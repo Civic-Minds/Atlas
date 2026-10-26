@@ -10,12 +10,13 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { DEFAULT_R2_PUBLIC_URL } from '../shared/config.js';
-import { buildHistoryAgencyList } from '../shared/historyEligibility.js';
+import { historyV2FromEnv } from '../pipeline/historyV2Flag.js';
+import { buildHistoryAgencyList, type HistoryEligibilityOptions } from '../shared/historyEligibility.js';
 
 export const HISTORY_AGENCY_LIST_PATH = resolve(import.meta.dirname, '../shared/data/history-agencies.json');
 
-export function writeHistoryAgencyList(rows: Parameters<typeof buildHistoryAgencyList>[0]): number {
-  const list = buildHistoryAgencyList(rows);
+export function writeHistoryAgencyList(rows: Parameters<typeof buildHistoryAgencyList>[0], options: HistoryEligibilityOptions = {}): number {
+  const list = buildHistoryAgencyList(rows, options);
   writeFileSync(HISTORY_AGENCY_LIST_PATH, `${JSON.stringify(list, null, 2)}\n`);
   return list.slugs.length;
 }
@@ -28,7 +29,7 @@ async function main() {
       if (!r.ok) throw new Error(`history-config.json: HTTP ${r.status}`);
       return r.json();
     });
-  const count = writeHistoryAgencyList(rows);
+  const count = writeHistoryAgencyList(rows, { realYearsOnly: historyV2FromEnv() });
   console.log(`Wrote ${HISTORY_AGENCY_LIST_PATH} (${count} agencies)`);
 }
 

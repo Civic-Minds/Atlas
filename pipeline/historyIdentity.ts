@@ -5,7 +5,7 @@ export interface CurrentHistoryRoute {
   routeLongName?: string;
   routeType?: number | string;
   busSubType?: string;
-  headway: number;
+  headway: number | null;
   headwayByPeriod?: HeadwayByPeriod;
   geometry?: number[][];
 }
@@ -35,4 +35,47 @@ export function resolveCurrentHistoryRoute(
   }
 
   return undefined;
+}
+
+/** {slug: {canonicalKey: [oldKeys]}}: committed in config/history-route-aliases.json. */
+export type HistoryRouteAliases = Record<string, Record<string, string[]>>;
+
+/** Old keys that stand for `canonicalKey` in this agency. */
+export function aliasesFor(aliases: HistoryRouteAliases, slug: string, canonicalKey: string): string[] {
+  return aliases[slug]?.[canonicalKey] ?? [];
+}
+
+/**
+ * Re-key routes recorded under an old key onto the canonical key, before the
+ * one-per-year rule runs. Returns the merged map and the number of old keys folded in.
+ */
+export function mergeAliasedRoutes<T>(
+  routes: Record<string, T[]>,
+  slugAliases: Record<string, string[]> | undefined,
+): { routes: Record<string, T[]>; merged: number } {
+  const out: Record<string, T[]> = {};
+  for (const [k, v] of Object.entries(routes)) out[k] = [...v];
+  let merged = 0;
+  for (const [canonical, oldKeys] of Object.entries(slugAliases ?? {})) {
+    for (const oldKey of oldKeys) {
+      if (oldKey === canonical || !out[oldKey]) continue;
+      out[canonical] = [...(out[canonical] ?? []), ...out[oldKey]];
+      delete out[oldKey];
+      merged++;
+    }
+  }
+  return { routes: out, merged };
+}
+
+/**
+ * Current-artifact names a historical key may resolve to: the manual list plus any
+ * canonical key that lists this key as an old key.
+ */
+export function currentRouteShortNamesFor(
+  key: string,
+  manual: string[] | undefined,
+  slugAliases: Record<string, string[]> | undefined,
+): string[] {
+  const viaAlias = Object.entries(slugAliases ?? {}).filter(([, olds]) => olds.includes(key)).map(([canonical]) => canonical);
+  return [...new Set([...(manual ?? []), ...viaAlias])];
 }

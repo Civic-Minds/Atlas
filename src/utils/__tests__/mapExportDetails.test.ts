@@ -41,8 +41,8 @@ const BASE: MapExportState = {
 
 describe('filter wording', () => {
   it('matches the app filter labels', () => {
-    expect(describeHeadwayFilter(20)).toBe('Every 20 min or better');
-    expect(describeHeadwayFilter(Infinity)).toBe('All routes');
+    expect(describeHeadwayFilter(20)).toBe('≤20 min');
+    expect(describeHeadwayFilter(Infinity)).toBe('All');
     expect(describeDayAndPeriod('Saturday', 'midday')).toBe('Saturday midday');
     expect(describeDayAndPeriod('Weekday', 'amPeak')).toBe('Weekday AM peak');
     expect(describeDayAndPeriod('Sunday', 'all')).toBe('Sunday, all day');
@@ -107,7 +107,7 @@ describe('describeMapExport', () => {
     expect(details.place).toBe('Toronto');
     expect(details.title).toBe('Toronto');
     expect(details.eyebrow).toBe('Transit frequency');
-    expect(details.lines).toEqual(['Every 20 min or better · Saturday midday']);
+    expect(details.lines).toEqual(['≤20 min · Saturday midday']);
     expect(details.route).toBeNull();
     expect(details.keyTitle).toBeUndefined();
     expect(details.filename).toBe('atlas-toronto-20min-saturday-midday.png');
@@ -116,7 +116,7 @@ describe('describeMapExport', () => {
   it('includes the selected route and modes', () => {
     const details = describeMapExport({ ...BASE, routeLabel: '505 — Dundas', routeShortName: '505', routeColor: '#15803d', selectedModes: [3, 1] }, samples({ ttc: 30 }), AGENCIES);
     expect(details.route).toEqual({ label: 'Route 505 — Dundas', color: '#15803d' });
-    expect(details.lines).toEqual(['Every 20 min or better · Saturday midday · Subway/Metro and Bus']);
+    expect(details.lines).toEqual(['≤20 min · Saturday midday · Subway/Metro and Bus']);
     expect(details.filename).toBe('atlas-toronto-route-505-20min-saturday-midday.png');
   });
 
@@ -131,7 +131,7 @@ describe('describeMapExport', () => {
     expect(details.place).toBeNull();
     expect(details.title).toBe('Transit frequency');
     expect(details.eyebrow).toBeNull();
-    expect(details.lines).toEqual(['Every 20 min or better · Saturday midday']);
+    expect(details.lines).toEqual(['≤20 min · Saturday midday']);
     expect(details.filename).toBe('atlas-20min-saturday-midday.png');
   });
 

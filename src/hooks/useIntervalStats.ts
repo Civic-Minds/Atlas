@@ -52,6 +52,11 @@ export interface HoveredBranch {
   directionId: number;
   headsign?: string;
   headsigns?: string[];
+  /**
+   * The hovered row's pattern when it has one: two rows can share a headsign and differ only by
+   * origin (CIV-221 converging-origin rows), so the row, chart and map also match on this (#1064).
+   */
+  routeVariant?: string;
   isCore?: boolean;
   /** On-shape stops shared by the hovered direction's branches. */
   sharedStopIds?: string[];

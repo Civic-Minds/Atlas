@@ -5,7 +5,7 @@ import { useColorVision } from '../../context/ColorVisionContext';
 import type { ShapeProperties, TimePeriod, DayType, HoveredBranch, ViewportBounds } from '../../hooks/useIntervalStats';
 import type { Agency } from '../../App';
 import { findVariantFamily } from '../../utils/routeVariants';
-import { routeLabels, shortenAgencyName, searchOverlayHidesPanel } from '../../utils/format';
+import { routeLabels, shortenAgencyName, searchOverlayHidesPanel, comparePanelTop } from '../../utils/format';
 import { labelDirectionGroups, sortDirectionGroupIds } from '../../utils/directionLabel';
 import { hasDirectionPeriodService, partPeriodText, routeCardDisplayHeadway, routeListDisplay, type RouteListDisplay } from '../../utils/effectiveHeadway';
 import { combineSuggestedRouteNames, suggestedRouteGroupKey } from '../../utils/routeSuggestion';
@@ -23,7 +23,7 @@ import {
   type RouteSearchResult,
   type StopSearchResult,
 } from '../../utils/searchResults';
-import { FLOATING_CARD, TRANSITION_BASE, PANEL_SIDEBAR, Z_PANEL, SIDEBAR_LEFT_FALLBACK, SIDEBAR_PANEL_WIDTH } from '../../styles';
+import { FLOATING_CARD, TRANSITION_BASE, PANEL_SIDEBAR_SLOT, Z_PANEL, Z_DROPDOWN, SIDEBAR_LEFT_FALLBACK, SIDEBAR_PANEL_WIDTH } from '../../styles';
 import { DisambiguationPanel } from './panels/DisambiguationPanel';
 import { StopCard } from './panels/StopCard';
 import type { StopRoute, NearbyConnection } from './panels/StopCard';
@@ -42,6 +42,10 @@ import type { CompareRouteRow } from './compareTypes';
 import { FEATURES } from '../../../shared/config';
 import { PHONE_MEDIA_QUERY, useMediaQuery } from '../../hooks/useMediaQuery';
 import { hasRegularServiceInPeriod, hasStretchRoles, stretchRowFeatures, variantOnlyRow } from '../../utils/stretchCard';
+import { compareAgencyName, compareHeadwayThenNumber, compareRouteNumber } from '../../utils/sortCompare';
+import { SIDEBAR_CARD_BODY } from './cardUi';
+import { useRecentSearches } from '../../hooks/useRecentSearches';
+import { BOTTOM_SHEET_FRAME, BottomSheetHandle, bottomSheetBodyClass, useBottomSheet } from '../ui/BottomSheet';
 
 interface SidebarControlsProps {
   query: string;
@@ -85,9 +89,6 @@ interface SidebarControlsProps {
   analyticsApp?: string;
   onSearchRouteHover?: (key: string | null) => void;
 }
-
-/** Below map A's compare label and controls row (label, then a row of chips, from 68px). */
-const COMPARE_PANEL_TOP = 160;
 
 /**
  * Phone bottom sheet while comparing: map B is the lower half, with its label and Frequency, Day and
@@ -148,7 +149,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   const scrollRef = useRef<HTMLDivElement>(null);
   const [canScrollMore, setCanScrollMore] = useState(false);
   const [stopAgencyFilter, setStopAgencyFilter] = useState<string | null>(null);
-  const [recentSearches, setRecentSearches] = useState<string[]>([]);
+  const { recentSearches, saveRecentSearch, clearRecentSearches } = useRecentSearches(!!searchFocused);
   const [recentlyViewed, setRecentlyViewed] = useState<Array<{ key: string; shortName: string; longName: string; agencyName: string; routeType?: number }>>([]);
   const [showAllSearchResults, setShowAllSearchResults] = useState(false);
 
@@ -185,9 +186,6 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
 
   const loadRecents = useCallback(() => {
     try {
-      const qRecents = localStorage.getItem('atlas_recent_searches');
-      if (qRecents) setRecentSearches(JSON.parse(qRecents));
-
       const rRecents = localStorage.getItem('atlas_recently_viewed_routes');
       if (rRecents) {
         const parsed: Array<{ key: string; shortName: string; longName: string; agencyName: string; routeType?: number }> = JSON.parse(rRecents);
@@ -216,30 +214,6 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     setShowAllSearchResults(false);
   }, [query]);
 
-  const saveRecentSearch = useCallback((q: string) => {
-    const trimmed = q.trim();
-    if (!trimmed) return;
-    try {
-      const recentsRaw = localStorage.getItem('atlas_recent_searches');
-      const recents: string[] = recentsRaw ? JSON.parse(recentsRaw) : [];
-      const filtered = recents.filter(s => s.toLowerCase() !== trimmed.toLowerCase());
-      filtered.unshift(trimmed);
-      const limited = filtered.slice(0, 5);
-      localStorage.setItem('atlas_recent_searches', JSON.stringify(limited));
-      setRecentSearches(limited);
-    } catch (e) {
-      console.error(e);
-    }
-  }, []);
-
-  const clearRecentSearches = useCallback(() => {
-    try {
-      localStorage.removeItem('atlas_recent_searches');
-      setRecentSearches([]);
-    } catch (e) {
-      console.error(e);
-    }
-  }, []);
 
   // Save recently viewed route
   useEffect(() => {
@@ -322,7 +296,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     }
     return [...routes.values()]
       .map(route => ({ ...route, longName: combineSuggestedRouteNames(route.longNames) ?? '' }))
-      .sort((a, b) => a.headway - b.headway)
+      .sort(compareHeadwayThenNumber)
       .slice(0, 5);
   }, [nonCorridorLayers, period, currentDay, searchFocused]);
 
@@ -662,7 +636,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       }
     }
     return Array.from(routeMap.entries())
-      .sort(([a], [b]) => a.localeCompare(b, undefined, { numeric: true }))
+      .sort(([a], [b]) => compareRouteNumber(a, b))
       .map(([, v]) => ({
         shortName: v.shortName,
         longName: v.longName,
@@ -774,12 +748,10 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
 
     return Array.from(seen.values())
       .filter(conn => !departingKeys.has(conn.rKey))
-      .sort((a, b) => {
-        if (a.headway !== null && b.headway !== null) return a.headway - b.headway;
-        if (a.headway !== null) return -1;
-        if (b.headway !== null) return 1;
-        return a.routeShortName.localeCompare(b.routeShortName, undefined, { numeric: true });
-      });
+      .sort((a, b) => compareHeadwayThenNumber(
+        { headway: a.headway, shortName: a.routeShortName, longName: a.routeLongName },
+        { headway: b.headway, shortName: b.routeShortName, longName: b.routeLongName },
+      ));
   }, [currentStop, nonCorridorLayers, currentDay, period, stopRoutes]);
 
   const disambigDetails = useMemo(() => {
@@ -806,13 +778,8 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
           return candidateKey === displayKey;
         }) === index;
       })
-      .sort((a, b) => {
-        const agencyCmp = a.agencyName.localeCompare(b.agencyName);
-        if (agencyCmp !== 0) return agencyCmp;
-        const nA = parseInt(a.shortName, 10), nB = parseInt(b.shortName, 10);
-        if (!isNaN(nA) && !isNaN(nB)) return nA - nB;
-        return a.shortName.localeCompare(b.shortName, undefined, { numeric: true });
-      });
+      .sort((a, b) => compareAgencyName(a.agencyName, b.agencyName)
+        || compareRouteNumber(a.shortName, b.shortName, a.longName, b.longName));
     return details;
   }, [disambiguationRoutes, nonCorridorLayers, colorMode]);
 
@@ -955,25 +922,8 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   // take the full screen width, and route and stop cards keep a fixed width.
   const matchSearchBarWidth = !!searchBarWidth && !isPhone;
   const phonePanelWidth = isPhone && !searchFocused ? 'max-sm:w-44' : '';
-  const [sheetExpanded, setSheetExpanded] = useState(false);
-  const sheetDragStart = useRef<number | null>(null);
   const sheetSubject = selectedRoute ?? (currentStop as { stopId?: string } | null)?.stopId ?? null;
-  useEffect(() => {
-    setSheetExpanded(false);
-  }, [sheetSubject]);
-  const onSheetPointerDown = (event: React.PointerEvent) => {
-    sheetDragStart.current = event.clientY;
-    // Keep receiving the pointer after the finger leaves the handle mid-drag.
-    event.currentTarget.setPointerCapture?.(event.pointerId);
-  };
-  const onSheetPointerUp = (event: React.PointerEvent) => {
-    const start = sheetDragStart.current;
-    sheetDragStart.current = null;
-    if (start == null) return;
-    const moved = event.clientY - start;
-    if (Math.abs(moved) < 8) setSheetExpanded(expanded => !expanded);
-    else setSheetExpanded(moved < 0);
-  };
+  const { expanded: sheetExpanded, handle: sheetHandle } = useBottomSheet(sheetSubject);
 
   const [panelShouldRender, setPanelShouldRender] = useState(false);
   const [panelVisible, setPanelVisible] = useState(false);
@@ -1010,14 +960,16 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
 
   if (!panelShouldRender) return null;
 
+  const compareTop = comparePanelTop(compareActive, searchFocused, query);
+
   return (
     <div
       className={sheetMode
-        ? `fixed inset-x-0 bottom-0 ${Z_PANEL} flex flex-col transition-[opacity,transform] duration-200 ease-out ${panelVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'}`
-        : `${PANEL_SIDEBAR} ${SIDEBAR_PANEL_WIDTH} ${phonePanelWidth} ${nightServiceView ? 'max-h-[calc(100vh-168px)]' : 'max-h-[calc(100vh-132px)]'} flex flex-col gap-3 transition-[opacity,transform] duration-200 ease-out ${panelVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2 pointer-events-none'}`}
+        ? `${BOTTOM_SHEET_FRAME} ${panelVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'}`
+        : `${PANEL_SIDEBAR_SLOT} ${searchOverlayHidesPanel(searchFocused, query) ? Z_DROPDOWN : Z_PANEL} ${SIDEBAR_PANEL_WIDTH} ${phonePanelWidth} ${nightServiceView ? 'max-h-[calc(100vh-168px)]' : 'max-h-[calc(100vh-132px)]'} flex flex-col gap-3 transition-[opacity,transform] duration-200 ease-out ${panelVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2 pointer-events-none'}`}
       style={sheetMode ? undefined : {
         '--sidebar-left': `${sidebarLeft ?? SIDEBAR_LEFT_FALLBACK}px`,
-        ...(compareActive ? { top: `${COMPARE_PANEL_TOP}px`, maxHeight: `calc(100vh - ${COMPARE_PANEL_TOP + 64}px)` } : {}),
+        ...(compareTop != null ? { top: `${compareTop}px`, maxHeight: `calc(100vh - ${compareTop + 64}px)` } : {}),
         ...(matchSearchBarWidth ? { width: `${searchBarWidth}px`, maxWidth: 'none' } : {}),
       } as React.CSSProperties}
     >
@@ -1044,22 +996,10 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         onScroll={checkScroll}
         data-report-anchor="true"
         className={sheetMode
-          ? `relative ${FLOATING_CARD} rounded-b-none px-4 pt-0 pb-[max(0.5rem,env(safe-area-inset-bottom))] overflow-y-auto overflow-x-hidden overscroll-contain transition-[height] duration-200 ease-out ${sheetExpanded ? 'h-[calc(100dvh-76px)]' : compareActive ? COMPARE_SHEET_HEIGHT : 'h-[42dvh]'}`
-          : `relative flex-1 min-h-0 ${FLOATING_CARD} px-4 pt-4 pb-2 transition-colors ${TRANSITION_BASE} overflow-y-auto overflow-x-hidden custom-scrollbar`}
+          ? bottomSheetBodyClass(sheetExpanded, compareActive ? COMPARE_SHEET_HEIGHT : undefined)
+          : `${SIDEBAR_CARD_BODY} transition-colors ${TRANSITION_BASE}`}
       >
-        {sheetMode && (
-          <button
-            type="button"
-            aria-label={sheetExpanded ? 'Show less' : 'Show more'}
-            aria-expanded={sheetExpanded}
-            onPointerDown={onSheetPointerDown}
-            onPointerUp={onSheetPointerUp}
-            onPointerCancel={() => { sheetDragStart.current = null; }}
-            className="sticky top-0 z-10 -mx-4 mb-1 flex w-[calc(100%+2rem)] touch-none justify-center bg-[var(--bg-panel)] pt-2.5 pb-2"
-          >
-            <span className="h-1 w-10 rounded-full bg-[var(--border-primary)]" />
-          </button>
-        )}
+        {sheetMode && <BottomSheetHandle expanded={sheetExpanded} handle={sheetHandle} />}
         {panelStop && (
           <StopCard
             currentStop={currentStop}

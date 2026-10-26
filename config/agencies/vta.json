@@ -16,9 +16,9 @@
   ],
   "feedUrl": "https://gtfs.vta.org/gtfs_vta.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-57/latest.zip",
-  "lastFeedExpiry": "20261025",
-  "lastFeedVersion": "2026-08-27_10:32",
-  "lastRefreshedAt": "2026-09-07",
+  "lastFeedExpiry": "20270110",
+  "lastFeedVersion": "2026-10-09_14:57",
+  "lastRefreshedAt": "2026-10-19",
   "cities": [
     "San Jose, California",
     "Santa Clara, California",
@@ -29,10 +29,10 @@
     "Gilroy, California",
     "Palo Alto, California"
   ],
-  "lastFeedCheckAt": "20261012",
+  "lastFeedCheckAt": "20261019",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261025",
+  "expiredFeedCheckExpiry": "20270110",
   "timezone": "America/Los_Angeles",
   "feedQuality": {
     "status": "healthy",
@@ -43,9 +43,9 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 298
+      "featureCount": 312
     },
-    "checkedAt": "2026-09-07"
+    "checkedAt": "2026-10-19"
   },
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://gtfs.vta.org/gtfs_vta.zip",
@@ -69,5 +69,9 @@
       "reason": "VTA light rail is published as route_type 0 (tram)"
     }
   ],
-  "lastPeekedExpiry": "20261025"
+  "lastPeekedExpiry": "20270110",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

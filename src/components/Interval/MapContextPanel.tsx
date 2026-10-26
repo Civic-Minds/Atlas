@@ -7,6 +7,8 @@ import RegionFilterPills from '../RegionFilterPills';
 import Panel, { PanelTitleBar } from '../ui/Panel';
 import ListRow from '../ui/ListRow';
 import AgencyGroupHeader from '../ui/AgencyGroupHeader';
+import { compareAgencyName, compareRegion } from '../../utils/sortCompare';
+import { countOf } from '../../../shared/overflowText';
 
 interface MapContextPanelProps {
   agencies: MapContextAgency[];
@@ -25,7 +27,7 @@ export const MapContextPanel: React.FC<MapContextPanelProps> = ({ agencies, mode
   // Only regions with routes in view get a pill, so no pill ever matches nothing.
   const regionsInView = useMemo(() => {
     if (!regionBySlug) return [];
-    return [...new Set(agencies.filter(agency => agency.routes.length > 0).map(agency => regionOf(agency.slug)))].sort();
+    return [...new Set(agencies.filter(agency => agency.routes.length > 0).map(agency => regionOf(agency.slug)))].sort(compareRegion);
   }, [agencies, regionBySlug, regionOf]);
   useEffect(() => {
     if (regionFilter.size === 0) return;
@@ -39,13 +41,18 @@ export const MapContextPanel: React.FC<MapContextPanelProps> = ({ agencies, mode
   [agencies, showRegionPills, regionFilter, regionOf]);
   const count = mode === 'agencies' ? agencies.length : routes.length;
   const filteredRouteGroups = useMemo(() => {
-    const groups = new Map<string, { agencyName: string; routes: MapContextRoute[] }>();
+    const groups = new Map<string, { agencySlug: string; agencyName: string; routes: MapContextRoute[] }>();
     for (const route of routes) {
-      const group = groups.get(route.agencySlug) ?? { agencyName: route.agencyName, routes: [] };
+      const group = groups.get(route.agencySlug) ?? { agencySlug: route.agencySlug, agencyName: route.agencyName, routes: [] };
       group.routes.push(route);
       groups.set(route.agencySlug, group);
     }
-    return [...groups.values()].sort((a, b) => a.agencyName.localeCompare(b.agencyName));
+    // Same order as the agencies tab: most routes in view first, then A-Z. Routes inside each
+    // agency keep the route-number order buildMapContextAgencies gave them.
+    return [...groups.values()].sort((a, b) =>
+      b.routes.length - a.routes.length
+      || compareAgencyName(a.agencyName, b.agencyName)
+      || a.agencySlug.localeCompare(b.agencySlug));
   }, [routes]);
 
   return (
@@ -61,7 +68,7 @@ export const MapContextPanel: React.FC<MapContextPanelProps> = ({ agencies, mode
         <div className="min-w-0 flex-1">
           <div className={PANEL_TITLE}>In view</div>
           <div className="text-xs font-bold text-[var(--text-primary)]">
-            {count} {count === 1 ? (mode === 'agencies' ? 'agency' : 'route') : (mode === 'agencies' ? 'agencies' : 'routes')}
+            {mode === 'agencies' ? countOf(count, 'agency', 'agencies') : countOf(count, 'route')}
           </div>
         </div>
       </PanelTitleBar>

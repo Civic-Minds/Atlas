@@ -1,0 +1,1365 @@
+route_id,route_short_name,route_long_name,branch,direction_id,direction_label,from_stop_id,from_stop_name,to_stop_id,to_stop_name,sample_trip_count,spacing_m_median,spacing_m_mean,spacing_m_min,spacing_m_max
+501,501,Queen,,0,East,5199,2111 Lake Shore Blvd West,6523,Humber Loop at The Queensway,71,231.5,231.5,231.5,231.5
+501,501,Queen,,0,East,5175,2155 Lake Shore Blvd West,5199,2111 Lake Shore Blvd West,71,397.8,397.8,397.8,397.8
+501,501,Queen,,0,East,16578,Adelaide St West at Yonge St - King Station,12314,Church St at Queen St East,542,520.5,520.5,520.5,520.5
+501,501,Queen,,0,East,12314,Church St at Queen St East,3050,Queen St East at Jarvis St,542,211.6,211.6,211.6,211.6
+501,501,Queen,,0,East,2115,Dundas St East at Broadview Ave,3072,Queen St East at Saulter St East Side,542,687.7,687.7,687.7,687.7
+501,501,Queen,,0,East,15872,Dundas St East at Regent Park Blvd,2126,Dundas St East at River St,542,310.1,310.1,310.0,310.1
+501,501,Queen,,0,East,2126,Dundas St East at River St,2115,Dundas St East at Broadview Ave,542,537.1,537.1,537.1,537.1
+501,501,Queen,,0,East,6523,Humber Loop at The Queensway,6916,The Queensway at South Kingsway,418,795.4,795.4,795.4,795.4
+501,501,Queen,,0,East,5506,Humber Loop at The Queensway,6916,The Queensway at South Kingsway,71,699.4,699.4,699.4,699.4
+501,501,Queen,,0,East,5173,Lake Shore Blvd West at Burlington St,5189,Lake Shore Blvd West at Louisa St,71,194.1,194.1,194.1,194.1
+501,501,Queen,,0,East,5182,Lake Shore Blvd West at Colonel Samuel Smith Park Dr,5152,Lake Shore Blvd West at Thirteenth St,71,440.1,440.1,440.1,440.1
+501,501,Queen,,0,East,5170,Lake Shore Blvd West at Fifth St,5167,Lake Shore Blvd West at Third St,71,189.5,189.5,189.5,189.5
+501,501,Queen,,0,East,13946,Lake Shore Blvd West at First St,15722,Lake Shore Blvd West at Royal York Rd,71,467.5,467.5,467.5,467.5
+501,501,Queen,,0,East,5185,Lake Shore Blvd West at Legion Rd,5195,Lake Shore Blvd West at Park Lawn Rd,71,317.8,317.8,317.8,317.8
+501,501,Queen,,0,East,5187,Lake Shore Blvd West at Long Branch Ave,5163,Lake Shore Blvd West at Thirty First St,71,313.5,313.5,313.5,313.5
+501,501,Queen,,0,East,5189,Lake Shore Blvd West at Louisa St,5185,Lake Shore Blvd West at Legion Rd,71,324.2,324.2,324.2,324.2
+501,501,Queen,,0,East,15721,Lake Shore Blvd West at Miles Rd,15720,Lake Shore Blvd West at Norris Cres,71,295.2,295.2,295.2,295.2
+501,501,Queen,,0,East,5192,Lake Shore Blvd West at Mimico Ave,5201,Lake Shore Blvd West at Superior Ave,71,152.7,152.7,152.7,152.7
+501,501,Queen,,0,East,15720,Lake Shore Blvd West at Norris Cres,5192,Lake Shore Blvd West at Mimico Ave,71,311.9,311.9,311.9,311.9
+501,501,Queen,,0,East,5195,Lake Shore Blvd West at Park Lawn Rd,5175,2155 Lake Shore Blvd West,71,349.3,349.3,349.3,349.3
+501,501,Queen,,0,East,15722,Lake Shore Blvd West at Royal York Rd,15721,Lake Shore Blvd West at Miles Rd,71,587.4,587.4,587.4,587.4
+501,501,Queen,,0,East,5172,Lake Shore Blvd West at Seventh St,5170,Lake Shore Blvd West at Fifth St,71,192.3,192.3,192.3,192.3
+501,501,Queen,,0,East,5201,Lake Shore Blvd West at Superior Ave,5173,Lake Shore Blvd West at Burlington St,71,281.7,281.7,281.7,281.7
+501,501,Queen,,0,East,5150,Lake Shore Blvd West at Tenth St,5172,Lake Shore Blvd West at Seventh St,71,286.4,286.4,286.4,286.4
+501,501,Queen,,0,East,5167,Lake Shore Blvd West at Third St,13946,Lake Shore Blvd West at First St,71,190.4,190.4,190.4,190.4
+501,501,Queen,,0,East,5152,Lake Shore Blvd West at Thirteenth St,5150,Lake Shore Blvd West at Tenth St,71,264.4,264.4,264.4,264.4
+501,501,Queen,,0,East,5163,Lake Shore Blvd West at Thirty First St,5160,Lake Shore Blvd West at Twenty Eighth St,71,225.5,225.5,225.5,225.5
+501,501,Queen,,0,East,5164,Lake Shore Blvd West at Thirty Seventh St,5187,Lake Shore Blvd West at Long Branch Ave,71,355.8,355.8,355.8,355.8
+501,501,Queen,,0,East,5160,Lake Shore Blvd West at Twenty Eighth St,5159,Lake Shore Blvd West at Twenty Seventh St,71,225.2,225.2,225.2,225.2
+501,501,Queen,,0,East,5157,Lake Shore Blvd West at Twenty Second St,5182,Lake Shore Blvd West at Colonel Samuel Smith Park Dr,71,355.2,355.2,355.2,355.2
+501,501,Queen,,0,East,5159,Lake Shore Blvd West at Twenty Seventh St,5157,Lake Shore Blvd West at Twenty Second St,71,305.0,305.0,305.0,305.0
+501,501,Queen,,0,East,5511,Long Branch Loop - Long Branch GO Station,5164,Lake Shore Blvd West at Thirty Seventh St,71,535.0,535.0,535.0,535.0
+501,501,Queen,,0,East,15218,Parliament St at Dundas St East,15872,Dundas St East at Regent Park Blvd,542,349.9,349.9,349.9,350.0
+501,501,Queen,,0,East,6646,Parliament St at Shuter St,15218,Parliament St at Dundas St East,542,291.8,291.8,291.7,291.8
+501,501,Queen,,0,East,15699,Queen St East at Alton Ave,3048,Queen St East at Greenwood Ave,542,221.5,221.5,221.4,221.5
+501,501,Queen,,0,East,6801,Queen St East at Beech Ave,10158,Queen St East at Silver Birch Ave,542,195.6,195.6,195.6,195.6
+501,501,Queen,,0,East,15338,Queen St East at Bellefair Ave,16520,Queen St East at Wineva Ave East Side,542,411.0,411.0,411.0,411.1
+501,501,Queen,,0,East,3035,Queen St East at Carlaw Ave,3062,Queen St East at Pape Ave,542,179.3,179.3,179.3,179.3
+501,501,Queen,,0,East,3037,Queen St East at Caroline Ave,3030,Queen St East at Jones Ave,542,212.3,212.3,212.3,212.3
+501,501,Queen,,0,East,15342,Queen St East at Elmer Ave,15338,Queen St East at Bellefair Ave,542,312.7,312.7,312.6,312.7
+501,501,Queen,,0,East,4557,Queen St East at Emdaabiimok Ave,11845,Queen St East at Kingston Rd,542,322.3,322.3,322.3,322.3
+501,501,Queen,,0,East,3046,Queen St East at Empire Ave,3058,Queen St East at Logan Ave,542,153.1,153.1,153.1,153.1
+501,501,Queen,,0,East,15344,Queen St East at Glen Manor Dr,6801,Queen St East at Beech Ave,542,429.2,429.2,429.2,429.3
+501,501,Queen,,0,East,3048,Queen St East at Greenwood Ave,15336,Queen St East at Woodfield Rd,542,332.1,332.1,332.1,332.1
+501,501,Queen,,0,East,3050,Queen St East at Jarvis St,3070,Queen St East at Sherbourne St,542,321.0,321.0,321.0,321.0
+501,501,Queen,,0,East,3030,Queen St East at Jones Ave,3056,Queen St East at Leslie St,542,214.8,214.8,214.8,214.8
+501,501,Queen,,0,East,11845,Queen St East at Kingston Rd,6810,Queen St East at Sarah Ashbridge Ave,542,308.5,308.5,308.5,308.6
+501,501,Queen,,0,East,3056,Queen St East at Leslie St,15699,Queen St East at Alton Ave,542,189.5,189.5,189.5,189.5
+501,501,Queen,,0,East,3058,Queen St East at Logan Ave,3035,Queen St East at Carlaw Ave,542,208.2,208.2,208.2,208.2
+501,501,Queen,,0,East,3060,Queen St East at Ontario St,3064,Queen St East at Parliament St,542,217.6,217.6,217.6,217.7
+501,501,Queen,,0,East,3062,Queen St East at Pape Ave,3037,Queen St East at Caroline Ave,542,221.7,221.7,221.7,221.8
+501,501,Queen,,0,East,3064,Queen St East at Parliament St,6646,Parliament St at Shuter St,542,161.4,161.4,161.4,161.4
+501,501,Queen,,0,East,6810,Queen St East at Sarah Ashbridge Ave,6824,Queen St East at Woodbine Ave,542,281.8,281.8,281.8,281.8
+501,501,Queen,,0,East,3072,Queen St East at Saulter St East Side,3046,Queen St East at Empire Ave,542,219.0,219.0,219.0,219.0
+501,501,Queen,,0,East,3070,Queen St East at Sherbourne St,3060,Queen St East at Ontario St,542,192.1,192.1,192.0,192.1
+501,501,Queen,,0,East,10158,Queen St East at Silver Birch Ave,11683,Queen St East at Neville Park Blvd,542,234.9,234.9,234.8,234.9
+501,501,Queen,,0,East,16520,Queen St East at Wineva Ave East Side,15344,Queen St East at Glen Manor Dr,542,183.9,183.9,183.8,183.9
+501,501,Queen,,0,East,6824,Queen St East at Woodbine Ave,15342,Queen St East at Elmer Ave,542,193.9,193.9,193.9,193.9
+501,501,Queen,,0,East,15336,Queen St East at Woodfield Rd,4557,Queen St East at Emdaabiimok Ave,542,399.0,399.0,399.0,399.0
+501,501,Queen,,0,East,6825,Queen St West at Abell St,6831,Queen St West at Dovercourt Rd,542,161.8,161.8,161.8,161.9
+501,501,Queen,,0,East,6826,Queen St West at Augusta Ave,6853,Queen St West at Spadina Ave,542,188.4,188.4,188.4,188.4
+501,501,Queen,,0,East,6827,Queen St West at Bathurst St,6826,Queen St West at Augusta Ave,542,358.5,358.5,358.5,358.5
+501,501,Queen,,0,East,10152,Queen St West at Beaty Ave,6840,Queen St West at Jameson Ave,542,314.0,314.0,313.9,314.0
+501,501,Queen,,0,East,6836,Queen St West at Brock Ave,6834,Queen St West at Dufferin St,542,303.8,303.8,303.8,303.8
+501,501,Queen,,0,East,6831,Queen St West at Dovercourt Rd,6846,Queen St West at Ossington Ave,542,295.1,295.1,295.1,295.1
+501,501,Queen,,0,East,6834,Queen St West at Dufferin St,15348,Queen St West at Sudbury St,542,119.7,119.7,119.7,119.7
+501,501,Queen,,0,East,6835,Queen St West at Dunn Ave,6836,Queen St West at Brock Ave,542,188.3,188.3,188.3,188.4
+501,501,Queen,,0,East,6840,Queen St West at Jameson Ave,6835,Queen St West at Dunn Ave,542,236.1,236.1,236.1,236.1
+501,501,Queen,,0,East,6841,Queen St West at John St,6858,Queen St West at University Ave - Osgoode Station,542,357.0,357.0,357.0,357.0
+501,501,Queen,,0,East,6844,Queen St West at Niagara St,6856,Queen St West at Tecumseth St,542,274.5,274.5,274.5,274.5
+501,501,Queen,,0,East,6846,Queen St West at Ossington Ave,6850,Queen St West at Shaw St,542,205.5,205.5,205.5,205.5
+501,501,Queen,,0,East,6829,Queen St West at Peter St,6841,Queen St West at John St,542,215.8,215.8,215.8,215.8
+501,501,Queen,,0,East,16429,Queen St West at Roncesvalles Ave East Side,15341,Queen St West at Triller Ave,542,127.6,127.6,127.6,127.7
+501,501,Queen,,0,East,6850,Queen St West at Shaw St,6854,Queen St West at Strachan Ave,542,267.5,267.5,267.4,267.5
+501,501,Queen,,0,East,6853,Queen St West at Spadina Ave,6829,Queen St West at Peter St,542,321.7,321.7,321.7,321.7
+501,501,Queen,,0,East,6854,Queen St West at Strachan Ave,6844,Queen St West at Niagara St,542,276.6,276.6,276.6,276.6
+501,501,Queen,,0,East,15348,Queen St West at Sudbury St,6825,Queen St West at Abell St,542,240.6,240.6,240.5,240.6
+501,501,Queen,,0,East,6856,Queen St West at Tecumseth St,6827,Queen St West at Bathurst St,542,212.5,212.5,212.5,212.6
+501,501,Queen,,0,East,15341,Queen St West at Triller Ave,10152,Queen St West at Beaty Ave,542,217.3,217.3,217.3,217.3
+501,501,Queen,,0,East,6858,Queen St West at University Ave - Osgoode Station,16716,York St at Adelaide St West,542,374.0,374.0,373.9,374.0
+501,501,Queen,,0,East,14280,The Queensway at Colborne Lodge Dr East Side,6908,The Queensway at Parkside Dr,489,380.0,380.0,380.0,380.0
+501,501,Queen,,0,East,14281,The Queensway at Ellis Ave East Side,14280,The Queensway at Colborne Lodge Dr East Side,489,599.8,599.8,599.7,599.8
+501,501,Queen,,0,East,6888,The Queensway at Glendale Ave East Side - St Joseph's Health Centre,16429,Queen St West at Roncesvalles Ave East Side,489,440.6,440.6,440.5,440.6
+501,501,Queen,,0,East,6908,The Queensway at Parkside Dr,6888,The Queensway at Glendale Ave East Side - St Joseph's Health Centre,489,264.5,264.5,264.5,264.6
+501,501,Queen,,0,East,6916,The Queensway at South Kingsway,14282,The Queensway at Windermere Ave East Side,489,362.0,362.0,362.0,362.0
+501,501,Queen,,0,East,14282,The Queensway at Windermere Ave East Side,14281,The Queensway at Ellis Ave East Side,489,292.3,292.3,292.3,292.4
+501,501,Queen,,0,East,16716,York St at Adelaide St West,16578,Adelaide St West at Yonge St - King Station,542,493.8,493.8,493.8,493.9
+501,501,Queen,A,1,West,3372,Broadview Ave at Dundas St East,2127,Dundas St East at River St,380,578.1,578.1,578.1,578.1
+501,501,Queen,A,1,West,803,Church St at Richmond St East,10892,Richmond St West at Yonge St - Queen Station,380,346.7,346.7,346.7,346.7
+501,501,Queen,A,1,West,2125,Dundas St East at Parliament St,6647,Parliament St at Shuter St,380,291.8,291.8,291.8,291.8
+501,501,Queen,A,1,West,15873,Dundas St East at Regent Park Blvd,2125,Dundas St East at Parliament St,380,356.6,356.6,356.6,356.6
+501,501,Queen,A,1,West,2127,Dundas St East at River St,15873,Dundas St East at Regent Park Blvd,380,306.6,306.6,306.6,306.6
+501,501,Queen,A,1,West,6644,Parliament St at Queen St East,3061,Queen St East at Ontario St,380,214.2,214.2,214.2,214.2
+501,501,Queen,A,1,West,6647,Parliament St at Shuter St,6644,Parliament St at Queen St East,380,146.8,146.8,146.8,146.8
+501,501,Queen,A,1,West,3029,Queen St East at Alton Ave,3057,Queen St East at Leslie St,380,203.4,203.4,203.4,203.4
+501,501,Queen,A,1,West,15347,Queen St East at Beech Ave,6804,Queen St East at Glen Manor Dr,380,418.2,418.2,418.2,418.2
+501,501,Queen,A,1,West,15339,Queen St East at Bellefair Ave,6803,Queen St East at Elmer Ave,380,309.7,309.7,309.7,309.7
+501,501,Queen,A,1,West,3031,Queen St East at Boulton Ave,3033,Queen St East at Broadview Ave,380,248.3,248.3,248.3,248.3
+501,501,Queen,A,1,West,3033,Queen St East at Broadview Ave,3372,Broadview Ave at Dundas St East,380,421.7,421.7,421.7,421.7
+501,501,Queen,A,1,West,3034,Queen St East at Brooklyn Ave,3063,Queen St East at Pape Ave,380,153.0,153.0,153.0,153.0
+501,501,Queen,A,1,West,3036,Queen St East at Carlaw Ave,3059,Queen St East at Logan Ave,380,203.2,203.2,203.2,203.2
+501,501,Queen,A,1,West,3045,Queen St East at Coxwell Ave,15337,Queen St East at Woodfield Rd,380,396.8,396.8,396.8,396.8
+501,501,Queen,A,1,West,6803,Queen St East at Elmer Ave,15343,Queen St East at Woodbine Ave,380,187.3,187.3,187.3,187.3
+501,501,Queen,A,1,West,3047,Queen St East at Empire Ave,3031,Queen St East at Boulton Ave,380,205.4,205.4,205.4,205.4
+501,501,Queen,A,1,West,6804,Queen St East at Glen Manor Dr,6822,Queen St East at Wineva Ave,380,239.8,239.8,239.8,239.8
+501,501,Queen,A,1,West,3049,Queen St East at Greenwood Ave,3029,Queen St East at Alton Ave,380,211.3,211.3,211.3,211.3
+501,501,Queen,A,1,West,3051,Queen St East at Jarvis St,803,Church St at Richmond St East,380,285.7,285.7,285.7,285.7
+501,501,Queen,A,1,West,3052,Queen St East at Jones Ave,3034,Queen St East at Brooklyn Ave,380,273.1,273.1,273.1,273.1
+501,501,Queen,A,1,West,6806,Queen St East at Kingston Rd,3045,Queen St East at Coxwell Ave,380,363.1,363.1,363.1,363.1
+501,501,Queen,A,1,West,3057,Queen St East at Leslie St,3052,Queen St East at Jones Ave,380,206.9,206.9,206.9,206.9
+501,501,Queen,A,1,West,6811,Queen St East at Lockwood Rd,6806,Queen St East at Kingston Rd,380,270.0,270.0,270.0,270.0
+501,501,Queen,A,1,West,3059,Queen St East at Logan Ave,3047,Queen St East at Empire Ave,380,145.5,145.5,145.5,145.5
+501,501,Queen,A,1,West,6813,Queen St East at Neville Park Blvd,6817,Queen St East at Silver Birch Ave,380,270.7,270.7,270.7,270.7
+501,501,Queen,A,1,West,3061,Queen St East at Ontario St,3071,Queen St East at Sherbourne St,380,211.0,211.0,211.0,211.0
+501,501,Queen,A,1,West,3063,Queen St East at Pape Ave,3036,Queen St East at Carlaw Ave,380,195.8,195.8,195.8,195.8
+501,501,Queen,A,1,West,3071,Queen St East at Sherbourne St,3051,Queen St East at Jarvis St,380,315.9,315.9,315.9,315.9
+501,501,Queen,A,1,West,6817,Queen St East at Silver Birch Ave,15347,Queen St East at Beech Ave,380,207.3,207.3,207.3,207.3
+501,501,Queen,A,1,West,6822,Queen St East at Wineva Ave,15339,Queen St East at Bellefair Ave,380,371.3,371.3,371.3,371.3
+501,501,Queen,A,1,West,15343,Queen St East at Woodbine Ave,6811,Queen St East at Lockwood Rd,380,274.5,274.5,274.5,274.5
+501,501,Queen,A,1,West,15337,Queen St East at Woodfield Rd,3049,Queen St East at Greenwood Ave,380,338.1,338.1,338.1,338.1
+501,501,Queen,A,1,West,15633,Queen St West at Abell St,6838,Queen St West at Gladstone Ave,380,243.5,243.5,243.5,243.5
+501,501,Queen,A,1,West,3080,Queen St West at Augusta Ave,3081,Queen St West at Bathurst St,380,348.1,348.1,348.1,348.1
+501,501,Queen,A,1,West,3081,Queen St West at Bathurst St,6848,Queen St West at Palmerston Ave,380,227.1,227.1,227.1,227.1
+501,501,Queen,A,1,West,6839,Queen St West at Brock Ave,6845,Queen St West at O'Hara Ave,380,152.3,152.3,152.3,152.3
+501,501,Queen,A,1,West,6830,Queen St West at Claremont St,6855,Queen St West at Strachan Ave,380,305.0,305.0,305.0,305.0
+501,501,Queen,A,1,West,6832,Queen St West at Dovercourt Rd,15633,Queen St West at Abell St,380,155.8,155.8,155.8,155.8
+501,501,Queen,A,1,West,16849,Queen St West at Dufferin St,6839,Queen St West at Brock Ave,380,327.1,327.1,327.1,327.1
+501,501,Queen,A,1,West,6838,Queen St West at Gladstone Ave,16849,Queen St West at Dufferin St,380,109.9,109.9,109.9,109.9
+501,501,Queen,A,1,West,3084,Queen St West at John St,3087,Queen St West at Soho St,380,194.9,194.9,194.9,194.9
+501,501,Queen,A,1,West,6842,Queen St West at Lansdowne Ave,6852,Queen St West at Sorauren Ave,380,359.8,359.8,359.8,359.8
+501,501,Queen,A,1,West,6845,Queen St West at O'Hara Ave,6842,Queen St West at Lansdowne Ave,380,200.4,200.4,200.4,200.4
+501,501,Queen,A,1,West,6847,Queen St West at Ossington Ave,6832,Queen St West at Dovercourt Rd,380,295.1,295.1,295.1,295.1
+501,501,Queen,A,1,West,6848,Queen St West at Palmerston Ave,6830,Queen St West at Claremont St,380,248.0,248.0,248.0,248.0
+501,501,Queen,A,1,West,6849,Queen St West at Roncesvalles Ave,16402,The Queensway at Glendale Ave - St Joseph's Health Centre,380,509.0,509.0,509.0,509.0
+501,501,Queen,A,1,West,6851,Queen St West at Shaw St,6847,Queen St West at Ossington Ave,380,210.8,210.8,210.8,210.8
+501,501,Queen,A,1,West,3087,Queen St West at Soho St,3088,Queen St West at Spadina Ave,380,231.9,231.9,231.9,231.9
+501,501,Queen,A,1,West,6852,Queen St West at Sorauren Ave,6857,Queen St West at Triller Ave,380,216.4,216.4,216.4,216.4
+501,501,Queen,A,1,West,3088,Queen St West at Spadina Ave,3080,Queen St West at Augusta Ave,380,291.1,291.1,291.1,291.1
+501,501,Queen,A,1,West,15340,Queen St West at St Patrick St,3084,Queen St West at John St,380,207.7,207.7,207.7,207.7
+501,501,Queen,A,1,West,6855,Queen St West at Strachan Ave,6851,Queen St West at Shaw St,380,259.0,259.0,259.0,259.0
+501,501,Queen,A,1,West,6857,Queen St West at Triller Ave,6849,Queen St West at Roncesvalles Ave,380,198.9,198.9,198.9,198.9
+501,501,Queen,A,1,West,6859,Queen St West at University Ave - Osgoode Station,15340,Queen St West at St Patrick St,380,187.6,187.6,187.6,187.6
+501,501,Queen,A,1,West,10892,Richmond St West at Yonge St - Queen Station,13874,Richmond St West at York St,380,406.8,406.8,406.8,406.8
+501,501,Queen,A,1,West,13874,Richmond St West at York St,6859,Queen St West at University Ave - Osgoode Station,380,233.8,233.8,233.8,233.8
+501,501,Queen,A,1,West,14393,The Queensway at Colborne Lodge Dr West Side,14394,The Queensway at Ellis Ave West Side,424,586.7,586.7,586.7,586.7
+501,501,Queen,A,1,West,14394,The Queensway at Ellis Ave West Side,14395,The Queensway at Windermere Ave West Side,424,286.2,286.2,286.2,286.2
+501,501,Queen,A,1,West,16402,The Queensway at Glendale Ave - St Joseph's Health Centre,6909,The Queensway at Parkside Dr,424,190.6,190.6,190.6,190.6
+501,501,Queen,A,1,West,6909,The Queensway at Parkside Dr,14393,The Queensway at Colborne Lodge Dr West Side,424,493.8,493.8,493.8,493.8
+501,501,Queen,A,1,West,6915,The Queensway at South Kingsway,6523,Humber Loop at The Queensway,424,698.7,698.7,698.6,698.7
+501,501,Queen,A,1,West,14395,The Queensway at Windermere Ave West Side,6915,The Queensway at South Kingsway,424,278.4,278.4,278.4,278.4
+501,501,Queen,C,1,West,15746,2155 Lake Shore Blvd West,5196,Lake Shore Blvd West at Park Lawn Rd West Side,99,424.8,424.8,424.8,424.8
+501,501,Queen,C,1,West,3372,Broadview Ave at Dundas St East,2127,Dundas St East at River St,99,578.1,578.1,578.1,578.1
+501,501,Queen,C,1,West,803,Church St at Richmond St East,10892,Richmond St West at Yonge St - Queen Station,99,346.7,346.7,346.7,346.7
+501,501,Queen,C,1,West,2125,Dundas St East at Parliament St,6647,Parliament St at Shuter St,99,291.8,291.8,291.8,291.8
+501,501,Queen,C,1,West,15873,Dundas St East at Regent Park Blvd,2125,Dundas St East at Parliament St,99,356.6,356.6,356.6,356.6
+501,501,Queen,C,1,West,2127,Dundas St East at River St,15873,Dundas St East at Regent Park Blvd,99,306.6,306.6,306.6,306.6
+501,501,Queen,C,1,West,6523,Humber Loop at The Queensway,5200,Opposite 2111 Lake Shore Blvd West,99,253.1,253.1,253.1,253.1
+501,501,Queen,C,1,West,5174,Lake Shore Blvd West at Burlington St,5202,Lake Shore Blvd West at Superior Ave,99,282.7,282.7,282.7,282.7
+501,501,Queen,C,1,West,5155,Lake Shore Blvd West at Fifteenth St,5181,Lake Shore Blvd West at Kipling Ave,99,243.0,243.0,243.0,243.0
+501,501,Queen,C,1,West,5171,Lake Shore Blvd West at Fifth St,5180,Lake Shore Blvd West at Islington Ave,99,188.2,188.2,188.2,188.2
+501,501,Queen,C,1,West,13947,Lake Shore Blvd West at First St,5168,Lake Shore Blvd West at Third St,99,192.4,192.4,192.4,192.4
+501,501,Queen,C,1,West,5179,Lake Shore Blvd West at Hillside Ave,5203,Lake Shore Blvd West at Symons St,99,295.4,295.4,295.4,295.4
+501,501,Queen,C,1,West,5180,Lake Shore Blvd West at Islington Ave,5151,Lake Shore Blvd West at Tenth St,99,284.7,284.7,284.7,284.7
+501,501,Queen,C,1,West,5181,Lake Shore Blvd West at Kipling Ave,5156,Lake Shore Blvd West at Twenty Second St,99,378.3,378.3,378.3,378.3
+501,501,Queen,C,1,West,5186,Lake Shore Blvd West at Legion Rd,5190,Lake Shore Blvd West at Louisa St,99,329.1,329.1,329.1,329.1
+501,501,Queen,C,1,West,5188,Lake Shore Blvd West at Long Branch Ave,5165,Lake Shore Blvd West at Thirty Seventh St,99,420.0,420.0,420.0,420.0
+501,501,Queen,C,1,West,5190,Lake Shore Blvd West at Louisa St,5174,Lake Shore Blvd West at Burlington St,99,193.5,193.5,193.5,193.5
+501,501,Queen,C,1,West,5193,Lake Shore Blvd West at Mimico Ave,5179,Lake Shore Blvd West at Hillside Ave,99,294.0,294.0,294.0,294.0
+501,501,Queen,C,1,West,5196,Lake Shore Blvd West at Park Lawn Rd West Side,5186,Lake Shore Blvd West at Legion Rd,99,257.8,257.8,257.8,257.8
+501,501,Queen,C,1,West,5198,Lake Shore Blvd West at Royal York Rd,13947,Lake Shore Blvd West at First St,99,469.9,469.9,469.9,469.9
+501,501,Queen,C,1,West,5202,Lake Shore Blvd West at Superior Ave,5193,Lake Shore Blvd West at Mimico Ave,99,150.2,150.2,150.2,150.2
+501,501,Queen,C,1,West,5203,Lake Shore Blvd West at Symons St,5198,Lake Shore Blvd West at Royal York Rd,99,606.1,606.1,606.1,606.1
+501,501,Queen,C,1,West,5151,Lake Shore Blvd West at Tenth St,5153,Lake Shore Blvd West at Thirteenth St,99,271.3,271.3,271.3,271.3
+501,501,Queen,C,1,West,5168,Lake Shore Blvd West at Third St,5171,Lake Shore Blvd West at Fifth St,99,186.0,186.0,186.0,186.0
+501,501,Queen,C,1,West,5153,Lake Shore Blvd West at Thirteenth St,5155,Lake Shore Blvd West at Fifteenth St,99,180.8,180.8,180.8,180.8
+501,501,Queen,C,1,West,5162,Lake Shore Blvd West at Thirtieth St,5188,Lake Shore Blvd West at Long Branch Ave,99,283.7,283.7,283.7,283.7
+501,501,Queen,C,1,West,5165,Lake Shore Blvd West at Thirty Seventh St,5511,Long Branch Loop - Long Branch GO Station,99,679.8,679.8,679.8,679.8
+501,501,Queen,C,1,West,5161,Lake Shore Blvd West at Twenty Ninth St,5162,Lake Shore Blvd West at Thirtieth St,99,124.9,124.9,124.9,124.9
+501,501,Queen,C,1,West,5156,Lake Shore Blvd West at Twenty Second St,5158,Lake Shore Blvd West at Twenty Sixth St,99,253.7,253.7,253.7,253.7
+501,501,Queen,C,1,West,5158,Lake Shore Blvd West at Twenty Sixth St,5161,Lake Shore Blvd West at Twenty Ninth St,99,329.7,329.7,329.7,329.7
+501,501,Queen,C,1,West,5200,Opposite 2111 Lake Shore Blvd West,15746,2155 Lake Shore Blvd West,99,328.5,328.5,328.5,328.5
+501,501,Queen,C,1,West,6644,Parliament St at Queen St East,3061,Queen St East at Ontario St,99,214.2,214.2,214.2,214.2
+501,501,Queen,C,1,West,6647,Parliament St at Shuter St,6644,Parliament St at Queen St East,99,146.8,146.8,146.8,146.8
+501,501,Queen,C,1,West,3029,Queen St East at Alton Ave,3057,Queen St East at Leslie St,99,203.4,203.4,203.4,203.4
+501,501,Queen,C,1,West,15347,Queen St East at Beech Ave,6804,Queen St East at Glen Manor Dr,99,418.2,418.2,418.2,418.2
+501,501,Queen,C,1,West,15339,Queen St East at Bellefair Ave,6803,Queen St East at Elmer Ave,99,309.7,309.7,309.7,309.7
+501,501,Queen,C,1,West,3031,Queen St East at Boulton Ave,3033,Queen St East at Broadview Ave,99,248.3,248.3,248.3,248.3
+501,501,Queen,C,1,West,3033,Queen St East at Broadview Ave,3372,Broadview Ave at Dundas St East,99,421.7,421.7,421.7,421.7
+501,501,Queen,C,1,West,3034,Queen St East at Brooklyn Ave,3063,Queen St East at Pape Ave,99,153.0,153.0,153.0,153.0
+501,501,Queen,C,1,West,3036,Queen St East at Carlaw Ave,3059,Queen St East at Logan Ave,99,203.2,203.2,203.2,203.2
+501,501,Queen,C,1,West,3045,Queen St East at Coxwell Ave,15337,Queen St East at Woodfield Rd,99,396.8,396.8,396.8,396.8
+501,501,Queen,C,1,West,6803,Queen St East at Elmer Ave,15343,Queen St East at Woodbine Ave,99,187.3,187.3,187.3,187.3
+501,501,Queen,C,1,West,3047,Queen St East at Empire Ave,3031,Queen St East at Boulton Ave,99,205.4,205.4,205.4,205.4
+501,501,Queen,C,1,West,6804,Queen St East at Glen Manor Dr,6822,Queen St East at Wineva Ave,99,239.8,239.8,239.8,239.8
+501,501,Queen,C,1,West,3049,Queen St East at Greenwood Ave,3029,Queen St East at Alton Ave,99,211.3,211.3,211.3,211.3
+501,501,Queen,C,1,West,3051,Queen St East at Jarvis St,803,Church St at Richmond St East,99,285.7,285.7,285.7,285.7
+501,501,Queen,C,1,West,3052,Queen St East at Jones Ave,3034,Queen St East at Brooklyn Ave,99,273.1,273.1,273.1,273.1
+501,501,Queen,C,1,West,6806,Queen St East at Kingston Rd,3045,Queen St East at Coxwell Ave,99,363.1,363.1,363.1,363.1
+501,501,Queen,C,1,West,3057,Queen St East at Leslie St,3052,Queen St East at Jones Ave,99,206.9,206.9,206.9,206.9
+501,501,Queen,C,1,West,6811,Queen St East at Lockwood Rd,6806,Queen St East at Kingston Rd,99,270.0,270.0,270.0,270.0
+501,501,Queen,C,1,West,3059,Queen St East at Logan Ave,3047,Queen St East at Empire Ave,99,145.5,145.5,145.5,145.5
+501,501,Queen,C,1,West,6813,Queen St East at Neville Park Blvd,6817,Queen St East at Silver Birch Ave,99,270.7,270.7,270.7,270.7
+501,501,Queen,C,1,West,3061,Queen St East at Ontario St,3071,Queen St East at Sherbourne St,99,211.0,211.0,211.0,211.0
+501,501,Queen,C,1,West,3063,Queen St East at Pape Ave,3036,Queen St East at Carlaw Ave,99,195.8,195.8,195.8,195.8
+501,501,Queen,C,1,West,3071,Queen St East at Sherbourne St,3051,Queen St East at Jarvis St,99,315.9,315.9,315.9,315.9
+501,501,Queen,C,1,West,6817,Queen St East at Silver Birch Ave,15347,Queen St East at Beech Ave,99,207.3,207.3,207.3,207.3
+501,501,Queen,C,1,West,6822,Queen St East at Wineva Ave,15339,Queen St East at Bellefair Ave,99,371.3,371.3,371.3,371.3
+501,501,Queen,C,1,West,15343,Queen St East at Woodbine Ave,6811,Queen St East at Lockwood Rd,99,274.5,274.5,274.5,274.5
+501,501,Queen,C,1,West,15337,Queen St East at Woodfield Rd,3049,Queen St East at Greenwood Ave,99,338.1,338.1,338.1,338.1
+501,501,Queen,C,1,West,15633,Queen St West at Abell St,6838,Queen St West at Gladstone Ave,99,243.5,243.5,243.5,243.5
+501,501,Queen,C,1,West,3080,Queen St West at Augusta Ave,3081,Queen St West at Bathurst St,99,348.1,348.1,348.1,348.1
+501,501,Queen,C,1,West,3081,Queen St West at Bathurst St,6848,Queen St West at Palmerston Ave,99,227.1,227.1,227.1,227.1
+501,501,Queen,C,1,West,6839,Queen St West at Brock Ave,6845,Queen St West at O'Hara Ave,99,152.3,152.3,152.3,152.3
+501,501,Queen,C,1,West,6830,Queen St West at Claremont St,6855,Queen St West at Strachan Ave,99,305.0,305.0,305.0,305.0
+501,501,Queen,C,1,West,6832,Queen St West at Dovercourt Rd,15633,Queen St West at Abell St,99,155.8,155.8,155.8,155.8
+501,501,Queen,C,1,West,16849,Queen St West at Dufferin St,6839,Queen St West at Brock Ave,99,327.1,327.1,327.1,327.1
+501,501,Queen,C,1,West,6838,Queen St West at Gladstone Ave,16849,Queen St West at Dufferin St,99,109.9,109.9,109.9,109.9
+501,501,Queen,C,1,West,3084,Queen St West at John St,3087,Queen St West at Soho St,99,194.9,194.9,194.9,194.9
+501,501,Queen,C,1,West,6842,Queen St West at Lansdowne Ave,6852,Queen St West at Sorauren Ave,99,359.8,359.8,359.8,359.8
+501,501,Queen,C,1,West,6845,Queen St West at O'Hara Ave,6842,Queen St West at Lansdowne Ave,99,200.4,200.4,200.4,200.4
+501,501,Queen,C,1,West,6847,Queen St West at Ossington Ave,6832,Queen St West at Dovercourt Rd,99,295.1,295.1,295.1,295.1
+501,501,Queen,C,1,West,6848,Queen St West at Palmerston Ave,6830,Queen St West at Claremont St,99,248.0,248.0,248.0,248.0
+501,501,Queen,C,1,West,6849,Queen St West at Roncesvalles Ave,16402,The Queensway at Glendale Ave - St Joseph's Health Centre,99,509.0,509.0,509.0,509.0
+501,501,Queen,C,1,West,6851,Queen St West at Shaw St,6847,Queen St West at Ossington Ave,99,210.8,210.8,210.8,210.8
+501,501,Queen,C,1,West,3087,Queen St West at Soho St,3088,Queen St West at Spadina Ave,99,231.9,231.9,231.9,231.9
+501,501,Queen,C,1,West,6852,Queen St West at Sorauren Ave,6857,Queen St West at Triller Ave,99,216.4,216.4,216.4,216.4
+501,501,Queen,C,1,West,3088,Queen St West at Spadina Ave,3080,Queen St West at Augusta Ave,99,291.1,291.1,291.1,291.1
+501,501,Queen,C,1,West,15340,Queen St West at St Patrick St,3084,Queen St West at John St,99,207.7,207.7,207.7,207.7
+501,501,Queen,C,1,West,6855,Queen St West at Strachan Ave,6851,Queen St West at Shaw St,99,259.0,259.0,259.0,259.0
+501,501,Queen,C,1,West,6857,Queen St West at Triller Ave,6849,Queen St West at Roncesvalles Ave,99,198.9,198.9,198.9,198.9
+501,501,Queen,C,1,West,6859,Queen St West at University Ave - Osgoode Station,15340,Queen St West at St Patrick St,99,187.6,187.6,187.6,187.6
+501,501,Queen,C,1,West,10892,Richmond St West at Yonge St - Queen Station,13874,Richmond St West at York St,99,406.8,406.8,406.8,406.8
+501,501,Queen,C,1,West,13874,Richmond St West at York St,6859,Queen St West at University Ave - Osgoode Station,99,233.8,233.8,233.8,233.8
+501,501,Queen,C,1,West,14393,The Queensway at Colborne Lodge Dr West Side,14394,The Queensway at Ellis Ave West Side,99,586.7,586.7,586.7,586.7
+501,501,Queen,C,1,West,14394,The Queensway at Ellis Ave West Side,14395,The Queensway at Windermere Ave West Side,99,286.2,286.2,286.2,286.2
+501,501,Queen,C,1,West,16402,The Queensway at Glendale Ave - St Joseph's Health Centre,6909,The Queensway at Parkside Dr,99,190.6,190.6,190.6,190.6
+501,501,Queen,C,1,West,6909,The Queensway at Parkside Dr,14393,The Queensway at Colborne Lodge Dr West Side,99,493.8,493.8,493.8,493.8
+501,501,Queen,C,1,West,6915,The Queensway at South Kingsway,6523,Humber Loop at The Queensway,99,695.1,695.1,695.1,695.1
+501,501,Queen,C,1,West,14395,The Queensway at Windermere Ave West Side,6915,The Queensway at South Kingsway,99,278.4,278.4,278.4,278.4
+501,501,Queen,S,0,East,5199,2111 Lake Shore Blvd West,6523,Humber Loop at The Queensway,26,231.5,231.5,231.5,231.5
+501,501,Queen,S,0,East,5175,2155 Lake Shore Blvd West,5199,2111 Lake Shore Blvd West,26,397.8,397.8,397.8,397.8
+501,501,Queen,S,0,East,6523,Humber Loop at The Queensway,6916,The Queensway at South Kingsway,6,795.4,795.4,795.4,795.4
+501,501,Queen,S,0,East,5506,Humber Loop at The Queensway,6916,The Queensway at South Kingsway,26,699.4,699.4,699.4,699.4
+501,501,Queen,S,0,East,5173,Lake Shore Blvd West at Burlington St,5189,Lake Shore Blvd West at Louisa St,26,194.1,194.1,194.1,194.1
+501,501,Queen,S,0,East,5182,Lake Shore Blvd West at Colonel Samuel Smith Park Dr,5152,Lake Shore Blvd West at Thirteenth St,26,440.1,440.1,440.1,440.1
+501,501,Queen,S,0,East,5170,Lake Shore Blvd West at Fifth St,5167,Lake Shore Blvd West at Third St,26,189.5,189.5,189.5,189.5
+501,501,Queen,S,0,East,13946,Lake Shore Blvd West at First St,15722,Lake Shore Blvd West at Royal York Rd,26,467.5,467.5,467.5,467.5
+501,501,Queen,S,0,East,5185,Lake Shore Blvd West at Legion Rd,5195,Lake Shore Blvd West at Park Lawn Rd,26,317.8,317.8,317.8,317.8
+501,501,Queen,S,0,East,5187,Lake Shore Blvd West at Long Branch Ave,5163,Lake Shore Blvd West at Thirty First St,26,313.5,313.5,313.5,313.5
+501,501,Queen,S,0,East,5189,Lake Shore Blvd West at Louisa St,5185,Lake Shore Blvd West at Legion Rd,26,324.2,324.2,324.2,324.2
+501,501,Queen,S,0,East,15721,Lake Shore Blvd West at Miles Rd,15720,Lake Shore Blvd West at Norris Cres,26,295.2,295.2,295.2,295.2
+501,501,Queen,S,0,East,5192,Lake Shore Blvd West at Mimico Ave,5201,Lake Shore Blvd West at Superior Ave,26,152.7,152.7,152.7,152.7
+501,501,Queen,S,0,East,15720,Lake Shore Blvd West at Norris Cres,5192,Lake Shore Blvd West at Mimico Ave,26,311.9,311.9,311.9,311.9
+501,501,Queen,S,0,East,5195,Lake Shore Blvd West at Park Lawn Rd,5175,2155 Lake Shore Blvd West,26,349.3,349.3,349.3,349.3
+501,501,Queen,S,0,East,15722,Lake Shore Blvd West at Royal York Rd,15721,Lake Shore Blvd West at Miles Rd,26,587.4,587.4,587.4,587.4
+501,501,Queen,S,0,East,5172,Lake Shore Blvd West at Seventh St,5170,Lake Shore Blvd West at Fifth St,26,192.3,192.3,192.3,192.3
+501,501,Queen,S,0,East,5201,Lake Shore Blvd West at Superior Ave,5173,Lake Shore Blvd West at Burlington St,26,281.7,281.7,281.7,281.7
+501,501,Queen,S,0,East,5150,Lake Shore Blvd West at Tenth St,5172,Lake Shore Blvd West at Seventh St,26,286.4,286.4,286.4,286.4
+501,501,Queen,S,0,East,5167,Lake Shore Blvd West at Third St,13946,Lake Shore Blvd West at First St,26,190.4,190.4,190.4,190.4
+501,501,Queen,S,0,East,5152,Lake Shore Blvd West at Thirteenth St,5150,Lake Shore Blvd West at Tenth St,26,264.4,264.4,264.4,264.4
+501,501,Queen,S,0,East,5163,Lake Shore Blvd West at Thirty First St,5160,Lake Shore Blvd West at Twenty Eighth St,26,225.5,225.5,225.5,225.5
+501,501,Queen,S,0,East,5164,Lake Shore Blvd West at Thirty Seventh St,5187,Lake Shore Blvd West at Long Branch Ave,26,355.8,355.8,355.8,355.8
+501,501,Queen,S,0,East,5160,Lake Shore Blvd West at Twenty Eighth St,5159,Lake Shore Blvd West at Twenty Seventh St,26,225.2,225.2,225.2,225.2
+501,501,Queen,S,0,East,5157,Lake Shore Blvd West at Twenty Second St,5182,Lake Shore Blvd West at Colonel Samuel Smith Park Dr,26,355.2,355.2,355.2,355.2
+501,501,Queen,S,0,East,5159,Lake Shore Blvd West at Twenty Seventh St,5157,Lake Shore Blvd West at Twenty Second St,26,305.0,305.0,305.0,305.0
+501,501,Queen,S,0,East,5511,Long Branch Loop - Long Branch GO Station,5164,Lake Shore Blvd West at Thirty Seventh St,26,535.0,535.0,535.0,535.0
+501,501,Queen,S,0,East,14280,The Queensway at Colborne Lodge Dr East Side,6908,The Queensway at Parkside Dr,32,380.0,380.0,380.0,380.0
+501,501,Queen,S,0,East,14281,The Queensway at Ellis Ave East Side,14280,The Queensway at Colborne Lodge Dr East Side,32,599.7,599.7,599.7,599.8
+501,501,Queen,S,0,East,6908,The Queensway at Parkside Dr,6888,The Queensway at Glendale Ave East Side - St Joseph's Health Centre,32,264.6,264.6,264.5,264.6
+501,501,Queen,S,0,East,6916,The Queensway at South Kingsway,14282,The Queensway at Windermere Ave East Side,32,362.0,362.0,362.0,362.0
+501,501,Queen,S,0,East,14282,The Queensway at Windermere Ave East Side,14281,The Queensway at Ellis Ave East Side,32,292.4,292.4,292.3,292.4
+501,501,Queen,S,1,West,3372,Broadview Ave at Dundas St East,2127,Dundas St East at River St,38,578.1,578.1,578.1,578.1
+501,501,Queen,S,1,West,803,Church St at Richmond St East,10892,Richmond St West at Yonge St - Queen Station,38,346.7,346.7,346.7,346.7
+501,501,Queen,S,1,West,2125,Dundas St East at Parliament St,6647,Parliament St at Shuter St,38,291.8,291.8,291.8,291.8
+501,501,Queen,S,1,West,15873,Dundas St East at Regent Park Blvd,2125,Dundas St East at Parliament St,38,356.6,356.6,356.6,356.6
+501,501,Queen,S,1,West,2127,Dundas St East at River St,15873,Dundas St East at Regent Park Blvd,38,306.6,306.6,306.6,306.6
+501,501,Queen,S,1,West,6644,Parliament St at Queen St East,3061,Queen St East at Ontario St,38,214.2,214.2,214.2,214.2
+501,501,Queen,S,1,West,6647,Parliament St at Shuter St,6644,Parliament St at Queen St East,38,146.8,146.8,146.8,146.8
+501,501,Queen,S,1,West,3029,Queen St East at Alton Ave,3057,Queen St East at Leslie St,38,203.4,203.4,203.4,203.4
+501,501,Queen,S,1,West,15347,Queen St East at Beech Ave,6804,Queen St East at Glen Manor Dr,38,418.2,418.2,418.2,418.2
+501,501,Queen,S,1,West,15339,Queen St East at Bellefair Ave,6803,Queen St East at Elmer Ave,38,309.7,309.7,309.7,309.7
+501,501,Queen,S,1,West,3031,Queen St East at Boulton Ave,3033,Queen St East at Broadview Ave,38,248.3,248.3,248.3,248.3
+501,501,Queen,S,1,West,3033,Queen St East at Broadview Ave,3372,Broadview Ave at Dundas St East,38,421.7,421.7,421.7,421.7
+501,501,Queen,S,1,West,3034,Queen St East at Brooklyn Ave,3063,Queen St East at Pape Ave,38,153.0,153.0,153.0,153.0
+501,501,Queen,S,1,West,3036,Queen St East at Carlaw Ave,3059,Queen St East at Logan Ave,38,203.2,203.2,203.2,203.2
+501,501,Queen,S,1,West,3045,Queen St East at Coxwell Ave,15337,Queen St East at Woodfield Rd,38,396.8,396.8,396.8,396.8
+501,501,Queen,S,1,West,6803,Queen St East at Elmer Ave,15343,Queen St East at Woodbine Ave,38,187.3,187.3,187.3,187.3
+501,501,Queen,S,1,West,3047,Queen St East at Empire Ave,3031,Queen St East at Boulton Ave,38,205.4,205.4,205.4,205.4
+501,501,Queen,S,1,West,6804,Queen St East at Glen Manor Dr,6822,Queen St East at Wineva Ave,38,239.8,239.8,239.8,239.8
+501,501,Queen,S,1,West,3049,Queen St East at Greenwood Ave,3029,Queen St East at Alton Ave,38,211.3,211.3,211.3,211.3
+501,501,Queen,S,1,West,3051,Queen St East at Jarvis St,803,Church St at Richmond St East,38,285.7,285.7,285.7,285.7
+501,501,Queen,S,1,West,3052,Queen St East at Jones Ave,3034,Queen St East at Brooklyn Ave,38,273.1,273.1,273.1,273.1
+501,501,Queen,S,1,West,6806,Queen St East at Kingston Rd,3045,Queen St East at Coxwell Ave,38,363.1,363.1,363.1,363.1
+501,501,Queen,S,1,West,3057,Queen St East at Leslie St,3052,Queen St East at Jones Ave,38,206.9,206.9,206.9,206.9
+501,501,Queen,S,1,West,6811,Queen St East at Lockwood Rd,6806,Queen St East at Kingston Rd,38,270.0,270.0,270.0,270.0
+501,501,Queen,S,1,West,3059,Queen St East at Logan Ave,3047,Queen St East at Empire Ave,38,145.5,145.5,145.5,145.5
+501,501,Queen,S,1,West,6813,Queen St East at Neville Park Blvd,6817,Queen St East at Silver Birch Ave,38,270.7,270.7,270.7,270.7
+501,501,Queen,S,1,West,3061,Queen St East at Ontario St,3071,Queen St East at Sherbourne St,38,211.0,211.0,211.0,211.0
+501,501,Queen,S,1,West,3063,Queen St East at Pape Ave,3036,Queen St East at Carlaw Ave,38,195.8,195.8,195.8,195.8
+501,501,Queen,S,1,West,3071,Queen St East at Sherbourne St,3051,Queen St East at Jarvis St,38,315.9,315.9,315.9,315.9
+501,501,Queen,S,1,West,6817,Queen St East at Silver Birch Ave,15347,Queen St East at Beech Ave,38,207.3,207.3,207.3,207.3
+501,501,Queen,S,1,West,6822,Queen St East at Wineva Ave,15339,Queen St East at Bellefair Ave,38,371.3,371.3,371.3,371.3
+501,501,Queen,S,1,West,15343,Queen St East at Woodbine Ave,6811,Queen St East at Lockwood Rd,38,274.5,274.5,274.5,274.5
+501,501,Queen,S,1,West,15337,Queen St East at Woodfield Rd,3049,Queen St East at Greenwood Ave,38,338.1,338.1,338.1,338.1
+501,501,Queen,S,1,West,15633,Queen St West at Abell St,6838,Queen St West at Gladstone Ave,38,243.5,243.5,243.5,243.5
+501,501,Queen,S,1,West,3080,Queen St West at Augusta Ave,3081,Queen St West at Bathurst St,38,348.1,348.1,348.1,348.1
+501,501,Queen,S,1,West,3081,Queen St West at Bathurst St,6848,Queen St West at Palmerston Ave,38,227.1,227.1,227.1,227.1
+501,501,Queen,S,1,West,6839,Queen St West at Brock Ave,6845,Queen St West at O'Hara Ave,38,152.3,152.3,152.3,152.3
+501,501,Queen,S,1,West,6830,Queen St West at Claremont St,6855,Queen St West at Strachan Ave,38,305.0,305.0,305.0,305.0
+501,501,Queen,S,1,West,6832,Queen St West at Dovercourt Rd,15633,Queen St West at Abell St,38,155.8,155.8,155.8,155.8
+501,501,Queen,S,1,West,16849,Queen St West at Dufferin St,6839,Queen St West at Brock Ave,38,327.1,327.1,327.1,327.1
+501,501,Queen,S,1,West,6838,Queen St West at Gladstone Ave,16849,Queen St West at Dufferin St,38,109.9,109.9,109.9,109.9
+501,501,Queen,S,1,West,3084,Queen St West at John St,3087,Queen St West at Soho St,38,194.9,194.9,194.9,194.9
+501,501,Queen,S,1,West,6842,Queen St West at Lansdowne Ave,6852,Queen St West at Sorauren Ave,38,359.8,359.8,359.8,359.8
+501,501,Queen,S,1,West,6845,Queen St West at O'Hara Ave,6842,Queen St West at Lansdowne Ave,38,200.4,200.4,200.4,200.4
+501,501,Queen,S,1,West,6847,Queen St West at Ossington Ave,6832,Queen St West at Dovercourt Rd,38,295.1,295.1,295.1,295.1
+501,501,Queen,S,1,West,6848,Queen St West at Palmerston Ave,6830,Queen St West at Claremont St,38,248.0,248.0,248.0,248.0
+501,501,Queen,S,1,West,6851,Queen St West at Shaw St,6847,Queen St West at Ossington Ave,38,210.8,210.8,210.8,210.8
+501,501,Queen,S,1,West,3087,Queen St West at Soho St,3088,Queen St West at Spadina Ave,38,231.9,231.9,231.9,231.9
+501,501,Queen,S,1,West,6852,Queen St West at Sorauren Ave,6857,Queen St West at Triller Ave,38,216.4,216.4,216.4,216.4
+501,501,Queen,S,1,West,3088,Queen St West at Spadina Ave,3080,Queen St West at Augusta Ave,38,291.1,291.1,291.1,291.1
+501,501,Queen,S,1,West,15340,Queen St West at St Patrick St,3084,Queen St West at John St,38,207.7,207.7,207.7,207.7
+501,501,Queen,S,1,West,6855,Queen St West at Strachan Ave,6851,Queen St West at Shaw St,38,259.0,259.0,259.0,259.0
+501,501,Queen,S,1,West,6857,Queen St West at Triller Ave,6849,Queen St West at Roncesvalles Ave,38,198.9,198.9,198.9,198.9
+501,501,Queen,S,1,West,6859,Queen St West at University Ave - Osgoode Station,15340,Queen St West at St Patrick St,38,187.6,187.6,187.6,187.6
+501,501,Queen,S,1,West,10892,Richmond St West at Yonge St - Queen Station,13874,Richmond St West at York St,38,406.8,406.8,406.8,406.8
+501,501,Queen,S,1,West,13874,Richmond St West at York St,6859,Queen St West at University Ave - Osgoode Station,38,233.8,233.8,233.8,233.8
+503,503,Kingston Rd,,0,East,12537,King St East at Church St East Side,15636,King St West at Jarvis St East Side,548,210.1,210.1,210.1,210.1
+503,503,Kingston Rd,,0,East,15352,King St East at Ontario St,6645,Parliament St at Richmond St East,548,465.3,465.3,465.3,465.3
+503,503,Kingston Rd,,0,East,4145,King St East at Sherbourne St,15352,King St East at Ontario St,548,183.5,183.5,183.5,183.5
+503,503,Kingston Rd,,0,East,15640,King St West at Bay St East Side,15638,King St West at Yonge St East Side - King Station,548,199.0,199.0,199.0,199.0
+503,503,Kingston Rd,,0,East,15636,King St West at Jarvis St East Side,4145,King St East at Sherbourne St,548,245.1,245.1,245.1,245.1
+503,503,Kingston Rd,,0,East,15638,King St West at Yonge St East Side - King Station,12537,King St East at Church St East Side,548,288.6,288.6,288.6,288.6
+503,503,Kingston Rd,,0,East,15642,King St West at York St - St Andrew Station,15640,King St West at Bay St East Side,548,342.0,342.0,342.0,342.0
+503,503,Kingston Rd,,0,East,2766,Kingston Rd at Beech Ave,2794,Kingston Rd at Scarborough Rd,550,299.1,299.1,299.1,299.1
+503,503,Kingston Rd,,0,East,16838,Kingston Rd at Columbine Ave,2802,Kingston Rd at Woodbine Ave,550,316.8,316.8,316.8,316.8
+503,503,Kingston Rd,,0,East,2774,Kingston Rd at Dixon Ave,16838,Kingston Rd at Columbine Ave,550,191.5,191.5,191.5,191.5
+503,503,Kingston Rd,,0,East,2776,Kingston Rd at Elmer Ave,2800,Kingston Rd at Waverley Rd,550,207.7,207.7,207.7,207.7
+503,503,Kingston Rd,,0,East,2779,Kingston Rd at Glen Manor Dr,2766,Kingston Rd at Beech Ave,550,310.7,310.7,310.6,310.7
+503,503,Kingston Rd,,0,East,2782,Kingston Rd at Lee Ave,2796,Kingston Rd at Southwood Dr,550,253.7,253.7,253.6,253.7
+503,503,Kingston Rd,,0,East,2794,Kingston Rd at Scarborough Rd,4265,Kingston Rd at Victoria Park Ave,550,231.9,231.9,231.9,231.9
+503,503,Kingston Rd,,0,East,2796,Kingston Rd at Southwood Dr,2779,Kingston Rd at Glen Manor Dr,550,313.8,313.8,313.8,313.9
+503,503,Kingston Rd,,0,East,4265,Kingston Rd at Victoria Park Ave,2839,Bingham Loop,550,195.5,195.5,195.5,195.6
+503,503,Kingston Rd,,0,East,2800,Kingston Rd at Waverley Rd,2782,Kingston Rd at Lee Ave,550,267.1,267.1,267.1,267.1
+503,503,Kingston Rd,,0,East,2802,Kingston Rd at Woodbine Ave,2776,Kingston Rd at Elmer Ave,550,266.6,266.6,266.6,266.6
+503,503,Kingston Rd,,0,East,6643,Parliament St at Queen St East,3068,Queen St East at Sackville St,548,237.3,237.3,237.3,237.3
+503,503,Kingston Rd,,0,East,6645,Parliament St at Richmond St East,6643,Parliament St at Queen St East,548,116.1,116.1,116.1,116.1
+503,503,Kingston Rd,,0,East,15699,Queen St East at Alton Ave,3048,Queen St East at Greenwood Ave,548,221.4,221.4,221.4,221.4
+503,503,Kingston Rd,,0,East,3032,Queen St East at Broadview Ave,3072,Queen St East at Saulter St East Side,548,248.4,248.4,248.4,248.4
+503,503,Kingston Rd,,0,East,3035,Queen St East at Carlaw Ave,3062,Queen St East at Pape Ave,548,179.3,179.3,179.3,179.3
+503,503,Kingston Rd,,0,East,3037,Queen St East at Caroline Ave,3030,Queen St East at Jones Ave,548,212.3,212.3,212.3,212.3
+503,503,Kingston Rd,,0,East,4557,Queen St East at Emdaabiimok Ave,13461,Queen St East at Kingston Rd,548,330.8,330.8,330.8,330.8
+503,503,Kingston Rd,,0,East,3046,Queen St East at Empire Ave,3058,Queen St East at Logan Ave,548,153.1,153.1,153.1,153.1
+503,503,Kingston Rd,,0,East,3048,Queen St East at Greenwood Ave,15336,Queen St East at Woodfield Rd,548,332.1,332.1,332.1,332.1
+503,503,Kingston Rd,,0,East,3030,Queen St East at Jones Ave,3056,Queen St East at Leslie St,548,214.8,214.8,214.8,214.8
+503,503,Kingston Rd,,0,East,13461,Queen St East at Kingston Rd,2774,Kingston Rd at Dixon Ave,548,331.7,331.7,331.7,331.7
+503,503,Kingston Rd,,0,East,3056,Queen St East at Leslie St,15699,Queen St East at Alton Ave,548,189.5,189.5,189.5,189.5
+503,503,Kingston Rd,,0,East,3058,Queen St East at Logan Ave,3035,Queen St East at Carlaw Ave,548,208.2,208.2,208.2,208.2
+503,503,Kingston Rd,,0,East,3062,Queen St East at Pape Ave,3037,Queen St East at Caroline Ave,548,221.8,221.8,221.8,221.8
+503,503,Kingston Rd,,0,East,3066,Queen St East at River St,3032,Queen St East at Broadview Ave,548,557.5,557.5,557.5,557.5
+503,503,Kingston Rd,,0,East,3068,Queen St East at Sackville St,3073,Queen St East at Sumach St,548,240.7,240.7,240.7,240.7
+503,503,Kingston Rd,,0,East,3072,Queen St East at Saulter St East Side,3046,Queen St East at Empire Ave,548,219.0,219.0,219.0,219.0
+503,503,Kingston Rd,,0,East,3073,Queen St East at Sumach St,3066,Queen St East at River St,548,196.1,196.1,196.1,196.1
+503,503,Kingston Rd,,0,East,15336,Queen St East at Woodfield Rd,4557,Queen St East at Emdaabiimok Ave,548,399.0,399.0,399.0,399.0
+503,503,Kingston Rd,,0,East,15838,University Ave at Adelaide St West,15642,King St West at York St - St Andrew Station,548,255.2,255.2,255.2,255.2
+503,503,Kingston Rd,,0,East,15824,York St at King St West North Side,15838,University Ave at Adelaide St West,548,563.7,563.7,563.7,563.7
+503,503,Kingston Rd,,1,West,16852,BROADVIEW AVE AT QUEEN ST EAST SOUTH SIDE,16142,Eastern Ave at Sumach St,548,1002.7,1002.7,1002.7,1002.7
+503,503,Kingston Rd,,1,West,1738,Bingham Ave at Kingston Rd,2795,Kingston Rd at Scarborough Rd,548,178.0,178.0,178.0,178.0
+503,503,Kingston Rd,,1,West,2839,Bingham Loop,1738,Bingham Ave at Kingston Rd,548,144.9,144.9,144.9,144.9
+503,503,Kingston Rd,,1,West,16142,Eastern Ave at Sumach St,13880,FRONT ST EAST AT PARLIAMENT ST,548,462.7,462.7,462.7,462.7
+503,503,Kingston Rd,,1,West,13880,FRONT ST EAST AT PARLIAMENT ST,4139,King St East at Ontario St,548,388.7,388.7,388.7,388.7
+503,503,Kingston Rd,,1,West,12538,King St East at Church St West Side,15637,King St West at Yonge St West Side - King Station,548,299.7,299.7,299.7,299.7
+503,503,Kingston Rd,,1,West,4139,King St East at Ontario St,4146,King St East at Sherbourne St,548,190.8,190.8,190.8,190.8
+503,503,Kingston Rd,,1,West,4146,King St East at Sherbourne St,15635,King St West at Jarvis St West Side,548,363.1,363.1,363.1,363.1
+503,503,Kingston Rd,,1,West,15639,King St West at Bay St West Side,15824,York St at King St West North Side,548,324.2,324.2,324.2,324.2
+503,503,Kingston Rd,,1,West,15635,King St West at Jarvis St West Side,12538,King St East at Church St West Side,548,211.3,211.3,211.3,211.3
+503,503,Kingston Rd,,1,West,15637,King St West at Yonge St West Side - King Station,15639,King St West at Bay St West Side,548,172.2,172.2,172.2,172.2
+503,503,Kingston Rd,,1,West,2767,Kingston Rd at Beech Ave,15349,Kingston Rd at Glen Manor Dr,548,279.7,279.7,279.7,279.7
+503,503,Kingston Rd,,1,West,2770,Kingston Rd at Brookside Dr,2777,Kingston Rd at Elmer Ave,548,217.9,217.9,217.9,217.9
+503,503,Kingston Rd,,1,West,2772,Kingston Rd at Columbine Ave,2775,Kingston Rd at Dundas St East,548,189.7,189.7,189.7,189.7
+503,503,Kingston Rd,,1,West,2775,Kingston Rd at Dundas St East,14058,Kingston Rd at Queen St East,548,250.4,250.4,250.4,250.4
+503,503,Kingston Rd,,1,West,2777,Kingston Rd at Elmer Ave,15350,Kingston Rd at Woodbine Ave,548,240.8,240.8,240.8,240.8
+503,503,Kingston Rd,,1,West,15349,Kingston Rd at Glen Manor Dr,2785,Kingston Rd at Main St,548,321.4,321.4,321.4,321.4
+503,503,Kingston Rd,,1,West,2783,Kingston Rd at Lee Ave,2770,Kingston Rd at Brookside Dr,548,270.5,270.5,270.5,270.5
+503,503,Kingston Rd,,1,West,2785,Kingston Rd at Main St,2783,Kingston Rd at Lee Ave,548,263.3,263.3,263.3,263.3
+503,503,Kingston Rd,,1,West,14058,Kingston Rd at Queen St East,3045,Queen St East at Coxwell Ave,548,409.6,409.6,409.6,409.6
+503,503,Kingston Rd,,1,West,2795,Kingston Rd at Scarborough Rd,2767,Kingston Rd at Beech Ave,548,280.2,280.2,280.2,280.2
+503,503,Kingston Rd,,1,West,15350,Kingston Rd at Woodbine Ave,2772,Kingston Rd at Columbine Ave,548,344.6,344.6,344.6,344.6
+503,503,Kingston Rd,,1,West,3029,Queen St East at Alton Ave,3057,Queen St East at Leslie St,548,203.4,203.4,203.4,203.4
+503,503,Kingston Rd,,1,West,3031,Queen St East at Boulton Ave,16852,BROADVIEW AVE AT QUEEN ST EAST SOUTH SIDE,548,308.1,308.1,308.1,308.1
+503,503,Kingston Rd,,1,West,3034,Queen St East at Brooklyn Ave,3063,Queen St East at Pape Ave,548,153.0,153.0,153.0,153.0
+503,503,Kingston Rd,,1,West,3036,Queen St East at Carlaw Ave,3059,Queen St East at Logan Ave,548,203.2,203.2,203.2,203.2
+503,503,Kingston Rd,,1,West,3045,Queen St East at Coxwell Ave,15337,Queen St East at Woodfield Rd,548,396.8,396.8,396.8,396.8
+503,503,Kingston Rd,,1,West,3047,Queen St East at Empire Ave,3031,Queen St East at Boulton Ave,548,205.4,205.4,205.4,205.4
+503,503,Kingston Rd,,1,West,3049,Queen St East at Greenwood Ave,3029,Queen St East at Alton Ave,548,211.3,211.3,211.3,211.3
+503,503,Kingston Rd,,1,West,3052,Queen St East at Jones Ave,3034,Queen St East at Brooklyn Ave,548,273.1,273.1,273.1,273.1
+503,503,Kingston Rd,,1,West,3057,Queen St East at Leslie St,3052,Queen St East at Jones Ave,548,206.9,206.9,206.9,206.9
+503,503,Kingston Rd,,1,West,3059,Queen St East at Logan Ave,3047,Queen St East at Empire Ave,548,145.5,145.5,145.5,145.5
+503,503,Kingston Rd,,1,West,3063,Queen St East at Pape Ave,3036,Queen St East at Carlaw Ave,548,195.8,195.8,195.8,195.8
+503,503,Kingston Rd,,1,West,15337,Queen St East at Woodfield Rd,3049,Queen St East at Greenwood Ave,548,338.1,338.1,338.1,338.1
+504,504,King,A,0,East,15461,Cherry St at Front St East,15462,Distillery Loop,982,377.5,369.6,361.4,377.5
+504,504,King,A,0,East,2032,Dufferin Gate Loop,2071,Dufferin St at Liberty St,498,355.2,355.2,355.2,355.2
+504,504,King,A,0,East,15516,Dufferin St at King St West,15353,King St West at Joe Shuster Way,498,338.5,338.5,338.5,338.5
+504,504,King,A,0,East,2071,Dufferin St at Liberty St,15516,Dufferin St at King St West,498,200.2,200.2,200.2,200.2
+504,504,King,A,0,East,9856,Dundas St West at Bloor St West,4569,Roncesvalles Ave at Boustead Ave South Side,15,382.3,382.3,382.3,382.3
+504,504,King,A,0,East,14665,Dundas West Station,9855,Edna Ave at Dundas St West,15,123.5,123.5,123.5,123.5
+504,504,King,A,0,East,14665,Dundas West Station,4569,Roncesvalles Ave at Boustead Ave South Side,469,627.5,627.5,627.5,627.5
+504,504,King,A,0,East,9855,Edna Ave at Dundas St West,9856,Dundas St West at Bloor St West,15,121.7,121.7,121.7,121.7
+504,504,King,A,0,East,12537,King St East at Church St East Side,15636,King St West at Jarvis St East Side,982,210.0,210.0,210.0,210.1
+504,504,King,A,0,East,15352,King St East at Ontario St,4140,King St East at Parliament St,982,247.7,247.7,247.7,247.7
+504,504,King,A,0,East,4140,King St East at Parliament St,4143,King St East at Sackville St,982,309.5,309.5,309.5,309.5
+504,504,King,A,0,East,4143,King St East at Sackville St,4148,King St East at Sumach St,982,173.2,173.2,173.2,173.3
+504,504,King,A,0,East,4145,King St East at Sherbourne St,15352,King St East at Ontario St,982,183.4,183.4,183.4,183.4
+504,504,King,A,0,East,4148,King St East at Sumach St,15461,Cherry St at Front St East,982,354.9,354.9,354.8,354.9
+504,504,King,A,0,East,4155,King St West at Atlantic Ave,13344,King St West at Sudbury St,982,329.0,329.0,329.0,329.0
+504,504,King,A,0,East,15650,King St West at Bathurst St East Side,15649,King St West at Portland St East Side,982,192.2,192.2,192.2,192.2
+504,504,King,A,0,East,15640,King St West at Bay St East Side,15638,King St West at Yonge St East Side - King Station,982,199.0,199.0,199.0,199.0
+504,504,King,A,0,East,15646,King St West at Blue Jays Way East Side,15644,King St West at John St East Side,982,198.7,198.7,198.7,198.7
+504,504,King,A,0,East,4164,King St West at Dowling Ave,4173,King St West at Jameson Ave,484,210.7,210.7,210.7,210.7
+504,504,King,A,0,East,4167,King St West at Dufferin St,15353,King St West at Joe Shuster Way,484,315.4,315.4,315.4,315.4
+504,504,King,A,0,East,4168,King St West at Dunn Ave,4186,King St West at Spencer Ave,484,199.2,199.2,199.2,199.2
+504,504,King,A,0,East,4173,King St West at Jameson Ave,4168,King St West at Dunn Ave,484,236.1,236.1,236.1,236.1
+504,504,King,A,0,East,15636,King St West at Jarvis St East Side,4145,King St East at Sherbourne St,982,245.2,245.2,245.1,245.2
+504,504,King,A,0,East,15353,King St West at Joe Shuster Way,4155,King St West at Atlantic Ave,982,191.2,191.2,191.2,191.2
+504,504,King,A,0,East,15644,King St West at John St East Side,15642,King St West at York St - St Andrew Station,982,468.0,468.0,468.0,468.0
+504,504,King,A,0,East,4178,King St West at Niagara St,4189,King St West at Tecumseth St,982,200.4,200.4,200.4,200.5
+504,504,King,A,0,East,15649,King St West at Portland St East Side,15648,King St West at Spadina Ave East Side,982,435.0,435.0,435.0,435.1
+504,504,King,A,0,East,4162,King St West at Shaw St,4187,King St West at Strachan Ave,982,260.6,260.6,260.6,260.6
+504,504,King,A,0,East,15648,King St West at Spadina Ave East Side,15646,King St West at Blue Jays Way East Side,982,223.4,223.4,223.3,223.4
+504,504,King,A,0,East,4186,King St West at Spencer Ave,4167,King St West at Dufferin St,484,291.9,291.9,291.9,291.9
+504,504,King,A,0,East,4187,King St West at Strachan Ave,4178,King St West at Niagara St,982,361.6,361.6,361.5,361.6
+504,504,King,A,0,East,13344,King St West at Sudbury St,4162,King St West at Shaw St,982,188.7,188.7,188.7,188.8
+504,504,King,A,0,East,4189,King St West at Tecumseth St,15650,King St West at Bathurst St East Side,982,295.1,295.1,295.0,295.1
+504,504,King,A,0,East,4194,King St West at Wilson Park Rd,4164,King St West at Dowling Ave,484,306.9,306.9,306.9,306.9
+504,504,King,A,0,East,15638,King St West at Yonge St East Side - King Station,12537,King St East at Church St East Side,982,288.6,288.6,288.6,288.6
+504,504,King,A,0,East,15642,King St West at York St - St Andrew Station,15640,King St West at Bay St East Side,982,342.0,342.0,342.0,342.0
+504,504,King,A,0,East,4569,Roncesvalles Ave at Boustead Ave South Side,15039,Roncesvalles Ave at Howard Park Ave South Side,484,246.0,246.0,246.0,246.0
+504,504,King,A,0,East,4573,Roncesvalles Ave at Galley Ave,14992,Roncesvalles Ave at Marion St South Side,484,270.0,270.0,270.0,270.0
+504,504,King,A,0,East,14994,Roncesvalles Ave at Grenadier Rd,14993,Roncesvalles Ave at High Park Blvd South Side,484,342.6,342.6,342.6,342.6
+504,504,King,A,0,East,14993,Roncesvalles Ave at High Park Blvd South Side,4573,Roncesvalles Ave at Galley Ave,484,340.4,340.4,340.4,340.4
+504,504,King,A,0,East,15039,Roncesvalles Ave at Howard Park Ave South Side,14994,Roncesvalles Ave at Grenadier Rd,484,238.8,238.8,238.8,238.8
+504,504,King,A,0,East,14992,Roncesvalles Ave at Marion St South Side,4582,Roncesvalles Ave at Queen St West,484,202.3,202.3,202.3,202.3
+504,504,King,A,0,East,4582,Roncesvalles Ave at Queen St West,4194,King St West at Wilson Park Rd,484,392.9,392.9,392.9,392.9
+504,504,King,A,1,West,3374,Broadview Ave at Queen St East,4142,King St East at River St,31,539.8,539.8,539.8,539.8
+504,504,King,A,1,West,15460,Cherry St at Front St East,4144,King St East at Sackville St,489,534.9,534.9,534.9,534.9
+504,504,King,A,1,West,15462,Distillery Loop,15460,Cherry St at Front St East,489,284.5,284.5,284.5,284.5
+504,504,King,A,1,West,2150,Dundas St West at Bloor St West,14665,Dundas West Station,520,192.6,191.2,169.1,192.6
+504,504,King,A,1,West,12538,King St East at Church St West Side,15637,King St West at Yonge St West Side - King Station,520,299.7,299.7,299.7,299.7
+504,504,King,A,1,West,4139,King St East at Ontario St,4146,King St East at Sherbourne St,520,190.7,190.7,190.7,190.8
+504,504,King,A,1,West,4141,King St East at Parliament St,4139,King St East at Ontario St,520,263.5,263.5,263.5,263.5
+504,504,King,A,1,West,4142,King St East at River St,4149,King St East at Sumach St,31,249.2,249.2,249.2,249.2
+504,504,King,A,1,West,4144,King St East at Sackville St,4141,King St East at Parliament St,520,297.3,297.3,297.3,297.3
+504,504,King,A,1,West,4146,King St East at Sherbourne St,15635,King St West at Jarvis St West Side,520,363.2,363.2,363.1,363.2
+504,504,King,A,1,West,4149,King St East at Sumach St,4144,King St East at Sackville St,31,188.2,188.2,188.2,188.2
+504,504,King,A,1,West,4156,King St West at Bathurst St,4190,King St West at Tecumseth St,520,264.7,264.7,264.7,264.7
+504,504,King,A,1,West,15639,King St West at Bay St West Side,15641,King St West at Simcoe St - St. Andrew Station,520,447.1,447.1,447.1,447.1
+504,504,King,A,1,West,4165,King St West at Dowling Ave,4193,King St West at Wilson Park Rd West Side,520,329.3,329.3,329.3,329.4
+504,504,King,A,1,West,4166,King St West at Dufferin St,13890,King St West at Spencer Ave,520,314.7,314.7,314.6,314.7
+504,504,King,A,1,West,4169,King St West at Dunn Ave,4174,King St West at Jameson Ave,520,234.0,234.0,234.0,234.0
+504,504,King,A,1,West,4174,King St West at Jameson Ave,4165,King St West at Dowling Ave,520,209.7,209.7,209.7,209.7
+504,504,King,A,1,West,15635,King St West at Jarvis St West Side,12538,King St East at Church St West Side,520,211.3,211.3,211.3,211.3
+504,504,King,A,1,West,4175,King St West at Jefferson Ave,14400,King St West at Joe Shuster Way,520,111.1,111.1,111.1,111.1
+504,504,King,A,1,West,14400,King St West at Joe Shuster Way,4166,King St West at Dufferin St,520,298.9,298.9,298.9,299.0
+504,504,King,A,1,West,15643,King St West at John St West Side,4181,King St West at Peter St,520,154.7,154.7,154.7,154.7
+504,504,King,A,1,West,4179,King St West at Niagara St,4188,King St West at Strachan Ave,520,353.6,353.6,353.6,353.6
+504,504,King,A,1,West,4181,King St West at Peter St,15647,King St West at Spadina Ave West Side,520,317.7,317.7,317.7,317.7
+504,504,King,A,1,West,10176,King St West at Portland St,4156,King St West at Bathurst St,520,162.1,162.1,162.1,162.2
+504,504,King,A,1,West,11596,King St West at Queen St West,15059,Roncesvalles Ave at Queen St West North Side,520,88.6,88.6,88.6,88.6
+504,504,King,A,1,West,4163,King St West at Shaw St,11021,King St West at Sudbury St,520,200.4,200.4,200.4,200.4
+504,504,King,A,1,West,15641,King St West at Simcoe St - St. Andrew Station,15643,King St West at John St West Side,520,353.7,353.7,353.7,353.7
+504,504,King,A,1,West,15647,King St West at Spadina Ave West Side,10176,King St West at Portland St,520,344.8,344.8,344.8,344.8
+504,504,King,A,1,West,13890,King St West at Spencer Ave,4169,King St West at Dunn Ave,520,191.9,191.9,191.9,191.9
+504,504,King,A,1,West,4188,King St West at Strachan Ave,4163,King St West at Shaw St,520,250.0,250.0,250.0,250.0
+504,504,King,A,1,West,11021,King St West at Sudbury St,4175,King St West at Jefferson Ave,520,408.8,408.8,408.8,408.8
+504,504,King,A,1,West,4190,King St West at Tecumseth St,4179,King St West at Niagara St,520,207.7,207.7,207.6,207.7
+504,504,King,A,1,West,4193,King St West at Wilson Park Rd West Side,11596,King St West at Queen St West,520,347.9,347.9,347.8,347.9
+504,504,King,A,1,West,15637,King St West at Yonge St West Side - King Station,15639,King St West at Bay St West Side,520,172.1,172.1,172.1,172.1
+504,504,King,A,1,West,4568,Roncesvalles Ave at Boustead Ave North Side,2150,Dundas St West at Bloor St West,520,333.6,333.6,333.6,333.6
+504,504,King,A,1,West,4571,Roncesvalles Ave at Fermanagh Ave,4576,Roncesvalles Ave at Grenadier Rd,520,286.3,286.3,286.2,286.3
+504,504,King,A,1,West,4574,Roncesvalles Ave at Garden Ave,4571,Roncesvalles Ave at Fermanagh Ave,520,304.2,304.2,304.2,304.3
+504,504,King,A,1,West,4576,Roncesvalles Ave at Grenadier Rd,4578,Roncesvalles Ave at Howard Park Ave,520,291.0,291.0,291.0,291.0
+504,504,King,A,1,West,4578,Roncesvalles Ave at Howard Park Ave,4568,Roncesvalles Ave at Boustead Ave North Side,520,233.1,233.1,233.1,233.1
+504,504,King,A,1,West,15038,Roncesvalles Ave at Marion St North Side,4574,Roncesvalles Ave at Garden Ave,520,244.1,244.1,244.1,244.1
+504,504,King,A,1,West,15059,Roncesvalles Ave at Queen St West North Side,15038,Roncesvalles Ave at Marion St North Side,520,256.6,256.6,256.6,256.6
+504,504,King,B,1,West,3374,Broadview Ave at Queen St East,4142,King St East at River St,17,539.8,539.8,539.8,539.8
+504,504,King,B,1,West,15460,Cherry St at Front St East,4144,King St East at Sackville St,499,534.9,534.9,534.9,534.9
+504,504,King,B,1,West,15462,Distillery Loop,15460,Cherry St at Front St East,499,214.6,214.6,214.6,214.6
+504,504,King,B,1,West,2072,Dufferin St at Liberty St,2092,Dufferin St at Springhurst Ave,516,279.3,279.3,279.3,279.3
+504,504,King,B,1,West,2092,Dufferin St at Springhurst Ave,2032,Dufferin Gate Loop,516,242.6,242.6,242.6,242.6
+504,504,King,B,1,West,12538,King St East at Church St West Side,15637,King St West at Yonge St West Side - King Station,516,299.7,299.7,299.7,299.7
+504,504,King,B,1,West,4139,King St East at Ontario St,4146,King St East at Sherbourne St,516,190.7,190.7,190.7,190.8
+504,504,King,B,1,West,4141,King St East at Parliament St,4139,King St East at Ontario St,516,263.5,263.5,263.5,263.5
+504,504,King,B,1,West,4142,King St East at River St,4149,King St East at Sumach St,17,249.2,249.2,249.2,249.2
+504,504,King,B,1,West,4144,King St East at Sackville St,4141,King St East at Parliament St,516,297.4,297.4,297.3,297.4
+504,504,King,B,1,West,4146,King St East at Sherbourne St,15635,King St West at Jarvis St West Side,516,363.1,363.1,363.1,363.1
+504,504,King,B,1,West,4149,King St East at Sumach St,4144,King St East at Sackville St,17,188.2,188.2,188.2,188.2
+504,504,King,B,1,West,4156,King St West at Bathurst St,4190,King St West at Tecumseth St,516,264.7,264.7,264.7,264.7
+504,504,King,B,1,West,15639,King St West at Bay St West Side,15641,King St West at Simcoe St - St. Andrew Station,516,447.0,447.0,447.0,447.1
+504,504,King,B,1,West,4166,King St West at Dufferin St,2072,Dufferin St at Liberty St,516,209.6,209.6,209.6,209.6
+504,504,King,B,1,West,15635,King St West at Jarvis St West Side,12538,King St East at Church St West Side,516,211.3,211.3,211.3,211.3
+504,504,King,B,1,West,4175,King St West at Jefferson Ave,14400,King St West at Joe Shuster Way,516,111.2,111.2,111.1,111.2
+504,504,King,B,1,West,14400,King St West at Joe Shuster Way,4166,King St West at Dufferin St,516,298.9,298.9,298.9,299.0
+504,504,King,B,1,West,15643,King St West at John St West Side,4181,King St West at Peter St,516,154.7,154.7,154.7,154.7
+504,504,King,B,1,West,4179,King St West at Niagara St,4188,King St West at Strachan Ave,516,353.5,353.5,353.5,353.6
+504,504,King,B,1,West,4181,King St West at Peter St,15647,King St West at Spadina Ave West Side,516,317.8,317.8,317.7,317.8
+504,504,King,B,1,West,10176,King St West at Portland St,4156,King St West at Bathurst St,516,162.1,162.1,162.1,162.2
+504,504,King,B,1,West,4163,King St West at Shaw St,11021,King St West at Sudbury St,516,200.4,200.4,200.4,200.4
+504,504,King,B,1,West,15641,King St West at Simcoe St - St. Andrew Station,15643,King St West at John St West Side,516,353.7,353.7,353.7,353.7
+504,504,King,B,1,West,15647,King St West at Spadina Ave West Side,10176,King St West at Portland St,516,344.8,344.8,344.8,344.8
+504,504,King,B,1,West,4188,King St West at Strachan Ave,4163,King St West at Shaw St,516,250.0,250.0,250.0,250.0
+504,504,King,B,1,West,11021,King St West at Sudbury St,4175,King St West at Jefferson Ave,516,408.8,408.8,408.8,408.8
+504,504,King,B,1,West,4190,King St West at Tecumseth St,4179,King St West at Niagara St,516,207.7,207.7,207.6,207.7
+504,504,King,B,1,West,15637,King St West at Yonge St West Side - King Station,15639,King St West at Bay St West Side,516,172.2,172.2,172.1,172.2
+504,504,King,D,0,East,15839,Berkeley St at King St East,4140,King St East at Parliament St,564,96.4,96.4,96.4,96.4
+504,504,King,D,0,East,3372,Broadview Ave at Dundas St East,9317,Broadview Ave at Mountstephen St,564,197.4,197.4,197.4,197.4
+504,504,King,D,0,East,1757,Broadview Ave at Gerrard St East,1759,Broadview Ave at Langley Ave-Hennick Bridgepoint Hospital,564,280.7,280.7,280.7,280.7
+504,504,King,D,0,East,1759,Broadview Ave at Langley Ave-Hennick Bridgepoint Hospital,1766,Broadview Ave at Withrow Ave,564,218.7,218.7,218.7,218.7
+504,504,King,D,0,East,1761,Broadview Ave at Millbrook Cres,1768,Broadview Ave at Wolfrey Ave,564,307.8,307.8,307.8,307.8
+504,504,King,D,0,East,9317,Broadview Ave at Mountstephen St,1757,Broadview Ave at Gerrard St East,564,155.6,155.6,155.6,155.6
+504,504,King,D,0,East,11895,Broadview Ave at Queen St East North Side,3372,Broadview Ave at Dundas St East,564,324.9,324.9,324.9,324.9
+504,504,King,D,0,East,1766,Broadview Ave at Withrow Ave,1761,Broadview Ave at Millbrook Cres,564,291.5,291.5,291.5,291.5
+504,504,King,D,0,East,1768,Broadview Ave at Wolfrey Ave,14640,Broadview Station,564,411.0,411.0,411.0,411.0
+504,504,King,D,0,East,15351,King St East at Lower River St,11895,Broadview Ave at Queen St East North Side,564,649.3,649.3,649.3,649.3
+504,504,King,D,0,East,4140,King St East at Parliament St,4143,King St East at Sackville St,564,309.5,309.5,309.5,309.5
+504,504,King,D,0,East,4143,King St East at Sackville St,4148,King St East at Sumach St,564,173.3,173.3,173.3,173.3
+504,504,King,D,0,East,4148,King St East at Sumach St,15351,King St East at Lower River St,564,254.8,254.8,254.8,254.8
+504,504,King,D,1,West,3371,Broadview Ave at Danforth Ave,1769,Broadview Ave at Wolfrey Ave,563,247.0,247.0,247.0,247.0
+504,504,King,D,1,West,1756,Broadview Ave at Dundas St East,16029,River St at Dundas St East South Side,563,622.4,622.4,622.4,622.4
+504,504,King,D,1,West,1758,Broadview Ave at Gerrard St East,9318,Broadview Ave at Mountstephen St,563,182.6,182.6,182.6,182.6
+504,504,King,D,1,West,1763,Broadview Ave at Jack Layton Way,1758,Broadview Ave at Gerrard St East,563,94.2,94.2,94.2,94.2
+504,504,King,D,1,West,1760,Broadview Ave at Langley Ave-Hennick Bridgepoint Hospital,1763,Broadview Ave at Jack Layton Way,563,181.1,181.1,181.1,181.1
+504,504,King,D,1,West,1762,Broadview Ave at Millbrook Cres,1767,Broadview Ave at Withrow Ave,563,291.1,291.1,291.1,291.1
+504,504,King,D,1,West,9318,Broadview Ave at Mountstephen St,1756,Broadview Ave at Dundas St East,563,175.3,175.3,175.3,175.3
+504,504,King,D,1,West,1767,Broadview Ave at Withrow Ave,1760,Broadview Ave at Langley Ave-Hennick Bridgepoint Hospital,563,214.6,214.6,214.6,214.6
+504,504,King,D,1,West,1769,Broadview Ave at Wolfrey Ave,1762,Broadview Ave at Millbrook Cres,563,311.5,311.5,311.5,311.5
+504,504,King,D,1,West,14640,Broadview Station,3371,Broadview Ave at Danforth Ave,563,226.7,226.7,226.7,226.7
+504,504,King,D,1,West,9536,Front St East at Berkeley St,15839,Berkeley St at King St East,563,125.3,125.3,125.3,125.3
+504,504,King,D,1,West,4144,King St East at Sackville St,9535,Parliament St at Front St East,563,444.1,444.1,444.1,444.1
+504,504,King,D,1,West,4149,King St East at Sumach St,4144,King St East at Sackville St,563,188.2,188.2,188.2,188.2
+504,504,King,D,1,West,9535,Parliament St at Front St East,9536,Front St East at Berkeley St,563,98.6,98.6,98.6,98.6
+504,504,King,D,1,West,16029,River St at Dundas St East South Side,16027,River St at King St East,563,458.7,458.7,458.7,458.7
+504,504,King,D,1,West,16027,River St at King St East,4149,King St East at Sumach St,563,234.6,234.6,234.6,234.6
+504,504,King,S,0,East,15462,Distillery Loop,15351,King St East at Lower River St,23,785.5,785.5,785.5,785.5
+504,504,King,S,0,East,2032,Dufferin Gate Loop,2071,Dufferin St at Liberty St,18,355.2,355.2,355.2,355.2
+504,504,King,S,0,East,15516,Dufferin St at King St West,15353,King St West at Joe Shuster Way,18,338.5,338.5,338.5,338.5
+504,504,King,S,0,East,2071,Dufferin St at Liberty St,15516,Dufferin St at King St West,18,200.2,200.2,200.2,200.2
+504,504,King,S,0,East,14665,Dundas West Station,4569,Roncesvalles Ave at Boustead Ave South Side,14,627.5,627.5,627.5,627.5
+504,504,King,S,0,East,12537,King St East at Church St East Side,15636,King St West at Jarvis St East Side,32,210.0,210.0,210.0,210.1
+504,504,King,S,0,East,15351,King St East at Lower River St,3032,Queen St East at Broadview Ave,55,562.3,562.3,562.3,562.3
+504,504,King,S,0,East,15352,King St East at Ontario St,4140,King St East at Parliament St,32,247.7,247.7,247.7,247.7
+504,504,King,S,0,East,4140,King St East at Parliament St,4143,King St East at Sackville St,32,309.5,309.5,309.5,309.5
+504,504,King,S,0,East,4143,King St East at Sackville St,4148,King St East at Sumach St,32,173.2,173.2,173.2,173.3
+504,504,King,S,0,East,4145,King St East at Sherbourne St,15352,King St East at Ontario St,32,183.4,183.4,183.4,183.4
+504,504,King,S,0,East,4148,King St East at Sumach St,15351,King St East at Lower River St,32,254.8,254.8,254.8,254.8
+504,504,King,S,0,East,4155,King St West at Atlantic Ave,13344,King St West at Sudbury St,32,329.0,329.0,329.0,329.0
+504,504,King,S,0,East,15650,King St West at Bathurst St East Side,15649,King St West at Portland St East Side,32,192.2,192.2,192.2,192.2
+504,504,King,S,0,East,15640,King St West at Bay St East Side,15638,King St West at Yonge St East Side - King Station,32,199.0,199.0,199.0,199.0
+504,504,King,S,0,East,15646,King St West at Blue Jays Way East Side,15644,King St West at John St East Side,32,198.7,198.7,198.7,198.7
+504,504,King,S,0,East,4164,King St West at Dowling Ave,4173,King St West at Jameson Ave,14,210.7,210.7,210.7,210.7
+504,504,King,S,0,East,4167,King St West at Dufferin St,15353,King St West at Joe Shuster Way,14,315.4,315.4,315.4,315.4
+504,504,King,S,0,East,4168,King St West at Dunn Ave,4186,King St West at Spencer Ave,14,199.2,199.2,199.2,199.2
+504,504,King,S,0,East,4173,King St West at Jameson Ave,4168,King St West at Dunn Ave,14,236.1,236.1,236.1,236.1
+504,504,King,S,0,East,15636,King St West at Jarvis St East Side,4145,King St East at Sherbourne St,32,245.2,245.2,245.1,245.2
+504,504,King,S,0,East,15353,King St West at Joe Shuster Way,4155,King St West at Atlantic Ave,32,191.2,191.2,191.2,191.2
+504,504,King,S,0,East,15644,King St West at John St East Side,15642,King St West at York St - St Andrew Station,32,468.0,468.0,468.0,468.0
+504,504,King,S,0,East,4178,King St West at Niagara St,4189,King St West at Tecumseth St,32,200.4,200.4,200.4,200.5
+504,504,King,S,0,East,15649,King St West at Portland St East Side,15648,King St West at Spadina Ave East Side,32,435.0,435.0,435.0,435.1
+504,504,King,S,0,East,4162,King St West at Shaw St,4187,King St West at Strachan Ave,32,260.6,260.6,260.6,260.6
+504,504,King,S,0,East,15648,King St West at Spadina Ave East Side,15646,King St West at Blue Jays Way East Side,32,223.4,223.4,223.3,223.4
+504,504,King,S,0,East,4186,King St West at Spencer Ave,4167,King St West at Dufferin St,14,291.9,291.9,291.9,291.9
+504,504,King,S,0,East,4187,King St West at Strachan Ave,4178,King St West at Niagara St,32,361.6,361.6,361.5,361.6
+504,504,King,S,0,East,13344,King St West at Sudbury St,4162,King St West at Shaw St,32,188.7,188.7,188.7,188.8
+504,504,King,S,0,East,4189,King St West at Tecumseth St,15650,King St West at Bathurst St East Side,32,295.1,295.1,295.0,295.1
+504,504,King,S,0,East,4194,King St West at Wilson Park Rd,4164,King St West at Dowling Ave,14,306.9,306.9,306.9,306.9
+504,504,King,S,0,East,15638,King St West at Yonge St East Side - King Station,12537,King St East at Church St East Side,32,288.6,288.6,288.6,288.6
+504,504,King,S,0,East,15642,King St West at York St - St Andrew Station,15640,King St West at Bay St East Side,32,342.0,342.0,342.0,342.0
+504,504,King,S,0,East,4569,Roncesvalles Ave at Boustead Ave South Side,15039,Roncesvalles Ave at Howard Park Ave South Side,14,246.0,246.0,246.0,246.0
+504,504,King,S,0,East,4573,Roncesvalles Ave at Galley Ave,14992,Roncesvalles Ave at Marion St South Side,14,270.0,270.0,270.0,270.0
+504,504,King,S,0,East,14994,Roncesvalles Ave at Grenadier Rd,14993,Roncesvalles Ave at High Park Blvd South Side,14,342.6,342.6,342.6,342.6
+504,504,King,S,0,East,14993,Roncesvalles Ave at High Park Blvd South Side,4573,Roncesvalles Ave at Galley Ave,14,340.4,340.4,340.4,340.4
+504,504,King,S,0,East,15039,Roncesvalles Ave at Howard Park Ave South Side,14994,Roncesvalles Ave at Grenadier Rd,14,238.8,238.8,238.8,238.8
+504,504,King,S,0,East,14992,Roncesvalles Ave at Marion St South Side,4582,Roncesvalles Ave at Queen St West,14,202.3,202.3,202.3,202.3
+504,504,King,S,0,East,4582,Roncesvalles Ave at Queen St West,4194,King St West at Wilson Park Rd,14,392.9,392.9,392.9,392.9
+504,504,King,S,1,West,3374,Broadview Ave at Queen St East,4142,King St East at River St,39,539.8,539.8,539.8,539.8
+504,504,King,S,1,West,15461,Cherry St at Front St East,15462,Distillery Loop,39,339.6,339.6,339.6,339.6
+504,504,King,S,1,West,15460,Cherry St at Front St East,4144,King St East at Sackville St,7,534.9,534.9,534.9,534.9
+504,504,King,S,1,West,15462,Distillery Loop,15460,Cherry St at Front St East,7,290.5,290.5,290.5,290.5
+504,504,King,S,1,West,12538,King St East at Church St West Side,15637,King St West at Yonge St West Side - King Station,7,299.7,299.7,299.7,299.7
+504,504,King,S,1,West,4139,King St East at Ontario St,4146,King St East at Sherbourne St,7,190.7,190.7,190.7,190.7
+504,504,King,S,1,West,4141,King St East at Parliament St,4139,King St East at Ontario St,7,263.5,263.5,263.5,263.5
+504,504,King,S,1,West,4142,King St East at River St,4149,King St East at Sumach St,39,249.2,249.2,249.2,249.2
+504,504,King,S,1,West,4144,King St East at Sackville St,4141,King St East at Parliament St,7,297.3,297.3,297.3,297.3
+504,504,King,S,1,West,4146,King St East at Sherbourne St,15635,King St West at Jarvis St West Side,7,363.2,363.2,363.2,363.2
+504,504,King,S,1,West,4149,King St East at Sumach St,15461,Cherry St at Front St East,39,324.3,324.3,324.3,324.3
+504,504,King,S,1,West,4156,King St West at Bathurst St,4190,King St West at Tecumseth St,7,264.7,264.7,264.7,264.7
+504,504,King,S,1,West,15639,King St West at Bay St West Side,15641,King St West at Simcoe St - St. Andrew Station,7,447.1,447.1,447.1,447.1
+504,504,King,S,1,West,4165,King St West at Dowling Ave,4193,King St West at Wilson Park Rd West Side,7,329.3,329.3,329.3,329.3
+504,504,King,S,1,West,4166,King St West at Dufferin St,13890,King St West at Spencer Ave,7,314.7,314.7,314.7,314.7
+504,504,King,S,1,West,4169,King St West at Dunn Ave,4174,King St West at Jameson Ave,7,234.0,234.0,234.0,234.0
+504,504,King,S,1,West,4174,King St West at Jameson Ave,4165,King St West at Dowling Ave,7,209.7,209.7,209.7,209.7
+504,504,King,S,1,West,15635,King St West at Jarvis St West Side,12538,King St East at Church St West Side,7,211.3,211.3,211.3,211.3
+504,504,King,S,1,West,4175,King St West at Jefferson Ave,14400,King St West at Joe Shuster Way,7,111.1,111.1,111.1,111.1
+504,504,King,S,1,West,14400,King St West at Joe Shuster Way,4166,King St West at Dufferin St,7,298.9,298.9,298.9,298.9
+504,504,King,S,1,West,15643,King St West at John St West Side,4181,King St West at Peter St,7,154.7,154.7,154.7,154.7
+504,504,King,S,1,West,4179,King St West at Niagara St,4188,King St West at Strachan Ave,7,353.6,353.6,353.6,353.6
+504,504,King,S,1,West,4181,King St West at Peter St,15647,King St West at Spadina Ave West Side,7,317.7,317.7,317.7,317.7
+504,504,King,S,1,West,10176,King St West at Portland St,4156,King St West at Bathurst St,7,162.1,162.1,162.1,162.1
+504,504,King,S,1,West,4163,King St West at Shaw St,11021,King St West at Sudbury St,7,200.4,200.4,200.4,200.4
+504,504,King,S,1,West,15641,King St West at Simcoe St - St. Andrew Station,15643,King St West at John St West Side,7,353.7,353.7,353.7,353.7
+504,504,King,S,1,West,15647,King St West at Spadina Ave West Side,10176,King St West at Portland St,7,344.8,344.8,344.8,344.8
+504,504,King,S,1,West,13890,King St West at Spencer Ave,4169,King St West at Dunn Ave,7,191.9,191.9,191.9,191.9
+504,504,King,S,1,West,4188,King St West at Strachan Ave,4163,King St West at Shaw St,7,250.0,250.0,250.0,250.0
+504,504,King,S,1,West,11021,King St West at Sudbury St,4175,King St West at Jefferson Ave,7,408.8,408.8,408.8,408.8
+504,504,King,S,1,West,4190,King St West at Tecumseth St,4179,King St West at Niagara St,7,207.7,207.7,207.7,207.7
+504,504,King,S,1,West,4193,King St West at Wilson Park Rd West Side,11596,King St West at Queen St West,7,347.9,347.9,347.9,347.9
+504,504,King,S,1,West,15637,King St West at Yonge St West Side - King Station,15639,King St West at Bay St West Side,7,172.1,172.1,172.1,172.1
+505,505,Dundas,,0,East,1755,Broadview Ave at Danforth Ave,14639,Broadview Station,34,174.9,174.9,174.9,174.9
+505,505,Dundas,,0,East,1757,Broadview Ave at Gerrard St East,1759,Broadview Ave at Langley Ave-Hennick Bridgepoint Hospital,674,280.8,280.8,280.8,280.8
+505,505,Dundas,,0,East,1759,Broadview Ave at Langley Ave-Hennick Bridgepoint Hospital,1766,Broadview Ave at Withrow Ave,674,218.6,218.6,218.6,218.6
+505,505,Dundas,,0,East,1761,Broadview Ave at Millbrook Cres,1768,Broadview Ave at Wolfrey Ave,674,308.3,308.3,308.2,308.3
+505,505,Dundas,,0,East,9317,Broadview Ave at Mountstephen St,1757,Broadview Ave at Gerrard St East,674,155.6,155.6,155.6,155.6
+505,505,Dundas,,0,East,1766,Broadview Ave at Withrow Ave,1761,Broadview Ave at Millbrook Cres,674,291.6,291.6,291.6,291.6
+505,505,Dundas,,0,East,1768,Broadview Ave at Wolfrey Ave,1755,Broadview Ave at Danforth Ave,34,248.4,248.4,248.3,248.4
+505,505,Dundas,,0,East,1768,Broadview Ave at Wolfrey Ave,14639,Broadview Station,640,423.2,423.2,423.2,423.3
+505,505,Dundas,,0,East,2115,Dundas St East at Broadview Ave,9317,Broadview Ave at Mountstephen St,617,214.2,214.2,214.2,214.2
+505,505,Dundas,,0,East,2116,Dundas St East at Church St,2118,Dundas St East at Jarvis St,617,220.6,220.6,220.6,220.6
+505,505,Dundas,,0,East,2118,Dundas St East at Jarvis St,2130,Dundas St East at Sherbourne St,617,329.3,329.3,329.3,329.3
+505,505,Dundas,,0,East,2122,Dundas St East at Ontario St,2124,Dundas St East at Parliament St,617,199.1,199.1,199.1,199.1
+505,505,Dundas,,0,East,2124,Dundas St East at Parliament St,15872,Dundas St East at Regent Park Blvd,617,363.6,363.6,363.6,363.6
+505,505,Dundas,,0,East,15872,Dundas St East at Regent Park Blvd,2126,Dundas St East at River St,617,310.0,310.0,310.0,310.0
+505,505,Dundas,,0,East,2126,Dundas St East at River St,2115,Dundas St East at Broadview Ave,617,537.3,537.3,537.3,537.3
+505,505,Dundas,,0,East,2130,Dundas St East at Sherbourne St,2122,Dundas St East at Ontario St,617,219.0,219.0,219.0,219.0
+505,505,Dundas,,0,East,2140,Dundas St West at Bathurst St - Toronto Western Hospital,2156,Dundas St West at Denison Ave,617,339.1,339.1,339.1,339.1
+505,505,Dundas,,0,East,2142,Dundas St West at Bay St,2197,Dundas St West at Yonge St - TMU Station,617,236.7,236.7,236.7,236.7
+505,505,Dundas,,0,East,2146,Dundas St West at Beverley St,2173,Dundas St West at McCaul St,617,201.0,201.0,201.0,201.0
+505,505,Dundas,,0,East,2151,Dundas St West at Brock Ave,2186,Dundas St West at Sheridan Ave,617,151.4,151.4,151.4,151.4
+505,505,Dundas,,0,East,2153,Dundas St West at Chestnut St,2142,Dundas St West at Bay St,617,176.9,176.9,176.9,176.9
+505,505,Dundas,,0,East,2156,Dundas St West at Denison Ave,2189,Dundas St West at Spadina Ave,617,336.1,336.1,336.1,336.1
+505,505,Dundas,,0,East,2158,Dundas St West at Dovercourt Rd,2175,Dundas St West at Ossington Ave,617,317.3,317.3,317.3,317.3
+505,505,Dundas,,0,East,2160,Dundas St West at Dufferin St,2164,Dundas St West at Gladstone Ave,617,128.2,128.2,128.2,128.2
+505,505,Dundas,,0,East,2164,Dundas St West at Gladstone Ave,2172,Dundas St West at Lisgar St,617,248.3,248.3,248.3,248.3
+505,505,Dundas,,0,East,10181,Dundas St West at Grace St,15354,Dundas St West at Manning Ave,617,266.0,266.0,266.0,266.0
+505,505,Dundas,,0,East,2167,Dundas St West at Howard Park Ave,987,Dundas St West at Sorauren Ave,617,247.2,247.2,247.2,247.2
+505,505,Dundas,,0,East,2170,Dundas St West at Lansdowne Ave,2151,Dundas St West at Brock Ave,617,354.7,354.7,354.7,354.7
+505,505,Dundas,,0,East,2172,Dundas St West at Lisgar St,2158,Dundas St West at Dovercourt Rd,617,160.1,160.1,160.1,160.1
+505,505,Dundas,,0,East,15354,Dundas St West at Manning Ave,2140,Dundas St West at Bathurst St - Toronto Western Hospital,617,398.0,398.0,398.0,398.0
+505,505,Dundas,,0,East,2173,Dundas St West at McCaul St,2193,Dundas St West at University Ave - St Patrick Station,617,233.4,233.4,233.4,233.4
+505,505,Dundas,,0,East,2175,Dundas St West at Ossington Ave,2185,Dundas St West at Shaw St,617,201.0,201.0,201.0,201.0
+505,505,Dundas,,0,East,2181,Dundas St West at Roncesvalles Ave East Side,2167,Dundas St West at Howard Park Ave,617,260.8,260.8,260.8,260.8
+505,505,Dundas,,0,East,2185,Dundas St West at Shaw St,10181,Dundas St West at Grace St,617,357.2,357.2,357.2,357.2
+505,505,Dundas,,0,East,2186,Dundas St West at Sheridan Ave,2160,Dundas St West at Dufferin St,617,183.7,183.7,183.7,183.7
+505,505,Dundas,,0,East,987,Dundas St West at Sorauren Ave,991,Dundas St West at Sterling Rd,617,212.3,212.3,212.3,212.3
+505,505,Dundas,,0,East,2189,Dundas St West at Spadina Ave,2146,Dundas St West at Beverley St,617,366.8,366.8,366.8,366.8
+505,505,Dundas,,0,East,991,Dundas St West at Sterling Rd,2170,Dundas St West at Lansdowne Ave,617,257.4,257.4,257.4,257.4
+505,505,Dundas,,0,East,2193,Dundas St West at University Ave - St Patrick Station,2153,Dundas St West at Chestnut St,617,218.2,218.2,218.2,218.2
+505,505,Dundas,,0,East,2197,Dundas St West at Yonge St - TMU Station,2116,Dundas St East at Church St,617,321.2,321.2,321.2,321.2
+505,505,Dundas,,0,East,14666,Dundas West Station,2181,Dundas St West at Roncesvalles Ave East Side,607,583.8,583.8,583.8,583.8
+505,505,Dundas,,0,East,14666,Dundas West Station,9855,Edna Ave at Dundas St West,10,106.4,106.4,106.4,106.4
+505,505,Dundas,,0,East,9855,Edna Ave at Dundas St West,2181,Dundas St West at Roncesvalles Ave East Side,10,477.4,477.4,477.4,477.4
+505,505,Dundas,,1,West,3371,Broadview Ave at Danforth Ave,1769,Broadview Ave at Wolfrey Ave,578,245.9,245.9,245.9,245.9
+505,505,Dundas,,1,West,1756,Broadview Ave at Dundas St East,2127,Dundas St East at River St,632,570.8,570.8,570.8,570.8
+505,505,Dundas,,1,West,1758,Broadview Ave at Gerrard St East,9318,Broadview Ave at Mountstephen St,632,182.8,182.8,182.8,182.8
+505,505,Dundas,,1,West,1763,Broadview Ave at Jack Layton Way,1758,Broadview Ave at Gerrard St East,632,95.0,95.0,95.0,95.0
+505,505,Dundas,,1,West,1760,Broadview Ave at Langley Ave-Hennick Bridgepoint Hospital,1763,Broadview Ave at Jack Layton Way,632,179.2,179.2,179.2,179.2
+505,505,Dundas,,1,West,1762,Broadview Ave at Millbrook Cres,1767,Broadview Ave at Withrow Ave,632,291.0,291.0,291.0,291.0
+505,505,Dundas,,1,West,9318,Broadview Ave at Mountstephen St,1756,Broadview Ave at Dundas St East,632,175.3,175.3,175.3,175.3
+505,505,Dundas,,1,West,1767,Broadview Ave at Withrow Ave,1760,Broadview Ave at Langley Ave-Hennick Bridgepoint Hospital,632,215.5,215.5,215.5,215.5
+505,505,Dundas,,1,West,1769,Broadview Ave at Wolfrey Ave,1762,Broadview Ave at Millbrook Cres,632,312.9,312.9,312.9,312.9
+505,505,Dundas,,1,West,14639,Broadview Station,2428,Erindale Ave at Broadview Ave,632,109.0,109.0,109.0,109.0
+505,505,Dundas,,1,West,2117,Dundas St East at Church St,2136,Dundas St East at Yonge St - TMU Station,658,314.0,314.0,313.9,314.0
+505,505,Dundas,,1,West,2119,Dundas St East at Jarvis St,2117,Dundas St East at Church St,658,220.2,220.2,220.2,220.3
+505,505,Dundas,,1,West,2123,Dundas St East at Ontario St,2131,Dundas St East at Sherbourne St,658,210.3,210.3,210.3,210.3
+505,505,Dundas,,1,West,2125,Dundas St East at Parliament St,2123,Dundas St East at Ontario St,658,208.6,208.6,208.5,208.6
+505,505,Dundas,,1,West,15873,Dundas St East at Regent Park Blvd,2125,Dundas St East at Parliament St,658,356.3,356.3,356.3,356.4
+505,505,Dundas,,1,West,2127,Dundas St East at River St,15873,Dundas St East at Regent Park Blvd,658,307.2,307.2,307.2,307.2
+505,505,Dundas,,1,West,2131,Dundas St East at Sherbourne St,2119,Dundas St East at Jarvis St,658,333.9,333.9,333.9,333.9
+505,505,Dundas,,1,West,2136,Dundas St East at Yonge St - TMU Station,2143,Dundas St West at Bay St,658,228.7,228.7,228.7,228.7
+505,505,Dundas,,1,West,2141,Dundas St West at Bathurst St - Toronto Western Hospital,15355,Dundas St West at Manning Ave,658,413.5,413.5,413.5,413.5
+505,505,Dundas,,1,West,2143,Dundas St West at Bay St,2154,Dundas St West at Chestnut St,658,199.4,199.4,199.4,199.5
+505,505,Dundas,,1,West,2147,Dundas St West at Beverley St,2190,Dundas St West at Spadina Ave,658,333.3,333.3,333.2,333.3
+505,505,Dundas,,1,West,2150,Dundas St West at Bloor St West,13702,Dundas St West at Dundas West Outer Platform,633,161.9,161.9,161.9,162.0
+505,505,Dundas,,1,West,2150,Dundas St West at Bloor St West,14666,Dundas West Station,25,195.3,195.3,195.3,195.3
+505,505,Dundas,,1,West,2152,Dundas St West at Brock Ave,2171,Dundas St West at Lansdowne Ave,658,321.4,321.4,321.4,321.5
+505,505,Dundas,,1,West,2154,Dundas St West at Chestnut St,2194,Dundas St West at University Ave - St Patrick Station,658,162.4,162.4,162.3,162.4
+505,505,Dundas,,1,West,2157,Dundas St West at Denison Ave,2141,Dundas St West at Bathurst St - Toronto Western Hospital,658,322.7,322.7,322.6,322.7
+505,505,Dundas,,1,West,2159,Dundas St West at Dovercourt Rd,2183,Dundas St West at Rusholme Rd,658,154.2,154.2,154.2,154.2
+505,505,Dundas,,1,West,2161,Dundas St West at Dufferin St,2187,Dundas St West at Sheridan Ave,658,177.5,177.5,177.5,177.5
+505,505,Dundas,,1,West,13702,Dundas St West at Dundas West Outer Platform,14666,Dundas West Station,633,33.4,33.4,33.3,33.4
+505,505,Dundas,,1,West,2165,Dundas St West at Gladstone Ave,2161,Dundas St West at Dufferin St,658,136.3,136.3,136.2,136.3
+505,505,Dundas,,1,West,2166,Dundas St West at Grace St,15356,Dundas St West at Shaw St,658,360.3,360.3,360.3,360.4
+505,505,Dundas,,1,West,986,Dundas St West at Howard Park Ave,2182,Dundas St West at Roncesvalles Ave,658,370.2,370.2,370.2,370.3
+505,505,Dundas,,1,West,2171,Dundas St West at Lansdowne Ave,990,Dundas St West at Sterling Rd,658,273.9,273.9,273.8,273.9
+505,505,Dundas,,1,West,15355,Dundas St West at Manning Ave,2166,Dundas St West at Grace St,658,249.3,249.3,249.3,249.3
+505,505,Dundas,,1,West,2176,Dundas St West at Ossington Ave,2159,Dundas St West at Dovercourt Rd,658,330.2,330.2,330.2,330.2
+505,505,Dundas,,1,West,2182,Dundas St West at Roncesvalles Ave,2150,Dundas St West at Bloor St West,658,296.2,296.2,296.1,296.2
+505,505,Dundas,,1,West,2183,Dundas St West at Rusholme Rd,2165,Dundas St West at Gladstone Ave,658,253.2,253.2,253.2,253.3
+505,505,Dundas,,1,West,15356,Dundas St West at Shaw St,2176,Dundas St West at Ossington Ave,658,197.2,197.2,197.1,197.2
+505,505,Dundas,,1,West,2187,Dundas St West at Sheridan Ave,2152,Dundas St West at Brock Ave,658,159.6,159.6,159.6,159.6
+505,505,Dundas,,1,West,988,Dundas St West at Sorauren Ave,986,Dundas St West at Howard Park Ave,658,214.9,214.9,214.8,214.9
+505,505,Dundas,,1,West,2190,Dundas St West at Spadina Ave,2157,Dundas St West at Denison Ave,658,373.0,373.0,373.0,373.1
+505,505,Dundas,,1,West,16064,Dundas St West at St Patrick St,2147,Dundas St West at Beverley St,658,298.1,298.1,298.1,298.2
+505,505,Dundas,,1,West,990,Dundas St West at Sterling Rd,988,Dundas St West at Sorauren Ave,658,187.8,187.8,187.8,187.9
+505,505,Dundas,,1,West,2194,Dundas St West at University Ave - St Patrick Station,16064,Dundas St West at St Patrick St,658,194.3,194.3,194.3,194.3
+505,505,Dundas,,1,West,2428,Erindale Ave at Broadview Ave,3371,Broadview Ave at Danforth Ave,578,148.4,148.4,148.4,148.4
+505,505,Dundas,,1,West,2428,Erindale Ave at Broadview Ave,1769,Broadview Ave at Wolfrey Ave,54,394.3,394.3,394.3,394.3
+505,505,Dundas,S,0,East,2116,Dundas St East at Church St,2118,Dundas St East at Jarvis St,25,220.6,220.6,220.6,220.6
+505,505,Dundas,S,0,East,2118,Dundas St East at Jarvis St,2130,Dundas St East at Sherbourne St,25,329.3,329.3,329.3,329.3
+505,505,Dundas,S,0,East,2122,Dundas St East at Ontario St,2124,Dundas St East at Parliament St,25,199.1,199.1,199.1,199.1
+505,505,Dundas,S,0,East,2124,Dundas St East at Parliament St,15872,Dundas St East at Regent Park Blvd,25,363.6,363.6,363.6,363.6
+505,505,Dundas,S,0,East,15872,Dundas St East at Regent Park Blvd,2126,Dundas St East at River St,25,310.0,310.0,310.0,310.0
+505,505,Dundas,S,0,East,2126,Dundas St East at River St,2115,Dundas St East at Broadview Ave,25,537.3,537.3,537.3,537.3
+505,505,Dundas,S,0,East,2130,Dundas St East at Sherbourne St,2122,Dundas St East at Ontario St,25,219.0,219.0,219.0,219.0
+505,505,Dundas,S,0,East,2140,Dundas St West at Bathurst St - Toronto Western Hospital,2156,Dundas St West at Denison Ave,25,339.1,339.1,339.1,339.1
+505,505,Dundas,S,0,East,2142,Dundas St West at Bay St,2197,Dundas St West at Yonge St - TMU Station,25,236.7,236.7,236.7,236.7
+505,505,Dundas,S,0,East,2146,Dundas St West at Beverley St,2173,Dundas St West at McCaul St,25,201.0,201.0,201.0,201.0
+505,505,Dundas,S,0,East,2151,Dundas St West at Brock Ave,2186,Dundas St West at Sheridan Ave,25,151.4,151.4,151.4,151.4
+505,505,Dundas,S,0,East,2153,Dundas St West at Chestnut St,2142,Dundas St West at Bay St,25,176.9,176.9,176.9,176.9
+505,505,Dundas,S,0,East,2156,Dundas St West at Denison Ave,2189,Dundas St West at Spadina Ave,25,336.1,336.1,336.1,336.1
+505,505,Dundas,S,0,East,2158,Dundas St West at Dovercourt Rd,2175,Dundas St West at Ossington Ave,25,317.3,317.3,317.3,317.3
+505,505,Dundas,S,0,East,2160,Dundas St West at Dufferin St,2164,Dundas St West at Gladstone Ave,25,128.2,128.2,128.2,128.2
+505,505,Dundas,S,0,East,2164,Dundas St West at Gladstone Ave,2172,Dundas St West at Lisgar St,25,248.3,248.3,248.3,248.3
+505,505,Dundas,S,0,East,10181,Dundas St West at Grace St,15354,Dundas St West at Manning Ave,25,266.0,266.0,266.0,266.0
+505,505,Dundas,S,0,East,2167,Dundas St West at Howard Park Ave,987,Dundas St West at Sorauren Ave,25,247.2,247.2,247.2,247.2
+505,505,Dundas,S,0,East,2170,Dundas St West at Lansdowne Ave,2151,Dundas St West at Brock Ave,25,354.7,354.7,354.7,354.7
+505,505,Dundas,S,0,East,2172,Dundas St West at Lisgar St,2158,Dundas St West at Dovercourt Rd,25,160.1,160.1,160.1,160.1
+505,505,Dundas,S,0,East,15354,Dundas St West at Manning Ave,2140,Dundas St West at Bathurst St - Toronto Western Hospital,25,398.0,398.0,398.0,398.0
+505,505,Dundas,S,0,East,2173,Dundas St West at McCaul St,2193,Dundas St West at University Ave - St Patrick Station,25,233.4,233.4,233.4,233.4
+505,505,Dundas,S,0,East,2175,Dundas St West at Ossington Ave,2185,Dundas St West at Shaw St,25,201.0,201.0,201.0,201.0
+505,505,Dundas,S,0,East,2181,Dundas St West at Roncesvalles Ave East Side,2167,Dundas St West at Howard Park Ave,25,260.8,260.8,260.8,260.8
+505,505,Dundas,S,0,East,2185,Dundas St West at Shaw St,10181,Dundas St West at Grace St,25,357.2,357.2,357.2,357.2
+505,505,Dundas,S,0,East,2186,Dundas St West at Sheridan Ave,2160,Dundas St West at Dufferin St,25,183.7,183.7,183.7,183.7
+505,505,Dundas,S,0,East,987,Dundas St West at Sorauren Ave,991,Dundas St West at Sterling Rd,25,212.3,212.3,212.3,212.3
+505,505,Dundas,S,0,East,2189,Dundas St West at Spadina Ave,2146,Dundas St West at Beverley St,25,366.8,366.8,366.8,366.8
+505,505,Dundas,S,0,East,991,Dundas St West at Sterling Rd,2170,Dundas St West at Lansdowne Ave,25,257.4,257.4,257.4,257.4
+505,505,Dundas,S,0,East,2193,Dundas St West at University Ave - St Patrick Station,2153,Dundas St West at Chestnut St,25,218.2,218.2,218.2,218.2
+505,505,Dundas,S,0,East,2197,Dundas St West at Yonge St - TMU Station,2116,Dundas St East at Church St,25,321.2,321.2,321.2,321.2
+505,505,Dundas,S,0,East,14666,Dundas West Station,2181,Dundas St West at Roncesvalles Ave East Side,25,583.8,583.8,583.8,583.8
+505,505,Dundas,S,1,West,3371,Broadview Ave at Danforth Ave,1769,Broadview Ave at Wolfrey Ave,34,245.9,245.9,245.9,245.9
+505,505,Dundas,S,1,West,1758,Broadview Ave at Gerrard St East,9318,Broadview Ave at Mountstephen St,34,182.8,182.8,182.8,182.8
+505,505,Dundas,S,1,West,1763,Broadview Ave at Jack Layton Way,1758,Broadview Ave at Gerrard St East,34,95.0,95.0,95.0,95.0
+505,505,Dundas,S,1,West,1760,Broadview Ave at Langley Ave-Hennick Bridgepoint Hospital,1763,Broadview Ave at Jack Layton Way,34,179.2,179.2,179.2,179.2
+505,505,Dundas,S,1,West,1762,Broadview Ave at Millbrook Cres,1767,Broadview Ave at Withrow Ave,34,291.0,291.0,291.0,291.0
+505,505,Dundas,S,1,West,9318,Broadview Ave at Mountstephen St,1756,Broadview Ave at Dundas St East,34,175.3,175.3,175.3,175.3
+505,505,Dundas,S,1,West,1767,Broadview Ave at Withrow Ave,1760,Broadview Ave at Langley Ave-Hennick Bridgepoint Hospital,34,215.5,215.5,215.5,215.5
+505,505,Dundas,S,1,West,1769,Broadview Ave at Wolfrey Ave,1762,Broadview Ave at Millbrook Cres,34,312.9,312.9,312.9,312.9
+505,505,Dundas,S,1,West,14639,Broadview Station,2428,Erindale Ave at Broadview Ave,34,109.0,109.0,109.0,109.0
+505,505,Dundas,S,1,West,2428,Erindale Ave at Broadview Ave,3371,Broadview Ave at Danforth Ave,34,148.4,148.4,148.4,148.4
+506,506,Carlton,,0,East,809,College St at Augusta Ave,843,College St at Spadina Ave,466,235.6,235.6,235.6,235.6
+506,506,Carlton,,0,East,811,College St at Bathurst St,816,College St at Borden St,466,213.8,213.8,213.8,213.8
+506,506,Carlton,,0,East,815,College St at Beverley St,837,College St at McCaul St,466,220.1,220.1,220.1,220.1
+506,506,Carlton,,0,East,816,College St at Borden St,809,College St at Augusta Ave,466,169.1,169.1,169.1,169.1
+506,506,Carlton,,0,East,818,College St at Brock Ave,826,College St at Dufferin St,466,316.4,316.4,316.4,316.4
+506,506,Carlton,,0,East,822,College St at Crawford St,832,College St at Grace St,466,274.8,274.8,274.8,274.8
+506,506,Carlton,,0,East,824,College St at Dovercourt Rd,839,College St at Ossington Ave,466,297.8,297.8,297.8,297.8
+506,506,Carlton,,0,East,826,College St at Dufferin St,842,College St at Rusholme Park Cres,466,238.6,238.6,238.6,238.6
+506,506,Carlton,,0,East,830,College St at Euclid Ave,811,College St at Bathurst St,466,301.6,301.6,301.6,301.6
+506,506,Carlton,,0,East,832,College St at Grace St,830,College St at Euclid Ave,466,359.0,359.0,359.0,359.0
+506,506,Carlton,,0,East,835,College St at Lansdowne Ave,818,College St at Brock Ave,466,334.8,334.8,334.8,334.8
+506,506,Carlton,,0,East,837,College St at McCaul St,16854,MCCAUL ST AT DUNDAS ST WEST,466,577.5,577.5,577.5,577.5
+506,506,Carlton,,0,East,839,College St at Ossington Ave,822,College St at Crawford St,466,318.4,318.4,318.4,318.4
+506,506,Carlton,,0,East,842,College St at Rusholme Park Cres,824,College St at Dovercourt Rd,466,274.0,274.0,274.0,274.0
+506,506,Carlton,,0,East,843,College St at Spadina Ave,815,College St at Beverley St,466,337.3,337.3,337.3,337.3
+506,506,Carlton,,0,East,1800,Coxwell Ave at Gerrard St East,1113,Gerrard St East at Beaton Ave,509,302.0,302.0,302.0,302.0
+506,506,Carlton,,0,East,2116,Dundas St East at Church St,2118,Dundas St East at Jarvis St,466,220.6,220.6,220.6,220.6
+506,506,Carlton,,0,East,2118,Dundas St East at Jarvis St,2130,Dundas St East at Sherbourne St,466,329.2,329.2,329.2,329.2
+506,506,Carlton,,0,East,2122,Dundas St East at Ontario St,2124,Dundas St East at Parliament St,466,199.1,199.1,199.1,199.1
+506,506,Carlton,,0,East,2124,Dundas St East at Parliament St,6642,Parliament St at Oak St,466,158.2,158.2,158.2,158.2
+506,506,Carlton,,0,East,2130,Dundas St East at Sherbourne St,2122,Dundas St East at Ontario St,466,218.9,218.9,218.9,218.9
+506,506,Carlton,,0,East,2142,Dundas St West at Bay St,2197,Dundas St West at Yonge St - TMU Station,466,237.0,237.0,237.0,237.0
+506,506,Carlton,,0,East,2153,Dundas St West at Chestnut St,2142,Dundas St West at Bay St,466,177.0,177.0,177.0,177.0
+506,506,Carlton,,0,East,987,Dundas St West at Sorauren Ave,991,Dundas St West at Sterling Rd,466,212.3,212.3,212.3,212.3
+506,506,Carlton,,0,East,991,Dundas St West at Sterling Rd,835,College St at Lansdowne Ave,466,259.6,259.6,259.6,259.6
+506,506,Carlton,,0,East,2193,Dundas St West at University Ave - St Patrick Station,2153,Dundas St West at Chestnut St,466,218.9,218.9,218.9,218.9
+506,506,Carlton,,0,East,2197,Dundas St West at Yonge St - TMU Station,2116,Dundas St East at Church St,466,321.6,321.6,321.6,321.6
+506,506,Carlton,,0,East,1077,Gerrard St East at Alton Ave,1089,Gerrard St East at Greenwood Ave,466,221.1,221.1,221.1,221.1
+506,506,Carlton,,0,East,1113,Gerrard St East at Beaton Ave,1115,Gerrard St East at Bowmore Rd,509,260.6,260.6,260.6,260.6
+506,506,Carlton,,0,East,1080,Gerrard St East at Blackburn St,1081,Gerrard St East at Broadview Ave,466,214.4,214.4,214.4,214.4
+506,506,Carlton,,0,East,1115,Gerrard St East at Bowmore Rd,1122,Gerrard St East at Kingsmount Park Rd,509,246.4,246.4,246.4,246.4
+506,506,Carlton,,0,East,1081,Gerrard St East at Broadview Ave,1087,Gerrard St East at De Grassi St,466,346.7,346.7,346.7,346.7
+506,506,Carlton,,0,East,1083,Gerrard St East at Carlaw Ave,1100,Gerrard St East at Pape Ave,466,210.6,210.6,210.6,210.6
+506,506,Carlton,,0,East,1085,Gerrard St East at Coxwell Ave,1800,Coxwell Ave at Gerrard St East,466,273.3,273.3,273.3,273.3
+506,506,Carlton,,0,East,1087,Gerrard St East at De Grassi St,1096,Gerrard St East at Logan Ave,466,291.0,291.0,291.0,291.0
+506,506,Carlton,,0,East,1118,Gerrard St East at Glenmount Park Rd,1125,Gerrard St East at Norwood Rd,509,251.3,251.3,251.3,251.3
+506,506,Carlton,,0,East,1120,Gerrard St East at Golfview Ave,1118,Gerrard St East at Glenmount Park Rd,509,240.7,240.7,240.7,240.7
+506,506,Carlton,,0,East,1089,Gerrard St East at Greenwood Ave,1112,Gerrard St East at Woodfield Rd,466,334.7,334.7,334.7,334.7
+506,506,Carlton,,0,East,1092,Gerrard St East at Jones Ave,1094,Gerrard St East at Leslie St,466,211.9,211.9,211.9,211.9
+506,506,Carlton,,0,East,1122,Gerrard St East at Kingsmount Park Rd,1127,Gerrard St East at Woodbine Ave,509,225.4,225.4,225.4,225.4
+506,506,Carlton,,0,East,1094,Gerrard St East at Leslie St,1077,Gerrard St East at Alton Ave,466,208.5,208.5,208.5,208.5
+506,506,Carlton,,0,East,1096,Gerrard St East at Logan Ave,1083,Gerrard St East at Carlaw Ave,466,193.6,193.6,193.6,193.6
+506,506,Carlton,,0,East,1124,Gerrard St East at Main St,1262,Main St at Danforth Ave - Danforth GO Station,509,494.4,494.4,494.4,494.4
+506,506,Carlton,,0,East,1098,Gerrard St East at Marjory Ave,1092,Gerrard St East at Jones Ave,466,155.0,155.0,155.0,155.0
+506,506,Carlton,,0,East,1125,Gerrard St East at Norwood Rd,1124,Gerrard St East at Main St,509,235.7,235.7,235.7,235.7
+506,506,Carlton,,0,East,1100,Gerrard St East at Pape Ave,1098,Gerrard St East at Marjory Ave,466,240.8,240.8,240.8,240.8
+506,506,Carlton,,0,East,1104,Gerrard St East at River St,1080,Gerrard St East at Blackburn St,466,340.6,340.6,340.6,340.6
+506,506,Carlton,,0,East,1106,Gerrard St East at Sackville St,1109,Gerrard St East at Sumach St,466,210.7,210.7,210.7,210.7
+506,506,Carlton,,0,East,1109,Gerrard St East at Sumach St,1104,Gerrard St East at River St,466,189.7,189.7,189.7,189.7
+506,506,Carlton,,0,East,1127,Gerrard St East at Woodbine Ave,1120,Gerrard St East at Golfview Ave,509,192.5,192.5,192.5,192.5
+506,506,Carlton,,0,East,1112,Gerrard St East at Woodfield Rd,1085,Gerrard St East at Coxwell Ave,466,392.5,392.5,392.5,392.5
+506,506,Carlton,,0,East,1252,High Park Loop,1152,Howard Park Ave at Parkside Dr East Side,466,179.8,179.8,179.8,179.8
+506,506,Carlton,,0,East,1149,Howard Park Ave at Dundas St West,987,Dundas St West at Sorauren Ave,466,233.9,233.9,233.9,233.9
+506,506,Carlton,,0,East,1150,Howard Park Ave at Indian Rd,1154,Howard Park Ave at Roncesvalles Ave,466,332.5,332.5,332.5,332.5
+506,506,Carlton,,0,East,1152,Howard Park Ave at Parkside Dr East Side,1150,Howard Park Ave at Indian Rd,466,260.1,260.1,260.1,260.1
+506,506,Carlton,,0,East,1154,Howard Park Ave at Roncesvalles Ave,1149,Howard Park Ave at Dundas St West,466,235.5,235.5,235.5,235.5
+506,506,Carlton,,0,East,16854,MCCAUL ST AT DUNDAS ST WEST,2193,Dundas St West at University Ave - St Patrick Station,466,233.4,233.4,233.4,233.4
+506,506,Carlton,,0,East,1262,Main St at Danforth Ave - Danforth GO Station,14741,Main Street Station,509,322.0,322.0,322.0,322.0
+506,506,Carlton,,0,East,6637,Parliament St at Gerrard St East,1106,Gerrard St East at Sackville St,466,273.4,273.4,273.4,273.4
+506,506,Carlton,,0,East,6642,Parliament St at Oak St,6637,Parliament St at Gerrard St East,466,129.2,129.2,129.2,129.2
+506,506,Carlton,,1,West,12338,College St at Augusta Ave,817,College St at Borden St,491,163.0,163.0,163.0,163.0
+506,506,Carlton,,1,West,812,College St at Bathurst St,831,College St at Euclid Ave,491,328.6,328.6,328.6,328.6
+506,506,Carlton,,1,West,817,College St at Borden St,812,College St at Bathurst St,491,195.1,195.1,195.1,195.1
+506,506,Carlton,,1,West,819,College St at Brock Ave,836,College St at Lansdowne Ave,491,303.6,303.6,303.6,303.6
+506,506,Carlton,,1,West,823,College St at Crawford St,840,College St at Ossington Ave,491,307.8,307.8,307.8,307.8
+506,506,Carlton,,1,West,825,College St at Dovercourt Rd,834,College St at Havelock St,491,252.9,252.9,252.9,252.9
+506,506,Carlton,,1,West,827,College St at Dufferin St,819,College St at Brock Ave,491,314.7,314.7,314.7,314.7
+506,506,Carlton,,1,West,831,College St at Euclid Ave,833,College St at Grace St,491,347.7,347.7,347.7,347.7
+506,506,Carlton,,1,West,833,College St at Grace St,823,College St at Crawford St,491,278.0,278.0,278.0,278.0
+506,506,Carlton,,1,West,834,College St at Havelock St,827,College St at Dufferin St,491,261.7,261.7,261.7,261.7
+506,506,Carlton,,1,West,836,College St at Lansdowne Ave,990,Dundas St West at Sterling Rd,491,282.1,282.1,282.1,282.1
+506,506,Carlton,,1,West,840,College St at Ossington Ave,825,College St at Dovercourt Rd,491,309.1,309.1,309.1,309.1
+506,506,Carlton,,1,West,844,College St at Spadina Ave,12338,College St at Augusta Ave,491,282.8,282.8,282.8,282.8
+506,506,Carlton,,1,West,845,College St at St George St,844,College St at Spadina Ave,491,325.3,325.3,325.3,325.3
+506,506,Carlton,,1,West,1794,Coxwell Ave at Lower Gerrard St East,1079,Gerrard St East at Ashdale Ave,472,226.4,226.4,226.4,226.4
+506,506,Carlton,,1,West,2117,Dundas St East at Church St,2136,Dundas St East at Yonge St - TMU Station,491,315.7,315.7,315.7,315.7
+506,506,Carlton,,1,West,2119,Dundas St East at Jarvis St,2117,Dundas St East at Church St,491,219.3,219.3,219.3,219.3
+506,506,Carlton,,1,West,2123,Dundas St East at Ontario St,2131,Dundas St East at Sherbourne St,491,210.9,210.9,210.9,210.9
+506,506,Carlton,,1,West,2131,Dundas St East at Sherbourne St,2119,Dundas St East at Jarvis St,491,333.7,333.7,333.7,333.7
+506,506,Carlton,,1,West,2136,Dundas St East at Yonge St - TMU Station,2143,Dundas St West at Bay St,491,227.8,227.8,227.8,227.8
+506,506,Carlton,,1,West,2143,Dundas St West at Bay St,2154,Dundas St West at Chestnut St,491,199.8,199.8,199.7,199.8
+506,506,Carlton,,1,West,2154,Dundas St West at Chestnut St,2194,Dundas St West at University Ave - St Patrick Station,491,163.0,163.0,163.0,163.1
+506,506,Carlton,,1,West,986,Dundas St West at Howard Park Ave,1155,Howard Park Ave at Roncesvalles Ave,491,281.0,281.0,280.9,281.0
+506,506,Carlton,,1,West,988,Dundas St West at Sorauren Ave,986,Dundas St West at Howard Park Ave,491,214.7,214.7,214.7,214.7
+506,506,Carlton,,1,West,16064,Dundas St West at St Patrick St,16853,MCCAUL ST AT COLLEGE ST,491,648.8,648.8,648.8,648.8
+506,506,Carlton,,1,West,990,Dundas St West at Sterling Rd,988,Dundas St West at Sorauren Ave,491,188.5,188.5,188.5,188.5
+506,506,Carlton,,1,West,2194,Dundas St West at University Ave - St Patrick Station,16064,Dundas St West at St Patrick St,491,193.3,193.3,193.3,193.3
+506,506,Carlton,,1,West,1079,Gerrard St East at Ashdale Ave,15357,Gerrard St East at Woodfield Rd,491,164.5,164.5,164.5,164.5
+506,506,Carlton,,1,West,1114,Gerrard St East at Beaton Ave,1117,Gerrard St East at Coxwell Ave,472,251.5,251.5,251.5,251.5
+506,506,Carlton,,1,West,1116,Gerrard St East at Bowmore Rd,1114,Gerrard St East at Beaton Ave,472,266.9,266.9,266.9,266.9
+506,506,Carlton,,1,West,1082,Gerrard St East at Broadview Ave,1108,Gerrard St East at St Matthews Rd,491,215.5,215.5,215.5,215.5
+506,506,Carlton,,1,West,1084,Gerrard St East at Carlaw Ave,1097,Gerrard St East at Logan Ave,491,207.5,207.5,207.5,207.5
+506,506,Carlton,,1,West,1117,Gerrard St East at Coxwell Ave,1794,Coxwell Ave at Lower Gerrard St East,472,309.4,309.4,309.4,309.4
+506,506,Carlton,,1,West,1086,Gerrard St East at De Grassi St,1082,Gerrard St East at Broadview Ave,491,329.3,329.3,329.3,329.3
+506,506,Carlton,,1,West,1119,Gerrard St East at Glenmount Park Rd,1121,Gerrard St East at Golfview Ave,472,210.9,210.9,210.9,210.9
+506,506,Carlton,,1,West,1121,Gerrard St East at Golfview Ave,1128,Gerrard St East at Woodbine Ave,472,225.0,225.0,225.0,225.0
+506,506,Carlton,,1,West,1090,Gerrard St East at Greenwood Ave,1103,Gerrard St East at Prust Ave,491,207.8,207.8,207.8,207.8
+506,506,Carlton,,1,West,1093,Gerrard St East at Jones Ave,1099,Gerrard St East at Marjory Ave,491,172.1,172.1,172.1,172.1
+506,506,Carlton,,1,West,1123,Gerrard St East at Kingsmount Park Rd,1116,Gerrard St East at Bowmore Rd,472,260.3,260.3,260.3,260.3
+506,506,Carlton,,1,West,1095,Gerrard St East at Leslie St,1093,Gerrard St East at Jones Ave,491,209.1,209.1,209.1,209.1
+506,506,Carlton,,1,West,1097,Gerrard St East at Logan Ave,1086,Gerrard St East at De Grassi St,491,282.8,282.8,282.8,282.8
+506,506,Carlton,,1,West,1099,Gerrard St East at Marjory Ave,1101,Gerrard St East at Pape Ave,491,234.4,234.4,234.4,234.4
+506,506,Carlton,,1,West,1126,Gerrard St East at Norwood Rd,1119,Gerrard St East at Glenmount Park Rd,472,261.0,261.0,261.0,261.0
+506,506,Carlton,,1,West,1101,Gerrard St East at Pape Ave,1084,Gerrard St East at Carlaw Ave,491,198.0,198.0,198.0,198.0
+506,506,Carlton,,1,West,1102,Gerrard St East at Parliament St,6641,Parliament St at Oak St,491,139.9,139.9,139.8,139.9
+506,506,Carlton,,1,West,1103,Gerrard St East at Prust Ave,1095,Gerrard St East at Leslie St,491,219.2,219.2,219.2,219.3
+506,506,Carlton,,1,West,1105,Gerrard St East at River St,1110,Gerrard St East at Sumach St,491,188.9,188.9,188.9,188.9
+506,506,Carlton,,1,West,1107,Gerrard St East at Sackville St,1102,Gerrard St East at Parliament St,491,235.8,235.8,235.8,235.8
+506,506,Carlton,,1,West,1108,Gerrard St East at St Matthews Rd,1105,Gerrard St East at River St,491,356.4,356.4,356.4,356.4
+506,506,Carlton,,1,West,1110,Gerrard St East at Sumach St,1107,Gerrard St East at Sackville St,491,222.0,222.0,222.0,222.0
+506,506,Carlton,,1,West,1128,Gerrard St East at Woodbine Ave,1123,Gerrard St East at Kingsmount Park Rd,472,205.3,205.3,205.3,205.3
+506,506,Carlton,,1,West,15357,Gerrard St East at Woodfield Rd,1090,Gerrard St East at Greenwood Ave,491,351.5,351.5,351.4,351.5
+506,506,Carlton,,1,West,1151,Howard Park Ave at Indian Rd,1153,Howard Park Ave at Parkside Dr,491,277.1,277.1,277.1,277.2
+506,506,Carlton,,1,West,1153,Howard Park Ave at Parkside Dr,1252,High Park Loop,491,176.6,176.6,176.6,176.6
+506,506,Carlton,,1,West,1155,Howard Park Ave at Roncesvalles Ave,1151,Howard Park Ave at Indian Rd,491,340.7,340.7,340.7,340.7
+506,506,Carlton,,1,West,16853,MCCAUL ST AT COLLEGE ST,845,College St at St George St,491,215.0,215.0,215.0,215.0
+506,506,Carlton,,1,West,1263,Main St at Danforth Ave - Danforth GO Station,1264,Main St at Gerrard St East,472,492.3,492.3,492.3,492.3
+506,506,Carlton,,1,West,13923,Main St at Gerrard St East,1126,Gerrard St East at Norwood Rd,472,227.7,227.7,227.7,227.7
+506,506,Carlton,,1,West,14741,Main Street Station,1263,Main St at Danforth Ave - Danforth GO Station,472,266.7,266.7,266.7,266.7
+506,506,Carlton,,1,West,6635,Parliament St at Dundas St East,2123,Dundas St East at Ontario St,491,216.8,216.8,216.8,216.8
+506,506,Carlton,,1,West,6641,Parliament St at Oak St,6635,Parliament St at Dundas St East,491,160.5,160.5,160.5,160.6
+506,506,Carlton,B,0,East,16859,CARLTON ST AT YONGE ST EAST SIDE,751,Carlton St at Church St,459,234.3,234.3,234.3,234.3
+506,506,Carlton,B,0,East,16862,COLLEGE ST AT SPADINA AVE EAST SIDE,815,College St at Beverley St,459,249.6,249.6,249.6,249.6
+506,506,Carlton,B,0,East,751,Carlton St at Church St,753,Carlton St at Jarvis St,459,230.9,230.9,230.9,230.9
+506,506,Carlton,B,0,East,753,Carlton St at Jarvis St,758,Carlton St at Sherbourne St,459,301.2,301.2,301.2,301.2
+506,506,Carlton,B,0,East,755,Carlton St at Ontario St,757,Carlton St at Parliament St,459,205.3,205.3,205.3,205.3
+506,506,Carlton,B,0,East,757,Carlton St at Parliament St,6650,Parliament St at Gerrard St East,459,236.4,236.4,236.4,236.4
+506,506,Carlton,B,0,East,758,Carlton St at Sherbourne St,755,Carlton St at Ontario St,459,217.8,217.8,217.8,217.8
+506,506,Carlton,B,0,East,815,College St at Beverley St,837,College St at McCaul St,459,220.1,220.1,220.1,220.1
+506,506,Carlton,B,0,East,837,College St at McCaul St,847,College St at University Ave - Queen's Park Station,459,247.0,247.0,247.0,247.0
+506,506,Carlton,B,0,East,847,College St at University Ave - Queen's Park Station,1616,University Ave at Gerrard St West,459,237.9,237.9,237.9,237.9
+506,506,Carlton,B,0,East,1104,Gerrard St East at River St,16863,ST MATTHEWS RD AT GERRARD ST EAST NORTH SIDE,459,396.6,396.6,396.6,396.6
+506,506,Carlton,B,0,East,1106,Gerrard St East at Sackville St,1109,Gerrard St East at Sumach St,459,210.7,210.7,210.7,210.7
+506,506,Carlton,B,0,East,1109,Gerrard St East at Sumach St,1104,Gerrard St East at River St,459,189.7,189.7,189.7,189.7
+506,506,Carlton,B,0,East,16276,Gerrard St West at Bay St,3236,Yonge St at Opposite College Park,459,348.0,348.0,348.0,348.0
+506,506,Carlton,B,0,East,16278,Gerrard St West at Elizabeth St,16276,Gerrard St West at Bay St,459,125.3,125.3,125.3,125.3
+506,506,Carlton,B,0,East,6650,Parliament St at Gerrard St East,1106,Gerrard St East at Sackville St,459,299.1,299.1,299.1,299.1
+506,506,Carlton,B,0,East,16863,ST MATTHEWS RD AT GERRARD ST EAST NORTH SIDE,1758,Broadview Ave at Gerrard St East,459,317.1,317.1,317.1,317.1
+506,506,Carlton,B,0,East,13160,Spadina Ave at Harbord St,15076,Spadina Ave at Willcocks St,459,202.9,202.9,202.9,202.9
+506,506,Carlton,B,0,East,16533,Spadina Ave at Sussex Ave South Side,13160,Spadina Ave at Harbord St,459,142.5,142.5,142.5,142.5
+506,506,Carlton,B,0,East,15076,Spadina Ave at Willcocks St,16862,COLLEGE ST AT SPADINA AVE EAST SIDE,459,519.9,519.9,519.9,519.9
+506,506,Carlton,B,0,East,15081,Spadina Rd at Bloor St West,16533,Spadina Ave at Sussex Ave South Side,459,282.9,282.9,282.9,282.9
+506,506,Carlton,B,0,East,15080,Spadina Station,15081,Spadina Rd at Bloor St West,459,103.8,103.8,103.8,103.8
+506,506,Carlton,B,0,East,1616,University Ave at Gerrard St West,16278,Gerrard St West at Elizabeth St,459,308.6,308.6,308.6,308.6
+506,506,Carlton,B,0,East,3236,Yonge St at Opposite College Park,16859,CARLTON ST AT YONGE ST EAST SIDE,459,213.3,213.3,213.3,213.3
+506,506,Carlton,B,1,West,752,Carlton St at Church St,760,Carlton St at Yonge St - College Station,464,309.9,309.9,309.9,309.9
+506,506,Carlton,B,1,West,754,Carlton St at Jarvis St,752,Carlton St at Church St,464,217.2,217.2,217.2,217.2
+506,506,Carlton,B,1,West,756,Carlton St at Ontario St,759,Carlton St at Sherbourne St,464,209.5,209.5,209.5,209.5
+506,506,Carlton,B,1,West,759,Carlton St at Sherbourne St,754,Carlton St at Jarvis St,464,307.6,307.6,307.6,307.6
+506,506,Carlton,B,1,West,760,Carlton St at Yonge St - College Station,16094,Yonge St at Carlton St North Side - College Station,464,62.6,62.6,62.6,62.6
+506,506,Carlton,B,1,West,838,College St at McCaul St,845,College St at St George St,464,206.7,206.7,206.7,206.7
+506,506,Carlton,B,1,West,845,College St at St George St,16861,SPADINA AVE AT COLLEGE ST NORTH SIDE,464,403.3,403.3,403.3,403.3
+506,506,Carlton,B,1,West,1102,Gerrard St East at Parliament St,1451,Parliament St at Carlton St,464,254.4,254.4,254.4,254.4
+506,506,Carlton,B,1,West,1105,Gerrard St East at River St,1110,Gerrard St East at Sumach St,464,188.9,188.9,188.9,188.9
+506,506,Carlton,B,1,West,1107,Gerrard St East at Sackville St,1102,Gerrard St East at Parliament St,464,235.8,235.8,235.8,235.8
+506,506,Carlton,B,1,West,1108,Gerrard St East at St Matthews Rd,1105,Gerrard St East at River St,464,356.4,356.4,356.4,356.4
+506,506,Carlton,B,1,West,1110,Gerrard St East at Sumach St,1107,Gerrard St East at Sackville St,464,222.0,222.0,222.0,222.0
+506,506,Carlton,B,1,West,1451,Parliament St at Carlton St,756,Carlton St at Ontario St,464,247.8,247.8,247.8,247.8
+506,506,Carlton,B,1,West,16861,SPADINA AVE AT COLLEGE ST NORTH SIDE,15074,Spadina Ave at Willcocks St,464,397.1,397.1,397.1,397.1
+506,506,Carlton,B,1,West,15082,Spadina Ave at Bloor St West,15080,Spadina Station,464,192.2,192.2,192.2,192.2
+506,506,Carlton,B,1,West,15397,Spadina Ave at Harbord St North Side,15075,Spadina Ave at Sussex Ave,464,137.3,137.3,137.3,137.3
+506,506,Carlton,B,1,West,15075,Spadina Ave at Sussex Ave,15082,Spadina Ave at Bloor St West,464,231.4,231.4,231.4,231.4
+506,506,Carlton,B,1,West,15074,Spadina Ave at Willcocks St,15397,Spadina Ave at Harbord St North Side,464,251.7,251.7,251.7,251.7
+506,506,Carlton,B,1,West,16855,WELLESLEY ST WEST AT YONGE ST WEST SIDE,8624,Wellesley St West at Bay St,464,163.0,163.0,163.0,163.0
+506,506,Carlton,B,1,West,8624,Wellesley St West at Bay St,8634,Wellesley St West at Queen's Park Cres East,464,298.5,298.5,298.5,298.5
+506,506,Carlton,B,1,West,8634,Wellesley St West at Queen's Park Cres East,838,College St at McCaul St,464,865.6,865.6,865.6,865.6
+506,506,Carlton,B,1,West,3209,Yonge St at Alexander St,16855,WELLESLEY ST WEST AT YONGE ST WEST SIDE,464,280.0,280.0,280.0,280.0
+506,506,Carlton,B,1,West,16094,Yonge St at Carlton St North Side - College Station,3209,Yonge St at Alexander St,464,117.0,117.0,117.0,117.0
+506,506,Carlton,S,0,East,809,College St at Augusta Ave,843,College St at Spadina Ave,7,235.6,235.6,235.6,235.6
+506,506,Carlton,S,0,East,811,College St at Bathurst St,816,College St at Borden St,7,213.8,213.8,213.8,213.8
+506,506,Carlton,S,0,East,815,College St at Beverley St,837,College St at McCaul St,7,220.1,220.1,220.1,220.1
+506,506,Carlton,S,0,East,816,College St at Borden St,809,College St at Augusta Ave,7,169.1,169.1,169.1,169.1
+506,506,Carlton,S,0,East,818,College St at Brock Ave,826,College St at Dufferin St,7,316.4,316.4,316.4,316.4
+506,506,Carlton,S,0,East,822,College St at Crawford St,832,College St at Grace St,7,274.8,274.8,274.8,274.8
+506,506,Carlton,S,0,East,824,College St at Dovercourt Rd,839,College St at Ossington Ave,7,297.8,297.8,297.8,297.8
+506,506,Carlton,S,0,East,826,College St at Dufferin St,842,College St at Rusholme Park Cres,7,238.6,238.6,238.6,238.6
+506,506,Carlton,S,0,East,830,College St at Euclid Ave,811,College St at Bathurst St,7,301.6,301.6,301.6,301.6
+506,506,Carlton,S,0,East,832,College St at Grace St,830,College St at Euclid Ave,7,359.0,359.0,359.0,359.0
+506,506,Carlton,S,0,East,835,College St at Lansdowne Ave,818,College St at Brock Ave,7,334.8,334.8,334.8,334.8
+506,506,Carlton,S,0,East,837,College St at McCaul St,16854,MCCAUL ST AT DUNDAS ST WEST,7,577.5,577.5,577.5,577.5
+506,506,Carlton,S,0,East,839,College St at Ossington Ave,822,College St at Crawford St,7,318.4,318.4,318.4,318.4
+506,506,Carlton,S,0,East,842,College St at Rusholme Park Cres,824,College St at Dovercourt Rd,7,274.0,274.0,274.0,274.0
+506,506,Carlton,S,0,East,843,College St at Spadina Ave,815,College St at Beverley St,7,337.3,337.3,337.3,337.3
+506,506,Carlton,S,0,East,2116,Dundas St East at Church St,2118,Dundas St East at Jarvis St,7,220.6,220.6,220.6,220.6
+506,506,Carlton,S,0,East,2118,Dundas St East at Jarvis St,2130,Dundas St East at Sherbourne St,7,329.2,329.2,329.2,329.2
+506,506,Carlton,S,0,East,2122,Dundas St East at Ontario St,2124,Dundas St East at Parliament St,7,199.1,199.1,199.1,199.1
+506,506,Carlton,S,0,East,2124,Dundas St East at Parliament St,6642,Parliament St at Oak St,7,158.2,158.2,158.2,158.2
+506,506,Carlton,S,0,East,2130,Dundas St East at Sherbourne St,2122,Dundas St East at Ontario St,7,218.9,218.9,218.9,218.9
+506,506,Carlton,S,0,East,2142,Dundas St West at Bay St,2197,Dundas St West at Yonge St - TMU Station,7,237.0,237.0,237.0,237.0
+506,506,Carlton,S,0,East,2153,Dundas St West at Chestnut St,2142,Dundas St West at Bay St,7,177.0,177.0,177.0,177.0
+506,506,Carlton,S,0,East,987,Dundas St West at Sorauren Ave,991,Dundas St West at Sterling Rd,7,212.3,212.3,212.3,212.3
+506,506,Carlton,S,0,East,991,Dundas St West at Sterling Rd,835,College St at Lansdowne Ave,7,259.6,259.6,259.6,259.6
+506,506,Carlton,S,0,East,2193,Dundas St West at University Ave - St Patrick Station,2153,Dundas St West at Chestnut St,7,218.9,218.9,218.9,218.9
+506,506,Carlton,S,0,East,2197,Dundas St West at Yonge St - TMU Station,2116,Dundas St East at Church St,7,321.6,321.6,321.6,321.6
+506,506,Carlton,S,0,East,1077,Gerrard St East at Alton Ave,1089,Gerrard St East at Greenwood Ave,7,221.1,221.1,221.1,221.1
+506,506,Carlton,S,0,East,1080,Gerrard St East at Blackburn St,1081,Gerrard St East at Broadview Ave,7,214.4,214.4,214.4,214.4
+506,506,Carlton,S,0,East,1081,Gerrard St East at Broadview Ave,1087,Gerrard St East at De Grassi St,7,346.7,346.7,346.7,346.7
+506,506,Carlton,S,0,East,1083,Gerrard St East at Carlaw Ave,1100,Gerrard St East at Pape Ave,7,210.6,210.6,210.6,210.6
+506,506,Carlton,S,0,East,1087,Gerrard St East at De Grassi St,1096,Gerrard St East at Logan Ave,7,291.0,291.0,291.0,291.0
+506,506,Carlton,S,0,East,1089,Gerrard St East at Greenwood Ave,1112,Gerrard St East at Woodfield Rd,7,334.7,334.7,334.7,334.7
+506,506,Carlton,S,0,East,1092,Gerrard St East at Jones Ave,1094,Gerrard St East at Leslie St,7,211.9,211.9,211.9,211.9
+506,506,Carlton,S,0,East,1094,Gerrard St East at Leslie St,1077,Gerrard St East at Alton Ave,7,208.5,208.5,208.5,208.5
+506,506,Carlton,S,0,East,1096,Gerrard St East at Logan Ave,1083,Gerrard St East at Carlaw Ave,7,193.6,193.6,193.6,193.6
+506,506,Carlton,S,0,East,1098,Gerrard St East at Marjory Ave,1092,Gerrard St East at Jones Ave,7,155.0,155.0,155.0,155.0
+506,506,Carlton,S,0,East,1100,Gerrard St East at Pape Ave,1098,Gerrard St East at Marjory Ave,7,240.8,240.8,240.8,240.8
+506,506,Carlton,S,0,East,1104,Gerrard St East at River St,1080,Gerrard St East at Blackburn St,7,340.6,340.6,340.6,340.6
+506,506,Carlton,S,0,East,1106,Gerrard St East at Sackville St,1109,Gerrard St East at Sumach St,7,210.7,210.7,210.7,210.7
+506,506,Carlton,S,0,East,1109,Gerrard St East at Sumach St,1104,Gerrard St East at River St,7,189.7,189.7,189.7,189.7
+506,506,Carlton,S,0,East,1112,Gerrard St East at Woodfield Rd,1085,Gerrard St East at Coxwell Ave,7,392.5,392.5,392.5,392.5
+506,506,Carlton,S,0,East,1252,High Park Loop,1152,Howard Park Ave at Parkside Dr East Side,7,179.8,179.8,179.8,179.8
+506,506,Carlton,S,0,East,1149,Howard Park Ave at Dundas St West,987,Dundas St West at Sorauren Ave,7,233.9,233.9,233.9,233.9
+506,506,Carlton,S,0,East,1150,Howard Park Ave at Indian Rd,1154,Howard Park Ave at Roncesvalles Ave,7,332.5,332.5,332.5,332.5
+506,506,Carlton,S,0,East,1152,Howard Park Ave at Parkside Dr East Side,1150,Howard Park Ave at Indian Rd,7,260.1,260.1,260.1,260.1
+506,506,Carlton,S,0,East,1154,Howard Park Ave at Roncesvalles Ave,1149,Howard Park Ave at Dundas St West,7,235.5,235.5,235.5,235.5
+506,506,Carlton,S,0,East,16854,MCCAUL ST AT DUNDAS ST WEST,2193,Dundas St West at University Ave - St Patrick Station,7,233.4,233.4,233.4,233.4
+506,506,Carlton,S,0,East,6637,Parliament St at Gerrard St East,1106,Gerrard St East at Sackville St,7,273.4,273.4,273.4,273.4
+506,506,Carlton,S,0,East,6642,Parliament St at Oak St,6637,Parliament St at Gerrard St East,7,129.2,129.2,129.2,129.2
+506,506,Carlton,S,1,West,1114,Gerrard St East at Beaton Ave,1117,Gerrard St East at Coxwell Ave,8,251.5,251.5,251.5,251.5
+506,506,Carlton,S,1,West,1116,Gerrard St East at Bowmore Rd,1114,Gerrard St East at Beaton Ave,8,266.9,266.9,266.9,266.9
+506,506,Carlton,S,1,West,1117,Gerrard St East at Coxwell Ave,1794,Coxwell Ave at Lower Gerrard St East,8,309.4,309.4,309.4,309.4
+506,506,Carlton,S,1,West,1119,Gerrard St East at Glenmount Park Rd,1121,Gerrard St East at Golfview Ave,8,210.9,210.9,210.9,210.9
+506,506,Carlton,S,1,West,1121,Gerrard St East at Golfview Ave,1128,Gerrard St East at Woodbine Ave,8,225.0,225.0,225.0,225.0
+506,506,Carlton,S,1,West,1123,Gerrard St East at Kingsmount Park Rd,1116,Gerrard St East at Bowmore Rd,8,260.3,260.3,260.3,260.3
+506,506,Carlton,S,1,West,1126,Gerrard St East at Norwood Rd,1119,Gerrard St East at Glenmount Park Rd,8,261.0,261.0,261.0,261.0
+506,506,Carlton,S,1,West,1128,Gerrard St East at Woodbine Ave,1123,Gerrard St East at Kingsmount Park Rd,8,205.3,205.3,205.3,205.3
+506,506,Carlton,S,1,West,13923,Main St at Gerrard St East,1126,Gerrard St East at Norwood Rd,8,241.3,241.3,241.3,241.3
+506,506,Carlton,S,1,West,14741,Main Street Station,13923,Main St at Gerrard St East,8,749.5,749.5,749.5,749.5
+507,507,Long Branch,,0,East,5199,2111 Lake Shore Blvd West,15155,Humber Loop at The Queensway,400,246.6,246.4,228.0,246.6
+507,507,Long Branch,,0,East,5175,2155 Lake Shore Blvd West,5199,2111 Lake Shore Blvd West,400,397.8,397.8,397.8,397.8
+507,507,Long Branch,,0,East,5173,Lake Shore Blvd West at Burlington St,5189,Lake Shore Blvd West at Louisa St,400,194.1,194.1,194.1,194.1
+507,507,Long Branch,,0,East,5182,Lake Shore Blvd West at Colonel Samuel Smith Park Dr,5152,Lake Shore Blvd West at Thirteenth St,400,440.1,440.1,440.1,440.1
+507,507,Long Branch,,0,East,5170,Lake Shore Blvd West at Fifth St,5167,Lake Shore Blvd West at Third St,400,189.5,189.5,189.5,189.5
+507,507,Long Branch,,0,East,13946,Lake Shore Blvd West at First St,15722,Lake Shore Blvd West at Royal York Rd,400,467.5,467.5,467.5,467.5
+507,507,Long Branch,,0,East,5185,Lake Shore Blvd West at Legion Rd,5195,Lake Shore Blvd West at Park Lawn Rd,400,317.8,317.8,317.8,317.8
+507,507,Long Branch,,0,East,5187,Lake Shore Blvd West at Long Branch Ave,5163,Lake Shore Blvd West at Thirty First St,400,313.5,313.5,313.5,313.5
+507,507,Long Branch,,0,East,5189,Lake Shore Blvd West at Louisa St,5185,Lake Shore Blvd West at Legion Rd,400,324.2,324.2,324.2,324.2
+507,507,Long Branch,,0,East,15721,Lake Shore Blvd West at Miles Rd,15720,Lake Shore Blvd West at Norris Cres,400,295.2,295.2,295.2,295.2
+507,507,Long Branch,,0,East,5192,Lake Shore Blvd West at Mimico Ave,5201,Lake Shore Blvd West at Superior Ave,400,152.7,152.7,152.7,152.7
+507,507,Long Branch,,0,East,15720,Lake Shore Blvd West at Norris Cres,5192,Lake Shore Blvd West at Mimico Ave,400,311.9,311.9,311.9,311.9
+507,507,Long Branch,,0,East,5195,Lake Shore Blvd West at Park Lawn Rd,5175,2155 Lake Shore Blvd West,400,349.3,349.3,349.3,349.3
+507,507,Long Branch,,0,East,15722,Lake Shore Blvd West at Royal York Rd,15721,Lake Shore Blvd West at Miles Rd,400,587.4,587.4,587.4,587.4
+507,507,Long Branch,,0,East,5172,Lake Shore Blvd West at Seventh St,5170,Lake Shore Blvd West at Fifth St,400,192.3,192.3,192.3,192.3
+507,507,Long Branch,,0,East,5201,Lake Shore Blvd West at Superior Ave,5173,Lake Shore Blvd West at Burlington St,400,281.7,281.7,281.7,281.7
+507,507,Long Branch,,0,East,5150,Lake Shore Blvd West at Tenth St,5172,Lake Shore Blvd West at Seventh St,400,286.4,286.4,286.4,286.4
+507,507,Long Branch,,0,East,5167,Lake Shore Blvd West at Third St,13946,Lake Shore Blvd West at First St,400,190.4,190.4,190.4,190.4
+507,507,Long Branch,,0,East,5152,Lake Shore Blvd West at Thirteenth St,5150,Lake Shore Blvd West at Tenth St,400,264.4,264.4,264.4,264.4
+507,507,Long Branch,,0,East,5163,Lake Shore Blvd West at Thirty First St,5160,Lake Shore Blvd West at Twenty Eighth St,400,225.5,225.5,225.5,225.5
+507,507,Long Branch,,0,East,5164,Lake Shore Blvd West at Thirty Seventh St,5187,Lake Shore Blvd West at Long Branch Ave,400,355.8,355.8,355.8,355.8
+507,507,Long Branch,,0,East,5160,Lake Shore Blvd West at Twenty Eighth St,5159,Lake Shore Blvd West at Twenty Seventh St,400,225.2,225.2,225.2,225.2
+507,507,Long Branch,,0,East,5157,Lake Shore Blvd West at Twenty Second St,5182,Lake Shore Blvd West at Colonel Samuel Smith Park Dr,400,355.2,355.2,355.2,355.2
+507,507,Long Branch,,0,East,5159,Lake Shore Blvd West at Twenty Seventh St,5157,Lake Shore Blvd West at Twenty Second St,400,305.0,305.0,305.0,305.0
+507,507,Long Branch,,0,East,5511,Long Branch Loop - Long Branch GO Station,5164,Lake Shore Blvd West at Thirty Seventh St,400,535.0,535.0,535.0,535.0
+507,507,Long Branch,,1,West,15746,2155 Lake Shore Blvd West,5196,Lake Shore Blvd West at Park Lawn Rd West Side,421,424.8,424.8,424.8,424.8
+507,507,Long Branch,,1,West,15155,Humber Loop at The Queensway,5200,Opposite 2111 Lake Shore Blvd West,421,341.0,341.0,341.0,341.0
+507,507,Long Branch,,1,West,5174,Lake Shore Blvd West at Burlington St,5202,Lake Shore Blvd West at Superior Ave,421,282.7,282.7,282.7,282.7
+507,507,Long Branch,,1,West,5155,Lake Shore Blvd West at Fifteenth St,5181,Lake Shore Blvd West at Kipling Ave,421,243.0,243.0,243.0,243.0
+507,507,Long Branch,,1,West,5171,Lake Shore Blvd West at Fifth St,5180,Lake Shore Blvd West at Islington Ave,421,188.2,188.2,188.2,188.2
+507,507,Long Branch,,1,West,13947,Lake Shore Blvd West at First St,5168,Lake Shore Blvd West at Third St,421,192.4,192.4,192.4,192.4
+507,507,Long Branch,,1,West,5179,Lake Shore Blvd West at Hillside Ave,5203,Lake Shore Blvd West at Symons St,421,295.3,295.3,295.3,295.3
+507,507,Long Branch,,1,West,5180,Lake Shore Blvd West at Islington Ave,5151,Lake Shore Blvd West at Tenth St,421,284.7,284.7,284.7,284.7
+507,507,Long Branch,,1,West,5181,Lake Shore Blvd West at Kipling Ave,5156,Lake Shore Blvd West at Twenty Second St,421,378.3,378.3,378.3,378.3
+507,507,Long Branch,,1,West,5186,Lake Shore Blvd West at Legion Rd,5190,Lake Shore Blvd West at Louisa St,421,329.0,329.0,329.0,329.0
+507,507,Long Branch,,1,West,5188,Lake Shore Blvd West at Long Branch Ave,5165,Lake Shore Blvd West at Thirty Seventh St,421,420.0,420.0,420.0,420.0
+507,507,Long Branch,,1,West,5190,Lake Shore Blvd West at Louisa St,5174,Lake Shore Blvd West at Burlington St,421,193.6,193.6,193.6,193.6
+507,507,Long Branch,,1,West,5193,Lake Shore Blvd West at Mimico Ave,5179,Lake Shore Blvd West at Hillside Ave,421,294.0,294.0,294.0,294.0
+507,507,Long Branch,,1,West,5196,Lake Shore Blvd West at Park Lawn Rd West Side,5186,Lake Shore Blvd West at Legion Rd,421,257.8,257.8,257.8,257.8
+507,507,Long Branch,,1,West,5198,Lake Shore Blvd West at Royal York Rd,13947,Lake Shore Blvd West at First St,421,469.9,469.9,469.9,469.9
+507,507,Long Branch,,1,West,5202,Lake Shore Blvd West at Superior Ave,5193,Lake Shore Blvd West at Mimico Ave,421,150.2,150.2,150.2,150.2
+507,507,Long Branch,,1,West,5203,Lake Shore Blvd West at Symons St,5198,Lake Shore Blvd West at Royal York Rd,421,606.2,606.2,606.2,606.2
+507,507,Long Branch,,1,West,5151,Lake Shore Blvd West at Tenth St,5153,Lake Shore Blvd West at Thirteenth St,421,271.3,271.3,271.3,271.3
+507,507,Long Branch,,1,West,5168,Lake Shore Blvd West at Third St,5171,Lake Shore Blvd West at Fifth St,421,186.0,186.0,186.0,186.0
+507,507,Long Branch,,1,West,5153,Lake Shore Blvd West at Thirteenth St,5155,Lake Shore Blvd West at Fifteenth St,421,180.8,180.8,180.8,180.8
+507,507,Long Branch,,1,West,5162,Lake Shore Blvd West at Thirtieth St,5188,Lake Shore Blvd West at Long Branch Ave,421,283.7,283.7,283.7,283.7
+507,507,Long Branch,,1,West,5165,Lake Shore Blvd West at Thirty Seventh St,5511,Long Branch Loop - Long Branch GO Station,421,679.8,679.8,679.8,679.8
+507,507,Long Branch,,1,West,5161,Lake Shore Blvd West at Twenty Ninth St,5162,Lake Shore Blvd West at Thirtieth St,421,125.0,125.0,125.0,125.0
+507,507,Long Branch,,1,West,5156,Lake Shore Blvd West at Twenty Second St,5158,Lake Shore Blvd West at Twenty Sixth St,421,253.7,253.7,253.7,253.7
+507,507,Long Branch,,1,West,5158,Lake Shore Blvd West at Twenty Sixth St,5161,Lake Shore Blvd West at Twenty Ninth St,421,329.6,329.6,329.6,329.6
+507,507,Long Branch,,1,West,5200,Opposite 2111 Lake Shore Blvd West,15746,2155 Lake Shore Blvd West,421,328.5,328.5,328.5,328.5
+508,508,Lake Shore,,0,East,5199,2111 Lake Shore Blvd West,5506,Humber Loop at The Queensway,10,258.4,258.4,258.4,258.4
+508,508,Lake Shore,,0,East,5175,2155 Lake Shore Blvd West,5199,2111 Lake Shore Blvd West,10,397.8,397.8,397.8,397.8
+508,508,Lake Shore,,0,East,15461,Cherry St at Front St East,15462,Distillery Loop,14,377.5,377.5,377.5,377.5
+508,508,Lake Shore,,0,East,5506,Humber Loop at The Queensway,6916,The Queensway at South Kingsway,10,699.4,699.4,699.4,699.4
+508,508,Lake Shore,,0,East,12537,King St East at Church St East Side,15636,King St West at Jarvis St East Side,14,210.1,210.1,210.1,210.1
+508,508,Lake Shore,,0,East,15352,King St East at Ontario St,4140,King St East at Parliament St,14,247.6,247.6,247.6,247.6
+508,508,Lake Shore,,0,East,4140,King St East at Parliament St,4143,King St East at Sackville St,14,309.6,309.6,309.6,309.6
+508,508,Lake Shore,,0,East,4143,King St East at Sackville St,4148,King St East at Sumach St,14,173.2,173.2,173.2,173.2
+508,508,Lake Shore,,0,East,4145,King St East at Sherbourne St,15352,King St East at Ontario St,14,183.4,183.4,183.4,183.5
+508,508,Lake Shore,,0,East,4148,King St East at Sumach St,15461,Cherry St at Front St East,14,354.9,354.9,354.9,354.9
+508,508,Lake Shore,,0,East,4155,King St West at Atlantic Ave,13344,King St West at Sudbury St,14,329.0,329.0,329.0,329.0
+508,508,Lake Shore,,0,East,15650,King St West at Bathurst St East Side,15649,King St West at Portland St East Side,14,192.3,192.3,192.2,192.3
+508,508,Lake Shore,,0,East,15640,King St West at Bay St East Side,15638,King St West at Yonge St East Side - King Station,14,199.1,199.1,199.0,199.1
+508,508,Lake Shore,,0,East,15646,King St West at Blue Jays Way East Side,15644,King St West at John St East Side,14,198.6,198.6,198.6,198.7
+508,508,Lake Shore,,0,East,4164,King St West at Dowling Ave,4173,King St West at Jameson Ave,14,210.7,210.7,210.7,210.7
+508,508,Lake Shore,,0,East,4167,King St West at Dufferin St,15353,King St West at Joe Shuster Way,14,315.4,315.4,315.4,315.4
+508,508,Lake Shore,,0,East,4168,King St West at Dunn Ave,4186,King St West at Spencer Ave,14,199.2,199.2,199.2,199.2
+508,508,Lake Shore,,0,East,4173,King St West at Jameson Ave,4168,King St West at Dunn Ave,14,236.1,236.1,236.1,236.1
+508,508,Lake Shore,,0,East,15636,King St West at Jarvis St East Side,4145,King St East at Sherbourne St,14,245.2,245.2,245.1,245.2
+508,508,Lake Shore,,0,East,15353,King St West at Joe Shuster Way,4155,King St West at Atlantic Ave,14,191.2,191.2,191.2,191.2
+508,508,Lake Shore,,0,East,15644,King St West at John St East Side,15642,King St West at York St - St Andrew Station,14,468.0,468.0,468.0,468.0
+508,508,Lake Shore,,0,East,4178,King St West at Niagara St,4189,King St West at Tecumseth St,14,200.4,200.4,200.4,200.4
+508,508,Lake Shore,,0,East,15649,King St West at Portland St East Side,15648,King St West at Spadina Ave East Side,14,435.0,435.0,435.0,435.1
+508,508,Lake Shore,,0,East,4162,King St West at Shaw St,4187,King St West at Strachan Ave,14,260.6,260.6,260.6,260.7
+508,508,Lake Shore,,0,East,15648,King St West at Spadina Ave East Side,15646,King St West at Blue Jays Way East Side,14,223.4,223.4,223.3,223.4
+508,508,Lake Shore,,0,East,4186,King St West at Spencer Ave,4167,King St West at Dufferin St,14,291.9,291.9,291.9,291.9
+508,508,Lake Shore,,0,East,4187,King St West at Strachan Ave,4178,King St West at Niagara St,14,361.6,361.6,361.6,361.6
+508,508,Lake Shore,,0,East,13344,King St West at Sudbury St,4162,King St West at Shaw St,14,188.8,188.8,188.7,188.8
+508,508,Lake Shore,,0,East,4189,King St West at Tecumseth St,15650,King St West at Bathurst St East Side,14,295.0,295.0,295.0,295.0
+508,508,Lake Shore,,0,East,16452,King St West at The Queensway,4194,King St West at Wilson Park Rd,14,325.7,325.7,325.7,325.7
+508,508,Lake Shore,,0,East,4194,King St West at Wilson Park Rd,4164,King St West at Dowling Ave,14,306.9,306.9,306.9,306.9
+508,508,Lake Shore,,0,East,15638,King St West at Yonge St East Side - King Station,12537,King St East at Church St East Side,14,288.5,288.5,288.5,288.6
+508,508,Lake Shore,,0,East,15642,King St West at York St - St Andrew Station,15640,King St West at Bay St East Side,14,342.0,342.0,342.0,342.0
+508,508,Lake Shore,,0,East,5173,Lake Shore Blvd West at Burlington St,5189,Lake Shore Blvd West at Louisa St,10,194.1,194.1,194.1,194.1
+508,508,Lake Shore,,0,East,5182,Lake Shore Blvd West at Colonel Samuel Smith Park Dr,5152,Lake Shore Blvd West at Thirteenth St,10,440.1,440.1,440.1,440.1
+508,508,Lake Shore,,0,East,5170,Lake Shore Blvd West at Fifth St,5167,Lake Shore Blvd West at Third St,10,189.5,189.5,189.5,189.5
+508,508,Lake Shore,,0,East,13946,Lake Shore Blvd West at First St,15722,Lake Shore Blvd West at Royal York Rd,10,467.5,467.5,467.5,467.5
+508,508,Lake Shore,,0,East,5185,Lake Shore Blvd West at Legion Rd,5195,Lake Shore Blvd West at Park Lawn Rd,10,317.8,317.8,317.8,317.8
+508,508,Lake Shore,,0,East,5187,Lake Shore Blvd West at Long Branch Ave,5163,Lake Shore Blvd West at Thirty First St,10,313.5,313.5,313.5,313.5
+508,508,Lake Shore,,0,East,5189,Lake Shore Blvd West at Louisa St,5185,Lake Shore Blvd West at Legion Rd,10,324.2,324.2,324.2,324.2
+508,508,Lake Shore,,0,East,15721,Lake Shore Blvd West at Miles Rd,15720,Lake Shore Blvd West at Norris Cres,10,295.2,295.2,295.2,295.2
+508,508,Lake Shore,,0,East,5192,Lake Shore Blvd West at Mimico Ave,5201,Lake Shore Blvd West at Superior Ave,10,152.7,152.7,152.7,152.7
+508,508,Lake Shore,,0,East,15720,Lake Shore Blvd West at Norris Cres,5192,Lake Shore Blvd West at Mimico Ave,10,311.9,311.9,311.9,311.9
+508,508,Lake Shore,,0,East,5195,Lake Shore Blvd West at Park Lawn Rd,5175,2155 Lake Shore Blvd West,10,349.3,349.3,349.3,349.3
+508,508,Lake Shore,,0,East,15722,Lake Shore Blvd West at Royal York Rd,15721,Lake Shore Blvd West at Miles Rd,10,587.4,587.4,587.4,587.4
+508,508,Lake Shore,,0,East,5172,Lake Shore Blvd West at Seventh St,5170,Lake Shore Blvd West at Fifth St,10,192.3,192.3,192.3,192.3
+508,508,Lake Shore,,0,East,5201,Lake Shore Blvd West at Superior Ave,5173,Lake Shore Blvd West at Burlington St,10,281.7,281.7,281.7,281.7
+508,508,Lake Shore,,0,East,5150,Lake Shore Blvd West at Tenth St,5172,Lake Shore Blvd West at Seventh St,10,286.4,286.4,286.4,286.4
+508,508,Lake Shore,,0,East,5167,Lake Shore Blvd West at Third St,13946,Lake Shore Blvd West at First St,10,190.4,190.4,190.4,190.4
+508,508,Lake Shore,,0,East,5152,Lake Shore Blvd West at Thirteenth St,5150,Lake Shore Blvd West at Tenth St,10,264.4,264.4,264.4,264.4
+508,508,Lake Shore,,0,East,5163,Lake Shore Blvd West at Thirty First St,5160,Lake Shore Blvd West at Twenty Eighth St,10,225.5,225.5,225.5,225.5
+508,508,Lake Shore,,0,East,5164,Lake Shore Blvd West at Thirty Seventh St,5187,Lake Shore Blvd West at Long Branch Ave,10,355.8,355.8,355.8,355.8
+508,508,Lake Shore,,0,East,5160,Lake Shore Blvd West at Twenty Eighth St,5159,Lake Shore Blvd West at Twenty Seventh St,10,225.2,225.2,225.2,225.2
+508,508,Lake Shore,,0,East,5157,Lake Shore Blvd West at Twenty Second St,5182,Lake Shore Blvd West at Colonel Samuel Smith Park Dr,10,355.2,355.2,355.2,355.2
+508,508,Lake Shore,,0,East,5159,Lake Shore Blvd West at Twenty Seventh St,5157,Lake Shore Blvd West at Twenty Second St,10,305.0,305.0,305.0,305.0
+508,508,Lake Shore,,0,East,5511,Long Branch Loop - Long Branch GO Station,5164,Lake Shore Blvd West at Thirty Seventh St,10,535.0,535.0,535.0,535.0
+508,508,Lake Shore,,0,East,14280,The Queensway at Colborne Lodge Dr East Side,6908,The Queensway at Parkside Dr,10,380.0,380.0,380.0,380.0
+508,508,Lake Shore,,0,East,14281,The Queensway at Ellis Ave East Side,14280,The Queensway at Colborne Lodge Dr East Side,10,599.7,599.7,599.7,599.7
+508,508,Lake Shore,,0,East,6888,The Queensway at Glendale Ave East Side - St Joseph's Health Centre,16452,King St West at The Queensway,5,418.2,418.2,418.2,418.2
+508,508,Lake Shore,,0,East,6908,The Queensway at Parkside Dr,6888,The Queensway at Glendale Ave East Side - St Joseph's Health Centre,10,264.6,264.6,264.6,264.6
+508,508,Lake Shore,,0,East,6916,The Queensway at South Kingsway,14282,The Queensway at Windermere Ave East Side,10,362.0,362.0,362.0,362.0
+508,508,Lake Shore,,0,East,14282,The Queensway at Windermere Ave East Side,14281,The Queensway at Ellis Ave East Side,10,292.4,292.4,292.4,292.4
+508,508,Lake Shore,,1,West,15746,2155 Lake Shore Blvd West,5196,Lake Shore Blvd West at Park Lawn Rd West Side,10,424.8,424.8,424.8,424.8
+508,508,Lake Shore,,1,West,15460,Cherry St at Front St East,4144,King St East at Sackville St,7,534.9,534.9,534.9,534.9
+508,508,Lake Shore,,1,West,15462,Distillery Loop,15460,Cherry St at Front St East,7,230.7,230.7,230.7,230.7
+508,508,Lake Shore,,1,West,6523,Humber Loop at The Queensway,5200,Opposite 2111 Lake Shore Blvd West,10,253.1,253.1,253.1,253.1
+508,508,Lake Shore,,1,West,12538,King St East at Church St West Side,15637,King St West at Yonge St West Side - King Station,7,299.7,299.7,299.7,299.7
+508,508,Lake Shore,,1,West,4139,King St East at Ontario St,4146,King St East at Sherbourne St,7,190.7,190.7,190.7,190.7
+508,508,Lake Shore,,1,West,4141,King St East at Parliament St,4139,King St East at Ontario St,7,263.5,263.5,263.5,263.5
+508,508,Lake Shore,,1,West,4144,King St East at Sackville St,4141,King St East at Parliament St,7,297.4,297.4,297.4,297.4
+508,508,Lake Shore,,1,West,4146,King St East at Sherbourne St,15635,King St West at Jarvis St West Side,7,363.2,363.2,363.2,363.2
+508,508,Lake Shore,,1,West,4156,King St West at Bathurst St,4190,King St West at Tecumseth St,7,264.7,264.7,264.7,264.7
+508,508,Lake Shore,,1,West,15639,King St West at Bay St West Side,15641,King St West at Simcoe St - St. Andrew Station,7,447.1,447.1,447.1,447.1
+508,508,Lake Shore,,1,West,4165,King St West at Dowling Ave,4193,King St West at Wilson Park Rd West Side,7,329.4,329.4,329.4,329.4
+508,508,Lake Shore,,1,West,4166,King St West at Dufferin St,13890,King St West at Spencer Ave,7,314.6,314.6,314.6,314.6
+508,508,Lake Shore,,1,West,4169,King St West at Dunn Ave,4174,King St West at Jameson Ave,7,234.0,234.0,234.0,234.0
+508,508,Lake Shore,,1,West,4174,King St West at Jameson Ave,4165,King St West at Dowling Ave,7,209.7,209.7,209.7,209.7
+508,508,Lake Shore,,1,West,15635,King St West at Jarvis St West Side,12538,King St East at Church St West Side,7,211.3,211.3,211.3,211.3
+508,508,Lake Shore,,1,West,4175,King St West at Jefferson Ave,14400,King St West at Joe Shuster Way,7,111.2,111.2,111.2,111.2
+508,508,Lake Shore,,1,West,14400,King St West at Joe Shuster Way,4166,King St West at Dufferin St,7,298.9,298.9,298.9,298.9
+508,508,Lake Shore,,1,West,15643,King St West at John St West Side,4181,King St West at Peter St,7,154.7,154.7,154.7,154.7
+508,508,Lake Shore,,1,West,4179,King St West at Niagara St,4188,King St West at Strachan Ave,7,353.6,353.6,353.6,353.6
+508,508,Lake Shore,,1,West,4181,King St West at Peter St,15647,King St West at Spadina Ave West Side,7,317.7,317.7,317.7,317.7
+508,508,Lake Shore,,1,West,10176,King St West at Portland St,4156,King St West at Bathurst St,7,162.1,162.1,162.1,162.1
+508,508,Lake Shore,,1,West,11596,King St West at Queen St West,16402,The Queensway at Glendale Ave - St Joseph's Health Centre,5,501.0,501.0,501.0,501.0
+508,508,Lake Shore,,1,West,4163,King St West at Shaw St,11021,King St West at Sudbury St,7,200.4,200.4,200.4,200.4
+508,508,Lake Shore,,1,West,15641,King St West at Simcoe St - St. Andrew Station,15643,King St West at John St West Side,7,353.7,353.7,353.7,353.7
+508,508,Lake Shore,,1,West,15647,King St West at Spadina Ave West Side,10176,King St West at Portland St,7,344.8,344.8,344.8,344.8
+508,508,Lake Shore,,1,West,13890,King St West at Spencer Ave,4169,King St West at Dunn Ave,7,191.9,191.9,191.9,191.9
+508,508,Lake Shore,,1,West,4188,King St West at Strachan Ave,4163,King St West at Shaw St,7,250.0,250.0,250.0,250.0
+508,508,Lake Shore,,1,West,11021,King St West at Sudbury St,4175,King St West at Jefferson Ave,7,408.8,408.8,408.8,408.8
+508,508,Lake Shore,,1,West,4190,King St West at Tecumseth St,4179,King St West at Niagara St,7,207.7,207.7,207.7,207.7
+508,508,Lake Shore,,1,West,4193,King St West at Wilson Park Rd West Side,11596,King St West at Queen St West,7,347.8,347.8,347.8,347.8
+508,508,Lake Shore,,1,West,15637,King St West at Yonge St West Side - King Station,15639,King St West at Bay St West Side,7,172.1,172.1,172.1,172.1
+508,508,Lake Shore,,1,West,5174,Lake Shore Blvd West at Burlington St,5202,Lake Shore Blvd West at Superior Ave,10,282.6,282.6,282.6,282.7
+508,508,Lake Shore,,1,West,5155,Lake Shore Blvd West at Fifteenth St,5181,Lake Shore Blvd West at Kipling Ave,10,243.1,243.1,243.0,243.1
+508,508,Lake Shore,,1,West,5171,Lake Shore Blvd West at Fifth St,5180,Lake Shore Blvd West at Islington Ave,10,188.2,188.2,188.2,188.2
+508,508,Lake Shore,,1,West,13947,Lake Shore Blvd West at First St,5168,Lake Shore Blvd West at Third St,10,192.4,192.4,192.4,192.4
+508,508,Lake Shore,,1,West,5179,Lake Shore Blvd West at Hillside Ave,5203,Lake Shore Blvd West at Symons St,10,295.4,295.4,295.3,295.4
+508,508,Lake Shore,,1,West,5180,Lake Shore Blvd West at Islington Ave,5151,Lake Shore Blvd West at Tenth St,10,284.8,284.8,284.7,284.8
+508,508,Lake Shore,,1,West,5181,Lake Shore Blvd West at Kipling Ave,5156,Lake Shore Blvd West at Twenty Second St,10,378.3,378.3,378.3,378.3
+508,508,Lake Shore,,1,West,5186,Lake Shore Blvd West at Legion Rd,5190,Lake Shore Blvd West at Louisa St,10,329.1,329.1,329.1,329.1
+508,508,Lake Shore,,1,West,5188,Lake Shore Blvd West at Long Branch Ave,5165,Lake Shore Blvd West at Thirty Seventh St,10,420.0,420.0,420.0,420.0
+508,508,Lake Shore,,1,West,5190,Lake Shore Blvd West at Louisa St,5174,Lake Shore Blvd West at Burlington St,10,193.6,193.6,193.6,193.6
+508,508,Lake Shore,,1,West,5193,Lake Shore Blvd West at Mimico Ave,5179,Lake Shore Blvd West at Hillside Ave,10,294.0,294.0,294.0,294.0
+508,508,Lake Shore,,1,West,5196,Lake Shore Blvd West at Park Lawn Rd West Side,5186,Lake Shore Blvd West at Legion Rd,10,257.8,257.8,257.7,257.8
+508,508,Lake Shore,,1,West,5198,Lake Shore Blvd West at Royal York Rd,13947,Lake Shore Blvd West at First St,10,469.9,469.9,469.9,469.9
+508,508,Lake Shore,,1,West,5202,Lake Shore Blvd West at Superior Ave,5193,Lake Shore Blvd West at Mimico Ave,10,150.2,150.2,150.2,150.2
+508,508,Lake Shore,,1,West,5203,Lake Shore Blvd West at Symons St,5198,Lake Shore Blvd West at Royal York Rd,10,606.2,606.1,606.1,606.2
+508,508,Lake Shore,,1,West,5151,Lake Shore Blvd West at Tenth St,5153,Lake Shore Blvd West at Thirteenth St,10,271.2,271.2,271.2,271.3
+508,508,Lake Shore,,1,West,5168,Lake Shore Blvd West at Third St,5171,Lake Shore Blvd West at Fifth St,10,186.0,186.0,186.0,186.0
+508,508,Lake Shore,,1,West,5153,Lake Shore Blvd West at Thirteenth St,5155,Lake Shore Blvd West at Fifteenth St,10,180.8,180.8,180.7,180.8
+508,508,Lake Shore,,1,West,5162,Lake Shore Blvd West at Thirtieth St,5188,Lake Shore Blvd West at Long Branch Ave,10,283.7,283.7,283.7,283.7
+508,508,Lake Shore,,1,West,5165,Lake Shore Blvd West at Thirty Seventh St,5511,Long Branch Loop - Long Branch GO Station,10,679.8,679.9,679.8,679.9
+508,508,Lake Shore,,1,West,5161,Lake Shore Blvd West at Twenty Ninth St,5162,Lake Shore Blvd West at Thirtieth St,10,125.0,125.0,124.9,125.0
+508,508,Lake Shore,,1,West,5156,Lake Shore Blvd West at Twenty Second St,5158,Lake Shore Blvd West at Twenty Sixth St,10,253.7,253.7,253.7,253.7
+508,508,Lake Shore,,1,West,5158,Lake Shore Blvd West at Twenty Sixth St,5161,Lake Shore Blvd West at Twenty Ninth St,10,329.6,329.6,329.6,329.7
+508,508,Lake Shore,,1,West,5200,Opposite 2111 Lake Shore Blvd West,15746,2155 Lake Shore Blvd West,10,328.5,328.5,328.5,328.5
+508,508,Lake Shore,,1,West,14393,The Queensway at Colborne Lodge Dr West Side,14394,The Queensway at Ellis Ave West Side,10,586.8,586.8,586.7,586.8
+508,508,Lake Shore,,1,West,14394,The Queensway at Ellis Ave West Side,14395,The Queensway at Windermere Ave West Side,10,286.2,286.2,286.2,286.2
+508,508,Lake Shore,,1,West,16402,The Queensway at Glendale Ave - St Joseph's Health Centre,6909,The Queensway at Parkside Dr,10,190.6,190.6,190.6,190.6
+508,508,Lake Shore,,1,West,6909,The Queensway at Parkside Dr,14393,The Queensway at Colborne Lodge Dr West Side,10,493.8,493.8,493.8,493.8
+508,508,Lake Shore,,1,West,6915,The Queensway at South Kingsway,6523,Humber Loop at The Queensway,10,695.0,695.0,695.0,695.1
+508,508,Lake Shore,,1,West,14395,The Queensway at Windermere Ave West Side,6915,The Queensway at South Kingsway,10,278.4,278.4,278.4,278.4
+509,509,Harbourfront,,0,East,13366,Exhibition Loop at Manitoba Dr,1062,Manitoba Dr at Strachan Ave,479,685.6,685.6,685.6,685.6
+509,509,Harbourfront,,0,East,14512,Fleet St at Bastion St,10210,Fleet St at Bathurst St,479,301.6,301.6,301.6,301.6
+509,509,Harbourfront,,0,East,10210,Fleet St at Bathurst St,13371,Queens Quay West at Bathurst St East Side Billy Bishop Airport,479,264.6,264.6,264.6,264.6
+509,509,Harbourfront,,0,East,14508,Fleet St at Fort York Blvd East Side,14512,Fleet St at Bastion St,479,210.9,210.9,210.9,210.9
+509,509,Harbourfront,,0,East,1062,Manitoba Dr at Strachan Ave,14508,Fleet St at Fort York Blvd East Side,479,309.7,309.7,309.7,309.7
+509,509,Harbourfront,,0,East,13371,Queens Quay West at Bathurst St East Side Billy Bishop Airport,13369,Queens Quay West at Dan Leckie Way East Side,479,157.9,157.9,157.9,157.9
+509,509,Harbourfront,,0,East,13369,Queens Quay West at Dan Leckie Way East Side,13131,Queens Quay West at Lower Spadina Ave East Side,479,418.3,418.3,418.3,418.3
+509,509,Harbourfront,,0,East,15332,Queens Quay West at Harbourfront Centre,10945,Queens Quay/Ferry Docks Station,479,509.6,509.6,509.6,509.6
+509,509,Harbourfront,,0,East,13131,Queens Quay West at Lower Spadina Ave East Side,15331,Queens Quay West at Rees St,479,368.6,368.6,368.6,368.6
+509,509,Harbourfront,,0,East,15331,Queens Quay West at Rees St,15332,Queens Quay West at Harbourfront Centre,479,416.5,416.5,416.5,416.5
+509,509,Harbourfront,,0,East,10945,Queens Quay/Ferry Docks Station,10935,Union Station,479,464.7,464.7,464.7,464.7
+509,509,Harbourfront,,1,West,13368,Bathurst St at Queens Quay West North Side Billy Bishop Airport,13362,Fleet St at Bathurst St West Side,479,171.9,171.9,171.9,171.9
+509,509,Harbourfront,,1,West,15190,Exhibition Loop,13366,Exhibition Loop at Manitoba Dr,503,284.7,284.7,284.6,284.7
+509,509,Harbourfront,,1,West,14511,Fleet St at Bastion St West Side,14509,Fleet St at Fort York Blvd West Side,503,267.3,267.3,267.3,267.4
+509,509,Harbourfront,,1,West,13362,Fleet St at Bathurst St West Side,14511,Fleet St at Bastion St West Side,503,299.1,299.1,299.1,299.1
+509,509,Harbourfront,,1,West,14509,Fleet St at Fort York Blvd West Side,1063,Manitoba Dr at Strachan Ave West Side,503,245.3,245.3,245.2,245.3
+509,509,Harbourfront,,1,West,1063,Manitoba Dr at Strachan Ave West Side,15190,Exhibition Loop,503,827.2,827.2,827.2,827.3
+509,509,Harbourfront,,1,West,13367,Queens Quay West at Dan Leckie Way West Side,13368,Bathurst St at Queens Quay West North Side Billy Bishop Airport,479,179.7,179.7,179.7,179.7
+509,509,Harbourfront,,1,West,15333,Queens Quay West at Harbourfront Centre,6864,Queens Quay West at Rees St West Side,479,482.1,482.1,482.1,482.1
+509,509,Harbourfront,,1,West,13370,Queens Quay West at Lower Spadina Ave West Side,13367,Queens Quay West at Dan Leckie Way West Side,479,396.9,396.9,396.9,396.9
+509,509,Harbourfront,,1,West,6864,Queens Quay West at Rees St West Side,13370,Queens Quay West at Lower Spadina Ave West Side,479,460.7,460.7,460.7,460.7
+509,509,Harbourfront,,1,West,10946,Queens Quay/Ferry Docks Station,15333,Queens Quay West at Harbourfront Centre,479,429.0,429.0,429.0,429.0
+509,509,Harbourfront,,1,West,10935,Union Station,10946,Queens Quay/Ferry Docks Station,479,505.5,505.5,505.5,505.5
+509,509,Harbourfront,S,0,East,13366,Exhibition Loop at Manitoba Dr,1062,Manitoba Dr at Strachan Ave,24,685.6,685.6,685.6,685.6
+509,509,Harbourfront,S,0,East,14512,Fleet St at Bastion St,10210,Fleet St at Bathurst St,24,301.6,301.6,301.6,301.6
+509,509,Harbourfront,S,0,East,14508,Fleet St at Fort York Blvd East Side,14512,Fleet St at Bastion St,24,210.9,210.9,210.9,210.9
+509,509,Harbourfront,S,0,East,1062,Manitoba Dr at Strachan Ave,14508,Fleet St at Fort York Blvd East Side,24,309.7,309.7,309.7,309.7
+510,510,Spadina,,1,North,10927,Queens Quay Loop at Lower Spadina Ave,10777,Spadina Ave at Bremner Blvd North Side,286,397.8,397.8,397.8,397.8
+510,510,Spadina,,1,North,15333,Queens Quay West at Harbourfront Centre,6864,Queens Quay West at Rees St West Side,532,482.1,482.1,482.1,482.1
+510,510,Spadina,,1,North,6864,Queens Quay West at Rees St West Side,12085,Spadina Ave at Queens Quay West North Side,532,455.6,455.6,455.6,455.6
+510,510,Spadina,,1,North,10946,Queens Quay/Ferry Docks Station,15333,Queens Quay West at Harbourfront Centre,532,429.0,429.0,429.0,429.0
+510,510,Spadina,,1,North,10777,Spadina Ave at Bremner Blvd North Side,7346,Spadina Ave at Front St West North Side,818,227.7,227.7,227.7,227.7
+510,510,Spadina,,1,North,7347,Spadina Ave at College St North Side,7358,Spadina Ave at Willcocks St,868,365.5,365.5,365.5,365.5
+510,510,Spadina,,1,North,7349,Spadina Ave at Dundas St West North Side,11986,Spadina Ave at Nassau St,868,263.3,263.3,263.3,263.4
+510,510,Spadina,,1,North,7346,Spadina Ave at Front St West North Side,7353,Spadina Ave at King St West North Side,818,327.3,327.3,327.3,327.3
+510,510,Spadina,,1,North,7351,Spadina Ave at Harbord St North Side,7357,Spadina Ave at Sussex Ave,868,112.3,112.3,112.3,112.3
+510,510,Spadina,,1,North,7353,Spadina Ave at King St West North Side,11985,Spadina Ave at Richmond St West,868,187.1,187.1,187.1,187.1
+510,510,Spadina,,1,North,11986,Spadina Ave at Nassau St,7347,Spadina Ave at College St North Side,868,330.9,330.9,330.8,330.9
+510,510,Spadina,,1,North,7355,Spadina Ave at Queen St West North Side,7356,Spadina Ave at Sullivan St North Side,868,245.0,245.0,245.0,245.0
+510,510,Spadina,,1,North,12085,Spadina Ave at Queens Quay West North Side,10777,Spadina Ave at Bremner Blvd North Side,532,357.6,357.6,357.6,357.6
+510,510,Spadina,,1,North,11985,Spadina Ave at Richmond St West,7355,Spadina Ave at Queen St West North Side,868,184.5,184.5,184.5,184.5
+510,510,Spadina,,1,North,7356,Spadina Ave at Sullivan St North Side,7349,Spadina Ave at Dundas St West North Side,868,243.4,243.4,243.4,243.4
+510,510,Spadina,,1,North,7357,Spadina Ave at Sussex Ave,14816,Spadina Station,868,401.9,400.6,379.8,401.9
+510,510,Spadina,,1,North,7358,Spadina Ave at Willcocks St,7351,Spadina Ave at Harbord St North Side,868,280.8,280.8,280.8,280.8
+510,510,Spadina,,1,North,10935,Union Station,10946,Queens Quay/Ferry Docks Station,532,505.5,505.5,505.5,505.5
+510,510,Spadina,A,0,South,15332,Queens Quay West at Harbourfront Centre,10945,Queens Quay/Ferry Docks Station,541,509.7,509.7,509.6,509.7
+510,510,Spadina,A,0,South,13131,Queens Quay West at Lower Spadina Ave East Side,15331,Queens Quay West at Rees St,541,368.5,368.5,368.5,368.5
+510,510,Spadina,A,0,South,15331,Queens Quay West at Rees St,15332,Queens Quay West at Harbourfront Centre,541,416.5,416.5,416.5,416.6
+510,510,Spadina,A,0,South,10945,Queens Quay/Ferry Docks Station,10935,Union Station,541,464.6,464.6,464.6,464.6
+510,510,Spadina,A,0,South,10929,Spadina Ave at Bremner Blvd,13131,Queens Quay West at Lower Spadina Ave East Side,541,427.2,427.2,427.2,427.2
+510,510,Spadina,A,0,South,8120,Spadina Ave at College St South Side,8128,Spadina Ave at Nassau St South Side,534,229.9,229.9,229.9,229.9
+510,510,Spadina,A,0,South,8121,Spadina Ave at Dundas St West South Side,8131,Spadina Ave at Sullivan St,534,169.7,169.7,169.7,169.7
+510,510,Spadina,A,0,South,8123,Spadina Ave at Front St West,10929,Spadina Ave at Bremner Blvd,541,245.5,245.5,245.5,245.5
+510,510,Spadina,A,0,South,8124,Spadina Ave at Harbord St South Side,8134,Spadina Ave at Willcocks St,534,137.4,137.4,137.4,137.4
+510,510,Spadina,A,0,South,8126,Spadina Ave at King St West,8123,Spadina Ave at Front St West,541,319.0,318.7,294.3,319.0
+510,510,Spadina,A,0,South,8128,Spadina Ave at Nassau St South Side,8121,Spadina Ave at Dundas St West South Side,534,337.1,337.1,337.1,337.1
+510,510,Spadina,A,0,South,8129,Spadina Ave at Queen St West South Side,8126,Spadina Ave at King St West,534,296.6,296.6,296.6,296.6
+510,510,Spadina,A,0,South,8131,Spadina Ave at Sullivan St,8129,Spadina Ave at Queen St West South Side,534,326.3,326.3,326.3,326.3
+510,510,Spadina,A,0,South,8132,Spadina Ave at Sussex Ave South Side,8124,Spadina Ave at Harbord St South Side,534,183.9,183.9,183.9,183.9
+510,510,Spadina,A,0,South,8134,Spadina Ave at Willcocks St,8120,Spadina Ave at College St South Side,534,541.9,541.9,541.9,541.9
+510,510,Spadina,A,0,South,14816,Spadina Station,8132,Spadina Ave at Sussex Ave South Side,534,412.8,412.8,412.8,412.8
+510,510,Spadina,B,0,South,13131,Queens Quay West at Lower Spadina Ave East Side,10927,Queens Quay Loop at Lower Spadina Ave,286,177.5,177.5,177.5,177.5
+510,510,Spadina,B,0,South,10929,Spadina Ave at Bremner Blvd,13131,Queens Quay West at Lower Spadina Ave East Side,286,427.2,427.2,427.2,427.2
+510,510,Spadina,B,0,South,8120,Spadina Ave at College St South Side,8128,Spadina Ave at Nassau St South Side,286,229.9,229.9,229.9,229.9
+510,510,Spadina,B,0,South,8121,Spadina Ave at Dundas St West South Side,8131,Spadina Ave at Sullivan St,286,169.7,169.7,169.7,169.7
+510,510,Spadina,B,0,South,8123,Spadina Ave at Front St West,10929,Spadina Ave at Bremner Blvd,286,245.5,245.5,245.5,245.5
+510,510,Spadina,B,0,South,8124,Spadina Ave at Harbord St South Side,8134,Spadina Ave at Willcocks St,286,137.4,137.4,137.4,137.4
+510,510,Spadina,B,0,South,8126,Spadina Ave at King St West,8123,Spadina Ave at Front St West,286,319.0,319.0,319.0,319.0
+510,510,Spadina,B,0,South,8128,Spadina Ave at Nassau St South Side,8121,Spadina Ave at Dundas St West South Side,286,337.1,337.1,337.1,337.1
+510,510,Spadina,B,0,South,8129,Spadina Ave at Queen St West South Side,8126,Spadina Ave at King St West,286,296.6,296.6,296.6,296.6
+510,510,Spadina,B,0,South,8131,Spadina Ave at Sullivan St,8129,Spadina Ave at Queen St West South Side,286,326.3,326.3,326.3,326.3
+510,510,Spadina,B,0,South,8132,Spadina Ave at Sussex Ave South Side,8124,Spadina Ave at Harbord St South Side,286,183.9,183.9,183.9,183.9
+510,510,Spadina,B,0,South,8134,Spadina Ave at Willcocks St,8120,Spadina Ave at College St South Side,286,541.9,541.9,541.9,541.9
+510,510,Spadina,B,0,South,14816,Spadina Station,8132,Spadina Ave at Sussex Ave South Side,286,412.8,412.8,412.8,412.8
+510,510,Spadina,C,0,South,8120,Spadina Ave at College St South Side,8128,Spadina Ave at Nassau St South Side,38,229.9,229.9,229.9,229.9
+510,510,Spadina,C,0,South,8121,Spadina Ave at Dundas St West South Side,8131,Spadina Ave at Sullivan St,38,169.7,169.7,169.7,169.7
+510,510,Spadina,C,0,South,8124,Spadina Ave at Harbord St South Side,8134,Spadina Ave at Willcocks St,38,137.4,137.4,137.4,137.4
+510,510,Spadina,C,0,South,8128,Spadina Ave at Nassau St South Side,8121,Spadina Ave at Dundas St West South Side,38,337.1,337.1,337.1,337.1
+510,510,Spadina,C,0,South,8129,Spadina Ave at Queen St West South Side,8126,Spadina Ave at King St West,38,296.6,296.6,296.6,296.6
+510,510,Spadina,C,0,South,8131,Spadina Ave at Sullivan St,8129,Spadina Ave at Queen St West South Side,38,326.3,326.3,326.3,326.3
+510,510,Spadina,C,0,South,8132,Spadina Ave at Sussex Ave South Side,8124,Spadina Ave at Harbord St South Side,38,183.9,183.9,183.9,183.9
+510,510,Spadina,C,0,South,8134,Spadina Ave at Willcocks St,8120,Spadina Ave at College St South Side,38,541.9,541.9,541.9,541.9
+510,510,Spadina,C,0,South,14816,Spadina Station,8132,Spadina Ave at Sussex Ave South Side,38,412.8,412.8,412.8,412.8
+511,511,Bathurst,,0,South,15518,Bathurst St at Bloor St West,15334,Bathurst St at Lennox St,1,154.6,154.6,154.6,154.6
+511,511,Bathurst,,0,South,111,Bathurst St at College St,178,Bathurst St at Nassau St - Toronto Western Hospital,654,264.9,264.9,264.9,264.9
+511,511,Bathurst,,0,South,127,Bathurst St at Dundas St West - Toronto Western Hospital,193,Bathurst St at Robinson St,654,392.9,392.9,392.9,392.9
+511,511,Bathurst,,0,South,100,Bathurst St at Fort York Blvd,13362,Fleet St at Bathurst St West Side,689,341.8,341.8,341.8,341.9
+511,511,Bathurst,,0,South,149,Bathurst St at Harbord St,213,Bathurst St at Ulster St,654,202.9,202.9,202.9,202.9
+511,511,Bathurst,,0,South,162,Bathurst St at King St West,15225,Bathurst St at Niagara St,654,244.9,244.9,244.9,244.9
+511,511,Bathurst,,0,South,15334,Bathurst St at Lennox St,149,Bathurst St at Harbord St,654,265.8,265.8,265.8,265.8
+511,511,Bathurst,,0,South,178,Bathurst St at Nassau St - Toronto Western Hospital,127,Bathurst St at Dundas St West - Toronto Western Hospital,654,218.0,218.0,218.0,218.0
+511,511,Bathurst,,0,South,15225,Bathurst St at Niagara St,100,Bathurst St at Fort York Blvd,689,358.3,358.3,358.2,358.3
+511,511,Bathurst,,0,South,187,Bathurst St at Queen St West,162,Bathurst St at King St West,654,375.5,375.5,375.5,375.5
+511,511,Bathurst,,0,South,193,Bathurst St at Robinson St,187,Bathurst St at Queen St West,654,200.4,200.4,200.4,200.4
+511,511,Bathurst,,0,South,213,Bathurst St at Ulster St,111,Bathurst St at College St,654,376.2,376.2,376.2,376.2
+511,511,Bathurst,,0,South,14619,Bathurst Station,15518,Bathurst St at Bloor St West,1,255.5,255.5,255.5,255.5
+511,511,Bathurst,,0,South,14619,Bathurst Station,15334,Bathurst St at Lennox St,653,410.1,410.1,410.1,410.1
+511,511,Bathurst,,0,South,14511,Fleet St at Bastion St West Side,14509,Fleet St at Fort York Blvd West Side,689,267.3,267.3,267.3,267.4
+511,511,Bathurst,,0,South,13362,Fleet St at Bathurst St West Side,14511,Fleet St at Bastion St West Side,689,299.1,299.1,299.0,299.1
+511,511,Bathurst,,0,South,14509,Fleet St at Fort York Blvd West Side,1063,Manitoba Dr at Strachan Ave West Side,689,245.3,245.3,245.2,245.3
+511,511,Bathurst,,0,South,1063,Manitoba Dr at Strachan Ave West Side,15190,Exhibition Loop,689,827.2,827.2,827.2,827.3
+511,511,Bathurst,,1,North,96,Bathurst St at Bloor St West,14619,Bathurst Station,1,173.3,173.3,173.3,173.3
+511,511,Bathurst,,1,North,15335,Bathurst St at Carr St,126,Bathurst St at Dundas St West - Toronto Western Hospital,672,415.1,415.1,415.0,415.1
+511,511,Bathurst,,1,North,110,Bathurst St at College St,212,Bathurst St at Ulster St,672,405.4,405.4,405.4,405.4
+511,511,Bathurst,,1,North,126,Bathurst St at Dundas St West - Toronto Western Hospital,16454,Bathurst St at Nassau St - Toronto Western Hospital,672,294.9,294.9,294.9,294.9
+511,511,Bathurst,,1,North,13672,Bathurst St at Fort York Blvd,15224,Bathurst St at Niagara St,656,361.4,361.4,361.4,361.4
+511,511,Bathurst,,1,North,148,Bathurst St at Harbord St,167,Bathurst St at Lennox St,672,268.0,268.0,268.0,268.0
+511,511,Bathurst,,1,North,161,Bathurst St at King St West,186,Bathurst St at Queen St West,656,396.0,396.0,396.0,396.0
+511,511,Bathurst,,1,North,167,Bathurst St at Lennox St,96,Bathurst St at Bloor St West,1,150.4,150.4,150.4,150.4
+511,511,Bathurst,,1,North,167,Bathurst St at Lennox St,14619,Bathurst Station,671,323.8,323.8,323.7,323.8
+511,511,Bathurst,,1,North,16454,Bathurst St at Nassau St - Toronto Western Hospital,110,Bathurst St at College St,672,178.1,178.1,178.1,178.2
+511,511,Bathurst,,1,North,15224,Bathurst St at Niagara St,161,Bathurst St at King St West,656,218.4,218.4,218.4,218.4
+511,511,Bathurst,,1,North,186,Bathurst St at Queen St West,15335,Bathurst St at Carr St,672,176.1,176.1,176.1,176.1
+511,511,Bathurst,,1,North,212,Bathurst St at Ulster St,148,Bathurst St at Harbord St,672,195.6,195.6,195.6,195.6
+511,511,Bathurst,,1,North,12584,Exhibition Loop,1062,Manitoba Dr at Strachan Ave,656,685.6,685.6,685.6,685.6
+511,511,Bathurst,,1,North,14512,Fleet St at Bastion St,10210,Fleet St at Bathurst St,656,301.6,301.6,301.6,301.6
+511,511,Bathurst,,1,North,10210,Fleet St at Bathurst St,13672,Bathurst St at Fort York Blvd,656,274.0,274.0,274.0,274.0
+511,511,Bathurst,,1,North,14508,Fleet St at Fort York Blvd East Side,14512,Fleet St at Bastion St,656,210.9,210.9,210.9,210.9
+511,511,Bathurst,,1,North,1062,Manitoba Dr at Strachan Ave,14508,Fleet St at Fort York Blvd East Side,656,309.7,309.7,309.7,309.7
+511,511,Bathurst,S,0,South,111,Bathurst St at College St,178,Bathurst St at Nassau St - Toronto Western Hospital,18,264.9,264.9,264.9,264.9
+511,511,Bathurst,S,0,South,127,Bathurst St at Dundas St West - Toronto Western Hospital,193,Bathurst St at Robinson St,18,392.9,392.9,392.9,392.9
+511,511,Bathurst,S,0,South,149,Bathurst St at Harbord St,213,Bathurst St at Ulster St,18,202.9,202.9,202.9,202.9
+511,511,Bathurst,S,0,South,15334,Bathurst St at Lennox St,149,Bathurst St at Harbord St,18,265.8,265.8,265.8,265.8
+511,511,Bathurst,S,0,South,178,Bathurst St at Nassau St - Toronto Western Hospital,127,Bathurst St at Dundas St West - Toronto Western Hospital,18,218.0,218.0,218.0,218.0
+511,511,Bathurst,S,0,South,187,Bathurst St at Queen St West,162,Bathurst St at King St West,18,375.5,375.5,375.5,375.5
+511,511,Bathurst,S,0,South,193,Bathurst St at Robinson St,187,Bathurst St at Queen St West,18,200.4,200.4,200.4,200.4
+511,511,Bathurst,S,0,South,213,Bathurst St at Ulster St,111,Bathurst St at College St,18,376.2,376.2,376.2,376.2
+511,511,Bathurst,S,0,South,14619,Bathurst Station,15334,Bathurst St at Lennox St,18,410.1,410.1,410.1,410.1
+511,511,Bathurst,S,1,North,13672,Bathurst St at Fort York Blvd,15224,Bathurst St at Niagara St,33,361.4,361.4,361.4,361.4
+511,511,Bathurst,S,1,North,15224,Bathurst St at Niagara St,161,Bathurst St at King St West,33,218.4,218.4,218.4,218.4
+511,511,Bathurst,S,1,North,12584,Exhibition Loop,1062,Manitoba Dr at Strachan Ave,33,685.6,685.6,685.6,685.6
+511,511,Bathurst,S,1,North,14512,Fleet St at Bastion St,10210,Fleet St at Bathurst St,33,301.6,301.6,301.6,301.6
+511,511,Bathurst,S,1,North,10210,Fleet St at Bathurst St,13672,Bathurst St at Fort York Blvd,33,274.0,274.0,274.0,274.0
+511,511,Bathurst,S,1,North,14508,Fleet St at Fort York Blvd East Side,14512,Fleet St at Bastion St,33,210.9,210.9,210.9,210.9
+511,511,Bathurst,S,1,North,1062,Manitoba Dr at Strachan Ave,14508,Fleet St at Fort York Blvd East Side,33,309.7,309.7,309.7,309.7
+512,512,St Clair,,0,East,14958,Gunns Loop at St Clair Ave West,15050,St Clair Ave West at Old Stock Yards Rd,680,126.8,126.8,126.8,126.8
+512,512,St Clair,,0,East,14874,St Clair Ave West at Arlington Ave East Side,14872,St Clair Ave West at Christie St East Side,680,264.4,264.4,264.4,264.4
+512,512,St Clair,,0,East,8149,St Clair Ave West at Avenue Rd East Side,8160,St Clair Ave West at Deer Park Cres East Side,697,284.2,284.2,284.1,284.2
+512,512,St Clair,,0,East,14336,St Clair Ave West at Bathurst St East Side,14343,St Clair Ave West at Tweedsmuir Ave,34,362.0,362.0,362.0,362.0
+512,512,St Clair,,0,East,14336,St Clair Ave West at Bathurst St East Side,15308,St Clair West Station,663,265.7,265.7,265.7,265.8
+512,512,St Clair,,0,East,14931,St Clair Ave West at Caledonia Rd East Side,14889,St Clair Ave West at Lansdowne Ave East Side,680,351.0,351.0,351.0,351.0
+512,512,St Clair,,0,East,14872,St Clair Ave West at Christie St East Side,14870,St Clair Ave West at Wychwood Ave East Side,680,187.3,187.3,187.3,187.3
+512,512,St Clair,,0,East,8160,St Clair Ave West at Deer Park Cres East Side,14778,St Clair Station,697,522.0,522.0,522.0,522.0
+512,512,St Clair,,0,East,14885,St Clair Ave West at Dufferin St East Side,14883,St Clair Ave West at Northcliffe Blvd East Side,680,182.2,182.2,182.2,182.2
+512,512,St Clair,,0,East,14351,St Clair Ave West at Dunvegan Rd,8149,St Clair Ave West at Avenue Rd East Side,697,323.7,323.7,323.7,323.8
+512,512,St Clair,,0,East,14887,St Clair Ave West at Earlscourt Ave East Side,14885,St Clair Ave West at Dufferin St East Side,680,367.7,367.7,367.7,367.7
+512,512,St Clair,,0,East,14881,St Clair Ave West at Glenholme Ave East Side,14879,St Clair Ave West at Oakwood Ave East Side,680,252.1,252.1,252.1,252.1
+512,512,St Clair,,0,East,14935,St Clair Ave West at Hounslow Heath Rd East Side,14933,St Clair Ave West at Laughton Ave East Side,680,196.8,196.8,196.8,196.8
+512,512,St Clair,,0,East,14939,St Clair Ave West at Keele St/ Weston Rd,14937,St Clair Ave West at Old Weston Rd East Side,680,451.9,451.9,451.9,451.9
+512,512,St Clair,,0,East,14889,St Clair Ave West at Lansdowne Ave East Side,14887,St Clair Ave West at Earlscourt Ave East Side,680,266.7,266.7,266.7,266.7
+512,512,St Clair,,0,East,14933,St Clair Ave West at Laughton Ave East Side,14931,St Clair Ave West at Caledonia Rd East Side,680,243.6,243.6,243.6,243.6
+512,512,St Clair,,0,East,14883,St Clair Ave West at Northcliffe Blvd East Side,14881,St Clair Ave West at Glenholme Ave East Side,680,187.5,187.5,187.5,187.5
+512,512,St Clair,,0,East,14879,St Clair Ave West at Oakwood Ave East Side,14877,St Clair Ave West at Winona Dr East Side,680,261.7,261.7,261.7,261.7
+512,512,St Clair,,0,East,15050,St Clair Ave West at Old Stock Yards Rd,14939,St Clair Ave West at Keele St/ Weston Rd,680,221.4,221.4,221.4,221.4
+512,512,St Clair,,0,East,14937,St Clair Ave West at Old Weston Rd East Side,14935,St Clair Ave West at Hounslow Heath Rd East Side,680,253.1,253.1,253.1,253.1
+512,512,St Clair,,0,East,8181,St Clair Ave West at Russell Hill Rd East Side,14351,St Clair Ave West at Dunvegan Rd,697,212.5,212.5,212.5,212.6
+512,512,St Clair,,0,East,14344,St Clair Ave West at Spadina Rd East Side,8181,St Clair Ave West at Russell Hill Rd East Side,697,272.7,272.7,272.6,272.7
+512,512,St Clair,,0,East,14343,St Clair Ave West at Tweedsmuir Ave,14344,St Clair Ave West at Spadina Rd East Side,697,232.3,232.3,232.3,232.4
+512,512,St Clair,,0,East,14335,St Clair Ave West at Vaughan Rd East Side,14336,St Clair Ave West at Bathurst St East Side,680,139.7,139.7,139.7,139.7
+512,512,St Clair,,0,East,14877,St Clair Ave West at Winona Dr East Side,14874,St Clair Ave West at Arlington Ave East Side,680,304.7,304.7,304.7,304.7
+512,512,St Clair,,0,East,14870,St Clair Ave West at Wychwood Ave East Side,14335,St Clair Ave West at Vaughan Rd East Side,680,294.9,294.9,294.9,294.9
+512,512,St Clair,,0,East,15308,St Clair West Station,14343,St Clair Ave West at Tweedsmuir Ave,663,346.9,346.9,346.8,346.9
+512,512,St Clair,,1,West,14875,St Clair Ave West at Arlington Ave West Side,14878,St Clair Ave West at Winona Dr West Side,717,304.5,304.5,304.4,304.5
+512,512,St Clair,,1,West,8150,St Clair Ave West at Avenue Rd West Side,8163,St Clair Ave West at Dunvegan Rd West Side,680,280.8,280.8,280.8,280.8
+512,512,St Clair,,1,West,14337,St Clair Ave West at Bathurst St West Side,14334,St Clair Ave West at Vaughan Rd West Side,717,166.5,166.5,166.5,166.5
+512,512,St Clair,,1,West,14932,St Clair Ave West at Caledonia Rd West Side,14934,St Clair Ave West at Laughton Ave West Side,717,242.7,242.7,242.6,242.7
+512,512,St Clair,,1,West,14873,St Clair Ave West at Christie St West Side,14875,St Clair Ave West at Arlington Ave West Side,717,261.0,261.0,261.0,261.0
+512,512,St Clair,,1,West,8159,St Clair Ave West at Deer Park Cres West Side,8150,St Clair Ave West at Avenue Rd West Side,680,286.5,286.5,286.5,286.5
+512,512,St Clair,,1,West,14886,St Clair Ave West at Dufferin St West Side,14888,St Clair Ave West at Earlscourt Ave,717,303.8,303.8,303.8,303.8
+512,512,St Clair,,1,West,8163,St Clair Ave West at Dunvegan Rd West Side,8182,St Clair Ave West at Russell Hill Rd West Side,680,244.1,244.1,244.1,244.1
+512,512,St Clair,,1,West,14888,St Clair Ave West at Earlscourt Ave,13173,St Clair Ave West at Lansdowne Ave West Side,717,325.5,325.5,325.5,325.5
+512,512,St Clair,,1,West,14882,St Clair Ave West at Glenholme Ave West Side,14884,St Clair Ave West at Northcliffe Blvd West Side,717,176.5,176.5,176.4,176.5
+512,512,St Clair,,1,West,13173,St Clair Ave West at Lansdowne Ave West Side,14932,St Clair Ave West at Caledonia Rd West Side,717,349.1,349.1,349.1,349.2
+512,512,St Clair,,1,West,14934,St Clair Ave West at Laughton Ave West Side,14936,St Clair Ave West at Silverthorn Ave West Side,717,199.9,199.9,199.9,200.0
+512,512,St Clair,,1,West,14884,St Clair Ave West at Northcliffe Blvd West Side,14886,St Clair Ave West at Dufferin St West Side,717,188.9,188.9,188.9,188.9
+512,512,St Clair,,1,West,14880,St Clair Ave West at Oakwood Ave,14882,St Clair Ave West at Glenholme Ave West Side,717,321.9,321.9,321.9,322.0
+512,512,St Clair,,1,West,14938,St Clair Ave West at Old Weston Rd West Side,14940,St Clair Ave West at Weston Rd/ Keele St West Side,717,387.3,387.3,387.3,387.3
+512,512,St Clair,,1,West,8182,St Clair Ave West at Russell Hill Rd West Side,14355,St Clair Ave West at Spadina Rd West Side,680,277.8,277.8,277.8,277.8
+512,512,St Clair,,1,West,14936,St Clair Ave West at Silverthorn Ave West Side,14938,St Clair Ave West at Old Weston Rd West Side,717,254.7,254.7,254.7,254.7
+512,512,St Clair,,1,West,14355,St Clair Ave West at Spadina Rd West Side,4632,St Clair Ave West at Tweedsmuir Ave West Side,680,168.7,168.7,168.7,168.7
+512,512,St Clair,,1,West,4632,St Clair Ave West at Tweedsmuir Ave West Side,14337,St Clair Ave West at Bathurst St West Side,29,428.3,428.3,428.3,428.3
+512,512,St Clair,,1,West,4632,St Clair Ave West at Tweedsmuir Ave West Side,14780,St Clair West Station,651,220.0,220.0,220.0,220.0
+512,512,St Clair,,1,West,14334,St Clair Ave West at Vaughan Rd West Side,14871,St Clair Ave West at Wychwood Ave West Side,717,263.8,263.8,263.8,263.8
+512,512,St Clair,,1,West,14940,St Clair Ave West at Weston Rd/ Keele St West Side,14958,Gunns Loop at St Clair Ave West,717,384.4,384.4,384.3,384.4
+512,512,St Clair,,1,West,14878,St Clair Ave West at Winona Dr West Side,14880,St Clair Ave West at Oakwood Ave,717,202.5,202.5,202.5,202.5
+512,512,St Clair,,1,West,14871,St Clair Ave West at Wychwood Ave West Side,14873,St Clair Ave West at Christie St West Side,717,188.5,188.5,188.5,188.5
+512,512,St Clair,,1,West,14345,St Clair Ave West at Yonge St West Side,8159,St Clair Ave West at Deer Park Cres West Side,680,338.2,338.2,338.2,338.2
+512,512,St Clair,,1,West,14778,St Clair Station,14345,St Clair Ave West at Yonge St West Side,680,429.2,429.2,429.2,429.2
+512,512,St Clair,,1,West,14780,St Clair West Station,14337,St Clair Ave West at Bathurst St West Side,651,487.9,487.9,487.9,487.9
+512,512,St Clair,S,0,East,14958,Gunns Loop at St Clair Ave West,15050,St Clair Ave West at Old Stock Yards Rd,25,126.8,126.8,126.8,126.8
+512,512,St Clair,S,0,East,14874,St Clair Ave West at Arlington Ave East Side,14872,St Clair Ave West at Christie St East Side,25,264.4,264.4,264.4,264.4
+512,512,St Clair,S,0,East,14931,St Clair Ave West at Caledonia Rd East Side,14889,St Clair Ave West at Lansdowne Ave East Side,25,351.0,351.0,351.0,351.0
+512,512,St Clair,S,0,East,14872,St Clair Ave West at Christie St East Side,14870,St Clair Ave West at Wychwood Ave East Side,25,187.3,187.3,187.3,187.3
+512,512,St Clair,S,0,East,14885,St Clair Ave West at Dufferin St East Side,14883,St Clair Ave West at Northcliffe Blvd East Side,25,182.2,182.2,182.2,182.2
+512,512,St Clair,S,0,East,14887,St Clair Ave West at Earlscourt Ave East Side,14885,St Clair Ave West at Dufferin St East Side,25,367.7,367.7,367.7,367.7
+512,512,St Clair,S,0,East,14881,St Clair Ave West at Glenholme Ave East Side,14879,St Clair Ave West at Oakwood Ave East Side,25,252.1,252.1,252.1,252.1
+512,512,St Clair,S,0,East,14935,St Clair Ave West at Hounslow Heath Rd East Side,14933,St Clair Ave West at Laughton Ave East Side,25,196.8,196.8,196.8,196.8
+512,512,St Clair,S,0,East,14939,St Clair Ave West at Keele St/ Weston Rd,14937,St Clair Ave West at Old Weston Rd East Side,25,451.9,451.9,451.9,451.9
+512,512,St Clair,S,0,East,14889,St Clair Ave West at Lansdowne Ave East Side,14887,St Clair Ave West at Earlscourt Ave East Side,25,266.7,266.7,266.7,266.7
+512,512,St Clair,S,0,East,14933,St Clair Ave West at Laughton Ave East Side,14931,St Clair Ave West at Caledonia Rd East Side,25,243.6,243.6,243.6,243.6
+512,512,St Clair,S,0,East,14883,St Clair Ave West at Northcliffe Blvd East Side,14881,St Clair Ave West at Glenholme Ave East Side,25,187.5,187.5,187.5,187.5
+512,512,St Clair,S,0,East,14879,St Clair Ave West at Oakwood Ave East Side,14877,St Clair Ave West at Winona Dr East Side,25,261.7,261.7,261.7,261.7
+512,512,St Clair,S,0,East,15050,St Clair Ave West at Old Stock Yards Rd,14939,St Clair Ave West at Keele St/ Weston Rd,25,221.4,221.4,221.4,221.4
+512,512,St Clair,S,0,East,14937,St Clair Ave West at Old Weston Rd East Side,14935,St Clair Ave West at Hounslow Heath Rd East Side,25,253.1,253.1,253.1,253.1
+512,512,St Clair,S,0,East,14877,St Clair Ave West at Winona Dr East Side,14874,St Clair Ave West at Arlington Ave East Side,25,304.7,304.7,304.7,304.7
+512,512,St Clair,S,1,West,8150,St Clair Ave West at Avenue Rd West Side,8163,St Clair Ave West at Dunvegan Rd West Side,17,280.8,280.8,280.8,280.8
+512,512,St Clair,S,1,West,8159,St Clair Ave West at Deer Park Cres West Side,8150,St Clair Ave West at Avenue Rd West Side,17,286.5,286.5,286.5,286.5
+512,512,St Clair,S,1,West,8163,St Clair Ave West at Dunvegan Rd West Side,8182,St Clair Ave West at Russell Hill Rd West Side,17,244.1,244.1,244.1,244.1
+512,512,St Clair,S,1,West,8182,St Clair Ave West at Russell Hill Rd West Side,14355,St Clair Ave West at Spadina Rd West Side,17,277.8,277.8,277.8,277.8
+512,512,St Clair,S,1,West,14355,St Clair Ave West at Spadina Rd West Side,4632,St Clair Ave West at Tweedsmuir Ave West Side,17,168.7,168.7,168.7,168.7
+512,512,St Clair,S,1,West,4632,St Clair Ave West at Tweedsmuir Ave West Side,14337,St Clair Ave West at Bathurst St West Side,4,428.3,428.3,428.3,428.3
+512,512,St Clair,S,1,West,4632,St Clair Ave West at Tweedsmuir Ave West Side,14780,St Clair West Station,13,220.0,220.0,220.0,220.0
+512,512,St Clair,S,1,West,14345,St Clair Ave West at Yonge St West Side,8159,St Clair Ave West at Deer Park Cres West Side,17,338.2,338.2,338.2,338.2
+512,512,St Clair,S,1,West,14778,St Clair Station,14345,St Clair Ave West at Yonge St West Side,17,437.6,436.3,432.2,437.6
+512,512,St Clair,S,1,West,14780,St Clair West Station,14337,St Clair Ave West at Bathurst St West Side,13,487.9,487.9,487.9,487.9

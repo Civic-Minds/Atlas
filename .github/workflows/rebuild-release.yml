@@ -221,7 +221,7 @@ jobs:
 
       - name: Upload the reprocess report and release diff
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: rebuild-report-dry-run-${{ github.run_id }}
           path: |
@@ -253,7 +253,7 @@ jobs:
 
       - name: Upload the requested agencies' JSON
         if: always() && inputs.agencies != '' && steps.agency-files.outputs.paths != ''
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: rebuild-agencies-dry-run-${{ github.run_id }}
           path: ${{ steps.agency-files.outputs.paths }}
@@ -349,7 +349,7 @@ jobs:
 
       - name: Download the earlier run's saved stamps
         if: inputs.start_at != 'reprocess' && inputs.resume_run_id != ''
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: rebuild-stamps-${{ inputs.resume_run_id }}
           path: tmp/rebuild-state
@@ -358,7 +358,7 @@ jobs:
 
       - name: Download the earlier run's release manifest
         if: inputs.start_at == 'history' || inputs.start_at == 'publish'
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: rebuild-manifest-${{ inputs.resume_run_id }}
           path: tmp/rebuild-manifest
@@ -481,7 +481,7 @@ jobs:
 
       - name: Upload the saved stamps
         if: always() && steps.stamps.outcome == 'success'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: rebuild-stamps-${{ github.run_id }}
           path: tmp/rebuild-state
@@ -553,7 +553,7 @@ jobs:
 
       - name: Upload the release manifest
         if: always() && steps.manifest.outcome == 'success'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: rebuild-manifest-${{ github.run_id }}
           path: tmp/rebuild-manifest
@@ -636,7 +636,7 @@ jobs:
 
       - name: Upload the reprocess report and release diff
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: rebuild-report-publish-${{ github.run_id }}
           path: |

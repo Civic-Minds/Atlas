@@ -3,6 +3,7 @@ import type { Agency } from '../App';
 import type { DayType } from '../../shared/dayTypes';
 import type { ViewportBounds } from '../hooks/useIntervalStats';
 import { buildRouteKey, dedupeRouteKeysByDisplay } from './routeKey';
+import { compareAgencyName, compareRouteNumber } from './sortCompare';
 
 export interface MapContextRoute {
   key: string;
@@ -35,11 +36,9 @@ function buildMapContextAgencies(
       slug,
       name: agencies.find(agency => agency.slug === slug)?.name ?? slug,
       routeCount: routes.size,
-      routes: [...routes.values()].sort((a, b) =>
-        a.shortName.localeCompare(b.shortName, undefined, { numeric: true, sensitivity: 'base' })
-        || (a.longName ?? '').localeCompare(b.longName ?? '', undefined, { sensitivity: 'base' })),
+      routes: [...routes.values()].sort((a, b) => compareRouteNumber(a.shortName, b.shortName, a.longName, b.longName)),
     }))
-    .sort((a, b) => b.routeCount - a.routeCount || a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }));
+    .sort((a, b) => b.routeCount - a.routeCount || compareAgencyName(a.name, b.name) || a.slug.localeCompare(b.slug));
 }
 
 function addMapContextFeature(

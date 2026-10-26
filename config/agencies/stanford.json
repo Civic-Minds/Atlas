@@ -16,13 +16,13 @@
   "feedUrl": "https://transportation-forms.stanford.edu/google/google_transit.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-59/latest.zip",
   "lastFeedExpiry": "20270926",
-  "lastFeedVersion": "2026-10-03T16:41:58Z+eta154",
-  "lastRefreshedAt": "2026-10-07",
+  "lastFeedVersion": "2026-10-03T16:41:58Z+eta155",
+  "lastRefreshedAt": "2026-10-19",
   "cities": [
     "Palo Alto, California",
     "Mountain View, California"
   ],
-  "lastFeedCheckAt": "20261012",
+  "lastFeedCheckAt": "20261019",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270926",
@@ -39,7 +39,7 @@
       "routeHeadwayMismatches": 0,
       "featureCount": 30
     },
-    "checkedAt": "2026-10-07"
+    "checkedAt": "2026-10-19"
   },
   "timezone": "America/Los_Angeles",
   "feedRefreshStatus": "current",

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { andOthers, joinList, plural } from './overflowText';
+import { andOthers, countOf, joinList, plural } from './overflowText';
 
 describe('andOthers', () => {
   it('uses the singular for exactly one', () => {
@@ -22,6 +22,18 @@ describe('plural', () => {
       expect(plural(n, 'route')).toBe(n === 1 ? 'route' : 'routes');
       expect(plural(n, 'agency', 'agencies')).toBe(n === 1 ? 'agency' : 'agencies');
     }
+  });
+});
+
+describe('countOf', () => {
+  it('says "1 agency" and "1 route", never "1 agencies" (#1009)', () => {
+    expect(countOf(1, 'agency', 'agencies')).toBe('1 agency');
+    expect(countOf(1, 'route')).toBe('1 route');
+  });
+  it('uses the plural for 0 and several', () => {
+    expect(countOf(0, 'agency', 'agencies')).toBe('0 agencies');
+    expect(countOf(3, 'agency', 'agencies')).toBe('3 agencies');
+    expect(countOf(68, 'route')).toBe('68 routes');
   });
 });
 

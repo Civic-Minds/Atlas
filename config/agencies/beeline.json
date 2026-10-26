@@ -14,9 +14,9 @@
   ],
   "feedUrl": "https://westchester-gmv.itoworld.com/production/ito_westchester_county_gtfs.zip",
   "mdbFeedUrl": "https://s3.amazonaws.com/datatools-511ny/public/Westchester_County_Bee-Line_System.zip",
-  "lastFeedExpiry": "20270104",
-  "lastFeedVersion": "20260728_180759",
-  "lastRefreshedAt": "2026-07-29",
+  "lastFeedExpiry": "20270209",
+  "lastFeedVersion": null,
+  "lastRefreshedAt": "2026-10-19",
   "cities": [
     "White Plains, New York",
     "Greenburgh, New York",
@@ -30,15 +30,30 @@
     "Kings Bridge, New York"
   ],
   "timezone": "America/New_York",
-  "lastFeedCheckAt": "20261012",
-  "expiredFeedCheckCount": 3,
-  "expiredFeedCheckSince": "20260622",
-  "expiredFeedCheckExpiry": "20260927",
-  "feedRefreshStatus": "stale",
-  "feedRefreshError": "all available feeds expired (latest 20260927)",
-  "feedRefreshErrorAt": "20261012",
-  "feedRefreshRetryCount": 3,
+  "lastFeedCheckAt": "20261019",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20270209",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://s3.amazonaws.com/datatools-511ny/public/Westchester_County_Bee-Line_System.zip",
-  "lastPeekedExpiry": "20270104"
+  "lastPeekedExpiry": "20270209",
+  "feedQuality": {
+    "status": "review",
+    "score": 70,
+    "reasons": [
+      "3 route have stops whose frequency differs from the overall route schedule."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 3,
+      "featureCount": 245
+    },
+    "checkedAt": "2026-10-19"
+  }
 }

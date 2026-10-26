@@ -19,12 +19,12 @@
     -73.07
   ],
   "feedUrl": "https://www.stm.info/sites/default/files/gtfs/gtfs_stm.zip",
-  "lastFeedExpiry": "20261025",
-  "lastFeedVersion": "20260805110000_26S",
+  "lastFeedExpiry": "20270103",
+  "lastFeedVersion": "20261007130000_26N",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2126/latest.zip",
   "gtfsFares": true,
   "fareUrl": "https://www.stm.info/en/info/fares",
-  "lastRefreshedAt": "2026-08-24",
+  "lastRefreshedAt": "2026-10-19",
   "cities": [
     "Saint-Laurent, Quebec",
     "Notre-Dame-de-Grâce, Quebec",
@@ -37,27 +37,31 @@
     "Rosemont–La Petite-Patrie, Quebec",
     "Ville-Marie, Quebec"
   ],
-  "lastFeedCheckAt": "20261012",
+  "lastFeedCheckAt": "20261019",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261025",
+  "expiredFeedCheckExpiry": "20270103",
   "feedQuality": {
     "status": "review",
-    "score": 90,
+    "score": 70,
     "reasons": [
-      "1 route frequency metric need review."
+      "4 route have stops whose frequency differs from the overall route schedule."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
       "shapeAnomalies": 0,
-      "routeHeadwayMismatches": 1,
-      "featureCount": 1129
+      "routeHeadwayMismatches": 4,
+      "featureCount": 1132
     },
-    "checkedAt": "2026-08-24"
+    "checkedAt": "2026-10-19"
   },
   "timezone": "America/Montreal",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://www.stm.info/sites/default/files/gtfs/gtfs_stm.zip",
-  "lastPeekedExpiry": "20261025"
+  "lastPeekedExpiry": "20270103",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

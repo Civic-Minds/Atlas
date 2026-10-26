@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { Fragment, useState, useEffect, useMemo } from 'react';
 import { Settings, SlidersHorizontal, X, ArrowLeft, Search } from 'lucide-react';
 import { CompareSidePicker, SideBadge, type CompareSide } from './CompareControl';
-import { ICON_BTN, DROPDOWN_PANEL, SEARCH_FIELD, SEARCH_PILL, dropdownAnim, TRANSITION_BASE, Z_MODAL_TOP } from '../../styles';
+import { ICON_BTN, DROPDOWN_PANEL, SEARCH_FIELD, SEARCH_PILL, SEARCH_ICON, dropdownAnim, TRANSITION_BASE, Z_MODAL_TOP } from '../../styles';
 import Pill from '../ui/Pill';
 import Toggle from '../ui/Toggle';
 import { AVAILABLE_FILTER_MODES } from '../../utils/shareUrlState';
@@ -12,13 +12,14 @@ import { ATLAS_MODE, FEATURES, R2_PUBLIC_URL } from '../../../shared/config';
 import { plural } from '../../../shared/overflowText';
 import type { Agency } from '../../App';
 import { agencyDisplayParts, formatStoredDate, routeLabels } from '../../utils/format';
-import { presentFeedQualityReason, qualityStatusLabel } from '../../../shared/feedQuality';
+import { feedQualityListItems, presentFeedQualityReason, qualityStatusLabel } from '../../../shared/feedQuality';
 import { useColorVision } from '../../context/ColorVisionContext';
 import ArrowLink from '../ui/ArrowLink';
 import PanelEmpty from '../ui/PanelEmpty';
 import AgencyName from '../ui/AgencyName';
 import { loadingText } from '../../content/stateCopy';
-
+import { compareAgencyName, compareRegion, compareRouteNumber } from '../../utils/sortCompare';
+import RoundIconButton from '../ui/RoundIconButton';
 
 interface FilterPanelProps {
   lightMode: boolean;
@@ -79,7 +80,7 @@ export interface HiddenRoute {
 export function getHiddenFeedAgencies(agencies: Agency[]): Agency[] {
   return agencies
     .filter(agency => agency.feedQuality?.status === 'degraded' || agency.feedQuality?.status === 'unusable')
-    .sort((a, b) => a.name.localeCompare(b.name));
+    .sort((a, b) => compareAgencyName(a.name, b.name) || a.slug.localeCompare(b.slug));
 }
 
 export function updateHiddenRouteRegions(current: Set<string>, region: string): Set<string> {
@@ -147,7 +148,6 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
   const [hiddenRegionFilter, setHiddenRegionFilter] = useState<Set<string>>(new Set());
   const [degradedFeedsQuery, setDegradedFeedsQuery] = useState('');
   const [degradedFeedsStatus, setDegradedFeedsStatus] = useState<'all' | 'degraded' | 'unusable'>('all');
-  const [degradedFeedsSort, setDegradedFeedsSort] = useState<'name' | 'status'>('name');
 
   useEffect(() => {
     if (open) {
@@ -198,7 +198,6 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
     setHiddenRegionFilter(new Set());
     setDegradedFeedsQuery('');
     setDegradedFeedsStatus('all');
-    setDegradedFeedsSort('name');
   };
 
   const selectHiddenRouteRegion = (region: string) => {
@@ -236,7 +235,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
   }, [listRoutes, hiddenRoutesQuery, hiddenRegionFilter]);
 
   const hiddenRouteRegions = useMemo(
-    () => [...new Set(listRoutes.map(route => route.region ?? 'Other'))].sort(),
+    () => [...new Set(listRoutes.map(route => route.region ?? 'Other'))].sort(compareRegion),
     [listRoutes],
   );
 
@@ -254,14 +253,13 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
       grouped.set(route.agencySlug, group);
     }
     return [...grouped.entries()]
-      .sort(([, a], [, b]) => a.agencyName.localeCompare(b.agencyName))
+      .sort(([aSlug, a], [bSlug, b]) => compareAgencyName(a.agencyName, b.agencyName) || aSlug.localeCompare(bSlug))
       .map(([agencySlug, group]) => [
         agencySlug,
         {
           ...group,
           routes: group.routes.sort((a, b) =>
-            a.routeShortName.localeCompare(b.routeShortName, undefined, { numeric: true })
-            || (a.routeLongName ?? '').localeCompare(b.routeLongName ?? ''),
+            compareRouteNumber(a.routeShortName, b.routeShortName, a.routeLongName, b.routeLongName),
           ),
         },
       ] as const);
@@ -277,17 +275,11 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
       .filter(agency => {
         if (!q) return true;
         const quality = agency.feedQuality!;
-        return [agency.name, ...(agency.cities ?? []), agency.displayArea ?? '', quality.status, ...quality.reasons.map(presentFeedQualityReason)]
+        return [agency.name, ...(agency.cities ?? []), agency.displayArea ?? '', quality.status, ...quality.reasons.map(presentFeedQualityReason), ...feedQualityListItems(quality.reasons)]
           .some(value => value.toLowerCase().includes(q));
       })
-      .sort((a, b) => {
-        if (degradedFeedsSort === 'status') {
-          const byStatus = (a.feedQuality?.status ?? '').localeCompare(b.feedQuality?.status ?? '');
-          if (byStatus !== 0) return byStatus;
-        }
-        return a.name.localeCompare(b.name);
-      });
-  }, [degradedFeedsQuery, degradedFeedsSort, degradedFeedsStatus, hiddenFeedAgencies]);
+      .sort((a, b) => compareAgencyName(a.name, b.name) || a.slug.localeCompare(b.slug));
+  }, [degradedFeedsQuery, degradedFeedsStatus, hiddenFeedAgencies]);
 
   const agencyCitiesBySlug = useMemo(
     () => new Map(agencyCatalog.map(agency => [agency.slug, agency.cities] as const)),
@@ -399,13 +391,12 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                       : isFilters ? 'Filters' : 'Settings'}
                 </h2>
               </div>
-              <button
+              <RoundIconButton
                 onClick={close}
-                className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-[var(--bg-btn-hover)] text-[var(--text-dim)] transition-colors"
                 aria-label={isFilters ? 'Close filters' : 'Close settings'}
               >
                 <X className="w-3.5 h-3.5" />
-              </button>
+              </RoundIconButton>
             </div>
 
             <div className="overflow-y-auto flex flex-col">
@@ -413,7 +404,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                 <>
                   <div className="px-5 pt-4 pb-3">
                     <label className={SEARCH_PILL}>
-                      <Search className="w-3 h-3 text-[var(--text-dim)] shrink-0" />
+                      <Search className={SEARCH_ICON} />
                       <input
                         value={hiddenRoutesQuery}
                         onChange={event => setHiddenRoutesQuery(event.target.value)}
@@ -479,13 +470,10 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                 </>
               ) : view === 'degraded-feeds' ? (
                 <div className="px-5 py-3">
-                  <p className="text-xs text-[var(--text-muted)] leading-relaxed pb-2">
-                    Atlas found serious data problems or an expired schedule in these agencies.
-                  </p>
                   {hiddenFeedAgencies.length > 0 && (
                     <>
                       <label className={SEARCH_PILL}>
-                        <Search className="w-3 h-3 text-[var(--text-dim)] shrink-0" />
+                        <Search className={SEARCH_ICON} />
                         <input
                           value={degradedFeedsQuery}
                           onChange={event => setDegradedFeedsQuery(event.target.value)}
@@ -504,15 +492,6 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                             {status === 'all' ? 'All' : qualityStatusLabel(status)}
                           </Pill>
                         ))}
-                        <select
-                          value={degradedFeedsSort}
-                          onChange={event => setDegradedFeedsSort(event.target.value as 'name' | 'status')}
-                          aria-label="Sort degraded feeds"
-                          className="ml-auto h-6 rounded-md bg-[var(--bg-app)] border border-[var(--border-primary)] px-1.5 text-xs text-[var(--text-muted)] outline-none"
-                        >
-                          <option value="name">Name</option>
-                          <option value="status">Status</option>
-                        </select>
                       </div>
                     </>
                   )}
@@ -536,9 +515,14 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                               <AgencyName primary={primary} secondary={secondary} />
                             </p>
                             {quality.reasons.length > 0 && (
-                              <ul className="mt-1.5 space-y-0.5 text-xs text-[var(--text-muted)] leading-relaxed">
-                                {quality.reasons.map(reason => <li key={reason}>{presentFeedQualityReason(reason)}</li>)}
-                              </ul>
+                              <p className="mt-1.5 text-xs text-[var(--text-muted)] leading-relaxed">
+                                {feedQualityListItems(quality.reasons).map((item, index, items) => (
+                                  <Fragment key={item}>
+                                    {index > 0 && ' '}
+                                    <span className={item.length <= 40 ? 'whitespace-nowrap' : undefined}>{item}{index < items.length - 1 ? ' ·' : ''}</span>
+                                  </Fragment>
+                                ))}
+                              </p>
                             )}
                             <p className="mt-1 text-xs text-[var(--text-dim)]">Checked {checkedDate}</p>
                           </div>
@@ -637,12 +621,12 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                         )}
                         {id === 'limited' && limitedServiceRouteCount != null && (
                           <ArrowLink as="button" tone="inline" size="xs" onClick={() => setView('limited-routes')} className="mt-1">
-                            {limitedServiceRouteCount.toLocaleString()} {plural(limitedServiceRouteCount, 'route')} affected
+                            See all part-time {plural(limitedServiceRouteCount, 'route')} ({limitedServiceRouteCount.toLocaleString()})
                           </ArrowLink>
                         )}
                         {id === 'quality' && (
                           <ArrowLink as="button" tone="inline" size="xs" onClick={() => setView('degraded-feeds')} className="mt-1">
-                            {hideLowQuality ? 'See hidden feeds' : 'Review degraded feeds'}
+                            See all degraded {plural(hiddenFeedAgencies.length, 'feed')}
                             {hiddenFeedAgencies.length ? ` (${hiddenFeedAgencies.length.toLocaleString()})` : ''}
                           </ArrowLink>
                         )}

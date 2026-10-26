@@ -16,11 +16,12 @@
     "McAllen, Texas",
     "Edinburg, Texas"
   ],
-  "lastFeedCheckAt": "20261012",
+  "lastFeedCheckAt": "20261019",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261231",
   "timezone": "America/Chicago",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://mcallen.net/metro/assets/resources/GTFS%20-%20TransLoc.zip"
+  "lastFeedSourceUrl": "https://mcallen.net/metro/assets/resources/GTFS%20-%20TransLoc.zip",
+  "lastPeekedExpiry": "20261231"
 }

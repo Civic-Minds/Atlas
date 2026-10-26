@@ -127,6 +127,8 @@ export interface FeedDates {
   feedVersion: string | null;
   /** feed_info.txt feed_end_date alone, for recordedFeedExpiry (#875). */
   feedInfoEnd: string | null;
+  /** Latest service date from calendar.txt and added calendar_dates alone, for recordedFeedExpiry (#1039). */
+  calendarOnlyEnd?: string | null;
 }
 
 /** Read the first and latest advertised service dates and feed_version from a GTFS zip. */
@@ -157,6 +159,10 @@ export async function peekFeedDates(buf: Buffer): Promise<FeedDates> {
       }),
       feedVersion: feedInfo.feed_version || null,
       feedInfoEnd: feedInfo.feed_end_date || null,
+      calendarOnlyEnd: effectiveFeedExpiry({
+        calendarEnds: calendar.map(row => row.end_date),
+        calendarDates,
+      }),
     };
   } catch {
     return { feedStart: null, feedExpiry: null, feedVersion: null, feedInfoEnd: null };

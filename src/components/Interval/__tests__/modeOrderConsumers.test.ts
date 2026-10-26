@@ -3,7 +3,7 @@ import { MODE_DEFINITIONS, FILTER_MODES, filterModeOptions, modeLabel, ON_DEMAND
 import { agencyStats, modesText, type AgencyPageRoute } from '../../../../shared/agencyPages';
 import { buildAreaPageData } from '../../../../shared/areaPages';
 import { buildAgencyRouteFilters } from '../AgencyCard';
-import { buildHistoryRouteFilters } from '../../../utils/historyRouteFilters';
+import { buildRouteModeFilters } from '../../../utils/routeModeFilters';
 import { AVAILABLE_FILTER_MODES } from '../../../utils/shareUrlState';
 
 // One shared definition of mode order and labels; every place that lists modes must follow it (#827).
@@ -51,7 +51,7 @@ describe('shared mode order and labels', () => {
     const card = buildAgencyRouteFilters(rows).map(c => c.label);
     expect(ascending(inOrder(card))).toBe(true);
     expect(card).not.toContain('Bus');
-    const history = buildHistoryRouteFilters(SHUFFLED.map(routeType => ({ routeShortName: String(routeType), routeType, agencySlug: 'x' }))).map(c => c.label);
+    const history = buildRouteModeFilters(SHUFFLED.map(routeType => ({ routeShortName: String(routeType), routeType, agencySlug: 'x' }))).map(c => c.label);
     expect(history).toEqual(card);
   });
 });

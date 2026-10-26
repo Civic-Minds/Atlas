@@ -1,8 +1,8 @@
 import { effectiveMode, knownModeLabel, sortModes } from '../../shared/modes';
 
-export type HistoryRouteFilterKey = `mode:${number}` | 'subtype:brt' | 'subtype:express';
+export type RouteModeFilterKey = `mode:${number}` | 'subtype:brt' | 'subtype:express';
 
-export interface HistoryRouteFilterRoute {
+export interface RouteModeFilterRoute {
   routeShortName: string;
   routeLongName?: string | null;
   routeType?: number | string | null;
@@ -11,22 +11,22 @@ export interface HistoryRouteFilterRoute {
 }
 
 export interface HistoryRouteFilter {
-  key: HistoryRouteFilterKey;
+  key: RouteModeFilterKey;
   label: string;
   count: number;
 }
 
-export function historyRouteModeLabel(route: HistoryRouteFilterRoute): string | null {
+export function routeModeFilterLabel(route: RouteModeFilterRoute): string | null {
   const mode = effectiveMode(route);
   return mode === 3 ? null : knownModeLabel(mode);
 }
 
-export function buildHistoryRouteFilters(routes: HistoryRouteFilterRoute[]): HistoryRouteFilter[] {
+export function buildRouteModeFilters(routes: RouteModeFilterRoute[]): HistoryRouteFilter[] {
   const filters: HistoryRouteFilter[] = [];
   const modes = new Map<number, { label: string; count: number }>();
 
   for (const route of routes) {
-    const label = historyRouteModeLabel(route);
+    const label = routeModeFilterLabel(route);
     if (!label) continue;
     const mode = effectiveMode(route);
     const current = modes.get(mode);
@@ -46,7 +46,7 @@ export function buildHistoryRouteFilters(routes: HistoryRouteFilterRoute[]): His
   return filters;
 }
 
-export function historyRouteMatchesFilter(route: HistoryRouteFilterRoute, filter: HistoryRouteFilterKey): boolean {
+export function routeMatchesModeFilter(route: RouteModeFilterRoute, filter: RouteModeFilterKey): boolean {
   if (filter.startsWith('mode:')) return effectiveMode(route) === Number(filter.slice(5));
   if (filter === 'subtype:brt') return route.busSubType === 'brt';
   if (filter === 'subtype:express') return route.busSubType === 'express';

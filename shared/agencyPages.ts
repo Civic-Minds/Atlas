@@ -6,6 +6,7 @@
  */
 import { headwayEvery } from './headwayText';
 import { modeLabel, sortModes } from './modes';
+import { compareAgencyName, compareNullableAscending } from './sortCompare';
 import { areaRegionName, areaRegionTitle } from './areaRegions';
 import { BETA_BUILD } from './config';
 import { DESCRIPTION_MAX, DESCRIPTION_MIN, TITLE_MAX, firstThatFits, truncateAtWord } from './seoText';
@@ -431,7 +432,7 @@ export function nearbyAgencies(a: AgencyPageSummary, all: readonly AgencyPageSum
   return all
     .filter(o => o.slug !== a.slug && o.region === a.region)
     .map(o => ({ o, d: a.center && o.center ? distanceKm(a.center, o.center) : Infinity }))
-    .sort((x, y) => x.d - y.d || x.o.displayName.localeCompare(y.o.displayName))
+    .sort((x, y) => compareNullableAscending(x.d, y.d) || compareAgencyName(x.o.displayName, y.o.displayName) || x.o.slug.localeCompare(y.o.slug))
     .slice(0, limit)
     .map(x => x.o);
 }

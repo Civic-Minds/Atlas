@@ -33,12 +33,29 @@ export interface AgencyFeedConfig {
   referenceDateFromRunDate?: boolean;
   fare?: number;
   supplementalFeedUrls?: string[];
+  /** The main feed's configured URL; matched against nextServiceDatesFeedUrls. */
+  feedUrl?: string | null;
+  /**
+   * Feeds (by URL: the main feedUrl or one of supplementalFeedUrls) that give each day or few
+   * days its own short service_id. Each day type is read from one typical real date in the two
+   * weeks after the run date instead of one reference date (LA Metro Rail supplemental, #1019;
+   * Sound Transit main feed, #1035; see serviceDates.ts). Feeds not listed keep the default
+   * calendar logic.
+   */
+  nextServiceDatesFeedUrls?: string[];
+  /**
+   * For the feeds in nextServiceDatesFeedUrls: leave a weekday line's occasional weekend services
+   * out of the Saturday and Sunday read (Sound Transit's Sounder game-day trains, CIV-445).
+   */
+  nextServiceDatesSkipWeekendEvents?: boolean;
 }
 
 export interface AgencyProcessOverrides {
   /** Resolved fare (e.g. from fare-overrides.json); falls back to the agency's legacy `fare`. */
   manualBaseFare?: number;
   force?: boolean;
+  /** History v2 backfill only: read the feed at this reference date (YYYYMMDD) instead of the detected one. */
+  referenceDate?: string;
 }
 
 export interface SupplementalFeed {
@@ -49,6 +66,11 @@ export interface SupplementalFeed {
 export interface AgencyFeedResult extends ProcessResult {
   /** Feature count contributed by each supplemental feed, in input order. */
   supplementalFeatureCounts: Array<{ url: string; featureCount: number }>;
+  /**
+   * Which feed each entry of the merged `geojson.features` came from, in order: the main feed
+   * first (url null), then each supplemental. Counts are the merged array's own slice sizes.
+   */
+  featureSources: Array<{ url: string | null; count: number }>;
   /** CIV-321: the beta section colours' fields, moved off the route features (`{slug}-sections.json`). */
   sectionsJson: string;
 }
@@ -72,6 +94,7 @@ export function agencyProcessOptions(agency: AgencyFeedConfig, overrides: Agency
     referenceDateFromRunDate: agency.referenceDateFromRunDate,
     manualBaseFare: overrides.manualBaseFare ?? agency.fare,
     force: overrides.force ?? false,
+    ...(overrides.referenceDate ? { referenceDate: overrides.referenceDate } : {}),
   };
 }
 
@@ -155,9 +178,18 @@ export async function processAgencyFeeds(
   }
 
   const options = agencyProcessOptions(agency, overrides);
-  const primary = await processGtfsBuffer(primaryBuf, onProgress, options);
+  const nextServiceDatesUrls = new Set(agency.nextServiceDatesFeedUrls ?? []);
+  const withNextServiceDates = (url: string | null | undefined): ProcessOptions =>
+    url && nextServiceDatesUrls.has(url) ? {
+      ...options,
+      dayTypesFromNextServiceDates: true,
+      ...(agency.nextServiceDatesSkipWeekendEvents ? { nextServiceDatesSkipWeekendEvents: true } : {}),
+    } : options;
+  // The main feed opts in by its configured URL, whichever source the zip came from (archive, mirror).
+  const primary = await processGtfsBuffer(primaryBuf, onProgress, withNextServiceDates(agency.feedUrl));
   const primaryCollection = JSON.parse(primary.geojson) as FeatureCollection;
   const features = primaryCollection.features;
+  const featureSources: AgencyFeedResult['featureSources'] = [{ url: null, count: features.length }];
   // Running time (CIV-84) per feed; the main feed wins any key a supplemental feed repeats.
   const runningTimes: Record<string, unknown> = {};
   const corridorFeatures = (JSON.parse(primary.corridorsGeojson) as FeatureCollection).features;
@@ -169,9 +201,10 @@ export async function processAgencyFeeds(
   let featureCount = primary.featureCount;
 
   for (const { url, buf } of supplementalFeeds) {
-    const supp = await processGtfsBuffer(buf, onProgress, options);
+    const supp = await processGtfsBuffer(buf, onProgress, withNextServiceDates(url));
     const suppCollection = JSON.parse(supp.geojson) as FeatureCollection;
     features.push(...suppCollection.features);
+    featureSources.push({ url, count: suppCollection.features.length });
     Object.assign(runningTimes, suppCollection.runningTimes ?? {});
     corridorFeatures.push(...(JSON.parse(supp.corridorsGeojson) as FeatureCollection).features);
     Object.assign(stopsIndex, JSON.parse(supp.stopsJson));
@@ -196,6 +229,7 @@ export async function processAgencyFeeds(
     featureCount,
     shapeAnomalies,
     supplementalFeatureCounts,
+    featureSources,
     sectionsJson: JSON.stringify(sections),
   };
 }

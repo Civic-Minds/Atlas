@@ -9,6 +9,9 @@ import { trackEvent } from '../../lib/analytics';
 import { FEATURES } from '../../../shared/config';
 import { useColorVision } from '../../context/ColorVisionContext';
 import ArrowLink from '../ui/ArrowLink';
+import LinkPill from '../ui/LinkPill';
+import RoundIconButton from '../ui/RoundIconButton';
+import { OutboundLink } from '../OutboundLink';
 
 export { default as CardDirectionRow } from './RouteDirectionRow';
 
@@ -16,6 +19,12 @@ export const CARD_EYEBROW = 'text-xs font-bold text-[var(--text-muted)] leading-
 export const CARD_TITLE = 'text-sm font-black text-[var(--text-primary)] leading-tight';
 export const CARD_LIST_ROUTE = 'text-xs font-bold text-[var(--text-primary)] leading-snug';
 export const CARD_SECTION = 'text-xs font-black text-[var(--text-dim)]';
+/** A list card's header block (agency card, History's agency view): one divider under it. */
+export const CARD_HEADER_BLOCK = 'shrink-0 px-4 pt-4 pb-3 border-b border-[var(--border-primary)]';
+/** The route card's scrolling body on desktop (the map's route card and History's route view). */
+export const SIDEBAR_CARD_BODY = `relative flex-1 min-h-0 ${FLOATING_CARD} px-4 pt-4 pb-2 overflow-y-auto overflow-x-hidden custom-scrollbar`;
+/** The line under a card title ("Atlanta · 102 routes · 2013–2026"). */
+export const CARD_SUMMARY = 'text-xs font-bold text-[var(--text-dim)] mt-1 leading-snug';
 
 const REPORT_REASONS = [
   'Route or agency is missing',
@@ -274,9 +283,9 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
                 <h2 id={dialogTitleId} className={CARD_TITLE}>Report a problem</h2>
                 <p className={`${CARD_NOTICE} mt-0.5`}>Choose a category, or click a card value to preselect its reason.</p>
               </div>
-              <button type="button" onClick={reset} aria-label="Close report form" className="w-7 h-7 flex items-center justify-center rounded-full text-[var(--text-dim)] hover:bg-[var(--bg-btn-hover)]">
+              <RoundIconButton onClick={reset} aria-label="Close report form">
                 <X className="w-3.5 h-3.5" />
-              </button>
+              </RoundIconButton>
             </div>
 
             <div className="px-4 py-3 space-y-2">
@@ -439,12 +448,19 @@ export function CardBackLink({ onClick, children }: { onClick: () => void; child
   );
 }
 
+const SUFFIX_TONE = {
+  dim: 'text-[var(--text-dim)]',
+  negative: 'text-[var(--status-negative-text)]',
+  positive: 'text-[var(--status-positive-text)]',
+} as const;
+
 export function HeadwayBadge({
   headway,
   colorHeadway,
   label,
   live,
   suffix,
+  suffixTone = 'dim',
   className = '',
 }: {
   headway: number;
@@ -452,6 +468,8 @@ export function HeadwayBadge({
   label?: string;
   live?: boolean;
   suffix?: string;
+  /** Colour of the suffix: dim by default; negative (red) or positive (green) for a change, as History's snapshot rows show it. */
+  suffixTone?: 'dim' | 'negative' | 'positive';
   className?: string;
 }) {
   const { colorVisionFriendly } = useColorVision();
@@ -461,7 +479,7 @@ export function HeadwayBadge({
       {live && <Radio className="w-2.5 h-2.5 text-[var(--accent)] shrink-0" aria-label="Live data available" />}
       <span className="w-2 h-2 rounded-full shrink-0" style={{ background: headwayToTierColor(colorHeadway ?? headway, colorMode) }} />
       <span className="whitespace-nowrap">{label ?? fmtHeadway(headway)}</span>
-      {suffix && <span className="text-xs font-bold text-[var(--text-dim)] whitespace-nowrap">{suffix}</span>}
+      {suffix && <span className={`text-xs font-bold whitespace-nowrap ${SUFFIX_TONE[suffixTone]}`}>{suffix}</span>}
     </span>
   );
 }
@@ -577,15 +595,18 @@ export function CardHelpNotice({
   actionLabel = 'Learn more',
 }: {
   message: string;
-  onLearnMore: () => void;
+  /** Without it the notice is the sentence alone, no link. */
+  onLearnMore?: () => void;
   actionLabel?: string;
 }) {
   return (
     <div className={`${CARD_NOTICE} flex min-w-0 flex-wrap items-start gap-x-1 gap-y-0.5`}>
       <span className="min-w-0 flex-1 whitespace-normal break-words leading-relaxed">{message}</span>
-      <ArrowLink as="button" tone="inline" size="xs" onClick={onLearnMore} className="shrink-0 whitespace-nowrap">
-        {actionLabel}
-      </ArrowLink>
+      {onLearnMore && (
+        <ArrowLink as="button" tone="inline" size="xs" onClick={onLearnMore} className="shrink-0 whitespace-nowrap">
+          {actionLabel}
+        </ArrowLink>
+      )}
     </div>
   );
 }
@@ -676,4 +697,19 @@ export function CardSublineButton({
       {children}
     </button>
   );
+}
+
+/** "Data source": a link to the agency's own website in an agency card's header. Beta-only; nothing for an agency with no website. */
+export function AgencyDataSourceLink({ agency }: { agency: { slug: string; websiteUrl?: string } }) {
+  if (!FEATURES.dataSourceLink || !agency.websiteUrl) return null;
+  return (
+    <ArrowLink as={OutboundLink} size="xs" tone="inline" href={agency.websiteUrl} kind="agency_website" agencySlug={agency.slug} aria-label="Data source (opens in a new tab)" title="Opens in a new tab">
+      Data source
+    </ArrowLink>
+  );
+}
+
+/** "All <place> area agencies": a small chip beside the card's summary line. */
+export function AgencyAreaChip({ href, label }: { href: string; label: string }) {
+  return <LinkPill href={href} className="mt-1">{label}</LinkPill>;
 }

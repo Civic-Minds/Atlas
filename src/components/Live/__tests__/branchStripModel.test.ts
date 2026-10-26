@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { allBranchStops, branchStripFromV3, branchesOf, columnsOf, sharedRun } from '../branchStripModel';
+import { allBranchStops, branchStripFromV3, branchesOf, columnsOf, phoneSections, phoneStretchRows, sharedRun } from '../branchStripModel';
 import type { LiveV3 } from '../../../../shared/liveDashboard';
 import type { RouteStripStop } from '../routeStripModel';
 
@@ -82,5 +82,24 @@ describe('branchStripFromV3 bunching join (CIV-311)', () => {
     const old = JSON.parse(JSON.stringify(v3)); delete old.bunching[0].bands.all.branchStops;
     const by = new Map(allBranchStops(branchStripFromV3(old, 0, 'all')!).map(s => [s.stopId, s]));
     expect(by.get('x')).toMatchObject({ bunchingShare: null, bunchingN: 0 });
+  });
+});
+
+describe('phone strip sections and stretch rows (CIV-506)', () => {
+  const mk = (ids: string[]) => ids.map(id => ({ stopId: id, name: id }));
+  const stopFor = (s: { stopId: string; name: string }) => ({ stopId: s.stopId, name: s.name, delayMin: 0, lateShare: 0, bunchingShare: 0, bunchedShare: 0, gappedShare: 0, n: 50, bunchingN: 50 }) as never;
+  // 504 eastbound shape: the main pattern starts on the Dufferin Gate branch (G1, G2), the Dundas West branch (D1..D5) is the other lead-in.
+  const parts = branchesOf([{ stops: mk(['G1', 'G2', 'T1', 'T2', 'T3']) }, { stops: mk(['D1', 'D2', 'D3', 'D4', 'D5', 'T1', 'T2', 'T3']) }], stopFor)!;
+  const model = { directionId: 0, label: 'Eastbound', ...parts, delaysStart: null, bunchingForms: null } as never as Parameters<typeof phoneSections>[0];
+
+  it('puts the main pattern lead-in next to the trunk, so the main line is unbroken', () => {
+    const order = phoneSections(model).flatMap(s => s.stops.map(x => x.stopId));
+    expect(order).toEqual(['D1', 'D2', 'D3', 'D4', 'D5', 'G1', 'G2', 'T1', 'T2', 'T3']);
+  });
+
+  it('brackets only the stretch stops (G2 to T1), never the other branch between', () => {
+    const r = phoneStretchRows(phoneSections(model), model.lines[0], 1, 2);
+    expect([...r.ids]).toEqual(['G2', 'T1']);
+    expect(r.last - r.first).toBe(1);
   });
 });

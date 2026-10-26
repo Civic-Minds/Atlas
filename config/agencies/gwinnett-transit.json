@@ -17,11 +17,12 @@
     "Brookhaven, Georgia",
     "Stonecrest, Georgia"
   ],
-  "lastFeedCheckAt": "20261012",
+  "lastFeedCheckAt": "20261019",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261226",
   "timezone": "America/New_York",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2241/latest.zip"
+  "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2241/latest.zip",
+  "lastPeekedExpiry": "20261226"
 }

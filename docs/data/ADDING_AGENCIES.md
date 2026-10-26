@@ -98,7 +98,3 @@ A live incremental upload writes the legacy root `atlas.pmtiles`, which is outsi
 cp tmp/incremental-pmtiles-build/<slug>/atlas.pmtiles tmp/atlas-pmtiles-preview.pmtiles
 ```
 `vite.config.ts`'s dev proxy serves this file directly (with proper Range-request support) for `atlas.pmtiles` requests instead of proxying to R2, with zero writes to the live bucket. It only does so when `VITE_USE_LOCAL_PREVIEWS=true` is set **and** a matching `tmp/atlas-preview-manifest.json` exists (written by `npm run build-pmtiles -- --dry-run`; the incremental script does not write one) — a preview archive without its manifest is ignored so local tiles are never paired with live agency data. Requires a dev server restart to pick up; delete the preview file to go back to normal behavior.
-
----
-
-[Back to Data](../DATA.md)

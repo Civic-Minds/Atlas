@@ -15,9 +15,9 @@
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-473/latest.zip",
   "region": "Virginia",
-  "lastFeedExpiry": "20261024",
-  "lastFeedVersion": "1",
-  "lastRefreshedAt": "2026-08-07",
+  "lastFeedExpiry": "20270522",
+  "lastFeedVersion": null,
+  "lastRefreshedAt": "2026-10-19",
   "cities": [
     "Norfolk, Virginia",
     "Newport News, Virginia",
@@ -28,10 +28,10 @@
     "East Hampton, Virginia",
     "Portsmouth, Virginia"
   ],
-  "lastFeedCheckAt": "20261012",
+  "lastFeedCheckAt": "20261019",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261024",
+  "expiredFeedCheckExpiry": "20270522",
   "timezone": "America/New_York",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-473/latest.zip",
@@ -42,5 +42,25 @@
       "mode": 100,
       "reason": "Tide is light rail, published as route_type 0 (tram)"
     }
-  ]
+  ],
+  "feedQuality": {
+    "status": "review",
+    "score": 70,
+    "reasons": [
+      "4 route shapes needed adjustment before display."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 4,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 320
+    },
+    "checkedAt": "2026-10-19"
+  },
+  "lastPeekedExpiry": "20270522",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

@@ -50,7 +50,3 @@ Target: ~$500/month per agency. Mid-sized agencies (10–100 buses) are the swee
 | Regional | MPO or regional authority | All agencies in their geography |
 
 Agency data is isolated by default — an agency only sees their own numbers.
-
----
-
-[Back to Roadmap](../roadmap/ROADMAP.md)

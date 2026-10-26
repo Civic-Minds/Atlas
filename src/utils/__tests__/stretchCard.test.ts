@@ -88,7 +88,7 @@ describe('no filter value for the period (YRT Viva overnight)', () => {
 
 describe('the outside-filter notice', () => {
   it('uses the real value, not a fixed 30', () => {
-    expect(selectedRouteFilterNotice({ headway: 15, activeRange: '8 AM–3 PM', periodRange: '9 AM–3 PM' })).toContain('about every 15 min');
+    expect(selectedRouteFilterNotice({ headway: 15, activeRange: '8 AM–3 PM', periodRange: '9 AM–3 PM' })).toContain('every 15 min');
     expect(selectedRouteFilterNotice({ headway: null, activeRange: '4–5 AM', periodRange: '2–6 AM' })).not.toContain('every');
   });
 });

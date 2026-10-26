@@ -1,9 +1,16 @@
 import type * as maplibregl from 'maplibre-gl';
 import { fitTargetForPoints } from '../../../utils/routeFitTarget';
 import type { LonLat } from '../../../../shared/routeGeometry';
+import { FEATURES } from '../../../../shared/config';
 
 /** Which side of the map the card sits on, on wide screens. */
 export type CardSide = 'left' | 'right';
+
+/** The phone top bar's buttons sit 21px in from each side and end 51px from the top (measured at 360-402px wide). */
+const PHONE_TOP_BAR_SIDE_INSET = 21;
+const PHONE_TOP_BAR_BOTTOM = 51;
+/** Clear space kept between a framed route and the top bar or screen edge. */
+const PHONE_FRAME_MARGIN = 24;
 
 /**
  * Camera padding that keeps a route clear of the card: beside it on wide screens, above the
@@ -12,10 +19,22 @@ export type CardSide = 'left' | 'right';
 export function routeFramePadding(map: maplibregl.Map, side: CardSide = 'left', { phoneSheet = false }: { phoneSheet?: boolean } = {}): maplibregl.PaddingOptions {
   const { clientWidth, clientHeight } = map.getContainer();
   // Live's card is a bottom sheet on phones; the main map and History keep their framing.
-  if (phoneSheet && clientWidth < 640) return { top: 60, bottom: Math.round(clientHeight * 0.45), left: 30, right: 30 };
+  if (phoneSheet && clientWidth < 640) {
+    const inset = PHONE_TOP_BAR_SIDE_INSET + PHONE_FRAME_MARGIN;
+    return { top: PHONE_TOP_BAR_BOTTOM + PHONE_FRAME_MARGIN, bottom: Math.round(clientHeight * 0.45), left: inset, right: inset };
+  }
   return side === 'left'
     ? { top: 80, bottom: 80, left: 320, right: 80 }
     : { top: 80, bottom: 80, left: 80, right: 280 };
+}
+
+/**
+ * Padding for the main map's route selection. Where the route card is a phone bottom sheet
+ * (FEATURES.mobileRouteSheet), frame above the sheet: the side-card padding (400px of left+right)
+ * leaves a phone map almost no width, so the fit zooms out to a continent.
+ */
+export function selectionFramePadding(map: maplibregl.Map, phoneSheet: boolean = FEATURES.mobileRouteSheet): maplibregl.PaddingOptions {
+  return routeFramePadding(map, 'left', { phoneSheet });
 }
 
 /** Fit the camera to a route's (or stretch's) coordinates, or fly to it when it's a single point. */

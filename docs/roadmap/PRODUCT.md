@@ -36,7 +36,3 @@ User experience and the workflow of a transit professional using Atlas.
 
 - Every view should be usable by a transit planner without data science training
 - Default performance metric is headway consistency, not timepoint adherence — headway is what passengers experience
-
----
-
-[Back to Roadmap](./ROADMAP.md)

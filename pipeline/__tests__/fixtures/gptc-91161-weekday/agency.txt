@@ -1,0 +1,2 @@
+agency_id,agency_name,agency_url,agency_timezone,agency_lang,agency_phone,agency_branding_url,agency_fare_url,agency_email
+1,Gary Public Transportation Corp,https://www.gptcbus.com/,America/Chicago,en,(219) 980-7566,,https://www.gptcbus.com/fares/,

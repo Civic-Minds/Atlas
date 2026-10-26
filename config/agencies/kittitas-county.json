@@ -11,8 +11,8 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2456/latest.zip",
   "region": "Washington",
   "lastFeedExpiry": "20270301",
-  "lastFeedVersion": "UTC: 05-Oct-2026 18:47",
-  "lastRefreshedAt": "2026-10-12",
+  "lastFeedVersion": "UTC: 15-Oct-2026 17:54",
+  "lastRefreshedAt": "2026-10-19",
   "feedQuality": {
     "status": "review",
     "score": 90,
@@ -26,11 +26,11 @@
       "routeHeadwayMismatches": 0,
       "featureCount": 36
     },
-    "checkedAt": "2026-10-12"
+    "checkedAt": "2026-10-19"
   },
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://data.trilliumtransit.com/gtfs/ellensburg-wa-us/ellensburg-wa-us.zip",
-  "lastFeedCheckAt": "20261012",
+  "lastFeedCheckAt": "20261019",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270301",

@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import { GTFS_FILES_DIR } from '../pipeline/gtfsArchivePath';
 
 interface Agency {
   slug: string;
@@ -14,7 +15,7 @@ const main = () => {
   const indexData = JSON.parse(fs.readFileSync(indexPath, 'utf-8'));
   const agencies: Agency[] = indexData.agencies;
 
-  const gtfsDir = '/Users/ryan/Desktop/Data/GTFS/Files/Canada/Ontario/';
+  const gtfsDir = path.join(GTFS_FILES_DIR, 'Canada', 'Ontario');
   const files = fs.readdirSync(gtfsDir);
   console.log(`Found ${files.length} files in GTFS directory.`);
 

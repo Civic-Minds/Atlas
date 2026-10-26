@@ -1,17 +1,17 @@
 import React, { useState, useEffect, useLayoutEffect, useRef, useCallback, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router';
-import { Map as MapIcon, Search, X, Info, History as HistoryIcon, ChevronDown, Radio } from 'lucide-react';
+import { Search, X, Info, History as HistoryIcon, ChevronDown, Radio } from 'lucide-react';
 import { CompareTab } from './components/Interval/CompareControl';
 import { useUrlPathname } from './hooks/useUrlPathname';
 import ModeTab from './components/ModeTab';
-import { PILL_SURFACE, FLOATING_CARD, SEARCH_BAR_WIDTH, TRANSITION_BASE, TRANSITION_SLOW, Z_MAP_OVERLAY, Z_HEADER, Z_MODAL_TOP, SIDEBAR_LEFT_FALLBACK, APP_TAB_ACTIVE, APP_TAB_INACTIVE, ICON_BTN } from './styles';
+import { PILL_SURFACE, FLOATING_CARD, SEARCH_BAR_WIDTH, TRANSITION_BASE, TRANSITION_SLOW, Z_MAP_OVERLAY, Z_HEADER, Z_MODAL_TOP, SIDEBAR_LEFT_FALLBACK, APP_TAB_ACTIVE, APP_TAB_INACTIVE, ICON_BTN, SEARCH_ICON } from './styles';
 import { R2_PUBLIC_URL, getAgencyArtifactUrls, getAgencyCatalogUrl, FEATURES, FEATURE_ROUTES, ATLAS_MODE } from '../shared/config';
-import AtlasBrand from './components/AtlasBrand';
+import AtlasLogo from './components/AtlasLogo';
 import { isAgencyVisibleInBrowser } from '../shared/agencyVisibility';
 import { LIVE_POLLING_ROUTES } from '../shared/livePollingConfig';
 const Interval = React.lazy(() => import('./apps/Interval'));
 import { useDebouncedValue } from './hooks/useDebouncedValue';
-import { PHONE_MEDIA_QUERY, useMediaQuery } from './hooks/useMediaQuery';
+import { PHONE_MEDIA_QUERY, phoneModeFlags, useMediaQuery } from './hooks/useMediaQuery';
 const NightService = React.lazy(() => import('./apps/NightService'));
 // Lazy-loaded and rendered only when their flag is on (shared/config.ts) -- keeps this code out
 // of what main's build actually fetches, not just hidden behind a runtime check.
@@ -28,6 +28,10 @@ import type { FeedRefreshMeta } from '../shared/feedRefresh';
 import type { SupplementalFeedMeta } from '../shared/feedAvailability';
 import type { HistoryAgencyList } from '../shared/historyEligibility';
 import { preloadHistory } from './utils/historyConfig';
+import { historyAgencyToOpen, historyRouteSearchPlaceholder } from './utils/historyOpen';
+import { useHistoryRouteLink } from './hooks/useHistoryRouteLink';
+import { HISTORY_VIEW_ALL, type HistoryView } from './utils/historyYearMap';
+import { encodeHistoryView, parseHistoryView } from './utils/historyViewUrl';
 import historyAgencyList from '../shared/data/history-agencies.json';
 import ErrorBoundary from './components/ErrorBoundary';
 import LiveOffNotice from './components/LiveOffNotice';
@@ -46,7 +50,9 @@ const ResearchPage = React.lazy(() => import('./apps/ResearchPage'));
 import { applyOnDemand } from './lib/onDemandLoader';
 import { OnDemandStatusProvider, OnDemandViewportLoader, useOnDemandData } from './hooks/useOnDemandData';
 import type { OnDemandAvailability, OnDemandPickup, OnDemandZoneDetails } from '../shared/onDemandAvailability';
-import { loadErrorText } from './content/stateCopy';
+import { loadErrorText, loadingText } from './content/stateCopy';
+import Panel from './components/ui/Panel';
+import PanelEmpty from './components/ui/PanelEmpty';
 
 export interface Agency {
   slug: string;
@@ -167,11 +173,16 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   const inFrequentServiceStory = FEATURES.frequentService && isFrequentServiceStoryRoute;
   const inFrequentService = frequentServiceMapView;
   const inResearch = FEATURES.researchApps && pathname === FEATURE_ROUTES.research;
+  const isPhone = useMediaQuery(PHONE_MEDIA_QUERY);
+  // History and Compare are not offered on phones (below sm): their tabs, menu entries and deep links all fall back to the map.
+  const phoneModes = phoneModeFlags(isPhone);
+  const historyOn = FEATURES.history && phoneModes.history;
+  const compareOn = FEATURES.compareMode && phoneModes.compareMode;
   const routedApp: AppId = PATH_TO_APP[pathname] ?? 'frequency';
   // Direct URL access (e.g. /apps/live) would otherwise bypass the LIVE_ENABLED / HISTORY_ENABLED
   // gate below -- fall back to the frequency map, and correct the URL so it
   // doesn't lie about what's actually showing.
-  const gated = isAppGated(routedApp, FEATURES)
+  const gated = isAppGated(routedApp, { ...FEATURES, history: historyOn })
     || ((isFrequentServiceMapRoute || isFrequentServiceStoryRoute) && !FEATURES.frequentService);
   const activeApp: AppId = gated ? 'frequency' : routedApp;
   // The router's view of the address lags the address bar while the next mode renders (a
@@ -187,6 +198,8 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
 
   function setActiveApp(app: AppId) {
     trackEvent('app_opened', { app });
+    // The map's open route carries into History (useHistoryRouteLink); the switch drops the URL's params.
+    if (app === 'history') noteHistorySwitch();
     navigate(APP_TO_PATH[app]);
   }
 
@@ -351,7 +364,6 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   const [searchFocused, setSearchFocused] = useState(false);
   // On phones the search box is too narrow to read what you type (#698), so while it is
   // focused it takes the whole top bar and the other header buttons step aside.
-  const isPhone = useMediaQuery(PHONE_MEDIA_QUERY);
   const phoneSearchExpanded = isPhone && searchFocused;
   const searchBlurTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -384,6 +396,22 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
 
   const [layers, setLayers] = useState<Record<string, GeoJSON.FeatureCollection>>({});
   const [viewportAgencySlugs, setViewportAgencySlugs] = useState<string[]>([]);
+  const [userMovedMap, setUserMovedMap] = useState(false);
+  // History with an agency open: the top search bar searches that agency's routes (#1015).
+  // The History agency open, by its short name: the top search bar then searches its routes (#1015, CIV-402).
+  const [historyOpenAgencyName, setHistoryOpenAgencyName] = useState<string | null>(null);
+  // Bumped when the user dismisses the map's selection (empty-map click, Escape): History closes its panel too (#1031).
+  const [historyDismissKey, setHistoryDismissKey] = useState(0);
+  const handleMapDismiss = useCallback(() => setHistoryDismissKey(k => k + 1), []);
+  const [historyPanelOpen, setHistoryPanelOpen] = useState(false);
+  // History's own Frequency and Time (CIV-389, CIV-392): start at All and All day, separate from the map's.
+  // Read from the link's h/p (the map's params) when the app opens on History.
+  const [historyView, setHistoryView] = useState<HistoryView>(() => (
+    window.location.pathname.startsWith('/apps/history') ? parseHistoryView(window.location.search) : HISTORY_VIEW_ALL
+  ));
+
+  const historyViewControl = useMemo(() => ({ view: historyView, setView: setHistoryView }), [historyView]);
+  const handleUserMoveMap = useCallback(() => setUserMovedMap(true), []);
   const [frequentServiceDays, setFrequentServiceDays] = useState(() => {
     const days = parseFrequentServiceDays(new URLSearchParams(window.location.search).get('days'));
     return days.length ? days : ['Weekday' as const];
@@ -401,6 +429,10 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
 
   const inFrequency = activeApp === 'frequency';
   const inHistory = activeApp === 'history';
+  // History's Frequency and Time live in the link as the map's h/p while History is open (historyViewUrl).
+  useEffect(() => {
+    if (inHistory) syncUrlParams(encodeHistoryView(historyView));
+  }, [inHistory, historyView]);
 
   // Interval reloads all its agency data whenever this list's identity changes, so it must stay the same
   // array until its contents change (a fresh filter() every render looped History at phone width).
@@ -435,7 +467,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   // shrink to icons. ModeTab applies it, so views and future views never decide this themselves.
   const nonMapViewActive = FEATURES.collapseModeTabs
     && (inLive || inHistory || inNight || inFrequentService || compareActive);
-  const showCompareControl = FEATURES.compareMode && inFrequency;
+  const showCompareControl = compareOn && inFrequency;
   const showLiveControl = FEATURES.live && (inLive || [...loadedAgencySlugs].some(slug =>
     LIVE_POLLING_ROUTES.some(route => route.slug === slug && (!route.apiKeyParamEnvVar && !route.apiKeyHeaderEnvVar || route.active)),
   ));
@@ -445,7 +477,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
       .map(route => route.slug)).size,
     [],
   );
-  const showHistoryControl = FEATURES.history && (inHistory || (historyAgencySlugs != null && (
+  const showHistoryControl = historyOn && (inHistory || (historyAgencySlugs != null && (
     (selectedMapAgencySlug != null && historyAgencySlugs.has(selectedMapAgencySlug)) ||
     [...loadedAgencySlugs].some(slug => historyAgencySlugs.has(slug))
   )));
@@ -462,14 +494,19 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
     const id = window.setTimeout(preloadHistory, 3000);
     return () => window.clearTimeout(id);
   }, [warmHistory]);
-  // Always open History on the agency chooser rather than guessing one from
-  // whatever the map happens to be showing -- auto-jumping straight to an
-  // agency (e.g. TTC, just because the map defaults to Toronto) surprised
-  // users who never actually picked that agency themselves.
-  const historyAgencyForView = null;
+  // History opens on a city only when the user has shown which one they mean: an agency they
+  // selected, or the single History agency left in view after they moved or zoomed the map (#1012).
+  // A fresh load, the default Toronto view and restored or shared views never count, so History
+  // doesn't jump to an agency nobody picked (the reason 9b0c3440 made it always open on the chooser).
+  const historyAgencyForView = historyAgencyToOpen({
+    selectedAgencySlug,
+    viewportSlugs: viewportAgencySlugs,
+    historySlugs: historyAgencySlugs,
+    userMovedMap,
+  });
   const searchPlaceholder = inFrequency
     ? 'Search routes'
-    : inHistory ? 'Find an agency…'
+    : inHistory ? (historyOpenAgencyName ? historyRouteSearchPlaceholder(historyOpenAgencyName) : 'Find an agency…')
     : inNight ? 'Search agencies or routes…'
     : 'Search vehicles…';
 
@@ -499,6 +536,8 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   useEffect(() => {
     if (activeApp === 'live') setLiveMounted(true);
   }, [activeApp]);
+
+  const { noteHistorySwitch } = useHistoryRouteLink({ inHistory, layers, openRoute: setPendingHistoryRoute });
 
   // Clear history-specific pending state when leaving history mode
   // (prevents lingering state after idle + exit, e.g. back arrow or panels)
@@ -577,10 +616,11 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
     <div className={`relative h-dvh w-screen bg-[var(--bg-app)] text-[var(--text-primary)] font-sans overflow-hidden transition-colors ${TRANSITION_BASE}`}>
       {/* Unified header row — left and right sections share one flex container so they can never overlap. Fixed row height so a taller control in one view (e.g. Night's 30/60 toggle) can't push the logo and search off the line they sit on in every other view (#908). */}
       <div className={`absolute ${inFrequentServiceStory ? 'top-0 left-0 right-0 bg-[var(--bg-app)] px-6 py-6' : 'top-6 left-6 right-6 h-[28px]'} ${infoOpen ? Z_MODAL_TOP : Z_HEADER} flex items-center justify-between pointer-events-none`}>
-      <div ref={headerLeftRef} className={`flex items-center gap-2 pointer-events-auto flex-1 ${phoneSearchExpanded ? '' : 'max-w-[calc(100%-3rem)] mr-2'} sm:max-w-none sm:mr-0`}>
+      <div ref={headerLeftRef} className={`flex items-center gap-2 pointer-events-auto flex-1 min-w-0 ${phoneSearchExpanded ? '' : 'max-w-[calc(100%-3rem)] mr-2'} sm:max-w-none sm:mr-0`}>
         {/* The logo is "home": it clears every selection, mode and URL parameter, like a fresh visit to "/". */}
-        <button
-          type="button"
+        <AtlasLogo
+          hideByline
+          hideWordmark={phoneSearchExpanded}
           onClick={() => {
             if (inFrequentServiceStory) {
               navigate(FEATURE_ROUTES.frequentService.map);
@@ -593,19 +633,13 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
               navigate('/');
             }
           }}
-          aria-label={inFrequentServiceStory ? 'Back to frequency map' : 'Atlas home'}
-          className="group flex items-center gap-2 shrink-0"
-        >
-          <span className="w-8 h-8 bg-[var(--accent)] rounded-full flex items-center justify-center shrink-0 shadow-2xl group-hover:opacity-80 transition-opacity">
-            <MapIcon className="w-3.5 h-3.5 text-white" />
-          </span>
-          {!phoneSearchExpanded && <AtlasBrand hideByline />}
-        </button>
+          ariaLabel={inFrequentServiceStory ? 'Back to frequency map' : 'Atlas home'}
+        />
 
-        {!inFrequentServiceStory && !inResearch && <div className="flex items-center gap-2 flex-1 min-w-0 lg:flex-none">
+        {!inFrequentServiceStory && !inResearch && <div className="flex items-center gap-2 flex-1 min-w-0 lg:flex-initial">
         <div className="flex-1 min-w-0 sm:flex">
-        <div ref={searchBarRef} className={`${SEARCH_BAR_WIDTH} relative ${PILL_SURFACE} pl-1 pr-3`}>
-          <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[var(--text-dim)] pointer-events-none" />
+        <div ref={searchBarRef} className={`${SEARCH_BAR_WIDTH} min-w-0 relative ${PILL_SURFACE} pl-1 pr-3`}>
+          <Search className={`absolute left-2 top-1/2 -translate-y-1/2 ${SEARCH_ICON} pointer-events-none`} />
           <input
             ref={searchInputRef}
             type="text"
@@ -626,7 +660,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
               searchBlurTimer.current = setTimeout(() => setSearchFocused(false), 150);
             }}
             placeholder=""
-            className="w-full bg-transparent text-[var(--text-primary)] pl-7 pr-6 py-0 text-xs font-bold focus:outline-none"
+            className="w-full min-w-0 bg-transparent text-[var(--text-primary)] pl-7 pr-6 py-0 text-xs font-bold focus:outline-none"
           />
           {!query && (
             <span
@@ -681,7 +715,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
         {/* Compare (beta) portals in here from Interval. Phones reach it from the filter panel. */}
         <div ref={viewTabsPortalRef} className="hidden sm:contents" />
         {/* Live and History have no compare view: keep the tab (as an icon) and take it back to the map to compare. */}
-        {FEATURES.compareMode && (inLive || inHistory) && (
+        {compareOn && (inLive || inHistory) && (
           <CompareTab
             active={false}
             onStart={() => { setCompareStartRequest(Date.now()); setActiveApp('frequency'); }}
@@ -701,7 +735,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
                 onClick={() => setAppLinksOpen(open => !open)}
                 aria-label="More Atlas views"
                 aria-expanded={appLinksOpen}
-                className={`flex h-8 px-3 items-center gap-1.5 rounded-full shrink-0 transition-colors text-xs font-bold border focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)] ${appLinksOpen || inHistory || inLive || compareActive ? APP_TAB_ACTIVE : APP_TAB_INACTIVE}`}
+                className={`flex h-8 max-sm:h-[32px] px-3 items-center gap-1.5 rounded-full shrink-0 transition-colors text-xs font-bold border focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)] ${appLinksOpen || inHistory || inLive || compareActive ? APP_TAB_ACTIVE : APP_TAB_INACTIVE}`}
               >
                 <span>{liveTabOn ? 'Live' : inHistory ? 'History' : compareActive ? 'Compare' : 'More'}</span>
                 <ChevronDown className={`w-3.5 h-3.5 transition-transform ${appLinksOpen ? 'rotate-180' : ''}`} />
@@ -800,6 +834,10 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
               setDay={setDay}
               onLayersChange={setLayers}
               onViewportAgencySlugsChange={setViewportAgencySlugs}
+              onUserMoveMap={handleUserMoveMap}
+              onMapDismiss={inHistory ? handleMapDismiss : undefined}
+              historyView={inHistory ? historyViewControl : undefined}
+              externalPanelOpen={inHistory && historyPanelOpen}
               onSelectedMapAgencyChange={setSelectedMapAgencySlug}
               onSelectionActiveChange={setIntervalSelectionActive}
               onLiveRouteSelected={inLive ? handleLiveRouteSelected : undefined}
@@ -821,9 +859,14 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
               dataSaver={dataSaver}
               setDataSaver={setDataSaver}
             />
-            {FEATURES.history && (historyOpened || inHistory) && (
-              <React.Suspense fallback={inHistory ? <div className="absolute left-1/2 bottom-5 -translate-x-1/2 rounded-full bg-[var(--bg-panel)]/90 px-3 py-1.5 text-xs font-semibold text-[var(--text-dim)] shadow-lg pointer-events-none">Loading history…</div> : null}>
-                <History active={inHistory} initialAgencySlug={historyAgencyForView} onInfoOpen={openInfo} query={deferredQuery} searchFocused={searchFocused} setQuery={setQuery} pendingRouteClick={pendingHistoryRoute} onPendingRouteHandled={() => setPendingHistoryRoute(null)} sidebarLeft={sidebarLeft} />
+            {historyOn && (historyOpened || inHistory) && (
+              <React.Suspense fallback={inHistory ? (
+                // The shared loading panel, where History's panels open (#1028 item 20).
+                <Panel sidebar style={{ top: 80, '--sidebar-left': `${sidebarLeft}px`, ...(searchBarWidth && !isPhone ? { width: `${searchBarWidth}px`, maxWidth: 'none' } : {}) } as React.CSSProperties}>
+                  <PanelEmpty kind="loading">{loadingText('history data')}</PanelEmpty>
+                </Panel>
+              ) : null}>
+                <History active={inHistory} view={historyView} agencyCatalog={agencies} searchBarWidth={isPhone ? undefined : searchBarWidth} initialAgencySlug={historyAgencyForView} inViewAgencySlugs={viewportAgencySlugs} onOpenAgencyChange={setHistoryOpenAgencyName} dismissKey={historyDismissKey} onPanelOpenChange={setHistoryPanelOpen} onInfoOpen={openInfo} query={deferredQuery} searchFocused={searchFocused} setQuery={setQuery} pendingRouteClick={pendingHistoryRoute} onPendingRouteHandled={() => setPendingHistoryRoute(null)} sidebarLeft={sidebarLeft} />
               </React.Suspense>
             )}
             {FEATURES.beta && (nightOpened || inNight) && (

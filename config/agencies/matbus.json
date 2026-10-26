@@ -15,13 +15,13 @@
   "feedUrl": "https://ridematbus.com/gtfs",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-80003/latest.zip",
   "region": "North Dakota",
-  "lastFeedExpiry": "20281016",
+  "lastFeedExpiry": "20281021",
   "lastFeedVersion": "9/7/2026 Schedule",
   "lastRefreshedAt": "2026-10-12",
   "cities": [
     "Fargo, North Dakota"
   ],
-  "lastFeedCheckAt": "20261012",
+  "lastFeedCheckAt": "20261019",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20991231",

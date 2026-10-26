@@ -17,9 +17,11 @@ import {
   buildEffectiveHeadwayColorExpression,
   buildFriendlyRouteWidthExpression,
   ROUTE_LINE_WIDTH_BY_ZOOM,
+  ROUTE_LINE_WIDTH_STOPS,
   setRouteLayerPaint,
   resetRoutesLayerDefaultPaint,
 } from './routeStyle';
+import { historyYearColorExpression, onTodaysLines } from '../../../utils/historyYearMap';
 
 export interface RouteStylingInput {
   agencies: Agency[];
@@ -143,6 +145,16 @@ export function useRouteStyling(
       routeFilter = concatFilters(routeFilter, slugAllowlist);
     }
 
+    // History's year view (#1028 batch A): the open agency shows exactly that year's routes that have
+    // no shape of their own (those draw on history-routes-layer), whatever today's filters say;
+    // other agencies keep the regular filter.
+    const historyYearAgencyMatch: any = historyOverlay?.slug && historyOverlay.yearRoutes ? ['==', ['get', 'agencySlug'], historyOverlay.slug] : null;
+    if (historyYearAgencyMatch) {
+      const names = onTodaysLines(historyOverlay!.yearRoutes!).map(r => r.routeShortName);
+      const yearClause = ['all', historyYearAgencyMatch, ['in', ['to-string', ['get', 'routeShortName']], ['literal', names]]];
+      routeFilter = ['any', concatFilters(routeFilter, ['!', historyYearAgencyMatch]) ?? true, yearClause];
+    }
+
     if (liveRoutesOnly) {
       // Live draws only the routes with Live route data; vehicles of other routes still show as dots.
       const livePairs = LIVE_ANALYSIS_ROUTES
@@ -202,6 +214,10 @@ export function useRouteStyling(
       } else {
         lineColorExpr = buildEffectiveHeadwayColorExpression(period, colorMode);
       }
+      // History's year view: the open agency's lines take that year's colours.
+      if (historyYearAgencyMatch) {
+        lineColorExpr = ['case', historyYearAgencyMatch, historyYearColorExpression(historyOverlay!.yearRoutes!, lineColorExpr), lineColorExpr];
+      }
 
       if (hasOverviewRoutes) map.setPaintProperty('overview-routes-layer', 'line-color', lineColorExpr);
       if (hasRoutes) map.setPaintProperty('routes-layer', 'line-color', lineColorExpr);
@@ -231,6 +247,14 @@ export function useRouteStyling(
       // you can click another line to switch — not a near-invisible ghost layer.
       const DIM_OPACITY = 0.18;
       const DIM_WIDTH = 1.25;
+      // The selected route is drawn again above every line (selected-route-layer), so a hovered branch
+      // row also dims that layer's other branches (below); every other state draws it at full strength (#1064).
+      // The per-section colour layer (off by default) is left as is: the branch match is not checked against its pieces.
+      const SELECTED_ROUTE_LAYERS = ['selected-route-layer', 'selected-local-route-layer'];
+      const setSelectedRouteOpacity = (value: unknown) => {
+        for (const id of SELECTED_ROUTE_LAYERS) if (map.getLayer(id)) map.setPaintProperty(id, 'line-opacity', value as any);
+      };
+      setSelectedRouteOpacity(1);
       if (historyOverlay?.routeShortName) {
         // History uses its own route selection state, so mirror the Frequency
         // map's focus treatment when a historical route is selected.
@@ -242,14 +266,10 @@ export function useRouteStyling(
         setRouteLayerPaint(map, 'line-opacity', focusedPaint.opacity as any);
         setRouteLayerPaint(map, 'line-width', focusedPaint.width as any);
         if (map.getLayer('history-routes-layer')) {
-          map.setPaintProperty('history-routes-layer', 'line-opacity', ['case', ['get', 'selected'], 1.0, DIM_OPACITY] as any);
-          map.setPaintProperty('history-routes-layer', 'line-width', [
-            'interpolate', ['linear'], ['zoom'],
-            8, ['case', ['get', 'selected'], 3.5, DIM_WIDTH],
-            11, ['case', ['get', 'selected'], 4.0, DIM_WIDTH],
-            14, ['case', ['get', 'selected'], 4.5, DIM_WIDTH],
-            17, ['case', ['get', 'selected'], 5.0, DIM_WIDTH],
-          ] as any);
+          // The same focus paint as the tile lines, for the routes drawn on their own shape.
+          const ownShapeFocus = buildFocusedRoutePaint(['==', ['get', 'routeShortName'], historyOverlay.routeShortName], DIM_OPACITY, DIM_WIDTH);
+          map.setPaintProperty('history-routes-layer', 'line-opacity', ownShapeFocus.opacity as any);
+          map.setPaintProperty('history-routes-layer', 'line-width', ownShapeFocus.width as any);
         }
       } else if (historyOverlay?.slug) {
         // History agency selection keeps the whole agency visible while dimming
@@ -258,16 +278,15 @@ export function useRouteStyling(
         setRouteLayerPaint(map, 'line-opacity', [
           'case', historyAgencyMatch, 1.0, DIM_OPACITY,
         ] as any);
-        setRouteLayerPaint(map, 'line-width', [
-          'interpolate', ['linear'], ['zoom'],
-          8, ['case', historyAgencyMatch, 2.8, DIM_WIDTH],
-          11, ['case', historyAgencyMatch, 3.2, DIM_WIDTH],
-          14, ['case', historyAgencyMatch, 3.8, DIM_WIDTH],
-          17, ['case', historyAgencyMatch, 4.5, DIM_WIDTH],
-        ] as any);
+        // The agency's lines at the regular route widths (ROUTE_LINE_WIDTH_STOPS), the rest dimmed.
+        const widthStops: unknown[] = [];
+        for (let i = 0; i < ROUTE_LINE_WIDTH_STOPS.length; i += 2) {
+          widthStops.push(ROUTE_LINE_WIDTH_STOPS[i], ['case', historyAgencyMatch, ROUTE_LINE_WIDTH_STOPS[i + 1], DIM_WIDTH]);
+        }
+        setRouteLayerPaint(map, 'line-width', ['interpolate', ['linear'], ['zoom'], ...widthStops] as any);
         if (map.getLayer('history-routes-layer')) {
-          map.setPaintProperty('history-routes-layer', 'line-opacity', 0.85);
-          map.setPaintProperty('history-routes-layer', 'line-width', 2.5);
+          map.setPaintProperty('history-routes-layer', 'line-opacity', 1);
+          map.setPaintProperty('history-routes-layer', 'line-width', ROUTE_LINE_WIDTH_BY_ZOOM as any);
         }
       } else if (selectedRoute) {
         const selKey = selectedRoute;
@@ -289,6 +308,8 @@ export function useRouteStyling(
             routeMatch,
             ['==', ['get', 'directionId'], hoveredBranch.directionId],
             branchHeadSignMatch,
+            // Two rows can share a headsign and differ only by pattern (#1064): match the hovered one's.
+            ...(hoveredBranch.routeVariant ? [['==', ['coalesce', ['get', 'routeVariant'], ''], hoveredBranch.routeVariant]] : []),
           ];
           setRouteLayerPaint(map, 'line-opacity', [
             'case', branchMatch, 1.0, routeMatch, 0.4, DIM_OPACITY,
@@ -296,6 +317,7 @@ export function useRouteStyling(
           setRouteLayerPaint(map, 'line-width', [
             'case', branchMatch, 3.5, routeMatch, 1.5, DIM_WIDTH,
           ]);
+          setSelectedRouteOpacity(['case', branchMatch, 1, 0.25]);
         } else {
           // Same fade as History, stops and search hover: the selected route stands out
           // and the rest of the network stays faintly visible and clickable.

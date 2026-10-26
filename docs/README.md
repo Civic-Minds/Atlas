@@ -15,7 +15,9 @@ Read first: [Decisions](product/DECISIONS.md) for what is settled, then the [Glo
 | [Data principles](data/DATA_PRINCIPLES.md) | Open when you decide how fresh data must be, or whether a number is static or live. |
 | [Display naming](data/DISPLAY_NAMING.md) | Open when an agency name renders oddly or you add a new name. |
 | [Security policy](../SECURITY.md) | Open when someone reports a security problem. |
-| [Terms of service](../TERMS.md) | Open when a question touches the public site's legal terms. |
+| [Terms of service](legal/TERMS.md) | Open when a question touches the public site's legal terms; the /terms page is built from this file, so edit it here. |
+| [Privacy policy](legal/PRIVACY.md) | Open when a question touches privacy, analytics or stored data; the /privacy page is built from this file, so edit it here. |
+| [Terms of service (root pointer)](../TERMS.md) | Open only if you landed here from the repo root; it points to the legal docs. |
 
 ## Frequency numbers and filter questions
 
@@ -67,7 +69,7 @@ Read first: [Decisions](product/DECISIONS.md), then [Adding agencies](data/ADDIN
 | [Coverage gap discovery](data/COVERAGE_GAP_DISCOVERY.md) | Open when you look for agencies Atlas does not cover yet. |
 | [Agency config](../config/agencies/README.md) | Open when you edit an agency config file or a `modeOverrides` entry. |
 | [Agencies](data/AGENCIES.md) | Open when you need the static list of which agencies Atlas covers. |
-| [History coverage](data/DATA_HISTORY.md) | Open when you work on History or check why an agency is or is not eligible. |
+| [History coverage](data/DATA_HISTORY.md) | Open when you work on History, check why an agency is or is not eligible, or need the archive policy for past schedule periods. |
 | [Agency backlog](data/AGENCY_BACKLOG.md) | Open when you pick the next agencies to add or check what was already batched. |
 | [Feed status snapshot](operations/GTFS_FEED_STATUS.md) | Open only for the 2026-08-10 refresh results; it is a historical snapshot. |
 | [Places data](../shared/data/README.md) | Open when you change or rely on `na-places.json`. |
@@ -103,7 +105,7 @@ Read first: [Architecture](ARCHITECTURE.md) for where data lives, then the [Rese
 | Doc | Job |
 |---|---|
 | [Architecture](ARCHITECTURE.md) | Open when you need to know where data lives, how a release flows, or which env var does what. |
-| [Data](DATA.md) | Open for an overview of the data docs or the History archive policy. |
+| [How Atlas data flows](DATA.md) | Open for a short overview of how data moves from feeds to the published map, with a link to the doc for each step. |
 | [Pipeline stages](../pipeline/README.md) | Open when you need to find which module runs a pipeline stage. |
 | [Stretch fixtures](../pipeline/__tests__/fixtures/STRETCH-FIXTURES.md) | Open when you edit the trip-set selector tests and need to know what the fixtures are. |
 | [Research index](research/INDEX.md) | Open when you look for any study under `docs/research/`. |

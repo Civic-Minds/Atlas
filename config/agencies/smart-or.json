@@ -16,7 +16,7 @@
   ],
   "feedUrl": "https://mysmartbus.com/gtfs",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2706/latest.zip",
-  "lastFeedExpiry": "20281016",
+  "lastFeedExpiry": "20281021",
   "lastFeedVersion": "FY27 Q1",
   "lastRefreshedAt": "2026-10-12",
   "cities": [
@@ -25,7 +25,7 @@
     "Gresham, Oregon",
     "Portland, Oregon"
   ],
-  "lastFeedCheckAt": "20261012",
+  "lastFeedCheckAt": "20261019",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20991231",

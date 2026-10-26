@@ -474,28 +474,8 @@ function addSharedHoverLayer(map: maplibregl.Map) {
   });
 }
 
-/** History route shape and time-scrubber routes. */
+/** History's year routes that carry their own shape (the rest are today's route lines, #1028 batch A). */
 function addHistoryLayers(map: maplibregl.Map) {
-  // History route shape dynamic layer (for historical period shapes, AI-162/AI-161)
-  map.addSource('history-route-shape', {
-    type: 'geojson',
-    data: { type: 'FeatureCollection', features: [] }
-  });
-  map.addLayer({
-    id: 'history-route-shape-layer',
-    type: 'line',
-    source: 'history-route-shape',
-    paint: {
-      'line-color': '#3b82f6',
-      'line-width': 3.5,
-      'line-opacity': 0.9
-    },
-    layout: {
-      'line-cap': 'round',
-      'line-join': 'round'
-    }
-  });
-
   // History scrubber routes layer (AI-198) - multiple historical routes
   map.addSource('history-routes', {
     type: 'geojson',
@@ -507,8 +487,9 @@ function addHistoryLayers(map: maplibregl.Map) {
     source: 'history-routes',
     paint: {
       'line-color': ['get', 'color'],
-      'line-width': 2.5,
-      'line-opacity': 0.85
+      // The regular route lines' widths; History's focus paint (useRouteStyling) overrides while a route is open.
+      'line-width': ROUTE_LINE_WIDTH_BY_ZOOM as any,
+      'line-opacity': 1
     },
     layout: {
       'line-cap': 'round',

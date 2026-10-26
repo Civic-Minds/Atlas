@@ -8,8 +8,8 @@
   ],
   "feedUrl": "https://files.mobilitydatabase.org/tld-1660_1/latest.zip",
   "lastFeedExpiry": "20261231",
-  "lastFeedVersion": "Updated: Oct 6, 2026, 12:51 PM",
-  "lastRefreshedAt": "2026-10-12",
+  "lastFeedVersion": "Updated: Oct 14, 2026, 4:11 PM",
+  "lastRefreshedAt": "2026-10-19",
   "region": "Kansas",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-1660_1/latest.zip",
   "bbox": [
@@ -21,7 +21,7 @@
   "cities": [
     "Topeka, Kansas"
   ],
-  "lastFeedCheckAt": "20261012",
+  "lastFeedCheckAt": "20261019",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261231",
@@ -36,7 +36,7 @@
       "routeHeadwayMismatches": 0,
       "featureCount": 48
     },
-    "checkedAt": "2026-10-12"
+    "checkedAt": "2026-10-19"
   },
   "timezone": "America/Chicago",
   "feedRefreshStatus": "current",

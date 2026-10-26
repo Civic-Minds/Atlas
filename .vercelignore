@@ -14,3 +14,9 @@ scripts/*
 !scripts/build-sitemap.ts
 !scripts/prerender-routes.ts
 types/
+# Research data (~100 MB) isn't needed at build time, except one file
+# imported by src/data/frequentServiceStory.ts.
+docs/research/*
+!docs/research/system-map-audit-2026-09/
+docs/research/system-map-audit-2026-09/*
+!docs/research/system-map-audit-2026-09/data.json

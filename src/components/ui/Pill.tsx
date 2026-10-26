@@ -1,10 +1,13 @@
-import type { ButtonHTMLAttributes } from 'react';
+import type { ButtonHTMLAttributes, ElementType } from 'react';
 import { APP_TAB_ACTIVE, APP_TAB_INACTIVE, CONTROL_ACTIVE, CONTROL_INACTIVE, FILTER_OPTION } from '../../styles';
 
 const SEGMENT = 'h-7 px-2.5 flex items-center justify-center text-xs font-bold rounded-full border transition-colors';
 const OUTLINE = 'border-[var(--border-primary)] text-[var(--text-dim)] hover:text-[var(--text-primary)] hover:border-[var(--accent-border)] disabled:opacity-30 disabled:cursor-default';
 
 interface PillProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'type'> {
+  /** Render as another element, such as a link ("a"), keeping the pill look. Defaults to a button. */
+  as?: ElementType;
+  href?: string;
   /** Selected state; sets aria-pressed. Leave undefined for a plain action pill (tone "outline"). */
   selected?: boolean;
   /**
@@ -19,14 +22,13 @@ interface PillProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'type'
 }
 
 /** Compact option pill (text-xs, rounded-full). One component for the filter, option and bulk-action pills. */
-export default function Pill({ selected = false, tone = 'control', size = 'option', className = '', ...rest }: PillProps) {
+export default function Pill({ as: Tag = 'button', selected = false, tone = 'control', size = 'option', className = '', ...rest }: PillProps) {
   const state = tone === 'outline' ? (selected ? CONTROL_ACTIVE : OUTLINE)
     : tone === 'glass' ? (selected ? APP_TAB_ACTIVE : APP_TAB_INACTIVE)
     : (selected ? CONTROL_ACTIVE : CONTROL_INACTIVE);
   return (
-    <button
-      type="button"
-      aria-pressed={tone === 'outline' && !selected ? undefined : selected}
+    <Tag
+      {...(Tag === 'button' ? { type: 'button', 'aria-pressed': tone === 'outline' && !selected ? undefined : selected } : {})}
       className={`${size === 'segment' ? SEGMENT : FILTER_OPTION} ${state} ${className}`.trim()}
       {...rest}
     />

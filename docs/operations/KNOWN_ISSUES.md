@@ -39,7 +39,7 @@ Permanent blockers only — agencies we cannot add because upstream has no fixed
 ### Feeds sourced from the Mobility Database
 Agencies whose official URLs are unstable or rate-limited use the Mobility Database's always-current link (`https://files.mobilitydatabase.org/{id}/latest.zip`), not a dated snapshot. A registry test rejects dated snapshots and the retired `storage.googleapis.com/.../mdb-latest/...` mirror, with a short allowlist for agencies not yet moved — for example `grt`, whose MDB feed is deprecated and whose successor has no `latest.zip`.
 
-If a weekly refresh (temporarily paused) fails for an agency, check whether the official `feedUrl` in `index.json` is still valid before blaming the pipeline.
+If a weekly refresh fails for an agency, check whether the official `feedUrl` in `index.json` is still valid before blaming the pipeline.
 
 ### GO Transit dual route IDs
 GO Transit publishes two overlapping route ID sets per schedule period (e.g. `04260626-41` and `06260926-41` for route 41). The pipeline deduplicates these by short name, direction, day, display headsign, and route variant, keeping the lower-headway feature. The losing feature's stop headways are discarded. This is expected behaviour.
@@ -65,9 +65,6 @@ Agency list and card surfaces now use the shared display-parts helper. Live vehi
 
 ### Non-round GO Transit headways
 GO Transit buses frequently show headways like 55 min instead of 60 min. This is accurate — GO schedules are not uniformly spaced. For example, route 94 "to Pickering GO" departs Square One at 09:35, 11:40, 12:35, 13:35, 14:20, 14:50 during Midday — a 2-hour gap followed by clustering. The median gap is genuinely 55 min.
-
-### Corridors headway is at the "from" stop
-The Corridors app shows frequency at the departure stop (where the user waits), not the destination. At major hubs like Square One, many patterns converge and the TO-stop headway is artificially low — GO route 41 showed 7 min at Square One but 30 min at Hamilton GO, where the user actually boards.
 
 ### NRT day/night route pairs
 Niagara Transit (Niagara Region Transit) publishes separate daytime and nighttime route numbers (for example, 316 and 416, or 309 and 409). Atlas keeps those published route numbers separate so nighttime service does not make the daytime route appear more frequent than its schedule.
@@ -101,7 +98,3 @@ A route/direction whose GTFS has no usable shape is published as a point feature
 instead of being dropped ([#596](https://github.com/Civic-Minds/Atlas/pull/596)). It keeps its route card and
 frequency data, but PMTiles carry lines only, so no route line is drawn. An agency whose routes are all
 shapeless is treated as schedule-only and does not fail the tile coverage gate.
-
----
-
-[Back to Data](../DATA.md)

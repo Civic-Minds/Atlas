@@ -21,14 +21,14 @@
   "lastRefreshedAt": "20260811",
   "timezone": "America/New_York",
   "lastRawArchiveKey": "20231231-85caeab172b4358d",
-  "lastFeedCheckAt": "20261012",
-  "expiredFeedCheckCount": 5,
+  "lastFeedCheckAt": "20261019",
+  "expiredFeedCheckCount": 6,
   "expiredFeedCheckSince": "20260622",
   "expiredFeedCheckExpiry": "20231231",
   "feedRefreshStatus": "stale",
   "feedRefreshError": "all available feeds expired (latest 20231231)",
-  "feedRefreshErrorAt": "20261012",
-  "feedRefreshRetryCount": 3,
+  "feedRefreshErrorAt": "20261019",
+  "feedRefreshRetryCount": 4,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-new-york-greater-glens-falls-transit-gtfs-542.zip?alt=media"
 }

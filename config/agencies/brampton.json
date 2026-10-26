@@ -2,7 +2,6 @@
   "slug": "brampton",
   "name": "Brampton Transit",
   "websiteUrl": "http://www.bramptontransit.com",
-  "issueUrl": "https://github.com/Civic-Minds/Atlas/issues/770",
   "region": "Ontario",
   "center": [
     43.7315,
@@ -34,10 +33,10 @@
     }
   ],
   "feedUrl": "https://www.arcgis.com/sharing/rest/content/items/a355aabd5a8c490186bdce559c9c75fb/data",
-  "lastFeedExpiry": "20261101",
-  "lastFeedVersion": "20260907",
+  "lastFeedExpiry": "20261220",
+  "lastFeedVersion": "20261102",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-1994/latest.zip",
-  "lastRefreshedAt": "2026-08-27",
+  "lastRefreshedAt": "2026-10-19",
   "cities": [
     "Brampton, Ontario",
     "Etobicoke, Ontario",
@@ -45,27 +44,31 @@
     "Mississauga, Ontario",
     "Caledon, Ontario"
   ],
-  "lastFeedCheckAt": "20261012",
+  "lastFeedCheckAt": "20261019",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261101",
+  "expiredFeedCheckExpiry": "20261220",
   "feedQuality": {
     "status": "review",
     "score": 80,
     "reasons": [
-      "2 route frequencies need checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+      "2 route have stops whose frequency differs from the overall route schedule."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 2,
-      "featureCount": 317
+      "featureCount": 338
     },
-    "checkedAt": "2026-08-27"
+    "checkedAt": "2026-10-19"
   },
   "timezone": "America/New_York",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://www.arcgis.com/sharing/rest/content/items/a355aabd5a8c490186bdce559c9c75fb/data",
-  "lastPeekedExpiry": "20261101"
+  "lastPeekedExpiry": "20261220",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

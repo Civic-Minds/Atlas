@@ -30,7 +30,7 @@ describe('route filter headway and card display', () => {
       periodCoverageHeadway: { amPeak: 10 },
       headwayByPeriodSustained: { amPeak: false },
     } as ShapeProperties;
-    expect(routeCardTypicalText(p, 'amPeak')).toBe('about every 10–12 min');
+    expect(routeCardTypicalText(p, 'amPeak')).toBe('every 10–12 min');
   });
 
   it('uses period-specific headway when period is set', () => {

@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Micromobility Prices</title>
+  <style>
+    :root { color-scheme: light; font: 16px/1.5 system-ui, sans-serif; background: #f5f7f6; color: #17211c; }
+    body { max-width: 1100px; margin: 0 auto; padding: 32px 20px 64px; }
+    h1 { margin-bottom: 4px; } .intro { color: #52635a; margin-top: 0; }
+    .controls { display: flex; gap: 12px; flex-wrap: wrap; margin: 24px 0; }
+    input, select { border: 1px solid #b9c8bf; border-radius: 8px; padding: 10px; background: white; font: inherit; }
+    input { min-width: 240px; } .summary { color: #52635a; margin-bottom: 12px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+    article { background: white; border: 1px solid #d9e2dc; border-radius: 12px; padding: 18px; box-shadow: 0 2px 8px #20352a0d; }
+    article h2 { font-size: 1.1rem; margin: 0 0 4px; } .meta, small { color: #607168; }
+    .price { font-size: 1.6rem; font-weight: 700; margin: 14px 0 4px; }
+    ul { padding-left: 20px; } a { color: #146b45; }
+    .empty { padding: 24px; background: white; border-radius: 12px; }
+  </style>
+</head>
+<body>
+  <h1>Micromobility Prices</h1>
+  <p class="intro">Published bike-share and scooter-share plans, with sources and check dates.</p>
+  <div class="controls">
+    <input id="search" type="search" placeholder="Search city, operator, or plan…" aria-label="Search pricing plans">
+    <select id="planType" aria-label="Filter by plan type"><option value="">All plan types</option></select>
+    <select id="vehicleType" aria-label="Filter by vehicle type"><option value="">All vehicle types</option></select>
+  </div>
+  <div id="summary" class="summary"></div><main id="results" class="grid"></main>
+  <script>
+    const money = new Intl.NumberFormat(undefined, { style: 'currency', currencyDisplay: 'code' });
+    const labels = { single_ride: 'Single ride', day_pass: 'Day pass', monthly_membership: 'Monthly membership', annual_membership: 'Annual membership', bundle: 'Bundle', discount: 'Discount' };
+    let records = [];
+    const byId = id => document.getElementById(id);
+    function render() {
+      const query = byId('search').value.toLowerCase(); const type = byId('planType').value; const vehicle = byId('vehicleType').value;
+      const filtered = records.filter(r => (!type || r.planType === type) && (!vehicle || r.vehicleTypes.includes(vehicle)) && (!query || [r.city, r.country, r.operator, r.service, r.planName].join(' ').toLowerCase().includes(query)));
+      byId('summary').textContent = `${filtered.length} of ${records.length} pricing plans`;
+      byId('results').innerHTML = filtered.length ? filtered.map(r => `<article><h2>${r.planName}</h2><div class="meta">${r.service} · ${r.city}, ${r.country}</div><div class="price">${r.currency} ${r.basePrice.toFixed(2)} <small>/ ${r.basePriceUnit}</small></div><ul>${r.pricingTiers?.length ? r.pricingTiers.map(t => `<li>${t.maxMinutes ? `Up to ${t.maxMinutes} minutes` : `After ${t.afterMinutes} minutes`}: ${r.currency} ${t.price ?? t.amount}${t.unit ? `/${t.unit}` : ''}</li>`).join('') : ''}${r.includedMinutes ? `<li>${r.includedMinutes} included minutes per ride</li>` : ''}${r.includedUsage ? `<li>${r.includedUsage}</li>` : ''}${r.fees.map(f => `<li>${f.type.replaceAll('_', ' ')}: ${r.currency} ${f.amount.toFixed(2)}/${f.unit}</li>`).join('')}<li>Buy via ${r.purchaseMethods.join(', ')}</li></ul><small>Checked ${r.checkedOn} · <a href="${r.sourceUrl}" target="_blank" rel="noreferrer">Source</a></small></article>`).join('') : '<div class="empty">No plans match those filters.</div>';
+    }
+    fetch('data/pricing.json').then(r => r.json()).then(data => { records = data.records; [...new Set(records.map(r => r.planType))].sort().forEach(v => byId('planType').insertAdjacentHTML('beforeend', `<option value="${v}">${labels[v] || v}</option>`)); [...new Set(records.flatMap(r => r.vehicleTypes))].sort().forEach(v => byId('vehicleType').insertAdjacentHTML('beforeend', `<option value="${v}">${v}</option>`)); render(); });
+    ['search', 'planType', 'vehicleType'].forEach(id => byId(id).addEventListener('input', render));
+  </script>
+</body>
+</html>

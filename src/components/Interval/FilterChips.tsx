@@ -1,12 +1,14 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { Search } from 'lucide-react';
 import { HEADWAY_TIERS, getTierColor } from '../../utils/colors';
-import { FLOATING_CARD, GLASS_PILL, PANEL_ENTER_TOP, CONTROL_ACTIVE, CONTROL_ACTIVE_GLASS, CONTROL_INACTIVE } from '../../styles';
+import { FLOATING_CARD, GLASS_PILL, PANEL_ENTER_TOP, CONTROL_ACTIVE, CONTROL_ACTIVE_GLASS, CONTROL_INACTIVE, SEARCH_PILL, SEARCH_ICON, SEARCH_FIELD } from '../../styles';
 import Pill from '../ui/Pill';
 import type { Agency } from '../../App';
 import { PERIOD_LABELS, PERIOD_KEYS } from '../../hooks/useIntervalStats';
 import type { TimePeriod, ViewportBounds } from '../../hooks/useIntervalStats';
 import { FEATURES, formatPeriodRange, periodKeyForHour } from '../../../shared/config';
+import { COMPACT_TOP_BAR_QUERY } from '../ModeTabLabel';
+import { useMediaQuery } from '../../hooks/useMediaQuery';
 import { agencyDisplayParts } from '../../utils/format';
 import { bboxInViewport } from '../../utils/agencySearch';
 import { filterModeOptions } from '../../../shared/modes';
@@ -20,7 +22,7 @@ import LegendItem from '../ui/LegendItem';
 import { DayPicker, FrequencyPicker, PeriodPicker, PickerSection, useFrequencyOptions } from './pickers';
 import PanelEmpty from '../ui/PanelEmpty';
 import AgencyName from '../ui/AgencyName';
-import { headwayAmount, headwayBandLabel, headwayFilterLabel, headwayTierLabel } from '../../utils/headwayText';
+import { capitalizeFirst, headwayAmount, headwayBandLabel, headwayOrBetter, headwayTierLabel } from '../../utils/headwayText';
 
 export { getNowDay };
 
@@ -50,9 +52,10 @@ interface FilterChipsProps {
   /**
    * Compare mode. 'shared': only the filters both maps share (Mode and Agencies), labelled as
    * such. 'side': only Frequency, Day and Time, for one map's own controls. Same chips and menus
-   * as the full bar either way.
+   * as the full bar either way. 'history': only Frequency and Time (History is weekday only), with
+   * "All day" in the Time menu since History's default is the weekday all-day value (CIV-389, CIV-392).
    */
-  variant?: 'full' | 'shared' | 'side';
+  variant?: 'full' | 'shared' | 'side' | 'history';
   /** Accessible name for the 'side' variant's group, e.g. "Map B settings". */
   groupLabel?: string;
 }
@@ -150,14 +153,14 @@ function AgenciesPanel({ agencies, selectedAgencies, setSelectedAgencies, bounds
 
   return (
     <div className={`${PANEL} w-56`}>
-      <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-[var(--bg-btn)] border border-[var(--border-primary)]">
-        <Search className="w-3 h-3 text-[var(--text-dim)] shrink-0" />
+      <div className={SEARCH_PILL}>
+        <Search className={SEARCH_ICON} />
         <input
           ref={agencySearchRef}
           value={agencyQuery}
           onChange={e => setAgencyQuery(e.target.value)}
           placeholder="Search…"
-          className="flex-1 bg-transparent text-xs font-bold text-[var(--text-primary)] placeholder:text-[var(--text-dim)] outline-none"
+          className={SEARCH_FIELD}
         />
       </div>
       <div className="flex gap-1 px-1 pt-1">
@@ -246,6 +249,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
   variant = 'full',
   groupLabel,
 }) => {
+  const compactTopBar = useMediaQuery(COMPACT_TOP_BAR_QUERY);
   const { colorVisionFriendly } = useColorVision();
   const colorMode = colorVisionFriendly ? 'friendly' : 'default';
   const [openChip, setOpenChip] = useState<ChipId | null>(null);
@@ -349,7 +353,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
         <Dot show={maxHeadway !== Infinity} />
       </button>
       {openChip === 'frequency' && (
-        <div className={`${PANEL} w-52`}>
+        <div className={`${PANEL} w-36`}>
           {frequencyOptions.map(o => {
             const isSelected = maxHeadway === o.max;
             return (
@@ -358,7 +362,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
                 onClick={() => { setMaxHeadway(o.max); setOpenChip(null); }}
                 className={rowBtn(isSelected)}
                 aria-pressed={isSelected}
-                aria-label={o.max === Infinity ? 'Show all routes' : o.label}
+                aria-label={o.max === Infinity ? 'Show all routes' : capitalizeFirst(headwayOrBetter(o.max))}
               >
                 <LegendItem color={o.color}>{o.label}</LegendItem>
               </button>
@@ -400,7 +404,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
       </button>
       {openChip === 'period' && (
         <div className={`${PANEL} w-56`}>
-          {PERIOD_KEYS.map((p) => (
+          {(variant === 'history' ? (['all', ...PERIOD_KEYS] as TimePeriod[]) : PERIOD_KEYS).map((p) => (
             <button
               key={p}
               onClick={() => { setPeriod(p); setOpenChip(null); }}
@@ -408,7 +412,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
               aria-pressed={period === p}
             >
               <span className="whitespace-nowrap">{PERIOD_LABELS[p]}</span>
-              <span className="text-xs opacity-70 shrink-0 whitespace-nowrap">{formatPeriodRange(p)}</span>
+              {p !== 'all' && <span className="text-xs opacity-70 shrink-0 whitespace-nowrap">{formatPeriodRange(p)}</span>}
             </button>
           ))}
         </div>
@@ -464,6 +468,15 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
     </div>
   );
 
+  if (variant === 'history') {
+    return (
+      <div ref={rowRef} className="flex items-center gap-2">
+        {frequencyChip('')}
+        {periodChip('')}
+      </div>
+    );
+  }
+
   if (variant === 'side') {
     return (
       <div ref={rowRef} className="flex items-center gap-2" role="group" aria-label={groupLabel}>
@@ -477,9 +490,9 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
   if (variant === 'shared') {
     return (
       <div ref={rowRef} className="flex items-center gap-2" role="group" aria-label="Filters for both maps">
-        <span className="h-8 px-3 flex items-center gap-1.5 rounded-full bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] text-xs font-bold text-[var(--text-primary)] whitespace-nowrap">
+        <span title={compactTopBar ? 'Both maps' : undefined} className="h-8 px-3 flex items-center gap-1.5 rounded-full bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] text-xs font-bold text-[var(--text-primary)] whitespace-nowrap">
           <span className="inline-flex h-4 px-1 items-center justify-center rounded-full bg-[var(--text-primary)] text-2xs font-black text-[var(--bg-panel)]" aria-hidden="true">A+B</span>
-          Both maps
+          {!compactTopBar && 'Both maps'}
         </span>
         {modeChip('')}
         {agenciesChip}

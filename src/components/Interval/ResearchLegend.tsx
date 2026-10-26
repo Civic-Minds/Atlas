@@ -14,7 +14,7 @@ export default function ResearchLegend({ view, frequentFrequency }: { view: 'nig
   const { colorVisionFriendly } = useColorVision();
   const mode = colorVisionFriendly ? 'friendly' : 'default';
   return (
-    <div className={`${MAP_BADGE} h-8`} role="group" aria-label="Map colours">
+    <div className={`${MAP_BADGE} h-8 max-sm:h-[32px]`} role="group" aria-label="Map colours">
       {view === 'night' ? (
         <LegendItem kind="line" color={getNightServiceColor(mode)}><span className={MAP_BADGE_LABEL}>Night service</span></LegendItem>
       ) : (

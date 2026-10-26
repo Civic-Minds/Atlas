@@ -8,9 +8,9 @@
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-205/latest.zip",
   "lastFeedExpiry": "20261204",
-  "lastFeedVersion": "1791385495",
+  "lastFeedVersion": "1791990332",
   "region": "Minnesota",
-  "lastRefreshedAt": "2026-10-12",
+  "lastRefreshedAt": "2026-10-19",
   "cities": [
     "Minneapolis, Minnesota",
     "Saint Paul, Minnesota",
@@ -23,25 +23,25 @@
     "Plymouth, Minnesota",
     "West Coon Rapids, Minnesota"
   ],
-  "lastFeedCheckAt": "20261012",
+  "lastFeedCheckAt": "20261019",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261204",
   "feedQuality": {
     "status": "review",
-    "score": 60,
+    "score": 80,
     "reasons": [
       "1 route shape needed adjustment before display.",
-      "11 route have stops whose frequency differs from the overall route schedule."
+      "1 route has stops whose frequency differs from the overall route schedule."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
       "shapeAnomalies": 1,
-      "routeHeadwayMismatches": 11,
-      "featureCount": 657
+      "routeHeadwayMismatches": 1,
+      "featureCount": 671
     },
-    "checkedAt": "2026-10-12"
+    "checkedAt": "2026-10-19"
   },
   "timezone": "America/Chicago",
   "feedRefreshStatus": "current",

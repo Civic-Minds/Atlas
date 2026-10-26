@@ -53,7 +53,7 @@ jobs:
 
       - name: Restore archived positions
         id: archive-cache
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v6
         with:
           path: ${{ runner.temp }}/live-data/archive
           key: live-archive-${{ steps.day.outputs.day }}
@@ -67,7 +67,7 @@ jobs:
       # Saved even when a later step fails, so a failed night doesn't throw away the fetched days.
       - name: Save archived positions
         if: always() && steps.archive-cache.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v6
         with:
           path: ${{ runner.temp }}/live-data/archive
           key: live-archive-${{ steps.day.outputs.day }}

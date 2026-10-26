@@ -1,0 +1,19 @@
+364a083 2026-09-19 Explain frequency threshold sensitivity
+de737e4 2026-09-19 Add Canada common-scope sensitivity finding
+dfdf5e2 2026-09-19 Add US 15-minute sensitivity finding
+74a3f38 2026-09-19 Correct US aggregate population deduplication
+ba7e60b 2026-09-19 Complete remaining US bundle rollout
+8ccbcdc 2026-09-19 Bound large bundle network retries
+7121262 2026-09-19 Retry Census pagination safely
+0719fad 2026-09-19 Handle skipped and large US bundles
+0770fb4 2026-09-19 Make US rollout resumable
+663e60b 2026-09-19 Catalogue Florida Massachusetts New Jersey New York batch
+87ef37e 2026-09-19 Catalogue Arizona Colorado Georgia Hawaii batch
+5c1116a 2026-09-19 Catalogue first US bundle batch
+6cfdf1b 2026-09-19 Fix US batch runner invocation
+1742f00 2026-09-19 Add reusable US bundle coverage runner
+7683983 2026-09-19 Run US cross-state validation pilots
+f0d6271 2026-09-19 Run Kansas Missouri US transit coverage pilot
+e26a464 2026-09-18 Add US transit service bundling layer
+34c337d 2026-09-18 Add 30-minute Canada transit coverage finding
+68e9990 2026-09-18 Add Canada transit population coverage analysis

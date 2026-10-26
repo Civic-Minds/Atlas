@@ -1,5 +1,5 @@
 import { FEATURES } from '../../shared/config';
-import AtlasBrand from './AtlasBrand';
+import AtlasLogo from './AtlasLogo';
 
 type FooterLink = { href: string; label: string };
 
@@ -37,9 +37,7 @@ export default function SiteFooter() {
     <footer className="mt-8 pt-5 sm:[html[data-consent-prompt]_&]:pb-16 text-sm text-[var(--text-dim)]" aria-label="Site footer">
       <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <a href="/" aria-label="Atlas by Civic Minds">
-            <AtlasBrand size="page" />
-          </a>
+          <AtlasLogo href="/" ariaLabel="Atlas by Civic Minds" showMark={false} size="page" />
           <p className="mt-2 sm:whitespace-nowrap">Transit service, from schedule to street.</p>
         </div>
         <nav className="grid grid-cols-3 gap-x-4 gap-y-5 sm:flex sm:gap-x-20" aria-label="Footer links">

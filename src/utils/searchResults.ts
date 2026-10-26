@@ -3,6 +3,7 @@ import type { ShapeProperties } from '../hooks/useAgencyData';
 import type { ViewportBounds } from '../hooks/useIntervalStats';
 import type { AgencySearchGroup } from './agencySearch';
 import { buildRouteFacts } from './routeFacts';
+import { compareRouteNumber, compareSearchRelevance, compareText } from './sortCompare';
 
 export interface RouteSearchResult {
   key: string;
@@ -296,12 +297,9 @@ export function searchRouteResults(
         matchRank,
       };
     })
-    .sort((a, b) => {
-      if (a.inView !== b.inView) return a.inView ? -1 : 1;
-      if (a.matchRank !== b.matchRank) return a.matchRank - b.matchRank;
-      if (a.distanceM !== b.distanceM) return a.distanceM - b.distanceM;
-      return (a.routeShortName ?? '').localeCompare(b.routeShortName ?? '', undefined, { numeric: true });
-    });
+    .sort((a, b) => compareSearchRelevance(a, b, (x, y) =>
+      compareRouteNumber(x.routeShortName, y.routeShortName, x.routeLongName, y.routeLongName)
+      || compareText(x.agencyName, y.agencyName)));
 }
 
 export function splitByViewport<T extends { inView: boolean }>(items: T[]): SplitSearchResults<T> {
@@ -491,12 +489,7 @@ export function searchStopResults(
     }
   }
 
-  return groupedResults.sort((a, b) => {
-    if (a.inView !== b.inView) return a.inView ? -1 : 1;
-    if (a.matchRank !== b.matchRank) return a.matchRank - b.matchRank;
-    if (a.distanceM !== b.distanceM) return a.distanceM - b.distanceM;
-    return a.stopName.localeCompare(b.stopName);
-  });
+  return groupedResults.sort((a, b) => compareSearchRelevance(a, b, (x, y) => compareText(x.stopName, y.stopName)));
 }
 
 export function splitStopResults(stops: StopSearchResult[]): SplitSearchResults<StopSearchResult> {

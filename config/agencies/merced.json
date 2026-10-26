@@ -7,7 +7,7 @@
     -120.48
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-3117/latest.zip",
-  "lastFeedExpiry": "20281016",
+  "lastFeedExpiry": "20281021",
   "lastFeedVersion": "PASAT 8 Route Update",
   "region": "California",
   "lastRefreshedAt": "2026-08-10",
@@ -15,7 +15,7 @@
     "Merced, California",
     "Turlock, California"
   ],
-  "lastFeedCheckAt": "20261012",
+  "lastFeedCheckAt": "20261019",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20991231",

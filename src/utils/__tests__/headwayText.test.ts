@@ -23,20 +23,20 @@ describe('headwayText', () => {
     expect(headwayOrBetter(30)).toBe('every 30 min or better');
   });
 
-  it('filter label: capitalised, and no limit is All routes', () => {
-    expect(headwayFilterLabel(15)).toBe('Every 15 min or better');
-    expect(headwayFilterLabel(Infinity)).toBe('All routes');
+  it('filter label: the pickers\' short wording, and no limit is All (#1011)', () => {
+    expect(headwayFilterLabel(15)).toBe('≤15 min');
+    expect(headwayFilterLabel(Infinity)).toBe('All');
   });
 
   it('about: a measured spacing', () => {
-    expect(headwayAbout(16)).toBe('about every 16 min');
-    expect(headwayAbout(60)).toBe('about every 60 min');
+    expect(headwayAbout(16)).toBe('every 16 min');
+    expect(headwayAbout(60)).toBe('every 60 min');
   });
 
   it('about range: both ends in minutes, collapsed when equal, split above 60', () => {
-    expect(headwayAboutRange(6, 12)).toBe('about every 6–12 min');
-    expect(headwayAboutRange(10, 10)).toBe('about every 10 min');
-    expect(headwayAboutRange(30, 90)).toBe('about every 30 min – about every 90 min');
+    expect(headwayAboutRange(6, 12)).toBe('every 6–12 min');
+    expect(headwayAboutRange(10, 10)).toBe('every 10 min');
+    expect(headwayAboutRange(30, 90)).toBe('every 30–90 min');
   });
 
   it('tier label and band label', () => {
@@ -65,18 +65,18 @@ describe('headwayText', () => {
       expect(headwayOrBetter(120)).toBe('every 120 min or better');
     });
     it('about rounds to the nearest 30 min', () => {
-      expect(headwayAbout(61)).toBe('about every 60 min');
-      expect(headwayAbout(80)).toBe('about every 90 min');
-      expect(headwayAbout(90)).toBe('about every 90 min');
-      expect(headwayAbout(120)).toBe('about every 120 min');
+      expect(headwayAbout(61)).toBe('every 60 min');
+      expect(headwayAbout(80)).toBe('every 90 min');
+      expect(headwayAbout(90)).toBe('every 90 min');
+      expect(headwayAbout(120)).toBe('every 120 min');
     });
   });
 
   describe('non-integers', () => {
     it('prints one decimal and never float noise', () => {
       expect(headwayEvery(7.5)).toBe('every 7.5 min');
-      expect(headwayAbout(0.1 + 0.2)).toBe('about every 0.3 min');
-      expect(headwayAbout(16.04)).toBe('about every 16 min');
+      expect(headwayAbout(0.1 + 0.2)).toBe('every 0.3 min');
+      expect(headwayAbout(16.04)).toBe('every 16 min');
     });
   });
 

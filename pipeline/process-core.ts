@@ -11,6 +11,7 @@ import { computeRawDepartures } from './transit-phase1.js';
 import { applyAnalysisCriteria, BURST_MAX_SPAN_MINUTES, determineTierWithEdgeGapAllowance, previousNightTailDays } from './transit-phase2.js';
 import { calculateCorridors } from './transit-logic.js';
 import { detectReferenceDate, getActiveServiceIds } from './transit-calendar.js';
+import { calendarFromNextServiceDates } from './serviceDates.js';
 import { DEFAULT_CRITERIA, getTiersForCriteria } from './defaults.js';
 import { normalizeGtfs, type GtfsPreprocess, type GtfsTransformOptions } from './preprocess/run.js';
 import { clearLoneOriginRows, labelConvergingOrigins } from './convergingOrigins.js';
@@ -481,6 +482,12 @@ export interface ProcessOptions extends GtfsTransformOptions {
    * omit this and continue to use the default analysis criteria.
    */
   analysisCriteriaFn?: (raw: RawRouteDepartures[]) => AnalysisResult[];
+  /**
+   * Explicit reference date (YYYYMMDD) in place of the detected one. Only the History v2 backfill
+   * sets it (flag-gated), to re-read a feed at a normal week instead of a holiday-week date. Unset
+   * everywhere else, so the picker below is unchanged.
+   */
+  referenceDate?: string;
   /** Read-only view of the phase 2 results, for tests and audits. Does not change the output. */
   onAnalysisResults?: (results: readonly AnalysisResult[]) => void;
   /** Tests only (frequency focus step 3): the stretch selector's output beside stopDepsByGroup, for the trip-membership check. */
@@ -510,6 +517,8 @@ export interface ProcessResult {
   feedExpiry: string | null;   // feed_end_date from feed_info.txt, or null if absent
   /** Latest service date across feed_info, calendar.txt and added calendar_dates; uncapped. Feed with `feedExpiry` through recordedFeedExpiry() to get the value to store. */
   calendarExpiry: string | null;
+  /** Latest service date from calendar.txt and added calendar_dates alone (no feed_info); can only lower the recorded expiry (#1039). */
+  calendarOnlyEnd: string | null;
   feedVersion: string | null;  // feed_version from feed_info.txt, or null if absent
   livePollingSidecar?: Record<string, any>;
   shapeAnomalies?: import('../types/gtfs.js').ShapeAnomaly[];
@@ -730,7 +739,27 @@ export async function processGtfsBuffer(
   // service a 2025-2027 calendar.txt period and switches semester and summer timetables only
   // with calendar_dates removals, so the period midpoint (Jul 2, 2026) always read the summer
   // timetable and dropped the semester-only routes 40 and 51 (#774).
-  const refDate = options?.referenceDateFromRunDate
+  // The feed's own calendar, kept for the expiry below when a feed opts into next service dates.
+  const feedCalendar = gtfs.calendar;
+  const feedCalendarDates = gtfs.calendarDates;
+  // Feed opt-in (an agency's nextServiceDatesFeedUrls): rolling per-day service_ids, read from one
+  // typical real weekday, Saturday and Sunday after the run date instead of one reference date. LA Metro Rail lost
+  // Weekday and Sunday on A, B and D in release-mvf8jscd. See serviceDates.ts.
+  const nextServiceDates = options?.dayTypesFromNextServiceDates
+    ? calendarFromNextServiceDates(gtfs.calendar ?? [], gtfs.calendarDates ?? [], gtfs.trips ?? [], runDateYmd(), {
+      skipWeekendEvents: options?.nextServiceDatesSkipWeekendEvents,
+    })
+    : null;
+  if (nextServiceDates) {
+    gtfs = { ...gtfs, calendar: nextServiceDates.calendar, calendarDates: [] };
+    const { Weekday, Saturday, Sunday } = nextServiceDates.dates;
+    onStatus?.(`Next service dates: Weekday ${Weekday}, Saturday ${Saturday}, Sunday ${Sunday}`);
+  }
+  const refDate = nextServiceDates
+    ? nextServiceDates.referenceDate
+    : options?.referenceDate
+    ? options.referenceDate
+    : options?.referenceDateFromRunDate
     ? runDateYmd()
     : detectReferenceDate(gtfs.calendar ?? [], gtfs.calendarDates, gtfs.trips);
   // Union all 7 days, not just Monday/Saturday/Sunday — an agency whose weekday
@@ -3400,8 +3429,12 @@ export async function processGtfsBuffer(
   const feedInfo = gtfs.feedInfo?.[0];
   const calendarExpiry = effectiveFeedExpiry({
     feedInfoEnd: feedInfo?.feed_end_date,
-    calendarEnds: gtfs.calendar?.map(calendar => calendar.end_date) ?? [],
-    calendarDates: gtfs.calendarDates,
+    calendarEnds: feedCalendar?.map(calendar => calendar.end_date) ?? [],
+    calendarDates: feedCalendarDates,
+  });
+  const calendarOnlyEnd = effectiveFeedExpiry({
+    calendarEnds: feedCalendar?.map(calendar => calendar.end_date) ?? [],
+    calendarDates: feedCalendarDates,
   });
   const timezone = gtfs.agencies?.[0]?.agency_timezone?.trim() || null;
   // Scheduled running time (CIV-84): card data in its own top-level block of the agency JSON,
@@ -3425,7 +3458,7 @@ export async function processGtfsBuffer(
     featureCount: routeFeatures.length,
     // Same rule as the registry's lastFeedExpiry, so a stale feed_info end date
     // does not mark a feed whose calendar runs on as expired (#687).
-    feedExpiry: recordedFeedExpiry(feedInfo?.feed_end_date ?? null, calendarExpiry, new Date().toISOString().slice(0, 10)),
+    feedExpiry: recordedFeedExpiry(feedInfo?.feed_end_date ?? null, calendarExpiry, new Date().toISOString().slice(0, 10), calendarOnlyEnd),
   });
 
   let livePollingSidecar: Record<string, any> | undefined;
@@ -3480,6 +3513,7 @@ export async function processGtfsBuffer(
     timezone,
     feedExpiry: feedInfo?.feed_end_date ?? null,
     calendarExpiry,
+    calendarOnlyEnd,
     feedVersion: feedInfo?.feed_version ?? null,
     livePollingSidecar,
     shapeAnomalies: gtfs.shapeAnomalies,

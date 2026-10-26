@@ -11,6 +11,7 @@ import Papa from 'papaparse';
 import { computeRawDepartures, applyAnalysisCriteria } from '../pipeline/transit-logic';
 import { GtfsData, GtfsShape, AnalysisCriteria } from '../src/types/gtfs';
 import { DEFAULT_CRITERIA } from '../pipeline/defaults';
+import { GTFS_ARCHIVE_DIR } from '../pipeline/gtfsArchivePath';
 
 const parseCsv = <T>(text: string): T[] => {
     const result = Papa.parse(text, { header: true, skipEmptyLines: true, transform: (v: string) => v.trim() });
@@ -144,7 +145,7 @@ async function processZip(zipPath: string): Promise<void> {
 }
 
 async function main() {
-    const folder = process.argv[2] || '/Users/ryan/Desktop/Data/GTFS';
+    const folder = process.argv[2] || GTFS_ARCHIVE_DIR;
     const zips = readdirSync(folder)
         .filter(f => f.endsWith('.zip'))
         .map(f => join(folder, f))

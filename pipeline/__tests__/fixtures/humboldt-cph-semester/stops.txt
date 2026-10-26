@@ -1,0 +1,15 @@
+stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,zone_id,stop_url,location_type,parent_station,stop_timezone,wheelchair_boarding,platform_code,tts_stop_name
+1273,1256,Riverwalk Dr (Fortuna Overlook),,40.577668,-124.154495,,,0,,,2,,"Riverwalk Drive, Fortuna Overlook"
+1250,1176,College of the Redwoods,,40.6980697597394,-124.195865659449,,,0,,,1,,College of the Redwoods
+1252,1156,Bayshore Mall,,40.780443,-124.188823,,,0,,,1,,"Bayshore Mall, Eureka"
+1262,1088,Cal Poly Humboldt (Library),,40.87709416037406,-124.08047848162073,,,0,,,1,,"Cal Poly Humboldt Library, Arcata"
+1264,1072,Valley West Blvd (McDonald's),,40.902639781915376,-124.08355199422651,,,0,,,1,,"Valley West Boulevard, Arcata, McDonald's"
+1461,1080,Valley East Blvd (Little Learner's),,40.90390735908506,-124.08104495643138,,,0,,,1,,"Valley East Boulevard, Arcata, Little Learner's Center"
+1268,1045,McKinleyville Ave & Murray Rd - NB Stop (High School),,40.95447624030265,-124.11037286011887,,,0,,,1,,"McKinleyville Avenue and Murray Road, Northbound Stop, McKinleyville High School"
+1270,1024,Arcata/Eureka Airport,,40.970563,-124.106561,,,0,,,1,,Arcata Eureka Airport
+758927,1248,Fortuna Park & Ride - SB Stop,,40.57567252806918,-124.1481540932541,,,0,,,1,,"Fortuna Park and Ride, Southbound Stop"
+29,1001,Main St & View Ave - Trinidad NB Stop,,41.061443872690944,-124.14093340843958,,,0,,,1,,"Main Street and View Avenue, Trinidad, Southbound Stop"
+1282,1000,Main St & View Ave - Trinidad SB Stop,,41.06145518545524,-124.14056639720647,,,0,,,1,,"Main Street and View Avenue, Trinidad, Northbound Stop"
+1238,1284,Main St & Mill St (Hoby's Market),,40.48461171127397,-124.101065124012,,,0,,,1,,"Main Street and Mill Street, Scotia, Hoby's Market"
+3451961,1096C,Arcata Transit Center,,40.8685767700786,-124.083772212778,,,0,3451959,,1,C,"Arcata Transit Center, platform C"
+58,3082,St Louis Rd (HHM Student Housing),,40.885128719641564,-124.08201455033628,,,0,,,1,,Heenod Huh Moo-leek Student Housing

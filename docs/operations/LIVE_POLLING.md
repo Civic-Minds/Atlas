@@ -4,7 +4,7 @@ Reference for Atlas's live GTFS-RT integration status — which agencies are pol
 
 For where this fits in the platform's future direction, see [Live Data Infrastructure](../roadmap/TECHNICAL.md#live-data-infrastructure).
 
-**Status:** TTC vehicle positions are still recorded every minute by the ttc-positions Worker's cron, which is set in Cloudflare; the repo's Worker config has no `[triggers]` block (CIV-317). Whether the other shards still write is unverified. Existing R2 snapshots remain available.
+**Status:** TTC vehicle positions are still recorded every minute by the ttc-positions Worker's cron, which is set in Cloudflare; the repo's Worker config has no `[triggers]` block (CIV-317). The positions archive was verified running in the Cloudflare dashboard on 2026-10-21 (every minute, 0 errors). The ttc-trips, Hamilton, STM and Burlington/Halifax shards stopped on 2026-10-14, so their R2 data ends there. The 30-day lifecycle keeps only the last 30 days. Existing R2 snapshots remain available.
 
 ---
 
@@ -127,7 +127,3 @@ about the final hosted architecture.
 - **511 SF Bay API key**: one key covers SF Muni (`SF`), AC Transit (`AC`), and VTA (`SC`). Atlas uses `MUNI_511_API_KEY` and the provider's `api_key` query parameter.
 - **TTC trip IDs**: Clever Devices RT trip IDs don't match Toronto Open Data static IDs — time-based spatial fallback required. ~20% direct match rate.
 - **Halifax trip IDs**: RT trip IDs differ from static — spatial fallback handles matching.
-
----
-
-[Back to Data](../DATA.md)

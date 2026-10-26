@@ -21,7 +21,3 @@ npm run discover-gaps -- --min-pop 100000
 ```
 
 Candidates are written to `tmp/gap-candidates.json`.
-
----
-
-[Back to Data](../DATA.md)

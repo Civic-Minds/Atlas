@@ -8,3 +8,8 @@ export const loadErrorText = (noun: string) => `Couldn't load ${noun}.`;
 
 /** Added after a load error that the person can retry. */
 export const RETRY_HINT = 'Check your connection and try again.';
+
+/** A route list with nothing to show: the agency card's wording, shared with History's agency view. */
+export const NO_ROUTES_LOADED = 'No routes loaded yet.';
+/** A route list whose mode pill (or search) leaves nothing: "No streetcar routes match.", or "No routes match." with no pill. */
+export const noRoutesMatchText = (modeLabel?: string | null) => `No ${modeLabel ? `${modeLabel.toLowerCase()} ` : ''}routes match.`;

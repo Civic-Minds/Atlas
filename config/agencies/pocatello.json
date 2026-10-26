@@ -21,11 +21,12 @@
   "cities": [
     "Pocatello, Idaho"
   ],
-  "lastFeedCheckAt": "20261012",
+  "lastFeedCheckAt": "20261019",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261231",
   "timezone": "America/Boise",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://pocatellotransit.com/gtfs/pocatello-regional-transit-gtfs.zip?v=current"
+  "lastFeedSourceUrl": "https://pocatellotransit.com/gtfs/pocatello-regional-transit-gtfs.zip?v=current",
+  "lastPeekedExpiry": "20261231"
 }

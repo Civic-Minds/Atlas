@@ -12,10 +12,10 @@ import { PERIOD_KEYS, PERIOD_LABELS, type TimePeriod } from '../../hooks/useInte
  * Settings and the Compare side picker), so the same choice has the same labels, colours and order everywhere.
  */
 
-/** The text of a frequency choice: "All routes" for no limit, else "Every 10 min or better" style. */
-export const frequencyOptionLabel = (max: number) => (max === Infinity ? 'All routes' : headwayFilterLabel(max));
+/** The text of a frequency choice: the short map-key wording ("≤10 min"), the same on every surface. No limit reads "All" everywhere. */
+export const frequencyOptionLabel = (max: number) => headwayFilterLabel(max);
 
-/** The dot colour of a frequency choice (grey for "All routes"). */
+/** The dot colour of a frequency choice (grey for "All"). */
 export function tierDotColor(max: number, colorMode: 'default' | 'friendly'): string {
   return isFinite(max) ? getTierColor(String(max), colorMode) : 'var(--text-dim)';
 }

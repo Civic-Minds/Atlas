@@ -80,11 +80,11 @@ export const PREVIEW_BUILD = ATLAS_MODE === 'preview';
 export const AGENCY_PAGES_ENABLED = true;
 export const RESEARCH_APPS_ENABLED = ATLAS_MODE === 'beta' || ATLAS_MODE === 'dev';
 // Route and stop cards open as a bottom sheet on phones instead of a narrow floating panel.
-// Beta-only while the layout is tried on real phones (Ryan, 2026-10-10, #647).
-export const MOBILE_ROUTE_SHEET_ENABLED = ATLAS_MODE === 'beta' || ATLAS_MODE === 'dev';
+// On for every build (public too, Ryan 2026-10-20); it was beta-only while the layout was tried on real phones (#647).
+export const MOBILE_ROUTE_SHEET_ENABLED = true;
 // Compare mode: two maps side by side, same filter, each with its own day and time (CIV-19).
-// Beta-only while it is tried out.
-export const COMPARE_MODE_ENABLED = ATLAS_MODE === 'beta' || ATLAS_MODE === 'dev';
+// On for every build (public too, Ryan 2026-10-20); it was beta-only while it was tried out. Still hidden on phones (phoneModeFlags).
+export const COMPARE_MODE_ENABLED = true;
 // Shared links and shared map images carry utm tags so analytics can count shared visits.
 // Beta-only until it's been seen working end to end.
 export const SHARE_UTM_ENABLED = ATLAS_MODE === 'beta' || ATLAS_MODE === 'dev';
@@ -137,6 +137,8 @@ export const ROUTE_VARIANTS_ENABLED = BETA_BUILD;
 export const RUNNING_TIMES_ENABLED = BETA_BUILD;
 // The expand control on the route card's frequency chart.
 export const SPARKLINE_EXPAND_ENABLED = BETA_BUILD;
+// "Data source" link to the agency's own website on the agency card (CIV-467).
+export const DATA_SOURCE_LINK_ENABLED = BETA_BUILD;
 
 /**
  * Single source of truth for feature exposure. Consumers should use this registry for navigation,
@@ -172,6 +174,7 @@ export const FEATURES = {
   routeVariants: ROUTE_VARIANTS_ENABLED,
   runningTimes: RUNNING_TIMES_ENABLED,
   sparklineExpand: SPARKLINE_EXPAND_ENABLED,
+  dataSourceLink: DATA_SOURCE_LINK_ENABLED,
 } as const;
 
 /** The flags the SEO title and description depend on, read the same way by the client hook and the prerender. */

@@ -16,8 +16,8 @@
   "feedUrl": "https://files.mobilitydatabase.org/mdb-528/latest.zip",
   "region": "New York",
   "lastFeedExpiry": "20270102",
-  "lastFeedVersion": "20260813",
-  "lastRefreshedAt": "2026-09-07",
+  "lastFeedVersion": "20261009",
+  "lastRefreshedAt": "2026-10-19",
   "cities": [
     "Parkchester, New York",
     "Fordham, New York",
@@ -30,7 +30,7 @@
     "Yonkers, New York",
     "Morningside Heights, New York"
   ],
-  "lastFeedCheckAt": "20261012",
+  "lastFeedCheckAt": "20261019",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270102",
@@ -44,11 +44,15 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 359
+      "featureCount": 361
     },
-    "checkedAt": "2026-09-07"
+    "checkedAt": "2026-10-19"
   },
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-528/latest.zip",
-  "lastPeekedExpiry": "20270102"
+  "lastPeekedExpiry": "20270102",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

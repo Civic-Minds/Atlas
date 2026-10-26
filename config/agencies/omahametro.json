@@ -7,31 +7,33 @@
     -96
   ],
   "feedUrl": "https://www.ometro.com/wp-content/uploads/GTFSRT/google_transit.zip",
-  "lastFeedExpiry": "20261121",
-  "lastFeedVersion": "OMAHA_2607_V1",
+  "lastFeedExpiry": "20261212",
+  "lastFeedVersion": "OMAHA_2610 V1",
   "region": "Nebraska",
-  "lastRefreshedAt": "2026-10-03",
+  "lastRefreshedAt": "2026-10-19",
   "cities": [
     "Omaha, Nebraska",
     "Council Bluffs, Iowa"
   ],
-  "lastFeedCheckAt": "20261012",
+  "lastFeedCheckAt": "20261019",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261121",
+  "expiredFeedCheckExpiry": "20261212",
   "timezone": "America/Chicago",
   "feedQuality": {
-    "status": "healthy",
-    "score": 100,
-    "reasons": [],
+    "status": "review",
+    "score": 70,
+    "reasons": [
+      "10 route shapes needed adjustment before display."
+    ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
-      "shapeAnomalies": 0,
+      "shapeAnomalies": 10,
       "routeHeadwayMismatches": 0,
-      "featureCount": 142
+      "featureCount": 153
     },
-    "checkedAt": "2026-10-03"
+    "checkedAt": "2026-10-19"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -39,5 +41,5 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://www.ometro.com/wp-content/uploads/GTFSRT/google_transit.zip",
-  "lastPeekedExpiry": "20261121"
+  "lastPeekedExpiry": "20261212"
 }

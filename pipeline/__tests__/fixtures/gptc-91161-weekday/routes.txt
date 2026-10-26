@@ -1,0 +1,4 @@
+route_id,agency_id,route_short_name,route_long_name,route_desc,route_type,route_url,route_branding_url,route_color,route_text_color,route_sort_order,continuous_pickup,continuous_drop_off
+6,,R2,US30 Shuttle,,3,,,E8E345,000000,,,
+9,,L2,Oak & County Line Road,,3,,,46A451,000000,,,
+pvmr,1,L1,West Central via Grant,,3,,,5348D0,FFFFFF,,,

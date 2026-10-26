@@ -23,10 +23,11 @@
   ],
   "timezone": "America/New_York",
   "lastRawArchiveKey": "20250817-826a9fab634aebc4",
-  "lastFeedCheckAt": "20261012",
+  "lastFeedCheckAt": "20261019",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270502",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://go-rts.com/wp-content/uploads/2026/08/RTSGTFS_Fall2026-1.zip"
+  "lastFeedSourceUrl": "https://go-rts.com/wp-content/uploads/2026/08/RTSGTFS_Fall2026-1.zip",
+  "lastPeekedExpiry": "20270502"
 }

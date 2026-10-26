@@ -336,7 +336,3 @@ Triage steps specific to this backlog:
 3. `npm run find-mdb -- "Agency Name" slug "lat,lon"` to confirm feed
 
 Then process and publish — see [`MAP_UPDATES.md`](./MAP_UPDATES.md) § Batch processing and publishing for the actual steps (config, `order.json`, `refresh-release`) — and mark `done` here plus note it in `CHANGELOG.md` once published.
-
----
-
-[Back to Agencies](AGENCIES.md) · [Data](../DATA.md)

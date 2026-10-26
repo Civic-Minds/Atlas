@@ -115,7 +115,3 @@ We can rename later.
 - [Technical Roadmap](../TECHNICAL.md)
 - [Research](../../product/RESEARCH.md) (especially evidence gaps for planning)
 - [History app work](https://github.com/Civic-Minds/Atlas) and recent geometry + scrubber improvements
-
----
-
-[Back to Experiments](../EXPERIMENT_IDEAS.md) · [Back to Roadmap](../ROADMAP.md)

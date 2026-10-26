@@ -1,0 +1,225 @@
+route_id,service_id,trip_id,trip_headsign,trip_short_name,direction_id,block_id,shape_id,wheelchair_accessible,bikes_allowed
+RTS,WkDy CPH Group,RTS-WkDy Reg-1_WkDy CPH Group,RTS 1 North - Airport,1,0,100/101,Redwood Transit_Northbound_2 WD Main,1,1
+RTS,WkDy CPH Group,RTS-WkDy Reg-12_WkDy CPH Group,RTS 12 South - Fortuna Overlook,12,1,100/101,Redwood Transit_Southbound_2 WD 12,1,1
+RTS,WkDy CPH Group,RTS-WkDy Reg-21_WkDy CPH Group,RTS 21 North - Airport,21,0,100/101,Redwood Transit_Northbound_2 WD Main,1,1
+RTS,WkDy CPH Group,RTS-WkDy Reg-30_WkDy CPH Group,RTS 30 South - College of the Redwoods,30,1,100/101,Redwood Transit_Southbound_3 WD Main,1,1
+RTS,WkDy CPH Group,RTS-WkDy Reg-31_WkDy CPH Group,RTS 31 North - Cal Poly Humboldt,31,0,100/101,Redwood Transit_Northbound_3 WD,1,1
+RTS,WkDy CPH Group,RTS-WkDy Reg-38_WkDy CPH Group,RTS 38 South - College of the Redwoods,38,1,100/101,Redwood Transit_Southbound_3 WD Main,1,1
+RTS,WkDy CPH Group,RTS-WkDy Reg-41_WkDy CPH Group,RTS 41 North - Cal Poly Humboldt,41,0,100/101,Redwood Transit_Northbound_3 WD,1,1
+RTS,WkDy CPH Group,RTS-WkDy Reg-46_WkDy CPH Group,RTS 46 South - College of the Redwoods,46,1,100/101,Redwood Transit_Southbound_3 WD Main,1,1
+RTS,WkDy CPH Group,RTS-WkDy Reg-49_WkDy CPH Group,RTS 49 North - Trinidad,49,0,100/101,Redwood Transit_Northbound_1 WD 49,1,1
+RTS,WkDy CPH Group,RTS-WkDy Reg-58_WkDy CPH Group,RTS 58 South - Fortuna Park & Ride,58,1,100/101,Redwood Transit_Southbound_1 WD 58,1,1
+RTS,WkDy CPH Group,RTS-WkDy Reg-3_WkDy CPH Group,RTS 3 North - Cal Poly Humboldt,3,0,102/116,Redwood Transit_Northbound_2 WD 3,1,1
+RTS,WkDy CPH Group,RTS-WkDy Reg-10_WkDy CPH Group,RTS 10 South - College of the Redwoods,10,1,102/116,Redwood Transit_Southbound_3 WD Main,1,1
+RTS,WkDy CPH Group,RTS-WkDy Reg-11_WkDy CPH Group,RTS 11 North - Cal Poly Humboldt,11,0,102/116,Redwood Transit_Northbound_3 WD,1,1
+RTS,WkDy CPH Group,RTS-WkDy Reg-28_WkDy CPH Group,RTS 28 South - Fortuna Overlook,28,1,102/116,Redwood Transit_Southbound_2 WD 28,1,1
+RTS,WkDy CPH Group,RTS-WkDy Reg-39_WkDy CPH Group,RTS 39 North - AIrport,39,0,102/116,Redwood Transit_Northbound_2 WD Main,1,1
+RTS,WkDy CPH Group,RTS-WkDy Reg-50_WkDy CPH Group,RTS 50 South - Fortuna Overlook,50,1,102/116,"Redwood Transit_Southbound_2 WD 36, 50",1,1
+RTS,WkDy CPH Group,RTS-WkDy Reg-55_WkDy CPH Group,RTS 55 North - Valley West,55,0,102/116,Redwood Transit_Northbound_2 WD 55,1,1
+RTS,WkDy CPH Group,RTS-WkDy Reg-5_WkDy CPH Group,RTS 5 North - Trinidad,5,0,104/105,Redwood Transit_Northbound_1 WD 5,1,1
+RTS,WkDy CPH Group,RTS-WkDy Reg-20_WkDy CPH Group,RTS 20 South - Scotia,20,1,104/105,Redwood Transit_Southbound_1 WD Main,1,1
+RTS,WkDy CPH Group,RTS-WkDy Reg-29_WkDy CPH Group,RTS 29 North - Trinidad,29,0,104/105,Redwood Transit_Northbound_1 WD 29,1,1
+RTS,WkDy CPH Group,RTS-WkDy Reg-44_WkDy CPH Group,RTS 44 South - Scotia,44,1,104/105,Redwood Transit_Southbound_1 WD 44,1,1
+RTS,WkDy CPH Group,RTS-WkDy Reg-53_WkDy CPH Group,RTS 53 North - Airport,53,0,104/105,Redwood Transit_Northbound_1 WD 53,1,1
+RTS,WkDy CPH Group,RTS-WkDy Reg-8_WkDy CPH Group,RTS 8 South - Scotia,8,1,106/107,Redwood Transit_Southbound_1 WD Main,1,1
+RTS,WkDy CPH Group,RTS-WkDy Reg-17_WkDy CPH Group,RTS 17 North - Trinidad,17,0,106/107,"Redwood Transit_Northbound_1 WD 17,43",1,1
+RTS,WkDy CPH Group,RTS-WkDy Reg-32_WkDy CPH Group,RTS 32 South - Scotia,32,1,106/107,Redwood Transit_Southbound_1 WD Main,1,1
+RTS,WkDy CPH Group,RTS-WkDy Reg-43_WkDy CPH Group,RTS 43 North - Trinidad,43,0,106/107,"Redwood Transit_Northbound_1 WD 17,43",1,1
+RTS,WkDy CPH Group,RTS-WkDy Reg-54_WkDy CPH Group,RTS 54 South - Fortuna Park & Ride,54,1,106/107,Redwood Transit_Southbound_1 WD 54,1,1
+RTS,WkDy CPH Group,RTS-WkDy Reg-2_WkDy CPH Group,RTS 2 South - Scotia,2,1,108/109,Redwood Transit_Southbound_1 WD 2,1,1
+RTS,WkDy CPH Group,RTS-WkDy Reg-13_WkDy CPH Group,RTS 13 North - Airport,13,0,108/109,Redwood Transit_Northbound_1 WD 13,1,1
+RTS,WkDy CPH Group,RTS-WkDy Reg-24_WkDy CPH Group,RTS 24 South - Fortuna Overlook,24,1,108/109,"Redwood Transit_Southbound_2 WD 24,40",1,1
+RTS,WkDy CPH Group,RTS-WkDy Reg-33_WkDy CPH Group,RTS 33 North - Airport,33,0,108/109,Redwood Transit_Northbound_2 WD 33,1,1
+RTS,WkDy CPH Group,RTS-WkDy Reg-4_WkDy CPH Group,RTS 4 South - College of the Redwoods,4,1,110,Redwood Transit_Southbound_3 WD Main,1,1
+RTS,WkDy CPH Group,RTS-WkDy Reg-7_WkDy CPH Group,RTS 7 North - Cal Poly Humboldt,7,0,110,Redwood Transit_Northbound_3 WD,1,1
+RTS,WkDy CPH Group,RTS-WkDy Reg-14_WkDy CPH Group,RTS 14 South - College of the Redwoods,14,1,110,Redwood Transit_Southbound_3 WD Main,1,1
+RTS,WkDy CPH Group,RTS-WkDy Reg-15_WkDy CPH Group,RTS 15 North - Cal Poly Humboldt,15,0,110,Redwood Transit_Northbound_3 WD,1,1
+RTS,WkDy CPH Group,RTS-WkDy Reg-22_WkDy CPH Group,RTS 22 South - College of the Redwoods,22,1,110,Redwood Transit_Southbound_3 WD Main,1,1
+RTS,WkDy CPH Group,RTS-WkDy Reg-23_WkDy CPH Group,RTS 23 North - Cal Poly Humboldt,23,0,110,Redwood Transit_Northbound_3 WD,1,1
+RTS,WkDy CPH Group,RTS-WkDy Reg-9_WkDy CPH Group,RTS 9 North - Airport,9,0,112/115,Redwood Transit_Northbound_1 WD 9,1,1
+RTS,WkDy CPH Group,RTS-WkDy Reg-18_WkDy CPH Group,RTS 18 South - College of the Redwoods,18,1,112/115,Redwood Transit_Southbound_3 WD Main,1,1
+RTS,WkDy CPH Group,RTS-WkDy Reg-19_WkDy CPH Group,RTS 19 North - Cal Poly Humboldt,19,0,112/115,Redwood Transit_Northbound_3 WD,1,1
+RTS,WkDy CPH Group,RTS-WkDy Reg-26_WkDy CPH Group,RTS 26 South - College of the Redwoods,26,1,112/115,Redwood Transit_Southbound_3 WD Main,1,1
+RTS,WkDy CPH Group,RTS-WkDy Reg-27_WkDy CPH Group,RTS 27 North - Cal Poly Humboldt,27,0,112/115,Redwood Transit_Northbound_3 WD,1,1
+RTS,WkDy CPH Group,RTS-WkDy Reg-34_WkDy CPH Group,RTS 34 South - College of the Redwoods,34,1,112/115,Redwood Transit_Southbound_3 WD Main,1,1
+RTS,WkDy CPH Group,RTS-WkDy Reg-35_WkDy CPH Group,RTS 35 North - Cal Poly Humboldt,35,0,112/115,Redwood Transit_Northbound_3 WD,1,1
+RTS,WkDy CPH Group,RTS-WkDy Reg-42_WkDy CPH Group,RTS 42 South - College of the Redwoods,42,1,112/115,Redwood Transit_Southbound_3 WD Main,1,1
+RTS,WkDy CPH Group,RTS-WkDy Reg-45_WkDy CPH Group,RTS 45 North - Cal Poly Humboldt,45,0,112/115,Redwood Transit_Northbound_3 WD,1,1
+RTS,WkDy CPH Group,RTS-WkDy Reg-52_WkDy CPH Group,RTS 52 South - Scotia,52,1,112/115,Redwood Transit_Southbound_1 WD 52,1,1
+RTS,WkDy CPH Group,RTS-WkDy Reg-57_WkDy CPH Group,RTS 57 North - McKinleyville Highschool,57,0,112/115,Redwood Transit_Northbound_1 WD 57,1,1
+RTS,WkDy CPH Group,RTS-WkDy Reg-16_WkDy CPH Group,RTS 16 South - Fortuna Overlook,16,1,118,Redwood Transit_Southbound_2 WD 16,1,1
+RTS,WkDy CPH Group,RTS-WkDy Reg-25_WkDy CPH Group,RTS 25 North - Airport,25,0,118,Redwood Transit_Northbound_2 WD 25,1,1
+RTS,WkDy CPH Group,RTS-WkDy Reg-36_WkDy CPH Group,RTS 36 South - Fortuna Overlook,36,1,118,"Redwood Transit_Southbound_2 WD 36, 50",1,1
+RTS,WkDy CPH Group,RTS-WkDy Reg-47_WkDy CPH Group,RTS 47 North - Airport,47,0,118,Redwood Transit_Northbound_2 WD 47,1,1
+RTS,WkDy CPH Group,RTS-WkDy Reg-40_WkDy CPH Group,RTS 40 South - Fortuna Overlook,40,1,120,"Redwood Transit_Southbound_2 WD 24,40",1,1
+RTS,WkDy CPH Group,RTS-WkDy Reg-51_WkDy CPH Group,RTS 51 North - Airport,51,0,120,Redwood Transit_Northbound_2 WD Main,1,1
+RTS,WkDy CPH Group,RTS-WkDy Reg-56_WkDy CPH Group,RTS 56 South - Fortuna Park & Ride,56,1,120,Redwood Transit_Southbound_2 WD 56,1,1
+RTS,WkDy CPH Group,RTS-WkDy Reg-37_WkDy CPH Group,RTS 37 North - McKinleyville Highschool,37,0,123,Redwood Transit_Northbound_2 WD 37,1,1
+RTS,WkDy CPH Group,RTS-WkDy Reg-48_WkDy CPH Group,RTS 48 South - Fortuna Overlook,48,1,123,Redwood Transit_Southbound_2 WD 48,1,1
+A Orng,WkDy CPH Group,A Orng-WkDy CPH-1905_WkDy CPH Group,Arcata Orange Loop,1905,0,351,AMRTS Orange_Loop_Main,,
+A Orng,WkDy CPH Group,A Orng-WkDy CPH-2005_WkDy CPH Group,Arcata Orange Loop,2005,0,351,AMRTS Orange_Loop_Main,,
+A Orng,WkDy CPH Group,A Orng-WkDy CPH-2105_WkDy CPH Group,Arcata Orange Loop,2105,0,351,AMRTS Orange_Loop_Main,,
+HHM,WkDy CPH Group,HHM-WkDy CPH-1_WkDy CPH Group,HHM Express,1,0,305,HHM Express_Loop_Main,1,0
+HHM,WkDy CPH Group,HHM-WkDy CPH-2_WkDy CPH Group,HHM Express,2,0,305,HHM Express_Loop_Main,1,0
+HHM,WkDy CPH Group,HHM-WkDy CPH-3_WkDy CPH Group,HHM Express,3,0,305,HHM Express_Loop_Main,1,0
+HHM,WkDy CPH Group,HHM-WkDy CPH-4_WkDy CPH Group,HHM Express,4,0,305,HHM Express_Loop_Main,1,0
+HHM,WkDy CPH Group,HHM-WkDy CPH-5_WkDy CPH Group,HHM Express,5,0,305,HHM Express_Loop_Main,1,0
+HHM,WkDy CPH Group,HHM-WkDy CPH-6_WkDy CPH Group,HHM Express,6,0,305,HHM Express_Loop_Main,1,0
+HHM,WkDy CPH Group,HHM-WkDy CPH-7_WkDy CPH Group,HHM Express,7,0,305,HHM Express_Loop_Main,1,0
+HHM,WkDy CPH Group,HHM-WkDy CPH-8_WkDy CPH Group,HHM Express,8,0,305,HHM Express_Loop_Main,1,0
+HHM,WkDy CPH Group,HHM-WkDy CPH-9_WkDy CPH Group,HHM Express,9,0,305,HHM Express_Loop_Main,1,0
+HHM,WkDy CPH Group,HHM-WkDy CPH-10_WkDy CPH Group,HHM Express,10,0,305,HHM Express_Loop_Main,1,0
+HHM,WkDy CPH Group,HHM-WkDy CPH-11_WkDy CPH Group,HHM Express,11,0,305,HHM Express_Loop_Main,1,0
+HHM,WkDy CPH Group,HHM-WkDy CPH-12_WkDy CPH Group,HHM Express,12,0,305,HHM Express_Loop_Main,1,0
+HHM,WkDy CPH Group,HHM-WkDy CPH-13_WkDy CPH Group,HHM Express,13,0,305,HHM Express_Loop_Main,1,0
+HHM,WkDy CPH Group,HHM-WkDy CPH-14_WkDy CPH Group,HHM Express,14,0,305,HHM Express_Loop_Main,1,0
+HHM,WkDy CPH Group,HHM-WkDy CPH-15_WkDy CPH Group,HHM Express,15,0,305,HHM Express_Loop_Main,1,0
+HHM,WkDy CPH Group,HHM-WkDy CPH-16_WkDy CPH Group,HHM Express,16,0,305,HHM Express_Loop_Main,1,0
+HHM,WkDy CPH Group,HHM-WkDy CPH-17_WkDy CPH Group,HHM Express,17,0,305,HHM Express_Loop_Main,1,0
+HHM,WkDy CPH Group,HHM-WkDy CPH-18_WkDy CPH Group,HHM Express,18,0,305,HHM Express_Loop_Main,1,0
+HHM,WkDy CPH Group,HHM-WkDy CPH-19_WkDy CPH Group,HHM Express,19,0,305,HHM Express_Loop_Main,1,0
+HHM,WkDy CPH Group,HHM-WkDy CPH-20_WkDy CPH Group,HHM Express,20,0,305,HHM Express_Loop_Main,1,0
+HHM,WkDy CPH Group,HHM-WkDy CPH-21_WkDy CPH Group,HHM Express,21,0,305,HHM Express_Loop_Main,1,0
+HHM,WkDy CPH Group,HHM-WkDy CPH-22_WkDy CPH Group,HHM Express,22,0,305,HHM Express_Loop_Main,1,0
+HHM,WkDy CPH Group,HHM-WkDy CPH-23_WkDy CPH Group,HHM Express,23,0,305,HHM Express_Loop_Main,1,0
+HHM,WkDy CPH Group,HHM-WkDy CPH-24_WkDy CPH Group,HHM Express,24,0,305,HHM Express_Loop_Main,1,0
+HHM,WkDy CPH Group,HHM-WkDy CPH-25_WkDy CPH Group,HHM Express,25,0,305,HHM Express_Loop_Main,1,0
+HHM,WkDy CPH Group,HHM-WkDy CPH-26_WkDy CPH Group,HHM Express,26,0,305,HHM Express_Loop_Main,1,0
+HHM,WkDy CPH Group,HHM-WkDy CPH-27_WkDy CPH Group,HHM Express,27,0,305,HHM Express_Loop_Main,1,0
+HHM,WkDy CPH Group,HHM-WkDy CPH-28_WkDy CPH Group,HHM Express,28,0,305,HHM Express_Loop_Main,1,0
+HHM,WkDy CPH Group,HHM-WkDy CPH-29_WkDy CPH Group,HHM Express,29,0,305,HHM Express_Loop_Main,1,0
+HHM,WkDy CPH Group,HHM-WkDy CPH-30_WkDy CPH Group,HHM Express,30,0,305,HHM Express_Loop_Main,1,0
+HHM,WkDy CPH Group,HHM-WkDy CPH-31_WkDy CPH Group,HHM Express,31,0,305,HHM Express_Loop_Main,1,0
+HHM,WkDy CPH Group,HHM-WkDy CPH-32_WkDy CPH Group,HHM Express,32,0,305,HHM Express_Loop_Main,1,0
+HHM,WkDy CPH Group,HHM-WkDy CPH-33_WkDy CPH Group,HHM Express,33,0,305,HHM Express_Loop_Main,1,0
+HHM,WkDy CPH Group,HHM-WkDy CPH-34_WkDy CPH Group,HHM Express,34,0,305,HHM Express_Loop_Main,1,0
+HHM,WkDy CPH Group,HHM-WkDy CPH-35_WkDy CPH Group,HHM Express,35,0,305,HHM Express_Loop_Main,1,0
+HHM,WkDy CPH Group,HHM-WkDy CPH-36_WkDy CPH Group,HHM Express,36,0,305,HHM Express_Loop_Main,1,0
+HHM,WkDy CPH Group,HHM-WkDy CPH-37_WkDy CPH Group,HHM Express,37,0,305,HHM Express_Loop_Main,1,0
+HHM,WkDy CPH Group,HHM-WkDy CPH-38_WkDy CPH Group,HHM Express,38,0,305,HHM Express_Loop_Main,1,0
+HHM,WkDy CPH Group,HHM-WkDy CPH-39_WkDy CPH Group,HHM Express,39,0,305,HHM Express_Loop_Main,1,0
+HHM,WkDy CPH Group,HHM-WkDy CPH-40_WkDy CPH Group,HHM Express,40,0,305,HHM Express_Loop_Main,1,0
+A Orng,Sat Reg,A Orng-Sat Reg-0705_Sat Reg,Arcata Orange Loop,0705,0,303/353,AMRTS Orange_Loop_Main,1,2
+A Orng,Sat Reg,A Orng-Sat Reg-0805_Sat Reg,Arcata Orange Loop,0805,0,303/353,AMRTS Orange_Loop_Main,1,2
+A Orng,Sat Reg,A Orng-Sat Reg-0905_Sat Reg,Arcata Orange Loop,0905,0,303/353,AMRTS Orange_Loop_Main,1,2
+A Orng,Sat Reg,A Orng-Sat Reg-1005_Sat Reg,Arcata Orange Loop,1005,0,303/353,AMRTS Orange_Loop_Main,1,2
+A Orng,Sat Reg,A Orng-Sat Reg-1105_Sat Reg,Arcata Orange Loop,1105,0,303/353,AMRTS Orange_Loop_Main,1,2
+A Orng,Sat Reg,A Orng-Sat Reg-1205_Sat Reg,Arcata Orange Loop,1205,0,303/353,AMRTS Orange_Loop_Main,1,2
+A Orng,Sat Reg,A Orng-Sat Reg-1305_Sat Reg,Arcata Orange Loop,1305,0,303/353,AMRTS Orange_Loop_Main,1,2
+A Orng,Sat Reg,A Orng-Sat Reg-1405_Sat Reg,Arcata Orange Loop,1405,0,303/353,AMRTS Orange_Loop_Main,1,2
+A Orng,Sat Reg,A Orng-Sat Reg-1505_Sat Reg,Arcata Orange Loop,1505,0,303/353,AMRTS Orange_Loop_Main,1,2
+A Orng,Sat Reg,A Orng-Sat Reg-1605_Sat Reg,Arcata Orange Loop,1605,0,303/353,AMRTS Orange_Loop_Main,1,2
+A Orng,Sat Reg,A Orng-Sat Reg-1705_Sat Reg,Arcata Orange Loop,1705,0,303/353,AMRTS Orange_Loop_Main,1,2
+A Orng,Sat Reg,A Orng-Sat Reg-1805_Sat Reg,Arcata Orange Loop,1805,0,303/353,AMRTS Orange_Loop_Main,1,2
+RTS,Sat Reg,RTS-Sat Reg-2_Sat Reg,RTS 2 South - Scotia,2,1,601/602,"Redwood Transit_Southbound_1 Sat 2,16",1,1
+RTS,Sat Reg,RTS-Sat Reg-5_Sat Reg,RTS 5 North - Trinidad,5,0,601/602,"Redwood Transit_Northbound_1 Sat 5,9",1,1
+RTS,Sat Reg,RTS-Sat Reg-10_Sat Reg,RTS 10 South - Scotia,10,1,601/602,"Redwood Transit_Southbound_1 Sat 6,10",1,1
+RTS,Sat Reg,RTS-Sat Reg-15_Sat Reg,RTS 15 North - Trinidad,15,0,601/602,"Redwood Transit_Northbound_1 Sat 1,15",1,1
+RTS,Sat Reg,RTS-Sat Reg-20_Sat Reg,RTS 20 South - Fortuna Park & Ride,20,1,601/602,Redwood Transit_Southbound_1 Sat 20,1,1
+RTS,Sat Reg,RTS-Sat Reg-1_Sat Reg,RTS 15 North - Trinidad,1,0,603/604,"Redwood Transit_Northbound_1 Sat 1,15",1,1
+RTS,Sat Reg,RTS-Sat Reg-6_Sat Reg,RTS 6 South - Scotia,6,1,603/604,"Redwood Transit_Southbound_1 Sat 6,10",1,1
+RTS,Sat Reg,RTS-Sat Reg-9_Sat Reg,RTS 9 North - Trinidad,9,0,603/604,"Redwood Transit_Northbound_1 Sat 5,9",1,1
+RTS,Sat Reg,RTS-Sat Reg-16_Sat Reg,RTS 16 South - Scotia,16,1,603/604,"Redwood Transit_Southbound_1 Sat 2,16",1,1
+RTS,Sat Reg,RTS-Sat Reg-19_Sat Reg,RTS 19 North - McKinleyville Highschool,19,0,603/604,Redwood Transit_Northbound_1 Sat 19,1,1
+RTS,Sat Reg,RTS-Sat Reg-4_Sat Reg,RTS 4 South - College of the Redwoods,4,1,605,"Redwood Transit_Southbound_3 Sat 4,18",1,1
+RTS,Sat Reg,RTS-Sat Reg-3_Sat Reg,RTS 3 North - Valley West,3,0,605,Redwood Transit_Northbound_3 Sat 3,1,1
+RTS,Sat Reg,RTS-Sat Reg-8_Sat Reg,RTS 8 South - Bayshore Mall,8,1,605,Redwood Transit_Southbound_3 Sat Main,1,1
+RTS,Sat Reg,RTS-Sat Reg-7_Sat Reg,RTS 7 North - Valley West,7,0,605,Redwood Transit_Northbound_3 Sat Main,1,1
+RTS,Sat Reg,RTS-Sat Reg-12_Sat Reg,RTS 12 South - Bayshore Mall,12,1,605,Redwood Transit_Southbound_3 Sat Main,1,1
+RTS,Sat Reg,RTS-Sat Reg-11_Sat Reg,RTS 11 North - Valley West,11,0,605,Redwood Transit_Northbound_3 Sat Main,1,1
+RTS,Sat Reg,RTS-Sat Reg-14_Sat Reg,RTS 14 South - Bayshore Mall,14,1,606,Redwood Transit_Southbound_3 Sat Main,1,1
+RTS,Sat Reg,RTS-Sat Reg-13_Sat Reg,RTS 13 North - Valley West,13,0,606,Redwood Transit_Northbound_3 Sat Main,1,1
+RTS,Sat Reg,RTS-Sat Reg-18_Sat Reg,RTS 18 South - College of the Redwoods,18,1,606,"Redwood Transit_Southbound_3 Sat 4,18",1,1
+RTS,Sat Reg,RTS-Sat Reg-17_Sat Reg,RTS 17 North - McKinleyville Highschool,17,0,606,Redwood Transit_Northbound_2 Sat 17,1,1
+RTS,WkDy Reg,RTS-WkDy Reg-1_WkDy Reg,RTS 1 North - Airport,1,0,100/101,Redwood Transit_Northbound_2 WD Main,1,1
+RTS,WkDy Reg,RTS-WkDy Reg-12_WkDy Reg,RTS 12 South - Fortuna Overlook,12,1,100/101,Redwood Transit_Southbound_2 WD 12,1,1
+RTS,WkDy Reg,RTS-WkDy Reg-21_WkDy Reg,RTS 21 North - Airport,21,0,100/101,Redwood Transit_Northbound_2 WD Main,1,1
+RTS,WkDy Reg,RTS-WkDy Reg-30_WkDy Reg,RTS 30 South - College of the Redwoods,30,1,100/101,Redwood Transit_Southbound_3 WD Main,1,1
+RTS,WkDy Reg,RTS-WkDy Reg-31_WkDy Reg,RTS 31 North - Cal Poly Humboldt,31,0,100/101,Redwood Transit_Northbound_3 WD,1,1
+RTS,WkDy Reg,RTS-WkDy Reg-38_WkDy Reg,RTS 38 South - College of the Redwoods,38,1,100/101,Redwood Transit_Southbound_3 WD Main,1,1
+RTS,WkDy Reg,RTS-WkDy Reg-41_WkDy Reg,RTS 41 North - Cal Poly Humboldt,41,0,100/101,Redwood Transit_Northbound_3 WD,1,1
+RTS,WkDy Reg,RTS-WkDy Reg-46_WkDy Reg,RTS 46 South - College of the Redwoods,46,1,100/101,Redwood Transit_Southbound_3 WD Main,1,1
+RTS,WkDy Reg,RTS-WkDy Reg-49_WkDy Reg,RTS 49 North - Trinidad,49,0,100/101,Redwood Transit_Northbound_1 WD 49,1,1
+RTS,WkDy Reg,RTS-WkDy Reg-58_WkDy Reg,RTS 58 South - Fortuna Park & Ride,58,1,100/101,Redwood Transit_Southbound_1 WD 58,1,1
+RTS,WkDy Reg,RTS-WkDy Reg-3_WkDy Reg,RTS 3 North - Cal Poly Humboldt,3,0,102/116,Redwood Transit_Northbound_2 WD 3,1,1
+RTS,WkDy Reg,RTS-WkDy Reg-10_WkDy Reg,RTS 10 South - College of the Redwoods,10,1,102/116,Redwood Transit_Southbound_3 WD Main,1,1
+RTS,WkDy Reg,RTS-WkDy Reg-11_WkDy Reg,RTS 11 North - Cal Poly Humboldt,11,0,102/116,Redwood Transit_Northbound_3 WD,1,1
+RTS,WkDy Reg,RTS-WkDy Reg-28_WkDy Reg,RTS 28 South - Fortuna Overlook,28,1,102/116,Redwood Transit_Southbound_2 WD 28,1,1
+RTS,WkDy Reg,RTS-WkDy Reg-39_WkDy Reg,RTS 39 North - AIrport,39,0,102/116,Redwood Transit_Northbound_2 WD Main,1,1
+RTS,WkDy Reg,RTS-WkDy Reg-50_WkDy Reg,RTS 50 South - Fortuna Overlook,50,1,102/116,"Redwood Transit_Southbound_2 WD 36, 50",1,1
+RTS,WkDy Reg,RTS-WkDy Reg-55_WkDy Reg,RTS 55 North - Valley West,55,0,102/116,Redwood Transit_Northbound_2 WD 55,1,1
+RTS,WkDy Reg,RTS-WkDy Reg-5_WkDy Reg,RTS 5 North - Trinidad,5,0,104/105,Redwood Transit_Northbound_1 WD 5,1,1
+RTS,WkDy Reg,RTS-WkDy Reg-20_WkDy Reg,RTS 20 South - Scotia,20,1,104/105,Redwood Transit_Southbound_1 WD Main,1,1
+RTS,WkDy Reg,RTS-WkDy Reg-29_WkDy Reg,RTS 29 North - Trinidad,29,0,104/105,Redwood Transit_Northbound_1 WD 29,1,1
+RTS,WkDy Reg,RTS-WkDy Reg-44_WkDy Reg,RTS 44 South - Scotia,44,1,104/105,Redwood Transit_Southbound_1 WD 44,1,1
+RTS,WkDy Reg,RTS-WkDy Reg-53_WkDy Reg,RTS 53 North - Airport,53,0,104/105,Redwood Transit_Northbound_1 WD 53,1,1
+RTS,WkDy Reg,RTS-WkDy Reg-8_WkDy Reg,RTS 8 South - Scotia,8,1,106/107,Redwood Transit_Southbound_1 WD Main,1,1
+RTS,WkDy Reg,RTS-WkDy Reg-17_WkDy Reg,RTS 17 North - Trinidad,17,0,106/107,"Redwood Transit_Northbound_1 WD 17,43",1,1
+RTS,WkDy Reg,RTS-WkDy Reg-32_WkDy Reg,RTS 32 South - Scotia,32,1,106/107,Redwood Transit_Southbound_1 WD Main,1,1
+RTS,WkDy Reg,RTS-WkDy Reg-43_WkDy Reg,RTS 43 North - Trinidad,43,0,106/107,"Redwood Transit_Northbound_1 WD 17,43",1,1
+RTS,WkDy Reg,RTS-WkDy Reg-54_WkDy Reg,RTS 54 South - Fortuna Park & Ride,54,1,106/107,Redwood Transit_Southbound_1 WD 54,1,1
+RTS,WkDy Reg,RTS-WkDy Reg-2_WkDy Reg,RTS 2 South - Scotia,2,1,108/109,Redwood Transit_Southbound_1 WD 2,1,1
+RTS,WkDy Reg,RTS-WkDy Reg-13_WkDy Reg,RTS 13 North - Airport,13,0,108/109,Redwood Transit_Northbound_1 WD 13,1,1
+RTS,WkDy Reg,RTS-WkDy Reg-24_WkDy Reg,RTS 24 South - Fortuna Overlook,24,1,108/109,"Redwood Transit_Southbound_2 WD 24,40",1,1
+RTS,WkDy Reg,RTS-WkDy Reg-33_WkDy Reg,RTS 33 North - Airport,33,0,108/109,Redwood Transit_Northbound_2 WD 33,1,1
+RTS,WkDy Reg,RTS-WkDy Reg-4_WkDy Reg,RTS 4 South - College of the Redwoods,4,1,110,Redwood Transit_Southbound_3 WD Main,1,1
+RTS,WkDy Reg,RTS-WkDy Reg-7_WkDy Reg,RTS 7 North - Cal Poly Humboldt,7,0,110,Redwood Transit_Northbound_3 WD,1,1
+RTS,WkDy Reg,RTS-WkDy Reg-14_WkDy Reg,RTS 14 South - College of the Redwoods,14,1,110,Redwood Transit_Southbound_3 WD Main,1,1
+RTS,WkDy Reg,RTS-WkDy Reg-15_WkDy Reg,RTS 15 North - Cal Poly Humboldt,15,0,110,Redwood Transit_Northbound_3 WD,1,1
+RTS,WkDy Reg,RTS-WkDy Reg-22_WkDy Reg,RTS 22 South - College of the Redwoods,22,1,110,Redwood Transit_Southbound_3 WD Main,1,1
+RTS,WkDy Reg,RTS-WkDy Reg-23_WkDy Reg,RTS 23 North - Cal Poly Humboldt,23,0,110,Redwood Transit_Northbound_3 WD,1,1
+RTS,WkDy Reg,RTS-WkDy Reg-9_WkDy Reg,RTS 9 North - Airport,9,0,112/115,Redwood Transit_Northbound_1 WD 9,1,1
+RTS,WkDy Reg,RTS-WkDy Reg-18_WkDy Reg,RTS 18 South - College of the Redwoods,18,1,112/115,Redwood Transit_Southbound_3 WD Main,1,1
+RTS,WkDy Reg,RTS-WkDy Reg-19_WkDy Reg,RTS 19 North - Cal Poly Humboldt,19,0,112/115,Redwood Transit_Northbound_3 WD,1,1
+RTS,WkDy Reg,RTS-WkDy Reg-26_WkDy Reg,RTS 26 South - College of the Redwoods,26,1,112/115,Redwood Transit_Southbound_3 WD Main,1,1
+RTS,WkDy Reg,RTS-WkDy Reg-27_WkDy Reg,RTS 27 North - Cal Poly Humboldt,27,0,112/115,Redwood Transit_Northbound_3 WD,1,1
+RTS,WkDy Reg,RTS-WkDy Reg-34_WkDy Reg,RTS 34 South - College of the Redwoods,34,1,112/115,Redwood Transit_Southbound_3 WD Main,1,1
+RTS,WkDy Reg,RTS-WkDy Reg-35_WkDy Reg,RTS 35 North - Cal Poly Humboldt,35,0,112/115,Redwood Transit_Northbound_3 WD,1,1
+RTS,WkDy Reg,RTS-WkDy Reg-42_WkDy Reg,RTS 42 South - College of the Redwoods,42,1,112/115,Redwood Transit_Southbound_3 WD Main,1,1
+RTS,WkDy Reg,RTS-WkDy Reg-45_WkDy Reg,RTS 45 North - Cal Poly Humboldt,45,0,112/115,Redwood Transit_Northbound_3 WD,1,1
+RTS,WkDy Reg,RTS-WkDy Reg-52_WkDy Reg,RTS 52 South - Scotia,52,1,112/115,Redwood Transit_Southbound_1 WD 52,1,1
+RTS,WkDy Reg,RTS-WkDy Reg-57_WkDy Reg,RTS 57 North - McKinleyville Highschool,57,0,112/115,Redwood Transit_Northbound_1 WD 57,1,1
+RTS,WkDy Reg,RTS-WkDy Reg-16_WkDy Reg,RTS 16 South - Fortuna Overlook,16,1,118,Redwood Transit_Southbound_2 WD 16,1,1
+RTS,WkDy Reg,RTS-WkDy Reg-25_WkDy Reg,RTS 25 North - Airport,25,0,118,Redwood Transit_Northbound_2 WD 25,1,1
+RTS,WkDy Reg,RTS-WkDy Reg-36_WkDy Reg,RTS 36 South - Fortuna Overlook,36,1,118,"Redwood Transit_Southbound_2 WD 36, 50",1,1
+RTS,WkDy Reg,RTS-WkDy Reg-47_WkDy Reg,RTS 47 North - Airport,47,0,118,Redwood Transit_Northbound_2 WD 47,1,1
+RTS,WkDy Reg,RTS-WkDy Reg-40_WkDy Reg,RTS 40 South - Fortuna Overlook,40,1,120,"Redwood Transit_Southbound_2 WD 24,40",1,1
+RTS,WkDy Reg,RTS-WkDy Reg-51_WkDy Reg,RTS 51 North - Airport,51,0,120,Redwood Transit_Northbound_2 WD Main,1,1
+RTS,WkDy Reg,RTS-WkDy Reg-56_WkDy Reg,RTS 56 South - Fortuna Park & Ride,56,1,120,Redwood Transit_Southbound_2 WD 56,1,1
+RTS,WkDy Reg,RTS-WkDy Reg-37_WkDy Reg,RTS 37 North - McKinleyville Highschool,37,0,123,Redwood Transit_Northbound_2 WD 37,1,1
+RTS,WkDy Reg,RTS-WkDy Reg-48_WkDy Reg,RTS 48 South - Fortuna Overlook,48,1,123,Redwood Transit_Southbound_2 WD 48,1,1
+A Orng,Sat CPH Group,A Orng-Sat Reg-0705_Sat CPH Group,Arcata Orange Loop,0705,0,303/353,AMRTS Orange_Loop_Main,1,2
+A Orng,Sat CPH Group,A Orng-Sat Reg-0805_Sat CPH Group,Arcata Orange Loop,0805,0,303/353,AMRTS Orange_Loop_Main,1,2
+A Orng,Sat CPH Group,A Orng-Sat Reg-0905_Sat CPH Group,Arcata Orange Loop,0905,0,303/353,AMRTS Orange_Loop_Main,1,2
+A Orng,Sat CPH Group,A Orng-Sat Reg-1005_Sat CPH Group,Arcata Orange Loop,1005,0,303/353,AMRTS Orange_Loop_Main,1,2
+A Orng,Sat CPH Group,A Orng-Sat Reg-1105_Sat CPH Group,Arcata Orange Loop,1105,0,303/353,AMRTS Orange_Loop_Main,1,2
+A Orng,Sat CPH Group,A Orng-Sat Reg-1205_Sat CPH Group,Arcata Orange Loop,1205,0,303/353,AMRTS Orange_Loop_Main,1,2
+A Orng,Sat CPH Group,A Orng-Sat Reg-1305_Sat CPH Group,Arcata Orange Loop,1305,0,303/353,AMRTS Orange_Loop_Main,1,2
+A Orng,Sat CPH Group,A Orng-Sat Reg-1405_Sat CPH Group,Arcata Orange Loop,1405,0,303/353,AMRTS Orange_Loop_Main,1,2
+A Orng,Sat CPH Group,A Orng-Sat Reg-1505_Sat CPH Group,Arcata Orange Loop,1505,0,303/353,AMRTS Orange_Loop_Main,1,2
+A Orng,Sat CPH Group,A Orng-Sat Reg-1605_Sat CPH Group,Arcata Orange Loop,1605,0,303/353,AMRTS Orange_Loop_Main,1,2
+A Orng,Sat CPH Group,A Orng-Sat Reg-1705_Sat CPH Group,Arcata Orange Loop,1705,0,303/353,AMRTS Orange_Loop_Main,1,2
+A Orng,Sat CPH Group,A Orng-Sat Reg-1805_Sat CPH Group,Arcata Orange Loop,1805,0,303/353,AMRTS Orange_Loop_Main,1,2
+A Orng,Sat CPH Group,A Orng-Sat CPH-1905_Sat CPH Group,Arcata Orange Loop,1905,0,303/353,AMRTS Orange_Loop_Main,1,2
+A Orng,Sat CPH Group,A Orng-Sat CPH-2005_Sat CPH Group,Arcata Orange Loop,2005,0,303/353,AMRTS Orange_Loop_Main,1,2
+A Orng,Sat CPH Group,A Orng-Sat CPH-2105_Sat CPH Group,Arcata Orange Loop,2105,0,303/353,AMRTS Orange_Loop_Main,1,2
+RTS,Sat CPH Group,RTS-Sat Reg-2_Sat CPH Group,RTS 2 South - Scotia,2,1,601/602,"Redwood Transit_Southbound_1 Sat 2,16",1,1
+RTS,Sat CPH Group,RTS-Sat Reg-5_Sat CPH Group,RTS 5 North - Trinidad,5,0,601/602,"Redwood Transit_Northbound_1 Sat 5,9",1,1
+RTS,Sat CPH Group,RTS-Sat Reg-10_Sat CPH Group,RTS 10 South - Scotia,10,1,601/602,"Redwood Transit_Southbound_1 Sat 6,10",1,1
+RTS,Sat CPH Group,RTS-Sat Reg-15_Sat CPH Group,RTS 15 North - Trinidad,15,0,601/602,"Redwood Transit_Northbound_1 Sat 1,15",1,1
+RTS,Sat CPH Group,RTS-Sat Reg-20_Sat CPH Group,RTS 20 South - Fortuna Park & Ride,20,1,601/602,Redwood Transit_Southbound_1 Sat 20,1,1
+RTS,Sat CPH Group,RTS-Sat Reg-1_Sat CPH Group,RTS 15 North - Trinidad,1,0,603/604,"Redwood Transit_Northbound_1 Sat 1,15",1,1
+RTS,Sat CPH Group,RTS-Sat Reg-6_Sat CPH Group,RTS 6 South - Scotia,6,1,603/604,"Redwood Transit_Southbound_1 Sat 6,10",1,1
+RTS,Sat CPH Group,RTS-Sat Reg-9_Sat CPH Group,RTS 9 North - Trinidad,9,0,603/604,"Redwood Transit_Northbound_1 Sat 5,9",1,1
+RTS,Sat CPH Group,RTS-Sat Reg-16_Sat CPH Group,RTS 16 South - Scotia,16,1,603/604,"Redwood Transit_Southbound_1 Sat 2,16",1,1
+RTS,Sat CPH Group,RTS-Sat Reg-19_Sat CPH Group,RTS 19 North - McKinleyville Highschool,19,0,603/604,Redwood Transit_Northbound_1 Sat 19,1,1
+RTS,Sat CPH Group,RTS-Sat Reg-4_Sat CPH Group,RTS 4 South - College of the Redwoods,4,1,605,"Redwood Transit_Southbound_3 Sat 4,18",1,1
+RTS,Sat CPH Group,RTS-Sat Reg-3_Sat CPH Group,RTS 3 North - Valley West,3,0,605,Redwood Transit_Northbound_3 Sat 3,1,1
+RTS,Sat CPH Group,RTS-Sat Reg-8_Sat CPH Group,RTS 8 South - Bayshore Mall,8,1,605,Redwood Transit_Southbound_3 Sat Main,1,1
+RTS,Sat CPH Group,RTS-Sat Reg-7_Sat CPH Group,RTS 7 North - Valley West,7,0,605,Redwood Transit_Northbound_3 Sat Main,1,1
+RTS,Sat CPH Group,RTS-Sat Reg-12_Sat CPH Group,RTS 12 South - Bayshore Mall,12,1,605,Redwood Transit_Southbound_3 Sat Main,1,1
+RTS,Sat CPH Group,RTS-Sat Reg-11_Sat CPH Group,RTS 11 North - Valley West,11,0,605,Redwood Transit_Northbound_3 Sat Main,1,1
+RTS,Sat CPH Group,RTS-Sat Reg-14_Sat CPH Group,RTS 14 South - Bayshore Mall,14,1,606,Redwood Transit_Southbound_3 Sat Main,1,1
+RTS,Sat CPH Group,RTS-Sat Reg-13_Sat CPH Group,RTS 13 North - Valley West,13,0,606,Redwood Transit_Northbound_3 Sat Main,1,1
+RTS,Sat CPH Group,RTS-Sat Reg-18_Sat CPH Group,RTS 18 South - College of the Redwoods,18,1,606,"Redwood Transit_Southbound_3 Sat 4,18",1,1
+RTS,Sat CPH Group,RTS-Sat Reg-17_Sat CPH Group,RTS 17 North - McKinleyville Highschool,17,0,606,Redwood Transit_Northbound_2 Sat 17,1,1

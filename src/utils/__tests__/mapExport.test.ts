@@ -89,13 +89,13 @@ describe('createMapExport', () => {
       source,
       title: 'Toronto',
       eyebrow: 'Transit frequency',
-      lines: ['Every 20 min or better · Saturday midday'],
+      lines: ['≤20 min · Saturday midday'],
       route: { label: 'Route 505 Dundas', color: '#15803d' },
       key: [{ color: '#22863a', label: '≤10m' }, { color: '#f59e0b', label: '≤20m' }],
       lightMode: true,
     });
     const texts = vi.mocked(context.fillText).mock.calls.map(call => call[0]);
-    expect(texts).toEqual(expect.arrayContaining(['Toronto', 'Transit frequency', 'Every 20 min or better · Saturday midday', 'Route 505 Dundas', '≤10m', '≤20m']));
+    expect(texts).toEqual(expect.arrayContaining(['Toronto', 'Transit frequency', '≤20 min · Saturday midday', 'Route 505 Dundas', '≤10m', '≤20m']));
     expect(texts.some(text => /[A-Z]{4,}/.test(String(text).replace(/CARTO|ODbL/g, '')))).toBe(false);
   });
   it('draws the data source line in full, above the tile credit', async () => {
@@ -115,7 +115,7 @@ describe('wrapExportLine', () => {
   const measure = (text: string) => text.length * 10;
 
   it('wraps between filter parts instead of cutting text off', () => {
-    expect(wrapExportLine(measure, 'Every 20 min or better · Saturday midday', 250)).toEqual(['Every 20 min or better', 'Saturday midday']);
+    expect(wrapExportLine(measure, '≤20 min · Saturday midday', 200)).toEqual(['≤20 min', 'Saturday midday']);
   });
 
   it('keeps every word when one part is wider than the image', () => {
@@ -139,7 +139,7 @@ describe('getMapExportLayout', () => {
   });
 
   it('gives a phone image its own row for the selected route', () => {
-    const text = { title: 'Toronto', lines: ['Every 20 min or better'] };
+    const text = { title: 'Toronto', lines: ['≤20 min'] };
     const withRoute = getMapExportLayout(1170, 2532, MAP_EXPORT_SIZES[1], { ...text, route: { label: 'Route 505 Dundas', color: '#15803d' } });
     const without = getMapExportLayout(1170, 2532, MAP_EXPORT_SIZES[1], text);
     expect(withRoute.headerHeight).toBeGreaterThan(without.headerHeight);

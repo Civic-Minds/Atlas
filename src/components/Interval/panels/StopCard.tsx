@@ -18,6 +18,7 @@ import { currentAtlasUrl } from '../../../utils/reportIssue';
 import StopRouteGroup, { stopRouteBestHeadway } from './StopRouteGroup';
 import LiveStopArrivals from './LiveStopArrivals';
 import type { HeadwayMetric } from '../../../utils/routeFacts';
+import { compareHeadwayThenNumber } from '../../../utils/sortCompare';
 
 export interface StopBranch {
   rKey: string;
@@ -87,13 +88,13 @@ export const StopCard: React.FC<StopCardProps> = ({
   };
 
   const sortedRoutes = useMemo(() => {
-    return [...filteredStopRoutes].sort((a, b) => {
-      const ah = stopRouteBestHeadway(a.branches, period);
-      const bh = stopRouteBestHeadway(b.branches, period);
-      if (ah == null) return 1;
-      if (bh == null) return -1;
-      return ah - bh;
-    });
+    return [...filteredStopRoutes]
+      .map(route => ({ route, headway: stopRouteBestHeadway(route.branches, period) }))
+      .sort((a, b) => compareHeadwayThenNumber(
+        { headway: a.headway, shortName: a.route.shortName, longName: a.route.longName },
+        { headway: b.headway, shortName: b.route.shortName, longName: b.route.longName },
+      ))
+      .map(({ route }) => route);
   }, [filteredStopRoutes, period]);
 
   return (

@@ -17,6 +17,11 @@ export function joinList(items: readonly string[], options: { oxford?: boolean }
   return `${items.slice(0, -1).join(', ')}${options.oxford ? ',' : ''} and ${items[items.length - 1]}`;
 }
 
+/** The count and its noun: countOf(1, 'agency', 'agencies') is "1 agency", countOf(3, 'route') is "3 routes". */
+export function countOf(count: number, singular: string, pluralForm: string = `${singular}s`): string {
+  return `${count} ${plural(count, singular, pluralForm)}`;
+}
+
 export function andOthers(count: number, singular: string, pluralForm: string = `${singular}s`): string {
   return `and ${count} other ${plural(count, singular, pluralForm)}`;
 }

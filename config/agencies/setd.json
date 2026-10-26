@@ -17,8 +17,8 @@
   "mdbFeedUrl": "https://oregon-gtfs.trilliumtransit.com/gtfs_data/clatsopcounty-or-us/clatsopcounty-or-us.zip",
   "timezone": "America/Los_Angeles",
   "lastFeedExpiry": "20270531",
-  "lastFeedVersion": "UTC: 30-Sep-2026 16:44",
-  "lastRefreshedAt": "2026-10-03",
+  "lastFeedVersion": "UTC: 15-Oct-2026 17:43",
+  "lastRefreshedAt": "2026-10-19",
   "cities": [
     "Astoria, Oregon",
     "Warrenton, Oregon",
@@ -36,9 +36,9 @@
       "routeHeadwayMismatches": 0,
       "featureCount": 12
     },
-    "checkedAt": "2026-10-03"
+    "checkedAt": "2026-10-19"
   },
-  "lastFeedCheckAt": "20261012",
+  "lastFeedCheckAt": "20261019",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270531",

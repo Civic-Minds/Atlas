@@ -18,11 +18,12 @@
     37.252,
     -80.3802
   ],
-  "lastFeedCheckAt": "20261012",
+  "lastFeedCheckAt": "20261019",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270201",
   "timezone": "America/New_York",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://data.trilliumtransit.com/gtfs/radford-va-us/radford-va-us.zip"
+  "lastFeedSourceUrl": "https://data.trilliumtransit.com/gtfs/radford-va-us/radford-va-us.zip",
+  "lastPeekedExpiry": "20270201"
 }

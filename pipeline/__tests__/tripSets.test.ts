@@ -757,3 +757,83 @@ describe('section values count trips running through a skipped stop (CIV-321)', 
     expect(own[1] - own[0]).toBe(30);
   });
 });
+
+describe('rule 3: sibling branches that take turns through a period (#1072, HSR 16 Ancaster)', () => {
+  // A trunk t0-t9 and two branches off its end, w (Wilson) and f (Fiddler's Green), 6 stops and
+  // about 2 km each, that end at the same terminal. HSR 16 weekday: every 30 via Wilson until about 12:10, then every 30 via
+  // Fiddler's Green, so the trunk is every 30 all day and each branch alone has a 170-minute
+  // midday wait.
+  const coords = new Map<string, [number, number]>();
+  const trunk = Array.from({ length: 10 }, (_, i) => `t${i}`);
+  const w = Array.from({ length: 6 }, (_, i) => `w${i}`);
+  const f = Array.from({ length: 6 }, (_, i) => `f${i}`);
+  trunk.forEach((id, i) => coords.set(id, [43.6 + i * 0.01, -79.4]));
+  w.forEach((id, i) => coords.set(id, [43.7 + (i + 1) * 0.004, -79.4]));
+  f.forEach((id, i) => coords.set(id, [43.7 + (i + 1) * 0.004, -79.45]));
+  // Both branches rejoin at one terminal, z (Garner at Wilson); g is a branch to another terminal.
+  const g = Array.from({ length: 6 }, (_, i) => `g${i}`);
+  g.forEach((id, i) => coords.set(id, [43.7 + (i + 1) * 0.004, -79.35]));
+  coords.set('z', [43.73, -79.425]);
+  const trip = (id: string, m: number, branch: readonly string[]): DirectionTrip => ({ tripId: id, visits: [...trunk, ...branch, ...(branch === w || branch === f ? ['z'] : [])].map((stopId, i) => ({ stopId, minutes: m + i })) });
+  const every = (from: number, to: number, step: number) => { const out: number[] = []; for (let m = from; m <= to; m += step) out.push(m); return out; };
+  const build = (wStarts: number[], other: number[], otherBranch: readonly string[]) =>
+    directionStretches('r::0::Weekday', [...wStarts.map(m => trip(`w${m}`, m, w)), ...other.map(m => trip(`o${m}`, m, otherBranch))], id => coords.get(id));
+  const without = (d: DirectionStretches) => rollupDirection({ ...d, tailHandoverTimes: undefined })!;
+
+  it('regression: Wilson until 12:00, then Fiddler\'s Green every 30: midday reads 30, not the branch\'s 170-minute wait', () => {
+    const d = build(every(360, 720, 30), every(750, 1380, 30), f);
+    expect(d.tails).toHaveLength(2);
+    expect(without(d).period.midday.filterValue).toBeGreaterThan(60);
+    const r = rollupDirection(d)!;
+    expect(r.period.midday.filterValue).toBe(30);
+    expect(r.period.midday.value).toBe(30);
+    // Every other period, the all-day value and Frequent Service are unchanged.
+    for (const key of ['amPeak', 'pmPeak', 'evening', 'late', 'overnight'] as const) expect(r.period[key]).toEqual(without(d).period[key]);
+    expect(r.allDay).toBe(without(d).allDay);
+    expect(r.frequent).toBe(without(d).frequent);
+  });
+
+  it('the slower branch still decides (D1): a trunk every 15 with branches taking turns every 30 reads 30, not the trunk\'s 15', () => {
+    const wTrips = every(360, 720, 30), fTrips = every(750, 1380, 30);
+    const turns = every(375, 1365, 30);
+    const d = directionStretches('r::0::Weekday', [...wTrips.map(m => trip(`w${m}`, m, w)), ...fTrips.map(m => trip(`f${m}`, m, f)), ...turns.map(m => trip(`s${m}`, m, []))], id => coords.get(id));
+    expect(without(d).period.midday.filterValue).toBeGreaterThan(60);
+    expect(rollupDirection(d)!.period.midday.filterValue).toBe(30);
+  });
+
+  it('legitimate: a branch that stops at 12:00 while only trunk trips run after it keeps its wait', () => {
+    const d = build(every(360, 720, 30), every(750, 1380, 30), []);
+    expect(d.tails).toHaveLength(1);
+    expect(rollupDirection(d)).toEqual(without(d));
+    expect(rollupDirection(d)!.period.midday.filterValue).toBeGreaterThan(60);
+  });
+
+  it('legitimate: a few variant trips to another terminal are not a sibling branch (AC Transit 22\'s late Grand Lake runs)', () => {
+    const after = every(750, 1380, 30);
+    const odd = new Set([750, 780, 810]);
+    const d = directionStretches('r::0::Weekday', [
+      ...every(360, 720, 30).map(m => trip(`w${m}`, m, w)),
+      ...after.map(m => trip(`o${m}`, m, odd.has(m) ? f : [])),
+    ], id => coords.get(id));
+    expect(d.tails).toHaveLength(1);
+    expect(rollupDirection(d)).toEqual(without(d));
+    expect(rollupDirection(d)!.period.midday.filterValue).toBeGreaterThan(60);
+  });
+
+  it('legitimate: a cut-back or extension to another terminal is not a handover (CTA 28, TransLink 9)', () => {
+    const d = build(every(360, 720, 30), every(750, 1380, 30), g);
+    expect(d.tails).toHaveLength(2);
+    expect(rollupDirection(d)).toEqual(without(d));
+    expect(rollupDirection(d)!.period.midday.filterValue).toBeGreaterThan(60);
+  });
+
+  it('legitimate: a sibling that overlaps the branch in time is not a handover', () => {
+    const d = build(every(360, 720, 30), every(675, 1380, 30), f);
+    expect(rollupDirection(d)).toEqual(without(d));
+  });
+
+  it('legitimate: a sibling at a slower cadence (every 60 after every 30) is not a handover', () => {
+    const d = build(every(360, 720, 30), every(780, 1380, 60), f);
+    expect(rollupDirection(d)).toEqual(without(d));
+  });
+});

@@ -202,7 +202,7 @@ async function main() {
   // Supplemental feeds (e.g. a separate rail zip) always come from the agency's
   // configured URLs; any failure aborts rather than publishing a main-only artifact.
   const supplementalFeeds = await loadSupplementalFeeds(agencyConfig, downloadToBuffer);
-  const { geojson, corridorsGeojson, stopsJson, tripsJson, stopsMetaJson, sectionsJson, featureCount, center: computedCenter, timezone, livePollingSidecar, feedExpiry: feedInfoExpiry, calendarExpiry, feedVersion, shapeAnomalies, feedQuality, supplementalFeatureCounts } = await processAgencyFeeds(buf, supplementalFeeds, agencyConfig, { manualBaseFare, force }, msg => {
+  const { geojson, corridorsGeojson, stopsJson, tripsJson, stopsMetaJson, sectionsJson, featureCount, center: computedCenter, timezone, livePollingSidecar, feedExpiry: feedInfoExpiry, calendarExpiry, calendarOnlyEnd, feedVersion, shapeAnomalies, feedQuality, supplementalFeatureCounts } = await processAgencyFeeds(buf, supplementalFeeds, agencyConfig, { manualBaseFare, force }, msg => {
     process.stdout.write(`  ${msg.padEnd(60, ' ')}\r`);
   });
   for (const supp of supplementalFeatureCounts) {
@@ -212,7 +212,7 @@ async function main() {
 
   const todayYmd = todayUtcYmd().replace(/-/g, '');
   // Same rule as refresh: the later of feed_info's end and the capped calendar end (#687).
-  const feedExpiry = recordedFeedExpiry(feedInfoExpiry, calendarExpiry, todayYmd);
+  const feedExpiry = recordedFeedExpiry(feedInfoExpiry, calendarExpiry, todayYmd, calendarOnlyEnd);
   // --force is the explicit maintainer override for a known-current source that omits or
   // misstates feed_info metadata; validation and the zero-feature guard still apply below.
   if (!dryRun && !force && candidateIsOlderThanActive({ candidateExpiry: feedExpiry, existingExpiry: previousFeedExpiry })) {

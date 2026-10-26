@@ -7,21 +7,39 @@
     -116.2
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-142/latest.zip",
-  "lastFeedExpiry": "20270609",
-  "lastFeedVersion": "457",
+  "lastFeedExpiry": "20271014",
+  "lastFeedVersion": "491",
   "region": "Idaho",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-10-19",
   "cities": [
     "Boise, Idaho",
     "Meridian, Idaho",
     "Nampa, Idaho",
     "Caldwell, Idaho"
   ],
-  "lastFeedCheckAt": "20261012",
+  "lastFeedCheckAt": "20261019",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20270609",
-  "timezone": "America/Boise",
+  "expiredFeedCheckExpiry": "20271014",
+  "timezone": "America/Denver",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-142/latest.zip"
+  "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-142/latest.zip",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 53
+    },
+    "checkedAt": "2026-10-19"
+  },
+  "lastPeekedExpiry": "20271014",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

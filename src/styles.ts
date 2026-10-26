@@ -6,8 +6,8 @@
 /** Glass panel surface: background + blur + primary border */
 export const SURFACE = 'bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)]';
 
-/** Circular icon button (w-8 h-8, top-bar style) */
-export const ICON_BTN = `w-8 h-8 flex items-center justify-center ${SURFACE} rounded-full shadow-lg text-[var(--text-primary)] hover:text-[var(--accent)] transition-colors`;
+/** Circular icon button (w-8 h-8, top-bar style; 32px on phones) */
+export const ICON_BTN = `w-8 h-8 max-sm:w-[32px] max-sm:h-[32px] flex items-center justify-center ${SURFACE} rounded-full shadow-lg text-[var(--text-primary)] hover:text-[var(--accent)] transition-colors`;
 
 /** Shared transition timing tokens */
 export const TRANSITION_FAST = 'duration-150 ease-out';
@@ -33,7 +33,7 @@ export const FLOATING_CARD = `${SURFACE} rounded-2xl shadow-2xl`;
 export const PANEL_SHELL = `${FLOATING_CARD} flex flex-col overflow-hidden`;
 
 /** Top-bar pill surface (search bar, headway filter row) */
-export const PILL_SURFACE = `h-8 flex items-center ${SURFACE} rounded-full shadow-lg`;
+export const PILL_SURFACE = `h-8 max-sm:h-[32px] flex items-center ${SURFACE} rounded-full shadow-lg`;
 /** Shared responsive width used by the top search bar */
 export const SEARCH_BAR_WIDTH = 'w-full sm:w-72 xl:w-80';
 
@@ -94,6 +94,15 @@ export const PANEL_HELPER = 'px-4 pt-2 pb-2 text-xs text-[var(--text-dim)] font-
 export const PANEL_CARD_HEADER = 'flex items-start gap-2 px-4 pt-3 pb-2.5 border-b border-[var(--border-primary)] shrink-0';
 
 /** Section label inside a floating panel list */
+/** Region heading in an agency list (About panel's agency list, History's agency chooser). */
+export const LIST_REGION_HEAD = 'px-5 pt-3 pb-1 text-xs font-bold text-[var(--text-dim)]';
+
+/** The filter block above an agency list (search and pills), with one divider under it. */
+export const AGENCY_LIST_FILTERS = 'shrink-0 px-4 pt-3 pb-2 bg-[var(--bg-panel)] border-b border-[var(--border-primary)] space-y-2';
+
+/** A row of filter pills that scrolls sideways instead of wrapping. */
+export const PILL_SCROLL_ROW = 'flex gap-1.5 overflow-x-auto items-center [&::-webkit-scrollbar]:hidden';
+
 export const PANEL_SECTION_HEAD = 'px-4 py-2 text-xs font-black tracking-wide text-[var(--text-dim)]';
 
 /** Accent group label in search results */
@@ -118,8 +127,14 @@ export const CARD_NOTICE_FOOTER = 'mt-2 pt-1';
 /** In-list notice padding (e.g. outside-filters control) */
 export const CARD_NOTICE_INLINE = 'px-4 pt-2 pb-1 opacity-80';
 
-/** Pill search box wrapper — used inside panels (recessed bg-app background) */
-export const SEARCH_PILL = 'flex items-center h-8 bg-[var(--bg-app)] border border-[var(--border-primary)] rounded-full px-3 gap-1.5';
+/**
+ * Pill search box wrapper inside panels and dropdowns. Same look as the top search bar (surface,
+ * edge, height, roundness, icon and text), minus its floating shadow, so every search field matches.
+ */
+export const SEARCH_PILL = 'flex items-center h-8 bg-[var(--bg-panel)] border border-[var(--border-primary)] rounded-full pl-2 pr-3 gap-2.5';
+
+/** The magnifier in every search field, the top search bar included. */
+export const SEARCH_ICON = 'w-3.5 h-3.5 text-[var(--text-dim)] shrink-0';
 
 /** Search input text field (inside SEARCH_PILL) */
 export const SEARCH_FIELD = 'flex-1 bg-transparent text-xs font-bold text-[var(--text-primary)] placeholder:text-[var(--text-dim)] focus:outline-none';
@@ -134,7 +149,8 @@ export const Z_MODAL_TOP = 'z-[1500]';    // FilterPanel backdrop (above InfoPan
 export const PANEL_Z_INDEX = 1000;         // Numeric for inline styles (e.g. NearbyRoutesPanel)
 
 /** Shared sidebar placement below the top search controls. */
-export const PANEL_SIDEBAR = `absolute top-[68px] left-6 sm:left-[var(--sidebar-left)] ${Z_PANEL}`;
+export const PANEL_SIDEBAR_SLOT = 'absolute top-[68px] left-6 sm:left-[var(--sidebar-left)]';
+export const PANEL_SIDEBAR = `${PANEL_SIDEBAR_SLOT} ${Z_PANEL}`;
 
 /** Fallback sidebar left offset (px) — used until ResizeObserver measures the real position */
 export const SIDEBAR_LEFT_FALLBACK = 182;

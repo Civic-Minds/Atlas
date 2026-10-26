@@ -1,6 +1,7 @@
 import type { Agency } from '../App';
 import type { ViewportBounds } from '../hooks/useIntervalStats';
 import { AGENCY_CHIP_PAD } from '../../shared/config';
+import { compareAgencyName, compareSearchRelevance } from './sortCompare';
 
 export function bboxInViewport(
   agency: { bbox?: [number, number, number, number]; center?: [number, number] },
@@ -108,11 +109,7 @@ export function searchAgencyGroups(
         displayArea: g.displayArea,
       };
     })
-    .sort((a, b) => {
-      if (a.inView !== b.inView) return a.inView ? -1 : 1;
-      if (a.distanceM !== b.distanceM) return a.distanceM - b.distanceM;
-      return a.name.localeCompare(b.name, undefined, { sensitivity: 'base' });
-    });
+    .sort((a, b) => compareSearchRelevance(a, b, (x, y) => compareAgencyName(x.name, y.name) || x.region.localeCompare(y.region)));
 }
 
 /** Max agency rows in the search dropdown. */

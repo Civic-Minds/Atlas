@@ -77,7 +77,7 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 - **History is curated, not backfilled**
   - What: History is on for selected agencies where archived feeds show real service change; snapshots stay immutable and missing periods stay unavailable.
   - Why: a duplicated or inferred period would show service that is not documented.
-  - Source: [decision log](#decision-log) (2026-07-29), [DATA.md](../DATA.md), [DATA_HISTORY.md](../data/DATA_HISTORY.md)
+  - Source: [decision log](#decision-log) (2026-07-29), [History coverage](../data/DATA_HISTORY.md#archive-policy)
 - **Fares V2 first, V1 as fallback, base fare only**
   - What: a route's base fare is the lowest adult Fares V2 product, then V1, then a manual override; Atlas does not claim a rider's full fare.
   - Why: base fares are what the feeds support reliably.
@@ -181,7 +181,7 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
   - Why: settled look and voice; the glossary lists the UI word for each internal term.
   - Source: [STYLE.md](../STYLE.md), [GLOSSARY.md](../GLOSSARY.md)
 - **Frequencies are written by one function, in minutes**
-  - What: "every 10 min", "about every 16 min", ranges with an en dash; never hours, never typed by hand.
+  - What: "every 10 min", "every 16 min", ranges with an en dash; never hours, never typed by hand.
   - Why: the same frequency reads the same on every surface, and columns never mix units.
   - Source: [STYLE.md](../STYLE.md) (Frequencies), [#938](https://github.com/Civic-Minds/Atlas/issues/938)
 

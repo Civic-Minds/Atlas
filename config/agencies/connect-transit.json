@@ -7,7 +7,7 @@
     -88.99
   ],
   "feedUrl": "https://rideconnecttransit.com/gtfs",
-  "lastFeedExpiry": "20281016",
+  "lastFeedExpiry": "20281021",
   "lastFeedVersion": "Sapphire Change 9/14/2026",
   "lastRefreshedAt": "2026-10-12",
   "region": "Illinois",
@@ -22,7 +22,7 @@
     "Bloomington, Illinois",
     "Normal, Illinois"
   ],
-  "lastFeedCheckAt": "20261012",
+  "lastFeedCheckAt": "20261019",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20991231",

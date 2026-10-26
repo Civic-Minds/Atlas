@@ -8,6 +8,6 @@ That distinction matters because scheduled and actual service are often meaningf
 
 Long-term, the value is in accumulation. A week of GTFS-RT data is a snapshot. A year of it is a record of how a transit network actually performs — which routes are reliable, which stops are where service consistently breaks down, which schedule changes made things better or worse. That's the kind of evidence that currently doesn't exist in a form most agencies can access.
 
----
+## Where it started
 
-[Back to Roadmap](../roadmap/ROADMAP.md)
+The first code version of Atlas was a small script from February 2025: [ScheduleScreener.py](history/ScheduleScreener.py). It is a pandas script that screens weekday route frequency from GTFS. It is kept as it was written, for history only, and its original GTFS data is no longer included.

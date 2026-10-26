@@ -8,16 +8,16 @@
   ],
   "feedUrl": "https://emta.availtec.com/InfoPoint/gtfs-zip.ashx",
   "lastFeedExpiry": "20270213",
-  "lastFeedVersion": "20260910",
+  "lastFeedVersion": "20261016",
   "mdbFeedUrl": "https://emta.availtec.com/InfoPoint/gtfs-zip.ashx",
-  "lastRefreshedAt": "2026-10-14",
+  "lastRefreshedAt": "2026-10-19",
   "websiteUrl": "http://www.ride-the-e.com/",
   "cities": [
     "Erie, Pennsylvania"
   ],
   "timezone": "America/New_York",
   "lastRawArchiveKey": "20231101-7a0b8231d16dd4b1",
-  "lastFeedCheckAt": "20261014",
+  "lastFeedCheckAt": "20261019",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270213",
@@ -28,16 +28,16 @@
     "score": 60,
     "reasons": [
       "1 minor schedule issue found while reading the feed.",
-      "29 route shapes needed adjustment before display."
+      "66 route shapes needed adjustment before display."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 1,
-      "shapeAnomalies": 29,
+      "shapeAnomalies": 66,
       "routeHeadwayMismatches": 0,
       "featureCount": 78
     },
-    "checkedAt": "2026-10-14"
+    "checkedAt": "2026-10-19"
   },
   "lastPeekedExpiry": "20270213",
   "feedRefreshStatus": "current",

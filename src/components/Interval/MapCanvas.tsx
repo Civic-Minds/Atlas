@@ -27,6 +27,7 @@ import { Z_PANEL, MAP_BADGE } from '../../styles';
 import { useColorVision } from '../../context/ColorVisionContext';
 import { routeFilterHeadway } from '../../../shared/routeHeadwayFilter';
 import { isOnDemandStopFocused, isOnDemandZoneFocused, ON_DEMAND_FOCUSED_PROP, type OnDemandFocusTarget } from './map/onDemandFocus';
+import { TRANSFER_POINT_SERVICE_TYPE, transferPointStop } from './map/transferPointStop';
 import { dedupeRouteKeysByDisplay } from '../../utils/routeKey';
 import { computeFrequencySegmentOverlay } from '../../utils/frequencySegments';
 import { buildSharedHoverSegments } from '../../utils/sharedHoverSegments';
@@ -36,6 +37,7 @@ import MapExportDialog from '../MapExportDialog';
 import { waitForMapExportReady } from '../../utils/mapExport';
 import { describeMapExport, type MapExportBox, type MapExportDetails, type MapExportView, type RenderedRouteSample } from '../../utils/mapExportDetails';
 import { routeLabels } from '../../utils/format';
+import { canCountRenderedRoutes } from '../../utils/compareSides';
 import type { FrequentServiceFrequency, FrequentServiceWindow } from '../../../shared/frequentService';
 import { ON_DEMAND_MODE } from '../../../shared/modes';
 import { mapViewKind, viewAllowsOnDemand } from '../../../shared/viewLayers';
@@ -114,7 +116,7 @@ function restoreSelectedRouteAfterExport(map: maplibregl.Map) {
 function MapNoticePill({ children, className = '', raised = false }: { children: React.ReactNode; className?: string; raised?: boolean }) {
   return (
     <div className={`absolute ${raised ? 'bottom-16' : 'bottom-6'} left-6 right-24 sm:right-56 flex justify-center ${Z_PANEL} pointer-events-none`}>
-      <div className={`${MAP_BADGE} h-8 max-w-full ${className}`}>
+      <div className={`${MAP_BADGE} h-8 max-sm:h-[32px] max-w-full ${className}`}>
         {children}
       </div>
     </div>
@@ -151,6 +153,8 @@ interface MapCanvasProps {
   onBoundsChange: (b: ViewportBounds, zoom?: number) => void;
   resetViewKey?: number;
   onLocate?: (lat: number, lon: number) => void;
+  /** The user panned or zoomed the map themselves (drag, wheel, keys, pinch or the zoom buttons); fits and restored views don't count. */
+  onUserMove?: () => void;
   showMapContext?: boolean;
   mapContextOpen?: boolean;
   mapContextView?: 'agencies' | 'routes';
@@ -213,6 +217,8 @@ interface MapCanvasProps {
   onBasemapLoadingChange?: (loading: boolean) => void;
   setQuery?: (q: string) => void;
   onClearSelection?: () => void;
+  /** An empty-map click dismissed the selection (also closes another view's panel, e.g. History's, #1031). */
+  onMapDismiss?: () => void;
   sidebarLeft?: number;
   searchBarWidth?: number;
   exportEnabled?: boolean;
@@ -244,6 +250,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   resetViewKey,
   setQuery,
   onLocate,
+  onUserMove,
   showMapContext = false,
   mapContextOpen = false,
   mapContextView = 'routes',
@@ -284,6 +291,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   onTileLoadingChange,
   onBasemapLoadingChange,
   onClearSelection,
+  onMapDismiss,
   sidebarLeft,
   searchBarWidth,
   exportEnabled = false,
@@ -525,6 +533,8 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     const contextAgencies = getMapContextAgenciesFromFeatures(agencies, features);
     // The panel and its counts show distinct rider-visible lines; compare mode below keeps raw keys.
     if (showMapContext) setMapContextAgencies(dedupeMapContextByDisplay(contextAgencies));
+    // Compare's route counts wait for the map to finish loading rather than report a partial count (#1075).
+    if (!canCountRenderedRoutes(map, layers.length)) return;
     renderedRouteKeysRef.current?.(new Set(contextAgencies.flatMap(agency => agency.routes.map(route => route.key))));
   }, [agencies, mapLoaded, showMapContext, reportsRenderedRoutes]);
 
@@ -711,6 +721,8 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   const onOnDemandStopClickRef = useRef(onOnDemandStopClick);
   const onOnDemandZoneClickRef = useRef(onOnDemandZoneClick);
   const onBoundsChangeRef = useRef(onBoundsChange);
+  const onUserMoveRef = useRef(onUserMove);
+  onUserMoveRef.current = onUserMove;
   const onMapReadyRef = useRef(onMapReady);
   onMapReadyRef.current = onMapReady;
   const secondaryRef = useRef(secondary);
@@ -718,6 +730,8 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   const onTileLoadingChangeRef = useRef(onTileLoadingChange);
   const onBasemapLoadingChangeRef = useRef(onBasemapLoadingChange);
   const onClearSelectionRef = useRef(onClearSelection);
+  const onMapDismissRef = useRef(onMapDismiss);
+  onMapDismissRef.current = onMapDismiss;
   const selectedRouteRef = useRef(selectedRoute);
   const highlightRoutesRef = useRef(highlightRoutes);
   const handleMapClickRef = useRef<(e: maplibregl.MapMouseEvent) => void>(() => {});
@@ -791,12 +805,31 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         setDisambiguationRoutesRef.current(null);
         setQueryRef.current?.('');
         if (serviceAreaHits[0]?.layer?.id === 'on-demand-stop-points') {
+          // #1071: a transfer point drawn on a fixed stop is that stop: open the stop's card.
+          const pointProps = serviceAreaHits[0].properties ?? {};
+          const fixedStop = pointProps.serviceType === TRANSFER_POINT_SERVICE_TYPE
+            ? transferPointStop(
+              { serviceType: pointProps.serviceType, agencySlug: serviceAreaSlug, coordinates: (serviceAreaHits[0].geometry as GeoJSON.Point).coordinates as [number, number] },
+              map.querySourceFeatures('atlas-pmtiles', { sourceLayer: 'stops' }).flatMap(f => {
+                const c = (f.geometry as GeoJSON.Point).coordinates;
+                return f.properties?.stopId != null && f.geometry.type === 'Point'
+                  ? [{ agencySlug: String(f.properties.agencySlug), stopId: String(f.properties.stopId), lon: c[0], lat: c[1] }]
+                  : [];
+              }),
+            )
+            : null;
+          if (fixedStop) {
+            setSelectedStopRef.current(`${fixedStop.agencySlug}::${fixedStop.stopId}`);
+            return;
+          }
           const stopZoneId = serviceAreaHits[0]?.properties?.onDemandZoneId as string | undefined;
           if (stopZoneId) onOnDemandZoneClickRef.current?.({ slug: serviceAreaSlug, zoneId: stopZoneId });
           else onOnDemandStopClickRef.current?.(serviceAreaSlug);
         } else {
           const zoneId = serviceAreaHits[0]?.properties?.onDemandZoneId as string | undefined;
           if (zoneId) onOnDemandZoneClickRef.current?.({ slug: serviceAreaSlug, zoneId });
+          // A whole-service click opens the on-demand card itself, not the agency card (#1073).
+          else if (onOnDemandStopClickRef.current) onOnDemandStopClickRef.current(serviceAreaSlug);
           else setSelectedAgencySlugRef.current?.(serviceAreaSlug);
         }
         return;
@@ -851,6 +884,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       }
 
       clearMapSelection();
+      onMapDismissRef.current?.();
     };
   });
 
@@ -1058,13 +1092,23 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       setMapContextMenu({ x: e.point.x, y: e.point.y, lat: e.lngLat.lat, lon: e.lngLat.lng });
     };
     const closeMenu = () => setMapContextMenu(null);
+    // MapLibre sets originalEvent only on moves the user made, not on fitBounds/flyTo/jumpTo.
+    const onMoveStart = (e: { originalEvent?: unknown }) => {
+      closeMenu();
+      if (e.originalEvent) onUserMoveRef.current?.();
+    };
+    // Wheel zooms start without originalEvent on movestart, so the wheel itself counts as the user's move.
+    const container = map.getCanvasContainer();
+    const onWheel = () => onUserMoveRef.current?.();
     map.on('contextmenu', onContextMenu);
     map.on('click', closeMenu);
-    map.on('movestart', closeMenu);
+    map.on('movestart', onMoveStart);
+    container.addEventListener('wheel', onWheel, { passive: true });
     return () => {
       map.off('contextmenu', onContextMenu);
       map.off('click', closeMenu);
-      map.off('movestart', closeMenu);
+      map.off('movestart', onMoveStart);
+      container.removeEventListener('wheel', onWheel);
     };
   }, [mapLoaded]);
 
@@ -1290,21 +1334,21 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       )}
 
       {/* Map controls — one stack keeps the gaps identical at every map size. */}
-      {showMapControls && <div className={`absolute bottom-6 right-3 ${Z_PANEL} flex flex-col gap-2 pointer-events-auto`}>
+      {showMapControls && <div className={`absolute bottom-6 right-3 max-sm:right-6 ${Z_PANEL} flex flex-col items-center gap-2 pointer-events-auto`}>
         {exportEnabled && (
           <button
             onClick={() => setExportDialogOpen(true)}
             aria-label="Export map image"
-            className="box-border !h-8 !w-8 min-h-8 min-w-8 shrink-0 p-0 flex items-center justify-center rounded-full bg-[var(--bg-panel)] border border-[var(--border-primary)] text-[var(--text-dim)] shadow-lg backdrop-blur-md hover:text-[var(--accent)] hover:border-[var(--accent-border)] transition-colors cursor-pointer"
+            className="box-border !h-8 !w-8 max-sm:!h-[32px] max-sm:!w-[32px] min-h-8 min-w-8 shrink-0 p-0 max-sm:hidden flex items-center justify-center rounded-full bg-[var(--bg-panel)] border border-[var(--border-primary)] text-[var(--text-dim)] shadow-lg backdrop-blur-md hover:text-[var(--accent)] hover:border-[var(--accent-border)] transition-colors cursor-pointer"
           >
             <Download className="w-3.5 h-3.5" />
           </button>
         )}
-        <MapZoomButtons onZoomIn={() => mapRef.current?.zoomIn({ duration: 200 })} onZoomOut={() => mapRef.current?.zoomOut({ duration: 200 })} />
+        <MapZoomButtons onZoomIn={() => { onUserMove?.(); mapRef.current?.zoomIn({ duration: 200 }); }} onZoomOut={() => { onUserMove?.(); mapRef.current?.zoomOut({ duration: 200 }); }} />
         <button
           onClick={locateUser}
           aria-label="Go to my location"
-          className="w-8 h-8 flex items-center justify-center rounded-full bg-[var(--bg-panel)] border border-[var(--border-primary)] text-[var(--text-dim)] shadow-lg backdrop-blur-md hover:text-[var(--accent)] hover:border-[var(--accent-border)] transition-colors cursor-pointer"
+          className="w-8 h-8 max-sm:w-[32px] max-sm:h-[32px] flex items-center justify-center rounded-full bg-[var(--bg-panel)] border border-[var(--border-primary)] text-[var(--text-dim)] shadow-lg backdrop-blur-md hover:text-[var(--accent)] hover:border-[var(--accent-border)] transition-colors cursor-pointer"
         >
           <LocateFixed className="w-3.5 h-3.5" />
         </button>

@@ -22,7 +22,3 @@ Canada: Ontario, Quebec, British Columbia, Alberta, Saskatchewan, Manitoba, Nova
 US: Washington, Oregon, California, Arizona, Nevada, Idaho, Utah, Colorado, Wyoming, New Mexico, Texas, Oklahoma, Arkansas, Nebraska, South Dakota, Iowa, Missouri, Kansas, Minnesota, Wisconsin, Illinois, Indiana, Michigan, Ohio, Kentucky, Tennessee, Louisiana, Alabama, Alaska, Mississippi, Georgia, Florida, North Carolina, South Carolina, Vermont, Virginia, West Virginia, Maryland, Washington DC, Pennsylvania, New Hampshire, New Jersey, New York, North Dakota, Connecticut, Rhode Island, Massachusetts, Maine, Delaware, Hawaii, Montana
 
 Not live: France (142 agencies configured) and Mexico (Ciudad de México, 1 agency) are all `hiddenInProduction`, so neither country has a live agency yet and both are behind the new-country gate in [ADDING_AGENCIES.md](ADDING_AGENCIES.md). Counted from `config/agencies/*.json` on 2026-10-18.
-
----
-
-[Back to Data](../DATA.md)
