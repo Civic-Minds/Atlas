@@ -95,8 +95,12 @@ describe('drop-off-only stops are not graded (#879)', () => {
     expect(line.stopTiers.s7).toBeUndefined();
     expect(line.stopTiers.s8).toBeUndefined();
     expect(new Set(Object.values(line.stopTiers))).toEqual(new Set(['30']));
-    // (The route tier here is still 60: s7 is not the terminal, so the #771 floor reads its
-    // own arrivals into the headline. That part is the follow-up change, not this one.)
+    // #1116: s7 is not the last drawn stop, but it is drop-off only, so the #771 floor leaves it out
+    // too (it held the drawn shape's own hourly arrivals alone): the route and its periods read 30.
+    expect(line.tier).toBe('30');
+    expect(line.headway).toBe(30);
+    expect(line.headwayByPeriod.midday).toBe(30);
+    expect(line.maxGapByPeriod.midday).toBe(30);
     const order: string[] = line.stopOrder;
     const tiers = order.map(s => line.stopTiers[s] ?? null);
     const flags = order.map(s => line.dropOffOnlyStops.includes(s));
