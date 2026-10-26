@@ -65,6 +65,8 @@ interface ProfileBarsProps {
   whiskers?: boolean;
   /** Most names to print under the chart (default 6). */
   maxLabels?: number;
+  /** Name every bar (a day-by-day chart), not just a few spread out; names still never overlap. */
+  everyLabel?: boolean;
   /** What the striped, less exact bars mean, shown in the key (only when some points are `lessExact`). */
   lessExactNote?: string;
   /** Names for the stacked series, in order (y, then y2). */
@@ -120,7 +122,7 @@ function usePlotWidth() {
  * stop names that never overlap (the ends, the marked stretch, major stops), and a shaded, striped look for points that
  * are measured less exactly. The values are also in a table for screen readers.
  */
-export default function ProfileBars({ points, ariaLabel, formatY, unit, minN = 30, caption, fadedNote = true, peakLabel = false, takeaway, axisTitle, marks = [], zero = false, zeroLabel, scale, whiskers = true, maxLabels = 6, lessExactNote, series, valueHeader, refHeader, rowHeader = 'Stop' }: ProfileBarsProps) {
+export default function ProfileBars({ points, ariaLabel, formatY, unit, minN = 30, caption, fadedNote = true, peakLabel = false, takeaway, axisTitle, marks = [], zero = false, zeroLabel, scale, whiskers = true, maxLabels = 6, everyLabel = false, lessExactNote, series, valueHeader, refHeader, rowHeader = 'Stop' }: ProfileBarsProps) {
   const [plotRef, plotWidth] = usePlotWidth();
   const tableId = useId();
   if (points.length < 2) return null;
@@ -141,7 +143,8 @@ export default function ProfileBars({ points, ariaLabel, formatY, unit, minN = 3
   // Generous per-character width, capped; a longer name wraps onto more lines inside its width (never cut with an ellipsis), so names never overlap.
   const labelWidths = names.map(n => Math.min(n.length * 7.2 + 8, 132));
   const labels = pickAxisLabels({
-    count, width: plotWidth, max: Math.max(2, Math.min(maxLabels, Math.floor(plotWidth / 90))),
+    count, width: plotWidth, // The spread-out cap suits stop charts; a day chart names every bar (Oct 13 on 505 was dropped by it, CIV-910).
+    max: everyLabel ? count : Math.max(2, Math.min(maxLabels, Math.floor(plotWidth / 90))),
     widths: labelWidths,
     marked: marks.map(m => m.index),
     major: points.flatMap((p, i) => (p.major ? [i] : [])),
