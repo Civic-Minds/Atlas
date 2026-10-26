@@ -4,6 +4,7 @@ import type { DayType } from '../../shared/dayTypes';
 import type { ViewportBounds } from '../hooks/useIntervalStats';
 import { buildRouteKey, dedupeRouteKeysByDisplay } from './routeKey';
 import { compareAgencyName, compareRouteNumber } from './sortCompare';
+import { agencyDisplayParts } from './format';
 
 export interface MapContextRoute {
   key: string;
@@ -17,6 +18,8 @@ export interface MapContextRoute {
 export interface MapContextAgency {
   slug: string;
   name: string;
+  /** The name as lists show it, with its place ("Toronto Transit Commission · Toronto"), from agencyDisplayParts. */
+  display?: { primary: string; secondary?: string };
   routeCount: number;
   routes: MapContextRoute[];
 }
@@ -32,12 +35,17 @@ function buildMapContextAgencies(
   routesByAgency: Map<string, Map<string, MapContextRoute>>,
 ): MapContextAgency[] {
   return [...routesByAgency.entries()]
-    .map(([slug, routes]) => ({
+    .map(([slug, routes]) => {
+      const agency = agencies.find(item => item.slug === slug);
+      const name = agency?.name ?? slug;
+      return {
       slug,
-      name: agencies.find(agency => agency.slug === slug)?.name ?? slug,
+      name,
+      display: agency ? agencyDisplayParts(agency.name, agency.cities, agency.displayArea) : { primary: slug },
       routeCount: routes.size,
       routes: [...routes.values()].sort((a, b) => compareRouteNumber(a.shortName, b.shortName, a.longName, b.longName)),
-    }))
+      };
+    })
     .sort((a, b) => b.routeCount - a.routeCount || compareAgencyName(a.name, b.name) || a.slug.localeCompare(b.slug));
 }
 

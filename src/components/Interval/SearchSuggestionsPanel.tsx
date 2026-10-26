@@ -10,6 +10,11 @@ import { splitRouteKey } from '../../utils/routeKey';
 import RouteListRow from '../RouteListRow';
 import { NO_REGULAR_SERVICE_SHORT_LABEL, routeListHeadwayText, type RouteListDisplay } from '../../utils/effectiveHeadway';
 import ListRow from '../ui/ListRow';
+import PanelEmpty from '../ui/PanelEmpty';
+import { CardDivider } from './cardUi';
+import { headwayToTierColor } from './HeadwaySparkline';
+import { getTierColor } from '../../utils/colors';
+import { useColorMode } from '../../hooks/useColorMode';
 
 // Reusable/helper interfaces for route snippets
 export interface RecentRoute {
@@ -54,6 +59,17 @@ export function routeRowLabels(route: Parameters<typeof routeLabels>[0]) {
   return { shortName: primary, name: secondary };
 }
 
+/** The frequency's tier dot, as the route rows' badge shows it (CIV-971): coloured by the headway, grey for none. */
+function TierDot({ headway }: { headway: number | null }) {
+  const colorMode = useColorMode();
+  return (
+    <span
+      className="inline-block w-2 h-2 rounded-full shrink-0 mr-1 align-[1px]"
+      style={{ background: headway != null ? headwayToTierColor(headway, colorMode) : getTierColor(null, colorMode) }}
+    />
+  );
+}
+
 export function routeRowRight(agencyName: string, headway?: number | null, stacked = false, limited = false, sharedHeadway?: number | null, noRegular = false) {
   const agency = shortenAgencyName(agencyName);
   const layout = stacked
@@ -64,6 +80,7 @@ export function routeRowRight(agencyName: string, headway?: number | null, stack
       <span className={`${LIST_ROW_DIM} ${layout} whitespace-nowrap`}>
         {agency}
         <span className="text-[var(--text-dim)] font-normal"> · </span>
+        <TierDot headway={headway} />
         {routeListHeadwayText(headway, sharedHeadway)}
       </span>
     );
@@ -73,6 +90,7 @@ export function routeRowRight(agencyName: string, headway?: number | null, stack
       <span className={`${LIST_ROW_DIM} ${layout} whitespace-nowrap`}>
         {agency}
         <span className="text-[var(--text-dim)] font-normal"> · </span>
+        <TierDot headway={null} />
         {noRegular ? NO_REGULAR_SERVICE_SHORT_LABEL : 'limited'}
       </span>
     );
@@ -125,7 +143,7 @@ export const SearchSuggestionsPanel: React.FC<SearchSuggestionsPanelProps> = ({
       <>
           {recentlyViewed.length > 0 && (
             <>
-              {recentSearches.length > 0 && <div className="mx-4 border-t border-[var(--border-primary)]" />}
+              {recentSearches.length > 0 && <CardDivider className="mx-4" />}
               <div className={PANEL_SECTION_HEAD}>
                 Recent routes
               </div>
@@ -151,7 +169,7 @@ export const SearchSuggestionsPanel: React.FC<SearchSuggestionsPanelProps> = ({
           )}
           {suggestedRoutes.length > 0 && (
             <>
-              {(recentSearches.length > 0 || recentlyViewed.length > 0) && <div className="mx-4 border-t border-[var(--border-primary)]" />}
+              {(recentSearches.length > 0 || recentlyViewed.length > 0) && <CardDivider className="mx-4" />}
               <div className={PANEL_SECTION_HEAD}>
                 Suggested routes
               </div>
@@ -173,7 +191,7 @@ export const SearchSuggestionsPanel: React.FC<SearchSuggestionsPanelProps> = ({
             </>
           )}
           {recentSearches.length === 0 && recentlyViewed.length === 0 && suggestedRoutes.length === 0 && (
-            <p className="text-xs text-[var(--text-dim)] italic px-4 py-3">No route suggestions in this area.</p>
+            <PanelEmpty>No route suggestions in this area.</PanelEmpty>
           )}
       </>
       </div>

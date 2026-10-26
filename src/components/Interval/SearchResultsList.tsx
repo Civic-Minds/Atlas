@@ -3,6 +3,7 @@ import { PANEL_SECTION_HEAD, LIST_ROW_PRIMARY, LIST_ROW_DIM, SELECTION_ACTIVE, S
 import type { AgencySearchGroup } from '../../utils/agencySearch';
 import type { RouteSearchResult, StopSearchResult } from '../../utils/searchResults';
 import RouteListRow from '../RouteListRow';
+import AgencyName from '../ui/AgencyName';
 import { routeRowLabels, routeRowRight } from './SearchSuggestionsPanel';
 import { splitRouteKey } from '../../utils/routeKey';
 import { agencyDisplayParts, shortenAgencyName, titleCase } from '../../utils/format';
@@ -129,21 +130,21 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({
       itemKey={(g: AgencySearchGroup) => g.key}
       renderItem={(g: AgencySearchGroup) => {
         const { primary, secondary } = agencyDisplayParts(g.name, g.cities, g.displayArea);
+        // "Agency · place", as every agency list writes it (CIV-971).
         return (
-          <RouteListRow
-            shortName={primary}
+          <ListRow
             variant="spaced"
             onClick={() => {
               setSelectedAgencySlug?.(g.slug);
               setQuery('');
               setSearchFocused?.(false);
             }}
-            right={secondary && (
-              <span className={`${LIST_ROW_DIM} shrink-0 ml-2 text-right`}>
-                {secondary}
-              </span>
-            )}
-          />
+          >
+            {/* One line: a long place ends in "…" and the full name shows on hover. */}
+            <p className={`${LIST_ROW_PRIMARY} truncate min-w-0 text-left`} title={g.name}>
+              <AgencyName primary={primary} secondary={secondary} />
+            </p>
+          </ListRow>
         );
       }}
     />
