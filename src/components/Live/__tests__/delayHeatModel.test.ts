@@ -18,12 +18,12 @@ describe('delayHeatPoints', () => {
     const p = delayHeatPoints(new Map([['1', routeA]]), 'all', { uncertain: () => [] });
     expect(p.map(x => [x.stopId, x.addedMin])).toEqual([['B', 1.2], ['D', 0]]);
   });
-  it('combines routes that share a stop by trip-weighted mean, whatever their direction numbers', () => {
+  it('takes the route that adds the most at a shared stop, whatever their direction numbers', () => {
     const routeB = v3([stop('A', 1, 0), stop('B', 1, 1)], [{ directionId: 1, stretches: [stretch('A', 'B', 1500, 0.4, 0.4)] }]);
     const p = delayHeatPoints(new Map([['1', routeA], ['2', routeB]]), 'all', { uncertain: () => [] });
     const b = p.find(x => x.stopId === 'B')!;
-    expect(b.addedMin).toBe(0.6);
-    expect(b.n).toBe(2000);
+    expect(b.addedMin).toBe(1.2);
+    expect(b.n).toBe(500);
     expect(b.routes).toEqual(['1', '2']);
   });
   it('counts only the added delay that stays over the next stops', () => {
