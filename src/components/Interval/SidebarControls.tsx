@@ -626,6 +626,9 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     for (const [slug, fc] of Object.entries(nonCorridorLayers)) {
       // Find stops in the transfer band (beyond sibling radius, within walking radius)
       const routeIdToClosest = new Map<string, { stopName: string; dist: number }>();
+      // A route that serves this stop is never "nearby", even in a period it has no service here (#1117: MiWay 314 and
+      // 315 at stop 0814 showed as 423 m away at midday).
+      const ownRouteIds = currentStop.routesByAgency?.[slug];
       for (const f of fc.features) {
         if (f.geometry.type !== 'Point') continue;
         const [flon, flat] = (f.geometry as GeoJSON.Point).coordinates;
@@ -635,6 +638,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         const isSibling = currentStop.siblingIdsByAgency?.[slug]?.has(p.stopId);
         if (isSibling || d > TRANSFER_MAX_M) continue;
         for (const rid of p.routeIds as string[]) {
+          if (ownRouteIds?.has(rid)) continue;
           const existing = routeIdToClosest.get(rid);
           if (!existing || d < existing.dist) {
             routeIdToClosest.set(rid, { stopName: p.stopName ?? '', dist: d });
