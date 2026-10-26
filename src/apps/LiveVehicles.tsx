@@ -21,7 +21,7 @@ import RouteListRow from '../components/RouteListRow';
 import RouteCardTitle from '../components/RouteCardTitle';
 import { getVehicleColors, getVehicleStatus } from '../utils/colors';
 import { useColorVision } from '../context/ColorVisionContext';
-import { agencyDisplayParts, cleanRouteShortName, cleanRouteDisplayName, shortenAgencyName, agencyDisplayName, routeListCompanionName, vehicleModeWord, vehicleModeCount, routeLabelCase } from '../utils/format';
+import { agencyDisplayParts, cleanRouteShortName, cleanRouteDisplayName, agencyDisplayName, routeListCompanionName, vehicleModeWord, vehicleModeCount, routeLabelCase } from '../utils/format';
 import { branchDisplayPeriodHeadway } from '../utils/routeFacts';
 import { periodKeyForHour } from '../../shared/config';
 import { countOf } from '../../shared/overflowText';
@@ -347,7 +347,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
         agencySlug: r.slug,
         routeShortName: r.displayRouteShortName,
         label: r.displayName ? routeLabelCase(r.displayName) : r.displayRouteShortName,
-        agencyName: shortenAgencyName(agencies.find(a => a.slug === r.slug)?.name ?? r.slug),
+        agencyName: agencyDisplayName(agencies, r.slug),
       }));
   }, [visibleSlugs, agencies]);
 
@@ -448,6 +448,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
     ? selectedGroup?.vehicles.find(v => v.id === vehicleCard.id) ?? null
     : null;
   const selectedAgencyName = selectedGroup
+    // The full feed name, not agencyDisplayName: RouteCardTitle's routeLabels keys agency-specific name rules on it.
     ? (agencies.find(a => a.slug === selectedGroup.agencySlug)?.name ?? selectedGroup.agencySlug)
     : null;
 
@@ -591,7 +592,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
   const requestedRouteNote = useMemo((): string | null => {
     if (!selectedRoute || selectedGroup || isLoading) return null;
     const [slug, routeShortName] = selectedRoute.split('::');
-    const agencyName = shortenAgencyName(agencies.find(a => a.slug === slug)?.name ?? slug);
+    const agencyName = agencyDisplayName(agencies, slug);
     if (!getPolledRoute(slug, routeShortName)) {
       const followed = LIVE_POLLING_ROUTES.filter(r => r.slug === slug).map(r => r.displayRouteShortName);
       return followed.length > 0
@@ -856,7 +857,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                     <CardHelpNotice
                       message={liveUnreachableText(Object.entries(errorBySlug)
                         .filter((entry): entry is [string, string] => Boolean(entry[1]))
-                        .map(([slug]) => agencies.find(a => a.slug === slug)?.name ?? slug)
+                        .map(([slug]) => agencyDisplayName(agencies, slug))
                         .join(', '))}
                     />
                   </div>
