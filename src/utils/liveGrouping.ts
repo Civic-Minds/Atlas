@@ -52,3 +52,15 @@ export function vehicleDirectionKey(v: Pick<LiveVehicle, 'headsign' | 'direction
   return v.headsign
     ?? (v.directionId != null ? (directionLabels.get(v.directionId) ?? (v.directionId === 0 ? 'Outbound' : 'Inbound')) : DIRECTION_UNCLEAR);
 }
+
+/**
+ * The direction a Live selection narrows to: the picked direction row, else the direction of the vehicle whose card
+ * is open, else none (the whole route).
+ */
+export function focusDirectionKey(
+  selectedDirection: string | null,
+  cardVehicle: Pick<LiveVehicle, 'headsign' | 'directionId'> | null,
+  directionLabels: ReadonlyMap<number, string>,
+): string | null {
+  return selectedDirection ?? (cardVehicle ? vehicleDirectionKey(cardVehicle, directionLabels) : null);
+}

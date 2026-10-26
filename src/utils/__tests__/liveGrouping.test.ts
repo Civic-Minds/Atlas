@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { LiveVehicle } from '../../context/LiveVehiclesMapOverlay';
-import { DIRECTION_UNCLEAR, groupVehiclesByDirection, routeDirectionLabels, vehicleDirectionKey } from '../liveGrouping';
+import { DIRECTION_UNCLEAR, focusDirectionKey, groupVehiclesByDirection, routeDirectionLabels, vehicleDirectionKey } from '../liveGrouping';
 
 const v = (id: string, extra: Partial<LiveVehicle> = {}): LiveVehicle => ({
   id, routeShortName: '501', displayName: '501', tripId: 't', lat: 43.65, lon: -79.4, bearing: null, speedKmh: null, tsEpoch: null,
@@ -46,5 +46,22 @@ describe('vehicleDirectionKey (the direction a vehicle card keeps emphasised)', 
       expect(groups.get(vehicleDirectionKey(vehicle, labels))).toContain(vehicle);
     }
     expect(vehicleDirectionKey(vehicles[2], labels)).toBe(DIRECTION_UNCLEAR);
+  });
+});
+
+describe('focusDirectionKey (what a Live pick narrows the fade to)', () => {
+  const labels = new Map([[0, 'Neville Park'], [1, 'Long Branch']]);
+
+  it('uses the picked direction row first', () => {
+    expect(focusDirectionKey('Long Branch', v('a', { directionId: 0 }), labels)).toBe('Long Branch');
+  });
+
+  it('otherwise uses the direction of the vehicle whose card is open (a dot click)', () => {
+    expect(focusDirectionKey(null, v('a', { directionId: 0 }), labels)).toBe('Neville Park');
+    expect(focusDirectionKey(null, v('b'), labels)).toBe(DIRECTION_UNCLEAR);
+  });
+
+  it('is the whole route with neither', () => {
+    expect(focusDirectionKey(null, null, labels)).toBeNull();
   });
 });

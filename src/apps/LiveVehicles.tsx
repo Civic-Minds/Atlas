@@ -18,7 +18,7 @@ import { branchDisplayPeriodHeadway } from '../utils/routeFacts';
 import { periodKeyForHour } from '../../shared/config';
 import { plural } from '../../shared/overflowText';
 import { inferLiveDirection } from '../utils/liveDirection';
-import { DIRECTION_UNCLEAR, groupVehiclesByDirection, routeDirectionLabels, vehicleDirectionKey } from '../utils/liveGrouping';
+import { DIRECTION_UNCLEAR, groupVehiclesByDirection, routeDirectionLabels, focusDirectionKey } from '../utils/liveGrouping';
 import { CardDirectionRow, SidebarCardHeaderBlock, SidebarCardListRows, SidebarCardSection, SidebarCardShell, CARD_LIST_ROUTE } from '../components/Interval/cardUi';
 import { liveVehiclesFingerprint } from '../utils/liveVehiclesFingerprint';
 import { routeKeyForShortName } from '../utils/routeKey';
@@ -523,7 +523,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
 
   // Every vehicle stays on the map; a picked route keeps its own at full strength and fades the rest. A picked
   // direction, or the direction of the vehicle whose card is open, narrows that to the direction's vehicles.
-  const focusDirection = selectedDirection ?? (cardVehicle ? vehicleDirectionKey(cardVehicle, directionLabels) : null);
+  const focusDirection = focusDirectionKey(selectedDirection, cardVehicle, directionLabels);
   const focusIds = focusDirection ? (vehiclesByDirection?.get(focusDirection) ?? []).map(v => v.id).join(',') : null;
   const focus = useMemo<MapFocus | null>(() => {
     if (!selectedRoute) return null;
