@@ -109,6 +109,12 @@ describe('head and structured data', () => {
     expect(ld['@graph'][2].dateModified).toBe('2026-08-27');
     expect(JSON.stringify(ld)).not.toContain('FAQ');
   });
+
+  it('names a statewide place once when the city is the state itself (#1130)', () => {
+    const statewide = { ...TTC, city: 'Colorado', region: 'Colorado', country: 'United States' };
+    const ld = agencyPageJsonLd(statewide, 'https://x/agency/a', 'https://x') as { '@graph': Array<Record<string, unknown>> };
+    expect(ld['@graph'][0].areaServed).toEqual({ '@type': 'Place', name: 'Colorado, United States' });
+  });
 });
 
 describe('committed summary data', () => {

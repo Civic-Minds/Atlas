@@ -10460,6 +10460,7 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-2280/latest.zip",
       "region": "Colorado",
+      "displayArea": "Colorado",
       "bbox": [
         38.8,
         -108.6,

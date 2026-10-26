@@ -458,7 +458,8 @@ export function resolveAgencySeo(
 export function agencyPageJsonLd(a: AgencyPageSummary, canonicalUrl: string, origin: string, area?: { slug: string; name: string }, intro?: string): object {
   const crumbs = agencyBreadcrumbs(a, area);
   const modified = formatIso(a.lastRefreshedAt);
-  const place = [a.city, a.region, a.country].filter(Boolean).join(', ');
+  // A city that is the state itself ("Colorado" for a statewide service) is named once, not "Colorado, Colorado" (#1130).
+  const place = [a.city, a.region, a.country].filter((p, i, all): p is string => !!p && p !== all[i + 1]).join(', ');
   return {
     '@context': 'https://schema.org',
     '@graph': [
