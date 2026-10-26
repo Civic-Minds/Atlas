@@ -1,22 +1,6 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import type { LiveVehicle } from '../context/LiveVehiclesMapOverlay';
 import { syncUrlParams } from '../utils/syncUrlParams';
-
-type Bounds = [number, number, number, number];
-type LineClick = (lonLat: [number, number], toleranceM: number) => void;
-
-/**
- * The link between the Live route card and the map: the card asks for a stretch zoom and a
- * highlight; map clicks on the line are routed back to whichever handler the card registered.
- */
-export function useLiveCardMapLink() {
-  const [fitArea, setFitArea] = useState<{ bounds: Bounds; ts: number } | null>(null);
-  const [highlight, setHighlight] = useState<[number, number][] | null>(null);
-  const mapLineClickRef = useRef<LineClick | null>(null);
-  const registerMapClick = useCallback((fn: LineClick | null) => { mapLineClickRef.current = fn; }, []);
-  const zoomToStretch = useCallback((bounds: Bounds) => setFitArea({ bounds, ts: Date.now() }), []);
-  return { fitArea, highlight, setHighlight, zoomToStretch, registerMapClick, mapLineClickRef };
-}
 
 /**
  * Live's view state in the URL so a shared link reopens it: the route, the vehicle whose card is
