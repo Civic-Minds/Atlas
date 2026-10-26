@@ -182,9 +182,10 @@ describe('Live route dashboard', () => {
   });
 
   it('says how many runs were left out and why, so the figures are honest about what they cover', async () => {
+    // The kept count is the trips the figures describe (the header's count), not the raw runs before matching (CIV-910).
     renderPage({ ...ready, v3: { ...v3, leftOut: { noTimetableTrip: 600, excluded: 500, excludedLabel: 'replacement buses', kept: 900 } } });
     await screen.findByRole('heading', { level: 1 });
-    expect(screen.getByText(/600 runs \(30% of the vehicle trips seen\) under a trip number not on the timetable, such as extra or unscheduled buses, are left out; the figures describe the 900 timetabled trips kept/)).toBeTruthy();
+    expect(screen.getByText(/600 runs \(30% of the vehicle trips seen\) under a trip number not on the timetable, such as extra or unscheduled buses, are left out; the figures describe the 1,234 timetabled trips kept/)).toBeTruthy();
     expect(screen.getByText(/500 runs by replacement buses that share this route number are left out/)).toBeTruthy();
   });
 
