@@ -22,7 +22,7 @@ import {
   FlaggableValue,
   type CardReportButtonHandle,
 } from '../cardUi';
-import { CARD_NOTICE, CARD_NOTICE_FOOTER } from '../../../styles';
+import { CARD_NOTE, CARD_NOTICE, CARD_NOTICE_FOOTER } from '../../../styles';
 import { FEATURES, SPARKLINE_HOURS, TIME_PERIODS, formatPeriodHourLong, formatPeriodRangeLong, periodKeyForHour } from '../../../../shared/config';
 import { hasDirectionPeriodService, NO_REGULAR_SERVICE_LABEL, routeCardCoverageText, routeCardPeriodShapeText, routeCardDisplayHeadway, routeCardDisplayHeadwayRange, routeCardDisplayLimited } from '../../../utils/effectiveHeadway';
 import { branchDisplayHourHeadway, branchDisplayPeriodHeadway, buildRouteServiceSummary } from '../../../utils/routeFacts';
@@ -472,10 +472,10 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
         );
       })()}
       {patternLabel && (
-        <p className="text-xs font-bold text-[var(--text-dim)] -mt-1 mb-3 truncate" data-testid="route-pattern-label">{patternLabel}</p>
+        <p className={`${CARD_NOTE} -mt-1 mb-3 truncate`} data-testid="route-pattern-label">{patternLabel}</p>
       )}
       {FEATURES.routeVariants && variantFamily && (
-        <p className="text-xs text-[var(--text-dim)] -mt-1 mb-3">
+        <p className={`${CARD_NOTICE} -mt-1 mb-3`}>
           Includes variants {variantFamily.members.map(m => m.shortName).join(', ')}
         </p>
       )}
@@ -694,14 +694,14 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                   <>
                     <CardSectionLabel className="mb-0">{group.boundLabel}</CardSectionLabel>
                     {!hasVisibleDirectionRows && selectedPeriod && (
-                      <p className="mt-2 mb-2 text-xs font-bold text-[var(--text-dim)]">
+                      <p className={`${CARD_NOTE} mt-2 mb-2`}>
                         No {selectedPeriod.label.toLowerCase()} service.
                       </p>
                     )}
                   </>
                 )}
                 {onlySharedPasses && (
-                  <p className="mt-2 mb-2 text-xs font-bold text-[var(--text-dim)]">
+                  <p className={`${CARD_NOTE} mt-2 mb-2`}>
                     Only the shared section meets this filter. The branches do not.
                   </p>
                 )}

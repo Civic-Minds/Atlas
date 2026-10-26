@@ -8,6 +8,7 @@ import Panel, { PanelTitleBar } from '../ui/Panel';
 import ListRow from '../ui/ListRow';
 import AgencyGroupHeader from '../ui/AgencyGroupHeader';
 import AgencyName from '../ui/AgencyName';
+import PanelEmpty from '../ui/PanelEmpty';
 import { compareAgencyName, compareRegion } from '../../utils/sortCompare';
 import { countOf } from '../../../shared/overflowText';
 
@@ -99,7 +100,7 @@ export const MapContextPanel: React.FC<MapContextPanelProps> = ({ agencies, mode
               </div>
             );
           }) : (
-            <div className="px-4 py-3 text-xs font-bold text-[var(--text-dim)]">No matching agencies.</div>
+            <PanelEmpty>No matching agencies.</PanelEmpty>
           )
         ) : (
           filteredRouteGroups.length > 0 ? filteredRouteGroups.map(group => (
@@ -125,7 +126,7 @@ export const MapContextPanel: React.FC<MapContextPanelProps> = ({ agencies, mode
               })}
             </section>
           )) : (
-            <div className="px-4 py-3 text-xs font-bold text-[var(--text-dim)]">No matching routes.</div>
+            <PanelEmpty>No matching routes.</PanelEmpty>
           )
         )}
       </div>
