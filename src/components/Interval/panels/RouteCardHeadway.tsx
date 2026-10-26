@@ -46,7 +46,7 @@ import { hasRegularServiceInPeriod, hasStretchRoles, isOneGapRow, routeAllDayCon
 import type { VariantFamily } from '../../../utils/routeVariants';
 import type { CompareRouteRow } from '../compareTypes';
 import { compareCardSummary } from '../../../utils/compareSides';
-import { currentAtlasUrl } from '../../../utils/reportIssue';
+import { reportDetails } from '../../../utils/reportIssue';
 import { ROUTE_DATA_QUALITY_WARNING, ROUTE_DATA_QUALITY_WARNING_MESSAGE } from '../../../../shared/routeDataQuality';
 import { featurePassesHeadwayFilter, routeFilterHeadway } from '../../../../shared/routeHeadwayFilter';
 import { expiredFeedNotice, NO_ROUTE_SHAPE_NOTICE, periodServiceNotice, selectedRouteFilterNotice, selectedRouteOutsideFilterNotice, unevenServiceNotice } from '../../../content/noticeCopy';
@@ -420,19 +420,18 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
   const reportPeriod = selectedPeriod
     ? `${selectedPeriod.label} (${formatPeriodRangeLong(selectedPeriod.startHour, selectedPeriod.endHour)})`
     : 'All day';
-  const reportDetails = [
-    `**Agency:** ${routeAgency?.name ?? routeSlug ?? 'Unknown'}`,
-    `**Route:** ${routeTitle || 'Unknown'} (feed short name: ${currentRoute.routeShortName ?? 'none'}; long name: ${currentRoute.routeLongName ?? 'none'})`,
-    `**Period:** ${reportPeriod}`,
-    `**Agency data refreshed:** ${routeAgency?.lastRefreshedAt ?? 'unknown'}`,
-    `**Feed expiry:** ${routeAgency?.lastFeedExpiry ?? 'unknown'}`,
+  const details = reportDetails([
+    ['Agency', routeAgency?.name ?? routeSlug ?? 'Unknown'],
+    ['Route', `${routeTitle || 'Unknown'} (feed short name: ${currentRoute.routeShortName ?? 'none'}; long name: ${currentRoute.routeLongName ?? 'none'})`],
+    ['Period', reportPeriod],
+    ['Agency data refreshed', routeAgency?.lastRefreshedAt ?? 'unknown'],
+    ['Feed expiry', routeAgency?.lastFeedExpiry ?? 'unknown'],
     '**Displayed service:**',
     ...(reportServiceLines.length > 0 ? reportServiceLines : ['- No displayed service rows']),
     '',
     '**Generated route metrics from the loaded artifact:**',
     reportRawMetrics,
-    `**Atlas URL:** ${currentAtlasUrl()}`,
-  ].join('\n');
+  ]);
 
   const patternLabel = routePatternLabel(currentRoute.directions);
 
@@ -456,7 +455,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
           <CardReportButton
             ref={reportRef}
             title={`${routeAgency?.name ?? agencyDisplayName} ${routeTitle || 'Unknown route'}`}
-            details={reportDetails}
+            details={details}
             excludeReasons={['Stop is missing, misplaced, or assigned incorrectly']}
           />
         </div>

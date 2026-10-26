@@ -38,7 +38,7 @@ import Panel, { PanelBody, PanelTitleBar } from '../components/ui/Panel';
 import ListRow from '../components/ui/ListRow';
 import { AgencyList, AgencyListRow, AgencyRegionSection } from '../components/ui/AgencyList';
 import ArrowLink from '../components/ui/ArrowLink';
-import { currentAtlasUrl } from '../utils/reportIssue';
+import { reportDetails } from '../utils/reportIssue';
 import ModeFilterPillRow from '../components/ui/ModeFilterPillRow';
 import { syncUrlParams } from '../utils/syncUrlParams';
 import { encodeHistoryUrlState, parseHistoryUrlState, type HistoryUrlState } from '../utils/shareUrlState';
@@ -265,7 +265,12 @@ function RouteHistoryCard({
           </div>
           <CardReportButton
             title={`History: ${agencyName} ${route.routeShortName}`}
-            details={`**Agency:** ${agencyName}\n**Agency slug:** ${agencySlug}\n**Route:** ${route.routeShortName}${route.routeName ? ` ${route.routeName}` : ''}\n**Snapshots:** ${snaps.map(s => s.label).join(', ')}\n**Atlas URL:** ${currentAtlasUrl()}`}
+            details={reportDetails([
+              ['Agency', agencyName],
+              ['Agency slug', agencySlug],
+              ['Route', `${route.routeShortName}${route.routeName ? ` ${route.routeName}` : ''}`],
+              ['Snapshots', snaps.map(s => s.label).join(', ')],
+            ])}
             excludeReasons={['Stop is missing, misplaced, or assigned incorrectly']}
           />
         </div>
@@ -493,7 +498,7 @@ function HistoryAgencyPanel({
           report={(
             <CardReportButton
               title={`History: ${agencyHistory.name}`}
-              details={`**Agency:** ${agencyHistory.name}\n**Agency slug:** ${agencyHistory.slug}\n**Atlas URL:** ${currentAtlasUrl()}`}
+              details={reportDetails([['Agency', agencyHistory.name], ['Agency slug', agencyHistory.slug]])}
               excludeReasons={['Stop is missing, misplaced, or assigned incorrectly', 'Route line is missing or follows the wrong path']}
             />
           )}

@@ -14,7 +14,7 @@ import {
   FlaggableValue,
   type CardReportButtonHandle,
 } from '../cardUi';
-import { currentAtlasUrl } from '../../../utils/reportIssue';
+import { reportDetails } from '../../../utils/reportIssue';
 import StopRouteGroup, { stopRouteBestHeadway } from './StopRouteGroup';
 import LiveStopArrivals from './LiveStopArrivals';
 import type { HeadwayMetric } from '../../../utils/routeFacts';
@@ -154,7 +154,11 @@ export const StopCard: React.FC<StopCardProps> = ({
           <CardReportButton
             ref={reportRef}
             title={`Stop issue: ${titleCase(currentStop.stopName)}`}
-            details={`**Stop:** ${titleCase(currentStop.stopName)}${currentStop.direction ? ` — ${currentStop.direction}` : ''}\n**Agencies:** ${stopAgencies.join(', ') || 'Unknown'}\n**Period:** ${period}\n**Atlas URL:** ${currentAtlasUrl()}`}
+            details={reportDetails([
+              ['Stop', `${titleCase(currentStop.stopName)}${currentStop.direction ? ` — ${currentStop.direction}` : ''}`],
+              ['Agencies', stopAgencies.join(', ') || 'Unknown'],
+              ['Period', period],
+            ])}
             showLiveReason={!!liveStop}
             excludeReasons={['Route line is missing or follows the wrong path']}
           />
