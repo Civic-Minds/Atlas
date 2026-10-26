@@ -25,14 +25,19 @@ function figure(r: AgencyRouteRow, v3: LiveV3 | undefined, measure: MapMeasure, 
   }
 }
 
+/** The routes in the overview's order: worst figure for the measure first, routes with none at the end (the list and the top bar's route menu). */
+export function rankRoutes(s: AgencySummary, network: Map<string, LiveV3>, measure: MapMeasure, band: DashboardBand = 'all') {
+  return s.routes
+    .map(r => ({ r, f: figure(r, network.get(r.route), measure, band) }))
+    .sort((a, b) => (b.f?.value ?? -Infinity) - (a.f?.value ?? -Infinity) || a.r.route.localeCompare(b.r.route, undefined, { numeric: true }));
+}
+
 /**
  * The agency overview: every route with its figure for the chosen measure, worst first; a click selects the route. The
  * header is the measure's own label. Routes with no figure sit at the end.
  */
 export default function OverviewList({ s, measure, band = 'all', route, network, onPick }: { s: AgencySummary; measure: MapMeasure; band?: DashboardBand; route: string | null; network: Map<string, LiveV3>; onPick: (route: string) => void }) {
-  const rows = useMemo(() => s.routes
-    .map(r => ({ r, f: figure(r, network.get(r.route), measure, band) }))
-    .sort((a, b) => (b.f?.value ?? -Infinity) - (a.f?.value ?? -Infinity) || a.r.route.localeCompare(b.r.route, undefined, { numeric: true })), [s, measure, band, network]);
+  const rows = useMemo(() => rankRoutes(s, network, measure, band), [s, measure, band, network]);
   // Every route is listed: the route list is the only route picker. Nothing scrolls, so a list taller than its room is clipped at the bottom.
   const shown = rows;
   return (
