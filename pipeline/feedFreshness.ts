@@ -3,11 +3,14 @@ function validYmd(value: unknown): value is string {
 }
 
 /**
- * Return the latest service date advertised anywhere in the feed.
+ * Return the latest service date advertised anywhere in the feed: the latest of
+ * feed_info.txt's feed_end_date, calendar.txt end dates and added calendar_dates
+ * entries (removals are ignored).
  *
- * feed_info.txt is often left stale by agencies that keep extending their
- * calendar, so calendar.txt and added calendar_dates entries are authoritative
- * for deciding whether a feed still contains future service.
+ * feed_info's end date counts here, so a feed whose feed_info outlasts its
+ * calendar reads later than its last real service (Detroit People Mover:
+ * calendar 2026-12-31, feed_info 2027-12-31, #1126). The recorded expiry caps
+ * that with the calendar's own end (recordedFeedExpiry in refreshMeta.ts, #1039).
  */
 export function effectiveFeedExpiry(opts: {
   feedInfoEnd?: unknown;
