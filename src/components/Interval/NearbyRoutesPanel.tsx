@@ -4,7 +4,7 @@ import { HeadwayBadge, LimitedBadge } from './cardUi';
 import { headwayEveryRange } from '../../utils/headwayText';
 import { NO_REGULAR_SERVICE_SHORT_LABEL } from '../../utils/effectiveHeadway';
 import type { NearbyRoute } from '../../hooks/useNearbyRoutes';
-import { PANEL_Z_INDEX, PANEL_TITLE } from '../../styles';
+import { NEARBY_PANEL_SLOT, PANEL_TITLE } from '../../styles';
 import Panel, { PanelBody, PanelTitleBar } from '../ui/Panel';
 import ListRow from '../ui/ListRow';
 import PanelEmpty from '../ui/PanelEmpty';
@@ -29,11 +29,7 @@ export const NearbyRoutesPanel = forwardRef<HTMLDivElement, NearbyRoutesPanelPro
     <Panel
       enter
       ref={ref}
-      // 136px clears the stacked zoom controls (bottom-[59px], 64px tall → top edge at 123)
-      // plus the geolocate button below them — this used to sit at bottom:72, overlapping
-      // the zoom-in button by ~50px.
-      style={{ position: 'absolute', bottom: 136, right: 12, zIndex: PANEL_Z_INDEX }}
-      className="w-64 max-h-[calc(100vh-152px)]"
+      className={NEARBY_PANEL_SLOT}
     >
       <PanelTitleBar>
         <span className={PANEL_TITLE}>Near You</span>

@@ -152,7 +152,6 @@ export const Z_DROPDOWN  = 'z-[1200]';    // Autocomplete dropdowns, app drawer 
 export const Z_MODAL_BG  = 'z-[1400]';    // InfoPanel backdrop
 export const Z_MODAL_TOP = 'z-[1500]';    // FilterPanel backdrop (above InfoPanel)
 export const Z_PANEL_RAISED = 'z-[1001]'; // One step above the panels: Compare's map labels and link button, so a chip's menu opens over the phone route sheet
-export const PANEL_Z_INDEX = 1000;         // Numeric for inline styles (e.g. NearbyRoutesPanel)
 
 /** The top of everything that sits under the search bar: 7px below it (the bar ends at 49px on desktop, 51px on phones).
  *  The desktop step is its own token for a phone layout that starts somewhere else (Compare's lower map). */
@@ -164,6 +163,11 @@ export const SIDEBAR_CARD = `${SIDEBAR_CARD_SLOT} ${Z_PANEL}`;
 /** Every sidebar card's tallest size: it stops 7px above the bottom pills (measured: their top is 49px up
  *  on desktop, 53px on phones) and its list scrolls inside. */
 export const SIDEBAR_CARD_MAX_H = 'max-h-[calc(100vh-112px)] max-sm:max-h-[calc(100dvh-118px)]';
+
+/** The Near You panel's placement at the map's bottom right. 136px up clears the stacked zoom controls
+ *  (bottom-[59px], 64px tall, so their top edge is at 123px) plus the geolocate button below them; it used
+ *  to sit at 72px and overlap the zoom-in button. Its tallest size keeps 16px clear of the top. */
+export const NEARBY_PANEL_SLOT = `absolute bottom-[136px] right-3 ${Z_PANEL} w-64 max-h-[calc(100vh-152px)]`;
 
 /** Live's sidebar placement, kept apart from the cards' while Live is rebuilt on its own branch
  *  (Live sidebars never scroll or collapse). */
