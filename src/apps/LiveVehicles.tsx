@@ -110,6 +110,8 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
 
   // Locally-fetched agency GeoJSON (fallback when Interval layers haven't loaded yet)
   const [localLayers, setLocalLayers] = useState<Record<string, GeoJSON.FeatureCollection>>({});
+  // The card over the map, so the map frames routes, places and vehicles clear of it.
+  const cardRef = useRef<HTMLDivElement>(null);
 
 
   // selectedRoute is a composite "slug::routeShortName" key
@@ -554,7 +556,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
     if (fp === lastOverlayFpRef.current) return;
     lastOverlayFpRef.current = fp;
     setOverlay({
-      vehicles: allVehicles, focusedVehicle, vehicleFly, mapRouteKey, focus, focusArea, fitArea, highlight,
+      vehicles: allVehicles, focusedVehicle, vehicleFly, mapRouteKey, focus, cardRef, focusArea, fitArea, highlight,
       onMapClick: (_lonLat, vehicles) => {
         if (vehicles.length === 1) { openVehicleCard(vehicles[0]); return; }
         if (vehicles.length > 1) { setVehiclePick(vehicles.map(v => v.id)); return; }
@@ -616,6 +618,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
   return (
     <div className="relative h-full w-full overflow-hidden pointer-events-none" inert={!active}>
       <div
+        ref={cardRef}
         className={`${PANEL_SIDEBAR} ${SIDEBAR_PANEL_WIDTH} max-h-[calc(100dvh-170px)] sm:max-h-[calc(100vh-92px)] flex flex-col gap-3 transition-opacity ${TRANSITION_SLOW} ${selectionActive ? 'opacity-0 pointer-events-none' : 'opacity-100 pointer-events-auto'}`}
         style={{ '--sidebar-left': `${sidebarLeft ?? SIDEBAR_LEFT_FALLBACK}px` } as React.CSSProperties}
       >

@@ -20,6 +20,8 @@ export interface SelectionFramingInput {
   areaFocus?: { bbox: [number, number, number, number]; nonce: number } | null;
   resetViewKey?: number;
   regionalView: ReturnType<typeof getRegionalView>;
+  /** Padding for the route fit when the card over the map is not the regular route card (Live's card). */
+  framePadding?: ((map: maplibregl.Map) => maplibregl.PaddingOptions) | null;
 }
 
 /** Camera moves for a selection: agency, `?ondemand=` link, area, Reset View, route and stop. */
@@ -28,7 +30,7 @@ export function useSelectionFraming(
   mapLoaded: boolean,
   {
     agencies, layers, selectedAgencySlug, selectedRoute, selectedStop, initialOnDemandSlug,
-    initialMapCenter, areaFocus, resetViewKey, regionalView,
+    initialMapCenter, areaFocus, resetViewKey, regionalView, framePadding,
   }: SelectionFramingInput,
 ) {
   const fittedRouteRef = useRef<string | null>(null);
@@ -122,7 +124,7 @@ export function useSelectionFraming(
     }
 
     // Keeps the line clear of the route card: beside it, or above the phone bottom sheet (routeFraming).
-    const padding = selectionFramePadding(map);
+    const padding = framePadding ? framePadding(map) : selectionFramePadding(map);
     if (target?.kind === 'bounds') {
       map.fitBounds(target.bounds, { padding, maxZoom: 14 });
       fittedRouteRef.current = selectedRoute;

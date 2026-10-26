@@ -8,7 +8,7 @@ import { escapeHtml } from '../../../lib/escapeHtml';
 import { liveVehiclesFingerprint } from '../../../utils/liveVehiclesFingerprint';
 import { useColorVision } from '../../../context/ColorVisionContext';
 import { delayAmount } from '../../../utils/headwayText';
-import { frameRoute } from './routeFraming';
+import { cardFramePadding, frameRoute } from './routeFraming';
 import { LIVE_VEHICLE_PICK_RADIUS_PX, pickLiveVehicles } from './liveVehiclePick';
 import { LIVE_CONTEXT_LAYER_IDS } from './mapLayers';
 import { focusOpacity } from '../../../utils/routeFocus';
@@ -58,6 +58,8 @@ export function useLiveVehiclesLayer(
   const colorMode = colorVisionFriendly ? 'friendly' : 'default';
   const { overlay: liveOverlay } = useLiveVehiclesMapOverlay();
   const lastDeckFpRef = useRef('');
+  const cardRefRef = useRef(liveOverlay?.cardRef);
+  cardRefRef.current = liveOverlay?.cardRef;
   const deckEnsurePromiseRef = useRef<Promise<MapboxOverlay | null> | null>(null);
 
   // Lazily attach MapboxOverlay the first time Live has vehicles to show.
@@ -272,7 +274,7 @@ export function useLiveVehiclesLayer(
     const map = mapRef.current;
     const fly = liveOverlay?.vehicleFly;
     if (!map || !mapLoaded || !fly) return;
-    map.flyTo({ center: [fly.lon, fly.lat], zoom: Math.max(map.getZoom(), 15) });
+    frameRoute(map, [[fly.lon, fly.lat]], { maxZoom: 15, padding: cardFramePadding(map, cardRefRef.current?.current) });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [liveOverlay?.vehicleFly?.ts, mapLoaded, mapRef]);
 
@@ -282,9 +284,7 @@ export function useLiveVehiclesLayer(
     const area = liveOverlay?.focusArea;
     if (!map || !mapLoaded || !area) return;
     const [w, s, e, n] = area.bounds;
-    const cam = map.cameraForBounds([[w, s], [e, n]], { padding: 64 });
-    if (!cam) return;
-    map.flyTo({ center: cam.center, zoom: Math.max(cam.zoom ?? 0, area.minZoom ?? 0) });
+    frameRoute(map, [[w, s], [e, n]], { minZoom: area.minZoom ?? 0, padding: cardFramePadding(map, cardRefRef.current?.current) });
   }, [liveOverlay?.focusArea, mapLoaded, mapRef]);
 
   // Stretch zoom from the route card: same framing as selecting the route.
