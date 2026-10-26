@@ -315,10 +315,45 @@ export interface LiveGapsOptions {
    * A car on a recorded branch that isn't the drawn line is counted but has no gap on this line.
    */
   wholeLine?: boolean;
+  /**
+   * Trips today's timetable runs that the analysis's timetable doesn't list, already known to go this way
+   * (from the map's own direction for each vehicle, see liveTripDirections). Treated like listed trips.
+   */
+  extraTrips?: ReadonlySet<string>;
+}
+
+/**
+ * The analysis's direction for trips its timetable doesn't list, from the map's direction for each vehicle
+ * (which comes from today's route shapes). The two timetables number directions differently (TTC: the
+ * map's 0 is east, the analysis's 0 is west), so the pairing is learned from vehicles both know.
+ */
+export function liveTripDirections(vehicles: readonly { tripId: string; directionId: number | null }[], tripDirections: Record<string, string[]> | undefined): Map<number, Set<string>> {
+  const dirOf = new Map<string, number>();
+  for (const [d, ids] of Object.entries(tripDirections ?? {})) for (const id of ids) dirOf.set(id, Number(d));
+  const votes = new Map<number, Map<number, number>>();
+  for (const v of vehicles) {
+    const d = dirOf.get(v.tripId);
+    if (d == null || v.directionId == null) continue;
+    const m = votes.get(v.directionId) ?? votes.set(v.directionId, new Map()).get(v.directionId)!;
+    m.set(d, (m.get(d) ?? 0) + 1);
+  }
+  const pair = new Map<number, number>();
+  for (const [mapDir, m] of votes) {
+    const ranked = [...m.entries()].sort((a, b) => b[1] - a[1]);
+    // Only a clear pairing: a tie means the map's directions don't line up with the analysis's.
+    if (ranked.length === 1 || ranked[0][1] > ranked[1][1]) pair.set(mapDir, ranked[0][0]);
+  }
+  const out = new Map<number, Set<string>>();
+  for (const v of vehicles) {
+    if (dirOf.has(v.tripId) || v.directionId == null || !pair.has(v.directionId)) continue;
+    const d = pair.get(v.directionId)!;
+    (out.get(d) ?? out.set(d, new Set()).get(d)!).add(v.tripId);
+  }
+  return out;
 }
 
 export function liveGaps(data: SegmentDelayData & { tripDirections?: Record<string, string[]> }, line: LineModel, stops: LineStop[], band: SegmentBand, snapshots: RecentSnapshot[], nowSec: number, opts: LiveGapsOptions = {}): LiveGaps | null {
-  const trips = new Set(data.tripDirections?.[String(line.directionId)] ?? []);
+  const trips = new Set([...(data.tripDirections?.[String(line.directionId)] ?? []), ...(opts.extraTrips ?? [])]);
   if (trips.size === 0 || snapshots.length === 0) return null;
   const whole = !!opts.wholeLine;
   // The timetable at each stop, read from the timetable itself rather than the recorded-gap stats
@@ -351,7 +386,7 @@ export function liveGaps(data: SegmentDelayData & { tripDirections?: Record<stri
     const p = placeOnLine(line, [lon, lat]);
     return p ? { m: start[p.segIndex] + p.frac * len[p.segIndex], segIndex: p.segIndex } : null;
   };
-  const known = new Set(Object.values(data.tripDirections ?? {}).flat());
+  const known = new Set([...Object.values(data.tripDirections ?? {}).flat(), ...(opts.extraTrips ?? [])]);
   // Trips the timetable doesn't list (e.g. added buses with negative trip numbers) count in this
   // direction only when their own recent track moved 200 m or more forward along this line.
   const added = new Map<string, { m: number; t: number }[]>();
