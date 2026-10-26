@@ -213,7 +213,8 @@ export function useRouteStyling(
       if (nightServiceView) {
         lineColorExpr = getNightServiceColor(colorMode);
       } else if (frequentServiceView) {
-        lineColorExpr = '#f59e0b';
+        // The frequent bands' own colours (with the colour-vision variant), as the overlay draws them.
+        lineColorExpr = frequentServiceColorExpression(colorMode);
       } else {
         lineColorExpr = buildEffectiveHeadwayColorExpression(period, colorMode);
       }
