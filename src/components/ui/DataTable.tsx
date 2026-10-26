@@ -107,11 +107,14 @@ export const FIXED_FIRST_COLUMN_REM = 16;
 export const FIXED_COLUMN_REM = 8;
 
 /** Plain data table. Wrap it in an overflow-x-auto element where it may be wider than its container. */
-/** A click anywhere on a linked row follows its link; a click on a link or button inside keeps its own behaviour. */
+/**
+ * A click anywhere on a linked row follows its link, and a middle, Cmd or Ctrl click opens it in a new tab. A click on a
+ * link or button inside keeps its own behaviour, and so does selecting text in the row.
+ */
 function openRow(e: MouseEvent<HTMLTableRowElement>, href: string) {
-  if ((e.target as HTMLElement).closest('a, button')) return;
-  if (e.metaKey || e.ctrlKey) window.open(href, '_blank', 'noopener');
-  else window.location.assign(href);
+  if ((e.target as HTMLElement).closest('a, button') || window.getSelection()?.toString()) return;
+  if (e.button === 1 || e.metaKey || e.ctrlKey) window.open(href, '_blank', 'noopener');
+  else if (e.button === 0) window.location.assign(href);
 }
 
 export default function DataTable<T>({ columns, rows, rowKey, variant = 'compact', caption, fixed = false, fill = false, narrowFit = false, endAligned = false, rowHref, rowTitle, sort, onSort }: DataTableProps<T>) {
@@ -163,6 +166,7 @@ export default function DataTable<T>({ columns, rows, rowKey, variant = 'compact
             className={`${v.row}${rowHref ? ' cursor-pointer hover:bg-[var(--bg-btn-hover)] transition-colors' : ''}`}
             title={rowTitle?.(row)}
             onClick={rowHref ? e => openRow(e, rowHref(row)) : undefined}
+            onAuxClick={rowHref ? e => openRow(e, rowHref(row)) : undefined}
           >
             {columns.map((col, i) => {
               const className = `${v.td}${cellPad(i)}${rowEdge(i)}${hide(i)}${fixed && i === 0 ? ' break-words' : ''}${col.className ? ` ${col.className}` : ''}`;
