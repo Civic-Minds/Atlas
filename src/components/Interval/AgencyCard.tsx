@@ -545,14 +545,14 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
           {!agency.onDemandOnly && agency.onDemandServiceArea?.serviceName && (() => {
             const service = agency.onDemandServiceArea;
             // Every on-demand service in the shared row style (CIV-962): its name bold like a route with no number,
-            // and one grey hours line each; a service with no confirmed hours says so, as its zone card does. A
-            // line above and below keeps it apart from the mode pills and the routes.
+            // and its hours in grey; a service with no confirmed hours says so, as its zone card does. A line under it
+            // keeps it apart from the mode pills; with no pills, the header's own line already ends it.
             const services = [
               { serviceName: service.serviceName!, availability: service.availability, serviceHours: service.serviceHours },
               ...otherZoneServices(service),
             ];
             return (
-              <div className="mt-2 border-y border-[var(--border-primary)] py-2">
+              <div className={`mt-2 border-t border-[var(--border-primary)] pt-2 ${routeFilters.length > 0 || hasOnDemandPill ? 'border-b pb-2' : ''}`}>
                 <CardSectionLabel>On-demand service</CardSectionLabel>
                 {services.map((item, index) => (
                   <div key={item.serviceName} className={index > 0 ? 'mt-1.5' : ''}>
@@ -568,9 +568,9 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
                     )}
                   </div>
                 ))}
-                {service.tripRules && <p className={CARD_SUMMARY}>{service.tripRules}</p>}
+                {service.tripRules && <p className="text-xs leading-snug text-[var(--text-muted)] mt-1">{service.tripRules}</p>}
                 {coverageNote?.kind === 'partly-mapped' && (
-                  <p className={CARD_SUMMARY}>Not on the map yet: {coverageNote.missing}.</p>
+                  <p className="text-xs leading-snug text-[var(--text-muted)] mt-1">Not on the map yet: {coverageNote.missing}.</p>
                 )}
                 {service.sourceUrl && (
                   <p className="mt-1 text-xs">
