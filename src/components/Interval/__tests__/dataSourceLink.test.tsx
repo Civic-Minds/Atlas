@@ -18,7 +18,7 @@ const withoutSite = { ...base } as unknown as Agency;
 function card(agency: Agency) {
   return render(
     <AgencyCard agency={agency} layers={{}} day="Weekday" period="midday" maxHeadway={Infinity} selectedModes={new Set()}
-      hideSpan={false} hideLimitedService={false} onRouteSelect={() => {}} />,
+      hideSpan={false} hideLimitedService={false} onRouteSelect={() => {}} onClose={() => {}} />,
   );
 }
 
@@ -49,7 +49,7 @@ describe('Source link', () => {
     const onDemand = (a: Agency) => ({ ...a, onDemandServiceArea: HAMILTON_MY_RIDE_SERVICE_AREA }) as unknown as Agency;
     const demandCard = (agency: Agency) => render(
       <AgencyCard agency={onDemand(agency)} layers={{}} day="Weekday" period="midday" maxHeadway={Infinity} selectedModes={new Set()}
-        hideSpan={false} hideLimitedService={false} onRouteSelect={() => {}} onDemandFocus onDemandZoneId={null} />,
+        hideSpan={false} hideLimitedService={false} onRouteSelect={() => {}} onClose={() => {}} onDemandFocus onDemandZoneId={null} />,
     );
 
     it('shows in beta, pointing at the agency website in a new tab', () => {
@@ -75,27 +75,27 @@ describe('Source link', () => {
   describe('header links (CIV-841)', () => {
     const ttc = { ...base, slug: 'ttc', name: 'Toronto Transit Commission', websiteUrl: 'https://www.ttc.ca' } as unknown as Agency;
 
-    it('one row: About, Source, Toronto area, each opening in a new tab', () => {
+    it('the region link under the name, then the facts, then About and Source, each opening in a new tab (CIV-929)', () => {
       card(ttc);
+      const area = screen.getByRole('link', { name: 'Greater Toronto and Hamilton Area' });
+      const facts = screen.getByText(/^\d+ routes?/);
       const about = screen.getByRole('link', { name: 'About' });
       const source = screen.getByRole('link', { name: /^Source/ });
-      const area = screen.getByRole('link', { name: 'Toronto area' });
       expect(about).toHaveAttribute('href', '/agency/ttc');
       expect(area).toHaveAttribute('href', '/area/toronto');
-      for (const link of [about, source, area]) {
-        expect(link).toHaveAttribute('target', '_blank');
-        expect(link.parentElement).toBe(about.parentElement);
-      }
+      for (const link of [about, source, area]) expect(link).toHaveAttribute('target', '_blank');
+      expect(source.parentElement).toBe(about.parentElement);
+      expect(area.compareDocumentPosition(facts) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+      expect(facts.compareDocumentPosition(about) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
       expect(about.compareDocumentPosition(source) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
-      expect(source.compareDocumentPosition(area) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
       expect(screen.queryByText(/agencies$/)).toBeNull();
     });
 
-    it('public mode: About and Toronto area, no Source', () => {
+    it('public mode: About and the region link, no Source', () => {
       flags.on = false;
       card(ttc);
       expect(screen.getByRole('link', { name: 'About' })).toBeInTheDocument();
-      expect(screen.getByRole('link', { name: 'Toronto area' })).toBeInTheDocument();
+      expect(screen.getByRole('link', { name: 'Greater Toronto and Hamilton Area' })).toBeInTheDocument();
       expect(screen.queryByText('Source')).toBeNull();
     });
   });

@@ -451,29 +451,63 @@ export function FlaggableValue({ reason, reportRef, children, className = 'inlin
   );
 }
 
-/** The agency card's heading, shared by the map and History: an optional back link, then the agency name
- *  in bold with its place beside it in lighter text on the same line. */
-export function AgencyCardHeading({
+/** An agency's name in bold with its place beside it in lighter text on the same line. */
+export function AgencyNameHeading({
   name,
   place,
-  back,
   as: Tag = 'p',
   className = '',
 }: {
   name: string;
   place?: string | null;
-  back?: { to: string; onClick: () => void };
   as?: 'p' | 'h2';
   className?: string;
 }) {
   return (
-    <>
-      {back && <CardBackLink onClick={back.onClick}>{back.to}</CardBackLink>}
-      <Tag className={`${CARD_TITLE} ${className}`}>
-        {name}
-        {place && <>{' '}<span className="font-medium text-[var(--text-muted)] whitespace-nowrap">{place}</span></>}
-      </Tag>
-    </>
+    <Tag className={`${CARD_TITLE} ${className}`}>
+      {name}
+      {place && <>{' '}<span className="font-medium text-[var(--text-muted)] whitespace-nowrap">{place}</span></>}
+    </Tag>
+  );
+}
+
+/**
+ * The one top every agency card shares, in every mode (CIV-929): a back link ("← Map" when nothing came
+ * before the card), the agency name in bold with its place beside it, an optional region link on one line
+ * under it, one grey facts line for the mode, and the report flag on the right. Anything else the card needs under
+ * the top goes in `children`.
+ */
+export function AgencyCardTop({
+  name,
+  place,
+  back,
+  region,
+  facts,
+  report,
+  as,
+  children,
+}: {
+  name: string;
+  place?: string | null;
+  back: { to: string; onClick: () => void };
+  /** A link to the agency's region ("Greater Toronto and Hamilton Area →"), kept to one line. */
+  region?: React.ReactNode;
+  facts?: React.ReactNode;
+  report?: React.ReactNode;
+  as?: 'p' | 'h2';
+  children?: React.ReactNode;
+}) {
+  return (
+    <div className="flex items-start gap-2 min-w-0">
+      <div className="min-w-0 flex-1">
+        <CardBackLink onClick={back.onClick}>{back.to}</CardBackLink>
+        <AgencyNameHeading as={as} name={name} place={place} className="mb-0" />
+        {region && <p className="mt-0.5 flex min-w-0 text-xs whitespace-nowrap">{region}</p>}
+        {facts && <p className={CARD_SUMMARY}>{facts}</p>}
+        {children}
+      </div>
+      {report}
+    </div>
   );
 }
 

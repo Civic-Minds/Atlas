@@ -15,8 +15,7 @@ import { routeRowLabels } from '../components/Interval/SearchSuggestionsPanel';
 import ResearchInfo from '../components/ResearchInfo';
 import { NIGHT_INFO_HEADING, nightRuleText } from '../content/researchRules';
 import PanelEmpty from '../components/ui/PanelEmpty';
-import AgencyName from '../components/ui/AgencyName';
-import AgencyGroupHeader from '../components/ui/AgencyGroupHeader';
+import { AgencyNameHeading, CARD_SUMMARY } from '../components/Interval/cardUi';
 import { loadingText, loadErrorText } from '../content/stateCopy';
 import { boundingBox, lineCoordinates } from '../../shared/routeGeometry';
 
@@ -68,6 +67,8 @@ interface Props {
   query?: string;
   frequency: NightServiceFrequency;
   onRouteSelect?: (agencySlug: string, routeId: string) => void;
+  /** The info card's back link: leaves Night for the main map at the same spot (CIV-929). */
+  onBackToMap: () => void;
   /** A route is selected: its card takes this panel's place, as in Live. */
   selectionActive?: boolean;
 }
@@ -78,7 +79,7 @@ function featureIntersectsBounds(feature: GeoJSON.Feature, bounds: { s: number; 
   return box.maxLng >= bounds.w && box.minLng <= bounds.e && box.maxLat >= bounds.s && box.minLat <= bounds.n;
 }
 
-export default function NightService({ active, sidebarLeft, searchBarWidth, layers, query = '', frequency, onRouteSelect, selectionActive = false }: Props) {
+export default function NightService({ active, sidebarLeft, searchBarWidth, layers, query = '', frequency, onRouteSelect, onBackToMap, selectionActive = false }: Props) {
   const [data, setData] = useState<NightServiceIndexFile | null>(null);
   const [loadState, setLoadState] = useState<'loading' | 'ready' | 'error'>('loading');
   const { bounds } = useViewport();
@@ -164,7 +165,7 @@ export default function NightService({ active, sidebarLeft, searchBarWidth, laye
   if (!active) return null;
 
   return (
-    <ResearchInfo heading={NIGHT_INFO_HEADING} sidebarLeft={sidebarLeft} searchBarWidth={searchBarWidth} hidden={selectionActive} below={
+    <ResearchInfo heading={NIGHT_INFO_HEADING} onBack={onBackToMap} sidebarLeft={sidebarLeft} searchBarWidth={searchBarWidth} hidden={selectionActive} below={
       <Panel sidebarSurface className="min-h-0 flex-1">
         <PanelTitleBar>
           <Moon className="w-3 h-3 text-[var(--text-dim)] shrink-0" />
@@ -179,11 +180,11 @@ export default function NightService({ active, sidebarLeft, searchBarWidth, laye
           )}
           {loadState === 'ready' && agencies.map((agency, agencyIndex) => (
             <div key={agency.slug}>
-              <AgencyGroupHeader rule={agencyIndex > 0 ? 'above' : 'below'}>
-                <AgencyName primary={agency.agencyName} secondary={agency.region ?? undefined}>
-                  <span className="font-normal text-[var(--text-dim)]"> · {agency.routes.length} {plural(agency.routes.length, 'route')}</span>
-                </AgencyName>
-              </AgencyGroupHeader>
+              {/* The agency card top's name and facts line (CIV-929); the back link is on the info card above. */}
+              <div className={`px-4 pt-3 pb-2 ${agencyIndex > 0 ? 'border-t' : 'border-b'} border-[var(--border-primary)]`}>
+                <AgencyNameHeading name={agency.agencyName} place={agency.region} className="mb-0" />
+                <p className={CARD_SUMMARY}>{agency.routes.length} night {plural(agency.routes.length, 'route')}</p>
+              </div>
               {agency.routes.map(route => {
                 const labels = routeRowLabels({ shortName: route.routeShortName, longName: route.routeLongName, routeType: route.routeType, agencySlug: agency.slug, agencyName: agency.agencyName });
                 const hasSubtitle = route.destinations.length > 0 || route.partOfRoute;

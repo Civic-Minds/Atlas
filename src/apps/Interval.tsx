@@ -884,6 +884,11 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     setOnDemandStopAgencySlug(null);
     onAgencyCardClose?.();
   }, [onAgencyCardClose]);
+  // An agency or on-demand card's "← Map" (CIV-929): closes the card, as a click on the map outside it does.
+  const closeAgencyCard = useCallback(() => {
+    setOnDemandStopAgencySlug(null);
+    onAgencyCardClose?.();
+  }, [onAgencyCardClose]);
   // The user dismissing the map's selection (empty-map click, Escape): clears it and tells any other
   // view's panel over the map to close the same way (History, #1031). Data-driven clears don't.
   const dismissMapSelection = useCallback(() => {
@@ -1277,6 +1282,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
             onDemandFocus
             onDemandZoneId={selectedOnDemandZoneId}
             onBackToAgency={setSelectedAgencySlug ? () => { setOnDemandStopAgencySlug(null); setSelectedAgencySlug(agency.slug); } : undefined}
+            onClose={closeAgencyCard}
           />
         ) : null;
       })()}
@@ -1298,6 +1304,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
             sidebarLeft={sidebarLeft}
             searchBarWidth={searchBarWidth}
             onInfoOpen={onInfoOpen}
+            onClose={closeAgencyCard}
           />
         ) : null;
       })()}

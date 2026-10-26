@@ -6,7 +6,7 @@ import {
   areaSpanShort, areaSubtitle, buildAreaPageData, resolveAreaSeo, type AreaPageData,
 } from './areaPages';
 import { rankLargeMetros, parseCsv } from './largeMetros';
-import { areaLinkFor } from './agencyArea';
+import { agencyRegionTitle, areaLinkFor } from './agencyArea';
 import { MERGED_AREAS, isLargeMetro, areaSlug, mainCities, type AreaConfig } from './areas';
 
 const r = (name: string, mode: number, midday: number | null, am = midday, pm = midday): AgencyPageRoute => ({ name, longName: null, mode, midday, am, pm, evening: null, overnight: null });
@@ -175,6 +175,15 @@ describe('committed areas (config/areas)', () => {
     expect(toronto.agencies).toEqual(expect.arrayContaining(['ttc', 'hamilton', 'go']));
     expect(toronto.note).toContain('GTHA');
     expect(areas.find(a => a.slug === 'hamilton')).toBeUndefined();
+  });
+});
+
+describe('agencyRegionTitle', () => {
+  it("names the agency's region as a title, or null outside every area", () => {
+    const map = { ttc: ['toronto', 'Toronto'], calgary: ['calgary', 'Calgary'] } as Record<string, [string, string]>;
+    expect(agencyRegionTitle('ttc', map)).toBe('Greater Toronto and Hamilton Area');
+    expect(agencyRegionTitle('calgary', map)).toBe('Calgary area');
+    expect(agencyRegionTitle('nowhere', map)).toBeNull();
   });
 });
 

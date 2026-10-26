@@ -3,6 +3,7 @@ import { routeLabels } from '../../../utils/format';
 import { PANEL_ENTER, LIST_ROW_PRIMARY, SIDEBAR_CARD_SURFACE } from '../../../styles';
 import ListRow from '../../ui/ListRow';
 import AgencyGroupHeader from '../../ui/AgencyGroupHeader';
+import { CardBackLink } from '../../CardBack';
 
 export interface DisambigRoute {
   key: string;
@@ -34,6 +35,10 @@ export const DisambiguationPanel: React.FC<DisambiguationPanelProps> = ({
 
   return (
     <div className={`${SIDEBAR_CARD_SURFACE} ${PANEL_ENTER} max-h-[380px] overflow-y-auto custom-scrollbar`}>
+      {/* Nothing comes before the chooser, so its back link closes it (CIV-929). */}
+      <div className="px-4 pt-4">
+        <CardBackLink onClick={() => setDisambiguationRoutes(null)}>Map</CardBackLink>
+      </div>
       <div>
         {groups.map(g => (
           <div key={g.agencyName}>

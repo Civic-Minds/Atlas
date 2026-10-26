@@ -9,7 +9,7 @@ import { isDrawableLineCoordinates } from '../../shared/routeGeometry';
 import { TRANSITION_BASE, AGENCY_LIST_FILTERS, PILL_SURFACE, CONTROL_ACTIVE, PILL_SCROLL_ROW, PANEL_TITLE, SIDEBAR_CARD, SIDEBAR_CARD_MAX_H, sidebarFrameStyle, SIDEBAR_PANEL_WIDTH, Z_PANEL } from '../styles';
 import { agencyDisplayParts, routeLabels, shortenAgencyName, titleCase } from '../utils/format';
 import CardRouteList from '../components/Interval/CardRouteList';
-import { AgencyCardHeading, CARD_HEADER_BLOCK, CardCallout, CARD_CALLOUT_SURFACE, CARD_SUMMARY, CardDirectionRow, CardReportButton, SIDEBAR_CARD_BODY, SidebarCardHeaderBlock, SidebarCardListRows, SidebarCardShell } from '../components/Interval/cardUi';
+import { AgencyCardTop, CARD_HEADER_BLOCK, CardCallout, CARD_CALLOUT_SURFACE, CardDirectionRow, CardReportButton, SIDEBAR_CARD_BODY, SidebarCardHeaderBlock, SidebarCardListRows, SidebarCardShell } from '../components/Interval/cardUi';
 import RouteCardTitle from '../components/RouteCardTitle';
 import { SearchSuggestionsPanel, type RecentRoute, type SuggestedRoute } from '../components/Interval/SearchSuggestionsPanel';
 import type { RouteListDisplay } from '../utils/effectiveHeadway';
@@ -484,28 +484,24 @@ function HistoryAgencyPanel({
     <Panel sidebar enter className={frameClassName} style={frameStyle}>
       {/* Header: the agency card's header block, with the route filter and mode pills inside it. */}
       <div className={CARD_HEADER_BLOCK}>
-        <div className="flex items-start gap-2 min-w-0">
-        <div className="min-w-0 flex-1">
-        <AgencyCardHeading
+        <AgencyCardTop
           as="h2"
           name={nameParts.primary}
           place={nameParts.secondary}
           back={{ to: 'All agencies', onClick: onBack }}
-        />
-        {/* The agency card's summary: just the counts (the place sits beside the name). */}
-        <p className={CARD_SUMMARY}>
-          {[countOf(agencyHistory.routes.length, 'route'), minYear === maxYear ? String(minYear) : `${minYear}–${maxYear}`].join(' · ')}
-        </p>
-        {!routeQuery && !activeFilter && (
-          <p className="text-xs text-[var(--text-dim)] mt-1">Biggest changes first</p>
-        )}
-        </div>
-        <CardReportButton
-          title={`History: ${agencyHistory.name}`}
-          details={`**Agency:** ${agencyHistory.name}\n**Agency slug:** ${agencyHistory.slug}\n**Atlas URL:** ${currentAtlasUrl()}`}
-          excludeReasons={['Stop is missing, misplaced, or assigned incorrectly', 'Route line is missing or follows the wrong path']}
-        />
-        </div>
+          facts={[countOf(agencyHistory.routes.length, 'route'), minYear === maxYear ? String(minYear) : `${minYear}–${maxYear}`].join(' · ')}
+          report={(
+            <CardReportButton
+              title={`History: ${agencyHistory.name}`}
+              details={`**Agency:** ${agencyHistory.name}\n**Agency slug:** ${agencyHistory.slug}\n**Atlas URL:** ${currentAtlasUrl()}`}
+              excludeReasons={['Stop is missing, misplaced, or assigned incorrectly', 'Route line is missing or follows the wrong path']}
+            />
+          )}
+        >
+          {!routeQuery && !activeFilter && (
+            <p className="text-xs text-[var(--text-dim)] mt-1">Biggest changes first</p>
+          )}
+        </AgencyCardTop>
         {routeFilters.length > 0 && (
           <ModeFilterPillRow filters={routeFilters} selected={activeFilter} onSelect={setActiveFilter} />
         )}
