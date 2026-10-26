@@ -10,6 +10,7 @@ import { liveVehiclesFingerprint } from '../../../utils/liveVehiclesFingerprint'
 import { useColorVision } from '../../../context/ColorVisionContext';
 import { delayAmount } from '../../../utils/headwayText';
 import { frameRoute } from './routeFraming';
+import { LIVE_VEHICLE_PICK_RADIUS_PX, pickLiveVehicles } from './liveVehiclePick';
 import { LIVE_CONTEXT_LAYER_IDS } from './mapLayers';
 import { lineCoordinates } from '../../../../shared/routeGeometry';
 
@@ -365,7 +366,7 @@ export function useLiveVehiclesLayer(
     });
   }, [liveOverlay?.highlight, mapLoaded, mapRef]);
 
-  // Clicks while Live is open: a vehicle opens its route; anywhere else goes to the route card (stretch picking).
+  // Clicks while Live is open: every vehicle dot under the click goes to Live; anywhere else goes to the route card (stretch picking).
   const onMapClickRef = useRef(liveOverlay?.onMapClick);
   onMapClickRef.current = liveOverlay?.onMapClick;
   useEffect(() => {
@@ -374,10 +375,9 @@ export function useLiveVehiclesLayer(
     const onClick = (e: maplibregl.MapMouseEvent) => {
       const handler = onMapClickRef.current;
       if (!handler) return;
-      const info = deckOverlayRef.current?.pickObject({ x: e.point.x, y: e.point.y, radius: 12, layerIds: ['vehicles-dots'] });
-      // A 12 px hit area, whatever the zoom.
+      const vehicles = pickLiveVehicles(deckOverlayRef.current, e.point);
       const mPerPx = (40_075_016 * Math.cos((e.lngLat.lat * Math.PI) / 180)) / (512 * 2 ** map.getZoom());
-      handler([e.lngLat.lng, e.lngLat.lat], (info?.object as LiveVehicle | undefined) ?? null, 12 * mPerPx);
+      handler([e.lngLat.lng, e.lngLat.lat], vehicles, LIVE_VEHICLE_PICK_RADIUS_PX * mPerPx);
     };
     map.on('click', onClick);
     return () => { map.off('click', onClick); };
