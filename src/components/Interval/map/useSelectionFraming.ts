@@ -6,7 +6,7 @@ import { getAgencyBounds, type getRegionalView } from '../../../utils/regionView
 import { splitRouteKey } from '../../../utils/routeKey';
 import { fitTargetForPoints, routeFitTarget } from '../../../utils/routeFitTarget';
 import { lineCoordinates } from '../../../../shared/routeGeometry';
-import { selectionFramePadding } from './routeFraming';
+import { cardBesideMap, selectionFramePadding } from './routeFraming';
 import { shouldApplyResetView } from './resetView';
 
 export interface SelectionFramingInput {
@@ -103,9 +103,10 @@ export function useSelectionFraming(
     }
     // Direction hover changes filtered layer data, but it is not a new route
     // selection. Do not refit the map on every hover-driven layer update.
-    // A route the main map hands to Live keeps its key but gains Live's card padding: refit it once for that card,
-    // or the fit made for the regular card leaves the route under Live's wider card.
-    const fitKey = `${selectedRoute}|${framePadding ? 'card' : 'map'}`;
+    // A route the main map hands to Live keeps its key but gains Live's card padding: on wide screens, refit it
+    // once for that card, or the fit made for the regular card leaves the route under Live's wider card. Phones
+    // keep the first fit: it already clears the bottom sheet, and Live's sheet isn't open yet at the hand-off.
+    const fitKey = `${selectedRoute}|${framePadding && cardBesideMap(map) ? 'card' : 'map'}`;
     if (fittedRouteRef.current === fitKey) return;
 
     // Compute full-route bounds from GeoJSON layer data.
