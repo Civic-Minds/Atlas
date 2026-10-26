@@ -12,6 +12,17 @@ export function expiredFeedNotice(agencyName: string, expDateStr?: string, manua
   return ended;
 }
 
+/**
+ * A time range kept on one line in running text (#1133): no break at its dash ("7–" / "11 PM") or before
+ * its AM/PM. Word joiners hold the dash to its numbers and a no-break space holds the AM/PM; both are
+ * invisible, so the words read and copy the same.
+ */
+export function keepRangeTogether(range: string): string {
+  return range
+    .replace(/\s*–\s*/g, '\u2060–\u2060')
+    .replace(/ (AM|PM|a\.m\.|p\.m\.)/gi, '\u00a0$1');
+}
+
 export function selectedRouteFilterNotice(options: {
   /** The route's own filter value for the period; without one the notice names no frequency. */
   headway?: number | null;
@@ -19,13 +30,13 @@ export function selectedRouteFilterNotice(options: {
   periodRange: string;
 }): string {
   const runs = options.headway != null ? `Service runs ${headwayAbout(options.headway)}` : 'Service runs';
-  return `${runs} from ${options.activeRange}, but not throughout the selected ${options.periodRange} period.`;
+  return `${runs} from ${keepRangeTogether(options.activeRange)}, but not throughout the selected ${keepRangeTogether(options.periodRange)} period.`;
 }
 
 export function periodServiceNotice(periodRange: string, partial: boolean, activeRange?: string): string {
   return partial
-    ? `Limited service during the selected ${activeRange || periodRange} period.`
-    : `No scheduled service during the selected ${periodRange} period.`;
+    ? `Limited service during the selected ${keepRangeTogether(activeRange || periodRange)} period.`
+    : `No scheduled service during the selected ${keepRangeTogether(periodRange)} period.`;
 }
 
 export function unevenServiceNotice(longestGap: number): string {
