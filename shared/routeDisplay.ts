@@ -84,6 +84,30 @@ export function withoutRepeatedShortName(primary: string, secondary: string | un
   return { primary, secondary: rest };
 }
 
+/**
+ * A long name that ends with the short name plus "Line" names the line: "SILVER LINE" on route SILVER, and "DART LIGHT RAIL -
+ * GREEN LINE" on route GREEN. Returns "<short> Line", or null. Words before it are dropped only when a separator ends them
+ * ("... - GREEN LINE") or they start with the agency's own name ("Valley Metro Rail A Line", "Bustang North Line"); other
+ * words can be part of the name ("Gold Coast Line" on route Coast, "Rapid A Line"), so those stay. A number never counts
+ * ("5 Line" on route 5 keeps the number rules).
+ */
+export function lineNamedByShortName(
+  shortName: string | null | undefined,
+  longName: string | null | undefined,
+  agency: (string | null | undefined)[] = [],
+): string | null {
+  const short = shortName?.trim();
+  if (!short || !longName || /^\d+$/.test(short)) return null;
+  const m = longName.trim().match(new RegExp(`^(?:(.*\\S)\\s+)?(${escapeRe(short)}\\s+line)$`, 'iu'));
+  if (!m) return null;
+  if (!m[1] || /[-–—:]$/.test(m[1])) return m[2];
+  const norm = (x: string) => x.toLowerCase().replace(/[^\p{L}\p{N}]/gu, '');
+  // "Valley Metro (Phoenix)" and "dart": the name, the part in brackets, and the slug.
+  const names = agency.flatMap(a => (a ? [a, a.replace(/\s*\(.*\)\s*/g, ' '), a.match(/\(([^)]+)\)/)?.[1] ?? ''] : []))
+    .map(norm).filter(n => n.length >= 3);
+  return names.some(n => norm(m[1]).startsWith(n)) ? m[2] : null;
+}
+
 export function routeDisplay(input: {
   shortName: string | null | undefined;
   longName: string | null | undefined;
@@ -107,11 +131,16 @@ export function routeDisplay(input: {
     return !!d && /^(?:Line|Ligne)\s+/i.test(d.designator) && d.designator.replace(/^\S+\s+/, '').toLowerCase() === shortName.trim().replace(/^0+(?=\d)/, '').toLowerCase();
   })();
   if (longName && (blankShort || lineNamedByLongName || shouldHideNumericRouteShortName(shortName, longName, mode))) {
-    const cleaned = routeLabelParts(null, longName, agencyName).primary.replace(/\s+via\s+.+$/i, '').trim();
+    // With no short name, "via ..." is what tells two routes apart (Orillia "West Ridge Via Old Barrie Road" and "... Via
+    // Coldwater Road"), so it stays; a hidden id has a short name to fall back on.
+    const named = routeLabelParts(null, longName, agencyName).primary;
+    const cleaned = (blankShort ? named : named.replace(/\s+via\s+.+$/i, '')).trim();
     const d = splitDesignator(cleaned);
     const primary = d ? d.designator : cleaned;
     return { primary, secondary: d?.rest, text: d ? `${d.designator} — ${d.rest}` : cleaned };
   }
+  const lineName = lineNamedByShortName(shortName, longName, [input.agencyName, input.agencySlug]);
+  if (lineName) return { primary: lineName, text: lineName };
   const parts = routeLabelParts(shortName, longName, agencyName);
   // A letter code the card title leaves out ("MI" for Milton) stays as the bold part of a list row.
   if (parts.shortCode) {

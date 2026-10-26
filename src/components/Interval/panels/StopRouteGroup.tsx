@@ -19,6 +19,8 @@ function branchHeadway(branch: StopBranch, period: TimePeriod): number | null {
 
 interface Props {
   shortName: string;
+  /** The short name the label shows; blank when the feed has none but has a long name (#1099). Defaults to shortName. */
+  labelShortName?: string;
   longName: string;
   agencyName: string;
   agencySlug?: string;
@@ -32,6 +34,7 @@ interface Props {
 /** One route at a stop — shared headway collapsed, flat list (#102). */
 export default function StopRouteGroup({
   shortName,
+  labelShortName,
   longName,
   agencyName,
   agencySlug,
@@ -41,7 +44,7 @@ export default function StopRouteGroup({
   showAgency,
   onOpenRoute,
 }: Props) {
-  const routeParts = routeLabels({ shortName, longName, routeType, agencySlug, agencyName: showAgency ? agencyName : undefined });
+  const routeParts = routeLabels({ shortName: labelShortName ?? shortName, longName, routeType, agencySlug, agencyName: showAgency ? agencyName : undefined });
   // The list rule (CIV-928): "**504** King", not "504 — King".
   const routeLabel = <RouteRowName shortName={routeParts.primary} name={routeParts.secondary} />;
   const hasMultipleDirections = new Set(branches.map(b => b.directionId)).size > 1;

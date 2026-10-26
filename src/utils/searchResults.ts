@@ -8,6 +8,8 @@ import { compareRouteNumber, compareSearchRelevance, compareText } from './sortC
 export interface RouteSearchResult {
   key: string;
   routeShortName: string | null;
+  /** The short name the label shows; blank when the feed has none but has a long name (#1099). */
+  routeLabelShortName?: string | null;
   routeLongName: string | null;
   agencyName?: string;
   inView: boolean;
@@ -289,6 +291,7 @@ export function searchRouteResults(
       return {
         key,
         routeShortName: facts.shortName,
+        routeLabelShortName: facts.labelShortName,
         routeLongName: facts.longName,
         agencyName: facts.agencyName,
         routeType: (p as { routeType?: number }).routeType,

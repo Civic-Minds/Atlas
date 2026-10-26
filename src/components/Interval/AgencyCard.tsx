@@ -45,6 +45,8 @@ interface RouteRow {
   routeId: string;
   agencySlug: string;
   shortName: string;
+  /** The short name the row's label shows (blank when the feed has none but has a long name, #1099). Defaults to shortName. */
+  labelShortName?: string;
   longName: string | null;
   headway: number | null;
   limited: boolean;
@@ -96,6 +98,7 @@ export function getRoutes(
     routeId: string;
     agencySlug: string;
     shortName: string;
+    labelShortName: string;
     longName: string | null;
     tier: string | null;
     routeType: number;
@@ -119,6 +122,7 @@ export function getRoutes(
         routeId: facts.routeId,
         agencySlug: facts.agencySlug,
         shortName: facts.shortName,
+        labelShortName: facts.labelShortName,
         longName: facts.longName,
         tier: facts.tier,
         routeType: typeof p.routeType === 'number' ? p.routeType : 3,
@@ -137,6 +141,7 @@ export function getRoutes(
       routeId: row.routeId,
       agencySlug: row.agencySlug,
       shortName: row.shortName,
+      labelShortName: row.labelShortName,
       longName: row.longName,
       ...routeListDisplay(row.props, period),
       tier: row.tier,
@@ -317,7 +322,7 @@ function RouteListSection({
 }) {
   const rows = routes.map(r => ({
     key: `${r.agencySlug}::${r.routeId}`,
-    route: routeLabels({ shortName: r.shortName, longName: r.longName, routeType: r.routeType, agencySlug: r.agencySlug }),
+    route: routeLabels({ shortName: r.labelShortName ?? r.shortName, longName: r.longName, routeType: r.routeType, agencySlug: r.agencySlug }),
     headway: r.headway ?? undefined,
     headwayLabel: r.headway != null && r.sharedHeadway != null ? headwayEveryRange(r.sharedHeadway, r.headway) : undefined,
     limited: r.limited || r.noRegular === true,
