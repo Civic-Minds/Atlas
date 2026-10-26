@@ -108,8 +108,7 @@ export default function AreaPage({ data: dataProp }: { data?: AreaPageData }) {
             <div className="mt-6 -mx-2 overflow-x-auto">
                 <DataTable
                   caption="Agencies and route counts by mode"
-                  fixed
-                  endAligned
+                  layout="page"
                   rowHref={a => agencyPagePath(a.slug)}
                   rows={data.agencies}
                   rowKey={a => a.slug}

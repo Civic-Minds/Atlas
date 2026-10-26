@@ -154,8 +154,7 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
                 <h3 className="pb-2 text-base font-black" aria-hidden="true">{group.label} <span className="ml-1 font-normal text-[var(--text-muted)]">{group.routes.length}</span></h3>
                   <DataTable
                     caption={`${group.label} ${group.routes.length}`}
-                    fixed
-                    endAligned
+                    layout="page"
                     rows={group.routes}
                     rowKey={r => `${r.name}-${r.longName ?? ''}`}
                     columns={[

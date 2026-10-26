@@ -103,8 +103,7 @@ function RoutesTable({ s }: { s: AgencySummary }) {
           <h3 className="pb-2 text-base font-black" aria-hidden="true">{group.label} <span className="ml-1 font-normal text-[var(--text-muted)]">{group.routes.length}</span></h3>
           <DataTable
             caption={`${group.label} ${group.routes.length}`}
-            fixed
-            fill
+            layout="fill"
             sort={{ key: sort, reversed }}
             onSort={onSort}
             rows={group.routes}
@@ -157,7 +156,7 @@ function StretchTable({ s, rows, caption, valueHeader, format }: { s: AgencySumm
       <SortableDataTable
         caption={caption}
         // With no number column there is nothing to share the leftover width, so the table keeps the shared widths and ends short of the edge.
-        fill={!!valueHeader}
+        layout={valueHeader ? 'fill' : 'fixed'}
         rows={rows}
         defaultSort={valueHeader ? 'value' : undefined}
         rowKey={r => `${r.route}-${r.directionId}-${r.fromStopId}-${r.toStopId}`}

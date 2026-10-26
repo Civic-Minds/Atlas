@@ -12,7 +12,7 @@ describe('DataTable end-aligned columns and row links (CIV-958)', () => {
   afterEach(() => vi.unstubAllGlobals());
 
   it('right-aligns the other columns and leaves the first column free to take the rest', () => {
-    const { container } = render(<DataTable fixed endAligned rows={rows} rowKey={r => r.id} columns={columns} />);
+    const { container } = render(<DataTable layout="page" rows={rows} rowKey={r => r.id} columns={columns} />);
     expect(screen.getByRole('columnheader', { name: 'Bus' }).className).toContain('text-right');
     expect(screen.getByRole('cell', { name: '210' }).className).toContain('text-right');
     // From sm up the first column takes the rest and the others keep their width; on phones both keep the default widths (CIV-973).
@@ -26,7 +26,7 @@ describe('DataTable end-aligned columns and row links (CIV-958)', () => {
   it('opens the row link from a click anywhere on the row, and leaves a click on the link itself alone', () => {
     const assign = vi.fn();
     vi.stubGlobal('location', { ...window.location, assign });
-    render(<DataTable fixed endAligned rows={rows} rowKey={r => r.id} columns={columns} rowHref={r => `/agency/${r.id}`} />);
+    render(<DataTable layout="page" rows={rows} rowKey={r => r.id} columns={columns} rowHref={r => `/agency/${r.id}`} />);
     const row = screen.getByRole('row', { name: /TTC/ });
     expect(row.className).toContain('hover:bg-[var(--bg-btn-hover)]');
     fireEvent.click(screen.getByRole('cell', { name: '210' }));

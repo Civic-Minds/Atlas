@@ -222,7 +222,7 @@ export default function ProfileBars({ points, ariaLabel, formatY, unit, minN = 3
       <div id={tableId} className="sr-only">
         <div>
           <DataTable
-            fixed
+            layout="fixed"
             caption={ariaLabel}
             rows={points.map((p, i) => ({ p, i }))}
             rowKey={r => `${r.p.label}-${r.i}`}

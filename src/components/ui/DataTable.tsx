@@ -66,30 +66,24 @@ interface DataTableProps<T> {
   /** Screen-reader caption. */
   caption?: string;
   /**
-   * Fixed column layout: the first column has one set width and every other column has the same set width, so
-   * columns line up across tables and pages (agency and area pages). The table is only as wide as its columns and
-   * leftover space stays empty on the right. Long text in the first column wraps.
-   * Without it, each table sizes its columns to its own content.
+   * How the columns are sized (CIV-984: one named layout instead of separate flags).
+   * - `content` (default): each table sizes its columns to its own content.
+   * - `fixed`: the first column has one set width and every other column the same set width, so columns line up across
+   *   tables. The table is only as wide as its columns; leftover space stays empty on the right. Long first-column text wraps.
+   * - `fill`: fixed widths, filling the container: the first column, and any column given a `width`, keep their width;
+   *   the others share the rest equally, never narrower than the default. For a page whose other blocks span the full width.
+   * - `page`: fills the container with the other columns at its right edge, right-aligned at their set width, and the
+   *   first column takes what is left, so the last column lines up with links at the right of the section (area and
+   *   agency pages, CIV-958). Below the set widths the table scrolls in its wrapper. On phones (below sm) it is the plain
+   *   `fixed` layout instead (default widths, left-aligned), so a column cut off at the edge shows there is more to scroll
+   *   to (CIV-973). Headers sit on their bottom line.
    */
-  fixed?: boolean;
+  layout?: DataTableLayout;
   /**
-   * Fixed layout that fills its container: the first column, and any column given a `width`, keep their set width; the
-   * others share the rest equally, never narrower than the default width. For a page whose other blocks span the full content width.
-   */
-  fill?: boolean;
-  /**
-   * Phone widths (below sm): no minimum width, columns size to their content and the ones marked `narrowHide` are left
-   * out, so the table fits its container without scrolling. From sm up it is the fixed layout as before. Needs `fill`.
+   * With `layout="fill"`, phone widths (below sm): no minimum width, columns size to their content and the ones marked
+   * `narrowHide` are left out, so the table fits its container without scrolling. From sm up it is the `fill` layout.
    */
   narrowFit?: boolean;
-  /**
-   * Fixed layout that fills its container with the other columns at its right edge: they keep their set width and are
-   * right-aligned, and the first column takes what is left, so the last column lines up with links at the right of the
-   * section (area and agency pages, CIV-958). Below the set widths the table scrolls in its wrapper as before. On phones
-   * (below sm) it is the plain fixed layout instead: default widths, left-aligned, columns right after the first, so a
-   * column cut off at the edge shows there is more to scroll to (CIV-973). Headers sit on their bottom line.
-   */
-  endAligned?: boolean;
   /**
    * The whole row opens this page: it highlights on hover like a card list row and a click anywhere follows it. The
    * first and last cells get a little inner space for the highlight; give the wrapper `-mx-2` to keep the text in line.
@@ -119,7 +113,11 @@ function openRow(e: MouseEvent<HTMLTableRowElement>, href: string) {
   else if (e.button === 0) window.location.assign(href);
 }
 
-export default function DataTable<T>({ columns, rows, rowKey, variant = 'compact', caption, fixed = false, fill = false, narrowFit = false, endAligned = false, rowHref, rowTitle, sort, onSort }: DataTableProps<T>) {
+export type DataTableLayout = 'content' | 'fixed' | 'fill' | 'page';
+
+export default function DataTable<T>({ columns, rows, rowKey, variant = 'compact', caption, layout = 'content', narrowFit = false, rowHref, rowTitle, sort, onSort }: DataTableProps<T>) {
+  const fixed = layout !== 'content';
+  const fill = layout === 'fill';
   const v = VARIANTS[variant];
   const widths = columns.map((col, i) => col.width ?? (i === 0 ? FIXED_FIRST_COLUMN_REM : FIXED_COLUMN_REM));
   const fit = fixed && fill && narrowFit;
@@ -128,7 +126,7 @@ export default function DataTable<T>({ columns, rows, rowKey, variant = 'compact
   const lastNarrow = shown.lastIndexOf(true);
   const pad = (i: number) => (v.gap && i < columns.length - 1 ? (fit && i !== lastNarrow ? ' pr-3 sm:pr-4' : fit ? ' pr-0 sm:pr-4' : ' pr-4') : '');
   const hide = (i: number) => (fit && columns[i].narrowHide ? ' max-sm:hidden' : '');
-  const end = fixed && endAligned;
+  const end = layout === 'page';
   // From sm up, right-aligned columns take their gap on the left; the last one has none on the right, so it meets the edge.
   // The last column sets no right padding of its own, so a linked row's `pr-2` (rowEdge) still lines it up with the edge.
   const cellPad = (i: number) => (end ? (i === 0 ? ' pr-4' : `${i < columns.length - 1 ? ' pr-4 sm:pr-0' : ''} sm:pl-2 sm:text-right`) : pad(i));
