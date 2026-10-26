@@ -9,4 +9,14 @@ describe('Card callout box (CIV-900 S3)', () => {
     expect(box.className).toBe(`${CARD_CALLOUT} mb-3`);
     expect(box.textContent).toBe('Text');
   });
+
+  it('tinted tones swap the outline for the status tint (History\'s better or worse summary)', () => {
+    const { getByTestId } = render(<>
+      <CardCallout tone="negative" data-testid="worse">Worse</CardCallout>
+      <CardCallout tone="positive" data-testid="better">Better</CardCallout>
+    </>);
+    expect(getByTestId('worse').className).toBe('rounded-xl px-3 py-2.5 bg-[var(--status-negative-bg)]');
+    expect(getByTestId('better').className).toBe('rounded-xl px-3 py-2.5 bg-[var(--status-positive-bg)]');
+    expect(getByTestId('worse').className).not.toContain('border');
+  });
 });

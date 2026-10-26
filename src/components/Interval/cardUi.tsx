@@ -44,9 +44,16 @@ export function CardBodyText({ className = '', ...rest }: React.HTMLAttributes<H
 export const CARD_CALLOUT_SURFACE = 'rounded-xl border border-[var(--border-primary)] bg-[var(--bg-app)]';
 export const CARD_CALLOUT = `${CARD_CALLOUT_SURFACE} px-3 py-2.5`;
 
-/** A callout box inside a card (Compare's summary, History's trip time). Spacing and text styles come from the caller. */
-export function CardCallout({ className = '', ...rest }: React.HTMLAttributes<HTMLDivElement>) {
-  return <div className={`${CARD_CALLOUT} ${className}`.trim()} {...rest} />;
+/** The tinted callouts (History's better or worse summary): the status tint in place of the outline. */
+const CARD_CALLOUT_TONE = {
+  neutral: CARD_CALLOUT,
+  negative: 'rounded-xl px-3 py-2.5 bg-[var(--status-negative-bg)]',
+  positive: 'rounded-xl px-3 py-2.5 bg-[var(--status-positive-bg)]',
+} as const;
+
+/** A callout box inside a card (Compare's summary, History's trip time and change summary). Spacing and text styles come from the caller. */
+export function CardCallout({ tone = 'neutral', className = '', ...rest }: React.HTMLAttributes<HTMLDivElement> & { tone?: keyof typeof CARD_CALLOUT_TONE }) {
+  return <div className={`${CARD_CALLOUT_TONE[tone]} ${className}`.trim()} {...rest} />;
 }
 
 const REPORT_REASONS = [

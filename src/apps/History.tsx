@@ -9,7 +9,7 @@ import { isDrawableLineCoordinates } from '../../shared/routeGeometry';
 import { TRANSITION_SLOW, AGENCY_LIST_FILTERS, PILL_SCROLL_ROW, PANEL_TITLE, SIDEBAR_CARD, SIDEBAR_CARD_MAX_H, sidebarFrameStyle, SIDEBAR_PANEL_WIDTH, Z_PANEL } from '../styles';
 import { agencyDisplayParts, routeLabels, shortenAgencyName, titleCase } from '../utils/format';
 import CardRouteList from '../components/Interval/CardRouteList';
-import { AgencyCardHeading, CARD_HEADER_BLOCK, CardCallout, CARD_SUMMARY, CardDirectionRow, CardReportButton, SIDEBAR_CARD_BODY, SidebarCardHeaderBlock, SidebarCardListRows, SidebarCardShell } from '../components/Interval/cardUi';
+import { AgencyCardHeading, CARD_HEADER_BLOCK, CardCallout, CARD_CALLOUT_SURFACE, CARD_SUMMARY, CardDirectionRow, CardReportButton, SIDEBAR_CARD_BODY, SidebarCardHeaderBlock, SidebarCardListRows, SidebarCardShell } from '../components/Interval/cardUi';
 import RouteCardTitle from '../components/RouteCardTitle';
 import { SearchSuggestionsPanel, type RecentRoute, type SuggestedRoute } from '../components/Interval/SearchSuggestionsPanel';
 import type { RouteListDisplay } from '../utils/effectiveHeadway';
@@ -264,7 +264,8 @@ function RouteHistoryCard({
       {/* The frequency chart shows inline, as the route card's hour chart does (#1028 item 10). */}
       {chartSnaps.length >= 2 && (
         <div className="mt-3">
-          <div className="w-full bg-[var(--bg-app)] border border-[var(--border-primary)] rounded-xl p-3">
+          {/* The callout surface with the chart's own p-3 (CARD_CALLOUT's px-3 py-2.5 would make it shorter). */}
+          <div className={`w-full ${CARD_CALLOUT_SURFACE} p-3`}>
             <svg width="100%" viewBox={`0 0 ${width} ${height}`} className="overflow-visible">
               <defs>
                 <linearGradient id={`sparkline-grad-${route.routeShortName}`} x1="0" y1="0" x2="0" y2="1">
@@ -337,11 +338,11 @@ function RouteHistoryCard({
       </SidebarCardListRows>
 
         {summary && (
-          <div className={`mt-3 rounded-xl px-3 py-2.5 ${summary.worse ? 'bg-[var(--status-negative-bg)]' : 'bg-[var(--status-positive-bg)]'}`}>
+          <CardCallout tone={summary.worse ? 'negative' : 'positive'} className="mt-3">
             <p className={`text-xs font-bold leading-tight ${summary.worse ? 'text-[var(--status-negative-text)]' : 'text-[var(--status-positive-text)]'}`}>{summary.text}</p>
             <p className="text-xs text-[var(--text-muted)] mt-0.5">{summary.subtext}</p>
             <p className="text-xs text-[var(--text-dim)] mt-1">Latest archived snapshot: {last.label}</p>
-          </div>
+          </CardCallout>
         )}
 
         {route.tripDuration && (
