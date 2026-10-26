@@ -123,21 +123,18 @@ export default function LiveRoutePerformance({ slug, routeShortName, feedDegrade
   const replacement = (data as { replacementBuses?: boolean }).replacementBuses
     ? <div className="text-xs font-black text-[var(--status-caution-text)]">Replacement buses: all figures describe the buses running this route</div>
     : null;
-  const pickers = (
-    <div className="flex flex-col gap-1.5">
-      {replacement}
-      {directions.length > 1 && <Chips options={directions} value={directionId} onChange={setDir} />}
-    </div>
-  );
 
   const liveBand = livePeriod(data);
   const liveSched = sharedSummary(data, line, liveBand);
-  // No position history (archiver paused, feed degraded) leaves live null: then no "Right now" at all, never a false "Fewer than 2 cars".
+  // No position history (no archive access, feed degraded) leaves live null: then no "Right now" at all, never a false "Fewer than 2 cars".
   const live = feedDegraded || !recent || serverNow == null ? null : liveGaps(data, line, withStats(line, liveBand), liveBand, recent, serverNow);
 
   return (
     <div className="flex flex-col gap-3">
-      {pickers}
+      {replacement}
+
+      {/* The direction pills only steer "Right now", so they show only with it. */}
+      {live && directions.length > 1 && <Chips options={directions} value={directionId} onChange={setDir} />}
 
       {live && (
       <Section title={`Right now · ${torontoTime(new Date(now))}`}>
