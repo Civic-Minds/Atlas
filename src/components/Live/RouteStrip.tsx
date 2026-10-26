@@ -238,19 +238,33 @@ export default function RouteStrip({ stops, modes = ['delay', 'bunching'], direc
             {tracks.map((t, k) => (
               <Fragment key={t.mode}>
                 <span className="absolute left-0 text-xs font-bold text-[var(--text-secondary)]" style={{ top: lineY(k) - 8, width: GUTTER - 8 }}>{TRACK_NAME[t.mode]}</span>
-                {t.stretch && (
-                  <div
-                    className={`absolute ${onSelectStretch ? 'cursor-pointer' : 'pointer-events-none'}`}
-                    style={{ left: xs[t.stretch.from] - 7, width: xs[t.stretch.to] - xs[t.stretch.from] + 14, top: trackTop(k) + 4, height: MARK_H - 4 }}
-                    onPointerDown={onSelectStretch ? e => { e.stopPropagation(); onSelectStretch(t.mode); } : undefined}
-                  >
-                    <div className={`absolute inset-x-0 bottom-0 h-2 rounded-t-sm border-x-2 border-t-2 ${selectedStretch === t.mode ? 'border-[var(--accent)]' : 'border-[var(--text-secondary)]'}`} />
-                    <span
-                      className="absolute bottom-3 whitespace-nowrap text-xs font-bold text-[var(--text-primary)]"
-                      style={xs[t.stretch.from] < GUTTER + plotW / 2 ? { left: 0 } : { right: 0 }}
-                    >{labels.includes(t.stretch.from) && labels.includes(t.stretch.to) ? t.stretch.label : `${t.stretch.label}: ${stretchLabel(stops[t.stretch.from].name, stops[t.stretch.to].name)}`}</span>
-                  </div>
-                )}
+                {t.stretch && (() => {
+                  const pick = onSelectStretch ? (e: PointerEvent<HTMLElement>) => { e.stopPropagation(); onSelectStretch(t.mode); } : undefined;
+                  const bracketLeft = xs[t.stretch.from] - 7, bracketRight = xs[t.stretch.to] + 7;
+                  const fromLeft = xs[t.stretch.from] < GUTTER + plotW / 2;
+                  // The name starts at the bracket's left end (or ends at its right end) but never leaves this strip: the gap
+                  // beside it gives way, so a long name slides back inside instead of running into the next column (CIV-910).
+                  const gap = <span aria-hidden="true" style={{ flex: `0 1 ${Math.max(0, fromLeft ? bracketLeft : width - bracketRight)}px`, minWidth: 0 }} />;
+                  const name = (
+                    <span className={`max-w-full text-xs font-bold text-[var(--text-primary)] ${fromLeft ? '' : 'text-right'} ${onSelectStretch ? 'pointer-events-auto cursor-pointer' : ''}`} style={{ flex: 'none' }} onPointerDown={pick}>
+                      {labels.includes(t.stretch.from) && labels.includes(t.stretch.to) ? t.stretch.label : `${t.stretch.label}: ${stretchLabel(stops[t.stretch.from].name, stops[t.stretch.to].name)}`}
+                    </span>
+                  );
+                  return (
+                    <>
+                      <div
+                        className={`absolute ${onSelectStretch ? 'cursor-pointer' : 'pointer-events-none'}`}
+                        style={{ left: bracketLeft, width: bracketRight - bracketLeft, top: trackTop(k) + 4, height: MARK_H - 4 }}
+                        onPointerDown={pick}
+                      >
+                        <div className={`absolute inset-x-0 bottom-0 h-2 rounded-t-sm border-x-2 border-t-2 ${selectedStretch === t.mode ? 'border-[var(--accent)]' : 'border-[var(--text-secondary)]'}`} />
+                      </div>
+                      <div className="pointer-events-none absolute inset-x-0 flex items-end" style={{ top: trackTop(k) + 4, height: MARK_H - 4 - 12, justifyContent: fromLeft ? 'flex-start' : 'flex-end' }}>
+                        {fromLeft ? <>{gap}{name}</> : <>{name}{gap}</>}
+                      </div>
+                    </>
+                  );
+                })()}
                 <div className="absolute rounded-full bg-[var(--text-dim)] opacity-40" style={{ left: GUTTER + INSET, right: INSET, top: lineY(k) - 1, height: 2 }} />
                 {stops.map((s, i) => (
                   <span
