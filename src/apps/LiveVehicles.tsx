@@ -3,7 +3,7 @@ import { CardBackLink } from '../components/CardBack';
 import { Info, Moon, Sun, WifiOff, ChevronRight } from 'lucide-react';
 import { useLiveVehiclesMapOverlay } from '../context/LiveVehiclesMapOverlay';
 import type { LiveVehicle } from '../context/LiveVehiclesMapOverlay';
-import { LIVE_POLLING_ROUTES, LIVE_AGENCY_BBOXES, LIVE_AGENCY_PLACES, getPolledRoute, hasLiveAnalysis } from '../../shared/livePollingConfig';
+import { LIVE_POLLING_ROUTES, LIVE_AGENCY_BBOXES, LIVE_AGENCY_PLACES, getPolledRoute } from '../../shared/livePollingConfig';
 import { useViewport } from '../context/ViewportContext';
 import type { OpenInfoFn } from '../components/InfoPanel';
 import type { Agency } from '../App';
@@ -21,6 +21,9 @@ import { inferLiveDirection } from '../utils/liveDirection';
 import { DIRECTION_UNCLEAR, groupVehiclesByDirection, routeDirectionLabels } from '../utils/liveGrouping';
 import { CardDirectionRow, SidebarCardHeaderBlock, SidebarCardListRows, SidebarCardSection, SidebarCardShell, CARD_LIST_ROUTE } from '../components/Interval/cardUi';
 import { liveVehiclesFingerprint } from '../utils/liveVehiclesFingerprint';
+import { routeKeyForShortName } from '../utils/routeKey';
+import type { MapFocus } from '../utils/routeFocus';
+import { getNowDay } from '../../shared/dayTypes';
 import { capitalizeFirst, headwayAbout, headwayEvery } from '../utils/headwayText';
 import { delayLabel, vehicleCardName, vehicleCardRows } from '../components/Live/vehicleCardModel';
 import Panel, { PanelBody, PanelTitleBar } from '../components/ui/Panel';
@@ -246,45 +249,20 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
     }
   }, [selectedRoute, vehiclesBySlug, layers, localLayers, agencies]);
 
-  // Route shapes: show selected route only, or all active routes by default
-  const routeFeatures = useMemo(() => {
-    if (selectedRoute) {
-      const [slug, rsn] = selectedRoute.split('::');
-      if (!slug || !rsn) return [];
-      const fc = layers[slug] ?? localLayers[slug];
-      if (!fc || !hasLiveAnalysis(slug, rsn)) return [];
-      return fc.features.filter(f => {
-        const p = f.properties as any;
-        return p && p.routeShortName === rsn;
-      });
-    }
-    const result: GeoJSON.Feature[] = [];
-    for (const [slug, vehicles] of Object.entries(vehiclesBySlug)) {
-      const fc = layers[slug] ?? localLayers[slug];
-      if (!fc) continue;
-      const activeRSNs = new Set(vehicles.map(v => v.routeShortName).filter(rsn => hasLiveAnalysis(slug, rsn)));
-      fc.features.forEach(f => {
-        const p = f.properties as any;
-        if (p && activeRSNs.has(p.routeShortName)) result.push(f);
-      });
-    }
-    return result;
-  }, [layers, localLayers, selectedRoute, vehiclesBySlug]);
-
-  // Selected route's full geometry, for framing the camera (any route, not only ones with live analysis).
-  const frameFeatures = useMemo(() => {
-    if (!selectedRoute) return undefined;
+  // The picked route in the map's own key form, so the map's shared selected-route styling and framing draw it.
+  const mapRouteKey = useMemo(() => {
+    if (!selectedRoute) return null;
     const [slug, rsn] = selectedRoute.split('::');
     const fc = slug ? layers[slug] ?? localLayers[slug] : undefined;
-    if (!fc || !rsn) return undefined;
-    return fc.features.filter(f => (f.properties as any)?.routeShortName === rsn);
+    return fc && rsn ? routeKeyForShortName(slug, fc.features, rsn, getNowDay()) : null;
   }, [layers, localLayers, selectedRoute]);
 
-  // Filter map overlay to selected route when one is active
-  const overlayVehicles = useMemo(() => {
-    if (!selectedRoute) return allVehicles;
-    return allVehicles.filter(v => `${v.agencySlug}::${v.routeShortName}` === selectedRoute);
-  }, [allVehicles, selectedRoute]);
+  // Every vehicle stays on the map; a picked route keeps its own at full strength and fades the rest.
+  const focus = useMemo<MapFocus | null>(() => {
+    if (!selectedRoute) return null;
+    const [agencySlug, routeShortName] = selectedRoute.split('::');
+    return { agencySlug, routeShortName };
+  }, [selectedRoute]);
 
   // A vehicle's card, from a dot click, the overlapping-dots pick list, or a shared link.
   const openVehicleCard = useCallback((vehicle: LiveVehicle) => {
@@ -304,13 +282,12 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
       return;
     }
     const fp = [
-      liveVehiclesFingerprint(overlayVehicles),
-      selectedRoute ?? '',
+      liveVehiclesFingerprint(allVehicles),
+      mapRouteKey ?? '',
+      focus ? `${focus.agencySlug}::${focus.routeShortName}::${focus.ids?.join(',') ?? '*'}` : '',
       focusedVehicle?.id ?? '',
       focusedVehicle?.ts ?? '',
       vehicleFly?.ts ?? '',
-      routeFeatures.length,
-      frameFeatures?.length ?? '',
       focusArea?.ts ?? '',
       fitArea?.ts ?? '',
       highlight?.length ?? 0,
@@ -319,14 +296,14 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
     if (fp === lastOverlayFpRef.current) return;
     lastOverlayFpRef.current = fp;
     setOverlay({
-      vehicles: overlayVehicles, focusedVehicle, vehicleFly, routeFeatures, frameFeatures, selectedRouteKey: selectedRoute, focusArea, fitArea, highlight,
+      vehicles: allVehicles, focusedVehicle, vehicleFly, mapRouteKey, focus, focusArea, fitArea, highlight,
       onMapClick: (_lonLat, vehicles) => {
         if (vehicles.length === 1) { openVehicleCard(vehicles[0]); return; }
         if (vehicles.length > 1) { setVehiclePick(vehicles.map(v => v.id)); return; }
         setVehiclePick(null);
       },
     });
-  }, [active, overlayVehicles, focusedVehicle, vehicleFly, routeFeatures, frameFeatures, selectedRoute, focusArea, fitArea, highlight, setOverlay]);
+  }, [active, allVehicles, focusedVehicle, vehicleFly, mapRouteKey, focus, focusArea, fitArea, highlight, setOverlay]);
 
 
   // Clear overlay when deactivating or unmounting

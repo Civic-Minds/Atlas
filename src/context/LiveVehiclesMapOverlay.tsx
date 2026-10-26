@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useMemo, useCallback } from 'react';
+import type { MapFocus } from '../utils/routeFocus';
 
 export interface LiveVehicle {
   id: string;
@@ -25,11 +26,13 @@ export interface LiveVehiclesMapOverlay {
   focusedVehicle?: { id: string; lat: number; lon: number; ts: number } | null;
   // One-shot fly to a vehicle clicked in the list; ts re-triggers repeat clicks. Never zooms out below street level.
   vehicleFly?: { lat: number; lon: number; ts: number } | null;
-  routeFeatures?: GeoJSON.Feature[];
-  // The selected route's full geometry, used only to frame the camera (the drawn shape is routeFeatures).
-  frameFeatures?: GeoJSON.Feature[];
-  // Composite key "slug::routeShortName" — used for route shape fit-bounds tracking
-  selectedRouteKey?: string | null;
+  /**
+   * The picked route in the map's own key form (slug::routeId), so the map's shared selected-route styling and
+   * framing draw it exactly like a route picked on the regular map.
+   */
+  mapRouteKey?: string | null;
+  /** What stays at full strength on the vehicle layer: the picked route, or one of its directions. */
+  focus?: MapFocus | null;
   // One-shot request to fly the map to a coverage area: [w, s, e, n] bounds,
   // landing at ≥ minZoom so live tracking activates. ts re-triggers repeat clicks.
   focusArea?: { bounds: [number, number, number, number]; minZoom?: number; ts: number } | null;

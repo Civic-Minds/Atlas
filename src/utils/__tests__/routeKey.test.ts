@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { buildRouteKey, dedupeRouteKeysByDisplay, splitRouteKey } from '../routeKey';
+import { buildRouteKey, dedupeRouteKeysByDisplay, routeKeyForShortName, splitRouteKey } from '../routeKey';
 
 describe('route keys', () => {
   it('keeps unbranched route keys backward-compatible', () => {
@@ -26,5 +26,27 @@ describe('route keys', () => {
       { key: 'yrt::603', agencySlug: 'yrt', shortName: 'purple', longName: 'VIVA PURPLE' },
       { key: 'yrt::603-variant', agencySlug: 'yrt', shortName: 'Purple', longName: 'Viva   Purple' },
     ])).toEqual(['yrt::603']);
+  });
+});
+
+describe('routeKeyForShortName (Live\'s route as the map\'s selection key)', () => {
+  const f = (properties: Record<string, unknown>): GeoJSON.Feature => ({ type: 'Feature', properties, geometry: { type: 'LineString', coordinates: [] } });
+  const features = [
+    f({ routeShortName: '505', routeId: '505', day: 'Weekday' }),
+    f({ routeShortName: '504', routeId: '504-sat', day: 'Saturday', routeBranch: 'A' }),
+    f({ routeShortName: '504', routeId: '504', day: 'Weekday', routeBranch: 'B' }),
+  ];
+
+  it('keys the whole route by its own ID, never one branch', () => {
+    expect(routeKeyForShortName('ttc', features, '504', 'Weekday')).toBe('ttc::504');
+  });
+
+  it('prefers the given day and falls back to any day', () => {
+    expect(routeKeyForShortName('ttc', features, '504', 'Saturday')).toBe('ttc::504-sat');
+    expect(routeKeyForShortName('ttc', features, '504', 'Sunday')).toBe('ttc::504-sat');
+  });
+
+  it('gives null for a route the agency does not have', () => {
+    expect(routeKeyForShortName('ttc', features, '999', 'Weekday')).toBeNull();
   });
 });

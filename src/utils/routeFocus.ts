@@ -16,3 +16,26 @@ export function buildFocusedRoutePaint(routeMatch: unknown, dimOpacity = FOCUS_D
     width: buildFocusCase(routeMatch, 3.5, dimWidth),
   };
 }
+
+/**
+ * What a map selection keeps at full strength, for things that are not route lines (Live's vehicle dots): the
+ * selected route's items, narrowed to `ids` when a part of the route (one direction) is picked.
+ */
+export interface MapFocus {
+  agencySlug: string;
+  routeShortName: string;
+  /** When set, only these items of the route stay at full strength (a direction of the route). */
+  ids?: readonly string[] | null;
+}
+
+/** Full strength (1) for an item in the focus or when nothing is focused, otherwise the shared fade. */
+export function focusOpacity(
+  item: { id: string; agencySlug: string; routeShortName: string },
+  focus: MapFocus | null | undefined,
+  dimOpacity = FOCUS_DIM_OPACITY,
+): number {
+  if (!focus) return 1;
+  const inRoute = item.agencySlug === focus.agencySlug && item.routeShortName === focus.routeShortName;
+  if (!inRoute) return dimOpacity;
+  return !focus.ids || focus.ids.includes(item.id) ? 1 : dimOpacity;
+}

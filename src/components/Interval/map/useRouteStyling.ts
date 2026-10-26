@@ -6,7 +6,8 @@ import type { TimePeriod, HoveredBranch } from '../../../hooks/useIntervalStats'
 import type { HistoryMapOverlay } from '../../../context/HistoryMapOverlay';
 import { LIVE_ANALYSIS_ROUTES } from '../../../../shared/livePollingConfig';
 import { tileEffectiveHeadwayExpr } from '../../../../shared/tileFilterExprs';
-import { buildFocusedRoutePaint } from '../../../utils/routeFocus';
+import { buildFocusCase, buildFocusedRoutePaint, FOCUS_DIM_OPACITY } from '../../../utils/routeFocus';
+import { LIVE_CONTEXT_LAYER_IDS, LIVE_CONTEXT_OPACITY } from './mapLayers';
 import { buildPartialMatchFilterExpression, broadenFilterForPartialMatches, selectedSharedStretchRoutes, type computeFrequencySegmentOverlay } from '../../../utils/frequencySegments';
 import { buildRouteSortKeyExpression } from '../../../utils/routeSort';
 import type { OnDemandFocusTarget } from './onDemandFocus';
@@ -179,6 +180,14 @@ export function useRouteStyling(
       map.setPaintProperty('route-segments-layer', 'line-opacity', (selectedRoute
         ? ['case', routeKeyMatchExpression(selectedRoute), 1, 0.2]
         : ['interpolate', ['linear'], ['zoom'], 8, 0.7, 11, 0.8, 14, 0.9]) as any);
+    }
+
+    // Live's thin context lines step back behind a picked route like every other line.
+    for (const id of LIVE_CONTEXT_LAYER_IDS) {
+      if (!map.getLayer(id)) continue;
+      map.setPaintProperty(id, 'line-opacity', (selectedRoute
+        ? buildFocusCase(routeKeyMatchExpression(selectedRoute), LIVE_CONTEXT_OPACITY, FOCUS_DIM_OPACITY)
+        : LIVE_CONTEXT_OPACITY) as any);
     }
 
     if (hasOverviewRoutes) map.setFilter('overview-routes-layer', routeFilter as any);

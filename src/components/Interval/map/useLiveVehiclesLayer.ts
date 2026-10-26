@@ -1,7 +1,6 @@
 import { useEffect, useRef } from 'react';
 import type * as maplibregl from 'maplibre-gl';
 import type { MapboxOverlay } from '@deck.gl/mapbox';
-import { getTierColor } from '../../../hooks/useIntervalStats';
 import { useLiveVehiclesMapOverlay } from '../../../context/LiveVehiclesMapOverlay';
 import type { LiveVehicle } from '../../../context/LiveVehiclesMapOverlay';
 import { cleanRouteShortName } from '../../../utils/format';
@@ -12,7 +11,8 @@ import { delayAmount } from '../../../utils/headwayText';
 import { frameRoute } from './routeFraming';
 import { LIVE_VEHICLE_PICK_RADIUS_PX, pickLiveVehicles } from './liveVehiclePick';
 import { LIVE_CONTEXT_LAYER_IDS } from './mapLayers';
-import { lineCoordinates } from '../../../../shared/routeGeometry';
+import { focusOpacity } from '../../../utils/routeFocus';
+import { getNowDay } from '../../../../shared/dayTypes';
 
 /** Exported for unit tests — GTFS-RT text must be escaped before innerHTML. */
 export function vehicleTooltipHtml(v: LiveVehicle): string | null {
@@ -57,7 +57,6 @@ export function useLiveVehiclesLayer(
   const { colorVisionFriendly } = useColorVision();
   const colorMode = colorVisionFriendly ? 'friendly' : 'default';
   const { overlay: liveOverlay } = useLiveVehiclesMapOverlay();
-  const liveFittedRouteRef = useRef<string | null>(null);
   const lastDeckFpRef = useRef('');
   const deckEnsurePromiseRef = useRef<Promise<MapboxOverlay | null> | null>(null);
 
@@ -106,8 +105,12 @@ export function useLiveVehiclesLayer(
 
     const vehicles = (liveOverlay.vehicles ?? []).filter(v => v.lat && v.lon);
     const focusedId = liveOverlay.focusedVehicle?.id ?? null;
-    const labelVehicles = liveOverlay.selectedRouteKey ? vehicles : [];
-    const fp = `${liveVehiclesFingerprint(vehicles)}|${focusedId ?? ''}|${liveOverlay.selectedRouteKey ?? ''}|${labelVehicles.length}`;
+    // The shared selection fade: with a route (or one of its directions) picked, every other vehicle steps back.
+    const focus = liveOverlay.focus ?? null;
+    const alpha = (v: LiveVehicle) => focusOpacity(v, focus);
+    const labelVehicles = focus ? vehicles.filter(v => alpha(v) === 1) : [];
+    const focusFp = focus ? `${focus.agencySlug}::${focus.routeShortName}::${focus.ids?.join(',') ?? '*'}` : '';
+    const fp = `${liveVehiclesFingerprint(vehicles)}|${focusedId ?? ''}|${focusFp}|${labelVehicles.length}`;
     if (fp === lastDeckFpRef.current && deckOverlayRef.current) return;
 
     let cancelled = false;
@@ -136,9 +139,9 @@ export function useLiveVehiclesLayer(
             data: vehicles,
             getPosition: (v: LiveVehicle) => [v.lon, v.lat],
             getRadius: (v: LiveVehicle) => (v.id === focusedId ? 6 : 4.5),
-            getFillColor: (v: LiveVehicle) => statusRgb[v.status] ?? statusRgb.no_data,
+            getFillColor: (v: LiveVehicle) => [...(statusRgb[v.status] ?? statusRgb.no_data), Math.round(255 * alpha(v))] as [number, number, number, number],
             stroked: true,
-            getLineColor: [255, 255, 255, 200],
+            getLineColor: (v: LiveVehicle) => [255, 255, 255, Math.round(200 * alpha(v))],
             getLineWidth: 1.25,
             lineWidthUnits: 'pixels',
             radiusUnits: 'pixels',
@@ -146,6 +149,7 @@ export function useLiveVehiclesLayer(
             updateTriggers: {
               getRadius: focusedId,
               getFillColor: fp,
+              getLineColor: fp,
               data: fp,
             },
           }),
@@ -248,11 +252,13 @@ export function useLiveVehiclesLayer(
     const map = mapRef.current;
     if (!map || !mapLoaded) return;
     const keys = contextRoutesKey ? contextRoutesKey.split('\n') : [];
+    // Today's shapes only, like the route lines: every day's copy drawn on top of the others stacks a faded line
+    // back to full strength.
     const filter = (keys.length > 0
-      ? ['any', ...keys.map(k => {
+      ? ['all', ['==', ['coalesce', ['get', 'day'], getNowDay()], getNowDay()], ['any', ...keys.map(k => {
         const i = k.indexOf('::');
         return ['all', ['==', ['get', 'agencySlug'], k.slice(0, i)], ['==', ['get', 'routeShortName'], k.slice(i + 2)]];
-      })]
+      })]]
       : ['==', ['get', 'agencySlug'], '']) as maplibregl.FilterSpecification;
     for (const id of LIVE_CONTEXT_LAYER_IDS) {
       if (!map.getLayer(id)) continue;
@@ -260,60 +266,6 @@ export function useLiveVehiclesLayer(
       map.setLayoutProperty(id, 'visibility', keys.length > 0 ? 'visible' : 'none');
     }
   }, [contextRoutesKey, mapLoaded, mapRef]);
-
-  // Live route dynamic shape overlay (MapLibre GeoJSON — not deck)
-  useEffect(() => {
-    const map = mapRef.current;
-    if (!map || !mapLoaded) return;
-
-    const source = map.getSource('live-route-shape') as maplibregl.GeoJSONSource;
-    if (!source) return;
-
-    const features = liveOverlay?.routeFeatures ?? [];
-    const routeKey = liveOverlay?.selectedRouteKey ?? null;
-
-    if (features.length > 0) {
-      source.setData({
-        type: 'FeatureCollection',
-        features: features.map(f => ({
-          ...f,
-          properties: {
-            ...f.properties,
-            color: getTierColor((f.properties as { tier?: string | null } | null)?.tier ?? null, colorMode),
-          },
-        })),
-      });
-
-    } else {
-      source.setData({ type: 'FeatureCollection', features: [] });
-    }
-  }, [liveOverlay?.routeFeatures, liveOverlay?.selectedRouteKey, mapLoaded, mapRef, colorMode]);
-
-  // Route picked in the list: frame its full extent once (like the main map), with its vehicles included so
-  // none sit outside the view. Waits for the geometry if it is still loading.
-  useEffect(() => {
-    const map = mapRef.current;
-    if (!map || !mapLoaded) return;
-    const routeKey = liveOverlay?.selectedRouteKey ?? null;
-    if (!routeKey) { liveFittedRouteRef.current = null; return; }
-    if (liveFittedRouteRef.current === routeKey) return;
-    const frame = liveOverlay?.frameFeatures ?? liveOverlay?.routeFeatures ?? [];
-    const points = frame.flatMap(f => lineCoordinates(f.geometry));
-    if (points.length === 0) return;
-    liveFittedRouteRef.current = routeKey;
-    for (const v of liveOverlay?.vehicles ?? []) if (v.lat && v.lon) points.push([v.lon, v.lat]);
-    frameRoute(map, points, { phoneSheet: true });
-  }, [liveOverlay?.frameFeatures, liveOverlay?.routeFeatures, liveOverlay?.selectedRouteKey, liveOverlay?.vehicles, mapLoaded, mapRef]);
-
-  // Focus vehicle centering — skip if route shape fit will handle positioning
-  useEffect(() => {
-    const map = mapRef.current;
-    if (!map || !mapLoaded || !liveOverlay?.focusedVehicle) return;
-    if ((liveOverlay.frameFeatures ?? liveOverlay.routeFeatures ?? []).some(f => lineCoordinates(f.geometry).length > 0)) return;
-
-    const { lat, lon } = liveOverlay.focusedVehicle;
-    map.flyTo({ center: [lon, lat], zoom: Math.max(map.getZoom(), 14) });
-  }, [liveOverlay?.focusedVehicle, liveOverlay?.routeFeatures, liveOverlay?.frameFeatures, mapLoaded, mapRef]);
 
   // Vehicle clicked in the sidebar list — one fly-to, never zooming out past street level
   useEffect(() => {
