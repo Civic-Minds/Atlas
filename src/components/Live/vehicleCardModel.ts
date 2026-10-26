@@ -45,3 +45,11 @@ export function vehicleCardName(
   const name = liveVehicleRowLabel({ headsign: null, id: v.id, vehicleLabel: v.vehicleLabel }, 0, modeWord);
   return name.startsWith('Vehicle ') ? null : name;
 }
+
+/**
+ * Every vehicle row's label: the card's name ("Streetcar 4412"), or "Vehicle N" (its place in the
+ * list) when the feed gives no usable number. Never the destination, so rows don't mix the two.
+ */
+export function vehicleRowName(v: Pick<LiveVehicle, 'id' | 'vehicleLabel'>, index: number, modeWord: string): string {
+  return vehicleCardName(v, modeWord) ?? liveVehicleRowLabel({ headsign: null, id: v.id, vehicleLabel: v.vehicleLabel }, index, modeWord);
+}

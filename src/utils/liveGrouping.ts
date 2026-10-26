@@ -64,3 +64,22 @@ export function focusDirectionKey(
 ): string | null {
   return selectedDirection ?? (cardVehicle ? vehicleDirectionKey(cardVehicle, directionLabels) : null);
 }
+
+/**
+ * The direction groups in a fixed order, so the list doesn't reshuffle between polls: direction 0's
+ * groups, then direction 1's (each direction's main destination before its short turns), then groups
+ * whose vehicles carry no direction id, each set alphabetically, and DIRECTION_UNCLEAR always last.
+ */
+export function orderDirectionGroups(groups: ReadonlyMap<string, LiveVehicle[]>, directionLabels: ReadonlyMap<number, string>): [string, LiveVehicle[]][] {
+  const rank = (key: string, vehicles: readonly LiveVehicle[]): [number, number, number] => {
+    if (key === DIRECTION_UNCLEAR) return [1, 0, 0];
+    const ids = vehicles.map(v => v.directionId).filter((d): d is number => d != null);
+    const dir = ids.length > 0 ? Math.min(...ids) : Number.MAX_SAFE_INTEGER;
+    const main = directionLabels.get(dir) === key || (dir === 0 && key === 'Outbound') || (dir === 1 && key === 'Inbound') ? 0 : 1;
+    return [0, dir, main];
+  };
+  return [...groups.entries()]
+    .map(entry => ({ entry, r: rank(entry[0], entry[1]) }))
+    .sort((a, b) => a.r[0] - b.r[0] || a.r[1] - b.r[1] || a.r[2] - b.r[2] || a.entry[0].localeCompare(b.entry[0]))
+    .map(x => x.entry);
+}

@@ -274,7 +274,38 @@ function lineMetres(line: LineModel): { start: number[]; len: number[] } {
  * passed the spot where the car behind is now. Nothing is estimated; when the
  * car ahead's passing wasn't seen, that gap is null.
  */
-export function liveGaps(data: SegmentDelayData & { tripDirections?: Record<string, string[]> }, line: LineModel, stops: LineStop[], band: SegmentBand, snapshots: RecentSnapshot[], nowSec: number): LiveGaps | null {
+/** How long the Live card keeps the map's polled positions for "Right now" (the archive's window). */
+export const RECENT_WINDOW_SEC = 30 * 60;
+
+/** One poll of the map's live vehicles as a snapshot; a car's report time is its own, else the poll's. */
+export function positionsSnapshot(vehicles: readonly { id: string; tripId: string; lat: number; lon: number; tsEpoch: number | null }[], capturedAt: number): RecentSnapshot {
+  return { capturedAt, v: vehicles.map(x => [x.id, x.tripId, x.lat, x.lon, x.tsEpoch ?? capturedAt]) };
+}
+
+/**
+ * Add a poll to the rolling buffer. A poll with the same cars, places and report times as the last
+ * one (the map rebuilds its vehicle list without a new poll) is not added; snapshots older than the
+ * window are dropped.
+ */
+export function addSnapshot(buffer: readonly RecentSnapshot[], snap: RecentSnapshot, windowSec = RECENT_WINDOW_SEC): RecentSnapshot[] {
+  const key = (s: RecentSnapshot) => s.v.map(c => c.join(',')).sort().join(';');
+  const last = buffer[buffer.length - 1];
+  if (last && key(last) === key(snap)) return buffer as RecentSnapshot[];
+  return [...buffer.filter(s => snap.capturedAt - s.capturedAt <= windowSec), snap];
+}
+
+export interface LiveGapsOptions {
+  /**
+   * An unlisted trip seen fewer than twice has no movement yet to tell its direction. By default
+   * that makes the result incomplete (the archive path, which had 30 min of history). The Live card
+   * builds its history from the map's polls after it opens, so it skips such a car instead.
+   */
+  skipUnseenAdded?: boolean;
+  /** With 0 or 1 placed cars, return the count (no gaps) instead of null. */
+  countFewCars?: boolean;
+}
+
+export function liveGaps(data: SegmentDelayData & { tripDirections?: Record<string, string[]> }, line: LineModel, stops: LineStop[], band: SegmentBand, snapshots: RecentSnapshot[], nowSec: number, opts: LiveGapsOptions = {}): LiveGaps | null {
   const trips = new Set(data.tripDirections?.[String(line.directionId)] ?? []);
   if (trips.size === 0 || snapshots.length === 0) return null;
   const sched = med(stops.filter(s => s.shared && s.stat).map(s => s.stat!.scheduledMedianGapSec));
@@ -312,6 +343,7 @@ export function liveGaps(data: SegmentDelayData & { tripDirections?: Record<stri
     else if (moved <= -200) backward.add(key);
   }
   const movingOtherWay = (id: string, tripId: string) => backward.has(`${id}|${tripId}`);
+  const unseen = (id: string, tripId: string) => (added.get(`${id}|${tripId}`)?.length ?? 0) < 2;
   // Parked: two or more reports in the last 10 min that stay within 200 m.
   const parked = (id: string, tripId: string) => {
     const tr = added.get(`${id}|${tripId}`) ?? [];
@@ -343,6 +375,7 @@ export function liveGaps(data: SegmentDelayData & { tripDirections?: Record<stri
       // A current car on this section whose direction we can't tell (an unlisted trip with too few
       // reports, or moving back and forth): the gaps either side of it would be wrong. One that
       // stayed within 200 m over 10 min is parked (standby buses wait on the line), not missing.
+      if (opts.skipUnseenAdded && unseen(id, tripId)) continue;
       if (!known.has(tripId) && a && onShared(a.segIndex) && !parked(id, tripId) && !movingOtherWay(id, tripId)) unplaceable++;
       continue;
     }
@@ -358,7 +391,7 @@ export function liveGaps(data: SegmentDelayData & { tripDirections?: Record<stri
   });
   const expected = sched ? sharedSec / sched : 0;
   if (unplaceable > 0 || (expected >= 2 && now.length < expected / 2)) return { incomplete: true, cars: now.length, gapsMin: [], scheduledSec: sched };
-  if (now.length < 2) return null;
+  if (now.length < 2) return opts.countFewCars ? { cars: now.length, gapsMin: [], scheduledSec: sched } : null;
   now.sort((a, b) => b.m - a.m);
   const gapsMin = now.slice(1).map((car, i) => {
     const track = tracks.get(now[i].key) ?? [];
