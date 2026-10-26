@@ -13,6 +13,7 @@
  */
 import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { countryForRegion } from '../shared/regionCountry';
+import { hasMiddayService } from '../shared/agencyPages';
 import { areaSlug, mainCities, type AreaConfig, type AreaType, MERGED_AREAS, isLargeMetro } from '../shared/areas';
 
 const TIGER_MSA = 'https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/CBSA/MapServer/3/query';
@@ -79,7 +80,7 @@ function writeAreaIndex(areas: AreaConfig[]) {
 /** --rescore: recompute largeMetro and page from the committed area files and agency summaries (no network). */
 function rescore() {
   const summaries = new Set((JSON.parse(readFileSync('shared/data/agency-pages.json', 'utf8')).agencies as Array<{ slug: string; routes: Array<{ midday: number | null }> }>)
-    .filter(a => a.routes.some(r => r.midday != null)).map(a => a.slug));
+    .filter(hasMiddayService).map(a => a.slug));
   let pages = 0;
   const all: AreaConfig[] = [];
   for (const f of readdirSync('config/areas').filter(n => n.endsWith('.json') && !n.startsWith('_'))) {
@@ -101,7 +102,7 @@ async function main() {
   const catalog = JSON.parse(readFileSync('public/data/catalog-public.json', 'utf8')) as Catalog;
   const summaries = existsSync('shared/data/agency-pages.json')
     ? new Set((JSON.parse(readFileSync('shared/data/agency-pages.json', 'utf8')).agencies as Array<{ slug: string; routes: Array<{ midday: number | null }> }>)
-      .filter(a => a.routes.some(r => r.midday != null)).map(a => a.slug))
+      .filter(hasMiddayService).map(a => a.slug))
     : new Set<string>();
 
   const placed = new Map<string, Hit>();
