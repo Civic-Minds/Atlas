@@ -148,6 +148,7 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
                   <DataTable
                     caption={`${group.label} ${group.routes.length}`}
                     fixed
+                    endAligned
                     rows={group.routes}
                     rowKey={r => `${r.name}-${r.longName ?? ''}`}
                     columns={[

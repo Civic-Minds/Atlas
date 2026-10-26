@@ -81,10 +81,12 @@ export default function AreaPage({ data: dataProp }: { data?: AreaPageData }) {
             <p className="mt-3 text-base font-bold">Weekday midday frequency, by route</p>
             <FrequencyBar counts={data.bands} mapHref={areaMapHref(data)} />
             <p className="mt-2 text-sm leading-6 text-[var(--text-muted)]">The bar splits this area's routes by how often they run on a weekday midday. Each route is judged by its slower direction.</p>
-            <div className="mt-6 overflow-x-auto">
+            <div className="mt-6 -mx-2 overflow-x-auto">
                 <DataTable
                   caption="Agencies and route counts by mode"
                   fixed
+                  endAligned
+                  rowHref={a => agencyPagePath(a.slug)}
                   rows={data.agencies}
                   rowKey={a => a.slug}
                   columns={[

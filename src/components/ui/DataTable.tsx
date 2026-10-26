@@ -1,4 +1,4 @@
-import type { CSSProperties, Key, ReactNode } from 'react';
+import type { CSSProperties, Key, MouseEvent, ReactNode } from 'react';
 
 export interface DataTableColumn<T> {
   key: string;
@@ -82,6 +82,17 @@ interface DataTableProps<T> {
    * out, so the table fits its container without scrolling. From sm up it is the fixed layout as before. Needs `fill`.
    */
   narrowFit?: boolean;
+  /**
+   * Fixed layout that fills its container with the other columns at its right edge: they keep their set width and are
+   * right-aligned, and the first column takes what is left, so the last column lines up with links at the right of the
+   * section (area and agency pages, CIV-958). Below the set widths the table scrolls in its wrapper as before.
+   */
+  endAligned?: boolean;
+  /**
+   * The whole row opens this page: it highlights on hover like a card list row and a click anywhere follows it. The
+   * first and last cells get a little inner space for the highlight; give the wrapper `-mx-2` to keep the text in line.
+   */
+  rowHref?: (row: T) => string;
   /** Hover text for a whole row (where a column was left out on a phone, its figure). */
   rowTitle?: (row: T) => string | undefined;
   /** Current sort, for the sortable columns' arrow and aria-sort. */
@@ -96,7 +107,17 @@ export const FIXED_FIRST_COLUMN_REM = 16;
 export const FIXED_COLUMN_REM = 8;
 
 /** Plain data table. Wrap it in an overflow-x-auto element where it may be wider than its container. */
-export default function DataTable<T>({ columns, rows, rowKey, variant = 'compact', caption, fixed = false, fill = false, narrowFit = false, rowTitle, sort, onSort }: DataTableProps<T>) {
+/**
+ * A click anywhere on a linked row follows its link, and a middle, Cmd or Ctrl click opens it in a new tab. A click on a
+ * link or button inside keeps its own behaviour, and so does selecting text in the row.
+ */
+function openRow(e: MouseEvent<HTMLTableRowElement>, href: string) {
+  if ((e.target as HTMLElement).closest('a, button') || window.getSelection()?.toString()) return;
+  if (e.button === 1 || e.metaKey || e.ctrlKey) window.open(href, '_blank', 'noopener');
+  else if (e.button === 0) window.location.assign(href);
+}
+
+export default function DataTable<T>({ columns, rows, rowKey, variant = 'compact', caption, fixed = false, fill = false, narrowFit = false, endAligned = false, rowHref, rowTitle, sort, onSort }: DataTableProps<T>) {
   const v = VARIANTS[variant];
   const widths = columns.map((col, i) => col.width ?? (i === 0 ? FIXED_FIRST_COLUMN_REM : FIXED_COLUMN_REM));
   const fit = fixed && fill && narrowFit;
@@ -105,38 +126,50 @@ export default function DataTable<T>({ columns, rows, rowKey, variant = 'compact
   const lastNarrow = shown.lastIndexOf(true);
   const pad = (i: number) => (v.gap && i < columns.length - 1 ? (fit && i !== lastNarrow ? ' pr-3 sm:pr-4' : fit ? ' pr-0 sm:pr-4' : ' pr-4') : '');
   const hide = (i: number) => (fit && columns[i].narrowHide ? ' max-sm:hidden' : '');
+  const end = fixed && endAligned;
+  // Right-aligned columns take their gap on the left; the last one has none on the right, so it meets the edge.
+  const cellPad = (i: number) => (end ? (i === 0 ? ' pr-4' : ' pl-4 text-right') : pad(i));
+  // A linked row's highlight reaches a little past the text on both sides, as in card lists.
+  const rowEdge = (i: number) => (rowHref ? (i === 0 ? ' pl-2' : '') + (i === columns.length - 1 ? ' pr-2' : '') : '');
+  const totalRem = widths.reduce((a, b) => a + b, 0);
   return (
     <table
       className={fixed ? `${v.table} ${fit ? 'sm:table-fixed sm:min-w-[var(--table-min)]' : 'table-fixed'}` : v.table}
-      style={fixed ? (fill ? (fit ? ({ width: '100%', '--table-min': `${widths.reduce((a, b) => a + b, 0)}rem` } as CSSProperties) : { width: '100%', minWidth: `${widths.reduce((a, b) => a + b, 0)}rem` }) : { width: `${widths.reduce((a, b) => a + b, 0)}rem` }) : undefined}
+      style={end ? { width: '100%', minWidth: `${totalRem}rem` } : fixed ? (fill ? (fit ? ({ width: '100%', '--table-min': `${widths.reduce((a, b) => a + b, 0)}rem` } as CSSProperties) : { width: '100%', minWidth: `${widths.reduce((a, b) => a + b, 0)}rem` }) : { width: `${widths.reduce((a, b) => a + b, 0)}rem` }) : undefined}
     >
       {caption && <caption className="sr-only">{caption}</caption>}
       {fixed && (
         <colgroup>
           {columns.map((col, i) => fit
             ? <col key={col.key} className={`${fill && i > 0 && col.width == null ? '' : 'sm:w-[var(--col-w)]'}${hide(i)}`} style={{ '--col-w': `${widths[i]}rem` } as CSSProperties} />
-            : <col key={col.key} style={fill && i > 0 && col.width == null ? undefined : { width: `${widths[i]}rem` }} />)}
+            : <col key={col.key} style={(fill && i > 0 && col.width == null) || (end && i === 0) ? undefined : { width: `${widths[i]}rem` }} />)}
         </colgroup>
       )}
       <thead className={v.thead}>
         <tr className={v.headRow}>
           {columns.map((col, i) => (
             col.sortable && onSort ? (
-              <th key={col.key} scope="col" className={`${v.th}${pad(i)}${hide(i)}`} aria-sort={sort?.key === col.key ? (sort.reversed ? 'ascending' : 'descending') : 'none'}>
+              <th key={col.key} scope="col" className={`${v.th}${cellPad(i)}${rowEdge(i)}${hide(i)}`} aria-sort={sort?.key === col.key ? (sort.reversed ? 'ascending' : 'descending') : 'none'}>
                 <button type="button" onClick={() => onSort(col.key)} className="inline-flex items-center gap-1 font-[inherit] hover:underline">
                   {col.header}
                   <span aria-hidden="true" className={`text-[0.7em] ${sort?.key === col.key ? '' : 'invisible'}`}>{sort?.key === col.key && sort.reversed ? '▲' : '▼'}</span>
                 </button>
               </th>
-            ) : <th key={col.key} scope="col" className={`${v.th}${pad(i)}${hide(i)}`}>{col.header}</th>
+            ) : <th key={col.key} scope="col" className={`${v.th}${cellPad(i)}${rowEdge(i)}${hide(i)}`}>{col.header}</th>
           ))}
         </tr>
       </thead>
       <tbody>
         {rows.map(row => (
-          <tr key={rowKey(row)} className={v.row} title={rowTitle?.(row)}>
+          <tr
+            key={rowKey(row)}
+            className={`${v.row}${rowHref ? ' cursor-pointer hover:bg-[var(--bg-btn-hover)] transition-colors' : ''}`}
+            title={rowTitle?.(row)}
+            onClick={rowHref ? e => openRow(e, rowHref(row)) : undefined}
+            onAuxClick={rowHref ? e => openRow(e, rowHref(row)) : undefined}
+          >
             {columns.map((col, i) => {
-              const className = `${v.td}${pad(i)}${hide(i)}${fixed && i === 0 ? ' break-words' : ''}${col.className ? ` ${col.className}` : ''}`;
+              const className = `${v.td}${cellPad(i)}${rowEdge(i)}${hide(i)}${fixed && i === 0 ? ' break-words' : ''}${col.className ? ` ${col.className}` : ''}`;
               return col.rowHeader
                 ? <th key={col.key} scope="row" className={className}>{col.cell(row)}</th>
                 : <td key={col.key} className={className}>{col.cell(row)}</td>;
