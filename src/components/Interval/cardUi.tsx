@@ -648,14 +648,18 @@ export function CardHelpNotice({
   actionLabel?: string;
 }) {
   return (
-    <div className={`${CARD_NOTICE} flex min-w-0 flex-wrap items-start gap-x-1 gap-y-0.5`}>
-      <span className="min-w-0 flex-1 whitespace-normal break-words leading-relaxed">{message}</span>
+    // The link runs on right after the sentence's last word, as text, not in a column beside it (CIV-920).
+    <p className={`${CARD_NOTICE} min-w-0 whitespace-normal break-words leading-relaxed`}>
+      {message}
       {onLearnMore && (
-        <ArrowLink as="button" tone="inline" size="xs" onClick={onLearnMore} className="shrink-0 whitespace-nowrap">
-          {actionLabel}
-        </ArrowLink>
+        <>
+          {' '}
+          <ArrowLink as="button" tone="inline" size="xs" wrap onClick={onLearnMore} className="whitespace-nowrap">
+            {actionLabel}
+          </ArrowLink>
+        </>
       )}
-    </div>
+    </p>
   );
 }
 
