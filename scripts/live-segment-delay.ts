@@ -21,7 +21,7 @@ import {
   type HoldEvent, type Pattern, type TripPing, type TripStopStatus, type PositionSample, type ScheduledRunTimes, type SegmentObservation, type TimeBand,
 } from '../shared/segmentDelay.js';
 import { adherenceReport, delayBuildup, stopDelayStats, type RunDelays, type RunStopDelay } from '../shared/stopDelay.js';
-import { BUNCHED_GAP_SEC, MIN_GAPS, bunchingLinks, bunchingProfile, stopBunching, type GapWindow } from '../shared/bunching.js';
+import { BUNCHED_GAP_SEC, bunchingLinks, bunchingProfile, stopBunching, stopGapsRow, type GapWindow, type StopGapsRow } from '../shared/bunching.js';
 import { EARLY_AT_OR_BELOW_MIN, LATE_AT_OR_ABOVE_MIN } from '../shared/liveDelayStatus.js';
 import { feedGaps, routeEmptyMinutes, MIN_SCHEDULED_TRIPS } from '../shared/feedOutages.js';
 import { dayHealth, delivered, goodDates, keepGoodDays, runTimeStat, snapshotsPerDate, weekSplit, MIN_HEALTHY_DAYS, type RunTimeRow } from '../shared/routeMetrics.js';
@@ -1066,7 +1066,8 @@ const branchesByDir: Record<string, BranchRunTime[]> = {};
 for (const d of [...new Set(stretchRuns.map(r => r.directionId))].sort()) {
   const dirPatterns = [...patterns.values()].filter(p => p.directionId === d);
   const main = mainStretchStops(dirPatterns.map(p => ({ stops: p.stops.map(s => s.stopId), trips: tripsPerShape.get(p.id) ?? 0 })));
-  const runs = stretchRuns.filter(r => r.directionId === d && inWindow.has(r.date));
+  // Coverage on good days only (CIV-318): a recording gap must not move the stretch that run time is measured over.
+  const runs = stretchRuns.filter(r => r.directionId === d && inGoodDays.has(r.date));
   // The first stops of the route that are known to be measured poorly (the 510's tunnel) never end a stretch.
   const poorFirst = LIVE_DASHBOARD_UNCERTAIN_START[`ttc::${ROUTE}`]?.find(u => u.directionId === d)?.stops ?? 0;
   const coverage = (stopId: string) => {
@@ -1333,24 +1334,16 @@ const result = {
 };
 writeFileSync(OUT, JSON.stringify(result));
 
-// Gaps through the day (B4 chart): every measured gap at each stop with enough gaps, in the window. A separate file
-// beside the analysis, loaded only when the chart is shown. Per stop: m = minutes after the service day's start (GTFS
-// style, so 1 am is 1500), g = the gap in seconds, s = the timetable's typical gap in that stretch of service, seconds.
-const gapsOut: Record<string, Record<string, { m: number[]; g: number[]; s: number[] }>> = {};
+// Gaps through the day (B4 chart): every measured gap at each stop with enough gaps, on the window's good days only
+// (CIV-318). A separate file beside the analysis, loaded only when the chart is shown. Per stop: m = minutes after the
+// service day's start (GTFS style, so 1 am is 1500), g = the gap in seconds, s = the timetable's typical gap in that stretch of service, seconds.
+const gapsOut: Record<string, Record<string, StopGapsRow>> = {};
 for (const [key, m] of headwayByStop) {
   const [stopId, dir] = key.split('|');
-  const wins = (m.get('all') ?? []).filter(w => inWindow.has(w.date) && w.actualAt);
-  const total = wins.reduce((n, w) => n + w.actualGaps.length, 0);
-  if (total < MIN_GAPS) continue;
-  const row = { m: [] as number[], g: [] as number[], s: [] as number[] };
-  for (const w of wins) {
-    const sched = Math.round(median(w.scheduledGaps) ?? 0);
-    const start = serviceDayStart(w.date);
-    w.actualGaps.forEach((g, i) => { row.m.push(Math.round((w.actualAt![i] - start) / 60)); row.g.push(Math.round(g)); row.s.push(sched); });
-  }
-  (gapsOut[dir] ??= {})[stopId] = row;
+  const row = stopGapsRow(m.get('all') ?? [], inGoodDays, serviceDayStart);
+  if (row) (gapsOut[dir] ??= {})[stopId] = row;
 }
-writeFileSync(OUT.replace(/-segments\.json$/, '-gaps.json'), JSON.stringify({ schema: 1, agency: 'ttc', route: ROUTE, dates: windowDates, directions: gapsOut }));
+writeFileSync(OUT.replace(/-segments\.json$/, '-gaps.json'), JSON.stringify({ schema: 1, agency: 'ttc', route: ROUTE, dates: goodWindowDates, directions: gapsOut }));
 console.log(`dates ${usedDates.length} (${usedDates[0]}..${usedDates[usedDates.length - 1]}), runs matched ${runsMatched}/${runsTotal} (no timetable trip: ${runsUnmatched}), passes ${observations.length}, segments ${stats.length}, headway windows ${windowsKept}/${windowsTotal}, outages ${outages.length}`);
 
 // The agency page reads one summary of every route's analysis. Any run of this script rebuilds it, and drops it if the

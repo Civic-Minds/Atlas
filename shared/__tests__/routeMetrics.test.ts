@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { adherenceReport, stopDelayStats, type RunDelays } from '../stopDelay';
+import { adherenceReport, delayBuildup, stopDelayStats, type RunDelays } from '../stopDelay';
 import { headwayBandStat } from '../segmentDelay';
-import { stopBunching } from '../bunching';
+import { stopBunching, stopGapsRow } from '../bunching';
 import { dayHealth, delivered, goodDates, snapshotsPerDate, HEALTHY_DAY_SHARE, MIN_SAME_TYPE_DAYS, keepGoodDays, runTimeStat, weekSplit, type RunTimeRow, type TripOutcome } from '../routeMetrics';
 
 const row = (sched: number, actual: number): RunTimeRow => ({ date: 'd', directionId: 0, startHour: 8, schedSec: sched * 60, actualSec: actual * 60 });
@@ -89,6 +89,37 @@ describe('good days only (CIV-318)', () => {
     expect(stopBunching('A', kept)).toMatchObject({ n: 9, bunchedShare: 0 });
     expect(headwayBandStat(kept)!.gaps).toBe(9);
     expect(headwayBandStat(kept)!.excessWaitSec).toBeCloseTo(0);
+  });
+
+  it('where delays build up: the bad day\'s added delay is excluded', () => {
+    // Each run passes A then B. Good days add nothing between them; the bad day adds 10 min.
+    const ab = (date: string, i: number): RunDelays => {
+      const add = date === '2026-10-12' ? 600 : 0;
+      return { date, directionId: 0, tripId: `${date}-${i}`, stops: [{ stopId: 'A', t: 0, hour: 8, delaySec: 0 }, { stopId: 'B', t: 60, hour: 8, delaySec: add }] };
+    };
+    const abRuns = window.flatMap(d => Array.from({ length: 30 }, (_, i) => ab(d, i)));
+    const order = new Map([[0, ['A', 'B']]]);
+    const all = delayBuildup(abRuns, order)[0].stretches[0];
+    expect(all).toMatchObject({ n: 120 });
+    expect(all.addedShare).toBeCloseTo(0.25);
+    const goodOnly = delayBuildup(keepGoodDays(abRuns, good), order)[0].stretches[0];
+    expect(goodOnly).toMatchObject({ n: 90, addedShare: 0, medianAddedMin: 0, p90DelayMin: 0 });
+  });
+
+  it('gaps through the day chart: only the good days\' gaps are plotted', () => {
+    const dayStart = (date: string) => Date.parse(`${date}T00:00:00Z`) / 1000;
+    // 12 gaps a day at 08:00-08:55; the bad day's gaps are all 60 s.
+    const w = (date: string) => ({ date, actualGaps: Array(12).fill(date === '2026-10-12' ? 60 : 600), scheduledGaps: [600, 600, 600], actualAt: Array.from({ length: 12 }, (_, i) => dayStart(date) + 8 * 3600 + i * 300) });
+    const wins = window.map(w);
+    const row = stopGapsRow(wins, good, dayStart)!;
+    expect(row.g).toHaveLength(36);
+    expect(row.g.every(g => g === 600)).toBe(true);
+    expect(row.s.every(s => s === 600)).toBe(true);
+    expect(row.m[0]).toBe(480);
+    // Every day counted would have plotted the bad day's 60 s gaps too.
+    expect(stopGapsRow(wins, new Set(window), dayStart)!.g.filter(g => g === 60)).toHaveLength(12);
+    // Below MIN_GAPS on good days alone: no row, even though all days together would have enough.
+    expect(stopGapsRow(wins.slice(0, 3), new Set(['2026-10-10', '2026-10-11']), dayStart)).toBeNull();
   });
 });
 
