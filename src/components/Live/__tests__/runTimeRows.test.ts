@@ -100,13 +100,13 @@ describe('patternRunTimeRows (CIV-945)', () => {
   const withPatterns = { directionLabels: { '0': 'Southbound' }, runningTime: { patterns: { '0': [p('main', 'A', 'U', 17, 500, 27), p('shortTurn', 'A', 'Q', 13, 160, 23)] }, bands: { all: {} }, byHour: {} } } as unknown as LiveV3;
   it('gives one row per pattern, the main pattern first, each labelled with its kind and stops', () => {
     const rows = patternRunTimeRows(withPatterns, 'all', 0, nice)!;
-    expect(rows.map(r => r.label)).toEqual(['Main: A → U · 17 stops', 'Short turn: A → Q · 13 stops']);
+    expect(rows.map(r => r.label)).toEqual(['Main: A → U · 17\u00a0stops', 'Short turn: A → Q · 13\u00a0stops']);
     expect(rows.map(r => r.main)).toEqual([true, false]);
     expect(rows[1].typical).toBe(23);
   });
   it('says how much of a trimmed pattern is timed', () => {
     const trimmed = { ...withPatterns, runningTime: { ...withPatterns.runningTime, patterns: { '0': [{ ...p('main', 'Q', 'S', 13, 500, 22), patternStops: 18, fullPattern: false }] } } } as unknown as LiveV3;
-    expect(patternRunTimeRows(trimmed, 'all', 0, nice)![0].label).toBe('Main: Q → S · 13 of 18 stops');
+    expect(patternRunTimeRows(trimmed, 'all', 0, nice)![0].label).toBe('Main: Q → S · 13\u00a0of\u00a018\u00a0stops');
   });
   it('is null for an older file', () => {
     expect(patternRunTimeRows(v3, 'all', 0, nice)).toBeNull();
