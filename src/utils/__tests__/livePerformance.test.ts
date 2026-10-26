@@ -186,6 +186,56 @@ describe('livePerformance', () => {
   });
 });
 
+describe('"Right now" over the whole route (CIV-899)', () => {
+  // The last stop pair carries fewer recorded trips, so it falls outside the shared section; the
+  // timetable there is every 10 min against every 5 on the rest. B1 is a recorded branch heading north.
+  const wl = {
+    ...data,
+    segments: [seg(0, 600), seg(1, 600), seg(2, 600), seg(3, 300), { ...seg(1, 50), toStopId: 'B1', toName: 'Branch at Stub', coordinates: [[lon(1), LAT], [lon(1), LAT + 0.01]] }],
+    headways: [1, 2, 3].map(i => ({ stopId: `S${i}`, stopName: `King St at Stop ${i}`, directionId: 0, coordinates: [], bands: { all: gapStat(i === 3 ? 600 : 300, 240, 60, 600) } })),
+  } as typeof data;
+  const at = (t: number, cars: [string, string, number, number?][]) => ({ capturedAt: t, v: cars.map(([id, trip, x, dLat = 0]) => [id, trip, LAT + dLat, lon(x), t] as [string, string, number, number, number]) });
+  const t0 = 50_000;
+
+  it('counts a car past the shared section and measures its gap', () => {
+    const line = lineModel(wl, 0)!;
+    expect(line.stops[4].shared).toBe(false);
+    // a reaches 3.5 (outside the shared section); b, 4 min behind, is at 1.5.
+    const snaps = [0, 1, 2, 3, 4, 5, 6, 7].map(k => at(t0 + k * 60, [['a', 't1', k * 0.5], ...(k >= 4 ? [['b', 't2', (k - 4) * 0.5] as [string, string, number]] : [])]));
+    expect(liveGaps(wl, line, withStats(line, 'all'), 'all', snaps, t0 + 420, { countFewCars: true })!.cars).toBe(1);
+    const g = liveGaps(wl, line, withStats(line, 'all'), 'all', snaps, t0 + 420, { wholeLine: true })!;
+    expect(g.cars).toBe(2);
+    expect(g.gapsMin).toEqual([4]);
+    expect(g.gapsSchedSec).toEqual([300]);
+    expect(g.scheduledRangeSec).toEqual([300, 600]);
+  });
+
+  it('judges a gap against the timetable where the car behind is', () => {
+    const line = lineModel(wl, 0)!;
+    const snaps = [0, 1, 2, 3, 4, 5, 6, 7].map(k => at(t0 + k * 60, [['a', 't1', 1 + k * 0.4], ['b', 't2', 0.4 + k * 0.4]]));
+    const g = liveGaps(wl, line, withStats(line, 'all'), 'all', snaps, t0 + 420, { wholeLine: true })!;
+    expect(g.gapsMin).toEqual([2]);
+    expect(g.gapsSchedSec).toEqual([600]);
+  });
+
+  it('keeps a car off every recorded street (a new diversion) in the count, with no gap claimed either side', () => {
+    const line = lineModel(wl, 0)!;
+    const snaps = [0, 1, 2, 3, 4, 5, 6, 7].map(k => at(t0 + k * 60, [['a', 't1', k * 0.5], ['c', 't3', 2.5, 0.003], ...(k >= 4 ? [['b', 't2', (k - 4) * 0.5] as [string, string, number]] : [])]));
+    const g = liveGaps(wl, line, withStats(line, 'all'), 'all', snaps, t0 + 420, { wholeLine: true })!;
+    expect(g.incomplete).toBeUndefined();
+    expect(g.cars).toBe(3);
+    expect(g.gapsMin).toEqual([null, null]);
+  });
+
+  it('counts a car on a recorded branch without putting it between the line\'s cars', () => {
+    const line = lineModel(wl, 0)!;
+    const snaps = [0, 1, 2, 3, 4, 5, 6, 7].map(k => at(t0 + k * 60, [['a', 't1', k * 0.5], ['c', 't3', 1, 0.005], ...(k >= 4 ? [['b', 't2', (k - 4) * 0.5] as [string, string, number]] : [])]));
+    const g = liveGaps(wl, line, withStats(line, 'all'), 'all', snaps, t0 + 420, { wholeLine: true })!;
+    expect(g.cars).toBe(3);
+    expect(g.gapsMin).toEqual([4]);
+  });
+});
+
 describe('rolling buffer of the map\'s polls (CIV-893)', () => {
   const v = (id: string, at: number, tsEpoch: number | null) => ({ id, tripId: 't1', lat: LAT, lon: lon(at), tsEpoch });
 
