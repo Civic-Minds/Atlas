@@ -2,18 +2,24 @@ import { useMemo } from 'react';
 import { minutesText } from '../../../../shared/liveFormat';
 import { runTimeDiffText } from '../../../../shared/liveWording';
 import type { AgencyRouteRow, AgencySummary } from '../../../../shared/liveAgency';
-import type { LiveV3 } from '../../../../shared/liveDashboard';
+import type { DashboardBand, LiveV3 } from '../../../../shared/liveDashboard';
 import { routeLabels } from '../../../utils/format';
-import { MEASURES, type MapMeasure } from '../routeMapModel';
+import { measureLabel, type MapMeasure } from '../routeMapModel';
+import { delayHeatPoints } from '../delayHeatModel';
 
 const pct = (x: number) => `${Math.round(x * 100)}%`;
 const signed = (x: number) => `${x > 0 ? '+' : x < 0 ? '−' : ''}${Math.abs(Math.round(x * 100))}%`;
 
 /** A route's figure for the chosen measure, as a number to sort by and the text to show. Null when it has none. */
-function figure(r: AgencyRouteRow, v3: LiveV3 | undefined, measure: MapMeasure): { value: number; text: string } | null {
+function figure(r: AgencyRouteRow, v3: LiveV3 | undefined, measure: MapMeasure, band: DashboardBand = 'all'): { value: number; text: string } | null {
   switch (measure) {
     case 'late': return r.lateShare == null ? null : { value: r.lateShare, text: pct(r.lateShare) };
     case 'runTime': return r.runTimeOver == null ? null : { value: r.runTimeOver, text: r.runTimeDiffMin != null ? runTimeDiffText(r.runTimeDiffMin, false) : signed(r.runTimeOver) };
+    case 'delayStarts': {
+      // The route's stop where vehicles add the most, for the map's time of day (the heatmap prototype).
+      const top = v3 ? Math.max(0, ...delayHeatPoints(new Map([[r.route, v3]]), band).map(p => p.addedMin)) : null;
+      return top == null ? null : { value: top, text: minutesText(top) };
+    }
     case 'bunching': return r.bunchingShare == null ? null : { value: r.bunchingShare, text: pct(r.bunchingShare) };
     default: { const w = v3?.weekly?.thisWeek.extraWait; return w ? { value: w.minutes, text: minutesText(w.minutes) } : null; }
   }
@@ -23,17 +29,17 @@ function figure(r: AgencyRouteRow, v3: LiveV3 | undefined, measure: MapMeasure):
  * The agency overview: every route with its figure for the chosen measure, worst first; a click selects the route. The
  * header is the measure's own label. Routes with no figure sit at the end.
  */
-export default function OverviewList({ s, measure, route, network, onPick }: { s: AgencySummary; measure: MapMeasure; route: string | null; network: Map<string, LiveV3>; onPick: (route: string) => void }) {
+export default function OverviewList({ s, measure, band = 'all', route, network, onPick }: { s: AgencySummary; measure: MapMeasure; band?: DashboardBand; route: string | null; network: Map<string, LiveV3>; onPick: (route: string) => void }) {
   const rows = useMemo(() => s.routes
-    .map(r => ({ r, f: figure(r, network.get(r.route), measure) }))
-    .sort((a, b) => (b.f?.value ?? -Infinity) - (a.f?.value ?? -Infinity) || a.r.route.localeCompare(b.r.route, undefined, { numeric: true })), [s, measure, network]);
+    .map(r => ({ r, f: figure(r, network.get(r.route), measure, band) }))
+    .sort((a, b) => (b.f?.value ?? -Infinity) - (a.f?.value ?? -Infinity) || a.r.route.localeCompare(b.r.route, undefined, { numeric: true })), [s, measure, band, network]);
   // Every route is listed: the route list is the only route picker. Nothing scrolls, so a list taller than its room is clipped at the bottom.
   const shown = rows;
   return (
     <section aria-label="Routes" className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-3xl border border-[var(--border-primary)] bg-[var(--bg-header)]/90 p-3 shadow-lg backdrop-blur">
       <div className="flex shrink-0 items-baseline justify-between text-xs font-bold text-[var(--text-muted)]">
         <span>Routes</span>
-        <span>{MEASURES.find(([k]) => k === measure)![1]}</span>
+        <span>{measureLabel(measure)}</span>
       </div>
       <ul className="m-0 mt-1 min-h-0 flex-1 overflow-hidden p-0">
         {shown.map(({ r, f }) => {

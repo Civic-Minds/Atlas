@@ -21,7 +21,8 @@ import LiveOffNotice from './components/LiveOffNotice';
 import AtlasLogo from './components/AtlasLogo';
 import RouteMap, { type MapPick } from './components/Live/RouteMap';
 import { directionStopsById } from './components/Live/DirectionStrip';
-import { MAP_STEP_LIMITS, MEASURES, routeMapModel, type MapMeasure, type MapSegment, type RouteMapModel } from './components/Live/routeMapModel';
+import { DELAY_STARTS_LABEL, MAP_STEP_LIMITS, MEASURES, measureLabel, routeMapModel, type MapMeasure, type MapSegment, type RouteMapModel } from './components/Live/routeMapModel';
+import { delayHeatPoints } from './components/Live/delayHeatModel';
 import { STEP_LABELS, stopDetail, type RouteStripStop } from './components/Live/routeStripModel';
 import Widget from './components/Live/tool/Widget';
 import WidgetPanel, { type PanelWidget } from './components/Live/tool/WidgetPanel';
@@ -35,6 +36,7 @@ import { KpiTile, WeekTable } from './LiveDashboardView';
 import { NOISE_RULE } from '../shared/liveDashboard';
 import { BANDS } from './LiveExplorePage';
 import PillGroup, { PILL_ROW } from './components/ui/PillGroup';
+import Pill from './components/ui/Pill';
 import { DataUpTo, withNiceNames } from './LiveRoutePage';
 
 const pct = (x: number) => `${Math.round(x * 100)}%`;
@@ -51,11 +53,18 @@ function stepLabels(measure: MapMeasure): [string, string, string] {
 }
 const STEP_VAR = (measure: MapMeasure, step: number) => `var(--strip-${measure === 'bunching' ? 'bunching' : 'delay'}-${step})`;
 
-function Key({ measure }: { measure: MapMeasure }) {
+/** The heatmap prototype's one line on what the colour means (CIV-942, wording to confirm). */
+const DELAY_STARTS_NOTE = 'Typical minutes vehicles add since the previous stop';
+
+/** The map's key, with the heatmap toggle (CIV-942 prototype) above it. */
+function Key({ measure, toggleHeat }: { measure: MapMeasure; toggleHeat: () => void }) {
   const labels = stepLabels(measure);
   return (
-    <div className="pointer-events-none absolute left-3 top-3 z-10 rounded-xl border border-[var(--border-primary)] bg-[var(--bg-header)] px-3 py-2 text-xs shadow-sm">
-      <div className="font-bold text-[var(--text-secondary)]">{MEASURES.find(([k]) => k === measure)![1]}</div>
+    <div className="pointer-events-none absolute left-3 top-3 z-10 flex flex-col items-start gap-2">
+    <Pill size="segment" tone="glass" className="pointer-events-auto" selected={measure === 'delayStarts'} onClick={toggleHeat}>{DELAY_STARTS_LABEL}</Pill>
+    <div className="rounded-xl border border-[var(--border-primary)] bg-[var(--bg-header)] px-3 py-2 text-xs shadow-sm">
+      <div className="font-bold text-[var(--text-secondary)]">{measureLabel(measure)}</div>
+      {measure === 'delayStarts' && <div className="text-[var(--text-legend)]">{DELAY_STARTS_NOTE}</div>}
       <ul className="m-0 mt-1 flex flex-col gap-1 p-0">
         {labels.map((l, i) => (
           <li key={l} className="flex list-none items-center gap-2 text-[var(--text-legend)]"><span aria-hidden="true" className="inline-block h-2.5 w-5 rounded-full" style={{ background: STEP_VAR(measure, i) }} />{l}</li>
@@ -63,14 +72,17 @@ function Key({ measure }: { measure: MapMeasure }) {
         <li className="flex list-none items-center gap-2 text-[var(--text-legend)]"><span aria-hidden="true" className="inline-block h-2.5 w-5 rounded-full" style={{ background: 'var(--strip-delay-0)', opacity: 0.45 }} />Not measured</li>
       </ul>
     </div>
+    </div>
   );
 }
 
 
 /** The lines of a stop's card: the trimmed figures the strip's hover shows, then its extra wait where it has one. */
-function stopLines(v3: LiveV3, band: DashboardBand, dir: number, stop: RouteStripStop): string[] {
+function stopLines(v3: LiveV3, band: DashboardBand, dir: number, stop: RouteStripStop, measure: MapMeasure): string[] {
   const extra = v3.extraWait?.[band]?.find(x => x.directionId === dir && x.stopId === stop.stopId);
-  return [...stopDetail(stop).lines, ...(extra ? [`Extra wait ${minutesText(Math.max(0, extra.extraWaitMin))}`] : [])];
+  // Delay starts: the stretch that ends at this stop first, in the segment card's own words.
+  const into = measure === 'delayStarts' ? v3.bands[band].buildup.find(b => b.directionId === dir)?.stretches.find(t => t.toStopId === stop.stopId) : undefined;
+  return [...(into ? segmentLines(v3.bands[band] as DashboardBandData, dir, into.fromStopId, into.toStopId) : []), ...stopDetail(stop).lines, ...(extra ? [`Extra wait ${minutesText(Math.max(0, extra.extraWaitMin))}`] : [])];
 }
 
 /** The lines of a segment's card: only the segment, never its start stop. */
@@ -176,8 +188,8 @@ function LoadingWidget() {
 }
 
 /** The whole screen under the top bar: the map always, the overview on the left, the widgets on the right. */
-function Body({ agency, s, route, setRoute, dir, setDir, dirSlot, routeSlot, dataSlot, band, measure, pick, setPick }: {
-  agency: string; dirSlot: HTMLElement | null; routeSlot: HTMLElement | null; dataSlot: HTMLElement | null; s: AgencySummary; route: string | null; setRoute: (r: string | null) => void; dir: number | null; setDir: (d: number | null) => void; band: DashboardBand; measure: MapMeasure; pick: MapPick | null; setPick: (p: MapPick | null) => void;
+function Body({ agency, s, route, setRoute, dir, setDir, dirSlot, routeSlot, dataSlot, band, measure, toggleHeat, pick, setPick }: {
+  agency: string; dirSlot: HTMLElement | null; routeSlot: HTMLElement | null; dataSlot: HTMLElement | null; s: AgencySummary; route: string | null; setRoute: (r: string | null) => void; dir: number | null; setDir: (d: number | null) => void; band: DashboardBand; measure: MapMeasure; toggleHeat: () => void; pick: MapPick | null; setPick: (p: MapPick | null) => void;
 }) {
   const wide = useMediaQuery('(min-width: 1024px)');
   const routes = useMemo(() => s.routes.map(r => r.route), [s]);
@@ -197,7 +209,7 @@ function Body({ agency, s, route, setRoute, dir, setDir, dirSlot, routeSlot, dat
   const uncertain = ready?.uncertainStart ?? [];
   const stops = useMemo(() => (v3 ? directionStopsById(v3, shown, band, uncertain) : new Map<string, RouteStripStop>()), [v3, shown, band]); // eslint-disable-line react-hooks/exhaustive-deps
   const model: RouteMapModel = useMemo(() => {
-    if (v3) return routeMapModel(v3, shown, band, measure);
+    if (v3) return routeMapModel(v3, shown, band, measure, uncertain);
     const segments: MapSegment[] = [];
     for (const [r, nb] of network) {
       const n3 = nb.v3;
@@ -205,7 +217,12 @@ function Body({ agency, s, route, setRoute, dir, setDir, dirSlot, routeSlot, dat
       dirs.forEach((d, k) => { for (const seg of routeMapModel(n3, d, band, measure).segments) segments.push({ ...seg, route: r, label: r, offset: dirs.length > 1 ? (k === 0 ? 2.5 : -2.5) : 0 }); });
     }
     return { directionId: 0, segments, stops: [] };
-  }, [v3, shown, band, measure, network]);
+  }, [v3, shown, band, measure, network]); // eslint-disable-line react-hooks/exhaustive-deps
+  const heat = useMemo(() => {
+    if (measure !== 'delayStarts') return null;
+    if (v3 && route) return delayHeatPoints(new Map([[route, v3]]), band, { only: { route, directionId: shown }, uncertain: () => uncertain });
+    return v3 ? null : delayHeatPoints(networkV3, band);
+  }, [measure, v3, route, shown, band, networkV3]); // eslint-disable-line react-hooks/exhaustive-deps
   const bandData = v3 ? (v3.bands[band] as DashboardBandData) : null;
   const anchor: [number, number] | null = pick?.kind === 'stop'
     ? model.stops.find(x => x.stopId === pick.stopId)?.lonLat ?? null
@@ -213,7 +230,7 @@ function Body({ agency, s, route, setRoute, dir, setDir, dirSlot, routeSlot, dat
   const picked = pick?.kind === 'stop' ? stops.get(pick.stopId) : undefined;
   const card = v3 && bandData
     ? pick?.kind === 'segment' ? <MapCard title={stretchLabel(stops.get(pick.fromStopId)?.name ?? pick.fromStopId, stops.get(pick.toStopId)?.name ?? pick.toStopId)} lines={segmentLines(bandData, shown, pick.fromStopId, pick.toStopId)} />
-      : picked ? <MapCard title={picked.name} lines={stopLines(v3, band, shown, picked)} /> : null
+      : picked ? <MapCard title={picked.name} lines={stopLines(v3, band, shown, picked, measure)} /> : null
     : null;
   // The Bunching tile's legend line is shown only where the right panel has room for it (it never scrolls or clips); its text is the tile's hover title either way.
   const panelRef = useRef<HTMLDivElement>(null);
@@ -251,10 +268,10 @@ function Body({ agency, s, route, setRoute, dir, setDir, dirSlot, routeSlot, dat
   }, [noteEl]); // eslint-disable-line react-hooks/exhaustive-deps
   const framePad = (pad: typeof PANEL_PAD) => ({ ...pad, bottom: Math.max(pad.bottom, noteH ? noteH + 12 + 12 : 0) });
   // The note is about delay at the first stops: it shows in the delay-based views (Late, Run time), not for the gap-based ones (Extra wait, Bunching).
-  const note = ready?.note && (measure === 'late' || measure === 'runTime') && <p ref={setNoteEl} className="pointer-events-none absolute bottom-0 left-0 right-12 m-0 rounded-lg bg-[var(--bg-header)] px-3 py-1.5 text-xs text-[var(--text-muted)] shadow-sm">{ready.note}</p>;
+  const note = ready?.note && (measure === 'late' || measure === 'runTime' || measure === 'delayStarts') && <p ref={setNoteEl} className="pointer-events-none absolute bottom-0 left-0 right-12 m-0 rounded-lg bg-[var(--bg-header)] px-3 py-1.5 text-xs text-[var(--text-muted)] shadow-sm">{ready.note}</p>;
   const mapEl = (
     <RouteMap
-      model={model} measure={measure} selected={pick} anchor={anchor} card={card} padding={framePad(wide ? PANEL_PAD : NARROW_PAD)}
+      model={model} measure={measure} heat={heat} selected={pick} anchor={anchor} card={card} padding={framePad(wide ? PANEL_PAD : NARROW_PAD)}
       controlsRight={wide ? 'calc(24.5rem + 24px)' : 12}
       onPick={p => { if (!route && p?.kind === 'segment' && p.route) setRoute(p.route); else setPick(p); }}
       frameKey={ready && route ? `route-${ready.route}-${noteH}` : `network-${network.size === routes.length ? 'all' : 'loading'}`}
@@ -274,10 +291,10 @@ function Body({ agency, s, route, setRoute, dir, setDir, dirSlot, routeSlot, dat
         <div className="absolute inset-0 overflow-y-auto">
           <div className="relative h-[55vh] min-h-[22rem]">
             <div className="absolute inset-0">{mapEl}</div>
-            <div className="pointer-events-none absolute inset-3"><Key measure={measure} />{note}</div>
+            <div className="pointer-events-none absolute inset-3"><Key measure={measure} toggleHeat={toggleHeat} />{note}</div>
           </div>
           <WidgetPanel className="p-3" widgets={[...summary, ...widgets]} />
-          <div className="flex p-3 pt-0"><OverviewList s={s} measure={measure} route={route} network={networkV3} onPick={r => { setRoute(r); setPick(null); }} /></div>
+          <div className="flex p-3 pt-0"><OverviewList s={s} measure={measure} band={band} route={route} network={networkV3} onPick={r => { setRoute(r); setPick(null); }} /></div>
         </div>
       </div>
     );
@@ -289,10 +306,10 @@ function Body({ agency, s, route, setRoute, dir, setDir, dirSlot, routeSlot, dat
       <div className="pointer-events-none absolute inset-3 flex gap-3">
         <div className="pointer-events-auto flex w-[24.5rem] shrink-0 flex-col gap-2">
           <WidgetPanel widgets={summary} />
-          <OverviewList s={s} measure={measure} route={route} network={networkV3} onPick={r => { setRoute(r); setPick(null); }} />
+          <OverviewList s={s} measure={measure} band={band} route={route} network={networkV3} onPick={r => { setRoute(r); setPick(null); }} />
         </div>
         <div className="relative min-w-0 flex-1">
-          <Key measure={measure} />
+          <Key measure={measure} toggleHeat={toggleHeat} />
           {note}
         </div>
         <WidgetPanel panelRef={panelRef} className="pointer-events-auto w-[24.5rem] shrink-0" widgets={widgets} />
@@ -308,7 +325,10 @@ export default function LiveToolPage() {
   const [route, setRoute] = useState<string | null>(() => readParam('route'));
   const [dir, setDir] = useState<number | null>(() => { const d = readParam('dir'); return d != null && d !== '' && !Number.isNaN(Number(d)) ? Number(d) : null; });
   const [band, setBand] = useState<DashboardBand>(() => { const b = readParam('band'); return BANDS.some(([k]) => k === b) ? (b as DashboardBand) : 'all'; });
-  const [measure, setMeasure] = useState<MapMeasure>(() => { const m = readParam('measure'); return MEASURES.some(([k]) => k === m) ? (m as MapMeasure) : 'late'; });
+  const [measure, setMeasure] = useState<MapMeasure>(() => { const m = readParam('measure'); return MEASURES.some(([k]) => k === m) || m === 'delayStarts' ? (m as MapMeasure) : 'late'; });
+  // The measure the heatmap toggle goes back to when it is switched off.
+  const [before, setBefore] = useState<MapMeasure>('late');
+  const toggleHeat = () => { if (measure === 'delayStarts') setMeasure(before); else { setBefore(measure); setMeasure('delayStarts'); } };
   const [dirSlot, setDirSlot] = useState<HTMLElement | null>(null);
   const [routeSlot, setRouteSlot] = useState<HTMLElement | null>(null);
   const [dataSlot, setDataSlot] = useState<HTMLElement | null>(null);
@@ -342,7 +362,7 @@ export default function LiveToolPage() {
         <PillGroup label="Time of day" value={band} onChange={v => setBand(v as DashboardBand)} options={BANDS} />
         <div ref={setDataSlot} className="contents" />
       </header>
-      <Body agency={agency} dirSlot={dirSlot} routeSlot={routeSlot} dataSlot={dataSlot} s={s} route={route} setRoute={setRoute} dir={dir} setDir={setDir} band={band} measure={measure} pick={pick} setPick={setPick} />
+      <Body agency={agency} dirSlot={dirSlot} routeSlot={routeSlot} dataSlot={dataSlot} s={s} route={route} setRoute={setRoute} dir={dir} setDir={setDir} band={band} measure={measure} toggleHeat={toggleHeat} pick={pick} setPick={setPick} />
     </>,
   );
 }
