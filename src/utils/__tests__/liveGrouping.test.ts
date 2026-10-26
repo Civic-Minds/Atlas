@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { LiveVehicle } from '../../context/LiveVehiclesMapOverlay';
-import { DIRECTION_UNCLEAR, groupVehiclesByDirection, routeDirectionLabels } from '../liveGrouping';
+import { DIRECTION_UNCLEAR, groupVehiclesByDirection, routeDirectionLabels, vehicleDirectionKey } from '../liveGrouping';
 
 const v = (id: string, extra: Partial<LiveVehicle> = {}): LiveVehicle => ({
   id, routeShortName: '501', displayName: '501', tripId: 't', lat: 43.65, lon: -79.4, bearing: null, speedKmh: null, tsEpoch: null,
@@ -33,5 +33,18 @@ describe('groupVehiclesByDirection (every vehicle placed)', () => {
   it('falls back to Outbound / Inbound when a direction has no named shape', () => {
     const groups = groupVehiclesByDirection([v('a', { directionId: 0 }), v('b', { directionId: 1 })], new Map());
     expect([...groups.keys()]).toEqual(['Outbound', 'Inbound']);
+  });
+});
+
+describe('vehicleDirectionKey (the direction a vehicle card keeps emphasised)', () => {
+  const labels = new Map([[0, 'Neville Park'], [1, 'Long Branch']]);
+
+  it('names the same group the direction list puts the vehicle in', () => {
+    const vehicles = [v('a', { directionId: 0 }), v('b', { directionId: 1, headsign: 'Humber Loop' }), v('c'), v('d', { directionId: 1 })];
+    const groups = groupVehiclesByDirection(vehicles, labels);
+    for (const vehicle of vehicles) {
+      expect(groups.get(vehicleDirectionKey(vehicle, labels))).toContain(vehicle);
+    }
+    expect(vehicleDirectionKey(vehicles[2], labels)).toBe(DIRECTION_UNCLEAR);
   });
 });
