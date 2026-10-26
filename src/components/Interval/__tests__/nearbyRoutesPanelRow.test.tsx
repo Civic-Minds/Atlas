@@ -42,7 +42,7 @@ describe('Near You route rows', () => {
   });
 
   // Critic review of CIV-900 M13: the wider badge squeezed "Yonge-University" to "Yonge-Univers…".
-  it('lets a long route name take the free width and wrap in full', () => {
+  it('lets a route name size to its text and wrap between words, never mid-word', () => {
     render(
       <NearbyRoutesPanel
         setSelectedRoute={() => {}}
@@ -50,8 +50,8 @@ describe('Near You route rows', () => {
       />,
     );
     const name = screen.getByText('Yonge-University');
-    expect(name.className).toContain('flex-1');
-    expect(name.className).toContain('break-words');
+    expect(name.className).toContain('flex-auto');
+    expect(name.className).not.toMatch(/break-words|break-all|min-w-/);
     expect(name.className).not.toMatch(/line-clamp|truncate/);
   });
 

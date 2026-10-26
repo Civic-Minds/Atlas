@@ -54,10 +54,10 @@ export const NearbyRoutesPanel = forwardRef<HTMLDivElement, NearbyRoutesPanelPro
                     </span>
                   ) : null}
                   {/* The name takes the row's free width and wraps between words, like the route card's direction rows;
-                      it sizes to its text, so the badge sits beside a name that fits and moves to the next line only when it can't. */}
+                      it sizes to its text and never splits a word (its narrowest is its longest word), so the badge sits beside a name that fits and moves to the next line only when it can't. */}
                   <span className={r.displayShortName
-                    ? 'flex-auto min-w-[6rem] text-xs leading-snug font-bold text-[var(--text-muted)] break-words'
-                    : 'flex-auto min-w-[6rem] text-xs leading-snug font-black text-[var(--text-primary)] break-words'}
+                    ? 'flex-auto text-xs leading-snug font-bold text-[var(--text-muted)]'
+                    : 'flex-auto text-xs leading-snug font-black text-[var(--text-primary)]'}
                     title={r.routeLongName || r.agencyName}>
                     {r.routeLongName || r.agencyName}
                   </span>
