@@ -2,9 +2,10 @@ import { Fragment, useCallback, useEffect, useId, useMemo, useRef, useState, typ
 import DataTable from '../ui/DataTable';
 import { useMediaQuery } from '../../hooks/useMediaQuery';
 import {
-  LEGEND_TITLE, MIN_N, bunchParts, delayText, legendSteps, shownDelayMin, stepLabel, keyStops, labelLines, labelWidth, pct, pickLabels, shortStopName, stepColor, stepFor, stopDetail, stopStep, stopN, stopValue, stretchSpan, stripSummary,
+  LEGEND_TITLE, MIN_N, bunchParts, delayText, legendSteps, shownDelayMin, stepLabel, keyStops, labelLines, labelWidth, pct, pickLabels, stepColor, stepFor, stopDetail, stopStep, stopN, stopValue, stretchSpan, stripSummary,
   type RouteStripMode, type RouteStripStop, type RouteStripStretch, type Step, type StretchSpan,
 } from './routeStripModel';
+import { shortStopName, stretchLabel } from '../../utils/stopLabel';
 
 export type { RouteStripMode, RouteStripStop, RouteStripStretch } from './routeStripModel';
 export { routeStripFromV3 } from './routeStripModel';
@@ -247,7 +248,7 @@ export default function RouteStrip({ stops, modes = ['delay', 'bunching'], direc
                     <span
                       className="absolute bottom-3 whitespace-nowrap text-xs font-bold text-[var(--text-primary)]"
                       style={xs[t.stretch.from] < GUTTER + plotW / 2 ? { left: 0 } : { right: 0 }}
-                    >{labels.includes(t.stretch.from) && labels.includes(t.stretch.to) ? t.stretch.label : `${t.stretch.label}: ${labelText[t.stretch.from]} to ${labelText[t.stretch.to]}`}</span>
+                    >{labels.includes(t.stretch.from) && labels.includes(t.stretch.to) ? t.stretch.label : `${t.stretch.label}: ${stretchLabel(stops[t.stretch.from].name, stops[t.stretch.to].name)}`}</span>
                   </div>
                 )}
                 <div className="absolute rounded-full bg-[var(--text-dim)] opacity-40" style={{ left: GUTTER + INSET, right: INSET, top: lineY(k) - 1, height: 2 }} />

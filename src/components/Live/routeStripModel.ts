@@ -105,17 +105,6 @@ export function delayText(min: number): string {
   return min > 0 ? `+${num(min)} min late` : `${num(min)} min early`;
 }
 
-/**
- * A short name for a label under the strip. "Spadina Ave at Queen St West South Side" becomes "Queen St West" (the
- * cross street); stations and loops keep their own name ("Broadview Station at Bay 6" becomes "Broadview Station").
- */
-export function shortStopName(name: string): string {
-  let s = name.replace(/\s+(North|South|East|West)\s+Side$/i, '').replace(/\s+Streetcar Platform$/i, '').replace(/\s+at Bay \d+$/i, '').trim();
-  const at = s.match(/^(.*?)\s+at\s+(.*)$/i);
-  if (at) s = /\b(station|loop|terminal)\b/i.test(at[1]) ? at[1] : at[2];
-  return s;
-}
-
 /** Rough width of a label in px at 12px Inter, capped at `maxPx` (longer labels wrap onto more lines, see labelLines). */
 export function labelWidth(text: string, maxPx = 120): number {
   return Math.min(maxPx, Math.ceil(text.length * 6.4) + 4);

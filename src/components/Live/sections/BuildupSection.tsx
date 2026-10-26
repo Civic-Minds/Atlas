@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { buildupTakeaway, type DashboardBand, type DashboardBandData, type LiveV3, type UncertainStart } from '../../../../shared/liveDashboard';
-import { isMajorStop, shortStopName, stretchEnds } from '../../../utils/stopLabel';
+import { isMajorStop, shortStopName, stretchLabel } from '../../../utils/stopLabel';
 import ProfileBars, { sharedScale, type ProfilePoint } from '../../charts/ProfileBars';
 import SortableDataTable from '../../ui/SortableDataTable';
 import DirectionStrip from '../DirectionStrip';
@@ -90,11 +90,11 @@ export default function BuildupSection({ v3, data, dir, uncertain, detail, bound
                   rows={full ? worst.slice(0, 3) : worst}
                   rowKey={s => `${s.fromStopId}-${s.toStopId}`}
                   columns={full ? [
-                    { key: 'stretch', header: 'Stretch that adds the most', rowHeader: true, width: 14, className: 'font-normal break-words', cell: s => { const [a, b] = stretchEnds(s.fromName, s.toName); return <span title={`${s.fromName} to ${s.toName}`}>{a} to {b}</span>; } },
+                    { key: 'stretch', header: 'Stretch that adds the most', rowHeader: true, width: 14, className: 'font-normal break-words', cell: s => <span title={`${s.fromName} to ${s.toName}`}>{stretchLabel(s.fromName, s.toName)}</span> },
                     { key: 'added', header: 'Typical added', width: 7, className: 'max-sm:!pr-1', worst: s => s.medianAddedMin, cell: s => mins(s.medianAddedMin) },
                     { key: 'grows', header: 'Trips where it grows', width: 10, className: 'whitespace-nowrap max-sm:!pr-1.5', worst: s => s.growShare, cell: s => `${pct(s.growShare)} of ${s.n.toLocaleString()}` },
                   ] : [
-                    { key: 'stretch', header: 'Stretch that adds the most', rowHeader: true, className: 'font-normal', cell: s => `${s.fromName} to ${s.toName}` },
+                    { key: 'stretch', header: 'Stretch that adds the most', rowHeader: true, className: 'font-normal', cell: s => <span title={`${s.fromName} to ${s.toName}`}>{stretchLabel(s.fromName, s.toName)}</span> },
                     { key: 'added', header: 'Typical added', worst: s => s.medianAddedMin, cell: s => mins(s.medianAddedMin) },
                     { key: 'grows', header: 'Trips where it grows', worst: s => s.growShare, cell: s => `${pct(s.growShare)} of ${s.n.toLocaleString()}` },
                   ]}

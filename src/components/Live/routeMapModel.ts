@@ -7,7 +7,7 @@
  */
 import type { DashboardBand, LiveV3 } from '../../../shared/liveDashboard';
 import { titleCase } from '../../utils/format';
-import { shortStopName } from './routeStripModel';
+import { stretchLabel } from '../../utils/stopLabel';
 
 export type MapMeasure = 'late' | 'runTime' | 'extraWait' | 'bunching';
 /** The measure switch, in order, with the labels the tiles already use. */
@@ -78,7 +78,7 @@ export function routeMapModel(v3: LiveV3, directionId: number, band: DashboardBa
     const a = byId.get(from), b = byId.get(to);
     if (!a?.lonLat || !b?.lonLat) continue;
     const value = segmentValue(from, to);
-    segments.push({ label: `${shortStopName(titleCase(a.name))} to ${shortStopName(titleCase(b.name))}`, fromStopId: from, toStopId: to, coordinates: lines.get(key(from, to)) ?? [a.lonLat as [number, number], b.lonLat as [number, number]], value, step: mapStep(measure, value) });
+    segments.push({ label: stretchLabel(titleCase(a.name), titleCase(b.name)), fromStopId: from, toStopId: to, coordinates: lines.get(key(from, to)) ?? [a.lonLat as [number, number], b.lonLat as [number, number]], value, step: mapStep(measure, value) });
   }
   return { directionId, segments, stops };
 }

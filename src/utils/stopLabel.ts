@@ -55,3 +55,8 @@ export function stretchEnds(fromName: string, toName: string): [string, string] 
   };
   return [withCross(fromName, a), withCross(toName, b)];
 }
+
+/** The one name for a stretch on every Live surface: "Church St to Dundas Station" (CIV-910). */
+export function stretchLabel(fromName: string, toName: string): string {
+  return stretchEnds(fromName, toName).join(' to ');
+}

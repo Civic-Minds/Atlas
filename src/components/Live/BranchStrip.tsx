@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useId, useMemo, useRef, useState, type KeyboardEvent } from 'react';
 import DataTable from '../ui/DataTable';
 import { useMediaQuery } from '../../hooks/useMediaQuery';
-import { isMajorStop } from '../../utils/stopLabel';
+import { isMajorStop, shortStopName } from '../../utils/stopLabel';
 import {
-  MIN_N, bunchParts, delayText, labelWidth, pct, shortStopName, shownDelayMin, stopDetail, stopN, stopStep, stretchSpan,
+  MIN_N, bunchParts, delayText, labelWidth, pct, shownDelayMin, stopDetail, stopN, stopStep, stretchSpan,
   type RouteStripMode, type RouteStripStop, type Step,
 } from './routeStripModel';
 import { COL_X, NAME_LEFT, StretchBracketPiece, StretchNote, phoneDotSize, phoneRowHeight, StripLegend, Tooltip, swatchStyle } from './RouteStrip';

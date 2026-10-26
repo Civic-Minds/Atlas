@@ -12,7 +12,7 @@ import { useLiveDashboard } from './hooks/useLiveDashboard';
 import { devOnly, liveReportTitle } from './lib/liveReportData';
 import { applySeoToDocument } from './lib/seoDom';
 import { syncUrlParams } from './utils/syncUrlParams';
-import { shortStopName } from './utils/stopLabel';
+import { stretchLabel } from './utils/stopLabel';
 import { TILE } from './pageStyles';
 import ErrorBoundary from './components/ErrorBoundary';
 import PageShell from './components/ui/PageShell';
@@ -74,14 +74,13 @@ function DetailPanel({ v3, band, sel, stops, data }: { v3: LiveV3; band: Dashboa
   const strip = { label: v3.directionLabels[String(sel.dir)] };
   const buildup = data.buildup.find(b => b.directionId === sel.dir);
   const bunchBand = v3.bunching.find(b => b.directionId === sel.dir)?.bands[band];
-  const nice = (n: string) => shortStopName(n);
 
   if (sel.kind === 'stretch') {
     if (sel.mode === 'delay') {
       const f = buildup?.forms;
       if (!f) return null;
       return (
-        <Panel title={`${nice(f.fromName)} to ${nice(f.toName)}`} sub={strip.label}>
+        <Panel title={stretchLabel(f.fromName, f.toName)} sub={strip.label}>
           <Block>
             <Fact label="Typical added" value={mins(f.medianAddedMin)} />
             <Fact label="Trips where it grows" value={pct(f.growShare)} sub={`of ${f.n.toLocaleString()}`} />
@@ -95,7 +94,7 @@ function DetailPanel({ v3, band, sel, stops, data }: { v3: LiveV3; band: Dashboa
     if (!b) return null;
     const linked = b.links.filter(l => l.linked);
     return (
-      <Panel title={`${nice(b.fromName)} to ${nice(b.toName)}`} sub={strip.label}>
+      <Panel title={stretchLabel(b.fromName, b.toName)} sub={strip.label}>
         <Block>
           <Fact label="Gaps off the timetable" value={`${pct(b.fromBadShare)} to ${pct(b.toBadShare)}`} />
         </Block>
@@ -138,7 +137,7 @@ function DetailPanel({ v3, band, sel, stops, data }: { v3: LiveV3; band: Dashboa
         </Block>
       )}
       {into && into.n > 0 && (
-        <Block title={`${nice(into.fromName)} to ${nice(into.toName)}`}>
+        <Block title={stretchLabel(into.fromName, into.toName)}>
           <Fact label="Typical added" value={mins(into.medianAddedMin)} />
           <Fact label="Trips where it grows" value={pct(into.growShare)} sub={`of ${into.n.toLocaleString()}`} />
         </Block>

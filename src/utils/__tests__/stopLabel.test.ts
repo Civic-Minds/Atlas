@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { shortStopName, stretchEnds } from '../stopLabel';
+import { shortStopName, stretchEnds, stretchLabel } from '../stopLabel';
 
 describe('shortStopName', () => {
   it('names the loop, not the street, for a stop at a loop', () => {
@@ -21,5 +21,12 @@ describe('stretchEnds', () => {
   });
   it('gives each end its own cross street when the short names collide', () => {
     expect(stretchEnds('King St West at Queen St West', 'Roncesvalles Ave at Queen St West North Side')).toEqual(['Queen St West (King St West)', 'Queen St West (Roncesvalles Ave)']);
+  });
+});
+
+describe('stretchLabel', () => {
+  it('names a stretch the same way on every page (CIV-910)', () => {
+    expect(stretchLabel('Dundas St East at Church St', 'Dundas St East at Yonge St - Dundas Station')).toBe('Church St to Dundas Station');
+    expect(stretchLabel('Dundas St West at McCaul St', 'Dundas St West at University Ave - St Patrick Station')).toBe('McCaul St to St Patrick Station');
   });
 });
