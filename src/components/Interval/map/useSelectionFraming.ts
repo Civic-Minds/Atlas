@@ -103,7 +103,10 @@ export function useSelectionFraming(
     }
     // Direction hover changes filtered layer data, but it is not a new route
     // selection. Do not refit the map on every hover-driven layer update.
-    if (fittedRouteRef.current === selectedRoute) return;
+    // A route the main map hands to Live keeps its key but gains Live's card padding: refit it once for that card,
+    // or the fit made for the regular card leaves the route under Live's wider card.
+    const fitKey = `${selectedRoute}|${framePadding ? 'card' : 'map'}`;
+    if (fittedRouteRef.current === fitKey) return;
 
     // Compute full-route bounds from GeoJSON layer data.
     // agencySlug is added to features only in build-pmtiles, not the raw R2 GeoJSON,
@@ -127,7 +130,7 @@ export function useSelectionFraming(
     const padding = framePadding ? framePadding(map) : selectionFramePadding(map);
     if (target?.kind === 'bounds') {
       map.fitBounds(target.bounds, { padding, maxZoom: 14 });
-      fittedRouteRef.current = selectedRoute;
+      fittedRouteRef.current = fitKey;
     } else if (target?.kind === 'point') {
       map.flyTo({
         center: target.center,
@@ -136,9 +139,9 @@ export function useSelectionFraming(
         duration: 900,
         essential: true,
       });
-      fittedRouteRef.current = selectedRoute;
+      fittedRouteRef.current = fitKey;
     }
-  }, [selectedRoute, mapLoaded, layers]);
+  }, [selectedRoute, mapLoaded, layers, framePadding]);
 
   // Fly to selected stop when chosen
   useEffect(() => {
