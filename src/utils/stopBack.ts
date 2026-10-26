@@ -109,3 +109,32 @@ export function resolveStopBack(
     : shortenAgencyName(agency.name);
   return to ? { to, target } : MAP;
 }
+
+/**
+ * The back target in the link (CIV-919), so a reload keeps "← Route 504": `from=route:<route key>`,
+ * `from=agency:<slug>` or `from=ondemand:<selection>`. The map needs no param.
+ */
+export const STOP_BACK_PARAM = 'from';
+
+export function encodeStopBackTarget(target: StopBackTarget | null): string | null {
+  if (!target) return null;
+  switch (target.kind) {
+    case 'route': return `route:${target.route}`;
+    case 'agency': return `agency:${target.agencySlug}`;
+    case 'onDemand': return `ondemand:${target.selection}`;
+    default: return null;
+  }
+}
+
+export function parseStopBackTarget(raw: string | null | undefined): StopBackTarget | null {
+  if (!raw) return null;
+  const sep = raw.indexOf(':');
+  if (sep < 0) return null;
+  const kind = raw.slice(0, sep);
+  const value = raw.slice(sep + 1).trim();
+  if (!value) return null;
+  if (kind === 'route') return value.includes('::') ? { kind: 'route', route: value } : null;
+  if (kind === 'agency') return /^[a-z0-9-]+$/.test(value) ? { kind: 'agency', agencySlug: value } : null;
+  if (kind === 'ondemand') return /^[a-z0-9-]+(::.+)?$/.test(value) ? { kind: 'onDemand', selection: value } : null;
+  return null;
+}

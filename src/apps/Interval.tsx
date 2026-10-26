@@ -34,7 +34,7 @@ import { resolveRouteSelectionForDay } from '../utils/routeSelection';
 import { syncUrlParams } from '../utils/syncUrlParams';
 import type { HistoryView } from '../utils/historyYearMap';
 import { usePersistedFilterPref } from '../hooks/usePersistedFilterPref';
-import { encodeCompareSideParams, encodeSelectionParams, encodeModesParam, isAgencyOff, parseAgencyUrlRule, parseAreaBounds, parseCompareSideParams, parseModesParam, settleAgencyUrlRule, shouldPersistAgencySelection, type AgencyUrlRule } from '../utils/shareUrlState';
+import { encodeCompareSideParams, encodeSelectionParams, encodeModesParam, isAgencyOff, parseAgencyUrlRule, parseAreaBounds, parseCompareSideParams, parseModesParam, parseRouteChooserParam, encodeRouteChooserParam, ROUTE_CHOOSER_PARAM, settleAgencyUrlRule, shouldPersistAgencySelection, type AgencyUrlRule } from '../utils/shareUrlState';
 import { searchOverlayHidesPanel } from '../utils/format';
 import { trackEvent } from '../lib/analytics';
 import type { FrequentServiceFrequency, FrequentServiceWindow } from '../../shared/frequentService';
@@ -46,7 +46,7 @@ import { areaFitZoom } from '../../shared/areaIndex';
 import type { AreaSearchResult } from '../../shared/areaSearch';
 import Spinner from '../components/ui/Spinner';
 import { onDemandSelectionZoneId, resolveSelectedOnDemandSlug } from '../utils/onDemandSelection';
-import { resolveStopBack, stopBackTarget, type StopBackRoute, type StopBackSnapshot, type StopBackTarget } from '../utils/stopBack';
+import { encodeStopBackTarget, parseStopBackTarget, resolveStopBack, STOP_BACK_PARAM, stopBackTarget, type StopBackRoute, type StopBackSnapshot, type StopBackTarget } from '../utils/stopBack';
 import { loadingText } from '../content/stateCopy';
 
 // Versioned because the original preference could accidentally persist only
@@ -231,6 +231,11 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     return raw ? raw.split(',').map(s => s.trim()).filter(Boolean) : [];
   });
   const [disambiguationRoutes, setDisambiguationRoutes] = useState<string[] | null>(null);
+  // A link's ?routes= chooser (CIV-919) waits here until those routes' agencies load, so it never
+  // shows raw route keys. A link that also opens a route or stop shows that card instead.
+  const [pendingRouteChooser, setPendingRouteChooser] = useState<string[] | null>(() => (
+    searchParams.get('route') || searchParams.get('stop') ? null : parseRouteChooserParam(searchParams)
+  ));
   const [hoveredBranch, setHoveredBranchState] = useState<HoveredBranch | null>(null);
   const hoverTimeoutRef = useRef<number | null>(null);
 
@@ -317,7 +322,10 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
 
   // When a stop opens from nothing, read the note once. A stop opened while another stop's card is
   // showing keeps that card's target: back never chains from stop to stop.
-  const [stopBackTargetState, setStopBackTargetState] = useState<StopBackTarget | null>(null);
+  // A link (or reload) that opens a stop keeps its back target from ?from= (CIV-919).
+  const [stopBackTargetState, setStopBackTargetState] = useState<StopBackTarget | null>(() => (
+    selectedStop ? parseStopBackTarget(searchParams.get(STOP_BACK_PARAM)) : null
+  ));
   const prevSelectedStopRef = useRef(selectedStop);
   useLayoutEffect(() => {
     const prev = prevSelectedStopRef.current;
@@ -556,10 +564,12 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   );
   const priorityAgencySlugs = useMemo(() => {
     const slugOf = (key: string | null | undefined) => (key ? key.split('::')[0] : null);
-    return [slugOf(selectedRoute), slugOf(selectedStop), pendingLiveRoute?.slug, pendingNightRoute?.slug]
+    const stopBackRouteSlug = selectedStop && stopBackTargetState?.kind === 'route' ? slugOf(stopBackTargetState.route) : null;
+    return [slugOf(selectedRoute), slugOf(selectedStop), stopBackRouteSlug, pendingLiveRoute?.slug, pendingNightRoute?.slug, ...(pendingRouteChooser ?? []).map(slugOf)]
       .filter((slug): slug is string => !!slug)
+      .filter((slug, index, slugs) => slugs.indexOf(slug) === index)
       .concat(compareBSlugKey ? compareBSlugKey.split('|') : []);
-  }, [selectedRoute, selectedStop, pendingLiveRoute?.slug, pendingNightRoute?.slug, compareBSlugKey]);
+  }, [selectedRoute, selectedStop, stopBackTargetState, pendingLiveRoute?.slug, pendingNightRoute?.slug, pendingRouteChooser, compareBSlugKey]);
   const { layers, loadedCount, requestedCount, isLoading, failedSlugs } = useAgencyData(agencies, bounds, {
     showCorridorBand: false,
     searchQuery: searchFocused ? query : '',
@@ -935,6 +945,33 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   useEffect(() => {
     syncUrlParams({ stop: selectedStop || null });
   }, [selectedStop]);
+
+  // The stop card's back target and the route chooser in the link (CIV-919).
+  useEffect(() => {
+    syncUrlParams({ [STOP_BACK_PARAM]: selectedStop ? encodeStopBackTarget(stopBackTargetState) : null });
+  }, [selectedStop, stopBackTargetState]);
+
+  useEffect(() => {
+    syncUrlParams({ [ROUTE_CHOOSER_PARAM]: encodeRouteChooserParam(disambiguationRoutes ?? pendingRouteChooser) });
+  }, [disambiguationRoutes, pendingRouteChooser]);
+
+  // Open the linked chooser once its agencies have loaded (or failed), with the routes still found.
+  // Anything else opened first wins and the link's chooser is dropped.
+  useEffect(() => {
+    if (!pendingRouteChooser) return;
+    if (selectedRoute || selectedStop || selectedAgencySlug || onDemandStopAgencySlug || disambiguationRoutes || !(showUi || showSelectionUi)) {
+      setPendingRouteChooser(null);
+      return;
+    }
+    const slugs = [...new Set(pendingRouteChooser.map(key => splitRouteKey(key).agencySlug))];
+    if (!slugs.every(slug => layers[slug] || failedSlugs.has(slug))) return;
+    const found = pendingRouteChooser.filter(key => layers[splitRouteKey(key).agencySlug]?.features.some(f => {
+      const p = f.properties as ShapeProperties | null;
+      return !!p && !p.stopId && routeKey({ ...p, agencySlug: splitRouteKey(key).agencySlug } as ShapeProperties) === key;
+    }));
+    setPendingRouteChooser(null);
+    if (found.length > 1) setDisambiguationRoutes(found);
+  }, [pendingRouteChooser, layers, failedSlugs, selectedRoute, selectedStop, selectedAgencySlug, onDemandStopAgencySlug, disambiguationRoutes, showUi, showSelectionUi]);
 
   // Sync filter state (maxHeadway, period) to URL for active view persistence (refresh/share).
   // On load: URL wins (see initializers), else LS/default; effects then ensure URL reflects
