@@ -29,6 +29,8 @@ export const AREA_DATA_SCRIPT_ID = 'area-page-data';
 export interface AreaAgencyRow {
   slug: string;
   name: string;
+  /** The agency's short display name ("WETA (San Francisco Bay)"), for a narrow names column. */
+  displayName: string;
   totalRoutes: number;
   /** Route counts by table column (AREA_TABLE_MODES, rarer modes added into "Other"), only the columns the agency has. */
   modes: Record<string, number>;
@@ -63,8 +65,11 @@ const SPAN_VARIES_HOURS = 3;
  */
 export const AREA_TABLE_MODES: readonly string[] = [1, VIRTUAL_LRT_MODE, 0, 2, 3, 4, 6]
   .map(id => MODE_DEFINITIONS.find(m => m.id === id)!.label);
-/** One last column for the rarer modes (monorail, trolleybus, cable car, funicular, ...), shown only where an area has one. */
+/** One last column for the rarer modes (monorail, cable car, funicular, ...), shown only where an area has one. */
 export const AREA_TABLE_OTHER = 'Other';
+/** Trolleybus routes count in this table's Bus column (Ryan, CIV-973); every other surface keeps them separate. */
+const TROLLEYBUS_LABEL = MODE_DEFINITIONS.find(m => m.id === 11)!.label;
+const BUS_LABEL = MODE_DEFINITIONS.find(m => m.id === 3)!.label;
 
 /**
  * The agencies counted on an area page (they have a page: weekday midday service), each with only the
@@ -86,11 +91,11 @@ export function areaAgencySummaries(area: Pick<AreaConfig, 'agencies' | 'slug'>,
   return out;
 }
 
-/** An agency's route counts by table column: the fixed modes as they are, every other mode added into "Other". */
+/** An agency's route counts by table column: the fixed modes as they are, trolleybus added into Bus, every other mode into "Other". */
 function tableModes(byMode: ReadonlyArray<{ label: string; routes: readonly unknown[] }>): Record<string, number> {
   const out: Record<string, number> = {};
   for (const m of byMode) {
-    const key = AREA_TABLE_MODES.includes(m.label) ? m.label : AREA_TABLE_OTHER;
+    const key = m.label === TROLLEYBUS_LABEL ? BUS_LABEL : AREA_TABLE_MODES.includes(m.label) ? m.label : AREA_TABLE_OTHER;
     out[key] = (out[key] ?? 0) + m.routes.length;
   }
   return out;
@@ -114,6 +119,7 @@ export function buildAreaPageData(area: AreaConfig, all: ReadonlyMap<string, Age
     rows.push({
       slug: a.slug,
       name: a.name,
+      displayName: a.displayName,
       totalRoutes: s.totalRoutes,
       modes: tableModes(s.byMode),
     });

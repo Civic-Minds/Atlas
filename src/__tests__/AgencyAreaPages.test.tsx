@@ -153,6 +153,18 @@ describe('AgencyPage other agencies list', () => {
   });
 });
 
+describe('AreaPage narrow names column', () => {
+  it('shows the short name with the full one on hover only when the "Other" column narrows the names and the full name is long', () => {
+    const long = 'San Francisco Bay Area Water Emergency Transportation Authority (WETA)';
+    const weta: AgencyPageSummary = { ...HSR, slug: 'weta', name: long, displayName: 'WETA (San Francisco Bay)', routes: [r('F1', 12, 20)] };
+    const withOther = buildAreaPageData({ ...AREA, agencies: ['ttc', 'weta'] }, new Map([[TTC.slug, TTC], [weta.slug, weta]]), null);
+    view(<AreaPage data={withOther} />);
+    const link = screen.getByRole('link', { name: 'WETA (San Francisco Bay)' });
+    expect(link.getAttribute('title')).toBe(long);
+    expect(screen.getByRole('link', { name: 'Toronto Transit Commission' }).getAttribute('title')).toBeNull();
+  });
+});
+
 describe('AreaPage', () => {
   const data = buildAreaPageData(AREA, new Map([[TTC.slug, TTC], [HSR.slug, HSR]]), '2026-10-13T00:00:00Z');
 
