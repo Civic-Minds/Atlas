@@ -1344,7 +1344,8 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
             <Download className="w-3.5 h-3.5" />
           </button>
         )}
-        <MapZoomButtons onZoomIn={() => { onUserMove?.(); mapRef.current?.zoomIn({ duration: 200 }); }} onZoomOut={() => { onUserMove?.(); mapRef.current?.zoomOut({ duration: 200 }); }} />
+        {/* Phones zoom by pinching, so the + and − buttons show only from sm up (Ryan: "on mobile we should remove the zoom in zoom out buttons"). */}
+        <MapZoomButtons className="max-sm:hidden" onZoomIn={() => { onUserMove?.(); mapRef.current?.zoomIn({ duration: 200 }); }} onZoomOut={() => { onUserMove?.(); mapRef.current?.zoomOut({ duration: 200 }); }} />
         <button
           onClick={locateUser}
           aria-label="Go to my location"
