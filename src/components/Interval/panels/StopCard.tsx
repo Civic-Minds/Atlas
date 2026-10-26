@@ -23,7 +23,10 @@ import { compareHeadwayThenNumber } from '../../../utils/sortCompare';
 export interface StopBranch {
   rKey: string;
   headsign: string | null;
+  /** The route's departures at the stop, pooled across its patterns where they share it (CIV-82). */
   service: HeadwayMetric;
+  /** The destination row's value (CIV-918): the branch's own, as on its route card row. */
+  rowHeadway?: number | null;
   directionId: number;
   /** #934: part-period wording shown in place of a number, as on the route card's row. */
   periodText?: string;

@@ -60,11 +60,18 @@ export default function StopRouteGroup({
         directionId: branch.directionId,
         multipleDirections: hasMultipleDirections,
       }),
-      // #934: part-period wording replaces the number, as on the route card's row.
-      hw: branch.periodText ? null : branchHeadway(branch, period),
+      // #934: part-period wording replaces the number, as on the route card's row. A row shows its branch's
+      // own value, never the stop's value for every trip, so a destination is never shown as more frequent.
+      hw: branch.periodText ? null : branch.rowHeadway ?? null,
     }))
     .filter(item => item.label)
     .sort((a, b) => a.directionId - b.directionId);
+  // Where the route's patterns share the stop (504A and 504B at King and Bay), the route comes more often
+  // than any one destination: the route line keeps the stop's value, as the stop card showed before.
+  const rowValues = items.map(item => item.hw).filter((hw): hw is number => hw != null);
+  const pooledValues = items.map(item => (item.periodText ? null : branchHeadway(item, period))).filter((hw): hw is number => hw != null);
+  const pooled = pooledValues.length > 0 ? Math.min(...pooledValues) : null;
+  const routeHeadway = pooled != null && rowValues.length > 0 && pooled < Math.min(...rowValues) ? pooled : null;
 
   if (items.length === 0) return null;
 
@@ -78,6 +85,7 @@ export default function StopRouteGroup({
       <CardSummaryRow
         label={routeLabel}
         onClick={() => onOpenRoute(branches[0]?.rKey ?? '')}
+        headway={routeHeadway}
       />
       <SidebarCardListRows className="space-y-1 mt-0.5">
         {items.map(item => {

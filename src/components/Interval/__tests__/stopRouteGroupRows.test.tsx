@@ -10,6 +10,7 @@ const branch = (headsign: string, directionId: number, minutes: number): StopBra
   headsign,
   directionId,
   service: { byPeriod: { midday: minutes } } as unknown as StopBranch['service'],
+  rowHeadway: minutes,
 });
 
 function renderGroup(setHoveredBranch = vi.fn()) {
@@ -30,6 +31,20 @@ function renderGroup(setHoveredBranch = vi.fn()) {
 }
 
 describe('StopRouteGroup rows (CIV-918)', () => {
+  it("rows show each pattern's own value; the route line keeps the pooled value where it is better", () => {
+    const pooled = (headsign: string, directionId: number, own: number) => ({ ...branch(headsign, directionId, 5), rowHeadway: own });
+    render(
+      <StopRouteGroup
+        shortName="504" longName="King" agencyName="TTC" agencySlug="ttc"
+        branches={[pooled('Broadview', 0, 10), pooled('Distillery', 0, 10)]}
+        period="midday" showAgency={false} onOpenRoute={() => {}}
+      />,
+    );
+    // Never "to Broadview every 5 min": that destination comes every 10.
+    expect(screen.getAllByText('every 10 min')).toHaveLength(2);
+    expect(screen.getAllByText('every 5 min')).toHaveLength(1);
+  });
+
   it('gives every destination its own frequency, even when they all match', () => {
     renderGroup();
     expect(screen.getAllByText('every 20 min')).toHaveLength(2);
