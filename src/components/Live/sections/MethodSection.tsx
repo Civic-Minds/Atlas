@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { dateRangeText, type LiveV3 } from '../../../../shared/liveDashboard';
+import { dateRangeText, goodDayCounts, type LiveV3 } from '../../../../shared/liveDashboard';
 import type { AgencySummary } from '../../../../shared/liveAgency';
 import { builtText, coveredRoutesText, METHOD_GROUPS } from '../../../../shared/liveWording';
 import { weekWindowParts } from '../../../utils/liveKpi';
@@ -38,7 +38,9 @@ export default function MethodSection(props: MethodSectionProps): ReactNode {
   if (props.scope === 'route') {
     const { data } = props;
     const { v3 } = data;
-    const [first, last] = [v3.window.dates[0], v3.window.dates[v3.window.dates.length - 1]];
+    // The good days only, the days every figure counts (CIV-910).
+    const good = goodDayCounts(v3);
+    const [first, last] = [good.dates[0], good.dates[good.dates.length - 1]];
     const lo = v3.leftOut;
     const unknown = v3.serviceDelivered?.overall.unknown ?? 0;
     return (
@@ -54,7 +56,7 @@ export default function MethodSection(props: MethodSectionProps): ReactNode {
         <Term t="Linked to">measured in the same stretch, not the cause.</Term>,
       ] },
       { label: METHOD_GROUPS.data, items: [
-        `Last ${v3.window.days} service days, ${dateRangeText(first, last)}: ${v3.totals.runs.toLocaleString()} trips and ${v3.totals.stopPassages.toLocaleString()} stop departures.`,
+        `Last ${good.days} service days, ${dateRangeText(first, last)}: ${good.runs.toLocaleString()} trips and ${good.stopPassages.toLocaleString()} stop departures.`,
         ...(v3.weekly ? weekWindowItems(v3.weekly) : []),
         positionsLine,
         tripMatchLine(true),
@@ -66,7 +68,7 @@ export default function MethodSection(props: MethodSectionProps): ReactNode {
         recordingGapsLine,
         <Term t="Near a limit">vehicles are seen only about once a minute, so the {pct(v3.uncertainty.nearCutoffShare)} of trips leaving the end of the line within {Math.round(v3.uncertainty.withinMin * 60)} seconds of a limit could land on either side of it.</Term>,
         // The share is of the raw runs seen; the kept count is the trips the figures describe, the header's count (CIV-910).
-        lo && lo.noTimetableTrip > 0 && <Term t="Unscheduled trips">{lo.noTimetableTrip.toLocaleString()} runs ({pct(lo.noTimetableTrip / (lo.kept + lo.noTimetableTrip + lo.excluded))} of the vehicle trips seen) under a trip number not on the timetable, such as extra or unscheduled buses, are left out; the figures describe the {v3.totals.runs.toLocaleString()} timetabled trips kept.</Term>,
+        lo && lo.noTimetableTrip > 0 && <Term t="Unscheduled trips">{lo.noTimetableTrip.toLocaleString()} runs ({pct(lo.noTimetableTrip / (lo.kept + lo.noTimetableTrip + lo.excluded))} of the vehicle trips seen) under a trip number not on the timetable, such as extra or unscheduled buses, are left out; the figures describe the {good.runs.toLocaleString()} timetabled trips kept.</Term>,
         lo && lo.excluded > 0 && <Term t="Other services">{lo.excluded.toLocaleString()} runs by {lo.excludedLabel ?? 'another service'} that share this route number are left out.</Term>,
         <Term t="Mismatched trip numbers">{pct(v3.swaps.rate)} of trips ran under a trip number that did not fit their own timetable slot: {v3.swaps.reassigned} were matched to the slot that fit, {v3.swaps.dropped} were left out.</Term>,
         unknown > 0 && <Term t="Unjudged trips">{unknown.toLocaleString()} trips that could not be judged are left out of Delivered.</Term>,

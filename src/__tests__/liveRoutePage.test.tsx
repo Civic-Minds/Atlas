@@ -97,6 +97,20 @@ describe('Live route dashboard', () => {
     expect(screen.getAllByText(/more than 5½ min behind the timetable.*? Ahead means 1\.5\+ minutes before it\./).length).toBeGreaterThan(0);
   });
 
+  it('the header trip count and the service-days line count only the good days, and the excluded day is still named (CIV-910)', async () => {
+    const dates = ['2026-10-10', '2026-10-11', '2026-10-12', '2026-10-13', '2026-10-14', '2026-10-15', '2026-10-16'];
+    const good = dates.filter(d => d !== '2026-10-11');
+    const wk = (ds: string[], healthy: string[]) => ({ dates: ds, healthyDates: healthy }) as unknown as NonNullable<LiveV3['weekly']>['thisWeek'];
+    const last = ['2026-10-03', '2026-10-04', '2026-10-05', '2026-10-06', '2026-10-07', '2026-10-08', '2026-10-09'];
+    const weekly = { comparable: true, minHealthyDays: 4, thisWeek: wk(dates, good), lastWeek: wk(last, last) } as unknown as LiveV3['weekly'];
+    const withBadDay: LiveV3 = { ...v3, window: { days: 7, dates, requestedDays: 7, goodDates: good }, totals: { runs: 2693, stopPassages: 80000, droppedOffTimetable: 0, goodRuns: 2368, goodStopPassages: 70000 }, weekly };
+    renderPage({ ...ready, v3: withBadDay });
+    expect(await screen.findByText(/Last 6 service days, Oct 10–16: 2,368 trips and 70,000 stop departures\./)).toBeTruthy();
+    expect(screen.getAllByText(/Excluding Oct 11 this week\./).length).toBeGreaterThan(0);
+    expect(document.body.textContent).toMatch(/· 2,368 trips ·/);
+    expect(document.body.textContent).not.toMatch(/2,693/);
+  });
+
   it('has no time-of-day toggle: the whole day, a per-period list where the answer differs, and the direction in the address', async () => {
     renderPage(ready);
     await screen.findByRole('heading', { level: 1 });

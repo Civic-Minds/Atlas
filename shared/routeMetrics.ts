@@ -126,3 +126,9 @@ export function goodDates(windowDates: readonly string[], health: readonly DayHe
 export function keepGoodDays<T extends { date: string }>(rows: readonly T[], good: ReadonlySet<string>): T[] {
   return rows.filter(r => good.has(r.date));
 }
+
+/** Trips and stop departures over the good days only (CIV-910): the header's trip count and the "Last N service days" line. */
+export function goodDayTotals(runs: ReadonlyArray<{ date: string; stops: readonly unknown[] }>, good: ReadonlySet<string>): { runs: number; stopPassages: number } {
+  const kept = keepGoodDays(runs, good);
+  return { runs: kept.length, stopPassages: kept.reduce((n, r) => n + r.stops.length, 0) };
+}

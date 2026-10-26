@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { adherenceReport, delayBuildup, stopDelayStats, type RunDelays } from '../stopDelay';
 import { headwayBandStat } from '../segmentDelay';
 import { stopBunching, stopGapsRow } from '../bunching';
-import { dayHealth, delivered, goodDates, snapshotsPerDate, HEALTHY_DAY_SHARE, MIN_SAME_TYPE_DAYS, keepGoodDays, runTimeStat, weekSplit, type RunTimeRow, type TripOutcome } from '../routeMetrics';
+import { dayHealth, delivered, goodDates, goodDayTotals, snapshotsPerDate, HEALTHY_DAY_SHARE, MIN_SAME_TYPE_DAYS, keepGoodDays, runTimeStat, weekSplit, type RunTimeRow, type TripOutcome } from '../routeMetrics';
 
 const row = (sched: number, actual: number): RunTimeRow => ({ date: 'd', directionId: 0, startHour: 8, schedSec: sched * 60, actualSec: actual * 60 });
 
@@ -57,6 +57,15 @@ describe('good days only (CIV-318)', () => {
   const run = (date: string, delayMin: number, hour = 8): RunDelays => ({ date, directionId: 0, tripId: `${date}-${delayMin}`, stops: [{ stopId: 'A', t: 0, hour, delaySec: delayMin * 60 }] });
   // 30 on-time runs on each good day, and the bad day is all very late.
   const runs = window.flatMap(d => Array.from({ length: 30 }, () => run(d, d === '2026-10-12' ? 20 : 0)));
+
+  it('the trip count and stop departures leave the bad day out (CIV-910)', () => {
+    // 30 runs a day over 4 days, one stop each; Oct 12 is the bad day.
+    expect(goodDayTotals(runs, good)).toEqual({ runs: 90, stopPassages: 90 });
+    const twoStops = runs.map(r => ({ ...r, stops: [...r.stops, ...r.stops] }));
+    expect(goodDayTotals(twoStops, good)).toEqual({ runs: 90, stopPassages: 180 });
+    expect(goodDayTotals(runs, new Set(window))).toEqual({ runs: 120, stopPassages: 120 });
+    expect(runs).toHaveLength(120);
+  });
 
   it('worst stops and a direction late share: the bad day is excluded and the result is the hand-computed value', () => {
     const all = stopDelayStats(runs)[0];

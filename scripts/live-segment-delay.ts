@@ -24,7 +24,7 @@ import { adherenceReport, delayBuildup, stopDelayStats, type RunDelays, type Run
 import { BUNCHED_GAP_SEC, bunchingLinks, bunchingProfile, stopBunching, stopGapsRow, type GapWindow, type StopGapsRow } from '../shared/bunching.js';
 import { EARLY_AT_OR_BELOW_MIN, LATE_AT_OR_ABOVE_MIN } from '../shared/liveDelayStatus.js';
 import { feedGaps, routeEmptyMinutes, MIN_SCHEDULED_TRIPS } from '../shared/feedOutages.js';
-import { dayHealth, delivered, goodDates, keepGoodDays, runTimeStat, snapshotsPerDate, weekSplit, MIN_HEALTHY_DAYS, type RunTimeRow } from '../shared/routeMetrics.js';
+import { dayHealth, delivered, goodDates, goodDayTotals, keepGoodDays, runTimeStat, snapshotsPerDate, weekSplit, MIN_HEALTHY_DAYS, type RunTimeRow } from '../shared/routeMetrics.js';
 import { branchOnlyStops, branchPatterns, mainStretchStops, regularPatterns, reliableStretch, stationOrLoop, RELIABLE_STOP_MIN_SHARE } from '../shared/mainStretch.js';
 import { SHARED_STRETCH_MIN_KM, SHARED_STRETCH_MIN_STOPS } from '../pipeline/sharedStretch.js';
 import { LIVE_DASHBOARD_UNCERTAIN_START } from '../shared/liveDashboard.js';
@@ -1249,7 +1249,11 @@ const v3 = {
   },
   swaps: { reassigned: swapsReassigned, dropped: swapsDropped, rate: r3(windowRuns.length + swapsDropped ? swapsInWindow.length / (windowRuns.length + swapsDropped) : 0) },
   uncertainty: { nearCutoffShare: r3(nearCutoffShare), withinMin: 0.75, note: 'Share of terminal departures within 0.75 min of an on-time cutoff; positions are about a minute apart, so those can land on either side.' },
-  totals: { runs: windowRuns.length, stopPassages: windowRuns.reduce((n, r) => n + r.stops.length, 0), droppedOffTimetable: delaysExcluded },
+  totals: {
+    runs: windowRuns.length, stopPassages: windowRuns.reduce((n, r) => n + r.stops.length, 0), droppedOffTimetable: delaysExcluded,
+    // The same over the good days (window.goodDates) only: what the pages show, so the counts match every figure (CIV-910).
+    ...(({ runs, stopPassages }) => ({ goodRuns: runs, goodStopPassages: stopPassages }))(goodDayTotals(windowRuns, inGoodDays)),
+  },
   directionLabels,
   // The headline adherence counts each trip's departure from the end of the line (its first stop), as the TTC does; the
   // key stays 'timepoints' for older readers. allStops counts every stop.
