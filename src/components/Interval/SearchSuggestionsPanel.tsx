@@ -4,7 +4,7 @@ import {
   PANEL_SECTION_HEAD,
   LIST_ROW_DIM,
 } from '../../styles';
-import Panel from '../ui/Panel';
+import Panel, { PanelBody } from '../ui/Panel';
 import { shortenAgencyName, routeLabels } from '../../utils/format';
 import { splitRouteKey } from '../../utils/routeKey';
 import RouteListRow from '../RouteListRow';
@@ -113,7 +113,7 @@ export const SearchSuggestionsPanel: React.FC<SearchSuggestionsPanelProps> = ({
     // The sidebar caps its height to the space below the search bar (above the bottom pills);
     // the panel shrinks to that cap and its list scrolls inside it instead of running off screen.
     <Panel className="min-h-0" data-testid="search-suggestions-panel">
-      <div className="min-h-0 overflow-y-auto overscroll-contain" data-testid="search-suggestions-scroll">
+      <PanelBody className="overscroll-contain" data-testid="search-suggestions-scroll">
       {recentSearches.length > 0 && (
         <>
           <div className={`flex items-center justify-between ${PANEL_SECTION_HEAD}`}>
@@ -194,7 +194,7 @@ export const SearchSuggestionsPanel: React.FC<SearchSuggestionsPanelProps> = ({
             <PanelEmpty>No route suggestions in this area.</PanelEmpty>
           )}
       </>
-      </div>
+      </PanelBody>
     </Panel>
   );
 };

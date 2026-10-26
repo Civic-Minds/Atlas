@@ -11,6 +11,7 @@ import type { OpenInfoFn } from '../InfoPanel';
 import type { AgencyLayers } from '../../hooks/useAgencyData';
 import { CARD_NOTICE_FOOTER, CARD_NOTICE_INLINE, sidebarFrameStyle } from '../../styles';
 import Panel, { PanelBody } from '../ui/Panel';
+import RouteRowName from '../RouteRowName';
 import Pill from '../ui/Pill';
 import ModeFilterPillRow from '../ui/ModeFilterPillRow';
 import { HEADWAY_TIERS } from '../../utils/colors';
@@ -561,7 +562,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
                 <CardSectionLabel>On-demand service</CardSectionLabel>
                 {services.map((item, index) => (
                   <div key={item.serviceName} className={index > 0 ? 'mt-1.5' : ''}>
-                    <p className="text-xs font-black text-[var(--text-primary)] leading-snug">{item.serviceName}</p>
+                    <p className="text-xs text-[var(--text-primary)] leading-snug"><RouteRowName shortName={item.serviceName} /></p>
                     {item.availability || item.serviceHours ? (
                       <OnDemandHoursText
                         availability={item.availability}
@@ -648,7 +649,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
         </AgencyCardTop>
       </div>
 
-      <div className="flex-1 overflow-y-auto custom-scrollbar">
+      <PanelBody>
         {onDemandOn ? (
           <PanelEmpty>{ON_DEMAND_NOT_MAPPED_NOTE}</PanelEmpty>
         ) : visibleRoutes.length === 0 ? (
@@ -697,7 +698,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
             onRouteSelect={onRouteSelect}
           />
         )}
-      </div>
+      </PanelBody>
     </Panel>
   );
 });
