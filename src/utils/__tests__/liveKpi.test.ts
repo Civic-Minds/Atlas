@@ -146,3 +146,12 @@ describe('the method line for the days left out', () => {
     expect(weekWindowParts(weeks(wk(t, t), wk(l, l))).days).toBeNull();
   });
 });
+
+describe('network run time against the timetable (CIV-945)', () => {
+  it('writes the share faster or slower, and on time when it rounds to 0%', async () => {
+    const { runTimeShareText } = await import('../liveAgencyKpi');
+    expect(runTimeShareText(-0.071)).toBe('7% faster');
+    expect(runTimeShareText(0.03)).toBe('3% slower');
+    expect(runTimeShareText(0.004)).toBe('on time');
+  });
+});

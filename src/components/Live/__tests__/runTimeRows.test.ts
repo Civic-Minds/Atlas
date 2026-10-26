@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { LiveV3 } from '../../../../shared/liveDashboard';
-import { placeRowLabels, rowPercent, runTimeRowScale, runTimeRows } from '../sections/runTimeRows';
+import { patternRunTimeRows, placeRowLabels, rowPercent, runTimeRowScale, runTimeRows } from '../sections/runTimeRows';
 
 const fig = (n: number, s: number, t: number, p: number) => ({ n, scheduledMin: s, typicalMin: t, p90Min: p, overMin: t - s });
 const stretch = (from: string, to: string, stops: number) => ({ fromStopId: from, toStopId: to, fromName: from, toName: to, stops, fullRoute: false, mainPatternTrips: 100, trips: 100 });
@@ -92,5 +92,27 @@ describe('runTimeRows figures', () => {
   it('begin with the direction, which the page shows once in its heading', () => {
     const w = { ...v3, directionLabels: { '0': 'Westbound', '1': 'Eastbound' } } as unknown as LiveV3;
     expect(runTimeRows(w, 'all', [0], nice)[0][0].figures).toBe('Westbound: scheduled 34 min · usually 31 · 1 in 10 over 37 min (900 trips)');
+  });
+});
+
+describe('patternRunTimeRows (CIV-945)', () => {
+  const p = (kind: 'main' | 'shortTurn' | 'branch', from: string, to: string, stops: number, n: number, t: number) => ({ kind, fromStopId: from, toStopId: to, fromName: from, toName: to, stops, patternStops: stops, fullPattern: true, all: fig(n, t, t, t + 3), bands: { all: fig(n, t, t, t + 3) }, byHour: [] });
+  const withPatterns = { directionLabels: { '0': 'Southbound' }, runningTime: { patterns: { '0': [p('main', 'A', 'U', 17, 500, 27), p('shortTurn', 'A', 'Q', 13, 160, 23)] }, bands: { all: {} }, byHour: {} } } as unknown as LiveV3;
+  it('gives one row per pattern, the main pattern first, each labelled with its kind and stops', () => {
+    const rows = patternRunTimeRows(withPatterns, 'all', 0, nice)!;
+    expect(rows.map(r => r.label)).toEqual(['Main: A → U · 17\u00a0stops', 'Short turn: A → Q · 13\u00a0stops']);
+    expect(rows.map(r => r.main)).toEqual([true, false]);
+    expect(rows[1].typical).toBe(23);
+  });
+  it('says how much of a trimmed pattern is timed', () => {
+    const trimmed = { ...withPatterns, runningTime: { ...withPatterns.runningTime, patterns: { '0': [{ ...p('main', 'Q', 'S', 13, 500, 22), patternStops: 18, fullPattern: false }] } } } as unknown as LiveV3;
+    expect(patternRunTimeRows(trimmed, 'all', 0, nice)![0].label).toBe('Main: Q → S · 13\u00a0of\u00a018\u00a0stops');
+  });
+  it('leaves out a trimmed main row no longer than a short turn', () => {
+    const tunnel = { ...withPatterns, runningTime: { ...withPatterns.runningTime, patterns: { '0': [{ ...p('main', 'Q', 'S', 13, 500, 22), patternStops: 18, fullPattern: false }, { ...p('shortTurn', 'L', 'S', 13, 300, 23), patternStops: 14, fullPattern: false }] } } } as unknown as LiveV3;
+    expect(patternRunTimeRows(tunnel, 'all', 0, nice)!.map(r => r.label)).toEqual(['Short turn: L → S · 13\u00a0of\u00a014\u00a0stops']);
+  });
+  it('is null for an older file', () => {
+    expect(patternRunTimeRows(v3, 'all', 0, nice)).toBeNull();
   });
 });

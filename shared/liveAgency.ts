@@ -4,7 +4,7 @@
  * route, so a quiet route does not count as much as the 504. Every figure says how many of the agency's routes it covers.
  * Pure: the builder script (scripts/live-agency-summary.ts) reads the files, this turns them into the page's numbers.
  */
-import { dailyValuesOf, healthyLateByHour, rankStops, type DailyValues, type LiveV3, type UncertainStart, type WeekMetrics } from './liveDashboard.js';
+import { withMainPatternTrip, dailyValuesOf, healthyLateByHour, rankStops, type DailyValues, type LiveV3, type UncertainStart, type WeekMetrics } from './liveDashboard.js';
 
 /** Stops and stretches need this many measurements to be ranked (the route page's rule). */
 export const AGENCY_MIN_N = 30;
@@ -142,7 +142,9 @@ export function agencySummary(input: {
   generatedAt?: string;
   top?: { stops?: number; stretches?: number };
 }): AgencySummary {
-  const { agency, routes } = input;
+  const { agency } = input;
+  // Run time over each route's main pattern only (CIV-945), so the network's figure and each route's row match the route's own.
+  const routes = input.routes.map(r => ({ ...r, v3: withMainPatternTrip(r.v3) }));
   const topStops = input.top?.stops ?? 10, topStretches = input.top?.stretches ?? 10;
   const withWeekly = routes.filter(r => r.v3.weekly);
   const weekly = withWeekly.length ? (() => {

@@ -14,7 +14,8 @@ const signed = (x: number) => `${x > 0 ? '+' : x < 0 ? '−' : ''}${Math.abs(Mat
 function figure(r: AgencyRouteRow, v3: LiveV3 | undefined, measure: MapMeasure, band: DashboardBand = 'all'): { value: number; text: string } | null {
   switch (measure) {
     case 'late': return r.lateShare == null ? null : { value: r.lateShare, text: pct(r.lateShare) };
-    case 'runTime': return r.runTimeOver == null ? null : { value: r.runTimeOver, text: r.runTimeDiffMin != null ? runTimeDiffText(r.runTimeDiffMin, false) : signed(r.runTimeOver) };
+    // Sorted by the minutes it shows (a share would put "4 min faster" above "8 min faster").
+    case 'runTime': return r.runTimeOver == null ? null : { value: r.runTimeDiffMin ?? r.runTimeOver, text: r.runTimeDiffMin != null ? runTimeDiffText(r.runTimeDiffMin, false) : signed(r.runTimeOver) };
     case 'delayStarts': {
       // The route's stop where vehicles add the most, for the map's time of day (the heatmap prototype).
       const top = v3 ? Math.max(0, ...delayHeatPoints(new Map([[r.route, v3]]), band).map(p => p.addedMin)) : null;

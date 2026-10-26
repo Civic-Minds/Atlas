@@ -46,6 +46,36 @@ export function runTimeRows(v3: LiveV3, band: DashboardBand, dirs: readonly numb
   return out;
 }
 
+/** The kind words on the planner's per-pattern rows (CIV-945, wording to confirm). */
+export const PATTERN_KIND_WORDS = { main: 'Main', shortTurn: 'Short turn', branch: 'Branch' } as const;
+
+/**
+ * The planner's rows for one direction, one per regular pattern timed on its own trips (CIV-945), the main pattern first,
+ * each labelled "Main: From → To · N stops". Null when the file has no per-pattern figures (older files).
+ */
+export function patternRunTimeRows(v3: LiveV3, band: DashboardBand, d: number, nice: (name: string) => string): RunTimeRow[] | null {
+  const list = v3.runningTime?.patterns?.[String(d)];
+  if (!list?.length) return null;
+  const dirName = v3.directionLabels?.[String(d)];
+  // A main pattern trimmed at a poorly measured end to no more stops than a short turn would read as no longer than it
+  // (the 510 northbound at the Union tunnel): its row is left out; the week table still gives the main pattern's figure.
+  const main = list.find(p => p.kind === 'main');
+  const hideMain = !!main && main.stops < main.patternStops && list.some(p => p.kind === 'shortTurn' && p.stops >= main.stops);
+  return list.filter(p => !(hideMain && p === main)).flatMap(p => {
+    const f = branchFigures(p, band);
+    if (!f) return [];
+    return [{
+      key: `${d}-${p.kind}-${p.fromStopId}-${p.toStopId}`, direction: d, main: p.kind === 'main',
+      // A pattern trimmed at a poorly measured end says how much of it is timed: "13 of 18 stops".
+      // The stop count never breaks across lines (no-break spaces): "13 of 18 stops" wraps as one piece.
+      label: `${PATTERN_KIND_WORDS[p.kind]}: ${nice(p.fromName)} → ${nice(p.toName)} · ${`${p.stops < p.patternStops ? `${p.stops} of ${p.patternStops}` : p.stops} stops`.replace(/ /g, '\u00a0')}`,
+      trips: f.n, thin: f.n < MIN_PATTERN_TRIPS,
+      typical: finite(f.typicalMin) ? f.typicalMin : undefined, scheduled: finite(f.scheduledMin) ? f.scheduledMin : undefined, p90: finite(f.p90Min) ? f.p90Min : undefined,
+      figures: `${dirName ? `${dirName}: ` : ''}${runningTimeFigures(f)} (${f.n.toLocaleString()} trips)`,
+    }];
+  });
+}
+
 /** One minutes range for every row of the section (both directions), whole 5-minute steps with a little headroom. Thin main rows are left out. */
 export function runTimeRowScale(rows: readonly RunTimeRow[]): { min: number; max: number } {
   const v = rows.filter(r => !(r.main && r.thin)).flatMap(r => [r.typical, r.scheduled, r.p90]).filter(finite);
