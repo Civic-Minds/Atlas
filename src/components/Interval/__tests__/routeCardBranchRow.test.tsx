@@ -48,6 +48,9 @@ const cityCollege = {
   directionFilterHeadwayByPeriod: { pmPeak: null, midday: 10 }, stretchPeriodOneGap: { pmPeak: false, midday: false },
 } as unknown as ShapeProperties;
 
+// A part-period value is drawn in two parts that may wrap after the comma (#1128); match the whole badge.
+const partPeriodBadge = (re: RegExp) => (_: string, el: Element | null) => !!el?.classList.contains('flex-wrap') && re.test(el.textContent ?? '');
+
 describe('route card rows when the route has no regular service (#954)', () => {
   it("shows a row's own direction value; a row without one still reads no regular service", () => {
     renderRows([cityCollege, wharf], 'pmPeak', 'sfmta');
@@ -157,7 +160,7 @@ describe('route card rows word part-period and one-gap service (#934)', () => {
     const row = { ...bx, directionId: 0, headsign: 'Fisherman\'s Wharf', headway: 9, directionFilterHeadwayByPeriod: { amPeak: 77 },
       stretchPeriodEdge: { amPeak: { from: 437, every: 9 } } } as unknown as ShapeProperties;
     renderRows([row], 'amPeak' as any, 'sfmta');
-    expect(screen.getByText(/from 7:17am, every 9 min/)).toBeTruthy();
+    expect(screen.getByText(partPeriodBadge(/from 7:17am, every 9 min/))).toBeTruthy();
     expect(screen.queryByText(/every 77/)).toBeNull();
   });
   it('a part-period row reads "until 9:37am, every 12 min" instead of limited', () => {
@@ -170,7 +173,7 @@ describe('route card rows word part-period and one-gap service (#934)', () => {
       routeFilterHeadwayByPeriod: { midday: 30 }, routeRunsByPeriod: { midday: true }, directionFilterHeadwayByPeriod: { midday: 30 },
       stretchPeriodOneGap: { midday: false } } as unknown as ShapeProperties;
     renderRows([other, row], 'midday', 'cta');
-    expect(screen.getByText(/until 9:37am, every 12 min/)).toBeTruthy();
+    expect(screen.getByText(partPeriodBadge(/until 9:37am, every 12 min/))).toBeTruthy();
     expect(partPeriodText(row, 'midday')).toBe('until 9:37am, every 12 min');
   });
   it('one gap inside steady service reads "every 10 min, with a 45 min gap"', () => {
@@ -178,13 +181,13 @@ describe('route card rows word part-period and one-gap service (#934)', () => {
       routeFilterHeadwayByPeriod: { midday: 45 }, routeRunsByPeriod: { midday: true }, directionFilterHeadwayByPeriod: { midday: 45 },
       stretchPeriodOneGap: { midday: false }, stretchPeriodGap: { midday: { every: 10, gap: 45 } } } as unknown as ShapeProperties;
     renderRows([row], 'midday', 'ttc');
-    expect(screen.getByText(/every 10 min, with a 45 min gap/)).toBeTruthy();
+    expect(screen.getByText(partPeriodBadge(/every 10 min, with a 45 min gap/))).toBeTruthy();
   });
   it('the stop card shows the same part-period words (route card and stop card agree)', () => {
     render(<StopRouteGroup shortName="134" label={routeLabels({ shortName: '134', longName: 'Stony Island' })} longName="Stony Island" agencyName="CTA" branches={[
       { rKey: 'cta::134', headsign: 'Downtown', directionId: 1, service: { value: 12 } as any, periodText: 'until 9:37am, every 12 min' },
     ]} period="midday" showAgency={false} onOpenRoute={() => {}} />);
-    expect(screen.getByText('until 9:37am, every 12 min')).toBeTruthy();
-    expect(screen.queryByText('every 12 min')).toBeNull();
+    expect(screen.getByText(partPeriodBadge(/^until 9:37am, every 12 min$/))).toBeTruthy();
+    expect(screen.queryAllByText('every 12 min').filter(el => !el.closest('.flex-wrap'))).toHaveLength(0);
   });
 });

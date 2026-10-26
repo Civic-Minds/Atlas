@@ -8,14 +8,13 @@ import { trackEvent } from '../../lib/analytics';
 import { OutboundLink } from '../OutboundLink';
 import { ConsentPill } from '../AnalyticsConsent';
 import { registerConsentRow, useConsentPrompt } from '../../lib/consentPrompt';
+import { BASEMAP_ATTRIBUTION } from '../../lib/basemap';
 
 const ATTRIB_LINK =
   `${MAP_BADGE_LABEL} text-[var(--text-dim)] no-underline hover:text-[var(--text-primary)]`;
 
-const FULL_ATTRIBUTION =
-  'Map tiles by CARTO, under CC BY 3.0. Data by OpenStreetMap, under ODbL.';
 
-/** Basemap credit — linked names satisfy OSM + CARTO attribution requirements. */
+/** Basemap credit: CARTO's required line, "© OpenStreetMap contributors, © CARTO", with both names linked. */
 export function MapAttribution({ whatsNewEnabled = FEATURES.whatsNew }: { whatsNewEnabled?: boolean } = {}) {
   const [whatsNewOpen, setWhatsNewOpen] = useState(false);
   // The analytics prompt is this row's last pill on sm and up, so it shares the row's baseline
@@ -46,7 +45,7 @@ export function MapAttribution({ whatsNewEnabled = FEATURES.whatsNew }: { whatsN
     <div
       className={`max-sm:absolute max-sm:bottom-6 max-sm:left-6 max-sm:max-w-[calc(100vw-3rem)] ${Z_PANEL} sm:min-w-0 pointer-events-none [&>*]:pointer-events-auto flex flex-wrap-reverse items-center gap-1.5`}
       data-map-attribution=""
-      title={FULL_ATTRIBUTION}
+      title={BASEMAP_ATTRIBUTION}
     >
       <div ref={aboutRef} className="relative sm:hidden">
         <button
@@ -111,17 +110,19 @@ export function MapAttribution({ whatsNewEnabled = FEATURES.whatsNew }: { whatsN
           <OutboundLink
             href="https://www.openstreetmap.org/copyright"
             kind="attribution"
+            aria-label="© OpenStreetMap contributors"
             className={ATTRIB_LINK}
           >
-            OpenStreetMap
+            {/* Phones have room for the short form beside the location button; the hover keeps the full line. */}
+            © OpenStreetMap<span className="max-sm:hidden"> contributors</span>
           </OutboundLink>
-          <span className={MAP_BADGE_LABEL}> · </span>
+          <span className={MAP_BADGE_LABEL}>, </span>
           <OutboundLink
             href="https://carto.com/attributions"
             kind="attribution"
             className={ATTRIB_LINK}
           >
-            CARTO
+            © CARTO
           </OutboundLink>
         </p>
       </div>

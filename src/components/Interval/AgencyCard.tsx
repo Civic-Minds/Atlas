@@ -25,7 +25,7 @@ import { AgencyCardTop, AgencyDataSourceLink, SidebarCardHeader, CARD_HEADER_BLO
 import CardRouteList from './CardRouteList';
 import { OutboundLink } from '../OutboundLink';
 import { buildRouteFacts, type RouteLabel } from '../../utils/routeFacts';
-import { currentAtlasUrl } from '../../utils/reportIssue';
+import { reportDetails } from '../../utils/reportIssue';
 import { getRolloutNotice } from '../../../shared/rolloutNotice';
 import { onDemandCardName } from '../../utils/onDemandSelection';
 import { onDemandCoverageNote } from '../../data/onDemandCoverage';
@@ -417,7 +417,14 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
     <CardReportButton
       title={`Agency issue: ${agency.name}`}
       // The data dates the route card's report sends too (CIV-932), so an agency report says how fresh its data is.
-      details={`**Agency:** ${agency.name}\n**Agency slug:** ${agency.slug}\n**Day:** ${day}\n**Period:** ${period}\n**Agency data refreshed:** ${agency.lastRefreshedAt ?? 'unknown'}\n**Feed expiry:** ${agency.lastFeedExpiry ?? 'unknown'}\n**Atlas URL:** ${currentAtlasUrl()}`}
+      details={reportDetails([
+        ['Agency', agency.name],
+        ['Agency slug', agency.slug],
+        ['Day', day],
+        ['Period', period],
+        ['Agency data refreshed', agency.lastRefreshedAt ?? 'unknown'],
+        ['Feed expiry', agency.lastFeedExpiry ?? 'unknown'],
+      ])}
       excludeReasons={['Stop is missing, misplaced, or assigned incorrectly', 'Route line is missing or follows the wrong path']}
     />
   );
