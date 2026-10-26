@@ -494,7 +494,8 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     }
   }, [agencies.length, analyticsApp, day, hideSpan, livePollingOnly, maxHeadway, period, selectedAgencies, selectedModes]);
 
-  const selectionUiVisible = showSelectionUi && (!!selectedRoute || !!selectedStop || !!disambiguationRoutes?.length || !!selectedAgencySlug);
+  // Frequent Service draws its route card over the research info card, so a selection there counts too.
+  const selectionUiVisible = (showSelectionUi || frequentServiceView) && (!!selectedRoute || !!selectedStop || !!disambiguationRoutes?.length || !!selectedAgencySlug);
   const showSidebar = showUi || selectionUiVisible;
 
   useEffect(() => {
