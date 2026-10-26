@@ -9,6 +9,8 @@ export type CardSide = 'left' | 'right';
 /** The phone top bar's buttons sit 21px in from each side and end 51px from the top (measured at 360-402px wide). */
 const PHONE_TOP_BAR_SIDE_INSET = 21;
 const PHONE_TOP_BAR_BOTTOM = 51;
+/** Below this map width the card is a phone card or bottom sheet, not a card beside the map. */
+const PHONE_MAP_WIDTH = 640;
 /** Clear space kept between a framed route and the top bar or screen edge. */
 const PHONE_FRAME_MARGIN = 24;
 
@@ -29,7 +31,7 @@ function cardRectPadding(container: HTMLElement, card: CardRect, side: CardSide,
   const bottom = card.bottom - box.top;
   const left = card.left - box.left;
   const right = card.right - box.left;
-  if (clientWidth < 640) {
+  if (clientWidth < PHONE_MAP_WIDTH) {
     const inset = PHONE_TOP_BAR_SIDE_INSET + PHONE_FRAME_MARGIN;
     const topBar = PHONE_TOP_BAR_BOTTOM + PHONE_FRAME_MARGIN;
     // A bottom sheet keeps the space above it; a card at the top keeps the space below it.
@@ -65,13 +67,18 @@ export function routeFramePadding(
   const { clientWidth, clientHeight } = container;
   if (card && card.bottom > card.top && card.right > card.left) return cardRectPadding(container, card, side, phoneSheet);
   // Live's card is a bottom sheet on phones; the main map and History keep their framing.
-  if (phoneSheet && clientWidth < 640) {
+  if (phoneSheet && clientWidth < PHONE_MAP_WIDTH) {
     const inset = PHONE_TOP_BAR_SIDE_INSET + PHONE_FRAME_MARGIN;
     return { top: PHONE_TOP_BAR_BOTTOM + PHONE_FRAME_MARGIN, bottom: Math.round(clientHeight * 0.45), left: inset, right: inset };
   }
   return side === 'left'
     ? { top: 80, bottom: 80, left: 320, right: 80 }
     : { top: 80, bottom: 80, left: 80, right: 280 };
+}
+
+/** True when the card sits beside the map (wide screens), so its width sets the framing's side padding. */
+export function cardBesideMap(map: maplibregl.Map): boolean {
+  return map.getContainer().clientWidth >= PHONE_MAP_WIDTH;
 }
 
 /** Padding that keeps a framed route, place or vehicle clear of this card element, measured where it is now. */
