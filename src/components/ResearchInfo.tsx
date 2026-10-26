@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import Panel from './ui/Panel';
-import { CARD_HEADER_BLOCK, CARD_TITLE } from './Interval/cardUi';
+import { CARD_HEADER_ONLY, CARD_TITLE } from './Interval/cardUi';
 import { SIDEBAR_CARD, SIDEBAR_CARD_MAX_H, SIDEBAR_PANEL_WIDTH, sidebarFrameStyle } from '../styles';
 
 /**
@@ -25,7 +25,7 @@ export default function ResearchInfo({ heading, children, sidebarLeft, searchBar
       style={sidebarFrameStyle(sidebarLeft, searchBarWidth)}
     >
       <Panel enter sidebarSurface className="shrink-0">
-        <div className={CARD_HEADER_BLOCK}>
+        <div className={CARD_HEADER_ONLY}>
           <p className={CARD_TITLE}>{heading}</p>
           <p className="mt-1 text-xs text-[var(--text-muted)] font-medium leading-snug">{children}</p>
         </div>
