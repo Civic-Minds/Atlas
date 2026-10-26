@@ -132,12 +132,14 @@ export default function LiveRoutePerformance({ slug, routeShortName, feedDegrade
 
   const liveBand = livePeriod(data);
   const liveSched = sharedSummary(data, line, liveBand);
+  // No position history (archiver paused, feed degraded) leaves live null: then no "Right now" at all, never a false "Fewer than 2 cars".
   const live = feedDegraded || !recent || serverNow == null ? null : liveGaps(data, line, withStats(line, liveBand), liveBand, recent, serverNow);
 
   return (
     <div className="flex flex-col gap-3">
       {pickers}
 
+      {live && (
       <Section title={`Right now · ${torontoTime(new Date(now))}`}>
         {live && !live.incomplete ? (
           <>
@@ -155,9 +157,10 @@ export default function LiveRoutePerformance({ slug, routeShortName, feedDegrade
             </div>
           </>
         ) : (
-          <div className="text-xs font-bold text-[var(--text-muted)]">{feedDegraded || !recent || live?.incomplete ? 'Live feed incomplete right now' : 'Fewer than 2 cars on the shared section'}</div>
+          <div className="text-xs font-bold text-[var(--text-muted)]">{live.incomplete ? 'Live feed incomplete right now' : 'Fewer than 2 cars on the shared section'}</div>
         )}
       </Section>
+      )}
     </div>
   );
 }

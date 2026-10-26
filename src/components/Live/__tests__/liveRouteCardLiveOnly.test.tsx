@@ -37,4 +37,13 @@ describe('route card shows only what is live (CIV-892)', () => {
     await waitFor(() => expect(fetch).toHaveBeenCalled());
     for (const [url] of vi.mocked(fetch).mock.calls) expect(String(url)).not.toContain('live-dashboard');
   });
+
+  it('shows no "Right now" when there is no position history (CIV-893)', async () => {
+    card();
+    await waitFor(() => expect(fetch).toHaveBeenCalled());
+    await new Promise(r => setTimeout(r, 0));
+    expect(screen.queryByText(/Right now/)).toBeNull();
+    expect(screen.queryByText(/Fewer than 2 cars/)).toBeNull();
+    expect(screen.queryByText(/Live feed incomplete/)).toBeNull();
+  });
 });
