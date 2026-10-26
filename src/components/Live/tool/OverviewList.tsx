@@ -28,13 +28,15 @@ function figure(r: AgencyRouteRow, v3: LiveV3 | undefined, measure: MapMeasure, 
 
 /**
  * Each row's bar (CIV-946, "most late routes"): its length against the worst route in the list, its colour the map's
- * step for that figure, so the list reads as a ranked bar chart. Only the bad side has a bar: a run time faster than the
+ * step for that figure (run time: one neutral colour), so the list reads as a ranked bar chart. Only the bad side has a bar: a run time faster than the
  * timetable has none. Widths are shares of the bar's column (0–1).
  */
 export function routeBars(rows: { f: { value: number } | null }[], measure: MapMeasure): ({ width: number; color: string } | null)[] {
   const top = Math.max(0, ...rows.map(({ f }) => f?.value ?? 0));
   return rows.map(({ f }) => {
     if (!f || !(f.value > 0) || !(top > 0)) return null;
+    // Run time's key steps are minutes per stretch; the list's figure is minutes over the whole route: one neutral colour.
+    if (measure === 'runTime') return { width: f.value / top, color: 'var(--text-secondary)' };
     const step = mapStep(measure, f.value) ?? 0;
     return { width: f.value / top, color: `var(--strip-${measure === 'bunching' ? 'bunching' : 'delay'}-${step})` };
   });
