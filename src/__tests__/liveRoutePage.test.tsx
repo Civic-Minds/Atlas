@@ -111,6 +111,37 @@ describe('Live route dashboard', () => {
     expect(document.body.textContent).not.toMatch(/2,693/);
   });
 
+  it('the Limits shares (unscheduled trips, mismatched trip numbers, near a limit) count only the good days; older files keep the whole window (CIV-910)', async () => {
+    const dates = ['2026-10-10', '2026-10-11', '2026-10-12', '2026-10-13', '2026-10-14', '2026-10-15', '2026-10-16'];
+    const good = dates.filter(d => d !== '2026-10-11');
+    // Whole window, with the bad day: 300 unscheduled of 2,993 seen (10%), 4% mismatched, 12% near a limit.
+    // Good days: 60 unscheduled of 2,428 seen (2%), 2% mismatched, 8% near a limit.
+    const withBadDay: LiveV3 = {
+      ...v3, window: { days: 7, dates, requestedDays: 7, goodDates: good },
+      totals: { runs: 2693, stopPassages: 80000, droppedOffTimetable: 0, goodRuns: 2368, goodStopPassages: 70000 },
+      leftOut: { noTimetableTrip: 300, excluded: 0, excludedLabel: null, kept: 2693, goodNoTimetableTrip: 60, goodExcluded: 0, goodKept: 2368 },
+      swaps: { reassigned: 5, dropped: 9, rate: 0.04, goodReassigned: 3, goodDropped: 4, goodRate: 0.02 },
+      uncertainty: { nearCutoffShare: 0.12, goodNearCutoffShare: 0.08, withinMin: 0.75, note: '' },
+    };
+    const { unmount } = renderPage({ ...ready, v3: withBadDay });
+    await screen.findByText(/Last 6 service days/);
+    const text = document.body.textContent ?? '';
+    expect(text).toMatch(/60 runs \(2% of the vehicle trips seen\)/);
+    expect(text).toMatch(/2% of trips ran under a trip number that did not fit their own timetable slot: 3 were matched to the slot that fit, 4 were left out\./);
+    expect(text).toMatch(/the 8% of trips leaving the end of the line within 45 seconds of a limit/);
+    expect(text).not.toMatch(/300 runs|10% of the vehicle trips|4% of trips ran|the 12% of trips leaving/);
+    unmount();
+    clearLiveDashboardCache();
+    // A file without the good-day fields shows the whole-window figures.
+    const older: LiveV3 = { ...withBadDay, leftOut: { noTimetableTrip: 300, excluded: 0, excludedLabel: null, kept: 2693 }, swaps: { reassigned: 5, dropped: 9, rate: 0.04 }, uncertainty: { nearCutoffShare: 0.12, withinMin: 0.75, note: '' } };
+    renderPage({ ...ready, v3: older });
+    await screen.findByText(/Last 6 service days/);
+    const oldText = document.body.textContent ?? '';
+    expect(oldText).toMatch(/300 runs \(10% of the vehicle trips seen\)/);
+    expect(oldText).toMatch(/4% of trips ran under a trip number/);
+    expect(oldText).toMatch(/the 12% of trips leaving/);
+  });
+
   it('has no time-of-day toggle: the whole day, a per-period list where the answer differs, and the direction in the address', async () => {
     renderPage(ready);
     await screen.findByRole('heading', { level: 1 });

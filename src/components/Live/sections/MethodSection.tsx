@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { dateRangeText, goodDayCounts, type LiveV3 } from '../../../../shared/liveDashboard';
+import { dateRangeText, goodDayCounts, goodDayLimits, type LiveV3 } from '../../../../shared/liveDashboard';
 import type { AgencySummary } from '../../../../shared/liveAgency';
 import { builtText, coveredRoutesText, METHOD_GROUPS } from '../../../../shared/liveWording';
 import { weekWindowParts } from '../../../utils/liveKpi';
@@ -42,6 +42,9 @@ export default function MethodSection(props: MethodSectionProps): ReactNode {
     const good = goodDayCounts(v3);
     const [first, last] = [good.dates[0], good.dates[good.dates.length - 1]];
     const lo = v3.leftOut;
+    // The unscheduled-trips, mismatched-trip-numbers and near-a-limit figures over the good days too (CIV-910).
+    const lim = goodDayLimits(v3);
+    const glo = lim.leftOut;
     const unknown = v3.serviceDelivered?.overall.unknown ?? 0;
     return (
       <MethodFootnote id="method" groups={[
@@ -66,11 +69,11 @@ export default function MethodSection(props: MethodSectionProps): ReactNode {
       { label: METHOD_GROUPS.colours, items: [v3.weekly && colourLine] },
       { label: METHOD_GROUPS.limits, items: [
         recordingGapsLine,
-        <Term t="Near a limit">vehicles are seen only about once a minute, so the {pct(v3.uncertainty.nearCutoffShare)} of trips leaving the end of the line within {Math.round(v3.uncertainty.withinMin * 60)} seconds of a limit could land on either side of it.</Term>,
+        <Term t="Near a limit">vehicles are seen only about once a minute, so the {pct(lim.nearCutoffShare)} of trips leaving the end of the line within {Math.round(v3.uncertainty.withinMin * 60)} seconds of a limit could land on either side of it.</Term>,
         // The share is of the raw runs seen; the kept count is the trips the figures describe, the header's count (CIV-910).
-        lo && lo.noTimetableTrip > 0 && <Term t="Unscheduled trips">{lo.noTimetableTrip.toLocaleString()} runs ({pct(lo.noTimetableTrip / (lo.kept + lo.noTimetableTrip + lo.excluded))} of the vehicle trips seen) under a trip number not on the timetable, such as extra or unscheduled buses, are left out; the figures describe the {good.runs.toLocaleString()} timetabled trips kept.</Term>,
+        glo && glo.noTimetableTrip > 0 && <Term t="Unscheduled trips">{glo.noTimetableTrip.toLocaleString()} runs ({pct(glo.noTimetableTrip / (glo.kept + glo.noTimetableTrip + glo.excluded))} of the vehicle trips seen) under a trip number not on the timetable, such as extra or unscheduled buses, are left out; the figures describe the {good.runs.toLocaleString()} timetabled trips kept.</Term>,
         lo && lo.excluded > 0 && <Term t="Other services">{lo.excluded.toLocaleString()} runs by {lo.excludedLabel ?? 'another service'} that share this route number are left out.</Term>,
-        <Term t="Mismatched trip numbers">{pct(v3.swaps.rate)} of trips ran under a trip number that did not fit their own timetable slot: {v3.swaps.reassigned} were matched to the slot that fit, {v3.swaps.dropped} were left out.</Term>,
+        <Term t="Mismatched trip numbers">{pct(lim.swaps.rate)} of trips ran under a trip number that did not fit their own timetable slot: {lim.swaps.reassigned} were matched to the slot that fit, {lim.swaps.dropped} were left out.</Term>,
         unknown > 0 && <Term t="Unjudged trips">{unknown.toLocaleString()} trips that could not be judged are left out of Delivered.</Term>,
       ] },
     
