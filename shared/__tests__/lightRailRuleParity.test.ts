@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { createPropertyExpression, type StylePropertySpecification } from '@maplibre/maplibre-gl-style-spec';
 import { buildEffectiveModeExpression, effectiveMode, MODE_OVERRIDES, VIRTUAL_LRT_MODE } from '../modes';
+import rawOverrides from '../data/mode-overrides.json';
 
 // CIV-993: the map's expression and effectiveMode come from one rule table; this runs the real expression next to it.
 const NUMBER_SPEC = { type: 'number', 'property-type': 'data-driven', expression: { interpolated: false, parameters: ['zoom', 'feature'] } } as unknown as StylePropertySpecification;
@@ -47,8 +48,8 @@ describe('mode overrides: map expression and effectiveMode pick the same routes 
       expect(mapMode(spaced)).toBe(effectiveMode(spaced));
     }
   });
-  it('override names are stored trimmed', () => {
-    for (const o of MODE_OVERRIDES) {
+  it('override names in the committed config have no stray spaces (both sides compare exactly)', () => {
+    for (const o of (rawOverrides as { overrides: Array<{ routeShortName?: string; routeLongName?: string }> }).overrides) {
       if (o.routeShortName !== undefined) expect(o.routeShortName).toBe(o.routeShortName.trim());
       if (o.routeLongName !== undefined) expect(o.routeLongName).toBe(o.routeLongName.trim());
     }
