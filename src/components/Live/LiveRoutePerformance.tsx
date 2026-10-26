@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { Fragment, useEffect, useMemo, useState } from 'react';
 import PillGroup from '../ui/PillGroup';
 import { SidebarCardSection } from '../Interval/cardUi';
 import { useSegmentDelay } from '../../hooks/useSegmentDelay';
@@ -45,15 +45,18 @@ function livePeriod(data: SegmentDelayData, slug: string): SegmentBand {
   return key && (data.headways ?? []).some(h => h.bands[key]) ? (key as SegmentBand) : 'all';
 }
 
-/** A row of small labelled figures. */
+/**
+ * A row of small labelled figures. Labels wrap rather than cut off ("Cars (College)" on a desktop card); labels
+ * share the first grid row and figures the second, so the figures stay level when one label takes two lines.
+ */
 function Stats({ items }: { items: [string, string][] }) {
   return (
-    <div className="grid grid-cols-3 gap-2">
+    <div className="grid grid-cols-3 grid-rows-[auto_auto] grid-flow-col gap-x-2">
       {items.map(([label, value]) => (
-        <div key={label} className="min-w-0">
-          <div className="text-xs font-bold text-[var(--text-dim)] truncate">{label}</div>
-          <div className="text-sm font-black text-[var(--text-primary)] tabular-nums whitespace-nowrap">{value}</div>
-        </div>
+        <Fragment key={label}>
+          <div className="min-w-0 self-end text-xs font-bold text-[var(--text-dim)] leading-snug break-words">{label}</div>
+          <div className="min-w-0 text-sm font-black text-[var(--text-primary)] tabular-nums whitespace-nowrap">{value}</div>
+        </Fragment>
       ))}
     </div>
   );
