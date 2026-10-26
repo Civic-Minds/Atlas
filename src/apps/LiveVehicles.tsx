@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { CardBackLink } from '../components/CardBack';
 import { Info, Moon, Sun, ChevronRight } from 'lucide-react';
 import { useLiveVehiclesMapOverlay } from '../context/LiveVehiclesMapOverlay';
@@ -97,6 +98,11 @@ function BrowseLiveAgenciesLink({ onInfoOpen }: { onInfoOpen?: OpenInfoFn }) {
       Browse all live agencies
     </ArrowLink>
   );
+}
+
+/** The phone sheet renders at the page root, so it sits above the map's controls as the map's own route sheet does. */
+function SheetPortal({ on, children }: { on: boolean; children: React.ReactNode }) {
+  return on ? createPortal(children, document.body) : <>{children}</>;
 }
 
 const MIN_LIVE_ZOOM = 9;
@@ -760,6 +766,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
 
   return (
     <div className="relative h-full w-full overflow-hidden pointer-events-none" inert={!active}>
+      <SheetPortal on={sheetMode}>
       <div
         className={sheetMode
           ? `${BOTTOM_SHEET_FRAME} ${fade}`
@@ -904,6 +911,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
         </Panel>
         )}
       </div>
+      </SheetPortal>
 
       {/* Toolbar */}
       <div className={`absolute top-6 right-6 ${Z_HEADER} flex items-center gap-1.5 pointer-events-auto`}>
