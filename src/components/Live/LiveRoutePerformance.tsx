@@ -1,5 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { ArrowLeft, ChevronRight } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
+import { CardBackLink } from '../Interval/cardUi';
+import { cleanRouteShortName } from '../../utils/format';
 import Pill from '../ui/Pill';
 import { useLiveDashboard, liveDashboardPath } from '../../hooks/useLiveDashboard';
 import { cardSummary } from '../../../shared/liveDashboard';
@@ -287,7 +289,7 @@ export default function LiveRoutePerformance({ slug, routeShortName, feedDegrade
   const still = usableStandingStill(data, band).filter(s => s.stop.directionId === directionId);
 
   if (screen.kind === 'details') {
-    return <Details data={data} line={line} stops={stops} band={band} bandLabel={bandLabel} directionLabel={directions.find(d => d.id === directionId)?.label ?? ''} still={still} range={range} onBack={() => setScreen({ kind: 'card' })} />;
+    return <Details data={data} line={line} stops={stops} band={band} bandLabel={bandLabel} directionLabel={directions.find(d => d.id === directionId)?.label ?? ''} still={still} range={range} backLabel={`Route ${cleanRouteShortName(routeShortName)}`} onBack={() => setScreen({ kind: 'card' })} />;
   }
 
   const replacement = (data as { replacementBuses?: boolean }).replacementBuses
@@ -307,10 +309,8 @@ export default function LiveRoutePerformance({ slug, routeShortName, feedDegrade
     const ids = new Set(stretch.stops.map(s => s.stopId));
     return (
       <div className="flex flex-col gap-3">
-        <div className="flex items-start gap-2">
-          <button type="button" onClick={() => { setScreen({ kind: 'card' }); }} className="p-0.5 -ml-0.5 mt-0.5 text-[var(--text-dim)] hover:text-[var(--text-primary)] shrink-0" aria-label="Back to the whole route">
-            <ArrowLeft className="w-3.5 h-3.5" />
-          </button>
+        <div>
+          <CardBackLink onClick={() => { setScreen({ kind: 'card' }); }}>Whole route</CardBackLink>
           <div className="min-w-0">
             <div className="text-sm font-black text-[var(--text-primary)] leading-tight truncate">{stretch.from.label} to {stretch.to.label}</div>
             <div className="text-xs font-bold text-[var(--text-muted)]">{directions.find(d => d.id === directionId)?.label} · {bandLabel}</div>
@@ -428,9 +428,9 @@ export default function LiveRoutePerformance({ slug, routeShortName, feedDegrade
   );
 }
 
-function Details({ data, line, stops, band, bandLabel, directionLabel, still, range, onBack }: {
+function Details({ data, line, stops, band, bandLabel, directionLabel, still, range, backLabel, onBack }: {
   data: SegmentDelayData; line: LineModel; stops: LineStop[]; band: SegmentBand; bandLabel: string; directionLabel: string;
-  still: ReturnType<typeof usableStandingStill>; range: string; onBack: () => void;
+  still: ReturnType<typeof usableStandingStill>; range: string; backLabel: string; onBack: () => void;
 }) {
   const totalDays = data.dates.length;
   const measured = stops.filter(s => s.stat);
@@ -440,10 +440,8 @@ function Details({ data, line, stops, band, bandLabel, directionLabel, still, ra
   });
   return (
     <div className="flex flex-col gap-3">
-      <div className="flex items-start gap-2">
-        <button type="button" onClick={onBack} className="p-0.5 -ml-0.5 mt-0.5 text-[var(--text-dim)] hover:text-[var(--text-primary)] shrink-0" aria-label="Back to the card">
-          <ArrowLeft className="w-3.5 h-3.5" />
-        </button>
+      <div>
+        <CardBackLink onClick={onBack}>{backLabel}</CardBackLink>
         <div className="min-w-0">
           <div className="text-sm font-black text-[var(--text-primary)] leading-tight">Details</div>
           <div className="text-xs font-bold text-[var(--text-muted)]">{directionLabel} · {bandLabel} · {totalDays} days, {range}</div>
