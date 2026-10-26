@@ -17,6 +17,11 @@ describe('formatBranchLabel', () => {
     expect(formatBranchLabel('Crosstown2', '2', 'CROSSTOWN 2', 'Eastbound')).toBe('to Eastbound');
   });
 
+  it('drops the repeated route number from zero-padded DART headsigns (#1098)', () => {
+    expect(formatBranchLabel('5 INWOOD/ LOVE FIELD STATION', '005', 'LOVE FIELD SHUTTLE')).toBe('to Inwood/Love Field Station');
+    expect(formatBranchLabel('5  LOVE FIELD AIRPORT', '005', 'LOVE FIELD SHUTTLE')).toBe('to Love Field Airport');
+  });
+
   it('shows distinct terminals', () => {
     expect(formatBranchLabel('Warden Station', '68', 'Warden', 'Southbound')).toBe('to Warden Station');
   });

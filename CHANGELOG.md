@@ -8,6 +8,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Map and route behavior
 
+- **Route destinations no longer repeat the route number**: feeds that pad route numbers with zeros wrote "to 5 Love Field Airport" ([DART 5](https://github.com/Civic-Minds/Atlas/issues/1098), Edmonton, TransLink)
 - **Compare mode is on the public map, and its maps can be [unlinked](https://github.com/Civic-Minds/Atlas/issues/1067)**: so each map can look at a different city; [search results](https://github.com/Civic-Minds/Atlas/issues/1066) open under the search bar, a [label pill](https://github.com/Civic-Minds/Atlas/issues/1070) no longer pans the map, and captions show only their own settings and no [route count](https://github.com/Civic-Minds/Atlas/issues/1075) while loading (CIV-75, CIV-530)
 - **A route whose branches take turns at the same frequency reads its real frequency**: each branch's half-day gap read as every 175 min, though a bus comes every 30 (HSR 16 Ancaster) ([#1072](https://github.com/Civic-Minds/Atlas/issues/1072))
 - **Each Compare map has its own Frequency, Day and Time controls (beta)**: so two frequency limits can be compared as well as two times, and shared links keep both sides (CIV-19)
