@@ -38,6 +38,7 @@ describe('mapContext', () => {
     expect(result).toEqual([{
       slug: 'near',
       name: 'Near Transit',
+      display: { primary: 'Near Transit' },
       routeCount: 2,
       routes: [
         { key: 'near::1', agencySlug: 'near', agencyName: 'Near Transit', shortName: '1', longName: null },

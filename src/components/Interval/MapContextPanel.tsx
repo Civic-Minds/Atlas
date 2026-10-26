@@ -7,6 +7,7 @@ import RegionFilterPills from '../RegionFilterPills';
 import Panel, { PanelTitleBar } from '../ui/Panel';
 import ListRow from '../ui/ListRow';
 import AgencyGroupHeader from '../ui/AgencyGroupHeader';
+import AgencyName from '../ui/AgencyName';
 import { compareAgencyName, compareRegion } from '../../utils/sortCompare';
 import { countOf } from '../../../shared/overflowText';
 
@@ -90,7 +91,10 @@ export const MapContextPanel: React.FC<MapContextPanelProps> = ({ agencies, mode
                   onClick={() => onSelectAgency?.(agency.slug)}
                   className={`min-w-0 flex-1 ${onSelectAgency ? 'cursor-pointer' : 'cursor-default'}`}
                 >
-                  <span className={`${LIST_ROW_PRIMARY} min-w-0 text-left`} title={agency.name}>{agency.name}</span>
+                  {/* "Agency · place", as every agency list writes it (CIV-971). */}
+                  <span className={`${LIST_ROW_PRIMARY} min-w-0 text-left`} title={agency.name}>
+                    <AgencyName primary={agency.display?.primary ?? agency.name} secondary={agency.display?.secondary} />
+                  </span>
                 </ListRow>
               </div>
             );
@@ -100,7 +104,12 @@ export const MapContextPanel: React.FC<MapContextPanelProps> = ({ agencies, mode
         ) : (
           filteredRouteGroups.length > 0 ? filteredRouteGroups.map(group => (
             <section key={group.agencyName}>
-              <AgencyGroupHeader rule="none">{group.agencyName}</AgencyGroupHeader>
+              <AgencyGroupHeader rule="none">
+                {(() => {
+                  const display = agencies.find(agency => agency.slug === group.agencySlug)?.display;
+                  return <AgencyName primary={display?.primary ?? group.agencyName} secondary={display?.secondary} />;
+                })()}
+              </AgencyGroupHeader>
               {group.routes.map((route: MapContextRoute) => {
                 const labels = routeRowLabels({ shortName: route.shortName, longName: route.longName, routeType: route.routeType, agencySlug: route.agencySlug, agencyName: group.agencyName });
                 return (
