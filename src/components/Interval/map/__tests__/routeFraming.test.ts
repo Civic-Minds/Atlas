@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import type * as maplibregl from 'maplibre-gl';
-import { frameRoute, paddedCenter, routeFramePadding, selectionFramePadding } from '../routeFraming';
+import { frameRoute, paddedCenter, routeFitStep, routeFramePadding, selectionFramePadding } from '../routeFraming';
 
 function fakeMap(width = 1200, height = 800, zoom = 10) {
   return {
@@ -140,5 +140,25 @@ describe('paddedCenter', () => {
     const [lon, lat] = paddedCenter([-79.4, 43.7], 10, { top: 400, bottom: 24, left: 45, right: 45 });
     expect(lon).toBeCloseTo(-79.4, 9);
     expect(lat).toBeGreaterThan(43.7);
+  });
+});
+
+describe('routeFitStep', () => {
+  it('fits a newly picked route when no vehicle card is open', () => {
+    expect(routeFitStep('ttc::504|card', null, false)).toBe('fit');
+    expect(routeFitStep('ttc::504|card', 'ttc::504|map', false)).toBe('fit');
+  });
+
+  it('lets the vehicle frame win when the same click picks the route and opens a vehicle card', () => {
+    expect(routeFitStep('ttc::504|card', null, true)).toBe('hold');
+  });
+
+  it('holds a later refit (padding change, late route layer) while the vehicle card is open', () => {
+    expect(routeFitStep('ttc::504|card', 'ttc::504|map', true)).toBe('hold');
+  });
+
+  it('skips a fit that already ran, card or not', () => {
+    expect(routeFitStep('ttc::504|card', 'ttc::504|card', false)).toBe('skip');
+    expect(routeFitStep('ttc::504|card', 'ttc::504|card', true)).toBe('skip');
   });
 });
