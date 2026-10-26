@@ -3,7 +3,6 @@ import { Moon } from 'lucide-react';
 import { useViewport } from '../context/ViewportContext';
 import {
   PANEL_TITLE,
-  LIST_ROW_PRIMARY,
   LIST_ROW_DIM,
 } from '../styles';
 import { R2_PUBLIC_URL } from '../../shared/config';
@@ -11,14 +10,14 @@ import { plural } from '../../shared/overflowText';
 import type { NightServiceFrequency } from '../../shared/nightService';
 import { nightServiceKey } from '../../shared/nightService';
 import Panel, { PanelBody, PanelTitleBar } from '../components/ui/Panel';
-import ListRow from '../components/ui/ListRow';
+import RouteListRow from '../components/RouteListRow';
+import { routeRowLabels } from '../components/Interval/SearchSuggestionsPanel';
 import ResearchInfo from '../components/ResearchInfo';
 import { NIGHT_INFO_HEADING, nightRuleText } from '../content/researchRules';
 import PanelEmpty from '../components/ui/PanelEmpty';
 import AgencyName from '../components/ui/AgencyName';
 import AgencyGroupHeader from '../components/ui/AgencyGroupHeader';
 import { loadingText, loadErrorText } from '../content/stateCopy';
-import { routeLabels } from '../utils/format';
 import { boundingBox, lineCoordinates } from '../../shared/routeGeometry';
 
 interface NightServiceRoute {
@@ -184,29 +183,30 @@ export default function NightService({ active, sidebarLeft, layers, query = '', 
                   <span className="font-normal text-[var(--text-dim)]"> · {agency.routes.length} {plural(agency.routes.length, 'route')}</span>
                 </AgencyName>
               </AgencyGroupHeader>
-              {agency.routes.map(route => (
-                <ListRow
-                  key={`${route.routeShortName ?? ''}-${route.routeLongName ?? ''}`}
-                  disabled={!route.routeId || !onRouteSelect}
-                  onClick={() => route.routeId && onRouteSelect?.(agency.slug, route.routeId)}
-                  className="disabled:cursor-default"
-                >
-                  <div className="min-w-0 flex-1">
-                  <div className={`${LIST_ROW_PRIMARY} line-clamp-2 break-words`} title={routeLabels({ shortName: route.routeShortName, longName: route.routeLongName, routeType: route.routeType, agencySlug: agency.slug, agencyName: agency.agencyName }).text}>
-                    {(() => {
-                      const label = routeLabels({ shortName: route.routeShortName, longName: route.routeLongName, routeType: route.routeType, agencySlug: agency.slug, agencyName: agency.agencyName });
-                      return <>{label.primary || 'Unnamed route'}{label.secondary && <span className={`font-normal ${LIST_ROW_DIM}`}> — {label.secondary}</span>}</>;
-                    })()}
-                  </div>
-                  {route.destinations.length > 0 && (
-                    <div className={`mt-0.5 ${LIST_ROW_DIM} truncate`} title={route.destinations.join(' · ')}>
-                      To {route.destinations.join(' · ')}
-                    </div>
-                  )}
-                  {route.partOfRoute && <div className="mt-0.5 text-xs font-bold text-[var(--text-dim)]">Night service on part of the route</div>}
-                  </div>
-                </ListRow>
-              ))}
+              {agency.routes.map(route => {
+                const labels = routeRowLabels({ shortName: route.routeShortName, longName: route.routeLongName, routeType: route.routeType, agencySlug: agency.slug, agencyName: agency.agencyName });
+                const hasSubtitle = route.destinations.length > 0 || route.partOfRoute;
+                return (
+                  <RouteListRow
+                    key={`${route.routeShortName ?? ''}-${route.routeLongName ?? ''}`}
+                    shortName={labels.shortName || 'Unnamed route'}
+                    name={labels.name}
+                    disabled={!route.routeId || !onRouteSelect}
+                    onClick={() => route.routeId && onRouteSelect?.(agency.slug, route.routeId)}
+                    className="disabled:cursor-default"
+                    subtitle={hasSubtitle ? (
+                      <>
+                        {route.destinations.length > 0 && (
+                          <div className={`mt-0.5 ${LIST_ROW_DIM} truncate`} title={route.destinations.join(' · ')}>
+                            To {route.destinations.join(' · ')}
+                          </div>
+                        )}
+                        {route.partOfRoute && <div className="mt-0.5 text-xs font-bold text-[var(--text-dim)]">Night service on part of the route</div>}
+                      </>
+                    ) : undefined}
+                  />
+                );
+              })}
             </div>
           ))}
         </PanelBody>

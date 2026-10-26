@@ -9,6 +9,8 @@ interface RouteListRowProps {
   subtitle?: React.ReactNode;
   right?: React.ReactNode;  // stats, chevron, headway — caller decides
   onClick?: () => void;
+  /** Not clickable (e.g. a route the list cannot open). */
+  disabled?: boolean;
   onHoverChange?: (hovered: boolean) => void;
   selected?: boolean;
   stacked?: boolean;
@@ -22,6 +24,7 @@ export default function RouteListRow({
   subtitle,
   right,
   onClick,
+  disabled,
   onHoverChange,
   selected = false,
   stacked = false,
@@ -42,6 +45,7 @@ export default function RouteListRow({
       variant={variant === 'spaced' ? 'spaced' : 'divided'}
       selected={selected}
       onClick={onClick}
+      disabled={disabled}
       onMouseEnter={onHoverChange ? () => onHoverChange(true) : undefined}
       onMouseLeave={onHoverChange ? () => onHoverChange(false) : undefined}
       className={`${stacked || subtitle ? 'items-start' : ''} ${className ?? ''}`.trim()}
