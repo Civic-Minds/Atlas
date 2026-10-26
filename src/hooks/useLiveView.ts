@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import type { LiveVehicle } from '../context/LiveVehiclesMapOverlay';
 import { syncUrlParams } from '../utils/syncUrlParams';
+import { buildRouteKey, splitRouteKey } from '../utils/routeKey';
 
 /**
  * Live's view state in the URL so a shared link reopens it: the route, the vehicle whose card is
@@ -48,7 +49,7 @@ export function useLiveRouteRequest({ active, routeRequest, visibleSlugs, pendin
 }) {
   useEffect(() => {
     if (!active || !routeRequest) return;
-    const key = `${routeRequest.slug}::${routeRequest.routeShortName}`;
+    const key = buildRouteKey(routeRequest.slug, routeRequest.routeShortName);
     if (visibleSlugs.includes(routeRequest.slug)) {
       pendingRouteRef.current = null;
       open(key);
@@ -60,7 +61,7 @@ export function useLiveRouteRequest({ active, routeRequest, visibleSlugs, pendin
   }, [active, routeRequest]);
   useEffect(() => {
     const pending = pendingRouteRef.current;
-    if (pending && visibleSlugs.includes(pending.split('::')[0])) {
+    if (pending && visibleSlugs.includes(splitRouteKey(pending).agencySlug)) {
       pendingRouteRef.current = null;
       open(pending);
     }

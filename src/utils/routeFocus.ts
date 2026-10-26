@@ -1,3 +1,5 @@
+import { buildRouteKey } from './routeKey';
+
 /** Opacity for map context faded behind a selection (routes, on-demand zones and stops). */
 export const FOCUS_DIM_OPACITY = 0.18;
 
@@ -42,7 +44,7 @@ export function focusOpacity(
 
 /** The route a MapFocus is on, as "slug::routeShortName" (null with nothing picked). */
 export function mapFocusRoute(focus: MapFocus | null | undefined): string | null {
-  return focus ? `${focus.agencySlug}::${focus.routeShortName}` : null;
+  return focus ? buildRouteKey(focus.agencySlug, focus.routeShortName) : null;
 }
 
 /**

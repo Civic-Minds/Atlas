@@ -12,6 +12,7 @@ import { cardFramePadding, frameRoute } from './routeFraming';
 import { LIVE_VEHICLE_PICK_RADIUS_PX, pickLiveVehicles } from './liveVehiclePick';
 import { LIVE_CONTEXT_LAYER_IDS } from './mapLayers';
 import { focusOpacity } from '../../../utils/routeFocus';
+import { buildRouteKey, splitRouteKey } from '../../../utils/routeKey';
 import { getNowDay } from '../../../../shared/dayTypes';
 
 // Kept exported from here for the escape test that imports it.
@@ -220,7 +221,7 @@ export function useLiveVehiclesLayer(
   // Context lines (CIV-326): only the routes that currently have a vehicle in the overlay (so the same
   // filter as the dots), thin and light, under every other route line and the deck dots.
   const contextRoutesKey = liveOverlay
-    ? [...new Set((liveOverlay.vehicles ?? []).filter(v => v.agencySlug && v.routeShortName).map(v => `${v.agencySlug}::${v.routeShortName}`))].sort().join('\n')
+    ? [...new Set((liveOverlay.vehicles ?? []).filter(v => v.agencySlug && v.routeShortName).map(v => buildRouteKey(v.agencySlug, v.routeShortName)))].sort().join('\n')
     : null;
   useEffect(() => {
     const map = mapRef.current;
@@ -230,8 +231,8 @@ export function useLiveVehiclesLayer(
     // back to full strength.
     const filter = (keys.length > 0
       ? ['all', ['==', ['coalesce', ['get', 'day'], getNowDay()], getNowDay()], ['any', ...keys.map(k => {
-        const i = k.indexOf('::');
-        return ['all', ['==', ['get', 'agencySlug'], k.slice(0, i)], ['==', ['get', 'routeShortName'], k.slice(i + 2)]];
+        const { agencySlug, routeId: routeShortName } = splitRouteKey(k);
+        return ['all', ['==', ['get', 'agencySlug'], agencySlug], ['==', ['get', 'routeShortName'], routeShortName]];
       })]]
       : ['==', ['get', 'agencySlug'], '']) as maplibregl.FilterSpecification;
     for (const id of LIVE_CONTEXT_LAYER_IDS) {
