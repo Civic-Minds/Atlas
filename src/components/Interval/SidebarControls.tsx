@@ -30,7 +30,7 @@ import { RouteCardHeadway } from './panels/RouteCardHeadway';
 import type { OpenInfoFn } from '../InfoPanel';
 import { SearchSuggestionsPanel } from './SearchSuggestionsPanel';
 import { SearchResultsList } from './SearchResultsList';
-import { branchDisplayPeriodHeadway, buildRouteFacts, buildRouteStopMetric, metricValueForPeriod } from '../../utils/routeFacts';
+import { branchDisplayPeriodHeadway, buildRouteFacts, buildRouteStopMetric, labelShortNameOf, metricValueForPeriod, type RouteLabel } from '../../utils/routeFacts';
 import { buildSharedStopIndex } from '../../../shared/sharedStops';
 import { collectStopHubSiblings, getDistanceMeters } from '../../utils/stopHub';
 import { splitRouteKey } from '../../utils/routeKey';
@@ -233,18 +233,18 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     if (feat) {
       const facts = buildRouteFacts(feat.properties as ShapeProperties, slug);
       const shortName = facts.shortName;
-      const labelShortName = facts.labelShortName;
+      const label = facts.label;
       const longName = facts.longName || '';
       const agencyName = shortenAgencyName(facts.agencyName);
 
       try {
         const recentsRaw = localStorage.getItem('atlas_recently_viewed_routes');
-        const recents: Array<{ key: string; shortName: string; labelShortName?: string; longName: string; agencyName: string; routeType?: number }> = recentsRaw ? JSON.parse(recentsRaw) : [];
+        const recents: Array<{ key: string; shortName: string; label?: RouteLabel; longName: string; agencyName: string; routeType?: number }> = recentsRaw ? JSON.parse(recentsRaw) : [];
         const filtered = recents.filter(r => r.key !== selectedRoute);
         filtered.unshift({
           key: selectedRoute,
           shortName,
-          labelShortName,
+          label,
           longName,
           agencyName,
           routeType: facts.routeType,
@@ -263,7 +263,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   // quadratic in route features and reran on every layer update (froze Live zooming, CIV-218).
   const notableRoutes = useMemo(() => {
     if (!searchFocused) return [];
-    const routes = new Map<string, { key: string; shortName: string; labelShortName?: string; longNames: string[]; agencyName: string; routeType?: number; headway: number; limited: boolean; noRegular?: boolean; sharedHeadway?: number }>();
+    const routes = new Map<string, { key: string; shortName: string; labelShortName: string; agencySlug: string; longNames: string[]; agencyName: string; routeType?: number; headway: number; limited: boolean; noRegular?: boolean; sharedHeadway?: number }>();
     for (const [slug, fc] of Object.entries(nonCorridorLayers)) {
       if (!fc?.features) continue;
       for (const f of fc.features) {
@@ -289,7 +289,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         const agencyName = shortenAgencyName(facts.agencyName);
         const existing = routes.get(groupKey);
         if (!existing) {
-          routes.set(groupKey, { key: facts.key, shortName: slug === 'bart' ? suggestedRouteGroupKey(slug, shortName) : shortName, labelShortName: slug === 'bart' ? undefined : facts.labelShortName, longNames: longName ? [longName] : [], agencyName, routeType: facts.routeType, headway, limited, noRegular, sharedHeadway });
+          routes.set(groupKey, { key: facts.key, shortName: slug === 'bart' ? suggestedRouteGroupKey(slug, shortName) : shortName, labelShortName: slug === 'bart' ? suggestedRouteGroupKey(slug, shortName) : labelShortNameOf(p), agencySlug: slug, longNames: longName ? [longName] : [], agencyName, routeType: facts.routeType, headway, limited, noRegular, sharedHeadway });
         } else {
           if (longName && !existing.longNames.includes(longName)) existing.longNames.push(longName);
           if (headway < existing.headway) {
@@ -302,7 +302,11 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       }
     }
     return [...routes.values()]
-      .map(route => ({ ...route, longName: combineSuggestedRouteNames(route.longNames) ?? '' }))
+      // The label is built here, once the group's long names are combined; the row keeps only its identity and label.
+      .map(({ labelShortName, ...route }) => {
+        const longName = combineSuggestedRouteNames(route.longNames) ?? '';
+        return { ...route, longName, label: routeLabels({ shortName: labelShortName, longName, routeType: route.routeType, agencySlug: route.agencySlug, agencyName: route.agencyName }) };
+      })
       .sort(compareHeadwayThenNumber)
       .slice(0, 5);
   }, [nonCorridorLayers, period, currentDay, searchFocused]);
@@ -391,7 +395,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       ...first,
       agencySlug: slug,
       routeShortName: firstFacts.shortName,
-      routeLabelShortName: firstFacts.labelShortName,
+      label: firstFacts.label,
       routeLongName: firstFacts.longName,
       directions,
       features,
@@ -497,7 +501,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     if (!currentStop) return [];
     const siblingIdsByAgency = currentStop.siblingIdsByAgency || {};
 
-    const routeMap = new Map<string, { shortName: string; labelShortName: string; longName: string; agencyName: string; agencySlug: string; routeType?: number; branches: Map<string, Branch> }>();
+    const routeMap = new Map<string, { shortName: string; label: RouteLabel; longName: string; agencyName: string; agencySlug: string; routeType?: number; branches: Map<string, Branch> }>();
     type Branch = { rKey: string; headsign: string | null; service: ReturnType<typeof buildRouteStopMetric>; rowHeadway: number | null; directionId: number; periodText?: string };
     // Pooled values at shared stops (CIV-82), so the stop card agrees with the map and route card.
     const sharedIndexBySlug = new Map(Object.entries(nonCorridorLayers).map(([slug, fc]) => [slug, buildSharedStopIndex(fc.features)]));
@@ -541,7 +545,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         if (!routeMap.has(routeShortName)) {
           routeMap.set(routeShortName, {
             shortName: routeShortName,
-            labelShortName: facts.labelShortName,
+            label: facts.label,
             longName: facts.longName || '',
             agencyName: shortenAgencyName(facts.agencyName),
             agencySlug: slug,
@@ -576,7 +580,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       .sort(([a], [b]) => compareRouteNumber(a, b))
       .map(([, v]) => ({
         shortName: v.shortName,
-        labelShortName: v.labelShortName,
+        label: v.label,
         longName: v.longName,
         agencyName: v.agencyName,
         agencySlug: v.agencySlug,
@@ -608,7 +612,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     type TransferEntry = {
       rKey: string;
       routeShortName: string;
-      routeLabelShortName: string;
+      label: RouteLabel;
       routeLongName: string;
       agencyName: string;
       agencySlug: string;
@@ -660,7 +664,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
           seen.set(mapKey, {
             rKey: facts.key,
             routeShortName: facts.shortName,
-            routeLabelShortName: facts.labelShortName,
+            label: facts.label,
             routeLongName: facts.longName || '',
             agencyName: shortenAgencyName(facts.agencyName),
             agencySlug: slug,
@@ -715,10 +719,10 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
             // The place beside the agency's name in the chooser's heading, unless the name already says it (CIV-971).
             const place = agency ? agencyDisplayParts(agency.name, agency.cities, agency.displayArea).secondary : undefined;
             const agencyPlace = place && !placeAlreadyInName(agencyName, place) ? place : undefined;
-            return { key: facts.key, shortName: facts.shortName, labelShortName: facts.labelShortName, longName: facts.longName ?? '', agencyName, agencyPlace, agencySlug: slug, routeType: facts.routeType, color: getTierColor(p.tier, colorMode) };
+            return { key: facts.key, shortName: facts.shortName, label: facts.label, longName: facts.longName ?? '', agencyName, agencyPlace, agencySlug: slug, routeType: facts.routeType, color: getTierColor(p.tier, colorMode) };
           }
         }
-        return { key, shortName: key, longName: '', agencyName: '', agencySlug: undefined as string | undefined, routeType: undefined as number | undefined, color: 'var(--text-dim)' };
+        return { key, shortName: key, label: routeLabels({ shortName: key, longName: '' }), longName: '', agencyName: '', agencySlug: undefined as string | undefined, routeType: undefined as number | undefined, color: 'var(--text-dim)' };
       })
       .filter((route, index, routes) => {
         const displayKey = `${route.agencyName.trim().toLowerCase()}::${routeLabels({ shortName: route.shortName, longName: route.longName, routeType: route.routeType, agencySlug: route.agencySlug, agencyName: route.agencyName }).text.trim().toLowerCase().replace(/\s+/g, ' ')}`;

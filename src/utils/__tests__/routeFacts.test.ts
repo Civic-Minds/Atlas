@@ -154,11 +154,12 @@ describe('route facts label short name (#1099)', () => {
       agencyName: 'fred-transit',
     } as any);
     expect(facts.shortName).toBe('_Route 13_FXBGO! Central to Wegmans/ Central Park_FFFAAB1C');
-    expect(facts.labelShortName).toBe('');
+    // Labelled from the long name; the ID is only the identity.
+    expect(facts.label.text).toBe('Route 13');
   });
   it('falls back to the route ID only when the route has no name at all', () => {
-    expect(buildRouteFacts({ routeId: '900', directionId: 0, routeShortName: null, routeLongName: null, agencyName: 'TTC' } as any).labelShortName).toBe('900');
-    expect(buildRouteFacts({ routeId: 'x1', directionId: 0, routeShortName: '501', routeLongName: 'Queen', agencyName: 'TTC' } as any).labelShortName).toBe('501');
+    expect(buildRouteFacts({ routeId: '900', directionId: 0, routeShortName: null, routeLongName: null, agencyName: 'TTC' } as any).label.text).toBe('900');
+    expect(buildRouteFacts({ routeId: 'x1', directionId: 0, routeShortName: '501', routeLongName: 'Queen', agencyName: 'TTC' } as any).label.text).toBe('501 — Queen');
   });
 });
 

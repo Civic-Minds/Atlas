@@ -4,8 +4,7 @@ import type { AgencySearchGroup } from '../../utils/agencySearch';
 import type { RouteSearchResult, StopSearchResult } from '../../utils/searchResults';
 import RouteListRow from '../RouteListRow';
 import AgencyName from '../ui/AgencyName';
-import { routeRowLabels, routeRowRight } from './SearchSuggestionsPanel';
-import { splitRouteKey } from '../../utils/routeKey';
+import { routeRowRight } from './SearchSuggestionsPanel';
 import { agencyDisplayParts, shortenAgencyName, titleCase } from '../../utils/format';
 import type { RouteListDisplay } from '../../utils/effectiveHeadway';
 import ListRow from '../ui/ListRow';
@@ -158,7 +157,7 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({
       elsewhere={routeSections.elsewhere}
       itemKey={(r: RouteSearchResult) => r.key}
       renderItem={(r: RouteSearchResult) => {
-        const labels = routeRowLabels({ shortName: r.routeLabelShortName ?? r.routeShortName ?? '', longName: r.routeLongName, routeType: r.routeType, agencySlug: splitRouteKey(r.key).agencySlug, agencyName: r.agencyName });
+        const labels = { shortName: r.label.primary, name: r.label.secondary };
         const name = r.variantCount && r.variantCount > 1
           ? `${labels.name ? `${labels.name} · ` : ''}${r.variantCount} variants`
           : labels.name;

@@ -10,6 +10,7 @@ import {
   SidebarCardListRows,
 } from '../cardUi';
 import type { StopBranch } from './StopCard';
+import type { RouteLabel } from '../../../utils/routeFacts';
 
 function branchHeadway(branch: StopBranch, period: TimePeriod): number | null {
   return metricValueForPeriod(branch.service, period);
@@ -24,8 +25,8 @@ function rowHeadway(branchValue: number | null, stopValue: number | null): numbe
 
 interface Props {
   shortName: string;
-  /** The short name the label shows; blank when the feed has none but has a long name (#1099). Defaults to shortName. */
-  labelShortName?: string;
+  /** What the row shows (route facts' label, CIV-984); the short name is only the route's identity. */
+  label: RouteLabel;
   longName: string;
   agencyName: string;
   agencySlug?: string;
@@ -42,7 +43,7 @@ interface Props {
 /** One route at a stop: its name, then each destination as a route card row (CIV-918). */
 export default function StopRouteGroup({
   shortName,
-  labelShortName,
+  label,
   longName,
   agencyName,
   agencySlug,
@@ -54,7 +55,7 @@ export default function StopRouteGroup({
   hoveredBranch = null,
   setHoveredBranch,
 }: Props) {
-  const routeParts = routeLabels({ shortName: labelShortName ?? shortName, longName, routeType, agencySlug, agencyName: showAgency ? agencyName : undefined });
+  const routeParts = label;
   // The list rule (CIV-928): "**504** King", not "504 — King".
   const routeLabel = <RouteRowName shortName={routeParts.primary} name={routeParts.secondary} />;
   const hasMultipleDirections = new Set(branches.map(b => b.directionId)).size > 1;

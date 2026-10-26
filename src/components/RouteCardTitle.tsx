@@ -2,6 +2,8 @@ import { agencyBackLinkName, routeLabels, shortenAgencyName } from '../utils/for
 import { SidebarCardHeader } from './Interval/cardUi';
 
 interface Props {
+  /** The title, when the caller already has the route's label (the map's route card, CIV-984); else built from the names. */
+  title?: string;
   routeShortName: string | null | undefined;
   routeLongName?: string | null;
   agencyName?: string | null;
@@ -20,8 +22,8 @@ interface Props {
   back?: { to: string; onClick: () => void };
 }
 
-export default function RouteCardTitle({ routeShortName, routeLongName, agencyName, routeType, agencySlug, onAgencyClick, showAgency = true, agencyBackLink = false, agencyFullName, back: otherBack }: Props) {
-  const title = routeLabels({ shortName: routeShortName, longName: routeLongName, routeType, agencySlug, agencyName }).text;
+export default function RouteCardTitle({ title: givenTitle, routeShortName, routeLongName, agencyName, routeType, agencySlug, onAgencyClick, showAgency = true, agencyBackLink = false, agencyFullName, back: otherBack }: Props) {
+  const title = givenTitle ?? routeLabels({ shortName: routeShortName, longName: routeLongName, routeType, agencySlug, agencyName }).text;
   const displayAgency = showAgency && agencyName ? shortenAgencyName(agencyName) : null;
   const back = otherBack
     ?? (agencyBackLink && onAgencyClick && displayAgency ? { to: agencyBackLinkName(agencyFullName ?? agencyName!), onClick: onAgencyClick } : undefined);

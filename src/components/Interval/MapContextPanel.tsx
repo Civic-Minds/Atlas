@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import type { MapContextAgency, MapContextRoute } from '../../utils/mapContext';
 import { FLOATING_CARD, LIST_ROW_PRIMARY, PANEL_TITLE, SIDEBAR_PANEL_WIDTH, PANEL_SIDEBAR, sidebarFrameStyle } from '../../styles';
 import RouteListRow from '../RouteListRow';
-import { routeRowLabels } from './SearchSuggestionsPanel';
 import RegionFilterPills from '../RegionFilterPills';
 import Panel, { PanelBody, PanelTitleBar } from '../ui/Panel';
 import ListRow from '../ui/ListRow';
@@ -112,7 +111,7 @@ export const MapContextPanel: React.FC<MapContextPanelProps> = ({ agencies, mode
                 })()}
               </AgencyGroupHeader>
               {group.routes.map((route: MapContextRoute) => {
-                const labels = routeRowLabels({ shortName: route.shortName, longName: route.longName, routeType: route.routeType, agencySlug: route.agencySlug, agencyName: group.agencyName });
+                const labels = { shortName: route.label.primary, name: route.label.secondary };
                 return (
                   <RouteListRow
                     key={route.key}

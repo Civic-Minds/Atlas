@@ -17,14 +17,14 @@ import ModeFilterPillRow from '../ui/ModeFilterPillRow';
 import { HEADWAY_TIERS } from '../../utils/colors';
 import { effectiveMode, isRailReplacementBus, knownModeLabel, sortModes } from '../../../shared/modes';
 import { headwayEveryRange } from '../../utils/headwayText';
-import { agencyDisplayParts, routeLabels } from '../../utils/format';
+import { agencyDisplayParts } from '../../utils/format';
 import type { DayType, TimePeriod, ShapeProperties } from '../../hooks/useIntervalStats';
 import { passesRouteFilter } from '../../hooks/useIntervalStats';
 import { NO_REGULAR_SERVICE_LABEL, routeListDisplay } from '../../utils/effectiveHeadway';
 import { AgencyCardTop, AgencyDataSourceLink, SidebarCardHeader, CARD_HEADER_BLOCK, CARD_BODY_TEXT, CARD_SUMMARY, CardBodyText, CardHelpNotice, CardSectionLabel, CardReportButton } from './cardUi';
 import CardRouteList from './CardRouteList';
 import { OutboundLink } from '../OutboundLink';
-import { buildRouteFacts } from '../../utils/routeFacts';
+import { buildRouteFacts, type RouteLabel } from '../../utils/routeFacts';
 import { currentAtlasUrl } from '../../utils/reportIssue';
 import { getRolloutNotice } from '../../../shared/rolloutNotice';
 import { onDemandCardName } from '../../utils/onDemandSelection';
@@ -46,8 +46,8 @@ interface RouteRow {
   routeId: string;
   agencySlug: string;
   shortName: string;
-  /** The short name the row's label shows (blank when the feed has none but has a long name, #1099). Defaults to shortName. */
-  labelShortName?: string;
+  /** What the row shows (route facts' label, CIV-984): never built from shortName, which is the route's identity. */
+  label: RouteLabel;
   longName: string | null;
   headway: number | null;
   limited: boolean;
@@ -99,7 +99,7 @@ export function getRoutes(
     routeId: string;
     agencySlug: string;
     shortName: string;
-    labelShortName: string;
+    label: RouteLabel;
     longName: string | null;
     tier: string | null;
     routeType: number;
@@ -123,7 +123,7 @@ export function getRoutes(
         routeId: facts.routeId,
         agencySlug: facts.agencySlug,
         shortName: facts.shortName,
-        labelShortName: facts.labelShortName,
+        label: facts.label,
         longName: facts.longName,
         tier: facts.tier,
         routeType: typeof p.routeType === 'number' ? p.routeType : 3,
@@ -142,7 +142,7 @@ export function getRoutes(
       routeId: row.routeId,
       agencySlug: row.agencySlug,
       shortName: row.shortName,
-      labelShortName: row.labelShortName,
+      label: row.label,
       longName: row.longName,
       ...routeListDisplay(row.props, period),
       tier: row.tier,
@@ -323,7 +323,7 @@ function RouteListSection({
 }) {
   const rows = routes.map(r => ({
     key: `${r.agencySlug}::${r.routeId}`,
-    route: routeLabels({ shortName: r.labelShortName ?? r.shortName, longName: r.longName, routeType: r.routeType, agencySlug: r.agencySlug }),
+    route: r.label,
     headway: r.headway ?? undefined,
     headwayLabel: r.headway != null && r.sharedHeadway != null ? headwayEveryRange(r.sharedHeadway, r.headway) : undefined,
     limited: r.limited || r.noRegular === true,

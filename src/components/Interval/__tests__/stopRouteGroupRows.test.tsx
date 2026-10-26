@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { fireEvent, render, screen } from '@testing-library/react';
 import StopRouteGroup from '../panels/StopRouteGroup';
 import type { StopBranch } from '../panels/StopCard';
+import { routeLabels } from '../../../utils/format';
 
 // CIV-918: every destination is a route card row with its own frequency, ordered by direction, no
 // direction lines, and hovering one shows that route and direction on the map.
@@ -17,6 +18,7 @@ function renderGroup(setHoveredBranch = vi.fn()) {
   render(
     <StopRouteGroup
       shortName="GREEN"
+      label={routeLabels({ shortName: 'GREEN', longName: 'Green Line' })}
       longName="Green Line"
       agencyName="DART"
       agencySlug="dart"
@@ -35,7 +37,7 @@ describe('StopRouteGroup rows (CIV-918)', () => {
     const pooled = (headsign: string, directionId: number, own: number) => ({ ...branch(headsign, directionId, 5), rowHeadway: own });
     render(
       <StopRouteGroup
-        shortName="504" longName="King" agencyName="TTC" agencySlug="ttc"
+        shortName="504" label={routeLabels({ shortName: '504', longName: 'King' })} longName="King" agencyName="TTC" agencySlug="ttc"
         branches={[pooled('Broadview', 0, 10), pooled('Distillery', 0, 10)]}
         period="midday" showAgency={false} onOpenRoute={() => {}}
       />,
@@ -48,7 +50,7 @@ describe('StopRouteGroup rows (CIV-918)', () => {
   it("a branch value better than the stop's is not used: the row never claims more service than the stop sees", () => {
     render(
       <StopRouteGroup
-        shortName="503" longName="Kingston Rd" agencyName="TTC" agencySlug="ttc"
+        shortName="503" label={routeLabels({ shortName: '503', longName: 'Kingston Rd' })} longName="Kingston Rd" agencyName="TTC" agencySlug="ttc"
         branches={[{ ...branch('Victoria Park', 0, 10), rowHeadway: 6 }]}
         period="midday" showAgency={false} onOpenRoute={() => {}}
       />,
