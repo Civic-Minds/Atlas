@@ -29,7 +29,7 @@ import { holidayDropFor, repickedFor, type HolidayPeriodDrop, type RepickedPerio
 import { historyV2FromEnv } from './historyV2Flag.js';
 import { compileAgencyShapes, type ShapeRouteYear } from './historyShapes.js';
 import type { HistoryPeriodShapes } from '../shared/historyV2.js';
-import { parsePeriodKey, getPeriodKeySortValue } from './historyPeriods.js';
+import { parsePeriodKey, getPeriodKeySortValue, isRefreshRunPeriodKey } from './historyPeriods.js';
 import { writeHistoryAgencyList } from '../scripts/build-history-agency-list.js';
 import { historyGeometryForRoute } from './historyGeometry.js';
 import { isDrawableLineCoordinates, lineStringCoordinatesOrNull } from '../shared/routeGeometry.js';
@@ -256,6 +256,7 @@ async function main() {
   }>>> = {};
   const coverageBySlug: Record<string, { coverageYears: number[]; materializeAllPeriods?: boolean }> = {};
   let failedFiles = 0;
+  let refreshRunSkipped = 0;
   const failedKeys: string[] = [];
   const recordFailure = (key: string) => {
     failedFiles++;
@@ -305,6 +306,8 @@ async function main() {
         const data = JSON.parse(raw);
         const h = data.headway;
         if (h == null) return;
+        // Rows named by a refresh run's date are hidden until History is rebuilt from archived feeds (#1114).
+        if (isRefreshRunPeriodKey(periodKey, data.processedAt)) { refreshRunSkipped++; return; }
         if (!archiveRoutes[slug]) archiveRoutes[slug] = {};
         if (!archiveRoutes[slug][routeShortName]) archiveRoutes[slug][routeShortName] = [];
         archiveRoutes[slug][routeShortName].push({
@@ -327,6 +330,7 @@ async function main() {
   console.log(`Downloading ${tasks.length} history snapshot files in parallel (concurrency ${concurrency})...`);
   await runWithConcurrency(tasks, concurrency);
   console.log(`History archive summary: ${tasks.length - failedFiles}/${tasks.length} files read successfully; ${failedFiles} failed.`);
+  console.log(`Hid ${refreshRunSkipped} change files named by a refresh run's date (#1114).`);
   if (failedFiles > 0) {
     console.log(`Failed history keys (first 20): ${failedKeys.slice(0, 20).join(', ')}`);
   }
