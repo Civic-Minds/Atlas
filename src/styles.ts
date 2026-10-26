@@ -151,12 +151,12 @@ export const Z_MODAL_BG  = 'z-[1400]';    // InfoPanel backdrop
 export const Z_MODAL_TOP = 'z-[1500]';    // FilterPanel backdrop (above InfoPanel)
 export const PANEL_Z_INDEX = 1000;         // Numeric for inline styles (e.g. NearbyRoutesPanel)
 
-/** Every sidebar card's placement: its top sits 7px below the search bar (the bar ends at 49px on desktop). */
-export const SIDEBAR_CARD_SLOT = 'absolute top-[56px] left-6 sm:left-[var(--sidebar-left)]';
+/** Every sidebar card's placement: its top sits 7px below the search bar (the bar ends at 49px on desktop, 51px on phones). */
+export const SIDEBAR_CARD_SLOT = 'absolute top-[58px] sm:top-[56px] left-6 sm:left-[var(--sidebar-left)]';
 export const SIDEBAR_CARD = `${SIDEBAR_CARD_SLOT} ${Z_PANEL}`;
 /** Every sidebar card's tallest size: it stops 7px above the bottom pills (measured: their top is 49px up
  *  on desktop, 53px on phones) and its list scrolls inside. */
-export const SIDEBAR_CARD_MAX_H = 'max-h-[calc(100vh-112px)] max-sm:max-h-[calc(100dvh-116px)]';
+export const SIDEBAR_CARD_MAX_H = 'max-h-[calc(100vh-112px)] max-sm:max-h-[calc(100dvh-118px)]';
 
 /** Live's sidebar placement, kept apart from the cards' while Live is rebuilt on its own branch
  *  (Live sidebars never scroll or collapse). */

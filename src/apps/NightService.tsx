@@ -177,7 +177,7 @@ export default function NightService({ active, sidebarLeft, layers, query = '', 
 
   return (
     <ResearchInfo heading={NIGHT_INFO_HEADING} sidebarLeft={sidebarLeft} hidden={selectionActive} below={
-      <Panel className="min-h-0 flex-1">
+      <Panel sidebarSurface className="min-h-0 flex-1">
         <PanelTitleBar>
           <Moon className="w-3 h-3 text-[var(--text-dim)] shrink-0" />
           <span className={PANEL_TITLE}>Night Service</span>

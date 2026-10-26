@@ -4,15 +4,17 @@ import { FLOATING_CARD, PANEL_BODY, SIDEBAR_CARD_SURFACE, PANEL_ENTER, PANEL_TIT
 interface PanelProps extends ComponentProps<'div'> {
   /** Anchor below the search bar on the left, at the shared sidebar card width and height (needs --sidebar-left). */
   sidebar?: boolean;
+  /** The sidebar cards' surface (smaller shadow) without the placement: a card stacked inside a sidebar slot. */
+  sidebarSurface?: boolean;
   /** Play the shared entrance animation. */
   enter?: boolean;
 }
 
 /** Floating glass card that clips its children and stacks them in a column. Title bar and body are the shared sections. */
-export default function Panel({ sidebar = false, enter = false, className = '', ...rest }: PanelProps) {
+export default function Panel({ sidebar = false, sidebarSurface = false, enter = false, className = '', ...rest }: PanelProps) {
   const classes = [
     sidebar ? `${SIDEBAR_CARD} ${SIDEBAR_PANEL_WIDTH} ${SIDEBAR_CARD_MAX_H}` : '',
-    sidebar ? SIDEBAR_CARD_SURFACE : FLOATING_CARD,
+    sidebar || sidebarSurface ? SIDEBAR_CARD_SURFACE : FLOATING_CARD,
     'flex flex-col overflow-hidden',
     enter ? PANEL_ENTER : '',
     className,
