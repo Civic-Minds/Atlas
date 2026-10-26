@@ -3,6 +3,8 @@ import { shouldShowTrunkSummary } from './routeCardTrunk';
 
 interface DirectionGroupLike {
   realTier: ShapeProperties[];
+  /** Every feature of the direction, when its rows come from the stretches (CIV-939). */
+  directionFeatures?: readonly ShapeProperties[];
 }
 
 // Mirrors pipeline/headway-utils.ts's MIN_UNSUSTAINED_EXCESS_MINUTES / MIN_UNSUSTAINED_RATIO.
@@ -32,6 +34,26 @@ export function isRiderMeaningfulGap(
 }
 
 /**
+ * CIV-939: another main or tail feature fills the same stretch slot under a different headsign and has a headway in the period. The
+ * pipeline measures a feature's period gaps over its own headsign's trips, so this feature's longest gap leaves those trips out
+ * (Sun Metro 205: 9 "Mesa Inbound" trips of 58 read a 315-minute midday gap while the direction runs every 18).
+ */
+export function stretchSlotSharedWithOtherHeadsign(
+  f: ShapeProperties,
+  directionFeatures: readonly ShapeProperties[],
+  period: TimePeriod,
+): boolean {
+  if (period === 'all' || (f.stretchRole !== 'main' && f.stretchRole !== 'tail')) return false;
+  const headsign = (f.headsign ?? '').trim();
+  return directionFeatures.some(o => o !== f
+    && o.stretchRole === f.stretchRole
+    && (o.stretchIndex ?? 0) === (f.stretchIndex ?? 0)
+    && (o.headsign ?? '').trim() !== headsign
+    // A period headway needs departures inside the window; a gap alone can be the whole window between two outside it.
+    && o.headwayByPeriod?.[period] != null);
+}
+
+/**
  * Find the largest rider-relevant gap for a route card period.
  *
  * A branch's own max gap is not a route-level warning when another branch shares
@@ -58,6 +80,8 @@ export function unevenPeriodMaxGap(
         // Keep primary / near-primary; drop branches clearly sparser short-turns.
         return direction.headway == null || direction.headway <= primaryHw * 1.5;
       })
+      // A row whose stretch another headsign shares: its own gap leaves those trips out (CIV-939).
+      .filter(direction => !group.directionFeatures || !stretchSlotSharedWithOtherHeadsign(direction, group.directionFeatures, period))
       .filter(direction => isRiderMeaningfulGap(
         direction.maxGapByPeriod?.[period] ?? 0,
         direction.headwayByPeriod?.[period] ?? direction.headway,

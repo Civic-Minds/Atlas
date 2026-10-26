@@ -10,6 +10,8 @@ export interface RouteCardDirectionGroup {
   realTier: ShapeProperties[];
   span: ShapeProperties[];
   boundLabel?: string;
+  /** Every feature of the direction, when its rows come from the stretches. */
+  directionFeatures?: ShapeProperties[];
 }
 
 /**
@@ -24,7 +26,7 @@ export function buildDirectionGroups(
 ): RouteCardDirectionGroup[] {
   if (!currentRoute) return [];
   const routeFeatures = (currentRoute as { features?: GeoJSON.Feature[] }).features ?? [];
-  type Group = { dirId: number; realTier: ShapeProperties[]; span: ShapeProperties[]; boundLabel?: string };
+  type Group = RouteCardDirectionGroup;
   const map = new Map<number, Group>();
   for (const d of currentRoute.directions) {
     const dirId = d.directionId ?? 0;
@@ -59,7 +61,7 @@ export function buildDirectionGroups(
     const variantRow = variantOnlyRow(directionFeatures);
     if (variantRow) rows = [variantRow];
     if (rows.some(d => d.stretchRole === 'tail')) rows = rows.filter(d => d.stretchRole !== 'main' || routeCardDisplayHeadway(d, period) != null);
-    if (rows.length > 0) { g.realTier = rows; g.span = []; }
+    if (rows.length > 0) { g.realTier = rows; g.span = []; g.directionFeatures = directionFeatures; }
   }
   // Deduplicate realTier entries with the same headsign — keep the one with the best (lowest) headway.
   // Multiple shape variants can share the same headsign (e.g. different mid-route detours), producing

@@ -157,6 +157,7 @@ export interface DirectionGroup {
   realTier: ShapeProperties[];
   span: ShapeProperties[];
   boundLabel?: string;
+  directionFeatures?: ShapeProperties[];
 }
 
 export interface CurrentRouteData {
