@@ -232,6 +232,14 @@ export const FREQUENCY_BANDS = [
 export const NO_MIDDAY_PHRASE = 'with no regular midday service';
 export const NO_MIDDAY_SHORT = 'no midday';
 
+/**
+ * At least one route with a regular weekday midday cadence. Area pages and their area files list only these agencies;
+ * every agency has its own page either way (CIV-965). The one place this rule is written.
+ */
+export function hasMiddayService(a: { routes: ReadonlyArray<{ midday: number | null }> }): boolean {
+  return a.routes.some(r => r.midday != null);
+}
+
 /** Route counts per band (same order as FREQUENCY_BANDS), then routes with no midday cadence last. */
 export function bandCounts(routes: ReadonlyArray<Pick<AgencyPageRoute, 'midday'>>): number[] {
   const counts = new Array<number>(FREQUENCY_BANDS.length + 1).fill(0);
@@ -458,7 +466,8 @@ export function resolveAgencySeo(
 export function agencyPageJsonLd(a: AgencyPageSummary, canonicalUrl: string, origin: string, area?: { slug: string; name: string }, intro?: string): object {
   const crumbs = agencyBreadcrumbs(a, area);
   const modified = formatIso(a.lastRefreshedAt);
-  const place = [a.city, a.region, a.country].filter(Boolean).join(', ');
+  // A city that is the state itself ("Colorado" for a statewide service) is named once, not "Colorado, Colorado" (#1130).
+  const place = [a.city, a.region, a.country].filter((p, i, all): p is string => !!p && p !== all[i + 1]).join(', ');
   return {
     '@context': 'https://schema.org',
     '@graph': [

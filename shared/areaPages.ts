@@ -7,6 +7,7 @@ import {
   bandCounts,
   bestRoute,
   formatDataDate,
+  hasMiddayService,
   headwayEvery,
   modesText,
   modeLabel,
@@ -79,7 +80,7 @@ const BUS_LABEL = MODE_DEFINITIONS.find(m => m.id === 3)!.label;
  * (older files) fall back to the area's own agency list.
  */
 export function areaAgencySummaries(area: Pick<AreaConfig, 'agencies' | 'slug'>, all: ReadonlyMap<string, AgencyPageSummary>): AgencyPageSummary[] {
-  const hasPage = (a: AgencyPageSummary) => a.routes.some(r => r.midday != null);
+  const hasPage = hasMiddayService;
   const tagged = [...all.values()].some(a => a.routes.some(r => r.areas !== undefined));
   if (!tagged) return area.agencies.map(s => all.get(s)).filter((a): a is AgencyPageSummary => !!a && hasPage(a));
   const out: AgencyPageSummary[] = [];

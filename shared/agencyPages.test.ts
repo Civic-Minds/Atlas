@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
-  agencyIntroSentence, introName, agencySpansArea, namesList, agencySpanShort, agencyBreadcrumbs, agencyDatesText, agencyLeadSentence, agencyMapHref, agencyPageDescription, agencyPageH1, agencyPageJsonLd,
+  agencyIntroSentence, introName, agencySpansArea, namesList, agencySpanShort, agencyBreadcrumbs, agencyDatesText, agencyLeadSentence, agencyMapHref, agencyPageDescription, agencyPageH1, agencyPageJsonLd, hasMiddayService,
   agencyPageData, agencyPagePath, agencyPageTitle, agencySpanText, agencyStats, bandCounts, formatDataDate, nearbyAgencies, resolveAgencySeo, trimRedundantCity,
   type AgencyPageRoute, type AgencyPageSummary, bestRoute, modesText, weekendLabel,
 } from './agencyPages';
@@ -109,6 +109,12 @@ describe('head and structured data', () => {
     expect(ld['@graph'][2].dateModified).toBe('2026-08-27');
     expect(JSON.stringify(ld)).not.toContain('FAQ');
   });
+
+  it('names a statewide place once when the city is the state itself (#1130)', () => {
+    const statewide = { ...TTC, city: 'Colorado', region: 'Colorado', country: 'United States' };
+    const ld = agencyPageJsonLd(statewide, 'https://x/agency/a', 'https://x') as { '@graph': Array<Record<string, unknown>> };
+    expect(ld['@graph'][0].areaServed).toEqual({ '@type': 'Place', name: 'Colorado, United States' });
+  });
 });
 
 describe('committed summary data', () => {
@@ -207,5 +213,13 @@ describe('beta-only agencies', () => {
     const a = { ...TTC, connections: [{ slug: 'metz', name: 'Le Met', routes: ['1'], betaOnly: true as const }, { slug: 'hsr', name: 'HSR', routes: ['2'] }] };
     const names = agencyPageData(a, [a], null).connections.map(c => c.slug);
     expect(names).toEqual(BETA_BUILD ? ['metz', 'hsr'] : ['hsr']);
+  });
+});
+
+describe('hasMiddayService', () => {
+  it('is true with one route that has a midday cadence, false when none do', () => {
+    expect(hasMiddayService({ routes: [r('1', 3, null), r('2', 3, 20)] })).toBe(true);
+    expect(hasMiddayService({ routes: [r('1', 3, null)] })).toBe(false);
+    expect(hasMiddayService({ routes: [] })).toBe(false);
   });
 });
