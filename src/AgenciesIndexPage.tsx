@@ -41,12 +41,12 @@ const INDEX_COLUMNS = 'sm:columns-2 lg:columns-3 sm:gap-x-8';
 /** Beta only: agencies with 10+ years of schedule history, from the small list build-history writes. */
 const HISTORY_SLUGS: ReadonlySet<string> = new Set((historyAgencies as HistoryAgencyList).slugs);
 
-/** Beta-only "Live" / "History" tags beside an agency name, in the page's existing pill style. */
+/** Beta-only "Live" / "History" tags after an agency's route count, tight around the word (CIV-967). */
 function AgencyTags({ live, history }: { live: boolean; history: boolean }) {
   return (
     <>
-      {live && <Tag className="ml-1.5 inline-block">Live</Tag>}
-      {history && <Tag className="ml-1 inline-block">History</Tag>}
+      {live && <Tag size="inline" className="ml-1.5">Live</Tag>}
+      {history && <Tag size="inline" className={live ? 'ml-1' : 'ml-1.5'}>History</Tag>}
     </>
   );
 }
@@ -104,7 +104,7 @@ export default function AgenciesIndexPage({ data: dataProp }: { data?: AgencyInd
                         return (
                           <li key={a.slug} className="flex min-w-0 items-baseline break-inside-avoid py-[3px]">
                             <a className={`${LINK} min-w-0 truncate underline underline-offset-2`} href={agencyPagePath(a.slug)} title={a.name}>{a.name}</a>
-                            <span className="shrink-0 whitespace-nowrap"><AgencyTags live={live} history={history} />{routes}</span>
+                            <span className="shrink-0 whitespace-nowrap">{routes}<AgencyTags live={live} history={history} /></span>
                           </li>
                         );
                       }
