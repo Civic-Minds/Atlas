@@ -71,7 +71,7 @@ Less text
 
 Card notices
 
-- One sentence in plain words: what the card shows and why. "Learn more →" runs on at the end of the sentence, not on its own line (CIV-920). CIV-941.
+- Plain words: what the card shows and why. One sentence is preferred for short notices; a longer notice may use two. "Learn more →" runs on at the end of the last sentence, not on its own line (CIV-920). CIV-941.
 
 New wording needs a yes
 
