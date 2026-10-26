@@ -1,6 +1,7 @@
 import type React from 'react';
 import { SPARKLINE_HOURS } from '../../../shared/config';
 import { tripTimeBarHeight, type TripTimeSeries } from '../../utils/tripTime';
+import { runTimeAmount } from '../../utils/headwayText';
 
 /**
  * The full-day chart's hour column row and bar shape (width and round ends); the trip-time strip
@@ -45,7 +46,7 @@ function pickTicks(candidates: number[], fractionOf: (value: number) => number, 
  */
 export function tripTimeAxisTicks(scaleMax: number, height: number): AxisTick[] {
   if (!(scaleMax > 0)) return [];
-  return pickTicks([10, 15, 20, 30, 45, 60, 90, 120], m => m / scaleMax, m => `${m} min`, height);
+  return pickTicks([10, 15, 20, 30, 45, 60, 90, 120], m => m / scaleMax, runTimeAmount, height);
 }
 
 /**

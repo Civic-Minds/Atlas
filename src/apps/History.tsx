@@ -33,7 +33,7 @@ import {
   agencyQualifiesForHistory,
   type HistoryTier,
 } from '../../shared/historyEligibility';
-import { capitalizeFirst, headwayAmount, headwayEvery } from '../utils/headwayText';
+import { capitalizeFirst, headwayAmount, headwayEvery, runTimeAmount } from '../utils/headwayText';
 import Panel, { PanelTitleBar } from '../components/ui/Panel';
 import ListRow from '../components/ui/ListRow';
 import { AgencyList, AgencyListRow, AgencyRegionSection } from '../components/ui/AgencyList';
@@ -349,7 +349,7 @@ function RouteHistoryCard({
         {route.tripDuration && (
           <CardCallout className="mt-3">
             <p className="text-xs font-bold leading-tight text-[var(--text-primary)]">
-              Trip time: {route.tripDuration.firstMinutes} min ({route.tripDuration.firstLabel}) → {route.tripDuration.lastMinutes} min ({route.tripDuration.lastLabel})
+              Trip time: {runTimeAmount(route.tripDuration.firstMinutes)} ({route.tripDuration.firstLabel}) → {runTimeAmount(route.tripDuration.lastMinutes)} ({route.tripDuration.lastLabel})
             </p>
             <p className="text-xs text-[var(--text-dim)] mt-1">
               End-to-end scheduled time on a representative weekday trip. Only shown when the route's stops and alignment haven't changed between these years.

@@ -11,7 +11,7 @@ import type { HeadwayByPeriod, HeadwayByHour } from '../../hooks/useAgencyData';
 import type { HeadwayByHourMaxGap } from '../../../shared/config';
 import Pill from '../ui/Pill';
 import LegendItem from '../ui/LegendItem';
-import { delayAmount, headwayAmount, headwayEvery } from '../../utils/headwayText';
+import { delayAmount, headwayAmount, headwayEvery, runTimeAmount } from '../../utils/headwayText';
 import { TripTimeStrip, AxisOverlay, tripTimeAxisTicks, type AxisTick, tripTimeHeading, FULL_DAY_BAR_SHAPE, FULL_DAY_COLUMN_ROW } from './TripTimeStrip';
 import { type TripTimeSeries } from '../../utils/tripTime';
 import { syncUrlParams } from '../../utils/syncUrlParams';
@@ -86,7 +86,7 @@ function formatHourTitle(h: number, headway: number): string {
 }
 
 function tripTimeAbout(minutes: number): string {
-  return `about ${minutes} min`;
+  return `about ${runTimeAmount(minutes)}`;
 }
 
 function formatTripTimeTitle(h: number, minutes: number): string {
