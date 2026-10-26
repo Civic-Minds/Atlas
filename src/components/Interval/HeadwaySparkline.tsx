@@ -280,7 +280,10 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
 
   const readoutHour = hoveredTripHour ?? hoveredHour;
   // With both directions showing, the hovered hour (and its period band) is shared, so it shows in every chart.
-  const litPeriod = sharedMode ? (sharedHour != null ? HOUR_TO_PERIOD[sharedHour] ?? null : null) : hoveredPeriod;
+  // With nothing hovered, the band stays behind the selected period, so it shows which hours the numbers below
+  // come from (CIV-933). Hovering moves it; leaving the chart brings it back.
+  const hoverPeriod = sharedMode ? (sharedHour != null ? HOUR_TO_PERIOD[sharedHour] ?? null : null) : hoveredPeriod;
+  const litPeriod = hoverPeriod ?? activePeriodKey;
   const bands = litPeriod ? PERIOD_BANDS[litPeriod] : null;
   // The full-day chart already labels every period along its top, so only the route card's chart names the hovered one.
   const activeLabelKey = (expanded ? null : hoveredPeriod ?? (period && period !== 'all' ? period : null)) as TimePeriod | null;
