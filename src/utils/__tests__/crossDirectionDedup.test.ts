@@ -63,4 +63,21 @@ describe('dedupeCrossDirectionHeadsigns', () => {
 
     expect(groups.map(g => g.realTier.length)).toEqual([1, 1]);
   });
+
+  it('still drops a direction\'s only row when its line is under half the other direction\'s (TTC 300 overnight)', () => {
+    const line = (n: number) => ({ type: 'LineString' as const, coordinates: Array.from({ length: n }, (_, i) => [i, i]) });
+    const east: ShapeProperties = { routeId: '300', directionId: 0, tier: '15', headway: 15, routeShortName: '300', routeLongName: 'Bloor-Danforth', headsign: 'Victoria Park Stn' };
+    const stub: ShapeProperties = { ...east, directionId: 1 };
+    const groups = [
+      { dirId: 0, realTier: [east], span: [] },
+      { dirId: 1, realTier: [stub], span: [] },
+    ];
+
+    dedupeCrossDirectionHeadsigns(groups, [
+      { type: 'Feature', properties: east, geometry: line(76) },
+      { type: 'Feature', properties: stub, geometry: line(12) },
+    ]);
+
+    expect(groups.map(g => g.realTier.length)).toEqual([1, 0]);
+  });
 });
