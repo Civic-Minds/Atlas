@@ -1,0 +1,412 @@
+route_id,service_id,trip_id,trip_headsign,trip_short_name,direction_id,block_id,shape_id,wheelchair_accessible,bikes_allowed
+300,1,50802812,East - 300A Bloor-Danforth towards Warden,A,0,2235061,1122283,1,1
+300,1,50802813,East - 300A Bloor-Danforth towards Warden,A,0,2234530,1122283,1,1
+300,1,50802814,East - 300A Bloor-Danforth towards Warden,A,0,2234857,1122283,1,1
+300,1,50802789,East - 300B Bloor-Danforth towards Kennedy Station,B,0,2235309,1122286,1,1
+300,1,50802786,East - 300S Bloor-Danforth Short Turn towards Victoria Park Stn,S,0,2234851,1122282,1,1
+300,1,50802790,East - 300B Bloor-Danforth towards Kennedy Station,B,0,2234763,1122286,1,1
+300,1,50802787,East - 300S Bloor-Danforth Short Turn towards Victoria Park Stn,S,0,2234852,1122282,1,1
+300,1,50802799,East - 300B Bloor-Danforth towards Kennedy Station,B,0,2235353,1122286,1,1
+300,1,50802788,East - 300S Bloor-Danforth Short Turn towards Victoria Park Stn,S,0,2234853,1122282,1,1
+300,1,50802800,East - 300S Bloor-Danforth Short Turn towards Victoria Park Stn,S,0,2234889,1122281,1,1
+300,1,50802802,East - 300A Bloor-Danforth towards Warden,A,0,2233961,1122287,1,1
+300,1,50802809,East - 300A Bloor-Danforth towards Warden via Kipling Stn,A,0,2234856,1122284,1,1
+300,1,50802804,East - 300A Bloor-Danforth towards Warden,A,0,2234036,1122287,1,1
+300,1,50802803,East - 300B Bloor-Danforth towards Kennedy Station,B,0,2233468,1122288,1,1
+300,1,50802810,East - 300A Bloor-Danforth towards Warden via Kipling Stn,A,0,2234849,1122284,1,1
+300,1,50802805,East - 300B Bloor-Danforth towards Kennedy Station,B,0,2233470,1122288,1,1
+300,1,50802792,East - 300A Bloor-Danforth towards Warden via Kipling Stn,A,0,2234854,1122284,1,1
+300,1,50802806,East - 300B Bloor-Danforth towards Kennedy Station,B,0,2234404,1122288,1,1
+300,1,50802793,East - 300A Bloor-Danforth towards Warden via Kipling Stn,A,0,2234855,1122284,1,1
+300,1,50802807,East - 300B Bloor-Danforth towards Kennedy Station,B,0,2234712,1122288,1,1
+300,1,50802794,East - 300A Bloor-Danforth towards Warden,A,0,2233467,1122283,1,1
+300,1,50802808,East - 300B Bloor-Danforth towards Kennedy Station,B,0,2233554,1122286,1,1
+300,1,50802795,East - 300A Bloor-Danforth towards Warden,A,0,2233264,1122283,1,1
+300,1,50802796,East - 300B Bloor-Danforth towards Kennedy Station,B,0,2234888,1122286,1,1
+300,1,50802801,East - 300A Bloor-Danforth towards Warden,A,0,2234283,1122283,1,1
+300,1,50802797,East - 300B Bloor-Danforth towards Kennedy Station,B,0,2234845,1122286,1,1
+300,1,50802822,East - 300A Bloor-Danforth towards Warden,A,0,2234479,1122283,1,1
+300,1,50802818,East - 300B Bloor-Danforth towards Kennedy Station,B,0,2234764,1122286,1,1
+300,1,50802820,East - 300A Bloor-Danforth towards Warden,A,0,2233343,1122283,1,1
+300,1,50802819,East - 300B Bloor-Danforth towards Kennedy Station,B,0,2233621,1122286,1,1
+300,1,50802821,East - 300A Bloor-Danforth towards Warden,A,0,2233143,1122283,1,1
+300,1,50802815,East - 300B Bloor-Danforth towards Kennedy Station,B,0,2233265,1122286,1,1
+300,1,50802816,East - 300B Bloor-Danforth towards Kennedy Station,B,0,2233502,1122286,1,1
+300,1,50802817,East - 300B Bloor-Danforth towards Kennedy Station,B,0,2233332,1122286,1,1
+300,1,50802828,East - 300A Bloor-Danforth towards Warden,A,1,2235061,1122305,1,1
+300,1,50802827,East - 300A Bloor-Danforth towards Warden,A,1,2234530,1122305,1,1
+300,1,50802840,West - 300B Bloor-Danforth towards West Mall,B,1,2233360,1122301,1,1
+300,1,50802858,West - 300S Bloor-Danforth Short Turn towards Kipling Station,S,1,2233361,1122300,1,1
+300,1,50802826,East - 300A Bloor-Danforth towards Warden,A,1,2234857,1122305,1,1
+300,1,50802861,West - 300S Bloor-Danforth Short Turn towards Kipling Station,S,1,2234000,1122300,1,1
+300,1,50802884,West - 300S Bloor-Danforth Short Turn towards Kipling Station,S,1,2234711,1122300,1,1
+300,1,50802825,East - 300S Bloor-Danforth Short Turn towards Victoria Park Stn,S,1,2234851,1122291,1,1
+300,1,50802866,West - 300A Bloor-Danforth towards Pearson Airport via Kipling Stn,A,1,2234811,1122303,1,1
+300,1,50802843,West - 300S Bloor-Danforth Short Turn towards Keele Stn,S,1,2234810,1122297,1,1
+300,1,50802883,West - 300S Bloor-Danforth Short Turn towards Keele Stn,S,1,2233722,1122297,1,1
+300,1,50802852,East - 300S Bloor-Danforth Short Turn towards Victoria Park Stn,S,1,2234852,1122291,1,1
+300,1,50802857,East - 300S Bloor-Danforth Short Turn towards Victoria Park Stn,S,1,2234853,1122291,1,1
+300,1,50802867,West - 300A Bloor-Danforth towards Pearson Airport via Kipling Stn,A,1,2234930,1122303,1,1
+300,1,50802862,West - 300S Bloor-Danforth Short Turn towards Keele Stn,S,1,2235310,1122297,1,1
+300,1,50802882,West - 300S Bloor-Danforth Short Turn towards Keele Stn,S,1,2235311,1122297,1,1
+300,1,50802868,West - 300S Bloor-Danforth Short Turn towards Keele Stn,S,1,2235062,1122298,1,1
+300,1,50802863,West - 300S Bloor-Danforth Short Turn towards Castle Frank Stn,S,1,2234707,1122294,1,1
+300,1,50802881,West - 300S Bloor-Danforth Short Turn towards Castle Frank Stn,S,1,2234713,1122294,1,1
+300,1,50802869,West - 300S Bloor-Danforth Short Turn towards Keele Stn,S,1,2235061,1122298,1,1
+300,1,50802846,Terminal 3 Only,,1,2234930,1122292,1,1
+300,1,50802844,East - 300A Bloor-Danforth towards Warden,A,1,2234856,1122305,1,1
+300,1,50802829,East - 300A Bloor-Danforth towards Warden,A,1,2234849,1122305,1,1
+300,1,50802886,West - 300B Bloor-Danforth towards West Mall,B,1,2234845,1122301,1,1
+300,1,50802885,West - 300B Bloor-Danforth towards West Mall,B,1,2234888,1122296,1,1
+300,1,50802880,East - 300A Bloor-Danforth towards Warden,A,1,2234854,1122305,1,1
+300,1,50802870,West - 300A Bloor-Danforth towards Pearson Airport,A,1,2234479,1122295,1,1
+300,1,50802887,West - 300B Bloor-Danforth towards West Mall,B,1,2234764,1122301,1,1
+300,1,50802871,West - 300A Bloor-Danforth towards Pearson Airport,A,1,2233343,1122295,1,1
+300,1,50802879,East - 300A Bloor-Danforth towards Warden,A,1,2234855,1122305,1,1
+300,1,50802888,West - 300B Bloor-Danforth towards West Mall,B,1,2233621,1122301,1,1
+300,1,50802892,East - 300A Bloor-Danforth towards Warden,A,1,2233467,1122305,1,1
+300,1,50802872,West - 300A Bloor-Danforth towards Pearson Airport,A,1,2233143,1122295,1,1
+300,1,50802889,West - 300B Bloor-Danforth towards West Mall,B,1,2233265,1122301,1,1
+300,1,50802873,West - 300A Bloor-Danforth towards Pearson Airport,A,1,2233961,1122304,1,1
+300,1,50802891,East - 300A Bloor-Danforth towards Warden,A,1,2233264,1122305,1,1
+300,1,50802890,West - 300B Bloor-Danforth towards West Mall,B,1,2233502,1122301,1,1
+300,1,50802874,West - 300A Bloor-Danforth towards Pearson Airport,A,1,2234036,1122304,1,1
+300,1,50802859,East - 300A Bloor-Danforth towards Warden,A,1,2234283,1122305,1,1
+300,1,50802841,West - 300B Bloor-Danforth towards West Mall,B,1,2233332,1122301,1,1
+300,1,50802837,West - 300A Bloor-Danforth towards Pearson Airport,A,1,2234856,1122304,1,1
+300,1,50802842,West - 300B Bloor-Danforth towards West Mall,B,1,2233468,1122301,1,1
+300,1,50802847,East - 300A Bloor-Danforth towards Warden,A,1,2234479,1122305,1,1
+300,1,50802875,West - 300A Bloor-Danforth towards Pearson Airport,A,1,2234849,1122304,1,1
+300,1,50802848,East - 300A Bloor-Danforth towards Warden,A,1,2233343,1122305,1,1
+300,1,50802835,West - 300B Bloor-Danforth towards West Mall,B,1,2233470,1122301,1,1
+300,1,50802876,West - 300A Bloor-Danforth towards Pearson Airport,A,1,2234854,1122304,1,1
+300,1,50802836,West - 300B Bloor-Danforth towards West Mall,B,1,2234404,1122301,1,1
+300,1,50802849,East - 300A Bloor-Danforth towards Warden,A,1,2233143,1122305,1,1
+300,1,50802877,West - 300A Bloor-Danforth towards Pearson Airport,A,1,2234855,1122304,1,1
+300,1,50802850,Terminal 3 Only,,1,2233961,1122292,1,1
+300,1,50802838,West - 300B Bloor-Danforth towards West Mall,B,1,2234712,1122301,1,1
+300,1,50802878,West - 300A Bloor-Danforth towards Pearson Airport,A,1,2233467,1122304,1,1
+300,1,50802839,West - 300B Bloor-Danforth towards West Mall,B,1,2233554,1122301,1,1
+300,1,50802830,Terminal 3 Only,,1,2234036,1122292,1,1
+300,1,50802864,West - 300A Bloor-Danforth towards Pearson Airport,A,1,2233264,1122304,1,1
+300,1,50802845,Terminal 3 Only,,1,2234856,1122292,1,1
+300,1,50802865,West - 300A Bloor-Danforth towards Pearson Airport,A,1,2234283,1122304,1,1
+300,1,50802831,Terminal 3 Only,,1,2234849,1122292,1,1
+300,1,50802832,Terminal 3 Only,,1,2234854,1122292,1,1
+300,1,50802833,Terminal 3 Only,,1,2234855,1122292,1,1
+300,1,50802834,Terminal 3 Only,,1,2233467,1122292,1,1
+300,1,50802856,Terminal 3 Only,,1,2233264,1122292,1,1
+300,1,50802853,Terminal 3 Only,,1,2234283,1122292,1,1
+300,2,50839196,East - 300A Bloor-Danforth towards Warden,A,0,2236625,1122283,1,1
+300,2,50839197,East - 300A Bloor-Danforth towards Warden,A,0,2236480,1122283,1,1
+300,2,50839190,East - 300B Bloor-Danforth towards Kennedy Station,B,0,2236627,1122286,1,1
+300,2,50839198,East - 300S Bloor-Danforth Short Turn towards Victoria Park Stn,S,0,2235593,1122282,1,1
+300,2,50839199,East - 300S Bloor-Danforth Short Turn towards Victoria Park Stn,S,0,2236712,1122281,1,1
+300,2,50839191,East - 300S Bloor-Danforth Short Turn towards Victoria Park Stn,S,0,2236708,1122281,1,1
+300,2,50839188,East - 300A Bloor-Danforth towards Warden,A,0,2236030,1122287,1,1
+300,2,50839192,East - 300A Bloor-Danforth towards Warden via Kipling Stn,A,0,2236709,1122284,1,1
+300,2,50839206,East - 300B Bloor-Danforth towards Kennedy Station,B,0,2236110,1122288,1,1
+300,2,50839193,East - 300B Bloor-Danforth towards Kennedy Station via Kipling Stn,B,0,2236710,1122290,1,1
+300,2,50839201,East - 300A Bloor-Danforth towards Warden via Kipling Stn,A,0,2236713,1122284,1,1
+300,2,50839194,East - 300B Bloor-Danforth towards Kennedy Station via Kipling Stn,B,0,2236711,1122290,1,1
+300,2,50839202,East - 300A Bloor-Danforth towards Warden,A,0,2235982,1122283,1,1
+300,2,50839195,East - 300B Bloor-Danforth towards Kennedy Station,B,0,2235562,1122285,1,1
+300,2,50839203,East - 300A Bloor-Danforth towards Warden,A,0,2236324,1122283,1,1
+300,2,50839204,East - 300A Bloor-Danforth towards Warden,A,0,2235594,1122283,1,1
+300,2,50839189,East - 300B Bloor-Danforth towards Kennedy Station,B,0,2235981,1122286,1,1
+300,2,50839200,East - 300B Bloor-Danforth towards Kennedy Station,B,0,2235534,1122286,1,1
+300,2,50839251,East - 300A Bloor-Danforth towards Warden,A,1,2236625,1122305,1,1
+300,2,50839239,West - 300A Bloor-Danforth towards Pearson Airport,A,1,2236714,1122299,1,1
+300,2,50839217,East - 300A Bloor-Danforth towards Warden,A,1,2236480,1122305,1,1
+300,2,50839221,West - 300S Bloor-Danforth Short Turn towards Kipling Station,S,1,2235526,1122300,1,1
+300,2,50839240,West - 300S Bloor-Danforth Short Turn towards Keele Stn,S,1,2235522,1122297,1,1
+300,2,50839216,East - 300S Bloor-Danforth Short Turn towards Victoria Park Stn,S,1,2235593,1122291,1,1
+300,2,50839237,West - 300A Bloor-Danforth towards Pearson Airport via Kipling Stn,A,1,2236742,1122303,1,1
+300,2,50839220,West - 300S Bloor-Danforth Short Turn towards Keele Stn,S,1,2236481,1122297,1,1
+300,2,50839244,West - 300S Bloor-Danforth Short Turn towards Castle Frank Stn,S,1,2235587,1122294,1,1
+300,2,50839238,West - 300S Bloor-Danforth Short Turn towards Keele Stn,S,1,2236625,1122298,1,1
+300,2,50839230,West - 300S Bloor-Danforth Short Turn towards Castle Frank Stn,S,1,2235838,1122294,1,1
+300,2,50839246,Terminal 3 Only,,1,2236742,1122292,1,1
+300,2,50839223,East - 300A Bloor-Danforth towards Warden,A,1,2236709,1122305,1,1
+300,2,50839213,East - 300B Bloor-Danforth towards Kennedy Station,B,1,2236710,1122306,1,1
+300,2,50839247,West - 300B Bloor-Danforth towards West Mall,B,1,2235656,1122301,1,1
+300,2,50839222,West - 300B Bloor-Danforth towards West Mall,B,1,2236789,1122296,1,1
+300,2,50839212,East - 300A Bloor-Danforth towards Warden,A,1,2236713,1122305,1,1
+300,2,50839245,West - 300B Bloor-Danforth towards West Mall,B,1,2235981,1122301,1,1
+300,2,50839211,East - 300B Bloor-Danforth towards Kennedy Station,B,1,2236711,1122306,1,1
+300,2,50839248,West - 300A Bloor-Danforth towards Pearson Airport,A,1,2235594,1122295,1,1
+300,2,50839210,East - 300A Bloor-Danforth towards Warden,A,1,2235982,1122305,1,1
+300,2,50839208,West - 300B Bloor-Danforth towards West Mall,B,1,2235534,1122301,1,1
+300,2,50839249,West - 300A Bloor-Danforth towards Pearson Airport,A,1,2236030,1122304,1,1
+300,2,50839209,East - 300B Bloor-Danforth towards Kennedy Station,B,1,2235562,1122306,1,1
+300,2,50839227,East - 300A Bloor-Danforth towards Warden,A,1,2236324,1122305,1,1
+300,2,50839219,West - 300B Bloor-Danforth towards West Mall,B,1,2236110,1122301,1,1
+300,2,50839250,West - 300A Bloor-Danforth towards Pearson Airport,A,1,2236709,1122304,1,1
+300,2,50839224,East - 300A Bloor-Danforth towards Warden,A,1,2235594,1122305,1,1
+300,2,50839233,West - 300B Bloor-Danforth towards West Mall,B,1,2236710,1122301,1,1
+300,2,50839242,West - 300A Bloor-Danforth towards Pearson Airport,A,1,2236713,1122304,1,1
+300,2,50839225,Terminal 3 Only,,1,2236030,1122292,1,1
+300,2,50839215,West - 300B Bloor-Danforth towards West Mall,B,1,2236711,1122301,1,1
+300,2,50839236,West - 300A Bloor-Danforth towards Pearson Airport,A,1,2235982,1122304,1,1
+300,2,50839226,Terminal 3 Only,,1,2236709,1122292,1,1
+300,2,50839207,West - 300A Bloor-Danforth towards Pearson Airport,A,1,2236324,1122304,1,1
+300,2,50839218,Terminal 3 Only,,1,2236713,1122292,1,1
+300,2,50839232,Terminal 3 Only,,1,2235982,1122292,1,1
+300,2,50839214,Terminal 3 Only,,1,2236324,1122292,1,1
+300,3,50870358,East - 300A Bloor-Danforth towards Warden,A,0,2237292,1122283,1,1
+300,3,50870362,East - 300A Bloor-Danforth towards Warden,A,0,2237875,1122283,1,1
+300,3,50870363,East - 300B Bloor-Danforth towards Kennedy Station,B,0,2237100,1122286,1,1
+300,3,50870352,East - 300B Bloor-Danforth towards Kennedy Station,B,0,2237578,1122286,1,1
+300,3,50870384,East - 300B Bloor-Danforth towards Kennedy Station,B,0,2237038,1122286,1,1
+300,3,50870374,East - 300A Bloor-Danforth towards Warden,A,0,2237166,1122289,1,1
+300,3,50870360,East - 300A Bloor-Danforth towards Warden,A,0,2238090,1122283,1,1
+300,3,50870361,East - 300B Bloor-Danforth towards Kennedy Station,B,0,2238006,1122286,1,1
+300,3,50870359,East - 300A Bloor-Danforth towards Warden,A,0,2237541,1122289,1,1
+300,3,50870373,East - 300B Bloor-Danforth towards Kennedy Station,B,0,2237514,1122286,1,1
+300,3,50870385,East - 300B Bloor-Danforth towards Kennedy Station,B,0,2237542,1122286,1,1
+300,3,50870390,East - 300A Bloor-Danforth towards Warden,A,0,2238096,1122289,1,1
+300,3,50870379,East - 300A Bloor-Danforth towards Warden,A,0,2238094,1122283,1,1
+300,3,50870386,East - 300B Bloor-Danforth towards Kennedy Station,B,0,2238187,1122286,1,1
+300,3,50870378,East - 300A Bloor-Danforth towards Warden,A,0,2238093,1122289,1,1
+300,3,50870387,East - 300B Bloor-Danforth towards Kennedy Station,B,0,2238008,1122286,1,1
+300,3,50870389,East - 300B Bloor-Danforth towards Kennedy Station,B,0,2238150,1122286,1,1
+300,3,50870380,East - 300A Bloor-Danforth towards Warden,A,0,2238156,1122289,1,1
+300,3,50870382,East - 300A Bloor-Danforth towards Warden,A,0,2238185,1122283,1,1
+300,3,50870391,East - 300B Bloor-Danforth towards Kennedy Station,B,0,2238154,1122286,1,1
+300,3,50870381,East - 300A Bloor-Danforth towards Warden,A,0,2237167,1122289,1,1
+300,3,50870392,East - 300B Bloor-Danforth towards Kennedy Station,B,0,2237260,1122286,1,1
+300,3,50870341,East - 300A Bloor-Danforth towards Warden,A,0,2237096,1122283,1,1
+300,3,50870393,East - 300B Bloor-Danforth towards Kennedy Station,B,0,2237083,1122286,1,1
+300,3,50870383,East - 300A Bloor-Danforth towards Warden,A,0,2237364,1122289,1,1
+300,3,50870395,East - 300A Bloor-Danforth towards Warden,A,0,2237307,1122283,1,1
+300,3,50870394,East - 300B Bloor-Danforth towards Kennedy Station,B,0,2238047,1122286,1,1
+300,3,50870396,East - 300A Bloor-Danforth towards Warden,A,0,2238117,1122283,1,1
+300,3,50870371,East - 300B Bloor-Danforth towards Kennedy Station,B,0,2237441,1122286,1,1
+300,3,50870397,East - 300A Bloor-Danforth towards Warden,A,0,2237103,1122283,1,1
+300,3,50870342,East - 300B Bloor-Danforth towards Kennedy Station,B,0,2237266,1122286,1,1
+300,3,50870365,East - 300S Bloor-Danforth Short Turn towards Victoria Park Stn,S,0,2238116,1122282,1,1
+300,3,50870343,East - 300B Bloor-Danforth towards Kennedy Station,B,0,2237491,1122286,1,1
+300,3,50870357,East - 300S Bloor-Danforth Short Turn towards Victoria Park Stn,S,0,2237292,1122282,1,1
+300,3,50870344,East - 300B Bloor-Danforth towards Kennedy Station,B,0,2237408,1122286,1,1
+300,3,50870369,East - 300S Bloor-Danforth Short Turn towards Victoria Park Stn,S,0,2237118,1122282,1,1
+300,3,50870376,East - 300S Bloor-Danforth Short Turn towards Victoria Park Stn,S,0,2236981,1122281,1,1
+300,3,50870368,East - 300S Bloor-Danforth Short Turn towards Victoria Park Stn,S,0,2237298,1122282,1,1
+300,3,50870377,East - 300S Bloor-Danforth Short Turn towards Victoria Park Stn,S,0,2237286,1122281,1,1
+300,3,50870367,East - 300S Bloor-Danforth Short Turn towards Victoria Park Stn,S,0,2237875,1122282,1,1
+300,3,50870366,East - 300S Bloor-Danforth Short Turn towards Victoria Park Stn,S,0,2237876,1122281,1,1
+300,3,50870345,East - 300S Bloor-Danforth Short Turn towards Victoria Park Stn,S,0,2237874,1122281,1,1
+300,3,50870364,East - 300A Bloor-Danforth towards Warden,A,0,2237542,1122287,1,1
+300,3,50870356,East - 300A Bloor-Danforth towards Warden via Kipling Stn,A,0,2238089,1122284,1,1
+300,3,50870375,East - 300A Bloor-Danforth towards Warden,A,0,2237578,1122287,1,1
+300,3,50870372,East - 300B Bloor-Danforth towards Kennedy Station,B,0,2237167,1122288,1,1
+300,3,50870388,East - 300A Bloor-Danforth towards Warden via Kipling Stn,A,0,2238095,1122284,1,1
+300,3,50870353,East - 300B Bloor-Danforth towards Kennedy Station,B,0,2237990,1122288,1,1
+300,3,50870370,East - 300A Bloor-Danforth towards Warden via Kipling Stn,A,0,2238091,1122284,1,1
+300,3,50870354,East - 300B Bloor-Danforth towards Kennedy Station,B,0,2237303,1122288,1,1
+300,3,50870405,East - 300A Bloor-Danforth towards Warden via Kipling Stn,A,0,2238092,1122284,1,1
+300,3,50870355,East - 300B Bloor-Danforth towards Kennedy Station,B,0,2238007,1122288,1,1
+300,3,50870408,East - 300A Bloor-Danforth towards Warden,A,0,2237104,1122283,1,1
+300,3,50870398,East - 300B Bloor-Danforth towards Kennedy Station,B,0,2237225,1122286,1,1
+300,3,50870409,East - 300A Bloor-Danforth towards Warden,A,0,2237048,1122283,1,1
+300,3,50870410,East - 300B Bloor-Danforth towards Kennedy Station,B,0,2238157,1122286,1,1
+300,3,50870403,East - 300A Bloor-Danforth towards Warden,A,0,2237782,1122283,1,1
+300,3,50870411,East - 300B Bloor-Danforth towards Kennedy Station,B,0,2237191,1122286,1,1
+300,3,50870404,East - 300A Bloor-Danforth towards Warden,A,0,2237871,1122283,1,1
+300,3,50870412,East - 300B Bloor-Danforth towards Kennedy Station,B,0,2237442,1122286,1,1
+300,3,50870402,East - 300A Bloor-Danforth towards Warden,A,0,2237102,1122283,1,1
+300,3,50870406,East - 300B Bloor-Danforth towards Kennedy Station,B,0,2237281,1122286,1,1
+300,3,50870401,East - 300A Bloor-Danforth towards Warden,A,0,2236968,1122283,1,1
+300,3,50870400,East - 300B Bloor-Danforth towards Kennedy Station,B,0,2237054,1122286,1,1
+300,3,50870399,East - 300B Bloor-Danforth towards Kennedy Station,B,0,2237202,1122286,1,1
+300,3,50870407,East - 300B Bloor-Danforth towards Kennedy Station,B,0,2237089,1122286,1,1
+300,3,50870464,East - 300A Bloor-Danforth towards Warden,A,1,2237292,1122305,1,1
+300,3,50870447,West - 300B Bloor-Danforth towards West Mall,B,1,2238154,1122301,1,1
+300,3,50870463,East - 300A Bloor-Danforth towards Warden,A,1,2237875,1122305,1,1
+300,3,50870519,West - 300B Bloor-Danforth towards West Mall,B,1,2237260,1122301,1,1
+300,3,50870480,West - 300B Bloor-Danforth towards West Mall,B,1,2237083,1122301,1,1
+300,3,50870509,West - 300A Bloor-Danforth towards Pearson Airport,A,1,2237096,1122304,1,1
+300,3,50870448,West - 300B Bloor-Danforth towards West Mall,B,1,2238047,1122301,1,1
+300,3,50870499,West - 300A Bloor-Danforth towards Pearson Airport,A,1,2237307,1122304,1,1
+300,3,50870462,East - 300A Bloor-Danforth towards Warden,A,1,2238090,1122305,1,1
+300,3,50870517,West - 300B Bloor-Danforth towards West Mall,B,1,2237441,1122301,1,1
+300,3,50870518,West - 300A Bloor-Danforth towards Pearson Airport,A,1,2238117,1122304,1,1
+300,3,50870452,West - 300B Bloor-Danforth towards West Mall,B,1,2237266,1122301,1,1
+300,3,50870453,West - 300A Bloor-Danforth towards Pearson Airport,A,1,2237103,1122304,1,1
+300,3,50870497,West - 300B Bloor-Danforth towards West Mall,B,1,2237491,1122301,1,1
+300,3,50870508,West - 300A Bloor-Danforth towards Pearson Airport,A,1,2238116,1122304,1,1
+300,3,50870461,East - 300A Bloor-Danforth towards Warden,A,1,2238094,1122305,1,1
+300,3,50870489,West - 300B Bloor-Danforth towards West Mall,B,1,2237408,1122301,1,1
+300,3,50870422,West - 300A Bloor-Danforth towards Pearson Airport,A,1,2237292,1122304,1,1
+300,3,50870449,West - 300B Bloor-Danforth towards West Mall,B,1,2236981,1122301,1,1
+300,3,50870446,West - 300A Bloor-Danforth towards Pearson Airport,A,1,2237118,1122304,1,1
+300,3,50870450,West - 300B Bloor-Danforth towards West Mall,B,1,2237286,1122301,1,1
+300,3,50870493,West - 300A Bloor-Danforth towards Pearson Airport,A,1,2237298,1122304,1,1
+300,3,50870430,East - 300A Bloor-Danforth towards Warden,A,1,2238185,1122305,1,1
+300,3,50870506,West - 300B Bloor-Danforth towards West Mall,B,1,2237876,1122301,1,1
+300,3,50870494,West - 300A Bloor-Danforth towards Pearson Airport,A,1,2237875,1122304,1,1
+300,3,50870527,East - 300A Bloor-Danforth towards Warden,A,1,2237096,1122305,1,1
+300,3,50870439,West - 300B Bloor-Danforth towards West Mall,B,1,2237874,1122301,1,1
+300,3,50870495,West - 300A Bloor-Danforth towards Pearson Airport,A,1,2237166,1122304,1,1
+300,3,50870440,West - 300B Bloor-Danforth towards West Mall,B,1,2237100,1122301,1,1
+300,3,50870415,East - 300A Bloor-Danforth towards Warden,A,1,2237307,1122305,1,1
+300,3,50870478,West - 300A Bloor-Danforth towards Pearson Airport,A,1,2237541,1122304,1,1
+300,3,50870441,West - 300B Bloor-Danforth towards West Mall,B,1,2237578,1122301,1,1
+300,3,50870525,East - 300A Bloor-Danforth towards Warden,A,1,2238117,1122305,1,1
+300,3,50870496,West - 300S Bloor-Danforth Short Turn towards Kipling Station,S,1,2237038,1122300,1,1
+300,3,50870443,West - 300A Bloor-Danforth towards Pearson Airport,A,1,2238090,1122304,1,1
+300,3,50870502,West - 300S Bloor-Danforth Short Turn towards Kipling Station,S,1,2238005,1122300,1,1
+300,3,50870526,East - 300A Bloor-Danforth towards Warden,A,1,2237103,1122305,1,1
+300,3,50870444,West - 300A Bloor-Danforth towards Pearson Airport,A,1,2238096,1122304,1,1
+300,3,50870451,West - 300S Bloor-Danforth Short Turn towards Kipling Station,S,1,2238006,1122300,1,1
+300,3,50870445,West - 300A Bloor-Danforth towards Pearson Airport,A,1,2238093,1122304,1,1
+300,3,50870416,East - 300S Bloor-Danforth Short Turn towards Victoria Park Stn,S,1,2238116,1122291,1,1
+300,3,50870490,West - 300S Bloor-Danforth Short Turn towards Kipling Station,S,1,2237514,1122300,1,1
+300,3,50870479,West - 300A Bloor-Danforth towards Pearson Airport via Kipling Stn,A,1,2238094,1122303,1,1
+300,3,50870524,East - 300S Bloor-Danforth Short Turn towards Victoria Park Stn,S,1,2237292,1122291,1,1
+300,3,50870491,West - 300S Bloor-Danforth Short Turn towards Keele Stn,S,1,2237542,1122297,1,1
+300,3,50870442,West - 300A Bloor-Danforth towards Pearson Airport via Kipling Stn,A,1,2238004,1122303,1,1
+300,3,50870417,East - 300S Bloor-Danforth Short Turn towards Victoria Park Stn,S,1,2237118,1122291,1,1
+300,3,50870507,West - 300S Bloor-Danforth Short Turn towards Keele Stn,S,1,2238187,1122297,1,1
+300,3,50870498,West - 300A Bloor-Danforth towards Pearson Airport via Kipling Stn,A,1,2238156,1122303,1,1
+300,3,50870504,West - 300S Bloor-Danforth Short Turn towards Keele Stn,S,1,2237134,1122297,1,1
+300,3,50870528,East - 300S Bloor-Danforth Short Turn towards Victoria Park Stn,S,1,2237298,1122291,1,1
+300,3,50870428,West - 300S Bloor-Danforth Short Turn towards Kipling Station,S,1,2237167,1122302,1,1
+300,3,50870492,West - 300S Bloor-Danforth Short Turn towards Keele Stn,S,1,2238008,1122297,1,1
+300,3,50870429,West - 300S Bloor-Danforth Short Turn towards Keele Stn,S,1,2238185,1122298,1,1
+300,3,50870529,East - 300S Bloor-Danforth Short Turn towards Victoria Park Stn,S,1,2237875,1122291,1,1
+300,3,50870418,West - 300S Bloor-Danforth Short Turn towards Castle Frank Stn,S,1,2238150,1122294,1,1
+300,3,50870503,West - 300S Bloor-Danforth Short Turn towards Keele Stn,S,1,2237493,1122298,1,1
+300,3,50870505,West - 300S Bloor-Danforth Short Turn towards Castle Frank Stn,S,1,2238154,1122294,1,1
+300,3,50870487,West - 300S Bloor-Danforth Short Turn towards Keele Stn,S,1,2237364,1122298,1,1
+300,3,50870423,West - 300S Bloor-Danforth Short Turn towards Castle Frank Stn,S,1,2237096,1122293,1,1
+300,3,50870419,West - 300S Bloor-Danforth Short Turn towards Castle Frank Stn,S,1,2237307,1122293,1,1
+300,3,50870510,Terminal 3 Only,,1,2238004,1122292,1,1
+300,3,50870414,Terminal 3 Only,,1,2238156,1122292,1,1
+300,3,50870471,East - 300A Bloor-Danforth towards Warden,A,1,2238089,1122305,1,1
+300,3,50870470,East - 300A Bloor-Danforth towards Warden,A,1,2238095,1122305,1,1
+300,3,50870438,West - 300B Bloor-Danforth towards West Mall,B,1,2237191,1122301,1,1
+300,3,50870437,West - 300B Bloor-Danforth towards West Mall,B,1,2238157,1122296,1,1
+300,3,50870469,East - 300A Bloor-Danforth towards Warden,A,1,2238091,1122305,1,1
+300,3,50870427,West - 300A Bloor-Danforth towards Pearson Airport,A,1,2237871,1122295,1,1
+300,3,50870511,West - 300B Bloor-Danforth towards West Mall,B,1,2237442,1122301,1,1
+300,3,50870468,East - 300A Bloor-Danforth towards Warden,A,1,2238092,1122305,1,1
+300,3,50870488,West - 300A Bloor-Danforth towards Pearson Airport,A,1,2237102,1122295,1,1
+300,3,50870512,West - 300B Bloor-Danforth towards West Mall,B,1,2237281,1122301,1,1
+300,3,50870467,East - 300A Bloor-Danforth towards Warden,A,1,2237104,1122305,1,1
+300,3,50870413,West - 300A Bloor-Danforth towards Pearson Airport,A,1,2236968,1122295,1,1
+300,3,50870513,West - 300B Bloor-Danforth towards West Mall,B,1,2237054,1122301,1,1
+300,3,50870420,West - 300A Bloor-Danforth towards Pearson Airport,A,1,2237542,1122304,1,1
+300,3,50870466,East - 300A Bloor-Danforth towards Warden,A,1,2237048,1122305,1,1
+300,3,50870514,West - 300B Bloor-Danforth towards West Mall,B,1,2237202,1122301,1,1
+300,3,50870433,West - 300A Bloor-Danforth towards Pearson Airport,A,1,2237578,1122304,1,1
+300,3,50870465,East - 300A Bloor-Danforth towards Warden,A,1,2237782,1122305,1,1
+300,3,50870515,West - 300B Bloor-Danforth towards West Mall,B,1,2237089,1122301,1,1
+300,3,50870426,West - 300A Bloor-Danforth towards Pearson Airport,A,1,2238089,1122304,1,1
+300,3,50870473,East - 300A Bloor-Danforth towards Warden,A,1,2237871,1122305,1,1
+300,3,50870516,West - 300B Bloor-Danforth towards West Mall,B,1,2237167,1122301,1,1
+300,3,50870434,West - 300A Bloor-Danforth towards Pearson Airport,A,1,2238095,1122304,1,1
+300,3,50870424,West - 300B Bloor-Danforth towards West Mall,B,1,2237990,1122301,1,1
+300,3,50870474,East - 300A Bloor-Danforth towards Warden,A,1,2237102,1122305,1,1
+300,3,50870435,West - 300A Bloor-Danforth towards Pearson Airport,A,1,2238091,1122304,1,1
+300,3,50870425,West - 300B Bloor-Danforth towards West Mall,B,1,2237303,1122301,1,1
+300,3,50870475,East - 300A Bloor-Danforth towards Warden,A,1,2236968,1122305,1,1
+300,3,50870436,West - 300A Bloor-Danforth towards Pearson Airport,A,1,2238092,1122304,1,1
+300,3,50870476,Terminal 3 Only,,1,2237542,1122292,1,1
+300,3,50870536,West - 300B Bloor-Danforth towards West Mall,B,1,2238007,1122301,1,1
+300,3,50870532,West - 300A Bloor-Danforth towards Pearson Airport,A,1,2237104,1122304,1,1
+300,3,50870535,West - 300B Bloor-Danforth towards West Mall,B,1,2237225,1122301,1,1
+300,3,50870477,Terminal 3 Only,,1,2237578,1122292,1,1
+300,3,50870530,West - 300A Bloor-Danforth towards Pearson Airport,A,1,2237048,1122304,1,1
+300,3,50870472,Terminal 3 Only,,1,2238089,1122292,1,1
+300,3,50870531,West - 300A Bloor-Danforth towards Pearson Airport,A,1,2237782,1122304,1,1
+300,3,50870520,Terminal 3 Only,,1,2238095,1122292,1,1
+300,3,50870521,Terminal 3 Only,,1,2238091,1122292,1,1
+300,3,50870522,Terminal 3 Only,,1,2238092,1122292,1,1
+300,3,50870523,Terminal 3 Only,,1,2237104,1122292,1,1
+300,3,50870534,Terminal 3 Only,,1,2237048,1122292,1,1
+300,3,50870533,Terminal 3 Only,,1,2237782,1122292,1,1
+300,4,50900253,East - 300A Bloor-Danforth towards Warden,A,0,2239269,1122283,1,1
+300,4,50900259,East - 300A Bloor-Danforth towards Warden,A,0,2238324,1122283,1,1
+300,4,50900254,East - 300B Bloor-Danforth towards Kennedy Station,B,0,2238736,1122286,1,1
+300,4,50900260,East - 300S Bloor-Danforth Short Turn towards Victoria Park Stn,S,0,2238435,1122282,1,1
+300,4,50900261,East - 300S Bloor-Danforth Short Turn towards Victoria Park Stn,S,0,2239153,1122281,1,1
+300,4,50900262,East - 300S Bloor-Danforth Short Turn towards Victoria Park Stn,S,0,2239154,1122281,1,1
+300,4,50900276,East - 300A Bloor-Danforth towards Warden,A,0,2238818,1122287,1,1
+300,4,50900283,East - 300A Bloor-Danforth towards Warden via Kipling Stn,A,0,2239369,1122284,1,1
+300,4,50900278,East - 300A Bloor-Danforth towards Warden,A,0,2238871,1122287,1,1
+300,4,50900277,East - 300B Bloor-Danforth towards Kennedy Station,B,0,2238499,1122288,1,1
+300,4,50900256,East - 300A Bloor-Danforth towards Warden via Kipling Stn,A,0,2239366,1122284,1,1
+300,4,50900279,East - 300B Bloor-Danforth towards Kennedy Station,B,0,2239273,1122288,1,1
+300,4,50900266,East - 300A Bloor-Danforth towards Warden via Kipling Stn,A,0,2239367,1122284,1,1
+300,4,50900280,East - 300B Bloor-Danforth towards Kennedy Station,B,0,2238611,1122288,1,1
+300,4,50900267,East - 300A Bloor-Danforth towards Warden via Kipling Stn,A,0,2239368,1122284,1,1
+300,4,50900281,East - 300B Bloor-Danforth towards Kennedy Station,B,0,2239270,1122288,1,1
+300,4,50900268,East - 300A Bloor-Danforth towards Warden,A,0,2238465,1122283,1,1
+300,4,50900282,East - 300B Bloor-Danforth towards Kennedy Station,B,0,2238546,1122286,1,1
+300,4,50900269,East - 300A Bloor-Danforth towards Warden,A,0,2238388,1122283,1,1
+300,4,50900257,East - 300B Bloor-Danforth towards Kennedy Station,B,0,2239432,1122286,1,1
+300,4,50900274,East - 300A Bloor-Danforth towards Warden,A,0,2239051,1122283,1,1
+300,4,50900270,East - 300B Bloor-Danforth towards Kennedy Station,B,0,2238517,1122286,1,1
+300,4,50900275,East - 300A Bloor-Danforth towards Warden,A,0,2239131,1122283,1,1
+300,4,50900271,East - 300B Bloor-Danforth towards Kennedy Station,B,0,2238737,1122286,1,1
+300,4,50900273,East - 300A Bloor-Danforth towards Warden,A,0,2238434,1122283,1,1
+300,4,50900272,East - 300B Bloor-Danforth towards Kennedy Station,B,0,2238599,1122286,1,1
+300,4,50900265,East - 300A Bloor-Danforth towards Warden,A,0,2238339,1122283,1,1
+300,4,50900264,East - 300B Bloor-Danforth towards Kennedy Station,B,0,2238390,1122286,1,1
+300,4,50900263,East - 300B Bloor-Danforth towards Kennedy Station,B,0,2238521,1122286,1,1
+300,4,50900255,East - 300B Bloor-Danforth towards Kennedy Station,B,0,2238419,1122286,1,1
+300,4,50900303,East - 300A Bloor-Danforth towards Warden,A,1,2239269,1122305,1,1
+300,4,50900307,West - 300A Bloor-Danforth towards Pearson Airport,A,1,2239370,1122299,1,1
+300,4,50900314,East - 300A Bloor-Danforth towards Warden,A,1,2238324,1122305,1,1
+300,4,50900342,West - 300S Bloor-Danforth Short Turn towards Kipling Station,S,1,2238384,1122300,1,1
+300,4,50900343,East - 300S Bloor-Danforth Short Turn towards Victoria Park Stn,S,1,2238435,1122291,1,1
+300,4,50900308,West - 300S Bloor-Danforth Short Turn towards Keele Stn,S,1,2238382,1122297,1,1
+300,4,50900305,West - 300A Bloor-Danforth towards Pearson Airport via Kipling Stn,A,1,2239428,1122303,1,1
+300,4,50900311,West - 300S Bloor-Danforth Short Turn towards Keele Stn,S,1,2239155,1122297,1,1
+300,4,50900309,West - 300S Bloor-Danforth Short Turn towards Castle Frank Stn,S,1,2238426,1122294,1,1
+300,4,50900306,West - 300S Bloor-Danforth Short Turn towards Keele Stn,S,1,2239269,1122298,1,1
+300,4,50900310,West - 300S Bloor-Danforth Short Turn towards Castle Frank Stn,S,1,2238632,1122294,1,1
+300,4,50900304,Terminal 3 Only,,1,2239428,1122292,1,1
+300,4,50900344,East - 300A Bloor-Danforth towards Warden,A,1,2239369,1122305,1,1
+300,4,50900326,East - 300A Bloor-Danforth towards Warden,A,1,2239366,1122305,1,1
+300,4,50900335,West - 300B Bloor-Danforth towards West Mall,B,1,2238517,1122301,1,1
+300,4,50900334,West - 300B Bloor-Danforth towards West Mall,B,1,2239432,1122296,1,1
+300,4,50900325,East - 300A Bloor-Danforth towards Warden,A,1,2239367,1122305,1,1
+300,4,50900296,West - 300A Bloor-Danforth towards Pearson Airport,A,1,2239131,1122295,1,1
+300,4,50900336,West - 300B Bloor-Danforth towards West Mall,B,1,2238737,1122301,1,1
+300,4,50900324,East - 300A Bloor-Danforth towards Warden,A,1,2239368,1122305,1,1
+300,4,50900297,West - 300A Bloor-Danforth towards Pearson Airport,A,1,2238434,1122295,1,1
+300,4,50900337,West - 300B Bloor-Danforth towards West Mall,B,1,2238599,1122301,1,1
+300,4,50900323,East - 300A Bloor-Danforth towards Warden,A,1,2238465,1122305,1,1
+300,4,50900327,West - 300A Bloor-Danforth towards Pearson Airport,A,1,2238339,1122295,1,1
+300,4,50900338,West - 300B Bloor-Danforth towards West Mall,B,1,2238390,1122301,1,1
+300,4,50900328,West - 300A Bloor-Danforth towards Pearson Airport,A,1,2238818,1122304,1,1
+300,4,50900322,East - 300A Bloor-Danforth towards Warden,A,1,2238388,1122305,1,1
+300,4,50900339,West - 300B Bloor-Danforth towards West Mall,B,1,2238521,1122301,1,1
+300,4,50900329,West - 300A Bloor-Danforth towards Pearson Airport,A,1,2238871,1122304,1,1
+300,4,50900321,East - 300A Bloor-Danforth towards Warden,A,1,2239051,1122305,1,1
+300,4,50900340,West - 300B Bloor-Danforth towards West Mall,B,1,2238419,1122301,1,1
+300,4,50900295,West - 300A Bloor-Danforth towards Pearson Airport,A,1,2239369,1122304,1,1
+300,4,50900341,West - 300B Bloor-Danforth towards West Mall,B,1,2238499,1122301,1,1
+300,4,50900291,East - 300A Bloor-Danforth towards Warden,A,1,2239131,1122305,1,1
+300,4,50900330,West - 300A Bloor-Danforth towards Pearson Airport,A,1,2239366,1122304,1,1
+300,4,50900293,West - 300B Bloor-Danforth towards West Mall,B,1,2239273,1122301,1,1
+300,4,50900284,East - 300A Bloor-Danforth towards Warden,A,1,2238434,1122305,1,1
+300,4,50900331,West - 300A Bloor-Danforth towards Pearson Airport,A,1,2239367,1122304,1,1
+300,4,50900285,East - 300A Bloor-Danforth towards Warden,A,1,2238339,1122305,1,1
+300,4,50900294,West - 300B Bloor-Danforth towards West Mall,B,1,2238611,1122301,1,1
+300,4,50900332,West - 300A Bloor-Danforth towards Pearson Airport,A,1,2239368,1122304,1,1
+300,4,50900320,West - 300B Bloor-Danforth towards West Mall,B,1,2239270,1122301,1,1
+300,4,50900286,Terminal 3 Only,,1,2238818,1122292,1,1
+300,4,50900333,West - 300A Bloor-Danforth towards Pearson Airport,A,1,2238465,1122304,1,1
+300,4,50900319,West - 300B Bloor-Danforth towards West Mall,B,1,2238546,1122301,1,1
+300,4,50900287,Terminal 3 Only,,1,2238871,1122292,1,1
+300,4,50900318,West - 300A Bloor-Danforth towards Pearson Airport,A,1,2238388,1122304,1,1
+300,4,50900313,Terminal 3 Only,,1,2239369,1122292,1,1
+300,4,50900317,West - 300A Bloor-Danforth towards Pearson Airport,A,1,2239051,1122304,1,1
+300,4,50900288,Terminal 3 Only,,1,2239366,1122292,1,1
+300,4,50900289,Terminal 3 Only,,1,2239367,1122292,1,1
+300,4,50900290,Terminal 3 Only,,1,2239368,1122292,1,1
+300,4,50900292,Terminal 3 Only,,1,2238465,1122292,1,1
+300,4,50900316,Terminal 3 Only,,1,2238388,1122292,1,1
+300,4,50900315,Terminal 3 Only,,1,2239051,1122292,1,1
