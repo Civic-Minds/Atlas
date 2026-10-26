@@ -4,7 +4,7 @@ import { useParams } from 'react-router';
 import { FEATURES } from '../shared/config';
 
 import { minutesText } from '../shared/liveFormat';
-import { LATE_SHORT, excludingWeeksText, leftOutReason } from '../shared/liveWording';
+import { excludingWeeksText, leftOutReason } from '../shared/liveWording';
 import type { AgencySummary } from '../shared/liveAgency';
 import { weekDailyValues, type UncertainStart, type DashboardBand, type DashboardBandData, type LiveV3 } from '../shared/liveDashboard';
 import { useLiveDashboard } from './hooks/useLiveDashboard';
@@ -59,22 +59,26 @@ const DELAY_STARTS_NOTE = 'Typical minutes of delay added since the previous sto
 /** The stop card's line for that figure (wording to confirm). */
 const DELAY_STAYS = 'Added and kept';
 
-/** The measures, on the map at the top left: they change only the map and the route list, so they sit with them. "Delay starts" (the CIV-942 heatmap) is one of the set. */
+/** The measures, on the map at the top right: they change only the map and the route list, so they sit with them. "Delay starts" (the CIV-942 heatmap) is one of the set. */
 const MAP_MEASURES: ReadonlyArray<readonly [MapMeasure, string]> = [...MEASURES, ['delayStarts', DELAY_STARTS_LABEL]];
 function MeasurePills({ measure, setMeasure }: { measure: MapMeasure; setMeasure: (m: MapMeasure) => void }) {
   return (
-    <div role="group" aria-label="Measure" className="pointer-events-auto absolute left-0 top-0 z-10 flex flex-wrap gap-1.5">
+    <div role="group" aria-label="Measure" className="pointer-events-auto absolute right-0 top-0 z-10 flex flex-wrap justify-end gap-1.5">
       {MAP_MEASURES.map(([k, text]) => <Pill key={k} size="segment" tone="glass" selected={measure === k} onClick={() => setMeasure(k)}>{text}</Pill>)}
     </div>
   );
 }
 
-/** The map's key, as a row of pills along the bottom of the map (the regular map's legend pills). */
+/** The picked measure's one-line definition, first in the key (Ryan, 2026-10-26, word for word). Run time has none; Delay starts has its own note. */
+const KEY_DEFINITION: Partial<Record<MapMeasure, string>> = { late: '5½+ min late', extraWait: 'wait beyond the scheduled gap', bunching: 'gaps under 2 min or over 2× scheduled' };
+
+/** The map's key, as a row of pills at the bottom right of the map, clear of the zoom buttons (the regular map's legend pills). */
 function Key({ measure }: { measure: MapMeasure }) {
   const labels = stepLabels(measure);
   return (
-    <div className="flex flex-wrap items-center gap-2">
+    <div className="flex flex-wrap items-center justify-end gap-2">
       {measure === 'delayStarts' && <div className={`${MAP_BADGE} h-8`}><span className={MAP_BADGE_LABEL}>{DELAY_STARTS_NOTE}</span></div>}
+      {KEY_DEFINITION[measure] && <div className={`${MAP_BADGE} h-8`}><span className={MAP_BADGE_LABEL}>{KEY_DEFINITION[measure]}</span></div>}
       <div className={`${MAP_BADGE} h-8 gap-3`} role="group" aria-label="Map colours">
         <span className="text-xs font-bold leading-none text-[var(--text-secondary)]">{measureLabel(measure)}</span>
         {labels.map((l, i) => <LegendItem key={l} kind="line" color={STEP_VAR(measure, i)}><span className={MAP_BADGE_LABEL}>{l}</span></LegendItem>)}
@@ -124,8 +128,6 @@ function networkHours(s: AgencySummary) {
   }).filter(x => x.n > 0);
 }
 
-/** The left panel's one-line explanations (approved by Ryan, 2026-10-17): Run time and Service delivered have none. */
-const MATH: readonly string[] = [LATE_SHORT, 'longer wait than scheduled, from the gaps between vehicles', 'too close · too far apart (gaps under 2 min or over 2× scheduled)'];
 /** Under the left panel's tiles; the full rule is its hover text. */
 const NOISE_CAPTION = 'Grey = within normal day-to-day change';
 /** The network's summary, on the left with no route picked: the week's figures as one-line rows, then late departures by hour. */
@@ -135,7 +137,7 @@ function summaryWidgets(s: AgencySummary, band: DashboardBand): PanelWidget[] {
   const hours = networkHours(s);
   const tiles = agencyKpiTiles(s);
   return [
-    ...(tiles.length ? [{ key: 'week', size: 'medium' as const, node: <WeekTable tiles={tiles} scope={s.agency.toUpperCase()} notes={MATH} caption={NOISE_CAPTION} captionTitle={NOISE_RULE} excluding={weekLeft.text} excludingTitle={weekLeft.title ?? undefined} /> }] : []),
+    ...(tiles.length ? [{ key: 'week', size: 'medium' as const, node: <WeekTable tiles={tiles} scope={s.agency.toUpperCase()} caption={NOISE_CAPTION} captionTitle={NOISE_RULE} excluding={weekLeft.text} excludingTitle={weekLeft.title ?? undefined} /> }] : []),
     ...(hours.length ? [{ key: 'late-hours', size: 'medium' as const, node: <LateByHourSection chart="mini" hours={hours} band={band} overall={s.weekly?.thisWeek.late?.share ?? null} days={s.weekly?.thisWeek.healthyDates.length} leftOut={s.weekly ? leftOutDates(s.weekly.thisWeek) : []} height={56} /> }] : []),
   ];
 }
@@ -156,7 +158,7 @@ function routeWidgets({ data, v3, dir, band, setPick, route }: {
   const weekLeft = { text: excludingWeeksText(thisLeft, lastLeft), title: leftOutReason([...lastLeft, ...thisLeft]) };
   return [
     // The week's figures cover the whole route (both directions), while Run time and the stops follow the direction pills.
-    ...(tiles.length ? [{ key: 'week', size: 'medium' as const, node: <WeekTable tiles={tiles} scope={`${route} · ${BOTH_DIRECTIONS}`} notes={MATH} caption={NOISE_CAPTION} captionTitle={NOISE_RULE} excluding={weekLeft.text} excludingTitle={weekLeft.title ?? undefined} /> }] : []),
+    ...(tiles.length ? [{ key: 'week', size: 'medium' as const, node: <WeekTable tiles={tiles} scope={`${route} · ${BOTH_DIRECTIONS}`} caption={NOISE_CAPTION} captionTitle={NOISE_RULE} excluding={weekLeft.text} excludingTitle={weekLeft.title ?? undefined} /> }] : []),
     ...(hasRunTime ? [{ key: 'run-time', size: 'medium' as const, node: <RunTimeWidget v3={v3} dir={dir} band={band} /> }] : []),
     ...(hours.length ? [{ key: 'late-hours', size: 'medium' as const, node: <LateByHourSection chart="mini" hours={hours} band={band} overall={routeLateOverall(v3)} days={routeLateDays(v3)} leftOut={routeLeftOut(v3)} scope={BOTH_DIRECTIONS} height={40} /> }] : []),
     ...(worst.length ? [{ key: 'problems', size: 'medium' as const, node: <ProblemsWidget title="Stops most often late" rows={worst} /> }] : []),
@@ -243,7 +245,7 @@ function Body({ agency, s, route, setRoute, dir, setDir, dirSlot, routeSlot, dat
   const showNote = ready?.note && (measure === 'late' || measure === 'runTime' || measure === 'delayStarts');
   // The bottom of the map: the note (when it applies) above the key's row of pills. The route is framed above both.
   const note = (
-    <div ref={setNoteEl} className="pointer-events-none absolute bottom-0 left-0 right-12 flex flex-col items-start gap-2">
+    <div ref={setNoteEl} className="pointer-events-none absolute bottom-0 left-0 right-12 flex flex-col items-end gap-2">
       {showNote && <p className="m-0 rounded-lg bg-[var(--bg-header)] px-3 py-1.5 text-xs text-[var(--text-muted)] shadow-sm">{ready!.note}</p>}
       <Key measure={measure} />
     </div>
