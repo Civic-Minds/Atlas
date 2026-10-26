@@ -894,6 +894,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
                     selectionActive={intervalSelectionActive}
                     routeRequest={liveRouteRequest}
                     onAgencyClick={handleLiveAgencyClick}
+                    searchBarWidth={isPhone ? undefined : searchBarWidth}
                   />
                 </React.Suspense>
               </div>
