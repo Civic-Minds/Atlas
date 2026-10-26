@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { COMPARE_PANEL_TOP, comparePanelTop, fmtHeadway, getRouteLabel, ROUTE_NAME_ACRONYMS, routeLabelCase, routeLabels, shouldHideNumericRouteShortName, shortenAgencyName, titleCase } from '../format';
+import { agencyBackLinkName, COMPARE_PANEL_TOP, comparePanelTop, fmtHeadway, getRouteLabel, ROUTE_NAME_ACRONYMS, routeLabelCase, routeLabels, shouldHideNumericRouteShortName, shortenAgencyName, titleCase } from '../format';
 import indexData from '../../../public/data/index.json';
 
 interface IndexAgency {
@@ -8,6 +8,26 @@ interface IndexAgency {
 }
 
 const agencies = (indexData as { agencies: IndexAgency[] }).agencies;
+
+describe('agencyBackLinkName', () => {
+  it('never swaps the name for a bracketed city (#1102)', () => {
+    expect(agencyBackLinkName('Valley Metro (Phoenix)')).toBe('Valley Metro');
+    expect(agencyBackLinkName('Capital Metro (Austin)')).toBe('Capital Metro');
+    expect(agencyBackLinkName('Cascades East Transit (Bend, OR)')).toBe('Cascades East Transit');
+  });
+
+  it('still uses a bracketed brand code, and otherwise matches shortenAgencyName', () => {
+    expect(agencyBackLinkName('Dallas Area Rapid Transit (DART)')).toBe('DART');
+    expect(agencyBackLinkName('Clemson Area Transit (CATbus)')).toBe('CATbus');
+    expect(agencyBackLinkName('Sacramento Regional Transit (SacRT)')).toBe('SacRT');
+    expect(agencyBackLinkName('Los Angeles County Metropolitan Transportation Authority (LA Metro)')).toBe('LA Metro');
+    expect(agencyBackLinkName('Toronto Transit Commission')).toBe('TTC');
+  });
+
+  it('leaves lists on the shortened name', () => {
+    expect(shortenAgencyName('Valley Metro (Phoenix)')).toBe('Phoenix');
+  });
+});
 
 describe('shortenAgencyName', () => {
   // Specific regressions for confirmed substring collisions — a short

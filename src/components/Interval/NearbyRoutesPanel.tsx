@@ -4,9 +4,10 @@ import { HeadwayBadge, LimitedBadge } from './cardUi';
 import { headwayEveryRange } from '../../utils/headwayText';
 import { NO_REGULAR_SERVICE_SHORT_LABEL } from '../../utils/effectiveHeadway';
 import type { NearbyRoute } from '../../hooks/useNearbyRoutes';
-import { NEARBY_PANEL_SLOT, PANEL_TITLE } from '../../styles';
+import { PANEL_TITLE, sidebarFrameStyle } from '../../styles';
 import Panel, { PanelBody, PanelTitleBar } from '../ui/Panel';
 import ListRow from '../ui/ListRow';
+import { ROUTE_ROW_NAME } from '../RouteRowName';
 import PanelEmpty from '../ui/PanelEmpty';
 import { loadingText } from '../../content/stateCopy';
 
@@ -14,6 +15,9 @@ interface NearbyRoutesPanelProps {
   routes: NearbyRoute[];
   loading?: boolean;
   setSelectedRoute: (key: string | null) => void;
+  sidebarLeft?: number;
+  /** The search bar's width on desktop, so the card lines up with it like every other card. */
+  searchBarWidth?: number;
 }
 
 function fmtDist(m: number): string {
@@ -24,12 +28,16 @@ export const NearbyRoutesPanel = forwardRef<HTMLDivElement, NearbyRoutesPanelPro
   routes,
   loading = false,
   setSelectedRoute,
+  sidebarLeft,
+  searchBarWidth,
 }, ref) {
   return (
+    // The left card slot at the shared card width, where the in-view lists open (CIV-930).
     <Panel
+      sidebar
       enter
       ref={ref}
-      className={NEARBY_PANEL_SLOT}
+      style={sidebarFrameStyle(sidebarLeft, searchBarWidth)}
     >
       <PanelTitleBar>
         <span className={PANEL_TITLE}>Near You</span>
@@ -56,8 +64,9 @@ export const NearbyRoutesPanel = forwardRef<HTMLDivElement, NearbyRoutesPanelPro
                   ) : null}
                   {/* The name takes the row's free width and wraps between words, like the route card's direction rows;
                       it sizes to its text and never splits a word (its narrowest is its longest word), so the badge sits beside a name that fits and moves to the next line only when it can't. */}
+                  {/* The list rule (CIV-928): the name after a number is the light weight, in its own colour. */}
                   <span className={r.displayShortName
-                    ? 'flex-auto text-xs leading-snug font-bold text-[var(--text-muted)]'
+                    ? `flex-auto text-xs leading-snug ${ROUTE_ROW_NAME}`
                     : 'flex-auto text-xs leading-snug font-black text-[var(--text-primary)]'}
                     title={r.routeLongName || r.agencyName}>
                     {r.routeLongName || r.agencyName}

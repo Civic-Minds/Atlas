@@ -163,10 +163,6 @@ export const SIDEBAR_CARD = `${SIDEBAR_CARD_SLOT} ${Z_PANEL}`;
  *  on desktop, 53px on phones) and its list scrolls inside. */
 export const SIDEBAR_CARD_MAX_H = 'max-h-[calc(100vh-112px)] max-sm:max-h-[calc(100dvh-118px)]';
 
-/** The Near You panel's placement at the map's bottom right. 136px up clears the stacked zoom controls
- *  (bottom-[59px], 64px tall, so their top edge is at 123px) plus the geolocate button below them; it used
- *  to sit at 72px and overlap the zoom-in button. Its tallest size keeps 16px clear of the top. */
-export const NEARBY_PANEL_SLOT = `absolute bottom-[136px] right-3 ${Z_PANEL} w-64 max-h-[calc(100vh-152px)]`;
 
 /** Live's sidebar placement, kept apart from the cards' while Live is rebuilt on its own branch
  *  (Live sidebars never scroll or collapse). */

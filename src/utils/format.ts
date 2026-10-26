@@ -463,8 +463,8 @@ function normalizeBrandCode(s: string): string {
   return trimmed;
 }
 
-/** True when place text (or its significant words) already appears in the agency name. */
-function placeAlreadyInName(agency: string, place: string): boolean {
+/** True when place text (or its significant words) already appears in the agency name. Also used by the agency card top. */
+export function placeAlreadyInName(agency: string, place: string): boolean {
   const norm = (s: string) =>
     s
       .toLowerCase()
@@ -528,6 +528,25 @@ function looksLikeBrandCode(s: string): boolean {
  */
 function hasWord(haystack: string, word: string): boolean {
   return new RegExp(`\\b${word}\\b`).test(haystack);
+}
+
+/** A one-word code with two or more capitals ("CATbus", "SacRT", "StaRT"); a place has one ("Phoenix"). */
+function isMixedCaseCode(s: string): boolean {
+  return !/[\s,]/.test(s) && (s.match(/[A-Z]/g)?.length ?? 0) >= 2;
+}
+
+/**
+ * The agency's name in a card's back link ("← Valley Metro"): shortenAgencyName, except that a bracketed city
+ * never stands in for the name ("Valley Metro (Phoenix)" → "Valley Metro", not "Phoenix"). A bracketed brand
+ * code still does ("DART", "LA Metro", "CATbus"). Lists and search keep shortenAgencyName (#1102).
+ */
+export function agencyBackLinkName(name: string): string {
+  const short = shortenAgencyName(name);
+  const m = name.match(/^(.*?)\s*\(([^)]+)\)\s*$/);
+  if (!m || short !== m[2].trim()) return short;
+  const bracket = m[2].trim();
+  const isCode = !isPlaceAbbrev(bracket) && (looksLikeBrandCode(bracket) || isMixedCaseCode(bracket));
+  return isCode || !m[1].trim() ? short : m[1].trim();
 }
 
 export function shortenAgencyName(name: string): string {

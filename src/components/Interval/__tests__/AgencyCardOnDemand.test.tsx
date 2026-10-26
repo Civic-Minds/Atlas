@@ -13,7 +13,7 @@ const hamilton = {
   onDemandServiceArea: HAMILTON_MY_RIDE_SERVICE_AREA,
 } as unknown as Agency;
 
-function renderZoneCard(zoneId: string | null, day: 'Weekday' | 'Saturday' | 'Sunday', period: 'midday' | 'overnight', agency: Agency = hamilton, onBackToAgency?: () => void) {
+function renderZoneCard(zoneId: string | null, day: 'Weekday' | 'Saturday' | 'Sunday', period: 'midday' | 'overnight', agency: Agency = hamilton, onBackToAgency?: () => void, onClose: () => void = () => {}) {
   return render(
     <AgencyCard
       agency={agency}
@@ -25,6 +25,7 @@ function renderZoneCard(zoneId: string | null, day: 'Weekday' | 'Saturday' | 'Su
       hideSpan={false}
       hideLimitedService={false}
       onRouteSelect={() => {}}
+      onClose={onClose}
       onDemandFocus
       onDemandZoneId={zoneId}
       onBackToAgency={onBackToAgency}
@@ -81,8 +82,21 @@ describe('on-demand card back link', () => {
     expect(screen.getAllByText(/Hamilton Street Railway/)).toHaveLength(1);
   });
 
-  it("an on-demand-only agency's whole-service card is its agency card, so it has no back link", () => {
-    renderZoneCard(null, 'Saturday', 'midday', { ...hamilton, onDemandOnly: true } as unknown as Agency, vi.fn());
-    expect(screen.queryByText(/^← /)).toBeNull();
+  it("an on-demand-only agency's whole-service card is its agency card: \"← Map\" closes it and the agency is named once", () => {
+    const onClose = vi.fn();
+    const onBack = vi.fn();
+    renderZoneCard(null, 'Saturday', 'midday', { ...hamilton, onDemandOnly: true } as unknown as Agency, onBack, onClose);
+    fireEvent.click(screen.getByRole('button', { name: /^← Map$/ }));
+    expect(onClose).toHaveBeenCalledTimes(1);
+    expect(onBack).not.toHaveBeenCalled();
+    // Named by its service, once, and "On-demand service" only as the section label (CIV-929).
+    expect(screen.getByText(HAMILTON_MY_RIDE_SERVICE_AREA.serviceName!)).toBeInTheDocument();
+    expect(screen.queryByText(/Hamilton Street Railway/)).toBeNull();
+    expect(screen.getAllByText('On-demand service')).toHaveLength(1);
+  });
+
+  it("an on-demand-only agency's zone card goes back to the service name its agency card shows", () => {
+    renderZoneCard('West Glanbrook', 'Saturday', 'midday', { ...hamilton, onDemandOnly: true } as unknown as Agency, vi.fn());
+    expect(screen.getByRole('button', { name: `← ${HAMILTON_MY_RIDE_SERVICE_AREA.serviceName}` })).toBeInTheDocument();
   });
 });

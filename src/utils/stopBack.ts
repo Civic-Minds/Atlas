@@ -1,5 +1,5 @@
 import type { OnDemandServiceDetails } from '../../shared/onDemandAvailability';
-import { agencyDisplayParts, cleanRouteShortName, routeLabels, shortenAgencyName } from './format';
+import { agencyBackLinkName, agencyDisplayParts, cleanRouteShortName, routeLabels, shortenAgencyName } from './format';
 import { onDemandCardName, onDemandSelectionZoneId, resolveSelectedOnDemandSlug } from './onDemandSelection';
 import { splitRouteKey } from './routeKey';
 
@@ -96,7 +96,7 @@ export function resolveStopBack(
     if (!agency) return MAP;
     const to = agency.onDemandServiceArea
       ? onDemandCardName(agency.onDemandServiceArea, onDemandSelectionZoneId(target.selection), agencyDisplayParts(agency.name, agency.cities, agency.displayArea).primary)
-      : shortenAgencyName(agency.name);
+      : agencyBackLinkName(agency.name);
     return to ? { to, target } : MAP;
   }
 
@@ -106,7 +106,7 @@ export function resolveStopBack(
   const opensOnDemandCard = resolveSelectedOnDemandSlug(null, agency.slug, agencies) === agency.slug && agency.onDemandServiceArea;
   const to = opensOnDemandCard
     ? onDemandCardName(agency.onDemandServiceArea!, null, agencyDisplayParts(agency.name, agency.cities, agency.displayArea).primary)
-    : shortenAgencyName(agency.name);
+    : agencyBackLinkName(agency.name);
   return to ? { to, target } : MAP;
 }
 

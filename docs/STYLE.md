@@ -24,6 +24,7 @@ Tables, controls and labels
 - Tables use `DataTable` (`src/components/ui/DataTable.tsx`) with one of its variants (compact, ruled, card).
 - Pills and segmented buttons use `Pill` (`src/components/ui/Pill.tsx`). On/off switches use `Toggle`. Small labels such as "Live" or "New" use `Tag`. Legend entries use `LegendItem`.
 - Colours come from the CSS tokens in `src/styles/index.css`, written as `var(--accent)`, `var(--text-muted)`, `var(--text-primary)`, `var(--border-primary)` and so on.
+- Route names in lists: the number in bold, then the name in a light weight, with no dash ("**504** King"). A route with no number shows its name in bold alone. Card titles keep "504 — King". Use `RouteRowName` (`src/components/RouteRowName.tsx`). CIV-928.
 
 Colour and shape
 

@@ -1,4 +1,4 @@
-import { routeLabels, shortenAgencyName } from '../utils/format';
+import { agencyBackLinkName, routeLabels, shortenAgencyName } from '../utils/format';
 import { SidebarCardHeader } from './Interval/cardUi';
 
 interface Props {
@@ -14,18 +14,23 @@ interface Props {
   /** The agency name above the title is the card's back link to the agency card ("← TTC") instead of a plain eyebrow.
    *  The map's and History's route cards; Live's cards have their own back link. */
   agencyBackLink?: boolean;
+  /** The agency's full name, when `agencyName` is already shortened: the back link names the agency, never a bracketed city (#1102). */
+  agencyFullName?: string | null;
+  /** A back link to somewhere other than the agency card ("← Near You", CIV-930); the agency name shows as the eyebrow under it. */
+  back?: { to: string; onClick: () => void };
 }
 
-export default function RouteCardTitle({ routeShortName, routeLongName, agencyName, routeType, agencySlug, onAgencyClick, showAgency = true, agencyBackLink = false }: Props) {
+export default function RouteCardTitle({ routeShortName, routeLongName, agencyName, routeType, agencySlug, onAgencyClick, showAgency = true, agencyBackLink = false, agencyFullName, back: otherBack }: Props) {
   const title = routeLabels({ shortName: routeShortName, longName: routeLongName, routeType, agencySlug, agencyName }).text;
   const displayAgency = showAgency && agencyName ? shortenAgencyName(agencyName) : null;
-  const back = agencyBackLink && onAgencyClick && displayAgency ? { to: displayAgency, onClick: onAgencyClick } : undefined;
+  const back = otherBack
+    ?? (agencyBackLink && onAgencyClick && displayAgency ? { to: agencyBackLinkName(agencyFullName ?? agencyName!), onClick: onAgencyClick } : undefined);
   return (
     <SidebarCardHeader
       back={back}
-      eyebrow={back ? null : displayAgency}
+      eyebrow={back && !otherBack ? null : displayAgency}
       title={title}
-      onEyebrowClick={back ? undefined : onAgencyClick}
+      onEyebrowClick={back && !otherBack ? undefined : onAgencyClick}
       titleClamp
     />
   );

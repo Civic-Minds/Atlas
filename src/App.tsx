@@ -165,6 +165,9 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
 
   const navigate = useNavigate();
   const { pathname } = useLocation();
+  // The on-demand service a shared link opens (?ondemand=<slug>[::zone]), read once: its zones load
+  // wherever the map starts, so the link opens the same card a click does and the map moves to it.
+  const [linkedOnDemandSlug] = useState(() => new URLSearchParams(window.location.search).get('ondemand')?.split('::', 1)[0] || null);
   // The map route is the map regardless of which map-state parameters are in the URL.
   // Requiring one of the filter parameters made links such as ?p=overnight render the
   // normal frequency controls and left the research controls out of the header.
@@ -618,7 +621,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
     <ViewportProvider>
     <ModeTabsProvider nonMapViewActive={nonMapViewActive}>
     <OnDemandStatusProvider data={onDemandData}>
-    <OnDemandViewportLoader data={onDemandData} />
+    <OnDemandViewportLoader data={onDemandData} linkedSlug={linkedOnDemandSlug} />
     <HistoryMapOverlayProvider>
     <LiveVehiclesMapOverlayProvider>
     <div className={`relative h-dvh w-screen bg-[var(--bg-app)] text-[var(--text-primary)] font-sans overflow-hidden transition-colors ${TRANSITION_BASE}`}>
@@ -878,11 +881,11 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
             )}
             {FEATURES.beta && (nightOpened || inNight) && (
               <React.Suspense fallback={null}>
-                <NightService active={inNight} sidebarLeft={sidebarLeft} searchBarWidth={isPhone ? undefined : searchBarWidth} layers={layers} query={deferredQuery} frequency={nightServiceFrequency} onRouteSelect={handleNightRouteClick} selectionActive={intervalSelectionActive} />
+                <NightService active={inNight} sidebarLeft={sidebarLeft} searchBarWidth={isPhone ? undefined : searchBarWidth} layers={layers} query={deferredQuery} frequency={nightServiceFrequency} onRouteSelect={handleNightRouteClick} onBackToMap={() => setActiveApp('frequency')} selectionActive={intervalSelectionActive} />
               </React.Suspense>
             )}
             {inFrequentService && (
-              <ResearchInfo heading={FREQUENT_INFO_HEADING} sidebarLeft={sidebarLeft} searchBarWidth={isPhone ? undefined : searchBarWidth} hidden={intervalSelectionActive}>
+              <ResearchInfo heading={FREQUENT_INFO_HEADING} onBack={() => setActiveApp('frequency')} sidebarLeft={sidebarLeft} searchBarWidth={isPhone ? undefined : searchBarWidth} hidden={intervalSelectionActive}>
                 {frequentRuleText({ frequency: frequentServiceFrequency, window: frequentServiceWindow, days: frequentServiceDays })}
               </ResearchInfo>
             )}

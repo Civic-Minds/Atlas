@@ -1,6 +1,7 @@
 import React from 'react';
 import { isLivePollingRoute } from '../../../utils/livePolling';
 import { routeLabels, resolveBranchLabel } from '../../../utils/format';
+import RouteRowName from '../../RouteRowName';
 import { metricValueForPeriod } from '../../../utils/routeFacts';
 import type { TimePeriod } from '../../../hooks/useIntervalStats';
 import {
@@ -40,7 +41,9 @@ export default function StopRouteGroup({
   showAgency,
   onOpenRoute,
 }: Props) {
-  const routeLabel = routeLabels({ shortName, longName, routeType, agencySlug, agencyName: showAgency ? agencyName : undefined }).text;
+  const routeParts = routeLabels({ shortName, longName, routeType, agencySlug, agencyName: showAgency ? agencyName : undefined });
+  // The list rule (CIV-928): "**504** King", not "504 — King".
+  const routeLabel = <RouteRowName shortName={routeParts.primary} name={routeParts.secondary} />;
   const hasMultipleDirections = new Set(branches.map(b => b.directionId)).size > 1;
   const simpleBidirectional = hasMultipleDirections && branches.length === 2 &&
     new Set(branches.map(b => b.directionId)).size === 2;

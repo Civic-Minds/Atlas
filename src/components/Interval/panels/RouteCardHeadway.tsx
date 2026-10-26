@@ -180,6 +180,8 @@ export interface RouteCardHeadwayProps {
   routeAgency: Agency | undefined;
   setSelectedAgencySlug: ((slug: string | null) => void) | undefined;
   setSelectedRoute: (r: string | null) => void;
+  /** A back link in place of "← <agency>": "← Near You" for a route opened from Near You (CIV-930). */
+  back?: { to: string; onClick: () => void };
   maxHeadway: number;
   period: TimePeriod;
   setPeriod: (p: TimePeriod) => void;
@@ -205,6 +207,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
   routeAgency,
   setSelectedAgencySlug,
   setSelectedRoute,
+  back,
   maxHeadway,
   period,
   setPeriod,
@@ -441,8 +444,10 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
               routeType={currentRoute.routeType ?? currentRoute.directions[0]?.routeType}
               agencySlug={currentRoute.agencySlug ?? routeSlug}
               agencyName={agencyDisplayName}
+              agencyFullName={routeAgency?.name}
               onAgencyClick={routeSlug && setSelectedAgencySlug ? () => { setSelectedAgencySlug(routeSlug); setSelectedRoute(null); } : undefined}
               agencyBackLink
+              back={back}
             />
           </div>
           <CardReportButton

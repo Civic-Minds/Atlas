@@ -591,8 +591,26 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     onViewportAgencySlugsChange?.(viewportSlugKey ? viewportSlugKey.split('|') : []);
   }, [viewportSlugKey, onViewportAgencySlugsChange]);
 
+  // Near You sits in the left card slot (CIV-930), so it shows only while no other card is there. A route
+  // opened from it gets "← Near You", which closes the route and shows Near You again.
+  const [nearYouRoute, setNearYouRoute] = useState<string | null>(null);
+  useEffect(() => { if (!userLocation) setNearYouRoute(null); }, [userLocation]);
+  const nearYouCovered = !!(selectedRoute || selectedStop || selectedAgencySlug || onDemandStopAgencySlug
+    || disambiguationRoutes?.length || mapContextOpen || searchOverlayHidesPanel(searchFocused, query));
+  const nearYouShown = showUi && !!userLocation && !nearYouCovered;
+  const openNearYouRoute = useCallback((key: string | null) => {
+    setNearYouRoute(key);
+    setSelectedRoute(key);
+  }, []);
+  const routeCardBack = useMemo(
+    () => (userLocation && nearYouRoute && selectedRoute === nearYouRoute
+      ? { to: 'Near You', onClick: () => setSelectedRoute(null) }
+      : undefined),
+    [userLocation, nearYouRoute, selectedRoute],
+  );
+
   useEffect(() => {
-    if (!userLocation) return;
+    if (!nearYouShown) return;
     function onPointerDown(e: PointerEvent) {
       const target = e.target as Node;
       if (nearbyPanelRef.current?.contains(target)) return;
@@ -601,7 +619,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     }
     document.addEventListener('pointerdown', onPointerDown);
     return () => document.removeEventListener('pointerdown', onPointerDown);
-  }, [userLocation, clearUserLocation]);
+  }, [nearYouShown, clearUserLocation]);
 
   const nearbyRoutes = useNearbyRoutes(userLocation, layers, day, period);
   const { stats, searchMatches, searchMatchResults, searchStopMatchResults, matchesQuery, q, filteredLayers, mapFilteredLayers, routesForStop, tileFilter } = useIntervalStats(layers, {
@@ -873,7 +891,8 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     else if (target.kind === 'onDemand') setOnDemandStopAgencySlug(target.selection);
     else if (target.kind === 'agency') setSelectedAgencySlug?.(target.agencySlug);
   }, [stopBack.target, setSelectedAgencySlug]);
-  const stopCardBack = useMemo(() => ({ to: stopBack.to, onClick: goBackFromStop }), [stopBack.to, goBackFromStop]);
+  const stopBackToAgency = stopBack.target?.kind === 'agency';
+  const stopCardBack = useMemo(() => ({ to: stopBack.to, onClick: goBackFromStop, namesAgency: stopBackToAgency }), [stopBack.to, goBackFromStop, stopBackToAgency]);
   useEffect(() => { setHoveredBranch(null); }, [selectedRoute]);
 
   const clearMapSelection = useCallback(() => {
@@ -884,12 +903,19 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     setOnDemandStopAgencySlug(null);
     onAgencyCardClose?.();
   }, [onAgencyCardClose]);
+  // An agency or on-demand card's "← Map" (CIV-929): closes the card, as a click on the map outside it does.
+  const closeAgencyCard = useCallback(() => {
+    setOnDemandStopAgencySlug(null);
+    onAgencyCardClose?.();
+  }, [onAgencyCardClose]);
   // The user dismissing the map's selection (empty-map click, Escape): clears it and tells any other
   // view's panel over the map to close the same way (History, #1031). Data-driven clears don't.
   const dismissMapSelection = useCallback(() => {
     clearMapSelection();
+    // An empty-map click closes Near You too, not just a route opened from it.
+    clearUserLocation();
     onMapDismiss?.();
-  }, [clearMapSelection, onMapDismiss]);
+  }, [clearMapSelection, clearUserLocation, onMapDismiss]);
 
   // Drop stale selection when the route card has no data (day change, agency unload, etc.)
   useEffect(() => {
@@ -1277,6 +1303,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
             onDemandFocus
             onDemandZoneId={selectedOnDemandZoneId}
             onBackToAgency={setSelectedAgencySlug ? () => { setOnDemandStopAgencySlug(null); setSelectedAgencySlug(agency.slug); } : undefined}
+            onClose={closeAgencyCard}
           />
         ) : null;
       })()}
@@ -1298,6 +1325,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
             sidebarLeft={sidebarLeft}
             searchBarWidth={searchBarWidth}
             onInfoOpen={onInfoOpen}
+            onClose={closeAgencyCard}
           />
         ) : null;
       })()}
@@ -1320,12 +1348,14 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
         );
       })()}
 
-      {showUi && userLocation && (
+      {nearYouShown && (
         <NearbyRoutesPanel
           ref={nearbyPanelRef}
           routes={nearbyRoutes}
           loading={isLoading}
-          setSelectedRoute={setSelectedRoute}
+          setSelectedRoute={openNearYouRoute}
+          sidebarLeft={sidebarLeft}
+          searchBarWidth={searchBarWidth}
         />
       )}
 
@@ -1502,6 +1532,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
         onInfoOpen={onInfoOpen}
         searchEnterRef={searchEnterRef}
         stopBack={stopCardBack}
+        routeBack={routeCardBack}
       />
       </div>
     </div>

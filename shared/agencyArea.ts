@@ -5,6 +5,12 @@ import { areaRegionTitle } from './areaRegions';
 /** agency slug -> [area slug, area name], for agencies in an area that has a page (config/areas). */
 const AGENCY_AREAS = agencyAreas as unknown as Record<string, [string, string]>;
 
+/** The agency's region as a title ("Greater Toronto and Hamilton Area", "Metro Vancouver"), or null when it is in no area. */
+export function agencyRegionTitle(agencySlug: string, map: Record<string, [string, string]> = AGENCY_AREAS): string | null {
+  const hit = map[agencySlug];
+  return hit ? areaRegionTitle({ slug: hit[0], name: hit[1] }) : null;
+}
+
 /**
  * The area page an agency's links should point to: only when the area pages are on (beta flag) and
  * the agency belongs to an area that actually has a page. Otherwise null, so no link is drawn.

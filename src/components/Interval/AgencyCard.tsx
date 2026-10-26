@@ -3,8 +3,7 @@ import { LIVE_POLLING_ROUTES } from '../../../shared/livePollingConfig';
 import { FEATURES } from '../../../shared/config';
 import { plural } from '../../../shared/overflowText';
 import { agencyPagePath } from '../../../shared/agencyPages';
-import { areaLinkFor } from '../../../shared/agencyArea';
-import { areaPagePath } from '../../../shared/areas';
+import { agencyRegionTitle, areaLinkFor } from '../../../shared/agencyArea';
 import { ON_DEMAND_NOT_MAPPED_NOTE, ON_DEMAND_PILL_LABEL, onDemandPillSelected } from '../../utils/onDemandPill';
 import agencyPageSlugs from '../../../shared/data/agency-page-slugs.json';
 import type { Agency } from '../../App';
@@ -21,7 +20,7 @@ import { agencyDisplayParts, routeLabels } from '../../utils/format';
 import type { DayType, TimePeriod, ShapeProperties } from '../../hooks/useIntervalStats';
 import { passesRouteFilter } from '../../hooks/useIntervalStats';
 import { NO_REGULAR_SERVICE_LABEL, routeListDisplay } from '../../utils/effectiveHeadway';
-import { AgencyCardHeading, AgencyDataSourceLink, SidebarCardHeader, CARD_HEADER_BLOCK, CARD_BODY_TEXT, CARD_SUMMARY, CardBodyText, CardHelpNotice, CardSectionLabel, CardReportButton } from './cardUi';
+import { AgencyCardTop, AgencyDataSourceLink, SidebarCardHeader, CARD_HEADER_BLOCK, CARD_BODY_TEXT, CardBodyText, CardHelpNotice, CardSectionLabel, CardReportButton } from './cardUi';
 import CardRouteList from './CardRouteList';
 import { OutboundLink } from '../OutboundLink';
 import { buildRouteFacts } from '../../utils/routeFacts';
@@ -301,12 +300,8 @@ interface Props {
   onDemandZoneId?: string | null;
   /** The on-demand card's back link to the agency card (CIV-900); shown only when that is a different card. */
   onBackToAgency?: () => void;
-}
-
-/** Area link words Ryan has approved, by area page (CIV-841). Other areas get no link until he picks their words. */
-const APPROVED_AREA_LABELS: Record<string, string> = { [areaPagePath('toronto')]: 'Toronto area' };
-function approvedAreaLabel(href: string): string | null {
-  return APPROVED_AREA_LABELS[href] ?? null;
+  /** Closes the card: the "← Map" back link every card with nothing before it gets (CIV-929). */
+  onClose: () => void;
 }
 
 function RouteListSection({
@@ -322,7 +317,7 @@ function RouteListSection({
 }) {
   const rows = routes.map(r => ({
     key: `${r.agencySlug}::${r.routeId}`,
-    label: routeLabels({ shortName: r.shortName, longName: r.longName, routeType: r.routeType, agencySlug: r.agencySlug }).text,
+    route: routeLabels({ shortName: r.shortName, longName: r.longName, routeType: r.routeType, agencySlug: r.agencySlug }),
     headway: r.headway ?? undefined,
     headwayLabel: r.headway != null && r.sharedHeadway != null ? headwayEveryRange(r.sharedHeadway, r.headway) : undefined,
     limited: r.limited || r.noRegular === true,
@@ -349,6 +344,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
   onDemandFocus = false,
   onDemandZoneId = null,
   onBackToAgency,
+  onClose,
 }, ref) {
   const routes = useMemo(
     () => getRoutes(layers, agency.slug, day, period, { maxHeadway, selectedModes, hideSpan, hideLimitedService }),
@@ -395,6 +391,17 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
     () => agencyDisplayParts(agency.name, agency.cities, agency.displayArea),
     [agency.name, agency.cities, agency.displayArea],
   );
+  // An on-demand-only agency's cards are named by its service ("GP Transit On-Demand"), with no place beside it,
+  // so it fits on one line beside the report flag; the zone card has no place either (CIV-929).
+  const agencyCardName = agency.onDemandOnly && agency.onDemandServiceArea
+    ? onDemandCardName(agency.onDemandServiceArea, null, agencyNamePrimary)
+    : agencyNamePrimary;
+  const hasAboutPage = FEATURES.agencyPages && (agencyPageSlugs as string[]).includes(agency.slug);
+  // The region link shows the region's name alone (CIV-929), not the area page's "All … agencies" label.
+  const areaLink = hasAboutPage ? areaLinkFor(agency.slug, FEATURES.agencyPages) : null;
+  const regionTitle = agencyRegionTitle(agency.slug);
+  const area = areaLink && regionTitle ? { href: areaLink.href, label: regionTitle } : null;
+  const hasSource = FEATURES.dataSourceLink && !!agency.websiteUrl;
   const rolloutNotice = getRolloutNotice(agency);
   const coverageNote = FEATURES.onDemand ? onDemandCoverageNote(agency) : null;
   // Zone not on the map yet: an "On-Demand" pill beside the mode pills instead of a notice block.
@@ -408,6 +415,9 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
     />
   );
 
+  // A link's on-demand card waits for the service's zones instead of flashing the routes card (CIV-929).
+  if (onDemandFocus && !agency.onDemandServiceArea) return null;
+
   if (onDemandFocus && agency.onDemandServiceArea) {
     const service = agency.onDemandServiceArea;
     const selectedZone = onDemandZoneId
@@ -415,7 +425,6 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
       : undefined;
     const zoneName = (selectedZone?.properties as { areaName?: string } | undefined)?.areaName;
     const zone = resolveOnDemandZone(service, zoneName);
-    const serviceName = zone.serviceName ?? service.serviceName ?? agencyNamePrimary;
     const pickupSentence = onDemandPickupSentence(service, zoneName);
     // Only claim a shaded area when one belongs to this service (Hamilton's shaded zones are Trans-Cab, not myRide).
     const showsShadedArea = zoneName
@@ -435,13 +444,16 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
           {backToAgency ? (
             // A zone (or a fixed-route agency's service) reads like a route card: "← Agency" back to the agency
             // card, then the bold zone name (Ryan: "the on demand should be closer to the route card").
-            <SidebarCardHeader title={onDemandCardName(service, onDemandZoneId, agencyNamePrimary)} back={{ to: agencyNamePrimary, onClick: backToAgency }} />
+            <SidebarCardHeader title={onDemandCardName(service, onDemandZoneId, agencyNamePrimary)} back={{ to: agencyCardName, onClick: backToAgency }} />
           ) : (
-            // An on-demand-only agency's whole-service card is its agency card: the shared agency heading, the agency below.
-            <>
-              <AgencyCardHeading name={onDemandCardName(service, onDemandZoneId, agencyNamePrimary)} place={agencyNameSecondary} className="mb-0" />
-              {serviceName !== agencyNamePrimary && <p className={CARD_SUMMARY}>{agencyNamePrimary}</p>}
-            </>
+            // An on-demand-only agency's whole-service card is its agency card: the shared agency card top, named
+            // once, with no facts line (the "On-demand service" section label below says it) (CIV-929).
+            <AgencyCardTop
+              name={agencyCardName}
+              place={null}
+              back={{ to: 'Map', onClick: onClose }}
+              report={reportButton}
+            />
           )}
           {FEATURES.dataSourceLink && agency.websiteUrl && (
             <p className="mt-1 text-xs"><AgencyDataSourceLink agency={agency} /></p>
@@ -508,28 +520,27 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
       style={sidebarFrameStyle(sidebarLeft, searchBarWidth)}
     >
       <div className={CARD_HEADER_BLOCK}>
-        <div className="flex items-start gap-2 min-w-0">
-          <div className="min-w-0 flex-1">
-            <AgencyCardHeading name={agencyNamePrimary} place={agencyNameSecondary} className="mb-0" />
-          <p className={CARD_SUMMARY}>
-            {agency.onDemandOnly ? 'On-demand service' : buildHeaderSummary(visibleRoutes, maxHeadway)}
-          </p>
-          {(() => {
-            // One row of links (CIV-841): "About →", "Source →", then the area. The map is a different page from
-            // the About and area pages, so they open in a new tab like the outside Source link.
-            const hasAboutPage = FEATURES.agencyPages && (agencyPageSlugs as string[]).includes(agency.slug);
-            const area = hasAboutPage ? areaLinkFor(agency.slug, FEATURES.agencyPages) : null;
-            const areaLabel = area ? approvedAreaLabel(area.href) : null;
-            const hasSource = FEATURES.dataSourceLink && !!agency.websiteUrl;
-            if (!hasAboutPage && !hasSource && !areaLabel) return null;
-            return (
-              <p className="mt-1 flex flex-wrap gap-x-3 text-xs">
-                {hasAboutPage && <ArrowLink size="xs" tone="inline" href={agencyPagePath(agency.slug)} target="_blank" rel="noopener noreferrer">About</ArrowLink>}
-                <AgencyDataSourceLink agency={agency} />
-                {area && areaLabel && <ArrowLink size="xs" tone="inline" href={area.href} target="_blank" rel="noopener noreferrer">{areaLabel}</ArrowLink>}
-              </p>
-            );
-          })()}
+        <AgencyCardTop
+          name={agencyCardName}
+          place={agency.onDemandOnly ? null : agencyNameSecondary}
+          back={{ to: 'Map', onClick: onClose }}
+          facts={agency.onDemandOnly ? 'On-demand service' : buildHeaderSummary(visibleRoutes, maxHeadway)}
+          report={reportButton}
+          region={area && (
+            // The region on one line under the name, cut with an ellipsis if it ever runs long (CIV-929). The map is
+            // a different page from the area page, so it opens in a new tab like the outside Source link.
+            <ArrowLink size="xs" tone="inline" href={area.href} target="_blank" rel="noopener noreferrer" className="max-w-full" title={area.label}>
+              <span className="truncate min-w-0">{area.label}</span>
+            </ArrowLink>
+          )}
+        >
+          {(hasAboutPage || hasSource) && (
+            // "About →" and "Source →" under the facts (CIV-841), each in a new tab like the region link.
+            <p className="mt-1 flex flex-wrap gap-x-3 text-xs">
+              {hasAboutPage && <ArrowLink size="xs" tone="inline" href={agencyPagePath(agency.slug)} target="_blank" rel="noopener noreferrer">About</ArrowLink>}
+              <AgencyDataSourceLink agency={agency} />
+            </p>
+          )}
           {!agency.onDemandOnly && agency.onDemandServiceArea?.serviceName && (
             <div className="mt-2 border-t border-[var(--border-primary)] pt-2">
               <div className="flex items-baseline justify-between gap-2">
@@ -626,9 +637,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
               )}
             </div>
           )}
-          </div>
-          {reportButton}
-        </div>
+        </AgencyCardTop>
       </div>
 
       <div className="flex-1 overflow-y-auto custom-scrollbar">
