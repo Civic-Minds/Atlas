@@ -46,7 +46,7 @@ import { compareAgencyName, compareHeadwayThenNumber, compareRouteNumber } from 
 import { SIDEBAR_CARD_BODY } from './cardUi';
 import { useRecentSearches } from '../../hooks/useRecentSearches';
 import { useFadePresence } from '../../hooks/useFadePresence';
-import { BOTTOM_SHEET_FRAME, BottomSheetHandle, bottomSheetBodyClass, useBottomSheet } from '../ui/BottomSheet';
+import { bottomSheetFrameClass, BottomSheetHandle, bottomSheetBodyClass, useBottomSheet } from '../ui/BottomSheet';
 
 interface SidebarControlsProps {
   query: string;
@@ -956,7 +956,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   return (
     <div
       className={sheetMode
-        ? `${BOTTOM_SHEET_FRAME} ${panelVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'}`
+        ? bottomSheetFrameClass(panelVisible)
         : `${SIDEBAR_CARD_SLOT} ${searchOverlayHidesPanel(searchFocused, query) ? Z_DROPDOWN : Z_PANEL} ${SIDEBAR_PANEL_WIDTH} ${phonePanelWidth} ${SIDEBAR_CARD_MAX_H} flex flex-col gap-3 transition-[opacity,transform] duration-200 ease-out ${panelVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2 pointer-events-none'}`}
       style={sheetMode ? undefined : {
         ...sidebarFrameStyle(sidebarLeft, matchSearchBarWidth ? searchBarWidth : undefined),

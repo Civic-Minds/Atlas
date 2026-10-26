@@ -17,7 +17,7 @@ import { useRecentSearches } from '../hooks/useRecentSearches';
 import { useFadePresence } from '../hooks/useFadePresence';
 import { PHONE_MEDIA_QUERY, useMediaQuery } from '../hooks/useMediaQuery';
 import { FEATURES } from '../../shared/config';
-import { BOTTOM_SHEET_FRAME, BottomSheetHandle, bottomSheetBodyClass, useBottomSheet } from '../components/ui/BottomSheet';
+import { bottomSheetFrameClass, BottomSheetHandle, bottomSheetBodyClass, useBottomSheet } from '../components/ui/BottomSheet';
 import { historyRouteMatchesQuery } from '../utils/historyRouteSearch';
 import { snapshotsNewestFirst, usableSnapshots } from '../utils/historySnapshots';
 import { buildRouteModeFilters, routeMatchesModeFilter, type RouteModeFilterKey } from '../utils/routeModeFilters';
@@ -168,6 +168,7 @@ function RouteHistoryCard({
   onBack,
   frameClassName,
   frameStyle,
+  sheetVisible,
   period,
 }: {
   /** The Time chip's period: the rows, chart and summary read that period's values (CIV-389). */
@@ -179,8 +180,13 @@ function RouteHistoryCard({
   /** Placement and fade shared by History's panels (the regular cards' sidebar rule). */
   frameClassName: string;
   frameStyle: React.CSSProperties;
+  /** Whether History's panels are showing; the phone sheet uses it in place of frameClassName's fade. */
+  sheetVisible: boolean;
 }) {
   const isPhone = useMediaQuery(PHONE_MEDIA_QUERY);
+  // The sheet opens like the map's route sheet: it fades and slides up when a route is picked
+  // (this card mounts) and when History opens, and slides back down when History closes.
+  const { visible: sheetEntered } = useFadePresence(true);
   const sheetMode = FEATURES.mobileRouteSheet && isPhone;
   const { expanded: sheetExpanded, handle: sheetHandle } = useBottomSheet(route.routeShortName);
   const { newestFirst: snaps } = routeHistorySnapshots(route);
@@ -237,7 +243,7 @@ function RouteHistoryCard({
     // The regular route card's frame, title and rows (RouteCardTitle, direction rows): the agency name
     // above the title goes back to the agency, as on the map's route card.
     // On phones it opens in the map route card's bottom sheet (#1028 item 23).
-    <div className={sheetMode ? `${BOTTOM_SHEET_FRAME} ${frameClassName}` : `${SIDEBAR_CARD} ${SIDEBAR_PANEL_WIDTH} ${SIDEBAR_CARD_MAX_H} flex flex-col ${frameClassName}`} style={sheetMode ? undefined : frameStyle}>
+    <div className={sheetMode ? bottomSheetFrameClass(sheetVisible && sheetEntered) : `${SIDEBAR_CARD} ${SIDEBAR_PANEL_WIDTH} ${SIDEBAR_CARD_MAX_H} flex flex-col ${frameClassName}`} style={sheetMode ? undefined : frameStyle}>
     <div className={sheetMode ? bottomSheetBodyClass(sheetExpanded) : SIDEBAR_CARD_BODY}>
     {sheetMode && <BottomSheetHandle expanded={sheetExpanded} handle={sheetHandle} />}
     <SidebarCardShell>
@@ -868,6 +874,7 @@ export default function History({ active, view = HISTORY_VIEW_ALL, initialAgency
                   onBack={() => setSelectedRouteShortName(null)}
                   frameClassName={frameClassName}
                   frameStyle={frameStyle}
+                  sheetVisible={visible}
                   period={view.period}
                 />
               );
