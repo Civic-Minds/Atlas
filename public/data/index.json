@@ -3470,7 +3470,15 @@
       "timezone": "America/Detroit",
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2281/latest.zip",
-      "lastPeekedExpiry": "20271231"
+      "lastPeekedExpiry": "20271231",
+      "modeOverrides": [
+        {
+          "routeType": 0,
+          "routeShortName": "DPM",
+          "mode": 101,
+          "reason": "The Detroit People Mover is an automated people mover, published as route_type 0 (streetcar)"
+        }
+      ]
     },
     {
       "slug": "qline",
@@ -12324,6 +12332,24 @@
           "routeShortName": "2600",
           "mode": 1,
           "reason": "Metrorail is a heavy-rail metro, published as route_type 2 (commuter rail)"
+        },
+        {
+          "routeType": 0,
+          "routeShortName": "MMI",
+          "mode": 101,
+          "reason": "Metromover MMI is an automated people mover, published as route_type 0 (streetcar)"
+        },
+        {
+          "routeType": 0,
+          "routeShortName": "MMO",
+          "mode": 101,
+          "reason": "Metromover MMO is an automated people mover, published as route_type 0 (streetcar)"
+        },
+        {
+          "routeType": 0,
+          "routeShortName": "MIA",
+          "mode": 101,
+          "reason": "Metromover MIA is an automated people mover, published as route_type 0 (streetcar)"
         }
       ],
       "lastPeekedExpiry": "20271231"
@@ -18595,7 +18621,10 @@
       "hiddenInProduction": true,
       "feedUrl": "https://files.mobilitydatabase.org/tld-7068_1/latest.zip",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-7068_1/latest.zip",
-      "preprocess": "wvu-prt-shapes",
+      "preprocess": "wvu-prt-line",
+      "onDemandRoutes": [
+        "PRT"
+      ],
       "lastFeedExpiry": "20261218",
       "lastFeedVersion": "2",
       "lastRefreshedAt": "2026-08-18",
@@ -18622,7 +18651,15 @@
       "timezone": "America/New_York",
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://files.mobilitydatabase.org/tld-7068_1/latest.zip",
-      "lastPeekedExpiry": "20261218"
+      "lastPeekedExpiry": "20261218",
+      "modeOverrides": [
+        {
+          "routeType": 0,
+          "routeShortName": "PRT",
+          "mode": 101,
+          "reason": "WVU PRT is an automated people mover, published as route_type 0 (streetcar)"
+        }
+      ]
     },
     {
       "slug": "visalia",
@@ -22842,7 +22879,15 @@
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://s3.amazonaws.com/datatools-511ny/public/AirTrain_JFK.zip",
-      "lastPeekedExpiry": "20270228"
+      "lastPeekedExpiry": "20270228",
+      "modeOverrides": [
+        {
+          "routeType": 0,
+          "routeShortName": "AirTrain",
+          "mode": 101,
+          "reason": "AirTrain JFK (all three routes) is an automated people mover, published as route_type 0 (streetcar)"
+        }
+      ]
     },
     {
       "slug": "staten-island-ferry",

@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { readdirSync, readFileSync } from 'node:fs';
 import { featureFilter } from '@maplibre/maplibre-gl-style-spec';
-import { effectiveMode, isRailLikeRoute, MODE_OVERRIDES, VIRTUAL_LRT_MODE } from '../modes';
+import { effectiveMode, FILTER_MODES, isRailLikeRoute, modeLabel, MODE_OVERRIDES, VIRTUAL_LRT_MODE } from '../modes';
 import { buildModeFilterClause } from '../tileFilterExprs';
 import { generateAgencyIndex, generateModeOverrides } from '../../scripts/agencyIndexGeneration';
 
@@ -83,5 +83,18 @@ describe('per-route mode overrides (#827)', () => {
           .toBe(effectiveMode(s) === mode);
       }
     }
+  });
+});
+
+describe('people movers published as streetcars (#1119)', () => {
+  it.each([
+    ['wvu-prt', 'PRT'], ['detroit-people-mover', 'DPM'], ['jfk-airtrain', 'AirTrain'],
+    ['miami-dade-transit', 'MMI'], ['miami-dade-transit', 'MMO'], ['miami-dade-transit', 'MIA'],
+  ])('%s %s reads People mover', (agencySlug, routeShortName) => {
+    expect(modeLabel(effectiveMode({ agencySlug, routeShortName, routeType: 0 }))).toBe('People mover');
+  });
+
+  it('is a label only: no filter chip', () => {
+    expect(FILTER_MODES.map(m => m.label)).not.toContain('People mover');
   });
 });

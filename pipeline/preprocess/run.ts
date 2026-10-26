@@ -6,6 +6,7 @@ import { mergeNrtDayNightRoutes, sanitizeNrtFeed } from '../transforms/nrt-day-n
 import { synthesizeLondonRouteNames } from '../transforms/london-route-names.js';
 import { linkMetrolinkShapes } from '../transforms/metrolink-shapes.js';
 import { linkWvuPrtShapes } from '../transforms/wvu-prt-shapes.js';
+import { mergeWvuPrtLine } from '../transforms/wvu-prt-line.js';
 import { normalizeBrantfordRouteLabels } from '../transforms/brantford-route-labels.js';
 import { fixMountainLineFrequencyWindow } from '../transforms/mountain-line-frequency-fix.js';
 import { addSantaFePickUpWeekendFrequency } from '../transforms/santafe-pickup-schedule.js';
@@ -16,7 +17,7 @@ import { poolSingleTripShapes } from './pool-single-trip-shapes.js';
 
 // WVU PRT publishes route geometry separately from the schedule feed.
 // Keep this agency-specific transform opt-in rather than changing shared shape handling.
-export type GtfsPreprocess = 'nrt-day-night' | 'nrt-cleanup' | 'london-route-names' | 'metrolink-shapes' | 'wvu-prt-shapes' | 'brantford-route-labels' | 'interpolate-untimed-stops' | 'mountain-line-frequency-fix' | 'santafe-pickup-schedule';
+export type GtfsPreprocess = 'nrt-day-night' | 'nrt-cleanup' | 'london-route-names' | 'metrolink-shapes' | 'wvu-prt-shapes' | 'wvu-prt-line' | 'brantford-route-labels' | 'interpolate-untimed-stops' | 'mountain-line-frequency-fix' | 'santafe-pickup-schedule';
 
 export interface GtfsTransformOptions {
   agencyId?: string;
@@ -121,6 +122,13 @@ export function normalizeGtfs(
     gtfs = linkWvuPrtShapes(gtfs);
     const after = gtfs.trips?.filter(trip => trip.shape_id).length ?? 0;
     onStatus?.(`WVU PRT shape linkage: ${after - before} trips linked`);
+  }
+  if (options?.preprocess === 'wvu-prt-line') {
+    const result = mergeWvuPrtLine(gtfs);
+    gtfs = result.gtfs;
+    onStatus?.(result.merged
+      ? `WVU PRT: ${result.gtfs.trips.length} end-to-end trips folded into one line through five stations (#1119)`
+      : `WVU PRT: feed left as published (${result.reason})`);
   }
   if (options?.preprocess === 'brantford-route-labels') {
     gtfs = normalizeBrantfordRouteLabels(gtfs);
