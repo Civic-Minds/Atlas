@@ -4,46 +4,18 @@ import type { MapboxOverlay } from '@deck.gl/mapbox';
 import { useLiveVehiclesMapOverlay } from '../../../context/LiveVehiclesMapOverlay';
 import type { LiveVehicle } from '../../../context/LiveVehiclesMapOverlay';
 import { cleanRouteShortName } from '../../../utils/format';
-import { escapeHtml } from '../../../lib/escapeHtml';
 import { liveVehiclesFingerprint } from '../../../utils/liveVehiclesFingerprint';
 import { useColorVision } from '../../../context/ColorVisionContext';
-import { delayAmount } from '../../../utils/headwayText';
+import { getVehicleRgb } from '../../../utils/colors';
+import { vehicleTooltipHtml } from '../../../lib/mapHtml';
 import { cardFramePadding, frameRoute } from './routeFraming';
 import { LIVE_VEHICLE_PICK_RADIUS_PX, pickLiveVehicles } from './liveVehiclePick';
 import { LIVE_CONTEXT_LAYER_IDS } from './mapLayers';
 import { focusOpacity } from '../../../utils/routeFocus';
 import { getNowDay } from '../../../../shared/dayTypes';
 
-/** Exported for unit tests — GTFS-RT text must be escaped before innerHTML. */
-export function vehicleTooltipHtml(v: LiveVehicle): string | null {
-  if (!v.routeShortName) return null;
-  const delayMin = v.delayMin;
-  const label = delayMin === null ? null
-    : delayMin <= -1.5 ? `${delayAmount(Math.round(Math.abs(delayMin)))} early`
-    : delayMin >= 5.5  ? `${delayAmount(Math.round(delayMin))} late`
-    : 'On time';
-  const statusColor: Record<string, string> = {
-    on_time: '#38a169', early: '#3182ce', late: '#e53e3e', no_data: '#718096',
-  };
-  const color = statusColor[v.status] ?? statusColor.no_data;
-  const routeLabel = escapeHtml(cleanRouteShortName(v.routeShortName));
-  const headsign = v.headsign ? escapeHtml(v.headsign) : '';
-  const speed = v.speedKmh != null ? escapeHtml(String(v.speedKmh)) : null;
-  return `
-    <div style="font-family:'Inter',ui-sans-serif,sans-serif;padding:8px 10px;min-width:130px;line-height:1.4;">
-      <div style="font-size:9px;font-weight:800;color:var(--text-dim);">Route ${routeLabel}</div>
-      ${headsign ? `<div style="font-size:11px;font-weight:700;color:var(--text-primary);margin-top:2px;">${headsign}</div>` : ''}
-      ${speed != null ? `<div style="display:flex;align-items:center;justify-content:space-between;margin-top:4px;"><span style="font-size:9px;color:var(--text-dim);font-weight:600;">Speed</span><span style="font-size:10px;font-weight:800;color:var(--text-primary);">${speed} km/h</span></div>` : ''}
-      ${label ? `<div style="display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--border-primary);padding-top:5px;margin-top:6px;"><span style="font-size:9px;color:var(--text-dim);font-weight:600;">Status</span><span style="font-size:10px;font-weight:800;color:${color};">${label}</span></div>` : ''}
-    </div>`;
-}
-
-const statusRgb: Record<string, [number, number, number]> = {
-  on_time: [56, 161, 105],
-  early:   [49, 130, 206],
-  late:    [229,  62,  62],
-  no_data: [113, 128, 150],
-};
+// Kept exported from here for the escape test that imports it.
+export { vehicleTooltipHtml };
 
 /**
  * Live vehicle map layers: deck.gl is dynamically imported only when Live is
@@ -112,7 +84,7 @@ export function useLiveVehiclesLayer(
     const alpha = (v: LiveVehicle) => focusOpacity(v, focus);
     const labelVehicles = focus ? vehicles.filter(v => alpha(v) === 1) : [];
     const focusFp = focus ? `${focus.agencySlug}::${focus.routeShortName}::${focus.ids?.join(',') ?? '*'}` : '';
-    const fp = `${liveVehiclesFingerprint(vehicles)}|${focusedId ?? ''}|${focusFp}|${labelVehicles.length}`;
+    const fp = `${liveVehiclesFingerprint(vehicles)}|${focusedId ?? ''}|${focusFp}|${labelVehicles.length}|${colorMode}`;
     if (fp === lastDeckFpRef.current && deckOverlayRef.current) return;
 
     let cancelled = false;
@@ -141,7 +113,7 @@ export function useLiveVehiclesLayer(
             data: vehicles,
             getPosition: (v: LiveVehicle) => [v.lon, v.lat],
             getRadius: (v: LiveVehicle) => (v.id === focusedId ? 6 : 4.5),
-            getFillColor: (v: LiveVehicle) => [...(statusRgb[v.status] ?? statusRgb.no_data), Math.round(255 * alpha(v))] as [number, number, number, number],
+            getFillColor: (v: LiveVehicle) => [...getVehicleRgb(v.status ?? 'no_data', colorMode), Math.round(255 * alpha(v))] as [number, number, number, number],
             stroked: true,
             getLineColor: (v: LiveVehicle) => [255, 255, 255, Math.round(200 * alpha(v))],
             getLineWidth: 1.25,
@@ -176,7 +148,7 @@ export function useLiveVehiclesLayer(
     return () => {
       cancelled = true;
     };
-  }, [liveOverlay, mapLoaded, mapRef, deckOverlayRef]);
+  }, [liveOverlay, mapLoaded, mapRef, deckOverlayRef, colorMode]);
 
   // Deck.gl's canvas sits above MapLibre; keep it inert always.
   useEffect(() => {
@@ -223,7 +195,7 @@ export function useLiveVehiclesLayer(
         const deck = deckOverlayRef.current;
         if (!deck) return hide();
         const info = deck.pickObject({ x: e.point.x, y: e.point.y, radius: 16, layerIds: ['vehicles-dots'] });
-        const html = info?.object ? vehicleTooltipHtml(info.object as LiveVehicle) : null;
+        const html = info?.object ? vehicleTooltipHtml(info.object as LiveVehicle, colorMode) : null;
         if (html) {
           tip.innerHTML = html;
           tip.style.left = `${e.point.x + 12}px`;
@@ -243,7 +215,7 @@ export function useLiveVehiclesLayer(
       map.off('mouseout', hide);
       tip.remove();
     };
-  }, [mapLoaded, mapRef, deckOverlayRef, liveOverlay]);
+  }, [mapLoaded, mapRef, deckOverlayRef, liveOverlay, colorMode]);
 
   // Context lines (CIV-326): only the routes that currently have a vehicle in the overlay (so the same
   // filter as the dots), thin and light, under every other route line and the deck dots.
