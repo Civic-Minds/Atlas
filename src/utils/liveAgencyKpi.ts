@@ -33,7 +33,8 @@ export function agencyKpiTiles(s: AgencySummary): Kpi[] {
     value: nowText,
     sub: NETWORK_RUN_TIME_SUB,
     lastWeekText: lastText,
-    delta: w.comparable ? kpiDelta('tripTime', now, before, true, true, noise, lastText, nowText) : null,
+    // The hover says last week's share in the same words, never "down N points" (going from 5% to 7% faster is not "down").
+    delta: (() => { const d = w.comparable ? kpiDelta('tripTime', now, before, true, true, noise, lastText, nowText) : null; return d && lastText && d.arrow !== 'none' ? { ...d, spoken: `last week ${lastText}` } : d; })(),
   }));
 }
 
