@@ -6,7 +6,7 @@ import { readUrlNumberParam, syncUrlParams } from '../../utils/syncUrlParams';
 import { periodKeyForHour } from '../../../shared/config';
 import { LIVE_AGENCY_TIMEZONES } from '../../../shared/livePollingConfig';
 import { halfMinutes, type SegmentBand, type SegmentDelayData } from '../../utils/segmentDelayView';
-import { addSnapshot, lineModel, liveGaps, positionsSnapshot, type RecentSnapshot, sharedSummary, withStats, type LineModel } from '../../utils/livePerformance';
+import { addSnapshot, lineModel, liveGaps, positionsSnapshot, type RecentSnapshot, withStats, type LineModel } from '../../utils/livePerformance';
 import type { LiveVehicle } from '../../context/LiveVehiclesMapOverlay';
 
 function halfText(m: number): string {
@@ -114,11 +114,18 @@ export default function LiveRoutePerformance({ slug, routeShortName, vehicles, f
     : null;
 
   const liveBand = livePeriod(data, slug);
-  const liveSched = sharedSummary(data, line, liveBand);
-  // From the map's own polls, not the archive. A trip the timetable doesn't list is placed by its own
-  // movement since the card opened; until it has been seen twice it is skipped (skipUnseenAdded).
-  // With 0 or 1 car the count still shows (no gaps line), so the direction pills never vanish.
-  const live = feedDegraded ? null : liveGaps(data, line, withStats(line, liveBand), liveBand, recent, Math.floor(now / 1000), { skipUnseenAdded: true, countFewCars: true });
+  // From the map's own polls, not the archive, over the whole route (CIV-899). A trip the timetable
+  // doesn't list is placed by its own movement since the card opened; until it has been seen twice it
+  // is skipped (skipUnseenAdded). With 0 or 1 car the count still shows (no gaps line), so the
+  // direction pills never vanish.
+  const live = feedDegraded ? null : liveGaps(data, line, withStats(line, liveBand), liveBand, recent, Math.floor(now / 1000), { skipUnseenAdded: true, countFewCars: true, wholeLine: true });
+  const range = live?.scheduledRangeSec;
+  const schedLabel = range ? schedText({ scheduledMedianGapSec: range[0], scheduledP10Sec: range[0], scheduledP90Sec: range[1] }) : live?.scheduledSec ? mins(live.scheduledSec) : '–';
+  // A gap is late at twice the timetable gap where the car behind is.
+  const late = (g: number, i: number) => {
+    const s = live?.gapsSchedSec?.[i] ?? live?.scheduledSec;
+    return !!s && g * 60 >= 2 * s;
+  };
 
   return (
     <div className="flex flex-col gap-3">
@@ -134,8 +141,8 @@ export default function LiveRoutePerformance({ slug, routeShortName, vehicles, f
           ) : (
             <>
               <Stats items={[
-                [`Cars${line.sharedStreet ? ` (${line.sharedStreet.replace(/\s+(St|Ave|Rd|Blvd)$/i, '')})` : ''}`, String(live.cars)],
-                ['Scheduled', `every ${liveSched ? schedText(liveSched) : live.scheduledSec ? mins(live.scheduledSec) : '–'}`],
+                ['Cars', String(live.cars)],
+                ['Scheduled', `every ${schedLabel}`],
               ]} />
               {/* Only once a gap is known: right after the card opens the map has no track of the cars ahead yet. */}
               {live.gapsMin.some(g => g != null) && (
@@ -144,7 +151,7 @@ export default function LiveRoutePerformance({ slug, routeShortName, vehicles, f
                   {live.gapsMin.map((g, i) => (
                     g == null
                       ? <span key={i} className="text-[var(--text-dim)]" title="The car ahead's passing wasn't seen">–</span>
-                      : <span key={i} style={live.scheduledSec && g * 60 >= 2 * live.scheduledSec ? { color: AMBER } : undefined} className={live.scheduledSec && g * 60 >= 2 * live.scheduledSec ? 'font-black' : 'text-[var(--text-primary)]'}>{g}</span>
+                      : <span key={i} style={late(g, i) ? { color: AMBER } : undefined} className={late(g, i) ? 'font-black' : 'text-[var(--text-primary)]'}>{g}</span>
                   ))}
                 </div>
               )}
