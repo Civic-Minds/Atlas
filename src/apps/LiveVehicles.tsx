@@ -19,9 +19,9 @@ import ArrowLink from '../components/ui/ArrowLink';
 import { AgencyList, AgencyListRow } from '../components/ui/AgencyList';
 import RouteListRow from '../components/RouteListRow';
 import RouteCardTitle from '../components/RouteCardTitle';
-import { getVehicleColors } from '../utils/colors';
+import { getVehicleColors, getVehicleStatus } from '../utils/colors';
 import { useColorVision } from '../context/ColorVisionContext';
-import { agencyDisplayParts, cleanRouteShortName, cleanRouteDisplayName, shortenAgencyName, agencyDisplayName, routeListCompanionName, vehicleModeWord, routeLabelCase } from '../utils/format';
+import { agencyDisplayParts, cleanRouteShortName, cleanRouteDisplayName, shortenAgencyName, agencyDisplayName, routeListCompanionName, vehicleModeWord, vehicleModeCount, routeLabelCase } from '../utils/format';
 import { branchDisplayPeriodHeadway } from '../utils/routeFacts';
 import { periodKeyForHour } from '../../shared/config';
 import { plural } from '../../shared/overflowText';
@@ -82,15 +82,10 @@ const ELIGIBLE_SLUGS = new Set(
     .map(r => r.slug)
 );
 
-function pluralModeWord(modeWord: string): string {
-  const w = modeWord.toLowerCase();
-  return w === 'bus' ? 'buses' : w === 'ferry' ? 'ferries' : `${w}s`;
-}
-
 /** One-line summary of a destination's vehicles: "10 streetcars · 2 late". */
 function directionSummary(vehicles: LiveVehicle[], modeWord: string): string {
-  const count = `${vehicles.length} ${vehicles.length === 1 ? modeWord.toLowerCase() : pluralModeWord(modeWord)}`;
-  const late = vehicles.filter(v => v.delayMin != null && v.delayMin >= 5.5).length;
+  const count = vehicleModeCount(vehicles.length, modeWord);
+  const late = vehicles.filter(v => getVehicleStatus(v.delayMin) === 'late').length;
   return late > 0 ? `${count} · ${late} late` : count;
 }
 

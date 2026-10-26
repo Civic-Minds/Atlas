@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { COMPARE_PANEL_TOP, comparePanelTop, fmtHeadway, getRouteLabel, ROUTE_NAME_ACRONYMS, routeLabelCase, routeLabels, shouldHideNumericRouteShortName, shortenAgencyName, titleCase } from '../format';
+import { COMPARE_PANEL_TOP, comparePanelTop, fmtHeadway, getRouteLabel, ROUTE_NAME_ACRONYMS, routeLabelCase, routeLabels, shouldHideNumericRouteShortName, shortenAgencyName, titleCase, vehicleModeCount } from '../format';
 import indexData from '../../../public/data/index.json';
 
 interface IndexAgency {
@@ -214,5 +214,16 @@ describe('comparePanelTop', () => {
   it('leaves the normal slot alone outside Compare', () => {
     expect(comparePanelTop(false, false, '')).toBeNull();
     expect(comparePanelTop(false, true, 'Bloor')).toBeNull();
+  });
+});
+
+describe('vehicleModeCount', () => {
+  it('counts vehicles in the same words the Live direction rows used', () => {
+    expect(vehicleModeCount(1, 'Streetcar')).toBe('1 streetcar');
+    expect(vehicleModeCount(10, 'Streetcar')).toBe('10 streetcars');
+    expect(vehicleModeCount(3, 'Bus')).toBe('3 buses');
+    expect(vehicleModeCount(1, 'Bus')).toBe('1 bus');
+    expect(vehicleModeCount(2, 'Ferry')).toBe('2 ferries');
+    expect(vehicleModeCount(0, 'Train')).toBe('0 trains');
   });
 });

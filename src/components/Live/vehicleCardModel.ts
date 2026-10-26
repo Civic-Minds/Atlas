@@ -1,13 +1,15 @@
 import { delayAmount } from '../../utils/headwayText';
 import { liveVehicleRowLabel } from '../../utils/format';
+import { getVehicleStatus } from '../../utils/colors';
 import type { LiveVehicle } from '../../context/LiveVehiclesMapOverlay';
 
 /** Schedule status for a vehicle, or '' when the feed gives none (never a "No data" placeholder). */
 export function delayLabel(v: Pick<LiveVehicle, 'statusLabel' | 'delayMin'>): string {
   if (v.statusLabel) return v.statusLabel;
-  if (v.delayMin === null) return '';
-  if (v.delayMin <= -1.5) return `${delayAmount(Math.round(Math.abs(v.delayMin)))} early`;
-  if (v.delayMin >= 5.5) return `${delayAmount(Math.round(v.delayMin))} late`;
+  const status = getVehicleStatus(v.delayMin);
+  if (status === 'no_data') return '';
+  if (status === 'early') return `${delayAmount(Math.round(Math.abs(v.delayMin!)))} early`;
+  if (status === 'late') return `${delayAmount(Math.round(v.delayMin!))} late`;
   return 'On time';
 }
 
