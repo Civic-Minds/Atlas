@@ -65,7 +65,15 @@ export interface ModeOverride {
   reason: string;
 }
 
-export const MODE_OVERRIDES: readonly ModeOverride[] = (modeOverrideData as { overrides: ModeOverride[] }).overrides;
+/**
+ * The listed overrides, with their names trimmed once here. The app (findModeOverride) and the map expression then both
+ * compare a route's names to these exactly, so they always pick the same routes (#1132); a map expression cannot trim.
+ */
+export const MODE_OVERRIDES: readonly ModeOverride[] = (modeOverrideData as { overrides: ModeOverride[] }).overrides.map(o => ({
+  ...o,
+  ...(o.routeShortName !== undefined ? { routeShortName: o.routeShortName.trim() } : {}),
+  ...(o.routeLongName !== undefined ? { routeLongName: o.routeLongName.trim() } : {}),
+}));
 
 const OVERRIDES_BY_AGENCY = new Map<string, ModeOverride[]>();
 for (const o of MODE_OVERRIDES) {
@@ -79,8 +87,9 @@ export function findModeOverride(p: EffectiveModeInput): ModeOverride | undefine
   const list = p.agencySlug ? OVERRIDES_BY_AGENCY.get(p.agencySlug) : undefined;
   if (!list) return undefined;
   const rt = normalizeRouteType(p.routeType);
-  const shortName = (p.routeShortName ?? '').trim();
-  const longName = (p.routeLongName ?? '').trim();
+  // Compared exactly, as the map expression does (#1132): it cannot trim, so trimming here would match routes the map misses.
+  const shortName = p.routeShortName ?? '';
+  const longName = p.routeLongName ?? '';
   return list.find(o => o.routeType === rt
     && (o.routeShortName === undefined || o.routeShortName === shortName)
     && (o.routeLongName === undefined || o.routeLongName === longName));

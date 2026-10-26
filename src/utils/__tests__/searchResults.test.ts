@@ -14,6 +14,9 @@ import {
 } from '../searchResults';
 import type { AgencySearchGroup } from '../agencySearch';
 
+// Labels are not under test here.
+const NO_LABEL = { primary: '', secondary: undefined, text: '' };
+
 describe('searchResults', () => {
   it('detects route-primary queries', () => {
     expect(isRoutePrimaryQuery('501')).toBe(true);
@@ -35,7 +38,7 @@ describe('searchResults', () => {
     const slugOnlyRoutes = Array.from({ length: 20 }, (_, i) => ({
       key: `ttc::${i}`,
       routeShortName: String(i + 1),
-      routeLongName: null,
+      routeLongName: null, label: NO_LABEL,
       inView: true,
       distanceM: 0,
       matchRank: 7,
@@ -66,7 +69,7 @@ describe('searchResults', () => {
     const incidentalRoute = [{
       key: 'santaclarita::799',
       routeShortName: '799',
-      routeLongName: 'Los Angeles',
+      routeLongName: 'Los Angeles', label: NO_LABEL,
       inView: false,
       distanceM: 50,
       matchRank: 4,
@@ -88,7 +91,7 @@ describe('searchResults', () => {
     const manyRoutes = Array.from({ length: 50 }, (_, i) => ({
       key: `a::${i}`,
       routeShortName: String(i + 1),
-      routeLongName: null,
+      routeLongName: null, label: NO_LABEL,
       inView: true,
       distanceM: i,
       matchRank: 4,
@@ -100,8 +103,8 @@ describe('searchResults', () => {
   });
 
   it('ranks exact route number above substring', () => {
-    const exact = { routeId: '501', routeShortName: '501', routeLongName: 'Queen', directionId: 0, tier: '5', headway: 5 };
-    const partial = { routeId: '5010', routeShortName: '5010', routeLongName: 'Other', directionId: 0, tier: '5', headway: 5 };
+    const exact = { routeId: '501', routeShortName: '501', routeLongName: 'Queen', label: NO_LABEL, directionId: 0, tier: '5', headway: 5 };
+    const partial = { routeId: '5010', routeShortName: '5010', routeLongName: 'Other', label: NO_LABEL, directionId: 0, tier: '5', headway: 5 };
     expect(routeQueryMatchRank(exact, '501')).toBeLessThan(routeQueryMatchRank(partial, '501'));
   });
 
@@ -110,12 +113,12 @@ describe('searchResults', () => {
       {
         type: 'Feature' as const,
         geometry: { type: 'LineString' as const, coordinates: [[-80, 43], [-79.9, 43.1]] },
-        properties: { routeId: '1', routeShortName: 'MAX', routeLongName: 'Max', agencySlug: 'far', agencyName: 'Far' },
+        properties: { routeId: '1', routeShortName: 'MAX', routeLongName: 'Max', label: NO_LABEL, agencySlug: 'far', agencyName: 'Far' },
       },
       {
         type: 'Feature' as const,
         geometry: { type: 'LineString' as const, coordinates: [[-79.4, 43.65], [-79.3, 43.7]] },
-        properties: { routeId: '2', routeShortName: '6X', routeLongName: 'Six', agencySlug: 'ttc', agencyName: 'TTC' },
+        properties: { routeId: '2', routeShortName: '6X', routeLongName: 'Six', label: NO_LABEL, agencySlug: 'ttc', agencyName: 'TTC' },
       },
     ];
     const bounds = { s: 43.5, w: -79.6, n: 43.9, e: -79.1 };
@@ -131,7 +134,7 @@ describe('searchResults', () => {
         geometry: { type: 'LineString' as const, coordinates: [[-118.4, 34.0], [-118.3, 34.1]] },
         properties: {
           routeId: '7X', agencySlug: 'gtrans', agencyName: 'GTrans',
-          routeShortName: '7X', routeLongName: 'Line 7x', headway: 6, directionId: 0,
+          routeShortName: '7X', routeLongName: 'Line 7x', label: NO_LABEL, headway: 6, directionId: 0,
         },
       },
       {
@@ -139,7 +142,7 @@ describe('searchResults', () => {
         geometry: { type: 'LineString' as const, coordinates: [[-122.4, 37.7], [-122.3, 37.8]] },
         properties: {
           routeId: '7X', agencySlug: 'sfmta', agencyName: 'SFMTA',
-          routeShortName: '7X', routeLongName: 'Noriega', headway: 8, directionId: 0,
+          routeShortName: '7X', routeLongName: 'Noriega', label: NO_LABEL, headway: 8, directionId: 0,
         },
       },
     ];
@@ -152,7 +155,7 @@ describe('searchResults', () => {
   });
 
   it('puts routes first for numeric queries', () => {
-    const routes = [{ key: 'a::1', routeShortName: '501', routeLongName: null, inView: true, distanceM: 0, matchRank: 0 }];
+    const routes = [{ key: 'a::1', routeShortName: '501', routeLongName: null, label: NO_LABEL, inView: true, distanceM: 0, matchRank: 0 }];
     const agencies = [{ key: 'TTC', name: 'TTC', region: 'Ontario', slug: 'ttc', inView: true, distanceM: 0 }];
     expect(routesBeforeAgencies('501', routes, agencies)).toBe(true);
   });
@@ -180,7 +183,7 @@ describe('searchResults', () => {
     const route = {
       key: 'stratford::1',
       routeShortName: '1',
-      routeLongName: 'Main',
+      routeLongName: 'Main', label: NO_LABEL,
       inView: false,
       distanceM: 1000,
       matchRank: 0,

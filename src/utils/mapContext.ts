@@ -4,15 +4,19 @@ import type { DayType } from '../../shared/dayTypes';
 import type { ViewportBounds } from '../hooks/useIntervalStats';
 import { buildRouteKey, dedupeRouteKeysByDisplay } from './routeKey';
 import { compareAgencyName, compareRouteNumber } from './sortCompare';
-import { agencyDisplayParts } from './format';
+import { agencyDisplayParts, routeLabels } from './format';
+import { labelShortNameOf, type RouteLabel } from './routeFacts';
 
 export interface MapContextRoute {
   key: string;
   agencySlug: string;
   agencyName: string;
+  /** The route's identity for sorting; never shown. */
   shortName: string;
   longName: string | null;
   routeType?: number;
+  /** What the list shows (CIV-984): from the feed's names, the route ID only when the route has none. */
+  label: RouteLabel;
 }
 
 export interface MapContextAgency {
@@ -73,6 +77,13 @@ function addMapContextFeature(
       agencyName,
       shortName: properties.routeShortName ?? properties.routeId,
       longName: properties.routeLongName ?? null,
+      label: routeLabels({
+        shortName: labelShortNameOf({ routeId: properties.routeId, routeShortName: properties.routeShortName ?? '', routeLongName: properties.routeLongName ?? null }),
+        longName: properties.routeLongName ?? null,
+        routeType: properties.routeType,
+        agencySlug: slug,
+        agencyName,
+      }),
       routeType: properties.routeType,
     });
   }

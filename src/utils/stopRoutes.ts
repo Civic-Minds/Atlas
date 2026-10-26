@@ -1,6 +1,6 @@
 import type { GeoJSON } from 'geojson';
 import type { ShapeProperties, TimePeriod } from '../hooks/useIntervalStats';
-import { branchDisplayPeriodHeadway, buildRouteFacts, buildRouteStopMetric, metricValueForPeriod, type HeadwayMetric } from './routeFacts';
+import { branchDisplayPeriodHeadway, buildRouteFacts, buildRouteStopMetric, metricValueForPeriod, type HeadwayMetric, type RouteLabel } from './routeFacts';
 import { buildSharedStopIndex } from '../../shared/sharedStops';
 import { partPeriodText } from './effectiveHeadway';
 import { hasRegularServiceInPeriod } from './stretchCard';
@@ -26,8 +26,8 @@ export interface StopBranch {
 
 export interface StopRoute {
   shortName: string;
-  /** The short name the label shows; blank when the feed has none but has a long name (#1099). Defaults to shortName. */
-  labelShortName?: string;
+  /** What the row shows (route facts' label, CIV-984); the short name is only the route's identity. */
+  label: RouteLabel;
   longName: string;
   agencyName: string;
   agencySlug?: string;
@@ -82,7 +82,7 @@ export function buildStopRoutes({ siblingIdsByAgency, routesByAgency, layers, da
 }): StopRoute[] {
   type Branch = { rKey: string; headsign: string | null; service: ReturnType<typeof buildRouteStopMetric>; rowHeadway: number | null; directionId: number; periodText?: string };
 
-  const routeMap = new Map<string, { shortName: string; labelShortName: string; longName: string; agencyName: string; agencySlug: string; routeType?: number; branches: Map<string, Branch> }>();
+  const routeMap = new Map<string, { shortName: string; label: RouteLabel; longName: string; agencyName: string; agencySlug: string; routeType?: number; branches: Map<string, Branch> }>();
   // Pooled values at shared stops (CIV-82), so the stop card agrees with the map and route card.
   const sharedIndexBySlug = new Map(Object.entries(layers).map(([slug, fc]) => [slug, buildSharedStopIndex(fc.features)]));
 
@@ -124,7 +124,7 @@ export function buildStopRoutes({ siblingIdsByAgency, routesByAgency, layers, da
       if (!routeMap.has(routeShortName)) {
         routeMap.set(routeShortName, {
           shortName: routeShortName,
-          labelShortName: facts.labelShortName,
+          label: facts.label,
           longName: facts.longName || '',
           agencyName: shortenAgencyName(facts.agencyName),
           agencySlug: slug,
@@ -159,7 +159,7 @@ export function buildStopRoutes({ siblingIdsByAgency, routesByAgency, layers, da
     .sort(([a], [b]) => compareRouteNumber(a, b))
     .map(([, v]) => ({
       shortName: v.shortName,
-      labelShortName: v.labelShortName,
+      label: v.label,
       longName: v.longName,
       agencyName: v.agencyName,
       agencySlug: v.agencySlug,

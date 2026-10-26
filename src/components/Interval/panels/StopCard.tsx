@@ -20,6 +20,7 @@ import { stopRouteBestHeadway, type StopRoute } from '../../../utils/stopRoutes'
 import LiveStopArrivals from './LiveStopArrivals';
 import type { HeadwayMetric } from '../../../utils/routeFacts';
 import { compareHeadwayThenNumber } from '../../../utils/sortCompare';
+import type { RouteLabel } from '../../../utils/routeFacts';
 
 // The stop card's route and branch shapes live with the code that builds them (CIV-997).
 export type { StopBranch, StopRoute } from '../../../utils/stopRoutes';
@@ -27,8 +28,8 @@ export type { StopBranch, StopRoute } from '../../../utils/stopRoutes';
 export interface NearbyConnection {
   rKey: string;
   routeShortName: string;
-  /** The short name the label shows (#1099). Defaults to routeShortName. */
-  routeLabelShortName?: string;
+  /** What the row shows (route facts' label, CIV-984); the short name is only the route's identity. */
+  label: RouteLabel;
   routeLongName: string;
   agencyName: string;
   agencySlug?: string;
@@ -153,7 +154,7 @@ export const StopCard: React.FC<StopCardProps> = ({
           <StopRouteGroup
             key={route.shortName}
             shortName={route.shortName}
-            labelShortName={route.labelShortName}
+            label={route.label}
             longName={route.longName}
             agencyName={route.agencyName}
             agencySlug={route.agencySlug}
@@ -170,8 +171,7 @@ export const StopCard: React.FC<StopCardProps> = ({
 
       {nearbyConnections.length > 0 && (
         <SidebarCardSection label="Nearby routes">
-          {nearbyConnections.map(({ rKey, routeShortName, routeLabelShortName, routeLongName, agencyName, agencySlug, routeType, headway, nearestStopName, distanceMeters }) => {
-            const route = routeLabels({ shortName: routeLabelShortName ?? routeShortName, longName: routeLongName, routeType, agencySlug, agencyName });
+          {nearbyConnections.map(({ rKey, label: route, agencyName, agencySlug, headway, nearestStopName, distanceMeters }) => {
             return (
               <CardDirectionRow
                 key={rKey}

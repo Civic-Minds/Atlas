@@ -5,6 +5,7 @@ import { partPeriodText, routeListDisplay } from '../../../utils/effectiveHeadwa
 import StopRouteGroup from '../panels/StopRouteGroup';
 import { hasRegularServiceInPeriod } from '../../../utils/stretchCard';
 import { RouteCardHeadway } from '../panels/RouteCardHeadway';
+import { routeLabels } from '../../../utils/format';
 
 const renderRows = (directions: ShapeProperties[], period: 'midday' | 'pmPeak' | 'all', slug = 'ttc') => render(
   <RouteCardHeadway
@@ -183,7 +184,7 @@ describe('route card rows word part-period and one-gap service (#934)', () => {
     expect(screen.getByText(partPeriodBadge(/every 10 min, with a 45 min gap/))).toBeTruthy();
   });
   it('the stop card shows the same part-period words (route card and stop card agree)', () => {
-    render(<StopRouteGroup shortName="134" longName="Stony Island" agencyName="CTA" branches={[
+    render(<StopRouteGroup shortName="134" label={routeLabels({ shortName: '134', longName: 'Stony Island' })} longName="Stony Island" agencyName="CTA" branches={[
       { rKey: 'cta::134', headsign: 'Downtown', directionId: 1, service: { value: 12 } as any, periodText: 'until 9:37am, every 12 min' },
     ]} period="midday" showAgency={false} onOpenRoute={() => {}} />);
     expect(screen.getByText(partPeriodBadge(/^until 9:37am, every 12 min$/))).toBeTruthy();

@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { dedupeMapContextByDisplay, getMapContextAgencies, isMapContextOutsideClick } from '../mapContext';
+import { routeLabels } from '../format';
 
 const agencies = [
   { slug: 'near', name: 'Near Transit', center: [43, -79] as [number, number], url: '' },
@@ -41,14 +42,14 @@ describe('mapContext', () => {
       display: { primary: 'Near Transit' },
       routeCount: 2,
       routes: [
-        { key: 'near::1', agencySlug: 'near', agencyName: 'Near Transit', shortName: '1', longName: null },
-        { key: 'near::2', agencySlug: 'near', agencyName: 'Near Transit', shortName: '2', longName: null },
+        { key: 'near::1', agencySlug: 'near', agencyName: 'Near Transit', shortName: '1', longName: null, label: { primary: '1', secondary: undefined, text: '1' }, routeType: undefined },
+        { key: 'near::2', agencySlug: 'near', agencyName: 'Near Transit', shortName: '2', longName: null, label: { primary: '2', secondary: undefined, text: '2' }, routeType: undefined },
       ],
     }]);
   });
 
   it('collapses route IDs with the same rider-visible label in the count and list', () => {
-    const route = (id: string, shortName: string) => ({ key: `a::${id}`, agencySlug: 'a', agencyName: 'A', shortName, longName: null });
+    const route = (id: string, shortName: string) => ({ key: `a::${id}`, agencySlug: 'a', agencyName: 'A', shortName, longName: null, label: routeLabels({ shortName, longName: null }) });
     const [agency] = dedupeMapContextByDisplay([{ slug: 'a', name: 'A', routeCount: 3, routes: [route('1', '301'), route('2', '301'), route('3', '302')] }]);
     expect(agency.routeCount).toBe(2);
     expect(agency.routes.map(r => r.key)).toEqual(['a::1', 'a::3']);

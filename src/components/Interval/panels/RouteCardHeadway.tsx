@@ -51,6 +51,7 @@ import { ROUTE_DATA_QUALITY_WARNING, ROUTE_DATA_QUALITY_WARNING_MESSAGE } from '
 import { featurePassesHeadwayFilter, routeFilterHeadway } from '../../../../shared/routeHeadwayFilter';
 import { expiredFeedNotice, NO_ROUTE_SHAPE_NOTICE, periodServiceNotice, selectedRouteFilterNotice, selectedRouteOutsideFilterNotice, unevenServiceNotice } from '../../../content/noticeCopy';
 import { headwayAbout, headwayAboutRange } from '../../../utils/headwayText';
+import type { RouteLabel } from '../../../utils/routeFacts';
 
 function medianHeadway(values: number[]): number {
   const sorted = [...values].sort((a, b) => a - b);
@@ -164,8 +165,8 @@ export interface DirectionGroup {
 export interface CurrentRouteData {
   /** The route's identity (the route ID when the feed has no short name): variant families, direction labels. */
   routeShortName: string | null;
-  /** The short name the title shows: blank when the feed has none but has a long name (#1099). Falls back to routeShortName. */
-  routeLabelShortName?: string | null;
+  /** What the title shows (route facts' label, CIV-984). The map's route card always sets it; without it the title is built from routeShortName. */
+  label?: RouteLabel;
   routeLongName: string | null;
   /** The feed's route_type and agency slug, so the title names the route the same way lists and agency pages do. */
   routeType?: number | string | null;
@@ -416,7 +417,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
     ].join('\n');
   }).join('\n\n');
   // One route name for the title, the sparkline and the issue report (shared/routeDisplay.ts).
-  const routeTitle = routeLabels({ shortName: currentRoute.routeLabelShortName ?? currentRoute.routeShortName, longName: currentRoute.routeLongName, routeType: currentRoute.routeType ?? currentRoute.directions[0]?.routeType, agencySlug: currentRoute.agencySlug ?? routeSlug, agencyName: agencyDisplayName }).text;
+  const routeTitle = currentRoute.label?.text ?? routeLabels({ shortName: currentRoute.routeShortName, longName: currentRoute.routeLongName, routeType: currentRoute.routeType ?? currentRoute.directions[0]?.routeType, agencySlug: currentRoute.agencySlug ?? routeSlug, agencyName: agencyDisplayName }).text;
   const reportPeriod = selectedPeriod
     ? `${selectedPeriod.label} (${formatPeriodRangeLong(selectedPeriod.startHour, selectedPeriod.endHour)})`
     : 'All day';
@@ -441,7 +442,8 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
         <div className="flex items-start gap-2">
           <div className="flex-1 min-w-0">
             <RouteCardTitle
-              routeShortName={currentRoute.routeLabelShortName ?? currentRoute.routeShortName}
+              title={routeTitle}
+              routeShortName={currentRoute.routeShortName}
               routeLongName={currentRoute.routeLongName}
               routeType={currentRoute.routeType ?? currentRoute.directions[0]?.routeType}
               agencySlug={currentRoute.agencySlug ?? routeSlug}
