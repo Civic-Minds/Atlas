@@ -70,6 +70,8 @@ export function branchFigures(b: RunTimeBranch, band: DashboardBand): RunTimeFig
 export function branchRunTimeLine(b: RunTimeBranch, nice: (name: string) => string = x => x, f: RunTimeFigures = b.all): string {
   return `To ${nice(b.toName)}: usually ${Math.round(f.typicalMin)} min, timetable ${Math.round(f.scheduledMin)}, 1 in 10 over ${Math.round(f.p90Min)} (over ${b.stops} stops from ${nice(b.fromName)}, ${f.n.toLocaleString()} trips).`;
 }
+/** A regular pattern's run time over its own reliably measured stops (`stops` of its `patternStops`; `fullPattern` when none is trimmed). */
+export type RunTimePattern = RunTimeBranch & { kind: 'main' | 'shortTurn' | 'branch'; patternStops: number; fullPattern: boolean };
 export interface RunTimeFigures { n: number; scheduledMin: number; typicalMin: number; p90Min: number; overMin: number }
 export interface WeekMetrics {
   days: number;
@@ -77,6 +79,8 @@ export interface WeekMetrics {
   healthyDates: string[];
   late: { share: number; n: number } | null;
   tripTime: { n: number; scheduledMin: number; typicalMin: number; overMin: number } | null;
+  /** The same over each direction's main pattern only (CIV-945; older files: absent). */
+  mainPatternTrip?: { n: number; scheduledMin: number; typicalMin: number; overMin: number } | null;
   extraWait: { minutes: number; gaps: number } | null;
   bunching: { share: number; gaps: number; /** Too close (CIV-302); absent in older files. */ bunched?: number; /** Too far apart. */ gapped?: number } | null;
   delivered: { share: number; seen: number; notSeen: number; unknown: number } | null;
@@ -137,6 +141,8 @@ export interface LiveV3 {
     stretch?: Record<string, RunTimeStretch>;
     /** Per direction, a line for each regular pattern that runs well past the main stretch (a branch, or the full route beside a common short turn), measured over the whole pattern. */
     branches?: Record<string, RunTimeBranch[]>;
+    /** Per direction, every regular pattern timed on its own trips only, the main (busiest) first (CIV-945). Older files: absent. */
+    patterns?: Record<string, RunTimePattern[]>;
     bands: Record<DashboardBand, Record<string, RunTimeFigures | null>>;
     byHour: Record<string, Array<{ hour: number } & RunTimeFigures>>;
   };
@@ -147,7 +153,7 @@ export interface LiveV3 {
     overall: DeliveredFigures & { byDirection: Record<string, DeliveredFigures> };
   };
   /** One day at a time, the same figures as a week (CIV-278): each day's measures and whether it was a good day. */
-  daily?: Record<string, { healthy: boolean; lateByHour?: Array<{ hour: number; n: number; lateShare: number }> } & Pick<WeekMetrics, 'late' | 'tripTime' | 'extraWait' | 'bunching' | 'delivered'>>;
+  daily?: Record<string, { healthy: boolean; lateByHour?: Array<{ hour: number; n: number; lateShare: number }> } & Pick<WeekMetrics, 'late' | 'tripTime' | 'extraWait' | 'bunching' | 'delivered' | 'mainPatternTrip'>>;
   weekly?: { minHealthyDays: number; health: Array<{ date: string; snapshots: number; healthy: boolean }>; thisWeek: WeekMetrics; lastWeek: WeekMetrics; comparable: boolean };
   /** Stops, build-up and adherence for each time of day. The top-level `adherence`, `stops` and `buildup` are the 'all' entry. */
   bands: Record<DashboardBand, DashboardBandData>;

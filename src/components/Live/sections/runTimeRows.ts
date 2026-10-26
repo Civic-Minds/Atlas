@@ -46,6 +46,30 @@ export function runTimeRows(v3: LiveV3, band: DashboardBand, dirs: readonly numb
   return out;
 }
 
+/** The kind words on the planner's per-pattern rows (CIV-945, wording to confirm). */
+export const PATTERN_KIND_WORDS = { main: 'Main', shortTurn: 'Short turn', branch: 'Branch' } as const;
+
+/**
+ * The planner's rows for one direction, one per regular pattern timed on its own trips (CIV-945), the main pattern first,
+ * each labelled "Main: From → To · N stops". Null when the file has no per-pattern figures (older files).
+ */
+export function patternRunTimeRows(v3: LiveV3, band: DashboardBand, d: number, nice: (name: string) => string): RunTimeRow[] | null {
+  const list = v3.runningTime?.patterns?.[String(d)];
+  if (!list?.length) return null;
+  const dirName = v3.directionLabels?.[String(d)];
+  return list.flatMap(p => {
+    const f = branchFigures(p, band);
+    if (!f) return [];
+    return [{
+      key: `${d}-${p.kind}-${p.fromStopId}-${p.toStopId}`, direction: d, main: p.kind === 'main',
+      label: `${PATTERN_KIND_WORDS[p.kind]}: ${patternLabel(nice(p.fromName), nice(p.toName), p.stops)}`,
+      trips: f.n, thin: f.n < MIN_PATTERN_TRIPS,
+      typical: finite(f.typicalMin) ? f.typicalMin : undefined, scheduled: finite(f.scheduledMin) ? f.scheduledMin : undefined, p90: finite(f.p90Min) ? f.p90Min : undefined,
+      figures: `${dirName ? `${dirName}: ` : ''}${runningTimeFigures(f)} (${f.n.toLocaleString()} trips)`,
+    }];
+  });
+}
+
 /** One minutes range for every row of the section (both directions), whole 5-minute steps with a little headroom. Thin main rows are left out. */
 export function runTimeRowScale(rows: readonly RunTimeRow[]): { min: number; max: number } {
   const v = rows.filter(r => !(r.main && r.thin)).flatMap(r => [r.typical, r.scheduled, r.p90]).filter(finite);
