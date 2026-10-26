@@ -1,5 +1,5 @@
-import { render, screen } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import { fireEvent, render, screen } from '@testing-library/react';
+import { describe, expect, it, vi } from 'vitest';
 import { AgencyCard } from '../AgencyCard';
 import type { Agency } from '../../../App';
 import { HAMILTON_MY_RIDE_SERVICE_AREA } from '../../../data/onDemandServiceAreas';
@@ -13,7 +13,7 @@ const hamilton = {
   onDemandServiceArea: HAMILTON_MY_RIDE_SERVICE_AREA,
 } as unknown as Agency;
 
-function renderZoneCard(zoneId: string | null, day: 'Weekday' | 'Saturday' | 'Sunday', period: 'midday' | 'overnight', agency: Agency = hamilton) {
+function renderZoneCard(zoneId: string | null, day: 'Weekday' | 'Saturday' | 'Sunday', period: 'midday' | 'overnight', agency: Agency = hamilton, onBackToAgency?: () => void) {
   return render(
     <AgencyCard
       agency={agency}
@@ -27,6 +27,7 @@ function renderZoneCard(zoneId: string | null, day: 'Weekday' | 'Saturday' | 'Su
       onRouteSelect={() => {}}
       onDemandFocus
       onDemandZoneId={zoneId}
+      onBackToAgency={onBackToAgency}
     />,
   );
 }
@@ -67,5 +68,21 @@ describe('on-demand service card without a zone', () => {
     renderZoneCard(null, 'Saturday', 'midday');
     expect(screen.queryByText(/shaded map area/)).toBeNull();
     expect(screen.getByText('Pickups and drop-offs are at 138 set stops, shown on the map.')).toBeInTheDocument();
+  });
+});
+
+describe('on-demand card back link', () => {
+  it('a zone card goes back to its agency card, and the agency line is dropped because the link names it', () => {
+    const onBack = vi.fn();
+    renderZoneCard('West Glanbrook', 'Saturday', 'midday', hamilton, onBack);
+    const link = screen.getByRole('button', { name: /^← Hamilton Street Railway$/ });
+    fireEvent.click(link);
+    expect(onBack).toHaveBeenCalledTimes(1);
+    expect(screen.getAllByText(/Hamilton Street Railway/)).toHaveLength(1);
+  });
+
+  it("an on-demand-only agency's whole-service card is its agency card, so it has no back link", () => {
+    renderZoneCard(null, 'Saturday', 'midday', { ...hamilton, onDemandOnly: true } as unknown as Agency, vi.fn());
+    expect(screen.queryByText(/^← /)).toBeNull();
   });
 });

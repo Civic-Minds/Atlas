@@ -1,5 +1,5 @@
 import { PHONE_MEDIA_QUERY, phoneModeFlags, useMediaQuery } from '../hooks/useMediaQuery';
-import React, { useState, useCallback, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useCallback, useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useSearchParams } from 'react-router';
 import { useViewportLoadGate } from '../hooks/useViewportLoadGate';
@@ -16,7 +16,7 @@ import { NearbyRoutesPanel } from '../components/Interval/NearbyRoutesPanel';
 import { FilterPanel } from '../components/Interval/FilterPanel';
 import { FilterChips, getNowPeriodForTimezone } from '../components/Interval/FilterChips';
 import { AgencyCard } from '../components/Interval/AgencyCard';
-import { TRANSITION_BASE, TRANSITION_SLOW, Z_PANEL, MAP_BADGE, MAP_BADGE_COUNT, MAP_BADGE_LABEL } from '../styles';
+import { TRANSITION_BASE, TRANSITION_SLOW, Z_PANEL, MAP_BADGE, MAP_BADGE_COUNT, MAP_BADGE_LABEL, SIDEBAR_CARD_TOP, SIDEBAR_CARD_TOP_DESKTOP, Z_PANEL_RAISED } from '../styles';
 import type { Agency } from '../App';
 import type { OpenInfoFn } from '../components/InfoPanel';
 import { mapViewKind, viewAllowsOnDemand } from '../../shared/viewLayers';
@@ -45,7 +45,8 @@ import { selectFrequentServiceFeatures, selectNightServiceFeatures } from '../co
 import { areaFitZoom } from '../../shared/areaIndex';
 import type { AreaSearchResult } from '../../shared/areaSearch';
 import Spinner from '../components/ui/Spinner';
-import { resolveSelectedOnDemandSlug } from '../utils/onDemandSelection';
+import { onDemandSelectionZoneId, resolveSelectedOnDemandSlug } from '../utils/onDemandSelection';
+import { resolveStopBack, stopBackTarget, type StopBackRoute, type StopBackSnapshot, type StopBackTarget } from '../utils/stopBack';
 import { loadingText } from '../content/stateCopy';
 
 // Versioned because the original preference could accidentally persist only
@@ -149,13 +150,14 @@ const EMPTY_LAYERS: Record<string, GeoJSON.FeatureCollection> = {};
 
 /**
  * Where a compare side's label and controls sit on its map: top right of each half on desktop (never wider than its half),
- * centred on phones (where the halves stack). The wrapper ignores pointer events so the map stays
+ * centred on phones (where the halves stack). Map A's label sits where the sidebar cards start, just under
+ * the search bar; on phones map B is the lower half with no search bar over it, so its label sits near that half's top. The wrapper ignores pointer events so the map stays
  * draggable around it; the controls inside turn them back on. One step above the panels so a chip's
  * menu opens over the phone route sheet instead of behind it.
  */
 function CompareSideSlot({ side, children }: { side: 'A' | 'B'; children: React.ReactNode }) {
   return (
-    <div className={`absolute ${side === 'A' ? 'top-[68px]' : 'top-3 sm:top-[68px]'} left-1/2 -translate-x-1/2 sm:left-4 sm:translate-x-0 sm:right-4 sm:flex sm:justify-end z-[1001] pointer-events-none`}>
+    <div className={`absolute ${side === 'A' ? SIDEBAR_CARD_TOP : `top-3 ${SIDEBAR_CARD_TOP_DESKTOP}`} left-1/2 -translate-x-1/2 sm:left-4 sm:translate-x-0 sm:right-4 sm:flex sm:justify-end ${Z_PANEL_RAISED} pointer-events-none`}>
       {children}
     </div>
   );
@@ -244,9 +246,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
 
   const selectedOnDemandSelection = onDemandStopAgencySlug;
   const selectedOnDemandSlug = resolveSelectedOnDemandSlug(onDemandStopAgencySlug, selectedAgencySlug, agencies);
-  const selectedOnDemandZoneId = selectedOnDemandSelection?.includes('::')
-    ? selectedOnDemandSelection.slice(selectedOnDemandSelection.indexOf('::') + 2)
-    : null;
+  const selectedOnDemandZoneId = onDemandSelectionZoneId(selectedOnDemandSelection);
 
   useEffect(() => {
     syncUrlParams({ ondemand: selectedOnDemandSelection });
@@ -285,16 +285,50 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   const prevSearchFocused = useRef(searchFocused);
   const agencyCardRef = useRef<HTMLDivElement>(null);
 
+  // The stop card's back link returns to the screen the stop was opened from (CIV-832). One always-on
+  // capture listener notes what is open on every pointerdown, before any click handler changes it;
+  // when a stop then opens, that note becomes the back link's target. The same listener closes an
+  // open agency or on-demand card on any pointerdown outside it (panning the map included).
+  const openSelectionRef = useRef({ route: selectedRoute, stop: selectedStop, agencySlug: selectedAgencySlug ?? null, onDemand: onDemandStopAgencySlug, searchFocused });
+  useLayoutEffect(() => {
+    openSelectionRef.current = { route: selectedRoute, stop: selectedStop, agencySlug: selectedAgencySlug ?? null, onDemand: onDemandStopAgencySlug, searchFocused };
+  });
+  const onAgencyCardCloseRef = useRef(onAgencyCardClose);
+  useLayoutEffect(() => { onAgencyCardCloseRef.current = onAgencyCardClose; });
+  const stopBackSnapshotRef = useRef<StopBackSnapshot | null>(null);
   useEffect(() => {
-    if ((!selectedAgencySlug && !onDemandStopAgencySlug) || selectedRoute || selectedStop) return;
     const onPointerDown = (e: PointerEvent) => {
+      const open = openSelectionRef.current;
+      stopBackSnapshotRef.current = { route: open.route, agencySlug: open.agencySlug, onDemand: open.onDemand, searchFocused: open.searchFocused };
+      if ((!open.agencySlug && !open.onDemand) || open.route || open.stop) return;
       if (agencyCardRef.current?.contains(e.target as Node)) return;
       setOnDemandStopAgencySlug(null);
-      onAgencyCardClose?.();
+      onAgencyCardCloseRef.current?.();
     };
+    // A stop opened from the keyboard (search Enter) has no pointer to go back to: it returns to the map.
+    const onKeyDown = () => { stopBackSnapshotRef.current = null; };
     document.addEventListener('pointerdown', onPointerDown, true);
-    return () => document.removeEventListener('pointerdown', onPointerDown, true);
-  }, [selectedAgencySlug, onDemandStopAgencySlug, selectedRoute, selectedStop, onAgencyCardClose]);
+    document.addEventListener('keydown', onKeyDown, true);
+    return () => {
+      document.removeEventListener('pointerdown', onPointerDown, true);
+      document.removeEventListener('keydown', onKeyDown, true);
+    };
+  }, []);
+
+  // When a stop opens from nothing, read the note once. A stop opened while another stop's card is
+  // showing keeps that card's target: back never chains from stop to stop.
+  const [stopBackTargetState, setStopBackTargetState] = useState<StopBackTarget | null>(null);
+  const prevSelectedStopRef = useRef(selectedStop);
+  useLayoutEffect(() => {
+    const prev = prevSelectedStopRef.current;
+    prevSelectedStopRef.current = selectedStop;
+    if (selectedStop && !prev) {
+      setStopBackTargetState(stopBackTarget(stopBackSnapshotRef.current));
+      stopBackSnapshotRef.current = null;
+    } else if (!selectedStop && prev) {
+      setStopBackTargetState(null);
+    }
+  }, [selectedStop]);
 
   useEffect(() => {
     if (searchFocused && !prevSearchFocused.current) {
@@ -460,7 +494,8 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     }
   }, [agencies.length, analyticsApp, day, hideSpan, livePollingOnly, maxHeadway, period, selectedAgencies, selectedModes]);
 
-  const selectionUiVisible = showSelectionUi && (!!selectedRoute || !!selectedStop || !!disambiguationRoutes?.length || !!selectedAgencySlug);
+  // Frequent Service draws its route card over the research info card, so a selection there counts too.
+  const selectionUiVisible = (showSelectionUi || frequentServiceView) && (!!selectedRoute || !!selectedStop || !!disambiguationRoutes?.length || !!selectedAgencySlug);
   const showSidebar = showUi || selectionUiVisible;
 
   useEffect(() => {
@@ -806,6 +841,29 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
 
   useEffect(() => { if (selectedRoute) { setOnDemandStopAgencySlug(null); onAgencyCardClose?.(); } }, [selectedRoute, onAgencyCardClose]);
   useEffect(() => { if (selectedStop) { setOnDemandStopAgencySlug(null); onAgencyCardClose?.(); } }, [selectedStop, onAgencyCardClose]);
+
+  // The stop card's back link: its words and what it reopens (CIV-832).
+  const stopBack = useMemo(() => {
+    const findRoute = (key: string): StopBackRoute | null => {
+      const { agencySlug, routeId } = splitRouteKey(key);
+      const feature = layers[agencySlug]?.features.find(f => {
+        const p = f.properties as ShapeProperties | null;
+        return !!p && !p.stopId && String(p.routeId) === routeId;
+      });
+      if (!feature) return null;
+      const p = feature.properties as ShapeProperties & { routeType?: number };
+      return { routeShortName: p.routeShortName, routeLongName: p.routeLongName, routeType: p.routeType };
+    };
+    return resolveStopBack(stopBackTargetState, agencies, findRoute);
+  }, [stopBackTargetState, agencies, layers]);
+  const goBackFromStop = useCallback(() => {
+    const target = stopBack.target;
+    setSelectedStop(null);
+    if (target.kind === 'route') setSelectedRoute(target.route);
+    else if (target.kind === 'onDemand') setOnDemandStopAgencySlug(target.selection);
+    else if (target.kind === 'agency') setSelectedAgencySlug?.(target.agencySlug);
+  }, [stopBack.target, setSelectedAgencySlug]);
+  const stopCardBack = useMemo(() => ({ to: stopBack.to, onClick: goBackFromStop }), [stopBack.to, goBackFromStop]);
   useEffect(() => { setHoveredBranch(null); }, [selectedRoute]);
 
   const clearMapSelection = useCallback(() => {
@@ -1063,7 +1121,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
           </div>
         )}
         {compareActive && (
-          <div className="absolute left-1/2 top-1/2 z-[1001] -translate-x-1/2 -translate-y-1/2 max-sm:hidden">
+          <div className={`absolute left-1/2 top-1/2 ${Z_PANEL_RAISED} -translate-x-1/2 -translate-y-1/2 max-sm:hidden`}>
             <CompareLinkToggle linked={compareLinked} onChange={setCompareLinked} />
           </div>
         )}
@@ -1181,6 +1239,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
             onInfoOpen={onInfoOpen}
             onDemandFocus
             onDemandZoneId={selectedOnDemandZoneId}
+            onBackToAgency={setSelectedAgencySlug ? () => { setOnDemandStopAgencySlug(null); setSelectedAgencySlug(agency.slug); } : undefined}
           />
         ) : null;
       })()}
@@ -1405,6 +1464,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
         compareActive={compareActive}
         onInfoOpen={onInfoOpen}
         searchEnterRef={searchEnterRef}
+        stopBack={stopCardBack}
       />
       </div>
     </div>

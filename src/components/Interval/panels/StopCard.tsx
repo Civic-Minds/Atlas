@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import { CardBackLink } from '../../CardBack';
 import { titleCase, routeLabels } from '../../../utils/format';
 import type { TimePeriod } from '../../../hooks/useIntervalStats';
 import {
@@ -10,7 +11,6 @@ import {
   SidebarCardSection,
   SidebarCardShell,
   CardReportButton,
-  CardBackButton,
   FlaggableValue,
   type CardReportButtonHandle,
 } from '../cardUi';
@@ -55,8 +55,16 @@ export interface CurrentStopData {
   direction?: string;
 }
 
+/** The back link above the stop's title: "← " + the screen it returns to (CIV-832). */
+export interface StopCardBack {
+  to: string;
+  onClick: () => void;
+}
+
 export interface StopCardProps {
   currentStop: CurrentStopData;
+  /** Where the back link goes. Without it the link reads "← Map" and just closes the card. */
+  back?: StopCardBack;
   setSelectedStop: (s: string | null) => void;
   setSelectedRoute: (r: string | null) => void;
   stopAgencies: string[];
@@ -71,6 +79,7 @@ export interface StopCardProps {
 
 export const StopCard: React.FC<StopCardProps> = ({
   currentStop,
+  back,
   setSelectedStop,
   setSelectedRoute,
   stopAgencies,
@@ -101,12 +110,12 @@ export const StopCard: React.FC<StopCardProps> = ({
     <SidebarCardShell>
       <SidebarCardHeaderBlock>
         <div className="flex items-start gap-2">
-          <CardBackButton onClick={() => setSelectedStop(null)} label="Back to map" />
           <div className="flex-1 min-w-0">
+            <CardBackLink onClick={back?.onClick ?? (() => setSelectedStop(null))}>{back?.to ?? 'Map'}</CardBackLink>
             {stopAgencies.length === 1 ? (
               <FlaggableValue reason="Stop is missing, misplaced, or assigned incorrectly" reportRef={reportRef} className="block w-full text-left">
                 <SidebarCardHeader
-                  eyebrow={stopAgencies[0]}
+                  eyebrow={back?.to === stopAgencies[0] ? null : stopAgencies[0]}
                   title={`${titleCase(currentStop.stopName)}${currentStop.direction ? ` — ${currentStop.direction}` : ''}`}
                   titleClamp
                 />
@@ -164,6 +173,7 @@ export const StopCard: React.FC<StopCardProps> = ({
                 key={rKey}
                 label={routeLabels({ shortName: routeShortName, longName: routeLongName, routeType, agencySlug, agencyName }).text}
                 subLabel={`${nearestStopName} · ${Math.round(distanceMeters)} m away`}
+                subLabelWeight="medium"
                 headway={headway ?? undefined}
                 onClick={() => openRoute(rKey)}
               />

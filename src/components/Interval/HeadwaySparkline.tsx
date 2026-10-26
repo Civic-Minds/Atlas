@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Maximize2, X } from 'lucide-react';
 import { headwayToTierColor } from '../../utils/colors';
-import { useColorVision } from '../../context/ColorVisionContext';
+import { useColorMode } from '../../hooks/useColorMode';
 export { headwayToTierColor };
 import { periodKeyForHour, isHourInPeriod, SPARKLINE_HOURS, SPARKLINE_HOUR_LABELS, TIME_PERIODS } from '../../../shared/config';
 import { PERIOD_LABELS } from '../../hooks/useIntervalStats';
@@ -10,8 +10,9 @@ import type { TimePeriod } from '../../hooks/useIntervalStats';
 import type { HeadwayByPeriod, HeadwayByHour } from '../../hooks/useAgencyData';
 import type { HeadwayByHourMaxGap } from '../../../shared/config';
 import Pill from '../ui/Pill';
+import RoundIconButton from '../ui/RoundIconButton';
 import LegendItem from '../ui/LegendItem';
-import { delayAmount, headwayAmount, headwayEvery } from '../../utils/headwayText';
+import { delayAmount, headwayAmount, headwayEvery, runTimeAmount } from '../../utils/headwayText';
 import { TripTimeStrip, AxisOverlay, tripTimeAxisTicks, type AxisTick, tripTimeHeading, FULL_DAY_BAR_SHAPE, FULL_DAY_COLUMN_ROW } from './TripTimeStrip';
 import { type TripTimeSeries } from '../../utils/tripTime';
 import { syncUrlParams } from '../../utils/syncUrlParams';
@@ -86,7 +87,7 @@ function formatHourTitle(h: number, headway: number): string {
 }
 
 function tripTimeAbout(minutes: number): string {
-  return `about ${minutes} min`;
+  return `about ${runTimeAmount(minutes)}`;
 }
 
 function formatTripTimeTitle(h: number, minutes: number): string {
@@ -174,8 +175,7 @@ interface HourlySparklineProps {
 }
 
 export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directionOptions, period, onPeriodChange, onPeriodHover, onHourHover, allowExpand = false, reserveStackedLegendSpace = false, title = 'Schedule overview', seriesLabel, expanded = false, tripTime, legendStackedByHour, legendInvisible = false, scaleMaxFreq, sharedHour, onSharedHour, showPeriodLabels = true, yAxis }: HourlySparklineProps) {
-  const { colorVisionFriendly } = useColorVision();
-  const colorMode = colorVisionFriendly ? 'friendly' : 'default';
+  const colorMode = useColorMode();
   const [hoveredPeriod, setHoveredPeriod] = useState<string | null>(null);
   const [hoveredHour, setHoveredHour] = useState<number | null>(null);
   const phone = useMediaQuery(PHONE_MEDIA_QUERY);
@@ -478,7 +478,7 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
           className="fixed inset-0 z-[1700] flex items-center justify-center bg-[var(--bg-app)]/60 p-4 backdrop-blur-sm"
           onMouseDown={event => { if (event.target === event.currentTarget) setIsExpanded(false); }}
         >
-          <div className="w-full max-w-[900px] max-h-[calc(100vh-2rem)] overflow-y-auto rounded-2xl border border-[var(--border-primary)] bg-[var(--bg-panel)] p-5 shadow-2xl">
+          <div className="w-full max-w-[900px] max-h-[calc(100vh-2rem)] overflow-y-auto rounded-2xl border border-[var(--border-primary)] bg-[var(--bg-panel)] p-5">
             <div className="flex items-start justify-between gap-4">
               <div>
                 <h2 className="text-base font-black text-[var(--text-primary)]">{title}</h2>
@@ -486,14 +486,9 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
                   All time periods are shown together.
                 </p>
               </div>
-              <button
-                type="button"
-                onClick={() => setIsExpanded(false)}
-                aria-label="Close schedule"
-                className="shrink-0 rounded-full p-1.5 text-[var(--text-dim)] hover:bg-[var(--bg-btn-hover)] hover:text-[var(--text-primary)]"
-              >
+              <RoundIconButton onClick={() => setIsExpanded(false)} aria-label="Close schedule">
                 <X className="w-4 h-4" />
-              </button>
+              </RoundIconButton>
             </div>
             {directionOptions && directionOptions.length > 1 && !bothDirections && (
               <div className="mt-4 flex flex-wrap gap-2" role="group" aria-label="Schedule direction">

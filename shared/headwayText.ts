@@ -16,6 +16,7 @@
  *   headwayBandLabel(16, 30)  "16–30 min"                  the band between two tiers in a key
  *   headwayAmount(10)         "10 min"                   a bare spacing with no "every" (tables, chart cells)
  *   delayAmount(3)            "3 min"                    a delay or gap length that is not a headway
+ *   runTimeAmount(42)         "42 min"                   a trip's run time, rounded to the whole minute
  *
  * Units: headways always read in minutes, never hours ("every 90 min", "every 120 min"), so a
  * column of values never mixes units. headwayAbout rounds to the nearest 30 minutes above 60
@@ -106,6 +107,11 @@ export function headwayBandLabel(lowMinutes: number, highMinutes: number): strin
 /** "3 min": a delay, gap or other length of time that is not a headway. */
 export function delayAmount(minutes: number | null | undefined): string {
   return isUsable(minutes) ? `${num(minutes)} min` : MISSING;
+}
+
+/** "42 min": how long a trip takes end to end (trip time, run time), rounded to the whole minute. */
+export function runTimeAmount(minutes: number | null | undefined): string {
+  return isUsable(minutes) ? `${Math.round(minutes)} min` : MISSING;
 }
 
 /**

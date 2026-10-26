@@ -5,7 +5,6 @@ import type { MapboxOverlay } from '@deck.gl/mapbox';
 import { LocateFixed, Link2, Flag, Download } from 'lucide-react';
 import MapZoomButtons from '../MapZoomButtons';
 import { routeKey } from '../../hooks/useIntervalStats';
-import { type ColorVisionMode } from '../../utils/colors';
 import { getRegionalView, getSavedView } from '../../utils/regionView';
 import { useViewport } from '../../context/ViewportContext';
 import { useHistoryMapOverlay } from '../../context/HistoryMapOverlay';
@@ -25,6 +24,7 @@ import type { DayType } from '../../../shared/dayTypes';
 import { registerProtocol, getMapStyle, getActiveDataRelease } from '../../lib/mapStyle';
 import { Z_PANEL, MAP_BADGE } from '../../styles';
 import { useColorVision } from '../../context/ColorVisionContext';
+import { useColorMode } from '../../hooks/useColorMode';
 import { routeFilterHeadway } from '../../../shared/routeHeadwayFilter';
 import { isOnDemandStopFocused, isOnDemandZoneFocused, ON_DEMAND_FOCUSED_PROP, type OnDemandFocusTarget } from './map/onDemandFocus';
 import { TRANSFER_POINT_SERVICE_TYPE, transferPointStop } from './map/transferPointStop';
@@ -300,7 +300,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   agencyDataFailedCount = 0,
 }) => {
   const { colorVisionFriendly } = useColorVision();
-  const colorMode: ColorVisionMode = colorVisionFriendly ? 'friendly' : 'default';
+  const colorMode = useColorMode();
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
   const [pmtilesRoutesAvailable, setPmtilesRoutesAvailable] = useState<boolean | null>(null);
@@ -1339,16 +1339,17 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
           <button
             onClick={() => setExportDialogOpen(true)}
             aria-label="Export map image"
-            className="box-border !h-8 !w-8 max-sm:!h-[32px] max-sm:!w-[32px] min-h-8 min-w-8 shrink-0 p-0 max-sm:hidden flex items-center justify-center rounded-full bg-[var(--bg-panel)] border border-[var(--border-primary)] text-[var(--text-dim)] shadow-lg backdrop-blur-md hover:text-[var(--accent)] hover:border-[var(--accent-border)] transition-colors cursor-pointer"
+            className="box-border !h-8 !w-8 max-sm:!h-[32px] max-sm:!w-[32px] min-h-8 min-w-8 shrink-0 p-0 max-sm:hidden flex items-center justify-center rounded-full bg-[var(--bg-panel)] border border-[var(--border-primary)] text-[var(--text-dim)] backdrop-blur-md hover:text-[var(--accent)] hover:border-[var(--accent-border)] transition-colors cursor-pointer"
           >
             <Download className="w-3.5 h-3.5" />
           </button>
         )}
-        <MapZoomButtons onZoomIn={() => { onUserMove?.(); mapRef.current?.zoomIn({ duration: 200 }); }} onZoomOut={() => { onUserMove?.(); mapRef.current?.zoomOut({ duration: 200 }); }} />
+        {/* Phones zoom by pinching, so the + and − buttons show only from sm up (Ryan: "on mobile we should remove the zoom in zoom out buttons"). */}
+        <MapZoomButtons className="max-sm:hidden" onZoomIn={() => { onUserMove?.(); mapRef.current?.zoomIn({ duration: 200 }); }} onZoomOut={() => { onUserMove?.(); mapRef.current?.zoomOut({ duration: 200 }); }} />
         <button
           onClick={locateUser}
           aria-label="Go to my location"
-          className="w-8 h-8 max-sm:w-[32px] max-sm:h-[32px] flex items-center justify-center rounded-full bg-[var(--bg-panel)] border border-[var(--border-primary)] text-[var(--text-dim)] shadow-lg backdrop-blur-md hover:text-[var(--accent)] hover:border-[var(--accent-border)] transition-colors cursor-pointer"
+          className="w-8 h-8 max-sm:w-[32px] max-sm:h-[32px] flex items-center justify-center rounded-full bg-[var(--bg-panel)] border border-[var(--border-primary)] text-[var(--text-dim)] backdrop-blur-md hover:text-[var(--accent)] hover:border-[var(--accent-border)] transition-colors cursor-pointer"
         >
           <LocateFixed className="w-3.5 h-3.5" />
         </button>

@@ -1,7 +1,7 @@
 import { searchAreas, type AreaSearchResult } from '../../../shared/areaSearch';
 import React, { useMemo, useRef, useEffect, useCallback, useState } from 'react';
 import { getTierColor } from '../../utils/colors';
-import { useColorVision } from '../../context/ColorVisionContext';
+import { useColorMode } from '../../hooks/useColorMode';
 import type { ShapeProperties, TimePeriod, DayType, HoveredBranch, ViewportBounds } from '../../hooks/useIntervalStats';
 import type { Agency } from '../../App';
 import { findVariantFamily } from '../../utils/routeVariants';
@@ -23,10 +23,10 @@ import {
   type RouteSearchResult,
   type StopSearchResult,
 } from '../../utils/searchResults';
-import { FLOATING_CARD, TRANSITION_BASE, PANEL_SIDEBAR_SLOT, Z_PANEL, Z_DROPDOWN, SIDEBAR_LEFT_FALLBACK, SIDEBAR_PANEL_WIDTH } from '../../styles';
+import { FLOATING_CARD, TRANSITION_BASE, SIDEBAR_CARD_SLOT, SIDEBAR_CARD_MAX_H, Z_PANEL, Z_DROPDOWN, sidebarFrameStyle, SIDEBAR_PANEL_WIDTH } from '../../styles';
 import { DisambiguationPanel } from './panels/DisambiguationPanel';
 import { StopCard } from './panels/StopCard';
-import type { StopRoute, NearbyConnection } from './panels/StopCard';
+import type { StopRoute, NearbyConnection, StopCardBack } from './panels/StopCard';
 import { RouteCardHeadway } from './panels/RouteCardHeadway';
 import type { OpenInfoFn } from '../InfoPanel';
 import { SearchSuggestionsPanel } from './SearchSuggestionsPanel';
@@ -45,7 +45,8 @@ import { hasRegularServiceInPeriod, hasStretchRoles, stretchRowFeatures, variant
 import { compareAgencyName, compareHeadwayThenNumber, compareRouteNumber } from '../../utils/sortCompare';
 import { SIDEBAR_CARD_BODY } from './cardUi';
 import { useRecentSearches } from '../../hooks/useRecentSearches';
-import { BOTTOM_SHEET_FRAME, BottomSheetHandle, bottomSheetBodyClass, useBottomSheet } from '../ui/BottomSheet';
+import { useFadePresence } from '../../hooks/useFadePresence';
+import { bottomSheetFrameClass, BottomSheetHandle, bottomSheetBodyClass, useBottomSheet } from '../ui/BottomSheet';
 
 interface SidebarControlsProps {
   query: string;
@@ -86,6 +87,8 @@ interface SidebarControlsProps {
   compareActive?: boolean;
   onInfoOpen?: OpenInfoFn;
   searchEnterRef?: React.MutableRefObject<(() => void) | null>;
+  /** The stop card's back link: where it goes and its words (CIV-832). */
+  stopBack?: StopCardBack;
   analyticsApp?: string;
   onSearchRouteHover?: (key: string | null) => void;
 }
@@ -131,11 +134,11 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   compareActive = false,
   onInfoOpen,
   searchEnterRef,
+  stopBack,
   onSearchRouteHover,
   analyticsApp = 'frequency',
 }) => {
-  const { colorVisionFriendly } = useColorVision();
-  const colorMode = colorVisionFriendly ? 'friendly' : 'default';
+  const colorMode = useColorMode();
   const nonCorridorLayers = useMemo(() => {
     const result: Record<string, GeoJSON.FeatureCollection> = {};
     for (const [slug, fc] of Object.entries(layers)) {
@@ -925,19 +928,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   const sheetSubject = selectedRoute ?? (currentStop as { stopId?: string } | null)?.stopId ?? null;
   const { expanded: sheetExpanded, handle: sheetHandle } = useBottomSheet(sheetSubject);
 
-  const [panelShouldRender, setPanelShouldRender] = useState(false);
-  const [panelVisible, setPanelVisible] = useState(false);
-  useEffect(() => {
-    if (hasContent) {
-      setPanelShouldRender(true);
-      const id = setTimeout(() => setPanelVisible(true), 10);
-      return () => clearTimeout(id);
-    } else {
-      setPanelVisible(false);
-      const id = setTimeout(() => setPanelShouldRender(false), 200);
-      return () => clearTimeout(id);
-    }
-  }, [hasContent]);
+  const { mounted: panelShouldRender, visible: panelVisible } = useFadePresence(hasContent);
 
   const routeSlug = selectedRoute
     ? splitRouteKey(selectedRoute).agencySlug
@@ -965,13 +956,12 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   return (
     <div
       className={sheetMode
-        ? `${BOTTOM_SHEET_FRAME} ${panelVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'}`
-        : `${PANEL_SIDEBAR_SLOT} ${searchOverlayHidesPanel(searchFocused, query) ? Z_DROPDOWN : Z_PANEL} ${SIDEBAR_PANEL_WIDTH} ${phonePanelWidth} ${nightServiceView ? 'max-h-[calc(100vh-168px)]' : 'max-h-[calc(100vh-132px)]'} flex flex-col gap-3 transition-[opacity,transform] duration-200 ease-out ${panelVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2 pointer-events-none'}`}
+        ? bottomSheetFrameClass(panelVisible)
+        : `${SIDEBAR_CARD_SLOT} ${searchOverlayHidesPanel(searchFocused, query) ? Z_DROPDOWN : Z_PANEL} ${SIDEBAR_PANEL_WIDTH} ${phonePanelWidth} ${SIDEBAR_CARD_MAX_H} flex flex-col gap-3 transition-[opacity,transform] duration-200 ease-out ${panelVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2 pointer-events-none'}`}
       style={sheetMode ? undefined : {
-        '--sidebar-left': `${sidebarLeft ?? SIDEBAR_LEFT_FALLBACK}px`,
+        ...sidebarFrameStyle(sidebarLeft, matchSearchBarWidth ? searchBarWidth : undefined),
         ...(compareTop != null ? { top: `${compareTop}px`, maxHeight: `calc(100vh - ${compareTop + 64}px)` } : {}),
-        ...(matchSearchBarWidth ? { width: `${searchBarWidth}px`, maxWidth: 'none' } : {}),
-      } as React.CSSProperties}
+      }}
     >
       {searchFocused && query === '' && (
         <SearchSuggestionsPanel
@@ -1003,6 +993,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         {panelStop && (
           <StopCard
             currentStop={currentStop}
+            back={stopBack}
             setSelectedStop={setSelectedStop}
             setSelectedRoute={setSelectedRoute}
             stopAgencies={stopAgencies}

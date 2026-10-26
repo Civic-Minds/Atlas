@@ -1,24 +1,17 @@
 import type { WheelEvent as ReactWheelEvent } from 'react';
 import ModeTab from '../ModeTab';
 import { Columns2, Lock, LockOpen } from 'lucide-react';
-import { MAP_BADGE } from '../../styles';
+import { MAP_BADGE, MAP_BADGE_COUNT, MAP_BADGE_LABEL } from '../../styles';
 import Pill from '../ui/Pill';
 import RoundIconButton from '../ui/RoundIconButton';
 import { FilterChips } from './FilterChips';
+import { SideBadge } from '../ui/SideBadge';
 import { DayPicker, FrequencyPicker, PeriodPicker, PickerSection } from './pickers';
 import { compareSideHeading, type CompareSide } from '../../utils/compareSides';
 import { plural } from '../../../shared/overflowText';
 
+export { SideBadge } from '../ui/SideBadge';
 export { compareSideLabel, defaultCompareSide, type CompareSide } from '../../utils/compareSides';
-
-export function SideBadge({ side }: { side: 'A' | 'B' }) {
-  return (
-    <span className="inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-[var(--text-primary)] text-2xs font-black text-[var(--bg-panel)]" aria-hidden="true">
-      {side}
-    </span>
-  );
-}
-
 
 /** Frequency, day and time buttons for one compare side (the phone filter panel uses this for B). */
 export function CompareSidePicker({ side, onChange }: { side: CompareSide; onChange: (side: CompareSide) => void }) {
@@ -78,7 +71,7 @@ export function CompareLinkToggle({ linked, onChange }: { linked: boolean; onCha
       aria-label={COMPARE_LINK_LABEL}
       title={COMPARE_LINK_LABEL}
       data-testid="compare-link-toggle"
-      className={`h-10! w-10! border-2! shadow-xl ring-4 ring-[var(--bg-panel)] backdrop-blur-md ${linked ? '' : 'bg-[var(--bg-panel)]! border-[var(--border-primary)]!'}`}
+      className={`h-10! w-10! border-2! ring-4 ring-[var(--bg-panel)] backdrop-blur-md ${linked ? '' : 'bg-[var(--bg-panel)]! border-[var(--border-primary)]!'}`}
     >
       <Icon className="h-5 w-5" strokeWidth={2.25} aria-hidden="true" />
     </RoundIconButton>
@@ -117,9 +110,9 @@ export function CompareSideBar({ side, settings, onChange, counts }: CompareSide
     <div className="flex flex-col items-center sm:items-end gap-1.5 min-w-0 max-w-full" data-compare-side={side}>
       <div onWheel={forwardWheelToMap} className={`pointer-events-auto ${MAP_BADGE} min-h-8 max-sm:min-h-[32px] py-1 gap-x-1.5 gap-y-0 flex-wrap justify-center max-w-[calc(100vw-2rem)] sm:flex-nowrap sm:max-w-full sm:min-w-0`}>
         <SideBadge side={side} />
-        <span className="text-xs font-black text-[var(--text-primary)] whitespace-nowrap sm:shrink-0" data-testid={`compare-heading-${side}`}>{compareSideHeading(settings)}</span>
+        <span className={`${MAP_BADGE_COUNT} whitespace-nowrap sm:shrink-0`} data-testid={`compare-heading-${side}`}>{compareSideHeading(settings)}</span>
         {counts && (
-          <span className="text-xs font-semibold text-[var(--text-dim)] whitespace-nowrap sm:min-w-0 sm:truncate" data-testid={`compare-counts-${side}`}>
+          <span className={`${MAP_BADGE_LABEL} whitespace-nowrap sm:min-w-0 sm:truncate`} data-testid={`compare-counts-${side}`}>
             <span className="hidden sm:inline">· </span>{counts.total} {plural(counts.total, 'route')}
           </span>
         )}

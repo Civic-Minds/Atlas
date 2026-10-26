@@ -22,13 +22,13 @@ function card(agency: Agency) {
   );
 }
 
-describe('Data source link', () => {
+describe('Source link', () => {
   beforeEach(() => { flags.on = true; });
 
   it('agency card: shows in beta, pointing at the agency website in a new tab', () => {
     card(withSite);
-    const link = screen.getByRole('link', { name: 'Data source (opens in a new tab)' });
-    expect(link).toHaveTextContent(/^Data source$/);
+    const link = screen.getByRole('link', { name: 'Source (opens in a new tab)' });
+    expect(link).toHaveTextContent(/^Source$/);
     expect(link).toHaveAttribute('href', 'https://example.org/transit');
     expect(link).toHaveAttribute('target', '_blank');
     expect(link).toHaveAttribute('rel', 'noopener noreferrer');
@@ -37,12 +37,12 @@ describe('Data source link', () => {
   it('agency card: absent in public mode', () => {
     flags.on = false;
     card(withSite);
-    expect(screen.queryByText('Data source')).toBeNull();
+    expect(screen.queryByText('Source')).toBeNull();
   });
 
   it('agency card: absent when the agency has no website', () => {
     card(withoutSite);
-    expect(screen.queryByText('Data source')).toBeNull();
+    expect(screen.queryByText('Source')).toBeNull();
   });
 
   describe('on-demand card', () => {
@@ -54,7 +54,7 @@ describe('Data source link', () => {
 
     it('shows in beta, pointing at the agency website in a new tab', () => {
       demandCard(withSite);
-      const link = screen.getByRole('link', { name: /Data source/ });
+      const link = screen.getByRole('link', { name: /^Source/ });
       expect(link).toHaveAttribute('href', 'https://example.org/transit');
       expect(link).toHaveAttribute('target', '_blank');
       expect(link).toHaveAttribute('rel', 'noopener noreferrer');
@@ -63,41 +63,40 @@ describe('Data source link', () => {
     it('is absent in public mode', () => {
       flags.on = false;
       demandCard(withSite);
-      expect(screen.queryByText('Data source')).toBeNull();
+      expect(screen.queryByText('Source')).toBeNull();
     });
 
     it('is absent when the agency has no website', () => {
       demandCard(withoutSite);
-      expect(screen.queryByText('Data source')).toBeNull();
+      expect(screen.queryByText('Source')).toBeNull();
     });
   });
 
-  describe('header links', () => {
+  describe('header links (CIV-841)', () => {
     const ttc = { ...base, slug: 'ttc', name: 'Toronto Transit Commission', websiteUrl: 'https://www.ttc.ca' } as unknown as Agency;
 
-    it('groups About + Data source as a pair and the area link as a chip', () => {
+    it('one row: About, Source, Toronto area, each opening in a new tab', () => {
       card(ttc);
-      expect(screen.getByRole('link', { name: 'About this agency' })).toHaveAttribute('href', '/agency/ttc');
-      expect(screen.getByRole('link', { name: /Data source/ })).toBeInTheDocument();
-      const chip = screen.getByRole('link', { name: /^All Greater Toronto and Hamilton Area agencies/ });
-      expect(chip).toHaveAttribute('href', '/area/toronto');
-      expect(chip.className).toContain('rounded-full');
-      expect(chip).toHaveAttribute('title', 'All Greater Toronto and Hamilton Area agencies');
-      expect(chip.querySelector('span')?.className).toContain('truncate');
+      const about = screen.getByRole('link', { name: 'About' });
+      const source = screen.getByRole('link', { name: /^Source/ });
+      const area = screen.getByRole('link', { name: 'Toronto area' });
+      expect(about).toHaveAttribute('href', '/agency/ttc');
+      expect(area).toHaveAttribute('href', '/area/toronto');
+      for (const link of [about, source, area]) {
+        expect(link).toHaveAttribute('target', '_blank');
+        expect(link.parentElement).toBe(about.parentElement);
+      }
+      expect(about.compareDocumentPosition(source) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+      expect(source.compareDocumentPosition(area) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+      expect(screen.queryByText(/agencies$/)).toBeNull();
     });
 
-    it('public mode keeps the old header: About, then the area name as a text link, no chip', () => {
+    it('public mode: About and Toronto area, no Source', () => {
       flags.on = false;
       card(ttc);
-      const about = screen.getByRole('link', { name: 'About this agency' });
-      const area = screen.getByRole('link', { name: /^All Greater Toronto and Hamilton Area agencies/ });
-      expect(area).toHaveAttribute('href', '/area/toronto');
-      expect(area.className).toContain('text-[var(--accent)]');
-      expect(area.className).not.toContain('rounded-full');
-      expect(area).not.toHaveAttribute('title');
-      expect(about.parentElement).toBe(area.parentElement);
-      expect(about.compareDocumentPosition(area) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
-      expect(screen.queryByText('Data source')).toBeNull();
+      expect(screen.getByRole('link', { name: 'About' })).toBeInTheDocument();
+      expect(screen.getByRole('link', { name: 'Toronto area' })).toBeInTheDocument();
+      expect(screen.queryByText('Source')).toBeNull();
     });
   });
 });

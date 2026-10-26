@@ -3,7 +3,6 @@ import { Moon } from 'lucide-react';
 import { useViewport } from '../context/ViewportContext';
 import {
   PANEL_TITLE,
-  LIST_ROW_PRIMARY,
   LIST_ROW_DIM,
 } from '../styles';
 import { R2_PUBLIC_URL } from '../../shared/config';
@@ -11,14 +10,15 @@ import { plural } from '../../shared/overflowText';
 import type { NightServiceFrequency } from '../../shared/nightService';
 import { nightServiceKey } from '../../shared/nightService';
 import Panel, { PanelBody, PanelTitleBar } from '../components/ui/Panel';
-import ListRow from '../components/ui/ListRow';
+import RouteListRow from '../components/RouteListRow';
+import { routeRowLabels } from '../components/Interval/SearchSuggestionsPanel';
 import ResearchInfo from '../components/ResearchInfo';
 import { NIGHT_INFO_HEADING, nightRuleText } from '../content/researchRules';
 import PanelEmpty from '../components/ui/PanelEmpty';
 import AgencyName from '../components/ui/AgencyName';
 import AgencyGroupHeader from '../components/ui/AgencyGroupHeader';
 import { loadingText, loadErrorText } from '../content/stateCopy';
-import { routeLabels } from '../utils/format';
+import { boundingBox, lineCoordinates } from '../../shared/routeGeometry';
 
 interface NightServiceRoute {
   agencySlug: string;
@@ -63,6 +63,7 @@ interface NightServiceIndexFile {
 interface Props {
   active?: boolean;
   sidebarLeft?: number;
+  searchBarWidth?: number;
   layers: Record<string, GeoJSON.FeatureCollection>;
   query?: string;
   frequency: NightServiceFrequency;
@@ -72,25 +73,12 @@ interface Props {
 }
 
 function featureIntersectsBounds(feature: GeoJSON.Feature, bounds: { s: number; w: number; n: number; e: number }): boolean {
-  if (feature.geometry.type !== 'LineString' && feature.geometry.type !== 'MultiLineString') return false;
-  const coordinates = feature.geometry.type === 'LineString'
-    ? feature.geometry.coordinates
-    : feature.geometry.coordinates.flat();
-  if (coordinates.length === 0) return false;
-  let minLon = Infinity;
-  let minLat = Infinity;
-  let maxLon = -Infinity;
-  let maxLat = -Infinity;
-  for (const [lon, lat] of coordinates) {
-    minLon = Math.min(minLon, lon);
-    minLat = Math.min(minLat, lat);
-    maxLon = Math.max(maxLon, lon);
-    maxLat = Math.max(maxLat, lat);
-  }
-  return maxLon >= bounds.w && minLon <= bounds.e && maxLat >= bounds.s && minLat <= bounds.n;
+  const box = boundingBox(lineCoordinates(feature.geometry));
+  if (!box) return false;
+  return box.maxLng >= bounds.w && box.minLng <= bounds.e && box.maxLat >= bounds.s && box.minLat <= bounds.n;
 }
 
-export default function NightService({ active, sidebarLeft, layers, query = '', frequency, onRouteSelect, selectionActive = false }: Props) {
+export default function NightService({ active, sidebarLeft, searchBarWidth, layers, query = '', frequency, onRouteSelect, selectionActive = false }: Props) {
   const [data, setData] = useState<NightServiceIndexFile | null>(null);
   const [loadState, setLoadState] = useState<'loading' | 'ready' | 'error'>('loading');
   const { bounds } = useViewport();
@@ -176,8 +164,8 @@ export default function NightService({ active, sidebarLeft, layers, query = '', 
   if (!active) return null;
 
   return (
-    <ResearchInfo heading={NIGHT_INFO_HEADING} sidebarLeft={sidebarLeft} hidden={selectionActive} below={
-      <Panel className="min-h-0 flex-1">
+    <ResearchInfo heading={NIGHT_INFO_HEADING} sidebarLeft={sidebarLeft} searchBarWidth={searchBarWidth} hidden={selectionActive} below={
+      <Panel sidebarSurface className="min-h-0 flex-1">
         <PanelTitleBar>
           <Moon className="w-3 h-3 text-[var(--text-dim)] shrink-0" />
           <span className={PANEL_TITLE}>Night Service</span>
@@ -196,29 +184,30 @@ export default function NightService({ active, sidebarLeft, layers, query = '', 
                   <span className="font-normal text-[var(--text-dim)]"> · {agency.routes.length} {plural(agency.routes.length, 'route')}</span>
                 </AgencyName>
               </AgencyGroupHeader>
-              {agency.routes.map(route => (
-                <ListRow
-                  key={`${route.routeShortName ?? ''}-${route.routeLongName ?? ''}`}
-                  disabled={!route.routeId || !onRouteSelect}
-                  onClick={() => route.routeId && onRouteSelect?.(agency.slug, route.routeId)}
-                  className="disabled:cursor-default"
-                >
-                  <div className="min-w-0 flex-1">
-                  <div className={`${LIST_ROW_PRIMARY} line-clamp-2 break-words`} title={routeLabels({ shortName: route.routeShortName, longName: route.routeLongName, routeType: route.routeType, agencySlug: agency.slug, agencyName: agency.agencyName }).text}>
-                    {(() => {
-                      const label = routeLabels({ shortName: route.routeShortName, longName: route.routeLongName, routeType: route.routeType, agencySlug: agency.slug, agencyName: agency.agencyName });
-                      return <>{label.primary || 'Unnamed route'}{label.secondary && <span className={`font-normal ${LIST_ROW_DIM}`}> — {label.secondary}</span>}</>;
-                    })()}
-                  </div>
-                  {route.destinations.length > 0 && (
-                    <div className={`mt-0.5 ${LIST_ROW_DIM} truncate`} title={route.destinations.join(' · ')}>
-                      To {route.destinations.join(' · ')}
-                    </div>
-                  )}
-                  {route.partOfRoute && <div className="mt-0.5 text-xs font-bold text-[var(--text-dim)]">Night service on part of the route</div>}
-                  </div>
-                </ListRow>
-              ))}
+              {agency.routes.map(route => {
+                const labels = routeRowLabels({ shortName: route.routeShortName, longName: route.routeLongName, routeType: route.routeType, agencySlug: agency.slug, agencyName: agency.agencyName });
+                const hasSubtitle = route.destinations.length > 0 || route.partOfRoute;
+                return (
+                  <RouteListRow
+                    key={`${route.routeShortName ?? ''}-${route.routeLongName ?? ''}`}
+                    shortName={labels.shortName || 'Unnamed route'}
+                    name={labels.name}
+                    disabled={!route.routeId || !onRouteSelect}
+                    onClick={() => route.routeId && onRouteSelect?.(agency.slug, route.routeId)}
+                    className="disabled:cursor-default"
+                    subtitle={hasSubtitle ? (
+                      <>
+                        {route.destinations.length > 0 && (
+                          <div className={`mt-0.5 ${LIST_ROW_DIM} truncate`} title={route.destinations.join(' · ')}>
+                            To {route.destinations.join(' · ')}
+                          </div>
+                        )}
+                        {route.partOfRoute && <div className="mt-0.5 text-xs font-bold text-[var(--text-dim)]">Night service on part of the route</div>}
+                      </>
+                    ) : undefined}
+                  />
+                );
+              })}
             </div>
           ))}
         </PanelBody>

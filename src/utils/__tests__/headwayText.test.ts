@@ -10,6 +10,7 @@ import {
   headwayFilterLabel,
   headwayOrBetter,
   headwayTierLabel,
+  runTimeAmount,
 } from '../headwayText';
 
 describe('headwayText', () => {
@@ -57,6 +58,13 @@ describe('headwayText', () => {
     expect(delayAmount(2.5)).toBe('2.5 min');
   });
 
+  it('run time: a trip\'s length, to the whole minute', () => {
+    expect(runTimeAmount(42)).toBe('42 min');
+    expect(runTimeAmount(125)).toBe('125 min');
+    expect(runTimeAmount(41.6)).toBe('42 min');
+    expect(runTimeAmount(41.4)).toBe('41 min');
+  });
+
   describe('units above 60 minutes', () => {
     it('exact spacings stay in minutes, never hours', () => {
       expect(headwayEvery(90)).toBe('every 90 min');
@@ -88,6 +96,7 @@ describe('headwayText', () => {
         expect(headwayAbout(bad)).toBe('—');
         expect(headwayAmount(bad)).toBe('—');
         expect(delayAmount(bad)).toBe('—');
+        expect(runTimeAmount(bad)).toBe('—');
       }
       expect(headwayTierLabel(Infinity)).toBe('—');
     });

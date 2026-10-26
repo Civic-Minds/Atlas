@@ -4,15 +4,16 @@ import { FEATURES } from '../../../shared/config';
 import { plural } from '../../../shared/overflowText';
 import { agencyPagePath } from '../../../shared/agencyPages';
 import { areaLinkFor } from '../../../shared/agencyArea';
+import { areaPagePath } from '../../../shared/areas';
 import { ON_DEMAND_NOT_MAPPED_NOTE, ON_DEMAND_PILL_LABEL, onDemandPillSelected } from '../../utils/onDemandPill';
 import agencyPageSlugs from '../../../shared/data/agency-page-slugs.json';
 import type { Agency } from '../../App';
 import type { OpenInfoFn } from '../InfoPanel';
 import type { AgencyLayers } from '../../hooks/useAgencyData';
-import { CARD_NOTICE_FOOTER, CARD_NOTICE_INLINE, SIDEBAR_LEFT_FALLBACK } from '../../styles';
-import Panel from '../ui/Panel';
+import { CARD_NOTICE_FOOTER, CARD_NOTICE_INLINE, sidebarFrameStyle } from '../../styles';
+import Panel, { PanelBody } from '../ui/Panel';
 import Pill from '../ui/Pill';
-import ModeFilterPill from '../ui/ModeFilterPill';
+import ModeFilterPillRow from '../ui/ModeFilterPillRow';
 import { HEADWAY_TIERS } from '../../utils/colors';
 import { effectiveMode, isRailReplacementBus, knownModeLabel, sortModes } from '../../../shared/modes';
 import { headwayEveryRange } from '../../utils/headwayText';
@@ -20,12 +21,13 @@ import { agencyDisplayParts, routeLabels } from '../../utils/format';
 import type { DayType, TimePeriod, ShapeProperties } from '../../hooks/useIntervalStats';
 import { passesRouteFilter } from '../../hooks/useIntervalStats';
 import { NO_REGULAR_SERVICE_LABEL, routeListDisplay } from '../../utils/effectiveHeadway';
-import { AgencyAreaChip, AgencyDataSourceLink, CARD_HEADER_BLOCK, CARD_SUMMARY, CARD_TITLE, CardHelpNotice, CardReportButton } from './cardUi';
+import { AgencyCardHeading, AgencyDataSourceLink, SidebarCardHeader, CARD_HEADER_BLOCK, CARD_BODY_TEXT, CARD_SUMMARY, CardBodyText, CardHelpNotice, CardSectionLabel, CardReportButton } from './cardUi';
 import CardRouteList from './CardRouteList';
 import { OutboundLink } from '../OutboundLink';
 import { buildRouteFacts } from '../../utils/routeFacts';
 import { currentAtlasUrl } from '../../utils/reportIssue';
 import { getRolloutNotice } from '../../../shared/rolloutNotice';
+import { onDemandCardName } from '../../utils/onDemandSelection';
 import { onDemandCoverageNote } from '../../data/onDemandCoverage';
 import {
   formatOnDemandHoursLines,
@@ -297,6 +299,14 @@ interface Props {
   onInfoOpen?: OpenInfoFn;
   onDemandFocus?: boolean;
   onDemandZoneId?: string | null;
+  /** The on-demand card's back link to the agency card (CIV-900); shown only when that is a different card. */
+  onBackToAgency?: () => void;
+}
+
+/** Area link words Ryan has approved, by area page (CIV-841). Other areas get no link until he picks their words. */
+const APPROVED_AREA_LABELS: Record<string, string> = { [areaPagePath('toronto')]: 'Toronto area' };
+function approvedAreaLabel(href: string): string | null {
+  return APPROVED_AREA_LABELS[href] ?? null;
 }
 
 function RouteListSection({
@@ -338,6 +348,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
   onInfoOpen,
   onDemandFocus = false,
   onDemandZoneId = null,
+  onBackToAgency,
 }, ref) {
   const routes = useMemo(
     () => getRoutes(layers, agency.slug, day, period, { maxHeadway, selectedModes, hideSpan, hideLimitedService }),
@@ -389,7 +400,6 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
   // Zone not on the map yet: an "On-Demand" pill beside the mode pills instead of a notice block.
   const hasOnDemandPill = !agency.onDemandOnly && coverageNote?.kind === 'not-mapped';
   const onDemandOn = onDemandPillSelected({ hasPill: hasOnDemandPill, choice: onDemandChoice, routeCount: routes.length });
-  const grouped = FEATURES.dataSourceLink;
   const reportButton = (
     <CardReportButton
       title={`Agency issue: ${agency.name}`}
@@ -404,7 +414,6 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
       ? service.features.find(feature => (feature.properties as { areaName?: string } | undefined)?.areaName === onDemandZoneId)
       : undefined;
     const zoneName = (selectedZone?.properties as { areaName?: string } | undefined)?.areaName;
-    const zoneDisplayName = zoneName?.replace(/\s+Area$/, '');
     const zone = resolveOnDemandZone(service, zoneName);
     const serviceName = zone.serviceName ?? service.serviceName ?? agencyNamePrimary;
     const pickupSentence = onDemandPickupSentence(service, zoneName);
@@ -413,80 +422,79 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
       ? true
       : service.features.some(feature => resolveOnDemandZone(service, (feature.properties as { areaName?: string } | undefined)?.areaName).sameServiceAsParent);
     const runningNote = onDemandRunningNote(zone.availability, day, period);
+    const backToAgency = onBackToAgency && (onDemandZoneId || !agency.onDemandOnly) ? onBackToAgency : undefined;
     return (
       <Panel
         ref={ref}
         data-report-anchor="true"
         sidebar
         enter
-        className="max-h-[calc(100vh-104px)]"
-        style={{
-          top: 80, // main's offset (the shared sidebar anchor sits 12px higher)
-          '--sidebar-left': `${sidebarLeft ?? SIDEBAR_LEFT_FALLBACK}px`,
-          ...(searchBarWidth ? { width: `${searchBarWidth}px`, maxWidth: 'none' } : {}),
-        } as React.CSSProperties}
+        style={sidebarFrameStyle(sidebarLeft, searchBarWidth)}
       >
         <div className={CARD_HEADER_BLOCK}>
-          <p className={`${CARD_TITLE} mb-0`}>{[serviceName, zoneDisplayName].filter(Boolean).join(' — ')}</p>
-          <p className={CARD_SUMMARY}>
-            {[agencyNamePrimary, agencyNameSecondary].filter(Boolean).join(' · ')}
-          </p>
+          {backToAgency ? (
+            // A zone (or a fixed-route agency's service) reads like a route card: "← Agency" back to the agency
+            // card, then the bold zone name (Ryan: "the on demand should be closer to the route card").
+            <SidebarCardHeader title={onDemandCardName(service, onDemandZoneId, agencyNamePrimary)} back={{ to: agencyNamePrimary, onClick: backToAgency }} />
+          ) : (
+            // An on-demand-only agency's whole-service card is its agency card: the shared agency heading, the agency below.
+            <>
+              <AgencyCardHeading name={onDemandCardName(service, onDemandZoneId, agencyNamePrimary)} place={agencyNameSecondary} className="mb-0" />
+              {serviceName !== agencyNamePrimary && <p className={CARD_SUMMARY}>{agencyNamePrimary}</p>}
+            </>
+          )}
           {FEATURES.dataSourceLink && agency.websiteUrl && (
             <p className="mt-1 text-xs"><AgencyDataSourceLink agency={agency} /></p>
           )}
         </div>
-        <div className="flex-1 overflow-y-auto custom-scrollbar px-4 py-4 space-y-4">
+        {/* Every section sits at the body padding, the same left edge as the header. */}
+        <PanelBody className="px-4 py-4 space-y-4">
           <div>
-            <p className="text-xs font-black text-[var(--text-dim)]">On-demand service</p>
+            <CardSectionLabel>On-demand service</CardSectionLabel>
             {showsShadedArea && (
-              <p className="text-xs leading-relaxed text-[var(--text-muted)] mt-1">
+              <CardBodyText>
                 The shaded map area shows where this on-demand service operates.
-              </p>
+              </CardBodyText>
             )}
             {pickupSentence && (
-              <p className="text-xs leading-relaxed text-[var(--text-muted)] mt-1">{pickupSentence}</p>
+              <CardBodyText>{pickupSentence}</CardBodyText>
             )}
             {coverageNote?.kind === 'partly-mapped' && (
-              <p className="text-xs leading-relaxed text-[var(--text-muted)] mt-1">Not on the map yet: {coverageNote.missing}.</p>
+              <CardBodyText>Not on the map yet: {coverageNote.missing}.</CardBodyText>
             )}
           </div>
           {zone.eligibility && (
-            <div className="px-1">
-              <p className="text-xs font-black text-[var(--text-dim)]">Who can ride</p>
-              <p className="text-xs leading-relaxed text-[var(--text-muted)] mt-1">{zone.eligibility}</p>
+            <div>
+              <CardSectionLabel>Who can ride</CardSectionLabel>
+              <CardBodyText>{zone.eligibility}</CardBodyText>
             </div>
           )}
           {zone.tripRules && (
-            <div className="px-1">
-              <p className="text-xs font-black text-[var(--text-dim)]">Trip rules</p>
-              <p className="text-xs leading-relaxed text-[var(--text-muted)] mt-1">{zone.tripRules}</p>
+            <div>
+              <CardSectionLabel>Trip rules</CardSectionLabel>
+              <CardBodyText>{zone.tripRules}</CardBodyText>
             </div>
           )}
-          <div className="px-1">
-            <p className="text-xs font-black text-[var(--text-dim)]">Service hours</p>
-            <p
-              className="text-xs leading-relaxed text-[var(--text-muted)] mt-1"
-              data-testid="on-demand-running-note"
-            >
-              {runningNote}
-            </p>
+          <div>
+            <CardSectionLabel>Service hours</CardSectionLabel>
+            <CardBodyText data-testid="on-demand-running-note">{runningNote}</CardBodyText>
             <OnDemandHoursText
               availability={zone.availability}
               serviceHours={zone.serviceHours}
               day={day}
-              className="text-xs leading-relaxed text-[var(--text-muted)] mt-1"
+              className={CARD_BODY_TEXT}
             />
             {zone.availability && zone.hoursNote && (
               <p className="text-xs leading-snug text-[var(--text-dim)] mt-1">{zone.hoursNote}</p>
             )}
           </div>
           {zone.bookingInfo && (
-            <div className="px-1">
-              <p className="text-xs font-black text-[var(--text-dim)]">Booking</p>
-              <p className="text-xs leading-relaxed text-[var(--text-muted)] mt-1">{zone.bookingInfo}</p>
+            <div>
+              <CardSectionLabel>Booking</CardSectionLabel>
+              <CardBodyText>{zone.bookingInfo}</CardBodyText>
             </div>
           )}
-        </div>
+        </PanelBody>
       </Panel>
     );
   }
@@ -497,61 +505,35 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
       data-report-anchor="true"
       sidebar
       enter
-      className="max-h-[calc(100vh-104px)]"
-      style={{
-        top: 80, // main's offset (the shared sidebar anchor sits 12px higher)
-          '--sidebar-left': `${sidebarLeft ?? SIDEBAR_LEFT_FALLBACK}px`,
-        ...(searchBarWidth ? { width: `${searchBarWidth}px`, maxWidth: 'none' } : {}),
-      } as React.CSSProperties}
+      style={sidebarFrameStyle(sidebarLeft, searchBarWidth)}
     >
       <div className={CARD_HEADER_BLOCK}>
-        {/* grouped (beta, with the Data source link): the area link is a chip, About + Data source share a row, and the report flag
-            floats in the corner so the chip can use the full header width. Otherwise the header is exactly as it was. */}
-        <div className={grouped ? 'relative min-w-0' : 'flex items-start gap-2 min-w-0'}>
-          <div className={grouped ? 'min-w-0' : 'min-w-0 flex-1'}>
-            <p className={`${CARD_TITLE} mb-0${grouped ? ' pr-7' : ''}`}>{agencyNamePrimary}</p>
+        <div className="flex items-start gap-2 min-w-0">
+          <div className="min-w-0 flex-1">
+            <AgencyCardHeading name={agencyNamePrimary} place={agencyNameSecondary} className="mb-0" />
+          <p className={CARD_SUMMARY}>
+            {agency.onDemandOnly ? 'On-demand service' : buildHeaderSummary(visibleRoutes, maxHeadway)}
+          </p>
           {(() => {
+            // One row of links (CIV-841): "About →", "Source →", then the area. The map is a different page from
+            // the About and area pages, so they open in a new tab like the outside Source link.
             const hasAboutPage = FEATURES.agencyPages && (agencyPageSlugs as string[]).includes(agency.slug);
             const area = hasAboutPage ? areaLinkFor(agency.slug, FEATURES.agencyPages) : null;
-            const summary = (
-              <p className={`${CARD_SUMMARY}${grouped ? ' pr-7' : ''}`}>
-                {agency.onDemandOnly
-                  ? [agencyNameSecondary, 'On-demand service'].filter(Boolean).join(' · ')
-                  : [agencyNameSecondary, buildHeaderSummary(visibleRoutes, maxHeadway)].filter(Boolean).join(' · ')}
-              </p>
-            );
-            if (!grouped) {
-              return (
-                <>
-                  {summary}
-                  {hasAboutPage && (
-                    <p className="mt-1 flex flex-wrap gap-x-3 text-xs">
-                      <ArrowLink size="xs" tone="inline" href={agencyPagePath(agency.slug)}>About this agency</ArrowLink>
-                      {area && <ArrowLink size="xs" tone="inline" wrap href={area.href}>{area.label}</ArrowLink>}
-                    </p>
-                  )}
-                </>
-              );
-            }
+            const areaLabel = area ? approvedAreaLabel(area.href) : null;
+            const hasSource = FEATURES.dataSourceLink && !!agency.websiteUrl;
+            if (!hasAboutPage && !hasSource && !areaLabel) return null;
             return (
-              <>
-                <div className="flex flex-wrap items-baseline gap-x-2">
-                  {summary}
-                  {area && <AgencyAreaChip href={area.href} label={area.label} />}
-                </div>
-                {(hasAboutPage || agency.websiteUrl) && (
-                  <p className="mt-1 flex flex-wrap gap-x-3 text-xs">
-                    {hasAboutPage && <ArrowLink size="xs" tone="inline" href={agencyPagePath(agency.slug)}>About this agency</ArrowLink>}
-                    <AgencyDataSourceLink agency={agency} />
-                  </p>
-                )}
-              </>
+              <p className="mt-1 flex flex-wrap gap-x-3 text-xs">
+                {hasAboutPage && <ArrowLink size="xs" tone="inline" href={agencyPagePath(agency.slug)} target="_blank" rel="noopener noreferrer">About</ArrowLink>}
+                <AgencyDataSourceLink agency={agency} />
+                {area && areaLabel && <ArrowLink size="xs" tone="inline" href={area.href} target="_blank" rel="noopener noreferrer">{areaLabel}</ArrowLink>}
+              </p>
             );
           })()}
           {!agency.onDemandOnly && agency.onDemandServiceArea?.serviceName && (
             <div className="mt-2 border-t border-[var(--border-primary)] pt-2">
               <div className="flex items-baseline justify-between gap-2">
-                <p className="text-xs font-black text-[var(--accent)]">On-demand service</p>
+                <CardSectionLabel flush>On-demand service</CardSectionLabel>
                 {agency.onDemandServiceArea.sourceUrl && (
                   <ArrowLink as={OutboundLink} size="xs" tone="inline" href={agency.onDemandServiceArea.sourceUrl} kind="on_demand_source" agencySlug={agency.slug} className="shrink-0">
                     Details
@@ -587,19 +569,11 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
             </div>
           )}
           {(routeFilters.length > 0 || hasOnDemandPill) && (
-            <div className="flex flex-wrap gap-1.5 mt-2">
-              {routeFilters.map(f => {
-                const on = !onDemandOn && activeFilter === f.key;
-                return (
-                  <ModeFilterPill
-                    key={f.key}
-                    onClick={() => { setOnDemandChoice(false); setActiveFilter(on ? null : f.key); }}
-                    selected={on}
-                    label={f.label}
-                    count={f.count}
-                  />
-                );
-              })}
+            <ModeFilterPillRow
+              filters={routeFilters}
+              selected={onDemandOn ? null : activeFilter}
+              onSelect={key => { setOnDemandChoice(false); setActiveFilter(key); }}
+            >
               {hasOnDemandPill && (
                 <Pill
                   onClick={() => { setActiveFilter(null); setOnDemandChoice(!onDemandOn); }}
@@ -609,7 +583,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
                   {ON_DEMAND_PILL_LABEL}
                 </Pill>
               )}
-            </div>
+            </ModeFilterPillRow>
           )}
           {(agency.feedReviewStatus === 'review' || agency.overrideNote || rolloutNotice) && onInfoOpen && (
             <div className={`${CARD_NOTICE_FOOTER} space-y-1`}>
@@ -653,7 +627,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
             </div>
           )}
           </div>
-          {grouped ? <div className="absolute right-0 top-0">{reportButton}</div> : reportButton}
+          {reportButton}
         </div>
       </div>
 

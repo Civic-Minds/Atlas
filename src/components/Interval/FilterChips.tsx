@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { Search } from 'lucide-react';
 import { HEADWAY_TIERS, getTierColor } from '../../utils/colors';
-import { FLOATING_CARD, GLASS_PILL, PANEL_ENTER_TOP, CONTROL_ACTIVE, CONTROL_ACTIVE_GLASS, CONTROL_INACTIVE, SEARCH_PILL, SEARCH_ICON, SEARCH_FIELD } from '../../styles';
+import { FLOATING_CARD, GLASS_PILL, PILL_SURFACE, PANEL_ENTER_TOP, CONTROL_ACTIVE, CONTROL_ACTIVE_GLASS, CONTROL_INACTIVE, SEARCH_PILL, SEARCH_ICON, SEARCH_FIELD } from '../../styles';
 import Pill from '../ui/Pill';
 import type { Agency } from '../../App';
 import { PERIOD_LABELS, PERIOD_KEYS } from '../../hooks/useIntervalStats';
@@ -16,10 +16,11 @@ import { modesForView } from '../../../shared/viewLayers';
 import { DAY_TYPES, getNowDay, type DayType } from '../../../shared/dayTypes';
 import type { FrequentServiceFrequency, FrequentServiceWindow } from '../../../shared/frequentService';
 import type { NightServiceFrequency } from '../../../shared/nightService';
-import { useColorVision } from '../../context/ColorVisionContext';
+import { useColorMode } from '../../hooks/useColorMode';
 import ArrowLink from '../ui/ArrowLink';
 import LegendItem from '../ui/LegendItem';
 import { DayPicker, FrequencyPicker, PeriodPicker, PickerSection, useFrequencyOptions } from './pickers';
+import { SideBadge } from '../ui/SideBadge';
 import PanelEmpty from '../ui/PanelEmpty';
 import AgencyName from '../ui/AgencyName';
 import { capitalizeFirst, headwayAmount, headwayBandLabel, headwayOrBetter, headwayTierLabel } from '../../utils/headwayText';
@@ -250,8 +251,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
   groupLabel,
 }) => {
   const compactTopBar = useMediaQuery(COMPACT_TOP_BAR_QUERY);
-  const { colorVisionFriendly } = useColorVision();
-  const colorMode = colorVisionFriendly ? 'friendly' : 'default';
+  const colorMode = useColorMode();
   const [openChip, setOpenChip] = useState<ChipId | null>(null);
   const [agencyQuery, setAgencyQuery] = useState('');
   const agencySearchRef = useRef<HTMLInputElement>(null);
@@ -490,8 +490,8 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
   if (variant === 'shared') {
     return (
       <div ref={rowRef} className="flex items-center gap-2" role="group" aria-label="Filters for both maps">
-        <span title={compactTopBar ? 'Both maps' : undefined} className="h-8 px-3 flex items-center gap-1.5 rounded-full bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] text-xs font-bold text-[var(--text-primary)] whitespace-nowrap">
-          <span className="inline-flex h-4 px-1 items-center justify-center rounded-full bg-[var(--text-primary)] text-2xs font-black text-[var(--bg-panel)]" aria-hidden="true">A+B</span>
+        <span title={compactTopBar ? 'Both maps' : undefined} className={`${PILL_SURFACE} px-3 gap-1.5 text-xs font-bold text-[var(--text-primary)] whitespace-nowrap`}>
+          <SideBadge side="A+B" />
           {!compactTopBar && 'Both maps'}
         </span>
         {modeChip('')}

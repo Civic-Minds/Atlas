@@ -1,7 +1,8 @@
 import React from 'react';
 import { routeLabels } from '../../../utils/format';
-import { FLOATING_CARD, PANEL_ENTER, LIST_ROW_PRIMARY } from '../../../styles';
+import { PANEL_ENTER, LIST_ROW_PRIMARY, SIDEBAR_CARD_SURFACE } from '../../../styles';
 import ListRow from '../../ui/ListRow';
+import AgencyGroupHeader from '../../ui/AgencyGroupHeader';
 
 export interface DisambigRoute {
   key: string;
@@ -32,18 +33,17 @@ export const DisambiguationPanel: React.FC<DisambiguationPanelProps> = ({
   }
 
   return (
-    <div className={`${FLOATING_CARD} ${PANEL_ENTER} max-h-[380px] overflow-y-auto custom-scrollbar`}>
+    <div className={`${SIDEBAR_CARD_SURFACE} ${PANEL_ENTER} max-h-[380px] overflow-y-auto custom-scrollbar`}>
       <div>
         {groups.map(g => (
           <div key={g.agencyName}>
             {g.agencyName && (
-              <div className="px-4 pt-2.5 pb-1">
-                <span className="text-xs font-black tracking-wide text-[var(--text-dim)]">{g.agencyName}</span>
-              </div>
+              <AgencyGroupHeader rule="none">{g.agencyName}</AgencyGroupHeader>
             )}
             {g.routes.map(r => (
               <ListRow
                 key={r.key}
+                variant="spaced"
                 onClick={() => { setSelectedRoute(r.key); setDisambiguationRoutes(null); }}
               >
                 <div className="min-w-0 flex-1 flex items-center gap-2">
