@@ -43,6 +43,7 @@ export const DisambiguationPanel: React.FC<DisambiguationPanelProps> = ({
             {g.routes.map(r => (
               <ListRow
                 key={r.key}
+                variant="spaced"
                 onClick={() => { setSelectedRoute(r.key); setDisambiguationRoutes(null); }}
               >
                 <div className="min-w-0 flex-1 flex items-center gap-2">

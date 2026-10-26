@@ -14,6 +14,7 @@ interface RouteListRowProps {
   onHoverChange?: (hovered: boolean) => void;
   selected?: boolean;
   stacked?: boolean;
+  /** Route lists are spaced, with no line between rows (CIV-922); 'divided' keeps the hairline. */
   variant?: 'divided' | 'spaced';
   className?: string;
 }
@@ -28,7 +29,7 @@ export default function RouteListRow({
   onHoverChange,
   selected = false,
   stacked = false,
-  variant = 'divided',
+  variant = 'spaced',
   className
 }: RouteListRowProps) {
   const fullName = name && name !== shortName ? `${shortName} ${name}` : shortName;

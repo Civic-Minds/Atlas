@@ -44,6 +44,7 @@ export const NearbyRoutesPanel = forwardRef<HTMLDivElement, NearbyRoutesPanelPro
           {routes.map(r => (
             <ListRow
               key={r.rKey}
+              variant="spaced"
               onClick={() => setSelectedRoute(r.rKey)}
             >
               <div className="flex flex-col min-w-0 flex-1 gap-0.5">

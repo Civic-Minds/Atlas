@@ -139,7 +139,6 @@ export const SearchSuggestionsPanel: React.FC<SearchSuggestionsPanelProps> = ({
                       })()}
                       stacked
                       onClick={() => pickRoute(r.key)}
-                      className="border-b-0"
                     />
                   );
                 })}
@@ -163,7 +162,6 @@ export const SearchSuggestionsPanel: React.FC<SearchSuggestionsPanelProps> = ({
                       right={routeRowRight(r.agencyName, r.headway, true, r.limited, r.sharedHeadway, r.noRegular)}
                       stacked
                       onClick={() => pickRoute(r.key)}
-                      className="border-b-0"
                     />
                   );
                 })}
