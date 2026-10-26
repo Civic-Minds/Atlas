@@ -144,6 +144,24 @@ describe('routeFacts', () => {
   });
 });
 
+describe('route facts label short name (#1099)', () => {
+  it('labels a route with no short name by its long name, but keeps the route ID as its identity', () => {
+    const facts = buildRouteFacts({
+      routeId: '_Route 13_FXBGO! Central to Wegmans/ Central Park_FFFAAB1C',
+      directionId: 0,
+      routeShortName: '',
+      routeLongName: 'Route 13',
+      agencyName: 'fred-transit',
+    } as any);
+    expect(facts.shortName).toBe('_Route 13_FXBGO! Central to Wegmans/ Central Park_FFFAAB1C');
+    expect(facts.labelShortName).toBe('');
+  });
+  it('falls back to the route ID only when the route has no name at all', () => {
+    expect(buildRouteFacts({ routeId: '900', directionId: 0, routeShortName: null, routeLongName: null, agencyName: 'TTC' } as any).labelShortName).toBe('900');
+    expect(buildRouteFacts({ routeId: 'x1', directionId: 0, routeShortName: '501', routeLongName: 'Queen', agencyName: 'TTC' } as any).labelShortName).toBe('501');
+  });
+});
+
 describe('route facts cache (CIV-218)', () => {
   const base = { routeId: '10', routeShortName: '10', directionId: 0, headsign: 'Victoria Park', day: 'Weekday', tier: '30', headway: 30,
     headwayByPeriod: { midday: 30 } } as any;

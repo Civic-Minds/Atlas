@@ -84,6 +84,17 @@ export function withoutRepeatedShortName(primary: string, secondary: string | un
   return { primary, secondary: rest };
 }
 
+/**
+ * A long name that ends with the short name plus "Line" names the line: "SILVER LINE" on route SILVER, and "DART LIGHT RAIL -
+ * GREEN LINE" on route GREEN, where the words before it only repeat the agency and mode. Returns "<short> Line", or null.
+ * A number never counts ("5 Line" on route 5 keeps the number rules).
+ */
+export function lineNamedByShortName(shortName: string | null | undefined, longName: string | null | undefined): string | null {
+  const short = shortName?.trim();
+  if (!short || !longName || /^\d+$/.test(short)) return null;
+  return longName.trim().match(new RegExp(`^(?:.*\\S\\s+[-–—:]?\\s*)?(${escapeRe(short)}\\s+line)$`, 'iu'))?.[1] ?? null;
+}
+
 export function routeDisplay(input: {
   shortName: string | null | undefined;
   longName: string | null | undefined;
@@ -107,11 +118,16 @@ export function routeDisplay(input: {
     return !!d && /^(?:Line|Ligne)\s+/i.test(d.designator) && d.designator.replace(/^\S+\s+/, '').toLowerCase() === shortName.trim().replace(/^0+(?=\d)/, '').toLowerCase();
   })();
   if (longName && (blankShort || lineNamedByLongName || shouldHideNumericRouteShortName(shortName, longName, mode))) {
-    const cleaned = routeLabelParts(null, longName, agencyName).primary.replace(/\s+via\s+.+$/i, '').trim();
+    // With no short name, "via ..." is what tells two routes apart (Orillia "West Ridge Via Old Barrie Road" and "... Via
+    // Coldwater Road"), so it stays; a hidden id has a short name to fall back on.
+    const named = routeLabelParts(null, longName, agencyName).primary;
+    const cleaned = (blankShort ? named : named.replace(/\s+via\s+.+$/i, '')).trim();
     const d = splitDesignator(cleaned);
     const primary = d ? d.designator : cleaned;
     return { primary, secondary: d?.rest, text: d ? `${d.designator} — ${d.rest}` : cleaned };
   }
+  const lineName = lineNamedByShortName(shortName, longName);
+  if (lineName) return { primary: lineName, text: lineName };
   const parts = routeLabelParts(shortName, longName, agencyName);
   // A letter code the card title leaves out ("MI" for Milton) stays as the bold part of a list row.
   if (parts.shortCode) {

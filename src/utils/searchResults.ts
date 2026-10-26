@@ -288,7 +288,7 @@ export function searchRouteResults(
       const facts = buildRouteFacts(p);
       return {
         key,
-        routeShortName: facts.shortName,
+        routeShortName: facts.labelShortName,
         routeLongName: facts.longName,
         agencyName: facts.agencyName,
         routeType: (p as { routeType?: number }).routeType,

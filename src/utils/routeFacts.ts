@@ -214,7 +214,10 @@ export interface RouteFacts {
   agencySlug: string;
   agencyName: string;
   routeId: string;
+  /** The route's identity in lists and groups: the feed's short name, or the route ID when it has none. Not for labels. */
   shortName: string;
+  /** The short name a label shows: the feed's own, or the route ID only when the route has no name at all (#1099). */
+  labelShortName: string;
   longName: string | null;
   directionId: number;
   headsign: string | null;
@@ -245,6 +248,7 @@ function computeRouteFacts(p: ShapeProperties, agencySlug?: string): RouteFacts 
     agencyName: p.agencyName || resolvedAgencySlug,
     routeId,
     shortName: p.routeShortName || routeId,
+    labelShortName: p.routeShortName || (p.routeLongName ? '' : routeId),
     longName: p.routeLongName || null,
     directionId: p.directionId ?? 0,
     headsign: p.headsign ?? null,
