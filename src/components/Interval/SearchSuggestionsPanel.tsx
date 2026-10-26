@@ -17,6 +17,8 @@ export interface RecentRoute {
   /** The feed's raw route_type, when known (lets a numeric id hide the same way as on the agency page). */
   routeType?: number;
   shortName: string;
+  /** The short name the label shows; blank when the feed has none but has a long name (#1099). Defaults to shortName. */
+  labelShortName?: string;
   longName: string | null;
   agencyName: string;
 }
@@ -25,6 +27,8 @@ export interface SuggestedRoute {
   key: string;
   routeType?: number;
   shortName: string;
+  /** The short name the label shows; blank when the feed has none but has a long name (#1099). Defaults to shortName. */
+  labelShortName?: string;
   longName: string | null;
   agencyName: string;
   headway?: number | null;
@@ -127,7 +131,7 @@ export const SearchSuggestionsPanel: React.FC<SearchSuggestionsPanelProps> = ({
               </div>
               <div>
                 {recentlyViewed.map((r) => {
-                  const labels = routeRowLabels({ shortName: r.shortName, longName: r.longName, routeType: r.routeType, agencySlug: splitRouteKey(r.key).agencySlug, agencyName: r.agencyName });
+                  const labels = routeRowLabels({ shortName: r.labelShortName ?? r.shortName, longName: r.longName, routeType: r.routeType, agencySlug: splitRouteKey(r.key).agencySlug, agencyName: r.agencyName });
                   return (
                     <RouteListRow
                       key={r.key}
@@ -153,7 +157,7 @@ export const SearchSuggestionsPanel: React.FC<SearchSuggestionsPanelProps> = ({
               </div>
               <div>
                 {suggestedRoutes.map((r) => {
-                  const labels = routeRowLabels({ shortName: r.shortName, longName: r.longName, routeType: r.routeType, agencySlug: splitRouteKey(r.key).agencySlug, agencyName: r.agencyName });
+                  const labels = routeRowLabels({ shortName: r.labelShortName ?? r.shortName, longName: r.longName, routeType: r.routeType, agencySlug: splitRouteKey(r.key).agencySlug, agencyName: r.agencyName });
                   return (
                     <RouteListRow
                       key={r.key}

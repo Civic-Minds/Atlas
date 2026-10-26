@@ -9,6 +9,8 @@ import RouteRowName from '../../RouteRowName';
 export interface DisambigRoute {
   key: string;
   shortName: string;
+  /** The short name the label shows; blank when the feed has none but has a long name (#1099). Defaults to shortName. */
+  labelShortName?: string;
   longName: string;
   agencyName: string;
   agencySlug?: string;
@@ -47,7 +49,7 @@ export const DisambiguationPanel: React.FC<DisambiguationPanelProps> = ({
               <AgencyGroupHeader rule="none">{g.agencyName}</AgencyGroupHeader>
             )}
             {g.routes.map(r => {
-              const label = routeLabels({ shortName: r.shortName, longName: r.longName, routeType: r.routeType, agencySlug: r.agencySlug, agencyName: r.agencyName });
+              const label = routeLabels({ shortName: r.labelShortName ?? r.shortName, longName: r.longName, routeType: r.routeType, agencySlug: r.agencySlug, agencyName: r.agencyName });
               return (
               <ListRow
                 key={r.key}

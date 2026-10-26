@@ -100,7 +100,12 @@ describe('routeDisplay', () => {
   it('names a line once when the long name ends with the short name plus "Line" (#1100)', () => {
     expect(d('GREEN', 'DART LIGHT RAIL - GREEN LINE', 0).text).toBe('GREEN LINE'); // routeLabels title-cases it: "Green Line"
     expect(d('SILVER', 'SILVER LINE', 2).text).toBe('SILVER LINE');
-    expect(d('A', 'Valley Metro Rail A Line', 0).text).toBe('A Line');
+    expect(d('A', 'Valley Metro Rail A Line', 0, 'Valley Metro (Phoenix)').text).toBe('A Line'); // the words before it start with the agency's name
+    expect(routeDisplay({ shortName: 'North', longName: 'Bustang North Line', routeType: 3, agencySlug: 'bustang' }).text).toBe('North Line');
+    // Other words before it can be part of the name, so they stay.
+    expect(d('Coast', 'Gold Coast Line', 3).text).not.toBe('Coast Line');
+    expect(d('Blue', 'Shuttle to Blue Line', 3).text).not.toBe('Blue Line');
+    expect(d('A', 'Rapid A Line', 3, 'MARTA (Atlanta)').text).not.toBe('A Line');
     expect(d('NS', 'Portland Streetcar - NS Line', 0).text).toBe('NS Line');
     // Unchanged: the line word before the letter, a number, and a name that only contains the short name.
     expect(d('E', 'Green Line E', 0).text).toBe('Green Line E');

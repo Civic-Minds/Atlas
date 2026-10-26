@@ -156,7 +156,7 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({
       elsewhere={routeSections.elsewhere}
       itemKey={(r: RouteSearchResult) => r.key}
       renderItem={(r: RouteSearchResult) => {
-        const labels = routeRowLabels({ shortName: r.routeShortName ?? '', longName: r.routeLongName, routeType: r.routeType, agencySlug: splitRouteKey(r.key).agencySlug, agencyName: r.agencyName });
+        const labels = routeRowLabels({ shortName: r.routeLabelShortName ?? r.routeShortName ?? '', longName: r.routeLongName, routeType: r.routeType, agencySlug: splitRouteKey(r.key).agencySlug, agencyName: r.agencyName });
         const name = r.variantCount && r.variantCount > 1
           ? `${labels.name ? `${labels.name} · ` : ''}${r.variantCount} variants`
           : labels.name;
