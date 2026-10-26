@@ -7,6 +7,7 @@ import type { NearbyRoute } from '../../hooks/useNearbyRoutes';
 import { NEARBY_PANEL_SLOT, PANEL_TITLE } from '../../styles';
 import Panel, { PanelBody, PanelTitleBar } from '../ui/Panel';
 import ListRow from '../ui/ListRow';
+import { ROUTE_ROW_NAME } from '../RouteRowName';
 import PanelEmpty from '../ui/PanelEmpty';
 import { loadingText } from '../../content/stateCopy';
 
@@ -56,8 +57,9 @@ export const NearbyRoutesPanel = forwardRef<HTMLDivElement, NearbyRoutesPanelPro
                   ) : null}
                   {/* The name takes the row's free width and wraps between words, like the route card's direction rows;
                       it sizes to its text and never splits a word (its narrowest is its longest word), so the badge sits beside a name that fits and moves to the next line only when it can't. */}
+                  {/* The list rule (CIV-928): the name after a number is the light weight, in its own colour. */}
                   <span className={r.displayShortName
-                    ? 'flex-auto text-xs leading-snug font-bold text-[var(--text-muted)]'
+                    ? `flex-auto text-xs leading-snug ${ROUTE_ROW_NAME}`
                     : 'flex-auto text-xs leading-snug font-black text-[var(--text-primary)]'}
                     title={r.routeLongName || r.agencyName}>
                     {r.routeLongName || r.agencyName}

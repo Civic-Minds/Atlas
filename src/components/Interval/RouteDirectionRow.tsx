@@ -6,9 +6,13 @@ import { shouldShowBranchHeadwayRange } from '../../utils/routeCardTrunk';
 import { headwayToTierColor } from './HeadwaySparkline';
 import { useColorMode } from '../../hooks/useColorMode';
 import { HeadwayBadge, LimitedBadge } from './cardUi';
+import RouteRowName from '../RouteRowName';
 
 interface Props {
   label: string;
+  /** In a route list: the route's number and name, drawn as the list rule says ("**504** King", CIV-928) in place of `label`.
+   *  Direction rows ("to Broadview") leave it out. */
+  routeName?: { shortName: string; name?: string | null };
   // Regular service
   headway?: number | null;
   colorHeadway?: number | null;
@@ -44,7 +48,7 @@ interface Props {
  * Owns label color, headway display, and limited-service variants
  * so there's one place to change instead of hunting across SidebarControls.
  */
-export default function RouteDirectionRow({ label, headway, colorHeadway, headwayLabel, trunkHeadway, headwaySuffix, headwaySuffixTone, subLabel, subLabelWeight = 'bold', live, limited, limitedLabel = 'limited', edgeGapAllowance, onEdgeGapAllowanceClick, dimmed, onHoverStart, onHoverEnd, branchHovered, branchDimmed, onClick, holdLayout = false }: Props) {
+export default function RouteDirectionRow({ label, routeName, headway, colorHeadway, headwayLabel, trunkHeadway, headwaySuffix, headwaySuffixTone, subLabel, subLabelWeight = 'bold', live, limited, limitedLabel = 'limited', edgeGapAllowance, onEdgeGapAllowanceClick, dimmed, onHoverStart, onHoverEnd, branchHovered, branchDimmed, onClick, holdLayout = false }: Props) {
   const colorMode = useColorMode();
   const interactive = !!(onHoverStart && onHoverEnd);
   const clickable = !!onClick;
@@ -82,7 +86,7 @@ export default function RouteDirectionRow({ label, headway, colorHeadway, headwa
     >
       <div className="flex flex-wrap items-start justify-between gap-2">
         <span className={`font-bold flex-1 min-w-[6rem] leading-snug break-words ${clickable ? '' : 'text-[var(--text-primary)]'}`}>
-          {label}
+          {routeName ? <RouteRowName shortName={routeName.shortName} name={routeName.name} /> : label}
         </span>
         {hasValueCell && <span ref={valueRef} style={held.value} className="inline-flex items-center justify-end gap-2 shrink-0">
           {edgeGapAllowance && (

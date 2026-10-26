@@ -317,7 +317,7 @@ function RouteListSection({
 }) {
   const rows = routes.map(r => ({
     key: `${r.agencySlug}::${r.routeId}`,
-    label: routeLabels({ shortName: r.shortName, longName: r.longName, routeType: r.routeType, agencySlug: r.agencySlug }).text,
+    route: routeLabels({ shortName: r.shortName, longName: r.longName, routeType: r.routeType, agencySlug: r.agencySlug }),
     headway: r.headway ?? undefined,
     headwayLabel: r.headway != null && r.sharedHeadway != null ? headwayEveryRange(r.sharedHeadway, r.headway) : undefined,
     limited: r.limited || r.noRegular === true,

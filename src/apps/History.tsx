@@ -522,7 +522,7 @@ function HistoryAgencyPanel({
             const delta = value.kind === 'value' && before?.kind === 'value' ? value.min - before.min : 0;
             return {
               key: route.routeShortName,
-              label: routeLabels({ shortName: route.routeShortName, longName: titleCase(route.routeName), routeType: route.currentRouteType ?? undefined, agencySlug: agencyHistory.slug }).text,
+              route: routeLabels({ shortName: route.routeShortName, longName: titleCase(route.routeName), routeType: route.currentRouteType ?? undefined, agencySlug: agencyHistory.slug }),
               headway: value.kind === 'value' ? value.min : undefined,
               limited: value.kind === 'limited',
               headwaySuffix: delta ? (delta > 0 ? `+${delta}` : `${delta}`) : undefined,

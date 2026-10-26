@@ -4,6 +4,7 @@ import { PANEL_ENTER, LIST_ROW_PRIMARY, SIDEBAR_CARD_SURFACE } from '../../../st
 import ListRow from '../../ui/ListRow';
 import AgencyGroupHeader from '../../ui/AgencyGroupHeader';
 import { CardBackLink } from '../../CardBack';
+import RouteRowName from '../../RouteRowName';
 
 export interface DisambigRoute {
   key: string;
@@ -45,7 +46,9 @@ export const DisambiguationPanel: React.FC<DisambiguationPanelProps> = ({
             {g.agencyName && (
               <AgencyGroupHeader rule="none">{g.agencyName}</AgencyGroupHeader>
             )}
-            {g.routes.map(r => (
+            {g.routes.map(r => {
+              const label = routeLabels({ shortName: r.shortName, longName: r.longName, routeType: r.routeType, agencySlug: r.agencySlug, agencyName: r.agencyName });
+              return (
               <ListRow
                 key={r.key}
                 variant="spaced"
@@ -54,11 +57,12 @@ export const DisambiguationPanel: React.FC<DisambiguationPanelProps> = ({
                 <div className="min-w-0 flex-1 flex items-center gap-2">
                   <span className="w-2 h-2 rounded-full shrink-0" style={{ background: r.color }} />
                   <span className={LIST_ROW_PRIMARY}>
-                    {routeLabels({ shortName: r.shortName, longName: r.longName, routeType: r.routeType, agencySlug: r.agencySlug, agencyName: r.agencyName }).text}
+                    <RouteRowName shortName={label.primary} name={label.secondary} />
                   </span>
                 </div>
               </ListRow>
-            ))}
+              );
+            })}
           </div>
         ))}
       </div>

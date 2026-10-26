@@ -1,6 +1,7 @@
 import React from 'react';
-import { LIST_ROW_PRIMARY, LIST_ROW_DIM, SELECTION_ACTIVE_TEXT } from '../styles';
+import { LIST_ROW_PRIMARY, SELECTION_ACTIVE_TEXT } from '../styles';
 import ListRow from './ui/ListRow';
+import RouteRowName from './RouteRowName';
 
 interface RouteListRowProps {
   shortName: string;
@@ -35,10 +36,7 @@ export default function RouteListRow({
   const fullName = name && name !== shortName ? `${shortName} ${name}` : shortName;
   const label = (
     <p className={`${LIST_ROW_PRIMARY} line-clamp-2 break-words ${selected ? SELECTION_ACTIVE_TEXT : ''}`} title={fullName}>
-      <span>{shortName}</span>
-      {name && name !== shortName && (
-        <span className={`font-normal ${LIST_ROW_DIM} ml-1.5`}>{name}</span>
-      )}
+      <RouteRowName shortName={shortName} name={name} />
     </p>
   );
   return (

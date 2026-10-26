@@ -170,10 +170,12 @@ export const StopCard: React.FC<StopCardProps> = ({
       {nearbyConnections.length > 0 && (
         <SidebarCardSection label="Nearby routes">
           {nearbyConnections.map(({ rKey, routeShortName, routeLongName, agencyName, agencySlug, routeType, headway, nearestStopName, distanceMeters }) => {
+            const route = routeLabels({ shortName: routeShortName, longName: routeLongName, routeType, agencySlug, agencyName });
             return (
               <CardDirectionRow
                 key={rKey}
-                label={routeLabels({ shortName: routeShortName, longName: routeLongName, routeType, agencySlug, agencyName }).text}
+                label={route.text}
+                routeName={{ shortName: route.primary, name: route.secondary }}
                 subLabel={`${nearestStopName} · ${Math.round(distanceMeters)} m away`}
                 subLabelWeight="medium"
                 headway={headway ?? undefined}

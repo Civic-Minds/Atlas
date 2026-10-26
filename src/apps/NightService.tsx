@@ -1,17 +1,14 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Moon } from 'lucide-react';
 import { useViewport } from '../context/ViewportContext';
-import {
-  PANEL_TITLE,
-  LIST_ROW_DIM,
-} from '../styles';
+import { PANEL_TITLE } from '../styles';
 import { R2_PUBLIC_URL } from '../../shared/config';
 import { plural } from '../../shared/overflowText';
 import type { NightServiceFrequency } from '../../shared/nightService';
-import { nightServiceKey } from '../../shared/nightService';
+import { nightServiceKey, routeNightGrade } from '../../shared/nightService';
 import Panel, { PanelBody, PanelTitleBar } from '../components/ui/Panel';
-import RouteListRow from '../components/RouteListRow';
-import { routeRowLabels } from '../components/Interval/SearchSuggestionsPanel';
+import CardRouteList from '../components/Interval/CardRouteList';
+import { routeLabels } from '../utils/format';
 import ResearchInfo from '../components/ResearchInfo';
 import { NIGHT_INFO_HEADING, nightRuleText } from '../content/researchRules';
 import PanelEmpty from '../components/ui/PanelEmpty';
@@ -50,6 +47,11 @@ interface NightServiceFeatureProperties {
   routeType?: number;
   headsign?: string | null;
   agencyName?: string | null;
+}
+
+function nightRouteLabel(route: NightServiceRouteSummary, agency: { slug: string; agencyName: string }) {
+  const label = routeLabels({ shortName: route.routeShortName, longName: route.routeLongName, routeType: route.routeType, agencySlug: agency.slug, agencyName: agency.agencyName });
+  return label.primary ? label : { primary: 'Unnamed route', secondary: undefined };
 }
 
 interface NightServiceIndexFile {
@@ -96,6 +98,20 @@ export default function NightService({ active, sidebarLeft, searchBarWidth, laye
     }
     return routes;
   }, [bounds, layers, frequency]);
+  // Every row of each route that runs at night, in either view and anywhere on the map, so a route's night
+  // value covers all of it: a direction that only makes 60 keeps the route at 60 in the 30 view too (CIV-931).
+  const nightGrades = useMemo(() => {
+    const rows = new Map<string, { nightService30?: boolean }[]>();
+    for (const [agencySlug, collection] of Object.entries(layers)) {
+      for (const feature of collection.features) {
+        const properties = feature.properties as NightServiceFeatureProperties | null;
+        if (!properties || (properties.nightService60 !== true && properties.nightService !== true && properties.nightService30 !== true)) continue;
+        const key = `${agencySlug}::${properties.routeShortName ?? ''}::${properties.routeLongName ?? ''}`;
+        rows.set(key, [...(rows.get(key) ?? []), { nightService30: properties.nightService30 }]);
+      }
+    }
+    return new Map([...rows].map(([key, routeRows]) => [key, routeNightGrade(routeRows)]));
+  }, [layers]);
   useEffect(() => {
     fetch(`${R2_PUBLIC_URL}/atlas/night-service.json`, { cache: 'no-store' })
       .then(r => {
@@ -162,6 +178,9 @@ export default function NightService({ active, sidebarLeft, searchBarWidth, laye
       .filter(agency => agency.agencyName.toLowerCase().includes(q) || agency.routes.length > 0);
   }, [data, query, visibleRoutes, frequency]);
 
+  const nightGrade = (route: NightServiceRouteSummary, agencySlug: string) =>
+    nightGrades.get(`${agencySlug}::${route.routeShortName ?? ''}::${route.routeLongName ?? ''}`) ?? 60;
+
   if (!active) return null;
 
   return (
@@ -185,30 +204,22 @@ export default function NightService({ active, sidebarLeft, searchBarWidth, laye
                 <AgencyNameHeading name={agency.agencyName} place={agency.region} className="mb-0" />
                 <p className={CARD_SUMMARY}>{agency.routes.length} night {plural(agency.routes.length, 'route')}</p>
               </div>
-              {agency.routes.map(route => {
-                const labels = routeRowLabels({ shortName: route.routeShortName, longName: route.routeLongName, routeType: route.routeType, agencySlug: agency.slug, agencyName: agency.agencyName });
-                const hasSubtitle = route.destinations.length > 0 || route.partOfRoute;
-                return (
-                  <RouteListRow
-                    key={`${route.routeShortName ?? ''}-${route.routeLongName ?? ''}`}
-                    shortName={labels.shortName || 'Unnamed route'}
-                    name={labels.name}
-                    disabled={!route.routeId || !onRouteSelect}
-                    onClick={() => route.routeId && onRouteSelect?.(agency.slug, route.routeId)}
-                    className="disabled:cursor-default"
-                    subtitle={hasSubtitle ? (
-                      <>
-                        {route.destinations.length > 0 && (
-                          <div className={`mt-0.5 ${LIST_ROW_DIM} truncate`} title={route.destinations.join(' · ')}>
-                            To {route.destinations.join(' · ')}
-                          </div>
-                        )}
-                        {route.partOfRoute && <div className="mt-0.5 text-xs font-bold text-[var(--text-dim)]">Night service on part of the route</div>}
-                      </>
-                    ) : undefined}
-                  />
-                );
-              })}
+              {/* The agency card's route list (CIV-931): "**300** Bloor-Danforth" and the night frequency on the right.
+                  Destinations stay on the route card. */}
+              <CardRouteList
+                rows={agency.routes.map(route => ({
+                  key: `${route.routeShortName ?? ''}-${route.routeLongName ?? ''}`,
+                  route: nightRouteLabel(route, agency),
+                  // Ryan's approved row: "● every 30 min". The grade is an upper bound, so this never overstates.
+                  headway: nightGrade(route, agency.slug),
+                  subLabel: route.partOfRoute ? 'Night service on part of the route' : undefined,
+                  disabled: !route.routeId || !onRouteSelect,
+                }))}
+                onSelect={key => {
+                  const route = agency.routes.find(r => `${r.routeShortName ?? ''}-${r.routeLongName ?? ''}` === key);
+                  if (route?.routeId) onRouteSelect?.(agency.slug, route.routeId);
+                }}
+              />
             </div>
           ))}
         </PanelBody>
