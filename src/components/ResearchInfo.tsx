@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import Panel from './ui/Panel';
-import { LIST_ROW_PRIMARY, SIDEBAR_CARD, SIDEBAR_CARD_MAX_H, SIDEBAR_PANEL_WIDTH, sidebarFrameStyle } from '../styles';
+import { CARD_HEADER_BLOCK, CARD_TITLE } from './Interval/cardUi';
+import { SIDEBAR_CARD, SIDEBAR_CARD_MAX_H, SIDEBAR_PANEL_WIDTH, sidebarFrameStyle } from '../styles';
 
 /**
  * The one info card every research view (Night, Frequent Service, future ones) shows in the same place
@@ -24,8 +25,8 @@ export default function ResearchInfo({ heading, children, sidebarLeft, searchBar
       style={sidebarFrameStyle(sidebarLeft, searchBarWidth)}
     >
       <Panel enter sidebarSurface className="shrink-0">
-        <div className="px-4 pt-2.5 pb-3">
-          <p className={`${LIST_ROW_PRIMARY} leading-snug`}>{heading}</p>
+        <div className={CARD_HEADER_BLOCK}>
+          <p className={CARD_TITLE}>{heading}</p>
           <p className="mt-1 text-xs text-[var(--text-muted)] font-medium leading-snug">{children}</p>
         </div>
       </Panel>
