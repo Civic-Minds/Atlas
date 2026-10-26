@@ -443,7 +443,7 @@ export function AgencyCardHeading({
       {back && <CardBackLink onClick={back.onClick}>{back.to}</CardBackLink>}
       <Tag className={`${CARD_TITLE} ${className}`}>
         {name}
-        {place && <span className="font-medium text-[var(--text-muted)]"> {place}</span>}
+        {place && <>{' '}<span className="font-medium text-[var(--text-muted)] whitespace-nowrap">{place}</span></>}
       </Tag>
     </>
   );
