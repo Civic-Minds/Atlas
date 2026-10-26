@@ -73,6 +73,7 @@ Less text
 Card notices
 
 - Plain words: what the card shows and why. One sentence is preferred for short notices; a longer notice may use two. "Learn more →" runs on at the end of the last sentence, not on its own line (CIV-920). CIV-941.
+- No "so" joining two clauses in a notice or error (Ryan, 2026-10-26). State what happened, then what it means, as two short sentences if needed.
 
 New wording needs a yes
 
