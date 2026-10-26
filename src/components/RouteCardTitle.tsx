@@ -9,11 +9,13 @@ interface Props {
   routeType?: number | string | null;
   agencySlug?: string;
   onAgencyClick?: () => void;
+  /** False when a back link above the title already names the agency. */
+  showAgency?: boolean;
 }
 
-export default function RouteCardTitle({ routeShortName, routeLongName, agencyName, routeType, agencySlug, onAgencyClick }: Props) {
+export default function RouteCardTitle({ routeShortName, routeLongName, agencyName, routeType, agencySlug, onAgencyClick, showAgency = true }: Props) {
   const title = routeLabels({ shortName: routeShortName, longName: routeLongName, routeType, agencySlug, agencyName }).text;
-  const displayAgency = agencyName ? shortenAgencyName(agencyName) : null;
+  const displayAgency = showAgency && agencyName ? shortenAgencyName(agencyName) : null;
   return (
     <SidebarCardHeader
       eyebrow={displayAgency}

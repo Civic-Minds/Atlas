@@ -661,7 +661,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
             {selectedGroup && cardVehicle ? (
               <SidebarCardShell className="px-4 pt-4">
                 <SidebarCardHeaderBlock>
-                  <CardBackLink onClick={() => setVehicleCard(null)}>{cleanRouteShortName(selectedGroup.routeShortName)} route</CardBackLink>
+                  <CardBackLink onClick={() => setVehicleCard(null)}>Route {cleanRouteShortName(selectedGroup.routeShortName)}</CardBackLink>
                   <RouteCardTitle
                     routeShortName={selectedGroup.routeShortName}
                     routeLongName={selectedRouteLongName}
@@ -693,7 +693,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                       ? () => setSelectedDirection(null)
                       : () => { setSelectedRoute(null); setFocusedVehicle(null); }}
                   >
-                    {selectedDirection ? `${cleanRouteShortName(selectedGroup.routeShortName)} route` : `${agencyDisplayName(agencies, selectedGroup.agencySlug)} routes`}
+                    {selectedDirection ? `Route ${cleanRouteShortName(selectedGroup.routeShortName)}` : agencyDisplayName(agencies, selectedGroup.agencySlug)}
                   </CardBackLink>
                   <RouteCardTitle
                     routeShortName={selectedGroup.routeShortName}
@@ -702,6 +702,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                     agencySlug={selectedGroup.agencySlug}
                     agencyName={selectedAgencyName}
                     onAgencyClick={onAgencyClick ? () => onAgencyClick(selectedGroup.agencySlug) : undefined}
+                    showAgency={!!selectedDirection}
                   />
                 </SidebarCardHeaderBlock>
                 <LiveRoutePerformance
