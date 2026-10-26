@@ -49,13 +49,14 @@ export const NearbyRoutesPanel = forwardRef<HTMLDivElement, NearbyRoutesPanelPro
               <div className="flex flex-col min-w-0 flex-1 gap-0.5">
                 <div className="flex items-start gap-2">
                   {r.displayShortName ? (
-                    <span className="text-xs font-black text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors shrink-0">
+                    <span className="text-xs leading-snug font-black text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors shrink-0">
                       {r.displayShortName}
                     </span>
                   ) : null}
+                  {/* The name takes the row's free width and wraps in full, like the route card's direction rows. */}
                   <span className={r.displayShortName
-                    ? 'min-w-0 text-xs font-bold text-[var(--text-muted)] line-clamp-2 break-words'
-                    : 'min-w-0 text-xs font-black text-[var(--text-primary)] line-clamp-2 break-words'}
+                    ? 'flex-1 min-w-0 text-xs leading-snug font-bold text-[var(--text-muted)] break-words'
+                    : 'flex-1 min-w-0 text-xs leading-snug font-black text-[var(--text-primary)] break-words'}
                     title={r.routeLongName || r.agencyName}>
                     {r.routeLongName || r.agencyName}
                   </span>
@@ -64,10 +65,12 @@ export const NearbyRoutesPanel = forwardRef<HTMLDivElement, NearbyRoutesPanelPro
                     <HeadwayBadge
                       headway={r.headway}
                       label={r.sharedHeadway != null ? headwayEveryRange(r.sharedHeadway, r.headway) : undefined}
-                      className="ml-auto"
                     />
-                  ) : (r.limited || r.noRegular) && (
-                    <LimitedBadge label={r.noRegular ? NO_REGULAR_SERVICE_SHORT_LABEL : 'limited'} className="ml-auto" />
+                  ) : (r.limited || r.noRegular) ? (
+                    <LimitedBadge label={r.noRegular ? NO_REGULAR_SERVICE_SHORT_LABEL : 'limited'} />
+                  ) : (
+                    // No frequency and no words: the grey dot alone, as the row showed before the shared badge.
+                    <LimitedBadge />
                   )}
                 </div>
                 <p className="text-xs text-[var(--text-dim)] font-bold truncate leading-tight">

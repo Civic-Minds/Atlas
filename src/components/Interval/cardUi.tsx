@@ -513,11 +513,14 @@ export function HeadwayBadge({
   );
 }
 
-/** A route with no regular frequency to show: the grey dot and a word ("limited", "no regular service"), styled like HeadwayBadge. */
-export function LimitedBadge({ label, className = '' }: { label: string; className?: string }) {
+/**
+ * A route with no regular frequency to show: the grey dot and a word ("limited", "no regular service"), styled like HeadwayBadge.
+ * With no label it is the grey dot alone, kept one text line tall so it sits beside the row's first line.
+ */
+export function LimitedBadge({ label, className = '' }: { label?: string; className?: string }) {
   const colorMode = useColorMode();
   return (
-    <span className={`inline-flex items-center gap-1 text-xs font-black text-[var(--text-primary)] leading-snug shrink-0 whitespace-nowrap ${className}`.trim()}>
+    <span className={`inline-flex items-center gap-1 text-xs font-black text-[var(--text-primary)] leading-snug shrink-0 whitespace-nowrap ${label ? '' : 'min-h-[1lh]'} ${className}`.trim()}>
       <span className="w-2 h-2 rounded-full shrink-0" style={{ background: getTierColor(null, colorMode) }} />
       {label}
     </span>

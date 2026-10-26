@@ -40,4 +40,32 @@ describe('Near You route rows', () => {
       expect(badge.querySelector('span.rounded-full.w-2.h-2')).toBeTruthy();
     }
   });
+
+  // Critic review of CIV-900 M13: the wider badge squeezed "Yonge-University" to "Yonge-Univers…".
+  it('lets a long route name take the free width and wrap in full', () => {
+    render(
+      <NearbyRoutesPanel
+        setSelectedRoute={() => {}}
+        routes={[route({ rKey: 'ttc::1', displayShortName: '1', routeLongName: 'Yonge-University', headway: 12, sharedHeadway: 6 })]}
+      />,
+    );
+    const name = screen.getByText('Yonge-University');
+    expect(name.className).toContain('flex-1');
+    expect(name.className).toContain('break-words');
+    expect(name.className).not.toMatch(/line-clamp|truncate/);
+  });
+
+  // TTC 301/305/306/320: no frequency and no words still show the grey dot, as before the shared badge.
+  it('shows the grey dot alone for a route with no frequency and no label', () => {
+    const { container } = render(
+      <NearbyRoutesPanel
+        setSelectedRoute={() => {}}
+        routes={[route({ rKey: 'ttc::301', displayShortName: '301', routeLongName: 'Queen', headway: null, limited: false, noRegular: false })]}
+      />,
+    );
+    const dot = container.querySelector('span.rounded-full.w-2.h-2') as HTMLElement;
+    expect(dot).toBeTruthy();
+    expect(dot.style.background).toBe('rgb(107, 114, 128)');
+    expect((dot.parentElement as HTMLElement).textContent).toBe('');
+  });
 });
