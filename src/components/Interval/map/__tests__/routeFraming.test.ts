@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import type * as maplibregl from 'maplibre-gl';
-import { frameRoute, routeFramePadding, selectionFramePadding } from '../routeFraming';
+import { frameRoute, paddedCenter, routeFramePadding, selectionFramePadding } from '../routeFraming';
 
 function fakeMap(width = 1200, height = 800, zoom = 10) {
   return {
@@ -124,7 +124,21 @@ describe('frameRoute with a minimum zoom (Live place list)', () => {
     const padding = { top: 10, bottom: 10, left: 10, right: 10 };
     expect(frameRoute(map, [[-79.6, 43.5], [-79.2, 43.9]], { minZoom: 9.2, padding })).toBe(true);
     expect(map.cameraForBounds).toHaveBeenCalledWith([[-79.6, 43.5], [-79.2, 43.9]], { padding, maxZoom: 14 });
-    expect(map.flyTo).toHaveBeenCalledWith({ center: [-79.4, 43.7], zoom: 9.2 });
+    // The place's middle sits in the middle of the padded area (equal padding: the plain middle).
+    const [{ center, zoom }] = map.flyTo.mock.calls[0] as [{ center: [number, number]; zoom: number }];
+    expect(zoom).toBe(9.2);
+    expect(center[0]).toBeCloseTo(-79.4, 6);
+    expect(center[1]).toBeCloseTo(43.7, 6);
     expect(map.fitBounds).not.toHaveBeenCalled();
+  });
+});
+
+describe('paddedCenter', () => {
+  it('moves the centre so the point sits in the middle of the padded area', () => {
+    expect(paddedCenter([-79.4, 43.7], 10, { top: 0, bottom: 0, left: 0, right: 0 })[0]).toBeCloseTo(-79.4, 9);
+    // A card on top (big top padding): the centre moves north of the point, so the point shows lower down.
+    const [lon, lat] = paddedCenter([-79.4, 43.7], 10, { top: 400, bottom: 24, left: 45, right: 45 });
+    expect(lon).toBeCloseTo(-79.4, 9);
+    expect(lat).toBeGreaterThan(43.7);
   });
 });

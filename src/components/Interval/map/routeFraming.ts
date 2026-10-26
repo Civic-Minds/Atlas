@@ -108,8 +108,26 @@ export function frameRoute(
   if (target.kind === 'bounds' && minZoom !== undefined) {
     const camera = map.cameraForBounds(target.bounds, { padding, maxZoom });
     if (!camera) return false;
-    map.flyTo({ center: camera.center, zoom: Math.max(camera.zoom ?? 0, minZoom), ...(duration !== undefined && { duration }) });
+    const zoom = Math.max(camera.zoom ?? 0, minZoom);
+    const [[w, s], [e, n]] = target.bounds as [[number, number], [number, number]];
+    map.flyTo({ center: paddedCenter([(w + e) / 2, (s + n) / 2], zoom, padding), zoom, ...(duration !== undefined && { duration }) });
   } else if (target.kind === 'bounds') map.fitBounds(target.bounds, { padding, maxZoom, ...(duration !== undefined && { duration }) });
   else map.flyTo({ center: target.center, zoom: Math.max(map.getZoom(), maxZoom), padding, duration: duration ?? 900 });
   return true;
+}
+
+/**
+ * The map centre that puts `point` in the middle of the padded area at `zoom` (Web Mercator), without passing the
+ * padding to the camera, which would keep it for every later camera move.
+ */
+export function paddedCenter(point: LonLat, zoom: number, padding: maplibregl.PaddingOptions): [number, number] {
+  const world = 512 * 2 ** zoom;
+  const x = ((point[0] + 180) / 360) * world;
+  const sin = Math.sin((point[1] * Math.PI) / 180);
+  const y = (0.5 - Math.log((1 + sin) / (1 - sin)) / (4 * Math.PI)) * world;
+  const cx = x - ((padding.left ?? 0) - (padding.right ?? 0)) / 2;
+  const cy = y - ((padding.top ?? 0) - (padding.bottom ?? 0)) / 2;
+  const lon = (cx / world) * 360 - 180;
+  const lat = (Math.atan(Math.sinh(Math.PI * (1 - (2 * cy) / world))) * 180) / Math.PI;
+  return [lon, lat];
 }
