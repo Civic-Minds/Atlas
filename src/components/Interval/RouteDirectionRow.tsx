@@ -1,12 +1,11 @@
 import React from 'react';
 import { heldRowStyles, type HeldSize } from '../../utils/heldLayout';
 import { Info } from 'lucide-react';
-import { getTierColor } from '../../utils/colors';
 import { fmtHeadwayRange } from '../../utils/format';
 import { shouldShowBranchHeadwayRange } from '../../utils/routeCardTrunk';
 import { headwayToTierColor } from './HeadwaySparkline';
 import { useColorVision } from '../../context/ColorVisionContext';
-import { HeadwayBadge } from './cardUi';
+import { HeadwayBadge, LimitedBadge } from './cardUi';
 
 interface Props {
   label: string;
@@ -50,7 +49,7 @@ export default function RouteDirectionRow({ label, headway, colorHeadway, headwa
   const clickable = !!onClick;
   const faded = dimmed || branchDimmed;
   const showRange = shouldShowBranchHeadwayRange(trunkHeadway, headway);
-  const dotColor = limited ? getTierColor(null, colorMode) : headwayToTierColor(showRange ? trunkHeadway! : (colorHeadway ?? headway), colorMode);
+  const dotColor = headwayToTierColor(showRange ? trunkHeadway! : (colorHeadway ?? headway), colorMode);
   const rangeText = showRange && headway != null && trunkHeadway != null
     ? fmtHeadwayRange(trunkHeadway, headway)
     : null;
@@ -99,12 +98,7 @@ export default function RouteDirectionRow({ label, headway, colorHeadway, headwa
               <Info aria-hidden="true" className="w-3 h-3" />
             </button>
           )}
-          {limited && (
-            <span className="inline-flex items-center gap-1 text-xs font-black text-[var(--text-primary)] leading-snug shrink-0 whitespace-nowrap">
-              <span className="w-2 h-2 rounded-full shrink-0" style={{ background: dotColor }} />
-              {limitedLabel}
-            </span>
-          )}
+          {limited && <LimitedBadge label={limitedLabel} />}
           {!limited && headway != null && !showRange && (
             <HeadwayBadge headway={headway} colorHeadway={colorHeadway} live={live} suffix={headwaySuffix} suffixTone={headwaySuffixTone} label={headwayLabel} />
           )}

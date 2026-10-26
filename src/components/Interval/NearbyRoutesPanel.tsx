@@ -1,7 +1,6 @@
 import React, { forwardRef } from 'react';
-import { headwayToTierColor } from '../../utils/colors';
-import { useColorVision } from '../../context/ColorVisionContext';
-import { fmtHeadway, titleCase } from '../../utils/format';
+import { titleCase } from '../../utils/format';
+import { HeadwayBadge, LimitedBadge } from './cardUi';
 import { headwayEveryRange } from '../../utils/headwayText';
 import { NO_REGULAR_SERVICE_SHORT_LABEL } from '../../utils/effectiveHeadway';
 import type { NearbyRoute } from '../../hooks/useNearbyRoutes';
@@ -26,8 +25,6 @@ export const NearbyRoutesPanel = forwardRef<HTMLDivElement, NearbyRoutesPanelPro
   loading = false,
   setSelectedRoute,
 }, ref) {
-  const { colorVisionFriendly } = useColorVision();
-  const colorMode = colorVisionFriendly ? 'friendly' : 'default';
   return (
     <Panel
       enter
@@ -55,10 +52,6 @@ export const NearbyRoutesPanel = forwardRef<HTMLDivElement, NearbyRoutesPanelPro
             >
               <div className="flex flex-col min-w-0 flex-1 gap-0.5">
                 <div className="flex items-start gap-2">
-                  <span
-                    className="w-1.5 h-1.5 rounded-full shrink-0 mt-[5px]"
-                    style={{ background: headwayToTierColor(r.headway, colorMode) }}
-                  />
                   {r.displayShortName ? (
                     <span className="text-xs font-black text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors shrink-0">
                       {r.displayShortName}
@@ -70,18 +63,18 @@ export const NearbyRoutesPanel = forwardRef<HTMLDivElement, NearbyRoutesPanelPro
                     title={r.routeLongName || r.agencyName}>
                     {r.routeLongName || r.agencyName}
                   </span>
-                  {r.headway != null && (
-                    <span className="text-xs font-bold text-[var(--text-muted)] whitespace-nowrap shrink-0 ml-auto">
-                      {r.sharedHeadway != null ? headwayEveryRange(r.sharedHeadway, r.headway) : fmtHeadway(r.headway)}
-                    </span>
-                  )}
-                  {r.headway == null && (r.limited || r.noRegular) && (
-                    <span className="text-xs font-bold text-[var(--text-muted)] whitespace-nowrap shrink-0 ml-auto">
-                      {r.noRegular ? NO_REGULAR_SERVICE_SHORT_LABEL : 'limited'}
-                    </span>
+                  {/* The frequency as every other route row shows it: the shared badge with its tier dot. */}
+                  {r.headway != null ? (
+                    <HeadwayBadge
+                      headway={r.headway}
+                      label={r.sharedHeadway != null ? headwayEveryRange(r.sharedHeadway, r.headway) : undefined}
+                      className="ml-auto"
+                    />
+                  ) : (r.limited || r.noRegular) && (
+                    <LimitedBadge label={r.noRegular ? NO_REGULAR_SERVICE_SHORT_LABEL : 'limited'} className="ml-auto" />
                   )}
                 </div>
-                <p className="text-xs text-[var(--text-dim)] font-bold pl-3.5 truncate leading-tight">
+                <p className="text-xs text-[var(--text-dim)] font-bold truncate leading-tight">
                   {titleCase(r.nearestStopName)} · {fmtDist(r.distanceMeters)}
                 </p>
               </div>

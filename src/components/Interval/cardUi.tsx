@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { Flag, Radio, X } from 'lucide-react';
 import { fmtHeadway } from '../../utils/format';
 import { headwayToTierColor } from './HeadwaySparkline';
+import { getTierColor } from '../../utils/colors';
 import { CARD_NOTICE, FLOATING_CARD, PANEL_ENTER_LEFT, SIDEBAR_CARD_SURFACE, SIDEBAR_PANEL_WIDTH, ACTION_PRIMARY } from '../../styles';
 import { openAtlasProblemEmail } from '../../utils/reportIssue';
 import { trackEvent } from '../../lib/analytics';
@@ -502,6 +503,17 @@ export function HeadwayBadge({
       <span className="w-2 h-2 rounded-full shrink-0" style={{ background: headwayToTierColor(colorHeadway ?? headway, colorMode) }} />
       <span className="whitespace-nowrap">{label ?? fmtHeadway(headway)}</span>
       {suffix && <span className={`text-xs font-bold whitespace-nowrap ${SUFFIX_TONE[suffixTone]}`}>{suffix}</span>}
+    </span>
+  );
+}
+
+/** A route with no regular frequency to show: the grey dot and a word ("limited", "no regular service"), styled like HeadwayBadge. */
+export function LimitedBadge({ label, className = '' }: { label: string; className?: string }) {
+  const { colorVisionFriendly } = useColorVision();
+  return (
+    <span className={`inline-flex items-center gap-1 text-xs font-black text-[var(--text-primary)] leading-snug shrink-0 whitespace-nowrap ${className}`.trim()}>
+      <span className="w-2 h-2 rounded-full shrink-0" style={{ background: getTierColor(null, colorVisionFriendly ? 'friendly' : 'default') }} />
+      {label}
     </span>
   );
 }
