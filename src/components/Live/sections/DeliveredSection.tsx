@@ -37,6 +37,7 @@ export default function DeliveredSection({ v3, dir, detail, boundary }: { v3: Li
       rowHeader="Day"
       caption="How many of the scheduled trips ran, each day."
       scale={{ min: 0.9, max: 1 }}
+      everyLabel
     />
   );
   if (full) {
