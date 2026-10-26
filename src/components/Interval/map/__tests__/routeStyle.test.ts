@@ -51,6 +51,14 @@ describe('research overlay fade (Night and Frequent Service)', () => {
       expect(evaluate('line-width', paint.width, other)).toBe(1.25);
     }
   });
+
+  it('never draws the selected route thinner than it was unselected', () => {
+    const night = researchOverlayPaint(NIGHT_SERVICE_WIDTH_BY_ZOOM, 'ttc::501');
+    expect(evaluate('line-width', night.width, selected, 17)).toBe(4.5);
+    const frequent = researchOverlayPaint(FREQUENT_SERVICE_WIDTH_BY_ZOOM, 'ttc::501');
+    expect(evaluate('line-width', frequent.width, { ...selected, frequentServiceBand: '15' }, 17)).toBe(6);
+    expect(evaluate('line-width', frequent.width, { ...other, frequentServiceBand: '15' }, 17)).toBe(1.25);
+  });
 });
 
 describe('frequent service colour and width', () => {

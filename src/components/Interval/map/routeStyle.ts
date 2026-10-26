@@ -42,7 +42,25 @@ export const RESEARCH_OVERLAY_LAYERS = [
  */
 export function researchOverlayPaint(defaultWidth: unknown, selectedRoute: string | null): { opacity: unknown; width: unknown } {
   if (!selectedRoute) return { opacity: OVERLAY_ROUTE_OPACITY, width: defaultWidth };
-  return buildFocusedRoutePaint(routeKeyMatchExpression(selectedRoute));
+  const focused = buildFocusedRoutePaint(routeKeyMatchExpression(selectedRoute));
+  return { opacity: focused.opacity, width: focusedOverlayWidth(defaultWidth, focused.width) };
+}
+
+/**
+ * The overlay's width with a route selected: the shared focus case at every zoom stop, except the selected
+ * line never draws thinner than it did unselected (the overlays' own widths pass the shared 3.5 at street
+ * zoom, so a flat 3.5 would thin the selection). A zoom expression must stay the top-level interpolate,
+ * so the case goes inside each stop.
+ */
+function focusedOverlayWidth(defaultWidth: unknown, focusedWidth: unknown): unknown {
+  const [, match, selectedWidth, fadedWidth] = focusedWidth as [string, unknown, number, number];
+  if (!Array.isArray(defaultWidth) || defaultWidth[0] !== 'interpolate') return focusedWidth;
+  const [op, curve, input, ...stops] = defaultWidth as unknown[];
+  const out: unknown[] = [op, curve, input];
+  for (let i = 0; i < stops.length; i += 2) {
+    out.push(stops[i], ['case', match, ['max', selectedWidth, stops[i + 1]], fadedWidth]);
+  }
+  return out;
 }
 
 type PartialMatches = ReturnType<typeof computeFrequencySegmentOverlay>['partialMatches'];
