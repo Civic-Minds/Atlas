@@ -106,6 +106,8 @@ export interface Agency {
   manualFeedSource?: boolean;
   /** Agency-published direction names keyed by route short name and GTFS direction_id. */
   directionLabels?: Record<string, Record<string, string>>;
+  /** The agency's destination for a direction, keyed like directionLabels, where its trip headsign names the wrong end (RFTA HC). */
+  directionHeadsigns?: Record<string, Record<string, string>>;
   // Pipeline / source fields (present in the JSON even if not in this UI-focused type)
   feedUrl?: string | null;
   mdbFeedUrl?: string;

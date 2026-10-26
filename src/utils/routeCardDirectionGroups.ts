@@ -23,8 +23,11 @@ export function buildDirectionGroups(
   currentRoute: { directions: ShapeProperties[] } | null | undefined,
   period: TimePeriod,
   directionLabelOverrides?: Record<string, string>,
+  /** The agency's destination per GTFS direction_id where its trip headsign names the wrong end (RFTA HC, CIV-974). */
+  directionHeadsigns?: Record<string, string>,
 ): RouteCardDirectionGroup[] {
   if (!currentRoute) return [];
+  if (directionHeadsigns) currentRoute = withDirectionHeadsigns(currentRoute, directionHeadsigns);
   const routeFeatures = (currentRoute as { features?: GeoJSON.Feature[] }).features ?? [];
   type Group = RouteCardDirectionGroup;
   const map = new Map<number, Group>();
@@ -93,11 +96,33 @@ export function buildDirectionGroups(
       const label = boundLabels.get(g.dirId);
       if (label) g.boundLabel = label;
     }
-    const sortOrder = sortDirectionGroupIds(routeFeatures, dirIds);
+    const sortOrder = outboundFirst(sortDirectionGroupIds(routeFeatures, dirIds), boundLabels);
     groups.sort((a, b) => sortOrder.indexOf(a.dirId) - sortOrder.indexOf(b.dirId));
   }
   if (groups.length > 1 && routeFeatures.length > 0) {
     dedupeCrossDirectionHeadsigns(groups, routeFeatures);
   }
   return groups;
+}
+
+/** Every feature of a direction named in `headsigns` takes that destination, on the card's rows and in its line lookups. */
+function withDirectionHeadsigns<T extends { directions: ShapeProperties[] }>(route: T, headsigns: Record<string, string>): T {
+  const swap = (p: ShapeProperties): ShapeProperties => {
+    const h = headsigns[String(p.directionId ?? 0)];
+    return h ? { ...p, headsign: h } : p;
+  };
+  const features = (route as { features?: GeoJSON.Feature[] }).features;
+  return {
+    ...route,
+    directions: route.directions.map(swap),
+    ...(features ? { features: features.map(f => ({ ...f, properties: swap(f.properties as ShapeProperties) })) } : {}),
+  };
+}
+
+/** An agency that names its directions Outbound and Inbound lists Outbound first, as its own pages do (RFTA, CIV-974). */
+function outboundFirst(order: number[], labels: Map<number, string>): number[] {
+  const out = order.find(id => labels.get(id) === 'Outbound');
+  const inb = order.find(id => labels.get(id) === 'Inbound');
+  if (out == null || inb == null) return order;
+  return [out, ...order.filter(id => id !== out)];
 }

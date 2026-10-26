@@ -416,12 +416,18 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     const agency = slug ? agencies.find(a => a.slug === slug) : undefined;
     return agency?.directionLabels?.[currentRoute.routeShortName ?? ''];
   }, [agencies, currentRoute]);
+  const directionHeadsigns = useMemo(() => {
+    if (!currentRoute) return undefined;
+    const slug = (currentRoute as any).agencySlug as string | undefined;
+    const agency = slug ? agencies.find(a => a.slug === slug) : undefined;
+    return agency?.directionHeadsigns?.[currentRoute.routeShortName ?? ''];
+  }, [agencies, currentRoute]);
 
   // Group directions by directionId so outbound/inbound are visually separated,
   // and collapse multiple span patterns in the same group into one row.
   const directionGroups = useMemo(
-    () => buildDirectionGroups(currentRoute, period, directionLabelOverrides),
-    [currentRoute, directionLabelOverrides, period],
+    () => buildDirectionGroups(currentRoute, period, directionLabelOverrides, directionHeadsigns),
+    [currentRoute, directionLabelOverrides, directionHeadsigns, period],
   );
 
   const currentStop = useMemo(() => {
