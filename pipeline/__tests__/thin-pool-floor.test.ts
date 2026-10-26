@@ -35,7 +35,9 @@ describe('thin-pool fallback stops floor the period values', () => {
     // or the own list's 51.
     expect(sat.stopPeriodHeadways[sat.stopOrder[0]].amPeak).toBe(51);
     expect(sat.headwayByPeriod.amPeak).toBe(33);
-    expect(sat.headwayByPeriod.midday).toBe(24);
+    // #1116: midday read 24 from stop 13247, a drop-off-only stop next to the terminal (no boardable departures in
+    // the full feed). The terminal group is now left out with the terminal; the full feed runs every 12 to 13 there.
+    expect(sat.headwayByPeriod.midday).toBe(14);
   });
 
   it('TriMet 6 weekday toward Goose Hollow: the Hayden Meadows loop, served by no other pattern, floors the evening at its own 32', () => {

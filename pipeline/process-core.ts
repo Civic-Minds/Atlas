@@ -2442,7 +2442,13 @@ export async function processGtfsBuffer(
     const servedByFewerTrips = (pool: readonly number[] | null): string[] => {
       if (!pool) return [];
       const poolCount = new Set(pool).size;
-      return drawnPatternStops().slice(0, -1).map(p => p.stopId).filter(stopId => new Set(stopMetricMap.get(stopId) ?? []).size < poolCount);
+      // The terminal is left out, and with it the drop-off-only stops (#879) that run up to it: a terminal drawn twice,
+      // platform then parent station, holds only the drawn shape's own arrivals and slipped past the last-stop cut
+      // (#1116: MBTA 71 to Harvard read a 135-minute AM gap at its platform while all 91 trips run every 9 to 14).
+      const drawn = drawnPatternStops().map(p => p.stopId);
+      let end = drawn.length - 1;
+      while (end > 0 && dropOffOnlyStops.has(drawn[end - 1]) && drawn.slice(end).every(stopId => dropOffOnlyStops.has(stopId) || stopId === drawn[drawn.length - 1])) end--;
+      return drawn.slice(0, end).filter(stopId => new Set(stopMetricMap.get(stopId) ?? []).size < poolCount);
     };
     // Steps 2-3 and the line's segments (#690), shared by the thin-own-sample path below and
     // the full path: stop data is published from the pooled values whenever any stop has one.
