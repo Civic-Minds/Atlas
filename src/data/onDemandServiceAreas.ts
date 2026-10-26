@@ -466,7 +466,8 @@ function rtdFlexRideZone(page: string, serviceHours: string, availability: OnDem
   return {
     serviceName: 'FlexRide',
     serviceHours,
-    hoursNote: 'Holidays run the Sunday hours.',
+    // RTD's hours tables are headed "Sunday/Holiday"; with no Sunday service there is none on holidays either.
+    hoursNote: availability.Sunday?.length ? 'Holidays run the Sunday hours.' : 'No holiday service.',
     availability,
     hoursSource: { url: `${RTD_FLEXRIDE_ZONE_PAGES}/${page}`, retrievedAt: '2026-10-26' },
   };
@@ -480,7 +481,7 @@ export const RTD_FLEXRIDE_SERVICE_AREA = {
   sourceLabel: 'RTD FlexRide Areas layer (RTD GIS)',
   sourceRetrievedAt: '2026-10-26',
   serviceName: 'FlexRide',
-  bookingInfo: 'Book in the RTD FlexRide app, online, or call 303-299-6000 (option 2), from 30 days ahead to 10 minutes before pickup.',
+  bookingInfo: 'Book in the app or online, or call 303-299-6000 (option 2), from 30 days ahead to 10 minutes before pickup.',
   bookingUrl: RTD_FLEXRIDE_PAGE,
   zoneMetadata: {
     Brighton: rtdFlexRideZone('brighton', 'Monday\u2013Friday 5:30 a.m.\u20137 p.m.', RTD_WEEKDAY_ONLY(5.5, 19)),
