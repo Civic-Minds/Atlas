@@ -85,7 +85,9 @@ interface DataTableProps<T> {
   /**
    * Fixed layout that fills its container with the other columns at its right edge: they keep their set width and are
    * right-aligned, and the first column takes what is left, so the last column lines up with links at the right of the
-   * section (area and agency pages, CIV-958). Below the set widths the table scrolls in its wrapper as before.
+   * section (area and agency pages, CIV-958). Below the set widths the table scrolls in its wrapper as before. On phones
+   * (below sm) it is the plain fixed layout instead: default widths, left-aligned, columns right after the first, so a
+   * column cut off at the edge shows there is more to scroll to (CIV-973). Headers sit on their bottom line.
    */
   endAligned?: boolean;
   /**
@@ -127,35 +129,40 @@ export default function DataTable<T>({ columns, rows, rowKey, variant = 'compact
   const pad = (i: number) => (v.gap && i < columns.length - 1 ? (fit && i !== lastNarrow ? ' pr-3 sm:pr-4' : fit ? ' pr-0 sm:pr-4' : ' pr-4') : '');
   const hide = (i: number) => (fit && columns[i].narrowHide ? ' max-sm:hidden' : '');
   const end = fixed && endAligned;
-  // Right-aligned columns take their gap on the left; the last one has none on the right, so it meets the edge.
-  const cellPad = (i: number) => (end ? (i === 0 ? ' pr-4' : ' pl-4 text-right') : pad(i));
+  // From sm up, right-aligned columns take their gap on the left; the last one has none on the right, so it meets the edge.
+  // The last column sets no right padding of its own, so a linked row's `pr-2` (rowEdge) still lines it up with the edge.
+  const cellPad = (i: number) => (end ? (i === 0 ? ' pr-4' : `${i < columns.length - 1 ? ' pr-4 sm:pr-0' : ''} sm:pl-2 sm:text-right`) : pad(i));
+  // Phones: the default fixed widths, whatever the columns ask for from sm up.
+  const phoneWidths = columns.map((_, i) => (i === 0 ? FIXED_FIRST_COLUMN_REM : FIXED_COLUMN_REM));
   // A linked row's highlight reaches a little past the text on both sides, as in card lists.
   const rowEdge = (i: number) => (rowHref ? (i === 0 ? ' pl-2' : '') + (i === columns.length - 1 ? ' pr-2' : '') : '');
   const totalRem = widths.reduce((a, b) => a + b, 0);
   return (
     <table
-      className={fixed ? `${v.table} ${fit ? 'sm:table-fixed sm:min-w-[var(--table-min)]' : 'table-fixed'}` : v.table}
-      style={end ? { width: '100%', minWidth: `${totalRem}rem` } : fixed ? (fill ? (fit ? ({ width: '100%', '--table-min': `${widths.reduce((a, b) => a + b, 0)}rem` } as CSSProperties) : { width: '100%', minWidth: `${widths.reduce((a, b) => a + b, 0)}rem` }) : { width: `${widths.reduce((a, b) => a + b, 0)}rem` }) : undefined}
+      className={fixed ? `${v.table} ${fit ? 'sm:table-fixed sm:min-w-[var(--table-min)]' : 'table-fixed'}${end ? ' max-sm:!w-[var(--table-w)] sm:min-w-[var(--table-min)]' : ''}` : v.table}
+      style={end ? ({ width: '100%', '--table-w': `${phoneWidths.reduce((a, b) => a + b, 0)}rem`, '--table-min': `${totalRem}rem` } as CSSProperties) : fixed ? (fill ? (fit ? ({ width: '100%', '--table-min': `${widths.reduce((a, b) => a + b, 0)}rem` } as CSSProperties) : { width: '100%', minWidth: `${widths.reduce((a, b) => a + b, 0)}rem` }) : { width: `${widths.reduce((a, b) => a + b, 0)}rem` }) : undefined}
     >
       {caption && <caption className="sr-only">{caption}</caption>}
       {fixed && (
         <colgroup>
           {columns.map((col, i) => fit
             ? <col key={col.key} className={`${fill && i > 0 && col.width == null ? '' : 'sm:w-[var(--col-w)]'}${hide(i)}`} style={{ '--col-w': `${widths[i]}rem` } as CSSProperties} />
-            : <col key={col.key} style={(fill && i > 0 && col.width == null) || (end && i === 0) ? undefined : { width: `${widths[i]}rem` }} />)}
+            : end
+              ? <col key={col.key} className={`w-[var(--col-phone)] ${i > 0 ? 'sm:w-[var(--col-w)]' : 'sm:w-auto'}`} style={{ '--col-phone': `${phoneWidths[i]}rem`, '--col-w': `${widths[i]}rem` } as CSSProperties} />
+              : <col key={col.key} style={fill && i > 0 && col.width == null ? undefined : { width: `${widths[i]}rem` }} />)}
         </colgroup>
       )}
       <thead className={v.thead}>
         <tr className={v.headRow}>
           {columns.map((col, i) => (
             col.sortable && onSort ? (
-              <th key={col.key} scope="col" className={`${v.th}${cellPad(i)}${rowEdge(i)}${hide(i)}`} aria-sort={sort?.key === col.key ? (sort.reversed ? 'ascending' : 'descending') : 'none'}>
+              <th key={col.key} scope="col" className={`${v.th}${cellPad(i)}${rowEdge(i)}${hide(i)}${end ? ' align-bottom' : ''}`} aria-sort={sort?.key === col.key ? (sort.reversed ? 'ascending' : 'descending') : 'none'}>
                 <button type="button" onClick={() => onSort(col.key)} className="inline-flex items-center gap-1 font-[inherit] hover:underline">
                   {col.header}
                   <span aria-hidden="true" className={`text-[0.7em] ${sort?.key === col.key ? '' : 'invisible'}`}>{sort?.key === col.key && sort.reversed ? '▲' : '▼'}</span>
                 </button>
               </th>
-            ) : <th key={col.key} scope="col" className={`${v.th}${cellPad(i)}${rowEdge(i)}${hide(i)}`}>{col.header}</th>
+            ) : <th key={col.key} scope="col" className={`${v.th}${cellPad(i)}${rowEdge(i)}${hide(i)}${end ? ' align-bottom' : ''}`}>{col.header}</th>
           ))}
         </tr>
       </thead>
