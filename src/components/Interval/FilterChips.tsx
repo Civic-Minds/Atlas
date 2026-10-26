@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { Search } from 'lucide-react';
 import { HEADWAY_TIERS, getTierColor } from '../../utils/colors';
-import { FLOATING_CARD, GLASS_PILL, PANEL_ENTER_TOP, CONTROL_ACTIVE, CONTROL_ACTIVE_GLASS, CONTROL_INACTIVE, SEARCH_PILL, SEARCH_ICON, SEARCH_FIELD } from '../../styles';
+import { FLOATING_CARD, GLASS_PILL, PILL_SURFACE, PANEL_ENTER_TOP, CONTROL_ACTIVE, CONTROL_ACTIVE_GLASS, CONTROL_INACTIVE, SEARCH_PILL, SEARCH_ICON, SEARCH_FIELD } from '../../styles';
 import Pill from '../ui/Pill';
 import type { Agency } from '../../App';
 import { PERIOD_LABELS, PERIOD_KEYS } from '../../hooks/useIntervalStats';
@@ -491,7 +491,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
   if (variant === 'shared') {
     return (
       <div ref={rowRef} className="flex items-center gap-2" role="group" aria-label="Filters for both maps">
-        <span title={compactTopBar ? 'Both maps' : undefined} className="h-8 px-3 flex items-center gap-1.5 rounded-full bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] text-xs font-bold text-[var(--text-primary)] whitespace-nowrap">
+        <span title={compactTopBar ? 'Both maps' : undefined} className={`${PILL_SURFACE} px-3 gap-1.5 text-xs font-bold text-[var(--text-primary)] whitespace-nowrap`}>
           <SideBadge side="A+B" />
           {!compactTopBar && 'Both maps'}
         </span>
