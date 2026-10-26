@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import PillGroup from '../ui/PillGroup';
 import { SidebarCardSection } from '../Interval/cardUi';
 import { useSegmentDelay } from '../../hooks/useSegmentDelay';
-import { syncUrlParams } from '../../utils/syncUrlParams';
+import { readUrlNumberParam, syncUrlParams } from '../../utils/syncUrlParams';
 import { periodKeyForHour } from '../../../shared/config';
 import { LIVE_AGENCY_TIMEZONES } from '../../../shared/livePollingConfig';
 import { halfMinutes, type SegmentBand, type SegmentDelayData } from '../../utils/segmentDelayView';
@@ -84,9 +84,8 @@ function useRecentPositions(vehicles: readonly LiveVehicle[]): RecentSnapshot[] 
 export default function LiveRoutePerformance({ slug, routeShortName, vehicles, feedDegraded }: Props) {
   const data = useSegmentDelay(slug, routeShortName) as (SegmentDelayData & { tripDirections?: Record<string, string[]> }) | null;
   // The direction lives in the URL (dir) so a shared link reopens it.
-  const [initial] = useState(() => new URLSearchParams(window.location.search));
   const directions = useMemo(() => Object.entries(data?.directionLabels ?? {}).map(([id, label]) => [Number(id), label] as const), [data]);
-  const [dir, setDir] = useState<number | null>(() => (initial.get('dir') != null && !Number.isNaN(Number(initial.get('dir'))) ? Number(initial.get('dir')) : null));
+  const [dir, setDir] = useState<number | null>(() => readUrlNumberParam('dir'));
   const directionId = directions.some(([id]) => id === dir) ? dir! : directions[0]?.[0] ?? 0;
   const recent = useRecentPositions(vehicles);
   // Re-checked every 30 s, so a feed that stops updating shows as incomplete instead of frozen.
