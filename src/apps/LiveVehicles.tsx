@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import { Info, Moon, Sun, WifiOff, ChevronRight } from 'lucide-react';
 import { useLiveVehiclesMapOverlay } from '../context/LiveVehiclesMapOverlay';
 import type { LiveVehicle } from '../context/LiveVehiclesMapOverlay';
-import { LIVE_POLLING_ROUTES, LIVE_AGENCY_BBOXES, LIVE_AGENCY_PLACES, getPolledRoute, hasLiveAnalysis, agencyHasLiveAnalysis } from '../../shared/livePollingConfig';
+import { LIVE_POLLING_ROUTES, LIVE_AGENCY_BBOXES, LIVE_AGENCY_PLACES, getPolledRoute, hasLiveAnalysis } from '../../shared/livePollingConfig';
 import { useViewport } from '../context/ViewportContext';
 import type { OpenInfoFn } from '../components/InfoPanel';
 import type { Agency } from '../App';
@@ -420,7 +420,6 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
         slug,
         place: LIVE_AGENCY_PLACES[slug] ?? slug,
         agencyName: shortenAgencyName(agencies.find(a => a.slug === slug)?.name ?? ''),
-        withPerformance: agencyHasLiveAnalysis(slug),
       }))
       .sort((a, b) => a.place.localeCompare(b.place));
   }, [agencies]);
@@ -791,12 +790,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                     name={p.agencyName}
                     variant="spaced"
                     onClick={() => handlePlaceClick(p.slug)}
-                    right={(
-                      <span className="flex items-center gap-2 shrink-0">
-                        <span className="text-xs font-normal text-[var(--text-muted)] whitespace-nowrap">{p.withPerformance ? 'Vehicles + performance' : 'Vehicles'}</span>
-                        <ChevronRight className="w-3 h-3 text-[var(--text-dim)] group-hover:text-[var(--accent)] transition-colors shrink-0" />
-                      </span>
-                    )}
+                    right={<ChevronRight className="w-3 h-3 text-[var(--text-dim)] group-hover:text-[var(--accent)] transition-colors shrink-0" />}
                   />
                 ))}
                 <BrowseLiveAgenciesLink onInfoOpen={onInfoOpen} />
