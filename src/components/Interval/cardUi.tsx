@@ -1,6 +1,6 @@
 import React from 'react';
 import { createPortal } from 'react-dom';
-import { ArrowLeft, Flag, Radio, X } from 'lucide-react';
+import { Flag, Radio, X } from 'lucide-react';
 import { fmtHeadway } from '../../utils/format';
 import { headwayToTierColor } from './HeadwaySparkline';
 import { CARD_NOTICE, FLOATING_CARD, PANEL_ENTER_LEFT, SIDEBAR_PANEL_WIDTH, ACTION_PRIMARY } from '../../styles';
@@ -418,32 +418,6 @@ export function FlaggableValue({ reason, reportRef, children, className = 'inlin
     >
       {children}
       <Flag className="w-2.5 h-2.5 text-[var(--text-dim)] opacity-0 group-hover/flag:opacity-100 group-hover/flag:text-[var(--accent)] transition-opacity shrink-0" />
-    </button>
-  );
-}
-
-export function CardBackButton({ onClick, label = 'Back' }: { onClick: () => void; label?: string }) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-label={label}
-      className="p-0.5 -ml-0.5 mt-0.5 text-[var(--text-dim)] hover:text-[var(--text-primary)] transition-colors shrink-0"
-    >
-      <ArrowLeft className="w-3.5 h-3.5" />
-    </button>
-  );
-}
-
-/** Plain text link above a card title that goes back one level (no arrow). */
-export function CardBackLink({ onClick, children }: { onClick: () => void; children: React.ReactNode }) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="block max-w-full truncate text-xs font-bold text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors leading-snug mb-0.5"
-    >
-      {children}
     </button>
   );
 }
