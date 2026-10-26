@@ -61,17 +61,19 @@ export const NearbyRoutesPanel = forwardRef<HTMLDivElement, NearbyRoutesPanelPro
                     title={r.routeLongName || r.agencyName}>
                     {r.routeLongName || r.agencyName}
                   </span>
-                  {/* The frequency as every other route row shows it: the shared badge with its tier dot. */}
+                  {/* The frequency as every other route row shows it: the shared badge with its tier dot, kept on the right
+                      even when a long name pushes it to its own line. */}
                   {r.headway != null ? (
                     <HeadwayBadge
                       headway={r.headway}
                       label={r.sharedHeadway != null ? headwayEveryRange(r.sharedHeadway, r.headway) : undefined}
+                      className="ml-auto"
                     />
                   ) : (r.limited || r.noRegular) ? (
-                    <LimitedBadge label={r.noRegular ? NO_REGULAR_SERVICE_SHORT_LABEL : 'limited'} />
+                    <LimitedBadge label={r.noRegular ? NO_REGULAR_SERVICE_SHORT_LABEL : 'limited'} className="ml-auto" />
                   ) : (
                     // No frequency and no words: the grey dot alone, as the row showed before the shared badge.
-                    <LimitedBadge />
+                    <LimitedBadge className="ml-auto" />
                   )}
                 </div>
                 <p className="text-xs text-[var(--text-dim)] font-bold truncate leading-tight">
