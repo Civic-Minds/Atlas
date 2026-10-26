@@ -4,7 +4,8 @@ import type { LiveV3 } from '../../../../shared/liveDashboard';
 import RouteStrip, { ROW_DOT } from '../RouteStrip';
 import BranchStrip from '../BranchStrip';
 import { branchesOf, type BranchModel } from '../branchStripModel';
-import { keyStops, pickLabels, routeStripFromV3, shortStopName, stepFor, stretchSpan, stripSummary, type RouteStripStop } from '../routeStripModel';
+import { keyStops, pickLabels, routeStripFromV3, stepFor, stretchSpan, stripSummary, type RouteStripStop } from '../routeStripModel';
+import { shortStopName } from '../../../utils/stopLabel';
 
 const stop = (i: number, over: Partial<RouteStripStop> = {}): RouteStripStop => ({
   stopId: `S${i}`, name: `Spadina Ave at Street ${i} South Side`, delayMin: i * 0.5, lateShare: 0.1, bunchingShare: 0.1 + i * 0.02, n: 500, bunchingN: 400, ...over,

@@ -13,7 +13,7 @@ import { agencyKpiTiles } from './utils/liveAgencyKpi';
 import { weekNotComparableLine } from './utils/liveKpi';
 import { syncUrlParams } from './utils/syncUrlParams';
 import { titleCase } from './utils/format';
-import { shortStopName, stretchEnds } from './utils/stopLabel';
+import { shortStopName, stretchLabel } from './utils/stopLabel';
 import ErrorBoundary from './components/ErrorBoundary';
 import PageShell from './components/ui/PageShell';
 import DataTable from './components/ui/DataTable';
@@ -162,7 +162,7 @@ function StretchTable({ s, rows, caption, valueHeader, format }: { s: AgencySumm
         defaultSort={valueHeader ? 'value' : undefined}
         rowKey={r => `${r.route}-${r.directionId}-${r.fromStopId}-${r.toStopId}`}
         columns={[
-          { key: 'stretch', header: 'Stretch', rowHeader: true, width: FIRST_COL, className: 'font-normal break-words', cell: r => { const [a, b] = stretchEnds(titleCase(r.fromName), titleCase(r.toName)); return <span title={`${a} to ${b}`}>{a} to {b}</span>; } },
+          { key: 'stretch', header: 'Stretch', rowHeader: true, width: FIRST_COL, className: 'font-normal break-words', cell: r => { const name = stretchLabel(titleCase(r.fromName), titleCase(r.toName)); return <span title={name}>{name}</span>; } },
           { key: 'route', header: 'Route', width: ROUTE_COL, className: 'truncate', cell: r => <HotspotRoute s={s} route={r.route} /> },
           { key: 'dir', header: 'Direction', width: DIR_COL, cell: r => titleCase(r.direction) },
           ...(valueHeader && format ? [{ key: 'value', header: valueHeader, worst: (r: AgencyHotspotStretch) => r.value, cell: (r: AgencyHotspotStretch) => format(r.value) }] : []),
