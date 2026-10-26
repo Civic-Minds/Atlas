@@ -2,6 +2,7 @@ import React from 'react';
 import { routeLabels } from '../../../utils/format';
 import { PANEL_ENTER, LIST_ROW_PRIMARY, SIDEBAR_CARD_SURFACE } from '../../../styles';
 import ListRow from '../../ui/ListRow';
+import AgencyGroupHeader from '../../ui/AgencyGroupHeader';
 
 export interface DisambigRoute {
   key: string;
@@ -37,9 +38,7 @@ export const DisambiguationPanel: React.FC<DisambiguationPanelProps> = ({
         {groups.map(g => (
           <div key={g.agencyName}>
             {g.agencyName && (
-              <div className="px-4 pt-2.5 pb-1">
-                <span className="text-xs font-black tracking-wide text-[var(--text-dim)]">{g.agencyName}</span>
-              </div>
+              <AgencyGroupHeader rule="none">{g.agencyName}</AgencyGroupHeader>
             )}
             {g.routes.map(r => (
               <ListRow
