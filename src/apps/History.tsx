@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback, useRef, useLayoutEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef, useLayoutEffect, useId } from 'react';
 import { loadHistoryConfig as loadHistoryConfigShared } from '../utils/historyConfig';
 import { History as HistoryIcon } from 'lucide-react';
 import { useHistoryMapOverlay } from '../context/HistoryMapOverlay';
@@ -189,6 +189,9 @@ function RouteHistoryCard({
   const { visible: sheetEntered } = useFadePresence(true);
   const sheetMode = FEATURES.mobileRouteSheet && isPhone;
   const { expanded: sheetExpanded, handle: sheetHandle } = useBottomSheet(route.routeShortName);
+  // The chart fill's gradient id. Not the route name: a name with a space ("Local Weekday") made
+  // url(#…) invalid, so the fill fell back to solid black. Only letters, digits, - and _ are kept.
+  const gradientId = `sparkline-grad-${useId().replace(/[^A-Za-z0-9_-]/g, '')}`;
   const { newestFirst: snaps } = routeHistorySnapshots(route);
   // The chart and summary use the snapshots with a value in the period; rows list every snapshot.
   const valued = snaps.filter(s => periodMinutes(s, period) != null);
@@ -275,13 +278,13 @@ function RouteHistoryCard({
           <div className={`w-full ${CARD_CALLOUT_SURFACE} p-3`}>
             <svg width="100%" viewBox={`0 0 ${width} ${height}`} className="overflow-visible">
               <defs>
-                <linearGradient id={`sparkline-grad-${route.routeShortName}`} x1="0" y1="0" x2="0" y2="1">
+                <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
                   <stop offset="0%" style={{ stopColor: lineColor }} stopOpacity="0.18" />
                   <stop offset="100%" style={{ stopColor: lineColor }} stopOpacity="0" />
                 </linearGradient>
               </defs>
 
-              <path d={fillPath} fill={`url(#sparkline-grad-${route.routeShortName})`} />
+              <path d={fillPath} fill={`url(#${gradientId})`} />
 
               <path
                 d={linePath}
