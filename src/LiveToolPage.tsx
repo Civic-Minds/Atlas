@@ -54,8 +54,8 @@ function stepLabels(measure: MapMeasure): [string, string, string] {
 }
 const STEP_VAR = (measure: MapMeasure, step: number) => `var(--strip-${measure === 'bunching' ? 'bunching' : 'delay'}-${step})`;
 
-/** The heatmap prototype's one line on what the colour means (CIV-942, wording to confirm). */
-const DELAY_STARTS_NOTE = 'Typical minutes of delay added since the previous stop that stay for the next 3 stops';
+/** Delay starts' definition, after its name in the key (Ryan, 2026-10-26, word for word). */
+const DELAY_STARTS_NOTE = 'delay added that lasts 3+ stops';
 /** The stop card's line for that figure (wording to confirm). */
 const DELAY_STAYS = 'Added and kept';
 
@@ -105,10 +105,10 @@ function Key({ measure }: { measure: MapMeasure }) {
   const labels = stepLabels(measure);
   return (
     <div className="flex flex-wrap items-center justify-end gap-2">
-      {measure === 'delayStarts' && <div className={`${MAP_BADGE} h-8`}><span className={MAP_BADGE_LABEL}>{DELAY_STARTS_NOTE}</span></div>}
       {KEY_DEFINITION[measure] && <div className={`${MAP_BADGE} h-8`}><span className={MAP_BADGE_LABEL}>{KEY_DEFINITION[measure]}</span></div>}
       <div className={`${MAP_BADGE} h-8 gap-3`} role="group" aria-label="Map colours">
         <span className="text-xs font-bold leading-none text-[var(--text-secondary)]">{measureLabel(measure)}</span>
+        {measure === 'delayStarts' && <span className={MAP_BADGE_LABEL}>{DELAY_STARTS_NOTE}</span>}
         {labels.map((l, i) => <LegendItem key={l} kind="line" color={STEP_VAR(measure, i)}><span className={MAP_BADGE_LABEL}>{l}</span></LegendItem>)}
         <LegendItem kind="line" color="var(--strip-delay-0)" swatchClassName="opacity-45"><span className={MAP_BADGE_LABEL}>Not measured</span></LegendItem>
       </div>
@@ -153,31 +153,18 @@ const NARROW_PAD = { top: 56, bottom: 24, left: 24, right: 24 };
 const BOTH_DIRECTIONS = 'both directions';
 const weekly = (v3: LiveV3) => (v3.weekly ? kpiTiles(v3.weekly, weekDailyValues(v3)) : []);
 
-/** The network's late share by hour, from each route's own by-hour shares weighted by their departures. */
-function networkHours(s: AgencySummary) {
-  return Array.from({ length: 24 }, (_, hour) => {
-    let n = 0, late = 0;
-    for (const r of s.routes) { const h = r.lateByHour.find(x => x.hour === hour); if (h) { n += h.n; late += h.value * h.n; } }
-    return { hour, value: n ? late / n : 0, n };
-  }).filter(x => x.n > 0);
-}
-
 /** Under the left panel's tiles; the full rule is its hover text. */
 const NOISE_CAPTION = 'Grey = within normal day-to-day change';
-/** The network's summary, on the left with no route picked: the week's figures as one-line rows, then late departures by hour. */
+/** The network's summary, on the left with no route picked: the week's figures as one-line rows, (late departures by hour show for a picked route only). */
 function summaryWidgets(s: AgencySummary, band: DashboardBand): PanelWidget[] {
   const thisLeft = s.weekly ? leftOutDates(s.weekly.thisWeek) : [], lastLeft = s.weekly ? leftOutDates(s.weekly.lastWeek) : [];
   const weekLeft = { text: excludingWeeksText(thisLeft, lastLeft), title: leftOutReason([...lastLeft, ...thisLeft]) };
-  const hours = networkHours(s);
   const tiles = agencyKpiTiles(s);
   return [
-    ...(tiles.length ? [{ key: 'week', size: 'medium' as const, node: <WeekTable tiles={tiles} scope={s.agency.toUpperCase()} caption={NOISE_CAPTION} captionTitle={NOISE_RULE} excluding={weekLeft.text} excludingTitle={weekLeft.title ?? undefined} /> }] : []),
-    ...(hours.length ? [{ key: 'late-hours', size: 'medium' as const, node: <LateByHourSection chart="mini" hours={hours} band={band} overall={s.weekly?.thisWeek.late?.share ?? null} days={s.weekly?.thisWeek.healthyDates.length} leftOut={s.weekly ? leftOutDates(s.weekly.thisWeek) : []} height={56} /> }] : []),
+    ...(tiles.length ? [{ key: 'week', size: 'medium' as const, node: <WeekTable tiles={tiles} scope="All routes" caption={NOISE_CAPTION} captionTitle={NOISE_RULE} excluding={weekLeft.text} excludingTitle={weekLeft.title ?? undefined} /> }] : []),
   ];
 }
 
-/** The left panel's heading: the agency's name, as the pages write it. */
-const headingWidget = (text: string): PanelWidget => ({ key: 'heading-agency', size: 'medium', node: <h2 className="m-0 truncate text-sm font-bold text-[var(--text-primary)]">{text}</h2> });
 
 /** The figures for a route, in the one left panel: the week's figures in the same table as the network's, then the run time strip, late by hour and the worst stops. A picked stop or segment shows in the map popover only. */
 function routeWidgets({ data, v3, dir, band, setPick, route }: {
@@ -255,7 +242,7 @@ function Body({ agency, s, route, setRoute, dir, setDir, dirSlot, routeSlot, dat
     ? pick?.kind === 'segment' ? <MapCard title={stretchLabel(stops.get(pick.fromStopId)?.name ?? pick.fromStopId, stops.get(pick.toStopId)?.name ?? pick.toStopId)} lines={[...(measure === 'delayStarts' ? keptLine(v3, band, shown, pick.toStopId, pick.fromStopId, uncertain) : []), ...segmentLines(bandData, shown, pick.fromStopId, pick.toStopId)]} />
       : picked ? <MapCard title={picked.name} lines={stopLines(v3, band, shown, picked, measure, uncertain)} /> : null
     : null;
-  const summary = useMemo(() => [headingWidget(agency.toUpperCase()), ...summaryWidgets(s, band)], [s, band, agency]);
+  const summary = useMemo(() => summaryWidgets(s, band), [s, band]);
   const backToNetwork = () => { setRoute(null); setDir(null); setPick(null); };
   // One panel, on the left: the network's overview with no route picked; the route's own figures once one is picked, with a way back.
   const back: PanelWidget = { key: 'back', size: 'medium', node: <button type="button" onClick={backToNetwork} className="text-sm font-bold text-[var(--text-primary)] hover:underline">← {agency.toUpperCase()}</button> };
@@ -372,8 +359,9 @@ export default function LiveToolPage() {
         <button type="button" onClick={() => { setRoute(null); setDir(null); setPick(null); }} className="text-sm font-bold hover:underline">{agency.toUpperCase()}</button>
         <div ref={setRouteSlot} className="contents" />
         <div ref={setDirSlot} className="contents" />
-        <PeriodMenu band={band} setBand={setBand} />
         <div ref={setDataSlot} className="contents" />
+        {/* Time of day at the right end of the top bar (Ryan, 2026-10-26). */}
+        <div className="ml-auto"><PeriodMenu band={band} setBand={setBand} /></div>
       </header>
       <Body agency={agency} dirSlot={dirSlot} routeSlot={routeSlot} dataSlot={dataSlot} s={s} route={route} setRoute={setRoute} dir={dir} setDir={setDir} band={band} measure={measure} setMeasure={setMeasure} pick={pick} setPick={setPick} />
     </>,
