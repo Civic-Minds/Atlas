@@ -4,7 +4,7 @@ import { Search, X, Info, History as HistoryIcon, ChevronDown, Radio } from 'luc
 import { CompareTab } from './components/Interval/CompareControl';
 import { useUrlPathname } from './hooks/useUrlPathname';
 import ModeTab from './components/ModeTab';
-import { PILL_SURFACE, FLOATING_CARD, SEARCH_BAR_WIDTH, TRANSITION_BASE, TRANSITION_SLOW, Z_MAP_OVERLAY, Z_HEADER, Z_MODAL_TOP, SIDEBAR_LEFT_FALLBACK, sidebarFrameStyle, APP_TAB_ACTIVE, APP_TAB_INACTIVE, ICON_BTN, SEARCH_ICON } from './styles';
+import { PILL_SURFACE, FLOATING_CARD, SEARCH_BAR_WIDTH, TRANSITION_BASE, TRANSITION_SLOW, Z_MAP_OVERLAY, Z_HEADER, Z_MODAL_TOP, SIDEBAR_LEFT_FALLBACK, sidebarFrameStyle, ICON_BTN, SEARCH_ICON } from './styles';
 import { R2_PUBLIC_URL, getAgencyArtifactUrls, getAgencyCatalogUrl, FEATURES, FEATURE_ROUTES, ATLAS_MODE } from '../shared/config';
 import AtlasLogo from './components/AtlasLogo';
 import { isAgencyVisibleInBrowser } from '../shared/agencyVisibility';
@@ -730,16 +730,15 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
             <span className="sm:hidden w-px h-4 bg-[var(--border-primary)] shrink-0" aria-hidden="true" />
 
             <div ref={appLinksRef} className="relative flex sm:hidden">
-              <button
-                type="button"
+              <ModeTab
+                variant="menu-trigger"
+                label={liveTabOn ? 'Live' : inHistory ? 'History' : compareActive ? 'Compare' : 'More'}
+                ariaLabel="More Atlas views"
+                expanded={appLinksOpen}
+                active={appLinksOpen || inHistory || inLive || compareActive}
                 onClick={() => setAppLinksOpen(open => !open)}
-                aria-label="More Atlas views"
-                aria-expanded={appLinksOpen}
-                className={`flex h-8 max-sm:h-[32px] px-3 items-center gap-1.5 rounded-full shrink-0 transition-colors text-xs font-bold border focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)] ${appLinksOpen || inHistory || inLive || compareActive ? APP_TAB_ACTIVE : APP_TAB_INACTIVE}`}
-              >
-                <span>{liveTabOn ? 'Live' : inHistory ? 'History' : compareActive ? 'Compare' : 'More'}</span>
-                <ChevronDown className={`w-3.5 h-3.5 transition-transform ${appLinksOpen ? 'rotate-180' : ''}`} />
-              </button>
+                trailing={<ChevronDown className={`w-3.5 h-3.5 transition-transform ${appLinksOpen ? 'rotate-180' : ''}`} />}
+              />
               {appLinksOpen && (
                 <div className={`absolute top-10 right-0 ${FLOATING_CARD} min-w-48 p-1.5 flex flex-col gap-1 ${Z_MODAL_TOP}`}>
                   {showLiveControl && (
