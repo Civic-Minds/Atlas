@@ -115,7 +115,7 @@ export const StopCard: React.FC<StopCardProps> = ({
             {stopAgencies.length === 1 ? (
               <FlaggableValue reason="Stop is missing, misplaced, or assigned incorrectly" reportRef={reportRef} className="block w-full text-left">
                 <SidebarCardHeader
-                  eyebrow={stopAgencies[0]}
+                  eyebrow={back?.to === stopAgencies[0] ? null : stopAgencies[0]}
                   title={`${titleCase(currentStop.stopName)}${currentStop.direction ? ` — ${currentStop.direction}` : ''}`}
                   titleClamp
                 />
