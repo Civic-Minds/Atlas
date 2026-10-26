@@ -1,10 +1,10 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { useParams } from 'react-router';
 import { FEATURES } from '../shared/config';
 
 import { minutesText } from '../shared/liveFormat';
-import { LATE_SHORT, LATE_THRESHOLD, excludingWeeksText, leftOutReason, risePointsText } from '../shared/liveWording';
+import { excludingWeeksText, leftOutReason } from '../shared/liveWording';
 import type { AgencySummary } from '../shared/liveAgency';
 import { weekDailyValues, type UncertainStart, type DashboardBand, type DashboardBandData, type LiveV3 } from '../shared/liveDashboard';
 import { useLiveDashboard } from './hooks/useLiveDashboard';
@@ -13,8 +13,7 @@ import { useLiveAgency } from './LiveAgencyPage';
 import { devOnly, liveReportTitle } from './lib/liveReportData';
 import { applySeoToDocument } from './lib/seoDom';
 import { syncUrlParams } from './utils/syncUrlParams';
-import { shortStopName, stretchLabel } from './utils/stopLabel';
-import { titleCase } from './utils/format';
+import { stretchLabel } from './utils/stopLabel';
 import { agencyKpiTiles } from './utils/liveAgencyKpi';
 import { kpiTiles, leftOutDates, type Kpi } from './utils/liveKpi';
 import LiveOffNotice from './components/LiveOffNotice';
@@ -22,7 +21,7 @@ import AtlasLogo from './components/AtlasLogo';
 import RouteMap, { type MapPick } from './components/Live/RouteMap';
 import { directionStopsById } from './components/Live/DirectionStrip';
 import { DELAY_STARTS_LABEL, MAP_STEP_LIMITS, MEASURES, measureLabel, routeMapModel, type MapMeasure, type MapSegment, type RouteMapModel } from './components/Live/routeMapModel';
-import { delayHeatPoints, type HeatPoint } from './components/Live/delayHeatModel';
+import { delayHeatPoints } from './components/Live/delayHeatModel';
 import { STEP_LABELS, stopDetail, type RouteStripStop } from './components/Live/routeStripModel';
 import Widget from './components/Live/tool/Widget';
 import WidgetPanel, { type PanelWidget } from './components/Live/tool/WidgetPanel';
@@ -32,11 +31,13 @@ import ProblemsWidget from './components/Live/tool/ProblemsWidget';
 import { worstStopRows } from './components/Live/sections/WorstStopsSection';
 import RunTimeWidget from './components/Live/tool/RunTimeWidget';
 import useNetworkData, { type ReadyRoute } from './components/Live/tool/useNetworkData';
-import { KpiTile, WeekTable } from './LiveDashboardView';
+import { WeekTable } from './LiveDashboardView';
 import { NOISE_RULE } from '../shared/liveDashboard';
 import { BANDS } from './LiveExplorePage';
 import PillGroup, { PILL_ROW } from './components/ui/PillGroup';
 import Pill from './components/ui/Pill';
+import LegendItem from './components/ui/LegendItem';
+import { MAP_BADGE, MAP_BADGE_LABEL } from './styles';
 import { DataUpTo, withNiceNames } from './LiveRoutePage';
 
 const pct = (x: number) => `${Math.round(x * 100)}%`;
@@ -58,26 +59,34 @@ const DELAY_STARTS_NOTE = 'Typical minutes of delay added since the previous sto
 /** The stop card's line for that figure (wording to confirm). */
 const DELAY_STAYS = 'Added and kept';
 
-/** The map's key, with the heatmap toggle (CIV-942 prototype) above it. */
-function Key({ measure, toggleHeat }: { measure: MapMeasure; toggleHeat: () => void }) {
-  const labels = stepLabels(measure);
+/** The measures, on the map at the top right: they change only the map and the route list, so they sit with them. "Delay starts" (the CIV-942 heatmap) is one of the set. */
+const MAP_MEASURES: ReadonlyArray<readonly [MapMeasure, string]> = [...MEASURES, ['delayStarts', DELAY_STARTS_LABEL]];
+function MeasurePills({ measure, setMeasure }: { measure: MapMeasure; setMeasure: (m: MapMeasure) => void }) {
   return (
-    <div className="pointer-events-none absolute left-3 top-3 z-10 flex flex-col items-start gap-2">
-    <Pill size="segment" tone="glass" className="pointer-events-auto" selected={measure === 'delayStarts'} onClick={toggleHeat}>{DELAY_STARTS_LABEL}</Pill>
-    <div className="rounded-xl border border-[var(--border-primary)] bg-[var(--bg-header)] px-3 py-2 text-xs shadow-sm">
-      <div className="font-bold text-[var(--text-secondary)]">{measureLabel(measure)}</div>
-      {measure === 'delayStarts' && <div className="text-[var(--text-legend)]">{DELAY_STARTS_NOTE}</div>}
-      <ul className="m-0 mt-1 flex flex-col gap-1 p-0">
-        {labels.map((l, i) => (
-          <li key={l} className="flex list-none items-center gap-2 text-[var(--text-legend)]"><span aria-hidden="true" className="inline-block h-2.5 w-5 rounded-full" style={{ background: STEP_VAR(measure, i) }} />{l}</li>
-        ))}
-        <li className="flex list-none items-center gap-2 text-[var(--text-legend)]"><span aria-hidden="true" className="inline-block h-2.5 w-5 rounded-full" style={{ background: 'var(--strip-delay-0)', opacity: 0.45 }} />Not measured</li>
-      </ul>
-    </div>
+    <div role="group" aria-label="Measure" className="pointer-events-auto absolute right-0 top-0 z-10 flex flex-wrap justify-end gap-1.5">
+      {MAP_MEASURES.map(([k, text]) => <Pill key={k} size="segment" tone="glass" selected={measure === k} onClick={() => setMeasure(k)}>{text}</Pill>)}
     </div>
   );
 }
 
+/** The picked measure's one-line definition, first in the key (Ryan, 2026-10-26, word for word). Run time has none; Delay starts has its own note. */
+const KEY_DEFINITION: Partial<Record<MapMeasure, string>> = { late: '5½+ min late', extraWait: 'wait beyond the scheduled gap', bunching: 'gaps under 2 min or over 2× scheduled' };
+
+/** The map's key, as a row of pills at the bottom right of the map, clear of the zoom buttons (the regular map's legend pills). */
+function Key({ measure }: { measure: MapMeasure }) {
+  const labels = stepLabels(measure);
+  return (
+    <div className="flex flex-wrap items-center justify-end gap-2">
+      {measure === 'delayStarts' && <div className={`${MAP_BADGE} h-8`}><span className={MAP_BADGE_LABEL}>{DELAY_STARTS_NOTE}</span></div>}
+      {KEY_DEFINITION[measure] && <div className={`${MAP_BADGE} h-8`}><span className={MAP_BADGE_LABEL}>{KEY_DEFINITION[measure]}</span></div>}
+      <div className={`${MAP_BADGE} h-8 gap-3`} role="group" aria-label="Map colours">
+        <span className="text-xs font-bold leading-none text-[var(--text-secondary)]">{measureLabel(measure)}</span>
+        {labels.map((l, i) => <LegendItem key={l} kind="line" color={STEP_VAR(measure, i)}><span className={MAP_BADGE_LABEL}>{l}</span></LegendItem>)}
+        <LegendItem kind="line" color="var(--strip-delay-0)" swatchClassName="opacity-45"><span className={MAP_BADGE_LABEL}>Not measured</span></LegendItem>
+      </div>
+    </div>
+  );
+}
 
 /** The lines of a stop's card: the trimmed figures the strip's hover shows, then its extra wait where it has one. */
 function stopLines(v3: LiveV3, band: DashboardBand, dir: number, stop: RouteStripStop, measure: MapMeasure, uncertain: readonly UncertainStart[]): string[] {
@@ -110,7 +119,7 @@ function MapCard({ title, lines }: { title: string; lines: string[] }) {
   );
 }
 
-const PANEL_PAD = { top: 24, bottom: 24, left: 410, right: 410 };
+const PANEL_PAD = { top: 56, bottom: 24, left: 410, right: 24 };
 const NARROW_PAD = { top: 56, bottom: 24, left: 24, right: 24 };
 /** What the route's week figures cover (the Run time tile's own scope wording). */
 const BOTH_DIRECTIONS = 'both directions';
@@ -125,78 +134,44 @@ function networkHours(s: AgencySummary) {
   }).filter(x => x.n > 0);
 }
 
-/** The left panel's one-line explanations (approved by Ryan, 2026-10-17): Run time and Service delivered have none. */
-const MATH: readonly string[] = [LATE_SHORT, 'longer wait than scheduled, from the gaps between vehicles', 'too close · too far apart (gaps under 2 min or over 2× scheduled)'];
 /** Under the left panel's tiles; the full rule is its hover text. */
 const NOISE_CAPTION = 'Grey = within normal day-to-day change';
-/** The route panel's tiles are bare (figure and change): the explanations are shown once, on the left. */
-const tileWidgets = (tiles: ReturnType<typeof weekly>, legend: boolean): PanelWidget[] => tiles.map((k, i) => ({
-  key: `tile-${k.key}`, size: 'small' as const, tile: true,
-  node: (
-    <>
-      <KpiTile k={k} bare caption={legend && k.key === 'bunching'} />
-      {/* The week's figures cover the whole route, while Run time and the stops follow the direction pills. Said once, in the 12px gap under the last row of tiles (from the row's left tile, for any number of tiles), so it takes no height. */}
-      {i === tiles.length - (tiles.length % 2 || 2) && <span className="pointer-events-none absolute left-0 top-full whitespace-nowrap text-xs leading-3 text-[var(--text-dim)]">{BOTH_DIRECTIONS}</span>}
-    </>
-  ),
-}));
-
-/** The network's summary, always on the left: the week's figures as one-line rows, then late departures by hour. */
+/** The network's summary, on the left with no route picked: the week's figures as one-line rows, then late departures by hour. */
 function summaryWidgets(s: AgencySummary, band: DashboardBand): PanelWidget[] {
   const thisLeft = s.weekly ? leftOutDates(s.weekly.thisWeek) : [], lastLeft = s.weekly ? leftOutDates(s.weekly.lastWeek) : [];
   const weekLeft = { text: excludingWeeksText(thisLeft, lastLeft), title: leftOutReason([...lastLeft, ...thisLeft]) };
   const hours = networkHours(s);
   const tiles = agencyKpiTiles(s);
   return [
-    ...(tiles.length ? [{ key: 'week', size: 'medium' as const, node: <WeekTable tiles={tiles} scope={s.agency.toUpperCase()} notes={MATH} caption={NOISE_CAPTION} captionTitle={NOISE_RULE} excluding={weekLeft.text} excludingTitle={weekLeft.title ?? undefined} /> }] : []),
+    ...(tiles.length ? [{ key: 'week', size: 'medium' as const, node: <WeekTable tiles={tiles} scope={s.agency.toUpperCase()} caption={NOISE_CAPTION} captionTitle={NOISE_RULE} excluding={weekLeft.text} excludingTitle={weekLeft.title ?? undefined} /> }] : []),
     ...(hours.length ? [{ key: 'late-hours', size: 'medium' as const, node: <LateByHourSection chart="mini" hours={hours} band={band} overall={s.weekly?.thisWeek.late?.share ?? null} days={s.weekly?.thisWeek.healthyDates.length} leftOut={s.weekly ? leftOutDates(s.weekly.thisWeek) : []} height={56} /> }] : []),
-  ];
-}
-
-/** The widgets with nothing selected: the network's worst places, each a clickable list at full width. */
-/** Where delays start: each route direction's stop that adds the most delay that stays, the same figure the map and the route list use (CIV-942). */
-function delayStartRows(network: ReadonlyMap<string, LiveV3>, band: DashboardBand) {
-  const best = new Map<string, HeatPoint>();
-  for (const [r, v3] of network) for (const p of delayHeatPoints(new Map([[r, v3]]), band)) {
-    const k = `${r}|${p.directionId}`;
-    if (p.addedMin > 0 && p.addedMin > (best.get(k)?.addedMin ?? 0)) best.set(k, p);
-  }
-  return [...best.values()].sort((a, b) => b.addedMin - a.addedMin)
-    .map(p => ({ route: p.route, directionId: p.directionId, fromStopId: p.fromStopId, toStopId: p.stopId, fromName: p.fromName, toName: p.name, value: Math.round(p.addedMin * 10) / 10 }));
-}
-
-function networkWidgets(s: AgencySummary, network: ReadonlyMap<string, LiveV3>, band: DashboardBand, onOpen: (route: string, dir: number, pick: MapPick) => void): PanelWidget[] {
-  const label = (r: string) => s.routes.find(x => x.route === r)?.label ?? r;
-  const stopRows = s.worstStops.slice(0, 5).map(x => ({ key: `${x.route}-${x.stopId}-${x.directionId}`, label: shortStopName(titleCase(x.name)), sub: x.routeLabel, value: pct(x.lateShare), onPick: () => onOpen(x.route, x.directionId, { kind: 'stop', stopId: x.stopId }) }));
-  const stretchRows = (list: ReadonlyArray<Pick<AgencySummary['delayStarts'][number], 'route' | 'directionId' | 'fromStopId' | 'toStopId' | 'fromName' | 'toName' | 'value'>>, value: (v: number) => string) => list.slice(0, 5).map(x => ({ key: `${x.route}-${x.directionId}-${x.fromStopId}-${x.toStopId}`, label: stretchLabel(titleCase(x.fromName), titleCase(x.toName)), sub: label(x.route), value: value(x.value), onPick: () => onOpen(x.route, x.directionId, { kind: 'segment', fromStopId: x.fromStopId, toStopId: x.toStopId }) }));
-  const delays = stretchRows(delayStartRows(network, band), mins), bunching = stretchRows(s.bunchingForms, risePointsText);
-  return [
-    ...(stopRows.length ? [{ key: 'problems', size: 'medium' as const, node: <ProblemsWidget title="Stops most often late" intro={`The ${stopRows.length} stops with the highest share of departures ${LATE_THRESHOLD}, across all analysed routes.`} rows={stopRows} /> }] : []),
-    ...(delays.length ? [{ key: 'delays', size: 'medium' as const, node: <ProblemsWidget title="Where delays start" intro="Route directions where delay jumps on one stretch and stays up, and the typical minutes it adds there." rows={delays} /> }] : []),
-    ...(bunching.length ? [{ key: 'bunching', size: 'medium' as const, node: <ProblemsWidget title="Where bunching forms" intro="Route directions where the share of gaps that are too short or too long steps up on one stretch and stays up." rows={bunching} /> }] : []),
   ];
 }
 
 /** The left panel's heading: the agency's name, as the pages write it. */
 const headingWidget = (text: string): PanelWidget => ({ key: 'heading-agency', size: 'medium', node: <h2 className="m-0 truncate text-sm font-bold text-[var(--text-primary)]">{text}</h2> });
 
-/** The widgets for a route: the week's tiles and the run time summary at half width, late by hour and the worst stops at full width. A picked stop or segment shows in the map popover only. */
-function routeWidgets({ data, v3, dir, band, setPick, legend }: {
-  data: { uncertainStart?: { directionId: number; stops: number }[] }; v3: LiveV3; dir: number; band: DashboardBand; setPick: (p: MapPick | null) => void; /** Room for the Bunching tile's "too close · too far apart" line. */ legend: boolean;
+/** The figures for a route, in the one left panel: the week's figures in the same table as the network's, then the run time strip, late by hour and the worst stops. A picked stop or segment shows in the map popover only. */
+function routeWidgets({ data, v3, dir, band, setPick, route }: {
+  data: { uncertainStart?: { directionId: number; stops: number }[] }; v3: LiveV3; dir: number; band: DashboardBand; setPick: (p: MapPick | null) => void; route: string;
 }): PanelWidget[] {
   const bandData = v3.bands[band] as DashboardBandData;
   const worst = worstStopRows(v3, bandData, dir, data.uncertainStart ?? [], 3, stopId => setPick({ kind: 'stop', stopId }));
   const hours = routeLateHours(v3);
   const hasRunTime = !!v3.runningTime?.bands[band]?.[String(dir)];
+  const tiles = weekly(v3);
+  const thisLeft = v3.weekly ? leftOutDates(v3.weekly.thisWeek) : [], lastLeft = v3.weekly ? leftOutDates(v3.weekly.lastWeek) : [];
+  const weekLeft = { text: excludingWeeksText(thisLeft, lastLeft), title: leftOutReason([...lastLeft, ...thisLeft]) };
   return [
-    ...tileWidgets(weekly(v3), legend),
+    // The week's figures cover the whole route (both directions), while Run time and the stops follow the direction pills.
+    ...(tiles.length ? [{ key: 'week', size: 'medium' as const, node: <WeekTable tiles={tiles} scope={`${route} · ${BOTH_DIRECTIONS}`} caption={NOISE_CAPTION} captionTitle={NOISE_RULE} excluding={weekLeft.text} excludingTitle={weekLeft.title ?? undefined} /> }] : []),
     ...(hasRunTime ? [{ key: 'run-time', size: 'medium' as const, node: <RunTimeWidget v3={v3} dir={dir} band={band} /> }] : []),
-    ...(hours.length ? [{ key: 'late-hours', size: 'medium' as const, node: <LateByHourSection chart="mini" hours={hours} band={band} overall={routeLateOverall(v3)} days={routeLateDays(v3)} leftOut={routeLeftOut(v3)} scope={BOTH_DIRECTIONS} /> }] : []),
+    ...(hours.length ? [{ key: 'late-hours', size: 'medium' as const, node: <LateByHourSection chart="mini" hours={hours} band={band} overall={routeLateOverall(v3)} days={routeLateDays(v3)} leftOut={routeLeftOut(v3)} scope={BOTH_DIRECTIONS} height={40} /> }] : []),
     ...(worst.length ? [{ key: 'problems', size: 'medium' as const, node: <ProblemsWidget title="Stops most often late" rows={worst} /> }] : []),
   ];
 }
 
-/** The right panel while a picked route's figures are on their way: the page's own word and soft grey blocks where the figures will be. */
+/** The panel while a picked route's figures are on their way: the page's own word and soft grey blocks where the figures will be. */
 function LoadingWidget() {
   return (
     <Widget title="Loading…" size="medium">
@@ -208,8 +183,8 @@ function LoadingWidget() {
 }
 
 /** The whole screen under the top bar: the map always, the overview on the left, the widgets on the right. */
-function Body({ agency, s, route, setRoute, dir, setDir, dirSlot, routeSlot, dataSlot, band, measure, toggleHeat, pick, setPick }: {
-  agency: string; dirSlot: HTMLElement | null; routeSlot: HTMLElement | null; dataSlot: HTMLElement | null; s: AgencySummary; route: string | null; setRoute: (r: string | null) => void; dir: number | null; setDir: (d: number | null) => void; band: DashboardBand; measure: MapMeasure; toggleHeat: () => void; pick: MapPick | null; setPick: (p: MapPick | null) => void;
+function Body({ agency, s, route, setRoute, dir, setDir, dirSlot, routeSlot, dataSlot, band, measure, setMeasure, pick, setPick }: {
+  agency: string; dirSlot: HTMLElement | null; routeSlot: HTMLElement | null; dataSlot: HTMLElement | null; s: AgencySummary; route: string | null; setRoute: (r: string | null) => void; dir: number | null; setDir: (d: number | null) => void; band: DashboardBand; measure: MapMeasure; setMeasure: (m: MapMeasure) => void; pick: MapPick | null; setPick: (p: MapPick | null) => void;
 }) {
   const wide = useMediaQuery('(min-width: 1024px)');
   const routes = useMemo(() => s.routes.map(r => r.route), [s]);
@@ -252,28 +227,13 @@ function Body({ agency, s, route, setRoute, dir, setDir, dirSlot, routeSlot, dat
     ? pick?.kind === 'segment' ? <MapCard title={stretchLabel(stops.get(pick.fromStopId)?.name ?? pick.fromStopId, stops.get(pick.toStopId)?.name ?? pick.toStopId)} lines={[...(measure === 'delayStarts' ? keptLine(v3, band, shown, pick.toStopId, pick.fromStopId, uncertain) : []), ...segmentLines(bandData, shown, pick.fromStopId, pick.toStopId)]} />
       : picked ? <MapCard title={picked.name} lines={stopLines(v3, band, shown, picked, measure, uncertain)} /> : null
     : null;
-  // The Bunching tile's legend line is shown only where the right panel has room for it (it never scrolls or clips); its text is the tile's hover title either way.
-  const panelRef = useRef<HTMLDivElement>(null);
-  const [legend, setLegend] = useState(false);
-  const LEGEND_PX = 7;
-  useLayoutEffect(() => {
-    const el = panelRef.current;
-    if (!el) return;
-    // The panel's content height is where its last widget ends (scrollHeight is never less than the panel's own height).
-    const measure = () => {
-      const last = el.lastElementChild?.getBoundingClientRect().bottom ?? 0;
-      // Shown, it stays while it fits; hidden, it comes back only with room for the whole line (no flicker between the two).
-      const room = el.getBoundingClientRect().bottom - last;
-      setLegend(legend ? room >= 0 : room >= LEGEND_PX);
-    };
-    measure();
-    if (typeof ResizeObserver === 'undefined') return;
-    const ro = new ResizeObserver(measure);
-    ro.observe(el);
-    return () => ro.disconnect();
-  });
   const summary = useMemo(() => [headingWidget(agency.toUpperCase()), ...summaryWidgets(s, band)], [s, band, agency]);
-  const widgets: PanelWidget[] = v3 && ready ? routeWidgets({ data: ready, v3, dir: shown, band, setPick, legend }) : !route ? networkWidgets(s, networkV3, band, (r, d, p) => { setRoute(r); setDir(d); setPick(p); }) : own.kind === 'loading' ? [{ key: 'loading', size: 'medium' as const, node: <LoadingWidget /> }] : [];
+  const backToNetwork = () => { setRoute(null); setDir(null); setPick(null); };
+  // One panel, on the left: the network's overview with no route picked; the route's own figures once one is picked, with a way back.
+  const back: PanelWidget = { key: 'back', size: 'medium', node: <button type="button" onClick={backToNetwork} className="text-sm font-bold text-[var(--text-primary)] hover:underline">← {agency.toUpperCase()}</button> };
+  const routePanel: PanelWidget[] | null = !route ? null
+    : v3 && ready ? [back, ...routeWidgets({ data: ready, v3, dir: shown, band, setPick, route: ready.route })]
+    : [back, ...(own.kind === 'loading' ? [{ key: 'loading', size: 'medium' as const, node: <LoadingWidget /> }] : [])];
   // The map note sits over the map's bottom edge: the route is framed above it (its measured height plus its inset and a gap).
   const [noteEl, setNoteEl] = useState<HTMLElement | null>(null);
   const [noteH, setNoteH] = useState(0);
@@ -288,11 +248,18 @@ function Body({ agency, s, route, setRoute, dir, setDir, dirSlot, routeSlot, dat
   }, [noteEl]); // eslint-disable-line react-hooks/exhaustive-deps
   const framePad = (pad: typeof PANEL_PAD) => ({ ...pad, bottom: Math.max(pad.bottom, noteH ? noteH + 12 + 12 : 0) });
   // The note is about delay at the first stops: it shows in the delay-based views (Late, Run time), not for the gap-based ones (Extra wait, Bunching).
-  const note = ready?.note && (measure === 'late' || measure === 'runTime' || measure === 'delayStarts') && <p ref={setNoteEl} className="pointer-events-none absolute bottom-0 left-0 right-12 m-0 rounded-lg bg-[var(--bg-header)] px-3 py-1.5 text-xs text-[var(--text-muted)] shadow-sm">{ready.note}</p>;
+  const showNote = ready?.note && (measure === 'late' || measure === 'runTime' || measure === 'delayStarts');
+  // The bottom of the map: the note (when it applies) above the key's row of pills. The route is framed above both.
+  const note = (
+    <div ref={setNoteEl} className="pointer-events-none absolute bottom-0 left-0 right-12 flex flex-col items-end gap-2">
+      {showNote && <p className="m-0 rounded-lg bg-[var(--bg-header)] px-3 py-1.5 text-xs text-[var(--text-muted)] shadow-sm">{ready!.note}</p>}
+      <Key measure={measure} />
+    </div>
+  );
   const mapEl = (
     <RouteMap
       model={model} measure={measure} heat={heat} selected={pick} anchor={anchor} card={card} padding={framePad(wide ? PANEL_PAD : NARROW_PAD)}
-      controlsRight={wide ? 'calc(24.5rem + 24px)' : 12}
+      controlsRight={12}
       onPick={p => { if (!route && p?.kind === 'segment' && p.route) setRoute(p.route); else setPick(p); }}
       frameKey={ready && route ? `route-${ready.route}-${noteH}` : `network-${network.size === routes.length ? 'all' : 'loading'}`}
     />
@@ -311,10 +278,10 @@ function Body({ agency, s, route, setRoute, dir, setDir, dirSlot, routeSlot, dat
         <div className="absolute inset-0 overflow-y-auto">
           <div className="relative h-[55vh] min-h-[22rem]">
             <div className="absolute inset-0">{mapEl}</div>
-            <div className="pointer-events-none absolute inset-3"><Key measure={measure} toggleHeat={toggleHeat} />{note}</div>
+            <div className="pointer-events-none absolute inset-3"><MeasurePills measure={measure} setMeasure={setMeasure} />{note}</div>
           </div>
-          <WidgetPanel className="p-3" widgets={[...summary, ...widgets]} />
-          <div className="flex p-3 pt-0"><OverviewList s={s} measure={measure} band={band} route={route} network={networkV3} onPick={r => { setRoute(r); setPick(null); }} /></div>
+          <WidgetPanel className="p-3" widgets={routePanel ?? summary} />
+          {!routePanel && <div className="flex p-3 pt-0"><OverviewList s={s} measure={measure} band={band} route={route} network={networkV3} onPick={r => { setRoute(r); setPick(null); }} /></div>}
         </div>
       </div>
     );
@@ -325,14 +292,15 @@ function Body({ agency, s, route, setRoute, dir, setDir, dirSlot, routeSlot, dat
       <div className="absolute inset-0">{mapEl}</div>
       <div className="pointer-events-none absolute inset-3 flex gap-3">
         <div className="pointer-events-auto flex w-[24.5rem] shrink-0 flex-col gap-2">
-          <WidgetPanel widgets={summary} />
-          <OverviewList s={s} measure={measure} band={band} route={route} network={networkV3} onPick={r => { setRoute(r); setPick(null); }} />
+          {routePanel ? <WidgetPanel widgets={routePanel} /> : <>
+            <WidgetPanel widgets={summary} />
+            <OverviewList s={s} measure={measure} band={band} route={route} network={networkV3} onPick={r => { setRoute(r); setPick(null); }} />
+          </>}
         </div>
         <div className="relative min-w-0 flex-1">
-          <Key measure={measure} toggleHeat={toggleHeat} />
+          <MeasurePills measure={measure} setMeasure={setMeasure} />
           {note}
         </div>
-        <WidgetPanel panelRef={panelRef} className="pointer-events-auto w-[24.5rem] shrink-0" widgets={widgets} />
       </div>
     </div>
   );
@@ -346,9 +314,6 @@ export default function LiveToolPage() {
   const [dir, setDir] = useState<number | null>(() => { const d = readParam('dir'); return d != null && d !== '' && !Number.isNaN(Number(d)) ? Number(d) : null; });
   const [band, setBand] = useState<DashboardBand>(() => { const b = readParam('band'); return BANDS.some(([k]) => k === b) ? (b as DashboardBand) : 'all'; });
   const [measure, setMeasure] = useState<MapMeasure>(() => { const m = readParam('measure'); return MEASURES.some(([k]) => k === m) || m === 'delayStarts' ? (m as MapMeasure) : 'late'; });
-  // The measure the heatmap toggle goes back to when it is switched off.
-  const [before, setBefore] = useState<MapMeasure>('late');
-  const toggleHeat = () => { if (measure === 'delayStarts') setMeasure(before); else { setBefore(measure); setMeasure('delayStarts'); } };
   const [dirSlot, setDirSlot] = useState<HTMLElement | null>(null);
   const [routeSlot, setRouteSlot] = useState<HTMLElement | null>(null);
   const [dataSlot, setDataSlot] = useState<HTMLElement | null>(null);
@@ -375,14 +340,13 @@ export default function LiveToolPage() {
     <>
       <header className={`${PILL_ROW} border-b border-[var(--border-primary)] bg-[var(--bg-header)] px-4 py-2`}>
         <AtlasLogo href="/" ariaLabel="Atlas by Civic Minds" showMark={false} />
-        <button type="button" onClick={() => { setRoute(null); setPick(null); }} className="text-sm font-bold hover:underline">{agency.toUpperCase()}</button>
+        <button type="button" onClick={() => { setRoute(null); setDir(null); setPick(null); }} className="text-sm font-bold hover:underline">{agency.toUpperCase()}</button>
         <div ref={setRouteSlot} className="contents" />
         <div ref={setDirSlot} className="contents" />
-        <PillGroup label="Measure" value={measure} onChange={v => setMeasure(v as MapMeasure)} options={MEASURES} />
         <PillGroup label="Time of day" value={band} onChange={v => setBand(v as DashboardBand)} options={BANDS} />
         <div ref={setDataSlot} className="contents" />
       </header>
-      <Body agency={agency} dirSlot={dirSlot} routeSlot={routeSlot} dataSlot={dataSlot} s={s} route={route} setRoute={setRoute} dir={dir} setDir={setDir} band={band} measure={measure} toggleHeat={toggleHeat} pick={pick} setPick={setPick} />
+      <Body agency={agency} dirSlot={dirSlot} routeSlot={routeSlot} dataSlot={dataSlot} s={s} route={route} setRoute={setRoute} dir={dir} setDir={setDir} band={band} measure={measure} setMeasure={setMeasure} pick={pick} setPick={setPick} />
     </>,
   );
 }
