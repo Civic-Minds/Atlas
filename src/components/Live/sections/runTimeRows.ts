@@ -63,7 +63,8 @@ export function patternRunTimeRows(v3: LiveV3, band: DashboardBand, d: number, n
     return [{
       key: `${d}-${p.kind}-${p.fromStopId}-${p.toStopId}`, direction: d, main: p.kind === 'main',
       // A pattern trimmed at a poorly measured end says how much of it is timed: "13 of 18 stops".
-      label: `${PATTERN_KIND_WORDS[p.kind]}: ${nice(p.fromName)} → ${nice(p.toName)} · ${p.stops < p.patternStops ? `${p.stops} of ${p.patternStops}` : p.stops} stops`,
+      // The stop count never breaks across lines (no-break spaces): "13 of 18 stops" wraps as one piece.
+      label: `${PATTERN_KIND_WORDS[p.kind]}: ${nice(p.fromName)} → ${nice(p.toName)} · ${`${p.stops < p.patternStops ? `${p.stops} of ${p.patternStops}` : p.stops} stops`.replace(/ /g, '\u00a0')}`,
       trips: f.n, thin: f.n < MIN_PATTERN_TRIPS,
       typical: finite(f.typicalMin) ? f.typicalMin : undefined, scheduled: finite(f.scheduledMin) ? f.scheduledMin : undefined, p90: finite(f.p90Min) ? f.p90Min : undefined,
       figures: `${dirName ? `${dirName}: ` : ''}${runningTimeFigures(f)} (${f.n.toLocaleString()} trips)`,
