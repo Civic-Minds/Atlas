@@ -22,6 +22,14 @@ export type DayName = (typeof DAY_NAMES)[number];
 
 /** Days before the anchor the table starts (so the anchor's own week is always whole). */
 export const WINDOW_DAYS_BEFORE = 7;
+/**
+ * Days before the anchor read as history for a current period under two weeks long, only to tell
+ * whether a thin day's services are the usual pattern or a one-off (Embark 302, stage 4). Never part
+ * of the window: day selection and periods still read the 7 days before the anchor.
+ */
+export const HISTORY_DAYS_BEFORE = 28;
+/** A current period with fewer table days than this reads the history above. */
+export const SHORT_PERIOD_DAYS = 14;
 /** Weeks from the anchor the table runs to: the anchor plus 55 days, 8 whole weeks. */
 export const WINDOW_WEEKS_AFTER = 8;
 /** Weeks a day's new pattern must hold before it counts as a new period, so a one- or two-week holiday, bridge or break is not one. */
@@ -87,6 +95,11 @@ export interface ServiceDayTable {
   source: 'anchor' | 'anchor-feed-end' | 'last-weeks' | 'first-weeks' | 'empty';
   /** One row per date in the window, in date order. */
   days: ServiceDay[];
+  /**
+   * Dates from HISTORY_DAYS_BEFORE before the anchor up to the window's start, for a window placed
+   * around the anchor only (source 'anchor'). Read only by pickServiceWeek's one-off check.
+   */
+  history?: ServiceDay[];
 }
 
 export interface ServiceDayTableInput {
@@ -218,12 +231,15 @@ export function buildServiceDayTable(input: ServiceDayTableInput): ServiceDayTab
     source = 'last-weeks';
   }
 
-  const days: ServiceDay[] = [];
-  for (let n = start; n <= end; n++) {
+  const row = (n: number): ServiceDay => {
     const services = servicesOn(n);
-    days.push({ date: ymdOf(n), day: DAY_NAMES[dayIndex(n)], services, signature: signatureOf(services) });
-  }
-  return { anchor, span, window: { start: ymdOf(start), end: ymdOf(end) }, source, days };
+    return { date: ymdOf(n), day: DAY_NAMES[dayIndex(n)], services, signature: signatureOf(services) };
+  };
+  const days: ServiceDay[] = [];
+  for (let n = start; n <= end; n++) days.push(row(n));
+  const history: ServiceDay[] = [];
+  if (source === 'anchor') for (let n = Math.max(lo, anchorDay - HISTORY_DAYS_BEFORE); n < start; n++) history.push(row(n));
+  return { anchor, span, window: { start: ymdOf(start), end: ymdOf(end) }, source, days, history };
 }
 
 /** Weeks of the table as a grid: one row per Monday-Sunday week, a day's cell null when the table has no row for it. */
@@ -477,6 +493,27 @@ export function pickServiceWeek(table: ServiceDayTable): ServiceWeek {
     return { signature, weeks: best.weeks, of: cells.length };
   });
 
+  // Rule 2, short current period: a thin day whose only pattern is seen on no other week of the
+  // table nor of the history before it, while the history repeats another pattern for that day, is a
+  // one-off; the day reads the history's pattern (Embark 302: an extra Monday service on Oct 26, in
+  // a period of 1.5 weeks because Friday changes on Nov 6). A day matching its history (the last days
+  // of a timetable that still runs, Dutchess and Blacksburg) keeps its vote.
+  const currentDays = weeks.reduce((n, w) => n + grid.cells[w].filter(c => c != null).length, 0);
+  const historyFill = new Map<DayName, ServiceDay[]>();
+  if (anchorInPeriod && currentDays < SHORT_PERIOD_DAYS && table.history?.length) {
+    for (const [d, day] of DAY_NAMES.entries()) {
+      const vote = votes[day];
+      if (!vote || vote.of >= MIN_VOTE_WEEKS) continue;
+      const tableWeeks = grid.cells.filter(week => week[d]?.signature === vote.signature).length;
+      const past = table.history.filter(c => c.day === day);
+      if (tableWeeks > 1 || past.some(c => c.signature === vote.signature)) continue;
+      const usual = mode(past.map(c => c.signature));
+      if (!usual || usual.count < 2 || usual.count < past.length * PERIOD_MAJORITY) continue;
+      votes[day] = { signature: usual.value, weeks: usual.count, of: past.length };
+      historyFill.set(day, past.filter(c => c.signature === usual.value));
+    }
+  }
+
   // Rules 3 and 4: the nearest whole week where every day carries its vote, counted in weeks from
   // the anchor's week (the later week on a tie).
   const matches = (w: number) => DAY_NAMES.filter((day, d) => grid.cells[w][d]?.signature === votes[day]?.signature).length;
@@ -493,7 +530,12 @@ export function pickServiceWeek(table: ServiceDayTable): ServiceWeek {
     if (!vote) return null;
     const own = picked != null ? grid.cells[picked][d] : null;
     if (own && own.signature === vote.signature) return own;
-    const options = weeks.map(w => grid.cells[w][d]).filter((c): c is ServiceDay => c?.signature === vote.signature);
+    let options = weeks.map(w => grid.cells[w][d]).filter((c): c is ServiceDay => c?.signature === vote.signature);
+    // A one-off's usual pattern (above) is read from the table's nearest date with it, or from history.
+    if (options.length === 0 && historyFill.has(day)) {
+      options = grid.cells.map(week => week[d]).filter((c): c is ServiceDay => c?.signature === vote.signature);
+      if (options.length === 0) options = historyFill.get(day)!;
+    }
     options.sort((a, b) => nearer(dayNumber(a.date), dayNumber(b.date)));
     substituted.push(day);
     return options[0];

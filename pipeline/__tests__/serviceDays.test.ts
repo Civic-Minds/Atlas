@@ -444,6 +444,36 @@ describe('pickServiceWeek: issues in the plan (section 4)', () => {
     expect(skippedDates(week)).toEqual(['20261026']);
   });
 
+  it('a one-off in a current period under two weeks long reads the usual day from history (Embark 302, stage 4)', () => {
+    // Friday changes on Nov 6, so the current period is Oct 21 to Nov 1; its only Monday (Oct 26)
+    // carries an extra service. The Mondays before the window (Oct 5-19) say it is a one-off.
+    const calendar = [
+      cal('WK', 'mo,tu,we,th', '20260901', '20261231'),
+      cal('FR1', 'fr', '20260901', '20261101'), cal('FR2', 'fr', '20261102', '20261231'),
+    ];
+    const calendarDates = [added('EXTRA', '20261026')];
+    const trips = [...tripsOf('WK', 'R', 10), ...tripsOf('EXTRA', 'X', 29), ...tripsOf('FR1', 'R', 10), ...tripsOf('FR2', 'R', 12)];
+    const table = buildServiceDayTable({ calendar, calendarDates, trips, anchor: '20261028' });
+    const week = pickServiceWeek(table);
+    expect(week.period).toEqual({ start: '20261021', end: '20261101' });
+    expect(week.services.Monday).toEqual(['WK']);
+    expect(week.services.Friday).toEqual(['FR1']);
+    // The window itself is unchanged: the history is read only for this check.
+    expect(table.window?.start).toBe('20261021');
+  });
+
+  it('a short current period whose day matches its history keeps it (Dutchess, Blacksburg: question 5)', () => {
+    // The old timetable runs to Nov 1 with more services than the new one; its last Monday is not a one-off.
+    const calendar = [
+      cal('WK', 'mo,tu,we,th,fr', '20260901', '20261231'),
+      cal('SEM', 'mo,tu,we,th,fr', '20260901', '20261101'),
+    ];
+    const trips = [...tripsOf('WK', 'R', 10), ...tripsOf('SEM', 'S', 20)];
+    const week = pickServiceWeek(buildServiceDayTable({ calendar, calendarDates: [], trips, anchor: '20261028' }));
+    expect(week.services.Monday).toEqual(['SEM', 'WK']);
+    expect(week.services.Friday).toEqual(['SEM', 'WK']);
+  });
+
   it('a repeat from an earlier period does not win a tie (VTA Thursdays, stage 4)', () => {
     // VTA's archived zip: every Thursday of its last period has a different trip pattern, and a
     // bus bridge ran on Sep 10 (the period before) and Sep 17. Counting the whole table made the
