@@ -10,8 +10,8 @@ export const pct = (x: number): string => `${Math.round(x * 100)}%`;
 /** "96.7%": a share to a tenth of a percent (service delivered), whole numbers without ".0". */
 export const pctTenth = (x: number): string => `${tenth(Math.round(x * 1000) / 10)}%`;
 
-/** "+12%", "−4%", "0%": a change in share, with a real minus sign. */
-export const signedPct = (x: number): string => `${x > 0 ? '+' : x < 0 ? '−' : ''}${Math.abs(Math.round(x * 100))}%`;
+/** "+12%", "−4%", "0%": a change in share, with a real minus sign; a change that rounds to 0 has no sign. */
+export const signedPct = (x: number): string => { const r = Math.round(x * 100); return `${r > 0 ? '+' : r < 0 ? '−' : ''}${Math.abs(r)}%`; };
 
 /** "+3.2 min", "−1 min": a signed minutes value, `tenth` with its unit. */
 export const signedMinutes = (x: number): string => `${x > 0 ? '+' : ''}${tenth(x)} min`;
