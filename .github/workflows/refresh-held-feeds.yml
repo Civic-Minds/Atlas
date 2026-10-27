@@ -1,0 +1,39 @@
+name: Refresh held timetables
+
+# A feed whose timetable had not started was held by the weekly refresh (#1144). On its start date
+# this refreshes just those agencies through the regular refresh workflow, so the new timetable goes
+# live that day instead of at the next weekly run.
+on:
+  schedule:
+    # Daily 06:30 UTC (~01:30 Toronto), after midnight in every North American zone the map covers.
+    - cron: '30 6 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: write
+
+env:
+  TZ: America/Toronto
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - name: Refresh agencies whose held timetable has started
+        run: |
+          due="$(npx tsx scripts/held-feeds-due.ts)"
+          if [ -z "$due" ]; then echo "No held timetable starts today."; exit 0; fi
+          # Monday's weekly run refreshes every agency anyway.
+          if [ "$(date +%u)" = "1" ] && [ "${{ github.event_name }}" = "schedule" ]; then echo "Monday: the weekly refresh covers $due."; exit 0; fi
+          echo "Refreshing: $due"
+          gh workflow run refresh-feeds.yml -f agencies="$due"
+        env:
+          GH_TOKEN: ${{ github.token }}
