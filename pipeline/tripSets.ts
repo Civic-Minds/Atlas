@@ -498,7 +498,16 @@ export function isOneGapPeriod(times: readonly number[], start: number, end: num
 }
 
 /** A stretch period's filter value: the headway when steady with every gap within the coverage cap, else the full-window wait. */
+/** The longest gap between consecutive departures inside [start, end), or null with under two. */
+function longestInnerGap(times: readonly number[], start: number, end: number): number | null {
+  const t = [...new Set(forCrossMidnightWindow([...times], end))].filter(x => x >= start && x < end).sort((a, b) => a - b);
+  if (t.length < 2) return null;
+  return Math.max(...t.slice(1).map((x, i) => x - t[i]));
+}
+
 export function stretchFilterValue(p: StretchPeriod): number | null {
+  // An uneven period reads its value: the full-window wait, or for a tail its longest inner gap.
+  if (p.uneven) return p.value;
   return p.sustained === true && !p.uneven && p.coverage != null && p.coverage <= PERIOD_COVERAGE_MAX_HEADWAY ? p.headway : p.coverage;
 }
 
@@ -595,7 +604,11 @@ export function stretchPeriods(s: Stretch): Record<PeriodKey, StretchPeriod> {
     const runs = coverage[key] != null;
     const steady = sustained[key] === true;
     const uneven = runs && steady && isUnevenPeriod(times, start, end, headways[key]);
-    const value = !runs ? null : steady && !uneven ? (headways[key] ?? null) : coverage[key] ?? null;
+    // An uneven tail reads its longest wait between its own departures in the period, not the lead-in
+    // before its first or the run after its last: the 6's Pelham Bay tail starts its evening at 19:41,
+    // when the <6> express (another route) serves it, and read 41 though its gaps are 5-18. A main
+    // stretch keeps its full-window wait (TTC 320 overnight: 5-18).
+    const value = !runs ? null : steady && !uneven ? (headways[key] ?? null) : uneven && s.kind === 'tail' ? longestInnerGap(times, start, end) ?? coverage[key] ?? null : coverage[key] ?? null;
     out[key] = {
       // A tail speaks for the direction only where it runs steadily through the period.
       counts: runs && (s.kind === 'main' || (steady && sustainedWithMidpoint([...new Set(forCrossMidnightWindow(times, end))].sort((a, b) => a - b), sustained[key], start, end) === true)),

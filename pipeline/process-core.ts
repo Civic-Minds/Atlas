@@ -2905,8 +2905,14 @@ export async function processGtfsBuffer(
           // serves too thinly to grade refuses the lift, and the tier is never past the
           // headline's. Irregular and span lines are left alone, as on the bus side.
           const hsKey = `${shortName}::${dirId}::${day}::${featureHeadsign}`;
-          const drawnIds = coverageStops.map(p => p.stopId);
-          feature.properties.tier = liftTierOnDestinationPool({
+          // The stops the line draws with a reading (its published stop list), not every stop of the
+          // headsign's map: a rail headsign's map also holds stops only a few pull-out trips serve
+          // (SEPTA T2 to 13th-Market: Woodland Av and Elmwood Av, 10 trips each), which no pool
+          // grades, and with them in the list the pool's outer third excluded the regular trains
+          // and left the origin ungraded. Either refused the lift, so T2 kept its single-shape
+          // midday grade (60) though every drawn stop grades 10 (CIV-989 dry run, 2026-10-27).
+          const drawnIds = coverageStops.filter(p => allStopHw[p.stopId] != null).map(p => p.stopId);
+          feature.properties.tier = drawnIds.length < 2 ? feature.properties.tier : liftTierOnDestinationPool({
             currentTier: feature.properties.tier as string,
             headway,
             day: day as DayType,
