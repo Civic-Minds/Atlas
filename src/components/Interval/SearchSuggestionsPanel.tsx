@@ -17,6 +17,7 @@ import { CardDivider } from './cardUi';
 import { headwayToTierColor } from './HeadwaySparkline';
 import { getTierColor } from '../../utils/colors';
 import { useColorMode } from '../../hooks/useColorMode';
+import { NO_ROUTE_SUGGESTIONS } from '../../content/noticeCopy';
 
 // Reusable/helper interfaces for route snippets
 export interface RecentRoute {
@@ -204,7 +205,7 @@ export const SearchSuggestionsPanel: React.FC<SearchSuggestionsPanelProps> = ({
             </>
           )}
           {recentSearches.length === 0 && recentlyViewed.length === 0 && suggestedRoutes.length === 0 && (
-            <PanelEmpty>No route suggestions in this area.</PanelEmpty>
+            <PanelEmpty>{NO_ROUTE_SUGGESTIONS}</PanelEmpty>
           )}
       </>
       </PanelBody>

@@ -5,6 +5,7 @@ import { fmtHeadwayRange } from '../../utils/format';
 import { shouldShowBranchHeadwayRange } from '../../utils/routeCardTrunk';
 import { HeadwayBadge, LimitedBadge } from './cardUi';
 import RouteRowName from '../RouteRowName';
+import { FIRST_LAST_TRIP_ALLOWANCE_HINT } from '../../content/noticeCopy';
 
 interface Props {
   label: string;
@@ -105,7 +106,7 @@ export default function RouteDirectionRow({ label, routeName, labelWeight = 'bol
                 onEdgeGapAllowanceClick?.();
               }}
               className="inline-flex items-center text-[var(--text-dim)] hover:text-[var(--accent)] transition-colors shrink-0"
-              title="Atlas added a small allowance for the first or last trip of the day."
+              title={FIRST_LAST_TRIP_ALLOWANCE_HINT}
               aria-label="About the first-or-last-trip allowance"
             >
               <Info aria-hidden="true" className="w-3 h-3" />

@@ -11,6 +11,7 @@ import { CARD_SUMMARY } from './cardUi';
 import PanelEmpty from '../ui/PanelEmpty';
 import { compareAgencyName, compareRegion } from '../../utils/sortCompare';
 import { countOf } from '../../../shared/overflowText';
+import { NO_MATCHING_AGENCIES, NO_MATCHING_ROUTES } from '../../content/noticeCopy';
 
 interface MapContextPanelProps {
   agencies: MapContextAgency[];
@@ -101,7 +102,7 @@ export const MapContextPanel: React.FC<MapContextPanelProps> = ({ agencies, mode
               </div>
             );
           }) : (
-            <PanelEmpty>No matching agencies.</PanelEmpty>
+            <PanelEmpty>{NO_MATCHING_AGENCIES}</PanelEmpty>
           )
         ) : (
           filteredRouteGroups.length > 0 ? filteredRouteGroups.map(group => (
@@ -127,7 +128,7 @@ export const MapContextPanel: React.FC<MapContextPanelProps> = ({ agencies, mode
               })}
             </section>
           )) : (
-            <PanelEmpty>No matching routes.</PanelEmpty>
+            <PanelEmpty>{NO_MATCHING_ROUTES}</PanelEmpty>
           )
         )}
       </PanelBody>

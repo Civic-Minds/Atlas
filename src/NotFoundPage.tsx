@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { Link } from 'react-router';
 import EmptyPage from './components/ui/EmptyPage';
 import ArrowLink from './components/ui/ArrowLink';
+import { NOT_FOUND_BODY, NOT_FOUND_TITLE } from './content/noticeCopy';
 
 /** Shown for addresses the app has no page for; public/404.html is the same page for the server's 404. */
 export default function NotFoundPage() {
@@ -16,6 +17,6 @@ export default function NotFoundPage() {
     robots.content = 'noindex';
   }, []);
   return (
-    <EmptyPage title="This page took the wrong route" body="We couldn't find that page." footer={false} action={<ArrowLink as={Link} to="/">Back to the map</ArrowLink>} />
+    <EmptyPage title={NOT_FOUND_TITLE} body={NOT_FOUND_BODY} footer={false} action={<ArrowLink as={Link} to="/">Back to the map</ArrowLink>} />
   );
 }

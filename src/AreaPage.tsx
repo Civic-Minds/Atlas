@@ -28,6 +28,7 @@ import ArrowLink from './components/ui/ArrowLink';
 import { PageTitle, SectionTitle } from './components/ui/PageTitle';
 import EmptyPage from './components/ui/EmptyPage';
 import DataTable from './components/ui/DataTable';
+import { AREA_PAGE_NOT_FOUND_TITLE, NO_FREQUENCY_PAGE_BODY } from './content/noticeCopy';
 
 /**
  * Desktop widths of the agency table: the names' smallest width, and each mode column's. Seven mode columns fit beside the
@@ -89,7 +90,7 @@ export default function AreaPage({ data: dataProp }: { data?: AreaPageData }) {
 
   if (!data) {
     return (
-      <EmptyPage title="No page for this region" body="Atlas has no frequency page at this address." action={<ArrowLink href="/">Open the Atlas map</ArrowLink>} />
+      <EmptyPage title={AREA_PAGE_NOT_FOUND_TITLE} body={NO_FREQUENCY_PAGE_BODY} action={<ArrowLink href="/">Open the Atlas map</ArrowLink>} />
     );
   }
 

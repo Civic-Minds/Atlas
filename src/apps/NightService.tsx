@@ -20,7 +20,7 @@ import PanelEmpty from '../components/ui/PanelEmpty';
 import { CARD_SUMMARY } from '../components/Interval/cardUi';
 import AgencyGroupHeader from '../components/ui/AgencyGroupHeader';
 import AgencyName from '../components/ui/AgencyName';
-import { loadingText, loadErrorText } from '../content/stateCopy';
+import { loadErrorText, loadingText, NO_AGENCIES_MATCH_SEARCH } from '../content/noticeCopy';
 import { boundingBox, lineCoordinates } from '../../shared/routeGeometry';
 
 interface NightServiceRoute {
@@ -235,7 +235,7 @@ export default function NightService({ active, sidebarLeft, searchBarWidth, laye
           {loadState === 'loading' && <PanelEmpty kind="loading">{loadingText('night service')}</PanelEmpty>}
           {loadState === 'error' && <PanelEmpty kind="error">{loadErrorText('night service data')}</PanelEmpty>}
           {loadState === 'ready' && agencies.length === 0 && (
-            <PanelEmpty>No agencies match that search.</PanelEmpty>
+            <PanelEmpty>{NO_AGENCIES_MATCH_SEARCH}</PanelEmpty>
           )}
           {loadState === 'ready' && agencies.map((agency, agencyIndex) => (
             <div key={agency.slug}>

@@ -47,7 +47,7 @@ import ModeFilterPillRow from '../components/ui/ModeFilterPillRow';
 import { syncUrlParams } from '../utils/syncUrlParams';
 import { encodeHistoryUrlState, parseHistoryUrlState, type HistoryUrlState } from '../utils/shareUrlState';
 import PanelEmpty from '../components/ui/PanelEmpty';
-import { loadingText, loadErrorText, NO_ROUTES_LOADED, noRoutesMatchText, RETRY_HINT } from '../content/stateCopy';
+import { HISTORY_ROUTE_ORDER_NOTE, HISTORY_TRIP_TIME_NOTE, loadErrorText, loadingText, NO_AGENCIES_MATCH, NO_ROUTES_LOADED, noRoutesMatchText, RETRY_HINT } from '../content/noticeCopy';
 import { compareAgencyName, compareRegion } from '../utils/sortCompare';
 import { inViewFirst } from '../utils/historyOpen';
 
@@ -325,7 +325,7 @@ function RouteHistoryCard({
               Trip time: {runTimeAmount(route.tripDuration.firstMinutes)} ({route.tripDuration.firstLabel}) → {runTimeAmount(route.tripDuration.lastMinutes)} ({route.tripDuration.lastLabel})
             </p>
             <p className={`${CARD_NOTICE} mt-1`}>
-              End-to-end scheduled time on a representative weekday trip. Only shown when the route's stops and alignment haven't changed between these years.
+              {HISTORY_TRIP_TIME_NOTE}
             </p>
           </CardCallout>
         )}
@@ -640,7 +640,7 @@ function HistoryAgencyPanel({
           )}
         >
           {!routeQuery && !activeFilter && (
-            <p className={`${CARD_NOTICE} mt-1`}>Biggest changes first</p>
+            <p className={`${CARD_NOTICE} mt-1`}>{HISTORY_ROUTE_ORDER_NOTE}</p>
           )}
         </AgencyCardTop>
         {routeFilters.length > 0 && (
@@ -1090,7 +1090,7 @@ export default function History({ active, view = HISTORY_VIEW_ALL, initialAgency
                 </PanelEmpty>
               )}
               {historyData !== null && !historyLoadFailed && agenciesByRegion.length === 0 && (
-                <PanelEmpty>No agencies match.</PanelEmpty>
+                <PanelEmpty>{NO_AGENCIES_MATCH}</PanelEmpty>
               )}
               {agenciesByRegion.length > 0 && (
                 <AgencyList>

@@ -54,9 +54,9 @@ import type { VariantFamily } from '../../../utils/routeVariants';
 import type { CompareRouteRow } from '../compareTypes';
 import { compareCardSummary } from '../../../utils/compareSides';
 import { reportDetails } from '../../../utils/reportIssue';
-import { ROUTE_DATA_QUALITY_WARNING, ROUTE_DATA_QUALITY_WARNING_MESSAGE } from '../../../../shared/routeDataQuality';
+import { ROUTE_DATA_QUALITY_WARNING } from '../../../../shared/routeDataQuality';
+import { BOOKING_REQUIRED_NOTICE, expiredFeedNotice, NO_ROUTE_SHAPE_NOTICE, periodServiceNotice, ROUTE_DATA_QUALITY_WARNING_MESSAGE, selectedRouteFilterNotice, selectedRouteOutsideFilterNotice, unevenServiceNotice, variantsIncludedNotice, WEEKDAY_VARIATION_NOTICE } from '../../../content/noticeCopy';
 import { featurePassesHeadwayFilter } from '../../../../shared/routeHeadwayFilter';
-import { BOOKING_REQUIRED_NOTICE, expiredFeedNotice, NO_ROUTE_SHAPE_NOTICE, periodServiceNotice, selectedRouteFilterNotice, selectedRouteOutsideFilterNotice, unevenServiceNotice } from '../../../content/noticeCopy';
 import { headwayAbout, headwayAboutRange } from '../../../utils/headwayText';
 import type { RouteLabel } from '../../../utils/routeFacts';
 
@@ -456,7 +456,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
       )}
       {FEATURES.routeVariants && variantFamily && (
         <p className={`${CARD_NOTICE} -mt-1 mb-3`}>
-          Includes variants {variantFamily.members.map(m => m.shortName).join(', ')}
+          {variantsIncludedNotice(variantFamily.members.map(m => m.shortName).join(', '))}
         </p>
       )}
       {!nightView && (() => {
@@ -812,14 +812,14 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
               />
             )}
             {routeAgency?.feedReviewStatus === 'review' && !routeAgency.overrideNote && (
-              <NewScheduleDataNotice agency={routeAgency} onInfoOpen={onInfoOpen} />
+              <NewScheduleDataNotice on="route" agency={routeAgency} onInfoOpen={onInfoOpen} />
             )}
             {routeAgency && routeOverrideNote && (
-              <CorrectedDataNotice agency={routeAgency} overrideNote={routeOverrideNote} onInfoOpen={onInfoOpen} />
+              <CorrectedDataNotice on="route" agency={routeAgency} overrideNote={routeOverrideNote} onInfoOpen={onInfoOpen} />
             )}
             {hasWeekdayTierVariation && (
               <CardHelpNotice
-                message="Weekday schedules vary. The tier shown reflects the slowest weekday."
+                message={WEEKDAY_VARIATION_NOTICE}
                 onLearnMore={() => onInfoOpen('about', { helpTopic: 'weekday-variation' })}
               />
             )}

@@ -32,7 +32,7 @@ import { useSegmentDelay } from '../hooks/useSegmentDelay';
 import PanelEmpty from '../components/ui/PanelEmpty';
 import AgencyName from '../components/ui/AgencyName';
 import AgencyGroupHeader from '../components/ui/AgencyGroupHeader';
-import { loadingText } from '../content/stateCopy';
+import { loadingText } from '../content/noticeCopy';
 
 interface Props {
   agencies: Agency[];
