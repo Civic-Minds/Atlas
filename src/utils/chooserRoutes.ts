@@ -1,7 +1,7 @@
 import type { Agency } from '../App';
 import type { AgencyLayers } from '../hooks/useAgencyData';
 import { getTierColor, type ColorVisionMode } from './colors';
-import { agencyNameParts, agencyNames, placeAlreadyInName, routeLabels } from './format';
+import { agencyListParts, agencyNames, placeAlreadyInName, routeLabels } from './format';
 import { buildRouteFacts } from './routeFacts';
 import { buildRouteKey, splitRouteKey } from './routeKey';
 
@@ -21,9 +21,9 @@ export function chooserRouteRow(key: string, layers: AgencyLayers, agencies: Age
       const p = f.properties as any;
       const facts = buildRouteFacts(p, slug);
       const agency = agencies.find(a => a.slug === slug);
-      const agencyName = agencyNames(facts.agencyName).short;
+      const agencyName = agencyNames(facts.agencyName).name;
       // The place beside the agency's name in the chooser's heading, unless the name already says it (CIV-971).
-      const place = agency ? agencyNameParts({ name: agency.name, cities: agency.cities, displayArea: agency.displayArea }).secondary : undefined;
+      const place = agency ? agencyListParts({ name: agency.name, cities: agency.cities, displayArea: agency.displayArea }).secondary : undefined;
       const agencyPlace = place && !placeAlreadyInName(agencyName, place) ? place : undefined;
       // The chooser's own key (with its branch), so picking a row opens the route it listed.
       return { key, shortName: facts.shortName, label: facts.label, longName: facts.longName ?? '', agencyName, agencyPlace, agencySlug: slug, routeType: facts.routeType, color: getTierColor(p.tier, colorMode) };

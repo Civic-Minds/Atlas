@@ -126,7 +126,7 @@ export function buildStopRoutes({ siblingIdsByAgency, routesByAgency, layers, da
           shortName: routeShortName,
           label: facts.label,
           longName: facts.longName || '',
-          agencyName: agencyNames(facts.agencyName).short,
+          agencyName: agencyNames(facts.agencyName).name,
           agencySlug: slug,
           routeType: facts.routeType,
           branches: new Map(),

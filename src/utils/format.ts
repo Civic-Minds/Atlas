@@ -3,6 +3,7 @@ import { formatRemDisplay, getRouteLabel } from '../../shared/routeDisplay';
 import { routeDisplay, shouldHideNumericRouteShortName } from '../../shared/routeDisplay';
 import { directionBranchFallback, isRedundantWithRouteName } from '../../shared/headsignDisplay';
 import { headwayAbout, headwayAboutRange, headwayAmount } from './headwayText';
+import agencyShortNameData from '../../shared/data/agency-short-names.json';
 export { cleanHeadsign, formatRemDisplay, getRouteLabel };
 
 /**
@@ -473,10 +474,10 @@ function placeFromLegalName(outer: string): string | undefined {
   return ofMatch ? ofMatch[1].trim() : undefined;
 }
 
-/** Prefer a known short form when the primary still overflows a narrow list row. */
+/** Prefer a known short form when the primary still overflows a narrow list row; never a bracketed city (#1134). */
 function compactListPrimary(fullName: string, primary: string): string {
   if (primary.length <= 28) return primary;
-  const short = shortenAgencyName(fullName);
+  const short = agencyBackLinkName(fullName);
   return short.length > 0 && short.length < primary.length ? short : primary;
 }
 
@@ -720,23 +721,61 @@ export function shortenAgencyName(name: string): string {
  */
 /** Every form of an agency's name, from one place (CIV-998). Callers pick the form by name, not by helper. */
 export interface AgencyNames {
-  /** Tight spots (row details, eyebrows, headings): "TTC", "DART", "Muni"; today still a bracketed city for some ("Austin"). */
-  short: string;
-  /** A back link to the agency: the short name, but never a bracketed city ("Valley Metro", #1102). */
+  /**
+   * The agency's short name for every surface but its card title (Ryan, CIV-998): lists, rows, eyebrows, back links,
+   * the route chooser, the stop card, In view and search. Never a city ("Capital Metro", not "Austin").
+   */
+  name: string;
+  /** A back link to the agency: the same short name. */
   backLink: string;
-  /** Lists and card titles: "Toronto Transit Commission", "MiWay". */
+  /** The agency card title: "Toronto Transit Commission", "Gary Public Transportation Corporation". */
   full: string;
-  /** The place shown beside the full name ("Mississauga"), if any. */
+  /** The place shown beside the card title ("Mississauga"), if any. */
   place?: string;
+  /** Live only, until Atlas Live moves to `name`: the older short form, which can be a bracketed city ("Austin"). */
+  short: string;
+}
+
+/** A row name longer than this uses the agency's config shortName ("GPTC"), when it has one. */
+const AGENCY_ROW_NAME_MAX = 24;
+const CONFIG_SHORT_NAMES: ReadonlyMap<string, string> = new Map(Object.entries((agencyShortNameData as { byName: Record<string, string> }).byName));
+
+/** A word that makes a shortened name a transit name rather than a place ("Spokane Transit", not "Spokane"). */
+const TRANSIT_NAME_WORD = /\b(Transit|Transportation|Transport|Transpo|Metro|Bus|Rail|Railway|Express|Lines?|Ferr(?:y|ies)|Shuttle|Connector|Link|Ride|Trolley|Tram|Breeze|Trans)\b/i;
+
+/**
+ * The agency's short name (CIV-998): never a city. A bracketed city never stands in for the name (agencyBackLinkName),
+ * and a shortening that leaves only a place ("Corvallis Transit System" → "Corvallis") keeps the agency's own name.
+ * A config short form is used only when the name is too long for a row ("GPTC").
+ */
+function agencyRowName(name: string): string {
+  const outer = name.replace(/\s*\([^)]+\)\s*$/, '').trim() || name.trim();
+  let own = agencyBackLinkName(name);
+  const isCode = /^[\p{Lu}\d&./ -]+$/u.test(own) || isMixedCaseCode(own) || looksLikeBrandCode(own);
+  // Only the generic-word strip leaves a place: the leading words of the name with the transit words cut off. "Muni" is not that.
+  if (outer.startsWith(`${own} `) && !isCode && !TRANSIT_NAME_WORD.test(own)) own = outer;
+  return own.length > AGENCY_ROW_NAME_MAX ? CONFIG_SHORT_NAMES.get(name.trim()) ?? own : own;
 }
 
 export function agencyNames(agency: string | { name: string; cities?: string[]; displayArea?: string }): AgencyNames {
   const { name, cities, displayArea } = typeof agency === 'string' ? { name: agency, cities: undefined, displayArea: undefined } : agency;
   const { primary, secondary } = agencyDisplayParts(name, cities, displayArea);
-  return { short: shortenAgencyName(name), backLink: agencyBackLinkName(name), full: primary, place: secondary };
+  const row = agencyRowName(name);
+  return { name: row, backLink: row, full: primary, place: secondary, short: shortenAgencyName(name) };
 }
 
-/** agencyNames' full name and place as list rows destructure them ({ primary, secondary }). */
+/**
+ * A list row's agency: the short name, with the place beside it when the short name doesn't already say it
+ * ("TTC · Toronto", "Capital Metro · Austin", "Calgary Transit").
+ */
+export function agencyListParts(agency: string | { name: string; cities?: string[]; displayArea?: string }): { primary: string; secondary?: string } {
+  const { name, full, place } = agencyNames(agency);
+  const fallback = typeof agency === 'string' ? undefined : agency.displayArea ?? agency.cities?.[0]?.split(',')[0]?.trim();
+  const where = place ?? (name !== full ? fallback : undefined);
+  return where && !placeAlreadyInName(name, where) ? { primary: name, secondary: where } : { primary: name };
+}
+
+/** agencyNames' card title and place ({ primary, secondary }): the agency card, History's agency card, the zone card fallback. Lists use agencyListParts. */
 export function agencyNameParts(agency: string | { name: string; cities?: string[]; displayArea?: string }): { primary: string; secondary?: string } {
   const { full, place } = agencyNames(agency);
   return place ? { primary: full, secondary: place } : { primary: full };
