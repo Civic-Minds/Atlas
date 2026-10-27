@@ -9,6 +9,7 @@
   ],
   "feedUrl": "https://catbus.ridesystems.net/Secure/Admin/Reports/GTFSDownload.aspx",
   "lastFeedExpiry": "20281021",
+  "skipBlockTripHeadways": true,
   "lastFeedVersion": null,
   "lastRefreshedAt": "2026-10-03",
   "region": "South Carolina",

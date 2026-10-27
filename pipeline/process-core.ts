@@ -8,7 +8,7 @@ import { parseGtfsZip } from './parseGtfs.js';
 import { computeRunningTimes, runningTimesJson } from './runningTime.js';
 import { pickRepresentativeWeekday } from './representativeWeekday.js';
 import type { GtfsData, AnalysisResult, RawRouteDepartures } from '../types/gtfs.js';
-import { computeRawDepartures } from './transit-phase1.js';
+import { computeRawDepartures, findBlockOnlyTripIds } from './transit-phase1.js';
 import { applyAnalysisCriteria, BURST_MAX_SPAN_MINUTES, determineTierWithEdgeGapAllowance, previousNightTailDays } from './transit-phase2.js';
 import { calculateCorridors } from './transit-logic.js';
 import { detectReferenceDate, getActiveServiceIds } from './transit-calendar.js';
@@ -491,6 +491,11 @@ export interface ProcessOptions extends GtfsTransformOptions {
    * everywhere else, so the picker below is unchanged.
    */
   referenceDate?: string;
+  /**
+   * Agency opt-in (Clemson Area Transit, #1040): a pattern whose every trip is a block trip (only
+   * first and last stop timed) gets no computed headway. See findBlockTrips in transit-phase1.ts.
+   */
+  skipBlockTripHeadways?: boolean;
   /** Read-only view of the phase 2 results, for tests and audits. Does not change the output. */
   onAnalysisResults?: (results: readonly AnalysisResult[]) => void;
   /** Tests only (frequency focus step 3): the stretch selector's output beside stopDepsByGroup, for the trip-membership check. */
@@ -810,7 +815,7 @@ export async function processGtfsBuffer(
   } = shapes;
 
   onStatus?.('Running phase 1...');
-  const raw = computeRawDepartures(gtfs, refDate, shapeFilterForPhase1, options?.slug);
+  const raw = computeRawDepartures(gtfs, refDate, shapeFilterForPhase1, options?.slug, { skipBlockTripHeadways: options?.skipBlockTripHeadways });
   onStatus?.('Running phase 2...');
   // Same tail days phase 2 uses (#718), so the part-week decision (phase 2) and the stop-level
   // full-week check below both skip a weekday that only carries the previous night's tail.
@@ -911,9 +916,12 @@ export async function processGtfsBuffer(
     }
   }
   const tripGroupByTripId = new Map<string, StopTripGroup[]>();
+  // Clemson (#1040, opt-in): block trips whose pattern has no timed trip add no stop departures.
+  const blockOnlyTripIds = options?.skipBlockTripHeadways ? findBlockOnlyTripIds(gtfs) : null;
   for (const trip of gtfs.trips ?? []) {
     const meta = stopTripMeta.get(trip.trip_id);
     if (!meta) continue;
+    if (blockOnlyTripIds?.has(trip.trip_id)) continue;
     const keys = weekdayMapKeys(meta);
     const runsOnRepresentativeDay = (kind: 'group' | 'headsign' | 'shape'): boolean => {
       const key = keys[kind];
