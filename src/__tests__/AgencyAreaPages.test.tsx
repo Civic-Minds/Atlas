@@ -5,7 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import AgencyPage from '../AgencyPage';
 import AreaPage from '../AreaPage';
 import { agencyPageData, type AgencyPageRoute, type AgencyPageSummary } from '../../shared/agencyPages';
-import { buildAreaPageData } from '../../shared/areaPages';
+import { buildAreaPageData, AREA_TABLE_OTHER } from '../../shared/areaPages';
 import type { AreaConfig } from '../../shared/areas';
 
 const r = (name: string, mode: number, midday: number | null, extra: Partial<AgencyPageRoute> = {}): AgencyPageRoute =>
@@ -170,6 +170,15 @@ describe('AreaPage narrow names column', () => {
     const link = screen.getByRole('link', { name: 'WETA (San Francisco Bay)' });
     expect(link.getAttribute('title')).toBe(long);
     expect(within(screen.getByRole('table')).getByRole('link', { name: 'Toronto Transit Commission' }).getAttribute('title')).toBeNull();
+  });
+
+  it('keeps a full name of two lines or fewer even with the "Other" column (CIV-973: Portland, New York)', () => {
+    const name = 'Westchester County Bee-Line System (BeeLine)';
+    const beeline: AgencyPageSummary = { ...HSR, slug: 'beeline', name, displayName: 'BeeLine (White Plains)', routes: [r('T', 6, 20)] };
+    const data = buildAreaPageData({ ...AREA, agencies: ['ttc', 'beeline'] }, new Map([[TTC.slug, TTC], [beeline.slug, beeline]]), null);
+    expect(data.modeColumns).toContain(AREA_TABLE_OTHER);
+    view(<AreaPage data={data} />);
+    expect(screen.getByRole('link', { name }).getAttribute('title')).toBeNull();
   });
 
   it('draws the names at normal weight, as the column asks (CIV-973)', () => {

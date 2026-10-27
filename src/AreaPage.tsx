@@ -27,25 +27,25 @@ import EmptyPage from './components/ui/EmptyPage';
 import DataTable from './components/ui/DataTable';
 
 /**
- * Desktop widths of the agency table: the names' smallest width, and each mode column's. Eight mode columns fit beside the
+ * Desktop widths of the agency table: the names' smallest width, and each mode column's. Seven mode columns fit beside the
  * names from 768px wide up, every header on at most two lines (CIV-973); narrower, the table scrolls.
  */
 const AREA_NAME_COLUMN_REM = 10.75;
-const AREA_MODE_COLUMN_REM = 5;
+const AREA_MODE_COLUMN_REM = 5.5;
 /**
- * With the eighth ("Other") column the names column is narrow, so a full name past this length would wrap to three lines
- * or more ("San Francisco Bay Area Water Emergency Transportation Authority (WETA)"); it shows the short display name
- * instead, with the full name on hover. Names this long or shorter fit on two lines.
+ * With the "Other" column the names column is at its narrowest, so a full name past this length would wrap to three lines
+ * or more on a phone ("San Francisco Bay Area Water Emergency Transportation Authority (WETA)"); it shows the short display
+ * name instead, with the full name on hover. Names this long or shorter fit on two lines at 390px and from 900px up (CIV-973).
  */
-const NARROW_NAME_MAX_CHARS = 40;
+const NARROW_NAME_MAX_CHARS = 55;
 
 /**
- * A mode header too long for its column breaks after the slash ("Gondola/" over "aerial tram"); the rest stay on one line.
+ * A mode header with a slash breaks after it ("Subway/" over "Metro"); the rest wrap at spaces.
  * A column that counts more than its own mode says what it counts on hover (CIV-973: "Bus and trolleybus routes").
  */
 function modeHeader(label: string) {
   const slash = label.indexOf('/');
-  const text = label.length > 14 && slash > 0 ? <>{label.slice(0, slash + 1)}<br />{label.slice(slash + 1)}</> : label;
+  const text = slash > 0 ? <>{label.slice(0, slash + 1)}<br />{label.slice(slash + 1)}</> : label;
   const title = areaTableColumnTitle(label);
   return title ? <span title={title}>{text}</span> : text;
 }
