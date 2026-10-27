@@ -46,7 +46,8 @@ describe('map view link parameters', () => {
     expect(readUrlParam('?span=', MAP_URL.hideSpan)).toBe(true);
     expect(readUrlParam('?', MAP_URL.hideSpan)).toBeUndefined();
     expect(readUrlParam('?limited=0', MAP_URL.hideLimited)).toBe(false);
-    expect(urlParamUpdate(MAP_URL.hideSpan, true)).toEqual({ span: null });
+    expect(urlParamUpdate(MAP_URL.hideSpan, true)).toEqual({ span: '1' });
+    expect(urlParamUpdate(MAP_URL.hideLimited, true)).toEqual({ limited: '1' });
     expect(urlParamUpdate(MAP_URL.hideLimited, false)).toEqual({ limited: '0' });
   });
 
@@ -88,6 +89,15 @@ describe('map view link parameters', () => {
     for (const [period, headway] of [['all', 60], ['all', Infinity], ['midday', 60], ['amPeak', 15]] as const) {
       const address = mergeUrlSearchParams('route=ttc::504', { ...urlParamUpdate(MAP_URL.period, period), ...urlParamUpdate(MAP_URL.headway, headway) });
       expect([readUrlParam(address, MAP_URL.period), readUrlParam(address, MAP_URL.headway)]).toEqual([period, headway]);
+    }
+  });
+
+  it('a copied address reopens the same irregular and part-time choices, the default included (#1141)', () => {
+    for (const hideSpan of [true, false]) {
+      for (const hideLimited of [true, false]) {
+        const address = mergeUrlSearchParams('route=ttc::504', { ...urlParamUpdate(MAP_URL.hideSpan, hideSpan), ...urlParamUpdate(MAP_URL.hideLimited, hideLimited) });
+        expect([readUrlParam(address, MAP_URL.hideSpan), readUrlParam(address, MAP_URL.hideLimited)]).toEqual([hideSpan, hideLimited]);
+      }
     }
   });
 });
