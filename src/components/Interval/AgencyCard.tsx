@@ -1,6 +1,7 @@
 import React, { useMemo, useState, useEffect, forwardRef } from 'react';
+import { BETA_SITE_URL } from '../../../shared/seo';
 import { LIVE_POLLING_ROUTES } from '../../../shared/livePollingConfig';
-import { FEATURES } from '../../../shared/config';
+import { ATLAS_MODE, FEATURES } from '../../../shared/config';
 import { plural } from '../../../shared/overflowText';
 import { agencyPagePath } from '../../../shared/agencyPages';
 import { AREA_LINK_MAX_CHARS, agencyRegionTitle, areaLinkFor, areaLinkName } from '../../../shared/agencyArea';
@@ -25,7 +26,7 @@ import CardRouteList from './CardRouteList';
 import { OutboundLink } from '../OutboundLink';
 import { buildRouteFacts, type RouteLabel } from '../../utils/routeFacts';
 import { reportDetails } from '../../utils/reportIssue';
-import { getRolloutNotice, NO_ROUTES_LOADED, noRoutesMatchText, notOnMapYetNotice, ON_DEMAND_NOT_MAPPED_NOTE, ROUTES_OUTSIDE_FILTERS_NOTICE, routesOutsideFiltersNotice } from '../../content/noticeCopy';
+import { BETA_SERVICE_ROLLOUT_NOTICE, explainerFor, getRolloutNotice, NO_ROUTES_LOADED, noRoutesMatchText, notOnMapYetNotice, ON_DEMAND_NOT_MAPPED_NOTE, ROUTES_OUTSIDE_FILTERS_NOTICE, routesOutsideFiltersNotice, VIEW_ON_BETA } from '../../content/noticeCopy';
 import { onDemandCardName } from '../../utils/onDemandSelection';
 import { onDemandCoverageNote } from '../../data/onDemandCoverage';
 import {
@@ -689,17 +690,23 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
           )}
           {(agency.feedReviewStatus === 'review' || agency.overrideNote || rolloutNotice) && onInfoOpen && (
             <div className={`${CARD_NOTICE_FOOTER} space-y-1`}>
-              {rolloutNotice && (
+              {rolloutNotice && (rolloutNotice === BETA_SERVICE_ROLLOUT_NOTICE ? (
+                // N20 (Ryan): an on-demand service points to the same page on beta, never preview; on beta itself, no link.
+                <CardHelpNotice
+                  message={rolloutNotice}
+                  {...(ATLAS_MODE === 'beta' ? {} : { actionLabel: VIEW_ON_BETA, onLearnMore: () => window.location.assign(`${BETA_SITE_URL}${window.location.pathname}${window.location.search}`) })}
+                />
+              ) : (
                 <CardHelpNotice
                   message={rolloutNotice}
                   onLearnMore={() => onInfoOpen('about', {
-                    helpTopic: 'beta-rollout',
+                    helpTopic: explainerFor('N19'),
                     agencyName: agency.name,
                     rolloutNotice,
                     rolloutIssueUrl: agency.rolloutIssueUrl,
                   })}
                 />
-              )}
+              ))}
               {agency.feedReviewStatus === 'review' && !agency.overrideNote && (
                 <NewScheduleDataNotice on="agency" agency={agency} onInfoOpen={onInfoOpen} />
               )}
