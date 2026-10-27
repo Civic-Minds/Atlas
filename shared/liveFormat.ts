@@ -15,3 +15,6 @@ export const signedPct = (x: number): string => `${x > 0 ? '+' : x < 0 ? '−' :
 
 /** "+3.2 min", "−1 min": a signed minutes value, `tenth` with its unit. */
 export const signedMinutes = (x: number): string => `${x > 0 ? '+' : ''}${tenth(x)} min`;
+
+/** "2 pm", "12 am": an hour of the day (0-23, or past 24 for service after midnight) as every Live chart and sentence writes it. */
+export const hourText = (h24: number): string => `${h24 % 12 === 0 ? 12 : h24 % 12} ${h24 % 24 < 12 ? 'am' : 'pm'}`;
