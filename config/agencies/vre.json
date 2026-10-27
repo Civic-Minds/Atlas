@@ -16,7 +16,7 @@
   ],
   "feedUrl": "https://gtfs.vre.org/containercdngtfsupload/google_transit.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-61/latest.zip",
-  "lastFeedExpiry": "20270117",
+  "lastFeedExpiry": "20270124",
   "lastFeedVersion": null,
   "lastRefreshedAt": "2026-10-19",
   "cities": [
@@ -51,5 +51,5 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://gtfs.vre.org/containercdngtfsupload/google_transit.zip",
-  "lastPeekedExpiry": "20270117"
+  "lastPeekedExpiry": "20270124"
 }
