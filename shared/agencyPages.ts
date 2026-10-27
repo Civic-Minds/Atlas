@@ -372,7 +372,7 @@ export function agencyDatesText(a: Pick<AgencyPageSummary, 'lastRefreshedAt' | '
     : published ? `This timetable was published ${published}.`
     : through ? `This timetable covers service until ${through}.`
     : '';
-  return ["Based on the agency's published timetable, not live arrivals.", timetable, release ? `Atlas last updated this page ${release}.` : ''].filter(Boolean).join(' ');
+  return ["Based on the agency's published timetable, not live arrivals.", timetable, release ? `This page was last updated ${release}.` : ''].filter(Boolean).join(' ');
 }
 
 /** "Oct 12, 2026" from an ISO or yyyymmdd date; null when unusable. */

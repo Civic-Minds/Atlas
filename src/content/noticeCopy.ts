@@ -7,7 +7,7 @@
  * review page (_review/notices). A new text takes the next free number; numbers are never reused. Every notice with
  * Learn more names its explainer in NOTICE_EXPLAINERS, so the two can be checked against each other.
  */
-import { plural } from '../../shared/overflowText';
+import { joinList, plural } from '../../shared/overflowText';
 import { formatStoredDate } from '../utils/format';
 import { agencyNames } from '../utils/agencyName';
 import { delayAmount, headwayAbout } from '../utils/headwayText';
@@ -17,9 +17,8 @@ import { delayAmount, headwayAbout } from '../utils/headwayText';
 export function expiredFeedNotice(agencyName: string, expDateStr?: string, manualFeedSource = false): string {
   const { primary } = agencyNames(agencyName).card;
   const ended = `${primary}'s timetable ended${expDateStr ? ` on ${expDateStr}` : ''}.`;
-  if (manualFeedSource) {
-    return `${ended} It is maintained manually, so Atlas will keep showing it until a newer file is provided and verified.`;
-  }
+  // N3 (Ryan): the kept-by-hand detail is in its explainer (E1's MANUAL_FEED_CONTEXT), not the notice.
+  void manualFeedSource;
   return `${ended} Times shown may be out of date.`;
 }
 
@@ -40,9 +39,23 @@ export function selectedRouteFilterNotice(options: {
   headway?: number | null;
   activeRange: string;
   periodRange: string;
+  /**
+   * The period's parts outside the run of service, with their times formatted (N13, Ryan): "with no service from 6–7
+   * AM", "and less often after 9 AM", or "and not from 6–7 AM" where the data can't tell. Without it, the general wording.
+   */
+  outside?: Array<{ service: 'none' | 'less' | 'unknown'; /** A part at the start: "6–7 AM". */ range?: string; /** A part at the end: "9 AM". */ after?: string }>;
 }): string {
-  const runs = options.headway != null ? `Service runs ${headwayAbout(options.headway)}` : 'Service runs';
-  return `${runs} from ${keepRangeTogether(options.activeRange)}, but not throughout the selected ${keepRangeTogether(options.periodRange)} period.`;
+  const runs = options.headway != null ? `This route runs ${headwayAbout(options.headway)}` : 'This route runs';
+  const lead = `${runs} from ${keepRangeTogether(options.activeRange)}`;
+  if (!options.outside?.length) return `${lead}, but not throughout the selected ${keepRangeTogether(options.periodRange)} period.`;
+  const where = (part: NonNullable<typeof options.outside>[number]) => (part.after != null ? `after ${keepRangeTogether(part.after)}` : `from ${keepRangeTogether(part.range ?? '')}`);
+  const of = (service: 'none' | 'less' | 'unknown') => options.outside!.filter(part => part.service === service).map(where).join(' or ');
+  const clauses = [
+    of('none') && `with no service ${of('none')}`,
+    of('less') && `less often ${of('less')}`,
+    of('unknown') && `not ${of('unknown')}`,
+  ].filter(Boolean) as string[];
+  return `${lead}${clauses.map((clause, i) => (i === 0 && clause.startsWith('with') ? `, ${clause}` : `, and ${clause}`)).join('')}.`;
 }
 
 // N8 no-trips-in-period, N9 limited-in-period
@@ -73,24 +86,26 @@ export const NO_ROUTE_SHAPE_DETAIL =
   'Atlas can still show the route\'s schedule, stops, and frequency, but it cannot draw the route line.';
 
 // N11 not-in-period, N12 misses-filter
-export function selectedRouteOutsideFilterNotice(maxHeadway: number): string {
+/** Notices name the chosen time of day, never "the selected period" (Ryan); `periodRange` is "6–9 AM", or null for all day. */
+export function selectedRouteOutsideFilterNotice(maxHeadway: number, periodRange: string | null): string {
+  const when = periodRange ? keepRangeTogether(periodRange) : null;
   return maxHeadway === Infinity
-    ? "This route doesn't run during the selected period."
+    ? (when ? `This route has no scheduled trips from ${when}.` : 'This route has no scheduled trips all day.')
     // Non-breaking hyphen (U+2011) keeps "15-minute" on one line instead of wrapping after "15-".
-    : `This route does not meet the selected ${maxHeadway}\u2011minute filter for the full selected period.`;
+    : `This route doesn't meet the ${maxHeadway}\u2011minute filter ${when ? `for all of ${when}` : 'all day'}.`;
 }
 
 // N74 / E1 outdated-schedule (line 3)
 export const EXPIRED_FEED_EXPLANATION =
-  'Atlas keeps showing the most recent feed it could verify while we look for a newer public feed.';
+  'This is the latest schedule the agency has published that we could verify.';
 
 // N75 / E1 outdated-schedule (line 4)
 export const EXPIRED_FEED_CONTEXT =
-  'A newer schedule may exist on the agency\'s website without a downloadable feed Atlas can verify.';
+  'A newer schedule may exist on the agency\'s website without a downloadable feed we can verify.';
 
 // N76 / E1 outdated-schedule (line 4, kept by hand)
 export const MANUAL_FEED_CONTEXT =
-  'This agency does not publish a feed that Atlas can check automatically. We update it when a newer file is provided and verified.';
+  "This agency doesn't publish a feed we can check automatically. We update it when a newer file is provided and verified.";
 
 // E1 outdated-schedule (line 4 start)
 export const EXPIRED_FEED_CADENCE = 'We check all feeds weekly.';
@@ -103,10 +118,10 @@ export function expiredFeedCheckHistory(options: {
   lastRefreshed?: string;
 }): string {
   if (options.count != null && options.since && options.lastChecked && formatStoredDate(options.lastChecked)) {
-    return `Atlas has checked for a new timetable ${options.count} ${plural(options.count, 'time')} since ${formatStoredDate(options.since)}, most recently on ${formatStoredDate(options.lastChecked)}.`;
+    return `We've checked for a new timetable ${options.count} ${plural(options.count, 'time')} since ${formatStoredDate(options.since)}, with our most recent check on ${formatStoredDate(options.lastChecked)}.`;
   }
   if (options.lastRefreshed && formatStoredDate(options.lastRefreshed)) {
-    return `Atlas last successfully refreshed the feed on ${formatStoredDate(options.lastRefreshed)}.`;
+    return `The feed was last refreshed on ${formatStoredDate(options.lastRefreshed)}.`;
   }
   return '';
 }
@@ -118,8 +133,8 @@ export function expiredFeedCheckHistory(options: {
 export const loadingText = (noun: string) => `Loading ${noun}…`;
 
 // N51 night-failed, N54 history-failed, N66 agencies-failed, N67 selection-failed
-/** "Couldn't load history data." */
-export const loadErrorText = (noun: string) => `Couldn't load ${noun}.`;
+/** "This route couldn't load.": the thing first. */
+export const loadErrorText = (subject: string) => `${subject.charAt(0).toUpperCase()}${subject.slice(1)} couldn't load.`;
 
 // N54 history-failed (hint)
 /** Added after a load error that the person can retry. */
@@ -136,9 +151,9 @@ export const NO_SEARCH_MATCHES = 'No matches found.';
 // N40 no-agencies-match
 export const NO_AGENCIES_MATCH = 'No agencies match.';
 // N41 in-view-no-agencies
-export const NO_MATCHING_AGENCIES = 'No matching agencies.';
+export const NO_MATCHING_AGENCIES = 'No agencies match.';
 // N42 in-view-no-routes
-export const NO_MATCHING_ROUTES = 'No matching routes.';
+export const NO_MATCHING_ROUTES = 'No routes match.';
 // N37 no-routes-nearby
 export const NO_ROUTES_NEARBY = 'No routes within 500 m';
 // N44 no-suggestions
@@ -178,7 +193,7 @@ export function getRolloutNotice(agency: { betaOnly?: boolean; rolloutNotice?: s
 /** The route card and the agency card word these for what they show (CIV-941). */
 export const NEW_SCHEDULE_DATA_NOTICE = { route: "This route's new schedule is still being checked for errors.", agency: "This agency's new schedule data is being verified." } as const;
 // N5 corrected (route), N22 corrected (agency)
-export const CORRECTED_DATA_NOTICE = { route: "We corrected an error in this route's schedule.", agency: 'We corrected this data.' } as const;
+export const CORRECTED_DATA_NOTICE = { route: "We corrected an error in this route's schedule.", agency: "We corrected an error in this agency's schedule." } as const;
 // N23 routes-outside-show
 export const routesOutsideFiltersNotice = (count: number) => `${count} ${plural(count, 'route')} outside your filters.`;
 // N24 routes-outside-hide
@@ -204,42 +219,44 @@ export const HISTORY_ROUTE_ORDER_NOTE = 'Biggest changes first';
 
 // ---- Map ----
 // N46 networks-failed
-export const networksFailedText = (count: number) => (count === 1 ? '1 network failed to load' : `${count} networks failed to load`);
+export const networksFailedText = (count: number) => (count === 1 ? "1 agency didn't load" : `${count} agencies didn't load`);
 // N46 networks-failed (hover)
-export const networksFailedHint = (slugs: readonly string[]) => `Couldn't load: ${slugs.join(', ')}`;
+/** The agencies' names: "TTC and YRT couldn't load." */
+export const networksFailedHint = (names: readonly string[]) => `${joinList(names)} couldn't load.`;
 // N45 networks-loading
-export const networksLoadingText = (loaded: number, requested: number) => `${loaded}/${requested} networks`;
+export const networksLoadingText = (loaded: number, requested: number) => `Loading ${loaded} of ${requested} agencies…`;
 // N34 on-demand-failed
 export const ON_DEMAND_AREAS_FAILED = "On-demand areas couldn't load.";
 // N33 on-demand-growing
 export const ON_DEMAND_COVERAGE_GROWING = 'On-demand coverage is still growing. Not every service is mapped yet.';
 // N47 link-copied
-export const LOCATION_URL_COPIED = 'Location URL copied';
+export const LOCATION_URL_COPIED = 'Location link copied.';
 // N47 copy-denied
-export const CLIPBOARD_DENIED = 'Could not copy — clipboard access denied';
+export const CLIPBOARD_DENIED = "The link couldn't be copied. Clipboard access was denied.";
 // N48 location-denied
-export const LOCATION_DENIED = "Location access denied — check your browser's site permissions";
+export const LOCATION_DENIED = "Location access was denied. Check your browser's site permissions.";
 // N49 approximate-location
 export const approximateLocationHint = (city?: string | null) => (city
-  ? `Showing the approximate area of ${city} — precise location wasn't available`
-  : "Showing an approximate location — precise location wasn't available");
+  ? `The map shows the approximate area of ${city}. Your precise location wasn't available.`
+  : "The map shows an approximate location. Your precise location wasn't available.");
 // N50 location-timeout
-export const LOCATION_TIMED_OUT = 'Location request timed out — try again';
+export const LOCATION_TIMED_OUT = 'Finding your location took too long. Try again.';
 // N50 location-unavailable
-export const LOCATION_UNAVAILABLE = "Couldn't determine your location — check your device's location services";
+export const LOCATION_UNAVAILABLE = "Your location couldn't be found. Check your device's location services.";
 
 // ---- Map image export ----
 // N58 export-timeout, N59 export-no-routes, N60 export-failed-networks
 /** Why an image can't be saved yet, by reason (utils/mapExport.ts). */
 export const MAP_EXPORT_BLOCKED_MESSAGES = {
-  timeout: 'The map is still loading, so the image would be missing routes. Try again in a moment.',
-  'no-routes': 'No routes are showing in this view yet. Move the map to an area with service and try again.',
-  'failed-networks': 'Some transit networks did not load, so the image would be missing routes. Reload the page and try again.',
+  timeout: 'The map is still loading. Try again in a moment to get every route in the image.',
+  // Only when the view has no route data; routes hidden by filters still save.
+  'no-routes': "There's no transit data in this view to save. Move the map to an area with service and try again.",
+  'failed-networks': "Some agencies' routes didn't load. Reload the page and try again to get every route in the image.",
 } as const;
 // N61 export-not-ready
-export const MAP_EXPORT_NOT_READY = 'The map was not ready. Try again in a moment.';
+export const MAP_EXPORT_NOT_READY = "The map wasn't ready. Try again in a moment.";
 // N57 export-waiting
-export const MAP_EXPORT_WAITING = 'Map still loading. The image will save once every route is drawn.';
+export const MAP_EXPORT_WAITING = 'The map is still loading. The image will save once every route is drawn.';
 
 // ---- Site ----
 // N62 update-available
@@ -249,9 +266,9 @@ export const ANALYTICS_CONSENT_PROMPT = 'Optional analytics help improve Atlas.'
 // N64 analytics-setting
 export const ANALYTICS_SETTING_NOTE = 'Optional analytics helps us understand which parts of Atlas people use.';
 // N68 view-error
-export const VIEW_ERROR_TEXT = 'Something went wrong loading this view.';
+export const VIEW_ERROR_TEXT = "This view couldn't load because something went wrong.";
 // N68 map-error
-export const MAP_ERROR_TEXT = 'The map encountered an error.';
+export const MAP_ERROR_TEXT = "The map couldn't be shown because of an error.";
 // N71 not-found
 export const NOT_FOUND_TITLE = 'This page took the wrong route';
 // N71 not-found
@@ -261,8 +278,29 @@ export const AGENCY_PAGE_NOT_FOUND_TITLE = 'No page for this agency';
 // N72 page-not-found
 export const AREA_PAGE_NOT_FOUND_TITLE = 'No page for this region';
 // N72 page-not-found
-export const NO_FREQUENCY_PAGE_BODY = 'Atlas has no frequency page at this address.';
+export const NO_FREQUENCY_PAGE_BODY = 'This address has no frequency page.';
 
+const DAYS_PLURAL: Record<string, string> = { Weekday: 'weekdays', Saturday: 'Saturdays', Sunday: 'Sundays' };
+// N17 route-no-service-day, N26 agency-no-service-day (Ryan)
+export const noServiceOnDayNotice = (subject: 'route' | 'agency', day: string) => `This ${subject} has no scheduled service on ${DAYS_PLURAL[day] ?? day}.`;
+// N35 stop-no-routes-in-period (Ryan)
+export const stopNoRoutesNotice = (periodRange: string) => `No routes stop here from ${keepRangeTogether(periodRange)}.`;
+// N36 stop-not-found (Ryan)
+export const STOP_NOT_FOUND = "This stop couldn't be found. It may have been moved or removed.";
+// N51 night-failed (Ryan)
+export const NIGHT_LOAD_FAILED = "Night service couldn't load.";
+/** N52 night-empty (Ryan): the Night view's own rule, fixed at 2-5 AM (FREQUENCY_RULES rule 10), at its 30 or 60. A real search with no match keeps N52's old text. */
+export const nightNoRoutesNotice = (frequency: number) => `No routes here run every ${frequency} min or better from 2–5 AM.`;
+// N54 history-failed (Ryan; with RETRY_HINT in the sidebar)
+export const HISTORY_LOAD_FAILED = "History couldn't load.";
+// N55 history-route-not-covered (Ryan)
+export const HISTORY_ROUTE_NOT_COVERED = 'This route has no past schedules in History yet.';
+// N18 route-not-found (Ryan)
+export const ROUTE_NOT_FOUND = "This route couldn't be found. It may have been renumbered or removed.";
+// N27 agency-routes-failed (Ryan)
+export const AGENCY_ROUTES_FAILED = "This agency's routes couldn't load. Check your connection and try again.";
+// N30 agency-not-found (Ryan)
+export const AGENCY_NOT_FOUND = "This agency couldn't be found.";
 // N25 listing-ended (Ryan's exact text, CIV-1011; not shown anywhere yet)
 export const listingEndedNotice = (date: string) => `This agency's scheduled service for most routes ended ${date}, and they have not released updated data.`;
 
@@ -306,7 +344,7 @@ export const EDGE_GAP_ALLOWANCE_EXPLANATION = "Gaps in the middle of the day don
 // E8 weekday-variation
 export const WEEKDAY_VARIATION_LEAD = 'Weekday schedules differ for this route.';
 export const WEEKDAY_VARIATION_EXPLANATION =
-  'Atlas checks Monday through Friday separately. The frequency tier shown on the route card reflects the slowest actual weekday, while the displayed cadence uses a typical actual weekday. This keeps the summary from combining departures that ran on different days.';
+  'Monday to Friday are checked separately. The frequency tier shown on the route card reflects the slowest actual weekday, while the displayed cadence uses a typical actual weekday. This keeps the summary from combining departures that ran on different days.';
 
 /**
  * Which explainer each notice's Learn more opens (N-code to panel). Every Learn-more notice is listed here; components

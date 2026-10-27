@@ -50,3 +50,10 @@ export function resolveRouteSelectionForDay(
     ? `${agencySlug}::${[...sameLogicalRouteIds][0]}`
     : null;
 }
+
+/** Whether the agency's data has the route on any day (N17 tells "no service today" apart from N18 "not found"). */
+export function routeOnAnyDay(selectedRoute: string, features: GeoJSON.Feature[]): boolean {
+  const separator = selectedRoute.indexOf('::');
+  const routeId = separator < 0 ? '' : selectedRoute.slice(separator + 2);
+  return !!routeId && features.some(f => (f.properties as RouteSelectionProperties | null)?.routeId === routeId);
+}
