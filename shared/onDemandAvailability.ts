@@ -272,7 +272,7 @@ const RUNNING_PERIOD_LABELS: Record<OnDemandPeriod, string> = {
 /** Plain note for the selected day/period. Never claims service when hours are missing. */
 export function onDemandRunningNote(availability: OnDemandAvailability | undefined, day: DayType, period: OnDemandPeriod): string {
   const state = onDemandRunningState(availability, day, period);
-  if (state === 'unknown') return 'Hours not confirmed for this time';
+  if (state === 'unknown') return 'Hours unavailable'; // Ryan's wording, 2026-10-27
   if (state === 'not-running') return 'Not running at this time';
   if (period === 'all') return day === 'Weekday' ? 'Running on weekdays' : `Running on ${day}`;
   return `Running during ${RUNNING_DAY_LABELS[day]} ${RUNNING_PERIOD_LABELS[period]}`;

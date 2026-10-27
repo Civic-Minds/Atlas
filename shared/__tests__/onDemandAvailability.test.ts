@@ -95,8 +95,8 @@ describe('onDemandRunningNote', () => {
   });
 
   it('never claims service when hours are missing', () => {
-    expect(onDemandRunningNote(undefined, 'Saturday', 'midday')).toBe('Hours not confirmed for this time');
-    expect(onDemandRunningNote({ Weekday: [{ startHour: 7, endHour: 19 }] }, 'Saturday', 'midday')).toBe('Hours not confirmed for this time');
+    expect(onDemandRunningNote(undefined, 'Saturday', 'midday')).toBe('Hours unavailable');
+    expect(onDemandRunningNote({ Weekday: [{ startHour: 7, endHour: 19 }] }, 'Saturday', 'midday')).toBe('Hours unavailable');
   });
 });
 
