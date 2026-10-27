@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import type { AgencyPageRoute, AgencyPageSummary } from './agencyPages';
 import {
   areaAboutParagraph, areaDatesText, areaIntroJoiners, areaIntroParts, areaHoursLabel, areaMapHref, areaPageDescription, areaPageH1, areaPageJsonLd, areaPageTitle,
-  areaSpanShort, areaSubtitle, buildAreaPageData, resolveAreaSeo, type AreaPageData,
+  areaSpanShort, areaSubtitle, areaTableColumnTitle, buildAreaPageData, resolveAreaSeo, type AreaPageData,
 } from './areaPages';
 import { rankLargeMetros, parseCsv } from './largeMetros';
 import { agencyRegionTitle, areaLinkFor } from './agencyArea';
@@ -32,18 +32,20 @@ describe('buildAreaPageData', () => {
     expect(d.agencies[0]).toMatchObject({ slug: 'ttc', totalRoutes: 4, modes: { 'Subway/Metro': 2, Bus: 2 } });
     expect(d.byMode).toEqual([{ label: 'Subway/Metro', routes: 2 }, { label: 'Bus', routes: 4 }]);
     // The same fixed columns on every area page, in the shared order (CIV-973); no "Other" without a rarer mode.
-    expect(d.modeColumns).toEqual(['Subway/Metro', 'Light rail', 'Streetcar', 'Commuter rail', 'Bus', 'Ferry', 'Gondola/aerial tram']);
+    expect(d.modeColumns).toEqual(['Subway/Metro', 'Light rail', 'Streetcar', 'Commuter rail', 'Bus', 'Ferry']);
     expect(d.span).toEqual({ first: 5, last: 28 });
     expect(d.newestRefresh).toBe('2026-09-01');
   });
 
   it('adds rarer modes into one last "Other" column, only where an agency has one (CIV-973)', () => {
-    const withRare = new Map([...ALL, ['mono', ag('mono', 'Monorail Co', [r('M', 12, 10), r('T', 11, 15), r('F', 4, 20)])] as const]);
+    const withRare = new Map([...ALL, ['mono', ag('mono', 'Monorail Co', [r('M', 12, 10), r('T', 11, 15), r('F', 4, 20), r('G', 6, 15), r('C', 5, 10)])] as const]);
     const area = { ...AREA, agencies: [...AREA.agencies, 'mono'] };
     const e = buildAreaPageData(area, withRare, null);
     expect(e.modeColumns.at(-1)).toBe('Other');
-    // Trolleybus routes count in the Bus column in this table (Ryan, CIV-973 follow-up); monorail goes in Other.
-    expect(e.agencies.find(a => a.slug === 'mono')?.modes).toEqual({ Other: 1, Bus: 1, Ferry: 1 });
+    // Seven columns (Ryan, CIV-973): monorail counts with subway/metro, trolleybus with bus; gondola and cable car go in Other.
+    expect(e.agencies.find(a => a.slug === 'mono')?.modes).toEqual({ 'Subway/Metro': 1, Bus: 1, Ferry: 1, Other: 2 });
+    const monoOnly = buildAreaPageData({ ...AREA, agencies: ['mono'] }, new Map([['mono', ag('mono', 'Monorail Co', [r('M', 12, 10)])]]), null);
+    expect(monoOnly.modeColumns).not.toContain('Other');
   });
 
   it('takes the quickest route across the whole area', () => {
@@ -113,6 +115,15 @@ describe('buildAreaPageData', () => {
 
   it('names the dates', () => {
     expect(areaDatesText(d)).toBe("Based on the agencies' published timetables, not live arrivals. Newest timetable published Sep 1, 2026. Atlas last updated this page Oct 13, 2026.");
+  });
+});
+
+describe('area table columns (CIV-973)', () => {
+  it('says what a grouped column counts on hover, and nothing for a single-mode column', () => {
+    expect(areaTableColumnTitle('Subway/Metro')).toBe('Subway/metro and monorail routes');
+    expect(areaTableColumnTitle('Bus')).toBe('Bus and trolleybus routes');
+    expect(areaTableColumnTitle('Other')).toBe('Cable car, gondola/aerial tram, funicular and other routes');
+    expect(areaTableColumnTitle('Streetcar')).toBeUndefined();
   });
 });
 

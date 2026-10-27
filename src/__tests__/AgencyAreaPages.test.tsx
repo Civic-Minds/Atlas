@@ -164,7 +164,7 @@ describe('AgencyPage other agencies list', () => {
 describe('AreaPage narrow names column', () => {
   it('shows the short name with the full one on hover only when the "Other" column narrows the names and the full name is long', () => {
     const long = 'San Francisco Bay Area Water Emergency Transportation Authority (WETA)';
-    const weta: AgencyPageSummary = { ...HSR, slug: 'weta', name: long, displayName: 'WETA (San Francisco Bay)', routes: [r('F1', 12, 20)] };
+    const weta: AgencyPageSummary = { ...HSR, slug: 'weta', name: long, displayName: 'WETA (San Francisco Bay)', routes: [r('F1', 6, 20)] };
     const withOther = buildAreaPageData({ ...AREA, agencies: ['ttc', 'weta'] }, new Map([[TTC.slug, TTC], [weta.slug, weta]]), null);
     view(<AreaPage data={withOther} />);
     const link = screen.getByRole('link', { name: 'WETA (San Francisco Bay)' });
@@ -179,7 +179,8 @@ describe('AreaPage', () => {
   it('lists agencies in a table with the same mode columns as every area (CIV-973), and links each agency', () => {
     view(<AreaPage data={data} />);
     const headers = screen.getAllByRole('columnheader').map(h => h.textContent);
-    expect(headers).toEqual(['Agency', 'Subway/Metro', 'Light rail', 'Streetcar', 'Commuter rail', 'Bus', 'Ferry', 'Gondola/aerial tram']);
+    expect(headers).toEqual(['Agency', 'Subway/Metro', 'Light rail', 'Streetcar', 'Commuter rail', 'Bus', 'Ferry']);
+    expect(screen.getByTitle('Bus and trolleybus routes').textContent).toBe('Bus');
     const table = within(screen.getByRole('table'));
     expect(table.getByRole('link', { name: 'Toronto Transit Commission' }).getAttribute('href')).toBe('/agency/ttc');
     const ttcRow = table.getByRole('link', { name: 'Toronto Transit Commission' }).closest('tr')!;
