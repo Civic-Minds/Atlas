@@ -4,7 +4,7 @@
  * the plain-language sentences, so the page and the tests share one wording.
  */
 import { hasLiveAnalysis } from './livePollingConfig.js';
-import { hourText, pct } from './liveFormat.js';
+import { hourText, pct, signedMinutes as min } from './liveFormat.js';
 
 export interface AdherenceCounts {
   n: number;
@@ -214,7 +214,6 @@ export function dashboardUnavailable(agency: string, route: string, analysed = h
   return null;
 }
 
-const min = (x: number) => `${x > 0 ? '+' : ''}${Math.round(x * 10) / 10} min`;
 
 /** B3's one-line takeaway above the chart: what the bars show, in the chart's own terms. */
 export function buildupTakeaway(b: DashboardBuildup, lessExactStops = 0): string {
