@@ -32,8 +32,7 @@ import { SearchResultsList } from './SearchResultsList';
 import { branchDisplayPeriodHeadway, buildRouteFacts, labelShortNameOf, type RouteLabel } from '../../utils/routeFacts';
 import { collectStopHubSiblings, getDistanceMeters } from '../../utils/stopHub';
 import { splitRouteKey } from '../../utils/routeKey';
-import { isFeedExpired } from '../../utils/feedFreshness';
-import { effectiveFeedExpiry } from '../../../shared/feedAvailability';
+import { effectiveFeedExpiry, isAgencyFeedExpired } from '../../../shared/feedAvailability';
 import { trackEvent } from '../../lib/analytics';
 import type { CompareRouteRow } from './compareTypes';
 import { FEATURES } from '../../../shared/config';
@@ -785,7 +784,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       : undefined;
   const routeAgency = routeSlug ? agencies.find(a => a.slug === routeSlug) : undefined;
   const routeIsStale = (() => {
-    return isFeedExpired(routeAgency ? effectiveFeedExpiry(routeAgency) : null);
+    return routeAgency ? isAgencyFeedExpired(routeAgency) : false;
   })();
   const expDateStr = (() => {
     const exp = routeAgency ? effectiveFeedExpiry(routeAgency) : null;

@@ -172,7 +172,8 @@ async function restoreAgency(agency: Agency, candidate: Candidate): Promise<{ ag
 
 async function main(): Promise<void> {
   const index = JSON.parse(readFileSync(indexPath, 'utf8')) as { agencies: Agency[] };
-  const targets = index.agencies.filter(agency => isStalePrimaryProductionFeed(agency, today));
+  // Stale in each agency's own local date (agencyTodayYmd, the default).
+  const targets = index.agencies.filter(agency => isStalePrimaryProductionFeed(agency));
   const archiveKeys = await r2ListArchive('gtfs/archive/');
   console.log(`Restoring ${targets.length} stale active agencies from ${archiveKeys.length} archive objects.`);
 
@@ -214,7 +215,7 @@ async function main(): Promise<void> {
   const mergedHiddenRoutes = mergeHiddenRoutes(
     hiddenRoutes,
     hiddenUpdates,
-    new Set(index.agencies.filter(agency => isActiveProductionFeed(agency, today)).map(agency => agency.slug)),
+    new Set(index.agencies.filter(agency => isActiveProductionFeed(agency)).map(agency => agency.slug)),
   );
   await r2Put('atlas/hidden-routes.json', JSON.stringify(mergedHiddenRoutes));
   await bumpPublicDataVersion(`restore active feeds (${restored.length})`);

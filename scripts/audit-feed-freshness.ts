@@ -13,6 +13,7 @@ import '../pipeline/loadEnv.js';
 import { parseCsv } from '../pipeline/parseGtfs.js';
 import { effectiveFeedExpiry } from '../pipeline/feedFreshness.js';
 import { resolveFeedUrl } from '../pipeline/feedUrl.js';
+import { agencyTodayYmd } from '../shared/feedAvailability.js';
 
 interface Agency {
   slug: string;
@@ -110,7 +111,6 @@ async function auditAgency(agency: Agency, today: string): Promise<FeedAudit> {
 async function main() {
   const index = JSON.parse(readFileSync(resolve('public/data/index.json'), 'utf8')) as { agencies: Agency[] };
   const agencies = index.agencies.filter(agency => !agency.staged && !agency.hiddenInProduction);
-  const today = new Date().toISOString().slice(0, 10).replace(/-/g, '');
   const queue = [...agencies];
   const results: FeedAudit[] = [];
   const concurrency = 8;
@@ -118,7 +118,7 @@ async function main() {
     while (queue.length) {
       const agency = queue.shift();
       if (!agency) return;
-      const result = await auditAgency(agency, today);
+      const result = await auditAgency(agency, agencyTodayYmd(agency));
       results.push(result);
       process.stdout.write(`\rAudited ${results.length}/${agencies.length}`);
     }
