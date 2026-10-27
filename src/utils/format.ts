@@ -245,9 +245,10 @@ export function titleCase(s: string): string {
 }
 
 /**
- * A stop name as the feed wrote it, cased only when the feed sent it all in capitals ("MOODY CENTER" →
- * "Moody Center", CIV-935). A name that already has lower-case letters is the feed's own spelling and stays as
- * written ("Lower Jarvis St at The Esplanade"), the same rule routeLabelCase uses for route names.
+ * The one capitals rule for stop and destination names (CIV-935): cased only when the feed sent the name all in
+ * capitals ("MOODY CENTER" → "Moody Center", "LBJ/CENTRAL STATION" → "LBJ/Central Station", abbreviations from the
+ * list route names share). A name that already has lower-case letters is the feed's own spelling and stays exactly
+ * as written ("McDonald Ave", "Lower Jarvis St at The Esplanade"), the same rule routeLabelCase uses for route names.
  */
 export function stopNameCase(name: string): string {
   return !name || /\p{Ll}/u.test(name) ? name : titleCase(name);
@@ -763,7 +764,7 @@ export function formatBranchLabel(
     ? headsign.trim()
     : cleanHeadsign(headsign.trim(), shortName, longName);
   if (!raw || isRedundantWithRouteName(raw, shortName, longName)) return withToPrefix(fallback);
-  return withToPrefix(titleCase(raw));
+  return withToPrefix(stopNameCase(raw));
 }
 
 /** Format YYYYMMDD or YYYY-MM-DD for display (UTC). */
