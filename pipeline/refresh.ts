@@ -592,9 +592,11 @@ async function refreshAgency(
   // anything is written, so a refused agency keeps its live artifacts, archive
   // and metadata unchanged.
   const next = summarizeArtifact(geojson, stopsJson, agency.slug);
-  const { feedStart, calendarOnlyEnd } = await peekFeedDates(buf);
+  // Dates of the routes Atlas keeps (excluded routes' services left out, #1140), for the gate and the
+  // recorded expiry. lastPeekedExpiry stays the raw zip's, which the next refresh compares against.
+  const { feedStart, feedExpiry: keptCalendarExpiry, calendarOnlyEnd } = await peekFeedDates(buf, agency.excludeRouteShortNames);
   const agencyFlags = await evaluateRun({
-    candidates: [{ slug: agency.slug, next, service: { start: feedStart, end: feedExpiry ?? peekedExpiry, calendarEnd: peekedExpiry } }],
+    candidates: [{ slug: agency.slug, next, service: { start: feedStart, end: feedExpiry ?? keptCalendarExpiry, calendarEnd: keptCalendarExpiry } }],
     getLive: readRefreshLive,
     registry: gateRegistry,
     todayYmd: expiryToday,
@@ -661,6 +663,7 @@ async function refreshAgency(
       peekedExpiry,
       peekedVersion,
       todayYmd: todayUtcYmd(),
+      calendarExpiry: keptCalendarExpiry,
       calendarOnlyEnd,
     });
     stampSupplementalFeedMeta(agency, supplementalMeta);

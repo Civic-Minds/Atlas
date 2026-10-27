@@ -131,11 +131,13 @@ export function stampFeedMeta(
     peekedExpiry: string | null;
     peekedVersion: string | null;
     todayYmd: string;
+    /** The kept routes' latest service date (#1140); without it, the raw peeked expiry. */
+    calendarExpiry?: string | null;
     /** Last real service date from the calendar alone (no feed_info); can only lower the expiry. */
     calendarOnlyEnd?: string | null;
   },
 ): void {
-  agency.lastFeedExpiry = recordedFeedExpiry(opts.feedExpiry, opts.peekedExpiry, opts.todayYmd, opts.calendarOnlyEnd);
+  agency.lastFeedExpiry = recordedFeedExpiry(opts.feedExpiry, opts.calendarExpiry !== undefined ? opts.calendarExpiry : opts.peekedExpiry, opts.todayYmd, opts.calendarOnlyEnd);
   agency.lastPeekedExpiry = opts.peekedExpiry;
   agency.lastFeedVersion = opts.feedVersion ?? opts.peekedVersion ?? null;
   agency.lastRefreshedAt = opts.todayYmd;
