@@ -6,7 +6,7 @@ import type { LiveAgencyResponse } from '../local-api/live-agency';
 import { devOnly, liveAgencyDataUrl, liveDataMissing, liveReportTitle } from './lib/liveReportData';
 import { applySeoToDocument } from './lib/seoDom';
 import { SITE_URL } from '../shared/seo';
-import { liveDashboardPath } from './hooks/useLiveDashboard';
+import { liveDashboardPath, liveToolPath } from './hooks/useLiveDashboard';
 import { routesByMode } from '../shared/agencyPages';
 import { RouteNameCell } from './pageParts';
 import { agencyKpiTiles } from './utils/liveAgencyKpi';
@@ -203,7 +203,7 @@ export default function LiveAgencyPage() {
               {liveSubtitle({ thisWeek: dates, lastWeek: w?.comparable ? w.lastWeek.dates : null, middle: coverage, agency })}
             </p>
           </div>
-          {FEATURES.live && <ArrowLink href="/apps/live" className="shrink-0 whitespace-nowrap">View on Live map</ArrowLink>}
+          {FEATURES.liveReports && <ArrowLink href={liveToolPath(agency)} className="shrink-0 whitespace-nowrap">View on Live map</ArrowLink>}
         </div>
         <ErrorBoundary>
           {w && tiles.length
