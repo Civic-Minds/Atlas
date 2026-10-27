@@ -1,4 +1,5 @@
-import { cleanHeadsign, formatRemDisplay, getRouteLabel } from '../../shared/cleanHeadsign';
+import { cleanHeadsign } from '../../shared/cleanHeadsign';
+import { formatRemDisplay, getRouteLabel } from '../../shared/routeDisplay';
 import { routeDisplay, shouldHideNumericRouteShortName } from '../../shared/routeDisplay';
 import { directionBranchFallback, isRedundantWithRouteName } from '../../shared/headsignDisplay';
 import { headwayAbout, headwayAboutRange, headwayAmount } from './headwayText';

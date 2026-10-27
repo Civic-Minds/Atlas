@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { cleanHeadsign, getRouteLabel, isMiwayExpressHeadsign } from '../cleanHeadsign';
+import { cleanHeadsign, isMiwayExpressHeadsign } from '../cleanHeadsign';
+import { getRouteLabel } from '../routeDisplay';
 
 describe('cleanHeadsign', () => {
   it('removes NJ Transit fare instructions from destination headsigns', () => {
