@@ -180,8 +180,12 @@ describe('part-period notice frequency (#1123)', () => {
     expect(partPeriodNoticeHeadway(60, [30, 90])).toBe(60);
   });
 
-  it('keeps the number when there is no row to compare, and has none without a filter value', () => {
-    expect(partPeriodNoticeHeadway(72, [null, undefined])).toBe(72);
+  it('names no number when no row shows one, and none without a filter value', () => {
+    // TTC 10 Van Horne weekday Midday (#1043): rush-hour-only, rows read "no regular service"; the filter
+    // value is the 330-minute wait between the morning and afternoon trips, not a frequency.
+    expect(partPeriodNoticeHeadway(330, [null, null])).toBeNull();
+    expect(partPeriodNoticeHeadway(72, [null, undefined])).toBeNull();
+    expect(partPeriodNoticeHeadway(72, [])).toBeNull();
     expect(partPeriodNoticeHeadway(null, [20])).toBeNull();
   });
 });

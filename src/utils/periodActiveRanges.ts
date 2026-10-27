@@ -75,7 +75,10 @@ export function partPeriodNoticeApplies(
  * value is measured across the whole period, including the wait before the first or after the
  * last trip, so it can read slower than every row on the card (RFTA HC AM Peak: "every 60 min"
  * above rows of every 20). When the number the notice would print is slower than every row's,
- * the notice names no frequency; when a row runs that slowly or slower, the number stays.
+ * the notice names no frequency; when a row runs that slowly or slower, the number stays. With no row
+ * showing a number there is nothing to confirm it against, and on a peak-only route it is the wait
+ * between its rush-hour trips (TTC 10 weekday Midday: "every 330 min" over rows of "no regular
+ * service", #1043), so the notice names none.
  */
 export function partPeriodNoticeHeadway(
   filterValue: number | null | undefined,
@@ -84,5 +87,6 @@ export function partPeriodNoticeHeadway(
   if (filterValue == null) return null;
   const rows = rowHeadways.filter((h): h is number => typeof h === 'number' && Number.isFinite(h) && h > 0);
   const shown = headwayAboutMinutes(filterValue);
-  return rows.length > 0 && rows.every(h => shown > headwayAboutMinutes(h)) ? null : filterValue;
+  if (rows.length === 0) return null;
+  return rows.every(h => shown > headwayAboutMinutes(h)) ? null : filterValue;
 }
