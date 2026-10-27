@@ -9,6 +9,7 @@ import {
   formatDataDate,
   hasMiddayService,
   headwayEvery,
+  introName,
   modesText,
   modeLabel,
   type AgencyPageSummary,
@@ -51,6 +52,8 @@ export interface AreaPageData {
   /** Saturday and Sunday: every agency has it, none do, or it varies. */
   weekend: 'both' | 'sat' | 'sun' | 'none' | 'varies' | null;
   agencies: AreaAgencyRow[];
+  /** States or provinces of the area's own listed agencies, most routes first (CIV-968: the subtitle when the cities only repeat the title). */
+  regions?: string[];
   /** Mode columns for the agency table: the same fixed set on every area page (AREA_TABLE_MODES), then "Other" when an agency has a rarer mode. */
   modeColumns: string[];
   /** Newest schedule refresh among the area's agencies, and the data release the numbers come from. */
@@ -137,6 +140,11 @@ export function buildAreaPageData(area: AreaConfig, all: ReadonlyMap<string, Age
     : 'varies';
   const best = bestRoute(members.flatMap(a => a.routes.map(r => ({ ...r, agency: a.displayName }))));
   const { slug, name, type, officialName, country, cities, bbox, center, note } = area;
+  const regionRoutes = new Map<string, number>();
+  for (const a of members) {
+    if (a.region && area.agencies.includes(a.slug)) regionRoutes.set(a.region, (regionRoutes.get(a.region) ?? 0) + a.routes.length);
+  }
+  const regions = [...regionRoutes.entries()].sort((x, y) => y[1] - x[1] || x[0].localeCompare(y[0])).map(([r]) => r);
   const byMode = [...modeCounts.entries()].map(([label, routes]) => ({ label, routes }))
     .sort((x, y) => modeLabelSortIndex(x.label) - modeLabelSortIndex(y.label));
   return {
@@ -149,6 +157,7 @@ export function buildAreaPageData(area: AreaConfig, all: ReadonlyMap<string, Age
     spanVaries: Number.isFinite(firstMin) && (firstMax - firstMin >= SPAN_VARIES_HOURS || lastMax - lastMin >= SPAN_VARIES_HOURS),
     weekend,
     agencies: rows,
+    regions,
     modeColumns: [...AREA_TABLE_MODES, ...(rows.some(r => r.modes[AREA_TABLE_OTHER]) ? [AREA_TABLE_OTHER] : [])],
     newestRefresh: newest,
     releaseDate,
@@ -173,8 +182,16 @@ export function areaPageH1(d: Pick<AreaPageData, 'area'>): string {
   return areaRegionTitle(d.area);
 }
 
-export function areaSubtitle(d: Pick<AreaPageData, 'area'>): string {
-  return d.area.cities.join(', ');
+/**
+ * The line under the title: the area's cities, or when the title already names every one of them (CIV-968: "Pittsburgh
+ * area" over "Pittsburgh"), its states or provinces instead; '' when the title is just the state or province.
+ * A state inside a city's name still adds the state ("Iowa City area" over "Iowa").
+ */
+export function areaSubtitle(d: Pick<AreaPageData, 'area' | 'regions'>): string {
+  const title = areaRegionTitle(d.area).toLowerCase();
+  if (d.area.cities.some(c => !title.includes(c.toLowerCase()))) return d.area.cities.join(', ');
+  const titlePlace = title.replace(/\b(greater|metro|metropolitan|area|region)\b/g, '').replace(/\s+/g, ' ').trim();
+  return (d.regions ?? []).filter(r => r.toLowerCase() !== titlePlace).join(', ');
 }
 
 /** One sentence that stands alone, used as the meta description's opening. */
@@ -212,10 +229,42 @@ export function areaHoursLabel(d: Pick<AreaPageData, 'weekend' | 'spanVaries'>):
 }
 
 /** One plain sentence, the same template for every area. */
-export function areaAboutParagraph(d: AreaPageData): string {
+/** An area with more agencies than this names its two biggest and counts the rest (CIV-968); a smaller one names them all. */
+const AREA_INTRO_NAME_ALL_MAX = 3;
+const AREA_INTRO_NAMED = 2;
+
+/**
+ * The intro's agencies, by route count (the table's order): every agency when there are at most three, else the two
+ * biggest plus how many others there are. `lead` is the counting sentence up to where the names start.
+ */
+export function areaIntroParts(d: AreaPageData): { lead: string; named: AreaAgencyRow[]; others: number } {
   const n = d.agencies.length;
-  const out: string[] = [`${areaRegionSentenceStart(d.area)} has ${plural(n, 'transit agency', 'transit agencies')} running ${plural(d.totalRoutes, 'route', 'routes')}${d.byMode.length > 1 ? ` (${modesText(d.byMode, ', ')})` : ''}.`];
-  return out.join(' ');
+  const lead = `${areaRegionSentenceStart(d.area)} has ${plural(n, 'transit agency', 'transit agencies')} running ${plural(d.totalRoutes, 'route', 'routes')}${d.byMode.length > 1 ? ` (${modesText(d.byMode, ', ')})` : ''}`;
+  const named = n <= AREA_INTRO_NAME_ALL_MAX ? d.agencies : d.agencies.slice(0, AREA_INTRO_NAMED);
+  return { lead, named, others: n - named.length };
+}
+
+/** The joiners around the intro's names: "A, B and C" ends with ".", "A, B and 7 others" opens with "including". */
+export function areaIntroJoiners(parts: Pick<ReturnType<typeof areaIntroParts>, 'named' | 'others'>): { opener: string; separators: string[]; tail: string } {
+  const count = parts.named.length + (parts.others > 0 ? 1 : 0);
+  const separators = parts.named.map((_, i) => (i === count - 2 ? ' and ' : i < count - 2 ? ', ' : ''));
+  return {
+    opener: parts.named.length === 0 ? '' : parts.others > 0 ? ', including ' : ': ',
+    separators,
+    tail: parts.others > 0 ? `${plural(parts.others, 'other', 'others')}.` : '.',
+  };
+}
+
+/** An agency's name in the intro: its bracketed city is dropped when the area already names it, as agency intros do ("TheRide", not "TheRide (Ann Arbor)"). */
+export function areaIntroName(d: Pick<AreaPageData, 'area'>, a: Pick<AreaAgencyRow, 'name'>): string {
+  return introName(a.name, [areaRegionTitle(d.area), ...d.area.cities].join(', '));
+}
+
+/** The intro as plain text (the page links each name to its agency page). */
+export function areaAboutParagraph(d: AreaPageData): string {
+  const parts = areaIntroParts(d);
+  const j = areaIntroJoiners(parts);
+  return `${parts.lead}${j.opener}${parts.named.map((a, i) => areaIntroName(d, a) + j.separators[i]).join('')}${j.tail}`;
 }
 
 export function areaDatesText(d: Pick<AreaPageData, 'newestRefresh' | 'releaseDate'>): string {

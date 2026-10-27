@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router';
 import type { ReactElement } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -169,7 +169,7 @@ describe('AreaPage narrow names column', () => {
     view(<AreaPage data={withOther} />);
     const link = screen.getByRole('link', { name: 'WETA (San Francisco Bay)' });
     expect(link.getAttribute('title')).toBe(long);
-    expect(screen.getByRole('link', { name: 'Toronto Transit Commission' }).getAttribute('title')).toBeNull();
+    expect(within(screen.getByRole('table')).getByRole('link', { name: 'Toronto Transit Commission' }).getAttribute('title')).toBeNull();
   });
 });
 
@@ -180,10 +180,19 @@ describe('AreaPage', () => {
     view(<AreaPage data={data} />);
     const headers = screen.getAllByRole('columnheader').map(h => h.textContent);
     expect(headers).toEqual(['Agency', 'Subway/Metro', 'Light rail', 'Streetcar', 'Commuter rail', 'Bus', 'Ferry', 'Gondola/aerial tram']);
-    expect(screen.getByRole('link', { name: 'Toronto Transit Commission' }).getAttribute('href')).toBe('/agency/ttc');
-    const ttcRow = screen.getByRole('link', { name: 'Toronto Transit Commission' }).closest('tr')!;
-    const hsrRow = screen.getByRole('link', { name: 'Hamilton Street Railway' }).closest('tr')!;
+    const table = within(screen.getByRole('table'));
+    expect(table.getByRole('link', { name: 'Toronto Transit Commission' }).getAttribute('href')).toBe('/agency/ttc');
+    const ttcRow = table.getByRole('link', { name: 'Toronto Transit Commission' }).closest('tr')!;
+    const hsrRow = table.getByRole('link', { name: 'Hamilton Street Railway' }).closest('tr')!;
     expect(hsrRow.textContent).toContain('–'); // no subway routes
+  });
+
+  it('names the agencies in the intro, each linked to its page (CIV-968)', () => {
+    view(<AreaPage data={data} />);
+    const intro = screen.getByText(/transit agencies running/);
+    expect(intro.textContent).toMatch(/: Toronto Transit Commission and Hamilton Street Railway\.$/);
+    expect(within(intro).getByRole('link', { name: 'Toronto Transit Commission' }).getAttribute('href')).toBe('/agency/ttc');
+    expect(within(intro).getByRole('link', { name: 'Hamilton Street Railway' }).getAttribute('href')).toBe('/agency/hsr');
   });
 
   it('shows the band bar and no fixed threshold', () => {
