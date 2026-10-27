@@ -11,6 +11,7 @@ import { useHistoryMapOverlay } from '../../context/HistoryMapOverlay';
 import { useLiveVehiclesMapOverlay } from '../../context/LiveVehiclesMapOverlay';
 import { useHistoryLayer } from './map/useHistoryLayer';
 import { addMapLayers } from './map/mapLayers';
+import { topMapHit } from './map/mapHitTargets';
 import { resetRoutesLayerDefaultPaint as resetRouteLayersPaint, localRouteHeadwayColor } from './map/routeStyle';
 import { useRouteStyling } from './map/useRouteStyling';
 import { useSelectionFraming } from './map/useSelectionFraming';
@@ -768,9 +769,10 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         setSelectedAgencySlugRef.current?.(null);
       }
 
-      const stopHits = map.queryRenderedFeatures(e.point, { layers: ['stops-layer'] });
-      if (stopHits.length > 0) {
-        const props = stopHits[0].properties;
+      // One ordered rule picks what a click means: stop, then on-demand zone, then route (mapHitTargets.ts).
+      const hit = topMapHit(map, e.point);
+      if (hit?.kind === 'stop') {
+        const props = hit.features[0].properties;
         const compositeId = `${props.agencySlug}::${props.stopId}`;
         setSelectedRouteRef.current(null);
         setDisambiguationRoutesRef.current(null);
@@ -782,19 +784,9 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         return;
       }
 
-      const bbox: [maplibregl.PointLike, maplibregl.PointLike] = [
-        [e.point.x - 12, e.point.y - 12],
-        [e.point.x + 12, e.point.y + 12],
-      ];
-
-      // Service-area clicks take priority over route hitboxes. A route can cross a
-      // zone, but clicking inside the visible zone should open the on-demand agency
-      // rather than whichever route happens to be nearby.
-      const serviceAreaHitLayers = ['on-demand-service-area-fill', 'on-demand-service-area-line', 'on-demand-stop-points']
-        .filter(layerId => map.getLayer(layerId));
-      const serviceAreaHits = serviceAreaHitLayers.length > 0
-        ? map.queryRenderedFeatures(e.point, { layers: serviceAreaHitLayers })
-        : [];
+      // A route can cross a zone, but clicking inside the visible zone opens the on-demand service,
+      // not whichever route happens to be nearby.
+      const serviceAreaHits = hit?.kind === 'serviceArea' ? hit.features : [];
       const serviceAreaSlug = serviceAreaHits[0]?.properties?.agencySlug as string | undefined;
       if (serviceAreaSlug) {
         setSelectedRouteRef.current(null);
@@ -832,20 +824,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         return;
       }
 
-      const routeHitLayers = ['overview-routes-hit-layer', 'routes-hit-layer'];
-      if (map.getLayer('local-routes-hit-layer')) {
-        routeHitLayers.push('local-routes-hit-layer');
-      }
-      if (map.getLayer('night-service-routes-hit-layer')) {
-        routeHitLayers.push('night-service-routes-hit-layer');
-      }
-      if (map.getLayer('frequent-service-routes-hit-layer')) {
-        routeHitLayers.push('frequent-service-routes-hit-layer');
-      }
-      if (map.getLayer('frequency-qualifying-segments-hit-layer')) {
-        routeHitLayers.push('frequency-qualifying-segments-hit-layer');
-      }
-      const routeHits = map.queryRenderedFeatures(bbox, { layers: routeHitLayers });
+      const routeHits = hit?.kind === 'route' ? hit.features : [];
       if (routeHits.length > 0) {
         const props = routeHits[0].properties;
         const uniqueRouteKeys = dedupeRouteKeysByDisplay(routeHits.map((f: maplibregl.MapGeoJSONFeature) => {
@@ -1039,33 +1018,12 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     return () => { map.off('click', onClick); };
   }, [mapLoaded]);
 
-  // Pointer cursor over clickable stops/routes — same hit layers the click handler queries.
+  // Pointer cursor wherever a click does something: the click handler's own hit rule.
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !mapLoaded) return;
     const onMouseMove = (e: maplibregl.MapMouseEvent) => {
-      const stopHits = map.getLayer('stops-layer')
-        ? map.queryRenderedFeatures(e.point, { layers: ['stops-layer'] })
-        : [];
-      const routeHitLayers = ['overview-routes-hit-layer', 'routes-hit-layer'];
-      if (map.getLayer('local-routes-hit-layer')) {
-        routeHitLayers.push('local-routes-hit-layer');
-      }
-      if (map.getLayer('frequency-qualifying-segments-hit-layer')) {
-        routeHitLayers.push('frequency-qualifying-segments-hit-layer');
-      }
-      const routeHits = stopHits.length === 0 && (map.getLayer('overview-routes-hit-layer') || map.getLayer('routes-hit-layer') || map.getLayer('local-routes-hit-layer'))
-        ? map.queryRenderedFeatures(
-            [[e.point.x - 12, e.point.y - 12], [e.point.x + 12, e.point.y + 12]],
-            { layers: routeHitLayers },
-          )
-        : [];
-      const serviceAreaHitLayers = ['on-demand-service-area-fill', 'on-demand-stop-clusters', 'on-demand-stop-points']
-        .filter(layerId => Boolean(map.getLayer(layerId)));
-      const serviceAreaHits = serviceAreaHitLayers.length > 0
-        ? map.queryRenderedFeatures(e.point, { layers: serviceAreaHitLayers })
-        : [];
-      map.getCanvas().style.cursor = stopHits.length > 0 || routeHits.length > 0 || serviceAreaHits.length > 0 ? 'pointer' : '';
+      map.getCanvas().style.cursor = topMapHit(map, e.point) ? 'pointer' : '';
     };
     map.on('mousemove', onMouseMove);
     return () => {
