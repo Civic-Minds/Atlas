@@ -10,13 +10,15 @@ import Panel, { PanelBody, PanelTitleBar } from '../components/ui/Panel';
 import CardRouteList from '../components/Interval/CardRouteList';
 import { CardReportButton } from '../components/Interval/cardUi';
 import { reportDetails } from '../utils/reportIssue';
-import { routeLabels } from '../utils/format';
+import { placeAlreadyInName, routeLabels } from '../utils/format';
 import { headwayEvery, headwayOrBetter } from '../utils/headwayText';
 import ResearchInfo from '../components/ResearchInfo';
 import { NIGHT_INFO_HEADING, nightRuleText } from '../content/researchRules';
 import { compareRouteNumber } from '../utils/sortCompare';
 import PanelEmpty from '../components/ui/PanelEmpty';
-import { AgencyNameHeading, CARD_SUMMARY } from '../components/Interval/cardUi';
+import { CARD_SUMMARY } from '../components/Interval/cardUi';
+import AgencyGroupHeader from '../components/ui/AgencyGroupHeader';
+import AgencyName from '../components/ui/AgencyName';
 import { loadingText, loadErrorText } from '../content/stateCopy';
 import { boundingBox, lineCoordinates } from '../../shared/routeGeometry';
 
@@ -236,11 +238,11 @@ export default function NightService({ active, sidebarLeft, searchBarWidth, laye
           )}
           {loadState === 'ready' && agencies.map((agency, agencyIndex) => (
             <div key={agency.slug}>
-              {/* The agency card top's name and facts line (CIV-929); the back link is on the info card above. */}
-              <div className={`px-4 pt-3 pb-2 ${agencyIndex > 0 ? 'border-t' : 'border-b'} border-[var(--border-primary)]`}>
-                <AgencyNameHeading name={agency.agencyName} place={agency.region} className="mb-0" />
-                <p className={CARD_SUMMARY}>{agency.routes.length} night {plural(agency.routes.length, 'route')}</p>
-              </div>
+              {/* The shared agency heading of the list panels (CIV-1019), with the night route count under it in the card facts line's own spacing. */}
+              <AgencyGroupHeader rule={agencyIndex > 0 ? 'above' : 'below'}>
+                <AgencyName primary={agency.agencyName} secondary={agency.region && !placeAlreadyInName(agency.agencyName, agency.region) ? agency.region : undefined} />
+                <p className={`${CARD_SUMMARY} tracking-normal`}>{agency.routes.length} night {plural(agency.routes.length, 'route')}</p>
+              </AgencyGroupHeader>
               {/* The agency card's route list (CIV-931): "**300** Bloor-Danforth" and the night frequency on the right.
                   Destinations stay on the route card. */}
               <CardRouteList

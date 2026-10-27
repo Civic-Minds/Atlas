@@ -67,7 +67,6 @@ const RULES: Array<{ name: string; pattern: RegExp; use: string }> = [
 const ALLOWED: Record<string, string[]> = {
   'components/Interval/FilterChips.tsx': ['option pill classes'],
   'components/Interval/pickers.tsx': ['hand-rolled frequency picker'],
-  'apps/History.tsx': ['option pill classes'],
   // Live is local-only and its route groups carry no route type; it still names routes its own way (audit R8).
   // Maintainer-only diagnostics, the story page's own opening layout, and a dialog title (panel headers are a later step).
   'DiagnosticsPerformancePage.tsx': ['hand-rolled page heading'],
