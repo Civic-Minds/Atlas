@@ -184,6 +184,11 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
   - What: "every 10 min", "every 16 min", ranges with an en dash; never hours, never typed by hand.
   - Why: the same frequency reads the same on every surface, and columns never mix units.
   - Source: [STYLE.md](../STYLE.md) (Frequencies), [#938](https://github.com/Civic-Minds/Atlas/issues/938)
+- **Notice wording: one source, one style**
+  - What: every notice, empty state, error and explainer text lives in src/content/noticeCopy.ts with a permanent code (N1, N2… for notices, E1, E2… for explainers; codes are never reused), and each "Learn more" notice is paired with one explainer. Notices lead with what the rider sees ("This route…", "This agency's…"), never "Atlas…"; one sentence where possible; no "so"; a notice about the chosen time of day names the times ("from 6–9 AM"), never "the selected period"; a beta-only feature says "only available on Atlas beta. View →" and never points to the preview site.
+  - Why: the same situation should read the same everywhere, and a notice must match its explainer.
+  - Source: Ryan, 2026-10-27 (Linear CIV-1045): "I think overall we don't use "Atlas..." to start notices", "one single page where the entire site pulls from", "the erros on the route cards/agency cards/etc need to match up to the "explainer""; times rule on N35.
+
 - **Agency names: the agency's own short name, never a city or a made-up code**
   - What: lists and rows use a bracketed brand code from the official name ("Chicago Transit Authority (CTA)" → CTA), or a short name stored in the agency's config (TTC, Muni); a row name longer than 24 characters uses the stored short name if there is one, otherwise the full name. A city or bracketed place is never the short name ("Capital Metro", not "Austin"). The agency card always shows the full name. Short names are stored only for names riders actually use; no new codes are coined (the 18 proposed ones such as GPTC and SETD were dropped).
   - Why: a short name has to be one people recognise; an unfamiliar code is worse than the full name.
