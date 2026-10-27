@@ -498,7 +498,17 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
 
   // Direction drill-down within a route
   const [selectedDirection, setSelectedDirection] = useState<string | null>(null);
-  useEffect(() => { setSelectedDirection(null); }, [selectedRoute]);
+  // The direction picked in "Right now" and the cars it counts there (#1163): the list shows those same cars.
+  const [counted, setCounted] = useState<{ directionId: number; ids: string[] } | null>(null);
+  const countedDirection = useRef<number | null>(null);
+  useEffect(() => { setSelectedDirection(null); countedDirection.current = null; }, [selectedRoute]);
+  // Switching direction leaves a destination picked in the other one: back to that direction's destinations.
+  useEffect(() => {
+    const d = counted?.directionId ?? null;
+    if (d == null) return;
+    if (countedDirection.current != null && countedDirection.current !== d) setSelectedDirection(null);
+    countedDirection.current = d;
+  }, [counted?.directionId]);
   useLiveViewUrl({
     active, selectedRoute, cardVehicleId: cardVehicle?.id ?? null, selectedDirection, selectedGroup, pendingRouteRef,
     onRestore: (vehicle, group) => {
@@ -507,10 +517,19 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
     },
   });
 
-  // Group vehicles by destination; every vehicle lands in a group (see groupVehiclesByDirection).
+  // The vehicles the list shows: the ones "Right now" counts in the picked direction, so Vehicles and On time count
+  // exactly the cars listed (#1163). Every vehicle where the route has no "Right now" count. All stay on the map.
+  const listVehicles = useMemo(() => {
+    if (!selectedGroup) return [];
+    if (!counted) return selectedGroup.vehicles;
+    const ids = new Set(counted.ids);
+    return selectedGroup.vehicles.filter(v => ids.has(v.id));
+  }, [selectedGroup, counted]);
+
+  // Group vehicles by destination; every listed vehicle lands in a group (see groupVehiclesByDirection).
   const vehiclesByDirection = useMemo(
-    () => (selectedGroup ? groupVehiclesByDirection(selectedGroup.vehicles, directionLabels) : null),
-    [selectedGroup, directionLabels],
+    () => (selectedGroup ? groupVehiclesByDirection(listVehicles, directionLabels) : null),
+    [selectedGroup, listVehicles, directionLabels],
   );
 
   // Worth showing groups when there is more than one, or the one group has a real destination name.
@@ -676,6 +695,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
         routeShortName={selectedGroup.routeShortName}
         vehicles={selectedGroup.vehicles}
         feedDegraded={!!degradedBySlug[selectedGroup.agencySlug] || !!errorBySlug[selectedGroup.agencySlug]}
+        onCounted={setCounted}
       />
       <SidebarCardSection label={selectedDirection ?? selectedRouteHeadwayLine ?? undefined}>
         {/* Match static route cards: destinations first, live vehicles second. */}
@@ -694,7 +714,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
         ) : (
           (selectedDirection
             ? (vehiclesByDirection?.get(selectedDirection) ?? [])
-            : selectedGroup.vehicles
+            : listVehicles
           ).map((v, i) => {
             const colors = getVehicleColors(v.status, colorMode);
             return (

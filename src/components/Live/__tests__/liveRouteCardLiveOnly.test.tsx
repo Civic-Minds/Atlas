@@ -85,6 +85,15 @@ describe('"Right now" from the map\'s live positions (CIV-893)', () => {
     expect(label.nextElementSibling?.textContent).toBe('1');
   });
 
+  it('reports the picked direction and the cars it counts, so the vehicle list can show the same ones (#1163)', () => {
+    const onCounted = vi.fn();
+    const view = render(<LiveRoutePerformance slug="ttc" routeShortName="505" vehicles={[car('a', 't1', 3, T0), car('b', 't2', 1.5, T0), car('c', 't9', 2, T0)]} feedDegraded={false} onCounted={onCounted} />);
+    // Car c's trip isn't in this direction's timetable: it isn't counted, so it isn't listed either.
+    expect(onCounted).toHaveBeenLastCalledWith({ directionId: 0, ids: ['a', 'b'] });
+    view.unmount();
+    expect(onCounted).toHaveBeenLastCalledWith(null);
+  });
+
   it('shows no gaps line while no gap is known yet (cars just seen, no track of the car ahead)', () => {
     card([car('a', 't1', 3, T0), car('b', 't2', 1.5, T0)]);
     expect(screen.getByText('2')).toBeTruthy();
