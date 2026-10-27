@@ -63,6 +63,12 @@ export const ACTION_PRIMARY = 'bg-[var(--action-primary-bg)] border-[var(--actio
 /** Bottom map HUD badge (routes, coverage, loading, attribution) */
 export const MAP_BADGE = 'flex items-center gap-1.5 bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] rounded-full shadow-2xl px-3';
 export const MAP_BADGE_COUNT = 'text-xs font-black text-[var(--text-primary)]';
+/**
+ * A 44px tap area on phones for a control drawn smaller (a 25px pill), without changing how it looks: an invisible
+ * box 10px above and below it takes the tap. Desktop keeps the control's own size.
+ */
+export const PHONE_TAP_AREA = "relative max-sm:after:absolute max-sm:after:inset-x-0 max-sm:after:-inset-y-[10px] max-sm:after:content-['']";
+
 export const MAP_BADGE_LABEL = 'text-xs font-semibold leading-none text-[var(--text-muted)]';
 
 /** Full-width border-b list row — suggestion lists, route lists, any clickable row inside a panel */

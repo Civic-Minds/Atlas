@@ -39,7 +39,7 @@ import { BANDS } from './LiveExplorePage';
 import { PILL_ROW } from './components/ui/PillGroup';
 import Pill from './components/ui/Pill';
 import LegendItem from './components/ui/LegendItem';
-import { MAP_BADGE, MAP_BADGE_LABEL } from './styles';
+import { MAP_BADGE, MAP_BADGE_LABEL, PHONE_TAP_AREA } from './styles';
 import { DataUpTo, withNiceNames } from './LiveRoutePage';
 
 const pct = (x: number) => `${Math.round(x * 100)}%`;
@@ -89,7 +89,7 @@ function PillMenu({ label, value, options, onPick, alignRight = false }: { label
   }, [open]);
   return (
     <div ref={ref} className="relative">
-      <Pill size="segment" selected aria-haspopup="menu" aria-expanded={open} aria-label={label} onClick={() => setOpen(o => !o)}>
+      <Pill size="segment" selected className={PHONE_TAP_AREA} aria-haspopup="menu" aria-expanded={open} aria-label={label} onClick={() => setOpen(o => !o)}>
         {options.find(([k]) => k === value)?.[1]}<span aria-hidden="true" className="ml-1">▾</span>
       </Pill>
       {open && (
@@ -307,7 +307,7 @@ function Body({ agency, pickSlot, s, route, setRoute, dir, setDir, dirSlot, rout
   );
   // The direction switch sits in the top bar with the other pills.
   // One pill showing the current direction; a click switches to the other.
-  const direction = ids.length > 1 && dirSlot ? createPortal(<Pill size="segment" selected aria-label="Direction" onClick={() => { setDir(ids[(ids.indexOf(shown) + 1) % ids.length]); setPick(null); }}>{v3!.directionLabels[String(shown)]}</Pill>, dirSlot) : null;
+  const direction = ids.length > 1 && dirSlot ? createPortal(<Pill size="segment" selected className={PHONE_TAP_AREA} aria-label="Direction" onClick={() => { setDir(ids[(ids.indexOf(shown) + 1) % ids.length]); setPick(null); }}>{v3!.directionLabels[String(shown)]}</Pill>, dirSlot) : null;
   // The picked route's name, in the top bar beside the direction pills (the name the route page's title uses).
   // The route menu at the right end of the top bar: the panel list's routes in its order, plus All routes; a pick sets route= as a list click does.
   const routeOptions = useMemo(() => [['', 'All routes'] as const, ...rankRoutes(s, networkV3, measure, band).map(({ r }) => [r.route, `${r.route} ${r.longName ?? ''}`.trim()] as const)], [s, networkV3, measure, band]);
