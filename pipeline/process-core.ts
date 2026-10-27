@@ -12,6 +12,7 @@ import { applyAnalysisCriteria, BURST_MAX_SPAN_MINUTES, determineTierWithEdgeGap
 import { calculateCorridors } from './transit-logic.js';
 import { detectReferenceDate, getActiveServiceIds } from './transit-calendar.js';
 import { calendarFromNextServiceDates } from './serviceDates.js';
+import { bookingRequiredRouteIds } from './bookedRoutes.js';
 import { DEFAULT_CRITERIA, getTiersForCriteria } from './defaults.js';
 import { normalizeGtfs, type GtfsPreprocess, type GtfsTransformOptions } from './preprocess/run.js';
 import { clearLoneOriginRows, labelConvergingOrigins } from './convergingOrigins.js';
@@ -467,6 +468,8 @@ export function hasNightServiceAtShapeEndpoints(
 
 export interface ProcessOptions extends GtfsTransformOptions {
   slug?: string;
+  /** CIV-1006: force a route's booking-required status by short name, over the pickup_type share rule. */
+  bookingRequiredRoutes?: Record<string, boolean>;
   manualBaseFare?: number;
   /**
    * When true, continue after GTFS validation errors (log only).
@@ -3490,6 +3493,15 @@ export async function processGtfsBuffer(
         };
       }
     }
+  }
+
+  // CIV-1006: routes riders must book ahead read as on-demand (shared/modes.ts) and get the card's booking notice.
+  const bookedRouteIds = bookingRequiredRouteIds(gtfs, options?.bookingRequiredRoutes);
+  if (bookedRouteIds.size > 0) {
+    for (const f of mainFeatures) {
+      if (f.properties.stopId == null && bookedRouteIds.has(String(f.properties.routeId))) f.properties.bookingRequired = true;
+    }
+    onStatus?.(`Booking required: ${bookedRouteIds.size} route(s)`);
   }
 
   // Build trips lookup for live vehicle enrichment (agencies whose GTFS-RT omits directionId/headsign)

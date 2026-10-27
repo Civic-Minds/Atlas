@@ -5,7 +5,7 @@ import { HEADWAY_TIERS, getTierColor } from '../utils/colors';
 import { isLivePollingRoute } from '../utils/livePolling';
 import { TIME_PERIODS, PERIOD_LABELS as PERIOD_LABELS_BY_KEY, PERIOD_KEYS, type PeriodKey } from '../../shared/config';
 import { buildModeFilterClause, buildTileHeadwayFilterClause, tileLimitedServiceExpr, tileRouteKeyExpr } from '../../shared/tileFilterExprs';
-import { effectiveMode, ON_DEMAND_MODE } from '../../shared/modes';
+import { effectiveMode } from '../../shared/modes';
 import { featurePassesHeadwayFilter, headwayFilterApplies } from '../../shared/routeHeadwayFilter';
 import { collectStopHubSiblings } from '../utils/stopHub';
 import { isHiddenByIrregularFilter, isLimitedService } from '../../shared/irregularRoutes';
@@ -139,14 +139,15 @@ export function passesRouteFilter(
   // bidirectional routes are acceptable for accuracy.
 
   if (filters.modes.size > 0) {
-    const routeModes = [...filters.modes].filter(mode => mode !== ON_DEMAND_MODE);
-    if (routeModes.length === 0) return false;
+    // On-demand matches booked routes (CIV-1006) as well as the zones.
+    const routeModes = [...filters.modes];
     const modeSlug = (p as ShapeProperties).agencySlug ?? agencySlug;
     if (!routeModes.includes(effectiveMode({
       routeType: p.routeType,
       routeLongName: p.routeLongName,
       routeShortName: p.routeShortName,
       agencySlug: modeSlug,
+      bookingRequired: (p as ShapeProperties).bookingRequired,
     }))) return false;
   }
   if (p.day !== undefined && p.day !== filters.day) return false;

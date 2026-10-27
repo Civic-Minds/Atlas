@@ -49,7 +49,7 @@ import { compareCardSummary } from '../../../utils/compareSides';
 import { reportDetails } from '../../../utils/reportIssue';
 import { ROUTE_DATA_QUALITY_WARNING, ROUTE_DATA_QUALITY_WARNING_MESSAGE } from '../../../../shared/routeDataQuality';
 import { featurePassesHeadwayFilter } from '../../../../shared/routeHeadwayFilter';
-import { expiredFeedNotice, NO_ROUTE_SHAPE_NOTICE, periodServiceNotice, selectedRouteFilterNotice, selectedRouteOutsideFilterNotice, unevenServiceNotice } from '../../../content/noticeCopy';
+import { BOOKING_REQUIRED_NOTICE, expiredFeedNotice, NO_ROUTE_SHAPE_NOTICE, periodServiceNotice, selectedRouteFilterNotice, selectedRouteOutsideFilterNotice, unevenServiceNotice } from '../../../content/noticeCopy';
 import { headwayAbout, headwayAboutRange } from '../../../utils/headwayText';
 import type { RouteLabel } from '../../../utils/routeFacts';
 
@@ -241,6 +241,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
   const hasNoRouteShape = currentRoute.directions.length > 0
     && currentRoute.directions.every(direction => direction.noRouteShape);
   const hasWeekdayTierVariation = currentRoute.directions.some(direction => direction.weekdayTierVariation);
+  const bookingRequired = currentRoute.directions.some(direction => direction.bookingRequired === true);
   // Frequency focus: rows come from the stretches, and the route-level number is the filter's own value with its range.
   const stretchMode = hasStretchRoles(currentRoute.directions);
   const contract = routeContract(currentRoute.directions, period);
@@ -775,6 +776,11 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
         {(periodNotice || unevenNotice) && (
           <div className={`${CARD_NOTICE_FOOTER} space-y-1`}>
             <CardHelpNotice message={(periodNotice ?? unevenNotice) as string} />
+          </div>
+        )}
+        {bookingRequired && (
+          <div className={`${CARD_NOTICE_FOOTER} space-y-1`}>
+            <CardHelpNotice message={BOOKING_REQUIRED_NOTICE} />
           </div>
         )}
         {(routeIsStale || routeAgency?.feedReviewStatus === 'review' || routeOverrideNote || hasRouteDataQualityWarning || hasNoRouteShape || hasWeekdayTierVariation) && onInfoOpen && (

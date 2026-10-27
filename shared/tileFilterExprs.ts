@@ -1,7 +1,7 @@
 import type { PeriodKey } from './config.js';
 import { NO_PERIOD_SERVICE_TILE_VALUE, periodHeadwayFlatKeys } from './pmtilesProps.js';
 import { PERIOD_COVERAGE_MAX_HEADWAY } from './periodEligibility.js';
-import { buildEffectiveModeExpression, ON_DEMAND_MODE } from './modes.js';
+import { buildEffectiveModeExpression } from './modes.js';
 
 type PeriodFilter = PeriodKey | 'all';
 
@@ -172,8 +172,8 @@ export function buildTileHeadwayFilterClause(period: PeriodFilter | undefined, m
 /** Flat per-mode matchers (avoids nested case expr that breaks filter compilation). */
 export function buildModeFilterClause(modes: Set<number>): unknown[] | null {
   if (!modes || modes.size === 0) return null;
-  const routeModes = [...modes].filter(mode => mode !== ON_DEMAND_MODE);
-  if (routeModes.length === 0) return ['==', ['get', 'routeId'], '__atlas_no_scheduled_route__'];
+  // On-demand matches booked routes (CIV-1006); with no booked route in view it matches none, as before.
+  const routeModes = [...modes];
 
   const effectiveMode: unknown[] = buildEffectiveModeExpression();
   const parts: unknown[] = [];

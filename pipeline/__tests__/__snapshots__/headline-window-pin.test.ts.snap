@@ -14,7 +14,7 @@ exports[`processed fixture output is pinned > matches the recorded hash for ever
   "capmetro-550-fresh-per-trip-shapes": "21 features f3c05939881c",
   "capmetro-550-friday-shapes": "23 features 0aad554e82af",
   "capmetro-7-weekday": "132 features 93f59b6b1179",
-  "carta-stale-main-corridor": "230 features 3854cb4bc5fc",
+  "carta-stale-main-corridor": "230 features bbecc1778d8d",
   "cata-ve-friday-shape": "14 features 0e3c92adcca3",
   "cata-white-loop-mon-thu-fri": "8 features bcbfa6449bfd",
   "cdta-233": "84 features fd222cf61aa5",

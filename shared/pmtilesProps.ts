@@ -74,6 +74,8 @@ export const TILE_ROUTE_SCALAR_KEYS: readonly string[] = [
   // Frequency focus step 6: the stretch selector's all-day filter value and #899 cap.
   'routeAllDayHeadway', 'routeMiddayCap',
   'noRouteShape', 'frequentService', 'nightService', 'nightService30', 'nightService60',
+  // CIV-1006: booked routes read as on-demand in the map's mode expression.
+  'bookingRequired',
 ];
 
 export const TILE_ROUTE_FLAT_KEY = /^(pch|wdpch|hps|msph|wdph|hph|pws|rv|rr)_/;

@@ -22,6 +22,8 @@ export interface AgencyFeedConfig {
   routeTypes?: number[];
   preprocess?: GtfsPreprocess;
   excludeRouteShortNames?: string[];
+  /** CIV-1006: force a route's booking-required status by short name (see bookedRoutes.ts). */
+  bookingRequiredRoutes?: Record<string, boolean>;
   timezoneOverride?: string;
   excludeTripHeadsigns?: string[];
   skipLetterSuffixMerge?: boolean;
@@ -84,6 +86,7 @@ export function agencyProcessOptions(agency: AgencyFeedConfig, overrides: Agency
     routeTypes: agency.routeTypes,
     preprocess: agency.preprocess,
     excludeRouteShortNames: agency.excludeRouteShortNames,
+    bookingRequiredRoutes: agency.bookingRequiredRoutes,
     excludeTripHeadsigns: agency.excludeTripHeadsigns,
     skipLetterSuffixMerge: agency.skipLetterSuffixMerge,
     mergeEquivalentShapeVariants: agency.mergeEquivalentShapeVariants,
