@@ -43,6 +43,11 @@ function amount(minutes: number): string {
   return `${num(minutes)} min`;
 }
 
+/** "10 min", "15.5 min": a bare spacing with no "every", to the tenth of a minute, as headwayEvery prints it. */
+export function headwayExactAmount(minutes: number | null | undefined): string {
+  return isUsable(minutes) ? amount(minutes) : MISSING;
+}
+
 /** "10 min", "120 min": a bare spacing with no "every", rounded to the whole minute. */
 export function headwayAmount(minutes: number | null | undefined): string {
   if (!isUsable(minutes)) return MISSING;
