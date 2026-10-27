@@ -14,7 +14,7 @@
     -73.21
   ],
   "feedUrl": "https://www.stlaval.ca/datas/opendata/GTF_STL.zip",
-  "lastFeedExpiry": "20261030",
+  "lastFeedExpiry": "20270108",
   "lastFeedVersion": "20261019044646",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-3190/latest.zip",
   "lastRefreshedAt": "2026-10-19",
@@ -56,5 +56,5 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://www.stlaval.ca/datas/opendata/GTF_STL.zip",
-  "lastPeekedExpiry": "20261030"
+  "lastPeekedExpiry": "20270108"
 }
