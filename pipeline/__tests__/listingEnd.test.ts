@@ -101,6 +101,12 @@ describe('findListingEnd (CIV-1011 safeguard)', () => {
     expect(findListingEnd({ calendar: [], calendarDates, trips, anchor: ANCHOR, fileDate: FILE })).toBeNull();
   });
 
+  it('is not tripped when the same file lists the next season later (Telluride\'s Oct 16 file: winter from Nov 20)', () => {
+    const name = 'telluride-oct16-winter';
+    const read = (file: string) => parseCsv(readFileSync(resolve(__dirname, 'fixtures', name, file), 'utf8')) as never[];
+    expect(findListingEnd({ calendar: read('calendar.txt'), calendarDates: read('calendar_dates.txt'), trips: read('trips.txt'), routes: read('routes.txt'), anchor: ANCHOR, fileDate: '20261016' })).toBeNull();
+  });
+
   it('reads a feed_version that is a date', () => {
     expect(feedVersionDate('2026-03-27T18:13:21Z')).toBe('20260327');
     expect(feedVersionDate('UTC: 02-Jun-2026 18:30')).toBe('20260602');

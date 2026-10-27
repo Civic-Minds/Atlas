@@ -643,6 +643,8 @@ export const RETURN_GAP_DAYS = 28;
 export const MIN_RETURN_DAYS = 28;
 /** Days the rest of the service must keep running past the end, so a file that simply runs out is not flagged. */
 export const CONTINUING_DAYS = 14;
+/** How far after a listing end a later season in the same file is looked for. */
+const SEASON_LOOKAHEAD_DAYS = 400;
 /** How far back from the anchor week a listing end is looked for. */
 const LISTING_LOOKBACK_DAYS = 730;
 /** A service's last active day is searched at most this far back from its row's end (removals). */
@@ -808,6 +810,17 @@ export function findListingEnd(
     const totalIn = (from: number) => [...tripsIn(from, from + 6).values()].reduce((a, b) => a + b, 0);
     const after = Math.max(totalIn(d + 1), anchorWeekEnd - 6 > d + 1 ? totalIn(anchorWeekEnd - 6) : 0);
     if (after - (total - endedTrips) >= REPLACEMENT_TRIP_SHARE * endedTrips) continue;
+    // A seasonal gap (the manager, 2026-10-27): the same file lists other services carrying that share
+    // in some later week (Telluride's Oct 16 file: summer routes end Oct 25, the winter season starts
+    // Nov 20 under other routes). The agency has released its next timetable: no notice.
+    const endedSet = new Set(ended);
+    let laterSeason = false;
+    for (let from = d + 1; !laterSeason && from <= Math.min(feedLast, d + SEASON_LOOKAHEAD_DAYS); from += 7) {
+      let others = 0;
+      for (let n = from; n < from + 7; n++) for (const id of servicesOn(n)) if (!endedSet.has(id)) others += tripsOfService.get(id)!;
+      laterSeason = others - (total - endedTrips) >= REPLACEMENT_TRIP_SHARE * endedTrips;
+    }
+    if (laterSeason) continue;
     // The end that took the most trips (SLO Transit: its weekday services in August, not its one
     // trolley in October); the latest on a tie.
     if (!best || endedTrips > best.endedTrips) {
