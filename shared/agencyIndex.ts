@@ -8,6 +8,7 @@ import { areaRegionTitle, areaShortName } from './areaRegions';
 import { areaPagePath, areaSlug, type AreaConfig } from './areas';
 import { SITE_URL, seoTitlePrefix, type SeoMode } from './seo';
 import { plural } from './overflowText';
+import { compareAgencyName, compareText } from './sortCompare';
 import { AGENCY_INDEX_PATH } from './pagePaths';
 
 export { AGENCY_INDEX_PATH };
@@ -41,7 +42,6 @@ export interface AgencyIndexData {
 }
 
 const OTHER = 'Other';
-const byName = (a: string, b: string) => a.localeCompare(b, 'en');
 
 /** Areas with a page and at least one agency page, region names A to Z; agencies grouped by country, then region. */
 export function buildAgencyIndexData(
@@ -53,7 +53,7 @@ export function buildAgencyIndexData(
   const areaList = areas
     .filter(a => a.page && areaAgencySummaries(a, bySlug).length > 0)
     .map(a => ({ slug: a.slug, title: areaRegionTitle(a), shortName: areaShortName(a) }))
-    .sort((x, y) => byName(x.shortName, y.shortName));
+    .sort((x, y) => compareText(x.shortName, y.shortName));
   const tree = new Map<string, Map<string, AgencyIndexAgency[]>>();
   for (const a of agencies) {
     const country = a.country ?? OTHER;
@@ -61,12 +61,12 @@ export function buildAgencyIndexData(
     const regions = tree.get(country) ?? tree.set(country, new Map()).get(country)!;
     (regions.get(region) ?? regions.set(region, []).get(region)!).push({ slug: a.slug, name: a.name, shortName: agencyShortLabel(a), routes: a.routeCount });
   }
-  const last = (x: string, y: string) => (x === OTHER ? 1 : 0) - (y === OTHER ? 1 : 0) || byName(x, y);
+  const last = (x: string, y: string) => (x === OTHER ? 1 : 0) - (y === OTHER ? 1 : 0) || compareText(x, y);
   const groups = [...tree.entries()].sort(([x], [y]) => last(x, y)).map(([country, regions]) => ({
     country,
     regions: [...regions.entries()].sort(([x], [y]) => last(x, y)).map(([region, list]) => ({
       region,
-      agencies: list.sort((x, y) => byName(x.name, y.name)),
+      agencies: list.sort((x, y) => compareAgencyName(x.name, y.name)),
     })),
   }));
   return { areas: areaList, groups, agencyCount: agencies.length, releaseDate };
