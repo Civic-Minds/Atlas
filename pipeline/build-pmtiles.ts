@@ -3,7 +3,7 @@ import path from 'path';
 import { execSync } from 'child_process';
 // loadEnv first so shared/config sees staging R2_PUBLIC_URL
 import { LOADED_ENV_FILE } from './loadEnv.js';
-import { IMMUTABLE_CACHE_CONTROL, r2Put, r2PutFile } from './r2';
+import { IMMUTABLE_CACHE_CONTROL, r2List, r2Put, r2PutFile } from './r2';
 import { getAgencyArtifactUrls, pmtilesMinZoomForHeadway } from '../shared/config.js';
 import { runWithConcurrency } from './utils.js';
 import { runStopClustering } from './stopClustering.js';
@@ -12,6 +12,7 @@ import { simplifyLine } from './geometry.js';
 import { isBuiltIntoTiles } from './pmtilesCoverage.js';
 import { assertRouteArtifactSchema, ROUTE_ARTIFACT_SCHEMA_VERSION, TILE_RULES_VERSION } from '../shared/artifactSchema.js';
 import { currentCodeVersion, RELEASE_STAMP_FIELD } from './releaseGuard.js';
+import { planSearchIndex, readReleaseAgencies, uploadSearchIndex } from './searchIndex.js';
 import { consumeDataRefreshMarker, dataRefreshGuardError, readDataRefreshMarker } from './dataRefreshMarker.js';
 
 console.log(`env: ${LOADED_ENV_FILE} (bucket=${process.env.R2_BUCKET_NAME ?? '?'})`);
@@ -336,7 +337,19 @@ async function main() {
     console.log('Sample build: skipping the full-coverage check.');
   }
 
+  // Route and stop names for every agency, so search finds agencies the map has not loaded (CIV-1048).
+  const releasePrefix = `atlas/releases/${releaseId}`;
+  const search = planSearchIndex(readReleaseAgencies(releaseAgencyDir), releasePrefix);
+  console.log(`Search index: ${search.stats.routes} routes, ${search.stats.splits} stop splits in ${search.stats.pages} pages.`);
+
   if (dryRun) {
+    const searchDir = path.resolve('tmp/search-index');
+    fs.rmSync(searchDir, { recursive: true, force: true });
+    for (const f of search.files) {
+      fs.mkdirSync(path.dirname(path.join(searchDir, f.key)), { recursive: true });
+      fs.writeFileSync(path.join(searchDir, f.key), f.body);
+    }
+    console.log(`Dry run search index: ${searchDir}`);
     console.log(`Dry run complete: ${pmtilesPath}`);
     fs.copyFileSync(overviewRoutesPm, overviewPmtilesPath);
     fs.writeFileSync(
@@ -355,7 +368,6 @@ async function main() {
     return;
   }
 
-  const releasePrefix = `atlas/releases/${releaseId}`;
   const agencyPrefix = `${releasePrefix}/agencies`;
   const releaseManifest = {
     releaseId,
@@ -383,6 +395,12 @@ async function main() {
     }),
     6,
   );
+  const searchUpload = await uploadSearchIndex(search.files, {
+    listKeys: r2List,
+    put: async (key, body, immutable) => { await r2Put(key, body, 'application/json', immutable ? { cacheControl: IMMUTABLE_CACHE_CONTROL } : {}); },
+    runWithConcurrency,
+  });
+  console.log(`Search index: uploaded ${searchUpload.uploaded} files, ${searchUpload.skipped} already in R2.`);
   await r2Put(`${releasePrefix}/manifest.json`, JSON.stringify(releaseManifest, null, 2));
   // Leave the manifest locally for the coverage check and the final publish step.
   // The public pointer is intentionally not updated here: a release is not active

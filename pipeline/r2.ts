@@ -157,8 +157,8 @@ async function r2PutRaw(key: string, body: string | Buffer | import('fs').ReadSt
   throw lastErr;
 }
 
-export async function r2Put(key: string, body: string, contentType = 'application/json'): Promise<string> {
-  await r2PutRaw(key, body, contentType, requireEnv('R2_BUCKET_NAME'));
+export async function r2Put(key: string, body: string, contentType = 'application/json', options: R2PutOptions = {}): Promise<string> {
+  await r2PutRaw(key, body, contentType, requireEnv('R2_BUCKET_NAME'), undefined, options);
   return r2PublicUrl(key);
 }
 
