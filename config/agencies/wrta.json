@@ -8,7 +8,7 @@
     -71.802
   ],
   "feedUrl": "https://gtfs.wrta.cadavl.com/WRTA/GTFS/GTFS_WRTA.zip",
-  "lastFeedExpiry": "20270116",
+  "lastFeedExpiry": "20270124",
   "lastFeedVersion": null,
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-432/latest.zip",
   "lastRefreshedAt": "2026-10-19",
@@ -41,5 +41,5 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://gtfs.wrta.cadavl.com/WRTA/GTFS/GTFS_WRTA.zip",
-  "lastPeekedExpiry": "20270116"
+  "lastPeekedExpiry": "20270124"
 }

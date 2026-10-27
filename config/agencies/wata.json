@@ -15,7 +15,7 @@
   ],
   "feedUrl": "https://gtfs.wata.cadavl.com/WATA/GTFS/GTFS_WATA.zip",
   "region": "Virginia",
-  "lastFeedExpiry": "20261119",
+  "lastFeedExpiry": "20261126",
   "lastFeedVersion": null,
   "lastRefreshedAt": "2026-10-19",
   "cities": [
@@ -46,5 +46,5 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://gtfs.wata.cadavl.com/WATA/GTFS/GTFS_WATA.zip",
-  "lastPeekedExpiry": "20261119"
+  "lastPeekedExpiry": "20261126"
 }
