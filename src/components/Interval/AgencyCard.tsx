@@ -26,7 +26,7 @@ import CardRouteList from './CardRouteList';
 import { OutboundLink } from '../OutboundLink';
 import { buildRouteFacts, type RouteLabel } from '../../utils/routeFacts';
 import { reportDetails } from '../../utils/reportIssue';
-import { BETA_SERVICE_ROLLOUT_NOTICE, explainerFor, getRolloutNotice, NO_ROUTES_LOADED, noRoutesMatchText, notOnMapYetNotice, ON_DEMAND_NOT_MAPPED_NOTE, ROUTES_OUTSIDE_FILTERS_NOTICE, routesOutsideFiltersNotice, VIEW_ON_BETA } from '../../content/noticeCopy';
+import { BETA_ROLLOUT_NOTICE, BETA_SERVICE_ROLLOUT_NOTICE, explainerFor, getRolloutNotice, NO_ROUTES_LOADED, noRoutesMatchText, notOnMapYetNotice, ON_DEMAND_NOT_MAPPED_NOTE, ROUTES_OUTSIDE_FILTERS_NOTICE, routesOutsideFiltersNotice, VIEW_ON_BETA } from '../../content/noticeCopy';
 import { onDemandCardName } from '../../utils/onDemandSelection';
 import { onDemandCoverageNote } from '../../data/onDemandCoverage';
 import {
@@ -690,8 +690,8 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
           )}
           {(agency.feedReviewStatus === 'review' || agency.overrideNote || rolloutNotice) && onInfoOpen && (
             <div className={`${CARD_NOTICE_FOOTER} space-y-1`}>
-              {rolloutNotice && (rolloutNotice === BETA_SERVICE_ROLLOUT_NOTICE ? (
-                // N20 (Ryan): an on-demand service points to the same page on beta, never preview; on beta itself, no link.
+              {rolloutNotice && (rolloutNotice === BETA_SERVICE_ROLLOUT_NOTICE || rolloutNotice === BETA_ROLLOUT_NOTICE ? (
+                // N20 and N108 (Ryan): a beta-only agency or service points to the same page on beta, never preview; on beta itself, no link.
                 <CardHelpNotice
                   message={rolloutNotice}
                   {...(ATLAS_MODE === 'beta' ? {} : { actionLabel: VIEW_ON_BETA, onLearnMore: () => window.location.assign(`${BETA_SITE_URL}${window.location.pathname}${window.location.search}`) })}
