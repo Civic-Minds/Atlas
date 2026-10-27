@@ -169,7 +169,7 @@ function StretchTable({ s, rows, caption, valueHeader, format }: { s: AgencySumm
           { key: 'stretch', header: 'Stretch', rowHeader: true, width: FIRST_COL, className: 'font-normal break-words', cell: r => { const name = stretchLabel(titleCase(r.fromName), titleCase(r.toName)); return <span title={name}>{name}</span>; } },
           { key: 'route', header: 'Route', width: ROUTE_COL, className: 'truncate', cell: r => <HotspotRoute s={s} route={r.route} /> },
           { key: 'dir', header: 'Direction', width: DIR_COL, narrowHide: !!valueHeader, cell: r => titleCase(r.direction) },
-          ...(valueHeader && format ? [{ key: 'value', header: valueHeader, worst: (r: AgencyHotspotStretch) => r.value, cell: (r: AgencyHotspotStretch) => format(r.value) }] : []),
+          ...(valueHeader && format ? [{ key: 'value', header: valueHeader, worst: (r: AgencyHotspotStretch) => r.value, cell: (r: AgencyHotspotStretch) => <span className="whitespace-nowrap">{format(r.value)}</span> }] : []),
         ]}
       />
     </div>

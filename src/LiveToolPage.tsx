@@ -97,7 +97,7 @@ function PillMenu({ label, value, options, onPick, alignRight = false }: { label
           {options.map(([k, text]) => (
             <button key={k} type="button" role="menuitemradio" aria-checked={k === value} onClick={() => { onPick(k); setOpen(false); }}
               // A finger-sized row on phones (44px), the compact row with a pointer (#1151).
-              className={`whitespace-nowrap rounded-lg px-2.5 py-1 text-left text-xs font-bold max-sm:min-h-11 ${k === value ? 'bg-[var(--accent-selected-bg)]' : 'hover:bg-[var(--bg-hover)]'}`}>{text}</button>
+              className={`whitespace-nowrap rounded-lg px-2.5 py-1 text-left text-xs font-bold max-sm:min-h-[44px] ${k === value ? 'bg-[var(--accent-selected-bg)]' : 'hover:bg-[var(--bg-hover)]'}`}>{text}</button>
           ))}
         </div>
       )}
@@ -163,7 +163,8 @@ function MapCard({ title, lines = [], groups = [] }: { title: string; lines?: st
 }
 
 const PANEL_PAD = { top: 56, bottom: 24, left: 410, right: 24 };
-const NARROW_PAD = { top: 56, bottom: 24, left: 24, right: 24 };
+// On a phone the measure pills take two rows, so the route and the stop card start below them.
+const NARROW_PAD = { top: 76, bottom: 24, left: 24, right: 24 };
 /** What the route's week figures cover (the Run time tile's own scope wording). */
 const BOTH_DIRECTIONS = 'both directions';
 /**
@@ -270,7 +271,7 @@ function Body({ agency, pickSlot, s, route, setRoute, dir, setDir, dirSlot, rout
   const summary = useMemo(() => summaryWidgets(s, band), [s, band]);
   const backToNetwork = () => { setRoute(null); setDir(null); setPick(null); };
   // One panel, on the left: the network's overview with no route picked; the route's own figures once one is picked, with a way back.
-  const back: PanelWidget = { key: 'back', size: 'medium', node: <button type="button" onClick={backToNetwork} className="-my-3 py-3 pr-4 text-left text-sm font-bold text-[var(--text-primary)] hover:underline">← {agency.toUpperCase()}</button> };
+  const back: PanelWidget = { key: 'back', size: 'medium', node: <button type="button" onClick={backToNetwork} className="-my-[13px] py-[13px] pr-4 text-left text-sm font-bold text-[var(--text-primary)] hover:underline">← {agency.toUpperCase()}</button> };
   const routePanel: PanelWidget[] | null = !route ? null
     : v3 && ready ? [back, ...routeWidgets({ data: ready, v3, dir: shown, band, setPick, route: ready.route })]
     : [back, ...(own.kind === 'loading' ? [{ key: 'loading', size: 'medium' as const, node: <LoadingWidget /> }] : [])];
