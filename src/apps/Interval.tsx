@@ -48,7 +48,7 @@ import type { AreaSearchResult } from '../../shared/areaSearch';
 import Spinner from '../components/ui/Spinner';
 import { onDemandSelectionZoneId, resolveSelectedOnDemandSlug } from '../utils/onDemandSelection';
 import { encodeStopBackTarget, parseStopBackTarget, resolveStopBack, STOP_BACK_PARAM, stopBackTarget, type StopBackRoute, type StopBackSnapshot, type StopBackTarget } from '../utils/stopBack';
-import { loadingText } from '../content/stateCopy';
+import { loadingText, networksFailedHint, networksFailedText, networksLoadingText } from '../content/noticeCopy';
 
 // Versioned because the original preference could accidentally persist only
 // agencies in the current viewport when the bulk "All" action was used.
@@ -1191,17 +1191,17 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
             <div className={`${MAP_BADGE} h-8 max-sm:h-[32px]`}>
               <Spinner />
               <span className={MAP_BADGE_LABEL}>
-                {isLoading ? `${loadedCount}/${requestedCount} networks` : loadingText('map')}
+                {isLoading ? networksLoadingText(loadedCount, requestedCount) : loadingText('map')}
               </span>
             </div>
           )}
           {failedSlugs.size > 0 && (
             <div
               className={`${MAP_BADGE} h-8 max-sm:h-[32px]`}
-              title={`Couldn't load: ${[...failedSlugs].join(', ')}`}
+              title={networksFailedHint([...failedSlugs])}
             >
               <span className={MAP_BADGE_LABEL}>
-                {failedSlugs.size === 1 ? '1 network failed to load' : `${failedSlugs.size} networks failed to load`}
+                {networksFailedText(failedSlugs.size)}
               </span>
             </div>
           )}

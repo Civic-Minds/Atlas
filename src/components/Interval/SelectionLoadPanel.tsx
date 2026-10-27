@@ -4,7 +4,7 @@ import Panel from '../ui/Panel';
 import { useDelayedFlag } from '../../hooks/useDelayedFlag';
 import PanelEmpty from '../ui/PanelEmpty';
 import ArrowLink from '../ui/ArrowLink';
-import { loadingText, loadErrorText } from '../../content/stateCopy';
+import { loadingText, loadErrorText } from '../../content/noticeCopy';
 
 interface SelectionLoadPanelProps {
   /** What is being opened, for the message ("route" or "stop"). */

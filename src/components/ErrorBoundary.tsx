@@ -1,6 +1,7 @@
 import { devHintsOn } from '../lib/devHints';
 import React from 'react';
 import { ANALYZE_DEV_HINT } from '../lib/liveReportData';
+import { VIEW_ERROR_TEXT } from '../content/noticeCopy';
 
 interface Props {
   children: React.ReactNode;
@@ -34,7 +35,7 @@ export default class ErrorBoundary extends React.Component<Props, State> {
     if (this.state.hasError) {
       return (
         <div className="flex flex-col items-center justify-center h-full gap-3 p-6 text-sm text-[var(--text-dim)]">
-          <p>{this.props.label ?? 'Something went wrong loading this view.'}</p>
+          <p>{this.props.label ?? VIEW_ERROR_TEXT}</p>
           <button
             type="button"
             className="px-3 py-1.5 rounded-full bg-[var(--bg-btn-hover)] text-[var(--text-primary)]"

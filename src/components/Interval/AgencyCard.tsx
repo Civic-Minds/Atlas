@@ -4,7 +4,7 @@ import { FEATURES } from '../../../shared/config';
 import { plural } from '../../../shared/overflowText';
 import { agencyPagePath } from '../../../shared/agencyPages';
 import { AREA_LINK_MAX_CHARS, agencyRegionTitle, areaLinkFor, areaLinkName } from '../../../shared/agencyArea';
-import { ON_DEMAND_NOT_MAPPED_NOTE, ON_DEMAND_PILL_LABEL, onDemandPillSelected } from '../../utils/onDemandPill';
+import { ON_DEMAND_PILL_LABEL, onDemandPillSelected } from '../../utils/onDemandPill';
 import agencyPageSlugs from '../../../shared/data/agency-page-slugs.json';
 import type { Agency } from '../../App';
 import type { OpenInfoFn } from '../InfoPanel';
@@ -25,7 +25,7 @@ import CardRouteList from './CardRouteList';
 import { OutboundLink } from '../OutboundLink';
 import { buildRouteFacts, type RouteLabel } from '../../utils/routeFacts';
 import { reportDetails } from '../../utils/reportIssue';
-import { getRolloutNotice } from '../../../shared/rolloutNotice';
+import { getRolloutNotice, NO_ROUTES_LOADED, noRoutesMatchText, notOnMapYetNotice, ON_DEMAND_NOT_MAPPED_NOTE, ROUTES_OUTSIDE_FILTERS_NOTICE, routesOutsideFiltersNotice } from '../../content/noticeCopy';
 import { onDemandCardName } from '../../utils/onDemandSelection';
 import { onDemandCoverageNote } from '../../data/onDemandCoverage';
 import {
@@ -38,7 +38,6 @@ import {
 } from '../../../shared/onDemandAvailability';
 import ArrowLink from '../ui/ArrowLink';
 import PanelEmpty from '../ui/PanelEmpty';
-import { NO_ROUTES_LOADED, noRoutesMatchText } from '../../content/stateCopy';
 import { compareHeadwayThenNumber } from '../../utils/sortCompare';
 
 interface RouteRow {
@@ -575,7 +574,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
               <CardBodyText>{pickupSentence}</CardBodyText>
             )}
             {coverageNote?.kind === 'partly-mapped' && (
-              <CardBodyText>Not on the map yet: {coverageNote.missing}.</CardBodyText>
+              <CardBodyText>{notOnMapYetNotice(coverageNote.missing)}</CardBodyText>
             )}
           </div>
           {zone.eligibility && (
@@ -659,7 +658,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
                 ))}
                 {service.tripRules && <p className="text-xs leading-snug text-[var(--text-muted)] mt-1">{service.tripRules}</p>}
                 {coverageNote?.kind === 'partly-mapped' && (
-                  <p className="text-xs leading-snug text-[var(--text-muted)] mt-1">Not on the map yet: {coverageNote.missing}.</p>
+                  <p className="text-xs leading-snug text-[var(--text-muted)] mt-1">{notOnMapYetNotice(coverageNote.missing)}</p>
                 )}
                 {service.sourceUrl && (
                   <p className="mt-1 text-xs">
@@ -731,13 +730,13 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
                 <div className={CARD_NOTICE_INLINE}>
                   {!showOtherRoutes ? (
                     <CardHelpNotice
-                      message={`${otherRoutes.length} ${plural(otherRoutes.length, 'route')} outside your filters.`}
+                      message={routesOutsideFiltersNotice(otherRoutes.length)}
                       actionLabel="Show"
                       onLearnMore={() => setShowOtherRoutes(true)}
                     />
                   ) : (
                     <CardHelpNotice
-                      message="Routes outside your filters."
+                      message={ROUTES_OUTSIDE_FILTERS_NOTICE}
                       actionLabel="Hide"
                       onLearnMore={() => setShowOtherRoutes(false)}
                     />
