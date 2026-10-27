@@ -31,6 +31,7 @@ import { onDemandCardName } from '../../utils/onDemandSelection';
 import { onDemandCoverageNote } from '../../data/onDemandCoverage';
 import {
   formatOnDemandHoursLines,
+  formatOnDemandHoursRange,
   onDemandPickupSentence,
   onDemandRunningNote,
   resolveOnDemandZone,
@@ -200,6 +201,84 @@ export function OnDemandHoursText({
         </p>
       ))}
     </>
+  );
+}
+
+/** The hours rows' scale: 6 a.m. to 2 a.m. like the route card's chart, stretched for service outside it. */
+const HOURS_SCALE_START = 6;
+const HOURS_SCALE_END = 26;
+const HOURS_TICKS: [number, string][] = [[6, '6a'], [12, '12p'], [18, '6p'], [24, '12a']];
+
+/**
+ * Service hours as rows (CIV-964, Ryan's variant C): one row per group of days with the same hours, its days, a bar
+ * on a shared day scale and the times in words; the row covering the selected day is bold. Falls back to the agency's
+ * own wording when no structured hours exist.
+ */
+export function OnDemandHoursRows({
+  availability,
+  serviceHours,
+  day,
+  className,
+}: {
+  availability?: OnDemandAvailability;
+  serviceHours?: string;
+  day?: DayType;
+  className: string;
+}) {
+  const lines = formatOnDemandHoursLines(availability);
+  if (lines.length === 0) {
+    return serviceHours ? <p className={className}>{serviceHours}</p> : null;
+  }
+  const windows = lines.flatMap(line => line.windows);
+  const start = Math.min(HOURS_SCALE_START, ...windows.map(w => Math.floor(w.startHour)));
+  const end = Math.max(HOURS_SCALE_END, ...windows.map(w => Math.ceil(w.endHour)));
+  const pct = (hour: number) => ((hour - start) / (end - start)) * 100;
+  return (
+    <div className="mt-1 grid grid-cols-[3.5rem_1fr] gap-x-2 text-xs leading-snug" data-testid="on-demand-hours-rows">
+      {lines.map(line => {
+        const selected = !!day && line.dayTypes.includes(day);
+        const tone = selected ? 'font-bold text-[var(--text-primary)]' : 'text-[var(--text-muted)]';
+        return (
+          <React.Fragment key={line.text}>
+            {/* The days line up with the bar: a line box the bar's height. */}
+            <span className={`mt-1.5 whitespace-nowrap leading-[0.625rem] ${tone}`}>{line.days}</span>
+            <div className="mt-1.5 min-w-0">
+              {line.windows.length > 0 ? (
+                <>
+                  <div className="relative h-2.5 rounded-full bg-[var(--bg-stat)]" aria-hidden="true">
+                    {line.windows.map(w => (
+                      <span
+                        key={`${w.startHour}-${w.endHour}`}
+                        className="absolute inset-y-0 rounded-full bg-[var(--hours-band)]"
+                        style={{ left: `${pct(w.startHour)}%`, width: `${pct(w.endHour) - pct(w.startHour)}%` }}
+                      />
+                    ))}
+                  </div>
+                  {/* Each time range stays whole; a list of them wraps between ranges. */}
+                  <p className={`mt-0.5 ${tone}`}>
+                    {line.windows.map((w, i) => (
+                      <React.Fragment key={`${w.startHour}-${w.endHour}`}>
+                        {i > 0 && ', '}
+                        <span className="whitespace-nowrap">{formatOnDemandHoursRange(w)}</span>
+                      </React.Fragment>
+                    ))}
+                  </p>
+                </>
+              ) : (
+                // No bar for a day with no service, just the words (as in the picked mockup).
+                <p className={`leading-[0.625rem] ${tone}`}>{line.times}</p>
+              )}
+            </div>
+          </React.Fragment>
+        );
+      })}
+      <span />
+      <div className="relative mt-1 h-3 text-[10px] text-[var(--text-dim)]" aria-hidden="true">
+        {HOURS_TICKS.map(([hour, label]) => (
+          <span key={hour} className="absolute -translate-x-1/2" style={{ left: `${pct(hour)}%` }}>{label}</span>
+        ))}
+      </div>
+    </div>
   );
 }
 
@@ -515,7 +594,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
           <div>
             <CardSectionLabel>Service hours</CardSectionLabel>
             <CardBodyText data-testid="on-demand-running-note">{runningNote}</CardBodyText>
-            <OnDemandHoursText
+            <OnDemandHoursRows
               availability={zone.availability}
               serviceHours={zone.serviceHours}
               day={day}
