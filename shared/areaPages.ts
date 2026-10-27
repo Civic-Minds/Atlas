@@ -20,6 +20,7 @@ import { AREA_PATH_PREFIX, areaPagePath, type AreaConfig } from './areas';
 import { areaRegionName, areaRegionSentenceStart, areaRegionTitle } from './areaRegions';
 import { SITE_URL, seoTitlePrefix, type SeoMode } from './seo';
 import { countOf } from './overflowText';
+import { capitalizeFirst } from './headwayText';
 import { compareAgencyName } from './sortCompare';
 import { DESCRIPTION_MAX, TITLE_MAX, firstThatFits, truncateAtWord } from './seoText';
 
@@ -81,8 +82,7 @@ export function areaTableColumn(modeLabel: string): string {
 export function areaTableColumnTitle(column: string): string | undefined {
   const sentence = (labels: string[], last: string) => {
     const words = labels.map(l => l.toLowerCase());
-    const text = `${words.join(', ')} and ${last} routes`;
-    return text.charAt(0).toUpperCase() + text.slice(1);
+    return capitalizeFirst(`${words.join(', ')} and ${last} routes`);
   };
   if (column === AREA_TABLE_OTHER) {
     return sentence(MODE_DEFINITIONS.filter(m => m.id !== ON_DEMAND_MODE && areaTableColumn(m.label) === AREA_TABLE_OTHER).map(m => m.label), 'other');
