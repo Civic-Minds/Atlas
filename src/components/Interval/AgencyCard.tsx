@@ -273,7 +273,7 @@ export function OnDemandHoursRows({
         );
       })}
       <span />
-      <div className="relative mt-1 h-3 text-[10px] text-[var(--text-dim)]" aria-hidden="true">
+      <div className="relative mt-1.5 mb-1.5 h-3 text-[10px] text-[var(--text-dim)]" aria-hidden="true">
         {HOURS_TICKS.map(([hour, label]) => (
           <span key={hour} className="absolute -translate-x-1/2" style={{ left: `${pct(hour)}%` }}>{label}</span>
         ))}
