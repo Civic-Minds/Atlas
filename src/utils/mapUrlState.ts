@@ -46,17 +46,20 @@ export const MAP_URL = {
     parse: raw => ((DAY_TYPES as readonly string[]).includes(raw) ? raw as DayType : undefined),
     serialize: value => value,
   } satisfies UrlParam<DayType>,
-  /** Irregular service hidden (the default) unless the link says span=0. */
+  /**
+   * Irregular service hidden unless the link says span=0. Always written (span=1 when hidden): without it a
+   * link opens on the viewer's saved choice (#1141).
+   */
   hideSpan: {
     key: 'span', presence: 'any',
     parse: raw => raw !== '0',
-    serialize: value => (value ? null : '0'),
+    serialize: value => (value ? '1' : '0'),
   } satisfies UrlParam<boolean>,
-  /** Part-time service hidden (the default) unless the link says limited=0. */
+  /** Part-time service hidden unless the link says limited=0. Always written (limited=1 when hidden), as span (#1141). */
   hideLimited: {
     key: 'limited', presence: 'any',
     parse: raw => raw !== '0',
-    serialize: value => (value ? null : '0'),
+    serialize: value => (value ? '1' : '0'),
   } satisfies UrlParam<boolean>,
   /** The open route card: agency::route[::branch:x]. */
   route: { key: 'route', presence: 'any', parse: identity, serialize: value => value || null } satisfies UrlParam<string>,
