@@ -430,7 +430,8 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
 
       </div>
       {(stackedLegend.length > 0 || reserveStackedLegendSpace) && (
-        <div className={`flex min-h-[10px] flex-col items-start gap-y-0.5 mt-1 ${CARD_NOTE} leading-tight ${legendInvisible ? 'invisible' : ''}`}>
+        // Branches side by side while they fit, wrapping to the next line when they don't (CIV-936).
+        <div className={`flex min-h-[10px] flex-wrap items-center gap-x-3 gap-y-0.5 mt-1 ${CARD_NOTE} leading-tight ${legendInvisible ? 'invisible' : ''}`}>
           {stackedLegend.map((segment, i) => (
             <LegendItem key={`${segment.label}-${i}`} color={segment.color}>{segment.label}</LegendItem>
           ))}
