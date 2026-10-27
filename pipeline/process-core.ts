@@ -44,6 +44,7 @@ import { isNightRouteDirection, nextServiceDay, overnightPeriodValues, overnight
 import { makeShapeCoverChecker } from './shapeCoverage.js';
 import { annotateSharedStretches, isPoolablePattern } from './sharedStretch.js';
 import { boardsAt } from './stopEligibility.js';
+import { nearDuplicateTripIds } from './nearDuplicateTrips.js';
 import { decideDedupe, runsInDay, type DedupePattern } from './featureDedupe.js';
 import { decideHeadline, decidePeriod, liftTierOnDestinationPool, ownStepOneHeadway, pooledStepOneHeadway, settleTier, terminalReading, type PeriodValue } from './routeGrading.js';
 import type { SharedStretchPattern } from './sharedStretch.js';
@@ -768,6 +769,13 @@ export async function processGtfsBuffer(
   const activeServiceIdsByCalendarDay = new Map<DayName, Set<string>>(
     ALL_DAYS.map(day => [day, getActiveServiceIds(gtfs.calendar ?? [], gtfs.calendarDates ?? [], day, refDate)]),
   );
+  // #1143: a trip copied under a second service a minute apart would double every departure; drop
+  // the copy before phase 1 and the stop pass count anything (nearDuplicateTrips.ts has the rule).
+  const nearDuplicates = nearDuplicateTripIds(gtfs, activeServiceIdsByCalendarDay);
+  if (nearDuplicates.size > 0) {
+    onStatus?.(`Dropped ${nearDuplicates.size} near-duplicate trip(s) listed under a second service (#1143).`);
+    gtfs = { ...gtfs, trips: gtfs.trips.filter(t => !nearDuplicates.has(t.trip_id)), stopTimes: gtfs.stopTimes.filter(st => !nearDuplicates.has(st.trip_id)) };
+  }
   // Converging origins (TTC 29 northbound) get a route variant so each origin draws its own
   // row, judged on the same active service sets the rest of the pipeline draws.
   labelConvergingOrigins(gtfs, activeServiceIdsByCalendarDay);
