@@ -383,7 +383,8 @@ export default function LiveToolPage() {
   const s = state.data.summary;
   return shell(
     <>
-      <header className={`${PILL_ROW} border-b border-[var(--border-primary)] bg-[var(--bg-header)] px-4 py-2`}>
+      {/* On phones the bar's pills take two rows: 20px between rows and 10px below, so each pill's 44px tap area (PHONE_TAP_AREA) is its own. */}
+      <header className={`${PILL_ROW} border-b border-[var(--border-primary)] bg-[var(--bg-header)] px-4 py-2 max-sm:gap-y-[20px] max-sm:pb-[10px]`}>
         <AtlasLogo href="/" ariaLabel="Atlas by Civic Minds" showMark={false} />
         <button type="button" onClick={() => { setRoute(null); setDir(null); setPick(null); }} className="text-sm font-bold hover:underline">{agency.toUpperCase()}</button>
         <div ref={setRouteSlot} className="contents" />
