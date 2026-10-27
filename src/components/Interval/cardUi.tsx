@@ -746,10 +746,10 @@ export function CardHelpNotice({
 }
 
 /** "New schedule data is being verified.": the agency card and the route card show it the same way. */
-export function NewScheduleDataNotice({ agency, onInfoOpen }: { agency: Agency; onInfoOpen: OpenInfoFn }) {
+export function NewScheduleDataNotice({ agency, onInfoOpen, on }: { agency: Agency; onInfoOpen: OpenInfoFn; on: 'route' | 'agency' }) {
   return (
     <CardHelpNotice
-      message={NEW_SCHEDULE_DATA_NOTICE}
+      message={NEW_SCHEDULE_DATA_NOTICE[on]}
       onLearnMore={() => onInfoOpen('about', {
         helpTopic: 'new-schedule-data',
         agencyName: agency.name,
@@ -764,10 +764,10 @@ export function NewScheduleDataNotice({ agency, onInfoOpen }: { agency: Agency; 
 }
 
 /** "We corrected this data.": the agency card and the route card show it the same way, with the note that applies. */
-export function CorrectedDataNotice({ agency, overrideNote, onInfoOpen }: { agency: Agency; overrideNote: string; onInfoOpen: OpenInfoFn }) {
+export function CorrectedDataNotice({ agency, overrideNote, onInfoOpen, on }: { agency: Agency; overrideNote: string; onInfoOpen: OpenInfoFn; on: 'route' | 'agency' }) {
   return (
     <CardHelpNotice
-      message={CORRECTED_DATA_NOTICE}
+      message={CORRECTED_DATA_NOTICE[on]}
       onLearnMore={() => onInfoOpen('about', {
         helpTopic: 'corrected-data',
         agencyName: agency.name,

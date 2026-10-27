@@ -15,7 +15,7 @@ export function expiredFeedNotice(agencyName: string, expDateStr?: string, manua
   if (manualFeedSource) {
     return `${ended} It is maintained manually, so Atlas will keep showing it until a newer file is provided and verified.`;
   }
-  return ended;
+  return `${ended} Times shown may be out of date.`;
 }
 
 /**
@@ -41,15 +41,15 @@ export function selectedRouteFilterNotice(options: {
 
 export function periodServiceNotice(periodRange: string, partial: boolean, activeRange?: string): string {
   return partial
-    ? `Limited service during the selected ${keepRangeTogether(activeRange || periodRange)} period.`
-    : `No scheduled service during the selected ${keepRangeTogether(periodRange)} period.`;
+    ? `This route runs only from ${keepRangeTogether(activeRange || periodRange)} in this period. No frequency is shown.`
+    : `This route has no scheduled trips from ${keepRangeTogether(periodRange)}.`;
 }
 
 export function unevenServiceNotice(longestGap: number): string {
-  return `Service runs all period, but unevenly, with a longest gap of ${delayAmount(longestGap)}.`;
+  return `This route runs all period, but the gaps between trips vary, up to ${delayAmount(longestGap)}.`;
 }
 
-export const NO_ROUTE_SHAPE_NOTICE = 'Route map unavailable.';
+export const NO_ROUTE_SHAPE_NOTICE = "This route's line can't be shown on the map because it's missing from the agency's data.";
 
 /** CIV-1006: a route riders must book ahead (Ryan's wording). */
 export const BOOKING_REQUIRED_NOTICE = 'Rides on this route must be booked ahead.';
@@ -62,7 +62,7 @@ export const NO_ROUTE_SHAPE_DETAIL =
 
 export function selectedRouteOutsideFilterNotice(maxHeadway: number): string {
   return maxHeadway === Infinity
-    ? 'This route does not run during the selected period.'
+    ? "This route doesn't run during the selected period."
     // Non-breaking hyphen (U+2011) keeps "15-minute" on one line instead of wrapping after "15-".
     : `This route does not meet the selected ${maxHeadway}\u2011minute filter for the full selected period.`;
 }
@@ -118,35 +118,39 @@ export const NO_AGENCIES_IN_VIEW = 'No agencies in view.';
 export const NO_AGENCIES_MATCH_SEARCH = 'No agencies match that search.';
 
 // ---- Route card ----
-export const WEEKDAY_VARIATION_NOTICE = 'Weekday schedules vary. The tier shown reflects the slowest weekday.';
+export const WEEKDAY_VARIATION_NOTICE = "This route's weekday schedules vary. The least frequent day is shown.";
 /** "Includes variants 51A, 51B" (beta route variants). */
 export const variantsIncludedNotice = (shortNames: string) => `Includes variants ${shortNames}`;
 /** The info icon's hover text on a row whose frequency allows a longer first or last trip. */
-export const FIRST_LAST_TRIP_ALLOWANCE_HINT = 'Atlas added a small allowance for the first or last trip of the day.';
+export const FIRST_LAST_TRIP_ALLOWANCE_HINT = "This route's frequency allows a slightly longer wait for the first or last trip of the day.";
 
 // ---- Route and agency cards ----
 /** A route whose line had a confirmed shape problem in the source feed (shared/routeDataQuality.ts has the code). */
 export const ROUTE_DATA_QUALITY_WARNING_MESSAGE =
-  "Atlas found a problem with this route's shape in the source feed. The route may be incomplete or adjusted.";
-export const BETA_ROLLOUT_NOTICE =
+  "This route's line on the map may be incomplete because of an error in the agency's data.";
+export const BETA_ROLLOUT_NOTICE = 'This agency is only available in Atlas preview and beta, not the public version.';
+/** The same for an on-demand service on the beta site; Ryan's approval named the agency notice only, so this one is unchanged. */
+export const BETA_SERVICE_ROLLOUT_NOTICE =
   'This service is currently available only in Atlas preview and beta. It is not included in the public version.';
 /** The agency's rollout notice: the beta-only one, else the agency's own note from its config. */
 export function getRolloutNotice(agency: { betaOnly?: boolean; rolloutNotice?: string }): string | undefined {
   return agency.betaOnly ? BETA_ROLLOUT_NOTICE : agency.rolloutNotice;
 }
-export const NEW_SCHEDULE_DATA_NOTICE = 'New schedule data is being verified.';
-export const CORRECTED_DATA_NOTICE = 'We corrected this data.';
+/** The route card and the agency card word these for what they show (CIV-941). */
+export const NEW_SCHEDULE_DATA_NOTICE = { route: "This route's new schedule is still being checked for errors.", agency: "This agency's new schedule data is being verified." } as const;
+export const CORRECTED_DATA_NOTICE = { route: "We corrected an error in this route's schedule.", agency: 'We corrected this data.' } as const;
 export const routesOutsideFiltersNotice = (count: number) => `${count} ${plural(count, 'route')} outside your filters.`;
-export const ROUTES_OUTSIDE_FILTERS_NOTICE = 'Routes outside your filters.';
+export const ROUTES_OUTSIDE_FILTERS_NOTICE = 'These routes are outside your filters.';
 /** An on-demand agency whose zone isn't drawn (the card's on-demand pill). */
-export const ON_DEMAND_NOT_MAPPED_NOTE = "This service runs by request in a zone that isn't on the map yet.";
-export const notOnMapYetNotice = (missing: string) => `Not on the map yet: ${missing}.`;
+export const ON_DEMAND_NOT_MAPPED_NOTE = "This agency's on-demand service runs by request in a zone that isn't on the map yet.";
+/** "This service's north zone isn't on the map yet." */
+export const notOnMapYetNotice = (missing: string) => `This service's ${missing.replace(/^the /, '')} isn't on the map yet.`;
 export const REPORT_FORM_HINT = 'Choose a category, or click a card value to preselect its reason.';
 export const REPORT_NEEDS_FREQUENCY_DETAIL = 'Select at least one frequency detail.';
 export const REPORT_NEEDS_REASON = 'Select a reason or describe what is wrong.';
 
 // ---- History ----
-export const HISTORY_TRIP_TIME_NOTE = "End-to-end scheduled time on a representative weekday trip. Only shown when the route's stops and alignment haven't changed between these years.";
+export const HISTORY_TRIP_TIME_NOTE = "This is the scheduled time for one typical weekday trip end to end, shown only when the route's stops and path stayed the same across these years.";
 export const HISTORY_ROUTE_ORDER_NOTE = 'Biggest changes first';
 
 // ---- Map ----
@@ -175,7 +179,7 @@ export const MAP_EXPORT_NOT_READY = 'The map was not ready. Try again in a momen
 export const MAP_EXPORT_WAITING = 'Map still loading. The image will save once every route is drawn.';
 
 // ---- Site ----
-export const UPDATE_AVAILABLE_NOTICE = 'This page is out of date. Refresh to update.';
+export const UPDATE_AVAILABLE_NOTICE = 'A newer version of this page is available.';
 export const ANALYTICS_CONSENT_PROMPT = 'Optional analytics help improve Atlas.';
 export const ANALYTICS_SETTING_NOTE = 'Optional analytics helps us understand which parts of Atlas people use.';
 export const VIEW_ERROR_TEXT = 'Something went wrong loading this view.';

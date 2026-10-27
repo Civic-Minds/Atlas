@@ -5,13 +5,13 @@ import { expiredFeedCheckHistory, expiredFeedNotice } from './noticeCopy';
 describe('expiredFeedNotice', () => {
   it('names the agency once, without region or duplicated articles', () => {
     expect(expiredFeedNotice('Grand River Transit (Waterloo Region)', 'Apr 26, 2026')).toBe(
-      "Grand River Transit's timetable ended on Apr 26, 2026.",
+      "Grand River Transit's timetable ended on Apr 26, 2026. Times shown may be out of date.",
     );
   });
 
   it('omits the date when unknown', () => {
     expect(expiredFeedNotice('Grand River Transit')).toBe(
-      "Grand River Transit's timetable ended.",
+      "Grand River Transit's timetable ended. Times shown may be out of date.",
     );
   });
 
