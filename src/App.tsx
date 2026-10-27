@@ -4,7 +4,7 @@ import { Search, X, Info, History as HistoryIcon, ChevronDown, Radio } from 'luc
 import { CompareTab } from './components/Interval/CompareControl';
 import { useUrlPathname } from './hooks/useUrlPathname';
 import ModeTab from './components/ModeTab';
-import { PILL_SURFACE, FLOATING_CARD, SEARCH_BAR_WIDTH, TRANSITION_BASE, TRANSITION_SLOW, Z_MAP_OVERLAY, Z_HEADER, Z_MODAL_TOP, SIDEBAR_LEFT_FALLBACK, sidebarFrameStyle, ICON_BTN, SEARCH_ICON, CARD_NOTE } from './styles';
+import { MAP_TOP_BAR_SLOT, MAP_STATUS_SLOT, PILL_SURFACE, FLOATING_CARD, SEARCH_BAR_WIDTH, TRANSITION_BASE, TRANSITION_SLOW, Z_MAP_OVERLAY, Z_HEADER, Z_MODAL_TOP, SIDEBAR_LEFT_FALLBACK, sidebarFrameStyle, ICON_BTN, SEARCH_ICON, CARD_NOTE } from './styles';
 import { R2_PUBLIC_URL, getAgencyArtifactUrls, getAgencyCatalogUrl, FEATURES, FEATURE_ROUTES, ATLAS_MODE } from '../shared/config';
 import AtlasLogo from './components/AtlasLogo';
 import { isAgencyVisibleInBrowser } from '../shared/agencyVisibility';
@@ -628,7 +628,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
     <LiveVehiclesMapOverlayProvider>
     <div className={`relative h-dvh w-screen bg-[var(--bg-app)] text-[var(--text-primary)] font-sans overflow-hidden transition-colors ${TRANSITION_BASE}`}>
       {/* Unified header row — left and right sections share one flex container so they can never overlap. Fixed row height so a taller control in one view (e.g. Night's 30/60 toggle) can't push the logo and search off the line they sit on in every other view (#908). */}
-      <div className={`absolute ${inFrequentServiceStory ? 'top-0 left-0 right-0 bg-[var(--bg-app)] px-6 py-6' : 'top-6 left-6 right-6 h-[28px]'} ${infoOpen ? Z_MODAL_TOP : Z_HEADER} flex items-center justify-between pointer-events-none`}>
+      <div className={`absolute ${inFrequentServiceStory ? 'top-0 left-0 right-0 bg-[var(--bg-app)] px-6 py-6' : MAP_TOP_BAR_SLOT} ${infoOpen ? Z_MODAL_TOP : Z_HEADER} flex items-center justify-between pointer-events-none`} data-map-overlay="top-bar">
       <div ref={headerLeftRef} className={`flex items-center gap-2 pointer-events-auto flex-1 min-w-0 ${phoneSearchExpanded ? '' : 'max-w-[calc(100%-3rem)] mr-2'} sm:max-w-none sm:mr-0`}>
         {/* The logo is "home": it clears every selection, mode and URL parameter, like a fresh visit to "/". */}
         <AtlasLogo
@@ -914,12 +914,12 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
           </React.Suspense>
           </ErrorBoundary>
         {(agenciesLoadState === 'loading' || modeCatchingUp) && (
-          <div className="absolute left-1/2 bottom-5 -translate-x-1/2 rounded-full bg-[var(--bg-panel)]/90 px-3 py-1.5 text-xs font-semibold text-[var(--text-dim)] pointer-events-none">
+          <div className={`${MAP_STATUS_SLOT} rounded-full bg-[var(--bg-panel)]/90 px-3 py-1.5 text-xs font-semibold text-[var(--text-dim)] pointer-events-none`} data-map-overlay="status">
             Loading map…
           </div>
         )}
         {agenciesLoadState === 'error' && (
-          <div className="absolute left-1/2 bottom-5 -translate-x-1/2 flex items-center gap-3 rounded-full bg-[var(--bg-panel)]/95 px-3 py-1.5 text-xs text-[var(--text-dim)]">
+          <div className={`${MAP_STATUS_SLOT} flex items-center gap-3 rounded-full bg-[var(--bg-panel)]/95 px-3 py-1.5 text-xs text-[var(--text-dim)]`} data-map-overlay="status">
             <span>{loadErrorText('agency data')}</span>
             <button
               type="button"

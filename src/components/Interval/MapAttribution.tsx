@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { FLOATING_CARD, MAP_BADGE, MAP_BADGE_LABEL, Z_PANEL } from '../../styles';
+import { MAP_FOOTER_PILLS_PHONE_SLOT, FLOATING_CARD, MAP_BADGE, MAP_BADGE_LABEL, Z_PANEL } from '../../styles';
 import { FEATURES } from '../../../shared/config';
 import { version as appVersion } from '../../../package.json';
 import { shortVersion } from '../../data/whatsNew';
@@ -43,8 +43,9 @@ export function MapAttribution({ whatsNewEnabled = FEATURES.whatsNew }: { whatsN
   return (
     <>
     <div
-      className={`max-sm:absolute max-sm:bottom-6 max-sm:left-6 max-sm:max-w-[calc(100vw-3rem)] ${Z_PANEL} sm:min-w-0 pointer-events-none [&>*]:pointer-events-auto flex flex-wrap-reverse items-center gap-1.5`}
+      className={`${MAP_FOOTER_PILLS_PHONE_SLOT} ${Z_PANEL} sm:min-w-0 pointer-events-none [&>*]:pointer-events-auto flex flex-wrap-reverse items-center gap-1.5`}
       data-map-attribution=""
+      data-map-overlay="footer-pills"
       title={BASEMAP_ATTRIBUTION}
     >
       <div ref={aboutRef} className="relative sm:hidden">

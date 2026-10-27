@@ -16,7 +16,7 @@ import { NearbyRoutesPanel } from '../components/Interval/NearbyRoutesPanel';
 import { FilterPanel } from '../components/Interval/FilterPanel';
 import { FilterChips, getNowPeriodForTimezone } from '../components/Interval/FilterChips';
 import { AgencyCard } from '../components/Interval/AgencyCard';
-import { TRANSITION_BASE, TRANSITION_SLOW, Z_PANEL, MAP_BADGE, MAP_BADGE_COUNT, MAP_BADGE_LABEL, SIDEBAR_CARD_TOP, SIDEBAR_CARD_TOP_DESKTOP, Z_PANEL_RAISED } from '../styles';
+import { MAP_FOOTER_ROW_SLOT, MAP_COUNTS_PHONE_SLOT, TRANSITION_BASE, TRANSITION_SLOW, Z_PANEL, MAP_BADGE, MAP_BADGE_COUNT, MAP_BADGE_LABEL, SIDEBAR_CARD_TOP, SIDEBAR_CARD_TOP_DESKTOP, Z_PANEL_RAISED } from '../styles';
 import type { Agency } from '../App';
 import type { OpenInfoFn } from '../components/InfoPanel';
 import { mapViewKind, viewAllowsOnDemand } from '../../shared/viewLayers';
@@ -1196,11 +1196,11 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
           (and the analytics prompt, their last pill) wrap upward before they reach the counts (#999).
           Phones drop the wrapper (contents) and keep each group's own position. No z-index here, so
           the pills keep their own layer and the What's new panel still opens above the header. */}
-      <div className="max-sm:contents absolute bottom-6 left-6 right-14 flex items-end justify-between gap-2 pointer-events-none">
+      <div className={MAP_FOOTER_ROW_SLOT}>
       <MapAttribution />
 
       {((stats && (stats.total > 0 || !isLoading)) || researchCounts || isLoading || isTilesLoading || isBasemapLoading || failedSlugs.size > 0) && (
-        <div className={`max-sm:absolute max-sm:bottom-16 max-sm:left-6 ${Z_PANEL} shrink-0 ml-auto flex gap-2 transition-all ${TRANSITION_SLOW} ${showUi ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
+        <div data-map-overlay="counts" className={`${MAP_COUNTS_PHONE_SLOT} ${Z_PANEL} shrink-0 ml-auto flex gap-2 transition-all ${TRANSITION_SLOW} ${showUi ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
           {(isLoading || isTilesLoading || isBasemapLoading) && (
             <div className={`${MAP_BADGE} h-8 max-sm:h-[32px]`}>
               <Spinner />
