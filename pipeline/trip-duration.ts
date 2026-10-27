@@ -8,7 +8,7 @@
  * across the years being compared) done by the caller.
  */
 import type { GtfsData, GtfsStopTime, GtfsTrip } from '../types/gtfs.js';
-import { isRailLikeRoute } from '../shared/modes.js';
+import { isRailRoute } from './routeMode.js';
 import { t2m } from './transit-utils.js';
 
 export interface RouteTripDuration {
@@ -66,12 +66,7 @@ export function computeRailTripDurations(gtfs: GtfsData, agencySlug: string): Ro
     (gtfs.calendar ?? []).filter(c => c.monday === '1').map(c => c.service_id),
   );
 
-  const railRoutes = (gtfs.routes ?? []).filter(r => isRailLikeRoute({
-    routeType: r.route_type,
-    routeLongName: r.route_long_name,
-    routeShortName: r.route_short_name,
-    agencySlug,
-  }));
+  const railRoutes = (gtfs.routes ?? []).filter(r => isRailRoute(r, agencySlug));
 
   const childToParent = new Map<string, string>();
   for (const stop of gtfs.stops ?? []) {
