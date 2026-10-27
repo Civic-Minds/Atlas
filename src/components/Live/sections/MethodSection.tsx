@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { dateRangeText, goodDayCounts, goodDayLimits, type LiveV3 } from '../../../../shared/liveDashboard';
 import type { AgencySummary } from '../../../../shared/liveAgency';
+import { pct } from '../../../../shared/liveFormat';
 import { builtText, coveredRoutesText, METHOD_GROUPS } from '../../../../shared/liveWording';
 import { weekWindowParts } from '../../../utils/liveKpi';
 import ArrowLink from '../../ui/ArrowLink';
@@ -11,7 +12,6 @@ import type { Ready } from '../../../LiveRoutePage';
 /** The two weeks, then the days left out on a line of their own (no line when every day counted). */
 const weekWindowItems = (w: NonNullable<LiveV3['weekly']>): ReactNode[] => { const p = weekWindowParts(w); return p.days ? [p.weeks, <OwnLine key="days" title={p.reason ?? undefined}>{p.days}</OwnLine>] : [p.weeks]; };
 
-const pct = (x: number) => `${Math.round(x * 100)}%`;
 
 /**
  * "How this is measured", the one block every Live surface ends with. The scope picks the lines: the week comparison

@@ -5,7 +5,7 @@
  * confirm with Ryan.
  */
 import { USUALLY_ON_TIME, usuallyOffBy } from '../../../shared/liveWording';
-import { tenth } from '../../../shared/liveFormat';
+import { pct, tenth } from '../../../shared/liveFormat';
 import { bunchParts, type RouteStripStop } from './routeStripModel';
 
 export interface CardGroup { heading: string | null; lines: string[] }
@@ -23,7 +23,6 @@ export const STOP_CARD_WORDS = {
   lessExact: 'Less exact here: vehicles report their location less often',
 } as const;
 
-const pct = (x: number) => `${Math.round(x * 100)}%`;
 
 /** `extraWaitMin`: the stop's extra wait (null where service is less frequent than every 15 min, or not measured). */
 export function stopCardGroups(stop: RouteStripStop, extraWaitMin: number | null): CardGroup[] {

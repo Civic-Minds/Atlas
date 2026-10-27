@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { compareLines, deliveredSentence, extraWaitSentence, runningTimeSentence, toCsv, dateRangeText, freshness, LIVE_DASHBOARD_HOLD, LINK_LABELS, buildupSentence, bunchingSentence, dashboardUnavailable, linkValueText, rankStops, type DashboardBunchingBand, type DashboardBuildup, type DashboardStop, type LiveV3 } from '../liveDashboard';
+import { runningTimeSentence, dateRangeText, freshness, LIVE_DASHBOARD_HOLD, LINK_LABELS, bunchingSentence, dashboardUnavailable, linkValueText, rankStops, type DashboardBunchingBand, type DashboardStop, type LiveV3 } from '../liveDashboard';
 
 const stop = (id: string, dir: number, late: number, n = 100, ranked = true): DashboardStop => ({ stopId: id, name: id, directionId: dir, order: 0, n, medianMin: 0, p90Min: 5, lateShare: late, earlyShare: 0, ranked });
 
@@ -28,13 +28,6 @@ describe('rankStops (B2)', () => {
 });
 
 describe('sentences', () => {
-  const stretch = { fromStopId: 'a', toStopId: 'b', fromName: 'Dufferin', toName: 'Bathurst', n: 200, medianAddedMin: 2.4, addedShare: 0.71, growShare: 0.75, medianDelayMin: 3, p10DelayMin: 0, p90DelayMin: 6 };
-  const build = (over: object) => ({ directionId: 0, startingDelayMin: 0, kind: null, forms: null, climbMin: null, start: null, biggest: null, stretches: [], ...over }) as unknown as DashboardBuildup;
-  it('names the stretch where delay builds up and how consistent it is, calls a slow climb gradual, and says when it does not build', () => {
-    expect(buildupSentence('East', build({ kind: 'forms', forms: stretch }))).toBe('East: delay builds up between Dufferin and Bathurst: +2.4 min added there, and it stays up for the next few stops. Delay grows by 30+ seconds on 75% of 200 trips.');
-    expect(buildupSentence('East', build({ kind: 'gradual', climbMin: 2.1 }))).toBe('East: delay builds gradually along the route (+2.1 min from start to end). No single stretch stands out.');
-    expect(buildupSentence('East', build({ kind: 'none' }))).toBe('East: delay does not build up along the route.');
-  });
   it('names a stretch when bunching forms, calls a slow climb gradual, and never says "caused by"', () => {
     const stops = [0.05, 0.2, 0.4].map((b, i) => ({ stopId: `s${i}`, name: `S${i}`, order: i, n: 50, badShare: b, bunchedShare: b, gappedShare: 0, medianGapSec: 300 }));
     const forms: DashboardBunchingBand = { baselineBadShare: 0.05, kind: 'forms', climb: 0.35, biggestRise: null, stops, forms: { fromStopId: 's0', toStopId: 's1', fromName: 'S0', toName: 'S1', rise: 0.15, fromBadShare: 0.05, toBadShare: 0.2, links: [] } };
@@ -75,39 +68,12 @@ describe('dateRangeText', () => {
   });
 });
 
-describe('toCsv', () => {
-  it('quotes cells with commas, quotes or line breaks', () => {
-    expect(toCsv(['Stop', 'Late'], [['King, at "Bay"', 0.12], ['Plain', null]])).toBe('Stop,Late\n"King, at ""Bay""",0.12\nPlain,\n');
-  });
-});
-
-describe('running time, extra wait, service delivered', () => {
+describe('running time', () => {
   it('says scheduled, usual and 1-in-10 in plain words, and does not guess from a handful of trips', () => {
     expect(runningTimeSentence('Eastbound', { n: 120, scheduledMin: 22, typicalMin: 27.2, p90Min: 34.4, overMin: 5 })).toBe('Eastbound: scheduled 22 min · usually 27 · 1 in 10 over 34 min.');
     expect(runningTimeSentence('Eastbound', { n: 120, scheduledMin: 22, typicalMin: 27, p90Min: 34, overMin: 5 }, 17)).toMatch(/at 5pm\.$/);
     expect(runningTimeSentence('Eastbound', { n: 10, scheduledMin: 22, typicalMin: 27, p90Min: 34, overMin: 5 })).toMatch(/too few trips \(10\)/);
     expect(runningTimeSentence('Eastbound', null)).toMatch(/too few trips were measured over the main stretch/);
-  });
-  it('names the stop where riders wait longest, in half minutes, or says waits match the timetable', () => {
-    const stops = [{ name: 'Spadina & Queens Quay', extraWaitMin: 2.1, gaps: 500 }, { name: 'Other', extraWaitMin: 0.4, gaps: 500 }, { name: 'Thin', extraWaitMin: 9, gaps: 5 }];
-    expect(extraWaitSentence(stops, 'Northbound')).toBe('Northbound: riders at Spadina & Queens Quay wait about 2 min longer than scheduled.');
-    expect(extraWaitSentence([{ name: 'A', extraWaitMin: 0.2, gaps: 100 }], 'Northbound')).toMatch(/about as long as scheduled/);
-    expect(extraWaitSentence([], 'Northbound')).toBeNull();
-  });
-  it('says how many scheduled trips ran, among those we can judge', () => {
-    expect(deliveredSentence({ seen: 960, notSeen: 40, unknown: 5, share: 0.96 })).toBe('96% of scheduled trips ran (960 of 1,000).');
-    expect(deliveredSentence({ seen: 0, notSeen: 0, unknown: 3, share: null }, 'Eastbound')).toMatch(/not enough days of recordings/);
-  });
-  it('compares this week with last with one rule: plain up or down, and better or worse by which way is good', () => {
-    const wk = (late: number, minutes: number, delivered: number) => ({
-      days: 7, dates: [], healthyDates: [], late: { share: late, n: 1000 }, tripTime: { n: 100, scheduledMin: 30, typicalMin: 31, overMin: 1 },
-      extraWait: { minutes, gaps: 1000 }, bunching: { share: 0.2, gaps: 1000 }, delivered: { share: delivered, seen: 90, notSeen: 10, unknown: 0 },
-    });
-    const lines = compareLines({ minHealthyDays: 4, health: [], comparable: true, thisWeek: wk(0.09, 1.1, 0.96), lastWeek: wk(0.12, 1.1, 0.99) });
-    expect(lines.find(l => l.key === 'late')).toMatchObject({ text: '9% late, down from 12%.', direction: 'better' });
-    expect(lines.find(l => l.key === 'extraWait')).toMatchObject({ text: 'Riders wait 1.1 min longer than scheduled, unchanged from last week.', direction: 'same' });
-    expect(lines.find(l => l.key === 'delivered')).toMatchObject({ text: '96% of scheduled trips ran, down from 99%.', direction: 'worse' });
-    expect(lines.find(l => l.key === 'bunching')!.text).toBe('20% of gaps too close or too far apart, unchanged from last week.');
   });
 });
 
@@ -150,15 +116,6 @@ describe('build-up label with a terminal stretch', () => {
     const text = buildupTakeaway(named as never);
     expect(text).toMatch(/^Delay stays about the same from end to end/);
     expect(text).not.toMatch(/7\.4/);
-  });
-});
-
-describe('branch run-time line', () => {
-  it('says where the branch goes, how long it usually takes, and over which stops', async () => {
-    const { branchRunTimeLine } = await import('../liveDashboard');
-    const all = { n: 215, scheduledMin: 14.2, typicalMin: 12.4, p90Min: 16.1, overMin: -1.8 };
-    expect(branchRunTimeLine({ fromStopId: 'a', toStopId: 'b', fromName: 'Humber Loop', toName: 'Marine Parade', stops: 14, all, byHour: [] }))
-      .toBe('To Marine Parade: usually 12 min, timetable 14, 1 in 10 over 16 (over 14 stops from Humber Loop, 215 trips).');
   });
 });
 

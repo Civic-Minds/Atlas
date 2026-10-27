@@ -164,14 +164,6 @@ export function sharedSummary(data: SegmentDelayData & { sharedSection?: Record<
   return st;
 }
 
-/** Extra wait at the first measured stop and where it peaks. */
-export function extraWaitRun(stops: LineStop[]): { first: LineStop; peak: LineStop } | null {
-  const m = stops.filter(s => s.stat?.excessWaitSec != null);
-  if (m.length === 0) return null;
-  const peak = m.reduce((a, b) => (b.stat!.excessWaitSec! > a.stat!.excessWaitSec! ? b : a));
-  return { first: m[0], peak };
-}
-
 /** Running time on the line: how many measured stop pairs are within ½ min of the timetable or faster. */
 export function runningTimeTally(segments: SegmentDelaySegment[], band: SegmentBand): { within: number; total: number } {
   let within = 0, total = 0;
@@ -203,14 +195,6 @@ export function stretchBetween(line: LineModel, stops: LineStop[], fromIndex: nu
   let w = 180, s = 90, e = -180, n = -90;
   for (const [x, y] of coordinates) { w = Math.min(w, x); e = Math.max(e, x); s = Math.min(s, y); n = Math.max(n, y); }
   return { from: stops[lo], to: stops[hi], stops: stops.slice(lo, hi + 1), segments, bounds: [w, s, e, n], coordinates };
-}
-
-/** Strip row i covers the stretch from its stop to the next row's stop (the last row looks back). */
-export function stretchForRow(line: LineModel, stops: LineStop[], rows: LineStop[], i: number): Stretch | null {
-  if (rows.length < 2) return null;
-  const a = i < rows.length - 1 ? rows[i] : rows[i - 1];
-  const b = i < rows.length - 1 ? rows[i + 1] : rows[i];
-  return stretchBetween(line, stops, a.index, b.index);
 }
 
 /** Place a point on the line: the stop pair it's on and how far along (0..1). */
@@ -272,12 +256,6 @@ function lineMetres(line: LineModel): { start: number[]; len: number[] } {
   return { start, len };
 }
 
-/**
- * Real time gaps between the cars on the shared section now, from the last
- * 30 minutes of archived positions: a gap is how long ago the car ahead
- * passed the spot where the car behind is now. Nothing is estimated; when the
- * car ahead's passing wasn't seen, that gap is null.
- */
 /** How long the Live card keeps the map's polled positions for "Right now" (the archive's window). */
 export const RECENT_WINDOW_SEC = 30 * 60;
 
@@ -352,6 +330,12 @@ export function liveTripDirections(vehicles: readonly { tripId: string; directio
   return out;
 }
 
+/**
+ * Real time gaps between the cars on the shared section now, from the last
+ * 30 minutes of archived positions: a gap is how long ago the car ahead
+ * passed the spot where the car behind is now. Nothing is estimated; when the
+ * car ahead's passing wasn't seen, that gap is null.
+ */
 export function liveGaps(data: SegmentDelayData & { tripDirections?: Record<string, string[]> }, line: LineModel, stops: LineStop[], band: SegmentBand, snapshots: RecentSnapshot[], nowSec: number, opts: LiveGapsOptions = {}): LiveGaps | null {
   const trips = new Set([...(data.tripDirections?.[String(line.directionId)] ?? []), ...(opts.extraTrips ?? [])]);
   if (trips.size === 0 || snapshots.length === 0) return null;

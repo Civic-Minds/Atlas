@@ -1,6 +1,6 @@
 import DataTable from './components/ui/DataTable';
-import { useEffect, useMemo, useState, type ReactNode } from 'react';
-import { dateRangeText, runTimeTileStretch, weekDailyValues, type DashboardBand, type DashboardBandData, type LiveV3, type UncertainStart } from '../shared/liveDashboard';
+import { useMemo, useState, type ReactNode } from 'react';
+import { weekDailyValues, type DashboardBand, type DashboardBandData, type LiveV3, type UncertainStart } from '../shared/liveDashboard';
 import { kpiTiles, weekNotComparableLine, type Kpi } from './utils/liveKpi';
 import ErrorBoundary from './components/ErrorBoundary';
 import { ANALYZE_DEV_HINT } from './lib/liveReportData';
@@ -8,7 +8,6 @@ import DevHint from './components/Live/DevHint';
 import DirectionStrip from './components/Live/DirectionStrip';
 import { routeStripFromV3 } from './components/Live/routeStripModel';
 import PillGroup, { PILL_ROW } from './components/ui/PillGroup';
-import { syncUrlParams } from './utils/syncUrlParams';
 import { shortStopName } from './utils/stopLabel';
 import { useMediaQuery } from './hooks/useMediaQuery';
 import { TILE } from './pageStyles';
@@ -36,11 +35,10 @@ function Delta({ k }: { k: Kpi }) {
   );
 }
 
-/** The week tiles, shared with the full analysis page (LiveRoutePage) so both say the same thing the same way. */
 /** The Yesterday tiles: the same five figures for one day, against the same weekday a week before (CIV-278). */
-export function YesterdayTiles({ y, tiles }: { y: LiveYesterday; tiles?: Kpi[] }) {
+export function YesterdayTiles({ y }: { y: LiveYesterday }) {
   if (!y.weekly.thisWeek.healthyDates.length) return <p className="mt-5 text-sm text-[var(--text-muted)]">{NOT_ENOUGH_YESTERDAY}</p>;
-  const ks = (tiles ?? kpiTiles(y.weekly, y.daily)).map(k => (k.delta ? { ...k, delta: { ...k.delta, text: againstLastWeekday(k.delta.text, y.compareDate), spoken: againstLastWeekday(k.delta.spoken, y.compareDate) } } : k));
+  const ks = kpiTiles(y.weekly, y.daily).map(k => (k.delta ? { ...k, delta: { ...k.delta, text: againstLastWeekday(k.delta.text, y.compareDate), spoken: againstLastWeekday(k.delta.spoken, y.compareDate) } } : k));
   // The comparison is named in the page subtitle ("Thursday, Oct 15, compared with Thursday, Oct 8"), not under the tiles.
   return <KpiTiles tiles={ks} caption={y.weekly.comparable ? '' : NOT_ENOUGH_YESTERDAY} />;
 }
@@ -52,6 +50,7 @@ export const yesterdayHours = (y: LiveYesterday) => ({
   hours: y.lateByHour.filter(h => h.n > 0).map(h => ({ hour: h.hour, value: h.lateShare, n: h.n })),
 });
 
+/** The week tiles, shared with the full analysis page (LiveRoutePage) so both say the same thing the same way. */
 export function KpiRow({ v3 }: { v3: LiveV3 }) {
   const w = v3.weekly;
   if (!w) return <><p className="mt-4 text-sm text-[var(--text-muted)]">This week against last week is not in this analysis file.</p><DevHint hint={ANALYZE_DEV_HINT} /></>;
@@ -70,28 +69,6 @@ export function KpiTile({ k, className = '', math, bare = false, caption = false
       {k.scope && !bare && <div className="mt-0.5 text-xs leading-4 text-[var(--text-dim)]">{k.scope}</div>}
       <div className={`mt-auto ${bare && caption ? 'pt-0.5' : 'pt-2'}`}><Delta k={k} /></div>
     </li>
-  );
-}
-
-/** The week's figures as rows for a narrow column: the name, the figure, the change from last week; under it, the line that explains the math where there is one. */
-export function KpiRows({ tiles, math, caption, captionTitle }: { tiles: Kpi[]; /** Per tile key, the line that explains how the figure is worked out. */ math?: Partial<Record<Kpi['key'], string>>; caption?: string | null; /** Hover text for the caption (the full rule behind it). */ captionTitle?: string }) {
-  return (
-    <section aria-label="This week compared with last week" className={`${TILE} !px-2.5 !py-1.5`}>
-      <ul className="m-0 p-0">
-        {tiles.map(k => (
-          <li key={k.key} className={`list-none border-b border-[var(--border-primary)] py-1 last:border-b-0 ${k.n < MIN_N ? 'opacity-60' : ''}`}
-            title={`${k.sub}. ${k.n.toLocaleString()} ${k.unit} this week${k.nLastWeek != null ? `, ${k.nLastWeek.toLocaleString()} last week` : ''}${k.n < MIN_N ? '. Few measurements: treat with care.' : ''}`}>
-            <div className="grid grid-cols-[max-content_max-content_minmax(0,1fr)] items-baseline gap-x-1.5">
-              <span className="text-xs font-bold text-[var(--text-muted)]">{k.label}</span>
-              <span className="text-sm font-black tracking-tight">{k.value}</span>
-              <Delta k={k} />
-            </div>
-            {[(k.key === 'bunching' && !math?.bunching) || (k.key === 'late' && !math?.late) ? k.sub : null, math?.[k.key]].filter(Boolean).map(line => <div key={line} className="text-xs leading-4 text-[var(--text-dim)]">{line}</div>)}
-          </li>
-        ))}
-      </ul>
-      {caption && <p className="m-0 mt-1.5 text-xs leading-4 text-[var(--text-dim)]" title={captionTitle}>{caption}</p>}
-    </section>
   );
 }
 
@@ -219,8 +196,8 @@ function AlongRoute({ v3, dir, uncertain }: { v3: LiveV3; dir: number | null; un
   );
 }
 
-export default function LiveDashboardView({ v3, data, band, dir, uncertain, title, filters, toFull, lite = false, yesterday = null }: {
-  v3: LiveV3; data: DashboardBandData; band: DashboardBand; dir: number | null; uncertain: UncertainStart[]; note: string | null; title: string;
+export default function LiveDashboardView({ v3, data, band, dir, uncertain, filters, toFull, lite = false, yesterday = null }: {
+  v3: LiveV3; data: DashboardBandData; band: DashboardBand; dir: number | null; uncertain: UncertainStart[];
   /** The direction and time-of-day pills: they sit below the week figures, above the parts they change. */
   filters: ReactNode;
   toFull: (hash: string) => void;

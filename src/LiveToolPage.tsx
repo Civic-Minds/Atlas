@@ -3,10 +3,8 @@ import { createPortal } from 'react-dom';
 import { useParams } from 'react-router';
 import { FEATURES } from '../shared/config';
 
-import { minutesText } from '../shared/liveFormat';
-import { excludingWeeksText, leftOutReason } from '../shared/liveWording';
 import type { AgencySummary } from '../shared/liveAgency';
-import { weekDailyValues, type UncertainStart, type DashboardBand, type DashboardBandData, type LiveV3 } from '../shared/liveDashboard';
+import { NOISE_RULE, weekDailyValues, type UncertainStart, type DashboardBand, type DashboardBandData, type LiveV3 } from '../shared/liveDashboard';
 import { useLiveDashboard } from './hooks/useLiveDashboard';
 import { useMediaQuery } from './hooks/useMediaQuery';
 import { useLiveAgency } from './LiveAgencyPage';
@@ -15,7 +13,7 @@ import { applySeoToDocument } from './lib/seoDom';
 import { syncUrlParams } from './utils/syncUrlParams';
 import { stretchLabel } from './utils/stopLabel';
 import { agencyKpiTiles } from './utils/liveAgencyKpi';
-import { kpiTiles, leftOutDates, type Kpi } from './utils/liveKpi';
+import { excludingDays, kpiTiles } from './utils/liveKpi';
 import LiveOffNotice from './components/LiveOffNotice';
 import AtlasLogo from './components/AtlasLogo';
 import RouteMap, { type MapPick } from './components/Live/RouteMap';
@@ -23,7 +21,7 @@ import { directionStopsById } from './components/Live/DirectionStrip';
 import { DELAY_STARTS_LABEL, MAP_STEP_LIMITS, MEASURES, measureLabel, routeMapModel, type MapMeasure, type MapSegment, type RouteMapModel } from './components/Live/routeMapModel';
 import { delayHeatPoints } from './components/Live/delayHeatModel';
 import { stopCardGroups, type CardGroup } from './components/Live/stopCardModel';
-import { STEP_LABELS, stopDetail, type RouteStripStop } from './components/Live/routeStripModel';
+import { STEP_LABELS, stepColor, type RouteStripStop, type Step } from './components/Live/routeStripModel';
 import Widget from './components/Live/tool/Widget';
 import WidgetPanel, { type PanelWidget } from './components/Live/tool/WidgetPanel';
 import OverviewList from './components/Live/tool/OverviewList';
@@ -34,16 +32,13 @@ import { worstStopRows } from './components/Live/sections/WorstStopsSection';
 import RunTimeWidget from './components/Live/tool/RunTimeWidget';
 import useNetworkData, { type ReadyRoute } from './components/Live/tool/useNetworkData';
 import { WeekTable } from './LiveDashboardView';
-import { NOISE_RULE } from '../shared/liveDashboard';
-import { BANDS } from './LiveExplorePage';
+import { BANDS, mins, pct } from './components/Live/sections/figures';
 import { PILL_ROW } from './components/ui/PillGroup';
 import Pill from './components/ui/Pill';
 import LegendItem from './components/ui/LegendItem';
 import { MAP_BADGE, MAP_BADGE_LABEL, PHONE_TAP_AREA } from './styles';
 import { DataUpTo, withNiceNames } from './LiveRoutePage';
 
-const pct = (x: number) => `${Math.round(x * 100)}%`;
-const mins = (x: number) => `${x > 0 ? '+' : ''}${Math.round(x * 10) / 10} min`.replace('-', '−');
 const readParam = (key: string) => new URLSearchParams(window.location.search).get(key);
 
 /** The three step labels of a measure's key: the bunching key the strips already use, and the same shape for the others. */
@@ -54,7 +49,6 @@ function stepLabels(measure: MapMeasure): [string, string, string] {
   const m = (x: number) => `${x} min`;
   return [`Under ${m(a)}`, `${a}–${m(b)}`, `${m(b)} or more`];
 }
-const STEP_VAR = (measure: MapMeasure, step: number) => `var(--strip-${measure === 'bunching' ? 'bunching' : 'delay'}-${step})`;
 
 /** Delay starts' definition, after its name in the key (Ryan, 2026-10-26, word for word). */
 const DELAY_STARTS_NOTE = 'delay added that lasts 3+ stops';
@@ -117,7 +111,7 @@ function Key({ measure }: { measure: MapMeasure }) {
       {KEY_DEFINITION[measure] && <div className={`${MAP_BADGE} min-h-8 max-w-full py-1`}><span className={MAP_BADGE_LABEL}>{KEY_DEFINITION[measure]}</span></div>}
       <div className={`${MAP_BADGE} min-h-8 max-w-full flex-wrap gap-x-3 gap-y-1.5 py-1.5`} role="group" aria-label="Map colours">
         <span className="whitespace-nowrap text-xs font-bold leading-none text-[var(--text-secondary)]">{measureLabel(measure)}</span>
-        {labels.map((l, i) => <LegendItem key={l} kind="line" color={STEP_VAR(measure, i)}><span className={`${MAP_BADGE_LABEL} whitespace-nowrap`}>{l}</span></LegendItem>)}
+        {labels.map((l, i) => <LegendItem key={l} kind="line" color={stepColor(measure === 'bunching' ? 'bunching' : 'delay', i as Step)}><span className={`${MAP_BADGE_LABEL} whitespace-nowrap`}>{l}</span></LegendItem>)}
         <LegendItem kind="line" color="var(--strip-delay-0)" swatchClassName="opacity-45"><span className={`${MAP_BADGE_LABEL} whitespace-nowrap`}>Not measured</span></LegendItem>
       </div>
     </div>
@@ -177,9 +171,8 @@ const weekly = (v3: LiveV3) => (v3.weekly ? kpiTiles(v3.weekly, weekDailyValues(
 /** Under the left panel's tiles; the full rule is its hover text. */
 const NOISE_CAPTION = 'Grey = within normal day-to-day change';
 /** The network's summary, on the left with no route picked: the week's figures as one-line rows, (late departures by hour show for a picked route only). */
-function summaryWidgets(s: AgencySummary, band: DashboardBand): PanelWidget[] {
-  const thisLeft = s.weekly ? leftOutDates(s.weekly.thisWeek) : [], lastLeft = s.weekly ? leftOutDates(s.weekly.lastWeek) : [];
-  const weekLeft = { text: excludingWeeksText(thisLeft, lastLeft), title: leftOutReason([...lastLeft, ...thisLeft]) };
+function summaryWidgets(s: AgencySummary): PanelWidget[] {
+  const weekLeft = excludingDays(s.weekly);
   const tiles = agencyKpiTiles(s);
   return [
     ...(tiles.length ? [{ key: 'week', size: 'medium' as const, node: <WeekTable tiles={tiles} scope="All routes" caption={NOISE_CAPTION} captionTitle={NOISE_RULE} excluding={weekLeft.text} excludingTitle={weekLeft.title ?? undefined} /> }] : []),
@@ -196,8 +189,7 @@ function routeWidgets({ data, v3, dir, band, setPick, route }: {
   const hours = routeLateHours(v3);
   const hasRunTime = !!v3.runningTime?.bands[band]?.[String(dir)];
   const tiles = weekly(v3);
-  const thisLeft = v3.weekly ? leftOutDates(v3.weekly.thisWeek) : [], lastLeft = v3.weekly ? leftOutDates(v3.weekly.lastWeek) : [];
-  const weekLeft = { text: excludingWeeksText(thisLeft, lastLeft), title: leftOutReason([...lastLeft, ...thisLeft]) };
+  const weekLeft = excludingDays(v3.weekly);
   return [
     // The week's figures cover the whole route (both directions), while Run time and the stops follow the direction pills.
     ...(tiles.length ? [{ key: 'week', size: 'medium' as const, node: <WeekTable tiles={tiles} scope={`${route} · ${BOTH_DIRECTIONS}`} caption={NOISE_CAPTION} captionTitle={NOISE_RULE} excluding={weekLeft.text} excludingTitle={weekLeft.title ?? undefined} /> }] : []),
@@ -219,8 +211,8 @@ function LoadingWidget() {
 }
 
 /** The whole screen under the top bar: the map always, the overview on the left, the widgets on the right. */
-function Body({ agency, pickSlot, s, route, setRoute, dir, setDir, dirSlot, routeSlot, dataSlot, band, measure, setMeasure, pick, setPick }: {
-  agency: string; pickSlot: HTMLElement | null; dirSlot: HTMLElement | null; routeSlot: HTMLElement | null; dataSlot: HTMLElement | null; s: AgencySummary; route: string | null; setRoute: (r: string | null) => void; dir: number | null; setDir: (d: number | null) => void; band: DashboardBand; measure: MapMeasure; setMeasure: (m: MapMeasure) => void; pick: MapPick | null; setPick: (p: MapPick | null) => void;
+function Body({ agency, pickSlot, s, route, setRoute, dir, setDir, dirSlot, dataSlot, band, measure, setMeasure, pick, setPick }: {
+  agency: string; pickSlot: HTMLElement | null; dirSlot: HTMLElement | null; dataSlot: HTMLElement | null; s: AgencySummary; route: string | null; setRoute: (r: string | null) => void; dir: number | null; setDir: (d: number | null) => void; band: DashboardBand; measure: MapMeasure; setMeasure: (m: MapMeasure) => void; pick: MapPick | null; setPick: (p: MapPick | null) => void;
 }) {
   const wide = useMediaQuery('(min-width: 1024px)');
   // On a phone the map sits above the widgets: a stop or stretch picked lower down (a "Stops most often late" row)
@@ -268,7 +260,7 @@ function Body({ agency, pickSlot, s, route, setRoute, dir, setDir, dirSlot, rout
     ? pick?.kind === 'segment' ? <MapCard title={stretchLabel(stops.get(pick.fromStopId)?.name ?? pick.fromStopId, stops.get(pick.toStopId)?.name ?? pick.toStopId)} lines={[...(measure === 'delayStarts' ? keptLine(v3, band, shown, pick.toStopId, pick.fromStopId, uncertain) : []), ...segmentLines(bandData, shown, pick.fromStopId, pick.toStopId)]} />
       : picked ? <MapCard title={picked.name} groups={stopLines(v3, band, shown, picked, measure, uncertain)} /> : null
     : null;
-  const summary = useMemo(() => summaryWidgets(s, band), [s, band]);
+  const summary = useMemo(() => summaryWidgets(s), [s]);
   const backToNetwork = () => { setRoute(null); setDir(null); setPick(null); };
   // One panel, on the left: the network's overview with no route picked; the route's own figures once one is picked, with a way back.
   const back: PanelWidget = { key: 'back', size: 'medium', node: <button type="button" onClick={backToNetwork} className="-my-[13px] py-[13px] pr-4 text-left text-sm font-bold text-[var(--text-primary)] hover:underline">← {agency.toUpperCase()}</button> };
@@ -359,7 +351,6 @@ export default function LiveToolPage() {
   const [band, setBand] = useState<DashboardBand>(() => { const b = readParam('band'); return BANDS.some(([k]) => k === b) ? (b as DashboardBand) : 'all'; });
   const [measure, setMeasure] = useState<MapMeasure>(() => { const m = readParam('measure'); return MEASURES.some(([k]) => k === m) || m === 'delayStarts' ? (m as MapMeasure) : 'late'; });
   const [dirSlot, setDirSlot] = useState<HTMLElement | null>(null);
-  const [routeSlot, setRouteSlot] = useState<HTMLElement | null>(null);
   const [dataSlot, setDataSlot] = useState<HTMLElement | null>(null);
   const [pickSlot, setPickSlot] = useState<HTMLElement | null>(null);
   const [pick, setPick] = useState<MapPick | null>(() => {
@@ -387,13 +378,12 @@ export default function LiveToolPage() {
       <header className={`${PILL_ROW} border-b border-[var(--border-primary)] bg-[var(--bg-header)] px-4 py-2 max-sm:gap-y-[20px] max-sm:pb-[10px]`}>
         <AtlasLogo href="/" ariaLabel="Atlas by Civic Minds" showMark={false} />
         <button type="button" onClick={() => { setRoute(null); setDir(null); setPick(null); }} className="text-sm font-bold hover:underline">{agency.toUpperCase()}</button>
-        <div ref={setRouteSlot} className="contents" />
         <div ref={setDirSlot} className="contents" />
         <div ref={setDataSlot} className="contents" />
         {/* Time of day at the right end of the top bar (Ryan, 2026-10-26). */}
         <div className="ml-auto flex items-center gap-2"><div ref={setPickSlot} className="contents" /><PeriodMenu band={band} setBand={setBand} /></div>
       </header>
-      <Body agency={agency} pickSlot={pickSlot} dirSlot={dirSlot} routeSlot={routeSlot} dataSlot={dataSlot} s={s} route={route} setRoute={setRoute} dir={dir} setDir={setDir} band={band} measure={measure} setMeasure={setMeasure} pick={pick} setPick={setPick} />
+      <Body agency={agency} pickSlot={pickSlot} dirSlot={dirSlot} dataSlot={dataSlot} s={s} route={route} setRoute={setRoute} dir={dir} setDir={setDir} band={band} measure={measure} setMeasure={setMeasure} pick={pick} setPick={setPick} />
     </>,
   );
 }

@@ -2,15 +2,12 @@
  * The Live route list's numbers (CIV-991): each route's figure for the chosen measure, the order the list and the top
  * bar's route menu show, and each row's bar. OverviewList draws them.
  */
-import { minutesText } from '../../../shared/liveFormat';
+import { minutesText, pct, signedPct } from '../../../shared/liveFormat';
 import { runTimeDiffText } from '../../../shared/liveWording';
 import type { AgencyRouteRow, AgencySummary } from '../../../shared/liveAgency';
 import type { DashboardBand, LiveV3 } from '../../../shared/liveDashboard';
 import { mapStep, type MapMeasure } from './routeMapModel';
 import { delayHeatPoints } from './delayHeatModel';
-
-const pct = (x: number) => `${Math.round(x * 100)}%`;
-const signed = (x: number) => `${x > 0 ? '+' : x < 0 ? '−' : ''}${Math.abs(Math.round(x * 100))}%`;
 
 /**
  * A route's figure for one time of day (#1150), on the same basis as its all-day figure: late departures at the
@@ -46,7 +43,7 @@ export function figure(r: AgencyRouteRow, v3: LiveV3 | undefined, measure: MapMe
   switch (measure) {
     case 'late': return r.lateShare == null ? null : { value: r.lateShare, text: pct(r.lateShare) };
     // Sorted by the minutes it shows (a share would put "4 min faster" above "8 min faster").
-    case 'runTime': return r.runTimeOver == null ? null : { value: r.runTimeDiffMin ?? r.runTimeOver, text: r.runTimeDiffMin != null ? runTimeDiffText(r.runTimeDiffMin, false) : signed(r.runTimeOver) };
+    case 'runTime': return r.runTimeOver == null ? null : { value: r.runTimeDiffMin ?? r.runTimeOver, text: r.runTimeDiffMin != null ? runTimeDiffText(r.runTimeDiffMin, false) : signedPct(r.runTimeOver) };
     case 'delayStarts': {
       // The route's stop where vehicles add the most, for the map's time of day (the heatmap prototype).
       const top = v3 ? Math.max(0, ...delayHeatPoints(new Map([[r.route, v3]]), band).map(p => p.addedMin)) : null;
