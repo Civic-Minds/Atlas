@@ -751,12 +751,15 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                     <p className="text-xs font-bold text-[var(--text-dim)] mt-0.5">{v.speedKmh} km/h</p>
                   )}
                 </div>
-                <span
-                  style={{ color: v.status === 'no_data' ? undefined : colors.border }}
-                  className={`text-xs font-black shrink-0 whitespace-nowrap ${v.status === 'no_data' ? 'text-[var(--text-muted)]' : ''}`}
-                >
-                  {delayLabel(v)}
-                </span>
+                {/* No status at all where the feed gives none (TTC streetcars), not an empty field (CIV-1043). */}
+                {delayLabel(v) && (
+                  <span
+                    style={{ color: v.status === 'no_data' ? undefined : colors.border }}
+                    className={`text-xs font-black shrink-0 whitespace-nowrap ${v.status === 'no_data' ? 'text-[var(--text-muted)]' : ''}`}
+                  >
+                    {delayLabel(v)}
+                  </span>
+                )}
               </ListRow>
             );
           })
@@ -826,14 +829,14 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                     name={vehicleRowName(v, i, modeWord)}
                     onClick={() => openVehicleCard(v)}
                     variant="spaced"
-                    right={
+                    right={delayLabel(v) ? (
                       <span
                         style={{ color: v.status === 'no_data' ? undefined : colors.border }}
                         className={`text-xs font-black shrink-0 whitespace-nowrap ml-3 ${v.status === 'no_data' ? 'text-[var(--text-muted)]' : ''}`}
                       >
                         {delayLabel(v)}
                       </span>
-                    }
+                    ) : undefined}
                   />
                 );
               })
