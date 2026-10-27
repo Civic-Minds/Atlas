@@ -15,6 +15,8 @@ import { PHONE_MEDIA_QUERY, useMediaQuery } from '../hooks/useMediaQuery';
 import { BOTTOM_SHEET_FRAME, BottomSheetHandle, bottomSheetBodyClass, useBottomSheet } from '../components/ui/BottomSheet';
 import ListRow from '../components/ui/ListRow';
 import Tag from '../components/ui/Tag';
+import { fetchLiveDashboard } from '../lib/liveDashboardFetch';
+import type { LiveV3 } from '../../shared/liveDashboard';
 import { streetJoin } from '../utils/stopLabel';
 import ArrowLink from '../components/ui/ArrowLink';
 import { AgencyList, AgencyListRow } from '../components/ui/AgencyList';
@@ -27,7 +29,7 @@ import { branchDisplayPeriodHeadway } from '../utils/routeFacts';
 import { periodKeyForHour } from '../../shared/config';
 import { countOf } from '../../shared/overflowText';
 import { inferLiveDirection, type LiveDirectionMatch } from '../utils/liveDirection';
-import { DIRECTION_UNCLEAR, compareLiveRoutes, focusDirectionKey, groupVehiclesByDirection, orderDirectionGroups, routeDirectionLabels, routeTripEnds } from '../utils/liveGrouping';
+import { DIRECTION_UNCLEAR, compareLiveRoutes, focusDirectionKey, groupVehiclesByDirection, orderDirectionGroups, destinationKind, routeDirectionLabels } from '../utils/liveGrouping';
 import { CardDirectionRow, CardHelpNotice, SidebarCardHeaderBlock, SidebarCardListRows, SidebarCardSection, SidebarCardShell, CARD_LIST_ROUTE, SIDEBAR_CARD_BODY } from '../components/Interval/cardUi';
 import { liveVehiclesFingerprint } from '../utils/liveVehiclesFingerprint';
 import { buildRouteKey, routeFeatureForShortName, routeKeyForShortName, splitRouteKey } from '../utils/routeKey';
@@ -512,11 +514,18 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
     return fc ? new Map([...routeDirectionLabels(fc.features, selectedGroup.routeShortName)].map(([d, l]) => [d, streetJoin(l)])) : new Map<number, string>();
   }, [selectedGroup, routeLayer]);
 
-  // Which destinations are short turns and which are branches, for the vehicle card (CIV-1043).
-  const tripEnds = useMemo(() => {
-    const fc = selectedGroup ? routeLayer(selectedGroup.agencySlug) : null;
-    return fc && selectedGroup ? routeTripEnds(fc.features, selectedGroup.routeShortName, streetJoin) : new Map<string, 'shortTurn' | 'branch'>();
-  }, [selectedGroup, routeLayer]);
+  // The open route's Live analysis patterns (main, branch, short turn), so the vehicle card can tag a short turn and
+  // tell it from a branch (CIV-1043). Loaded only while a route card is open; the file is cached (liveDashboardFetch).
+  const [routePatterns, setRoutePatterns] = useState<{ route: string; patterns: NonNullable<NonNullable<LiveV3['runningTime']>['patterns']> } | null>(null);
+  useEffect(() => {
+    if (!selectedGroup) return;
+    const route = buildRouteKey(selectedGroup.agencySlug, selectedGroup.routeShortName);
+    let live = true;
+    fetchLiveDashboard(selectedGroup.agencySlug, selectedGroup.routeShortName)
+      .then(d => { if (live && d.status === 'ready' && d.v3.runningTime?.patterns) setRoutePatterns({ route, patterns: d.v3.runningTime.patterns }); })
+      .catch(() => {});
+    return () => { live = false; };
+  }, [selectedGroup?.agencySlug, selectedGroup?.routeShortName]);
 
   // Direction drill-down within a route
   const [selectedDirection, setSelectedDirection] = useState<string | null>(null);
@@ -663,6 +672,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
   const hasLiveElsewhere = offScreenOnly && !query;
   const fade = selectionActive ? 'opacity-0 pointer-events-none' : 'opacity-100 pointer-events-auto';
 
+  const cardDirectionLabel = cardVehicle?.directionId != null ? directionLabels.get(cardVehicle.directionId) : undefined;
   const cardBody = selectedGroup && cardVehicle ? (
     <SidebarCardShell>
       <SidebarCardHeaderBlock>
@@ -681,7 +691,8 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
         />
       </SidebarCardHeaderBlock>
       <SidebarCardSection label={vehicleCardName(cardVehicle, selectedRouteModeWord) ?? selectedRouteModeWord}>
-        {vehicleCardRows(cardVehicle, cardVehicle.directionId != null ? directionLabels.get(cardVehicle.directionId) : null, tripEnds.get(`${cardVehicle.directionId}|${cardVehicle.headsign}`)).map(row => (
+        {vehicleCardRows(cardVehicle, cardDirectionLabel, cardVehicle.headsign && cardVehicle.headsign !== cardDirectionLabel && routePatterns?.route === selectedRoute
+          ? destinationKind(routePatterns.patterns, cardVehicle.headsign) ?? undefined : undefined).map(row => (
           <div key={row.label} className="flex items-start justify-between gap-3">
             <span className="text-xs font-bold text-[var(--text-dim)] shrink-0 whitespace-nowrap">{row.label}</span>
             <span
