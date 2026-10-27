@@ -1,5 +1,5 @@
 import React from 'react';
-import { APP_TAB_ACTIVE, APP_TAB_INACTIVE } from '../styles';
+import { APP_TAB_ACTIVE, APP_TAB_INACTIVE, TOP_BAR_TAB_INACTIVE } from '../styles';
 import { ModeTabLabel, modeTabSpacing, modeTabCollapsed, useModeTabsCollapseOthers, NARROW_TOP_BAR_QUERY, COMPACT_TOP_BAR_QUERY } from './ModeTabLabel';
 import { useMediaQuery } from '../hooks/useMediaQuery';
 
@@ -41,7 +41,8 @@ export default function ModeTab({
 }) {
   // Shrinks to its icon while a non-map view is on, or on a narrow top bar, and this tab is not the selected one; on a compact top bar the selected one shrinks too.
   const collapsed = modeTabCollapsed(true, useModeTabsCollapseOthers(), active, useMediaQuery(NARROW_TOP_BAR_QUERY), useMediaQuery(COMPACT_TOP_BAR_QUERY));
-  const state = active ? APP_TAB_ACTIVE : APP_TAB_INACTIVE;
+  // On the bar an unselected tab takes the top bar's outline (CIV-1020); the phone menu's items sit in a panel and keep the panel border.
+  const state = active ? APP_TAB_ACTIVE : variant === 'menu' ? APP_TAB_INACTIVE : TOP_BAR_TAB_INACTIVE;
   const extraEl = extra != null && extra !== '' ? <span className="font-normal text-[var(--text-dim)]">{extra}</span> : null;
   if (variant === 'menu-trigger') {
     return (

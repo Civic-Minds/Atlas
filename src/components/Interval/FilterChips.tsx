@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { Search } from 'lucide-react';
 import { HEADWAY_TIERS, getTierColor } from '../../utils/colors';
-import { FLOATING_CARD, GLASS_PILL, PILL_SURFACE, PANEL_ENTER_TOP, CONTROL_ACTIVE, CONTROL_ACTIVE_GLASS, CONTROL_INACTIVE, SEARCH_PILL, SEARCH_ICON, SEARCH_FIELD, CARD_SECTION } from '../../styles';
+import { FLOATING_CARD, GLASS_PILL, PILL_SURFACE, PANEL_ENTER_TOP, CONTROL_ACTIVE, CONTROL_ACTIVE_GLASS, CONTROL_INACTIVE, SEARCH_PILL, SEARCH_ICON, SEARCH_FIELD, CARD_SECTION, TOP_BAR_OUTLINE } from '../../styles';
 import Pill from '../ui/Pill';
 import PillGroup from '../ui/PillGroup';
 import ActiveDot from '../ui/ActiveDot';
@@ -291,7 +291,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
     `relative h-8 px-3.5 flex items-center justify-center ${GLASS_PILL} border text-xs font-bold transition-colors whitespace-nowrap ${
       active
         ? CONTROL_ACTIVE_GLASS
-        : 'bg-[var(--bg-panel)] border-[var(--border-primary)] text-[var(--text-primary)] hover:text-[var(--accent)]'
+        : `bg-[var(--bg-panel)] ${TOP_BAR_OUTLINE} text-[var(--text-primary)] hover:text-[var(--accent)]`
     }`;
 
   const Dot = ({ show }: { show: boolean }) =>
