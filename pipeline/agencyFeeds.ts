@@ -65,6 +65,8 @@ export interface AgencyProcessOverrides {
   referenceDate?: string;
   /** History backfills: keep the old reference-date picker (the new one, stage 4, reads the week from the run date). */
   legacyReferenceDate?: boolean;
+  /** When Atlas first obtained the main feed's file (YYYYMMDD), for the listing-end safeguard. */
+  fileDate?: string | null;
 }
 
 export interface SupplementalFeed {
@@ -109,6 +111,7 @@ export function agencyProcessOptions(agency: AgencyFeedConfig, overrides: Agency
     // Stage 4 of the reference-date plan (CIV-1011): the live map reads the week from the run date
     // (pickRiderWeek). ATLAS_LEGACY_REFERENCE_DATE=1 is the kill switch back to the old picker.
     ...(overrides.legacyReferenceDate || process.env.ATLAS_LEGACY_REFERENCE_DATE === '1' ? {} : { riderWeek: true }),
+    ...(overrides.fileDate ? { fileDate: overrides.fileDate } : {}),
   };
 }
 

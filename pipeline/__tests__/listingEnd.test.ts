@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { parseCsv } from '../parseGtfs.js';
-import { findListingEnd, pickRiderWeek } from '../serviceDays.js';
+import { feedVersionDate, findListingEnd, pickRiderWeek } from '../serviceDays.js';
 import type { GtfsCalendar, GtfsCalendarDate } from '../../types/gtfs.js';
 
 // CIV-1011 stage 4 (Ryan and the manager, 2026-10-27): the map reads the week from the run date; when
@@ -25,16 +25,18 @@ function dates(from: string, to: string, dows = [1, 2, 3, 4, 5]): string[] {
   return out;
 }
 const ANCHOR = '20261028';
+/** A file obtained in early summer, older than every listing end below. */
+const FILE = '20260601';
 
 describe('findListingEnd (CIV-1011 safeguard)', () => {
   it('Dutchess: the main rows end Oct 28 while a few trips run on to a placeholder year', () => {
     const calendar = [cal('MAIN', 'mo,tu,we,th,fr', '20260801', '20261028'), cal('SAT', 'sa', '20260801', '20261024'), cal('REST', 'mo,tu,we,th,fr', '20260801', '20351231')];
     const trips = [...tripsOf('MAIN', 'A', 40), ...tripsOf('MAIN', 'C', 30), ...tripsOf('SAT', 'A', 20), ...tripsOf('REST', 'C', 8)];
-    const end = findListingEnd({ calendar, calendarDates: [], trips, anchor: ANCHOR });
+    const end = findListingEnd({ calendar, calendarDates: [], trips, anchor: ANCHOR, fileDate: FILE });
     expect(end?.date).toBe('20261028');
     expect(end!.tripShare).toBeGreaterThan(0.8);
     // The map keeps the last full listed week, with the main rows.
-    const week = pickRiderWeek({ calendar, calendarDates: [], trips, anchor: ANCHOR });
+    const week = pickRiderWeek({ calendar, calendarDates: [], trips, anchor: ANCHOR, fileDate: FILE });
     expect(week.listingEnd?.date).toBe('20261028');
     expect(week.week.services.Monday).toEqual(['MAIN', 'REST']);
     expect(week.week.services.Saturday).toEqual(['SAT']);
@@ -43,7 +45,7 @@ describe('findListingEnd (CIV-1011 safeguard)', () => {
   it('Blacksburg: a calendar_dates-only feed whose semester services are listed only to Oct 30', () => {
     const calendarDates = [...dates('20260801', '20261030').map(d => added('SEM', d)), ...dates('20260801', '20261230').map(d => added('BLU', d))];
     const trips = [...tripsOf('SEM', 'HWA', 60), ...tripsOf('SEM', 'CRC', 40), ...tripsOf('BLU', 'BLU', 3)];
-    expect(findListingEnd({ calendar: [], calendarDates, trips, anchor: ANCHOR })?.date).toBe('20261030');
+    expect(findListingEnd({ calendar: [], calendarDates, trips, anchor: ANCHOR, fileDate: FILE })?.date).toBe('20261030');
   });
 
   it('SLO Transit: weekday services stop Aug 14 and come back only for the file\'s last 19 days', () => {
@@ -52,7 +54,7 @@ describe('findListingEnd (CIV-1011 safeguard)', () => {
       ...dates('20260101', '20270101', [4]).map(d => added('TROLLEY', d)),
     ];
     const trips = [...tripsOf('WK', '1A', 60), ...tripsOf('WK', '2A', 52), ...tripsOf('TROLLEY', 'Old SLO Trolley', 8)];
-    const end = findListingEnd({ calendar: [], calendarDates, trips, anchor: ANCHOR });
+    const end = findListingEnd({ calendar: [], calendarDates, trips, anchor: ANCHOR, fileDate: FILE });
     expect(end?.date).toBe('20260814');
     expect(end?.endedRoutes).toEqual(['1A', '2A']);
   });
@@ -60,7 +62,7 @@ describe('findListingEnd (CIV-1011 safeguard)', () => {
   it('is not tripped by a new timetable under new service ids (VTA, Oct 26)', () => {
     const calendar = [cal('OLD', 'mo,tu,we,th,fr', '20260801', '20261023'), cal('NEW', 'mo,tu,we,th,fr', '20261026', '20261231')];
     const trips = [...tripsOf('OLD', '22', 50), ...tripsOf('NEW', '22', 48)];
-    expect(findListingEnd({ calendar, calendarDates: [], trips, anchor: ANCHOR })).toBeNull();
+    expect(findListingEnd({ calendar, calendarDates: [], trips, anchor: ANCHOR, fileDate: FILE })).toBeNull();
   });
 
   it('is not tripped when a service already running takes over (Pierce Transit, Sep 28)', () => {
@@ -68,27 +70,48 @@ describe('findListingEnd (CIV-1011 safeguard)', () => {
     const calendarDates: GtfsCalendarDate[] = [];
     const trips = [...tripsOf('A', '1', 100), ...tripsOf('B', '1', 100), ...tripsOf('B2', '1', 100)];
     // B2 is a new id here; the same holds when B's own row simply widens, which the total check reads.
-    expect(findListingEnd({ calendar, calendarDates, trips, anchor: ANCHOR })).toBeNull();
+    expect(findListingEnd({ calendar, calendarDates, trips, anchor: ANCHOR, fileDate: FILE })).toBeNull();
   });
 
   it('is not tripped by a break the service returns from for a term', () => {
     const calendarDates = [...dates('20260801', '20261016').map(d => added('SEM', d)), ...dates('20261130', '20270430').map(d => added('SEM', d)), ...dates('20260801', '20270430').map(d => added('BASE', d))];
     const trips = [...tripsOf('SEM', 'HWA', 60), ...tripsOf('BASE', 'BLU', 5)];
-    expect(findListingEnd({ calendar: [], calendarDates, trips, anchor: ANCHOR })).toBeNull();
+    expect(findListingEnd({ calendar: [], calendarDates, trips, anchor: ANCHOR, fileDate: FILE })).toBeNull();
   });
 
   it('is not tripped when the whole file runs out (the "timetable ended" notice covers it)', () => {
     const calendar = [cal('MAIN', 'mo,tu,we,th,fr', '20260801', '20261030'), cal('WE', 'sa,su', '20260801', '20261101')];
     const trips = [...tripsOf('MAIN', 'A', 50), ...tripsOf('WE', 'A', 20)];
-    expect(findListingEnd({ calendar, calendarDates: [], trips, anchor: ANCHOR })).toBeNull();
+    expect(findListingEnd({ calendar, calendarDates: [], trips, anchor: ANCHOR, fileDate: FILE })).toBeNull();
     // An expired file: nothing runs from the anchor on.
-    expect(findListingEnd({ calendar: [cal('MAIN', 'mo,tu,we,th,fr', '20260101', '20260930')], calendarDates: [], trips: tripsOf('MAIN', 'A', 50), anchor: ANCHOR })).toBeNull();
+    expect(findListingEnd({ calendar: [cal('MAIN', 'mo,tu,we,th,fr', '20260101', '20260930')], calendarDates: [], trips: tripsOf('MAIN', 'A', 50), anchor: ANCHOR, fileDate: FILE })).toBeNull();
+  });
+
+  it('is not tripped when the file is newer than the end (the agency dropped the routes) or its date is unknown', () => {
+    const calendar = [cal('MAIN', 'mo,tu,we,th,fr', '20260801', '20261028'), cal('REST', 'mo,tu,we,th,fr', '20260801', '20351231')];
+    const trips = [...tripsOf('MAIN', 'A', 40), ...tripsOf('REST', 'C', 8)];
+    expect(findListingEnd({ calendar, calendarDates: [], trips, anchor: ANCHOR, fileDate: '20261028' })?.date).toBe('20261028');
+    expect(findListingEnd({ calendar, calendarDates: [], trips, anchor: ANCHOR, fileDate: '20261029' })).toBeNull();
+    expect(findListingEnd({ calendar, calendarDates: [], trips, anchor: ANCHOR })).toBeNull();
+  });
+
+  it('is not tripped when the routes come back later in the file (a seasonal pause)', () => {
+    const calendarDates = [...dates('20260601', '20261019', [0, 1, 2, 3, 4, 5, 6]).map(d => added('SUMMER', d)), ...dates('20261126', '20270405', [0, 1, 2, 3, 4, 5, 6]).map(d => added('SUMMER', d)), ...dates('20260601', '20270405').map(d => added('DAR', d))];
+    const trips = [...tripsOf('SUMMER', 'Galloping Goose', 40), ...tripsOf('DAR', 'Dial-A-Ride', 1)];
+    expect(findListingEnd({ calendar: [], calendarDates, trips, anchor: ANCHOR, fileDate: FILE })).toBeNull();
+  });
+
+  it('reads a feed_version that is a date', () => {
+    expect(feedVersionDate('2026-03-27T18:13:21Z')).toBe('20260327');
+    expect(feedVersionDate('UTC: 02-Jun-2026 18:30')).toBe('20260602');
+    expect(feedVersionDate('20250617')).toBe('20250617');
+    for (const v of ['124', 'FY27 Blacksburg 1.8A', '1', '', null]) expect(feedVersionDate(v)).toBeNull();
   });
 
   it('is not tripped by a few discontinued school expresses (Marathon County X1-X9, 2025)', () => {
     const calendar = [cal('REG', 'mo,tu,we,th,fr', '20250101', '20261231'), cal('X', 'mo,tu,we,th,fr', '20250101', '20250604')];
     const trips = [...tripsOf('REG', 'B', 60), ...tripsOf('X', 'X1', 4), ...tripsOf('X', 'X2', 4)];
-    expect(findListingEnd({ calendar, calendarDates: [], trips, anchor: ANCHOR })).toBeNull();
+    expect(findListingEnd({ calendar, calendarDates: [], trips, anchor: ANCHOR, fileDate: FILE })).toBeNull();
   });
 });
 

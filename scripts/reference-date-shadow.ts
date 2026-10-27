@@ -27,7 +27,7 @@ import JSZip from 'jszip';
 import { parseCsv, synthesizeCalendarFromDates } from '../pipeline/parseGtfs.js';
 import { detectReferenceDate, getActiveServiceIds } from '../pipeline/transit-calendar.js';
 import { calendarFromNextServiceDates } from '../pipeline/serviceDates.js';
-import { buildServiceDayTable, pickRiderWeek, serviceAnchor, splitServicePeriods, DAY_NAMES, type DayName } from '../pipeline/serviceDays.js';
+import { buildServiceDayTable, feedVersionDate, pickRiderWeek, serviceAnchor, splitServicePeriods, DAY_NAMES, type DayName } from '../pipeline/serviceDays.js';
 import { filterGtfsByAgencyId, filterGtfsByAgencyName, filterGtfsByExcludedShortNames, filterGtfsByExcludedTripHeadsigns } from '../pipeline/filterGtfs.js';
 import { mergeLetterSuffixBranches } from '../pipeline/transforms/letter-suffix-branches.js';
 import { resolveAgencyCountry } from '../pipeline/countryLaunchGate.js';
@@ -94,13 +94,14 @@ async function readFeed(path: string): Promise<Rows> {
   const trips = await read<any>('trips.txt');
   const rawCalendar = await read<GtfsCalendar>('calendar.txt');
   const calendarDates = await read<GtfsCalendarDate>('calendar_dates.txt');
+  const feedInfo = await read<{ feed_version?: string }>('feed_info.txt');
   if (agenciesRows.length === 1) for (const r of routes) if (!r.agency_id && agenciesRows[0].agency_id) r.agency_id = agenciesRows[0].agency_id;
   const gtfs = {
     agencies: agenciesRows.length ? agenciesRows : [{ agency_name: 'Unknown Agency' }],
     routes, trips, calendar: rawCalendar, calendarDates,
     stops: [], stopTimes: [], shapes: [], frequencies: [],
   } as unknown as GtfsData;
-  return { gtfs, rawCalendar };
+  return { gtfs, rawCalendar, feedInfo };
 }
 
 /** The route filters normalizeGtfs applies that change which trips and services exist (preprocess transforms are not reproduced). */
@@ -156,7 +157,7 @@ function tripsByRoute(gtfs: GtfsData, services: readonly string[], label: (id: s
 }
 
 async function compareFeed(path: string, feedLabel: string, agency: Agency, feedUrl: string | null | undefined): Promise<FeedResult> {
-  const { gtfs: raw, rawCalendar } = await readFeed(path);
+  const { gtfs: raw, rawCalendar, feedInfo } = await readFeed(path);
   const m = new RealDate(statSync(path).mtimeMs);
   const fileDate = `${m.getFullYear()}${String(m.getMonth() + 1).padStart(2, '0')}${String(m.getDate()).padStart(2, '0')}`;
   const result: FeedResult = { feed: feedLabel, file: path, fileDate, old: { error: 'not run' }, new: { error: 'not run' } };
@@ -193,7 +194,11 @@ async function compareFeed(path: string, feedLabel: string, agency: Agency, feed
   try {
     const own = { ...oldGtfs, calendar: filtered({ ...raw, calendar: rawCalendar }, agency).calendar ?? [] };
     // The same pick process-core makes (stage 4), including the listing-end safeguard.
-    const rider = pickRiderWeek({ calendar: own.calendar ?? [], calendarDates: own.calendarDates ?? [], trips: own.trips ?? [], routes: own.routes ?? [], anchor: serviceAnchor(RUN_DATE) });
+    // The safeguard's file date, as process-core reads it: a date-like feed_version, or Atlas's first
+    // copy (the record's feedObtainedAt, else its last refresh), whichever is earlier.
+    const fileDate = [feedVersionDate(feedInfo[0]?.feed_version), agency.feedObtainedAt ?? agency.lastRefreshedAt?.replace(/-/g, '')]
+      .filter((d): d is string => !!d && /^\d{8}$/.test(d)).sort()[0] ?? null;
+    const rider = pickRiderWeek({ calendar: own.calendar ?? [], calendarDates: own.calendarDates ?? [], trips: own.trips ?? [], routes: own.routes ?? [], anchor: serviceAnchor(RUN_DATE), fileDate });
     const table = buildServiceDayTable({ calendar: own.calendar ?? [], calendarDates: own.calendarDates ?? [], trips: own.trips ?? [], anchor: rider.anchor });
     const week = rider.week;
     const split = splitServicePeriods(table);
@@ -206,7 +211,7 @@ async function compareFeed(path: string, feedLabel: string, agency: Agency, feed
     result.new = {
       source: table.source, window: table.window, weekStart: week.weekStart, dates: week.dates, substituted: week.substituted,
       period: week.period, services: week.services, skipped: week.skipped, periodChanges: changes,
-      ...(rider.listingEnd ? { listingEnd: rider.listingEnd } : {}),
+      ...(rider.listingEnd ? { listingEnd: { ...rider.listingEnd, fileDate } } : {}),
     };
   } catch (error) {
     result.new = { error: error instanceof Error ? error.message : String(error) };

@@ -311,6 +311,8 @@ interface AgencyEntry {
   heldFeedStart?: string | null;
   /** CIV-1011 stage 4: the picked week's key at the last refresh (serviceWeekKey). */
   lastServiceWeek?: string | null;
+  /** When Atlas first obtained the current main feed file (YYYYMMDD). */
+  feedObtainedAt?: string | null;
   expiredFeedCheckCount?: number;
   expiredFeedCheckSince?: string | null;
   expiredFeedCheckExpiry?: string | null;
@@ -511,6 +513,10 @@ async function refreshAgency(
     return { summary: `skipped (older feed: ${peekedExpiry ?? 'unknown'})` };
   }
 
+  // CIV-1011 safeguard: when Atlas first obtained this file. A new version or expiry is obtained
+  // today; an unchanged one keeps its recorded date (older records: the last refresh that processed it).
+  const newFile = (peekedVersion ?? null) !== (agency.lastFeedVersion ?? null) || (peekedExpiry ?? null) !== (agency.lastPeekedExpiry ?? agency.lastFeedExpiry ?? null);
+  const feedObtainedAt = newFile ? today : agency.feedObtainedAt ?? agency.lastRefreshedAt?.replace(/-/g, '') ?? null;
   // CIV-1011 stage 4: the week the map reads moves with the run date, so an unchanged zip whose
   // picked week moved is reprocessed (the old picker's kill switch leaves the check as it was).
   const serviceWeek = process.env.ATLAS_LEGACY_REFERENCE_DATE === '1' ? null : await serviceWeekKey(buf);
@@ -577,6 +583,7 @@ async function refreshAgency(
     // primary feed; supplemental feeds always reprocess.
     primary = await processAgencyFeeds(buf, supplementalFeeds, agency, {
       manualBaseFare: manualBaseFareOverride,
+      fileDate: feedObtainedAt,
       // Soft: skip this agency rather than aborting the whole weekly refresh.
       // process CLI fails hard unless --force.
       force: false,
@@ -691,6 +698,7 @@ async function refreshAgency(
       calendarOnlyEnd,
       listingEnd: primary.listingEnd,
       serviceWeek,
+      feedObtainedAt,
     });
     stampSupplementalFeedMeta(agency, supplementalMeta);
   }

@@ -627,7 +627,10 @@ export function pickServiceWeek(table: ServiceDayTable): ServiceWeek {
  * services that stopped on or before D carried more than LISTING_END_TRIP_SHARE of all trips in the 7
  * days ending D (the last full listed week), and other services bring back under
  * REPLACEMENT_TRIP_SHARE of those trips, both in the week after D and in the anchor week (a new
- * timetable, a renumbered board or a service already running that takes over replaces them). Any age counts (the manager,
+ * timetable, a renumbered board or a service already running that takes over replaces them), and the
+ * file is no newer than D (fileDate; the manager 2026-10-27: an agency that publishes a file after the
+ * routes stopped dropped them on purpose). Routes listed again later in the file (a seasonal pause)
+ * are not stopped. Any age counts (the manager,
  * 2026-10-27): trips, not route counts, keep a few discontinued school expresses (Marathon County
  * X1-X9) from tripping it. A whole file that runs out (the rest of the service stops within
  * CONTINUING_DAYS of D, or nothing runs from the anchor on) keeps the "timetable ended" notice instead.
@@ -700,8 +703,33 @@ function serviceCalendar(calendar: readonly GtfsCalendar[], calendarDates: reado
 export type ListingRoutes = ReadonlyArray<{ route_id: string; route_short_name?: string; route_long_name?: string }>;
 
 /** The safeguard's listing end for a feed at an anchor, or null (see LISTING_END_TRIP_SHARE). */
+/**
+ * A feed_version that is a date (SLO "2026-03-27T18:13:21Z", Trillium "UTC: 02-Jun-2026 18:30",
+ * Connexionz "20250617") as YYYYMMDD, or null when it is not one ("124", "FY27 Blacksburg 1.8A", "1").
+ */
+export function feedVersionDate(version: string | null | undefined): string | null {
+  const v = (version ?? '').trim();
+  const months = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'];
+  let m = v.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (m) return `${m[1]}${m[2]}${m[3]}`;
+  m = v.match(/(\d{1,2})-([A-Za-z]{3})-(\d{4})/);
+  if (m && months.includes(m[2].toLowerCase())) return `${m[3]}${String(months.indexOf(m[2].toLowerCase()) + 1).padStart(2, '0')}${m[1].padStart(2, '0')}`;
+  m = v.match(/^(20\d{2})(0[1-9]|1[0-2])(0[1-9]|[12]\d|3[01])$/);
+  if (m) return v;
+  return null;
+}
+
 export function findListingEnd(
-  input: Pick<ServiceDayTableInput, 'calendar' | 'calendarDates' | 'trips' | 'anchor'> & { routes?: ListingRoutes },
+  input: Pick<ServiceDayTableInput, 'calendar' | 'calendarDates' | 'trips' | 'anchor'> & {
+    routes?: ListingRoutes;
+    /**
+     * When the file was published or first obtained (YYYYMMDD): the earliest of a date-like
+     * feed_version and Atlas's first copy (archive upload). The safeguard trips only for a file older
+     * than the end (Ryan's "they have not released updated data"); a file published after the routes
+     * stopped dropped them on purpose. Unknown: it does not trip.
+     */
+    fileDate?: string | null;
+  },
   /** The trip share that trips it; lower only to report cases near the line. */
   minShare: number = LISTING_END_TRIP_SHARE,
 ): ListingEnd | null {
@@ -763,8 +791,10 @@ export function findListingEnd(
   for (const [id, n] of lastBefore) if (n < anchorWeekEnd && !listedAgain(id, n)) stoppedOn.set(id, n);
 
   let best: (ListingEnd & { endedTrips: number }) | null = null;
+  const fileDay = input.fileDate && isYmd(input.fileDate) ? dayNumber(input.fileDate) : null;
+  if (fileDay == null) return null;
   for (const d of [...new Set(stoppedOn.values())].sort((a, b) => b - a)) {
-    if (feedLast < d + CONTINUING_DAYS) continue;
+    if (feedLast < d + CONTINUING_DAYS || fileDay > d) continue;
     const week = tripsIn(d - 6, d);
     const total = [...week.values()].reduce((a, b) => a + b, 0);
     if (total === 0) continue;
@@ -813,7 +843,7 @@ const RIDER_WEEK_RANGE_DAYS = 14;
  * own calendar.txt (none for a calendar_dates-only feed, never parseGtfs' synthesized rows) and
  * calendar_dates, after the agency's filters.
  */
-export function pickRiderWeek(input: Pick<ServiceDayTableInput, 'calendar' | 'calendarDates' | 'trips' | 'anchor'> & { routes?: ListingRoutes }): RiderWeek {
+export function pickRiderWeek(input: Pick<ServiceDayTableInput, 'calendar' | 'calendarDates' | 'trips' | 'anchor'> & { routes?: ListingRoutes; fileDate?: string | null }): RiderWeek {
   const listingEnd = findListingEnd(input);
   const anchor = listingEnd ? ymdOf(dayNumber(listingEnd.date) - 6) : input.anchor;
   const week = pickServiceWeek(buildServiceDayTable({ calendar: input.calendar, calendarDates: input.calendarDates, trips: input.trips, anchor }));

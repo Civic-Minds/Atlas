@@ -8,6 +8,8 @@ export interface FeedMetaFields {
   lastFeedExpiry?: string | null;
   /** CIV-1011 stage 4: the picked week's key at the last refresh (serviceWeekKey). */
   lastServiceWeek?: string | null;
+  /** When Atlas first obtained the current main feed file (YYYYMMDD); the listing-end safeguard reads it. */
+  feedObtainedAt?: string | null;
   /** CIV-1011: the date most routes stopped being listed with nothing replacing them (YYYYMMDD); the agency shows Ryan's notice. Absent otherwise. */
   listingEndedOn?: string | null;
   /** The feed's own latest service date, uncapped. lastFeedExpiry caps placeholder dates, so it can't detect an unchanged feed (#688). */
@@ -145,6 +147,8 @@ export function stampFeedMeta(
     listingEnd?: string | null;
     /** The picked week's key (serviceWeekKey), for the next refresh's unchanged check. */
     serviceWeek?: string | null;
+    /** When Atlas first obtained this file (YYYYMMDD), for the listing-end safeguard. */
+    feedObtainedAt?: string | null;
   },
 ): void {
   agency.lastFeedExpiry = recordedFeedExpiry(opts.feedExpiry, opts.calendarExpiry !== undefined ? opts.calendarExpiry : opts.peekedExpiry, opts.todayYmd, opts.calendarOnlyEnd);
@@ -159,6 +163,7 @@ export function stampFeedMeta(
   stampListingEnd(agency, opts.listingEnd);
   if (opts.serviceWeek) agency.lastServiceWeek = opts.serviceWeek;
   else if (opts.serviceWeek === null) delete agency.lastServiceWeek;
+  if (opts.feedObtainedAt) agency.feedObtainedAt = opts.feedObtainedAt;
 }
 
 /** Record or clear the CIV-1011 listing end. Returns whether it changed. */

@@ -13,7 +13,7 @@ import { applyAnalysisCriteria, BURST_MAX_SPAN_MINUTES, determineTierWithEdgeGap
 import { calculateCorridors } from './transit-logic.js';
 import { detectReferenceDate, getActiveServiceIds } from './transit-calendar.js';
 import { calendarFromNextServiceDates } from './serviceDates.js';
-import { pickRiderWeek, serviceAnchor } from './serviceDays.js';
+import { feedVersionDate, pickRiderWeek, serviceAnchor } from './serviceDays.js';
 import { dropOneOffRailTrips } from './oneOffServices.js';
 import { bookingRequiredRouteIds } from './bookedRoutes.js';
 import { DEFAULT_CRITERIA, getTiersForCriteria } from './defaults.js';
@@ -502,6 +502,8 @@ export interface ProcessOptions extends GtfsTransformOptions {
   riderWeek?: boolean;
   /** The anchor for riderWeek (YYYYMMDD); serviceAnchor() of the run date when unset. Tests pin it. */
   serviceAnchor?: string;
+  /** When Atlas first obtained this file (YYYYMMDD), for the listing-end safeguard (findListingEnd). */
+  fileDate?: string | null;
   /**
    * Agency opt-in (Clemson Area Transit, #1040): a pattern whose every trip is a block trip (only
    * first and last stop timed) gets no computed headway. See findBlockTrips in transit-phase1.ts.
@@ -797,6 +799,7 @@ export async function processGtfsBuffer(
       trips: gtfs.trips ?? [],
       routes: gtfs.routes ?? [],
       anchor: options.serviceAnchor ?? serviceAnchor(),
+      fileDate: [options.fileDate, feedVersionDate(gtfs.feedInfo?.[0]?.feed_version)].filter((d): d is string => !!d && /^\d{8}$/.test(d)).sort()[0] ?? null,
     })
     : null;
   if (riderWeek) {
