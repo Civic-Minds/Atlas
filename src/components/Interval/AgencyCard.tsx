@@ -546,9 +546,11 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
               place={null}
               back={{ to: 'Map', onClick: onClose }}
               report={reportButton}
+              links={hasSource ? [<AgencyDataSourceLink key="source" agency={agency} />] : []}
             />
           )}
-          {FEATURES.dataSourceLink && agency.websiteUrl && (
+          {/* The zone card's header has no links line, so its Source link sits under the title. */}
+          {backToAgency && hasSource && (
             <p className="mt-1 text-xs"><AgencyDataSourceLink agency={agency} /></p>
           )}
         </div>
