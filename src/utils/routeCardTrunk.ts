@@ -3,6 +3,8 @@ import { periodKeyForHour } from '../../shared/config';
 import { branchDisplayPeriodHeadway, buildRouteServiceSummary } from './routeFacts';
 import { MIN_SHARED_STOPS_FOR_TRUNK, sharedStopIds, sharesOrderedTrunk } from './routeBranchGeometry';
 import { sharedStretchStopPass } from './frequencySegments';
+import { routeCardDisplayHeadway } from './effectiveHeadway';
+import { stretchRowsFromMeta } from './stretchCard';
 
 /** Headsign-scoped trunk minimum for route-card range display (not route-wide combined deps). */
 export function headsignTrunkHeadway(d: ShapeProperties, period: string): number | null {
@@ -144,7 +146,35 @@ export function shouldShowTrunkSummary(branches: ShapeProperties[], period: Time
   const trunk = groupTrunkHeadway(sustainedBranches, periodKey);
   const terminal = medianTerminalHeadway(sustainedBranches, period);
   if (trunk == null || terminal == null) return false;
+  return trunkBeatsBranches(trunk, terminal);
+}
+
+/** The shared section is materially better than the typical branch: worth its own row. */
+function trunkBeatsBranches(trunk: number, terminal: number): boolean {
   return trunk <= terminal * 0.65 && terminal / trunk <= 4;
+}
+
+/**
+ * CIV-937: the "Shared stretch every N" row of a direction whose rows come from the stretches: the main stretch's own
+ * value (stretchMeta.main) above its branch rows, each branch keeping its own wait. Only when the direction shows two
+ * or more rows with a tail among them (the main stretch's own row is the branch that runs on past it), and the shared
+ * value is materially better than the rows' (the Combined rule).
+ * Null on data without the value, for All day, and for a period the main stretch has no regular service in.
+ */
+export function stretchSharedHeadway(
+  group: { realTier: ShapeProperties[]; directionFeatures?: ShapeProperties[] },
+  period: TimePeriod,
+): number | null {
+  if (period === 'all' || !group.directionFeatures) return null;
+  const rows = group.realTier;
+  if (rows.length < 2 || !rows.some(d => d.stretchRole === 'tail')) return null;
+  // Every feature of the direction carries the same stretchMeta; a direction of tails alone (MARTA 20) has no main feature.
+  const meta = group.directionFeatures.find(d => d.stretchRole === 'main') ?? group.directionFeatures.find(d => d.stretchMeta?.main);
+  const shared = meta ? stretchRowsFromMeta(meta, period).find(r => r.role === 'main') : undefined;
+  if (shared?.value == null || shared.noRegular) return null;
+  const rowValues = rows.map(d => routeCardDisplayHeadway(d, period));
+  if (rowValues.some(v => v == null)) return null;
+  return trunkBeatsBranches(shared.value, medianHeadway(rowValues as number[])) ? shared.value : null;
 }
 
 /** Trunk hourly curve from combined stop headways (flat within each period). */
