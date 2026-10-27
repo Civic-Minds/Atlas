@@ -4,11 +4,14 @@ import { agencyPagePath, fitAgencyName } from '../shared/agencyPages';
 import {
   AREA_DATA_SCRIPT_ID,
   AREA_TABLE_OTHER,
-  areaAboutParagraph,
   areaDatesText,
+  areaIntroJoiners,
+  areaIntroName,
+  areaIntroParts,
   areaMapHref,
   areaPageH1,
   areaSubtitle,
+  areaTableColumnTitle,
   resolveAreaSeo,
   type AreaAgencyRow,
   type AreaPageData,
@@ -36,10 +39,15 @@ const AREA_MODE_COLUMN_REM = 5;
  */
 const NARROW_NAME_MAX_CHARS = 40;
 
-/** A mode header with a slash breaks after it ("Gondola/" over "aerial tram", "Subway/" over "Metro"); the rest wrap at spaces. */
+/**
+ * A mode header too long for its column breaks after the slash ("Gondola/" over "aerial tram"); the rest stay on one line.
+ * A column that counts more than its own mode says what it counts on hover (CIV-973: "Bus and trolleybus routes").
+ */
 function modeHeader(label: string) {
   const slash = label.indexOf('/');
-  return slash > 0 ? <>{label.slice(0, slash + 1)}<br />{label.slice(slash + 1)}</> : label;
+  const text = label.length > 14 && slash > 0 ? <>{label.slice(0, slash + 1)}<br />{label.slice(slash + 1)}</> : label;
+  const title = areaTableColumnTitle(label);
+  return title ? <span title={title}>{text}</span> : text;
 }
 
 /** The agency's link in the table: its full name, or in a narrow names column a short one with the full name on hover. */
@@ -87,17 +95,24 @@ export default function AreaPage({ data: dataProp }: { data?: AreaPageData }) {
     );
   }
 
+  const subtitle = areaSubtitle(data);
+  const intro = areaIntroParts(data);
+  const joiners = areaIntroJoiners(intro);
 
   return (
     <DocsPageLayout width="wide">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="min-w-0">
               <PageTitle>{areaPageH1(data)}</PageTitle>
-              <p className="mt-1 text-sm text-[var(--text-muted)]">{areaSubtitle(data)}</p>
+              {subtitle && <p className="mt-1 text-sm text-[var(--text-muted)]">{subtitle}</p>}
             </div>
             <ArrowLink href={areaMapHref(data)}>View on map</ArrowLink>
           </div>
-          <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--text-muted)]">{areaAboutParagraph(data)}</p>
+          <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--text-muted)]">
+            {intro.lead}{joiners.opener}
+            {intro.named.map((a, i) => <span key={a.slug}><a className={`${LINK} underline underline-offset-2`} href={agencyPagePath(a.slug)}>{areaIntroName(data, a)}</a>{joiners.separators[i]}</span>)}
+            {joiners.tail}
+          </p>
           {data.area.note && <p className="mt-3 max-w-2xl text-sm text-[var(--text-muted)]">{data.area.note}</p>}
 
           <section className="mt-14" aria-labelledby="agencies-heading">
