@@ -19,7 +19,7 @@ import type { Agency } from '../App';
 import { isAgencyFeedExpired } from '../../shared/feedAvailability';
 import { trackEvent } from '../lib/analytics';
 import { OutboundLink } from './OutboundLink';
-import { EXPIRED_FEED_CADENCE, EXPIRED_FEED_CONTEXT, EXPIRED_FEED_EXPLANATION, expiredFeedCheckHistory, expiredFeedNotice, MANUAL_FEED_CONTEXT, NO_AGENCIES_MATCH, NO_ROUTE_SHAPE_DETAIL, NO_ROUTE_SHAPE_EXPLANATION } from '../content/noticeCopy';
+import { BETA_ROLLOUT_EXPLANATION, betaRolloutLead, CORRECTED_DATA_EXPLANATION, EDGE_GAP_ALLOWANCE_EXPLANATION, EDGE_GAP_ALLOWANCE_LEAD, EXPIRED_FEED_CADENCE, EXPIRED_FEED_CONTEXT, EXPIRED_FEED_EXPLANATION, expiredFeedCheckHistory, expiredFeedNotice, EXPLAINERS, type HelpTopic, MANUAL_FEED_CONTEXT, NEW_SCHEDULE_DATA_EXPLANATION, NEW_SCHEDULE_DATA_TEMPORARY, newScheduleDataLead, NO_AGENCIES_MATCH, NO_ROUTE_SHAPE_DETAIL, NO_ROUTE_SHAPE_EXPLANATION, ROUTE_DATA_QUALITY_DETAIL, ROUTE_DATA_QUALITY_EXPLANATION, routeDataQualityLead, WEEKDAY_VARIATION_EXPLANATION, WEEKDAY_VARIATION_LEAD } from '../content/noticeCopy';
 import RegionFilterPills from './RegionFilterPills';
 import ListRow from './ui/ListRow';
 import { AgencyList, AgencyListRow, AgencyRegionSection } from './ui/AgencyList';
@@ -32,7 +32,7 @@ type View = 'home' | 'agencies' | 'agency-detail' | 'outdated-schedule' | 'new-s
 export type Tab = 'about' | 'agencies' | 'history' | 'live';
 export type InfoFeatureFilter = 'all' | 'live' | 'history';
 type AgencyListFilter = InfoFeatureFilter | 'outdated';
-export type HelpTopic = 'outdated-schedule' | 'new-schedule-data' | 'corrected-data' | 'beta-rollout' | 'route-data-quality' | 'no-route-shape' | 'edge-gap-allowance' | 'weekday-variation';
+export type { HelpTopic };
 export type HelpContext = {
   topic: HelpTopic;
   agencyName?: string;
@@ -293,14 +293,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
   const headerTitle =
     view === 'agencies' ? 'Agencies'
     : view === 'agency-detail' ? selectedAgency?.name ?? ''
-    : view === 'outdated-schedule' ? 'Outdated schedule'
-    : view === 'new-schedule-data' ? 'New schedule data'
-    : view === 'corrected-data' ? 'Corrected data'
-    : view === 'beta-rollout' ? 'Beta testing'
-    : view === 'route-data-quality' ? 'Route data quality'
-    : view === 'no-route-shape' ? 'Route map unavailable'
-    : view === 'edge-gap-allowance' ? 'Frequency allowance'
-    : view === 'weekday-variation' ? 'Weekday variation'
+    : view in EXPLAINERS ? EXPLAINERS[view as HelpTopic].title
     : view === 'sources' ? 'Sources'
     : null;
 
@@ -558,10 +551,10 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
           {view === 'edge-gap-allowance' && (
             <div className="h-full overflow-y-auto px-5 py-4 space-y-4">
               <p className="text-xs text-[var(--text-primary)] leading-relaxed">
-                Atlas added a small allowance for the first or last trip of the day.
+                {EDGE_GAP_ALLOWANCE_LEAD}
               </p>
               <p className="text-xs text-[var(--text-dim)] leading-relaxed">
-                This means a route can still qualify for its frequency tier when the first or last gap is a little longer than the rest of the service. It does not apply to gaps in the middle of the day.
+                {EDGE_GAP_ALLOWANCE_EXPLANATION}
               </p>
             </div>
           )}
@@ -569,10 +562,10 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
           {view === 'weekday-variation' && (
             <div className="h-full overflow-y-auto px-5 py-4 space-y-4">
               <p className="text-xs text-[var(--text-primary)] leading-relaxed">
-                Weekday schedules differ for this route.
+                {WEEKDAY_VARIATION_LEAD}
               </p>
               <p className="text-xs text-[var(--text-dim)] leading-relaxed">
-                Atlas checks Monday through Friday separately. The frequency tier shown on the route card reflects the slowest actual weekday, while the displayed cadence uses a typical actual weekday. This keeps the summary from combining departures that ran on different days.
+                {WEEKDAY_VARIATION_EXPLANATION}
               </p>
             </div>
           )}
@@ -581,17 +574,14 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
             <div className="h-full overflow-y-auto px-5 py-4 space-y-4">
               {helpContext?.agencyName && (
                 <p className="text-xs text-[var(--text-primary)] leading-relaxed">
-                  {helpContext.agencyName} recently published new schedule data.
-                  {helpContext.lastRefreshedAt && formatStoredDate(helpContext.lastRefreshedAt)
-                    ? ` Atlas published it on ${formatStoredDate(helpContext.lastRefreshedAt)}.`
-                    : ''}
+                  {newScheduleDataLead(helpContext.agencyName, helpContext.lastRefreshedAt ? formatStoredDate(helpContext.lastRefreshedAt) : null)}
                 </p>
               )}
               <p className="text-xs text-[var(--text-dim)] leading-relaxed">
-                Atlas publishes new feeds automatically so the map stays current. We&apos;re checking this feed for missing service and data-quality problems before treating it as verified.
+                {NEW_SCHEDULE_DATA_EXPLANATION}
               </p>
               <p className="text-xs text-[var(--text-dim)] leading-relaxed">
-                This notice is temporary. It will disappear after review, or become a correction notice if we find a known problem.
+                {NEW_SCHEDULE_DATA_TEMPORARY}
               </p>
               {helpContext?.websiteUrl && (
                 <LinkCard as={OutboundLink} href={helpContext.websiteUrl} kind="agency_website" icon="external">Check current schedules</LinkCard>
@@ -607,7 +597,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                 </p>
               )}
               <p className="text-xs text-[var(--text-dim)] leading-relaxed">
-                Sometimes agencies publish incorrect data in their GTFS feed. When we find a known problem, we filter it out during processing so the map reflects real service.
+                {CORRECTED_DATA_EXPLANATION}
               </p>
               {(helpContext?.issueUrls?.length || helpContext?.issueUrl) ? (
                 <>
@@ -635,11 +625,11 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
             <div className="h-full overflow-y-auto px-5 py-4 space-y-4">
               {helpContext?.agencyName && (
                 <p className="text-xs text-[var(--text-primary)] leading-relaxed">
-                  {helpContext.agencyName} is currently available in Atlas beta while its schedule data is being validated.
+                  {betaRolloutLead(helpContext.agencyName)}
                 </p>
               )}
               <p className="text-xs text-[var(--text-dim)] leading-relaxed">
-                This coverage is still being checked before it is added to the main Atlas map. Some routes or schedule details may change during testing.
+                {BETA_ROLLOUT_EXPLANATION}
               </p>
               {helpContext?.rolloutIssueUrl && (
                 <LinkCard href={helpContext.rolloutIssueUrl}
@@ -657,14 +647,14 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
             <div className="h-full overflow-y-auto px-5 py-4 space-y-4">
               {helpContext?.agencyName && (
                 <p className="text-xs text-[var(--text-primary)] leading-relaxed">
-                  {helpContext.agencyName} has a problem with this route's shape in the source feed.
+                  {routeDataQualityLead(helpContext.agencyName)}
                 </p>
               )}
               <p className="text-xs text-[var(--text-dim)] leading-relaxed">
-                Transit agencies publish the route shapes Atlas uses to draw routes. Atlas identified a specific problem in this route&apos;s source geometry, so the route stays visible with a warning instead of hiding the entire agency.
+                {ROUTE_DATA_QUALITY_EXPLANATION}
               </p>
               <p className="text-xs text-[var(--text-dim)] leading-relaxed">
-                The line may be incomplete or adjusted. The schedule information is separate from the map geometry.
+                {ROUTE_DATA_QUALITY_DETAIL}
               </p>
             </div>
           )}

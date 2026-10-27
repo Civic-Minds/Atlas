@@ -53,3 +53,27 @@ describe('notice text lives in noticeCopy.ts', () => {
     RULES.forEach((rule, i) => expect(rule.pattern.test(samples[i])).toBe(true));
   });
 });
+
+// CIV-1045: every Learn more opens the explainer its notice is paired with (NOTICE_EXPLAINERS), never a panel named inline.
+describe('Learn more notices name their explainer', () => {
+  const sources = files(SRC).map(f => [relative(SRC, f), readFileSync(f, 'utf8')] as const).filter(([f]) => !f.startsWith('content/'));
+
+  it('no help panel is named inline', () => {
+    expect(sources.filter(([, src]) => /helpTopic:\s*['"`]/.test(src)).map(([f]) => f)).toEqual([]);
+  });
+
+  it('every code a component pairs is in the map, and every mapped panel exists', async () => {
+    const { NOTICE_EXPLAINERS, EXPLAINERS } = await import('../noticeCopy');
+    const used = sources.flatMap(([, src]) => [...src.matchAll(/explainerFor\(([^)]*)\)/g)].flatMap(m => [...m[1].matchAll(/'(N\d+)'/g)].map(c => c[1])));
+    expect(used.length).toBeGreaterThan(0);
+    for (const code of used) expect(Object.keys(NOTICE_EXPLAINERS)).toContain(code);
+    for (const topic of Object.values(NOTICE_EXPLAINERS)) expect(Object.keys(EXPLAINERS)).toContain(topic);
+  });
+
+  it('every opening of a help panel goes through explainerFor', () => {
+    const opens = sources.flatMap(([f, src]) => [...src.matchAll(/helpTopic:\s*([^,}\n]+)/g)].map(m => [f, m[1].trim()] as const))
+      .filter(([f]) => !/InfoPanel\.tsx$|App\.tsx$/.test(f));
+    expect(opens.length).toBeGreaterThan(0);
+    for (const [, value] of opens) expect(value).toMatch(/^explainerFor\(/);
+  });
+});

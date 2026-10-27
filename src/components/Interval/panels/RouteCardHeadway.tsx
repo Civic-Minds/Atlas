@@ -55,7 +55,7 @@ import type { CompareRouteRow } from '../compareTypes';
 import { compareCardSummary } from '../../../utils/compareSides';
 import { reportDetails } from '../../../utils/reportIssue';
 import { ROUTE_DATA_QUALITY_WARNING } from '../../../../shared/routeDataQuality';
-import { BOOKING_REQUIRED_NOTICE, expiredFeedNotice, NO_ROUTE_SHAPE_NOTICE, periodServiceNotice, ROUTE_DATA_QUALITY_WARNING_MESSAGE, selectedRouteFilterNotice, selectedRouteOutsideFilterNotice, unevenServiceNotice, variantsIncludedNotice, WEEKDAY_VARIATION_NOTICE } from '../../../content/noticeCopy';
+import { BOOKING_REQUIRED_NOTICE, expiredFeedNotice, explainerFor, NO_ROUTE_SHAPE_NOTICE, periodServiceNotice, ROUTE_DATA_QUALITY_WARNING_MESSAGE, selectedRouteFilterNotice, selectedRouteOutsideFilterNotice, unevenServiceNotice, variantsIncludedNotice, WEEKDAY_VARIATION_NOTICE } from '../../../content/noticeCopy';
 import { featurePassesHeadwayFilter } from '../../../../shared/routeHeadwayFilter';
 import { headwayAbout, headwayAboutRange } from '../../../utils/headwayText';
 import type { RouteLabel } from '../../../utils/routeFacts';
@@ -735,7 +735,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                             headwayLabel={row.headwayLabel}
                             trunkHeadway={row.trunkHeadway}
                             edgeGapAllowance={d.edgeGapAllowance}
-                            onEdgeGapAllowanceClick={onInfoOpen ? () => onInfoOpen('about', { helpTopic: 'edge-gap-allowance' }) : undefined}
+                            onEdgeGapAllowanceClick={onInfoOpen ? () => onInfoOpen('about', { helpTopic: explainerFor('N14') }) : undefined}
                             dimmed={row.dimmed}
                             limited={row.isLimited}
                             {...branchHoverProps(group.dirId, d.headsign, d.routeVariant)}
@@ -781,7 +781,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
               <CardHelpNotice
                 message={NO_ROUTE_SHAPE_NOTICE}
                 onLearnMore={() => onInfoOpen('about', {
-                  helpTopic: 'no-route-shape',
+                  helpTopic: explainerFor('N7'),
                   agencyName: routeAgency?.name,
                 })}
               />
@@ -790,7 +790,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
               <CardHelpNotice
                 message={ROUTE_DATA_QUALITY_WARNING_MESSAGE}
                 onLearnMore={() => onInfoOpen('about', {
-                  helpTopic: 'route-data-quality',
+                  helpTopic: explainerFor('N6'),
                   agencyName: routeAgency?.name,
                 })}
               />
@@ -799,7 +799,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
               <CardHelpNotice
                 message={expiredFeedNotice(routeAgency?.name ?? 'This agency', expDateStr, routeAgency?.manualFeedSource)}
                 onLearnMore={() => onInfoOpen('about', {
-                  helpTopic: 'outdated-schedule',
+                  helpTopic: explainerFor(routeAgency?.manualFeedSource ? 'N3' : 'N2'),
                   agencyName: routeAgency?.name,
                   expDateStr: expDateStr || undefined,
                   manualFeedSource: routeAgency?.manualFeedSource,
@@ -820,7 +820,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
             {hasWeekdayTierVariation && (
               <CardHelpNotice
                 message={WEEKDAY_VARIATION_NOTICE}
-                onLearnMore={() => onInfoOpen('about', { helpTopic: 'weekday-variation' })}
+                onLearnMore={() => onInfoOpen('about', { helpTopic: explainerFor('N1') })}
               />
             )}
           </div>
