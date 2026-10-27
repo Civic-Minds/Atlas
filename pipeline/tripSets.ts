@@ -28,6 +28,7 @@ import {
   hasSustainedFrequentService,
   isSparseOvernightWindow,
   isSustainedHeadway,
+  isUnevenPeriod,
   medianHeadwayInWindow,
   hasSustainedServiceInWindow,
   nightServiceDepartureTimes,
@@ -443,6 +444,8 @@ export interface StretchPeriod {
   sustainedMid: boolean | null;
   /** The value is one gap between departures, not a repeated cadence (see isOneGapPeriod). */
   oneGap: boolean;
+  /** Steady by the settled check but uneven (#1142, isUnevenPeriod): the value is the longest wait. */
+  uneven: boolean;
 }
 
 const PERIOD_WINDOWS = PERIOD_KEYS.map(key => ({ key, ...PERIOD_MINUTES[key] }));
@@ -496,7 +499,7 @@ export function isOneGapPeriod(times: readonly number[], start: number, end: num
 
 /** A stretch period's filter value: the headway when steady with every gap within the coverage cap, else the full-window wait. */
 export function stretchFilterValue(p: StretchPeriod): number | null {
-  return p.sustained === true && p.coverage != null && p.coverage <= PERIOD_COVERAGE_MAX_HEADWAY ? p.headway : p.coverage;
+  return p.sustained === true && !p.uneven && p.coverage != null && p.coverage <= PERIOD_COVERAGE_MAX_HEADWAY ? p.headway : p.coverage;
 }
 
 /**
@@ -591,7 +594,8 @@ export function stretchPeriods(s: Stretch): Record<PeriodKey, StretchPeriod> {
   for (const { key, start, end } of PERIOD_WINDOWS) {
     const runs = coverage[key] != null;
     const steady = sustained[key] === true;
-    const value = !runs ? null : steady ? (headways[key] ?? null) : coverage[key] ?? null;
+    const uneven = runs && steady && isUnevenPeriod(times, start, end, headways[key]);
+    const value = !runs ? null : steady && !uneven ? (headways[key] ?? null) : coverage[key] ?? null;
     out[key] = {
       // A tail speaks for the direction only where it runs steadily through the period.
       counts: runs && (s.kind === 'main' || (steady && sustainedWithMidpoint([...new Set(forCrossMidnightWindow(times, end))].sort((a, b) => a - b), sustained[key], start, end) === true)),
@@ -601,6 +605,7 @@ export function stretchPeriods(s: Stretch): Record<PeriodKey, StretchPeriod> {
       sustained: sustained[key] ?? null,
       sustainedMid: sustainedWithMidpoint([...new Set(forCrossMidnightWindow([...times], end))].sort((a, b) => a - b), sustained[key], start, end),
       oneGap: runs && isOneGapPeriod(times, start, end, value, sustained[key]),
+      uneven,
     };
   }
   return out;
@@ -671,6 +676,8 @@ export function nightOnlyTrips(trips: readonly DirectionTrip[]): DirectionTrip[]
 export interface DirectionRollup {
   period: Record<PeriodKey, {
     value: number | null; coverage: number | null; sustained: boolean | null; sustainedMid: boolean | null; mainValue: number | null;
+    /** The main stretch's best reading for the range's low end: its typical gap when uneven (#1142), else mainValue. */
+    mainLow: number | null;
     /** The direction value comes from a counting stretch whose value is one gap (isOneGapPeriod). */
     oneGap: boolean;
     /**
@@ -688,6 +695,11 @@ export interface DirectionRollup {
     edge: StretchPeriodEdge | null;
     /** Narrow D6: the main stretch runs through the period, steady but for one gap inside it (card wording only). */
     gap: StretchPeriodGap | null;
+    /**
+     * #1142: the typical gap when the filter value comes from an uneven stretch (its longest wait),
+     * so the card can read "every typical-worst". null otherwise.
+     */
+    typical: number | null;
   }>;
   night30: boolean;
   night60: boolean;
@@ -836,7 +848,9 @@ export function rollupDirection(d: DirectionStretches): DirectionRollup | null {
       // The worst counting stretch sets the value; it is one gap when that stretch's is.
       oneGap: counting.length > 0 && counting.some(p => p.oneGap && p.value === Math.max(...counting.map(c => c.value!))),
       mainValue: main[key].counts ? main[key].value : null,
+      mainLow: !main[key].counts ? null : main[key].uneven ? main[key].headway : main[key].value,
       filterValue: null,
+      typical: null,
       runs: false,
       hasService: false,
       edge: null,
@@ -858,10 +872,14 @@ export function rollupDirection(d: DirectionStretches): DirectionRollup | null {
     period[key].runs = runs;
     period[key].hasService = forCrossMidnightWindow([...d.main.times], end).some(t => t >= start && t <= end);
     period[key].filterValue = runs && !sparse(d.main) && values.length > 0 ? Math.max(...values) : null;
-    period[key].edge = runs ? periodEdge(d.main.times, start, end, period[key].filterValue) : periodPartialEdge(d.main.times, start, end);
+    const setter = period[key].filterValue == null ? undefined : counting.find(p => filterOf(p) === period[key].filterValue);
+    period[key].typical = setter?.uneven && setter.headway != null && setter.headway < period[key].filterValue! ? setter.headway : null;
+    // An uneven period's card reads its range, not an edge or one-gap wording.
+    const uneven = period[key].typical != null;
+    period[key].edge = uneven ? null : runs ? periodEdge(d.main.times, start, end, period[key].filterValue) : periodPartialEdge(d.main.times, start, end);
     // Only where the settled checks count the period as running: a big-gap period that does not
     // run (TTC 504 overnight, 169 minutes against a typical 5) keeps "no regular service".
-    period[key].gap = runs && !period[key].edge ? periodOneGap(d.main.times, start, end) : null;
+    period[key].gap = runs && !uneven && !period[key].edge ? periodOneGap(d.main.times, start, end) : null;
   }
   // D3 with the D8 midpoint test: a tail runs at night only when it has departures on both sides
   // of the window's midpoint. One that only starts its day inside the window (CTA 20's downtown
@@ -970,7 +988,7 @@ export function rollupRoute(dirs: readonly (DirectionRollup | null)[]): RouteRol
   for (const { key } of PERIOD_WINDOWS) {
     const values = known.map(d => d.period[key].value);
     const value = complete && values.every(v => v != null) ? Math.max(...(values as number[])) : null;
-    const mains = known.map(d => d.period[key].mainValue).filter((v): v is number => v != null);
+    const mains = known.map(d => d.period[key].mainLow).filter((v): v is number => v != null);
     const coverages = known.map(d => d.period[key].coverage);
     const low = mains.length === known.length && mains.length > 0 ? Math.max(...mains) : null;
     // A direction with no departure at all in the period does not run in it and is skipped (a
@@ -1024,6 +1042,7 @@ export const STRETCH_SHADOW_KEYS = [
   'stretchPeriodSustained',
   'stretchPeriodSustainedMid',
   'stretchPeriodOneGap',
+  'stretchPeriodTypical',
   'stretchPeriodEdge',
   'stretchPeriodGap',
   'stretchRoutePeriodHeadway',
@@ -1100,6 +1119,7 @@ export function stampStretchShadow(
     p.stretchPeriodSustained = byPeriod(k => dir.period[k].sustained);
     p.stretchPeriodSustainedMid = byPeriod(k => dir.period[k].sustainedMid);
     p.stretchPeriodOneGap = byPeriod(k => dir.period[k].oneGap);
+    p.stretchPeriodTypical = byPeriod(k => dir.period[k].typical);
     // #934: only periods with an edge reading, so most features carry an empty object at most.
     {
       const edges = Object.fromEntries(PERIOD_WINDOWS.flatMap(({ key }) => (dir.period[key].edge ? [[key, dir.period[key].edge]] : [])));
