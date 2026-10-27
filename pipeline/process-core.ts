@@ -3,6 +3,7 @@
  * Used by process-gtfs.ts (local zip) and refresh.ts (downloaded feeds).
  */
 import './pipelineTimeZone.js';
+import { boardableDrawnStops, drawnStopsBeforeTerminal } from './drawnStops.js';
 import { parseGtfsZip } from './parseGtfs.js';
 import { computeRunningTimes, runningTimesJson } from './runningTime.js';
 import { pickRepresentativeWeekday } from './representativeWeekday.js';
@@ -2442,13 +2443,9 @@ export async function processGtfsBuffer(
     const servedByFewerTrips = (pool: readonly number[] | null): string[] => {
       if (!pool) return [];
       const poolCount = new Set(pool).size;
-      // The terminal is left out, and with it the drop-off-only stops (#879) that run up to it: a terminal drawn twice,
-      // platform then parent station, holds only the drawn shape's own arrivals and slipped past the last-stop cut
-      // (#1116: MBTA 71 to Harvard read a 135-minute AM gap at its platform while all 91 trips run every 9 to 14).
-      const drawn = drawnPatternStops().map(p => p.stopId);
-      let end = drawn.length - 1;
-      while (end > 0 && dropOffOnlyStops.has(drawn[end - 1]) && drawn.slice(end).every(stopId => dropOffOnlyStops.has(stopId) || stopId === drawn[drawn.length - 1])) end--;
-      return drawn.slice(0, end).filter(stopId => new Set(stopMetricMap.get(stopId) ?? []).size < poolCount);
+      // The terminal and the drop-off-only stops that run up to it are left out (#1116, CIV-994).
+      return drawnStopsBeforeTerminal(drawnPatternStops().map(p => p.stopId), dropOffOnlyStops)
+        .filter(stopId => new Set(stopMetricMap.get(stopId) ?? []).size < poolCount);
     };
     // Steps 2-3 and the line's segments (#690), shared by the thin-own-sample path below and
     // the full path: stop data is published from the pooled values whenever any stop has one.
@@ -2713,7 +2710,7 @@ export async function processGtfsBuffer(
         // Stops with a reading but no published value (saint-john 12: six trips whose all-day
         // sample rejects its 4-hour holes) keep phase 2's own headline.
       }
-      settleTierOnStops(settleStopIds(coverageStops.map(p => p.stopId).filter(stopId => !dropOffOnlyStops.has(stopId))));
+      settleTierOnStops(settleStopIds(boardableDrawnStops(coverageStops.map(p => p.stopId), dropOffOnlyStops)));
       continue;
     }
 
@@ -2918,7 +2915,7 @@ export async function processGtfsBuffer(
       }
       // An ungraded drawn stop refuses the lift, so drop-off-only stops (ungraded by design,
       // #879) are left out of the list the lift walks; the pool's stop scope keeps them.
-      settleTierOnStops(settleStopIds(coverageStops.map(p => p.stopId).filter(stopId => !dropOffOnlyStops.has(stopId))), featureHeadsign && coverageStops.length > 1 ? (() => {
+      settleTierOnStops(settleStopIds(boardableDrawnStops(coverageStops.map(p => p.stopId), dropOffOnlyStops)), featureHeadsign && coverageStops.length > 1 ? (() => {
         const hsKey = `${shortName}::${dirId}::${day}::${featureHeadsign}`;
         const drawnIds = coverageStops.map(p => p.stopId);
         return {
