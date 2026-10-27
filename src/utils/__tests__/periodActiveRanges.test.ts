@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { TIME_PERIODS } from '../../../shared/config';
 import type { ShapeProperties } from '../../hooks/useIntervalStats';
 import { sparklineSourceDirections } from '../routeCardTrunk';
-import { activeHourRanges, activeRangesCoverPeriod, hourHasService, partPeriodNoticeApplies, partPeriodNoticeHeadway } from '../periodActiveRanges';
+import { activeHourRanges, activeRangesCoverPeriod, hourHasService, partPeriodNoticeApplies, partPeriodNoticeHeadway, partPeriodOutside } from '../periodActiveRanges';
 
 // TTC 51 Leslie, published data (2026-10-20): the drawn patterns' hourly headways per day type.
 const TTC_51: Record<'Weekday' | 'Saturday' | 'Sunday', Array<{ directionId: number; headsign: string; headwayByHour: Record<number, number> }>> = {
@@ -217,5 +217,27 @@ describe('departure counts (CIV-1010)', () => {
     const withoutCounts = [{ headwayByHour: { 18: null, 19: null }, maxGapByHour: { 18: 60, 19: 60 } }];
     expect(activeHourRanges(withoutCounts as any, 18, 20)).toEqual([]);
     expect(hourHasService(withoutCounts[0] as any, 18)).toBe(true);
+  });
+});
+
+describe('partPeriodOutside (N13)', () => {
+  const hours = (h: Record<number, number>) => h;
+  it('no trips before the run, with departure counts: no service', () => {
+    const d = { headwayByHour: hours({ 7: 12, 8: 12 }), departuresByHour: hours({ 7: 5, 8: 5 }) };
+    expect(partPeriodOutside([d], 6, 9)).toEqual({ active: [7, 9], parts: [{ at: 'start', hours: [6, 7], service: 'none' }] });
+  });
+  it('trips before the run that are too few for a headway: less often', () => {
+    const d = { headwayByHour: hours({ 7: 12, 8: 12 }), maxGapByHour: hours({ 6: 40, 7: 12, 8: 12 }) };
+    expect(partPeriodOutside([d], 6, 9)?.parts).toEqual([{ at: 'start', hours: [6, 7], service: 'less' }]);
+  });
+  it('an end part without departure counts cannot be told apart', () => {
+    const d = { headwayByHour: hours({ 6: 12, 7: 12 }), maxGapByHour: hours({ 6: 12 }) };
+    expect(partPeriodOutside([d], 6, 9)?.parts).toEqual([{ at: 'end', hours: [8, 9], service: 'unknown' }]);
+  });
+  it('both ends, and more than one run gives null', () => {
+    const d = { headwayByHour: hours({ 7: 12 }), departuresByHour: hours({ 7: 5 }) };
+    expect(partPeriodOutside([d], 6, 9)?.parts.map(p => p.service)).toEqual(['none', 'none']);
+    const split = { headwayByHour: hours({ 6: 12, 8: 12 }), departuresByHour: hours({ 6: 5, 8: 5 }) };
+    expect(partPeriodOutside([split], 6, 9)).toBeNull();
   });
 });

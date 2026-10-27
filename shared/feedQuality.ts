@@ -28,6 +28,10 @@ export function feedQualityReasonForValidationWarnings(count: number): string {
   return `${count} minor schedule ${plural(count, 'issue')} found while reading the feed.`;
 }
 
+export function isValidationWarningReason(reason: string): boolean {
+  return /^\d+ minor schedule issues? found while reading the feed\.$/.test(reason);
+}
+
 export function feedQualityReasonForShapeAnomalies(count: number): string {
   return `${count} route ${plural(count, 'shape needed', 'shapes needed')} adjustment before display.`;
 }
@@ -37,8 +41,9 @@ export function feedQualityReasonForHeadwayMismatches(count: number): string {
 }
 
 export const FEED_QUALITY_EXPIRED_REASON = 'The schedule dates in this feed have passed.';
-export const FEED_QUALITY_NO_ROUTES_REASON = 'Atlas could not find any usable routes in this feed.';
-export const FEED_QUALITY_VALIDATION_ERROR_REASON = 'Atlas found errors while reading this feed.';
+// N79, N80
+export const FEED_QUALITY_NO_ROUTES_REASON = "This agency's schedule file has no routes we can show.";
+export const FEED_QUALITY_VALIDATION_ERROR_REASON = "This agency's schedule file has errors.";
 
 function isExpired(expiry: string | null | undefined, today: string): boolean {
   return isExpiredFeedExpiry(expiry, today.replaceAll('-', ''));
@@ -126,8 +131,8 @@ export function presentFeedQualityReason(reason: string): string {
     return `${count} route ${plural(count, 'has', 'have')} stops whose frequency differs from the overall route schedule.`;
   }
 
-  if (reason === 'No route features were produced.') return FEED_QUALITY_NO_ROUTES_REASON;
-  if (reason === 'The feed has validation errors.') return FEED_QUALITY_VALIDATION_ERROR_REASON;
+  if (reason === 'No route features were produced.' || reason === 'Atlas could not find any usable routes in this feed.') return FEED_QUALITY_NO_ROUTES_REASON;
+  if (reason === 'The feed has validation errors.' || reason === 'Atlas found errors while reading this feed.') return FEED_QUALITY_VALIDATION_ERROR_REASON;
   const warningMatch = reason.match(/^(\d+) schedule-data warnings? — Atlas found a minor issue while reading the schedule\.$/);
   if (warningMatch) {
     const count = Number(warningMatch[1]);
@@ -148,6 +153,8 @@ export function feedQualityListItems(reasons: readonly string[]): string[] {
   const others: string[] = [];
   for (const reason of reasons) {
     const presented = presentFeedQualityReason(reason);
+    // N81: validation warnings don't change the map, so riders never see them (internal diagnostics keep the count).
+    if (isValidationWarningReason(presented)) continue;
     const count = Number(presented.match(/^(\d+)/)?.[1] ?? 0);
     if (count > 0 && /\bshapes?\b|map lines?/.test(presented)) shapes += count;
     else if (count > 0 && /frequenc/.test(presented)) frequencies += count;

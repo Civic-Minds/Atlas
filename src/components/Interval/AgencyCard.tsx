@@ -26,7 +26,7 @@ import CardRouteList from './CardRouteList';
 import { OutboundLink } from '../OutboundLink';
 import { buildRouteFacts, type RouteLabel } from '../../utils/routeFacts';
 import { reportDetails } from '../../utils/reportIssue';
-import { BETA_ROLLOUT_NOTICE, BETA_SERVICE_ROLLOUT_NOTICE, explainerFor, getRolloutNotice, NO_ROUTES_LOADED, noRoutesMatchText, notOnMapYetNotice, ON_DEMAND_NOT_MAPPED_NOTE, ROUTES_OUTSIDE_FILTERS_NOTICE, routesOutsideFiltersNotice, VIEW_ON_BETA } from '../../content/noticeCopy';
+import { AGENCY_ROUTES_FAILED, BETA_ROLLOUT_NOTICE, BETA_SERVICE_ROLLOUT_NOTICE, explainerFor, getRolloutNotice, NO_ROUTES_LOADED, noRoutesMatchText, noServiceOnDayNotice, notOnMapYetNotice, ON_DEMAND_NOT_MAPPED_NOTE, ROUTES_OUTSIDE_FILTERS_NOTICE, routesOutsideFiltersNotice, VIEW_ON_BETA } from '../../content/noticeCopy';
 import { onDemandCardName } from '../../utils/onDemandSelection';
 import { onDemandCoverageNote } from '../../data/onDemandCoverage';
 import {
@@ -384,6 +384,8 @@ interface Props {
   onBackToAgency?: () => void;
   /** Closes the card: the "← Map" back link every card with nothing before it gets (CIV-929). */
   onClose: () => void;
+  /** The agency's route data failed to load (N27). */
+  loadFailed?: boolean;
 }
 
 function RouteListSection({
@@ -427,12 +429,18 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
   onDemandZoneId = null,
   onBackToAgency,
   onClose,
+  loadFailed = false,
 }, ref) {
   const routes = useMemo(
     () => getRoutes(layers, agency.slug, day, period, { maxHeadway, selectedModes, hideSpan, hideLimitedService }),
     [layers, agency.slug, day, period, maxHeadway, selectedModes, hideSpan, hideLimitedService],
   );
   const routeFilters = useMemo(() => buildAgencyRouteFilters(routes), [routes]);
+  // N26: the agency's data is in, with routes on other days but none on this one.
+  const noServiceToday = useMemo(() => routes.length === 0 && (layers[agency.slug]?.features ?? []).some(f => {
+    const p = f.properties as ShapeProperties;
+    return !!p.routeId && !(p as { stopId?: string }).stopId && !!p.day && p.day !== day;
+  }), [routes.length, layers, agency.slug, day]);
   const [activeFilter, setActiveFilter] = useState<AgencyRouteFilterKey | null>(null);
   const [showOtherRoutes, setShowOtherRoutes] = useState(false);
 
@@ -722,7 +730,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
         {onDemandOn ? (
           <PanelEmpty>{ON_DEMAND_NOT_MAPPED_NOTE}</PanelEmpty>
         ) : filteredRoutes.length === 0 ? (
-          <PanelEmpty>{activeFilterLabel ? noRoutesMatchText(activeFilterLabel) : NO_ROUTES_LOADED}</PanelEmpty>
+          <PanelEmpty kind={loadFailed ? 'error' : undefined}>{activeFilterLabel ? noRoutesMatchText(activeFilterLabel) : loadFailed ? AGENCY_ROUTES_FAILED : noServiceToday ? noServiceOnDayNotice('agency', day) : NO_ROUTES_LOADED}</PanelEmpty>
         ) : hasFilterSplit ? (
           <>
             {matchingRoutes.length > 0 && (

@@ -1,3 +1,4 @@
+import PanelEmpty from '../../ui/PanelEmpty';
 import React, { useMemo } from 'react';
 import { CardBackLink } from '../../CardBack';
 import { stopNameCase } from '../../../utils/format';
@@ -20,6 +21,8 @@ import { stopRouteBestHeadway, type StopRoute } from '../../../utils/stopRoutes'
 import LiveStopArrivals from './LiveStopArrivals';
 import { compareHeadwayThenNumber } from '../../../utils/sortCompare';
 import type { RouteLabel } from '../../../utils/routeFacts';
+import { stopNoRoutesNotice } from '../../../content/noticeCopy';
+import { formatPeriodRangeLong, TIME_PERIODS } from '../../../../shared/config';
 
 // The stop card's route and branch shapes live with the code that builds them (CIV-997).
 export type { StopBranch, StopRoute } from '../../../utils/stopRoutes';
@@ -101,6 +104,7 @@ export const StopCard: React.FC<StopCardProps> = ({
       ))
       .map(({ route }) => route);
   }, [filteredStopRoutes, period]);
+  const stopPeriod = period !== 'all' ? TIME_PERIODS.find(p => p.key === period) : undefined;
 
   return (
     <SidebarCardShell>
@@ -162,6 +166,10 @@ export const StopCard: React.FC<StopCardProps> = ({
             setHoveredBranch={setHoveredBranch}
           />
         ))}
+        {/* N35 (Ryan): none of the stop's routes run in the chosen time of day. */}
+        {sortedRoutes.length === 0 && stopPeriod && (
+          <div className="-mx-4"><PanelEmpty>{stopNoRoutesNotice(formatPeriodRangeLong(stopPeriod.startHour, stopPeriod.endHour))}</PanelEmpty></div>
+        )}
       </SidebarCardList>
 
       {nearbyConnections.length > 0 && (

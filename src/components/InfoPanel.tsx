@@ -3,6 +3,7 @@ import { X, Search, Radio } from 'lucide-react';
 import { DROPDOWN_PANEL, dropdownAnim, SEARCH_PILL, SEARCH_ICON, SEARCH_FIELD, AGENCY_LIST_FILTERS, PILL_SCROLL_ROW, Z_MODAL_BG, AGENCY_LIST_PRIMARY } from '../styles';
 import Pill from './ui/Pill';
 import LinkCard from './ui/LinkCard';
+import ArrowLink from './ui/ArrowLink';
 import Tag from './ui/Tag';
 import PanelEmpty from './ui/PanelEmpty';
 import AgencyName from './ui/AgencyName';
@@ -532,7 +533,8 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                 <p className="text-xs text-[var(--text-primary)] leading-relaxed">{checkHistory}</p>
               )}
               <p className="text-xs text-[var(--text-dim)] leading-relaxed">
-                {EXPIRED_FEED_EXPLANATION}
+                {EXPIRED_FEED_EXPLANATION}{' '}
+                <ArrowLink href="/about/docs#quality" tone="inline" size="xs" className="whitespace-nowrap">Learn more</ArrowLink>
               </p>
               <p className="text-xs text-[var(--text-dim)] leading-relaxed">
                 {EXPIRED_FEED_CADENCE} {helpContext?.manualFeedSource ? MANUAL_FEED_CONTEXT : EXPIRED_FEED_CONTEXT}

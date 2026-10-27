@@ -920,7 +920,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
         )}
         {agenciesLoadState === 'error' && (
           <div className={`${MAP_STATUS_SLOT} flex items-center gap-3 rounded-full bg-[var(--bg-panel)]/95 px-3 py-1.5 text-xs text-[var(--text-dim)]`} data-map-overlay="status">
-            <span>{loadErrorText('agency data')}</span>
+            <span>{loadErrorText('the list of agencies')}</span>
             <button
               type="button"
               className="font-bold text-[var(--text-primary)] hover:text-[var(--accent)]"

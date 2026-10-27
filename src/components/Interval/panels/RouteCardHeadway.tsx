@@ -29,7 +29,7 @@ import {
   type CardReportButtonHandle,
 } from '../cardUi';
 import { CARD_NOTE, CARD_NOTICE, CARD_NOTICE_FOOTER } from '../../../styles';
-import { FEATURES, SPARKLINE_HOURS, TIME_PERIODS, formatPeriodRangeLong, periodKeyForHour } from '../../../../shared/config';
+import { FEATURES, SPARKLINE_HOURS, TIME_PERIODS, formatPeriodHourLong, formatPeriodRangeLong, periodKeyForHour } from '../../../../shared/config';
 import { hasDirectionPeriodService, NO_REGULAR_SERVICE_LABEL, NO_REGULAR_SERVICE_SHORT_LABEL, routeCardDisplayHeadway, routeCardDisplayHeadwayRange, routeCardDisplayLimited } from '../../../utils/effectiveHeadway';
 import { branchDisplayHourHeadway, branchDisplayPeriodHeadway, buildRouteServiceSummary } from '../../../utils/routeFacts';
 import { branchStackColor } from '../../../utils/colors';
@@ -47,7 +47,7 @@ import {
   trunkSparklineByHour,
 } from '../../../utils/routeCardTrunk';
 import { shouldShowDirectionSections } from '../../../utils/routeCardDirectionLayout';
-import { activeHourRanges, partPeriodNoticeApplies, partPeriodNoticeHeadway } from '../../../utils/periodActiveRanges';
+import { activeHourRanges, partPeriodNoticeApplies, partPeriodNoticeHeadway, partPeriodOutside } from '../../../utils/periodActiveRanges';
 import { rowLabelWithOrigin } from '../../../utils/rowOriginLabel';
 import { hasStretchRoles, routeAllDayContract, routeContract } from '../../../utils/stretchCard';
 import type { VariantFamily } from '../../../utils/routeVariants';
@@ -594,7 +594,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
           <div className={CARD_NOTICE_FOOTER}>
             <p className={CARD_NOTICE}>
               {doesNotRun
-                ? selectedRouteOutsideFilterNotice(Infinity)
+                ? selectedRouteOutsideFilterNotice(Infinity, selectedPeriod ? formatPeriodRangeLong(selectedPeriod.startHour, selectedPeriod.endHour) : null)
                 : selectedPeriod && activePeriodRangeText && showPartPeriodNotice
                 ? selectedRouteFilterNotice({
                   headway: partPeriodNoticeHeadway(
@@ -603,10 +603,21 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                       period, hoveredHour: null, stretchMode, allDay, contract, noRegularService, maxHeadway,
                     }).headway),
                   ),
-                  activeRange: activePeriodRangeText,
+                  ...(() => {
+                    // N13 (Ryan): name what the rest of the period has, from the card's own hourly data.
+                    const split = partPeriodOutside(activeRangeDirections, selectedPeriod.startHour, selectedPeriod.endHour);
+                    return split
+                      ? {
+                        activeRange: formatPeriodRangeLong(split.active[0], split.active[1]),
+                        outside: split.parts.map(part => (part.at === 'start'
+                          ? { service: part.service, range: formatPeriodRangeLong(part.hours[0], part.hours[1]) }
+                          : { service: part.service, after: formatPeriodHourLong(part.hours[0]) })),
+                      }
+                      : { activeRange: activePeriodRangeText };
+                  })(),
                   periodRange: formatPeriodRangeLong(selectedPeriod.startHour, selectedPeriod.endHour),
                 })
-                : selectedRouteOutsideFilterNotice(maxHeadway)}
+                : selectedRouteOutsideFilterNotice(maxHeadway, selectedPeriod ? formatPeriodRangeLong(selectedPeriod.startHour, selectedPeriod.endHour) : null)}
             </p>
           </div>
         )}

@@ -47,7 +47,7 @@ import ModeFilterPillRow from '../components/ui/ModeFilterPillRow';
 import { syncUrlParams } from '../utils/syncUrlParams';
 import { encodeHistoryUrlState, parseHistoryUrlState, type HistoryUrlState } from '../utils/shareUrlState';
 import PanelEmpty from '../components/ui/PanelEmpty';
-import { HISTORY_ROUTE_ORDER_NOTE, HISTORY_TRIP_TIME_NOTE, loadErrorText, loadingText, NO_AGENCIES_MATCH, NO_ROUTES_LOADED, noRoutesMatchText, RETRY_HINT } from '../content/noticeCopy';
+import { HISTORY_LOAD_FAILED, HISTORY_ROUTE_NOT_COVERED, HISTORY_ROUTE_ORDER_NOTE, HISTORY_TRIP_TIME_NOTE, loadingText, NO_AGENCIES_MATCH, NO_ROUTES_LOADED, noRoutesMatchText, RETRY_HINT } from '../content/noticeCopy';
 import { compareAgencyName, compareRegion } from '../utils/sortCompare';
 import { inViewFirst } from '../utils/historyOpen';
 
@@ -536,7 +536,10 @@ function HistoryAgencyPanel({
   nameParts,
   selectedYear,
   view,
+  missingRoute = false,
 }: {
+  /** A route was asked for that History has no past schedules for (N55). */
+  missingRoute?: boolean;
   /** The Time and Frequency chips: the list shows the period's values and only routes within the limit. */
   view: HistoryView;
   /** The agency's name and place, as the agency card and About list show them. */
@@ -639,6 +642,8 @@ function HistoryAgencyPanel({
             />
           )}
         >
+          {/* N55 (Ryan): a linked route History has no past schedules for says so, above the agency's list. */}
+          {missingRoute && <p className={`${CARD_NOTICE} mt-1`}>{HISTORY_ROUTE_NOT_COVERED}</p>}
           {!routeQuery && !activeFilter && (
             <p className={`${CARD_NOTICE} mt-1`}>{HISTORY_ROUTE_ORDER_NOTE}</p>
           )}
@@ -996,7 +1001,7 @@ export default function History({ active, view = HISTORY_VIEW_ALL, initialAgency
           if (openAgencyFailed) {
             return (
               <Panel sidebar style={frameStyle} className={frameClassName}>
-                <PanelEmpty kind="error">{loadErrorText('history data')}</PanelEmpty>
+                <PanelEmpty kind="error">{HISTORY_LOAD_FAILED}</PanelEmpty>
               </Panel>
             );
           }
@@ -1029,6 +1034,7 @@ export default function History({ active, view = HISTORY_VIEW_ALL, initialAgency
             <HistoryAgencyPanel
               agencyHistory={agencyHistory}
               onRouteSelect={setSelectedRouteShortName}
+              missingRoute={!!selectedRouteShortName}
               onBack={() => { setSelectedSlug(null); setSelectedRouteShortName(null); }}
               routeQuery={routeQuery}
               activeFilter={activeFilter}
@@ -1086,7 +1092,7 @@ export default function History({ active, view = HISTORY_VIEW_ALL, initialAgency
                   kind="error"
                   action={<ArrowLink as="button" tone="inline" size="xs" onClick={loadHistoryConfig} className="shrink-0 whitespace-nowrap">Retry</ArrowLink>}
                 >
-                  {loadErrorText('history data')} {RETRY_HINT}
+                  {HISTORY_LOAD_FAILED} {RETRY_HINT}
                 </PanelEmpty>
               )}
               {historyData !== null && !historyLoadFailed && agenciesByRegion.length === 0 && (
