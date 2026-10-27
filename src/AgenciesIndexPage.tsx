@@ -31,11 +31,6 @@ function readEmbeddedData(): AgencyIndexData | null {
   }
 }
 
-/**
- * Every region and agency page in one list. The prerender writes the whole list as plain links, so it works
- * without scripts. The dev server (no prerendered
- * HTML) loads from the summary file instead (dead code in production builds).
- */
 /** Shared multi-column layout for the Regions list and every country's agency list. */
 const INDEX_COLUMNS = 'sm:columns-2 lg:columns-3 sm:gap-x-8';
 
@@ -58,6 +53,10 @@ function AgencyTags({ live, history }: { live: boolean; history: boolean }) {
   );
 }
 
+/**
+ * Every region and agency page in one list. The prerender writes the whole list as plain links, so it works
+ * without scripts. The dev server (no prerendered HTML) loads from the summary file instead (dead code in production builds).
+ */
 export default function AgenciesIndexPage({ data: dataProp }: { data?: AgencyIndexData }) {
   const [data, setData] = useState<AgencyIndexData | null>(() => dataProp ?? readEmbeddedData());
   useEffect(() => {

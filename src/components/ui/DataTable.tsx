@@ -102,7 +102,6 @@ export const FIXED_FIRST_COLUMN_REM = 16;
 /** Width of every other column in a fixed-layout table. */
 export const FIXED_COLUMN_REM = 8;
 
-/** Plain data table. Wrap it in an overflow-x-auto element where it may be wider than its container. */
 /**
  * A click anywhere on a linked row follows its link, and a middle, Cmd or Ctrl click opens it in a new tab. A click on a
  * link or button inside keeps its own behaviour, and so does selecting text in the row.
@@ -117,6 +116,7 @@ function openRow(e: MouseEvent<HTMLTableRowElement>, href: string) {
 
 export type DataTableLayout = 'content' | 'fixed' | 'fill' | 'page';
 
+/** Plain data table. Wrap it in an overflow-x-auto element where it may be wider than its container. */
 export default function DataTable<T>({ columns, rows, rowKey, variant = 'compact', caption, layout = 'content', narrowFit = false, rowHref, rowTitle, sort, onSort }: DataTableProps<T>) {
   const fixed = layout !== 'content';
   const fill = layout === 'fill';

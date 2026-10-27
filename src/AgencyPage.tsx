@@ -44,12 +44,6 @@ function readEmbeddedData(slug: string | undefined): AgencyPageData | null {
 }
 
 /**
- * One agency's frequency summary, written to be read and crawled as plain text. The prerender
- * passes `data`; in the browser the page reads only its own agency's numbers from its own HTML,
- * so no other agency's data ships with the page. The dev server has no prerendered HTML and
- * loads from the full summary file instead (dead code in production builds).
- */
-/**
  * The intro sentence, once, under the title. The place links to its area page when the agency has one, and otherwise
  * to its state or province in the all-agencies list (CIV-966); connecting agencies named in it are links when they have
  * a page. An agency with no regular midday service says so after it (CIV-965).
@@ -93,13 +87,18 @@ function Intro({ data }: { data: AgencyPageData }) {
  * A period cell: the card's cadence (a range where alternating branches combine on a shared
  * stretch), "Limited" when the route runs but has no trustworthy cadence, else a dash.
  */
-
 function cell(col: 'am' | 'midday' | 'pm' | 'evening' | 'overnight', r: AgencyPageRoute): string {
   const v = r[col];
   if (v != null) return routeListHeadwayText(v, r.shared?.[col], true);
   return Array.isArray(r.limited) && r.limited.includes(col) ? 'Limited' : headwayEvery(null);
 }
 
+/**
+ * One agency's frequency summary, written to be read and crawled as plain text. The prerender
+ * passes `data`; in the browser the page reads only its own agency's numbers from its own HTML,
+ * so no other agency's data ships with the page. The dev server has no prerendered HTML and
+ * loads from the full summary file instead (dead code in production builds).
+ */
 export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }) {
   const params = useParams();
   const [data, setData] = useState<AgencyPageData | null>(() => dataProp ?? readEmbeddedData(params.slug));

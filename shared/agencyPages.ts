@@ -14,7 +14,7 @@ import { SITE_URL } from './seo';
 import { andOthers, joinList, plural } from './overflowText';
 
 export { headwayEvery };
-export const MAX_NEARBY = 8;
+const MAX_NEARBY = 8;
 
 export interface AgencyPageRoute {
   name: string;
@@ -218,7 +218,6 @@ export function agencyPageH1(a: Pick<AgencyPageSummary, 'name' | 'city'>): strin
   return introName(a.name, a.city);
 }
 
-export { modeLabel };
 
 /** Weekday-midday frequency bands, best first; the last one is routes with no regular midday service. */
 export const FREQUENCY_BANDS = [
@@ -293,15 +292,6 @@ export function modesText(byMode: ReadonlyArray<{ label: string; routes: number 
   return byMode.map(m => `${m.routes} ${m.label.toLowerCase()}`).join(separator);
 }
 
-/** What the release has for Saturday and Sunday: a short sub-label, or null when unknown. */
-export function weekendLabel(sat: boolean | undefined, sun: boolean | undefined): string | null {
-  if (sat === undefined && sun === undefined) return null;
-  if (sat && sun) return 'Runs Sat & Sun';
-  if (sat) return 'Runs Saturdays';
-  if (sun) return 'Runs Sundays';
-  return 'Weekdays only';
-}
-
 /** One sentence that stands alone: "210 weekday routes." */
 export function agencyLeadSentence(a: Pick<AgencyPageSummary, 'routes'>): string {
   const n = a.routes.length;
@@ -327,25 +317,6 @@ export function agencyPageDescription(a: AgencyPageSummary, intro?: string): str
   const tail = [' Weekday route frequency by time of day, from the published schedule.', ' Weekday waits by time of day.']
     .find(t => base.length + t.length <= DESCRIPTION_MAX);
   return tail ? `${base}${tail}` : base;
-}
-
-function hourLabel(h: number): string {
-  const hour = h % 24;
-  const suffix = hour < 12 ? 'am' : 'pm';
-  return `${hour % 12 === 0 ? 12 : hour % 12}${suffix}`;
-}
-
-export function agencySpanText(a: Pick<AgencyPageSummary, 'span'>): string | null {
-  if (!a.span) return null;
-  if (a.span.last + 1 - a.span.first >= 24) return 'Runs 24 hours';
-  return `${hourLabel(a.span.first)} to ${hourLabel(a.span.last + 1)}`;
-}
-
-/** Short form for a tile: "24 h" or "5am–2am", so it stays on one line. */
-export function agencySpanShort(a: Pick<AgencyPageSummary, 'span'>): string | null {
-  if (!a.span) return null;
-  if (a.span.last + 1 - a.span.first >= 24) return '24 h';
-  return `${hourLabel(a.span.first)}–${hourLabel(a.span.last + 1)}`;
 }
 
 /**
@@ -379,7 +350,6 @@ export function agencyMapHref(a: AgencyPageIdentity): string {
   return `/?${params.toString()}`;
 }
 
-/** The dates, each named for what it is: the agency's schedule, and the Atlas data release it came from. */
 /** True when a yyyymmdd or ISO date is before the release's date (the day the data was last updated). */
 function endedBefore(through: string | null | undefined, releaseDate: string | null): boolean {
   const t = through ? /^(\d{4})-?(\d{2})-?(\d{2})/.exec(through) : null;

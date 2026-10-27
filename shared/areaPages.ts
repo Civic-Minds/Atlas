@@ -8,10 +8,8 @@ import {
   bestRoute,
   formatDataDate,
   hasMiddayService,
-  headwayEvery,
   introName,
   modesText,
-  modeLabel,
   type AgencyPageSummary,
 } from './agencyPages';
 import { MODE_DEFINITIONS, ON_DEMAND_MODE, VIRTUAL_LRT_MODE, modeLabelSortIndex } from './modes';
@@ -46,11 +44,6 @@ export interface AreaPageData {
   /** The route with the shortest weekday-midday headway, with its agency. */
   best: { name: string; headway: number; agency: string } | null;
   byMode: Array<{ label: string; routes: number }>;
-  span: { first: number; last: number } | null;
-  /** True when agencies' first or last departures differ by 3 hours or more. */
-  spanVaries: boolean;
-  /** Saturday and Sunday: every agency has it, none do, or it varies. */
-  weekend: 'both' | 'sat' | 'sun' | 'none' | 'varies' | null;
   agencies: AreaAgencyRow[];
   /** States or provinces of the area's own listed agencies, most routes first (CIV-968: the subtitle when the cities only repeat the title). */
   regions?: string[];
@@ -60,8 +53,6 @@ export interface AreaPageData {
   newestRefresh: string | null;
   releaseDate: string | null;
 }
-
-const SPAN_VARIES_HOURS = 3;
 
 const modeLabelOf = (id: number) => MODE_DEFINITIONS.find(m => m.id === id)!.label;
 
@@ -134,16 +125,11 @@ export function buildAreaPageData(area: AreaConfig, all: ReadonlyMap<string, Age
   const members = areaAgencySummaries(area, all);
   const allRoutes = members.flatMap(a => a.routes);
   const modeCounts = new Map<string, number>();
-  let firstMin = Infinity, firstMax = -Infinity, lastMin = Infinity, lastMax = -Infinity;
   let newest: string | null = null;
   const rows: AreaAgencyRow[] = [];
   for (const a of members) {
     const s = agencyStats(a);
     for (const m of s.byMode) modeCounts.set(m.label, (modeCounts.get(m.label) ?? 0) + m.routes.length);
-    if (a.span) {
-      firstMin = Math.min(firstMin, a.span.first); firstMax = Math.max(firstMax, a.span.first);
-      lastMin = Math.min(lastMin, a.span.last); lastMax = Math.max(lastMax, a.span.last);
-    }
     if (a.lastRefreshedAt && (!newest || a.lastRefreshedAt > newest)) newest = a.lastRefreshedAt;
     rows.push({
       slug: a.slug,
@@ -154,15 +140,6 @@ export function buildAreaPageData(area: AreaConfig, all: ReadonlyMap<string, Age
     });
   }
   rows.sort((x, y) => y.totalRoutes - x.totalRoutes || compareAgencyName(x.name, y.name) || x.slug.localeCompare(y.slug));
-  const known = members.filter(a => a.sat !== undefined || a.sun !== undefined);
-  const all2 = (k: 'sat' | 'sun') => known.length > 0 && known.every(a => a[k]);
-  const any2 = (k: 'sat' | 'sun') => known.some(a => a[k]);
-  const weekend: AreaPageData['weekend'] = known.length === 0 ? null
-    : all2('sat') && all2('sun') ? 'both'
-    : !any2('sat') && !any2('sun') ? 'none'
-    : all2('sat') && !any2('sun') ? 'sat'
-    : all2('sun') && !any2('sat') ? 'sun'
-    : 'varies';
   const best = bestRoute(members.flatMap(a => a.routes.map(r => ({ ...r, agency: a.displayName }))));
   const { slug, name, type, officialName, country, cities, bbox, center, note } = area;
   const regionRoutes = new Map<string, number>();
@@ -178,9 +155,6 @@ export function buildAreaPageData(area: AreaConfig, all: ReadonlyMap<string, Age
     bands: bandCounts(allRoutes),
     best: best ? { name: best.route.name, headway: best.headway, agency: best.route.agency } : null,
     byMode,
-    span: Number.isFinite(firstMin) ? { first: firstMin, last: lastMax } : null,
-    spanVaries: Number.isFinite(firstMin) && (firstMax - firstMin >= SPAN_VARIES_HOURS || lastMax - lastMin >= SPAN_VARIES_HOURS),
-    weekend,
     agencies: rows,
     regions,
     modeColumns: [...AREA_TABLE_MODES, ...(rows.some(r => r.modes[AREA_TABLE_OTHER]) ? [AREA_TABLE_OTHER] : [])],
@@ -235,25 +209,6 @@ export function areaPageDescription(d: AreaPageData): string {
   ], DESCRIPTION_MAX);
 }
 
-function hourLabel(h: number): string {
-  const hour = h % 24;
-  return `${hour % 12 === 0 ? 12 : hour % 12}${hour < 12 ? 'am' : 'pm'}`;
-}
-
-/** Stat text for the span: "24 h" or "5am–2am". */
-export function areaSpanShort(d: Pick<AreaPageData, 'span'>): string | null {
-  if (!d.span) return null;
-  return d.span.last + 1 - d.span.first >= 24 ? '24 h' : `${hourLabel(d.span.first)}–${hourLabel(d.span.last + 1)}`;
-}
-
-/** Sub-label under the hours: weekend service, and "varies by agency" when the span is wide. */
-export function areaHoursLabel(d: Pick<AreaPageData, 'weekend' | 'spanVaries'>): string {
-  const weekend = d.weekend === 'both' ? 'Runs Sat & Sun' : d.weekend === 'sat' ? 'Runs Saturdays' : d.weekend === 'sun' ? 'Runs Sundays'
-    : d.weekend === 'none' ? 'Weekdays only' : d.weekend === 'varies' ? 'Weekends vary by agency' : '';
-  return ['weekday service', d.spanVaries ? 'varies by agency' : '', weekend].filter(Boolean).join(' · ');
-}
-
-/** One plain sentence, the same template for every area. */
 /** An area with more agencies than this names its two biggest and counts the rest (CIV-968); a smaller one names none (Ryan). */
 const AREA_INTRO_NAME_NONE_MAX = 3;
 const AREA_INTRO_NAMED = 2;
@@ -300,7 +255,6 @@ export function areaDatesText(d: Pick<AreaPageData, 'newestRefresh' | 'releaseDa
   return ["Based on the agencies' published timetables, not live arrivals.", refreshed ? `Newest timetable published ${refreshed}.` : '', release ? `Atlas last updated this page ${release}.` : ''].filter(Boolean).join(' ');
 }
 
-/** The map link: `?area=<slug>` selects the area's agencies and fits the map to it (the app does the framing). */
 /**
  * The map link for an area page: the area's own agencies (`?area=`), plus `agencies=` listing every
  * agency counted on the page when that adds one (CIV-274: Fraser Valley on Vancouver), so the map
@@ -354,4 +308,3 @@ export function areaPageJsonLd(d: AreaPageData, canonicalUrl: string, origin: st
   };
 }
 
-export { modeLabel };
