@@ -72,3 +72,50 @@ export function expiredFeedCheckHistory(options: {
   }
   return '';
 }
+
+// ---- Live ----
+// Live's notice, empty-state and error texts (CIV-1045), word for word as they were in the Live components.
+// Live's own figure wording stays in shared/liveWording.ts.
+
+/** A Live section that failed to draw (its error boundary). */
+export const liveDrawError = (what: string) => `${what} could not be drawn: the analysis file may be from an older version.`;
+export const LIVE_METHOD_DRAW_ERROR = 'How this is measured could not be drawn.';
+export const liveNoAgencyAnalysis = (agency: string) => `Live has no route analysis for ${agency}.`;
+export const LIVE_API_NO_ANSWER = 'The Live API did not answer. Start Live with "npm run live" and open this page on the address it prints.';
+export const LIVE_OFF_TITLE = 'Live is switched off in this copy of Atlas';
+/** The switched-off page's line, in parts around its two code snippets. */
+export const LIVE_OFF_BODY = { start: 'Live only runs on your own computer. Start it with', command: 'npm run live', middle: 'and open', path: '/apps/live', end: 'on the address it prints.' } as const;
+
+/** Why a picked route has no vehicles on the Live map. */
+export function liveRouteEmptyNotice(agencyName: string, routeShortName: string, polled: boolean, followed: readonly string[]): string {
+  if (!polled) {
+    return followed.length > 0
+      ? `Live does not follow ${agencyName} ${routeShortName}. It follows ${agencyName} routes ${followed.join(', ')}.`
+      : `Live does not follow any ${agencyName} routes.`;
+  }
+  return `No ${agencyName} ${routeShortName} vehicles are running right now. Live checks again every few seconds.`;
+}
+export const LIVE_NO_VEHICLES_ON_ROUTE = 'No vehicles on this route';
+export const LIVE_NO_ROUTE_MATCHES = 'No routes match your search.';
+export const LIVE_REPLACEMENT_BUSES = 'Replacement buses: all figures describe the buses running this route';
+export const LIVE_FEED_INCOMPLETE = 'Live feed incomplete right now';
+export const LIVE_GAP_NOT_SEEN = "The car ahead's passing wasn't seen";
+
+export const LIVE_NO_WEEK_COMPARISON = 'No comparison with last week';
+export const LIVE_WEEK_NOT_IN_FILE = 'This week against last week is not in this analysis file.';
+export const LIVE_WEEK_NOT_IN_FILES = 'This week against last week is not in the analysis files yet.';
+export const LIVE_NO_STOPS_MEASURED = 'No stops were measured.';
+export const LIVE_NO_STOP_TO_RANK = 'No stop has enough departures to rank.';
+export const LIVE_NO_STOP_TO_RANK_YET = 'No stop has enough departures to rank yet.';
+export const LIVE_NO_STRETCH_STANDS_OUT = 'No stretch stands out on the analysed routes.';
+export const LIVE_NO_FREQUENT_STOP = 'No stop on this route has a vehicle every 15 minutes or better in this time of day.';
+export const LIVE_NOTHING_LINKED = 'Nothing measured here is linked to it';
+export const LIVE_LESS_EXACT_HERE = 'Less exact here: vehicles report their location less often';
+export const LIVE_FEW_MEASUREMENTS = 'Few measurements: treat with care.';
+export const LIVE_NO_DEPARTURES_IN_PERIOD = 'No departures in this part of the day.';
+/** A kind of day with no good recordings this week ("No weekends with good recordings this week."). */
+export const liveNoGoodDays = (dayKindLabel: string) => `No ${dayKindLabel.toLowerCase()} with good recordings this week.`;
+export const LIVE_TOO_FEW_SCHEDULED_DEPARTURES = 'Not enough departures at stops with a scheduled time.';
+export const LIVE_TOO_FEW_DEPARTURES = 'too few departures';
+/** Run time with too few trips for a time of day ("in the AM peak"). */
+export const liveTooFewTrips = (bandWords: string) => `Too few trips were measured ${bandWords} to draw this.`;

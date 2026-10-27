@@ -8,6 +8,7 @@ import { SectionTitle } from '../../ui/PageTitle';
 import Section from './Section';
 import { BAND_WORDS, dirsOf } from './figures';
 import { MIN_PATTERN_TRIPS, placeRowLabels, rowPercent, runTimeRowScale, runTimeRows, type RowLabel, type RunTimeRow } from './runTimeRows';
+import { liveTooFewTrips } from '../../../content/noticeCopy';
 
 /** The one derivation of the run-time figures, so every surface draws the same numbers. */
 export function runTimeModel(v3: LiveV3, band: DashboardBand, dir: number | null) {
@@ -172,7 +173,7 @@ export default function RunTimeSection({ v3, band, dir, detail, id, shrink, boun
                 {!full && <p className="mt-4 text-sm font-bold">{runTimeTakeaway(label, hours)}</p>}
                 <div className={full ? 'mt-4' : 'mt-2'}><RunTimeChart hours={hours} axis={axis} scale={scale} ariaLabel={`${label}: run time against the schedule by the hour the trip starts. ${full ? sentence : runTimeTakeaway(label, hours)}`} /></div>
               </>
-            ) : !full && <p className="mt-1 text-sm text-[var(--text-muted)]">Too few trips were measured {BAND_WORDS[band]} to draw this.</p>}
+            ) : !full && <p className="mt-1 text-sm text-[var(--text-muted)]">{liveTooFewTrips(BAND_WORDS[band])}</p>}
           </div>
         );
       })}

@@ -9,6 +9,7 @@ import { halfMinutes, type SegmentBand, type SegmentDelayData } from '../../util
 import { addSnapshot, analysisTripDirections, lineModel, liveGaps, liveTripDirections, mapDirectionPairing, positionsSnapshot, type RecentSnapshot, withStats, type LineModel } from '../../utils/livePerformance';
 import type { LiveVehicle } from '../../context/LiveVehiclesMapOverlay';
 import { getVehicleStatus } from '../../utils/colors';
+import { LIVE_FEED_INCOMPLETE, LIVE_GAP_NOT_SEEN, LIVE_REPLACEMENT_BUSES } from '../../content/noticeCopy';
 
 function halfText(m: number): string {
   const whole = Math.floor(Math.abs(m));
@@ -157,7 +158,7 @@ export default function LiveRoutePerformance({ slug, routeShortName, vehicles, f
   if (!data || !line) return null;
 
   const replacement = (data as { replacementBuses?: boolean }).replacementBuses
-    ? <div className="text-xs font-black text-[var(--status-caution-text)]">Replacement buses: all figures describe the buses running this route</div>
+    ? <div className="text-xs font-black text-[var(--status-caution-text)]">{LIVE_REPLACEMENT_BUSES}</div>
     : null;
 
   const range = live?.scheduledRangeSec;
@@ -190,7 +191,7 @@ export default function LiveRoutePerformance({ slug, routeShortName, vehicles, f
       {live && (
         <SidebarCardSection label={rightNowLabel}>
           {live.incomplete ? (
-            <div className="text-xs font-bold text-[var(--text-muted)]">Live feed incomplete right now</div>
+            <div className="text-xs font-bold text-[var(--text-muted)]">{LIVE_FEED_INCOMPLETE}</div>
           ) : (
             <>
               <Stats items={[
@@ -204,7 +205,7 @@ export default function LiveRoutePerformance({ slug, routeShortName, vehicles, f
                   <span className="text-[var(--text-dim)]">Gaps, front to back (min)</span>
                   {live.gapsMin.map((g, i) => (
                     g == null
-                      ? <span key={i} className="text-[var(--text-dim)]" title="The car ahead's passing wasn't seen">–</span>
+                      ? <span key={i} className="text-[var(--text-dim)]" title={LIVE_GAP_NOT_SEEN}>–</span>
                       : <span key={i} style={late(g, i) ? { color: AMBER } : undefined} className={late(g, i) ? 'font-black' : 'text-[var(--text-primary)]'}>{g}</span>
                   ))}
                 </div>

@@ -35,6 +35,7 @@ import BuildupSection from './components/Live/sections/BuildupSection';
 import { BANDS, DAYS, dirsOf, mins, pct } from './components/Live/sections/figures';
 import { BOUNDARY, RouteDevHint, RouteSubtitle, withNiceNames } from './LiveRoutePage';
 import { LATE_BY_HOUR_TITLE } from '../shared/liveWording';
+import { LIVE_LESS_EXACT_HERE, LIVE_METHOD_DRAW_ERROR, LIVE_NOTHING_LINKED } from './content/noticeCopy';
 
 type Day = 'all' | 'weekday' | 'weekend';
 
@@ -94,7 +95,7 @@ function DetailPanel({ v3, band, sel, stops, data }: { v3: LiveV3; band: Dashboa
         <Block>
           <Fact label="Gaps off the timetable" value={`${pct(b.fromBadShare)} to ${pct(b.toBadShare)}`} />
         </Block>
-        <Block title={linked.length ? 'Linked to' : 'Nothing measured here is linked to it'}>
+        <Block title={linked.length ? 'Linked to' : LIVE_NOTHING_LINKED}>
           {b.links.map(l => (
             <Fact key={l.kind} label={`${l.value == null ? 'Not measured' : l.linked ? 'Linked' : 'Not linked'}: ${LINK_LABELS[l.kind]}`} value={l.value == null ? '' : linkValueText(l.kind, l.value)} />
           ))}
@@ -119,7 +120,7 @@ function DetailPanel({ v3, band, sel, stops, data }: { v3: LiveV3; band: Dashboa
             {s.lateShare != null && <Fact label="Late" value={pct(s.lateShare)} sub={`of ${s.n.toLocaleString()} departures`} />}
           </>
         ) : <Fact label="Typical delay" value="not measured" />}
-        {s.uncertain && <p className="mt-2 text-xs text-[var(--text-dim)]">Less exact here: vehicles report their location less often</p>}
+        {s.uncertain && <p className="mt-2 text-xs text-[var(--text-dim)]">{LIVE_LESS_EXACT_HERE}</p>}
       </Block>
       {bunch && bunch.n > 0 && (
         <Block>
@@ -265,7 +266,7 @@ export default function LiveExplorePage() {
       <BunchingSection v3={v3} dir={dir} band={band} detail="compact" boundary={BOUNDARY('Where bunching forms')} />
       <DeliveredSection v3={v3} dir={dir} detail="compact" boundary={BOUNDARY('Service delivered')} />
       <WorstStopsSection v3={v3} data={bandData} dir={dir} uncertain={uncertain} limit={10} columns="full" title="Stops most often late" id="x-stops" shrink boundary={BOUNDARY('Stops most often late')} onPick={pickStop} canPick={onStrip} />
-      <ErrorBoundary label="How this is measured could not be drawn."><MethodSection scope="route" data={data} /></ErrorBoundary>
+      <ErrorBoundary label={LIVE_METHOD_DRAW_ERROR}><MethodSection scope="route" data={data} /></ErrorBoundary>
     </article>,
   );
 }
