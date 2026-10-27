@@ -122,7 +122,7 @@ describe('area table columns (CIV-973)', () => {
   it('says what a grouped column counts on hover, and nothing for a single-mode column', () => {
     expect(areaTableColumnTitle('Subway/Metro')).toBe('Subway/metro and monorail routes');
     expect(areaTableColumnTitle('Bus')).toBe('Bus and trolleybus routes');
-    expect(areaTableColumnTitle('Other')).toBe('Cable car, gondola/aerial tram, funicular and other routes');
+    expect(areaTableColumnTitle('Other')).toBe('People mover, cable car, gondola/aerial tram, funicular and other routes');
     expect(areaTableColumnTitle('Streetcar')).toBeUndefined();
   });
 });
