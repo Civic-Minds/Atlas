@@ -53,4 +53,12 @@ describe('stop card stays inside the map (#1151)', () => {
     expect(cardTop(100, 200, 600)).toBe(116);
     expect(cardTop(150, 400, 470)).toBe(62);
   });
+  it('keeps clear of the measure pills at the top and the key at the bottom', () => {
+    // A stop high on a desktop map: below it, not over the pills.
+    expect(cardTop(120, 100, 800, 56, 80)).toBe(136);
+    // A stop low on a phone map: above it, not over the key.
+    expect(cardTop(430, 180, 480, 76, 90)).toBe(234);
+    // No room either side: as low as clears the key.
+    expect(cardTop(200, 300, 480, 76, 90)).toBe(90);
+  });
 });

@@ -181,7 +181,7 @@ export default function RouteMap({ model, measure, selected, onPick, anchor = nu
       </div>
       {at && card && (
         <div ref={cardRef} className="absolute z-20 rounded-2xl border border-[var(--border-primary)] bg-[var(--bg-header)] shadow-2xl"
-          style={{ left: Math.max(8, Math.min(at.w - 260 - 8, at.x - 130)), top: cardTop(at.y, cardH, at.h), width: 260 }}>
+          style={{ left: Math.max(8, Math.min(at.w - 260 - 8, at.x - 130)), top: cardTop(at.y, cardH, at.h, padding?.top ?? 8, padding?.bottom ?? 8), width: 260 }}>
           {card}
         </div>
       )}
