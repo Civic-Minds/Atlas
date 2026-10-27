@@ -39,6 +39,7 @@ import ResearchInfo from './components/ResearchInfo';
 import { FREQUENT_INFO_HEADING, frequentRuleText } from './content/researchRules';
 import { DAY_TYPES, getNowDay, type DayType } from '../shared/dayTypes';
 import { syncUrlParams } from './utils/syncUrlParams';
+import { MAP_URL, readUrlParam, urlParamUpdate } from './utils/mapUrlState';
 import { AGENCY_CARD_PARAM, parseAgencyCardParam } from './utils/shareUrlState';
 import AppUpdateBanner from './components/AppUpdateBanner';
 import type { FeedQuality } from '../shared/feedQuality';
@@ -392,9 +393,8 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   const [compareActive, setCompareActive] = useState(false);
   const [day, setDay] = useState<DayType>(() => {
     try {
-      const sp = new URLSearchParams(window.location.search);
-      const d = sp.get('day') || sp.get('d');
-      if (d && (DAY_TYPES as readonly string[]).includes(d)) return d as DayType;
+      const fromLink = readUrlParam(window.location.search, MAP_URL.day);
+      if (fromLink != null) return fromLink;
     } catch {}
     try {
       const s = localStorage.getItem('atlas_pref_day');
@@ -565,7 +565,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   // Always written, never omitted as a "default": the default is today's day, so a link copied on a Wednesday
   // would open on Saturday for a friend (#909).
   useEffect(() => {
-    syncUrlParams({ day });
+    syncUrlParams(urlParamUpdate(MAP_URL.day, day));
   }, [day]);
 
   useEffect(() => {
