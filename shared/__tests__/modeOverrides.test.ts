@@ -52,7 +52,7 @@ describe('per-route mode overrides (#827)', () => {
     expect(at('miami-dade-transit', 2, '2600')).toBe(1);
     expect(at('qline', 2, 'ML')).toBe(0);
     expect(at('nfta', 0, 'Metro Rail', 'Metro Rail')).toBe(VIRTUAL_LRT_MODE);
-    expect(at('capmetro', 0, '550', '550-Metro Rail Red Line')).toBe(0);
+    expect(at('capmetro', 0, '550', '550-Metro Rail Red Line')).toBe(2); // commuter rail, published as tram (CIV-956)
     expect(at('rioc-tram', 0, '', 'Roosevelt Island Aerial Tramway')).toBe(6);
     expect(at('rioc-tram', 3, '', 'RIOC Red Bus')).toBe(3);
   });

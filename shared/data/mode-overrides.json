@@ -246,6 +246,13 @@
       "reason": "RTD light rail lines are published as route_type 0 (tram); A, B, G and N are commuter rail and stay as published"
     },
     {
+      "agencySlug": "capmetro",
+      "routeType": 0,
+      "routeShortName": "550",
+      "mode": 2,
+      "reason": "CapMetro Rail Red Line (550) is commuter rail, published as route_type 0 (tram)"
+    },
+    {
       "agencySlug": "dart",
       "routeType": 0,
       "routeShortName": "BLUE",
