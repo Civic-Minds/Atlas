@@ -19,6 +19,7 @@
  *   --bus-only   run on the main feed only; the report is stamped busOnly + supplementalExcluded
  * (supplemental feeds such as rail have no archive, so they never enter a backfill).
  */
+import { pipelineRunDateYmd } from './pipelineTimeZone.js';
 import { readFileSync, readdirSync, mkdirSync, writeFileSync } from 'node:fs';
 import { basename, resolve } from 'node:path';
 import { processAgencyFeeds } from './agencyFeeds.js';
@@ -70,7 +71,7 @@ async function main(): Promise<void> {
         chosen = chooseReferenceDate(await readRepickRows(buf), picked.refDate);
       }
       const processed = await processAgencyFeeds(buf, [], { ...agency, supplementalFeedUrls: [] } as any, chosen?.quality.repicked ? { referenceDate: chosen.refDate } : {}, m => process.stdout.write(`  ${m}`));
-      const evidence = await readFeedEvidence(buf, chosen?.quality.repicked ? { referenceDate: chosen.refDate } : agency.referenceDateFromRunDate ? { referenceDate: new Date().toISOString().slice(0, 10).replace(/-/g, '') } : {});
+      const evidence = await readFeedEvidence(buf, chosen?.quality.repicked ? { referenceDate: chosen.refDate } : agency.referenceDateFromRunDate ? { referenceDate: pipelineRunDateYmd() } : {});
       const built = buildV2Routes((JSON.parse(processed.geojson) as { features: Array<{ properties?: Record<string, unknown> }> }).features, evidence);
       const sidecar = buildSidecar(slug, periodKey, evidence.refDate, built.routes);
       sidecar.refDateQuality = chosen ? chosen.quality : await readRefDateQuality(buf, evidence.refDate);

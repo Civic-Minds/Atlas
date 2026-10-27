@@ -22,6 +22,7 @@
  * The index.json stores feed sources + metadata. Artifact URLs are derived from slug.
  */
 import { readFileSync, writeFileSync, renameSync } from 'fs';
+import { pipelineRunDateYmd } from './pipelineTimeZone.js';
 import { execFileSync } from 'child_process';
 import { resolve } from 'path';
 import { canRebuildPmtilesAfterRefresh, clearDataRefreshHandoff, writeDataRefreshMarker, writeRefreshRunResult, type RefreshAgencyStatus } from './dataRefreshMarker.js';
@@ -188,7 +189,7 @@ async function writeHistorySnapshot(slug: string, geojson: string, feedExpiry: s
   let v2Routes: ReturnType<typeof buildV2Routes>['routes'] | undefined;
   let collisionNote = '';
   if (v2Input) {
-    const today = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+    const today = pipelineRunDateYmd();
     const refOpts = v2Input.referenceDateFromRunDate ? { referenceDate: today } : {};
     const evidence = await readFeedEvidence(v2Input.buf, refOpts);
     // The merged features already hold the supplemental feeds' routes; split them back by feed so
