@@ -6,7 +6,7 @@ import { type HeadwayByPeriod } from '../../shared/config';
 import type { HistorySnapshotV2 } from '../../shared/historyV2';
 import { countOf } from '../../shared/overflowText';
 import { isDrawableLineCoordinates } from '../../shared/routeGeometry';
-import { TRANSITION_BASE, AGENCY_LIST_FILTERS, PILL_SURFACE, CONTROL_ACTIVE, PILL_SCROLL_ROW, PANEL_TITLE, SIDEBAR_CARD, SIDEBAR_CARD_MAX_H, sidebarFrameStyle, SIDEBAR_PANEL_WIDTH, Z_PANEL, CARD_NOTICE, CARD_NOTE } from '../styles';
+import { TRANSITION_BASE, AGENCY_LIST_FILTERS, PILL_SURFACE, PILL_SCROLL_ROW, PANEL_TITLE, SIDEBAR_CARD, SIDEBAR_CARD_MAX_H, sidebarFrameStyle, SIDEBAR_PANEL_WIDTH, Z_PANEL, CARD_NOTICE, CARD_NOTE } from '../styles';
 import { routeLabels, titleCase, agencyNames, agencyNameParts as nameParts, agencyListParts } from '../utils/format';
 import CardRouteList from '../components/Interval/CardRouteList';
 import { AgencyCardTop, CARD_CALLOUT_HEADLINE, CARD_CALLOUT_TEXT, CARD_HEADER_BLOCK, CardCallout, CARD_CALLOUT_SURFACE, CardDirectionRow, CardReportButton, SIDEBAR_CARD_BODY, SidebarCardHeaderBlock, SidebarCardListRows, SidebarCardShell } from '../components/Interval/cardUi';
@@ -37,6 +37,7 @@ import { capitalizeFirst, headwayEvery, headwayExactAmount, runTimeAmount } from
 import { historyChartPositions } from '../utils/historyChart';
 import Panel, { PanelBody, PanelTitleBar } from '../components/ui/Panel';
 import ListRow from '../components/ui/ListRow';
+import Pill from '../components/ui/Pill';
 import { AgencyList, AgencyListRow, AgencyRegionSection } from '../components/ui/AgencyList';
 import ArrowLink from '../components/ui/ArrowLink';
 import { reportDetails } from '../utils/reportIssue';
@@ -1032,7 +1033,7 @@ export default function History({ active, view = HISTORY_VIEW_ALL, initialAgency
             {selectedYear !== availableYears[availableYears.length - 1] && (
               <span className={`${CARD_NOTE} tabular-nums`}>{availableYears[availableYears.length - 1]}</span>
             )}
-            <span className={`rounded-md border ${CONTROL_ACTIVE} px-1.5 py-0.5 text-xs font-black tabular-nums`}>{selectedYear}</span>
+            <Pill as="span" selected className="tabular-nums">{selectedYear}</Pill>
         </div>
       )}
     </>
