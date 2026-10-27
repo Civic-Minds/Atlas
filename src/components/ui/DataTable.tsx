@@ -109,12 +109,10 @@ export const FIXED_COLUMN_REM = 8;
  */
 function openRow(e: MouseEvent<HTMLTableRowElement>, href: string) {
   if ((e.target as HTMLElement).closest('a, button') || window.getSelection()?.toString()) return;
-  // Row links are Atlas pages only: anything that resolves off this site is ignored.
-  const url = new URL(href, window.location.origin);
-  if (url.origin !== window.location.origin) return;
-  const path = url.pathname + url.search + url.hash;
-  if (e.button === 1 || e.metaKey || e.ctrlKey) window.open(path, '_blank', 'noopener');
-  else if (e.button === 0) window.location.assign(path);
+  // Row links are Atlas paths only ("/agency/ttc"): anything else, including protocol-relative "//host", is ignored.
+  if (!/^\/(?!\/)[\w\-./?=&%#~]*$/.test(href)) return;
+  if (e.button === 1 || e.metaKey || e.ctrlKey) window.open(href, '_blank', 'noopener');
+  else if (e.button === 0) window.location.assign(href);
 }
 
 export type DataTableLayout = 'content' | 'fixed' | 'fill' | 'page';
