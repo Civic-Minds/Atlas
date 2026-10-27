@@ -52,6 +52,8 @@ const RULES: Array<{ name: string; pattern: RegExp; use: string }> = [
   { name: 'hand-rolled card title', pattern: /text-sm font-black text-\[var\(--text-primary\)\] leading-tight/, use: 'CARD_TITLE, CardTitle or AgencyCardTop (Interval/cardUi.tsx)' },
   { name: 'hand-rolled card facts line', pattern: /text-xs font-medium text-\[var\(--text-dim\)\] mt-1 leading-snug/, use: 'CARD_SUMMARY (Interval/cardUi.tsx)' },
   { name: 'report details written by hand', pattern: /details=\{`/, use: 'reportDetails (utils/reportIssue.ts)' },
+  // One place names an agency (CIV-998): a surface picks agencyNames(...).short / .backLink / .full / .place.
+  { name: 'agency name helper called directly', pattern: /\b(shortenAgencyName|agencyBackLinkName|agencyDisplayParts)\(/, use: 'agencyNames or agencyNameParts (utils/format.ts)' },
 ];
 
 // Files that still own a style on purpose: the glass app tabs and the filter option list share the

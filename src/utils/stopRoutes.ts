@@ -4,7 +4,7 @@ import { branchDisplayPeriodHeadway, buildRouteFacts, buildRouteStopMetric, metr
 import { buildSharedStopIndex } from '../../shared/sharedStops';
 import { partPeriodText } from './effectiveHeadway';
 import { hasRegularServiceInPeriod } from './stretchCard';
-import { shortenAgencyName } from './format';
+import { agencyNames } from './format';
 import { compareRouteNumber } from './sortCompare';
 
 /**
@@ -126,7 +126,7 @@ export function buildStopRoutes({ siblingIdsByAgency, routesByAgency, layers, da
           shortName: routeShortName,
           label: facts.label,
           longName: facts.longName || '',
-          agencyName: shortenAgencyName(facts.agencyName),
+          agencyName: agencyNames(facts.agencyName).short,
           agencySlug: slug,
           routeType: facts.routeType,
           branches: new Map(),

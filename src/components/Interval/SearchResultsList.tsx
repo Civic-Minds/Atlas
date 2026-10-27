@@ -5,7 +5,7 @@ import type { RouteSearchResult, StopSearchResult } from '../../utils/searchResu
 import RouteListRow from '../RouteListRow';
 import AgencyName from '../ui/AgencyName';
 import { routeRowRight } from './SearchSuggestionsPanel';
-import { agencyDisplayParts, shortenAgencyName, titleCase } from '../../utils/format';
+import { titleCase, agencyNames, agencyNameParts } from '../../utils/format';
 import type { RouteListDisplay } from '../../utils/effectiveHeadway';
 import ListRow from '../ui/ListRow';
 import PanelEmpty from '../ui/PanelEmpty';
@@ -129,7 +129,7 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({
       elsewhere={agencySections.elsewhere}
       itemKey={(g: AgencySearchGroup) => g.key}
       renderItem={(g: AgencySearchGroup) => {
-        const { primary, secondary } = agencyDisplayParts(g.name, g.cities, g.displayArea);
+        const { primary, secondary } = agencyNameParts({ name: g.name, cities: g.cities, displayArea: g.displayArea });
         // "Agency · place", as every agency list writes it (CIV-971).
         return (
           <ListRow
@@ -217,7 +217,7 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({
                 </span>
               )}
               <span className="text-xs font-black text-[var(--text-dim)] truncate max-w-full">
-                {shortenAgencyName(s.agencyName || '')}
+                {agencyNames(s.agencyName || '').short}
               </span>
             </div>
           </ListRow>

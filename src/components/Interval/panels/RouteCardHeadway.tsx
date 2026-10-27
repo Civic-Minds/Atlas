@@ -4,7 +4,7 @@ import { routePatternLabel } from '../../../utils/routePattern';
 import type { Agency } from '../../../App';
 import type { OpenInfoFn } from '../../InfoPanel';
 import type { HeadwayByPeriod } from '../../../hooks/useAgencyData';
-import { routeLabels, shortenAgencyName, resolveBranchLabel, formatBranchLabel } from '../../../utils/format';
+import { routeLabels, resolveBranchLabel, formatBranchLabel, agencyNames } from '../../../utils/format';
 import { HeadwaySparkline } from '../HeadwaySparkline';
 import { getCachedAgencyGeo } from '../../../lib/agencyGeo';
 import { tripTimeSeriesFor, type PublishedRunningTimes } from '../../../utils/tripTime';
@@ -228,7 +228,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
 }) => {
   const [hoveredHour, setHoveredHour] = React.useState<number | null>(null);
   const reportRef = React.useRef<CardReportButtonHandle>(null);
-  const agencyDisplayName = shortenAgencyName(routeAgency?.name ?? routeSlug ?? '');
+  const agencyDisplayName = agencyNames(routeAgency?.name ?? routeSlug ?? '').short;
   const routeOverrideNote = routeAgency?.overrideNote
     && (!routeAgency.overrideNoteRoutes?.length || routeAgency.overrideNoteRoutes.includes(currentRoute.routeShortName ?? ''))
     ? routeAgency.overrideNote

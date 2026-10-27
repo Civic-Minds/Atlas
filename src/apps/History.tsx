@@ -7,7 +7,7 @@ import type { HistorySnapshotV2 } from '../../shared/historyV2';
 import { countOf } from '../../shared/overflowText';
 import { isDrawableLineCoordinates } from '../../shared/routeGeometry';
 import { TRANSITION_BASE, AGENCY_LIST_FILTERS, PILL_SURFACE, CONTROL_ACTIVE, PILL_SCROLL_ROW, PANEL_TITLE, SIDEBAR_CARD, SIDEBAR_CARD_MAX_H, sidebarFrameStyle, SIDEBAR_PANEL_WIDTH, Z_PANEL, CARD_NOTICE } from '../styles';
-import { agencyDisplayParts, routeLabels, shortenAgencyName, titleCase } from '../utils/format';
+import { routeLabels, titleCase, agencyNames, agencyNameParts as nameParts } from '../utils/format';
 import CardRouteList from '../components/Interval/CardRouteList';
 import { AgencyCardTop, CARD_HEADER_BLOCK, CardCallout, CARD_CALLOUT_SURFACE, CardDirectionRow, CardReportButton, SIDEBAR_CARD_BODY, SidebarCardHeaderBlock, SidebarCardListRows, SidebarCardShell } from '../components/Interval/cardUi';
 import RouteCardTitle from '../components/RouteCardTitle';
@@ -589,7 +589,7 @@ export default function History({ active, view = HISTORY_VIEW_ALL, initialAgency
   const catalogBySlug = useMemo(() => new Map((agencyCatalog ?? []).map(a => [a.slug, a])), [agencyCatalog]);
   const agencyNameParts = useCallback((slug: string, fallbackName: string) => {
     const a = catalogBySlug.get(slug);
-    return a ? agencyDisplayParts(a.name, a.cities, a.displayArea) : agencyDisplayParts(fallbackName);
+    return a ? nameParts({ name: a.name, cities: a.cities, displayArea: a.displayArea }) : nameParts(fallbackName);
   }, [catalogBySlug]);
   const { setOverlay } = useHistoryMapOverlay();
   const [historyData, setHistoryData] = useState<AgencyHistory[] | null>(null);
@@ -723,7 +723,7 @@ export default function History({ active, view = HISTORY_VIEW_ALL, initialAgency
   const openAgencyName = useMemo(() => {
     if (!active || !selectedSlug) return null;
     const agency = historyData?.find(a => a.slug === selectedSlug);
-    return agency ? shortenAgencyName(agency.name) : null;
+    return agency ? agencyNames(agency.name).short : null;
   }, [active, selectedSlug, historyData]);
   useEffect(() => { onOpenAgencyChange?.(openAgencyName); }, [openAgencyName, onOpenAgencyChange]);
   // Dismissed from the map (empty-map click, Escape), the panel closes and stays closed until the
