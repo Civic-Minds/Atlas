@@ -150,7 +150,7 @@ export const NO_AGENCIES_MATCH_SEARCH = 'No agencies match that search.';
 
 // ---- Route card ----
 // N1 weekday-variation
-export const WEEKDAY_VARIATION_NOTICE = "This route's weekday schedules vary. The least frequent day is shown.";
+export const WEEKDAY_VARIATION_NOTICE = "This route's weekday schedules vary by day.";
 // N15 variants
 /** "Includes variants 51A, 51B" (beta route variants). */
 export const variantsIncludedNotice = (shortNames: string) => `Includes variants ${shortNames}`;
@@ -163,13 +163,13 @@ export const FIRST_LAST_TRIP_ALLOWANCE_HINT = "This route's frequency allows a s
 /** A route whose line had a confirmed shape problem in the source feed (shared/routeDataQuality.ts has the code). */
 export const ROUTE_DATA_QUALITY_WARNING_MESSAGE =
   "This route's line on the map may be incomplete because of an error in the agency's data.";
-// N19 beta-agency
-export const BETA_ROLLOUT_NOTICE = 'This agency is only available in Atlas preview and beta, not the public version.';
+// N108 beta-agency (replaces N19's wording; Ryan)
+export const BETA_ROLLOUT_NOTICE = 'This agency is only available on Atlas beta.';
 // N20 beta-on-demand
 /** The same for an on-demand service on the beta site; Ryan's approval named the agency notice only, so this one is unchanged. */
 export const BETA_SERVICE_ROLLOUT_NOTICE = 'On-demand service is only available on Atlas beta.';
-/** N20's link (Ryan): the same page on the beta site; never preview, and not shown on beta itself. */
-export const VIEW_ON_BETA = 'View it';
+/** N20 and N108's link (Ryan): the same page on the beta site; never preview, and not shown on beta itself. */
+export const VIEW_ON_BETA = 'View';
 /** The agency's rollout notice: its own (an on-demand service's), else the beta-only agency one. */
 export function getRolloutNotice(agency: { betaOnly?: boolean; rolloutNotice?: string }): string | undefined {
   return agency.betaOnly ? (agency.rolloutNotice ?? BETA_ROLLOUT_NOTICE) : agency.rolloutNotice;
@@ -300,9 +300,9 @@ export const ROUTE_DATA_QUALITY_EXPLANATION =
   "Transit agencies publish the route shapes Atlas uses to draw routes. Atlas identified a specific problem in this route's source geometry, so the route stays visible with a warning instead of hiding the entire agency.";
 export const ROUTE_DATA_QUALITY_DETAIL = 'The line may be incomplete or adjusted. The schedule information is separate from the map geometry.';
 // E7 edge-gap-allowance
-export const EDGE_GAP_ALLOWANCE_LEAD = 'Atlas added a small allowance for the first or last trip of the day.';
-export const EDGE_GAP_ALLOWANCE_EXPLANATION =
-  'This means a route can still qualify for its frequency tier when the first or last gap is a little longer than the rest of the service. It does not apply to gaps in the middle of the day.';
+// Ryan's approved wording (CIV-1045), replacing both old lines.
+export const EDGE_GAP_ALLOWANCE_LEAD = 'A route can still count at its frequency when the first or last trip of the day comes a little later than the rest.';
+export const EDGE_GAP_ALLOWANCE_EXPLANATION = "Gaps in the middle of the day don't get this allowance.";
 // E8 weekday-variation
 export const WEEKDAY_VARIATION_LEAD = 'Weekday schedules differ for this route.';
 export const WEEKDAY_VARIATION_EXPLANATION =
@@ -321,6 +321,7 @@ export const NOTICE_EXPLAINERS = {
   N6: 'route-data-quality',
   N7: 'no-route-shape',
   N14: 'edge-gap-allowance',
+  /** An agency's own rollout note from its config (none set today); the beta-only notices link to beta instead. */
   N19: 'beta-rollout',
   N21: 'new-schedule-data',
   N22: 'corrected-data',
