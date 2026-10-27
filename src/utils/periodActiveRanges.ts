@@ -33,14 +33,23 @@ export function activeRangesCoverPeriod(ranges: Array<[number, number]>, startHo
 }
 
 /**
+ * Whether a direction has any departure in the hour (#1137). `headwayByHour` needs three
+ * departures in a 60-90 minute window, so an hourly route has none there; `maxGapByHour`
+ * is set for every hour with a departure, except the hour of the day's last one.
+ */
+export function hourHasService(direction: Pick<ShapeProperties, 'headwayByHour' | 'maxGapByHour'>, hour: number): boolean {
+  return direction.headwayByHour?.[hour] != null || direction.maxGapByHour?.[hour] != null;
+}
+
+/**
  * Whether a selected route outside the filter gets the part-period notice for this
  * period (#995). It needs some service near the period (the scan starts an hour
  * early, as the notice's range does) and, under a frequency filter, a service
- * window that stops short of the period. Without a frequency filter, or when the
- * route's filter value meets it, the earlier behaviour stands.
+ * window that stops short of the period: some hour of it with no departure. Without a
+ * frequency filter, or when the route's filter value meets it, the earlier behaviour stands.
  */
 export function partPeriodNoticeApplies(
-  directions: Pick<ShapeProperties, 'headwayByHour'>[],
+  directions: Pick<ShapeProperties, 'headwayByHour' | 'maxGapByHour'>[],
   startHour: number,
   endHour: number,
   maxHeadway: number,
@@ -51,5 +60,11 @@ export function partPeriodNoticeApplies(
   // No frequency filter, or the route meets it (hidden by span, limited, mode or agency filters
   // instead): the frequency notice would be false, so the earlier behaviour stands.
   if (maxHeadway === Infinity || (filterValue != null && filterValue <= maxHeadway)) return true;
-  return !activeRangesCoverPeriod(activeHourRanges(directions, startHour, endHour), startHour, endHour);
+  // A departure in every hour is service throughout (#1137), even when an hourly route has no
+  // hourly headway. This only drops the sentence; the hours it names still come from headways,
+  // because the hour of a direction's last departure has no maxGapByHour.
+  for (let hour = startHour; hour < endHour; hour++) {
+    if (!directions.some(direction => hourHasService(direction, hour))) return true;
+  }
+  return false;
 }
