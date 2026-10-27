@@ -49,6 +49,7 @@ import { markAtlasLatest } from '../../lib/performance';
 import { isOnDemandStopShown, isOnDemandZoneShown, localDateIn, onDemandHoursConfirmed, onDemandStopZoneNames } from '../../../shared/onDemandAvailability';
 import Panel from '../ui/Panel';
 import ListRow from '../ui/ListRow';
+import { drawnRouteLayers, queryDrawnRouteFeatures } from './map/drawnRoutes';
 
 // Keep the Live/Deck.gl graph out of public builds entirely when Live is disabled.
 const LiveVehiclesLayer = import.meta.env.VITE_LIVE_ENABLED === 'true'
@@ -382,14 +383,9 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     let routeShortName: string | null = null;
     let routeColor: string | null = null;
     if (map) {
-      const drawnLayers = ['overview-routes-layer', 'routes-layer', 'local-routes-layer', 'route-segments-layer', 'selected-route-layer', 'selected-local-route-layer', 'selected-route-segments-layer', 'night-service-routes-layer', 'frequent-service-routes-layer', 'frequency-qualifying-segments-layer']
-        .filter(layer => map.getLayer(layer) && map.getLayoutProperty(layer, 'visibility') !== 'none');
       // Only the part of the map that ends up in the image (exports crop to their own shape).
-      const features = drawnLayers.length > 0 ? map.queryRenderedFeatures(box, { layers: drawnLayers }) : [];
-      for (const feature of features) {
+      for (const feature of queryDrawnRouteFeatures(map, box)) {
         const paint = (feature.layer as { paint?: Record<string, unknown> }).paint ?? {};
-        const opacity = typeof paint['line-opacity'] === 'number' ? paint['line-opacity'] : 1;
-        if (opacity < 0.05) continue;
         const props = feature.properties as Record<string, unknown>;
         const agencySlug = typeof props.agencySlug === 'string' ? props.agencySlug : null;
         samples.push({
@@ -528,8 +524,9 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       setMapContextAgencies([]);
       return;
     }
-    const layers = ['overview-routes-layer', 'routes-layer', 'local-routes-layer'].filter(layer => map.getLayer(layer));
-    const features = layers.length > 0 ? map.queryRenderedFeatures(undefined, { layers }) : [];
+    // The same drawn routes the map export reads (map/drawnRoutes.ts), so the count always matches the lines.
+    const layers = drawnRouteLayers(map);
+    const features = queryDrawnRouteFeatures(map);
     const contextAgencies = getMapContextAgenciesFromFeatures(agencies, features);
     // The panel and its counts show distinct rider-visible lines; compare mode below keeps raw keys.
     if (showMapContext) setMapContextAgencies(dedupeMapContextByDisplay(contextAgencies));
