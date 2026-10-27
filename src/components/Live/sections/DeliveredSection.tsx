@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { dateRangeText, type LiveV3 } from '../../../../shared/liveDashboard';
+import { pctTenth } from '../../../../shared/liveFormat';
 import { TILE } from '../../../pageStyles';
 import ProfileBars, { type ProfilePoint } from '../../charts/ProfileBars';
 import Section from './Section';
@@ -52,7 +53,7 @@ export default function DeliveredSection({ v3, dir, detail, boundary }: { v3: Li
       {overall?.share != null && (
         <div className={TILE}>
           <div className="text-xs font-bold text-[var(--text-muted)]">Ran</div>
-          <div className="mt-1 text-3xl font-black tracking-tight">{Math.round(overall.share * 1000) / 10}%</div>
+          <div className="mt-1 text-3xl font-black tracking-tight">{pctTenth(overall.share)}</div>
           <div className="mt-1 text-xs text-[var(--text-dim)]">{(overall.seen + overall.notSeen).toLocaleString()} trips</div>
         </div>
       )}

@@ -13,7 +13,7 @@ import { agencyKpiTiles } from './utils/liveAgencyKpi';
 import { weekNotComparableLine } from './utils/liveKpi';
 import { syncUrlParams } from './utils/syncUrlParams';
 import { titleCase } from './utils/format';
-import { shortStopName, stretchLabel } from './utils/stopLabel';
+import { liveStopName as stop, stretchLabel } from './utils/stopLabel';
 import ErrorBoundary from './components/ErrorBoundary';
 import PageShell from './components/ui/PageShell';
 import DataTable from './components/ui/DataTable';
@@ -25,18 +25,15 @@ import { PageTitle, SectionTitle } from './components/ui/PageTitle';
 import DevHint from './components/Live/DevHint';
 import { ANALYZE_DEV_HINT } from './lib/liveReportData';
 import { coveredRoutesText, LATE_THRESHOLD, bunchPartsText, liveSubtitle, risePointsText, runTimeDiffText } from '../shared/liveWording';
-import { tenth } from '../shared/liveFormat';
+import { pct as pctOf, pctTenth, signedPct } from '../shared/liveFormat';
+import { mins } from './components/Live/sections/figures';
 import MethodSection from './components/Live/sections/MethodSection';
 
 /** One column grid for every table on the page, so the first column, Route and Direction line up from table to table (widths in rem; the number columns share the rest of the width equally). */
 const FIRST_COL = 15, ROUTE_COL = 10, DIR_COL = 6.5;
 
-const MINUS = '−';
-const pct = (x: number | null) => (x == null ? '–' : `${Math.round(x * 100)}%`);
-const pctSigned = (x: number | null) => (x == null ? '–' : `${x > 0 ? '+' : x < 0 ? MINUS : ''}${Math.abs(Math.round(x * 100))}%`);
-const num = tenth;
-const mins = (x: number) => `${x > 0 ? '+' : ''}${num(x)} min`;
-const stop = (name: string) => shortStopName(titleCase(name));
+const pct = (x: number | null) => (x == null ? '–' : pctOf(x));
+const pctSigned = (x: number | null) => (x == null ? '–' : signedPct(x));
 
 type Sort = 'late' | 'runTime' | 'bunching' | 'delivered';
 const SORTS: [Sort, string][] = [['late', 'Late'], ['runTime', 'Run time'], ['bunching', 'Bunching'], ['delivered', 'Service delivered']];
@@ -117,7 +114,7 @@ function RoutesTable({ s }: { s: AgencySummary }) {
               { key: 'lastWeek', header: 'Last week', narrowHide: true, className: 'text-[var(--text-muted)]', cell: r => pct(r.lateLastWeek) },
               { key: 'runTime', sortable: true, header: 'Run time', cell: r => (r.runTimeDiffMin != null ? runTimeDiffText(r.runTimeDiffMin, false) : pctSigned(r.runTimeOver)) },
               { key: 'bunching', sortable: true, header: 'Bunching', cell: r => (r.bunchingShare != null && r.bunchedShare != null && r.gappedShare != null ? bunchPartsText(r.bunchingShare, r.bunchedShare, r.gappedShare) : pct(r.bunchingShare)) },
-              { key: 'delivered', sortable: true, header: 'Delivered', cell: r => (r.deliveredShare == null ? '–' : `${(Math.floor(r.deliveredShare * 1000) / 10).toString()}%`) },
+              { key: 'delivered', sortable: true, header: 'Delivered', cell: r => (r.deliveredShare == null ? '–' : pctTenth(r.deliveredShare)) },
             ]}
           />
         </div>

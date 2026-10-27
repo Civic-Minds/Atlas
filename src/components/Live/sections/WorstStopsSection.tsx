@@ -1,8 +1,7 @@
 import { useMemo, type MouseEvent, type ReactNode } from 'react';
 import { rankStops, type DashboardBandData, type LiveV3, type UncertainStart } from '../../../../shared/liveDashboard';
 import { LATE_THRESHOLD } from '../../../../shared/liveWording';
-import { shortStopName } from '../../../utils/stopLabel';
-import { titleCase } from '../../../utils/format';
+import { liveStopName } from '../../../utils/stopLabel';
 import ErrorBoundary from '../../ErrorBoundary';
 import ArrowLink from '../../ui/ArrowLink';
 import { SectionTitle } from '../../ui/PageTitle';
@@ -23,7 +22,7 @@ const EMPTY = 'No stop has enough departures to rank.';
 
 /** The tool panel's short clickable list, built from the same model: a stop name and its late share. */
 export function worstStopRows(v3: LiveV3, data: DashboardBandData, dir: number | null, uncertain: readonly UncertainStart[], limit: number, onPick: (stopId: string) => void) {
-  return worstStopsModel(v3, data, dir, uncertain, limit).top.map(x => ({ key: x.stopId, label: shortStopName(titleCase(x.name)), value: pct(x.lateShare), onPick: () => onPick(x.stopId) }));
+  return worstStopsModel(v3, data, dir, uncertain, limit).top.map(x => ({ key: x.stopId, label: liveStopName(x.name), value: pct(x.lateShare), onPick: () => onPick(x.stopId) }));
 }
 
 /**

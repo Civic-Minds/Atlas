@@ -1,5 +1,6 @@
 import { useId, useState } from 'react';
 import { SPARKLINE_HOUR_LABELS } from '../../../shared/config';
+import { hourText as clock } from '../../../shared/liveFormat';
 import { HOUR_TO_PERIOD, hoverOfHour, liveChartHours, type HourHover } from '../../utils/sparklinePeriods';
 import PeriodBand from './PeriodBand';
 import DataTable from '../ui/DataTable';
@@ -17,7 +18,6 @@ const H = 64;
 export const AXIS_W = 36;
 /** Height of the departures band under the bars. */
 const BAND_H = 12;
-const clock = (h24: number) => `${h24 % 12 === 0 ? 12 : h24 % 12} ${h24 % 24 < 12 ? 'am' : 'pm'}`;
 
 /**
  * A small bar for each hour of the day, in the route card's sparkline shape (same hour order, narrow rounded bars, 90%

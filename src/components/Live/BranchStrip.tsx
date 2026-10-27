@@ -4,7 +4,7 @@ import { useMediaQuery } from '../../hooks/useMediaQuery';
 import { isMajorStop, shortStopName } from '../../utils/stopLabel';
 import {
   MIN_N, bunchParts, delayText, labelWidth, pct, shownDelayMin, stopDetail, stopN, stopStep, stretchSpan,
-  type RouteStripMode, type RouteStripStop, type Step,
+  type RouteStripMode, type RouteStripStop,
 } from './routeStripModel';
 import { COL_X, NAME_LEFT, StretchBracketPiece, StretchNote, phoneDotSize, phoneRowHeight, StripLegend, Tooltip, swatchStyle } from './RouteStrip';
 import { allBranchStops, columnsOf, phoneSections, phoneStretchRows, type BranchModel } from './branchStripModel';
@@ -112,7 +112,7 @@ export default function BranchStrip({ model, selected = null, onSelect, modes = 
   const vertical = phone || (width > 0 && width < verticalBelow);
   const stops = useMemo(() => allBranchStops(model), [model]);
   const faded = (s: RouteStripStop, mode: RouteStripMode) => stopN(s, mode) > 0 && stopN(s, mode) < minN;
-  const anyUncertain = stops.some(s => modes.some(m => !!s.uncertain));
+  const anyUncertain = modes.length > 0 && stops.some(s => !!s.uncertain);
   const anyFaded = stops.some(s => modes.some(m => faded(s, m)));
   const anyMissing = stops.some(s => modes.some(m => stopStep(s, m) == null));
   const anyEarly = stops.some(s => modes.includes('delay') && stopStep(s, 'delay') === 'early');

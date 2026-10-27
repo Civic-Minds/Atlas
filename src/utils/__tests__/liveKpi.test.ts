@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { kpiDelta, kpiTiles, lateForDays, weekWindowLine, weekWindowParts } from '../liveKpi';
+import { kpiDelta, kpiTiles, lateForDays, weekWindowParts } from '../liveKpi';
 import { dailyNoise } from '../../../shared/liveDashboard';
 import type { LiveV3 } from '../../../shared/liveDashboard';
 
@@ -96,7 +96,7 @@ describe('kpiTiles', () => {
   });
   it('drops the change chips when the weeks are not comparable', () => {
     expect(kpiTiles({ ...w, comparable: false }).every(t => t.delta == null)).toBe(true);
-    expect(weekWindowLine({ ...w, comparable: false })).toMatch(/Not enough days/);
+    expect(weekWindowParts({ ...w, comparable: false }).weeks).toMatch(/Not enough days/);
   });
 });
 
