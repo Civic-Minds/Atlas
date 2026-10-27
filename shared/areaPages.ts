@@ -244,12 +244,12 @@ export function areaIntroParts(d: AreaPageData): { lead: string; named: AreaAgen
   return { lead, named, others: n - named.length };
 }
 
-/** The joiners around the intro's names: "A, B and C" ends with ".", "A, B and 7 others" opens with "including". */
+/** The joiners around the intro's names, always after "including" (Ryan): "including A, B and C." or "including A, B and 7 others." */
 export function areaIntroJoiners(parts: Pick<ReturnType<typeof areaIntroParts>, 'named' | 'others'>): { opener: string; separators: string[]; tail: string } {
   const count = parts.named.length + (parts.others > 0 ? 1 : 0);
   const separators = parts.named.map((_, i) => (i === count - 2 ? ' and ' : i < count - 2 ? ', ' : ''));
   return {
-    opener: parts.named.length === 0 ? '' : parts.others > 0 ? ', including ' : ': ',
+    opener: parts.named.length === 0 ? '' : ', including ',
     separators,
     tail: parts.others > 0 ? `${plural(parts.others, 'other', 'others')}.` : '.',
   };

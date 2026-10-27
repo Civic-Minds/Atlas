@@ -190,7 +190,7 @@ describe('AreaPage', () => {
   it('names the agencies in the intro, each linked to its page (CIV-968)', () => {
     view(<AreaPage data={data} />);
     const intro = screen.getByText(/transit agencies running/);
-    expect(intro.textContent).toMatch(/: Toronto Transit Commission and Hamilton Street Railway\.$/);
+    expect(intro.textContent).toMatch(/, including Toronto Transit Commission and Hamilton Street Railway\.$/);
     expect(within(intro).getByRole('link', { name: 'Toronto Transit Commission' }).getAttribute('href')).toBe('/agency/ttc');
     expect(within(intro).getByRole('link', { name: 'Hamilton Street Railway' }).getAttribute('href')).toBe('/agency/hsr');
   });
