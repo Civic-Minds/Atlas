@@ -18,19 +18,19 @@ describe('map view link parameters', () => {
     expect(readUrlParam('?h=&max=30', MAP_URL.headway)).toBe(30);
   });
 
-  it('frequency is written as h, with 60 left out and All as "all"', () => {
+  it('frequency is written as h, 60 included, and All as "all" (#1141)', () => {
     expect(urlParamUpdate(MAP_URL.headway, 15)).toEqual({ h: '15' });
-    expect(urlParamUpdate(MAP_URL.headway, 60)).toEqual({ h: null });
+    expect(urlParamUpdate(MAP_URL.headway, 60)).toEqual({ h: '60' });
     expect(urlParamUpdate(MAP_URL.headway, Infinity)).toEqual({ h: 'all' });
   });
 
-  it('period: p, then the older period; all is left out when written', () => {
+  it('period: p, then the older period; all is written too (#1141)', () => {
     expect(readUrlParam('?p=amPeak', MAP_URL.period)).toBe('amPeak');
     expect(readUrlParam('?period=late', MAP_URL.period)).toBe('late');
     expect(readUrlParam('?p=all', MAP_URL.period)).toBe('all');
     expect(readUrlParam('?p=brunch', MAP_URL.period)).toBeUndefined();
     expect(urlParamUpdate(MAP_URL.period, 'midday')).toEqual({ p: 'midday' });
-    expect(urlParamUpdate(MAP_URL.period, 'all')).toEqual({ p: null });
+    expect(urlParamUpdate(MAP_URL.period, 'all')).toEqual({ p: 'all' });
   });
 
   it('day: day, then the older d; always written', () => {
@@ -82,5 +82,12 @@ describe('map view link parameters', () => {
     });
     // Same parameters in the same order (URLSearchParams writes "::" as %3A%3A, as it always has).
     expect([...new URLSearchParams(rewritten)]).toEqual([...new URLSearchParams(link)]);
+  });
+
+  it('a copied address reopens the same period and frequency, "All day" and 60 min included (#1141)', () => {
+    for (const [period, headway] of [['all', 60], ['all', Infinity], ['midday', 60], ['amPeak', 15]] as const) {
+      const address = mergeUrlSearchParams('route=ttc::504', { ...urlParamUpdate(MAP_URL.period, period), ...urlParamUpdate(MAP_URL.headway, headway) });
+      expect([readUrlParam(address, MAP_URL.period), readUrlParam(address, MAP_URL.headway)]).toEqual([period, headway]);
+    }
   });
 });
