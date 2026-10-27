@@ -9,7 +9,7 @@ import { isDrawableLineCoordinates } from '../../shared/routeGeometry';
 import { TRANSITION_BASE, AGENCY_LIST_FILTERS, PILL_SURFACE, CONTROL_ACTIVE, PILL_SCROLL_ROW, PANEL_TITLE, SIDEBAR_CARD, SIDEBAR_CARD_MAX_H, sidebarFrameStyle, SIDEBAR_PANEL_WIDTH, Z_PANEL, CARD_NOTICE, CARD_NOTE } from '../styles';
 import { routeLabels, titleCase, agencyNames, agencyNameParts as nameParts, agencyListParts } from '../utils/format';
 import CardRouteList from '../components/Interval/CardRouteList';
-import { AgencyCardTop, CARD_CALLOUT_HEADLINE, CARD_CALLOUT_TEXT, CARD_HEADER_BLOCK, CardCallout, CARD_CALLOUT_SURFACE, CardDirectionRow, CardReportButton, SIDEBAR_CARD_BODY, SidebarCardHeaderBlock, SidebarCardListRows, SidebarCardShell } from '../components/Interval/cardUi';
+import { AgencyCardTop, CARD_CALLOUT_HEADLINE, CARD_CALLOUT_TEXT, CARD_HEADER_BLOCK, CardCallout, CardDirectionRow, CardReportButton, SIDEBAR_CARD_BODY, SidebarCardHeaderBlock, SidebarCardListRows, SidebarCardShell } from '../components/Interval/cardUi';
 import RouteCardTitle from '../components/RouteCardTitle';
 import { SearchSuggestionsPanel, type RecentRoute, type SuggestedRoute } from '../components/Interval/SearchSuggestionsPanel';
 import type { RouteListDisplay } from '../utils/effectiveHeadway';
@@ -214,6 +214,9 @@ function RouteHistoryCard({
   const worse = lastHw > firstHw;
   const better = lastHw < firstHw;
   const summary = changeSummary(route, period);
+  // The snapshot under the pointer or keyboard, on a row or a chart point: its row highlights like a route card row and
+  // its point grows and shows its value (Ryan: "when u hover over a date in this list does it hihglight it on the date on the chart too").
+  const [hoveredSnap, setHoveredSnap] = useState<RouteSnapshot | null>(null);
 
   // Sparkline calculations
   const width = 220;
@@ -237,7 +240,7 @@ function RouteHistoryCard({
     const pctY = maxHw === minHw ? 0.5 : (hw - minHw) / hwRange;
     const y = height - paddingY - pctY * (height - 2 * paddingY);
 
-    return { x, y, hw, label: snap.label };
+    return { x, y, hw, label: snap.label, snap };
   });
 
   const linePath = 'M ' + points.map(p => `${p.x} ${p.y}`).join(' L ');
@@ -300,11 +303,9 @@ function RouteHistoryCard({
         </div>
       </SidebarCardHeaderBlock>
 
-      {/* The frequency chart shows inline, as the route card's hour chart does (#1028 item 10). */}
+      {/* The frequency chart shows inline and sits on the card with no box, as the route card's hour chart does (#1028 item 10). */}
       {chartSnaps.length >= 2 && (
         <div className="mt-3">
-          {/* The callout surface with the chart's own p-3 (CARD_CALLOUT's px-3 py-2.5 would make it shorter). */}
-          <div className={`w-full ${CARD_CALLOUT_SURFACE} p-3`}>
             <svg width="100%" viewBox={`0 0 ${width} ${height}`} className="overflow-visible">
               <defs>
                 <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
@@ -338,10 +339,13 @@ function RouteHistoryCard({
                 const showXLabel = labelIndices.has(i);
                 const xAnchor = isFirst ? 'start' : isLast ? 'end' : 'middle';
                 const xPos = isFirst ? paddingX : isLast ? (width - paddingX) : p.x;
+                const hovered = p.snap === hoveredSnap;
                 return (
                   <g key={i}>
-                    <circle cx={p.x} cy={p.y} r="3" fill={lineColor} stroke="var(--bg-panel)" strokeWidth="1.5" />
-                    {valueLabelIndices.has(i) && (
+                    <circle cx={p.x} cy={p.y} r={hovered ? 4.5 : 3} fill={lineColor} stroke="var(--bg-panel)" strokeWidth="1.5" />
+                    {/* A wider invisible target, so hovering near a point highlights its row. */}
+                    <circle cx={p.x} cy={p.y} r="8" fill="transparent" className="cursor-pointer" onMouseEnter={() => setHoveredSnap(p.snap)} onMouseLeave={() => setHoveredSnap(null)} />
+                    {(valueLabelIndices.has(i) || hovered) && (
                       <text x={p.x} y={p.y - 7} textAnchor="middle" fontSize="8" fontWeight="700" fill="var(--text-primary)" fontFamily="inherit">
                         {headwayExactAmount(shownMinutes(p.hw))}
                       </text>
@@ -355,7 +359,6 @@ function RouteHistoryCard({
                 );
               })}
             </svg>
-          </div>
         </div>
       )}
 
@@ -364,9 +367,18 @@ function RouteHistoryCard({
           const hw = periodMinutes(snap, period);
           const older = i < snaps.length - 1 ? periodMinutes(snaps[i + 1], period) : null;
           const delta = hw != null && older != null ? hw - older : null;
+          const charted = hw != null && chartSnaps.length >= 2;
           return (
-            <CardDirectionRow
+            // Focus and a tap highlight the row and its point too (a tap elsewhere moves focus and clears it); the row's own hover does it for the pointer.
+            <div
               key={`${snap.label}-${i}`}
+              tabIndex={charted ? 0 : undefined}
+              className="focus:outline-none"
+              onFocus={charted ? () => setHoveredSnap(snap) : undefined}
+              onBlur={charted ? () => setHoveredSnap(null) : undefined}
+              onClick={charted ? () => setHoveredSnap(snap) : undefined}
+            >
+            <CardDirectionRow
               label={snap.label}
               headway={hw ?? undefined}
               // The snapshot's own minutes, as in the chart, the summary and the change beside it (#1085):
@@ -376,7 +388,11 @@ function RouteHistoryCard({
               headwaySuffixTone={delta ? (delta > 0 ? 'negative' : 'positive') : undefined}
               // Regular weight, like the map cards' destination rows (CIV-971).
               labelWeight="regular"
+              onHoverStart={charted ? () => setHoveredSnap(snap) : undefined}
+              onHoverEnd={charted ? () => setHoveredSnap(null) : undefined}
+              branchHovered={charted && snap === hoveredSnap}
             />
+            </div>
           );
         })}
       </SidebarCardListRows>
