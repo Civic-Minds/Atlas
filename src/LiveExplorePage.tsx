@@ -8,7 +8,7 @@ import {
 import { headwayAmount } from '../shared/headwayText';
 import { minutesText } from '../shared/liveFormat';
 import { SITE_URL } from '../shared/seo';
-import { useLiveDashboard } from './hooks/useLiveDashboard';
+import { useLiveDashboard, liveToolPath } from './hooks/useLiveDashboard';
 import { devOnly, liveReportTitle } from './lib/liveReportData';
 import { applySeoToDocument } from './lib/seoDom';
 import { syncUrlParams } from './utils/syncUrlParams';
@@ -244,7 +244,7 @@ export default function LiveExplorePage() {
         <p className="m-0 text-sm text-[var(--text-muted)] sm:col-span-2 sm:row-start-2">
           <RouteSubtitle v3={v3} agency={agency} route={route} />
         </p>
-        {FEATURES.live && <ArrowLink href="/apps/live" className="mt-3 shrink-0 whitespace-nowrap sm:col-start-2 sm:row-start-1 sm:mt-0">View on Live map</ArrowLink>}
+        {FEATURES.liveReports && <ArrowLink href={liveToolPath(agency, route)} className="mt-3 shrink-0 whitespace-nowrap sm:col-start-2 sm:row-start-1 sm:mt-0">View on Live map</ArrowLink>}
       </div>
       <RouteDevHint v3={v3} route={route} />
       {data.note && <p className="mt-4 max-w-3xl text-sm font-bold text-[var(--status-caution-text)]">{data.note}</p>}

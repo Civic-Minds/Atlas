@@ -6,7 +6,7 @@ import { FEATURES } from '../shared/config';
 import { minutesText } from '../shared/liveFormat';
 import { excludingWeeksText, leftOutReason } from '../shared/liveWording';
 import type { AgencySummary } from '../shared/liveAgency';
-import { weekDailyValues, type UncertainStart, type DashboardBand, type DashboardBandData, type LiveV3, withMainPatternTrip } from '../shared/liveDashboard';
+import { weekDailyValues, type UncertainStart, type DashboardBand, type DashboardBandData, type LiveV3 } from '../shared/liveDashboard';
 import { useLiveDashboard } from './hooks/useLiveDashboard';
 import { useMediaQuery } from './hooks/useMediaQuery';
 import { useLiveAgency } from './LiveAgencyPage';
@@ -169,7 +169,8 @@ const BOTH_DIRECTIONS = 'both directions';
  * A picked route's week figures. Run time is its main pattern's alone (CIV-945: short turns and branches no longer blur
  * it; each has its own row in the Run time card), where the file has it.
  */
-const weekly = (v3: LiveV3) => { const own = withMainPatternTrip(v3); return own.weekly ? kpiTiles(own.weekly, weekDailyValues(own)) : []; };
+// Run time is already the main pattern's (fetchLiveDashboard, #1149).
+const weekly = (v3: LiveV3) => (v3.weekly ? kpiTiles(v3.weekly, weekDailyValues(v3)) : []);
 
 /** Under the left panel's tiles; the full rule is its hover text. */
 const NOISE_CAPTION = 'Grey = within normal day-to-day change';
