@@ -52,7 +52,7 @@ const ResearchPage = React.lazy(() => import('./apps/ResearchPage'));
 import { applyOnDemand } from './lib/onDemandLoader';
 import { OnDemandStatusProvider, OnDemandViewportLoader, useOnDemandData } from './hooks/useOnDemandData';
 import type { OnDemandAvailability, OnDemandPickup, OnDemandZoneDetails } from '../shared/onDemandAvailability';
-import { loadErrorText, loadingText } from './content/stateCopy';
+import { loadErrorText, loadingText, MAP_ERROR_TEXT } from './content/noticeCopy';
 import Panel from './components/ui/Panel';
 import PanelEmpty from './components/ui/PanelEmpty';
 
@@ -796,7 +796,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
       {FEATURES.updateBanner && <AppUpdateBanner />}
 
       <main className="absolute inset-0 overflow-hidden">
-        <ErrorBoundary label="The map encountered an error.">
+        <ErrorBoundary label={MAP_ERROR_TEXT}>
           <React.Suspense fallback={<div className="flex items-center justify-center h-full text-[var(--text-dim)] text-sm">{loadingText('map')}</div>}>
           {inResearch ? (
             <ResearchPage />

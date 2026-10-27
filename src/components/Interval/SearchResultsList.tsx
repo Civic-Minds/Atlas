@@ -12,6 +12,7 @@ import ListRow from '../ui/ListRow';
 import PanelEmpty from '../ui/PanelEmpty';
 import type { AreaSearchResult } from '../../../shared/areaSearch';
 import { plural } from '../../../shared/overflowText';
+import { NO_SEARCH_MATCHES } from '../../content/noticeCopy';
 
 interface SearchSplitListProps<T> {
   headLabel: string;
@@ -237,7 +238,7 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({
   return (
     <div className="-mx-4 mb-4 flex flex-col gap-5">
       {noResults ? (
-        <PanelEmpty>No matches found.</PanelEmpty>
+        <PanelEmpty>{NO_SEARCH_MATCHES}</PanelEmpty>
       ) : routesFirst ? (
         <>
           {areaBlock}

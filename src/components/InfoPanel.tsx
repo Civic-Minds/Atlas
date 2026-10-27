@@ -19,7 +19,7 @@ import type { Agency } from '../App';
 import { isAgencyFeedExpired } from '../../shared/feedAvailability';
 import { trackEvent } from '../lib/analytics';
 import { OutboundLink } from './OutboundLink';
-import { EXPIRED_FEED_CADENCE, EXPIRED_FEED_CONTEXT, EXPIRED_FEED_EXPLANATION, MANUAL_FEED_CONTEXT, NO_ROUTE_SHAPE_DETAIL, NO_ROUTE_SHAPE_EXPLANATION, expiredFeedCheckHistory, expiredFeedNotice } from '../content/noticeCopy';
+import { EXPIRED_FEED_CADENCE, EXPIRED_FEED_CONTEXT, EXPIRED_FEED_EXPLANATION, expiredFeedCheckHistory, expiredFeedNotice, MANUAL_FEED_CONTEXT, NO_AGENCIES_MATCH, NO_ROUTE_SHAPE_DETAIL, NO_ROUTE_SHAPE_EXPLANATION } from '../content/noticeCopy';
 import RegionFilterPills from './RegionFilterPills';
 import ListRow from './ui/ListRow';
 import { AgencyList, AgencyListRow, AgencyRegionSection } from './ui/AgencyList';
@@ -451,7 +451,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
               </div>
               <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar">
                 {byRegion.size === 0 ? (
-                  <PanelEmpty>No agencies match.</PanelEmpty>
+                  <PanelEmpty>{NO_AGENCIES_MATCH}</PanelEmpty>
                 ) : (
                   <AgencyList>
                     {[...byRegion.entries()].map(([region, list]) => (

@@ -26,6 +26,7 @@ import { SideBadge } from '../ui/SideBadge';
 import PanelEmpty from '../ui/PanelEmpty';
 import AgencyName from '../ui/AgencyName';
 import { capitalizeFirst, headwayAmount, headwayBandLabel, headwayOrBetter, headwayTierLabel } from '../../utils/headwayText';
+import { NO_AGENCIES_IN_VIEW } from '../../content/noticeCopy';
 
 export { getNowDay };
 
@@ -186,7 +187,7 @@ function AgenciesPanel({ agencies, selectedAgencies, setSelectedAgencies, bounds
       </div>
       <div className="max-h-64 overflow-y-auto custom-scrollbar flex flex-col gap-0.5">
         {byRegion.size === 0 && (
-          <PanelEmpty>No agencies in view.</PanelEmpty>
+          <PanelEmpty>{NO_AGENCIES_IN_VIEW}</PanelEmpty>
         )}
         {[...byRegion.entries()].map(([region, groups]) => (
           <div key={region}>

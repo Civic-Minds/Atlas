@@ -25,6 +25,7 @@ export const CARD_LIST_ROUTE = 'text-xs font-bold text-[var(--text-primary)] lea
 // The section label lives in styles.ts with the other shared text styles (CIV-395), so non-card panels use it too.
 export { CARD_SECTION } from '../../styles';
 import { CARD_NOTE, CARD_SECTION } from '../../styles';
+import { CORRECTED_DATA_NOTICE, NEW_SCHEDULE_DATA_NOTICE, REPORT_FORM_HINT, REPORT_NEEDS_FREQUENCY_DETAIL, REPORT_NEEDS_REASON } from '../../content/noticeCopy';
 /** A list card's header block (agency card, History's agency view): one divider under it. */
 export const CARD_HEADER_BLOCK = 'shrink-0 px-4 pt-4 pb-3 border-b border-[var(--border-primary)]';
 /** The same header spacing for a card that is only a header (no divider sitting on the card's own edge). */
@@ -269,11 +270,11 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
   const submit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (hasFrequencyReason && frequencyReasons.length === 0) {
-      setValidationError('Select at least one frequency detail.');
+      setValidationError(REPORT_NEEDS_FREQUENCY_DETAIL);
       return;
     }
     if (selectedReasons.length === 0 && !description.trim()) {
-      setValidationError('Select a reason or describe what is wrong.');
+      setValidationError(REPORT_NEEDS_REASON);
       return;
     }
     openAtlasProblemEmail(title, details, {
@@ -319,7 +320,7 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
             <div className={`${CARD_HEADER_BLOCK} flex items-center justify-between`}>
               <div>
                 <h2 id={dialogTitleId} className={CARD_TITLE}>Report a problem</h2>
-                <p className={`${CARD_NOTICE} mt-0.5`}>Choose a category, or click a card value to preselect its reason.</p>
+                <p className={`${CARD_NOTICE} mt-0.5`}>{REPORT_FORM_HINT}</p>
               </div>
               <RoundIconButton onClick={reset} aria-label="Close report form">
                 <X className="w-3.5 h-3.5" />
@@ -748,7 +749,7 @@ export function CardHelpNotice({
 export function NewScheduleDataNotice({ agency, onInfoOpen }: { agency: Agency; onInfoOpen: OpenInfoFn }) {
   return (
     <CardHelpNotice
-      message="New schedule data is being verified."
+      message={NEW_SCHEDULE_DATA_NOTICE}
       onLearnMore={() => onInfoOpen('about', {
         helpTopic: 'new-schedule-data',
         agencyName: agency.name,
@@ -766,7 +767,7 @@ export function NewScheduleDataNotice({ agency, onInfoOpen }: { agency: Agency; 
 export function CorrectedDataNotice({ agency, overrideNote, onInfoOpen }: { agency: Agency; overrideNote: string; onInfoOpen: OpenInfoFn }) {
   return (
     <CardHelpNotice
-      message="We corrected this data."
+      message={CORRECTED_DATA_NOTICE}
       onLearnMore={() => onInfoOpen('about', {
         helpTopic: 'corrected-data',
         agencyName: agency.name,
