@@ -8075,6 +8075,7 @@
     {
       "slug": "ace",
       "name": "Altamont Corridor Express",
+      "displayArea": "Northern California",
       "center": [
         37.2902,
         -121.0684
@@ -12626,6 +12627,7 @@
     {
       "slug": "vre",
       "name": "Virginia Railway Express (VRE)",
+      "displayArea": "Northern Virginia",
       "websiteUrl": "http://www.vre.org",
       "region": "Virginia",
       "center": [
@@ -16670,6 +16672,7 @@
     {
       "slug": "dart-first-state",
       "name": "DART First State (Wilmington, DE)",
+      "displayArea": "Delaware",
       "websiteUrl": "http://www.dartfirststate.com",
       "center": [
         39.1,
@@ -27000,6 +27003,7 @@
     {
       "slug": "brazos",
       "name": "Brazos Transit District",
+      "displayArea": "Brazos Valley",
       "websiteUrl": "https://www.btd.org/",
       "region": "Texas",
       "center": [
