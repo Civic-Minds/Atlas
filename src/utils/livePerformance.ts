@@ -302,14 +302,19 @@ export interface LiveGapsOptions {
   extraTrips?: ReadonlySet<string>;
 }
 
-/**
- * The analysis's direction for trips its timetable doesn't list, from the map's direction for each vehicle
- * (which comes from today's route shapes). The two timetables number directions differently (TTC: the
- * map's 0 is east, the analysis's 0 is west), so the pairing is learned from vehicles both know.
- */
-export function liveTripDirections(vehicles: readonly { tripId: string; directionId: number | null }[], tripDirections: Record<string, string[]> | undefined): Map<number, Set<string>> {
+/** The analysis's direction for each trip its timetable lists. */
+export function analysisTripDirections(tripDirections: Record<string, string[]> | undefined): Map<string, number> {
   const dirOf = new Map<string, number>();
   for (const [d, ids] of Object.entries(tripDirections ?? {})) for (const id of ids) dirOf.set(id, Number(d));
+  return dirOf;
+}
+
+/**
+ * Which of the analysis's directions each of the map's directions is (map direction → analysis direction).
+ * The two timetables number directions differently (TTC: the map's 0 is east, the analysis's 0 is west), so
+ * the pairing is learned from vehicles both know; a direction with no clear majority is left out.
+ */
+export function mapDirectionPairing(vehicles: readonly { tripId: string; directionId: number | null }[], dirOf: ReadonlyMap<string, number>): Map<number, number> {
   const votes = new Map<number, Map<number, number>>();
   for (const v of vehicles) {
     const d = dirOf.get(v.tripId);
@@ -323,6 +328,16 @@ export function liveTripDirections(vehicles: readonly { tripId: string; directio
     // Only a clear pairing: a tie means the map's directions don't line up with the analysis's.
     if (ranked.length === 1 || ranked[0][1] > ranked[1][1]) pair.set(mapDir, ranked[0][0]);
   }
+  return pair;
+}
+
+/**
+ * The analysis's direction for trips its timetable doesn't list, from the map's direction for each vehicle
+ * (which comes from today's route shapes), through mapDirectionPairing.
+ */
+export function liveTripDirections(vehicles: readonly { tripId: string; directionId: number | null }[], tripDirections: Record<string, string[]> | undefined): Map<number, Set<string>> {
+  const dirOf = analysisTripDirections(tripDirections);
+  const pair = mapDirectionPairing(vehicles, dirOf);
   const out = new Map<number, Set<string>>();
   for (const v of vehicles) {
     if (dirOf.has(v.tripId) || v.directionId == null || !pair.has(v.directionId)) continue;
