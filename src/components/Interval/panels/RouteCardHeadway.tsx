@@ -44,6 +44,7 @@ import {
   sharedStopIdsForBranches,
   sharedStretchHeadway,
   shouldShowTrunkSummary,
+  stretchSharedHeadway,
   trunkSparklineByHour,
 } from '../../../utils/routeCardTrunk';
 import { shouldShowDirectionSections } from '../../../utils/routeCardDirectionLayout';
@@ -632,9 +633,11 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
             // A route that fails the filter as a whole can still have a shared stretch that passes.
             const onlySharedPasses = groupShared != null && maxHeadway !== Infinity
               && group.realTier.some(d => !featurePassesHeadwayFilter(d, period, maxHeadway));
+            // CIV-937: with stretch data, the shared main stretch's own value ("Shared stretch every 15") above the branch rows.
+            const stretchShared = stretchMode && !nightView ? stretchSharedHeadway(group, period) : null;
             // A shared or combined value is a daytime reading: none on the Night card (CIV-934).
-            const groupHasCoreSummary = !nightView && !stretchMode && (groupShared != null || shouldShowTrunkSummary(group.realTier, period));
-            const groupCoreHeadway = groupShared?.headway ?? (groupHasCoreSummary
+            const groupHasCoreSummary = !nightView && (stretchMode ? stretchShared != null : groupShared != null || shouldShowTrunkSummary(group.realTier, period));
+            const groupCoreHeadway = groupShared?.headway ?? stretchShared ?? (groupHasCoreSummary
               ? groupTrunkHeadway(group.realTier, period === 'all' ? 'midday' : period)
               : null);
             const groupSharedStopIds = groupShared?.stopIds ?? (groupHasCoreSummary ? sharedStopIdsForBranches(group.realTier) : []);
@@ -683,7 +686,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                 {groupHasCoreSummary && groupCoreHeadway != null && (
                   <>
                     <CardDirectionRow
-                      label={groupShared ? 'Shared stretch' : 'Combined'}
+                      label={groupShared || stretchShared != null ? 'Shared stretch' : 'Combined'}
                       headway={groupCoreHeadway}
                       branchHovered={coreHovered}
                       branchDimmed={!!hoveredBranch && !coreHovered}
