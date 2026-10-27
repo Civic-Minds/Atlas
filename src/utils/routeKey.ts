@@ -1,4 +1,4 @@
-import { getRouteLabel } from '../../shared/cleanHeadsign';
+import { getRouteLabel } from '../../shared/routeDisplay';
 
 const BRANCH_MARKER = '::branch:';
 
