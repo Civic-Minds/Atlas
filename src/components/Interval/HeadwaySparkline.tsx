@@ -1,6 +1,4 @@
-import React, { useEffect, useState } from 'react';
-import { createPortal } from 'react-dom';
-import { Maximize2, X } from 'lucide-react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { headwayToTierColor } from '../../utils/colors';
 import { useColorMode } from '../../hooks/useColorMode';
 export { headwayToTierColor };
@@ -11,7 +9,7 @@ import type { TimePeriod } from '../../hooks/useIntervalStats';
 import type { HeadwayByPeriod, HeadwayByHour } from '../../hooks/useAgencyData';
 import type { HeadwayByHourMaxGap } from '../../../shared/config';
 import Pill from '../ui/Pill';
-import RoundIconButton from '../ui/RoundIconButton';
+import ExpandDialog, { ExpandButton } from '../ui/ExpandDialog';
 import LegendItem from '../ui/LegendItem';
 import { delayAmount, headwayEvery, runTimeAmount } from '../../utils/headwayText';
 import { TripTimeStrip, AxisOverlay, tripTimeAxisTicks, type AxisTick, tripTimeHeading, FULL_DAY_BAR_SHAPE, FULL_DAY_COLUMN_ROW } from './TripTimeStrip';
@@ -159,24 +157,11 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
     ownsUrl && typeof window !== 'undefined' ? parseFullDayUrlState(window.location.search) : null
   ));
   const [isExpanded, setIsExpanded] = useState(() => linkedFullDay?.open ?? false);
+  const closeExpanded = useCallback(() => setIsExpanded(false), []);
   // Two directions show side by side as four charts; one hovered hour is shared by all of them.
   const [modalHour, setModalHour] = useState<number | null>(null);
   const bothDirections = directionOptions?.length === 2;
   const [pickedDirection, setPickedDirection] = useState<string | null>(() => linkedFullDay?.direction ?? null);
-
-  useEffect(() => {
-    if (!isExpanded) return;
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') setIsExpanded(false);
-    };
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    window.addEventListener('keydown', handleKeyDown);
-    return () => {
-      document.body.style.overflow = previousOverflow;
-      window.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [isExpanded]);
 
   const defaultDirection = slowerDirectionKey(directionOptions);
   useEffect(() => {
@@ -280,19 +265,7 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
 
   return (
     <div className={`relative ${sharedMode ? '' : expanded ? 'mt-2 mb-4' : 'mt-6 mb-4'}`}>
-      {allowExpand && !expanded && (
-        <button
-          type="button"
-          onClick={() => setIsExpanded(true)}
-          aria-label="Expand schedule"
-          title="Expand schedule"
-          className="absolute right-0 top-[-2px] z-20 p-[4px] text-[var(--text-dim)] hover:text-[var(--accent)] transition-colors"
-        >
-          {/* Exact px, not w-3/h-3: the root font is 14px, so rem sizes shrink to 10.5px. 12px tall
-              like the label's text, centred on its 16px line (2px offset + 4px padding + 6px). */}
-          <Maximize2 className="block w-[12px] h-[12px]" strokeWidth={2.5} />
-        </button>
-      )}
+      {allowExpand && !expanded && <ExpandButton label="Expand schedule" onClick={() => setIsExpanded(true)} />}
       <div
         className={`relative ${expanded ? (labelRow ? 'pt-12' : 'pt-2') : 'pt-5'} ${interactive ? 'cursor-pointer select-none' : ''}`}
         onClick={handleClick}
@@ -436,26 +409,14 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
           )}
         </div>
       )}
-      {allowExpand && !expanded && isExpanded && createPortal(
-        <div
-          role="dialog"
-          aria-modal="true"
-          aria-label={`${title} full-day schedule`}
-          className="fixed inset-0 z-[1700] flex items-center justify-center bg-[var(--bg-app)]/60 p-4 backdrop-blur-sm"
-          onMouseDown={event => { if (event.target === event.currentTarget) setIsExpanded(false); }}
+      {allowExpand && !expanded && isExpanded && (
+        <ExpandDialog
+          title={title}
+          note="All time periods are shown together."
+          ariaLabel={`${title} full-day schedule`}
+          closeLabel="Close schedule"
+          onClose={closeExpanded}
         >
-          <div className="w-full max-w-[900px] max-h-[calc(100vh-2rem)] overflow-y-auto rounded-2xl border border-[var(--border-primary)] bg-[var(--bg-panel)] p-5">
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <h2 className="text-base font-black text-[var(--text-primary)]">{title}</h2>
-                <p className={`mt-1 ${CARD_NOTE}`}>
-                  All time periods are shown together.
-                </p>
-              </div>
-              <RoundIconButton onClick={() => setIsExpanded(false)} aria-label="Close schedule">
-                <X className="w-4 h-4" />
-              </RoundIconButton>
-            </div>
             {directionOptions && directionOptions.length > 1 && !bothDirections && (
               <div className="mt-4 flex flex-wrap gap-2" role="group" aria-label="Schedule direction">
                 {directionOptions.map(option => (
@@ -565,9 +526,7 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
                   )}
                 </div>
               </>
-          </div>
-        </div>,
-        document.body,
+        </ExpandDialog>
       )}
     </div>
   );
