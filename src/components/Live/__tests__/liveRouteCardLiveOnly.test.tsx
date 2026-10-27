@@ -74,6 +74,17 @@ describe('"Right now" from the map\'s live positions (CIV-893)', () => {
     expect(screen.queryByText(/Fewer than 2 cars/)).toBeNull();
   });
 
+  it('shows how many of the counted cars are on time by the late standard, and leaves it out where none reports lateness (CIV-1025)', () => {
+    // TTC streetcars today: no car reports how late it is, so there is no On time figure.
+    const none = card([car('a', 't1', 3, T0), car('b', 't2', 1.5, T0)]);
+    expect(screen.queryByText('On time')).toBeNull();
+    none.unmount();
+    // One on time (+2 min), one late (+7 min); car c goes the other way and isn't counted.
+    card([{ ...car('a', 't1', 3, T0), delayMin: 2 }, { ...car('b', 't2', 1.5, T0), delayMin: 7 }, { ...car('c', 't9', 2, T0), delayMin: 0 }]);
+    const label = screen.getByText('On time');
+    expect(label.nextElementSibling?.textContent).toBe('1');
+  });
+
   it('shows no gaps line while no gap is known yet (cars just seen, no track of the car ahead)', () => {
     card([car('a', 't1', 3, T0), car('b', 't2', 1.5, T0)]);
     expect(screen.getByText('2')).toBeTruthy();

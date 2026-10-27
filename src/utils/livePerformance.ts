@@ -235,6 +235,8 @@ export interface LiveGaps {
   /** The feed is behind, too few cars are placed for the schedule, or a car on the line can't be placed. */
   incomplete?: boolean;
   cars: number;
+  /** The vehicle ids behind `cars`, so a figure about those cars (how many are on time) counts the same ones. */
+  carIds?: string[];
   /** Minutes between consecutive cars, front of the line first; null when the car ahead's passing wasn't seen. */
   gapsMin: (number | null)[];
   scheduledSec: number | null;
@@ -418,6 +420,7 @@ export function liveGaps(data: SegmentDelayData & { tripDirections?: Record<stri
   const now: { key: string; t: number; m: number; segIndex: number; off?: boolean }[] = [];
   let unplaceable = 0;
   let cars = 0;
+  const carIds: string[] = [];
   for (const [id, tripId, lat, lon, t] of latest.v) {
     // Staleness is measured once: the car's own report time against the server clock.
     if (nowSec - t > LIVE_STALE_SEC) continue;
@@ -431,6 +434,7 @@ export function liveGaps(data: SegmentDelayData & { tripDirections?: Record<stri
       continue;
     }
     cars++;
+    carIds.push(id);
     if (a && onShared(a.segIndex)) now.push({ key: `${id}|${tripId}`, t, m: a.m, segIndex: a.segIndex });
     else if (whole && !a && !placeOnLine(recorded, [lon, lat])) {
       const p = placeOnLine(line, [lon, lat], Infinity);
@@ -438,6 +442,7 @@ export function liveGaps(data: SegmentDelayData & { tripDirections?: Record<stri
     }
   }
   if (!whole) cars = now.length;
+  const counted = whole ? carIds : now.map(c => c.key.split('|')[0]);
   // Same idea as the archive's "thin" feed rule: fewer than half the cars the schedule puts on the
   // section means some aren't reporting, and a missing car would show as one long gap.
   // On the whole line each stop pair counts against its own timetable gap (a branch every 10 beside a trunk every 5).
@@ -451,8 +456,8 @@ export function liveGaps(data: SegmentDelayData & { tripDirections?: Record<stri
     if (b && g) expectedWhole += b.actualMedianSec / g;
   });
   const expected = whole ? expectedWhole : sched ? sharedSec / sched : 0;
-  if (unplaceable > 0 || (expected >= 2 && now.length < expected / 2)) return { incomplete: true, cars, gapsMin: [], scheduledSec: sched, ...extra };
-  if (now.length < 2) return opts.countFewCars ? { cars, gapsMin: [], scheduledSec: sched, ...extra } : null;
+  if (unplaceable > 0 || (expected >= 2 && now.length < expected / 2)) return { incomplete: true, cars, carIds: counted, gapsMin: [], scheduledSec: sched, ...extra };
+  if (now.length < 2) return opts.countFewCars ? { cars, carIds: counted, gapsMin: [], scheduledSec: sched, ...extra } : null;
   now.sort((a, b) => b.m - a.m);
   const gapsMin = now.slice(1).map((car, i) => {
     // Next to a car off the recorded streets the order is only approximate: no gap is claimed.
@@ -470,6 +475,6 @@ export function liveGaps(data: SegmentDelayData & { tripDirections?: Record<stri
     }
     return null;
   });
-  if (!whole) return { cars, gapsMin, scheduledSec: sched };
-  return { cars, gapsMin, scheduledSec: sched, gapsSchedSec: now.slice(1).map(car => schedAt(car.segIndex) ?? sched), scheduledRangeSec };
+  if (!whole) return { cars, carIds: counted, gapsMin, scheduledSec: sched };
+  return { cars, carIds: counted, gapsMin, scheduledSec: sched, gapsSchedSec: now.slice(1).map(car => schedAt(car.segIndex) ?? sched), scheduledRangeSec };
 }
