@@ -99,12 +99,14 @@ function RoutesTable({ s }: { s: AgencySummary }) {
   return (
     <>
       {routesByMode(rows.map(r => ({ ...r, mode: r.mode ?? 3 }))).map(group => (
-        <div key={group.mode} className="mt-4 overflow-x-auto">
+        <div key={group.mode} className="mt-4 sm:overflow-x-auto">
           <h3 className="pb-2 text-base font-black" aria-hidden="true">{group.label} <span className="ml-1 font-normal text-[var(--text-muted)]">{group.routes.length}</span></h3>
           <DataTable
             caption={`${group.label} ${group.routes.length}`}
             fixed
             fill
+            // On a phone the table fits the screen, leaving out last week's Late, as Live's other tables do (#1151).
+            narrowFit
             sort={{ key: sort, reversed }}
             onSort={onSort}
             rows={group.routes}
@@ -112,7 +114,7 @@ function RoutesTable({ s }: { s: AgencySummary }) {
             columns={[
               { key: 'route', header: 'Route', rowHeader: true, width: FIRST_COL, className: 'font-normal', cell: r => <a href={liveDashboardPath(s.agency, r.route)} className="hover:underline"><RouteNameCell shortName={r.route} longName={r.longName} mode={r.mode} agencyName={s.agency.toUpperCase()} /></a> },
               { key: 'late', sortable: true, header: 'Late', cell: r => <span title={`${r.lateN.toLocaleString()} trips this week`}>{pct(r.lateShare)}</span> },
-              { key: 'lastWeek', header: 'Last week', className: 'text-[var(--text-muted)]', cell: r => pct(r.lateLastWeek) },
+              { key: 'lastWeek', header: 'Last week', narrowHide: true, className: 'text-[var(--text-muted)]', cell: r => pct(r.lateLastWeek) },
               { key: 'runTime', sortable: true, header: 'Run time', cell: r => (r.runTimeDiffMin != null ? runTimeDiffText(r.runTimeDiffMin, false) : pctSigned(r.runTimeOver)) },
               { key: 'bunching', sortable: true, header: 'Bunching', cell: r => (r.bunchingShare != null && r.bunchedShare != null && r.gappedShare != null ? bunchPartsText(r.bunchingShare, r.bunchedShare, r.gappedShare) : pct(r.bunchingShare)) },
               { key: 'delivered', sortable: true, header: 'Delivered', cell: r => (r.deliveredShare == null ? '–' : `${(Math.floor(r.deliveredShare * 1000) / 10).toString()}%`) },
@@ -130,8 +132,9 @@ const TOP_STOPS = 10;
 function StopsTable({ s, rows }: { s: AgencySummary; rows: AgencyHotspotStop[] }) {
   if (!rows.length) return <p className="mt-3 text-sm text-[var(--text-muted)]">No stop has enough departures to rank yet.</p>;
   return (
-    <div className="relative mt-3 overflow-x-auto">
+    <div className="relative mt-3 sm:overflow-x-auto">
       <SortableDataTable
+        narrowFit
         caption="Stops most often late, all analysed routes"
         rows={rows}
         defaultSort="late"
@@ -139,10 +142,10 @@ function StopsTable({ s, rows }: { s: AgencySummary; rows: AgencyHotspotStop[] }
         columns={[
           { key: 'stop', header: 'Stop', rowHeader: true, width: FIRST_COL, className: 'font-normal break-words', cell: r => <span title={stop(r.name)}>{stop(r.name)}</span> },
           { key: 'route', header: 'Route', width: ROUTE_COL, className: 'truncate', cell: r => <HotspotRoute s={s} route={r.route} /> },
-          { key: 'dir', header: 'Direction', width: DIR_COL, cell: r => titleCase(r.direction) },
+          { key: 'dir', header: 'Direction', width: DIR_COL, narrowHide: true, cell: r => titleCase(r.direction) },
           { key: 'late', header: 'Late', worst: r => r.lateShare, cell: r => pct(r.lateShare) },
           { key: 'typical', header: 'Typical', worst: r => r.medianMin, cell: r => mins(r.medianMin) },
-          { key: 'n', header: 'Departures', cell: r => r.n.toLocaleString() },
+          { key: 'n', header: 'Departures', narrowHide: true, cell: r => r.n.toLocaleString() },
         ]}
       />
     </div>
@@ -153,8 +156,9 @@ function StopsTable({ s, rows }: { s: AgencySummary; rows: AgencyHotspotStop[] }
 function StretchTable({ s, rows, caption, valueHeader, format }: { s: AgencySummary; rows: AgencyHotspotStretch[]; caption: string; valueHeader?: string; format?: (v: number) => string }) {
   if (!rows.length) return <p className="mt-3 text-sm text-[var(--text-muted)]">No stretch stands out on the analysed routes.</p>;
   return (
-    <div className="relative mt-3 overflow-x-auto">
+    <div className="relative mt-3 sm:overflow-x-auto">
       <SortableDataTable
+        narrowFit={!!valueHeader}
         caption={caption}
         // With no number column there is nothing to share the leftover width, so the table keeps the shared widths and ends short of the edge.
         fill={!!valueHeader}
@@ -164,7 +168,7 @@ function StretchTable({ s, rows, caption, valueHeader, format }: { s: AgencySumm
         columns={[
           { key: 'stretch', header: 'Stretch', rowHeader: true, width: FIRST_COL, className: 'font-normal break-words', cell: r => { const name = stretchLabel(titleCase(r.fromName), titleCase(r.toName)); return <span title={name}>{name}</span>; } },
           { key: 'route', header: 'Route', width: ROUTE_COL, className: 'truncate', cell: r => <HotspotRoute s={s} route={r.route} /> },
-          { key: 'dir', header: 'Direction', width: DIR_COL, cell: r => titleCase(r.direction) },
+          { key: 'dir', header: 'Direction', width: DIR_COL, narrowHide: !!valueHeader, cell: r => titleCase(r.direction) },
           ...(valueHeader && format ? [{ key: 'value', header: valueHeader, worst: (r: AgencyHotspotStretch) => r.value, cell: (r: AgencyHotspotStretch) => format(r.value) }] : []),
         ]}
       />

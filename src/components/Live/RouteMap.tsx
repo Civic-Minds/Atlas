@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
+import { cardTop } from './cardPlacement';
 import * as maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import MapZoomButtons from '../MapZoomButtons';
@@ -55,14 +56,17 @@ export default function RouteMap({ model, measure, selected, onPick, anchor = nu
   const latest = useRef({ model, measure, selected, frameKey, padding, heat });
   latest.current = { model, measure, selected, frameKey, padding, heat };
   const framed = useRef<string | null>(null);
-  const [at, setAt] = useState<{ x: number; y: number; w: number } | null>(null);
+  const [at, setAt] = useState<{ x: number; y: number; w: number; h: number } | null>(null);
+  // The card's own height, so it is placed wholly inside the map (#1151: on a phone it ran off the bottom).
+  const [cardH, setCardH] = useState(0);
+  const cardRef = useRef<HTMLDivElement | null>(null);
   const anchorRef = useRef(anchor);
   anchorRef.current = anchor;
   const place = () => {
     const map = mapRef.current, a = anchorRef.current;
     if (!map || !a) { setAt(null); return; }
     const p = map.project(a);
-    setAt({ x: p.x, y: p.y, w: map.getContainer().clientWidth });
+    setAt({ x: p.x, y: p.y, w: map.getContainer().clientWidth, h: map.getContainer().clientHeight });
   };
   const [tip, setTip] = useState<{ x: number; y: number; text: string } | null>(null);
   const latestHl = useRef(highlightRoute);
@@ -165,6 +169,7 @@ export default function RouteMap({ model, measure, selected, onPick, anchor = nu
 
   useEffect(draw, [model, measure, selected, frameKey, heat]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(place, [anchor]); // eslint-disable-line react-hooks/exhaustive-deps
+  useLayoutEffect(() => { const h = cardRef.current?.offsetHeight ?? 0; if (h !== cardH) setCardH(h); });
   useEffect(draw, [highlightRoute]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => { if (centerOn && mapRef.current) mapRef.current.easeTo({ center: centerOn.lonLat, duration: 300 }); }, [centerOn?.k]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -175,8 +180,8 @@ export default function RouteMap({ model, measure, selected, onPick, anchor = nu
         <MapZoomButtons onZoomIn={() => mapRef.current?.zoomIn({ duration: 200 })} onZoomOut={() => mapRef.current?.zoomOut({ duration: 200 })} />
       </div>
       {at && card && (
-        <div className="absolute z-20 rounded-2xl border border-[var(--border-primary)] bg-[var(--bg-header)] shadow-2xl"
-          style={{ left: Math.max(8, Math.min(at.w - 260 - 8, at.x - 130)), top: at.y, width: 260, transform: at.y < 280 ? 'translateY(16px)' : 'translateY(calc(-100% - 16px))' }}>
+        <div ref={cardRef} className="absolute z-20 rounded-2xl border border-[var(--border-primary)] bg-[var(--bg-header)] shadow-2xl"
+          style={{ left: Math.max(8, Math.min(at.w - 260 - 8, at.x - 130)), top: cardTop(at.y, cardH, at.h), width: 260 }}>
           {card}
         </div>
       )}
