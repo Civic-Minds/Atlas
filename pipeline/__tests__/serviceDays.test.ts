@@ -38,7 +38,7 @@ const dates = (from: string, to: string) => { const o: string[] = []; for (let n
 const dow = (s: string) => new Date(num(s) * 86400000).getUTCDay();
 const isWeekday = (s: string) => dow(s) >= 1 && dow(s) <= 5;
 
-const pick = (input: ServiceDayTableInput, options = {}) => pickServiceWeek(buildServiceDayTable(input), options);
+const pick = (input: ServiceDayTableInput) => pickServiceWeek(buildServiceDayTable(input));
 const weekDates = (monday: string) => dates(monday, ymd(num(monday) + 6));
 const skippedDates = (week: ReturnType<typeof pick>, reason = 'lost-vote') => week.skipped.filter(s => s.reason === reason).map(s => s.date);
 
@@ -356,32 +356,25 @@ describe('pickServiceWeek: issues in the plan (section 4)', () => {
     expect(skippedDates(week)).toEqual(['20181122']);
   });
 
-  it('#1082 VTA: a new period starting within 7 days is read, with its own weekend', () => {
-    for (const run of ['20261021', '20261022', '20261023', '20261024']) {
+  it('#1082 VTA: before the new period starts, the old one is read whole (question 5: today\'s timetable)', () => {
+    for (const run of ['20261016', '20261021', '20261022', '20261023', '20261024']) {
+      const week = pick({ ...vta(), anchor: serviceAnchor(run) });
+      expect(week.period?.end, `run ${run}`).toBe('20261025');
+      expect(week.services.Monday).toEqual(['WD-old', 'WD-old-b']);
+      expect(week.services.Saturday).toEqual(['Sat-old', 'Sat-old-b']);
+      expect(week.services.Sunday).toEqual(['Sun-old', 'Sun-old-b']);
+    }
+  });
+
+  it('#1082 VTA: from its first day, the new period is read, with its own weekend', () => {
+    for (const run of ['20261025', '20261027', '20261030']) {
       const week = pick({ ...vta(), anchor: serviceAnchor(run) });
       expect(week.weekStart, `run ${run}`).toBe('20261026');
       expect(week.services.Monday).toEqual(['WD-new', 'WD-new-b']);
       expect(week.services.Thursday).toEqual(['WD-new']);
       expect(week.services.Saturday).toEqual(['Sat-new']);
       expect(week.services.Sunday).toEqual(['Sun-new']);
-      expect(week.period?.start).toBe('20261026');
     }
-  });
-
-  it('#1082 VTA: earlier, the old period is read whole (never an old Saturday with new weekdays)', () => {
-    const week = pick({ ...vta(), anchor: serviceAnchor('20261016') });
-    expect(week.weekStart).toBe('20261012');
-    expect(week.services.Monday).toEqual(['WD-old', 'WD-old-b']);
-    expect(week.services.Saturday).toEqual(['Sat-old', 'Sat-old-b']);
-    expect(week.services.Sunday).toEqual(['Sun-old', 'Sun-old-b']);
-  });
-
-  it('#1082 VTA: the switch happens when the new period starts no more than 7 days after the anchor', () => {
-    // New period from Mon Oct 26: anchor Oct 18 is 8 days before, Oct 19 is 7.
-    expect(pick({ ...vta(), anchor: '20261018' }).services.Saturday).toEqual(['Sat-old', 'Sat-old-b']);
-    expect(pick({ ...vta(), anchor: '20261019' }).services.Saturday).toEqual(['Sat-new']);
-    // The lead is a parameter (plan question 5): with 0, riders' current timetable is read.
-    expect(pick({ ...vta(), anchor: '20261022' }, { newPeriodLeadDays: 0 }).services.Saturday).toEqual(['Sat-old', 'Sat-old-b']);
   });
 
   it('CIV-469 STM: an archived calendar_dates-only zip ending in a holiday fortnight reads its last regular week', () => {
@@ -566,11 +559,15 @@ describe('splitServicePeriods', () => {
     const split = splitServicePeriods(table);
     expect(split.straddling).toEqual(['20261019']);
     expect(split.periods.map(p => p[0])).toEqual(['20261005', '20261026']);
-    // The change week starts 4 days after the anchor, so the new period is read.
+    // The change week starts 4 days after the anchor: today's timetable is read until its last day.
     const week = pickServiceWeek(table);
-    expect(week.weekStart).toBe('20261026');
-    expect(week.services.Monday).toEqual(['WK2']);
+    expect(week.weekStart).toBe('20261012');
+    expect(week.services.Monday).toEqual(['WK1']);
     expect(skippedDates(week, 'period-change')).toEqual(weekDates('20261019'));
+    // In the change week, the anchor's own day decides: Tuesday still runs WK1, Thursday runs WK2.
+    const at = (anchor: string) => pickServiceWeek(buildServiceDayTable({ calendar, calendarDates: [], trips, anchor }));
+    expect(at('20261020').services.Monday).toEqual(['WK1']);
+    expect(at('20261022').services.Monday).toEqual(['WK2']);
   });
 });
 

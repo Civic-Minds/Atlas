@@ -24,8 +24,6 @@ export type DayName = (typeof DAY_NAMES)[number];
 export const WINDOW_DAYS_BEFORE = 7;
 /** Weeks from the anchor the table runs to: the anchor plus 55 days, 8 whole weeks. */
 export const WINDOW_WEEKS_AFTER = 8;
-/** A new period is read when it starts no more than this many days after the anchor (VTA, #1082; plan question 5). */
-export const NEW_PERIOD_LEAD_DAYS = 7;
 /** Weeks a day's new pattern must hold before it counts as a new period, so a one- or two-week holiday, bridge or break is not one. */
 export const MIN_NEW_PERIOD_WEEKS = 3;
 /** Weeks of the old pattern needed before a change can be called. */
@@ -356,11 +354,6 @@ export interface ServiceWeek {
 const byDayName = <T>(f: (day: DayName, i: number) => T): Record<DayName, T> =>
   Object.fromEntries(DAY_NAMES.map((day, i) => [day, f(day, i)])) as Record<DayName, T>;
 
-export interface PickServiceWeekOptions {
-  /** Read the next period when it starts within this many days of the anchor (default NEW_PERIOD_LEAD_DAYS). */
-  newPeriodLeadDays?: number;
-}
-
 /**
  * The anchor week's vote when a day runs a two-week cycle in the period: the day has exactly two
  * signatures there, each on at least MIN_CYCLE_WEEKS_EACH weeks, and one of them falls on every
@@ -398,9 +391,11 @@ function twoWeekCycle(grid: WeekGrid, weeks: readonly number[], anchorWeek: numb
 /**
  * Picks one real week from the table (plan 3b, rules 1-5 and 7).
  *
- * 1. The service period in force on the anchor, or the next one when it starts within
- *    NEW_PERIOD_LEAD_DAYS of the anchor, so an old Saturday is never paired with new weekdays.
- *    With the anchor outside the table (an archived or not-yet-started feed), the nearest period.
+ * 1. The service period in force on the anchor, read whole until its last day, so an old Saturday
+ *    is never paired with new weekdays. A new timetable is never read before it starts (plan
+ *    question 5, Ryan 2026-10-27: "why would we show anything other than what is running today").
+ *    An anchor in the week a timetable changes reads the period its own day runs. With the anchor
+ *    outside the table (an archived or not-yet-started feed), the nearest period.
  * 2. Each day of the week takes the signature seen on the most weeks of that period. When that
  *    vote is tied or thin (fewer than MIN_VOTE_WEEKS weeks of the day in the period), it goes to the
  *    period's signature seen on the most weeks of that day from the period's start to the table's
@@ -420,8 +415,7 @@ function twoWeekCycle(grid: WeekGrid, weeks: readonly number[], anchorWeek: numb
  * 7. Each day reads its own date, so per-day service_ids never stack and part-week routes stay
  *    part-week.
  */
-export function pickServiceWeek(table: ServiceDayTable, options: PickServiceWeekOptions = {}): ServiceWeek {
-  const leadDays = options.newPeriodLeadDays ?? NEW_PERIOD_LEAD_DAYS;
+export function pickServiceWeek(table: ServiceDayTable): ServiceWeek {
   const grid = weekGrid(table);
   const { periods, straddling } = splitPeriods(grid);
   const emptyWeek: ServiceWeek = {
@@ -434,14 +428,15 @@ export function pickServiceWeek(table: ServiceDayTable, options: PickServiceWeek
   const anchorMonday = anchorDay - dayIndex(anchorDay);
   const anchorWeek = (anchorMonday - grid.mondays[0]) / 7;
 
-  // Rule 1: the period in force on the anchor (or the one after a straddling week it falls in).
+  // Rule 1: the period in force on the anchor. An anchor in a straddling week (the timetable
+  // changes mid-week) reads the earlier period while its own day still runs the earlier pattern.
   let k = periods.findIndex(weeks => weeks[weeks.length - 1] >= anchorWeek);
-  const anchorInside = k >= 0 && periods[k][0] <= anchorWeek;
   if (k < 0) k = periods.length - 1;
-  if (anchorInside && k + 1 < periods.length) {
-    // The first week after this period that differs (a straddling week or the next period's first).
-    const nextChange = grid.mondays[periods[k][periods[k].length - 1] + 1];
-    if (nextChange - anchorDay <= leadDays) k++;
+  if (k > 0 && periods[k][0] > anchorWeek && straddling.includes(anchorWeek)) {
+    const d = dayIndex(anchorDay);
+    const own = grid.cells[anchorWeek]?.[d]?.signature;
+    const earlier = mode(periods[k - 1].map(w => grid.cells[w][d]?.signature).filter((s): s is string => s != null));
+    if (own == null || own === earlier?.value) k--;
   }
   const weeks = periods[k];
   const distance = (n: number) => Math.abs(n - anchorDay);
