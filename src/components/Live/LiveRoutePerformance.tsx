@@ -78,6 +78,11 @@ interface Props {
    * null while "Right now" has no count (no analysis, feed down or incomplete). Must be stable (a state setter).
    */
   onCounted?: (counted: { directionId: number; label: string; ids: string[] } | null) => void;
+  /**
+   * Each vehicle's direction from its trip in the analysis's timetable (vehicle id → GTFS direction id), so the map
+   * names its destination from that direction instead of guessing from the nearest shape (#1164). Must be stable.
+   */
+  onTripDirections?: (byVehicle: ReadonlyMap<string, number> | null) => void;
 }
 
 /**
@@ -93,7 +98,7 @@ function useRecentPositions(vehicles: readonly LiveVehicle[]): RecentSnapshot[] 
 }
 
 /** The Live route card: only what is live now ("Right now"), per direction. */
-export default function LiveRoutePerformance({ slug, routeShortName, vehicles, feedDegraded, onCounted }: Props) {
+export default function LiveRoutePerformance({ slug, routeShortName, vehicles, feedDegraded, onCounted, onTripDirections }: Props) {
   const data = useSegmentDelay(slug, routeShortName) as (SegmentDelayData & { tripDirections?: Record<string, string[]> }) | null;
   // The direction lives in the URL (dir) so a shared link reopens it.
   const directions = useMemo(() => Object.entries(data?.directionLabels ?? {}).map(([id, label]) => [Number(id), label] as const), [data]);
@@ -130,6 +135,18 @@ export default function LiveRoutePerformance({ slug, routeShortName, vehicles, f
     onCounted?.(countedKey == null ? null : { directionId, label: directionLabel, ids: countedKey ? countedKey.split('\n') : [] });
   }, [onCounted, countedKey, directionId, directionLabel]);
   useEffect(() => () => onCounted?.(null), [onCounted]);
+
+  // Only trips the timetable lists: a trip it doesn't list gets its direction from the map, the guess this corrects.
+  const dirOfTrip = useMemo(() => {
+    const m = new Map<string, number>();
+    for (const [d, trips] of Object.entries(data?.tripDirections ?? {})) for (const t of trips) m.set(t, Number(d));
+    return m;
+  }, [data]);
+  const tripDirKey = vehicles.flatMap(v => (dirOfTrip.has(v.tripId) ? [`${v.id}\t${dirOfTrip.get(v.tripId)}`] : [])).sort().join('\n');
+  useEffect(() => {
+    onTripDirections?.(tripDirKey ? new Map(tripDirKey.split('\n').map(x => { const [id, d] = x.split('\t'); return [id, Number(d)] as const; })) : null);
+  }, [onTripDirections, tripDirKey]);
+  useEffect(() => () => onTripDirections?.(null), [onTripDirections]);
 
   if (!data || !line) return null;
 

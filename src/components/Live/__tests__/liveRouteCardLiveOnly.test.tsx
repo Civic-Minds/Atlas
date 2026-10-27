@@ -103,6 +103,13 @@ describe('"Right now" from the map\'s live positions (CIV-893)', () => {
     expect(onCounted).toHaveBeenLastCalledWith(null);
   });
 
+  it("reports each listed trip's direction so the map can name its destination from it (#1164)", () => {
+    const onTripDirections = vi.fn();
+    render(<LiveRoutePerformance slug="ttc" routeShortName="505" vehicles={[car('a', 't1', 3, T0), car('c', 't9', 2, T0)]} feedDegraded={false} onTripDirections={onTripDirections} />);
+    // t9 isn't in the timetable: no direction is claimed for it.
+    expect(onTripDirections).toHaveBeenLastCalledWith(new Map([['a', 0]]));
+  });
+
   it('shows no gaps line while no gap is known yet (cars just seen, no track of the car ahead)', () => {
     card([car('a', 't1', 3, T0), car('b', 't2', 1.5, T0)]);
     expect(screen.getByText('2')).toBeTruthy();
