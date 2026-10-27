@@ -22,6 +22,19 @@ const shell = readFileSync(join(dist, 'index.html'), 'utf8');
 // Staging builds are never canonical to production; describe the host they are served from.
 const origin = mod.BUILD_MODE === 'public' ? SITE_URL : process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : SITE_URL;
 
+/** A <script> tag carrying JSON, with "<" escaped so the data can never close the tag. */
+const jsonScript = (attrs: string, data: unknown) => `<script ${attrs}>${JSON.stringify(data).replace(/</g, '\\u003c')}</script>`;
+
+/** Write one prerendered page: the shell with its SEO tags, its HTML in #root, its JSON-LD in the head and its data before </body>. */
+function writePage(path: string, seo: Parameters<typeof applySeoToHtml>[1], rootHtml: string, data: { id: string; value: unknown }, jsonLd?: object) {
+  let html = injectRootHtml(applySeoToHtml(shell, seo), rootHtml);
+  if (jsonLd) html = html.replace('</head>', () => `  ${jsonScript('type="application/ld+json"', jsonLd)}\n</head>`);
+  html = html.replace('</body>', () => `${jsonScript(`type="application/json" id="${data.id}"`, data.value)}\n</body>`);
+  const file = join(dist, path, 'index.html');
+  mkdirSync(dirname(file), { recursive: true });
+  writeFileSync(file, html);
+}
+
 for (const route of prerenderRoutes(mod.BUILD_FLAGS)) {
   if (!mod.PRERENDER_PATHS.includes(route.path)) throw new Error(`${route.path} is in the route table but has no prerender page`);
   const seo = resolveSeo(route.path, { mode: mod.BUILD_MODE, flags: mod.BUILD_FLAGS, origin });
@@ -54,36 +67,21 @@ if (mod.BUILD_FLAGS.agencyPages) {
     for (const a of agencies) {
       const data = agencyPageData(a, agencies, AGENCY_PAGE_DATA.generatedAt, areaOf.get(a.slug), areaMembers.get(a.slug));
       const seo = resolveAgencySeo(a, { mode: mod.BUILD_MODE, origin, intro: data.intro });
-      const embedded = `<script type="application/json" id="${AGENCY_DATA_SCRIPT_ID}">${JSON.stringify(data).replace(/</g, '\\u003c')}</script>\n</body>`;
-      const ld = `  <script type="application/ld+json">${JSON.stringify(agencyPageJsonLd(a, seo.canonicalUrl, origin, data.area, data.intro)).replace(/</g, '\\u003c')}</script>\n</head>`;
-      const html = injectRootHtml(applySeoToHtml(shell, seo), mod.renderAgencyPage(data)).replace('</head>', () => ld).replace('</body>', () => embedded);
-      const file = join(dist, agencyPagePath(a.slug), 'index.html');
-      mkdirSync(dirname(file), { recursive: true });
-      writeFileSync(file, html);
+      writePage(agencyPagePath(a.slug), seo, mod.renderAgencyPage(data), { id: AGENCY_DATA_SCRIPT_ID, value: data }, agencyPageJsonLd(a, seo.canonicalUrl, origin, data.area, data.intro));
       urls.push(seo.canonicalUrl);
     }
-    const byslug = new Map(agencies.map(a => [a.slug, a]));
     for (const area of areas) {
-      const data = buildAreaPageData(area, byslug, AGENCY_PAGE_DATA.generatedAt);
+      const data = buildAreaPageData(area, bySlug, AGENCY_PAGE_DATA.generatedAt);
       if (data.agencies.length === 0) continue;
       const seo = resolveAreaSeo(data, { mode: mod.BUILD_MODE, origin });
-      const embedded = `<script type="application/json" id="${AREA_DATA_SCRIPT_ID}">${JSON.stringify(data).replace(/</g, '\\u003c')}</script>\n</body>`;
-      const ld = `  <script type="application/ld+json">${JSON.stringify(areaPageJsonLd(data, seo.canonicalUrl, origin)).replace(/</g, '\\u003c')}</script>\n</head>`;
-      const html = injectRootHtml(applySeoToHtml(shell, seo), mod.renderAreaPage(data)).replace('</head>', () => ld).replace('</body>', () => embedded);
-      const file = join(dist, areaPagePath(area.slug), 'index.html');
-      mkdirSync(dirname(file), { recursive: true });
-      writeFileSync(file, html);
+      writePage(areaPagePath(area.slug), seo, mod.renderAreaPage(data), { id: AREA_DATA_SCRIPT_ID, value: data }, areaPageJsonLd(data, seo.canonicalUrl, origin));
       urls.push(seo.canonicalUrl);
     }
     // The index of every agency and area page, built from the same data (so new agencies and areas appear on their own).
     {
       const data = buildAgencyIndexData(agencies, areas, AGENCY_PAGE_DATA.generatedAt);
       const seo = resolveAgencyIndexSeo(data, { mode: mod.BUILD_MODE, origin });
-      const embedded = `<script type="application/json" id="${AGENCY_INDEX_DATA_SCRIPT_ID}">${JSON.stringify(data).replace(/</g, '\\u003c')}</script>\n</body>`;
-      const html = injectRootHtml(applySeoToHtml(shell, seo), mod.renderAgencyIndex(data)).replace('</body>', () => embedded);
-      const file = join(dist, AGENCY_INDEX_PATH, 'index.html');
-      mkdirSync(dirname(file), { recursive: true });
-      writeFileSync(file, html);
+      writePage(AGENCY_INDEX_PATH, seo, mod.renderAgencyIndex(data), { id: AGENCY_INDEX_DATA_SCRIPT_ID, value: data });
       urls.push(seo.canonicalUrl);
     }
     // The committed public/sitemap.xml stays public-only; this build's copy also lists agency and area pages.

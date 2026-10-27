@@ -13,23 +13,13 @@ import { plural } from '../shared/overflowText';
 import historyAgencies from '../shared/data/history-agencies.json';
 import type { HistoryAgencyList } from '../shared/historyEligibility';
 import { isLiveEligibleSlug } from '../shared/livePollingConfig';
-import { applySeoToDocument } from './lib/seoDom';
-import { LINK } from './pageStyles';
+import { applySeoToDocument, seoOrigin } from './lib/seoDom';
+import { readEmbeddedJson } from './lib/embeddedData';
+import { LINK, UNDERLINED_LINK } from './pageStyles';
 import Tag from './components/ui/Tag';
 import { PageTitle, SectionTitle } from './components/ui/PageTitle';
 import PageShell from './components/ui/PageShell';
 import DocsPageLayout from './components/ui/DocsPageLayout';
-
-/** Read this page's data from the JSON the prerender embedded next to the app root. */
-function readEmbeddedData(): AgencyIndexData | null {
-  if (typeof document === 'undefined') return null;
-  try {
-    const raw = document.getElementById(AGENCY_INDEX_DATA_SCRIPT_ID)?.textContent;
-    return raw ? (JSON.parse(raw) as AgencyIndexData) : null;
-  } catch {
-    return null;
-  }
-}
 
 /** Shared multi-column layout for the Regions list and every country's agency list. */
 const INDEX_COLUMNS = 'sm:columns-2 lg:columns-3 sm:gap-x-8';
@@ -58,7 +48,7 @@ function AgencyTags({ live, history }: { live: boolean; history: boolean }) {
  * without scripts. The dev server (no prerendered HTML) loads from the summary file instead (dead code in production builds).
  */
 export default function AgenciesIndexPage({ data: dataProp }: { data?: AgencyIndexData }) {
-  const [data, setData] = useState<AgencyIndexData | null>(() => dataProp ?? readEmbeddedData());
+  const [data, setData] = useState<AgencyIndexData | null>(() => dataProp ?? readEmbeddedJson<AgencyIndexData>(AGENCY_INDEX_DATA_SCRIPT_ID));
   useEffect(() => {
     if (data || !import.meta.env.DEV) return;
     void import('./agenciesIndexDevData').then(m => setData(m.devAgencyIndexData()));
@@ -67,7 +57,7 @@ export default function AgenciesIndexPage({ data: dataProp }: { data?: AgencyInd
     if (!data) return;
     applySeoToDocument(document, resolveAgencyIndexSeo(data, {
       mode: ATLAS_MODE,
-      origin: ATLAS_MODE === 'public' ? undefined : window.location.origin,
+      origin: seoOrigin(),
     }));
   }, [data]);
   // A link to a state or province heading (CIV-966) lands on it even when the list renders after the page loads.
@@ -94,7 +84,7 @@ export default function AgenciesIndexPage({ data: dataProp }: { data?: AgencyInd
             <section className="mt-12" aria-labelledby="index-regions">
               <SectionTitle id="index-regions">Regions</SectionTitle>
               <ul className={`mt-3 text-sm ${INDEX_COLUMNS}`}>
-                {areas.map(a => <li key={a.slug} className="break-inside-avoid py-1"><a className={`${LINK} underline underline-offset-2`} href={areaPagePath(a.slug)}>{a.shortName}</a></li>)}
+                {areas.map(a => <li key={a.slug} className="break-inside-avoid py-1"><a className={UNDERLINED_LINK} href={areaPagePath(a.slug)}>{a.shortName}</a></li>)}
               </ul>
             </section>
           )}
@@ -123,7 +113,7 @@ export default function AgenciesIndexPage({ data: dataProp }: { data?: AgencyInd
                       }
                       return (
                         <li key={a.slug} className="break-inside-avoid py-[3px]">
-                          <a className={`${LINK} underline underline-offset-2`} href={agencyPagePath(a.slug)}>{a.name}</a>
+                          <a className={UNDERLINED_LINK} href={agencyPagePath(a.slug)}>{a.name}</a>
                           {routes}
                         </li>
                       );

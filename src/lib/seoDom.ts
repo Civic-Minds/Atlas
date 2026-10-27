@@ -1,4 +1,5 @@
 import type { ResolvedSeo } from '../../shared/seo';
+import { ATLAS_MODE } from '../../shared/config';
 
 function ensureMeta(doc: Document, attr: 'name' | 'property', key: string): HTMLMetaElement {
   let el = doc.head.querySelector<HTMLMetaElement>(`meta[${attr}="${key}"]`);
@@ -18,6 +19,11 @@ export function safeHttpUrl(value: string): string | null {
   } catch {
     return null;
   }
+}
+
+/** The origin for canonical and og:url: production keeps the real site address (undefined); staging builds describe the host they run on. */
+export function seoOrigin(): string | undefined {
+  return ATLAS_MODE === 'public' ? undefined : window.location.origin;
 }
 
 /** Write a route's title, description, canonical, share tags and robots into the live page. */
