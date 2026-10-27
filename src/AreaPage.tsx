@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
-import { agencyPagePath } from '../shared/agencyPages';
+import { agencyPagePath, fitAgencyName } from '../shared/agencyPages';
 import {
   AREA_DATA_SCRIPT_ID,
   AREA_TABLE_OTHER,
@@ -23,9 +23,12 @@ import { PageTitle, SectionTitle } from './components/ui/PageTitle';
 import EmptyPage from './components/ui/EmptyPage';
 import DataTable from './components/ui/DataTable';
 
-/** Desktop widths of the agency table: the names' smallest width, and each mode column's (eight fit in the page). */
+/**
+ * Desktop widths of the agency table: the names' smallest width, and each mode column's. Eight mode columns fit beside the
+ * names from 768px wide up, every header on at most two lines (CIV-973); narrower, the table scrolls.
+ */
 const AREA_NAME_COLUMN_REM = 10.75;
-const AREA_MODE_COLUMN_REM = 6.75;
+const AREA_MODE_COLUMN_REM = 5;
 /**
  * With the eighth ("Other") column the names column is narrow, so a full name past this length would wrap to three lines
  * or more ("San Francisco Bay Area Water Emergency Transportation Authority (WETA)"); it shows the short display name
@@ -33,16 +36,16 @@ const AREA_MODE_COLUMN_REM = 6.75;
  */
 const NARROW_NAME_MAX_CHARS = 40;
 
-/** A mode header too long for its column breaks after the slash ("Gondola/" over "aerial tram"); the rest stay on one line. */
+/** A mode header with a slash breaks after it ("Gondola/" over "aerial tram", "Subway/" over "Metro"); the rest wrap at spaces. */
 function modeHeader(label: string) {
   const slash = label.indexOf('/');
-  return label.length > 14 && slash > 0 ? <>{label.slice(0, slash + 1)}<br />{label.slice(slash + 1)}</> : label;
+  return slash > 0 ? <>{label.slice(0, slash + 1)}<br />{label.slice(slash + 1)}</> : label;
 }
 
 /** The agency's link in the table: its full name, or in a narrow names column a short one with the full name on hover. */
 function agencyNameLink(a: AreaAgencyRow, narrow: boolean) {
-  const short = narrow && a.name.length > NARROW_NAME_MAX_CHARS && a.displayName.length < a.name.length;
-  return <a className={`font-black ${LINK}`} href={agencyPagePath(a.slug)} title={short ? a.name : undefined}>{short ? a.displayName : a.name}</a>;
+  const { text, title } = narrow ? fitAgencyName(a.name, a.displayName, NARROW_NAME_MAX_CHARS) : { text: a.name, title: undefined };
+  return <a className={LINK} href={agencyPagePath(a.slug)} title={title}>{text}</a>;
 }
 
 /** Read this page's numbers from the JSON the prerender embedded next to the app root. */
@@ -113,7 +116,7 @@ export default function AreaPage({ data: dataProp }: { data?: AreaPageData }) {
                   rows={data.agencies}
                   rowKey={a => a.slug}
                   columns={[
-                    // Every area has the same mode columns (CIV-973); from sm up they are narrow enough for eight to fit beside the names.
+                    // Every area has the same mode columns (CIV-973); from md up they are narrow enough for eight to fit beside the names.
                     { key: 'agency', header: 'Agency', rowHeader: true, width: AREA_NAME_COLUMN_REM, className: 'font-normal', cell: a => agencyNameLink(a, data.modeColumns.includes(AREA_TABLE_OTHER)) },
                     ...data.modeColumns.map(m => ({ key: m, header: modeHeader(m), width: AREA_MODE_COLUMN_REM, cell: (a: (typeof data.agencies)[number]) => a.modes[m] ?? '–' })),
                   ]}

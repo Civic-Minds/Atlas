@@ -171,6 +171,11 @@ describe('AreaPage narrow names column', () => {
     expect(link.getAttribute('title')).toBe(long);
     expect(screen.getByRole('link', { name: 'Toronto Transit Commission' }).getAttribute('title')).toBeNull();
   });
+
+  it('draws the names at normal weight, as the column asks (CIV-973)', () => {
+    view(<AreaPage data={buildAreaPageData(AREA, new Map([[TTC.slug, TTC], [HSR.slug, HSR]]), null)} />);
+    expect(screen.getByRole('link', { name: 'Toronto Transit Commission' }).className).not.toMatch(/font-(black|bold)/);
+  });
 });
 
 describe('AreaPage', () => {
