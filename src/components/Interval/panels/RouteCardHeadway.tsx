@@ -18,6 +18,8 @@ import {
   CARD_CALLOUT_TEXT,
   CardSectionLabel,
   CardHelpNotice,
+  CorrectedDataNotice,
+  NewScheduleDataNotice,
   SidebarCardHeaderBlock,
   SidebarCardList,
   SidebarCardShell,
@@ -35,6 +37,7 @@ import { routeCardRowValue } from '../../../utils/routeCardRowValue';
 import {
   dirIdNum,
   groupTrunkHeadway,
+  medianHeadway,
   sparklineSourceDirections,
   worstDirectionByHour,
   sharedStopIdsForBranches,
@@ -55,12 +58,6 @@ import { featurePassesHeadwayFilter } from '../../../../shared/routeHeadwayFilte
 import { expiredFeedNotice, NO_ROUTE_SHAPE_NOTICE, periodServiceNotice, selectedRouteFilterNotice, selectedRouteOutsideFilterNotice, unevenServiceNotice } from '../../../content/noticeCopy';
 import { headwayAbout, headwayAboutRange } from '../../../utils/headwayText';
 import type { RouteLabel } from '../../../utils/routeFacts';
-
-function medianHeadway(values: number[]): number {
-  const sorted = [...values].sort((a, b) => a - b);
-  const mid = Math.floor(sorted.length / 2);
-  return sorted.length % 2 === 1 ? sorted[mid] : Math.round((sorted[mid - 1] + sorted[mid]) / 2);
-}
 
 function formatMetricMap(
   values: Record<string, number | null | undefined> | null | undefined,
@@ -313,18 +310,20 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
   const displayGroups = doesNotRun ? [] : collapseGroups ? [directionGroups[0]] : directionGroups;
   const needsNumbered = allLackHeadsigns && !collapseGroups && directionGroups.length > 1;
   const showDirectionSections = shouldShowDirectionSections(displayGroups);
+  // A destination's name under its direction, the same in the rows and the issue report.
+  const destinationLabel = (group: DirectionGroup, direction: ShapeProperties, gi: number) => resolveBranchLabel({
+    headsign: direction.headsign,
+    shortName: currentRoute.routeShortName ?? '',
+    longName: currentRoute.routeLongName ?? '',
+    directionId: needsNumbered ? gi : group.dirId,
+    multipleDirections: showDirectionSections,
+    sectionBoundLabel: showDirectionSections ? group.boundLabel : undefined,
+  });
   const reportServiceLines = displayGroups.flatMap((group, gi) => {
     const section = showDirectionSections && group.boundLabel ? [`${group.boundLabel}:`] : [];
     const branchLines = group.realTier
       .map(direction => {
-        const label = resolveBranchLabel({
-          headsign: direction.headsign,
-          shortName: currentRoute.routeShortName ?? '',
-          longName: currentRoute.routeLongName ?? '',
-          directionId: needsNumbered ? gi : group.dirId,
-          multipleDirections: showDirectionSections,
-          sectionBoundLabel: showDirectionSections ? group.boundLabel : undefined,
-        });
+        const label = destinationLabel(group, direction, gi);
         // resolveBranchLabel can legitimately return '' (e.g. destination redundant with a
         // section header already shown) -- fine for the polished card, but the report text's
         // whole job is completeness, so a branch with real data must never be silently dropped
@@ -340,14 +339,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
       .filter((line): line is string => line !== null);
     const limitedLines = !hideSpan
       ? group.span
-          .map(direction => resolveBranchLabel({
-            headsign: direction.headsign,
-            shortName: currentRoute.routeShortName ?? '',
-            longName: currentRoute.routeLongName ?? '',
-            directionId: needsNumbered ? gi : group.dirId,
-            multipleDirections: showDirectionSections,
-            sectionBoundLabel: showDirectionSections ? group.boundLabel : undefined,
-          }))
+          .map(direction => destinationLabel(group, direction, gi))
           .filter(Boolean)
           .map(label => `- ${label}: limited service`)
       : [];
@@ -396,6 +388,10 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
     ].join('\n');
   }).join('\n\n');
   // One route name for the title, the sparkline and the issue report (shared/routeDisplay.ts).
+  // A branch matches the hovered row by headsign (or the core row's headsigns) and, when the row has one, its pattern (#1064).
+  const matchesHoveredBranch = (headsign: string | null | undefined, routeVariant: string | null | undefined) =>
+    (hoveredBranch?.headsign === headsign || hoveredBranch?.headsigns?.includes(headsign ?? '') === true)
+    && (!hoveredBranch?.routeVariant || (routeVariant ?? '') === hoveredBranch.routeVariant);
   const routeTitle = currentRoute.label?.text ?? routeLabels({ shortName: currentRoute.routeShortName, longName: currentRoute.routeLongName, routeType: currentRoute.routeType ?? currentRoute.directions[0]?.routeType, agencySlug: currentRoute.agencySlug ?? routeSlug, agencyName: agencyDisplayName }).text;
   const reportPeriod = selectedPeriod
     ? `${selectedPeriod.label} (${formatPeriodRangeLong(selectedPeriod.startHour, selectedPeriod.endHour)})`
@@ -522,9 +518,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
           ? displayGroups.find(group => dirIdNum(group.dirId) === dirIdNum(hoveredBranch!.directionId))
           : undefined;
         const selectedGroup = hoveredGroup && branchesOf(hoveredGroup).length >= 2 ? hoveredGroup : undefined;
-        const isSelectedBranch = (b: ShapeProperties) => (b.headsign === hoveredBranch?.headsign
-          || hoveredBranch?.headsigns?.includes(b.headsign ?? '') === true)
-          && (!hoveredBranch?.routeVariant || (b.routeVariant ?? '') === hoveredBranch.routeVariant);
+        const isSelectedBranch = (b: ShapeProperties) => matchesHoveredBranch(b.headsign, b.routeVariant);
         const selectionStacked = selectedGroup
           ? Object.fromEntries(HOURS.map(h => [h, stackOf(selectedGroup, h, isSelectedBranch)]))
           : null;
@@ -615,24 +609,13 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
           </div>
         )}
         {(() => {
-          const branchLabel = (group: DirectionGroup, direction: ShapeProperties, gi: number) => {
-            const label = resolveBranchLabel({
-              headsign: direction.headsign,
-              shortName: currentRoute.routeShortName ?? '',
-              longName: currentRoute.routeLongName ?? '',
-              directionId: needsNumbered ? gi : group.dirId,
-              multipleDirections: showDirectionSections,
-              sectionBoundLabel: showDirectionSections ? group.boundLabel : undefined,
-            });
-            return rowLabelWithOrigin(label, direction, group.realTier);
-          };
+          const branchLabel = (group: DirectionGroup, direction: ShapeProperties, gi: number) =>
+            rowLabelWithOrigin(destinationLabel(group, direction, gi), direction, group.realTier);
           // A row is matched by direction, headsign and, when the hovered row has one, its pattern, so two
           // rows sharing a headsign from different origins highlight one at a time (#1064).
           const branchHoverProps = (dirId: number, headsign: string | null | undefined, routeVariant?: string | null) => {
             if (!headsign) return {};
-            const isHovered = dirIdNum(hoveredBranch?.directionId) === dirIdNum(dirId)
-              && (hoveredBranch?.headsign === headsign || hoveredBranch?.headsigns?.includes(headsign ?? '') === true)
-              && (!hoveredBranch?.routeVariant || (routeVariant ?? '') === hoveredBranch.routeVariant);
+            const isHovered = dirIdNum(hoveredBranch?.directionId) === dirIdNum(dirId) && matchesHoveredBranch(headsign, routeVariant);
             return {
               onHoverStart: () => setHoveredBranch({ directionId: dirId, headsign, ...(routeVariant ? { routeVariant } : {}) }),
               onHoverEnd: () => setHoveredBranch(null),
@@ -822,30 +805,10 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
               />
             )}
             {routeAgency?.feedReviewStatus === 'review' && !routeAgency.overrideNote && (
-              <CardHelpNotice
-                message="New schedule data is being verified."
-                onLearnMore={() => onInfoOpen('about', {
-                  helpTopic: 'new-schedule-data',
-                  agencyName: routeAgency?.name,
-                  lastRefreshedAt: routeAgency.lastRefreshedAt ?? undefined,
-                  lastFeedCheckAt: routeAgency.lastFeedCheckAt ?? undefined,
-                  expiredFeedCheckCount: routeAgency.expiredFeedCheckCount,
-                  expiredFeedCheckSince: routeAgency.expiredFeedCheckSince ?? undefined,
-                  websiteUrl: routeAgency.websiteUrl ?? undefined,
-                })}
-              />
+              <NewScheduleDataNotice agency={routeAgency} onInfoOpen={onInfoOpen} />
             )}
-            {routeOverrideNote && (
-              <CardHelpNotice
-                message="We corrected this data."
-                onLearnMore={() => onInfoOpen('about', {
-                  helpTopic: 'corrected-data',
-                  agencyName: routeAgency?.name,
-                  overrideNote: routeOverrideNote,
-                  issueUrl: routeAgency?.issueUrl,
-                  issueUrls: routeAgency?.issueUrls,
-                })}
-              />
+            {routeAgency && routeOverrideNote && (
+              <CorrectedDataNotice agency={routeAgency} overrideNote={routeOverrideNote} onInfoOpen={onInfoOpen} />
             )}
             {hasWeekdayTierVariation && (
               <CardHelpNotice

@@ -106,7 +106,8 @@ export function sharedStopIdsForBranches(branches: ShapeProperties[]): string[] 
   return sharedStopIds(branches.filter(d => !isLimitedBranch(d)));
 }
 
-function medianHeadway(values: number[]): number {
+/** The middle value, rounded to a whole minute when it falls between two. */
+export function medianHeadway(values: number[]): number {
   const sorted = [...values].sort((a, b) => a - b);
   const mid = Math.floor(sorted.length / 2);
   return sorted.length % 2 === 1 ? sorted[mid] : Math.round((sorted[mid - 1] + sorted[mid]) / 2);
