@@ -739,7 +739,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
         ref={cardRef}
         className={sheetMode
           ? `${BOTTOM_SHEET_FRAME} ${fade}`
-          : `${PANEL_SIDEBAR} ${SIDEBAR_PANEL_WIDTH} max-h-[calc(100dvh-170px)] sm:max-h-[calc(100vh-92px)] flex flex-col gap-3 transition-opacity ${TRANSITION_SLOW} ${fade}`}
+          : `${PANEL_SIDEBAR} ${SIDEBAR_PANEL_WIDTH} max-h-[calc(100dvh-170px)] sm:max-h-[calc(100vh-132px)] flex flex-col gap-3 transition-opacity ${TRANSITION_SLOW} ${fade}`}
         style={sheetMode ? undefined : {
           '--sidebar-left': `${sidebarLeft ?? SIDEBAR_LEFT_FALLBACK}px`,
           ...(searchBarWidth && !isPhone ? { width: `${searchBarWidth}px`, maxWidth: 'none' } : {}),
