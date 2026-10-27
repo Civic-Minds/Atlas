@@ -35,6 +35,9 @@ export function agencyHour(slug: string, d = new Date()): number {
   return Number(new Intl.DateTimeFormat('en-CA', { hour: 'numeric', hourCycle: 'h23', timeZone: LIVE_AGENCY_TIMEZONES[slug] }).format(d));
 }
 
+/** "Right now" names a time only once the vehicles' newest report is older than this: "Right now · last updated 2:04 pm" (CIV-1034). */
+export const RIGHT_NOW_STALE_SEC = 2 * 60;
+
 /** "11:42 pm" on the agency's clock. */
 export function agencyTime(slug: string, d = new Date()): string {
   return new Intl.DateTimeFormat('en-CA', { hour: 'numeric', minute: '2-digit', timeZone: LIVE_AGENCY_TIMEZONES[slug] }).format(d).replace('a.m.', 'am').replace('p.m.', 'pm');
@@ -148,6 +151,12 @@ export default function LiveRoutePerformance({ slug, routeShortName, vehicles, f
   const reporting = vehicles.filter(v => counted.has(v.id) && v.delayMin != null);
   const onTime = reporting.length ? reporting.filter(v => getVehicleStatus(v.delayMin) === 'on_time').length : null;
 
+  // Fresh data needs no time; stale data says when it was last updated (by the newest vehicle report).
+  const newest = Math.max(0, ...vehicles.map(v => v.tsEpoch ?? 0));
+  const rightNowLabel = newest > 0 && now / 1000 - newest > RIGHT_NOW_STALE_SEC
+    ? `Right now · last updated ${agencyTime(slug, new Date(newest * 1000))}`
+    : 'Right now';
+
   return (
     <div className="flex flex-col gap-3">
       {replacement}
@@ -156,7 +165,7 @@ export default function LiveRoutePerformance({ slug, routeShortName, vehicles, f
       {live && directions.length > 1 && <PillGroup label="Direction" options={directions} value={directionId} onChange={setDir} />}
 
       {live && (
-        <SidebarCardSection label={`Right now · ${agencyTime(slug, new Date(now))}`}>
+        <SidebarCardSection label={rightNowLabel}>
           {live.incomplete ? (
             <div className="text-xs font-bold text-[var(--text-muted)]">Live feed incomplete right now</div>
           ) : (
