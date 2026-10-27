@@ -240,8 +240,13 @@ export function directionStretches(
       .map(trip => trip.visits.find(v => v.stopId === stop))
       .filter((v): v is NonNullable<typeof v> => v != null && v.counted !== false)
       .map(v => v.minutes))].sort((x, y) => x - y);
+    // Daytime service shapes the stretches (as steadyIn above): a pattern that takes over only at night
+    // (OC Transpo 39's after-midnight Place d'Orléans routing, 00:09-02:09) stays a variant by day.
+    const daytimeWindows = PERIOD_WINDOWS.filter(w => DAYTIME_PERIODS.includes(w.key));
+    const runsByDay = (p: (typeof all)[number]) =>
+      p.trips.filter(t => daytimeWindows.some(w => t.visits[0].minutes >= w.start && t.visits[0].minutes < w.end)).length >= MIN_SCHEDULE_DEPARTURES;
     const takesTurnsWith = (p: (typeof all)[number], q: (typeof all)[number]): boolean => {
-      if (p.stops.length < 2 || q.stops.length < 2 || !sameEnds(p.stops, q.stops)) return false;
+      if (p.stops.length < 2 || q.stops.length < 2 || !runsByDay(p) || !sameEnds(p.stops, q.stops)) return false;
       const pStops = new Set(p.stops);
       const shared = q.stops.filter(stop => pStops.has(stop));
       if (shared.length === 0) return false;

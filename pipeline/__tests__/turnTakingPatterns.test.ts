@@ -59,4 +59,12 @@ describe('patterns that take the same trip in turn (CIV-786)', () => {
     const d = directionStretches('hsr16', [...hourly, ...fiddlersAfter], coord);
     expect(d.regularPatternCount).toBe(1);
   });
+
+  it('not when the other routing runs only at night (OC Transpo 39 after midnight): daytime shapes the stretches', () => {
+    // Fiddler's Green all day, then the Wilson routing from 00:09 to 02:09 only.
+    const allDay = pattern('f', viaF, 6 * 60 + 57, 30, 34);
+    const nightOnly = pattern('w', viaW, 24 * 60 + 9, 30, 5);
+    const d = directionStretches('oct39', [...allDay, ...nightOnly], coord);
+    expect(d.regularPatternCount).toBe(1);
+  });
 });
