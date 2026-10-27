@@ -471,7 +471,8 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
           <CardCallout className="mb-3" data-testid="compare-card-summary">
             {/* The shared callout styles (CIV-971): a headline, then its lines; with no headline each line is one. */}
             {headline && <p className={CARD_CALLOUT_HEADLINE}>{headline}</p>}
-            {lines.map(line => <p key={line} className={headline ? CARD_CALLOUT_TEXT : `${CARD_CALLOUT_HEADLINE} py-0.5`}>{line}</p>)}
+            {/* A bracketed frequency ("(≤5 min)") stays on one line. */}
+            {lines.map(line => <p key={line} className={headline ? CARD_CALLOUT_TEXT : `${CARD_CALLOUT_HEADLINE} py-0.5`}>{line.replace(/\([^)]+\)/g, part => part.replace(/ /g, '\u00A0'))}</p>)}
           </CardCallout>
         );
       })()}
