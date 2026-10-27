@@ -57,7 +57,7 @@ export default function WorstStopsSection({ v3, data, dir, uncertain, limit, col
         rowKey={s => `${s.stopId}-${s.directionId}`}
         columns={[
           onPick && canPick
-            ? { key: 'stop', header: 'Stop', rowHeader: true, className: 'font-normal', cell: s => !canPick(s.directionId, s.stopId) ? s.name : <button type="button" onClick={() => onPick(s.directionId, s.stopId)} className="text-left font-[inherit] hover:underline">{s.name}</button> }
+            ? { key: 'stop', header: 'Stop', rowHeader: true, className: 'font-normal', cell: s => !canPick(s.directionId, s.stopId) ? s.name : <button type="button" onClick={() => onPick(s.directionId, s.stopId)} className="text-left font-[inherit] hover:underline max-sm:min-h-[44px] max-sm:w-full">{s.name}</button> }
             : { key: 'stop', header: 'Stop', rowHeader: true, className: 'font-normal break-words', cell: s => <span title={s.name}>{s.name}</span> },
           ...(both ? [{ key: 'dir', header: 'Direction', cell: (s: (typeof top)[number]) => directionLabels[String(s.directionId)] }] : []),
           full
