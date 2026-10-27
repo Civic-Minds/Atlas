@@ -28,6 +28,7 @@ import { coveredRoutesText, LATE_THRESHOLD, bunchPartsText, liveSubtitle, risePo
 import { pct as pctOf, pctTenth, signedPct } from '../shared/liveFormat';
 import { mins } from './components/Live/sections/figures';
 import MethodSection from './components/Live/sections/MethodSection';
+import { LIVE_API_NO_ANSWER, LIVE_NO_STOP_TO_RANK_YET, LIVE_NO_STRETCH_STANDS_OUT, LIVE_WEEK_NOT_IN_FILES, liveNoAgencyAnalysis } from './content/noticeCopy';
 
 /** One column grid for every table on the page, so the first column, Route and Direction line up from table to table (widths in rem; the number columns share the rest of the width equally). */
 const FIRST_COL = 15, ROUTE_COL = 10, DIR_COL = 6.5;
@@ -55,9 +56,9 @@ export function useLiveAgency(agency: string): { kind: 'loading' } | { kind: 'er
     if (!agency) return;
     let live = true;
     fetch(liveAgencyDataUrl(agency))
-      .then(r => (liveDataMissing(r) ? { status: 'unknown_agency', reason: `Live has no route analysis for ${agency}.` } as LiveAgencyResponse : r.json() as Promise<LiveAgencyResponse>))
+      .then(r => (liveDataMissing(r) ? { status: 'unknown_agency', reason: liveNoAgencyAnalysis(agency) } as LiveAgencyResponse : r.json() as Promise<LiveAgencyResponse>))
       .then(data => { if (live) setState({ kind: 'done', data }); })
-      .catch(() => { if (live) setState({ kind: 'error', reason: devOnly('The Live API did not answer. Start Live with "npm run live" and open this page on the address it prints.') }); });
+      .catch(() => { if (live) setState({ kind: 'error', reason: devOnly(LIVE_API_NO_ANSWER) }); });
     return () => { live = false; };
   }, [agency]);
   return state;
@@ -127,7 +128,7 @@ function RoutesTable({ s }: { s: AgencySummary }) {
 const TOP_STOPS = 10;
 
 function StopsTable({ s, rows }: { s: AgencySummary; rows: AgencyHotspotStop[] }) {
-  if (!rows.length) return <p className="mt-3 text-sm text-[var(--text-muted)]">No stop has enough departures to rank yet.</p>;
+  if (!rows.length) return <p className="mt-3 text-sm text-[var(--text-muted)]">{LIVE_NO_STOP_TO_RANK_YET}</p>;
   return (
     <div className="relative mt-3 sm:overflow-x-auto">
       <SortableDataTable
@@ -151,7 +152,7 @@ function StopsTable({ s, rows }: { s: AgencySummary; rows: AgencyHotspotStop[] }
 
 /** Without `valueHeader` the table has no value column and keeps the summary's order (largest first). */
 function StretchTable({ s, rows, caption, valueHeader, format }: { s: AgencySummary; rows: AgencyHotspotStretch[]; caption: string; valueHeader?: string; format?: (v: number) => string }) {
-  if (!rows.length) return <p className="mt-3 text-sm text-[var(--text-muted)]">No stretch stands out on the analysed routes.</p>;
+  if (!rows.length) return <p className="mt-3 text-sm text-[var(--text-muted)]">{LIVE_NO_STRETCH_STANDS_OUT}</p>;
   return (
     <div className="relative mt-3 sm:overflow-x-auto">
       <SortableDataTable
@@ -209,7 +210,7 @@ export default function LiveAgencyPage() {
         <ErrorBoundary>
           {w && tiles.length
             ? <KpiTiles tiles={tiles} caption={weekNotComparableLine({ ...w, health: [] })} />
-            : <><p className="mt-5 text-sm text-[var(--text-muted)]">This week against last week is not in the analysis files yet.</p><DevHint hint={ANALYZE_DEV_HINT} /></>}
+            : <><p className="mt-5 text-sm text-[var(--text-muted)]">{LIVE_WEEK_NOT_IN_FILES}</p><DevHint hint={ANALYZE_DEV_HINT} /></>}
         </ErrorBoundary>
 
         <Section id="agency-routes" title="Routes" intro="Every analysed route, worst first.">

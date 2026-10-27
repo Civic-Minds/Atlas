@@ -42,6 +42,7 @@ import PanelEmpty from '../components/ui/PanelEmpty';
 import AgencyName from '../components/ui/AgencyName';
 import AgencyGroupHeader from '../components/ui/AgencyGroupHeader';
 import { loadingText, liveFeedErrorText, liveUnreachableText, LIVE_FEEDS_DOWN, LIVE_FEEDS_DOWN_STUCK, LIVE_FEEDS_UNAVAILABLE, LIVE_NOTHING_ACTIVE, LIVE_NOTHING_ACTIVE_HINT } from '../content/stateCopy';
+import { LIVE_NO_ROUTE_MATCHES, LIVE_NO_VEHICLES_ON_ROUTE, liveRouteEmptyNotice } from '../content/noticeCopy';
 
 interface Props {
   agencies: Agency[];
@@ -629,11 +630,9 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
     const agencyName = agencyDisplayName(agencies, slug);
     if (!getPolledRoute(slug, routeShortName)) {
       const followed = LIVE_POLLING_ROUTES.filter(r => r.slug === slug).map(r => r.displayRouteShortName);
-      return followed.length > 0
-        ? `Live does not follow ${agencyName} ${routeShortName}. It follows ${agencyName} routes ${followed.join(', ')}.`
-        : `Live does not follow any ${agencyName} routes.`;
+      return liveRouteEmptyNotice(agencyName, routeShortName, false, followed);
     }
-    return `No ${agencyName} ${routeShortName} vehicles are running right now. Live checks again every few seconds.`;
+    return liveRouteEmptyNotice(agencyName, routeShortName, true, []);
   }, [selectedRoute, selectedGroup, isLoading, agencies]);
 
   // A route or vehicle card opens in the map card's body; on phones, in its bottom sheet (as SidebarControls).
@@ -713,7 +712,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
       <SidebarCardSection label={selectedDirection ?? selectedRouteHeadwayLine ?? undefined}>
         {/* Match static route cards: destinations first, live vehicles second. */}
         {selectedGroup.vehicles.length === 0 ? (
-          <PanelEmpty>No vehicles on this route</PanelEmpty>
+          <PanelEmpty>{LIVE_NO_VEHICLES_ON_ROUTE}</PanelEmpty>
         ) : canGroupByDirection && !selectedDirection ? (
           orderDirectionGroups(vehiclesByDirection ?? new Map(), directionLabels).map(([dirKey, vehicles]) => (
             <CardDirectionRow
@@ -869,7 +868,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
               })()
             ) : displayedRouteGroups.length === 0 && routeGroups.length === 0 ? (
               query ? (
-                <PanelEmpty>No routes match your search.</PanelEmpty>
+                <PanelEmpty>{LIVE_NO_ROUTE_MATCHES}</PanelEmpty>
               ) : (
                 <>
                   <PanelEmpty>{LIVE_NOTHING_ACTIVE}</PanelEmpty>

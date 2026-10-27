@@ -5,6 +5,7 @@ import ProfileBars, { sharedScale, type ProfilePoint } from '../../charts/Profil
 import SortableDataTable from '../../ui/SortableDataTable';
 import Section from './Section';
 import { dirsOf, num } from './figures';
+import { LIVE_NO_FREQUENT_STOP } from '../../../content/noticeCopy';
 
 /** The one derivation of the extra-wait figures, so every surface draws the same numbers. */
 export function extraWaitModel(v3: LiveV3, band: DashboardBand, dir: number | null) {
@@ -17,7 +18,7 @@ export function extraWaitModel(v3: LiveV3, band: DashboardBand, dir: number | nu
   return { all, dirs, pointsOf, scale, worst };
 }
 
-const EMPTY = 'No stop on this route has a vehicle every 15 minutes or better in this time of day.';
+const EMPTY = LIVE_NO_FREQUENT_STOP;
 
 /**
  * Extra wait: how much longer riders wait than scheduled, at stops with service every 15 minutes or better.

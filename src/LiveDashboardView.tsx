@@ -20,6 +20,7 @@ import WorstStopsSection from './components/Live/sections/WorstStopsSection';
 import { dirsOf } from './components/Live/sections/figures';
 import type { LiveYesterday } from '../shared/liveYesterday';
 import { LATE_BY_HOUR_TITLE, NOT_ENOUGH_YESTERDAY, againstLastWeekday, dayText } from '../shared/liveWording';
+import { LIVE_NO_STOPS_MEASURED, LIVE_NO_WEEK_COMPARISON, LIVE_WEEK_NOT_IN_FILE, liveDrawError } from './content/noticeCopy';
 
 const MIN_N = 30;
 
@@ -28,7 +29,7 @@ const MIN_N = 30;
 const TONE_TEXT: Record<KpiTone, string> = { better: 'text-[var(--status-positive-text)]', worse: 'text-[var(--status-negative-text)]', same: 'text-[var(--text-muted)]' };
 
 function Delta({ k }: { k: Kpi }) {
-  if (!k.delta) return <span className="text-xs text-[var(--text-dim)]">No comparison with last week</span>;
+  if (!k.delta) return <span className="text-xs text-[var(--text-dim)]">{LIVE_NO_WEEK_COMPARISON}</span>;
   const mark = TONE_TEXT[k.delta.tone];
   return (
     <span className="flex items-baseline gap-1 text-xs tracking-tight" aria-label={k.delta.spoken} title={k.delta.spoken}>
@@ -56,7 +57,7 @@ export const yesterdayHours = (y: LiveYesterday) => ({
 /** The week tiles, shared with the full analysis page (LiveRoutePage) so both say the same thing the same way. */
 export function KpiRow({ v3 }: { v3: LiveV3 }) {
   const w = v3.weekly;
-  if (!w) return <><p className="mt-4 text-sm text-[var(--text-muted)]">This week against last week is not in this analysis file.</p><DevHint hint={ANALYZE_DEV_HINT} /></>;
+  if (!w) return <><p className="mt-4 text-sm text-[var(--text-muted)]">{LIVE_WEEK_NOT_IN_FILE}</p><DevHint hint={ANALYZE_DEV_HINT} /></>;
   return <KpiTiles tiles={kpiTiles(w, weekDailyValues(v3), 'both directions')} caption={weekNotComparableLine(w)} />;
 }
 
@@ -193,7 +194,7 @@ function AlongRoute({ v3, dir, uncertain }: { v3: LiveV3; dir: number | null; un
             );
           })}
         </div>
-      ) : <p className="mt-3 text-sm text-[var(--text-muted)]">No stops were measured.</p>}
+      ) : <p className="mt-3 text-sm text-[var(--text-muted)]">{LIVE_NO_STOPS_MEASURED}</p>}
     </section>
   );
 }
@@ -208,7 +209,7 @@ export default function LiveDashboardView({ v3, data, band, dir, uncertain, filt
   /** The lite view's Yesterday figures, when the Yesterday pill is on. */
   yesterday?: LiveYesterday | null;
 }) {
-  const bad = (what: string) => `${what} could not be drawn: the analysis file may be from an older version.`;
+  const bad = liveDrawError;
   // The lite view (?view=lite), made to share: the week's tiles, the route strip, late by hour and a way into the rest.
   if (lite) return (
     <>
