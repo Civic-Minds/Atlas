@@ -1,5 +1,5 @@
 import React from 'react';
-import { PANEL_SECTION_HEAD, LIST_ROW_PRIMARY, LIST_ROW_DIM, SELECTION_ACTIVE, SELECTION_ACTIVE_TEXT, CARD_SECTION } from '../../styles';
+import { PANEL_SECTION_HEAD, LIST_ROW_PRIMARY, LIST_ROW_DIM, SELECTION_ACTIVE, SELECTION_ACTIVE_TEXT } from '../../styles';
 import type { AgencySearchGroup } from '../../utils/agencySearch';
 import type { RouteSearchResult, StopSearchResult } from '../../utils/searchResults';
 import RouteListRow from '../RouteListRow';
@@ -212,11 +212,12 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({
             </div>
             <div className="flex flex-col items-end text-right ml-2 shrink-0 min-w-0 max-w-[34%]">
               {s.routes.length > 0 && (
-                <span className="text-xs font-bold text-[var(--text-secondary)] truncate max-w-full">
+                // The routes and agency in the route rows' right-hand style (CIV-971).
+                <span className={`${LIST_ROW_DIM} truncate max-w-full`}>
                   {s.routes.length === 1 ? `Route ${s.routes[0]}` : `Routes ${s.routes.join(', ')}`}
                 </span>
               )}
-              <span className={`${CARD_SECTION} truncate max-w-full`}>
+              <span className={`${LIST_ROW_DIM} truncate max-w-full`}>
                 {agencyNames(s.agencyName || '').short}
               </span>
             </div>

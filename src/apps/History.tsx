@@ -9,7 +9,7 @@ import { isDrawableLineCoordinates } from '../../shared/routeGeometry';
 import { TRANSITION_BASE, AGENCY_LIST_FILTERS, PILL_SURFACE, CONTROL_ACTIVE, PILL_SCROLL_ROW, PANEL_TITLE, SIDEBAR_CARD, SIDEBAR_CARD_MAX_H, sidebarFrameStyle, SIDEBAR_PANEL_WIDTH, Z_PANEL, CARD_NOTICE, CARD_NOTE } from '../styles';
 import { routeLabels, titleCase, agencyNames, agencyNameParts as nameParts } from '../utils/format';
 import CardRouteList from '../components/Interval/CardRouteList';
-import { AgencyCardTop, CARD_HEADER_BLOCK, CardCallout, CARD_CALLOUT_SURFACE, CardDirectionRow, CardReportButton, SIDEBAR_CARD_BODY, SidebarCardHeaderBlock, SidebarCardListRows, SidebarCardShell } from '../components/Interval/cardUi';
+import { AgencyCardTop, CARD_CALLOUT_HEADLINE, CARD_CALLOUT_TEXT, CARD_HEADER_BLOCK, CardCallout, CARD_CALLOUT_SURFACE, CardDirectionRow, CardReportButton, SIDEBAR_CARD_BODY, SidebarCardHeaderBlock, SidebarCardListRows, SidebarCardShell } from '../components/Interval/cardUi';
 import RouteCardTitle from '../components/RouteCardTitle';
 import { SearchSuggestionsPanel, type RecentRoute, type SuggestedRoute } from '../components/Interval/SearchSuggestionsPanel';
 import type { RouteListDisplay } from '../utils/effectiveHeadway';
@@ -347,6 +347,8 @@ function RouteHistoryCard({
               headway={hw ?? undefined}
               headwaySuffix={delta ? (delta > 0 ? `+${delta}` : `${delta}`) : undefined}
               headwaySuffixTone={delta ? (delta > 0 ? 'negative' : 'positive') : undefined}
+              // Regular weight, like the map cards' destination rows (CIV-971).
+              labelWeight="regular"
             />
           );
         })}
@@ -354,15 +356,16 @@ function RouteHistoryCard({
 
         {summary && (
           <CardCallout tone={summary.worse ? 'negative' : 'positive'} className="mt-3">
-            <p className={`text-xs font-bold leading-tight ${summary.worse ? 'text-[var(--status-negative-text)]' : 'text-[var(--status-positive-text)]'}`}>{summary.text}</p>
-            <p className="text-xs text-[var(--text-muted)] mt-0.5">{summary.subtext}</p>
+            {/* The shared callout headline in the summary's better or worse colour (CIV-971). */}
+            <p className={`${CARD_CALLOUT_HEADLINE} ${summary.worse ? '!text-[var(--status-negative-text)]' : '!text-[var(--status-positive-text)]'}`}>{summary.text}</p>
+            <p className={CARD_CALLOUT_TEXT}>{summary.subtext}</p>
             <p className={`${CARD_NOTICE} mt-1`}>Latest archived snapshot: {last.label}</p>
           </CardCallout>
         )}
 
         {route.tripDuration && (
           <CardCallout className="mt-3">
-            <p className="text-xs font-bold leading-tight text-[var(--text-primary)]">
+            <p className={CARD_CALLOUT_HEADLINE}>
               Trip time: {runTimeAmount(route.tripDuration.firstMinutes)} ({route.tripDuration.firstLabel}) → {runTimeAmount(route.tripDuration.lastMinutes)} ({route.tripDuration.lastLabel})
             </p>
             <p className={`${CARD_NOTICE} mt-1`}>

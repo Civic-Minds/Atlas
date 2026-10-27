@@ -601,7 +601,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
               className={CARD_BODY_TEXT}
             />
             {zone.availability && zone.hoursNote && (
-              <p className="text-xs leading-snug text-[var(--text-dim)] mt-1">{zone.hoursNote}</p>
+              <CardBodyText>{zone.hoursNote}</CardBodyText>
             )}
           </div>
           {zone.bookingInfo && (
