@@ -18,6 +18,8 @@ export interface VehicleCardRow {
   value: string;
   /** Set on the schedule row so it takes the same on time / late colour as the list. */
   status?: LiveVehicle['status'];
+  /** A small tag beside the value ("Short turn"). */
+  tag?: string;
 }
 
 /**
@@ -31,8 +33,10 @@ export function vehicleCardRows(
   const rows: VehicleCardRow[] = [];
   const direction = directionLabel?.trim();
   const destination = v.headsign?.trim();
-  if (direction && direction !== destination) rows.push({ label: 'Direction', value: direction });
-  if (destination) rows.push({ label: 'Destination', value: destination });
+  // Every car reads "Direction: to Distillery", the line's end for its direction; a trip that ends short of it adds
+  // "Ends at Broadview" with a "Short turn" tag. Never a compass word (CIV-1043, Ryan's approved wording).
+  if (direction) rows.push({ label: 'Direction', value: `to ${direction}` });
+  if (destination && destination !== direction) rows.push({ label: 'Ends at', value: destination, ...(direction ? { tag: 'Short turn' } : {}) });
   if (v.speedKmh != null) rows.push({ label: 'Speed', value: `${v.speedKmh} km/h` });
   const schedule = delayLabel(v);
   if (schedule) rows.push({ label: 'Schedule', value: schedule, status: v.status });
