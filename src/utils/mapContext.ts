@@ -2,7 +2,7 @@ import type { GeoJSON } from 'geojson';
 import type { Agency } from '../App';
 import type { DayType } from '../../shared/dayTypes';
 import type { ViewportBounds } from '../hooks/useIntervalStats';
-import { buildRouteKey, dedupeRouteKeysByDisplay } from './routeKey';
+import { buildRouteKey, dedupeRouteKeysByDisplay, splitRouteKey } from './routeKey';
 import { compareAgencyName, compareRouteNumber } from './sortCompare';
 import { agencyDisplayParts, routeLabels, agencyNameParts } from './format';
 import { labelShortNameOf, type RouteLabel } from './routeFacts';
@@ -153,10 +153,16 @@ export function getMapContextAgenciesFromFeatures(
   features: GeoJSON.Feature[],
 ): MapContextAgency[] {
   const routesByAgency = new Map<string, Map<string, MapContextRoute>>();
-  for (const feature of features) {
-    const properties = feature.properties as { agencySlug?: string; routeId?: string } | null;
+  // A route's full line names its row; segment pieces drawn over it (#1090) come after, and a piece without a branch
+  // (section colours) joins the route already listed instead of counting it twice.
+  const named = (f: GeoJSON.Feature) => (f.properties as { routeShortName?: unknown } | null)?.routeShortName !== undefined;
+  const ordered = [...features.filter(named), ...features.filter(f => !named(f))];
+  for (const feature of ordered) {
+    const properties = feature.properties as { agencySlug?: string; routeId?: string; routeBranch?: unknown } | null;
     if (!properties?.agencySlug || !properties.routeId) continue;
     if (feature.geometry.type !== 'LineString' && feature.geometry.type !== 'MultiLineString') continue;
+    if (properties.routeBranch === undefined && [...(routesByAgency.get(properties.agencySlug)?.keys() ?? [])]
+      .some(key => splitRouteKey(key).routeId === properties.routeId)) continue;
     addMapContextFeature(agencies, routesByAgency, properties.agencySlug, feature as MapContextFeature);
   }
   return buildMapContextAgencies(agencies, routesByAgency);
