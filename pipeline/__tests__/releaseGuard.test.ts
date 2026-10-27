@@ -129,10 +129,12 @@ describe('tile rules fingerprint', () => {
   // stamp reads what it read before the value was withheld; data built earlier has no such period: hash only.
   // CIV-321 copies the beta sections file into the release beside the route file; no tile value
   // changes: hash only.
+  // CIV-1006 adds the bookingRequired key, read first by the mode expression. No version bump, as for
+  // #899: older tiles lack the key and evaluate exactly as before, and older apps ignore it. Hash only.
   it('changes only together with a deliberate TILE_RULES_VERSION decision', () => {
     expect({ version: TILE_RULES_VERSION, fingerprint: tileRulesFingerprint() }).toEqual({
       version: 5,
-      fingerprint: '8c2e9980fe35d2ba1c23ce116f47b7598c99e5ad5e15323a321a429d26989d5a',
+      fingerprint: 'd0d8c166bef57a3b44084ab0a56af0dc54539e77b83df6c0a217df57f05b35a4',
     });
   });
 });

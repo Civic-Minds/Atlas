@@ -30,6 +30,8 @@ export interface RouteProperties {
   routeDataQualityWarning?: RouteDataQualityWarning;
   /** The feed has schedule data for this route but no usable line geometry. */
   noRouteShape?: boolean;
+  /** CIV-1006: riders must book ahead (pipeline/bookedRoutes.ts); the route reads as on-demand. */
+  bookingRequired?: boolean;
   headwayByHour?: HeadwayByHour;
   maxGapByHour?: HeadwayByHourMaxGap;
   routeShortName: string | null;
