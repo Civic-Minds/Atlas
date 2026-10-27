@@ -169,7 +169,7 @@ async function selectArchiveKey(agency: Agency): Promise<{ key: string; reason: 
   const prior = selection.reason.replace(/^cannot tell which archived zip is newest: /, '');
   const peeked = await Promise.all(objects.filter(obj => obj.key.endsWith('.zip')).map(async obj => {
     const buf = await r2GetArchiveBuffer(obj.key);
-    return { obj, dates: buf ? await peekFeedDates(buf) : { feedStart: null, feedExpiry: null, feedVersion: null, feedInfoEnd: null } };
+    return { obj, dates: buf ? await peekFeedDates(buf, agency.excludeRouteShortNames) : { feedStart: null, feedExpiry: null, feedVersion: null, feedInfoEnd: null } };
   }));
   const byDates = selectByFeedDates(peeked, agencyTodayYmd(agency), prior);
   if (byDates.ok) return { key: byDates.key, reason: byDates.reason };
@@ -211,7 +211,7 @@ async function processAgency(agency: Agency): Promise<ReportRow> {
     console.log(`\n${agency.slug}: ${row.sourceKey} (${row.selection})`);
     // The same expiry the publish step reads from index.json (#875): a placeholder calendar
     // never keeps an expired feed_info in service here while the release gate calls it expired.
-    const { feedStart, feedExpiry: calendarEnd, feedInfoEnd, calendarOnlyEnd } = await peekFeedDates(body);
+    const { feedStart, feedExpiry: calendarEnd, feedInfoEnd, calendarOnlyEnd } = await peekFeedDates(body, agency.excludeRouteShortNames);
     const feedExpiry = recordedFeedExpiry(feedInfoEnd, calendarEnd, todayYmd, calendarOnlyEnd);
     row.feedExpiry = feedExpiry;
     const dateRefusal = feedDateRefusal(feedExpiry, agency.lastFeedExpiry, agencyTodayYmd(agency));

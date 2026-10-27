@@ -49,7 +49,7 @@ const onlySlugs = valueOf('--only-slug');
 async function main(): Promise<void> {
   if (!newDir === !newRelease) throw new Error('Usage: npm run release-diff -- (--new-dir <dir> | --new-release <releaseId>) [--archive-dir <dir>] [--only-slug <slug>] [--allow <slug>:<flag>]');
   const index = JSON.parse(readFileSync(resolve('public/data/index.json'), 'utf8')) as {
-    agencies: Array<{ slug: string; center?: number[]; bbox?: number[]; lastFeedExpiry?: string | null; timezone?: string | null }>;
+    agencies: Array<{ slug: string; center?: number[]; bbox?: number[]; lastFeedExpiry?: string | null; timezone?: string | null; excludeRouteShortNames?: string[] }>;
   };
   const errors = [...overrides.errors, ...unknownOverrideSlugs(overrides, index.agencies.map(a => a.slug))];
   if (errors.length) throw new Error(errors.join('\n'));
@@ -87,7 +87,7 @@ async function main(): Promise<void> {
       slug,
     );
     const zipPath = archiveDir ? resolve(archiveDir, `${slug}.zip`) : null;
-    const dates = zipPath && existsSync(zipPath) ? await peekFeedDates(readFileSync(zipPath)) : null;
+    const dates = zipPath && existsSync(zipPath) ? await peekFeedDates(readFileSync(zipPath), registry.get(slug)?.excludeRouteShortNames) : null;
     candidates.push({
       slug,
       next,
