@@ -507,26 +507,31 @@ export function AgencyCardTop({
   as?: 'p' | 'h2';
   children?: React.ReactNode;
 }) {
+  // A grid, so the links line can run under the report flag (CIV-523) while the name, facts and the rest keep their width beside it.
   return (
-    <div className="flex items-start gap-2 min-w-0">
-      <div className="min-w-0 flex-1">
+    <div className={`grid items-start min-w-0 ${report ? 'grid-cols-[minmax(0,1fr)_auto] gap-x-2' : 'grid-cols-1'}`}>
+      <div className="min-w-0">
         <CardBackLink onClick={back.onClick}>{back.to}</CardBackLink>
         <AgencyNameHeading as={as} name={name} place={place} className="mb-0" />
-        {links.length > 0 && (
-          // One line, dot between links; only the first (the area name) gives way, cut with an ellipsis.
-          <p className="mt-0.5 flex items-center min-w-0 text-xs whitespace-nowrap">
-            {links.map((link, i) => (
-              <React.Fragment key={i}>
-                {i > 0 && <span className="mx-1 shrink-0 text-[var(--text-dim)] select-none" aria-hidden="true">·</span>}
-                <span className={i === 0 ? 'flex min-w-0' : 'flex shrink-0'}>{link}</span>
-              </React.Fragment>
-            ))}
-          </p>
-        )}
-        {facts && <p className={CARD_SUMMARY}>{facts}</p>}
-        {children}
       </div>
-      {report}
+      {report ? <div className="col-start-2 row-start-1">{report}</div> : null}
+      {links.length > 0 && (
+        // One line, dot between links; only the first (the area name) gives way, cut with an ellipsis.
+        <p className="col-span-full mt-0.5 flex items-center min-w-0 text-xs whitespace-nowrap">
+          {links.map((link, i) => (
+            <React.Fragment key={i}>
+              {i > 0 && <span className="mx-1 shrink-0 text-[var(--text-dim)] select-none" aria-hidden="true">·</span>}
+              <span className={i === 0 ? 'flex min-w-0' : 'flex shrink-0'}>{link}</span>
+            </React.Fragment>
+          ))}
+        </p>
+      )}
+      {(facts || children) && (
+        <div className="col-start-1 min-w-0">
+          {facts && <p className={CARD_SUMMARY}>{facts}</p>}
+          {children}
+        </div>
+      )}
     </div>
   );
 }

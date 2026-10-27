@@ -6,7 +6,7 @@ import {
   areaSubtitle, areaTableColumnTitle, buildAreaPageData, resolveAreaSeo, type AreaPageData,
 } from './areaPages';
 import { rankLargeMetros, parseCsv } from './largeMetros';
-import { agencyRegionTitle, areaLinkFor } from './agencyArea';
+import { AREA_LINK_MAX_CHARS, agencyRegionTitle, areaLinkFor, areaLinkName } from './agencyArea';
 import { MERGED_AREAS, isLargeMetro, areaSlug, mainCities, type AreaConfig } from './areas';
 
 const r = (name: string, mode: number, midday: number | null, am = midday, pm = midday): AgencyPageRoute => ({ name, longName: null, mode, midday, am, pm, evening: null, overnight: null });
@@ -250,5 +250,19 @@ describe('areaRegionName', () => {
     expect(areaRegionName({ slug: 'calgary', name: 'Calgary' })).toBe('the Calgary area');
     expect(areaRegionTitle({ slug: 'san-francisco', name: 'San Francisco' })).toBe('Bay Area');
     expect(areaRegionSentenceStart({ slug: 'calgary', name: 'Calgary' })).toBe('The Calgary area');
+  });
+});
+
+describe('areaLinkName (CIV-523)', () => {
+  it('keeps a name that fits and drops a trailing "area" only from one that does not', () => {
+    expect(areaLinkName('Chicago metropolitan area', AREA_LINK_MAX_CHARS.about)).toBe('Chicago metropolitan area');
+    expect(areaLinkName('Greater Toronto and Hamilton Area', AREA_LINK_MAX_CHARS.about)).toBe('Greater Toronto and Hamilton');
+    expect(areaLinkName('Chicago metropolitan area', AREA_LINK_MAX_CHARS.aboutAndSource)).toBe('Chicago');
+    expect(areaLinkName('Portland metro area', 10)).toBe('Portland');
+  });
+
+  it('never shortens a proper name, or a name with no "area" to drop', () => {
+    expect(areaLinkName('Bay Area', 3)).toBe('Bay Area');
+    expect(areaLinkName('Waterloo Region', 5)).toBe('Waterloo Region');
   });
 });

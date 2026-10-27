@@ -3,7 +3,7 @@ import { LIVE_POLLING_ROUTES } from '../../../shared/livePollingConfig';
 import { FEATURES } from '../../../shared/config';
 import { plural } from '../../../shared/overflowText';
 import { agencyPagePath } from '../../../shared/agencyPages';
-import { agencyRegionTitle, areaLinkFor } from '../../../shared/agencyArea';
+import { AREA_LINK_MAX_CHARS, agencyRegionTitle, areaLinkFor, areaLinkName } from '../../../shared/agencyArea';
 import { ON_DEMAND_NOT_MAPPED_NOTE, ON_DEMAND_PILL_LABEL, onDemandPillSelected } from '../../utils/onDemandPill';
 import agencyPageSlugs from '../../../shared/data/agency-page-slugs.json';
 import type { Agency } from '../../App';
@@ -474,13 +474,16 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
   // The region link shows the region's name alone (CIV-929), not the area page's "All … agencies" label.
   const areaLink = hasAboutPage ? areaLinkFor(agency.slug, FEATURES.agencyPages) : null;
   const regionTitle = agencyRegionTitle(agency.slug);
-  const area = areaLink && regionTitle ? { href: areaLink.href, label: regionTitle } : null;
   const hasSource = FEATURES.dataSourceLink && !!agency.websiteUrl;
+  // A name too long for the line drops its trailing "area" (CIV-523); the full name stays on hover.
+  const area = areaLink && regionTitle
+    ? { href: areaLink.href, label: areaLinkName(regionTitle, hasSource ? AREA_LINK_MAX_CHARS.aboutAndSource : AREA_LINK_MAX_CHARS.about), title: regionTitle }
+    : null;
   // One line right under the name (CIV-929): the area link, then "About →" (CIV-841), then "Source →" when that is on.
   // Each opens in a new tab, since they leave the map; the area name is cut with an ellipsis if it runs long.
   const agencyLinks = [
     area && (
-      <ArrowLink key="area" size="xs" tone="inline" href={area.href} target="_blank" rel="noopener noreferrer" className="max-w-full [&>svg]:shrink-0" title={area.label}>
+      <ArrowLink key="area" size="xs" tone="inline" href={area.href} target="_blank" rel="noopener noreferrer" className="max-w-full [&>svg]:shrink-0" title={area.title}>
         <span className="truncate min-w-0">{area.label}</span>
       </ArrowLink>
     ),

@@ -25,3 +25,23 @@ export function areaLinkFor(
   // Says what the link opens (Ryan, 2026-10-20): "All Metro Atlanta agencies"; the arrow comes from ArrowLink.
   return hit ? { href: areaPagePath(hit[0]), label: `All ${areaRegionTitle({ slug: hit[0], name: hit[1] })} agencies` } : null;
 }
+
+/**
+ * About how many characters of area name fit on the agency card's links line (CIV-523): the 280px card's line runs under
+ * the report flag, and 12px text averages about 6px a character, leaving room for about 29 beside "· About →" and about
+ * 20 when "· Source →" follows too.
+ */
+export const AREA_LINK_MAX_CHARS = { about: 29, aboutAndSource: 20 } as const;
+
+/** Area names that are proper names ending in "Area", never shortened ("Bay Area" without it would read "Bay"). */
+const PROPER_AREA_NAMES: ReadonlySet<string> = new Set(['Bay Area']);
+
+/**
+ * The area link's text (CIV-523, Ryan): the region's full name where it fits in `maxChars`; else the name without its
+ * trailing "area" ("Greater Toronto and Hamilton"), which still names the region. A name that is still too long is cut
+ * with an ellipsis by the card, with the full name on hover.
+ */
+export function areaLinkName(title: string, maxChars: number): string {
+  if (title.length <= maxChars || PROPER_AREA_NAMES.has(title)) return title;
+  return title.replace(/ (metropolitan area|metro area|area)$/i, '');
+}
