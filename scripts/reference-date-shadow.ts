@@ -18,7 +18,7 @@
  * detectReferenceDate reads "today" itself.
  *
  * Usage: nice -n 15 npx tsx scripts/reference-date-shadow.ts [--run-date 20261027] [--feeds DIR]
- *        [--out-json FILE] [--out-md FILE] [--only slug,slug]
+ *        [--out-json FILE] [--out-md FILE] [--only slug,slug] [--before PREVIOUS.json]
  */
 import { PIPELINE_TIME_ZONE } from '../pipeline/pipelineTimeZone.js';
 import { readFileSync, readdirSync, statSync, writeFileSync, existsSync } from 'node:fs';
@@ -41,6 +41,8 @@ const FEEDS = arg('feeds', '/Users/ryan/Developer/Code/Platforms/Atlas-worktrees
 const OUT_JSON = arg('out-json', `/Users/ryan/Developer/Code/Platforms/Atlas-worktrees/_reports/reference-date-shadow-${RUN_DATE.slice(0, 4)}-${RUN_DATE.slice(4, 6)}-${RUN_DATE.slice(6, 8)}.json`);
 const OUT_MD = arg('out-md', OUT_JSON.replace(/\.json$/, '.md'));
 const ONLY = new Set(arg('only', '').split(',').filter(Boolean));
+/** A previous run's JSON: the report then lists the agencies whose NEW reading changed since, and the previous counts. */
+const BEFORE = arg('before', '');
 const PERIOD_CHANGE_DAYS = 14;
 
 // ---- clock: detectReferenceDate and process-core's runDateYmd read new Date() ----
@@ -136,6 +138,12 @@ interface DayDiff {
   tripChanges: Array<{ route: string; old: number; new: number }>;
 }
 
+/** Routes (labels) per service id, per agency feed, kept so the before/after comparison can name routes. */
+const routesByServiceCache = new Map<string, Map<string, Set<string>>>();
+function routeLabelsFromDays(slug: string, f: FeedResult) {
+  const byService = routesByServiceCache.get(`${slug}|${f.feed}`) ?? new Map<string, Set<string>>();
+  return (services: readonly string[]) => [...new Set(services.flatMap(id => [...(byService.get(id) ?? [])]))];
+}
 function routeLabeler(gtfs: GtfsData) {
   const byId = new Map((gtfs.routes ?? []).map(r => [r.route_id, (r.route_short_name || r.route_long_name || r.route_id).trim()]));
   return (id: string) => byId.get(id) ?? id;
@@ -203,6 +211,13 @@ async function compareFeed(path: string, feedLabel: string, agency: Agency, feed
   }
 
   const label = routeLabeler(oldGtfs);
+  const byService = new Map<string, Set<string>>();
+  for (const t of oldGtfs.trips ?? []) {
+    const set = byService.get(t.service_id) ?? new Set<string>();
+    set.add(label(t.route_id));
+    byService.set(t.service_id, set);
+  }
+  routesByServiceCache.set(`${agency.slug}|${feedLabel}`, byService);
   const days = {} as Record<DayKey, DayDiff>;
   const union = (byDay: ByDay) => [...new Set(WEEKDAY_NAMES.flatMap(d => byDay[d]))].sort();
   for (const day of [...DAY_NAMES, 'Weekday'] as DayKey[]) {
@@ -336,6 +351,42 @@ if (periodRows.length === 0) md.push('None.');
 else {
   md.push('| Agency | Change week (Monday) | Days from anchor | Kind | NEW reads |', '|---|---|---|---|---|');
   for (const p of periodRows) md.push(`| ${p.slug}${p.feed === 'main' ? '' : ` (${p.feed})`} | ${p.date} | ${p.days} | ${p.kind} | ${p.read} |`);
+}
+if (BEFORE) {
+  const before = JSON.parse(readFileSync(BEFORE, 'utf8')) as { totals: Totals; agencies: AgencyResult[] };
+  const t = before.totals;
+  md.push('', '## Before the tweak (previous run)', '');
+  md.push(`Previous run: ${BEFORE}.`, '');
+  md.push(`- Compared ${t.compared}; unchanged ${t.unchanged}; changed routes ${t.changedRoutes}; trip counts only ${t.changedTripsOnly}; errors ${t.errors}.`);
+  md.push(`- Route-days gained ${t.gained}, lost ${t.lost}. On the map's day types: ${t.mapChanged} agencies change routes, gained ${t.mapGained}, lost ${t.mapLost}.`, '');
+  md.push('### Agencies whose NEW reading changed since the previous run', '');
+  const moved: string[] = [];
+  for (const a of results) {
+    const old = before.agencies.find(b => b.slug === a.slug);
+    for (const f of a.feeds) {
+      const of = old?.feeds.find(x => x.feed === f.feed);
+      if (!of || 'error' in f.new || 'error' in of.new) continue;
+      const nNew = f.new as Exclude<FeedResult['new'], { error: string }>;
+      const oNew = of.new as Exclude<FeedResult['new'], { error: string }>;
+      const label = routeLabelsFromDays(a.slug, f);
+      const parts: string[] = [];
+      for (const day of DAY_NAMES) {
+        const sameDate = oNew.dates[day] === nNew.dates[day];
+        const sameIds = JSON.stringify(oNew.services[day]) === JSON.stringify(nNew.services[day]);
+        if (sameDate && sameIds) continue;
+        const was = new Set(label(oNew.services[day]));
+        const now = new Set(label(nNew.services[day]));
+        const gained = [...now].filter(r => !was.has(r)).sort();
+        const lost = [...was].filter(r => !now.has(r)).sort();
+        parts.push(`${day} ${oNew.dates[day]} -> ${nNew.dates[day]}${gained.length ? `, gained ${list(gained)}` : ''}${lost.length ? `, lost ${list(lost)}` : ''}${!gained.length && !lost.length ? ', same routes' : ''}`);
+      }
+      if (parts.length || oNew.weekStart !== nNew.weekStart) {
+        moved.push(`| ${a.slug}${f.feed === 'main' ? '' : ` (${f.feed})`} | ${oNew.weekStart} -> ${nNew.weekStart} | ${parts.join('; ') || 'same dates and services'} |`);
+      }
+    }
+  }
+  if (moved.length === 0) md.push('None.');
+  else md.push(`${moved.length} feeds.`, '', '| Agency | Week read | Days that changed |', '|---|---|---|', ...moved);
 }
 if (errorRows.length) {
   md.push('', '## Could not compare', '', '| Agency | Feed | Error |', '|---|---|---|');

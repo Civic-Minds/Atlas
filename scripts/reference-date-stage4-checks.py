@@ -148,6 +148,8 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--shadow', default=f'{REPORTS}/reference-date-shadow-2026-10-27.json')
     ap.add_argument('--out', default=f'{REPORTS}/reference-date-stage4-checks-2026-10-27.md')
+    ap.add_argument('--extra', default='', help='comma-separated slug:route:day checks to add even when the route did not change (kind "checked")')
+    ap.add_argument('--before', default='', help="a previous run's JSON: adds its counts and the checks whose verdict changed")
     a = ap.parse_args()
     shadow = json.load(open(a.shadow))
     anchor = parse(shadow['anchor'])
@@ -179,6 +181,11 @@ def main():
             samples += [(ag, p) for p in chosen]
         elif ag['slug'] in TRIP_ONLY_SAMPLE and trip_pairs:
             samples.append((ag, max(trip_pairs, key=lambda p: abs(p['new'] - p['old']))))
+        for extra in filter(None, a.extra.split(',')):
+            slug, route, day = extra.split(':')
+            if slug == ag['slug']:
+                f = next(f for f in ag['feeds'] if 'days' in f)
+                samples.append((ag, {'feed': f, 'day': day, 'route': route, 'kind': 'checked'}))
 
     feeds = {}
     last_cache = {}
@@ -232,12 +239,16 @@ def main():
                 return n > 0
             if p['kind'] == 'lost':
                 return n == 0
+            if p['kind'] == 'checked':
+                return n == new_n
             return n == p['new']
 
         reason = []
         rider_usual = usual(rider)
         new_usual = usual(parse(nd)) if nd else 0
-        if p['kind'] == 'trips':
+        if p['kind'] == 'checked':
+            reason.append(f'unchanged route checked directly: rider date {ymd(rider)} has {rider_n} trips (usual {rider_usual}); OLD date {old_n}, NEW date {new_n}')
+        elif p['kind'] == 'trips':
             reason.append(f'rider date {ymd(rider)} has {rider_n} trips (usual {rider_usual}); OLD date {old_n}, NEW date {new_n}')
         else:
             reason.append(f'{"runs " + str(rider_n) + " trips" if rider_n else "does not run"} on {ymd(rider)}' + (f' (the rider date is a one-off; the weeks around it have {rider_usual})' if rider_usual != rider_n else ''))
@@ -263,7 +274,7 @@ def main():
             reason.append('NEW read an earlier week because this zip stops listing service soon after the anchor')
         else:
             verdict = 'WRONG'
-        if verdict != 'RIGHT' and p['kind'] != 'trips':
+        if verdict != 'RIGHT' and p['kind'] in ('gained', 'lost'):
             near = [rider + timedelta(days=7 * k) for k in range(-4, 5)]
             near = [d for d in near if last is None or d <= last]
             running = sum(feed.trips_on(ids, d) > 0 for d in near)
@@ -307,6 +318,24 @@ def main():
         md += ['', '## WRONG cases (not explained by question 5 or the zips\' age)', '']
         for r in wrong:
             md.append(f'- {r["agency"]} {r["route"]}, {r["day"]} ({r["kind"]}): {r["reason"]}')
+    if a.before:
+        before = json.load(open(a.before))
+        bc = Counter(r['verdict'] for r in before)
+        md += ['', '## Before the tweak (previous run)', '', f'Previous run: {a.before}.', '']
+        md.append(f'- Checked {len(before)} route-days. RIGHT {bc["RIGHT"]}, WRONG {bc["WRONG"]}, Q5 {bc["Q5"]}, ZIP AGE {bc["ZIP AGE"]}, UNKNOWN {bc["UNKNOWN"]}.')
+        key = lambda r: (r['agency'], r['route'], r['day'], r['kind'])
+        old_by = {key(r): r for r in before}
+        new_by = {key(r): r for r in results}
+        changes = []
+        for k in sorted(set(old_by) | set(new_by)):
+            o, n = old_by.get(k), new_by.get(k)
+            if o and n and o['verdict'] == n['verdict'] and o['new_date'] == n['new_date']:
+                continue
+            was = f'{o["verdict"]} (NEW {o["new_date"]})' if o else 'not checked'
+            now = f'{n["verdict"]} (NEW {n["new_date"]})' if n else 'no longer a change, not checked'
+            changes.append(f'| {k[0]} | {k[1]} | {k[2]} | {k[3]} | {was} | {now} |')
+        md += ['', '### Checks that changed', '']
+        md += (['| Agency | Route | Day | Change | Before | After |', '|---|---|---|---|---|---|'] + changes) if changes else ['None.']
     md += ['', '## All checks', '', '| Agency | Route | Day | Change | OLD date | NEW date | Rider date | Verdict | Q5 | Zip age | Reason |', '|---|---|---|---|---|---|---|---|---|---|---|']
     for r in results:
         md.append(f'| {r["agency"]} | {r["route"]} | {r["day"]} | {r["kind"]} | {r["old_date"]} | {r["new_date"]} | {r["rider_date"]} | {r["verdict"]} | {"yes" if r["q5"] else ""} | {"yes" if r["zip_age"] else ""} | {r["reason"]} |')
