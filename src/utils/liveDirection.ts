@@ -35,16 +35,6 @@ function distanceToSegmentM(
   return { distanceM, bearing };
 }
 
-/** Metres from a point to the nearest part of a route shape (Infinity for a shape with no line). */
-export function distanceToShapeM(lat: number, lon: number, feature: GeoJSON.Feature): number {
-  const g = feature.geometry;
-  if (!g || (g.type !== 'LineString' && g.type !== 'MultiLineString')) return Infinity;
-  const parts = g.type === 'LineString' ? [g.coordinates as [number, number][]] : g.coordinates as [number, number][][];
-  let best = Infinity;
-  for (const c of parts) for (let i = 0; i < c.length - 1; i++) best = Math.min(best, distanceToSegmentM(lat, lon, c[i], c[i + 1]).distanceM);
-  return best;
-}
-
 function bearingDifference(a: number, b: number): number {
   const difference = Math.abs(a - b) % 360;
   return Math.min(difference, 360 - difference);

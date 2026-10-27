@@ -1,6 +1,5 @@
 import type { LiveVehicle } from '../context/LiveVehiclesMapOverlay';
 import { compareRouteNumber } from '../../shared/sortCompare';
-import { distanceToShapeM } from './liveDirection';
 
 /** Live's route list order: by agency slug, then route number in natural order ("2" < "10", "7A" < "7B"). */
 export function compareLiveRoutes(
@@ -29,35 +28,33 @@ export function featureSpan(f: GeoJSON.Feature): number {
   return best;
 }
 
-/** How far a trip's last stop may sit from its direction's main line and still be on it (a short turn, not a branch). */
-const ON_MAIN_LINE_M = 150;
+/** The words a stop name starts with, before " at " ("Broadview Station at Bay 7" → ["broadview", "station"]). */
+const placeWords = (name: string) => name.split(/ at /i)[0].toLowerCase().split(/\s+/).filter(Boolean);
+/** The destination's words lead the stop's ("Broadview" leads "Broadview Station", "Dufferin Gate" leads "Dufferin Gate Loop"). */
+const leads = (destination: string, stop: string | undefined) => {
+  if (!stop) return false;
+  const d = destination.toLowerCase().split(/\s+/), s = placeWords(stop);
+  return d.length <= s.length && d.every((w, i) => w === s[i]);
+};
 
 /**
- * Each destination that isn't its direction's end, as a short turn (its last stop is on the direction's main
- * line: 506 Broadview & Gerrard) or a branch (it ends off it: 504 Broadview Station, Dufferin Gate), keyed
- * "direction|destination" with destinations named by `name` (CIV-1043).
+ * Whether a destination short of its direction's end is a short turn or a branch, from the route's Live analysis
+ * (its run-time patterns, each "main", "branch" or "shortTurn", keyed by the analysis's own direction). On a route
+ * with no branch every such destination is a short turn. Otherwise it is a branch only when its name leads exactly
+ * one branch end in a direction and no main end; anything less clear is null, and the card shows no tag (CIV-1043:
+ * a wrong label is worse than none).
  */
-export function routeTripEnds(features: readonly GeoJSON.Feature[], routeShortName: string, name: (headsign: string) => string = h => h): Map<string, 'shortTurn' | 'branch'> {
-  const main = new Map<number, GeoJSON.Feature>();
-  const own = features.filter(f => (f.properties as Record<string, unknown> | null)?.routeShortName === routeShortName);
-  for (const f of own) {
-    const p = f.properties as Record<string, unknown>;
-    if (p.directionId == null || !p.headsign) continue;
-    const d = Number(p.directionId), m = main.get(d);
-    if (!m || featureSpan(f) > featureSpan(m)) main.set(d, f);
-  }
-  const ends = new Map<string, 'shortTurn' | 'branch'>();
-  for (const f of own) {
-    const p = f.properties as Record<string, unknown>;
-    const g = f.geometry;
-    if (p.directionId == null || !p.headsign || !g || (g.type !== 'LineString' && g.type !== 'MultiLineString')) continue;
-    const d = Number(p.directionId), m = main.get(d);
-    if (!m || m === f || (m.properties as Record<string, unknown>).headsign === p.headsign) continue;
-    const last = g.type === 'LineString' ? g.coordinates[g.coordinates.length - 1] : g.coordinates[g.coordinates.length - 1]?.slice(-1)[0];
-    if (!last) continue;
-    ends.set(`${d}|${name(String(p.headsign))}`, distanceToShapeM(last[1], last[0], m) <= ON_MAIN_LINE_M ? 'shortTurn' : 'branch');
-  }
-  return ends;
+export function destinationKind(
+  patterns: Readonly<Record<string, ReadonlyArray<{ kind: string; fromName?: string; toName?: string }>>> | null | undefined,
+  destination: string,
+): 'shortTurn' | 'branch' | null {
+  const dirs = Object.values(patterns ?? {});
+  if (!dirs.some(list => list.length)) return null;
+  if (!dirs.some(list => list.some(p => p.kind === 'branch'))) return 'shortTurn';
+  const hit = (p: { fromName?: string; toName?: string }) => leads(destination, p.fromName) || leads(destination, p.toName);
+  if (dirs.some(list => list.filter(p => p.kind === 'main' && hit(p)).length > 0)) return null;
+  const branchHits = dirs.map(list => list.filter(p => p.kind === 'branch' && hit(p)).length);
+  return branchHits.some(n => n > 1) || !branchHits.some(n => n === 1) ? null : 'branch';
 }
 
 /** Each direction named by its longest shape's headsign (a short turn never names a direction). */

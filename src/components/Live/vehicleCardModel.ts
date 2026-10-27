@@ -29,7 +29,7 @@ export interface VehicleCardRow {
 export function vehicleCardRows(
   v: Pick<LiveVehicle, 'headsign' | 'directionId' | 'speedKmh' | 'delayMin' | 'statusLabel' | 'status'>,
   directionLabel: string | null | undefined,
-  /** Where this trip ends against its direction's line (routeTripEnds); unknown: no tag. */
+  /** Whether this trip is a short turn or a branch (destinationKind); unknown: no tag. */
   tripEnd?: 'shortTurn' | 'branch',
 ): VehicleCardRow[] {
   const rows: VehicleCardRow[] = [];

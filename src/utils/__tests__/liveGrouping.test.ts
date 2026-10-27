@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { LiveVehicle } from '../../context/LiveVehiclesMapOverlay';
-import { DIRECTION_UNCLEAR, compareLiveRoutes, focusDirectionKey, groupVehiclesByDirection, orderDirectionGroups, routeDirectionLabels, routeTripEnds, vehicleDirectionKey } from '../liveGrouping';
-import { streetJoin } from '../stopLabel';
+import { DIRECTION_UNCLEAR, compareLiveRoutes, destinationKind, focusDirectionKey, groupVehiclesByDirection, orderDirectionGroups, routeDirectionLabels, vehicleDirectionKey } from '../liveGrouping';
 
 const v = (id: string, extra: Partial<LiveVehicle> = {}): LiveVehicle => ({
   id, routeShortName: '501', displayName: '501', tripId: 't', lat: 43.65, lon: -79.4, bearing: null, speedKmh: null, tsEpoch: null,
@@ -116,18 +115,24 @@ describe('compareLiveRoutes (route list order)', () => {
   });
 });
 
-describe('routeTripEnds (CIV-1043)', () => {
-  const line = (headsign: string, coordinates: [number, number][], directionId = 0): GeoJSON.Feature => ({
-    type: 'Feature', properties: { routeShortName: '504', directionId, headsign }, geometry: { type: 'LineString', coordinates },
+describe('destinationKind (CIV-1043)', () => {
+  // TTC 504 and 506 as the Live analysis has them.
+  const p504 = {
+    0: [{ kind: 'main', fromName: 'Distillery Loop', toName: 'Dundas St West at Bloor St West' }, { kind: 'branch', fromName: 'Broadview Station at Bay 7', toName: 'Dufferin St at Liberty St' }],
+    1: [{ kind: 'main', fromName: 'Dundas West Station at Bay 4', toName: 'King St East at Sumach St' }, { kind: 'branch', fromName: 'Dufferin Gate Loop', toName: 'Broadview Ave at Wolfrey Ave' }],
+  };
+  const p506 = { 0: [{ kind: 'main', fromName: 'Main Street Station at Bay 7', toName: 'Howard Park Ave at Indian Rd' }], 1: [{ kind: 'main', fromName: 'High Park Loop', toName: 'Main St at Danforth Ave' }] };
+  it('calls every early destination a short turn on a route with no branch', () => {
+    expect(destinationKind(p506, 'Spadina')).toBe('shortTurn');
+    expect(destinationKind(p506, 'Broadview & Gerrard')).toBe('shortTurn');
   });
-  it('calls a trip that ends on its direction\'s line a short turn, and one that ends off it a branch', () => {
-    const ends = routeTripEnds([
-      line('Distillery', [[0, 0], [0.05, 0]]),
-      line('Broadview and Queen', [[0, 0], [0.03, 0]]),
-      line('Broadview', [[0, 0], [0.03, 0], [0.03, 0.01]]),
-    ], '504', streetJoin);
-    expect(ends.get('0|Broadview & Queen')).toBe('shortTurn');
-    expect(ends.get('0|Broadview')).toBe('branch');
-    expect(ends.has('0|Distillery')).toBe(false);
+  it('names a branch only on a clear match, and nothing when unsure', () => {
+    expect(destinationKind(p504, 'Dufferin Gate')).toBe('branch');
+    expect(destinationKind(p504, 'Broadview')).toBe('branch');
+    // On a route with a branch, a destination that matches no end is unclear: no tag.
+    expect(destinationKind(p504, 'Broadview & Queen')).toBeNull();
+    // It matches a main end too: unclear.
+    expect(destinationKind(p504, 'Distillery')).toBeNull();
+    expect(destinationKind(null, 'Spadina')).toBeNull();
   });
 });
