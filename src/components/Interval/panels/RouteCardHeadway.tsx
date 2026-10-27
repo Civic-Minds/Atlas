@@ -228,7 +228,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
 }) => {
   const [hoveredHour, setHoveredHour] = React.useState<number | null>(null);
   const reportRef = React.useRef<CardReportButtonHandle>(null);
-  const agencyDisplayName = agencyNames(routeAgency?.name ?? routeSlug ?? '').short;
+  const agencyDisplayName = agencyNames(routeAgency?.name ?? routeSlug ?? '').name;
   const routeOverrideNote = routeAgency?.overrideNote
     && (!routeAgency.overrideNoteRoutes?.length || routeAgency.overrideNoteRoutes.includes(currentRoute.routeShortName ?? ''))
     ? routeAgency.overrideNote

@@ -234,7 +234,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       const shortName = facts.shortName;
       const label = facts.label;
       const longName = facts.longName || '';
-      const agencyName = agencyNames(facts.agencyName).short;
+      const agencyName = agencyNames(facts.agencyName).name;
 
       try {
         const recentsRaw = localStorage.getItem('atlas_recently_viewed_routes');
@@ -285,7 +285,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         const sharedHeadway = display.sharedHeadway;
         const shortName = facts.shortName;
         const longName = facts.longName || '';
-        const agencyName = agencyNames(facts.agencyName).short;
+        const agencyName = agencyNames(facts.agencyName).name;
         const existing = routes.get(groupKey);
         if (!existing) {
           routes.set(groupKey, { key: facts.key, shortName: slug === 'bart' ? suggestedRouteGroupKey(slug, shortName) : shortName, labelShortName: slug === 'bart' ? suggestedRouteGroupKey(slug, shortName) : labelShortNameOf(p), agencySlug: slug, longNames: longName ? [longName] : [], agencyName, routeType: facts.routeType, headway, limited, noRegular, sharedHeadway });
@@ -582,7 +582,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
             routeShortName: facts.shortName,
             label: facts.label,
             routeLongName: facts.longName || '',
-            agencyName: agencyNames(facts.agencyName).short,
+            agencyName: agencyNames(facts.agencyName).name,
             agencySlug: slug,
             routeType: facts.routeType,
             headway: null,

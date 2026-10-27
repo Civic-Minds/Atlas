@@ -7,7 +7,7 @@ import type { HistorySnapshotV2 } from '../../shared/historyV2';
 import { countOf } from '../../shared/overflowText';
 import { isDrawableLineCoordinates } from '../../shared/routeGeometry';
 import { TRANSITION_BASE, AGENCY_LIST_FILTERS, PILL_SURFACE, CONTROL_ACTIVE, PILL_SCROLL_ROW, PANEL_TITLE, SIDEBAR_CARD, SIDEBAR_CARD_MAX_H, sidebarFrameStyle, SIDEBAR_PANEL_WIDTH, Z_PANEL, CARD_NOTICE, CARD_NOTE } from '../styles';
-import { routeLabels, titleCase, agencyNames, agencyNameParts as nameParts } from '../utils/format';
+import { routeLabels, titleCase, agencyNames, agencyNameParts as nameParts, agencyListParts } from '../utils/format';
 import CardRouteList from '../components/Interval/CardRouteList';
 import { AgencyCardTop, CARD_HEADER_BLOCK, CardCallout, CARD_CALLOUT_SURFACE, CardDirectionRow, CardReportButton, SIDEBAR_CARD_BODY, SidebarCardHeaderBlock, SidebarCardListRows, SidebarCardShell } from '../components/Interval/cardUi';
 import RouteCardTitle from '../components/RouteCardTitle';
@@ -591,6 +591,11 @@ export default function History({ active, view = HISTORY_VIEW_ALL, initialAgency
     const a = catalogBySlug.get(slug);
     return a ? nameParts({ name: a.name, cities: a.cities, displayArea: a.displayArea }) : nameParts(fallbackName);
   }, [catalogBySlug]);
+  // List rows use the short name (CIV-998); the agency card above keeps the full name.
+  const agencyListNameParts = useCallback((slug: string, fallbackName: string) => {
+    const a = catalogBySlug.get(slug);
+    return a ? agencyListParts({ name: a.name, cities: a.cities, displayArea: a.displayArea }) : agencyListParts(fallbackName);
+  }, [catalogBySlug]);
   const { setOverlay } = useHistoryMapOverlay();
   const [historyData, setHistoryData] = useState<AgencyHistory[] | null>(null);
   const [historyLoadFailed, setHistoryLoadFailed] = useState(false);
@@ -723,7 +728,7 @@ export default function History({ active, view = HISTORY_VIEW_ALL, initialAgency
   const openAgencyName = useMemo(() => {
     if (!active || !selectedSlug) return null;
     const agency = historyData?.find(a => a.slug === selectedSlug);
-    return agency ? agencyNames(agency.name).short : null;
+    return agency ? agencyNames(agency.name).name : null;
   }, [active, selectedSlug, historyData]);
   useEffect(() => { onOpenAgencyChange?.(openAgencyName); }, [openAgencyName, onOpenAgencyChange]);
   // Dismissed from the map (empty-map click, Escape), the panel closes and stays closed until the
@@ -958,7 +963,7 @@ export default function History({ active, view = HISTORY_VIEW_ALL, initialAgency
                       {agencies.map(agency => (
                         <AgencyListRow
                           key={agency.slug}
-                          {...agencyNameParts(agency.slug, agency.name)}
+                          {...agencyListNameParts(agency.slug, agency.name)}
                           title={agency.name}
                           onClick={() => {
                             saveRecentSearch(query);

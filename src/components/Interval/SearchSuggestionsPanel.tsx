@@ -83,7 +83,7 @@ function TierDot({ headway }: { headway: number | null }) {
 }
 
 export function routeRowRight(agencyName: string, headway?: number | null, stacked = false, limited = false, sharedHeadway?: number | null, noRegular = false) {
-  const agency = agencyNames(agencyName).short;
+  const agency = agencyNames(agencyName).name;
   const layout = stacked
     ? 'block max-w-full truncate mt-1 ml-0 text-left'
     : 'min-w-0 max-w-[34%] truncate shrink-0 ml-2 text-right';
