@@ -56,6 +56,9 @@ const RULES: Array<{ name: string; pattern: RegExp; use: string }> = [
   // The shared grey note and section label (CIV-395 follow-up): CARD_NOTE and CARD_SECTION in styles.ts.
   { name: 'hand-rolled grey note', pattern: /text-xs font-bold text-\[var\(--text-dim\)\]/, use: 'CARD_NOTE (styles.ts)' },
   { name: 'hand-rolled section label', pattern: /text-xs font-black text-\[var\(--text-dim\)\]/, use: 'CARD_SECTION or CardSectionLabel' },
+  // CIV-1011 #4: the outlined segmented group (Night 30/60, Frequent Service) and the active-filter corner dot.
+  { name: 'hand-rolled segmented group', pattern: /rounded-full border border-\[var\(--border-primary\)\] p-0\.5/, use: 'PillGroup outlined' },
+  { name: 'hand-rolled active-filter dot', pattern: /-top-0\.5 -right-0\.5 w-2 h-2 rounded-full bg-\[var\(--accent\)\]/, use: 'ActiveDot' },
   { name: 'agency name helper called directly', pattern: /\b(shortenAgencyName|agencyBackLinkName|agencyDisplayParts)\(/, use: 'agencyNames or agencyNameParts (utils/format.ts)' },
 ];
 

@@ -3,6 +3,7 @@ import { Settings, SlidersHorizontal, Search } from 'lucide-react';
 import { CompareSidePicker, SideBadge, type CompareSide } from './CompareControl';
 import { ICON_BTN, DROPDOWN_PANEL, SEARCH_FIELD, SEARCH_PILL, SEARCH_ICON, dropdownAnim, TRANSITION_BASE, Z_MODAL_TOP, CARD_NOTE } from '../../styles';
 import Pill from '../ui/Pill';
+import ActiveDot from '../ui/ActiveDot';
 import Toggle from '../ui/Toggle';
 import { AVAILABLE_FILTER_MODES } from '../../utils/shareUrlState';
 import type { DayType } from '../../../shared/dayTypes';
@@ -354,7 +355,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
         >
           <Settings className="w-4 h-4" />
           {hasActiveFilters && (
-            <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-[var(--accent)] border border-[var(--bg-panel)]" />
+            <ActiveDot />
           )}
         </button>
       )}
