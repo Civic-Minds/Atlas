@@ -17,6 +17,7 @@ describe('agency short names (CIV-998)', () => {
     expect(agencyNames('Chicago Transit Authority (CTA)').name).toBe('CTA');
     expect(agencyNames('Toronto Transit Commission').name).toBe('TTC');
     expect(agencyNames('Spokane Transit Authority').name).toBe('Spokane Transit');
+    expect(agencyNames('San Francisco Municipal Transportation Agency (SFMTA - Muni)').name).toBe('Muni');
   });
 
   it('uses the config short form only where the own name is too long for a row', () => {

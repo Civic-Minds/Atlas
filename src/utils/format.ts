@@ -752,7 +752,8 @@ function agencyRowName(name: string): string {
   const outer = name.replace(/\s*\([^)]+\)\s*$/, '').trim() || name.trim();
   let own = agencyBackLinkName(name);
   const isCode = /^[\p{Lu}\d&./ -]+$/u.test(own) || isMixedCaseCode(own) || looksLikeBrandCode(own);
-  if (own !== outer && !name.includes(`(${own})`) && !isCode && !TRANSIT_NAME_WORD.test(own)) own = outer;
+  // Only the generic-word strip leaves a place: the leading words of the name with the transit words cut off. "Muni" is not that.
+  if (outer.startsWith(`${own} `) && !isCode && !TRANSIT_NAME_WORD.test(own)) own = outer;
   return own.length > AGENCY_ROW_NAME_MAX ? CONFIG_SHORT_NAMES.get(name.trim()) ?? own : own;
 }
 
