@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { setConsentPrompt, useConsentPrompt } from '../lib/consentPrompt';
 import { getAnalyticsConsent, initAnalytics, setAnalyticsConsent, type AnalyticsConsent } from '../lib/analytics';
+import { privacyRegionCountry } from '../lib/privacyRegion';
 import { DROPDOWN_PANEL, dropdownAnim, MAP_BADGE, Z_HEADER, Z_MODAL_TOP } from '../styles';
 import Toggle from './ui/Toggle';
 import ArrowLink from './ui/ArrowLink';
@@ -42,7 +43,7 @@ export default function AnalyticsConsent() {
     const existing = getAnalyticsConsent();
     if (existing) { initAnalytics(); return () => window.removeEventListener('atlas:privacy-settings', openSettings); }
     if (window.navigator.globalPrivacyControl) { setAnalyticsConsent('denied'); return () => window.removeEventListener('atlas:privacy-settings', openSettings); }
-    fetch('/api/privacy-region').then(r => r.ok ? r.json() as Promise<{ country?: string }> : Promise.reject()).then(({ country }) => { if (STRICT_COUNTRIES.has(country ?? 'XX')) setShowPrompt(true); else initAnalytics(); }).catch(() => setShowPrompt(true));
+    privacyRegionCountry().then(country => { if (STRICT_COUNTRIES.has(country)) setShowPrompt(true); else initAnalytics(); }).catch(() => setShowPrompt(true));
     return () => window.removeEventListener('atlas:privacy-settings', openSettings);
   }, []);
   // Flag the open prompt on <html> so the site footer can reserve room and the pill never covers its links.
