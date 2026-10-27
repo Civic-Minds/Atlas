@@ -9,6 +9,7 @@ import {
   areaMapHref,
   areaPageH1,
   areaSubtitle,
+  areaTableColumnTitle,
   resolveAreaSeo,
   type AreaAgencyRow,
   type AreaPageData,
@@ -33,10 +34,15 @@ const AREA_MODE_COLUMN_REM = 6.75;
  */
 const NARROW_NAME_MAX_CHARS = 40;
 
-/** A mode header too long for its column breaks after the slash ("Gondola/" over "aerial tram"); the rest stay on one line. */
+/**
+ * A mode header too long for its column breaks after the slash ("Gondola/" over "aerial tram"); the rest stay on one line.
+ * A column that counts more than its own mode says what it counts on hover (CIV-973: "Bus and trolleybus routes").
+ */
 function modeHeader(label: string) {
   const slash = label.indexOf('/');
-  return label.length > 14 && slash > 0 ? <>{label.slice(0, slash + 1)}<br />{label.slice(slash + 1)}</> : label;
+  const text = label.length > 14 && slash > 0 ? <>{label.slice(0, slash + 1)}<br />{label.slice(slash + 1)}</> : label;
+  const title = areaTableColumnTitle(label);
+  return title ? <span title={title}>{text}</span> : text;
 }
 
 /** The agency's link in the table: its full name, or in a narrow names column a short one with the full name on hover. */

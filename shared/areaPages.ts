@@ -13,7 +13,7 @@ import {
   modeLabel,
   type AgencyPageSummary,
 } from './agencyPages';
-import { MODE_DEFINITIONS, VIRTUAL_LRT_MODE, modeLabelSortIndex } from './modes';
+import { MODE_DEFINITIONS, ON_DEMAND_MODE, VIRTUAL_LRT_MODE, modeLabelSortIndex } from './modes';
 import { BETA_BUILD } from './config';
 import { AREA_INDEX, AREA_PARAM } from './areaIndex';
 import { AREA_PATH_PREFIX, areaPagePath, type AreaConfig } from './areas';
@@ -60,17 +60,42 @@ export interface AreaPageData {
 
 const SPAN_VARIES_HOURS = 3;
 
+const modeLabelOf = (id: number) => MODE_DEFINITIONS.find(m => m.id === id)!.label;
+
 /**
  * The agency table's mode columns, the same on every area page and in the shared mode order, so a mode's column never
  * moves from page to page; a missing mode shows a dash (CIV-973, Ryan: "the columns should never move").
  */
-export const AREA_TABLE_MODES: readonly string[] = [1, VIRTUAL_LRT_MODE, 0, 2, 3, 4, 6]
-  .map(id => MODE_DEFINITIONS.find(m => m.id === id)!.label);
-/** One last column for the rarer modes (monorail, cable car, funicular, ...), shown only where an area has one. */
+export const AREA_TABLE_MODES: readonly string[] = [1, VIRTUAL_LRT_MODE, 0, 2, 3, 4].map(modeLabelOf);
+/** One last column for every other mode (gondola/aerial tram, cable car, funicular, ...), shown only where an area has one. */
 export const AREA_TABLE_OTHER = 'Other';
-/** Trolleybus routes count in this table's Bus column (Ryan, CIV-973); every other surface keeps them separate. */
-const TROLLEYBUS_LABEL = MODE_DEFINITIONS.find(m => m.id === 11)!.label;
-const BUS_LABEL = MODE_DEFINITIONS.find(m => m.id === 3)!.label;
+/**
+ * Modes this table counts in another mode's column (Ryan picked seven columns, CIV-973): monorail with subway/metro,
+ * trolleybus with bus. Every other surface keeps them separate.
+ */
+const AREA_TABLE_GROUPED: Readonly<Record<string, string>> = {
+  [modeLabelOf(12)]: modeLabelOf(1),
+  [modeLabelOf(11)]: modeLabelOf(3),
+};
+
+/** The table column a mode's routes count in. */
+export function areaTableColumn(modeLabel: string): string {
+  return AREA_TABLE_GROUPED[modeLabel] ?? (AREA_TABLE_MODES.includes(modeLabel) ? modeLabel : AREA_TABLE_OTHER);
+}
+
+/** The header tooltip for a column that counts more than its own mode; undefined for the rest. */
+export function areaTableColumnTitle(column: string): string | undefined {
+  const sentence = (labels: string[], last: string) => {
+    const words = labels.map(l => l.toLowerCase());
+    const text = `${words.join(', ')} and ${last} routes`;
+    return text.charAt(0).toUpperCase() + text.slice(1);
+  };
+  if (column === AREA_TABLE_OTHER) {
+    return sentence(MODE_DEFINITIONS.filter(m => m.id !== ON_DEMAND_MODE && areaTableColumn(m.label) === AREA_TABLE_OTHER).map(m => m.label), 'other');
+  }
+  const extra = Object.entries(AREA_TABLE_GROUPED).filter(([, to]) => to === column).map(([from]) => from.toLowerCase());
+  return extra.length > 0 ? sentence([column], extra.join(' and ')) : undefined;
+}
 
 /**
  * The agencies counted on an area page (they have a page: weekday midday service), each with only the
@@ -92,11 +117,11 @@ export function areaAgencySummaries(area: Pick<AreaConfig, 'agencies' | 'slug'>,
   return out;
 }
 
-/** An agency's route counts by table column: the fixed modes as they are, trolleybus added into Bus, every other mode into "Other". */
+/** An agency's route counts by table column (areaTableColumn): the fixed modes, the grouped ones added in, the rest in "Other". */
 function tableModes(byMode: ReadonlyArray<{ label: string; routes: readonly unknown[] }>): Record<string, number> {
   const out: Record<string, number> = {};
   for (const m of byMode) {
-    const key = m.label === TROLLEYBUS_LABEL ? BUS_LABEL : AREA_TABLE_MODES.includes(m.label) ? m.label : AREA_TABLE_OTHER;
+    const key = areaTableColumn(m.label);
     out[key] = (out[key] ?? 0) + m.routes.length;
   }
   return out;
