@@ -7,14 +7,11 @@ const BEARING_WEIGHT_M = 250;
 export interface LiveDirectionMatch {
   directionId: number | null;
   headsign: string | null;
-  /** The matched shape's role on the route card: its main stretch, a branch (tail) or a variant such as a short turn. */
-  stretchRole?: 'main' | 'tail' | 'variant';
 }
 
 interface Candidate {
   directionId: number | null;
   headsign: string | null;
-  stretchRole?: 'main' | 'tail' | 'variant';
   score: number;
 }
 
@@ -36,6 +33,16 @@ function distanceToSegmentM(
   const distanceM = Math.hypot(px - t * bx, py - t * by);
   const bearing = (Math.atan2(bx, by) * 180 / Math.PI + 360) % 360;
   return { distanceM, bearing };
+}
+
+/** Metres from a point to the nearest part of a route shape (Infinity for a shape with no line). */
+export function distanceToShapeM(lat: number, lon: number, feature: GeoJSON.Feature): number {
+  const g = feature.geometry;
+  if (!g || (g.type !== 'LineString' && g.type !== 'MultiLineString')) return Infinity;
+  const parts = g.type === 'LineString' ? [g.coordinates as [number, number][]] : g.coordinates as [number, number][][];
+  let best = Infinity;
+  for (const c of parts) for (let i = 0; i < c.length - 1; i++) best = Math.min(best, distanceToSegmentM(lat, lon, c[i], c[i + 1]).distanceM);
+  return best;
 }
 
 function bearingDifference(a: number, b: number): number {
@@ -69,8 +76,7 @@ function candidateForFeature(
   const headingPenalty = vehicle.bearing == null
     ? 0
     : bearingDifference(vehicle.bearing, best.bearing) / 180 * BEARING_WEIGHT_M;
-  const role = properties?.stretchRole;
-  return { directionId, headsign, ...(role === 'main' || role === 'tail' || role === 'variant' ? { stretchRole: role } : {}), score: best.distanceM + headingPenalty };
+  return { directionId, headsign, score: best.distanceM + headingPenalty };
 }
 
 /** Infer missing live direction metadata from the static directional route shapes. */
@@ -105,7 +111,5 @@ export function inferLiveDirection(
   return {
     directionId: vehicle.directionId ?? best.directionId,
     headsign: vehicle.headsign ?? best.headsign,
-    // The role is the matched shape's, so it only holds when the headsign is that shape's too.
-    ...(vehicle.headsign == null && best.stretchRole ? { stretchRole: best.stretchRole } : {}),
   };
 }

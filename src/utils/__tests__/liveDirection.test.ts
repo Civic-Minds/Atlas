@@ -33,12 +33,6 @@ describe('inferLiveDirection', () => {
     expect(result).toEqual({ directionId: 1, headsign: 'Finch GO Bus Terminal' });
   });
 
-  it("carries the matched shape's role, so a short turn can be told from a branch (CIV-1043)", () => {
-    const f = { ...feature(1, 'Finch GO Bus Terminal', [[0.01, 0], [0, 0]]) };
-    f.properties = { ...f.properties, stretchRole: 'variant' };
-    expect(inferLiveDirection(vehicle({ directionId: 1 }), [f])).toEqual({ directionId: 1, headsign: 'Finch GO Bus Terminal', stretchRole: 'variant' });
-  });
-
   it('keeps the direction when a full route and its short turn share track', () => {
     const result = inferLiveDirection(vehicle({ bearing: 270 }), [
       feature(0, 'Newmarket Terminal', [[0, 0], [0.01, 0]]),

@@ -1,5 +1,6 @@
 import type { LiveVehicle } from '../context/LiveVehiclesMapOverlay';
 import { compareRouteNumber } from '../../shared/sortCompare';
+import { distanceToShapeM } from './liveDirection';
 
 /** Live's route list order: by agency slug, then route number in natural order ("2" < "10", "7A" < "7B"). */
 export function compareLiveRoutes(
@@ -26,6 +27,37 @@ export function featureSpan(f: GeoJSON.Feature): number {
     best = Math.max(best, Math.hypot(x2 - x1, y2 - y1));
   }
   return best;
+}
+
+/** How far a trip's last stop may sit from its direction's main line and still be on it (a short turn, not a branch). */
+const ON_MAIN_LINE_M = 150;
+
+/**
+ * Each destination that isn't its direction's end, as a short turn (its last stop is on the direction's main
+ * line: 506 Broadview & Gerrard) or a branch (it ends off it: 504 Broadview Station, Dufferin Gate), keyed
+ * "direction|destination" with destinations named by `name` (CIV-1043).
+ */
+export function routeTripEnds(features: readonly GeoJSON.Feature[], routeShortName: string, name: (headsign: string) => string = h => h): Map<string, 'shortTurn' | 'branch'> {
+  const main = new Map<number, GeoJSON.Feature>();
+  const own = features.filter(f => (f.properties as Record<string, unknown> | null)?.routeShortName === routeShortName);
+  for (const f of own) {
+    const p = f.properties as Record<string, unknown>;
+    if (p.directionId == null || !p.headsign) continue;
+    const d = Number(p.directionId), m = main.get(d);
+    if (!m || featureSpan(f) > featureSpan(m)) main.set(d, f);
+  }
+  const ends = new Map<string, 'shortTurn' | 'branch'>();
+  for (const f of own) {
+    const p = f.properties as Record<string, unknown>;
+    const g = f.geometry;
+    if (p.directionId == null || !p.headsign || !g || (g.type !== 'LineString' && g.type !== 'MultiLineString')) continue;
+    const d = Number(p.directionId), m = main.get(d);
+    if (!m || m === f || (m.properties as Record<string, unknown>).headsign === p.headsign) continue;
+    const last = g.type === 'LineString' ? g.coordinates[g.coordinates.length - 1] : g.coordinates[g.coordinates.length - 1]?.slice(-1)[0];
+    if (!last) continue;
+    ends.set(`${d}|${name(String(p.headsign))}`, distanceToShapeM(last[1], last[0], m) <= ON_MAIN_LINE_M ? 'shortTurn' : 'branch');
+  }
+  return ends;
 }
 
 /** Each direction named by its longest shape's headsign (a short turn never names a direction). */
