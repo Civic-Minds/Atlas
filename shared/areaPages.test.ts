@@ -123,13 +123,13 @@ describe('areaAboutParagraph', () => {
 
   const row = (slug: string, name: string, totalRoutes: number) => ({ slug, name, displayName: name, totalRoutes, modes: { Bus: totalRoutes } });
 
-  it('is one sentence with the counts, naming up to three agencies (CIV-968)', () => {
-    // "TTC (Toronto)" drops the city the area already names, as agency intros do.
-    expect(areaAboutParagraph(base({}))).toBe('The Greater Toronto and Hamilton Area has 2 transit agencies running 6 routes (2 subway/metro, 4 bus), including TTC and HSR.');
+  it('names no agencies when there are three or fewer: the sentence ends after the route breakdown (CIV-968, Ryan)', () => {
+    expect(areaAboutParagraph(base({}))).toBe('The Greater Toronto and Hamilton Area has 2 transit agencies running 6 routes (2 subway/metro, 4 bus).');
     const one = base({ agencies: [row('a', 'A', 1)], totalRoutes: 1, byMode: [{ label: 'Bus', routes: 1 }] });
-    expect(areaAboutParagraph(one)).toBe('The Greater Toronto and Hamilton Area has 1 transit agency running 1 route, including A.');
+    expect(areaAboutParagraph(one)).toBe('The Greater Toronto and Hamilton Area has 1 transit agency running 1 route.');
     const three = base({ agencies: [row('a', 'A', 3), row('b', 'B', 2), row('c', 'C', 1)], totalRoutes: 6, byMode: [{ label: 'Bus', routes: 6 }] });
-    expect(areaAboutParagraph(three)).toBe('The Greater Toronto and Hamilton Area has 3 transit agencies running 6 routes, including A, B and C.');
+    expect(areaAboutParagraph(three)).toBe('The Greater Toronto and Hamilton Area has 3 transit agencies running 6 routes.');
+    expect(areaIntroParts(three)).toMatchObject({ named: [], others: 0 });
   });
 
   it('names the two biggest and counts the rest past three agencies (CIV-968)', () => {

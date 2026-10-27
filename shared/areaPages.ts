@@ -229,22 +229,24 @@ export function areaHoursLabel(d: Pick<AreaPageData, 'weekend' | 'spanVaries'>):
 }
 
 /** One plain sentence, the same template for every area. */
-/** An area with more agencies than this names its two biggest and counts the rest (CIV-968); a smaller one names them all. */
-const AREA_INTRO_NAME_ALL_MAX = 3;
+/** An area with more agencies than this names its two biggest and counts the rest (CIV-968); a smaller one names none (Ryan). */
+const AREA_INTRO_NAME_NONE_MAX = 3;
 const AREA_INTRO_NAMED = 2;
 
 /**
- * The intro's agencies, by route count (the table's order): every agency when there are at most three, else the two
- * biggest plus how many others there are. `lead` is the counting sentence up to where the names start.
+ * The intro's agencies, by route count (the table's order): none when there are at most three (the sentence ends after
+ * the route breakdown), else the two biggest plus how many others there are. `lead` is the counting sentence up to where
+ * the names start.
  */
 export function areaIntroParts(d: AreaPageData): { lead: string; named: AreaAgencyRow[]; others: number } {
   const n = d.agencies.length;
   const lead = `${areaRegionSentenceStart(d.area)} has ${plural(n, 'transit agency', 'transit agencies')} running ${plural(d.totalRoutes, 'route', 'routes')}${d.byMode.length > 1 ? ` (${modesText(d.byMode, ', ')})` : ''}`;
-  const named = n <= AREA_INTRO_NAME_ALL_MAX ? d.agencies : d.agencies.slice(0, AREA_INTRO_NAMED);
+  if (n <= AREA_INTRO_NAME_NONE_MAX) return { lead, named: [], others: 0 };
+  const named = d.agencies.slice(0, AREA_INTRO_NAMED);
   return { lead, named, others: n - named.length };
 }
 
-/** The joiners around the intro's names, always after "including" (Ryan): "including A, B and C." or "including A, B and 7 others." */
+/** The joiners around the intro's names, after "including" (Ryan): "including A, B and 7 others."; just "." with no names. */
 export function areaIntroJoiners(parts: Pick<ReturnType<typeof areaIntroParts>, 'named' | 'others'>): { opener: string; separators: string[]; tail: string } {
   const count = parts.named.length + (parts.others > 0 ? 1 : 0);
   const separators = parts.named.map((_, i) => (i === count - 2 ? ' and ' : i < count - 2 ? ', ' : ''));
