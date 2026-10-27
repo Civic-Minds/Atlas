@@ -904,7 +904,11 @@ export default function Interval({ agencies, catalogReady = true, allAgencies, l
   const stopCardBack = useMemo(() => ({ to: stopBack.to, onClick: goBackFromStop, namesAgency: stopBackToAgency }), [stopBack.to, goBackFromStop, stopBackToAgency]);
   useEffect(() => { setHoveredBranch(null); }, [selectedRoute, selectedStop]);
 
+  // A link that matched nothing (CIV-959 gaps 3, 7, 8): its notice outlives the selection, which is
+  // cleared so the map isn't dimmed for something that isn't there.
+  const [notFoundNotice, setNotFoundNotice] = useState<{ key: string; kind: 'route' | 'stop' | 'agency'; text: string } | null>(null);
   const clearMapSelection = useCallback(() => {
+    setNotFoundNotice(null);
     setSelectedRoute(null);
     setSelectedStop(null);
     setDisambiguationRoutes(null);
@@ -955,6 +959,17 @@ export default function Interval({ agencies, catalogReady = true, allAgencies, l
     }
     return fc.features.some(f => f.geometry.type === 'Point' && f.properties?.stopId === id) ? null : STOP_NOT_FOUND;
   }, [selectedRoute, selectedStop, selectedAgencySlug, catalogReady, agencies, layers, day]);
+  useEffect(() => {
+    if (!missingSelectionNotice || (selectedRoute && missingSelectionNotice === routeNoServiceOnDay(day))) return;
+    const kind = selectedRoute ? 'route' : selectedStop ? 'stop' : 'agency';
+    const key = selectedRoute ?? selectedStop ?? selectedAgencySlug ?? kind;
+    clearMapSelection();
+    setNotFoundNotice({ key, kind, text: missingSelectionNotice });
+  }, [missingSelectionNotice, selectedRoute, selectedStop, selectedAgencySlug, day, clearMapSelection]);
+  // Any new selection replaces the notice.
+  useEffect(() => {
+    if (selectedRoute || selectedStop || selectedAgencySlug) setNotFoundNotice(prev => (prev ? null : prev));
+  }, [selectedRoute, selectedStop, selectedAgencySlug]);
 
   // Route card is hidden while search is focused — blur so the card appears on map select.
   useEffect(() => {
@@ -1368,6 +1383,19 @@ export default function Interval({ agencies, catalogReady = true, allAgencies, l
       })()}
 
       {(showUi || showSelectionUi) && (() => {
+        if (notFoundNotice && !selectedRoute && !selectedStop) {
+          return (
+            <SelectionLoadPanel
+              key={notFoundNotice.key}
+              kind={notFoundNotice.kind}
+              failed={false}
+              notice={notFoundNotice.text}
+              onClose={() => setNotFoundNotice(null)}
+              sidebarLeft={sidebarLeft}
+              searchBarWidth={searchBarWidth}
+            />
+          );
+        }
         const key = selectedRoute ?? selectedStop ?? (missingSelectionNotice ? selectedAgencySlug : null);
         const slug = key ? key.split('::')[0] : null;
         if (!key || !slug) return null;
