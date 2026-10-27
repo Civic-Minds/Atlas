@@ -7,11 +7,14 @@ const BEARING_WEIGHT_M = 250;
 export interface LiveDirectionMatch {
   directionId: number | null;
   headsign: string | null;
+  /** The matched shape's role on the route card: its main stretch, a branch (tail) or a variant such as a short turn. */
+  stretchRole?: 'main' | 'tail' | 'variant';
 }
 
 interface Candidate {
   directionId: number | null;
   headsign: string | null;
+  stretchRole?: 'main' | 'tail' | 'variant';
   score: number;
 }
 
@@ -66,7 +69,8 @@ function candidateForFeature(
   const headingPenalty = vehicle.bearing == null
     ? 0
     : bearingDifference(vehicle.bearing, best.bearing) / 180 * BEARING_WEIGHT_M;
-  return { directionId, headsign, score: best.distanceM + headingPenalty };
+  const role = properties?.stretchRole;
+  return { directionId, headsign, ...(role === 'main' || role === 'tail' || role === 'variant' ? { stretchRole: role } : {}), score: best.distanceM + headingPenalty };
 }
 
 /** Infer missing live direction metadata from the static directional route shapes. */
@@ -101,5 +105,7 @@ export function inferLiveDirection(
   return {
     directionId: vehicle.directionId ?? best.directionId,
     headsign: vehicle.headsign ?? best.headsign,
+    // The role is the matched shape's, so it only holds when the headsign is that shape's too.
+    ...(vehicle.headsign == null && best.stretchRole ? { stretchRole: best.stretchRole } : {}),
   };
 }
