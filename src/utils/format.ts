@@ -236,6 +236,11 @@ export function titleCase(s: string): string {
       return NAME_ACRONYMS[m] ?? NAME_ACRONYMS[m.toLowerCase()] ?? m;
     })
     .replace(/'(\p{L})/gu, (_, c) => "'" + c.toLowerCase())
+    // French elision: "D'ANDROMÈDE" -> "d'Andromède", "L'ACADIE" -> "L'Acadie" at the start; after a hyphen it is part
+    // of a surname and keeps its capital ("Lucien-L'Allier") (CIV-1054).
+    .replace(/(^|[^\p{L}'])([dl])'(\p{L})/giu, (_, pre: string, el: string, c: string) => `${pre}${pre && pre !== '-' ? el.toLowerCase() : el.toUpperCase()}'${c.toUpperCase()}`)
+    // French linking words inside a hyphenated name stay small: "Arc-En-Ciel" -> "Arc-en-Ciel" (CIV-1054).
+    .replace(/(?<=\p{L}-)(De|Du|Des|La|Le|Les|En|Sur|Aux|Au|Et)(?=-\p{L})/gu, (w: string) => w.toLowerCase())
     // Mc surnames in all-caps feeds: "MCKNIGHT" -> "McKnight"
     .replace(/\bMc(\p{L})/gu, (_, c: string) => 'Mc' + c.toUpperCase())
     // "O'CONNOR" -> "O'Connor"
@@ -251,7 +256,41 @@ export function titleCase(s: string): string {
  * as written ("McDonald Ave", "Lower Jarvis St at The Esplanade"), the same rule routeLabelCase uses for route names.
  */
 export function stopNameCase(name: string): string {
-  return !name || /\p{Ll}/u.test(name) ? name : titleCase(name);
+  return writtenInCapitals(name) ? keepFeedParticles(name, titleCase(name)) : name;
+}
+
+/**
+ * French linking words a feed writes in lower case inside an otherwise all-capitals name: STO's
+ * "SAINT-LOUIS/de NANTEL", "des ALLUMETTIÈRES/BROAD" (CIV-1054). English ones ("at", "of") are left out on purpose:
+ * names like NJ Transit's "US-9W at CHARLOTTE PL" would meet casing gaps ("Us-9w") that all-capitals names have today.
+ */
+const LOWER_PARTICLES = /^(de|du|des|la|le|les|d|l|et|à|au|aux|sur|en)$/u;
+
+/**
+ * True when the feed wrote the name in capitals: it has a capital, and every word with a small letter is one of the
+ * lower-case linking words above. Accented capitals count as capitals ("SPORTHÈQUE"). Shared by the stop and route
+ * casing (CIV-1001).
+ */
+export function writtenInCapitals(text: string): boolean {
+  if (!text || !/\p{Lu}/u.test(text)) return false;
+  for (const word of text.match(/\p{L}+/gu) ?? []) {
+    if (/\p{Ll}/u.test(word) && !(word === word.toLowerCase() && LOWER_PARTICLES.test(word))) return false;
+  }
+  return true;
+}
+
+/** After casing, the linking words the feed wrote in lower case stay as written ("Saint-Louis/de Nantel"). */
+function keepFeedParticles(original: string, cased: string): string {
+  // Casing keeps each letter in place; if a rule ever changes the length, keep its result as it is.
+  if (cased.length !== original.length) return cased;
+  let out = cased;
+  for (const m of original.matchAll(/\p{L}+/gu)) {
+    const word = m[0];
+    if (word === word.toLowerCase() && LOWER_PARTICLES.test(word)) {
+      out = out.slice(0, m.index) + word + out.slice(m.index! + word.length);
+    }
+  }
+  return out;
 }
 
 export function cleanRouteShortName(shortName: string | null | undefined): string {
@@ -311,9 +350,9 @@ export const ROUTE_NAME_ACRONYMS: ReadonlySet<string> = new Set([
  * left alone. This is the one place route names are cased; every route-name surface goes through it (directly or via routeLabels).
  */
 export function routeLabelCase(part: string): string {
-  if (!part || /\p{Ll}/u.test(part)) return part;
+  if (!writtenInCapitals(part)) return part;
   // "O'BRIEN": titleCase lowercases the letter after an apostrophe ("O'brien"); an Irish O' name keeps the capital.
-  return titleCase(part)
+  return keepFeedParticles(part, titleCase(part))
     .replace(/(^|[^\p{L}])O'(\p{L})/gu, (_, pre: string, c: string) => `${pre}O'${c.toUpperCase()}`)
     .replace(/[\p{L}\p{N}]+/gu, (tok: string) => {
       const up = tok.toUpperCase();

@@ -188,8 +188,9 @@ describe('titleCase', () => {
 
 describe('titleCase and accented first letters', () => {
   it('does not split a word after an accented first letter', () => {
-    expect(titleCase('ÎLE-DES-SOEURS')).toBe('Île-Des-Soeurs');
-    expect(titleCase('Île-des-Soeurs')).toBe('Île-Des-Soeurs');
+    // The linking word inside the hyphenated name stays small (CIV-1054).
+    expect(titleCase('ÎLE-DES-SOEURS')).toBe('Île-des-Soeurs');
+    expect(titleCase('Île-des-Soeurs')).toBe('Île-des-Soeurs');
     expect(titleCase('ÉCOLE SECONDAIRE')).toBe('École Secondaire');
   });
 });
@@ -270,5 +271,31 @@ describe('comparePanelTop', () => {
   it('leaves the normal slot alone outside Compare', () => {
     expect(comparePanelTop(false, false, '')).toBeNull();
     expect(comparePanelTop(false, true, 'Bloor')).toBeNull();
+  });
+});
+
+describe('names in capitals with French linking words (CIV-1054)', () => {
+  it('cases STO names whose only small letters are linking words, keeping those words as written', () => {
+    expect(stopNameCase('SPORTHÈQUE')).toBe('Sporthèque');
+    expect(stopNameCase('SAINT-LOUIS/de NANTEL')).toBe('Saint-Louis/de Nantel');
+    expect(stopNameCase('FREEMAN/du TALUS')).toBe('Freeman/du Talus');
+    expect(stopNameCase('des ALLUMETTIÈRES/BROAD')).toBe('des Allumettières/Broad');
+    expect(stopNameCase("du PRADO/de l'ACROPOLE")).toBe("du Prado/de l'Acropole");
+    expect(routeLabelCase("de L'AMÉRIQUE-FRANÇAISE")).toBe("de l'Amérique-Française");
+  });
+
+  it('cases French elisions and hyphenated linking words in names sent in capitals', () => {
+    expect(stopNameCase("JEANNE D'ARC / ST JOSEPH")).toBe("Jeanne d'Arc / St Joseph");
+    expect(stopNameCase('STATION CÔTE-DES-NEIGES')).toBe('Station Côte-des-Neiges');
+    expect(stopNameCase("STATION LUCIEN-L'ALLIER")).toBe("Station Lucien-L'Allier");
+    expect(stopNameCase("L'ACADIE")).toBe("L'Acadie");
+    expect(stopNameCase('SECAUCUS CUL-DE-SAC')).toBe('Secaucus Cul-de-Sac');
+  });
+
+  it('leaves names that are really mixed case, and English names with small words, as the feed wrote them', () => {
+    expect(stopNameCase('Saint-Joseph/Jean-Proulx')).toBe('Saint-Joseph/Jean-Proulx');
+    expect(stopNameCase('US-9W at CHARLOTTE PL')).toBe('US-9W at CHARLOTTE PL');
+    expect(stopNameCase('Granville-YVR')).toBe('Granville-YVR');
+    expect(routeLabelCase('Kendall/MIT Station')).toBe('Kendall/MIT Station');
   });
 });
