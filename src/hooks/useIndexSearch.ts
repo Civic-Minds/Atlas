@@ -17,8 +17,9 @@ export function useIndexSearch(
   const [routesFile, setRoutesFile] = useState<SearchRoutesFile | null | undefined>(undefined);
   const [stops, setStops] = useState<{ query: string; file: SearchStopsFile | null } | null>(null);
 
+  // One letter matches too much to be worth the routes file; it loads from the second.
   useEffect(() => {
-    if (!q || routesFile !== undefined) return;
+    if (q.length < 2 || routesFile !== undefined) return;
     let live = true;
     loadSearchRoutes().then(file => { if (live) setRoutesFile(file); });
     return () => { live = false; };
@@ -41,6 +42,6 @@ export function useIndexSearch(
     () => (q && stopFile ? searchIndexStopResults(stopFile, q, bounds, nameOf) : []),
     [q, stopFile, bounds, nameOf],
   );
-  const pending = !!q && (routesFile === undefined || stops?.query !== q);
+  const pending = !!q && ((q.length >= 2 && routesFile === undefined) || stops?.query !== q);
   return { routes, stops: stopResults, pending };
 }
