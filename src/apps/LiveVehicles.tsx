@@ -499,7 +499,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
   // Direction drill-down within a route
   const [selectedDirection, setSelectedDirection] = useState<string | null>(null);
   // The direction picked in "Right now" and the cars it counts there (#1163): the list shows those same cars.
-  const [counted, setCounted] = useState<{ directionId: number; ids: string[] } | null>(null);
+  const [counted, setCounted] = useState<{ directionId: number; label: string; ids: string[] } | null>(null);
   const countedDirection = useRef<number | null>(null);
   useEffect(() => { setSelectedDirection(null); countedDirection.current = null; }, [selectedRoute]);
   // Switching direction leaves a destination picked in the other one: back to that direction's destinations.
@@ -527,10 +527,16 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
   }, [selectedGroup, counted]);
 
   // Group vehicles by destination; every listed vehicle lands in a group (see groupVehiclesByDirection).
-  const vehiclesByDirection = useMemo(
-    () => (selectedGroup ? groupVehiclesByDirection(listVehicles, directionLabels) : null),
-    [selectedGroup, listVehicles, directionLabels],
-  );
+  // Within a picked direction a car with no destination of its own is that direction's ("Westbound"), not "Direction unclear".
+  const vehiclesByDirection = useMemo(() => {
+    if (!selectedGroup) return null;
+    const groups = groupVehiclesByDirection(listVehicles, directionLabels);
+    const unclear = groups.get(DIRECTION_UNCLEAR);
+    if (!counted?.label || !unclear) return groups;
+    groups.delete(DIRECTION_UNCLEAR);
+    groups.set(counted.label, [...(groups.get(counted.label) ?? []), ...unclear]);
+    return groups;
+  }, [selectedGroup, listVehicles, directionLabels, counted?.label]);
 
   // Worth showing groups when there is more than one, or the one group has a real destination name.
   const canGroupByDirection = useMemo(() => {
