@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { delayLabel, vehicleCardName, vehicleCardRows, vehicleRowName } from '../vehicleCardModel';
+import { vehicleModeWord } from '../../../utils/format';
 
 const base = { headsign: 'Humber Loop', directionId: 0, speedKmh: 23, delayMin: 7.2, statusLabel: null, status: 'late' as const };
 
@@ -22,11 +23,14 @@ describe('vehicle card content', () => {
   });
   it('names a vehicle only when the feed gives a fleet label', () => {
     expect(vehicleCardName({ id: 'a1b2c3d4-0000-0000-0000-000000000000', vehicleLabel: null }, 'Bus')).toBeNull();
-    expect(vehicleCardName({ id: 'x', vehicleLabel: '4412' }, 'Streetcar')).toBe('Streetcar 4412');
+    expect(vehicleCardName({ id: 'x', vehicleLabel: '4412' }, vehicleModeWord(0))).toBe('4412');
+    expect(vehicleCardName({ id: 'x', vehicleLabel: '8123' }, vehicleModeWord(3))).toBe('Bus 8123');
   });
   it('labels every vehicle row the same way: the vehicle name, never the destination (CIV-899)', () => {
-    expect(vehicleRowName({ id: '4578', vehicleLabel: null }, 0, 'Streetcar')).toBe('Streetcar 4578');
-    expect(vehicleRowName({ id: 'x', vehicleLabel: '4412' }, 3, 'Streetcar')).toBe('Streetcar 4412');
+    // A streetcar route can run buses and the feed doesn't say which (CIV-926): the fleet number stands alone.
+    expect(vehicleRowName({ id: '4578', vehicleLabel: null }, 0, vehicleModeWord(0))).toBe('4578');
+    expect(vehicleRowName({ id: 'x', vehicleLabel: '4412' }, 3, vehicleModeWord(0))).toBe('4412');
+    expect(vehicleRowName({ id: 'a1b2c3d4-0000-0000-0000-000000000000', vehicleLabel: null }, 2, vehicleModeWord(0))).toBe('Vehicle 3');
     expect(vehicleRowName({ id: 'a1b2c3d4-0000-0000-0000-000000000000', vehicleLabel: null }, 2, 'Bus')).toBe('Vehicle 3');
   });
 });

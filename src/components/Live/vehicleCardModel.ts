@@ -39,7 +39,7 @@ export function vehicleCardRows(
   return rows;
 }
 
-/** "Streetcar 4412" when the feed names the vehicle; null when it would only be a generic "Vehicle N". */
+/** "Bus 8123" (or "4412" on a streetcar route, CIV-926) when the feed names the vehicle; null when it would only be a generic "Vehicle N". */
 export function vehicleCardName(
   v: Pick<LiveVehicle, 'id' | 'vehicleLabel'>,
   modeWord: string,
@@ -49,7 +49,7 @@ export function vehicleCardName(
 }
 
 /**
- * Every vehicle row's label: the card's name ("Streetcar 4412"), or "Vehicle N" (its place in the
+ * Every vehicle row's label: the card's name ("Bus 8123", "4412"), or "Vehicle N" (its place in the
  * list) when the feed gives no usable number. Never the destination, so rows don't mix the two.
  */
 export function vehicleRowName(v: Pick<LiveVehicle, 'id' | 'vehicleLabel'>, index: number, modeWord: string): string {

@@ -82,7 +82,7 @@ const ELIGIBLE_SLUGS = new Set(
     .map(r => r.slug)
 );
 
-/** One-line summary of a destination's vehicles: "10 streetcars · 2 late". */
+/** One-line summary of a destination's vehicles: "10 vehicles · 2 late" (a streetcar route), "3 buses". */
 function directionSummary(vehicles: LiveVehicle[], modeWord: string): string {
   const count = vehicleModeCount(vehicles.length, modeWord);
   const late = vehicles.filter(v => getVehicleStatus(v.delayMin) === 'late').length;
