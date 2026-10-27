@@ -510,7 +510,7 @@ export function AgencyCardTop({
           <p className="mt-0.5 flex items-center min-w-0 text-xs whitespace-nowrap">
             {links.map((link, i) => (
               <React.Fragment key={i}>
-                {i > 0 && <span className="mx-1.5 shrink-0 text-[var(--text-dim)] select-none" aria-hidden="true">·</span>}
+                {i > 0 && <span className="mx-1 shrink-0 text-[var(--text-dim)] select-none" aria-hidden="true">·</span>}
                 <span className={i === 0 ? 'flex min-w-0' : 'flex shrink-0'}>{link}</span>
               </React.Fragment>
             ))}
