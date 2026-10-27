@@ -25,7 +25,9 @@
  *   yellow headway-lost  a smaller share of route/directions lose their weekday headway
  *   red    day-lost      a day type (Weekday, Saturday, Sunday) with route lines live has none now
  *   yellow day-shrunk    a day type's route lines fall below DAY_SHRUNK_RATIO of live (live >= DAY_SHRUNK_MIN_LIVE)
- *   yellow future-start  service does not start until a future date
+ *   red    future-start  service does not start until a future date while the live data's
+ *                        feed still runs (service.liveFeedExpiry >= today, #1144)
+ *   yellow future-start  the same with no running live feed, or no live expiry given
  *   yellow placeholder-expiry the calendar end is more than 2 years past today,
  *                        likely a placeholder; the recorded expiry is capped
  *   yellow added         no live artifact to compare with (new to the release),
@@ -143,6 +145,8 @@ export interface ServiceWindow {
   end?: string | null;
   /** Latest calendar end (calendar.txt / calendar_dates), when it differs from `end`. */
   calendarEnd?: string | null;
+  /** Expiry of the feed the live data was built from: a future start is red while it still runs (#1144). */
+  liveFeedExpiry?: string | null;
 }
 
 interface LineFeature {
@@ -479,7 +483,11 @@ export function evaluateAgency(input: AgencyGateInput, peers: GatePeer[], todayY
   }
   const start = input.service?.start ?? null;
   if (start && /^\d{8}$/.test(start) && start > todayYmd) {
-    flags.push(flag(slug, 'future-start', 'yellow', `service does not start until ${start}`));
+    const liveExpiry = input.service?.liveFeedExpiry ?? null;
+    const liveRunning = !!liveExpiry && /^\d{8}$/.test(liveExpiry) && liveExpiry >= todayYmd;
+    flags.push(liveRunning
+      ? flag(slug, 'future-start', 'red', `service does not start until ${start}, and the live timetable runs to ${liveExpiry}`)
+      : flag(slug, 'future-start', 'yellow', `service does not start until ${start}`));
   }
   const calendarEnd = input.service?.calendarEnd ?? end;
   const placeholderAfter = addYearsYmd(todayYmd, PLACEHOLDER_EXPIRY_YEARS);
