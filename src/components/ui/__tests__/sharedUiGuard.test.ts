@@ -4,7 +4,9 @@ import { describe, expect, it } from 'vitest';
 
 // Tables, pills, list rows and panel shells come from src/components/ui/. This fails when a screen
 // hand-rolls one again, so the look cannot drift screen by screen. To fix a failure, use the shared
-// component (DataTable, Pill, ListRow, Panel, LinkCard, Tag, ArrowLink, PanelEmpty, AgencyName, PageTitle, SectionTitle, EmptyPage). If a new variant is needed, add it to the shared component.
+// component (DataTable, Pill, ListRow, Panel, LinkCard, Tag, ArrowLink, PanelEmpty, AgencyName, PageTitle, SectionTitle, EmptyPage),
+// or for a card the card pieces (HeadwayBadge, LimitedBadge, CardBackLink, CARD_TITLE, CARD_SUMMARY, reportDetails).
+// If a new variant is needed, add it to the shared piece; a file that must differ goes in ALLOWED with its reason.
 const SRC = resolve(__dirname, '../../..');
 
 function files(dir: string): string[] {
@@ -43,6 +45,13 @@ const RULES: Array<{ name: string; pattern: RegExp; use: string }> = [
   { name: 'hand-rolled arrow link', pattern: /<ArrowRight\b/, use: 'ArrowLink' },
   { name: 'arrow link style constants', pattern: /\b(PAGE_ACTION|TAG|CHIP|CARD_NOTICE_ACTION)\b/, use: 'ArrowLink, Tag' },
   { name: 'hand-rolled page frame', pattern: /<main className="min-h-screen bg-\[var\(--bg-app\)\] px-/, use: 'PageShell' },
+  // Card pieces (CIV-395, after the card refactor CIV-929…CIV-1000): a card uses the shared badge, back link, title,
+  // facts line and report details, so a fix to one (#1128, #1102) reaches every card.
+  { name: 'hand-drawn frequency dot', pattern: /w-2 h-2 rounded-full shrink-0" style=\{\{ background/, use: 'HeadwayBadge or LimitedBadge (Interval/cardUi.tsx)' },
+  { name: 'hand-written back arrow', pattern: />\s*← |← \{/, use: 'CardBackLink (components/CardBack.tsx)' },
+  { name: 'hand-rolled card title', pattern: /text-sm font-black text-\[var\(--text-primary\)\] leading-tight/, use: 'CARD_TITLE, CardTitle or AgencyCardTop (Interval/cardUi.tsx)' },
+  { name: 'hand-rolled card facts line', pattern: /text-xs font-medium text-\[var\(--text-dim\)\] mt-1 leading-snug/, use: 'CARD_SUMMARY (Interval/cardUi.tsx)' },
+  { name: 'report details written by hand', pattern: /details=\{`/, use: 'reportDetails (utils/reportIssue.ts)' },
 ];
 
 // Files that still own a style on purpose: the glass app tabs and the filter option list share the
@@ -58,6 +67,12 @@ const ALLOWED: Record<string, string[]> = {
   'components/Interval/HeadwaySparkline.tsx': ['hand-rolled section heading'],
   // A filled call-to-action button (not a link) that ends in an arrow.
   'apps/FrequentServiceStory.tsx': ['hand-rolled arrow link', 'hand-rolled page heading'],
+  // The card pieces' own homes (CIV-395): the badges and card text styles, the back link, and the route row's tier dot.
+  'components/Interval/cardUi.tsx': ['hand-drawn frequency dot', 'hand-rolled card title', 'hand-rolled card facts line'],
+  'components/CardBack.tsx': ['hand-written back arrow'],
+  'components/RouteListRow.tsx': ['hand-drawn frequency dot'],
+  // Live is its own app and team (CIV-899); its performance panel keeps its own title for now.
+  'components/Live/LiveRoutePerformance.tsx': ['hand-rolled card title'],
 };
 
 describe('shared UI components', () => {
@@ -69,6 +84,22 @@ describe('shared UI components', () => {
         .filter(f => !(ALLOWED[f] ?? []).includes(rule.name))
         .filter(f => rule.pattern.test(readFileSync(join(SRC, f), 'utf8')));
       expect(offenders).toEqual([]);
+    });
+  }
+});
+
+// The card rules must catch the copies they are for (CIV-395): a typical hand-built line for each.
+describe('card piece rules catch hand-built copies', () => {
+  const samples: Record<string, string> = {
+    'hand-drawn frequency dot': '<span className="w-2 h-2 rounded-full shrink-0" style={{ background: color }} />',
+    'hand-written back arrow': '<button onClick={back}>← {agencyName}</button>',
+    'hand-rolled card title': '<p className="text-sm font-black text-[var(--text-primary)] leading-tight">{name}</p>',
+    'hand-rolled card facts line': '<p className="text-xs font-medium text-[var(--text-dim)] mt-1 leading-snug">12 routes</p>',
+    'report details written by hand': 'details={`**Agency:** ${name}`}',
+  };
+  for (const [name, sample] of Object.entries(samples)) {
+    it(name, () => {
+      expect(RULES.find(rule => rule.name === name)?.pattern.test(sample)).toBe(true);
     });
   }
 });
