@@ -74,7 +74,7 @@ interface Props {
    * The picked direction and the vehicles "Right now" counts in it, so the vehicle list shows those same cars (#1163);
    * null while "Right now" has no count (no analysis, feed down or incomplete). Must be stable (a state setter).
    */
-  onCounted?: (counted: { directionId: number; ids: string[] } | null) => void;
+  onCounted?: (counted: { directionId: number; label: string; ids: string[] } | null) => void;
 }
 
 /**
@@ -118,13 +118,14 @@ export default function LiveRoutePerformance({ slug, routeShortName, vehicles, f
   // is skipped (skipUnseenAdded). With 0 or 1 car the count still shows (no gaps line), so the
   // direction pills never vanish.
   // Trips today's timetable runs that the analysis's doesn't list get their direction from the map's.
+  const directionLabel = directions.find(([id]) => id === directionId)?.[1] ?? '';
   const liveBand = data ? livePeriod(data, slug) : 'all';
   const extraTrips = data ? liveTripDirections(vehicles, data.tripDirections).get(directionId) : undefined;
   const live = data && line && !feedDegraded ? liveGaps(data, line, withStats(line, liveBand), liveBand, recent, Math.floor(now / 1000), { skipUnseenAdded: true, countFewCars: true, wholeLine: true, extraTrips }) : null;
   const countedKey = live && !live.incomplete ? (live.carIds ?? []).join('\n') : null;
   useEffect(() => {
-    onCounted?.(countedKey == null ? null : { directionId, ids: countedKey ? countedKey.split('\n') : [] });
-  }, [onCounted, countedKey, directionId]);
+    onCounted?.(countedKey == null ? null : { directionId, label: directionLabel, ids: countedKey ? countedKey.split('\n') : [] });
+  }, [onCounted, countedKey, directionId, directionLabel]);
   useEffect(() => () => onCounted?.(null), [onCounted]);
 
   if (!data || !line) return null;
