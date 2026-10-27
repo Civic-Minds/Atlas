@@ -105,7 +105,7 @@ describe('createMapExport', () => {
     await createMapExport({ source, title: 'Toronto', citation: line, lightMode: true });
     const calls = vi.mocked(context.fillText).mock.calls;
     const sourceCall = calls.find(call => call[0] === line);
-    const creditCall = calls.find(call => String(call[0]).startsWith('© OpenStreetMap contributors'));
+    const creditCall = calls.find(call => String(call[0]).startsWith('Map tiles by CARTO'));
     expect(sourceCall).toBeDefined();
     expect(Number(sourceCall![2])).toBeLessThan(Number(creditCall![2]));
   });

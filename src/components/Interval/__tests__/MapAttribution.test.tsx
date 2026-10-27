@@ -9,13 +9,13 @@ describe('MapAttribution', () => {
     const feedback = screen.getByRole('link', { name: 'Feedback' });
     const about = screen.getByRole('link', { name: 'About Atlas' });
     expect(about).toHaveAttribute('href', '/about');
-    const osm = screen.getByRole('link', { name: '© OpenStreetMap contributors' });
-    const carto = screen.getByRole('link', { name: '© CARTO' });
+    const osm = screen.getByRole('link', { name: 'OpenStreetMap' });
+    const carto = screen.getByRole('link', { name: 'CARTO' });
     expect(screen.getAllByRole('link').map(link => link.textContent)).toEqual([
       'About Atlas',
       'Feedback',
-      '© OpenStreetMap contributors',
-      '© CARTO',
+      'OpenStreetMap',
+      'CARTO',
     ]);
 
     for (const element of [feedback, about, osm, carto]) {

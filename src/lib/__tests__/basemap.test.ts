@@ -10,7 +10,7 @@ describe('basemap tiles (CIV-980)', () => {
   it('goes through the dev server under npm run dev, where localhost is not on the key', () => {
     expect(cartoTiles('dark_all', true)).toEqual(['/api/carto-tiles?style=dark_all&z={z}&x={x}&y={y}']);
   });
-  it("uses CARTO's credit line", () => {
-    expect(BASEMAP_ATTRIBUTION).toBe('© OpenStreetMap contributors, © CARTO');
+  it('keeps the full credit line', () => {
+    expect(BASEMAP_ATTRIBUTION).toBe('Map tiles by CARTO, under CC BY 3.0. Data by OpenStreetMap, under ODbL.');
   });
 });

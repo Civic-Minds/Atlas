@@ -14,7 +14,7 @@ const ATTRIB_LINK =
   `${MAP_BADGE_LABEL} text-[var(--text-dim)] no-underline hover:text-[var(--text-primary)]`;
 
 
-/** Basemap credit: CARTO's required line, "© OpenStreetMap contributors, © CARTO", with both names linked. */
+/** Basemap credit — linked names satisfy OSM + CARTO attribution requirements. */
 export function MapAttribution({ whatsNewEnabled = FEATURES.whatsNew }: { whatsNewEnabled?: boolean } = {}) {
   const [whatsNewOpen, setWhatsNewOpen] = useState(false);
   // The analytics prompt is this row's last pill on sm and up, so it shares the row's baseline
@@ -110,19 +110,17 @@ export function MapAttribution({ whatsNewEnabled = FEATURES.whatsNew }: { whatsN
           <OutboundLink
             href="https://www.openstreetmap.org/copyright"
             kind="attribution"
-            aria-label="© OpenStreetMap contributors"
             className={ATTRIB_LINK}
           >
-            {/* Phones have room for the short form beside the location button; the hover keeps the full line. */}
-            © OpenStreetMap<span className="max-sm:hidden"> contributors</span>
+            OpenStreetMap
           </OutboundLink>
-          <span className={MAP_BADGE_LABEL}>, </span>
+          <span className={MAP_BADGE_LABEL}> · </span>
           <OutboundLink
             href="https://carto.com/attributions"
             kind="attribution"
             className={ATTRIB_LINK}
           >
-            © CARTO
+            CARTO
           </OutboundLink>
         </p>
       </div>
