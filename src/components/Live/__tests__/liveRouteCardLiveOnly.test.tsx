@@ -55,7 +55,7 @@ describe('"Right now" from the map\'s live positions (CIV-893)', () => {
     vi.setSystemTime(T0_MS + 120_000);
     // Car a moved from stop 1 to stop 2; car b is now where a was a minute ago.
     act(() => { view.rerender(<LiveRoutePerformance slug="ttc" routeShortName="505" vehicles={[car('a', 't1', 2, T0 + 120), car('b', 't2', 1.5, T0 + 120)]} feedDegraded={false} />); });
-    expect(screen.getByText('Right now · 9:02 am')).toBeTruthy();
+    expect(screen.getByText('Right now')).toBeTruthy();
     expect(screen.getByText('Vehicles')).toBeTruthy();
     expect(screen.getByText('2')).toBeTruthy();
     expect(screen.getByText('Gaps, front to back (min)')).toBeTruthy();
@@ -63,6 +63,15 @@ describe('"Right now" from the map\'s live positions (CIV-893)', () => {
     // The direction pills show with "Right now".
     expect(screen.getByRole('button', { name: 'Westbound' })).toBeTruthy();
     expect(screen.queryByText(/Fewer than 2 cars/)).toBeNull();
+  });
+
+  it('names no time while the data is fresh, and "last updated" once the newest report is over 2 minutes old (CIV-1034)', () => {
+    const view = card([car('a', 't1', 2, T0)]);
+    expect(screen.getByText('Right now')).toBeTruthy();
+    view.unmount();
+    // The newest report is 2½ min old at 9:00 am: it was last updated at 8:57 am.
+    card([car('a', 't1', 2, T0 - 150)]);
+    expect(screen.getByText('Right now · last updated 8:57 am')).toBeTruthy();
   });
 
   it('shows the count and keeps the direction pills with only one car, and never "Fewer than 2 cars"', () => {
