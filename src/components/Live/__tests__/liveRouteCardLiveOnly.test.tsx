@@ -105,9 +105,15 @@ describe('"Right now" from the map\'s live positions (CIV-893)', () => {
 
   it("reports each listed trip's direction so the map can name its destination from it (#1164)", () => {
     const onTripDirections = vi.fn();
-    render(<LiveRoutePerformance slug="ttc" routeShortName="505" vehicles={[car('a', 't1', 3, T0), car('c', 't9', 2, T0)]} feedDegraded={false} onTripDirections={onTripDirections} />);
-    // t9 isn't in the timetable: no direction is claimed for it.
-    expect(onTripDirections).toHaveBeenLastCalledWith(new Map([['a', 0]]));
+    // The map calls the analysis's direction 0 its direction 1 (learned from a and b); a third car on a listed
+    // trip whose map guess was the other way (d) gets the map's 1 too. t9 isn't in the timetable: nothing is claimed.
+    const dir = (v: LiveVehicle, d: number) => ({ ...v, directionId: d });
+    const view = render(<LiveRoutePerformance slug="ttc" routeShortName="505" vehicles={[dir(car('a', 't1', 3, T0), 1), dir(car('b', 't2', 1.5, T0), 1), dir(car('d', 't2', 1, T0), 0), dir(car('c', 't9', 2, T0), 0)]} feedDegraded={false} onTripDirections={onTripDirections} />);
+    expect(onTripDirections).toHaveBeenLastCalledWith(new Map([['a', 1], ['b', 1], ['d', 1]]));
+    view.unmount();
+    // No pairing yet (the map knows no direction): nothing is claimed.
+    render(<LiveRoutePerformance slug="ttc" routeShortName="505" vehicles={[car('a', 't1', 3, T0)]} feedDegraded={false} onTripDirections={onTripDirections} />);
+    expect(onTripDirections).toHaveBeenLastCalledWith(null);
   });
 
   it('shows no gaps line while no gap is known yet (cars just seen, no track of the car ahead)', () => {

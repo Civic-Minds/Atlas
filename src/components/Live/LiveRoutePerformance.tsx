@@ -6,7 +6,7 @@ import { readUrlNumberParam, syncUrlParams } from '../../utils/syncUrlParams';
 import { periodKeyForHour } from '../../../shared/config';
 import { LIVE_AGENCY_TIMEZONES } from '../../../shared/livePollingConfig';
 import { halfMinutes, type SegmentBand, type SegmentDelayData } from '../../utils/segmentDelayView';
-import { addSnapshot, lineModel, liveGaps, liveTripDirections, positionsSnapshot, type RecentSnapshot, withStats, type LineModel } from '../../utils/livePerformance';
+import { addSnapshot, analysisTripDirections, lineModel, liveGaps, liveTripDirections, mapDirectionPairing, positionsSnapshot, type RecentSnapshot, withStats, type LineModel } from '../../utils/livePerformance';
 import type { LiveVehicle } from '../../context/LiveVehiclesMapOverlay';
 import { getVehicleStatus } from '../../utils/colors';
 
@@ -79,7 +79,7 @@ interface Props {
    */
   onCounted?: (counted: { directionId: number; label: string; ids: string[] } | null) => void;
   /**
-   * Each vehicle's direction from its trip in the analysis's timetable (vehicle id → GTFS direction id), so the map
+   * Each vehicle's direction from its trip in the analysis's timetable, in the map's numbering (vehicle id → map direction id), so the map
    * names its destination from that direction instead of guessing from the nearest shape (#1164). Must be stable.
    */
   onTripDirections?: (byVehicle: ReadonlyMap<string, number> | null) => void;
@@ -137,12 +137,18 @@ export default function LiveRoutePerformance({ slug, routeShortName, vehicles, f
   useEffect(() => () => onCounted?.(null), [onCounted]);
 
   // Only trips the timetable lists: a trip it doesn't list gets its direction from the map, the guess this corrects.
-  const dirOfTrip = useMemo(() => {
-    const m = new Map<string, number>();
-    for (const [d, trips] of Object.entries(data?.tripDirections ?? {})) for (const t of trips) m.set(t, Number(d));
-    return m;
-  }, [data]);
-  const tripDirKey = vehicles.flatMap(v => (dirOfTrip.has(v.tripId) ? [`${v.id}\t${dirOfTrip.get(v.tripId)}`] : [])).sort().join('\n');
+  // The map numbers directions its own way, so each is turned into the map's number through the learned pairing
+  // (a direction the pairing doesn't name says nothing).
+  const dirOfTrip = useMemo(() => analysisTripDirections(data?.tripDirections), [data]);
+  // Where two of the map's directions pair with the same analysis direction (a few misplaced cars outvoting none),
+  // the one more cars back wins.
+  const support = (m: number, a: number) => vehicles.filter(v => v.directionId === m && dirOfTrip.get(v.tripId) === a).length;
+  const toMapDir = new Map<number, number>();
+  for (const [m, a] of mapDirectionPairing(vehicles, dirOfTrip)) {
+    const had = toMapDir.get(a);
+    if (had == null || support(m, a) > support(had, a)) toMapDir.set(a, m);
+  }
+  const tripDirKey = vehicles.flatMap(v => { const a = dirOfTrip.get(v.tripId); return a != null && toMapDir.has(a) ? [`${v.id}\t${toMapDir.get(a)}`] : []; }).sort().join('\n');
   useEffect(() => {
     onTripDirections?.(tripDirKey ? new Map(tripDirKey.split('\n').map(x => { const [id, d] = x.split('\t'); return [id, Number(d)] as const; })) : null);
   }, [onTripDirections, tripDirKey]);
