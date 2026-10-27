@@ -1,19 +1,13 @@
 import type { ShapeProperties } from '../hooks/useIntervalStats';
 import { headwayAboutMinutes } from './headwayText';
 
-/**
- * The hour runs, [start, end), in which any of the given directions has a headway,
- * scanned from `scanStart` up to the period's end.
- */
-export function activeHourRanges(
-  directions: Pick<ShapeProperties, 'headwayByHour'>[],
-  scanStart: number,
-  endHour: number,
-): Array<[number, number]> {
+type HourFields = Pick<ShapeProperties, 'headwayByHour' | 'maxGapByHour' | 'departuresByHour'>;
+
+function hourRuns(hourActive: (hour: number) => boolean, scanStart: number, endHour: number): Array<[number, number]> {
   const ranges: Array<[number, number]> = [];
   let runStart: number | null = null;
   for (let hour = scanStart; hour <= endHour; hour++) {
-    const active = hour < endHour && directions.some(direction => direction.headwayByHour?.[hour] != null);
+    const active = hour < endHour && hourActive(hour);
     if (active && runStart === null) runStart = hour;
     if ((!active || hour === endHour) && runStart !== null) {
       ranges.push([runStart, hour]);
@@ -21,6 +15,23 @@ export function activeHourRanges(
     }
   }
   return ranges;
+}
+
+/**
+ * The hour runs, [start, end), in which any of the given directions has service, scanned from `scanStart` up to the
+ * period's end. Where the hours with a headway name some run, the published departure counts (CIV-1010) name the
+ * runs instead: every hour with a departure, the day's last one included (OC Transpo 162 evening: "6-11 PM", not
+ * "6-10 PM"). Where no hour has a headway the answer stays empty, so the counts never add a notice or name hours
+ * that the card did not name before; data built before the counts keeps the headway hours.
+ */
+export function activeHourRanges(
+  directions: Partial<HourFields>[],
+  scanStart: number,
+  endHour: number,
+): Array<[number, number]> {
+  const byHeadway = hourRuns(hour => directions.some(direction => direction.headwayByHour?.[hour] != null), scanStart, endHour);
+  if (byHeadway.length === 0 || !directions.some(direction => direction.departuresByHour)) return byHeadway;
+  return hourRuns(hour => directions.some(direction => (direction.departuresByHour?.[hour] ?? 0) > 0), scanStart, endHour);
 }
 
 /**
@@ -34,12 +45,13 @@ export function activeRangesCoverPeriod(ranges: Array<[number, number]>, startHo
 }
 
 /**
- * Whether a direction has any departure in the hour (#1137). `headwayByHour` needs three
- * departures in a 60-90 minute window, so an hourly route has none there; `maxGapByHour`
- * is set for every hour with a departure, except the hour of the day's last one.
+ * Whether a direction has service in the hour (#1137). `headwayByHour` needs three departures in a 60-90 minute
+ * window, so an hourly route has none there; `maxGapByHour` is set for every hour with a departure except the day's
+ * last one; the published departure counts (CIV-1010) cover that last hour. Any of the three counts, so the counts
+ * only ever drop a part-period notice, never add one.
  */
-export function hourHasService(direction: Pick<ShapeProperties, 'headwayByHour' | 'maxGapByHour'>, hour: number): boolean {
-  return direction.headwayByHour?.[hour] != null || direction.maxGapByHour?.[hour] != null;
+export function hourHasService(direction: Partial<HourFields>, hour: number): boolean {
+  return (direction.departuresByHour?.[hour] ?? 0) > 0 || direction.headwayByHour?.[hour] != null || direction.maxGapByHour?.[hour] != null;
 }
 
 /**
@@ -50,7 +62,7 @@ export function hourHasService(direction: Pick<ShapeProperties, 'headwayByHour' 
  * frequency filter, or when the route's filter value meets it, the earlier behaviour stands.
  */
 export function partPeriodNoticeApplies(
-  directions: Pick<ShapeProperties, 'headwayByHour' | 'maxGapByHour'>[],
+  directions: Partial<HourFields>[],
   startHour: number,
   endHour: number,
   maxHeadway: number,
@@ -62,8 +74,8 @@ export function partPeriodNoticeApplies(
   // instead): the frequency notice would be false, so the earlier behaviour stands.
   if (maxHeadway === Infinity || (filterValue != null && filterValue <= maxHeadway)) return true;
   // A departure in every hour is service throughout (#1137), even when an hourly route has no
-  // hourly headway. This only drops the sentence; the hours it names still come from headways,
-  // because the hour of a direction's last departure has no maxGapByHour.
+  // hourly headway. With the departure counts (CIV-1010) the hours the notice names come from the
+  // same counts; on older data they still come from headways (the last hour has no maxGapByHour).
   for (let hour = startHour; hour < endHour; hour++) {
     if (!directions.some(direction => hourHasService(direction, hour))) return true;
   }

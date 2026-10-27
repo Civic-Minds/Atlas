@@ -32,6 +32,8 @@ export interface RouteProperties {
   noRouteShape?: boolean;
   headwayByHour?: HeadwayByHour;
   maxGapByHour?: HeadwayByHourMaxGap;
+  /** CIV-1010: departures leaving in each clock hour, only hours with one or more (the last hour of the day included). */
+  departuresByHour?: Record<number, number>;
   routeShortName: string | null;
   routeLongName: string | null;
   routeVariant?: string | null;
