@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { normalizeRouteFilterFeatures } from '../../../shared/routeHeadwayFilter';
-import { routeListDisplay, routeListDisplayHeadway, routeListHeadwayText, routeListSharedHeadway } from '../effectiveHeadway';
+import { routeListDisplay, routeListDisplayHeadway, routeListHeadwayText } from '../effectiveHeadway';
 import type { ShapeProperties } from '../../hooks/useIntervalStats';
 import fixtures from './fixtures/shared-stretch-range.json';
 
@@ -27,7 +27,7 @@ describe('route lists show a range where alternating branches share a stretch', 
     const expo = rows('expoSaturday');
     // The map's number is 12 (the branches); the card keeps 3 on the trunk and 6 per branch.
     expect(routeListDisplayHeadway(expo, 'midday')).toBe(12);
-    expect(routeListSharedHeadway(expo, 'midday')).toBe(3);
+    expect(routeListDisplay(expo, 'midday').sharedHeadway).toBe(3);
   });
 
   it('a short shared stretch never makes a range (Miami 37)', () => {

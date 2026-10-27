@@ -52,14 +52,14 @@ const RULES: Array<{ name: string; pattern: RegExp; use: string }> = [
   { name: 'hand-rolled card title', pattern: /text-sm font-black text-\[var\(--text-primary\)\] leading-tight/, use: 'CARD_TITLE, CardTitle or AgencyCardTop (Interval/cardUi.tsx)' },
   { name: 'hand-rolled card facts line', pattern: /text-xs font-medium text-\[var\(--text-dim\)\] mt-1 leading-snug/, use: 'CARD_SUMMARY (Interval/cardUi.tsx)' },
   { name: 'report details written by hand', pattern: /details=\{`/, use: 'reportDetails (utils/reportIssue.ts)' },
-  // One place names an agency (CIV-998): a surface picks agencyNames(...).short / .backLink / .full / .place.
+  // One place names an agency (CIV-998, CIV-1023): a surface picks agencyNames(...).name / .backLink / .full / .place / .list / .card (utils/agencyName.ts).
   // The shared grey note and section label (CIV-395 follow-up): CARD_NOTE and CARD_SECTION in styles.ts.
   { name: 'hand-rolled grey note', pattern: /text-xs font-bold text-\[var\(--text-dim\)\]/, use: 'CARD_NOTE (styles.ts)' },
   { name: 'hand-rolled section label', pattern: /text-xs font-black text-\[var\(--text-dim\)\]/, use: 'CARD_SECTION or CardSectionLabel' },
   // CIV-1011 #4: the outlined segmented group (Night 30/60, Frequent Service) and the active-filter corner dot.
   { name: 'hand-rolled segmented group', pattern: /rounded-full border border-\[var\(--border-primary\)\] p-0\.5/, use: 'PillGroup outlined' },
   { name: 'hand-rolled active-filter dot', pattern: /-top-0\.5 -right-0\.5 w-2 h-2 rounded-full bg-\[var\(--accent\)\]/, use: 'ActiveDot' },
-  { name: 'agency name helper called directly', pattern: /\b(shortenAgencyName|agencyBackLinkName|agencyDisplayParts)\(/, use: 'agencyNames or agencyNameParts (utils/format.ts)' },
+  { name: 'agency name helper called directly', pattern: /\b(shortenAgencyName|agencyBackLinkName|agencyDisplayParts|agencyListParts|agencyNameParts|agencyDisplayName)\(/, use: 'agencyNames (utils/agencyName.ts)' },
 ];
 
 // Files that still own a style on purpose: the glass app tabs and the filter option list share the
@@ -67,7 +67,6 @@ const RULES: Array<{ name: string; pattern: RegExp; use: string }> = [
 const ALLOWED: Record<string, string[]> = {
   'components/Interval/FilterChips.tsx': ['option pill classes'],
   'components/Interval/pickers.tsx': ['hand-rolled frequency picker'],
-  'apps/History.tsx': ['option pill classes'],
   // Live is local-only and its route groups carry no route type; it still names routes its own way (audit R8).
   // Maintainer-only diagnostics, the story page's own opening layout, and a dialog title (panel headers are a later step).
   'DiagnosticsPerformancePage.tsx': ['hand-rolled page heading'],

@@ -1,7 +1,7 @@
 import React, { Fragment, useState, useEffect, useMemo } from 'react';
 import { Settings, SlidersHorizontal, Search } from 'lucide-react';
 import { CompareSidePicker, SideBadge, type CompareSide } from './CompareControl';
-import { ICON_BTN, DROPDOWN_PANEL, SEARCH_FIELD, SEARCH_PILL, SEARCH_ICON, dropdownAnim, TRANSITION_BASE, Z_MODAL_TOP, CARD_NOTE } from '../../styles';
+import { TOP_BAR_ICON_BTN, DROPDOWN_PANEL, SEARCH_FIELD, SEARCH_PILL, SEARCH_ICON, dropdownAnim, TRANSITION_BASE, Z_MODAL_TOP, CARD_NOTE } from '../../styles';
 import Pill from '../ui/Pill';
 import ActiveDot from '../ui/ActiveDot';
 import Toggle from '../ui/Toggle';
@@ -12,7 +12,8 @@ import { DayPicker, FrequencyPicker, PeriodPicker, PickerSection } from './picke
 import { ATLAS_MODE, FEATURES, R2_PUBLIC_URL } from '../../../shared/config';
 import { plural } from '../../../shared/overflowText';
 import type { Agency } from '../../App';
-import { formatStoredDate, routeLabels, agencyListParts } from '../../utils/format';
+import { formatStoredDate, routeLabels } from '../../utils/format';
+import { agencyNames } from '../../utils/agencyName';
 import { feedQualityListItems, presentFeedQualityReason, qualityStatusLabel } from '../../../shared/feedQuality';
 import { useColorVision } from '../../context/ColorVisionContext';
 import { useColorMode } from '../../hooks/useColorMode';
@@ -336,7 +337,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
         maxHeadway !== undefined && (
           <button
             onClick={() => setOpen(v => !v)}
-            className={`relative sm:hidden ${ICON_BTN}`}
+            className={`relative sm:hidden ${TOP_BAR_ICON_BTN}`}
             aria-label="Filters"
           >
             <SlidersHorizontal className="w-4 h-4" />
@@ -350,7 +351,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
       ) : (
         <button
           onClick={() => setOpen(v => !v)}
-          className={`relative ${ICON_BTN}`}
+          className={`relative ${TOP_BAR_ICON_BTN}`}
           aria-label="Settings"
         >
           <Settings className="w-4 h-4" />
@@ -429,7 +430,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                   ) : (
                     <div className="px-5 pb-4">
                       {hiddenRoutesByAgency.map(([agencySlug, group]) => {
-                        const { primary, secondary } = agencyListParts({ name: group.agencyName, cities: agencyCitiesBySlug.get(agencySlug), displayArea: agencyDisplayAreasBySlug.get(agencySlug) });
+                        const { primary, secondary } = agencyNames({ name: group.agencyName, cities: agencyCitiesBySlug.get(agencySlug), displayArea: agencyDisplayAreasBySlug.get(agencySlug) }).list;
                         return (
                         <div key={agencySlug}>
                           <p className="pt-2 pb-1 text-xs font-bold text-[var(--text-primary)]">
@@ -495,7 +496,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                     <div className="divide-y divide-[var(--border-primary)]">
                       {filteredDegradedFeeds.map(agency => {
                         const quality = agency.feedQuality!;
-                        const { primary, secondary } = agencyListParts({ name: agency.name, cities: agency.cities, displayArea: agency.displayArea });
+                        const { primary, secondary } = agencyNames({ name: agency.name, cities: agency.cities, displayArea: agency.displayArea }).list;
                         const checkedDate = formatStoredDate(quality.checkedAt.slice(0, 10)) || quality.checkedAt;
                         return (
                           <div key={agency.slug} className="py-3 first:pt-2">

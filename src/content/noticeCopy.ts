@@ -1,10 +1,11 @@
 import { plural } from '../../shared/overflowText';
-import { formatStoredDate, agencyNameParts } from '../utils/format';
+import { formatStoredDate } from '../utils/format';
+import { agencyNames } from '../utils/agencyName';
 import { delayAmount, headwayAbout } from '../utils/headwayText';
 
 /** Shared user-facing copy for every expired-feed notice. */
 export function expiredFeedNotice(agencyName: string, expDateStr?: string, manualFeedSource = false): string {
-  const { primary } = agencyNameParts(agencyName);
+  const { primary } = agencyNames(agencyName).card;
   const ended = `${primary}'s timetable ended${expDateStr ? ` on ${expDateStr}` : ''}.`;
   if (manualFeedSource) {
     return `${ended} It is maintained manually, so Atlas will keep showing it until a newer file is provided and verified.`;

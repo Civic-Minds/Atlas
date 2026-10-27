@@ -249,16 +249,6 @@ export function outputDropRefusal(live: ArtifactCounts, next: ArtifactCounts, ma
   return drops.length ? `output would drop sharply against live data (${drops.join(', ')})` : null;
 }
 
-/** Count the live route and stops artifacts for an agency, or null when there is no live route artifact. */
-export async function readLiveArtifactCounts(
-  slug: string,
-  get: (key: string) => Promise<string | null>,
-): Promise<ArtifactCounts | null> {
-  const geojson = await get(`atlas/${slug}.json`);
-  if (!geojson) return null;
-  return countArtifacts(geojson, await get(`atlas/${slug}-stops.json`));
-}
-
 /**
  * The drop guard shared by reprocess and refresh: refuse output that would
  * replace live data with a sharply smaller result unless --allow-drop was

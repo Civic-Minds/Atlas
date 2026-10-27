@@ -8,8 +8,20 @@ import type { CSSProperties } from 'react';
 /** Glass panel surface: background + blur + primary border */
 export const SURFACE = 'bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)]';
 
-/** Circular icon button (w-8 h-8, top-bar style; 32px on phones) */
-export const ICON_BTN = `w-8 h-8 max-sm:w-[32px] max-sm:h-[32px] flex items-center justify-center ${SURFACE} rounded-full text-[var(--text-primary)] hover:text-[var(--accent)] transition-colors`;
+/**
+ * The outline of the map top bar's unselected pills and round buttons (CIV-1020, Ryan: "a light outline"): a little firmer
+ * than the panel border so they stand out on the light map; stronger again in high contrast (index.css). Selected pills keep
+ * their own edge.
+ */
+export const TOP_BAR_OUTLINE = 'border-[var(--top-bar-outline)]';
+/** The glass surface with the top bar's outline instead of the panel border. */
+export const TOP_BAR_SURFACE = `bg-[var(--bg-panel)] backdrop-blur-md border ${TOP_BAR_OUTLINE}`;
+
+const iconButton = (surface: string) => `w-8 h-8 max-sm:w-[32px] max-sm:h-[32px] flex items-center justify-center ${surface} rounded-full text-[var(--text-primary)] hover:text-[var(--accent)] transition-colors`;
+/** Circular icon button (w-8 h-8; 32px on phones) */
+export const ICON_BTN = iconButton(SURFACE);
+/** The same button in the map top bar. */
+export const TOP_BAR_ICON_BTN = iconButton(TOP_BAR_SURFACE);
 
 /** Shared transition timing tokens */
 export const TRANSITION_FAST = 'duration-150 ease-out';
@@ -36,8 +48,11 @@ export const SIDEBAR_CARD_SURFACE = `${SURFACE} rounded-2xl`;
 /** Shared shell for a scrollable sidebar card. */
 export const PANEL_SHELL = `${FLOATING_CARD} flex flex-col overflow-hidden`;
 
-/** Top-bar pill surface (search bar, headway filter row) */
-export const PILL_SURFACE = `h-8 max-sm:h-[32px] flex items-center ${SURFACE} rounded-full`;
+const pillSurface = (surface: string) => `h-8 max-sm:h-[32px] flex items-center ${surface} rounded-full`;
+/** Pill surface (search bar, headway filter row, History's year slider) */
+export const PILL_SURFACE = pillSurface(SURFACE);
+/** The same pill in the map top bar (the search bar). */
+export const TOP_BAR_PILL_SURFACE = pillSurface(TOP_BAR_SURFACE);
 /** Shared responsive width used by the top search bar */
 export const SEARCH_BAR_WIDTH = 'w-full sm:w-72 xl:w-80';
 
@@ -59,7 +74,10 @@ export const FILTER_OPTION = 'px-2.5 py-0.5 rounded-full text-xs font-bold borde
 /** App switchers use the same glass pill surface as the filter chips. */
 /** Active view tab: the selected tint plus a firmer ring, so it stands out in both themes without a dark fill. */
 export const APP_TAB_ACTIVE = `${GLASS_PILL} ${CONTROL_ACTIVE_GLASS} ring-1 ring-[var(--control-active-border)]`;
-export const APP_TAB_INACTIVE = `${GLASS_PILL} bg-[var(--bg-panel)] border-[var(--border-primary)] text-[var(--text-primary)] hover:bg-[var(--bg-btn-hover)] hover:text-[var(--accent)]`;
+const appTabInactive = (outline: string) => `${GLASS_PILL} bg-[var(--bg-panel)] ${outline} text-[var(--text-primary)] hover:bg-[var(--bg-btn-hover)] hover:text-[var(--accent)]`;
+export const APP_TAB_INACTIVE = appTabInactive('border-[var(--border-primary)]');
+/** An unselected view tab in the map top bar. */
+export const TOP_BAR_TAB_INACTIVE = appTabInactive(TOP_BAR_OUTLINE);
 export const SELECTION_ACTIVE = 'bg-[var(--selection-active-bg)] border-l-2 border-[var(--selection-active-border)]';
 export const SELECTION_ACTIVE_TEXT = 'text-[var(--selection-active-fg)]';
 export const ACTION_PRIMARY = 'bg-[var(--action-primary-bg)] border-[var(--action-primary-border)] text-[var(--action-primary-fg)]';
@@ -89,7 +107,7 @@ export const AGENCY_LIST_PRIMARY = 'text-xs text-[var(--text-primary)] min-w-0 l
 export const PANEL_TITLE_BAR = 'flex items-center gap-1.5 px-4 pt-3 pb-2.5 border-b border-[var(--border-primary)] shrink-0';
 
 /** Title text inside PANEL_TITLE_BAR */
-export const PANEL_TITLE = 'text-xs font-black text-[var(--text-dim)] tracking-wide';
+export const PANEL_TITLE = 'text-xs font-black text-[var(--text-dim)]';
 
 /** Compact explanatory line beneath a research panel title. */
 export const PANEL_HELPER = 'px-4 pt-2 pb-2 text-xs text-[var(--text-dim)] font-bold leading-snug border-b border-[var(--border-primary)]';
@@ -107,10 +125,10 @@ export const AGENCY_LIST_FILTERS = 'shrink-0 px-4 pt-3 pb-2 bg-[var(--bg-panel)]
 /** A row of filter pills that scrolls sideways instead of wrapping. */
 export const PILL_SCROLL_ROW = 'flex gap-1.5 overflow-x-auto items-center [&::-webkit-scrollbar]:hidden';
 
-export const PANEL_SECTION_HEAD = 'px-4 py-2 text-xs font-black tracking-wide text-[var(--text-dim)]';
+export const PANEL_SECTION_HEAD = 'px-4 py-2 text-xs font-black text-[var(--text-dim)]';
 
 /** Accent group label in search results */
-export const PANEL_SEARCH_HEAD = 'px-4 text-xs font-bold text-[var(--accent)] tracking-wide mb-1.5';
+export const PANEL_SEARCH_HEAD = 'px-4 text-xs font-bold text-[var(--accent)] mb-1.5';
 
 /** Sub-section label (In this area / Elsewhere) */
 export const PANEL_SEARCH_SUBHEAD = 'px-4 pt-2 pb-0.5 text-xs font-bold text-[var(--text-dim)]';

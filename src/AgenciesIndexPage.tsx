@@ -6,47 +6,27 @@ import {
   resolveAgencyIndexSeo,
   type AgencyIndexData,
 } from '../shared/agencyIndex';
-import { agencyPagePath, fitAgencyName } from '../shared/agencyPages';
+import { agencyPagePath } from '../shared/agencyPages';
+import { fitAgencyName } from './utils/agencyName';
 import { areaPagePath } from '../shared/areas';
 import { ATLAS_MODE, FEATURES } from '../shared/config';
 import { plural } from '../shared/overflowText';
 import historyAgencies from '../shared/data/history-agencies.json';
 import type { HistoryAgencyList } from '../shared/historyEligibility';
 import { isLiveEligibleSlug } from '../shared/livePollingConfig';
-import { applySeoToDocument } from './lib/seoDom';
-import { LINK } from './pageStyles';
+import { applySeoToDocument, seoOrigin } from './lib/seoDom';
+import { readEmbeddedJson } from './lib/embeddedData';
+import { LINK, UNDERLINED_LINK } from './pageStyles';
 import Tag from './components/ui/Tag';
 import { PageTitle, SectionTitle } from './components/ui/PageTitle';
 import PageShell from './components/ui/PageShell';
 import DocsPageLayout from './components/ui/DocsPageLayout';
 
-/** Read this page's data from the JSON the prerender embedded next to the app root. */
-function readEmbeddedData(): AgencyIndexData | null {
-  if (typeof document === 'undefined') return null;
-  try {
-    const raw = document.getElementById(AGENCY_INDEX_DATA_SCRIPT_ID)?.textContent;
-    return raw ? (JSON.parse(raw) as AgencyIndexData) : null;
-  } catch {
-    return null;
-  }
-}
-
-/**
- * Every region and agency page in one list. The prerender writes the whole list as plain links, so it works
- * without scripts. The dev server (no prerendered
- * HTML) loads from the summary file instead (dead code in production builds).
- */
 /** Shared multi-column layout for the Regions list and every country's agency list. */
 const INDEX_COLUMNS = 'sm:columns-2 lg:columns-3 sm:gap-x-8';
 
 /** Beta only: agencies with 10+ years of schedule history, from the small list build-history writes. */
 const HISTORY_SLUGS: ReadonlySet<string> = new Set((historyAgencies as HistoryAgencyList).slugs);
-
-/**
- * A tagged row's column fits about this many characters of name beside "· 81 routes History" at desktop widths;
- * longer names show their short name instead (CIV-967).
- */
-const TAGGED_NAME_MAX_CHARS = 24;
 
 /** Beta-only "Live" / "History" tags after an agency's route count, tight around the word (CIV-967). */
 function AgencyTags({ live, history }: { live: boolean; history: boolean }) {
@@ -58,8 +38,12 @@ function AgencyTags({ live, history }: { live: boolean; history: boolean }) {
   );
 }
 
+/**
+ * Every region and agency page in one list. The prerender writes the whole list as plain links, so it works
+ * without scripts. The dev server (no prerendered HTML) loads from the summary file instead (dead code in production builds).
+ */
 export default function AgenciesIndexPage({ data: dataProp }: { data?: AgencyIndexData }) {
-  const [data, setData] = useState<AgencyIndexData | null>(() => dataProp ?? readEmbeddedData());
+  const [data, setData] = useState<AgencyIndexData | null>(() => dataProp ?? readEmbeddedJson<AgencyIndexData>(AGENCY_INDEX_DATA_SCRIPT_ID));
   useEffect(() => {
     if (data || !import.meta.env.DEV) return;
     void import('./agenciesIndexDevData').then(m => setData(m.devAgencyIndexData()));
@@ -68,7 +52,7 @@ export default function AgenciesIndexPage({ data: dataProp }: { data?: AgencyInd
     if (!data) return;
     applySeoToDocument(document, resolveAgencyIndexSeo(data, {
       mode: ATLAS_MODE,
-      origin: ATLAS_MODE === 'public' ? undefined : window.location.origin,
+      origin: seoOrigin(),
     }));
   }, [data]);
   // A link to a state or province heading (CIV-966) lands on it even when the list renders after the page loads.
@@ -95,7 +79,7 @@ export default function AgenciesIndexPage({ data: dataProp }: { data?: AgencyInd
             <section className="mt-12" aria-labelledby="index-regions">
               <SectionTitle id="index-regions">Regions</SectionTitle>
               <ul className={`mt-3 text-sm ${INDEX_COLUMNS}`}>
-                {areas.map(a => <li key={a.slug} className="break-inside-avoid py-1"><a className={`${LINK} underline underline-offset-2`} href={areaPagePath(a.slug)}>{a.shortName}</a></li>)}
+                {areas.map(a => <li key={a.slug} className="break-inside-avoid py-1"><a className={UNDERLINED_LINK} href={areaPagePath(a.slug)}>{a.shortName}</a></li>)}
               </ul>
             </section>
           )}
@@ -114,7 +98,7 @@ export default function AgenciesIndexPage({ data: dataProp }: { data?: AgencyInd
                       if (live || history) {
                         // Tagged rows stay on one line: a name too long for the column shows its short name ("CDTA"), with
                         // the full name on hover (CIV-967); one still too long shortens with "…".
-                        const { text, title } = fitAgencyName(a.name, a.shortName, TAGGED_NAME_MAX_CHARS);
+                        const { text, title } = fitAgencyName(a.name, a.shortName);
                         return (
                           <li key={a.slug} className="flex min-w-0 items-baseline break-inside-avoid py-[3px]">
                             <a className={`${LINK} min-w-0 truncate underline underline-offset-2`} href={agencyPagePath(a.slug)} title={title ?? a.name}>{text}</a>
@@ -124,7 +108,7 @@ export default function AgenciesIndexPage({ data: dataProp }: { data?: AgencyInd
                       }
                       return (
                         <li key={a.slug} className="break-inside-avoid py-[3px]">
-                          <a className={`${LINK} underline underline-offset-2`} href={agencyPagePath(a.slug)}>{a.name}</a>
+                          <a className={UNDERLINED_LINK} href={agencyPagePath(a.slug)}>{a.name}</a>
                           {routes}
                         </li>
                       );

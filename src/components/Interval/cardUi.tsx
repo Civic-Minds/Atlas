@@ -1,7 +1,8 @@
 import React from 'react';
 import { createPortal } from 'react-dom';
 import { Flag, Radio, X } from 'lucide-react';
-import { fmtHeadway, placeAlreadyInName } from '../../utils/format';
+import { fmtHeadway } from '../../utils/format';
+import { placeAlreadyInName } from '../../utils/agencyName';
 import { headwayToTierColor } from './HeadwaySparkline';
 import { getTierColor } from '../../utils/colors';
 import { CARD_NOTICE, FLOATING_CARD, PANEL_ENTER_LEFT, SIDEBAR_CARD_SURFACE, SIDEBAR_PANEL_WIDTH, ACTION_PRIMARY } from '../../styles';
@@ -13,6 +14,8 @@ import ArrowLink from '../ui/ArrowLink';
 import RoundIconButton from '../ui/RoundIconButton';
 import { OutboundLink } from '../OutboundLink';
 import { CardBackLink } from '../CardBack';
+import type { Agency } from '../../App';
+import type { OpenInfoFn } from '../InfoPanel';
 
 export { default as CardDirectionRow } from './RouteDirectionRow';
 
@@ -313,7 +316,7 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
               ...(reportCardPosition ? { width: `${reportCardPosition.width}px` } : {}),
             }}
           >
-            <div className="flex items-center justify-between px-4 pt-4 pb-3 border-b border-[var(--border-primary)]">
+            <div className={`${CARD_HEADER_BLOCK} flex items-center justify-between`}>
               <div>
                 <h2 id={dialogTitleId} className={CARD_TITLE}>Report a problem</h2>
                 <p className={`${CARD_NOTICE} mt-0.5`}>Choose a category, or click a card value to preselect its reason.</p>
@@ -504,26 +507,31 @@ export function AgencyCardTop({
   as?: 'p' | 'h2';
   children?: React.ReactNode;
 }) {
+  // A grid, so the links line can run under the report flag (CIV-523) while the name, facts and the rest keep their width beside it.
   return (
-    <div className="flex items-start gap-2 min-w-0">
-      <div className="min-w-0 flex-1">
+    <div className={`grid items-start min-w-0 ${report ? 'grid-cols-[minmax(0,1fr)_auto] gap-x-2' : 'grid-cols-1'}`}>
+      <div className="min-w-0">
         <CardBackLink onClick={back.onClick}>{back.to}</CardBackLink>
         <AgencyNameHeading as={as} name={name} place={place} className="mb-0" />
-        {links.length > 0 && (
-          // One line, dot between links; only the first (the area name) gives way, cut with an ellipsis.
-          <p className="mt-0.5 flex items-center min-w-0 text-xs whitespace-nowrap">
-            {links.map((link, i) => (
-              <React.Fragment key={i}>
-                {i > 0 && <span className="mx-1 shrink-0 text-[var(--text-dim)] select-none" aria-hidden="true">·</span>}
-                <span className={i === 0 ? 'flex min-w-0' : 'flex shrink-0'}>{link}</span>
-              </React.Fragment>
-            ))}
-          </p>
-        )}
-        {facts && <p className={CARD_SUMMARY}>{facts}</p>}
-        {children}
       </div>
-      {report}
+      {report ? <div className="col-start-2 row-start-1">{report}</div> : null}
+      {links.length > 0 && (
+        // One line, dot between links; only the first (the area name) gives way, cut with an ellipsis.
+        <p className="col-span-full mt-0.5 flex items-center min-w-0 text-xs whitespace-nowrap">
+          {links.map((link, i) => (
+            <React.Fragment key={i}>
+              {i > 0 && <span className="mx-1 shrink-0 text-[var(--text-dim)] select-none" aria-hidden="true">·</span>}
+              <span className={i === 0 ? 'flex min-w-0' : 'flex shrink-0'}>{link}</span>
+            </React.Fragment>
+          ))}
+        </p>
+      )}
+      {(facts || children) && (
+        <div className="col-start-1 min-w-0">
+          {facts && <p className={CARD_SUMMARY}>{facts}</p>}
+          {children}
+        </div>
+      )}
     </div>
   );
 }
@@ -733,6 +741,40 @@ export function CardHelpNotice({
         </>
       )}
     </p>
+  );
+}
+
+/** "New schedule data is being verified.": the agency card and the route card show it the same way. */
+export function NewScheduleDataNotice({ agency, onInfoOpen }: { agency: Agency; onInfoOpen: OpenInfoFn }) {
+  return (
+    <CardHelpNotice
+      message="New schedule data is being verified."
+      onLearnMore={() => onInfoOpen('about', {
+        helpTopic: 'new-schedule-data',
+        agencyName: agency.name,
+        lastRefreshedAt: agency.lastRefreshedAt ?? undefined,
+        lastFeedCheckAt: agency.lastFeedCheckAt ?? undefined,
+        expiredFeedCheckCount: agency.expiredFeedCheckCount,
+        expiredFeedCheckSince: agency.expiredFeedCheckSince ?? undefined,
+        websiteUrl: agency.websiteUrl ?? undefined,
+      })}
+    />
+  );
+}
+
+/** "We corrected this data.": the agency card and the route card show it the same way, with the note that applies. */
+export function CorrectedDataNotice({ agency, overrideNote, onInfoOpen }: { agency: Agency; overrideNote: string; onInfoOpen: OpenInfoFn }) {
+  return (
+    <CardHelpNotice
+      message="We corrected this data."
+      onLearnMore={() => onInfoOpen('about', {
+        helpTopic: 'corrected-data',
+        agencyName: agency.name,
+        overrideNote,
+        issueUrl: agency.issueUrl,
+        issueUrls: agency.issueUrls,
+      })}
+    />
   );
 }
 

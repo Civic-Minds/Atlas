@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { CardBackLink } from '../../CardBack';
-import { stopNameCase, routeLabels } from '../../../utils/format';
+import { stopNameCase } from '../../../utils/format';
 import type { HoveredBranch, TimePeriod } from '../../../hooks/useIntervalStats';
 import {
   AgencyFilterChips,
@@ -18,7 +18,6 @@ import { reportDetails } from '../../../utils/reportIssue';
 import StopRouteGroup from './StopRouteGroup';
 import { stopRouteBestHeadway, type StopRoute } from '../../../utils/stopRoutes';
 import LiveStopArrivals from './LiveStopArrivals';
-import type { HeadwayMetric } from '../../../utils/routeFacts';
 import { compareHeadwayThenNumber } from '../../../utils/sortCompare';
 import type { RouteLabel } from '../../../utils/routeFacts';
 
@@ -156,12 +155,8 @@ export const StopCard: React.FC<StopCardProps> = ({
             shortName={route.shortName}
             label={route.label}
             longName={route.longName}
-            agencyName={route.agencyName}
-            agencySlug={route.agencySlug}
-            routeType={route.routeType}
             branches={route.branches}
             period={period}
-            showAgency={stopAgencies.length > 1}
             onOpenRoute={openRoute}
             hoveredBranch={hoveredBranch}
             setHoveredBranch={setHoveredBranch}
@@ -171,7 +166,7 @@ export const StopCard: React.FC<StopCardProps> = ({
 
       {nearbyConnections.length > 0 && (
         <SidebarCardSection label="Nearby routes">
-          {nearbyConnections.map(({ rKey, label: route, agencyName, agencySlug, headway, nearestStopName, distanceMeters }) => {
+          {nearbyConnections.map(({ rKey, label: route, headway, nearestStopName, distanceMeters }) => {
             return (
               <CardDirectionRow
                 key={rKey}

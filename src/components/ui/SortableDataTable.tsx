@@ -1,5 +1,5 @@
 import { useState, type Key } from 'react';
-import DataTable, { type DataTableColumn } from './DataTable';
+import DataTable, { type DataTableColumn, type DataTableSort } from './DataTable';
 
 export interface SortableColumn<T> extends DataTableColumn<T> {
   /** Makes the header sort the rows: higher values are worse and come first; a second click turns the order round. */
@@ -24,7 +24,7 @@ export default function SortableDataTable<T>({ columns, rows, defaultSort, layou
   narrowFit?: boolean;
   rowTitle?: (row: T) => string | undefined;
 }) {
-  const [sort, setSort] = useState<{ key: string; reversed: boolean } | null>(defaultSort ? { key: defaultSort, reversed: false } : null);
+  const [sort, setSort] = useState<DataTableSort | null>(defaultSort ? { key: defaultSort, reversed: false } : null);
   const col = sort ? columns.find(c => c.key === sort.key && c.worst) : undefined;
   const value = (r: T) => col?.worst?.(r) ?? -Infinity;
   const sorted = col

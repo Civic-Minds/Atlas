@@ -102,7 +102,6 @@ export const FIXED_FIRST_COLUMN_REM = 16;
 /** Width of every other column in a fixed-layout table. */
 export const FIXED_COLUMN_REM = 8;
 
-/** Plain data table. Wrap it in an overflow-x-auto element where it may be wider than its container. */
 /**
  * A click anywhere on a linked row follows its link, and a middle, Cmd or Ctrl click opens it in a new tab. A click on a
  * link or button inside keeps its own behaviour, and so does selecting text in the row.
@@ -117,6 +116,7 @@ function openRow(e: MouseEvent<HTMLTableRowElement>, href: string) {
 
 export type DataTableLayout = 'content' | 'fixed' | 'fill' | 'page';
 
+/** Plain data table. Wrap it in an overflow-x-auto element where it may be wider than its container. */
 export default function DataTable<T>({ columns, rows, rowKey, variant = 'compact', caption, layout = 'content', narrowFit = false, rowHref, rowTitle, sort, onSort }: DataTableProps<T>) {
   const fixed = layout !== 'content';
   const fill = layout === 'fill';
@@ -141,7 +141,7 @@ export default function DataTable<T>({ columns, rows, rowKey, variant = 'compact
   return (
     <table
       className={fixed ? `${v.table} ${fit ? 'sm:table-fixed sm:min-w-[var(--table-min)]' : 'table-fixed'}${end ? ' max-sm:!w-[var(--table-w)] sm:min-w-[var(--table-min)]' : ''}` : v.table}
-      style={end ? ({ width: '100%', '--table-w': `${phoneWidths.reduce((a, b) => a + b, 0)}rem`, '--table-min': `${totalRem}rem` } as CSSProperties) : fixed ? (fill ? (fit ? ({ width: '100%', '--table-min': `${widths.reduce((a, b) => a + b, 0)}rem` } as CSSProperties) : { width: '100%', minWidth: `${widths.reduce((a, b) => a + b, 0)}rem` }) : { width: `${widths.reduce((a, b) => a + b, 0)}rem` }) : undefined}
+      style={end ? ({ width: '100%', '--table-w': `${phoneWidths.reduce((a, b) => a + b, 0)}rem`, '--table-min': `${totalRem}rem` } as CSSProperties) : fixed ? (fill ? (fit ? ({ width: '100%', '--table-min': `${totalRem}rem` } as CSSProperties) : { width: '100%', minWidth: `${totalRem}rem` }) : { width: `${totalRem}rem` }) : undefined}
     >
       {caption && <caption className="sr-only">{caption}</caption>}
       {fixed && (

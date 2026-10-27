@@ -50,10 +50,7 @@ export function areaSlug(name: string): string {
   return name.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 }
 
-export const AREA_PATH_PREFIX = '/area/';
-export function areaPagePath(slug: string): string {
-  return `${AREA_PATH_PREFIX}${encodeURIComponent(slug)}`;
-}
+export { AREA_PATH_PREFIX, areaPagePath } from './pagePaths';
 
 /**
  * Whether an area is one of the large metros (shared/data/large-metros.json: the 50 largest US

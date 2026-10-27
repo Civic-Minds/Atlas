@@ -37,7 +37,7 @@ import type { AgencyPageIdentity, AgencyPageRoute, AgencyPageSummary, AgencyPage
 import { agencyShortLabel, trimRedundantCity } from '../shared/agencyPages';
 import { computeConnections, extractStops, type AgencyStops } from './agency-connections';
 import { countryForRegion } from '../shared/regionCountry';
-import { agencyDisplayParts } from '../src/utils/format';
+import { agencyNames } from '../src/utils/agencyName';
 import { compareRouteNumber } from '../shared/sortCompare';
 import { areasForStops, type AreaBoundaries } from '../shared/areaBoundaries';
 
@@ -221,7 +221,7 @@ export function primaryCity(a: { displayArea?: string; cities?: string[]; region
  *   Transit"), since the first city is then often just where the stops happen to be densest.
  */
 export function displayNameFor(a: CatalogAgency & { shortName?: string; labelPlace?: string }): string {
-  const { primary, secondary } = agencyDisplayParts(a.name, a.cities, a.displayArea);
+  const { primary, secondary } = agencyNames({ name: a.name, cities: a.cities, displayArea: a.displayArea }).card;
   const base = a.shortName ?? primary;
   if (a.labelPlace !== undefined) return trimRedundantCity(a.labelPlace ? `${base} (${a.labelPlace})` : base);
   if (a.shortName) return trimRedundantCity(`${a.shortName} (${primaryCity(a)})`);

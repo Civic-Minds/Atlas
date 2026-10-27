@@ -184,9 +184,9 @@ describe('route card rows word part-period and one-gap service (#934)', () => {
     expect(screen.getByText(partPeriodBadge(/every 10 min, with a 45 min gap/))).toBeTruthy();
   });
   it('the stop card shows the same part-period words (route card and stop card agree)', () => {
-    render(<StopRouteGroup shortName="134" label={routeLabels({ shortName: '134', longName: 'Stony Island' })} longName="Stony Island" agencyName="CTA" branches={[
+    render(<StopRouteGroup shortName="134" label={routeLabels({ shortName: '134', longName: 'Stony Island' })} longName="Stony Island" branches={[
       { rKey: 'cta::134', headsign: 'Downtown', directionId: 1, service: { value: 12 } as any, periodText: 'until 9:37am, every 12 min' },
-    ]} period="midday" showAgency={false} onOpenRoute={() => {}} />);
+    ]} period="midday" onOpenRoute={() => {}} />);
     expect(screen.getByText(partPeriodBadge(/^until 9:37am, every 12 min$/))).toBeTruthy();
     expect(screen.queryAllByText('every 12 min').filter(el => !el.closest('.flex-wrap'))).toHaveLength(0);
   });

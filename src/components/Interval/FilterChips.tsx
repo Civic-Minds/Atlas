@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { Search } from 'lucide-react';
 import { HEADWAY_TIERS, getTierColor } from '../../utils/colors';
-import { FLOATING_CARD, GLASS_PILL, PILL_SURFACE, PANEL_ENTER_TOP, CONTROL_ACTIVE, CONTROL_ACTIVE_GLASS, CONTROL_INACTIVE, SEARCH_PILL, SEARCH_ICON, SEARCH_FIELD, CARD_SECTION } from '../../styles';
+import { FLOATING_CARD, GLASS_PILL, PILL_SURFACE, PANEL_ENTER_TOP, CONTROL_ACTIVE, CONTROL_ACTIVE_GLASS, CONTROL_INACTIVE, SEARCH_PILL, SEARCH_ICON, SEARCH_FIELD, CARD_SECTION, TOP_BAR_OUTLINE } from '../../styles';
 import Pill from '../ui/Pill';
 import PillGroup from '../ui/PillGroup';
 import ActiveDot from '../ui/ActiveDot';
@@ -11,7 +11,7 @@ import type { TimePeriod, ViewportBounds } from '../../hooks/useIntervalStats';
 import { FEATURES, formatPeriodRange, periodKeyForHour } from '../../../shared/config';
 import { COMPACT_TOP_BAR_QUERY } from '../ModeTabLabel';
 import { useMediaQuery } from '../../hooks/useMediaQuery';
-import { agencyListParts } from '../../utils/format';
+import { agencyNames } from '../../utils/agencyName';
 import { bboxInViewport } from '../../utils/agencySearch';
 import { filterModeOptions } from '../../../shared/modes';
 import { modesForView } from '../../../shared/viewLayers';
@@ -193,7 +193,7 @@ function AgenciesPanel({ agencies, selectedAgencies, setSelectedAgencies, bounds
             <p className={`px-2 pt-2 pb-0.5 ${CARD_SECTION}`}>{region}</p>
             {groups.map(g => {
               const active = g.slugs.every(s => selectedAgencies.has(s));
-              const { primary, secondary } = agencyListParts({ name: g.name, cities: g.cities, displayArea: g.displayArea });
+              const { primary, secondary } = agencyNames({ name: g.name, cities: g.cities, displayArea: g.displayArea }).list;
               return (
                 <button
                   key={g.name}
@@ -291,7 +291,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
     `relative h-8 px-3.5 flex items-center justify-center ${GLASS_PILL} border text-xs font-bold transition-colors whitespace-nowrap ${
       active
         ? CONTROL_ACTIVE_GLASS
-        : 'bg-[var(--bg-panel)] border-[var(--border-primary)] text-[var(--text-primary)] hover:text-[var(--accent)]'
+        : `bg-[var(--bg-panel)] ${TOP_BAR_OUTLINE} text-[var(--text-primary)] hover:text-[var(--accent)]`
     }`;
 
   const Dot = ({ show }: { show: boolean }) =>

@@ -6,3 +6,5 @@ export const TILE = `min-w-0 rounded-2xl p-4 ${SURFACE}`;
 /** Main page call to action, the same as the About page's "Try Atlas" link: accent text, no fill or shadow. */
 export const PAGE_ACTION = 'inline-flex items-center gap-2 text-sm font-black text-[var(--accent)] hover:underline';
 export const LINK = 'text-[var(--accent)] hover:underline';
+/** LINK, always underlined: links inside running text and link lists on the pages. */
+export const UNDERLINED_LINK = `${LINK} underline underline-offset-2`;

@@ -2,7 +2,7 @@
  * Pure helpers for refresh.ts feed-metadata stamping.
  * Separated so unit tests can cover stamp decisions without R2.
  */
-import type { SupplementalFeedMeta } from '../shared/feedAvailability.js';
+import { isExpiredFeedExpiry, isYmd, type SupplementalFeedMeta } from '../shared/feedAvailability.js';
 
 export interface FeedMetaFields {
   lastFeedExpiry?: string | null;
@@ -23,7 +23,7 @@ export interface FeedMetaFields {
 
 /** Whether a feed's declared service end date is before the refresh date. */
 export function isFeedExpired(feedExpiry: string | null | undefined, todayYmd: string): boolean {
-  return !!feedExpiry && /^\d{8}$/.test(feedExpiry) && feedExpiry < todayYmd;
+  return isExpiredFeedExpiry(feedExpiry, todayYmd);
 }
 
 /** Replace known expired data only with a dated candidate that is current. */
@@ -43,7 +43,7 @@ export function shouldReplaceExpiredFeed(opts: {
  * reject the update.
  */
 export function shouldSkipAllExpiredFeeds(feedExpiries: Array<string | null | undefined>, todayYmd: string): boolean {
-  const knownExpiries = feedExpiries.filter((expiry): expiry is string => !!expiry && /^\d{8}$/.test(expiry));
+  const knownExpiries = feedExpiries.filter(isYmd);
   return knownExpiries.length === feedExpiries.length
     && knownExpiries.length > 0
     && knownExpiries.every(expiry => isFeedExpired(expiry, todayYmd));
@@ -75,8 +75,6 @@ export function routeLineCount(geojson: string): number {
   return routes.size;
 }
 
-const YMD = /^\d{8}$/;
-const validYmd = (d: string | null | undefined): d is string => !!d && YMD.test(d);
 
 /** Placeholder calendar ends (e.g. 20500101) are capped this far out. */
 export const PLACEHOLDER_EXPIRY_YEARS = 2;
@@ -109,17 +107,17 @@ export function addYearsYmd(ymd: string, years: number): string {
 export function recordedFeedExpiry(feedExpiry: string | null, peekedExpiry: string | null, todayYmd: string, calendarOnlyEnd?: string | null): string | null {
   const recorded = laterOfFeedInfoAndCappedCalendar(feedExpiry, peekedExpiry, todayYmd);
   const calendarCap = addYearsYmd(todayYmd.replace(/-/g, ''), PLACEHOLDER_EXPIRY_YEARS);
-  if (validYmd(recorded) && validYmd(calendarOnlyEnd) && calendarOnlyEnd <= calendarCap && calendarOnlyEnd < recorded) return calendarOnlyEnd;
+  if (isYmd(recorded) && isYmd(calendarOnlyEnd) && calendarOnlyEnd <= calendarCap && calendarOnlyEnd < recorded) return calendarOnlyEnd;
   return recorded;
 }
 
 function laterOfFeedInfoAndCappedCalendar(feedExpiry: string | null, peekedExpiry: string | null, todayYmd: string): string | null {
   const today = todayYmd.replace(/-/g, '');
-  if (validYmd(feedExpiry) && validYmd(peekedExpiry) && peekedExpiry > addYearsYmd(today, PLACEHOLDER_EXPIRY_YEARS)) return feedExpiry;
+  if (isYmd(feedExpiry) && isYmd(peekedExpiry) && peekedExpiry > addYearsYmd(today, PLACEHOLDER_EXPIRY_YEARS)) return feedExpiry;
   const limits = [addYearsYmd(today, PLACEHOLDER_EXPIRY_YEARS)];
-  if (validYmd(feedExpiry)) limits.push(addYearsYmd(feedExpiry, PLACEHOLDER_EXPIRY_YEARS));
-  const capped = validYmd(peekedExpiry) ? [peekedExpiry, ...limits].sort()[0] : null;
-  const valid = [feedExpiry, capped].filter(validYmd);
+  if (isYmd(feedExpiry)) limits.push(addYearsYmd(feedExpiry, PLACEHOLDER_EXPIRY_YEARS));
+  const capped = isYmd(peekedExpiry) ? [peekedExpiry, ...limits].sort()[0] : null;
+  const valid = [feedExpiry, capped].filter(isYmd);
   if (valid.length) return valid.sort().at(-1)!;
   return feedExpiry ?? peekedExpiry ?? null;
 }

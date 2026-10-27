@@ -1,12 +1,13 @@
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import ModeTab from '../ModeTab';
-import { APP_TAB_ACTIVE, APP_TAB_INACTIVE } from '../../styles';
+import { APP_TAB_ACTIVE, APP_TAB_INACTIVE, TOP_BAR_TAB_INACTIVE } from '../../styles';
 
 const tokens = (s: string) => new Set(s.split(/\s+/).filter(Boolean));
 
-// The phone "More" button's classes before it moved onto ModeTab (CIV-900 X4); the move must not change its look.
-const OLD_MORE_BUTTON = (active: boolean) => `flex h-8 max-sm:h-[32px] px-3 items-center gap-1.5 rounded-full shrink-0 transition-colors text-xs font-bold border focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)] ${active ? APP_TAB_ACTIVE : APP_TAB_INACTIVE}`;
+// The phone "More" button's classes before it moved onto ModeTab (CIV-900 X4); the move must not change its look. Unselected,
+// it sits on the bar and takes the top bar's outline (CIV-1020).
+const OLD_MORE_BUTTON = (active: boolean) => `flex h-8 max-sm:h-[32px] px-3 items-center gap-1.5 rounded-full shrink-0 transition-colors text-xs font-bold border focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)] ${active ? APP_TAB_ACTIVE : TOP_BAR_TAB_INACTIVE}`;
 
 describe('ModeTab menu-trigger', () => {
   it.each([true, false])('keeps the phone More button classes (active %s)', active => {

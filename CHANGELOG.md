@@ -8,6 +8,10 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Map and route behavior
 
+- **Top bar buttons have a light outline so they stand out on the map**: Mode, Agencies and the search bar blended into the light map; high contrast mode uses a stronger outline
+- **Stop dots at middle zoom sit where their stops are**: each dot groups stops within 250 m instead of chaining up to 8 km along a street ([#1147](https://github.com/Civic-Minds/Atlas/issues/1147))
+- **WVU's PRT shows as one people mover**: its [20 station-pair "routes"](https://github.com/Civic-Minds/Atlas/issues/1119) are one line
+- **Booked taxibus lines show as on-demand**: exo's taxibus lines you book ahead appear with on-demand service, and walk-on lines as buses
 - **Agencies are named by their own short name, never a city**: lists, rows and back links say "Capital Metro", not "Austin", and the agency card keeps the full name, so [Gary's](https://github.com/Civic-Minds/Atlas/issues/1134) card no longer reads "Gary, IN"
 - **Copied map links reopen the same view**: [links](https://github.com/Civic-Minds/Atlas/issues/1141) now keep "All day", the 60-minute limit and the irregular and part-time choices, which a recipient's own saved settings used to replace
 - **Destinations keep their first word**: [KCATA 12](https://github.com/Civic-Minds/Atlas/issues/1139) reads "12th Street", not "Street", and NYC subway B reads "Brighton Beach", not "Beach"
@@ -48,6 +52,12 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Route cards and frequency
 
+- **A period with a long slow stretch shows its longest wait**: [TTC 320](https://github.com/Civic-Minds/Atlas/issues/1142) overnight runs every 5 and then every 15, so it now reads "every 5–18" and is coloured by 18
+- **Branch rows show only the time a branch actually runs**: a [rush-hour branch](https://github.com/Civic-Minds/Atlas/issues/1115) no longer borrows the main line's midday frequency (TTC 84 Pioneer Village)
+- **Longest gaps leave out drop-off-only stops at the end of the line**: [MBTA 71 and 16](https://github.com/Civic-Minds/Atlas/issues/1116) no longer read a 135-minute gap in the rush hour
+- **Night routes no longer lose a direction**: [TTC 300](https://github.com/Civic-Minds/Atlas/issues/1121) shows its westbound service
+- **Duplicate trips no longer halve a frequency**: [trips a minute apart](https://github.com/Civic-Minds/Atlas/issues/1143) on the same day count once
+- **Trains and light rail are graded by rail rules**: rail lines' headline frequency follows the rules for rail, and [one-day event trains](https://github.com/Civic-Minds/Atlas/issues/1138) don't count as weekday service
 - **Part-period notes no longer misdescribe hourly and rush-hour routes**: an [hourly route](https://github.com/Civic-Minds/Atlas/issues/1137) no longer reads "not throughout the selected period" (OC Transpo 162), and the note names no [made-up frequency](https://github.com/Civic-Minds/Atlas/issues/1043) like "every 330 min" for a rush-hour-only route (TTC 10) or one [slower than every row](https://github.com/Civic-Minds/Atlas/issues/1123)
 - **Night's route card shows night service only**: no chart or period, and each destination reads its night frequency, never a daytime one
 - **On-demand cards show service hours as rows with a bar**: one row per group of days with the selected day in bold, and "Hours unavailable" where the hours aren't known
@@ -78,6 +88,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### History (beta)
 
+- **The History chart covers a route's whole history and stays readable**: it has no grey box, shows dots only where they have room, labels the latest value, highlights a row's point on hover, and expands to a wide view
 - **History shows exact minutes and places its chart points by month**: rows now match the chart ([NFTA 76](https://github.com/Civic-Minds/Atlas/issues/1085) reads 349, not 360), snapshots from one year no longer stack at the left edge, and [labels](https://github.com/Civic-Minds/Atlas/issues/1037) no longer overlap
 - **History no longer lists years that have not happened yet**: feeds that start next year had added a 2027 point, and an agency could count it toward its ten years; those years are now dropped, so an agency with only nine real years leaves History until it has ten
 - **History's route cards draw and move like the map's**: the chart fill no longer turns solid black for names with a space (Caltrain "Local Weekday"), the change box shows only across calendar years, and the phone route sheet slides in like the map's
@@ -108,6 +119,8 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Agency, area and research pages
 
+- **Area links fit on the agency card**: a name too long for the line drops "Area" ("Greater Toronto and Hamilton →") instead of being cut off
+- **Night lists use the same agency headings as every other list**: counts read "24 routes"
 - **Area pages introduce their biggest agencies and keep their tables on screen**: intros name the two biggest agencies when there are more than three, the subtitle names the state or province instead of repeating the title, and tables group modes into seven columns that fit from 768px wide
 - **Every agency has a page, including those with no midday service**: nine more such as ACE and VRE, and an agency with no area page links its place to its state or province in the agency list
 - **Area tables keep each mode in the same column**: a dash marks a missing mode, rarer modes share an "Other" column, trolleybuses count as Bus, long names shorten, and a click anywhere on a row opens the agency (middle-click opens a new tab)

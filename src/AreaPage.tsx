@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
-import { agencyPagePath, fitAgencyName } from '../shared/agencyPages';
+import { agencyPagePath } from '../shared/agencyPages';
+import { fitAgencyName } from './utils/agencyName';
 import {
   AREA_DATA_SCRIPT_ID,
   AREA_TABLE_OTHER,
@@ -17,8 +18,10 @@ import {
   type AreaPageData,
 } from '../shared/areaPages';
 import { ATLAS_MODE } from '../shared/config';
-import { applySeoToDocument } from './lib/seoDom';
-import { LINK } from './pageStyles';
+import { AGENCY_INDEX_PATH } from '../shared/agencyIndex';
+import { applySeoToDocument, seoOrigin } from './lib/seoDom';
+import { readEmbeddedJson } from './lib/embeddedData';
+import { LINK, UNDERLINED_LINK } from './pageStyles';
 import { FrequencyBar } from './pageParts';
 import DocsPageLayout from './components/ui/DocsPageLayout';
 import ArrowLink from './components/ui/ArrowLink';
@@ -33,7 +36,8 @@ import DataTable from './components/ui/DataTable';
 const AREA_NAME_COLUMN_REM = 10.75;
 const AREA_MODE_COLUMN_REM = 5.5;
 /**
- * With the "Other" column the names column is at its narrowest, so a full name past this length would wrap to three lines
+ * This surface's own width, past the one rule (AGENCY_NAME_MAX_CHARS) because its layout allows two lines:
+ * with the "Other" column the names column is at its narrowest, so a full name past this length would wrap to three lines
  * or more on a phone ("San Francisco Bay Area Water Emergency Transportation Authority (WETA)"); it shows the short display
  * name instead, with the full name on hover. Names this long or shorter fit on two lines at 390px and from 900px up (CIV-973).
  */
@@ -58,14 +62,8 @@ function agencyNameLink(a: AreaAgencyRow, narrow: boolean) {
 
 /** Read this page's numbers from the JSON the prerender embedded next to the app root. */
 function readEmbeddedData(slug: string | undefined): AreaPageData | null {
-  if (typeof document === 'undefined') return null;
-  try {
-    const raw = document.getElementById(AREA_DATA_SCRIPT_ID)?.textContent;
-    const data = raw ? (JSON.parse(raw) as AreaPageData) : null;
-    return data && data.area.slug === slug ? data : null;
-  } catch {
-    return null;
-  }
+  const data = readEmbeddedJson<AreaPageData>(AREA_DATA_SCRIPT_ID);
+  return data && data.area.slug === slug ? data : null;
 }
 
 /** One metro area: its agencies side by side, with the numbers added up from the agency pages. */
@@ -83,7 +81,7 @@ export default function AreaPage({ data: dataProp }: { data?: AreaPageData }) {
     if (!data) return;
     applySeoToDocument(document, resolveAreaSeo(data, {
       mode: ATLAS_MODE,
-      origin: ATLAS_MODE === 'public' ? undefined : window.location.origin,
+      origin: seoOrigin(),
     }));
   }, [data]);
 
@@ -110,7 +108,7 @@ export default function AreaPage({ data: dataProp }: { data?: AreaPageData }) {
           </div>
           <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--text-muted)]">
             {intro.lead}{joiners.opener}
-            {intro.named.map((a, i) => <span key={a.slug}><a className={`${LINK} underline underline-offset-2`} href={agencyPagePath(a.slug)}>{areaIntroName(data, a)}</a>{joiners.separators[i]}</span>)}
+            {intro.named.map((a, i) => <span key={a.slug}><a className={UNDERLINED_LINK} href={agencyPagePath(a.slug)}>{areaIntroName(data, a)}</a>{joiners.separators[i]}</span>)}
             {joiners.tail}
           </p>
           {data.area.note && <p className="mt-3 max-w-2xl text-sm text-[var(--text-muted)]">{data.area.note}</p>}
@@ -118,7 +116,7 @@ export default function AreaPage({ data: dataProp }: { data?: AreaPageData }) {
           <section className="mt-14" aria-labelledby="agencies-heading">
             <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
               <SectionTitle id="agencies-heading">Agencies and weekday frequency</SectionTitle>
-              <ArrowLink href="/agencies">See all agencies</ArrowLink>
+              <ArrowLink href={AGENCY_INDEX_PATH}>See all agencies</ArrowLink>
             </div>
             <p className="mt-3 text-base font-bold">Weekday midday frequency, by route</p>
             <FrequencyBar counts={data.bands} mapHref={areaMapHref(data)} />

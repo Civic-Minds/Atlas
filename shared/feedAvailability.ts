@@ -15,9 +15,14 @@ export function isAgencyFeedExpired(agency: SupplementalFeedExpiryEntry & { time
   return isExpiredFeedExpiry(effectiveFeedExpiry(agency), agencyTodayYmd(agency, now));
 }
 
+/** Whether a value is a GTFS date (YYYYMMDD). */
+export function isYmd(value: unknown): value is string {
+  return typeof value === 'string' && /^\d{8}$/.test(value);
+}
+
 /** Whether a published feed has service through the requested date. */
 export function isCurrentFeedExpiry(expiry: string | null | undefined, today = todayUtcYmd()): boolean {
-  return typeof expiry === 'string' && /^\d{8}$/.test(expiry) && expiry >= today;
+  return isYmd(expiry) && expiry >= today;
 }
 
 /**
@@ -25,7 +30,7 @@ export function isCurrentFeedExpiry(expiry: string | null | undefined, today = t
  * calendar or no calendar end) is not expired, matching the frontend's isFeedExpired.
  */
 export function isExpiredFeedExpiry(expiry: string | null | undefined, today = todayUtcYmd()): boolean {
-  return typeof expiry === 'string' && /^\d{8}$/.test(expiry) && expiry < today;
+  return isYmd(expiry) && expiry < today;
 }
 
 /** UTC calendar date in the same YYYYMMDD form used by GTFS metadata. */
@@ -53,7 +58,7 @@ export interface SupplementalFeedExpiryEntry {
  */
 export function effectiveFeedExpiry(agency: SupplementalFeedExpiryEntry): string | null {
   const dated = [agency.lastFeedExpiry, ...(agency.lastSupplementalFeeds ?? []).map(feed => feed.feedExpiry)]
-    .filter((expiry): expiry is string => typeof expiry === 'string' && /^\d{8}$/.test(expiry))
+    .filter(isYmd)
     .sort();
   return dated[0] ?? agency.lastFeedExpiry ?? null;
 }

@@ -1,6 +1,6 @@
 import type { ShapeProperties, TimePeriod } from '../hooks/useIntervalStats';
 import { featurePassesHeadwayFilter, routeFilterHeadway } from '../../shared/routeHeadwayFilter';
-import { routeCardCoverageText, routeCardDisplayHeadway, routeCardDisplayLimited, routeCardPeriodShapeText } from './effectiveHeadway';
+import { routeCardDisplayHeadway, routeCardDisplayLimited, routeCardPeriodShapeText } from './effectiveHeadway';
 import { headwayAboutRange } from './headwayText';
 import { branchDisplayHourHeadway } from './routeFacts';
 import { headsignTrunkHeadway } from './routeCardTrunk';
@@ -92,7 +92,7 @@ export function routeCardRowValue(d: ShapeProperties, ctx: RouteCardRowContext):
     isLimited,
     rowNoRegular,
     edgeText,
-    headwayLabel: hoveredHour == null && variantH === undefined ? (edgeText ?? (directionFallback != null ? fallbackRange : routeCardCoverageText(d, period))) : undefined,
+    headwayLabel: hoveredHour == null && variantH === undefined ? (edgeText ?? fallbackRange) : undefined,
     colorHeadway: hoveredHour == null && !rowNoRegular ? branchFilterHeadway : undefined,
     trunkHeadway,
     dimmed,

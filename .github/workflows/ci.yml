@@ -14,6 +14,11 @@ jobs:
   ci:
     name: Type Check · Test · Build
     runs-on: ubuntu-latest
+    # Only for the automation pull requests (CIV-1029): a run dispatched on their branch reports its
+    # result as a commit status, the one write this needs.
+    permissions:
+      contents: read
+      statuses: write
 
     steps:
       - name: Checkout
@@ -59,3 +64,20 @@ jobs:
           VITE_DIAGNOSTICS_ENABLED: 'true'
           VITE_UNEVEN_BANNER_ENABLED: 'true'
         run: npm run build
+
+      # CIV-1029: pull requests opened with GITHUB_TOKEN (rebuild-release and refresh-feeds: agency
+      # pages, reprocess metadata) get no working pull_request run, and a dispatched run's check is not
+      # tied to the pull request, so the required check never lands and auto-merge stalls. A run
+      # dispatched on a branch reports its result as a commit status on that commit under the required
+      # check's name, which the pull request does read. Push and pull_request runs are unchanged.
+      - name: Report the result on the commit for a dispatched run
+        if: always() && github.event_name == 'workflow_dispatch'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          STATE: ${{ job.status == 'success' && 'success' || 'failure' }}
+        run: |
+          gh api "repos/${{ github.repository }}/statuses/${{ github.sha }}" \
+            -f state="$STATE" \
+            -f context="Type Check · Test · Build" \
+            -f description="Dispatched CI run ${{ github.run_id }}" \
+            -f target_url="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"

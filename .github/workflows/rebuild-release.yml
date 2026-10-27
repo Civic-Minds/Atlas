@@ -502,6 +502,23 @@ jobs:
           delete-branch: true
           labels: data-quality,pipeline
 
+      # As for agency pages below (CIV-1029): a pull request opened with GITHUB_TOKEN gets no working
+      # CI run of its own, so CI is dispatched on the branch (it reports the required check as a
+      # commit status) and auto-merge finishes it.
+      - name: Run CI on the reprocess metadata branch
+        if: always() && steps.reprocess-pr.outputs.pull-request-number != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh workflow run ci.yml --ref automation/reprocess-metadata
+
+      - name: Auto-merge reprocess metadata pull request once checks pass
+        if: always() && steps.reprocess-pr.outputs.pull-request-number != ''
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ steps.reprocess-pr.outputs.pull-request-number }}
+        run: gh pr merge "$PR_NUMBER" --auto --squash
+
       # Re-raise a real reprocess error now that its stamps are saved: nothing after this runs.
       # A run where every agency was written or refused is clean and goes on to the tiles.
       - name: Stop when the reprocess had a real error

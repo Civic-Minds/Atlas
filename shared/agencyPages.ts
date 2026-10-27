@@ -10,11 +10,14 @@ import { compareAgencyName, compareNullableAscending } from './sortCompare';
 import { areaRegionName, areaRegionTitle } from './areaRegions';
 import { BETA_BUILD } from './config';
 import { DESCRIPTION_MAX, DESCRIPTION_MIN, TITLE_MAX, firstThatFits, truncateAtWord } from './seoText';
-import { SITE_URL } from './seo';
+import { SITE_URL, seoTitlePrefix, type SeoMode } from './seo';
+import { AGENCY_PATH_PREFIX, agencyPagePath, areaPagePath } from './pagePaths';
+import { zoomForSpan } from './mapZoom';
+import { haversineM } from './shapeProjection';
 import { andOthers, joinList, plural } from './overflowText';
 
 export { headwayEvery };
-export const MAX_NEARBY = 8;
+const MAX_NEARBY = 8;
 
 export interface AgencyPageRoute {
   name: string;
@@ -147,13 +150,19 @@ export function agencyIntroSentence(
   return `${s}.`;
 }
 
+/** "TTC (Toronto)" as ["TTC", "Toronto"]; null for a name with no bracketed place at the end. */
+function splitBracketedPlace(name: string): [string, string] | null {
+  const m = /^(.*\S)\s+\(([^)]+)\)$/.exec(name);
+  return m ? [m[1], m[2]] : null;
+}
+
 /** The agency name without a trailing "(Place)" when the sentence names that same place: "UM Transit Services (Ann Arbor)" in Ann Arbor. */
 export function introName(name: string, place: string): string {
-  const m = /^(.*\S)\s+\(([^)]+)\)$/.exec(name);
+  const m = splitBracketedPlace(name);
   if (!m) return name;
-  const paren = m[2].toLowerCase();
+  const paren = m[1].toLowerCase();
   const where = place.toLowerCase();
-  return where.includes(paren) || paren.includes(where.replace(/^the /, '')) ? m[1] : name;
+  return where.includes(paren) || paren.includes(where.replace(/^the /, '')) ? m[0] : name;
 }
 
 /** Everything in the intro before the place: "Hamilton Street Railway operates 31 routes in ". */
@@ -195,11 +204,7 @@ export function agencyPageData(
 
 const MAX_AREA_LIST = 12;
 
-export const AGENCY_PATH_PREFIX = '/agency/';
-
-export function agencyPagePath(slug: string): string {
-  return `${AGENCY_PATH_PREFIX}${encodeURIComponent(slug)}`;
-}
+export { AGENCY_PATH_PREFIX, agencyPagePath };
 
 /** "TTC frequency: how often routes run | Transit Atlas", dropping the brand, then the phrase, for long names (60 characters at most). */
 export function agencyPageTitle(a: Pick<AgencyPageSummary, 'displayName'>): string {
@@ -218,7 +223,6 @@ export function agencyPageH1(a: Pick<AgencyPageSummary, 'name' | 'city'>): strin
   return introName(a.name, a.city);
 }
 
-export { modeLabel };
 
 /** Weekday-midday frequency bands, best first; the last one is routes with no regular midday service. */
 export const FREQUENCY_BANDS = [
@@ -293,15 +297,6 @@ export function modesText(byMode: ReadonlyArray<{ label: string; routes: number 
   return byMode.map(m => `${m.routes} ${m.label.toLowerCase()}`).join(separator);
 }
 
-/** What the release has for Saturday and Sunday: a short sub-label, or null when unknown. */
-export function weekendLabel(sat: boolean | undefined, sun: boolean | undefined): string | null {
-  if (sat === undefined && sun === undefined) return null;
-  if (sat && sun) return 'Runs Sat & Sun';
-  if (sat) return 'Runs Saturdays';
-  if (sun) return 'Runs Sundays';
-  return 'Weekdays only';
-}
-
 /** One sentence that stands alone: "210 weekday routes." */
 export function agencyLeadSentence(a: Pick<AgencyPageSummary, 'routes'>): string {
   const n = a.routes.length;
@@ -329,37 +324,9 @@ export function agencyPageDescription(a: AgencyPageSummary, intro?: string): str
   return tail ? `${base}${tail}` : base;
 }
 
-function hourLabel(h: number): string {
-  const hour = h % 24;
-  const suffix = hour < 12 ? 'am' : 'pm';
-  return `${hour % 12 === 0 ? 12 : hour % 12}${suffix}`;
-}
-
-export function agencySpanText(a: Pick<AgencyPageSummary, 'span'>): string | null {
-  if (!a.span) return null;
-  if (a.span.last + 1 - a.span.first >= 24) return 'Runs 24 hours';
-  return `${hourLabel(a.span.first)} to ${hourLabel(a.span.last + 1)}`;
-}
-
-/** Short form for a tile: "24 h" or "5am–2am", so it stays on one line. */
-export function agencySpanShort(a: Pick<AgencyPageSummary, 'span'>): string | null {
-  if (!a.span) return null;
-  if (a.span.last + 1 - a.span.first >= 24) return '24 h';
-  return `${hourLabel(a.span.first)}–${hourLabel(a.span.last + 1)}`;
-}
-
-/**
- * A name for a tight spot: the full name, or past `maxChars` a shorter one with the full name kept for the hover
- * title. Shared by the area table's names column and the agencies list's tagged rows, so both shorten the same way.
- */
-export function fitAgencyName(full: string, short: string, maxChars: number): { text: string; title?: string } {
-  return full.length > maxChars && short.length < full.length ? { text: short, title: full } : { text: full };
-}
-
 /** The agency's name without its bracketed city: "TTC (Toronto)" becomes "TTC". */
 export function agencyShortLabel(a: Pick<AgencyPageSummary, 'displayName'>): string {
-  const m = /^(.*\S)\s+\([^)]+\)$/.exec(a.displayName);
-  return m ? m[1] : a.displayName;
+  return splitBracketedPlace(a.displayName)?.[0] ?? a.displayName;
 }
 
 /** The map link for the big button: the agency's area, with only that agency on. */
@@ -371,7 +338,7 @@ export function agencyMapHref(a: AgencyPageIdentity): string {
     params.set('lon', lon.toFixed(4));
     if (a.bbox) {
       const span = Math.max(a.bbox[2] - a.bbox[0], (a.bbox[3] - a.bbox[1]) * Math.cos((lat * Math.PI) / 180));
-      params.set('z', String(span > 3 ? 7 : span > 1.5 ? 8 : span > 0.7 ? 9 : span > 0.35 ? 10 : 11));
+      params.set('z', String(zoomForSpan(span)));
     } else {
       params.set('z', '10');
     }
@@ -379,11 +346,15 @@ export function agencyMapHref(a: AgencyPageIdentity): string {
   return `/?${params.toString()}`;
 }
 
-/** The dates, each named for what it is: the agency's schedule, and the Atlas data release it came from. */
+/** The year, month and day of an ISO or yyyymmdd date (match groups 1 to 3), or null. */
+function dateParts(value: string | null | undefined): RegExpExecArray | null {
+  return value ? /^(\d{4})-?(\d{2})-?(\d{2})/.exec(value) : null;
+}
+
 /** True when a yyyymmdd or ISO date is before the release's date (the day the data was last updated). */
 function endedBefore(through: string | null | undefined, releaseDate: string | null): boolean {
-  const t = through ? /^(\d{4})-?(\d{2})-?(\d{2})/.exec(through) : null;
-  const r = releaseDate ? /^(\d{4})-?(\d{2})-?(\d{2})/.exec(releaseDate) : null;
+  const t = dateParts(through);
+  const r = dateParts(releaseDate);
   return !!t && !!r && `${t[1]}${t[2]}${t[3]}` < `${r[1]}${r[2]}${r[3]}`;
 }
 
@@ -406,15 +377,16 @@ export function agencyDatesText(a: Pick<AgencyPageSummary, 'lastRefreshedAt' | '
 
 /** "Oct 12, 2026" from an ISO or yyyymmdd date; null when unusable. */
 export function formatDataDate(value: string | null | undefined): string | null {
-  const m = value ? /^(\d{4})-?(\d{2})-?(\d{2})/.exec(value) : null;
+  const m = dateParts(value);
   if (!m) return null;
   const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   const month = months[Number(m[2]) - 1];
   return month ? `${month} ${Number(m[3])}, ${m[1]}` : null;
 }
 
-function formatIso(value: string | null | undefined): string | null {
-  const m = value ? /^(\d{4})-?(\d{2})-?(\d{2})/.exec(value) : null;
+/** "2026-10-12" from an ISO or yyyymmdd date; null when unusable. */
+export function formatIso(value: string | null | undefined): string | null {
+  const m = dateParts(value);
   return m ? `${m[1]}-${m[2]}-${m[3]}` : null;
 }
 
@@ -429,18 +401,14 @@ export function agencyBreadcrumbs(a: AgencyPageSummary, area?: { slug: string; n
   const crumbs: Crumb[] = [{ name: 'Transit Atlas', href: '/' }];
   if (a.country) crumbs.push({ name: a.country });
   if (a.region) crumbs.push({ name: a.region });
-  if (area) crumbs.push({ name: areaRegionTitle(area), href: `/area/${area.slug}` });
+  if (area) crumbs.push({ name: areaRegionTitle(area), href: areaPagePath(area.slug) });
   else if (a.city && a.city !== a.region && a.city !== a.displayName) crumbs.push({ name: a.city });
   crumbs.push({ name: a.displayName });
   return crumbs;
 }
 
 function distanceKm(a: [number, number], b: [number, number]): number {
-  const rad = Math.PI / 180;
-  const dLat = (b[0] - a[0]) * rad;
-  const dLon = (b[1] - a[1]) * rad;
-  const h = Math.sin(dLat / 2) ** 2 + Math.cos(a[0] * rad) * Math.cos(b[0] * rad) * Math.sin(dLon / 2) ** 2;
-  return 6371 * 2 * Math.asin(Math.sqrt(h));
+  return haversineM(a[0], a[1], b[0], b[1]) / 1000;
 }
 
 /** Other agencies with a page in the same region, nearest first. */
@@ -457,10 +425,10 @@ export function nearbyAgencies(a: AgencyPageSummary, all: readonly AgencyPageSum
 /** Everything the head needs for an agency page, in the same shape as the other routes. */
 export function resolveAgencySeo(
   a: AgencyPageSummary,
-  ctx: { mode: 'public' | 'preview' | 'beta' | 'dev'; origin?: string; intro?: string },
+  ctx: { mode: SeoMode; origin?: string; intro?: string },
 ): { title: string; description: string; canonicalUrl: string; noindex: boolean; matchedPath: string } {
   const origin = (ctx.origin ?? SITE_URL).replace(/\/$/, '');
-  const prefix = ctx.mode === 'preview' ? '[Preview] ' : ctx.mode === 'public' ? '' : '[Beta] ';
+  const prefix = seoTitlePrefix(ctx.mode);
   return {
     title: `${prefix}${agencyPageTitle(a)}`,
     description: agencyPageDescription(a, ctx.intro),
@@ -511,8 +479,8 @@ export function agencyPageJsonLd(a: AgencyPageSummary, canonicalUrl: string, ori
 
 /** Drops a bracketed city the name already holds: "Halifax Transit (Halifax)" becomes "Halifax Transit". */
 export function trimRedundantCity(displayName: string): string {
-  const m = /^(.*\S)\s+\(([^)]+)\)$/.exec(displayName);
+  const m = splitBracketedPlace(displayName);
   if (!m) return displayName;
-  const [outer, inner] = [m[1].toLowerCase(), m[2].toLowerCase()];
-  return outer.includes(inner) || inner.includes(outer) ? m[1] : displayName;
+  const [outer, inner] = [m[0].toLowerCase(), m[1].toLowerCase()];
+  return outer.includes(inner) || inner.includes(outer) ? m[0] : displayName;
 }

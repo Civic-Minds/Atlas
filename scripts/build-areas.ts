@@ -77,17 +77,31 @@ function writeAreaIndex(areas: AreaConfig[]) {
   writeFileSync('shared/data/area-index.json', JSON.stringify(index) + '\n');
 }
 
+/** Slugs of the agencies an area page counts (regular midday service), from the committed summaries; none when there are none. */
+function pagedAgencySlugs(): Set<string> {
+  if (!existsSync('shared/data/agency-pages.json')) return new Set();
+  return new Set((JSON.parse(readFileSync('shared/data/agency-pages.json', 'utf8')).agencies as Array<{ slug: string; routes: Array<{ midday: number | null }> }>)
+    .filter(hasMiddayService).map(a => a.slug));
+}
+
+/**
+ * Sets largeMetro and page: a page for every metro (MSA or CMA) with 2+ agencies that have pages, or one such agency in a
+ * large metro (large-metros.json). Micropolitan areas and census agglomerations never get one.
+ */
+function scoreArea(a: AreaConfig, summaries: ReadonlySet<string>): void {
+  a.largeMetro = isLargeMetro(a);
+  const withPages = a.agencies.filter(s => summaries.has(s)).length;
+  a.page = (a.type === 'MSA' || a.type === 'CMA') && (withPages >= 2 || (withPages === 1 && a.largeMetro));
+}
+
 /** --rescore: recompute largeMetro and page from the committed area files and agency summaries (no network). */
 function rescore() {
-  const summaries = new Set((JSON.parse(readFileSync('shared/data/agency-pages.json', 'utf8')).agencies as Array<{ slug: string; routes: Array<{ midday: number | null }> }>)
-    .filter(hasMiddayService).map(a => a.slug));
+  const summaries = pagedAgencySlugs();
   let pages = 0;
   const all: AreaConfig[] = [];
   for (const f of readdirSync('config/areas').filter(n => n.endsWith('.json') && !n.startsWith('_'))) {
     const a = JSON.parse(readFileSync(`config/areas/${f}`, 'utf8')) as AreaConfig;
-    a.largeMetro = isLargeMetro(a);
-    const withPages = a.agencies.filter(s => summaries.has(s)).length;
-    a.page = (a.type === 'MSA' || a.type === 'CMA') && (withPages >= 2 || (withPages === 1 && a.largeMetro));
+    scoreArea(a, summaries);
     if (a.page) pages++;
     all.push(a);
     writeFileSync(`config/areas/${f}`, JSON.stringify(a, null, 2) + '\n');
@@ -100,10 +114,7 @@ function rescore() {
 async function main() {
   if (process.argv.includes('--rescore')) return rescore();
   const catalog = JSON.parse(readFileSync('public/data/catalog-public.json', 'utf8')) as Catalog;
-  const summaries = existsSync('shared/data/agency-pages.json')
-    ? new Set((JSON.parse(readFileSync('shared/data/agency-pages.json', 'utf8')).agencies as Array<{ slug: string; routes: Array<{ midday: number | null }> }>)
-      .filter(hasMiddayService).map(a => a.slug))
-    : new Set<string>();
+  const summaries = pagedAgencySlugs();
 
   const placed = new Map<string, Hit>();
   const unassigned: Array<{ slug: string; reason: string }> = [];
@@ -180,13 +191,7 @@ async function main() {
   }
   if (new Set(areas.map(a => a.slug)).size !== areas.length) throw new Error('Duplicate area slugs');
 
-  // A page for every metro (MSA or CMA) with 2+ agencies that have pages, or one such agency in a
-  // large metro (LARGE_METROS). Micropolitan areas and census agglomerations never get one.
-  for (const a of areas) {
-    a.largeMetro = isLargeMetro(a);
-    const withPages = a.agencies.filter(s => summaries.has(s)).length;
-    a.page = (a.type === 'MSA' || a.type === 'CMA') && (withPages >= 2 || (withPages === 1 && a.largeMetro));
-  }
+  for (const a of areas) scoreArea(a, summaries);
 
   mkdirSync('config/areas', { recursive: true });
   for (const f of readdirSync('config/areas')) rmSync(`config/areas/${f}`);
