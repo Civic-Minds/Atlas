@@ -217,9 +217,50 @@ export function directionStretches(
     const onePeak = peakWindows.some(w => starts.every(t => t >= w.start && t < w.end));
     return !onePeak || p.trips.length >= MIN_PEAK_BLOCK_DEPARTURES;
   });
+  // Two stops are one terminal when they are the same stop or within SAME_TERMINAL_METERS.
+  const sameTerminal = (a: string, b: string) => {
+    if (a === b) return true;
+    const p = stopCoord(a), q = stopCoord(b);
+    return p != null && q != null && km(p, q) * 1000 <= SAME_TERMINAL_METERS;
+  };
   const steadyIn = (periods: readonly PeriodKey[]) => eligible.filter(p => runsSteadily(p.trips, p.stops[Math.floor(p.stops.length / 2)], periods));
   let regular = steadyIn(DAYTIME_PERIODS);
   if (regular.length === 0) regular = steadyIn(ALL_PERIODS);
+  // CIV-786: a pattern that takes the same trip in turn with a regular sibling is regular too. HSR 16 on
+  // weekends runs via Wilson every 30 from 7:19 to 11:49, then via Fiddler's Green every 30 from 12:19:
+  // the morning pattern starts inside the AM peak and stops before midday ends, so it runs steadily
+  // through no period of its own, and the main stretch became all of Fiddler's Green, whose middle
+  // stop has no trips before noon (no midday value). Promoted only with #1072's handover evidence, at
+  // the stops the two share: same two terminals (the same trip by another road), every trip of one
+  // before every trip of the other, the 3 departures a value needs on each side, and the two
+  // spacings and the gap at the handover passing the settled steadiness test against each other.
+  if (regular.length > 0) {
+    const sameEnds = (a: readonly string[], b: readonly string[]) => sameTerminal(a[0], b[0]) && sameTerminal(a[a.length - 1], b[b.length - 1]);
+    const timesAtStop = (trips: readonly DirectionTrip[], stop: string) => [...new Set(trips
+      .map(trip => trip.visits.find(v => v.stopId === stop))
+      .filter((v): v is NonNullable<typeof v> => v != null && v.counted !== false)
+      .map(v => v.minutes))].sort((x, y) => x - y);
+    const takesTurnsWith = (p: (typeof all)[number], q: (typeof all)[number]): boolean => {
+      if (p.stops.length < 2 || q.stops.length < 2 || !sameEnds(p.stops, q.stops)) return false;
+      const pStops = new Set(p.stops);
+      const shared = q.stops.filter(stop => pStops.has(stop));
+      if (shared.length === 0) return false;
+      const ref = shared[Math.floor(shared.length / 2)];
+      const a = timesAtStop(p.trips, ref), b = timesAtStop(q.trips, ref);
+      if (a.length < MIN_SCHEDULE_DEPARTURES || b.length < MIN_SCHEDULE_DEPARTURES) return false;
+      const [first, second] = a[a.length - 1] < b[0] ? [a, b] : b[b.length - 1] < a[0] ? [b, a] : [null, null];
+      if (!first || !second) return false;
+      const everyA = medianHeadwayInWindow(a, a[0], a[a.length - 1], MIN_SCHEDULE_DEPARTURES, true);
+      const everyB = medianHeadwayInWindow(b, b[0], b[b.length - 1], MIN_SCHEDULE_DEPARTURES, true);
+      if (everyA == null || everyB == null || everyA <= 0 || everyB <= 0) return false;
+      const near = (x: number, y: number) => isSustainedHeadway([x], y) && isSustainedHeadway([y], x);
+      const gap = second[0] - first[first.length - 1];
+      return near(everyA, everyB) && near(gap, everyA) && near(gap, everyB);
+    };
+    const regularNow = new Set(regular);
+    const turnTakers = eligible.filter(p => !regularNow.has(p) && regular.some(q => takesTurnsWith(p, q)));
+    if (turnTakers.length > 0) regular = [...regular, ...turnTakers];
+  }
   // A short turn: a regular pattern whose stops all lie on a longer regular pattern shapes the
   // main stretch only when it carries a real share of the direction's trips (the spec's 20%).
   // Below it, it is a variant whose trips count where they serve: CTA 93's 7-trip Logan Square -
@@ -358,11 +399,6 @@ export function directionStretches(
     });
   };
   const regularIds = new Set(regular.map(p => p.stops.join('>')));
-  const sameTerminal = (a: string, b: string) => {
-    if (a === b) return true;
-    const p = stopCoord(a), q = stopCoord(b);
-    return p != null && q != null && km(p, q) * 1000 <= SAME_TERMINAL_METERS;
-  };
   const tailHandoverTimes = (tailIndex: number) => {
     const tail = tails[tailIndex];
     const on = new Set<number>();
