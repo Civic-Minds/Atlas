@@ -58,6 +58,8 @@ import { bumpPublicDataVersion } from './dataVersion.js';
 import { runWithConcurrency } from './utils.js';
 import {
   feedDateRefusal,
+  matchesExpiredFeedPin,
+  type ExpiredFeedPin,
   includeHiddenArgError,
   isReprocessTarget,
   parseSkipSlugs,
@@ -112,6 +114,8 @@ interface Agency {
   nextServiceDatesFeedUrls?: string[];
   nextServiceDatesSkipWeekendEvents?: boolean;
   fare?: number;
+  feedUrl?: string | null;
+  expiredFeedPin?: ExpiredFeedPin;
   lastFeedExpiry?: string | null;
   lastPeekedExpiry?: string | null;
   lastRawArchiveKey?: string | null;
@@ -216,20 +220,35 @@ async function readSupplementalFeed(agency: Agency, url: string): Promise<Buffer
   return archived ?? downloadFeedBuffer(url);
 }
 
+/**
+ * The agency's last official feed, read from its feedUrl, when config approves rebuilding from it
+ * after it ended (expiredFeedPin, #1036) and the URL still serves exactly that feed. Null otherwise,
+ * and the archive is read as usual.
+ */
+async function pinnedExpiredFeed(agency: Agency): Promise<Buffer | null> {
+  if (!agency.expiredFeedPin || !agency.feedUrl) return null;
+  const buf = await downloadFeedBuffer(agency.feedUrl).catch(() => null);
+  if (!buf) return null;
+  const { feedVersion, feedExpiry: calendarEnd, feedInfoEnd, calendarOnlyEnd } = await peekFeedDates(buf, agency.excludeRouteShortNames);
+  const feedExpiry = recordedFeedExpiry(feedInfoEnd, calendarEnd, todayYmd, calendarOnlyEnd);
+  return matchesExpiredFeedPin(agency.expiredFeedPin, { feedVersion, feedExpiry }) ? buf : null;
+}
+
 async function processAgency(agency: Agency): Promise<ReportRow> {
   const row: ReportRow = { slug: agency.slug, status: 'failed', liveFeedExpiry: agency.lastFeedExpiry ?? null };
   try {
     const localPath = localArchivePath(agency.slug);
-    const selected = localPath ? null : await selectArchiveKey(agency);
-    if (!selected && !localPath) {
+    const pinned = localPath ? null : await pinnedExpiredFeed(agency);
+    const selected = localPath || pinned ? null : await selectArchiveKey(agency);
+    if (!selected && !localPath && !pinned) {
       return { ...row, status: 'skipped', reason: 'no archived GTFS zip or local recovery input; live data left as is' };
     }
     const sourceKey = selected?.key ?? null;
-    row.sourceKey = sourceKey ?? `local:${localPath}`;
-    row.selection = selected?.reason ?? 'local recovery input';
+    row.sourceKey = sourceKey ?? (pinned ? `pinned:${agency.feedUrl}` : `local:${localPath}`);
+    row.selection = selected?.reason ?? (pinned ? `expiredFeedPin ${agency.expiredFeedPin!.feedVersion} (#1036)` : 'local recovery input');
     const body = localPath
       ? readFileSync(localPath)
-      : await r2GetArchiveBuffer(sourceKey!);
+      : pinned ?? await r2GetArchiveBuffer(sourceKey!);
     if (!body) throw new Error(`could not read ${sourceKey ?? localPath}`);
 
     console.log(`\n${agency.slug}: ${row.sourceKey} (${row.selection})`);
@@ -238,7 +257,7 @@ async function processAgency(agency: Agency): Promise<ReportRow> {
     const { feedStart, feedExpiry: calendarEnd, feedInfoEnd, calendarOnlyEnd } = await peekFeedDates(body, agency.excludeRouteShortNames);
     const feedExpiry = recordedFeedExpiry(feedInfoEnd, calendarEnd, todayYmd, calendarOnlyEnd);
     row.feedExpiry = feedExpiry;
-    const dateRefusal = feedDateRefusal(feedExpiry, agency.lastFeedExpiry, agencyTodayYmd(agency));
+    const dateRefusal = feedDateRefusal(feedExpiry, agency.lastFeedExpiry, agencyTodayYmd(agency), pinned ? agency.expiredFeedPin!.feedExpiry : null);
     if (dateRefusal) throw new Refusal(dateRefusal);
 
     const supplementalFeeds = await loadSupplementalFeeds(agency, url => readSupplementalFeed(agency, url));

@@ -7,6 +7,7 @@ import {
   includeHiddenArgError,
   isReprocessTarget,
   feedDateRefusal,
+  matchesExpiredFeedPin,
   outputDropRefusal,
   peekFeedDates,
   reprocessCountryLaunchSkip,
@@ -193,6 +194,28 @@ describe('feedDateRefusal', () => {
     expect(feedDateRefusal(null, '20261128', '20261010')).toMatch(/no service dates/);
     expect(feedDateRefusal('20261001', null, '20261010')).toMatch(/before today/);
     expect(feedDateRefusal('20261101', '20261128', '20261010')).toMatch(/older than the live data/);
+  });
+});
+
+describe('expiredFeedPin (#1036, Rockford)', () => {
+  const pin = { feedVersion: 'S1000085', feedExpiry: '20261010' };
+
+  it('matches only the exact approved feed', () => {
+    expect(matchesExpiredFeedPin(pin, { feedVersion: 'S1000085', feedExpiry: '20261010' })).toBe(true);
+    // A newer feed at the same URL, or the 2023 Mobility Database copy, is not the approved one.
+    expect(matchesExpiredFeedPin(pin, { feedVersion: 'S1000090', feedExpiry: '20270110' })).toBe(false);
+    expect(matchesExpiredFeedPin(pin, { feedVersion: 'S1000085', feedExpiry: '20261011' })).toBe(false);
+    expect(matchesExpiredFeedPin(pin, { feedVersion: null, feedExpiry: '20240611' })).toBe(false);
+    expect(matchesExpiredFeedPin(undefined, { feedVersion: 'S1000085', feedExpiry: '20261010' })).toBe(false);
+  });
+
+  it('lets the pinned feed past the ended check only', () => {
+    expect(feedDateRefusal('20261010', '20261010', '20261027', '20261010')).toBeNull();
+    // Another ended feed, or another agency with no pin, is still refused.
+    expect(feedDateRefusal('20240611', '20261010', '20261027', '20261010')).toMatch(/before today/);
+    expect(feedDateRefusal('20261010', '20261010', '20261027')).toMatch(/before today/);
+    // The older-than-live check still holds for the pinned feed.
+    expect(feedDateRefusal('20261010', '20261128', '20261027', '20261010')).toMatch(/older than the live data/);
   });
 });
 

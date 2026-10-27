@@ -19143,6 +19143,10 @@
       "feedUrl": "https://rmtd.org/rmtdgtfs/GTFS_FILES.zip",
       "region": "Illinois",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2019/latest.zip",
+      "expiredFeedPin": {
+        "feedVersion": "S1000085",
+        "feedExpiry": "20261010"
+      },
       "lastFeedExpiry": "20261010",
       "lastFeedVersion": "S1000085",
       "lastRefreshedAt": "2026-08-07",
