@@ -385,16 +385,16 @@ describe('pickServiceWeek: issues in the plan (section 4)', () => {
     expect(week.services.Monday).toEqual(['WK']);
   });
 
-  it('CIV-469 STM: known limit, an anchor a week before the feed ends in the holidays reads a holiday Monday', () => {
-    // The window is clipped at the feed end (Jan 3), so it holds one regular Monday and two
-    // holiday ones: the holiday wins Monday's vote. Recorded so the stage-4 shadow report and the
-    // manager see it; the plan's "fixes the live map too" needs more than the 8-week window.
-    const week = pick({ ...stmDatesOnly(), anchor: '20261215' });
+  it('CIV-469 STM: an anchor a week before the feed ends in the holidays still reads the regular week', () => {
+    // The feed ends Jan 3, inside the anchor's 8 weeks, so the window starts earlier (Nov 9) and
+    // still holds 8 weeks: six regular Mondays outvote the two holiday ones.
+    const table = buildServiceDayTable({ ...stmDatesOnly(), anchor: '20261215' });
+    expect(table.source).toBe('anchor-feed-end');
+    expect(table.window).toEqual({ start: '20261109', end: '20270103' });
+    const week = pickServiceWeek(table);
     expect(week.weekStart).toBe('20261214');
-    expect(week.dates.Monday).toBe('20261221');
-    expect(week.services.Monday).toEqual(['HOL']);
-    expect(week.services.Tuesday).toEqual(['WK']);
-    expect(week.substituted).toEqual(['Monday']);
+    for (const day of ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'] as const) expect(week.services[day]).toEqual(['WK']);
+    expect(week.substituted).toEqual([]);
   });
 
   it('part-week route (Tue+Wed) stays part-week; every weekday reads its own date', () => {
@@ -534,9 +534,9 @@ describe('pickServiceWeek: inputs from the existing tests', () => {
 
   it('alternating weeks with a holiday Monday (transit-calendar #658): known limit, Monday comes from another kind of week', () => {
     // The exact input of "moves the whole week so every day describes the same week": 'alt' runs
-    // in odd weeks, and the regular service is removed on Mon Oct 12. Mondays tie 3:3 between odd
-    // and even weeks and the nearest is even (Oct 19); Tuesday-Friday tie 4:4 and the nearest is
-    // the anchor's odd week. The per-day vote (rule 2) then pairs an even Monday with odd
+    // in odd weeks, and the regular service is removed on Mon Oct 12. The feed ends Nov 27, so the
+    // window starts Oct 3: even Mondays win 4:3 (Oct 12 is the holiday), while Tuesday-Friday tie
+    // 4:4 and the nearest is the anchor's odd week. The per-day vote (rule 2) then pairs an even Monday with odd
     // Tuesday-Friday, which the old whole-week move prevented. Recorded as a limit, not a target.
     const calendar = [cal('reg', 'mo,tu,we,th,fr', '20260928', '20261127'), cal('alt', 'mo,tu,we,th,fr', '20260928', '20261127')];
     const even = new Set([...dates('20261005', '20261009'), ...dates('20261019', '20261023'), ...dates('20261102', '20261106'), ...dates('20261116', '20261120')]);
@@ -569,11 +569,11 @@ describe('pickServiceWeek: inputs from the existing tests', () => {
     expect(routesOn(feed.trips, week.services.Monday).size).toBe(45);
   });
 
-  it('winter holidays (historyRefRepick winterFeed): known limit near the feed end, a tie goes to New Year\'s Day', () => {
-    // Anchor Dec 26 2018, feed ends Fri Jan 18: the window holds Tuesdays Dec 25 and Jan 1
-    // (holiday) and Jan 8 and 15 (regular). The 2:2 tie goes to the date nearest the anchor
-    // (Dec 25), so Tuesday reads the holiday timetable. The old re-pick read Dec 13 through its
-    // fixed Dec 20 - Jan 6 window (plan question 3). Recorded as a limit, not a target.
+  it('winter holidays (historyRefRepick winterFeed): the nearest week with no holiday is read', () => {
+    // Anchor Dec 26 2018, feed ends Fri Jan 18: the window starts earlier (Nov 24) so it holds 8
+    // weeks, and the holiday Tuesdays (Dec 25, Jan 1) lose 2:6. The weeks of Dec 24 and Dec 31
+    // hold holidays; Dec 17 is the nearest clean week. The old re-pick read Dec 13 through its
+    // fixed Dec 20 - Jan 6 window (plan question 3).
     const hol = ['20181224', '20181225', '20181226', '20190101'];
     const routes = Array.from({ length: 12 }, (_, i) => `R${i + 1}`);
     const tripsFor = (service: string, perRoute: number) => routes.flatMap(r => tripsOf(service, r, perRoute));
@@ -583,8 +583,8 @@ describe('pickServiceWeek: inputs from the existing tests', () => {
       trips: [...tripsFor('MAIN', 20), ...tripsFor('SAT', 12), ...tripsFor('SUN', 8), ...tripsFor('HOL', 6)],
       anchor: '20181226',
     });
-    expect(week.weekStart).toBe('20181231');
-    expect(week.services.Tuesday).toEqual(['HOL']);
-    expect(week.services.Monday).toEqual(['MAIN']);
+    expect(week.weekStart).toBe('20181217');
+    for (const day of ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'] as const) expect(week.services[day]).toEqual(['MAIN']);
+    expect(skippedDates(week)).toEqual(['20181224', '20181225', '20181226', '20190101']);
   });
 });

@@ -76,11 +76,13 @@ export interface ServiceDayTable {
   /** Dates the table covers (null: no service anywhere). */
   window: { start: string; end: string } | null;
   /**
-   * How the window was placed: around the anchor; the feed's last 8 weeks with service (nothing
-   * runs from the anchor on, an archived zip); the first 8 weeks of service after a gap (nothing
-   * runs in the 8 weeks from the anchor, but service resumes later); or empty.
+   * How the window was placed: around the anchor; around the anchor but starting earlier because
+   * the feed ends inside the 8 weeks (so it still holds up to 8 weeks of service); the feed's last
+   * 8 weeks with service (nothing runs from the anchor on, an archived zip); the first 8 weeks of
+   * service after a gap (nothing runs in the 8 weeks from the anchor, but service resumes later);
+   * or empty.
    */
-  source: 'anchor' | 'last-weeks' | 'first-weeks' | 'empty';
+  source: 'anchor' | 'anchor-feed-end' | 'last-weeks' | 'first-weeks' | 'empty';
   /** One row per date in the window, in date order. */
   days: ServiceDay[];
 }
@@ -181,9 +183,18 @@ export function buildServiceDayTable(input: ServiceDayTableInput): ServiceDayTab
   const aheadEnd = anchorDay + daysAfter;
   const firstAhead = firstServiceFrom(Math.max(anchorDay, lo));
   if (firstAhead != null && firstAhead <= aheadEnd) {
-    start = Math.max(lo, anchorDay - daysBefore);
     end = Math.min(hi, aheadEnd);
-    source = 'anchor';
+    const last = hi < aheadEnd ? lastServiceBefore(hi) : null;
+    if (last != null && last - daysAfter < anchorDay - daysBefore) {
+      // The feed ends inside the 8 weeks: start earlier so the vote still covers up to 8 weeks of
+      // service, as for an archived zip. Otherwise a holiday fortnight at the feed's end outvotes
+      // the one or two regular weeks left (CIV-469; New Year's Day in History's winter feed).
+      start = Math.max(lo, last - daysAfter);
+      source = 'anchor-feed-end';
+    } else {
+      start = Math.max(lo, anchorDay - daysBefore);
+      source = 'anchor';
+    }
   } else if (firstAhead != null) {
     // Nothing runs in the 8 weeks from the anchor but service resumes later (a seasonal pause):
     // the first 8 weeks of service from then.
