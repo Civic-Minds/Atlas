@@ -2,6 +2,7 @@ import { FEATURES } from '../../shared/config';
 import { BASEMAP_ATTRIBUTION } from '../lib/basemap';
 import { withShareTags, SHARE_UTM_MEDIUM_IMAGE } from '../lib/analytics';
 import { slugifyForFilename } from './mapExportDetails';
+import { MAP_EXPORT_BLOCKED_MESSAGES } from '../content/noticeCopy';
 
 export const MAP_EXPORT_SIZES = [
   { id: 'social', label: 'Social', width: 1200, height: 630 },
@@ -507,7 +508,7 @@ export async function createMapExport({ source, lightMode, size = DEFAULT_MAP_EX
   return canvasToBlob(canvas);
 }
 
-export type MapExportBlockReason = 'timeout' | 'no-routes' | 'failed-networks';
+export type MapExportBlockReason = keyof typeof MAP_EXPORT_BLOCKED_MESSAGES;
 
 /** Raised when exporting now would save an image that is missing route data. */
 export class MapExportBlockedError extends Error {
@@ -517,11 +518,7 @@ export class MapExportBlockedError extends Error {
   }
 }
 
-export const MAP_EXPORT_BLOCKED_MESSAGES: Record<MapExportBlockReason, string> = {
-  timeout: 'The map is still loading, so the image would be missing routes. Try again in a moment.',
-  'no-routes': 'No routes are showing in this view yet. Move the map to an area with service and try again.',
-  'failed-networks': 'Some transit networks did not load, so the image would be missing routes. Reload the page and try again.',
-};
+export { MAP_EXPORT_BLOCKED_MESSAGES };
 
 /** The parts of a MapLibre map the export readiness check needs. */
 export interface MapExportReadinessTarget {

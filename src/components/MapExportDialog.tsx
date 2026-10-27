@@ -4,6 +4,7 @@ import { FLOATING_CARD, Z_MODAL_BG, Z_MODAL_TOP, CARD_NOTE } from '../styles';
 import { canShareMapExport, createMapExport, DEFAULT_MAP_EXPORT_SIZE, downloadMapExport, getMapExportLayout, MAP_EXPORT_SIZES, MapExportBlockedError, shareMapExport, type MapExportSize, type MapExportSizeId } from '../utils/mapExport';
 import type { MapExportBox, MapExportDetails } from '../utils/mapExportDetails';
 import { trackEvent } from '../lib/analytics';
+import { MAP_EXPORT_NOT_READY, MAP_EXPORT_WAITING } from '../content/noticeCopy';
 
 interface Props {
   open: boolean;
@@ -95,7 +96,7 @@ export default function MapExportDialog({ open, prepareSource, releaseSource, de
       onClose();
     } catch (shareError) {
       if (shareError instanceof DOMException && shareError.name === 'AbortError') return;
-      setError(shareError instanceof MapExportBlockedError ? shareError.message : 'The map was not ready. Try again in a moment.');
+      setError(shareError instanceof MapExportBlockedError ? shareError.message : MAP_EXPORT_NOT_READY);
     } finally {
       releaseSource?.();
       setExportingMode(null);
@@ -124,7 +125,7 @@ export default function MapExportDialog({ open, prepareSource, releaseSource, de
           </button>
         </div>
 
-        {waitingForMap && <p role="status" className={`mt-2 ${CARD_NOTE}`}>Map still loading. The image will save once every route is drawn.</p>}
+        {waitingForMap && <p role="status" className={`mt-2 ${CARD_NOTE}`}>{MAP_EXPORT_WAITING}</p>}
         {error && <p role="alert" className="mt-2 text-xs font-bold text-[var(--status-negative-text)]">{error}</p>}
 
         <div className="mt-5 grid grid-cols-3 gap-1 rounded-xl border border-[var(--border-primary)] p-1">

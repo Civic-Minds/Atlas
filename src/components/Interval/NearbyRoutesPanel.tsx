@@ -9,7 +9,7 @@ import Panel, { PanelBody, PanelTitleBar } from '../ui/Panel';
 import ListRow from '../ui/ListRow';
 import { ROUTE_ROW_NAME } from '../RouteRowName';
 import PanelEmpty from '../ui/PanelEmpty';
-import { loadingText } from '../../content/stateCopy';
+import { loadingText, NO_ROUTES_NEARBY } from '../../content/noticeCopy';
 
 interface NearbyRoutesPanelProps {
   routes: NearbyRoute[];
@@ -46,7 +46,7 @@ export const NearbyRoutesPanel = forwardRef<HTMLDivElement, NearbyRoutesPanelPro
       {loading ? (
         <PanelEmpty kind="loading">{loadingText('nearby routes')}</PanelEmpty>
       ) : routes.length === 0 ? (
-        <PanelEmpty>No routes within 500 m</PanelEmpty>
+        <PanelEmpty>{NO_ROUTES_NEARBY}</PanelEmpty>
       ) : (
         <PanelBody>
           {routes.map(r => (

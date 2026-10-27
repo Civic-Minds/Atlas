@@ -11,7 +11,7 @@ import { GTFS_FLEX_METADATA } from './metroMicroFlexMetadata';
 import { C_TRAN_CURRENT_FLEX_STOPS } from './ctranCurrentFlexStops';
 import { ALL_POINTS_DIAL_A_RIDE_FEATURES, ASPEN_DOWNTOWNER_FEATURES, BAY_TRANSIT_EXPRESS_FEATURES, CAT_DIAL_A_RIDE_FEATURES, DURANGO_MICROTRANSIT_FEATURES, GLTC_FLEX_FEATURES, ISLAND_TRANSIT_GO_STOPS, SAM_RIDES_FEATURES, SNOQUALMIE_DOOR_TO_DOOR_FEATURES, TCTD_DIAL_A_RIDE_FEATURES, VALLEY_METRO_METROFLX_FEATURES } from './flexBatchData';
 import type { OnDemandAvailability, OnDemandPickup, OnDemandZoneDetails } from '../../shared/onDemandAvailability';
-import { BETA_ROLLOUT_NOTICE } from '../../shared/rolloutNotice';
+import { BETA_SERVICE_ROLLOUT_NOTICE } from '../content/noticeCopy';
 import { CYRIDE_MOONLIGHT_EXPRESS_FEATURE, RFTA_CARBONDALE_DOWNTOWNER_FEATURE, UTA_NORTH_UTAH_COUNTY_FEATURE } from './onDemandOfficialLayers';
 import { ON_DEMAND_PUBLIC } from '../../shared/config';
 
@@ -29,7 +29,7 @@ const RTD_FLEXRIDE_FEATURES = loadFlexZones('rtd-denver');
 /** Standalone on-demand agencies stay out of the public catalog until the launch flag flips (CIV-23). */
 const ON_DEMAND_ROLLOUT: { hiddenInProduction?: true; betaOnly?: true; rolloutNotice?: string } = ON_DEMAND_PUBLIC
   ? {}
-  : { hiddenInProduction: true, betaOnly: true, rolloutNotice: BETA_ROLLOUT_NOTICE };
+  : { hiddenInProduction: true, betaOnly: true, rolloutNotice: BETA_SERVICE_ROLLOUT_NOTICE };
 
 /**
  * Agency-owned service-area geometry for services that do not publish route

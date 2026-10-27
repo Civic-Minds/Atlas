@@ -20,7 +20,7 @@ import { useColorMode } from '../../hooks/useColorMode';
 import ArrowLink from '../ui/ArrowLink';
 import PanelEmpty from '../ui/PanelEmpty';
 import AgencyName from '../ui/AgencyName';
-import { loadingText } from '../../content/stateCopy';
+import { loadingText } from '../../content/noticeCopy';
 import { compareAgencyName, compareRegion, compareRouteNumber } from '../../utils/sortCompare';
 import PanelHeader from '../ui/PanelHeader';
 

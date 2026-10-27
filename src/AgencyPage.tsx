@@ -32,6 +32,7 @@ import { applySeoToDocument, seoOrigin } from './lib/seoDom';
 import { readEmbeddedJson } from './lib/embeddedData';
 import { LINK, UNDERLINED_LINK } from './pageStyles';
 import { FrequencyBar, RouteNameCell } from './pageParts';
+import { AGENCY_PAGE_NOT_FOUND_TITLE, NO_FREQUENCY_PAGE_BODY } from './content/noticeCopy';
 
 /** Read this page's numbers from the JSON the prerender embedded next to the app root. */
 function readEmbeddedData(slug: string | undefined): AgencyPageData | null {
@@ -118,7 +119,7 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
 
   if (!agency) {
     return (
-      <EmptyPage title="No page for this agency" body="Atlas has no frequency page at this address." action={<ArrowLink href="/">Open the Atlas map</ArrowLink>} />
+      <EmptyPage title={AGENCY_PAGE_NOT_FOUND_TITLE} body={NO_FREQUENCY_PAGE_BODY} action={<ArrowLink href="/">Open the Atlas map</ArrowLink>} />
     );
   }
 

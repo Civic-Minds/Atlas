@@ -51,6 +51,7 @@ import { isOnDemandStopShown, isOnDemandZoneShown, localDateIn, onDemandHoursCon
 import Panel from '../ui/Panel';
 import ListRow from '../ui/ListRow';
 import { drawnRouteLayers, queryDrawnRouteFeatures } from './map/drawnRoutes';
+import { approximateLocationHint, CLIPBOARD_DENIED, LOCATION_DENIED, LOCATION_TIMED_OUT, LOCATION_UNAVAILABLE, LOCATION_URL_COPIED, ON_DEMAND_AREAS_FAILED, ON_DEMAND_COVERAGE_GROWING } from '../../content/noticeCopy';
 
 // Keep the Live/Deck.gl graph out of public builds entirely when Live is disabled.
 const LiveVehiclesLayer = import.meta.env.VITE_LIVE_ENABLED === 'true'
@@ -1081,8 +1082,8 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     if (!mapContextMenu) return;
     const url = buildLocationUrl(mapContextMenu.lat, mapContextMenu.lon, SHARE_UTM_MEDIUM_LINK);
     navigator.clipboard.writeText(url).then(
-      () => showMapHint('Location URL copied'),
-      () => showMapHint('Could not copy — clipboard access denied'),
+      () => showMapHint(LOCATION_URL_COPIED),
+      () => showMapHint(CLIPBOARD_DENIED),
     );
     setMapContextMenu(null);
   };
@@ -1171,7 +1172,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         // fix from Vercel's edge IP-geolocation headers rather than just erroring out. Skip the
         // fallback for PERMISSION_DENIED -- the user explicitly said no, respect that.
         if (error.code === error.PERMISSION_DENIED) {
-          showMapHint('Location access denied — check your browser\'s site permissions');
+          showMapHint(LOCATION_DENIED);
           return;
         }
         fetch('/api/geo')
@@ -1180,12 +1181,12 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
             if (!geo) throw new Error('no approximate location');
             map.flyTo({ center: [geo.longitude, geo.latitude], zoom: 10, duration: 1200 });
             onLocate?.(geo.latitude, geo.longitude);
-            showMapHint(geo.city ? `Showing the approximate area of ${geo.city} — precise location wasn't available` : 'Showing an approximate location — precise location wasn\'t available');
+            showMapHint(approximateLocationHint(geo.city));
           })
           .catch(() => {
             const message = error.code === error.TIMEOUT
-              ? 'Location request timed out — try again'
-              : 'Couldn\'t determine your location — check your device\'s location services';
+              ? LOCATION_TIMED_OUT
+              : LOCATION_UNAVAILABLE;
             showMapHint(message);
           });
       },
@@ -1230,7 +1231,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         // Zones that failed to load must not read as "no on-demand service here" (CIV-50), so no
         // other hint hides this; a transient hint sits above it instead.
         <MapNoticePill className="px-3 py-1.5 text-xs text-[var(--text-muted)]">
-          On-demand areas couldn't load.
+          {ON_DEMAND_AREAS_FAILED}
         </MapNoticePill>
       )}
       {mapHint ? (
@@ -1240,7 +1241,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       ) : onDemandStatus !== 'error' && onDemandAllowed && selectedModes.has(ON_DEMAND_MODE) && (
         // A missing zone must never read as "no on-demand service here" (CIV-23).
         <MapNoticePill className="px-3 py-1.5 text-xs text-[var(--text-muted)]">
-          On-demand coverage is still growing. Not every service is mapped yet.
+          {ON_DEMAND_COVERAGE_GROWING}
         </MapNoticePill>
       )}
 
