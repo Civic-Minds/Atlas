@@ -265,10 +265,12 @@ async function main() {
     console.log(`Dry-run report → ${reportPath} (${dryRunSnapshots.length} snapshots)`);
   }
 
-  await r2PutArchiveJson(`history/${slug}/coverage.json`, JSON.stringify({
-    coverageYears: [...coverageYears].sort(),
-    materializeAllPeriods: true,
-  }));
+  if (!dryRun) {
+    await r2PutArchiveJson(`history/${slug}/coverage.json`, JSON.stringify({
+      coverageYears: [...coverageYears].sort(),
+      materializeAllPeriods: true,
+    }));
+  }
 
   console.log('\nDone. Run: npm run build-history');
 }
