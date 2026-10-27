@@ -32,6 +32,7 @@ import { r2Put, r2Get, r2PutArchive, r2PutArchiveJson, r2GetArchive, rawFeedArch
 import JSZip from 'jszip';
 import { GtfsValidationError, type GtfsPreprocess } from './process-core.js';
 import { loadSupplementalFeeds, processAgencyFeeds, supplementalArchiveStem, type SupplementalFeed } from './agencyFeeds.js';
+import { serviceWeekKey } from './serviceWeekKey.js';
 import { buildAgencyIndex } from './agencyIndex.js';
 import { buildNightServiceIndex, extractNightServiceRoutes, mergeNightServiceIndex, type NightServiceIndexFile, type NightServiceRouteEntry } from './nightServiceIndex.js';
 import type { HeadwayByPeriod } from '../shared/config.js';
@@ -308,6 +309,8 @@ interface AgencyEntry {
   lastFeedCheckAt?: string | null;
   /** A fetched timetable starting on this date waits until then (#1144). */
   heldFeedStart?: string | null;
+  /** CIV-1011 stage 4: the picked week's key at the last refresh (serviceWeekKey). */
+  lastServiceWeek?: string | null;
   expiredFeedCheckCount?: number;
   expiredFeedCheckSince?: string | null;
   expiredFeedCheckExpiry?: string | null;
@@ -508,6 +511,9 @@ async function refreshAgency(
     return { summary: `skipped (older feed: ${peekedExpiry ?? 'unknown'})` };
   }
 
+  // CIV-1011 stage 4: the week the map reads moves with the run date, so an unchanged zip whose
+  // picked week moved is reprocessed (the old picker's kill switch leaves the check as it was).
+  const serviceWeek = process.env.ATLAS_LEGACY_REFERENCE_DATE === '1' ? null : await serviceWeekKey(buf);
   const skipDecision = decideRefreshSkipUnchanged({
     forceRefresh,
     hasSupplementals,
@@ -518,6 +524,8 @@ async function refreshAgency(
     lastPeekedExpiry: agency.lastPeekedExpiry,
     lastFeedVersion: agency.lastFeedVersion,
     referenceDateFromRunDate: agency.referenceDateFromRunDate,
+    serviceWeek,
+    lastServiceWeek: agency.lastServiceWeek,
   });
   if (skipDecision.skip) {
     // A current feed can still have a legacy processed artifact. Do not let
@@ -682,6 +690,7 @@ async function refreshAgency(
       calendarExpiry: keptCalendarExpiry,
       calendarOnlyEnd,
       listingEnd: primary.listingEnd,
+      serviceWeek,
     });
     stampSupplementalFeedMeta(agency, supplementalMeta);
   }

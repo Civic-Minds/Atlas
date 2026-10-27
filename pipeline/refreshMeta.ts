@@ -6,6 +6,8 @@ import type { SupplementalFeedMeta } from '../shared/feedAvailability.js';
 
 export interface FeedMetaFields {
   lastFeedExpiry?: string | null;
+  /** CIV-1011 stage 4: the picked week's key at the last refresh (serviceWeekKey). */
+  lastServiceWeek?: string | null;
   /** CIV-1011: the date most routes stopped being listed with nothing replacing them (YYYYMMDD); the agency shows Ryan's notice. Absent otherwise. */
   listingEndedOn?: string | null;
   /** The feed's own latest service date, uncapped. lastFeedExpiry caps placeholder dates, so it can't detect an unchanged feed (#688). */
@@ -141,6 +143,8 @@ export function stampFeedMeta(
     calendarOnlyEnd?: string | null;
     /** The processed feed's listing end (ProcessResult.listingEnd); cleared when null. */
     listingEnd?: string | null;
+    /** The picked week's key (serviceWeekKey), for the next refresh's unchanged check. */
+    serviceWeek?: string | null;
   },
 ): void {
   agency.lastFeedExpiry = recordedFeedExpiry(opts.feedExpiry, opts.calendarExpiry !== undefined ? opts.calendarExpiry : opts.peekedExpiry, opts.todayYmd, opts.calendarOnlyEnd);
@@ -153,6 +157,8 @@ export function stampFeedMeta(
   agency.feedRefreshRetryCount = 0;
   delete agency.heldFeedStart;
   stampListingEnd(agency, opts.listingEnd);
+  if (opts.serviceWeek) agency.lastServiceWeek = opts.serviceWeek;
+  else if (opts.serviceWeek === null) delete agency.lastServiceWeek;
 }
 
 /** Record or clear the CIV-1011 listing end. Returns whether it changed. */
@@ -241,8 +247,12 @@ export function decideRefreshSkipUnchanged(opts: {
   lastFeedVersion?: string | null;
   /** The agency reads its feed as of the run date (#774), so an unchanged feed still has new output. */
   referenceDateFromRunDate?: boolean;
+  /** CIV-1011 stage 4: the picked week's key now (serviceWeekKey) and at the last refresh; a moved week reprocesses. */
+  serviceWeek?: string | null;
+  lastServiceWeek?: string | null;
 }): RefreshSkipReason {
   if (opts.forceRefresh || opts.hasSupplementals || opts.feedExpired || opts.referenceDateFromRunDate) return { skip: false };
+  if (opts.serviceWeek && opts.serviceWeek !== (opts.lastServiceWeek ?? null)) return { skip: false };
   const { peekedExpiry, peekedVersion, lastFeedVersion } = opts;
   // Older records have no uncapped value; compare against the recorded one as before.
   const lastFeedExpiry = opts.lastPeekedExpiry ?? opts.lastFeedExpiry;

@@ -337,3 +337,32 @@ describe('stampReprocessedFeedExpiry (#837)', () => {
     expect(agency).toEqual({ lastFeedExpiry: '20261205', lastPeekedExpiry: '20261205' });
   });
 });
+
+describe('CIV-1011 stage 4: the picked week and the listing end', () => {
+  const base = { forceRefresh: false, hasSupplementals: false, feedExpired: false, peekedExpiry: '20261231', peekedVersion: 'v1', lastPeekedExpiry: '20261231', lastFeedVersion: 'v1' };
+
+  it('skips an unchanged feed whose picked week is unchanged, and reprocesses when it moves', () => {
+    expect(decideRefreshSkipUnchanged({ ...base, serviceWeek: 'abc', lastServiceWeek: 'abc' }).skip).toBe(true);
+    expect(decideRefreshSkipUnchanged({ ...base, serviceWeek: 'def', lastServiceWeek: 'abc' }).skip).toBe(false);
+    // First run with the key on record: reprocess once so it is stamped.
+    expect(decideRefreshSkipUnchanged({ ...base, serviceWeek: 'abc' }).skip).toBe(false);
+    // The old picker (kill switch) passes no key: unchanged as before.
+    expect(decideRefreshSkipUnchanged({ ...base, serviceWeek: null }).skip).toBe(true);
+  });
+
+  it('records the listing end and the picked week, and clears the end when it no longer holds', () => {
+    const agency: Record<string, unknown> = {};
+    stampFeedMeta(agency, { feedExpiry: '20261231', feedVersion: 'v1', peekedExpiry: '20261231', peekedVersion: 'v1', todayYmd: '20261027', listingEnd: '20261028', serviceWeek: 'abc' });
+    expect(agency.listingEndedOn).toBe('20261028');
+    expect(agency.lastServiceWeek).toBe('abc');
+    stampFeedMeta(agency, { feedExpiry: '20261231', feedVersion: 'v2', peekedExpiry: '20261231', peekedVersion: 'v2', todayYmd: '20261103', listingEnd: null, serviceWeek: 'def' });
+    expect(agency).not.toHaveProperty('listingEndedOn');
+    expect(agency.lastServiceWeek).toBe('def');
+  });
+
+  it('a reprocess records a new listing end even when the expiry is unchanged', () => {
+    const agency: Record<string, unknown> = { lastFeedExpiry: '20261231', lastPeekedExpiry: '20261231' };
+    expect(stampReprocessedFeedExpiry(agency, { feedExpiry: '20261231', calendarExpiry: '20261231', todayYmd: '20261027', listingEnd: '20261028' })).toBe(true);
+    expect(agency.listingEndedOn).toBe('20261028');
+  });
+});
