@@ -4,7 +4,7 @@ import { hasNoPeriodService } from '../../shared/periodEligibility';
 import { routeFilterHeadway } from '../../shared/routeHeadwayFilter';
 import { buildRouteServiceSummary, metricValueForPeriod } from './routeFacts';
 import { pairedTripPeriodFloor, pairedTripSafeHeadway } from './pairedTripFloor';
-import { delayAmount, headwayAbout, headwayAboutRange, headwayEvery, headwayEveryRange, headwayPeriodShape } from './headwayText';
+import { delayAmount, headwayAboutRange, headwayEvery, headwayEveryRange, headwayPeriodShape } from './headwayText';
 import { routeAllDayContract, routeContract, routeValueIsOneGap } from './stretchCard';
 import { clockText } from '../content/researchRules';
 
@@ -97,14 +97,6 @@ export function routeCardDisplayHeadway(p: ShapeProperties, period: TimePeriod):
   return branchHeadway;
 }
 
-export function hasPeriodCoverage(p: ShapeProperties, period: TimePeriod): boolean {
-  return period !== 'all' && (
-    p.periodCoverageHeadway !== undefined
-    || p.worstDirectionPeriodCoverageHeadway !== undefined
-    || p.maxGapByPeriod !== undefined
-  );
-}
-
 /**
  * Whether a route direction has scheduled departures during a specific time period.
  * Distinguishes between complete absence of service (0 trips) and partial/limited
@@ -129,13 +121,6 @@ export function hasDirectionPeriodService(p: ShapeProperties, period: TimePeriod
   if (p.periodCoverageHeadway && Object.prototype.hasOwnProperty.call(p.periodCoverageHeadway, period)) return false;
   if (p.headsignMinStopHeadwayByPeriod?.[period] != null) return true;
   return false;
-}
-
-/** Full-window bound first; raw median remains a separately labelled cadence. */
-export function routeCardCoverageText(p: ShapeProperties, period: TimePeriod): string | undefined {
-  // Coverage is a filter-eligibility metric, not a rider-facing headway. A route
-  // can run every 10 minutes within a shorter service span inside this period.
-  return undefined;
 }
 
 /**
@@ -165,14 +150,6 @@ export function partPeriodText(p: ShapeProperties, period: TimePeriod): string |
   if (period === 'all' || p.stretchRole !== 'main') return undefined;
   if (typeof p.directionFilterHeadwayByPeriod?.[period] === 'number') return undefined;
   return p.stretchPeriodEdge?.[period] ? routeCardPeriodShapeText(p, period) : undefined;
-}
-
-export function routeCardTypicalText(p: ShapeProperties, period: TimePeriod): string | undefined {
-  if (!hasPeriodCoverage(p, period) || period === 'all') return undefined;
-  const range = routeCardDisplayHeadwayRange(p, period);
-  if (range) return range;
-  const median = p.headwayByPeriod?.[period];
-  return median == null ? undefined : headwayAbout(median);
 }
 
 /** Rider-facing range for an irregular period, scoped to this destination/branch. */
@@ -327,15 +304,6 @@ function routeListCadence(features: readonly ShapeProperties[], period: TimePeri
  */
 export function routeListDisplayHeadway(features: readonly ShapeProperties[], period: TimePeriod): number | null {
   return routeListCadence(features, period).headway;
-}
-
-/**
- * The lower end of a route list range: the slower direction's cadence with alternating branches
- * combined on their shared stretch. Display text only ("every 30–60 min"); sorting
- * and colour use routeListDisplayHeadway. Null when it is not lower, or the route is limited.
- */
-export function routeListSharedHeadway(features: readonly ShapeProperties[], period: TimePeriod): number | null {
-  return routeListCadence(features, period).shared;
 }
 
 /**

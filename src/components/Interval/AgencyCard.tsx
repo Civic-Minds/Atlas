@@ -14,14 +14,13 @@ import Panel, { PanelBody } from '../ui/Panel';
 import RouteRowName from '../RouteRowName';
 import Pill from '../ui/Pill';
 import ModeFilterPillRow from '../ui/ModeFilterPillRow';
-import { HEADWAY_TIERS } from '../../utils/colors';
 import { effectiveMode, isRailReplacementBus, knownModeLabel, sortModes } from '../../../shared/modes';
 import { headwayEveryRange } from '../../utils/headwayText';
 import { agencyNameParts } from '../../utils/format';
 import type { DayType, TimePeriod, ShapeProperties } from '../../hooks/useIntervalStats';
 import { passesRouteFilter } from '../../hooks/useIntervalStats';
 import { NO_REGULAR_SERVICE_LABEL, routeListDisplay } from '../../utils/effectiveHeadway';
-import { AgencyCardTop, AgencyDataSourceLink, SidebarCardHeader, CARD_HEADER_BLOCK, CARD_BODY_TEXT, CARD_SUMMARY, CardBodyText, CardHelpNotice, CardSectionLabel, CardReportButton } from './cardUi';
+import { AgencyCardTop, AgencyDataSourceLink, SidebarCardHeader, CARD_HEADER_BLOCK, CARD_BODY_TEXT, CARD_SUMMARY, CardBodyText, CardHelpNotice, CardSectionLabel, CardReportButton, CorrectedDataNotice, NewScheduleDataNotice } from './cardUi';
 import CardRouteList from './CardRouteList';
 import { OutboundLink } from '../OutboundLink';
 import { buildRouteFacts, type RouteLabel } from '../../utils/routeFacts';
@@ -37,7 +36,6 @@ import {
   resolveOnDemandZone,
   type OnDemandAvailability,
 } from '../../../shared/onDemandAvailability';
-import { headwayTierLabel } from '../../utils/headwayText';
 import ArrowLink from '../ui/ArrowLink';
 import PanelEmpty from '../ui/PanelEmpty';
 import { NO_ROUTES_LOADED, noRoutesMatchText } from '../../content/stateCopy';
@@ -152,11 +150,6 @@ export function getRoutes(
       matchesFilter: row.matchesFilter,
     }))
     .sort(compareHeadwayThenNumber);
-}
-
-function frequencyFilterLabel(maxHeadway: number): string | null {
-  if (maxHeadway === Infinity) return null;
-  return HEADWAY_TIERS.find(t => t.max === maxHeadway)?.label ?? headwayTierLabel(maxHeadway);
 }
 
 /** Separate services that own some zones (e.g. Hamilton Trans-Cab beside myRide), listed once each. */
@@ -288,8 +281,7 @@ export function buildHeaderSummary(
 ): string {
   const matching = routes.filter(r => r.matchesFilter).length;
   const parts = [`${routes.length} ${plural(routes.length, 'route')}`];
-  const freqLabel = frequencyFilterLabel(maxHeadway);
-  if (freqLabel) parts.push(`${matching} match filters`);
+  if (maxHeadway !== Infinity) parts.push(`${matching} match filters`);
   return parts.join(' · ');
 }
 
@@ -457,13 +449,10 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
     [filteredRoutes],
   );
   const hasFilterSplit = otherRoutes.length > 0 && maxHeadway !== Infinity;
-  const showOthersExpanded = showOtherRoutes;
 
   useEffect(() => {
     setShowOtherRoutes(false);
   }, [agency.slug, maxHeadway, period, day]);
-
-  const visibleRoutes = filteredRoutes;
 
   const activeFilterLabel = routeFilters.find(f => f.key === activeFilter)?.label;
 
@@ -557,9 +546,11 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
               place={null}
               back={{ to: 'Map', onClick: onClose }}
               report={reportButton}
+              links={hasSource ? [<AgencyDataSourceLink key="source" agency={agency} />] : []}
             />
           )}
-          {FEATURES.dataSourceLink && agency.websiteUrl && (
+          {/* The zone card's header has no links line, so its Source link sits under the title. */}
+          {backToAgency && hasSource && (
             <p className="mt-1 text-xs"><AgencyDataSourceLink agency={agency} /></p>
           )}
         </div>
@@ -628,7 +619,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
           name={agencyCardName}
           place={agency.onDemandOnly ? null : agencyNameSecondary}
           back={{ to: 'Map', onClick: onClose }}
-          facts={agency.onDemandOnly ? 'On-demand service' : buildHeaderSummary(visibleRoutes, maxHeadway)}
+          facts={agency.onDemandOnly ? 'On-demand service' : buildHeaderSummary(filteredRoutes, maxHeadway)}
           report={reportButton}
           links={agencyLinks}
         >
@@ -703,30 +694,10 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
                 />
               )}
               {agency.feedReviewStatus === 'review' && !agency.overrideNote && (
-                <CardHelpNotice
-                  message="New schedule data is being verified."
-                  onLearnMore={() => onInfoOpen('about', {
-                    helpTopic: 'new-schedule-data',
-                    agencyName: agency.name,
-                    lastRefreshedAt: agency.lastRefreshedAt ?? undefined,
-                    lastFeedCheckAt: agency.lastFeedCheckAt ?? undefined,
-                    expiredFeedCheckCount: agency.expiredFeedCheckCount,
-                    expiredFeedCheckSince: agency.expiredFeedCheckSince ?? undefined,
-                    websiteUrl: agency.websiteUrl,
-                  })}
-                />
+                <NewScheduleDataNotice agency={agency} onInfoOpen={onInfoOpen} />
               )}
               {agency.overrideNote && (
-                <CardHelpNotice
-                  message="We corrected this data."
-                  onLearnMore={() => onInfoOpen('about', {
-                    helpTopic: 'corrected-data',
-                    agencyName: agency.name,
-                    overrideNote: agency.overrideNote,
-                    issueUrl: agency.issueUrl,
-                    issueUrls: agency.issueUrls,
-                  })}
-                />
+                <CorrectedDataNotice agency={agency} overrideNote={agency.overrideNote} onInfoOpen={onInfoOpen} />
               )}
             </div>
           )}
@@ -736,7 +707,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
       <PanelBody>
         {onDemandOn ? (
           <PanelEmpty>{ON_DEMAND_NOT_MAPPED_NOTE}</PanelEmpty>
-        ) : visibleRoutes.length === 0 ? (
+        ) : filteredRoutes.length === 0 ? (
           <PanelEmpty>{activeFilterLabel ? noRoutesMatchText(activeFilterLabel) : NO_ROUTES_LOADED}</PanelEmpty>
         ) : hasFilterSplit ? (
           <>
@@ -750,7 +721,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
             {otherRoutes.length > 0 && (
               <>
                 <div className={CARD_NOTICE_INLINE}>
-                  {!showOthersExpanded ? (
+                  {!showOtherRoutes ? (
                     <CardHelpNotice
                       message={`${otherRoutes.length} ${plural(otherRoutes.length, 'route')} outside your filters.`}
                       actionLabel="Show"
@@ -764,7 +735,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
                     />
                   )}
                 </div>
-                {showOthersExpanded && (
+                {showOtherRoutes && (
                   <RouteListSection
                     routes={otherRoutes}
                     liveShortNames={liveShortNames}
@@ -777,7 +748,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
           </>
         ) : (
           <RouteListSection
-            routes={visibleRoutes}
+            routes={filteredRoutes}
             liveShortNames={liveShortNames}
             onRouteSelect={onRouteSelect}
           />

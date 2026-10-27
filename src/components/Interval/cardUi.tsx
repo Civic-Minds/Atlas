@@ -13,6 +13,8 @@ import ArrowLink from '../ui/ArrowLink';
 import RoundIconButton from '../ui/RoundIconButton';
 import { OutboundLink } from '../OutboundLink';
 import { CardBackLink } from '../CardBack';
+import type { Agency } from '../../App';
+import type { OpenInfoFn } from '../InfoPanel';
 
 export { default as CardDirectionRow } from './RouteDirectionRow';
 
@@ -313,7 +315,7 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
               ...(reportCardPosition ? { width: `${reportCardPosition.width}px` } : {}),
             }}
           >
-            <div className="flex items-center justify-between px-4 pt-4 pb-3 border-b border-[var(--border-primary)]">
+            <div className={`${CARD_HEADER_BLOCK} flex items-center justify-between`}>
               <div>
                 <h2 id={dialogTitleId} className={CARD_TITLE}>Report a problem</h2>
                 <p className={`${CARD_NOTICE} mt-0.5`}>Choose a category, or click a card value to preselect its reason.</p>
@@ -733,6 +735,40 @@ export function CardHelpNotice({
         </>
       )}
     </p>
+  );
+}
+
+/** "New schedule data is being verified.": the agency card and the route card show it the same way. */
+export function NewScheduleDataNotice({ agency, onInfoOpen }: { agency: Agency; onInfoOpen: OpenInfoFn }) {
+  return (
+    <CardHelpNotice
+      message="New schedule data is being verified."
+      onLearnMore={() => onInfoOpen('about', {
+        helpTopic: 'new-schedule-data',
+        agencyName: agency.name,
+        lastRefreshedAt: agency.lastRefreshedAt ?? undefined,
+        lastFeedCheckAt: agency.lastFeedCheckAt ?? undefined,
+        expiredFeedCheckCount: agency.expiredFeedCheckCount,
+        expiredFeedCheckSince: agency.expiredFeedCheckSince ?? undefined,
+        websiteUrl: agency.websiteUrl ?? undefined,
+      })}
+    />
+  );
+}
+
+/** "We corrected this data.": the agency card and the route card show it the same way, with the note that applies. */
+export function CorrectedDataNotice({ agency, overrideNote, onInfoOpen }: { agency: Agency; overrideNote: string; onInfoOpen: OpenInfoFn }) {
+  return (
+    <CardHelpNotice
+      message="We corrected this data."
+      onLearnMore={() => onInfoOpen('about', {
+        helpTopic: 'corrected-data',
+        agencyName: agency.name,
+        overrideNote,
+        issueUrl: agency.issueUrl,
+        issueUrls: agency.issueUrls,
+      })}
+    />
   );
 }
 
