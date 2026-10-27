@@ -129,10 +129,13 @@ describe('tile rules fingerprint', () => {
   // stamp reads what it read before the value was withheld; data built earlier has no such period: hash only.
   // CIV-321 copies the beta sections file into the release beside the route file; no tile value
   // changes: hash only.
+  // #1147 moves stop grouping into stopClustering.ts and caps each group at 250 m. hubId and isHubRef
+  // values change, but they are only ever set at tile build and never re-derived by the app, so any
+  // app draws any tiles as before (older tiles keep their larger groups): hash only.
   it('changes only together with a deliberate TILE_RULES_VERSION decision', () => {
     expect({ version: TILE_RULES_VERSION, fingerprint: tileRulesFingerprint() }).toEqual({
       version: 5,
-      fingerprint: '8c2e9980fe35d2ba1c23ce116f47b7598c99e5ad5e15323a321a429d26989d5a',
+      fingerprint: 'bcdd223ffa20c11decb2fa2084c1a69fbbaf4e13096ec72e59713d6be8fa8205',
     });
   });
 });
