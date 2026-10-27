@@ -174,7 +174,7 @@ describe('livePerformance', () => {
 
   it('returns the count with no gaps for fewer than two cars when asked (the Live card, CIV-893)', () => {
     const line = lineModel(data, 0)!;
-    expect(liveGaps(data, line, withStats(line, 'all'), 'all', [snap(5, [['a', 't1', 2]])], 5, { countFewCars: true })).toEqual({ cars: 1, gapsMin: [], scheduledSec: 300 });
+    expect(liveGaps(data, line, withStats(line, 'all'), 'all', [snap(5, [['a', 't1', 2]])], 5, { countFewCars: true })).toEqual({ cars: 1, carIds: ['a'], gapsMin: [], scheduledSec: 300 });
   });
 
   it('skips an unlisted car seen only once instead of marking the feed incomplete when asked', () => {
