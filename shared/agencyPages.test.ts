@@ -139,6 +139,14 @@ describe('dates', () => {
       .toBe("Based on the agency's published timetable, not live arrivals. This timetable ended on Sep 1, 2026; the agency hasn't published a newer one yet. Atlas last updated this page Oct 13, 2026.");
   });
 
+  it('N25: says most routes ended when the listing ended (CIV-1055)', () => {
+    expect(agencyDatesText({ lastRefreshedAt: '2026-08-07', validThrough: '20270131', listingEndedOn: '20261028' }, '2026-10-27'))
+      .toBe("Based on the agency's published timetable, not live arrivals. This agency's scheduled service for most routes ended Oct 28, 2026, and they have not released updated data. Atlas last updated this page Oct 27, 2026.");
+    // An ended timetable says more, so it wins.
+    expect(agencyDatesText({ lastRefreshedAt: '2026-01-05', validThrough: '20260901', listingEndedOn: '20260814' }, '2026-10-13'))
+      .toContain('This timetable ended on Sep 1, 2026');
+  });
+
   it('drops a trailing city from the agency name only when the sentence names that place', () => {
     expect(introName('University of Michigan Transit Services (Ann Arbor)', 'Ann Arbor')).toBe('University of Michigan Transit Services');
     expect(introName('University of Michigan Transit Services (Ann Arbor)', 'the Greater Toronto and Hamilton Area')).toBe('University of Michigan Transit Services (Ann Arbor)');
