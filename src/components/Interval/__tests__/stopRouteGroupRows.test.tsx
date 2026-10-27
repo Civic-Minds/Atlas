@@ -3,6 +3,7 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import StopRouteGroup from '../panels/StopRouteGroup';
 import type { StopBranch } from '../panels/StopCard';
 import { routeLabels } from '../../../utils/format';
+import { keyboardFocusHover } from '../RouteDirectionRow';
 
 // CIV-918: every destination is a route card row with its own frequency, ordered by direction, no
 // direction lines, and hovering one shows that route and direction on the map.
@@ -73,5 +74,54 @@ describe('StopRouteGroup rows (CIV-918)', () => {
     const setHoveredBranch = renderGroup();
     fireEvent.mouseEnter(screen.getByText(/Buckner/));
     expect(setHoveredBranch).toHaveBeenCalledWith({ routeKey: 'dart::green', directionId: 1, headsign: 'Buckner' });
+  });
+
+  it('hovering the route line names the whole route for the map (CIV-1053)', () => {
+    const setHoveredBranch = renderGroup();
+    fireEvent.mouseEnter(screen.getByRole('button', { name: /Green Line/ }));
+    expect(setHoveredBranch).toHaveBeenCalledWith({ routeKey: 'dart::green' });
+  });
+
+  it("with the route line hovered, the route's own rows stay; another route's line fades (CIV-1053)", () => {
+    const { container, rerender } = render(
+      <StopRouteGroup
+        shortName="GREEN" label={routeLabels({ shortName: 'GREEN', longName: 'Green Line' })} longName="Green Line"
+        branches={[branch('Buckner', 1, 20)]} period="midday" onOpenRoute={() => {}}
+        hoveredBranch={{ routeKey: 'dart::green' }} setHoveredBranch={() => {}}
+      />,
+    );
+    expect(container.querySelector('.opacity-35')).toBeNull();
+    rerender(
+      <StopRouteGroup
+        shortName="GREEN" label={routeLabels({ shortName: 'GREEN', longName: 'Green Line' })} longName="Green Line"
+        branches={[branch('Buckner', 1, 20)]} period="midday" onOpenRoute={() => {}}
+        hoveredBranch={{ routeKey: 'dart::red' }} setHoveredBranch={() => {}}
+      />,
+    );
+    expect(container.querySelectorAll('.opacity-35')).toHaveLength(2);
+  });
+});
+
+describe('keyboardFocusHover (CIV-1053)', () => {
+  const focusEvent = (keyboard: boolean) => ({ currentTarget: { matches: () => keyboard } }) as unknown as React.FocusEvent<HTMLElement>;
+
+  it('keyboard focus starts the hover and blur ends it', () => {
+    const start = vi.fn();
+    const end = vi.fn();
+    const handlers = keyboardFocusHover(start, end);
+    handlers.onFocus!(focusEvent(true));
+    expect(start).toHaveBeenCalledTimes(1);
+    handlers.onBlur!();
+    expect(end).toHaveBeenCalledTimes(1);
+  });
+
+  it('focus from a tap or click does not start it', () => {
+    const start = vi.fn();
+    keyboardFocusHover(start, vi.fn()).onFocus!(focusEvent(false));
+    expect(start).not.toHaveBeenCalled();
+  });
+
+  it('a row with no hover gets no handlers', () => {
+    expect(keyboardFocusHover(undefined, undefined)).toEqual({});
   });
 });

@@ -51,6 +51,22 @@ interface Props {
 }
 
 /**
+ * Keyboard focus shows a row on the map as hovering does (CIV-1053). Only focus the browser marks as
+ * keyboard focus (:focus-visible), so a tap on a phone stays a tap.
+ */
+export function keyboardFocusHover(onHoverStart?: () => void, onHoverEnd?: () => void) {
+  if (!onHoverStart || !onHoverEnd) return {};
+  return {
+    onFocus: (e: React.FocusEvent<HTMLElement>) => {
+      let keyboard = false;
+      try { keyboard = e.currentTarget.matches(':focus-visible'); } catch { /* no :focus-visible support */ }
+      if (keyboard) onHoverStart();
+    },
+    onBlur: onHoverEnd,
+  };
+}
+
+/**
  * Single direction row in the route card panel.
  * Owns label color, headway display, and limited-service variants
  * so there's one place to change instead of hunting across SidebarControls.
@@ -88,6 +104,7 @@ export default function RouteDirectionRow({ label, routeName, labelWeight = 'bol
       className={`text-xs transition-opacity duration-150 rounded-lg -mx-1 px-1 py-0.5 ${faded ? 'opacity-35' : ''} ${interactive || clickable ? 'cursor-pointer' : ''} ${branchHovered ? 'bg-[var(--bg-hover)] opacity-100' : ''} ${clickable ? 'hover:text-[var(--accent)]' : ''}`}
       onMouseEnter={onHoverStart}
       onMouseLeave={onHoverEnd}
+      {...keyboardFocusHover(onHoverStart, onHoverEnd)}
     >
       <div className={`flex ${singleLine ? '' : 'flex-wrap'} items-start justify-between gap-2`}>
         <span
