@@ -238,10 +238,10 @@ export default function NightService({ active, sidebarLeft, searchBarWidth, laye
           )}
           {loadState === 'ready' && agencies.map((agency, agencyIndex) => (
             <div key={agency.slug}>
-              {/* The shared agency heading of the list panels (CIV-1019), with the night route count under it in the card facts line's own spacing. */}
+              {/* The shared agency heading of the list panels (CIV-1019), with the route count under it in the card facts line's own spacing. */}
               <AgencyGroupHeader rule={agencyIndex > 0 ? 'above' : 'below'}>
                 <AgencyName primary={agency.agencyName} secondary={agency.region && !placeAlreadyInName(agency.agencyName, agency.region) ? agency.region : undefined} />
-                <p className={`${CARD_SUMMARY} tracking-normal`}>{agency.routes.length} night {plural(agency.routes.length, 'route')}</p>
+                <p className={`${CARD_SUMMARY} tracking-normal`}>{agency.routes.length} {plural(agency.routes.length, 'route')}</p>
               </AgencyGroupHeader>
               {/* The agency card's route list (CIV-931): "**300** Bloor-Danforth" and the night frequency on the right.
                   Destinations stay on the route card. */}
