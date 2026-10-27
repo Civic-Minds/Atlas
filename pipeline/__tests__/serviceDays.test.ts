@@ -408,6 +408,15 @@ describe('pickServiceWeek: issues in the plan (section 4)', () => {
     for (const day of ['Monday', 'Thursday', 'Friday'] as const) expect(week.services[day]).toEqual(['R-wk']);
   });
 
+  it('two equally near clean weeks: the later one is read', () => {
+    // Monday anchor (Oct 19): the week before is whole too. Wed Oct 21 is a holiday, so Oct 12 and
+    // Oct 26 are both one week away; the later is read, like transit-calendar's later-date tie.
+    const calendar = [cal('WK', 'mo,tu,we,th,fr', '20261001', '20261231')];
+    const calendarDates = [removed('WK', '20261021'), added('HOL', '20261021')];
+    const week = pick({ calendar, calendarDates, trips: [...tripsOf('WK', 'R', 10), ...tripsOf('HOL', 'R', 4)], anchor: '20261019' });
+    expect(week.weekStart).toBe('20261026');
+  });
+
   it('a game-day Sunday loses the vote (Sound Transit Sounder, CIV-445)', () => {
     // Run Mon Nov 2: the anchor week's Sunday (Nov 8) is a game day, so the next week is read.
     const week = pick({ ...gameDay(), anchor: serviceAnchor('20261102') });
@@ -521,6 +530,43 @@ describe('pickServiceWeek: inputs from the existing tests', () => {
     expect(week.weekStart).toBeNull();
     expect(DAY_NAMES.map(d => week.dates[d])).toEqual(['20181119', '20181120', '20181121', '20181122', '20181123', null, null]);
     expect(week.services.Thursday).toEqual(['ONE-20181122']);
+  });
+
+  it('alternating weeks with a holiday Monday (transit-calendar #658): known limit, Monday comes from another kind of week', () => {
+    // The exact input of "moves the whole week so every day describes the same week": 'alt' runs
+    // in odd weeks, and the regular service is removed on Mon Oct 12. Mondays tie 3:3 between odd
+    // and even weeks and the nearest is even (Oct 19); Tuesday-Friday tie 4:4 and the nearest is
+    // the anchor's odd week. The per-day vote (rule 2) then pairs an even Monday with odd
+    // Tuesday-Friday, which the old whole-week move prevented. Recorded as a limit, not a target.
+    const calendar = [cal('reg', 'mo,tu,we,th,fr', '20260928', '20261127'), cal('alt', 'mo,tu,we,th,fr', '20260928', '20261127')];
+    const even = new Set([...dates('20261005', '20261009'), ...dates('20261019', '20261023'), ...dates('20261102', '20261106'), ...dates('20261116', '20261120')]);
+    const calendarDates = [...dates('20260928', '20261127').filter(d => isWeekday(d) && even.has(d)).map(d => removed('alt', d)), removed('reg', '20261012')];
+    const week = pick({ calendar, calendarDates, trips: [...tripsOf('reg', 'R', 10), ...tripsOf('alt', 'R', 4)], anchor: '20261014' });
+    expect(week.weekStart).toBe('20261012');
+    expect(week.dates.Monday).toBe('20261019');
+    expect(week.services.Monday).toEqual(['reg']);
+    for (const day of ['Tuesday', 'Wednesday', 'Thursday', 'Friday'] as const) expect(week.services[day]).toEqual(['alt', 'reg']);
+  });
+
+  it('carta (holiday-reference-week #734, real calendar): with the main period ended, only TriCounty Link is read', () => {
+    // Old reference: Jul 3, inside the main period that ended Aug 15 (route-share guard). The new
+    // model has no such guard: it reads what runs, 14 of the fixture's 38 routes on weekdays
+    // (the ended main period's weekday service had 23). A stage-4 decision, recorded here.
+    const feed = fixtureFeed('carta-stale-main-period');
+    const week = pick({ ...feed, anchor: '20261013' });
+    expect(week.weekStart).toBe('20261012');
+    expect(week.services.Monday).toEqual(['c_70976_b_84051_d_31']);
+    expect(routesOn(feed.trips, week.services.Monday).size).toBe(14);
+  });
+
+  it('miami-dade (holiday-reference-week #734, real calendar): with the bus periods ended, the long-range services are read', () => {
+    // Old reference: Jun 7 (route-share guard). Bus periods ended Jul 19; the weekday read now
+    // carries services 11 and 21, 45 of the fixture's 122 routes.
+    const feed = fixtureFeed('miami-dade-stale-bus-periods');
+    const week = pick({ ...feed, anchor: '20261013' });
+    expect(week.weekStart).toBe('20261012');
+    expect(week.services.Monday).toEqual(['11', '21']);
+    expect(routesOn(feed.trips, week.services.Monday).size).toBe(45);
   });
 
   it('winter holidays (historyRefRepick winterFeed): known limit near the feed end, a tie goes to New Year\'s Day', () => {
