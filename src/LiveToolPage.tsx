@@ -10,7 +10,7 @@ import { useMediaQuery } from './hooks/useMediaQuery';
 import { useLiveAgency } from './LiveAgencyPage';
 import { devOnly, liveReportTitle } from './lib/liveReportData';
 import { applySeoToDocument } from './lib/seoDom';
-import { syncUrlParams } from './utils/syncUrlParams';
+import { readUrlNumberParam, readUrlParam as readParam, syncUrlParams } from './utils/syncUrlParams';
 import { stretchLabel } from './utils/stopLabel';
 import { agencyKpiTiles } from './utils/liveAgencyKpi';
 import { excludingDays, kpiTiles } from './utils/liveKpi';
@@ -39,7 +39,6 @@ import LegendItem from './components/ui/LegendItem';
 import { MAP_BADGE, MAP_BADGE_LABEL, PHONE_TAP_AREA } from './styles';
 import { DataUpTo, withNiceNames } from './LiveRoutePage';
 
-const readParam = (key: string) => new URLSearchParams(window.location.search).get(key);
 
 /** The three step labels of a measure's key: the bunching key the strips already use, and the same shape for the others. */
 function stepLabels(measure: MapMeasure): [string, string, string] {
@@ -347,7 +346,7 @@ export default function LiveToolPage() {
   const { agency = '' } = useParams();
   const state = useLiveAgency(FEATURES.liveReports ? agency : '');
   const [route, setRoute] = useState<string | null>(() => readParam('route'));
-  const [dir, setDir] = useState<number | null>(() => { const d = readParam('dir'); return d != null && d !== '' && !Number.isNaN(Number(d)) ? Number(d) : null; });
+  const [dir, setDir] = useState<number | null>(() => readUrlNumberParam('dir'));
   const [band, setBand] = useState<DashboardBand>(() => { const b = readParam('band'); return BANDS.some(([k]) => k === b) ? (b as DashboardBand) : 'all'; });
   const [measure, setMeasure] = useState<MapMeasure>(() => { const m = readParam('measure'); return MEASURES.some(([k]) => k === m) || m === 'delayStarts' ? (m as MapMeasure) : 'late'; });
   const [dirSlot, setDirSlot] = useState<HTMLElement | null>(null);
