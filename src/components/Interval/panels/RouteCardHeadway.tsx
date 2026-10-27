@@ -27,7 +27,7 @@ import {
 } from '../cardUi';
 import { CARD_NOTE, CARD_NOTICE, CARD_NOTICE_FOOTER } from '../../../styles';
 import { FEATURES, SPARKLINE_HOURS, TIME_PERIODS, formatPeriodHourLong, formatPeriodRangeLong, periodKeyForHour } from '../../../../shared/config';
-import { hasDirectionPeriodService, NO_REGULAR_SERVICE_LABEL, routeCardCoverageText, routeCardDisplayHeadway, routeCardDisplayHeadwayRange, routeCardDisplayLimited } from '../../../utils/effectiveHeadway';
+import { hasDirectionPeriodService, NO_REGULAR_SERVICE_LABEL, NO_REGULAR_SERVICE_SHORT_LABEL, routeCardCoverageText, routeCardDisplayHeadway, routeCardDisplayHeadwayRange, routeCardDisplayLimited } from '../../../utils/effectiveHeadway';
 import { branchDisplayHourHeadway, branchDisplayPeriodHeadway, buildRouteServiceSummary } from '../../../utils/routeFacts';
 import { branchStackColor } from '../../../utils/colors';
 import { unevenPeriodMaxGap } from '../../../utils/routeCardUneven';
@@ -198,6 +198,11 @@ export interface RouteCardHeadwayProps {
   selectedRouteOutOfFilter: boolean;
   /** Night and Frequent Service ignore the period and speed filters, so the card shows no notice about them. */
   hideFilterNotices?: boolean;
+  /**
+   * The Night view's card (CIV-934): no chart and no period, and each destination row reads its night grade (the 2am to
+   * 5am check the Night view runs), never a daytime value.
+   */
+  nightView?: boolean;
   /** Compare mode: this route on each side. */
   compareRows?: CompareRouteRow[] | null;
   expDateStr: string;
@@ -223,6 +228,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
   routeIsStale,
   selectedRouteOutOfFilter,
   hideFilterNotices = false,
+  nightView = false,
   compareRows = null,
   expDateStr,
   hoveredBranch,
@@ -485,7 +491,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
           Includes variants {variantFamily.members.map(m => m.shortName).join(', ')}
         </p>
       )}
-      {(() => {
+      {!nightView && (() => {
         const HOURS = SPARKLINE_HOURS;
         const hoveredSingleBranch = hoveredBranch?.headsign != null;
         const defaultSparklineDirs = sparklineSourceDirections(currentRoute.directions, primaryMultiBranch?.realTier);
@@ -671,7 +677,8 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
             // A route that fails the filter as a whole can still have a shared stretch that passes.
             const onlySharedPasses = groupShared != null && maxHeadway !== Infinity
               && group.realTier.some(d => !featurePassesHeadwayFilter(d, period, maxHeadway));
-            const groupHasCoreSummary = !stretchMode && (groupShared != null || shouldShowTrunkSummary(group.realTier, period));
+            // A shared or combined value is a daytime reading: none on the Night card (CIV-934).
+            const groupHasCoreSummary = !nightView && !stretchMode && (groupShared != null || shouldShowTrunkSummary(group.realTier, period));
             const groupCoreHeadway = groupShared?.headway ?? (groupHasCoreSummary
               ? groupTrunkHeadway(group.realTier, period === 'all' ? 'midday' : period)
               : null);
@@ -706,14 +713,14 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                 {showDirectionSections && group.boundLabel && (
                   <>
                     <CardSectionLabel className="mb-0">{group.boundLabel}</CardSectionLabel>
-                    {!hasVisibleDirectionRows && selectedPeriod && (
+                    {!hasVisibleDirectionRows && selectedPeriod && !nightView && (
                       <p className={`${CARD_NOTE} mt-2 mb-2`}>
                         No {selectedPeriod.label.toLowerCase()} service.
                       </p>
                     )}
                   </>
                 )}
-                {onlySharedPasses && (
+                {onlySharedPasses && !nightView && (
                   <p className={`${CARD_NOTE} mt-2 mb-2`}>
                     Only the shared section meets this filter. The branches do not.
                   </p>
@@ -739,8 +746,27 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                 <div className="space-y-1">
                   {group.realTier.map((d, i) => {
                     return (() => {
-                      const row = routeCardRowValue(d, { period, hoveredHour, stretchMode, allDay, contract, noRegularService, maxHeadway });
                       const label = branchLabel(group, d, gi);
+                      if (nightView) {
+                        // The row's night grade: 30 when it passes the 30-minute night check, else 60 when it passes the
+                        // hourly one, as the Night list reads it (an upper bound, never overstated).
+                        const grade = d.nightService30 === true ? 30 : d.nightService60 === true || d.nightService === true ? 60 : null;
+                        return (
+                          <FlaggableValue key={`r${i}`} reason="Frequency is wrong" reportRef={reportRef} className="block w-full text-left">
+                            <CardDirectionRow
+                              labelWeight="regular"
+                              singleLine
+                              label={label}
+                              headway={grade ?? undefined}
+                              limited={grade == null}
+                              limitedLabel={grade == null ? NO_REGULAR_SERVICE_SHORT_LABEL : undefined}
+                              subLabel={grade != null && d.nightServicePartOfRoute === true ? 'Night service on part of the route' : undefined}
+                              {...branchHoverProps(group.dirId, d.headsign, d.routeVariant)}
+                            />
+                          </FlaggableValue>
+                        );
+                      }
+                      const row = routeCardRowValue(d, { period, hoveredHour, stretchMode, allDay, contract, noRegularService, maxHeadway });
                       if (!label && !collapseGroups && row.displayH == null) return null;
                       return (
                         <FlaggableValue key={`r${i}`} reason="Frequency is wrong" reportRef={reportRef} className="block w-full text-left">
