@@ -3,7 +3,7 @@
  * A change is coloured only when it is bigger than normal noise: the rule (weekChangeTone, dailyNoise, NOISE_RULE) lives
  * in shared/liveDashboard so the dashboard and Full analysis colour changes the same way.
  */
-import { dailyNoise, dateRangeText, healthyCounts, weekChangeTone, type CompareKey, type DailyValues, type DayKind, type LiveV3, type WeekMetrics } from '../../shared/liveDashboard';
+import { runTimeDiffMin, dailyNoise, dateRangeText, healthyCounts, weekChangeTone, type CompareKey, type DailyValues, type DayKind, type LiveV3, type WeekMetrics } from '../../shared/liveDashboard';
 import { LATE_TILE_CAPTION, bunchPartsText, excludingWeeksText, leftOutReason, runTimeDiffText } from '../../shared/liveWording';
 import { pct as pct0, pctTenth as pct1, tenth as clean } from '../../shared/liveFormat';
 
@@ -55,7 +55,7 @@ export function kpiDelta(key: CompareKey, now: number | null, before: number | n
 
 /** "2 min faster than the timetable", from the same whole minutes the tile and the Run time section show. */
 function runTimeCaption(typicalMin: number, scheduledMin: number): string {
-  return runTimeDiffText(Math.round(typicalMin) - Math.round(scheduledMin));
+  return runTimeDiffText(runTimeDiffMin(typicalMin, scheduledMin));
 }
 
 /** The tiles that have a figure this week (a measure with nothing behind it is left out, not shown as a dash). `runTimeScope` is the Run time tile's second caption line. */

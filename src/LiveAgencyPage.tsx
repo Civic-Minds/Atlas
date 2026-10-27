@@ -13,7 +13,7 @@ import { agencyKpiTiles } from './utils/liveAgencyKpi';
 import { weekNotComparableLine } from './utils/liveKpi';
 import { syncUrlParams } from './utils/syncUrlParams';
 import { titleCase } from './utils/format';
-import { shortStopName, stretchLabel } from './utils/stopLabel';
+import { liveStopName as stop, stretchLabel } from './utils/stopLabel';
 import ErrorBoundary from './components/ErrorBoundary';
 import PageShell from './components/ui/PageShell';
 import DataTable from './components/ui/DataTable';
@@ -34,7 +34,6 @@ const FIRST_COL = 15, ROUTE_COL = 10, DIR_COL = 6.5;
 
 const pct = (x: number | null) => (x == null ? '–' : pctOf(x));
 const pctSigned = (x: number | null) => (x == null ? '–' : signedPct(x));
-const stop = (name: string) => shortStopName(titleCase(name));
 
 type Sort = 'late' | 'runTime' | 'bunching' | 'delivered';
 const SORTS: [Sort, string][] = [['late', 'Late'], ['runTime', 'Run time'], ['bunching', 'Bunching'], ['delivered', 'Service delivered']];

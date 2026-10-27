@@ -62,6 +62,12 @@ export function runTimeTileStretch(stretch: Record<string, RunTimeStretch> | und
   return dirs.length === 1 ? `over ${n} stops, ${ends[0]}` : `over ${n} stops: ${ends.join('; ')}`;
 }
 export interface RunTimeBranch { fromStopId: string; toStopId: string; fromName: string; toName: string; stops: number; all: RunTimeFigures; /** By time of day (older files: absent, all day only). */ bands?: Partial<Record<DashboardBand, RunTimeFigures | null>>; byHour: Array<{ hour: number } & RunTimeFigures> }
+/** A direction's name from the file ("Eastbound"), or "Direction 1" where the file has none. */
+export const directionLabel = (v3: LiveV3, d: number): string => v3.directionLabels[String(d)] ?? `Direction ${d}`;
+
+/** Run time against the timetable in the whole minutes the tiles show (typical and scheduled each rounded first, so the difference matches the two figures). */
+export const runTimeDiffMin = (typicalMin: number, scheduledMin: number): number => Math.round(typicalMin) - Math.round(scheduledMin);
+
 /** A branch's figures for a time of day: null when that period has none (or an older file has only all day). */
 export function branchFigures(b: RunTimeBranch, band: DashboardBand): RunTimeFigures | null {
   return b.bands ? b.bands[band] ?? null : band === 'all' ? b.all : null;

@@ -9,6 +9,7 @@ import type { DashboardBand, LiveV3, UncertainStart } from '../../../shared/live
 import { titleCase } from '../../utils/format';
 import { stretchLabel } from '../../utils/stopLabel';
 import { delayHeatPoints } from './delayHeatModel';
+import { BUNCHING_STEP_LIMITS } from './routeStripModel';
 
 export type MapMeasure = 'late' | 'runTime' | 'extraWait' | 'bunching' | 'delayStarts';
 /** The measure switch, in order, with the labels the tiles already use. */
@@ -20,7 +21,8 @@ export const measureLabel = (m: MapMeasure): string => (m === 'delayStarts' ? DE
 /** Step cutoffs per measure: below the first is step 0, below the second step 1, else step 2. Late and bunching are shares; run time and extra wait are minutes. */
 export const MAP_STEP_LIMITS: Record<MapMeasure, readonly [number, number]> = {
   late: [0.1, 0.2],
-  bunching: [0.15, 0.25],
+  // The strips' bunching steps, so the map and the strips colour a stop the same.
+  bunching: BUNCHING_STEP_LIMITS,
   runTime: [0.5, 1.5],
   extraWait: [1, 2],
   // Minutes added since the previous stop: across the analysed routes 90% of stretches add under 0.3 min, 95% under 0.5.

@@ -1,7 +1,7 @@
 import DataTable from './components/ui/DataTable';
 import { useMemo, useState, type ReactNode } from 'react';
 import { weekDailyValues, type DashboardBand, type DashboardBandData, type LiveV3, type UncertainStart } from '../shared/liveDashboard';
-import { kpiTiles, weekNotComparableLine, type Kpi } from './utils/liveKpi';
+import { kpiTiles, weekNotComparableLine, type Kpi, type KpiTone } from './utils/liveKpi';
 import ErrorBoundary from './components/ErrorBoundary';
 import { ANALYZE_DEV_HINT } from './lib/liveReportData';
 import DevHint from './components/Live/DevHint';
@@ -24,9 +24,12 @@ import { LATE_BY_HOUR_TITLE, NOT_ENOUGH_YESTERDAY, againstLastWeekday, dayText }
 const MIN_N = 30;
 
 
+/** The change arrow's colour by its tone: the tiles and the week table colour a change the same way. */
+const TONE_TEXT: Record<KpiTone, string> = { better: 'text-[var(--status-positive-text)]', worse: 'text-[var(--status-negative-text)]', same: 'text-[var(--text-muted)]' };
+
 function Delta({ k }: { k: Kpi }) {
   if (!k.delta) return <span className="text-xs text-[var(--text-dim)]">No comparison with last week</span>;
-  const mark = k.delta.tone === 'better' ? 'text-[var(--status-positive-text)]' : k.delta.tone === 'worse' ? 'text-[var(--status-negative-text)]' : 'text-[var(--text-muted)]';
+  const mark = TONE_TEXT[k.delta.tone];
   return (
     <span className="flex items-baseline gap-1 text-xs tracking-tight" aria-label={k.delta.spoken} title={k.delta.spoken}>
       {k.delta.arrow !== 'none' && <span aria-hidden="true" data-tone={k.delta.tone} className={`text-2xs ${mark}`}>{k.delta.arrow === 'up' ? '▲' : '▼'}</span>}
@@ -91,7 +94,6 @@ export function WeekTable({ tiles, notes, caption, captionTitle, scope, excludin
   excluding?: string | null;
   excludingTitle?: string;
 }) {
-  const arrowTone = (t: Kpi['delta']) => (t?.tone === 'better' ? 'text-[var(--status-positive-text)]' : t?.tone === 'worse' ? 'text-[var(--status-negative-text)]' : 'text-[var(--text-muted)]');
   return (
     <section aria-label="This week compared with last week" className={`${TILE} !px-2.5 !py-1.5`}>
       <DataTable
@@ -103,7 +105,7 @@ export function WeekTable({ tiles, notes, caption, captionTitle, scope, excludin
           { key: 'measure', header: <span className="font-bold text-[var(--text-primary)]"><span className="sr-only">Measure </span>{scope}</span>, rowHeader: true, className: `font-bold text-[var(--text-muted)]`, cell: k => <span className={k.n < MIN_N ? 'opacity-60' : ''}>{k.label}</span> },
           { key: 'now', header: <span className="block text-right font-normal text-[var(--text-dim)]">This week</span>, className: 'text-right text-sm font-black tabular-nums tracking-tight', cell: k => (
             <span className={k.n < MIN_N ? 'opacity-60' : ''}>
-              {k.delta && k.delta.arrow !== 'none' && <span aria-hidden="true" data-tone={k.delta.tone} className={`mr-1 text-2xs font-bold ${arrowTone(k.delta)}`}>{k.delta.arrow === 'up' ? '▲' : '▼'}</span>}
+              {k.delta && k.delta.arrow !== 'none' && <span aria-hidden="true" data-tone={k.delta.tone} className={`mr-1 text-2xs font-bold ${TONE_TEXT[k.delta.tone]}`}>{k.delta.arrow === 'up' ? '▲' : '▼'}</span>}
               {k.value}
             </span>
           ) },

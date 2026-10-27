@@ -3,7 +3,7 @@
  * stop, which stops get a label without labels overlapping, the screen-reader summary, and how a direction is read
  * from the Live analysis file (v3).
  */
-import type { DashboardBand, LiveV3, UncertainStart } from '../../../shared/liveDashboard';
+import { directionLabel, type DashboardBand, type LiveV3, type UncertainStart } from '../../../shared/liveDashboard';
 import { titleCase } from '../../utils/format';
 import { pct, tenth } from '../../../shared/liveFormat';
 import { USUALLY_ON_TIME, bunchTotalParts, bunchedAndLong, lateShareText, usuallyOffBy } from '../../../shared/liveWording';
@@ -284,7 +284,7 @@ export function routeStripFromV3(v3: LiveV3, directionId: number, band: Dashboar
   const bForms = bunchingBand?.kind === 'forms' ? bunchingBand.forms : null;
   return {
     directionId,
-    label: v3.directionLabels[String(directionId)] ?? `Direction ${directionId}`,
+    label: directionLabel(v3, directionId),
     stops,
     delaysStart: forms ? { fromStopId: forms.fromStopId, toStopId: forms.toStopId } : null,
     bunchingForms: bForms ? { fromStopId: bForms.fromStopId, toStopId: bForms.toStopId } : null,
