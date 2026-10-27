@@ -11,6 +11,7 @@ import PerPeriod, { PERIOD_BANDS_ONLY } from './PerPeriod';
 import Section from './Section';
 import { pct } from './figures';
 import Tag from '../../ui/Tag';
+import { LIVE_NOTHING_LINKED } from '../../../content/noticeCopy';
 
 /** The one derivation of where bunching forms, so every surface draws the same numbers. */
 export function bunchingModel(v3: LiveV3, dir: number | null, band: DashboardBand) {
@@ -105,7 +106,7 @@ export default function BunchingSection({ v3, dir, band, gaps, detail, boundary,
               {full && <GapsBlock data={data} gaps={gaps?.directions[String(b.directionId)]} label={label} />}
               {full && stretch && (
                 <>
-                  <h4 className="mt-3 text-sm font-black">{linked.length ? 'Linked to' : 'Nothing measured here is linked to it'}</h4>
+                  <h4 className="mt-3 text-sm font-black">{linked.length ? 'Linked to' : LIVE_NOTHING_LINKED}</h4>
                   <ul className="m-0 mt-1.5 flex list-none flex-wrap gap-1.5 p-0 [&>li]:max-w-full">
                     {stretch.links.map(l => (
                       <li key={l.kind}>
