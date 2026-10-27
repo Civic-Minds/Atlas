@@ -7,8 +7,8 @@
 const PUBLIC_CARTO_KEY = 'cb1_4vgm_1_bddf0dba122b55aa0ea4293a';
 const CARTO_KEY = import.meta.env.VITE_CARTO_BASEMAP_KEY || PUBLIC_CARTO_KEY;
 
-/** CARTO's required credit line. */
-export const BASEMAP_ATTRIBUTION = '© OpenStreetMap contributors, © CARTO';
+/** The basemap's full credit line: the map's hover, MapLibre's attribution and image exports. */
+export const BASEMAP_ATTRIBUTION = 'Map tiles by CARTO, under CC BY 3.0. Data by OpenStreetMap, under ODbL.';
 
 /** A style's tile URL: CARTO directly in builds, the dev server's key route under `npm run dev`. */
 export const cartoTiles = (style: 'light_all' | 'dark_all', dev = import.meta.env.DEV): string[] => [dev
