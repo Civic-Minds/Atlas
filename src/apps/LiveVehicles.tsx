@@ -15,6 +15,7 @@ import { PHONE_MEDIA_QUERY, useMediaQuery } from '../hooks/useMediaQuery';
 import { BOTTOM_SHEET_FRAME, BottomSheetHandle, bottomSheetBodyClass, useBottomSheet } from '../components/ui/BottomSheet';
 import ListRow from '../components/ui/ListRow';
 import Tag from '../components/ui/Tag';
+import { streetJoin } from '../utils/stopLabel';
 import ArrowLink from '../components/ui/ArrowLink';
 import { AgencyList, AgencyListRow } from '../components/ui/AgencyList';
 import RouteListRow from '../components/RouteListRow';
@@ -206,7 +207,8 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
         const cached = resolvedDirections.get(vehicle);
         if (cached && (known == null || cached.directionId === known)) return cached;
         const match = inferLiveDirection(known == null ? vehicle : { ...vehicle, directionId: known }, routeFeatures);
-        const out = { ...vehicle, directionId: match.directionId, headsign: match.headsign };
+        // Destinations read with "&" between two street names, like the direction labels below (CIV-1043).
+        const out = { ...vehicle, directionId: match.directionId, headsign: match.headsign && streetJoin(match.headsign) };
         if (routeFeatures.length > 0) resolvedDirections.set(vehicle, out);
         return out;
       });
@@ -500,7 +502,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
   const directionLabels = useMemo(() => {
     if (!selectedGroup) return new Map<number, string>();
     const fc = routeLayer(selectedGroup.agencySlug);
-    return fc ? routeDirectionLabels(fc.features, selectedGroup.routeShortName) : new Map<number, string>();
+    return fc ? new Map([...routeDirectionLabels(fc.features, selectedGroup.routeShortName)].map(([d, l]) => [d, streetJoin(l)])) : new Map<number, string>();
   }, [selectedGroup, routeLayer]);
 
   // Direction drill-down within a route

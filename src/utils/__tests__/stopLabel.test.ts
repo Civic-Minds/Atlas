@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { shortStopName, stretchEnds, stretchLabel } from '../stopLabel';
+import { shortStopName, streetJoin, stretchEnds, stretchLabel } from '../stopLabel';
 
 describe('shortStopName', () => {
   it('names the loop, not the street, for a stop at a loop', () => {
@@ -28,5 +28,19 @@ describe('stretchLabel', () => {
   it('names a stretch the same way on every page (CIV-910)', () => {
     expect(stretchLabel('Dundas St East at Church St', 'Dundas St East at Yonge St - Dundas Station')).toBe('Church St to Dundas Station');
     expect(stretchLabel('Dundas St West at McCaul St', 'Dundas St West at University Ave - St Patrick Station')).toBe('McCaul St to St Patrick Station');
+  });
+});
+
+describe('streetJoin (CIV-1043)', () => {
+  it('joins two street names with "&"', () => {
+    expect(streetJoin('Broadview and Queen')).toBe('Broadview & Queen');
+    expect(streetJoin('Martin Grove and Steeles')).toBe('Martin Grove & Steeles');
+    expect(streetJoin('Dufferin St and Millicent St')).toBe('Dufferin St & Millicent St');
+  });
+  it('leaves names where "and" is not a street join', () => {
+    for (const name of ['Jane and Finch Station Eastbound Platform', 'Guildwood Pkwy at Guild Park and Gardens East Side',
+      'Cherry Beach via Distillery and Ookwemin Minising', '1315 and 1319 Neilson Rd', 'Steeles and Islington via Weston', 'Weston Rd via Culford and Benton and Church']) {
+      expect(streetJoin(name)).toBe(name);
+    }
   });
 });
