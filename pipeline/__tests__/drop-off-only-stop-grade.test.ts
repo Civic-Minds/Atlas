@@ -19,7 +19,7 @@ const every = (from: number, to: number, step: number) => { const out: number[] 
  * drawn one at every stop). `dropOffOnly` lists stops whose stop times are pickup_type 1 on
  * every trip; `dropOffOnlyOnB` lists stops that are drop-off only on shape B's trips only.
  */
-async function feed(opts: { a: number[]; b: number[]; dropOffOnly?: string[]; dropOffOnlyOnA?: string[]; dropOffOnlyOnB?: string[]; noPickupColumn?: boolean; frequencies?: boolean }): Promise<Buffer> {
+async function feed(opts: { a: number[]; b: number[]; dropOffOnly?: string[]; dropOffOnlyOnA?: string[]; dropOffOnlyOnB?: string[]; noPickupColumn?: boolean; frequencies?: boolean; loopFirstDropOff?: boolean }): Promise<Buffer> {
   const zip = new JSZip();
   const csv = (rows: string[][]) => rows.map(r => r.join(',')).join('\n') + '\n';
   zip.file('agency.txt', csv([['agency_id', 'agency_name', 'agency_url', 'agency_timezone'], ['a', 'A', 'https://example.com', 'America/Toronto']]));
@@ -28,14 +28,15 @@ async function feed(opts: { a: number[]; b: number[]; dropOffOnly?: string[]; dr
     ['wk', '1', '1', '1', '1', '1', '0', '0', '20260101', '20271231']]));
   const stops = Array.from({ length: 9 }, (_, i) => [`s${i}`, 43.70 + i * 0.01, -79.40] as const);
   zip.file('stops.txt', csv([['stop_id', 'stop_name', 'stop_lat', 'stop_lon'], ...stops.map(([id, lat, lon]) => [id, id, String(lat), String(lon)])]));
-  const seq = stops.map(s => s[0]);
+  // loopFirstDropOff: each trip is a loop that lists s0 first as drop-off only and ends back at s0, where it boards.
+  const seq = opts.loopFirstDropOff ? [...stops.map(s => s[0]), 's0'] : stops.map(s => s[0]);
   const shapeRows = [['shape_id', 'shape_pt_lat', 'shape_pt_lon', 'shape_pt_sequence']];
   for (const id of ['A', 'B']) seq.forEach((s, i) => { const st = stops.find(x => x[0] === s)!; shapeRows.push([id, String(st[1]), String(st[2]), String(i + 1)]); });
   zip.file('shapes.txt', csv(shapeRows));
   const trips = [['route_id', 'service_id', 'trip_id', 'trip_headsign', 'direction_id', 'shape_id']];
   const times = [opts.noPickupColumn ? ['trip_id', 'arrival_time', 'departure_time', 'stop_id', 'stop_sequence'] : ['trip_id', 'arrival_time', 'departure_time', 'stop_id', 'stop_sequence', 'pickup_type', 'drop_off_type']];
   const row = (id: string, shape: string, start: number, s: string, i: number) => {
-    const dropOff = opts.dropOffOnly?.includes(s) || (shape === 'A' && opts.dropOffOnlyOnA?.includes(s)) || (shape === 'B' && opts.dropOffOnlyOnB?.includes(s));
+    const dropOff = (opts.loopFirstDropOff && s === 's0' && i === 0) || opts.dropOffOnly?.includes(s) || (shape === 'A' && opts.dropOffOnlyOnA?.includes(s)) || (shape === 'B' && opts.dropOffOnlyOnB?.includes(s));
     times.push(opts.noPickupColumn ? [id, hm(start + i * 4), hm(start + i * 4), s, String(i + 1)] : [id, hm(start + i * 4), hm(start + i * 4), s, String(i + 1), dropOff ? '1' : '0', '0']);
   };
   const add = (shape: string, starts: number[]) => starts.forEach((start, n) => {
@@ -117,6 +118,13 @@ describe('drop-off-only stops are not graded (#879)', () => {
     expect(line.dropOffOnlyStops).toBeUndefined();
     expect(line.stopTiers.s0).toBeDefined();
     expect(line.stopTiers.s8).toBeDefined();
+  });
+
+  it('a loop terminal whose first listed visit is drop-off only still boards, in stop_times and frequencies.txt feeds (CIV-224)', async () => {
+    for (const frequencies of [false, true]) {
+      const line = await weekdayLine(await feed({ a, b, loopFirstDropOff: true, frequencies }));
+      expect(line.dropOffOnlyStops ?? [], `frequencies: ${frequencies}`).not.toContain('s0');
+    }
   });
 
   it('a frequencies.txt feed marks its drop-off-only terminal the same way', async () => {

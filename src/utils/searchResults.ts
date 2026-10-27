@@ -2,12 +2,14 @@ import type { GeoJSON } from 'geojson';
 import type { ShapeProperties } from '../hooks/useAgencyData';
 import type { ViewportBounds } from '../hooks/useIntervalStats';
 import type { AgencySearchGroup } from './agencySearch';
-import { buildRouteFacts } from './routeFacts';
+import { buildRouteFacts, type RouteLabel } from './routeFacts';
 import { compareRouteNumber, compareSearchRelevance, compareText } from './sortCompare';
 
 export interface RouteSearchResult {
   key: string;
   routeShortName: string | null;
+  /** What the row shows (route facts' label, CIV-984); routeShortName is only the route's identity. */
+  label: RouteLabel;
   routeLongName: string | null;
   agencyName?: string;
   inView: boolean;
@@ -289,6 +291,7 @@ export function searchRouteResults(
       return {
         key,
         routeShortName: facts.shortName,
+        label: facts.label,
         routeLongName: facts.longName,
         agencyName: facts.agencyName,
         routeType: (p as { routeType?: number }).routeType,

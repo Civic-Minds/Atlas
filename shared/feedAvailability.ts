@@ -1,4 +1,21 @@
-/** Whether a published feed has service through the requested UTC date. */
+import { localDateIn } from './onDemandAvailability.js';
+
+/**
+ * Today's date (YYYYMMDD) where the agency is: every check of whether its feed has ended reads this
+ * (Ryan, 2026-10-27), so the site, the refresh and the release gate agree near midnight. With no
+ * time zone on file it is the last place on Earth to reach midnight (localDateIn), so a feed never
+ * reads as ended before its last day is over anywhere.
+ */
+export function agencyTodayYmd(agency: { timezone?: string | null }, now: Date = new Date()): string {
+  return localDateIn(agency.timezone, now).replace(/-/g, '');
+}
+
+/** Whether the agency's published service (every feed, effectiveFeedExpiry) has ended, in its own local date. */
+export function isAgencyFeedExpired(agency: SupplementalFeedExpiryEntry & { timezone?: string | null }, now: Date = new Date()): boolean {
+  return isExpiredFeedExpiry(effectiveFeedExpiry(agency), agencyTodayYmd(agency, now));
+}
+
+/** Whether a published feed has service through the requested date. */
 export function isCurrentFeedExpiry(expiry: string | null | undefined, today = todayUtcYmd()): boolean {
   return typeof expiry === 'string' && /^\d{8}$/.test(expiry) && expiry >= today;
 }
@@ -42,6 +59,7 @@ export function effectiveFeedExpiry(agency: SupplementalFeedExpiryEntry): string
 }
 
 export interface FeedAvailabilityEntry extends SupplementalFeedExpiryEntry {
+  timezone?: string | null;
   lastRefreshedAt?: string | null;
   staged?: boolean;
   hiddenInProduction?: boolean;
@@ -53,17 +71,17 @@ export function isProductionVisibleFeed(agency: FeedAvailabilityEntry): boolean 
 }
 
 /** The latest snapshot Atlas has published, whether current or stale. */
-export function isActiveProductionFeed(agency: FeedAvailabilityEntry, today = todayUtcYmd()): boolean {
+export function isActiveProductionFeed(agency: FeedAvailabilityEntry, today = agencyTodayYmd(agency)): boolean {
   return isProductionVisibleFeed(agency) && (
     (typeof agency.lastRefreshedAt === 'string' && agency.lastRefreshedAt.length > 0) ||
     isCurrentFeedExpiry(effectiveFeedExpiry(agency), today)
   );
 }
 
-/** Production-visible and current through the requested UTC date. */
+/** Production-visible and current through the requested date (default: the agency's local today). */
 export function isCurrentProductionFeed(
   agency: FeedAvailabilityEntry,
-  today = todayUtcYmd(),
+  today = agencyTodayYmd(agency),
 ): boolean {
   return isActiveProductionFeed(agency, today) && !isExpiredFeedExpiry(effectiveFeedExpiry(agency), today);
 }
@@ -71,7 +89,7 @@ export function isCurrentProductionFeed(
 /** An active production feed whose published schedule may be outdated. */
 export function isStaleProductionFeed(
   agency: FeedAvailabilityEntry,
-  today = todayUtcYmd(),
+  today = agencyTodayYmd(agency),
 ): boolean {
   return isActiveProductionFeed(agency, today) && isExpiredFeedExpiry(effectiveFeedExpiry(agency), today);
 }
@@ -83,7 +101,7 @@ export function isStaleProductionFeed(
  */
 export function isStalePrimaryProductionFeed(
   agency: FeedAvailabilityEntry,
-  today = todayUtcYmd(),
+  today = agencyTodayYmd(agency),
 ): boolean {
   return isStaleProductionFeed({ ...agency, lastSupplementalFeeds: undefined }, today);
 }

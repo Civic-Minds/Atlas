@@ -4,7 +4,7 @@
  * the per-route headways already published in the data release (see
  * scripts/build-agency-page-summaries.ts); nothing here measures anything new.
  */
-import { headwayEvery } from './headwayText';
+import { headwayEvery, headwayEveryRange, headwayOrBetter } from './headwayText';
 import { modeLabel, sortModes } from './modes';
 import { compareAgencyName, compareNullableAscending } from './sortCompare';
 import { areaRegionName, areaRegionTitle } from './areaRegions';
@@ -182,7 +182,8 @@ export function agencyPageData(
         .sort((x, y) => (a.center && x.center ? distanceKm(a.center, x.center) : 0) - (a.center && y.center ? distanceKm(a.center, y.center) : 0))
         .slice(0, MAX_AREA_LIST)
     : nearbyAgencies(a, all);
-  const hasPage = new Set(all.filter(o => o.routes.some(r => r.midday != null)).map(o => o.slug));
+  // Every agency in the list has a page (CIV-965), so a connection links whenever its agency is in it.
+  const hasPage = new Set(all.map(o => o.slug));
   const fullName = new Map(all.map(o => [o.slug, o.name]));
   const connections = (a.connections ?? []).filter(c => !c.betaOnly || BETA_BUILD).map(c => ({ ...c, name: fullName.get(c.slug) ?? c.name, page: hasPage.has(c.slug) }));
   const place = area && agencySpansArea(a.bbox, area.bbox) ? areaRegionName(area) : a.city;
@@ -221,15 +222,23 @@ export { modeLabel };
 
 /** Weekday-midday frequency bands, best first; the last one is routes with no regular midday service. */
 export const FREQUENCY_BANDS = [
-  { key: 'b10', phrase: 'every 10 min or better', short: '≤10', test: (m: number) => m <= 10 },
-  { key: 'b15', phrase: 'every 11–15 min', short: '11–15', test: (m: number) => m <= 15 },
-  { key: 'b20', phrase: 'every 16–20 min', short: '16–20', test: (m: number) => m <= 20 },
-  { key: 'b30', phrase: 'every 21–30 min', short: '21–30', test: (m: number) => m <= 30 },
-  { key: 'b60', phrase: 'every 31–60 min', short: '31–60', test: (m: number) => m <= 60 },
-  { key: 'b60plus', phrase: 'less often than every 60 min', short: '60+', test: () => true },
+  { key: 'b10', phrase: headwayOrBetter(10), short: '≤10', test: (m: number) => m <= 10 },
+  { key: 'b15', phrase: headwayEveryRange(11, 15), short: '11–15', test: (m: number) => m <= 15 },
+  { key: 'b20', phrase: headwayEveryRange(16, 20), short: '16–20', test: (m: number) => m <= 20 },
+  { key: 'b30', phrase: headwayEveryRange(21, 30), short: '21–30', test: (m: number) => m <= 30 },
+  { key: 'b60', phrase: headwayEveryRange(31, 60), short: '31–60', test: (m: number) => m <= 60 },
+  { key: 'b60plus', phrase: `less often than ${headwayEvery(60)}`, short: '60+', test: () => true },
 ] as const;
 export const NO_MIDDAY_PHRASE = 'with no regular midday service';
 export const NO_MIDDAY_SHORT = 'no midday';
+
+/**
+ * At least one route with a regular weekday midday cadence. Area pages and their area files list only these agencies;
+ * every agency has its own page either way (CIV-965). The one place this rule is written.
+ */
+export function hasMiddayService(a: { routes: ReadonlyArray<{ midday: number | null }> }): boolean {
+  return a.routes.some(r => r.midday != null);
+}
 
 /** Route counts per band (same order as FREQUENCY_BANDS), then routes with no midday cadence last. */
 export function bandCounts(routes: ReadonlyArray<Pick<AgencyPageRoute, 'midday'>>): number[] {
@@ -337,6 +346,14 @@ export function agencySpanShort(a: Pick<AgencyPageSummary, 'span'>): string | nu
   if (!a.span) return null;
   if (a.span.last + 1 - a.span.first >= 24) return '24 h';
   return `${hourLabel(a.span.first)}–${hourLabel(a.span.last + 1)}`;
+}
+
+/**
+ * A name for a tight spot: the full name, or past `maxChars` a shorter one with the full name kept for the hover
+ * title. Shared by the area table's names column and the agencies list's tagged rows, so both shorten the same way.
+ */
+export function fitAgencyName(full: string, short: string, maxChars: number): { text: string; title?: string } {
+  return full.length > maxChars && short.length < full.length ? { text: short, title: full } : { text: full };
 }
 
 /** The agency's name without its bracketed city: "TTC (Toronto)" becomes "TTC". */
@@ -457,7 +474,8 @@ export function resolveAgencySeo(
 export function agencyPageJsonLd(a: AgencyPageSummary, canonicalUrl: string, origin: string, area?: { slug: string; name: string }, intro?: string): object {
   const crumbs = agencyBreadcrumbs(a, area);
   const modified = formatIso(a.lastRefreshedAt);
-  const place = [a.city, a.region, a.country].filter(Boolean).join(', ');
+  // A city that is the state itself ("Colorado" for a statewide service) is named once, not "Colorado, Colorado" (#1130).
+  const place = [a.city, a.region, a.country].filter((p, i, all): p is string => !!p && p !== all[i + 1]).join(', ');
   return {
     '@context': 'https://schema.org',
     '@graph': [

@@ -2,6 +2,7 @@ import type { DayType } from '../../shared/dayTypes';
 import type { FrequentServiceFrequency, FrequentServiceWindow } from '../../shared/frequentService';
 import type { NightServiceFrequency } from '../../shared/nightService';
 import { joinList } from '../../shared/overflowText';
+import { headwayOrBetter } from '../../shared/headwayText';
 
 /** The rule shown in each research view's info panel, always using the numbers currently selected. */
 
@@ -20,7 +21,7 @@ export function clockText(minutes: number): string {
 }
 
 export function nightRuleText(frequency: NightServiceFrequency): string {
-  return `Routes with a departure at least every ${frequency} minutes from 2am to 5am.`;
+  return `Routes with a departure ${headwayOrBetter(frequency)} from 2am to 5am.`;
 }
 
 export const FREQUENT_INFO_HEADING = 'Which routes are frequent?';
@@ -38,5 +39,5 @@ export function frequentRuleText(options: {
 }): string {
   const startMin = 7 * 60;
   const endMin = options.window === 'extended' ? 24 * 60 : 19 * 60;
-  return `Routes with a departure at least every ${options.frequency} minutes, ${clockText(startMin)} to ${clockText(endMin)}, on ${dayList(options.days)}.`;
+  return `Routes with a departure ${headwayOrBetter(options.frequency)}, ${clockText(startMin)} to ${clockText(endMin)}, on ${dayList(options.days)}.`;
 }

@@ -54,3 +54,25 @@ export function pointCoordinate(geometry: GeometryLike): LonLat | null {
 export function isDrawableLineCoordinates(value: unknown): value is LonLat[] {
   return Array.isArray(value) && value.length >= 2 && value.every(isLonLat);
 }
+
+/** The smallest box around a set of [lon, lat] points. */
+export interface LonLatBox {
+  minLng: number;
+  minLat: number;
+  maxLng: number;
+  maxLat: number;
+}
+
+/** Bounding box of a set of [lon, lat] points, or null when there are none. */
+export function boundingBox(points: Iterable<LonLat>): LonLatBox | null {
+  let minLng = Infinity, maxLng = -Infinity, minLat = Infinity, maxLat = -Infinity;
+  let any = false;
+  for (const [lng, lat] of points) {
+    any = true;
+    if (lng < minLng) minLng = lng;
+    if (lng > maxLng) maxLng = lng;
+    if (lat < minLat) minLat = lat;
+    if (lat > maxLat) maxLat = lat;
+  }
+  return any ? { minLng, minLat, maxLng, maxLat } : null;
+}

@@ -17,6 +17,11 @@ describe('formatBranchLabel', () => {
     expect(formatBranchLabel('Crosstown2', '2', 'CROSSTOWN 2', 'Eastbound')).toBe('to Eastbound');
   });
 
+  it('drops the repeated route number from zero-padded DART headsigns (#1098)', () => {
+    expect(formatBranchLabel('5 INWOOD/ LOVE FIELD STATION', '005', 'LOVE FIELD SHUTTLE')).toBe('to Inwood/Love Field Station');
+    expect(formatBranchLabel('5  LOVE FIELD AIRPORT', '005', 'LOVE FIELD SHUTTLE')).toBe('to Love Field Airport');
+  });
+
   it('shows distinct terminals', () => {
     expect(formatBranchLabel('Warden Station', '68', 'Warden', 'Southbound')).toBe('to Warden Station');
   });
@@ -68,5 +73,18 @@ describe('resolveBranchLabel', () => {
   it('capitalizes MVTA destination abbreviations', () => {
     expect(formatBranchLabel('MOA/MSP', '495', '4FUN: Shakopee-Savage-Burnsville-MOA-MSP')).toBe('to MOA/MSP');
     expect(formatBranchLabel('Marschall Road TS', '495', '4FUN: Shakopee-Savage-Burnsville-MOA-MSP')).toBe('to Marschall Road TS');
+  });
+});
+
+describe('destination capitals (CIV-935)', () => {
+  it('keeps a mixed-case destination exactly as the feed wrote it', () => {
+    expect(formatBranchLabel('McDonald Ave', '9', '')).toBe('to McDonald Ave');
+    expect(formatBranchLabel('Station Champ-de-Mars', '9', '')).toBe('to Station Champ-de-Mars');
+    expect(formatBranchLabel('95th/Dan Ryan CTA Station Bay A', '352', '')).toBe('to 95th/Dan Ryan CTA Station Bay A');
+  });
+
+  it('re-cases an all-capitals destination, keeping listed abbreviations', () => {
+    expect(formatBranchLabel('LBJ/CENTRAL STATION', '9', '')).toBe('to LBJ/Central Station');
+    expect(formatBranchLabel('MOODY CENTER', '9', '')).toBe('to Moody Center');
   });
 });

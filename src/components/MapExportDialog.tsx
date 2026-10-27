@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Download, Share2, X } from 'lucide-react';
-import { FLOATING_CARD, Z_MODAL_BG, Z_MODAL_TOP } from '../styles';
+import { FLOATING_CARD, Z_MODAL_BG, Z_MODAL_TOP, CARD_NOTE } from '../styles';
 import { canShareMapExport, createMapExport, DEFAULT_MAP_EXPORT_SIZE, downloadMapExport, getMapExportLayout, MAP_EXPORT_SIZES, MapExportBlockedError, shareMapExport, type MapExportSize, type MapExportSizeId } from '../utils/mapExport';
 import type { MapExportBox, MapExportDetails } from '../utils/mapExportDetails';
 import { trackEvent } from '../lib/analytics';
@@ -117,14 +117,14 @@ export default function MapExportDialog({ open, prepareSource, releaseSource, de
         <div className="flex items-start justify-between gap-4">
           <div>
             <h2 id="map-export-title" className="text-sm font-black text-[var(--text-primary)]">Export map image</h2>
-            <p className="mt-1 text-xs font-bold text-[var(--text-dim)]">A picture of this map, with whose schedules it shows, when the data was updated, and the Atlas link.</p>
+            <p className={`mt-1 ${CARD_NOTE}`}>A picture of this map, with whose schedules it shows, when the data was updated, and the Atlas link.</p>
           </div>
           <button type="button" onClick={onClose} aria-label="Close export dialog" className="text-[var(--text-dim)] hover:text-[var(--text-primary)]">
             <X className="h-4 w-4" />
           </button>
         </div>
 
-        {waitingForMap && <p role="status" className="mt-2 text-xs font-bold text-[var(--text-dim)]">Map still loading. The image will save once every route is drawn.</p>}
+        {waitingForMap && <p role="status" className={`mt-2 ${CARD_NOTE}`}>Map still loading. The image will save once every route is drawn.</p>}
         {error && <p role="alert" className="mt-2 text-xs font-bold text-[var(--status-negative-text)]">{error}</p>}
 
         <div className="mt-5 grid grid-cols-3 gap-1 rounded-xl border border-[var(--border-primary)] p-1">

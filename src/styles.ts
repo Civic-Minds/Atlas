@@ -1,13 +1,15 @@
 /**
  * Shared structural class constants for Atlas UI primitives.
- * Color tokens live in CSS variables (index.css). These handle shape, shadow, and surface.
+ * Color tokens live in CSS variables (index.css). These handle shape and surface (nothing has a shadow).
  */
+
+import type { CSSProperties } from 'react';
 
 /** Glass panel surface: background + blur + primary border */
 export const SURFACE = 'bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)]';
 
 /** Circular icon button (w-8 h-8, top-bar style; 32px on phones) */
-export const ICON_BTN = `w-8 h-8 max-sm:w-[32px] max-sm:h-[32px] flex items-center justify-center ${SURFACE} rounded-full shadow-lg text-[var(--text-primary)] hover:text-[var(--accent)] transition-colors`;
+export const ICON_BTN = `w-8 h-8 max-sm:w-[32px] max-sm:h-[32px] flex items-center justify-center ${SURFACE} rounded-full text-[var(--text-primary)] hover:text-[var(--accent)] transition-colors`;
 
 /** Shared transition timing tokens */
 export const TRANSITION_FAST = 'duration-150 ease-out';
@@ -20,20 +22,22 @@ export const PANEL_ENTER_LEFT = `animate-in fade-in slide-in-from-left-2 ${TRANS
 export const PANEL_ENTER_TOP = `animate-in fade-in zoom-in-95 slide-in-from-top-1 origin-top-right ${TRANSITION_FAST}`;
 
 /** Right-anchored dropdown card — Settings, Info, etc. */
-export const DROPDOWN_PANEL = `absolute top-[4.5rem] left-3 right-3 sm:left-auto sm:right-6 sm:w-[360px] h-[calc(100vh-5.5rem)] flex flex-col ${SURFACE} rounded-2xl shadow-2xl overflow-hidden`;
+export const DROPDOWN_PANEL = `absolute top-[4.5rem] left-3 right-3 sm:left-auto sm:right-6 sm:w-[360px] h-[calc(100vh-5.5rem)] flex flex-col ${SURFACE} rounded-2xl overflow-hidden`;
 
 /** Scale + opacity entrance animation for dropdown panels */
 export const dropdownAnim = (visible: boolean) =>
   `transition-[opacity,transform] ${TRANSITION_BASE} origin-top-right ${visible ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`;
 
 /** Generic floating card (dropdown menus, small overlays) */
-export const FLOATING_CARD = `${SURFACE} rounded-2xl shadow-2xl`;
+export const FLOATING_CARD = `${SURFACE} rounded-2xl`;
+/** Every sidebar card's surface. */
+export const SIDEBAR_CARD_SURFACE = `${SURFACE} rounded-2xl`;
 
 /** Shared shell for a scrollable sidebar card. */
 export const PANEL_SHELL = `${FLOATING_CARD} flex flex-col overflow-hidden`;
 
 /** Top-bar pill surface (search bar, headway filter row) */
-export const PILL_SURFACE = `h-8 max-sm:h-[32px] flex items-center ${SURFACE} rounded-full shadow-lg`;
+export const PILL_SURFACE = `h-8 max-sm:h-[32px] flex items-center ${SURFACE} rounded-full`;
 /** Shared responsive width used by the top search bar */
 export const SEARCH_BAR_WIDTH = 'w-full sm:w-72 xl:w-80';
 
@@ -41,7 +45,7 @@ export const SEARCH_BAR_WIDTH = 'w-full sm:w-72 xl:w-80';
 export const SIDEBAR_PANEL_WIDTH = 'w-[calc(100vw-3rem)] sm:w-72 lg:w-72 xl:w-80 max-w-sm';
 
 /** Shared glass pill geometry; surfaces and borders are supplied by each state. */
-export const GLASS_PILL = 'backdrop-blur-md rounded-full shadow-lg';
+export const GLASS_PILL = 'backdrop-blur-md rounded-full';
 /** Filter chip pill base — border color added dynamically per active state */
 export const CHIP_BASE = `${GLASS_PILL} bg-[var(--bg-panel)] border`;
 
@@ -61,7 +65,7 @@ export const SELECTION_ACTIVE_TEXT = 'text-[var(--selection-active-fg)]';
 export const ACTION_PRIMARY = 'bg-[var(--action-primary-bg)] border-[var(--action-primary-border)] text-[var(--action-primary-fg)]';
 
 /** Bottom map HUD badge (routes, coverage, loading, attribution) */
-export const MAP_BADGE = 'flex items-center gap-1.5 bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] rounded-full shadow-2xl px-3';
+export const MAP_BADGE = 'flex items-center gap-1.5 bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] rounded-full px-3';
 export const MAP_BADGE_COUNT = 'text-xs font-black text-[var(--text-primary)]';
 export const MAP_BADGE_LABEL = 'text-xs font-semibold leading-none text-[var(--text-muted)]';
 
@@ -122,6 +126,15 @@ export const PANEL_EMPTY = 'px-4 py-3 text-xs text-[var(--text-muted)] font-bold
  * Use via CardHelpNotice — these tokens keep one visual language.
  */
 export const CARD_NOTICE = 'text-xs font-normal text-[var(--text-dim)]';
+/** A short grey note inside a card (the route card's pattern label and "No midday service."; the chart's period
+ *  name and legend). Bold, to read beside the card's bold rows. */
+export const CARD_NOTE = 'text-xs font-bold text-[var(--text-dim)]';
+/** A small section label ("Westbound", "On-demand service", the filter panel's "Mode"). */
+export const CARD_SECTION = 'text-xs font-black text-[var(--text-dim)]';
+/** The chart's period names over its bars (route card chart and the full-day view). */
+export const CHART_PERIOD_LABEL = 'text-xs font-black text-[var(--text-muted)]';
+/** A heading inside the chart area (the trip-time strip's "Trip time"). */
+export const CHART_HEADING = 'text-xs font-bold text-[var(--text-muted)]';
 /** Footer block under card content (spacing only, no divider) */
 export const CARD_NOTICE_FOOTER = 'mt-2 pt-1';
 /** In-list notice padding (e.g. outside-filters control) */
@@ -129,7 +142,7 @@ export const CARD_NOTICE_INLINE = 'px-4 pt-2 pb-1 opacity-80';
 
 /**
  * Pill search box wrapper inside panels and dropdowns. Same look as the top search bar (surface,
- * edge, height, roundness, icon and text), minus its floating shadow, so every search field matches.
+ * edge, height, roundness, icon and text), so every search field matches.
  */
 export const SEARCH_PILL = 'flex items-center h-8 bg-[var(--bg-panel)] border border-[var(--border-primary)] rounded-full pl-2 pr-3 gap-2.5';
 
@@ -146,11 +159,59 @@ export const Z_HEADER    = 'z-[1100]';    // Header row, in-app right-side butto
 export const Z_DROPDOWN  = 'z-[1200]';    // Autocomplete dropdowns, app drawer panel
 export const Z_MODAL_BG  = 'z-[1400]';    // InfoPanel backdrop
 export const Z_MODAL_TOP = 'z-[1500]';    // FilterPanel backdrop (above InfoPanel)
-export const PANEL_Z_INDEX = 1000;         // Numeric for inline styles (e.g. NearbyRoutesPanel)
+export const Z_PANEL_RAISED = 'z-[1001]'; // One step above the panels: Compare's map labels and link button, so a chip's menu opens over the phone route sheet
 
-/** Shared sidebar placement below the top search controls. */
+/** The top of everything that sits under the search bar: 7px below it (the bar ends at 49px on desktop, 51px on phones).
+ *  The desktop step is its own token for a phone layout that starts somewhere else (Compare's lower map). */
+/**
+ * Map overlay slots (CIV-1011 #12): where each fixed overlay sits over the map, in one place so they are placed
+ * against each other, not one at a time. Every edge is the same 1.5rem (6) inset; the phone row above the bottom
+ * edge is bottom-16. scripts/check-overlay-overlap.mjs measures them at 360, 640, 820, 1024 and 1440 and fails on
+ * any overlap. Each overlay carries `data-map-overlay="<name>"` for that check.
+ */
+/** The header row: logo and search on the left, mode tabs and buttons on the right. */
+export const MAP_TOP_BAR_SLOT = 'top-6 left-6 right-6 h-[28px]';
+/** sm and up: the bottom-left pills and the bottom-right counts share one row, so the pills wrap upward before the counts. Phones drop it (contents). */
+export const MAP_FOOTER_ROW_SLOT = 'max-sm:contents absolute bottom-6 left-6 right-14 flex items-end justify-between gap-2 pointer-events-none';
+/** Phones: the About, What's new and Feedback pills along the bottom edge. */
+export const MAP_FOOTER_PILLS_PHONE_SLOT = 'max-sm:absolute max-sm:bottom-6 max-sm:left-6 max-sm:max-w-[calc(100vw-3rem)]';
+/** Phones: the loading and count pills, one row above the footer pills. */
+export const MAP_COUNTS_PHONE_SLOT = 'max-sm:absolute max-sm:bottom-16 max-sm:left-6';
+/** The locate, export and zoom stack in the bottom-right corner. */
+export const MAP_CONTROLS_SLOT = 'absolute bottom-6 right-3 max-sm:right-6';
+/** A centred notice pill along the bottom, clear of the controls; `raised` sits one row up. */
+export const MAP_NOTICE_SLOT = 'absolute bottom-6 left-6 right-24 sm:right-56 flex justify-center';
+export const MAP_NOTICE_SLOT_RAISED = 'absolute bottom-16 left-6 right-24 sm:right-56 flex justify-center';
+/** The analytics prompt where the footer row doesn't draw it: under the header on phones, at the bottom edge otherwise. */
+export const MAP_CONSENT_SLOT = 'fixed inset-x-0 top-[4.25rem] mx-auto sm:top-auto sm:bottom-6';
+/** App-level status pills (loading the map, a load error), centred along the bottom. */
+export const MAP_STATUS_SLOT = 'absolute left-1/2 bottom-5 -translate-x-1/2';
+
+export const SIDEBAR_CARD_TOP_DESKTOP = 'sm:top-[56px]';
+export const SIDEBAR_CARD_TOP = `top-[58px] ${SIDEBAR_CARD_TOP_DESKTOP}`;
+/** Every sidebar card's placement: SIDEBAR_CARD_TOP plus its left edge. */
+export const SIDEBAR_CARD_SLOT = `absolute ${SIDEBAR_CARD_TOP} left-6 sm:left-[var(--sidebar-left)]`;
+export const SIDEBAR_CARD = `${SIDEBAR_CARD_SLOT} ${Z_PANEL}`;
+/** Every sidebar card's tallest size: it stops 7px above the bottom pills (measured: their top is 49px up
+ *  on desktop, 53px on phones) and its list scrolls inside. */
+export const SIDEBAR_CARD_MAX_H = 'max-h-[calc(100vh-112px)] max-sm:max-h-[calc(100dvh-118px)]';
+
+
+/** Live's sidebar placement, kept apart from the cards' while Live is rebuilt on its own branch
+ *  (Live sidebars never scroll or collapse). */
 export const PANEL_SIDEBAR_SLOT = 'absolute top-[68px] left-6 sm:left-[var(--sidebar-left)]';
 export const PANEL_SIDEBAR = `${PANEL_SIDEBAR_SLOT} ${Z_PANEL}`;
 
 /** Fallback sidebar left offset (px) — used until ResizeObserver measures the real position */
 export const SIDEBAR_LEFT_FALLBACK = 182;
+
+/**
+ * Inline placement every sidebar card shares: its left edge (--sidebar-left, the fallback until the
+ * real position is measured) and, on desktop, the search bar's width. Callers pass no width on phones.
+ */
+export function sidebarFrameStyle(sidebarLeft?: number | null, searchBarWidth?: number): CSSProperties {
+  return {
+    '--sidebar-left': `${sidebarLeft ?? SIDEBAR_LEFT_FALLBACK}px`,
+    ...(searchBarWidth ? { width: `${searchBarWidth}px`, maxWidth: 'none' } : {}),
+  } as CSSProperties;
+}

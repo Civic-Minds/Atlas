@@ -1,20 +1,15 @@
 // Type-checks pipeline/ (tsconfig.pipeline.json) for CI (#719).
 //
-// TODO(#719): the files below still have type errors and are being rewritten on other branches
-// (featureDedupe.ts, routeGrading.ts, route-grading/period logic in transit-phase2.ts). tsc cannot
-// skip a file that other files import, so errors reported inside them are filtered out here.
-// Remove each entry once that file typechecks.
+// SKIPPED_FILES filters out errors in files that still have known type errors (tsc cannot skip a
+// file that other files import). It is empty: featureDedupe.ts, routeGrading.ts and
+// transit-phase2.ts typecheck now (CIV-1004). Add an entry only with an issue number.
 //
 // TODO(#719): pipeline/catalog.ts and pipeline/population.ts (import the nonexistent
 // types/catalog) and pipeline/restore-active-feeds.ts (imports r2 helpers that do not exist) are
 // excluded in tsconfig.pipeline.json. They are not imported by anything else; fix or delete them.
 import { spawnSync } from 'node:child_process';
 
-const SKIPPED_FILES = [
-  'pipeline/featureDedupe.ts',
-  'pipeline/routeGrading.ts',
-  'pipeline/transit-phase2.ts',
-];
+const SKIPPED_FILES = [];
 
 const result = spawnSync('npx', ['tsc', '--noEmit', '-p', 'tsconfig.pipeline.json', '--pretty', 'false'], {
   encoding: 'utf8',

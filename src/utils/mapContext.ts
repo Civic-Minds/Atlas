@@ -2,21 +2,28 @@ import type { GeoJSON } from 'geojson';
 import type { Agency } from '../App';
 import type { DayType } from '../../shared/dayTypes';
 import type { ViewportBounds } from '../hooks/useIntervalStats';
-import { buildRouteKey, dedupeRouteKeysByDisplay } from './routeKey';
+import { buildRouteKey, dedupeRouteKeysByDisplay, splitRouteKey } from './routeKey';
 import { compareAgencyName, compareRouteNumber } from './sortCompare';
+import { agencyDisplayParts, routeLabels, agencyListParts } from './format';
+import { labelShortNameOf, type RouteLabel } from './routeFacts';
 
 export interface MapContextRoute {
   key: string;
   agencySlug: string;
   agencyName: string;
+  /** The route's identity for sorting; never shown. */
   shortName: string;
   longName: string | null;
   routeType?: number;
+  /** What the list shows (CIV-984): from the feed's names, the route ID only when the route has none. */
+  label: RouteLabel;
 }
 
 export interface MapContextAgency {
   slug: string;
   name: string;
+  /** The name as lists show it, with its place ("Toronto Transit Commission · Toronto"), from agencyDisplayParts. */
+  display?: { primary: string; secondary?: string };
   routeCount: number;
   routes: MapContextRoute[];
 }
@@ -32,12 +39,17 @@ function buildMapContextAgencies(
   routesByAgency: Map<string, Map<string, MapContextRoute>>,
 ): MapContextAgency[] {
   return [...routesByAgency.entries()]
-    .map(([slug, routes]) => ({
+    .map(([slug, routes]) => {
+      const agency = agencies.find(item => item.slug === slug);
+      const name = agency?.name ?? slug;
+      return {
       slug,
-      name: agencies.find(agency => agency.slug === slug)?.name ?? slug,
+      name,
+      display: agency ? agencyListParts({ name: agency.name, cities: agency.cities, displayArea: agency.displayArea }) : { primary: slug },
       routeCount: routes.size,
       routes: [...routes.values()].sort((a, b) => compareRouteNumber(a.shortName, b.shortName, a.longName, b.longName)),
-    }))
+      };
+    })
     .sort((a, b) => b.routeCount - a.routeCount || compareAgencyName(a.name, b.name) || a.slug.localeCompare(b.slug));
 }
 
@@ -65,6 +77,13 @@ function addMapContextFeature(
       agencyName,
       shortName: properties.routeShortName ?? properties.routeId,
       longName: properties.routeLongName ?? null,
+      label: routeLabels({
+        shortName: labelShortNameOf({ routeId: properties.routeId, routeShortName: properties.routeShortName ?? '', routeLongName: properties.routeLongName ?? null }),
+        longName: properties.routeLongName ?? null,
+        routeType: properties.routeType,
+        agencySlug: slug,
+        agencyName,
+      }),
       routeType: properties.routeType,
     });
   }
@@ -134,10 +153,16 @@ export function getMapContextAgenciesFromFeatures(
   features: GeoJSON.Feature[],
 ): MapContextAgency[] {
   const routesByAgency = new Map<string, Map<string, MapContextRoute>>();
-  for (const feature of features) {
-    const properties = feature.properties as { agencySlug?: string; routeId?: string } | null;
+  // A route's full line names its row; segment pieces drawn over it (#1090) come after, and a piece without a branch
+  // (section colours) joins the route already listed instead of counting it twice.
+  const named = (f: GeoJSON.Feature) => (f.properties as { routeShortName?: unknown } | null)?.routeShortName !== undefined;
+  const ordered = [...features.filter(named), ...features.filter(f => !named(f))];
+  for (const feature of ordered) {
+    const properties = feature.properties as { agencySlug?: string; routeId?: string; routeBranch?: unknown } | null;
     if (!properties?.agencySlug || !properties.routeId) continue;
     if (feature.geometry.type !== 'LineString' && feature.geometry.type !== 'MultiLineString') continue;
+    if (properties.routeBranch === undefined && [...(routesByAgency.get(properties.agencySlug)?.keys() ?? [])]
+      .some(key => splitRouteKey(key).routeId === properties.routeId)) continue;
     addMapContextFeature(agencies, routesByAgency, properties.agencySlug, feature as MapContextFeature);
   }
   return buildMapContextAgencies(agencies, routesByAgency);

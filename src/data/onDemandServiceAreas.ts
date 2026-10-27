@@ -23,6 +23,8 @@ function loadFlexZones(slug: string): GeoJSON.Feature<GeoJSON.Polygon | GeoJSON.
 const METRO_MICRO_FLEX_FEATURES = loadFlexZones('metro-transit');
 /* C-TRAN zones: reproduced with permission granted by C-TRAN under its GTFS data license. */
 const C_TRAN_CURRENT_FLEX_FEATURES = loadFlexZones('ctran');
+/* RTD FlexRide zones: RTD's public FlexRide Areas layer (RTD_GIS_Current_Runboard, layer 7), retrieved 2026-10-26 (CIV-951). */
+const RTD_FLEXRIDE_FEATURES = loadFlexZones('rtd-denver');
 
 /** Standalone on-demand agencies stay out of the public catalog until the launch flag flips (CIV-23). */
 const ON_DEMAND_ROLLOUT: { hiddenInProduction?: true; betaOnly?: true; rolloutNotice?: string } = ON_DEMAND_PUBLIC
@@ -457,6 +459,47 @@ export const C_TRAN_CURRENT_SERVICE_AREA = {
   ) as Record<string, OnDemandZoneDetails>,
 };
 
+const RTD_FLEXRIDE_PAGE = 'https://www.rtd-denver.com/services/flexride';
+const RTD_FLEXRIDE_ZONE_PAGES = 'https://www.rtd-denver.com/routes-services/other-services/flexride/flexride-service-areas';
+/** One zone's hours from its RTD page (checked 2026-10-26). RTD lists Sunday and holidays together. */
+function rtdFlexRideZone(page: string, serviceHours: string, availability: OnDemandAvailability): OnDemandZoneDetails {
+  return {
+    serviceName: 'FlexRide',
+    serviceHours,
+    // RTD's hours tables are headed "Sunday/Holiday"; with no Sunday service there is none on holidays either.
+    hoursNote: availability.Sunday?.length ? 'Holidays run the Sunday hours.' : 'No holiday service.',
+    availability,
+    hoursSource: { url: `${RTD_FLEXRIDE_ZONE_PAGES}/${page}`, retrievedAt: '2026-10-26' },
+  };
+}
+const RTD_WEEKDAY_ONLY = (start: number, end: number): OnDemandAvailability => ({ Weekday: [{ startHour: start, endHour: end }], Saturday: [], Sunday: [] });
+
+/** RTD FlexRide (Denver region): 13 zones. Pickup type isn't stated on RTD's pages, so none is shown. */
+export const RTD_FLEXRIDE_SERVICE_AREA = {
+  features: RTD_FLEXRIDE_FEATURES,
+  sourceUrl: 'https://services5.arcgis.com/1fZoXlzLW6FCIUcE/arcgis/rest/services/RTD_GIS_Current_Runboard/FeatureServer/7',
+  sourceLabel: 'RTD FlexRide Areas layer (RTD GIS)',
+  sourceRetrievedAt: '2026-10-26',
+  serviceName: 'FlexRide',
+  bookingInfo: 'Book in the app or online, or call 303-299-6000 (option 2), from 30 days ahead to 10 minutes before pickup.',
+  bookingUrl: RTD_FLEXRIDE_PAGE,
+  zoneMetadata: {
+    Brighton: rtdFlexRideZone('brighton', 'Monday\u2013Friday 5:30 a.m.\u20137 p.m.', RTD_WEEKDAY_ONLY(5.5, 19)),
+    Broomfield: rtdFlexRideZone('broomfield', 'Monday\u2013Friday 5:30 a.m.\u20139 p.m.; Saturday 9 a.m.\u20136 p.m.; Sunday 9 a.m.\u20134 p.m.', { Weekday: [{ startHour: 5.5, endHour: 21 }], Saturday: [{ startHour: 9, endHour: 18 }], Sunday: [{ startHour: 9, endHour: 16 }] }),
+    DTC: rtdFlexRideZone('dtc', 'Monday\u2013Friday 5:30 a.m.\u201310 p.m.; Saturday 7 a.m.\u201310 p.m.', { Weekday: [{ startHour: 5.5, endHour: 22 }], Saturday: [{ startHour: 7, endHour: 22 }], Sunday: [] }),
+    Evergreen: rtdFlexRideZone('evergreen', 'Monday\u2013Friday 5:30 a.m.\u20137 p.m.; Saturday 9 a.m.\u20137 p.m.', { Weekday: [{ startHour: 5.5, endHour: 19 }], Saturday: [{ startHour: 9, endHour: 19 }], Sunday: [] }),
+    Golden: rtdFlexRideZone('golden', 'Monday\u2013Friday 5:30 a.m.\u20137 p.m.; Saturday 8 a.m.\u20137 p.m.', { Weekday: [{ startHour: 5.5, endHour: 19 }], Saturday: [{ startHour: 8, endHour: 19 }], Sunday: [] }),
+    'Green Mountain': rtdFlexRideZone('green-mountain', 'Monday\u2013Friday 5:30 a.m.\u20137 p.m.', RTD_WEEKDAY_ONLY(5.5, 19)),
+    'Interlocken/Westmoor': rtdFlexRideZone('interlocken-westmoor', 'Monday\u2013Friday 5:30 a.m.\u20139 p.m.', RTD_WEEKDAY_ONLY(5.5, 21)),
+    Longmont: rtdFlexRideZone('longmont', 'Monday\u2013Friday 5:30 a.m.\u20137 p.m.; Saturday and Sunday 9 a.m.\u20136 p.m.', { Weekday: [{ startHour: 5.5, endHour: 19 }], Saturday: [{ startHour: 9, endHour: 18 }], Sunday: [{ startHour: 9, endHour: 18 }] }),
+    Louisville: rtdFlexRideZone('louisville', 'Monday\u2013Friday 5:30 a.m.\u20137 p.m.', RTD_WEEKDAY_ONLY(5.5, 19)),
+    Parker: rtdFlexRideZone('parker', 'Monday\u2013Friday 6 a.m.\u20136 p.m.', RTD_WEEKDAY_ONLY(6, 18)),
+    'South Jeffco': rtdFlexRideZone('south-jeffco', 'Monday\u2013Friday 5:30 a.m.\u20137 p.m.; Saturday 8 a.m.\u201310 p.m.', { Weekday: [{ startHour: 5.5, endHour: 19 }], Saturday: [{ startHour: 8, endHour: 22 }], Sunday: [] }),
+    Superior: rtdFlexRideZone('superior', 'Monday\u2013Friday 5:30 a.m.\u20137 p.m.', RTD_WEEKDAY_ONLY(5.5, 19)),
+    'Thornton/I-25 North': rtdFlexRideZone('thornton', 'Monday\u2013Friday 5:30 a.m.\u20137 p.m.', RTD_WEEKDAY_ONLY(5.5, 19)),
+  } satisfies Record<string, OnDemandZoneDetails>,
+};
+
 const MUSKOKA_DRT_SOURCE_URL = 'https://services1.arcgis.com/5Av2OaC0epjp7wD3/arcgis/rest/services/District_DRT_Phase_1_2_Service_Area/FeatureServer/0';
 const MUSKOKA_DRT_SOURCE_LABEL = 'District of Muskoka DRT Phase 1.2 service-area layer';
 
@@ -885,7 +928,6 @@ export const ALL_POINTS_DIAL_A_RIDE_SERVICE_AREA = {
   serviceName: 'All Points Dial-A-Ride',
   serviceHours: 'Weekdays 6 a.m.–4 p.m.',
   hoursNote: 'No service on the last Friday of the month.',
-  tripRules: 'Open to the public. Days of service in outlying areas may be limited.',
   bookingInfo: 'Call 970-249-0128 (Montrose County and Norwood) or 970-874-7334 (Delta County) by noon the business day before.',
   pickup: { method: 'door-to-door' } satisfies OnDemandPickup,
   bookingUrl: 'https://www.allpointstransit.com/dial-a-ride/',

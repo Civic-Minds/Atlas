@@ -100,6 +100,10 @@ export interface RouteProperties {
     main: { stops: number; refStop: string; trips: number; period?: Partial<Record<PeriodKey, number | null>>; noRegular?: PeriodKey[] } | null;
     tails: Array<{ refStop: string; stops: number; km: number; trips: number; period?: Partial<Record<PeriodKey, number | null>>; noRegular?: PeriodKey[] }>;
   };
+  /** The row's night grade (pipeline/process-core.ts): it passes the 2am to 5am check at 30 or 60 minutes; nightService is the older 60. */
+  nightService30?: boolean;
+  nightService60?: boolean;
+  nightService?: boolean;
   /** Night service runs on only part of the route: draw and name only these stops' segments ("part of the route"). */
   nightServicePartOfRoute?: boolean;
   nightServiceStops?: string[];

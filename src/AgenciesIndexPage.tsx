@@ -2,10 +2,11 @@ import { useEffect, useState } from 'react';
 import {
   AGENCY_INDEX_DATA_SCRIPT_ID,
   agencyIndexDescription,
+  agencyIndexRegionId,
   resolveAgencyIndexSeo,
   type AgencyIndexData,
 } from '../shared/agencyIndex';
-import { agencyPagePath } from '../shared/agencyPages';
+import { agencyPagePath, fitAgencyName } from '../shared/agencyPages';
 import { areaPagePath } from '../shared/areas';
 import { ATLAS_MODE, FEATURES } from '../shared/config';
 import { plural } from '../shared/overflowText';
@@ -41,12 +42,18 @@ const INDEX_COLUMNS = 'sm:columns-2 lg:columns-3 sm:gap-x-8';
 /** Beta only: agencies with 10+ years of schedule history, from the small list build-history writes. */
 const HISTORY_SLUGS: ReadonlySet<string> = new Set((historyAgencies as HistoryAgencyList).slugs);
 
-/** Beta-only "Live" / "History" tags beside an agency name, in the page's existing pill style. */
+/**
+ * A tagged row's column fits about this many characters of name beside "· 81 routes History" at desktop widths;
+ * longer names show their short name instead (CIV-967).
+ */
+const TAGGED_NAME_MAX_CHARS = 24;
+
+/** Beta-only "Live" / "History" tags after an agency's route count, tight around the word (CIV-967). */
 function AgencyTags({ live, history }: { live: boolean; history: boolean }) {
   return (
     <>
-      {live && <Tag className="ml-1.5 inline-block">Live</Tag>}
-      {history && <Tag className="ml-1 inline-block">History</Tag>}
+      {live && <Tag size="inline" className="ml-1.5">Live</Tag>}
+      {history && <Tag size="inline" className={live ? 'ml-1' : 'ml-1.5'}>History</Tag>}
     </>
   );
 }
@@ -63,6 +70,11 @@ export default function AgenciesIndexPage({ data: dataProp }: { data?: AgencyInd
       mode: ATLAS_MODE,
       origin: ATLAS_MODE === 'public' ? undefined : window.location.origin,
     }));
+  }, [data]);
+  // A link to a state or province heading (CIV-966) lands on it even when the list renders after the page loads.
+  useEffect(() => {
+    if (!data || !window.location.hash) return;
+    document.getElementById(decodeURIComponent(window.location.hash.slice(1)))?.scrollIntoView();
   }, [data]);
 
   if (!data) {
@@ -93,18 +105,20 @@ export default function AgenciesIndexPage({ data: dataProp }: { data?: AgencyInd
               <SectionTitle id={`index-${g.country}`}>{g.country}</SectionTitle>
               {g.regions.map(r => (
                 <div key={r.region} className="mt-5">
-                  {r.region !== g.country && <h3 className="text-base font-black">{r.region}</h3>}
+                  {r.region !== g.country && <h3 id={agencyIndexRegionId(g.country, r.region)} className="scroll-mt-24 text-base font-black">{r.region}</h3>}
                   <ul className={`mt-2 text-sm ${INDEX_COLUMNS}`}>
                     {r.agencies.map(a => {
                       const routes = <span className="text-[var(--text-muted)]">{'\u00A0'}·{'\u00A0'}{a.routes.toLocaleString('en-US')}{'\u00A0'}{plural(a.routes, 'route')}</span>;
                       const live = FEATURES.live && isLiveEligibleSlug(a.slug);
                       const history = FEATURES.history && HISTORY_SLUGS.has(a.slug);
                       if (live || history) {
-                        // Tagged rows stay on one line: a long name shortens with "…" instead of wrapping.
+                        // Tagged rows stay on one line: a name too long for the column shows its short name ("CDTA"), with
+                        // the full name on hover (CIV-967); one still too long shortens with "…".
+                        const { text, title } = fitAgencyName(a.name, a.shortName, TAGGED_NAME_MAX_CHARS);
                         return (
                           <li key={a.slug} className="flex min-w-0 items-baseline break-inside-avoid py-[3px]">
-                            <a className={`${LINK} min-w-0 truncate underline underline-offset-2`} href={agencyPagePath(a.slug)} title={a.name}>{a.name}</a>
-                            <span className="shrink-0 whitespace-nowrap"><AgencyTags live={live} history={history} />{routes}</span>
+                            <a className={`${LINK} min-w-0 truncate underline underline-offset-2`} href={agencyPagePath(a.slug)} title={title ?? a.name}>{text}</a>
+                            <span className="shrink-0 whitespace-nowrap">{routes}<AgencyTags live={live} history={history} /></span>
                           </li>
                         );
                       }

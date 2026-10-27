@@ -36,6 +36,7 @@ import {
 } from './overrideAudit.js';
 import { readFeedReviewHistory, shouldReviewNextFeed } from './feedReview.js';
 import { todayUtcYmd } from './utils.js';
+import { agencyTodayYmd } from '../shared/feedAvailability.js';
 import { readConfigAgencyName, resolveAgencyName } from './agencyName.js';
 import { candidateIsOlderThanActive, recordedFeedExpiry, routeLineCount } from './refreshMeta.js';
 import {
@@ -221,7 +222,7 @@ async function main() {
   if (!dryRun && (featureCount === 0 || routeLineCount(geojson) === 0)) {
     throw new Error(`Refusing to replace ${slug}: processed feed produced 0 route lines; active snapshot unchanged`);
   }
-  if (!dryRun && (!feedExpiry || feedExpiry < todayYmd)) {
+  if (!dryRun && (!feedExpiry || feedExpiry < agencyTodayYmd({ timezone: resolveAgencyTimezone(timezone, agencyConfig) }))) {
     console.log(`  [warn] publishing ${slug} as the latest available schedule; feed service ends ${feedExpiry ?? 'unknown'}`);
   }
 

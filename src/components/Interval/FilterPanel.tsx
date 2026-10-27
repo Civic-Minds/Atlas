@@ -1,8 +1,9 @@
 import React, { Fragment, useState, useEffect, useMemo } from 'react';
-import { Settings, SlidersHorizontal, X, ArrowLeft, Search } from 'lucide-react';
+import { Settings, SlidersHorizontal, Search } from 'lucide-react';
 import { CompareSidePicker, SideBadge, type CompareSide } from './CompareControl';
-import { ICON_BTN, DROPDOWN_PANEL, SEARCH_FIELD, SEARCH_PILL, SEARCH_ICON, dropdownAnim, TRANSITION_BASE, Z_MODAL_TOP } from '../../styles';
+import { ICON_BTN, DROPDOWN_PANEL, SEARCH_FIELD, SEARCH_PILL, SEARCH_ICON, dropdownAnim, TRANSITION_BASE, Z_MODAL_TOP, CARD_NOTE } from '../../styles';
 import Pill from '../ui/Pill';
+import ActiveDot from '../ui/ActiveDot';
 import Toggle from '../ui/Toggle';
 import { AVAILABLE_FILTER_MODES } from '../../utils/shareUrlState';
 import type { DayType } from '../../../shared/dayTypes';
@@ -11,15 +12,16 @@ import { DayPicker, FrequencyPicker, PeriodPicker, PickerSection } from './picke
 import { ATLAS_MODE, FEATURES, R2_PUBLIC_URL } from '../../../shared/config';
 import { plural } from '../../../shared/overflowText';
 import type { Agency } from '../../App';
-import { agencyDisplayParts, formatStoredDate, routeLabels } from '../../utils/format';
+import { formatStoredDate, routeLabels, agencyListParts } from '../../utils/format';
 import { feedQualityListItems, presentFeedQualityReason, qualityStatusLabel } from '../../../shared/feedQuality';
 import { useColorVision } from '../../context/ColorVisionContext';
+import { useColorMode } from '../../hooks/useColorMode';
 import ArrowLink from '../ui/ArrowLink';
 import PanelEmpty from '../ui/PanelEmpty';
 import AgencyName from '../ui/AgencyName';
 import { loadingText } from '../../content/stateCopy';
 import { compareAgencyName, compareRegion, compareRouteNumber } from '../../utils/sortCompare';
-import RoundIconButton from '../ui/RoundIconButton';
+import PanelHeader from '../ui/PanelHeader';
 
 interface FilterPanelProps {
   lightMode: boolean;
@@ -137,7 +139,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
 }) => {
   const { colorVisionFriendly, setColorVisionFriendly } = useColorVision();
   const isFilters = mode === 'filters';
-  const colorMode = colorVisionFriendly ? 'friendly' : 'default';
+  const colorMode = useColorMode();
   const [open, setOpen] = useState(false);
   const [visible, setVisible] = useState(false);
   const [view, setView] = useState<'settings' | 'hidden-routes' | 'limited-routes' | 'degraded-feeds'>('settings');
@@ -353,7 +355,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
         >
           <Settings className="w-4 h-4" />
           {hasActiveFilters && (
-            <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-[var(--accent)] border border-[var(--bg-panel)]" />
+            <ActiveDot />
           )}
         </button>
       )}
@@ -370,34 +372,20 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
             aria-modal="true"
             aria-labelledby="settings-panel-title"
           >
-            <div className="flex items-center justify-between px-5 py-2 border-b border-[var(--border-primary)] shrink-0">
-              <div className="flex items-center gap-1.5">
-                {view !== 'settings' && (
-                  <button
-                    onClick={() => { setView('settings'); setHiddenRoutesQuery(''); setHiddenRegionFilter(new Set()); }}
-                    className="w-7 h-7 -ml-1 flex items-center justify-center rounded-full hover:bg-[var(--bg-btn-hover)] text-[var(--text-dim)] transition-colors"
-                    aria-label="Back to settings"
-                  >
-                    <ArrowLeft className="w-3.5 h-3.5" />
-                  </button>
-                )}
-                <h2 id="settings-panel-title" className="text-xs font-black text-[var(--text-primary)]">
-                  {view === 'hidden-routes'
-                    ? 'Hidden routes'
-                    : view === 'limited-routes'
-                      ? 'Limited-service routes'
-                    : view === 'degraded-feeds'
-                      ? (hideLowQuality ? 'Hidden feeds' : 'Degraded feeds')
-                      : isFilters ? 'Filters' : 'Settings'}
-                </h2>
-              </div>
-              <RoundIconButton
-                onClick={close}
-                aria-label={isFilters ? 'Close filters' : 'Close settings'}
-              >
-                <X className="w-3.5 h-3.5" />
-              </RoundIconButton>
-            </div>
+            <PanelHeader
+              titleId="settings-panel-title"
+              title={view === 'hidden-routes'
+                ? 'Hidden routes'
+                : view === 'limited-routes'
+                  ? 'Limited-service routes'
+                : view === 'degraded-feeds'
+                  ? (hideLowQuality ? 'Hidden feeds' : 'Degraded feeds')
+                  : isFilters ? 'Filters' : 'Settings'}
+              onBack={view !== 'settings' ? () => { setView('settings'); setHiddenRoutesQuery(''); setHiddenRegionFilter(new Set()); } : undefined}
+              backLabel="Back to settings"
+              onClose={close}
+              closeLabel={isFilters ? 'Close filters' : 'Close settings'}
+            />
 
             <div className="overflow-y-auto flex flex-col">
               {view === 'hidden-routes' || view === 'limited-routes' ? (
@@ -441,7 +429,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                   ) : (
                     <div className="px-5 pb-4">
                       {hiddenRoutesByAgency.map(([agencySlug, group]) => {
-                        const { primary, secondary } = agencyDisplayParts(group.agencyName, agencyCitiesBySlug.get(agencySlug), agencyDisplayAreasBySlug.get(agencySlug));
+                        const { primary, secondary } = agencyListParts({ name: group.agencyName, cities: agencyCitiesBySlug.get(agencySlug), displayArea: agencyDisplayAreasBySlug.get(agencySlug) });
                         return (
                         <div key={agencySlug}>
                           <p className="pt-2 pb-1 text-xs font-bold text-[var(--text-primary)]">
@@ -507,7 +495,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                     <div className="divide-y divide-[var(--border-primary)]">
                       {filteredDegradedFeeds.map(agency => {
                         const quality = agency.feedQuality!;
-                        const { primary, secondary } = agencyDisplayParts(agency.name, agency.cities, agency.displayArea);
+                        const { primary, secondary } = agencyListParts({ name: agency.name, cities: agency.cities, displayArea: agency.displayArea });
                         const checkedDate = formatStoredDate(quality.checkedAt.slice(0, 10)) || quality.checkedAt;
                         return (
                           <div key={agency.slug} className="py-3 first:pt-2">
@@ -537,7 +525,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
               <>
               {/* Appearance. Sections use spacing only, no divider lines (guarded by settingsNoDividers.test.ts). */}
               <div className="px-5 pt-4 pb-1">
-                <p className="text-xs font-bold text-[var(--text-dim)]">Appearance</p>
+                <p className={CARD_NOTE}>Appearance</p>
               </div>
               <div className="px-5 pb-4">
                 <div className="flex items-start justify-between gap-4">
@@ -563,7 +551,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
               {FEATURES.persistedSettings && (
                 <>
                   <div className="px-5 pt-4 pb-1">
-                    <p className="text-xs font-bold text-[var(--text-dim)]">Map</p>
+                    <p className={CARD_NOTE}>Map</p>
                   </div>
                   <div className="px-5 pb-3">
                     <div className="flex items-start justify-between gap-4">
@@ -582,7 +570,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
               {FEATURES.persistedSettings && (
                 <>
                   <div className="px-5 pt-4 pb-1">
-                    <p className="text-xs font-bold text-[var(--text-dim)]">Data &amp; performance</p>
+                    <p className={CARD_NOTE}>Data &amp; performance</p>
                   </div>
                   <div className="px-5 pb-3">
                     <div className="flex items-start justify-between gap-4">
@@ -600,7 +588,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
 
               {/* Filters */}
               <div className="px-5 pt-4 pb-1">
-                <p className="text-xs font-bold text-[var(--text-dim)]">Routes shown</p>
+                <p className={CARD_NOTE}>Routes shown</p>
                 {!inFrequency && (
                   <p className="text-xs text-[var(--text-muted)] mt-1">These settings apply to the Frequency map.</p>
                 )}
@@ -649,14 +637,14 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
 
                   {compare?.side && (
                     <div className="px-5 pt-2 pb-3">
-                      <p className="mb-2 flex items-center gap-1.5 text-xs font-bold text-[var(--text-dim)]"><SideBadge side="B" /> The frequency, day and time above are map A; pick map B here. Modes and agencies apply to both maps. Leave Compare from the More menu.</p>
+                      <p className={`mb-2 flex items-center gap-1.5 ${CARD_NOTE}`}><SideBadge side="B" /> The frequency, day and time above are map A; pick map B here. Modes and agencies apply to both maps. Leave Compare from the More menu.</p>
                       <CompareSidePicker side={compare.side} onChange={compare.onChange} />
                     </div>
                   )}
 
                   {/* Transit Modes */}
                   <div className="px-5 pt-2 pb-1">
-                    <p className="text-xs font-bold text-[var(--text-dim)]">Transit modes</p>
+                    <p className={CARD_NOTE}>Transit modes</p>
                   </div>
                   <div className="px-5 pb-3 flex flex-wrap gap-1.5">
                     {AVAILABLE_FILTER_MODES.map(({ id, label }) => {

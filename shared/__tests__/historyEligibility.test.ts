@@ -86,13 +86,28 @@ describe('historyEligibility', () => {
     it('does not count years after the build year', () => {
       const agency = { routes: [{ snapshots: [{ year: 2024 }, { year: 2026 }, { year: 2027 }, { year: 2099 }] }] };
       expect(distinctSnapshotYears(agency, { realYearsOnly: true, buildYear: 2026 })).toEqual([2024, 2026]);
-      // Default rule counts every year, as before.
-      expect(distinctSnapshotYears(agency)).toEqual([2024, 2026, 2027, 2099]);
+      // The default rule also drops future years (it still counts coverage years, unlike v2).
+      expect(distinctSnapshotYears(agency, { buildYear: 2026 })).toEqual([2024, 2026]);
     });
 
     it('still qualifies an agency with enough real snapshot years', () => {
       const years = Array.from({ length: MIN_HISTORY_DISTINCT_YEARS }, (_, i) => 2010 + i);
       expect(agencyQualifiesForHistory({ routes: [{ snapshots: years.map(year => ({ year })) }] }, { realYearsOnly: true, buildYear: 2026 })).toBe(true);
+    });
+  });
+
+  describe('future-dated years never count', () => {
+    const real = Array.from({ length: 9 }, (_, i) => 2017 + i); // 2017-2025
+    const opts = { buildYear: 2026 };
+    it('ignores snapshot and coverage years after the build year under both rules', () => {
+      const agency = { coverageYears: [2016, 2027], routes: [{ snapshots: [...real, 2026, 2027].map(year => ({ year })) }] };
+      expect(distinctSnapshotYears(agency, opts)).toEqual([2016, ...real, 2026]);
+      expect(distinctSnapshotYears(agency, { ...opts, realYearsOnly: true })).toEqual([...real, 2026]);
+    });
+    it('does not let a future year make up the tenth year', () => {
+      const nine = { routes: [{ snapshots: [...real, 2027].map(year => ({ year })) }] };
+      expect(agencyQualifiesForHistory(nine, opts)).toBe(false);
+      expect(agencyQualifiesForHistory({ routes: [{ snapshots: [...real, 2026].map(year => ({ year })) }] }, opts)).toBe(true);
     });
   });
 });

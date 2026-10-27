@@ -4,7 +4,7 @@ import { Search, X, Info, History as HistoryIcon, ChevronDown, Radio } from 'luc
 import { CompareTab } from './components/Interval/CompareControl';
 import { useUrlPathname } from './hooks/useUrlPathname';
 import ModeTab from './components/ModeTab';
-import { PILL_SURFACE, FLOATING_CARD, SEARCH_BAR_WIDTH, TRANSITION_BASE, TRANSITION_SLOW, Z_MAP_OVERLAY, Z_HEADER, Z_MODAL_TOP, SIDEBAR_LEFT_FALLBACK, APP_TAB_ACTIVE, APP_TAB_INACTIVE, ICON_BTN, SEARCH_ICON } from './styles';
+import { MAP_TOP_BAR_SLOT, MAP_STATUS_SLOT, PILL_SURFACE, FLOATING_CARD, SEARCH_BAR_WIDTH, TRANSITION_BASE, TRANSITION_SLOW, Z_MAP_OVERLAY, Z_HEADER, Z_MODAL_TOP, SIDEBAR_LEFT_FALLBACK, sidebarFrameStyle, ICON_BTN, SEARCH_ICON, CARD_NOTE } from './styles';
 import { R2_PUBLIC_URL, getAgencyArtifactUrls, getAgencyCatalogUrl, FEATURES, FEATURE_ROUTES, ATLAS_MODE } from '../shared/config';
 import AtlasLogo from './components/AtlasLogo';
 import { isAgencyVisibleInBrowser } from '../shared/agencyVisibility';
@@ -39,6 +39,8 @@ import ResearchInfo from './components/ResearchInfo';
 import { FREQUENT_INFO_HEADING, frequentRuleText } from './content/researchRules';
 import { DAY_TYPES, getNowDay, type DayType } from '../shared/dayTypes';
 import { syncUrlParams } from './utils/syncUrlParams';
+import { MAP_URL, readUrlParam, urlParamUpdate } from './utils/mapUrlState';
+import { AGENCY_CARD_PARAM, parseAgencyCardParam } from './utils/shareUrlState';
 import AppUpdateBanner from './components/AppUpdateBanner';
 import type { FeedQuality } from '../shared/feedQuality';
 import { trackEvent } from './lib/analytics';
@@ -105,6 +107,8 @@ export interface Agency {
   manualFeedSource?: boolean;
   /** Agency-published direction names keyed by route short name and GTFS direction_id. */
   directionLabels?: Record<string, Record<string, string>>;
+  /** The agency's destination for a direction, keyed like directionLabels, where its trip headsign names the wrong end (RFTA HC). */
+  directionHeadsigns?: Record<string, Record<string, string>>;
   // Pipeline / source fields (present in the JSON even if not in this UI-focused type)
   feedUrl?: string | null;
   mdbFeedUrl?: string;
@@ -164,6 +168,9 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
 
   const navigate = useNavigate();
   const { pathname } = useLocation();
+  // The on-demand service a shared link opens (?ondemand=<slug>[::zone]), read once: its zones load
+  // wherever the map starts, so the link opens the same card a click does and the map moves to it.
+  const [linkedOnDemandSlug] = useState(() => new URLSearchParams(window.location.search).get('ondemand')?.split('::', 1)[0] || null);
   // The map route is the map regardless of which map-state parameters are in the URL.
   // Requiring one of the filter parameters made links such as ?p=overnight render the
   // normal frequency controls and left the research controls out of the header.
@@ -268,7 +275,10 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
       return true;
     });
   }, []);
-  const [selectedAgencySlug, setSelectedAgencySlug] = useState<string | null>(null);
+  // The agency card opens from a link's ?operator= (CIV-919). History keeps its own `agency` param.
+  const [selectedAgencySlug, setSelectedAgencySlug] = useState<string | null>(() => (
+    window.location.pathname.startsWith('/apps/history') ? null : parseAgencyCardParam(window.location.search)
+  ));
   const [selectedMapAgencySlug, setSelectedMapAgencySlug] = useState<string | null>(null);
   const [pendingLiveRoute, setPendingLiveRoute] = useState<{ slug: string; routeShortName: string } | null>(null);
   const [pendingNightRoute, setPendingNightRoute] = useState<{ slug: string; routeId: string; frequency: NightServiceFrequency } | null>(null);
@@ -383,9 +393,8 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   const [compareActive, setCompareActive] = useState(false);
   const [day, setDay] = useState<DayType>(() => {
     try {
-      const sp = new URLSearchParams(window.location.search);
-      const d = sp.get('day') || sp.get('d');
-      if (d && (DAY_TYPES as readonly string[]).includes(d)) return d as DayType;
+      const fromLink = readUrlParam(window.location.search, MAP_URL.day);
+      if (fromLink != null) return fromLink;
     } catch {}
     try {
       const s = localStorage.getItem('atlas_pref_day');
@@ -433,6 +442,10 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   useEffect(() => {
     if (inHistory) syncUrlParams(encodeHistoryView(historyView));
   }, [inHistory, historyView]);
+  // The open agency card in the link (CIV-919); History never carries it.
+  useEffect(() => {
+    syncUrlParams({ [AGENCY_CARD_PARAM]: inHistory ? null : selectedAgencySlug });
+  }, [inHistory, selectedAgencySlug]);
 
   // Interval reloads all its agency data whenever this list's identity changes, so it must stay the same
   // array until its contents change (a fresh filter() every render looped History at phone width).
@@ -552,7 +565,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   // Always written, never omitted as a "default": the default is today's day, so a link copied on a Wednesday
   // would open on Saturday for a friend (#909).
   useEffect(() => {
-    syncUrlParams({ day });
+    syncUrlParams(urlParamUpdate(MAP_URL.day, day));
   }, [day]);
 
   useEffect(() => {
@@ -610,12 +623,12 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
     <ViewportProvider>
     <ModeTabsProvider nonMapViewActive={nonMapViewActive}>
     <OnDemandStatusProvider data={onDemandData}>
-    <OnDemandViewportLoader data={onDemandData} />
+    <OnDemandViewportLoader data={onDemandData} linkedSlug={linkedOnDemandSlug} />
     <HistoryMapOverlayProvider>
     <LiveVehiclesMapOverlayProvider>
     <div className={`relative h-dvh w-screen bg-[var(--bg-app)] text-[var(--text-primary)] font-sans overflow-hidden transition-colors ${TRANSITION_BASE}`}>
       {/* Unified header row — left and right sections share one flex container so they can never overlap. Fixed row height so a taller control in one view (e.g. Night's 30/60 toggle) can't push the logo and search off the line they sit on in every other view (#908). */}
-      <div className={`absolute ${inFrequentServiceStory ? 'top-0 left-0 right-0 bg-[var(--bg-app)] px-6 py-6' : 'top-6 left-6 right-6 h-[28px]'} ${infoOpen ? Z_MODAL_TOP : Z_HEADER} flex items-center justify-between pointer-events-none`}>
+      <div className={`absolute ${inFrequentServiceStory ? 'top-0 left-0 right-0 bg-[var(--bg-app)] px-6 py-6' : MAP_TOP_BAR_SLOT} ${infoOpen ? Z_MODAL_TOP : Z_HEADER} flex items-center justify-between pointer-events-none`} data-map-overlay="top-bar">
       <div ref={headerLeftRef} className={`flex items-center gap-2 pointer-events-auto flex-1 min-w-0 ${phoneSearchExpanded ? '' : 'max-w-[calc(100%-3rem)] mr-2'} sm:max-w-none sm:mr-0`}>
         {/* The logo is "home": it clears every selection, mode and URL parameter, like a fresh visit to "/". */}
         <AtlasLogo
@@ -664,7 +677,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
           />
           {!query && (
             <span
-              className="absolute left-8 right-2 top-1/2 -translate-y-1/2 text-xs font-bold text-[var(--text-dim)] pointer-events-none select-none whitespace-nowrap overflow-hidden text-ellipsis"
+              className={`absolute left-8 right-2 top-1/2 -translate-y-1/2 ${CARD_NOTE} pointer-events-none select-none whitespace-nowrap overflow-hidden text-ellipsis`}
             >
               {/* The search pill is narrow on phones: a one-word hint stays on one line. */}
               <span className="sm:hidden">Search</span>
@@ -730,16 +743,15 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
             <span className="sm:hidden w-px h-4 bg-[var(--border-primary)] shrink-0" aria-hidden="true" />
 
             <div ref={appLinksRef} className="relative flex sm:hidden">
-              <button
-                type="button"
+              <ModeTab
+                variant="menu-trigger"
+                label={liveTabOn ? 'Live' : inHistory ? 'History' : compareActive ? 'Compare' : 'More'}
+                ariaLabel="More Atlas views"
+                expanded={appLinksOpen}
+                active={appLinksOpen || inHistory || inLive || compareActive}
                 onClick={() => setAppLinksOpen(open => !open)}
-                aria-label="More Atlas views"
-                aria-expanded={appLinksOpen}
-                className={`flex h-8 max-sm:h-[32px] px-3 items-center gap-1.5 rounded-full shrink-0 transition-colors text-xs font-bold border focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)] ${appLinksOpen || inHistory || inLive || compareActive ? APP_TAB_ACTIVE : APP_TAB_INACTIVE}`}
-              >
-                <span>{liveTabOn ? 'Live' : inHistory ? 'History' : compareActive ? 'Compare' : 'More'}</span>
-                <ChevronDown className={`w-3.5 h-3.5 transition-transform ${appLinksOpen ? 'rotate-180' : ''}`} />
-              </button>
+                trailing={<ChevronDown className={`w-3.5 h-3.5 transition-transform ${appLinksOpen ? 'rotate-180' : ''}`} />}
+              />
               {appLinksOpen && (
                 <div className={`absolute top-10 right-0 ${FLOATING_CARD} min-w-48 p-1.5 flex flex-col gap-1 ${Z_MODAL_TOP}`}>
                   {showLiveControl && (
@@ -785,7 +797,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
 
       <main className="absolute inset-0 overflow-hidden">
         <ErrorBoundary label="The map encountered an error.">
-          <React.Suspense fallback={<div className="flex items-center justify-center h-full text-[var(--text-dim)] text-sm">Loading map…</div>}>
+          <React.Suspense fallback={<div className="flex items-center justify-center h-full text-[var(--text-dim)] text-sm">{loadingText('map')}</div>}>
           {inResearch ? (
             <ResearchPage />
           ) : inFrequentServiceStory ? (
@@ -862,7 +874,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
             {historyOn && (historyOpened || inHistory) && (
               <React.Suspense fallback={inHistory ? (
                 // The shared loading panel, where History's panels open (#1028 item 20).
-                <Panel sidebar style={{ top: 80, '--sidebar-left': `${sidebarLeft}px`, ...(searchBarWidth && !isPhone ? { width: `${searchBarWidth}px`, maxWidth: 'none' } : {}) } as React.CSSProperties}>
+                <Panel sidebar style={sidebarFrameStyle(sidebarLeft, isPhone ? undefined : searchBarWidth)}>
                   <PanelEmpty kind="loading">{loadingText('history data')}</PanelEmpty>
                 </Panel>
               ) : null}>
@@ -871,11 +883,11 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
             )}
             {FEATURES.beta && (nightOpened || inNight) && (
               <React.Suspense fallback={null}>
-                <NightService active={inNight} sidebarLeft={sidebarLeft} layers={layers} query={deferredQuery} frequency={nightServiceFrequency} onRouteSelect={handleNightRouteClick} selectionActive={intervalSelectionActive} />
+                <NightService active={inNight} sidebarLeft={sidebarLeft} searchBarWidth={isPhone ? undefined : searchBarWidth} layers={layers} query={deferredQuery} frequency={nightServiceFrequency} onRouteSelect={handleNightRouteClick} onBackToMap={() => setActiveApp('frequency')} selectionActive={intervalSelectionActive} />
               </React.Suspense>
             )}
             {inFrequentService && (
-              <ResearchInfo heading={FREQUENT_INFO_HEADING} sidebarLeft={sidebarLeft} hidden={intervalSelectionActive}>
+              <ResearchInfo heading={FREQUENT_INFO_HEADING} onBack={() => setActiveApp('frequency')} sidebarLeft={sidebarLeft} searchBarWidth={isPhone ? undefined : searchBarWidth} hidden={intervalSelectionActive}>
                 {frequentRuleText({ frequency: frequentServiceFrequency, window: frequentServiceWindow, days: frequentServiceDays })}
               </ResearchInfo>
             )}
@@ -902,12 +914,12 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
           </React.Suspense>
           </ErrorBoundary>
         {(agenciesLoadState === 'loading' || modeCatchingUp) && (
-          <div className="absolute left-1/2 bottom-5 -translate-x-1/2 rounded-full bg-[var(--bg-panel)]/90 px-3 py-1.5 text-xs font-semibold text-[var(--text-dim)] shadow-lg pointer-events-none">
-            Loading map…
+          <div className={`${MAP_STATUS_SLOT} rounded-full bg-[var(--bg-panel)]/90 px-3 py-1.5 text-xs font-semibold text-[var(--text-dim)] pointer-events-none`} data-map-overlay="status">
+            {loadingText('map')}
           </div>
         )}
         {agenciesLoadState === 'error' && (
-          <div className="absolute left-1/2 bottom-5 -translate-x-1/2 flex items-center gap-3 rounded-full bg-[var(--bg-panel)]/95 px-3 py-1.5 text-xs text-[var(--text-dim)] shadow-lg">
+          <div className={`${MAP_STATUS_SLOT} flex items-center gap-3 rounded-full bg-[var(--bg-panel)]/95 px-3 py-1.5 text-xs text-[var(--text-dim)]`} data-map-overlay="status">
             <span>{loadErrorText('agency data')}</span>
             <button
               type="button"

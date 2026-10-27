@@ -1,4 +1,4 @@
-import { lineCoordinates, pointCoordinate, type LonLat } from '../../shared/routeGeometry';
+import { boundingBox, lineCoordinates, pointCoordinate, type LonLat } from '../../shared/routeGeometry';
 
 export type RouteFitTarget =
   | { kind: 'bounds'; bounds: [LonLat, LonLat] }
@@ -56,14 +56,9 @@ export function routeFitTarget(
 
 /** Bounds for a set of points, or a single point when they do not span any area. */
 export function fitTargetForPoints(points: ReadonlyArray<LonLat>): RouteFitTarget | null {
-  if (points.length === 0) return null;
-  let minLng = Infinity, maxLng = -Infinity, minLat = Infinity, maxLat = -Infinity;
-  for (const [lng, lat] of points) {
-    if (lng < minLng) minLng = lng;
-    if (lng > maxLng) maxLng = lng;
-    if (lat < minLat) minLat = lat;
-    if (lat > maxLat) maxLat = lat;
-  }
+  const box = boundingBox(points);
+  if (!box) return null;
+  const { minLng, minLat, maxLng, maxLat } = box;
   if (minLng === maxLng && minLat === maxLat) return { kind: 'point', center: [minLng, minLat] };
   return { kind: 'bounds', bounds: [[minLng, minLat], [maxLng, maxLat]] };
 }

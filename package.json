@@ -52,6 +52,7 @@
     "history-v2:fixtures": "npx tsx scripts/history-v2-fixtures.ts",
     "history-v2:pilot-shapes": "npx tsx scripts/history-v2-pilot-shapes.ts",
     "publish-data-release": "npx tsx pipeline/publish-data-release.ts",
+    "rollback-data-release": "npx tsx pipeline/rollback-data-release.ts",
     "build-hidden-routes": "npx tsx pipeline/build-hidden-routes.ts",
     "migrate-archive": "npx tsx pipeline/migrate-gtfs-archive.ts",
     "validate-headsigns": "npx tsx scripts/validate-headsign-split.ts",
@@ -64,6 +65,8 @@
     "build:agency-catalog": "npx tsx scripts/build-agency-catalog.ts",
     "build:history-agencies": "npx tsx scripts/build-history-agency-list.ts",
     "check:agency-index": "npx tsx scripts/check-agency-index-drift.ts",
+    "check:agency-pages": "npx tsx scripts/check-agency-pages.ts",
+    "check:overlays": "node scripts/check-overlay-overlap.mjs",
     "record-feed-review": "npx tsx scripts/record-feed-review.ts",
     "verify:live-contract": "npx tsx scripts/verify-live-contract.ts",
     "verify:deployments": "node scripts/verify-deployments.mjs",
@@ -145,6 +148,6 @@
     "tsx": "^4.23.15",
     "typescript": "^6.0.3",
     "vite": "^8.3.4",
-    "vitest": "^4.1.11"
+    "vitest": "^5.0.5"
   }
 }

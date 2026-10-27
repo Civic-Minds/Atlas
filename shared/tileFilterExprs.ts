@@ -17,6 +17,20 @@ export function tileLimitedServiceExpr(): unknown[] {
   ];
 }
 
+/**
+ * MapLibre expression for "not hidden by the irregular-service filter": the tile side of
+ * isHiddenByIrregularFilter (shared/irregularRoutes.ts), negated. A route whose other direction
+ * has no sustained pattern is hidden too (#318).
+ */
+export function tileShownByIrregularFilterExpr(): unknown[] {
+  return ['!', ['any',
+    ['==', ['get', 'serviceClass'], 'irregular'],
+    // Legacy artifacts without a service class: a span tier is irregular (isIrregularService).
+    ['all', ['!', ['has', 'serviceClass']], ['==', ['get', 'tier'], 'span']],
+    ['==', ['coalesce', ['get', 'routeHasIrregularDirection'], false], true],
+  ]];
+}
+
 /** MapLibre expression matching the canonical agency::route[:branch] key. */
 export function tileRouteKeyExpr(): unknown[] {
   const base: unknown[] = [

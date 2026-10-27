@@ -1,7 +1,9 @@
-import { cleanHeadsign, formatRemDisplay, getRouteLabel } from '../../shared/cleanHeadsign';
+import { cleanHeadsign } from '../../shared/cleanHeadsign';
+import { formatRemDisplay, getRouteLabel } from '../../shared/routeDisplay';
 import { routeDisplay, shouldHideNumericRouteShortName } from '../../shared/routeDisplay';
 import { directionBranchFallback, isRedundantWithRouteName } from '../../shared/headsignDisplay';
 import { headwayAbout, headwayAboutRange, headwayAmount } from './headwayText';
+import agencyShortNameData from '../../shared/data/agency-short-names.json';
 export { cleanHeadsign, formatRemDisplay, getRouteLabel };
 
 /**
@@ -26,7 +28,12 @@ export function comparePanelTop(compareActive: boolean, searchFocused: boolean, 
   return compareActive && !searchOverlayHidesPanel(searchFocused, query) ? COMPARE_PANEL_TOP : null;
 }
 
-const TRANSIT_ACRONYMS: Record<string, string> = {
+/**
+ * The one list of real abbreviations Atlas keeps in capitals (CIV-935): stop names, destinations and route names.
+ * Keys are the word as titleCase first writes it ("Lbj"), values how it reads ("LBJ"). A word that is also an
+ * ordinary word or surname in place names ("Max", "Marc", "Path", "Ne") is in ROUTE_NAME_ONLY_ACRONYMS below instead.
+ */
+const NAME_ACRONYMS: Record<string, string> = {
   Go: 'GO',
   Dc: 'DC',
   Yrt: 'YRT',
@@ -116,7 +123,53 @@ const TRANSIT_ACRONYMS: Record<string, string> = {
   Uc: 'UC',
   Ut: 'UT',
   Sf: 'SF',
+  // Agencies, campuses, airports and places, moved here from the route-name list so stops and destinations get them too.
+  Wce: 'WCE',
+  Mbta: 'MBTA',
+  Wmata: 'WMATA',
+  Septa: 'SEPTA',
+  Marta: 'MARTA',
+  Stm: 'STM',
+  Ets: 'ETS',
+  Ubc: 'UBC',
+  Utsc: 'UTSC',
+  Utm: 'UTM',
+  Mit: 'MIT',
+  Lax: 'LAX',
+  Lga: 'LGA',
+  Ewr: 'EWR',
+  Yvr: 'YVR',
+  Yyz: 'YYZ',
+  Bwi: 'BWI',
+  Nyc: 'NYC',
+  Nj: 'NJ',
+  Patco: 'PATCO',
+  Cbd: 'CBD',
+  // DART destinations ("LBJ / Central", "DFW") and other initialisms found in published stop names and headsigns.
+  Lbj: 'LBJ',
+  Dfw: 'DFW',
+  Eb: 'EB',
+  Wb: 'WB',
+  Nb: 'NB',
+  Sb: 'SB',
+  Ymca: 'YMCA',
+  Ywca: 'YWCA',
+  Cvs: 'CVS',
+  Dmv: 'DMV',
+  Suny: 'SUNY',
+  Usc: 'USC',
+  Vfw: 'VFW',
+  Ikea: 'IKEA',
 };
+
+/**
+ * Capitals kept only in route names: these are also ordinary words or surnames in stop and place names
+ * ("Max", "Marc", "Path", "Up") or compass letters a stop name spells as a word.
+ */
+const ROUTE_NAME_ONLY_ACRONYMS = [
+  'AM', 'PM', 'MAX', 'UP', 'TC', 'PATH', 'MARC', 'STO', 'SU',
+  'N', 'S', 'E', 'W', 'NE', 'SE', 'US',
+];
 
 // Articles/prepositions that stay lowercase unless they open the string
 const KEEP_LOWER = /^(of|to|the|a|an|and|or|in|at|by|for|via)$/i;
@@ -157,13 +210,13 @@ export function titleCase(s: string): string {
 
   // Preserve short route codes (e.g. "GO", "LW", "1X") as uppercase. Three-letter
   // service names such as MARTA's "RED" should still title-case; known three-letter
-  // acronyms are restored by the TRANSIT_ACRONYMS table below.
+  // acronyms are restored by the NAME_ACRONYMS table below.
   if (s.length <= 2 && /^[A-Z0-9a-z]+$/i.test(s)) {
     return s.toUpperCase();
   }
 
-  // Build the acronym matching regex dynamically from the keys of TRANSIT_ACRONYMS
-  const acronymKeys = Object.keys(TRANSIT_ACRONYMS).join('|');
+  // Build the acronym matching regex dynamically from the keys of NAME_ACRONYMS
+  const acronymKeys = Object.keys(NAME_ACRONYMS).join('|');
   const acronymRegex = new RegExp(`\\b(${acronymKeys})\\b`, 'gi');
 
   return s
@@ -181,7 +234,7 @@ export function titleCase(s: string): string {
     .replace(acronymRegex, (m, _g1, offset, str) => {
       // Don't convert "St." (Saint abbreviation) — only the standalone GO line-code "ST"
       if (m === 'St' && str[offset + m.length] === '.') return m;
-      return TRANSIT_ACRONYMS[m] ?? TRANSIT_ACRONYMS[m.toLowerCase()] ?? m;
+      return NAME_ACRONYMS[m] ?? NAME_ACRONYMS[m.toLowerCase()] ?? m;
     })
     .replace(/'(\p{L})/gu, (_, c) => "'" + c.toLowerCase())
     // Mc surnames in all-caps feeds: "MCKNIGHT" -> "McKnight"
@@ -190,6 +243,16 @@ export function titleCase(s: string): string {
     .replace(/\bO'(\p{L})/gu, (_, c: string) => "O'" + c.toUpperCase())
     .replace(/l'orme/gi, "l'Orme")
     .replace(/à-l'/gi, "à-l'");
+}
+
+/**
+ * The one capitals rule for stop and destination names (CIV-935): cased only when the feed sent the name all in
+ * capitals ("MOODY CENTER" → "Moody Center", "LBJ/CENTRAL STATION" → "LBJ/Central Station", abbreviations from the
+ * list route names share). A name that already has lower-case letters is the feed's own spelling and stays exactly
+ * as written ("McDonald Ave", "Lower Jarvis St at The Esplanade"), the same rule routeLabelCase uses for route names.
+ */
+export function stopNameCase(name: string): string {
+  return !name || /\p{Ll}/u.test(name) ? name : titleCase(name);
 }
 
 export function cleanRouteShortName(shortName: string | null | undefined): string {
@@ -237,17 +300,9 @@ export { shouldHideNumericRouteShortName };
  * names in the repo's agency config and pipeline fixtures; anything not on it ("WEST", "PARK", "MAIN", "VIVA") is a word.
  */
 export const ROUTE_NAME_ACRONYMS: ReadonlySet<string> = new Set([
-  // Transit agencies and systems
-  'BART', 'TTC', 'GO', 'YRT', 'HSR', 'GRT', 'NFTA', 'LTC', 'KTC', 'WETA', 'SFMTA', 'WCE', 'MBTA', 'WMATA', 'SEPTA', 'MARTA',
-  'STM', 'VTA', 'CTA', 'ETS', 'REM', 'AC', 'NWIA',
-  // Modes
-  'BRT', 'LRT',
-  // Campuses, airports, places, and common abbreviations
-  'UBC', 'UTSC', 'UTM', 'SFU', 'MIT', 'SFO', 'JFK', 'LAX', 'LGA', 'EWR', 'YVR', 'YYZ', 'BWI', 'NJ', 'NYC', 'DC', 'CBD', 'AM', 'PM',
-  // Service brands and rail/transit names riders read in capitals
-  'MAX', 'UP', 'TC', 'PATH', 'PATCO', 'MARC', 'STO', 'SU', 'RT',
-  // Compass directions and US highways ("NW 5TH AVE", "US 41"); not state codes: none appear as route-name words in the repo's data
-  'N', 'S', 'E', 'W', 'NE', 'NW', 'SE', 'SW', 'US',
+  // The shared list (stops and destinations get these too), then the route-name-only words.
+  ...Object.values(NAME_ACRONYMS).filter(word => word === word.toUpperCase()),
+  ...ROUTE_NAME_ONLY_ACRONYMS,
 ]);
 
 /**
@@ -419,10 +474,10 @@ function placeFromLegalName(outer: string): string | undefined {
   return ofMatch ? ofMatch[1].trim() : undefined;
 }
 
-/** Prefer a known short form when the primary still overflows a narrow list row. */
+/** Prefer a known short form when the primary still overflows a narrow list row; never a bracketed city (#1134). */
 function compactListPrimary(fullName: string, primary: string): string {
   if (primary.length <= 28) return primary;
-  const short = shortenAgencyName(fullName);
+  const short = agencyBackLinkName(fullName);
   return short.length > 0 && short.length < primary.length ? short : primary;
 }
 
@@ -463,8 +518,8 @@ function normalizeBrandCode(s: string): string {
   return trimmed;
 }
 
-/** True when place text (or its significant words) already appears in the agency name. */
-function placeAlreadyInName(agency: string, place: string): boolean {
+/** True when place text (or its significant words) already appears in the agency name. Also used by the agency card top. */
+export function placeAlreadyInName(agency: string, place: string): boolean {
   const norm = (s: string) =>
     s
       .toLowerCase()
@@ -528,6 +583,25 @@ function looksLikeBrandCode(s: string): boolean {
  */
 function hasWord(haystack: string, word: string): boolean {
   return new RegExp(`\\b${word}\\b`).test(haystack);
+}
+
+/** A one-word code with two or more capitals ("CATbus", "SacRT", "StaRT"); a place has one ("Phoenix"). */
+function isMixedCaseCode(s: string): boolean {
+  return !/[\s,]/.test(s) && (s.match(/[A-Z]/g)?.length ?? 0) >= 2;
+}
+
+/**
+ * The agency's name in a card's back link ("← Valley Metro"): shortenAgencyName, except that a bracketed city
+ * never stands in for the name ("Valley Metro (Phoenix)" → "Valley Metro", not "Phoenix"). A bracketed brand
+ * code still does ("DART", "LA Metro", "CATbus"). Lists and search keep shortenAgencyName (#1102).
+ */
+export function agencyBackLinkName(name: string): string {
+  const short = shortenAgencyName(name);
+  const m = name.match(/^(.*?)\s*\(([^)]+)\)\s*$/);
+  if (!m || short !== m[2].trim()) return short;
+  const bracket = m[2].trim();
+  const isCode = !isPlaceAbbrev(bracket) && (looksLikeBrandCode(bracket) || isMixedCaseCode(bracket));
+  return isCode || !m[1].trim() ? short : m[1].trim();
 }
 
 export function shortenAgencyName(name: string): string {
@@ -645,9 +719,71 @@ export function shortenAgencyName(name: string): string {
  * Prefer this over `agencies.find(a => a.slug === slug)?.name` — the raw
  * lookup is easy to reach for and easy to forget to shorten.
  */
+/** Every form of an agency's name, from one place (CIV-998). Callers pick the form by name, not by helper. */
+export interface AgencyNames {
+  /**
+   * The agency's short name for every surface but its card title (Ryan, CIV-998): lists, rows, eyebrows, back links,
+   * the route chooser, the stop card, In view and search. Never a city ("Capital Metro", not "Austin").
+   */
+  name: string;
+  /** A back link to the agency: the same short name. */
+  backLink: string;
+  /** The agency card title: "Toronto Transit Commission", "Gary Public Transportation Corporation". */
+  full: string;
+  /** The place shown beside the card title ("Mississauga"), if any. */
+  place?: string;
+  /** Live only, until Atlas Live moves to `name`: the older short form, which can be a bracketed city ("Austin"). */
+  short: string;
+}
+
+/** A row name longer than this uses the agency's config shortName ("GPTC"), when it has one. */
+const AGENCY_ROW_NAME_MAX = 24;
+const CONFIG_SHORT_NAMES: ReadonlyMap<string, string> = new Map(Object.entries((agencyShortNameData as { byName: Record<string, string> }).byName));
+
+/** A word that makes a shortened name a transit name rather than a place ("Spokane Transit", not "Spokane"). */
+const TRANSIT_NAME_WORD = /\b(Transit|Transportation|Transport|Transpo|Metro|Bus|Rail|Railway|Express|Lines?|Ferr(?:y|ies)|Shuttle|Connector|Link|Ride|Trolley|Tram|Breeze|Trans)\b/i;
+
+/**
+ * The agency's short name (CIV-998): never a city. A bracketed city never stands in for the name (agencyBackLinkName),
+ * and a shortening that leaves only a place ("Corvallis Transit System" → "Corvallis") keeps the agency's own name.
+ * A config short form is used only when the name is too long for a row ("GPTC").
+ */
+function agencyRowName(name: string): string {
+  const outer = name.replace(/\s*\([^)]+\)\s*$/, '').trim() || name.trim();
+  let own = agencyBackLinkName(name);
+  const isCode = /^[\p{Lu}\d&./ -]+$/u.test(own) || isMixedCaseCode(own) || looksLikeBrandCode(own);
+  // Only the generic-word strip leaves a place: the leading words of the name with the transit words cut off. "Muni" is not that.
+  if (outer.startsWith(`${own} `) && !isCode && !TRANSIT_NAME_WORD.test(own)) own = outer;
+  return own.length > AGENCY_ROW_NAME_MAX ? CONFIG_SHORT_NAMES.get(name.trim()) ?? own : own;
+}
+
+export function agencyNames(agency: string | { name: string; cities?: string[]; displayArea?: string }): AgencyNames {
+  const { name, cities, displayArea } = typeof agency === 'string' ? { name: agency, cities: undefined, displayArea: undefined } : agency;
+  const { primary, secondary } = agencyDisplayParts(name, cities, displayArea);
+  const row = agencyRowName(name);
+  return { name: row, backLink: row, full: primary, place: secondary, short: shortenAgencyName(name) };
+}
+
+/**
+ * A list row's agency: the short name, with the place beside it when the short name doesn't already say it
+ * ("TTC · Toronto", "Capital Metro · Austin", "Calgary Transit").
+ */
+export function agencyListParts(agency: string | { name: string; cities?: string[]; displayArea?: string }): { primary: string; secondary?: string } {
+  const { name, full, place } = agencyNames(agency);
+  const fallback = typeof agency === 'string' ? undefined : agency.displayArea ?? agency.cities?.[0]?.split(',')[0]?.trim();
+  const where = place ?? (name !== full ? fallback : undefined);
+  return where && !placeAlreadyInName(name, where) ? { primary: name, secondary: where } : { primary: name };
+}
+
+/** agencyNames' card title and place ({ primary, secondary }): the agency card, History's agency card, the zone card fallback. Lists use agencyListParts. */
+export function agencyNameParts(agency: string | { name: string; cities?: string[]; displayArea?: string }): { primary: string; secondary?: string } {
+  const { full, place } = agencyNames(agency);
+  return place ? { primary: full, secondary: place } : { primary: full };
+}
+
 export function agencyDisplayName(agencies: { slug: string; name: string }[], slug: string): string {
   const agency = agencies.find(a => a.slug === slug);
-  return agency ? shortenAgencyName(agency.name) : slug;
+  return agency ? agencyNames(agency.name).short : slug;
 }
 
 /** Destination label for route/stop cards — matches route card `to …` convention. */
@@ -667,7 +803,7 @@ export function formatBranchLabel(
     ? headsign.trim()
     : cleanHeadsign(headsign.trim(), shortName, longName);
   if (!raw || isRedundantWithRouteName(raw, shortName, longName)) return withToPrefix(fallback);
-  return withToPrefix(titleCase(raw));
+  return withToPrefix(stopNameCase(raw));
 }
 
 /** Format YYYYMMDD or YYYY-MM-DD for display (UTC). */

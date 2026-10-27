@@ -2,7 +2,7 @@
  * The /agencies index: every area and agency page in one place. Built from the same summaries as the pages
  * themselves; nothing new is measured.
  */
-import { agencyPagePath, type AgencyPageSummary } from './agencyPages';
+import { agencyPagePath, agencyShortLabel, type AgencyPageSummary } from './agencyPages';
 import { areaAgencySummaries } from './areaPages';
 import { areaRegionTitle, areaShortName } from './areaRegions';
 import { areaPagePath, type AreaConfig } from './areas';
@@ -13,9 +13,23 @@ export const AGENCY_INDEX_PATH = '/agencies';
 /** The prerendered HTML carries its data in <script type="application/json" id=...>. */
 export const AGENCY_INDEX_DATA_SCRIPT_ID = 'agency-index-data';
 
+const anchorSlug = (s: string) => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+
+/** The id of a state or province heading in the list; a country listed with no regions keeps its own heading's id. */
+export function agencyIndexRegionId(country: string, region: string): string {
+  return region === country ? `index-${country}` : `index-${anchorSlug(country)}-${anchorSlug(region)}`;
+}
+
+/** Link to an agency's state or province in the list (CIV-966), or null when the agency has no country and region. */
+export function agencyIndexRegionHref(a: { country?: string; region?: string }): string | null {
+  return a.country && a.region ? `${AGENCY_INDEX_PATH}#${encodeURIComponent(agencyIndexRegionId(a.country, a.region))}` : null;
+}
+
 export interface AgencyIndexAgency {
   slug: string;
   name: string;
+  /** The name without its bracketed city ("CDTA"), for a row too tight for the full name. */
+  shortName: string;
   routes: number;
 }
 
@@ -46,7 +60,7 @@ export function buildAgencyIndexData(
     const country = a.country ?? OTHER;
     const region = a.country && a.region ? a.region : OTHER;
     const regions = tree.get(country) ?? tree.set(country, new Map()).get(country)!;
-    (regions.get(region) ?? regions.set(region, []).get(region)!).push({ slug: a.slug, name: a.name, routes: a.routeCount });
+    (regions.get(region) ?? regions.set(region, []).get(region)!).push({ slug: a.slug, name: a.name, shortName: agencyShortLabel(a), routes: a.routeCount });
   }
   const last = (x: string, y: string) => (x === OTHER ? 1 : 0) - (y === OTHER ? 1 : 0) || byName(x, y);
   const groups = [...tree.entries()].sort(([x], [y]) => last(x, y)).map(([country, regions]) => ({

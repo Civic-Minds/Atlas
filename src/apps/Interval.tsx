@@ -1,5 +1,5 @@
 import { PHONE_MEDIA_QUERY, phoneModeFlags, useMediaQuery } from '../hooks/useMediaQuery';
-import React, { useState, useCallback, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useCallback, useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useSearchParams } from 'react-router';
 import { useViewportLoadGate } from '../hooks/useViewportLoadGate';
@@ -16,7 +16,7 @@ import { NearbyRoutesPanel } from '../components/Interval/NearbyRoutesPanel';
 import { FilterPanel } from '../components/Interval/FilterPanel';
 import { FilterChips, getNowPeriodForTimezone } from '../components/Interval/FilterChips';
 import { AgencyCard } from '../components/Interval/AgencyCard';
-import { TRANSITION_BASE, TRANSITION_SLOW, Z_PANEL, MAP_BADGE, MAP_BADGE_COUNT, MAP_BADGE_LABEL } from '../styles';
+import { MAP_FOOTER_ROW_SLOT, MAP_COUNTS_PHONE_SLOT, TRANSITION_BASE, TRANSITION_SLOW, Z_PANEL, MAP_BADGE, MAP_BADGE_COUNT, MAP_BADGE_LABEL, SIDEBAR_CARD_TOP, SIDEBAR_CARD_TOP_DESKTOP, Z_PANEL_RAISED } from '../styles';
 import type { Agency } from '../App';
 import type { OpenInfoFn } from '../components/InfoPanel';
 import { mapViewKind, viewAllowsOnDemand } from '../../shared/viewLayers';
@@ -31,10 +31,11 @@ import { DAY_TYPES, type DayType as DayTypeName } from '../../shared/dayTypes';
 import { splitRouteKey } from '../utils/routeKey';
 import { getPolledRoute } from '../../shared/livePollingConfig';
 import { resolveRouteSelectionForDay } from '../utils/routeSelection';
+import { MAP_URL, readUrlParam, urlParamPresent, urlParamUpdate } from '../utils/mapUrlState';
 import { syncUrlParams } from '../utils/syncUrlParams';
 import type { HistoryView } from '../utils/historyYearMap';
 import { usePersistedFilterPref } from '../hooks/usePersistedFilterPref';
-import { encodeCompareSideParams, encodeSelectionParams, encodeModesParam, isAgencyOff, parseAgencyUrlRule, parseAreaBounds, parseCompareSideParams, parseModesParam, settleAgencyUrlRule, shouldPersistAgencySelection, type AgencyUrlRule } from '../utils/shareUrlState';
+import { encodeCompareSideParams, encodeSelectionParams, encodeModesParam, isAgencyOff, parseAgencyUrlRule, parseAreaBounds, parseCompareSideParams, parseModesParam, parseRouteChooserParam, encodeRouteChooserParam, ROUTE_CHOOSER_PARAM, settleAgencyUrlRule, shouldPersistAgencySelection, type AgencyUrlRule } from '../utils/shareUrlState';
 import { searchOverlayHidesPanel } from '../utils/format';
 import { trackEvent } from '../lib/analytics';
 import type { FrequentServiceFrequency, FrequentServiceWindow } from '../../shared/frequentService';
@@ -45,7 +46,8 @@ import { selectFrequentServiceFeatures, selectNightServiceFeatures } from '../co
 import { areaFitZoom } from '../../shared/areaIndex';
 import type { AreaSearchResult } from '../../shared/areaSearch';
 import Spinner from '../components/ui/Spinner';
-import { resolveSelectedOnDemandSlug } from '../utils/onDemandSelection';
+import { onDemandSelectionZoneId, resolveSelectedOnDemandSlug } from '../utils/onDemandSelection';
+import { encodeStopBackTarget, parseStopBackTarget, resolveStopBack, STOP_BACK_PARAM, stopBackTarget, type StopBackRoute, type StopBackSnapshot, type StopBackTarget } from '../utils/stopBack';
 import { loadingText } from '../content/stateCopy';
 
 // Versioned because the original preference could accidentally persist only
@@ -149,13 +151,14 @@ const EMPTY_LAYERS: Record<string, GeoJSON.FeatureCollection> = {};
 
 /**
  * Where a compare side's label and controls sit on its map: top right of each half on desktop (never wider than its half),
- * centred on phones (where the halves stack). The wrapper ignores pointer events so the map stays
+ * centred on phones (where the halves stack). Map A's label sits where the sidebar cards start, just under
+ * the search bar; on phones map B is the lower half with no search bar over it, so its label sits near that half's top. The wrapper ignores pointer events so the map stays
  * draggable around it; the controls inside turn them back on. One step above the panels so a chip's
  * menu opens over the phone route sheet instead of behind it.
  */
 function CompareSideSlot({ side, children }: { side: 'A' | 'B'; children: React.ReactNode }) {
   return (
-    <div className={`absolute ${side === 'A' ? 'top-[68px]' : 'top-3 sm:top-[68px]'} left-1/2 -translate-x-1/2 sm:left-4 sm:translate-x-0 sm:right-4 sm:flex sm:justify-end z-[1001] pointer-events-none`}>
+    <div className={`absolute ${side === 'A' ? SIDEBAR_CARD_TOP : `top-3 ${SIDEBAR_CARD_TOP_DESKTOP}`} left-1/2 -translate-x-1/2 sm:left-4 sm:translate-x-0 sm:right-4 sm:flex sm:justify-end ${Z_PANEL_RAISED} pointer-events-none`}>
       {children}
     </div>
   );
@@ -187,22 +190,16 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   }, []);
 
   const [maxHeadway, setMaxHeadway] = useState<number>(() => {
-    try {
-      const h = searchParams.get('h') || searchParams.get('headway') || searchParams.get('max');
-      if (h) {
-        if (h === 'all' || h === 'inf' || h === 'Infinity') return Infinity;
-        const n = Number(h);
-        if (isFinite(n) && n > 0) return n;
-      }
-    } catch {}
+    const fromLink = readUrlParam(searchParams, MAP_URL.headway);
+    if (fromLink != null) return fromLink;
     try { const v = Number(localStorage.getItem('atlas_pref_headway')); if (v > 0) return v; } catch {}
     return 60;
   });
-  const [selectedRoute, setSelectedRoute] = useState<string | null>(() => searchParams.get('route'));
-  const [selectedStop, setSelectedStop] = useState<string | null>(() => searchParams.get('stop'));
+  const [selectedRoute, setSelectedRoute] = useState<string | null>(() => readUrlParam(searchParams, MAP_URL.route) ?? null);
+  const [selectedStop, setSelectedStop] = useState<string | null>(() => readUrlParam(searchParams, MAP_URL.stop) ?? null);
   // Research views never show on-demand, so a shared link's on-demand mode (or ?ondemand=) is dropped there.
   const onDemandAllowed = viewAllowsOnDemand(mapViewKind({ nightServiceView, frequentServiceView, liveRoutesOnly }));
-  const [onDemandStopAgencySlug, setOnDemandStopAgencySlug] = useState<string | null>(() => onDemandAllowed ? searchParams.get('ondemand') : null);
+  const [onDemandStopAgencySlug, setOnDemandStopAgencySlug] = useState<string | null>(() => onDemandAllowed ? readUrlParam(searchParams, MAP_URL.onDemand) ?? null : null);
 
   useEffect(() => {
     if (!selectedRoute) return;
@@ -224,11 +221,13 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   // same key format as ?route=. Not surfaced in any UI; for investigating cases like #294 where
   // seeing whether two routes' shapes actually overlap settles the question faster than reasoning
   // about it in the abstract. Read-only from the URL on load, never written back.
-  const [highlightRoutes] = useState<string[]>(() => {
-    const raw = searchParams.get('highlight');
-    return raw ? raw.split(',').map(s => s.trim()).filter(Boolean) : [];
-  });
+  const [highlightRoutes] = useState<string[]>(() => readUrlParam(searchParams, MAP_URL.highlight) ?? []);
   const [disambiguationRoutes, setDisambiguationRoutes] = useState<string[] | null>(null);
+  // A link's ?routes= chooser (CIV-919) waits here until those routes' agencies load, so it never
+  // shows raw route keys. A link that also opens a route or stop shows that card instead.
+  const [pendingRouteChooser, setPendingRouteChooser] = useState<string[] | null>(() => (
+    readUrlParam(searchParams, MAP_URL.route) || readUrlParam(searchParams, MAP_URL.stop) ? null : parseRouteChooserParam(searchParams)
+  ));
   const [hoveredBranch, setHoveredBranchState] = useState<HoveredBranch | null>(null);
   const hoverTimeoutRef = useRef<number | null>(null);
 
@@ -244,12 +243,10 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
 
   const selectedOnDemandSelection = onDemandStopAgencySlug;
   const selectedOnDemandSlug = resolveSelectedOnDemandSlug(onDemandStopAgencySlug, selectedAgencySlug, agencies);
-  const selectedOnDemandZoneId = selectedOnDemandSelection?.includes('::')
-    ? selectedOnDemandSelection.slice(selectedOnDemandSelection.indexOf('::') + 2)
-    : null;
+  const selectedOnDemandZoneId = onDemandSelectionZoneId(selectedOnDemandSelection);
 
   useEffect(() => {
-    syncUrlParams({ ondemand: selectedOnDemandSelection });
+    syncUrlParams(urlParamUpdate(MAP_URL.onDemand, selectedOnDemandSelection));
   }, [selectedOnDemandSelection]);
 
   // An agency selection replaces route disambiguation. Keeping both active
@@ -285,16 +282,53 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   const prevSearchFocused = useRef(searchFocused);
   const agencyCardRef = useRef<HTMLDivElement>(null);
 
+  // The stop card's back link returns to the screen the stop was opened from (CIV-832). One always-on
+  // capture listener notes what is open on every pointerdown, before any click handler changes it;
+  // when a stop then opens, that note becomes the back link's target. The same listener closes an
+  // open agency or on-demand card on any pointerdown outside it (panning the map included).
+  const openSelectionRef = useRef({ route: selectedRoute, stop: selectedStop, agencySlug: selectedAgencySlug ?? null, onDemand: onDemandStopAgencySlug, searchFocused });
+  useLayoutEffect(() => {
+    openSelectionRef.current = { route: selectedRoute, stop: selectedStop, agencySlug: selectedAgencySlug ?? null, onDemand: onDemandStopAgencySlug, searchFocused };
+  });
+  const onAgencyCardCloseRef = useRef(onAgencyCardClose);
+  useLayoutEffect(() => { onAgencyCardCloseRef.current = onAgencyCardClose; });
+  const stopBackSnapshotRef = useRef<StopBackSnapshot | null>(null);
   useEffect(() => {
-    if ((!selectedAgencySlug && !onDemandStopAgencySlug) || selectedRoute || selectedStop) return;
     const onPointerDown = (e: PointerEvent) => {
+      const open = openSelectionRef.current;
+      stopBackSnapshotRef.current = { route: open.route, agencySlug: open.agencySlug, onDemand: open.onDemand, searchFocused: open.searchFocused };
+      if ((!open.agencySlug && !open.onDemand) || open.route || open.stop) return;
       if (agencyCardRef.current?.contains(e.target as Node)) return;
       setOnDemandStopAgencySlug(null);
-      onAgencyCardClose?.();
+      onAgencyCardCloseRef.current?.();
     };
+    // A stop opened from the keyboard (search Enter) has no pointer to go back to: it returns to the map.
+    const onKeyDown = () => { stopBackSnapshotRef.current = null; };
     document.addEventListener('pointerdown', onPointerDown, true);
-    return () => document.removeEventListener('pointerdown', onPointerDown, true);
-  }, [selectedAgencySlug, onDemandStopAgencySlug, selectedRoute, selectedStop, onAgencyCardClose]);
+    document.addEventListener('keydown', onKeyDown, true);
+    return () => {
+      document.removeEventListener('pointerdown', onPointerDown, true);
+      document.removeEventListener('keydown', onKeyDown, true);
+    };
+  }, []);
+
+  // When a stop opens from nothing, read the note once. A stop opened while another stop's card is
+  // showing keeps that card's target: back never chains from stop to stop.
+  // A link (or reload) that opens a stop keeps its back target from ?from= (CIV-919).
+  const [stopBackTargetState, setStopBackTargetState] = useState<StopBackTarget | null>(() => (
+    selectedStop ? parseStopBackTarget(searchParams.get(STOP_BACK_PARAM)) : null
+  ));
+  const prevSelectedStopRef = useRef(selectedStop);
+  useLayoutEffect(() => {
+    const prev = prevSelectedStopRef.current;
+    prevSelectedStopRef.current = selectedStop;
+    if (selectedStop && !prev) {
+      setStopBackTargetState(stopBackTarget(stopBackSnapshotRef.current));
+      stopBackSnapshotRef.current = null;
+    } else if (!selectedStop && prev) {
+      setStopBackTargetState(null);
+    }
+  }, [selectedStop]);
 
   useEffect(() => {
     if (searchFocused && !prevSearchFocused.current) {
@@ -354,10 +388,8 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     return modes;
   });
   const [period, setPeriod] = useState<TimePeriod>(() => {
-    try {
-      const p = searchParams.get('p') || searchParams.get('period');
-      if (p === 'all' || (p && PERIOD_KEYS.includes(p as any))) return p as TimePeriod;
-    } catch {}
+    const fromLink = readUrlParam(searchParams, MAP_URL.period);
+    if (fromLink != null) return fromLink;
     // A direct link to a specific agency's route/stop should default to that
     // agency's own current time, not the viewer's browser-local clock (#245).
     const initialSlug = (selectedRoute ?? selectedStop)?.split('::')[0];
@@ -366,8 +398,8 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   });
   const [hideSpan, setHideSpan] = useState(() => {
     try {
-      const urlValue = new URLSearchParams(window.location.search).get('span');
-      if (urlValue != null) return urlValue !== '0';
+      const fromLink = readUrlParam(window.location.search, MAP_URL.hideSpan);
+      if (fromLink != null) return fromLink;
       const saved = localStorage.getItem('atlas_pref_hide_span');
       return saved == null ? true : saved === 'true';
     } catch {
@@ -378,8 +410,8 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   // saved preference keeps its meaning; only a visitor with neither gets the new default.
   const [hideLimitedService, setHideLimitedService] = useState(() => {
     try {
-      const urlValue = new URLSearchParams(window.location.search).get('limited');
-      if (urlValue != null) return urlValue !== '0';
+      const fromLink = readUrlParam(window.location.search, MAP_URL.hideLimited);
+      if (fromLink != null) return fromLink;
       const saved = localStorage.getItem('atlas_pref_hide_limited');
       return saved == null ? true : saved === 'true';
     } catch {
@@ -460,7 +492,8 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     }
   }, [agencies.length, analyticsApp, day, hideSpan, livePollingOnly, maxHeadway, period, selectedAgencies, selectedModes]);
 
-  const selectionUiVisible = showSelectionUi && (!!selectedRoute || !!selectedStop || !!disambiguationRoutes?.length || !!selectedAgencySlug);
+  // Frequent Service draws its route card over the research info card, so a selection there counts too.
+  const selectionUiVisible = (showSelectionUi || frequentServiceView) && (!!selectedRoute || !!selectedStop || !!disambiguationRoutes?.length || !!selectedAgencySlug);
   const showSidebar = showUi || selectionUiVisible;
 
   useEffect(() => {
@@ -521,10 +554,12 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   );
   const priorityAgencySlugs = useMemo(() => {
     const slugOf = (key: string | null | undefined) => (key ? key.split('::')[0] : null);
-    return [slugOf(selectedRoute), slugOf(selectedStop), pendingLiveRoute?.slug, pendingNightRoute?.slug]
+    const stopBackRouteSlug = selectedStop && stopBackTargetState?.kind === 'route' ? slugOf(stopBackTargetState.route) : null;
+    return [slugOf(selectedRoute), slugOf(selectedStop), stopBackRouteSlug, pendingLiveRoute?.slug, pendingNightRoute?.slug, ...(pendingRouteChooser ?? []).map(slugOf)]
       .filter((slug): slug is string => !!slug)
+      .filter((slug, index, slugs) => slugs.indexOf(slug) === index)
       .concat(compareBSlugKey ? compareBSlugKey.split('|') : []);
-  }, [selectedRoute, selectedStop, pendingLiveRoute?.slug, pendingNightRoute?.slug, compareBSlugKey]);
+  }, [selectedRoute, selectedStop, stopBackTargetState, pendingLiveRoute?.slug, pendingNightRoute?.slug, pendingRouteChooser, compareBSlugKey]);
   const { layers, loadedCount, requestedCount, isLoading, failedSlugs } = useAgencyData(agencies, bounds, {
     showCorridorBand: false,
     searchQuery: searchFocused ? query : '',
@@ -546,8 +581,26 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     onViewportAgencySlugsChange?.(viewportSlugKey ? viewportSlugKey.split('|') : []);
   }, [viewportSlugKey, onViewportAgencySlugsChange]);
 
+  // Near You sits in the left card slot (CIV-930), so it shows only while no other card is there. A route
+  // opened from it gets "← Near You", which closes the route and shows Near You again.
+  const [nearYouRoute, setNearYouRoute] = useState<string | null>(null);
+  useEffect(() => { if (!userLocation) setNearYouRoute(null); }, [userLocation]);
+  const nearYouCovered = !!(selectedRoute || selectedStop || selectedAgencySlug || onDemandStopAgencySlug
+    || disambiguationRoutes?.length || mapContextOpen || searchOverlayHidesPanel(searchFocused, query));
+  const nearYouShown = showUi && !!userLocation && !nearYouCovered;
+  const openNearYouRoute = useCallback((key: string | null) => {
+    setNearYouRoute(key);
+    setSelectedRoute(key);
+  }, []);
+  const routeCardBack = useMemo(
+    () => (userLocation && nearYouRoute && selectedRoute === nearYouRoute
+      ? { to: 'Near You', onClick: () => setSelectedRoute(null) }
+      : undefined),
+    [userLocation, nearYouRoute, selectedRoute],
+  );
+
   useEffect(() => {
-    if (!userLocation) return;
+    if (!nearYouShown) return;
     function onPointerDown(e: PointerEvent) {
       const target = e.target as Node;
       if (nearbyPanelRef.current?.contains(target)) return;
@@ -556,7 +609,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     }
     document.addEventListener('pointerdown', onPointerDown);
     return () => document.removeEventListener('pointerdown', onPointerDown);
-  }, [userLocation, clearUserLocation]);
+  }, [nearYouShown, clearUserLocation]);
 
   const nearbyRoutes = useNearbyRoutes(userLocation, layers, day, period);
   const { stats, searchMatches, searchMatchResults, searchStopMatchResults, matchesQuery, q, filteredLayers, mapFilteredLayers, routesForStop, tileFilter } = useIntervalStats(layers, {
@@ -705,10 +758,10 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   const [filtersFromUrl] = useState(() => {
     const sp = new URLSearchParams(window.location.search);
     return {
-      headway: !!(sp.get('h') || sp.get('headway') || sp.get('max')),
-      day: !!(sp.get('day') || sp.get('d')),
-      span: sp.get('span') != null,
-      limited: sp.get('limited') != null,
+      headway: urlParamPresent(sp, MAP_URL.headway),
+      day: urlParamPresent(sp, MAP_URL.day),
+      span: urlParamPresent(sp, MAP_URL.hideSpan),
+      limited: urlParamPresent(sp, MAP_URL.hideLimited),
     };
   });
   usePersistedFilterPref('atlas_pref_headway', String(maxHeadway), filtersFromUrl.headway);
@@ -716,10 +769,10 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   usePersistedFilterPref('atlas_pref_hide_span', String(hideSpan), filtersFromUrl.span);
   usePersistedFilterPref('atlas_pref_hide_limited', String(hideLimitedService), filtersFromUrl.limited);
   useEffect(() => {
-    syncUrlParams({ span: hideSpan ? null : '0' });
+    syncUrlParams(urlParamUpdate(MAP_URL.hideSpan, hideSpan));
   }, [hideSpan]);
   useEffect(() => {
-    syncUrlParams({ limited: hideLimitedService ? null : '0' });
+    syncUrlParams(urlParamUpdate(MAP_URL.hideLimited, hideLimitedService));
   }, [hideLimitedService]);
   useEffect(() => {
     if (!shouldPersistAgencySelection(agencyUrlRuleRef.current, agencySelectionUserChangedRef.current)) return;
@@ -806,7 +859,31 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
 
   useEffect(() => { if (selectedRoute) { setOnDemandStopAgencySlug(null); onAgencyCardClose?.(); } }, [selectedRoute, onAgencyCardClose]);
   useEffect(() => { if (selectedStop) { setOnDemandStopAgencySlug(null); onAgencyCardClose?.(); } }, [selectedStop, onAgencyCardClose]);
-  useEffect(() => { setHoveredBranch(null); }, [selectedRoute]);
+
+  // The stop card's back link: its words and what it reopens (CIV-832).
+  const stopBack = useMemo(() => {
+    const findRoute = (key: string): StopBackRoute | null => {
+      const { agencySlug, routeId } = splitRouteKey(key);
+      const feature = layers[agencySlug]?.features.find(f => {
+        const p = f.properties as ShapeProperties | null;
+        return !!p && !p.stopId && String(p.routeId) === routeId;
+      });
+      if (!feature) return null;
+      const p = feature.properties as ShapeProperties & { routeType?: number };
+      return { routeShortName: p.routeShortName, routeLongName: p.routeLongName, routeType: p.routeType };
+    };
+    return resolveStopBack(stopBackTargetState, agencies, findRoute);
+  }, [stopBackTargetState, agencies, layers]);
+  const goBackFromStop = useCallback(() => {
+    const target = stopBack.target;
+    setSelectedStop(null);
+    if (target.kind === 'route') setSelectedRoute(target.route);
+    else if (target.kind === 'onDemand') setOnDemandStopAgencySlug(target.selection);
+    else if (target.kind === 'agency') setSelectedAgencySlug?.(target.agencySlug);
+  }, [stopBack.target, setSelectedAgencySlug]);
+  const stopBackToAgency = stopBack.target?.kind === 'agency';
+  const stopCardBack = useMemo(() => ({ to: stopBack.to, onClick: goBackFromStop, namesAgency: stopBackToAgency }), [stopBack.to, goBackFromStop, stopBackToAgency]);
+  useEffect(() => { setHoveredBranch(null); }, [selectedRoute, selectedStop]);
 
   const clearMapSelection = useCallback(() => {
     setSelectedRoute(null);
@@ -816,12 +893,19 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     setOnDemandStopAgencySlug(null);
     onAgencyCardClose?.();
   }, [onAgencyCardClose]);
+  // An agency or on-demand card's "← Map" (CIV-929): closes the card, as a click on the map outside it does.
+  const closeAgencyCard = useCallback(() => {
+    setOnDemandStopAgencySlug(null);
+    onAgencyCardClose?.();
+  }, [onAgencyCardClose]);
   // The user dismissing the map's selection (empty-map click, Escape): clears it and tells any other
   // view's panel over the map to close the same way (History, #1031). Data-driven clears don't.
   const dismissMapSelection = useCallback(() => {
     clearMapSelection();
+    // An empty-map click closes Near You too, not just a route opened from it.
+    clearUserLocation();
     onMapDismiss?.();
-  }, [clearMapSelection, onMapDismiss]);
+  }, [clearMapSelection, clearUserLocation, onMapDismiss]);
 
   // Drop stale selection when the route card has no data (day change, agency unload, etc.)
   useEffect(() => {
@@ -871,26 +955,49 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   // concurrent writers (day, map center, filters) don't clobber each other.
   useEffect(() => {
     if (!selectedRoute && handedToLiveRef.current) { handedToLiveRef.current = false; return; }
-    syncUrlParams({ route: selectedRoute || null });
+    syncUrlParams(urlParamUpdate(MAP_URL.route, selectedRoute));
   }, [selectedRoute]);
 
   useEffect(() => {
-    syncUrlParams({ stop: selectedStop || null });
+    syncUrlParams(urlParamUpdate(MAP_URL.stop, selectedStop));
   }, [selectedStop]);
+
+  // The stop card's back target and the route chooser in the link (CIV-919).
+  useEffect(() => {
+    syncUrlParams({ [STOP_BACK_PARAM]: selectedStop ? encodeStopBackTarget(stopBackTargetState) : null });
+  }, [selectedStop, stopBackTargetState]);
+
+  useEffect(() => {
+    syncUrlParams({ [ROUTE_CHOOSER_PARAM]: encodeRouteChooserParam(disambiguationRoutes ?? pendingRouteChooser) });
+  }, [disambiguationRoutes, pendingRouteChooser]);
+
+  // Open the linked chooser once its agencies have loaded (or failed), with the routes still found.
+  // Anything else opened first wins and the link's chooser is dropped.
+  useEffect(() => {
+    if (!pendingRouteChooser) return;
+    if (selectedRoute || selectedStop || selectedAgencySlug || onDemandStopAgencySlug || disambiguationRoutes || !(showUi || showSelectionUi)) {
+      setPendingRouteChooser(null);
+      return;
+    }
+    const slugs = [...new Set(pendingRouteChooser.map(key => splitRouteKey(key).agencySlug))];
+    if (!slugs.every(slug => layers[slug] || failedSlugs.has(slug))) return;
+    const found = pendingRouteChooser.filter(key => layers[splitRouteKey(key).agencySlug]?.features.some(f => {
+      const p = f.properties as ShapeProperties | null;
+      return !!p && !p.stopId && routeKey({ ...p, agencySlug: splitRouteKey(key).agencySlug } as ShapeProperties) === key;
+    }));
+    setPendingRouteChooser(null);
+    if (found.length > 1) setDisambiguationRoutes(found);
+  }, [pendingRouteChooser, layers, failedSlugs, selectedRoute, selectedStop, selectedAgencySlug, onDemandStopAgencySlug, disambiguationRoutes, showUi, showSelectionUi]);
 
   // Sync filter state (maxHeadway, period) to URL for active view persistence (refresh/share).
   // On load: URL wins (see initializers), else LS/default; effects then ensure URL reflects
-  // current (like lat/lon/z). Defaults (h=60, p=all) omitted to keep URLs short.
+  // current (like lat/lon/z). Every value is written, h=60 and p=all included, so a copied link reopens this view (#1141).
   useEffect(() => {
-    const h =
-      maxHeadway === Infinity ? 'all'
-      : maxHeadway !== 60 ? String(maxHeadway)
-      : null;
-    syncUrlParams({ h });
+    syncUrlParams(urlParamUpdate(MAP_URL.headway, maxHeadway));
   }, [maxHeadway]);
 
   useEffect(() => {
-    syncUrlParams({ p: period !== 'all' ? period : null });
+    syncUrlParams(urlParamUpdate(MAP_URL.period, period));
   }, [period]);
 
   // Search-result hover → highlight that route on the map, fading the rest
@@ -962,7 +1069,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
             selectedAgencies={selectedAgencies}
             initialMapCenter={initialMapCenter}
             initialMapBounds={initialMapBounds}
-            initialOnDemandSlug={initialMapCenter || !onDemandAllowed ? null : searchParams.get('ondemand')?.split('::', 1)[0] ?? null}
+            initialOnDemandSlug={initialMapCenter || !onDemandAllowed ? null : readUrlParam(searchParams, MAP_URL.onDemand)?.split('::', 1)[0] ?? null}
             onTileLoadingChange={setIsTilesLoading}
             onBasemapLoadingChange={setIsBasemapLoading}
             setQuery={setQuery}
@@ -1063,7 +1170,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
           </div>
         )}
         {compareActive && (
-          <div className="absolute left-1/2 top-1/2 z-[1001] -translate-x-1/2 -translate-y-1/2 max-sm:hidden">
+          <div className={`absolute left-1/2 top-1/2 ${Z_PANEL_RAISED} -translate-x-1/2 -translate-y-1/2 max-sm:hidden`}>
             <CompareLinkToggle linked={compareLinked} onChange={setCompareLinked} />
           </div>
         )}
@@ -1075,11 +1182,11 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
           (and the analytics prompt, their last pill) wrap upward before they reach the counts (#999).
           Phones drop the wrapper (contents) and keep each group's own position. No z-index here, so
           the pills keep their own layer and the What's new panel still opens above the header. */}
-      <div className="max-sm:contents absolute bottom-6 left-6 right-14 flex items-end justify-between gap-2 pointer-events-none">
+      <div className={MAP_FOOTER_ROW_SLOT}>
       <MapAttribution />
 
       {((stats && (stats.total > 0 || !isLoading)) || researchCounts || isLoading || isTilesLoading || isBasemapLoading || failedSlugs.size > 0) && (
-        <div className={`max-sm:absolute max-sm:bottom-[7rem] max-sm:right-[4.25rem] ${Z_PANEL} shrink-0 ml-auto flex gap-2 transition-all ${TRANSITION_SLOW} ${showUi ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
+        <div data-map-overlay="counts" className={`${MAP_COUNTS_PHONE_SLOT} ${Z_PANEL} shrink-0 ml-auto flex gap-2 transition-all ${TRANSITION_SLOW} ${showUi ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
           {(isLoading || isTilesLoading || isBasemapLoading) && (
             <div className={`${MAP_BADGE} h-8 max-sm:h-[32px]`}>
               <Spinner />
@@ -1181,6 +1288,8 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
             onInfoOpen={onInfoOpen}
             onDemandFocus
             onDemandZoneId={selectedOnDemandZoneId}
+            onBackToAgency={setSelectedAgencySlug ? () => { setOnDemandStopAgencySlug(null); setSelectedAgencySlug(agency.slug); } : undefined}
+            onClose={closeAgencyCard}
           />
         ) : null;
       })()}
@@ -1202,6 +1311,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
             sidebarLeft={sidebarLeft}
             searchBarWidth={searchBarWidth}
             onInfoOpen={onInfoOpen}
+            onClose={closeAgencyCard}
           />
         ) : null;
       })()}
@@ -1224,12 +1334,14 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
         );
       })()}
 
-      {showUi && userLocation && (
+      {nearYouShown && (
         <NearbyRoutesPanel
           ref={nearbyPanelRef}
           routes={nearbyRoutes}
           loading={isLoading}
-          setSelectedRoute={setSelectedRoute}
+          setSelectedRoute={openNearYouRoute}
+          sidebarLeft={sidebarLeft}
+          searchBarWidth={searchBarWidth}
         />
       )}
 
@@ -1405,6 +1517,8 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
         compareActive={compareActive}
         onInfoOpen={onInfoOpen}
         searchEnterRef={searchEnterRef}
+        stopBack={stopCardBack}
+        routeBack={routeCardBack}
       />
       </div>
     </div>

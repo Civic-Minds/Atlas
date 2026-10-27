@@ -7,6 +7,11 @@ import { FLOATING_CARD, Z_PANEL } from '../../styles';
  */
 export const BOTTOM_SHEET_FRAME = `fixed inset-x-0 bottom-0 ${Z_PANEL} flex flex-col transition-[opacity,transform] duration-200 ease-out`;
 
+/** The sheet frame with its open or closed state: it fades and slides up 16px as it opens, and back down as it closes. */
+export function bottomSheetFrameClass(visible: boolean): string {
+  return `${BOTTOM_SHEET_FRAME} ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'}`;
+}
+
 /** The sheet's scrolling body; `collapsedHeight` is the short state's height class. */
 export function bottomSheetBodyClass(expanded: boolean, collapsedHeight = 'h-[42dvh]'): string {
   return `relative ${FLOATING_CARD} rounded-b-none px-4 pt-0 pb-[max(0.5rem,env(safe-area-inset-bottom))] overflow-y-auto overflow-x-hidden overscroll-contain transition-[height] duration-200 ease-out ${expanded ? 'h-[calc(100dvh-76px)]' : collapsedHeight}`;

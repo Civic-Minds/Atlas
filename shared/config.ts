@@ -137,8 +137,9 @@ export const ROUTE_VARIANTS_ENABLED = BETA_BUILD;
 export const RUNNING_TIMES_ENABLED = BETA_BUILD;
 // The expand control on the route card's frequency chart.
 export const SPARKLINE_EXPAND_ENABLED = BETA_BUILD;
-// "Data source" link to the agency's own website on the agency card (CIV-467).
-export const DATA_SOURCE_LINK_ENABLED = BETA_BUILD;
+// "Source" link to the agency's own website on the agency card (CIV-467; renamed in CIV-841).
+// Off everywhere (CIV-940): it links to the agency's website, not its data feed.
+export const DATA_SOURCE_LINK_ENABLED = false;
 
 /**
  * Single source of truth for feature exposure. Consumers should use this registry for navigation,
@@ -238,6 +239,18 @@ export const TIME_PERIODS = [
 export type PeriodKey = (typeof TIME_PERIODS)[number]['key'];
 
 export const PERIOD_KEYS: PeriodKey[] = TIME_PERIODS.map(p => p.key);
+
+/** Each period's window in minutes after midnight, [start, end), the unit the pipeline reads departures in (CIV-986). */
+export const PERIOD_MINUTES = Object.fromEntries(
+  TIME_PERIODS.map(p => [p.key, { start: p.startHour * 60, end: p.endHour * 60 }]),
+) as Record<PeriodKey, { start: number; end: number }>;
+
+/** Minutes in a day: a departure written at or past this belongs to the night after its service day. */
+export const MINUTES_PER_DAY = 1440;
+
+/** The day's times before midnight, moved to the following night (02:00 read as 26:00). */
+export const asNextNight = (times: readonly number[]): number[] =>
+  times.filter(t => t < MINUTES_PER_DAY).map(t => t + MINUTES_PER_DAY);
 
 export const PERIOD_LABELS: Record<PeriodKey, string> = Object.fromEntries(
   TIME_PERIODS.map(p => [p.key, p.label]),

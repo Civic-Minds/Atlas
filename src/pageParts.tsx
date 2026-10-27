@@ -58,6 +58,10 @@ export function FrequencyBar({ counts, mapHref }: { counts: number[]; /** The pa
 
 /** A route's name cell in a routes table: the same cleaned names the map's lists show (bold part, then the lighter name). */
 export function RouteNameCell({ shortName, longName, mode, agencyName }: { shortName: string; longName?: string | null; mode: number; agencyName: string }) {
-  const label = routeLabels({ shortName, longName: longName ?? null, mode, agencyName });
+  const named = routeLabels({ shortName, longName: longName ?? null, mode, agencyName });
+  // The page data names a route with no short name by its long name, so the two match. Where that makes the long name show
+  // twice (#1122: Orillia "West Ridge Via Coldwater Road  West Ridge"), label it as having no short name. A feed that
+  // really gives both the same name ("CMAX", "USI") has no second part, so it keeps its label.
+  const label = shortName === longName && named.secondary ? routeLabels({ shortName: '', longName, mode, agencyName }) : named;
   return <><span className="font-black">{label.primary}</span>{label.secondary ? <span className="text-[var(--text-muted)]"> {label.secondary}</span> : null}</>;
 }

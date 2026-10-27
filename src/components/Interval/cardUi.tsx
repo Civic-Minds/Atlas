@@ -1,30 +1,65 @@
 import React from 'react';
 import { createPortal } from 'react-dom';
-import { ArrowLeft, Flag, Radio, X } from 'lucide-react';
-import { fmtHeadway } from '../../utils/format';
+import { Flag, Radio, X } from 'lucide-react';
+import { fmtHeadway, placeAlreadyInName } from '../../utils/format';
 import { headwayToTierColor } from './HeadwaySparkline';
-import { CARD_NOTICE, FLOATING_CARD, PANEL_ENTER_LEFT, SIDEBAR_PANEL_WIDTH, ACTION_PRIMARY } from '../../styles';
+import { getTierColor } from '../../utils/colors';
+import { CARD_NOTICE, FLOATING_CARD, PANEL_ENTER_LEFT, SIDEBAR_CARD_SURFACE, SIDEBAR_PANEL_WIDTH, ACTION_PRIMARY } from '../../styles';
 import { openAtlasProblemEmail } from '../../utils/reportIssue';
 import { trackEvent } from '../../lib/analytics';
 import { FEATURES } from '../../../shared/config';
-import { useColorVision } from '../../context/ColorVisionContext';
+import { useColorMode } from '../../hooks/useColorMode';
 import ArrowLink from '../ui/ArrowLink';
-import LinkPill from '../ui/LinkPill';
 import RoundIconButton from '../ui/RoundIconButton';
 import { OutboundLink } from '../OutboundLink';
+import { CardBackLink } from '../CardBack';
 
 export { default as CardDirectionRow } from './RouteDirectionRow';
 
 export const CARD_EYEBROW = 'text-xs font-bold text-[var(--text-muted)] leading-tight mb-0.5';
 export const CARD_TITLE = 'text-sm font-black text-[var(--text-primary)] leading-tight';
 export const CARD_LIST_ROUTE = 'text-xs font-bold text-[var(--text-primary)] leading-snug';
-export const CARD_SECTION = 'text-xs font-black text-[var(--text-dim)]';
+// The section label lives in styles.ts with the other shared text styles (CIV-395), so non-card panels use it too.
+export { CARD_SECTION } from '../../styles';
+import { CARD_NOTE, CARD_SECTION } from '../../styles';
 /** A list card's header block (agency card, History's agency view): one divider under it. */
 export const CARD_HEADER_BLOCK = 'shrink-0 px-4 pt-4 pb-3 border-b border-[var(--border-primary)]';
+/** The same header spacing for a card that is only a header (no divider sitting on the card's own edge). */
+export const CARD_HEADER_ONLY = 'shrink-0 px-4 pt-4 pb-3';
 /** The route card's scrolling body on desktop (the map's route card and History's route view). */
-export const SIDEBAR_CARD_BODY = `relative flex-1 min-h-0 ${FLOATING_CARD} px-4 pt-4 pb-2 overflow-y-auto overflow-x-hidden custom-scrollbar`;
+export const SIDEBAR_CARD_BODY = `relative flex-1 min-h-0 ${SIDEBAR_CARD_SURFACE} px-4 pt-4 pb-2 overflow-y-auto overflow-x-hidden custom-scrollbar`;
 /** The line under a card title ("Atlanta · 102 routes · 2013–2026"). */
-export const CARD_SUMMARY = 'text-xs font-bold text-[var(--text-dim)] mt-1 leading-snug';
+export const CARD_SUMMARY = 'text-xs font-medium text-[var(--text-dim)] mt-1 leading-snug';
+
+/** A card's body paragraph: a short muted sentence under a section label (the on-demand zone card's sections). */
+export const CARD_BODY_TEXT = 'text-xs leading-relaxed text-[var(--text-muted)] mt-1';
+
+/** A card body paragraph (CARD_BODY_TEXT). Extra classes from the caller go after the shared ones. */
+export function CardBodyText({ className = '', ...rest }: React.HTMLAttributes<HTMLParagraphElement>) {
+  return <p className={`${CARD_BODY_TEXT} ${className}`.trim()} {...rest} />;
+}
+
+/** A card callout box's surface: the inset, rounded, outlined block used for summaries and grouped
+ *  options inside a card. CARD_CALLOUT adds the standard padding; use the surface alone only where a
+ *  block needs its own padding (the report form's checkbox group). */
+export const CARD_CALLOUT_SURFACE = 'rounded-xl border border-[var(--border-primary)] bg-[var(--bg-app)]';
+export const CARD_CALLOUT = `${CARD_CALLOUT_SURFACE} px-3 py-2.5`;
+
+/** A callout's headline and its plain lines under it: one style for every callout (Compare, History) (CIV-971). */
+export const CARD_CALLOUT_HEADLINE = 'text-xs font-bold leading-tight text-[var(--text-primary)]';
+export const CARD_CALLOUT_TEXT = 'text-xs text-[var(--text-muted)] mt-0.5';
+
+/** The tinted callouts (History's better or worse summary): the status tint in place of the outline. */
+const CARD_CALLOUT_TONE = {
+  neutral: CARD_CALLOUT,
+  negative: 'rounded-xl px-3 py-2.5 bg-[var(--status-negative-bg)]',
+  positive: 'rounded-xl px-3 py-2.5 bg-[var(--status-positive-bg)]',
+} as const;
+
+/** A callout box inside a card (Compare's summary, History's trip time and change summary). Spacing and text styles come from the caller. */
+export function CardCallout({ tone = 'neutral', className = '', ...rest }: React.HTMLAttributes<HTMLDivElement> & { tone?: keyof typeof CARD_CALLOUT_TONE }) {
+  return <div className={`${CARD_CALLOUT_TONE[tone]} ${className}`.trim()} {...rest} />;
+}
 
 const REPORT_REASONS = [
   'Route or agency is missing',
@@ -298,7 +333,7 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
                         key={category.key}
                         type="button"
                         onClick={() => { setValidationError(''); setSelectedCategory(category.key); }}
-                        className="w-full rounded-xl border border-[var(--border-primary)] bg-[var(--bg-app)] px-3 py-2.5 text-left hover:bg-[var(--bg-btn-hover)] transition-colors"
+                        className={`w-full ${CARD_CALLOUT} text-left hover:bg-[var(--bg-btn-hover)] transition-colors`}
                       >
                         <span className={`block ${CARD_LIST_ROUTE} font-black`}>{category.label}</span>
                         <span className={`block mt-0.5 ${CARD_NOTICE}`}>{category.description}</span>
@@ -339,7 +374,7 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
               )}
 
               {selectedCategory && hasFrequencyReason && (
-                <fieldset className="space-y-0.5 rounded-xl bg-[var(--bg-app)] border border-[var(--border-primary)] p-3">
+                <fieldset className={`space-y-0.5 ${CARD_CALLOUT_SURFACE} p-3`}>
                   <legend className="px-1 text-xs font-black text-[var(--text-muted)]">Frequency details</legend>
                   {FREQUENCY_REASONS.map(reason => (
                     <label key={reason} className="flex items-start gap-2 px-1.5 py-1 rounded-lg hover:bg-[var(--bg-btn-hover)] cursor-pointer">
@@ -366,7 +401,7 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
                 />
               </label>}
               {selectedCategory && copiesDiagnostics && (
-                <p className="text-xs font-bold text-[var(--text-dim)]">
+                <p className={CARD_NOTE}>
                   {import.meta.env.DEV ? 'The GitHub report includes the captured route diagnostics.' : 'The email draft includes the captured route diagnostics.'}
                 </p>
               )}
@@ -422,29 +457,74 @@ export function FlaggableValue({ reason, reportRef, children, className = 'inlin
   );
 }
 
-export function CardBackButton({ onClick, label = 'Back' }: { onClick: () => void; label?: string }) {
+/** An agency's name in bold with its place beside it in lighter text on the same line; no place when the name
+ *  already says it ("Grande Prairie Transit On-Demand", not "… Grande Prairie"). */
+export function AgencyNameHeading({
+  name,
+  place,
+  as: Tag = 'p',
+  className = '',
+}: {
+  name: string;
+  place?: string | null;
+  as?: 'p' | 'h2';
+  className?: string;
+}) {
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-label={label}
-      className="p-0.5 -ml-0.5 mt-0.5 text-[var(--text-dim)] hover:text-[var(--text-primary)] transition-colors shrink-0"
-    >
-      <ArrowLeft className="w-3.5 h-3.5" />
-    </button>
+    <Tag className={`${CARD_TITLE} ${className}`}>
+      {name}
+      {place && !placeAlreadyInName(name, place) && <>{' '}<span className="font-medium text-[var(--text-muted)] whitespace-nowrap">{place}</span></>}
+    </Tag>
   );
 }
 
-/** Plain text link above a card title that goes back one level (no arrow). */
-export function CardBackLink({ onClick, children }: { onClick: () => void; children: React.ReactNode }) {
+/**
+ * The one top every agency card shares, in every mode (CIV-929): a back link ("← Map" when nothing came
+ * before the card), the agency name in bold with its place beside it, an optional region link on one line
+ * under it, one grey facts line for the mode, and the report flag on the right. Anything else the card needs under
+ * the top goes in `children`.
+ */
+export function AgencyCardTop({
+  name,
+  place,
+  back,
+  links = [],
+  facts,
+  report,
+  as,
+  children,
+}: {
+  name: string;
+  place?: string | null;
+  back: { to: string; onClick: () => void };
+  /** The links line under the name ("Austin area → · About →"), kept to one line (CIV-929). */
+  links?: React.ReactNode[];
+  facts?: React.ReactNode;
+  report?: React.ReactNode;
+  as?: 'p' | 'h2';
+  children?: React.ReactNode;
+}) {
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="block max-w-full truncate text-xs font-bold text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors leading-snug mb-0.5"
-    >
-      {children}
-    </button>
+    <div className="flex items-start gap-2 min-w-0">
+      <div className="min-w-0 flex-1">
+        <CardBackLink onClick={back.onClick}>{back.to}</CardBackLink>
+        <AgencyNameHeading as={as} name={name} place={place} className="mb-0" />
+        {links.length > 0 && (
+          // One line, dot between links; only the first (the area name) gives way, cut with an ellipsis.
+          <p className="mt-0.5 flex items-center min-w-0 text-xs whitespace-nowrap">
+            {links.map((link, i) => (
+              <React.Fragment key={i}>
+                {i > 0 && <span className="mx-1 shrink-0 text-[var(--text-dim)] select-none" aria-hidden="true">·</span>}
+                <span className={i === 0 ? 'flex min-w-0' : 'flex shrink-0'}>{link}</span>
+              </React.Fragment>
+            ))}
+          </p>
+        )}
+        {facts && <p className={CARD_SUMMARY}>{facts}</p>}
+        {children}
+      </div>
+      {report}
+    </div>
   );
 }
 
@@ -453,6 +533,24 @@ const SUFFIX_TONE = {
   negative: 'text-[var(--status-negative-text)]',
   positive: 'text-[var(--status-positive-text)]',
 } as const;
+
+/**
+ * A part-period value ("from 7:05am, every 20 min") may break after its comma: on a narrow row the dot and
+ * "from 7:05am," stay on the first line and "every 20 min" goes under it, right-aligned, instead of running
+ * past the card edge (#1128). Each part stays whole; a short value stays one line as before.
+ */
+const twoPart = (text: string | undefined) => !!text && text.includes(', ');
+
+function TwoPartBadge({ dot, text, className }: { dot: React.ReactNode; text: string; className: string }) {
+  const comma = text.indexOf(', ');
+  return (
+    <span className={`inline-flex flex-wrap justify-end gap-x-1 min-w-0 ${className}`}>
+      <span className="inline-flex items-center gap-1 whitespace-nowrap">{dot}{text.slice(0, comma + 1)}</span>
+      {' '}
+      <span className="whitespace-nowrap">{text.slice(comma + 2)}</span>
+    </span>
+  );
+}
 
 export function HeadwayBadge({
   headway,
@@ -472,14 +570,31 @@ export function HeadwayBadge({
   suffixTone?: 'dim' | 'negative' | 'positive';
   className?: string;
 }) {
-  const { colorVisionFriendly } = useColorVision();
-  const colorMode = colorVisionFriendly ? 'friendly' : 'default';
+  const colorMode = useColorMode();
+  const dot = <span className="w-2 h-2 rounded-full shrink-0" style={{ background: headwayToTierColor(colorHeadway ?? headway, colorMode) }} />;
+  const words = label ?? fmtHeadway(headway);
+  const base = 'font-black text-[var(--text-primary)] text-xs leading-snug';
   return (
-    <span className={`inline-flex items-center gap-1 font-black text-[var(--text-primary)] text-xs leading-snug shrink-0 ${className}`}>
+    <span className={`inline-flex items-center gap-1 ${base} ${twoPart(words) ? 'min-w-0' : 'shrink-0'} ${className}`}>
       {live && <Radio className="w-2.5 h-2.5 text-[var(--accent)] shrink-0" aria-label="Live data available" />}
-      <span className="w-2 h-2 rounded-full shrink-0" style={{ background: headwayToTierColor(colorHeadway ?? headway, colorMode) }} />
-      <span className="whitespace-nowrap">{label ?? fmtHeadway(headway)}</span>
+      {twoPart(words) ? <TwoPartBadge dot={dot} text={words} className={base} /> : <>{dot}<span className="whitespace-nowrap">{words}</span></>}
       {suffix && <span className={`text-xs font-bold whitespace-nowrap ${SUFFIX_TONE[suffixTone]}`}>{suffix}</span>}
+    </span>
+  );
+}
+
+/**
+ * A route with no regular frequency to show: the grey dot and a word ("limited", "no regular service"), styled like HeadwayBadge.
+ * With no label it is the grey dot alone, kept one text line tall so it sits beside the row's first line.
+ */
+export function LimitedBadge({ label, className = '' }: { label?: string; className?: string }) {
+  const colorMode = useColorMode();
+  const dot = <span className="w-2 h-2 rounded-full shrink-0" style={{ background: getTierColor(null, colorMode) }} />;
+  if (label && twoPart(label)) return <TwoPartBadge dot={dot} text={label} className={`text-xs font-black text-[var(--text-primary)] leading-snug ${className}`} />;
+  return (
+    <span className={`inline-flex items-center gap-1 text-xs font-black text-[var(--text-primary)] leading-snug shrink-0 whitespace-nowrap ${label ? '' : 'min-h-[1lh]'} ${className}`.trim()}>
+      {dot}
+      {label}
     </span>
   );
 }
@@ -534,22 +649,28 @@ export function SidebarCardHeader({
   title,
   onEyebrowClick,
   titleClamp = false,
+  back,
 }: {
   eyebrow?: string | null;
   title: string;
   onEyebrowClick?: () => void;
   titleClamp?: boolean;
+  /** The card's back link, above the eyebrow. */
+  back?: { to: string; onClick: () => void };
 }) {
   return (
     <div className="flex-1 min-w-0">
+      {back && <CardBackLink onClick={back.onClick}>{back.to}</CardBackLink>}
       {eyebrow && <CardEyebrow onClick={onEyebrowClick}>{eyebrow}</CardEyebrow>}
-      <CardTitle clamp={titleClamp} className={eyebrow ? 'mb-0' : 'mb-2'}>{title}</CardTitle>
+      <CardTitle clamp={titleClamp} className={eyebrow || back ? 'mb-0' : 'mb-2'}>{title}</CardTitle>
     </div>
   );
 }
 
-export function CardSectionLabel({ children, className = '' }: { children: React.ReactNode; className?: string }) {
-  return <div className={`${CARD_SECTION} mb-2 ${className}`}>{children}</div>;
+/** A small dim section label. `flush` drops the gap below it, for a label that shares a row with a link
+ *  (a margin class passed in `className` does not win over the built-in gap). */
+export function CardSectionLabel({ children, flush = false, className = '' }: { children: React.ReactNode; flush?: boolean; className?: string }) {
+  return <div className={`${CARD_SECTION}${flush ? '' : ' mb-2'} ${className}`}>{children}</div>;
 }
 
 export function CardDivider({ className = '' }: { className?: string }) {
@@ -600,14 +721,18 @@ export function CardHelpNotice({
   actionLabel?: string;
 }) {
   return (
-    <div className={`${CARD_NOTICE} flex min-w-0 flex-wrap items-start gap-x-1 gap-y-0.5`}>
-      <span className="min-w-0 flex-1 whitespace-normal break-words leading-relaxed">{message}</span>
+    // The link runs on right after the sentence's last word, as text, not in a column beside it (CIV-920).
+    <p className={`${CARD_NOTICE} min-w-0 whitespace-normal break-words leading-relaxed`}>
+      {message}
       {onLearnMore && (
-        <ArrowLink as="button" tone="inline" size="xs" onClick={onLearnMore} className="shrink-0 whitespace-nowrap">
-          {actionLabel}
-        </ArrowLink>
+        <>
+          {' '}
+          <ArrowLink as="button" tone="inline" size="xs" wrap onClick={onLearnMore} className="whitespace-nowrap">
+            {actionLabel}
+          </ArrowLink>
+        </>
       )}
-    </div>
+    </p>
   );
 }
 
@@ -637,8 +762,6 @@ export function SidebarCardSection({ label, children }: { label?: string; childr
   );
 }
 
-const CARD_SUBLINE = 'text-xs font-bold text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors leading-snug';
-
 /** Route label + headway on one row (stop card groups). */
 export function CardSummaryRow({
   label,
@@ -660,7 +783,8 @@ export function CardSummaryRow({
 }) {
   const labelCls = `${CARD_LIST_ROUTE} block text-left w-full`;
   return (
-    <div className={`flex justify-between gap-2 ${below ? 'items-start' : 'items-center'}`}>
+    // The badge lines up with the label's first line, as on the route card's rows (CIV-918).
+    <div className="flex justify-between gap-2 items-start">
       <div className="flex-1 min-w-0">
         {onClick ? (
           <button type="button" onClick={onClick} className={`${labelCls} hover:text-[var(--accent)]`}>
@@ -678,38 +802,13 @@ export function CardSummaryRow({
   );
 }
 
-/** Muted destination / sub-line in stop card groups. */
-export function CardSublineButton({
-  children,
-  onClick,
-  className = '',
-}: {
-  children: React.ReactNode;
-  onClick?: () => void;
-  className?: string;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`block w-full text-left ${CARD_SUBLINE} py-0.5 rounded-lg -mx-1 px-1 ${className}`}
-    >
-      {children}
-    </button>
-  );
-}
-
-/** "Data source": a link to the agency's own website in an agency card's header. Beta-only; nothing for an agency with no website. */
+/** "Source": a link to the agency's own website in an agency card's header. Beta-only; nothing for an agency with no website. */
 export function AgencyDataSourceLink({ agency }: { agency: { slug: string; websiteUrl?: string } }) {
   if (!FEATURES.dataSourceLink || !agency.websiteUrl) return null;
   return (
-    <ArrowLink as={OutboundLink} size="xs" tone="inline" href={agency.websiteUrl} kind="agency_website" agencySlug={agency.slug} aria-label="Data source (opens in a new tab)" title="Opens in a new tab">
-      Data source
+    <ArrowLink as={OutboundLink} size="xs" tone="inline" href={agency.websiteUrl} kind="agency_website" agencySlug={agency.slug} aria-label="Source (opens in a new tab)" title="Opens in a new tab">
+      Source
     </ArrowLink>
   );
 }
 
-/** "All <place> area agencies": a small chip beside the card's summary line. */
-export function AgencyAreaChip({ href, label }: { href: string; label: string }) {
-  return <LinkPill href={href} className="mt-1">{label}</LinkPill>;
-}

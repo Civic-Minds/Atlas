@@ -3,32 +3,35 @@ import { LIVE_POLLING_ROUTES } from '../../../shared/livePollingConfig';
 import { FEATURES } from '../../../shared/config';
 import { plural } from '../../../shared/overflowText';
 import { agencyPagePath } from '../../../shared/agencyPages';
-import { areaLinkFor } from '../../../shared/agencyArea';
+import { agencyRegionTitle, areaLinkFor } from '../../../shared/agencyArea';
 import { ON_DEMAND_NOT_MAPPED_NOTE, ON_DEMAND_PILL_LABEL, onDemandPillSelected } from '../../utils/onDemandPill';
 import agencyPageSlugs from '../../../shared/data/agency-page-slugs.json';
 import type { Agency } from '../../App';
 import type { OpenInfoFn } from '../InfoPanel';
 import type { AgencyLayers } from '../../hooks/useAgencyData';
-import { CARD_NOTICE_FOOTER, CARD_NOTICE_INLINE, SIDEBAR_LEFT_FALLBACK } from '../../styles';
-import Panel from '../ui/Panel';
+import { CARD_NOTICE_FOOTER, CARD_NOTICE_INLINE, sidebarFrameStyle } from '../../styles';
+import Panel, { PanelBody } from '../ui/Panel';
+import RouteRowName from '../RouteRowName';
 import Pill from '../ui/Pill';
-import ModeFilterPill from '../ui/ModeFilterPill';
+import ModeFilterPillRow from '../ui/ModeFilterPillRow';
 import { HEADWAY_TIERS } from '../../utils/colors';
 import { effectiveMode, isRailReplacementBus, knownModeLabel, sortModes } from '../../../shared/modes';
 import { headwayEveryRange } from '../../utils/headwayText';
-import { agencyDisplayParts, routeLabels } from '../../utils/format';
+import { agencyNameParts } from '../../utils/format';
 import type { DayType, TimePeriod, ShapeProperties } from '../../hooks/useIntervalStats';
 import { passesRouteFilter } from '../../hooks/useIntervalStats';
 import { NO_REGULAR_SERVICE_LABEL, routeListDisplay } from '../../utils/effectiveHeadway';
-import { AgencyAreaChip, AgencyDataSourceLink, CARD_HEADER_BLOCK, CARD_SUMMARY, CARD_TITLE, CardHelpNotice, CardReportButton } from './cardUi';
+import { AgencyCardTop, AgencyDataSourceLink, SidebarCardHeader, CARD_HEADER_BLOCK, CARD_BODY_TEXT, CARD_SUMMARY, CardBodyText, CardHelpNotice, CardSectionLabel, CardReportButton } from './cardUi';
 import CardRouteList from './CardRouteList';
 import { OutboundLink } from '../OutboundLink';
-import { buildRouteFacts } from '../../utils/routeFacts';
-import { currentAtlasUrl } from '../../utils/reportIssue';
+import { buildRouteFacts, type RouteLabel } from '../../utils/routeFacts';
+import { reportDetails } from '../../utils/reportIssue';
 import { getRolloutNotice } from '../../../shared/rolloutNotice';
+import { onDemandCardName } from '../../utils/onDemandSelection';
 import { onDemandCoverageNote } from '../../data/onDemandCoverage';
 import {
   formatOnDemandHoursLines,
+  formatOnDemandHoursRange,
   onDemandPickupSentence,
   onDemandRunningNote,
   resolveOnDemandZone,
@@ -44,6 +47,8 @@ interface RouteRow {
   routeId: string;
   agencySlug: string;
   shortName: string;
+  /** What the row shows (route facts' label, CIV-984): never built from shortName, which is the route's identity. */
+  label: RouteLabel;
   longName: string | null;
   headway: number | null;
   limited: boolean;
@@ -95,6 +100,7 @@ export function getRoutes(
     routeId: string;
     agencySlug: string;
     shortName: string;
+    label: RouteLabel;
     longName: string | null;
     tier: string | null;
     routeType: number;
@@ -118,6 +124,7 @@ export function getRoutes(
         routeId: facts.routeId,
         agencySlug: facts.agencySlug,
         shortName: facts.shortName,
+        label: facts.label,
         longName: facts.longName,
         tier: facts.tier,
         routeType: typeof p.routeType === 'number' ? p.routeType : 3,
@@ -136,6 +143,7 @@ export function getRoutes(
       routeId: row.routeId,
       agencySlug: row.agencySlug,
       shortName: row.shortName,
+      label: row.label,
       longName: row.longName,
       ...routeListDisplay(row.props, period),
       tier: row.tier,
@@ -193,6 +201,84 @@ export function OnDemandHoursText({
         </p>
       ))}
     </>
+  );
+}
+
+/** The hours rows' scale: 6 a.m. to 2 a.m. like the route card's chart, stretched for service outside it. */
+const HOURS_SCALE_START = 6;
+const HOURS_SCALE_END = 26;
+const HOURS_TICKS: [number, string][] = [[6, '6a'], [12, '12p'], [18, '6p'], [24, '12a']];
+
+/**
+ * Service hours as rows (CIV-964, Ryan's variant C): one row per group of days with the same hours, its days, a bar
+ * on a shared day scale and the times in words; the row covering the selected day is bold. Falls back to the agency's
+ * own wording when no structured hours exist.
+ */
+export function OnDemandHoursRows({
+  availability,
+  serviceHours,
+  day,
+  className,
+}: {
+  availability?: OnDemandAvailability;
+  serviceHours?: string;
+  day?: DayType;
+  className: string;
+}) {
+  const lines = formatOnDemandHoursLines(availability);
+  if (lines.length === 0) {
+    return serviceHours ? <p className={className}>{serviceHours}</p> : null;
+  }
+  const windows = lines.flatMap(line => line.windows);
+  const start = Math.min(HOURS_SCALE_START, ...windows.map(w => Math.floor(w.startHour)));
+  const end = Math.max(HOURS_SCALE_END, ...windows.map(w => Math.ceil(w.endHour)));
+  const pct = (hour: number) => ((hour - start) / (end - start)) * 100;
+  return (
+    <div className="mt-1 grid grid-cols-[3.5rem_1fr] gap-x-2 text-xs leading-snug" data-testid="on-demand-hours-rows">
+      {lines.map(line => {
+        const selected = !!day && line.dayTypes.includes(day);
+        const tone = selected ? 'font-bold text-[var(--text-primary)]' : 'text-[var(--text-muted)]';
+        return (
+          <React.Fragment key={line.text}>
+            {/* The days line up with the bar: a line box the bar's height. */}
+            <span className={`mt-1.5 whitespace-nowrap leading-[0.625rem] ${tone}`}>{line.days}</span>
+            <div className="mt-1.5 min-w-0">
+              {line.windows.length > 0 ? (
+                <>
+                  <div className="relative h-2.5 rounded-full bg-[var(--bg-stat)]" aria-hidden="true">
+                    {line.windows.map(w => (
+                      <span
+                        key={`${w.startHour}-${w.endHour}`}
+                        className="absolute inset-y-0 rounded-full bg-[var(--hours-band)]"
+                        style={{ left: `${pct(w.startHour)}%`, width: `${pct(w.endHour) - pct(w.startHour)}%` }}
+                      />
+                    ))}
+                  </div>
+                  {/* Each time range stays whole; a list of them wraps between ranges. */}
+                  <p className={`mt-0.5 ${tone}`}>
+                    {line.windows.map((w, i) => (
+                      <React.Fragment key={`${w.startHour}-${w.endHour}`}>
+                        {i > 0 && ', '}
+                        <span className="whitespace-nowrap">{formatOnDemandHoursRange(w)}</span>
+                      </React.Fragment>
+                    ))}
+                  </p>
+                </>
+              ) : (
+                // No bar for a day with no service, just the words (as in the picked mockup).
+                <p className={`leading-[0.625rem] ${tone}`}>{line.times}</p>
+              )}
+            </div>
+          </React.Fragment>
+        );
+      })}
+      <span />
+      <div className="relative mt-1.5 mb-1.5 h-3 text-2xs text-[var(--text-dim)]" aria-hidden="true">
+        {HOURS_TICKS.map(([hour, label]) => (
+          <span key={hour} className="absolute -translate-x-1/2" style={{ left: `${pct(hour)}%` }}>{label}</span>
+        ))}
+      </div>
+    </div>
   );
 }
 
@@ -297,6 +383,10 @@ interface Props {
   onInfoOpen?: OpenInfoFn;
   onDemandFocus?: boolean;
   onDemandZoneId?: string | null;
+  /** The on-demand card's back link to the agency card (CIV-900); shown only when that is a different card. */
+  onBackToAgency?: () => void;
+  /** Closes the card: the "← Map" back link every card with nothing before it gets (CIV-929). */
+  onClose: () => void;
 }
 
 function RouteListSection({
@@ -312,7 +402,7 @@ function RouteListSection({
 }) {
   const rows = routes.map(r => ({
     key: `${r.agencySlug}::${r.routeId}`,
-    label: routeLabels({ shortName: r.shortName, longName: r.longName, routeType: r.routeType, agencySlug: r.agencySlug }).text,
+    route: r.label,
     headway: r.headway ?? undefined,
     headwayLabel: r.headway != null && r.sharedHeadway != null ? headwayEveryRange(r.sharedHeadway, r.headway) : undefined,
     limited: r.limited || r.noRegular === true,
@@ -338,6 +428,8 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
   onInfoOpen,
   onDemandFocus = false,
   onDemandZoneId = null,
+  onBackToAgency,
+  onClose,
 }, ref) {
   const routes = useMemo(
     () => getRoutes(layers, agency.slug, day, period, { maxHeadway, selectedModes, hideSpan, hideLimitedService }),
@@ -381,22 +473,54 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
   );
   const liveShortNames = useMemo(() => new Set(liveRoutes.map(r => r.displayRouteShortName)), [liveRoutes]);
   const { primary: agencyNamePrimary, secondary: agencyNameSecondary } = useMemo(
-    () => agencyDisplayParts(agency.name, agency.cities, agency.displayArea),
+    () => agencyNameParts({ name: agency.name, cities: agency.cities, displayArea: agency.displayArea }),
     [agency.name, agency.cities, agency.displayArea],
   );
+  // An on-demand-only agency's cards are named by its service ("GP Transit On-Demand"), with no place beside it,
+  // so it fits on one line beside the report flag; the zone card has no place either (CIV-929).
+  const agencyCardName = agency.onDemandOnly && agency.onDemandServiceArea
+    ? onDemandCardName(agency.onDemandServiceArea, null, agencyNamePrimary)
+    : agencyNamePrimary;
+  const hasAboutPage = FEATURES.agencyPages && (agencyPageSlugs as string[]).includes(agency.slug);
+  // The region link shows the region's name alone (CIV-929), not the area page's "All … agencies" label.
+  const areaLink = hasAboutPage ? areaLinkFor(agency.slug, FEATURES.agencyPages) : null;
+  const regionTitle = agencyRegionTitle(agency.slug);
+  const area = areaLink && regionTitle ? { href: areaLink.href, label: regionTitle } : null;
+  const hasSource = FEATURES.dataSourceLink && !!agency.websiteUrl;
+  // One line right under the name (CIV-929): the area link, then "About →" (CIV-841), then "Source →" when that is on.
+  // Each opens in a new tab, since they leave the map; the area name is cut with an ellipsis if it runs long.
+  const agencyLinks = [
+    area && (
+      <ArrowLink key="area" size="xs" tone="inline" href={area.href} target="_blank" rel="noopener noreferrer" className="max-w-full [&>svg]:shrink-0" title={area.label}>
+        <span className="truncate min-w-0">{area.label}</span>
+      </ArrowLink>
+    ),
+    hasAboutPage && <ArrowLink key="about" size="xs" tone="inline" href={agencyPagePath(agency.slug)} target="_blank" rel="noopener noreferrer">About</ArrowLink>,
+    hasSource && <AgencyDataSourceLink key="source" agency={agency} />,
+  ].filter(Boolean) as React.ReactNode[];
   const rolloutNotice = getRolloutNotice(agency);
   const coverageNote = FEATURES.onDemand ? onDemandCoverageNote(agency) : null;
   // Zone not on the map yet: an "On-Demand" pill beside the mode pills instead of a notice block.
   const hasOnDemandPill = !agency.onDemandOnly && coverageNote?.kind === 'not-mapped';
   const onDemandOn = onDemandPillSelected({ hasPill: hasOnDemandPill, choice: onDemandChoice, routeCount: routes.length });
-  const grouped = FEATURES.dataSourceLink;
   const reportButton = (
     <CardReportButton
       title={`Agency issue: ${agency.name}`}
-      details={`**Agency:** ${agency.name}\n**Agency slug:** ${agency.slug}\n**Day:** ${day}\n**Period:** ${period}\n**Atlas URL:** ${currentAtlasUrl()}`}
+      // The data dates the route card's report sends too (CIV-932), so an agency report says how fresh its data is.
+      details={reportDetails([
+        ['Agency', agency.name],
+        ['Agency slug', agency.slug],
+        ['Day', day],
+        ['Period', period],
+        ['Agency data refreshed', agency.lastRefreshedAt ?? 'unknown'],
+        ['Feed expiry', agency.lastFeedExpiry ?? 'unknown'],
+      ])}
       excludeReasons={['Stop is missing, misplaced, or assigned incorrectly', 'Route line is missing or follows the wrong path']}
     />
   );
+
+  // A link's on-demand card waits for the service's zones instead of flashing the routes card (CIV-929).
+  if (onDemandFocus && !agency.onDemandServiceArea) return null;
 
   if (onDemandFocus && agency.onDemandServiceArea) {
     const service = agency.onDemandServiceArea;
@@ -404,89 +528,89 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
       ? service.features.find(feature => (feature.properties as { areaName?: string } | undefined)?.areaName === onDemandZoneId)
       : undefined;
     const zoneName = (selectedZone?.properties as { areaName?: string } | undefined)?.areaName;
-    const zoneDisplayName = zoneName?.replace(/\s+Area$/, '');
     const zone = resolveOnDemandZone(service, zoneName);
-    const serviceName = zone.serviceName ?? service.serviceName ?? agencyNamePrimary;
     const pickupSentence = onDemandPickupSentence(service, zoneName);
     // Only claim a shaded area when one belongs to this service (Hamilton's shaded zones are Trans-Cab, not myRide).
     const showsShadedArea = zoneName
       ? true
       : service.features.some(feature => resolveOnDemandZone(service, (feature.properties as { areaName?: string } | undefined)?.areaName).sameServiceAsParent);
     const runningNote = onDemandRunningNote(zone.availability, day, period);
+    const backToAgency = onBackToAgency && (onDemandZoneId || !agency.onDemandOnly) ? onBackToAgency : undefined;
     return (
       <Panel
         ref={ref}
         data-report-anchor="true"
         sidebar
         enter
-        className="max-h-[calc(100vh-104px)]"
-        style={{
-          top: 80, // main's offset (the shared sidebar anchor sits 12px higher)
-          '--sidebar-left': `${sidebarLeft ?? SIDEBAR_LEFT_FALLBACK}px`,
-          ...(searchBarWidth ? { width: `${searchBarWidth}px`, maxWidth: 'none' } : {}),
-        } as React.CSSProperties}
+        style={sidebarFrameStyle(sidebarLeft, searchBarWidth)}
       >
         <div className={CARD_HEADER_BLOCK}>
-          <p className={`${CARD_TITLE} mb-0`}>{[serviceName, zoneDisplayName].filter(Boolean).join(' — ')}</p>
-          <p className={CARD_SUMMARY}>
-            {[agencyNamePrimary, agencyNameSecondary].filter(Boolean).join(' · ')}
-          </p>
+          {backToAgency ? (
+            // A zone (or a fixed-route agency's service) reads like a route card: "← Agency" back to the agency
+            // card, then the bold zone name (Ryan: "the on demand should be closer to the route card").
+            <SidebarCardHeader title={onDemandCardName(service, onDemandZoneId, agencyNamePrimary)} back={{ to: agencyCardName, onClick: backToAgency }} />
+          ) : (
+            // An on-demand-only agency's whole-service card is its agency card: the shared agency card top, named
+            // once, with no facts line (the "On-demand service" section label below says it) (CIV-929).
+            <AgencyCardTop
+              name={agencyCardName}
+              place={null}
+              back={{ to: 'Map', onClick: onClose }}
+              report={reportButton}
+            />
+          )}
           {FEATURES.dataSourceLink && agency.websiteUrl && (
             <p className="mt-1 text-xs"><AgencyDataSourceLink agency={agency} /></p>
           )}
         </div>
-        <div className="flex-1 overflow-y-auto custom-scrollbar px-4 py-4 space-y-4">
+        {/* Every section sits at the body padding, the same left edge as the header. */}
+        <PanelBody className="px-4 py-4 space-y-4">
           <div>
-            <p className="text-xs font-black text-[var(--text-dim)]">On-demand service</p>
+            <CardSectionLabel>On-demand service</CardSectionLabel>
             {showsShadedArea && (
-              <p className="text-xs leading-relaxed text-[var(--text-muted)] mt-1">
+              <CardBodyText>
                 The shaded map area shows where this on-demand service operates.
-              </p>
+              </CardBodyText>
             )}
             {pickupSentence && (
-              <p className="text-xs leading-relaxed text-[var(--text-muted)] mt-1">{pickupSentence}</p>
+              <CardBodyText>{pickupSentence}</CardBodyText>
             )}
             {coverageNote?.kind === 'partly-mapped' && (
-              <p className="text-xs leading-relaxed text-[var(--text-muted)] mt-1">Not on the map yet: {coverageNote.missing}.</p>
+              <CardBodyText>Not on the map yet: {coverageNote.missing}.</CardBodyText>
             )}
           </div>
           {zone.eligibility && (
-            <div className="px-1">
-              <p className="text-xs font-black text-[var(--text-dim)]">Who can ride</p>
-              <p className="text-xs leading-relaxed text-[var(--text-muted)] mt-1">{zone.eligibility}</p>
+            <div>
+              <CardSectionLabel>Who can ride</CardSectionLabel>
+              <CardBodyText>{zone.eligibility}</CardBodyText>
             </div>
           )}
           {zone.tripRules && (
-            <div className="px-1">
-              <p className="text-xs font-black text-[var(--text-dim)]">Trip rules</p>
-              <p className="text-xs leading-relaxed text-[var(--text-muted)] mt-1">{zone.tripRules}</p>
+            <div>
+              <CardSectionLabel>Trip rules</CardSectionLabel>
+              <CardBodyText>{zone.tripRules}</CardBodyText>
             </div>
           )}
-          <div className="px-1">
-            <p className="text-xs font-black text-[var(--text-dim)]">Service hours</p>
-            <p
-              className="text-xs leading-relaxed text-[var(--text-muted)] mt-1"
-              data-testid="on-demand-running-note"
-            >
-              {runningNote}
-            </p>
-            <OnDemandHoursText
+          <div>
+            <CardSectionLabel>Service hours</CardSectionLabel>
+            <CardBodyText data-testid="on-demand-running-note">{runningNote}</CardBodyText>
+            <OnDemandHoursRows
               availability={zone.availability}
               serviceHours={zone.serviceHours}
               day={day}
-              className="text-xs leading-relaxed text-[var(--text-muted)] mt-1"
+              className={CARD_BODY_TEXT}
             />
             {zone.availability && zone.hoursNote && (
-              <p className="text-xs leading-snug text-[var(--text-dim)] mt-1">{zone.hoursNote}</p>
+              <CardBodyText>{zone.hoursNote}</CardBodyText>
             )}
           </div>
           {zone.bookingInfo && (
-            <div className="px-1">
-              <p className="text-xs font-black text-[var(--text-dim)]">Booking</p>
-              <p className="text-xs leading-relaxed text-[var(--text-muted)] mt-1">{zone.bookingInfo}</p>
+            <div>
+              <CardSectionLabel>Booking</CardSectionLabel>
+              <CardBodyText>{zone.bookingInfo}</CardBodyText>
             </div>
           )}
-        </div>
+        </PanelBody>
       </Panel>
     );
   }
@@ -497,109 +621,63 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
       data-report-anchor="true"
       sidebar
       enter
-      className="max-h-[calc(100vh-104px)]"
-      style={{
-        top: 80, // main's offset (the shared sidebar anchor sits 12px higher)
-          '--sidebar-left': `${sidebarLeft ?? SIDEBAR_LEFT_FALLBACK}px`,
-        ...(searchBarWidth ? { width: `${searchBarWidth}px`, maxWidth: 'none' } : {}),
-      } as React.CSSProperties}
+      style={sidebarFrameStyle(sidebarLeft, searchBarWidth)}
     >
       <div className={CARD_HEADER_BLOCK}>
-        {/* grouped (beta, with the Data source link): the area link is a chip, About + Data source share a row, and the report flag
-            floats in the corner so the chip can use the full header width. Otherwise the header is exactly as it was. */}
-        <div className={grouped ? 'relative min-w-0' : 'flex items-start gap-2 min-w-0'}>
-          <div className={grouped ? 'min-w-0' : 'min-w-0 flex-1'}>
-            <p className={`${CARD_TITLE} mb-0${grouped ? ' pr-7' : ''}`}>{agencyNamePrimary}</p>
-          {(() => {
-            const hasAboutPage = FEATURES.agencyPages && (agencyPageSlugs as string[]).includes(agency.slug);
-            const area = hasAboutPage ? areaLinkFor(agency.slug, FEATURES.agencyPages) : null;
-            const summary = (
-              <p className={`${CARD_SUMMARY}${grouped ? ' pr-7' : ''}`}>
-                {agency.onDemandOnly
-                  ? [agencyNameSecondary, 'On-demand service'].filter(Boolean).join(' · ')
-                  : [agencyNameSecondary, buildHeaderSummary(visibleRoutes, maxHeadway)].filter(Boolean).join(' · ')}
-              </p>
-            );
-            if (!grouped) {
-              return (
-                <>
-                  {summary}
-                  {hasAboutPage && (
-                    <p className="mt-1 flex flex-wrap gap-x-3 text-xs">
-                      <ArrowLink size="xs" tone="inline" href={agencyPagePath(agency.slug)}>About this agency</ArrowLink>
-                      {area && <ArrowLink size="xs" tone="inline" wrap href={area.href}>{area.label}</ArrowLink>}
-                    </p>
-                  )}
-                </>
-              );
-            }
+        <AgencyCardTop
+          name={agencyCardName}
+          place={agency.onDemandOnly ? null : agencyNameSecondary}
+          back={{ to: 'Map', onClick: onClose }}
+          facts={agency.onDemandOnly ? 'On-demand service' : buildHeaderSummary(visibleRoutes, maxHeadway)}
+          report={reportButton}
+          links={agencyLinks}
+        >
+          {!agency.onDemandOnly && agency.onDemandServiceArea?.serviceName && (() => {
+            const service = agency.onDemandServiceArea;
+            // Every on-demand service in the shared row style (CIV-962): its name bold like a route with no number,
+            // and its hours in grey; a service with no confirmed hours says so, as its zone card does. A line under it
+            // keeps it apart from the mode pills; with no pills, the header's own line already ends it.
+            const services = [
+              { serviceName: service.serviceName!, availability: service.availability, serviceHours: service.serviceHours },
+              ...otherZoneServices(service),
+            ];
             return (
-              <>
-                <div className="flex flex-wrap items-baseline gap-x-2">
-                  {summary}
-                  {area && <AgencyAreaChip href={area.href} label={area.label} />}
-                </div>
-                {(hasAboutPage || agency.websiteUrl) && (
-                  <p className="mt-1 flex flex-wrap gap-x-3 text-xs">
-                    {hasAboutPage && <ArrowLink size="xs" tone="inline" href={agencyPagePath(agency.slug)}>About this agency</ArrowLink>}
-                    <AgencyDataSourceLink agency={agency} />
+              <div className={`mt-2 border-t border-[var(--border-primary)] pt-2 ${routeFilters.length > 0 || hasOnDemandPill ? 'border-b pb-2' : ''}`}>
+                <CardSectionLabel>On-demand service</CardSectionLabel>
+                {services.map((item, index) => (
+                  <div key={item.serviceName} className={index > 0 ? 'mt-1.5' : ''}>
+                    <p className="text-xs text-[var(--text-primary)] leading-snug"><RouteRowName shortName={item.serviceName} /></p>
+                    {item.availability || item.serviceHours ? (
+                      <OnDemandHoursText
+                        availability={item.availability}
+                        serviceHours={item.serviceHours}
+                        className={CARD_SUMMARY}
+                      />
+                    ) : (
+                      <p className={CARD_SUMMARY}>{onDemandRunningNote(undefined, day, period)}</p>
+                    )}
+                  </div>
+                ))}
+                {service.tripRules && <p className="text-xs leading-snug text-[var(--text-muted)] mt-1">{service.tripRules}</p>}
+                {coverageNote?.kind === 'partly-mapped' && (
+                  <p className="text-xs leading-snug text-[var(--text-muted)] mt-1">Not on the map yet: {coverageNote.missing}.</p>
+                )}
+                {service.sourceUrl && (
+                  <p className="mt-1 text-xs">
+                    <ArrowLink as={OutboundLink} size="xs" tone="inline" href={service.sourceUrl} kind="on_demand_source" agencySlug={agency.slug}>
+                      Details
+                    </ArrowLink>
                   </p>
                 )}
-              </>
+              </div>
             );
           })()}
-          {!agency.onDemandOnly && agency.onDemandServiceArea?.serviceName && (
-            <div className="mt-2 border-t border-[var(--border-primary)] pt-2">
-              <div className="flex items-baseline justify-between gap-2">
-                <p className="text-xs font-black text-[var(--accent)]">On-demand service</p>
-                {agency.onDemandServiceArea.sourceUrl && (
-                  <ArrowLink as={OutboundLink} size="xs" tone="inline" href={agency.onDemandServiceArea.sourceUrl} kind="on_demand_source" agencySlug={agency.slug} className="shrink-0">
-                    Details
-                  </ArrowLink>
-                )}
-              </div>
-              <p className="text-xs font-bold text-[var(--text-primary)] mt-0.5">{agency.onDemandServiceArea.serviceName}</p>
-              <OnDemandHoursText
-                availability={agency.onDemandServiceArea.availability}
-                serviceHours={agency.onDemandServiceArea.serviceHours}
-                day={day}
-                className="text-xs leading-snug text-[var(--text-muted)] mt-0.5"
-              />
-              {agency.onDemandServiceArea.tripRules && (
-                <p className="text-xs leading-snug text-[var(--text-muted)] mt-0.5">{agency.onDemandServiceArea.tripRules}</p>
-              )}
-              {otherZoneServices(agency.onDemandServiceArea).map(zoneService => (
-                <div key={zoneService.serviceName} className="mt-1.5">
-                  <p className="text-xs font-bold text-[var(--text-primary)]">{zoneService.serviceName}</p>
-                  <OnDemandHoursText
-                    availability={zoneService.availability}
-                    serviceHours={zoneService.serviceHours}
-                    day={day}
-                    className="text-xs leading-snug text-[var(--text-muted)] mt-0.5"
-                  />
-                </div>
-              ))}
-              {coverageNote?.kind === 'partly-mapped' && (
-                <p className="text-xs leading-snug text-[var(--text-muted)] mt-1">
-                  Not on the map yet: {coverageNote.missing}.
-                </p>
-              )}
-            </div>
-          )}
           {(routeFilters.length > 0 || hasOnDemandPill) && (
-            <div className="flex flex-wrap gap-1.5 mt-2">
-              {routeFilters.map(f => {
-                const on = !onDemandOn && activeFilter === f.key;
-                return (
-                  <ModeFilterPill
-                    key={f.key}
-                    onClick={() => { setOnDemandChoice(false); setActiveFilter(on ? null : f.key); }}
-                    selected={on}
-                    label={f.label}
-                    count={f.count}
-                  />
-                );
-              })}
+            <ModeFilterPillRow
+              filters={routeFilters}
+              selected={onDemandOn ? null : activeFilter}
+              onSelect={key => { setOnDemandChoice(false); setActiveFilter(key); }}
+            >
               {hasOnDemandPill && (
                 <Pill
                   onClick={() => { setActiveFilter(null); setOnDemandChoice(!onDemandOn); }}
@@ -609,7 +687,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
                   {ON_DEMAND_PILL_LABEL}
                 </Pill>
               )}
-            </div>
+            </ModeFilterPillRow>
           )}
           {(agency.feedReviewStatus === 'review' || agency.overrideNote || rolloutNotice) && onInfoOpen && (
             <div className={`${CARD_NOTICE_FOOTER} space-y-1`}>
@@ -652,12 +730,10 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
               )}
             </div>
           )}
-          </div>
-          {grouped ? <div className="absolute right-0 top-0">{reportButton}</div> : reportButton}
-        </div>
+        </AgencyCardTop>
       </div>
 
-      <div className="flex-1 overflow-y-auto custom-scrollbar">
+      <PanelBody>
         {onDemandOn ? (
           <PanelEmpty>{ON_DEMAND_NOT_MAPPED_NOTE}</PanelEmpty>
         ) : visibleRoutes.length === 0 ? (
@@ -706,7 +782,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
             onRouteSelect={onRouteSelect}
           />
         )}
-      </div>
+      </PanelBody>
     </Panel>
   );
 });

@@ -4,12 +4,18 @@ import {
   PANEL_SECTION_HEAD,
   LIST_ROW_DIM,
 } from '../../styles';
-import Panel from '../ui/Panel';
-import { shortenAgencyName, routeLabels } from '../../utils/format';
+import Panel, { PanelBody } from '../ui/Panel';
+import { routeLabels, agencyNames } from '../../utils/format';
 import { splitRouteKey } from '../../utils/routeKey';
+import type { RouteLabel } from '../../utils/routeFacts';
 import RouteListRow from '../RouteListRow';
 import { NO_REGULAR_SERVICE_SHORT_LABEL, routeListHeadwayText, type RouteListDisplay } from '../../utils/effectiveHeadway';
 import ListRow from '../ui/ListRow';
+import PanelEmpty from '../ui/PanelEmpty';
+import { CardDivider } from './cardUi';
+import { headwayToTierColor } from './HeadwaySparkline';
+import { getTierColor } from '../../utils/colors';
+import { useColorMode } from '../../hooks/useColorMode';
 
 // Reusable/helper interfaces for route snippets
 export interface RecentRoute {
@@ -17,6 +23,8 @@ export interface RecentRoute {
   /** The feed's raw route_type, when known (lets a numeric id hide the same way as on the agency page). */
   routeType?: number;
   shortName: string;
+  /** What the row shows (route facts' label, CIV-984). Missing only on a recent saved by an older build. */
+  label?: RouteLabel;
   longName: string | null;
   agencyName: string;
 }
@@ -25,6 +33,8 @@ export interface SuggestedRoute {
   key: string;
   routeType?: number;
   shortName: string;
+  /** What the row shows (route facts' label, CIV-984); shortName is only the route's identity. */
+  label: RouteLabel;
   longName: string | null;
   agencyName: string;
   headway?: number | null;
@@ -44,14 +54,36 @@ interface SearchSuggestionsPanelProps {
   displayForRouteKey: (key: string) => RouteListDisplay;
 }
 
+/** A label's bold and lighter parts for a list row. */
+const rowParts = (label: RouteLabel) => ({ shortName: label.primary, name: label.secondary });
+
+/**
+ * A recent route's label. One saved by an older build has no label: it is built from what that build stored (its
+ * `labelShortName` when it has one), as the list did then.
+ */
+function recentRouteLabel(r: RecentRoute & { labelShortName?: string }): RouteLabel {
+  return r.label ?? routeLabels({ shortName: r.labelShortName ?? r.shortName, longName: r.longName, routeType: r.routeType, agencySlug: splitRouteKey(r.key).agencySlug, agencyName: r.agencyName });
+}
+
 /** A route's bold and lighter parts for a list row. Same cleaned names as the card title (see shared/routeDisplay.ts). */
 export function routeRowLabels(route: Parameters<typeof routeLabels>[0]) {
   const { primary, secondary } = routeLabels(route);
   return { shortName: primary, name: secondary };
 }
 
+/** The frequency's tier dot, as the route rows' badge shows it (CIV-971): coloured by the headway, grey for none. */
+function TierDot({ headway }: { headway: number | null }) {
+  const colorMode = useColorMode();
+  return (
+    <span
+      className="inline-block w-2 h-2 rounded-full shrink-0 mr-1 align-[1px]"
+      style={{ background: headway != null ? headwayToTierColor(headway, colorMode) : getTierColor(null, colorMode) }}
+    />
+  );
+}
+
 export function routeRowRight(agencyName: string, headway?: number | null, stacked = false, limited = false, sharedHeadway?: number | null, noRegular = false) {
-  const agency = shortenAgencyName(agencyName);
+  const agency = agencyNames(agencyName).name;
   const layout = stacked
     ? 'block max-w-full truncate mt-1 ml-0 text-left'
     : 'min-w-0 max-w-[34%] truncate shrink-0 ml-2 text-right';
@@ -60,6 +92,7 @@ export function routeRowRight(agencyName: string, headway?: number | null, stack
       <span className={`${LIST_ROW_DIM} ${layout} whitespace-nowrap`}>
         {agency}
         <span className="text-[var(--text-dim)] font-normal"> · </span>
+        <TierDot headway={headway} />
         {routeListHeadwayText(headway, sharedHeadway)}
       </span>
     );
@@ -69,6 +102,7 @@ export function routeRowRight(agencyName: string, headway?: number | null, stack
       <span className={`${LIST_ROW_DIM} ${layout} whitespace-nowrap`}>
         {agency}
         <span className="text-[var(--text-dim)] font-normal"> · </span>
+        <TierDot headway={null} />
         {noRegular ? NO_REGULAR_SERVICE_SHORT_LABEL : 'limited'}
       </span>
     );
@@ -91,7 +125,7 @@ export const SearchSuggestionsPanel: React.FC<SearchSuggestionsPanelProps> = ({
     // The sidebar caps its height to the space below the search bar (above the bottom pills);
     // the panel shrinks to that cap and its list scrolls inside it instead of running off screen.
     <Panel className="min-h-0" data-testid="search-suggestions-panel">
-      <div className="min-h-0 overflow-y-auto overscroll-contain" data-testid="search-suggestions-scroll">
+      <PanelBody className="overscroll-contain" data-testid="search-suggestions-scroll">
       {recentSearches.length > 0 && (
         <>
           <div className={`flex items-center justify-between ${PANEL_SECTION_HEAD}`}>
@@ -121,13 +155,13 @@ export const SearchSuggestionsPanel: React.FC<SearchSuggestionsPanelProps> = ({
       <>
           {recentlyViewed.length > 0 && (
             <>
-              {recentSearches.length > 0 && <div className="mx-4 border-t border-[var(--border-primary)]" />}
+              {recentSearches.length > 0 && <CardDivider className="mx-4" />}
               <div className={PANEL_SECTION_HEAD}>
                 Recent routes
               </div>
               <div>
                 {recentlyViewed.map((r) => {
-                  const labels = routeRowLabels({ shortName: r.shortName, longName: r.longName, routeType: r.routeType, agencySlug: splitRouteKey(r.key).agencySlug, agencyName: r.agencyName });
+                  const labels = rowParts(recentRouteLabel(r));
                   return (
                     <RouteListRow
                       key={r.key}
@@ -139,7 +173,6 @@ export const SearchSuggestionsPanel: React.FC<SearchSuggestionsPanelProps> = ({
                       })()}
                       stacked
                       onClick={() => pickRoute(r.key)}
-                      className="border-b-0"
                     />
                   );
                 })}
@@ -148,13 +181,13 @@ export const SearchSuggestionsPanel: React.FC<SearchSuggestionsPanelProps> = ({
           )}
           {suggestedRoutes.length > 0 && (
             <>
-              {(recentSearches.length > 0 || recentlyViewed.length > 0) && <div className="mx-4 border-t border-[var(--border-primary)]" />}
+              {(recentSearches.length > 0 || recentlyViewed.length > 0) && <CardDivider className="mx-4" />}
               <div className={PANEL_SECTION_HEAD}>
                 Suggested routes
               </div>
               <div>
                 {suggestedRoutes.map((r) => {
-                  const labels = routeRowLabels({ shortName: r.shortName, longName: r.longName, routeType: r.routeType, agencySlug: splitRouteKey(r.key).agencySlug, agencyName: r.agencyName });
+                  const labels = rowParts(r.label);
                   return (
                     <RouteListRow
                       key={r.key}
@@ -163,7 +196,6 @@ export const SearchSuggestionsPanel: React.FC<SearchSuggestionsPanelProps> = ({
                       right={routeRowRight(r.agencyName, r.headway, true, r.limited, r.sharedHeadway, r.noRegular)}
                       stacked
                       onClick={() => pickRoute(r.key)}
-                      className="border-b-0"
                     />
                   );
                 })}
@@ -171,10 +203,10 @@ export const SearchSuggestionsPanel: React.FC<SearchSuggestionsPanelProps> = ({
             </>
           )}
           {recentSearches.length === 0 && recentlyViewed.length === 0 && suggestedRoutes.length === 0 && (
-            <p className="text-xs text-[var(--text-dim)] italic px-4 py-3">No route suggestions in this area.</p>
+            <PanelEmpty>No route suggestions in this area.</PanelEmpty>
           )}
       </>
-      </div>
+      </PanelBody>
     </Panel>
   );
 };
