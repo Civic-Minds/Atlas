@@ -5,7 +5,7 @@ import { headwayToTierColor } from '../../utils/colors';
 import { useColorMode } from '../../hooks/useColorMode';
 export { headwayToTierColor };
 import { CARD_NOTE, CHART_HEADING, CHART_PERIOD_LABEL } from '../../styles';
-import { periodKeyForHour, isHourInPeriod, SPARKLINE_HOURS, SPARKLINE_HOUR_LABELS, TIME_PERIODS } from '../../../shared/config';
+import { periodKeyForHour, SPARKLINE_HOURS, SPARKLINE_HOUR_LABELS, TIME_PERIODS } from '../../../shared/config';
 import { PERIOD_LABELS } from '../../hooks/useIntervalStats';
 import type { TimePeriod } from '../../hooks/useIntervalStats';
 import type { HeadwayByPeriod, HeadwayByHour } from '../../hooks/useAgencyData';
@@ -13,13 +13,15 @@ import type { HeadwayByHourMaxGap } from '../../../shared/config';
 import Pill from '../ui/Pill';
 import RoundIconButton from '../ui/RoundIconButton';
 import LegendItem from '../ui/LegendItem';
-import { delayAmount, headwayAmount, headwayEvery, runTimeAmount } from '../../utils/headwayText';
+import { delayAmount, headwayEvery, runTimeAmount } from '../../utils/headwayText';
 import { TripTimeStrip, AxisOverlay, tripTimeAxisTicks, type AxisTick, tripTimeHeading, FULL_DAY_BAR_SHAPE, FULL_DAY_COLUMN_ROW } from './TripTimeStrip';
 import { type TripTimeSeries } from '../../utils/tripTime';
 import { syncUrlParams } from '../../utils/syncUrlParams';
 import { PHONE_MEDIA_QUERY, useMediaQuery } from '../../hooks/useMediaQuery';
 import { encodeFullDayUrlState, parseFullDayUrlState } from '../../utils/shareUrlState';
 import { HOUR_TO_PERIOD, PERIOD_BANDS, PERIOD_OVERVIEW_BANDS } from '../../utils/sparklinePeriods';
+import { headwayAxisTicks, hourBarColorHeadway, hourBarEmphasis, hourChartLitPeriod, hourChartMaxFreq, sparklineBarHeight } from '../../utils/hourChartModel';
+export { headwayAxisTicks, sparklineBarHeight };
 
 /** Bar area height of the route card's compact sparkline, in px. The one place to change it. */
 export const SPARKLINE_CARD_HEIGHT = 38;
@@ -35,6 +37,8 @@ export const SPARKLINE_PAIRED_HEIGHT = 96;
 export const SPARKLINE_PAIRED_HEIGHT_PHONE = 44;
 
 const HOURS = SPARKLINE_HOURS;
+
+const BAR_OPACITY = { active: 'opacity-90', lit: 'opacity-60', dim: 'opacity-40' } as const;
 
 // Label positions: 6a, 12p, 6p, 12a
 const HOUR_LABELS = SPARKLINE_HOUR_LABELS;
@@ -62,27 +66,6 @@ function ClockLabels({ className = '' }: { className?: string }) {
   );
 }
 
-/**
- * Headway axis for the full-day charts: round headways ("10 min") placed where a bar of that headway
- * tops out. Bars are as tall as 1/headway on the chart's fixed scale (sparklineBarHeight), so a tick's
- * height is (1/minutes) / maxFreq, and more frequent service sits higher.
- */
-export function headwayAxisTicks(maxFreq: number, height: number): AxisTick[] {
-  if (!(maxFreq > 0)) return [];
-  const minGap = height < 60 ? 16 : 24;
-  const maxTicks = height < 60 ? 2 : 3;
-  const ticks: AxisTick[] = [];
-  let lastPx = Infinity;
-  for (const minutes of [2, 3, 5, 10, 15, 20, 30, 60, 120]) {
-    const fraction = (1 / minutes) / maxFreq;
-    const px = fraction * height;
-    if (fraction > 1.0001 || px < 14 || lastPx - px < minGap || ticks.length >= maxTicks) continue;
-    ticks.push({ label: headwayAmount(minutes), fraction: Math.min(1, fraction) });
-    lastPx = px;
-  }
-  return ticks;
-}
-
 function formatHourTitle(h: number, headway: number): string {
   return `${formatClock(h * 60)}: ${headwayEvery(headway)}`;
 }
@@ -93,18 +76,6 @@ function tripTimeAbout(minutes: number): string {
 
 function formatTripTimeTitle(h: number, minutes: number): string {
   return `${formatClock(h * 60)}: ${tripTimeAbout(minutes)}`;
-}
-
-/**
- * Bar height for one hour. Height is proportional to trips per hour
- * (1 / headway) measured from zero, so a 35-minute hour is ~2/3 the height of
- * a 23-minute hour instead of collapsing to a stub. A small floor keeps any
- * hour with service visible.
- */
-export function sparklineBarHeight(headway: number | null | undefined, maxFreq: number, chartHeight: number): number {
-  if (headway == null || !(headway > 0) || !(maxFreq > 0)) return 0;
-  const floor = Math.min(3, chartHeight);
-  return Math.max(floor, Math.round((1 / headway) / maxFreq * chartHeight));
 }
 
 function medianOf(values: number[]): number {
@@ -236,8 +207,7 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
   if (valids.length === 0) return null;
 
   // The route's fixed top when given (never below the tallest bar shown), else this series' busiest hour.
-  const ownMaxFreq = Math.max(...valids.map(v => 1 / v));
-  const maxFreq = scaleMaxFreq != null && scaleMaxFreq > 0 ? Math.max(scaleMaxFreq, ownMaxFreq) : ownMaxFreq;
+  const maxFreq = hourChartMaxFreq([displayedByHour], HOURS, scaleMaxFreq);
 
   const activePeriodKey = expanded ? null : period && period !== 'all' ? period : null;
 
@@ -284,9 +254,7 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
   // With nothing hovered, the band stays behind the selected period, so it shows which hours the numbers below
   // come from (CIV-933). Hovering moves it; leaving the chart brings it back.
   const hoverPeriod = sharedMode ? (sharedHour != null ? HOUR_TO_PERIOD[sharedHour] ?? null : null) : hoveredPeriod;
-  // A period with no bars gets no band: over empty columns it reads as a placeholder (a night route at midday).
-  const selectedHasBars = !!activePeriodKey && HOURS.some(h => isHourInPeriod(h, activePeriodKey) && displayedByHour[h] != null);
-  const litPeriod = hoverPeriod ?? (selectedHasBars ? activePeriodKey : null);
+  const litPeriod = hourChartLitPeriod(hoverPeriod, activePeriodKey, displayedByHour, HOURS);
   const bands = litPeriod ? PERIOD_BANDS[litPeriod] : null;
   // The full-day chart already labels every period along its top, so only the route card's chart names the hovered one.
   const activeLabelKey = (expanded ? null : hoveredPeriod ?? (period && period !== 'all' ? period : null)) as TimePeriod | null;
@@ -305,7 +273,7 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
     ? directionOptions!
     : [{ key: expandedDirection ?? 'all', label: '', byHour: modalByHour, tripTime: pickedOption ? pickedOption.tripTime : tripTime }];
   const scaleSources = directionOptions && directionOptions.length > 0 ? directionOptions : gridBlocks;
-  const pairMaxFreq = Math.max(scaleMaxFreq ?? 0, ...scaleSources.flatMap(option => HOURS.map(h => option.byHour[h]).filter((v): v is number => v != null && v > 0).map(v => 1 / v)));
+  const pairMaxFreq = hourChartMaxFreq(scaleSources.map(option => option.byHour), HOURS, scaleMaxFreq);
   const pairTripMax = Math.max(0, ...scaleSources.flatMap(option => HOURS.map(h => option.tripTime?.byHour[h]).filter((v): v is number => v != null)));
   const pairFreqTicks = headwayAxisTicks(pairMaxFreq, pairH);
   const pairTripTicks = tripTimeAxisTicks(pairTripMax, pairH);
@@ -375,22 +343,13 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
             const maxGap = maxGapByHour?.[h];
             const hasValue = hw != null;
             const barH = sparklineBarHeight(hw, maxFreq, H);
-            const inActivePeriod = activePeriodKey
-              ? isHourInPeriod(h, activePeriodKey)
-              : true;
-            const inHovered = litPeriod ? HOUR_TO_PERIOD[h] === litPeriod : false;
             const isTooltipHover = sharedMode ? sharedHour === h : (hoveredHour === h || hoveredTripHour === h);
             const segments = stackedByHour?.[h] ?? [];
             const segmentTotalFreq = segments.reduce((sum, segment) => sum + 1 / segment.headway, 0);
             // One rule for every hour with trips (CIV-497): its colour (tier, or branch colours when
             // stacked), faded outside the selected period. Hours with no trips draw no bar.
-            const barColor = hasValue
-              ? headwayToTierColor(maxGap != null && hw != null && maxGap - hw >= 15 && maxGap / hw >= 1.7 ? maxGap : hw, colorMode)
-              : undefined;
-            const opacity = !hasValue ? undefined
-              : inActivePeriod ? 'opacity-90'
-              : inHovered ? 'opacity-60'
-              : 'opacity-40';
+            const barColor = hasValue ? headwayToTierColor(hourBarColorHeadway(hw, maxGap), colorMode) : undefined;
+            const opacity = !hasValue ? undefined : BAR_OPACITY[hourBarEmphasis(h, activePeriodKey, litPeriod)];
             return (
               <div
                 key={h}
