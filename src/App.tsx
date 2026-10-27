@@ -797,7 +797,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
 
       <main className="absolute inset-0 overflow-hidden">
         <ErrorBoundary label="The map encountered an error.">
-          <React.Suspense fallback={<div className="flex items-center justify-center h-full text-[var(--text-dim)] text-sm">Loading map…</div>}>
+          <React.Suspense fallback={<div className="flex items-center justify-center h-full text-[var(--text-dim)] text-sm">{loadingText('map')}</div>}>
           {inResearch ? (
             <ResearchPage />
           ) : inFrequentServiceStory ? (
@@ -915,7 +915,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
           </ErrorBoundary>
         {(agenciesLoadState === 'loading' || modeCatchingUp) && (
           <div className={`${MAP_STATUS_SLOT} rounded-full bg-[var(--bg-panel)]/90 px-3 py-1.5 text-xs font-semibold text-[var(--text-dim)] pointer-events-none`} data-map-overlay="status">
-            Loading map…
+            {loadingText('map')}
           </div>
         )}
         {agenciesLoadState === 'error' && (
