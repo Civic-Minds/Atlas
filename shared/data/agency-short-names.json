@@ -1,0 +1,23 @@
+{
+  "byName": {
+    "Hamilton Street Railway": "HSR",
+    "Toronto Transit Commission": "TTC",
+    "York Region Transit": "YRT",
+    "STM (Montréal)": "STM",
+    "Edmonton Transit Service (ETS)": "ETS",
+    "Massachusetts Bay Transportation Authority": "MBTA",
+    "TriMet (Portland, OR)": "TriMet",
+    "San Francisco Municipal Transportation Agency (SFMTA - Muni)": "SFMTA",
+    "Bay Area Rapid Transit (BART)": "BART",
+    "Alameda-Contra Costa Transit District (AC Transit)": "AC Transit",
+    "Santa Clara Valley Transportation Authority (VTA)": "VTA",
+    "Regional Transportation District (RTD Denver)": "RTD",
+    "Dallas Area Rapid Transit (DART)": "DART",
+    "Chicago Transit Authority (CTA)": "CTA",
+    "MARTA (Atlanta)": "MARTA",
+    "SEPTA (Philadelphia)": "SEPTA",
+    "WMATA (Washington, DC)": "WMATA",
+    "Nassau Inter-County Express (NICE Bus)": "NICE",
+    "GoRaleigh (Capital Area Transit)": "GoRaleigh"
+  }
+}

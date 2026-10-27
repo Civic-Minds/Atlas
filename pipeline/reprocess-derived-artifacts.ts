@@ -46,6 +46,7 @@
  * it was rebuilt from (refresh's placeholder cap applies), so publish and the
  * expired notice read the right date (#837). Commit those files after the run.
  */
+import { futureFeedHoldUntil, startedArchiveInstead } from './futureFeedHold.js';
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import './loadEnv.js';
@@ -66,6 +67,7 @@ import {
   reprocessCountryLaunchSkip,
   selectArchiveForAgency,
   selectByFeedDates,
+  type PeekedArchive,
   type ArtifactCounts,
 } from './archiveSelection.js';
 import {
@@ -77,7 +79,7 @@ import {
   formatGateSummary,
   gateRunId,
   parseGateOverrides,
-  readLiveSummary,
+  releaseBaselineReader,
   summarizeArtifact,
   unknownOverrideSlugs,
   writeGateReport,
@@ -85,11 +87,13 @@ import {
   type GateCandidate,
 } from './releaseDiff.js';
 import { ROUTE_ARTIFACT_SCHEMA_VERSION } from '../shared/artifactSchema.js';
+import { agencyTodayYmd } from '../shared/feedAvailability.js';
 import { COUNTRY_LAUNCH_FLAG, assertCountryMayWriteToR2, resolveAgencyCountry, type AgencyCountrySource } from './countryLaunchGate.js';
 
 interface Agency {
   slug: string;
   name?: string;
+  timezone?: string | null;
   agencyId?: string;
   agencyName?: string;
   supplementalFeedUrls?: string[];
@@ -135,6 +139,8 @@ class Refusal extends Error {}
 
 /** Gate inputs per processed agency, kept out of the JSON report. */
 const gateInputs = new Map<string, { candidate: GateCandidate; live: ArtifactSummary | null }>();
+// Live data for the drop and gate checks: the public release first (CIV-522).
+const readBaseline = releaseBaselineReader(r2Get);
 /** The processed feed's raw expiry dates per agency, recorded in index.json once its artifacts are published (#837). */
 const processedExpiries = new Map<string, { feedExpiry: string | null; calendarExpiry: string | null; calendarOnlyEnd: string | null }>();
 const expiryUpdates: string[] = [];
@@ -161,17 +167,37 @@ function shouldProcess(agency: Agency): boolean {
 async function selectArchiveKey(agency: Agency): Promise<{ key: string; reason: string } | null> {
   const objects = await r2ListArchiveObjects(`gtfs/archive/${agency.slug}/`);
   const selection = selectArchiveForAgency(objects, agency);
-  if (selection.ok) return { key: selection.key, reason: selection.reason };
-  if (selection.noArchive) return null;
-  // Key dates and upload order disagree: read each zip's own service dates instead (#859).
-  const prior = selection.reason.replace(/^cannot tell which archived zip is newest: /, '');
-  const peeked = await Promise.all(objects.filter(obj => obj.key.endsWith('.zip')).map(async obj => {
+  if (!selection.ok && selection.noArchive) return null;
+  const zips = objects.filter(obj => obj.key.endsWith('.zip'));
+  const peekAll = () => Promise.all(zips.map(async obj => {
     const buf = await r2GetArchiveBuffer(obj.key);
-    return { obj, dates: buf ? await peekFeedDates(buf) : { feedStart: null, feedExpiry: null, feedVersion: null, feedInfoEnd: null } };
+    return { obj, dates: buf ? await peekFeedDates(buf, agency.excludeRouteShortNames) : { feedStart: null, feedExpiry: null, feedVersion: null, feedInfoEnd: null } };
   }));
-  const byDates = selectByFeedDates(peeked, todayYmd, prior);
-  if (byDates.ok) return { key: byDates.key, reason: byDates.reason };
-  throw new Refusal(byDates.reason);
+  let picked: { key: string; reason: string };
+  let peeked: PeekedArchive[] | null = null;
+  if (selection.ok) {
+    picked = { key: selection.key, reason: selection.reason };
+  } else {
+    // Key dates and upload order disagree: read each zip's own service dates instead (#859).
+    const prior = selection.reason.replace(/^cannot tell which archived zip is newest: /, '');
+    peeked = await peekAll();
+    const byDates = selectByFeedDates(peeked, agencyTodayYmd(agency), prior);
+    if (!byDates.ok) throw new Refusal(byDates.reason);
+    picked = { key: byDates.key, reason: byDates.reason };
+  }
+  // #1144: a zip whose timetable hasn't started never replaces one still in service.
+  if (zips.length > 1) {
+    const pickedBuf = peeked ? null : await r2GetArchiveBuffer(picked.key);
+    const pickedStart = peeked
+      ? peeked.find(p => p.obj.key === picked.key)?.dates.feedStart
+      : pickedBuf ? (await peekFeedDates(pickedBuf, agency.excludeRouteShortNames)).feedStart : null;
+    if (futureFeedHoldUntil({ feedStart: pickedStart, todayYmd: agencyTodayYmd(agency), liveFeedExpiry: agency.lastFeedExpiry })) {
+      const instead = startedArchiveInstead({ pickedKey: picked.key, peeked: peeked ?? await peekAll(), todayYmd: agencyTodayYmd(agency), liveFeedExpiry: agency.lastFeedExpiry });
+      if (instead && 'refuse' in instead) throw new Refusal(instead.refuse);
+      if (instead) return instead;
+    }
+  }
+  return picked;
 }
 
 function localArchivePath(fileStem: string): string | null {
@@ -209,10 +235,10 @@ async function processAgency(agency: Agency): Promise<ReportRow> {
     console.log(`\n${agency.slug}: ${row.sourceKey} (${row.selection})`);
     // The same expiry the publish step reads from index.json (#875): a placeholder calendar
     // never keeps an expired feed_info in service here while the release gate calls it expired.
-    const { feedStart, feedExpiry: calendarEnd, feedInfoEnd, calendarOnlyEnd } = await peekFeedDates(body);
+    const { feedStart, feedExpiry: calendarEnd, feedInfoEnd, calendarOnlyEnd } = await peekFeedDates(body, agency.excludeRouteShortNames);
     const feedExpiry = recordedFeedExpiry(feedInfoEnd, calendarEnd, todayYmd, calendarOnlyEnd);
     row.feedExpiry = feedExpiry;
-    const dateRefusal = feedDateRefusal(feedExpiry, agency.lastFeedExpiry, todayYmd);
+    const dateRefusal = feedDateRefusal(feedExpiry, agency.lastFeedExpiry, agencyTodayYmd(agency));
     if (dateRefusal) throw new Refusal(dateRefusal);
 
     const supplementalFeeds = await loadSupplementalFeeds(agency, url => readSupplementalFeed(agency, url));
@@ -222,10 +248,11 @@ async function processAgency(agency: Agency): Promise<ReportRow> {
 
     // The release diff gate runs over the whole batch once every agency is processed.
     const next = summarizeArtifact(result.geojson, result.stopsJson, agency.slug);
-    const live = await readLiveSummary(agency.slug, r2Get);
+    // The public release's copy, never a top-level file a failed run may have rewritten (CIV-522).
+    const live = await readBaseline(agency.slug);
     row.outputCounts = next.counts;
     row.liveCounts = live?.counts ?? null;
-    gateInputs.set(agency.slug, { candidate: { slug: agency.slug, next, service: { start: feedStart, end: feedExpiry, calendarEnd } }, live });
+    gateInputs.set(agency.slug, { candidate: { slug: agency.slug, next, service: { start: feedStart, end: feedExpiry, calendarEnd, liveFeedExpiry: agency.lastFeedExpiry } }, live });
     processedExpiries.set(agency.slug, { feedExpiry: result.feedExpiry, calendarExpiry: result.calendarExpiry, calendarOnlyEnd: result.calendarOnlyEnd });
 
     const agencyDir = resolve(outputDir, agency.slug);
@@ -258,12 +285,12 @@ async function processAgency(agency: Agency): Promise<ReportRow> {
  */
 async function gateProcessedRows(rows: ReportRow[], registry: Agency[]): Promise<void> {
   const processed = rows.filter(row => row.status === 'processed');
-  const getLive = cachedSummaryReader(async slug => (gateInputs.has(slug) ? gateInputs.get(slug)!.live : readLiveSummary(slug, r2Get)));
+  const getLive = cachedSummaryReader(async slug => (gateInputs.has(slug) ? gateInputs.get(slug)!.live : readBaseline(slug)));
   const flags = await evaluateRun({
     candidates: processed.map(row => gateInputs.get(row.slug)!.candidate),
     getLive,
     registry: registry as Array<{ slug: string; center?: number[]; bbox?: number[] }>,
-    todayYmd,
+    todayYmd: slug => agencyTodayYmd(registry.find(a => a.slug === slug) ?? {}),
     allowMissingLive: false,
   });
   const result = applyOverrides(flags, overrides);

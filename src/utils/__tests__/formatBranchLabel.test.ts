@@ -75,3 +75,16 @@ describe('resolveBranchLabel', () => {
     expect(formatBranchLabel('Marschall Road TS', '495', '4FUN: Shakopee-Savage-Burnsville-MOA-MSP')).toBe('to Marschall Road TS');
   });
 });
+
+describe('destination capitals (CIV-935)', () => {
+  it('keeps a mixed-case destination exactly as the feed wrote it', () => {
+    expect(formatBranchLabel('McDonald Ave', '9', '')).toBe('to McDonald Ave');
+    expect(formatBranchLabel('Station Champ-de-Mars', '9', '')).toBe('to Station Champ-de-Mars');
+    expect(formatBranchLabel('95th/Dan Ryan CTA Station Bay A', '352', '')).toBe('to 95th/Dan Ryan CTA Station Bay A');
+  });
+
+  it('re-cases an all-capitals destination, keeping listed abbreviations', () => {
+    expect(formatBranchLabel('LBJ/CENTRAL STATION', '9', '')).toBe('to LBJ/Central Station');
+    expect(formatBranchLabel('MOODY CENTER', '9', '')).toBe('to Moody Center');
+  });
+});

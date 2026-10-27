@@ -6,10 +6,10 @@ import { type HeadwayByPeriod } from '../../shared/config';
 import type { HistorySnapshotV2 } from '../../shared/historyV2';
 import { countOf } from '../../shared/overflowText';
 import { isDrawableLineCoordinates } from '../../shared/routeGeometry';
-import { TRANSITION_BASE, AGENCY_LIST_FILTERS, PILL_SURFACE, CONTROL_ACTIVE, PILL_SCROLL_ROW, PANEL_TITLE, SIDEBAR_CARD, SIDEBAR_CARD_MAX_H, sidebarFrameStyle, SIDEBAR_PANEL_WIDTH, Z_PANEL, CARD_NOTICE } from '../styles';
-import { agencyDisplayParts, routeLabels, shortenAgencyName, titleCase } from '../utils/format';
+import { TRANSITION_BASE, AGENCY_LIST_FILTERS, PILL_SURFACE, CONTROL_ACTIVE, PILL_SCROLL_ROW, PANEL_TITLE, SIDEBAR_CARD, SIDEBAR_CARD_MAX_H, sidebarFrameStyle, SIDEBAR_PANEL_WIDTH, Z_PANEL, CARD_NOTICE, CARD_NOTE } from '../styles';
+import { routeLabels, titleCase, agencyNames, agencyNameParts as nameParts, agencyListParts } from '../utils/format';
 import CardRouteList from '../components/Interval/CardRouteList';
-import { AgencyCardTop, CARD_HEADER_BLOCK, CardCallout, CARD_CALLOUT_SURFACE, CardDirectionRow, CardReportButton, SIDEBAR_CARD_BODY, SidebarCardHeaderBlock, SidebarCardListRows, SidebarCardShell } from '../components/Interval/cardUi';
+import { AgencyCardTop, CARD_CALLOUT_HEADLINE, CARD_CALLOUT_TEXT, CARD_HEADER_BLOCK, CardCallout, CARD_CALLOUT_SURFACE, CardDirectionRow, CardReportButton, SIDEBAR_CARD_BODY, SidebarCardHeaderBlock, SidebarCardListRows, SidebarCardShell } from '../components/Interval/cardUi';
 import RouteCardTitle from '../components/RouteCardTitle';
 import { SearchSuggestionsPanel, type RecentRoute, type SuggestedRoute } from '../components/Interval/SearchSuggestionsPanel';
 import type { RouteListDisplay } from '../utils/effectiveHeadway';
@@ -33,12 +33,13 @@ import {
   agencyQualifiesForHistory,
   type HistoryTier,
 } from '../../shared/historyEligibility';
-import { capitalizeFirst, headwayAmount, headwayEvery, runTimeAmount } from '../utils/headwayText';
+import { capitalizeFirst, headwayEvery, headwayExactAmount, runTimeAmount } from '../utils/headwayText';
+import { historyChartPositions } from '../utils/historyChart';
 import Panel, { PanelBody, PanelTitleBar } from '../components/ui/Panel';
 import ListRow from '../components/ui/ListRow';
 import { AgencyList, AgencyListRow, AgencyRegionSection } from '../components/ui/AgencyList';
 import ArrowLink from '../components/ui/ArrowLink';
-import { currentAtlasUrl } from '../utils/reportIssue';
+import { reportDetails } from '../utils/reportIssue';
 import ModeFilterPillRow from '../components/ui/ModeFilterPillRow';
 import { syncUrlParams } from '../utils/syncUrlParams';
 import { encodeHistoryUrlState, parseHistoryUrlState, type HistoryUrlState } from '../utils/shareUrlState';
@@ -115,6 +116,13 @@ function periodMinutes(snapshot: RouteSnapshot, period: TimePeriod): number | nu
   return value.kind === 'value' ? value.min : null;
 }
 
+/**
+ * The minutes History prints for a snapshot: its exact value everywhere (#1085), in the rows, the chart's
+ * labels, the summary and the line's colour, so they never disagree. To round them all as the map cards
+ * do instead, return headwayAboutMinutes(minutes) here.
+ */
+const shownMinutes = (minutes: number): number => minutes;
+
 function changeSummary(entry: RouteHistoryEntry, period: TimePeriod = 'all'): { text: string; subtext: string; worse: boolean } | null {
   // Only snapshots with a value in the period take part (CIV-389).
   const snaps = sortSnapshotsNewestFirst(entry.snapshots).filter(s => periodMinutes(s, period) != null);
@@ -123,8 +131,8 @@ function changeSummary(entry: RouteHistoryEntry, period: TimePeriod = 'all'): { 
   const last = snaps[0];
   // Only a change across calendar years gets the box; schedules from the same year show just the rows.
   if (first.year === last.year) return null;
-  const fHw = periodMinutes(first, period)!;
-  const lHw = periodMinutes(last, period)!;
+  const fHw = shownMinutes(periodMinutes(first, period)!);
+  const lHw = shownMinutes(periodMinutes(last, period)!);
   if (Math.abs(fHw - lHw) < 2) return null;
   const worse = lHw > fHw;
   return {
@@ -200,8 +208,9 @@ function RouteHistoryCard({
 
   const first = valued[valued.length - 1] ?? snaps[snaps.length - 1];
   const last = valued[0] ?? snaps[0];
-  const firstHw = snapHeadway(first);
-  const lastHw = snapHeadway(last);
+  // The line's colour follows the same minutes as the rows and the summary (#1085).
+  const firstHw = shownMinutes(snapHeadway(first));
+  const lastHw = shownMinutes(snapHeadway(last));
   const worse = lastHw > firstHw;
   const better = lastHw < firstHw;
   const summary = changeSummary(route, period);
@@ -212,9 +221,8 @@ function RouteHistoryCard({
   const paddingX = 20;
   const paddingY = 22;
 
-  const minYear = first.year;
-  const maxYear = last.year;
-  const yearRange = maxYear - minYear || 1;
+  // Each point at its month, not its year, so a route's snapshots from one year spread out (CIV-924).
+  const positions = historyChartPositions(chartSnaps);
 
   const hws = chartSnaps.map(snapHeadway);
   const minHw = Math.min(...hws);
@@ -223,7 +231,7 @@ function RouteHistoryCard({
 
   const points = chartSnaps.map((snap, i) => {
     const hw = snapHeadway(snap);
-    const pctX = (snap.year - minYear) / yearRange;
+    const pctX = positions[i];
     const x = paddingX + pctX * (width - 2 * paddingX);
 
     const pctY = maxHw === minHw ? 0.5 : (hw - minHw) / hwRange;
@@ -239,7 +247,23 @@ function RouteHistoryCard({
   const lineColor = worse ? 'var(--status-negative)' : better ? 'var(--status-positive)' : '#9ca3af';
   // Labels that fit (#1037): x-axis labels need 34 units across; value labels ("30 min", about 26
   // units wide and 8 tall) skip one that would sit on another, e.g. two snapshots in the same month.
-  const labelIndices = labelsThatFit(points, 34);
+  // The first and last x labels are drawn against the chart's edges, so they are checked where they are drawn
+  // (CIV-924: "Oct '13" ran into "Aug '16"), and a month already labelled isn't labelled again.
+  const X_LABEL_WIDTH = 34;
+  const xLabelCentres = points.map((p, i) => ({
+    x: i === 0 ? paddingX + X_LABEL_WIDTH / 2 : i === points.length - 1 ? width - paddingX - X_LABEL_WIDTH / 2 : p.x,
+    y: 0,
+  }));
+  const labelIndices = new Set<number>();
+  const labelled = new Set<string>();
+  // The ends first, so a month at the right edge is labelled there rather than at an earlier point.
+  const edgesFirst = (i: number) => (i === 0 ? -2 : i === points.length - 1 ? -1 : i);
+  for (const i of [...labelsThatFit(xLabelCentres, X_LABEL_WIDTH)].sort((a, b) => edgesFirst(a) - edgesFirst(b))) {
+    const text = formatXLabel(points[i].label);
+    if (labelled.has(text)) continue;
+    labelled.add(text);
+    labelIndices.add(i);
+  }
   const valueLabelIndices = labelsThatFit(points.map(p => ({ x: p.x, y: p.y - 7 })), 28, 9);
 
   return (
@@ -265,7 +289,12 @@ function RouteHistoryCard({
           </div>
           <CardReportButton
             title={`History: ${agencyName} ${route.routeShortName}`}
-            details={`**Agency:** ${agencyName}\n**Agency slug:** ${agencySlug}\n**Route:** ${route.routeShortName}${route.routeName ? ` ${route.routeName}` : ''}\n**Snapshots:** ${snaps.map(s => s.label).join(', ')}\n**Atlas URL:** ${currentAtlasUrl()}`}
+            details={reportDetails([
+              ['Agency', agencyName],
+              ['Agency slug', agencySlug],
+              ['Route', `${route.routeShortName}${route.routeName ? ` ${route.routeName}` : ''}`],
+              ['Snapshots', snaps.map(s => s.label).join(', ')],
+            ])}
             excludeReasons={['Stop is missing, misplaced, or assigned incorrectly']}
           />
         </div>
@@ -314,7 +343,7 @@ function RouteHistoryCard({
                     <circle cx={p.x} cy={p.y} r="3" fill={lineColor} stroke="var(--bg-panel)" strokeWidth="1.5" />
                     {valueLabelIndices.has(i) && (
                       <text x={p.x} y={p.y - 7} textAnchor="middle" fontSize="8" fontWeight="700" fill="var(--text-primary)" fontFamily="inherit">
-                        {headwayAmount(p.hw)}
+                        {headwayExactAmount(shownMinutes(p.hw))}
                       </text>
                     )}
                     {showXLabel && (
@@ -340,8 +369,13 @@ function RouteHistoryCard({
               key={`${snap.label}-${i}`}
               label={snap.label}
               headway={hw ?? undefined}
+              // The snapshot's own minutes, as in the chart, the summary and the change beside it (#1085):
+              // the map cards' rounding to the half hour made NFTA 76 read 360 beside a chart reading 349.
+              headwayLabel={hw != null ? headwayEvery(shownMinutes(hw)) : undefined}
               headwaySuffix={delta ? (delta > 0 ? `+${delta}` : `${delta}`) : undefined}
               headwaySuffixTone={delta ? (delta > 0 ? 'negative' : 'positive') : undefined}
+              // Regular weight, like the map cards' destination rows (CIV-971).
+              labelWeight="regular"
             />
           );
         })}
@@ -349,15 +383,16 @@ function RouteHistoryCard({
 
         {summary && (
           <CardCallout tone={summary.worse ? 'negative' : 'positive'} className="mt-3">
-            <p className={`text-xs font-bold leading-tight ${summary.worse ? 'text-[var(--status-negative-text)]' : 'text-[var(--status-positive-text)]'}`}>{summary.text}</p>
-            <p className="text-xs text-[var(--text-muted)] mt-0.5">{summary.subtext}</p>
+            {/* The shared callout headline in the summary's better or worse colour (CIV-971). */}
+            <p className={`${CARD_CALLOUT_HEADLINE} ${summary.worse ? '!text-[var(--status-negative-text)]' : '!text-[var(--status-positive-text)]'}`}>{summary.text}</p>
+            <p className={CARD_CALLOUT_TEXT}>{summary.subtext}</p>
             <p className={`${CARD_NOTICE} mt-1`}>Latest archived snapshot: {last.label}</p>
           </CardCallout>
         )}
 
         {route.tripDuration && (
           <CardCallout className="mt-3">
-            <p className="text-xs font-bold leading-tight text-[var(--text-primary)]">
+            <p className={CARD_CALLOUT_HEADLINE}>
               Trip time: {runTimeAmount(route.tripDuration.firstMinutes)} ({route.tripDuration.firstLabel}) → {runTimeAmount(route.tripDuration.lastMinutes)} ({route.tripDuration.lastLabel})
             </p>
             <p className={`${CARD_NOTICE} mt-1`}>
@@ -493,7 +528,7 @@ function HistoryAgencyPanel({
           report={(
             <CardReportButton
               title={`History: ${agencyHistory.name}`}
-              details={`**Agency:** ${agencyHistory.name}\n**Agency slug:** ${agencyHistory.slug}\n**Atlas URL:** ${currentAtlasUrl()}`}
+              details={reportDetails([['Agency', agencyHistory.name], ['Agency slug', agencyHistory.slug]])}
               excludeReasons={['Stop is missing, misplaced, or assigned incorrectly', 'Route line is missing or follows the wrong path']}
             />
           )}
@@ -584,7 +619,12 @@ export default function History({ active, view = HISTORY_VIEW_ALL, initialAgency
   const catalogBySlug = useMemo(() => new Map((agencyCatalog ?? []).map(a => [a.slug, a])), [agencyCatalog]);
   const agencyNameParts = useCallback((slug: string, fallbackName: string) => {
     const a = catalogBySlug.get(slug);
-    return a ? agencyDisplayParts(a.name, a.cities, a.displayArea) : agencyDisplayParts(fallbackName);
+    return a ? nameParts({ name: a.name, cities: a.cities, displayArea: a.displayArea }) : nameParts(fallbackName);
+  }, [catalogBySlug]);
+  // List rows use the short name (CIV-998); the agency card above keeps the full name.
+  const agencyListNameParts = useCallback((slug: string, fallbackName: string) => {
+    const a = catalogBySlug.get(slug);
+    return a ? agencyListParts({ name: a.name, cities: a.cities, displayArea: a.displayArea }) : agencyListParts(fallbackName);
   }, [catalogBySlug]);
   const { setOverlay } = useHistoryMapOverlay();
   const [historyData, setHistoryData] = useState<AgencyHistory[] | null>(null);
@@ -718,7 +758,7 @@ export default function History({ active, view = HISTORY_VIEW_ALL, initialAgency
   const openAgencyName = useMemo(() => {
     if (!active || !selectedSlug) return null;
     const agency = historyData?.find(a => a.slug === selectedSlug);
-    return agency ? shortenAgencyName(agency.name) : null;
+    return agency ? agencyNames(agency.name).name : null;
   }, [active, selectedSlug, historyData]);
   useEffect(() => { onOpenAgencyChange?.(openAgencyName); }, [openAgencyName, onOpenAgencyChange]);
   // Dismissed from the map (empty-map click, Escape), the panel closes and stays closed until the
@@ -953,7 +993,7 @@ export default function History({ active, view = HISTORY_VIEW_ALL, initialAgency
                       {agencies.map(agency => (
                         <AgencyListRow
                           key={agency.slug}
-                          {...agencyNameParts(agency.slug, agency.name)}
+                          {...agencyListNameParts(agency.slug, agency.name)}
                           title={agency.name}
                           onClick={() => {
                             saveRecentSearch(query);
@@ -978,7 +1018,7 @@ export default function History({ active, view = HISTORY_VIEW_ALL, initialAgency
           onPointerMove={event => event.stopPropagation()}
           onWheel={event => event.stopPropagation()}
         >
-            <span className="text-xs font-bold text-[var(--text-dim)] tabular-nums">{availableYears[0]}</span>
+            <span className={`${CARD_NOTE} tabular-nums`}>{availableYears[0]}</span>
             <input
               type="range"
               min={0}
@@ -991,7 +1031,7 @@ export default function History({ active, view = HISTORY_VIEW_ALL, initialAgency
             />
             {/* The latest year shows once: while the chip is on it, the end label is left out (CIV-400, CIV-444). */}
             {selectedYear !== availableYears[availableYears.length - 1] && (
-              <span className="text-xs font-bold text-[var(--text-dim)] tabular-nums">{availableYears[availableYears.length - 1]}</span>
+              <span className={`${CARD_NOTE} tabular-nums`}>{availableYears[availableYears.length - 1]}</span>
             )}
             <span className={`rounded-md border ${CONTROL_ACTIVE} px-1.5 py-0.5 text-xs font-black tabular-nums`}>{selectedYear}</span>
         </div>

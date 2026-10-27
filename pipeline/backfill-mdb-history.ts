@@ -18,6 +18,7 @@ import JSZip from 'jszip';
 import { processGtfsBuffer } from './process-core.js';
 import { backfillRouteKey } from './historyRouteKey.js';
 import { r2PutArchive, r2PutArchiveJson, r2GetArchive } from './r2.js';
+import { writeHistoryCoverage } from './historyCoverage.js';
 import type { HeadwayByPeriod } from '../shared/config.js';
 
 const MDB_API = 'https://api.mobilitydatabase.org/v1';
@@ -267,10 +268,7 @@ async function main() {
     console.log(`Dry-run report → ${reportPath} (${dryRunSnapshots.length} snapshots)`);
   }
 
-  await r2PutArchiveJson(`history/${slug}/coverage.json`, JSON.stringify({
-    coverageYears: [...coverageYears].sort(),
-    materializeAllPeriods: true,
-  }));
+  await writeHistoryCoverage(slug, coverageYears, { dryRun });
 
   console.log('\nDone. Run: npm run build-history');
 }

@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { CARD_SECTION } from '../../styles';
 import Pill from '../ui/Pill';
 import LegendItem from '../ui/LegendItem';
 import { HEADWAY_TIERS, getTierColor } from '../../utils/colors';
@@ -30,7 +31,7 @@ export function useFrequencyOptions() {
 export function PickerSection({ title, className = '', children }: { title: string; className?: string; children: ReactNode }) {
   return (
     <div className={className}>
-      <p className="mb-1.5 text-xs font-black text-[var(--text-dim)]">{title}</p>
+      <p className={`mb-1.5 ${CARD_SECTION}`}>{title}</p>
       {children}
     </div>
   );

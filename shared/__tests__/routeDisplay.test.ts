@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { getRouteLabel } from '../cleanHeadsign';
-import { routeDisplay, shouldHideNumericRouteShortName, splitDesignator } from '../routeDisplay';
+import { getRouteLabel, routeDisplay, shouldHideNumericRouteShortName, splitDesignator } from '../routeDisplay';
 
 const d = (shortName: string | null, longName: string | null, routeType?: number, agencyName?: string) => routeDisplay({ shortName, longName, routeType, agencyName });
 

@@ -2,30 +2,19 @@ import React from 'react';
 import { isLivePollingRoute } from '../../../utils/livePolling';
 import { routeLabels, resolveBranchLabel } from '../../../utils/format';
 import RouteRowName from '../../RouteRowName';
-import { metricValueForPeriod } from '../../../utils/routeFacts';
 import type { HoveredBranch, TimePeriod } from '../../../hooks/useIntervalStats';
 import {
   CardDirectionRow,
   CardSummaryRow,
   SidebarCardListRows,
 } from '../cardUi';
-import type { StopBranch } from './StopCard';
-
-function branchHeadway(branch: StopBranch, period: TimePeriod): number | null {
-  return metricValueForPeriod(branch.service, period);
-}
-
-/** The less frequent of the branch's own value and the stop's value, so a destination is never overstated. */
-function rowHeadway(branchValue: number | null, stopValue: number | null): number | null {
-  if (branchValue == null) return stopValue;
-  if (stopValue == null) return branchValue;
-  return Math.max(branchValue, stopValue);
-}
+import { stopRouteLineHeadway, stopRowHeadway, type StopBranch } from '../../../utils/stopRoutes';
+import type { RouteLabel } from '../../../utils/routeFacts';
 
 interface Props {
   shortName: string;
-  /** The short name the label shows; blank when the feed has none but has a long name (#1099). Defaults to shortName. */
-  labelShortName?: string;
+  /** What the row shows (route facts' label, CIV-984); the short name is only the route's identity. */
+  label: RouteLabel;
   longName: string;
   agencyName: string;
   agencySlug?: string;
@@ -42,7 +31,7 @@ interface Props {
 /** One route at a stop: its name, then each destination as a route card row (CIV-918). */
 export default function StopRouteGroup({
   shortName,
-  labelShortName,
+  label,
   longName,
   agencyName,
   agencySlug,
@@ -54,7 +43,7 @@ export default function StopRouteGroup({
   hoveredBranch = null,
   setHoveredBranch,
 }: Props) {
-  const routeParts = routeLabels({ shortName: labelShortName ?? shortName, longName, routeType, agencySlug, agencyName: showAgency ? agencyName : undefined });
+  const routeParts = label;
   // The list rule (CIV-928): "**504** King", not "504 — King".
   const routeLabel = <RouteRowName shortName={routeParts.primary} name={routeParts.secondary} />;
   const hasMultipleDirections = new Set(branches.map(b => b.directionId)).size > 1;
@@ -70,19 +59,13 @@ export default function StopRouteGroup({
         directionId: branch.directionId,
         multipleDirections: hasMultipleDirections,
       }),
-      // #934: part-period wording replaces the number, as on the route card's row. A row never claims more
-      // service than either measure gives: the stop's value counts every trip of the direction (504A and
-      // 504B together), and the branch's route-wide value can count trips that don't reach this stop.
-      hw: branch.periodText ? null : rowHeadway(branch.rowHeadway ?? null, branchHeadway(branch, period)),
+      // #934: part-period wording replaces the number. The row value never overstates (stopRowHeadway).
+      hw: stopRowHeadway(branch, period),
     }))
     .filter(item => item.label)
     .sort((a, b) => a.directionId - b.directionId);
-  // Where the route's patterns share the stop (504A and 504B at King and Bay), the route comes more often
-  // than any one destination: the route line keeps the stop's value, as the stop card showed before.
-  const rowValues = items.map(item => item.hw).filter((hw): hw is number => hw != null);
-  const pooledValues = items.map(item => (item.periodText ? null : branchHeadway(item, period))).filter((hw): hw is number => hw != null);
-  const pooled = pooledValues.length > 0 ? Math.min(...pooledValues) : null;
-  const routeHeadway = pooled != null && rowValues.length > 0 && pooled < Math.min(...rowValues) ? pooled : null;
+  // The route line's own value, only where the route comes more often than any one destination (stopRouteLineHeadway).
+  const routeHeadway = stopRouteLineHeadway(items, period);
 
   if (items.length === 0) return null;
 
@@ -125,9 +108,4 @@ export default function StopRouteGroup({
       </SidebarCardListRows>
     </div>
   );
-}
-
-export function stopRouteBestHeadway(branches: StopBranch[], period: TimePeriod): number | null {
-  const vals = branches.map(b => branchHeadway(b, period)).filter((h): h is number => h != null);
-  return vals.length ? Math.min(...vals) : null;
 }

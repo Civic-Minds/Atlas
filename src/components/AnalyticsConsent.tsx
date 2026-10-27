@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useState } from 'react';
 import { setConsentPrompt, useConsentPrompt } from '../lib/consentPrompt';
 import { getAnalyticsConsent, initAnalytics, setAnalyticsConsent, type AnalyticsConsent } from '../lib/analytics';
-import { DROPDOWN_PANEL, dropdownAnim, MAP_BADGE, Z_HEADER, Z_MODAL_TOP } from '../styles';
+import { privacyRegionCountry } from '../lib/privacyRegion';
+import { MAP_CONSENT_SLOT, DROPDOWN_PANEL, dropdownAnim, MAP_BADGE, Z_HEADER, Z_MODAL_TOP } from '../styles';
 import Toggle from './ui/Toggle';
 import ArrowLink from './ui/ArrowLink';
 import PanelHeader from './ui/PanelHeader';
@@ -42,7 +43,7 @@ export default function AnalyticsConsent() {
     const existing = getAnalyticsConsent();
     if (existing) { initAnalytics(); return () => window.removeEventListener('atlas:privacy-settings', openSettings); }
     if (window.navigator.globalPrivacyControl) { setAnalyticsConsent('denied'); return () => window.removeEventListener('atlas:privacy-settings', openSettings); }
-    fetch('/api/privacy-region').then(r => r.ok ? r.json() as Promise<{ country?: string }> : Promise.reject()).then(({ country }) => { if (STRICT_COUNTRIES.has(country ?? 'XX')) setShowPrompt(true); else initAnalytics(); }).catch(() => setShowPrompt(true));
+    privacyRegionCountry().then(country => { if (STRICT_COUNTRIES.has(country)) setShowPrompt(true); else initAnalytics(); }).catch(() => setShowPrompt(true));
     return () => window.removeEventListener('atlas:privacy-settings', openSettings);
   }, []);
   // Flag the open prompt on <html> so the site footer can reserve room and the pill never covers its links.
@@ -58,7 +59,7 @@ export default function AnalyticsConsent() {
   useEffect(() => { setConsentPrompt(showPrompt, choose); }, [showPrompt, choose]);
   // inset-x-0 + mx-auto + w-fit centers without the left-1/2 shrink-to-fit squeeze that wrapped the text on phones.
   // Phones show it under the header, clear of the map controls and footer links along the bottom edge.
-  const position = `fixed inset-x-0 top-[4.25rem] mx-auto sm:top-auto sm:bottom-6 ${rows > 0 ? 'sm:hidden' : ''}`;
+  const position = `${MAP_CONSENT_SLOT} ${rows > 0 ? 'sm:hidden' : ''}`;
   return <>{showPrompt && <ConsentPill className={`${position} max-w-[calc(100vw-2rem)] ${Z_HEADER}`} choose={choose} />}{showSettings && <Controls onClose={() => setShowSettings(false)} />}</>;
 }
 

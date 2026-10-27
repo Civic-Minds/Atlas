@@ -9,10 +9,12 @@ import { nightServiceKey, routeNightGrade } from '../../shared/nightService';
 import Panel, { PanelBody, PanelTitleBar } from '../components/ui/Panel';
 import CardRouteList from '../components/Interval/CardRouteList';
 import { CardReportButton } from '../components/Interval/cardUi';
-import { currentAtlasUrl } from '../utils/reportIssue';
+import { reportDetails } from '../utils/reportIssue';
 import { routeLabels } from '../utils/format';
+import { headwayEvery, headwayOrBetter } from '../utils/headwayText';
 import ResearchInfo from '../components/ResearchInfo';
 import { NIGHT_INFO_HEADING, nightRuleText } from '../content/researchRules';
+import { compareRouteNumber } from '../utils/sortCompare';
 import PanelEmpty from '../components/ui/PanelEmpty';
 import { AgencyNameHeading, CARD_SUMMARY } from '../components/Interval/cardUi';
 import { loadingText, loadErrorText } from '../content/stateCopy';
@@ -57,13 +59,12 @@ function nightReportDetails(
   agencies: { name: string; routes: string[] }[],
   bounds: { n: number; s: number; e: number; w: number } | null | undefined,
 ): string {
-  return [
-    `**View:** routes every ${frequency} min or better from 2am to 5am`,
-    `**Map bounds:** ${bounds ? `${bounds.s.toFixed(4)},${bounds.w.toFixed(4)} to ${bounds.n.toFixed(4)},${bounds.e.toFixed(4)}` : 'unknown'}`,
+  return reportDetails([
+    ['View', `routes ${headwayOrBetter(frequency)} from 2am to 5am`],
+    ['Map bounds', bounds ? `${bounds.s.toFixed(4)},${bounds.w.toFixed(4)} to ${bounds.n.toFixed(4)},${bounds.e.toFixed(4)}` : 'unknown'],
     '**Listed:**',
     ...(agencies.length > 0 ? agencies.flatMap(agency => [`- ${agency.name}`, ...agency.routes.map(route => `  - ${route}`)]) : ['- Nothing listed']),
-    `**Atlas URL:** ${currentAtlasUrl()}`,
-  ].join('\n');
+  ]);
 }
 
 function nightRouteLabel(route: NightServiceRouteSummary, agency: { slug: string; agencyName: string }) {
@@ -180,7 +181,12 @@ export default function NightService({ active, sidebarLeft, searchBarWidth, laye
       byAgency.set(visible.agencySlug, entry);
     }
     const q = query.trim().toLowerCase();
-    const list = [...byAgency.entries()].map(([slug, entry]) => ({ slug, ...entry, routes: [...entry.routes.values()] }));
+    // Routes in number order within each agency, by the shared route sort (#1155: MiWay read 2, 3, 1, 7, 17).
+    const list = [...byAgency.entries()].map(([slug, entry]) => ({
+      slug,
+      ...entry,
+      routes: [...entry.routes.values()].sort((x, y) => compareRouteNumber(x.routeShortName, y.routeShortName, x.routeLongName, y.routeLongName)),
+    }));
     if (!q) return list;
     return list
       .map(agency => ({
@@ -214,7 +220,7 @@ export default function NightService({ active, sidebarLeft, searchBarWidth, laye
                 name: agency.agencyName,
                 routes: agency.routes.map(route => {
                   const { primary, secondary } = nightRouteLabel(route, agency);
-                  return `${secondary ? `${primary} ${secondary}` : primary} (every ${nightGrade(route, agency.slug)} min${route.partOfRoute ? ', part of the route' : ''})`;
+                  return `${secondary ? `${primary} ${secondary}` : primary} (${headwayEvery(nightGrade(route, agency.slug))}${route.partOfRoute ? ', part of the route' : ''})`;
                 }),
               })), bounds)}
               excludeReasons={['Stop is missing, misplaced, or assigned incorrectly']}

@@ -52,7 +52,7 @@ describe('per-route mode overrides (#827)', () => {
     expect(at('miami-dade-transit', 2, '2600')).toBe(1);
     expect(at('qline', 2, 'ML')).toBe(0);
     expect(at('nfta', 0, 'Metro Rail', 'Metro Rail')).toBe(VIRTUAL_LRT_MODE);
-    expect(at('capmetro', 0, '550', '550-Metro Rail Red Line')).toBe(0);
+    expect(at('capmetro', 0, '550', '550-Metro Rail Red Line')).toBe(2); // commuter rail, published as tram (CIV-956)
     expect(at('rioc-tram', 0, '', 'Roosevelt Island Aerial Tramway')).toBe(6);
     expect(at('rioc-tram', 3, '', 'RIOC Red Bus')).toBe(3);
   });
@@ -62,6 +62,12 @@ describe('per-route mode overrides (#827)', () => {
     expect(isRailLikeRoute({ agencySlug: 'kenosha', routeType: 3, routeShortName: 'SC' })).toBe(false);
     // The pipeline passes no agencySlug, so overrides never change its tiering.
     expect(isRailLikeRoute({ routeType: 0, routeShortName: 'BLUE' })).toBe(false);
+  });
+
+  it('a label-only override changes the shown mode but not pipeline processing (CapMetro 550 until #1138)', () => {
+    const red = { agencySlug: 'capmetro', routeType: 0, routeShortName: '550', routeLongName: '550-Metro Rail Red Line' };
+    expect(effectiveMode(red)).toBe(2);
+    expect(isRailLikeRoute(red)).toBe(false);
   });
 
   it('the map filter and effectiveMode agree for every override and a control route', () => {

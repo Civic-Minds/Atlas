@@ -80,6 +80,21 @@ describe('stampFeedMeta', () => {
     expect(agency.lastRefreshedAt).toBe('2026-07-19');
   });
 
+  it('records the kept routes\' calendar end, and keeps the raw peeked expiry for the next comparison (#1140)', () => {
+    // Snowmass, CIV-829: the excluded routes run to Dec 29, the kept route 3 to Nov 25.
+    const agency: { lastFeedExpiry?: string | null; lastPeekedExpiry?: string | null } = {};
+    stampFeedMeta(agency, {
+      feedExpiry: '20261125',
+      feedVersion: null,
+      peekedExpiry: '20261229',
+      peekedVersion: null,
+      todayYmd: '2026-10-27',
+      calendarExpiry: '20261125',
+    });
+    expect(agency.lastFeedExpiry).toBe('20261125');
+    expect(agency.lastPeekedExpiry).toBe('20261229');
+  });
+
   it('keeps the calendar end when feed_info ends earlier', () => {
     // coast-transit-ms: feed_info ends 20260930, calendar.txt runs to 20261231.
     const agency: { lastFeedExpiry?: string | null } = {};

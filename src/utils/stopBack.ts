@@ -1,5 +1,5 @@
 import type { OnDemandServiceDetails } from '../../shared/onDemandAvailability';
-import { agencyBackLinkName, agencyDisplayParts, cleanRouteShortName, routeLabels, shortenAgencyName } from './format';
+import { cleanRouteShortName, routeLabels, agencyNames, agencyNameParts } from './format';
 import { onDemandCardName, onDemandSelectionZoneId, resolveSelectedOnDemandSlug } from './onDemandSelection';
 import { splitRouteKey } from './routeKey';
 
@@ -85,7 +85,7 @@ export function resolveStopBack(
     const route = findRoute(target.route);
     if (!route) return MAP;
     const agency = agencies.find(a => a.slug === agencySlug);
-    const agencyName = shortenAgencyName(agency?.name ?? agencySlug);
+    const agencyName = agencyNames(agency?.name ?? agencySlug).name;
     const to = stopBackRouteName(route, agencySlug, agencyName);
     return to ? { to, target } : MAP;
   }
@@ -95,8 +95,8 @@ export function resolveStopBack(
     const agency = agencies.find(a => a.slug === slug);
     if (!agency) return MAP;
     const to = agency.onDemandServiceArea
-      ? onDemandCardName(agency.onDemandServiceArea, onDemandSelectionZoneId(target.selection), agencyDisplayParts(agency.name, agency.cities, agency.displayArea).primary)
-      : agencyBackLinkName(agency.name);
+      ? onDemandCardName(agency.onDemandServiceArea, onDemandSelectionZoneId(target.selection), agencyNameParts({ name: agency.name, cities: agency.cities, displayArea: agency.displayArea }).primary)
+      : agencyNames(agency.name).backLink;
     return to ? { to, target } : MAP;
   }
 
@@ -105,8 +105,8 @@ export function resolveStopBack(
   // An on-demand-only agency opens the on-demand card, so the link uses that card's heading.
   const opensOnDemandCard = resolveSelectedOnDemandSlug(null, agency.slug, agencies) === agency.slug && agency.onDemandServiceArea;
   const to = opensOnDemandCard
-    ? onDemandCardName(agency.onDemandServiceArea!, null, agencyDisplayParts(agency.name, agency.cities, agency.displayArea).primary)
-    : agencyBackLinkName(agency.name);
+    ? onDemandCardName(agency.onDemandServiceArea!, null, agencyNameParts({ name: agency.name, cities: agency.cities, displayArea: agency.displayArea }).primary)
+    : agencyNames(agency.name).backLink;
   return to ? { to, target } : MAP;
 }
 

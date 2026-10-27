@@ -6,7 +6,7 @@ import { FILTER_MODES } from '../../shared/modes';
 import { joinList } from '../../shared/overflowText';
 import type { FrequentServiceFrequency, FrequentServiceWindow } from '../../shared/frequentService';
 import type { NightServiceFrequency } from '../../shared/nightService';
-import { agencyDisplayParts, formatStoredDate } from './format';
+import { formatStoredDate, agencyNameParts } from './format';
 import { getHeadwayTiers, getNightServiceColor, getTierColor, headwayThresholdForZoom, type ColorVisionMode } from './colors';
 import { headwayBandLabel, headwayFilterLabel, headwayOrBetter, headwayTierLabel } from './headwayText';
 
@@ -182,7 +182,7 @@ function agencyPlace(agency: Agency | undefined): string | null {
   if (agency.displayArea) return agency.displayArea;
   // A place written in the agency's own name ("STM (Montréal)", "OC Transpo (Ottawa)") is the
   // most reliable label; the stop-density city can be a neighbourhood in large cities.
-  const fromName = agencyDisplayParts(agency.name).secondary;
+  const fromName = agencyNameParts(agency.name).secondary;
   if (fromName) return fromName;
   const city = agency.cities?.[0]?.split(',')[0]?.trim();
   return city || null;

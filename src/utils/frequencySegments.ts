@@ -44,6 +44,10 @@ interface FrequencySegmentProperties {
   agencySlug: string;
   routeId: string;
   routeBranch: string | null;
+  /** The route's names and type, so the route counter names a route drawn only by these pieces (#1090). */
+  routeShortName: string | null;
+  routeLongName: string | null;
+  routeType: number | null;
   directionId: number;
   headsign: string | null;
   day: string | null;
@@ -133,6 +137,10 @@ function addClippedSegments(
         agencySlug: p.agencySlug ?? slug,
         routeId: p.routeId,
         routeBranch: (p as any).routeBranch ?? null,
+        // The route's names and type, so a route drawn only by its segments is named and counted like its line (#1090).
+        routeShortName: p.routeShortName ?? null,
+        routeLongName: p.routeLongName ?? null,
+        routeType: (p as any).routeType ?? null,
         directionId: p.directionId,
         headsign: p.headsign ?? null,
         day: p.day ?? null,
@@ -448,6 +456,10 @@ function addFailingRouteSharedStretches(
           agencySlug: p.agencySlug ?? slug,
           routeId: p.routeId,
           routeBranch: (p as any).routeBranch ?? null,
+          // The route's names and type, so a route drawn only by its segments is named and counted like its line (#1090).
+          routeShortName: p.routeShortName ?? null,
+          routeLongName: p.routeLongName ?? null,
+          routeType: (p as any).routeType ?? null,
           directionId: p.directionId,
           headsign: p.headsign ?? null,
           day: p.day ?? null,
@@ -536,6 +548,10 @@ export function computeFrequencySegmentOverlay(
             agencySlug: p.agencySlug ?? slug,
             routeId: p.routeId,
             routeBranch: (p as any).routeBranch ?? null,
+            // The route's names and type, so a route drawn only by its segments is named and counted like its line (#1090).
+            routeShortName: p.routeShortName ?? null,
+            routeLongName: p.routeLongName ?? null,
+            routeType: (p as any).routeType ?? null,
             directionId: p.directionId,
             headsign: p.headsign ?? null,
             day: p.day ?? null,

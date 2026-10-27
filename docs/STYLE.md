@@ -22,7 +22,7 @@ Pages and layout
 Tables, controls and labels
 
 - Tables use `DataTable` (`src/components/ui/DataTable.tsx`) with one of its variants (compact, ruled, card).
-- Page tables (area and agency pages) keep their columns in place. Every area page shows the same mode columns in the shared mode order (Subway/Metro, Light rail, Streetcar, Commuter rail, Bus, Ferry, Gondola/aerial tram), with a dash where a mode is missing; rarer modes go in one last "Other" column, shown only where an area has one (`AREA_TABLE_MODES` in `shared/areaPages.ts`). On desktop the columns sit against the right edge, right-aligned, with the spare space after the names; on phones they start right after the names, left-aligned, so a column cut off at the edge shows there is more to scroll to (`DataTable` `endAligned`). A header too long for its column breaks onto two lines. CIV-958, CIV-973.
+- Page tables (area and agency pages) keep their columns in place. Every area page shows the same mode columns in the shared mode order (Subway/Metro, Light rail, Streetcar, Commuter rail, Bus, Ferry), with a dash where a mode is missing; monorail counts in Subway/Metro and trolleybus in Bus, and every other mode (gondola/aerial tram, cable car, funicular) goes in one last "Other" column, shown only where an area has one. A column that counts more than its own mode says what it counts on hover (`AREA_TABLE_MODES` and `areaTableColumn` in `shared/areaPages.ts`). On desktop the columns sit against the right edge, right-aligned, with the spare space after the names; on phones they start right after the names, left-aligned, so a column cut off at the edge shows there is more to scroll to (`DataTable` `endAligned`). A header too long for its column breaks onto two lines. CIV-958, CIV-973.
 - Pills and segmented buttons use `Pill` (`src/components/ui/Pill.tsx`). On/off switches use `Toggle`. Small labels such as "Live" or "New" use `Tag`. Legend entries use `LegendItem`.
 - Colours come from the CSS tokens in `src/styles/index.css`, written as `var(--accent)`, `var(--text-muted)`, `var(--text-primary)`, `var(--border-primary)` and so on.
 - Route names in lists: the number in bold, then the name in a light weight, with no dash ("**504** King"). A route with no number shows its name in bold alone. Card titles keep "504 — King". Use `RouteRowName` (`src/components/RouteRowName.tsx`). CIV-928.
@@ -33,6 +33,7 @@ Colour and shape
 - Nothing has a shadow. Keep the flat look.
 - No all-caps text anywhere: no `uppercase` class, no `text-transform: uppercase`, no hard-coded capitals in labels, headers, badges or titles. Drop the wide letter spacing that usually comes with it. An agency's own route code in capitals ("SSSF", "WCE") is the route's name and stays as written.
 - A clear (X) button inside a pill-shaped search box sits at least `right-2` in from the edge, never flush with the border.
+- Map overlays (the header row, footer pills, counts, map controls, notice and status pills, the analytics prompt) take their position from the "Map overlay slots" in `src/styles.ts`, never a hand-set `bottom-*`/`right-*`, and each carries `data-map-overlay`. After moving one, run `npm run check:overlays -- <dev server URL>`: it fails if any two overlap or one runs off the screen at 360, 640, 820, 1024 or 1440 wide. CIV-1011.
 
 Live
 

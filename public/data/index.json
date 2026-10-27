@@ -8083,6 +8083,7 @@
     {
       "slug": "ace",
       "name": "Altamont Corridor Express",
+      "displayArea": "Northern California",
       "center": [
         37.2902,
         -121.0684
@@ -10653,6 +10654,15 @@
       "feedRefreshError": null,
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
+      "modeOverrides": [
+        {
+          "routeType": 0,
+          "routeShortName": "550",
+          "mode": 2,
+          "reason": "CapMetro Rail Red Line (550) is commuter rail, published as route_type 0 (tram)",
+          "labelOnly": true
+        }
+      ],
       "lastPeekedExpiry": "20270109"
     },
     {
@@ -12643,6 +12653,7 @@
     {
       "slug": "vre",
       "name": "Virginia Railway Express (VRE)",
+      "displayArea": "Northern Virginia",
       "websiteUrl": "http://www.vre.org",
       "region": "Virginia",
       "center": [
@@ -16686,7 +16697,8 @@
     },
     {
       "slug": "dart-first-state",
-      "name": "DART First State (Wilmington, DE)",
+      "name": "DART First State",
+      "displayArea": "Delaware",
       "websiteUrl": "http://www.dartfirststate.com",
       "center": [
         39.1,
@@ -27036,6 +27048,7 @@
     {
       "slug": "brazos",
       "name": "Brazos Transit District",
+      "displayArea": "Brazos Valley",
       "websiteUrl": "https://www.btd.org/",
       "region": "Texas",
       "center": [

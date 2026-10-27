@@ -109,6 +109,8 @@ export const FIXED_COLUMN_REM = 8;
  */
 function openRow(e: MouseEvent<HTMLTableRowElement>, href: string) {
   if ((e.target as HTMLElement).closest('a, button') || window.getSelection()?.toString()) return;
+  // Row links are Atlas paths only ("/agency/ttc"): anything else, including protocol-relative "//host", is ignored.
+  if (!/^\/(?!\/)[\w\-./?=&%#~]*$/.test(href)) return;
   if (e.button === 1 || e.metaKey || e.ctrlKey) window.open(href, '_blank', 'noopener');
   else if (e.button === 0) window.location.assign(href);
 }
@@ -129,7 +131,8 @@ export default function DataTable<T>({ columns, rows, rowKey, variant = 'compact
   const end = layout === 'page';
   // From sm up, right-aligned columns take their gap on the left; the last one has none on the right, so it meets the edge.
   // The last column sets no right padding of its own, so a linked row's `pr-2` (rowEdge) still lines it up with the edge.
-  const cellPad = (i: number) => (end ? (i === 0 ? ' pr-4' : `${i < columns.length - 1 ? ' pr-4 sm:pr-0' : ''} sm:pl-2 sm:text-right`) : pad(i));
+  // The names column keeps a wider gap before the first figure column, so a long name doesn't run up against it (CIV-973).
+  const cellPad = (i: number) => (end ? (i === 0 ? ' pr-6' : `${i < columns.length - 1 ? ' pr-4 sm:pr-0' : ''} sm:pl-2 sm:text-right`) : pad(i));
   // Phones: the default fixed widths, whatever the columns ask for from sm up.
   const phoneWidths = columns.map((_, i) => (i === 0 ? FIXED_FIRST_COLUMN_REM : FIXED_COLUMN_REM));
   // A linked row's highlight reaches a little past the text on both sides, as in card lists.

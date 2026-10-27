@@ -1,9 +1,6 @@
 import { MIN_UNSUSTAINED_EXCESS_MINUTES, MIN_UNSUSTAINED_RATIO } from '../shared/unevenGap.js';
-import { HEADWAY_TIERS, TIME_PERIODS, type HeadwayByHourMaxGap, type HeadwayByPeriod, type HeadwayByPeriodMaxGap, type HeadwayByPeriodRange, type PeriodKey } from '../shared/config.js';
+import { asNextNight, HEADWAY_TIERS, MINUTES_PER_DAY, PERIOD_MINUTES as PERIODS, type HeadwayByHourMaxGap, type HeadwayByPeriod, type HeadwayByPeriodMaxGap, type HeadwayByPeriodRange, type PeriodKey } from '../shared/config.js';
 
-const PERIODS = Object.fromEntries(
-  TIME_PERIODS.map(p => [p.key, { start: p.startHour * 60, end: p.endHour * 60 }]),
-) as Record<string, { start: number; end: number }>;
 
 /**
  * Tier order for comparisons, best first: every numeric tier any mode grades on (the surface
@@ -151,8 +148,8 @@ export function medianHeadwayInWindow(
 // day-of-week attribution is untouched, since that's decided by service_id/getActiveServiceIds,
 // not by which notation an agency chose for a given trip.
 export function forCrossMidnightWindow(departureTimes: number[], windowEnd: number): number[] {
-  if (windowEnd <= 1440) return departureTimes;
-  return [...departureTimes, ...departureTimes.filter(t => t < 1440).map(t => t + 1440)];
+  if (windowEnd <= MINUTES_PER_DAY) return departureTimes;
+  return [...departureTimes, ...asNextNight(departureTimes)];
 }
 
 // headwayByHour used a fixed 90-min-wide window ([h*60, h*60+90]) for every hour, because a

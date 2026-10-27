@@ -3,8 +3,6 @@ import { heldRowStyles, type HeldSize } from '../../utils/heldLayout';
 import { Info } from 'lucide-react';
 import { fmtHeadwayRange } from '../../utils/format';
 import { shouldShowBranchHeadwayRange } from '../../utils/routeCardTrunk';
-import { headwayToTierColor } from './HeadwaySparkline';
-import { useColorMode } from '../../hooks/useColorMode';
 import { HeadwayBadge, LimitedBadge } from './cardUi';
 import RouteRowName from '../RouteRowName';
 
@@ -29,6 +27,8 @@ interface Props {
   /** The suffix's colour (HeadwayBadge suffixTone). */
   headwaySuffixTone?: 'dim' | 'negative' | 'positive';
   subLabel?: string;
+  /** Text after the sub-label that always stays whole ("· 484 m away"); the sub-label shortens before it does (#1154). */
+  subLabelTrailing?: string;
   /** The sub-label's weight: bold by default; 'medium' (the summary weight) for a stop name and distance (CIV-923). */
   subLabelWeight?: 'bold' | 'medium';
   live?: boolean;
@@ -55,13 +55,11 @@ interface Props {
  * Owns label color, headway display, and limited-service variants
  * so there's one place to change instead of hunting across SidebarControls.
  */
-export default function RouteDirectionRow({ label, routeName, labelWeight = 'bold', singleLine = false, headway, colorHeadway, headwayLabel, trunkHeadway, headwaySuffix, headwaySuffixTone, subLabel, subLabelWeight = 'bold', live, limited, limitedLabel = 'limited', edgeGapAllowance, onEdgeGapAllowanceClick, dimmed, onHoverStart, onHoverEnd, branchHovered, branchDimmed, onClick, holdLayout = false }: Props) {
-  const colorMode = useColorMode();
+export default function RouteDirectionRow({ label, routeName, labelWeight = 'bold', singleLine = false, headway, colorHeadway, headwayLabel, trunkHeadway, headwaySuffix, headwaySuffixTone, subLabel, subLabelTrailing, subLabelWeight = 'bold', live, limited, limitedLabel = 'limited', edgeGapAllowance, onEdgeGapAllowanceClick, dimmed, onHoverStart, onHoverEnd, branchHovered, branchDimmed, onClick, holdLayout = false }: Props) {
   const interactive = !!(onHoverStart && onHoverEnd);
   const clickable = !!onClick;
   const faded = dimmed || branchDimmed;
   const showRange = shouldShowBranchHeadwayRange(trunkHeadway, headway);
-  const dotColor = headwayToTierColor(showRange ? trunkHeadway! : (colorHeadway ?? headway), colorMode);
   const rangeText = showRange && headway != null && trunkHeadway != null
     ? fmtHeadwayRange(trunkHeadway, headway)
     : null;
@@ -98,7 +96,7 @@ export default function RouteDirectionRow({ label, routeName, labelWeight = 'bol
         >
           {routeName ? <RouteRowName shortName={routeName.shortName} name={routeName.name} /> : label}
         </span>
-        {hasValueCell && <span ref={valueRef} style={held.value} className="inline-flex items-center justify-end gap-2 shrink-0">
+        {hasValueCell && <span ref={valueRef} style={held.value} className="inline-flex items-center justify-end gap-2 min-w-0">
           {edgeGapAllowance && (
             <button
               type="button"
@@ -117,17 +115,18 @@ export default function RouteDirectionRow({ label, routeName, labelWeight = 'bol
           {!limited && headway != null && !showRange && (
             <HeadwayBadge headway={headway} colorHeadway={colorHeadway} live={live} suffix={headwaySuffix} suffixTone={headwaySuffixTone} label={headwayLabel} />
           )}
-          {!limited && rangeText && (
-            <span className="inline-flex items-center gap-1 font-black text-[var(--text-primary)] text-xs leading-snug shrink-0">
-              <span className="w-2 h-2 rounded-full shrink-0" style={{ background: dotColor }} />
-              <span className="whitespace-nowrap">{rangeText}</span>
-            </span>
-          )}
+          {/* The trunk-to-branch range ("every 6–12 min") is the shared badge, coloured by the trunk (CIV-1000). */}
+          {!limited && rangeText && <HeadwayBadge headway={trunkHeadway!} label={rangeText} />}
         </span>}
       </div>
-      {subLabel && (
+      {subLabel && (subLabelTrailing ? (
+        <span className={`text-xs ${subLabelWeight === 'medium' ? 'font-medium' : 'font-bold'} text-[var(--text-dim)] flex min-w-0 mt-0.5`}>
+          <span className="truncate min-w-0">{subLabel}</span>
+          <span className="shrink-0 whitespace-pre">{subLabelTrailing}</span>
+        </span>
+      ) : (
         <span className={`text-xs ${subLabelWeight === 'medium' ? 'font-medium' : 'font-bold'} text-[var(--text-dim)] block mt-0.5 truncate`}>{subLabel}</span>
-      )}
+      ))}
     </div>
   );
 }

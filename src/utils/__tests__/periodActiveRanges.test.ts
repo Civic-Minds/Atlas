@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { TIME_PERIODS } from '../../../shared/config';
 import type { ShapeProperties } from '../../hooks/useIntervalStats';
 import { sparklineSourceDirections } from '../routeCardTrunk';
-import { activeHourRanges, activeRangesCoverPeriod, partPeriodNoticeApplies } from '../periodActiveRanges';
+import { activeHourRanges, activeRangesCoverPeriod, hourHasService, partPeriodNoticeApplies, partPeriodNoticeHeadway } from '../periodActiveRanges';
 
 // TTC 51 Leslie, published data (2026-10-20): the drawn patterns' hourly headways per day type.
 const TTC_51: Record<'Weekday' | 'Saturday' | 'Sunday', Array<{ directionId: number; headsign: string; headwayByHour: Record<number, number> }>> = {
@@ -84,5 +84,108 @@ describe('part-period notice (#995)', () => {
   it('without a frequency filter, keeps the earlier behaviour', () => {
     const pm = period('pmPeak');
     expect(partPeriodNoticeApplies(asDirections(TTC_51.Weekday), pm.startHour, pm.endHour, Infinity, 22)).toBe(true);
+  });
+});
+
+// #1137: published data (release-mvp929b3). Hourly patterns have no headwayByHour (it needs three
+// departures in 60-90 minutes) but a maxGapByHour in every hour with a departure.
+type Hourly = { directionId: number; headwayByHour: Record<number, number>; maxGapByHour: Record<number, number> };
+const OC_162: Record<'Weekday' | 'Saturday' | 'Sunday', Hourly[]> = {
+  Weekday: [
+    { directionId: 0, headwayByHour: {7: 30, 8: 30, 14: 45, 15: 20, 16: 31, 17: 30}, maxGapByHour: {6: 30, 7: 31, 8: 30, 9: 60, 10: 60, 11: 60, 12: 60, 13: 60, 14: 60, 15: 30, 16: 32, 17: 30, 18: 60, 19: 56, 20: 60, 21: 60} },
+    { directionId: 1, headwayByHour: {7: 30, 8: 31, 15: 29, 16: 30, 17: 30}, maxGapByHour: {7: 30, 8: 31, 9: 60, 10: 60, 11: 60, 12: 60, 13: 60, 14: 65, 15: 30, 16: 32, 17: 30, 18: 60, 19: 54, 20: 59, 21: 59} },
+  ],
+  Saturday: [
+    { directionId: 1, headwayByHour: {}, maxGapByHour: {7: 60, 8: 60, 9: 60, 10: 61, 11: 60, 12: 60, 13: 60, 14: 60, 15: 60, 16: 60, 17: 60, 18: 59, 19: 60, 20: 60, 21: 60, 22: 43} },
+    { directionId: 0, headwayByHour: {}, maxGapByHour: {7: 60, 8: 60, 9: 60, 10: 60, 11: 61, 12: 60, 13: 60, 14: 60, 15: 60, 16: 60, 17: 59, 18: 60, 19: 60, 20: 60, 21: 43, 22: 39} },
+  ],
+  Sunday: [
+    { directionId: 1, headwayByHour: {}, maxGapByHour: {7: 60, 8: 60, 9: 61, 10: 60, 11: 60, 12: 60, 13: 60, 14: 60, 15: 60, 16: 60, 17: 59, 18: 60, 19: 60, 20: 60, 21: 60} },
+    { directionId: 0, headwayByHour: {}, maxGapByHour: {8: 60, 9: 60, 10: 60, 11: 61, 12: 60, 13: 60, 14: 60, 15: 60, 16: 60, 17: 59, 18: 60, 19: 60, 20: 60, 21: 60, 22: 60} },
+  ],
+};
+const OAKVILLE_14_WEEKDAY: Hourly[] = [
+  { directionId: 0, headwayByHour: {7: 30, 16: 30, 17: 30, 18: 27}, maxGapByHour: {6: 30, 7: 30, 8: 45, 9: 58, 10: 60, 11: 60, 12: 60, 13: 60, 14: 67, 15: 66, 16: 30, 17: 30, 18: 30, 19: 53} },
+  { directionId: 1, headwayByHour: {6: 32, 7: 30, 8: 30, 17: 30, 18: 30}, maxGapByHour: {6: 33, 7: 30, 8: 30, 9: 55, 10: 60, 11: 60, 12: 60, 13: 60, 14: 60, 15: 69, 16: 60, 17: 30, 18: 30, 19: 51} },
+  { directionId: 0, headwayByHour: {7: 30, 8: 30, 17: 30, 18: 30}, maxGapByHour: {7: 30, 8: 30, 9: 45, 10: 52, 11: 60, 12: 60, 13: 60, 14: 60, 15: 73, 16: 63, 17: 30, 18: 30, 19: 47} },
+  { directionId: 1, headwayByHour: {7: 30, 8: 30, 17: 30, 18: 30}, maxGapByHour: {6: 33, 7: 33, 8: 30, 9: 54, 10: 60, 11: 60, 12: 60, 13: 60, 14: 60, 15: 72, 16: 60, 17: 30, 18: 30, 19: 48} },
+];
+// RFTA HC weekday: the first buses leave at 7:05 and 7:12, so AM Peak (6-9) really starts late.
+const RFTA_HC_WEEKDAY: Hourly[] = [0, 1].map(directionId => ({
+  directionId,
+  headwayByHour: Object.fromEntries(Array.from({ length: 17 }, (_, i) => [i + 7, 20])),
+  maxGapByHour: Object.fromEntries(Array.from({ length: 17 }, (_, i) => [i + 7, 20])),
+}));
+const hourly = (rows: Hourly[]) => rows as unknown as ShapeProperties[];
+
+describe('part-period notice counts hourly service (#1137)', () => {
+  it('an hour with a departure but no hourly headway counts as service', () => {
+    expect(hourHasService({ maxGapByHour: { 10: 60 } }, 10)).toBe(true);
+    expect(hourHasService({ headwayByHour: { 10: 20 } }, 10)).toBe(true);
+    expect(hourHasService({ headwayByHour: { 10: null }, maxGapByHour: { 10: null } }, 10)).toBe(false);
+  });
+
+  it('OC Transpo 162 runs hourly through Midday and PM Peak on every day type, so no "not throughout" sentence', () => {
+    for (const day of ['Weekday', 'Saturday', 'Sunday'] as const) {
+      for (const key of ['midday', 'pmPeak']) {
+        const p = period(key);
+        expect(partPeriodNoticeApplies(hourly(OC_162[day]), p.startHour, p.endHour, 30, 60), `${day} ${key}`).toBe(false);
+      }
+    }
+    // The note's hours still come from hourly headways (the last departure's hour has no maxGapByHour).
+    const midday = period('midday');
+    expect(activeHourRanges(hourly(OC_162.Weekday), midday.startHour - 1, midday.endHour)).toEqual([[8, 9], [14, 15]]);
+    const am = period('amPeak');
+    expect(partPeriodNoticeApplies(hourly(OC_162.Weekday), am.startHour, am.endHour, 30, 60)).toBe(false);
+  });
+
+  it('Oakville 14 weekday Midday runs throughout, so no "not throughout" sentence', () => {
+    const midday = period('midday');
+    expect(partPeriodNoticeApplies(hourly(OAKVILLE_14_WEEKDAY), midday.startHour, midday.endHour, 30, 60)).toBe(false);
+  });
+
+  it('never adds the sentence: an hourly route the old check had no service for keeps the filter notice', () => {
+    // OC Transpo 162 Saturday Evening (7-11 PM): hourly with no hourly headway at all.
+    const evening = period('evening');
+    expect(activeHourRanges(hourly(OC_162.Saturday), evening.startHour - 1, evening.endHour)).toEqual([]);
+    expect(partPeriodNoticeApplies(hourly(OC_162.Saturday), evening.startHour, evening.endHour, 30, 60)).toBe(false);
+  });
+
+  it('RFTA HC weekday AM Peak starts at 7, so it keeps the part-period sentence', () => {
+    const am = period('amPeak');
+    expect(activeHourRanges(hourly(RFTA_HC_WEEKDAY), am.startHour - 1, am.endHour)).toEqual([[7, 9]]);
+    expect(partPeriodNoticeApplies(hourly(RFTA_HC_WEEKDAY), am.startHour, am.endHour, 15, 72)).toBe(true);
+  });
+});
+
+// #1123: the part-period notice's number against the card's rows (published values, release-mvp929b3).
+describe('part-period notice frequency (#1123)', () => {
+  it('names no frequency when its number is slower than every row', () => {
+    // RFTA HC weekday AM Peak: filter value 72 ("every 60 min") over two rows of every 20.
+    expect(partPeriodNoticeHeadway(72, [20, 20])).toBeNull();
+    // SEPTA 25 Sunday Night: 60 over rows of 30 and 31.
+    expect(partPeriodNoticeHeadway(60, [30, 31])).toBeNull();
+    // OC Transpo 14 weekday Night: 85 ("every 90 min") over rows of 37 and 27.
+    expect(partPeriodNoticeHeadway(85, [37, 27])).toBeNull();
+  });
+
+  it('keeps the number when a row runs as slowly', () => {
+    // Des Moines 12 weekday AM Peak: "every 45 min", over rows of every 45 and every 30.
+    expect(partPeriodNoticeHeadway(45, [45, 30])).toBe(45);
+    // An hourly route keeps "every 60 min" over hourly rows.
+    expect(partPeriodNoticeHeadway(60, [60, 60])).toBe(60);
+    // Compared as printed: 62 reads "every 60 min", the same as a row of 60.
+    expect(partPeriodNoticeHeadway(62, [60, 39])).toBe(62);
+    // One row slower than the number is enough.
+    expect(partPeriodNoticeHeadway(60, [30, 90])).toBe(60);
+  });
+
+  it('names no number when no row shows one, and none without a filter value', () => {
+    // TTC 10 Van Horne weekday Midday (#1043): rush-hour-only, rows read "no regular service"; the filter
+    // value is the 330-minute wait between the morning and afternoon trips, not a frequency.
+    expect(partPeriodNoticeHeadway(330, [null, null])).toBeNull();
+    expect(partPeriodNoticeHeadway(72, [null, undefined])).toBeNull();
+    expect(partPeriodNoticeHeadway(72, [])).toBeNull();
+    expect(partPeriodNoticeHeadway(null, [20])).toBeNull();
   });
 });
