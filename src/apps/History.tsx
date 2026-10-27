@@ -33,7 +33,8 @@ import {
   agencyQualifiesForHistory,
   type HistoryTier,
 } from '../../shared/historyEligibility';
-import { capitalizeFirst, headwayAmount, headwayEvery, runTimeAmount } from '../utils/headwayText';
+import { capitalizeFirst, headwayAbout, headwayAboutMinutes, runTimeAmount } from '../utils/headwayText';
+import { historyChartPositions } from '../utils/historyChart';
 import Panel, { PanelBody, PanelTitleBar } from '../components/ui/Panel';
 import ListRow from '../components/ui/ListRow';
 import { AgencyList, AgencyListRow, AgencyRegionSection } from '../components/ui/AgencyList';
@@ -123,12 +124,13 @@ function changeSummary(entry: RouteHistoryEntry, period: TimePeriod = 'all'): { 
   const last = snaps[0];
   // Only a change across calendar years gets the box; schedules from the same year show just the rows.
   if (first.year === last.year) return null;
-  const fHw = periodMinutes(first, period)!;
-  const lHw = periodMinutes(last, period)!;
+  // Rounded as the rows round them (#1085), so the box and the rows never give two numbers for one snapshot.
+  const fHw = headwayAboutMinutes(periodMinutes(first, period)!);
+  const lHw = headwayAboutMinutes(periodMinutes(last, period)!);
   if (Math.abs(fHw - lHw) < 2) return null;
   const worse = lHw > fHw;
   return {
-    text: `${capitalizeFirst(headwayEvery(fHw))} → ${headwayEvery(lHw)}`,
+    text: `${capitalizeFirst(headwayAbout(fHw))} → ${headwayAbout(lHw)}`,
     subtext: `${first.label} to ${last.label}`,
     worse,
   };
@@ -200,8 +202,9 @@ function RouteHistoryCard({
 
   const first = valued[valued.length - 1] ?? snaps[snaps.length - 1];
   const last = valued[0] ?? snaps[0];
-  const firstHw = snapHeadway(first);
-  const lastHw = snapHeadway(last);
+  // The line's colour follows the same rounded values as the rows and the summary (#1085).
+  const firstHw = headwayAboutMinutes(snapHeadway(first));
+  const lastHw = headwayAboutMinutes(snapHeadway(last));
   const worse = lastHw > firstHw;
   const better = lastHw < firstHw;
   const summary = changeSummary(route, period);
@@ -212,9 +215,8 @@ function RouteHistoryCard({
   const paddingX = 20;
   const paddingY = 22;
 
-  const minYear = first.year;
-  const maxYear = last.year;
-  const yearRange = maxYear - minYear || 1;
+  // Each point at its month, not its year, so a route's snapshots from one year spread out (CIV-924).
+  const positions = historyChartPositions(chartSnaps);
 
   const hws = chartSnaps.map(snapHeadway);
   const minHw = Math.min(...hws);
@@ -223,7 +225,7 @@ function RouteHistoryCard({
 
   const points = chartSnaps.map((snap, i) => {
     const hw = snapHeadway(snap);
-    const pctX = (snap.year - minYear) / yearRange;
+    const pctX = positions[i];
     const x = paddingX + pctX * (width - 2 * paddingX);
 
     const pctY = maxHw === minHw ? 0.5 : (hw - minHw) / hwRange;
@@ -239,7 +241,23 @@ function RouteHistoryCard({
   const lineColor = worse ? 'var(--status-negative)' : better ? 'var(--status-positive)' : '#9ca3af';
   // Labels that fit (#1037): x-axis labels need 34 units across; value labels ("30 min", about 26
   // units wide and 8 tall) skip one that would sit on another, e.g. two snapshots in the same month.
-  const labelIndices = labelsThatFit(points, 34);
+  // The first and last x labels are drawn against the chart's edges, so they are checked where they are drawn
+  // (CIV-924: "Oct '13" ran into "Aug '16"), and a month already labelled isn't labelled again.
+  const X_LABEL_WIDTH = 34;
+  const xLabelCentres = points.map((p, i) => ({
+    x: i === 0 ? paddingX + X_LABEL_WIDTH / 2 : i === points.length - 1 ? width - paddingX - X_LABEL_WIDTH / 2 : p.x,
+    y: 0,
+  }));
+  const labelIndices = new Set<number>();
+  const labelled = new Set<string>();
+  // The ends first, so a month at the right edge is labelled there rather than at an earlier point.
+  const edgesFirst = (i: number) => (i === 0 ? -2 : i === points.length - 1 ? -1 : i);
+  for (const i of [...labelsThatFit(xLabelCentres, X_LABEL_WIDTH)].sort((a, b) => edgesFirst(a) - edgesFirst(b))) {
+    const text = formatXLabel(points[i].label);
+    if (labelled.has(text)) continue;
+    labelled.add(text);
+    labelIndices.add(i);
+  }
   const valueLabelIndices = labelsThatFit(points.map(p => ({ x: p.x, y: p.y - 7 })), 28, 9);
 
   return (
@@ -319,7 +337,7 @@ function RouteHistoryCard({
                     <circle cx={p.x} cy={p.y} r="3" fill={lineColor} stroke="var(--bg-panel)" strokeWidth="1.5" />
                     {valueLabelIndices.has(i) && (
                       <text x={p.x} y={p.y - 7} textAnchor="middle" fontSize="8" fontWeight="700" fill="var(--text-primary)" fontFamily="inherit">
-                        {headwayAmount(p.hw)}
+                        {`${headwayAboutMinutes(p.hw)} min`}
                       </text>
                     )}
                     {showXLabel && (
