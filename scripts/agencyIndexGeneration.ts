@@ -62,6 +62,7 @@ export function generateModeOverrides(agencies: Array<Record<string, unknown>>):
       if (!(OVERRIDE_MODES as readonly unknown[]).includes(raw.mode)) throw new Error(`${where}: mode must be one of ${OVERRIDE_MODES.join(', ')}`);
       if (raw.mode === raw.routeType) throw new Error(`${where}: mode equals routeType, so the override does nothing`);
       if (typeof raw.reason !== 'string' || raw.reason.trim().length < 10) throw new Error(`${where}: reason is required`);
+      if (raw.labelOnly !== undefined && raw.labelOnly !== true) throw new Error(`${where}: labelOnly must be true when set`);
       const key = `${String(agency.slug)}|${raw.routeType}|${raw.routeShortName ?? ''}|${raw.routeLongName ?? ''}`;
       if (seen.has(key)) throw new Error(`${where}: duplicate override`);
       seen.add(key);
@@ -72,6 +73,7 @@ export function generateModeOverrides(agencies: Array<Record<string, unknown>>):
         ...(raw.routeLongName !== undefined ? { routeLongName: raw.routeLongName } : {}),
         mode: raw.mode,
         reason: raw.reason,
+        ...(raw.labelOnly ? { labelOnly: true } : {}),
       });
     }
   }
