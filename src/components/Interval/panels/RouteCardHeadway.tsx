@@ -801,7 +801,16 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
               // N25 (CIV-1055): most of the agency's routes stopped being listed; the card shows their last listed week.
               <CardHelpNotice
                 message={listingEndedNotice(listingEndedDate)}
-                onLearnMore={() => window.location.assign('/about/docs#quality')}
+                onLearnMore={() => onInfoOpen('about', {
+                  helpTopic: 'outdated-schedule',
+                  agencyName: routeAgency?.name,
+                  listingEndedDate,
+                  lastRefreshedAt: routeAgency?.lastRefreshedAt ?? undefined,
+                  lastFeedCheckAt: routeAgency?.lastFeedCheckAt ?? undefined,
+                  expiredFeedCheckCount: routeAgency?.expiredFeedCheckCount,
+                  expiredFeedCheckSince: routeAgency?.expiredFeedCheckSince ?? undefined,
+                  websiteUrl: routeAgency?.websiteUrl ?? undefined,
+                })}
               />
             )}
             {routeIsStale && (

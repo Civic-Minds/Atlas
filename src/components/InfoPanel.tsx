@@ -19,7 +19,7 @@ import type { Agency } from '../App';
 import { isAgencyFeedExpired } from '../../shared/feedAvailability';
 import { trackEvent } from '../lib/analytics';
 import { OutboundLink } from './OutboundLink';
-import { EXPIRED_FEED_CADENCE, EXPIRED_FEED_CONTEXT, EXPIRED_FEED_EXPLANATION, MANUAL_FEED_CONTEXT, NO_ROUTE_SHAPE_DETAIL, NO_ROUTE_SHAPE_EXPLANATION, expiredFeedCheckHistory, expiredFeedNotice } from '../content/noticeCopy';
+import { EXPIRED_FEED_CADENCE, EXPIRED_FEED_CONTEXT, EXPIRED_FEED_EXPLANATION, MANUAL_FEED_CONTEXT, NO_ROUTE_SHAPE_DETAIL, NO_ROUTE_SHAPE_EXPLANATION, expiredFeedCheckHistory, expiredFeedNotice, listingEndedNotice } from '../content/noticeCopy';
 import RegionFilterPills from './RegionFilterPills';
 import ListRow from './ui/ListRow';
 import { AgencyList, AgencyListRow, AgencyRegionSection } from './ui/AgencyList';
@@ -37,6 +37,8 @@ export type HelpContext = {
   topic: HelpTopic;
   agencyName?: string;
   expDateStr?: string;
+  /** N25 (CIV-1055): set when opened from the listing-ended notice; the panel shows its variant. */
+  listingEndedDate?: string;
   manualFeedSource?: boolean;
   lastRefreshedAt?: string;
   lastFeedCheckAt?: string;
@@ -54,6 +56,8 @@ export type OpenInfoOptions = {
   helpTopic?: HelpTopic;
   agencyName?: string;
   expDateStr?: string;
+  /** N25 (CIV-1055): set when opened from the listing-ended notice; the panel shows its variant. */
+  listingEndedDate?: string;
   manualFeedSource?: boolean;
   lastRefreshedAt?: string;
   lastFeedCheckAt?: string;
@@ -530,7 +534,11 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
             });
             return (
             <div className="h-full overflow-y-auto px-5 py-4 space-y-4">
-              {helpContext?.agencyName && (
+              {helpContext?.listingEndedDate ? (
+                // N25 variant: only the lines that are true when most routes stopped being listed
+                // (no "timetable ended", no "keeps showing the most recent feed"), until Ryan approves its wording.
+                <p className="text-xs text-[var(--text-primary)] leading-relaxed">{listingEndedNotice(helpContext.listingEndedDate)}</p>
+              ) : helpContext?.agencyName && (
                 <p className="text-xs text-[var(--text-primary)] leading-relaxed">
                   {expiredFeedNotice(helpContext.agencyName, helpContext.expDateStr, helpContext.manualFeedSource)}
                 </p>
@@ -538,9 +546,11 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
               {helpContext?.agencyName && checkHistory && (
                 <p className="text-xs text-[var(--text-primary)] leading-relaxed">{checkHistory}</p>
               )}
-              <p className="text-xs text-[var(--text-dim)] leading-relaxed">
-                {EXPIRED_FEED_EXPLANATION}
-              </p>
+              {!helpContext?.listingEndedDate && (
+                <p className="text-xs text-[var(--text-dim)] leading-relaxed">
+                  {EXPIRED_FEED_EXPLANATION}
+                </p>
+              )}
               <p className="text-xs text-[var(--text-dim)] leading-relaxed">
                 {EXPIRED_FEED_CADENCE} {helpContext?.manualFeedSource ? MANUAL_FEED_CONTEXT : EXPIRED_FEED_CONTEXT}
               </p>
