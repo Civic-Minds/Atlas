@@ -324,14 +324,6 @@ export function agencyPageDescription(a: AgencyPageSummary, intro?: string): str
   return tail ? `${base}${tail}` : base;
 }
 
-/**
- * A name for a tight spot: the full name, or past `maxChars` a shorter one with the full name kept for the hover
- * title. Shared by the area table's names column and the agencies list's tagged rows, so both shorten the same way.
- */
-export function fitAgencyName(full: string, short: string, maxChars: number): { text: string; title?: string } {
-  return full.length > maxChars && short.length < full.length ? { text: short, title: full } : { text: full };
-}
-
 /** The agency's name without its bracketed city: "TTC (Toronto)" becomes "TTC". */
 export function agencyShortLabel(a: Pick<AgencyPageSummary, 'displayName'>): string {
   return splitBracketedPlace(a.displayName)?.[0] ?? a.displayName;

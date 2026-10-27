@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import indexData from '../../../public/data/index.json';
-import { agencyListParts, agencyNameParts, agencyNames } from '../format';
+import { agencyNames } from '../agencyName';
 
 const agencies = (indexData as { agencies: unknown[] }).agencies as Array<{ slug: string; name: string; cities?: string[]; displayArea?: string }>;
 const bySlug = new Map(agencies.map(a => [a.slug, a]));
@@ -28,14 +28,14 @@ describe('agency short names (CIV-998)', () => {
   });
 
   it('lists show the short name with the place beside it (#1134)', () => {
-    expect(agencyListParts(bySlug.get('ttc')!)).toEqual({ primary: 'TTC', secondary: 'Toronto' });
-    expect(agencyListParts(bySlug.get('gptc')!)).toEqual({ primary: 'Gary Public Transportation Corporation' }); // the name already says Gary
-    expect(agencyListParts(bySlug.get('calgary')!).primary).toBe('Calgary Transit');
+    expect(agencyNames(bySlug.get('ttc')!).list).toEqual({ primary: 'TTC', secondary: 'Toronto' });
+    expect(agencyNames(bySlug.get('gptc')!).list).toEqual({ primary: 'Gary Public Transportation Corporation' }); // the name already says Gary
+    expect(agencyNames(bySlug.get('calgary')!).list.primary).toBe('Calgary Transit');
   });
 
   it('the card title is the full name, never a bracketed city (#1134)', () => {
-    expect(agencyNameParts(bySlug.get('gptc')!).primary).toBe('Gary Public Transportation Corporation');
-    expect(agencyNameParts(bySlug.get('um-transit')!).primary).toBe('University of Michigan Transit Services');
+    expect(agencyNames(bySlug.get('gptc')!).card.primary).toBe('Gary Public Transportation Corporation');
+    expect(agencyNames(bySlug.get('um-transit')!).card.primary).toBe('University of Michigan Transit Services');
   });
 
   it('no agency in the registry gets a city or a bracketed place as its short name', () => {

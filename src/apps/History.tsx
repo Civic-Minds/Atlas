@@ -7,7 +7,8 @@ import type { HistorySnapshotV2 } from '../../shared/historyV2';
 import { countOf } from '../../shared/overflowText';
 import { isDrawableLineCoordinates } from '../../shared/routeGeometry';
 import { TRANSITION_BASE, AGENCY_LIST_FILTERS, PILL_SURFACE, PILL_SCROLL_ROW, PANEL_TITLE, SIDEBAR_CARD, SIDEBAR_CARD_MAX_H, sidebarFrameStyle, SIDEBAR_PANEL_WIDTH, Z_PANEL, CARD_NOTICE, CARD_NOTE } from '../styles';
-import { routeLabels, titleCase, agencyNames, agencyNameParts as nameParts, agencyListParts } from '../utils/format';
+import { routeLabels, titleCase } from '../utils/format';
+import { agencyNames } from '../utils/agencyName';
 import CardRouteList from '../components/Interval/CardRouteList';
 import { AgencyCardTop, CARD_CALLOUT_HEADLINE, CARD_CALLOUT_TEXT, CARD_HEADER_BLOCK, CardCallout, CARD_CALLOUT_SURFACE, CardDirectionRow, CardReportButton, SIDEBAR_CARD_BODY, SidebarCardHeaderBlock, SidebarCardListRows, SidebarCardShell } from '../components/Interval/cardUi';
 import RouteCardTitle from '../components/RouteCardTitle';
@@ -617,14 +618,14 @@ export default function History({ active, view = HISTORY_VIEW_ALL, initialAgency
   const { mounted: shouldRender, visible } = useFadePresence(active);
   // Agency name and place from the catalog, by the same rule as the agency card and About list (#1028 items 16-17).
   const catalogBySlug = useMemo(() => new Map((agencyCatalog ?? []).map(a => [a.slug, a])), [agencyCatalog]);
-  const agencyNameParts = useCallback((slug: string, fallbackName: string) => {
+  const agencyCardParts = useCallback((slug: string, fallbackName: string) => {
     const a = catalogBySlug.get(slug);
-    return a ? nameParts({ name: a.name, cities: a.cities, displayArea: a.displayArea }) : nameParts(fallbackName);
+    return a ? agencyNames({ name: a.name, cities: a.cities, displayArea: a.displayArea }).card : agencyNames(fallbackName).card;
   }, [catalogBySlug]);
   // List rows use the short name (CIV-998); the agency card above keeps the full name.
   const agencyListNameParts = useCallback((slug: string, fallbackName: string) => {
     const a = catalogBySlug.get(slug);
-    return a ? agencyListParts({ name: a.name, cities: a.cities, displayArea: a.displayArea }) : agencyListParts(fallbackName);
+    return a ? agencyNames({ name: a.name, cities: a.cities, displayArea: a.displayArea }).list : agencyNames(fallbackName).list;
   }, [catalogBySlug]);
   const { setOverlay } = useHistoryMapOverlay();
   const [historyData, setHistoryData] = useState<AgencyHistory[] | null>(null);
@@ -929,7 +930,7 @@ export default function History({ active, view = HISTORY_VIEW_ALL, initialAgency
               setActiveFilter={setActiveFilter}
               frameClassName={frameClassName}
               frameStyle={frameStyle}
-              nameParts={agencyNameParts(agencyHistory.slug, agencyHistory.name)}
+              nameParts={agencyCardParts(agencyHistory.slug, agencyHistory.name)}
               selectedYear={selectedYear}
               view={view}
             />

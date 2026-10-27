@@ -4,7 +4,8 @@ import type { DayType } from '../../shared/dayTypes';
 import type { ViewportBounds } from '../hooks/useIntervalStats';
 import { buildRouteKey, dedupeRouteKeysByDisplay, splitRouteKey } from './routeKey';
 import { compareAgencyName, compareRouteNumber } from './sortCompare';
-import { agencyDisplayParts, routeLabels, agencyListParts } from './format';
+import { routeLabels } from './format';
+import { agencyNames } from './agencyName';
 import { labelShortNameOf, type RouteLabel } from './routeFacts';
 
 export interface MapContextRoute {
@@ -22,7 +23,7 @@ export interface MapContextRoute {
 export interface MapContextAgency {
   slug: string;
   name: string;
-  /** The name as lists show it, with its place ("Toronto Transit Commission · Toronto"), from agencyDisplayParts. */
+  /** The name as lists show it, with its place ("Toronto Transit Commission · Toronto"), from agencyNames(...).list. */
   display?: { primary: string; secondary?: string };
   routeCount: number;
   routes: MapContextRoute[];
@@ -45,7 +46,7 @@ function buildMapContextAgencies(
       return {
       slug,
       name,
-      display: agency ? agencyListParts({ name: agency.name, cities: agency.cities, displayArea: agency.displayArea }) : { primary: slug },
+      display: agency ? agencyNames({ name: agency.name, cities: agency.cities, displayArea: agency.displayArea }).list : { primary: slug },
       routeCount: routes.size,
       routes: [...routes.values()].sort((a, b) => compareRouteNumber(a.shortName, b.shortName, a.longName, b.longName)),
       };

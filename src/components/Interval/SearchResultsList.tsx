@@ -5,7 +5,8 @@ import type { RouteSearchResult, StopSearchResult } from '../../utils/searchResu
 import RouteListRow from '../RouteListRow';
 import AgencyName from '../ui/AgencyName';
 import { routeRowRight } from './SearchSuggestionsPanel';
-import { stopNameCase, agencyNames, agencyListParts } from '../../utils/format';
+import { stopNameCase } from '../../utils/format';
+import { agencyNames } from '../../utils/agencyName';
 import type { RouteListDisplay } from '../../utils/effectiveHeadway';
 import ListRow from '../ui/ListRow';
 import PanelEmpty from '../ui/PanelEmpty';
@@ -129,7 +130,7 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({
       elsewhere={agencySections.elsewhere}
       itemKey={(g: AgencySearchGroup) => g.key}
       renderItem={(g: AgencySearchGroup) => {
-        const { primary, secondary } = agencyListParts({ name: g.name, cities: g.cities, displayArea: g.displayArea });
+        const { primary, secondary } = agencyNames({ name: g.name, cities: g.cities, displayArea: g.displayArea }).list;
         // "Agency · place", as every agency list writes it (CIV-971).
         return (
           <ListRow

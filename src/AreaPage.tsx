@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
-import { agencyPagePath, fitAgencyName } from '../shared/agencyPages';
+import { agencyPagePath } from '../shared/agencyPages';
+import { fitAgencyName } from './utils/agencyName';
 import {
   AREA_DATA_SCRIPT_ID,
   AREA_TABLE_OTHER,
@@ -35,7 +36,8 @@ import DataTable from './components/ui/DataTable';
 const AREA_NAME_COLUMN_REM = 10.75;
 const AREA_MODE_COLUMN_REM = 5.5;
 /**
- * With the "Other" column the names column is at its narrowest, so a full name past this length would wrap to three lines
+ * This surface's own width, past the one rule (AGENCY_NAME_MAX_CHARS) because its layout allows two lines:
+ * with the "Other" column the names column is at its narrowest, so a full name past this length would wrap to three lines
  * or more on a phone ("San Francisco Bay Area Water Emergency Transportation Authority (WETA)"); it shows the short display
  * name instead, with the full name on hover. Names this long or shorter fit on two lines at 390px and from 900px up (CIV-973).
  */

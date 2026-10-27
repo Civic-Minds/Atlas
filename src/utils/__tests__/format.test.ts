@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { agencyBackLinkName, stopNameCase, COMPARE_PANEL_TOP, comparePanelTop, fmtHeadway, getRouteLabel, ROUTE_NAME_ACRONYMS, routeLabelCase, routeLabels, shouldHideNumericRouteShortName, shortenAgencyName, titleCase } from '../format';
+import { stopNameCase, COMPARE_PANEL_TOP, comparePanelTop, fmtHeadway, getRouteLabel, ROUTE_NAME_ACRONYMS, routeLabelCase, routeLabels, shouldHideNumericRouteShortName, titleCase } from '../format';
+import { agencyNames } from '../agencyName';
+
+const shortenAgencyName = (name: string) => agencyNames(name).short;
+// The bracket-aware short name is the row name for every name below (none is past the length rule).
+const agencyBackLinkName = (name: string) => agencyNames(name).name;
 import indexData from '../../../public/data/index.json';
 
 interface IndexAgency {

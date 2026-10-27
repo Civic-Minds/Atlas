@@ -1,4 +1,5 @@
-import { routeLabels, agencyNames } from '../utils/format';
+import { routeLabels } from '../utils/format';
+import { agencyNames } from '../utils/agencyName';
 import { SidebarCardHeader } from './Interval/cardUi';
 
 interface Props {
