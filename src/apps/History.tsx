@@ -35,7 +35,8 @@ import {
   type HistoryTier,
 } from '../../shared/historyEligibility';
 import { capitalizeFirst, headwayEvery, headwayExactAmount, runTimeAmount } from '../utils/headwayText';
-import { historyChartPositions } from '../utils/historyChart';
+import { historyChartPoints, historyDotPriority, historyYearTicks, placeHistoryDots, snapshotMonth } from '../utils/historyChart';
+import ExpandDialog, { ExpandButton } from '../components/ui/ExpandDialog';
 import Panel, { PanelBody, PanelTitleBar } from '../components/ui/Panel';
 import ListRow from '../components/ui/ListRow';
 import Pill from '../components/ui/Pill';
@@ -219,57 +220,12 @@ function RouteHistoryCard({
   // The snapshot under the pointer or keyboard, on a row or a chart point: its row highlights like a route card row and
   // its point grows and shows its value (Ryan: "when u hover over a date in this list does it hihglight it on the date on the chart too").
   const [hoveredSnap, setHoveredSnap] = useState<RouteSnapshot | null>(null);
-
-  // Sparkline calculations
-  const width = 220;
-  const height = 75;
-  const paddingX = 20;
-  const paddingY = 22;
-
-  // Each point at its month, not its year, so a route's snapshots from one year spread out (CIV-924).
-  const positions = historyChartPositions(chartSnaps);
-
+  // The wide view (CIV-1026): every snapshot, in the route card chart's expand window.
+  const [chartExpanded, setChartExpanded] = useState(false);
+  const closeChart = useCallback(() => setChartExpanded(false), []);
   const hws = chartSnaps.map(snapHeadway);
-  const minHw = Math.min(...hws);
-  const maxHw = Math.max(...hws);
-  const hwRange = maxHw - minHw || 1;
-
-  const points = chartSnaps.map((snap, i) => {
-    const hw = snapHeadway(snap);
-    const pctX = positions[i];
-    const x = paddingX + pctX * (width - 2 * paddingX);
-
-    const pctY = maxHw === minHw ? 0.5 : (hw - minHw) / hwRange;
-    const y = height - paddingY - pctY * (height - 2 * paddingY);
-
-    return { x, y, hw, label: snap.label, snap };
-  });
-
-  const linePath = 'M ' + points.map(p => `${p.x} ${p.y}`).join(' L ');
-  const fillPath = points.length ? `${linePath} L ${points[points.length - 1].x} ${height - 18} L ${points[0].x} ${height - 18} Z` : '';
-
   // The status tokens follow the colour-vision setting on their own (index.css).
   const lineColor = worse ? 'var(--status-negative)' : better ? 'var(--status-positive)' : '#9ca3af';
-  // Labels that fit (#1037): x-axis labels need 34 units across; value labels ("30 min", about 26
-  // units wide and 8 tall) skip one that would sit on another, e.g. two snapshots in the same month.
-  // The first and last x labels are drawn against the chart's edges, so they are checked where they are drawn
-  // (CIV-924: "Oct '13" ran into "Aug '16"), and a month already labelled isn't labelled again.
-  const X_LABEL_WIDTH = 34;
-  const xLabelCentres = points.map((p, i) => ({
-    x: i === 0 ? paddingX + X_LABEL_WIDTH / 2 : i === points.length - 1 ? width - paddingX - X_LABEL_WIDTH / 2 : p.x,
-    y: 0,
-  }));
-  const labelIndices = new Set<number>();
-  const labelled = new Set<string>();
-  // The ends first, so a month at the right edge is labelled there rather than at an earlier point.
-  const edgesFirst = (i: number) => (i === 0 ? -2 : i === points.length - 1 ? -1 : i);
-  for (const i of [...labelsThatFit(xLabelCentres, X_LABEL_WIDTH)].sort((a, b) => edgesFirst(a) - edgesFirst(b))) {
-    const text = formatXLabel(points[i].label);
-    if (labelled.has(text)) continue;
-    labelled.add(text);
-    labelIndices.add(i);
-  }
-  const valueLabelIndices = labelsThatFit(points.map(p => ({ x: p.x, y: p.y - 7 })), 28, 9);
 
   return (
     // The regular route card's frame, title and rows (RouteCardTitle, direction rows): the agency name
@@ -305,63 +261,19 @@ function RouteHistoryCard({
         </div>
       </SidebarCardHeaderBlock>
 
-      {/* The frequency chart shows inline and sits on the card with no box, as the route card's hour chart does (#1028 item 10). */}
+      {/* The chart sits on the card with no box, as the route card's hour chart does (#1028 item 10); its icon opens the wide view. */}
       {chartSnaps.length >= 2 && (
-        <div className="mt-3">
-            <svg width="100%" viewBox={`0 0 ${width} ${height}`} className="overflow-visible">
-              <defs>
-                <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" style={{ stopColor: lineColor }} stopOpacity="0.18" />
-                  <stop offset="100%" style={{ stopColor: lineColor }} stopOpacity="0" />
-                </linearGradient>
-              </defs>
-
-              <path d={fillPath} fill={`url(#${gradientId})`} />
-
-              <path
-                d={linePath}
-                fill="none"
-                stroke={lineColor}
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-
-              <line
-                x1={points[0].x} y1={height - 18}
-                x2={points[points.length - 1].x} y2={height - 18}
-                stroke="var(--border-primary)"
-                strokeWidth="1"
-                strokeDasharray="2 3"
-              />
-
-              {points.map((p, i) => {
-                const isFirst = i === 0;
-                const isLast = i === points.length - 1;
-                const showXLabel = labelIndices.has(i);
-                const xAnchor = isFirst ? 'start' : isLast ? 'end' : 'middle';
-                const xPos = isFirst ? paddingX : isLast ? (width - paddingX) : p.x;
-                const hovered = p.snap === hoveredSnap;
-                return (
-                  <g key={i}>
-                    <circle cx={p.x} cy={p.y} r={hovered ? 4.5 : 3} fill={lineColor} stroke="var(--bg-panel)" strokeWidth="1.5" />
-                    {/* A wider invisible target, so hovering near a point highlights its row. */}
-                    <circle cx={p.x} cy={p.y} r="8" fill="transparent" className="cursor-pointer" onMouseEnter={() => setHoveredSnap(p.snap)} onMouseLeave={() => setHoveredSnap(null)} />
-                    {(valueLabelIndices.has(i) || hovered) && (
-                      <text x={p.x} y={p.y - 7} textAnchor="middle" fontSize="8" fontWeight="700" fill="var(--text-primary)" fontFamily="inherit">
-                        {headwayExactAmount(shownMinutes(p.hw))}
-                      </text>
-                    )}
-                    {showXLabel && (
-                      <text x={xPos} y={height - 3} textAnchor={xAnchor} fontSize="7.5" fontWeight="600" fill="var(--text-muted)" fontFamily="inherit">
-                        {formatXLabel(p.label)}
-                      </text>
-                    )}
-                  </g>
-                );
-              })}
-            </svg>
+        <div className="mt-3 relative pt-5">
+          <ExpandButton label="Expand chart" onClick={() => setChartExpanded(true)} />
+          <RouteHistoryChart snaps={chartSnaps} minutes={hws} lineColor={lineColor} gradientId={gradientId} hoveredSnap={hoveredSnap} onHover={setHoveredSnap} />
         </div>
+      )}
+      {chartExpanded && chartSnaps.length >= 2 && (
+        <ExpandDialog title={`${route.routeShortName}${route.routeName ? ` ${titleCase(route.routeName)}` : ''}`} ariaLabel="Route history chart" closeLabel="Close chart" onClose={closeChart}>
+          <div className="mt-4">
+            <RouteHistoryChart wide snaps={chartSnaps} minutes={hws} lineColor={lineColor} gradientId={`${gradientId}-wide`} hoveredSnap={hoveredSnap} onHover={setHoveredSnap} />
+          </div>
+        </ExpandDialog>
       )}
 
       <SidebarCardListRows className="mt-3">
@@ -421,6 +333,183 @@ function RouteHistoryCard({
     </div>
     </div>
   );
+}
+
+/** Value labels are about 28 by 9 chart units; two closer than that (with a little room) in both directions would overlap. */
+const labelsOverlap = (a: { x: number; y: number }, b: { x: number; y: number }) => Math.abs(a.x - b.x) < 30 && Math.abs(a.y - b.y) < 12;
+
+/** How high and low the line runs within `half` units either side of x (chart y grows downward). */
+function lineExtentNear(points: ReadonlyArray<{ x: number; y: number }>, x: number, half: number): { top: number; bottom: number } {
+  let top = Infinity;
+  let bottom = -Infinity;
+  const take = (y: number) => { top = Math.min(top, y); bottom = Math.max(bottom, y); };
+  for (let i = 0; i < points.length; i++) {
+    const p = points[i];
+    if (Math.abs(p.x - x) <= half) take(p.y);
+    const q = points[i + 1];
+    if (!q || q.x === p.x) continue;
+    for (const edge of [x - half, x + half]) {
+      if (edge >= Math.min(p.x, q.x) && edge <= Math.max(p.x, q.x)) take(p.y + ((edge - p.x) / (q.x - p.x)) * (q.y - p.y));
+    }
+  }
+  return { top, bottom };
+}
+
+/**
+ * Where a value label goes: just above its point, or just below it where the line runs through the spot above (a spike
+ * beside it); null when the line crosses both. The label is about 28 units wide and 8 tall; `y` is its baseline.
+ */
+function valueLabelSpot(points: ReadonlyArray<{ x: number; y: number }>, i: number, axisY: number): { x: number; y: number } | null {
+  const { x, y } = points[i];
+  const line = lineExtentNear(points, x, 14);
+  if (line.top >= y - 3) return { x, y: y - 7 };
+  // Below only where it stays clear of the axis and its labels.
+  if (line.bottom <= y + 3 && y + 14 <= axisY - 2) return { x, y: y + 14 };
+  return null;
+}
+
+/**
+ * A route's history chart (CIV-1026, Ryan: "roughly between 10-15 points should be the most the small chart can handle").
+ * The x axis is the whole history, in years once it spans more than about two years and in months before that; a
+ * straight line runs through every snapshot. Dots go by priority (historyDotPriority) and only where one is at least
+ * 24 px from the dots already drawn, so a big swing fits more than a flat stretch. The small chart labels only the
+ * latest value; any other shows while its row or the chart near it is hovered, as on the route card's hour chart.
+ * `wide` is the expand window: every snapshot gets a dot, and values are labelled by the same priority where they fit.
+ */
+function RouteHistoryChart({ snaps, minutes, lineColor, gradientId, hoveredSnap, onHover, wide = false }: {
+  /** Oldest first; every one has a value in the period. */
+  snaps: RouteSnapshot[];
+  minutes: number[];
+  lineColor: string;
+  gradientId: string;
+  hoveredSnap: RouteSnapshot | null;
+  onHover: (snap: RouteSnapshot | null) => void;
+  wide?: boolean;
+}) {
+  const frame = wide ? { width: 760, height: 120, paddingX: 20, paddingY: 22 } : { width: 220, height: 75, paddingX: 20, paddingY: 22 };
+  const { width, height, paddingX } = frame;
+  // The drawn width, so the 24 px dot spacing is measured on screen.
+  const ref = useRef<HTMLDivElement>(null);
+  const [drawnWidth, setDrawnWidth] = useState(wide ? 860 : 300);
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const read = () => { const w = el.getBoundingClientRect().width; if (w > 0) setDrawnWidth(w); };
+    read();
+    if (typeof ResizeObserver === 'undefined') return;
+    const observer = new ResizeObserver(read);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+  const points = historyChartPoints(snaps, minutes, frame);
+  const priority = historyDotPriority(snaps, minutes);
+  const dots = wide ? new Set(snaps.map((_, i) => i)) : placeHistoryDots(points, priority, drawnWidth / width);
+  // A value label never sits on the line: above its point, or below where a spike beside it fills the spot above.
+  // The latest and a hovered value always show (above when neither spot is clear); the wide view adds others where they fit.
+  const spot = (i: number) => valueLabelSpot(points, i, height - 18);
+  // With no clear spot (only the latest or a hovered value), it stays just above its own point, on a halo that keeps it
+  // readable over the line, so it never reads as another point's value.
+  const valueAt = (i: number) => spot(i) ?? { x: points[i].x, y: points[i].y - 7 };
+  const valued: number[] = [];
+  if (wide) {
+    for (const i of [snaps.length - 1, ...priority, ...snaps.map((_, i) => i)]) {
+      if (valued.includes(i) || (i !== snaps.length - 1 && !spot(i))) continue;
+      // Not where another point sits inside the label, which would make it unclear which point it names.
+      const at = valueAt(i);
+      if (i !== snaps.length - 1 && points.some((p, k) => k !== i && Math.abs(p.x - at.x) < 16 && p.y > at.y - 11 && p.y < at.y + 3)) continue;
+      if (valued.every(k => !labelsOverlap(valueAt(i), valueAt(k)))) valued.push(i);
+    }
+  } else {
+    valued.push(snaps.length - 1);
+  }
+  // A hovered snapshot's value always shows; a label close to it steps aside while it does, so the two never stack.
+  const hovered = snaps.findIndex(snap => snap === hoveredSnap);
+  const shownValues = hovered < 0 ? valued : [hovered, ...valued.filter(k => k !== hovered && !(Math.abs(valueAt(hovered).x - valueAt(k).x) < 30 && Math.abs(valueAt(hovered).y - valueAt(k).y) < 18))];
+
+  const linePath = 'M ' + points.map(p => `${p.x} ${p.y}`).join(' L ');
+  const fillPath = `${linePath} L ${points[points.length - 1].x} ${height - 18} L ${points[0].x} ${height - 18} Z`;
+  const xLabels = historyXLabels(snaps, points, frame);
+
+  return (
+    <div ref={ref}>
+      <svg
+        width="100%"
+        viewBox={`0 0 ${width} ${height}`}
+        className="overflow-visible"
+        // Anywhere over the chart picks the snapshot nearest across, as the route card's hour chart picks its hour.
+        onMouseMove={event => {
+          const box = event.currentTarget.getBoundingClientRect();
+          const x = ((event.clientX - box.left) / box.width) * width;
+          let nearest = 0;
+          points.forEach((p, i) => { if (Math.abs(p.x - x) < Math.abs(points[nearest].x - x)) nearest = i; });
+          onHover(snaps[nearest]);
+        }}
+        onMouseLeave={() => onHover(null)}
+      >
+        <defs>
+          <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" style={{ stopColor: lineColor }} stopOpacity="0.18" />
+            <stop offset="100%" style={{ stopColor: lineColor }} stopOpacity="0" />
+          </linearGradient>
+        </defs>
+        <path d={fillPath} fill={`url(#${gradientId})`} />
+        <path d={linePath} fill="none" stroke={lineColor} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        <line x1={points[0].x} y1={height - 18} x2={points[points.length - 1].x} y2={height - 18} stroke="var(--border-primary)" strokeWidth="1" strokeDasharray="2 3" />
+        {xLabels.map(label => (
+          <text key={`${label.text}-${label.x}`} x={label.x} y={height - 3} textAnchor={label.anchor} fontSize="7.5" fontWeight="600" fill="var(--text-muted)" fontFamily="inherit">
+            {label.text}
+          </text>
+        ))}
+        {points.map((p, i) => (
+          <g key={i}>
+            {(dots.has(i) || i === hovered) && <circle cx={p.x} cy={p.y} r={i === hovered ? 4.5 : 3} fill={lineColor} stroke="var(--bg-panel)" strokeWidth="1.5" />}
+            {shownValues.includes(i) && (
+              <text x={p.x} y={valueAt(i).y} textAnchor="middle" fontSize="8" fontWeight="700" fill="var(--text-primary)" fontFamily="inherit" stroke="var(--bg-panel)" strokeWidth="3" strokeLinejoin="round" paintOrder="stroke">
+                {headwayExactAmount(shownMinutes(minutes[i]))}
+              </text>
+            )}
+          </g>
+        ))}
+      </svg>
+    </div>
+  );
+}
+
+/**
+ * The x axis labels: each year's start once the history spans more than about two years, else the snapshots' months
+ * (the ends drawn against the chart's edges, each month once, none closer than a label's width).
+ */
+function historyXLabels(
+  snaps: RouteSnapshot[],
+  points: Array<{ x: number }>,
+  frame: { width: number; paddingX: number },
+): Array<{ x: number; text: string; anchor: 'start' | 'middle' | 'end' }> {
+  const { width, paddingX } = frame;
+  const monthOf = (snap: RouteSnapshot) => snap.year * 12 + (snapshotMonth(snap.label) ?? 6);
+  const out: Array<{ x: number; text: string; anchor: 'start' | 'middle' | 'end' }> = [];
+  let lastCentre = -Infinity;
+  if (monthOf(snaps[snaps.length - 1]) - monthOf(snaps[0]) > 26) {
+    for (const tick of historyYearTicks(snaps)) {
+      const x = paddingX + tick.position * (width - 2 * paddingX);
+      if (x - lastCentre < 24 || x > width - paddingX - 10) continue;
+      out.push({ x, text: String(tick.year), anchor: 'middle' });
+      lastCentre = x;
+    }
+    return out;
+  }
+  // Months (#1037, CIV-924): labels that fit 34 units apart, the ends checked where they are drawn and taken first, so a
+  // month at the right edge is labelled there rather than at an earlier point; a month already labelled isn't again.
+  const lastIndex = points.length - 1;
+  const centres = points.map((p, i) => ({ x: i === 0 ? paddingX + 17 : i === lastIndex ? width - paddingX - 17 : p.x, y: 0 }));
+  const edgesFirst = (i: number) => (i === 0 ? -2 : i === lastIndex ? -1 : i);
+  const labelled = new Set<string>();
+  for (const i of [...labelsThatFit(centres, 34)].sort((a, b) => edgesFirst(a) - edgesFirst(b))) {
+    const text = formatXLabel(snaps[i].label);
+    if (labelled.has(text)) continue;
+    labelled.add(text);
+    out.push({ x: i === 0 ? paddingX : i === lastIndex ? width - paddingX : points[i].x, text, anchor: i === 0 ? 'start' : i === lastIndex ? 'end' : 'middle' });
+  }
+  return out;
 }
 
 /** History's suggestions are recent searches only: its routes have no map keys to suggest. */
