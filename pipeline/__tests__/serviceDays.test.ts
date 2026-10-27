@@ -126,6 +126,21 @@ describe('buildServiceDayTable', () => {
     expect(table.window).toEqual({ start: '20260822', end: '20261016' });
   });
 
+  it('ends the window at the last date with service when the rows run on with every date removed (SLO Transit shape)', () => {
+    // Found by the stage-3 shadow report: SLO Transit's main services run to 2027 in calendar.txt
+    // but are removed on every date from Oct 20. The weeks after the last service read as an
+    // empty new period starting within 7 days, so every day type came out empty.
+    const calendar = [cal('WK', 'mo,tu,we,th,fr', '20260901', '20270101'), cal('SA', 'sa', '20260901', '20261031')];
+    const calendarDates = dates('20261102', '20270101').filter(isWeekday).map(d => removed('WK', d));
+    const table = buildServiceDayTable({ calendar, calendarDates, trips: [...tripsOf('WK', 'R', 10), ...tripsOf('SA', 'R', 6)], anchor: '20261028' });
+    expect(table.source).toBe('anchor-feed-end');
+    expect(table.window).toEqual({ start: '20260906', end: '20261031' });
+    const week = pickServiceWeek(table);
+    expect(week.weekStart).toBe('20261019');
+    expect(week.services.Monday).toEqual(['WK']);
+    expect(week.services.Saturday).toEqual(['SA']);
+  });
+
   it('reads the first 8 weeks of service when nothing runs in the 8 weeks from the anchor (a later start)', () => {
     const calendar = [cal('WK', 'mo,tu,we,th,fr', '20270301', '20270630')];
     const table = buildServiceDayTable({ calendar, calendarDates: [], trips: tripsOf('WK', 'R', 3), anchor: '20261021' });

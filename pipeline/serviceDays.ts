@@ -183,15 +183,21 @@ export function buildServiceDayTable(input: ServiceDayTableInput): ServiceDayTab
   const aheadEnd = anchorDay + daysAfter;
   const firstAhead = firstServiceFrom(Math.max(anchorDay, lo));
   if (firstAhead != null && firstAhead <= aheadEnd) {
-    end = Math.min(hi, aheadEnd);
-    const last = hi < aheadEnd ? lastServiceBefore(hi) : null;
-    if (last != null && last - daysAfter < anchorDay - daysBefore) {
-      // The feed ends inside the 8 weeks: start earlier so the vote still covers up to 8 weeks of
-      // service, as for an archived zip. Otherwise a holiday fortnight at the feed's end outvotes
-      // the one or two regular weeks left (CIV-469; New Year's Day in History's winter feed).
-      start = Math.max(lo, last - daysAfter);
+    // The feed's service ends inside the 8 weeks when its last date with service is a whole week
+    // or more before the window's end. The rows can run on past it with every date removed (SLO
+    // Transit's main services, removed daily from Oct 20 to the 2027 row end), so this is read
+    // from the dates, not the rows' end_date.
+    const last = lastServiceBefore(Math.min(hi, aheadEnd));
+    if (last != null && last <= aheadEnd - 7) {
+      // Start earlier so the vote still covers up to 8 weeks of service, as for an archived zip,
+      // and stop at the last date with service. Otherwise a holiday fortnight at the feed's end
+      // outvotes the one or two regular weeks left (CIV-469; New Year's Day in History's winter
+      // feed), and the empty weeks after the end read as a new, empty period.
+      end = last;
+      start = Math.max(lo, Math.min(anchorDay - daysBefore, last - daysAfter));
       source = 'anchor-feed-end';
     } else {
+      end = Math.min(hi, aheadEnd);
       start = Math.max(lo, anchorDay - daysBefore);
       source = 'anchor';
     }
