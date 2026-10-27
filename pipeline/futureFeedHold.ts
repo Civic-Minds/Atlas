@@ -9,8 +9,7 @@
  * without R2.
  */
 import type { PeekedArchive } from './archiveSelection.js';
-
-const YMD = /^\d{8}$/;
+import { isYmd } from '../shared/feedAvailability.js';
 
 /**
  * The date a new feed is held until, or null to process it now. Held when its first service date
@@ -24,8 +23,8 @@ export function futureFeedHoldUntil(opts: {
   liveFeedExpiry: string | null | undefined;
 }): string | null {
   const { feedStart, todayYmd, liveFeedExpiry } = opts;
-  if (!feedStart || !YMD.test(feedStart) || feedStart <= todayYmd) return null;
-  if (!liveFeedExpiry || !YMD.test(liveFeedExpiry) || liveFeedExpiry < todayYmd) return null;
+  if (!isYmd(feedStart) || feedStart <= todayYmd) return null;
+  if (!isYmd(liveFeedExpiry) || liveFeedExpiry < todayYmd) return null;
   return feedStart;
 }
 
@@ -41,7 +40,7 @@ export function heldFeedsDue<A extends { slug: string; heldFeedStart?: string | 
 ): string[] {
   const today = (a: A) => (typeof todayYmd === 'string' ? todayYmd : todayYmd(a));
   return agencies
-    .filter(a => !!a.heldFeedStart && YMD.test(a.heldFeedStart) && a.heldFeedStart <= today(a))
+    .filter(a => isYmd(a.heldFeedStart) && a.heldFeedStart <= today(a))
     .map(a => a.slug)
     .sort();
 }
