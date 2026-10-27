@@ -290,6 +290,10 @@ describe('names in capitals with French linking words (CIV-1054)', () => {
     expect(stopNameCase("STATION LUCIEN-L'ALLIER")).toBe("Station Lucien-L'Allier");
     expect(stopNameCase("L'ACADIE")).toBe("L'Acadie");
     expect(stopNameCase('SECAUCUS CUL-DE-SAC')).toBe('Secaucus Cul-de-Sac');
+    // D'Arcy is a surname, not "de Arcy"; a feed's own mixed-case "D'" stays as written.
+    expect(stopNameCase("LA VÉRENDRYE / THOMAS D'ARCY MCGEE SCHOOL")).toBe("La Vérendrye / Thomas D'Arcy McGee School");
+    expect(titleCase("Thomas D'Arcy McGee")).toBe("Thomas D'Arcy McGee");
+    expect(titleCase("Rue D'Anjou")).toBe("Rue D'Anjou");
   });
 
   it('leaves names that are really mixed case, and English names with small words, as the feed wrote them', () => {

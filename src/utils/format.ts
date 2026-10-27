@@ -172,6 +172,8 @@ const ROUTE_NAME_ONLY_ACRONYMS = [
 
 // Articles/prepositions that stay lowercase unless they open the string
 const KEEP_LOWER = /^(of|to|the|a|an|and|or|in|at|by|for|via)$/i;
+/** Names where "D'" is part of a surname, not a French "de": "D'Arcy" (CIV-1054). */
+const SURNAME_ELISIONS = /^arcy(?!\p{L})/iu;
 
 /**
  * Headway wording lives in headwayText.ts. These two keep the older names working:
@@ -198,6 +200,10 @@ export function titleCase(s: string): string {
 
   // Clean backslashes into standard slashes
   s = s.replace(/\\/g, '/');
+
+  // A mixed-case input's own capital elisions before a mixed-case word ("Thomas D'Arcy") stay capital (CIV-1054).
+  const capitalElisions = new Set<number>();
+  if (/\p{Ll}/u.test(s)) for (const m of s.matchAll(/[DL]'\p{Lu}\p{Ll}/gu)) capitalElisions.add(m.index!);
 
   // If there is an em-dash divider, keep the shortName (before divider) untouched
   const parts = s.split(' — ');
@@ -236,9 +242,13 @@ export function titleCase(s: string): string {
       return NAME_ACRONYMS[m] ?? NAME_ACRONYMS[m.toLowerCase()] ?? m;
     })
     .replace(/'(\p{L})/gu, (_, c) => "'" + c.toLowerCase())
-    // French elision: "D'ANDROMÈDE" -> "d'Andromède", "L'ACADIE" -> "L'Acadie" at the start; after a hyphen it is part
-    // of a surname and keeps its capital ("Lucien-L'Allier") (CIV-1054).
-    .replace(/(^|[^\p{L}'])([dl])'(\p{L})/giu, (_, pre: string, el: string, c: string) => `${pre}${pre && pre !== '-' ? el.toLowerCase() : el.toUpperCase()}'${c.toUpperCase()}`)
+    // French elision: "D'ANDROMÈDE" -> "d'Andromède", "L'ACADIE" -> "L'Acadie" at the start (CIV-1054). It keeps its
+    // capital after a hyphen ("Lucien-L'Allier"), in a surname ("D'Arcy"), and wherever a mixed-case input wrote it so.
+    .replace(/(^|[^\p{L}'])([dl])'(\p{L})/giu, (m: string, pre: string, el: string, c: string, offset: number, str: string) => {
+      const at = offset + pre.length;
+      const keepCapital = !pre || pre === '-' || SURNAME_ELISIONS.test(str.slice(at + 2)) || capitalElisions.has(at);
+      return `${pre}${keepCapital ? el.toUpperCase() : el.toLowerCase()}'${c.toUpperCase()}`;
+    })
     // French linking words inside a hyphenated name stay small: "Arc-En-Ciel" -> "Arc-en-Ciel" (CIV-1054).
     .replace(/(?<=\p{L}-)(De|Du|Des|La|Le|Les|En|Sur|Aux|Au|Et)(?=-\p{L})/gu, (w: string) => w.toLowerCase())
     // Mc surnames in all-caps feeds: "MCKNIGHT" -> "McKnight"
