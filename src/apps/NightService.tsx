@@ -11,6 +11,7 @@ import CardRouteList from '../components/Interval/CardRouteList';
 import { CardReportButton } from '../components/Interval/cardUi';
 import { reportDetails } from '../utils/reportIssue';
 import { routeLabels } from '../utils/format';
+import { headwayEvery, headwayOrBetter } from '../utils/headwayText';
 import ResearchInfo from '../components/ResearchInfo';
 import { NIGHT_INFO_HEADING, nightRuleText } from '../content/researchRules';
 import PanelEmpty from '../components/ui/PanelEmpty';
@@ -58,7 +59,7 @@ function nightReportDetails(
   bounds: { n: number; s: number; e: number; w: number } | null | undefined,
 ): string {
   return reportDetails([
-    ['View', `routes every ${frequency} min or better from 2am to 5am`],
+    ['View', `routes ${headwayOrBetter(frequency)} from 2am to 5am`],
     ['Map bounds', bounds ? `${bounds.s.toFixed(4)},${bounds.w.toFixed(4)} to ${bounds.n.toFixed(4)},${bounds.e.toFixed(4)}` : 'unknown'],
     '**Listed:**',
     ...(agencies.length > 0 ? agencies.flatMap(agency => [`- ${agency.name}`, ...agency.routes.map(route => `  - ${route}`)]) : ['- Nothing listed']),
@@ -213,7 +214,7 @@ export default function NightService({ active, sidebarLeft, searchBarWidth, laye
                 name: agency.agencyName,
                 routes: agency.routes.map(route => {
                   const { primary, secondary } = nightRouteLabel(route, agency);
-                  return `${secondary ? `${primary} ${secondary}` : primary} (every ${nightGrade(route, agency.slug)} min${route.partOfRoute ? ', part of the route' : ''})`;
+                  return `${secondary ? `${primary} ${secondary}` : primary} (${headwayEvery(nightGrade(route, agency.slug))}${route.partOfRoute ? ', part of the route' : ''})`;
                 }),
               })), bounds)}
               excludeReasons={['Stop is missing, misplaced, or assigned incorrectly']}

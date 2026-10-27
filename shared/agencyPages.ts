@@ -4,7 +4,7 @@
  * the per-route headways already published in the data release (see
  * scripts/build-agency-page-summaries.ts); nothing here measures anything new.
  */
-import { headwayEvery } from './headwayText';
+import { headwayEvery, headwayEveryRange, headwayOrBetter } from './headwayText';
 import { modeLabel, sortModes } from './modes';
 import { compareAgencyName, compareNullableAscending } from './sortCompare';
 import { areaRegionName, areaRegionTitle } from './areaRegions';
@@ -222,12 +222,12 @@ export { modeLabel };
 
 /** Weekday-midday frequency bands, best first; the last one is routes with no regular midday service. */
 export const FREQUENCY_BANDS = [
-  { key: 'b10', phrase: 'every 10 min or better', short: '≤10', test: (m: number) => m <= 10 },
-  { key: 'b15', phrase: 'every 11–15 min', short: '11–15', test: (m: number) => m <= 15 },
-  { key: 'b20', phrase: 'every 16–20 min', short: '16–20', test: (m: number) => m <= 20 },
-  { key: 'b30', phrase: 'every 21–30 min', short: '21–30', test: (m: number) => m <= 30 },
-  { key: 'b60', phrase: 'every 31–60 min', short: '31–60', test: (m: number) => m <= 60 },
-  { key: 'b60plus', phrase: 'less often than every 60 min', short: '60+', test: () => true },
+  { key: 'b10', phrase: headwayOrBetter(10), short: '≤10', test: (m: number) => m <= 10 },
+  { key: 'b15', phrase: headwayEveryRange(11, 15), short: '11–15', test: (m: number) => m <= 15 },
+  { key: 'b20', phrase: headwayEveryRange(16, 20), short: '16–20', test: (m: number) => m <= 20 },
+  { key: 'b30', phrase: headwayEveryRange(21, 30), short: '21–30', test: (m: number) => m <= 30 },
+  { key: 'b60', phrase: headwayEveryRange(31, 60), short: '31–60', test: (m: number) => m <= 60 },
+  { key: 'b60plus', phrase: `less often than ${headwayEvery(60)}`, short: '60+', test: () => true },
 ] as const;
 export const NO_MIDDAY_PHRASE = 'with no regular midday service';
 export const NO_MIDDAY_SHORT = 'no midday';
