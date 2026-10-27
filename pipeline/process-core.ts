@@ -1718,6 +1718,17 @@ export async function processGtfsBuffer(
         ? allOffsets
         : allOffsets.filter(offset => !droppedWindows.some(window => first + offset >= window.start && first + offset < window.end));
       if (!tripStops || !groups || offsets.length === 0) continue;
+      // Every visit marks the stop boardable, not only the first counted one, as the stop_times pass does
+      // (CIV-224): a loop terminal whose first-listed visit is drop-off only still boards on the other.
+      for (const st of tripStops) {
+        if (!boardsAt(st)) continue;
+        const parentId = childToParent.get(st.stop_id);
+        for (const grp of groups) {
+          if (!grp.shapeId || !grp.inShape) continue;
+          markBoardable(`${grp.shapeId}::${grp.dayType}`, st.stop_id);
+          if (parentId) markBoardable(`${grp.shapeId}::${grp.dayType}`, parentId);
+        }
+      }
       const visits = firstVisitStopTimes(tripStops);
       const stretched = isStretchedBlockTrip(tripStops, windows);
       for (const offset of offsets) {
