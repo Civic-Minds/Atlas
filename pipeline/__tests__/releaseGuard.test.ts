@@ -131,10 +131,13 @@ describe('tile rules fingerprint', () => {
   // changes: hash only.
   // CIV-1006 adds the bookingRequired key, read first by the mode expression. No version bump, as for
   // #899: older tiles lack the key and evaluate exactly as before, and older apps ignore it. Hash only.
+  // #1147 moves stop grouping into stopClustering.ts and caps each group at 250 m. hubId and isHubRef
+  // values change, but they are only ever set at tile build and never re-derived by the app, so any
+  // app draws any tiles as before (older tiles keep their larger groups): hash only.
   it('changes only together with a deliberate TILE_RULES_VERSION decision', () => {
     expect({ version: TILE_RULES_VERSION, fingerprint: tileRulesFingerprint() }).toEqual({
       version: 5,
-      fingerprint: 'd0d8c166bef57a3b44084ab0a56af0dc54539e77b83df6c0a217df57f05b35a4',
+      fingerprint: 'c4e8101b481a87e0885f07945c32f260846f3e9b8c967bbaca6b2de191b54379',
     });
   });
 });
