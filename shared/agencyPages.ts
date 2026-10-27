@@ -364,12 +364,18 @@ function endedBefore(through: string | null | undefined, releaseDate: string | n
  * The page footer in plain words: what the numbers are based on, when the timetable was published and how long it runs,
  * and when Atlas last updated the page. A clause whose date is missing is left out; an ended timetable says so.
  */
-export function agencyDatesText(a: Pick<AgencyPageSummary, 'lastRefreshedAt' | 'validThrough'>, releaseDate: string | null): string {
+// N25 listing-ended (Ryan's exact text, CIV-1011). One definition for the agency page and the map (content/noticeCopy re-exports it).
+export const listingEndedNotice = (date: string) => `This agency's scheduled service for most routes ended ${date}, and they have not released updated data.`;
+
+export function agencyDatesText(a: Pick<AgencyPageSummary, 'lastRefreshedAt' | 'validThrough' | 'listingEndedOn'>, releaseDate: string | null): string {
   const published = formatDataDate(a.lastRefreshedAt);
   const through = formatDataDate(a.validThrough);
   const release = formatDataDate(releaseDate);
+  const listingEnded = formatDataDate(a.listingEndedOn);
   const timetable = through && endedBefore(a.validThrough, releaseDate)
     ? `This timetable ended on ${through}; the agency hasn't published a newer one yet.`
+    // N25 (CIV-1055), Ryan's text: "covers service until" would overstate a timetable whose routes mostly stopped.
+    : listingEnded ? listingEndedNotice(listingEnded)
     : published && through ? `This timetable was published ${published} and covers service until ${through}.`
     : published ? `This timetable was published ${published}.`
     : through ? `This timetable covers service until ${through}.`

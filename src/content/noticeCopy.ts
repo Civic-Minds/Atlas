@@ -87,3 +87,6 @@ export function expiredFeedCheckHistory(options: {
   }
   return '';
 }
+
+// N25 listing-ended (Ryan's exact text, CIV-1011; shown since CIV-1055). Defined beside the agency page text it shares.
+export { listingEndedNotice } from '../../shared/agencyPages';
