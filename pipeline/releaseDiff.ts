@@ -41,7 +41,8 @@ import { resolve } from 'node:path';
 import { findModeOverride, getGtfsModeName, VIRTUAL_LRT_MODE } from '../shared/modes.js';
 import { countArtifacts, dropGuardRefusal, type ArtifactCounts } from './archiveSelection.js';
 import { RAIL_TIER_MAXES, TIER_RANK } from './headway-utils.js';
-import { SURFACE_TIER_MAXES } from '../shared/config.js';
+import { PERIOD_KEYS, SURFACE_TIER_MAXES } from '../shared/config.js';
+import { routeFilterHeadway } from '../shared/routeHeadwayFilter.js';
 
 /**
  * The weekday tiers the gate compares: the surface scale plus rail's 5 and 8, so a rail line
@@ -89,6 +90,8 @@ export const HEADWAY_LOST_RED_SHARE = 0.75;
 export const HEADWAY_LOST_RED_MIN = 3;
 /** Day types compared by day-lost / day-shrunk, as route lines label them. */
 export const GATE_DAYS = ['Weekday', 'Saturday', 'Sunday'] as const;
+/** Periods headway-shift compares: All day and each named period, as the map's period picker offers them. */
+export const GATE_PERIODS = ['all', ...PERIOD_KEYS] as const;
 /**
  * day-shrunk is yellow when a day type's route lines fall below this share of
  * live, with at least DAY_SHRUNK_MIN_LIVE live. On the 2026-10-12 bundle dry
@@ -115,8 +118,14 @@ export interface ArtifactSummary {
   contentHash: string;
   /** One `routeId|start|end` signature per distinct route line shape. */
   routeSignatures: string[];
-  /** Median weekday headway per route, from the route lines' `headway`. */
+  /** Median weekday headway per route, from the route lines' `headway`. Names a route-shift's minutes. */
   weekdayHeadways: Record<string, number>;
+  /**
+   * The map filter's value per route, day and period ('Weekday|midday|routeId'): the worst direction's
+   * routeFilterHeadway, the rule the visible frequency filter applies (CIV-117 item 2). Routes with no
+   * qualifying service in a period have no entry. Optional: older summaries fall back to weekdayHeadways.
+   */
+  filterHeadways?: Record<string, number>;
   /**
    * Most frequent weekday tier per route across its directions and variants
    * ('10' ... 'infrequent'). Tiers outside the headway scale ('span', legacy
@@ -196,6 +205,7 @@ export function summarizeArtifact(geojson: string, stopsJson: string | null, slu
   const tiers: Record<string, string> = {};
   const directionHeadway: Record<string, boolean> = {};
   const dayFeatures: Record<string, number> = Object.fromEntries(GATE_DAYS.map(day => [day, 0]));
+  const filterHeadways: Record<string, number> = {};
   let lonSum = 0;
   let latSum = 0;
   let points = 0;
@@ -219,6 +229,14 @@ export function summarizeArtifact(geojson: string, stopsJson: string | null, slu
       const key = `${routeId}|${p.directionId == null ? '' : String(p.directionId)}`;
       directionHeadway[key] = (directionHeadway[key] ?? false) || hasHeadway;
     }
+    if (typeof p.day === 'string' && p.day in dayFeatures) {
+      for (const period of GATE_PERIODS) {
+        const value = routeFilterHeadway(p, period);
+        if (value == null) continue;
+        const key = `${p.day}|${period}|${routeId}`;
+        filterHeadways[key] = Math.max(filterHeadways[key] ?? 0, value);
+      }
+    }
     const tier = p.tier == null ? '' : String(p.tier);
     if (p.day === 'Weekday' && GATE_TIERS.has(tier) && (tiers[routeId] == null || TIER_RANK[tier] < TIER_RANK[tiers[routeId]])) {
       tiers[routeId] = tier;
@@ -233,6 +251,7 @@ export function summarizeArtifact(geojson: string, stopsJson: string | null, slu
     weekdayHeadways: Object.fromEntries(Object.entries(headways).map(([id, values]) => [id, median(values)])),
     weekdayTiers: tiers,
     weekdayDirectionHeadway: directionHeadway,
+    filterHeadways,
     dayFeatures,
     centroid: points ? [lonSum / points, latSum / points] : null,
   };
@@ -252,18 +271,41 @@ export function routeSimilarity(a: ArtifactSummary, b: ArtifactSummary): number 
 export interface HeadwayShift {
   compared: number;
   shifted: string[];
+  /** Per shifted route, what changed ("Saturday midday 15->30 min"). */
+  examples: Record<string, string>;
 }
 
+/**
+ * Routes whose map filter value halves or doubles in any day and period (CIV-117 item 2): the same
+ * worst-direction rule the visible frequency filter applies, on weekends too. `compared` and `shifted`
+ * count routes; `examples` names each shifted route's first changed cell. Summaries without
+ * filterHeadways (older reports) compare the weekday medians as before.
+ */
 export function headwayShift(live: ArtifactSummary, next: ArtifactSummary): HeadwayShift {
-  const shifted: string[] = [];
-  let compared = 0;
-  for (const [routeId, before] of Object.entries(live.weekdayHeadways)) {
-    const after = next.weekdayHeadways[routeId];
-    if (after == null) continue;
-    compared++;
-    if (after >= before * HEADWAY_SHIFT_RATIO || after * HEADWAY_SHIFT_RATIO <= before) shifted.push(routeId);
+  const changed = (before: number, after: number) => after >= before * HEADWAY_SHIFT_RATIO || after * HEADWAY_SHIFT_RATIO <= before;
+  if (!live.filterHeadways || !next.filterHeadways) {
+    const shifted: string[] = [];
+    const examples: Record<string, string> = {};
+    let compared = 0;
+    for (const [routeId, before] of Object.entries(live.weekdayHeadways)) {
+      const after = next.weekdayHeadways[routeId];
+      if (after == null) continue;
+      compared++;
+      if (changed(before, after)) { shifted.push(routeId); examples[routeId] = `${before}->${after} min`; }
+    }
+    return { compared, shifted: shifted.sort(), examples };
   }
-  return { compared, shifted: shifted.sort() };
+  const comparedRoutes = new Set<string>();
+  const examples: Record<string, string> = {};
+  for (const [key, before] of Object.entries(live.filterHeadways)) {
+    const after = next.filterHeadways[key];
+    if (after == null) continue;
+    const [day, period, ...rest] = key.split('|');
+    const routeId = rest.join('|');
+    comparedRoutes.add(routeId);
+    if (examples[routeId] == null && changed(before, after)) examples[routeId] = `${day} ${period} ${before}->${after} min`;
+  }
+  return { compared: comparedRoutes.size, shifted: Object.keys(examples).sort(), examples };
 }
 
 /**
@@ -408,9 +450,9 @@ export function evaluateAgency(input: AgencyGateInput, peers: GatePeer[], todayY
       const level: GateLevel | null = share >= HEADWAY_SHIFT_RED_SHARE ? 'red' : share >= HEADWAY_SHIFT_YELLOW_SHARE ? 'yellow' : null;
       if (level) {
         agencyShift = true;
-        const examples = shift.shifted.slice(0, 6).map(id => `${id} ${live.weekdayHeadways[id]}->${next.weekdayHeadways[id]} min`).join(', ');
+        const examples = shift.shifted.slice(0, 6).map(id => `${id} ${shift.examples[id]}`).join(', ');
         flags.push(flag(slug, 'headway-shift', level,
-          `${shift.shifted.length} of ${shift.compared} routes' weekday headway halves or doubles (${Math.round(share * 100)}%; ${examples}${shift.shifted.length > 6 ? ', ...' : ''})`));
+          `${shift.shifted.length} of ${shift.compared} routes' filter headway halves or doubles in some day and period (${Math.round(share * 100)}%; ${examples}${shift.shifted.length > 6 ? ', ...' : ''})`));
       }
     }
 
