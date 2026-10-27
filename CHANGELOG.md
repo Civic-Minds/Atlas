@@ -8,6 +8,9 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Map and route behavior
 
+- **Agencies are named by their own short name, never a city**: lists, rows and back links say "Capital Metro", not "Austin", and the agency card keeps the full name, so [Gary's](https://github.com/Civic-Minds/Atlas/issues/1134) card no longer reads "Gary, IN"
+- **Copied map links reopen the same view**: [links](https://github.com/Civic-Minds/Atlas/issues/1141) now keep "All day", the 60-minute limit and the irregular and part-time choices, which a recipient's own saved settings used to replace
+- **Destinations keep their first word**: [KCATA 12](https://github.com/Civic-Minds/Atlas/issues/1139) reads "12th Street", not "Street", and NYC subway B reads "Brighton Beach", not "Beach"
 - **Route destinations no longer repeat the route number**: feeds that pad route numbers with zeros wrote "to 5 Love Field Airport" ([DART 5](https://github.com/Civic-Minds/Atlas/issues/1098), Edmonton, TransLink)
 - **Routes are named by their feed's name, never a [raw route ID](https://github.com/Civic-Minds/Atlas/issues/1099)**: FXBGO routes read "Route 13", [lines](https://github.com/Civic-Minds/Atlas/issues/1100) are named once ("Green Line", not "DART LIGHT RAIL - GREEN LINE"), and [Orillia West Ridge](https://github.com/Civic-Minds/Atlas/issues/1122) is no longer named twice on its agency page
 - **Stop and destination names follow the same capitals rule as route names**: all-capitals names read normally ("Moody Center"), mixed case stays as the feed wrote it, and codes like LBJ, DFW and YMCA stay in capitals
@@ -45,6 +48,10 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Route cards and frequency
 
+- **Part-period notes no longer misdescribe hourly and rush-hour routes**: an [hourly route](https://github.com/Civic-Minds/Atlas/issues/1137) no longer reads "not throughout the selected period" (OC Transpo 162), and the note names no [made-up frequency](https://github.com/Civic-Minds/Atlas/issues/1043) like "every 330 min" for a rush-hour-only route (TTC 10) or one [slower than every row](https://github.com/Civic-Minds/Atlas/issues/1123)
+- **Night's route card shows night service only**: no chart or period, and each destination reads its night frequency, never a daytime one
+- **On-demand cards show service hours as rows with a bar**: one row per group of days with the selected day in bold, and "Hours unavailable" where the hours aren't known
+- **The route chart's branch legend sits side by side when it fits**: it was a stacked column
 - **Stop card destinations work like route card rows and never overstate**: each destination shows its own frequency (504 to Broadview at King and Bay reads every 10, not every 5), hovering one shows it on the map, and [Nearby](https://github.com/Civic-Minds/Atlas/issues/1117) no longer lists the stop's own routes (MiWay 314)
 - **Route cards keep a [direction](https://github.com/Civic-Minds/Atlas/issues/1118) whose only row shares the other direction's destination**: RFTA HC read "No pm peak service" one way, and 63 routes in 35 agencies get their missing direction back
 - **Part-time values [fit the card](https://github.com/Civic-Minds/Atlas/issues/1128) and [time ranges](https://github.com/Civic-Minds/Atlas/issues/1133) stay whole**: "from 7:05am, every 20 min" breaks after the comma instead of running past the edge, "7–11 PM" never splits, and long destinations stay on one line with the full name on hover
@@ -71,6 +78,8 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### History (beta)
 
+- **History shows exact minutes and places its chart points by month**: rows now match the chart ([NFTA 76](https://github.com/Civic-Minds/Atlas/issues/1085) reads 349, not 360), snapshots from one year no longer stack at the left edge, and [labels](https://github.com/Civic-Minds/Atlas/issues/1037) no longer overlap
+- **History no longer lists years that have not happened yet**: feeds that start next year had added a 2027 point, and an agency could count it toward its ten years; those years are now dropped, so an agency with only nine real years leaves History until it has ten
 - **History's route cards draw and move like the map's**: the chart fill no longer turns solid black for names with a space (Caltrain "Local Weekday"), the change box shows only across calendar years, and the phone route sheet slides in like the map's
 - **History draws each year on its [own lines](https://github.com/Civic-Minds/Atlas/issues/1028) and colours, with the map's filters**: pick "≤15 min" and a time and slide through the years; the route list follows the slider with that year's frequency and change, and a failed load shows an error
 - **History opens on the [city](https://github.com/Civic-Minds/Atlas/issues/1012) you're looking at and behaves like the map**: a map [route link](https://github.com/Civic-Minds/Atlas/issues/1028) opens the same route, clicking the map or [Escape](https://github.com/Civic-Minds/Atlas/issues/1031) closes the panel, and the [History map](https://github.com/Civic-Minds/Atlas/issues/1016) stays put while the year slider moves
@@ -99,10 +108,11 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Agency, area and research pages
 
+- **Area pages introduce their biggest agencies and keep their tables on screen**: intros name the two biggest agencies when there are more than three, the subtitle names the state or province instead of repeating the title, and tables group modes into seven columns that fit from 768px wide
 - **Every agency has a page, including those with no midday service**: nine more such as ACE and VRE, and an agency with no area page links its place to its state or province in the agency list
 - **Area tables keep each mode in the same column**: a dash marks a missing mode, rarer modes share an "Other" column, trolleybuses count as Bus, long names shorten, and a click anywhere on a row opens the agency (middle-click opens a new tab)
 - **On-demand cards read like route cards**: a zone card goes back to its agency, an on-demand-only agency is named by its service ("GP Transit On-Demand"), and each service on the agency card has one grey hours line (RFTA)
-- **The agency card links to its area page**: "Greater Toronto and Hamilton Area →" sits under the name for every area with a page, and the Source link is off because it opened the agency's website, not its data
+- **The agency card links to its area page and About on one line under the name**: "Greater Toronto and Hamilton Area →" sits under the name for every area with a page, and the Source link is off because it opened the agency's website, not its data
 - **Night and Frequent Service work like the map**: selecting a route fades the others and never draws it thinner, Frequent Service's info card no longer covers the route card, the Night list shows each route's night frequency, and the rules read "every 60 min or better"
 - **Every agency and metro area has its own frequency page, with an index**: a frequency-band bar, a route table by mode and period and nearby agencies; "Toronto area" compares every agency; the index lists them by country and state; map links can name an area
 - **Agency and area route tables count and line up the same**: area pages count every route stopping twice inside the area, whoever runs it (Bowen Island ferry in Vancouver), tables share one column layout, and each page links to "See these routes on the map" (CIV-274)
@@ -113,6 +123,8 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Data pipeline
 
+- **A timetable that hasn't started yet no longer replaces the current one**: [TANK and TTC](https://github.com/Civic-Minds/Atlas/issues/1144) showed next season's service a week early
+- **Feed expiry counts only the routes Atlas shows, on the agency's own date**: [Snowmass](https://github.com/Civic-Minds/Atlas/issues/1140) read current after its kept route ended, and a feed ending on Sunday read as ended on Sunday evening in Los Angeles
 - **A feed whose calendar ended earlier than it claims now shows the [expired notice](https://github.com/Civic-Minds/Atlas/issues/1039)**: MAX said it ran to 2035 while its schedule stopped in May 2025, so it looked current; a calendar can only shorten the end date, never extend it
 - **Long rural and [highway routes](https://github.com/Civic-Minds/Atlas/issues/1057) are drawn in full**: Prince George routes and [Redwood Coast](https://github.com/Civic-Minds/Atlas/issues/776) Transit 20 reach the real end of the line, [Streamline Goldline](https://github.com/Civic-Minds/Atlas/issues/433) follows its streets again, and [Amarillo](https://github.com/Civic-Minds/Atlas/issues/753) shows all 293 stops, not 41
 - **Feeds that give each trip its [own copy](https://github.com/Civic-Minds/Atlas/issues/616) of a shape draw their routes again**: NJ Transit's 14 rail lines and [SamTrans 120](https://github.com/Civic-Minds/Atlas/issues/775) are back, [Siskiyou County's](https://github.com/Civic-Minds/Atlas/issues/492) routes draw once republished, and Coast NH keeps [both directions](https://github.com/Civic-Minds/Atlas/issues/730)
