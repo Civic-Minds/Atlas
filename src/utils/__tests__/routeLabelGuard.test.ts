@@ -10,7 +10,8 @@ import { describe, expect, it } from 'vitest';
 const ALLOWED_LABEL_CALLS: Record<string, { count: number; why: string }> = {
   'src/utils/routeFacts.ts': { count: 1, why: 'builds facts.label, the one label every route row carries' },
   'src/utils/mapContext.ts': { count: 1, why: 'the map-context list label, from the feed names (labelShortNameOf)' },
-  'src/components/Interval/SidebarControls.tsx': { count: 4, why: 'suggestions after combining long names (labelShortNameOf); the chooser fallback row for a route with no feature; the chooser dedupe key (identity-based on purpose, two calls)' },
+  'src/components/Interval/SidebarControls.tsx': { count: 3, why: 'suggestions after combining long names (labelShortNameOf); the chooser dedupe key (identity-based on purpose, two calls)' },
+  'src/utils/chooserRoutes.ts': { count: 1, why: 'the chooser fallback row for a route with no loaded feature: labels the route ID, never the whole key' },
   'src/components/Interval/SearchSuggestionsPanel.tsx': { count: 1, why: 'a recent saved by an older build has no label' },
   'src/components/Interval/panels/RouteCardHeadway.tsx': { count: 1, why: 'title fallback when the route card data has no label (the map always sets it)' },
   'src/components/RouteCardTitle.tsx': { count: 1, why: 'title fallback when no title is passed (History, Live)' },

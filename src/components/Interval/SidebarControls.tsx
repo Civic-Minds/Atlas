@@ -1,11 +1,10 @@
 import { searchAreas, type AreaSearchResult } from '../../../shared/areaSearch';
 import React, { useMemo, useRef, useEffect, useCallback, useState } from 'react';
-import { getTierColor } from '../../utils/colors';
 import { useColorMode } from '../../hooks/useColorMode';
 import type { ShapeProperties, TimePeriod, DayType, HoveredBranch, ViewportBounds } from '../../hooks/useIntervalStats';
 import type { Agency } from '../../App';
 import { findVariantFamily } from '../../utils/routeVariants';
-import { placeAlreadyInName, routeLabels, searchOverlayHidesPanel, comparePanelTop, agencyNames, agencyNameParts } from '../../utils/format';
+import { routeLabels, searchOverlayHidesPanel, comparePanelTop, agencyNames } from '../../utils/format';
 import { routeListDisplay, type RouteListDisplay } from '../../utils/effectiveHeadway';
 import { combineSuggestedRouteNames, suggestedRouteGroupKey } from '../../utils/routeSuggestion';
 import { buildDirectionGroups, routeDirectionOverrides } from '../../utils/routeCardDirectionGroups';
@@ -45,6 +44,7 @@ import { SIDEBAR_CARD_BODY } from './cardUi';
 import { useRecentSearches } from '../../hooks/useRecentSearches';
 import { useFadePresence } from '../../hooks/useFadePresence';
 import { bottomSheetFrameClass, BottomSheetHandle, bottomSheetBodyClass, useBottomSheet } from '../ui/BottomSheet';
+import { chooserRouteRow } from '../../utils/chooserRoutes';
 
 interface SidebarControlsProps {
   query: string;
@@ -621,25 +621,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   const disambigDetails = useMemo(() => {
     if (!disambiguationRoutes) return null;
     const details = disambiguationRoutes
-      .map(key => {
-        for (const [slug, fc] of Object.entries(nonCorridorLayers)) {
-          const f = fc.features.find(feat => {
-            const p = feat.properties as any;
-            return buildRouteFacts(p, slug).key === key;
-          });
-          if (f) {
-            const p = f.properties as any;
-            const facts = buildRouteFacts(p, slug);
-            const agency = agencies.find(a => a.slug === slug);
-            const agencyName = agencyNames(facts.agencyName).short;
-            // The place beside the agency's name in the chooser's heading, unless the name already says it (CIV-971).
-            const place = agency ? agencyNameParts({ name: agency.name, cities: agency.cities, displayArea: agency.displayArea }).secondary : undefined;
-            const agencyPlace = place && !placeAlreadyInName(agencyName, place) ? place : undefined;
-            return { key: facts.key, shortName: facts.shortName, label: facts.label, longName: facts.longName ?? '', agencyName, agencyPlace, agencySlug: slug, routeType: facts.routeType, color: getTierColor(p.tier, colorMode) };
-          }
-        }
-        return { key, shortName: key, label: routeLabels({ shortName: key, longName: '' }), longName: '', agencyName: '', agencySlug: undefined as string | undefined, routeType: undefined as number | undefined, color: 'var(--text-dim)' };
-      })
+      .map(key => chooserRouteRow(key, nonCorridorLayers, agencies, colorMode))
       .filter((route, index, routes) => {
         const displayKey = `${route.agencyName.trim().toLowerCase()}::${routeLabels({ shortName: route.shortName, longName: route.longName, routeType: route.routeType, agencySlug: route.agencySlug, agencyName: route.agencyName }).text.trim().toLowerCase().replace(/\s+/g, ' ')}`;
         return routes.findIndex(candidate => {
