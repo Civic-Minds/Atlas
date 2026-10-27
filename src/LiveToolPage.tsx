@@ -96,7 +96,8 @@ function PillMenu({ label, value, options, onPick, alignRight = false }: { label
         <div role="menu" aria-label={label} className={`absolute ${alignRight ? 'right-0' : 'left-0'} top-full z-50 mt-1 flex min-w-full flex-col gap-0.5 rounded-xl border border-[var(--border-primary)] bg-[var(--bg-header)] p-1 shadow-lg`}>
           {options.map(([k, text]) => (
             <button key={k} type="button" role="menuitemradio" aria-checked={k === value} onClick={() => { onPick(k); setOpen(false); }}
-              className={`whitespace-nowrap rounded-lg px-2.5 py-1 text-left text-xs font-bold ${k === value ? 'bg-[var(--accent-selected-bg)]' : 'hover:bg-[var(--bg-hover)]'}`}>{text}</button>
+              // A finger-sized row on phones (44px), the compact row with a pointer (#1151).
+              className={`whitespace-nowrap rounded-lg px-2.5 py-1 text-left text-xs font-bold max-sm:min-h-11 ${k === value ? 'bg-[var(--accent-selected-bg)]' : 'hover:bg-[var(--bg-hover)]'}`}>{text}</button>
           ))}
         </div>
       )}
@@ -104,20 +105,20 @@ function PillMenu({ label, value, options, onPick, alignRight = false }: { label
   );
 }
 
-/** The picked measure's one-line definition, first in the key (Ryan, 2026-10-26, word for word). Run time has none; Delay starts has its own note. */
-const KEY_DEFINITION: Partial<Record<MapMeasure, string>> = { late: '5½+ min late', extraWait: 'wait beyond the scheduled gap', bunching: 'gaps under 2 min or over 2× scheduled' };
+/** The picked measure's one-line definition, first in the key (Ryan, 2026-10-26, word for word). Run time has none; Delay starts' is its note. */
+const KEY_DEFINITION: Partial<Record<MapMeasure, string>> = { late: '5½+ min late', extraWait: 'wait beyond the scheduled gap', bunching: 'gaps under 2 min or over 2× scheduled', delayStarts: DELAY_STARTS_NOTE };
 
 /** The map's key, as a row of pills at the bottom right of the map, clear of the zoom buttons (the regular map's legend pills). */
 function Key({ measure }: { measure: MapMeasure }) {
   const labels = stepLabels(measure);
   return (
-    <div className="flex flex-wrap items-center justify-end gap-2">
-      {KEY_DEFINITION[measure] && <div className={`${MAP_BADGE} h-8`}><span className={MAP_BADGE_LABEL}>{KEY_DEFINITION[measure]}</span></div>}
-      <div className={`${MAP_BADGE} h-8 gap-3`} role="group" aria-label="Map colours">
-        <span className="text-xs font-bold leading-none text-[var(--text-secondary)]">{measureLabel(measure)}</span>
-        {measure === 'delayStarts' && <span className={MAP_BADGE_LABEL}>{DELAY_STARTS_NOTE}</span>}
-        {labels.map((l, i) => <LegendItem key={l} kind="line" color={STEP_VAR(measure, i)}><span className={MAP_BADGE_LABEL}>{l}</span></LegendItem>)}
-        <LegendItem kind="line" color="var(--strip-delay-0)" swatchClassName="opacity-45"><span className={MAP_BADGE_LABEL}>Not measured</span></LegendItem>
+    // On a phone the pills wrap inside the map's width; each label keeps its words on one line (#1151).
+    <div className="flex max-w-full flex-wrap items-center justify-end gap-2">
+      {KEY_DEFINITION[measure] && <div className={`${MAP_BADGE} min-h-8 max-w-full py-1`}><span className={MAP_BADGE_LABEL}>{KEY_DEFINITION[measure]}</span></div>}
+      <div className={`${MAP_BADGE} min-h-8 max-w-full flex-wrap gap-x-3 gap-y-1.5 py-1.5`} role="group" aria-label="Map colours">
+        <span className="whitespace-nowrap text-xs font-bold leading-none text-[var(--text-secondary)]">{measureLabel(measure)}</span>
+        {labels.map((l, i) => <LegendItem key={l} kind="line" color={STEP_VAR(measure, i)}><span className={`${MAP_BADGE_LABEL} whitespace-nowrap`}>{l}</span></LegendItem>)}
+        <LegendItem kind="line" color="var(--strip-delay-0)" swatchClassName="opacity-45"><span className={`${MAP_BADGE_LABEL} whitespace-nowrap`}>Not measured</span></LegendItem>
       </div>
     </div>
   );
@@ -221,6 +222,11 @@ function Body({ agency, pickSlot, s, route, setRoute, dir, setDir, dirSlot, rout
   agency: string; pickSlot: HTMLElement | null; dirSlot: HTMLElement | null; routeSlot: HTMLElement | null; dataSlot: HTMLElement | null; s: AgencySummary; route: string | null; setRoute: (r: string | null) => void; dir: number | null; setDir: (d: number | null) => void; band: DashboardBand; measure: MapMeasure; setMeasure: (m: MapMeasure) => void; pick: MapPick | null; setPick: (p: MapPick | null) => void;
 }) {
   const wide = useMediaQuery('(min-width: 1024px)');
+  // On a phone the map sits above the widgets: a stop or stretch picked lower down (a "Stops most often late" row)
+  // brings the map back into view so its card shows (#1151).
+  const narrowScroll = useRef<HTMLDivElement | null>(null);
+  const pickKey = pick ? (pick.kind === 'stop' ? pick.stopId : `${pick.fromStopId}>${pick.toStopId}`) : null;
+  useEffect(() => { if (!wide && pickKey) narrowScroll.current?.scrollTo({ top: 0, behavior: 'smooth' }); }, [pickKey, wide]);
   const routes = useMemo(() => s.routes.map(r => r.route), [s]);
   const network = useNetworkData(agency, routes, route);
   // A route whose file was already fetched with the network opens at once; otherwise it is fetched. Until the new route's
@@ -264,7 +270,7 @@ function Body({ agency, pickSlot, s, route, setRoute, dir, setDir, dirSlot, rout
   const summary = useMemo(() => summaryWidgets(s, band), [s, band]);
   const backToNetwork = () => { setRoute(null); setDir(null); setPick(null); };
   // One panel, on the left: the network's overview with no route picked; the route's own figures once one is picked, with a way back.
-  const back: PanelWidget = { key: 'back', size: 'medium', node: <button type="button" onClick={backToNetwork} className="text-sm font-bold text-[var(--text-primary)] hover:underline">← {agency.toUpperCase()}</button> };
+  const back: PanelWidget = { key: 'back', size: 'medium', node: <button type="button" onClick={backToNetwork} className="-my-3 py-3 pr-4 text-left text-sm font-bold text-[var(--text-primary)] hover:underline">← {agency.toUpperCase()}</button> };
   const routePanel: PanelWidget[] | null = !route ? null
     : v3 && ready ? [back, ...routeWidgets({ data: ready, v3, dir: shown, band, setPick, route: ready.route })]
     : [back, ...(own.kind === 'loading' ? [{ key: 'loading', size: 'medium' as const, node: <LoadingWidget /> }] : [])];
@@ -312,7 +318,7 @@ function Body({ agency, pickSlot, s, route, setRoute, dir, setDir, dirSlot, rout
     return (
       <div className="relative min-h-0 flex-1">
         {direction}{upTo}{routeMenu}
-        <div className="absolute inset-0 overflow-y-auto">
+        <div ref={narrowScroll} className="absolute inset-0 overflow-y-auto">
           <div className="relative h-[55vh] min-h-[22rem]">
             <div className="absolute inset-0">{mapEl}</div>
             <div className="pointer-events-none absolute inset-3"><MeasurePills measure={measure} setMeasure={setMeasure} />{note}</div>

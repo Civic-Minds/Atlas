@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { bandFigure, figure } from '../overviewListModel';
 import { lateShareColor } from '../lateShare';
+import { cardTop } from '../cardPlacement';
 import type { LiveV3 } from '../../../../shared/liveDashboard';
 import type { AgencyRouteRow } from '../../../../shared/liveAgency';
 
@@ -43,5 +44,13 @@ describe('late-by-hour colours match the map Late key (#1152)', () => {
     expect(lateShareColor(0.09)).toBe('var(--strip-delay-0)');
     expect(lateShareColor(0.12)).toBe('var(--strip-delay-1)');
     expect(lateShareColor(0.23)).toBe('var(--strip-delay-2)');
+  });
+});
+
+describe('stop card stays inside the map (#1151)', () => {
+  it('goes above the point when it fits, else below, else as low as keeps it whole', () => {
+    expect(cardTop(400, 200, 600)).toBe(184);
+    expect(cardTop(100, 200, 600)).toBe(116);
+    expect(cardTop(150, 400, 470)).toBe(62);
   });
 });
