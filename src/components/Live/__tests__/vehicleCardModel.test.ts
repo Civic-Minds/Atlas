@@ -6,7 +6,7 @@ const base = { headsign: 'Humber Loop', directionId: 0, speedKmh: 23, delayMin: 
 
 describe('vehicle card content', () => {
   it('maps direction, destination, speed and schedule', () => {
-    expect(vehicleCardRows({ ...base, stretchRole: 'variant' }, 'Neville Park')).toEqual([
+    expect(vehicleCardRows(base, 'Neville Park', 'shortTurn')).toEqual([
       { label: 'Direction', value: 'to Neville Park' },
       { label: 'Ends at', value: 'Humber Loop', tag: 'Short turn' },
       { label: 'Speed', value: '23 km/h' },
@@ -17,12 +17,12 @@ describe('vehicle card content', () => {
     const rows = vehicleCardRows({ ...base, speedKmh: null, delayMin: null, status: 'no_data' }, 'Humber Loop');
     // A trip to the line's end: "Direction" only, as on every other card in the list (CIV-1043).
     expect(rows).toEqual([{ label: 'Direction', value: 'to Humber Loop' }]);
-    // A short-turn pattern adds where it ends, tagged; with no direction known, only where the trip ends (no tag).
+    // A short turn (its last stop on the line) adds where it ends, tagged; with no direction known, only where the trip ends (no tag).
     const quiet = { speedKmh: null, delayMin: null, status: 'no_data' as const };
-    expect(vehicleCardRows({ ...base, ...quiet, headsign: 'Broadview & Queen', stretchRole: 'variant' }, 'Distillery'))
+    expect(vehicleCardRows({ ...base, ...quiet, headsign: 'Broadview & Queen' }, 'Distillery', 'shortTurn'))
       .toEqual([{ label: 'Direction', value: 'to Distillery' }, { label: 'Ends at', value: 'Broadview & Queen', tag: 'Short turn' }]);
     // A branch (504B) runs to its own end: that is its direction, untagged.
-    expect(vehicleCardRows({ ...base, ...quiet, headsign: 'Broadview', stretchRole: 'tail' }, 'Distillery')).toEqual([{ label: 'Direction', value: 'to Broadview' }]);
+    expect(vehicleCardRows({ ...base, ...quiet, headsign: 'Broadview' }, 'Distillery', 'branch')).toEqual([{ label: 'Direction', value: 'to Broadview' }]);
     // A destination from the feed, with no shape to say what kind of trip it is: where it ends, untagged.
     expect(vehicleCardRows({ ...base, ...quiet, headsign: 'Broadview' }, 'Distillery'))
       .toEqual([{ label: 'Direction', value: 'to Distillery' }, { label: 'Ends at', value: 'Broadview' }]);

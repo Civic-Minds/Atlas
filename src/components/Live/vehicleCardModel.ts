@@ -27,8 +27,10 @@ export interface VehicleCardRow {
  * feed gave its value. The feed has no next-stop field, so the card never shows one.
  */
 export function vehicleCardRows(
-  v: Pick<LiveVehicle, 'headsign' | 'directionId' | 'speedKmh' | 'delayMin' | 'statusLabel' | 'status' | 'stretchRole'>,
+  v: Pick<LiveVehicle, 'headsign' | 'directionId' | 'speedKmh' | 'delayMin' | 'statusLabel' | 'status'>,
   directionLabel: string | null | undefined,
+  /** Where this trip ends against its direction's line (routeTripEnds); unknown: no tag. */
+  tripEnd?: 'shortTurn' | 'branch',
 ): VehicleCardRow[] {
   const rows: VehicleCardRow[] = [];
   const direction = directionLabel?.trim();
@@ -36,11 +38,11 @@ export function vehicleCardRows(
   // Every car reads "Direction: to Distillery", the line's end for its direction; a short turn adds
   // "Ends at Broadview & Queen" with a "Short turn" tag. Never a compass word (CIV-1043, Ryan's approved wording).
   // A branch (504B to Broadview) runs to its own end, so it reads "Direction: to Broadview", untagged; the tag is
-  // only for a trip whose shape is a short-turn pattern, never a guess.
-  const branch = v.stretchRole === 'tail' && !!destination;
+  // only for a trip whose last stop is on its direction's line, never a guess.
+  const branch = tripEnd === 'branch' && !!destination;
   if (branch) rows.push({ label: 'Direction', value: `to ${destination}` });
   else if (direction) rows.push({ label: 'Direction', value: `to ${direction}` });
-  if (!branch && destination && destination !== direction) rows.push({ label: 'Ends at', value: destination, ...(direction && v.stretchRole === 'variant' ? { tag: 'Short turn' } : {}) });
+  if (!branch && destination && destination !== direction) rows.push({ label: 'Ends at', value: destination, ...(direction && tripEnd === 'shortTurn' ? { tag: 'Short turn' } : {}) });
   if (v.speedKmh != null) rows.push({ label: 'Speed', value: `${v.speedKmh} km/h` });
   const schedule = delayLabel(v);
   if (schedule) rows.push({ label: 'Schedule', value: schedule, status: v.status });

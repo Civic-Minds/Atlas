@@ -15,8 +15,6 @@ export interface LiveVehicle {
   headsign: string | null;
   directionId: number | null;
   vehicleLabel: string | null;
-  /** From the route shape its destination was read from: a branch (tail) or a short turn (variant) (frontend only). */
-  stretchRole?: 'main' | 'tail' | 'variant';
   status: 'no_data' | 'early' | 'late' | 'on_time';
   statusLabel?: string | null;
   headwayGapMin?: number | null;

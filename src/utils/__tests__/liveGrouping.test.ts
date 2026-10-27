@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { LiveVehicle } from '../../context/LiveVehiclesMapOverlay';
-import { DIRECTION_UNCLEAR, compareLiveRoutes, focusDirectionKey, groupVehiclesByDirection, orderDirectionGroups, routeDirectionLabels, vehicleDirectionKey } from '../liveGrouping';
+import { DIRECTION_UNCLEAR, compareLiveRoutes, focusDirectionKey, groupVehiclesByDirection, orderDirectionGroups, routeDirectionLabels, routeTripEnds, vehicleDirectionKey } from '../liveGrouping';
+import { streetJoin } from '../stopLabel';
 
 const v = (id: string, extra: Partial<LiveVehicle> = {}): LiveVehicle => ({
   id, routeShortName: '501', displayName: '501', tripId: 't', lat: 43.65, lon: -79.4, bearing: null, speedKmh: null, tsEpoch: null,
@@ -112,5 +113,21 @@ describe('compareLiveRoutes (route list order)', () => {
 
   it('keeps numbered routes ahead of named ones', () => {
     expect(order([r('sfmta', 'N'), r('sfmta', '38'), r('sfmta', 'F')])).toEqual(['sfmta 38', 'sfmta F', 'sfmta N']);
+  });
+});
+
+describe('routeTripEnds (CIV-1043)', () => {
+  const line = (headsign: string, coordinates: [number, number][], directionId = 0): GeoJSON.Feature => ({
+    type: 'Feature', properties: { routeShortName: '504', directionId, headsign }, geometry: { type: 'LineString', coordinates },
+  });
+  it('calls a trip that ends on its direction\'s line a short turn, and one that ends off it a branch', () => {
+    const ends = routeTripEnds([
+      line('Distillery', [[0, 0], [0.05, 0]]),
+      line('Broadview and Queen', [[0, 0], [0.03, 0]]),
+      line('Broadview', [[0, 0], [0.03, 0], [0.03, 0.01]]),
+    ], '504', streetJoin);
+    expect(ends.get('0|Broadview & Queen')).toBe('shortTurn');
+    expect(ends.get('0|Broadview')).toBe('branch');
+    expect(ends.has('0|Distillery')).toBe(false);
   });
 });

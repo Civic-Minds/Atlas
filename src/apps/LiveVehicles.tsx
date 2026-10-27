@@ -27,7 +27,7 @@ import { branchDisplayPeriodHeadway } from '../utils/routeFacts';
 import { periodKeyForHour } from '../../shared/config';
 import { countOf } from '../../shared/overflowText';
 import { inferLiveDirection, type LiveDirectionMatch } from '../utils/liveDirection';
-import { DIRECTION_UNCLEAR, compareLiveRoutes, focusDirectionKey, groupVehiclesByDirection, orderDirectionGroups, routeDirectionLabels } from '../utils/liveGrouping';
+import { DIRECTION_UNCLEAR, compareLiveRoutes, focusDirectionKey, groupVehiclesByDirection, orderDirectionGroups, routeDirectionLabels, routeTripEnds } from '../utils/liveGrouping';
 import { CardDirectionRow, CardHelpNotice, SidebarCardHeaderBlock, SidebarCardListRows, SidebarCardSection, SidebarCardShell, CARD_LIST_ROUTE, SIDEBAR_CARD_BODY } from '../components/Interval/cardUi';
 import { liveVehiclesFingerprint } from '../utils/liveVehiclesFingerprint';
 import { buildRouteKey, routeFeatureForShortName, routeKeyForShortName, splitRouteKey } from '../utils/routeKey';
@@ -215,7 +215,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
         const kept = match.directionId == null && match.headsign == null ? lastDirection.get(`${slug}|${vehicle.id}|${vehicle.tripId}`) : undefined;
         const m = kept ?? match;
         if (!kept && (m.directionId != null || m.headsign != null)) lastDirection.set(`${slug}|${vehicle.id}|${vehicle.tripId}`, m);
-        const out = { ...vehicle, directionId: m.directionId, headsign: m.headsign && streetJoin(m.headsign), ...(m.stretchRole ? { stretchRole: m.stretchRole } : {}) };
+        const out = { ...vehicle, directionId: m.directionId, headsign: m.headsign && streetJoin(m.headsign) };
         if (routeFeatures.length > 0) resolvedDirections.set(vehicle, out);
         return out;
       });
@@ -512,6 +512,12 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
     return fc ? new Map([...routeDirectionLabels(fc.features, selectedGroup.routeShortName)].map(([d, l]) => [d, streetJoin(l)])) : new Map<number, string>();
   }, [selectedGroup, routeLayer]);
 
+  // Which destinations are short turns and which are branches, for the vehicle card (CIV-1043).
+  const tripEnds = useMemo(() => {
+    const fc = selectedGroup ? routeLayer(selectedGroup.agencySlug) : null;
+    return fc && selectedGroup ? routeTripEnds(fc.features, selectedGroup.routeShortName, streetJoin) : new Map<string, 'shortTurn' | 'branch'>();
+  }, [selectedGroup, routeLayer]);
+
   // Direction drill-down within a route
   const [selectedDirection, setSelectedDirection] = useState<string | null>(null);
   // The direction picked in "Right now" and the cars it counts there (#1163): the list shows those same cars.
@@ -675,7 +681,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
         />
       </SidebarCardHeaderBlock>
       <SidebarCardSection label={vehicleCardName(cardVehicle, selectedRouteModeWord) ?? selectedRouteModeWord}>
-        {vehicleCardRows(cardVehicle, cardVehicle.directionId != null ? directionLabels.get(cardVehicle.directionId) : null).map(row => (
+        {vehicleCardRows(cardVehicle, cardVehicle.directionId != null ? directionLabels.get(cardVehicle.directionId) : null, tripEnds.get(`${cardVehicle.directionId}|${cardVehicle.headsign}`)).map(row => (
           <div key={row.label} className="flex items-start justify-between gap-3">
             <span className="text-xs font-bold text-[var(--text-dim)] shrink-0 whitespace-nowrap">{row.label}</span>
             <span
