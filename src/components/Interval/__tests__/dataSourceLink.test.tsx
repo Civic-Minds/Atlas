@@ -77,12 +77,14 @@ describe('Source link', () => {
 
     it('the area link, About and Source on one line under the name, above the facts, each opening in a new tab (CIV-929)', () => {
       card(ttc);
-      const area = screen.getByRole('link', { name: 'Greater Toronto and Hamilton Area' });
+      const area = screen.getByRole('link', { name: 'Greater Toronto and Hamilton' });
       const facts = screen.getByText(/^\d+ routes?/);
       const about = screen.getByRole('link', { name: 'About' });
       const source = screen.getByRole('link', { name: /^Source/ });
       expect(about).toHaveAttribute('href', '/agency/ttc');
       expect(area).toHaveAttribute('href', '/area/toronto');
+      // Too long for the line, the name drops its trailing "Area" (CIV-523); the full name is on hover.
+      expect(area).toHaveAttribute('title', 'Greater Toronto and Hamilton Area');
       for (const link of [about, source, area]) expect(link).toHaveAttribute('target', '_blank');
       const line = area.closest('p')!;
       expect(about.closest('p')).toBe(line);
@@ -98,7 +100,7 @@ describe('Source link', () => {
       flags.on = false;
       card(ttc);
       expect(screen.getByRole('link', { name: 'About' })).toBeInTheDocument();
-      expect(screen.getByRole('link', { name: 'Greater Toronto and Hamilton Area' })).toBeInTheDocument();
+      expect(screen.getByRole('link', { name: 'Greater Toronto and Hamilton' })).toBeInTheDocument();
       expect(screen.queryByText('Source')).toBeNull();
     });
   });
