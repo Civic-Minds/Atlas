@@ -32,7 +32,7 @@
     },
     "checkedAt": "2026-10-03"
   },
-  "lastFeedExpiry": "20261231",
+  "lastFeedExpiry": "20270131",
   "lastFeedVersion": "20260930",
   "lastRefreshedAt": "2026-10-03",
   "lastFeedCheckAt": "20261019",
@@ -46,5 +46,5 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://godurham.rideralerts.com/InfoPoint/GTFS-Zip.ashx",
-  "lastPeekedExpiry": "20261231"
+  "lastPeekedExpiry": "20270131"
 }

@@ -7,7 +7,7 @@
     -84.55
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-3193/latest.zip",
-  "lastFeedExpiry": "20261231",
+  "lastFeedExpiry": "20270327",
   "lastFeedVersion": "20260924",
   "region": "Georgia",
   "lastRefreshedAt": "2026-10-12",
@@ -40,5 +40,5 @@
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
-  "lastPeekedExpiry": "20261231"
+  "lastPeekedExpiry": "20270327"
 }

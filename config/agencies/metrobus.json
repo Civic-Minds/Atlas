@@ -15,7 +15,7 @@
   ],
   "feedUrl": "http://www.metrobustransit.ca/google/google_transit.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-758/latest.zip",
-  "lastFeedExpiry": "20261111",
+  "lastFeedExpiry": "20270103",
   "lastFeedVersion": null,
   "lastRefreshedAt": "2026-09-07",
   "cities": [
@@ -43,5 +43,5 @@
   },
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "http://www.metrobustransit.ca/google/google_transit.zip",
-  "lastPeekedExpiry": "20261111"
+  "lastPeekedExpiry": "20270103"
 }

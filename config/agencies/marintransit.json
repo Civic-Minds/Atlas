@@ -16,7 +16,7 @@
   ],
   "feedUrl": "https://marintransit.gov/data/google_transit.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2937/latest.zip",
-  "lastFeedExpiry": "20270109",
+  "lastFeedExpiry": "20270110",
   "lastFeedVersion": "UTC: 04-Feb-2026 00:08",
   "lastRefreshedAt": "2026-10-14",
   "cities": [
@@ -47,7 +47,7 @@
     },
     "checkedAt": "2026-10-14"
   },
-  "lastPeekedExpiry": "20270109",
+  "lastPeekedExpiry": "20270110",
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
