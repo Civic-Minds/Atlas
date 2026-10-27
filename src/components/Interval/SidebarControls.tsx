@@ -419,9 +419,11 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
 
   // Group directions by directionId so outbound/inbound are visually separated,
   // and collapse multiple span patterns in the same group into one row.
+  // The Night view's route card ignores the map's period (CIV-934): its rows are the route's own, read at night.
+  const cardPeriod: TimePeriod = nightServiceView ? 'all' : period;
   const directionGroups = useMemo(
-    () => buildDirectionGroups(currentRoute, period, directionLabelOverrides, directionHeadsigns),
-    [currentRoute, directionLabelOverrides, directionHeadsigns, period],
+    () => buildDirectionGroups(currentRoute, cardPeriod, directionLabelOverrides, directionHeadsigns),
+    [currentRoute, directionLabelOverrides, directionHeadsigns, cardPeriod],
   );
 
   const currentStop = useMemo(() => {
@@ -869,13 +871,14 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                   setSelectedRoute={setSelectedRoute}
                   back={routeBack}
                   maxHeadway={maxHeadway}
-                  period={period}
+                  period={cardPeriod}
                   setPeriod={setPeriod}
                   directionGroups={directionGroups}
                   hideSpan={hideSpan}
                   routeIsStale={routeIsStale}
                   selectedRouteOutOfFilter={selectedRouteOutOfFilter}
                   hideFilterNotices={nightServiceView}
+                  nightView={nightServiceView}
                   compareRows={compareRows}
                   expDateStr={expDateStr}
                   hoveredBranch={hoveredBranch}
