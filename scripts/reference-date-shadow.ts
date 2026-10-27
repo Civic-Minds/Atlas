@@ -27,7 +27,7 @@ import JSZip from 'jszip';
 import { parseCsv, synthesizeCalendarFromDates } from '../pipeline/parseGtfs.js';
 import { detectReferenceDate, getActiveServiceIds } from '../pipeline/transit-calendar.js';
 import { calendarFromNextServiceDates } from '../pipeline/serviceDates.js';
-import { buildServiceDayTable, pickServiceWeek, serviceAnchor, splitServicePeriods, DAY_NAMES, type DayName } from '../pipeline/serviceDays.js';
+import { buildServiceDayTable, pickRiderWeek, serviceAnchor, splitServicePeriods, DAY_NAMES, type DayName } from '../pipeline/serviceDays.js';
 import { filterGtfsByAgencyId, filterGtfsByAgencyName, filterGtfsByExcludedShortNames, filterGtfsByExcludedTripHeadsigns } from '../pipeline/filterGtfs.js';
 import { mergeLetterSuffixBranches } from '../pipeline/transforms/letter-suffix-branches.js';
 import { resolveAgencyCountry } from '../pipeline/countryLaunchGate.js';
@@ -192,8 +192,10 @@ async function compareFeed(path: string, feedLabel: string, agency: Agency, feed
   // NEW: the feed's own calendar files after the same filters.
   try {
     const own = { ...oldGtfs, calendar: filtered({ ...raw, calendar: rawCalendar }, agency).calendar ?? [] };
-    const table = buildServiceDayTable({ calendar: own.calendar ?? [], calendarDates: own.calendarDates ?? [], trips: own.trips ?? [], anchor: serviceAnchor(RUN_DATE) });
-    const week = pickServiceWeek(table);
+    // The same pick process-core makes (stage 4), including the listing-end safeguard.
+    const rider = pickRiderWeek({ calendar: own.calendar ?? [], calendarDates: own.calendarDates ?? [], trips: own.trips ?? [], routes: own.routes ?? [], anchor: serviceAnchor(RUN_DATE) });
+    const table = buildServiceDayTable({ calendar: own.calendar ?? [], calendarDates: own.calendarDates ?? [], trips: own.trips ?? [], anchor: rider.anchor });
+    const week = rider.week;
     const split = splitServicePeriods(table);
     const anchorN = Date.UTC(+table.anchor.slice(0, 4), +table.anchor.slice(4, 6) - 1, +table.anchor.slice(6, 8)) / 86400000;
     const dayN = (s: string) => Date.UTC(+s.slice(0, 4), +s.slice(4, 6) - 1, +s.slice(6, 8)) / 86400000;
@@ -204,6 +206,7 @@ async function compareFeed(path: string, feedLabel: string, agency: Agency, feed
     result.new = {
       source: table.source, window: table.window, weekStart: week.weekStart, dates: week.dates, substituted: week.substituted,
       period: week.period, services: week.services, skipped: week.skipped, periodChanges: changes,
+      ...(rider.listingEnd ? { listingEnd: rider.listingEnd } : {}),
     };
   } catch (error) {
     result.new = { error: error instanceof Error ? error.message : String(error) };

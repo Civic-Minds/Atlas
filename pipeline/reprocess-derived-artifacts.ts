@@ -147,7 +147,7 @@ const gateInputs = new Map<string, { candidate: GateCandidate; live: ArtifactSum
 // Live data for the drop and gate checks: the public release first (CIV-522).
 const readBaseline = releaseBaselineReader(r2Get);
 /** The processed feed's raw expiry dates per agency, recorded in index.json once its artifacts are published (#837). */
-const processedExpiries = new Map<string, { feedExpiry: string | null; calendarExpiry: string | null; calendarOnlyEnd: string | null }>();
+const processedExpiries = new Map<string, { feedExpiry: string | null; calendarExpiry: string | null; calendarOnlyEnd: string | null; listingEnd: string | null }>();
 const expiryUpdates: string[] = [];
 const AGENCY_ARTIFACTS = ['', '-stops', '-corridors', '-trips', '-stops-meta', '-sections'] as const;
 
@@ -273,7 +273,7 @@ async function processAgency(agency: Agency): Promise<ReportRow> {
     row.outputCounts = next.counts;
     row.liveCounts = live?.counts ?? null;
     gateInputs.set(agency.slug, { candidate: { slug: agency.slug, next, service: { start: feedStart, end: feedExpiry, calendarEnd, liveFeedExpiry: agency.lastFeedExpiry } }, live });
-    processedExpiries.set(agency.slug, { feedExpiry: result.feedExpiry, calendarExpiry: result.calendarExpiry, calendarOnlyEnd: result.calendarOnlyEnd });
+    processedExpiries.set(agency.slug, { feedExpiry: result.feedExpiry, calendarExpiry: result.calendarExpiry, calendarOnlyEnd: result.calendarOnlyEnd, listingEnd: result.listingEnd });
 
     const agencyDir = resolve(outputDir, agency.slug);
     mkdirSync(agencyDir, { recursive: true });

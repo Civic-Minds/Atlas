@@ -572,3 +572,174 @@ export function pickServiceWeek(table: ServiceDayTable): ServiceWeek {
     skipped,
   };
 }
+
+/**
+ * Reference-date safeguard (CIV-1011, Ryan 2026-10-27): most of an agency's routes stopped being
+ * listed, and nothing replaced them. The map keeps the last full listed week and the agency shows
+ * "This agency's scheduled service for most routes ended <date>, and they have not released
+ * updated data." Dutchess: 11 main calendar rows end 2026-10-28 while its other rows run to
+ * placeholder years, so the whole file never runs out and the "timetable ended" notice never shows.
+ *
+ * A route (by its public name) stops being listed on its last date with trips anywhere in the feed.
+ * The listing ended on date D when routes with trips in the 7 days ending D and none after D are
+ * more than half (LISTING_END_ROUTE_SHARE) of every route the feed lists, and routes new since D carry under
+ * REPLACEMENT_TRIP_SHARE of those ended routes' trips in that week, both in the week after D and in
+ * the anchor week (a new timetable under new route ids, or renumbered routes, replace them). D
+ * counts when it falls on or before the end of the anchor week, so an end that has already passed
+ * still shows (the manager, 2026-10-27). A whole file that runs out (the other routes stop within
+ * CONTINUING_DAYS of D, or nothing runs from the anchor on) keeps the existing "timetable ended"
+ * notice instead.
+ */
+export const LISTING_END_ROUTE_SHARE = 0.5;
+export const REPLACEMENT_TRIP_SHARE = 0.5;
+/** Days the remaining routes must keep running past the end, so a file that simply runs out is not flagged. */
+export const CONTINUING_DAYS = 14;
+/** A service's last active day is searched at most this far back from its row's end (removals). */
+const LAST_DAY_SEARCH_DAYS = 800;
+
+export interface ListingEnd {
+  /** The last date the ended routes are listed (YYYYMMDD). */
+  date: string;
+  endedRoutes: string[];
+  /** Routes the feed lists at all (with trips on some date). */
+  routes: number;
+}
+
+interface ServiceCalendar {
+  servicesOn(day: number): string[];
+  lastActiveDay(serviceId: string): number | null;
+}
+
+function serviceCalendar(calendar: readonly GtfsCalendar[], calendarDates: readonly GtfsCalendarDate[]): ServiceCalendar {
+  const rows = calendar
+    .filter(c => isYmd(c.start_date) && isYmd(c.end_date))
+    .map(c => ({ id: c.service_id, start: dayNumber(c.start_date), end: dayNumber(c.end_date), flags: DOW_FIELDS.map(f => c[f] === '1') }));
+  const changesByDay = new Map<number, Array<{ id: string; add: boolean }>>();
+  const removed = new Set<string>();
+  const lastAdded = new Map<string, number>();
+  for (const cd of calendarDates) {
+    if (!isYmd(cd.date) || (cd.exception_type !== '1' && cd.exception_type !== '2')) continue;
+    const n = dayNumber(cd.date);
+    const add = cd.exception_type === '1';
+    changesByDay.set(n, [...(changesByDay.get(n) ?? []), { id: cd.service_id, add }]);
+    if (add) lastAdded.set(cd.service_id, Math.max(lastAdded.get(cd.service_id) ?? -Infinity, n));
+    else removed.add(`${cd.service_id}|${n}`);
+  }
+  const servicesOn = (n: number): string[] => {
+    const dow = dayIndex(n);
+    const running = new Set<string>();
+    for (const r of rows) if (r.flags[dow] && r.start <= n && n <= r.end) running.add(r.id);
+    const changes = changesByDay.get(n) ?? [];
+    for (const c of changes) if (!c.add) running.delete(c.id);
+    for (const c of changes) if (c.add) running.add(c.id);
+    return [...running].sort();
+  };
+  const lastActiveDay = (id: string): number | null => {
+    let last = lastAdded.get(id) ?? null;
+    for (const r of rows) {
+      if (r.id !== id || !r.flags.some(Boolean)) continue;
+      for (let n = r.end; n >= r.start && n > r.end - LAST_DAY_SEARCH_DAYS; n--) {
+        if (last != null && n <= last) break;
+        if (r.flags[dayIndex(n)] && !removed.has(`${id}|${n}`)) { last = n; break; }
+      }
+    }
+    return last;
+  };
+  return { servicesOn, lastActiveDay };
+}
+
+/** The safeguard's listing end for a feed at an anchor, or null (see LISTING_END_ROUTE_SHARE). */
+/** Routes by their public name, so a route_id renumbered each board (Calgary "1-20795") is one route. */
+export type ListingRoutes = ReadonlyArray<{ route_id: string; route_short_name?: string; route_long_name?: string }>;
+
+export function findListingEnd(input: Pick<ServiceDayTableInput, 'calendar' | 'calendarDates' | 'trips' | 'anchor'> & { routes?: ListingRoutes }): ListingEnd | null {
+  const cal = serviceCalendar(input.calendar, input.calendarDates);
+  const nameOf = new Map((input.routes ?? []).map(r => [r.route_id, r.route_short_name?.trim() || r.route_long_name?.trim() || r.route_id]));
+  const tripsByService = new Map<string, Map<string, number>>();
+  for (const t of input.trips) {
+    const byRoute = tripsByService.get(t.service_id) ?? new Map<string, number>();
+    const route = nameOf.get(t.route_id) ?? t.route_id;
+    byRoute.set(route, (byRoute.get(route) ?? 0) + 1);
+    tripsByService.set(t.service_id, byRoute);
+  }
+  const routeLast = new Map<string, number>();
+  for (const [id, byRoute] of tripsByService) {
+    const last = cal.lastActiveDay(id);
+    if (last == null) continue;
+    for (const route of byRoute.keys()) routeLast.set(route, Math.max(routeLast.get(route) ?? -Infinity, last));
+  }
+  if (routeLast.size === 0) return null;
+  const feedLast = Math.max(...routeLast.values());
+  const anchorDay = dayNumber(input.anchor);
+  const anchorWeekEnd = anchorDay - dayIndex(anchorDay) + 6;
+  const tripsIn = (from: number, to: number): Map<string, number> => {
+    const counts = new Map<string, number>();
+    for (let n = from; n <= to; n++) {
+      for (const id of cal.servicesOn(n)) for (const [route, k] of tripsByService.get(id) ?? []) counts.set(route, (counts.get(route) ?? 0) + k);
+    }
+    return counts;
+  };
+  // Of the ends that hold, the one where the most routes stopped (SLO Transit: its weekday routes in
+  // June, not its one trolley later on); the latest on a tie.
+  // A whole file running out is the "timetable ended" notice's case, not this one: the routes that
+  // remain must keep running at least CONTINUING_DAYS past D, and into the anchor week.
+  if (feedLast < anchorDay) return null;
+  const candidates = [...new Set(routeLast.values())].filter(d => d <= anchorWeekEnd && feedLast >= d + CONTINUING_DAYS).sort((a, b) => b - a);
+  let best: ListingEnd | null = null;
+  for (const d of candidates) {
+    const week = tripsIn(d - 6, d);
+    if (week.size === 0) continue;
+    const ended = [...week.keys()].filter(route => (routeLast.get(route) ?? -Infinity) <= d);
+    if (ended.length <= LISTING_END_ROUTE_SHARE * routeLast.size) continue;
+    const endedTrips = ended.reduce((n, route) => n + (week.get(route) ?? 0), 0);
+    // Replaced: in the week after D, or in the anchor week riders face now, routes new since D carry
+    // the share of the ended routes' trips.
+    const newTrips = (from: number) => [...tripsIn(from, from + 6)].filter(([route]) => !week.has(route)).reduce((n, [, k]) => n + k, 0);
+    const replacing = Math.max(newTrips(d + 1), anchorWeekEnd - 6 > d + 1 ? newTrips(anchorWeekEnd - 6) : 0);
+    if (replacing >= REPLACEMENT_TRIP_SHARE * endedTrips) continue;
+    if (!best || ended.length > best.endedRoutes.length) best = { date: ymdOf(d), endedRoutes: ended.sort(), routes: routeLast.size };
+  }
+  return best;
+}
+
+export interface RiderWeek {
+  week: ServiceWeek;
+  /** The anchor the week was picked at: the run's, or the last full listed week's (listingEnd). */
+  anchor: string;
+  listingEnd: ListingEnd | null;
+  /**
+   * The picked week as calendar.txt rows (each service flagged on the days it runs that week, over
+   * a range around `referenceDate`, with no calendar_dates), so every reader of the calendar
+   * (getActiveServiceIds, phase 1, corridors, converging origins) reads exactly this week.
+   */
+  calendar: GtfsCalendar[];
+  referenceDate: string;
+}
+
+/** Days either side of the picked week's reference date that its calendar rows cover. */
+const RIDER_WEEK_RANGE_DAYS = 14;
+
+/**
+ * The week the map reads (stage 4): pickServiceWeek at the anchor, or, when most routes stopped
+ * being listed (findListingEnd), in the last full listed week before that end. Input: the feed's
+ * own calendar.txt (none for a calendar_dates-only feed, never parseGtfs' synthesized rows) and
+ * calendar_dates, after the agency's filters.
+ */
+export function pickRiderWeek(input: Pick<ServiceDayTableInput, 'calendar' | 'calendarDates' | 'trips' | 'anchor'> & { routes?: ListingRoutes }): RiderWeek {
+  const listingEnd = findListingEnd(input);
+  const anchor = listingEnd ? ymdOf(dayNumber(listingEnd.date) - 6) : input.anchor;
+  const week = pickServiceWeek(buildServiceDayTable({ calendar: input.calendar, calendarDates: input.calendarDates, trips: input.trips, anchor }));
+  const dated = DAY_NAMES.map(day => week.dates[day]).filter((d): d is string => d != null);
+  const referenceDate = week.dates.Wednesday ?? dated[Math.floor(dated.length / 2)] ?? anchor;
+  const ids = [...new Set(DAY_NAMES.flatMap(day => week.services[day]))].sort();
+  const flag = (id: string, day: DayName) => (week.services[day].includes(id) ? '1' : '0');
+  const ref = dayNumber(referenceDate);
+  const calendar: GtfsCalendar[] = ids.map(id => ({
+    service_id: id,
+    monday: flag(id, 'Monday'), tuesday: flag(id, 'Tuesday'), wednesday: flag(id, 'Wednesday'), thursday: flag(id, 'Thursday'),
+    friday: flag(id, 'Friday'), saturday: flag(id, 'Saturday'), sunday: flag(id, 'Sunday'),
+    start_date: ymdOf(ref - RIDER_WEEK_RANGE_DAYS),
+    end_date: ymdOf(ref + RIDER_WEEK_RANGE_DAYS),
+  }));
+  return { week, anchor, listingEnd, calendar, referenceDate };
+}

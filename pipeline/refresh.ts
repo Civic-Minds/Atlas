@@ -681,6 +681,7 @@ async function refreshAgency(
       todayYmd: todayUtcYmd(),
       calendarExpiry: keptCalendarExpiry,
       calendarOnlyEnd,
+      listingEnd: primary.listingEnd,
     });
     stampSupplementalFeedMeta(agency, supplementalMeta);
   }
