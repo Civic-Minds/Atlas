@@ -13,6 +13,8 @@ import {
   CardDirectionRow,
   CardDivider,
   CardCallout,
+  CARD_CALLOUT_HEADLINE,
+  CARD_CALLOUT_TEXT,
   CardSectionLabel,
   CardHelpNotice,
   SidebarCardHeaderBlock,
@@ -466,9 +468,11 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
       {compareRows && (() => {
         const { headline, lines } = compareCardSummary(compareRows);
         return (
-          <CardCallout className="mb-3 text-xs font-bold text-[var(--text-primary)]" data-testid="compare-card-summary">
-            {headline && <p className="text-xs font-black">{headline}</p>}
-            {lines.map(line => <p key={line} className={headline ? 'mt-0.5 text-[var(--text-dim)]' : 'py-0.5'}>{line}</p>)}
+          <CardCallout className="mb-3" data-testid="compare-card-summary">
+            {/* The shared callout styles (CIV-971): a headline, then its lines; with no headline each line is one. */}
+            {headline && <p className={CARD_CALLOUT_HEADLINE}>{headline}</p>}
+            {/* A bracketed frequency ("(≤5 min)") stays on one line. */}
+            {lines.map(line => <p key={line} className={headline ? CARD_CALLOUT_TEXT : `${CARD_CALLOUT_HEADLINE} py-0.5`}>{line.replace(/\([^)]+\)/g, part => part.replace(/ /g, '\u00A0'))}</p>)}
           </CardCallout>
         );
       })()}

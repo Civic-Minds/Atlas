@@ -45,6 +45,10 @@ export function CardBodyText({ className = '', ...rest }: React.HTMLAttributes<H
 export const CARD_CALLOUT_SURFACE = 'rounded-xl border border-[var(--border-primary)] bg-[var(--bg-app)]';
 export const CARD_CALLOUT = `${CARD_CALLOUT_SURFACE} px-3 py-2.5`;
 
+/** A callout's headline and its plain lines under it: one style for every callout (Compare, History) (CIV-971). */
+export const CARD_CALLOUT_HEADLINE = 'text-xs font-bold leading-tight text-[var(--text-primary)]';
+export const CARD_CALLOUT_TEXT = 'text-xs text-[var(--text-muted)] mt-0.5';
+
 /** The tinted callouts (History's better or worse summary): the status tint in place of the outline. */
 const CARD_CALLOUT_TONE = {
   neutral: CARD_CALLOUT,
