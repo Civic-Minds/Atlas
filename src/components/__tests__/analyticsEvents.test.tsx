@@ -38,7 +38,15 @@ describe('MapAttribution events', () => {
     render(<MapAttribution whatsNewEnabled={false} />);
     fireEvent.click(screen.getByText('Feedback'));
     expect(trackEvent).toHaveBeenCalledWith('feedback_opened', { source: 'map_attribution' });
-    fireEvent.click(screen.getByText('CARTO'));
+    // The basemap credit (CIV-980): "© OpenStreetMap contributors, © CARTO", each name its own tracked link.
+    const carto = screen.getByRole('link', { name: '© CARTO' });
+    expect(carto).toHaveAttribute('href', 'https://carto.com/attributions');
+    fireEvent.click(carto);
+    expect(trackEvent).toHaveBeenCalledWith('outbound_click', { kind: 'attribution', agency_slug: undefined });
+    const osm = screen.getByRole('link', { name: '© OpenStreetMap contributors' });
+    expect(osm).toHaveAttribute('href', 'https://www.openstreetmap.org/copyright');
+    trackEvent.mockClear();
+    fireEvent.click(osm);
     expect(trackEvent).toHaveBeenCalledWith('outbound_click', { kind: 'attribution', agency_slug: undefined });
   });
 });
