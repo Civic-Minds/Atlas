@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  fitAgencyName,
   agencyIntroSentence, introName, agencySpansArea, namesList, agencySpanShort, agencyBreadcrumbs, agencyDatesText, agencyLeadSentence, agencyMapHref, agencyPageDescription, agencyPageH1, agencyPageJsonLd, hasMiddayService,
   agencyPageData, agencyPagePath, agencyPageTitle, agencySpanText, agencyStats, bandCounts, formatDataDate, nearbyAgencies, resolveAgencySeo, trimRedundantCity,
   type AgencyPageRoute, type AgencyPageSummary, bestRoute, modesText, weekendLabel,
@@ -221,5 +222,17 @@ describe('hasMiddayService', () => {
     expect(hasMiddayService({ routes: [r('1', 3, null), r('2', 3, 20)] })).toBe(true);
     expect(hasMiddayService({ routes: [r('1', 3, null)] })).toBe(false);
     expect(hasMiddayService({ routes: [] })).toBe(false);
+  });
+});
+
+describe('fitAgencyName (CIV-967)', () => {
+  it('keeps a name that fits, with no hover title', () => {
+    expect(fitAgencyName('Marin Transit', 'Marin Transit', 24)).toEqual({ text: 'Marin Transit' });
+  });
+  it('shows the short name past the limit, with the full name on hover', () => {
+    expect(fitAgencyName('Capital District Transportation Authority', 'CDTA', 24)).toEqual({ text: 'CDTA', title: 'Capital District Transportation Authority' });
+  });
+  it('keeps the full name when the short one is no shorter', () => {
+    expect(fitAgencyName('Spokane Transit Authority', 'Spokane Transit Authority', 24)).toEqual({ text: 'Spokane Transit Authority' });
   });
 });

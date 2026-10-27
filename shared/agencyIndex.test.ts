@@ -67,3 +67,10 @@ describe('agencyIndexRegionHref (CIV-966)', () => {
   });
 });
 
+describe('agency index short names (CIV-967)', () => {
+  it('carries each agency\'s name without its bracketed city, for rows too tight for the full name', () => {
+    const cdta = { ...ag('cdta', 'Capital District Transportation Authority', 'United States', 'New York', 50), displayName: 'CDTA (Albany)' };
+    const row = buildAgencyIndexData([cdta], [], null).groups[0].regions[0].agencies[0];
+    expect(row).toMatchObject({ name: 'Capital District Transportation Authority', shortName: 'CDTA' });
+  });
+});
