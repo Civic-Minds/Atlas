@@ -88,6 +88,22 @@ describe('cleanHeadsign', () => {
     expect(cleanHeadsign('9 Wilmington - Bowers & 12th Sts', '009', null)).toBe('Wilmington - Bowers & 12th Sts');
   });
 
+  it('keeps a first word that only starts with the route number or letter (#1139)', () => {
+    expect(cleanHeadsign('12th Street/31st & Van Brunt', '12', null)).toBe('12th Street/31st & Van Brunt');
+    expect(cleanHeadsign('63rd St/67th & Blue Ridge', '63', null)).toBe('63rd St/67th & Blue Ridge');
+    expect(cleanHeadsign('211', '21', null)).toBe('211');
+    expect(cleanHeadsign('AMERICAN CENTER', 'A', null)).toBe('AMERICAN CENTER');
+    expect(cleanHeadsign('BIG BEND - NORTHBOUND', 'B', null)).toBe('BIG BEND - NORTHBOUND');
+    expect(cleanHeadsign('UC Davis MU Terminal', 'U', null)).toBe('UC Davis MU Terminal');
+  });
+
+  it('still strips the route number and its variant letter when they open the headsign (#1139)', () => {
+    expect(cleanHeadsign('54S Lawrence East Short Turn', '54', null)).toBe('Lawrence East Short Turn');
+    expect(cleanHeadsign('504 King', '504', null)).toBe('King');
+    expect(cleanHeadsign('31 - Downtown', '31', null)).toBe('Downtown');
+    expect(cleanHeadsign('A Downtown', 'A', null)).toBe('Downtown');
+  });
+
   it('keeps a leading number that is not the unpadded route number', () => {
     expect(cleanHeadsign('50 Waterfront Station', '005', null)).toBe('50 Waterfront Station');
     expect(cleanHeadsign('5th Street', '005', null)).toBe('5th Street');

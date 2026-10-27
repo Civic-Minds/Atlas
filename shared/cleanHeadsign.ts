@@ -33,8 +33,11 @@ export function cleanHeadsign(
 
   if (shortName) {
     const escaped = shortName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    // Strip route short name repeated at the start of the headsign (common in many feeds)
-    h = h.replace(new RegExp(`^${escaped}[A-Za-z0-9]*\\s*(?:-\\s*)?`), '');
+    // Strip route short name repeated at the start of the headsign (common in many feeds). A numbered route may carry a
+    // one- or two-letter variant ("54S Lawrence East Short Turn"); the prefix must end the word, so a destination that only
+    // starts with the route's number or letter keeps it ("12th Street", "AMERICAN CENTER", "211", #1139).
+    const variant = /\d$/.test(shortName) ? '(?!(?:st|nd|rd|th)\\b)[A-Za-z]{0,2}' : '';
+    h = h.replace(new RegExp(`^${escaped}${variant}(?:\\s+|\\s*-\\s*|$)`), '');
     // Zero-padded numeric short names: DART route "005" writes its headsigns as "5 LOVE FIELD AIRPORT" (#1098).
     // The card title already drops the zeros (routeLabelParts), so match the unpadded number when it stands alone.
     const unpadded = /^0+\d+$/.test(shortName) ? shortName.replace(/^0+/, '') : '';
