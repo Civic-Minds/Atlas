@@ -1,5 +1,6 @@
 import type { ShapeProperties, TimePeriod } from '../hooks/useIntervalStats';
 import { shouldShowTrunkSummary } from './routeCardTrunk';
+import { MIN_UNSUSTAINED_EXCESS_MINUTES, MIN_UNSUSTAINED_RATIO } from '../../shared/unevenGap';
 
 interface DirectionGroupLike {
   realTier: ShapeProperties[];
@@ -7,11 +8,9 @@ interface DirectionGroupLike {
   directionFeatures?: readonly ShapeProperties[];
 }
 
-// Mirrors pipeline/headway-utils.ts's MIN_UNSUSTAINED_EXCESS_MINUTES / MIN_UNSUSTAINED_RATIO.
-// Duplicated rather than imported -- pipeline/ isn't part of the frontend build. Keep in sync
-// if the pipeline constants are retuned.
-const UNEVEN_GAP_MIN_EXCESS_MINUTES = 15;
-const UNEVEN_GAP_MIN_RATIO = 1.7;
+// The pipeline's thresholds, from one shared place (CIV-996).
+const UNEVEN_GAP_MIN_EXCESS_MINUTES = MIN_UNSUSTAINED_EXCESS_MINUTES;
+const UNEVEN_GAP_MIN_RATIO = MIN_UNSUSTAINED_RATIO;
 
 /**
  * Is this direction's worst gap for the period materially worse than its own normal headway?
