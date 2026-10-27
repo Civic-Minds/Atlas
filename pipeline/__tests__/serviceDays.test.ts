@@ -432,6 +432,53 @@ describe('pickServiceWeek: issues in the plan (section 4)', () => {
     expect(week.weekStart).toBe('20261026');
   });
 
+  it('a tied vote in a short period goes to the signature that recurs across the window (HSR 41, stage 4)', () => {
+    // The Saturday timetable changes on Nov 14, so the period read holds only two Mondays: Oct 26
+    // (a one-off: the weekday service swapped for a 7-trip one) and Nov 2. The 1:1 tie used to go
+    // to the date nearer the anchor, the one-off; the regular Monday recurs on every later Monday.
+    const calendar = [
+      cal('WK', 'mo,tu,we,th,fr', '20261001', '20261231'),
+      cal('SA1', 'sa', '20261001', '20261107'), cal('SA2', 'sa', '20261108', '20261231'),
+    ];
+    const calendarDates = [removed('WK', '20261026'), added('ONEOFF', '20261026')];
+    const trips = [...tripsOf('WK', 'R', 10), ...tripsOf('ONEOFF', 'R', 7), ...tripsOf('SA1', 'R', 6), ...tripsOf('SA2', 'R', 4)];
+    const table = buildServiceDayTable({ calendar, calendarDates, trips, anchor: '20261028' });
+    expect(splitServicePeriods(table).periods.map(p => p[0])).toEqual(['20261019', '20261109']);
+    const week = pickServiceWeek(table);
+    expect(week.votes.Monday?.signature).toBe('R:10');
+    expect(week.weekStart).toBe('20261102');
+    expect(week.services.Monday).toEqual(['WK']);
+    expect(skippedDates(week)).toEqual(['20261026']);
+  });
+
+  it('every-other-week service reads the anchor week\'s own signature (Kingston 60, stage 4)', () => {
+    // Route K runs on alternate Sundays (Oct 18, Nov 1, Nov 15), 2 of the table's 8 Sundays. The
+    // Sundays around the anchor's week alternate without a break, so the anchor week's Sunday
+    // (Nov 1, with K) is read rather than the majority, and the week read is the anchor's own.
+    const calendar = [cal('WK', 'mo,tu,we,th,fr', '20261001', '20261231'), cal('SUN', 'su', '20261001', '20261231')];
+    const calendarDates = ['20261018', '20261101', '20261115'].map(d => added('K', d));
+    const trips = [...tripsOf('WK', 'R', 10), ...tripsOf('SUN', 'R', 6), ...tripsOf('K', 'K', 61)];
+    const week = pick({ calendar, calendarDates, trips, anchor: '20261028' });
+    expect(week.weekStart).toBe('20261026');
+    expect(week.dates.Sunday).toBe('20261101');
+    expect(week.services.Sunday).toEqual(['K', 'SUN']);
+    expect(week.substituted).toEqual([]);
+    // From an anchor in a week without K, the same cycle reads that week's Sunday, without K.
+    expect(pick({ calendar, calendarDates, trips, anchor: '20261104' }).services.Sunday).toEqual(['SUN']);
+  });
+
+  it('occasional event service that does not alternate stays dropped (CATA game-day Saturdays)', () => {
+    // Game days Oct 31, Nov 14 and Dec 5: the Saturdays around the anchor run R, G, R, G, R, as
+    // CATA's home games did, but the games are not every other week throughout (Nov 14 to Dec 5 is
+    // three weeks), so it is not a two-week cycle and the majority (no game service) is read.
+    const calendar = [cal('WK', 'mo,tu,we,th,fr', '20261001', '20261231'), cal('SA', 'sa', '20261001', '20261231')];
+    const calendarDates = ['20261031', '20261114', '20261205'].map(d => added('GAME', d));
+    const trips = [...tripsOf('WK', 'R', 10), ...tripsOf('SA', 'R', 6), ...tripsOf('GAME', 'G', 94)];
+    const week = pick({ calendar, calendarDates, trips, anchor: '20261028' });
+    expect(week.services.Saturday).toEqual(['SA']);
+    expect(week.weekStart).toBe('20261102');
+  });
+
   it('a game-day Sunday loses the vote (Sound Transit Sounder, CIV-445)', () => {
     // Run Mon Nov 2: the anchor week's Sunday (Nov 8) is a game day, so the next week is read.
     const week = pick({ ...gameDay(), anchor: serviceAnchor('20261102') });
@@ -550,9 +597,11 @@ describe('pickServiceWeek: inputs from the existing tests', () => {
   it('alternating weeks with a holiday Monday (transit-calendar #658): known limit, Monday comes from another kind of week', () => {
     // The exact input of "moves the whole week so every day describes the same week": 'alt' runs
     // in odd weeks, and the regular service is removed on Mon Oct 12. The feed ends Nov 27, so the
-    // window starts Oct 3: even Mondays win 4:3 (Oct 12 is the holiday), while Tuesday-Friday tie
-    // 4:4 and the nearest is the anchor's odd week. The per-day vote (rule 2) then pairs an even Monday with odd
-    // Tuesday-Friday, which the old whole-week move prevented. Recorded as a limit, not a target.
+    // window starts Oct 3: even Mondays win 4:3 (Oct 12 is the holiday). Tuesday-Friday alternate
+    // without a break, so they take the anchor week's own (odd) signature by the two-week-cycle
+    // rule; Monday's cycle is broken by the holiday in the anchor's week, so Monday still takes the
+    // even majority. The week read pairs an even Monday with odd Tuesday-Friday, which the old
+    // whole-week move prevented. Recorded as a limit, not a target.
     const calendar = [cal('reg', 'mo,tu,we,th,fr', '20260928', '20261127'), cal('alt', 'mo,tu,we,th,fr', '20260928', '20261127')];
     const even = new Set([...dates('20261005', '20261009'), ...dates('20261019', '20261023'), ...dates('20261102', '20261106'), ...dates('20261116', '20261120')]);
     const calendarDates = [...dates('20260928', '20261127').filter(d => isWeekday(d) && even.has(d)).map(d => removed('alt', d)), removed('reg', '20261012')];

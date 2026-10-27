@@ -32,6 +32,10 @@ export const MIN_NEW_PERIOD_WEEKS = 3;
 export const MIN_OLD_PERIOD_WEEKS = 2;
 /** Share of the weeks looked at (up to 4 each side) that must carry the old and the new pattern. */
 export const PERIOD_MAJORITY = 0.75;
+/** A day seen on fewer weeks than this in its period has a thin vote, broken by the whole window (HSR 41, stage 4). */
+export const MIN_VOTE_WEEKS = 3;
+/** Weeks each of the two signatures of a two-week cycle must hold (Kingston 60's every-other-Sunday service, stage 4). */
+export const MIN_CYCLE_WEEKS_EACH = 2;
 /** Weeks looked at on each side of a possible period change. */
 const PERIOD_LOOK_WEEKS = 4;
 
@@ -358,13 +362,53 @@ export interface PickServiceWeekOptions {
 }
 
 /**
+ * The anchor week's vote when a day runs a two-week cycle in the period: the day has exactly two
+ * signatures there, each on at least MIN_CYCLE_WEEKS_EACH weeks, and one of them falls on every
+ * other week with no break (its weeks exactly two apart, every week between them present), with
+ * the anchor's week inside that stretch or next to it. Kingston 60 runs on alternate Sundays; a
+ * game day that repeats a week later, a holiday, or a third pattern breaks the cycle (CATA's
+ * game-day Saturdays stay dropped). Null when there is no such cycle.
+ */
+function twoWeekCycle(grid: WeekGrid, weeks: readonly number[], anchorWeek: number, d: number): DayVote | null {
+  const own = weeks.includes(anchorWeek) ? grid.cells[anchorWeek][d]?.signature : undefined;
+  if (own == null) return null;
+  const weeksBySig = new Map<string, number[]>();
+  let present = 0;
+  for (const w of weeks) {
+    const c = grid.cells[w][d];
+    if (!c) continue;
+    present++;
+    weeksBySig.set(c.signature, [...(weeksBySig.get(c.signature) ?? []), w]);
+  }
+  if (weeksBySig.size !== 2) return null;
+  for (const ws of weeksBySig.values()) {
+    if (ws.length < MIN_CYCLE_WEEKS_EACH || present - ws.length < MIN_CYCLE_WEEKS_EACH) return null;
+  }
+  for (const ws of weeksBySig.values()) {
+    const everyOther = ws.every((w, i) => i === 0 || w - ws[i - 1] === 2);
+    const between = Array.from({ length: ws[ws.length - 1] - ws[0] + 1 }, (_, i) => ws[0] + i);
+    const unbroken = between.every(w => weeks.includes(w) && grid.cells[w][d] != null);
+    if (everyOther && unbroken && anchorWeek >= ws[0] - 1 && anchorWeek <= ws[ws.length - 1] + 1) {
+      return { signature: own, weeks: weeksBySig.get(own)!.length, of: present };
+    }
+  }
+  return null;
+}
+
+/**
  * Picks one real week from the table (plan 3b, rules 1-5 and 7).
  *
  * 1. The service period in force on the anchor, or the next one when it starts within
  *    NEW_PERIOD_LEAD_DAYS of the anchor, so an old Saturday is never paired with new weekdays.
  *    With the anchor outside the table (an archived or not-yet-started feed), the nearest period.
- * 2. Each day of the week takes the signature seen on the most weeks of that period. A tie goes to
- *    the signature seen nearest the anchor (the later date when two are equally near).
+ * 2. Each day of the week takes the signature seen on the most weeks of that period. When that
+ *    vote is tied or thin (fewer than MIN_VOTE_WEEKS weeks of the day in the period), it goes to the
+ *    signature seen on the most weeks of that day across the whole table, so a one-off never beats
+ *    a pattern that recurs (HSR 41: a two-Monday period tied a one-off 1:1); then to the signature
+ *    seen nearest the anchor (the later date when two are equally near). A day on a two-week
+ *    cycle in the period (two signatures, one on every other week with no break, the anchor's
+ *    week inside it; see twoWeekCycle) takes the anchor week's own signature instead of the
+ *    majority (Kingston 60, every other Sunday); rule 3 then reads a week of that same phase.
  * 3. The week read is the whole week of the period nearest the anchor where every day carries its
  *    vote (the later week on a tie). Days that lose the vote are logged as skipped: holidays, bus
  *    bridges, game days and break weeks, judged from the feed's own pattern only.
@@ -404,16 +448,33 @@ export function pickServiceWeek(table: ServiceDayTable, options: PickServiceWeek
   const nearer = (a: number, b: number) => distance(a) - distance(b) || b - a;
 
   // Rule 2: the vote per day.
+  const anchorInPeriod = weeks.includes(anchorWeek);
   const votes = byDayName((_, d): DayVote | null => {
     const cells = weeks.map(w => grid.cells[w][d]).filter((c): c is ServiceDay => c != null);
     if (cells.length === 0) return null;
+    const cycle = anchorInPeriod ? twoWeekCycle(grid, weeks, anchorWeek, d) : null;
+    if (cycle) return cycle;
     const counts = new Map<string, { weeks: number; nearest: number }>();
     for (const c of cells) {
       const n = dayNumber(c.date);
       const prev = counts.get(c.signature);
       counts.set(c.signature, { weeks: (prev?.weeks ?? 0) + 1, nearest: prev && nearer(prev.nearest, n) <= 0 ? prev.nearest : n });
     }
-    const [signature, best] = [...counts].sort(([, a], [, b]) => b.weeks - a.weeks || nearer(a.nearest, b.nearest))[0];
+    const ranked = [...counts].sort(([, a], [, b]) => b.weeks - a.weeks || nearer(a.nearest, b.nearest));
+    const tied = ranked.length > 1 && ranked[0][1].weeks === ranked[1][1].weeks;
+    if (tied || cells.length < MIN_VOTE_WEEKS) {
+      // The whole table's weeks of this day decide among the period's leading signatures.
+      const inWindow = new Map<string, number>();
+      for (const week of grid.cells) {
+        const c = week[d];
+        if (c) inWindow.set(c.signature, (inWindow.get(c.signature) ?? 0) + 1);
+      }
+      const top = cells.length < MIN_VOTE_WEEKS ? ranked : ranked.filter(([, v]) => v.weeks === ranked[0][1].weeks);
+      top.sort(([sa, a], [sb, b]) => (inWindow.get(sb) ?? 0) - (inWindow.get(sa) ?? 0) || nearer(a.nearest, b.nearest));
+      const [signature, best] = top[0];
+      return { signature, weeks: best.weeks, of: cells.length };
+    }
+    const [signature, best] = ranked[0];
     return { signature, weeks: best.weeks, of: cells.length };
   });
 
