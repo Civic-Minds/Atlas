@@ -8,7 +8,7 @@
  */
 
 /** Feature properties measured from the timetable (and the beta section fields built from them). */
-const TIMETABLE_FIELD = /headway|Headway|Gap|Coverage|Sustained|Tiers|nightService|Night\d|NightPartial|FrequentService|frequentService|MiddayWait|AllDay|MiddayCap|RunsByPeriod|PeriodOneGap|PeriodRange|PeriodEdge|PeriodGap|RouteLimited|StopPeriodValues|fullLine|fullStop/;
+const TIMETABLE_FIELD = /headway|Headway|Gap|Coverage|Sustained|Tiers|nightService|Night\d|NightPartial|FrequentService|frequentService|MiddayWait|AllDay|MiddayCap|RunsByPeriod|PeriodOneGap|PeriodRange|PeriodEdge|PeriodGap|PeriodTypical|RouteLimited|StopPeriodValues|fullLine|fullStop/;
 
 type Props = Record<string, unknown>;
 

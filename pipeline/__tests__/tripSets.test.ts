@@ -153,8 +153,11 @@ describe('route values from the selector (shadow fields)', () => {
   it('TTC 102 Weekday midday: main every 5; the Major Mackenzie branch (102D, 18% of trips, every 30 all day) sets the route at 30', async () => {
     // 102D runs steadily all day, so it is regular despite its share and its own run is a tail.
     const r = await run('ttc-102-weekday');
-    expect(mainValue(r, '102::0::Weekday', 'midday')).toBe(5);
-    expect(mainValue(r, '102::1::Weekday', 'midday')).toBe(5);
+    // #1142: the main stretch runs a 5, 5, 10 cycle at midday, so it reads its longest wait (13 and
+    // 14) with a typical gap of 5; the branch still sets the route at 30.
+    expect(mainValue(r, '102::0::Weekday', 'midday')).toBe(13);
+    expect(mainValue(r, '102::1::Weekday', 'midday')).toBe(14);
+    expect(rollupDirection(r.stretches.get('102::0::Weekday')!)!.period.midday.typical).toBeNull();
     expect(row(r, '102', 'Weekday', 1).stretchPeriodHeadway.midday).toBe(30);
     expect(row(r, '102', 'Weekday').stretchRoutePeriodHeadway.midday).toBe(30);
     expect(row(r, '102', 'Weekday').stretchPeriodRange.midday).toEqual([5, 30]);
