@@ -189,3 +189,33 @@ describe('part-period notice frequency (#1123)', () => {
     expect(partPeriodNoticeHeadway(null, [20])).toBeNull();
   });
 });
+
+// CIV-1010: the published departure counts name every hour with a departure, the day's last one included.
+describe('departure counts (CIV-1010)', () => {
+  // OC Transpo 162 weekday evening shape: hourly, last departures 22:00 and 22:18; no hourly headway, no gap for hour 22.
+  const hourly = (from: number, to: number) => Object.fromEntries(Array.from({ length: to - from + 1 }, (_, i) => [from + i, 1]));
+  const oc162 = [{ departuresByHour: hourly(18, 22), headwayByHour: { 18: 30 }, maxGapByHour: { 18: 60, 19: 60, 20: 60, 21: 60 } }, { departuresByHour: hourly(18, 22) }];
+
+  it('counts the hour of the last departure, so an hourly evening reads as running to the end of the period', () => {
+    expect(activeHourRanges(oc162, 18, 23)).toEqual([[18, 23]]);
+    expect(partPeriodNoticeApplies(oc162, 19, 22, 30, 60)).toBe(false);
+  });
+
+  it('keeps the notice where an hour has no departure (a peak-only route at midday)', () => {
+    const peak = [{ departuresByHour: { 7: 4, 8: 4, 16: 4, 17: 4 }, headwayByHour: { 7: 15, 8: 15, 16: 15, 17: 15 } }];
+    expect(partPeriodNoticeApplies(peak, 9, 15, 30, 120)).toBe(true);
+    expect(activeHourRanges(peak, 8, 15)).toEqual([[8, 9]]);
+  });
+
+  it('never adds a notice or names hours where no hour has a headway', () => {
+    const sparse = [{ departuresByHour: { 8: 1, 9: 1, 10: 1, 11: 1, 13: 1, 14: 1 } }];
+    expect(activeHourRanges(sparse, 8, 15)).toEqual([]);
+    expect(partPeriodNoticeApplies(sparse, 9, 15, 30, 60)).toBe(false);
+  });
+
+  it('data without the counts keeps the earlier rule', () => {
+    const withoutCounts = [{ headwayByHour: { 18: null, 19: null }, maxGapByHour: { 18: 60, 19: 60 } }];
+    expect(activeHourRanges(withoutCounts as any, 18, 20)).toEqual([]);
+    expect(hourHasService(withoutCounts[0] as any, 18)).toBe(true);
+  });
+});

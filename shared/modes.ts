@@ -109,6 +109,8 @@ export interface EffectiveModeInput {
   routeLongName?: string | null;
   routeShortName?: string | null;
   agencySlug?: string;
+  /** CIV-1006: riders must book ahead (pipeline/bookedRoutes.ts); such a route reads as on-demand. */
+  bookingRequired?: boolean | null;
 }
 
 /** Agency feeds whose route_type=0 entries are rail rather than streetcars. */
@@ -176,6 +178,7 @@ export function isRailLikeRoute(p: EffectiveModeInput): boolean {
 }
 
 export function effectiveMode(p: EffectiveModeInput): number {
+  if (p.bookingRequired === true) return ON_DEMAND_MODE;
   const override = findModeOverride(p);
   if (override) return override.mode;
   return publishedMode(p);
@@ -286,6 +289,7 @@ export function buildEffectiveModeExpression(): unknown[] {
   }
   return [
     'case',
+    ['==', ['get', 'bookingRequired'], true], ON_DEMAND_MODE,
     ...overrideBranches,
     ['any',
       ['all', ['==', routeType, 0], ['any', ...VIRTUAL_LRT_AGENCIES.map(slug => ['==', agency, slug])]],

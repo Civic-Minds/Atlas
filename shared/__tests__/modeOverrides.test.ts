@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { readdirSync, readFileSync } from 'node:fs';
 import { featureFilter } from '@maplibre/maplibre-gl-style-spec';
-import { effectiveMode, FILTER_MODES, isRailLikeRoute, modeLabel, MODE_OVERRIDES, VIRTUAL_LRT_MODE } from '../modes';
+import { effectiveMode, FILTER_MODES, isRailLikeRoute, modeLabel, MODE_OVERRIDES, ON_DEMAND_MODE, VIRTUAL_LRT_MODE } from '../modes';
 import { buildModeFilterClause } from '../tileFilterExprs';
 import { generateAgencyIndex, generateModeOverrides } from '../../scripts/agencyIndexGeneration';
 
@@ -64,10 +64,10 @@ describe('per-route mode overrides (#827)', () => {
     expect(isRailLikeRoute({ routeType: 0, routeShortName: 'BLUE' })).toBe(false);
   });
 
-  it('a label-only override changes the shown mode but not pipeline processing (CapMetro 550 until #1138)', () => {
+  it('CapMetro 550 is commuter rail for the pipeline too, now that #1138 keeps event trains out', () => {
     const red = { agencySlug: 'capmetro', routeType: 0, routeShortName: '550', routeLongName: '550-Metro Rail Red Line' };
     expect(effectiveMode(red)).toBe(2);
-    expect(isRailLikeRoute(red)).toBe(false);
+    expect(isRailLikeRoute(red)).toBe(true);
   });
 
   it('the map filter and effectiveMode agree for every override and a control route', () => {
@@ -80,11 +80,13 @@ describe('per-route mode overrides (#827)', () => {
       { agencySlug: 'x', routeType: 702, routeShortName: '9', routeLongName: 'Express' },
       { agencySlug: 'x', routeType: 6, routeShortName: 'G', routeLongName: 'Gondola' },
       { agencySlug: 'x', routeType: 4, routeShortName: 'F', routeLongName: 'Ferry' },
+      { agencySlug: 'exo-terrebonne', routeType: 1501, routeShortName: 'T12', routeLongName: 'Taxibus', bookingRequired: true },
+      { agencySlug: 'x', routeType: 3, routeShortName: '7', routeLongName: 'Call-in', bookingRequired: true },
     ];
-    for (const mode of [0, 1, 2, 3, 4, 6, VIRTUAL_LRT_MODE]) {
+    for (const mode of [0, 1, 2, 3, 4, 6, VIRTUAL_LRT_MODE, ON_DEMAND_MODE]) {
       const compiled = featureFilter(buildModeFilterClause(new Set([mode])) as never, {} as never);
       for (const s of samples) {
-        const props = { routeType: s.routeType, routeShortName: s.routeShortName, routeLongName: s.routeLongName, agencySlug: s.agencySlug };
+        const props = { routeType: s.routeType, routeShortName: s.routeShortName, routeLongName: s.routeLongName, agencySlug: s.agencySlug, bookingRequired: (s as { bookingRequired?: boolean }).bookingRequired };
         expect(compiled.filter({ zoom: 10 } as never, { type: 2, properties: props } as never), `${JSON.stringify(s)} in mode ${mode}`)
           .toBe(effectiveMode(s) === mode);
       }

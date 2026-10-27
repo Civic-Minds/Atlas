@@ -10659,8 +10659,7 @@
           "routeType": 0,
           "routeShortName": "550",
           "mode": 2,
-          "reason": "CapMetro Rail Red Line (550) is commuter rail, published as route_type 0 (tram)",
-          "labelOnly": true
+          "reason": "CapMetro Rail Red Line (550) is commuter rail, published as route_type 0 (tram)"
         }
       ],
       "lastPeekedExpiry": "20270109"
@@ -19143,6 +19142,10 @@
       "feedUrl": "https://rmtd.org/rmtdgtfs/GTFS_FILES.zip",
       "region": "Illinois",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2019/latest.zip",
+      "expiredFeedPin": {
+        "feedVersion": "S1000085",
+        "feedExpiry": "20261010"
+      },
       "lastFeedExpiry": "20261010",
       "lastFeedVersion": "S1000085",
       "lastRefreshedAt": "2026-08-07",
@@ -22523,6 +22526,7 @@
       ],
       "feedUrl": "https://catbus.ridesystems.net/Secure/Admin/Reports/GTFSDownload.aspx",
       "lastFeedExpiry": "20281027",
+      "skipBlockTripHeadways": true,
       "lastFeedVersion": null,
       "lastRefreshedAt": "2026-10-03",
       "region": "South Carolina",

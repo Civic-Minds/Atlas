@@ -55,6 +55,7 @@ interface RouteRow {
   sharedHeadway?: number;
   tier: string | null;
   routeType: number;
+  bookingRequired?: boolean;
   busSubType: string | undefined;
   matchesFilter: boolean;
 }
@@ -102,6 +103,7 @@ export function getRoutes(
     longName: string | null;
     tier: string | null;
     routeType: number;
+    bookingRequired: boolean;
     busSubType: string | undefined;
     matchesFilter: boolean;
   };
@@ -126,6 +128,7 @@ export function getRoutes(
         longName: facts.longName,
         tier: facts.tier,
         routeType: typeof p.routeType === 'number' ? p.routeType : 3,
+        bookingRequired: p.bookingRequired === true,
         busSubType: p.busSubType ?? undefined,
         matchesFilter,
       });
@@ -146,6 +149,7 @@ export function getRoutes(
       ...routeListDisplay(row.props, period),
       tier: row.tier,
       routeType: row.routeType,
+      bookingRequired: row.bookingRequired,
       busSubType: row.busSubType,
       matchesFilter: row.matchesFilter,
     }))
@@ -291,6 +295,7 @@ function routeMode(route: RouteRow): number {
     routeLongName: route.longName,
     routeShortName: route.shortName,
     agencySlug: route.agencySlug,
+    bookingRequired: route.bookingRequired,
   });
 }
 

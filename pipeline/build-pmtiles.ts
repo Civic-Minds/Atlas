@@ -6,6 +6,7 @@ import { LOADED_ENV_FILE } from './loadEnv.js';
 import { IMMUTABLE_CACHE_CONTROL, r2Put, r2PutFile } from './r2';
 import { getAgencyArtifactUrls, pmtilesMinZoomForHeadway } from '../shared/config.js';
 import { runWithConcurrency } from './utils.js';
+import { runStopClustering } from './stopClustering.js';
 import { prepareAgencyRouteFeaturesForTiles } from './prepareAgencyRoutesForTiles.js';
 import { simplifyLine } from './geometry.js';
 import { isBuiltIntoTiles } from './pmtilesCoverage.js';
@@ -269,7 +270,9 @@ async function main() {
   if (allStops.length === 0) console.warn("WARNING: 0 stops features — stops layer will be missing from PMTiles!");
 
   if (allStops.length > 0) {
-    runStopClustering(allStops);
+    // One dot per stop group at middle zoom; every stop in a group is within 250 m of its dot (#1147).
+    const groups = runStopClustering(allStops);
+    console.log(`Stop groups: ${groups} for ${allStops.length} stops.`);
   }
 
   // LOD: annotate each route feature with headway minzoom
@@ -402,199 +405,4 @@ if (process.argv[1] && (process.argv[1].endsWith('build-pmtiles.ts') || process.
     console.error('Fatal error in build-pmtiles pipeline:', err);
     process.exit(1);
   });
-}
-
-class UnionFind {
-  parent: number[];
-  constructor(size: number) {
-    this.parent = Array.from({ length: size }, (_, i) => i);
-  }
-  find(i: number): number {
-    let root = i;
-    while (root !== this.parent[root]) {
-      root = this.parent[root];
-    }
-    let curr = i;
-    while (curr !== root) {
-      const nxt = this.parent[curr];
-      this.parent[curr] = root;
-      curr = nxt;
-    }
-    return root;
-  }
-  union(i: number, j: number): boolean {
-    const rootI = this.find(i);
-    const rootJ = this.find(j);
-    if (rootI !== rootJ) {
-      this.parent[rootI] = rootJ;
-      return true;
-    }
-    return false;
-  }
-}
-
-function getDistanceMeters(lat1: number, lon1: number, lat2: number, lon2: number): number {
-  const latMid = ((lat1 + lat2) * Math.PI) / 360;
-  const dy = (lat2 - lat1) * 111320;
-  const dx = ((lon2 - lon1) * 40075000 * Math.cos(latMid)) / 360;
-  return Math.sqrt(dx * dx + dy * dy);
-}
-
-function cleanStopName(name: string | null | undefined): string[] {
-  if (!name) return [];
-  return name
-    .toLowerCase()
-    .replace(/[^a-z0-9\s]/g, ' ')
-    .split(/\s+/)
-    .filter(token => {
-      const generic = new Set([
-        'stop',
-        'station',
-        'terminal',
-        'bay',
-        'bays',
-        'platform',
-        'direction',
-        'cta',
-        'pace',
-        'metra',
-        'loop',
-        'transit',
-        'center',
-        'ctr',
-        'bus',
-        'train',
-        'rail',
-        'subway',
-        'rapid',
-        'rt',
-        'rd',
-        'st',
-        'ave',
-        'blvd',
-        'street',
-        'avenue',
-        'road',
-        'park-n-ride',
-        'park',
-        'ride',
-        'parking',
-        'at',
-        'and',
-        '&',
-        'to',
-        'from',
-        'for',
-      ]);
-      return token.length > 2 && !generic.has(token);
-    });
-}
-
-function sharePrecomputedTokens(tokens1: string[], tokens2: string[]): boolean {
-  if (tokens1.length === 0 || tokens2.length === 0) return false;
-  return tokens1.some(t => tokens2.includes(t));
-}
-
-export function runStopClustering(stops: Feature[]) {
-  const start = Date.now();
-  console.log(`Running offline spatial/name clustering on ${stops.length} stops...`);
-
-  const N = stops.length;
-  const stopTokens = stops.map(s => cleanStopName(s.properties.stopName || s.properties.name));
-  const coords = stops.map(s => {
-    const coords = s.geometry?.coordinates || [0, 0];
-    return { lon: coords[0], lat: coords[1] };
-  });
-
-  // Build grid index
-  const grid = new Map<string, number[]>();
-  for (let i = 0; i < N; i++) {
-    const { lat, lon } = coords[i];
-    const gridX = Math.floor(lon * 100);
-    const gridY = Math.floor(lat * 100);
-    const cellKey = `${gridX},${gridY}`;
-    if (!grid.has(cellKey)) grid.set(cellKey, []);
-    grid.get(cellKey)!.push(i);
-  }
-
-  const uf = new UnionFind(N);
-
-  for (let i = 0; i < N; i++) {
-    const { lat: latI, lon: lonI } = coords[i];
-    const gridX = Math.floor(lonI * 100);
-    const gridY = Math.floor(latI * 100);
-    const agencyI = stops[i].properties.agencySlug;
-    const nameI = stops[i].properties.stopName || stops[i].properties.name;
-    const tokensI = stopTokens[i];
-
-    // Check current cell and 8 neighbors
-    for (let dx = -1; dx <= 1; dx++) {
-      for (let dy = -1; dy <= 1; dy++) {
-        const neighborKey = `${gridX + dx},${gridY + dy}`;
-        const cell = grid.get(neighborKey);
-        if (!cell) continue;
-        for (const j of cell) {
-          if (j <= i) continue; // avoid redundant comparisons
-
-          const { lat: latJ, lon: lonJ } = coords[j];
-          const d = getDistanceMeters(latI, lonI, latJ, lonJ);
-
-          const isSameNameSameAgency =
-            agencyI === stops[j].properties.agencySlug &&
-            !!nameI &&
-            nameI === (stops[j].properties.stopName || stops[j].properties.name);
-
-          const isCloseProximity = d <= 150;
-
-          const isNamedProximity = d <= 250 && sharePrecomputedTokens(tokensI, stopTokens[j]);
-
-          if (isSameNameSameAgency || isCloseProximity || isNamedProximity) {
-            uf.union(i, j);
-          }
-        }
-      }
-    }
-  }
-
-  // Assign unified hub IDs based on Union-Find roots
-  const hubIds = new Map<number, string>();
-  let nextHubId = 1;
-  for (let i = 0; i < N; i++) {
-    const root = uf.find(i);
-    if (!hubIds.has(root)) {
-      hubIds.set(root, `h_${nextHubId++}`);
-    }
-    stops[i].properties.hubId = hubIds.get(root)!;
-  }
-
-  // Assign isHubRef to exactly one representative stop per hubId
-  const hubMembers = new Map<string, number[]>();
-  for (let i = 0; i < N; i++) {
-    const hubId = stops[i].properties.hubId;
-    if (!hubMembers.has(hubId)) {
-      hubMembers.set(hubId, []);
-    }
-    hubMembers.get(hubId)!.push(i);
-  }
-
-  for (const indices of hubMembers.values()) {
-    let bestIndex = indices[0];
-    let bestScore = -1;
-    for (const idx of indices) {
-      const p = stops[idx].properties;
-      let score = 0;
-      if (p.isRail) score += 1000;
-      if (p.isHub) score += 100;
-      if (Array.isArray(p.routeIds)) {
-        score += p.routeIds.length;
-      }
-      if (score > bestScore) {
-        bestScore = score;
-        bestIndex = idx;
-      }
-    }
-    stops[bestIndex].properties.isHubRef = true;
-  }
-
-  console.log(`Clustering complete! Assigned ${hubIds.size} unique hub IDs in ${Date.now() - start}ms.`);
 }

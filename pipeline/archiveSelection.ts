@@ -186,12 +186,30 @@ export async function peekFeedDates(buf: Buffer, excludeRouteShortNames?: readon
 }
 
 /**
+ * A one-off approval to rebuild an agency from its last official feed after that feed has ended
+ * (`expiredFeedPin` in config/agencies/<slug>.json), so the map shows its last real timetable with
+ * the expired notice instead of an older file (Rockford, #1036: Ryan 2026-10-27). It holds only for
+ * the exact feed_version and expiry approved: once the agency publishes another feed, the pin no
+ * longer matches and the normal rules apply.
+ */
+export interface ExpiredFeedPin {
+  feedVersion: string;
+  feedExpiry: string;
+}
+
+/** Whether a source zip is the exact feed an expiredFeedPin approves. */
+export function matchesExpiredFeedPin(pin: ExpiredFeedPin | null | undefined, feed: { feedVersion: string | null; feedExpiry: string | null }): boolean {
+  return !!pin && feed.feedVersion === pin.feedVersion && feed.feedExpiry === pin.feedExpiry;
+}
+
+/**
  * Refuse a source zip whose service dates are unknown, already over, or older
  * than the feed the live data was built from. Returns a reason, or null if OK.
+ * A zip matching an expiredFeedPin may have ended; the other checks still apply.
  */
-export function feedDateRefusal(feedExpiry: string | null, liveFeedExpiry: string | null | undefined, todayYmd: string): string | null {
+export function feedDateRefusal(feedExpiry: string | null, liveFeedExpiry: string | null | undefined, todayYmd: string, pinnedExpiry?: string | null): string | null {
   if (!feedExpiry) return 'source zip has no service dates, so it cannot be shown to be current';
-  if (feedExpiry < todayYmd) return `source zip service ended ${feedExpiry}, before today (${todayYmd})`;
+  if (feedExpiry < todayYmd && feedExpiry !== pinnedExpiry) return `source zip service ended ${feedExpiry}, before today (${todayYmd})`;
   if (liveFeedExpiry && /^\d{8}$/.test(liveFeedExpiry) && feedExpiry < liveFeedExpiry) {
     return `source zip service ends ${feedExpiry}, older than the live data's ${liveFeedExpiry}`;
   }

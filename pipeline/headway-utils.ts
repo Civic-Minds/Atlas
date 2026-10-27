@@ -684,6 +684,21 @@ export function computeHourMaxGaps(departureTimes: number[], hours: readonly num
   return result;
 }
 
+/**
+ * CIV-1010: how many departures leave in each clock hour (distinct minutes), only hours with one or more. A
+ * direction's last hour of the day counts too, which maxGapByHour cannot say (it needs a next departure), and an
+ * hourly route counts every hour, which headwayByHour cannot (it needs three departures in a 60-90 minute window).
+ */
+export function computeHourDepartureCounts(departureTimes: number[], hours: readonly number[]): Record<number, number> {
+  const times = [...new Set(departureTimes)];
+  const result: Record<number, number> = {};
+  for (const hour of hours) {
+    const n = times.filter(t => t >= hour * 60 && t < hour * 60 + 60).length;
+    if (n > 0) result[hour] = n;
+  }
+  return result;
+}
+
 /** Return the typical scheduled gap range for each period, excluding one exceptional hole. */
 export function computePeriodHeadwayRanges(departureTimes: number[]): HeadwayByPeriodRange {
   const result: HeadwayByPeriodRange = {};
@@ -741,6 +756,34 @@ export const BOUNDARY_DOMINANT_RATIO = 8;
  * headwayByPeriod's own numbers (including TTC Line 1's overnight "5") are unchanged; only this
  * flag now correctly says that "5" doesn't describe real sustained coverage.
  */
+/**
+ * #1142 (Ryan, 2026-10-27, CIV-1018): a period the settled check calls steady can still be uneven: a
+ * slower stretch made of several medium gaps rather than one long hole (TTC 320 weekday overnight:
+ * every 5 from 2:00 to 3:20, every 15 from 3:20 to 4:50, read "every 5"). Uneven: the gaps of at
+ * least UNEVEN_GAP_RATIO times the typical gap number UNEVEN_MIN_GAPS or more and add up to
+ * UNEVEN_MIN_SHARE of the period or more. A slow first hour before the peak builds up is not (MBTA 7
+ * AM: every 13-15 from 6:00 to 7:00, then every 3-6): slow gaps that are all the period's first gaps
+ * and total UNEVEN_FIRST_HOUR_MINUTES or less. An uneven period reads its longest wait, as an
+ * unsteady one does, and publishes the typical gap for the card's range.
+ */
+export const UNEVEN_GAP_RATIO = 2;
+export const UNEVEN_MIN_SHARE = 0.25;
+export const UNEVEN_MIN_GAPS = 2;
+export const UNEVEN_FIRST_HOUR_MINUTES = 60;
+
+/** Whether a period's departures are uneven around its typical gap (see UNEVEN_GAP_RATIO). */
+export function isUnevenPeriod(departureTimes: readonly number[], start: number, end: number, typical: number | null | undefined): boolean {
+  if (typical == null || typical <= 0) return false;
+  const t = [...new Set(forCrossMidnightWindow([...departureTimes], end))].filter(x => x >= start && x < end).sort((a, b) => a - b);
+  const gaps = t.slice(1).map((x, i) => x - t[i]);
+  const slow = gaps.map((g, i) => ({ g, i })).filter(({ g }) => g >= UNEVEN_GAP_RATIO * typical);
+  if (slow.length < UNEVEN_MIN_GAPS) return false;
+  const total = slow.reduce((n, { g }) => n + g, 0);
+  if (total < UNEVEN_MIN_SHARE * (end - start)) return false;
+  const firstHour = slow.every(({ i }, k) => i === k) && total <= UNEVEN_FIRST_HOUR_MINUTES;
+  return !firstHour;
+}
+
 export function computePeriodSustained(departureTimes: number[]): Partial<Record<PeriodKey, boolean>> {
   const result: Partial<Record<PeriodKey, boolean>> = {};
   for (const [key, { start, end }] of Object.entries(PERIODS) as [PeriodKey, { start: number; end: number }][]) {

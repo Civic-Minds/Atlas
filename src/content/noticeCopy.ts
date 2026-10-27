@@ -46,6 +46,9 @@ export function unevenServiceNotice(longestGap: number): string {
 
 export const NO_ROUTE_SHAPE_NOTICE = 'Route map unavailable.';
 
+/** CIV-1006: a route riders must book ahead (Ryan's wording). */
+export const BOOKING_REQUIRED_NOTICE = 'Rides on this route must be booked ahead.';
+
 export const NO_ROUTE_SHAPE_EXPLANATION =
   'This route\'s source feed includes schedule information but does not include a usable map shape.';
 

@@ -8,11 +8,13 @@ import { parseGtfsZip } from './parseGtfs.js';
 import { computeRunningTimes, runningTimesJson } from './runningTime.js';
 import { pickRepresentativeWeekday } from './representativeWeekday.js';
 import type { GtfsData, AnalysisResult, RawRouteDepartures } from '../types/gtfs.js';
-import { computeRawDepartures } from './transit-phase1.js';
+import { computeRawDepartures, findBlockOnlyTripIds } from './transit-phase1.js';
 import { applyAnalysisCriteria, BURST_MAX_SPAN_MINUTES, determineTierWithEdgeGapAllowance, previousNightTailDays } from './transit-phase2.js';
 import { calculateCorridors } from './transit-logic.js';
 import { detectReferenceDate, getActiveServiceIds } from './transit-calendar.js';
 import { calendarFromNextServiceDates } from './serviceDates.js';
+import { dropOneOffRailTrips } from './oneOffServices.js';
+import { bookingRequiredRouteIds } from './bookedRoutes.js';
 import { DEFAULT_CRITERIA, getTiersForCriteria } from './defaults.js';
 import { normalizeGtfs, type GtfsPreprocess, type GtfsTransformOptions } from './preprocess/run.js';
 import { clearLoneOriginRows, labelConvergingOrigins } from './convergingOrigins.js';
@@ -25,7 +27,7 @@ import { ROUTE_ARTIFACT_SCHEMA_VERSION } from '../shared/artifactSchema.js';
 import { DAY_TYPES, WEEKDAYS, type DayName, type DayType } from '../types/gtfs.js';
 import { ALL_DAYS } from '../shared/dayTypes.js';
 import { expandFrequencyWindow, expandTripFrequencyWindows, isSingleTripFrequencyWindow, parseFrequencyWindow, SINGLE_TRIP_WINDOW_MAX_DEPARTURES, SINGLE_TRIP_WINDOW_SPAN_TOLERANCE_MIN, t2m, type FrequencyWindow } from './transit-utils.js';
-import { adaptiveMedianHeadwayInWindow, computeHourMaxGaps, computePeriodHeadways, computePeriodHeadwayRanges, computePeriodMaxGaps, computePeriodSustained, computeResearchFrequentService, forCrossMidnightWindow, HEADLINE_MIN_DEPARTURES, HEADLINE_WINDOWS, headlineWindowValue, hasSustainedNightService, headsignOverlapMinHeadway, headwayToTier, headwayToTierOn, isSparseOvernightWindow, isThinAllDayTerminalSample, isUnevenTwoGapMiddayTerminalSample, medianHeadwayInWindow, MIN_ALL_DAY_TERMINAL_DEPARTURES, nightServiceDepartureTimes, NIGHT_SERVICE_WINDOW_END_MIN, periodHeadwayInWindow, RAIL_TIER_WINDOW, resolveTerminalHeadline, sparseOvernightHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
+import { adaptiveMedianHeadwayInWindow, computeHourMaxGaps, computeHourDepartureCounts, computePeriodHeadways, computePeriodHeadwayRanges, computePeriodMaxGaps, computePeriodSustained, computeResearchFrequentService, forCrossMidnightWindow, HEADLINE_MIN_DEPARTURES, HEADLINE_WINDOWS, headlineWindowValue, hasSustainedNightService, headsignOverlapMinHeadway, headwayToTier, headwayToTierOn, isSparseOvernightWindow, isThinAllDayTerminalSample, isUnevenTwoGapMiddayTerminalSample, medianHeadwayInWindow, MIN_ALL_DAY_TERMINAL_DEPARTURES, nightServiceDepartureTimes, NIGHT_SERVICE_WINDOW_END_MIN, periodHeadwayInWindow, RAIL_TIER_WINDOW, resolveTerminalHeadline, sparseOvernightHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
 import { computeRouteBaseFares, detectBusSubType } from './route-metadata.js';
 import { buildStopsMeta } from './stopsMeta.js';
 import { haversineDistance } from './utils.js';
@@ -39,12 +41,13 @@ import { effectiveFeedExpiry } from './feedFreshness.js';
 import { recordedFeedExpiry } from './refreshMeta.js';
 import { routeDataQualityWarningForShape } from './routeDataQuality.js';
 import { deriveRouteBranch } from '../shared/routeBranch.js';
-import { isRailLikeRoute } from '../shared/modes.js';
+import { isRailRoute } from './routeMode.js';
 import { computePeriodCoverageHeadways } from './headway-utils.js';
 import { isNightRouteDirection, nextServiceDay, nightStartsBeforeWindow, overnightPeriodValues, overnightWindowTimes } from './overnightTerminal.js';
 import { makeShapeCoverChecker } from './shapeCoverage.js';
 import { annotateSharedStretches, isPoolablePattern } from './sharedStretch.js';
 import { boardsAt } from './stopEligibility.js';
+import { nearDuplicateTripIds } from './nearDuplicateTrips.js';
 import { decideDedupe, runsInDay, type DedupePattern } from './featureDedupe.js';
 import { decideHeadline, decidePeriod, liftTierOnDestinationPool, ownStepOneHeadway, pooledStepOneHeadway, settleTier, terminalReading, type PeriodValue } from './routeGrading.js';
 import type { SharedStretchPattern } from './sharedStretch.js';
@@ -469,6 +472,8 @@ export function hasNightServiceAtShapeEndpoints(
 
 export interface ProcessOptions extends GtfsTransformOptions {
   slug?: string;
+  /** CIV-1006: force a route's booking-required status by short name, over the pickup_type share rule. */
+  bookingRequiredRoutes?: Record<string, boolean>;
   manualBaseFare?: number;
   /**
    * When true, continue after GTFS validation errors (log only).
@@ -487,6 +492,11 @@ export interface ProcessOptions extends GtfsTransformOptions {
    * everywhere else, so the picker below is unchanged.
    */
   referenceDate?: string;
+  /**
+   * Agency opt-in (Clemson Area Transit, #1040): a pattern whose every trip is a block trip (only
+   * first and last stop timed) gets no computed headway. See findBlockTrips in transit-phase1.ts.
+   */
+  skipBlockTripHeadways?: boolean;
   /** Read-only view of the phase 2 results, for tests and audits. Does not change the output. */
   onAnalysisResults?: (results: readonly AnalysisResult[]) => void;
   /** Tests only (frequency focus step 3): the stretch selector's output beside stopDepsByGroup, for the trip-membership check. */
@@ -703,7 +713,7 @@ export async function processGtfsBuffer(
   onStatus?: (msg: string) => void,
   options?: ProcessOptions,
 ): Promise<ProcessResult> {
-  let gtfs = await parseGtfsZip(buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength) as ArrayBuffer, onStatus, { keepLongShapeJumps: options?.keepLongShapeJumps, skipClusteredJumpRepair: options?.skipClusteredJumpRepair });
+  let gtfs = await parseGtfsZip(buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength) as ArrayBuffer, onStatus, { keepLongShapeJumps: options?.keepLongShapeJumps, skipClusteredJumpRepair: options?.skipClusteredJumpRepair, agencySlug: options?.slug });
   gtfs = normalizeGtfs(gtfs, options, onStatus);
 
   const validation = validateGtfs(gtfs, options?.slug ?? 'feed');
@@ -722,6 +732,14 @@ export async function processGtfsBuffer(
   }
 
   const routeBaseFares = computeRouteBaseFares(gtfs, options?.manualBaseFare);
+
+  // #1138: one-off event trains on a rail route's own shapes (a special-event evening on top of the
+  // regular timetable) never read as regular service. See oneOffServices.ts.
+  const oneOff = dropOneOffRailTrips(gtfs, options?.slug);
+  if (oneOff.dropped.length > 0) {
+    gtfs = oneOff.gtfs;
+    onStatus?.(`One-off rail trips left out: ${oneOff.dropped.map(d => `${d.routeId}/${d.serviceId} (${d.trips} trips)`).join(', ')}`);
+  }
 
   const routeById = new Map((gtfs.routes ?? []).map(r => [r.route_id, r]));
 
@@ -769,6 +787,13 @@ export async function processGtfsBuffer(
   const activeServiceIdsByCalendarDay = new Map<DayName, Set<string>>(
     ALL_DAYS.map(day => [day, getActiveServiceIds(gtfs.calendar ?? [], gtfs.calendarDates ?? [], day, refDate)]),
   );
+  // #1143: a trip copied under a second service a minute apart would double every departure; drop
+  // the copy before phase 1 and the stop pass count anything (nearDuplicateTrips.ts has the rule).
+  const nearDuplicates = nearDuplicateTripIds(gtfs, activeServiceIdsByCalendarDay);
+  if (nearDuplicates.size > 0) {
+    onStatus?.(`Dropped ${nearDuplicates.size} near-duplicate trip(s) listed under a second service (#1143).`);
+    gtfs = { ...gtfs, trips: gtfs.trips.filter(t => !nearDuplicates.has(t.trip_id)), stopTimes: gtfs.stopTimes.filter(st => !nearDuplicates.has(st.trip_id)) };
+  }
   // Converging origins (TTC 29 northbound) get a route variant so each origin draws its own
   // row, judged on the same active service sets the rest of the pipeline draws.
   labelConvergingOrigins(gtfs, activeServiceIdsByCalendarDay);
@@ -799,7 +824,7 @@ export async function processGtfsBuffer(
   } = shapes;
 
   onStatus?.('Running phase 1...');
-  const raw = computeRawDepartures(gtfs, refDate, shapeFilterForPhase1, options?.slug);
+  const raw = computeRawDepartures(gtfs, refDate, shapeFilterForPhase1, options?.slug, { skipBlockTripHeadways: options?.skipBlockTripHeadways });
   onStatus?.('Running phase 2...');
   // Same tail days phase 2 uses (#718), so the part-week decision (phase 2) and the stop-level
   // full-week check below both skip a weekday that only carries the previous night's tail.
@@ -900,9 +925,12 @@ export async function processGtfsBuffer(
     }
   }
   const tripGroupByTripId = new Map<string, StopTripGroup[]>();
+  // Clemson (#1040, opt-in): block trips whose pattern has no timed trip add no stop departures.
+  const blockOnlyTripIds = options?.skipBlockTripHeadways ? findBlockOnlyTripIds(gtfs) : null;
   for (const trip of gtfs.trips ?? []) {
     const meta = stopTripMeta.get(trip.trip_id);
     if (!meta) continue;
+    if (blockOnlyTripIds?.has(trip.trip_id)) continue;
     const keys = weekdayMapKeys(meta);
     const runsOnRepresentativeDay = (kind: 'group' | 'headsign' | 'shape'): boolean => {
       const key = keys[kind];
@@ -1056,11 +1084,7 @@ export async function processGtfsBuffer(
     }
     return drawnHeadsignsByPool.get(poolKey) ?? new Set();
   };
-  const railRouteIds = new Set((gtfs.routes ?? []).filter(route => isRailLikeRoute({
-    routeType: route.route_type,
-    routeLongName: route.route_long_name,
-    routeShortName: route.route_short_name,
-  })).map(route => route.route_id));
+  const railRouteIds = new Set((gtfs.routes ?? []).filter(route => isRailRoute(route, options?.slug)).map(route => route.route_id));
   // A pattern: route_id + shape for buses (every trip on the feature's own shape, as in its
   // shape-scoped stop metrics), route_id + headsign for rail (headsign-scoped metrics).
   const sharedPatternKey = (routeId: string, headsign: string | null, shapeId: string | null | undefined): string | null => {
@@ -1311,6 +1335,7 @@ export async function processGtfsBuffer(
           return byHour;
         })(),
         maxGapByHour: computeHourMaxGaps(result.times, SPARKLINE_HOURS),
+        departuresByHour: computeHourDepartureCounts(result.times, SPARKLINE_HOURS),
         routeShortName: shortName,
         routeVariant: result.routeVariant ?? null,
         routeLongName: route?.route_long_name ?? null,
@@ -1964,11 +1989,7 @@ export async function processGtfsBuffer(
     }
     const featureHeadsign = feature.properties.headsign as string | null;
     const featureRoute = routeById.get(feature.properties.routeId as string);
-    const railFeature = isRailLikeRoute({
-      routeType: featureRoute?.route_type,
-      routeLongName: featureRoute?.route_long_name,
-      routeShortName: featureRoute?.route_short_name,
-    });
+    const railFeature = isRailRoute(featureRoute, options?.slug);
     const headsignMap = featureHeadsign
       ? stopDepsByHeadsignGroup.get(`${shortName}::${dirId}::${day}::${featureHeadsign}`)
       : undefined;
@@ -2884,8 +2905,14 @@ export async function processGtfsBuffer(
           // serves too thinly to grade refuses the lift, and the tier is never past the
           // headline's. Irregular and span lines are left alone, as on the bus side.
           const hsKey = `${shortName}::${dirId}::${day}::${featureHeadsign}`;
-          const drawnIds = coverageStops.map(p => p.stopId);
-          feature.properties.tier = liftTierOnDestinationPool({
+          // The stops the line draws with a reading (its published stop list), not every stop of the
+          // headsign's map: a rail headsign's map also holds stops only a few pull-out trips serve
+          // (SEPTA T2 to 13th-Market: Woodland Av and Elmwood Av, 10 trips each), which no pool
+          // grades, and with them in the list the pool's outer third excluded the regular trains
+          // and left the origin ungraded. Either refused the lift, so T2 kept its single-shape
+          // midday grade (60) though every drawn stop grades 10 (CIV-989 dry run, 2026-10-27).
+          const drawnIds = coverageStops.filter(p => allStopHw[p.stopId] != null).map(p => p.stopId);
+          feature.properties.tier = drawnIds.length < 2 ? feature.properties.tier : liftTierOnDestinationPool({
             currentTier: feature.properties.tier as string,
             headway,
             day: day as DayType,
@@ -3166,12 +3193,18 @@ export async function processGtfsBuffer(
     const headsignTerminalHourGaps = terminalScopedTimes
       ? computeHourMaxGaps(terminalScopedTimes, SPARKLINE_HOURS)
       : undefined;
+    // CIV-1010: departures per hour from the same list as the hour's gap, so the two always agree on the source.
+    const terminalHourDepartures = terminalScopedTimes
+      ? computeHourDepartureCounts(terminalScopedTimes, SPARKLINE_HOURS)
+      : terminalStopId ? computeHourDepartureCounts(metricStopMap.get(terminalStopId) ?? [], SPARKLINE_HOURS) : undefined;
     const terminalHourIsBranchScoped = !!headsignTerminalHourHw;
     const branchHourHw = feature.properties.headwayByHour as HeadwayByHour | undefined;
     if (branchHourHw) {
       const mergedHourHw: HeadwayByHour = {};
       const branchHourGaps = feature.properties.maxGapByHour as Record<number, number | null> | undefined;
       const mergedHourGaps: Record<number, number | null> = {};
+      const branchHourDepartures = feature.properties.departuresByHour as Record<number, number> | undefined;
+      const mergedHourDepartures: Record<number, number> = {};
       for (const h of SPARKLINE_HOURS) {
         const termH = headsignTerminalHourHw?.[h] ?? terminalHourHw?.[h] ?? null;
         const bH = branchHourHw[h] ?? null;
@@ -3180,12 +3213,16 @@ export async function processGtfsBuffer(
         mergedHourGaps[h] = resolvedH === termH
           ? (h in flooredHourGap ? flooredHourGap[h] : (headsignTerminalHourGaps?.[h] ?? terminalHourGaps?.[h] ?? null))
           : (branchHourGaps?.[h] ?? null);
+        const departures = resolvedH === termH ? terminalHourDepartures?.[h] : branchHourDepartures?.[h];
+        if (departures) mergedHourDepartures[h] = departures;
       }
       feature.properties.headwayByHour = mergedHourHw;
       feature.properties.maxGapByHour = mergedHourGaps;
+      feature.properties.departuresByHour = mergedHourDepartures;
     } else if (terminalHourHw) {
       feature.properties.headwayByHour = terminalHourHw;
       feature.properties.maxGapByHour = headsignTerminalHourGaps ?? terminalHourGaps;
+      if (terminalHourDepartures) feature.properties.departuresByHour = terminalHourDepartures;
     }
   }
 
@@ -3518,6 +3555,15 @@ export async function processGtfsBuffer(
         };
       }
     }
+  }
+
+  // CIV-1006: routes riders must book ahead read as on-demand (shared/modes.ts) and get the card's booking notice.
+  const bookedRouteIds = bookingRequiredRouteIds(gtfs, options?.bookingRequiredRoutes);
+  if (bookedRouteIds.size > 0) {
+    for (const f of mainFeatures) {
+      if (f.properties.stopId == null && bookedRouteIds.has(String(f.properties.routeId))) f.properties.bookingRequired = true;
+    }
+    onStatus?.(`Booking required: ${bookedRouteIds.size} route(s)`);
   }
 
   // Build trips lookup for live vehicle enrichment (agencies whose GTFS-RT omits directionId/headsign)

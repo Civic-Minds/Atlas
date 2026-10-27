@@ -146,7 +146,7 @@ export function summarize(
     routes.set(key, {
       name: prev?.name ?? (shortName || longName || String(p.routeId ?? '')),
       longName: prev?.longName ?? longName,
-      mode: prev?.mode ?? effectiveMode({ routeType: p.routeType as number, routeLongName: longName, routeShortName: shortName, agencySlug: slug }),
+      mode: prev?.mode ?? effectiveMode({ routeType: p.routeType as number, routeLongName: longName, routeShortName: shortName, agencySlug: slug, bookingRequired: p.bookingRequired === true }),
       midday: null, am: null, pm: null, evening: null, overnight: null,
     });
     (rows.get(key) ?? rows.set(key, []).get(key)!).push(p as unknown as ShapeProperties);

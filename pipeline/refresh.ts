@@ -324,6 +324,7 @@ interface AgencyEntry {
   skipClusteredJumpRepair?: boolean;
   poolSingleTripShapes?: boolean;
   referenceDateFromRunDate?: boolean;
+  skipBlockTripHeadways?: boolean;
   nextServiceDatesFeedUrls?: string[];
   nextServiceDatesSkipWeekendEvents?: boolean;
   staged?: boolean;

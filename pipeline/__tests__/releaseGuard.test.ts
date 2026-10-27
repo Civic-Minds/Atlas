@@ -129,10 +129,15 @@ describe('tile rules fingerprint', () => {
   // stamp reads what it read before the value was withheld; data built earlier has no such period: hash only.
   // CIV-321 copies the beta sections file into the release beside the route file; no tile value
   // changes: hash only.
+  // CIV-1006 adds the bookingRequired key, read first by the mode expression. No version bump, as for
+  // #899: older tiles lack the key and evaluate exactly as before, and older apps ignore it. Hash only.
+  // #1147 moves stop grouping into stopClustering.ts and caps each group at 250 m. hubId and isHubRef
+  // values change, but they are only ever set at tile build and never re-derived by the app, so any
+  // app draws any tiles as before (older tiles keep their larger groups): hash only.
   it('changes only together with a deliberate TILE_RULES_VERSION decision', () => {
     expect({ version: TILE_RULES_VERSION, fingerprint: tileRulesFingerprint() }).toEqual({
       version: 5,
-      fingerprint: '8c2e9980fe35d2ba1c23ce116f47b7598c99e5ad5e15323a321a429d26989d5a',
+      fingerprint: 'c4e8101b481a87e0885f07945c32f260846f3e9b8c967bbaca6b2de191b54379',
     });
   });
 });
