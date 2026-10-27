@@ -26,7 +26,7 @@ import { ROUTE_ARTIFACT_SCHEMA_VERSION } from '../shared/artifactSchema.js';
 import { DAY_TYPES, WEEKDAYS, type DayName, type DayType } from '../types/gtfs.js';
 import { ALL_DAYS } from '../shared/dayTypes.js';
 import { expandFrequencyWindow, expandTripFrequencyWindows, isSingleTripFrequencyWindow, parseFrequencyWindow, SINGLE_TRIP_WINDOW_MAX_DEPARTURES, SINGLE_TRIP_WINDOW_SPAN_TOLERANCE_MIN, t2m, type FrequencyWindow } from './transit-utils.js';
-import { adaptiveMedianHeadwayInWindow, computeHourMaxGaps, computePeriodHeadways, computePeriodHeadwayRanges, computePeriodMaxGaps, computePeriodSustained, computeResearchFrequentService, forCrossMidnightWindow, HEADLINE_MIN_DEPARTURES, HEADLINE_WINDOWS, headlineWindowValue, hasSustainedNightService, headsignOverlapMinHeadway, headwayToTier, headwayToTierOn, isSparseOvernightWindow, isThinAllDayTerminalSample, isUnevenTwoGapMiddayTerminalSample, medianHeadwayInWindow, MIN_ALL_DAY_TERMINAL_DEPARTURES, nightServiceDepartureTimes, NIGHT_SERVICE_WINDOW_END_MIN, periodHeadwayInWindow, RAIL_TIER_WINDOW, resolveTerminalHeadline, sparseOvernightHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
+import { adaptiveMedianHeadwayInWindow, computeHourMaxGaps, computeHourDepartureCounts, computePeriodHeadways, computePeriodHeadwayRanges, computePeriodMaxGaps, computePeriodSustained, computeResearchFrequentService, forCrossMidnightWindow, HEADLINE_MIN_DEPARTURES, HEADLINE_WINDOWS, headlineWindowValue, hasSustainedNightService, headsignOverlapMinHeadway, headwayToTier, headwayToTierOn, isSparseOvernightWindow, isThinAllDayTerminalSample, isUnevenTwoGapMiddayTerminalSample, medianHeadwayInWindow, MIN_ALL_DAY_TERMINAL_DEPARTURES, nightServiceDepartureTimes, NIGHT_SERVICE_WINDOW_END_MIN, periodHeadwayInWindow, RAIL_TIER_WINDOW, resolveTerminalHeadline, sparseOvernightHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
 import { computeRouteBaseFares, detectBusSubType } from './route-metadata.js';
 import { buildStopsMeta } from './stopsMeta.js';
 import { haversineDistance } from './utils.js';
@@ -1318,6 +1318,7 @@ export async function processGtfsBuffer(
           return byHour;
         })(),
         maxGapByHour: computeHourMaxGaps(result.times, SPARKLINE_HOURS),
+        departuresByHour: computeHourDepartureCounts(result.times, SPARKLINE_HOURS),
         routeShortName: shortName,
         routeVariant: result.routeVariant ?? null,
         routeLongName: route?.route_long_name ?? null,
@@ -3169,12 +3170,18 @@ export async function processGtfsBuffer(
     const headsignTerminalHourGaps = terminalScopedTimes
       ? computeHourMaxGaps(terminalScopedTimes, SPARKLINE_HOURS)
       : undefined;
+    // CIV-1010: departures per hour from the same list as the hour's gap, so the two always agree on the source.
+    const terminalHourDepartures = terminalScopedTimes
+      ? computeHourDepartureCounts(terminalScopedTimes, SPARKLINE_HOURS)
+      : terminalStopId ? computeHourDepartureCounts(metricStopMap.get(terminalStopId) ?? [], SPARKLINE_HOURS) : undefined;
     const terminalHourIsBranchScoped = !!headsignTerminalHourHw;
     const branchHourHw = feature.properties.headwayByHour as HeadwayByHour | undefined;
     if (branchHourHw) {
       const mergedHourHw: HeadwayByHour = {};
       const branchHourGaps = feature.properties.maxGapByHour as Record<number, number | null> | undefined;
       const mergedHourGaps: Record<number, number | null> = {};
+      const branchHourDepartures = feature.properties.departuresByHour as Record<number, number> | undefined;
+      const mergedHourDepartures: Record<number, number> = {};
       for (const h of SPARKLINE_HOURS) {
         const termH = headsignTerminalHourHw?.[h] ?? terminalHourHw?.[h] ?? null;
         const bH = branchHourHw[h] ?? null;
@@ -3183,12 +3190,16 @@ export async function processGtfsBuffer(
         mergedHourGaps[h] = resolvedH === termH
           ? (h in flooredHourGap ? flooredHourGap[h] : (headsignTerminalHourGaps?.[h] ?? terminalHourGaps?.[h] ?? null))
           : (branchHourGaps?.[h] ?? null);
+        const departures = resolvedH === termH ? terminalHourDepartures?.[h] : branchHourDepartures?.[h];
+        if (departures) mergedHourDepartures[h] = departures;
       }
       feature.properties.headwayByHour = mergedHourHw;
       feature.properties.maxGapByHour = mergedHourGaps;
+      feature.properties.departuresByHour = mergedHourDepartures;
     } else if (terminalHourHw) {
       feature.properties.headwayByHour = terminalHourHw;
       feature.properties.maxGapByHour = headsignTerminalHourGaps ?? terminalHourGaps;
+      if (terminalHourDepartures) feature.properties.departuresByHour = terminalHourDepartures;
     }
   }
 

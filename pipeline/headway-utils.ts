@@ -684,6 +684,21 @@ export function computeHourMaxGaps(departureTimes: number[], hours: readonly num
   return result;
 }
 
+/**
+ * CIV-1010: how many departures leave in each clock hour (distinct minutes), only hours with one or more. A
+ * direction's last hour of the day counts too, which maxGapByHour cannot say (it needs a next departure), and an
+ * hourly route counts every hour, which headwayByHour cannot (it needs three departures in a 60-90 minute window).
+ */
+export function computeHourDepartureCounts(departureTimes: number[], hours: readonly number[]): Record<number, number> {
+  const times = [...new Set(departureTimes)];
+  const result: Record<number, number> = {};
+  for (const hour of hours) {
+    const n = times.filter(t => t >= hour * 60 && t < hour * 60 + 60).length;
+    if (n > 0) result[hour] = n;
+  }
+  return result;
+}
+
 /** Return the typical scheduled gap range for each period, excluding one exceptional hole. */
 export function computePeriodHeadwayRanges(departureTimes: number[]): HeadwayByPeriodRange {
   const result: HeadwayByPeriodRange = {};
