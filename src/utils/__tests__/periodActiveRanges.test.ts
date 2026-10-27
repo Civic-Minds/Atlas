@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { TIME_PERIODS } from '../../../shared/config';
 import type { ShapeProperties } from '../../hooks/useIntervalStats';
 import { sparklineSourceDirections } from '../routeCardTrunk';
-import { activeHourRanges, activeRangesCoverPeriod, hourHasService, partPeriodNoticeApplies } from '../periodActiveRanges';
+import { activeHourRanges, activeRangesCoverPeriod, hourHasService, partPeriodNoticeApplies, partPeriodNoticeHeadway } from '../periodActiveRanges';
 
 // TTC 51 Leslie, published data (2026-10-20): the drawn patterns' hourly headways per day type.
 const TTC_51: Record<'Weekday' | 'Saturday' | 'Sunday', Array<{ directionId: number; headsign: string; headwayByHour: Record<number, number> }>> = {
@@ -155,5 +155,33 @@ describe('part-period notice counts hourly service (#1137)', () => {
     const am = period('amPeak');
     expect(activeHourRanges(hourly(RFTA_HC_WEEKDAY), am.startHour - 1, am.endHour)).toEqual([[7, 9]]);
     expect(partPeriodNoticeApplies(hourly(RFTA_HC_WEEKDAY), am.startHour, am.endHour, 15, 72)).toBe(true);
+  });
+});
+
+// #1123: the part-period notice's number against the card's rows (published values, release-mvp929b3).
+describe('part-period notice frequency (#1123)', () => {
+  it('names no frequency when its number is slower than every row', () => {
+    // RFTA HC weekday AM Peak: filter value 72 ("every 60 min") over two rows of every 20.
+    expect(partPeriodNoticeHeadway(72, [20, 20])).toBeNull();
+    // SEPTA 25 Sunday Night: 60 over rows of 30 and 31.
+    expect(partPeriodNoticeHeadway(60, [30, 31])).toBeNull();
+    // OC Transpo 14 weekday Night: 85 ("every 90 min") over rows of 37 and 27.
+    expect(partPeriodNoticeHeadway(85, [37, 27])).toBeNull();
+  });
+
+  it('keeps the number when a row runs as slowly', () => {
+    // Des Moines 12 weekday AM Peak: "every 45 min", over rows of every 45 and every 30.
+    expect(partPeriodNoticeHeadway(45, [45, 30])).toBe(45);
+    // An hourly route keeps "every 60 min" over hourly rows.
+    expect(partPeriodNoticeHeadway(60, [60, 60])).toBe(60);
+    // Compared as printed: 62 reads "every 60 min", the same as a row of 60.
+    expect(partPeriodNoticeHeadway(62, [60, 39])).toBe(62);
+    // One row slower than the number is enough.
+    expect(partPeriodNoticeHeadway(60, [30, 90])).toBe(60);
+  });
+
+  it('keeps the number when there is no row to compare, and has none without a filter value', () => {
+    expect(partPeriodNoticeHeadway(72, [null, undefined])).toBe(72);
+    expect(partPeriodNoticeHeadway(null, [20])).toBeNull();
   });
 });

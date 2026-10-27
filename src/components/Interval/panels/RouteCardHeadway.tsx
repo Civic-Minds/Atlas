@@ -40,7 +40,7 @@ import {
   trunkSparklineByHour,
 } from '../../../utils/routeCardTrunk';
 import { shouldShowDirectionSections } from '../../../utils/routeCardDirectionLayout';
-import { activeHourRanges, partPeriodNoticeApplies } from '../../../utils/periodActiveRanges';
+import { activeHourRanges, partPeriodNoticeApplies, partPeriodNoticeHeadway } from '../../../utils/periodActiveRanges';
 import { rowLabelWithOrigin } from '../../../utils/rowOriginLabel';
 import { hasStretchRoles, routeAllDayContract, routeContract } from '../../../utils/stretchCard';
 import type { VariantFamily } from '../../../utils/routeVariants';
@@ -618,7 +618,12 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                 ? selectedRouteOutsideFilterNotice(Infinity)
                 : selectedPeriod && activePeriodRangeText && showPartPeriodNotice
                 ? selectedRouteFilterNotice({
-                  headway: contract?.filterValue ?? null,
+                  headway: partPeriodNoticeHeadway(
+                    contract?.filterValue,
+                    displayGroups.flatMap(g => g.realTier).map(d => routeCardRowValue(d, {
+                      period, hoveredHour: null, stretchMode, allDay, contract, noRegularService, maxHeadway,
+                    }).headway),
+                  ),
                   activeRange: activePeriodRangeText,
                   periodRange: formatPeriodRangeLong(selectedPeriod.startHour, selectedPeriod.endHour),
                 })
