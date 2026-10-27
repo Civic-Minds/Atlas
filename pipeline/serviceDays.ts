@@ -403,8 +403,9 @@ function twoWeekCycle(grid: WeekGrid, weeks: readonly number[], anchorWeek: numb
  *    With the anchor outside the table (an archived or not-yet-started feed), the nearest period.
  * 2. Each day of the week takes the signature seen on the most weeks of that period. When that
  *    vote is tied or thin (fewer than MIN_VOTE_WEEKS weeks of the day in the period), it goes to the
- *    signature seen on the most weeks of that day across the whole table, so a one-off never beats
- *    a pattern that recurs (HSR 41: a two-Monday period tied a one-off 1:1); then to the signature
+ *    period's signature seen on the most weeks of that day from the period's start to the table's
+ *    end, so a one-off never beats a pattern that recurs (HSR 41: a two-Monday period tied a
+ *    one-off 1:1, and the regular Monday continues after it); then to the signature
  *    seen nearest the anchor (the later date when two are equally near). A day on a two-week
  *    cycle in the period (two signatures, one on every other week with no break, the anchor's
  *    week inside it; see twoWeekCycle) takes the anchor week's own signature instead of the
@@ -463,9 +464,12 @@ export function pickServiceWeek(table: ServiceDayTable, options: PickServiceWeek
     const ranked = [...counts].sort(([, a], [, b]) => b.weeks - a.weeks || nearer(a.nearest, b.nearest));
     const tied = ranked.length > 1 && ranked[0][1].weeks === ranked[1][1].weeks;
     if (tied || cells.length < MIN_VOTE_WEEKS) {
-      // The whole table's weeks of this day decide among the period's leading signatures.
+      // The table's weeks of this day from the period's start on decide among the period's leading
+      // signatures (only signatures seen in the period are candidates). Earlier periods are an older
+      // timetable and do not count: VTA's archived zip has six different Thursdays in its last
+      // period, and a bus bridge on Sep 10 (the period before) and Sep 17 must not win as a repeat.
       const inWindow = new Map<string, number>();
-      for (const week of grid.cells) {
+      for (const week of grid.cells.slice(weeks[0])) {
         const c = week[d];
         if (c) inWindow.set(c.signature, (inWindow.get(c.signature) ?? 0) + 1);
       }

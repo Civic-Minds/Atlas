@@ -451,6 +451,33 @@ describe('pickServiceWeek: issues in the plan (section 4)', () => {
     expect(skippedDates(week)).toEqual(['20261026']);
   });
 
+  it('a repeat from an earlier period does not win a tie (VTA Thursdays, stage 4)', () => {
+    // VTA's archived zip: every Thursday of its last period has a different trip pattern, and a
+    // bus bridge ran on Sep 10 (the period before) and Sep 17. Counting the whole table made the
+    // bus bridge the only repeat, so Thursday read Sep 17; only the period onwards counts, so the
+    // six-way tie goes to the Thursday nearest the anchor (Oct 22).
+    // The Saturday timetable changes on Sep 12, which starts the last period on Sep 14.
+    const calendar = [
+      cal('WK', 'mo,tu,we,th,fr', '20260831', '20261023'),
+      cal('SA-OLD', 'sa', '20260829', '20260912'), cal('SA', 'sa', '20260913', '20261024'),
+    ];
+    const thursdays = ['20260924', '20261001', '20261008', '20261015', '20261022'];
+    const calendarDates = [
+      ...['20260910', '20260917'].map(d => added('BRIDGE', d)),
+      ...thursdays.map(d => removed('WK', d)), ...thursdays.map(d => added(`TH-${d}`, d)),
+    ];
+    const trips = [
+      ...tripsOf('WK', 'R', 10), ...tripsOf('SA-OLD', 'R', 8), ...tripsOf('SA', 'R', 6), ...tripsOf('BRIDGE', 'B', 5),
+      ...thursdays.flatMap((d, i) => tripsOf(`TH-${d}`, 'R', 11 + i)),
+    ];
+    const table = buildServiceDayTable({ calendar, calendarDates, trips, anchor: '20261028' });
+    expect(table.source).toBe('last-weeks');
+    expect(splitServicePeriods(table).periods.map(p => p[0])).toEqual(['20260824', '20260914']);
+    const week = pickServiceWeek(table);
+    expect(week.dates.Thursday).toBe('20261022');
+    expect(week.services.Thursday).toEqual(['TH-20261022']);
+  });
+
   it('every-other-week service reads the anchor week\'s own signature (Kingston 60, stage 4)', () => {
     // Route K runs on alternate Sundays (Oct 18, Nov 1, Nov 15), 2 of the table's 8 Sundays. The
     // Sundays around the anchor's week alternate without a break, so the anchor week's Sunday
