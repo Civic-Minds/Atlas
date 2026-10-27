@@ -7,8 +7,11 @@ export const minutesText = (x: number): string => `${tenth(x)} min`;
 /** "12%": a share as a whole percent. The one writer of a whole-percent figure on Live surfaces. */
 export const pct = (x: number): string => `${Math.round(x * 100)}%`;
 
-/** "96.7%": a share to a tenth of a percent (service delivered), whole numbers without ".0". */
-export const pctTenth = (x: number): string => `${tenth(Math.round(x * 1000) / 10)}%`;
+/**
+ * "99.9%": a share to a tenth of a percent (service delivered), rounded down so a route that missed trips never reads
+ * 100%; whole numbers without ".0". The 1e-9 keeps float error from dropping an exact share a step (0.57 * 1000 = 569.99…).
+ */
+export const pctTenth = (x: number): string => `${tenth(Math.floor(x * 1000 + 1e-9) / 10)}%`;
 
 /** "+12%", "−4%", "0%": a change in share, with a real minus sign; a change that rounds to 0 has no sign. */
 export const signedPct = (x: number): string => { const r = Math.round(x * 100); return `${r > 0 ? '+' : r < 0 ? '−' : ''}${Math.abs(r)}%`; };
