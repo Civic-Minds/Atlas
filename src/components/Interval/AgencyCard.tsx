@@ -408,6 +408,17 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
   const regionTitle = agencyRegionTitle(agency.slug);
   const area = areaLink && regionTitle ? { href: areaLink.href, label: regionTitle } : null;
   const hasSource = FEATURES.dataSourceLink && !!agency.websiteUrl;
+  // One line right under the name (CIV-929): the area link, then "About →" (CIV-841), then "Source →" when that is on.
+  // Each opens in a new tab, since they leave the map; the area name is cut with an ellipsis if it runs long.
+  const agencyLinks = [
+    area && (
+      <ArrowLink key="area" size="xs" tone="inline" href={area.href} target="_blank" rel="noopener noreferrer" className="max-w-full [&>svg]:shrink-0" title={area.label}>
+        <span className="truncate min-w-0">{area.label}</span>
+      </ArrowLink>
+    ),
+    hasAboutPage && <ArrowLink key="about" size="xs" tone="inline" href={agencyPagePath(agency.slug)} target="_blank" rel="noopener noreferrer">About</ArrowLink>,
+    hasSource && <AgencyDataSourceLink key="source" agency={agency} />,
+  ].filter(Boolean) as React.ReactNode[];
   const rolloutNotice = getRolloutNotice(agency);
   const coverageNote = FEATURES.onDemand ? onDemandCoverageNote(agency) : null;
   // Zone not on the map yet: an "On-Demand" pill beside the mode pills instead of a notice block.
@@ -540,21 +551,8 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
           back={{ to: 'Map', onClick: onClose }}
           facts={agency.onDemandOnly ? 'On-demand service' : buildHeaderSummary(visibleRoutes, maxHeadway)}
           report={reportButton}
-          region={area && (
-            // The region on one line under the name, cut with an ellipsis if it ever runs long (CIV-929). The map is
-            // a different page from the area page, so it opens in a new tab like the outside Source link.
-            <ArrowLink size="xs" tone="inline" href={area.href} target="_blank" rel="noopener noreferrer" className="max-w-full" title={area.label}>
-              <span className="truncate min-w-0">{area.label}</span>
-            </ArrowLink>
-          )}
+          links={agencyLinks}
         >
-          {(hasAboutPage || hasSource) && (
-            // "About →" and "Source →" under the facts (CIV-841), each in a new tab like the region link.
-            <p className="mt-1 flex flex-wrap gap-x-3 text-xs">
-              {hasAboutPage && <ArrowLink size="xs" tone="inline" href={agencyPagePath(agency.slug)} target="_blank" rel="noopener noreferrer">About</ArrowLink>}
-              <AgencyDataSourceLink agency={agency} />
-            </p>
-          )}
           {!agency.onDemandOnly && agency.onDemandServiceArea?.serviceName && (() => {
             const service = agency.onDemandServiceArea;
             // Every on-demand service in the shared row style (CIV-962): its name bold like a route with no number,

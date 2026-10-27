@@ -58,7 +58,7 @@ describe('on-demand zone card', () => {
     const { availability: _omit, ...withoutHours } = HAMILTON_MY_RIDE_SERVICE_AREA;
     const noHoursService = { ...withoutHours, serviceHours: 'Hours vary; check the app.' };
     renderZoneCard(null, 'Saturday', 'midday', { ...hamilton, onDemandServiceArea: noHoursService } as unknown as Agency);
-    expect(screen.getByText('Hours not confirmed for this time')).toBeInTheDocument();
+    expect(screen.getByText('Hours unavailable')).toBeInTheDocument();
     expect(screen.queryByText(/^Running/)).toBeNull();
     expect(screen.getByText('Hours vary; check the app.')).not.toHaveClass('font-bold');
   });

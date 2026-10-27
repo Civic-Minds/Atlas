@@ -484,7 +484,7 @@ export function AgencyCardTop({
   name,
   place,
   back,
-  region,
+  links = [],
   facts,
   report,
   as,
@@ -493,8 +493,8 @@ export function AgencyCardTop({
   name: string;
   place?: string | null;
   back: { to: string; onClick: () => void };
-  /** A link to the agency's region ("Greater Toronto and Hamilton Area →"), kept to one line. */
-  region?: React.ReactNode;
+  /** The links line under the name ("Austin area → · About →"), kept to one line (CIV-929). */
+  links?: React.ReactNode[];
   facts?: React.ReactNode;
   report?: React.ReactNode;
   as?: 'p' | 'h2';
@@ -505,7 +505,17 @@ export function AgencyCardTop({
       <div className="min-w-0 flex-1">
         <CardBackLink onClick={back.onClick}>{back.to}</CardBackLink>
         <AgencyNameHeading as={as} name={name} place={place} className="mb-0" />
-        {region && <p className="mt-0.5 flex min-w-0 text-xs whitespace-nowrap">{region}</p>}
+        {links.length > 0 && (
+          // One line, dot between links; only the first (the area name) gives way, cut with an ellipsis.
+          <p className="mt-0.5 flex items-center min-w-0 text-xs whitespace-nowrap">
+            {links.map((link, i) => (
+              <React.Fragment key={i}>
+                {i > 0 && <span className="mx-1 shrink-0 text-[var(--text-dim)] select-none" aria-hidden="true">·</span>}
+                <span className={i === 0 ? 'flex min-w-0' : 'flex shrink-0'}>{link}</span>
+              </React.Fragment>
+            ))}
+          </p>
+        )}
         {facts && <p className={CARD_SUMMARY}>{facts}</p>}
         {children}
       </div>
