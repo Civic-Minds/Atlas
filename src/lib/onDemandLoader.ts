@@ -5,7 +5,7 @@
  */
 import type { Agency } from '../App';
 import { BETA_R2_PUBLIC_URL, FEATURES, ON_DEMAND_URL_OVERRIDE, R2_PUBLIC_URL } from '../../shared/config';
-import { BETA_ROLLOUT_NOTICE } from '../content/noticeCopy';
+import { BETA_SERVICE_ROLLOUT_NOTICE } from '../content/noticeCopy';
 import { localDateIn, withoutExpiredOnDemandZones } from '../../shared/onDemandAvailability';
 import {
   ON_DEMAND_PREFIX,
@@ -45,7 +45,7 @@ export async function loadOnDemandGeometry(index: OnDemandIndex, slug: string, b
 }
 
 function rollout(isPublic: boolean): Partial<Agency> {
-  return isPublic ? {} : { hiddenInProduction: true, betaOnly: true, rolloutNotice: BETA_ROLLOUT_NOTICE };
+  return isPublic ? {} : { hiddenInProduction: true, betaOnly: true, rolloutNotice: BETA_SERVICE_ROLLOUT_NOTICE };
 }
 
 /**

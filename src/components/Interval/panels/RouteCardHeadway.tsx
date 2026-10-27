@@ -812,10 +812,10 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
               />
             )}
             {routeAgency?.feedReviewStatus === 'review' && !routeAgency.overrideNote && (
-              <NewScheduleDataNotice agency={routeAgency} onInfoOpen={onInfoOpen} />
+              <NewScheduleDataNotice on="route" agency={routeAgency} onInfoOpen={onInfoOpen} />
             )}
             {routeAgency && routeOverrideNote && (
-              <CorrectedDataNotice agency={routeAgency} overrideNote={routeOverrideNote} onInfoOpen={onInfoOpen} />
+              <CorrectedDataNotice on="route" agency={routeAgency} overrideNote={routeOverrideNote} onInfoOpen={onInfoOpen} />
             )}
             {hasWeekdayTierVariation && (
               <CardHelpNotice

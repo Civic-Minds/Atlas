@@ -27,12 +27,12 @@ describe.runIf(FEATURES.onDemand)('agency card On-Demand pill (zone not on the m
     expect(screen.queryByText('MARTA Reach')).toBeNull();
     expect(screen.queryByText('On-demand service')).toBeNull();
     const pill = screen.getByRole('button', { name: 'On-Demand' });
-    expect(screen.getByText("This service runs by request in a zone that isn't on the map yet.")).toBeInTheDocument();
+    expect(screen.getByText("This agency's on-demand service runs by request in a zone that isn't on the map yet.")).toBeInTheDocument();
     fireEvent.click(pill);
-    expect(screen.queryByText("This service runs by request in a zone that isn't on the map yet.")).toBeNull();
+    expect(screen.queryByText("This agency's on-demand service runs by request in a zone that isn't on the map yet.")).toBeNull();
     expect(screen.getByText('No routes loaded yet.')).toBeInTheDocument();
     fireEvent.click(pill);
-    expect(screen.getByText("This service runs by request in a zone that isn't on the map yet.")).toBeInTheDocument();
+    expect(screen.getByText("This agency's on-demand service runs by request in a zone that isn't on the map yet.")).toBeInTheDocument();
   });
 
   it('gives no pill to an agency whose zone is on the map', () => {

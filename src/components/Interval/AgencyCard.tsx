@@ -701,10 +701,10 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
                 />
               )}
               {agency.feedReviewStatus === 'review' && !agency.overrideNote && (
-                <NewScheduleDataNotice agency={agency} onInfoOpen={onInfoOpen} />
+                <NewScheduleDataNotice on="agency" agency={agency} onInfoOpen={onInfoOpen} />
               )}
               {agency.overrideNote && (
-                <CorrectedDataNotice agency={agency} overrideNote={agency.overrideNote} onInfoOpen={onInfoOpen} />
+                <CorrectedDataNotice on="agency" agency={agency} overrideNote={agency.overrideNote} onInfoOpen={onInfoOpen} />
               )}
             </div>
           )}
