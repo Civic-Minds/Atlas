@@ -1,6 +1,6 @@
 import type { GtfsData, GtfsRoute } from '../types/gtfs.js';
 import { resolveDisplayHeadsign } from '../shared/headsignDisplay.js';
-import { isRailLikeRoute } from '../shared/modes.js';
+import { isRailRoute } from './routeMode.js';
 import { haversineDistance } from './utils.js';
 import type { GeoJsonFeature } from './geojson-types.js';
 import type { DayType } from '../shared/dayTypes.js';
@@ -187,12 +187,7 @@ export function buildShapeSelectionContext(
     const routeId = key.split('::')[0];
     const routeType = routeById.get(routeId)?.route_type;
     const route = routeById.get(routeId);
-    const isRail = isRailLikeRoute({
-      routeType,
-      routeLongName: route?.route_long_name,
-      routeShortName: route?.route_short_name,
-      agencySlug,
-    });
+    const isRail = isRailRoute(route, agencySlug);
 
     if (isRail) {
       const best = [...counts.keys()]
@@ -220,24 +215,14 @@ export function buildShapeSelectionContext(
   for (const [key, shapeIds] of routeDirToAnalysisShapes) {
     const routeId = key.split('::')[0];
     const route = routeById.get(routeId);
-    const isRail = isRailLikeRoute({
-      routeType: route?.route_type,
-      routeLongName: route?.route_long_name,
-      routeShortName: route?.route_short_name,
-      agencySlug,
-    });
+    const isRail = isRailRoute(route, agencySlug);
     if (!isRail) shapeFilterForPhase1.set(key, shapeIds);
   }
 
   for (const [hKey, hShapeCounts] of headsignShapeCounts) {
     const routeId = hKey.split('::')[0];
     const route = routeById.get(routeId);
-    if (isRailLikeRoute({
-      routeType: route?.route_type,
-      routeLongName: route?.route_long_name,
-      routeShortName: route?.route_short_name,
-      agencySlug,
-    })) continue;
+    if (isRailRoute(route, agencySlug)) continue;
     const shapeEntries = [...hShapeCounts.entries()]
       .map(([sid, trips]) => ({ sid, trips, len: shapeLen(sid) }))
       .filter((e): e is { sid: string; trips: number; len: number } => e.len != null);

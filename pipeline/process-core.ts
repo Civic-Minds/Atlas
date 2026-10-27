@@ -39,7 +39,7 @@ import { effectiveFeedExpiry } from './feedFreshness.js';
 import { recordedFeedExpiry } from './refreshMeta.js';
 import { routeDataQualityWarningForShape } from './routeDataQuality.js';
 import { deriveRouteBranch } from '../shared/routeBranch.js';
-import { isRailLikeRoute } from '../shared/modes.js';
+import { isRailRoute } from './routeMode.js';
 import { computePeriodCoverageHeadways } from './headway-utils.js';
 import { isNightRouteDirection, nextServiceDay, nightStartsBeforeWindow, overnightPeriodValues, overnightWindowTimes } from './overnightTerminal.js';
 import { makeShapeCoverChecker } from './shapeCoverage.js';
@@ -705,7 +705,7 @@ export async function processGtfsBuffer(
   onStatus?: (msg: string) => void,
   options?: ProcessOptions,
 ): Promise<ProcessResult> {
-  let gtfs = await parseGtfsZip(buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength) as ArrayBuffer, onStatus, { keepLongShapeJumps: options?.keepLongShapeJumps, skipClusteredJumpRepair: options?.skipClusteredJumpRepair });
+  let gtfs = await parseGtfsZip(buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength) as ArrayBuffer, onStatus, { keepLongShapeJumps: options?.keepLongShapeJumps, skipClusteredJumpRepair: options?.skipClusteredJumpRepair, agencySlug: options?.slug });
   gtfs = normalizeGtfs(gtfs, options, onStatus);
 
   const validation = validateGtfs(gtfs, options?.slug ?? 'feed');
@@ -1058,11 +1058,7 @@ export async function processGtfsBuffer(
     }
     return drawnHeadsignsByPool.get(poolKey) ?? new Set();
   };
-  const railRouteIds = new Set((gtfs.routes ?? []).filter(route => isRailLikeRoute({
-    routeType: route.route_type,
-    routeLongName: route.route_long_name,
-    routeShortName: route.route_short_name,
-  })).map(route => route.route_id));
+  const railRouteIds = new Set((gtfs.routes ?? []).filter(route => isRailRoute(route, options?.slug)).map(route => route.route_id));
   // A pattern: route_id + shape for buses (every trip on the feature's own shape, as in its
   // shape-scoped stop metrics), route_id + headsign for rail (headsign-scoped metrics).
   const sharedPatternKey = (routeId: string, headsign: string | null, shapeId: string | null | undefined): string | null => {
@@ -1946,11 +1942,7 @@ export async function processGtfsBuffer(
     }
     const featureHeadsign = feature.properties.headsign as string | null;
     const featureRoute = routeById.get(feature.properties.routeId as string);
-    const railFeature = isRailLikeRoute({
-      routeType: featureRoute?.route_type,
-      routeLongName: featureRoute?.route_long_name,
-      routeShortName: featureRoute?.route_short_name,
-    });
+    const railFeature = isRailRoute(featureRoute, options?.slug);
     const headsignMap = featureHeadsign
       ? stopDepsByHeadsignGroup.get(`${shortName}::${dirId}::${day}::${featureHeadsign}`)
       : undefined;

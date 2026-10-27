@@ -3,7 +3,7 @@ import JSZip from 'jszip';
 import Papa from 'papaparse';
 import { GtfsData, GtfsShape, GtfsCalendar, GtfsCalendarDate, GtfsAgency, GtfsFareAttribute, GtfsFareRule, GtfsFareProduct, GtfsRiderCategory, GtfsFareLegRule, ShapeAnomaly } from '../types/gtfs';
 import { haversineDistance, bearing, bearingDiff } from './utils.js';
-import { isRailLikeRoute } from '../shared/modes.js';
+import { isRailRoute } from './routeMode.js';
 
 /**
  * Parse a CSV string into an array of typed objects.
@@ -538,7 +538,7 @@ export function synthesizeCalendarFromDates(calendarDates: GtfsCalendarDate[]): 
 export const parseGtfsZip = async (
     file: File | ArrayBuffer,
     onStatus?: (message: string) => void,
-    options: { keepLongShapeJumps?: boolean; skipClusteredJumpRepair?: boolean } = {},
+    options: { keepLongShapeJumps?: boolean; skipClusteredJumpRepair?: boolean; agencySlug?: string } = {},
 ): Promise<GtfsData> => {
     onStatus?.('Loading ZIP archive...');
     const zip = await JSZip.loadAsync(file);
@@ -592,10 +592,7 @@ export const parseGtfsZip = async (
     if (rawShapes) {
         const railRouteIds = new Set(
             (gtfsData.routes ?? [])
-                .filter(route => isRailLikeRoute({
-                    routeType: route.route_type,
-                    routeLongName: route.route_long_name,
-                }))
+                .filter(route => isRailRoute(route, options.agencySlug))
                 .map(route => route.route_id),
         );
         // Agency opt-in: rural highway shapes can have several multi-kilometre steps between

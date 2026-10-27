@@ -6,7 +6,7 @@ import {
 } from '../types/gtfs';
 import { t2m, getModeName, expandTripFrequencyWindows, parseFrequencyWindow, type FrequencyWindow } from './transit-utils';
 import { detectReferenceDate, getActiveServiceIds } from './transit-calendar';
-import { isRailLikeRoute } from '../shared/modes';
+import { isRailRoute } from './routeMode';
 
 /**
  * Expand frequency-based trips into individual departure times.
@@ -230,12 +230,7 @@ export function computeRawDepartures(gtfs: GtfsData, referenceDate?: string, sha
                 day,
                 routeType,
                 modeName: getModeName(routeType),
-                railLike: isRailLikeRoute({
-                    routeType,
-                    routeLongName: route?.route_long_name,
-                    routeShortName: route?.route_short_name,
-                    agencySlug,
-                }),
+                railLike: isRailRoute(route ?? { route_type: String(routeType) }, agencySlug),
                 shapeId,
                 departureTimes,
                 gaps,
