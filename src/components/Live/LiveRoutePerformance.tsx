@@ -8,6 +8,7 @@ import { LIVE_AGENCY_TIMEZONES } from '../../../shared/livePollingConfig';
 import { halfMinutes, type SegmentBand, type SegmentDelayData } from '../../utils/segmentDelayView';
 import { addSnapshot, lineModel, liveGaps, liveTripDirections, positionsSnapshot, type RecentSnapshot, withStats, type LineModel } from '../../utils/livePerformance';
 import type { LiveVehicle } from '../../context/LiveVehiclesMapOverlay';
+import { getVehicleStatus } from '../../utils/colors';
 
 function halfText(m: number): string {
   const whole = Math.floor(Math.abs(m));
@@ -129,6 +130,12 @@ export default function LiveRoutePerformance({ slug, routeShortName, vehicles, f
     return !!s && g * 60 >= 2 * s;
   };
 
+  // On time by the same standard as each vehicle's own label (getVehicleStatus), over the cars counted above.
+  // Left out where none of them reports how late it is (TTC streetcars today): the count would only say 0.
+  const counted = new Set(live?.carIds ?? []);
+  const reporting = vehicles.filter(v => counted.has(v.id) && v.delayMin != null);
+  const onTime = reporting.length ? reporting.filter(v => getVehicleStatus(v.delayMin) === 'on_time').length : null;
+
   return (
     <div className="flex flex-col gap-3">
       {replacement}
@@ -144,6 +151,7 @@ export default function LiveRoutePerformance({ slug, routeShortName, vehicles, f
             <>
               <Stats items={[
                 ['Vehicles', String(live.cars)],
+                ...(onTime != null ? [['On time', String(onTime)] as [string, string]] : []),
                 ['Scheduled', `every ${schedLabel}`],
               ]} />
               {/* Only once a gap is known: right after the card opens the map has no track of the cars ahead yet. */}
