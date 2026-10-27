@@ -178,6 +178,9 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
 
   const { vehiclesBySlug, headwaysBySlug, loadingBySlug, errorBySlug, failCountBySlug, degradedBySlug } = useLiveFeeds(active, visibleSlugs, visibleSlugKey);
 
+  // The picked route's vehicles' directions from their trips (the analysis's timetable, via LiveRoutePerformance).
+  const [tripDirections, setTripDirections] = useState<ReadonlyMap<string, number> | null>(null);
+
   // Fill missing direction metadata from static directional route shapes. Some
   // GTFS-RT feeds provide vehicle positions without direction_id or headsign.
   const resolvedVehiclesBySlug = useMemo(() => {
@@ -195,17 +198,20 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
       resolved[slug] = vehicles.map(vehicle => {
         // `layers` is rebuilt on every zoom step, but a vehicle's direction doesn't change until the next
         // poll gives a new vehicle object, so work it out once per vehicle.
-        const cached = resolvedDirections.get(vehicle);
-        if (cached) return cached;
         const routeFeatures = featuresByRoute.get(vehicle.routeShortName) ?? [];
-        const match = inferLiveDirection(vehicle, routeFeatures);
+        // A direction the trip itself gives wins over the nearest-shape guess, which can pick the other
+        // direction's shape where the two run close together, as at a terminal loop (#1164).
+        const known = vehicle.directionId == null && buildRouteKey(slug, vehicle.routeShortName) === selectedRoute ? tripDirections?.get(vehicle.id) : undefined;
+        const cached = resolvedDirections.get(vehicle);
+        if (cached && (known == null || cached.directionId === known)) return cached;
+        const match = inferLiveDirection(known == null ? vehicle : { ...vehicle, directionId: known }, routeFeatures);
         const out = { ...vehicle, directionId: match.directionId, headsign: match.headsign };
         if (routeFeatures.length > 0) resolvedDirections.set(vehicle, out);
         return out;
       });
     }
     return resolved;
-  }, [vehiclesBySlug, routeLayer]);
+  }, [vehiclesBySlug, routeLayer, selectedRoute, tripDirections]);
 
   useLiveRouteRequest({
     active, routeRequest, visibleSlugs, pendingRouteRef,
@@ -702,6 +708,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
         vehicles={selectedGroup.vehicles}
         feedDegraded={!!degradedBySlug[selectedGroup.agencySlug] || !!errorBySlug[selectedGroup.agencySlug]}
         onCounted={setCounted}
+        onTripDirections={setTripDirections}
       />
       <SidebarCardSection label={selectedDirection ?? selectedRouteHeadwayLine ?? undefined}>
         {/* Match static route cards: destinations first, live vehicles second. */}

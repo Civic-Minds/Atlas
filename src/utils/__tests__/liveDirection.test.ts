@@ -24,6 +24,15 @@ describe('inferLiveDirection', () => {
     expect(result).toEqual({ directionId: 0, headsign: 'Newmarket Terminal' });
   });
 
+  it("names the destination from the trip's own direction when one is known, even where the heading points the other way (#1164)", () => {
+    // Heading east, which alone picks direction 0; the trip says direction 1 (a car turning at a terminal loop).
+    const result = inferLiveDirection(vehicle({ directionId: 1 }), [
+      feature(0, 'Newmarket Terminal', [[0, 0], [0.01, 0]]),
+      feature(1, 'Finch GO Bus Terminal', [[0.01, 0], [0, 0]]),
+    ]);
+    expect(result).toEqual({ directionId: 1, headsign: 'Finch GO Bus Terminal' });
+  });
+
   it('keeps the direction when a full route and its short turn share track', () => {
     const result = inferLiveDirection(vehicle({ bearing: 270 }), [
       feature(0, 'Newmarket Terminal', [[0, 0], [0.01, 0]]),
