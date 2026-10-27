@@ -248,6 +248,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
       topic: opts.helpTopic,
       agencyName: opts.agencyName,
       expDateStr: opts.expDateStr,
+      listingEndedDate: opts.listingEndedDate,
       manualFeedSource: opts.manualFeedSource,
       lastRefreshedAt: opts.lastRefreshedAt,
       lastFeedCheckAt: opts.lastFeedCheckAt,
