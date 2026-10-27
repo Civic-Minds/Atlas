@@ -64,10 +64,10 @@ describe('per-route mode overrides (#827)', () => {
     expect(isRailLikeRoute({ routeType: 0, routeShortName: 'BLUE' })).toBe(false);
   });
 
-  it('a label-only override changes the shown mode but not pipeline processing (CapMetro 550 until #1138)', () => {
+  it('CapMetro 550 is commuter rail for the pipeline too, now that #1138 keeps event trains out', () => {
     const red = { agencySlug: 'capmetro', routeType: 0, routeShortName: '550', routeLongName: '550-Metro Rail Red Line' };
     expect(effectiveMode(red)).toBe(2);
-    expect(isRailLikeRoute(red)).toBe(false);
+    expect(isRailLikeRoute(red)).toBe(true);
   });
 
   it('the map filter and effectiveMode agree for every override and a control route', () => {

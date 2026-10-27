@@ -13,6 +13,7 @@ import { applyAnalysisCriteria, BURST_MAX_SPAN_MINUTES, determineTierWithEdgeGap
 import { calculateCorridors } from './transit-logic.js';
 import { detectReferenceDate, getActiveServiceIds } from './transit-calendar.js';
 import { calendarFromNextServiceDates } from './serviceDates.js';
+import { dropOneOffRailTrips } from './oneOffServices.js';
 import { bookingRequiredRouteIds } from './bookedRoutes.js';
 import { DEFAULT_CRITERIA, getTiersForCriteria } from './defaults.js';
 import { normalizeGtfs, type GtfsPreprocess, type GtfsTransformOptions } from './preprocess/run.js';
@@ -731,6 +732,14 @@ export async function processGtfsBuffer(
   }
 
   const routeBaseFares = computeRouteBaseFares(gtfs, options?.manualBaseFare);
+
+  // #1138: one-off event trains on a rail route's own shapes (a special-event evening on top of the
+  // regular timetable) never read as regular service. See oneOffServices.ts.
+  const oneOff = dropOneOffRailTrips(gtfs, options?.slug);
+  if (oneOff.dropped.length > 0) {
+    gtfs = oneOff.gtfs;
+    onStatus?.(`One-off rail trips left out: ${oneOff.dropped.map(d => `${d.routeId}/${d.serviceId} (${d.trips} trips)`).join(', ')}`);
+  }
 
   const routeById = new Map((gtfs.routes ?? []).map(r => [r.route_id, r]));
 
