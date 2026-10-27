@@ -6,6 +6,7 @@ import type { OpenInfoFn } from '../../InfoPanel';
 import type { HeadwayByPeriod } from '../../../hooks/useAgencyData';
 import { routeLabels, resolveBranchLabel, formatBranchLabel, agencyNames } from '../../../utils/format';
 import { HeadwaySparkline } from '../HeadwaySparkline';
+import { hourChartMaxFreq } from '../../../utils/hourChartModel';
 import { getCachedAgencyGeo } from '../../../lib/agencyGeo';
 import { tripTimeSeriesFor, type PublishedRunningTimes } from '../../../utils/tripTime';
 import RouteCardTitle from '../../RouteCardTitle';
@@ -561,12 +562,14 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
         const stackedByHour = selected ? selectionStacked! : defaultStackedByHour;
         // One y-axis top for the route: the busiest hour of anything the card or the full-day view can
         // draw (the default chart, each direction, each direction's branches together).
-        const freqsOf = (series: Record<number, number | null>) => HOURS.map(h => series[h]).filter((v): v is number => v != null && v > 0).map(v => 1 / v);
-        const scaleMaxFreq = Math.max(0, ...freqsOf(defaultMerged), ...perDirection.flatMap(entry => freqsOf(entry.byHour)),
+        const scaleMaxFreq = hourChartMaxFreq([
+          defaultMerged,
+          ...perDirection.map(entry => entry.byHour),
           // Only directions that can draw a branch stack (two or more branches): a one-branch direction's raw
           // hourly reading is never drawn, so it must not set the top (Milton 4: a 6 a.m. reading of 18 vs 30 shown).
           ...displayGroups.filter(group => branchesOf(group).length >= 2)
-            .flatMap(group => HOURS.map(h => tripsEvery(stackOf(group, h))).filter((v): v is number => v != null).map(v => 1 / v)));
+            .map(group => Object.fromEntries(HOURS.map(h => [h, tripsEvery(stackOf(group, h))]))),
+        ], HOURS);
         // Full-day view: one pill per direction, opening on the slower one.
         // Single-direction routes get no pills.
         const pillLabels = directionPillLabels(
