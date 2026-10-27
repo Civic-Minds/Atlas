@@ -24,7 +24,7 @@ interface Props {
 
 export default function RouteCardTitle({ title: givenTitle, routeShortName, routeLongName, agencyName, routeType, agencySlug, onAgencyClick, showAgency = true, agencyBackLink = false, agencyFullName, back: otherBack }: Props) {
   const title = givenTitle ?? routeLabels({ shortName: routeShortName, longName: routeLongName, routeType, agencySlug, agencyName }).text;
-  const displayAgency = showAgency && agencyName ? agencyNames(agencyName).short : null;
+  const displayAgency = showAgency && agencyName ? agencyNames(agencyName).name : null;
   const back = otherBack
     ?? (agencyBackLink && onAgencyClick && displayAgency ? { to: agencyNames(agencyFullName ?? agencyName!).backLink, onClick: onAgencyClick } : undefined);
   return (

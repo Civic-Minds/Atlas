@@ -9,7 +9,7 @@ import type { TimePeriod, ViewportBounds } from '../../hooks/useIntervalStats';
 import { FEATURES, formatPeriodRange, periodKeyForHour } from '../../../shared/config';
 import { COMPACT_TOP_BAR_QUERY } from '../ModeTabLabel';
 import { useMediaQuery } from '../../hooks/useMediaQuery';
-import { agencyNameParts } from '../../utils/format';
+import { agencyListParts } from '../../utils/format';
 import { bboxInViewport } from '../../utils/agencySearch';
 import { filterModeOptions } from '../../../shared/modes';
 import { modesForView } from '../../../shared/viewLayers';
@@ -191,7 +191,7 @@ function AgenciesPanel({ agencies, selectedAgencies, setSelectedAgencies, bounds
             <p className={`px-2 pt-2 pb-0.5 ${CARD_SECTION}`}>{region}</p>
             {groups.map(g => {
               const active = g.slugs.every(s => selectedAgencies.has(s));
-              const { primary, secondary } = agencyNameParts({ name: g.name, cities: g.cities, displayArea: g.displayArea });
+              const { primary, secondary } = agencyListParts({ name: g.name, cities: g.cities, displayArea: g.displayArea });
               return (
                 <button
                   key={g.name}

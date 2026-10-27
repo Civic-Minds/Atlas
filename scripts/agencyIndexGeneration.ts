@@ -37,6 +37,22 @@ export function generateAgencyCatalog(agencies: Array<Record<string, unknown>>, 
   return { contents: `${JSON.stringify(catalog)}\n`, agencyCount: catalog.agencyCount };
 }
 
+/**
+ * Every agency's config `shortName`, keyed by its config name, into shared/data/agency-short-names.json. The app uses
+ * one only where the agency's own everyday name is too long for a row (CIV-998: "Gary Public Transportation
+ * Corporation" → "GPTC"); the feature data carries the config name, so that is the key.
+ */
+export function generateAgencyShortNames(agencies: Array<Record<string, unknown>>): { contents: string; count: number } {
+  const byName: Record<string, string> = {};
+  for (const agency of agencies) {
+    const short = agency.shortName;
+    if (short === undefined) continue;
+    if (typeof short !== 'string' || !short.trim() || short !== short.trim()) throw new Error(`${String(agency.slug)}: shortName must be a trimmed non-empty string`);
+    byName[String(agency.name).trim()] = short;
+  }
+  return { contents: `${JSON.stringify({ byName }, null, 2)}\n`, count: Object.keys(byName).length };
+}
+
 /** Route modes a config modeOverrides entry may assign (100 = light rail). */
 export const OVERRIDE_MODES = [0, 1, 2, 3, 4, 5, 6, 11, 12, 100] as const;
 

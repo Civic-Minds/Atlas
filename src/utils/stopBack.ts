@@ -85,7 +85,7 @@ export function resolveStopBack(
     const route = findRoute(target.route);
     if (!route) return MAP;
     const agency = agencies.find(a => a.slug === agencySlug);
-    const agencyName = agencyNames(agency?.name ?? agencySlug).short;
+    const agencyName = agencyNames(agency?.name ?? agencySlug).name;
     const to = stopBackRouteName(route, agencySlug, agencyName);
     return to ? { to, target } : MAP;
   }
