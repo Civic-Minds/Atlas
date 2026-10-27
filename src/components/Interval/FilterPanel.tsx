@@ -1,7 +1,7 @@
 import React, { Fragment, useState, useEffect, useMemo } from 'react';
 import { Settings, SlidersHorizontal, Search } from 'lucide-react';
 import { CompareSidePicker, SideBadge, type CompareSide } from './CompareControl';
-import { ICON_BTN, DROPDOWN_PANEL, SEARCH_FIELD, SEARCH_PILL, SEARCH_ICON, dropdownAnim, TRANSITION_BASE, Z_MODAL_TOP, CARD_NOTE } from '../../styles';
+import { TOP_BAR_ICON_BTN, DROPDOWN_PANEL, SEARCH_FIELD, SEARCH_PILL, SEARCH_ICON, dropdownAnim, TRANSITION_BASE, Z_MODAL_TOP, CARD_NOTE } from '../../styles';
 import Pill from '../ui/Pill';
 import ActiveDot from '../ui/ActiveDot';
 import Toggle from '../ui/Toggle';
@@ -336,7 +336,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
         maxHeadway !== undefined && (
           <button
             onClick={() => setOpen(v => !v)}
-            className={`relative sm:hidden ${ICON_BTN}`}
+            className={`relative sm:hidden ${TOP_BAR_ICON_BTN}`}
             aria-label="Filters"
           >
             <SlidersHorizontal className="w-4 h-4" />
@@ -350,7 +350,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
       ) : (
         <button
           onClick={() => setOpen(v => !v)}
-          className={`relative ${ICON_BTN}`}
+          className={`relative ${TOP_BAR_ICON_BTN}`}
           aria-label="Settings"
         >
           <Settings className="w-4 h-4" />

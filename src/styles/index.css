@@ -112,6 +112,8 @@ html.map-page .overflow-y-scroll {
   --accent: #3f3f46;
   --accent-bg: rgba(63, 63, 70, 0.08);
   --accent-border: rgba(63, 63, 70, 0.2);
+  /* The map top bar's unselected pill and button outline (CIV-1020); the same in dark, stronger in high contrast. */
+  --top-bar-outline: var(--accent-border);
   /* Selected fill and edge are opaque so every selected option is the same shade whatever sits behind it
      (today's 20% / 50% tint composited over the panel). */
   --accent-selected-bg: #d8d8da;
@@ -185,6 +187,7 @@ html.map-page .overflow-y-scroll {
 }
 
 [data-color-vision='high-contrast'] {
+  --top-bar-outline: var(--accent-selected-border);
   --text-muted: #374151;
   --text-dim: #374151;
   --text-legend: #1f2937;
@@ -218,6 +221,7 @@ html.map-page .overflow-y-scroll {
 }
 
 [data-theme='dark'][data-color-vision='high-contrast'] {
+  --top-bar-outline: var(--accent-selected-border);
   --control-active-bg: #374151;
   --text-muted: rgba(255, 255, 255, 0.82);
   --text-dim: rgba(255, 255, 255, 0.82);
