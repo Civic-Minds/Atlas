@@ -674,6 +674,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
               className={`${CARD_LIST_ROUTE} text-right min-w-0`}
             >
               {row.value}
+              {row.tag && <Tag className="ml-1.5 align-middle">{row.tag}</Tag>}
             </span>
           </div>
         ))}

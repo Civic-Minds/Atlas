@@ -6,16 +6,21 @@ const base = { headsign: 'Humber Loop', directionId: 0, speedKmh: 23, delayMin: 
 
 describe('vehicle card content', () => {
   it('maps direction, destination, speed and schedule', () => {
-    expect(vehicleCardRows(base, 'Westbound')).toEqual([
-      { label: 'Direction', value: 'Westbound' },
-      { label: 'Destination', value: 'Humber Loop' },
+    expect(vehicleCardRows(base, 'Neville Park')).toEqual([
+      { label: 'Direction', value: 'to Neville Park' },
+      { label: 'Ends at', value: 'Humber Loop', tag: 'Short turn' },
       { label: 'Speed', value: '23 km/h' },
       { label: 'Schedule', value: '7 min late', status: 'late' },
     ]);
   });
   it('omits what the feed did not give and never repeats the destination as direction', () => {
     const rows = vehicleCardRows({ ...base, speedKmh: null, delayMin: null, status: 'no_data' }, 'Humber Loop');
-    expect(rows).toEqual([{ label: 'Destination', value: 'Humber Loop' }]);
+    // A trip to the line's end: "Direction" only, as on every other card in the list (CIV-1043).
+    expect(rows).toEqual([{ label: 'Direction', value: 'to Humber Loop' }]);
+    // A short turn adds where it ends, tagged; with no direction known, only where the trip ends (no tag).
+    expect(vehicleCardRows({ ...base, headsign: 'Broadview', speedKmh: null, delayMin: null, status: 'no_data' }, 'Distillery'))
+      .toEqual([{ label: 'Direction', value: 'to Distillery' }, { label: 'Ends at', value: 'Broadview', tag: 'Short turn' }]);
+    expect(vehicleCardRows({ ...base, speedKmh: null, delayMin: null, status: 'no_data' }, null)).toEqual([{ label: 'Ends at', value: 'Humber Loop' }]);
   });
   it('says on time and early in the list wording', () => {
     expect(delayLabel({ delayMin: 1, statusLabel: null })).toBe('On time');
