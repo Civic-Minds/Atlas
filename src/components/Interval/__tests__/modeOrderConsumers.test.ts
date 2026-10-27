@@ -46,7 +46,8 @@ describe('shared mode order and labels', () => {
     const all = new Map([summary('a', [3, 100, 6]), summary('b', [2, 1, 4, 0])].map(a => [a.slug, a as never] as const));
     const d = buildAreaPageData(area, all, null);
     expect(d.byMode.map(m => m.label)).toEqual(['Subway/Metro', 'Light rail', 'Streetcar', 'Commuter rail', 'Bus', 'Ferry', 'Gondola/aerial tram']);
-    expect(d.modeColumns).toEqual(d.byMode.map(m => m.label));
+    // Table columns group rarer modes into Other (CIV-973: 7 columns, gondola goes in Other).
+    expect(d.modeColumns).toEqual(['Subway/Metro', 'Light rail', 'Streetcar', 'Commuter rail', 'Bus', 'Ferry', 'Other']);
   });
 
   it('the agency card and history route chips follow it', () => {
