@@ -19,7 +19,9 @@ export { default as CardDirectionRow } from './RouteDirectionRow';
 export const CARD_EYEBROW = 'text-xs font-bold text-[var(--text-muted)] leading-tight mb-0.5';
 export const CARD_TITLE = 'text-sm font-black text-[var(--text-primary)] leading-tight';
 export const CARD_LIST_ROUTE = 'text-xs font-bold text-[var(--text-primary)] leading-snug';
-export const CARD_SECTION = 'text-xs font-black text-[var(--text-dim)]';
+// The section label lives in styles.ts with the other shared text styles (CIV-395), so non-card panels use it too.
+export { CARD_SECTION } from '../../styles';
+import { CARD_NOTE, CARD_SECTION } from '../../styles';
 /** A list card's header block (agency card, History's agency view): one divider under it. */
 export const CARD_HEADER_BLOCK = 'shrink-0 px-4 pt-4 pb-3 border-b border-[var(--border-primary)]';
 /** The same header spacing for a card that is only a header (no divider sitting on the card's own edge). */
@@ -395,7 +397,7 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
                 />
               </label>}
               {selectedCategory && copiesDiagnostics && (
-                <p className="text-xs font-bold text-[var(--text-dim)]">
+                <p className={CARD_NOTE}>
                   {import.meta.env.DEV ? 'The GitHub report includes the captured route diagnostics.' : 'The email draft includes the captured route diagnostics.'}
                 </p>
               )}

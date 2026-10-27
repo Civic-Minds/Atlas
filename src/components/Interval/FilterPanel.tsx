@@ -1,7 +1,7 @@
 import React, { Fragment, useState, useEffect, useMemo } from 'react';
 import { Settings, SlidersHorizontal, Search } from 'lucide-react';
 import { CompareSidePicker, SideBadge, type CompareSide } from './CompareControl';
-import { ICON_BTN, DROPDOWN_PANEL, SEARCH_FIELD, SEARCH_PILL, SEARCH_ICON, dropdownAnim, TRANSITION_BASE, Z_MODAL_TOP } from '../../styles';
+import { ICON_BTN, DROPDOWN_PANEL, SEARCH_FIELD, SEARCH_PILL, SEARCH_ICON, dropdownAnim, TRANSITION_BASE, Z_MODAL_TOP, CARD_NOTE } from '../../styles';
 import Pill from '../ui/Pill';
 import Toggle from '../ui/Toggle';
 import { AVAILABLE_FILTER_MODES } from '../../utils/shareUrlState';
@@ -524,7 +524,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
               <>
               {/* Appearance. Sections use spacing only, no divider lines (guarded by settingsNoDividers.test.ts). */}
               <div className="px-5 pt-4 pb-1">
-                <p className="text-xs font-bold text-[var(--text-dim)]">Appearance</p>
+                <p className={CARD_NOTE}>Appearance</p>
               </div>
               <div className="px-5 pb-4">
                 <div className="flex items-start justify-between gap-4">
@@ -550,7 +550,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
               {FEATURES.persistedSettings && (
                 <>
                   <div className="px-5 pt-4 pb-1">
-                    <p className="text-xs font-bold text-[var(--text-dim)]">Map</p>
+                    <p className={CARD_NOTE}>Map</p>
                   </div>
                   <div className="px-5 pb-3">
                     <div className="flex items-start justify-between gap-4">
@@ -569,7 +569,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
               {FEATURES.persistedSettings && (
                 <>
                   <div className="px-5 pt-4 pb-1">
-                    <p className="text-xs font-bold text-[var(--text-dim)]">Data &amp; performance</p>
+                    <p className={CARD_NOTE}>Data &amp; performance</p>
                   </div>
                   <div className="px-5 pb-3">
                     <div className="flex items-start justify-between gap-4">
@@ -587,7 +587,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
 
               {/* Filters */}
               <div className="px-5 pt-4 pb-1">
-                <p className="text-xs font-bold text-[var(--text-dim)]">Routes shown</p>
+                <p className={CARD_NOTE}>Routes shown</p>
                 {!inFrequency && (
                   <p className="text-xs text-[var(--text-muted)] mt-1">These settings apply to the Frequency map.</p>
                 )}
@@ -636,14 +636,14 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
 
                   {compare?.side && (
                     <div className="px-5 pt-2 pb-3">
-                      <p className="mb-2 flex items-center gap-1.5 text-xs font-bold text-[var(--text-dim)]"><SideBadge side="B" /> The frequency, day and time above are map A; pick map B here. Modes and agencies apply to both maps. Leave Compare from the More menu.</p>
+                      <p className={`mb-2 flex items-center gap-1.5 ${CARD_NOTE}`}><SideBadge side="B" /> The frequency, day and time above are map A; pick map B here. Modes and agencies apply to both maps. Leave Compare from the More menu.</p>
                       <CompareSidePicker side={compare.side} onChange={compare.onChange} />
                     </div>
                   )}
 
                   {/* Transit Modes */}
                   <div className="px-5 pt-2 pb-1">
-                    <p className="text-xs font-bold text-[var(--text-dim)]">Transit modes</p>
+                    <p className={CARD_NOTE}>Transit modes</p>
                   </div>
                   <div className="px-5 pb-3 flex flex-wrap gap-1.5">
                     {AVAILABLE_FILTER_MODES.map(({ id, label }) => {

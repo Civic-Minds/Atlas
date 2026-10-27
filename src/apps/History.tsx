@@ -6,7 +6,7 @@ import { type HeadwayByPeriod } from '../../shared/config';
 import type { HistorySnapshotV2 } from '../../shared/historyV2';
 import { countOf } from '../../shared/overflowText';
 import { isDrawableLineCoordinates } from '../../shared/routeGeometry';
-import { TRANSITION_BASE, AGENCY_LIST_FILTERS, PILL_SURFACE, CONTROL_ACTIVE, PILL_SCROLL_ROW, PANEL_TITLE, SIDEBAR_CARD, SIDEBAR_CARD_MAX_H, sidebarFrameStyle, SIDEBAR_PANEL_WIDTH, Z_PANEL, CARD_NOTICE } from '../styles';
+import { TRANSITION_BASE, AGENCY_LIST_FILTERS, PILL_SURFACE, CONTROL_ACTIVE, PILL_SCROLL_ROW, PANEL_TITLE, SIDEBAR_CARD, SIDEBAR_CARD_MAX_H, sidebarFrameStyle, SIDEBAR_PANEL_WIDTH, Z_PANEL, CARD_NOTICE, CARD_NOTE } from '../styles';
 import { routeLabels, titleCase, agencyNames, agencyNameParts as nameParts } from '../utils/format';
 import CardRouteList from '../components/Interval/CardRouteList';
 import { AgencyCardTop, CARD_HEADER_BLOCK, CardCallout, CARD_CALLOUT_SURFACE, CardDirectionRow, CardReportButton, SIDEBAR_CARD_BODY, SidebarCardHeaderBlock, SidebarCardListRows, SidebarCardShell } from '../components/Interval/cardUi';
@@ -983,7 +983,7 @@ export default function History({ active, view = HISTORY_VIEW_ALL, initialAgency
           onPointerMove={event => event.stopPropagation()}
           onWheel={event => event.stopPropagation()}
         >
-            <span className="text-xs font-bold text-[var(--text-dim)] tabular-nums">{availableYears[0]}</span>
+            <span className={`${CARD_NOTE} tabular-nums`}>{availableYears[0]}</span>
             <input
               type="range"
               min={0}
@@ -996,7 +996,7 @@ export default function History({ active, view = HISTORY_VIEW_ALL, initialAgency
             />
             {/* The latest year shows once: while the chip is on it, the end label is left out (CIV-400, CIV-444). */}
             {selectedYear !== availableYears[availableYears.length - 1] && (
-              <span className="text-xs font-bold text-[var(--text-dim)] tabular-nums">{availableYears[availableYears.length - 1]}</span>
+              <span className={`${CARD_NOTE} tabular-nums`}>{availableYears[availableYears.length - 1]}</span>
             )}
             <span className={`rounded-md border ${CONTROL_ACTIVE} px-1.5 py-0.5 text-xs font-black tabular-nums`}>{selectedYear}</span>
         </div>

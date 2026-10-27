@@ -1,5 +1,5 @@
 import React from 'react';
-import { PANEL_SECTION_HEAD, LIST_ROW_PRIMARY, LIST_ROW_DIM, SELECTION_ACTIVE, SELECTION_ACTIVE_TEXT } from '../../styles';
+import { PANEL_SECTION_HEAD, LIST_ROW_PRIMARY, LIST_ROW_DIM, SELECTION_ACTIVE, SELECTION_ACTIVE_TEXT, CARD_SECTION } from '../../styles';
 import type { AgencySearchGroup } from '../../utils/agencySearch';
 import type { RouteSearchResult, StopSearchResult } from '../../utils/searchResults';
 import RouteListRow from '../RouteListRow';
@@ -216,7 +216,7 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({
                   {s.routes.length === 1 ? `Route ${s.routes[0]}` : `Routes ${s.routes.join(', ')}`}
                 </span>
               )}
-              <span className="text-xs font-black text-[var(--text-dim)] truncate max-w-full">
+              <span className={`${CARD_SECTION} truncate max-w-full`}>
                 {agencyNames(s.agencyName || '').short}
               </span>
             </div>
