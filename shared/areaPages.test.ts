@@ -2,7 +2,7 @@ import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import type { AgencyPageRoute, AgencyPageSummary } from './agencyPages';
 import {
-  areaAboutParagraph, areaDatesText, areaHoursLabel, areaMapHref, areaPageDescription, areaPageH1, areaPageJsonLd, areaPageTitle,
+  areaAboutParagraph, areaDatesText, areaIntroJoiners, areaIntroParts, areaHoursLabel, areaMapHref, areaPageDescription, areaPageH1, areaPageJsonLd, areaPageTitle,
   areaSpanShort, areaSubtitle, areaTableColumnTitle, buildAreaPageData, resolveAreaSeo, type AreaPageData,
 } from './areaPages';
 import { rankLargeMetros, parseCsv } from './largeMetros';
@@ -76,7 +76,16 @@ describe('buildAreaPageData', () => {
   it('writes the title, heading, subtitle and lead from the numbers', () => {
     expect(areaPageTitle(d)).toBe('Greater Toronto and Hamilton Area transit frequency');
     expect(areaPageH1(d)).toBe('Greater Toronto and Hamilton Area');
-    expect(areaSubtitle(d)).toBe('Toronto, Hamilton');
+    // The cities stay while one adds to the title (Oshawa); this title names both, so the province shows instead.
+    expect(areaSubtitle({ ...d, area: { ...d.area, cities: ['Toronto', 'Hamilton', 'Oshawa'] } })).toBe('Toronto, Hamilton, Oshawa');
+    expect(areaSubtitle({ ...d, regions: ['Ontario'] })).toBe('Ontario');
+    // A title that already names every city shows the state or province instead (CIV-968), even inside a city name.
+    const pgh = { ...d, area: { ...d.area, slug: 'pittsburgh', name: 'Pittsburgh', type: 'MSA' as const, officialName: 'Pittsburgh, PA', country: 'United States' as const, cities: ['Pittsburgh'] } };
+    expect(areaSubtitle({ ...pgh, regions: ['Pennsylvania'] })).toBe('Pennsylvania');
+    expect(areaSubtitle({ ...pgh, regions: ['Ohio', 'Kentucky'] })).toBe('Ohio, Kentucky');
+    expect(areaSubtitle({ ...pgh, regions: [] })).toBe('');
+    const iowa = { ...pgh, area: { ...pgh.area, slug: 'iowa-city', name: 'Iowa City', officialName: 'Iowa City, IA', cities: ['Iowa City'] } };
+    expect(areaSubtitle({ ...iowa, regions: ['Iowa'] })).toBe('Iowa');
     expect(areaPageDescription(d)).toContain('Compare 2 transit agencies in the Greater Toronto and Hamilton Area');
     expect(areaPageDescription(d)).not.toMatch(/frequent\b|15 min/i);
     expect(areaSpanShort(d)).toBe('24 h');
@@ -123,10 +132,23 @@ describe('areaAboutParagraph', () => {
     ...buildAreaPageData(AREA, ALL, null), ...over,
   });
 
-  it('is one sentence with the agency and route counts', () => {
+  const row = (slug: string, name: string, totalRoutes: number) => ({ slug, name, displayName: name, totalRoutes, modes: { Bus: totalRoutes } });
+
+  it('names no agencies when there are three or fewer: the sentence ends after the route breakdown (CIV-968, Ryan)', () => {
     expect(areaAboutParagraph(base({}))).toBe('The Greater Toronto and Hamilton Area has 2 transit agencies running 6 routes (2 subway/metro, 4 bus).');
-    const one = base({ agencies: [{ slug: 'a', name: 'A', displayName: 'A', totalRoutes: 1, modes: { Bus: 1 } }], totalRoutes: 1, byMode: [{ label: 'Bus', routes: 1 }] });
+    const one = base({ agencies: [row('a', 'A', 1)], totalRoutes: 1, byMode: [{ label: 'Bus', routes: 1 }] });
     expect(areaAboutParagraph(one)).toBe('The Greater Toronto and Hamilton Area has 1 transit agency running 1 route.');
+    const three = base({ agencies: [row('a', 'A', 3), row('b', 'B', 2), row('c', 'C', 1)], totalRoutes: 6, byMode: [{ label: 'Bus', routes: 6 }] });
+    expect(areaAboutParagraph(three)).toBe('The Greater Toronto and Hamilton Area has 3 transit agencies running 6 routes.');
+    expect(areaIntroParts(three)).toMatchObject({ named: [], others: 0 });
+  });
+
+  it('names the two biggest and counts the rest past three agencies (CIV-968)', () => {
+    const four = base({ agencies: [row('a', 'A', 4), row('b', 'B', 3), row('c', 'C', 2), row('d', 'D', 1)], totalRoutes: 10, byMode: [{ label: 'Bus', routes: 10 }] });
+    expect(areaAboutParagraph(four)).toBe('The Greater Toronto and Hamilton Area has 4 transit agencies running 10 routes, including A, B and 2 others.');
+    const parts = areaIntroParts(four);
+    expect(parts.named.map(a => a.slug)).toEqual(['a', 'b']);
+    expect(areaIntroJoiners({ named: parts.named, others: 1 }).tail).toBe('1 other.');
   });
 });
 

@@ -4,8 +4,10 @@ import { agencyPagePath } from '../shared/agencyPages';
 import {
   AREA_DATA_SCRIPT_ID,
   AREA_TABLE_OTHER,
-  areaAboutParagraph,
   areaDatesText,
+  areaIntroJoiners,
+  areaIntroName,
+  areaIntroParts,
   areaMapHref,
   areaPageH1,
   areaSubtitle,
@@ -90,17 +92,24 @@ export default function AreaPage({ data: dataProp }: { data?: AreaPageData }) {
     );
   }
 
+  const subtitle = areaSubtitle(data);
+  const intro = areaIntroParts(data);
+  const joiners = areaIntroJoiners(intro);
 
   return (
     <DocsPageLayout width="wide">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="min-w-0">
               <PageTitle>{areaPageH1(data)}</PageTitle>
-              <p className="mt-1 text-sm text-[var(--text-muted)]">{areaSubtitle(data)}</p>
+              {subtitle && <p className="mt-1 text-sm text-[var(--text-muted)]">{subtitle}</p>}
             </div>
             <ArrowLink href={areaMapHref(data)}>View on map</ArrowLink>
           </div>
-          <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--text-muted)]">{areaAboutParagraph(data)}</p>
+          <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--text-muted)]">
+            {intro.lead}{joiners.opener}
+            {intro.named.map((a, i) => <span key={a.slug}><a className={`${LINK} underline underline-offset-2`} href={agencyPagePath(a.slug)}>{areaIntroName(data, a)}</a>{joiners.separators[i]}</span>)}
+            {joiners.tail}
+          </p>
           {data.area.note && <p className="mt-3 max-w-2xl text-sm text-[var(--text-muted)]">{data.area.note}</p>}
 
           <section className="mt-14" aria-labelledby="agencies-heading">
