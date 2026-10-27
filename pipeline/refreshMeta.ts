@@ -6,6 +6,12 @@ import { isExpiredFeedExpiry, isYmd, type SupplementalFeedMeta } from '../shared
 
 export interface FeedMetaFields {
   lastFeedExpiry?: string | null;
+  /** CIV-1011 stage 4: the picked week's key at the last refresh (serviceWeekKey). */
+  lastServiceWeek?: string | null;
+  /** When Atlas first obtained the current main feed file (YYYYMMDD); the listing-end safeguard reads it. */
+  feedObtainedAt?: string | null;
+  /** CIV-1011: the date most routes stopped being listed with nothing replacing them (YYYYMMDD); the agency shows Ryan's notice. Absent otherwise. */
+  listingEndedOn?: string | null;
   /** The feed's own latest service date, uncapped. lastFeedExpiry caps placeholder dates, so it can't detect an unchanged feed (#688). */
   lastPeekedExpiry?: string | null;
   lastFeedVersion?: string | null;
@@ -135,6 +141,12 @@ export function stampFeedMeta(
     calendarExpiry?: string | null;
     /** Last real service date from the calendar alone (no feed_info); can only lower the expiry. */
     calendarOnlyEnd?: string | null;
+    /** The processed feed's listing end (ProcessResult.listingEnd); cleared when null. */
+    listingEnd?: string | null;
+    /** The picked week's key (serviceWeekKey), for the next refresh's unchanged check. */
+    serviceWeek?: string | null;
+    /** When Atlas first obtained this file (YYYYMMDD), for the listing-end safeguard. */
+    feedObtainedAt?: string | null;
   },
 ): void {
   agency.lastFeedExpiry = recordedFeedExpiry(opts.feedExpiry, opts.calendarExpiry !== undefined ? opts.calendarExpiry : opts.peekedExpiry, opts.todayYmd, opts.calendarOnlyEnd);
@@ -146,6 +158,19 @@ export function stampFeedMeta(
   agency.feedRefreshErrorAt = null;
   agency.feedRefreshRetryCount = 0;
   delete agency.heldFeedStart;
+  stampListingEnd(agency, opts.listingEnd);
+  if (opts.serviceWeek) agency.lastServiceWeek = opts.serviceWeek;
+  else if (opts.serviceWeek === null) delete agency.lastServiceWeek;
+  if (opts.feedObtainedAt) agency.feedObtainedAt = opts.feedObtainedAt;
+}
+
+/** Record or clear the CIV-1011 listing end. Returns whether it changed. */
+export function stampListingEnd(agency: Pick<FeedMetaFields, 'listingEndedOn'>, listingEnd: string | null | undefined): boolean {
+  const next = listingEnd && /^\d{8}$/.test(listingEnd) ? listingEnd : null;
+  if ((agency.listingEndedOn ?? null) === next) return false;
+  if (next) agency.listingEndedOn = next;
+  else delete agency.listingEndedOn;
+  return true;
 }
 
 /**
@@ -157,13 +182,14 @@ export function stampFeedMeta(
  * changed, so unchanged agencies leave their files alone.
  */
 export function stampReprocessedFeedExpiry(
-  agency: Pick<FeedMetaFields, 'lastFeedExpiry' | 'lastPeekedExpiry'>,
-  opts: { feedExpiry: string | null; calendarExpiry: string | null; todayYmd: string; calendarOnlyEnd?: string | null },
+  agency: Pick<FeedMetaFields, 'lastFeedExpiry' | 'lastPeekedExpiry' | 'listingEndedOn'>,
+  opts: { feedExpiry: string | null; calendarExpiry: string | null; todayYmd: string; calendarOnlyEnd?: string | null; listingEnd?: string | null },
 ): boolean {
   const lastFeedExpiry = recordedFeedExpiry(opts.feedExpiry, opts.calendarExpiry, opts.todayYmd, opts.calendarOnlyEnd);
   if (lastFeedExpiry == null) return false;
+  const listingChanged = opts.listingEnd !== undefined && stampListingEnd(agency, opts.listingEnd);
   const lastPeekedExpiry = opts.calendarExpiry ?? agency.lastPeekedExpiry ?? null;
-  if (agency.lastFeedExpiry === lastFeedExpiry && (agency.lastPeekedExpiry ?? null) === lastPeekedExpiry) return false;
+  if (agency.lastFeedExpiry === lastFeedExpiry && (agency.lastPeekedExpiry ?? null) === lastPeekedExpiry) return listingChanged;
   agency.lastFeedExpiry = lastFeedExpiry;
   agency.lastPeekedExpiry = lastPeekedExpiry;
   return true;
@@ -224,8 +250,12 @@ export function decideRefreshSkipUnchanged(opts: {
   lastFeedVersion?: string | null;
   /** The agency reads its feed as of the run date (#774), so an unchanged feed still has new output. */
   referenceDateFromRunDate?: boolean;
+  /** CIV-1011 stage 4: the picked week's key now (serviceWeekKey) and at the last refresh; a moved week reprocesses. */
+  serviceWeek?: string | null;
+  lastServiceWeek?: string | null;
 }): RefreshSkipReason {
   if (opts.forceRefresh || opts.hasSupplementals || opts.feedExpired || opts.referenceDateFromRunDate) return { skip: false };
+  if (opts.serviceWeek && opts.serviceWeek !== (opts.lastServiceWeek ?? null)) return { skip: false };
   const { peekedExpiry, peekedVersion, lastFeedVersion } = opts;
   // Older records have no uncapped value; compare against the recorded one as before.
   const lastFeedExpiry = opts.lastPeekedExpiry ?? opts.lastFeedExpiry;

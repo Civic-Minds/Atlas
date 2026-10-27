@@ -13,6 +13,7 @@ import { applyAnalysisCriteria, BURST_MAX_SPAN_MINUTES, determineTierWithEdgeGap
 import { calculateCorridors } from './transit-logic.js';
 import { detectReferenceDate, getActiveServiceIds } from './transit-calendar.js';
 import { calendarFromNextServiceDates } from './serviceDates.js';
+import { feedVersionDate, pickRiderWeek, serviceAnchor } from './serviceDays.js';
 import { dropOneOffRailTrips } from './oneOffServices.js';
 import { bookingRequiredRouteIds } from './bookedRoutes.js';
 import { DEFAULT_CRITERIA, getTiersForCriteria } from './defaults.js';
@@ -493,6 +494,17 @@ export interface ProcessOptions extends GtfsTransformOptions {
    */
   referenceDate?: string;
   /**
+   * Stage 4 of the reference-date plan (CIV-1011): read the week riders face from the run date
+   * (pickRiderWeek, serviceDays.ts) instead of detectReferenceDate. Set by processAgencyFeeds for
+   * the live map; History backfills and direct callers keep the old picker. An explicit
+   * referenceDate and the referenceDateFromRunDate / next-service-dates opt-ins take precedence.
+   */
+  riderWeek?: boolean;
+  /** The anchor for riderWeek (YYYYMMDD); serviceAnchor() of the run date when unset. Tests pin it. */
+  serviceAnchor?: string;
+  /** When Atlas first obtained this file (YYYYMMDD), for the listing-end safeguard (findListingEnd). */
+  fileDate?: string | null;
+  /**
    * Agency opt-in (Clemson Area Transit, #1040): a pattern whose every trip is a block trip (only
    * first and last stop timed) gets no computed headway. See findBlockTrips in transit-phase1.ts.
    */
@@ -528,6 +540,11 @@ export interface ProcessResult {
   calendarExpiry: string | null;
   /** Latest service date from calendar.txt and added calendar_dates alone (no feed_info); can only lower the recorded expiry (#1039). */
   calendarOnlyEnd: string | null;
+  /**
+   * CIV-1011 safeguard: the date most routes stopped being listed with nothing replacing them
+   * (findListingEnd); the map then reads the last full listed week. null otherwise, or on the old picker.
+   */
+  listingEnd: string | null;
   feedVersion: string | null;  // feed_version from feed_info.txt, or null if absent
   livePollingSidecar?: Record<string, any>;
   shapeAnomalies?: import('../types/gtfs.js').ShapeAnomaly[];
@@ -772,7 +789,27 @@ export async function processGtfsBuffer(
     const { Weekday, Saturday, Sunday } = nextServiceDates.dates;
     onStatus?.(`Next service dates: Weekday ${Weekday}, Saturday ${Saturday}, Sunday ${Sunday}`);
   }
-  const refDate = nextServiceDates
+  // Stage 4 (CIV-1011): the week riders face, from the feed's own calendar files (never the
+  // calendar parseGtfs synthesizes from calendar_dates), written back as that week's calendar so
+  // every reader below (phase 1, corridors, converging origins, part-week counts) reads it.
+  const riderWeek = options?.riderWeek && !nextServiceDates && !options.referenceDate && !options.referenceDateFromRunDate
+    ? pickRiderWeek({
+      calendar: gtfs.calendarSynthesized ? [] : gtfs.calendar ?? [],
+      calendarDates: gtfs.calendarDates ?? [],
+      trips: gtfs.trips ?? [],
+      routes: gtfs.routes ?? [],
+      anchor: options.serviceAnchor ?? serviceAnchor(),
+      fileDate: [options.fileDate, feedVersionDate(gtfs.feedInfo?.[0]?.feed_version)].filter((d): d is string => !!d && /^\d{8}$/.test(d)).sort()[0] ?? null,
+    })
+    : null;
+  if (riderWeek) {
+    gtfs = { ...gtfs, calendar: riderWeek.calendar, calendarDates: [] };
+    const { dates } = riderWeek.week;
+    onStatus?.(`Service week from ${riderWeek.week.weekStart ?? dates.Monday ?? '?'} (anchor ${riderWeek.anchor})${riderWeek.listingEnd ? `; most routes stopped being listed after ${riderWeek.listingEnd.date}` : ''}`);
+  }
+  const refDate = riderWeek
+    ? riderWeek.referenceDate
+    : nextServiceDates
     ? nextServiceDates.referenceDate
     : options?.referenceDate
     ? options.referenceDate
@@ -3585,6 +3622,7 @@ export async function processGtfsBuffer(
     feedExpiry: feedInfo?.feed_end_date ?? null,
     calendarExpiry,
     calendarOnlyEnd,
+    listingEnd: riderWeek?.listingEnd?.date ?? null,
     feedVersion: feedInfo?.feed_version ?? null,
     livePollingSidecar,
     shapeAnomalies: gtfs.shapeAnomalies,

@@ -79,6 +79,8 @@ export interface AgencyPageSummary extends AgencyPageIdentity {
   lastRefreshedAt: string | null;
   /** Last day the published feed covers (the catalog's lastFeedExpiry), yyyymmdd. */
   validThrough?: string | null;
+  /** CIV-1011: the catalog's listingEndedOn, yyyymmdd: most routes stopped being listed then (Ryan's notice). */
+  listingEndedOn?: string | null;
   /** Whether the release has Saturday / Sunday service for this agency (published day types). */
   sat?: boolean;
   sun?: boolean;

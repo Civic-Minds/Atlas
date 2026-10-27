@@ -121,6 +121,8 @@ interface Agency {
   lastPeekedExpiry?: string | null;
   lastRawArchiveKey?: string | null;
   lastRefreshedAt?: string | null;
+  /** When Atlas first obtained the current main feed file (YYYYMMDD). */
+  feedObtainedAt?: string | null;
   hiddenInProduction?: boolean;
   staged?: boolean;
   pmtilesPending?: boolean;
@@ -147,7 +149,7 @@ const gateInputs = new Map<string, { candidate: GateCandidate; live: ArtifactSum
 // Live data for the drop and gate checks: the public release first (CIV-522).
 const readBaseline = releaseBaselineReader(r2Get);
 /** The processed feed's raw expiry dates per agency, recorded in index.json once its artifacts are published (#837). */
-const processedExpiries = new Map<string, { feedExpiry: string | null; calendarExpiry: string | null; calendarOnlyEnd: string | null }>();
+const processedExpiries = new Map<string, { feedExpiry: string | null; calendarExpiry: string | null; calendarOnlyEnd: string | null; listingEnd: string | null }>();
 const expiryUpdates: string[] = [];
 const AGENCY_ARTIFACTS = ['', '-stops', '-corridors', '-trips', '-stops-meta', '-sections'] as const;
 
@@ -169,8 +171,13 @@ function shouldProcess(agency: Agency): boolean {
   return isReprocessTarget(agency, { includeHidden });
 }
 
-async function selectArchiveKey(agency: Agency): Promise<{ key: string; reason: string } | null> {
+async function selectArchiveKey(agency: Agency): Promise<{ key: string; reason: string; uploaded?: string | null } | null> {
   const objects = await r2ListArchiveObjects(`gtfs/archive/${agency.slug}/`);
+  // When the picked zip was archived: Atlas's first copy of that file (the listing-end safeguard).
+  const withUploaded = (p: { key: string; reason: string }) => {
+    const at = objects.find(o => o.key === p.key)?.lastModified;
+    return { ...p, uploaded: at ? at.toISOString().slice(0, 10).replace(/-/g, '') : null };
+  };
   const selection = selectArchiveForAgency(objects, agency);
   if (!selection.ok && selection.noArchive) return null;
   const zips = objects.filter(obj => obj.key.endsWith('.zip'));
@@ -199,10 +206,10 @@ async function selectArchiveKey(agency: Agency): Promise<{ key: string; reason: 
     if (futureFeedHoldUntil({ feedStart: pickedStart, todayYmd: agencyTodayYmd(agency), liveFeedExpiry: agency.lastFeedExpiry })) {
       const instead = startedArchiveInstead({ pickedKey: picked.key, peeked: peeked ?? await peekAll(), todayYmd: agencyTodayYmd(agency), liveFeedExpiry: agency.lastFeedExpiry });
       if (instead && 'refuse' in instead) throw new Refusal(instead.refuse);
-      if (instead) return instead;
+      if (instead) return withUploaded(instead);
     }
   }
-  return picked;
+  return withUploaded(picked);
 }
 
 function localArchivePath(fileStem: string): string | null {
@@ -262,7 +269,9 @@ async function processAgency(agency: Agency): Promise<ReportRow> {
     if (dateRefusal) throw new Refusal(dateRefusal);
 
     const supplementalFeeds = await loadSupplementalFeeds(agency, url => readSupplementalFeed(agency, url));
-    const result = await processAgencyFeeds(body, supplementalFeeds, agency, {}, message => process.stdout.write(`  ${message}`));
+    // The safeguard's file date: the archive upload, or for a pinned or local file the agency's record.
+    const fileDate = selected?.uploaded ?? agency.feedObtainedAt ?? agency.lastRefreshedAt?.replace(/-/g, '') ?? null;
+    const result = await processAgencyFeeds(body, supplementalFeeds, agency, { fileDate }, message => process.stdout.write(`  ${message}`));
     for (const supp of result.supplementalFeatureCounts) console.log(`  + supplemental ${supp.url}: ${supp.featureCount} features`);
     if (result.featureCount === 0) throw new Error('processed feed produced 0 route features');
 
@@ -273,7 +282,7 @@ async function processAgency(agency: Agency): Promise<ReportRow> {
     row.outputCounts = next.counts;
     row.liveCounts = live?.counts ?? null;
     gateInputs.set(agency.slug, { candidate: { slug: agency.slug, next, service: { start: feedStart, end: feedExpiry, calendarEnd, liveFeedExpiry: agency.lastFeedExpiry } }, live });
-    processedExpiries.set(agency.slug, { feedExpiry: result.feedExpiry, calendarExpiry: result.calendarExpiry, calendarOnlyEnd: result.calendarOnlyEnd });
+    processedExpiries.set(agency.slug, { feedExpiry: result.feedExpiry, calendarExpiry: result.calendarExpiry, calendarOnlyEnd: result.calendarOnlyEnd, listingEnd: result.listingEnd });
 
     const agencyDir = resolve(outputDir, agency.slug);
     mkdirSync(agencyDir, { recursive: true });

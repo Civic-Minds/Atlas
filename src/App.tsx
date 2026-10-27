@@ -69,6 +69,8 @@ export interface Agency {
   /** Optional service-area label for regional agencies; avoids presenting one stop-density city as the agency's home. */
   displayArea?: string;
   lastFeedExpiry?: string | null;
+  /** CIV-1011: the date most routes stopped being listed with nothing replacing them (YYYYMMDD); the agency shows Ryan's notice. Absent otherwise. */
+  listingEndedOn?: string | null;
   /** Expiry/version/archive key per supplemental feed (e.g. separate rail GTFS), in supplementalFeedUrls order. */
   lastSupplementalFeeds?: SupplementalFeedMeta[];
   lastRefreshedAt?: string | null;
