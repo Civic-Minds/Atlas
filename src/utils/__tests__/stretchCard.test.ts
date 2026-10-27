@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { routeListDisplay, routeListDisplayLimited, routeListNoRegularService } from '../effectiveHeadway';
 import { selectedRouteFilterNotice } from '../../content/noticeCopy';
 import type { ShapeProperties } from '../../hooks/useIntervalStats';
-import { hasStretchRoles, routeContract, stretchRowFeatures, variantOnlyRow, variantRowHeadway, hasRegularServiceInPeriod } from '../stretchCard';
+import { hasStretchRoles, routeContract, stretchRowFeatures, stretchRowsFromMeta, variantOnlyRow, variantRowHeadway, hasRegularServiceInPeriod } from '../stretchCard';
 
 const f = (over: Record<string, unknown>) => ({ routeId: 'r', directionId: 0, tier: 'frequent', headway: 6, routeShortName: '1', routeLongName: null, ...over }) as unknown as ShapeProperties;
 
@@ -155,3 +155,23 @@ describe('hasRegularServiceInPeriod (#750)', () => {
   });
 });
 
+describe('stretch rows from stretchMeta (CIV-321 S2)', () => {
+  const f = {
+    stretchMeta: {
+      main: { stops: 12, refStop: 'm', trips: 40, period: { amPeak: 15, midday: 30 }, noRegular: [] },
+      tails: [{ refStop: 't0', stops: 6, km: 3, trips: 6, period: { amPeak: 30, midday: null } }, { refStop: 't1', stops: 5, km: 2, trips: 2, period: { amPeak: null, midday: 183 }, noRegular: ['midday'] }],
+    },
+  } as unknown as ShapeProperties;
+  it('gives one row per stretch with its own value', () => {
+    expect(stretchRowsFromMeta(f, 'midday')).toEqual([
+      { role: 'main', index: 0, refStop: 'm', value: 30, noRegular: false },
+      { role: 'tail', index: 0, refStop: 't0', value: null, noRegular: false },
+      // Two midday trains: the full-window wait (183) is the map's filter value, never "every 183" on a row.
+      { role: 'tail', index: 1, refStop: 't1', value: null, noRegular: true },
+    ]);
+    expect(stretchRowsFromMeta(f, 'all')).toEqual([]);
+  });
+  it('is empty on older data', () => {
+    expect(stretchRowsFromMeta({} as ShapeProperties, 'midday')).toEqual([]);
+  });
+});
