@@ -386,7 +386,6 @@ function RouteHistoryCard({
             {/* The shared callout headline in the summary's better or worse colour (CIV-971). */}
             <p className={`${CARD_CALLOUT_HEADLINE} ${summary.worse ? '!text-[var(--status-negative-text)]' : '!text-[var(--status-positive-text)]'}`}>{summary.text}</p>
             <p className={CARD_CALLOUT_TEXT}>{summary.subtext}</p>
-            <p className={`${CARD_NOTICE} mt-1`}>Latest archived snapshot: {last.label}</p>
           </CardCallout>
         )}
 

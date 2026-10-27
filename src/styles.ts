@@ -89,7 +89,7 @@ export const AGENCY_LIST_PRIMARY = 'text-xs text-[var(--text-primary)] min-w-0 l
 export const PANEL_TITLE_BAR = 'flex items-center gap-1.5 px-4 pt-3 pb-2.5 border-b border-[var(--border-primary)] shrink-0';
 
 /** Title text inside PANEL_TITLE_BAR */
-export const PANEL_TITLE = 'text-xs font-black text-[var(--text-dim)] tracking-wide';
+export const PANEL_TITLE = 'text-xs font-black text-[var(--text-dim)]';
 
 /** Compact explanatory line beneath a research panel title. */
 export const PANEL_HELPER = 'px-4 pt-2 pb-2 text-xs text-[var(--text-dim)] font-bold leading-snug border-b border-[var(--border-primary)]';
@@ -107,10 +107,10 @@ export const AGENCY_LIST_FILTERS = 'shrink-0 px-4 pt-3 pb-2 bg-[var(--bg-panel)]
 /** A row of filter pills that scrolls sideways instead of wrapping. */
 export const PILL_SCROLL_ROW = 'flex gap-1.5 overflow-x-auto items-center [&::-webkit-scrollbar]:hidden';
 
-export const PANEL_SECTION_HEAD = 'px-4 py-2 text-xs font-black tracking-wide text-[var(--text-dim)]';
+export const PANEL_SECTION_HEAD = 'px-4 py-2 text-xs font-black text-[var(--text-dim)]';
 
 /** Accent group label in search results */
-export const PANEL_SEARCH_HEAD = 'px-4 text-xs font-bold text-[var(--accent)] tracking-wide mb-1.5';
+export const PANEL_SEARCH_HEAD = 'px-4 text-xs font-bold text-[var(--accent)] mb-1.5';
 
 /** Sub-section label (In this area / Elsewhere) */
 export const PANEL_SEARCH_SUBHEAD = 'px-4 pt-2 pb-0.5 text-xs font-bold text-[var(--text-dim)]';
