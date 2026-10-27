@@ -33,6 +33,7 @@ Colour and shape
 - Nothing has a shadow. Keep the flat look.
 - No all-caps text anywhere: no `uppercase` class, no `text-transform: uppercase`, no hard-coded capitals in labels, headers, badges or titles. Drop the wide letter spacing that usually comes with it. An agency's own route code in capitals ("SSSF", "WCE") is the route's name and stays as written.
 - A clear (X) button inside a pill-shaped search box sits at least `right-2` in from the edge, never flush with the border.
+- Map overlays (the header row, footer pills, counts, map controls, notice and status pills, the analytics prompt) take their position from the "Map overlay slots" in `src/styles.ts`, never a hand-set `bottom-*`/`right-*`, and each carries `data-map-overlay`. After moving one, run `npm run check:overlays -- <dev server URL>`: it fails if any two overlap or one runs off the screen at 360, 640, 820, 1024 or 1440 wide. CIV-1011.
 
 Live
 

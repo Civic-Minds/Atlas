@@ -23,7 +23,7 @@ import type { Agency } from '../../App';
 import type { ShapeProperties, ViewportBounds, TimePeriod, HoveredBranch } from '../../hooks/useIntervalStats';
 import type { DayType } from '../../../shared/dayTypes';
 import { registerProtocol, getMapStyle, getActiveDataRelease } from '../../lib/mapStyle';
-import { Z_PANEL, MAP_BADGE } from '../../styles';
+import { MAP_CONTROLS_SLOT, MAP_NOTICE_SLOT, MAP_NOTICE_SLOT_RAISED, Z_PANEL, MAP_BADGE } from '../../styles';
 import { useColorVision } from '../../context/ColorVisionContext';
 import { useColorMode } from '../../hooks/useColorMode';
 import { routeFilterHeadway } from '../../../shared/routeHeadwayFilter';
@@ -117,7 +117,7 @@ function restoreSelectedRouteAfterExport(map: maplibregl.Map) {
 
 function MapNoticePill({ children, className = '', raised = false }: { children: React.ReactNode; className?: string; raised?: boolean }) {
   return (
-    <div className={`absolute ${raised ? 'bottom-16' : 'bottom-6'} left-6 right-24 sm:right-56 flex justify-center ${Z_PANEL} pointer-events-none`}>
+    <div className={`${raised ? MAP_NOTICE_SLOT_RAISED : MAP_NOTICE_SLOT} ${Z_PANEL} pointer-events-none`} data-map-overlay="notice">
       <div className={`${MAP_BADGE} h-8 max-sm:h-[32px] max-w-full ${className}`}>
         {children}
       </div>
@@ -1289,7 +1289,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       )}
 
       {/* Map controls — one stack keeps the gaps identical at every map size. */}
-      {showMapControls && <div className={`absolute bottom-6 right-3 max-sm:right-6 ${Z_PANEL} flex flex-col items-center gap-2 pointer-events-auto`}>
+      {showMapControls && <div className={`${MAP_CONTROLS_SLOT} ${Z_PANEL} flex flex-col items-center gap-2 pointer-events-auto`} data-map-overlay="controls">
         {exportEnabled && (
           <button
             onClick={() => setExportDialogOpen(true)}
