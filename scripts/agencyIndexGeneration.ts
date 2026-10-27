@@ -54,7 +54,7 @@ export function generateAgencyShortNames(agencies: Array<Record<string, unknown>
 }
 
 /** Route modes a config modeOverrides entry may assign (100 = light rail). */
-export const OVERRIDE_MODES = [0, 1, 2, 3, 4, 5, 6, 11, 12, 100] as const;
+export const OVERRIDE_MODES = [0, 1, 2, 3, 4, 5, 6, 11, 12, 100, 101] as const;
 
 /**
  * Collect every agency's `modeOverrides` (config/agencies/<slug>.json) into the file shared/modes.ts reads,

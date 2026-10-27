@@ -84,6 +84,23 @@ describe('TTC night routes drawn on a minor pattern (#896)', () => {
   });
 });
 
+describe('TTC 300 westbound overnight: a stop down the line gets its first night bus later (#1121)', () => {
+  // Real TTC feed (2026-09-30 to 10-31), route 300 only. Direction 1 to West Mall leaves Bloor and Sherbourne
+  // every 15 from 25:51 and reaches Bloor and Acorn from 26:30. The window's first half hour at Acorn is the
+  // ride from where the night begins, so it is no 30-minute gap; the card hid the row on that 30.
+  const values = async () => {
+    const result = await processGtfsBuffer(await fixtureZip('ttc-300-night'), undefined, { slug: 'ttc' });
+    return Object.fromEntries(JSON.parse(result.geojson).features
+      .map((feature: any) => feature.properties)
+      .filter((p: any) => p.stopId == null && p.headsign === 'West Mall')
+      .map((p: any) => [p.day, { headway: p.headwayByPeriod?.overnight ?? null, maxGap: p.maxGapByPeriod?.overnight ?? null }]));
+  };
+
+  it('reads West Mall every 15 overnight with a longest gap of 15 on weeknights', async () => {
+    expect((await values()).Weekday).toEqual({ headway: 15, maxGap: 15 });
+  });
+});
+
 const hm = (m: number) => `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}:00`;
 const every = (from: number, to: number, step: number) => { const out: number[] = []; for (let t = from; t <= to; t += step) out.push(t); return out; };
 

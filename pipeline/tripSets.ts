@@ -511,6 +511,36 @@ export function stretchMetaPeriods(s: Stretch): { period: Record<PeriodKey, numb
   };
 }
 
+/**
+ * Whether a stretch's departures run through a period: some on both sides of its midpoint, and, when the period is not
+ * steady, no internal gap more than BOUNDARY_DOMINANT_RATIO times its typical gap. The settled period checks (#567-#571,
+ * PR #584) decide this: such a hole means the departures are a straggler and the first trips of the next service, not
+ * service through the period (TTC 900 overnight: 26:11-26:41, then nothing until 29:19). A late start or an early end is
+ * the edge rules' business (CTA 134 PM runs every 9 from 16:14); only a hole between two runs of service counts here.
+ */
+export function runsThroughPeriod(times: readonly number[], start: number, end: number, sustained: boolean | null | undefined): boolean {
+  const mid = (start + end) / 2;
+  const inWindow = [...new Set(forCrossMidnightWindow([...times], end))].filter(t => t >= start && t <= end);
+  if (!(inWindow.some(x => x < mid) && inWindow.some(x => x >= mid))) return false;
+  if (sustained !== false) return true;
+  const median = medianHeadwayInWindow(forCrossMidnightWindow([...times], end), start, end, 3);
+  if (median == null || median <= 0) return true;
+  const t = inWindow.sort((a, b) => a - b);
+  let longest = 0;
+  for (let i = 1; i < t.length; i++) longest = Math.max(longest, t[i] - t[i - 1]);
+  return !(longest / median > BOUNDARY_DOMINANT_RATIO);
+}
+
+/**
+ * #1115 (Ryan, 2026-10-26): the periods a tail does not run through, by the same rule as the main stretch, read over every
+ * trip at the tail's reference stop. The card leaves that branch's row off for the period (TTC 84 to Pioneer Village:
+ * peak-only, nothing from 9:35 to 15:12, read "every 21" at midday).
+ */
+export function tailNotThrough(s: Stretch): { notThrough: PeriodKey[] } {
+  const own = stretchPeriods(s);
+  return { notThrough: PERIOD_WINDOWS.filter(({ key, start, end }) => !runsThroughPeriod(s.times, start, end, own[key].sustained)).map(w => w.key) };
+}
+
 export function stretchPeriods(s: Stretch): Record<PeriodKey, StretchPeriod> {
   const times = [...s.times];
   const headways = computePeriodHeadways(times);
@@ -774,27 +804,7 @@ export function rollupDirection(d: DirectionStretches): DirectionRollup | null {
   }
   // Step 5a: the filter value and whether the direction runs, per period.
   for (const { key, start, end } of PERIOD_WINDOWS) {
-    const mid = (start + end) / 2;
-    const timesIn = (s: Stretch) => [...new Set(forCrossMidnightWindow([...s.times], end))].filter(t => t >= start && t <= end);
-    const throughMidpoint = (s: Stretch) => { const t = timesIn(s); return t.some(x => x < mid) && t.some(x => x >= mid); };
-    // The settled period checks (#567-#571, PR #584) decide whether a period that has departures
-    // on both sides of its midpoint really runs through it: when it is not steady and its longest
-    // gap between two departures is more than BOUNDARY_DOMINANT_RATIO times its typical gap, the
-    // departures are a straggler and the first trips of the next service, not service through
-    // the period (TTC 900 overnight: 26:11-26:41, then nothing until 29:19).
-    const dominantHole = (s: Stretch) => {
-      if (main[key].sustained !== false) return false;
-      const dt = forCrossMidnightWindow([...s.times], end);
-      const median = medianHeadwayInWindow(dt, start, end, 3);
-      if (median == null || median <= 0) return false;
-      // Internal gaps only: a late start or an early end is the edge rules' business (CTA 134 PM
-      // runs every 9 from 16:14), a hole between two runs of service is this one's.
-      const t = timesIn(s).sort((a, b) => a - b);
-      let longest = 0;
-      for (let i = 1; i < t.length; i++) longest = Math.max(longest, t[i] - t[i - 1]);
-      return longest / median > BOUNDARY_DOMINANT_RATIO;
-    };
-    const runs = throughMidpoint(d.main) && !dominantHole(d.main);
+    const runs = runsThroughPeriod(d.main.times, start, end, main[key].sustained);
     const filterOf = stretchFilterValue;
     // #961: a sparse overnight window (#897: three departures around a hole of hours) has no
     // value at the row, so it gives none here either; the card would otherwise print its full-
@@ -805,7 +815,7 @@ export function rollupDirection(d: DirectionStretches): DirectionRollup | null {
       .filter((p, i) => p.counts && (i === 0 ? runs && !sparse(d.main) : !sparse(d.tails[i - 1])));
     const values = counting.map(filterOf).filter((v): v is number => v != null);
     period[key].runs = runs;
-    period[key].hasService = timesIn(d.main).length > 0;
+    period[key].hasService = forCrossMidnightWindow([...d.main.times], end).some(t => t >= start && t <= end);
     period[key].filterValue = runs && !sparse(d.main) && values.length > 0 ? Math.max(...values) : null;
     period[key].edge = runs ? periodEdge(d.main.times, start, end, period[key].filterValue) : periodPartialEdge(d.main.times, start, end);
     // Only where the settled checks count the period as running: a big-gap period that does not
@@ -1100,7 +1110,7 @@ export function stampStretchShadow(
     }
     p.stretchMeta = {
       main: stretches.main ? { stops: stretches.main.stops.length, refStop: stretches.main.refStop, trips: stretches.main.tripCount, ...stretchMetaPeriods(stretches.main) } : null,
-      tails: stretches.tails.map(t => ({ refStop: t.refStop, stops: t.stops.length, km: Math.round(t.lengthKm * 100) / 100, trips: t.tripCount, ...stretchMetaPeriods(t) })),
+      tails: stretches.tails.map(t => ({ refStop: t.refStop, stops: t.stops.length, km: Math.round(t.lengthKm * 100) / 100, trips: t.tripCount, ...stretchMetaPeriods(t), ...tailNotThrough(t) })),
     };
   }
   // The filter fields sit on every feature of a route-day or on none (no mixing with today's pools).

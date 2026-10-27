@@ -10,6 +10,9 @@ import modeOverrideData from './data/mode-overrides.json';
 /** Virtual mode ID for LRT routes that share route_type=0 with streetcars. */
 export const VIRTUAL_LRT_MODE = 100;
 
+/** Automated people movers (WVU PRT, Detroit People Mover, AirTrain JFK, Metromover), which feeds publish as streetcars (#1119). A label only: no filter chip of its own. */
+export const PEOPLE_MOVER_MODE = 101;
+
 /** One mode, one label and one place in every list that shows modes (menu, pages, sentences, counters). */
 export const ON_DEMAND_MODE = -1;
 
@@ -19,6 +22,7 @@ export const MODE_DEFINITIONS = [
   { id: 0, label: 'Streetcar' },
   { id: 2, label: 'Commuter rail' },
   { id: 12, label: 'Monorail' },
+  { id: PEOPLE_MOVER_MODE, label: 'People mover' },
   { id: 3, label: 'Bus' },
   { id: 11, label: 'Trolleybus' },
   { id: 4, label: 'Ferry' },

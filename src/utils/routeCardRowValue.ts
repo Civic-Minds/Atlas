@@ -50,11 +50,12 @@ export function routeCardRowValue(d: ShapeProperties, ctx: RouteCardRowContext):
   const branchFilterHeadway = routeFilterHeadway(d, period);
   const dimmed = maxHeadway !== Infinity && !featurePassesHeadwayFilter(d, period, maxHeadway);
   const variantH = hoveredHour == null ? variantRowHeadway(d, period) : undefined;
-  // A stretch row the card cannot read a cadence for (its own gaps are uneven) takes its direction's filter value.
+  // A main-stretch row the card cannot read a cadence for (its own gaps are uneven) takes its direction's filter
+  // value. A tail never does: that value is the trunk's (#1115, Ryan 2026-10-26).
   const ownH = hoveredHour != null
     ? branchDisplayHourHeadway(d, hoveredHour) ?? routeCardDisplayHeadway(d, period)
     : routeCardDisplayHeadway(d, period);
-  const directionH = stretchMode && hoveredHour == null && ownH == null && period !== 'all'
+  const directionH = stretchMode && hoveredHour == null && ownH == null && period !== 'all' && d.stretchRole !== 'tail'
     ? d.directionFilterHeadwayByPeriod?.[period as keyof NonNullable<ShapeProperties['directionFilterHeadwayByPeriod']>]
     : undefined;
   const allDayH = allDay?.filterValue != null && hoveredHour == null ? allDay.filterValue : undefined;
