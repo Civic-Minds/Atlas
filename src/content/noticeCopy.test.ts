@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { CARD_NOTICE, CARD_NOTICE_FOOTER } from '../styles';
-import { expiredFeedCheckHistory, expiredFeedNotice } from './noticeCopy';
+import { expiredFeedCheckHistory, expiredFeedNotice, LIVE_FEEDS_DOWN, LIVE_FEEDS_UNAVAILABLE, liveUnreachableText } from './noticeCopy';
 
 describe('expiredFeedNotice', () => {
   it('names the agency once, without region or duplicated articles', () => {
@@ -33,5 +33,13 @@ describe('card notice styling', () => {
     expect(CARD_NOTICE).toContain('font-normal');
     expect(CARD_NOTICE).not.toContain('font-bold');
     expect(CARD_NOTICE_FOOTER).not.toContain('border-t');
+  });
+});
+
+describe('Live feed notices (CIV-941 #55, #57)', () => {
+  it('reads as approved', () => {
+    expect(`${LIVE_FEEDS_UNAVAILABLE} ${LIVE_FEEDS_DOWN}`).toBe("Live buses in this area can't be shown right now. Atlas will keep trying.");
+    expect(liveUnreachableText(['TTC', 'YRT'])).toBe("Live buses from TTC and YRT can't be shown right now.");
+    expect(liveUnreachableText(['TTC', 'YRT', 'MiWay'])).toBe("Live buses from TTC, YRT and MiWay can't be shown right now.");
   });
 });
