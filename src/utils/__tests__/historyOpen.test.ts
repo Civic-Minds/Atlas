@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { historyAgencyToOpen, historyRouteFromRouteKey, historyRouteSearchPlaceholder, inViewFirst } from '../historyOpen';
+import { historyAgencyToOpen, historyRouteFromRouteKey, historyRouteSearchPlaceholder, indefiniteArticle, inViewFirst } from '../historyOpen';
 
 const HISTORY = new Set(['ttc', 'marta', 'yrt', 'miway']);
 
@@ -54,6 +54,33 @@ describe('inViewFirst', () => {
 describe('historyRouteSearchPlaceholder (CIV-402)', () => {
   it('names the open agency, since the bar searches its routes', () => {
     expect(historyRouteSearchPlaceholder('MARTA')).toBe('Find a MARTA route…');
+  });
+
+  it('uses "an" before a vowel sound', () => {
+    expect(historyRouteSearchPlaceholder('NFTA')).toBe('Find an NFTA route…');
+    expect(historyRouteSearchPlaceholder('MBTA')).toBe('Find an MBTA route…');
+    expect(historyRouteSearchPlaceholder('ABQ RIDE')).toBe('Find an ABQ RIDE route…'); // #1136
+  });
+});
+
+describe('indefiniteArticle', () => {
+  it('reads initialisms by their first letter\'s name', () => {
+    expect(['NFTA', 'MBTA', 'HSR', 'RTD', 'STM', 'OC Transpo', 'LA Metro', 'SFMTA'].map(indefiniteArticle)).toEqual(Array(8).fill('an'));
+    expect(['TTC', 'YRT', 'UTA', 'DDOT', 'GO Transit'].map(indefiniteArticle)).toEqual(Array(5).fill('a'));
+  });
+
+  it('reads all-caps names said as words by their first sound (#1136)', () => {
+    expect(['MAX', 'LYNX', 'SMART'].map(indefiniteArticle)).toEqual(Array(3).fill('a'));
+  });
+
+  it('reads leading capitals run into a lowercase part as letters', () => {
+    expect(['STLévis', 'NJ Transit'].map(indefiniteArticle)).toEqual(['an', 'an']);
+    expect(['CTtransit', 'QLine', 'GTrans'].map(indefiniteArticle)).toEqual(['a', 'a', 'a']);
+  });
+
+  it('reads other names by their first sound', () => {
+    expect(['MARTA', 'SEPTA', 'DART', 'TARC', 'MiWay', 'Unitrans', 'Utah Transit'].map(indefiniteArticle)).toEqual(Array(7).fill('a'));
+    expect(['IndyGo', 'Edmonton Transit', 'Omnitrans'].map(indefiniteArticle)).toEqual(Array(3).fill('an'));
   });
 });
 

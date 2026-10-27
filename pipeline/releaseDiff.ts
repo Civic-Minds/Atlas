@@ -25,7 +25,9 @@
  *   yellow headway-lost  a smaller share of route/directions lose their weekday headway
  *   red    day-lost      a day type (Weekday, Saturday, Sunday) with route lines live has none now
  *   yellow day-shrunk    a day type's route lines fall below DAY_SHRUNK_RATIO of live (live >= DAY_SHRUNK_MIN_LIVE)
- *   yellow future-start  service does not start until a future date
+ *   red    future-start  service does not start until a future date while the live data's
+ *                        feed still runs (service.liveFeedExpiry >= today, #1144)
+ *   yellow future-start  the same with no running live feed, or no live expiry given
  *   yellow placeholder-expiry the calendar end is more than 2 years past today,
  *                        likely a placeholder; the recorded expiry is capped
  *   yellow added         no live artifact to compare with (new to the release),
@@ -143,6 +145,8 @@ export interface ServiceWindow {
   end?: string | null;
   /** Latest calendar end (calendar.txt / calendar_dates), when it differs from `end`. */
   calendarEnd?: string | null;
+  /** Expiry of the feed the live data was built from: a future start is red while it still runs (#1144). */
+  liveFeedExpiry?: string | null;
 }
 
 interface LineFeature {
@@ -479,7 +483,11 @@ export function evaluateAgency(input: AgencyGateInput, peers: GatePeer[], todayY
   }
   const start = input.service?.start ?? null;
   if (start && /^\d{8}$/.test(start) && start > todayYmd) {
-    flags.push(flag(slug, 'future-start', 'yellow', `service does not start until ${start}`));
+    const liveExpiry = input.service?.liveFeedExpiry ?? null;
+    const liveRunning = !!liveExpiry && /^\d{8}$/.test(liveExpiry) && liveExpiry >= todayYmd;
+    flags.push(liveRunning
+      ? flag(slug, 'future-start', 'red', `service does not start until ${start}, and the live timetable runs to ${liveExpiry}`)
+      : flag(slug, 'future-start', 'yellow', `service does not start until ${start}`));
   }
   const calendarEnd = input.service?.calendarEnd ?? end;
   const placeholderAfter = addYearsYmd(todayYmd, PLACEHOLDER_EXPIRY_YEARS);
@@ -539,7 +547,8 @@ export async function evaluateRun(options: {
   candidates: GateCandidate[];
   getLive: (slug: string) => Promise<ArtifactSummary | null>;
   registry: RegistryAgency[];
-  todayYmd: string;
+  /** Today for the expiry flags: one date, or each agency's own local date (agencyTodayYmd). */
+  todayYmd: string | ((slug: string) => string);
   allowMissingLive: boolean;
   getHiddenLive?: (slug: string) => Promise<ArtifactSummary | null>;
   /** Outputs already produced earlier in the same run (refresh gates one agency at a time). */
@@ -573,7 +582,7 @@ export async function evaluateRun(options: {
       flags.push(...evaluateAgency(
         { slug: candidate.slug, live, next: candidate.next, service: candidate.service, allowMissingLive: options.allowMissingLive },
         [...runPeers, ...outside, ...hiddenPeers],
-        options.todayYmd,
+        typeof options.todayYmd === 'function' ? options.todayYmd(candidate.slug) : options.todayYmd,
       ));
     }
   };
@@ -589,6 +598,50 @@ export function cachedSummaryReader(read: (slug: string) => Promise<ArtifactSumm
     if (!hit) { hit = read(slug); cache.set(slug, hit); }
     return hit;
   };
+}
+
+/**
+ * Where a refresh or reprocess finds an agency's live data for its drop and gate checks (CIV-522): the public
+ * release first, then the top-level `atlas/<slug>.json` only for agencies the release doesn't have (hidden,
+ * staged, newly added). The top-level files are the next build's working set and can hold a failed run's
+ * unpublished output, so they must never stand in for what users see. With no readable release pointer, the
+ * top-level files are the only baseline there is (as before), and `onNoRelease` is told.
+ */
+export async function liveBaselinePrefixes(
+  get: (key: string) => Promise<string | null>,
+  onNoRelease: (reason: string) => void = reason => console.warn(`[release diff] ${reason}; comparing against atlas/<slug>.json.`),
+): Promise<string[]> {
+  let raw: string | null;
+  try {
+    raw = await get('atlas/release.json');
+  } catch (error) {
+    onNoRelease(`atlas/release.json could not be read (${error instanceof Error ? error.message : String(error)})`);
+    return ['atlas'];
+  }
+  if (!raw) {
+    onNoRelease('no atlas/release.json');
+    return ['atlas'];
+  }
+  let prefix: unknown;
+  try {
+    prefix = (JSON.parse(raw) as { agencyPrefix?: unknown }).agencyPrefix;
+  } catch {
+    prefix = null;
+  }
+  if (typeof prefix !== 'string' || !prefix.trim() || prefix.replace(/\/$/, '') === 'atlas') {
+    onNoRelease('atlas/release.json has no release agency prefix');
+    return ['atlas'];
+  }
+  return [prefix.replace(/\/$/, ''), 'atlas'];
+}
+
+/** A cached live-summary reader over the public release first (liveBaselinePrefixes), resolving the pointer once. */
+export function releaseBaselineReader(get: (key: string) => Promise<string | null>): (slug: string) => Promise<ArtifactSummary | null> {
+  let prefixes: Promise<string[]> | null = null;
+  return cachedSummaryReader(async slug => {
+    prefixes ??= liveBaselinePrefixes(get);
+    return readLiveSummary(slug, get, await prefixes);
+  });
 }
 
 /**

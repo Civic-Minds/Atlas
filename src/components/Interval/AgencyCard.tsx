@@ -17,20 +17,21 @@ import ModeFilterPillRow from '../ui/ModeFilterPillRow';
 import { HEADWAY_TIERS } from '../../utils/colors';
 import { effectiveMode, isRailReplacementBus, knownModeLabel, sortModes } from '../../../shared/modes';
 import { headwayEveryRange } from '../../utils/headwayText';
-import { agencyDisplayParts, routeLabels } from '../../utils/format';
+import { agencyNameParts } from '../../utils/format';
 import type { DayType, TimePeriod, ShapeProperties } from '../../hooks/useIntervalStats';
 import { passesRouteFilter } from '../../hooks/useIntervalStats';
 import { NO_REGULAR_SERVICE_LABEL, routeListDisplay } from '../../utils/effectiveHeadway';
 import { AgencyCardTop, AgencyDataSourceLink, SidebarCardHeader, CARD_HEADER_BLOCK, CARD_BODY_TEXT, CARD_SUMMARY, CardBodyText, CardHelpNotice, CardSectionLabel, CardReportButton } from './cardUi';
 import CardRouteList from './CardRouteList';
 import { OutboundLink } from '../OutboundLink';
-import { buildRouteFacts } from '../../utils/routeFacts';
-import { currentAtlasUrl } from '../../utils/reportIssue';
+import { buildRouteFacts, type RouteLabel } from '../../utils/routeFacts';
+import { reportDetails } from '../../utils/reportIssue';
 import { getRolloutNotice } from '../../../shared/rolloutNotice';
 import { onDemandCardName } from '../../utils/onDemandSelection';
 import { onDemandCoverageNote } from '../../data/onDemandCoverage';
 import {
   formatOnDemandHoursLines,
+  formatOnDemandHoursRange,
   onDemandPickupSentence,
   onDemandRunningNote,
   resolveOnDemandZone,
@@ -46,8 +47,8 @@ interface RouteRow {
   routeId: string;
   agencySlug: string;
   shortName: string;
-  /** The short name the row's label shows (blank when the feed has none but has a long name, #1099). Defaults to shortName. */
-  labelShortName?: string;
+  /** What the row shows (route facts' label, CIV-984): never built from shortName, which is the route's identity. */
+  label: RouteLabel;
   longName: string | null;
   headway: number | null;
   limited: boolean;
@@ -99,7 +100,7 @@ export function getRoutes(
     routeId: string;
     agencySlug: string;
     shortName: string;
-    labelShortName: string;
+    label: RouteLabel;
     longName: string | null;
     tier: string | null;
     routeType: number;
@@ -123,7 +124,7 @@ export function getRoutes(
         routeId: facts.routeId,
         agencySlug: facts.agencySlug,
         shortName: facts.shortName,
-        labelShortName: facts.labelShortName,
+        label: facts.label,
         longName: facts.longName,
         tier: facts.tier,
         routeType: typeof p.routeType === 'number' ? p.routeType : 3,
@@ -142,7 +143,7 @@ export function getRoutes(
       routeId: row.routeId,
       agencySlug: row.agencySlug,
       shortName: row.shortName,
-      labelShortName: row.labelShortName,
+      label: row.label,
       longName: row.longName,
       ...routeListDisplay(row.props, period),
       tier: row.tier,
@@ -200,6 +201,84 @@ export function OnDemandHoursText({
         </p>
       ))}
     </>
+  );
+}
+
+/** The hours rows' scale: 6 a.m. to 2 a.m. like the route card's chart, stretched for service outside it. */
+const HOURS_SCALE_START = 6;
+const HOURS_SCALE_END = 26;
+const HOURS_TICKS: [number, string][] = [[6, '6a'], [12, '12p'], [18, '6p'], [24, '12a']];
+
+/**
+ * Service hours as rows (CIV-964, Ryan's variant C): one row per group of days with the same hours, its days, a bar
+ * on a shared day scale and the times in words; the row covering the selected day is bold. Falls back to the agency's
+ * own wording when no structured hours exist.
+ */
+export function OnDemandHoursRows({
+  availability,
+  serviceHours,
+  day,
+  className,
+}: {
+  availability?: OnDemandAvailability;
+  serviceHours?: string;
+  day?: DayType;
+  className: string;
+}) {
+  const lines = formatOnDemandHoursLines(availability);
+  if (lines.length === 0) {
+    return serviceHours ? <p className={className}>{serviceHours}</p> : null;
+  }
+  const windows = lines.flatMap(line => line.windows);
+  const start = Math.min(HOURS_SCALE_START, ...windows.map(w => Math.floor(w.startHour)));
+  const end = Math.max(HOURS_SCALE_END, ...windows.map(w => Math.ceil(w.endHour)));
+  const pct = (hour: number) => ((hour - start) / (end - start)) * 100;
+  return (
+    <div className="mt-1 grid grid-cols-[3.5rem_1fr] gap-x-2 text-xs leading-snug" data-testid="on-demand-hours-rows">
+      {lines.map(line => {
+        const selected = !!day && line.dayTypes.includes(day);
+        const tone = selected ? 'font-bold text-[var(--text-primary)]' : 'text-[var(--text-muted)]';
+        return (
+          <React.Fragment key={line.text}>
+            {/* The days line up with the bar: a line box the bar's height. */}
+            <span className={`mt-1.5 whitespace-nowrap leading-[0.625rem] ${tone}`}>{line.days}</span>
+            <div className="mt-1.5 min-w-0">
+              {line.windows.length > 0 ? (
+                <>
+                  <div className="relative h-2.5 rounded-full bg-[var(--bg-stat)]" aria-hidden="true">
+                    {line.windows.map(w => (
+                      <span
+                        key={`${w.startHour}-${w.endHour}`}
+                        className="absolute inset-y-0 rounded-full bg-[var(--hours-band)]"
+                        style={{ left: `${pct(w.startHour)}%`, width: `${pct(w.endHour) - pct(w.startHour)}%` }}
+                      />
+                    ))}
+                  </div>
+                  {/* Each time range stays whole; a list of them wraps between ranges. */}
+                  <p className={`mt-0.5 ${tone}`}>
+                    {line.windows.map((w, i) => (
+                      <React.Fragment key={`${w.startHour}-${w.endHour}`}>
+                        {i > 0 && ', '}
+                        <span className="whitespace-nowrap">{formatOnDemandHoursRange(w)}</span>
+                      </React.Fragment>
+                    ))}
+                  </p>
+                </>
+              ) : (
+                // No bar for a day with no service, just the words (as in the picked mockup).
+                <p className={`leading-[0.625rem] ${tone}`}>{line.times}</p>
+              )}
+            </div>
+          </React.Fragment>
+        );
+      })}
+      <span />
+      <div className="relative mt-1.5 mb-1.5 h-3 text-2xs text-[var(--text-dim)]" aria-hidden="true">
+        {HOURS_TICKS.map(([hour, label]) => (
+          <span key={hour} className="absolute -translate-x-1/2" style={{ left: `${pct(hour)}%` }}>{label}</span>
+        ))}
+      </div>
+    </div>
   );
 }
 
@@ -323,7 +402,7 @@ function RouteListSection({
 }) {
   const rows = routes.map(r => ({
     key: `${r.agencySlug}::${r.routeId}`,
-    route: routeLabels({ shortName: r.labelShortName ?? r.shortName, longName: r.longName, routeType: r.routeType, agencySlug: r.agencySlug }),
+    route: r.label,
     headway: r.headway ?? undefined,
     headwayLabel: r.headway != null && r.sharedHeadway != null ? headwayEveryRange(r.sharedHeadway, r.headway) : undefined,
     limited: r.limited || r.noRegular === true,
@@ -394,7 +473,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
   );
   const liveShortNames = useMemo(() => new Set(liveRoutes.map(r => r.displayRouteShortName)), [liveRoutes]);
   const { primary: agencyNamePrimary, secondary: agencyNameSecondary } = useMemo(
-    () => agencyDisplayParts(agency.name, agency.cities, agency.displayArea),
+    () => agencyNameParts({ name: agency.name, cities: agency.cities, displayArea: agency.displayArea }),
     [agency.name, agency.cities, agency.displayArea],
   );
   // An on-demand-only agency's cards are named by its service ("GP Transit On-Demand"), with no place beside it,
@@ -408,6 +487,17 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
   const regionTitle = agencyRegionTitle(agency.slug);
   const area = areaLink && regionTitle ? { href: areaLink.href, label: regionTitle } : null;
   const hasSource = FEATURES.dataSourceLink && !!agency.websiteUrl;
+  // One line right under the name (CIV-929): the area link, then "About →" (CIV-841), then "Source →" when that is on.
+  // Each opens in a new tab, since they leave the map; the area name is cut with an ellipsis if it runs long.
+  const agencyLinks = [
+    area && (
+      <ArrowLink key="area" size="xs" tone="inline" href={area.href} target="_blank" rel="noopener noreferrer" className="max-w-full [&>svg]:shrink-0" title={area.label}>
+        <span className="truncate min-w-0">{area.label}</span>
+      </ArrowLink>
+    ),
+    hasAboutPage && <ArrowLink key="about" size="xs" tone="inline" href={agencyPagePath(agency.slug)} target="_blank" rel="noopener noreferrer">About</ArrowLink>,
+    hasSource && <AgencyDataSourceLink key="source" agency={agency} />,
+  ].filter(Boolean) as React.ReactNode[];
   const rolloutNotice = getRolloutNotice(agency);
   const coverageNote = FEATURES.onDemand ? onDemandCoverageNote(agency) : null;
   // Zone not on the map yet: an "On-Demand" pill beside the mode pills instead of a notice block.
@@ -417,7 +507,14 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
     <CardReportButton
       title={`Agency issue: ${agency.name}`}
       // The data dates the route card's report sends too (CIV-932), so an agency report says how fresh its data is.
-      details={`**Agency:** ${agency.name}\n**Agency slug:** ${agency.slug}\n**Day:** ${day}\n**Period:** ${period}\n**Agency data refreshed:** ${agency.lastRefreshedAt ?? 'unknown'}\n**Feed expiry:** ${agency.lastFeedExpiry ?? 'unknown'}\n**Atlas URL:** ${currentAtlasUrl()}`}
+      details={reportDetails([
+        ['Agency', agency.name],
+        ['Agency slug', agency.slug],
+        ['Day', day],
+        ['Period', period],
+        ['Agency data refreshed', agency.lastRefreshedAt ?? 'unknown'],
+        ['Feed expiry', agency.lastFeedExpiry ?? 'unknown'],
+      ])}
       excludeReasons={['Stop is missing, misplaced, or assigned incorrectly', 'Route line is missing or follows the wrong path']}
     />
   );
@@ -497,14 +594,14 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
           <div>
             <CardSectionLabel>Service hours</CardSectionLabel>
             <CardBodyText data-testid="on-demand-running-note">{runningNote}</CardBodyText>
-            <OnDemandHoursText
+            <OnDemandHoursRows
               availability={zone.availability}
               serviceHours={zone.serviceHours}
               day={day}
               className={CARD_BODY_TEXT}
             />
             {zone.availability && zone.hoursNote && (
-              <p className="text-xs leading-snug text-[var(--text-dim)] mt-1">{zone.hoursNote}</p>
+              <CardBodyText>{zone.hoursNote}</CardBodyText>
             )}
           </div>
           {zone.bookingInfo && (
@@ -533,21 +630,8 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
           back={{ to: 'Map', onClick: onClose }}
           facts={agency.onDemandOnly ? 'On-demand service' : buildHeaderSummary(visibleRoutes, maxHeadway)}
           report={reportButton}
-          region={area && (
-            // The region on one line under the name, cut with an ellipsis if it ever runs long (CIV-929). The map is
-            // a different page from the area page, so it opens in a new tab like the outside Source link.
-            <ArrowLink size="xs" tone="inline" href={area.href} target="_blank" rel="noopener noreferrer" className="max-w-full" title={area.label}>
-              <span className="truncate min-w-0">{area.label}</span>
-            </ArrowLink>
-          )}
+          links={agencyLinks}
         >
-          {(hasAboutPage || hasSource) && (
-            // "About →" and "Source →" under the facts (CIV-841), each in a new tab like the region link.
-            <p className="mt-1 flex flex-wrap gap-x-3 text-xs">
-              {hasAboutPage && <ArrowLink size="xs" tone="inline" href={agencyPagePath(agency.slug)} target="_blank" rel="noopener noreferrer">About</ArrowLink>}
-              <AgencyDataSourceLink agency={agency} />
-            </p>
-          )}
           {!agency.onDemandOnly && agency.onDemandServiceArea?.serviceName && (() => {
             const service = agency.onDemandServiceArea;
             // Every on-demand service in the shared row style (CIV-962): its name bold like a route with no number,

@@ -1,15 +1,17 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { Search } from 'lucide-react';
 import { HEADWAY_TIERS, getTierColor } from '../../utils/colors';
-import { FLOATING_CARD, GLASS_PILL, PILL_SURFACE, PANEL_ENTER_TOP, CONTROL_ACTIVE, CONTROL_ACTIVE_GLASS, CONTROL_INACTIVE, SEARCH_PILL, SEARCH_ICON, SEARCH_FIELD } from '../../styles';
+import { FLOATING_CARD, GLASS_PILL, PILL_SURFACE, PANEL_ENTER_TOP, CONTROL_ACTIVE, CONTROL_ACTIVE_GLASS, CONTROL_INACTIVE, SEARCH_PILL, SEARCH_ICON, SEARCH_FIELD, CARD_SECTION } from '../../styles';
 import Pill from '../ui/Pill';
+import PillGroup from '../ui/PillGroup';
+import ActiveDot from '../ui/ActiveDot';
 import type { Agency } from '../../App';
 import { PERIOD_LABELS, PERIOD_KEYS } from '../../hooks/useIntervalStats';
 import type { TimePeriod, ViewportBounds } from '../../hooks/useIntervalStats';
 import { FEATURES, formatPeriodRange, periodKeyForHour } from '../../../shared/config';
 import { COMPACT_TOP_BAR_QUERY } from '../ModeTabLabel';
 import { useMediaQuery } from '../../hooks/useMediaQuery';
-import { agencyDisplayParts } from '../../utils/format';
+import { agencyListParts } from '../../utils/format';
 import { bboxInViewport } from '../../utils/agencySearch';
 import { filterModeOptions } from '../../../shared/modes';
 import { modesForView } from '../../../shared/viewLayers';
@@ -188,10 +190,10 @@ function AgenciesPanel({ agencies, selectedAgencies, setSelectedAgencies, bounds
         )}
         {[...byRegion.entries()].map(([region, groups]) => (
           <div key={region}>
-            <p className="px-2 pt-2 pb-0.5 text-xs font-black text-[var(--text-dim)]">{region}</p>
+            <p className={`px-2 pt-2 pb-0.5 ${CARD_SECTION}`}>{region}</p>
             {groups.map(g => {
               const active = g.slugs.every(s => selectedAgencies.has(s));
-              const { primary, secondary } = agencyDisplayParts(g.name, g.cities, g.displayArea);
+              const { primary, secondary } = agencyListParts({ name: g.name, cities: g.cities, displayArea: g.displayArea });
               return (
                 <button
                   key={g.name}
@@ -293,7 +295,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
     }`;
 
   const Dot = ({ show }: { show: boolean }) =>
-    show ? <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-[var(--accent)] border border-[var(--bg-panel)]" /> : null;
+    show ? <ActiveDot /> : null;
 
   const toggle = (id: ChipId) => setOpenChip(c => c === id ? null : id);
 
@@ -302,13 +304,8 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
   if (nightServiceMode && setNightServiceFrequency) {
     return (
       <div ref={rowRef} className="flex items-center gap-2">
-        <div className="flex items-center gap-1 rounded-full border border-[var(--border-primary)] p-0.5">
-          {([30, 60] as const).map(value => (
-            <Pill size="segment" key={value} onClick={() => setNightServiceFrequency(value)} selected={nightServiceFrequency === value}>
-              {headwayAmount(value)}
-            </Pill>
-          ))}
-        </div>
+        <PillGroup outlined label="Night frequency" value={String(nightServiceFrequency)} onChange={v => setNightServiceFrequency(Number(v) as 30 | 60)}
+          options={([30, 60] as const).map(value => [String(value), headwayAmount(value)] as const)} />
       </div>
     );
   }
@@ -329,12 +326,10 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
             {DAY_TYPES.map(dayType => <button key={dayType} onClick={() => toggleResearchDay(dayType)} className={researchButton(researchDays.includes(dayType))}>{dayType}</button>)}
           </div>}
         </div>
-        <div className="flex items-center gap-1 rounded-full border border-[var(--border-primary)] p-0.5">
-          {([15, 30] as const).map(value => <Pill size="segment" key={value} onClick={() => setResearchFrequency(value)} selected={researchFrequency === value}>{headwayAmount(value)}</Pill>)}
-        </div>
-        <div className="flex items-center gap-1 rounded-full border border-[var(--border-primary)] p-0.5">
-          {([['daytime', '7am–7pm'], ['extended', '7am–midnight']] as const).map(([value, label]) => <Pill size="segment" key={value} onClick={() => setResearchWindow(value)} selected={researchWindow === value}>{label}</Pill>)}
-        </div>
+        <PillGroup outlined label="Frequency" value={String(researchFrequency)} onChange={v => setResearchFrequency(Number(v) as 15 | 30)}
+          options={([15, 30] as const).map(value => [String(value), headwayAmount(value)] as const)} />
+        <PillGroup outlined label="Time window" value={researchWindow} onChange={v => setResearchWindow(v as FrequentServiceWindow)}
+          options={[['daytime', '7am–7pm'], ['extended', '7am–midnight']] as const} />
         <div className="relative">
           <button onClick={() => toggle('mode')} className={chipClass(selectedModes.size > 0)}>Mode<Dot show={selectedModes.size > 0} /></button>
           {openChip === 'mode' && <div className={`${PANEL} w-48`}>
@@ -519,7 +514,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
             <PickerSection title="Time"><PeriodPicker value={period} onChange={setPeriod} /></PickerSection>
             {/* Mode */}
             <div>
-              <p className="text-xs font-black text-[var(--text-dim)] mb-1.5">Mode</p>
+              <p className={`${CARD_SECTION} mb-1.5`}>Mode</p>
               <div className="flex flex-wrap gap-1">
                 {MODES.map(m => (
                   <Pill size="segment" key={m.id} onClick={() => toggleMode(m.id)} selected={modeIsActive(m.id)}>

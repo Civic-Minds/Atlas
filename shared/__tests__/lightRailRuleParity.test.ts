@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { createPropertyExpression, type StylePropertySpecification } from '@maplibre/maplibre-gl-style-spec';
-import { buildEffectiveModeExpression, effectiveMode, VIRTUAL_LRT_MODE } from '../modes';
+import { buildEffectiveModeExpression, effectiveMode, MODE_OVERRIDES, VIRTUAL_LRT_MODE } from '../modes';
+import rawOverrides from '../data/mode-overrides.json';
 
 // CIV-993: the map's expression and effectiveMode come from one rule table; this runs the real expression next to it.
 const NUMBER_SPEC = { type: 'number', 'property-type': 'data-driven', expression: { interpolated: false, parameters: ['zoom', 'feature'] } } as unknown as StylePropertySpecification;
@@ -36,3 +37,22 @@ describe('light-rail rule: map expression and effectiveMode agree (CIV-993)', ()
     expect(effectiveMode({ agencySlug: 'x', routeType: 2, routeLongName: 'Union Station' })).toBe(2);
   });
 });
+
+describe('mode overrides: map expression and effectiveMode pick the same routes (#1132)', () => {
+  it('every listed override, with its exact names and with stray spaces added', () => {
+    for (const o of MODE_OVERRIDES) {
+      const exact = { agencySlug: o.agencySlug, routeType: o.routeType, routeShortName: o.routeShortName ?? 'x', routeLongName: o.routeLongName ?? 'x' };
+      expect(effectiveMode(exact), `${o.agencySlug} ${o.routeShortName ?? ''} ${o.routeLongName ?? ''}`).toBe(o.mode);
+      expect(mapMode(exact)).toBe(o.mode);
+      const spaced = { ...exact, routeShortName: ` ${exact.routeShortName} `, routeLongName: ` ${exact.routeLongName} ` };
+      expect(mapMode(spaced)).toBe(effectiveMode(spaced));
+    }
+  });
+  it('override names in the committed config have no stray spaces (both sides compare exactly)', () => {
+    for (const o of (rawOverrides as { overrides: Array<{ routeShortName?: string; routeLongName?: string }> }).overrides) {
+      if (o.routeShortName !== undefined) expect(o.routeShortName).toBe(o.routeShortName.trim());
+      if (o.routeLongName !== undefined) expect(o.routeLongName).toBe(o.routeLongName.trim());
+    }
+  });
+});
+

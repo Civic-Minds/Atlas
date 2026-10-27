@@ -2,12 +2,12 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import type { MapContextAgency, MapContextRoute } from '../../utils/mapContext';
 import { FLOATING_CARD, LIST_ROW_PRIMARY, PANEL_TITLE, SIDEBAR_PANEL_WIDTH, PANEL_SIDEBAR, sidebarFrameStyle } from '../../styles';
 import RouteListRow from '../RouteListRow';
-import { routeRowLabels } from './SearchSuggestionsPanel';
 import RegionFilterPills from '../RegionFilterPills';
 import Panel, { PanelBody, PanelTitleBar } from '../ui/Panel';
 import ListRow from '../ui/ListRow';
 import AgencyGroupHeader from '../ui/AgencyGroupHeader';
 import AgencyName from '../ui/AgencyName';
+import { CARD_SUMMARY } from './cardUi';
 import PanelEmpty from '../ui/PanelEmpty';
 import { compareAgencyName, compareRegion } from '../../utils/sortCompare';
 import { countOf } from '../../../shared/overflowText';
@@ -66,7 +66,8 @@ export const MapContextPanel: React.FC<MapContextPanelProps> = ({ agencies, mode
       <PanelTitleBar>
         <div className="min-w-0 flex-1">
           <div className={PANEL_TITLE}>In view</div>
-          <div className="text-xs font-bold text-[var(--text-primary)]">
+          {/* The count reads like an agency card's facts line under its name (CIV-971). */}
+          <div className={CARD_SUMMARY}>
             {mode === 'agencies' ? countOf(count, 'agency', 'agencies') : countOf(count, 'route')}
           </div>
         </div>
@@ -112,7 +113,7 @@ export const MapContextPanel: React.FC<MapContextPanelProps> = ({ agencies, mode
                 })()}
               </AgencyGroupHeader>
               {group.routes.map((route: MapContextRoute) => {
-                const labels = routeRowLabels({ shortName: route.shortName, longName: route.longName, routeType: route.routeType, agencySlug: route.agencySlug, agencyName: group.agencyName });
+                const labels = { shortName: route.label.primary, name: route.label.secondary };
                 return (
                   <RouteListRow
                     key={route.key}

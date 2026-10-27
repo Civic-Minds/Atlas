@@ -19,7 +19,9 @@ export { default as CardDirectionRow } from './RouteDirectionRow';
 export const CARD_EYEBROW = 'text-xs font-bold text-[var(--text-muted)] leading-tight mb-0.5';
 export const CARD_TITLE = 'text-sm font-black text-[var(--text-primary)] leading-tight';
 export const CARD_LIST_ROUTE = 'text-xs font-bold text-[var(--text-primary)] leading-snug';
-export const CARD_SECTION = 'text-xs font-black text-[var(--text-dim)]';
+// The section label lives in styles.ts with the other shared text styles (CIV-395), so non-card panels use it too.
+export { CARD_SECTION } from '../../styles';
+import { CARD_NOTE, CARD_SECTION } from '../../styles';
 /** A list card's header block (agency card, History's agency view): one divider under it. */
 export const CARD_HEADER_BLOCK = 'shrink-0 px-4 pt-4 pb-3 border-b border-[var(--border-primary)]';
 /** The same header spacing for a card that is only a header (no divider sitting on the card's own edge). */
@@ -42,6 +44,10 @@ export function CardBodyText({ className = '', ...rest }: React.HTMLAttributes<H
  *  block needs its own padding (the report form's checkbox group). */
 export const CARD_CALLOUT_SURFACE = 'rounded-xl border border-[var(--border-primary)] bg-[var(--bg-app)]';
 export const CARD_CALLOUT = `${CARD_CALLOUT_SURFACE} px-3 py-2.5`;
+
+/** A callout's headline and its plain lines under it: one style for every callout (Compare, History) (CIV-971). */
+export const CARD_CALLOUT_HEADLINE = 'text-xs font-bold leading-tight text-[var(--text-primary)]';
+export const CARD_CALLOUT_TEXT = 'text-xs text-[var(--text-muted)] mt-0.5';
 
 /** The tinted callouts (History's better or worse summary): the status tint in place of the outline. */
 const CARD_CALLOUT_TONE = {
@@ -395,7 +401,7 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
                 />
               </label>}
               {selectedCategory && copiesDiagnostics && (
-                <p className="text-xs font-bold text-[var(--text-dim)]">
+                <p className={CARD_NOTE}>
                   {import.meta.env.DEV ? 'The GitHub report includes the captured route diagnostics.' : 'The email draft includes the captured route diagnostics.'}
                 </p>
               )}
@@ -482,7 +488,7 @@ export function AgencyCardTop({
   name,
   place,
   back,
-  region,
+  links = [],
   facts,
   report,
   as,
@@ -491,8 +497,8 @@ export function AgencyCardTop({
   name: string;
   place?: string | null;
   back: { to: string; onClick: () => void };
-  /** A link to the agency's region ("Greater Toronto and Hamilton Area →"), kept to one line. */
-  region?: React.ReactNode;
+  /** The links line under the name ("Austin area → · About →"), kept to one line (CIV-929). */
+  links?: React.ReactNode[];
   facts?: React.ReactNode;
   report?: React.ReactNode;
   as?: 'p' | 'h2';
@@ -503,7 +509,17 @@ export function AgencyCardTop({
       <div className="min-w-0 flex-1">
         <CardBackLink onClick={back.onClick}>{back.to}</CardBackLink>
         <AgencyNameHeading as={as} name={name} place={place} className="mb-0" />
-        {region && <p className="mt-0.5 flex min-w-0 text-xs whitespace-nowrap">{region}</p>}
+        {links.length > 0 && (
+          // One line, dot between links; only the first (the area name) gives way, cut with an ellipsis.
+          <p className="mt-0.5 flex items-center min-w-0 text-xs whitespace-nowrap">
+            {links.map((link, i) => (
+              <React.Fragment key={i}>
+                {i > 0 && <span className="mx-1 shrink-0 text-[var(--text-dim)] select-none" aria-hidden="true">·</span>}
+                <span className={i === 0 ? 'flex min-w-0' : 'flex shrink-0'}>{link}</span>
+              </React.Fragment>
+            ))}
+          </p>
+        )}
         {facts && <p className={CARD_SUMMARY}>{facts}</p>}
         {children}
       </div>
@@ -517,6 +533,24 @@ const SUFFIX_TONE = {
   negative: 'text-[var(--status-negative-text)]',
   positive: 'text-[var(--status-positive-text)]',
 } as const;
+
+/**
+ * A part-period value ("from 7:05am, every 20 min") may break after its comma: on a narrow row the dot and
+ * "from 7:05am," stay on the first line and "every 20 min" goes under it, right-aligned, instead of running
+ * past the card edge (#1128). Each part stays whole; a short value stays one line as before.
+ */
+const twoPart = (text: string | undefined) => !!text && text.includes(', ');
+
+function TwoPartBadge({ dot, text, className }: { dot: React.ReactNode; text: string; className: string }) {
+  const comma = text.indexOf(', ');
+  return (
+    <span className={`inline-flex flex-wrap justify-end gap-x-1 min-w-0 ${className}`}>
+      <span className="inline-flex items-center gap-1 whitespace-nowrap">{dot}{text.slice(0, comma + 1)}</span>
+      {' '}
+      <span className="whitespace-nowrap">{text.slice(comma + 2)}</span>
+    </span>
+  );
+}
 
 export function HeadwayBadge({
   headway,
@@ -537,11 +571,13 @@ export function HeadwayBadge({
   className?: string;
 }) {
   const colorMode = useColorMode();
+  const dot = <span className="w-2 h-2 rounded-full shrink-0" style={{ background: headwayToTierColor(colorHeadway ?? headway, colorMode) }} />;
+  const words = label ?? fmtHeadway(headway);
+  const base = 'font-black text-[var(--text-primary)] text-xs leading-snug';
   return (
-    <span className={`inline-flex items-center gap-1 font-black text-[var(--text-primary)] text-xs leading-snug shrink-0 ${className}`}>
+    <span className={`inline-flex items-center gap-1 ${base} ${twoPart(words) ? 'min-w-0' : 'shrink-0'} ${className}`}>
       {live && <Radio className="w-2.5 h-2.5 text-[var(--accent)] shrink-0" aria-label="Live data available" />}
-      <span className="w-2 h-2 rounded-full shrink-0" style={{ background: headwayToTierColor(colorHeadway ?? headway, colorMode) }} />
-      <span className="whitespace-nowrap">{label ?? fmtHeadway(headway)}</span>
+      {twoPart(words) ? <TwoPartBadge dot={dot} text={words} className={base} /> : <>{dot}<span className="whitespace-nowrap">{words}</span></>}
       {suffix && <span className={`text-xs font-bold whitespace-nowrap ${SUFFIX_TONE[suffixTone]}`}>{suffix}</span>}
     </span>
   );
@@ -553,9 +589,11 @@ export function HeadwayBadge({
  */
 export function LimitedBadge({ label, className = '' }: { label?: string; className?: string }) {
   const colorMode = useColorMode();
+  const dot = <span className="w-2 h-2 rounded-full shrink-0" style={{ background: getTierColor(null, colorMode) }} />;
+  if (label && twoPart(label)) return <TwoPartBadge dot={dot} text={label} className={`text-xs font-black text-[var(--text-primary)] leading-snug ${className}`} />;
   return (
     <span className={`inline-flex items-center gap-1 text-xs font-black text-[var(--text-primary)] leading-snug shrink-0 whitespace-nowrap ${label ? '' : 'min-h-[1lh]'} ${className}`.trim()}>
-      <span className="w-2 h-2 rounded-full shrink-0" style={{ background: getTierColor(null, colorMode) }} />
+      {dot}
       {label}
     </span>
   );

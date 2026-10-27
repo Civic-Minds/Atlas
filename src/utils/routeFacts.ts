@@ -3,6 +3,15 @@ import type { ShapeProperties } from '../hooks/useAgencyData';
 import { PERIOD_KEYS, TIME_PERIODS, periodKeyForHour, type PeriodKey } from '../../shared/config';
 import { getPooledStop, type SharedStopIndex } from '../../shared/sharedStops';
 import { pairedTripPeriodFloor, pairedTripSafeHeadway } from './pairedTripFloor';
+import { routeLabels } from './format';
+
+/** A route's label for every list and card: the bold part, the lighter part, and both on one line (routeLabels). */
+export type RouteLabel = ReturnType<typeof routeLabels>;
+
+/** The short name a route's label is built from: the feed's own, or the route ID only when it has no name at all (#1099). */
+export function labelShortNameOf(p: Pick<ShapeProperties, 'routeShortName' | 'routeLongName' | 'routeId'>): string {
+  return p.routeShortName || (p.routeLongName ? '' : p.routeId);
+}
 
 export type ServicePeriod = PeriodKey | 'all';
 
@@ -214,10 +223,13 @@ export interface RouteFacts {
   agencySlug: string;
   agencyName: string;
   routeId: string;
-  /** The route's identity in lists and groups: the feed's short name, or the route ID when it has none. Not for labels. */
+  /** The route's identity in lists and groups: the feed's short name, or the route ID when it has none. Never shown. */
   shortName: string;
-  /** The short name a label shows: the feed's own, or the route ID only when the route has no name at all (#1099). */
-  labelShortName: string;
+  /**
+   * What every list and card shows for the route (CIV-984): its label from the feed's own names, or from the route ID
+   * only when the route has no name at all (#1099). Rows carry this, not a short name, so none can show a raw ID.
+   */
+  label: RouteLabel;
   longName: string | null;
   directionId: number;
   headsign: string | null;
@@ -248,7 +260,13 @@ function computeRouteFacts(p: ShapeProperties, agencySlug?: string): RouteFacts 
     agencyName: p.agencyName || resolvedAgencySlug,
     routeId,
     shortName: p.routeShortName || routeId,
-    labelShortName: p.routeShortName || (p.routeLongName ? '' : routeId),
+    label: routeLabels({
+      shortName: labelShortNameOf(p),
+      longName: p.routeLongName || null,
+      routeType: (p as ShapeProperties & { routeType?: number }).routeType,
+      agencySlug: resolvedAgencySlug,
+      agencyName: p.agencyName || resolvedAgencySlug,
+    }),
     longName: p.routeLongName || null,
     directionId: p.directionId ?? 0,
     headsign: p.headsign ?? null,

@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import Panel from './ui/Panel';
-import { CARD_HEADER_ONLY, CARD_TITLE } from './Interval/cardUi';
+import { CARD_HEADER_ONLY, CARD_SUMMARY, CARD_TITLE } from './Interval/cardUi';
 import { CardBackLink } from './CardBack';
 import { SIDEBAR_CARD, SIDEBAR_CARD_MAX_H, SIDEBAR_PANEL_WIDTH, sidebarFrameStyle } from '../styles';
 
@@ -31,7 +31,8 @@ export default function ResearchInfo({ heading, children, onBack, sidebarLeft, s
         <div className={CARD_HEADER_ONLY}>
           <CardBackLink onClick={onBack}>Frequency map</CardBackLink>
           <p className={CARD_TITLE}>{heading}</p>
-          <p className="mt-1 text-xs text-[var(--text-muted)] font-medium leading-snug">{children}</p>
+          {/* The rule reads like a card's facts line under its title (CIV-971). */}
+          <p className={CARD_SUMMARY}>{children}</p>
         </div>
       </Panel>
       {below}

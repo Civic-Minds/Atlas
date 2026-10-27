@@ -1,18 +1,18 @@
 import React from 'react';
-import { routeLabels } from '../../../utils/format';
 import Panel, { PanelBody } from '../../ui/Panel';
 import AgencyGroupHeader from '../../ui/AgencyGroupHeader';
 import AgencyName from '../../ui/AgencyName';
 import { CardBackLink } from '../../CardBack';
 import RouteListRow from '../../RouteListRow';
 import { CardReportButton } from '../cardUi';
-import { currentAtlasUrl } from '../../../utils/reportIssue';
+import { reportDetails } from '../../../utils/reportIssue';
+import type { RouteLabel } from '../../../utils/routeFacts';
 
 export interface DisambigRoute {
   key: string;
   shortName: string;
-  /** The short name the label shows; blank when the feed has none but has a long name (#1099). Defaults to shortName. */
-  labelShortName?: string;
+  /** What the row shows (route facts' label, CIV-984); the short name is only the route's identity. */
+  label: RouteLabel;
   longName: string;
   agencyName: string;
   /** The agency's place, shown beside its name in the group heading ("TTC · Toronto"). */
@@ -30,11 +30,10 @@ export interface DisambiguationPanelProps {
 
 /** What a report from the chooser sends (CIV-932): every route it lists, then the link (its `routes=` and map view). */
 export function chooserReportDetails(routes: readonly DisambigRoute[]): string {
-  return [
+  return reportDetails([
     '**Routes listed:**',
-    ...routes.map(r => `- ${r.agencyName}: ${routeLabels({ shortName: r.shortName, longName: r.longName, routeType: r.routeType, agencySlug: r.agencySlug, agencyName: r.agencyName }).text} (${r.key})`),
-    `**Atlas URL:** ${currentAtlasUrl()}`,
-  ].join('\n');
+    ...routes.map(r => `- ${r.agencyName}: ${r.label.text} (${r.key})`),
+  ]);
 }
 
 export const DisambiguationPanel: React.FC<DisambiguationPanelProps> = ({
@@ -73,7 +72,7 @@ export const DisambiguationPanel: React.FC<DisambiguationPanelProps> = ({
               </AgencyGroupHeader>
             )}
             {g.routes.map(r => {
-              const label = routeLabels({ shortName: r.labelShortName ?? r.shortName, longName: r.longName, routeType: r.routeType, agencySlug: r.agencySlug, agencyName: r.agencyName });
+              const label = r.label;
               return (
                 <RouteListRow
                   key={r.key}

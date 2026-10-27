@@ -131,8 +131,15 @@ export interface FeedDates {
   calendarOnlyEnd?: string | null;
 }
 
-/** Read the first and latest advertised service dates and feed_version from a GTFS zip. */
-export async function peekFeedDates(buf: Buffer): Promise<FeedDates> {
+/**
+ * Read the first and latest advertised service dates and feed_version from a GTFS zip.
+ *
+ * With `excludeRouteShortNames` (the agency's config), the calendar dates count only services
+ * that a kept route's trips use, as the processed output does (#1140, CIV-829): an excluded route
+ * running past the rest kept Snowmass "current" to Dec 29 while its kept route ended Nov 25.
+ * feed_info's end date is feed-wide and stays as published.
+ */
+export async function peekFeedDates(buf: Buffer, excludeRouteShortNames?: readonly string[]): Promise<FeedDates> {
   try {
     const zip = await JSZip.loadAsync(buf);
     const findEntry = (name: string) => zip.file(name) ?? zip.file(
@@ -144,8 +151,17 @@ export async function peekFeedDates(buf: Buffer): Promise<FeedDates> {
       return parseCsv<Record<string, string>>(await entry.async('text'));
     };
     const feedInfo = (await readRows('feed_info.txt'))[0] ?? {};
-    const calendar = await readRows('calendar.txt');
-    const calendarDates = await readRows('calendar_dates.txt');
+    let calendar = await readRows('calendar.txt');
+    let calendarDates = await readRows('calendar_dates.txt');
+    if (excludeRouteShortNames?.length) {
+      const excluded = new Set(excludeRouteShortNames);
+      const excludedRouteIds = new Set((await readRows('routes.txt')).filter(r => excluded.has(r.route_short_name ?? '')).map(r => r.route_id));
+      if (excludedRouteIds.size > 0) {
+        const keptServices = new Set((await readRows('trips.txt')).filter(t => !excludedRouteIds.has(t.route_id)).map(t => t.service_id));
+        calendar = calendar.filter(row => keptServices.has(row.service_id));
+        calendarDates = calendarDates.filter(row => keptServices.has(row.service_id));
+      }
+    }
     return {
       feedStart: effectiveFeedStart({
         feedInfoStart: feedInfo.feed_start_date,

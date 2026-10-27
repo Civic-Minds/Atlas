@@ -37,6 +37,22 @@ export function generateAgencyCatalog(agencies: Array<Record<string, unknown>>, 
   return { contents: `${JSON.stringify(catalog)}\n`, agencyCount: catalog.agencyCount };
 }
 
+/**
+ * Every agency's config `shortName`, keyed by its config name, into shared/data/agency-short-names.json. The app uses
+ * one only where the agency's own everyday name is too long for a row (CIV-998: "Gary Public Transportation
+ * Corporation" → "GPTC"); the feature data carries the config name, so that is the key.
+ */
+export function generateAgencyShortNames(agencies: Array<Record<string, unknown>>): { contents: string; count: number } {
+  const byName: Record<string, string> = {};
+  for (const agency of agencies) {
+    const short = agency.shortName;
+    if (short === undefined) continue;
+    if (typeof short !== 'string' || !short.trim() || short !== short.trim()) throw new Error(`${String(agency.slug)}: shortName must be a trimmed non-empty string`);
+    byName[String(agency.name).trim()] = short;
+  }
+  return { contents: `${JSON.stringify({ byName }, null, 2)}\n`, count: Object.keys(byName).length };
+}
+
 /** Route modes a config modeOverrides entry may assign (100 = light rail). */
 export const OVERRIDE_MODES = [0, 1, 2, 3, 4, 5, 6, 11, 12, 100, 101] as const;
 
@@ -62,6 +78,7 @@ export function generateModeOverrides(agencies: Array<Record<string, unknown>>):
       if (!(OVERRIDE_MODES as readonly unknown[]).includes(raw.mode)) throw new Error(`${where}: mode must be one of ${OVERRIDE_MODES.join(', ')}`);
       if (raw.mode === raw.routeType) throw new Error(`${where}: mode equals routeType, so the override does nothing`);
       if (typeof raw.reason !== 'string' || raw.reason.trim().length < 10) throw new Error(`${where}: reason is required`);
+      if (raw.labelOnly !== undefined && raw.labelOnly !== true) throw new Error(`${where}: labelOnly must be true when set`);
       const key = `${String(agency.slug)}|${raw.routeType}|${raw.routeShortName ?? ''}|${raw.routeLongName ?? ''}`;
       if (seen.has(key)) throw new Error(`${where}: duplicate override`);
       seen.add(key);
@@ -72,6 +89,7 @@ export function generateModeOverrides(agencies: Array<Record<string, unknown>>):
         ...(raw.routeLongName !== undefined ? { routeLongName: raw.routeLongName } : {}),
         mode: raw.mode,
         reason: raw.reason,
+        ...(raw.labelOnly ? { labelOnly: true } : {}),
       });
     }
   }

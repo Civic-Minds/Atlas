@@ -6,7 +6,7 @@ import {
   resolveAgencyIndexSeo,
   type AgencyIndexData,
 } from '../shared/agencyIndex';
-import { agencyPagePath } from '../shared/agencyPages';
+import { agencyPagePath, fitAgencyName } from '../shared/agencyPages';
 import { areaPagePath } from '../shared/areas';
 import { ATLAS_MODE, FEATURES } from '../shared/config';
 import { plural } from '../shared/overflowText';
@@ -41,6 +41,12 @@ const INDEX_COLUMNS = 'sm:columns-2 lg:columns-3 sm:gap-x-8';
 
 /** Beta only: agencies with 10+ years of schedule history, from the small list build-history writes. */
 const HISTORY_SLUGS: ReadonlySet<string> = new Set((historyAgencies as HistoryAgencyList).slugs);
+
+/**
+ * A tagged row's column fits about this many characters of name beside "· 81 routes History" at desktop widths;
+ * longer names show their short name instead (CIV-967).
+ */
+const TAGGED_NAME_MAX_CHARS = 24;
 
 /** Beta-only "Live" / "History" tags after an agency's route count, tight around the word (CIV-967). */
 function AgencyTags({ live, history }: { live: boolean; history: boolean }) {
@@ -106,10 +112,12 @@ export default function AgenciesIndexPage({ data: dataProp }: { data?: AgencyInd
                       const live = FEATURES.live && isLiveEligibleSlug(a.slug);
                       const history = FEATURES.history && HISTORY_SLUGS.has(a.slug);
                       if (live || history) {
-                        // Tagged rows stay on one line: a long name shortens with "…" instead of wrapping.
+                        // Tagged rows stay on one line: a name too long for the column shows its short name ("CDTA"), with
+                        // the full name on hover (CIV-967); one still too long shortens with "…".
+                        const { text, title } = fitAgencyName(a.name, a.shortName, TAGGED_NAME_MAX_CHARS);
                         return (
                           <li key={a.slug} className="flex min-w-0 items-baseline break-inside-avoid py-[3px]">
-                            <a className={`${LINK} min-w-0 truncate underline underline-offset-2`} href={agencyPagePath(a.slug)} title={a.name}>{a.name}</a>
+                            <a className={`${LINK} min-w-0 truncate underline underline-offset-2`} href={agencyPagePath(a.slug)} title={title ?? a.name}>{text}</a>
                             <span className="shrink-0 whitespace-nowrap">{routes}<AgencyTags live={live} history={history} /></span>
                           </li>
                         );

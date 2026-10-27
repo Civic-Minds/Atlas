@@ -11,6 +11,7 @@ import { useHistoryMapOverlay } from '../../context/HistoryMapOverlay';
 import { useLiveVehiclesMapOverlay } from '../../context/LiveVehiclesMapOverlay';
 import { useHistoryLayer } from './map/useHistoryLayer';
 import { addMapLayers } from './map/mapLayers';
+import { topMapHit } from './map/mapHitTargets';
 import { resetRoutesLayerDefaultPaint as resetRouteLayersPaint, localRouteHeadwayColor } from './map/routeStyle';
 import { useRouteStyling } from './map/useRouteStyling';
 import { useSelectionFraming } from './map/useSelectionFraming';
@@ -22,7 +23,7 @@ import type { Agency } from '../../App';
 import type { ShapeProperties, ViewportBounds, TimePeriod, HoveredBranch } from '../../hooks/useIntervalStats';
 import type { DayType } from '../../../shared/dayTypes';
 import { registerProtocol, getMapStyle, getActiveDataRelease } from '../../lib/mapStyle';
-import { Z_PANEL, MAP_BADGE } from '../../styles';
+import { MAP_CONTROLS_SLOT, MAP_NOTICE_SLOT, MAP_NOTICE_SLOT_RAISED, Z_PANEL, MAP_BADGE } from '../../styles';
 import { useColorVision } from '../../context/ColorVisionContext';
 import { useColorMode } from '../../hooks/useColorMode';
 import { routeFilterHeadway } from '../../../shared/routeHeadwayFilter';
@@ -49,6 +50,7 @@ import { markAtlasLatest } from '../../lib/performance';
 import { isOnDemandStopShown, isOnDemandZoneShown, localDateIn, onDemandHoursConfirmed, onDemandStopZoneNames } from '../../../shared/onDemandAvailability';
 import Panel from '../ui/Panel';
 import ListRow from '../ui/ListRow';
+import { drawnRouteLayers, queryDrawnRouteFeatures } from './map/drawnRoutes';
 
 // Keep the Live/Deck.gl graph out of public builds entirely when Live is disabled.
 const LiveVehiclesLayer = import.meta.env.VITE_LIVE_ENABLED === 'true'
@@ -115,7 +117,7 @@ function restoreSelectedRouteAfterExport(map: maplibregl.Map) {
 
 function MapNoticePill({ children, className = '', raised = false }: { children: React.ReactNode; className?: string; raised?: boolean }) {
   return (
-    <div className={`absolute ${raised ? 'bottom-16' : 'bottom-6'} left-6 right-24 sm:right-56 flex justify-center ${Z_PANEL} pointer-events-none`}>
+    <div className={`${raised ? MAP_NOTICE_SLOT_RAISED : MAP_NOTICE_SLOT} ${Z_PANEL} pointer-events-none`} data-map-overlay="notice">
       <div className={`${MAP_BADGE} h-8 max-sm:h-[32px] max-w-full ${className}`}>
         {children}
       </div>
@@ -382,14 +384,9 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     let routeShortName: string | null = null;
     let routeColor: string | null = null;
     if (map) {
-      const drawnLayers = ['overview-routes-layer', 'routes-layer', 'local-routes-layer', 'route-segments-layer', 'selected-route-layer', 'selected-local-route-layer', 'selected-route-segments-layer', 'night-service-routes-layer', 'frequent-service-routes-layer', 'frequency-qualifying-segments-layer']
-        .filter(layer => map.getLayer(layer) && map.getLayoutProperty(layer, 'visibility') !== 'none');
       // Only the part of the map that ends up in the image (exports crop to their own shape).
-      const features = drawnLayers.length > 0 ? map.queryRenderedFeatures(box, { layers: drawnLayers }) : [];
-      for (const feature of features) {
+      for (const feature of queryDrawnRouteFeatures(map, box)) {
         const paint = (feature.layer as { paint?: Record<string, unknown> }).paint ?? {};
-        const opacity = typeof paint['line-opacity'] === 'number' ? paint['line-opacity'] : 1;
-        if (opacity < 0.05) continue;
         const props = feature.properties as Record<string, unknown>;
         const agencySlug = typeof props.agencySlug === 'string' ? props.agencySlug : null;
         samples.push({
@@ -528,8 +525,9 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       setMapContextAgencies([]);
       return;
     }
-    const layers = ['overview-routes-layer', 'routes-layer', 'local-routes-layer'].filter(layer => map.getLayer(layer));
-    const features = layers.length > 0 ? map.queryRenderedFeatures(undefined, { layers }) : [];
+    // The same drawn routes the map export reads (map/drawnRoutes.ts), so the count always matches the lines.
+    const layers = drawnRouteLayers(map);
+    const features = queryDrawnRouteFeatures(map);
     const contextAgencies = getMapContextAgenciesFromFeatures(agencies, features);
     // The panel and its counts show distinct rider-visible lines; compare mode below keeps raw keys.
     if (showMapContext) setMapContextAgencies(dedupeMapContextByDisplay(contextAgencies));
@@ -771,9 +769,10 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         setSelectedAgencySlugRef.current?.(null);
       }
 
-      const stopHits = map.queryRenderedFeatures(e.point, { layers: ['stops-layer'] });
-      if (stopHits.length > 0) {
-        const props = stopHits[0].properties;
+      // One ordered rule picks what a click means: stop, then on-demand zone, then route (mapHitTargets.ts).
+      const hit = topMapHit(map, e.point);
+      if (hit?.kind === 'stop') {
+        const props = hit.features[0].properties;
         const compositeId = `${props.agencySlug}::${props.stopId}`;
         setSelectedRouteRef.current(null);
         setDisambiguationRoutesRef.current(null);
@@ -785,19 +784,9 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         return;
       }
 
-      const bbox: [maplibregl.PointLike, maplibregl.PointLike] = [
-        [e.point.x - 12, e.point.y - 12],
-        [e.point.x + 12, e.point.y + 12],
-      ];
-
-      // Service-area clicks take priority over route hitboxes. A route can cross a
-      // zone, but clicking inside the visible zone should open the on-demand agency
-      // rather than whichever route happens to be nearby.
-      const serviceAreaHitLayers = ['on-demand-service-area-fill', 'on-demand-service-area-line', 'on-demand-stop-points']
-        .filter(layerId => map.getLayer(layerId));
-      const serviceAreaHits = serviceAreaHitLayers.length > 0
-        ? map.queryRenderedFeatures(e.point, { layers: serviceAreaHitLayers })
-        : [];
+      // A route can cross a zone, but clicking inside the visible zone opens the on-demand service,
+      // not whichever route happens to be nearby.
+      const serviceAreaHits = hit?.kind === 'serviceArea' ? hit.features : [];
       const serviceAreaSlug = serviceAreaHits[0]?.properties?.agencySlug as string | undefined;
       if (serviceAreaSlug) {
         setSelectedRouteRef.current(null);
@@ -835,20 +824,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         return;
       }
 
-      const routeHitLayers = ['overview-routes-hit-layer', 'routes-hit-layer'];
-      if (map.getLayer('local-routes-hit-layer')) {
-        routeHitLayers.push('local-routes-hit-layer');
-      }
-      if (map.getLayer('night-service-routes-hit-layer')) {
-        routeHitLayers.push('night-service-routes-hit-layer');
-      }
-      if (map.getLayer('frequent-service-routes-hit-layer')) {
-        routeHitLayers.push('frequent-service-routes-hit-layer');
-      }
-      if (map.getLayer('frequency-qualifying-segments-hit-layer')) {
-        routeHitLayers.push('frequency-qualifying-segments-hit-layer');
-      }
-      const routeHits = map.queryRenderedFeatures(bbox, { layers: routeHitLayers });
+      const routeHits = hit?.kind === 'route' ? hit.features : [];
       if (routeHits.length > 0) {
         const props = routeHits[0].properties;
         const uniqueRouteKeys = dedupeRouteKeysByDisplay(routeHits.map((f: maplibregl.MapGeoJSONFeature) => {
@@ -1042,33 +1018,12 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     return () => { map.off('click', onClick); };
   }, [mapLoaded]);
 
-  // Pointer cursor over clickable stops/routes — same hit layers the click handler queries.
+  // Pointer cursor wherever a click does something: the click handler's own hit rule.
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !mapLoaded) return;
     const onMouseMove = (e: maplibregl.MapMouseEvent) => {
-      const stopHits = map.getLayer('stops-layer')
-        ? map.queryRenderedFeatures(e.point, { layers: ['stops-layer'] })
-        : [];
-      const routeHitLayers = ['overview-routes-hit-layer', 'routes-hit-layer'];
-      if (map.getLayer('local-routes-hit-layer')) {
-        routeHitLayers.push('local-routes-hit-layer');
-      }
-      if (map.getLayer('frequency-qualifying-segments-hit-layer')) {
-        routeHitLayers.push('frequency-qualifying-segments-hit-layer');
-      }
-      const routeHits = stopHits.length === 0 && (map.getLayer('overview-routes-hit-layer') || map.getLayer('routes-hit-layer') || map.getLayer('local-routes-hit-layer'))
-        ? map.queryRenderedFeatures(
-            [[e.point.x - 12, e.point.y - 12], [e.point.x + 12, e.point.y + 12]],
-            { layers: routeHitLayers },
-          )
-        : [];
-      const serviceAreaHitLayers = ['on-demand-service-area-fill', 'on-demand-stop-clusters', 'on-demand-stop-points']
-        .filter(layerId => Boolean(map.getLayer(layerId)));
-      const serviceAreaHits = serviceAreaHitLayers.length > 0
-        ? map.queryRenderedFeatures(e.point, { layers: serviceAreaHitLayers })
-        : [];
-      map.getCanvas().style.cursor = stopHits.length > 0 || routeHits.length > 0 || serviceAreaHits.length > 0 ? 'pointer' : '';
+      map.getCanvas().style.cursor = topMapHit(map, e.point) ? 'pointer' : '';
     };
     map.on('mousemove', onMouseMove);
     return () => {
@@ -1334,7 +1289,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       )}
 
       {/* Map controls — one stack keeps the gaps identical at every map size. */}
-      {showMapControls && <div className={`absolute bottom-6 right-3 max-sm:right-6 ${Z_PANEL} flex flex-col items-center gap-2 pointer-events-auto`}>
+      {showMapControls && <div className={`${MAP_CONTROLS_SLOT} ${Z_PANEL} flex flex-col items-center gap-2 pointer-events-auto`} data-map-overlay="controls">
         {exportEnabled && (
           <button
             onClick={() => setExportDialogOpen(true)}

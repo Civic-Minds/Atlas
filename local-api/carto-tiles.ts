@@ -1,3 +1,8 @@
+/**
+ * Local dev only (CIV-980): localhost is not on the public basemap key's host list, so `npm run dev` loads CARTO tiles
+ * through this route with the server key. It lives in local-api/, so it never deploys: production browsers load tiles
+ * straight from CARTO (src/lib/basemap.ts), as CARTO's terms require.
+ */
 const CARTO_HOSTS = ['a', 'b', 'c', 'd'] as const;
 const CARTO_STYLES = new Set(['light_all', 'dark_all']);
 // Browsers keep a good tile for 7 days (short enough to recover if CARTO relabels its watermark tile);

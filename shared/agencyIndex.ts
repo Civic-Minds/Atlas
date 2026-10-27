@@ -2,7 +2,7 @@
  * The /agencies index: every area and agency page in one place. Built from the same summaries as the pages
  * themselves; nothing new is measured.
  */
-import { agencyPagePath, type AgencyPageSummary } from './agencyPages';
+import { agencyPagePath, agencyShortLabel, type AgencyPageSummary } from './agencyPages';
 import { areaAgencySummaries } from './areaPages';
 import { areaRegionTitle, areaShortName } from './areaRegions';
 import { areaPagePath, type AreaConfig } from './areas';
@@ -28,6 +28,8 @@ export function agencyIndexRegionHref(a: { country?: string; region?: string }):
 export interface AgencyIndexAgency {
   slug: string;
   name: string;
+  /** The name without its bracketed city ("CDTA"), for a row too tight for the full name. */
+  shortName: string;
   routes: number;
 }
 
@@ -58,7 +60,7 @@ export function buildAgencyIndexData(
     const country = a.country ?? OTHER;
     const region = a.country && a.region ? a.region : OTHER;
     const regions = tree.get(country) ?? tree.set(country, new Map()).get(country)!;
-    (regions.get(region) ?? regions.set(region, []).get(region)!).push({ slug: a.slug, name: a.name, routes: a.routeCount });
+    (regions.get(region) ?? regions.set(region, []).get(region)!).push({ slug: a.slug, name: a.name, shortName: agencyShortLabel(a), routes: a.routeCount });
   }
   const last = (x: string, y: string) => (x === OTHER ? 1 : 0) - (y === OTHER ? 1 : 0) || byName(x, y);
   const groups = [...tree.entries()].sort(([x], [y]) => last(x, y)).map(([country, regions]) => ({

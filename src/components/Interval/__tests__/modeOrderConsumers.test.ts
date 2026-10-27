@@ -6,6 +6,9 @@ import { buildAgencyRouteFilters } from '../AgencyCard';
 import { buildRouteModeFilters } from '../../../utils/routeModeFilters';
 import { AVAILABLE_FILTER_MODES } from '../../../utils/shareUrlState';
 
+// The label is not under test here.
+const NO_LABEL = { primary: '', secondary: undefined, text: '' };
+
 // One shared definition of mode order and labels; every place that lists modes must follow it (#827).
 const EXPECTED_ORDER = ['Subway/Metro', 'Light rail', 'Streetcar', 'Commuter rail', 'Monorail', 'People mover', 'Bus', 'Trolleybus', 'Ferry', 'Cable car', 'Gondola/aerial tram', 'Funicular', 'On-demand'];
 const SHUFFLED = [3, 2, 100, 6, 4, 1, 0];
@@ -43,11 +46,12 @@ describe('shared mode order and labels', () => {
     const all = new Map([summary('a', [3, 100, 6]), summary('b', [2, 1, 4, 0])].map(a => [a.slug, a as never] as const));
     const d = buildAreaPageData(area, all, null);
     expect(d.byMode.map(m => m.label)).toEqual(['Subway/Metro', 'Light rail', 'Streetcar', 'Commuter rail', 'Bus', 'Ferry', 'Gondola/aerial tram']);
-    expect(d.modeColumns).toEqual(d.byMode.map(m => m.label));
+    // Table columns group rarer modes into Other (CIV-973: 7 columns, gondola goes in Other).
+    expect(d.modeColumns).toEqual(['Subway/Metro', 'Light rail', 'Streetcar', 'Commuter rail', 'Bus', 'Ferry', 'Other']);
   });
 
   it('the agency card and history route chips follow it', () => {
-    const rows = SHUFFLED.map(routeType => ({ routeId: String(routeType), agencySlug: 'x', shortName: String(routeType), longName: null, headway: 10, limited: false, tier: '10', routeType, busSubType: undefined, matchesFilter: true }));
+    const rows = SHUFFLED.map(routeType => ({ label: NO_LABEL, routeId: String(routeType), agencySlug: 'x', shortName: String(routeType), longName: null, headway: 10, limited: false, tier: '10', routeType, busSubType: undefined, matchesFilter: true }));
     const card = buildAgencyRouteFilters(rows).map(c => c.label);
     expect(ascending(inOrder(card))).toBe(true);
     expect(card).not.toContain('Bus');

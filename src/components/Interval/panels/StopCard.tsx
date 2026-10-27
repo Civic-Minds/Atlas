@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { CardBackLink } from '../../CardBack';
-import { stopNameCase, titleCase, routeLabels } from '../../../utils/format';
+import { stopNameCase, routeLabels } from '../../../utils/format';
 import type { HoveredBranch, TimePeriod } from '../../../hooks/useIntervalStats';
 import {
   AgencyFilterChips,
@@ -14,40 +14,22 @@ import {
   FlaggableValue,
   type CardReportButtonHandle,
 } from '../cardUi';
-import { currentAtlasUrl } from '../../../utils/reportIssue';
-import StopRouteGroup, { stopRouteBestHeadway } from './StopRouteGroup';
+import { reportDetails } from '../../../utils/reportIssue';
+import StopRouteGroup from './StopRouteGroup';
+import { stopRouteBestHeadway, type StopRoute } from '../../../utils/stopRoutes';
 import LiveStopArrivals from './LiveStopArrivals';
 import type { HeadwayMetric } from '../../../utils/routeFacts';
 import { compareHeadwayThenNumber } from '../../../utils/sortCompare';
+import type { RouteLabel } from '../../../utils/routeFacts';
 
-export interface StopBranch {
-  rKey: string;
-  headsign: string | null;
-  /** The route's departures at the stop, pooled across its patterns where they share it (CIV-82). */
-  service: HeadwayMetric;
-  /** The destination row's value (CIV-918): the branch's own, as on its route card row. */
-  rowHeadway?: number | null;
-  directionId: number;
-  /** #934: part-period wording shown in place of a number, as on the route card's row. */
-  periodText?: string;
-}
-
-export interface StopRoute {
-  shortName: string;
-  /** The short name the label shows; blank when the feed has none but has a long name (#1099). Defaults to shortName. */
-  labelShortName?: string;
-  longName: string;
-  agencyName: string;
-  agencySlug?: string;
-  routeType?: number;
-  branches: StopBranch[];
-}
+// The stop card's route and branch shapes live with the code that builds them (CIV-997).
+export type { StopBranch, StopRoute } from '../../../utils/stopRoutes';
 
 export interface NearbyConnection {
   rKey: string;
   routeShortName: string;
-  /** The short name the label shows (#1099). Defaults to routeShortName. */
-  routeLabelShortName?: string;
+  /** What the row shows (route facts' label, CIV-984); the short name is only the route's identity. */
+  label: RouteLabel;
   routeLongName: string;
   agencyName: string;
   agencySlug?: string;
@@ -131,7 +113,7 @@ export const StopCard: React.FC<StopCardProps> = ({
               <FlaggableValue reason="Stop is missing, misplaced, or assigned incorrectly" reportRef={reportRef} className="block w-full text-left">
                 <SidebarCardHeader
                   eyebrow={back?.namesAgency || back?.to === stopAgencies[0] ? null : stopAgencies[0]}
-                  title={`${titleCase(currentStop.stopName)}${currentStop.direction ? ` — ${currentStop.direction}` : ''}`}
+                  title={`${stopNameCase(currentStop.stopName)}${currentStop.direction ? ` — ${currentStop.direction}` : ''}`}
                   titleClamp
                 />
               </FlaggableValue>
@@ -144,7 +126,7 @@ export const StopCard: React.FC<StopCardProps> = ({
                 />
                 <FlaggableValue reason="Stop is missing, misplaced, or assigned incorrectly" reportRef={reportRef} className="block w-full text-left">
                   <SidebarCardHeader
-                    title={`${titleCase(currentStop.stopName)}${currentStop.direction ? ` — ${currentStop.direction}` : ''}`}
+                    title={`${stopNameCase(currentStop.stopName)}${currentStop.direction ? ` — ${currentStop.direction}` : ''}`}
                     titleClamp
                   />
                 </FlaggableValue>
@@ -153,8 +135,12 @@ export const StopCard: React.FC<StopCardProps> = ({
           </div>
           <CardReportButton
             ref={reportRef}
-            title={`Stop issue: ${titleCase(currentStop.stopName)}`}
-            details={`**Stop:** ${titleCase(currentStop.stopName)}${currentStop.direction ? ` — ${currentStop.direction}` : ''}\n**Agencies:** ${stopAgencies.join(', ') || 'Unknown'}\n**Period:** ${period}\n**Atlas URL:** ${currentAtlasUrl()}`}
+            title={`Stop issue: ${stopNameCase(currentStop.stopName)}`}
+            details={reportDetails([
+              ['Stop', `${stopNameCase(currentStop.stopName)}${currentStop.direction ? ` — ${currentStop.direction}` : ''}`],
+              ['Agencies', stopAgencies.join(', ') || 'Unknown'],
+              ['Period', period],
+            ])}
             showLiveReason={!!liveStop}
             excludeReasons={['Route line is missing or follows the wrong path']}
           />
@@ -168,7 +154,7 @@ export const StopCard: React.FC<StopCardProps> = ({
           <StopRouteGroup
             key={route.shortName}
             shortName={route.shortName}
-            labelShortName={route.labelShortName}
+            label={route.label}
             longName={route.longName}
             agencyName={route.agencyName}
             agencySlug={route.agencySlug}
@@ -185,8 +171,7 @@ export const StopCard: React.FC<StopCardProps> = ({
 
       {nearbyConnections.length > 0 && (
         <SidebarCardSection label="Nearby routes">
-          {nearbyConnections.map(({ rKey, routeShortName, routeLabelShortName, routeLongName, agencyName, agencySlug, routeType, headway, nearestStopName, distanceMeters }) => {
-            const route = routeLabels({ shortName: routeLabelShortName ?? routeShortName, longName: routeLongName, routeType, agencySlug, agencyName });
+          {nearbyConnections.map(({ rKey, label: route, agencyName, agencySlug, headway, nearestStopName, distanceMeters }) => {
             return (
               <CardDirectionRow
                 key={rKey}

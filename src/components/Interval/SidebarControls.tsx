@@ -1,12 +1,11 @@
 import { searchAreas, type AreaSearchResult } from '../../../shared/areaSearch';
 import React, { useMemo, useRef, useEffect, useCallback, useState } from 'react';
-import { getTierColor } from '../../utils/colors';
 import { useColorMode } from '../../hooks/useColorMode';
 import type { ShapeProperties, TimePeriod, DayType, HoveredBranch, ViewportBounds } from '../../hooks/useIntervalStats';
 import type { Agency } from '../../App';
 import { findVariantFamily } from '../../utils/routeVariants';
-import { agencyDisplayParts, placeAlreadyInName, routeLabels, shortenAgencyName, searchOverlayHidesPanel, comparePanelTop } from '../../utils/format';
-import { partPeriodText, routeListDisplay, type RouteListDisplay } from '../../utils/effectiveHeadway';
+import { routeLabels, searchOverlayHidesPanel, comparePanelTop, agencyNames } from '../../utils/format';
+import { routeListDisplay, type RouteListDisplay } from '../../utils/effectiveHeadway';
 import { combineSuggestedRouteNames, suggestedRouteGroupKey } from '../../utils/routeSuggestion';
 import { buildDirectionGroups, routeDirectionOverrides } from '../../utils/routeCardDirectionGroups';
 import { searchAgencyGroups, prepareAgencyGroupsForDisplay, SEARCH_AGENCY_DISPLAY_LIMIT } from '../../utils/agencySearch';
@@ -30,22 +29,21 @@ import { RouteCardHeadway } from './panels/RouteCardHeadway';
 import type { OpenInfoFn } from '../InfoPanel';
 import { SearchSuggestionsPanel } from './SearchSuggestionsPanel';
 import { SearchResultsList } from './SearchResultsList';
-import { branchDisplayPeriodHeadway, buildRouteFacts, buildRouteStopMetric, metricValueForPeriod } from '../../utils/routeFacts';
-import { buildSharedStopIndex } from '../../../shared/sharedStops';
+import { branchDisplayPeriodHeadway, buildRouteFacts, labelShortNameOf, type RouteLabel } from '../../utils/routeFacts';
 import { collectStopHubSiblings, getDistanceMeters } from '../../utils/stopHub';
 import { splitRouteKey } from '../../utils/routeKey';
-import { isFeedExpired } from '../../utils/feedFreshness';
-import { effectiveFeedExpiry } from '../../../shared/feedAvailability';
+import { effectiveFeedExpiry, isAgencyFeedExpired } from '../../../shared/feedAvailability';
 import { trackEvent } from '../../lib/analytics';
 import type { CompareRouteRow } from './compareTypes';
 import { FEATURES } from '../../../shared/config';
 import { PHONE_MEDIA_QUERY, useMediaQuery } from '../../hooks/useMediaQuery';
-import { hasRegularServiceInPeriod } from '../../utils/stretchCard';
+import { buildStopRoutes } from '../../utils/stopRoutes';
 import { compareAgencyName, compareHeadwayThenNumber, compareRouteNumber } from '../../utils/sortCompare';
 import { SIDEBAR_CARD_BODY } from './cardUi';
 import { useRecentSearches } from '../../hooks/useRecentSearches';
 import { useFadePresence } from '../../hooks/useFadePresence';
 import { bottomSheetFrameClass, BottomSheetHandle, bottomSheetBodyClass, useBottomSheet } from '../ui/BottomSheet';
+import { chooserRouteRow } from '../../utils/chooserRoutes';
 
 interface SidebarControlsProps {
   query: string;
@@ -233,18 +231,18 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     if (feat) {
       const facts = buildRouteFacts(feat.properties as ShapeProperties, slug);
       const shortName = facts.shortName;
-      const labelShortName = facts.labelShortName;
+      const label = facts.label;
       const longName = facts.longName || '';
-      const agencyName = shortenAgencyName(facts.agencyName);
+      const agencyName = agencyNames(facts.agencyName).name;
 
       try {
         const recentsRaw = localStorage.getItem('atlas_recently_viewed_routes');
-        const recents: Array<{ key: string; shortName: string; labelShortName?: string; longName: string; agencyName: string; routeType?: number }> = recentsRaw ? JSON.parse(recentsRaw) : [];
+        const recents: Array<{ key: string; shortName: string; label?: RouteLabel; longName: string; agencyName: string; routeType?: number }> = recentsRaw ? JSON.parse(recentsRaw) : [];
         const filtered = recents.filter(r => r.key !== selectedRoute);
         filtered.unshift({
           key: selectedRoute,
           shortName,
-          labelShortName,
+          label,
           longName,
           agencyName,
           routeType: facts.routeType,
@@ -263,7 +261,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   // quadratic in route features and reran on every layer update (froze Live zooming, CIV-218).
   const notableRoutes = useMemo(() => {
     if (!searchFocused) return [];
-    const routes = new Map<string, { key: string; shortName: string; labelShortName?: string; longNames: string[]; agencyName: string; routeType?: number; headway: number; limited: boolean; noRegular?: boolean; sharedHeadway?: number }>();
+    const routes = new Map<string, { key: string; shortName: string; labelShortName: string; agencySlug: string; longNames: string[]; agencyName: string; routeType?: number; headway: number; limited: boolean; noRegular?: boolean; sharedHeadway?: number }>();
     for (const [slug, fc] of Object.entries(nonCorridorLayers)) {
       if (!fc?.features) continue;
       for (const f of fc.features) {
@@ -286,10 +284,10 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         const sharedHeadway = display.sharedHeadway;
         const shortName = facts.shortName;
         const longName = facts.longName || '';
-        const agencyName = shortenAgencyName(facts.agencyName);
+        const agencyName = agencyNames(facts.agencyName).name;
         const existing = routes.get(groupKey);
         if (!existing) {
-          routes.set(groupKey, { key: facts.key, shortName: slug === 'bart' ? suggestedRouteGroupKey(slug, shortName) : shortName, labelShortName: slug === 'bart' ? undefined : facts.labelShortName, longNames: longName ? [longName] : [], agencyName, routeType: facts.routeType, headway, limited, noRegular, sharedHeadway });
+          routes.set(groupKey, { key: facts.key, shortName: slug === 'bart' ? suggestedRouteGroupKey(slug, shortName) : shortName, labelShortName: slug === 'bart' ? suggestedRouteGroupKey(slug, shortName) : labelShortNameOf(p), agencySlug: slug, longNames: longName ? [longName] : [], agencyName, routeType: facts.routeType, headway, limited, noRegular, sharedHeadway });
         } else {
           if (longName && !existing.longNames.includes(longName)) existing.longNames.push(longName);
           if (headway < existing.headway) {
@@ -302,7 +300,11 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       }
     }
     return [...routes.values()]
-      .map(route => ({ ...route, longName: combineSuggestedRouteNames(route.longNames) ?? '' }))
+      // The label is built here, once the group's long names are combined; the row keeps only its identity and label.
+      .map(({ labelShortName, ...route }) => {
+        const longName = combineSuggestedRouteNames(route.longNames) ?? '';
+        return { ...route, longName, label: routeLabels({ shortName: labelShortName, longName, routeType: route.routeType, agencySlug: route.agencySlug, agencyName: route.agencyName }) };
+      })
       .sort(compareHeadwayThenNumber)
       .slice(0, 5);
   }, [nonCorridorLayers, period, currentDay, searchFocused]);
@@ -391,7 +393,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       ...first,
       agencySlug: slug,
       routeShortName: firstFacts.shortName,
-      routeLabelShortName: firstFacts.labelShortName,
+      label: firstFacts.label,
       routeLongName: firstFacts.longName,
       directions,
       features,
@@ -417,9 +419,11 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
 
   // Group directions by directionId so outbound/inbound are visually separated,
   // and collapse multiple span patterns in the same group into one row.
+  // The Night view's route card ignores the map's period (CIV-934): its rows are the route's own, read at night.
+  const cardPeriod: TimePeriod = nightServiceView ? 'all' : period;
   const directionGroups = useMemo(
-    () => buildDirectionGroups(currentRoute, period, directionLabelOverrides, directionHeadsigns),
-    [currentRoute, directionLabelOverrides, directionHeadsigns, period],
+    () => buildDirectionGroups(currentRoute, cardPeriod, directionLabelOverrides, directionHeadsigns),
+    [currentRoute, directionLabelOverrides, directionHeadsigns, cardPeriod],
   );
 
   const currentStop = useMemo(() => {
@@ -493,99 +497,16 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     };
   }, [selectedStop, nonCorridorLayers]);
 
-  const stopRoutes = useMemo(() => {
-    if (!currentStop) return [];
-    const siblingIdsByAgency = currentStop.siblingIdsByAgency || {};
-
-    const routeMap = new Map<string, { shortName: string; labelShortName: string; longName: string; agencyName: string; agencySlug: string; routeType?: number; branches: Map<string, Branch> }>();
-    type Branch = { rKey: string; headsign: string | null; service: ReturnType<typeof buildRouteStopMetric>; rowHeadway: number | null; directionId: number; periodText?: string };
-    // Pooled values at shared stops (CIV-82), so the stop card agrees with the map and route card.
-    const sharedIndexBySlug = new Map(Object.entries(nonCorridorLayers).map(([slug, fc]) => [slug, buildSharedStopIndex(fc.features)]));
-
-    const routesByAgency = currentStop.routesByAgency || {};
-
-    for (const [slug, fc] of Object.entries(nonCorridorLayers)) {
-      const siblingIds = siblingIdsByAgency[slug] || new Set<string>();
-      if (siblingIds.size === 0) continue;
-
-      // Get all routeIds served by any sibling stop in this agency directly from currentStop.routesByAgency
-      const routeIds = routesByAgency[slug] || new Set<string>();
-
-      for (const f of fc.features) {
-        const p = f.properties as unknown as ShapeProperties;
-        if (!p.routeId || !routeIds.has(p.routeId)) continue;
-        if (p.day !== undefined && p.day !== currentDay) continue;
-        // #934: a direction the route only runs on one side of the period shows the route card's
-        // words ("until 9:37am, every 12 min") instead of a cadence, at a stop its shape serves.
-        const periodText = partPeriodText(p, period);
-        // No cadence at the stop for a period the route card says has no regular service (#750).
-        if (!periodText && !hasRegularServiceInPeriod(p, period)) continue;
-
-        // Only include features whose shape actually covers any of the sibling stops.
-        let stopHw: number | undefined = undefined;
-        let matchingStopId: string | undefined = undefined;
-        for (const sId of siblingIds) {
-          const service = buildRouteStopMetric(p, sId, sharedIndexBySlug.get(slug));
-          const hw = metricValueForPeriod(service, period);
-          if (hw != null || (periodText && p.stopHeadways?.[sId] != null)) {
-            stopHw = hw ?? undefined;
-            matchingStopId = sId;
-            break; // Use the first matching sibling stop ID that this route serves
-          }
-        }
-        if ((stopHw == null && !periodText) || !matchingStopId) continue;
-
-        const dirId = (p as any).directionId ?? 0;
-        const facts = buildRouteFacts(p, slug);
-        const routeShortName = facts.shortName;
-        if (!routeMap.has(routeShortName)) {
-          routeMap.set(routeShortName, {
-            shortName: routeShortName,
-            labelShortName: facts.labelShortName,
-            longName: facts.longName || '',
-            agencyName: shortenAgencyName(facts.agencyName),
-            agencySlug: slug,
-            routeType: facts.routeType,
-            branches: new Map(),
-          });
-        }
-        const entry = routeMap.get(routeShortName)!;
-        const branchKey = `${dirId}::${p.headsign ?? ''}`;
-        // Prefer stop-specific headway over feature headway; keep the best (lowest) when deduping.
-        const service = buildRouteStopMetric(p, matchingStopId, sharedIndexBySlug.get(slug));
-        const newHeadway = service.value ?? p.headway ?? null;
-        const existing = entry.branches.get(branchKey);
-        if (!existing || (newHeadway != null && (existing.service.value == null || newHeadway < existing.service.value))) {
-          entry.branches.set(branchKey, {
-            rKey: facts.key,
-            headsign: p.headsign ?? null,
-            service: service.value == null && p.headway != null && !periodText
-              ? { ...service, value: p.headway, provenance: 'all-day-summary' }
-              : service,
-            // A destination row says how often that destination comes (CIV-918): the branch's own value, the
-            // same number its row on the route card shows. The stop's value counts every trip of the
-            // direction (504A and 504B together at King and Bay), so it would overstate a destination.
-            rowHeadway: branchDisplayPeriodHeadway(p, period),
-            directionId: dirId,
-            ...(periodText ? { periodText } : {}),
-          });
-        }
-      }
-    }
-    return Array.from(routeMap.entries())
-      .sort(([a], [b]) => compareRouteNumber(a, b))
-      .map(([, v]) => ({
-        shortName: v.shortName,
-        labelShortName: v.labelShortName,
-        longName: v.longName,
-        agencyName: v.agencyName,
-        agencySlug: v.agencySlug,
-        routeType: v.routeType,
-        branches: Array.from(v.branches.values())
-          .sort((a, b) => a.directionId - b.directionId || (a.service.value ?? Infinity) - (b.service.value ?? Infinity))
-          .map(b => ({ rKey: b.rKey, headsign: b.headsign, service: b.service, rowHeadway: b.rowHeadway, directionId: b.directionId, ...(b.periodText ? { periodText: b.periodText } : {}) })),
-      }));
-  }, [currentStop, nonCorridorLayers, currentDay, period]);
+  // The stop card's routes and destination rows, built in one tested place (utils/stopRoutes.ts, CIV-997).
+  const stopRoutes = useMemo(() => (currentStop
+    ? buildStopRoutes({
+      siblingIdsByAgency: currentStop.siblingIdsByAgency || {},
+      routesByAgency: currentStop.routesByAgency || {},
+      layers: nonCorridorLayers,
+      day: currentDay,
+      period,
+    })
+    : []), [currentStop, nonCorridorLayers, currentDay, period]);
 
   const stopAgencies = useMemo(() => {
     const seen = new Set<string>();
@@ -608,7 +529,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     type TransferEntry = {
       rKey: string;
       routeShortName: string;
-      routeLabelShortName: string;
+      label: RouteLabel;
       routeLongName: string;
       agencyName: string;
       agencySlug: string;
@@ -660,9 +581,9 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
           seen.set(mapKey, {
             rKey: facts.key,
             routeShortName: facts.shortName,
-            routeLabelShortName: facts.labelShortName,
+            label: facts.label,
             routeLongName: facts.longName || '',
-            agencyName: shortenAgencyName(facts.agencyName),
+            agencyName: agencyNames(facts.agencyName).name,
             agencySlug: slug,
             routeType: facts.routeType,
             headway: null,
@@ -701,25 +622,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   const disambigDetails = useMemo(() => {
     if (!disambiguationRoutes) return null;
     const details = disambiguationRoutes
-      .map(key => {
-        for (const [slug, fc] of Object.entries(nonCorridorLayers)) {
-          const f = fc.features.find(feat => {
-            const p = feat.properties as any;
-            return buildRouteFacts(p, slug).key === key;
-          });
-          if (f) {
-            const p = f.properties as any;
-            const facts = buildRouteFacts(p, slug);
-            const agency = agencies.find(a => a.slug === slug);
-            const agencyName = shortenAgencyName(facts.agencyName);
-            // The place beside the agency's name in the chooser's heading, unless the name already says it (CIV-971).
-            const place = agency ? agencyDisplayParts(agency.name, agency.cities, agency.displayArea).secondary : undefined;
-            const agencyPlace = place && !placeAlreadyInName(agencyName, place) ? place : undefined;
-            return { key: facts.key, shortName: facts.shortName, labelShortName: facts.labelShortName, longName: facts.longName ?? '', agencyName, agencyPlace, agencySlug: slug, routeType: facts.routeType, color: getTierColor(p.tier, colorMode) };
-          }
-        }
-        return { key, shortName: key, longName: '', agencyName: '', agencySlug: undefined as string | undefined, routeType: undefined as number | undefined, color: 'var(--text-dim)' };
-      })
+      .map(key => chooserRouteRow(key, nonCorridorLayers, agencies, colorMode))
       .filter((route, index, routes) => {
         const displayKey = `${route.agencyName.trim().toLowerCase()}::${routeLabels({ shortName: route.shortName, longName: route.longName, routeType: route.routeType, agencySlug: route.agencySlug, agencyName: route.agencyName }).text.trim().toLowerCase().replace(/\s+/g, ' ')}`;
         return routes.findIndex(candidate => {
@@ -883,7 +786,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       : undefined;
   const routeAgency = routeSlug ? agencies.find(a => a.slug === routeSlug) : undefined;
   const routeIsStale = (() => {
-    return isFeedExpired(routeAgency ? effectiveFeedExpiry(routeAgency) : null);
+    return routeAgency ? isAgencyFeedExpired(routeAgency) : false;
   })();
   const expDateStr = (() => {
     const exp = routeAgency ? effectiveFeedExpiry(routeAgency) : null;
@@ -968,13 +871,14 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                   setSelectedRoute={setSelectedRoute}
                   back={routeBack}
                   maxHeadway={maxHeadway}
-                  period={period}
+                  period={cardPeriod}
                   setPeriod={setPeriod}
                   directionGroups={directionGroups}
                   hideSpan={hideSpan}
                   routeIsStale={routeIsStale}
                   selectedRouteOutOfFilter={selectedRouteOutOfFilter}
                   hideFilterNotices={nightServiceView}
+                  nightView={nightServiceView}
                   compareRows={compareRows}
                   expDateStr={expDateStr}
                   hoveredBranch={hoveredBranch}

@@ -67,9 +67,22 @@ export interface ModeOverride {
   routeLongName?: string;
   mode: number;
   reason: string;
+  /**
+   * The site shows `mode`, but the pipeline keeps reading the route by its published type. For a correction whose
+   * pipeline effect is not ready yet: CapMetro 550 reads as commuter rail, while rail processing waits on #1138.
+   */
+  labelOnly?: boolean;
 }
 
-export const MODE_OVERRIDES: readonly ModeOverride[] = (modeOverrideData as { overrides: ModeOverride[] }).overrides;
+/**
+ * The listed overrides, with their names trimmed once here. The app (findModeOverride) and the map expression then both
+ * compare a route's names to these exactly, so they always pick the same routes (#1132); a map expression cannot trim.
+ */
+export const MODE_OVERRIDES: readonly ModeOverride[] = (modeOverrideData as { overrides: ModeOverride[] }).overrides.map(o => ({
+  ...o,
+  ...(o.routeShortName !== undefined ? { routeShortName: o.routeShortName.trim() } : {}),
+  ...(o.routeLongName !== undefined ? { routeLongName: o.routeLongName.trim() } : {}),
+}));
 
 const OVERRIDES_BY_AGENCY = new Map<string, ModeOverride[]>();
 for (const o of MODE_OVERRIDES) {
@@ -83,8 +96,9 @@ export function findModeOverride(p: EffectiveModeInput): ModeOverride | undefine
   const list = p.agencySlug ? OVERRIDES_BY_AGENCY.get(p.agencySlug) : undefined;
   if (!list) return undefined;
   const rt = normalizeRouteType(p.routeType);
-  const shortName = (p.routeShortName ?? '').trim();
-  const longName = (p.routeLongName ?? '').trim();
+  // Compared exactly, as the map expression does (#1132): it cannot trim, so trimming here would match routes the map misses.
+  const shortName = p.routeShortName ?? '';
+  const longName = p.routeLongName ?? '';
   return list.find(o => o.routeType === rt
     && (o.routeShortName === undefined || o.routeShortName === shortName)
     && (o.routeLongName === undefined || o.routeLongName === longName));
@@ -156,13 +170,19 @@ export function isVirtualLrt(p: EffectiveModeInput): boolean {
 
 /** True for subway, commuter rail, monorail, and explicitly identified LRT routes. */
 export function isRailLikeRoute(p: EffectiveModeInput): boolean {
-  const mode = effectiveMode(p);
+  // Rail-like decides pipeline processing only, so a label-only correction is skipped here.
+  const mode = findModeOverride(p)?.labelOnly ? publishedMode(p) : effectiveMode(p);
   return mode === 1 || mode === 2 || mode === 12 || mode === VIRTUAL_LRT_MODE;
 }
 
 export function effectiveMode(p: EffectiveModeInput): number {
   const override = findModeOverride(p);
   if (override) return override.mode;
+  return publishedMode(p);
+}
+
+/** The mode before any listed per-route correction. */
+function publishedMode(p: EffectiveModeInput): number {
   const rt = normalizeRouteType(p.routeType);
   return isVirtualLrt(p) ? VIRTUAL_LRT_MODE : rt;
 }

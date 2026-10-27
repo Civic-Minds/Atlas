@@ -9,14 +9,13 @@ import AgencyName from './ui/AgencyName';
 import { LIVE_POLLING_ROUTES, liveCoverageForRouteNames, type LiveCoverage } from '../../shared/livePollingConfig';
 import { R2_PUBLIC_URL, FEATURES as BASE_FEATURES } from '../../shared/config';
 import { PHONE_MEDIA_QUERY, phoneModeFlags, useMediaQuery } from '../hooks/useMediaQuery';
-import { agencyDisplayParts, formatStoredDate, routeLabelCase } from '../utils/format';
+import { formatStoredDate, routeLabelCase, agencyListParts } from '../utils/format';
 import { feedRefreshCountdownLabel, type FeedRefreshMeta } from '../../shared/feedRefresh';
 import { agencyQualifiesForHistory, agencyQualifiesForHistoryExplore } from '../../shared/historyEligibility';
 import { countriesForAgencies } from '../../shared/regionCountry';
 import { countOf, joinList } from '../../shared/overflowText';
 import type { Agency } from '../App';
-import { isFeedExpired } from '../utils/feedFreshness';
-import { effectiveFeedExpiry } from '../../shared/feedAvailability';
+import { isAgencyFeedExpired } from '../../shared/feedAvailability';
 import { trackEvent } from '../lib/analytics';
 import { OutboundLink } from './OutboundLink';
 import { EXPIRED_FEED_CADENCE, EXPIRED_FEED_CONTEXT, EXPIRED_FEED_EXPLANATION, MANUAL_FEED_CONTEXT, NO_ROUTE_SHAPE_DETAIL, NO_ROUTE_SHAPE_EXPLANATION, expiredFeedCheckHistory, expiredFeedNotice } from '../content/noticeCopy';
@@ -218,7 +217,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
       if (agencyFeatureFilters.size > 0 && ![...agencyFeatureFilters].some(filter =>
         (filter === 'live' && liveBySlug.has(a.slug))
         || (filter === 'history' && historyBySlug.has(a.slug))
-        || (filter === 'outdated' && isFeedExpired(effectiveFeedExpiry(a)))
+        || (filter === 'outdated' && isAgencyFeedExpired(a))
       )) continue;
       seen.add(a.region ?? 'Other');
     }
@@ -237,7 +236,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
       if (agencyFeatureFilters.size > 0 && ![...agencyFeatureFilters].some(filter =>
         (filter === 'live' && liveBySlug.has(a.slug))
         || (filter === 'history' && historyBySlug.has(a.slug))
-        || (filter === 'outdated' && isFeedExpired(effectiveFeedExpiry(a)))
+        || (filter === 'outdated' && isAgencyFeedExpired(a))
       )) return false;
       if (regionFilter.size > 0 && !regionFilter.has(a.region ?? 'Other')) return false;
       if (!q) return true;
@@ -463,7 +462,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                           // Repeating that same status on every row makes the filter feel inactive.
                           const showLiveBadge = FEATURES.live && hasLive && !agencyFeatureFilters.has('live');
                           const showHistoryBadge = FEATURES.history && hasHistory && !agencyFeatureFilters.has('history');
-                          const { primary, secondary } = agencyDisplayParts(a.name, a.cities, a.displayArea);
+                          const { primary, secondary } = agencyListParts({ name: a.name, cities: a.cities, displayArea: a.displayArea });
                           const listLabel = secondary ? `${primary} · ${secondary}` : primary;
                           return (
                             <AgencyListRow

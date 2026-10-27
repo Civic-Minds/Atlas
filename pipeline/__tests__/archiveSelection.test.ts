@@ -232,6 +232,24 @@ describe('peekFeedDates', () => {
     expect((await peekFeedDates(buf)).feedStart).toBe('20261019');
   });
 
+  it('counts only the kept routes\' services when routes are excluded (#1140, Snowmass)', async () => {
+    // Snowmass, CIV-829: route 3 runs to Nov 25; the excluded BC-SMI/SMI-BC run to Dec 29.
+    const zip = new JSZip();
+    zip.file('feed_info.txt', 'feed_publisher_name,feed_end_date\nX,20261125\n');
+    zip.file('calendar.txt', 'service_id,start_date,end_date\nvillage,20260921,20261125\nbc,20260921,20261229\n');
+    zip.file('calendar_dates.txt', 'service_id,date,exception_type\nbc,20261230,1\n');
+    zip.file('routes.txt', 'route_id,route_short_name\nr3,3\nr10,BC-SMI\nr11,SMI-BC\n');
+    zip.file('trips.txt', 'route_id,service_id,trip_id\nr3,village,a\nr10,bc,b\nr11,bc,c\n');
+    const buf = await zip.generateAsync({ type: 'nodebuffer' });
+    expect((await peekFeedDates(buf)).feedExpiry).toBe('20261230');
+    const kept = await peekFeedDates(buf, ['BC-SMI', 'SMI-BC']);
+    expect(kept.feedExpiry).toBe('20261125');
+    expect(kept.calendarOnlyEnd).toBe('20261125');
+    // A list naming no route in the feed changes nothing; a shared service stays counted.
+    expect((await peekFeedDates(buf, ['X9'])).feedExpiry).toBe('20261230');
+    expect((await peekFeedDates(buf, ['BC-SMI'])).feedExpiry).toBe('20261230');
+  });
+
   it('returns nulls for an unreadable zip', async () => {
     expect(await peekFeedDates(Buffer.from('not a zip'))).toEqual({ feedStart: null, feedExpiry: null, feedVersion: null, feedInfoEnd: null });
   });

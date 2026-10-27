@@ -1,6 +1,6 @@
 import type { DayType } from '../shared/dayTypes.js';
 import { computePeriodCoverageHeadways, computePeriodHeadways, computePeriodMaxGaps, computePeriodSustained, forCrossMidnightWindow, HEADLINE_WINDOWS, sparseOvernightHeadway } from './headway-utils.js';
-import { TIME_PERIODS } from '../shared/config.js';
+import { asNextNight, MINUTES_PER_DAY, TIME_PERIODS } from '../shared/config.js';
 
 /**
  * The day type whose early-morning trips carry on a day type's night (#896): Saturday night runs
@@ -21,12 +21,12 @@ export function nextServiceDay(day: DayType): DayType | null {
  * or no next-day departures to read, keeps its own times.
  */
 export function overnightWindowTimes(own: readonly number[], nextDay: readonly number[] | undefined): number[] {
-  if (!nextDay || !own.some(t => t >= 1440)) return [...own];
-  const night = own.filter(t => t >= 1440);
+  if (!nextDay || !own.some(t => t >= MINUTES_PER_DAY)) return [...own];
+  const night = own.filter(t => t >= MINUTES_PER_DAY);
   // Only the next day's trips after the night's last own trip: where the two timetables overlap
   // (Saturday hourly to 29:00, Sunday's 02:03 onward) adding both would read as every 3.
   const last = Math.max(...night);
-  return [...night, ...nextDay.filter(t => t < 1440).map(t => t + 1440).filter(t => t > last)];
+  return [...night, ...asNextNight(nextDay).filter(t => t > last)];
 }
 
 /**

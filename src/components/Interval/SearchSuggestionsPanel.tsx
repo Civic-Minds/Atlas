@@ -5,8 +5,9 @@ import {
   LIST_ROW_DIM,
 } from '../../styles';
 import Panel, { PanelBody } from '../ui/Panel';
-import { shortenAgencyName, routeLabels } from '../../utils/format';
+import { routeLabels, agencyNames } from '../../utils/format';
 import { splitRouteKey } from '../../utils/routeKey';
+import type { RouteLabel } from '../../utils/routeFacts';
 import RouteListRow from '../RouteListRow';
 import { NO_REGULAR_SERVICE_SHORT_LABEL, routeListHeadwayText, type RouteListDisplay } from '../../utils/effectiveHeadway';
 import ListRow from '../ui/ListRow';
@@ -22,8 +23,8 @@ export interface RecentRoute {
   /** The feed's raw route_type, when known (lets a numeric id hide the same way as on the agency page). */
   routeType?: number;
   shortName: string;
-  /** The short name the label shows; blank when the feed has none but has a long name (#1099). Defaults to shortName. */
-  labelShortName?: string;
+  /** What the row shows (route facts' label, CIV-984). Missing only on a recent saved by an older build. */
+  label?: RouteLabel;
   longName: string | null;
   agencyName: string;
 }
@@ -32,8 +33,8 @@ export interface SuggestedRoute {
   key: string;
   routeType?: number;
   shortName: string;
-  /** The short name the label shows; blank when the feed has none but has a long name (#1099). Defaults to shortName. */
-  labelShortName?: string;
+  /** What the row shows (route facts' label, CIV-984); shortName is only the route's identity. */
+  label: RouteLabel;
   longName: string | null;
   agencyName: string;
   headway?: number | null;
@@ -51,6 +52,17 @@ interface SearchSuggestionsPanelProps {
   suggestedRoutes: SuggestedRoute[];
   pickRoute: (key: string) => void;
   displayForRouteKey: (key: string) => RouteListDisplay;
+}
+
+/** A label's bold and lighter parts for a list row. */
+const rowParts = (label: RouteLabel) => ({ shortName: label.primary, name: label.secondary });
+
+/**
+ * A recent route's label. One saved by an older build has no label: it is built from what that build stored (its
+ * `labelShortName` when it has one), as the list did then.
+ */
+function recentRouteLabel(r: RecentRoute & { labelShortName?: string }): RouteLabel {
+  return r.label ?? routeLabels({ shortName: r.labelShortName ?? r.shortName, longName: r.longName, routeType: r.routeType, agencySlug: splitRouteKey(r.key).agencySlug, agencyName: r.agencyName });
 }
 
 /** A route's bold and lighter parts for a list row. Same cleaned names as the card title (see shared/routeDisplay.ts). */
@@ -71,7 +83,7 @@ function TierDot({ headway }: { headway: number | null }) {
 }
 
 export function routeRowRight(agencyName: string, headway?: number | null, stacked = false, limited = false, sharedHeadway?: number | null, noRegular = false) {
-  const agency = shortenAgencyName(agencyName);
+  const agency = agencyNames(agencyName).name;
   const layout = stacked
     ? 'block max-w-full truncate mt-1 ml-0 text-left'
     : 'min-w-0 max-w-[34%] truncate shrink-0 ml-2 text-right';
@@ -149,7 +161,7 @@ export const SearchSuggestionsPanel: React.FC<SearchSuggestionsPanelProps> = ({
               </div>
               <div>
                 {recentlyViewed.map((r) => {
-                  const labels = routeRowLabels({ shortName: r.labelShortName ?? r.shortName, longName: r.longName, routeType: r.routeType, agencySlug: splitRouteKey(r.key).agencySlug, agencyName: r.agencyName });
+                  const labels = rowParts(recentRouteLabel(r));
                   return (
                     <RouteListRow
                       key={r.key}
@@ -175,7 +187,7 @@ export const SearchSuggestionsPanel: React.FC<SearchSuggestionsPanelProps> = ({
               </div>
               <div>
                 {suggestedRoutes.map((r) => {
-                  const labels = routeRowLabels({ shortName: r.labelShortName ?? r.shortName, longName: r.longName, routeType: r.routeType, agencySlug: splitRouteKey(r.key).agencySlug, agencyName: r.agencyName });
+                  const labels = rowParts(r.label);
                   return (
                     <RouteListRow
                       key={r.key}

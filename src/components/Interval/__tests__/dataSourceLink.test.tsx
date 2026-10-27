@@ -75,7 +75,7 @@ describe('Source link', () => {
   describe('header links (CIV-841)', () => {
     const ttc = { ...base, slug: 'ttc', name: 'Toronto Transit Commission', websiteUrl: 'https://www.ttc.ca' } as unknown as Agency;
 
-    it('the region link under the name, then the facts, then About and Source, each opening in a new tab (CIV-929)', () => {
+    it('the area link, About and Source on one line under the name, above the facts, each opening in a new tab (CIV-929)', () => {
       card(ttc);
       const area = screen.getByRole('link', { name: 'Greater Toronto and Hamilton Area' });
       const facts = screen.getByText(/^\d+ routes?/);
@@ -84,10 +84,13 @@ describe('Source link', () => {
       expect(about).toHaveAttribute('href', '/agency/ttc');
       expect(area).toHaveAttribute('href', '/area/toronto');
       for (const link of [about, source, area]) expect(link).toHaveAttribute('target', '_blank');
-      expect(source.parentElement).toBe(about.parentElement);
-      expect(area.compareDocumentPosition(facts) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
-      expect(facts.compareDocumentPosition(about) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+      const line = area.closest('p')!;
+      expect(about.closest('p')).toBe(line);
+      expect(source.closest('p')).toBe(line);
+      expect(line.className).toContain('whitespace-nowrap');
+      expect(area.compareDocumentPosition(about) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
       expect(about.compareDocumentPosition(source) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+      expect(line.compareDocumentPosition(facts) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
       expect(screen.queryByText(/agencies$/)).toBeNull();
     });
 

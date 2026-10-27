@@ -9,11 +9,12 @@ import {
   formatDataDate,
   hasMiddayService,
   headwayEvery,
+  introName,
   modesText,
   modeLabel,
   type AgencyPageSummary,
 } from './agencyPages';
-import { MODE_DEFINITIONS, VIRTUAL_LRT_MODE, modeLabelSortIndex } from './modes';
+import { MODE_DEFINITIONS, ON_DEMAND_MODE, VIRTUAL_LRT_MODE, modeLabelSortIndex } from './modes';
 import { BETA_BUILD } from './config';
 import { AREA_INDEX, AREA_PARAM } from './areaIndex';
 import { AREA_PATH_PREFIX, areaPagePath, type AreaConfig } from './areas';
@@ -51,6 +52,8 @@ export interface AreaPageData {
   /** Saturday and Sunday: every agency has it, none do, or it varies. */
   weekend: 'both' | 'sat' | 'sun' | 'none' | 'varies' | null;
   agencies: AreaAgencyRow[];
+  /** States or provinces of the area's own listed agencies, most routes first (CIV-968: the subtitle when the cities only repeat the title). */
+  regions?: string[];
   /** Mode columns for the agency table: the same fixed set on every area page (AREA_TABLE_MODES), then "Other" when an agency has a rarer mode. */
   modeColumns: string[];
   /** Newest schedule refresh among the area's agencies, and the data release the numbers come from. */
@@ -60,17 +63,42 @@ export interface AreaPageData {
 
 const SPAN_VARIES_HOURS = 3;
 
+const modeLabelOf = (id: number) => MODE_DEFINITIONS.find(m => m.id === id)!.label;
+
 /**
  * The agency table's mode columns, the same on every area page and in the shared mode order, so a mode's column never
  * moves from page to page; a missing mode shows a dash (CIV-973, Ryan: "the columns should never move").
  */
-export const AREA_TABLE_MODES: readonly string[] = [1, VIRTUAL_LRT_MODE, 0, 2, 3, 4, 6]
-  .map(id => MODE_DEFINITIONS.find(m => m.id === id)!.label);
-/** One last column for the rarer modes (monorail, cable car, funicular, ...), shown only where an area has one. */
+export const AREA_TABLE_MODES: readonly string[] = [1, VIRTUAL_LRT_MODE, 0, 2, 3, 4].map(modeLabelOf);
+/** One last column for every other mode (gondola/aerial tram, cable car, funicular, ...), shown only where an area has one. */
 export const AREA_TABLE_OTHER = 'Other';
-/** Trolleybus routes count in this table's Bus column (Ryan, CIV-973); every other surface keeps them separate. */
-const TROLLEYBUS_LABEL = MODE_DEFINITIONS.find(m => m.id === 11)!.label;
-const BUS_LABEL = MODE_DEFINITIONS.find(m => m.id === 3)!.label;
+/**
+ * Modes this table counts in another mode's column (Ryan picked seven columns, CIV-973): monorail with subway/metro,
+ * trolleybus with bus. Every other surface keeps them separate.
+ */
+const AREA_TABLE_GROUPED: Readonly<Record<string, string>> = {
+  [modeLabelOf(12)]: modeLabelOf(1),
+  [modeLabelOf(11)]: modeLabelOf(3),
+};
+
+/** The table column a mode's routes count in. */
+export function areaTableColumn(modeLabel: string): string {
+  return AREA_TABLE_GROUPED[modeLabel] ?? (AREA_TABLE_MODES.includes(modeLabel) ? modeLabel : AREA_TABLE_OTHER);
+}
+
+/** The header tooltip for a column that counts more than its own mode; undefined for the rest. */
+export function areaTableColumnTitle(column: string): string | undefined {
+  const sentence = (labels: string[], last: string) => {
+    const words = labels.map(l => l.toLowerCase());
+    const text = `${words.join(', ')} and ${last} routes`;
+    return text.charAt(0).toUpperCase() + text.slice(1);
+  };
+  if (column === AREA_TABLE_OTHER) {
+    return sentence(MODE_DEFINITIONS.filter(m => m.id !== ON_DEMAND_MODE && areaTableColumn(m.label) === AREA_TABLE_OTHER).map(m => m.label), 'other');
+  }
+  const extra = Object.entries(AREA_TABLE_GROUPED).filter(([, to]) => to === column).map(([from]) => from.toLowerCase());
+  return extra.length > 0 ? sentence([column], extra.join(' and ')) : undefined;
+}
 
 /**
  * The agencies counted on an area page (they have a page: weekday midday service), each with only the
@@ -92,11 +120,11 @@ export function areaAgencySummaries(area: Pick<AreaConfig, 'agencies' | 'slug'>,
   return out;
 }
 
-/** An agency's route counts by table column: the fixed modes as they are, trolleybus added into Bus, every other mode into "Other". */
+/** An agency's route counts by table column (areaTableColumn): the fixed modes, the grouped ones added in, the rest in "Other". */
 function tableModes(byMode: ReadonlyArray<{ label: string; routes: readonly unknown[] }>): Record<string, number> {
   const out: Record<string, number> = {};
   for (const m of byMode) {
-    const key = m.label === TROLLEYBUS_LABEL ? BUS_LABEL : AREA_TABLE_MODES.includes(m.label) ? m.label : AREA_TABLE_OTHER;
+    const key = areaTableColumn(m.label);
     out[key] = (out[key] ?? 0) + m.routes.length;
   }
   return out;
@@ -137,6 +165,11 @@ export function buildAreaPageData(area: AreaConfig, all: ReadonlyMap<string, Age
     : 'varies';
   const best = bestRoute(members.flatMap(a => a.routes.map(r => ({ ...r, agency: a.displayName }))));
   const { slug, name, type, officialName, country, cities, bbox, center, note } = area;
+  const regionRoutes = new Map<string, number>();
+  for (const a of members) {
+    if (a.region && area.agencies.includes(a.slug)) regionRoutes.set(a.region, (regionRoutes.get(a.region) ?? 0) + a.routes.length);
+  }
+  const regions = [...regionRoutes.entries()].sort((x, y) => y[1] - x[1] || x[0].localeCompare(y[0])).map(([r]) => r);
   const byMode = [...modeCounts.entries()].map(([label, routes]) => ({ label, routes }))
     .sort((x, y) => modeLabelSortIndex(x.label) - modeLabelSortIndex(y.label));
   return {
@@ -149,6 +182,7 @@ export function buildAreaPageData(area: AreaConfig, all: ReadonlyMap<string, Age
     spanVaries: Number.isFinite(firstMin) && (firstMax - firstMin >= SPAN_VARIES_HOURS || lastMax - lastMin >= SPAN_VARIES_HOURS),
     weekend,
     agencies: rows,
+    regions,
     modeColumns: [...AREA_TABLE_MODES, ...(rows.some(r => r.modes[AREA_TABLE_OTHER]) ? [AREA_TABLE_OTHER] : [])],
     newestRefresh: newest,
     releaseDate,
@@ -173,8 +207,16 @@ export function areaPageH1(d: Pick<AreaPageData, 'area'>): string {
   return areaRegionTitle(d.area);
 }
 
-export function areaSubtitle(d: Pick<AreaPageData, 'area'>): string {
-  return d.area.cities.join(', ');
+/**
+ * The line under the title: the area's cities, or when the title already names every one of them (CIV-968: "Pittsburgh
+ * area" over "Pittsburgh"), its states or provinces instead; '' when the title is just the state or province.
+ * A state inside a city's name still adds the state ("Iowa City area" over "Iowa").
+ */
+export function areaSubtitle(d: Pick<AreaPageData, 'area' | 'regions'>): string {
+  const title = areaRegionTitle(d.area).toLowerCase();
+  if (d.area.cities.some(c => !title.includes(c.toLowerCase()))) return d.area.cities.join(', ');
+  const titlePlace = title.replace(/\b(greater|metro|metropolitan|area|region)\b/g, '').replace(/\s+/g, ' ').trim();
+  return (d.regions ?? []).filter(r => r.toLowerCase() !== titlePlace).join(', ');
 }
 
 /** One sentence that stands alone, used as the meta description's opening. */
@@ -212,10 +254,44 @@ export function areaHoursLabel(d: Pick<AreaPageData, 'weekend' | 'spanVaries'>):
 }
 
 /** One plain sentence, the same template for every area. */
-export function areaAboutParagraph(d: AreaPageData): string {
+/** An area with more agencies than this names its two biggest and counts the rest (CIV-968); a smaller one names none (Ryan). */
+const AREA_INTRO_NAME_NONE_MAX = 3;
+const AREA_INTRO_NAMED = 2;
+
+/**
+ * The intro's agencies, by route count (the table's order): none when there are at most three (the sentence ends after
+ * the route breakdown), else the two biggest plus how many others there are. `lead` is the counting sentence up to where
+ * the names start.
+ */
+export function areaIntroParts(d: AreaPageData): { lead: string; named: AreaAgencyRow[]; others: number } {
   const n = d.agencies.length;
-  const out: string[] = [`${areaRegionSentenceStart(d.area)} has ${plural(n, 'transit agency', 'transit agencies')} running ${plural(d.totalRoutes, 'route', 'routes')}${d.byMode.length > 1 ? ` (${modesText(d.byMode, ', ')})` : ''}.`];
-  return out.join(' ');
+  const lead = `${areaRegionSentenceStart(d.area)} has ${plural(n, 'transit agency', 'transit agencies')} running ${plural(d.totalRoutes, 'route', 'routes')}${d.byMode.length > 1 ? ` (${modesText(d.byMode, ', ')})` : ''}`;
+  if (n <= AREA_INTRO_NAME_NONE_MAX) return { lead, named: [], others: 0 };
+  const named = d.agencies.slice(0, AREA_INTRO_NAMED);
+  return { lead, named, others: n - named.length };
+}
+
+/** The joiners around the intro's names, after "including" (Ryan): "including A, B and 7 others."; just "." with no names. */
+export function areaIntroJoiners(parts: Pick<ReturnType<typeof areaIntroParts>, 'named' | 'others'>): { opener: string; separators: string[]; tail: string } {
+  const count = parts.named.length + (parts.others > 0 ? 1 : 0);
+  const separators = parts.named.map((_, i) => (i === count - 2 ? ' and ' : i < count - 2 ? ', ' : ''));
+  return {
+    opener: parts.named.length === 0 ? '' : ', including ',
+    separators,
+    tail: parts.others > 0 ? `${plural(parts.others, 'other', 'others')}.` : '.',
+  };
+}
+
+/** An agency's name in the intro: its bracketed city is dropped when the area already names it, as agency intros do ("TheRide", not "TheRide (Ann Arbor)"). */
+export function areaIntroName(d: Pick<AreaPageData, 'area'>, a: Pick<AreaAgencyRow, 'name'>): string {
+  return introName(a.name, [areaRegionTitle(d.area), ...d.area.cities].join(', '));
+}
+
+/** The intro as plain text (the page links each name to its agency page). */
+export function areaAboutParagraph(d: AreaPageData): string {
+  const parts = areaIntroParts(d);
+  const j = areaIntroJoiners(parts);
+  return `${parts.lead}${j.opener}${parts.named.map((a, i) => areaIntroName(d, a) + j.separators[i]).join('')}${j.tail}`;
 }
 
 export function areaDatesText(d: Pick<AreaPageData, 'newestRefresh' | 'releaseDate'>): string {

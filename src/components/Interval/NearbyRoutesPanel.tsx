@@ -1,5 +1,5 @@
 import React, { forwardRef } from 'react';
-import { titleCase } from '../../utils/format';
+import { stopNameCase } from '../../utils/format';
 import { HeadwayBadge, LimitedBadge } from './cardUi';
 import { headwayEveryRange } from '../../utils/headwayText';
 import { NO_REGULAR_SERVICE_SHORT_LABEL } from '../../utils/effectiveHeadway';
@@ -87,7 +87,7 @@ export const NearbyRoutesPanel = forwardRef<HTMLDivElement, NearbyRoutesPanelPro
                   )}
                 </div>
                 <p className="text-xs text-[var(--text-dim)] font-medium truncate leading-tight">
-                  {titleCase(r.nearestStopName)} · {fmtDist(r.distanceMeters)}
+                  {stopNameCase(r.nearestStopName)} · {fmtDist(r.distanceMeters)}
                 </p>
               </div>
             </ListRow>

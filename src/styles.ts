@@ -129,6 +129,8 @@ export const CARD_NOTICE = 'text-xs font-normal text-[var(--text-dim)]';
 /** A short grey note inside a card (the route card's pattern label and "No midday service."; the chart's period
  *  name and legend). Bold, to read beside the card's bold rows. */
 export const CARD_NOTE = 'text-xs font-bold text-[var(--text-dim)]';
+/** A small section label ("Westbound", "On-demand service", the filter panel's "Mode"). */
+export const CARD_SECTION = 'text-xs font-black text-[var(--text-dim)]';
 /** The chart's period names over its bars (route card chart and the full-day view). */
 export const CHART_PERIOD_LABEL = 'text-xs font-black text-[var(--text-muted)]';
 /** A heading inside the chart area (the trip-time strip's "Trip time"). */
@@ -161,6 +163,30 @@ export const Z_PANEL_RAISED = 'z-[1001]'; // One step above the panels: Compare'
 
 /** The top of everything that sits under the search bar: 7px below it (the bar ends at 49px on desktop, 51px on phones).
  *  The desktop step is its own token for a phone layout that starts somewhere else (Compare's lower map). */
+/**
+ * Map overlay slots (CIV-1011 #12): where each fixed overlay sits over the map, in one place so they are placed
+ * against each other, not one at a time. Every edge is the same 1.5rem (6) inset; the phone row above the bottom
+ * edge is bottom-16. scripts/check-overlay-overlap.mjs measures them at 360, 640, 820, 1024 and 1440 and fails on
+ * any overlap. Each overlay carries `data-map-overlay="<name>"` for that check.
+ */
+/** The header row: logo and search on the left, mode tabs and buttons on the right. */
+export const MAP_TOP_BAR_SLOT = 'top-6 left-6 right-6 h-[28px]';
+/** sm and up: the bottom-left pills and the bottom-right counts share one row, so the pills wrap upward before the counts. Phones drop it (contents). */
+export const MAP_FOOTER_ROW_SLOT = 'max-sm:contents absolute bottom-6 left-6 right-14 flex items-end justify-between gap-2 pointer-events-none';
+/** Phones: the About, What's new and Feedback pills along the bottom edge. */
+export const MAP_FOOTER_PILLS_PHONE_SLOT = 'max-sm:absolute max-sm:bottom-6 max-sm:left-6 max-sm:max-w-[calc(100vw-3rem)]';
+/** Phones: the loading and count pills, one row above the footer pills. */
+export const MAP_COUNTS_PHONE_SLOT = 'max-sm:absolute max-sm:bottom-16 max-sm:left-6';
+/** The locate, export and zoom stack in the bottom-right corner. */
+export const MAP_CONTROLS_SLOT = 'absolute bottom-6 right-3 max-sm:right-6';
+/** A centred notice pill along the bottom, clear of the controls; `raised` sits one row up. */
+export const MAP_NOTICE_SLOT = 'absolute bottom-6 left-6 right-24 sm:right-56 flex justify-center';
+export const MAP_NOTICE_SLOT_RAISED = 'absolute bottom-16 left-6 right-24 sm:right-56 flex justify-center';
+/** The analytics prompt where the footer row doesn't draw it: under the header on phones, at the bottom edge otherwise. */
+export const MAP_CONSENT_SLOT = 'fixed inset-x-0 top-[4.25rem] mx-auto sm:top-auto sm:bottom-6';
+/** App-level status pills (loading the map, a load error), centred along the bottom. */
+export const MAP_STATUS_SLOT = 'absolute left-1/2 bottom-5 -translate-x-1/2';
+
 export const SIDEBAR_CARD_TOP_DESKTOP = 'sm:top-[56px]';
 export const SIDEBAR_CARD_TOP = `top-[58px] ${SIDEBAR_CARD_TOP_DESKTOP}`;
 /** Every sidebar card's placement: SIDEBAR_CARD_TOP plus its left edge. */

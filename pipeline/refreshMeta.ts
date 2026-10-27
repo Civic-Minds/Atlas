@@ -17,6 +17,8 @@ export interface FeedMetaFields {
   feedRefreshErrorAt?: string | null;
   feedRefreshRetryCount?: number;
   lastSupplementalFeeds?: SupplementalFeedMeta[];
+  /** A fetched timetable starting on this date waits until then (#1144); cleared once one is processed. */
+  heldFeedStart?: string | null;
 }
 
 /** Whether a feed's declared service end date is before the refresh date. */
@@ -131,11 +133,13 @@ export function stampFeedMeta(
     peekedExpiry: string | null;
     peekedVersion: string | null;
     todayYmd: string;
+    /** The kept routes' latest service date (#1140); without it, the raw peeked expiry. */
+    calendarExpiry?: string | null;
     /** Last real service date from the calendar alone (no feed_info); can only lower the expiry. */
     calendarOnlyEnd?: string | null;
   },
 ): void {
-  agency.lastFeedExpiry = recordedFeedExpiry(opts.feedExpiry, opts.peekedExpiry, opts.todayYmd, opts.calendarOnlyEnd);
+  agency.lastFeedExpiry = recordedFeedExpiry(opts.feedExpiry, opts.calendarExpiry !== undefined ? opts.calendarExpiry : opts.peekedExpiry, opts.todayYmd, opts.calendarOnlyEnd);
   agency.lastPeekedExpiry = opts.peekedExpiry;
   agency.lastFeedVersion = opts.feedVersion ?? opts.peekedVersion ?? null;
   agency.lastRefreshedAt = opts.todayYmd;
@@ -143,6 +147,7 @@ export function stampFeedMeta(
   agency.feedRefreshError = null;
   agency.feedRefreshErrorAt = null;
   agency.feedRefreshRetryCount = 0;
+  delete agency.heldFeedStart;
 }
 
 /**
