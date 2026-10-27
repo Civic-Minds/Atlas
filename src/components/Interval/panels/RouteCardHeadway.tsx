@@ -26,8 +26,8 @@ import {
   type CardReportButtonHandle,
 } from '../cardUi';
 import { CARD_NOTE, CARD_NOTICE, CARD_NOTICE_FOOTER } from '../../../styles';
-import { FEATURES, SPARKLINE_HOURS, TIME_PERIODS, formatPeriodHourLong, formatPeriodRangeLong, periodKeyForHour } from '../../../../shared/config';
-import { hasDirectionPeriodService, NO_REGULAR_SERVICE_LABEL, NO_REGULAR_SERVICE_SHORT_LABEL, routeCardCoverageText, routeCardDisplayHeadway, routeCardDisplayHeadwayRange, routeCardDisplayLimited } from '../../../utils/effectiveHeadway';
+import { FEATURES, SPARKLINE_HOURS, TIME_PERIODS, formatPeriodRangeLong, periodKeyForHour } from '../../../../shared/config';
+import { hasDirectionPeriodService, NO_REGULAR_SERVICE_LABEL, NO_REGULAR_SERVICE_SHORT_LABEL, routeCardDisplayHeadway, routeCardDisplayHeadwayRange, routeCardDisplayLimited } from '../../../utils/effectiveHeadway';
 import { branchDisplayHourHeadway, branchDisplayPeriodHeadway, buildRouteServiceSummary } from '../../../utils/routeFacts';
 import { branchStackColor } from '../../../utils/colors';
 import { unevenPeriodMaxGap } from '../../../utils/routeCardUneven';
@@ -301,14 +301,6 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
   const unevenNotice = !hideFilterNotices && selectedPeriod && hasPeriodService && unevenGap > 0
     ? unevenServiceNotice(unevenGap)
     : null;
-  const coreGroups = directionGroups.filter(group => shouldShowTrunkSummary(group.realTier, period));
-  const hasCoreSummary = coreGroups.length > 0;
-  const primaryCoreHeadway = primaryMultiBranch && shouldShowTrunkSummary(primaryMultiBranch.realTier, period)
-    ? groupTrunkHeadway(primaryMultiBranch.realTier, period === 'all' ? 'midday' : period)
-    : null;
-  const coreHeadway = primaryCoreHeadway ?? (coreGroups[0]
-    ? groupTrunkHeadway(coreGroups[0].realTier, period === 'all' ? 'midday' : period)
-    : null);
 
   const allLackHeadsigns = directionGroups.every(g => g.realTier.every(d => !d.headsign));
   const groupHeadway = (g: DirectionGroup) => g.realTier[0]
@@ -343,7 +335,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
         // period, which can happen even when real service exists (#297). Don't assert absence.
         const range = routeCardDisplayHeadwayRange(direction, period);
         const isLimited = routeCardDisplayLimited(direction, period);
-        return `- ${reportLabel}: ${routeCardCoverageText(direction, period) ?? (headway != null ? headwayAbout(headway) : range ?? (isLimited ? 'limited service' : 'no data for this period'))}`;
+        return `- ${reportLabel}: ${headway != null ? headwayAbout(headway) : range ?? (isLimited ? 'limited service' : 'no data for this period')}`;
       })
       .filter((line): line is string => line !== null);
     const limitedLines = !hideSpan
@@ -369,28 +361,6 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
       : [];
     return [...section, ...sharedLines, ...branchLines, ...limitedLines];
   });
-  // The folded timetable line states what the expanded rows show for this period:
-  // each direction's shared-stretch (or combined) cadence, as in the direction
-  // rows below; the slower direction decides, as everywhere else on the card.
-  const scheduleHeadline = (() => {
-    if (contract) {
-      if (contract.filterValue == null) return contract.runs ? `Scheduled: ${NO_REGULAR_SERVICE_LABEL}` : null;
-      return `Scheduled: ${contract.range ? headwayAboutRange(contract.range[0], contract.range[1]) : headwayAbout(contract.filterValue)}`;
-    }
-    const cores = displayGroups.map(group => {
-      const shared = sharedStretchHeadway(agencyFeatures, group.realTier, period, maxHeadway);
-      const hasCore = shared != null || shouldShowTrunkSummary(group.realTier, period);
-      const core = shared?.headway ?? (hasCore ? groupTrunkHeadway(group.realTier, period === 'all' ? 'midday' : period) : null);
-      if (core != null) return { headway: core, label: shared ? 'Shared stretch' : 'Combined' };
-      const branch = group.realTier
-        .map(direction => routeCardDisplayHeadway(direction, period))
-        .filter((v): v is number => v != null);
-      return branch.length ? { headway: Math.min(...branch), label: 'Scheduled' } : null;
-    }).filter((c): c is { headway: number; label: string } => c != null);
-    if (cores.length === 0) return null;
-    const slower = cores.reduce((a, c) => (c.headway > a.headway ? c : a));
-    return `${slower.label}: ${headwayAbout(slower.headway)}`;
-  })();
   const reportRawMetrics = currentRoute.directions.map((direction, index) => {
     const selectedPeriodHourlyHeadways = selectedPeriod
       ? Object.fromEntries(

@@ -1,6 +1,6 @@
 import type { ShapeProperties, TimePeriod } from '../hooks/useIntervalStats';
 import { periodKeyForHour } from '../../shared/config';
-import { branchDisplayPeriodHeadway, buildRouteServiceSummary, metricValueForPeriod } from './routeFacts';
+import { branchDisplayPeriodHeadway, buildRouteServiceSummary } from './routeFacts';
 import { MIN_SHARED_STOPS_FOR_TRUNK, sharedStopIds, sharesOrderedTrunk } from './routeBranchGeometry';
 import { sharedStretchStopPass } from './frequencySegments';
 
@@ -59,10 +59,7 @@ export function sparklineSourceDirections(
   const dir0 = withHours.filter(d => dirIdNum(d.directionId) === 0);
   if (dir0.length > 0) return dir0;
   // Pick the direction with the richest hourly series
-  const bestDir = withHours.reduce((best, d) => {
-    const id = dirIdNum(d.directionId);
-    return hourlyNonNullCount(d) > hourlyNonNullCount(best) ? d : best;
-  });
+  const bestDir = withHours.reduce((best, d) => (hourlyNonNullCount(d) > hourlyNonNullCount(best) ? d : best));
   const id = dirIdNum(bestDir.directionId);
   return withHours.filter(d => dirIdNum(d.directionId) === id);
 }

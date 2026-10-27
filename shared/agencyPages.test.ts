@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import {
   fitAgencyName,
-  agencyIntroSentence, introName, agencySpansArea, namesList, agencySpanShort, agencyBreadcrumbs, agencyDatesText, agencyLeadSentence, agencyMapHref, agencyPageDescription, agencyPageH1, agencyPageJsonLd, hasMiddayService,
-  agencyPageData, agencyPagePath, agencyPageTitle, agencySpanText, agencyStats, bandCounts, formatDataDate, nearbyAgencies, resolveAgencySeo, trimRedundantCity,
-  type AgencyPageRoute, type AgencyPageSummary, bestRoute, modesText, weekendLabel,
+  agencyIntroSentence, introName, agencySpansArea, namesList, agencyBreadcrumbs, agencyDatesText, agencyLeadSentence, agencyMapHref, agencyPageDescription, agencyPageH1, agencyPageJsonLd, hasMiddayService,
+  agencyPageData, agencyPagePath, agencyPageTitle, agencyStats, bandCounts, formatDataDate, nearbyAgencies, resolveAgencySeo, trimRedundantCity,
+  type AgencyPageRoute, type AgencyPageSummary, bestRoute, modesText,
 } from './agencyPages';
 import { agencyPageSummaries, getAgencyPageSummary } from './agencyPagesData';
 
@@ -44,23 +44,9 @@ describe('agency page text', () => {
     expect(bestRoute([r('x', 3, 8), r('y', 3, 8)])?.route.name).toBe('x');
   });
 
-  it('writes the modes line and the weekend label', () => {
+  it('writes the modes line', () => {
     expect(modesText([{ label: 'Subway/Metro', routes: 3 }, { label: 'Light rail', routes: 2 }, { label: 'Bus', routes: 209 }])).toBe('3 subway/metro · 2 light rail · 209 bus');
     expect(modesText([])).toBe('');
-    expect(weekendLabel(true, true)).toBe('Runs Sat & Sun');
-    expect(weekendLabel(true, false)).toBe('Runs Saturdays');
-    expect(weekendLabel(false, true)).toBe('Runs Sundays');
-    expect(weekendLabel(false, false)).toBe('Weekdays only');
-    expect(weekendLabel(undefined, undefined)).toBeNull();
-  });
-
-  it('describes the service span in clock hours', () => {
-    expect(agencySpanText({ span: { first: 5, last: 25 } })).toBe('5am to 2am');
-    expect(agencySpanText({ span: { first: 5, last: 28 } })).toBe('Runs 24 hours');
-    expect(agencySpanText({ span: null })).toBeNull();
-    expect(agencySpanShort({ span: { first: 5, last: 28 } })).toBe('24 h');
-    expect(agencySpanShort({ span: { first: 5, last: 25 } })).toBe('5am–2am');
-    expect(agencySpanShort({ span: null })).toBeNull();
   });
 
   it('links to the map with only this agency on and the agency area in view', () => {

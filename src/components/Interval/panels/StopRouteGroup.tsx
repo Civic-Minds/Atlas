@@ -1,6 +1,5 @@
-import React from 'react';
 import { isLivePollingRoute } from '../../../utils/livePolling';
-import { routeLabels, resolveBranchLabel } from '../../../utils/format';
+import { resolveBranchLabel } from '../../../utils/format';
 import RouteRowName from '../../RouteRowName';
 import type { HoveredBranch, TimePeriod } from '../../../hooks/useIntervalStats';
 import {
@@ -16,12 +15,8 @@ interface Props {
   /** What the row shows (route facts' label, CIV-984); the short name is only the route's identity. */
   label: RouteLabel;
   longName: string;
-  agencyName: string;
-  agencySlug?: string;
-  routeType?: number;
   branches: StopBranch[];
   period: TimePeriod;
-  showAgency: boolean;
   onOpenRoute: (rKey: string) => void;
   /** The map hover (CIV-918): a destination row shows its route and direction on the map. */
   hoveredBranch?: HoveredBranch | null;
@@ -33,12 +28,8 @@ export default function StopRouteGroup({
   shortName,
   label,
   longName,
-  agencyName,
-  agencySlug,
-  routeType,
   branches,
   period,
-  showAgency,
   onOpenRoute,
   hoveredBranch = null,
   setHoveredBranch,

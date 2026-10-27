@@ -20,11 +20,8 @@ function renderGroup(setHoveredBranch = vi.fn()) {
       shortName="GREEN"
       label={routeLabels({ shortName: 'GREEN', longName: 'Green Line' })}
       longName="Green Line"
-      agencyName="DART"
-      agencySlug="dart"
       branches={[branch('Buckner', 1, 20), branch('North Carrollton', 0, 20), branch('Bachman', 0, 40)]}
       period="midday"
-      showAgency={false}
       onOpenRoute={() => {}}
       setHoveredBranch={setHoveredBranch}
     />,
@@ -37,9 +34,9 @@ describe('StopRouteGroup rows (CIV-918)', () => {
     const pooled = (headsign: string, directionId: number, own: number) => ({ ...branch(headsign, directionId, 5), rowHeadway: own });
     render(
       <StopRouteGroup
-        shortName="504" label={routeLabels({ shortName: '504', longName: 'King' })} longName="King" agencyName="TTC" agencySlug="ttc"
+        shortName="504" label={routeLabels({ shortName: '504', longName: 'King' })} longName="King"
         branches={[pooled('Broadview', 0, 10), pooled('Distillery', 0, 10)]}
-        period="midday" showAgency={false} onOpenRoute={() => {}}
+        period="midday" onOpenRoute={() => {}}
       />,
     );
     // Never "to Broadview every 5 min": that destination comes every 10.
@@ -50,9 +47,9 @@ describe('StopRouteGroup rows (CIV-918)', () => {
   it("a branch value better than the stop's is not used: the row never claims more service than the stop sees", () => {
     render(
       <StopRouteGroup
-        shortName="503" label={routeLabels({ shortName: '503', longName: 'Kingston Rd' })} longName="Kingston Rd" agencyName="TTC" agencySlug="ttc"
+        shortName="503" label={routeLabels({ shortName: '503', longName: 'Kingston Rd' })} longName="Kingston Rd"
         branches={[{ ...branch('Victoria Park', 0, 10), rowHeadway: 6 }]}
-        period="midday" showAgency={false} onOpenRoute={() => {}}
+        period="midday" onOpenRoute={() => {}}
       />,
     );
     expect(screen.getByText('every 10 min')).toBeInTheDocument();
