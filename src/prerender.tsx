@@ -18,6 +18,7 @@ import AreaPage from './AreaPage';
 import type { AreaPageData } from '../shared/areaPages';
 import AgenciesIndexPage from './AgenciesIndexPage';
 import type { AgencyIndexData } from '../shared/agencyIndex';
+import { AGENCY_INDEX_PATH, agencyPagePath, areaPagePath } from '../shared/pagePaths';
 
 const PAGES: Record<string, () => ReactElement> = {
   '/about': () => <AboutPage />,
@@ -43,13 +44,13 @@ export function renderPage(path: string): string {
 export const PRERENDER_PATHS = Object.keys(PAGES);
 
 export function renderAgencyPage(data: AgencyPageData): string {
-  return renderToString(<StaticRouter location={`/agency/${data.agency.slug}`}><AgencyPage data={data} /></StaticRouter>);
+  return renderToString(<StaticRouter location={agencyPagePath(data.agency.slug)}><AgencyPage data={data} /></StaticRouter>);
 }
 
 export function renderAreaPage(data: AreaPageData): string {
-  return renderToString(<StaticRouter location={`/area/${data.area.slug}`}><AreaPage data={data} /></StaticRouter>);
+  return renderToString(<StaticRouter location={areaPagePath(data.area.slug)}><AreaPage data={data} /></StaticRouter>);
 }
 
 export function renderAgencyIndex(data: AgencyIndexData): string {
-  return renderToString(<StaticRouter location="/agencies"><AgenciesIndexPage data={data} /></StaticRouter>);
+  return renderToString(<StaticRouter location={AGENCY_INDEX_PATH}><AgenciesIndexPage data={data} /></StaticRouter>);
 }

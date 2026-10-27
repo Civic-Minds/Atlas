@@ -2,8 +2,8 @@ import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import type { AgencyPageRoute, AgencyPageSummary } from './agencyPages';
 import {
-  areaAboutParagraph, areaDatesText, areaIntroJoiners, areaIntroParts, areaHoursLabel, areaMapHref, areaPageDescription, areaPageH1, areaPageJsonLd, areaPageTitle,
-  areaSpanShort, areaSubtitle, areaTableColumnTitle, buildAreaPageData, resolveAreaSeo, type AreaPageData,
+  areaAboutParagraph, areaDatesText, areaIntroJoiners, areaIntroParts, areaMapHref, areaPageDescription, areaPageH1, areaPageJsonLd, areaPageTitle,
+  areaSubtitle, areaTableColumnTitle, buildAreaPageData, resolveAreaSeo, type AreaPageData,
 } from './areaPages';
 import { rankLargeMetros, parseCsv } from './largeMetros';
 import { agencyRegionTitle, areaLinkFor } from './agencyArea';
@@ -33,7 +33,6 @@ describe('buildAreaPageData', () => {
     expect(d.byMode).toEqual([{ label: 'Subway/Metro', routes: 2 }, { label: 'Bus', routes: 4 }]);
     // The same fixed columns on every area page, in the shared order (CIV-973); no "Other" without a rarer mode.
     expect(d.modeColumns).toEqual(['Subway/Metro', 'Light rail', 'Streetcar', 'Commuter rail', 'Bus', 'Ferry']);
-    expect(d.span).toEqual({ first: 5, last: 28 });
     expect(d.newestRefresh).toBe('2026-09-01');
   });
 
@@ -54,25 +53,6 @@ describe('buildAreaPageData', () => {
     expect(none.best?.headway).toBe(20);
   });
 
-  it('flags a wide span and mixed weekend service', () => {
-    expect(d.spanVaries).toBe(true); // ends at 24 and 28: four hours apart
-    const tight = new Map(ALL); tight.set('hsr', ag('hsr', 'HSR', [r('A', 3, 12)], { first: 5, last: 25 }));
-    const t = buildAreaPageData(AREA, tight, null);
-    expect(t.spanVaries).toBe(false); // starts 6 and 5, ends 24 and 25
-    expect(areaHoursLabel(t)).toBe('weekday service');
-    const wide = new Map(ALL); wide.set('hsr', ag('hsr', 'HSR', [r('A', 3, 12)], { first: 9, last: 20 }));
-    const w = buildAreaPageData(AREA, wide, null);
-    expect(w.spanVaries).toBe(true);
-    expect(areaHoursLabel(w)).toContain('varies by agency');
-    const mixed = new Map(ALL); mixed.set('ttc', { ...ALL.get('ttc')!, sat: true, sun: true }); mixed.set('hsr', { ...ALL.get('hsr')!, sat: true, sun: false });
-    expect(buildAreaPageData(AREA, mixed, null).weekend).toBe('varies');
-    const both = new Map(ALL); both.set('ttc', { ...ALL.get('ttc')!, sat: true, sun: true }); both.set('hsr', { ...ALL.get('hsr')!, sat: true, sun: true });
-    const b2 = buildAreaPageData(AREA, both, null);
-    expect(b2.weekend).toBe('both');
-    expect(areaHoursLabel(b2)).toBe('weekday service · varies by agency · Runs Sat & Sun');
-    expect(d.weekend).toBeNull();
-  });
-
   it('writes the title, heading, subtitle and lead from the numbers', () => {
     expect(areaPageTitle(d)).toBe('Greater Toronto and Hamilton Area transit frequency');
     expect(areaPageH1(d)).toBe('Greater Toronto and Hamilton Area');
@@ -88,7 +68,6 @@ describe('buildAreaPageData', () => {
     expect(areaSubtitle({ ...iowa, regions: ['Iowa'] })).toBe('Iowa');
     expect(areaPageDescription(d)).toContain('Compare 2 transit agencies in the Greater Toronto and Hamilton Area');
     expect(areaPageDescription(d)).not.toMatch(/frequent\b|15 min/i);
-    expect(areaSpanShort(d)).toBe('24 h');
   });
 
   it('opens the map with ?area= so the app selects the area and fits it', () => {

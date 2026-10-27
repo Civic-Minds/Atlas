@@ -7,19 +7,20 @@ import {
   bandCounts,
   bestRoute,
   formatDataDate,
+  formatIso,
   hasMiddayService,
-  headwayEvery,
   introName,
   modesText,
-  modeLabel,
   type AgencyPageSummary,
 } from './agencyPages';
-import { MODE_DEFINITIONS, ON_DEMAND_MODE, VIRTUAL_LRT_MODE, modeLabelSortIndex } from './modes';
+import { MODE_DEFINITIONS, ON_DEMAND_MODE, VIRTUAL_LRT_MODE, modeLabel, modeLabelSortIndex } from './modes';
 import { BETA_BUILD } from './config';
 import { AREA_INDEX, AREA_PARAM } from './areaIndex';
 import { AREA_PATH_PREFIX, areaPagePath, type AreaConfig } from './areas';
 import { areaRegionName, areaRegionSentenceStart, areaRegionTitle } from './areaRegions';
-import { SITE_URL } from './seo';
+import { SITE_URL, seoTitlePrefix, type SeoMode } from './seo';
+import { countOf } from './overflowText';
+import { capitalizeFirst } from './headwayText';
 import { compareAgencyName } from './sortCompare';
 import { DESCRIPTION_MAX, TITLE_MAX, firstThatFits, truncateAtWord } from './seoText';
 
@@ -46,11 +47,6 @@ export interface AreaPageData {
   /** The route with the shortest weekday-midday headway, with its agency. */
   best: { name: string; headway: number; agency: string } | null;
   byMode: Array<{ label: string; routes: number }>;
-  span: { first: number; last: number } | null;
-  /** True when agencies' first or last departures differ by 3 hours or more. */
-  spanVaries: boolean;
-  /** Saturday and Sunday: every agency has it, none do, or it varies. */
-  weekend: 'both' | 'sat' | 'sun' | 'none' | 'varies' | null;
   agencies: AreaAgencyRow[];
   /** States or provinces of the area's own listed agencies, most routes first (CIV-968: the subtitle when the cities only repeat the title). */
   regions?: string[];
@@ -61,15 +57,11 @@ export interface AreaPageData {
   releaseDate: string | null;
 }
 
-const SPAN_VARIES_HOURS = 3;
-
-const modeLabelOf = (id: number) => MODE_DEFINITIONS.find(m => m.id === id)!.label;
-
 /**
  * The agency table's mode columns, the same on every area page and in the shared mode order, so a mode's column never
  * moves from page to page; a missing mode shows a dash (CIV-973, Ryan: "the columns should never move").
  */
-export const AREA_TABLE_MODES: readonly string[] = [1, VIRTUAL_LRT_MODE, 0, 2, 3, 4].map(modeLabelOf);
+export const AREA_TABLE_MODES: readonly string[] = [1, VIRTUAL_LRT_MODE, 0, 2, 3, 4].map(modeLabel);
 /** One last column for every other mode (gondola/aerial tram, cable car, funicular, ...), shown only where an area has one. */
 export const AREA_TABLE_OTHER = 'Other';
 /**
@@ -77,8 +69,8 @@ export const AREA_TABLE_OTHER = 'Other';
  * trolleybus with bus. Every other surface keeps them separate.
  */
 const AREA_TABLE_GROUPED: Readonly<Record<string, string>> = {
-  [modeLabelOf(12)]: modeLabelOf(1),
-  [modeLabelOf(11)]: modeLabelOf(3),
+  [modeLabel(12)]: modeLabel(1),
+  [modeLabel(11)]: modeLabel(3),
 };
 
 /** The table column a mode's routes count in. */
@@ -90,8 +82,7 @@ export function areaTableColumn(modeLabel: string): string {
 export function areaTableColumnTitle(column: string): string | undefined {
   const sentence = (labels: string[], last: string) => {
     const words = labels.map(l => l.toLowerCase());
-    const text = `${words.join(', ')} and ${last} routes`;
-    return text.charAt(0).toUpperCase() + text.slice(1);
+    return capitalizeFirst(`${words.join(', ')} and ${last} routes`);
   };
   if (column === AREA_TABLE_OTHER) {
     return sentence(MODE_DEFINITIONS.filter(m => m.id !== ON_DEMAND_MODE && areaTableColumn(m.label) === AREA_TABLE_OTHER).map(m => m.label), 'other');
@@ -134,16 +125,11 @@ export function buildAreaPageData(area: AreaConfig, all: ReadonlyMap<string, Age
   const members = areaAgencySummaries(area, all);
   const allRoutes = members.flatMap(a => a.routes);
   const modeCounts = new Map<string, number>();
-  let firstMin = Infinity, firstMax = -Infinity, lastMin = Infinity, lastMax = -Infinity;
   let newest: string | null = null;
   const rows: AreaAgencyRow[] = [];
   for (const a of members) {
     const s = agencyStats(a);
     for (const m of s.byMode) modeCounts.set(m.label, (modeCounts.get(m.label) ?? 0) + m.routes.length);
-    if (a.span) {
-      firstMin = Math.min(firstMin, a.span.first); firstMax = Math.max(firstMax, a.span.first);
-      lastMin = Math.min(lastMin, a.span.last); lastMax = Math.max(lastMax, a.span.last);
-    }
     if (a.lastRefreshedAt && (!newest || a.lastRefreshedAt > newest)) newest = a.lastRefreshedAt;
     rows.push({
       slug: a.slug,
@@ -154,15 +140,6 @@ export function buildAreaPageData(area: AreaConfig, all: ReadonlyMap<string, Age
     });
   }
   rows.sort((x, y) => y.totalRoutes - x.totalRoutes || compareAgencyName(x.name, y.name) || x.slug.localeCompare(y.slug));
-  const known = members.filter(a => a.sat !== undefined || a.sun !== undefined);
-  const all2 = (k: 'sat' | 'sun') => known.length > 0 && known.every(a => a[k]);
-  const any2 = (k: 'sat' | 'sun') => known.some(a => a[k]);
-  const weekend: AreaPageData['weekend'] = known.length === 0 ? null
-    : all2('sat') && all2('sun') ? 'both'
-    : !any2('sat') && !any2('sun') ? 'none'
-    : all2('sat') && !any2('sun') ? 'sat'
-    : all2('sun') && !any2('sat') ? 'sun'
-    : 'varies';
   const best = bestRoute(members.flatMap(a => a.routes.map(r => ({ ...r, agency: a.displayName }))));
   const { slug, name, type, officialName, country, cities, bbox, center, note } = area;
   const regionRoutes = new Map<string, number>();
@@ -178,9 +155,6 @@ export function buildAreaPageData(area: AreaConfig, all: ReadonlyMap<string, Age
     bands: bandCounts(allRoutes),
     best: best ? { name: best.route.name, headway: best.headway, agency: best.route.agency } : null,
     byMode,
-    span: Number.isFinite(firstMin) ? { first: firstMin, last: lastMax } : null,
-    spanVaries: Number.isFinite(firstMin) && (firstMax - firstMin >= SPAN_VARIES_HOURS || lastMax - lastMin >= SPAN_VARIES_HOURS),
-    weekend,
     agencies: rows,
     regions,
     modeColumns: [...AREA_TABLE_MODES, ...(rows.some(r => r.modes[AREA_TABLE_OTHER]) ? [AREA_TABLE_OTHER] : [])],
@@ -189,11 +163,9 @@ export function buildAreaPageData(area: AreaConfig, all: ReadonlyMap<string, Age
   };
 }
 
-const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
-
 export function areaPageTitle(d: Pick<AreaPageData, 'area' | 'agencies'>): string {
   const region = areaRegionTitle(d.area);
-  const across = `how often transit runs across ${plural(d.agencies.length, 'agency', 'agencies')}`;
+  const across = `how often transit runs across ${countOf(d.agencies.length, 'agency', 'agencies')}`;
   return firstThatFits([
     `${region}: ${across} | Transit Atlas`,
     `${region}: ${across}`,
@@ -221,39 +193,20 @@ export function areaSubtitle(d: Pick<AreaPageData, 'area' | 'regions'>): string 
 
 /** One sentence that stands alone, used as the meta description's opening. */
 export function areaLeadSentence(d: AreaPageData): string {
-  return `${plural(d.totalRoutes, 'weekday route', 'weekday routes')} across ${plural(d.agencies.length, 'transit agency', 'transit agencies')} in ${areaRegionName(d.area)}.`;
+  return `${countOf(d.totalRoutes, 'weekday route', 'weekday routes')} across ${countOf(d.agencies.length, 'transit agency', 'transit agencies')} in ${areaRegionName(d.area)}.`;
 }
 
 export function areaPageDescription(d: AreaPageData): string {
   const n = d.agencies.length;
   const where = areaRegionName(d.area);
   return firstThatFits([
-    `Compare ${plural(n, 'transit agency', 'transit agencies')} in ${where} side by side: routes and weekday waits by time of day, from published schedules.`,
-    `Compare ${plural(n, 'transit agency', 'transit agencies')} in ${where}: routes and weekday waits by time of day.`,
+    `Compare ${countOf(n, 'transit agency', 'transit agencies')} in ${where} side by side: routes and weekday waits by time of day, from published schedules.`,
+    `Compare ${countOf(n, 'transit agency', 'transit agencies')} in ${where}: routes and weekday waits by time of day.`,
     `${areaLeadSentence(d)} Compare each agency's routes and frequency.`,
     areaLeadSentence(d),
   ], DESCRIPTION_MAX);
 }
 
-function hourLabel(h: number): string {
-  const hour = h % 24;
-  return `${hour % 12 === 0 ? 12 : hour % 12}${hour < 12 ? 'am' : 'pm'}`;
-}
-
-/** Stat text for the span: "24 h" or "5am–2am". */
-export function areaSpanShort(d: Pick<AreaPageData, 'span'>): string | null {
-  if (!d.span) return null;
-  return d.span.last + 1 - d.span.first >= 24 ? '24 h' : `${hourLabel(d.span.first)}–${hourLabel(d.span.last + 1)}`;
-}
-
-/** Sub-label under the hours: weekend service, and "varies by agency" when the span is wide. */
-export function areaHoursLabel(d: Pick<AreaPageData, 'weekend' | 'spanVaries'>): string {
-  const weekend = d.weekend === 'both' ? 'Runs Sat & Sun' : d.weekend === 'sat' ? 'Runs Saturdays' : d.weekend === 'sun' ? 'Runs Sundays'
-    : d.weekend === 'none' ? 'Weekdays only' : d.weekend === 'varies' ? 'Weekends vary by agency' : '';
-  return ['weekday service', d.spanVaries ? 'varies by agency' : '', weekend].filter(Boolean).join(' · ');
-}
-
-/** One plain sentence, the same template for every area. */
 /** An area with more agencies than this names its two biggest and counts the rest (CIV-968); a smaller one names none (Ryan). */
 const AREA_INTRO_NAME_NONE_MAX = 3;
 const AREA_INTRO_NAMED = 2;
@@ -265,7 +218,7 @@ const AREA_INTRO_NAMED = 2;
  */
 export function areaIntroParts(d: AreaPageData): { lead: string; named: AreaAgencyRow[]; others: number } {
   const n = d.agencies.length;
-  const lead = `${areaRegionSentenceStart(d.area)} has ${plural(n, 'transit agency', 'transit agencies')} running ${plural(d.totalRoutes, 'route', 'routes')}${d.byMode.length > 1 ? ` (${modesText(d.byMode, ', ')})` : ''}`;
+  const lead = `${areaRegionSentenceStart(d.area)} has ${countOf(n, 'transit agency', 'transit agencies')} running ${countOf(d.totalRoutes, 'route', 'routes')}${d.byMode.length > 1 ? ` (${modesText(d.byMode, ', ')})` : ''}`;
   if (n <= AREA_INTRO_NAME_NONE_MAX) return { lead, named: [], others: 0 };
   const named = d.agencies.slice(0, AREA_INTRO_NAMED);
   return { lead, named, others: n - named.length };
@@ -278,7 +231,7 @@ export function areaIntroJoiners(parts: Pick<ReturnType<typeof areaIntroParts>, 
   return {
     opener: parts.named.length === 0 ? '' : ', including ',
     separators,
-    tail: parts.others > 0 ? `${plural(parts.others, 'other', 'others')}.` : '.',
+    tail: parts.others > 0 ? `${countOf(parts.others, 'other', 'others')}.` : '.',
   };
 }
 
@@ -300,7 +253,6 @@ export function areaDatesText(d: Pick<AreaPageData, 'newestRefresh' | 'releaseDa
   return ["Based on the agencies' published timetables, not live arrivals.", refreshed ? `Newest timetable published ${refreshed}.` : '', release ? `Atlas last updated this page ${release}.` : ''].filter(Boolean).join(' ');
 }
 
-/** The map link: `?area=<slug>` selects the area's agencies and fits the map to it (the app does the framing). */
 /**
  * The map link for an area page: the area's own agencies (`?area=`), plus `agencies=` listing every
  * agency counted on the page when that adds one (CIV-274: Fraser Valley on Vancouver), so the map
@@ -316,10 +268,10 @@ export function areaMapHref(d: Pick<AreaPageData, 'area'> & Partial<Pick<AreaPag
 
 export function resolveAreaSeo(
   d: AreaPageData,
-  ctx: { mode: 'public' | 'preview' | 'beta' | 'dev'; origin?: string },
+  ctx: { mode: SeoMode; origin?: string },
 ): { title: string; description: string; canonicalUrl: string; noindex: boolean; matchedPath: string } {
   const origin = (ctx.origin ?? SITE_URL).replace(/\/$/, '');
-  const prefix = ctx.mode === 'preview' ? '[Preview] ' : ctx.mode === 'public' ? '' : '[Beta] ';
+  const prefix = seoTitlePrefix(ctx.mode);
   return {
     title: `${prefix}${areaPageTitle(d)}`,
     description: areaPageDescription(d),
@@ -332,7 +284,7 @@ export function resolveAreaSeo(
 /** BreadcrumbList and Dataset; the breadcrumb is not shown on the page. */
 export function areaPageJsonLd(d: AreaPageData, canonicalUrl: string, origin: string): object {
   const crumbs = [{ name: 'Transit Atlas', item: `${origin}/` }, { name: d.area.country }, { name: areaRegionTitle(d.area), item: canonicalUrl }];
-  const m = d.newestRefresh ? /^(\d{4})-?(\d{2})-?(\d{2})/.exec(d.newestRefresh) : null;
+  const modified = formatIso(d.newestRefresh);
   return {
     '@context': 'https://schema.org',
     '@graph': [
@@ -348,10 +300,9 @@ export function areaPageJsonLd(d: AreaPageData, canonicalUrl: string, origin: st
         isAccessibleForFree: true,
         spatialCoverage: { '@type': 'Place', name: `${areaRegionTitle(d.area)}, ${d.area.country}` },
         creator: { '@type': 'Organization', name: 'Civic Minds', url: `${SITE_URL}/` },
-        ...(m ? { dateModified: `${m[1]}-${m[2]}-${m[3]}` } : {}),
+        ...(modified ? { dateModified: modified } : {}),
       },
     ],
   };
 }
 
-export { modeLabel };
