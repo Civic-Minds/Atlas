@@ -10,6 +10,7 @@ import Section from './Section';
 import { mins, pct } from './figures';
 import { lateShareColor } from '../lateShare';
 import LegendItem from '../../ui/LegendItem';
+import { LIVE_NO_STOP_TO_RANK } from '../../../content/noticeCopy';
 
 /** The one derivation of the worst-stops list (the stops ranked by share of late departures), so every surface lists the same stops. */
 export function worstStopsModel(v3: LiveV3, data: DashboardBandData, dir: number | null, uncertain: readonly UncertainStart[], limit: number) {
@@ -18,7 +19,7 @@ export function worstStopsModel(v3: LiveV3, data: DashboardBandData, dir: number
   return { top, hidden, both: dir == null, directionLabels: v3.directionLabels };
 }
 
-const EMPTY = 'No stop has enough departures to rank.';
+const EMPTY = LIVE_NO_STOP_TO_RANK;
 
 /** The tool panel's short clickable list, built from the same model: a stop name and its late share. */
 export function worstStopRows(v3: LiveV3, data: DashboardBandData, dir: number | null, uncertain: readonly UncertainStart[], limit: number, onPick: (stopId: string) => void) {

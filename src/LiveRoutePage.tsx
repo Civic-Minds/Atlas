@@ -33,6 +33,7 @@ import BunchingSection from './components/Live/sections/BunchingSection';
 import DeliveredSection from './components/Live/sections/DeliveredSection';
 import ExtraWaitSection from './components/Live/sections/ExtraWaitSection';
 import { dirsOf } from './components/Live/sections/figures';
+import { LIVE_METHOD_DRAW_ERROR, liveDrawError } from './content/noticeCopy';
 
 
 /** The stop-name fields of a v3 file; every one of them is shown in normal case. */
@@ -106,7 +107,7 @@ export function RouteDevHint({ v3, route }: { v3: LiveV3; route: string }) {
   return <DevHint hint={freshness(v3, route, Date.now()).devHint} className="mt-2" />;
 }
 
-export const BOUNDARY = (what: string) => `${what} could not be drawn: the analysis file may be from an older version.`;
+export const BOUNDARY = liveDrawError;
 
 function AnalysisPage() {
   const { agency = '', route = '' } = useParams();
@@ -180,7 +181,7 @@ function AnalysisPage() {
         <ErrorBoundary label={BOUNDARY('Extra wait')}><ExtraWaitSection v3={v3} band={band} dir={dir} detail="full" /></ErrorBoundary>
         <ErrorBoundary label={BOUNDARY('Where bunching forms')}><BunchingSection v3={v3} dir={dir} band={band} gaps={gaps} detail="full" uncertain={uncertain} /></ErrorBoundary>
         <ErrorBoundary label={BOUNDARY('Service delivered')}><DeliveredSection v3={v3} dir={dir} detail="full" /></ErrorBoundary>
-        <ErrorBoundary label="How this is measured could not be drawn."><MethodSection scope="route" data={data} /></ErrorBoundary>
+        <ErrorBoundary label={LIVE_METHOD_DRAW_ERROR}><MethodSection scope="route" data={data} /></ErrorBoundary>
         </>)}
       </article>
     </PageShell>
