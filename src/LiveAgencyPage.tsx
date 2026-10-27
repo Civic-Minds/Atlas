@@ -25,17 +25,15 @@ import { PageTitle, SectionTitle } from './components/ui/PageTitle';
 import DevHint from './components/Live/DevHint';
 import { ANALYZE_DEV_HINT } from './lib/liveReportData';
 import { coveredRoutesText, LATE_THRESHOLD, bunchPartsText, liveSubtitle, risePointsText, runTimeDiffText } from '../shared/liveWording';
-import { tenth } from '../shared/liveFormat';
+import { pct as pctOf, signedPct } from '../shared/liveFormat';
+import { mins } from './components/Live/sections/figures';
 import MethodSection from './components/Live/sections/MethodSection';
 
 /** One column grid for every table on the page, so the first column, Route and Direction line up from table to table (widths in rem; the number columns share the rest of the width equally). */
 const FIRST_COL = 15, ROUTE_COL = 10, DIR_COL = 6.5;
 
-const MINUS = '−';
-const pct = (x: number | null) => (x == null ? '–' : `${Math.round(x * 100)}%`);
-const pctSigned = (x: number | null) => (x == null ? '–' : `${x > 0 ? '+' : x < 0 ? MINUS : ''}${Math.abs(Math.round(x * 100))}%`);
-const num = tenth;
-const mins = (x: number) => `${x > 0 ? '+' : ''}${num(x)} min`;
+const pct = (x: number | null) => (x == null ? '–' : pctOf(x));
+const pctSigned = (x: number | null) => (x == null ? '–' : signedPct(x));
 const stop = (name: string) => shortStopName(titleCase(name));
 
 type Sort = 'late' | 'runTime' | 'bunching' | 'delivered';

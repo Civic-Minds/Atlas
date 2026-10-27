@@ -3,10 +3,9 @@
  * A change is coloured only when it is bigger than normal noise: the rule (weekChangeTone, dailyNoise, NOISE_RULE) lives
  * in shared/liveDashboard so the dashboard and Full analysis colour changes the same way.
  */
-import { isWeekendDate, dailyNoise, dateRangeText, healthyCounts, weekChangeTone, type CompareKey, type DailyValues, type DayKind, type LiveV3, type WeekMetrics } from '../../shared/liveDashboard';
+import { dailyNoise, dateRangeText, healthyCounts, weekChangeTone, type CompareKey, type DailyValues, type DayKind, type LiveV3, type WeekMetrics } from '../../shared/liveDashboard';
 import { LATE_TILE_CAPTION, bunchPartsText, excludingWeeksText, leftOutReason, runTimeDiffText } from '../../shared/liveWording';
-import { tenth } from '../../shared/liveFormat';
-export { NOISE_RULE } from '../../shared/liveDashboard';
+import { pct as pct0, pctTenth as pct1, tenth as clean } from '../../shared/liveFormat';
 
 export type KpiTone = 'better' | 'worse' | 'same';
 
@@ -27,12 +26,9 @@ export interface Kpi {
 }
 
 const round1 = (x: number) => Math.round(x * 10) / 10;
-const clean = tenth;
-const pct0 = (x: number) => `${Math.round(x * 100)}%`;
 /** The Bunching tile shows its two parts when the file has them (CIV-302): "7% · 21%" over "too close · too far apart". */
 const bunchSplit = (b: { bunched?: number; gapped?: number }) => b.bunched != null && b.gapped != null;
 const BUNCHING_SPLIT_CAPTION = 'too close · too far apart';
-const pct1 = (x: number) => `${clean(Math.round(x * 1000) / 10)}%`;
 
 /**
  * The change line: "last week 10%" (label first, then last week's value as the tile writes it, `lastText`) or "same as
@@ -56,8 +52,6 @@ export function kpiDelta(key: CompareKey, now: number | null, before: number | n
     spoken: `${lastText ? `last week ${lastText}, ${up ? 'up' : 'down'} ${clean(mag)} ${word}` : `${up ? 'up' : 'down'} ${clean(mag)} ${word} from last week`}${big ? (measured ? ', a bigger change than usual day to day' : '') : (measured ? ', within the usual day-to-day change' : ', a small change')}`,
   };
 }
-
-export type { DailyValues };
 
 /** "2 min faster than the timetable", from the same whole minutes the tile and the Run time section show. */
 function runTimeCaption(typicalMin: number, scheduledMin: number): string {
@@ -85,7 +79,7 @@ export function kpiTiles(w: NonNullable<LiveV3['weekly']>, daily: DailyValues = 
       compare ? kpiDelta('extraWait', t.extraWait?.minutes ?? null, l.extraWait?.minutes ?? null, true, false, noise('extraWait'), l.extraWait ? `${clean(l.extraWait.minutes)} min` : null, waitT) : null, l.extraWait ? `${clean(l.extraWait.minutes)} min` : null),
     mk('bunching', 'Bunching', bunchText(t.bunching) ?? '–', t.bunching && bunchSplit(t.bunching) ? BUNCHING_SPLIT_CAPTION : 'of gaps between cars bunched or too long', t.bunching?.gaps ?? 0, 'gaps', l.bunching?.gaps ?? null,
       compare ? kpiDelta('bunching', t.bunching?.share ?? null, l.bunching?.share ?? null, true, true, noise('bunching'), lastBunch, bunchText(t.bunching), [t.bunching ? pct0(t.bunching.share) : null, l.bunching ? pct0(l.bunching.share) : null]) : null, lastBunch),
-    mk('delivered', 'Service delivered', t.delivered?.share != null ? pct1(t.delivered.share) : '–', t.delivered ? 'of scheduled trips ran' : 'of scheduled trips ran', t.delivered ? t.delivered.seen + t.delivered.notSeen : 0, 'trips', l.delivered ? l.delivered.seen + l.delivered.notSeen : null,
+    mk('delivered', 'Service delivered', t.delivered?.share != null ? pct1(t.delivered.share) : '–', 'of scheduled trips ran', t.delivered ? t.delivered.seen + t.delivered.notSeen : 0, 'trips', l.delivered ? l.delivered.seen + l.delivered.notSeen : null,
       compare ? kpiDelta('delivered', t.delivered?.share ?? null, l.delivered?.share ?? null, false, true, noise('delivered'), l.delivered?.share != null ? pct1(l.delivered.share) : null, delT) : null, l.delivered?.share != null ? pct1(l.delivered.share) : null),
   ];
   return tiles.filter(k => k.value !== '–').map(k => (k.key === 'tripTime' && runTimeScope ? { ...k, scope: runTimeScope } : k));
@@ -102,6 +96,12 @@ export function weekNotComparableLine(w: NonNullable<LiveV3['weekly']>): string 
 
 /** The days a week left out (recorded too incompletely to count). */
 export const leftOutDates = (wk: WeekMetrics): string[] => wk.dates.filter(d => !wk.healthyDates.includes(d));
+
+/** The days two weeks leave out, as the week table's "Excluding …" line (empty when none) and that line's hover text. */
+export function excludingDays(w: { thisWeek: WeekMetrics; lastWeek: WeekMetrics } | null | undefined): { text: string | null; title: string | null } {
+  const thisLeft = w ? leftOutDates(w.thisWeek) : [], lastLeft = w ? leftOutDates(w.lastWeek) : [];
+  return { text: excludingWeeksText(thisLeft, lastLeft), title: leftOutReason([...lastLeft, ...thisLeft]) };
+}
 
 /**
  * The same line in two parts, so the days left out can stand on a line of their own: "This week is Oct 8–14 and last week is
@@ -120,13 +120,7 @@ export function weekWindowParts(w: NonNullable<LiveV3['weekly']>): { weeks: stri
   };
 }
 
-/** The two weeks and how many days of each were counted, for "How this is measured" (the recording-gaps rule is a Limits line). */
-export function weekWindowLine(w: NonNullable<LiveV3['weekly']>): string {
-  const p = weekWindowParts(w);
-  return p.days ? `${p.weeks} ${p.days}` : p.weeks;
-}
-
-export { isWeekendDate, type DayKind };
+export type { DayKind };
 
 /**
  * Late share for one kind of day, from the per-date counts over this week's days with good recordings, so the

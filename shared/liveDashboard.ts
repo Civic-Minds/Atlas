@@ -4,7 +4,7 @@
  * the plain-language sentences, so the page and the tests share one wording.
  */
 import { hasLiveAnalysis } from './livePollingConfig.js';
-import { tenth } from './liveFormat.js';
+import { pct } from './liveFormat.js';
 
 export interface AdherenceCounts {
   n: number;
@@ -65,10 +65,6 @@ export interface RunTimeBranch { fromStopId: string; toStopId: string; fromName:
 /** A branch's figures for a time of day: null when that period has none (or an older file has only all day). */
 export function branchFigures(b: RunTimeBranch, band: DashboardBand): RunTimeFigures | null {
   return b.bands ? b.bands[band] ?? null : band === 'all' ? b.all : null;
-}
-/** "To Marine Parade: usually 12 min, timetable 14 (over 14 stops from Humber Loop, 215 trips)." */
-export function branchRunTimeLine(b: RunTimeBranch, nice: (name: string) => string = x => x, f: RunTimeFigures = b.all): string {
-  return `To ${nice(b.toName)}: usually ${Math.round(f.typicalMin)} min, timetable ${Math.round(f.scheduledMin)}, 1 in 10 over ${Math.round(f.p90Min)} (over ${b.stops} stops from ${nice(b.fromName)}, ${f.n.toLocaleString()} trips).`;
 }
 /** A regular pattern's run time over its own reliably measured stops (`stops` of its `patternStops`; `fullPattern` when none is trimmed). */
 export type RunTimePattern = RunTimeBranch & { kind: 'main' | 'shortTurn' | 'branch'; patternStops: number; fullPattern: boolean };
@@ -218,20 +214,7 @@ export function dashboardUnavailable(agency: string, route: string, analysed = h
   return null;
 }
 
-const pct = (x: number) => `${Math.round(x * 100)}%`;
 const min = (x: number) => `${x > 0 ? '+' : ''}${Math.round(x * 10) / 10} min`;
-
-/** B3: one sentence per direction. */
-export function buildupSentence(label: string, b: DashboardBuildup): string {
-  if (b.kind === 'forms' && b.forms) {
-    return `${label}: delay builds up between ${b.forms.fromName} and ${b.forms.toName}: ${min(b.forms.medianAddedMin)} added there, and it stays up for the next few stops. Delay grows by 30+ seconds on ${pct(b.forms.growShare)} of ${b.forms.n.toLocaleString()} trips.`;
-  }
-  if (b.kind === 'gradual') {
-    return `${label}: delay builds gradually along the route${b.climbMin != null ? ` (${min(b.climbMin)} from start to end)` : ''}. No single stretch stands out.`;
-  }
-  if (b.kind === 'none') return `${label}: delay does not build up along the route.`;
-  return `${label}: too few trips to say where delay builds up.`;
-}
 
 /** B3's one-line takeaway above the chart: what the bars show, in the chart's own terms. */
 export function buildupTakeaway(b: DashboardBuildup, lessExactStops = 0): string {
@@ -284,28 +267,6 @@ export function rankStops(stops: readonly DashboardStop[], directionId: number |
     .sort((a, b) => b.lateShare - a.lateShare || b.n - a.n);
 }
 
-export interface CardSummary {
-  /** Share of timepoint departures that are late (5.5+ min), with the count it is out of. */
-  late: { share: number; n: number } | null;
-  /** The stop where the most cars leave late (ranked stops only). */
-  worstStop: { name: string; lateShare: number; n: number } | null;
-  /** Where delays start, as one sentence, or null when no stretch adds more than a minute in half the runs. */
-  startsText: string | null;
-}
-
-/** The three short facts on the route card (one direction), from the same file the page reads. */
-export function cardSummary(v3: LiveV3, directionId: number, uncertain: readonly UncertainStart[] = []): CardSummary {
-  const counts = v3.adherence.timepoints.all.byDirection[String(directionId)];
-  const worst = rankStops(v3.stops, directionId, uncertain)[0];
-  const build = v3.buildup.find(b => b.directionId === directionId);
-  const start = build?.kind === 'forms' ? build.forms : null;
-  return {
-    late: counts && counts.n > 0 ? { share: counts.lateShare, n: counts.n } : null,
-    worstStop: worst ? { name: worst.name, lateShare: worst.lateShare, n: worst.n } : null,
-    startsText: start ? `${start.fromName} to ${start.toName} (${min(start.medianAddedMin)}, on ${pct(start.growShare)} of trips)` : null,
-  };
-}
-
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
 /** "Oct 8–14", or "Sep 30–Oct 14" across months, from two YYYY-MM-DD dates. */
@@ -343,20 +304,8 @@ export function freshness(v3: LiveV3, route: string, now: number): Freshness {
   };
 }
 
-/** One CSV cell: quoted when it holds a comma, quote or line break. */
-const cell = (v: string | number | null) => {
-  const t = v == null ? '' : String(v);
-  return /[",\n]/.test(t) ? `"${t.replace(/"/g, '""')}"` : t;
-};
-
-/** Rows as CSV text (for the table downloads): a header line, then one line per row. */
-export function toCsv(header: readonly string[], rows: ReadonlyArray<ReadonlyArray<string | number | null>>): string {
-  return [header, ...rows].map(r => r.map(cell).join(',')).join('\n') + '\n';
-}
-
 // --- running time, extra wait, service delivered and the week-over-week comparison ---
 
-const m1 = tenth;
 const hourName = (h: number) => `${h % 12 === 0 ? 12 : h % 12}${h % 24 < 12 ? 'am' : 'pm'}`;
 
 /** "Scheduled 22 min · usually 27 · 1 in 10 over 34 min" (with the hour when one is given). */
@@ -376,24 +325,8 @@ export function runningTimeFigures(r: { scheduledMin?: number | null; typicalMin
   return parts.join(' · ');
 }
 
-/** The stop where riders wait longest, as a sentence; null when no stop has service every 15 minutes or better. */
-export function extraWaitSentence(stops: ReadonlyArray<{ name: string; extraWaitMin: number; gaps: number }>, directionLabel: string): string | null {
-  const ranked = stops.filter(s => s.gaps >= 30).sort((a, b) => b.extraWaitMin - a.extraWaitMin);
-  const top = ranked[0];
-  if (!top) return null;
-  if (top.extraWaitMin < 0.5) return `${directionLabel}: riders wait about as long as scheduled at every stop.`;
-  return `${directionLabel}: riders at ${top.name} wait about ${m1(Math.round(top.extraWaitMin * 2) / 2)} min longer than scheduled.`;
-}
-
-/** "96% of scheduled trips ran" with how it was counted, in plain words. */
-export function deliveredSentence(d: DeliveredFigures, label?: string): string {
-  if (d.share == null) return `${label ? `${label}: ` : ''}not enough days of recordings to say how many scheduled trips ran.`;
-  return `${label ? `${label}: ` : ''}${m1(Math.round(d.share * 1000) / 10)}% of scheduled trips ran (${d.seen.toLocaleString()} of ${(d.seen + d.notSeen).toLocaleString()}).`;
-}
-
 export type CompareKey = 'late' | 'tripTime' | 'extraWait' | 'bunching' | 'delivered';
 
-/** One comparison line per measure, this week against last, with a plain up or down. The same rule for every measure. */
 /**
  * The week-change colouring rule, shared by the dashboard (src/utils/liveKpi.ts) and the full analysis page, so both
  * always agree. A change is coloured only when it is bigger than normal noise, for every measure the same way: twice
@@ -427,7 +360,6 @@ export type DayKind = 'all' | 'weekday' | 'weekend';
 export const isWeekendDate = (d: string) => { const g = new Date(`${d}T12:00:00Z`).getUTCDay(); return g === 0 || g === 6; };
 const ofKind = (d: string, kind: DayKind) => kind === 'all' || (kind === 'weekend') === isWeekendDate(d);
 
-/** The days every Live surface counts: this week's days with good recordings (all the window's days for a file without the weekly block). */
 /**
  * The good days and their trip and stop-departure counts: what the header and "Last N service days" line show, so they
  * agree with every figure (CIV-910). A file without the good-day counts falls back to the whole window.
@@ -461,6 +393,7 @@ export function goodDayLimits(v3: LiveV3): {
   return { leftOut, swaps, nearCutoffShare };
 }
 
+/** The days every Live surface counts: this week's days with good recordings (all the window's days for a file without the weekly block). */
 export const healthyDatesOf = (v3: LiveV3): string[] => v3.weekly?.thisWeek.healthyDates ?? v3.window.dates;
 
 /**
@@ -506,7 +439,6 @@ export function dailyValuesOf(days: ReadonlyArray<Pick<NonNullable<LiveV3['daily
   };
 }
 
-/** This week's daily values on days with good recordings, where the file has them. */
 /**
  * The analysis with run time over each direction's main pattern only (CIV-945), wherever the file has it: the week's
  * and each day's `tripTime` become `mainPatternTrip`. Older files come back unchanged.
@@ -517,6 +449,7 @@ export function withMainPatternTrip(v3: LiveV3): LiveV3 {
   return { ...v3, weekly: { ...v3.weekly, thisWeek: main(v3.weekly.thisWeek), lastWeek: main(v3.weekly.lastWeek) }, daily: v3.daily && Object.fromEntries(Object.entries(v3.daily).map(([d, x]) => [d, main(x)])) };
 }
 
+/** This week's daily values on days with good recordings, where the file has them. */
 export function weekDailyValues(v3: LiveV3): Required<DailyValues> {
   const ok = new Set(v3.weekly?.thisWeek.healthyDates ?? []);
   const perDay = dailyValuesOf(Object.entries(v3.daily ?? {}).filter(([d, x]) => ok.has(d) && x.healthy).map(([, x]) => x));
@@ -534,23 +467,6 @@ export function weekDailyValues(v3: LiveV3): Required<DailyValues> {
 export function weekChangeTone(key: CompareKey, now: number, before: number, lowerIsBetter: boolean, noise: number | null = null): { tone: 'better' | 'worse' | 'same'; big: boolean; measured: boolean } {
   const big = Math.abs(now - before) > (noise ?? FIXED_NOISE[key]);
   return { tone: !big ? 'same' : (now > before) !== lowerIsBetter ? 'better' : 'worse', big, measured: noise != null };
-}
-
-export function compareLines(w: NonNullable<LiveV3['weekly']>): Array<{ key: CompareKey; label: string; text: string; direction: 'better' | 'worse' | 'same' | 'unknown' }> {
-  const t = w.thisWeek, l = w.lastWeek;
-  const pct0 = (x: number) => `${Math.round(x * 100)}%`;
-  const line = (key: CompareKey, label: string, now: number | null, before: number | null, short: (x: number) => string, full: (x: number) => string, lowerIsBetter: boolean) => {
-    if (now == null || before == null) return { key, label, text: `${label}: not enough healthy days to compare.`, direction: 'unknown' as const };
-    if (short(now) === short(before)) return { key, label, text: `${full(now)}, unchanged from last week.`, direction: 'same' as const };
-    return { key, label, text: `${full(now)}, ${now > before ? 'up' : 'down'} from ${short(before)}.`, direction: (now > before) !== lowerIsBetter ? 'better' as const : 'worse' as const };
-  };
-  return [
-    line('late', 'Late', t.late?.share ?? null, l.late?.share ?? null, pct0, x => `${pct0(x)} late`, true),
-    line('tripTime', 'Trip time', t.tripTime?.typicalMin ?? null, l.tripTime?.typicalMin ?? null, x => `${Math.round(x)} min`, x => `Typical trip ${Math.round(x)} min`, true),
-    line('extraWait', 'Extra wait', t.extraWait?.minutes ?? null, l.extraWait?.minutes ?? null, x => `${m1(x)} min`, x => `Riders wait ${m1(x)} min longer than scheduled`, true),
-    line('bunching', 'Bunching', t.bunching?.share ?? null, l.bunching?.share ?? null, pct0, x => `${pct0(x)} of gaps too close or too far apart`, true),
-    line('delivered', 'Service delivered', t.delivered?.share ?? null, l.delivered?.share ?? null, x => `${m1(Math.round(x * 1000) / 10)}%`, x => `${m1(Math.round(x * 1000) / 10)}% of scheduled trips ran`, false),
-  ];
 }
 
 /**

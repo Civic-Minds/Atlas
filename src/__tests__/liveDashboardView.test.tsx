@@ -21,7 +21,7 @@ describe('Live dashboard view', () => {
     vi.stubGlobal('ResizeObserver', class { observe() {} unobserve() {} disconnect() {} });
   });
   it('shows five tiles with grey chips for small changes, and the top five stops', () => {
-    render(<LiveDashboardView v3={v3} data={one} band="all" dir={null} uncertain={[]} note={null} title="TTC 510" filters={<div>filters</div>} toFull={() => {}} />);
+    render(<LiveDashboardView v3={v3} data={one} band="all" dir={null} uncertain={[]} filters={<div>filters</div>} toFull={() => {}} />);
     const tiles = within(screen.getByRole('region', { name: /This week compared with last week/ })).getAllByRole('listitem');
     expect(tiles).toHaveLength(5);
     expect(within(tiles[0]).getByText('last week 20%').className).toMatch(/text-muted/);
