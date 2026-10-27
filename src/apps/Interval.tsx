@@ -991,7 +991,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
 
   // Sync filter state (maxHeadway, period) to URL for active view persistence (refresh/share).
   // On load: URL wins (see initializers), else LS/default; effects then ensure URL reflects
-  // current (like lat/lon/z). Defaults (h=60, p=all) omitted to keep URLs short.
+  // current (like lat/lon/z). Every value is written, h=60 and p=all included, so a copied link reopens this view (#1141).
   useEffect(() => {
     syncUrlParams(urlParamUpdate(MAP_URL.headway, maxHeadway));
   }, [maxHeadway]);

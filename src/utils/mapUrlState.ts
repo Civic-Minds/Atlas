@@ -22,7 +22,10 @@ export interface UrlParam<T> {
 const identity = (raw: string) => raw;
 
 export const MAP_URL = {
-  /** Frequency filter in minutes; Infinity is "All". 60 is the default and is left out of the URL. */
+  /**
+   * Frequency filter in minutes; Infinity is "All". Always written, 60 included: without it a link opens on
+   * the viewer's saved frequency, not the sender's (#1141).
+   */
   headway: {
     key: 'h', aliases: ['headway', 'max'], presence: 'nonEmpty',
     parse: raw => {
@@ -30,13 +33,13 @@ export const MAP_URL = {
       const n = Number(raw);
       return isFinite(n) && n > 0 ? n : undefined;
     },
-    serialize: value => (value === Infinity ? 'all' : value !== 60 ? String(value) : null),
+    serialize: value => (value === Infinity ? 'all' : String(value)),
   } satisfies UrlParam<number>,
-  /** Time period; "all" is left out of the URL. */
+  /** Time period. Always written, "all" included: without it a link opens on the current period (#1141). */
   period: {
     key: 'p', aliases: ['period'], presence: 'nonEmpty',
     parse: raw => (raw === 'all' || (PERIOD_KEYS as readonly string[]).includes(raw) ? raw as TimePeriod : undefined),
-    serialize: value => (value !== 'all' ? value : null),
+    serialize: value => value,
   } satisfies UrlParam<TimePeriod>,
   day: {
     key: 'day', aliases: ['d'], presence: 'nonEmpty',
