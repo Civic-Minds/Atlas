@@ -31,6 +31,7 @@ import { DAY_TYPES, type DayType as DayTypeName } from '../../shared/dayTypes';
 import { splitRouteKey } from '../utils/routeKey';
 import { getPolledRoute } from '../../shared/livePollingConfig';
 import { resolveRouteSelectionForDay } from '../utils/routeSelection';
+import { MAP_URL, readUrlParam, urlParamPresent, urlParamUpdate } from '../utils/mapUrlState';
 import { syncUrlParams } from '../utils/syncUrlParams';
 import type { HistoryView } from '../utils/historyYearMap';
 import { usePersistedFilterPref } from '../hooks/usePersistedFilterPref';
@@ -189,22 +190,16 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   }, []);
 
   const [maxHeadway, setMaxHeadway] = useState<number>(() => {
-    try {
-      const h = searchParams.get('h') || searchParams.get('headway') || searchParams.get('max');
-      if (h) {
-        if (h === 'all' || h === 'inf' || h === 'Infinity') return Infinity;
-        const n = Number(h);
-        if (isFinite(n) && n > 0) return n;
-      }
-    } catch {}
+    const fromLink = readUrlParam(searchParams, MAP_URL.headway);
+    if (fromLink != null) return fromLink;
     try { const v = Number(localStorage.getItem('atlas_pref_headway')); if (v > 0) return v; } catch {}
     return 60;
   });
-  const [selectedRoute, setSelectedRoute] = useState<string | null>(() => searchParams.get('route'));
-  const [selectedStop, setSelectedStop] = useState<string | null>(() => searchParams.get('stop'));
+  const [selectedRoute, setSelectedRoute] = useState<string | null>(() => readUrlParam(searchParams, MAP_URL.route) ?? null);
+  const [selectedStop, setSelectedStop] = useState<string | null>(() => readUrlParam(searchParams, MAP_URL.stop) ?? null);
   // Research views never show on-demand, so a shared link's on-demand mode (or ?ondemand=) is dropped there.
   const onDemandAllowed = viewAllowsOnDemand(mapViewKind({ nightServiceView, frequentServiceView, liveRoutesOnly }));
-  const [onDemandStopAgencySlug, setOnDemandStopAgencySlug] = useState<string | null>(() => onDemandAllowed ? searchParams.get('ondemand') : null);
+  const [onDemandStopAgencySlug, setOnDemandStopAgencySlug] = useState<string | null>(() => onDemandAllowed ? readUrlParam(searchParams, MAP_URL.onDemand) ?? null : null);
 
   useEffect(() => {
     if (!selectedRoute) return;
@@ -226,15 +221,12 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   // same key format as ?route=. Not surfaced in any UI; for investigating cases like #294 where
   // seeing whether two routes' shapes actually overlap settles the question faster than reasoning
   // about it in the abstract. Read-only from the URL on load, never written back.
-  const [highlightRoutes] = useState<string[]>(() => {
-    const raw = searchParams.get('highlight');
-    return raw ? raw.split(',').map(s => s.trim()).filter(Boolean) : [];
-  });
+  const [highlightRoutes] = useState<string[]>(() => readUrlParam(searchParams, MAP_URL.highlight) ?? []);
   const [disambiguationRoutes, setDisambiguationRoutes] = useState<string[] | null>(null);
   // A link's ?routes= chooser (CIV-919) waits here until those routes' agencies load, so it never
   // shows raw route keys. A link that also opens a route or stop shows that card instead.
   const [pendingRouteChooser, setPendingRouteChooser] = useState<string[] | null>(() => (
-    searchParams.get('route') || searchParams.get('stop') ? null : parseRouteChooserParam(searchParams)
+    readUrlParam(searchParams, MAP_URL.route) || readUrlParam(searchParams, MAP_URL.stop) ? null : parseRouteChooserParam(searchParams)
   ));
   const [hoveredBranch, setHoveredBranchState] = useState<HoveredBranch | null>(null);
   const hoverTimeoutRef = useRef<number | null>(null);
@@ -254,7 +246,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   const selectedOnDemandZoneId = onDemandSelectionZoneId(selectedOnDemandSelection);
 
   useEffect(() => {
-    syncUrlParams({ ondemand: selectedOnDemandSelection });
+    syncUrlParams(urlParamUpdate(MAP_URL.onDemand, selectedOnDemandSelection));
   }, [selectedOnDemandSelection]);
 
   // An agency selection replaces route disambiguation. Keeping both active
@@ -396,10 +388,8 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     return modes;
   });
   const [period, setPeriod] = useState<TimePeriod>(() => {
-    try {
-      const p = searchParams.get('p') || searchParams.get('period');
-      if (p === 'all' || (p && PERIOD_KEYS.includes(p as any))) return p as TimePeriod;
-    } catch {}
+    const fromLink = readUrlParam(searchParams, MAP_URL.period);
+    if (fromLink != null) return fromLink;
     // A direct link to a specific agency's route/stop should default to that
     // agency's own current time, not the viewer's browser-local clock (#245).
     const initialSlug = (selectedRoute ?? selectedStop)?.split('::')[0];
@@ -408,8 +398,8 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   });
   const [hideSpan, setHideSpan] = useState(() => {
     try {
-      const urlValue = new URLSearchParams(window.location.search).get('span');
-      if (urlValue != null) return urlValue !== '0';
+      const fromLink = readUrlParam(window.location.search, MAP_URL.hideSpan);
+      if (fromLink != null) return fromLink;
       const saved = localStorage.getItem('atlas_pref_hide_span');
       return saved == null ? true : saved === 'true';
     } catch {
@@ -420,8 +410,8 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   // saved preference keeps its meaning; only a visitor with neither gets the new default.
   const [hideLimitedService, setHideLimitedService] = useState(() => {
     try {
-      const urlValue = new URLSearchParams(window.location.search).get('limited');
-      if (urlValue != null) return urlValue !== '0';
+      const fromLink = readUrlParam(window.location.search, MAP_URL.hideLimited);
+      if (fromLink != null) return fromLink;
       const saved = localStorage.getItem('atlas_pref_hide_limited');
       return saved == null ? true : saved === 'true';
     } catch {
@@ -768,10 +758,10 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   const [filtersFromUrl] = useState(() => {
     const sp = new URLSearchParams(window.location.search);
     return {
-      headway: !!(sp.get('h') || sp.get('headway') || sp.get('max')),
-      day: !!(sp.get('day') || sp.get('d')),
-      span: sp.get('span') != null,
-      limited: sp.get('limited') != null,
+      headway: urlParamPresent(sp, MAP_URL.headway),
+      day: urlParamPresent(sp, MAP_URL.day),
+      span: urlParamPresent(sp, MAP_URL.hideSpan),
+      limited: urlParamPresent(sp, MAP_URL.hideLimited),
     };
   });
   usePersistedFilterPref('atlas_pref_headway', String(maxHeadway), filtersFromUrl.headway);
@@ -779,10 +769,10 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   usePersistedFilterPref('atlas_pref_hide_span', String(hideSpan), filtersFromUrl.span);
   usePersistedFilterPref('atlas_pref_hide_limited', String(hideLimitedService), filtersFromUrl.limited);
   useEffect(() => {
-    syncUrlParams({ span: hideSpan ? null : '0' });
+    syncUrlParams(urlParamUpdate(MAP_URL.hideSpan, hideSpan));
   }, [hideSpan]);
   useEffect(() => {
-    syncUrlParams({ limited: hideLimitedService ? null : '0' });
+    syncUrlParams(urlParamUpdate(MAP_URL.hideLimited, hideLimitedService));
   }, [hideLimitedService]);
   useEffect(() => {
     if (!shouldPersistAgencySelection(agencyUrlRuleRef.current, agencySelectionUserChangedRef.current)) return;
@@ -965,11 +955,11 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   // concurrent writers (day, map center, filters) don't clobber each other.
   useEffect(() => {
     if (!selectedRoute && handedToLiveRef.current) { handedToLiveRef.current = false; return; }
-    syncUrlParams({ route: selectedRoute || null });
+    syncUrlParams(urlParamUpdate(MAP_URL.route, selectedRoute));
   }, [selectedRoute]);
 
   useEffect(() => {
-    syncUrlParams({ stop: selectedStop || null });
+    syncUrlParams(urlParamUpdate(MAP_URL.stop, selectedStop));
   }, [selectedStop]);
 
   // The stop card's back target and the route chooser in the link (CIV-919).
@@ -1003,15 +993,11 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   // On load: URL wins (see initializers), else LS/default; effects then ensure URL reflects
   // current (like lat/lon/z). Defaults (h=60, p=all) omitted to keep URLs short.
   useEffect(() => {
-    const h =
-      maxHeadway === Infinity ? 'all'
-      : maxHeadway !== 60 ? String(maxHeadway)
-      : null;
-    syncUrlParams({ h });
+    syncUrlParams(urlParamUpdate(MAP_URL.headway, maxHeadway));
   }, [maxHeadway]);
 
   useEffect(() => {
-    syncUrlParams({ p: period !== 'all' ? period : null });
+    syncUrlParams(urlParamUpdate(MAP_URL.period, period));
   }, [period]);
 
   // Search-result hover → highlight that route on the map, fading the rest
@@ -1083,7 +1069,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
             selectedAgencies={selectedAgencies}
             initialMapCenter={initialMapCenter}
             initialMapBounds={initialMapBounds}
-            initialOnDemandSlug={initialMapCenter || !onDemandAllowed ? null : searchParams.get('ondemand')?.split('::', 1)[0] ?? null}
+            initialOnDemandSlug={initialMapCenter || !onDemandAllowed ? null : readUrlParam(searchParams, MAP_URL.onDemand)?.split('::', 1)[0] ?? null}
             onTileLoadingChange={setIsTilesLoading}
             onBasemapLoadingChange={setIsBasemapLoading}
             setQuery={setQuery}
