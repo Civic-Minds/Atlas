@@ -33,7 +33,7 @@ import {
   agencyQualifiesForHistory,
   type HistoryTier,
 } from '../../shared/historyEligibility';
-import { capitalizeFirst, headwayAbout, headwayAboutMinutes, runTimeAmount } from '../utils/headwayText';
+import { capitalizeFirst, headwayEvery, headwayExactAmount, runTimeAmount } from '../utils/headwayText';
 import { historyChartPositions } from '../utils/historyChart';
 import Panel, { PanelBody, PanelTitleBar } from '../components/ui/Panel';
 import ListRow from '../components/ui/ListRow';
@@ -116,6 +116,13 @@ function periodMinutes(snapshot: RouteSnapshot, period: TimePeriod): number | nu
   return value.kind === 'value' ? value.min : null;
 }
 
+/**
+ * The minutes History prints for a snapshot: its exact value everywhere (#1085), in the rows, the chart's
+ * labels, the summary and the line's colour, so they never disagree. To round them all as the map cards
+ * do instead, return headwayAboutMinutes(minutes) here.
+ */
+const shownMinutes = (minutes: number): number => minutes;
+
 function changeSummary(entry: RouteHistoryEntry, period: TimePeriod = 'all'): { text: string; subtext: string; worse: boolean } | null {
   // Only snapshots with a value in the period take part (CIV-389).
   const snaps = sortSnapshotsNewestFirst(entry.snapshots).filter(s => periodMinutes(s, period) != null);
@@ -124,13 +131,12 @@ function changeSummary(entry: RouteHistoryEntry, period: TimePeriod = 'all'): { 
   const last = snaps[0];
   // Only a change across calendar years gets the box; schedules from the same year show just the rows.
   if (first.year === last.year) return null;
-  // Rounded as the rows round them (#1085), so the box and the rows never give two numbers for one snapshot.
-  const fHw = headwayAboutMinutes(periodMinutes(first, period)!);
-  const lHw = headwayAboutMinutes(periodMinutes(last, period)!);
+  const fHw = shownMinutes(periodMinutes(first, period)!);
+  const lHw = shownMinutes(periodMinutes(last, period)!);
   if (Math.abs(fHw - lHw) < 2) return null;
   const worse = lHw > fHw;
   return {
-    text: `${capitalizeFirst(headwayAbout(fHw))} → ${headwayAbout(lHw)}`,
+    text: `${capitalizeFirst(headwayEvery(fHw))} → ${headwayEvery(lHw)}`,
     subtext: `${first.label} to ${last.label}`,
     worse,
   };
@@ -202,9 +208,9 @@ function RouteHistoryCard({
 
   const first = valued[valued.length - 1] ?? snaps[snaps.length - 1];
   const last = valued[0] ?? snaps[0];
-  // The line's colour follows the same rounded values as the rows and the summary (#1085).
-  const firstHw = headwayAboutMinutes(snapHeadway(first));
-  const lastHw = headwayAboutMinutes(snapHeadway(last));
+  // The line's colour follows the same minutes as the rows and the summary (#1085).
+  const firstHw = shownMinutes(snapHeadway(first));
+  const lastHw = shownMinutes(snapHeadway(last));
   const worse = lastHw > firstHw;
   const better = lastHw < firstHw;
   const summary = changeSummary(route, period);
@@ -337,7 +343,7 @@ function RouteHistoryCard({
                     <circle cx={p.x} cy={p.y} r="3" fill={lineColor} stroke="var(--bg-panel)" strokeWidth="1.5" />
                     {valueLabelIndices.has(i) && (
                       <text x={p.x} y={p.y - 7} textAnchor="middle" fontSize="8" fontWeight="700" fill="var(--text-primary)" fontFamily="inherit">
-                        {`${headwayAboutMinutes(p.hw)} min`}
+                        {headwayExactAmount(shownMinutes(p.hw))}
                       </text>
                     )}
                     {showXLabel && (
@@ -365,7 +371,7 @@ function RouteHistoryCard({
               headway={hw ?? undefined}
               // The snapshot's own minutes, as in the chart, the summary and the change beside it (#1085):
               // the map cards' rounding to the half hour made NFTA 76 read 360 beside a chart reading 349.
-              headwayLabel={hw != null ? headwayEvery(hw) : undefined}
+              headwayLabel={hw != null ? headwayEvery(shownMinutes(hw)) : undefined}
               headwaySuffix={delta ? (delta > 0 ? `+${delta}` : `${delta}`) : undefined}
               headwaySuffixTone={delta ? (delta > 0 ? 'negative' : 'positive') : undefined}
               // Regular weight, like the map cards' destination rows (CIV-971).
