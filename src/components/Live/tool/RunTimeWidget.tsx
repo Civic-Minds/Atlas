@@ -1,11 +1,9 @@
 import type { DashboardBand, LiveV3 } from '../../../../shared/liveDashboard';
-import { titleCase } from '../../../utils/format';
-import { shortStopName } from '../../../utils/stopLabel';
+import { liveStopName as nice } from '../../../utils/stopLabel';
 import { PatternRows, RowLegend, runTimeStretchOf } from '../sections/RunTimeSection';
 import { patternRunTimeRows, runTimeRowScale, runTimeRows } from '../sections/runTimeRows';
 import Widget from './Widget';
 
-const nice = (n: string) => shortStopName(titleCase(n));
 
 /**
  * The picked direction's run time. With per-pattern figures (CIV-945): one row per regular pattern, each timed on its own

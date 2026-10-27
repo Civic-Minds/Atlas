@@ -5,7 +5,7 @@
 import { minutesText, pct, signedPct } from '../../../shared/liveFormat';
 import { runTimeDiffText } from '../../../shared/liveWording';
 import type { AgencyRouteRow, AgencySummary } from '../../../shared/liveAgency';
-import type { DashboardBand, LiveV3 } from '../../../shared/liveDashboard';
+import { branchFigures, runTimeDiffMin, type DashboardBand, type LiveV3 } from '../../../shared/liveDashboard';
 import { mapStep, type MapMeasure } from './routeMapModel';
 import { delayHeatPoints } from './delayHeatModel';
 
@@ -22,11 +22,11 @@ export function bandFigure(v3: LiveV3 | undefined, measure: 'late' | 'runTime' |
   }
   if (measure === 'runTime') {
     const mains = Object.values(v3.runningTime?.patterns ?? {}).flatMap(list => list.filter(p => p.kind === 'main'))
-      .map(p => p.bands?.[band]).filter((f): f is NonNullable<typeof f> => !!f && f.n > 0);
+      .map(p => branchFigures(p, band)).filter((f): f is NonNullable<typeof f> => !!f && f.n > 0);
     const n = mains.reduce((a, f) => a + f.n, 0);
     if (!n) return null;
     const typical = mains.reduce((a, f) => a + f.typicalMin * f.n, 0) / n, scheduled = mains.reduce((a, f) => a + f.scheduledMin * f.n, 0) / n;
-    const diff = Math.round(typical) - Math.round(scheduled);
+    const diff = runTimeDiffMin(typical, scheduled);
     return { value: diff, text: runTimeDiffText(diff, false) };
   }
   const stops = v3.extraWait?.[band] ?? [];
