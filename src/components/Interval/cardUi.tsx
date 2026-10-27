@@ -25,7 +25,7 @@ export const CARD_LIST_ROUTE = 'text-xs font-bold text-[var(--text-primary)] lea
 // The section label lives in styles.ts with the other shared text styles (CIV-395), so non-card panels use it too.
 export { CARD_SECTION } from '../../styles';
 import { CARD_NOTE, CARD_SECTION } from '../../styles';
-import { CORRECTED_DATA_NOTICE, NEW_SCHEDULE_DATA_NOTICE, REPORT_FORM_HINT, REPORT_NEEDS_FREQUENCY_DETAIL, REPORT_NEEDS_REASON } from '../../content/noticeCopy';
+import { CORRECTED_DATA_NOTICE, explainerFor, NEW_SCHEDULE_DATA_NOTICE, REPORT_FORM_HINT, REPORT_NEEDS_FREQUENCY_DETAIL, REPORT_NEEDS_REASON } from '../../content/noticeCopy';
 /** A list card's header block (agency card, History's agency view): one divider under it. */
 export const CARD_HEADER_BLOCK = 'shrink-0 px-4 pt-4 pb-3 border-b border-[var(--border-primary)]';
 /** The same header spacing for a card that is only a header (no divider sitting on the card's own edge). */
@@ -751,7 +751,7 @@ export function NewScheduleDataNotice({ agency, onInfoOpen, on }: { agency: Agen
     <CardHelpNotice
       message={NEW_SCHEDULE_DATA_NOTICE[on]}
       onLearnMore={() => onInfoOpen('about', {
-        helpTopic: 'new-schedule-data',
+        helpTopic: explainerFor(on === 'route' ? 'N4' : 'N21'),
         agencyName: agency.name,
         lastRefreshedAt: agency.lastRefreshedAt ?? undefined,
         lastFeedCheckAt: agency.lastFeedCheckAt ?? undefined,
@@ -769,7 +769,7 @@ export function CorrectedDataNotice({ agency, overrideNote, onInfoOpen, on }: { 
     <CardHelpNotice
       message={CORRECTED_DATA_NOTICE[on]}
       onLearnMore={() => onInfoOpen('about', {
-        helpTopic: 'corrected-data',
+        helpTopic: explainerFor(on === 'route' ? 'N5' : 'N22'),
         agencyName: agency.name,
         overrideNote,
         issueUrl: agency.issueUrl,
