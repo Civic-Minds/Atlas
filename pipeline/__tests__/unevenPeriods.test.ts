@@ -66,3 +66,20 @@ describe('stretch values for an uneven period (#1142)', () => {
     expect(dir.period.midday.typical).toBeNull();
   });
 });
+
+describe('an uneven tail reads its longest gap between its own departures (NYC 6 Pelham Bay, batch 2 dry run)', () => {
+  it('leaves out the lead-in before its first departure; a main stretch keeps its full-window wait', () => {
+    // The tail's evening starts 41 minutes in, then runs 14, 14, 11, 8, 18, 18, ... (its gaps from 603N).
+    const gaps = [14, 14, 11, 8, 4, 8, 18, 18, 6, 10, 5, 7, 3, 10, 5, 6, 6, 5, 4, 5, 10, 5, 7, 6];
+    const ev = PERIOD_MINUTES.evening;
+    const times = gaps.reduce((acc, g) => [...acc, acc[acc.length - 1] + g], [ev.start + 41]);
+    const tail = stretchPeriods({ ...main(times), kind: 'tail' }).evening;
+    expect(tail.uneven).toBe(true);
+    expect(tail.value).toBe(18);
+    expect(stretchFilterValue(tail)).toBe(18);
+    const asMain = stretchPeriods(main(times)).evening;
+    expect(asMain.value).toBe(asMain.coverage);
+    expect(asMain.coverage).toBeGreaterThanOrEqual(41);
+  });
+});
+
