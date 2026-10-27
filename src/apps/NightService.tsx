@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { RESEARCH_VIEW_EMPTY } from '../content/missingNoticesDraft';
 import { Moon } from 'lucide-react';
 import { useViewport } from '../context/ViewportContext';
 import { PANEL_TITLE } from '../styles';
@@ -225,7 +226,8 @@ export default function NightService({ active, sidebarLeft, searchBarWidth, laye
           {loadState === 'loading' && <PanelEmpty kind="loading">{loadingText('night service')}</PanelEmpty>}
           {loadState === 'error' && <PanelEmpty kind="error">{loadErrorText('night service data')}</PanelEmpty>}
           {loadState === 'ready' && agencies.length === 0 && (
-            <PanelEmpty>No agencies match that search.</PanelEmpty>
+            // No search typed: nothing in view meets the rule, so the search line would mislead (CIV-959 gap 11, placeholder).
+            <PanelEmpty>{query.trim() ? 'No agencies match that search.' : RESEARCH_VIEW_EMPTY}</PanelEmpty>
           )}
           {loadState === 'ready' && agencies.map((agency, agencyIndex) => (
             <div key={agency.slug}>

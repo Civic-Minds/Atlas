@@ -151,7 +151,8 @@ export const StopCard: React.FC<StopCardProps> = ({
 
       {liveStop && <LiveStopArrivals slug={liveStop.slug} stopId={liveStop.stopId} lat={liveStop.lat} lon={liveStop.lon} />}
 
-      {sortedRoutes.length === 0 && <PanelEmpty>{STOP_NO_ROUTES_IN_PERIOD}</PanelEmpty>}
+      {/* The card body is already inset; the line keeps the agency card's empty-list inset (CIV-959 gap 2). */}
+      {sortedRoutes.length === 0 && <div className="-mx-4"><PanelEmpty>{STOP_NO_ROUTES_IN_PERIOD}</PanelEmpty></div>}
 
       <SidebarCardList>
         {sortedRoutes.map(route => (
