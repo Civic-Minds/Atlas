@@ -36,3 +36,14 @@ export default function SelectionLoadPanel({ kind, failed, onClose, sidebarLeft,
     </Panel>
   );
 }
+
+/** A card that can't be shown says why in its place (N17, N18, N30), with Close. */
+export function SelectionNoticePanel({ message, onClose, sidebarLeft, searchBarWidth }: { message: string; onClose: () => void; sidebarLeft?: number; searchBarWidth?: number }) {
+  return (
+    <Panel sidebar enter style={sidebarFrameStyle(sidebarLeft, searchBarWidth)}>
+      <PanelEmpty action={<ArrowLink as="button" tone="inline" size="xs" onClick={onClose} className="shrink-0 whitespace-nowrap">Close</ArrowLink>}>
+        {message}
+      </PanelEmpty>
+    </Panel>
+  );
+}

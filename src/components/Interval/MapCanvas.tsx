@@ -317,6 +317,8 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   const [exportDialogOpen, setExportDialogOpen] = useState(false);
   const agencyDataLoadingRef = useRef(agencyDataLoading);
   agencyDataLoadingRef.current = agencyDataLoading;
+  const unfilteredLayersRef = useRef(layers);
+  unfilteredLayersRef.current = layers;
   const agencyDataFailedCountRef = useRef(agencyDataFailedCount);
   agencyDataFailedCountRef.current = agencyDataFailedCount;
   const prepareExportSource = useCallback(async () => {
@@ -338,6 +340,20 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         if (!map) return false;
         const layers = routeLayers.filter(layer => map.getLayer(layer) && map.getLayoutProperty(layer, 'visibility') !== 'none');
         return layers.length > 0 && map.queryRenderedFeatures(undefined, { layers }).length > 0;
+      },
+      hasRouteData: () => {
+        if (!map) return false;
+        const bounds = map.getBounds();
+        const inView = (feature: GeoJSON.Feature) => {
+          const geometry = feature.geometry;
+          const lines = geometry.type === 'LineString' ? [geometry.coordinates]
+            : geometry.type === 'MultiLineString' ? geometry.coordinates : [];
+          return lines.some(line => line.some(point => bounds.contains(point as [number, number])));
+        };
+        // Tiles hold every route (filters apply per layer); loaded agency data is checked before filters.
+        const tileRoutes = ['atlas-overview-pmtiles', 'atlas-pmtiles'].some(source => map.getSource(source)
+          && map.querySourceFeatures(source, { sourceLayer: 'routes' }).some(inView));
+        return tileRoutes || Object.values(unfilteredLayersRef.current ?? {}).some(collection => collection.features.some(inView));
       },
     });
     // In the image, the selected route gets a bolder line with an outline in the map's

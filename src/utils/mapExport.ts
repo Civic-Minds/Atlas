@@ -538,6 +538,8 @@ interface WaitForMapExportReadyOptions {
   hasFailedData?: () => boolean;
   /** True when at least one route is drawn in the current view. */
   hasRenderedRoutes: () => boolean;
+  /** True when the view has route data even though none is drawn (every route is hidden by filters). */
+  hasRouteData?: () => boolean;
   timeoutMs?: number;
   pollMs?: number;
   /** How long a fully loaded view must stay empty before it is reported as having no routes. */
@@ -553,6 +555,7 @@ export async function waitForMapExportReady({
   isDataLoading,
   hasFailedData = () => false,
   hasRenderedRoutes,
+  hasRouteData = () => false,
   timeoutMs = 30000,
   pollMs = 250,
   emptyGraceMs = 3000,
@@ -585,7 +588,11 @@ export async function waitForMapExportReady({
         if (hasRenderedRoutes()) return;
         // A view can briefly look empty right before newly requested data arrives.
         emptySince ??= Date.now();
-        if (Date.now() - emptySince >= emptyGraceMs) throw new MapExportBlockedError('no-routes');
+        if (Date.now() - emptySince >= emptyGraceMs) {
+          // Routes only hidden by filters still make a real image of this view.
+          if (hasRouteData()) return;
+          throw new MapExportBlockedError('no-routes');
+        }
       } else {
         emptySince = null;
       }
