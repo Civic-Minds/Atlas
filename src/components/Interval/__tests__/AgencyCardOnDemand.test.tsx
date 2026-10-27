@@ -37,8 +37,11 @@ describe('on-demand zone card', () => {
   it('builds hours from structured data and bolds the selected day', () => {
     renderZoneCard('West Glanbrook', 'Saturday', 'midday');
     expect(screen.getByText('Running during Saturday midday')).toBeInTheDocument();
-    expect(screen.getByText('Mon–Sat 4:30 a.m.–2:00 a.m.')).toHaveClass('font-bold');
-    expect(screen.getByText('Sun 5:30 a.m.–1:00 a.m.')).not.toHaveClass('font-bold');
+    // Hours rows (CIV-964): the selected day's row is bold, days and times in words beside its bar.
+    expect(screen.getByText('Mon–Sat')).toHaveClass('font-bold');
+    expect(screen.getByText('4:30 a.m.–2:00 a.m.').closest('p')).toHaveClass('font-bold');
+    expect(screen.getByText('Sun')).not.toHaveClass('font-bold');
+    expect(screen.getByText('5:30 a.m.–1:00 a.m.').closest('p')).not.toHaveClass('font-bold');
     expect(screen.getByText('Holidays follow Sunday hours.')).toBeInTheDocument();
     expect(screen.getByText("Every trip starts or ends at this zone's transfer point, shown on the map.")).toBeInTheDocument();
     expect(screen.queryByText(/not fixed-route stops/)).toBeNull();

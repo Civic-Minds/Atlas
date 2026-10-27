@@ -134,6 +134,8 @@ html.map-page .overflow-y-scroll {
   --strip-bunching-1: #c084fc;
   --strip-bunching-2: #6d28d9;
   --strip-ring: rgba(0, 0, 0, 0.28);
+  /* On-demand service hours bars (CIV-964): the light green from the review page, never a dark fill. */
+  --hours-band: rgba(63, 143, 90, 0.45);
 }
 
 [data-theme='dark'] {
@@ -179,6 +181,7 @@ html.map-page .overflow-y-scroll {
   --strip-bunching-1: #e9a5ff;
   --strip-bunching-2: #a855f7;
   --strip-ring: rgba(255, 255, 255, 0.3);
+  --hours-band: rgba(63, 143, 90, 0.55);
 }
 
 [data-color-vision='high-contrast'] {

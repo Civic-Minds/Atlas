@@ -218,8 +218,13 @@ export function formatOnDemandClock(hour: number): string {
   return `${h12}:${String(minutes).padStart(2, '0')} ${suffix}`;
 }
 
+/** One time range in words: "6:00 a.m.–4:00 p.m.". */
+export function formatOnDemandHoursRange(window: OnDemandHours): string {
+  return `${formatOnDemandClock(window.startHour)}–${formatOnDemandClock(window.endHour)}`;
+}
+
 function formatWindows(windows: readonly OnDemandHours[]): string {
-  return windows.map(window => `${formatOnDemandClock(window.startHour)}–${formatOnDemandClock(window.endHour)}`).join(', ');
+  return windows.map(formatOnDemandHoursRange).join(', ');
 }
 
 const DAY_GROUP_LABELS: Record<string, string> = {
@@ -235,6 +240,10 @@ const DAY_GROUP_LABELS: Record<string, string> = {
 export interface OnDemandHoursLine {
   dayTypes: DayType[];
   text: string;
+  /** The line's days ("Mon–Fri") and its times in words ("6:00 a.m.–4:00 p.m.", or "No service"), for the hours rows. */
+  days: string;
+  times: string;
+  windows: readonly OnDemandHours[];
 }
 
 /**
@@ -254,7 +263,13 @@ export function formatOnDemandHoursLines(availability: OnDemandAvailability | un
   return [...groups.entries()].map(([key, dayTypes]) => {
     const label = DAY_GROUP_LABELS[dayTypes.join(',')];
     const windows = availability[dayTypes[0]] ?? [];
-    return { dayTypes, text: key === '[]' ? `${label}: no service` : `${label} ${formatWindows(windows)}` };
+    return {
+      dayTypes,
+      text: key === '[]' ? `${label}: no service` : `${label} ${formatWindows(windows)}`,
+      days: label,
+      times: key === '[]' ? 'No service' : formatWindows(windows),
+      windows,
+    };
   });
 }
 
