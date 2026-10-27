@@ -688,8 +688,13 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
               style={row.status && row.status !== 'no_data' ? { color: getVehicleColors(row.status, colorMode).border } : undefined}
               className={`${CARD_LIST_ROUTE} text-right min-w-0`}
             >
-              {row.value}
-              {row.tag && <Tag className="ml-1.5 align-middle whitespace-nowrap">{row.tag}</Tag>}
+              {row.tag ? (
+                // The name stays whole; the tag drops under it when both don't fit on one line.
+                <span className="inline-flex flex-wrap items-center justify-end gap-x-1.5 gap-y-1">
+                  <span>{row.value}</span>
+                  <Tag className="whitespace-nowrap">{row.tag}</Tag>
+                </span>
+              ) : row.value}
             </span>
           </div>
         ))}
