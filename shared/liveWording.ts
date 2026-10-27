@@ -5,15 +5,13 @@ import { dateRangeText } from './liveDashboard';
  * cannot drift apart.
  */
 
-/** The Late tile's caption under its percentage. */
 /** What Late means, once, for every page, panel and the glossary (approved by Ryan 2026-10-17). Reads after "Late:". */
 export const LATE_DEFINITION = "more than 5½ min behind the timetable: the TTC's 5-minute standard, plus 30 seconds because we see each vehicle about once a minute.";
 /** The title of every late-by-hour section and card (approved by Ryan 2026-10-17). */
 export const LATE_BY_HOUR_TITLE = 'Late departures by hour';
 /** The threshold in one phrase, wherever a caption or intro says how late counts as Late (approved by Ryan 2026-10-17). */
 export const LATE_THRESHOLD = 'more than 5½ min late';
-/** The short line for the tool's left panel and tile maths: the threshold and where it comes from. */
-export const LATE_SHORT = `${LATE_THRESHOLD} (TTC's 5-min standard + 30 s)`;
+/** The Late tile's caption under its percentage. */
 export const LATE_TILE_CAPTION = `of trips left the end of the line ${LATE_THRESHOLD}`;
 
 /** The week a page's figures cover, as its subtitle opens: "Week of Oct 8–14". */
@@ -32,15 +30,12 @@ export const lateShareText = (pct: string): string => `${pct} late`;
 export const bunchedAndLong = (bunched: string, tooLong: string): string => `${bunched} bunched · ${tooLong} too long`;
 
 /** The Yesterday view (CIV-278, wording approved by Ryan). */
-export const PERIOD_PILLS = { week: 'This week', yesterday: 'Yesterday' } as const;
 const WEEKDAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 export const weekdayOf = (date: string): string => WEEKDAYS[new Date(`${date}T12:00:00Z`).getUTCDay()];
 /** "Thursday, Oct 15": a single day where the weekly view says "Week of Oct 8–14". */
 export const dayText = (date: string): string => `${weekdayOf(date)}, ${dateRangeText(date, date)}`;
 /** A tile's change line against the same weekday a week before: "last week 9%" becomes "last Thursday 9%" ("same as last week" likewise). */
 export const againstLastWeekday = (line: string, compareDate: string): string => line.replace(/last week/, `last ${weekdayOf(compareDate)}`);
-/** The Yesterday subtitle's opening, like the week's "Week of Oct 8–14, compared with Oct 1–7": "Thursday, Oct 15, compared with Thursday, Oct 8". */
-export const dayComparedWith = (date: string, compareDate: string): string => `${dayText(date)}, compared with ${dayText(compareDate)}`;
 export const NOT_ENOUGH_YESTERDAY = 'Not enough recordings yesterday to compare.';
 
 /** The week a page is compared with, after its "Week of": "compared with Oct 1–7". */

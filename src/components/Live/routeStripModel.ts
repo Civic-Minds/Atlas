@@ -3,8 +3,9 @@
  * stop, which stops get a label without labels overlapping, the screen-reader summary, and how a direction is read
  * from the Live analysis file (v3).
  */
-import type { DashboardBand, LiveV3, UncertainStart } from '../../../shared/liveDashboard';
+import { directionLabel, type DashboardBand, type LiveV3, type UncertainStart } from '../../../shared/liveDashboard';
 import { titleCase } from '../../utils/format';
+import { pct, tenth } from '../../../shared/liveFormat';
 import { USUALLY_ON_TIME, bunchTotalParts, bunchedAndLong, lateShareText, usuallyOffBy } from '../../../shared/liveWording';
 
 export type RouteStripMode = 'delay' | 'bunching';
@@ -96,13 +97,11 @@ export function stopStep(stop: RouteStripStop, mode: RouteStripMode): Step | nul
   return step === 'early' && stop.timepoint === false ? 0 : step;
 }
 
-const MINUS = '−';
-const num = (x: number) => (Math.round(x * 10) / 10).toString().replace('-', MINUS);
-export const pct = (x: number) => `${Math.round(x * 100)}%`;
+export { pct };
 /** "+3.1 min late", "−2 min early", "on time". */
 export function delayText(min: number): string {
   if (Math.abs(min) < 0.05) return 'on time';
-  return min > 0 ? `+${num(min)} min late` : `${num(min)} min early`;
+  return min > 0 ? `+${tenth(min)} min late` : `${tenth(min)} min early`;
 }
 
 /** Rough width of a label in px at 12px Inter, capped at `maxPx` (longer labels wrap onto more lines, see labelLines). */
@@ -233,7 +232,7 @@ export function bunchParts(stop: RouteStripStop): { total: number; bunched: numb
 export function stopDetail(stop: RouteStripStop): { name: string; lines: string[] } {
   const lines: string[] = [];
   if (stop.n > 0 && stop.delayMin != null) {
-    const usual = Math.abs(stop.delayMin) < 0.05 || (stop.delayMin < 0 && stop.timepoint === false) ? USUALLY_ON_TIME : usuallyOffBy(num(Math.abs(stop.delayMin)), stop.delayMin > 0 ? 'late' : 'early');
+    const usual = Math.abs(stop.delayMin) < 0.05 || (stop.delayMin < 0 && stop.timepoint === false) ? USUALLY_ON_TIME : usuallyOffBy(tenth(Math.abs(stop.delayMin)), stop.delayMin > 0 ? 'late' : 'early');
     lines.push(stop.lateShare != null ? `${usual} · ${lateShareText(pct(stop.lateShare))}` : usual);
   } else lines.push('Delay not measured');
   const parts = bunchParts(stop);
@@ -285,7 +284,7 @@ export function routeStripFromV3(v3: LiveV3, directionId: number, band: Dashboar
   const bForms = bunchingBand?.kind === 'forms' ? bunchingBand.forms : null;
   return {
     directionId,
-    label: v3.directionLabels[String(directionId)] ?? `Direction ${directionId}`,
+    label: directionLabel(v3, directionId),
     stops,
     delaysStart: forms ? { fromStopId: forms.fromStopId, toStopId: forms.toStopId } : null,
     bunchingForms: bForms ? { fromStopId: bForms.fromStopId, toStopId: bForms.toStopId } : null,

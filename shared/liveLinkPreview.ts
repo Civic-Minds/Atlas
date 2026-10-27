@@ -1,3 +1,4 @@
+import { pct } from './liveFormat';
 import { LATE_TILE_CAPTION, weekOfText } from './liveWording';
 import type { AgencySummary } from './liveAgency';
 
@@ -6,7 +7,6 @@ import type { AgencySummary } from './liveAgency';
  * in the Late tile's words with the subtitle's week ("9% of trips left the end of the line more than 5½ min late · Week of Oct 8–14").
  */
 export function liveLinkPreview(agency: string, route: string | null, summary: AgencySummary | null): { title: string; description: string } {
-  const pct = (x: number) => `${Math.round(x * 100)}%`;
   const dates = summary?.weekly?.thisWeek.dates ?? [];
   const week = dates.length ? weekOfText(dates[0], dates[dates.length - 1]) : '';
   const line = (share: number | null | undefined) => (share == null ? '' : `${pct(share)} ${LATE_TILE_CAPTION}${week ? ` · ${week}` : ''}`);

@@ -11,7 +11,7 @@ import { SITE_URL } from '../shared/seo';
 import { useLiveDashboard, liveToolPath } from './hooks/useLiveDashboard';
 import { devOnly, liveReportTitle } from './lib/liveReportData';
 import { applySeoToDocument } from './lib/seoDom';
-import { syncUrlParams } from './utils/syncUrlParams';
+import { readUrlNumberParam, readUrlParam as readParam, syncUrlParams } from './utils/syncUrlParams';
 import { stretchLabel } from './utils/stopLabel';
 import { TILE } from './pageStyles';
 import ErrorBoundary from './components/ErrorBoundary';
@@ -32,21 +32,17 @@ import DeliveredSection from './components/Live/sections/DeliveredSection';
 import ExtraWaitSection from './components/Live/sections/ExtraWaitSection';
 import BunchingSection from './components/Live/sections/BunchingSection';
 import BuildupSection from './components/Live/sections/BuildupSection';
-import { BANDS, dirsOf, mins, pct } from './components/Live/sections/figures';
+import { BANDS, DAYS, dirsOf, mins, pct } from './components/Live/sections/figures';
 import { BOUNDARY, RouteDevHint, RouteSubtitle, withNiceNames } from './LiveRoutePage';
 import { LATE_BY_HOUR_TITLE } from '../shared/liveWording';
 
 type Day = 'all' | 'weekday' | 'weekend';
-const DAYS: [Day, string][] = [['all', 'All days'], ['weekday', 'Weekdays'], ['weekend', 'Weekends']];
-export { BANDS };
 
 /** What is open in the detail panel: a stop (by its place in the direction's strip) or a marked stretch. */
 type Selection = { dir: number; kind: 'stop'; stopId: string } | { dir: number; kind: 'stretch'; mode: RouteStripMode };
 
-export { dirsOf };
-const readParam = (key: string) => new URLSearchParams(window.location.search).get(key);
 
-export const Group = PillGroup;
+const Group = PillGroup;
 
 function Fact({ label, value, sub }: { label: string; value: string; sub?: string }) {
   return (
@@ -186,7 +182,7 @@ function Main({ v3, band, dir, uncertain, sel, setSel }: {
 export default function LiveExplorePage() {
   const { agency = '', route = '' } = useParams();
   const state = useLiveDashboard(FEATURES.liveReports ? agency : null, route);
-  const [dir, setDir] = useState<number | null>(() => { const d = readParam('dir'); return d != null && d !== '' && !Number.isNaN(Number(d)) ? Number(d) : null; });
+  const [dir, setDir] = useState<number | null>(() => readUrlNumberParam('dir'));
   const [day, setDay] = useState<Day>(() => { const d = readParam('day'); return d === 'weekday' || d === 'weekend' ? d : 'all'; });
   const [band, setBand] = useState<DashboardBand>(() => { const b = readParam('band'); return BANDS.some(([k]) => k === b) ? (b as DashboardBand) : 'all'; });
   const [picked, setPicked] = useState<Selection | null>(null);

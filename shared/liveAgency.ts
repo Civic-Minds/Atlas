@@ -4,7 +4,7 @@
  * route, so a quiet route does not count as much as the 504. Every figure says how many of the agency's routes it covers.
  * Pure: the builder script (scripts/live-agency-summary.ts) reads the files, this turns them into the page's numbers.
  */
-import { withMainPatternTrip, dailyValuesOf, healthyLateByHour, rankStops, type DailyValues, type LiveV3, type UncertainStart, type WeekMetrics } from './liveDashboard.js';
+import { directionLabel as dirLabel, runTimeDiffMin, withMainPatternTrip, dailyValuesOf, healthyLateByHour, rankStops, type DailyValues, type LiveV3, type UncertainStart, type WeekMetrics } from './liveDashboard.js';
 
 /** Stops and stretches need this many measurements to be ranked (the route page's rule). */
 export const AGENCY_MIN_N = 30;
@@ -132,7 +132,6 @@ function networkDaily(inputs: readonly AgencyRouteInput[], healthy: readonly str
   return { late, delivered, tripTime: rest.tripTime, extraWait: rest.extraWait, bunching: rest.bunching };
 }
 
-const dirLabel = (v3: LiveV3, d: number) => v3.directionLabels[String(d)] ?? `Direction ${d}`;
 
 export function agencySummary(input: {
   agency: string;
@@ -163,7 +162,7 @@ export function agencySummary(input: {
       lateN: t?.late?.n ?? 0,
       lateLastWeek: v3.weekly?.comparable ? l?.late?.share ?? null : null,
       runTimeOver: runTimeOver(t?.tripTime ?? null),
-      runTimeDiffMin: t?.tripTime && t.tripTime.n > 0 ? Math.round(t.tripTime.typicalMin) - Math.round(t.tripTime.scheduledMin) : null,
+      runTimeDiffMin: t?.tripTime && t.tripTime.n > 0 ? runTimeDiffMin(t.tripTime.typicalMin, t.tripTime.scheduledMin) : null,
       bunchingShare: t?.bunching?.share ?? null,
       ...(t?.bunching?.bunched != null && t.bunching.gapped != null ? { bunchedShare: t.bunching.bunched, gappedShare: t.bunching.gapped } : {}),
       deliveredShare: t?.delivered?.share ?? null,

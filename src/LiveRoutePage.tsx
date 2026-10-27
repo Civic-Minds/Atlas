@@ -32,7 +32,7 @@ import BuildupSection from './components/Live/sections/BuildupSection';
 import BunchingSection from './components/Live/sections/BunchingSection';
 import DeliveredSection from './components/Live/sections/DeliveredSection';
 import ExtraWaitSection from './components/Live/sections/ExtraWaitSection';
-import { dirsOf, mins } from './components/Live/sections/figures';
+import { dirsOf } from './components/Live/sections/figures';
 
 
 /** The stop-name fields of a v3 file; every one of them is shown in normal case. */
@@ -53,14 +53,9 @@ const niceDeep = (x: unknown, key = ''): unknown => {
 export function withNiceNames(v3: LiveV3): LiveV3 {
   return niceDeep(v3) as LiveV3;
 }
-/** Axis value with its unit, with a real minus sign. */
-const axisMin = mins;
 
 export type Ready = Extract<LiveDashboardResponse, { status: 'ready' }>;
 
-
-/** B2: stops most often late, ranked by how often vehicles leave more than 5½ min late. One table with a small bar in each row. */
-const hourLabel = (h: number) => `${h % 12 === 0 ? 12 : h % 12}${h % 24 < 12 ? 'a' : 'p'}`;
 
 /** This week against last week: five tiles, each a number, a label and a change chip coloured only beyond normal noise. */
 function WeekCompare({ v3 }: { v3: LiveV3 }) {
@@ -173,7 +168,7 @@ function AnalysisPage() {
             options={[['both', 'Both directions'], ...dirsOf(v3, null).map(d => [String(d), v3.directionLabels[String(d)]] as const)]} />
         </div>}
         {view !== 'analysis' ? (
-          <LiveDashboardView lite={view === 'lite'} v3={v3} data={v3.bands.all} band="all" dir={dir} uncertain={uncertain} note={data.note} title={title}
+          <LiveDashboardView lite={view === 'lite'} v3={v3} data={v3.bands.all} band="all" dir={dir} uncertain={uncertain}
             filters={null}
             toFull={hash => { window.history.replaceState(null, '', `${window.location.pathname}${window.location.search}#${hash}`); setView('analysis'); }} />
         ) : (<>

@@ -1,3 +1,5 @@
+import { titleCase } from './format';
+
 /** Short names for chart axes: the cross street or the station, not the whole stop name. */
 export function shortStopName(name: string): string {
   let n = name.replace(/\s+(North|South|East|West)\s+Side$/i, '').replace(/\s+Streetcar Platform$/i, '').trim();
@@ -60,3 +62,6 @@ export function stretchEnds(fromName: string, toName: string): [string, string] 
 export function stretchLabel(fromName: string, toName: string): string {
   return stretchEnds(fromName, toName).join(' to ');
 }
+
+/** A stop as Live lists it: normal case, then the short name ("Bathurst", not "KING ST WEST AT BATHURST ST"). */
+export const liveStopName = (name: string): string => shortStopName(titleCase(name));
