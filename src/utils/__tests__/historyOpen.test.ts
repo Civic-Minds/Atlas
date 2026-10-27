@@ -59,6 +59,7 @@ describe('historyRouteSearchPlaceholder (CIV-402)', () => {
   it('uses "an" before a vowel sound', () => {
     expect(historyRouteSearchPlaceholder('NFTA')).toBe('Find an NFTA route…');
     expect(historyRouteSearchPlaceholder('MBTA')).toBe('Find an MBTA route…');
+    expect(historyRouteSearchPlaceholder('ABQ RIDE')).toBe('Find an ABQ RIDE route…'); // #1136
   });
 });
 
@@ -66,6 +67,15 @@ describe('indefiniteArticle', () => {
   it('reads initialisms by their first letter\'s name', () => {
     expect(['NFTA', 'MBTA', 'HSR', 'RTD', 'STM', 'OC Transpo', 'LA Metro', 'SFMTA'].map(indefiniteArticle)).toEqual(Array(8).fill('an'));
     expect(['TTC', 'YRT', 'UTA', 'DDOT', 'GO Transit'].map(indefiniteArticle)).toEqual(Array(5).fill('a'));
+  });
+
+  it('reads all-caps names said as words by their first sound (#1136)', () => {
+    expect(['MAX', 'LYNX', 'SMART'].map(indefiniteArticle)).toEqual(Array(3).fill('a'));
+  });
+
+  it('reads leading capitals run into a lowercase part as letters', () => {
+    expect(['STLévis', 'NJ Transit'].map(indefiniteArticle)).toEqual(['an', 'an']);
+    expect(['CTtransit', 'QLine', 'GTrans'].map(indefiniteArticle)).toEqual(['a', 'a', 'a']);
   });
 
   it('reads other names by their first sound', () => {
