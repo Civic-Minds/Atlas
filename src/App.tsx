@@ -805,6 +805,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
           ) : <>
             <Interval
               agencies={intervalAgencies}
+              catalogReady={agenciesLoadState === 'ready' && !modeCatchingUp}
               allAgencies={agencies}
               lightMode={lightMode}
               setLightMode={setLightMode}

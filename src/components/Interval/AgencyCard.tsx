@@ -40,6 +40,7 @@ import { headwayTierLabel } from '../../utils/headwayText';
 import ArrowLink from '../ui/ArrowLink';
 import PanelEmpty from '../ui/PanelEmpty';
 import { NO_ROUTES_LOADED, noRoutesMatchText } from '../../content/stateCopy';
+import { AGENCY_LOAD_FAILED, agencyNoServiceOnDay } from '../../content/missingNoticesDraft';
 import { compareHeadwayThenNumber } from '../../utils/sortCompare';
 
 interface RouteRow {
@@ -289,6 +290,17 @@ export function buildAgencyRouteBuckets(routes: RouteRow[]): { matching: RouteRo
   };
 }
 
+/** The empty route list's line: failed to load, no service this day, or still loading (CIV-959 placeholders). */
+function emptyListText(layers: AgencyLayers, slug: string, day: DayType, loadFailed: boolean): string {
+  const fc = layers[slug];
+  if (!fc) return loadFailed ? AGENCY_LOAD_FAILED : NO_ROUTES_LOADED;
+  const runsOtherDays = fc.features.some(f => {
+    const p = f.properties as ShapeProperties & { stopId?: string };
+    return p.routeId && !p.stopId && p.day && p.day !== day;
+  });
+  return runsOtherDays ? agencyNoServiceOnDay(day) : NO_ROUTES_LOADED;
+}
+
 interface Props {
   agency: Agency;
   layers: AgencyLayers;
@@ -308,6 +320,8 @@ interface Props {
   onBackToAgency?: () => void;
   /** Closes the card: the "← Map" back link every card with nothing before it gets (CIV-929). */
   onClose: () => void;
+  /** This agency's network failed to load, so the empty list says so instead of "loading" (CIV-959). */
+  loadFailed?: boolean;
 }
 
 function RouteListSection({
@@ -351,6 +365,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
   onDemandZoneId = null,
   onBackToAgency,
   onClose,
+  loadFailed = false,
 }, ref) {
   const routes = useMemo(
     () => getRoutes(layers, agency.slug, day, period, { maxHeadway, selectedModes, hideSpan, hideLimitedService }),
@@ -660,7 +675,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
         {onDemandOn ? (
           <PanelEmpty>{ON_DEMAND_NOT_MAPPED_NOTE}</PanelEmpty>
         ) : visibleRoutes.length === 0 ? (
-          <PanelEmpty>{activeFilterLabel ? noRoutesMatchText(activeFilterLabel) : NO_ROUTES_LOADED}</PanelEmpty>
+          <PanelEmpty>{activeFilterLabel ? noRoutesMatchText(activeFilterLabel) : emptyListText(layers, agency.slug, day, loadFailed)}</PanelEmpty>
         ) : hasFilterSplit ? (
           <>
             {matchingRoutes.length > 0 && (

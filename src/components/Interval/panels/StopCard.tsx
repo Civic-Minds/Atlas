@@ -17,6 +17,8 @@ import {
 import { reportDetails } from '../../../utils/reportIssue';
 import StopRouteGroup from './StopRouteGroup';
 import { stopRouteBestHeadway, type StopRoute } from '../../../utils/stopRoutes';
+import PanelEmpty from '../../ui/PanelEmpty';
+import { STOP_NO_ROUTES_IN_PERIOD } from '../../../content/missingNoticesDraft';
 import LiveStopArrivals from './LiveStopArrivals';
 import type { HeadwayMetric } from '../../../utils/routeFacts';
 import { compareHeadwayThenNumber } from '../../../utils/sortCompare';
@@ -148,6 +150,8 @@ export const StopCard: React.FC<StopCardProps> = ({
       </SidebarCardHeaderBlock>
 
       {liveStop && <LiveStopArrivals slug={liveStop.slug} stopId={liveStop.stopId} lat={liveStop.lat} lon={liveStop.lon} />}
+
+      {sortedRoutes.length === 0 && <PanelEmpty>{STOP_NO_ROUTES_IN_PERIOD}</PanelEmpty>}
 
       <SidebarCardList>
         {sortedRoutes.map(route => (

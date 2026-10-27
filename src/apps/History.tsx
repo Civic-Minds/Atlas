@@ -44,6 +44,7 @@ import { syncUrlParams } from '../utils/syncUrlParams';
 import { encodeHistoryUrlState, parseHistoryUrlState, type HistoryUrlState } from '../utils/shareUrlState';
 import PanelEmpty from '../components/ui/PanelEmpty';
 import { loadingText, loadErrorText, NO_ROUTES_LOADED, noRoutesMatchText, RETRY_HINT } from '../content/stateCopy';
+import { historyNotCovered } from '../content/missingNoticesDraft';
 import { compareAgencyName, compareRegion } from '../utils/sortCompare';
 import { inViewFirst } from '../utils/historyOpen';
 
@@ -400,7 +401,10 @@ function HistoryAgencyPanel({
   nameParts,
   selectedYear,
   view,
+  notice,
 }: {
+  /** Why the linked route isn't open: History doesn't cover it (CIV-959, placeholder wording). */
+  notice?: string | null;
   /** The Time and Frequency chips: the list shows the period's values and only routes within the limit. */
   view: HistoryView;
   /** The agency's name and place, as the agency card and About list show them. */
@@ -513,6 +517,7 @@ function HistoryAgencyPanel({
       </div>
 
       <PanelBody>
+        {notice && <PanelEmpty>{notice}</PanelEmpty>}
         {visibleRouteRows.length === 0 && (
           <PanelEmpty>{routeQuery || activeFilter ? noRoutesMatchText(routeFilters.find(f => f.key === activeFilter)?.label) : NO_ROUTES_LOADED}</PanelEmpty>
         )}
@@ -759,12 +764,16 @@ export default function History({ active, view = HISTORY_VIEW_ALL, initialAgency
     }
   }, [selectedSlug, selectedRouteShortName]);
 
-  // A linked agency that History doesn't have: fall back to the agency chooser.
+  // A linked agency that History doesn't have: fall back to the agency chooser, which says why (CIV-959).
+  const [uncoveredNotice, setUncoveredNotice] = useState<string | null>(null);
   useEffect(() => {
     if (!historyData || !selectedSlug) return;
     if (!historyData.some(a => a.slug === selectedSlug)) {
+      setUncoveredNotice(historyNotCovered(selectedRouteShortName ? 'route' : 'agency'));
       setSelectedSlug(null);
       setSelectedRouteShortName(null);
+    } else {
+      setUncoveredNotice(null);
     }
   }, [historyData, selectedSlug]);
 
@@ -886,6 +895,7 @@ export default function History({ active, view = HISTORY_VIEW_ALL, initialAgency
           }
           return (
             <HistoryAgencyPanel
+              notice={selectedRouteShortName ? historyNotCovered('route') : null}
               agencyHistory={agencyHistory}
               onRouteSelect={setSelectedRouteShortName}
               onBack={() => { setSelectedSlug(null); setSelectedRouteShortName(null); }}
@@ -924,6 +934,7 @@ export default function History({ active, view = HISTORY_VIEW_ALL, initialAgency
             <HistoryIcon className="w-3 h-3 text-[var(--text-dim)] shrink-0" />
             <span className={PANEL_TITLE}>Historical service</span>
           </PanelTitleBar>
+          {uncoveredNotice && <PanelEmpty>{uncoveredNotice}</PanelEmpty>}
           {(
             <>
               {historyData !== null && !historyLoadFailed && (

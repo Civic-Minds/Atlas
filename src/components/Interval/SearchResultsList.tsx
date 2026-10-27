@@ -1,5 +1,6 @@
 import React from 'react';
-import { PANEL_SECTION_HEAD, LIST_ROW_PRIMARY, LIST_ROW_DIM, SELECTION_ACTIVE, SELECTION_ACTIVE_TEXT, CARD_SECTION } from '../../styles';
+import { PANEL_SECTION_HEAD, LIST_ROW_PRIMARY, LIST_ROW_DIM, SELECTION_ACTIVE, SELECTION_ACTIVE_TEXT, CARD_SECTION, CARD_NOTE } from '../../styles';
+import { ROUTE_SEARCH_AREA_ONLY } from '../../content/missingNoticesDraft';
 import type { AgencySearchGroup } from '../../utils/agencySearch';
 import type { RouteSearchResult, StopSearchResult } from '../../utils/searchResults';
 import RouteListRow from '../RouteListRow';
@@ -235,7 +236,11 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({
   return (
     <div className="-mx-4 mb-4 flex flex-col gap-5">
       {noResults ? (
-        <PanelEmpty>No matches found.</PanelEmpty>
+        <div>
+          <PanelEmpty>No matches found.</PanelEmpty>
+          {/* Routes are searched only in networks loaded near the map (CIV-959 gap 6, placeholder wording). */}
+          <p className={`${CARD_NOTE} px-4 -mt-1`}>{ROUTE_SEARCH_AREA_ONLY}</p>
+        </div>
       ) : routesFirst ? (
         <>
           {areaBlock}

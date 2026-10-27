@@ -31,6 +31,7 @@ import { DAY_TYPES, type DayType as DayTypeName } from '../../shared/dayTypes';
 import { splitRouteKey } from '../utils/routeKey';
 import { getPolledRoute } from '../../shared/livePollingConfig';
 import { resolveRouteSelectionForDay } from '../utils/routeSelection';
+import { AGENCY_NOT_FOUND, NO_ROUTES_MATCH_FILTERS, RESEARCH_VIEW_EMPTY, ROUTE_NOT_FOUND, STOP_NOT_FOUND, routeNoServiceOnDay } from '../content/missingNoticesDraft';
 import { syncUrlParams } from '../utils/syncUrlParams';
 import type { HistoryView } from '../utils/historyYearMap';
 import { usePersistedFilterPref } from '../hooks/usePersistedFilterPref';
@@ -55,6 +56,8 @@ const AGENCY_PREF_STORAGE_KEY = 'atlas_pref_agencies_off_v2';
 
 interface Props {
   agencies: Agency[];
+  /** The agency list has loaded, so a slug missing from it is really unknown (CIV-959). */
+  catalogReady?: boolean;
   allAgencies?: Agency[];
   lightMode: boolean;
   setLightMode: (v: boolean | ((prev: boolean) => boolean)) => void;
@@ -165,7 +168,7 @@ function CompareSideSlot({ side, children }: { side: 'A' | 'B'; children: React.
 
 const PENDING_ROUTE_TIMEOUT_MS = 20000;
 
-export default function Interval({ agencies, allAgencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showSelectionUi = false, showRouteLayers = true, liveRoutesOnly = false, filterToAgencies = false, agencyFilterSlugs = null, onHistoryRouteClick, onInfoOpen, selectedAgencySlug, setSelectedAgencySlug, onAgencyCardClose, historyView, onMapDismiss, externalPanelOpen = false, pendingLiveRoute, onPendingLiveRouteHandled, pendingNightRoute, onPendingNightRouteHandled, searchFocused = false, setSearchFocused, hideFilterPanel = false, day, setDay, onLayersChange, onViewportAgencySlugsChange, onUserMoveMap, onSelectedMapAgencyChange, onSelectionActiveChange, onLiveRouteSelected, compareStartRequest = null, onCompareActiveChange, headerPortalContainer, viewTabsPortalContainer, moreMenuPortalContainer, onMoreMenuDone, nightServiceView = false, nightServiceFrequency = 60, setNightServiceFrequency, frequentServiceView = false, frequentServiceDays = ['Weekday'], frequentServiceFrequency = 15, frequentServiceWindow = 'daytime', setFrequentServiceDays, setFrequentServiceFrequency, setFrequentServiceWindow, showMapContext = false, showMatchPercentage = false, sidebarLeft, searchBarWidth, searchEnterRef, analyticsApp = 'frequency', hideLowQuality, setHideLowQuality, feedQualityEnabled = false, showMapLegend, setShowMapLegend, dataSaver, setDataSaver, exportEnabled = false, exportTitle = 'Transit map' }: Props) {
+export default function Interval({ agencies, catalogReady = true, allAgencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showSelectionUi = false, showRouteLayers = true, liveRoutesOnly = false, filterToAgencies = false, agencyFilterSlugs = null, onHistoryRouteClick, onInfoOpen, selectedAgencySlug, setSelectedAgencySlug, onAgencyCardClose, historyView, onMapDismiss, externalPanelOpen = false, pendingLiveRoute, onPendingLiveRouteHandled, pendingNightRoute, onPendingNightRouteHandled, searchFocused = false, setSearchFocused, hideFilterPanel = false, day, setDay, onLayersChange, onViewportAgencySlugsChange, onUserMoveMap, onSelectedMapAgencyChange, onSelectionActiveChange, onLiveRouteSelected, compareStartRequest = null, onCompareActiveChange, headerPortalContainer, viewTabsPortalContainer, moreMenuPortalContainer, onMoreMenuDone, nightServiceView = false, nightServiceFrequency = 60, setNightServiceFrequency, frequentServiceView = false, frequentServiceDays = ['Weekday'], frequentServiceFrequency = 15, frequentServiceWindow = 'daytime', setFrequentServiceDays, setFrequentServiceFrequency, setFrequentServiceWindow, showMapContext = false, showMatchPercentage = false, sidebarLeft, searchBarWidth, searchEnterRef, analyticsApp = 'frequency', hideLowQuality, setHideLowQuality, feedQualityEnabled = false, showMapLegend, setShowMapLegend, dataSaver, setDataSaver, exportEnabled = false, exportTitle = 'Transit map' }: Props) {
   const [searchParams] = useSearchParams();
   const [mapContextOpen, setMapContextOpen] = useState(false);
   const [mapContextView, setMapContextView] = useState<'agencies' | 'routes'>('routes');
@@ -738,6 +741,12 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     return { routes: routes.size, agencies: agencySlugs.size };
   }, [nightServiceView, nightServiceFrequency, frequentServiceView, layers, frequentServiceDays, frequentServiceFrequency, frequentServiceWindow, selectedModes]);
 
+  // A research view with nothing drawn once its networks have loaded (CIV-959 gap 11).
+  const researchViewEmpty = (nightServiceView || frequentServiceView) && !researchCounts && !isLoading && Object.keys(layers).length > 0;
+  // Phones hide the route count, so a map emptied by filters needs its own line (CIV-959 gap 10).
+  const filtersHideEverything = !compareActive && !nightServiceView && !frequentServiceView && !isLoading
+    && !!stats && stats.total > 0 && stats.matching === 0;
+
   const selectedRouteOutOfFilter = useMemo(() => {
     if (!selectedRoute || frequentServiceView || nightServiceView || (maxHeadway === Infinity && period === 'all')) return false;
     const { agencySlug: slug, routeId, routeBranch } = splitRouteKey(selectedRoute);
@@ -917,19 +926,35 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     onMapDismiss?.();
   }, [clearMapSelection, clearUserLocation, onMapDismiss]);
 
-  // Drop stale selection when the route card has no data (day change, agency unload, etc.)
+  // Follow a route whose ID changes by day. One that doesn't run this day, or isn't in the data,
+  // stays selected and the card says why (missingSelectionNotice, CIV-959) instead of closing silently.
   useEffect(() => {
     if (!selectedRoute) return;
     const [slug] = selectedRoute.split('::');
     const fc = layers[slug];
     if (!fc) return;
     const resolvedRoute = resolveRouteSelectionForDay(selectedRoute, slug, fc.features, day);
-    if (resolvedRoute && resolvedRoute !== selectedRoute) {
-      setSelectedRoute(resolvedRoute);
-    } else if (!resolvedRoute) {
-      clearMapSelection();
+    if (resolvedRoute && resolvedRoute !== selectedRoute) setSelectedRoute(resolvedRoute);
+  }, [selectedRoute, layers, day]);
+
+  // Why the selected route, stop or agency has no card (CIV-959; placeholder wording in content/missingNoticesDraft.ts).
+  const missingSelectionNotice = useMemo((): string | null => {
+    const key = selectedRoute ?? selectedStop;
+    if (!key) {
+      return selectedAgencySlug && catalogReady && !agencies.some(a => a.slug === selectedAgencySlug) ? AGENCY_NOT_FOUND : null;
     }
-  }, [selectedRoute, layers, day, clearMapSelection]);
+    const separator = key.indexOf('::');
+    const slug = separator >= 0 ? key.slice(0, separator) : key;
+    const id = separator >= 0 ? key.slice(separator + 2) : '';
+    if (catalogReady && !agencies.some(a => a.slug === slug)) return selectedRoute ? ROUTE_NOT_FOUND : STOP_NOT_FOUND;
+    const fc = layers[slug];
+    if (!fc) return null;
+    if (selectedRoute) {
+      if (resolveRouteSelectionForDay(selectedRoute, slug, fc.features, day)) return null;
+      return fc.features.some(f => f.properties?.routeId === id) ? routeNoServiceOnDay(day) : ROUTE_NOT_FOUND;
+    }
+    return fc.features.some(f => f.geometry.type === 'Point' && f.properties?.stopId === id) ? null : STOP_NOT_FOUND;
+  }, [selectedRoute, selectedStop, selectedAgencySlug, catalogReady, agencies, layers, day]);
 
   // Route card is hidden while search is focused — blur so the card appears on map select.
   useEffect(() => {
@@ -1199,7 +1224,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
       <div className="max-sm:contents absolute bottom-6 left-6 right-14 flex items-end justify-between gap-2 pointer-events-none">
       <MapAttribution />
 
-      {((stats && (stats.total > 0 || !isLoading)) || researchCounts || isLoading || isTilesLoading || isBasemapLoading || failedSlugs.size > 0) && (
+      {((stats && (stats.total > 0 || !isLoading)) || researchCounts || researchViewEmpty || isLoading || isTilesLoading || isBasemapLoading || failedSlugs.size > 0) && (
         <div className={`max-sm:absolute max-sm:bottom-16 max-sm:left-6 ${Z_PANEL} shrink-0 ml-auto flex gap-2 transition-all ${TRANSITION_SLOW} ${showUi ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
           {(isLoading || isTilesLoading || isBasemapLoading) && (
             <div className={`${MAP_BADGE} h-8 max-sm:h-[32px]`}>
@@ -1230,6 +1255,17 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
                 <span className={MAP_BADGE_COUNT}>{researchCounts.agencies}</span>
                 <span className={MAP_BADGE_LABEL}>{plural(researchCounts.agencies, 'agency', 'agencies')}</span>
               </div>
+            </div>
+          )}
+          {/* Missing notices (CIV-959 gaps 10 and 11, placeholder wording): say why the map is empty. */}
+          {researchViewEmpty && (
+            <div className={`${MAP_BADGE} h-8 max-sm:h-[32px]`}>
+              <span className={MAP_BADGE_LABEL}>{RESEARCH_VIEW_EMPTY}</span>
+            </div>
+          )}
+          {filtersHideEverything && (
+            <div className={`${MAP_BADGE} h-8 max-sm:h-[32px] sm:hidden`}>
+              <span className={MAP_BADGE_LABEL}>{NO_ROUTES_MATCH_FILTERS}</span>
             </div>
           )}
           {(nightServiceView || frequentServiceView) && <ResearchLegend view={nightServiceView ? 'night' : 'frequent'} frequentFrequency={frequentServiceFrequency} />}
@@ -1326,21 +1362,26 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
             searchBarWidth={searchBarWidth}
             onInfoOpen={onInfoOpen}
             onClose={closeAgencyCard}
+            loadFailed={failedSlugs.has(agency.slug)}
           />
         ) : null;
       })()}
 
       {(showUi || showSelectionUi) && (() => {
-        const key = selectedRoute ?? selectedStop;
+        const key = selectedRoute ?? selectedStop ?? (missingSelectionNotice ? selectedAgencySlug : null);
         const slug = key ? key.split('::')[0] : null;
-        if (!key || !slug || layers[slug]) return null;
-        // An agency this view does not list (filtered out, or on-demand only) has no card to wait for.
-        if (!agencies.some(a => a.slug === slug && !a.onDemandOnly)) return null;
+        if (!key || !slug) return null;
+        if (!missingSelectionNotice) {
+          if (layers[slug]) return null;
+          // An agency this view does not list (filtered out, or on-demand only) has no card to wait for.
+          if (!agencies.some(a => a.slug === slug && !a.onDemandOnly)) return null;
+        }
         return (
           <SelectionLoadPanel
             key={key}
-            kind={selectedRoute ? 'route' : 'stop'}
+            kind={selectedRoute ? 'route' : selectedStop ? 'stop' : 'agency'}
             failed={failedSlugs.has(slug)}
+            notice={missingSelectionNotice}
             onClose={clearMapSelection}
             sidebarLeft={sidebarLeft}
             searchBarWidth={searchBarWidth}
