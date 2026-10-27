@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router';
 import type { ReactElement } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -169,7 +169,7 @@ describe('AreaPage narrow names column', () => {
     view(<AreaPage data={withOther} />);
     const link = screen.getByRole('link', { name: 'WETA (San Francisco Bay)' });
     expect(link.getAttribute('title')).toBe(long);
-    expect(screen.getByRole('link', { name: 'Toronto Transit Commission' }).getAttribute('title')).toBeNull();
+    expect(within(screen.getByRole('table')).getByRole('link', { name: 'Toronto Transit Commission' }).getAttribute('title')).toBeNull();
   });
 });
 
@@ -180,10 +180,28 @@ describe('AreaPage', () => {
     view(<AreaPage data={data} />);
     const headers = screen.getAllByRole('columnheader').map(h => h.textContent);
     expect(headers).toEqual(['Agency', 'Subway/Metro', 'Light rail', 'Streetcar', 'Commuter rail', 'Bus', 'Ferry', 'Gondola/aerial tram']);
-    expect(screen.getByRole('link', { name: 'Toronto Transit Commission' }).getAttribute('href')).toBe('/agency/ttc');
-    const ttcRow = screen.getByRole('link', { name: 'Toronto Transit Commission' }).closest('tr')!;
-    const hsrRow = screen.getByRole('link', { name: 'Hamilton Street Railway' }).closest('tr')!;
+    const table = within(screen.getByRole('table'));
+    expect(table.getByRole('link', { name: 'Toronto Transit Commission' }).getAttribute('href')).toBe('/agency/ttc');
+    const ttcRow = table.getByRole('link', { name: 'Toronto Transit Commission' }).closest('tr')!;
+    const hsrRow = table.getByRole('link', { name: 'Hamilton Street Railway' }).closest('tr')!;
     expect(hsrRow.textContent).toContain('–'); // no subway routes
+  });
+
+  it('names the two biggest agencies in the intro past three, each linked to its page, and none up to three (CIV-968)', () => {
+    const extra = (slug: string, n: number): AgencyPageSummary => ({ ...HSR, slug, name: `Agency ${slug}`, displayName: `Agency ${slug}`, routes: Array.from({ length: n }, (_, i) => r(`${slug}${i}`, 3, 30)), routeCount: n });
+    const four = new Map([[TTC.slug, TTC], [HSR.slug, HSR], ['x', extra('x', 1)], ['y', extra('y', 1)]]);
+    view(<AreaPage data={buildAreaPageData({ ...AREA, agencies: ['ttc', 'hsr', 'x', 'y'] }, four, null)} />);
+    const intro = screen.getByText(/transit agencies running/);
+    expect(intro.textContent).toMatch(/, including Toronto Transit Commission, Hamilton Street Railway and 2 others\.$/);
+    expect(within(intro).getByRole('link', { name: 'Toronto Transit Commission' }).getAttribute('href')).toBe('/agency/ttc');
+    expect(within(intro).getByRole('link', { name: 'Hamilton Street Railway' }).getAttribute('href')).toBe('/agency/hsr');
+  });
+
+  it('ends the intro after the route breakdown with three agencies or fewer (CIV-968)', () => {
+    view(<AreaPage data={data} />);
+    const intro = screen.getByText(/transit agencies running/);
+    expect(intro.textContent).not.toMatch(/including/);
+    expect(within(intro).queryAllByRole('link')).toHaveLength(0);
   });
 
   it('shows the band bar and no fixed threshold', () => {
