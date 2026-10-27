@@ -178,7 +178,9 @@ export const StopCard: React.FC<StopCardProps> = ({
                 label={route.text}
                 routeName={{ shortName: route.primary, name: route.secondary }}
                 // "Moody Center", not the feed's "MOODY CENTER"; a feed's own mixed case stays as written (CIV-935).
-                subLabel={`${stopNameCase(nearestStopName)} · ${Math.round(distanceMeters)} m away`}
+                // The stop name shortens; the distance always shows (#1154).
+                subLabel={stopNameCase(nearestStopName)}
+                subLabelTrailing={` · ${Math.round(distanceMeters)} m away`}
                 subLabelWeight="medium"
                 headway={headway ?? undefined}
                 onClick={() => openRoute(rKey)}

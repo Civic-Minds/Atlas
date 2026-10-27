@@ -14,6 +14,7 @@ import { routeLabels } from '../utils/format';
 import { headwayEvery, headwayOrBetter } from '../utils/headwayText';
 import ResearchInfo from '../components/ResearchInfo';
 import { NIGHT_INFO_HEADING, nightRuleText } from '../content/researchRules';
+import { compareRouteNumber } from '../utils/sortCompare';
 import PanelEmpty from '../components/ui/PanelEmpty';
 import { AgencyNameHeading, CARD_SUMMARY } from '../components/Interval/cardUi';
 import { loadingText, loadErrorText } from '../content/stateCopy';
@@ -180,7 +181,12 @@ export default function NightService({ active, sidebarLeft, searchBarWidth, laye
       byAgency.set(visible.agencySlug, entry);
     }
     const q = query.trim().toLowerCase();
-    const list = [...byAgency.entries()].map(([slug, entry]) => ({ slug, ...entry, routes: [...entry.routes.values()] }));
+    // Routes in number order within each agency, by the shared route sort (#1155: MiWay read 2, 3, 1, 7, 17).
+    const list = [...byAgency.entries()].map(([slug, entry]) => ({
+      slug,
+      ...entry,
+      routes: [...entry.routes.values()].sort((x, y) => compareRouteNumber(x.routeShortName, y.routeShortName, x.routeLongName, y.routeLongName)),
+    }));
     if (!q) return list;
     return list
       .map(agency => ({
