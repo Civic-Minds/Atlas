@@ -345,6 +345,9 @@ function RouteHistoryCard({
               key={`${snap.label}-${i}`}
               label={snap.label}
               headway={hw ?? undefined}
+              // The snapshot's own minutes, as in the chart, the summary and the change beside it (#1085):
+              // the map cards' rounding to the half hour made NFTA 76 read 360 beside a chart reading 349.
+              headwayLabel={hw != null ? headwayEvery(hw) : undefined}
               headwaySuffix={delta ? (delta > 0 ? `+${delta}` : `${delta}`) : undefined}
               headwaySuffixTone={delta ? (delta > 0 ? 'negative' : 'positive') : undefined}
               // Regular weight, like the map cards' destination rows (CIV-971).
