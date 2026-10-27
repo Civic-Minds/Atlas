@@ -63,6 +63,11 @@ export interface ModeOverride {
   routeLongName?: string;
   mode: number;
   reason: string;
+  /**
+   * The site shows `mode`, but the pipeline keeps reading the route by its published type. For a correction whose
+   * pipeline effect is not ready yet: CapMetro 550 reads as commuter rail, while rail processing waits on #1138.
+   */
+  labelOnly?: boolean;
 }
 
 /**
@@ -161,13 +166,19 @@ export function isVirtualLrt(p: EffectiveModeInput): boolean {
 
 /** True for subway, commuter rail, monorail, and explicitly identified LRT routes. */
 export function isRailLikeRoute(p: EffectiveModeInput): boolean {
-  const mode = effectiveMode(p);
+  // Rail-like decides pipeline processing only, so a label-only correction is skipped here.
+  const mode = findModeOverride(p)?.labelOnly ? publishedMode(p) : effectiveMode(p);
   return mode === 1 || mode === 2 || mode === 12 || mode === VIRTUAL_LRT_MODE;
 }
 
 export function effectiveMode(p: EffectiveModeInput): number {
   const override = findModeOverride(p);
   if (override) return override.mode;
+  return publishedMode(p);
+}
+
+/** The mode before any listed per-route correction. */
+function publishedMode(p: EffectiveModeInput): number {
   const rt = normalizeRouteType(p.routeType);
   return isVirtualLrt(p) ? VIRTUAL_LRT_MODE : rt;
 }
