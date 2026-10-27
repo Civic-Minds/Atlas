@@ -85,11 +85,13 @@ import {
   type GateCandidate,
 } from './releaseDiff.js';
 import { ROUTE_ARTIFACT_SCHEMA_VERSION } from '../shared/artifactSchema.js';
+import { agencyTodayYmd } from '../shared/feedAvailability.js';
 import { COUNTRY_LAUNCH_FLAG, assertCountryMayWriteToR2, resolveAgencyCountry, type AgencyCountrySource } from './countryLaunchGate.js';
 
 interface Agency {
   slug: string;
   name?: string;
+  timezone?: string | null;
   agencyId?: string;
   agencyName?: string;
   supplementalFeedUrls?: string[];
@@ -169,7 +171,7 @@ async function selectArchiveKey(agency: Agency): Promise<{ key: string; reason: 
     const buf = await r2GetArchiveBuffer(obj.key);
     return { obj, dates: buf ? await peekFeedDates(buf) : { feedStart: null, feedExpiry: null, feedVersion: null, feedInfoEnd: null } };
   }));
-  const byDates = selectByFeedDates(peeked, todayYmd, prior);
+  const byDates = selectByFeedDates(peeked, agencyTodayYmd(agency), prior);
   if (byDates.ok) return { key: byDates.key, reason: byDates.reason };
   throw new Refusal(byDates.reason);
 }
@@ -212,7 +214,7 @@ async function processAgency(agency: Agency): Promise<ReportRow> {
     const { feedStart, feedExpiry: calendarEnd, feedInfoEnd, calendarOnlyEnd } = await peekFeedDates(body);
     const feedExpiry = recordedFeedExpiry(feedInfoEnd, calendarEnd, todayYmd, calendarOnlyEnd);
     row.feedExpiry = feedExpiry;
-    const dateRefusal = feedDateRefusal(feedExpiry, agency.lastFeedExpiry, todayYmd);
+    const dateRefusal = feedDateRefusal(feedExpiry, agency.lastFeedExpiry, agencyTodayYmd(agency));
     if (dateRefusal) throw new Refusal(dateRefusal);
 
     const supplementalFeeds = await loadSupplementalFeeds(agency, url => readSupplementalFeed(agency, url));
@@ -263,7 +265,7 @@ async function gateProcessedRows(rows: ReportRow[], registry: Agency[]): Promise
     candidates: processed.map(row => gateInputs.get(row.slug)!.candidate),
     getLive,
     registry: registry as Array<{ slug: string; center?: number[]; bbox?: number[] }>,
-    todayYmd,
+    todayYmd: slug => agencyTodayYmd(registry.find(a => a.slug === slug) ?? {}),
     allowMissingLive: false,
   });
   const result = applyOverrides(flags, overrides);

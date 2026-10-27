@@ -21,6 +21,7 @@ import { R2_PUBLIC_URL } from '../shared/config.js';
 import { peekFeedDates } from './archiveSelection.js';
 import { isBuiltIntoTiles, type TileInclusionAgency } from './pmtilesCoverage.js';
 import { runWithConcurrency } from './utils.js';
+import { agencyTodayYmd } from '../shared/feedAvailability.js';
 import {
   applyOverrides,
   buildGateReport,
@@ -44,12 +45,11 @@ const newDir = valueOf('--new-dir')[0];
 const newRelease = valueOf('--new-release')[0];
 const archiveDir = valueOf('--archive-dir')[0];
 const onlySlugs = valueOf('--only-slug');
-const todayYmd = new Date().toISOString().slice(0, 10).replace(/-/g, '');
 
 async function main(): Promise<void> {
   if (!newDir === !newRelease) throw new Error('Usage: npm run release-diff -- (--new-dir <dir> | --new-release <releaseId>) [--archive-dir <dir>] [--only-slug <slug>] [--allow <slug>:<flag>]');
   const index = JSON.parse(readFileSync(resolve('public/data/index.json'), 'utf8')) as {
-    agencies: Array<{ slug: string; center?: number[]; bbox?: number[]; lastFeedExpiry?: string | null }>;
+    agencies: Array<{ slug: string; center?: number[]; bbox?: number[]; lastFeedExpiry?: string | null; timezone?: string | null }>;
   };
   const errors = [...overrides.errors, ...unknownOverrideSlugs(overrides, index.agencies.map(a => a.slug))];
   if (errors.length) throw new Error(errors.join('\n'));
@@ -101,7 +101,7 @@ async function main(): Promise<void> {
     // Like publish: visible peers are the release itself, hidden/staged ones only warn.
     registry: newRelease ? index.agencies.filter(a => (a as { hiddenInProduction?: boolean; staged?: boolean }).hiddenInProduction || (a as { staged?: boolean }).staged) : index.agencies,
     getHiddenLive: cachedSummaryReader(slug => readLiveSummary(slug, get, ['atlas'])),
-    todayYmd,
+    todayYmd: slug => agencyTodayYmd(index.agencies.find(a => a.slug === slug) ?? {}),
     allowMissingLive: true,
   });
   const report = buildGateReport(gateRunId('preview'), 'release-diff (preview, read-only)', slugs, overrides, applyOverrides(flags, overrides));

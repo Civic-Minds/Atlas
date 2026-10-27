@@ -539,7 +539,8 @@ export async function evaluateRun(options: {
   candidates: GateCandidate[];
   getLive: (slug: string) => Promise<ArtifactSummary | null>;
   registry: RegistryAgency[];
-  todayYmd: string;
+  /** Today for the expiry flags: one date, or each agency's own local date (agencyTodayYmd). */
+  todayYmd: string | ((slug: string) => string);
   allowMissingLive: boolean;
   getHiddenLive?: (slug: string) => Promise<ArtifactSummary | null>;
   /** Outputs already produced earlier in the same run (refresh gates one agency at a time). */
@@ -573,7 +574,7 @@ export async function evaluateRun(options: {
       flags.push(...evaluateAgency(
         { slug: candidate.slug, live, next: candidate.next, service: candidate.service, allowMissingLive: options.allowMissingLive },
         [...runPeers, ...outside, ...hiddenPeers],
-        options.todayYmd,
+        typeof options.todayYmd === 'function' ? options.todayYmd(candidate.slug) : options.todayYmd,
       ));
     }
   };

@@ -64,7 +64,7 @@ import { readRefDateQuality } from './historyRefQuality.js';
 import { assessWithWeekCheck, readRepickRows } from './historyRefRepick.js';
 import { historyGeometryForRoute } from './historyGeometry.js';
 import { effectiveFeedExpiry } from './feedFreshness.js';
-import { isActiveProductionFeed, type SupplementalFeedMeta } from '../shared/feedAvailability.js';
+import { agencyTodayYmd, isActiveProductionFeed, type SupplementalFeedMeta } from '../shared/feedAvailability.js';
 import { recordFeedCheck, type FeedCheckFields } from './feedCheckTracking.js';
 import { buildFeedCandidates, type FeedCandidate } from './feedSourceCandidates.js';
 import { resolveFeedUrl } from './feedUrl.js';
@@ -380,6 +380,8 @@ async function refreshAgency(
   // Skip processing if the feed hasn't changed since last refresh.
   // Primary key: feed_end_date. Fallback: feed_version (for agencies without feed_info expiry).
   const today = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+  // Whether a feed has ended is read in the agency's local date (agencyTodayYmd); `today` stays the record date.
+  const expiryToday = agencyTodayYmd(agency);
   const configuredFeedUrl = resolveFeedUrl(agency.feedUrl, agency.feedApiKeyEnvVar, agency.feedApiKeyParam);
   const feedCandidates = buildFeedCandidates(configuredFeedUrl, agency.mdbFeedUrl, agency.feedFallbackUrls);
   let buf: Buffer | null = null;
@@ -404,11 +406,11 @@ async function refreshAgency(
         peekedExpiry = metadata.feedExpiry;
         peekedVersion = metadata.feedVersion;
         selectedCandidate = candidate;
-        if (!isFeedExpired(metadata.feedExpiry, today)) break;
+        if (!isFeedExpired(metadata.feedExpiry, expiryToday)) break;
       } else if (shouldReplaceExpiredFeed({
         selectedExpiry: peekedExpiry,
         candidateExpiry: metadata.feedExpiry,
-        todayYmd: today,
+        todayYmd: expiryToday,
       })) {
         buf = candidateBuf;
         peekedExpiry = metadata.feedExpiry;
@@ -442,9 +444,9 @@ async function refreshAgency(
     agency.lastFeedSourceUrl = selectedCandidate.url;
   }
 
-  recordFeedCheck(agency as FeedCheckFields, { feedExpiry: peekedExpiry, todayYmd: today });
+  recordFeedCheck(agency as FeedCheckFields, { feedExpiry: peekedExpiry, todayYmd: today, expiryTodayYmd: expiryToday });
 
-  if (peekedExpiry && isFeedExpired(peekedExpiry, today)) {
+  if (peekedExpiry && isFeedExpired(peekedExpiry, expiryToday)) {
     const expDate = `${peekedExpiry.slice(0, 4)}-${peekedExpiry.slice(4, 6)}-${peekedExpiry.slice(6, 8)}`;
     const daysAgo = Math.round((Date.now() - new Date(expDate).getTime()) / 86_400_000);
     writeLog(`\n  [warn] feed expired ${daysAgo}d ago (${expDate}) — update the feedUrl\n  `);
@@ -477,7 +479,7 @@ async function refreshAgency(
 
   if (!forceRefresh && shouldSkipAllExpiredFeeds(
     [peekedExpiry, ...supplementalFeeds.map(feed => feed.feedExpiry)],
-    today,
+    expiryToday,
   )) {
     const reason = `all available feeds expired (latest ${peekedExpiry ?? 'unknown'})`;
     markFeedStale(agency, { reason, todayYmd: today });
@@ -493,7 +495,7 @@ async function refreshAgency(
   const skipDecision = decideRefreshSkipUnchanged({
     forceRefresh,
     hasSupplementals,
-    feedExpired: isFeedExpired(peekedExpiry, today),
+    feedExpired: isFeedExpired(peekedExpiry, expiryToday),
     peekedExpiry,
     peekedVersion,
     lastFeedExpiry: agency.lastFeedExpiry,
@@ -595,7 +597,7 @@ async function refreshAgency(
     candidates: [{ slug: agency.slug, next, service: { start: feedStart, end: feedExpiry ?? peekedExpiry, calendarEnd: peekedExpiry } }],
     getLive: readRefreshLive,
     registry: gateRegistry,
-    todayYmd: today,
+    todayYmd: expiryToday,
     allowMissingLive: true,
     extraPeers: [...gateRunPeers],
   });
