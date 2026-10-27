@@ -1,4 +1,4 @@
-import { plural } from '../../shared/overflowText';
+import { joinList, plural } from '../../shared/overflowText';
 import { agencyDisplayParts, formatStoredDate } from '../utils/format';
 import { delayAmount, headwayAbout } from '../utils/headwayText';
 
@@ -99,6 +99,11 @@ export const LIVE_NO_VEHICLES_ON_ROUTE = 'No vehicles on this route';
 export const LIVE_NO_ROUTE_MATCHES = 'No routes match your search.';
 export const LIVE_REPLACEMENT_BUSES = 'Replacement buses: all figures describe the buses running this route';
 export const LIVE_FEED_INCOMPLETE = 'Live feed incomplete right now';
+/** Every feed in view failed: the line, then the retry note under it (approved, CIV-941 #55). */
+export const LIVE_FEEDS_UNAVAILABLE = "Live buses in this area can't be shown right now.";
+export const LIVE_FEEDS_DOWN = 'Atlas will keep trying.';
+/** Some feeds in view failed while others work: "Live buses from TTC and YRT can't be shown right now." (approved, CIV-941 #57). */
+export const liveUnreachableText = (agencyNames: readonly string[]) => `Live buses from ${joinList(agencyNames)} can't be shown right now.`;
 export const LIVE_GAP_NOT_SEEN = "The car ahead's passing wasn't seen";
 
 export const LIVE_NO_WEEK_COMPARISON = 'No comparison with last week';
