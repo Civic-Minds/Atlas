@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { CardBackLink } from '../../CardBack';
-import { stopNameCase, titleCase, routeLabels } from '../../../utils/format';
+import { stopNameCase, routeLabels } from '../../../utils/format';
 import type { HoveredBranch, TimePeriod } from '../../../hooks/useIntervalStats';
 import {
   AgencyFilterChips,
@@ -113,7 +113,7 @@ export const StopCard: React.FC<StopCardProps> = ({
               <FlaggableValue reason="Stop is missing, misplaced, or assigned incorrectly" reportRef={reportRef} className="block w-full text-left">
                 <SidebarCardHeader
                   eyebrow={back?.namesAgency || back?.to === stopAgencies[0] ? null : stopAgencies[0]}
-                  title={`${titleCase(currentStop.stopName)}${currentStop.direction ? ` — ${currentStop.direction}` : ''}`}
+                  title={`${stopNameCase(currentStop.stopName)}${currentStop.direction ? ` — ${currentStop.direction}` : ''}`}
                   titleClamp
                 />
               </FlaggableValue>
@@ -126,7 +126,7 @@ export const StopCard: React.FC<StopCardProps> = ({
                 />
                 <FlaggableValue reason="Stop is missing, misplaced, or assigned incorrectly" reportRef={reportRef} className="block w-full text-left">
                   <SidebarCardHeader
-                    title={`${titleCase(currentStop.stopName)}${currentStop.direction ? ` — ${currentStop.direction}` : ''}`}
+                    title={`${stopNameCase(currentStop.stopName)}${currentStop.direction ? ` — ${currentStop.direction}` : ''}`}
                     titleClamp
                   />
                 </FlaggableValue>
@@ -135,9 +135,9 @@ export const StopCard: React.FC<StopCardProps> = ({
           </div>
           <CardReportButton
             ref={reportRef}
-            title={`Stop issue: ${titleCase(currentStop.stopName)}`}
+            title={`Stop issue: ${stopNameCase(currentStop.stopName)}`}
             details={reportDetails([
-              ['Stop', `${titleCase(currentStop.stopName)}${currentStop.direction ? ` — ${currentStop.direction}` : ''}`],
+              ['Stop', `${stopNameCase(currentStop.stopName)}${currentStop.direction ? ` — ${currentStop.direction}` : ''}`],
               ['Agencies', stopAgencies.join(', ') || 'Unknown'],
               ['Period', period],
             ])}
