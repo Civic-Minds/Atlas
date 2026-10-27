@@ -70,6 +70,11 @@ interface Props {
   vehicles: readonly LiveVehicle[];
   /** Live feed is down, stale or incomplete: "Right now" is hidden. */
   feedDegraded: boolean;
+  /**
+   * The picked direction and the vehicles "Right now" counts in it, so the vehicle list shows those same cars (#1163);
+   * null while "Right now" has no count (no analysis, feed down or incomplete). Must be stable (a state setter).
+   */
+  onCounted?: (counted: { directionId: number; label: string; ids: string[] } | null) => void;
 }
 
 /**
@@ -85,7 +90,7 @@ function useRecentPositions(vehicles: readonly LiveVehicle[]): RecentSnapshot[] 
 }
 
 /** The Live route card: only what is live now ("Right now"), per direction. */
-export default function LiveRoutePerformance({ slug, routeShortName, vehicles, feedDegraded }: Props) {
+export default function LiveRoutePerformance({ slug, routeShortName, vehicles, feedDegraded, onCounted }: Props) {
   const data = useSegmentDelay(slug, routeShortName) as (SegmentDelayData & { tripDirections?: Record<string, string[]> }) | null;
   // The direction lives in the URL (dir) so a shared link reopens it.
   const directions = useMemo(() => Object.entries(data?.directionLabels ?? {}).map(([id, label]) => [Number(id), label] as const), [data]);
@@ -108,20 +113,27 @@ export default function LiveRoutePerformance({ slug, routeShortName, vehicles, f
   }, [data, dir, directionId]);
   useEffect(() => () => syncUrlParams({ dir: null }), []);
 
+  // From the map's own polls, not the archive, over the whole route (CIV-899). A trip the timetable
+  // doesn't list is placed by its own movement since the card opened; until it has been seen twice it
+  // is skipped (skipUnseenAdded). With 0 or 1 car the count still shows (no gaps line), so the
+  // direction pills never vanish.
+  // Trips today's timetable runs that the analysis's doesn't list get their direction from the map's.
+  const directionLabel = directions.find(([id]) => id === directionId)?.[1] ?? '';
+  const liveBand = data ? livePeriod(data, slug) : 'all';
+  const extraTrips = data ? liveTripDirections(vehicles, data.tripDirections).get(directionId) : undefined;
+  const live = data && line && !feedDegraded ? liveGaps(data, line, withStats(line, liveBand), liveBand, recent, Math.floor(now / 1000), { skipUnseenAdded: true, countFewCars: true, wholeLine: true, extraTrips }) : null;
+  const countedKey = live && !live.incomplete ? (live.carIds ?? []).join('\n') : null;
+  useEffect(() => {
+    onCounted?.(countedKey == null ? null : { directionId, label: directionLabel, ids: countedKey ? countedKey.split('\n') : [] });
+  }, [onCounted, countedKey, directionId, directionLabel]);
+  useEffect(() => () => onCounted?.(null), [onCounted]);
+
   if (!data || !line) return null;
 
   const replacement = (data as { replacementBuses?: boolean }).replacementBuses
     ? <div className="text-xs font-black text-[var(--status-caution-text)]">Replacement buses: all figures describe the buses running this route</div>
     : null;
 
-  const liveBand = livePeriod(data, slug);
-  // From the map's own polls, not the archive, over the whole route (CIV-899). A trip the timetable
-  // doesn't list is placed by its own movement since the card opened; until it has been seen twice it
-  // is skipped (skipUnseenAdded). With 0 or 1 car the count still shows (no gaps line), so the
-  // direction pills never vanish.
-  // Trips today's timetable runs that the analysis's doesn't list get their direction from the map's.
-  const extraTrips = liveTripDirections(vehicles, data.tripDirections).get(directionId);
-  const live = feedDegraded ? null : liveGaps(data, line, withStats(line, liveBand), liveBand, recent, Math.floor(now / 1000), { skipUnseenAdded: true, countFewCars: true, wholeLine: true, extraTrips });
   const range = live?.scheduledRangeSec;
   const schedLabel = range ? schedText({ scheduledMedianGapSec: range[0], scheduledP10Sec: range[0], scheduledP90Sec: range[1] }) : live?.scheduledSec ? mins(live.scheduledSec) : '–';
   // A gap is late at twice the timetable gap where the car behind is.
