@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { COMPARE_PANEL_TOP, comparePanelTop, fmtHeadway, getRouteLabel, ROUTE_NAME_ACRONYMS, routeLabelCase, routeLabels, shouldHideNumericRouteShortName, shortenAgencyName, titleCase, vehicleModeCount } from '../format';
+import { COMPARE_PANEL_TOP, comparePanelTop, fmtHeadway, getRouteLabel, ROUTE_NAME_ACRONYMS, routeLabelCase, routeLabels, shouldHideNumericRouteShortName, shortenAgencyName, titleCase, vehicleModeCount, vehicleModeWord } from '../format';
 import indexData from '../../../public/data/index.json';
 
 interface IndexAgency {
@@ -219,8 +219,9 @@ describe('comparePanelTop', () => {
 
 describe('vehicleModeCount', () => {
   it('counts vehicles in the same words the Live direction rows used', () => {
-    expect(vehicleModeCount(1, 'Streetcar')).toBe('1 streetcar');
-    expect(vehicleModeCount(10, 'Streetcar')).toBe('10 streetcars');
+    // A streetcar route counts vehicles: buses replace streetcars on it (CIV-926).
+    expect(vehicleModeCount(1, vehicleModeWord(0))).toBe('1 vehicle');
+    expect(vehicleModeCount(10, vehicleModeWord(0))).toBe('10 vehicles');
     expect(vehicleModeCount(3, 'Bus')).toBe('3 buses');
     expect(vehicleModeCount(1, 'Bus')).toBe('1 bus');
     expect(vehicleModeCount(2, 'Ferry')).toBe('2 ferries');
