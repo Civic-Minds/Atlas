@@ -3668,7 +3668,6 @@
     {
       "slug": "butler-county-rta",
       "name": "Butler County Regional Transit Authority",
-      "shortName": "BCRTA",
       "region": "Ohio",
       "center": [
         39.425,
@@ -4200,7 +4199,6 @@
     {
       "slug": "mta-flint",
       "name": "Mass Transportation Authority (Flint)",
-      "shortName": "Flint MTA",
       "websiteUrl": "https://www.mtaflint.org/",
       "region": "Michigan",
       "center": [
@@ -5768,7 +5766,6 @@
     {
       "slug": "southportlandme",
       "name": "South Portland Bus Service",
-      "shortName": "South Portland Bus",
       "center": [
         43.63,
         -70.28
@@ -6587,7 +6584,6 @@
     {
       "slug": "tillamook",
       "name": "Tillamook County Transportation District",
-      "shortName": "TCTD",
       "websiteUrl": "https://nwconnector.org/agencies/tillamook-county-transportation-district/",
       "center": [
         45.4496,
@@ -6743,7 +6739,6 @@
     {
       "slug": "setd",
       "name": "Sunset Empire Transportation District",
-      "shortName": "SETD",
       "websiteUrl": "https://nwconnector.org/agencies/sunset-empire-transportation-district/",
       "center": [
         46.0328,
@@ -8279,7 +8274,6 @@
     {
       "slug": "humboldt",
       "name": "Humboldt Transit Authority",
-      "shortName": "HTA",
       "websiteUrl": "https://hta.org/agencies/redwood-transit-system/?referrer=gtfs",
       "center": [
         40.7249,
@@ -9217,7 +9211,6 @@
     {
       "slug": "gold-coast",
       "name": "Gold Coast Transit District (Oxnard)",
-      "shortName": "Gold Coast Transit",
       "websiteUrl": "http://www.goldcoasttransit.org",
       "center": [
         34.2396,
@@ -14156,7 +14149,6 @@
     {
       "slug": "decatur",
       "name": "Decatur Public Transit System",
-      "shortName": "DPTS",
       "websiteUrl": "https://decaturil.gov/departments/transit/",
       "center": [
         39.86,
@@ -14347,7 +14339,6 @@
     {
       "slug": "janesville",
       "name": "Janesville Transit System",
-      "shortName": "Janesville Transit",
       "websiteUrl": "http://www.ci.janesville.wi.us/index.aspx?page=124",
       "center": [
         42.61,
@@ -14978,7 +14969,6 @@
     {
       "slug": "beaver-county",
       "name": "Beaver County Transit Authority",
-      "shortName": "BCTA",
       "region": "Pennsylvania",
       "center": [
         40.683,
@@ -15255,7 +15245,6 @@
     {
       "slug": "new-castle",
       "name": "New Castle Area Transit Authority",
-      "shortName": "NCATA",
       "labelPlace": "",
       "region": "Pennsylvania",
       "center": [
@@ -17200,7 +17189,6 @@
     {
       "slug": "gptc",
       "name": "Gary Public Transportation Corporation (Gary, IN)",
-      "shortName": "GPTC",
       "websiteUrl": "https://www.gptcbus.com/",
       "region": "Indiana",
       "center": [
@@ -17618,7 +17606,6 @@
     {
       "slug": "youngstown-wrta",
       "name": "Western Reserve Transit Authority (Youngstown)",
-      "shortName": "WRTA",
       "center": [
         41.1,
         -80.65
@@ -18593,7 +18580,6 @@
     {
       "slug": "mountain-line",
       "name": "Mountain Line Transit Authority (Morgantown)",
-      "shortName": "Mountain Line",
       "websiteUrl": "https://busride.org",
       "center": [
         39.63,
@@ -19475,7 +19461,6 @@
     {
       "slug": "greensboro",
       "name": "Greensboro Transit Authority",
-      "shortName": "GTA",
       "center": [
         36.0744,
         -79.8048
@@ -19769,7 +19754,6 @@
     {
       "slug": "lcta",
       "name": "Luzerne County Transportation Authority",
-      "shortName": "LCTA",
       "displayArea": "Wilkes-Barre",
       "websiteUrl": "http://www.lctabus.com/",
       "center": [
@@ -22394,7 +22378,6 @@
     {
       "slug": "um-transit",
       "name": "University of Michigan Transit Services (Ann Arbor)",
-      "shortName": "U-M Transit",
       "websiteUrl": "https://ltp.umich.edu",
       "center": [
         42.28,
@@ -27453,7 +27436,6 @@
     {
       "slug": "muskegon",
       "name": "Muskegon Area Transit System",
-      "shortName": "MATS",
       "websiteUrl": "https://matsbus.com/",
       "center": [
         43.2342,
