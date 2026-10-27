@@ -81,7 +81,7 @@ import {
   formatGateSummary,
   gateRunId,
   parseGateOverrides,
-  readLiveSummary,
+  releaseBaselineReader,
   summarizeArtifact,
   unknownOverrideSlugs,
   writeGateReport,
@@ -113,7 +113,8 @@ let gateRegistry: RegistryAgency[] = [];
 const gateRunPeers: GatePeer[] = [];
 const gateFlags: GateFlag[] = [];
 const gateChecked: string[] = [];
-const readRefreshLive = cachedSummaryReader(slug => readLiveSummary(slug, r2Get));
+// The baseline is the public release's copy, never a top-level file a failed run may have rewritten (CIV-522).
+const readRefreshLive = releaseBaselineReader(r2Get);
 
 function writeJsonAtomically(filePath: string, value: unknown): void {
   const tempPath = `${filePath}.tmp-${process.pid}`;

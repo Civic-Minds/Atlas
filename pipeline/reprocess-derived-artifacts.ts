@@ -77,7 +77,7 @@ import {
   formatGateSummary,
   gateRunId,
   parseGateOverrides,
-  readLiveSummary,
+  releaseBaselineReader,
   summarizeArtifact,
   unknownOverrideSlugs,
   writeGateReport,
@@ -137,6 +137,8 @@ class Refusal extends Error {}
 
 /** Gate inputs per processed agency, kept out of the JSON report. */
 const gateInputs = new Map<string, { candidate: GateCandidate; live: ArtifactSummary | null }>();
+// Live data for the drop and gate checks: the public release first (CIV-522).
+const readBaseline = releaseBaselineReader(r2Get);
 /** The processed feed's raw expiry dates per agency, recorded in index.json once its artifacts are published (#837). */
 const processedExpiries = new Map<string, { feedExpiry: string | null; calendarExpiry: string | null; calendarOnlyEnd: string | null }>();
 const expiryUpdates: string[] = [];
@@ -224,7 +226,8 @@ async function processAgency(agency: Agency): Promise<ReportRow> {
 
     // The release diff gate runs over the whole batch once every agency is processed.
     const next = summarizeArtifact(result.geojson, result.stopsJson, agency.slug);
-    const live = await readLiveSummary(agency.slug, r2Get);
+    // The public release's copy, never a top-level file a failed run may have rewritten (CIV-522).
+    const live = await readBaseline(agency.slug);
     row.outputCounts = next.counts;
     row.liveCounts = live?.counts ?? null;
     gateInputs.set(agency.slug, { candidate: { slug: agency.slug, next, service: { start: feedStart, end: feedExpiry, calendarEnd } }, live });
@@ -260,7 +263,7 @@ async function processAgency(agency: Agency): Promise<ReportRow> {
  */
 async function gateProcessedRows(rows: ReportRow[], registry: Agency[]): Promise<void> {
   const processed = rows.filter(row => row.status === 'processed');
-  const getLive = cachedSummaryReader(async slug => (gateInputs.has(slug) ? gateInputs.get(slug)!.live : readLiveSummary(slug, r2Get)));
+  const getLive = cachedSummaryReader(async slug => (gateInputs.has(slug) ? gateInputs.get(slug)!.live : readBaseline(slug)));
   const flags = await evaluateRun({
     candidates: processed.map(row => gateInputs.get(row.slug)!.candidate),
     getLive,

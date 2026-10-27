@@ -593,6 +593,50 @@ export function cachedSummaryReader(read: (slug: string) => Promise<ArtifactSumm
 }
 
 /**
+ * Where a refresh or reprocess finds an agency's live data for its drop and gate checks (CIV-522): the public
+ * release first, then the top-level `atlas/<slug>.json` only for agencies the release doesn't have (hidden,
+ * staged, newly added). The top-level files are the next build's working set and can hold a failed run's
+ * unpublished output, so they must never stand in for what users see. With no readable release pointer, the
+ * top-level files are the only baseline there is (as before), and `onNoRelease` is told.
+ */
+export async function liveBaselinePrefixes(
+  get: (key: string) => Promise<string | null>,
+  onNoRelease: (reason: string) => void = reason => console.warn(`[release diff] ${reason}; comparing against atlas/<slug>.json.`),
+): Promise<string[]> {
+  let raw: string | null;
+  try {
+    raw = await get('atlas/release.json');
+  } catch (error) {
+    onNoRelease(`atlas/release.json could not be read (${error instanceof Error ? error.message : String(error)})`);
+    return ['atlas'];
+  }
+  if (!raw) {
+    onNoRelease('no atlas/release.json');
+    return ['atlas'];
+  }
+  let prefix: unknown;
+  try {
+    prefix = (JSON.parse(raw) as { agencyPrefix?: unknown }).agencyPrefix;
+  } catch {
+    prefix = null;
+  }
+  if (typeof prefix !== 'string' || !prefix.trim() || prefix.replace(/\/$/, '') === 'atlas') {
+    onNoRelease('atlas/release.json has no release agency prefix');
+    return ['atlas'];
+  }
+  return [prefix.replace(/\/$/, ''), 'atlas'];
+}
+
+/** A cached live-summary reader over the public release first (liveBaselinePrefixes), resolving the pointer once. */
+export function releaseBaselineReader(get: (key: string) => Promise<string | null>): (slug: string) => Promise<ArtifactSummary | null> {
+  let prefixes: Promise<string[]> | null = null;
+  return cachedSummaryReader(async slug => {
+    prefixes ??= liveBaselinePrefixes(get);
+    return readLiveSummary(slug, get, await prefixes);
+  });
+}
+
+/**
  * Read an agency's live route and stops artifacts with `get` (an R2 or public
  * HTTP getter) under each prefix in turn (e.g. the public release first, then
  * `atlas` for agencies not in the release, such as hidden ones).
