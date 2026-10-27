@@ -17,6 +17,8 @@ export interface FeedMetaFields {
   feedRefreshErrorAt?: string | null;
   feedRefreshRetryCount?: number;
   lastSupplementalFeeds?: SupplementalFeedMeta[];
+  /** A fetched timetable starting on this date waits until then (#1144); cleared once one is processed. */
+  heldFeedStart?: string | null;
 }
 
 /** Whether a feed's declared service end date is before the refresh date. */
@@ -145,6 +147,7 @@ export function stampFeedMeta(
   agency.feedRefreshError = null;
   agency.feedRefreshErrorAt = null;
   agency.feedRefreshRetryCount = 0;
+  delete agency.heldFeedStart;
 }
 
 /**

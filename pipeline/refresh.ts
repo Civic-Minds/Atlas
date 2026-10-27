@@ -71,6 +71,7 @@ import { resolveFeedUrl } from './feedUrl.js';
 import { ROUTE_ARTIFACT_SCHEMA_VERSION } from '../shared/artifactSchema.js';
 import { peekFeedDates } from './archiveSelection.js';
 import { tryArchiveUnchangedFeed } from './archiveIfMissing.js';
+import { futureFeedHoldUntil, heldFeedSummary } from './futureFeedHold.js';
 import { resolveAgencyTimezone } from '../shared/agencyTimezone.js';
 import {
   applyOverrides,
@@ -305,6 +306,8 @@ interface AgencyEntry {
   lastFeedVersion?: string | null;
   lastRefreshedAt?: string | null;
   lastFeedCheckAt?: string | null;
+  /** A fetched timetable starting on this date waits until then (#1144). */
+  heldFeedStart?: string | null;
   expiredFeedCheckCount?: number;
   expiredFeedCheckSince?: string | null;
   expiredFeedCheckExpiry?: string | null;
@@ -453,6 +456,17 @@ async function refreshAgency(
     writeLog(`\n  [warn] feed expired ${daysAgo}d ago (${expDate}) — update the feedUrl\n  `);
   }
 
+  // #1144: a timetable that hasn't started waits while the current one still runs. The zip is
+  // archived and the agency marked, so the run on its start date (heldFeedsDue) processes it.
+  const { feedStart: peekedStart } = await peekFeedDates(buf, agency.excludeRouteShortNames);
+  const heldUntil = futureFeedHoldUntil({ feedStart: peekedStart, todayYmd: expiryToday, liveFeedExpiry: agency.lastFeedExpiry });
+  if (heldUntil) {
+    agency.heldFeedStart = heldUntil;
+    await tryArchiveUnchangedFeed(agency.slug, buf, peekedExpiry, peekedVersion, writeLog);
+    writeLog(`\n  [info] ${heldFeedSummary(heldUntil)}\n  `);
+    return { summary: heldFeedSummary(heldUntil) };
+  }
+
   const hasSupplementals = (agency.supplementalFeedUrls?.length ?? 0) > 0;
   const supplementalFeeds: Array<SupplementalFeed & {
     feedExpiry: string | null;
@@ -597,7 +611,7 @@ async function refreshAgency(
   // recorded expiry. lastPeekedExpiry stays the raw zip's, which the next refresh compares against.
   const { feedStart, feedExpiry: keptCalendarExpiry, calendarOnlyEnd } = await peekFeedDates(buf, agency.excludeRouteShortNames);
   const agencyFlags = await evaluateRun({
-    candidates: [{ slug: agency.slug, next, service: { start: feedStart, end: feedExpiry ?? keptCalendarExpiry, calendarEnd: keptCalendarExpiry } }],
+    candidates: [{ slug: agency.slug, next, service: { start: feedStart, end: feedExpiry ?? keptCalendarExpiry, calendarEnd: keptCalendarExpiry, liveFeedExpiry: agencyBeforeRebuild.lastFeedExpiry } }],
     getLive: readRefreshLive,
     registry: gateRegistry,
     todayYmd: expiryToday,
