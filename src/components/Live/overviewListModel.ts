@@ -12,8 +12,37 @@ import { delayHeatPoints } from './delayHeatModel';
 const pct = (x: number) => `${Math.round(x * 100)}%`;
 const signed = (x: number) => `${x > 0 ? '+' : x < 0 ? '−' : ''}${Math.abs(Math.round(x * 100))}%`;
 
+/**
+ * A route's figure for one time of day (#1150), on the same basis as its all-day figure: late departures at the
+ * timepoints, run time over each direction's main pattern, extra wait over every gap. Null when the file has none.
+ * Bunching has no time-of-day figure on that basis, so it stays all day.
+ */
+export function bandFigure(v3: LiveV3 | undefined, measure: 'late' | 'runTime' | 'extraWait', band: DashboardBand): { value: number; text: string } | null {
+  if (!v3) return null;
+  if (measure === 'late') {
+    const o = v3.bands[band]?.adherence.timepoints.all.overall;
+    return o && o.n > 0 ? { value: o.lateShare, text: pct(o.lateShare) } : null;
+  }
+  if (measure === 'runTime') {
+    const mains = Object.values(v3.runningTime?.patterns ?? {}).flatMap(list => list.filter(p => p.kind === 'main'))
+      .map(p => p.bands?.[band]).filter((f): f is NonNullable<typeof f> => !!f && f.n > 0);
+    const n = mains.reduce((a, f) => a + f.n, 0);
+    if (!n) return null;
+    const typical = mains.reduce((a, f) => a + f.typicalMin * f.n, 0) / n, scheduled = mains.reduce((a, f) => a + f.scheduledMin * f.n, 0) / n;
+    const diff = Math.round(typical) - Math.round(scheduled);
+    return { value: diff, text: runTimeDiffText(diff, false) };
+  }
+  const stops = v3.extraWait?.[band] ?? [];
+  const gaps = stops.reduce((a, x) => a + x.gaps, 0);
+  if (!gaps) return null;
+  const minutes = stops.reduce((a, x) => a + x.extraWaitMin * x.gaps, 0) / gaps;
+  return { value: minutes, text: minutesText(minutes) };
+}
+
 /** A route's figure for the chosen measure, as a number to sort by and the text to show. Null when it has none. */
 export function figure(r: AgencyRouteRow, v3: LiveV3 | undefined, measure: MapMeasure, band: DashboardBand = 'all'): { value: number; text: string } | null {
+  // A time of day other than all day reads that period's own figure (#1150).
+  if (band !== 'all' && (measure === 'late' || measure === 'runTime' || measure === 'extraWait')) return bandFigure(v3, measure, band);
   switch (measure) {
     case 'late': return r.lateShare == null ? null : { value: r.lateShare, text: pct(r.lateShare) };
     // Sorted by the minutes it shows (a share would put "4 min faster" above "8 min faster").
