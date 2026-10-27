@@ -5,7 +5,7 @@ import {
   LIST_ROW_DIM,
 } from '../../styles';
 import Panel, { PanelBody } from '../ui/Panel';
-import { shortenAgencyName, routeLabels } from '../../utils/format';
+import { routeLabels, agencyNames } from '../../utils/format';
 import { splitRouteKey } from '../../utils/routeKey';
 import type { RouteLabel } from '../../utils/routeFacts';
 import RouteListRow from '../RouteListRow';
@@ -83,7 +83,7 @@ function TierDot({ headway }: { headway: number | null }) {
 }
 
 export function routeRowRight(agencyName: string, headway?: number | null, stacked = false, limited = false, sharedHeadway?: number | null, noRegular = false) {
-  const agency = shortenAgencyName(agencyName);
+  const agency = agencyNames(agencyName).short;
   const layout = stacked
     ? 'block max-w-full truncate mt-1 ml-0 text-left'
     : 'min-w-0 max-w-[34%] truncate shrink-0 ml-2 text-right';

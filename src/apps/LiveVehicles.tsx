@@ -12,7 +12,7 @@ import RouteListRow from '../components/RouteListRow';
 import RouteCardTitle from '../components/RouteCardTitle';
 import { getVehicleColors } from '../utils/colors';
 import { useColorVision } from '../context/ColorVisionContext';
-import { agencyDisplayParts, cleanRouteShortName, cleanRouteDisplayName, shortenAgencyName, agencyDisplayName, routeListCompanionName, liveVehicleRowLabel, vehicleModeWord, routeLabelCase } from '../utils/format';
+import { cleanRouteShortName, cleanRouteDisplayName, agencyDisplayName, routeListCompanionName, liveVehicleRowLabel, vehicleModeWord, routeLabelCase, agencyNames, agencyNameParts } from '../utils/format';
 import { branchDisplayPeriodHeadway } from '../utils/routeFacts';
 import { periodKeyForHour } from '../../shared/config';
 import { plural } from '../../shared/overflowText';
@@ -409,7 +409,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
         agencySlug: r.slug,
         routeShortName: r.displayRouteShortName,
         label: r.displayName ? routeLabelCase(r.displayName) : r.displayRouteShortName,
-        agencyName: shortenAgencyName(agencies.find(a => a.slug === r.slug)?.name ?? r.slug),
+        agencyName: agencyNames(agencies.find(a => a.slug === r.slug)?.name ?? r.slug).short,
       }));
   }, [visibleSlugs, agencies]);
 
@@ -420,7 +420,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
       .map(slug => ({
         slug,
         place: LIVE_AGENCY_PLACES[slug] ?? slug,
-        agencyName: shortenAgencyName(agencies.find(a => a.slug === slug)?.name ?? ''),
+        agencyName: agencyNames(agencies.find(a => a.slug === slug)?.name ?? '').short,
         withPerformance: agencyHasLiveAnalysis(slug),
       }))
       .sort((a, b) => a.place.localeCompare(b.place));
@@ -459,7 +459,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
       lastSlug = g.agencySlug;
       const agency = agencies.find(a => a.slug === g.agencySlug);
       const rawAgencyName = agency?.name ?? g.agencySlug;
-      const { primary: agencyName, secondary: agencyPlace } = agencyDisplayParts(rawAgencyName, agency?.cities, agency?.displayArea);
+      const { primary: agencyName, secondary: agencyPlace } = agencyNameParts({ name: rawAgencyName, cities: agency?.cities, displayArea: agency?.displayArea });
 
       return (
         <React.Fragment key={key}>
@@ -607,7 +607,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
   const requestedRouteNote = useMemo((): string | null => {
     if (!selectedRoute || selectedGroup || isLoading) return null;
     const [slug, routeShortName] = selectedRoute.split('::');
-    const agencyName = shortenAgencyName(agencies.find(a => a.slug === slug)?.name ?? slug);
+    const agencyName = agencyNames(agencies.find(a => a.slug === slug)?.name ?? slug).short;
     if (!getPolledRoute(slug, routeShortName)) {
       const followed = LIVE_POLLING_ROUTES.filter(r => r.slug === slug).map(r => r.displayRouteShortName);
       return followed.length > 0

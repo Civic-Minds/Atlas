@@ -52,6 +52,11 @@ const RULES: Array<{ name: string; pattern: RegExp; use: string }> = [
   { name: 'hand-rolled card title', pattern: /text-sm font-black text-\[var\(--text-primary\)\] leading-tight/, use: 'CARD_TITLE, CardTitle or AgencyCardTop (Interval/cardUi.tsx)' },
   { name: 'hand-rolled card facts line', pattern: /text-xs font-medium text-\[var\(--text-dim\)\] mt-1 leading-snug/, use: 'CARD_SUMMARY (Interval/cardUi.tsx)' },
   { name: 'report details written by hand', pattern: /details=\{`/, use: 'reportDetails (utils/reportIssue.ts)' },
+  // One place names an agency (CIV-998): a surface picks agencyNames(...).short / .backLink / .full / .place.
+  // The shared grey note and section label (CIV-395 follow-up): CARD_NOTE and CARD_SECTION in styles.ts.
+  { name: 'hand-rolled grey note', pattern: /text-xs font-bold text-\[var\(--text-dim\)\]/, use: 'CARD_NOTE (styles.ts)' },
+  { name: 'hand-rolled section label', pattern: /text-xs font-black text-\[var\(--text-dim\)\]/, use: 'CARD_SECTION or CardSectionLabel' },
+  { name: 'agency name helper called directly', pattern: /\b(shortenAgencyName|agencyBackLinkName|agencyDisplayParts)\(/, use: 'agencyNames or agencyNameParts (utils/format.ts)' },
 ];
 
 // Files that still own a style on purpose: the glass app tabs and the filter option list share the
@@ -61,7 +66,6 @@ const ALLOWED: Record<string, string[]> = {
   'components/Interval/pickers.tsx': ['hand-rolled frequency picker'],
   'apps/History.tsx': ['option pill classes'],
   // Live is local-only and its route groups carry no route type; it still names routes its own way (audit R8).
-  'apps/LiveVehicles.tsx': ['route label written by hand', 'route label joined by hand'],
   // Maintainer-only diagnostics, the story page's own opening layout, and a dialog title (panel headers are a later step).
   'DiagnosticsPerformancePage.tsx': ['hand-rolled page heading'],
   'components/Interval/HeadwaySparkline.tsx': ['hand-rolled section heading'],
@@ -72,7 +76,9 @@ const ALLOWED: Record<string, string[]> = {
   'components/CardBack.tsx': ['hand-written back arrow'],
   'components/RouteListRow.tsx': ['hand-drawn frequency dot'],
   // Live is its own app and team (CIV-899); its performance panel keeps its own title for now.
-  'components/Live/LiveRoutePerformance.tsx': ['hand-rolled card title'],
+  'components/Live/LiveRoutePerformance.tsx': ['hand-rolled card title', 'hand-rolled grey note', 'hand-rolled section label'],
+  'apps/LiveVehicles.tsx': ['route label written by hand', 'route label joined by hand', 'hand-rolled grey note'],
+  'components/Interval/panels/LiveStopArrivals.tsx': ['hand-rolled grey note'],
 };
 
 describe('shared UI components', () => {

@@ -129,6 +129,8 @@ export const CARD_NOTICE = 'text-xs font-normal text-[var(--text-dim)]';
 /** A short grey note inside a card (the route card's pattern label and "No midday service."; the chart's period
  *  name and legend). Bold, to read beside the card's bold rows. */
 export const CARD_NOTE = 'text-xs font-bold text-[var(--text-dim)]';
+/** A small section label ("Westbound", "On-demand service", the filter panel's "Mode"). */
+export const CARD_SECTION = 'text-xs font-black text-[var(--text-dim)]';
 /** The chart's period names over its bars (route card chart and the full-day view). */
 export const CHART_PERIOD_LABEL = 'text-xs font-black text-[var(--text-muted)]';
 /** A heading inside the chart area (the trip-time strip's "Trip time"). */

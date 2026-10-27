@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { Search } from 'lucide-react';
 import { HEADWAY_TIERS, getTierColor } from '../../utils/colors';
-import { FLOATING_CARD, GLASS_PILL, PILL_SURFACE, PANEL_ENTER_TOP, CONTROL_ACTIVE, CONTROL_ACTIVE_GLASS, CONTROL_INACTIVE, SEARCH_PILL, SEARCH_ICON, SEARCH_FIELD } from '../../styles';
+import { FLOATING_CARD, GLASS_PILL, PILL_SURFACE, PANEL_ENTER_TOP, CONTROL_ACTIVE, CONTROL_ACTIVE_GLASS, CONTROL_INACTIVE, SEARCH_PILL, SEARCH_ICON, SEARCH_FIELD, CARD_SECTION } from '../../styles';
 import Pill from '../ui/Pill';
 import type { Agency } from '../../App';
 import { PERIOD_LABELS, PERIOD_KEYS } from '../../hooks/useIntervalStats';
@@ -9,7 +9,7 @@ import type { TimePeriod, ViewportBounds } from '../../hooks/useIntervalStats';
 import { FEATURES, formatPeriodRange, periodKeyForHour } from '../../../shared/config';
 import { COMPACT_TOP_BAR_QUERY } from '../ModeTabLabel';
 import { useMediaQuery } from '../../hooks/useMediaQuery';
-import { agencyDisplayParts } from '../../utils/format';
+import { agencyNameParts } from '../../utils/format';
 import { bboxInViewport } from '../../utils/agencySearch';
 import { filterModeOptions } from '../../../shared/modes';
 import { modesForView } from '../../../shared/viewLayers';
@@ -188,10 +188,10 @@ function AgenciesPanel({ agencies, selectedAgencies, setSelectedAgencies, bounds
         )}
         {[...byRegion.entries()].map(([region, groups]) => (
           <div key={region}>
-            <p className="px-2 pt-2 pb-0.5 text-xs font-black text-[var(--text-dim)]">{region}</p>
+            <p className={`px-2 pt-2 pb-0.5 ${CARD_SECTION}`}>{region}</p>
             {groups.map(g => {
               const active = g.slugs.every(s => selectedAgencies.has(s));
-              const { primary, secondary } = agencyDisplayParts(g.name, g.cities, g.displayArea);
+              const { primary, secondary } = agencyNameParts({ name: g.name, cities: g.cities, displayArea: g.displayArea });
               return (
                 <button
                   key={g.name}
@@ -519,7 +519,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
             <PickerSection title="Time"><PeriodPicker value={period} onChange={setPeriod} /></PickerSection>
             {/* Mode */}
             <div>
-              <p className="text-xs font-black text-[var(--text-dim)] mb-1.5">Mode</p>
+              <p className={`${CARD_SECTION} mb-1.5`}>Mode</p>
               <div className="flex flex-wrap gap-1">
                 {MODES.map(m => (
                   <Pill size="segment" key={m.id} onClick={() => toggleMode(m.id)} selected={modeIsActive(m.id)}>

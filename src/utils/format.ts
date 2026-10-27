@@ -716,9 +716,33 @@ export function shortenAgencyName(name: string): string {
  * Prefer this over `agencies.find(a => a.slug === slug)?.name` — the raw
  * lookup is easy to reach for and easy to forget to shorten.
  */
+/** Every form of an agency's name, from one place (CIV-998). Callers pick the form by name, not by helper. */
+export interface AgencyNames {
+  /** Tight spots (row details, eyebrows, headings): "TTC", "DART", "Muni"; today still a bracketed city for some ("Austin"). */
+  short: string;
+  /** A back link to the agency: the short name, but never a bracketed city ("Valley Metro", #1102). */
+  backLink: string;
+  /** Lists and card titles: "Toronto Transit Commission", "MiWay". */
+  full: string;
+  /** The place shown beside the full name ("Mississauga"), if any. */
+  place?: string;
+}
+
+export function agencyNames(agency: string | { name: string; cities?: string[]; displayArea?: string }): AgencyNames {
+  const { name, cities, displayArea } = typeof agency === 'string' ? { name: agency, cities: undefined, displayArea: undefined } : agency;
+  const { primary, secondary } = agencyDisplayParts(name, cities, displayArea);
+  return { short: shortenAgencyName(name), backLink: agencyBackLinkName(name), full: primary, place: secondary };
+}
+
+/** agencyNames' full name and place as list rows destructure them ({ primary, secondary }). */
+export function agencyNameParts(agency: string | { name: string; cities?: string[]; displayArea?: string }): { primary: string; secondary?: string } {
+  const { full, place } = agencyNames(agency);
+  return place ? { primary: full, secondary: place } : { primary: full };
+}
+
 export function agencyDisplayName(agencies: { slug: string; name: string }[], slug: string): string {
   const agency = agencies.find(a => a.slug === slug);
-  return agency ? shortenAgencyName(agency.name) : slug;
+  return agency ? agencyNames(agency.name).short : slug;
 }
 
 /** Destination label for route/stop cards — matches route card `to …` convention. */

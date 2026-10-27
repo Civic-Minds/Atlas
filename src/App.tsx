@@ -4,7 +4,7 @@ import { Search, X, Info, History as HistoryIcon, ChevronDown, Radio } from 'luc
 import { CompareTab } from './components/Interval/CompareControl';
 import { useUrlPathname } from './hooks/useUrlPathname';
 import ModeTab from './components/ModeTab';
-import { PILL_SURFACE, FLOATING_CARD, SEARCH_BAR_WIDTH, TRANSITION_BASE, TRANSITION_SLOW, Z_MAP_OVERLAY, Z_HEADER, Z_MODAL_TOP, SIDEBAR_LEFT_FALLBACK, sidebarFrameStyle, ICON_BTN, SEARCH_ICON } from './styles';
+import { PILL_SURFACE, FLOATING_CARD, SEARCH_BAR_WIDTH, TRANSITION_BASE, TRANSITION_SLOW, Z_MAP_OVERLAY, Z_HEADER, Z_MODAL_TOP, SIDEBAR_LEFT_FALLBACK, sidebarFrameStyle, ICON_BTN, SEARCH_ICON, CARD_NOTE } from './styles';
 import { R2_PUBLIC_URL, getAgencyArtifactUrls, getAgencyCatalogUrl, FEATURES, FEATURE_ROUTES, ATLAS_MODE } from '../shared/config';
 import AtlasLogo from './components/AtlasLogo';
 import { isAgencyVisibleInBrowser } from '../shared/agencyVisibility';
@@ -677,7 +677,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
           />
           {!query && (
             <span
-              className="absolute left-8 right-2 top-1/2 -translate-y-1/2 text-xs font-bold text-[var(--text-dim)] pointer-events-none select-none whitespace-nowrap overflow-hidden text-ellipsis"
+              className={`absolute left-8 right-2 top-1/2 -translate-y-1/2 ${CARD_NOTE} pointer-events-none select-none whitespace-nowrap overflow-hidden text-ellipsis`}
             >
               {/* The search pill is narrow on phones: a one-word hint stays on one line. */}
               <span className="sm:hidden">Search</span>

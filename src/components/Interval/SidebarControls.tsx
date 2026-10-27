@@ -5,7 +5,7 @@ import { useColorMode } from '../../hooks/useColorMode';
 import type { ShapeProperties, TimePeriod, DayType, HoveredBranch, ViewportBounds } from '../../hooks/useIntervalStats';
 import type { Agency } from '../../App';
 import { findVariantFamily } from '../../utils/routeVariants';
-import { agencyDisplayParts, placeAlreadyInName, routeLabels, shortenAgencyName, searchOverlayHidesPanel, comparePanelTop } from '../../utils/format';
+import { placeAlreadyInName, routeLabels, searchOverlayHidesPanel, comparePanelTop, agencyNames, agencyNameParts } from '../../utils/format';
 import { routeListDisplay, type RouteListDisplay } from '../../utils/effectiveHeadway';
 import { combineSuggestedRouteNames, suggestedRouteGroupKey } from '../../utils/routeSuggestion';
 import { buildDirectionGroups, routeDirectionOverrides } from '../../utils/routeCardDirectionGroups';
@@ -234,7 +234,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       const shortName = facts.shortName;
       const label = facts.label;
       const longName = facts.longName || '';
-      const agencyName = shortenAgencyName(facts.agencyName);
+      const agencyName = agencyNames(facts.agencyName).short;
 
       try {
         const recentsRaw = localStorage.getItem('atlas_recently_viewed_routes');
@@ -285,7 +285,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         const sharedHeadway = display.sharedHeadway;
         const shortName = facts.shortName;
         const longName = facts.longName || '';
-        const agencyName = shortenAgencyName(facts.agencyName);
+        const agencyName = agencyNames(facts.agencyName).short;
         const existing = routes.get(groupKey);
         if (!existing) {
           routes.set(groupKey, { key: facts.key, shortName: slug === 'bart' ? suggestedRouteGroupKey(slug, shortName) : shortName, labelShortName: slug === 'bart' ? suggestedRouteGroupKey(slug, shortName) : labelShortNameOf(p), agencySlug: slug, longNames: longName ? [longName] : [], agencyName, routeType: facts.routeType, headway, limited, noRegular, sharedHeadway });
@@ -582,7 +582,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
             routeShortName: facts.shortName,
             label: facts.label,
             routeLongName: facts.longName || '',
-            agencyName: shortenAgencyName(facts.agencyName),
+            agencyName: agencyNames(facts.agencyName).short,
             agencySlug: slug,
             routeType: facts.routeType,
             headway: null,
@@ -631,9 +631,9 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
             const p = f.properties as any;
             const facts = buildRouteFacts(p, slug);
             const agency = agencies.find(a => a.slug === slug);
-            const agencyName = shortenAgencyName(facts.agencyName);
+            const agencyName = agencyNames(facts.agencyName).short;
             // The place beside the agency's name in the chooser's heading, unless the name already says it (CIV-971).
-            const place = agency ? agencyDisplayParts(agency.name, agency.cities, agency.displayArea).secondary : undefined;
+            const place = agency ? agencyNameParts({ name: agency.name, cities: agency.cities, displayArea: agency.displayArea }).secondary : undefined;
             const agencyPlace = place && !placeAlreadyInName(agencyName, place) ? place : undefined;
             return { key: facts.key, shortName: facts.shortName, label: facts.label, longName: facts.longName ?? '', agencyName, agencyPlace, agencySlug: slug, routeType: facts.routeType, color: getTierColor(p.tier, colorMode) };
           }
