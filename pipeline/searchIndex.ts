@@ -41,6 +41,9 @@ export interface SearchFile {
   contentAddressed: boolean;
 }
 
+/** [stopId, lat, lon]: one stop standing for its name at one place. */
+type StopPoint = [string, number, number];
+
 const round3 = (n: number) => Math.round(n * 1000) / 1000;
 
 function* coordinatesOf(geometry: { type: string; coordinates: unknown } | null | undefined): Generator<[number, number]> {
@@ -83,33 +86,33 @@ export function buildSearchRoutes(agencies: SearchAgencyInput[]): SearchRoutesFi
 }
 
 /** Each agency's stop names, one point per name unless copies are about a kilometre apart. */
-function stopNamesOf(agency: SearchAgencyInput): Map<string, Array<[number, number]>> {
-  const byName = new Map<string, Array<[number, number]>>();
+function stopNamesOf(agency: SearchAgencyInput): Map<string, StopPoint[]> {
+  const byName = new Map<string, StopPoint[]>();
   // The compact stop file; a few older ones are still GeoJSON.
   const raw = agency.stops as { features?: Array<{ properties?: { name?: string; stopName?: string }; geometry?: { coordinates?: [number, number] } }> } | null;
   const stops = Array.isArray(raw?.features)
-    ? raw.features.map(f => ({ name: f.properties?.stopName ?? f.properties?.name, lon: f.geometry?.coordinates?.[0], lat: f.geometry?.coordinates?.[1] }))
-    : Object.values(agency.stops ?? {});
+    ? raw.features.map(f => ({ id: (f.properties as { stopId?: string })?.stopId, name: f.properties?.stopName ?? f.properties?.name, lon: f.geometry?.coordinates?.[0], lat: f.geometry?.coordinates?.[1] }))
+    : Object.entries(agency.stops ?? {}).map(([id, s]) => ({ id, ...s }));
   for (const s of stops) {
     const name = (s.name ?? '').trim();
     const lat = Number(s.lat);
     const lon = Number(s.lon);
-    if (!name || !Number.isFinite(lat) || !Number.isFinite(lon)) continue;
+    if (!name || !s.id || !Number.isFinite(lat) || !Number.isFinite(lon)) continue;
     const points = byName.get(name) ?? [];
-    if (points.every(([pLat, pLon]) => Math.abs(pLat - lat) + Math.abs(pLon - lon) > SAME_PLACE_DEG)) {
-      points.push([round3(lat), round3(lon)]);
+    if (points.every(([, pLat, pLon]) => Math.abs(pLat - lat) + Math.abs(pLon - lon) > SAME_PLACE_DEG)) {
+      points.push([String(s.id), round3(lat), round3(lon)]);
     }
     byName.set(name, points);
   }
   return byName;
 }
 
-function stableSplit(rows: Map<string, Map<string, Array<[number, number]>>>): SearchStopsFile {
+function stableSplit(rows: Map<string, Map<string, StopPoint[]>>): SearchStopsFile {
   const out: SearchStopsFile = {};
   for (const slug of [...rows.keys()].sort()) {
     const names = rows.get(slug)!;
     out[slug] = [...names.keys()].sort().map(name => {
-      const points = [...names.get(name)!].sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+      const points = [...names.get(name)!].sort((a, b) => a[1] - b[1] || a[2] - b[2] || a[0].localeCompare(b[0]));
       return [name, ...points.flat()];
     });
   }
@@ -119,8 +122,8 @@ function stableSplit(rows: Map<string, Map<string, Array<[number, number]>>>): S
 /** Stop splits by word key: the first three characters, longer where a split is over SPLIT_MAX_BYTES. */
 export function buildSearchStops(agencies: SearchAgencyInput[], maxBytes = SPLIT_MAX_BYTES): Map<string, SearchStopsFile> {
   // key -> slug -> name -> points
-  const byKey = new Map<string, Map<string, Map<string, Array<[number, number]>>>>();
-  const add = (key: string, slug: string, name: string, points: Array<[number, number]>) => {
+  const byKey = new Map<string, Map<string, Map<string, StopPoint[]>>>();
+  const add = (key: string, slug: string, name: string, points: StopPoint[]) => {
     const bySlug = byKey.get(key) ?? new Map();
     byKey.set(key, bySlug);
     const names = bySlug.get(slug) ?? new Map();
@@ -139,13 +142,13 @@ export function buildSearchStops(agencies: SearchAgencyInput[], maxBytes = SPLIT
   const splits = new Map<string, SearchStopsFile>();
   // A split too large is divided by the next character of its words; a word that ends at the key
   // goes to `${key}_` (shared/searchIndex.ts queryStopKey reads the same keys).
-  const place = (key: string, rows: Map<string, Map<string, Array<[number, number]>>>) => {
+  const place = (key: string, rows: Map<string, Map<string, StopPoint[]>>) => {
     const file = stableSplit(rows);
     if (key.endsWith('_') || key.length >= SEARCH_MAX_KEY || JSON.stringify(file).length <= maxBytes) {
       splits.set(key, file);
       return;
     }
-    const sub = new Map<string, Map<string, Map<string, Array<[number, number]>>>>();
+    const sub = new Map<string, Map<string, Map<string, StopPoint[]>>>();
     for (const [slug, names] of rows) {
       for (const [name, points] of names) {
         const keys = new Set(indexedWords(name).filter(w => w.startsWith(key)).map(w => (w.length > key.length ? w.slice(0, key.length + 1) : `${key}_`)));

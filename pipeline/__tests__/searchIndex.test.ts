@@ -48,8 +48,8 @@ describe('search index stops (CIV-1048)', () => {
     const splits = buildSearchStops([muni, ttc]);
     expect([...splits.keys()].sort()).toEqual(['bat', 'egl', 'gea', 'kin', 'par', 'pie', 'pre', 'sai']);
     // Two copies 10 m apart share a point; the one 13 km away keeps its own.
-    expect(splits.get('gea')).toEqual({ muni: [['Geary Blvd & Park Presidio', 37.78, -122.47, 37.9, -122.47]] });
-    expect(splits.get('egl')).toEqual({ muni: [['Église Saint-Pierre', 37.7, -122.4]] });
+    expect(splits.get('gea')).toEqual({ muni: [['Geary Blvd & Park Presidio', 'a', 37.78, -122.47, 'c', 37.9, -122.47]] });
+    expect(splits.get('egl')).toEqual({ muni: [['Église Saint-Pierre', 'd', 37.7, -122.4]] });
   });
 
   it('divides a split that is too large by the next character', () => {
@@ -58,9 +58,9 @@ describe('search index stops (CIV-1048)', () => {
       routes: { features: [] },
       stops: Object.fromEntries(['Park', 'Parkdale', 'Parkside Plaza', 'Parker'].map((name, i) => [String(i), { name, lat: i, lon: i }])),
     };
-    const splits = buildSearchStops([many], 50);
+    const splits = buildSearchStops([many], 60);
     expect([...splits.keys()].sort()).toEqual(['park_', 'parkd', 'parke', 'parks', 'pla']);
-    expect(splits.get('park_')).toEqual({ big: [['Park', 0, 0]] });
+    expect(splits.get('park_')).toEqual({ big: [['Park', '0', 0, 0]] });
   });
 
   it('reads the smallest split among the query words', () => {

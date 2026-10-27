@@ -82,7 +82,7 @@ export interface SearchIndexFile {
 /** A page: word key to [stop-split hash, split size in bytes]. */
 export type SearchPageFile = Record<string, [string, number]>;
 
-/** A stop split: agency slug to [name, lat, lon, lat, lon, ...] (one point per kilometre-apart copy). */
+/** A stop split: agency slug to [name, stopId, lat, lon, stopId, lat, lon, ...] (one stop per kilometre-apart copy). */
 export type SearchStopsFile = Record<string, Array<Array<string | number>>>;
 
 export function searchRoutesKey(releasePrefix: string): string {
