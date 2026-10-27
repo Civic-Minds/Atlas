@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { CARD_NOTICE, CARD_NOTICE_FOOTER } from '../styles';
-import { expiredFeedCheckHistory, expiredFeedNotice } from './noticeCopy';
+import { expiredFeedCheckHistory, expiredFeedNotice, nightNoRoutesNotice, noServiceOnDayNotice, selectedRouteFilterNotice, selectedRouteOutsideFilterNotice, stopNoRoutesNotice } from './noticeCopy';
 
 describe('expiredFeedNotice', () => {
   it('names the agency once, without region or duplicated articles', () => {
@@ -15,15 +15,15 @@ describe('expiredFeedNotice', () => {
     );
   });
 
-  it('explains manually maintained feeds', () => {
-    expect(expiredFeedNotice('Grand River Transit', 'Apr 26, 2026', true)).toContain('maintained manually');
+  it('reads the same for a timetable kept by hand (N3: the detail is in its explainer)', () => {
+    expect(expiredFeedNotice('Grand River Transit', 'Apr 26, 2026', true)).toBe(expiredFeedNotice('Grand River Transit', 'Apr 26, 2026'));
   });
 });
 
 describe('expiredFeedCheckHistory', () => {
   it('reads as its own sentence', () => {
     expect(expiredFeedCheckHistory({ count: 5, since: '2026-06-22', lastChecked: '2026-10-12' })).toBe(
-      'Atlas has checked for a new timetable 5 times since Jun 22, 2026, most recently on Oct 12, 2026.',
+      "We've checked for a new timetable 5 times since Jun 22, 2026, with our most recent check on Oct 12, 2026.",
     );
   });
 });
@@ -33,5 +33,43 @@ describe('card notice styling', () => {
     expect(CARD_NOTICE).toContain('font-normal');
     expect(CARD_NOTICE).not.toContain('font-bold');
     expect(CARD_NOTICE_FOOTER).not.toContain('border-t');
+  });
+});
+
+describe('approved notice wording (CIV-1045)', () => {
+  it('N12: the frequency filter', () => {
+    expect(selectedRouteOutsideFilterNotice(15, '6–9 AM').replace(/\u2060/g, '').replace(/\u00a0/g, ' ')).toBe("This route doesn't meet the 15\u2011minute filter for all of 6–9 AM.");
+    // N11: the same times as N8.
+    expect(selectedRouteOutsideFilterNotice(Infinity, '6–9 AM').replace(/\u2060/g, '').replace(/\u00a0/g, ' ')).toBe('This route has no scheduled trips from 6–9 AM.');
+  });
+
+  it('N13: names what the rest of the period has', () => {
+    const base = { headway: 12, activeRange: '7–9 AM', periodRange: '6–9 AM' };
+    const plain = (s: string) => s.replace(/\u2060/g, '').replace(/\u00a0/g, ' ');
+    expect(plain(selectedRouteFilterNotice({ ...base, outside: [{ service: 'none', range: '6–7 AM' }] })))
+      .toBe('This route runs every 12 min from 7–9 AM, with no service from 6–7 AM.');
+    expect(plain(selectedRouteFilterNotice({ ...base, outside: [{ service: 'less', range: '6–7 AM' }] })))
+      .toBe('This route runs every 12 min from 7–9 AM, and less often from 6–7 AM.');
+    expect(plain(selectedRouteFilterNotice({ ...base, activeRange: '7–8 AM', outside: [{ service: 'none', range: '6–7 AM' }, { service: 'none', after: '8 AM' }] })))
+      .toBe('This route runs every 12 min from 7–8 AM, with no service from 6–7 AM or after 8 AM.');
+    expect(plain(selectedRouteFilterNotice({ ...base, activeRange: '7–8 AM', outside: [{ service: 'none', range: '6–7 AM' }, { service: 'less', after: '8 AM' }] })))
+      .toBe('This route runs every 12 min from 7–8 AM, with no service from 6–7 AM, and less often after 8 AM.');
+    expect(plain(selectedRouteFilterNotice({ ...base, outside: [{ service: 'unknown', range: '6–7 AM' }] })))
+      .toBe('This route runs every 12 min from 7–9 AM, and not from 6–7 AM.');
+    // More than one run in the period: the general wording.
+    expect(plain(selectedRouteFilterNotice(base))).toBe('This route runs every 12 min from 7–9 AM, but not throughout the selected 6–9 AM period.');
+  });
+
+  it('N35: a stop with no routes in the chosen time', () => {
+    expect(stopNoRoutesNotice('4–7 PM').replace(/\u2060/g, '').replace(/\u00a0/g, ' ')).toBe('No routes stop here from 4–7 PM.');
+  });
+
+  it('N52: the Night view with nothing to list', () => {
+    expect(nightNoRoutesNotice(30)).toBe('No routes here run every 30 min or better from 2–5 AM.');
+  });
+
+  it('N17 and N26: no scheduled service on the day', () => {
+    expect(noServiceOnDayNotice('route', 'Sunday')).toBe('This route has no scheduled service on Sundays.');
+    expect(noServiceOnDayNotice('agency', 'Weekday')).toBe('This agency has no scheduled service on weekdays.');
   });
 });
