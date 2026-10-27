@@ -24,14 +24,14 @@ import {
 } from '../cardUi';
 import { CARD_NOTE, CARD_NOTICE, CARD_NOTICE_FOOTER } from '../../../styles';
 import { FEATURES, SPARKLINE_HOURS, TIME_PERIODS, formatPeriodHourLong, formatPeriodRangeLong, periodKeyForHour } from '../../../../shared/config';
-import { hasDirectionPeriodService, NO_REGULAR_SERVICE_LABEL, routeCardCoverageText, routeCardPeriodShapeText, routeCardDisplayHeadway, routeCardDisplayHeadwayRange, routeCardDisplayLimited } from '../../../utils/effectiveHeadway';
+import { hasDirectionPeriodService, NO_REGULAR_SERVICE_LABEL, routeCardCoverageText, routeCardDisplayHeadway, routeCardDisplayHeadwayRange, routeCardDisplayLimited } from '../../../utils/effectiveHeadway';
 import { branchDisplayHourHeadway, branchDisplayPeriodHeadway, buildRouteServiceSummary } from '../../../utils/routeFacts';
 import { branchStackColor } from '../../../utils/colors';
 import { unevenPeriodMaxGap } from '../../../utils/routeCardUneven';
+import { routeCardRowValue } from '../../../utils/routeCardRowValue';
 import {
   dirIdNum,
   groupTrunkHeadway,
-  headsignTrunkHeadway,
   sparklineSourceDirections,
   worstDirectionByHour,
   sharedStopIdsForBranches,
@@ -42,13 +42,13 @@ import {
 import { shouldShowDirectionSections } from '../../../utils/routeCardDirectionLayout';
 import { activeHourRanges, partPeriodNoticeApplies } from '../../../utils/periodActiveRanges';
 import { rowLabelWithOrigin } from '../../../utils/rowOriginLabel';
-import { hasRegularServiceInPeriod, hasStretchRoles, isOneGapRow, routeAllDayContract, routeContract, variantRowHeadway } from '../../../utils/stretchCard';
+import { hasStretchRoles, routeAllDayContract, routeContract } from '../../../utils/stretchCard';
 import type { VariantFamily } from '../../../utils/routeVariants';
 import type { CompareRouteRow } from '../compareTypes';
 import { compareCardSummary } from '../../../utils/compareSides';
 import { reportDetails } from '../../../utils/reportIssue';
 import { ROUTE_DATA_QUALITY_WARNING, ROUTE_DATA_QUALITY_WARNING_MESSAGE } from '../../../../shared/routeDataQuality';
-import { featurePassesHeadwayFilter, routeFilterHeadway } from '../../../../shared/routeHeadwayFilter';
+import { featurePassesHeadwayFilter } from '../../../../shared/routeHeadwayFilter';
 import { expiredFeedNotice, NO_ROUTE_SHAPE_NOTICE, periodServiceNotice, selectedRouteFilterNotice, selectedRouteOutsideFilterNotice, unevenServiceNotice } from '../../../content/noticeCopy';
 import { headwayAbout, headwayAboutRange } from '../../../utils/headwayText';
 import type { RouteLabel } from '../../../utils/routeFacts';
@@ -726,64 +726,25 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                 )}
                 <div className="space-y-1">
                   {group.realTier.map((d, i) => {
-                    // Dimming and colour follow the one frequency rule (worst direction decides),
-                    // exactly as the map does; the row's own cadence stays display-only (#564).
-                    const branchFilterHeadway = routeFilterHeadway(d, period);
-                    const dimmed = maxHeadway !== Infinity && !featurePassesHeadwayFilter(d, period, maxHeadway);
                     return (() => {
-                      const variantH = hoveredHour == null ? variantRowHeadway(d, period) : undefined;
-                      // A stretch row the card cannot read a cadence for (its own gaps are uneven) takes its direction's filter value.
-                      const ownH = hoveredHour != null
-                        ? branchDisplayHourHeadway(d, hoveredHour) ?? routeCardDisplayHeadway(d, period)
-                        : routeCardDisplayHeadway(d, period);
-                      const directionH = stretchMode && hoveredHour == null && ownH == null && period !== 'all'
-                        ? d.directionFilterHeadwayByPeriod?.[period as keyof NonNullable<ShapeProperties['directionFilterHeadwayByPeriod']>]
-                        : undefined;
-                      const allDayH = allDay?.filterValue != null && hoveredHour == null ? allDay.filterValue : undefined;
-                      // All day: every row reads the route's all-day value, the number the lists and the map filter use.
-                      const directionFallback = allDayH ?? (typeof directionH === 'number' ? directionH : undefined);
-                      const fallbackRange = directionFallback != null && contract?.range && contract.range[0] < directionFallback && contract.range[1] >= directionFallback
-                        ? headwayAboutRange(contract.range[0], directionFallback)
-                        : undefined;
-                      const displayH = variantH !== undefined ? variantH : directionFallback ?? ownH;
-                      // #934 and D6: the main stretch's row names a late start, an early end or one gap inside
-                      // steady service, in place of a long wait or "limited"; the dot keeps the filter's colour.
-                      // A period that is one gap between a few departures (#955) has no cadence to word.
-                      const edgeText = hoveredHour == null && variantH === undefined && allDayH == null && d.stretchRole === 'main' && !isOneGapRow(d, period)
-                        ? routeCardPeriodShapeText(d, period)
-                        : undefined;
+                      const row = routeCardRowValue(d, { period, hoveredHour, stretchMode, allDay, contract, noRegularService, maxHeadway });
                       const label = branchLabel(group, d, gi);
-                      if (!label && !collapseGroups && displayH == null) return null;
-                      const trunkHw = hoveredHour == null && period !== 'all'
-                        ? headsignTrunkHeadway(d, period)
-                        : undefined;
-                      // The stop card's rule (hasRegularServiceInPeriod), so the two cards agree. #954: when
-                      // the route has no regular service in the period, a row still shows its own direction
-                      // value when it has one (SF Muni 8 PM: Fisherman's Wharf every 8), on data that carries
-                      // the one-gap flag; every other row, and All day, reads as the route does. #955: a number
-                      // that is one gap between a few departures is not a cadence (TTC 10 weekday midday to
-                      // Victoria Park, 09:07 then 14:22: "every 315"); a row with a steady value of its own keeps it.
-                      const rowNoRegular = hoveredHour == null && (
-                        (noRegularService && (period === 'all' || d.stretchPeriodOneGap === undefined || !hasRegularServiceInPeriod(d, period) || displayH == null))
-                        || isOneGapRow(d, period));
-                      const isLimited = rowNoRegular
-                        ? true
-                        : displayH == null && hoveredHour == null && routeCardDisplayLimited(d, period);
+                      if (!label && !collapseGroups && row.displayH == null) return null;
                       return (
                         <FlaggableValue key={`r${i}`} reason="Frequency is wrong" reportRef={reportRef} className="block w-full text-left">
                           <CardDirectionRow
                             labelWeight="regular"
                             singleLine
                             label={label}
-                            headway={rowNoRegular ? undefined : displayH ?? undefined}
-                            limitedLabel={isLimited && edgeText ? edgeText : rowNoRegular ? noRegularLabel : undefined}
-                            colorHeadway={hoveredHour == null && !rowNoRegular ? branchFilterHeadway : undefined}
-                            headwayLabel={hoveredHour == null && variantH === undefined ? (edgeText ?? (directionFallback != null ? fallbackRange : routeCardCoverageText(d, period))) : undefined}
-                            trunkHeadway={trunkHw}
+                            headway={row.headway}
+                            limitedLabel={row.isLimited && row.edgeText ? row.edgeText : row.rowNoRegular ? noRegularLabel : undefined}
+                            colorHeadway={row.colorHeadway}
+                            headwayLabel={row.headwayLabel}
+                            trunkHeadway={row.trunkHeadway}
                             edgeGapAllowance={d.edgeGapAllowance}
                             onEdgeGapAllowanceClick={onInfoOpen ? () => onInfoOpen('about', { helpTopic: 'edge-gap-allowance' }) : undefined}
-                            dimmed={dimmed}
-                            limited={isLimited}
+                            dimmed={row.dimmed}
+                            limited={row.isLimited}
                             {...branchHoverProps(group.dirId, d.headsign, d.routeVariant)}
                             holdLayout={hoveredHour != null}
                           />
