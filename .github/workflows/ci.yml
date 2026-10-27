@@ -40,6 +40,10 @@ jobs:
       - name: Check index.json and catalogs match config/agencies
         run: npm run check:agency-index
 
+      # A warning, not a failure: the summaries only catch up after a data publish (#1156).
+      - name: Check agency page summaries match the public data release
+        run: npm run check:agency-pages
+
       - name: Test
         run: npm run test
 

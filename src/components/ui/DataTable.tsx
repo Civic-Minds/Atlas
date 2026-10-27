@@ -109,6 +109,8 @@ export const FIXED_COLUMN_REM = 8;
  */
 function openRow(e: MouseEvent<HTMLTableRowElement>, href: string) {
   if ((e.target as HTMLElement).closest('a, button') || window.getSelection()?.toString()) return;
+  // Row links are Atlas paths only ("/agency/ttc"): anything else, including protocol-relative "//host", is ignored.
+  if (!/^\/(?!\/)[\w\-./?=&%#~]*$/.test(href)) return;
   if (e.button === 1 || e.metaKey || e.ctrlKey) window.open(href, '_blank', 'noopener');
   else if (e.button === 0) window.location.assign(href);
 }

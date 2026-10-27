@@ -65,6 +65,7 @@
     "build:agency-catalog": "npx tsx scripts/build-agency-catalog.ts",
     "build:history-agencies": "npx tsx scripts/build-history-agency-list.ts",
     "check:agency-index": "npx tsx scripts/check-agency-index-drift.ts",
+    "check:agency-pages": "npx tsx scripts/check-agency-pages.ts",
     "check:overlays": "node scripts/check-overlay-overlap.mjs",
     "record-feed-review": "npx tsx scripts/record-feed-review.ts",
     "verify:live-contract": "npx tsx scripts/verify-live-contract.ts",

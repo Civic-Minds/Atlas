@@ -20,15 +20,16 @@ describe('agency short names (CIV-998)', () => {
     expect(agencyNames('San Francisco Municipal Transportation Agency (SFMTA - Muni)').name).toBe('Muni');
   });
 
-  it('uses the config short form only where the own name is too long for a row', () => {
-    expect(agencyNames('Gary Public Transportation Corporation (Gary, IN)').name).toBe('GPTC');
-    expect(agencyNames('Gary Public Transportation Corporation (Gary, IN)').backLink).toBe('GPTC');
+  it('a long name with no short form keeps its own name, never the bracketed city', () => {
+    // Ryan held the new short forms (GPTC, SETD, ...) on 2026-10-27, so Gary shows its full name.
+    expect(agencyNames('Gary Public Transportation Corporation (Gary, IN)').name).toBe('Gary Public Transportation Corporation');
+    expect(agencyNames('Gary Public Transportation Corporation (Gary, IN)').backLink).toBe('Gary Public Transportation Corporation');
     expect(agencyNames('STM (Montréal)').name).toBe('STM');
   });
 
   it('lists show the short name with the place beside it (#1134)', () => {
     expect(agencyListParts(bySlug.get('ttc')!)).toEqual({ primary: 'TTC', secondary: 'Toronto' });
-    expect(agencyListParts(bySlug.get('gptc')!)).toEqual({ primary: 'GPTC', secondary: 'Gary' });
+    expect(agencyListParts(bySlug.get('gptc')!)).toEqual({ primary: 'Gary Public Transportation Corporation' }); // the name already says Gary
     expect(agencyListParts(bySlug.get('calgary')!).primary).toBe('Calgary Transit');
   });
 
