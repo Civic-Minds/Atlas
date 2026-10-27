@@ -35,10 +35,10 @@ export function agencyHour(slug: string, d = new Date()): number {
   return Number(new Intl.DateTimeFormat('en-CA', { hour: 'numeric', hourCycle: 'h23', timeZone: LIVE_AGENCY_TIMEZONES[slug] }).format(d));
 }
 
-/** "11:42 pm" on the agency's clock. */
 /** "Right now" names a time only once the vehicles' newest report is older than this: "Right now · last updated 2:04 pm" (CIV-1034). */
 export const RIGHT_NOW_STALE_SEC = 2 * 60;
 
+/** "11:42 pm" on the agency's clock. */
 export function agencyTime(slug: string, d = new Date()): string {
   return new Intl.DateTimeFormat('en-CA', { hour: 'numeric', minute: '2-digit', timeZone: LIVE_AGENCY_TIMEZONES[slug] }).format(d).replace('a.m.', 'am').replace('p.m.', 'pm');
 }
