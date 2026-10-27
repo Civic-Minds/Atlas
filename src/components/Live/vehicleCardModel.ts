@@ -27,16 +27,20 @@ export interface VehicleCardRow {
  * feed gave its value. The feed has no next-stop field, so the card never shows one.
  */
 export function vehicleCardRows(
-  v: Pick<LiveVehicle, 'headsign' | 'directionId' | 'speedKmh' | 'delayMin' | 'statusLabel' | 'status'>,
+  v: Pick<LiveVehicle, 'headsign' | 'directionId' | 'speedKmh' | 'delayMin' | 'statusLabel' | 'status' | 'stretchRole'>,
   directionLabel: string | null | undefined,
 ): VehicleCardRow[] {
   const rows: VehicleCardRow[] = [];
   const direction = directionLabel?.trim();
   const destination = v.headsign?.trim();
-  // Every car reads "Direction: to Distillery", the line's end for its direction; a trip that ends short of it adds
-  // "Ends at Broadview" with a "Short turn" tag. Never a compass word (CIV-1043, Ryan's approved wording).
-  if (direction) rows.push({ label: 'Direction', value: `to ${direction}` });
-  if (destination && destination !== direction) rows.push({ label: 'Ends at', value: destination, ...(direction ? { tag: 'Short turn' } : {}) });
+  // Every car reads "Direction: to Distillery", the line's end for its direction; a short turn adds
+  // "Ends at Broadview & Queen" with a "Short turn" tag. Never a compass word (CIV-1043, Ryan's approved wording).
+  // A branch (504B to Broadview) runs to its own end, so it reads "Direction: to Broadview", untagged; the tag is
+  // only for a trip whose shape is a short-turn pattern, never a guess.
+  const branch = v.stretchRole === 'tail' && !!destination;
+  if (branch) rows.push({ label: 'Direction', value: `to ${destination}` });
+  else if (direction) rows.push({ label: 'Direction', value: `to ${direction}` });
+  if (!branch && destination && destination !== direction) rows.push({ label: 'Ends at', value: destination, ...(direction && v.stretchRole === 'variant' ? { tag: 'Short turn' } : {}) });
   if (v.speedKmh != null) rows.push({ label: 'Speed', value: `${v.speedKmh} km/h` });
   const schedule = delayLabel(v);
   if (schedule) rows.push({ label: 'Schedule', value: schedule, status: v.status });

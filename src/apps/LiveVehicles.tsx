@@ -26,7 +26,7 @@ import { agencyDisplayParts, cleanRouteShortName, cleanRouteDisplayName, agencyD
 import { branchDisplayPeriodHeadway } from '../utils/routeFacts';
 import { periodKeyForHour } from '../../shared/config';
 import { countOf } from '../../shared/overflowText';
-import { inferLiveDirection } from '../utils/liveDirection';
+import { inferLiveDirection, type LiveDirectionMatch } from '../utils/liveDirection';
 import { DIRECTION_UNCLEAR, compareLiveRoutes, focusDirectionKey, groupVehiclesByDirection, orderDirectionGroups, routeDirectionLabels } from '../utils/liveGrouping';
 import { CardDirectionRow, CardHelpNotice, SidebarCardHeaderBlock, SidebarCardListRows, SidebarCardSection, SidebarCardShell, CARD_LIST_ROUTE, SIDEBAR_CARD_BODY } from '../components/Interval/cardUi';
 import { liveVehiclesFingerprint } from '../utils/liveVehiclesFingerprint';
@@ -109,6 +109,8 @@ const MIN_LIVE_ZOOM = 9;
 
 /** Direction work per polled vehicle, kept across zoom steps (see resolvedVehiclesBySlug). */
 const resolvedDirections = new WeakMap<LiveVehicle, LiveVehicle>();
+/** Each trip's last labelled direction ("agency|vehicle|trip"), for a poll whose shape match comes back tied. */
+const lastDirection = new Map<string, LiveDirectionMatch>();
 
 export default function LiveVehicles({ agencies, lightMode, setLightMode, active, onInfoOpen, query, layers = {}, sidebarLeft, selectionActive = false, routeRequest = null, onAgencyClick, searchBarWidth }: Props) {
   const { colorVisionFriendly } = useColorVision();
@@ -208,7 +210,12 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
         if (cached && (known == null || cached.directionId === known)) return cached;
         const match = inferLiveDirection(known == null ? vehicle : { ...vehicle, directionId: known }, routeFeatures);
         // Destinations read with "&" between two street names, like the direction labels below (CIV-1043).
-        const out = { ...vehicle, directionId: match.directionId, headsign: match.headsign && streetJoin(match.headsign) };
+        // A car between two directions' shapes can come back unlabelled on one poll: keep what the last poll said for
+        // the same trip rather than blank the card (CIV-1043).
+        const kept = match.directionId == null && match.headsign == null ? lastDirection.get(`${slug}|${vehicle.id}|${vehicle.tripId}`) : undefined;
+        const m = kept ?? match;
+        if (!kept && (m.directionId != null || m.headsign != null)) lastDirection.set(`${slug}|${vehicle.id}|${vehicle.tripId}`, m);
+        const out = { ...vehicle, directionId: m.directionId, headsign: m.headsign && streetJoin(m.headsign), ...(m.stretchRole ? { stretchRole: m.stretchRole } : {}) };
         if (routeFeatures.length > 0) resolvedDirections.set(vehicle, out);
         return out;
       });
@@ -670,13 +677,13 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
       <SidebarCardSection label={vehicleCardName(cardVehicle, selectedRouteModeWord) ?? selectedRouteModeWord}>
         {vehicleCardRows(cardVehicle, cardVehicle.directionId != null ? directionLabels.get(cardVehicle.directionId) : null).map(row => (
           <div key={row.label} className="flex items-start justify-between gap-3">
-            <span className="text-xs font-bold text-[var(--text-dim)]">{row.label}</span>
+            <span className="text-xs font-bold text-[var(--text-dim)] shrink-0 whitespace-nowrap">{row.label}</span>
             <span
               style={row.status && row.status !== 'no_data' ? { color: getVehicleColors(row.status, colorMode).border } : undefined}
               className={`${CARD_LIST_ROUTE} text-right min-w-0`}
             >
               {row.value}
-              {row.tag && <Tag className="ml-1.5 align-middle">{row.tag}</Tag>}
+              {row.tag && <Tag className="ml-1.5 align-middle whitespace-nowrap">{row.tag}</Tag>}
             </span>
           </div>
         ))}
