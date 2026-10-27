@@ -69,11 +69,15 @@ export function headwayFilterLabel(maxHeadway: number): string {
   return headwayTierLabel(maxHeadway);
 }
 
+/** The number headwayAbout prints: one decimal up to 60 minutes, the nearest 30 above. */
+export function headwayAboutMinutes(minutes: number): number {
+  return minutes <= 60 ? Number(num(minutes)) : Math.round(minutes / 30) * 30;
+}
+
 /** "every 16 min": a measured or typical spacing. Above 60 minutes it rounds to the nearest 30 min. */
 export function headwayAbout(minutes: number | null | undefined): string {
   if (!isUsable(minutes)) return MISSING;
-  if (minutes <= 60) return `every ${num(minutes)} min`;
-  return `every ${Math.round(minutes / 30) * 30} min`;
+  return `every ${num(headwayAboutMinutes(minutes))} min`;
 }
 
 /** "every 30–60 min": a list cadence, combined on a shared stretch up to each branch's own. */

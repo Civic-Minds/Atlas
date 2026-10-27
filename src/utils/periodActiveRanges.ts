@@ -1,4 +1,5 @@
 import type { ShapeProperties } from '../hooks/useIntervalStats';
+import { headwayAboutMinutes } from './headwayText';
 
 /**
  * The hour runs, [start, end), in which any of the given directions has a headway,
@@ -67,4 +68,21 @@ export function partPeriodNoticeApplies(
     if (!directions.some(direction => hourHasService(direction, hour))) return true;
   }
   return false;
+}
+
+/**
+ * The frequency the part-period notice names, or null to name none (#1123). The route's filter
+ * value is measured across the whole period, including the wait before the first or after the
+ * last trip, so it can read slower than every row on the card (RFTA HC AM Peak: "every 60 min"
+ * above rows of every 20). When the number the notice would print is slower than every row's,
+ * the notice names no frequency; when a row runs that slowly or slower, the number stays.
+ */
+export function partPeriodNoticeHeadway(
+  filterValue: number | null | undefined,
+  rowHeadways: ReadonlyArray<number | null | undefined>,
+): number | null {
+  if (filterValue == null) return null;
+  const rows = rowHeadways.filter((h): h is number => typeof h === 'number' && Number.isFinite(h) && h > 0);
+  const shown = headwayAboutMinutes(filterValue);
+  return rows.length > 0 && rows.every(h => shown > headwayAboutMinutes(h)) ? null : filterValue;
 }
