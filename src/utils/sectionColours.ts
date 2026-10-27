@@ -72,6 +72,10 @@ export interface SectionColourProperties {
   headway: number | null;
   agencySlug: string;
   routeId: string;
+  /** The route's names and type, so the route counter names a route drawn only by these pieces (#1090). */
+  routeShortName: string | null;
+  routeLongName: string | null;
+  routeType: number | null;
   directionId: number;
   headsign: string | null;
   day: string | null;
@@ -267,6 +271,10 @@ export function buildSectionColourFeatures(
             headway: run.headway,
             agencySlug: p.agencySlug ?? slug,
             routeId: String(p.routeId),
+            // The route's names and type, so the route counter can name a route drawn only by these pieces (#1090).
+            routeShortName: p.routeShortName ?? null,
+            routeLongName: p.routeLongName ?? null,
+            routeType: (p as any).routeType ?? null,
             directionId: dir,
             headsign: p.headsign ?? null,
             day: p.day ?? null,

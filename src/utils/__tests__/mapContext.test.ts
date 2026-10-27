@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { dedupeMapContextByDisplay, getMapContextAgencies, isMapContextOutsideClick } from '../mapContext';
+import { dedupeMapContextByDisplay, getMapContextAgencies, getMapContextAgenciesFromFeatures, isMapContextOutsideClick } from '../mapContext';
 import { routeLabels } from '../format';
 
 const agencies = [
@@ -55,3 +55,22 @@ describe('mapContext', () => {
     expect(agency.routes.map(r => r.key)).toEqual(['a::1', 'a::3']);
   });
 });
+
+describe('routes drawn by segment layers (#1090)', () => {
+  const line = (props: Record<string, unknown>): GeoJSON.Feature => ({ type: 'Feature', geometry: { type: 'LineString', coordinates: [[0, 0], [1, 1]] }, properties: { agencySlug: 'yrt', ...props } });
+  const agencies = [{ slug: 'yrt', name: 'York Region Transit' }] as any;
+
+  it('names a route drawn only by its qualifying segments from the names the piece carries', () => {
+    const [agency] = getMapContextAgenciesFromFeatures(agencies, [line({ routeId: 'r-purple', routeBranch: null, routeShortName: 'Purple', routeLongName: 'Viva Purple', routeType: 3 })]);
+    expect(agency.routes.map(r => r.label.text)).toEqual([expect.stringContaining('Purple')]);
+  });
+  it('a full line names the row even when a segment piece comes first, and a piece without a branch is not a second route', () => {
+    const [agency] = getMapContextAgenciesFromFeatures(agencies, [
+      line({ routeId: '1', routeShortName: '1', routeLongName: 'Yonge', routeType: 3 }), // a section piece: no routeBranch
+      line({ routeId: '1', routeBranch: 'A', routeShortName: '1', routeLongName: 'Yonge', routeType: 3 }),
+    ].reverse());
+    expect(agency.routes).toHaveLength(1);
+    expect(agency.routeCount).toBe(1);
+  });
+});
+
