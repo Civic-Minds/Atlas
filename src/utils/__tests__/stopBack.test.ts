@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { resolveStopBack, stopBackTarget, type StopBackAgency, type StopBackRoute, type StopBackSnapshot } from '../stopBack';
-import { shortenAgencyName } from '../format';
+import { agencyNames } from '../agencyName';
 
 const snap = (over: Partial<StopBackSnapshot> = {}): StopBackSnapshot => ({
   route: null, agencySlug: null, onDemand: null, searchFocused: false, ...over,
@@ -53,7 +53,7 @@ describe('resolveStopBack (CIV-832)', () => {
   });
   it('agency uses the same short name as the route card\'s back link', () => {
     const back = resolveStopBack({ kind: 'agency', agencySlug: 'hsr' }, agencies, findRoute);
-    expect(back.to).toBe(shortenAgencyName('Hamilton Street Railway (HSR)'));
+    expect(back.to).toBe(agencyNames('Hamilton Street Railway (HSR)').short);
     expect(back.target).toEqual({ kind: 'agency', agencySlug: 'hsr' });
   });
   it('an on-demand-only agency opens the on-demand card, so it uses that card\'s heading', () => {

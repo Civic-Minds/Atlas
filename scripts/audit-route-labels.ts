@@ -17,7 +17,8 @@
 import { existsSync, readdirSync, readFileSync, statSync, writeFileSync } from 'fs';
 import { join, resolve } from 'path';
 import { strFromU8, unzipSync } from 'fflate';
-import { routeLabels, shortenAgencyName } from '../src/utils/format';
+import { routeLabels } from '../src/utils/format';
+import { agencyNames } from '../src/utils/agencyName';
 import { routeRowLabels } from '../src/components/Interval/SearchSuggestionsPanel';
 import { effectiveMode } from '../shared/modes';
 
@@ -30,11 +31,11 @@ const row = (l: { shortName: string; name?: string }) => (l.name ? `${l.shortNam
 /** Every place a route is named, with the call and inputs that site uses (file:line on chore/ui-consolidate-9). */
 const SITES: Site[] = [
   // RouteCardTitle via RouteCardHeadway: route_type from the route's features, slug from the route key, shortened agency name.
-  { name: 'card', label: r => routeLabels({ shortName: r.short, longName: r.long, routeType: r.type, agencySlug: r.slug, agencyName: shortenAgencyName(r.agencyName) }).text },
+  { name: 'card', label: r => routeLabels({ shortName: r.short, longName: r.long, routeType: r.type, agencySlug: r.slug, agencyName: agencyNames(r.agencyName).short }).text },
   // SearchResultsList / MapContextPanel / suggested routes (SidebarControls notableRoutes): routeRowLabels with type and slug.
   { name: 'list', label: r => row(routeRowLabels({ shortName: r.short, longName: r.long, routeType: r.type, agencySlug: r.slug, agencyName: r.agencyName })) },
   // Recently viewed, saved by this build (routeType stored with the entry).
-  { name: 'recent', label: r => row(routeRowLabels({ shortName: r.short, longName: r.long, routeType: r.type, agencySlug: r.slug, agencyName: shortenAgencyName(r.agencyName) })) },
+  { name: 'recent', label: r => row(routeRowLabels({ shortName: r.short, longName: r.long, routeType: r.type, agencySlug: r.slug, agencyName: agencyNames(r.agencyName).short })) },
   // AgencyPage: the stored effective mode, full agency name.
   { name: 'agencyPage', label: r => one(routeLabels({ shortName: r.short, longName: r.long, mode: effectiveMode({ routeType: r.type, routeShortName: r.short, routeLongName: r.long, agencySlug: r.slug }), agencyName: r.agencyName })) },
   // AgencyCard route rows: type and slug, no agency name.
@@ -46,12 +47,12 @@ const SITES: Site[] = [
   { name: 'settings', label: r => one(routeLabels({ shortName: r.short, longName: r.long, routeType: r.type, agencySlug: r.slug, agencyName: r.agencyName })) },
   // StopRouteGroup: agency name only when the stop has several agencies; StopCard nearby connections; DisambiguationPanel; MapCanvas hover.
   { name: 'stopRoute', label: r => routeLabels({ shortName: r.short, longName: r.long, routeType: r.type, agencySlug: r.slug }).text },
-  { name: 'stopRouteMultiAgency', label: r => routeLabels({ shortName: r.short, longName: r.long, routeType: r.type, agencySlug: r.slug, agencyName: shortenAgencyName(r.agencyName) }).text },
-  { name: 'stopNearby', label: r => routeLabels({ shortName: r.short, longName: r.long, routeType: r.type, agencySlug: r.slug, agencyName: shortenAgencyName(r.agencyName) }).text },
-  { name: 'disambiguation', label: r => routeLabels({ shortName: r.short, longName: r.long, routeType: r.type, agencySlug: r.slug, agencyName: shortenAgencyName(r.agencyName) }).text },
+  { name: 'stopRouteMultiAgency', label: r => routeLabels({ shortName: r.short, longName: r.long, routeType: r.type, agencySlug: r.slug, agencyName: agencyNames(r.agencyName).short }).text },
+  { name: 'stopNearby', label: r => routeLabels({ shortName: r.short, longName: r.long, routeType: r.type, agencySlug: r.slug, agencyName: agencyNames(r.agencyName).short }).text },
+  { name: 'disambiguation', label: r => routeLabels({ shortName: r.short, longName: r.long, routeType: r.type, agencySlug: r.slug, agencyName: agencyNames(r.agencyName).short }).text },
   { name: 'mapHover', label: r => routeLabels({ shortName: r.short, longName: r.long, routeType: r.type, agencySlug: r.slug, agencyName: r.agencyName }).text },
   // A recent route saved by an older build carries no route type, so it falls back to the bus rule.
-  { name: 'recentOldEntry', byDesign: true, label: r => row(routeRowLabels({ shortName: r.short, longName: r.long, agencyName: shortenAgencyName(r.agencyName) })) },
+  { name: 'recentOldEntry', byDesign: true, label: r => row(routeRowLabels({ shortName: r.short, longName: r.long, agencyName: agencyNames(r.agencyName).short })) },
 ];
 
 function parseCsv(text: string): Record<string, string>[] {

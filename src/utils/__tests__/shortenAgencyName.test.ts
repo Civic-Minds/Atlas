@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { shortenAgencyName } from '../format';
+import { agencyNames } from '../agencyName';
+
+const shortenAgencyName = (name: string) => agencyNames(name).short;
 
 describe('shortenAgencyName', () => {
   it('maps Minnesota Valley Transit Authority to MVTA, not VTA', () => {

@@ -9,7 +9,8 @@ import AgencyName from './ui/AgencyName';
 import { LIVE_POLLING_ROUTES, liveCoverageForRouteNames, type LiveCoverage } from '../../shared/livePollingConfig';
 import { R2_PUBLIC_URL, FEATURES as BASE_FEATURES } from '../../shared/config';
 import { PHONE_MEDIA_QUERY, phoneModeFlags, useMediaQuery } from '../hooks/useMediaQuery';
-import { formatStoredDate, routeLabelCase, agencyListParts } from '../utils/format';
+import { formatStoredDate, routeLabelCase } from '../utils/format';
+import { agencyNames } from '../utils/agencyName';
 import { feedRefreshCountdownLabel, type FeedRefreshMeta } from '../../shared/feedRefresh';
 import { agencyQualifiesForHistory, agencyQualifiesForHistoryExplore } from '../../shared/historyEligibility';
 import { countriesForAgencies } from '../../shared/regionCountry';
@@ -462,7 +463,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                           // Repeating that same status on every row makes the filter feel inactive.
                           const showLiveBadge = FEATURES.live && hasLive && !agencyFeatureFilters.has('live');
                           const showHistoryBadge = FEATURES.history && hasHistory && !agencyFeatureFilters.has('history');
-                          const { primary, secondary } = agencyListParts({ name: a.name, cities: a.cities, displayArea: a.displayArea });
+                          const { primary, secondary } = agencyNames({ name: a.name, cities: a.cities, displayArea: a.displayArea }).list;
                           const listLabel = secondary ? `${primary} · ${secondary}` : primary;
                           return (
                             <AgencyListRow

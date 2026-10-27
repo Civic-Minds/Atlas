@@ -5,7 +5,8 @@ import {
   LIST_ROW_DIM,
 } from '../../styles';
 import Panel, { PanelBody } from '../ui/Panel';
-import { routeLabels, agencyNames } from '../../utils/format';
+import { routeLabels } from '../../utils/format';
+import { agencyNames } from '../../utils/agencyName';
 import { splitRouteKey } from '../../utils/routeKey';
 import type { RouteLabel } from '../../utils/routeFacts';
 import RouteListRow from '../RouteListRow';

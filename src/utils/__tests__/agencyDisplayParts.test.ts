@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { agencyDisplayParts } from '../format';
+import { agencyNames } from '../agencyName';
+
+const agencyDisplayParts = (name: string, cities?: string[], displayArea?: string) => agencyNames({ name, cities, displayArea }).card;
 
 describe('agencyDisplayParts', () => {
   it('leaves plain names alone (place often already in the name)', () => {
