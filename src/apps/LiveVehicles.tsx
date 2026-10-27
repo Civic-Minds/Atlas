@@ -41,8 +41,8 @@ import { useLiveRouteRequest, useLiveViewUrl } from '../hooks/useLiveView';
 import PanelEmpty from '../components/ui/PanelEmpty';
 import AgencyName from '../components/ui/AgencyName';
 import AgencyGroupHeader from '../components/ui/AgencyGroupHeader';
-import { loadingText, liveFeedErrorText, liveUnreachableText, LIVE_FEEDS_DOWN, LIVE_FEEDS_DOWN_STUCK, LIVE_FEEDS_UNAVAILABLE, LIVE_NOTHING_ACTIVE, LIVE_NOTHING_ACTIVE_HINT } from '../content/stateCopy';
-import { LIVE_NO_ROUTE_MATCHES, LIVE_NO_VEHICLES_ON_ROUTE, liveRouteEmptyNotice } from '../content/noticeCopy';
+import { loadingText, liveFeedErrorText, LIVE_FEEDS_DOWN_STUCK, LIVE_NOTHING_ACTIVE, LIVE_NOTHING_ACTIVE_HINT } from '../content/stateCopy';
+import { LIVE_FEEDS_DOWN, LIVE_FEEDS_UNAVAILABLE, LIVE_NO_ROUTE_MATCHES, LIVE_NO_VEHICLES_ON_ROUTE, liveRouteEmptyNotice, liveUnreachableText } from '../content/noticeCopy';
 
 interface Props {
   agencies: Agency[];
@@ -895,8 +895,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                     <CardHelpNotice
                       message={liveUnreachableText(Object.entries(errorBySlug)
                         .filter((entry): entry is [string, string] => Boolean(entry[1]))
-                        .map(([slug]) => agencyDisplayName(agencies, slug))
-                        .join(', '))}
+                        .map(([slug]) => agencyDisplayName(agencies, slug)))}
                     />
                   </div>
                 )}
