@@ -25,7 +25,7 @@ import { PageTitle, SectionTitle } from './components/ui/PageTitle';
 import DevHint from './components/Live/DevHint';
 import { ANALYZE_DEV_HINT } from './lib/liveReportData';
 import { coveredRoutesText, LATE_THRESHOLD, bunchPartsText, liveSubtitle, risePointsText, runTimeDiffText } from '../shared/liveWording';
-import { pct as pctOf, signedPct } from '../shared/liveFormat';
+import { pct as pctOf, pctTenth, signedPct } from '../shared/liveFormat';
 import { mins } from './components/Live/sections/figures';
 import MethodSection from './components/Live/sections/MethodSection';
 
@@ -115,7 +115,7 @@ function RoutesTable({ s }: { s: AgencySummary }) {
               { key: 'lastWeek', header: 'Last week', narrowHide: true, className: 'text-[var(--text-muted)]', cell: r => pct(r.lateLastWeek) },
               { key: 'runTime', sortable: true, header: 'Run time', cell: r => (r.runTimeDiffMin != null ? runTimeDiffText(r.runTimeDiffMin, false) : pctSigned(r.runTimeOver)) },
               { key: 'bunching', sortable: true, header: 'Bunching', cell: r => (r.bunchingShare != null && r.bunchedShare != null && r.gappedShare != null ? bunchPartsText(r.bunchingShare, r.bunchedShare, r.gappedShare) : pct(r.bunchingShare)) },
-              { key: 'delivered', sortable: true, header: 'Delivered', cell: r => (r.deliveredShare == null ? '–' : `${(Math.floor(r.deliveredShare * 1000) / 10).toString()}%`) },
+              { key: 'delivered', sortable: true, header: 'Delivered', cell: r => (r.deliveredShare == null ? '–' : pctTenth(r.deliveredShare)) },
             ]}
           />
         </div>
