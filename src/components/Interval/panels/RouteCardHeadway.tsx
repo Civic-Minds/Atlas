@@ -57,7 +57,8 @@ import { compareCardSummary } from '../../../utils/compareSides';
 import { reportDetails } from '../../../utils/reportIssue';
 import { ROUTE_DATA_QUALITY_WARNING, ROUTE_DATA_QUALITY_WARNING_MESSAGE } from '../../../../shared/routeDataQuality';
 import { featurePassesHeadwayFilter } from '../../../../shared/routeHeadwayFilter';
-import { BOOKING_REQUIRED_NOTICE, expiredFeedNotice, listingEndedNotice, NO_ROUTE_SHAPE_NOTICE, periodServiceNotice, selectedRouteFilterNotice, selectedRouteOutsideFilterNotice, unevenServiceNotice } from '../../../content/noticeCopy';
+import { BOOKING_REQUIRED_NOTICE, expiredFeedNotice, listingEndedNotice, listingEndHasPassed, NO_ROUTE_SHAPE_NOTICE, periodServiceNotice, selectedRouteFilterNotice, selectedRouteOutsideFilterNotice, unevenServiceNotice } from '../../../content/noticeCopy';
+import { agencyTodayYmd } from '../../../../shared/feedAvailability';
 import { headwayAbout, headwayAboutRange } from '../../../utils/headwayText';
 import type { RouteLabel } from '../../../utils/routeFacts';
 
@@ -239,6 +240,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
   const agencyDisplayName = agencyNames(routeAgency?.name ?? routeSlug ?? '').name;
   // An ended timetable (N2) says more, so it wins over the listing end.
   const listingEndedDate = !routeIsStale && routeAgency?.listingEndedOn ? formatStoredDate(routeAgency.listingEndedOn) : '';
+  const listingEnded = !!routeAgency?.listingEndedOn && listingEndHasPassed(routeAgency.listingEndedOn, agencyTodayYmd(routeAgency));
   const routeOverrideNote = routeAgency?.overrideNote
     && (!routeAgency.overrideNoteRoutes?.length || routeAgency.overrideNoteRoutes.includes(currentRoute.routeShortName ?? ''))
     ? routeAgency.overrideNote
@@ -803,11 +805,12 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
             {listingEndedDate && (
               // N25 (CIV-1055): most of the agency's routes stopped being listed; the card shows their last listed week.
               <CardHelpNotice
-                message={listingEndedNotice(listingEndedDate)}
+                message={listingEndedNotice(listingEndedDate, listingEnded)}
                 onLearnMore={() => onInfoOpen('about', {
                   helpTopic: 'outdated-schedule',
                   agencyName: routeAgency?.name,
                   listingEndedDate,
+                  listingEnded,
                   lastRefreshedAt: routeAgency?.lastRefreshedAt ?? undefined,
                   lastFeedCheckAt: routeAgency?.lastFeedCheckAt ?? undefined,
                   expiredFeedCheckCount: routeAgency?.expiredFeedCheckCount,
