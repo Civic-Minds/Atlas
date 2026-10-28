@@ -29,5 +29,6 @@
   "feedRefreshStatus": "stale",
   "feedRefreshError": "all available feeds expired (latest 20261010)",
   "feedRefreshErrorAt": "20261019",
-  "feedRefreshRetryCount": 2
+  "feedRefreshRetryCount": 2,
+  "lastPeekedExpiry": "20261010"
 }

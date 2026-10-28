@@ -182,6 +182,8 @@ export function useRouteStyling(
       map.setPaintProperty('route-segments-layer', 'line-opacity', (selectedRoute
         ? ['case', routeKeyMatchExpression(selectedRoute), 1, 0.2]
         : ['interpolate', ['linear'], ['zoom'], 8, 0.7, 11, 0.8, 14, 0.9]) as any);
+      // Stop focus narrows it below (CIV-1058); every other state draws the layer's own width.
+      map.setPaintProperty('route-segments-layer', 'line-width', ROUTE_LINE_WIDTH_BY_ZOOM as any);
     }
 
     if (hasOverviewRoutes) map.setFilter('overview-routes-layer', routeFilter as any);
@@ -341,6 +343,8 @@ export function useRouteStyling(
         ]);
       } else if (selectedStop && routesForStop?.siblingIdsByAgency) {
         const servingMatch = buildServingStopMatchExpression(layers, routesForStop.siblingIdsByAgency);
+        let stopFocusOpacity: any;
+        let stopFocusWidth: any;
         if (hoveredBranch?.routeKey) {
           // A stop card destination row is hovered (CIV-918): that route and direction stand out, the stop's
           // other routes fade, and the rest stays dim, as on the route card.
@@ -349,21 +353,24 @@ export function useRouteStyling(
             ['==', ['get', 'directionId'], hoveredBranch.directionId],
             ...(hoveredBranch.headsign ? [['==', ['get', 'headsign'], hoveredBranch.headsign]] : []),
           ];
-          setRouteLayerPaint(map, 'line-opacity', [
-            'case', branchMatch, 1.0, servingMatch, 0.4, DIM_OPACITY,
-          ]);
-          setRouteLayerPaint(map, 'line-width', [
-            'case', branchMatch, 3.5, servingMatch, 1.5, DIM_WIDTH,
-          ]);
+          stopFocusOpacity = ['case', branchMatch, 1.0, servingMatch, 0.4, DIM_OPACITY];
+          setRouteLayerPaint(map, 'line-opacity', stopFocusOpacity);
+          stopFocusWidth = ['case', branchMatch, 3.5, servingMatch, 1.5, DIM_WIDTH];
+          setRouteLayerPaint(map, 'line-width', stopFocusWidth);
         } else {
-          setRouteLayerPaint(map, 'line-opacity', [
-            'case', servingMatch, 1.0, DIM_OPACITY,
-          ]);
-          setRouteLayerPaint(map, 'line-width', [
+          stopFocusOpacity = ['case', servingMatch, 1.0, DIM_OPACITY];
+          setRouteLayerPaint(map, 'line-opacity', stopFocusOpacity);
+          stopFocusWidth = [
             'interpolate', ['linear'], ['zoom'],
             8, ['case', servingMatch, 2.0, DIM_WIDTH],
             14, ['case', servingMatch, 3.0, DIM_WIDTH],
-          ]);
+          ];
+          setRouteLayerPaint(map, 'line-width', stopFocusWidth);
+        }
+        // The section colours (beta) fade with the route lines they sit on (CIV-1058).
+        if (map.getLayer('route-segments-layer')) {
+          map.setPaintProperty('route-segments-layer', 'line-opacity', stopFocusOpacity);
+          map.setPaintProperty('route-segments-layer', 'line-width', stopFocusWidth);
         }
       } else {
         setRouteLayerPaint(map, 'line-width', colorVisionFriendly
