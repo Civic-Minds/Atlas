@@ -68,3 +68,14 @@ describe('E5 route line, three paragraphs (CIV-1051)', () => {
     expect(t).toContain('If something looks off, report it with the flag on this card.');
   });
 });
+
+describe('E6 route with no line, three paragraphs (CIV-1051)', () => {
+  it("reads Ryan's text", () => {
+    const t = render(
+      <InfoPanel open onClose={() => {}} agencies={[]} helpContext={{ topic: 'no-route-shape' }} />,
+    ).container.textContent ?? '';
+    expect(t).toContain("This route's line can't be shown on the map because it's missing from the agency's data.");
+    expect(t).toContain('We still show the route on this card. Its frequency comes from the timetable and is still accurate.');
+    expect(t).toContain('If something looks off, report it with the flag on this card.');
+  });
+});
