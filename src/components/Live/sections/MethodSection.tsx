@@ -6,7 +6,7 @@ import { builtText, coveredRoutesText, METHOD_GROUPS } from '../../../../shared/
 import { weekWindowParts } from '../../../utils/liveKpi';
 import ArrowLink from '../../ui/ArrowLink';
 import MethodFootnote, { OwnLine, Term } from '../MethodFootnote';
-import { aheadLine, bunchingLine, colourLine, deliveredLine, delaysStartLine, extraWaitLine, lateLine, networkFiguresLine, positionsLine, recordingGapsLine, runTimeLine, stopsLine, tripMatchLine } from '../methodLines';
+import { aheadLine, bunchingLine, colourLine, deliveredLine, extraWaitLine, lateLine, networkFiguresLine, positionsLine, recordingGapsLine, runTimeLine, stopsLine, tripMatchLine } from '../methodLines';
 import type { Ready } from '../../../LiveRoutePage';
 
 /** The two weeks, then the days left out on a line of their own (no line when every day counted). */
@@ -79,7 +79,6 @@ export default function MethodSection(props: MethodSectionProps): ReactNode {
             extraWaitLine,
             bunchingLine(),
             deliveredLine(),
-            delaysStartLine,
           ] },
           { label: METHOD_GROUPS.data, items: [
             ...(w ? weekWindowItems({ ...w, health: [] }) : []),
