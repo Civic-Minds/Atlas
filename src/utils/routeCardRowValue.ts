@@ -64,7 +64,16 @@ export function routeCardRowValue(d: ShapeProperties, ctx: RouteCardRowContext):
   const fallbackRange = directionFallback != null && contract?.range && contract.range[0] < directionFallback && contract.range[1] >= directionFallback
     ? headwayAboutRange(contract.range[0], directionFallback)
     : undefined;
-  const displayH = variantH !== undefined ? variantH : directionFallback ?? ownH;
+  // #1142 (CIV-1018): an uneven period reads typical to worst ("every 5–18 min") on the main stretch's row, its number the
+  // direction's worst wait, as the filter and colour use. A tail's own value stays (the direction's is the trunk's).
+  const periodKey = period as keyof NonNullable<ShapeProperties['stretchPeriodTypical']>;
+  const typical = period !== 'all' ? d.stretchPeriodTypical?.[periodKey] : undefined;
+  const worst = period !== 'all' ? d.stretchPeriodHeadway?.[periodKey] : undefined;
+  const uneven = stretchMode && hoveredHour == null && d.stretchRole === 'main' && variantH === undefined && allDayH == null
+    && typeof typical === 'number' && typeof worst === 'number' && typical < worst
+    ? { typical, worst }
+    : undefined;
+  const displayH = variantH !== undefined ? variantH : uneven?.worst ?? directionFallback ?? ownH;
   // #934 and D6: the main stretch's row names a late start, an early end or one gap inside
   // steady service, in place of a long wait or "limited"; the dot keeps the filter's colour.
   // A period that is one gap between a few departures (#955) has no cadence to word.
@@ -92,7 +101,9 @@ export function routeCardRowValue(d: ShapeProperties, ctx: RouteCardRowContext):
     isLimited,
     rowNoRegular,
     edgeText,
-    headwayLabel: hoveredHour == null && variantH === undefined ? (edgeText ?? fallbackRange) : undefined,
+    headwayLabel: hoveredHour == null && variantH === undefined
+      ? (edgeText ?? (uneven ? headwayAboutRange(uneven.typical, uneven.worst) : fallbackRange))
+      : undefined,
     colorHeadway: hoveredHour == null && !rowNoRegular ? branchFilterHeadway : undefined,
     trunkHeadway,
     dimmed,
