@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import type * as maplibregl from 'maplibre-gl';
-import { frameRoute, paddedCenter, routeFitStep, routeFramePadding, selectionFramePadding } from '../routeFraming';
+import { cardInFramingPlace, frameRoute, paddedCenter, routeFitStep, routeFramePadding, selectionFramePadding } from '../routeFraming';
 
 function fakeMap(width = 1200, height = 800, zoom = 10) {
   return {
@@ -171,5 +171,21 @@ describe('routeFitStep', () => {
   it('skips a fit that already ran, card or not', () => {
     expect(routeFitStep('ttc::504|card', 'ttc::504|card', false)).toBe('skip');
     expect(routeFitStep('ttc::504|card', 'ttc::504|card', true)).toBe('skip');
+  });
+});
+
+describe('cardInFramingPlace (CIV-1093)', () => {
+  const card = (top: number) => ({ getBoundingClientRect: () => ({ top }) }) as unknown as Element;
+
+  it('waits on a phone until the card is the bottom sheet, not the list at the top', () => {
+    // Entering Live with 504 open: the list sits at the top for a moment, then the sheet opens at 490 of 844.
+    expect(cardInFramingPlace(fakeMap(390, 844), card(70))).toBe(false);
+    expect(cardInFramingPlace(fakeMap(390, 844), card(490))).toBe(true);
+    expect(cardInFramingPlace(fakeMap(390, 844), null)).toBe(false);
+  });
+
+  it('never waits on wide screens, where the card sits beside the map', () => {
+    expect(cardInFramingPlace(fakeMap(1280, 800), card(70))).toBe(true);
+    expect(cardInFramingPlace(fakeMap(1280, 800), null)).toBe(true);
   });
 });
