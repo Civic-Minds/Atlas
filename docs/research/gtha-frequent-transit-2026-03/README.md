@@ -4,7 +4,7 @@
 
 Date: `2026-03-26` (last edited; the source folder has no git history, so no commit list exists)
 Source: a plain local folder (`Research/Scripts/gtha-frequent-transit`), not a git repository.
-Scope: share of Greater Toronto and Hamilton Area population within an 800 m walk of a stop on a route running every 15 minutes or better in the 7:00-9:00 AM peak. Eight local agencies (TTC, Brampton Transit, MiWay, YRT/Viva, DRT, Burlington Transit, HSR, Oakville Transit); GO Transit left out on purpose.
+Scope: share of Greater Toronto and Hamilton Area population within an 800 m walk of a stop on a route running every 15 minutes or better in the 7–9 AM peak. Eight local agencies (TTC, Brampton Transit, MiWay, YRT/Viva, DRT, Burlington Transit, HSR, Oakville Transit); GO Transit left out on purpose.
 
 ## How this relates to Atlas
 

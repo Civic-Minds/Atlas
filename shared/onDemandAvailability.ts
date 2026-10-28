@@ -1,5 +1,6 @@
 import type { DayType } from './dayTypes.js';
 import { TIME_PERIODS, type PeriodKey } from './config.js';
+import { clockTime, timeRange } from './timeText.js';
 
 export type OnDemandPeriod = 'all' | PeriodKey;
 export interface OnDemandHours {
@@ -205,22 +206,14 @@ export function onDemandHoursConfirmed(service: OnDemandServiceDetails, areaName
   return names.every(name => !!resolveOnDemandZone(service, name).availability?.[day]);
 }
 
-/** 4.5 → "4:30 a.m."; 26 → "2:00 a.m." (next day); 24 → "midnight". */
+/** 4.5 → "4:30 AM"; 26 → "2 AM" (next day); 24 → "12 AM" (CIV-1095). */
 export function formatOnDemandClock(hour: number): string {
-  const totalMinutes = Math.round(hour * 60);
-  const minutesInDay = ((totalMinutes % 1440) + 1440) % 1440;
-  if (minutesInDay === 0) return 'midnight';
-  if (minutesInDay === 720) return 'noon';
-  const h24 = Math.floor(minutesInDay / 60);
-  const minutes = minutesInDay % 60;
-  const suffix = h24 < 12 ? 'a.m.' : 'p.m.';
-  const h12 = h24 % 12 === 0 ? 12 : h24 % 12;
-  return `${h12}:${String(minutes).padStart(2, '0')} ${suffix}`;
+  return clockTime(hour * 60);
 }
 
-/** One time range in words: "6:00 a.m.–4:00 p.m.". */
+/** One time range: "6 AM–4 PM" (CIV-1095). */
 export function formatOnDemandHoursRange(window: OnDemandHours): string {
-  return `${formatOnDemandClock(window.startHour)}–${formatOnDemandClock(window.endHour)}`;
+  return timeRange(window.startHour * 60, window.endHour * 60);
 }
 
 function formatWindows(windows: readonly OnDemandHours[]): string {
