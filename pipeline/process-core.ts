@@ -49,6 +49,7 @@ import { makeShapeCoverChecker } from './shapeCoverage.js';
 import { annotateSharedStretches, contiguousSharedRuns, isPoolablePattern } from './sharedStretch.js';
 import { boardsAt, isThinPool } from './stopEligibility.js';
 import { noOwnServicePeriods } from './noOwnService.js';
+import { laterServiceByRoute } from './seasonalPause.js';
 import { nearDuplicateTripIds } from './nearDuplicateTrips.js';
 import { decideDedupe, runsInDay, type DedupePattern } from './featureDedupe.js';
 import { decideHeadline, decidePeriod, liftTierOnDestinationPool, ownStepOneHeadway, pooledStepOneHeadway, settleTier, terminalReading, type PeriodValue } from './routeGrading.js';
@@ -803,6 +804,16 @@ export async function processGtfsBuffer(
       fileDate: [options.fileDate, feedVersionDate(gtfs.feedInfo?.[0]?.feed_version)].filter((d): d is string => !!d && /^\d{8}$/.test(d)).sort()[0] ?? null,
     })
     : null;
+  // CIV-1076: routes with trips in the file but none in the read week, and the date each runs again.
+  const resumingRoutes = riderWeek
+    ? laterServiceByRoute({
+      calendar: gtfs.calendarSynthesized ? [] : gtfs.calendar ?? [],
+      calendarDates: gtfs.calendarDates ?? [],
+      trips: gtfs.trips ?? [],
+      // A week with no service at all has no dates; its reference date stands in.
+      weekDates: (d => d.length ? d : [riderWeek.referenceDate])(Object.values(riderWeek.week.dates).filter((d): d is string => !!d)),
+    })
+    : {};
   if (riderWeek) {
     gtfs = { ...gtfs, calendar: riderWeek.calendar, calendarDates: [] };
     const { dates } = riderWeek.week;
@@ -3778,7 +3789,7 @@ export async function processGtfsBuffer(
   }
 
   return {
-    geojson: JSON.stringify({ type: 'FeatureCollection', atlasSchemaVersion: ROUTE_ARTIFACT_SCHEMA_VERSION, features: mainFeatures, runningTimes: runningTimesJson(runningTimes) }),
+    geojson: JSON.stringify({ type: 'FeatureCollection', atlasSchemaVersion: ROUTE_ARTIFACT_SCHEMA_VERSION, features: mainFeatures, runningTimes: runningTimesJson(runningTimes), ...(Object.keys(resumingRoutes).length ? { resumingRoutes } : {}) }),
     corridorsGeojson: JSON.stringify({ type: 'FeatureCollection', features: corridorFeatures }),
     stopsJson: JSON.stringify(stopsIndex),
     tripsJson: JSON.stringify(tripsLookup),

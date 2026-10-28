@@ -172,7 +172,7 @@ export async function loadSupplementalFeeds(
   return feeds;
 }
 
-type FeatureCollection = { type: string; features: unknown[]; runningTimes?: Record<string, unknown> };
+type FeatureCollection = { type: string; features: unknown[]; runningTimes?: Record<string, unknown>; resumingRoutes?: Record<string, string> };
 type StopsMeta = { generatedAt: string; stopCount: number; stops: unknown[] };
 
 /**
@@ -209,6 +209,8 @@ export async function processAgencyFeeds(
   const featureSources: AgencyFeedResult['featureSources'] = [{ url: null, count: features.length }];
   // Running time (CIV-84) per feed; the main feed wins any key a supplemental feed repeats.
   const runningTimes: Record<string, unknown> = {};
+  // CIV-1076: routes paused in the read week, and when each runs again; a supplemental feed's add to the main feed's.
+  const resumingRoutes: Record<string, string> = { ...(primaryCollection.resumingRoutes ?? {}) };
   const corridorFeatures = (JSON.parse(primary.corridorsGeojson) as FeatureCollection).features;
   const stopsIndex = JSON.parse(primary.stopsJson) as Record<string, unknown>;
   const tripsIndex = JSON.parse(primary.tripsJson) as Record<string, unknown>;
@@ -223,6 +225,7 @@ export async function processAgencyFeeds(
     features.push(...suppCollection.features);
     featureSources.push({ url, count: suppCollection.features.length });
     Object.assign(runningTimes, suppCollection.runningTimes ?? {});
+    for (const [id, date] of Object.entries(suppCollection.resumingRoutes ?? {})) resumingRoutes[id] ??= date;
     corridorFeatures.push(...(JSON.parse(supp.corridorsGeojson) as FeatureCollection).features);
     Object.assign(stopsIndex, JSON.parse(supp.stopsJson));
     Object.assign(tripsIndex, JSON.parse(supp.tripsJson));
@@ -240,7 +243,7 @@ export async function processAgencyFeeds(
 
   return {
     ...primary,
-    geojson: JSON.stringify({ type: 'FeatureCollection', atlasSchemaVersion: ROUTE_ARTIFACT_SCHEMA_VERSION, features, runningTimes }),
+    geojson: JSON.stringify({ type: 'FeatureCollection', atlasSchemaVersion: ROUTE_ARTIFACT_SCHEMA_VERSION, features, runningTimes, ...(Object.keys(resumingRoutes).length ? { resumingRoutes } : {}) }),
     corridorsGeojson: JSON.stringify({ type: 'FeatureCollection', features: corridorFeatures }),
     stopsJson: JSON.stringify(stopsIndex),
     tripsJson: JSON.stringify(tripsIndex),
