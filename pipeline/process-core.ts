@@ -27,6 +27,7 @@ import { PERIOD_KEYS, PERIOD_MINUTES as PERIODS, periodKeyForHour, SPARKLINE_HOU
 import { ROUTE_ARTIFACT_SCHEMA_VERSION } from '../shared/artifactSchema.js';
 import { DAY_TYPES, WEEKDAYS, type DayName, type DayType } from '../types/gtfs.js';
 import { ALL_DAYS } from '../shared/dayTypes.js';
+import { buildStopRoutePeriodBits } from './stopRoutePeriods.js';
 import { expandFrequencyWindow, expandTripFrequencyWindows, isSingleTripFrequencyWindow, parseFrequencyWindow, SINGLE_TRIP_WINDOW_MAX_DEPARTURES, SINGLE_TRIP_WINDOW_SPAN_TOLERANCE_MIN, t2m, type FrequencyWindow } from './transit-utils.js';
 import { adaptiveMedianHeadwayInWindow, computeHourMaxGaps, computeHourDepartureCounts, computePeriodHeadways, computePeriodHeadwayRanges, computePeriodMaxGaps, computePeriodSustained, computeResearchFrequentService, forCrossMidnightWindow, HEADLINE_MIN_DEPARTURES, HEADLINE_WINDOWS, headlineWindowValue, hasSustainedNightService, headsignOverlapMinHeadway, headwayToTier, headwayToTierOn, isSparseOvernightWindow, isThinAllDayTerminalSample, isUnevenTwoGapMiddayTerminalSample, medianHeadwayInWindow, MIN_ALL_DAY_TERMINAL_DEPARTURES, nightServiceDepartureTimes, NIGHT_SERVICE_WINDOW_END_MIN, periodHeadwayInWindow, RAIL_TIER_WINDOW, resolveTerminalHeadline, sparseOvernightHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
 import { computeRouteBaseFares, detectBusSubType } from './route-metadata.js';
@@ -1915,6 +1916,17 @@ export async function processGtfsBuffer(
   }
 
   const servedStopIds = new Set((gtfs.stopTimes ?? []).map(st => st.stop_id));
+  // CIV-1052: the periods each route visits each stop in, per day type, so the stop card can say a route
+  // has no trips there in a period only where the schedule proves it.
+  const stopRoutePeriodBits = buildStopRoutePeriodBits({
+    trips: gtfs.trips ?? [],
+    stopTimesByTripId,
+    serviceIdToDayTypes,
+    childToParent,
+    frequencyRowsByTripId,
+    firstDepartureByTripId,
+    lastDepartureByTripId,
+  });
   for (const stop of gtfs.stops ?? []) {
     // Include child stops referenced in stop_times, AND parent stations whose children
     // gave them routes via the propagation above (AI-117).
@@ -1947,6 +1959,7 @@ export async function processGtfsBuffer(
         stopName: stop.stop_name,
         stopCode: stop.stop_code || null,
         routeIds,
+        routePeriodBits: routeIds.map(rid => stopRoutePeriodBits.get(stop.stop_id)?.get(rid) ?? 0),
         isHub,
         isRail,
         direction: stopDirections.get(stop.stop_id) ?? null,

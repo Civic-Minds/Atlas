@@ -67,3 +67,36 @@ describe('buildStopRoutes: one destination served by two patterns (CIV-1080)', (
     expect(rows(fc, 'midday').map(([, hw]) => hw)).toEqual([16, 16]);
   });
 });
+
+describe('buildStopRoutes: a stop\'s own route with no trips in the period (CIV-1052)', () => {
+  // MiWay 314 at stop 0814 (#1169): one 08:20 school trip on weekdays, none at midday.
+  const miway314 = {
+    type: 'Feature', geometry: null,
+    properties: { routeId: '314', routeShortName: '314', routeLongName: 'Rick Hansen', day: 'Weekday', directionId: 0, headsign: 'School', tier: 'span' },
+  };
+  const layer = { type: 'FeatureCollection', features: [...ttc29.features, miway314] } as unknown as GeoJSON.FeatureCollection;
+  const amPeakWeekday = 1;
+  const build = (period: 'amPeak' | 'midday' | 'all', bits: Array<number | undefined>, routeIds = ['314']) => buildStopRoutes({
+    siblingIdsByAgency: { ttc: new Set(['2108']) },
+    routesByAgency: { ttc: new Set(routeIds) },
+    routePeriodBitsByAgency: { ttc: new Map(routeIds.map(rid => [rid, bits])) },
+    layers: { ttc: layer }, day: 'Weekday', period,
+  });
+
+  it('lists the route with no rows where every stop point proves no trip in the period', () => {
+    const idle = build('midday', [amPeakWeekday]);
+    expect(idle.map(r => [r.shortName, r.branches.length, r.noTrips?.rKey != null])).toEqual([['314', 0, true]]);
+  });
+
+  it('leaves it out (as before) where it has a trip in the period, the data has no field, or the period is All day', () => {
+    expect(build('amPeak', [amPeakWeekday])).toEqual([]);
+    expect(build('midday', [undefined])).toEqual([]);
+    expect(build('midday', [0, undefined])).toEqual([]);
+    expect(build('all', [0])).toEqual([]);
+  });
+
+  it('never lists a route that runs here as idle', () => {
+    const rows = build('midday', [0], ['29']);
+    expect(rows.map(r => [r.shortName, r.noTrips])).toEqual([['29', undefined]]);
+  });
+});

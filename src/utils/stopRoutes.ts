@@ -7,6 +7,9 @@ import { hasRegularServiceInPeriod } from './stretchCard';
 import { agencyNames } from './agencyName';
 import { rowTrips } from './rowTrips';
 import { compareRouteNumber } from './sortCompare';
+import { noTripsInPeriod } from '../../shared/stopRoutePeriods';
+import type { DayType } from '../../shared/dayTypes';
+import type { PeriodKey } from '../../shared/config';
 
 /**
  * The stop card's routes and destination rows, and the rule for the frequency each row shows (CIV-997). One
@@ -34,6 +37,11 @@ export interface StopRoute {
   agencySlug?: string;
   routeType?: number;
   branches: StopBranch[];
+  /**
+   * CIV-1052: the route serves this stop but the schedule proves it has no trips here in the whole period
+   * (its stop points' routePeriodBits). It has no branches; the card lists it with "No trips from {range}".
+   */
+  noTrips?: { rKey: string };
 }
 
 /** The stop's own value for a branch in the period: every trip of the direction at the stop, pooled where patterns share it. */
@@ -74,9 +82,11 @@ export function stopRouteBestHeadway(branches: readonly StopBranch[], period: Ti
 }
 
 /** Every route that serves the stop (or its siblings) in the day and period, with one branch per direction and destination. */
-export function buildStopRoutes({ siblingIdsByAgency, routesByAgency, layers, day, period }: {
+export function buildStopRoutes({ siblingIdsByAgency, routesByAgency, routePeriodBitsByAgency, layers, day, period }: {
   siblingIdsByAgency: Record<string, Set<string>>;
   routesByAgency: Record<string, Set<string>>;
+  /** CIV-1052: each route's routePeriodBits at the stop and its siblings (undefined where a stop has no field). */
+  routePeriodBitsByAgency?: Record<string, Map<string, Array<number | undefined>>>;
   layers: Record<string, GeoJSON.FeatureCollection>;
   day: string;
   period: TimePeriod;
@@ -176,7 +186,38 @@ export function buildStopRoutes({ siblingIdsByAgency, routesByAgency, layers, da
       if (b.patterns > 1 && !b.periodText && only?.size === 1 && only.has(b.headsign ?? '')) b.rowHeadway = null;
     }
   }
-  return Array.from(routeMap.entries())
+  // CIV-1052: a route that serves the stop but has no trips here in the whole period is listed with no rows,
+  // only where every stop point proves it (a route running part of the period keeps its row and notice).
+  const idle = new Map<string, StopRoute>();
+  const namedOnDay = new Set<string>();
+  if (period !== 'all') {
+    for (const [slug, fc] of Object.entries(layers)) {
+      const bitsByRoute = routePeriodBitsByAgency?.[slug];
+      if (!bitsByRoute) continue;
+      const idleIds = new Set([...(routesByAgency[slug] ?? [])]
+        .filter(rid => noTripsInPeriod(bitsByRoute.get(rid) ?? [], day as DayType, period as PeriodKey) === true));
+      if (idleIds.size === 0) continue;
+      for (const f of fc.features) {
+        const p = f.properties as unknown as ShapeProperties;
+        if ((p as any).stopId != null || !p.routeId || !idleIds.has(p.routeId)) continue;
+        const facts = buildRouteFacts(p, slug);
+        // The chosen day's feature names the route; another day's stands in when it has none that day.
+        if (routeMap.has(facts.shortName) || namedOnDay.has(facts.shortName) || (idle.has(facts.shortName) && p.day !== day)) continue;
+        if (p.day === day) namedOnDay.add(facts.shortName);
+        idle.set(facts.shortName, {
+          shortName: facts.shortName,
+          label: facts.label,
+          longName: facts.longName || '',
+          agencyName: agencyNames(facts.agencyName).name,
+          agencySlug: slug,
+          routeType: facts.routeType,
+          branches: [],
+          noTrips: { rKey: facts.key },
+        });
+      }
+    }
+  }
+  return [...Array.from(routeMap.entries())
     .sort(([a], [b]) => compareRouteNumber(a, b))
     .map(([, v]) => ({
       shortName: v.shortName,
@@ -188,5 +229,5 @@ export function buildStopRoutes({ siblingIdsByAgency, routesByAgency, layers, da
       branches: Array.from(v.branches.values())
         .sort((a, b) => a.directionId - b.directionId || (a.service.value ?? Infinity) - (b.service.value ?? Infinity))
         .map(b => ({ rKey: b.rKey, headsign: b.headsign, service: b.service, rowHeadway: b.rowHeadway, directionId: b.directionId, ...(b.periodText ? { periodText: b.periodText } : {}) })),
-    }));
+    })), ...[...idle.values()].sort((a, b) => compareRouteNumber(a.shortName, b.shortName))];
 }
