@@ -19,4 +19,24 @@ describe('routeCardRowValue (CIV-992)', () => {
     expect(row.headway).toBeUndefined();
     expect(row.isLimited).toBe(true);
   });
+
+  // #1142 (CIV-1018): TTC 320 southbound, weekday overnight: every 5 from 2:00 to 3:20, then every 15 or more.
+  const uneven = (role: 'main' | 'tail', typical: number | null) => ({
+    routeId: '320', routeShortName: '320', routeLongName: 'Yonge', directionId: 0, headsign: 'Queens Quay', tier: '10',
+    headway: 7, headwayByPeriod: { overnight: 7 }, stretchRole: role, stretchIndex: 0,
+    stretchPeriodHeadway: { overnight: 18 }, stretchPeriodTypical: { overnight: typical },
+  }) as unknown as ShapeProperties;
+  const overnight = { ...ctx, period: 'overnight' as const, stretchMode: true };
+
+  it("reads an uneven period's main row as typical to worst, its number the worst wait", () => {
+    const row = routeCardRowValue(uneven('main', 5), overnight);
+    expect(row.headway).toBe(18);
+    expect(row.headwayLabel).toBe('every 5–18 min');
+  });
+  it('leaves a steady period, a tail and the hovered hour as they were', () => {
+    expect(routeCardRowValue(uneven('main', null), overnight).headwayLabel).toBeUndefined();
+    expect(routeCardRowValue(uneven('tail', 5), overnight).headwayLabel).toBeUndefined();
+    expect(routeCardRowValue(uneven('main', 5), { ...overnight, hoveredHour: 2 }).headwayLabel).toBeUndefined();
+  });
 });
+
