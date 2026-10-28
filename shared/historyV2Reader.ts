@@ -53,7 +53,8 @@ export type SnapshotValue =
 export interface HistorySnapshotLike {
   label: string;
   year: number;
-  weekdayHeadwayMin: number;
+  /** null (blank) only on a weekend-only v2 snapshot; the v2 `rep` is authoritative there. */
+  weekdayHeadwayMin: number | null;
   periodKey?: string;
   v2?: HistorySnapshotV2;
 }
