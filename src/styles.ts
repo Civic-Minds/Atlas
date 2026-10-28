@@ -195,6 +195,9 @@ export const MAP_FOOTER_ROW_SLOT = 'max-sm:contents absolute bottom-6 left-6 rig
 export const MAP_FOOTER_PILLS_PHONE_SLOT = 'max-sm:absolute max-sm:bottom-6 max-sm:left-6 max-sm:max-w-[calc(100vw-3rem)]';
 /** Phones: the loading and count pills, one row above the footer pills. */
 export const MAP_COUNTS_PHONE_SLOT = 'max-sm:absolute max-sm:bottom-16 max-sm:left-6';
+/** The map key (Settings, "Show map legend"): bottom-left above the footer row; phones one row higher, above the
+ *  loading and count pills (CIV-1070: the loading pill covered its last row). */
+export const MAP_LEGEND_SLOT = 'absolute bottom-16 left-5 max-sm:bottom-[6.5rem] max-sm:left-6';
 /** The locate, export and zoom stack in the bottom-right corner. */
 export const MAP_CONTROLS_SLOT = 'absolute bottom-6 right-3 max-sm:right-6';
 /** A centred notice pill one row above the bottom-left pills, clear of the controls; `raised` sits one row higher
