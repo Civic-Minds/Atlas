@@ -68,12 +68,15 @@ export function destinationKind(
 
 /**
  * A timetable headsign a rider can read, or null when it's an internal name like "506 Carlton Short Turn" (the route
- * number, then "Short Turn"): that names no stop, so the car shows its direction only (CIV-1062).
+ * number, maybe with one letter, then "Short Turn"): that names no stop, so the car shows its direction only (CIV-1062).
  */
 export function riderHeadsign(headsign: string | null | undefined, routeShortName: string): string | null {
   if (!headsign) return null;
   const raw = headsign.trim().toLowerCase();
-  return raw.startsWith(`${routeShortName.toLowerCase()} `) && raw.endsWith(' short turn') ? null : headsign;
+  const own = raw.split(' ')[0];
+  // The route number may carry one letter ("88S South Leaside Short Turn" on route 88).
+  const number = own === routeShortName.toLowerCase() || (own.slice(0, -1) === routeShortName.toLowerCase() && /[a-z]$/.test(own));
+  return number && raw.endsWith(' short turn') ? null : headsign;
 }
 
 /** Each direction named by its longest shape's headsign (a short turn never names a direction). */
