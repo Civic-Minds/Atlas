@@ -64,6 +64,7 @@ Words
 
 - Plain words a non-expert understands at once. No transit or technical jargon in labels, buttons or statuses.
 - "Part-time", not "Time-limited", for service that runs part of the day. CIV-211, #933.
+- "Consistent", not "steady" (Ryan, 2026-10-27: "\"steady\" should not be used - consistent is better"). CIV-1059.
 - Route numbers keep the agency's own form ("1X", "SU 43", "99 B-Line", "SSSF"). Route labels come from `routeLabels` in `src/utils/format.ts`, built on `shared/routeDisplay.ts`, so a route reads the same way on every surface.
 - Internal terms and the UI words for them are listed in `docs/GLOSSARY.md`. Use the UI wording given there.
 
