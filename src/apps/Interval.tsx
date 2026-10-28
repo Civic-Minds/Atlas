@@ -1568,6 +1568,8 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
         selectedRouteOutOfFilter={selectedRouteOutOfFilter && !compareActive}
         compareRows={compareRows}
         compareActive={compareActive}
+        compareSideB={compareActive ? compareSide : null}
+        setCompareSideB={setCompareSide}
         onInfoOpen={onInfoOpen}
         searchEnterRef={searchEnterRef}
         stopBack={stopCardBack}
