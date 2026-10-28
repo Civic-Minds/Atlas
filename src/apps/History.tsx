@@ -262,9 +262,10 @@ function RouteHistoryCard({
       </SidebarCardHeaderBlock>
 
       {/* The chart sits on the card with no box, as the route card's hour chart does (#1028 item 10); its icon opens the wide view. */}
-      {chartSnaps.length >= 2 && (
+      {/* One snapshot (CIV-471): one dot with its value, no line; nothing to widen. */}
+      {chartSnaps.length >= 1 && (
         <div className="mt-3 relative pt-5">
-          <ExpandButton label="Expand chart" onClick={() => setChartExpanded(true)} />
+          {chartSnaps.length >= 2 && <ExpandButton label="Expand chart" onClick={() => setChartExpanded(true)} />}
           <RouteHistoryChart snaps={chartSnaps} minutes={hws} lineColor={lineColor} gradientId={gradientId} hoveredSnap={hoveredSnap} onHover={setHoveredSnap} />
         </div>
       )}
@@ -402,6 +403,8 @@ function RouteHistoryChart({ snaps, minutes, lineColor, gradientId, hoveredSnap,
     return () => observer.disconnect();
   }, []);
   const points = historyChartPoints(snaps, minutes, frame);
+  // One snapshot (CIV-471): its dot and value at the middle, with no line, fill or baseline.
+  const single = snaps.length === 1;
   const priority = historyDotPriority(snaps, minutes);
   const dots = wide ? new Set(snaps.map((_, i) => i)) : placeHistoryDots(points, priority, drawnWidth / width);
   // A value label never sits on the line: above its point, or below where a spike beside it fills the spot above.
@@ -452,9 +455,9 @@ function RouteHistoryChart({ snaps, minutes, lineColor, gradientId, hoveredSnap,
             <stop offset="100%" style={{ stopColor: lineColor }} stopOpacity="0" />
           </linearGradient>
         </defs>
-        <path d={fillPath} fill={`url(#${gradientId})`} />
-        <path d={linePath} fill="none" stroke={lineColor} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-        <line x1={points[0].x} y1={height - 18} x2={points[points.length - 1].x} y2={height - 18} stroke="var(--border-primary)" strokeWidth="1" strokeDasharray="2 3" />
+        {!single && <path d={fillPath} fill={`url(#${gradientId})`} />}
+        {!single && <path d={linePath} fill="none" stroke={lineColor} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />}
+        {!single && <line x1={points[0].x} y1={height - 18} x2={points[points.length - 1].x} y2={height - 18} stroke="var(--border-primary)" strokeWidth="1" strokeDasharray="2 3" />}
         {xLabels.map(label => (
           <text key={`${label.text}-${label.x}`} x={label.x} y={height - 3} textAnchor={label.anchor} fontSize="7.5" fontWeight="600" fill="var(--text-muted)" fontFamily="inherit">
             {label.text}
@@ -462,7 +465,7 @@ function RouteHistoryChart({ snaps, minutes, lineColor, gradientId, hoveredSnap,
         ))}
         {points.map((p, i) => (
           <g key={i}>
-            {(dots.has(i) || i === hovered) && <circle cx={p.x} cy={p.y} r={i === hovered ? 4.5 : 3} fill={lineColor} stroke="var(--bg-panel)" strokeWidth="1.5" />}
+            {(dots.has(i) || i === hovered || single) && <circle cx={p.x} cy={p.y} r={i === hovered ? 4.5 : 3} fill={lineColor} stroke="var(--bg-panel)" strokeWidth="1.5" />}
             {shownValues.includes(i) && (
               <text x={p.x} y={valueAt(i).y} textAnchor="middle" fontSize="8" fontWeight="700" fill="var(--text-primary)" fontFamily="inherit" stroke="var(--bg-panel)" strokeWidth="3" strokeLinejoin="round" paintOrder="stroke">
                 {headwayExactAmount(shownMinutes(minutes[i]))}
@@ -500,6 +503,8 @@ function historyXLabels(
   // Months (#1037, CIV-924): labels that fit 34 units apart, the ends checked where they are drawn and taken first, so a
   // month at the right edge is labelled there rather than at an earlier point; a month already labelled isn't again.
   const lastIndex = points.length - 1;
+  // One snapshot: its month centred under its dot (CIV-471).
+  if (lastIndex === 0) return [{ x: points[0].x, text: formatXLabel(snaps[0].label), anchor: 'middle' }];
   const centres = points.map((p, i) => ({ x: i === 0 ? paddingX + 17 : i === lastIndex ? width - paddingX - 17 : p.x, y: 0 }));
   const edgesFirst = (i: number) => (i === 0 ? -2 : i === lastIndex ? -1 : i);
   const labelled = new Set<string>();
