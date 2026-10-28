@@ -298,9 +298,13 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
     setFocusedVehicle({ id: vehicle.id, lat: vehicle.lat, lon: vehicle.lon, ts: Date.now() });
   }, []);
 
-  // Clear overlay when deactivating or unmounting
+  // Clear overlay when deactivating or unmounting. The camera requests go too, or re-entering Live replays the
+  // last vehicle or place flight.
   useEffect(() => {
-    if (!active) setOverlay(null);
+    if (active) return;
+    setOverlay(null);
+    setVehicleFly(null);
+    setFocusArea(null);
   }, [active, setOverlay]);
   useEffect(() => {
     return () => setOverlay(null);

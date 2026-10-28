@@ -48,7 +48,8 @@ describe('frameRoute', () => {
   it('flies to a single point without zooming out', () => {
     const map = fakeMap(1200, 800, 15);
     frameRoute(map, [[-79.4, 43.65], [-79.4, 43.65]]);
-    expect(map.flyTo).toHaveBeenCalledWith({ center: [-79.4, 43.65], zoom: 15, padding: { top: 80, bottom: 80, left: 320, right: 80 }, duration: 900 });
+    const padding = { top: 80, bottom: 80, left: 320, right: 80 };
+    expect(map.flyTo).toHaveBeenCalledWith({ center: paddedCenter([-79.4, 43.65], 15, padding), zoom: 15, duration: 900 });
     expect(map.fitBounds).not.toHaveBeenCalled();
   });
 
@@ -58,7 +59,17 @@ describe('frameRoute', () => {
     frameRoute(map, [[0, 0], [1, 1]], { padding, maxZoom: 15, duration: 0 });
     expect(map.fitBounds).toHaveBeenCalledWith([[0, 0], [1, 1]], { padding, maxZoom: 15, duration: 0 });
     frameRoute(map, [[2, 2]], { padding, maxZoom: 15, duration: 0 });
-    expect(map.flyTo).toHaveBeenCalledWith({ center: [2, 2], zoom: 15, padding, duration: 0 });
+    expect(map.flyTo).toHaveBeenCalledWith({ center: paddedCenter([2, 2], 15, padding), zoom: 15, duration: 0 });
+  });
+
+  // The camera keeps a flyTo's padding, and the next route fit adds its own on top: a route picked after a vehicle
+  // fit into the map less the card's width twice and zoomed out to the region (CIV-1088).
+  it('never hands its padding to the camera when it flies to a point', () => {
+    const map = fakeMap(1000, 680, 12);
+    frameRoute(map, [[-79.4, 43.65]], { maxZoom: 15, padding: { top: 80, bottom: 80, left: 409, right: 80 } });
+    expect(map.flyTo.mock.calls[0][0]).not.toHaveProperty('padding');
+    const [lon] = map.flyTo.mock.calls[0][0].center;
+    expect(lon).toBeLessThan(-79.4);
   });
 });
 
