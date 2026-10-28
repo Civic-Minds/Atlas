@@ -66,9 +66,13 @@ function median(values: number[]): number {
   return s.length % 2 ? s[mid] : (s[mid - 1] + s[mid]) / 2;
 }
 
+/** How much better than a stop's own rider wait (minutes) its stretch value may read. */
+export const OWN_WAIT_TOLERANCE = 1;
+
 /**
  * The stretch value for each stop with a wait: the median of the waits in its run, rounded.
- * A stop with no wait (too few departures) gets nothing and keeps its own value.
+ * A stop with no wait (too few departures) gets nothing and keeps its own value; a stop whose own
+ * wait is more than OWN_WAIT_TOLERANCE worse than the median shows its own wait.
  */
 export function stretchMedians(stopIds: readonly string[], keys: readonly string[], waitOf: (stopId: string) => number | null): Map<string, number> {
   const out = new Map<string, number>();
@@ -80,7 +84,9 @@ export function stretchMedians(stopIds: readonly string[], keys: readonly string
     }
     if (waits.size === 0) continue;
     const value = Math.round(median([...waits.values()]));
-    for (const stopId of waits.keys()) out.set(stopId, value);
+    // Ryan, 2026-10-27: no stop shows a value more than 1 min better than its own rider wait;
+    // where the median would, the stop shows its own wait.
+    for (const [stopId, wait] of waits) out.set(stopId, value < wait - OWN_WAIT_TOLERANCE ? Math.round(wait) : value);
   }
   return out;
 }
