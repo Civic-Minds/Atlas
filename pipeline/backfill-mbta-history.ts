@@ -10,6 +10,7 @@
 import { mkdir, writeFile } from 'fs/promises';
 import { dirname, resolve } from 'path';
 import JSZip from 'jszip';
+import { historyHeadlineWins } from './historyHeadlinePick.js';
 import { processGtfsBuffer } from './process-core.js';
 import { backfillRouteKey } from './historyRouteKey.js';
 import type { HeadwayByPeriod } from '../shared/config.js';
@@ -92,7 +93,8 @@ function snapshotRoutes(geojson: string, previous: Record<string, { headway: num
     if (!route) continue;
     const headway = properties.headway == null ? null : Number(properties.headway);
     if (headway == null) continue;
-    if (!current[route] || headway < current[route].headway) {
+    // CIV-1081: a feature with period values beats one with none (historyHeadlinePick.ts).
+    if (historyHeadlineWins({ headway, headwayByPeriod: properties.headwayByPeriod as HeadwayByPeriod | undefined }, current[route])) {
       current[route] = {
         headway,
         tier: properties.tier == null ? null : String(properties.tier),
