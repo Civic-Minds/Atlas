@@ -13,6 +13,7 @@ const [baseUrl = 'http://localhost:5180', outDir] = process.argv.slice(2);
 const WIDTHS = [360, 640, 820, 1024, 1440];
 const HEIGHT = 900;
 const SETTLE_MS = 6000;
+const LOADED_MS = 30000;
 
 /** Every overlay's visible pieces, in page coordinates. The header splits into its left and right groups. */
 function measure() {
@@ -21,16 +22,24 @@ function measure() {
     const r = el.getBoundingClientRect();
     return s.visibility !== 'hidden' && s.display !== 'none' && Number(s.opacity) > 0.05 && r.width > 1 && r.height > 1;
   };
-  /** The overlay's drawn pieces: leaf-ish children with a box, merged per direct child. */
-  const pieces = (root) => [...root.children].filter(visible).map(child => {
+  /** The overlay's drawn pieces, one per direct child: the child's box grown to cover any descendant drawn outside
+   *  it, so a pill that spills out of a squeezed group is measured where it is drawn (CIV-1057, About Atlas at 640).
+   *  The header's groups keep their own boxes: their search field and menus hold descendants laid out off the bar. */
+  const pieces = (root, spill = true) => [...root.children].filter(visible).map(child => {
     const r = child.getBoundingClientRect();
-    return { x: r.left, y: r.top, w: r.width, h: r.height };
+    let [x1, y1, x2, y2] = [r.left, r.top, r.right, r.bottom];
+    for (const d of spill ? child.querySelectorAll('*') : []) {
+      if (!visible(d)) continue;
+      const b = d.getBoundingClientRect();
+      x1 = Math.min(x1, b.left); y1 = Math.min(y1, b.top); x2 = Math.max(x2, b.right); y2 = Math.max(y2, b.bottom);
+    }
+    return { x: x1, y: y1, w: x2 - x1, h: y2 - y1 };
   });
   const out = [];
   for (const el of document.querySelectorAll('[data-map-overlay]')) {
     const name = el.getAttribute('data-map-overlay');
     if (name === 'top-bar') {
-      [...el.children].filter(visible).forEach((group, i) => out.push({ name: `top-bar:${i === 0 ? 'left' : 'right'}`, boxes: pieces(group).length ? pieces(group) : [] }));
+      [...el.children].filter(visible).forEach((group, i) => out.push({ name: `top-bar:${i === 0 ? 'left' : 'right'}`, boxes: pieces(group, false) }));
       continue;
     }
     if (!visible(el) && getComputedStyle(el).display !== 'contents') continue;
@@ -62,6 +71,8 @@ try {
     await page.goto(baseUrl + '/', { waitUntil: 'domcontentloaded' });
     await page.waitForSelector('[data-map-overlay="top-bar"]', { timeout: 30000 });
     await page.waitForTimeout(SETTLE_MS);
+    // The counts pill widens once agencies finish loading, so measure after that too (up to LOADED_MS more).
+    await page.waitForFunction(() => ![...document.querySelectorAll('[data-map-overlay="counts"]')].some(el => /Loading/.test(el.textContent ?? '')), null, { timeout: LOADED_MS }).catch(() => {});
     const { overlays, viewport } = await page.evaluate(measure);
     const names = overlays.map(o => `${o.name}(${o.boxes.length})`).join(' ');
     console.log(`${width} ${visitor}: ${names}`);

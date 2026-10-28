@@ -52,7 +52,7 @@ import Panel from '../ui/Panel';
 import ListRow from '../ui/ListRow';
 import { drawnRouteLayers, queryDrawnRouteFeatures } from './map/drawnRoutes';
 import { approximateLocationHint, CLIPBOARD_DENIED, LOCATION_DENIED, LOCATION_TIMED_OUT, LOCATION_UNAVAILABLE, LOCATION_URL_COPIED, ON_DEMAND_AREAS_FAILED } from '../../content/noticeCopy';
-import { PHONE_MEDIA_QUERY, useMediaQuery } from '../../hooks/useMediaQuery';
+import { FOOTER_NOTICE_MEDIA_QUERY, PHONE_MEDIA_QUERY, useMediaQuery } from '../../hooks/useMediaQuery';
 
 // Keep the Live/Deck.gl graph out of public builds entirely when Live is disabled.
 const LiveVehiclesLayer = import.meta.env.VITE_LIVE_ENABLED === 'true'
@@ -317,6 +317,8 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   // A map hint, and whether it reports an error: on phones errors collapse into the one "Error" pill (CIV-1057).
   const [mapHint, setMapHint] = useState<{ text: string; error: boolean } | null>(null);
   const isPhone = useMediaQuery(PHONE_MEDIA_QUERY);
+  // From 768 up the on-demand failed notice is in Interval's footer row instead (CIV-1057).
+  const onDemandNoticeInFooter = useMediaQuery(FOOTER_NOTICE_MEDIA_QUERY);
   const [exportDialogOpen, setExportDialogOpen] = useState(false);
   const agencyDataLoadingRef = useRef(agencyDataLoading);
   agencyDataLoadingRef.current = agencyDataLoading;
@@ -1246,8 +1248,9 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
 
       {/* Geolocate Button Control Overlay */}
       {/* Zones that failed to load must not read as "no on-demand service here" (CIV-50), so nothing hides that notice.
-          On sm and up it sits in the footer row beside the agencies loading pill (Interval, CIV-1057). Phones show every
-          error as one "Error" pill that lists them on a tap, with any other hint one row above it. */}
+          From 768 up it sits in the footer row beside the agencies loading pill (Interval, CIV-1057); 640-767 keeps it
+          here with any hint one row above. Phones show every error as one "Error" pill that lists them on a tap, with
+          any other hint one row above it. */}
       {isPhone ? (
         <>
           <MapErrorsPill messages={[
@@ -1260,10 +1263,19 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
             </MapNoticePill>
           )}
         </>
-      ) : mapHint && (
-        <MapNoticePill className="px-3 py-1.5 text-xs text-[var(--text-muted)]">
-          {mapHint.text}
-        </MapNoticePill>
+      ) : (
+        <>
+          {!onDemandNoticeInFooter && onDemandStatus === 'error' && onDemandShown && (
+            <MapNoticePill className="px-3 py-1.5 text-xs text-[var(--text-muted)]">
+              {ON_DEMAND_AREAS_FAILED}
+            </MapNoticePill>
+          )}
+          {mapHint && (
+            <MapNoticePill raised={!onDemandNoticeInFooter && onDemandStatus === 'error' && onDemandShown} className="px-3 py-1.5 text-xs text-[var(--text-muted)]">
+              {mapHint.text}
+            </MapNoticePill>
+          )}
+        </>
       )}
 
       {mapContextMenu && (
