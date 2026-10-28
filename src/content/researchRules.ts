@@ -6,7 +6,7 @@ import { headwayOrBetter } from '../../shared/headwayText';
 
 /** The rule shown in each research view's info panel, always using the numbers currently selected. */
 
-export const NIGHT_INFO_HEADING = 'Which routes run all night?';
+export const NIGHT_INFO_HEADING = 'Which routes run overnight?';
 
 /** Minutes after midnight as plain clock text: 3am, 2:30am, 6:45pm, midnight. */
 export function clockText(minutes: number): string {
@@ -21,7 +21,7 @@ export function clockText(minutes: number): string {
 }
 
 export function nightRuleText(frequency: NightServiceFrequency): string {
-  return `Routes with a departure ${headwayOrBetter(frequency)} from 2am to 5am.`;
+  return `Routes with a departure ${headwayOrBetter(frequency)} from 2–5 AM.`;
 }
 
 export const FREQUENT_INFO_HEADING = 'Which routes are frequent?';

@@ -15,7 +15,7 @@ describe('map keys', () => {
 
   it('night key: one line step', () => {
     const { container } = render(<ResearchLegend view="night" frequentFrequency={15} />);
-    expect(container.textContent).toBe('Night service');
+    expect(container.textContent).toBe('Overnight service');
     expect(container.querySelectorAll('[aria-hidden="true"]')).toHaveLength(1);
   });
 
