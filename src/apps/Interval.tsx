@@ -17,7 +17,7 @@ import { NearbyRoutesPanel } from '../components/Interval/NearbyRoutesPanel';
 import { FilterPanel } from '../components/Interval/FilterPanel';
 import { FilterChips, getNowPeriodForTimezone } from '../components/Interval/FilterChips';
 import { AgencyCard } from '../components/Interval/AgencyCard';
-import { MAP_FOOTER_ROW_SLOT, MAP_COUNTS_PHONE_SLOT, TRANSITION_BASE, TRANSITION_SLOW, Z_PANEL, MAP_BADGE, MAP_BADGE_COUNT, MAP_BADGE_LABEL, SIDEBAR_CARD_TOP, SIDEBAR_CARD_TOP_DESKTOP, Z_PANEL_RAISED } from '../styles';
+import { MAP_FOOTER_ROW_SLOT, MAP_COUNTS_PHONE_SLOT, mapFooterStyle, TRANSITION_BASE, TRANSITION_SLOW, Z_PANEL, MAP_BADGE, MAP_BADGE_COUNT, MAP_BADGE_LABEL, SIDEBAR_CARD_TOP, SIDEBAR_CARD_TOP_DESKTOP, Z_PANEL_RAISED } from '../styles';
 import type { Agency } from '../App';
 import type { OpenInfoFn } from '../components/InfoPanel';
 import { mapViewKind, viewAllowsOnDemand } from '../../shared/viewLayers';
@@ -1019,8 +1019,21 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     if (!searchFocused) setHoveredSearchRoute(null);
   }, [searchFocused]);
 
+  // The footer row's height, so the map notice pill sits above the pills however far they wrap (CIV-1057).
+  const footerRowRef = useRef<HTMLDivElement>(null);
+  const [footerHeight, setFooterHeight] = useState<number | null>(null);
+  useEffect(() => {
+    const el = footerRowRef.current;
+    if (!el || typeof ResizeObserver === 'undefined') return;
+    const measure = () => setFooterHeight(Math.round(el.getBoundingClientRect().height) || null);
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
   return (
-    <div className={`relative w-full h-full transition-colors ${TRANSITION_BASE}`}>
+    <div className={`relative w-full h-full transition-colors ${TRANSITION_BASE}`} style={mapFooterStyle(footerHeight)}>
 
       <div className={`absolute inset-0 flex ${compareActive ? 'flex-col sm:flex-row gap-1 bg-[var(--text-primary)]' : ''}`}>
         <div className="relative flex-1 min-h-0 min-w-0">
@@ -1195,7 +1208,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
           (and the analytics prompt, their last pill) wrap upward before they reach the counts (#999).
           Phones drop the wrapper (contents) and keep each group's own position. No z-index here, so
           the pills keep their own layer and the What's new panel still opens above the header. */}
-      <div className={MAP_FOOTER_ROW_SLOT}>
+      <div ref={footerRowRef} className={MAP_FOOTER_ROW_SLOT}>
       <MapAttribution />
 
       {((stats && (stats.total > 0 || !isLoading)) || researchCounts || isLoading || isTilesLoading || isBasemapLoading || failedSlugs.size > 0) && (

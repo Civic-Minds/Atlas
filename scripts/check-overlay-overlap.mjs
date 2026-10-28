@@ -1,7 +1,8 @@
 // Overlap check for the map's fixed overlays (CIV-1011 #12). Usage:
 //   node scripts/check-overlay-overlap.mjs <baseUrl> [screenshotDir]
-// Needs a running dev server. At 360, 640, 820, 1024 and 1440 wide it opens the map twice, as a default visitor and as
-// one from a strict-consent country (so the analytics prompt shows), and measures every overlay marked data-map-overlay (styles.ts, "Map overlay slots"):
+// Needs a running dev server. At 360, 640, 820, 1024 and 1440 wide it opens the map four times: as a default visitor, as
+// one from a strict-consent country (so the analytics prompt shows), with the on-demand areas failing to load (so the
+// map notice pill shows, CIV-1057), and with both. It measures every overlay marked data-map-overlay (styles.ts, "Map overlay slots"):
 // the header's left and right groups, the footer pills, the counts, the map controls, notice and status pills, and the
 // analytics prompt. Each overlay is measured by its visible pieces, not its container, so a full-width row only counts
 // where something is drawn. It fails when two overlays' pieces overlap, or when a piece runs off the screen.
@@ -51,11 +52,13 @@ if (outDir) mkdirSync(outDir, { recursive: true });
 const browser = await chromium.launch();
 const failures = [];
 try {
-  for (const width of WIDTHS) for (const visitor of ['default', 'consent']) {
+  for (const width of WIDTHS) for (const visitor of ['default', 'consent', 'notice', 'consent-notice']) {
     const ctx = await browser.newContext({ viewport: { width, height: HEIGHT } });
     const page = await ctx.newPage();
     // A visitor from a strict-consent country sees the analytics prompt; the default visitor doesn't.
-    if (visitor === 'consent') await page.route('**/api/privacy-region*', route => route.fulfill({ json: { country: 'FR' } }));
+    if (visitor.startsWith('consent')) await page.route('**/api/privacy-region*', route => route.fulfill({ json: { country: 'FR' } }));
+    // On-demand areas that fail to load put the notice pill along the bottom edge.
+    if (visitor.endsWith('notice')) await page.route('**/on-demand/manifest.json*', route => route.fulfill({ status: 500, body: '' }));
     await page.goto(baseUrl + '/', { waitUntil: 'domcontentloaded' });
     await page.waitForSelector('[data-map-overlay="top-bar"]', { timeout: 30000 });
     await page.waitForTimeout(SETTLE_MS);
