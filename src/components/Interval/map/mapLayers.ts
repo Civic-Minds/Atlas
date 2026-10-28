@@ -6,9 +6,6 @@ import { buildFocusCase, FOCUS_DIM_OPACITY } from '../../../utils/routeFocus';
 import { ROUTE_LINE_WIDTH_BY_ZOOM, ROUTE_LINE_WIDTH_STOPS, NIGHT_SERVICE_WIDTH_BY_ZOOM, FREQUENT_SERVICE_WIDTH_BY_ZOOM, OVERLAY_ROUTE_OPACITY, frequentServiceColorExpression } from './routeStyle';
 import { ON_DEMAND_FOCUSED_PROP } from './onDemandFocus';
 
-/** The map's one dash pattern: on-demand area outlines and approximate History lines. */
-const DASHED_LINE = [2, 1.5];
-
 const ON_DEMAND_AREA_COLOR = '#64748b';
 // Selected on-demand features keep their normal paint; the rest fade like routes behind a selection.
 const ON_DEMAND_FOCUS_MATCH = ['!=', ['get', ON_DEMAND_FOCUSED_PROP], false];
@@ -93,7 +90,7 @@ function addOnDemandLayers(map: maplibregl.Map) {
         onDemandOpacity(0.35, 0.15, FOCUS_DIM_OPACITY / 2),
         onDemandOpacity(0.95, 0.4, FOCUS_DIM_OPACITY),
       ) as any,
-      'line-dasharray': DASHED_LINE,
+      'line-dasharray': [2, 1.5],
     },
     layout: { visibility: 'none' },
   });
@@ -486,9 +483,7 @@ function addHistoryLayers(map: maplibregl.Map) {
       'line-color': ['get', 'color'],
       // The regular route lines' widths; History's focus paint (useRouteStyling) overrides while a route is open.
       'line-width': ROUTE_LINE_WIDTH_BY_ZOOM as any,
-      'line-opacity': 1,
-      // A line drawn from the stop order (the feed has no shapes.txt) is approximate: dashed, no words (CIV-470).
-      'line-dasharray': ['case', ['==', ['get', 'approximate'], true], ['literal', DASHED_LINE], ['literal', [1, 0]]] as any,
+      'line-opacity': 1
     },
     layout: {
       'line-cap': 'round',

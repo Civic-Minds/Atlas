@@ -77,21 +77,3 @@ describe('History camera (#1016)', () => {
   });
 });
 
-describe('History own-shape lines (CIV-470)', () => {
-  it('marks a line drawn from the stop order as approximate, for the layer to dash', () => {
-    const map = fakeMap();
-    const setData = vi.fn();
-    map.getSource = vi.fn(() => ({ setData }));
-    render(<HistoryMapOverlayProvider><Harness map={map} /></HistoryMapOverlayProvider>);
-    act(() => setOverlay({
-      ...overlay(2014),
-      yearRoutes: [
-        { routeShortName: '1', color: '#000', headway: 30, coordinates: shape(1) },
-        { routeShortName: '2', color: '#000', headway: 30, coordinates: shape(2), approximate: true },
-      ],
-    }));
-    const features = setData.mock.calls.at(-1)![0].features;
-    expect(features.map((f: { properties: { approximate?: boolean } }) => f.properties.approximate)).toEqual([undefined, true]);
-  });
-});
-
