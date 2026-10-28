@@ -191,9 +191,9 @@ export const Z_PANEL_RAISED = 'z-[1001]'; // One step above the panels: Compare'
 export const MAP_TOP_BAR_SLOT = 'top-6 left-6 right-6 h-[28px]';
 /** sm and up: the bottom-left pills and the bottom-right counts share one row, so the pills wrap upward before the counts. Phones drop it (contents). */
 export const MAP_FOOTER_ROW_SLOT = 'max-sm:contents absolute bottom-6 left-6 right-14 flex items-end justify-between gap-2 pointer-events-none';
-/** sm and up: the footer row's right end, the on-demand failed notice then the counts (CIV-1057). Phones drop it (contents). */
+/** sm and up: the footer row's right end, the on-demand failed notice (768 up) then the counts (CIV-1057). Phones drop it (contents). */
 export const MAP_FOOTER_RIGHT_SLOT = 'max-sm:contents ml-auto shrink-0 flex items-end gap-2';
-/** sm and up: the on-demand failed notice in the footer row, beside the agencies loading pill (CIV-1057). */
+/** 768 and up: the on-demand failed notice in the footer row, beside the agencies loading pill (CIV-1057). */
 export const MAP_FOOTER_NOTICE_SLOT = 'flex shrink-0 pointer-events-none';
 /** Phones: the About, What's new and Feedback pills along the bottom edge. */
 export const MAP_FOOTER_PILLS_PHONE_SLOT = 'max-sm:absolute max-sm:bottom-6 max-sm:left-6 max-sm:max-w-[calc(100vw-3rem)]';

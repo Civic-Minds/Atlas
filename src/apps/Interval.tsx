@@ -1,4 +1,4 @@
-import { PHONE_MEDIA_QUERY, phoneModeFlags, useMediaQuery } from '../hooks/useMediaQuery';
+import { FOOTER_NOTICE_MEDIA_QUERY, PHONE_MEDIA_QUERY, phoneModeFlags, useMediaQuery } from '../hooks/useMediaQuery';
 import { useOnDemandStatus } from '../hooks/useOnDemandData';
 import React, { useState, useCallback, useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import { createPortal } from 'react-dom';
@@ -424,10 +424,12 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   // Compare mode (beta): side A is the normal day, time and frequency; side B has its own day, time
   // and frequency. Modes, agencies and the irregular-route settings are shared by both maps.
   const isPhoneScreen = useMediaQuery(PHONE_MEDIA_QUERY);
-  // On sm and up the on-demand failed notice sits in the footer row beside the agencies loading pill (CIV-1057, Ryan:
-  // "Just move the on demand notice to beside the 6/11 networks then"); phones show it in the map's "Error" pill.
+  // From 768 up the on-demand failed notice sits in the footer row beside the agencies loading pill (CIV-1057, Ryan:
+  // "Just move the on demand notice to beside the 6/11 networks then"). Narrower, the row has no room once the counts
+  // load, so 640-767 keeps the centred spot above the row and phones show it in the map's "Error" pill.
+  const footerHasNoticeRoom = useMediaQuery(FOOTER_NOTICE_MEDIA_QUERY);
   const onDemandStatus = useOnDemandStatus();
-  const onDemandFailedInFooter = !isPhoneScreen && onDemandStatus === 'error' && FEATURES.onDemand
+  const onDemandFailedInFooter = footerHasNoticeRoom && onDemandStatus === 'error' && FEATURES.onDemand
     && viewShowsOnDemand(mapViewKind({ nightServiceView, frequentServiceView, liveRoutesOnly }), selectedModes);
   const compareAvailable = FEATURES.compareMode && phoneModeFlags(isPhoneScreen).compareMode && showRouteLayers && !nightServiceView
     && !frequentServiceView && !liveRoutesOnly && !filterToAgencies;
