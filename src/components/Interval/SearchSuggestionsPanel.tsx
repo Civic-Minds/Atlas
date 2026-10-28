@@ -17,7 +17,7 @@ import { CardDivider } from './cardUi';
 import { headwayToTierColor } from './HeadwaySparkline';
 import { getTierColor } from '../../utils/colors';
 import { useColorMode } from '../../hooks/useColorMode';
-import { NO_ROUTE_SUGGESTIONS } from '../../content/noticeCopy';
+import { LIMITED_SERVICE_LABEL, NO_ROUTE_SUGGESTIONS } from '../../content/noticeCopy';
 
 // Reusable/helper interfaces for route snippets
 export interface RecentRoute {
@@ -125,7 +125,7 @@ export function routeRowRight(agencyName: string, headway?: number | null, stack
         {agency}
         <span className="text-[var(--text-dim)] font-normal"> · </span>
         <TierDot headway={null} />
-        {noRegular ? NO_REGULAR_SERVICE_SHORT_LABEL : 'limited'}
+        {noRegular ? NO_REGULAR_SERVICE_SHORT_LABEL : LIMITED_SERVICE_LABEL}
       </span>
     );
   }

@@ -20,7 +20,7 @@ import { useColorMode } from '../../hooks/useColorMode';
 import ArrowLink from '../ui/ArrowLink';
 import PanelEmpty from '../ui/PanelEmpty';
 import AgencyName from '../ui/AgencyName';
-import { HIDDEN_ROUTES_UNAVAILABLE, loadingText, NO_DEGRADED_FEEDS, NO_FEED_MATCHES, NO_LIMITED_ROUTES_IN_VIEW, noSearchMatchText } from '../../content/noticeCopy';
+import { HIDE_DEGRADED_FEEDS_SETTING, HIDE_ONE_OFF_SETTING, HIDE_PART_TIME_SETTING, HIDDEN_ROUTES_UNAVAILABLE, loadingText, NO_DEGRADED_FEEDS, NO_FEED_MATCHES, NO_LIMITED_ROUTES_IN_VIEW, noSearchMatchText } from '../../content/noticeCopy';
 import { compareAgencyName, compareRegion, compareRouteNumber } from '../../utils/sortCompare';
 import PanelHeader from '../ui/PanelHeader';
 
@@ -95,11 +95,7 @@ export function updateHiddenRouteRegions(current: Set<string>, region: string): 
 }
 
 const SETTINGS = [
-  {
-    id: 'span',
-    label: 'Hide one-off routes',
-    description: 'School runs, a few trips a day, on-demand.',
-  },
+  { id: 'span', ...HIDE_ONE_OFF_SETTING },
 ] as const;
 
 export const FilterPanel: React.FC<FilterPanelProps> = ({
@@ -321,13 +317,11 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
       // #720: part-time routes are on public too. Rush-hour-only routes join this switch once the
       // pipeline classes them time-limited (they are still irregular in today's data).
       id: 'limited',
-      label: 'Hide part-time routes',
-      description: 'Only at rush hour, evenings, or some days.',
+      ...HIDE_PART_TIME_SETTING,
     },
     ...(feedQualityEnabled ? [{
       id: 'quality',
-      label: 'Hide degraded feeds',
-      description: 'Hides agencies with known data-quality problems. Feeds still being reviewed remain visible.',
+      ...HIDE_DEGRADED_FEEDS_SETTING,
     }] : []),
   ];
 
