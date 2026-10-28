@@ -831,7 +831,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
             {hasWeekdayTierVariation && (
               <CardHelpNotice
                 message={WEEKDAY_VARIATION_NOTICE}
-                onLearnMore={() => onInfoOpen('about', { helpTopic: explainerFor('N1') })}
+                onLearnMore={() => onInfoOpen('about', { helpTopic: explainerFor('N1'), agencyName: routeAgency?.name, websiteUrl: routeAgency?.websiteUrl ?? undefined })}
               />
             )}
           </div>
