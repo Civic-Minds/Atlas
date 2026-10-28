@@ -15,8 +15,7 @@ import { PHONE_MEDIA_QUERY, useMediaQuery } from '../hooks/useMediaQuery';
 import { BOTTOM_SHEET_FRAME, BottomSheetHandle, bottomSheetBodyClass, useBottomSheet } from '../components/ui/BottomSheet';
 import ListRow from '../components/ui/ListRow';
 import Tag from '../components/ui/Tag';
-import { fetchLiveDashboard } from '../lib/liveDashboardFetch';
-import type { LiveV3 } from '../../shared/liveDashboard';
+import { useRouteAnalysisPatterns } from '../hooks/useRouteAnalysisPatterns';
 import { streetJoin } from '../utils/stopLabel';
 import ArrowLink from '../components/ui/ArrowLink';
 import { AgencyList, AgencyListRow } from '../components/ui/AgencyList';
@@ -28,15 +27,15 @@ import { agencyDisplayParts, cleanRouteShortName, cleanRouteDisplayName, agencyD
 import { branchDisplayPeriodHeadway } from '../utils/routeFacts';
 import { periodKeyForHour } from '../../shared/config';
 import { countOf } from '../../shared/overflowText';
-import { inferLiveDirection, type LiveDirectionMatch } from '../utils/liveDirection';
-import { DIRECTION_UNCLEAR, compareLiveRoutes, focusDirectionKey, groupVehiclesByDirection, orderDirectionGroups, destinationKind, routeDirectionLabels } from '../utils/liveGrouping';
+import { inferLiveDirection } from '../utils/liveDirection';
+import { DIRECTION_UNCLEAR, compareLiveRoutes, focusDirectionKey, groupVehiclesByDirection, orderDirectionGroups, routeDirectionLabels } from '../utils/liveGrouping';
 import { CardDirectionRow, CardHelpNotice, SidebarCardHeaderBlock, SidebarCardListRows, SidebarCardSection, SidebarCardShell, CARD_LIST_ROUTE, SIDEBAR_CARD_BODY } from '../components/Interval/cardUi';
 import { liveVehiclesFingerprint } from '../utils/liveVehiclesFingerprint';
 import { buildRouteKey, routeFeatureForShortName, routeKeyForShortName, splitRouteKey } from '../utils/routeKey';
 import type { MapFocus } from '../utils/routeFocus';
 import { getNowDay } from '../../shared/dayTypes';
 import { capitalizeFirst, headwayAbout, headwayEvery } from '../utils/headwayText';
-import { delayLabel, vehicleCardName, vehicleCardRows, vehicleRowName } from '../components/Live/vehicleCardModel';
+import { cardTripEnd, delayLabel, vehicleCardName, vehicleCardRows, vehicleRowName } from '../components/Live/vehicleCardModel';
 import Panel, { PanelBody, PanelTitleBar } from '../components/ui/Panel';
 import LiveRoutePerformance from '../components/Live/LiveRoutePerformance';
 import { useLiveFeeds } from '../hooks/useLiveFeeds';
@@ -111,8 +110,6 @@ const MIN_LIVE_ZOOM = 9;
 
 /** Direction work per polled vehicle, kept across zoom steps (see resolvedVehiclesBySlug). */
 const resolvedDirections = new WeakMap<LiveVehicle, LiveVehicle>();
-/** Each trip's last labelled direction ("agency|vehicle|trip"), for a poll whose shape match comes back tied. */
-const lastDirection = new Map<string, LiveDirectionMatch>();
 
 export default function LiveVehicles({ agencies, lightMode, setLightMode, active, onInfoOpen, query, layers = {}, sidebarLeft, selectionActive = false, routeRequest = null, onAgencyClick, searchBarWidth }: Props) {
   const { colorVisionFriendly } = useColorVision();
@@ -212,12 +209,8 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
         if (cached && (known == null || cached.directionId === known)) return cached;
         const match = inferLiveDirection(known == null ? vehicle : { ...vehicle, directionId: known }, routeFeatures);
         // Destinations read with "&" between two street names, like the direction labels below (CIV-1043).
-        // A car between two directions' shapes can come back unlabelled on one poll: keep what the last poll said for
-        // the same trip rather than blank the card (CIV-1043).
-        const kept = match.directionId == null && match.headsign == null ? lastDirection.get(`${slug}|${vehicle.id}|${vehicle.tripId}`) : undefined;
-        const m = kept ?? match;
-        if (!kept && (m.directionId != null || m.headsign != null)) lastDirection.set(`${slug}|${vehicle.id}|${vehicle.tripId}`, m);
-        const out = { ...vehicle, directionId: m.directionId, headsign: m.headsign && streetJoin(m.headsign) };
+        // Destinations read with "&" between two street names, like the direction labels below (CIV-1043).
+        const out = { ...vehicle, directionId: match.directionId, headsign: match.headsign && streetJoin(match.headsign) };
         if (routeFeatures.length > 0) resolvedDirections.set(vehicle, out);
         return out;
       });
@@ -506,6 +499,9 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
     return vehiclePick.map(id => byId.get(id)).filter((v): v is LiveVehicle => !!v);
   }, [vehiclePick, allVehicles]);
 
+  // Short turn or branch, from the route's Live analysis, read only while a vehicle card is open (CIV-1043).
+  const cardAnalysis = useRouteAnalysisPatterns(selectedGroup?.agencySlug ?? null, selectedGroup?.routeShortName ?? null, !!cardVehicle);
+
   // Direction label lookup from GeoJSON features: the route's main destination per direction, i.e. the
   // headsign of its longest shape (a short turn like Roncesvalles must not rename the Humber direction).
   const directionLabels = useMemo(() => {
@@ -513,19 +509,6 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
     const fc = routeLayer(selectedGroup.agencySlug);
     return fc ? new Map([...routeDirectionLabels(fc.features, selectedGroup.routeShortName)].map(([d, l]) => [d, streetJoin(l)])) : new Map<number, string>();
   }, [selectedGroup, routeLayer]);
-
-  // The open route's Live analysis patterns (main, branch, short turn), so the vehicle card can tag a short turn and
-  // tell it from a branch (CIV-1043). Loaded only while a route card is open; the file is cached (liveDashboardFetch).
-  const [routePatterns, setRoutePatterns] = useState<{ route: string; patterns: NonNullable<NonNullable<LiveV3['runningTime']>['patterns']> } | null>(null);
-  useEffect(() => {
-    if (!selectedGroup) return;
-    const route = buildRouteKey(selectedGroup.agencySlug, selectedGroup.routeShortName);
-    let live = true;
-    fetchLiveDashboard(selectedGroup.agencySlug, selectedGroup.routeShortName)
-      .then(d => { if (live && d.status === 'ready' && d.v3.runningTime?.patterns) setRoutePatterns({ route, patterns: d.v3.runningTime.patterns }); })
-      .catch(() => {});
-    return () => { live = false; };
-  }, [selectedGroup?.agencySlug, selectedGroup?.routeShortName]);
 
   // Direction drill-down within a route
   const [selectedDirection, setSelectedDirection] = useState<string | null>(null);
@@ -691,8 +674,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
         />
       </SidebarCardHeaderBlock>
       <SidebarCardSection label={vehicleCardName(cardVehicle, selectedRouteModeWord) ?? selectedRouteModeWord}>
-        {vehicleCardRows(cardVehicle, cardDirectionLabel, cardVehicle.headsign && cardVehicle.headsign !== cardDirectionLabel && routePatterns?.route === selectedRoute
-          ? destinationKind(routePatterns.patterns, cardVehicle.headsign) ?? undefined : undefined).map(row => (
+        {vehicleCardRows(cardVehicle, cardDirectionLabel, cardTripEnd(cardVehicle.headsign, cardDirectionLabel, cardAnalysis)).map(row => (
           <div key={row.label} className="flex items-start justify-between gap-3">
             <span className="text-xs font-bold text-[var(--text-dim)] shrink-0 whitespace-nowrap">{row.label}</span>
             <span

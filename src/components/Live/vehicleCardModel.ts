@@ -2,6 +2,8 @@ import { delayAmount } from '../../utils/headwayText';
 import { liveVehicleRowLabel } from '../../utils/format';
 import { getVehicleStatus } from '../../utils/colors';
 import type { LiveVehicle } from '../../context/LiveVehiclesMapOverlay';
+import type { RouteAnalysisPatterns } from '../../hooks/useRouteAnalysisPatterns';
+import { destinationKind } from '../../utils/liveGrouping';
 
 /** Schedule status for a vehicle, or '' when the feed gives none (never a "No data" placeholder). */
 export function delayLabel(v: Pick<LiveVehicle, 'statusLabel' | 'delayMin'>): string {
@@ -64,4 +66,17 @@ export function vehicleCardName(
  */
 export function vehicleRowName(v: Pick<LiveVehicle, 'id' | 'vehicleLabel'>, index: number, modeWord: string): string {
   return vehicleCardName(v, modeWord) ?? liveVehicleRowLabel({ headsign: null, id: v.id, vehicleLabel: v.vehicleLabel }, index, modeWord);
+}
+
+/**
+ * Whether the card's trip is a short turn or a branch, for its "Ends at" row (CIV-1043): only once the route's
+ * analysis has loaded and only for a destination short of the direction's end; otherwise no tag.
+ */
+export function cardTripEnd(
+  headsign: string | null | undefined,
+  directionLabel: string | null | undefined,
+  analysis: Pick<RouteAnalysisPatterns, 'patterns' | 'stopNames'> | null,
+): 'shortTurn' | 'branch' | undefined {
+  if (!headsign || !analysis || headsign === directionLabel) return undefined;
+  return destinationKind(analysis.patterns, headsign, analysis.stopNames) ?? undefined;
 }
