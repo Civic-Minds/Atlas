@@ -52,7 +52,7 @@ import { rowLabelWithOrigin } from '../../../utils/rowOriginLabel';
 import { hasStretchRoles, routeAllDayContract, routeContract } from '../../../utils/stretchCard';
 import type { VariantFamily } from '../../../utils/routeVariants';
 import type { CompareRouteRow } from '../compareTypes';
-import { compareCardSummary } from '../../../utils/compareSides';
+import { compareCardSummary, compareLineNoOrphan } from '../../../utils/compareSides';
 import { reportDetails } from '../../../utils/reportIssue';
 import { ROUTE_DATA_QUALITY_WARNING } from '../../../../shared/routeDataQuality';
 import { BOOKING_REQUIRED_NOTICE, expiredFeedNotice, explainerFor, NO_ROUTE_SHAPE_NOTICE, periodServiceNotice, ROUTE_DATA_QUALITY_WARNING_MESSAGE, selectedRouteFilterNotice, selectedRouteOutsideFilterNotice, unevenServiceNotice, variantsIncludedNotice, WEEKDAY_VARIATION_NOTICE } from '../../../content/noticeCopy';
@@ -447,7 +447,8 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
             {/* The shared callout styles (CIV-971): a headline, then its lines; with no headline each line is one. */}
             {headline && <p className={CARD_CALLOUT_HEADLINE}>{headline}</p>}
             {/* A bracketed frequency ("(≤5 min)") stays on one line. */}
-            {lines.map(line => <p key={line} className={headline ? CARD_CALLOUT_TEXT : `${CARD_CALLOUT_HEADLINE} py-0.5`}>{line.replace(/\([^)]+\)/g, part => part.replace(/ /g, '\u00A0'))}</p>)}
+            {/* A side's value stays together, so "on map" never sits on a line of its own (CIV-844). */}
+            {lines.map(line => <p key={line} className={headline ? CARD_CALLOUT_TEXT : `${CARD_CALLOUT_HEADLINE} py-0.5`}>{compareLineNoOrphan(line.replace(/\([^)]+\)/g, part => part.replace(/ /g, '\u00A0')))}</p>)}
           </CardCallout>
         );
       })()}
