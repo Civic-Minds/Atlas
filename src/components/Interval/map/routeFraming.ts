@@ -76,6 +76,19 @@ export function routeFramePadding(
     : { top: 80, bottom: 80, left: 80, right: 280 };
 }
 
+/**
+ * Whether the card is in its framing place: always beside the map on wide screens; on phones, only once it is the bottom
+ * sheet (its top in the lower half). Entering Live with a route open, the phone card is the list at the top for a moment
+ * before the sheet opens, and a fit measured then lands under the sheet (CIV-1093).
+ */
+export function cardInFramingPlace(map: maplibregl.Map, card: Element | null | undefined): boolean {
+  const container = map.getContainer();
+  if (container.clientWidth >= PHONE_MAP_WIDTH) return true;
+  if (!card) return false;
+  const top = card.getBoundingClientRect().top - (typeof container.getBoundingClientRect === 'function' ? container.getBoundingClientRect().top : 0);
+  return top >= container.clientHeight / 2;
+}
+
 /** True when the card sits beside the map (wide screens), so its width sets the framing's side padding. */
 export function cardBesideMap(map: maplibregl.Map): boolean {
   return map.getContainer().clientWidth >= PHONE_MAP_WIDTH;

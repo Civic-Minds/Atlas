@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import * as maplibregl from 'maplibre-gl';
 import type { Agency } from '../../../App';
 import { routeKey } from '../../../hooks/useIntervalStats';
@@ -20,11 +20,18 @@ export interface SelectionFramingInput {
   areaFocus?: { bbox: [number, number, number, number]; nonce: number } | null;
   resetViewKey?: number;
   regionalView: ReturnType<typeof getRegionalView>;
-  /** Padding for the route fit when the card over the map is not the regular route card (Live's card). */
-  framePadding?: ((map: maplibregl.Map) => maplibregl.PaddingOptions) | null;
+  /**
+   * Padding for the route fit when the card over the map is not the regular route card (Live's card), or null while
+   * that card is not in place yet: the fit then waits for it (CIV-1093).
+   */
+  framePadding?: ((map: maplibregl.Map) => maplibregl.PaddingOptions | null) | null;
   /** A vehicle card is open over the selected route: the vehicle's frame wins, so the route fit stands down. */
   vehicleCardOpen?: boolean;
 }
+
+/** How often, and how many times, the route fit looks again for a card that is not in place yet. */
+const CARD_WAIT_MS = 100;
+const CARD_WAIT_TRIES = 20;
 
 /** Camera moves for a selection: agency, `?ondemand=` link, area, Reset View, route and stop. */
 export function useSelectionFraming(
@@ -36,6 +43,9 @@ export function useSelectionFraming(
   }: SelectionFramingInput,
 ) {
   const fittedRouteRef = useRef<string | null>(null);
+  // Re-runs the route fit while the card it frames against is not in place yet (framePadding gives null).
+  const [cardWait, setCardWait] = useState(0);
+  const cardWaitsRef = useRef(0);
 
   // Fly to selected agency when chosen from lists/panels (e.g. Data list in InfoPanel)
   useEffect(() => {
@@ -134,8 +144,16 @@ export function useSelectionFraming(
       target = fitTargetForPoints(rendered.flatMap(f => lineCoordinates(f.geometry)));
     }
 
-    // Keeps the line clear of the route card: beside it, or above the phone bottom sheet (routeFraming).
-    const padding = framePadding ? framePadding(map) : selectionFramePadding(map);
+    // Keeps the line clear of the route card: beside it, or above the phone bottom sheet (routeFraming). A card not in
+    // place yet is waited for, up to about two seconds; after that the phone sheet's usual padding stands in.
+    let padding = framePadding ? framePadding(map) : selectionFramePadding(map);
+    if (!padding && cardWaitsRef.current < CARD_WAIT_TRIES) {
+      cardWaitsRef.current += 1;
+      const timer = setTimeout(() => setCardWait(n => n + 1), CARD_WAIT_MS);
+      return () => clearTimeout(timer);
+    }
+    cardWaitsRef.current = 0;
+    padding ??= selectionFramePadding(map, true);
     if (target?.kind === 'bounds') {
       map.fitBounds(target.bounds, { padding, maxZoom: 14 });
       fittedRouteRef.current = fitKey;
@@ -150,7 +168,7 @@ export function useSelectionFraming(
       });
       fittedRouteRef.current = fitKey;
     }
-  }, [selectedRoute, mapLoaded, layers, framePadding, vehicleCardOpen]);
+  }, [selectedRoute, mapLoaded, layers, framePadding, vehicleCardOpen, cardWait]);
 
   // Fly to selected stop when chosen
   useEffect(() => {
