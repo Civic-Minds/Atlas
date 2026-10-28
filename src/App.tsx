@@ -30,8 +30,8 @@ import type { HistoryAgencyList } from '../shared/historyEligibility';
 import { preloadHistory } from './utils/historyConfig';
 import { historyAgencyToOpen, historyRouteSearchPlaceholder } from './utils/historyOpen';
 import { useHistoryRouteLink } from './hooks/useHistoryRouteLink';
-import { HISTORY_VIEW_ALL, type HistoryView } from './utils/historyYearMap';
-import { encodeHistoryView, parseHistoryView } from './utils/historyViewUrl';
+import { type HistoryView } from './utils/historyYearMap';
+import { encodeHistoryView, historyDefaultView, parseHistoryView } from './utils/historyViewUrl';
 import historyAgencyList from '../shared/data/history-agencies.json';
 import ErrorBoundary from './components/ErrorBoundary';
 import LiveOffNotice from './components/LiveOffNotice';
@@ -412,10 +412,10 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   const [historyDismissKey, setHistoryDismissKey] = useState(0);
   const handleMapDismiss = useCallback(() => setHistoryDismissKey(k => k + 1), []);
   const [historyPanelOpen, setHistoryPanelOpen] = useState(false);
-  // History's own Frequency and Time (CIV-389, CIV-392): start at All and All day, separate from the map's.
-  // Read from the link's h/p (the map's params) when the app opens on History.
+  // History's own Frequency and Time (CIV-389, CIV-392), separate from the map's: All, and the current period
+  // (Evening late at night, CIV-1097). Read from the link's h/p (the map's params) when the app opens on History.
   const [historyView, setHistoryView] = useState<HistoryView>(() => (
-    window.location.pathname.startsWith('/apps/history') ? parseHistoryView(window.location.search) : HISTORY_VIEW_ALL
+    window.location.pathname.startsWith('/apps/history') ? parseHistoryView(window.location.search) : historyDefaultView()
   ));
 
   const historyViewControl = useMemo(() => ({ view: historyView, setView: setHistoryView }), [historyView]);
