@@ -3,6 +3,7 @@ import {
   isOnDemandActive,
   formatOnDemandClock,
   formatOnDemandHoursLines,
+  formatOnDemandHoursRange,
   isOnDemandStopShown,
   isOnDemandZoneShown,
   localDateIn,
@@ -51,6 +52,16 @@ describe('formatOnDemandHoursLines', () => {
       Saturday: [{ startHour: 7, endHour: 19 }],
       Sunday: [{ startHour: 7, endHour: 19 }],
     })).toMatchObject([{ dayTypes: ['Weekday', 'Saturday', 'Sunday'], text: 'Daily 7 AM–7 PM' }]);
+  });
+
+  it('says "24 hours" for service round the clock, and only then (CIV-1095, Ryan)', () => {
+    expect(formatOnDemandHoursRange({ startHour: 0, endHour: 24 })).toBe('24 hours');
+    expect(formatOnDemandHoursRange({ startHour: 5, endHour: 29 })).toBe('24 hours');
+    expect(formatOnDemandHoursRange({ startHour: 6, endHour: 6 })).toBe('24 hours');
+    expect(formatOnDemandHoursLines({ Weekday: [{ startHour: 0, endHour: 24 }], Saturday: [{ startHour: 0, endHour: 24 }], Sunday: [{ startHour: 0, endHour: 24 }] }))
+      .toMatchObject([{ text: 'Daily 24 hours' }]);
+    expect(formatOnDemandHoursRange({ startHour: 0, endHour: 23.5 })).toBe('12 AM–11:30 PM');
+    expect(formatOnDemandHoursRange({ startHour: 7, endHour: 24 })).toBe('7 AM–12 AM');
   });
 
   it('shows hours past 24 as next-day clock times, rounding to the minute', () => {
