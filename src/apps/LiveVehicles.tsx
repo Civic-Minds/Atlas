@@ -15,7 +15,7 @@ import { PHONE_MEDIA_QUERY, useMediaQuery } from '../hooks/useMediaQuery';
 import { BOTTOM_SHEET_FRAME, BottomSheetHandle, bottomSheetBodyClass, useBottomSheet } from '../components/ui/BottomSheet';
 import ListRow from '../components/ui/ListRow';
 import Tag from '../components/ui/Tag';
-import { useRouteAnalysisPatterns } from '../hooks/useRouteAnalysisPatterns';
+import { useRouteAnalysis } from '../hooks/useRouteAnalysisPatterns';
 import { useLiveTripDirections } from '../hooks/useLiveTripDirections';
 import { streetJoin } from '../utils/stopLabel';
 import ArrowLink from '../components/ui/ArrowLink';
@@ -476,8 +476,8 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
   // has never shown the route card) (CIV-1068).
   const routeTrips = useLiveTripDirections(selectedGroup?.agencySlug ?? null, selectedGroup?.routeShortName ?? null, selectedGroup?.vehicles ?? NO_VEHICLES);
   useEffect(() => { setTripDirections(routeTrips.byVehicle); }, [routeTrips.byVehicle]);
-  // The card's Direction and Ends at rows wait until the vehicles have been placed by their trips, so it never shows
-  // the nearest-shape guess first.
+  // The card's Direction and Ends at rows wait until the vehicles have been placed by their trips (and, below, until the
+  // route's analysis has said short turn or branch), so it never shows the nearest-shape guess first.
   const cardDirectionsReady = routeTrips.settled && tripDirections === routeTrips.byVehicle;
   const selectedAgencyName = selectedGroup
     // The full feed name, not agencyDisplayName: RouteCardTitle's routeLabels keys agency-specific name rules on it.
@@ -510,7 +510,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
   }, [vehiclePick, allVehicles]);
 
   // Short turn or branch, from the route's Live analysis, read only while a vehicle card is open (CIV-1043).
-  const cardAnalysis = useRouteAnalysisPatterns(selectedGroup?.agencySlug ?? null, selectedGroup?.routeShortName ?? null, !!cardVehicle);
+  const { value: cardAnalysis, settled: cardAnalysisSettled } = useRouteAnalysis(selectedGroup?.agencySlug ?? null, selectedGroup?.routeShortName ?? null, !!cardVehicle);
 
   // Direction label lookup from GeoJSON features: the route's main destination per direction, i.e. the
   // headsign of its longest shape (a short turn like Roncesvalles must not rename the Humber direction).
@@ -684,7 +684,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
         />
       </SidebarCardHeaderBlock>
       <SidebarCardSection label={vehicleCardName(cardVehicle, selectedRouteModeWord) ?? selectedRouteModeWord}>
-        {placedRows(vehicleCardRows(cardVehicle, cardDirectionLabel, cardTripEnd(cardVehicle.headsign, cardDirectionLabel, cardAnalysis)), cardDirectionsReady).map(row => (
+        {placedRows(vehicleCardRows(cardVehicle, cardDirectionLabel, cardTripEnd(cardVehicle.headsign, cardDirectionLabel, cardAnalysis)), cardDirectionsReady && cardAnalysisSettled).map(row => (
           <div key={row.label} className="flex items-start justify-between gap-3">
             <span className="text-xs font-bold text-[var(--text-dim)] shrink-0 whitespace-nowrap">{row.label}</span>
             <span
