@@ -36,7 +36,7 @@ import { splitRouteKey } from '../../utils/routeKey';
 import { effectiveFeedExpiry, isAgencyFeedExpired } from '../../../shared/feedAvailability';
 import { trackEvent } from '../../lib/analytics';
 import type { CompareRouteRow } from './compareTypes';
-import type { CompareSide } from '../../utils/compareSides';
+import { compareCardFacts, type CompareSide } from '../../utils/compareSides';
 import { FEATURES } from '../../../shared/config';
 import { PHONE_MEDIA_QUERY, useMediaQuery } from '../../hooks/useMediaQuery';
 import { buildStopRoutes } from '../../utils/stopRoutes';
@@ -921,7 +921,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                   selectedRouteOutOfFilter={selectedRouteOutOfFilter}
                   hideFilterNotices={nightServiceView}
                   nightView={nightServiceView}
-                  compareRows={compareRows}
+                  compareFacts={compareRows?.[0] ? compareCardFacts(compareRows[0]) : null}
                   expDateStr={expDateStr}
                   hoveredBranch={hoveredBranch}
                   setHoveredBranch={setHoveredBranch}
@@ -998,7 +998,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
             selectedRouteOutOfFilter={false}
             hideFilterNotices={false}
             nightView={false}
-            compareRows={null}
+            compareFacts={compareRows?.[1] ? compareCardFacts(compareRows[1]) : null}
             expDateStr={expDateStr}
             hoveredBranch={hoveredBranch}
             setHoveredBranch={setHoveredBranch}
