@@ -711,7 +711,6 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
                     helpTopic: explainerFor('N19'),
                     agencyName: agency.name,
                     rolloutNotice,
-                    rolloutIssueUrl: agency.rolloutIssueUrl,
                   })}
                 />
               ))}
