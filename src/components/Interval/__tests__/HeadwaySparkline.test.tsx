@@ -1,6 +1,7 @@
 import { fireEvent, render, screen, within } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
-import { HeadwaySparkline, sparklineBarHeight, slowerDirectionKey, headwayAxisTicks } from '../HeadwaySparkline';
+import { HeadwaySparkline, sparklineBarHeight, slowerDirectionKey, headwayAxisTicks, layoutBandLabels, FREQUENCY_LABEL } from '../HeadwaySparkline';
+import { PERIOD_OVERVIEW_BANDS } from '../../../utils/sparklinePeriods';
 import { SPARKLINE_HOURS } from '../../../../shared/config';
 
 describe('HeadwaySparkline', () => {
@@ -51,17 +52,17 @@ describe('HeadwaySparkline', () => {
     }
   });
 
-  it('draws every full-day period band and the hover band over the same plot height, with no second period label', () => {
+  it('draws every full-day period band up behind its name and the hover band over the bars, with no second period label', () => {
     const { container } = render(
       <HeadwaySparkline byHour={{ 6: 30, 12: 20, 18: 25, 21: 20, 24: 45 }} period="all" onPeriodChange={() => {}} expanded />,
     );
     const area = container.querySelector('.cursor-pointer') as HTMLElement;
     const staticBands = Array.from(area.querySelectorAll(':scope > div.opacity-40'));
     expect(staticBands).toHaveLength(6);
-    for (const band of staticBands) expect(band).toHaveClass('top-12', 'bottom-0');
+    for (const band of staticBands) expect(band).toHaveClass('top-0', 'bottom-0');
     area.getBoundingClientRect = () => ({ left: 0, width: 240, top: 0, height: 48, right: 240, bottom: 48, x: 0, y: 0, toJSON: () => ({}) });
     fireEvent.mouseMove(area, { clientX: 120 });
-    for (const band of screen.getAllByTestId('sparkline-hover-band')) expect(band).toHaveClass('top-12', 'bottom-0');
+    for (const band of screen.getAllByTestId('sparkline-hover-band')) expect(band).toHaveClass('top-6', 'bottom-0');
     expect(area.querySelectorAll(':scope > span')).toHaveLength(0);
   });
 
@@ -97,7 +98,7 @@ describe('HeadwaySparkline', () => {
 
     const dialog = screen.getByRole('dialog', { name: 'Route 14 — Lakeshore full-day schedule' });
     expect(dialog).toBeInTheDocument();
-    // The frequency column is half the dialog wide, so the peaks use the short form.
+    // Before the chart's width is measured (as here), the peaks use the short form.
     expect(within(dialog).getByText('AM')).toBeInTheDocument();
     expect(within(dialog).getByText('Midday')).toBeInTheDocument();
     expect(within(dialog).getByText('Overnight')).toBeInTheDocument();
@@ -107,8 +108,13 @@ describe('HeadwaySparkline', () => {
     expect(within(dialog).getByText('Southbound')).toBeInTheDocument();
     expect(within(dialog).getByText('Northbound')).toBeInTheDocument();
     expect(within(dialog).getAllByTestId('full-day-direction')).toHaveLength(2);
-    // The period names show once, above the first direction.
+    // The period names show once, on the first direction's frequency chart (CIV-1094).
     expect(within(dialog).getAllByText('Midday')).toHaveLength(1);
+    const [first] = within(dialog).getAllByTestId('full-day-direction');
+    expect(within(first).getByTestId('full-day-period-labels')).toHaveTextContent('Midday');
+    // Both charts are titled in one row: Frequency on the left, Trip time on the right.
+    expect(within(dialog).getByTestId('full-day-frequency-heading')).toHaveTextContent(FREQUENCY_LABEL);
+    expect(within(dialog).getByTestId('full-day-trip-time-heading')).toHaveTextContent('Trip time');
     expect(within(dialog).queryByText(/Hover over an hour/)).toBeNull();
   });
 
@@ -381,7 +387,7 @@ describe('HeadwaySparkline', () => {
         />,
       );
       fireEvent.click(screen.getByRole('button', { name: 'Expand schedule' }));
-      const header = within(screen.getByRole('dialog')).getByTestId('full-day-grid').querySelector('.hidden.sm\\:block.pl-11')!;
+      const header = within(screen.getByRole('dialog')).getByTestId('full-day-trip-time-heading');
       const text = header.textContent;
       unmount();
       return text;
@@ -523,5 +529,51 @@ describe('HeadwaySparkline full-day link', () => {
     unmount();
     expect(window.location.search).toBe('?route=ttc%3A%3A14');
     window.history.replaceState(null, '', '/');
+  });
+});
+
+describe('layoutBandLabels (CIV-1094)', () => {
+  // 7px per character stands in for the real 12px label font.
+  const width = (text: string) => text.length * 7;
+  const shown = (chartWidth: number, phone = false) =>
+    Object.fromEntries(layoutBandLabels(PERIOD_OVERVIEW_BANDS, chartWidth, width, phone).map(l => [l.key, l.text]));
+
+  it('names every period in full where the chart is wide enough', () => {
+    expect(shown(800)).toEqual({ amPeak: 'AM peak', midday: 'Midday', pmPeak: 'PM peak', evening: 'Evening', late: 'Late', overnight: 'Overnight' });
+  });
+
+  it('shortens only the peak that would run into the next name', () => {
+    // AM peak's band (3 hours) is narrower than PM peak's (4 hours).
+    const narrow = shown(380);
+    expect(narrow.amPeak).toBe('AM');
+    expect(narrow.pmPeak).toBe('PM peak');
+  });
+
+  it('leaves off a name with no room for either form', () => {
+    expect(shown(150, true)).not.toHaveProperty('late');
+  });
+
+  it('always uses the short peaks on phones', () => {
+    const phone = shown(800, true);
+    expect(phone.amPeak).toBe('AM');
+    expect(phone.pmPeak).toBe('PM');
+  });
+
+  it('never lets two names overlap', () => {
+    for (const chartWidth of [200, 260, 330, 420, 600]) {
+      for (const phone of [false, true]) {
+        const placed = layoutBandLabels(PERIOD_OVERVIEW_BANDS, chartWidth, width, phone).map(l => {
+          const band = PERIOD_OVERVIEW_BANDS.find(b => b.key === l.key)!;
+          const start = l.alignRight ? chartWidth - width(l.text) : band.left * chartWidth + 4;
+          return [start, start + width(l.text)] as const;
+        }).sort((a, b) => a[0] - b[0]);
+        for (let i = 1; i < placed.length; i++) expect(placed[i][0]).toBeGreaterThanOrEqual(placed[i - 1][1]);
+        for (const [, end] of placed) expect(end).toBeLessThanOrEqual(chartWidth);
+      }
+    }
+  });
+
+  it('shows every name, short peaks, before the width is known', () => {
+    expect(Object.values(shown(0))).toEqual(['AM', 'Midday', 'PM', 'Evening', 'Late', 'Overnight']);
   });
 });
