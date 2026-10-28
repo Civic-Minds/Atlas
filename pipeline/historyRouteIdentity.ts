@@ -58,16 +58,94 @@ export interface IdentityPeriod {
   year: number;
   name?: string;
   termini?: Termini | null;
+  /** The route's line in the period ([lon, lat]); the stops sit on it, so it carries the mid-trip stops too. */
+  line?: number[][] | null;
+}
+
+/** A point of one line within this distance (metres) of the other line counts as on it. */
+export const SAME_PATH_M = 200;
+
+/** Metres between two [lon, lat] points (equirectangular: fine at a few hundred metres). */
+function metres(a: number[], b: number[]): number {
+  const k = Math.cos(((a[1] + b[1]) / 2) * Math.PI / 180);
+  return Math.hypot((a[0] - b[0]) * k, a[1] - b[1]) * 111_320;
+}
+
+function toSegmentM(p: number[], a: number[], b: number[]): number {
+  const k = Math.cos(p[1] * Math.PI / 180);
+  const [ax, ay, bx, by, px, py] = [a[0] * k, a[1], b[0] * k, b[1], p[0] * k, p[1]];
+  const dx = bx - ax, dy = by - ay;
+  const len = dx * dx + dy * dy;
+  const t = len > 0 ? Math.max(0, Math.min(1, ((px - ax) * dx + (py - ay) * dy) / len)) : 0;
+  return Math.hypot(px - (ax + t * dx), py - (ay + t * dy)) * 111_320;
+}
+
+/** Points every `stepM` metres along a line, ends included. */
+function sampleLine(line: number[][], stepM = 50): number[][] {
+  const out: number[][] = [line[0]];
+  for (let i = 1; i < line.length; i++) {
+    const d = metres(line[i - 1], line[i]);
+    for (let s = stepM; s < d; s += stepM) {
+      const t = s / d;
+      out.push([line[i - 1][0] + t * (line[i][0] - line[i - 1][0]), line[i - 1][1] + t * (line[i][1] - line[i - 1][1])]);
+    }
+    out.push(line[i]);
+  }
+  return out;
+}
+
+/** The share of line `a`'s length that runs within SAME_PATH_M of line `b`. */
+export function pathShareOn(a: number[][], b: number[][]): number {
+  const pts = sampleLine(a);
+  let on = 0;
+  for (const p of pts) {
+    for (let i = 1; i < b.length; i++) if (toSegmentM(p, b[i - 1], b[i]) <= SAME_PATH_M) { on++; break; }
+  }
+  return pts.length ? on / pts.length : 0;
 }
 
 export interface IdentityVerdict {
   same: boolean;
   reason: string;
   terminiM: number | null;
+  /** The share of the path in common (see sameRouteIdentity), when both sides have a line. */
+  shared?: number | null;
 }
 
-/** Is `next` the same route as `prev`? */
-export function sameRouteIdentity(prev: IdentityPeriod, next: IdentityPeriod): IdentityVerdict {
+/** Same route when at least this share of either line runs on the other (see sameRouteIdentity). */
+export const SAME_ROUTE_SHARE = 0.8;
+
+/** The long name, or '' when there is none or it is only the route number (MBTA before 2018: "21"). */
+function realName(routeKey: string | undefined, name: string | undefined): string {
+  const n = normalizeRouteName(name);
+  return n && n !== normalizeRouteName(routeKey) ? n : '';
+}
+
+/**
+ * Is `next` the same route as the segment ending in `prev` (CIV-422 redesign; Ryan: "Why not look at mid-trip stops
+ * too?")? A number is reused only when BOTH the long name changes AND the path changes: less than SAME_ROUTE_SHARE of
+ * the new line runs on any of the segment's earlier lines (and of the last line on the new one). The path is the
+ * whole line, so the stops along the trip count, and a reuse that keeps one end stop still splits; a cut-back or an
+ * extension (one line mostly on the other) and a rename on the same streets stay one route. A name that is only the
+ * route number is no name. With no line on either side, the long-name/terminus rule decides.
+ */
+export function sameRouteIdentity(prev: IdentityPeriod, next: IdentityPeriod, segmentLines: ReadonlyArray<number[][]> = [], routeKey?: string): IdentityVerdict {
+  const terminiM = prev.termini && next.termini ? Math.round(terminiDistanceM(prev.termini, next.termini)) : null;
+  const lines = [...segmentLines, ...(prev.line ? [prev.line] : [])];
+  if (!next.line || next.line.length < 2 || lines.length === 0) return sameRouteIdentityByName(prev, next);
+  let shared = prev.line ? pathShareOn(prev.line, next.line) : 0;
+  for (const l of lines) if (l.length >= 2) shared = Math.max(shared, pathShareOn(next.line, l));
+  const a = realName(routeKey, prev.name), b = realName(routeKey, next.name);
+  const renamed = !!a && !!b && a !== b && nameOverlap(a, b) < 0.5;
+  const pct = `${Math.round(shared * 100)}% of the path in common`;
+  if (!renamed) return { same: true, reason: `same long name (${pct})`, terminiM, shared };
+  return shared >= SAME_ROUTE_SHARE
+    ? { same: true, reason: `renamed, ${pct}`, terminiM, shared }
+    : { same: false, reason: `renamed and only ${pct}`, terminiM, shared };
+}
+
+/** The first prototype's rule: long name and terminus. */
+export function sameRouteIdentityByName(prev: IdentityPeriod, next: IdentityPeriod): IdentityVerdict {
   const a = normalizeRouteName(prev.name);
   const b = normalizeRouteName(next.name);
   const terminiM = prev.termini && next.termini ? Math.round(terminiDistanceM(prev.termini, next.termini)) : null;
@@ -93,25 +171,29 @@ export interface IdentitySplit {
 }
 
 /** The route key's periods cut into same-route segments, oldest first, and the cut points. */
-export function splitRouteHistory(periods: readonly IdentityPeriod[]): { segments: IdentitySegment[]; splits: IdentitySplit[] } {
+export function splitRouteHistory(periods: readonly IdentityPeriod[], routeKey?: string): { segments: IdentitySegment[]; splits: IdentitySplit[] } {
   const sorted = [...periods].sort((x, y) => x.sortKey.localeCompare(y.sortKey));
   const segments: IdentitySegment[] = [];
   const splits: IdentitySplit[] = [];
   let prev = null as IdentityPeriod | null;
+  // Every line of the current segment: a year's stored line may be another pattern of the same route.
+  let segLines: number[][][] = [];
   for (const p of sorted) {
-    const verdict = prev ? sameRouteIdentity(prev, p) : null;
+    const verdict = prev ? sameRouteIdentity(prev, p, segLines, routeKey) : null;
     if (!prev || !verdict!.same) {
       if (prev && verdict) splits.push({ fromYear: prev.year, toYear: p.year, before: prev.name ?? '', after: p.name ?? '', verdict });
       segments.push({ periodKeys: [p.periodKey], firstYear: p.year, lastYear: p.year, name: p.name });
+      segLines = [];
     } else {
       const seg = segments[segments.length - 1];
       seg.periodKeys.push(p.periodKey);
       seg.lastYear = p.year;
       seg.name = p.name ?? seg.name;
     }
+    if (p.line && p.line.length >= 2) segLines.push(p.line);
     // Compare with the latest period that has a name, so one nameless period does not hide a change.
     const last: IdentityPeriod | null = prev;
-    prev = p.name || !last ? p : { periodKey: last.periodKey, sortKey: last.sortKey, year: last.year, name: last.name, termini: p.termini ?? last.termini };
+    prev = p.name || !last ? p : { periodKey: last.periodKey, sortKey: last.sortKey, year: last.year, name: last.name, termini: p.termini ?? last.termini, line: p.line ?? last.line };
   }
   return { segments, splits };
 }

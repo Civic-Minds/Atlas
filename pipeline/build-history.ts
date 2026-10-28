@@ -444,7 +444,8 @@ async function main() {
           year: Number(e.v2.refDate.slice(0, 4)),
           name: e.v2.name,
           termini: terminiOf(shapePeriods[slug]?.get(e.periodKey)?.routes[key]?.c),
-        })));
+          line: shapePeriods[slug]?.get(e.periodKey)?.routes[key]?.c ?? null,
+        })), key);
         if (segments.length < 2) continue;
         splitCount++;
         for (const sp of splits) console.log(`  identity split ${slug}/${key}: ${sp.fromYear} "${sp.before}" -> ${sp.toYear} "${sp.after}" (${sp.verdict.reason})`);

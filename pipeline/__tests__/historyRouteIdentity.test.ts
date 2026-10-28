@@ -41,3 +41,34 @@ describe('route identity by long name and terminus (CIV-422 prototype)', () => {
     expect(terminiOf([[1, 2]])).toBeNull();
   });
 });
+
+// CIV-422 redesign: the path, not just the ends. Lines run through these points.
+const line = (...pts: Array<[number, number]>) => pts;
+const MID_NORTH: [number, number] = [-86.15, 39.82];
+const EAST: [number, number] = [-86.0, 39.79];
+const pl = (year: number, name: string, l: number[][]): IdentityPeriod => ({ periodKey: `${year}0901`, sortKey: `${year}0901`, year, name, termini: terminiOf(l), line: l });
+
+describe('route identity by the path in common (CIV-422 redesign)', () => {
+  it('splits a reuse that keeps an end stop: new name, new streets after downtown', () => {
+    const { splits } = splitRouteHistory([pl(2024, 'Castleton', line(DOWNTOWN, EAST, CASTLETON)), pl(2025, 'Broad Ripple', line(DOWNTOWN, MID_NORTH, BROAD_RIPPLE))], '19');
+    expect(splits).toHaveLength(1);
+  });
+
+  it('keeps a cut-back or an extension under a new name (the shorter line runs on the longer)', () => {
+    const long = line(DOWNTOWN, MID_NORTH, BROAD_RIPPLE);
+    expect(splitRouteHistory([pl(2019, 'Downtown Boston', long), pl(2020, 'Newton Corner', line(DOWNTOWN, MID_NORTH))], '558').splits).toEqual([]);
+    expect(splitRouteHistory([pl(2019, 'Newton Corner', line(DOWNTOWN, MID_NORTH)), pl(2020, 'Downtown Boston', long)], '558').splits).toEqual([]);
+  });
+
+  it('keeps a route whose old name was only its number (MBTA "21" -> "Ashmont - Forest Hills")', () => {
+    expect(splitRouteHistory([pl(2017, '21', line(DOWNTOWN, EAST)), pl(2018, 'Ashmont - Forest Hills', line(DOWNTOWN, MID_NORTH))], '21').splits).toEqual([]);
+  });
+
+  it('keeps a moved line under the same name, and compares with every earlier line of the route', () => {
+    expect(splitRouteHistory([pl(2018, 'East 16th St', line(DOWNTOWN, EAST)), pl(2019, 'East 16th St', line(DOWNTOWN, MID_NORTH))], '11').splits).toEqual([]);
+    // 2019's stored line is another pattern; 2020 runs on 2018's streets: one route.
+    expect(splitRouteHistory([
+      pl(2018, 'Charles River Loop', line(DOWNTOWN, EAST)), pl(2019, 'Charles River Loop', line(DOWNTOWN, MID_NORTH)), pl(2020, 'VA Hospital', line(DOWNTOWN, EAST)),
+    ], '36').splits).toEqual([]);
+  });
+});

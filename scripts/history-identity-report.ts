@@ -55,7 +55,7 @@ const rows: string[] = [];
 for (const slug of [...bySlug.keys()].sort()) {
   for (const [routeKey, periods] of [...bySlug.get(slug)!.entries()].sort(([a], [b]) => a.localeCompare(b, undefined, { numeric: true }))) {
     totalKeys++;
-    const { splits } = splitRouteHistory(periods);
+    const { splits } = splitRouteHistory(periods, routeKey);
     if (splits.length === 0) continue;
     splitKeys++;
     for (const s of splits) {
