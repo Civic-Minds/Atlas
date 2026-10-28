@@ -12,6 +12,7 @@
  * I/O and no feature access. The scripts/handcheck/stretch-departures.py oracle (`--at mid`)
  * computes the same stretches from the feed zip.
  */
+import { appendFileSync as steadyDump } from 'node:fs';
 import { PERIOD_KEYS, PERIOD_MINUTES, type PeriodKey } from '../shared/config.js';
 import { PERIOD_COVERAGE_MAX_HEADWAY } from '../shared/periodEligibility.js';
 import { DEFAULT_CRITERIA } from './defaults.js';
@@ -724,6 +725,10 @@ export function rollupDirection(d: DirectionStretches): DirectionRollup | null {
   if (!d.main) return null;
   const main = stretchPeriods(d.main);
   const tails = d.tails.map(stretchPeriods);
+  if (process.env.STEADY_DUMP) {
+    const rows = [{ role: 'main', s: d.main, p: main }, ...d.tails.map((s, i) => ({ role: `tail${i}`, s, p: tails[i] }))];
+    for (const r of rows) steadyDump(process.env.STEADY_DUMP, JSON.stringify({ slug: process.env.STEADY_SLUG, key: d.key, role: r.role, refStop: r.s.refStop, times: r.s.times, periods: r.p }) + '\n');
+  }
   // #1072, rule 3: a tail that runs only part of a period because a sibling branch takes over the
   // same cadence from it at the main stretch (HSR 16: every 30 via Wilson until 12:10, then every 30
   // via Fiddler's Green) is read at its own spacing in that period, not at its full-window wait
