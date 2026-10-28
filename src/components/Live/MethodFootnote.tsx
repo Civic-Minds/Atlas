@@ -8,9 +8,9 @@ export function OwnLine({ children, title }: { children: ReactNode; title?: stri
   return <span className="block" title={title}>{children}</span>;
 }
 
-/** A glossary line: the term in bold, a colon, then its short definition. */
+/** A glossary line: the term in bold, then its definition as the rest of the sentence ("**Late** is …"), no colon (Ryan, CIV-1075). */
 export function Term({ t, children }: { t: string; children: ReactNode }) {
-  return <><strong className="font-semibold text-[var(--text-secondary)]">{t}:</strong> {children}</>;
+  return <><strong className="font-semibold text-[var(--text-secondary)]">{t}</strong> {children}</>;
 }
 
 /**

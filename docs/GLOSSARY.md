@@ -174,6 +174,12 @@ These measures are different things. Never combine them, convert one into anothe
 | `excessWaitSec` / EWT (Live) | | "Extra wait" (footer), "riders waited X longer than the timetable implies" (row) | branch only |
 | `detectHolds` / `HoldEvent` (Live) | | "Stood still", "Standing still" | branch only; never "hold" |
 | `not_seen` (Live) | | "No vehicle reported under this trip's number" | not on card |
+| Late (Live) | `LATE_DEFINITION` | "**Late** is more than 5½ min behind schedule. This is based on the TTC's 5-minute standard, plus 30 seconds because we only record each vehicle's location once a minute." | How this is measured and the Docs glossary (E9). Each definition reads "**Term** is …", no colon after the term (CIV-1075) |
+| ahead of schedule (Live) | `aheadLine`, `earlyAtOrBelowMin` | "**Ahead** is N min or more ahead of schedule." | E10. The Live UI says "ahead", not "early" |
+| route strip delay steps (Live) | `EARLY_STEP_LABEL`, `STEP_LABELS.delay` | "Typical delay: 1+ min ahead · On time · 1–3 min behind · 3+ min behind · Not measured" | E22. "behind" under 5½ min; "late" only past it (E9) |
+| route strip bunching steps (Live) | `STEP_LABELS.bunching`, `LEGEND_LAST_STEP_TAIL` | "Bunching: Under 15% · 15–25% · 25% or more of gaps" | E23 |
+| week colours (Live) | `COLOURED_CHANGES`, `NOISE_RULE` | "**Coloured changes** are bigger than the figure's normal day-to-day range. Grey changes fall inside that range and may just be normal variation." | E17 |
+| recording gaps (Live) | `RECORDING_GAPS` | "**Recording gaps** are times our recording missed, such as when the feed went down. Trips during a gap aren't counted, and days with gaps are left out." | E18. "Where delays start" is no longer defined (E19 dropped) |
 
 ### Known mismatches
 

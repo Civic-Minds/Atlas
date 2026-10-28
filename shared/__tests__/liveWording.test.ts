@@ -22,7 +22,7 @@ describe('Live wording', () => {
   it('says 5½ min, never 5 min, wherever Late is named', () => {
     expect(LATE_THRESHOLD).toBe('more than 5½ min late');
     expect(LATE_TILE_CAPTION).toBe('of trips left the end of the line more than 5½ min late');
-    expect(LATE_DEFINITION.startsWith('more than 5½ min behind the timetable')).toBe(true);
+    expect(LATE_DEFINITION.startsWith('is more than 5½ min behind schedule')).toBe(true);
     for (const text of [LATE_THRESHOLD, LATE_TILE_CAPTION]) expect(text).not.toMatch(/\b5 min late/);
   });
 });
