@@ -79,3 +79,13 @@ describe('E6 route with no line, three paragraphs (CIV-1051)', () => {
     expect(t).toContain('If something looks off, report it with the flag on this card.');
   });
 });
+
+describe('E7 frequency allowance, two paragraphs (CIV-1051)', () => {
+  it("reads Ryan's text", () => {
+    const t = render(
+      <InfoPanel open onClose={() => {}} agencies={[]} helpContext={{ topic: 'edge-gap-allowance' }} />,
+    ).container.textContent ?? '';
+    expect(t).toContain('The first or last trip of the day can come up to 10 minutes later than usual, and the route still counts at its frequency.');
+    expect(t).toContain("Many routes start or end their day with one longer gap. Gaps in the middle of the day don't get this allowance.");
+  });
+});
