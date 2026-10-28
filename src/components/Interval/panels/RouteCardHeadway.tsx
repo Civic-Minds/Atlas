@@ -14,7 +14,6 @@ import RouteCardTitle from '../../RouteCardTitle';
 import {
   CardDirectionRow,
   CardDivider,
-  CARD_SUMMARY,
   CardSectionLabel,
   CardHelpNotice,
   CorrectedDataNotice,
@@ -197,8 +196,6 @@ export interface RouteCardHeadwayProps {
    * 5am check the Night view runs), never a daytime value.
    */
   nightView?: boolean;
-  /** Compare mode: this card's side in one facts line, "A · Weekday PM peak · every 3 min" (CIV-844). */
-  compareFacts?: string | null;
   expDateStr: string;
   hoveredBranch: HoveredBranch | null;
   setHoveredBranch: (b: HoveredBranch | null) => void;
@@ -223,7 +220,6 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
   selectedRouteOutOfFilter,
   hideFilterNotices = false,
   nightView = false,
-  compareFacts = null,
   expDateStr,
   hoveredBranch,
   setHoveredBranch,
@@ -434,8 +430,6 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
             excludeReasons={['Stop is missing, misplaced, or assigned incorrectly']}
           />
         </div>
-        {/* Compare: this map's side in one grey facts line under the title row, across the card's width (CIV-844). */}
-        {compareFacts && <p className={`${CARD_SUMMARY} whitespace-nowrap`} data-testid="compare-card-facts">{compareFacts}</p>}
       </SidebarCardHeaderBlock>
       {(<>
       {patternLabel && (

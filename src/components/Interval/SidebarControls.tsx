@@ -35,8 +35,7 @@ import { collectStopHubSiblings, getDistanceMeters } from '../../utils/stopHub';
 import { splitRouteKey } from '../../utils/routeKey';
 import { effectiveFeedExpiry, isAgencyFeedExpired } from '../../../shared/feedAvailability';
 import { trackEvent } from '../../lib/analytics';
-import type { CompareRouteRow } from './compareTypes';
-import { compareCardFacts, type CompareSide } from '../../utils/compareSides';
+import type { CompareSide } from '../../utils/compareSides';
 import { FEATURES } from '../../../shared/config';
 import { PHONE_MEDIA_QUERY, useMediaQuery } from '../../hooks/useMediaQuery';
 import { buildStopRoutes } from '../../utils/stopRoutes';
@@ -78,7 +77,6 @@ interface SidebarControlsProps {
   hoveredBranch: HoveredBranch | null;
   setHoveredBranch: (b: HoveredBranch | null) => void;
   selectedRouteOutOfFilter?: boolean;
-  compareRows?: CompareRouteRow[] | null;
   /**
    * Compare mode: each map's label and controls sit in a row at the top, so the panel starts
    * below that row instead of covering map A's settings.
@@ -201,7 +199,6 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   hoveredBranch,
   setHoveredBranch,
   selectedRouteOutOfFilter = false,
-  compareRows = null,
   compareActive = false,
   compareSideB = null,
   setCompareSideB,
@@ -921,7 +918,6 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                   selectedRouteOutOfFilter={selectedRouteOutOfFilter}
                   hideFilterNotices={nightServiceView}
                   nightView={nightServiceView}
-                  compareFacts={compareRows?.[0] ? compareCardFacts(compareRows[0]) : null}
                   expDateStr={expDateStr}
                   hoveredBranch={hoveredBranch}
                   setHoveredBranch={setHoveredBranch}
@@ -998,7 +994,6 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
             selectedRouteOutOfFilter={false}
             hideFilterNotices={false}
             nightView={false}
-            compareFacts={compareRows?.[1] ? compareCardFacts(compareRows[1]) : null}
             expDateStr={expDateStr}
             hoveredBranch={hoveredBranch}
             setHoveredBranch={setHoveredBranch}
