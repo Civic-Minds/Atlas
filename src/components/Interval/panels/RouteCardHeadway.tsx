@@ -707,7 +707,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                               headway={grade ?? undefined}
                               limited={grade == null}
                               limitedLabel={grade == null ? NO_REGULAR_SERVICE_SHORT_LABEL : undefined}
-                              subLabel={grade != null && d.nightServicePartOfRoute === true ? 'Night service on part of the route' : undefined}
+                              subLabel={grade != null && d.nightServicePartOfRoute === true ? 'Overnight service on part of the route' : undefined}
                               {...branchHoverProps(group.dirId, d.headsign, d.routeVariant)}
                             />
                           </FlaggableValue>
