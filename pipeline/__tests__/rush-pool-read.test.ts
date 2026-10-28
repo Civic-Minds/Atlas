@@ -42,9 +42,10 @@ describe('a rush-hour-only bus pattern reads what serves its stops in its own ru
 
   it('Patsaouras reads every 10-11 in the PM peak from stop 45, its own trips before it', () => {
     // Stops 1-44: the pooled list thins to every ~20 after 17:20 (gaps 18-24), so the pooled
-    // rule refuses it and the stop keeps its own value. Stop 86 is drop-off only for it.
+    // rule refuses it and the stop keeps its own value. Stop 86 is drop-off only for it, so it
+    // has no departures and no value (CIV-1071).
     expect(periodRow(row('Patsaouras Transit Plaza'), 'pmPeak'))
-      .toEqual(runs('22x24,21x20,11x17,10x24,18,10'));
+      .toEqual(runs('22x24,21x20,11x17,10x24,-,10'));
   });
 
   it('Patsaouras keeps its own values outside the PM peak, and every row-level value', () => {
@@ -52,7 +53,7 @@ describe('a rush-hour-only bus pattern reads what serves its stops in its own ru
     expect(periodRow(p, 'amPeak')).toEqual(runs('-x87'));
     expect(periodRow(p, 'midday')).toEqual(runs('-x87'));
     expect(periodRow(p, 'evening')).toEqual(runs(
-      '-x24,99x6,98,99,98x7,97x13,96x8,76x4,75x11,95,96x2,95x2,37x3,36x4'));
+      '-x24,99x6,98,99,98x7,97x13,96x8,76x4,75x11,95,96x2,95x2,37x3,36x2,-,36'));
     expect(p).toMatchObject({ headway: null, tier: '60', serviceClass: 'time-limited', routeAllDayHeadway: 10 });
     expect(p.headwayByPeriod).toMatchObject({ amPeak: null, midday: null, pmPeak: 18, evening: 36 });
     // The minimum stop values read the own pattern (#690), so they do not move either.
@@ -63,9 +64,10 @@ describe('a rush-hour-only bus pattern reads what serves its stops in its own ru
 
   it('the Division 13 line is unchanged: the rush trips never join what it reads', () => {
     const p = row('Division 13 Layover');
-    expect(periodRow(p, 'pmPeak')).toEqual(runs('23x7,22x6,21x12,20x19,16x3,11x26,10x3,11,10,11x2,10x8'));
-    expect(periodRow(p, 'amPeak')).toEqual(runs('10x6,9,10x5,9,10,9,10x55,11x17,12'));
-    expect(periodRow(p, 'midday')).toEqual(runs('10x88'));
+    // Stops 86 and 88 are drop-off only for it: no departures, no value (CIV-1071).
+    expect(periodRow(p, 'pmPeak')).toEqual(runs('23x7,22x6,21x12,20x19,16x3,11x26,10x3,11,10,11x2,10x5,-,10,-'));
+    expect(periodRow(p, 'amPeak')).toEqual(runs('10x6,9,10x5,9,10,9,10x55,11x15,-,11,-'));
+    expect(periodRow(p, 'midday')).toEqual(runs('10x85,-,10,-'));
     expect(p).toMatchObject({ headway: 10, tier: '60', serviceClass: 'regular' });
     expect(p.headwayByPeriod).toMatchObject({ amPeak: 11, midday: 10, pmPeak: 23, evening: 33 });
   });
@@ -98,7 +100,8 @@ describe('what a rush-hour-only pattern still never changes (#720, CIV-850)', ()
     const stopsById = new Map(lines.map(line => line.split(',')).map(f => [f[col.indexOf('stop_id')], { lat: Number(f[col.indexOf('stop_lat')]), lon: Number(f[col.indexOf('stop_lon')]) }]));
     expect(contiguousSharedRuns(express.stopOrder, local.stopOrder, stopsById)).toEqual([[0, 9]]);
     expect(express).toMatchObject({ serviceClass: 'time-limited', headway: null });
-    expect(periodRow(express, 'amPeak')).toEqual(runs('20x13'));
+    // Its last stop is drop-off only: no departures, no value (CIV-1071).
+    expect(periodRow(express, 'amPeak')).toEqual(runs('20x12,-'));
     expect(periodRow(express, 'pmPeak')).toEqual(runs('-x13'));
   });
 });
