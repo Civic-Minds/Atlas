@@ -19,10 +19,24 @@ describe('rowTrips (CIV-1069): a row reads its value, gap and part-period words 
 
   it('a stretch row pairs its value with the stretch\'s gap, from the same pooled departures (Sun Metro 205)', () => {
     const main = row({
-      stretchRole: 'main', stretchIndex: 0, headwayByPeriod: { midday: 15 }, maxGapByPeriod: { midday: 315 },
+      stretchRole: 'main', stretchIndex: 0, headwayByPeriod: { midday: 18 }, maxGapByPeriod: { midday: 315 },
       stretchMeta: { main: { stops: 13, refStop: 's', trips: 58, period: { midday: 18 }, maxGap: { midday: 20 } }, tails: [] },
     });
-    expect(rowTrips(main, 'midday')).toMatchObject({ value: 15, longestGap: 20 });
+    expect(rowTrips(main, 'midday')).toMatchObject({ value: 18, longestGap: 20 });
+  });
+
+  it('a row faster than its stretch keeps its own gap (NYCT R late: 13 beside the stretch\'s 165, CIV-1074 2c)', () => {
+    const r = row({
+      stretchRole: 'main', stretchIndex: 0, headwayByPeriod: { late: 13 }, maxGapByPeriod: { late: 15 },
+      stretchMeta: { main: { stops: 40, refStop: 's', trips: 90, period: { late: 20 }, maxGap: { late: 165 } }, tails: [] },
+    });
+    expect(rowTrips(r, 'late')).toMatchObject({ value: 13, longestGap: 15 });
+  });
+
+  it('a period that is not steady reads its full-window wait, not the median (CTA 9 Ashland & 95th midday, CIV-1074 2a)', () => {
+    const r = row({ headwayByPeriod: { midday: 13 }, headwayByPeriodSustained: { midday: false }, periodCoverageHeadway: { midday: 256 }, maxGapByPeriod: { midday: 256 } });
+    expect(rowTrips(r, 'midday')).toMatchObject({ value: 256, longestGap: 256 });
+    expect(rowTrips({ ...r, headwayByPeriodSustained: { midday: true } } as ShapeProperties, 'midday').value).toBe(13);
   });
 
   it('a row slower than its stretch reads one branch of it and keeps its own gap (Phoenix 35: 30 on a shared 15)', () => {
