@@ -280,7 +280,7 @@ const RUNNING_PERIOD_LABELS: Record<OnDemandPeriod, string> = {
   midday: 'midday',
   pmPeak: 'PM peak',
   evening: 'evening',
-  late: 'night',
+  late: 'late',
   overnight: 'overnight',
 };
 
