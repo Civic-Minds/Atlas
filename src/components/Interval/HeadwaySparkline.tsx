@@ -1,8 +1,8 @@
-import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { headwayToTierColor } from '../../utils/colors';
 import { useColorMode } from '../../hooks/useColorMode';
 export { headwayToTierColor };
-import { CARD_NOTE, CHART_HEADING, CHART_PERIOD_LABEL } from '../../styles';
+import { CARD_NOTE, CHART_HEADING, HEADING_GAP } from '../../styles';
 import { SPARKLINE_HOURS, SPARKLINE_HOUR_LABELS } from '../../../shared/config';
 import { PERIOD_LABELS } from '../../hooks/useIntervalStats';
 import type { TimePeriod } from '../../hooks/useIntervalStats';
@@ -17,7 +17,9 @@ import { type TripTimeSeries } from '../../utils/tripTime';
 import { syncUrlParams } from '../../utils/syncUrlParams';
 import { PHONE_MEDIA_QUERY, useMediaQuery } from '../../hooks/useMediaQuery';
 import { encodeFullDayUrlState, parseFullDayUrlState } from '../../utils/shareUrlState';
-import { HOUR_TO_PERIOD, PERIOD_BANDS, PERIOD_OVERVIEW_BANDS } from '../../utils/sparklinePeriods';
+import { HOUR_TO_PERIOD, PERIOD_BANDS } from '../../utils/sparklinePeriods';
+import { BAND_NAMES_ROW, FullDayPeriodBands } from './FullDayPeriodBands';
+export { layoutBandLabels } from './FullDayPeriodBands';
 import { headwayAxisTicks, hourBarColorHeadway, hourBarEmphasis, hourChartLitPeriod, hourChartMaxFreq, sparklineBarHeight } from '../../utils/hourChartModel';
 export { headwayAxisTicks, sparklineBarHeight };
 
@@ -67,107 +69,14 @@ function ClockLabels({ className = '' }: { className?: string }) {
 /** The full-day view's frequency chart title, beside "Trip time" (Ryan, CIV-1094). */
 export const FREQUENCY_LABEL = 'Frequency';
 
-/** A period's name, and its short form for a peak ("AM peak" -> "AM"). */
-const shortPeriodLabel = (label: string) => label.replace(/ peak$/, '');
-
-/** Space kept between a band's left edge and its name, and between two names, in px. */
-const BAND_LABEL_INSET = 4;
-const BAND_LABEL_GAP = 6;
-
-/** The order names claim space on a narrow chart: the day's main periods first, so Late is the first to go. */
-const BAND_LABEL_PRIORITY = ['amPeak', 'pmPeak', 'midday', 'evening', 'overnight', 'late'];
-
 /**
- * Which name each period band shows, given the chart's width and each text's width (CIV-1094). First, in priority
- * order, each band gets its name with the peaks in short form ("AM", "PM"), or nothing where it has no room: a name
- * starts at its band and may run past it, as long as it clears every name already placed and the chart's right edge
- * (the last band's name may instead end at that edge, still starting on its own band). Then, except on phones, each peak takes its full name
- * ("AM peak") where that still clears its neighbours. With no width known yet (or in tests), every band shows its
- * name, the peaks in short form.
+ * Review only (CIV-1094): which of the three full-day layouts to draw, from ?fdlayout=a|b|c (default a). A: rows per
+ * direction, named bands on both charts. B: the same rows, plain bands. C: a column per direction. Removed once
+ * Ryan picks one.
  */
-export function layoutBandLabels(
-  bands: readonly { key: string; label: string; left: number; width: number }[],
-  chartWidth: number,
-  textWidth: (text: string) => number,
-  phone: boolean,
-): { key: string; text: string; alignRight: boolean }[] {
-  if (chartWidth <= 0) return bands.map(band => ({ key: band.key, text: shortPeriodLabel(band.label), alignRight: false }));
-  const rank = (key: string) => (BAND_LABEL_PRIORITY.indexOf(key) + 1 || BAND_LABEL_PRIORITY.length + 1);
-  type Placed = { key: string; text: string; alignRight: boolean; start: number; end: number };
-  const placed: Placed[] = [];
-  const clear = (start: number, end: number, self?: Placed) => start >= 0 && end <= chartWidth
-    && placed.every(other => other === self || end + BAND_LABEL_GAP <= other.start || start >= other.end + BAND_LABEL_GAP);
-  const lastKey = bands[bands.length - 1]?.key;
-  for (const band of [...bands].sort((a, b) => rank(a.key) - rank(b.key))) {
-    const text = shortPeriodLabel(band.label);
-    const w = textWidth(text);
-    const start = band.left * chartWidth + BAND_LABEL_INSET;
-    if (clear(start, start + w)) placed.push({ key: band.key, text, alignRight: false, start, end: start + w });
-    // A name always starts on its own band, or it would read as the band before's.
-    else if (band.key === lastKey && chartWidth - w >= band.left * chartWidth && clear(chartWidth - w, chartWidth)) placed.push({ key: band.key, text, alignRight: true, start: chartWidth - w, end: chartWidth });
-  }
-  if (!phone) {
-    for (const label of placed) {
-      const full = bands.find(band => band.key === label.key)!.label;
-      if (full === label.text || label.alignRight) continue;
-      const end = label.start + textWidth(full);
-      if (clear(label.start, end, label)) Object.assign(label, { text: full, end });
-    }
-  }
-  return bands.flatMap(band => placed.filter(l => l.key === band.key).map(({ key, text, alignRight }) => ({ key, text, alignRight })));
-}
-
-/** The period names drawn on the full-day frequency chart's shaded bands, measured so no two overlap. */
-function BandLabels({ phone }: { phone: boolean }) {
-  const ref = useRef<HTMLDivElement | null>(null);
-  const [width, setWidth] = useState(0);
-  const [font, setFont] = useState<string | null>(null);
-  const [fontsReady, setFontsReady] = useState(false);
-  useLayoutEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const read = () => setWidth(el.getBoundingClientRect().width);
-    read();
-    const style = getComputedStyle(el);
-    setFont(`${style.fontWeight} ${style.fontSize} ${style.fontFamily}`);
-    // Measured again once the web font has loaded: a fallback font's widths differ.
-    document.fonts?.ready.then(() => setFontsReady(true));
-    if (typeof ResizeObserver === 'undefined') return;
-    const ro = new ResizeObserver(read);
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, []);
-  const context = useMemoCanvas(width > 0 ? font : null, fontsReady);
-  const labels = layoutBandLabels(PERIOD_OVERVIEW_BANDS, context ? width : 0, text => context?.measureText(text).width ?? 0, phone);
-  return (
-    <div ref={ref} className={`absolute inset-x-0 top-1 h-4 pointer-events-none ${CHART_PERIOD_LABEL}`} data-testid="full-day-period-labels" aria-hidden="true">
-      {labels.map(({ key, text, alignRight }) => {
-        const band = PERIOD_OVERVIEW_BANDS.find(b => b.key === key)!;
-        return (
-          <span
-            key={key}
-            className="absolute top-0 whitespace-nowrap leading-4"
-            style={alignRight ? { right: 0 } : { left: `calc(${band.left * 100}% + ${BAND_LABEL_INSET}px)` }}
-          >
-            {text}
-          </span>
-        );
-      })}
-    </div>
-  );
-}
-
-/** A 2D canvas context set to `font`, for measuring label widths; null until the font is known. */
-function useMemoCanvas(font: string | null, fontsReady: boolean): CanvasRenderingContext2D | null {
-  const [context, setContext] = useState<CanvasRenderingContext2D | null>(null);
-  useLayoutEffect(() => {
-    if (!font) return;
-    const ctx = document.createElement('canvas').getContext('2d');
-    if (!ctx) return;
-    ctx.font = font;
-    setContext(ctx);
-  }, [font, fontsReady]);
-  return context;
+function fullDayLayout(): 'a' | 'b' | 'c' {
+  const value = typeof window === 'undefined' ? null : new URLSearchParams(window.location.search).get('fdlayout');
+  return value === 'b' || value === 'c' ? value : 'a';
 }
 
 function formatHourTitle(h: number, headway: number): string {
@@ -373,21 +282,14 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
     <div className={`relative ${sharedMode ? '' : expanded ? 'mt-2 mb-4' : 'mt-6 mb-4'}`}>
       {allowExpand && !expanded && <ExpandButton label="Expand schedule" onClick={() => setIsExpanded(true)} />}
       <div
-        className={`relative ${expanded ? (labelRow ? 'pt-6' : 'pt-2') : 'pt-5'} ${interactive ? 'cursor-pointer select-none' : ''}`}
+        className={`relative ${expanded ? (labelRow ? BAND_NAMES_ROW : 'pt-1') : 'pt-5'} ${interactive ? 'cursor-pointer select-none' : ''}`}
         onClick={handleClick}
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
         >
-        {expanded && PERIOD_OVERVIEW_BANDS.map(band => (
-          <div
-            key={band.key}
-            // With names on, each shaded band reaches up behind its name (CIV-1094).
-            className={`absolute ${labelRow ? 'top-0' : 'top-2'} bottom-0 rounded-sm pointer-events-none odd:bg-[var(--bg-btn-hover)] even:bg-transparent opacity-40`}
-            style={{ left: `${band.left * 100}%`, width: `${band.width * 100}%` }}
-          />
-        ))}
-        {labelRow && <BandLabels phone={phone} />}
-        {yAxis && <AxisOverlay ticks={yAxis} height={H} className={labelRow ? 'top-6' : 'top-2'} />}
+        {/* With names on, each shaded band reaches up behind its name (CIV-1094). */}
+        {expanded && <FullDayPeriodBands names={labelRow} className={`inset-x-0 ${labelRow ? 'top-0' : 'top-1'} bottom-0`} />}
+        {yAxis && <AxisOverlay ticks={yAxis} height={H} className={labelRow ? 'top-6' : 'top-1'} />}
         {activeLabelKey && (
           <span className={`absolute top-0 ${CARD_NOTE} pointer-events-none ${allowExpand && !expanded ? 'right-7' : 'right-0'}`}>
             {PERIOD_LABELS[activeLabelKey]}
@@ -399,7 +301,7 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
           <div
             key={i}
             data-testid="sparkline-hover-band"
-            className={`absolute ${expanded ? (labelRow ? 'top-6' : 'top-2') : 'top-5'} bottom-0 rounded-sm pointer-events-none`}
+            className={`absolute ${expanded ? (labelRow ? 'top-6' : 'top-1') : 'top-5'} bottom-0 rounded-sm pointer-events-none`}
             style={{
               left: `${band.left * 100}%`,
               width: `${band.width * 100}%`,
@@ -530,70 +432,95 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
               </div>
             )}
             <>
-                {/* Two columns on desktop: the frequency charts on the left, the trip time charts on the right
-                    (Westbound over Eastbound when both directions show). On a phone the same cells stack. */}
-                <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 sm:gap-x-4" data-testid="full-day-grid">
-                  {/* One title row over both columns (CIV-1094); on a phone each chart is titled above itself instead.
-                      The period names sit on the first frequency chart's own bands. */}
-                  <div className={`hidden sm:block pl-11 ${CHART_HEADING} sm:col-start-1 sm:row-start-1 sm:mb-1`} data-testid="full-day-frequency-heading">{FREQUENCY_LABEL}</div>
-                  <div className={`hidden sm:block pl-11 ${CHART_HEADING} sm:col-start-2 sm:row-start-1 sm:mb-1`} data-testid="full-day-trip-time-heading">{tripTimeHeading(gridBlocks.some(option => option.tripTime?.loop))}</div>
-                  {gridBlocks.map((option, blockIndex) => {
+                {(() => {
+                  const layout = fullDayLayout();
+                  const names = layout !== 'b';
+                  const loop = gridBlocks.some(option => option.tripTime?.loop);
+                  // Each chart's title sits right above it, with its number for the hovered hour at the other end of
+                  // the same line, so nothing jumps and no line is left empty.
+                  const titleRow = (title: string, value: string, testId: string) => (
+                    <div className={`flex items-baseline justify-between gap-2 leading-4 ${CHART_HEADING} ${HEADING_GAP}`} data-testid={testId}>
+                      <span>{title}</span>
+                      <span className="text-[var(--text-muted)]" data-testid="full-day-chart-value" aria-hidden="true">{value}</span>
+                    </div>
+                  );
+                  const frequencyCell = (option: typeof gridBlocks[number]) => {
                     const hw = modalHour != null ? option.byHour[modalHour] : null;
-                    const tt = modalHour != null ? option.tripTime?.byHour[modalHour] : null;
                     return (
-                      <div key={option.key} className="contents" data-testid="full-day-direction">
-                        {bothDirections && <div className="mt-3 mb-1 sm:col-span-2 text-sm font-black text-[var(--text-primary)]">{option.label}</div>}
-                        <div className="relative pl-11">
-                          <div className={`text-left ${CHART_HEADING} sm:hidden`}>{FREQUENCY_LABEL}</div>
-                          {/* This chart's own number for the hovered hour, in a fixed spot so nothing jumps. */}
-                          <div className="h-4 text-xs font-bold leading-4 text-[var(--text-muted)]" data-testid="full-day-chart-value" aria-hidden="true">
-                            {hw != null ? headwayEvery(hw) : ''}
-                          </div>
-                          <HeadwaySparkline
-                            byHour={option.byHour}
-                            period="all"
-                            onPeriodChange={() => {}}
-                            onPeriodHover={onPeriodHover}
-                            onHourHover={onHourHover}
-                            title={title}
-                            expanded
-                            scaleMaxFreq={pairMaxFreq}
-                            sharedHour={modalHour}
-                            onSharedHour={setModalHour}
-                            showPeriodLabels={blockIndex === 0}
-                            yAxis={pairFreqTicks}
-                          />
-                          <ClockLabels />
-                        </div>
-                        {HOURS.some(h => option.tripTime?.byHour[h] != null) && <div className="relative pl-11">
-                          <TripTimeStrip
-                            above={(
-                              <>
-                                <div className="h-4 text-xs font-bold leading-4 text-[var(--text-muted)]" data-testid="full-day-chart-value" aria-hidden="true">
-                                  {tt != null ? tripTimeAbout(tt) : ''}
-                                </div>
-                                {/* Side by side, this chart lines up with the frequency chart, whose names row sits above its bars. */}
-                                {blockIndex === 0 && <div className="hidden sm:block h-4" aria-hidden="true" />}
-                              </>
-                            )}
-                            series={option.tripTime}
-                            height={pairH}
-                            serviceHours={new Set(HOURS.filter(h => option.byHour[h] != null))}
-                            hoveredHour={modalHour}
-                            onHourHover={setModalHour}
-                            className="mt-3 sm:mt-0"
-                            labelClassName="sm:hidden"
-                            barsClassName="mt-1 sm:mt-2"
-                            scaleMax={pairTripMax}
-                            axis={pairTripTicks}
-                          />
-                          {/* Every chart has its own clock row directly under it. */}
-                          <ClockLabels />
-                        </div>}
+                      <div className="relative pl-11" data-testid="full-day-frequency-cell">
+                        {titleRow(FREQUENCY_LABEL, hw != null ? headwayEvery(hw) : '', 'full-day-frequency-heading')}
+                        <HeadwaySparkline
+                          byHour={option.byHour}
+                          period="all"
+                          onPeriodChange={() => {}}
+                          onPeriodHover={onPeriodHover}
+                          onHourHover={onHourHover}
+                          title={title}
+                          expanded
+                          scaleMaxFreq={pairMaxFreq}
+                          sharedHour={modalHour}
+                          onSharedHour={setModalHour}
+                          showPeriodLabels={names}
+                          yAxis={pairFreqTicks}
+                        />
+                        <ClockLabels />
                       </div>
                     );
-                  })}
-                </div>
+                  };
+                  const tripTimeCell = (option: typeof gridBlocks[number]) => {
+                    if (!HOURS.some(h => option.tripTime?.byHour[h] != null)) return null;
+                    const tt = modalHour != null ? option.tripTime?.byHour[modalHour] : null;
+                    return (
+                      <div className="relative pl-11" data-testid="full-day-trip-time-cell">
+                        <TripTimeStrip
+                          above={titleRow(tripTimeHeading(loop), tt != null ? tripTimeAbout(tt) : '', 'full-day-trip-time-heading')}
+                          series={option.tripTime}
+                          height={pairH}
+                          serviceHours={new Set(HOURS.filter(h => option.byHour[h] != null))}
+                          hoveredHour={modalHour}
+                          onHourHover={setModalHour}
+                          className=""
+                          labelClassName="hidden"
+                          barsClassName=""
+                          scaleMax={pairTripMax}
+                          axis={pairTripTicks}
+                          bands={{ names }}
+                        />
+                        <ClockLabels />
+                      </div>
+                    );
+                  };
+                  const directionLabel = (option: typeof gridBlocks[number]) => bothDirections && (
+                    <div className={`${HEADING_GAP} text-sm font-black text-[var(--text-primary)]`}>{option.label}</div>
+                  );
+                  return layout === 'c' ? (
+                    // C: a column per direction, Frequency over Trip time in each.
+                    <div className={`mt-3 grid grid-cols-1 gap-y-4 ${bothDirections ? 'sm:grid-cols-2 sm:gap-x-4' : ''}`} data-testid="full-day-grid">
+                      {gridBlocks.map(option => (
+                        <div key={option.key} data-testid="full-day-direction">
+                          {directionLabel(option)}
+                          <div className="flex flex-col gap-y-3">
+                            {frequencyCell(option)}
+                            {tripTimeCell(option)}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    // A and B: a row per direction, Frequency beside Trip time. On a phone the two stack.
+                    <div className="mt-3 flex flex-col gap-y-4" data-testid="full-day-grid">
+                      {gridBlocks.map(option => (
+                        <div key={option.key} data-testid="full-day-direction">
+                          {directionLabel(option)}
+                          <div className="grid grid-cols-1 gap-y-3 sm:grid-cols-2 sm:gap-x-4">
+                            {frequencyCell(option)}
+                            {tripTimeCell(option)}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  );
+                })()}
                 {/* Screen-reader text only: the hovered hour once, then each direction's frequency and
                     trip time in their existing wording. Nothing visible, so the dialog reserves no space. */}
                 <div className="sr-only" aria-live="polite" data-testid="full-day-readout">
