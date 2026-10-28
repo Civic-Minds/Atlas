@@ -6,7 +6,7 @@ import { getAgencyBounds, type getRegionalView } from '../../../utils/regionView
 import { splitRouteKey } from '../../../utils/routeKey';
 import { fitTargetForPoints, routeFitTarget } from '../../../utils/routeFitTarget';
 import { lineCoordinates } from '../../../../shared/routeGeometry';
-import { cardBesideMap, routeFitStep, selectionFramePadding } from './routeFraming';
+import { cardBesideMap, paddedCenter, routeFitStep, selectionFramePadding } from './routeFraming';
 import { shouldApplyResetView } from './resetView';
 
 export interface SelectionFramingInput {
@@ -140,10 +140,11 @@ export function useSelectionFraming(
       map.fitBounds(target.bounds, { padding, maxZoom: 14 });
       fittedRouteRef.current = fitKey;
     } else if (target?.kind === 'point') {
+      // Padding goes into the centre so the camera doesn't keep it for later fits (routeFraming).
+      const zoom = Math.max(map.getZoom(), 14);
       map.flyTo({
-        center: target.center,
-        zoom: Math.max(map.getZoom(), 14),
-        padding,
+        center: paddedCenter(target.center, zoom, padding),
+        zoom,
         duration: 900,
         essential: true,
       });
