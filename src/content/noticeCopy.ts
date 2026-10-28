@@ -58,11 +58,14 @@ export function selectedRouteFilterNotice(options: {
   return `${lead}${clauses.map((clause, i) => (i === 0 && clause.startsWith('with') ? `, ${clause}` : `, and ${clause}`)).join('')}.`;
 }
 
+// N8 no-trips-in-period and N11 not-in-period (CIV-1077: one sentence): "This route has no scheduled trips from 6–9 AM."
+const routeNoTripsText = (when: string) => `This route has no scheduled trips ${when}.`;
+
 // N8 no-trips-in-period, N9 limited-in-period
 export function periodServiceNotice(periodRange: string, partial: boolean, activeRange?: string): string {
   return partial
     ? `This route runs only from ${keepRangeTogether(activeRange || periodRange)} in this period. No frequency is shown.`
-    : `This route has no scheduled trips from ${keepRangeTogether(periodRange)}.`;
+    : routeNoTripsText(`from ${keepRangeTogether(periodRange)}`);
 }
 
 // N10 uneven-gaps
@@ -83,7 +86,7 @@ export const BOOKING_REQUIRED_NOTICE = 'Rides on this route must be booked ahead
 export function selectedRouteOutsideFilterNotice(maxHeadway: number, periodRange: string | null): string {
   const when = periodRange ? keepRangeTogether(periodRange) : null;
   return maxHeadway === Infinity
-    ? (when ? `This route has no scheduled trips from ${when}.` : 'This route has no scheduled trips all day.')
+    ? routeNoTripsText(when ? `from ${when}` : 'all day')
     // Non-breaking hyphen (U+2011) keeps "15-minute" on one line instead of wrapping after "15-".
     : `This route doesn't meet the ${maxHeadway}\u2011minute filter ${when ? `for all of ${when}` : 'all day'}.`;
 }
@@ -198,11 +201,13 @@ export const FIRST_LAST_TRIP_ALLOWANCE_HINT = "This route's frequency allows a s
 /** A route whose line had a confirmed shape problem in the source feed (shared/routeDataQuality.ts has the code). */
 export const ROUTE_DATA_QUALITY_WARNING_MESSAGE =
   "This route's line on the map may be incomplete because of an error in the agency's data.";
+/** N108, N20 and E4's lead (CIV-1077: one sentence): "This agency is only available on Atlas beta." */
+const onlyOnBetaText = (subject: string) => `${subject} is only available on Atlas beta.`;
 // N108 beta-agency (replaces N19's wording; Ryan)
-export const BETA_ROLLOUT_NOTICE = 'This agency is only available on Atlas beta.';
+export const BETA_ROLLOUT_NOTICE = onlyOnBetaText('This agency');
 // N20 beta-on-demand
 /** The same for an on-demand service on the beta site; Ryan's approval named the agency notice only, so this one is unchanged. */
-export const BETA_SERVICE_ROLLOUT_NOTICE = 'On-demand service is only available on Atlas beta.';
+export const BETA_SERVICE_ROLLOUT_NOTICE = onlyOnBetaText('On-demand service');
 /** N20 and N108's link (Ryan): the same page on the beta site; never preview, and not shown on beta itself. */
 export const VIEW_ON_BETA = 'View';
 /** The agency's rollout notice: its own (an on-demand service's), else the beta-only agency one. */
@@ -246,7 +251,7 @@ export const networksFailedHint = (names: readonly string[]) => `${joinList(name
 // N45 networks-loading
 export const networksLoadingText = (loaded: number, requested: number) => `Loading ${loaded} of ${requested} agencies…`;
 // N34 on-demand-failed
-export const ON_DEMAND_AREAS_FAILED = "On-demand areas couldn't load.";
+export const ON_DEMAND_AREAS_FAILED = loadErrorText('on-demand areas');
 // N33 removed (Ryan, 2026-10-27: scheduled service and Live carry no such notice; CIV-1063 adds a per-agency one).
 // N47 link-copied
 export const LOCATION_URL_COPIED = 'Location link copied.';
@@ -264,10 +269,12 @@ export const LOCATION_TIMED_OUT = 'Finding your location took too long. Try agai
 export const LOCATION_UNAVAILABLE = "Your location couldn't be found. Check your device's location services.";
 
 // ---- Map image export ----
+/** N57 and N58 open with the same sentence (CIV-1077). */
+const MAP_STILL_LOADING = 'The map is still loading.';
 // N58 export-timeout, N59 export-no-routes, N60 export-failed-networks
 /** Why an image can't be saved yet, by reason (utils/mapExport.ts). */
 export const MAP_EXPORT_BLOCKED_MESSAGES = {
-  timeout: 'The map is still loading. Try again in a moment to get every route in the image.',
+  timeout: `${MAP_STILL_LOADING} Try again in a moment to get every route in the image.`,
   // Only when the view has no route data; routes hidden by filters still save.
   'no-routes': "There's no transit data in this view to save. Move the map to an area with service and try again.",
   'failed-networks': "Some agencies' routes didn't load. Reload the page and try again to get every route in the image.",
@@ -275,7 +282,7 @@ export const MAP_EXPORT_BLOCKED_MESSAGES = {
 // N61 export-not-ready
 export const MAP_EXPORT_NOT_READY = "The map wasn't ready. Try again in a moment.";
 // N57 export-waiting
-export const MAP_EXPORT_WAITING = 'The map is still loading. The image will save once every route is drawn.';
+export const MAP_EXPORT_WAITING = `${MAP_STILL_LOADING} The image will save once every route is drawn.`;
 
 // ---- Site ----
 // N62 update-available
@@ -307,17 +314,17 @@ export const stopNoRoutesNotice = (periodRange: string) => `No routes stop here 
 // N36 stop-not-found (Ryan)
 export const STOP_NOT_FOUND = "This stop couldn't be found. It may have been moved or removed.";
 // N51 night-failed (Ryan)
-export const NIGHT_LOAD_FAILED = "Overnight service couldn't load.";
+export const NIGHT_LOAD_FAILED = loadErrorText('overnight service');
 /** N52 night-empty (Ryan): the Night view's own rule, fixed at 2-5 AM (FREQUENCY_RULES rule 10), at its 30 or 60. A real search with no match keeps N52's old text. */
 export const nightNoRoutesNotice = (frequency: number) => `No routes here run every ${frequency} min or better from 2–5 AM.`;
 // N54 history-failed (Ryan; with RETRY_HINT in the sidebar)
-export const HISTORY_LOAD_FAILED = "History couldn't load.";
+export const HISTORY_LOAD_FAILED = loadErrorText('history');
 // N55 history-route-not-covered (Ryan)
 export const HISTORY_ROUTE_NOT_COVERED = 'This route has no past schedules in History yet.';
 // N18 route-not-found (Ryan)
 export const ROUTE_NOT_FOUND = "This route couldn't be found. It may have been renumbered or removed.";
 // N27 agency-routes-failed (Ryan)
-export const AGENCY_ROUTES_FAILED = "This agency's routes couldn't load. Check your connection and try again.";
+export const AGENCY_ROUTES_FAILED = `${loadErrorText("this agency's routes")} ${RETRY_HINT}`;
 // N30 agency-not-found (Ryan)
 export const AGENCY_NOT_FOUND = "This agency couldn't be found.";
 // N25 listing-ended (Ryan's exact text, CIV-1011; not shown anywhere yet)
@@ -344,7 +351,7 @@ export type HelpTopic = keyof typeof EXPLAINERS;
 export const newScheduleDataLead = (agencyName: string, onMapOn?: string | null) =>
   `${agencyNames(agencyName).card.primary}'s new schedule went on the map${onMapOn ? ` on ${onMapOn}` : ''}. It may have errors we haven't found yet.`;
 // E4
-export const betaRolloutLead = (agencyName: string) => `${agencyNames(agencyName).card.primary} is only available on Atlas beta.`;
+export const betaRolloutLead = (agencyName: string) => onlyOnBetaText(agencyNames(agencyName).card.primary);
 // E5
 export const ROUTE_DATA_QUALITY_LEAD = "Part of this route's line on the map may be missing or drawn in the wrong place.";
 // E7: 10 minutes is EDGE_GAP_ALLOWANCE_MINUTES (pipeline/transit-phase2.ts).
