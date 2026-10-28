@@ -2,7 +2,7 @@ import type { DayType } from '../../shared/dayTypes';
 import type { TimePeriod } from '../hooks/useIntervalStats';
 import { describeDayAndPeriod } from './mapExportDetails';
 import { headwayAbout, headwayFilterLabel } from './headwayText';
-import { NO_REGULAR_SERVICE_LABEL } from './effectiveHeadway';
+import { NO_REGULAR_SERVICE_SHORT_LABEL } from './effectiveHeadway';
 
 /** One side of compare mode: its own day, time and frequency threshold (CIV-19). */
 export interface CompareSide {
@@ -49,54 +49,17 @@ export interface CompareRowFacts {
 
 function routeFrequencyWords(row: CompareRowFacts): string {
   if (!row.runs) return 'no service';
-  if (row.headway == null) return NO_REGULAR_SERVICE_LABEL;
+  if (row.headway == null) return NO_REGULAR_SERVICE_SHORT_LABEL;
   return headwayAbout(row.headway);
 }
 
-const capitalize = (text: string) => text.charAt(0).toUpperCase() + text.slice(1);
-
 /**
- * The route card's compare section in plain words.
- * - Same day and time on both sides: the route's frequency once ("Every 16 min"), then which
- *   maps draw it ("On map B (≤20 min) · not on map A (≤10 min)").
- * - Day or time differ: one line per side with that side's own frequency
- *   ("A · Weekday midday: every 16 min, on map").
+ * A compare card's one grey facts line under its title (CIV-844, Ryan): the side, that side's day and time, and the
+ * route's frequency there, "A · Weekday PM peak · every 3 min". Each map's card shows its own side.
  */
-export function compareCardSummary(rows: readonly CompareRowFacts[]): { headline: string | null; lines: string[] } {
-  if (rows.length !== 2) return { headline: null, lines: [] };
-  const [a, b] = rows;
-  const sameTime = a.settings.day === b.settings.day && a.settings.period === b.settings.period;
-  if (sameTime) {
-    const ordered = [...rows].sort((x, y) => Number(y.passes) - Number(x.passes));
-    const line = ordered
-      .map(row => `${row.passes ? 'on' : 'not on'} map ${row.label} (${frequencyWords(row.settings.maxHeadway)})`)
-      .join(' · ');
-    return { headline: capitalize(routeFrequencyWords(a)), lines: [capitalize(line)] };
-  }
-  const frequencyDiffers = a.settings.maxHeadway !== b.settings.maxHeadway;
-  const lines = rows.map(row => {
-    const title = capitalize(compareSideLabel(row.settings)) + (frequencyDiffers ? ` · ${frequencyWords(row.settings.maxHeadway)}` : '');
-    return `${row.label} · ${title}: ${routeFrequencyWords(row)}, ${row.passes ? 'on map' : 'not on map'}`;
-  });
-  return { headline: null, lines };
-}
-
-/** Longest side value kept whole on one line ("every 120 min, not on map"). */
-const COMPARE_VALUE_NOWRAP_MAX = 26;
-
-/**
- * A side's line wraps between its title and its value, never inside a short value, so "on map" never sits alone on a
- * line (CIV-844): "A · Weekday PM peak:" then "every 3 min, on map". A long value keeps only its last word with
- * "on map". Same words, non-breaking spaces only.
- */
-export function compareLineNoOrphan(line: string): string {
-  const at = line.lastIndexOf(': ');
-  if (at < 0) return line;
-  const value = line.slice(at + 2);
-  const kept = value.length <= COMPARE_VALUE_NOWRAP_MAX
-    ? value.replace(/ /g, '\u00A0')
-    : value.replace(/ (\S+, (?:not )?on) (map)$/, (_m, last: string, map: string) => `\u00A0${last.replace(/ /g, '\u00A0')}\u00A0${map}`);
-  return `${line.slice(0, at + 2)}${kept}`;
+export function compareCardFacts(row: CompareRowFacts): string {
+  const title = compareSideLabel(row.settings);
+  return `${row.label} · ${title.charAt(0).toUpperCase()}${title.slice(1)} · ${routeFrequencyWords(row)}`;
 }
 
 /**
