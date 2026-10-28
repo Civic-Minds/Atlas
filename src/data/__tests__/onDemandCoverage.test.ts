@@ -47,7 +47,7 @@ describe('on-demand coverage notes (CIV-23)', () => {
 
   it('lists only services confirmed open to the general public (CIV-1063)', () => {
     for (const slug of ['dart-first-state', 'squamish', 'kelowna']) expect(ON_DEMAND_NOT_MAPPED[slug], slug).toBeDefined();
-    for (const slug of ['rts', 'dutchess', 'cornwall', 'sjsr']) expect(ON_DEMAND_NOT_MAPPED[slug], slug).toBeUndefined();
+    for (const slug of ['rts', 'dutchess', 'cornwall', 'sjsr', 'codiac', 'mcts', 'trimet', 'lavta']) expect(ON_DEMAND_NOT_MAPPED[slug], slug).toBeUndefined();
   });
 
   it('only names agencies Atlas has', () => {
