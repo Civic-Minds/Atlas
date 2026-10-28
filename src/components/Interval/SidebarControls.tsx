@@ -4,7 +4,7 @@ import { useColorMode } from '../../hooks/useColorMode';
 import type { ShapeProperties, TimePeriod, DayType, HoveredBranch, ViewportBounds } from '../../hooks/useIntervalStats';
 import type { Agency } from '../../App';
 import { findVariantFamily } from '../../utils/routeVariants';
-import { routeLabels, searchOverlayHidesPanel, comparePanelTop } from '../../utils/format';
+import { routeLabels, searchOverlayHidesPanel, comparePanelTop, COMPARE_PANEL_LEFT } from '../../utils/format';
 import { agencyNames } from '../../utils/agencyName';
 import { routeListDisplay, type RouteListDisplay } from '../../utils/effectiveHeadway';
 import { combineSuggestedRouteNames, suggestedRouteGroupKey } from '../../utils/routeSuggestion';
@@ -810,7 +810,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         : `${SIDEBAR_CARD_SLOT} ${searchOverlayHidesPanel(searchFocused, query) ? Z_DROPDOWN : Z_PANEL} ${SIDEBAR_PANEL_WIDTH} ${phonePanelWidth} ${SIDEBAR_CARD_MAX_H} flex flex-col gap-3 transition-[opacity,transform] duration-200 ease-out ${panelVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2 pointer-events-none'}`}
       style={sheetMode ? undefined : {
         ...sidebarFrameStyle(sidebarLeft, matchSearchBarWidth ? searchBarWidth : undefined),
-        ...(compareTop != null ? { top: `${compareTop}px`, maxHeight: `calc(100vh - ${compareTop + 64}px)` } : {}),
+        ...(compareTop != null ? { top: `${compareTop}px`, maxHeight: `calc(100vh - ${compareTop + 64}px)`, '--sidebar-left': `${COMPARE_PANEL_LEFT}px` } : {}),
       }}
     >
       {searchFocused && query === '' && (
