@@ -46,6 +46,7 @@ export function useSelectionFraming(
   // Re-runs the route fit while the card it frames against is not in place yet (framePadding gives null).
   const [cardWait, setCardWait] = useState(0);
   const cardWaitsRef = useRef(0);
+  const cardWaitKeyRef = useRef<string | null>(null);
 
   // Fly to selected agency when chosen from lists/panels (e.g. Data list in InfoPanel)
   useEffect(() => {
@@ -111,6 +112,7 @@ export function useSelectionFraming(
     if (!map || !mapLoaded) return;
     if (!selectedRoute) {
       fittedRouteRef.current = null;
+      cardWaitsRef.current = 0;
       return;
     }
     // Direction hover changes filtered layer data, but it is not a new route
@@ -119,6 +121,11 @@ export function useSelectionFraming(
     // once for that card, or the fit made for the regular card leaves the route under Live's wider card. Phones
     // keep the first fit: it already clears the bottom sheet, and Live's sheet isn't open yet at the hand-off.
     const fitKey = `${selectedRoute}|${framePadding && cardBesideMap(map) ? 'card' : 'map'}`;
+    // A new route gets the whole wait for the card, whatever an earlier one used.
+    if (cardWaitKeyRef.current !== fitKey) {
+      cardWaitKeyRef.current = fitKey;
+      cardWaitsRef.current = 0;
+    }
     const step = routeFitStep(fitKey, fittedRouteRef.current, vehicleCardOpen);
     if (step === 'skip') return;
     if (step === 'hold') {
