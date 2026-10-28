@@ -214,7 +214,7 @@ export default function NightService({ active, sidebarLeft, searchBarWidth, laye
       <Panel sidebarSurface data-report-anchor="true" className="min-h-0 flex-1">
         <PanelTitleBar>
           <Moon className="w-3 h-3 text-[var(--text-dim)] shrink-0" />
-          <span className={PANEL_TITLE}>Night Service</span>
+          <span className={PANEL_TITLE}>Overnight service</span>
           {/* The list shows data, so it has the report flag (CIV-932); the negative margin keeps the bar's height. */}
           <div className="ml-auto -my-1">
             <CardReportButton

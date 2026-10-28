@@ -92,7 +92,7 @@ export function describeHeadwayFilter(maxHeadway: number): string {
 }
 
 function periodPhrase(period: TimePeriod): string {
-  // "AM Peak" -> "AM peak", "Midday" -> "midday", "All day" -> "all day".
+  // "AM peak" stays, "Midday" -> "midday", "All day" -> "all day".
   return PERIOD_LABELS[period]
     .split(' ')
     .map(word => (/^[AP]M$/.test(word) ? word : word.toLowerCase()))
@@ -136,7 +136,7 @@ function filterLine(state: MapExportState): string | null {
       ].filter(Boolean).join(' · ') || null;
     }
     case 'night':
-      return state.nightServiceFrequency ? `Night service ${headwayOrBetter(state.nightServiceFrequency)}` : null;
+      return state.nightServiceFrequency ? `Overnight service ${headwayOrBetter(state.nightServiceFrequency)}` : null;
     default:
       return null;
   }

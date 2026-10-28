@@ -181,7 +181,7 @@ export const MAP_KEY_SELECTED = 'Selected / qualifying';
 // K3 frequency-key other
 export const MAP_KEY_OTHER = 'Other routes';
 // K4 night-key (also the exported image's key)
-export const MAP_KEY_NIGHT = 'Night service';
+export const MAP_KEY_NIGHT = 'Overnight service';
 
 // ---- Route card ----
 // N1 weekday-variation
@@ -307,7 +307,7 @@ export const stopNoRoutesNotice = (periodRange: string) => `No routes stop here 
 // N36 stop-not-found (Ryan)
 export const STOP_NOT_FOUND = "This stop couldn't be found. It may have been moved or removed.";
 // N51 night-failed (Ryan)
-export const NIGHT_LOAD_FAILED = "Night service couldn't load.";
+export const NIGHT_LOAD_FAILED = "Overnight service couldn't load.";
 /** N52 night-empty (Ryan): the Night view's own rule, fixed at 2-5 AM (FREQUENCY_RULES rule 10), at its 30 or 60. A real search with no match keeps N52's old text. */
 export const nightNoRoutesNotice = (frequency: number) => `No routes here run every ${frequency} min or better from 2–5 AM.`;
 // N54 history-failed (Ryan; with RETRY_HINT in the sidebar)

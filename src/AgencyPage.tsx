@@ -22,7 +22,7 @@ import { AGENCY_INDEX_PATH, agencyIndexRegionHref } from '../shared/agencyIndex'
 import { areaPagePath } from '../shared/areas';
 import { andOthers } from '../shared/overflowText';
 import { routeListHeadwayText } from './utils/effectiveHeadway';
-import { ATLAS_MODE } from '../shared/config';
+import { ATLAS_MODE, PERIOD_LABELS } from '../shared/config';
 import DocsPageLayout from './components/ui/DocsPageLayout';
 import ArrowLink from './components/ui/ArrowLink';
 import { PageTitle, SectionTitle } from './components/ui/PageTitle';
@@ -154,11 +154,11 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
                     rowKey={r => `${r.name}-${r.longName ?? ''}`}
                     columns={[
                       { key: 'route', header: 'Route', rowHeader: true, className: 'font-normal', cell: r => <RouteNameCell shortName={r.name} longName={r.longName} mode={r.mode} agencyName={agency.name} /> },
-                      { key: 'am', header: 'AM peak', cell: r => cell('am', r) },
-                      { key: 'midday', header: 'Midday', cell: r => cell('midday', r) },
-                      { key: 'pm', header: 'PM peak', cell: r => cell('pm', r) },
-                      { key: 'evening', header: 'Evening', cell: r => cell('evening', r) },
-                      { key: 'overnight', header: 'Overnight', cell: r => cell('overnight', r) },
+                      { key: 'am', header: PERIOD_LABELS.amPeak, cell: r => cell('am', r) },
+                      { key: 'midday', header: PERIOD_LABELS.midday, cell: r => cell('midday', r) },
+                      { key: 'pm', header: PERIOD_LABELS.pmPeak, cell: r => cell('pm', r) },
+                      { key: 'evening', header: PERIOD_LABELS.evening, cell: r => cell('evening', r) },
+                      { key: 'overnight', header: PERIOD_LABELS.overnight, cell: r => cell('overnight', r) },
                     ]}
                   />
               </div>
