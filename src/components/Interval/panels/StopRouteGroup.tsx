@@ -55,8 +55,10 @@ export default function StopRouteGroup({
     }))
     .filter(item => item.label)
     .sort((a, b) => a.directionId - b.directionId);
-  // The route line's own value, only where the route comes more often than any one destination (stopRouteLineHeadway).
-  const routeHeadway = stopRouteLineHeadway(items, period);
+  // CIV-1078: where a direction's destinations share the stop, the route card's "Shared stretch" row carries their
+  // combined value above that direction's rows (stopRouteLineHeadway: only where it is better than every destination).
+  const directionIds = [...new Set(items.map(item => item.directionId))];
+  const sharedByDirection = new Map(directionIds.map(dirId => [dirId, stopRouteLineHeadway(items.filter(item => item.directionId === dirId), period)]));
 
   if (items.length === 0) return null;
 
@@ -74,7 +76,6 @@ export default function StopRouteGroup({
       <CardSummaryRow
         label={routeLabel}
         onClick={() => onOpenRoute(rKey)}
-        headway={routeHeadway}
         {...(setHoveredBranch ? {
           onHoverStart: () => setHoveredBranch({ routeKey: rKey }),
           onHoverEnd: () => setHoveredBranch(null),
@@ -82,10 +83,29 @@ export default function StopRouteGroup({
         } : {})}
       />
       <SidebarCardListRows className="space-y-1 mt-0.5">
-        {items.map(item => {
+        {items.flatMap((item, i) => {
+          const sharedHeadway = sharedByDirection.get(item.directionId);
+          const sharedHovered = !!hoveredBranch && hoveredBranch.routeKey === rKey
+            && hoveredBranch.directionId === item.directionId && hoveredBranch.headsign == null;
+          // The direction's first row: the shared row goes above it, as on the route card (CIV-937).
+          const sharedRow = sharedHeadway != null && items[i - 1]?.directionId !== item.directionId ? [
+            <CardDirectionRow
+              key={`${rKey}::${item.directionId}::shared`}
+              label="Shared stretch"
+              headway={sharedHeadway}
+              live={live}
+              onClick={() => onOpenRoute(rKey)}
+              {...(setHoveredBranch ? {
+                onHoverStart: () => setHoveredBranch({ routeKey: rKey, directionId: item.directionId }),
+                onHoverEnd: () => setHoveredBranch(null),
+                branchHovered: sharedHovered,
+                branchDimmed: !!hoveredBranch && !sharedHovered && !routeHovered,
+              } : {})}
+            />,
+          ] : [];
           const hovered = !!hoveredBranch && hoveredBranch.routeKey === item.rKey
             && hoveredBranch.directionId === item.directionId && hoveredBranch.headsign === (item.headsign ?? undefined);
-          return (
+          return [...sharedRow, (
             <CardDirectionRow
               key={`${item.rKey}::${item.directionId}::${item.headsign ?? ''}`}
               label={item.label}
@@ -103,7 +123,7 @@ export default function StopRouteGroup({
                 branchDimmed: !!hoveredBranch && !hovered && !routeHovered,
               } : {})}
             />
-          );
+          )];
         })}
       </SidebarCardListRows>
     </div>
