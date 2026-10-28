@@ -8,6 +8,11 @@ on:
         required: true
         default: '10'
         type: string
+      v2:
+        description: 'Verify the History v2 build (ATLAS_HISTORY_V2=1) instead of the published default build. Read-only either way.'
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: read
@@ -35,6 +40,7 @@ jobs:
         run: npm run build-history -- --verify-only
         env:
           HISTORY_DOWNLOAD_CONCURRENCY: ${{ inputs.concurrency }}
+          ATLAS_HISTORY_V2: ${{ inputs.v2 && '1' || '' }}
           R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
           R2_BUCKET_NAME: ${{ secrets.R2_BUCKET_NAME }}
           R2_PUBLIC_URL: ${{ secrets.R2_PUBLIC_URL }}
