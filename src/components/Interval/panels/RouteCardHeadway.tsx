@@ -34,6 +34,7 @@ import { hasDirectionPeriodService, NO_REGULAR_SERVICE_LABEL, NO_REGULAR_SERVICE
 import { branchDisplayHourHeadway, branchDisplayPeriodHeadway, buildRouteServiceSummary } from '../../../utils/routeFacts';
 import { branchStackColor } from '../../../utils/colors';
 import { unevenPeriodMaxGap } from '../../../utils/routeCardUneven';
+import { rowTrips } from '../../../utils/rowTrips';
 import { routeCardRowValue } from '../../../utils/routeCardRowValue';
 import {
   dirIdNum,
@@ -264,7 +265,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
   const noRegularLabel = allDay?.limited ? 'limited' : NO_REGULAR_SERVICE_LABEL;
   const selectedPeriod = period !== 'all' ? TIME_PERIODS.find(p => p.key === period) : undefined;
   const hasPeriodService = period === 'all' || directionGroups.some(group =>
-    group.realTier.some(direction => routeCardDisplayHeadway(direction, period) != null) ||
+    group.realTier.some(direction => rowTrips(direction, period).value != null) ||
     group.span.length > 0,
   );
   const hasPartialPeriodService = selectedPeriod != null && !hasPeriodService && currentRoute.directions.some(direction =>
@@ -336,7 +337,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
         // whole job is completeness, so a branch with real data must never be silently dropped
         // just because it has nothing distinctive to say (#300). Fall back to something, not null.
         const reportLabel = label || direction.headsign?.trim() || `Direction ${direction.directionId ?? gi}`;
-        const headway = routeCardDisplayHeadway(direction, period);
+        const headway = rowTrips(direction, period).value;
         // Not "no scheduled service" -- null means the pipeline didn't compute a value for this
         // period, which can happen even when real service exists (#297). Don't assert absence.
         const range = routeCardDisplayHeadwayRange(direction, period);
@@ -353,7 +354,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
     // CIV-82: pooled shared-stretch cadence from real departures, when the data has it.
     const shared = sharedStretchHeadway(agencyFeatures, group.realTier, period, maxHeadway);
     const branchHeadways = [...new Set(group.realTier
-      .map(direction => routeCardDisplayHeadway(direction, period))
+      .map(direction => rowTrips(direction, period).value)
       .filter((v): v is number => v != null))].sort((a, b) => a - b);
     const sharedLines = shared && branchHeadways.length > 0
       ? [`- Shared stretch ${headwayAbout(shared.headway)}; each branch ${branchHeadways.length === 1 ? headwayAbout(branchHeadways[0]) : headwayAboutRange(branchHeadways[0], branchHeadways[branchHeadways.length - 1])}`]
@@ -602,12 +603,14 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                 ? selectedRouteOutsideFilterNotice(Infinity)
                 : selectedPeriod && activePeriodRangeText && showPartPeriodNotice
                 ? selectedRouteFilterNotice({
-                  headway: partPeriodNoticeHeadway(
-                    contract?.filterValue,
-                    displayGroups.flatMap(g => g.realTier).map(d => routeCardRowValue(d, {
+                  // CIV-1069: the notice names the rows' own value (the slowest row), not the route's filter value,
+                  // which also counts the wait before the first trip; CIV-975's rule still checks it against every row.
+                  headway: (() => {
+                    const rowHeadways = displayGroups.flatMap(g => g.realTier).map(d => routeCardRowValue(d, {
                       period, hoveredHour: null, stretchMode, allDay, contract, noRegularService, maxHeadway,
-                    }).headway),
-                  ),
+                    }).headway).filter((h): h is number => typeof h === 'number');
+                    return partPeriodNoticeHeadway(rowHeadways.length > 0 ? Math.max(...rowHeadways) : null, rowHeadways);
+                  })(),
                   activeRange: activePeriodRangeText,
                   periodRange: formatPeriodRangeLong(selectedPeriod.startHour, selectedPeriod.endHour),
                 })

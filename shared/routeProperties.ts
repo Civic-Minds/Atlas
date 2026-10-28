@@ -105,10 +105,10 @@ export interface RouteProperties {
   stretchRole?: 'main' | 'tail' | 'variant';
   /** 0 for the main stretch; a tail's index into stretchMeta.tails. Absent for variants. */
   stretchIndex?: number;
-  /** CIV-321 S2: period = each stretch's own filter value per period (same rules as a whole route); noRegular = periods its card row reads "no regular service" (one gap, or under three departures). */
+  /** CIV-321 S2: period = each stretch's own filter value per period (same rules as a whole route); maxGap = the longest gap of the same departures (CIV-1069); noRegular = periods its card row reads "no regular service" (one gap, or under three departures). */
   stretchMeta?: {
-    main: { stops: number; refStop: string; trips: number; period?: Partial<Record<PeriodKey, number | null>>; noRegular?: PeriodKey[] } | null;
-    tails: Array<{ refStop: string; stops: number; km: number; trips: number; period?: Partial<Record<PeriodKey, number | null>>; noRegular?: PeriodKey[]; notThrough?: PeriodKey[] }>;
+    main: { stops: number; refStop: string; trips: number; period?: Partial<Record<PeriodKey, number | null>>; maxGap?: Partial<Record<PeriodKey, number | null>>; noRegular?: PeriodKey[] } | null;
+    tails: Array<{ refStop: string; stops: number; km: number; trips: number; period?: Partial<Record<PeriodKey, number | null>>; maxGap?: Partial<Record<PeriodKey, number | null>>; noRegular?: PeriodKey[]; notThrough?: PeriodKey[] }>;
   };
   /** The row's night grade (pipeline/process-core.ts): it passes the 2am to 5am check at 30 or 60 minutes; nightService is the older 60. */
   nightService30?: boolean;
