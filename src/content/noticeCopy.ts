@@ -159,6 +159,20 @@ export const storyMapFailedText = (agencyName: string) => `The ${agencyName} net
 // N118 settings-no-feed-matches
 export const NO_FEED_MATCHES = 'No feeds match your search or filter.';
 
+// ---- Route labels and setting definitions (CIV-957 item 2): each written once, used by every card, list and setting ----
+// D1 route-limited: a row with no steady frequency in the period ("limited" in place of a number).
+export const LIMITED_SERVICE_LABEL = 'limited';
+// D2 no-regular-service: the filter says the route has no regular service in the period.
+export const NO_REGULAR_SERVICE_LABEL = 'no regular service during this period';
+// D3 no-regular-service-short: the same, for the narrow Nearby and search rows.
+export const NO_REGULAR_SERVICE_SHORT_LABEL = 'no regular service';
+// D4 setting-hide-one-off
+export const HIDE_ONE_OFF_SETTING = { label: 'Hide one-off routes', description: 'School runs, a few trips a day, on-demand.' } as const;
+// D5 setting-hide-part-time
+export const HIDE_PART_TIME_SETTING = { label: 'Hide part-time routes', description: 'Only at rush hour, evenings, or some days.' } as const;
+// D6 setting-hide-degraded-feeds
+export const HIDE_DEGRADED_FEEDS_SETTING = { label: 'Hide degraded feeds', description: 'Hides agencies with known data-quality problems. Feeds still being reviewed remain visible.' } as const;
+
 // ---- Map keys (CIV-957) ----
 // K1 frequency-key heading
 export const MAP_KEY_FREQUENCY = 'Frequency';

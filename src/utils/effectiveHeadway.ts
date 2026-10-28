@@ -7,6 +7,7 @@ import { pairedTripPeriodFloor, pairedTripSafeHeadway } from './pairedTripFloor'
 import { delayAmount, headwayAboutRange, headwayEvery, headwayEveryRange, headwayPeriodShape } from './headwayText';
 import { routeAllDayContract, routeContract, routeValueIsOneGap } from './stretchCard';
 import { clockText } from '../content/researchRules';
+import { NO_REGULAR_SERVICE_LABEL, NO_REGULAR_SERVICE_SHORT_LABEL } from '../content/noticeCopy';
 
 export { pairedTripPeriodFloor, pairedTripSafeHeadway } from './pairedTripFloor';
 
@@ -325,10 +326,8 @@ export function routeListDisplayLimited(features: readonly ShapeProperties[], pe
     && features.some(feature => routeCardDisplayLimited(feature, period));
 }
 
-/** The words every card and list shows where the filter says a route has no regular service in the period. */
-export const NO_REGULAR_SERVICE_LABEL = 'no regular service during this period';
-/** The same, short, for the narrow Nearby and search rows, where the long words do not fit. */
-export const NO_REGULAR_SERVICE_SHORT_LABEL = 'no regular service';
+/** The words every card and list shows where the filter says a route has no regular service in the period (D2, D3 in noticeCopy). */
+export { NO_REGULAR_SERVICE_LABEL, NO_REGULAR_SERVICE_SHORT_LABEL };
 
 /** The filter says the route has no regular service in this period: lists say NO_REGULAR_SERVICE_LABEL, never a number. */
 export function routeListNoRegularService(features: readonly ShapeProperties[], period: TimePeriod): boolean {
