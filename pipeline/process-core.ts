@@ -7,6 +7,7 @@ import { boardableDrawnStops, drawnStopsBeforeTerminal } from './drawnStops.js';
 import { parseGtfsZip } from './parseGtfs.js';
 import { computeRunningTimes, runningTimesJson } from './runningTime.js';
 import { pickRepresentativeWeekday } from './representativeWeekday.js';
+import { weekdayNoTripPeriods, type NoTripPeriodsByRoute } from './noTripPeriods.js';
 import type { GtfsData, AnalysisResult, RawRouteDepartures } from '../types/gtfs.js';
 import { computeRawDepartures, findBlockOnlyTripIds } from './transit-phase1.js';
 import { applyAnalysisCriteria, BURST_MAX_SPAN_MINUTES, determineTierWithEdgeGapAllowance, previousNightTailDays } from './transit-phase2.js';
@@ -626,6 +627,8 @@ export interface ProcessResult {
   feedQuality: FeedQuality;
   /** CIV-1275: lines the feed published as one route per direction, merged here (#1285); History reads their old keys from the artifact. */
   directionSplits?: DirectionSplit[];
+  /** CIV-471: route_id -> the weekday periods it runs no trip at all (noTripPeriods.ts). History writers read it; no map artifact carries it. */
+  noTripPeriodsByRoute?: NoTripPeriodsByRoute;
 }
 
 /**
@@ -922,6 +925,8 @@ export async function processGtfsBuffer(
   // row, judged on the same active service sets the rest of the pipeline draws.
   labelConvergingOrigins(gtfs, activeServiceIdsByCalendarDay);
   options?.onServiceDays?.({ gtfs, referenceDate: refDate, activeServiceIdsByCalendarDay, feedCalendar, feedCalendarDates });
+  // CIV-471: the weekday periods each route runs no trip at all, for History's "No midday buses" (noTripPeriods.ts).
+  const noTripPeriodsByRoute = weekdayNoTripPeriods(gtfs, activeServiceIdsByCalendarDay);
   const activeServiceIdsByDay = new Map<DayType, Set<string>>();
   const calendarDaysForType = (dayType: DayType): DayName[] =>
     dayType === 'Weekday' ? [...WEEKDAYS] : [dayType as DayName];
@@ -4435,6 +4440,7 @@ export async function processGtfsBuffer(
     shapeAnomalies: gtfs.shapeAnomalies,
     feedQuality,
     ...(directionSplit.merged.length > 0 ? { directionSplits: directionSplitsOf(directionSplit.merged) } : {}),
+    noTripPeriodsByRoute,
   };
 }
 

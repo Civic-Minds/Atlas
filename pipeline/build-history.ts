@@ -35,7 +35,7 @@ import { writeHistoryAgencyList } from '../scripts/build-history-agency-list.js'
 import { historyGeometryForRoute } from './historyGeometry.js';
 import { identitySplitApplies, isPeriodExcluded, type HistoryIdentityKeys, type HistoryPeriodExcludes } from './historyRouteConfig.js';
 import { isDrawableLineCoordinates, lineStringCoordinatesOrNull } from '../shared/routeGeometry.js';
-import type { HeadwayByPeriod } from '../shared/config.js';
+import type { HeadwayByPeriod, PeriodKey } from '../shared/config.js';
 
 config({ path: resolve('.env.local') });
 
@@ -290,7 +290,7 @@ async function main() {
   // Map: slug → routeShortName → sorted array of change events
   type ArchiveChange = {
     periodKey: string; headway: number; routeLongName?: string; label?: string;
-    headwayByPeriod?: HeadwayByPeriod; trunkHeadway?: number; trunkHeadwayByPeriod?: HeadwayByPeriod; geometry?: unknown; processedAt?: string;
+    headwayByPeriod?: HeadwayByPeriod; noTripPeriods?: PeriodKey[]; trunkHeadway?: number; trunkHeadwayByPeriod?: HeadwayByPeriod; geometry?: unknown; processedAt?: string;
   };
   type Coverage = { coverageYears: number[]; materializeAllPeriods?: boolean };
   type ArchiveRead =
@@ -365,6 +365,8 @@ async function main() {
             headway: h,
             routeLongName: data.routeLongName ?? undefined,
             headwayByPeriod: data.headwayByPeriod ?? undefined,
+            // CIV-471: periods with no weekday trip at all; files written before it have none (unknown).
+            ...(Array.isArray(data.noTripPeriods) ? { noTripPeriods: data.noTripPeriods as PeriodKey[] } : {}),
             ...(typeof data.trunkHeadway === 'number' ? { trunkHeadway: data.trunkHeadway } : {}),
             ...(data.trunkHeadwayByPeriod && typeof data.trunkHeadwayByPeriod === 'object' ? { trunkHeadwayByPeriod: data.trunkHeadwayByPeriod } : {}),
             // v2 dates a file keyed by a feed end date after this year by when it was read (CIV-394).
@@ -622,7 +624,7 @@ async function main() {
     const retired = new Set(retiredRoutes[slug] ?? []);
     for (const [routeShortName, changes] of Object.entries(routeMap)) {
       if (retired.has(routeShortName)) continue;
-      let snapshots: Array<{ label: string; year: number; weekdayHeadwayMin: number | null; headwayByPeriod?: HeadwayByPeriod; geometry?: number[][] }>;
+      let snapshots: Array<{ label: string; year: number; weekdayHeadwayMin: number | null; headwayByPeriod?: HeadwayByPeriod; noTripPeriods?: PeriodKey[]; geometry?: number[][] }>;
       if (v2) {
         // v2: join change files with sidecar entries by period key, drop invalid snapshots,
         // order by real date and keep one snapshot per year (see historyV2Build.ts).
@@ -642,7 +644,7 @@ async function main() {
         changes.sort((a, b) => getPeriodKeySortValue(a.periodKey) - getPeriodKeySortValue(b.periodKey));
         snapshots = changes.map(c => {
           const { year, label } = parsePeriodKey(c.periodKey);
-          return { label: c.label ?? label, year, weekdayHeadwayMin: c.headway, headwayByPeriod: c.headwayByPeriod, ...(c.trunkHeadway != null ? { trunkHeadwayMin: c.trunkHeadway } : {}), ...(c.trunkHeadwayByPeriod ? { trunkHeadwayByPeriod: c.trunkHeadwayByPeriod } : {}), geometry: isDrawableLineCoordinates(c.geometry) ? c.geometry : undefined };
+          return { label: c.label ?? label, year, weekdayHeadwayMin: c.headway, headwayByPeriod: c.headwayByPeriod, ...(c.noTripPeriods ? { noTripPeriods: c.noTripPeriods } : {}), ...(c.trunkHeadway != null ? { trunkHeadwayMin: c.trunkHeadway } : {}), ...(c.trunkHeadwayByPeriod ? { trunkHeadwayByPeriod: c.trunkHeadwayByPeriod } : {}), geometry: isDrawableLineCoordinates(c.geometry) ? c.geometry : undefined };
         });
       }
 

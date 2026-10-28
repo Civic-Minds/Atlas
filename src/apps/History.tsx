@@ -3,7 +3,7 @@ import { MAP_SCRUBBER_SLOT, MAP_SCRUBBER_WIDTH } from '../mapOverlayLayout';
 import { loadHistoryConfig as loadHistoryConfigShared } from '../utils/historyConfig';
 import { History as HistoryIcon } from 'lucide-react';
 import { useHistoryMapOverlay } from '../context/HistoryMapOverlay';
-import { type HeadwayByPeriod } from '../../shared/config';
+import { type HeadwayByPeriod, type PeriodKey } from '../../shared/config';
 import { countOf } from '../../shared/overflowText';
 import { TRANSITION_BASE, AGENCY_LIST_FILTERS, PILL_SURFACE, PILL_SCROLL_ROW, SIDEBAR_CARD, SIDEBAR_CARD_MAX_H, sidebarFrameStyle, sidebarCardFrame, SIDEBAR_PANEL_WIDTH, Z_PANEL, CARD_NOTICE, CARD_NOTE } from '../styles';
 import { routeLabels } from '../utils/format';
@@ -43,10 +43,11 @@ import ModeFilterPillRow from '../components/ui/ModeFilterPillRow';
 import { syncUrlParams } from '../utils/syncUrlParams';
 import { encodeHistoryUrlState, parseHistoryUrlState, type HistoryUrlState } from '../utils/shareUrlState';
 import PanelEmpty from '../components/ui/PanelEmpty';
-import { CLOSE_PLACES, closeLabel, HISTORY_BACK_TO_AGENCIES, HISTORY_CHART_LABEL, HISTORY_EXPAND_CHART, HISTORY_FREQUENCY_CHANGE_NOTE, HISTORY_LOAD_FAILED, HISTORY_NO_TRIPS_LABEL, HISTORY_TITLE, HISTORY_YEAR_HINT, HISTORY_YEAR_LABEL, HISTORY_ROUTE_NOT_COVERED, HISTORY_ROUTE_ORDER_NOTE, HISTORY_TRIP_TIME_NOTE, loadingText, NO_AGENCIES_MATCH, NO_ROUTES_LOADED, noRoutesMatchText, RETRY_HINT, RETRY_LABEL, historyWeekendFrequencyChangeNote, historyWeekendPeriodsMissingNote } from '../content/noticeCopy';
+import { CLOSE_PLACES, closeLabel, HISTORY_BACK_TO_AGENCIES, HISTORY_CHART_LABEL, HISTORY_EXPAND_CHART, HISTORY_FREQUENCY_CHANGE_NOTE, HISTORY_LOAD_FAILED, HISTORY_NO_TRIPS_LABEL, noTripsInPeriodText, HISTORY_TITLE, HISTORY_YEAR_HINT, HISTORY_YEAR_LABEL, HISTORY_ROUTE_NOT_COVERED, HISTORY_ROUTE_ORDER_NOTE, HISTORY_TRIP_TIME_NOTE, loadingText, NO_AGENCIES_MATCH, NO_ROUTES_LOADED, noRoutesMatchText, RETRY_HINT, RETRY_LABEL, historyWeekendFrequencyChangeNote, historyWeekendPeriodsMissingNote } from '../content/noticeCopy';
 import { compareAgencyName, compareRegion } from '../utils/sortCompare';
 import { inViewFirst } from '../utils/historyOpen';
 import { TRIP_TIME_LABEL } from '../../shared/liveWording';
+import { effectiveMode } from '../../shared/modes';
 import { frequencyChange } from '../../shared/frequencyChange';
 
 export interface RouteSnapshot {
@@ -54,6 +55,8 @@ export interface RouteSnapshot {
   year: number;
   weekdayHeadwayMin: number;
   headwayByPeriod?: HeadwayByPeriod;
+  /** CIV-471: the weekday periods the route ran no trip at all (absent: unknown, the row stays blank). */
+  noTripPeriods?: PeriodKey[];
   /** CIV-555: the route's shared-stretch value per period when better than its own (build-history); trunkHeadwayMin is the internal all-day one (no screen shows it). */
   trunkHeadwayMin?: number;
   trunkHeadwayByPeriod?: HeadwayByPeriod;
@@ -131,6 +134,12 @@ const shownMinutes = (minutes: number): number => minutes;
 
 /** The route card's chart shows only with this many snapshots valued in the period (CIV-471, Ryan's call); with fewer, the rows alone. */
 export const MIN_CHART_VALUES = 3;
+
+/** The route's mode for "No midday buses" (CIV-471): its effective mode, none when it has no current route type. */
+function historyRouteMode(route: RouteHistoryEntry, agencySlug: string): number | null {
+  if (route.currentRouteType == null || route.currentRouteType === '') return null;
+  return effectiveMode({ routeType: route.currentRouteType, routeShortName: route.routeShortName, routeLongName: route.routeName, agencySlug });
+}
 
 /**
  * A row's words (CIV-555): "every 15–52 min" where a slow branch sets the period's value and the shared stretch runs
@@ -293,6 +302,7 @@ function RouteHistoryCard({
   // url(#…) invalid, so the fill fell back to solid black. Only letters, digits, - and _ are kept.
   const gradientId = `sparkline-grad-${useId().replace(/[^A-Za-z0-9_-]/g, '')}`;
   const { newestFirst: snaps } = routeHistorySnapshots(route);
+  const routeMode = historyRouteMode(route, agencySlug);
   // The chart and summary use the snapshots with a value in the period; rows list every snapshot.
   const valued = snaps.filter(s => periodMinutes(s, period, day) != null);
   const chartSnaps = [...valued].reverse();
@@ -372,8 +382,10 @@ function RouteHistoryCard({
         {snaps.map((snap, i) => {
           const hw = periodMinutes(snap, period, day);
           const older = i < snaps.length - 1 ? periodMinutes(snaps[i + 1], period, day) : null;
-          // A weekend day with no trips at all says so in the row's limited slot (CIV-1425).
-          const noTrips = day !== 'Weekday' && historyDayPeriodValue(snap, day, period).kind === 'none';
+          // A weekend day with no trips at all says so in the row's limited slot (CIV-1425). A weekday period the build
+          // recorded no trip in says "No midday buses" there (CIV-471); a mode with no approved word leaves it blank.
+          const noTripsLabel = historyDayPeriodValue(snap, day, period).kind !== 'none' ? null
+            : day === 'Weekday' ? noTripsInPeriodText(period, routeMode) : HISTORY_NO_TRIPS_LABEL;
           const delta = hw != null && older != null ? hw - older : null;
           const charted = hw != null && showChart;
           return (
@@ -392,9 +404,10 @@ function RouteHistoryCard({
               // The snapshot's own minutes, as in the chart, the summary and the change beside it (#1085):
               // rounding to the half hour once made NFTA 76 read 360 beside a chart reading 349.
               headwayLabel={hw != null ? snapshotHeadwayLabel(snap, period, hw, day) : undefined}
-              {...(noTrips ? { limited: true, limitedLabel: HISTORY_NO_TRIPS_LABEL } : {})}
               headwaySuffix={delta ? (delta > 0 ? `+${delta}` : `${delta}`) : undefined}
               headwaySuffixTone={delta ? (delta > 0 ? 'negative' : 'positive') : undefined}
+              limited={noTripsLabel != null}
+              limitedLabel={noTripsLabel ?? undefined}
               // Regular weight, like the map cards' destination rows (CIV-971).
               labelWeight="regular"
               // A value that does not fit beside the date ("every 15–30 min -6" in a narrow panel) goes under it at the

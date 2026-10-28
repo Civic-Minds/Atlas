@@ -8,6 +8,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 - **The For Transit Planners page counts the agencies Atlas really covers**: it said about 700, a hand-typed number; the count and countries now follow the published data, with a link to the Docs on where the data comes from
 - **History on beta can switch between Weekday, Saturday and Sunday (beta)**: Boston shows weekend ranges, including past years; other cities wait for their own approval
+- **History says "No midday buses" where a route ran no trip in that period (beta)**: it was a blank row, which also looks like a missing number; the same wording covers every time of day and every kind of vehicle
 - **History on beta can switch between Weekday, Saturday and Sunday (beta)**: Boston shows weekend ranges, including past years; cities without weekend data hide the Day chip and stay on Weekday
 - **Area and state pages name agencies that only run at rush hour**: "Rush hour only: VRE." on the Washington, DC and Virginia pages (ACE in California, San Francisco and San Jose), each linking to its agency page; they were left out because the pages count weekday midday service
 - **History's frequency change box shows when a route's frequency moves to another grade (beta)**: a 2-minute shift such as 30 to 28 min no longer counts, while 20 to 15 always does, by the same rule Studio uses
