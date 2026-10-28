@@ -128,6 +128,26 @@ function laterOfFeedInfoAndCappedCalendar(feedExpiry: string | null, peekedExpir
   return feedExpiry ?? peekedExpiry ?? null;
 }
 
+/**
+ * A refresh that skips an unchanged feed records nothing new, so an expiry stored before a rule
+ * change stayed as it was: MAX kept feed_info's 20350201 after #1039 taught recordedFeedExpiry to
+ * use the calendar's last service date (20250531), and no expired notice showed (CIV-443). The
+ * skip path calls this to record the expiry today's rule gives the same feed, only ever lowering
+ * it (a raise waits for a real refresh). Returns the old value when it changed, else null.
+ */
+export function lowerStoredFeedExpiry(
+  agency: Pick<FeedMetaFields, 'lastFeedExpiry'>,
+  opts: { feedInfoEnd: string | null; calendarEnd: string | null; calendarOnlyEnd: string | null; todayYmd: string },
+): string | null {
+  const recorded = recordedFeedExpiry(opts.feedInfoEnd, opts.calendarEnd, opts.todayYmd, opts.calendarOnlyEnd);
+  const stored = agency.lastFeedExpiry ?? null;
+  // Only the #1039 case: today's value is the calendar's own last service date. A lower value from
+  // the placeholder cap (today + 2 years) moves every week and says nothing new.
+  if (!isYmd(recorded) || !isYmd(stored) || recorded >= stored || recorded !== opts.calendarOnlyEnd) return null;
+  agency.lastFeedExpiry = recorded;
+  return stored;
+}
+
 /** Apply feed metadata after a successful non-empty refresh. */
 export function stampFeedMeta(
   agency: FeedMetaFields,
