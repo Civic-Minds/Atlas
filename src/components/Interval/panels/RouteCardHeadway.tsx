@@ -426,8 +426,6 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
               agencyBackLink
               back={back}
             />
-            {/* Compare: this map's side in one grey facts line (CIV-844), kept to one line. */}
-            {compareFacts && <p className={`${CARD_SUMMARY} whitespace-nowrap`} data-testid="compare-card-facts">{compareFacts}</p>}
           </div>
           <CardReportButton
             ref={reportRef}
@@ -436,6 +434,8 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
             excludeReasons={['Stop is missing, misplaced, or assigned incorrectly']}
           />
         </div>
+        {/* Compare: this map's side in one grey facts line under the title row, across the card's width (CIV-844). */}
+        {compareFacts && <p className={`${CARD_SUMMARY} whitespace-nowrap`} data-testid="compare-card-facts">{compareFacts}</p>}
       </SidebarCardHeaderBlock>
       {(<>
       {patternLabel && (
