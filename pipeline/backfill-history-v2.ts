@@ -26,7 +26,7 @@ import { processAgencyFeeds } from './agencyFeeds.js';
 import { peekFeedDates } from './archiveSelection.js';
 import { backfillSupplementalPolicy, buildSidecar, buildV2Routes, localDirSink, periodKeyForZip, writeSidecar, type BuildV2Report } from './historyV2.js';
 import { readFeedEvidence } from './historyWeekend.js';
-import { buildPeriodShapes, extractRouteShapes, periodShapesKey } from './historyShapes.js';
+import { buildPeriodShapes, shapeTripStats, extractRouteShapes, periodShapesKey } from './historyShapes.js';
 import { parseGtfsZip } from './parseGtfs.js';
 import { readRefDateQuality } from './historyRefQuality.js';
 import { chooseReferenceDate, readRepickRows, repickEligible } from './historyRefRepick.js';
@@ -79,7 +79,7 @@ async function main(): Promise<void> {
       let shapesNote = '';
       if (withShapes) {
         const gtfs = await parseGtfsZip(buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength) as ArrayBuffer);
-        const period = buildPeriodShapes(slug, periodKey, evidence.refDate, extractRouteShapes(gtfs as never));
+        const period = buildPeriodShapes(slug, periodKey, evidence.refDate, extractRouteShapes(gtfs as never), { trips: shapeTripStats(gtfs as never) });
         const shapesResult = await sink.put(periodShapesKey(slug, periodKey), JSON.stringify(period));
         if (shapesResult === 'conflict') process.exitCode = 1;
         shapesNote = `, shapes ${shapesResult} (${Object.keys(period.routes).length} routes)`;
