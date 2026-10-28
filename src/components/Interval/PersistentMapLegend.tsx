@@ -1,4 +1,4 @@
-import { FLOATING_CARD } from '../../styles';
+import { FLOATING_CARD, MAP_LEGEND_SLOT } from '../../styles';
 import { useHeadwayTiers } from '../../hooks/useHeadwayTiers';
 import MapKey from '../ui/MapKey';
 import { MAP_KEY_FREQUENCY, MAP_KEY_OTHER, MAP_KEY_SELECTED } from '../../content/noticeCopy';
@@ -9,7 +9,8 @@ export function PersistentMapLegend() {
   return (
     <aside
       aria-label="Map legend"
-      className={`${FLOATING_CARD} absolute bottom-16 left-5 z-[500] w-72 max-w-[calc(100vw-2.5rem)] p-3 pointer-events-auto`}
+      data-map-overlay="legend"
+      className={`${FLOATING_CARD} ${MAP_LEGEND_SLOT} z-[500] w-72 max-w-[calc(100vw-2.5rem)] p-3 pointer-events-auto`}
     >
       <MapKey
         definition={MAP_KEY_FREQUENCY}
