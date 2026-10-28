@@ -16,7 +16,7 @@ import { bboxInViewport } from '../../utils/agencySearch';
 import { filterModeOptions } from '../../../shared/modes';
 import { modesForView } from '../../../shared/viewLayers';
 import { DAY_TYPES, getNowDay, type DayType } from '../../../shared/dayTypes';
-import type { FrequentServiceFrequency, FrequentServiceWindow } from '../../../shared/frequentService';
+import { FREQUENT_WINDOW_LABELS, type FrequentServiceFrequency, type FrequentServiceWindow } from '../../../shared/frequentService';
 import type { NightServiceFrequency } from '../../../shared/nightService';
 import { useColorMode } from '../../hooks/useColorMode';
 import ArrowLink from '../ui/ArrowLink';
@@ -330,7 +330,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
         <PillGroup outlined label="Frequency" value={String(researchFrequency)} onChange={v => setResearchFrequency(Number(v) as 15 | 30)}
           options={([15, 30] as const).map(value => [String(value), headwayAmount(value)] as const)} />
         <PillGroup outlined label="Time window" value={researchWindow} onChange={v => setResearchWindow(v as FrequentServiceWindow)}
-          options={[['daytime', '7am–7pm'], ['extended', '7am–midnight']] as const} />
+          options={(['daytime', 'extended'] as const).map(w => [w, FREQUENT_WINDOW_LABELS[w]] as const)} />
         <div className="relative">
           <button onClick={() => toggle('mode')} className={chipClass(selectedModes.size > 0)}>Mode<Dot show={selectedModes.size > 0} /></button>
           {openChip === 'mode' && <div className={`${PANEL} w-48`}>

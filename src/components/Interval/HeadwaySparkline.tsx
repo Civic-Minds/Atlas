@@ -4,6 +4,7 @@ import { useColorMode } from '../../hooks/useColorMode';
 export { headwayToTierColor };
 import { CARD_NOTE, CHART_HEADING, CHART_PERIOD_LABEL } from '../../styles';
 import { SPARKLINE_HOURS, SPARKLINE_HOUR_LABELS } from '../../../shared/config';
+import { clockTime } from '../../../shared/timeText';
 import { PERIOD_LABELS } from '../../hooks/useIntervalStats';
 import type { TimePeriod } from '../../hooks/useIntervalStats';
 import type { HeadwayByPeriod, HeadwayByHour } from '../../hooks/useAgencyData';
@@ -38,16 +39,11 @@ const HOURS = SPARKLINE_HOURS;
 
 const BAR_OPACITY = { active: 'opacity-90', lit: 'opacity-60', dim: 'opacity-40' } as const;
 
-// Label positions: 6a, 12p, 6p, 12a
+// Label positions: 6 AM, 12 PM, 6 PM, 12 AM
 const HOUR_LABELS = SPARKLINE_HOUR_LABELS;
 
-function formatClock(totalMinutes: number): string {
-  const h24 = Math.floor(totalMinutes / 60) % 24;
-  const m = totalMinutes % 60;
-  const period = h24 < 12 ? 'a' : 'p';
-  const h12 = h24 % 12 === 0 ? 12 : h24 % 12;
-  return `${h12}:${String(m).padStart(2, '0')}${period}`;
-}
+/** The app's one time format (CIV-1095): "7 AM". */
+const formatClock = clockTime;
 
 /** One row of clock labels under a chart column, every third hour so the 12px labels don't collide. */
 function ClockLabels({ className = '' }: { className?: string }) {
@@ -391,7 +387,7 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
                   {formatClock(h * 60)}
                 </span>
               ) : (
-                <span className="text-xs text-[var(--text-dim)]">{HOUR_LABELS[h]}</span>
+                <span className="text-xs text-[var(--text-dim)] whitespace-nowrap">{HOUR_LABELS[h]}</span>
               )
             )}
           </div>
