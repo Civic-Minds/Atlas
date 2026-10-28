@@ -93,9 +93,9 @@ describe('Live route dashboard', () => {
     expect(screen.getByText(/Last 7 service days, Oct 8–14: 1,234 trips and 20,000 stop departures\./)).toBeTruthy();
     expect(screen.getByText(/4% of trips ran under a trip number/)).toBeTruthy();
     // One Late definition (no second "Late at a stop" line), then what ahead means, from the file's own limit.
-    expect(screen.getAllByText(/more than 5½ min behind the timetable/).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/is more than 5½ min behind schedule\. This is based on the TTC's 5-minute standard/).length).toBeGreaterThan(0);
     expect(screen.queryByText(/Late at a stop/)).toBeNull();
-    expect(screen.getAllByText(/more than 5½ min behind the timetable.*? Ahead means 1\.5\+ minutes before it\./).length).toBeGreaterThan(0);
+    expect(screen.getAllByText((_, el) => el?.tagName === 'P' && /once a minute\. Ahead is 1\.5 min or more ahead of schedule\./.test(el.textContent ?? '')).length).toBeGreaterThan(0);
   });
 
   it('the header trip count and the service-days line count only the good days, and the excluded day is still named (CIV-910)', async () => {
@@ -211,7 +211,7 @@ describe('Live route dashboard', () => {
     expect(screen.getByText(/This week is .+ and last week is .+\./)).toBeTruthy();
     expect(screen.getByText(/^Excluding .+ this week, .+ last week\.$/).className).toMatch(/block/);
     expect(document.querySelector('details')).toBeNull();
-    expect(screen.getAllByText(/days with gaps in our recordings are left out/).length).toBe(1);
+    expect(screen.getAllByText((_, el) => el?.tagName === 'P' && (el.textContent ?? '').split('Recording gaps are times our recording missed').length === 2).length).toBe(1);
     // One paragraph: each group opens with its bold run-in label.
     for (const g of ['What each number means', 'Where the data comes from', 'How changes are coloured', 'Limits']) expect(screen.getByText(`${g}.`, { selector: 'strong' })).toBeTruthy();
     expect(screen.queryByText(/trip time/i)).toBeNull();

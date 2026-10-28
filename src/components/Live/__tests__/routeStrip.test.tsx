@@ -78,7 +78,7 @@ describe('stripSummary', () => {
     const span = stretchSpan(STOPS, { fromStopId: 'S3', toStopId: 'S5' }, 'delaysStart');
     const text = stripSummary(STOPS, 'delay', 'Southbound', span);
     expect(text).toContain('12 stops');
-    expect(text).toContain('2 on time, 4 1–3 min late, 6 3+ min late');
+    expect(text).toContain('2 on time, 4 1–3 min behind, 6 3+ min behind');
     expect(text).toContain('Delays start between Spadina Ave at Street 3 South Side and Spadina Ave at Street 5 South Side');
   });
 });
@@ -140,19 +140,19 @@ describe('RouteStrip', () => {
     setWidth(900);
     const { rerender } = render(<RouteStrip stops={STOPS} modes={["delay"]} directionLabel="Southbound" />);
     expect(screen.getByText('On time')).toBeTruthy();
-    expect(screen.queryByText('1+ min early')).toBeNull(); // no dot here is early
+    expect(screen.queryByText('1+ min ahead')).toBeNull(); // no dot here is early
     expect(screen.queryByText('Less exact')).toBeNull();
     rerender(<RouteStrip stops={[stop(0, { uncertain: true }), stop(1, { n: 12 }), ...STOPS.slice(2)]} modes={["delay"]} directionLabel="Southbound" />);
     expect(screen.getByText('Less exact')).toBeTruthy();
     expect(screen.getByText('Fewer than 30 departures or gaps')).toBeTruthy();
     rerender(<RouteStrip stops={[stop(0, { delayMin: -2, timepoint: true }), ...STOPS.slice(1)]} modes={["delay"]} directionLabel="Southbound" />);
-    expect(screen.getByText('1+ min early')).toBeTruthy();
+    expect(screen.getByText('1+ min ahead')).toBeTruthy();
   });
 
   it('switches its colours and legend to bunching', () => {
     setWidth(900);
     render(<RouteStrip stops={STOPS} modes={["bunching"]} directionLabel="Southbound" bunchingForms={{ fromStopId: 'S6', toStopId: 'S8' }} />);
-    expect(screen.getByText('Gaps too short or too long:')).toBeTruthy();
+    expect(screen.getByText('Bunching:')).toBeTruthy();
     expect(screen.getByText('Bunching forms')).toBeTruthy();
   });
 
@@ -202,7 +202,7 @@ describe('RouteStrip', () => {
     setWidth(900);
     render(<RouteStrip stops={STOPS} directionLabel="Southbound" delaysStart={{ fromStopId: 'S2', toStopId: 'S3' }} bunchingForms={{ fromStopId: 'S6', toStopId: 'S8' }} />);
     expect(screen.getByText('Typical delay:')).toBeTruthy();
-    expect(screen.getByText('Gaps too short or too long:')).toBeTruthy();
+    expect(screen.getByText('Bunching:')).toBeTruthy();
     expect(screen.getAllByText(/^Delays start/).length).toBeGreaterThan(0);
     expect(screen.getAllByText(/^Bunching forms/).length).toBeGreaterThan(0);
     expect(screen.queryByRole('button', { name: 'Bunching' })).toBeNull();

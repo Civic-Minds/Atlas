@@ -1,23 +1,22 @@
 /**
  * The Live terms, in the words the Live agency page's "How this is measured" uses (a test keeps the two identical).
- * The Docs page's Glossary shows them. `text` reads after "Term:".
+ * The Docs page's Glossary shows them. `text` is the rest of the sentence after the bold term, no colon (CIV-1075).
  */
-import { NOISE_RULE } from './liveDashboard.js';
+import { COLOURED_CHANGES } from './liveDashboard.js';
 import { LATE_DEFINITION, RECORDING_GAPS } from './liveWording.js';
 
 export interface LiveTerm { term: string; text: string }
 
 export const LIVE_GLOSSARY: readonly LiveTerm[] = [
   { term: 'Late', text: LATE_DEFINITION },
-  { term: 'Run time', text: 'the typical trip over the main stretch against its scheduled time.' },
-  { term: 'Extra wait', text: 'how much longer riders wait than the timetable says, worked out from the gaps between vehicles at each stop.' },
-  { term: 'Bunching', text: "gaps under 2 minutes or over twice the timetable's." },
-  { term: 'Delivered', text: 'scheduled trips that ran.' },
-  { term: 'Where delays start', text: 'the stretch where delay jumps and stays up; directions where delay builds slowly have no single place and are left out.' },
-  { term: 'Vehicle positions', text: 'each vehicle is seen about once a minute; the moment it left each stop is estimated from that and compared with the timetable.' },
-  { term: 'Trip matching', text: 'vehicles are matched to timetable trips by trip number.' },
-  { term: 'Network figures', text: 'every departure, trip or gap on the covered routes added up, not an average of route figures, so busy routes weigh more.' },
-  { term: 'Stops', text: 'at least 30 departures, at most 3 from one route direction.' },
-  { term: 'How changes are coloured', text: NOISE_RULE },
+  { term: 'Run time', text: 'is how long a typical trip takes over the main stretch, compared with the schedule.' },
+  { term: 'Extra wait', text: 'is how much longer riders wait than the schedule says, worked out from the gaps between vehicles at each stop.' },
+  { term: 'Bunching', text: 'is when the gap between vehicles is under 2 min, or more than twice the scheduled gap.' },
+  { term: 'Delivered', text: 'is the share of scheduled trips that actually ran.' },
+  { term: 'Vehicle positions', text: 'are recorded once a minute for each vehicle. The time it left each stop is estimated from those and compared with the schedule.' },
+  { term: 'Trip matching', text: 'links each vehicle to its scheduled trip by trip number.' },
+  { term: 'Network figures', text: 'combine every trip on every covered route. A route with more trips has more effect on the total.' },
+  { term: 'Stops', text: 'are listed once they have 30 or more departures, with up to 3 per route direction.' },
+  { term: 'Coloured changes', text: COLOURED_CHANGES },
   { term: 'Recording gaps', text: RECORDING_GAPS },
 ];

@@ -338,7 +338,10 @@ export type CompareKey = 'late' | 'tripTime' | 'extraWait' | 'bunching' | 'deliv
  * The analysis file holds a value per day for all five measures. A fixed amount (FIXED_NOISE) stands in only where
  * fewer than 3 good days leave no spread to measure (or an older file has no daily values).
  */
-export const NOISE_RULE = 'Only when bigger than the usual day-to-day change: Late, Run time, Extra wait, Bunching and Delivered each by more than the spread between days. Smaller changes stay grey.';
+/** E17, after the term "Coloured changes" (approved by Ryan, CIV-1075). */
+export const COLOURED_CHANGES = "are bigger than the figure's normal day-to-day range. Grey changes fall inside that range and may just be normal variation.";
+/** The same rule as one sentence, for the week table's caption hover. */
+export const NOISE_RULE = `Coloured changes ${COLOURED_CHANGES}`;
 
 /**
  * PROVISIONAL: smallest change that counts, in the figure's own unit (share as 0-1, or minutes), for measures without
