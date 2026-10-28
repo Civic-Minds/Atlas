@@ -1,8 +1,7 @@
 import type { DayType } from '../../shared/dayTypes';
 import type { TimePeriod } from '../hooks/useIntervalStats';
 import { describeDayAndPeriod } from './mapExportDetails';
-import { headwayAbout, headwayFilterLabel } from './headwayText';
-import { NO_REGULAR_SERVICE_SHORT_LABEL } from './effectiveHeadway';
+import { headwayFilterLabel } from './headwayText';
 
 /** One side of compare mode: its own day, time and frequency threshold (CIV-19). */
 export interface CompareSide {
@@ -35,31 +34,6 @@ export function frequencyWords(maxHeadway: number): string {
 export function compareSideHeading(side: CompareSide): string {
   const title = compareSideLabel(side);
   return `${title.charAt(0).toUpperCase()}${title.slice(1)} · ${frequencyWords(side.maxHeadway)}`;
-}
-
-/** One compare side of a route, as the route card needs it. */
-export interface CompareRowFacts {
-  label: 'A' | 'B';
-  settings: CompareSide;
-  /** Frequency the filter judges, in minutes; null when there is no regular frequency. */
-  headway: number | null;
-  passes: boolean;
-  runs: boolean;
-}
-
-function routeFrequencyWords(row: CompareRowFacts): string {
-  if (!row.runs) return 'no service';
-  if (row.headway == null) return NO_REGULAR_SERVICE_SHORT_LABEL;
-  return headwayAbout(row.headway);
-}
-
-/**
- * A compare card's one grey facts line under its title (CIV-844, Ryan): the side, that side's day and time, and the
- * route's frequency there, "A · Weekday PM peak · every 3 min". Each map's card shows its own side.
- */
-export function compareCardFacts(row: CompareRowFacts): string {
-  const title = compareSideLabel(row.settings);
-  return `${row.label} · ${title.charAt(0).toUpperCase()}${title.slice(1)} · ${routeFrequencyWords(row)}`;
 }
 
 /**

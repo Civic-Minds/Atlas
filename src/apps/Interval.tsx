@@ -27,7 +27,6 @@ import { countOf, plural } from '../../shared/overflowText';
 import type * as maplibregl from 'maplibre-gl';
 import { CompareSideBar, CompareLinkToggle, CompareTab, CompareMenuItem, defaultCompareSide, type CompareSide } from '../components/Interval/CompareControl';
 import { compareSideBView, linkCompareMaps } from '../utils/compareMapSync';
-import { buildCompareRow } from '../utils/compareRows';
 import { DAY_TYPES, type DayType as DayTypeName } from '../../shared/dayTypes';
 import { splitRouteKey } from '../utils/routeKey';
 import { getPolledRoute } from '../../shared/livePollingConfig';
@@ -685,31 +684,6 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     if (!compareActive || !renderedA || !renderedB) return null;
     return { a: { total: renderedA.size }, b: { total: renderedB.size } };
   }, [compareActive, renderedA, renderedB]);
-
-  // Route card rows: each side's frequency and whether it passes, from the same helpers the map
-  // and route lists use (worst direction decides).
-  const compareRows = useMemo(() => {
-    if (!compareActive || !selectedRoute) return null;
-    const { agencySlug: slug, routeId, routeBranch } = splitRouteKey(selectedRoute);
-    const routeFeatures = layers[slug]?.features.filter(f => {
-      const p = f.properties as ShapeProperties;
-      return p?.routeId === routeId && (!routeBranch || p.routeBranch === routeBranch);
-    }) ?? [];
-    const filters = {
-      agencies: selectedAgencies,
-      modes: selectedModes,
-      hideSpan,
-      hideLimitedService,
-      livePollingOnly,
-      showCorridors: false,
-      showCorridorBand: false,
-      selectedRoute: null,
-    };
-    return [
-      buildCompareRow('A', compareA, routeFeatures, slug, filters),
-      buildCompareRow('B', compareSide!, routeFeatures, slug, filters),
-    ];
-  }, [compareActive, selectedRoute, layers, compareA, compareSide, selectedAgencies, selectedModes, hideSpan, hideLimitedService, livePollingOnly]);
 
   // Whole routes and agencies for the research views' stat pills, counted from the routes each overlay
   // draws (the night index has no 30 minute data, so it cannot answer for both settings).
@@ -1566,7 +1540,6 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
         hoveredBranch={hoveredBranch}
         setHoveredBranch={setHoveredBranch}
         selectedRouteOutOfFilter={selectedRouteOutOfFilter && !compareActive}
-        compareRows={compareRows}
         compareActive={compareActive}
         compareSideB={compareActive ? compareSide : null}
         setCompareSideB={setCompareSide}
