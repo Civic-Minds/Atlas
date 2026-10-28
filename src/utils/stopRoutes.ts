@@ -5,6 +5,7 @@ import { buildSharedStopIndex } from '../../shared/sharedStops';
 import { partPeriodText } from './effectiveHeadway';
 import { hasRegularServiceInPeriod } from './stretchCard';
 import { agencyNames } from './agencyName';
+import { rowTrips } from './rowTrips';
 import { compareRouteNumber } from './sortCompare';
 
 /**
@@ -101,8 +102,9 @@ export function buildStopRoutes({ siblingIdsByAgency, routesByAgency, layers, da
       // #934: a direction the route only runs on one side of the period shows the route card's
       // words ("until 9:37am, every 12 min") instead of a cadence, at a stop its shape serves.
       const periodText = partPeriodText(p, period);
-      // No cadence at the stop for a period the route card says has no regular service (#750).
-      if (!periodText && !hasRegularServiceInPeriod(p, period)) continue;
+      // No cadence at the stop for a period the route card says has no regular service (#750), or where the
+      // destination has no service of its own and its value is other headsigns' trips (CIV-1069, rowTrips).
+      if (!periodText && (!hasRegularServiceInPeriod(p, period) || rowTrips(p, period).noOwnService)) continue;
 
       // Only include features whose shape actually covers any of the sibling stops.
       let stopHw: number | undefined = undefined;
