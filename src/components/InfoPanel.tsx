@@ -19,7 +19,7 @@ import type { Agency } from '../App';
 import { isAgencyFeedExpired } from '../../shared/feedAvailability';
 import { trackEvent } from '../lib/analytics';
 import { OutboundLink } from './OutboundLink';
-import { EXPIRED_FEED_CADENCE, EXPIRED_FEED_CONTEXT, EXPIRED_FEED_EXPLANATION, MANUAL_FEED_CONTEXT, NO_ROUTE_SHAPE_DETAIL, NO_ROUTE_SHAPE_EXPLANATION, expiredFeedCheckHistory, expiredFeedNotice, listingEndedNotice } from '../content/noticeCopy';
+import { EXPIRED_FEED_CADENCE, EXPIRED_FEED_CONTEXT, EXPIRED_FEED_EXPLANATION, MANUAL_FEED_CONTEXT, NO_ROUTE_SHAPE_DETAIL, NO_ROUTE_SHAPE_EXPLANATION, expiredFeedCheckHistory, expiredFeedNotice, E1_AGENCY_WEBSITE, E1_WEEKLY_CHECK, listingEndedPanelLead } from '../content/noticeCopy';
 import RegionFilterPills from './RegionFilterPills';
 import ListRow from './ui/ListRow';
 import { AgencyList, AgencyListRow, AgencyRegionSection } from './ui/AgencyList';
@@ -539,25 +539,32 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
             return (
             <div className="h-full overflow-y-auto px-5 py-4 space-y-4">
               {helpContext?.listingEndedDate ? (
-                // N25 variant: only the lines that are true when most routes stopped being listed
-                // (no "timetable ended", no "keeps showing the most recent feed"), until Ryan approves its wording.
-                <p className="text-xs text-[var(--text-primary)] leading-relaxed">{listingEndedNotice(helpContext.listingEndedDate, helpContext.listingEnded ?? true)}</p>
-              ) : helpContext?.agencyName && (
-                <p className="text-xs text-[var(--text-primary)] leading-relaxed">
-                  {expiredFeedNotice(helpContext.agencyName, helpContext.expDateStr, helpContext.manualFeedSource)}
-                </p>
+                // E1, N25 version (Ryan, CIV-1051): the issue / what we're doing / what you can do.
+                <>
+                  <p className="text-xs text-[var(--text-primary)] leading-relaxed">
+                    {listingEndedPanelLead(helpContext.agencyName ?? 'This agency', helpContext.listingEndedDate, helpContext.listingEnded ?? true)}
+                  </p>
+                  <p className="text-xs text-[var(--text-dim)] leading-relaxed">{E1_WEEKLY_CHECK}{checkHistory ? ` ${checkHistory}` : ''}</p>
+                  <p className="text-xs text-[var(--text-dim)] leading-relaxed">{E1_AGENCY_WEBSITE}</p>
+                </>
+              ) : (
+                <>
+                  {helpContext?.agencyName && (
+                    <p className="text-xs text-[var(--text-primary)] leading-relaxed">
+                      {expiredFeedNotice(helpContext.agencyName, helpContext.expDateStr, helpContext.manualFeedSource)}
+                    </p>
+                  )}
+                  {helpContext?.agencyName && checkHistory && (
+                    <p className="text-xs text-[var(--text-primary)] leading-relaxed">{checkHistory}</p>
+                  )}
+                  <p className="text-xs text-[var(--text-dim)] leading-relaxed">
+                    {EXPIRED_FEED_EXPLANATION}
+                  </p>
+                  <p className="text-xs text-[var(--text-dim)] leading-relaxed">
+                    {EXPIRED_FEED_CADENCE} {helpContext?.manualFeedSource ? MANUAL_FEED_CONTEXT : EXPIRED_FEED_CONTEXT}
+                  </p>
+                </>
               )}
-              {helpContext?.agencyName && checkHistory && (
-                <p className="text-xs text-[var(--text-primary)] leading-relaxed">{checkHistory}</p>
-              )}
-              {!helpContext?.listingEndedDate && (
-                <p className="text-xs text-[var(--text-dim)] leading-relaxed">
-                  {EXPIRED_FEED_EXPLANATION}
-                </p>
-              )}
-              <p className="text-xs text-[var(--text-dim)] leading-relaxed">
-                {EXPIRED_FEED_CADENCE} {helpContext?.manualFeedSource ? MANUAL_FEED_CONTEXT : EXPIRED_FEED_CONTEXT}
-              </p>
               {helpContext?.websiteUrl && (
                 <LinkCard as={OutboundLink}
                   href={helpContext.websiteUrl}
