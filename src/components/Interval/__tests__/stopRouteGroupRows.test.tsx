@@ -66,6 +66,18 @@ describe('StopRouteGroup rows (CIV-918)', () => {
     expect(text.indexOf('Shared stretch')).toBeLessThan(text.indexOf('South Bay'));
   });
 
+  it('a direction with one destination has no shared row, even where the stop sees more buses (TTC 29 at Wilson, northbound)', () => {
+    render(
+      <StopRouteGroup
+        shortName="29" label={routeLabels({ shortName: '29', longName: 'Dufferin' })} longName="Dufferin"
+        branches={[{ ...branch('Wilson', 1, 8), rowHeadway: 16 }]}
+        period="midday" onOpenRoute={() => {}}
+      />,
+    );
+    expect(screen.queryByText('Shared stretch')).toBeNull();
+    expect(screen.getByText('every 16 min')).toBeInTheDocument();
+  });
+
   it("a branch value better than the stop's is not used: the row never claims more service than the stop sees", () => {
     render(
       <StopRouteGroup

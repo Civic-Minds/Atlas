@@ -58,7 +58,11 @@ export default function StopRouteGroup({
   // CIV-1078: where a direction's destinations share the stop, the route card's "Shared stretch" row carries their
   // combined value above that direction's rows (stopRouteLineHeadway: only where it is better than every destination).
   const directionIds = [...new Set(items.map(item => item.directionId))];
-  const sharedByDirection = new Map(directionIds.map(dirId => [dirId, stopRouteLineHeadway(items.filter(item => item.directionId === dirId), period)]));
+  // A direction with one destination has no branches to combine: no shared row there, as on the route card.
+  const sharedByDirection = new Map(directionIds.map(dirId => {
+    const rows = items.filter(item => item.directionId === dirId);
+    return [dirId, rows.length > 1 ? stopRouteLineHeadway(rows, period) : null];
+  }));
 
   if (items.length === 0) return null;
 
