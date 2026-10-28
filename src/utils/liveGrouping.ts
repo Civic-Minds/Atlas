@@ -66,6 +66,16 @@ export function destinationKind(
   return branchHits.some(n => n > 1) || !branchHits.some(n => n === 1) ? null : 'branch';
 }
 
+/**
+ * A timetable headsign a rider can read, or null when it's an internal name like "506 Carlton Short Turn" (the route
+ * number, then "Short Turn"): that names no stop, so the car shows its direction only (CIV-1062).
+ */
+export function riderHeadsign(headsign: string | null | undefined, routeShortName: string): string | null {
+  if (!headsign) return null;
+  const raw = headsign.trim().toLowerCase();
+  return raw.startsWith(`${routeShortName.toLowerCase()} `) && raw.endsWith(' short turn') ? null : headsign;
+}
+
 /** Each direction named by its longest shape's headsign (a short turn never names a direction). */
 export function routeDirectionLabels(features: readonly GeoJSON.Feature[], routeShortName: string): Map<number, string> {
   const labels = new Map<number, string>();
