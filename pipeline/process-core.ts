@@ -47,7 +47,7 @@ import { computePeriodCoverageHeadways } from './headway-utils.js';
 import { isNightRouteDirection, nextServiceDay, nightStartsBeforeWindow, overnightPeriodValues, overnightWindowTimes } from './overnightTerminal.js';
 import { makeShapeCoverChecker } from './shapeCoverage.js';
 import { annotateSharedStretches, contiguousSharedRuns, isPoolablePattern } from './sharedStretch.js';
-import { boardsAt } from './stopEligibility.js';
+import { boardsAt, isThinPool } from './stopEligibility.js';
 import { nearDuplicateTripIds } from './nearDuplicateTrips.js';
 import { decideDedupe, runsInDay, type DedupePattern } from './featureDedupe.js';
 import { decideHeadline, decidePeriod, liftTierOnDestinationPool, ownStepOneHeadway, pooledStepOneHeadway, settleTier, terminalReading, type PeriodValue } from './routeGrading.js';
@@ -2334,18 +2334,6 @@ export async function processGtfsBuffer(
       if (middayPlain != null) allStopMiddayHwPlain[stopId] = middayPlain;
       if (hw != null && usedOwnFallback) ownFallbackHw.add(stopId);
       const byPeriod: Partial<Record<PeriodKey, number>> = {};
-      /** Departures of the other patterns in the window: the merged list less the own list. */
-      const othersInWindow = (start: number, end: number): number => {
-        const ownCounts = new Map<number, number>();
-        for (const t of forCrossMidnightWindow(own, end)) if (t >= start && t <= end) ownCounts.set(t, (ownCounts.get(t) ?? 0) + 1);
-        let n = 0;
-        for (const t of forCrossMidnightWindow(times, end)) {
-          if (t < start || t > end) continue;
-          const c = ownCounts.get(t) ?? 0;
-          if (c > 0) ownCounts.set(t, c - 1); else n++;
-        }
-        return n;
-      };
       for (const [pk, { start, end }] of Object.entries(PERIODS) as [PeriodKey, { start: number; end: number }][]) {
         const pooledPh = isPooled ? pooledHeadwayInWindow(times, start, end, 3, false, own) : null;
         const ph = isPooled
@@ -2355,7 +2343,7 @@ export async function processGtfsBuffer(
           const set = ownFallbackPeriodHw.get(stopId) ?? new Set<PeriodKey>();
           set.add(pk);
           ownFallbackPeriodHw.set(stopId, set);
-          if (othersInWindow(start, end) < 3) {
+          if (isThinPool(forCrossMidnightWindow(times, end), forCrossMidnightWindow(own, end), start, end)) {
             const merged = medianHeadwayInWindow(forCrossMidnightWindow(times, end), start, end, 3, true);
             if (merged != null) {
               const thin = thinPoolFallbackPeriodHw.get(stopId) ?? new Map<PeriodKey, PeriodValue>();
@@ -2598,6 +2586,10 @@ export async function processGtfsBuffer(
       const daytime = sorted.filter(t => t >= HEADLINE_WINDOWS.allDay.start && t <= HEADLINE_WINDOWS.allDay.end);
       return daytime.length >= MIN_ALL_DAY_TERMINAL_DEPARTURES;
     };
+    // CIV-1071: a stop that grades: riders can board there (gradesAt) and it has an all-day reading.
+    // The headline floor below still reads stopHasReading alone (a drop-off-only stop counts there);
+    // aligning it is CIV-1071 step B, a data change.
+    const stopGradeable = (stopId: string): boolean => gradesAt(stopId) && stopHasReading(stopId);
     // The line runs by day when at least half of its stop departures fall in 6-22h; a night
     // route (actransit 800 Sunday) keeps its overnight headline and is never "limited" here.
     const lineRunsByDay = (): boolean => {
@@ -2696,9 +2688,9 @@ export async function processGtfsBuffer(
           // A drop-off-only stop has arrivals, not departures: its value stays on the stop
           // card, but it is not graded (#879: RFTA L's terminal read the drawn shape's hourly
           // arrivals while all 37 trips of the destination end there every 30).
-          if (!gradesAt(stopId)) continue;
+          if (!stopGradeable(stopId)) continue;
           const times = stopMetricMap.get(stopId);
-          if (!times || times.length === 0 || !stopHasReading(stopId)) continue;
+          if (!times || times.length === 0) continue;
           const headway = allStopHw[stopId];
           if (headway == null) continue;
           // Rail (#756): no every-gap grade, so each drawn stop's grade is its pooled headway on
