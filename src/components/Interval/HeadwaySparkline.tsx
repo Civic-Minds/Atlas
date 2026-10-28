@@ -81,7 +81,7 @@ const BAND_LABEL_PRIORITY = ['amPeak', 'pmPeak', 'midday', 'evening', 'overnight
  * Which name each period band shows, given the chart's width and each text's width (CIV-1094). First, in priority
  * order, each band gets its name with the peaks in short form ("AM", "PM"), or nothing where it has no room: a name
  * starts at its band and may run past it, as long as it clears every name already placed and the chart's right edge
- * (the last band's name may instead end at that edge). Then, except on phones, each peak takes its full name
+ * (the last band's name may instead end at that edge, still starting on its own band). Then, except on phones, each peak takes its full name
  * ("AM peak") where that still clears its neighbours. With no width known yet (or in tests), every band shows its
  * name, the peaks in short form.
  */
@@ -103,7 +103,8 @@ export function layoutBandLabels(
     const w = textWidth(text);
     const start = band.left * chartWidth + BAND_LABEL_INSET;
     if (clear(start, start + w)) placed.push({ key: band.key, text, alignRight: false, start, end: start + w });
-    else if (band.key === lastKey && clear(chartWidth - w, chartWidth)) placed.push({ key: band.key, text, alignRight: true, start: chartWidth - w, end: chartWidth });
+    // A name always starts on its own band, or it would read as the band before's.
+    else if (band.key === lastKey && chartWidth - w >= band.left * chartWidth && clear(chartWidth - w, chartWidth)) placed.push({ key: band.key, text, alignRight: true, start: chartWidth - w, end: chartWidth });
   }
   if (!phone) {
     for (const label of placed) {
@@ -121,6 +122,7 @@ function BandLabels({ phone }: { phone: boolean }) {
   const ref = useRef<HTMLDivElement | null>(null);
   const [width, setWidth] = useState(0);
   const [font, setFont] = useState<string | null>(null);
+  const [fontsReady, setFontsReady] = useState(false);
   useLayoutEffect(() => {
     const el = ref.current;
     if (!el) return;
@@ -128,12 +130,14 @@ function BandLabels({ phone }: { phone: boolean }) {
     read();
     const style = getComputedStyle(el);
     setFont(`${style.fontWeight} ${style.fontSize} ${style.fontFamily}`);
+    // Measured again once the web font has loaded: a fallback font's widths differ.
+    document.fonts?.ready.then(() => setFontsReady(true));
     if (typeof ResizeObserver === 'undefined') return;
     const ro = new ResizeObserver(read);
     ro.observe(el);
     return () => ro.disconnect();
   }, []);
-  const context = useMemoCanvas(width > 0 ? font : null);
+  const context = useMemoCanvas(width > 0 ? font : null, fontsReady);
   const labels = layoutBandLabels(PERIOD_OVERVIEW_BANDS, context ? width : 0, text => context?.measureText(text).width ?? 0, phone);
   return (
     <div ref={ref} className={`absolute inset-x-0 top-1 h-4 pointer-events-none ${CHART_PERIOD_LABEL}`} data-testid="full-day-period-labels" aria-hidden="true">
@@ -154,7 +158,7 @@ function BandLabels({ phone }: { phone: boolean }) {
 }
 
 /** A 2D canvas context set to `font`, for measuring label widths; null until the font is known. */
-function useMemoCanvas(font: string | null): CanvasRenderingContext2D | null {
+function useMemoCanvas(font: string | null, fontsReady: boolean): CanvasRenderingContext2D | null {
   const [context, setContext] = useState<CanvasRenderingContext2D | null>(null);
   useLayoutEffect(() => {
     if (!font) return;
@@ -162,7 +166,7 @@ function useMemoCanvas(font: string | null): CanvasRenderingContext2D | null {
     if (!ctx) return;
     ctx.font = font;
     setContext(ctx);
-  }, [font]);
+  }, [font, fontsReady]);
   return context;
 }
 

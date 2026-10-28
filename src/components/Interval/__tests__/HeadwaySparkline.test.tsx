@@ -573,6 +573,13 @@ describe('layoutBandLabels (CIV-1094)', () => {
     }
   });
 
+  it('drops the last name rather than let it start on the band before', () => {
+    // Overnight's band (4 hours) is too narrow for its name at 330; ending at the edge would start it in Late's band.
+    const narrow = layoutBandLabels(PERIOD_OVERVIEW_BANDS, 330, width, true);
+    expect(narrow.map(l => l.key)).not.toContain('overnight');
+    expect(narrow.map(l => l.key)).toContain('late');
+  });
+
   it('shows every name, short peaks, before the width is known', () => {
     expect(Object.values(shown(0))).toEqual(['AM', 'Midday', 'PM', 'Evening', 'Late', 'Overnight']);
   });
