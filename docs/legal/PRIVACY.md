@@ -1,6 +1,6 @@
 # Privacy Policy
 
-Last updated October 3, 2026.
+Last updated October 27, 2026.
 
 Atlas is a free public transit map and analysis service operated by Civic Minds. You do not need an account or need to provide personal information to browse the map.
 
@@ -27,6 +27,8 @@ You can allow or decline Google Analytics through *Privacy & analytics* in the A
 ## Storage {#storage}
 
 Atlas stores some preferences in your browser, including theme, display settings, filter choices, recent searches, recently viewed routes, and your Google Analytics consent choice. These values help Atlas remember your preferences and are not an Atlas account.
+
+Atlas stores your country in your browser for 30 days so it can show the right consent prompt without asking our server again.
 
 ## Location {#location}
 

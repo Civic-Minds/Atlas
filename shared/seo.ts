@@ -137,6 +137,11 @@ export const SEO_ROUTES: readonly SeoRoute[] = [
 /** Routes the router knows but that are never reachable by URL (they redirect to the map). */
 export const UNREACHABLE_APP_PATHS: readonly string[] = ['/apps/fares'];
 
+/** The title's build tag: none on public, "[Preview] " on preview, "[Beta] " on beta and dev builds. */
+export function seoTitlePrefix(mode: SeoMode): string {
+  return mode === 'preview' ? '[Preview] ' : mode === 'public' ? '' : '[Beta] ';
+}
+
 export interface SeoContext {
   mode: SeoMode;
   flags: SeoFlags;
@@ -173,7 +178,7 @@ export function resolveSeo(pathname: string, ctx: SeoContext): ResolvedSeo {
   const found = findSeoRoute(pathname);
   const route = found && routeExistsInBuild(found, ctx.flags) ? found : SEO_ROUTES[0];
   const publicBuild = ctx.mode === 'public';
-  const prefix = ctx.mode === 'preview' ? '[Preview] ' : ctx.mode === 'public' ? '' : '[Beta] ';
+  const prefix = seoTitlePrefix(ctx.mode);
   const canonicalPath = route.canonicalPath ?? route.path;
   return {
     title: `${prefix}${route.title}`,

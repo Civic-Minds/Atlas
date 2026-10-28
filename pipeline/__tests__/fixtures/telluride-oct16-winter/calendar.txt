@@ -1,0 +1,25 @@
+service_id,service_name,monday,tuesday,wednesday,thursday,friday,saturday,sunday,start_date,end_date
+c_71893_b_86833_d_96,Year Round Service Summer/Winter (Weekend),0,0,0,0,0,1,1,20260521,20280131
+c_71893_b_86833_d_31,Year Round Service Summer/Winter (Weekday),1,1,1,1,1,0,0,20260521,20280131
+c_71893_b_86833_d_127,Year Round Service Summer/Winter (All days of week),1,1,1,1,1,1,1,20260521,20280131
+c_71173_b_87266_d_31,Off Season SMART (Weekday),1,1,1,1,1,0,0,20261026,20261119
+c_71173_b_87266_d_127,Off Season SMART (All days of week),1,1,1,1,1,1,1,20261026,20261119
+c_70506_b_87294_d_79,Mountain Village DAR (peak) (MTuWThSu),1,1,1,1,0,0,1,20261123,20270404
+c_70506_b_87294_d_48,Mountain Village DAR (peak) (FSa),0,0,0,0,1,1,0,20261123,20270404
+c_70506_b_86761_d_79,Mountain Village DAR (peak) (MTuWThSu),1,1,1,1,0,0,1,20260521,20261018
+c_70506_b_86761_d_48,Mountain Village DAR (peak) (FSa),0,0,0,0,1,1,0,20260521,20261018
+c_70505_b_86763_d_127,Mountain Village DAR (shoulder) (All days of week),1,1,1,1,1,1,1,20261019,20261122
+c_67769_b_87282_d_31,Mountain Village / Lawson Hill (Weekday),1,1,1,1,1,0,0,20261120,20270404
+c_67769_b_86590_d_31,Mountain Village / Lawson Hill (Weekday),1,1,1,1,1,0,0,20260522,20261025
+c_24236_b_87293_d_79,Mountain Village Paratransit (Seasonal Peak) (MTuWThSu),1,1,1,1,0,0,1,20261123,20270404
+c_24236_b_87293_d_48,Mountain Village Paratransit (Seasonal Peak) (FSa),0,0,0,0,1,1,0,20261123,20270404
+c_24236_b_86758_d_79,Mountain Village Paratransit (Seasonal Peak) (MTuWThSu),1,1,1,1,0,0,1,20260521,20261018
+c_24236_b_86758_d_48,Mountain Village Paratransit (Seasonal Peak) (FSa),0,0,0,0,1,1,0,20260521,20261018
+c_24234_b_86760_d_127,Mountain Village Paratransit (Shoulder) (All days of week),1,1,1,1,1,1,1,20261019,20261122
+c_21219_b_86592_d_127,Lawson Hill (All days of week),1,1,1,1,1,1,1,20260522,20270404
+c_21011_b_86834_d_31,Year Round Service (Weekday),1,1,1,1,1,0,0,20260821,20280503
+c_20858_b_87283_d_127,Gondola Service (All days of week),1,1,1,1,1,1,1,20261120,20270404
+c_20858_b_86593_d_127,Gondola Service (All days of week),1,1,1,1,1,1,1,20260521,20261025
+c_20857_b_87284_d_127,Chondola Service (Winter Only) (All days of week),1,1,1,1,1,1,1,20261126,20270404
+c_20856_b_87292_d_127,Galloping Goose (All days of week),1,1,1,1,1,1,1,20261123,20270404
+c_20856_b_86591_d_127,Galloping Goose (All days of week),1,1,1,1,1,1,1,20260522,20261019

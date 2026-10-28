@@ -4,6 +4,7 @@
  * small enough for the map bundle; scripts/build-areas.ts writes it.
  */
 import areaIndexJson from './data/area-index.json';
+import { zoomForSpan } from './mapZoom';
 
 export interface AreaIndexEntry {
   /** The city people search for: "Montréal". */
@@ -32,8 +33,7 @@ export function lookupArea(slug: string | null | undefined, index: AreaIndex = A
 export function areaFitZoom(bbox: readonly [number, number, number, number]): number {
   const [s, w, n, e] = bbox;
   const lat = (s + n) / 2;
-  const span = Math.max(n - s, (e - w) * Math.cos((lat * Math.PI) / 180));
-  return span > 3 ? 7 : span > 1.5 ? 8 : span > 0.7 ? 9 : span > 0.35 ? 10 : 11;
+  return zoomForSpan(Math.max(n - s, (e - w) * Math.cos((lat * Math.PI) / 180)));
 }
 
 /**

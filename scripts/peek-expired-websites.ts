@@ -5,7 +5,7 @@ import JSZip from 'jszip';
 import { parseCsv } from '../pipeline/parseGtfs.js';
 import { runWithConcurrency } from '../pipeline/utils.js';
 
-const today = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+import { agencyTodayYmd } from '../shared/feedAvailability.js';
 const indexPath = resolve('public/data/index.json');
 const index = JSON.parse(readFileSync(indexPath, 'utf8')) as {
   agencies: Array<{
@@ -19,7 +19,7 @@ const index = JSON.parse(readFileSync(indexPath, 'utf8')) as {
 };
 
 const expired = index.agencies.filter(
-  a => a.lastFeedExpiry?.length === 8 && a.lastFeedExpiry < today,
+  a => a.lastFeedExpiry?.length === 8 && a.lastFeedExpiry < agencyTodayYmd(a),
 );
 const targets = process.argv.includes('--all') ? index.agencies : expired;
 

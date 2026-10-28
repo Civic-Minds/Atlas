@@ -1,13 +1,22 @@
 import React from 'react';
-import { routeLabels } from '../../../utils/format';
-import { FLOATING_CARD, PANEL_ENTER, LIST_ROW_PRIMARY } from '../../../styles';
-import ListRow from '../../ui/ListRow';
+import Panel, { PanelBody } from '../../ui/Panel';
+import AgencyGroupHeader from '../../ui/AgencyGroupHeader';
+import AgencyName from '../../ui/AgencyName';
+import { CardBackLink } from '../../CardBack';
+import RouteListRow from '../../RouteListRow';
+import { CardReportButton } from '../cardUi';
+import { reportDetails } from '../../../utils/reportIssue';
+import type { RouteLabel } from '../../../utils/routeFacts';
 
 export interface DisambigRoute {
   key: string;
   shortName: string;
+  /** What the row shows (route facts' label, CIV-984); the short name is only the route's identity. */
+  label: RouteLabel;
   longName: string;
   agencyName: string;
+  /** The agency's place, shown beside its name in the group heading ("TTC · Toronto"). */
+  agencyPlace?: string;
   agencySlug?: string;
   routeType?: number;
   color: string;
@@ -19,44 +28,64 @@ export interface DisambiguationPanelProps {
   setDisambiguationRoutes: (routes: string[] | null) => void;
 }
 
+/** What a report from the chooser sends (CIV-932): every route it lists, then the link (its `routes=` and map view). */
+export function chooserReportDetails(routes: readonly DisambigRoute[]): string {
+  return reportDetails([
+    '**Routes listed:**',
+    ...routes.map(r => `- ${r.agencyName}: ${r.label.text} (${r.key})`),
+  ]);
+}
+
 export const DisambiguationPanel: React.FC<DisambiguationPanelProps> = ({
   disambigDetails,
   setSelectedRoute,
   setDisambiguationRoutes,
 }) => {
-  const groups: { agencyName: string; routes: DisambigRoute[] }[] = [];
+  const groups: { agencyName: string; agencyPlace?: string; routes: DisambigRoute[] }[] = [];
   for (const r of disambigDetails) {
     const last = groups[groups.length - 1];
     if (last && last.agencyName === r.agencyName) last.routes.push(r);
-    else groups.push({ agencyName: r.agencyName, routes: [r] });
+    else groups.push({ agencyName: r.agencyName, agencyPlace: r.agencyPlace, routes: [r] });
   }
 
   return (
-    <div className={`${FLOATING_CARD} ${PANEL_ENTER} max-h-[380px] overflow-y-auto custom-scrollbar`}>
-      <div>
+    // The shared card panel (CIV-971): its header stays put and only the routes scroll.
+    <Panel sidebarSurface enter data-report-anchor="true" className="max-h-[380px]">
+      {/* Nothing comes before the chooser, so its back link closes it (CIV-929). The report flag sits on the
+          same line (CIV-932); its negative margin keeps the line its old height. */}
+      <div className="shrink-0 px-4 pt-4 flex items-start justify-between gap-2">
+        <CardBackLink onClick={() => setDisambiguationRoutes(null)}>Map</CardBackLink>
+        <div className="-my-1">
+          <CardReportButton
+            title="Route chooser"
+            details={chooserReportDetails(disambigDetails)}
+            excludeReasons={['Stop is missing, misplaced, or assigned incorrectly']}
+          />
+        </div>
+      </div>
+      <PanelBody>
         {groups.map(g => (
           <div key={g.agencyName}>
             {g.agencyName && (
-              <div className="px-4 pt-2.5 pb-1">
-                <span className="text-xs font-black tracking-wide text-[var(--text-dim)]">{g.agencyName}</span>
-              </div>
+              <AgencyGroupHeader rule="none">
+                <AgencyName primary={g.agencyName} secondary={g.agencyPlace} />
+              </AgencyGroupHeader>
             )}
-            {g.routes.map(r => (
-              <ListRow
-                key={r.key}
-                onClick={() => { setSelectedRoute(r.key); setDisambiguationRoutes(null); }}
-              >
-                <div className="min-w-0 flex-1 flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full shrink-0" style={{ background: r.color }} />
-                  <span className={LIST_ROW_PRIMARY}>
-                    {routeLabels({ shortName: r.shortName, longName: r.longName, routeType: r.routeType, agencySlug: r.agencySlug, agencyName: r.agencyName }).text}
-                  </span>
-                </div>
-              </ListRow>
-            ))}
+            {g.routes.map(r => {
+              const label = r.label;
+              return (
+                <RouteListRow
+                  key={r.key}
+                  shortName={label.primary}
+                  name={label.secondary}
+                  dotColor={r.color}
+                  onClick={() => { setSelectedRoute(r.key); setDisambiguationRoutes(null); }}
+                />
+              );
+            })}
           </div>
         ))}
-      </div>
-    </div>
+      </PanelBody>
+    </Panel>
   );
 };

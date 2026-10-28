@@ -168,6 +168,7 @@ jobs:
       - name: Rebuild history config
         run: npm run build-history
         env:
+          ATLAS_HISTORY_V2: '1'
           R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
           R2_BUCKET_NAME: ${{ secrets.R2_BUCKET_NAME }}
           R2_PUBLIC_URL: ${{ secrets.R2_PUBLIC_URL }}

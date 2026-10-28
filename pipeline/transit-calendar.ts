@@ -435,7 +435,7 @@ const HOLIDAY_WEEK_WINDOW = 4;
  * True when the calendar is the one synthesizeCalendarFromDates built from a
  * calendar_dates-only feed: every entry spans exactly its service's first to last added date.
  */
-function isSynthesizedCalendar(calendar: GtfsCalendar[], calendarDates: GtfsCalendarDate[] | undefined): boolean {
+export function isSynthesizedCalendar(calendar: GtfsCalendar[], calendarDates: GtfsCalendarDate[] | undefined): boolean {
     if (calendar.length === 0 || !calendarDates || calendarDates.length === 0) return false;
     const range = new Map<string, [string, string]>();
     for (const cd of calendarDates) {

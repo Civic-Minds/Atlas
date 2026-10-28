@@ -14,7 +14,7 @@
  */
 import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { CATALOG_MODES, generateAgencyCatalog, generateAgencyIndex, generateModeOverrides } from './agencyIndexGeneration.js';
+import { CATALOG_MODES, generateAgencyCatalog, generateAgencyIndex, generateAgencyShortNames, generateModeOverrides } from './agencyIndexGeneration.js';
 import { publicAgenciesExcludedFromRelease } from '../pipeline/releaseGuard.js';
 
 const root = resolve(import.meta.dirname, '..');
@@ -49,6 +49,11 @@ const drifted: string[] = [];
 const modeOverridesPath = resolve(root, 'shared/data/mode-overrides.json');
 if (!existsSync(modeOverridesPath) || readFileSync(modeOverridesPath, 'utf8') !== generateModeOverrides(index.agencies).contents) {
   console.error('shared/data/mode-overrides.json is out of date with config/agencies modeOverrides — run npm run build:agency-index');
+  process.exit(1);
+}
+const shortNamesPath = resolve(root, 'shared/data/agency-short-names.json');
+if (!existsSync(shortNamesPath) || readFileSync(shortNamesPath, 'utf8') !== generateAgencyShortNames(index.agencies).contents) {
+  console.error('shared/data/agency-short-names.json is out of date with config/agencies shortName — run npm run build:agency-index');
   process.exit(1);
 }
 for (const [name, contents] of expected) {

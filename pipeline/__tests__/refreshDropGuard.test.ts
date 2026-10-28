@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { dropGuardRefusal, readLiveArtifactCounts, type ArtifactCounts } from '../archiveSelection.js';
+import { countArtifacts, dropGuardRefusal, type ArtifactCounts } from '../archiveSelection.js';
 
 // refresh.ts runs its CLI on import, so these tests exercise the shared guard
 // with refresh's options and pin how refresh.ts wires it up.
@@ -32,7 +32,7 @@ describe('refresh drop guard', () => {
     expect(dropGuardRefusal(null, sctRefreshed, { allowDrop: true, allowMissingLive: false })).toBeNull();
   });
 
-  it('reads live counts from the route and stops artifacts', async () => {
+  it('counts routes and stops from the route and stops artifacts', () => {
     const files: Record<string, string> = {
       'atlas/sct.json': JSON.stringify({ features: [
         { geometry: { type: 'LineString' }, properties: { routeId: '1' } },
@@ -40,9 +40,7 @@ describe('refresh drop guard', () => {
       ] }),
       'atlas/sct-stops.json': JSON.stringify({ a: {}, b: {} }),
     };
-    const get = async (key: string) => files[key] ?? null;
-    expect(await readLiveArtifactCounts('sct', get)).toEqual({ stops: 2, stopPoints: 1, routes: 1 });
-    expect(await readLiveArtifactCounts('missing', get)).toBeNull();
+    expect(countArtifacts(files['atlas/sct.json'], files['atlas/sct-stops.json'])).toEqual({ stops: 2, stopPoints: 1, routes: 1 });
   });
 
   it('refresh checks the release diff gate before writing any artifact, archive, metadata or history', () => {

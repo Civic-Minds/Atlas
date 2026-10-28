@@ -55,6 +55,11 @@ afterEach(() => {
   window.history.replaceState(null, '', '/');
 });
 
+// A list row draws the route as "**6** Yonge" (CIV-928): the number and the name are separate spans.
+function routeRow(number: string, name: string) {
+  return screen.queryAllByText(name).find(el => el.previousElementSibling?.textContent === number);
+}
+
 describe('History shared links', () => {
   it('opens the linked agency, route and year, and keeps them in the URL after data loads', async () => {
     renderHistory('?agency=ttc&hroute=29&year=2019');
@@ -89,21 +94,21 @@ describe('History shared links', () => {
 
   it('the route list follows the year: only routes with a snapshot that year, with that year\'s value and change (CIV-457)', async () => {
     renderHistory('?agency=yrt&year=2020');
-    await waitFor(() => expect(screen.getByText('6 — Yonge')).toBeInTheDocument());
-    expect(screen.queryByText('7 — Highway 7')).not.toBeInTheDocument();
+    await waitFor(() => expect(routeRow('6', 'Yonge')).toBeTruthy());
+    expect(routeRow('7', 'Highway 7')).toBeUndefined();
     expect(screen.getByText('+10')).toBeInTheDocument();
   });
 
   it('a later year lists the routes that ran then', async () => {
     renderHistory('?agency=yrt&year=2025');
-    await waitFor(() => expect(screen.getByText('7 — Highway 7')).toBeInTheDocument());
-    expect(screen.getByText('6 — Yonge')).toBeInTheDocument();
+    await waitFor(() => expect(routeRow('7', 'Highway 7')).toBeTruthy());
+    expect(routeRow('6', 'Yonge')).toBeTruthy();
     expect(screen.queryByText('+10')).not.toBeInTheDocument();
   });
 
   it('a route with one snapshot is listed with its value and no change, and opens with one row', async () => {
     renderHistory('?agency=yrt&year=2025');
-    await waitFor(() => expect(screen.getByText('8 — Kennedy')).toBeInTheDocument());
+    await waitFor(() => expect(routeRow('8', 'Kennedy')).toBeTruthy());
     renderHistory('?agency=yrt&year=2025&hroute=8');
     await waitFor(() => expect(screen.getAllByText('2025').length).toBeGreaterThan(0));
   });

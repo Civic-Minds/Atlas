@@ -43,5 +43,13 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://s3.amazonaws.com/datatools-511ny/public/AirTrain_JFK.zip",
-  "lastPeekedExpiry": "20270228"
+  "lastPeekedExpiry": "20270228",
+  "modeOverrides": [
+    {
+      "routeType": 0,
+      "routeShortName": "AirTrain",
+      "mode": 101,
+      "reason": "AirTrain JFK (all three routes) is an automated people mover, published as route_type 0 (streetcar)"
+    }
+  ]
 }

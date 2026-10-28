@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import { X } from 'lucide-react';
 import { Z_MODAL_TOP } from '../styles';
 import Panel from './ui/Panel';
+import PanelHeader from './ui/PanelHeader';
 import { resolveDataRelease, type DataRelease } from '../lib/dataRelease';
 import { formatStoredDate } from '../utils/format';
 import { WhatsNewItemText } from './WhatsNewItemText';
@@ -51,17 +51,7 @@ export function WhatsNewPanel({ onClose, includeBeta, releases, loadRelease = re
         enter
         className="absolute bottom-24 sm:bottom-16 left-3 right-3 sm:left-6 sm:right-auto sm:w-[340px] max-h-[min(70vh,520px)]"
       >
-        <div className="shrink-0 flex items-center justify-between px-5 border-b border-[var(--border-primary)] h-12">
-          <h2 id="whats-new-title" className="text-xs font-black text-[var(--text-primary)]">What's new</h2>
-          <button
-            type="button"
-            aria-label="Close what's new"
-            onClick={onClose}
-            className="w-7 h-7 -mr-1.5 flex items-center justify-center rounded-full hover:bg-[var(--bg-btn-hover)] text-[var(--text-dim)] transition-colors"
-          >
-            <X className="w-3.5 h-3.5" />
-          </button>
-        </div>
+        <PanelHeader titleId="whats-new-title" title="What's new" onClose={onClose} closeLabel="Close what's new" />
         <div className="overflow-y-auto custom-scrollbar px-5 py-4 space-y-4 text-xs">
           {visible.map((release, index) => (
             <section key={release.version} aria-label={`Version ${shortVersion(release.version)}`}>

@@ -2,7 +2,7 @@ import { useEffect, useMemo } from 'react';
 import * as maplibregl from 'maplibre-gl';
 import type { DayType } from '../../../../shared/dayTypes';
 import { frequentServiceBand, frequentServiceFeatureKey, frequentServiceQueryKey, type FrequentServiceFrequency, type FrequentServiceWindow } from '../../../../shared/frequentService';
-import { effectiveMode, ON_DEMAND_MODE } from '../../../../shared/modes';
+import { effectiveMode } from '../../../../shared/modes';
 import { clipToStopIds } from '../../../utils/lineClip';
 import { nightServiceKey, type NightServiceFrequency } from '../../../../shared/nightService';
 
@@ -111,13 +111,13 @@ export function selectFrequentServiceFeatures(
     if (feature.geometry.type !== 'LineString') continue;
     const props = feature.properties as Record<string, any> | null;
     if (!props?.day || !frequentServiceDays.includes(props.day) || !props.researchFrequentService?.[key]) continue;
-    const routeModes = [...selectedModes].filter(mode => mode !== ON_DEMAND_MODE);
-    if (selectedModes.size > 0 && (routeModes.length === 0 || !routeModes.includes(effectiveMode({
+    if (selectedModes.size > 0 && !selectedModes.has(effectiveMode({
       routeType: props.routeType,
       routeLongName: props.routeLongName,
       routeShortName: props.routeShortName,
       agencySlug: props.agencySlug,
-    })))) continue;
+      bookingRequired: props.bookingRequired,
+    }))) continue;
     const group = grouped.get(frequentServiceFeatureKey(props)) ?? [];
     group.push(feature);
     grouped.set(frequentServiceFeatureKey(props), group);

@@ -18,7 +18,8 @@ name="$1"
 branch="$2"
 
 # The main checkout is the first entry in `git worktree list`, wherever this runs from.
-main_checkout="$(git worktree list --porcelain | awk '/^worktree /{print substr($0, 10); exit}')"
+# Read the whole list (no early awk exit), so git never gets SIGPIPE under pipefail.
+main_checkout="$(git worktree list --porcelain | awk '/^worktree /{if (!seen) print substr($0, 10); seen=1}')"
 dev_env="$main_checkout/.env.dev-public"
 target="$(dirname "$main_checkout")/Atlas-worktrees/$name"
 

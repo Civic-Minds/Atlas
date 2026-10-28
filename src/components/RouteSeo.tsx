@@ -5,7 +5,7 @@ import { resolveSeo } from '../../shared/seo';
 import { AGENCY_PATH_PREFIX } from '../../shared/agencyPages';
 import { AREA_PATH_PREFIX } from '../../shared/areas';
 import { AGENCY_INDEX_PATH } from '../../shared/agencyIndex';
-import { applySeoToDocument } from '../lib/seoDom';
+import { applySeoToDocument, seoOrigin } from '../lib/seoDom';
 
 /** Sets the page title, description, canonical and robots tags for the current route. */
 export default function RouteSeo() {
@@ -16,8 +16,7 @@ export default function RouteSeo() {
     const seo = resolveSeo(pathname, {
       mode: ATLAS_MODE,
       flags: seoFlags(),
-      // Production keeps the real site address; staging builds describe the host they run on.
-      origin: ATLAS_MODE === 'public' ? undefined : window.location.origin,
+      origin: seoOrigin(),
     });
     applySeoToDocument(document, seo);
   }, [pathname]);

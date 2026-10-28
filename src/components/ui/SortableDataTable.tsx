@@ -1,5 +1,5 @@
 import { useState, type Key } from 'react';
-import DataTable, { type DataTableColumn } from './DataTable';
+import DataTable, { type DataTableColumn, type DataTableSort } from './DataTable';
 
 export interface SortableColumn<T> extends DataTableColumn<T> {
   /** Makes the header sort the rows: higher values are worse and come first; a second click turns the order round. */
@@ -11,20 +11,20 @@ export interface SortableColumn<T> extends DataTableColumn<T> {
  * Live pages use. Ties keep the incoming order. For a table whose sort lives in the address, use DataTable's
  * `sort` / `onSort` directly (the Live agency Routes table).
  */
-export default function SortableDataTable<T>({ columns, rows, defaultSort, fill = true, narrowFit, ...rest }: {
+export default function SortableDataTable<T>({ columns, rows, defaultSort, layout = 'fill', narrowFit, ...rest }: {
   columns: SortableColumn<T>[];
   rows: readonly T[];
   rowKey: (row: T) => Key;
   caption?: string;
   /** The column the rows start sorted by; omit to keep the incoming order until a header is clicked. */
   defaultSort?: string;
-  /** The table spans its container (default); false keeps every column at its set width, so tables line up. */
-  fill?: boolean;
+  /** `fill` spans its container (default); `fixed` keeps every column at its set width, so tables line up. */
+  layout?: 'fill' | 'fixed';
   /** See DataTable: on a phone the table fits its container, leaving out the columns marked `narrowHide`. */
   narrowFit?: boolean;
   rowTitle?: (row: T) => string | undefined;
 }) {
-  const [sort, setSort] = useState<{ key: string; reversed: boolean } | null>(defaultSort ? { key: defaultSort, reversed: false } : null);
+  const [sort, setSort] = useState<DataTableSort | null>(defaultSort ? { key: defaultSort, reversed: false } : null);
   const col = sort ? columns.find(c => c.key === sort.key && c.worst) : undefined;
   const value = (r: T) => col?.worst?.(r) ?? -Infinity;
   const sorted = col
@@ -33,8 +33,7 @@ export default function SortableDataTable<T>({ columns, rows, defaultSort, fill 
   return (
     <DataTable
       {...rest}
-      fixed
-      fill={fill}
+      layout={layout}
       narrowFit={narrowFit}
       rows={sorted}
       // Headers stay on one line, as in the Routes table.

@@ -53,11 +53,14 @@ describe('the section fields move to the agency sections file', () => {
     const full = JSON.parse((await processGtfsBuffer(buf, undefined, { slug: 'go' })).geojson).features;
     const result = await processAgencyFeeds(buf, [], { slug: 'go' } as any);
     const routes = JSON.parse(result.geojson).features;
-    for (const f of routes) {
+    routes.forEach((f: any, i: number) => {
       for (const field of SECTION_FIELDS) expect(f.properties[field]).toBeUndefined();
-      expect(f.properties.stretchMeta?.main?.period).toBeUndefined();
-      expect(f.properties.stretchMeta?.main?.noRegular).toBeUndefined();
-    }
+      // The main stretch's values stay on the route file for public route cards (CIV-937); the tails' move.
+      expect(f.properties.stretchMeta?.main?.period).toEqual(full[i].properties.stretchMeta?.main?.period);
+      expect(f.properties.stretchMeta?.main?.noRegular).toEqual(full[i].properties.stretchMeta?.main?.noRegular);
+      for (const t of f.properties.stretchMeta?.tails ?? []) expect(t.period).toBeUndefined();
+    });
+    expect(routes.some((f: any) => f.properties.stretchMeta?.main?.period)).toBe(true);
     expect(full.some((f: any) => f.properties.fullLine)).toBe(true);
     expect(applyAgencySections(routes, JSON.parse(result.sectionsJson) as AgencySections)).toEqual(full);
   });

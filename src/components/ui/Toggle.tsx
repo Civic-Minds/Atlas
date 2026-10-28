@@ -18,7 +18,7 @@ export default function Toggle({ on, onToggle, label, className = 'shrink-0' }: 
         }`}
       >
         <span
-          className={`absolute top-1 h-3 w-3 rounded-full shadow-sm transition-transform ${TRANSITION_BASE} ${
+          className={`absolute top-1 h-3 w-3 rounded-full transition-transform ${TRANSITION_BASE} ${
             on ? 'translate-x-5 bg-[var(--toggle-knob-on)]' : 'translate-x-1 bg-[var(--toggle-knob-off)]'
           }`}
         />

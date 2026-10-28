@@ -150,17 +150,20 @@ export const determineTier = (
  * is used. Ordinary classifications retain the separate three-departure
  * minimum below.
  */
+// Typed as a TierDeterminer's arguments; the 11th (preCountedGraceViolations) is not used here, as before (CIV-1004).
 const determineTierWithEdgeGapAllowanceDetail = (
-    headways,
-    tripCount,
-    spanMinutes,
-    tiers,
-    graceMinutes,
-    maxGraceViolations,
-    gracePercent,
-    violationPercent,
-    context,
-    violationPercentByTier,
+    ...[
+        headways,
+        tripCount,
+        spanMinutes,
+        tiers,
+        graceMinutes,
+        maxGraceViolations,
+        gracePercent,
+        violationPercent,
+        context,
+        violationPercentByTier,
+    ]: Parameters<TierDeterminer>
 ): EdgeGapAllowanceResult => {
     const analysisTimes = [...context.analysisTimes];
     const rawTimes = context.rawDepartureTimes;
@@ -722,7 +725,6 @@ export function applyAnalysisCriteria(
             headsign: raw.headsign,
             routeVariant: raw.routeVariant,
             shapeId: raw.shapeId,
-            routeVariant: raw.routeVariant,
             ...resourceStats
         };
         perDayResults.set(`${raw.route}::${raw.dir}::${raw.headsign ?? ''}::${raw.shapeId ?? ''}::${raw.routeVariant ?? ''}::${raw.day}`, { dayType, day: raw.day, result, rawTimes: raw.departureTimes });
@@ -950,7 +952,6 @@ export function applyAnalysisCriteria(
             headsign: rep.headsign,
             routeVariant: rep.routeVariant,
             shapeId: rep.shapeId,
-            routeVariant: rep.routeVariant,
             ...resourceStats
         });
     }

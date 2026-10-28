@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { adaptiveMedianHeadwayInWindow, computeHourMaxGaps, computePeriodCoverageHeadways, computePeriodHeadways, computePeriodMaxGaps, computePeriodSustained, computeResearchFrequentService, forCrossMidnightWindow, HEADLINE_MIN_DEPARTURES, HEADLINE_WINDOWS, headlineWindowValue, hasGenuineBranchPattern, hasSustainedFrequentService, hasSustainedNightService, headsignOverlapMinHeadway, isSustainedHeadway, medianHeadwayInWindow, nightServiceDepartureTimes, resolveTerminalHeadway, RAIL_TIER_WINDOW, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from '../headway-utils';
+import { adaptiveMedianHeadwayInWindow, computeHourDepartureCounts, computeHourMaxGaps, computePeriodCoverageHeadways, computePeriodHeadways, computePeriodMaxGaps, computePeriodSustained, computeResearchFrequentService, forCrossMidnightWindow, HEADLINE_MIN_DEPARTURES, HEADLINE_WINDOWS, headlineWindowValue, hasGenuineBranchPattern, hasSustainedFrequentService, hasSustainedNightService, headsignOverlapMinHeadway, isSustainedHeadway, medianHeadwayInWindow, nightServiceDepartureTimes, resolveTerminalHeadway, RAIL_TIER_WINDOW, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from '../headway-utils';
 import { TIME_PERIODS } from '../../shared/config';
 
 describe('computePeriodCoverageHeadways', () => {
@@ -606,5 +606,14 @@ describe('headlineWindowValue (same values as the old pasted chains)', () => {
     expect(HEADLINE_WINDOWS).toEqual({ midday: { start: 540, end: 900 }, pmPeak: { start: 900, end: 1140 }, allDay: { start: 360, end: 1320 } });
     expect(RAIL_TIER_WINDOW).toEqual({ start: 570, end: 870 });
     expect(HEADLINE_MIN_DEPARTURES).toBe(3);
+  });
+});
+
+describe('computeHourDepartureCounts (CIV-1010)', () => {
+  it('counts distinct departures per hour, the last hour of the day included, and leaves empty hours out', () => {
+    // Hourly at :00 and :18 from 18:00; the day's last departure is 22:18, which maxGapByHour cannot cover.
+    const times = [1080, 1098, 1140, 1158, 1200, 1218, 1260, 1278, 1320, 1338, 1338];
+    expect(computeHourDepartureCounts(times, [17, 18, 19, 20, 21, 22, 23])).toEqual({ 18: 2, 19: 2, 20: 2, 21: 2, 22: 2 });
+    expect(computeHourMaxGaps(times, [22])[22]).toBe(18);
   });
 });

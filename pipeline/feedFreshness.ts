@@ -1,13 +1,14 @@
-function validYmd(value: unknown): value is string {
-  return typeof value === 'string' && /^\d{8}$/.test(value);
-}
+import { isYmd } from '../shared/feedAvailability.js';
 
 /**
- * Return the latest service date advertised anywhere in the feed.
+ * Return the latest service date advertised anywhere in the feed: the latest of
+ * feed_info.txt's feed_end_date, calendar.txt end dates and added calendar_dates
+ * entries (removals are ignored).
  *
- * feed_info.txt is often left stale by agencies that keep extending their
- * calendar, so calendar.txt and added calendar_dates entries are authoritative
- * for deciding whether a feed still contains future service.
+ * feed_info's end date counts here, so a feed whose feed_info outlasts its
+ * calendar reads later than its last real service (Detroit People Mover:
+ * calendar 2026-12-31, feed_info 2027-12-31, #1126). The recorded expiry caps
+ * that with the calendar's own end (recordedFeedExpiry in refreshMeta.ts, #1039).
  */
 export function effectiveFeedExpiry(opts: {
   feedInfoEnd?: unknown;
@@ -15,13 +16,13 @@ export function effectiveFeedExpiry(opts: {
   calendarDates?: Array<{ date?: unknown; exception_type?: unknown }>;
 }): string | null {
   const dates: string[] = [];
-  if (validYmd(opts.feedInfoEnd)) dates.push(opts.feedInfoEnd);
+  if (isYmd(opts.feedInfoEnd)) dates.push(opts.feedInfoEnd);
   for (const end of opts.calendarEnds ?? []) {
-    if (validYmd(end)) dates.push(end);
+    if (isYmd(end)) dates.push(end);
   }
   for (const entry of opts.calendarDates ?? []) {
     if (String(entry.exception_type ?? '') === '2') continue;
-    if (validYmd(entry.date)) dates.push(entry.date);
+    if (isYmd(entry.date)) dates.push(entry.date);
   }
   return dates.length ? dates.sort().at(-1)! : null;
 }
@@ -38,12 +39,12 @@ export function effectiveFeedStart(opts: {
 }): string | null {
   const dates: string[] = [];
   for (const start of opts.calendarStarts ?? []) {
-    if (validYmd(start)) dates.push(start);
+    if (isYmd(start)) dates.push(start);
   }
   for (const entry of opts.calendarDates ?? []) {
     if (String(entry.exception_type ?? '') === '2') continue;
-    if (validYmd(entry.date)) dates.push(entry.date);
+    if (isYmd(entry.date)) dates.push(entry.date);
   }
   if (dates.length) return dates.sort()[0];
-  return validYmd(opts.feedInfoStart) ? opts.feedInfoStart : null;
+  return isYmd(opts.feedInfoStart) ? opts.feedInfoStart : null;
 }

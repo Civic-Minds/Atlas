@@ -7,6 +7,7 @@ import {
   includeHiddenArgError,
   isReprocessTarget,
   feedDateRefusal,
+  matchesExpiredFeedPin,
   outputDropRefusal,
   peekFeedDates,
   reprocessCountryLaunchSkip,
@@ -196,6 +197,28 @@ describe('feedDateRefusal', () => {
   });
 });
 
+describe('expiredFeedPin (#1036, Rockford)', () => {
+  const pin = { feedVersion: 'S1000085', feedExpiry: '20261010' };
+
+  it('matches only the exact approved feed', () => {
+    expect(matchesExpiredFeedPin(pin, { feedVersion: 'S1000085', feedExpiry: '20261010' })).toBe(true);
+    // A newer feed at the same URL, or the 2023 Mobility Database copy, is not the approved one.
+    expect(matchesExpiredFeedPin(pin, { feedVersion: 'S1000090', feedExpiry: '20270110' })).toBe(false);
+    expect(matchesExpiredFeedPin(pin, { feedVersion: 'S1000085', feedExpiry: '20261011' })).toBe(false);
+    expect(matchesExpiredFeedPin(pin, { feedVersion: null, feedExpiry: '20240611' })).toBe(false);
+    expect(matchesExpiredFeedPin(undefined, { feedVersion: 'S1000085', feedExpiry: '20261010' })).toBe(false);
+  });
+
+  it('lets the pinned feed past the ended check only', () => {
+    expect(feedDateRefusal('20261010', '20261010', '20261027', '20261010')).toBeNull();
+    // Another ended feed, or another agency with no pin, is still refused.
+    expect(feedDateRefusal('20240611', '20261010', '20261027', '20261010')).toMatch(/before today/);
+    expect(feedDateRefusal('20261010', '20261010', '20261027')).toMatch(/before today/);
+    // The older-than-live check still holds for the pinned feed.
+    expect(feedDateRefusal('20261010', '20261128', '20261027', '20261010')).toMatch(/older than the live data/);
+  });
+});
+
 describe('reprocessCountryLaunchSkip (#668)', () => {
   const registry = [
     { slug: 'ttc', region: 'Ontario', center: [43.65, -79.38] as [number, number] },
@@ -230,6 +253,24 @@ describe('peekFeedDates', () => {
     zip.file('calendar.txt', 'service_id,start_date,end_date\nwk,20261019,20261204\n');
     const buf = await zip.generateAsync({ type: 'nodebuffer' });
     expect((await peekFeedDates(buf)).feedStart).toBe('20261019');
+  });
+
+  it('counts only the kept routes\' services when routes are excluded (#1140, Snowmass)', async () => {
+    // Snowmass, CIV-829: route 3 runs to Nov 25; the excluded BC-SMI/SMI-BC run to Dec 29.
+    const zip = new JSZip();
+    zip.file('feed_info.txt', 'feed_publisher_name,feed_end_date\nX,20261125\n');
+    zip.file('calendar.txt', 'service_id,start_date,end_date\nvillage,20260921,20261125\nbc,20260921,20261229\n');
+    zip.file('calendar_dates.txt', 'service_id,date,exception_type\nbc,20261230,1\n');
+    zip.file('routes.txt', 'route_id,route_short_name\nr3,3\nr10,BC-SMI\nr11,SMI-BC\n');
+    zip.file('trips.txt', 'route_id,service_id,trip_id\nr3,village,a\nr10,bc,b\nr11,bc,c\n');
+    const buf = await zip.generateAsync({ type: 'nodebuffer' });
+    expect((await peekFeedDates(buf)).feedExpiry).toBe('20261230');
+    const kept = await peekFeedDates(buf, ['BC-SMI', 'SMI-BC']);
+    expect(kept.feedExpiry).toBe('20261125');
+    expect(kept.calendarOnlyEnd).toBe('20261125');
+    // A list naming no route in the feed changes nothing; a shared service stays counted.
+    expect((await peekFeedDates(buf, ['X9'])).feedExpiry).toBe('20261230');
+    expect((await peekFeedDates(buf, ['BC-SMI'])).feedExpiry).toBe('20261230');
   });
 
   it('returns nulls for an unreadable zip', async () => {

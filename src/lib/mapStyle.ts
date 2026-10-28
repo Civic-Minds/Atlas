@@ -3,6 +3,7 @@ import { Protocol, PMTiles } from 'pmtiles';
 import { R2_PUBLIC_URL } from '../../shared/config';
 import { currentAgencyDataVersion, resolveAgencyDataVersion } from './agencyGeo';
 import { RetryingFetchSource } from './pmtilesRetrySource';
+import { BASEMAP_ATTRIBUTION, cartoTiles } from './basemap';
 import { dataReleasePmtilesUrl, resolveDataRelease, verifiedReleaseRequired, type DataRelease } from './dataRelease';
 import maplibreWorkerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url';
 
@@ -50,12 +51,8 @@ export async function registerProtocol() {
 }
 
 export const getMapStyle = (lightMode: boolean): maplibregl.StyleSpecification => {
-  const lightTiles = [
-    '/api/carto-tiles?style=light_all&z={z}&x={x}&y={y}',
-  ];
-  const darkTiles = [
-    '/api/carto-tiles?style=dark_all&z={z}&x={x}&y={y}',
-  ];
+  const lightTiles = cartoTiles('light_all');
+  const darkTiles = cartoTiles('dark_all');
   const lightVis = lightMode ? 'visible' : 'none';
   const darkVis = lightMode ? 'none' : 'visible';
 
@@ -66,13 +63,13 @@ export const getMapStyle = (lightMode: boolean): maplibregl.StyleSpecification =
         type: 'raster',
         tiles: lightTiles,
         tileSize: 256,
-        attribution: 'Map tiles by CARTO, under CC BY 3.0. Data by OpenStreetMap, under ODbL.',
+        attribution: BASEMAP_ATTRIBUTION,
       },
       'cartodb-dark': {
         type: 'raster',
         tiles: darkTiles,
         tileSize: 256,
-        attribution: 'Map tiles by CARTO, under CC BY 3.0. Data by OpenStreetMap, under ODbL.',
+        attribution: BASEMAP_ATTRIBUTION,
       },
     },
     layers: [

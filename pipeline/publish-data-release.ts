@@ -26,6 +26,7 @@ import { bumpPublicDataVersion } from './dataVersion.js';
 import { isBuiltIntoTiles, type TileInclusionAgency } from './pmtilesCoverage.js';
 import { R2_PUBLIC_URL } from '../shared/config.js';
 import { runWithConcurrency } from './utils.js';
+import { agencyTodayYmd } from '../shared/feedAvailability.js';
 import {
   applyOverrides,
   buildGateReport,
@@ -149,7 +150,7 @@ const gateFlags = await evaluateRun({
   // (read from atlas/<slug>.json) are peers whose matches only warn.
   registry: (indexAgencies as Array<{ slug: string; hiddenInProduction?: boolean; staged?: boolean }>).filter(a => a.hiddenInProduction || a.staged),
   getHiddenLive: cachedSummaryReader(slug => readLiveSummary(slug, getPublic, ['atlas'])),
-  todayYmd: new Date().toISOString().slice(0, 10).replace(/-/g, ''),
+  todayYmd: slug => agencyTodayYmd(indexAgencies.find(a => a.slug === slug) as { timezone?: string } ?? {}),
   allowMissingLive: true,
 });
 const gateReport = buildGateReport(manifest.releaseId, 'publish-data-release', includedSlugs, overrides, applyOverrides(gateFlags, overrides));

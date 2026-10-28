@@ -7,7 +7,7 @@
     -93.27
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-205/latest.zip",
-  "lastFeedExpiry": "20261204",
+  "lastFeedExpiry": "20261211",
   "lastFeedVersion": "1791990332",
   "region": "Minnesota",
   "lastRefreshedAt": "2026-10-19",
@@ -50,5 +50,5 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-205/latest.zip",
-  "lastPeekedExpiry": "20261204"
+  "lastPeekedExpiry": "20261211"
 }

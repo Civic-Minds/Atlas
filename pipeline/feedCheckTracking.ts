@@ -13,11 +13,11 @@ export interface FeedCheckFields {
 /** Record one downloaded feed inspection and count it when the feed is expired. */
 export function recordFeedCheck(
   agency: FeedCheckFields,
-  opts: { feedExpiry: string | null; todayYmd: string },
+  opts: { feedExpiry: string | null; todayYmd: string; /** The agency's local date, for the expired check (default todayYmd). */ expiryTodayYmd?: string },
 ): void {
   agency.lastFeedCheckAt = opts.todayYmd;
 
-  if (!isFeedExpired(opts.feedExpiry, opts.todayYmd)) {
+  if (!isFeedExpired(opts.feedExpiry, opts.expiryTodayYmd ?? opts.todayYmd)) {
     agency.expiredFeedCheckCount = 0;
     agency.expiredFeedCheckSince = null;
     agency.expiredFeedCheckExpiry = opts.feedExpiry;

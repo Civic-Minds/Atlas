@@ -204,7 +204,7 @@ describe('Infrequent routes show "limited" on All day and in specific periods (#
           selectedModes={new Set()}
           hideSpan={false}
           hideLimitedService={false}
-          onRouteSelect={() => {}}
+          onRouteSelect={() => {}} onClose={() => {}}
         />,
       );
       expect(screen.getByText('limited')).toBeTruthy();

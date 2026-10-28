@@ -5,7 +5,11 @@
  * The golden (historyBuild/main-golden.json) was made by running origin/main's own
  * pipeline/build-history.ts (commit c7d4c2a5) on this same synthetic fixture with this same
  * harness, via GENERATE_HISTORY_GOLDEN=<path>. Regenerate only from origin/main's code, never
- * from this branch:
+ * from this branch. One deliberate difference since then: archived periods and coverage years after
+ * the build year are dropped (the Dec 2030 points on routes 10 and 40, and coverage year 2031 on beta,
+ * which this fixture adds). Nothing else differs from origin/main's build of this fixture, including
+ * the live current-year endpoint, which is still decided from the archive as main saw it. The golden
+ * was made from main's code on this fixture, then from this branch; the only diff is those drops:
  *   git worktree add --detach <dir> origin/main; copy this test + pipeline/__tests__/historyBuild/
  *   into it; GENERATE_HISTORY_GOLDEN=<out.json> npx vitest run pipeline/__tests__/buildHistoryDefaultGolden.test.ts
  */
@@ -91,7 +95,13 @@ describe('build-history default (ATLAS_HISTORY_V2 unset) is byte-identical to or
     const r10 = alpha.routes.find(r => r.routeShortName === '10')!;
     const years = r10.snapshots.map(s => s.year);
     expect(new Set(years).size).toBeLessThan(years.length); // duplicate years survive on main
-    expect(r10.snapshots.some(s => s.year === 2030)).toBe(true); // future label survives
+    expect(r10.snapshots.some(s => s.year === 2030)).toBe(false); // future-dated period is not a past year (the archive holds Dec 2030)
+    expect((rows.find(r => r.slug === 'beta') as { coverageYears?: number[] }).coverageYears).not.toContain(2031); // nor is a future coverage year
+    // The live current-year endpoint is still appended exactly as on main when the archive ends with a future point.
+    expect(r10.snapshots[r10.snapshots.length - 1]).toMatchObject({ year: 2026, label: '2026', weekdayHeadwayMin: 8, headwayByPeriod: { am: 8 } });
+    const r40 = alpha.routes.find(r => r.routeShortName === '40')!; // archived 2026 snapshot, then a future one
+    expect(r40.snapshots.map(s => s.label)).toEqual(['Sep 2018', 'Mar 2026', '2026']); // main also appended the live point here
+    expect(r40.snapshots.some(s => s.year > 2026)).toBe(false);
     expect(r10.snapshots.some(s => s.label === '')).toBe(true); // empty label survives
     expect(alpha.routes.some(r => r.routeShortName === 'R7')).toBe(true);
     expect(alpha.routes.find(r => r.routeShortName === '20')).toBeDefined(); // limited route gets a current endpoint on main

@@ -143,7 +143,7 @@ describe('supplemental feed archiving (#630)', () => {
 
   it('restore only targets agencies whose main feed is stale', () => {
     const source = readFileSync(resolve(root, 'pipeline/restore-active-feeds.ts'), 'utf8');
-    expect(source).toContain('isStalePrimaryProductionFeed(agency, today)');
+    expect(source).toContain('isStalePrimaryProductionFeed(agency)');
     expect(source).not.toMatch(/\bisStaleProductionFeed\(/);
   });
 });

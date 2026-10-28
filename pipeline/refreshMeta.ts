@@ -2,10 +2,16 @@
  * Pure helpers for refresh.ts feed-metadata stamping.
  * Separated so unit tests can cover stamp decisions without R2.
  */
-import type { SupplementalFeedMeta } from '../shared/feedAvailability.js';
+import { isExpiredFeedExpiry, isYmd, type SupplementalFeedMeta } from '../shared/feedAvailability.js';
 
 export interface FeedMetaFields {
   lastFeedExpiry?: string | null;
+  /** CIV-1011 stage 4: the picked week's key at the last refresh (serviceWeekKey). */
+  lastServiceWeek?: string | null;
+  /** When Atlas first obtained the current main feed file (YYYYMMDD); the listing-end safeguard reads it. */
+  feedObtainedAt?: string | null;
+  /** CIV-1011: the date most routes stopped being listed with nothing replacing them (YYYYMMDD); the agency shows Ryan's notice. Absent otherwise. */
+  listingEndedOn?: string | null;
   /** The feed's own latest service date, uncapped. lastFeedExpiry caps placeholder dates, so it can't detect an unchanged feed (#688). */
   lastPeekedExpiry?: string | null;
   lastFeedVersion?: string | null;
@@ -17,11 +23,13 @@ export interface FeedMetaFields {
   feedRefreshErrorAt?: string | null;
   feedRefreshRetryCount?: number;
   lastSupplementalFeeds?: SupplementalFeedMeta[];
+  /** A fetched timetable starting on this date waits until then (#1144); cleared once one is processed. */
+  heldFeedStart?: string | null;
 }
 
 /** Whether a feed's declared service end date is before the refresh date. */
 export function isFeedExpired(feedExpiry: string | null | undefined, todayYmd: string): boolean {
-  return !!feedExpiry && /^\d{8}$/.test(feedExpiry) && feedExpiry < todayYmd;
+  return isExpiredFeedExpiry(feedExpiry, todayYmd);
 }
 
 /** Replace known expired data only with a dated candidate that is current. */
@@ -41,7 +49,7 @@ export function shouldReplaceExpiredFeed(opts: {
  * reject the update.
  */
 export function shouldSkipAllExpiredFeeds(feedExpiries: Array<string | null | undefined>, todayYmd: string): boolean {
-  const knownExpiries = feedExpiries.filter((expiry): expiry is string => !!expiry && /^\d{8}$/.test(expiry));
+  const knownExpiries = feedExpiries.filter(isYmd);
   return knownExpiries.length === feedExpiries.length
     && knownExpiries.length > 0
     && knownExpiries.every(expiry => isFeedExpired(expiry, todayYmd));
@@ -73,8 +81,6 @@ export function routeLineCount(geojson: string): number {
   return routes.size;
 }
 
-const YMD = /^\d{8}$/;
-const validYmd = (d: string | null | undefined): d is string => !!d && YMD.test(d);
 
 /** Placeholder calendar ends (e.g. 20500101) are capped this far out. */
 export const PLACEHOLDER_EXPIRY_YEARS = 2;
@@ -107,19 +113,39 @@ export function addYearsYmd(ymd: string, years: number): string {
 export function recordedFeedExpiry(feedExpiry: string | null, peekedExpiry: string | null, todayYmd: string, calendarOnlyEnd?: string | null): string | null {
   const recorded = laterOfFeedInfoAndCappedCalendar(feedExpiry, peekedExpiry, todayYmd);
   const calendarCap = addYearsYmd(todayYmd.replace(/-/g, ''), PLACEHOLDER_EXPIRY_YEARS);
-  if (validYmd(recorded) && validYmd(calendarOnlyEnd) && calendarOnlyEnd <= calendarCap && calendarOnlyEnd < recorded) return calendarOnlyEnd;
+  if (isYmd(recorded) && isYmd(calendarOnlyEnd) && calendarOnlyEnd <= calendarCap && calendarOnlyEnd < recorded) return calendarOnlyEnd;
   return recorded;
 }
 
 function laterOfFeedInfoAndCappedCalendar(feedExpiry: string | null, peekedExpiry: string | null, todayYmd: string): string | null {
   const today = todayYmd.replace(/-/g, '');
-  if (validYmd(feedExpiry) && validYmd(peekedExpiry) && peekedExpiry > addYearsYmd(today, PLACEHOLDER_EXPIRY_YEARS)) return feedExpiry;
+  if (isYmd(feedExpiry) && isYmd(peekedExpiry) && peekedExpiry > addYearsYmd(today, PLACEHOLDER_EXPIRY_YEARS)) return feedExpiry;
   const limits = [addYearsYmd(today, PLACEHOLDER_EXPIRY_YEARS)];
-  if (validYmd(feedExpiry)) limits.push(addYearsYmd(feedExpiry, PLACEHOLDER_EXPIRY_YEARS));
-  const capped = validYmd(peekedExpiry) ? [peekedExpiry, ...limits].sort()[0] : null;
-  const valid = [feedExpiry, capped].filter(validYmd);
+  if (isYmd(feedExpiry)) limits.push(addYearsYmd(feedExpiry, PLACEHOLDER_EXPIRY_YEARS));
+  const capped = isYmd(peekedExpiry) ? [peekedExpiry, ...limits].sort()[0] : null;
+  const valid = [feedExpiry, capped].filter(isYmd);
   if (valid.length) return valid.sort().at(-1)!;
   return feedExpiry ?? peekedExpiry ?? null;
+}
+
+/**
+ * A refresh that skips an unchanged feed records nothing new, so an expiry stored before a rule
+ * change stayed as it was: MAX kept feed_info's 20350201 after #1039 taught recordedFeedExpiry to
+ * use the calendar's last service date (20250531), and no expired notice showed (CIV-443). The
+ * skip path calls this to record the expiry today's rule gives the same feed, only ever lowering
+ * it (a raise waits for a real refresh). Returns the old value when it changed, else null.
+ */
+export function lowerStoredFeedExpiry(
+  agency: Pick<FeedMetaFields, 'lastFeedExpiry'>,
+  opts: { feedInfoEnd: string | null; calendarEnd: string | null; calendarOnlyEnd: string | null; todayYmd: string },
+): string | null {
+  const recorded = recordedFeedExpiry(opts.feedInfoEnd, opts.calendarEnd, opts.todayYmd, opts.calendarOnlyEnd);
+  const stored = agency.lastFeedExpiry ?? null;
+  // Only the #1039 case: today's value is the calendar's own last service date. A lower value from
+  // the placeholder cap (today + 2 years) moves every week and says nothing new.
+  if (!isYmd(recorded) || !isYmd(stored) || recorded >= stored || recorded !== opts.calendarOnlyEnd) return null;
+  agency.lastFeedExpiry = recorded;
+  return stored;
 }
 
 /** Apply feed metadata after a successful non-empty refresh. */
@@ -131,11 +157,19 @@ export function stampFeedMeta(
     peekedExpiry: string | null;
     peekedVersion: string | null;
     todayYmd: string;
+    /** The kept routes' latest service date (#1140); without it, the raw peeked expiry. */
+    calendarExpiry?: string | null;
     /** Last real service date from the calendar alone (no feed_info); can only lower the expiry. */
     calendarOnlyEnd?: string | null;
+    /** The processed feed's listing end (ProcessResult.listingEnd); cleared when null. */
+    listingEnd?: string | null;
+    /** The picked week's key (serviceWeekKey), for the next refresh's unchanged check. */
+    serviceWeek?: string | null;
+    /** When Atlas first obtained this file (YYYYMMDD), for the listing-end safeguard. */
+    feedObtainedAt?: string | null;
   },
 ): void {
-  agency.lastFeedExpiry = recordedFeedExpiry(opts.feedExpiry, opts.peekedExpiry, opts.todayYmd, opts.calendarOnlyEnd);
+  agency.lastFeedExpiry = recordedFeedExpiry(opts.feedExpiry, opts.calendarExpiry !== undefined ? opts.calendarExpiry : opts.peekedExpiry, opts.todayYmd, opts.calendarOnlyEnd);
   agency.lastPeekedExpiry = opts.peekedExpiry;
   agency.lastFeedVersion = opts.feedVersion ?? opts.peekedVersion ?? null;
   agency.lastRefreshedAt = opts.todayYmd;
@@ -143,6 +177,20 @@ export function stampFeedMeta(
   agency.feedRefreshError = null;
   agency.feedRefreshErrorAt = null;
   agency.feedRefreshRetryCount = 0;
+  delete agency.heldFeedStart;
+  stampListingEnd(agency, opts.listingEnd);
+  if (opts.serviceWeek) agency.lastServiceWeek = opts.serviceWeek;
+  else if (opts.serviceWeek === null) delete agency.lastServiceWeek;
+  if (opts.feedObtainedAt) agency.feedObtainedAt = opts.feedObtainedAt;
+}
+
+/** Record or clear the CIV-1011 listing end. Returns whether it changed. */
+export function stampListingEnd(agency: Pick<FeedMetaFields, 'listingEndedOn'>, listingEnd: string | null | undefined): boolean {
+  const next = listingEnd && /^\d{8}$/.test(listingEnd) ? listingEnd : null;
+  if ((agency.listingEndedOn ?? null) === next) return false;
+  if (next) agency.listingEndedOn = next;
+  else delete agency.listingEndedOn;
+  return true;
 }
 
 /**
@@ -154,13 +202,14 @@ export function stampFeedMeta(
  * changed, so unchanged agencies leave their files alone.
  */
 export function stampReprocessedFeedExpiry(
-  agency: Pick<FeedMetaFields, 'lastFeedExpiry' | 'lastPeekedExpiry'>,
-  opts: { feedExpiry: string | null; calendarExpiry: string | null; todayYmd: string; calendarOnlyEnd?: string | null },
+  agency: Pick<FeedMetaFields, 'lastFeedExpiry' | 'lastPeekedExpiry' | 'listingEndedOn'>,
+  opts: { feedExpiry: string | null; calendarExpiry: string | null; todayYmd: string; calendarOnlyEnd?: string | null; listingEnd?: string | null },
 ): boolean {
   const lastFeedExpiry = recordedFeedExpiry(opts.feedExpiry, opts.calendarExpiry, opts.todayYmd, opts.calendarOnlyEnd);
   if (lastFeedExpiry == null) return false;
+  const listingChanged = opts.listingEnd !== undefined && stampListingEnd(agency, opts.listingEnd);
   const lastPeekedExpiry = opts.calendarExpiry ?? agency.lastPeekedExpiry ?? null;
-  if (agency.lastFeedExpiry === lastFeedExpiry && (agency.lastPeekedExpiry ?? null) === lastPeekedExpiry) return false;
+  if (agency.lastFeedExpiry === lastFeedExpiry && (agency.lastPeekedExpiry ?? null) === lastPeekedExpiry) return listingChanged;
   agency.lastFeedExpiry = lastFeedExpiry;
   agency.lastPeekedExpiry = lastPeekedExpiry;
   return true;
@@ -221,8 +270,12 @@ export function decideRefreshSkipUnchanged(opts: {
   lastFeedVersion?: string | null;
   /** The agency reads its feed as of the run date (#774), so an unchanged feed still has new output. */
   referenceDateFromRunDate?: boolean;
+  /** CIV-1011 stage 4: the picked week's key now (serviceWeekKey) and at the last refresh; a moved week reprocesses. */
+  serviceWeek?: string | null;
+  lastServiceWeek?: string | null;
 }): RefreshSkipReason {
   if (opts.forceRefresh || opts.hasSupplementals || opts.feedExpired || opts.referenceDateFromRunDate) return { skip: false };
+  if (opts.serviceWeek && opts.serviceWeek !== (opts.lastServiceWeek ?? null)) return { skip: false };
   const { peekedExpiry, peekedVersion, lastFeedVersion } = opts;
   // Older records have no uncapped value; compare against the recorded one as before.
   const lastFeedExpiry = opts.lastPeekedExpiry ?? opts.lastFeedExpiry;

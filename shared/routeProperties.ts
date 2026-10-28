@@ -30,8 +30,12 @@ export interface RouteProperties {
   routeDataQualityWarning?: RouteDataQualityWarning;
   /** The feed has schedule data for this route but no usable line geometry. */
   noRouteShape?: boolean;
+  /** CIV-1006: riders must book ahead (pipeline/bookedRoutes.ts); the route reads as on-demand. */
+  bookingRequired?: boolean;
   headwayByHour?: HeadwayByHour;
   maxGapByHour?: HeadwayByHourMaxGap;
+  /** CIV-1010: departures leaving in each clock hour, only hours with one or more (the last hour of the day included). */
+  departuresByHour?: Record<number, number>;
   routeShortName: string | null;
   routeLongName: string | null;
   routeVariant?: string | null;
@@ -79,6 +83,8 @@ export interface RouteProperties {
   directionFilterHeadwayByPeriod?: Partial<Record<PeriodKey, number | null>>;
   /** The direction's value is one gap between departures, not a cadence (pipeline isOneGapPeriod). Display only. */
   stretchPeriodOneGap?: Partial<Record<PeriodKey, boolean>>;
+  /** #1142: the typical gap of a period whose value is an uneven stretch's longest wait (card range "every typical–worst"); null: steady. Display only. */
+  stretchPeriodTypical?: Partial<Record<PeriodKey, number | null>>;
   /** The route's range, [best stretch, worst] ("every 8–25"); null: one number. Display only. */
   stretchPeriodRange?: Partial<Record<PeriodKey, [number, number] | null>>;
   /** #934: periods whose value is a late start or early end around steady service: the first or last departure (GTFS minutes) and the steady spacing. Card wording only. */
@@ -98,8 +104,12 @@ export interface RouteProperties {
   /** CIV-321 S2: period = each stretch's own filter value per period (same rules as a whole route); noRegular = periods its card row reads "no regular service" (one gap, or under three departures). */
   stretchMeta?: {
     main: { stops: number; refStop: string; trips: number; period?: Partial<Record<PeriodKey, number | null>>; noRegular?: PeriodKey[] } | null;
-    tails: Array<{ refStop: string; stops: number; km: number; trips: number; period?: Partial<Record<PeriodKey, number | null>>; noRegular?: PeriodKey[] }>;
+    tails: Array<{ refStop: string; stops: number; km: number; trips: number; period?: Partial<Record<PeriodKey, number | null>>; noRegular?: PeriodKey[]; notThrough?: PeriodKey[] }>;
   };
+  /** The row's night grade (pipeline/process-core.ts): it passes the 2am to 5am check at 30 or 60 minutes; nightService is the older 60. */
+  nightService30?: boolean;
+  nightService60?: boolean;
+  nightService?: boolean;
   /** Night service runs on only part of the route: draw and name only these stops' segments ("part of the route"). */
   nightServicePartOfRoute?: boolean;
   nightServiceStops?: string[];

@@ -1,11 +1,25 @@
 {
   "overrides": [
     {
+      "agencySlug": "grt",
+      "routeType": 0,
+      "routeShortName": "301",
+      "mode": 100,
+      "reason": "ION is light rail; the Region's feed publishes it as route_type 0 (tram) while the earlier GRT feed had it as 2"
+    },
+    {
       "agencySlug": "nfta",
       "routeType": 0,
       "routeLongName": "Metro Rail",
       "mode": 100,
       "reason": "Buffalo Metro Rail is light rail, published as route_type 0 (tram); replaces the former agency-name rule (#811)"
+    },
+    {
+      "agencySlug": "detroit-people-mover",
+      "routeType": 0,
+      "routeShortName": "DPM",
+      "mode": 101,
+      "reason": "The Detroit People Mover is an automated people mover, published as route_type 0 (streetcar)"
     },
     {
       "agencySlug": "qline",
@@ -246,6 +260,13 @@
       "reason": "RTD light rail lines are published as route_type 0 (tram); A, B, G and N are commuter rail and stay as published"
     },
     {
+      "agencySlug": "capmetro",
+      "routeType": 0,
+      "routeShortName": "550",
+      "mode": 2,
+      "reason": "CapMetro Rail Red Line (550) is commuter rail, published as route_type 0 (tram)"
+    },
+    {
       "agencySlug": "dart",
       "routeType": 0,
       "routeShortName": "BLUE",
@@ -335,6 +356,27 @@
       "routeShortName": "2600",
       "mode": 1,
       "reason": "Metrorail is a heavy-rail metro, published as route_type 2 (commuter rail)"
+    },
+    {
+      "agencySlug": "miami-dade-transit",
+      "routeType": 0,
+      "routeShortName": "MMI",
+      "mode": 101,
+      "reason": "Metromover MMI is an automated people mover, published as route_type 0 (streetcar)"
+    },
+    {
+      "agencySlug": "miami-dade-transit",
+      "routeType": 0,
+      "routeShortName": "MMO",
+      "mode": 101,
+      "reason": "Metromover MMO is an automated people mover, published as route_type 0 (streetcar)"
+    },
+    {
+      "agencySlug": "miami-dade-transit",
+      "routeType": 0,
+      "routeShortName": "MIA",
+      "mode": 101,
+      "reason": "Metromover MIA is an automated people mover, published as route_type 0 (streetcar)"
     },
     {
       "agencySlug": "septa",
@@ -491,11 +533,25 @@
       "reason": "El Paso Streetcar is a streetcar, published as route_type 3 (bus)"
     },
     {
+      "agencySlug": "wvu-prt",
+      "routeType": 0,
+      "routeShortName": "PRT",
+      "mode": 101,
+      "reason": "WVU PRT is an automated people mover, published as route_type 0 (streetcar)"
+    },
+    {
       "agencySlug": "kenosha",
       "routeType": 3,
       "routeShortName": "SC",
       "mode": 0,
       "reason": "Kenosha Streetcar is a streetcar, published as route_type 3 (bus)"
+    },
+    {
+      "agencySlug": "jfk-airtrain",
+      "routeType": 0,
+      "routeShortName": "AirTrain",
+      "mode": 101,
+      "reason": "AirTrain JFK (all three routes) is an automated people mover, published as route_type 0 (streetcar)"
     },
     {
       "agencySlug": "rioc-tram",

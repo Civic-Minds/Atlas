@@ -72,6 +72,10 @@ export interface SectionColourProperties {
   headway: number | null;
   agencySlug: string;
   routeId: string;
+  /** The route's names and type, so the route counter names a route drawn only by these pieces (#1090). */
+  routeShortName: string | null;
+  routeLongName: string | null;
+  routeType: number | null;
   directionId: number;
   headsign: string | null;
   day: string | null;
@@ -133,7 +137,8 @@ export function sectionRuns(stopTiers: ReadonlyArray<string | null>, routeTier: 
   const runs: SectionRun[] = [];
   for (let i = 0; i < n; i++) {
     const tier = tiers[i]!;
-    const hw = headways[i] ?? null;
+    // A drop-off-only stop's own value is its arrivals, not a wait anyone boards for (#879, CIV-224).
+    const hw = dropOffOnly[i] ? null : headways[i] ?? null;
     const last = runs[runs.length - 1];
     if (last && last.tier === tier && last.to === i - 1) {
       last.to = i;
@@ -267,6 +272,10 @@ export function buildSectionColourFeatures(
             headway: run.headway,
             agencySlug: p.agencySlug ?? slug,
             routeId: String(p.routeId),
+            // The route's names and type, so the route counter can name a route drawn only by these pieces (#1090).
+            routeShortName: p.routeShortName ?? null,
+            routeLongName: p.routeLongName ?? null,
+            routeType: (p as any).routeType ?? null,
             directionId: dir,
             headsign: p.headsign ?? null,
             day: p.day ?? null,

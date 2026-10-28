@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo, useRef } from 'react';
-import { X, Search, Radio, ArrowLeft } from 'lucide-react';
+import { X, Search, Radio } from 'lucide-react';
 import { DROPDOWN_PANEL, dropdownAnim, SEARCH_PILL, SEARCH_ICON, SEARCH_FIELD, AGENCY_LIST_FILTERS, PILL_SCROLL_ROW, Z_MODAL_BG, AGENCY_LIST_PRIMARY } from '../styles';
 import Pill from './ui/Pill';
 import LinkCard from './ui/LinkCard';
@@ -9,22 +9,22 @@ import AgencyName from './ui/AgencyName';
 import { LIVE_POLLING_ROUTES, liveCoverageForRouteNames, type LiveCoverage } from '../../shared/livePollingConfig';
 import { R2_PUBLIC_URL, FEATURES as BASE_FEATURES } from '../../shared/config';
 import { PHONE_MEDIA_QUERY, phoneModeFlags, useMediaQuery } from '../hooks/useMediaQuery';
-import { agencyDisplayParts, formatStoredDate, routeLabelCase } from '../utils/format';
+import { formatStoredDate, routeLabelCase } from '../utils/format';
+import { agencyNames } from '../utils/agencyName';
 import { feedRefreshCountdownLabel, type FeedRefreshMeta } from '../../shared/feedRefresh';
 import { agencyQualifiesForHistory, agencyQualifiesForHistoryExplore } from '../../shared/historyEligibility';
 import { countriesForAgencies } from '../../shared/regionCountry';
 import { countOf, joinList } from '../../shared/overflowText';
 import type { Agency } from '../App';
-import { isFeedExpired } from '../utils/feedFreshness';
-import { effectiveFeedExpiry } from '../../shared/feedAvailability';
+import { isAgencyFeedExpired } from '../../shared/feedAvailability';
 import { trackEvent } from '../lib/analytics';
 import { OutboundLink } from './OutboundLink';
-import { EXPIRED_FEED_CADENCE, EXPIRED_FEED_CONTEXT, EXPIRED_FEED_EXPLANATION, MANUAL_FEED_CONTEXT, NO_ROUTE_SHAPE_DETAIL, NO_ROUTE_SHAPE_EXPLANATION, expiredFeedCheckHistory, expiredFeedNotice } from '../content/noticeCopy';
+import { EXPIRED_FEED_CADENCE, EXPIRED_FEED_CONTEXT, EXPIRED_FEED_EXPLANATION, MANUAL_FEED_CONTEXT, NO_ROUTE_SHAPE_DETAIL, NO_ROUTE_SHAPE_EXPLANATION, expiredFeedCheckHistory, expiredFeedNotice, E1_AGENCY_WEBSITE, E1_WEEKLY_CHECK, listingEndedPanelLead } from '../content/noticeCopy';
 import RegionFilterPills from './RegionFilterPills';
 import ListRow from './ui/ListRow';
 import { AgencyList, AgencyListRow, AgencyRegionSection } from './ui/AgencyList';
 import { compareAgencyName, compareRegion } from '../utils/sortCompare';
-import RoundIconButton from './ui/RoundIconButton';
+import { PANEL_HEADER_BAR, PANEL_HEADER_TITLE, PanelBackButton, PanelCloseButton } from './ui/PanelHeader';
 
 interface HistoryAgencySummary { slug: string; name: string; region: string; routes: unknown[] }
 
@@ -37,6 +37,10 @@ export type HelpContext = {
   topic: HelpTopic;
   agencyName?: string;
   expDateStr?: string;
+  /** N25 (CIV-1055): set when opened from the listing-ended notice; the panel shows its variant. */
+  listingEndedDate?: string;
+  /** Whether that date has arrived (agency-local): 'ended', else 'ends'. */
+  listingEnded?: boolean;
   manualFeedSource?: boolean;
   lastRefreshedAt?: string;
   lastFeedCheckAt?: string;
@@ -54,6 +58,10 @@ export type OpenInfoOptions = {
   helpTopic?: HelpTopic;
   agencyName?: string;
   expDateStr?: string;
+  /** N25 (CIV-1055): set when opened from the listing-ended notice; the panel shows its variant. */
+  listingEndedDate?: string;
+  /** Whether that date has arrived (agency-local): 'ended', else 'ends'. */
+  listingEnded?: boolean;
   manualFeedSource?: boolean;
   lastRefreshedAt?: string;
   lastFeedCheckAt?: string;
@@ -218,7 +226,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
       if (agencyFeatureFilters.size > 0 && ![...agencyFeatureFilters].some(filter =>
         (filter === 'live' && liveBySlug.has(a.slug))
         || (filter === 'history' && historyBySlug.has(a.slug))
-        || (filter === 'outdated' && isFeedExpired(effectiveFeedExpiry(a)))
+        || (filter === 'outdated' && isAgencyFeedExpired(a))
       )) continue;
       seen.add(a.region ?? 'Other');
     }
@@ -237,7 +245,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
       if (agencyFeatureFilters.size > 0 && ![...agencyFeatureFilters].some(filter =>
         (filter === 'live' && liveBySlug.has(a.slug))
         || (filter === 'history' && historyBySlug.has(a.slug))
-        || (filter === 'outdated' && isFeedExpired(effectiveFeedExpiry(a)))
+        || (filter === 'outdated' && isAgencyFeedExpired(a))
       )) return false;
       if (regionFilter.size > 0 && !regionFilter.has(a.region ?? 'Other')) return false;
       if (!q) return true;
@@ -312,7 +320,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
         onClick={e => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="shrink-0 flex items-center px-5 border-b border-[var(--border-primary)] h-12 relative overflow-hidden">
+        <div className={`${PANEL_HEADER_BAR} relative overflow-hidden`}>
           {/* Home title */}
           <div 
             className={`absolute inset-y-0 left-5 right-12 flex items-center transition-all duration-300 ease-out ${
@@ -330,29 +338,20 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
               view !== 'home' ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-4 pointer-events-none'
             }`}
           >
-            <button
+            <PanelBackButton
               onClick={() => {
                 if (view === 'agency-detail') setView('agencies');
                 else setView('home');
               }}
-              className="w-7 h-7 -ml-1.5 flex items-center justify-center rounded-full text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-btn-hover)] transition-colors shrink-0"
-              aria-label={view === 'agency-detail' ? 'Back to agencies' : 'Back'}
-            >
-              <ArrowLeft className="w-3.5 h-3.5" />
-            </button>
-            <span className="text-xs font-bold text-[var(--text-primary)] truncate min-w-0">
+              label={view === 'agency-detail' ? 'Back to agencies' : 'Back'}
+            />
+            <h2 className={`${PANEL_HEADER_TITLE} truncate min-w-0`}>
               {headerTitle}
-            </span>
+            </h2>
           </div>
 
           <div className="flex-1" />
-          <RoundIconButton
-            onClick={onClose}
-            className="z-10"
-            aria-label="Close"
-          >
-            <X className="w-3.5 h-3.5" />
-          </RoundIconButton>
+          <PanelCloseButton onClick={onClose} className="z-10" label="Close" />
         </div>
 
         {/* Content View Container */}
@@ -472,7 +471,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                           // Repeating that same status on every row makes the filter feel inactive.
                           const showLiveBadge = FEATURES.live && hasLive && !agencyFeatureFilters.has('live');
                           const showHistoryBadge = FEATURES.history && hasHistory && !agencyFeatureFilters.has('history');
-                          const { primary, secondary } = agencyDisplayParts(a.name, a.cities, a.displayArea);
+                          const { primary, secondary } = agencyNames({ name: a.name, cities: a.cities, displayArea: a.displayArea }).list;
                           const listLabel = secondary ? `${primary} · ${secondary}` : primary;
                           return (
                             <AgencyListRow
@@ -539,20 +538,33 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
             });
             return (
             <div className="h-full overflow-y-auto px-5 py-4 space-y-4">
-              {helpContext?.agencyName && (
-                <p className="text-xs text-[var(--text-primary)] leading-relaxed">
-                  {expiredFeedNotice(helpContext.agencyName, helpContext.expDateStr, helpContext.manualFeedSource)}
-                </p>
+              {helpContext?.listingEndedDate ? (
+                // E1, N25 version (Ryan, CIV-1051): the issue / what we're doing / what you can do.
+                <>
+                  <p className="text-xs text-[var(--text-primary)] leading-relaxed">
+                    {listingEndedPanelLead(helpContext.agencyName ?? 'This agency', helpContext.listingEndedDate, helpContext.listingEnded ?? true)}
+                  </p>
+                  <p className="text-xs text-[var(--text-dim)] leading-relaxed">{E1_WEEKLY_CHECK}{checkHistory ? ` ${checkHistory}` : ''}</p>
+                  <p className="text-xs text-[var(--text-dim)] leading-relaxed">{E1_AGENCY_WEBSITE}</p>
+                </>
+              ) : (
+                <>
+                  {helpContext?.agencyName && (
+                    <p className="text-xs text-[var(--text-primary)] leading-relaxed">
+                      {expiredFeedNotice(helpContext.agencyName, helpContext.expDateStr, helpContext.manualFeedSource)}
+                    </p>
+                  )}
+                  {helpContext?.agencyName && checkHistory && (
+                    <p className="text-xs text-[var(--text-primary)] leading-relaxed">{checkHistory}</p>
+                  )}
+                  <p className="text-xs text-[var(--text-dim)] leading-relaxed">
+                    {EXPIRED_FEED_EXPLANATION}
+                  </p>
+                  <p className="text-xs text-[var(--text-dim)] leading-relaxed">
+                    {EXPIRED_FEED_CADENCE} {helpContext?.manualFeedSource ? MANUAL_FEED_CONTEXT : EXPIRED_FEED_CONTEXT}
+                  </p>
+                </>
               )}
-              {helpContext?.agencyName && checkHistory && (
-                <p className="text-xs text-[var(--text-primary)] leading-relaxed">{checkHistory}</p>
-              )}
-              <p className="text-xs text-[var(--text-dim)] leading-relaxed">
-                {EXPIRED_FEED_EXPLANATION}
-              </p>
-              <p className="text-xs text-[var(--text-dim)] leading-relaxed">
-                {EXPIRED_FEED_CADENCE} {helpContext?.manualFeedSource ? MANUAL_FEED_CONTEXT : EXPIRED_FEED_CONTEXT}
-              </p>
               {helpContext?.websiteUrl && (
                 <LinkCard as={OutboundLink}
                   href={helpContext.websiteUrl}

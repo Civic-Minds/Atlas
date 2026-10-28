@@ -15,6 +15,27 @@ describe('HeadwaySparkline', () => {
     expect(faded).toHaveLength(2);
   });
 
+  it('keeps the band behind the selected period with nothing hovered, and none for All day (CIV-933)', () => {
+    const { container, rerender } = render(
+      <HeadwaySparkline byHour={{ 12: 20, 18: 25 }} period="midday" onPeriodChange={() => {}} />,
+    );
+    expect(screen.getAllByTestId('sparkline-hover-band').length).toBeGreaterThan(0);
+    const area = container.querySelector('.cursor-pointer') as HTMLElement;
+    area.getBoundingClientRect = () => ({ left: 0, width: 240, top: 0, height: 48, right: 240, bottom: 48, x: 0, y: 0, toJSON: () => ({}) });
+    const before = screen.getAllByTestId('sparkline-hover-band')[0].style.left;
+    fireEvent.mouseMove(area, { clientX: 2 });
+    expect(screen.getAllByTestId('sparkline-hover-band')[0].style.left).not.toBe(before);
+    fireEvent.mouseLeave(area);
+    expect(screen.getAllByTestId('sparkline-hover-band')[0].style.left).toBe(before);
+    rerender(<HeadwaySparkline byHour={{ 12: 20, 18: 25 }} period="all" onPeriodChange={() => {}} />);
+    expect(screen.queryAllByTestId('sparkline-hover-band')).toHaveLength(0);
+  });
+
+  it('draws no band for a selected period with no bars (a night route at midday)', () => {
+    render(<HeadwaySparkline byHour={{ 26: 30, 27: 30 }} period="midday" onPeriodChange={() => {}} />);
+    expect(screen.queryAllByTestId('sparkline-hover-band')).toHaveLength(0);
+  });
+
   it('starts the hover highlight below the period label row, so the label sits above it', () => {
     const { container } = render(
       <HeadwaySparkline byHour={{ 12: 20, 18: 25 }} period="midday" onPeriodChange={() => {}} allowExpand />,

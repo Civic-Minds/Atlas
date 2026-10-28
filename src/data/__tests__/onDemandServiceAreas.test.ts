@@ -12,6 +12,7 @@ import {
   GRT_ROUTE_79_SERVICE_AREA,
   HAMILTON_MY_RIDE_SERVICE_AREA,
   C_TRAN_CURRENT_SERVICE_AREA,
+  RTD_FLEXRIDE_SERVICE_AREA,
   CYRIDE_EASE_SERVICE_AREA,
   EDMONTON_ON_DEMAND_SERVICE_AREA,
   MUSKOKA_DRT_ON_DEMAND_AGENCY,
@@ -388,5 +389,20 @@ describe('on-demand public launch gate (CIV-23)', () => {
       expect(isAgencyVisibleInBrowser(agency, { mode: 'beta' }), agency.slug).toBe(true);
       expect(isAgencyVisibleInBrowser(agency, { mode: 'preview' }), agency.slug).toBe(true);
     }
+  });
+});
+
+describe('RTD FlexRide (CIV-951)', () => {
+  it('draws the 13 zones from RTD\'s layer, each with its own hours and source page', () => {
+    const names = RTD_FLEXRIDE_SERVICE_AREA.features.map(f => (f.properties as { areaName: string }).areaName);
+    expect(names).toHaveLength(13);
+    expect(new Set(names).size).toBe(13);
+    expect(Object.keys(RTD_FLEXRIDE_SERVICE_AREA.zoneMetadata).sort()).toEqual([...names].sort());
+    for (const zone of Object.values(RTD_FLEXRIDE_SERVICE_AREA.zoneMetadata)) {
+      expect(zone.availability?.Weekday?.length).toBe(1);
+      expect(zone.hoursSource?.url).toMatch(/^https:\/\/www\.rtd-denver\.com\/routes-services\/other-services\/flexride\/flexride-service-areas\//);
+    }
+    // No pickup type: RTD's pages don't state one.
+    expect('pickup' in RTD_FLEXRIDE_SERVICE_AREA).toBe(false);
   });
 });

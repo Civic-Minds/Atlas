@@ -147,7 +147,7 @@ describe('failing routes draw only their passing shared stretches', () => {
   // all-day value (the midday median) is the one these fixtures can judge.
   // Rail stays one row per headsign (converging origins are labelled on surface routes only).
   for (const [fixture, slug, single, branches, max] of [
-    ['nyct-b-subway', 'nyct-subway', 'Beach', ['Park Blvd', '145 St'], 15],
+    ['nyct-b-subway', 'nyct-subway', 'Brighton Beach', ['Park Blvd', '145 St'], 15],
     ['cta-green-line', 'cta', 'Harlem-Green', ['East 63rd-Cottage Grove', 'Ashland/63rd'], 15],
   ] as const) {
     it(`${slug} ${single}: the single-pattern direction draws where both directions pass`, async () => {

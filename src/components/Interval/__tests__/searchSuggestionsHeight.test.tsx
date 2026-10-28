@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import { SearchSuggestionsPanel } from '../SearchSuggestionsPanel';
 
-const route = (i: number) => ({ key: `ttc::${i}`, shortName: String(i), longName: `Route ${i}`, agencyName: 'TTC', headway: 5, limited: false });
+const route = (i: number) => ({ key: `ttc::${i}`, shortName: String(i), label: { primary: String(i), secondary: `Route ${i}`, text: `${i} — Route ${i}` }, longName: `Route ${i}`, agencyName: 'TTC', headway: 5, limited: false });
 
 describe('search suggestions height', () => {
   it('shrinks to the sidebar cap and scrolls inside itself instead of overflowing the screen', () => {

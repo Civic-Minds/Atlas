@@ -53,6 +53,24 @@
       "routeShortName": "2600",
       "mode": 1,
       "reason": "Metrorail is a heavy-rail metro, published as route_type 2 (commuter rail)"
+    },
+    {
+      "routeType": 0,
+      "routeShortName": "MMI",
+      "mode": 101,
+      "reason": "Metromover MMI is an automated people mover, published as route_type 0 (streetcar)"
+    },
+    {
+      "routeType": 0,
+      "routeShortName": "MMO",
+      "mode": 101,
+      "reason": "Metromover MMO is an automated people mover, published as route_type 0 (streetcar)"
+    },
+    {
+      "routeType": 0,
+      "routeShortName": "MIA",
+      "mode": 101,
+      "reason": "Metromover MIA is an automated people mover, published as route_type 0 (streetcar)"
     }
   ],
   "lastPeekedExpiry": "20271231"

@@ -2,11 +2,11 @@ import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import type { AgencyPageRoute, AgencyPageSummary } from './agencyPages';
 import {
-  areaAboutParagraph, areaDatesText, areaHoursLabel, areaMapHref, areaPageDescription, areaPageH1, areaPageJsonLd, areaPageTitle,
-  areaSpanShort, areaSubtitle, buildAreaPageData, resolveAreaSeo, type AreaPageData,
+  areaAboutParagraph, areaDatesText, areaIntroJoiners, areaIntroParts, areaMapHref, areaPageDescription, areaPageH1, areaPageJsonLd, areaPageTitle,
+  areaSubtitle, areaTableColumnTitle, buildAreaPageData, resolveAreaSeo, type AreaPageData,
 } from './areaPages';
 import { rankLargeMetros, parseCsv } from './largeMetros';
-import { areaLinkFor } from './agencyArea';
+import { AREA_LINK_MAX_CHARS, agencyRegionTitle, areaLinkFor, areaLinkName } from './agencyArea';
 import { MERGED_AREAS, isLargeMetro, areaSlug, mainCities, type AreaConfig } from './areas';
 
 const r = (name: string, mode: number, midday: number | null, am = midday, pm = midday): AgencyPageRoute => ({ name, longName: null, mode, midday, am, pm, evening: null, overnight: null });
@@ -31,9 +31,20 @@ describe('buildAreaPageData', () => {
     expect(d.bands).toEqual([2, 1, 1, 1, 0, 0, 1]); // 4 and 10, 12, 20, 30, none
     expect(d.agencies[0]).toMatchObject({ slug: 'ttc', totalRoutes: 4, modes: { 'Subway/Metro': 2, Bus: 2 } });
     expect(d.byMode).toEqual([{ label: 'Subway/Metro', routes: 2 }, { label: 'Bus', routes: 4 }]);
-    expect(d.modeColumns).toEqual(['Subway/Metro', 'Bus']);
-    expect(d.span).toEqual({ first: 5, last: 28 });
+    // The same fixed columns on every area page, in the shared order (CIV-973); no "Other" without a rarer mode.
+    expect(d.modeColumns).toEqual(['Subway/Metro', 'Light rail', 'Streetcar', 'Commuter rail', 'Bus', 'Ferry']);
     expect(d.newestRefresh).toBe('2026-09-01');
+  });
+
+  it('adds rarer modes into one last "Other" column, only where an agency has one (CIV-973)', () => {
+    const withRare = new Map([...ALL, ['mono', ag('mono', 'Monorail Co', [r('M', 12, 10), r('T', 11, 15), r('F', 4, 20), r('G', 6, 15), r('C', 5, 10)])] as const]);
+    const area = { ...AREA, agencies: [...AREA.agencies, 'mono'] };
+    const e = buildAreaPageData(area, withRare, null);
+    expect(e.modeColumns.at(-1)).toBe('Other');
+    // Seven columns (Ryan, CIV-973): monorail counts with subway/metro, trolleybus with bus; gondola and cable car go in Other.
+    expect(e.agencies.find(a => a.slug === 'mono')?.modes).toEqual({ 'Subway/Metro': 1, Bus: 1, Ferry: 1, Other: 2 });
+    const monoOnly = buildAreaPageData({ ...AREA, agencies: ['mono'] }, new Map([['mono', ag('mono', 'Monorail Co', [r('M', 12, 10)])]]), null);
+    expect(monoOnly.modeColumns).not.toContain('Other');
   });
 
   it('takes the quickest route across the whole area', () => {
@@ -42,32 +53,21 @@ describe('buildAreaPageData', () => {
     expect(none.best?.headway).toBe(20);
   });
 
-  it('flags a wide span and mixed weekend service', () => {
-    expect(d.spanVaries).toBe(true); // ends at 24 and 28: four hours apart
-    const tight = new Map(ALL); tight.set('hsr', ag('hsr', 'HSR', [r('A', 3, 12)], { first: 5, last: 25 }));
-    const t = buildAreaPageData(AREA, tight, null);
-    expect(t.spanVaries).toBe(false); // starts 6 and 5, ends 24 and 25
-    expect(areaHoursLabel(t)).toBe('weekday service');
-    const wide = new Map(ALL); wide.set('hsr', ag('hsr', 'HSR', [r('A', 3, 12)], { first: 9, last: 20 }));
-    const w = buildAreaPageData(AREA, wide, null);
-    expect(w.spanVaries).toBe(true);
-    expect(areaHoursLabel(w)).toContain('varies by agency');
-    const mixed = new Map(ALL); mixed.set('ttc', { ...ALL.get('ttc')!, sat: true, sun: true }); mixed.set('hsr', { ...ALL.get('hsr')!, sat: true, sun: false });
-    expect(buildAreaPageData(AREA, mixed, null).weekend).toBe('varies');
-    const both = new Map(ALL); both.set('ttc', { ...ALL.get('ttc')!, sat: true, sun: true }); both.set('hsr', { ...ALL.get('hsr')!, sat: true, sun: true });
-    const b2 = buildAreaPageData(AREA, both, null);
-    expect(b2.weekend).toBe('both');
-    expect(areaHoursLabel(b2)).toBe('weekday service · varies by agency · Runs Sat & Sun');
-    expect(d.weekend).toBeNull();
-  });
-
   it('writes the title, heading, subtitle and lead from the numbers', () => {
     expect(areaPageTitle(d)).toBe('Greater Toronto and Hamilton Area transit frequency');
     expect(areaPageH1(d)).toBe('Greater Toronto and Hamilton Area');
-    expect(areaSubtitle(d)).toBe('Toronto, Hamilton');
+    // The cities stay while one adds to the title (Oshawa); this title names both, so the province shows instead.
+    expect(areaSubtitle({ ...d, area: { ...d.area, cities: ['Toronto', 'Hamilton', 'Oshawa'] } })).toBe('Toronto, Hamilton, Oshawa');
+    expect(areaSubtitle({ ...d, regions: ['Ontario'] })).toBe('Ontario');
+    // A title that already names every city shows the state or province instead (CIV-968), even inside a city name.
+    const pgh = { ...d, area: { ...d.area, slug: 'pittsburgh', name: 'Pittsburgh', type: 'MSA' as const, officialName: 'Pittsburgh, PA', country: 'United States' as const, cities: ['Pittsburgh'] } };
+    expect(areaSubtitle({ ...pgh, regions: ['Pennsylvania'] })).toBe('Pennsylvania');
+    expect(areaSubtitle({ ...pgh, regions: ['Ohio', 'Kentucky'] })).toBe('Ohio, Kentucky');
+    expect(areaSubtitle({ ...pgh, regions: [] })).toBe('');
+    const iowa = { ...pgh, area: { ...pgh.area, slug: 'iowa-city', name: 'Iowa City', officialName: 'Iowa City, IA', cities: ['Iowa City'] } };
+    expect(areaSubtitle({ ...iowa, regions: ['Iowa'] })).toBe('Iowa');
     expect(areaPageDescription(d)).toContain('Compare 2 transit agencies in the Greater Toronto and Hamilton Area');
     expect(areaPageDescription(d)).not.toMatch(/frequent\b|15 min/i);
-    expect(areaSpanShort(d)).toBe('24 h');
   });
 
   it('opens the map with ?area= so the app selects the area and fits it', () => {
@@ -78,7 +78,7 @@ describe('buildAreaPageData', () => {
   it('adds every counted agency to the map link when the page counts one the area does not list (CIV-274)', () => {
     const index = { vancouver: { name: 'Vancouver', cities: [], page: true, agencies: ['translink'], bbox: [0, 0, 1, 1] } } as any;
     const area = { slug: 'vancouver' } as any;
-    const row = (slug: string) => ({ slug, name: slug, totalRoutes: 1, modes: {} });
+    const row = (slug: string) => ({ slug, name: slug, displayName: slug, totalRoutes: 1, modes: {} });
     expect(areaMapHref({ area, agencies: [row('translink'), row('bc-fraser-valley')] }, index)).toBe('/?area=vancouver&agencies=translink%2Cbc-fraser-valley');
     expect(areaMapHref({ area, agencies: [row('translink')] }, index)).toBe('/?area=vancouver');
   });
@@ -97,15 +97,37 @@ describe('buildAreaPageData', () => {
   });
 });
 
+describe('area table columns (CIV-973)', () => {
+  it('says what a grouped column counts on hover, and nothing for a single-mode column', () => {
+    expect(areaTableColumnTitle('Subway/Metro')).toBe('Subway/metro and monorail routes');
+    expect(areaTableColumnTitle('Bus')).toBe('Bus and trolleybus routes');
+    expect(areaTableColumnTitle('Other')).toBe('People mover, cable car, gondola/aerial tram, funicular and other routes');
+    expect(areaTableColumnTitle('Streetcar')).toBeUndefined();
+  });
+});
+
 describe('areaAboutParagraph', () => {
   const base = (over: Partial<AreaPageData>): AreaPageData => ({
     ...buildAreaPageData(AREA, ALL, null), ...over,
   });
 
-  it('is one sentence with the agency and route counts', () => {
+  const row = (slug: string, name: string, totalRoutes: number) => ({ slug, name, displayName: name, totalRoutes, modes: { Bus: totalRoutes } });
+
+  it('names no agencies when there are three or fewer: the sentence ends after the route breakdown (CIV-968, Ryan)', () => {
     expect(areaAboutParagraph(base({}))).toBe('The Greater Toronto and Hamilton Area has 2 transit agencies running 6 routes (2 subway/metro, 4 bus).');
-    const one = base({ agencies: [{ slug: 'a', name: 'A', totalRoutes: 1, modes: { Bus: 1 } }], totalRoutes: 1, byMode: [{ label: 'Bus', routes: 1 }] });
+    const one = base({ agencies: [row('a', 'A', 1)], totalRoutes: 1, byMode: [{ label: 'Bus', routes: 1 }] });
     expect(areaAboutParagraph(one)).toBe('The Greater Toronto and Hamilton Area has 1 transit agency running 1 route.');
+    const three = base({ agencies: [row('a', 'A', 3), row('b', 'B', 2), row('c', 'C', 1)], totalRoutes: 6, byMode: [{ label: 'Bus', routes: 6 }] });
+    expect(areaAboutParagraph(three)).toBe('The Greater Toronto and Hamilton Area has 3 transit agencies running 6 routes.');
+    expect(areaIntroParts(three)).toMatchObject({ named: [], others: 0 });
+  });
+
+  it('names the two biggest and counts the rest past three agencies (CIV-968)', () => {
+    const four = base({ agencies: [row('a', 'A', 4), row('b', 'B', 3), row('c', 'C', 2), row('d', 'D', 1)], totalRoutes: 10, byMode: [{ label: 'Bus', routes: 10 }] });
+    expect(areaAboutParagraph(four)).toBe('The Greater Toronto and Hamilton Area has 4 transit agencies running 10 routes, including A, B and 2 others.');
+    const parts = areaIntroParts(four);
+    expect(parts.named.map(a => a.slug)).toEqual(['a', 'b']);
+    expect(areaIntroJoiners({ named: parts.named, others: 1 }).tail).toBe('1 other.');
   });
 });
 
@@ -178,6 +200,15 @@ describe('committed areas (config/areas)', () => {
   });
 });
 
+describe('agencyRegionTitle', () => {
+  it("names the agency's region as a title, or null outside every area", () => {
+    const map = { ttc: ['toronto', 'Toronto'], calgary: ['calgary', 'Calgary'] } as Record<string, [string, string]>;
+    expect(agencyRegionTitle('ttc', map)).toBe('Greater Toronto and Hamilton Area');
+    expect(agencyRegionTitle('calgary', map)).toBe('Calgary area');
+    expect(agencyRegionTitle('nowhere', map)).toBeNull();
+  });
+});
+
 describe('areaLinkFor', () => {
   const map: Record<string, [string, string]> = { ttc: ['toronto', 'Toronto'] };
   it('links only agencies in a paged area, and only with the flag on', () => {
@@ -219,5 +250,19 @@ describe('areaRegionName', () => {
     expect(areaRegionName({ slug: 'calgary', name: 'Calgary' })).toBe('the Calgary area');
     expect(areaRegionTitle({ slug: 'san-francisco', name: 'San Francisco' })).toBe('Bay Area');
     expect(areaRegionSentenceStart({ slug: 'calgary', name: 'Calgary' })).toBe('The Calgary area');
+  });
+});
+
+describe('areaLinkName (CIV-523)', () => {
+  it('keeps a name that fits and drops a trailing "area" only from one that does not', () => {
+    expect(areaLinkName('Chicago metropolitan area', AREA_LINK_MAX_CHARS.about)).toBe('Chicago metropolitan area');
+    expect(areaLinkName('Greater Toronto and Hamilton Area', AREA_LINK_MAX_CHARS.about)).toBe('Greater Toronto and Hamilton');
+    expect(areaLinkName('Chicago metropolitan area', AREA_LINK_MAX_CHARS.aboutAndSource)).toBe('Chicago');
+    expect(areaLinkName('Portland metro area', 10)).toBe('Portland');
+  });
+
+  it('never shortens a proper name, or a name with no "area" to drop', () => {
+    expect(areaLinkName('Bay Area', 3)).toBe('Bay Area');
+    expect(areaLinkName('Waterloo Region', 5)).toBe('Waterloo Region');
   });
 });

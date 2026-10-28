@@ -22,6 +22,7 @@
  * The index.json stores feed sources + metadata. Artifact URLs are derived from slug.
  */
 import { readFileSync, writeFileSync, renameSync } from 'fs';
+import { pipelineRunDateYmd } from './pipelineTimeZone.js';
 import { execFileSync } from 'child_process';
 import { resolve } from 'path';
 import { canRebuildPmtilesAfterRefresh, clearDataRefreshHandoff, writeDataRefreshMarker, writeRefreshRunResult, type RefreshAgencyStatus } from './dataRefreshMarker.js';
@@ -31,6 +32,7 @@ import { r2Put, r2Get, r2PutArchive, r2PutArchiveJson, r2GetArchive, rawFeedArch
 import JSZip from 'jszip';
 import { GtfsValidationError, type GtfsPreprocess } from './process-core.js';
 import { loadSupplementalFeeds, processAgencyFeeds, supplementalArchiveStem, type SupplementalFeed } from './agencyFeeds.js';
+import { serviceWeekKey } from './serviceWeekKey.js';
 import { buildAgencyIndex } from './agencyIndex.js';
 import { buildNightServiceIndex, extractNightServiceRoutes, mergeNightServiceIndex, type NightServiceIndexFile, type NightServiceRouteEntry } from './nightServiceIndex.js';
 import type { HeadwayByPeriod } from '../shared/config.js';
@@ -47,7 +49,7 @@ import {
 } from './overrideAudit.js';
 import { readFeedReviewHistory, shouldReviewNextFeed } from './feedReview.js';
 import { compareStopSnapshots, formatStopAuditLog, type AuditedStop } from './stopAudit.js';
-import { candidateIsOlderThanActive, shouldClearStaged, decideRefreshSkipUnchanged, isFeedExpired, markFeedStale, shouldReplaceExpiredFeed, shouldSkipAllExpiredFeeds, shouldStampFeedMeta, stampFeedMeta, routeLineCount, stampSupplementalFeedMeta } from './refreshMeta.js';
+import { lowerStoredFeedExpiry, candidateIsOlderThanActive, shouldClearStaged, decideRefreshSkipUnchanged, isFeedExpired, markFeedStale, shouldReplaceExpiredFeed, shouldSkipAllExpiredFeeds, shouldStampFeedMeta, stampFeedMeta, routeLineCount, stampSupplementalFeedMeta } from './refreshMeta.js';
 import {
   COUNTRY_LAUNCH_FLAG,
   isCountryLaunchBlocked,
@@ -63,13 +65,14 @@ import { readRefDateQuality } from './historyRefQuality.js';
 import { assessWithWeekCheck, readRepickRows } from './historyRefRepick.js';
 import { historyGeometryForRoute } from './historyGeometry.js';
 import { effectiveFeedExpiry } from './feedFreshness.js';
-import { isActiveProductionFeed, type SupplementalFeedMeta } from '../shared/feedAvailability.js';
+import { agencyTodayYmd, isActiveProductionFeed, type SupplementalFeedMeta } from '../shared/feedAvailability.js';
 import { recordFeedCheck, type FeedCheckFields } from './feedCheckTracking.js';
 import { buildFeedCandidates, type FeedCandidate } from './feedSourceCandidates.js';
 import { resolveFeedUrl } from './feedUrl.js';
 import { ROUTE_ARTIFACT_SCHEMA_VERSION } from '../shared/artifactSchema.js';
 import { peekFeedDates } from './archiveSelection.js';
 import { tryArchiveUnchangedFeed } from './archiveIfMissing.js';
+import { futureFeedHoldUntil, heldFeedSummary } from './futureFeedHold.js';
 import { resolveAgencyTimezone } from '../shared/agencyTimezone.js';
 import {
   applyOverrides,
@@ -80,7 +83,7 @@ import {
   formatGateSummary,
   gateRunId,
   parseGateOverrides,
-  readLiveSummary,
+  releaseBaselineReader,
   summarizeArtifact,
   unknownOverrideSlugs,
   writeGateReport,
@@ -112,7 +115,8 @@ let gateRegistry: RegistryAgency[] = [];
 const gateRunPeers: GatePeer[] = [];
 const gateFlags: GateFlag[] = [];
 const gateChecked: string[] = [];
-const readRefreshLive = cachedSummaryReader(slug => readLiveSummary(slug, r2Get));
+// The baseline is the public release's copy, never a top-level file a failed run may have rewritten (CIV-522).
+const readRefreshLive = releaseBaselineReader(r2Get);
 
 function writeJsonAtomically(filePath: string, value: unknown): void {
   const tempPath = `${filePath}.tmp-${process.pid}`;
@@ -188,7 +192,7 @@ async function writeHistorySnapshot(slug: string, geojson: string, feedExpiry: s
   let v2Routes: ReturnType<typeof buildV2Routes>['routes'] | undefined;
   let collisionNote = '';
   if (v2Input) {
-    const today = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+    const today = pipelineRunDateYmd();
     const refOpts = v2Input.referenceDateFromRunDate ? { referenceDate: today } : {};
     const evidence = await readFeedEvidence(v2Input.buf, refOpts);
     // The merged features already hold the supplemental feeds' routes; split them back by feed so
@@ -303,6 +307,12 @@ interface AgencyEntry {
   lastFeedVersion?: string | null;
   lastRefreshedAt?: string | null;
   lastFeedCheckAt?: string | null;
+  /** A fetched timetable starting on this date waits until then (#1144). */
+  heldFeedStart?: string | null;
+  /** CIV-1011 stage 4: the picked week's key at the last refresh (serviceWeekKey). */
+  lastServiceWeek?: string | null;
+  /** When Atlas first obtained the current main feed file (YYYYMMDD). */
+  feedObtainedAt?: string | null;
   expiredFeedCheckCount?: number;
   expiredFeedCheckSince?: string | null;
   expiredFeedCheckExpiry?: string | null;
@@ -319,6 +329,7 @@ interface AgencyEntry {
   skipClusteredJumpRepair?: boolean;
   poolSingleTripShapes?: boolean;
   referenceDateFromRunDate?: boolean;
+  skipBlockTripHeadways?: boolean;
   nextServiceDatesFeedUrls?: string[];
   nextServiceDatesSkipWeekendEvents?: boolean;
   staged?: boolean;
@@ -379,6 +390,8 @@ async function refreshAgency(
   // Skip processing if the feed hasn't changed since last refresh.
   // Primary key: feed_end_date. Fallback: feed_version (for agencies without feed_info expiry).
   const today = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+  // Whether a feed has ended is read in the agency's local date (agencyTodayYmd); `today` stays the record date.
+  const expiryToday = agencyTodayYmd(agency);
   const configuredFeedUrl = resolveFeedUrl(agency.feedUrl, agency.feedApiKeyEnvVar, agency.feedApiKeyParam);
   const feedCandidates = buildFeedCandidates(configuredFeedUrl, agency.mdbFeedUrl, agency.feedFallbackUrls);
   let buf: Buffer | null = null;
@@ -403,11 +416,11 @@ async function refreshAgency(
         peekedExpiry = metadata.feedExpiry;
         peekedVersion = metadata.feedVersion;
         selectedCandidate = candidate;
-        if (!isFeedExpired(metadata.feedExpiry, today)) break;
+        if (!isFeedExpired(metadata.feedExpiry, expiryToday)) break;
       } else if (shouldReplaceExpiredFeed({
         selectedExpiry: peekedExpiry,
         candidateExpiry: metadata.feedExpiry,
-        todayYmd: today,
+        todayYmd: expiryToday,
       })) {
         buf = candidateBuf;
         peekedExpiry = metadata.feedExpiry;
@@ -441,12 +454,23 @@ async function refreshAgency(
     agency.lastFeedSourceUrl = selectedCandidate.url;
   }
 
-  recordFeedCheck(agency as FeedCheckFields, { feedExpiry: peekedExpiry, todayYmd: today });
+  recordFeedCheck(agency as FeedCheckFields, { feedExpiry: peekedExpiry, todayYmd: today, expiryTodayYmd: expiryToday });
 
-  if (peekedExpiry && isFeedExpired(peekedExpiry, today)) {
+  if (peekedExpiry && isFeedExpired(peekedExpiry, expiryToday)) {
     const expDate = `${peekedExpiry.slice(0, 4)}-${peekedExpiry.slice(4, 6)}-${peekedExpiry.slice(6, 8)}`;
     const daysAgo = Math.round((Date.now() - new Date(expDate).getTime()) / 86_400_000);
     writeLog(`\n  [warn] feed expired ${daysAgo}d ago (${expDate}) — update the feedUrl\n  `);
+  }
+
+  // #1144: a timetable that hasn't started waits while the current one still runs. The zip is
+  // archived and the agency marked, so the run on its start date (heldFeedsDue) processes it.
+  const { feedStart: peekedStart, feedExpiry: peekedCalendarEnd, feedInfoEnd: peekedFeedInfoEnd, calendarOnlyEnd: peekedCalendarOnlyEnd } = await peekFeedDates(buf, agency.excludeRouteShortNames);
+  const heldUntil = futureFeedHoldUntil({ feedStart: peekedStart, todayYmd: expiryToday, liveFeedExpiry: agency.lastFeedExpiry });
+  if (heldUntil) {
+    agency.heldFeedStart = heldUntil;
+    await tryArchiveUnchangedFeed(agency.slug, buf, peekedExpiry, peekedVersion, writeLog);
+    writeLog(`\n  [info] ${heldFeedSummary(heldUntil)}\n  `);
+    return { summary: heldFeedSummary(heldUntil) };
   }
 
   const hasSupplementals = (agency.supplementalFeedUrls?.length ?? 0) > 0;
@@ -476,7 +500,7 @@ async function refreshAgency(
 
   if (!forceRefresh && shouldSkipAllExpiredFeeds(
     [peekedExpiry, ...supplementalFeeds.map(feed => feed.feedExpiry)],
-    today,
+    expiryToday,
   )) {
     const reason = `all available feeds expired (latest ${peekedExpiry ?? 'unknown'})`;
     markFeedStale(agency, { reason, todayYmd: today });
@@ -489,16 +513,25 @@ async function refreshAgency(
     return { summary: `skipped (older feed: ${peekedExpiry ?? 'unknown'})` };
   }
 
+  // CIV-1011 safeguard: when Atlas first obtained this file. A new version or expiry is obtained
+  // today; an unchanged one keeps its recorded date (older records: the last refresh that processed it).
+  const newFile = (peekedVersion ?? null) !== (agency.lastFeedVersion ?? null) || (peekedExpiry ?? null) !== (agency.lastPeekedExpiry ?? agency.lastFeedExpiry ?? null);
+  const feedObtainedAt = newFile ? today : agency.feedObtainedAt ?? agency.lastRefreshedAt?.replace(/-/g, '') ?? null;
+  // CIV-1011 stage 4: the week the map reads moves with the run date, so an unchanged zip whose
+  // picked week moved is reprocessed (the old picker's kill switch leaves the check as it was).
+  const serviceWeek = process.env.ATLAS_LEGACY_REFERENCE_DATE === '1' ? null : await serviceWeekKey(buf);
   const skipDecision = decideRefreshSkipUnchanged({
     forceRefresh,
     hasSupplementals,
-    feedExpired: isFeedExpired(peekedExpiry, today),
+    feedExpired: isFeedExpired(peekedExpiry, expiryToday),
     peekedExpiry,
     peekedVersion,
     lastFeedExpiry: agency.lastFeedExpiry,
     lastPeekedExpiry: agency.lastPeekedExpiry,
     lastFeedVersion: agency.lastFeedVersion,
     referenceDateFromRunDate: agency.referenceDateFromRunDate,
+    serviceWeek,
+    lastServiceWeek: agency.lastServiceWeek,
   });
   if (skipDecision.skip) {
     // A current feed can still have a legacy processed artifact. Do not let
@@ -518,6 +551,11 @@ async function refreshAgency(
     }
     if (!artifactNeedsReprocess) {
       await tryArchiveUnchangedFeed(agency.slug, buf, peekedExpiry, peekedVersion, writeLog);
+      // The feed is unchanged, but the expiry rule may not be (CIV-443): record what it gives now.
+      const previousExpiry = lowerStoredFeedExpiry(agency, {
+        feedInfoEnd: peekedFeedInfoEnd ?? null, calendarEnd: peekedCalendarEnd ?? null, calendarOnlyEnd: peekedCalendarOnlyEnd ?? null, todayYmd: todayUtcYmd(),
+      });
+      if (previousExpiry) writeLog(`\n  [info] recorded expiry ${previousExpiry} -> ${agency.lastFeedExpiry} (calendar's last service date)\n  `);
       return { summary: skipDecision.reason };
     }
     writeLog(`\n  ${agency.slug.padEnd(12)} ... reprocessing (current feed, legacy or missing route artifact)\n`);
@@ -550,6 +588,7 @@ async function refreshAgency(
     // primary feed; supplemental feeds always reprocess.
     primary = await processAgencyFeeds(buf, supplementalFeeds, agency, {
       manualBaseFare: manualBaseFareOverride,
+      fileDate: feedObtainedAt,
       // Soft: skip this agency rather than aborting the whole weekly refresh.
       // process CLI fails hard unless --force.
       force: false,
@@ -589,12 +628,14 @@ async function refreshAgency(
   // anything is written, so a refused agency keeps its live artifacts, archive
   // and metadata unchanged.
   const next = summarizeArtifact(geojson, stopsJson, agency.slug);
-  const { feedStart, calendarOnlyEnd } = await peekFeedDates(buf);
+  // Dates of the routes Atlas keeps (excluded routes' services left out, #1140), for the gate and the
+  // recorded expiry. lastPeekedExpiry stays the raw zip's, which the next refresh compares against.
+  const { feedStart, feedExpiry: keptCalendarExpiry, calendarOnlyEnd } = await peekFeedDates(buf, agency.excludeRouteShortNames);
   const agencyFlags = await evaluateRun({
-    candidates: [{ slug: agency.slug, next, service: { start: feedStart, end: feedExpiry ?? peekedExpiry, calendarEnd: peekedExpiry } }],
+    candidates: [{ slug: agency.slug, next, service: { start: feedStart, end: feedExpiry ?? keptCalendarExpiry, calendarEnd: keptCalendarExpiry, liveFeedExpiry: agencyBeforeRebuild.lastFeedExpiry } }],
     getLive: readRefreshLive,
     registry: gateRegistry,
-    todayYmd: today,
+    todayYmd: expiryToday,
     allowMissingLive: true,
     extraPeers: [...gateRunPeers],
   });
@@ -658,7 +699,11 @@ async function refreshAgency(
       peekedExpiry,
       peekedVersion,
       todayYmd: todayUtcYmd(),
+      calendarExpiry: keptCalendarExpiry,
       calendarOnlyEnd,
+      listingEnd: primary.listingEnd,
+      serviceWeek,
+      feedObtainedAt,
     });
     stampSupplementalFeedMeta(agency, supplementalMeta);
   }

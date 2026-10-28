@@ -19,7 +19,7 @@ export interface HistoryEligibilityOptions {
    * false/omitted: the original rule (snapshot years plus `coverageYears`, any year).
    */
   realYearsOnly?: boolean;
-  /** Latest year that counts under `realYearsOnly` (default: this year). */
+  /** Latest year that counts, under either rule (default: this year). Later years are future-dated and never count. */
   buildYear?: number;
 }
 
@@ -35,10 +35,12 @@ export function distinctSnapshotYears(agency: HistoryAgencyLike, options: Histor
     }
     return [...real].sort((a, b) => a - b);
   }
-  const years = new Set<number>(agency.coverageYears ?? []);
+  // A year after the build year cannot be a real past year (a feed that starts later), so it never counts.
+  const buildYear = options.buildYear ?? new Date().getFullYear();
+  const years = new Set<number>((agency.coverageYears ?? []).filter(y => y <= buildYear));
   for (const route of agency.routes ?? []) {
     for (const snap of route.snapshots ?? []) {
-      if (snap.year != null) years.add(snap.year);
+      if (snap.year != null && snap.year <= buildYear) years.add(snap.year);
     }
   }
   return [...years].sort((a, b) => a - b);

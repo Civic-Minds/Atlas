@@ -9,7 +9,7 @@
   "feedUrl": "https://s3.amazonaws.com/etatransit.gtfs/tarta.etaspot.net/gtfs.zip",
   "region": "Ohio",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-1716_1/latest.zip",
-  "lastFeedExpiry": "20271015",
+  "lastFeedExpiry": "20271023",
   "lastFeedVersion": "462",
   "lastRefreshedAt": "2026-10-19",
   "cities": [
@@ -41,5 +41,5 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://s3.amazonaws.com/etatransit.gtfs/tarta.etaspot.net/gtfs.zip",
-  "lastPeekedExpiry": "20271015"
+  "lastPeekedExpiry": "20271023"
 }

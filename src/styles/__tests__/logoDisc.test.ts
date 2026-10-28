@@ -18,7 +18,9 @@ function walk(dir: string): string[] {
 
 describe('shared Atlas logo component', () => {
   it('uses a pale disc with an accent icon, not a solid accent fill', () => {
-    expect(LOGO).toContain('bg-[var(--bg-panel)]');
+    // The disc takes the top bar's shared surface (CIV-1020), which is the pale panel fill.
+    expect(LOGO).toContain('TOP_BAR_SURFACE');
+    expect(read('styles.ts')).toMatch(/TOP_BAR_SURFACE = `bg-\[var\(--bg-panel\)\]/);
     expect(LOGO).not.toContain('bg-[var(--accent)]');
     expect(LOGO).toContain('text-[var(--accent)]');
     expect(LOGO).not.toContain('text-white');

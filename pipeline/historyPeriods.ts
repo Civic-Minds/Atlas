@@ -79,3 +79,14 @@ export function labelFromRefDate(refDate: string | null | undefined): string | n
   if (month < 1 || month > 12) return null;
   return `${MONTHS[month - 1]} ${m[1]}`;
 }
+
+/**
+ * A History change file named by its refresh run's date (YYYY-MM-DD): refresh.ts falls back to the
+ * run date when a feed has no end date or version, so the row records a pipeline run, not a schedule
+ * change (#1114). Feed end dates are YYYYMMDD. A file whose processedAt is on another day was not
+ * written by that run and is kept.
+ */
+export function isRefreshRunPeriodKey(periodKey: string, processedAt?: unknown): boolean {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(periodKey)) return false;
+  return typeof processedAt !== 'string' || processedAt.slice(0, 10) === periodKey;
+}

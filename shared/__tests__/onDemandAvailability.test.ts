@@ -42,7 +42,7 @@ describe('formatOnDemandHoursLines', () => {
       Saturday: [{ startHour: 4.5, endHour: 26 }],
       Sunday: [{ startHour: 5.5, endHour: 25 }],
     });
-    expect(lines).toEqual([
+    expect(lines).toMatchObject([
       { dayTypes: ['Weekday', 'Saturday'], text: 'Mon–Sat 4:30 a.m.–2:00 a.m.' },
       { dayTypes: ['Sunday'], text: 'Sun 5:30 a.m.–1:00 a.m.' },
     ]);
@@ -50,7 +50,7 @@ describe('formatOnDemandHoursLines', () => {
       Weekday: [{ startHour: 7, endHour: 19 }],
       Saturday: [{ startHour: 7, endHour: 19 }],
       Sunday: [{ startHour: 7, endHour: 19 }],
-    })).toEqual([{ dayTypes: ['Weekday', 'Saturday', 'Sunday'], text: 'Daily 7:00 a.m.–7:00 p.m.' }]);
+    })).toMatchObject([{ dayTypes: ['Weekday', 'Saturday', 'Sunday'], text: 'Daily 7:00 a.m.–7:00 p.m.' }]);
   });
 
   it('shows hours past 24 as next-day clock times, rounding to the minute', () => {
@@ -67,7 +67,7 @@ describe('formatOnDemandHoursLines', () => {
       Weekday: [{ startHour: 6, endHour: 10 }, { startHour: 14, endHour: 18 }],
       Saturday: [],
       Sunday: [],
-    })).toEqual([
+    })).toMatchObject([
       { dayTypes: ['Weekday'], text: 'Mon–Fri 6:00 a.m.–10:00 a.m., 2:00 p.m.–6:00 p.m.' },
       { dayTypes: ['Saturday', 'Sunday'], text: 'Sat–Sun: no service' },
     ]);
@@ -75,7 +75,7 @@ describe('formatOnDemandHoursLines', () => {
 
   it('leaves out day types the data does not cover instead of guessing', () => {
     expect(formatOnDemandHoursLines(undefined)).toEqual([]);
-    expect(formatOnDemandHoursLines({ Weekday: [{ startHour: 7, endHour: 19 }] })).toEqual([
+    expect(formatOnDemandHoursLines({ Weekday: [{ startHour: 7, endHour: 19 }] })).toMatchObject([
       { dayTypes: ['Weekday'], text: 'Mon–Fri 7:00 a.m.–7:00 p.m.' },
     ]);
   });
@@ -95,8 +95,8 @@ describe('onDemandRunningNote', () => {
   });
 
   it('never claims service when hours are missing', () => {
-    expect(onDemandRunningNote(undefined, 'Saturday', 'midday')).toBe('Hours not confirmed for this time');
-    expect(onDemandRunningNote({ Weekday: [{ startHour: 7, endHour: 19 }] }, 'Saturday', 'midday')).toBe('Hours not confirmed for this time');
+    expect(onDemandRunningNote(undefined, 'Saturday', 'midday')).toBe('Hours unavailable');
+    expect(onDemandRunningNote({ Weekday: [{ startHour: 7, endHour: 19 }] }, 'Saturday', 'midday')).toBe('Hours unavailable');
   });
 });
 

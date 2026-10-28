@@ -9,7 +9,7 @@
  *   npx tsx scripts/report-stale-feeds.ts [--count]   (reads public/data/index.json)
  */
 import { readFileSync } from 'node:fs';
-import { effectiveFeedExpiry, isStaleProductionFeed, todayUtcYmd, type FeedAvailabilityEntry } from '../shared/feedAvailability';
+import { agencyTodayYmd, effectiveFeedExpiry, isStaleProductionFeed, todayUtcYmd, type FeedAvailabilityEntry } from '../shared/feedAvailability';
 
 export interface StaleFeedAgency extends FeedAvailabilityEntry {
   slug: string;
@@ -31,11 +31,12 @@ export interface StaleFeedRow {
 
 const ymdToDate = (ymd: string) => Date.UTC(Number(ymd.slice(0, 4)), Number(ymd.slice(4, 6)) - 1, Number(ymd.slice(6, 8)));
 
-/** Public agencies whose timetable has expired, longest expired first. */
-export function staleFeedRows(agencies: StaleFeedAgency[], today = todayUtcYmd()): StaleFeedRow[] {
+/** Public agencies whose timetable has expired, longest expired first. Without `today`, each agency's own local date. */
+export function staleFeedRows(agencies: StaleFeedAgency[], today?: string): StaleFeedRow[] {
   return agencies
-    .filter(a => isStaleProductionFeed(a, today))
+    .filter(a => isStaleProductionFeed(a, today ?? agencyTodayYmd(a)))
     .map(a => {
+      const agencyToday = today ?? agencyTodayYmd(a);
       const expiry = effectiveFeedExpiry(a);
       const known = expiry != null && /^\d{8}$/.test(expiry);
       return {
@@ -43,7 +44,7 @@ export function staleFeedRows(agencies: StaleFeedAgency[], today = todayUtcYmd()
         name: a.name ?? a.slug,
         region: a.region ?? '',
         expiredOn: known ? `${expiry.slice(0, 4)}-${expiry.slice(4, 6)}-${expiry.slice(6, 8)}` : 'unknown',
-        daysExpired: known ? Math.round((ymdToDate(today) - ymdToDate(expiry)) / 86_400_000) : -1,
+        daysExpired: known ? Math.round((ymdToDate(agencyToday) - ymdToDate(expiry)) / 86_400_000) : -1,
         feedUrl: a.feedUrl ?? null,
         error: a.feedRefreshError ?? null,
       };

@@ -6,7 +6,7 @@ import {
 } from '../types/gtfs';
 import { t2m, getModeName, expandTripFrequencyWindows, parseFrequencyWindow, type FrequencyWindow } from './transit-utils';
 import { detectReferenceDate, getActiveServiceIds } from './transit-calendar';
-import { isRailLikeRoute } from '../shared/modes';
+import { isRailRoute } from './routeMode';
 
 /**
  * Expand frequency-based trips into individual departure times.
@@ -55,14 +55,47 @@ function expandFrequencies(
     return expanded;
 }
 
+type TripDepartureData = { depTime: number; routeId: string; dirId: string; serviceId: string; missingDir: boolean; shapeId: string | null; headsign: string | null; routeVariant: string | null; blockTrip: boolean };
+
+/**
+ * Block trips (Clemson Area Transit, #1040): a trip with three or more stops whose only timed
+ * stops are its first and its last, every stop in between blank. The feed writes one such trip
+ * per vehicle shift, so the first stop's time is when the shift starts (often 00:00 or 07:00),
+ * not a departure a rider can catch. Read only for agencies that opt in (`skipBlockTripHeadways`).
+ * A trip with any timed stop in between, or one given departures by frequencies.txt, is not one.
+ */
+function findBlockTrips(stopTimes: GtfsData['stopTimes']): Set<string> {
+    const stats = new Map<string, { stops: number; timed: number; firstSeq: number; lastSeq: number; firstTimed: boolean; lastTimed: boolean }>();
+    for (const st of stopTimes) {
+        const seq = parseInt(st.stop_sequence);
+        if (Number.isNaN(seq)) continue;
+        const timed = !!(st.departure_time || st.arrival_time);
+        let s = stats.get(st.trip_id);
+        if (!s) {
+            s = { stops: 0, timed: 0, firstSeq: seq, lastSeq: seq, firstTimed: timed, lastTimed: timed };
+            stats.set(st.trip_id, s);
+        }
+        s.stops++;
+        if (timed) s.timed++;
+        if (seq < s.firstSeq) { s.firstSeq = seq; s.firstTimed = timed; }
+        if (seq > s.lastSeq) { s.lastSeq = seq; s.lastTimed = timed; }
+    }
+    const blockTrips = new Set<string>();
+    for (const [tripId, s] of stats) {
+        if (s.stops >= 3 && s.timed === 2 && s.firstTimed && s.lastTimed) blockTrips.add(tripId);
+    }
+    return blockTrips;
+}
+
 /**
  * Builds a map of trip_id → origin departure time (minutes from midnight).
  * Origin = the stop with the lowest stop_sequence for that trip.
  * Frequency-based trips are expanded into synthetic per-departure entries.
  */
 function buildTripDepartures(
-    gtfs: GtfsData
-): Map<string, { depTime: number; routeId: string; dirId: string; serviceId: string; missingDir: boolean; shapeId: string | null; headsign: string | null; routeVariant: string | null }> {
+    gtfs: GtfsData,
+    detectBlockTrips = false,
+): Map<string, TripDepartureData> {
     const { trips, stopTimes } = gtfs;
 
     const tripFirstDep = new Map<string, number>();
@@ -95,7 +128,9 @@ function buildTripDepartures(
 
     const freqExpanded = expandFrequencies(gtfs.frequencies, stopTimes);
 
-    const result = new Map<string, { depTime: number; routeId: string; dirId: string; serviceId: string; missingDir: boolean; shapeId: string | null; headsign: string | null; routeVariant: string | null }>();
+    const blockTrips = detectBlockTrips ? findBlockTrips(stopTimes) : null;
+
+    const result = new Map<string, TripDepartureData>();
     for (const trip of trips) {
         let headsign = trip.trip_headsign?.trim() || null;
         if (!headsign) {
@@ -119,16 +154,39 @@ function buildTripDepartures(
         if (freqDeps) {
             // Frequency-based trip: use synthetic departures; stop_times baseDep not required.
             for (let i = 0; i < freqDeps.length; i++) {
-                result.set(`${trip.trip_id}__freq_${i}`, { depTime: freqDeps[i], ...tripMeta });
+                result.set(`${trip.trip_id}__freq_${i}`, { depTime: freqDeps[i], ...tripMeta, blockTrip: false });
             }
         } else {
             const baseDep = tripFirstDep.get(trip.trip_id);
             if (baseDep === undefined) continue;
-            result.set(trip.trip_id, { depTime: baseDep, ...tripMeta });
+            result.set(trip.trip_id, { depTime: baseDep, ...tripMeta, blockTrip: blockTrips?.has(trip.trip_id) ?? false });
         }
     }
 
+    if (blockTrips) {
+        // A block trip counts as one only when its whole pattern (route, direction, headsign, shape,
+        // variant: the grouping computeRawDepartures reads) is block trips. Central's Sunday 16:00
+        // trip is a block trip, but it is the last of an hourly pattern whose other trips are
+        // timed, so it stays a departure.
+        const patternKey = (d: TripDepartureData) => `${d.routeId}::${d.dirId}::${d.headsign ?? ''}::${d.shapeId ?? ''}::${d.routeVariant ?? ''}`;
+        const patternHasTimedTrip = new Set<string>();
+        for (const d of result.values()) if (!d.blockTrip) patternHasTimedTrip.add(patternKey(d));
+        for (const d of result.values()) if (d.blockTrip && patternHasTimedTrip.has(patternKey(d))) d.blockTrip = false;
+    }
+
     return result;
+}
+
+/**
+ * Trip ids of the block trips (see findBlockTrips) whose whole pattern is block trips, for an
+ * agency that opts in with `skipBlockTripHeadways`. Stop-level headways leave them out, as the
+ * route-level count does in computeRawDepartures.
+ */
+export function findBlockOnlyTripIds(gtfs: GtfsData): Set<string> {
+    const ids = new Set<string>();
+    if (!gtfs.trips || !gtfs.stopTimes) return ids;
+    for (const [tripId, data] of buildTripDepartures(gtfs, true)) if (data.blockTrip) ids.add(tripId);
+    return ids;
 }
 
 /**
@@ -151,12 +209,19 @@ function deduplicateDepartures(times: number[]): number[] {
  * Produces one RawRouteDepartures per route/direction/day (Mon–Sun).
  * No time window filtering, no tier classification — all gaps preserved.
  */
-export function computeRawDepartures(gtfs: GtfsData, referenceDate?: string, shapeFilter?: Map<string, Set<string>>, agencySlug?: string): RawRouteDepartures[] {
+export function computeRawDepartures(
+    gtfs: GtfsData,
+    referenceDate?: string,
+    shapeFilter?: Map<string, Set<string>>,
+    agencySlug?: string,
+    options?: { skipBlockTripHeadways?: boolean },
+): RawRouteDepartures[] {
     const { routes, calendar, calendarDates } = gtfs;
     if (!routes || !gtfs.trips || !gtfs.stops || !gtfs.stopTimes) return [];
 
     const routeById = new Map(routes.map(r => [r.route_id, r]));
-    const tripData = buildTripDepartures(gtfs);
+    const skipBlockTripHeadways = options?.skipBlockTripHeadways === true;
+    const tripData = buildTripDepartures(gtfs, skipBlockTripHeadways);
     const refDate = referenceDate ?? detectReferenceDate(calendar, calendarDates, gtfs.trips);
     const results: RawRouteDepartures[] = [];
 
@@ -166,7 +231,7 @@ export function computeRawDepartures(gtfs: GtfsData, referenceDate?: string, sha
 
         const grouped = new Map<string, {
             routeId: string; dirId: string; headsign?: string; shapeId?: string; routeVariant?: string;
-            times: number[]; serviceIds: Set<string>; missingDir: boolean;
+            times: number[]; serviceIds: Set<string>; missingDir: boolean; allBlockTrips: boolean;
         }>();
 
         for (const [, data] of tripData) {
@@ -196,8 +261,10 @@ export function computeRawDepartures(gtfs: GtfsData, referenceDate?: string, sha
                 times: [],
                 serviceIds: new Set(),
                 missingDir: false,
+                allBlockTrips: true,
             });
             const group = grouped.get(key)!;
+            if (!data.blockTrip) group.allBlockTrips = false;
             group.times.push(data.depTime);
             group.serviceIds.add(data.serviceId);
             if (data.missingDir) group.missingDir = true;
@@ -205,7 +272,10 @@ export function computeRawDepartures(gtfs: GtfsData, referenceDate?: string, sha
 
         for (const [, group] of grouped) {
             const { routeId, dirId, headsign, shapeId, routeVariant } = group;
-            const departureTimes = deduplicateDepartures(group.times);
+            let departureTimes = deduplicateDepartures(group.times);
+            // #1040 (opt-in): a pattern whose every departure is a block trip's shift start has no
+            // timetable, so it keeps one departure and reads as one-off with no headway.
+            if (skipBlockTripHeadways && group.allBlockTrips && departureTimes.length > 1) departureTimes = [departureTimes[0]];
             // #720: one departure is kept; phase 2 draws it as one-off (TARC 99).
             if (departureTimes.length === 0) continue;
 
@@ -230,12 +300,7 @@ export function computeRawDepartures(gtfs: GtfsData, referenceDate?: string, sha
                 day,
                 routeType,
                 modeName: getModeName(routeType),
-                railLike: isRailLikeRoute({
-                    routeType,
-                    routeLongName: route?.route_long_name,
-                    routeShortName: route?.route_short_name,
-                    agencySlug,
-                }),
+                railLike: isRailRoute(route ?? { route_type: String(routeType) }, agencySlug),
                 shapeId,
                 departureTimes,
                 gaps,

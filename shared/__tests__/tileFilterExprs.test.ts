@@ -203,9 +203,12 @@ describe('buildModeFilterClause', () => {
     expect(compiled.filter(ctx, feat({ day: 'Weekday', directionId: 0, routeType: 702 }) as any)).toBe(true);
   });
 
-  it('matches no scheduled routes when only on-demand is selected', () => {
+  it('on-demand alone matches only routes riders must book ahead (CIV-1006)', () => {
     const filter = buildModeFilterClause(new Set([ON_DEMAND_MODE]));
-    expect(() => compileFilter(filter)).not.toThrow();
-    expect(filter).toEqual(['==', ['get', 'routeId'], '__atlas_no_scheduled_route__']);
+    const compiled = compileFilter(filter);
+    const ctx = { zoom: 10 };
+    expect(compiled.filter(ctx, feat({ day: 'Weekday', directionId: 0, routeType: 1501, bookingRequired: true }) as any)).toBe(true);
+    expect(compiled.filter(ctx, feat({ day: 'Weekday', directionId: 0, routeType: 3 }) as any)).toBe(false);
+    expect(compiled.filter(ctx, feat({ day: 'Weekday', directionId: 0, routeType: 1501 }) as any)).toBe(false);
   });
 });

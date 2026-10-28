@@ -45,7 +45,7 @@ export default function FrequentServicePublishedMapMontage() {
   const current = publishedMapFrames[activeFrame];
 
   return (
-    <figure className="mt-10 w-full overflow-hidden rounded-[1.5rem] border border-[var(--border-primary)] bg-[#f4f3ef] shadow-sm">
+    <figure className="mt-10 w-full overflow-hidden rounded-[1.5rem] border border-[var(--border-primary)] bg-[#f4f3ef]">
       <div className="relative aspect-[12/7]">
         {publishedMapFrames.map((frame, index) => (
           <img

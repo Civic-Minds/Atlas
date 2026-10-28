@@ -1,5 +1,5 @@
 import React from 'react';
-import { SIDEBAR_LEFT_FALLBACK } from '../../styles';
+import { sidebarFrameStyle } from '../../styles';
 import Panel from '../ui/Panel';
 import { useDelayedFlag } from '../../hooks/useDelayedFlag';
 import PanelEmpty from '../ui/PanelEmpty';
@@ -24,11 +24,7 @@ export default function SelectionLoadPanel({ kind, failed, onClose, sidebarLeft,
     <Panel
       sidebar
       enter
-      style={{
-        top: 80,
-        '--sidebar-left': `${sidebarLeft ?? SIDEBAR_LEFT_FALLBACK}px`,
-        ...(searchBarWidth ? { width: `${searchBarWidth}px`, maxWidth: 'none' } : {}),
-      } as React.CSSProperties}
+      style={sidebarFrameStyle(sidebarLeft, searchBarWidth)}
     >
       {failed ? (
         <PanelEmpty kind="error" action={<ArrowLink as="button" tone="inline" size="xs" onClick={onClose} className="shrink-0 whitespace-nowrap">Close</ArrowLink>}>

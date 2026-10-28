@@ -299,3 +299,35 @@ describe('visibility check (report-only)', () => {
     expect(newBuildReport().visibility).toEqual([]);
   });
 });
+
+describe('a change file keyed by its feed end date after this year (CIV-394)', () => {
+  // AC Transit 7: the spring timetable's file ends Aug 2026; the current one, read Sep 2026, ends Apr 2027.
+  const changes = [
+    { periodKey: '20260808', headway: 30, processedAt: '2026-04-20T06:00:00.000Z' },
+    { periodKey: '20270424', headway: 15, processedAt: '2026-09-14T06:00:00.000Z' },
+  ];
+
+  it('dates it by when it was read, so this year shows the current timetable', () => {
+    const report = newBuildReport();
+    const snaps = buildRouteSnapshots('actransit', '7', joinCandidates(changes, []), 2026, report);
+    expect(snaps.map(s => [s.year, s.label, s.weekdayHeadwayMin])).toEqual([[2026, 'Sep 2026', 15]]);
+    expect(report.drops).toEqual([]);
+  });
+
+  it('still drops a file with no read date, or one read after this year', () => {
+    const report = newBuildReport();
+    const snaps = buildRouteSnapshots('actransit', '7', joinCandidates([
+      changes[0],
+      { periodKey: '20270424', headway: 15 },
+      { periodKey: '20280101', headway: 12, processedAt: '2027-02-01T00:00:00.000Z' },
+    ], []), 2026, report);
+    expect(snaps.map(s => [s.year, s.weekdayHeadwayMin])).toEqual([[2026, 30]]);
+    expect(report.drops.map(d => d.reason)).toEqual(['after build year', 'after build year']);
+  });
+
+  it('leaves an old feed dated by its end year as before', () => {
+    const report = newBuildReport();
+    const snaps = buildRouteSnapshots('mbta', '1', joinCandidates([{ periodKey: '20121215', headway: 10, processedAt: '2026-08-01T00:00:00.000Z' }], []), 2026, report);
+    expect(snaps.map(s => [s.year, s.label])).toEqual([[2012, 'Dec 2012']]);
+  });
+});

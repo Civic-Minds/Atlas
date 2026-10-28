@@ -15,7 +15,7 @@
   ],
   "feedUrl": "https://unitrans.ucdavis.edu/media/gtfs/Unitrans_GTFS.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-82/latest.zip",
-  "lastFeedExpiry": "20261213",
+  "lastFeedExpiry": "20270103",
   "lastFeedVersion": "Fall2026_V5",
   "lastRefreshedAt": "2026-10-07",
   "cities": [
@@ -48,5 +48,5 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://unitrans.ucdavis.edu/media/gtfs/Unitrans_GTFS.zip",
-  "lastPeekedExpiry": "20261213"
+  "lastPeekedExpiry": "20270103"
 }

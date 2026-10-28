@@ -14,6 +14,7 @@
 import { processGtfsBuffer, type GtfsPreprocess, type ProcessOptions, type ProcessResult } from './process-core.js';
 import { ROUTE_ARTIFACT_SCHEMA_VERSION } from '../shared/artifactSchema.js';
 import { extractAgencySections } from '../shared/agencySections.js';
+import { applyOnDemandRoutes } from './onDemandRoutes.js';
 
 export interface AgencyFeedConfig {
   slug: string;
@@ -22,6 +23,10 @@ export interface AgencyFeedConfig {
   routeTypes?: number[];
   preprocess?: GtfsPreprocess;
   excludeRouteShortNames?: string[];
+  /** #1119: routes (short names) that run on demand; nothing measured from their placeholder timetable is published. */
+  onDemandRoutes?: string[];
+  /** CIV-1006: force a route's booking-required status by short name (see bookedRoutes.ts). */
+  bookingRequiredRoutes?: Record<string, boolean>;
   timezoneOverride?: string;
   excludeTripHeadsigns?: string[];
   skipLetterSuffixMerge?: boolean;
@@ -31,6 +36,8 @@ export interface AgencyFeedConfig {
   skipClusteredJumpRepair?: boolean;
   poolSingleTripShapes?: boolean;
   referenceDateFromRunDate?: boolean;
+  /** Ignore block trips (only first and last stop timed) when counting departures (Clemson, #1040). */
+  skipBlockTripHeadways?: boolean;
   fare?: number;
   supplementalFeedUrls?: string[];
   /** The main feed's configured URL; matched against nextServiceDatesFeedUrls. */
@@ -56,6 +63,10 @@ export interface AgencyProcessOverrides {
   force?: boolean;
   /** History v2 backfill only: read the feed at this reference date (YYYYMMDD) instead of the detected one. */
   referenceDate?: string;
+  /** History backfills: keep the old reference-date picker (the new one, stage 4, reads the week from the run date). */
+  legacyReferenceDate?: boolean;
+  /** When Atlas first obtained the main feed's file (YYYYMMDD), for the listing-end safeguard. */
+  fileDate?: string | null;
 }
 
 export interface SupplementalFeed {
@@ -84,6 +95,7 @@ export function agencyProcessOptions(agency: AgencyFeedConfig, overrides: Agency
     routeTypes: agency.routeTypes,
     preprocess: agency.preprocess,
     excludeRouteShortNames: agency.excludeRouteShortNames,
+    bookingRequiredRoutes: agency.bookingRequiredRoutes,
     excludeTripHeadsigns: agency.excludeTripHeadsigns,
     skipLetterSuffixMerge: agency.skipLetterSuffixMerge,
     mergeEquivalentShapeVariants: agency.mergeEquivalentShapeVariants,
@@ -92,9 +104,14 @@ export function agencyProcessOptions(agency: AgencyFeedConfig, overrides: Agency
     skipClusteredJumpRepair: agency.skipClusteredJumpRepair,
     poolSingleTripShapes: agency.poolSingleTripShapes,
     referenceDateFromRunDate: agency.referenceDateFromRunDate,
+    skipBlockTripHeadways: agency.skipBlockTripHeadways,
     manualBaseFare: overrides.manualBaseFare ?? agency.fare,
     force: overrides.force ?? false,
     ...(overrides.referenceDate ? { referenceDate: overrides.referenceDate } : {}),
+    // Stage 4 of the reference-date plan (CIV-1011): the live map reads the week from the run date
+    // (pickRiderWeek). ATLAS_LEGACY_REFERENCE_DATE=1 is the kill switch back to the old picker.
+    ...(overrides.legacyReferenceDate || process.env.ATLAS_LEGACY_REFERENCE_DATE === '1' ? {} : { riderWeek: true }),
+    ...(overrides.fileDate ? { fileDate: overrides.fileDate } : {}),
   };
 }
 
@@ -216,6 +233,8 @@ export async function processAgencyFeeds(
   }
   stopsMeta.stopCount = stopsMeta.stops.length;
   Object.assign(runningTimes, primaryCollection.runningTimes ?? {});
+  const onDemandChanged = applyOnDemandRoutes(features as Array<{ properties?: Record<string, unknown> | null }>, runningTimes, agency.onDemandRoutes);
+  if (onDemandChanged > 0) onProgress?.(`On-demand routes: ${onDemandChanged} features carry no timetable values (#1119)`);
   // CIV-321: one pass over the merged list, so supplemental features' keys number on from the main feed's.
   const sections = extractAgencySections(features as Array<{ geometry?: { type?: string } | null; properties?: Record<string, unknown> | null }>);
 

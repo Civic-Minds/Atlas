@@ -184,6 +184,10 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
   - What: "every 10 min", "every 16 min", ranges with an en dash; never hours, never typed by hand.
   - Why: the same frequency reads the same on every surface, and columns never mix units.
   - Source: [STYLE.md](../STYLE.md) (Frequencies), [#938](https://github.com/Civic-Minds/Atlas/issues/938)
+- **Agency names: the agency's own short name, never a city or a made-up code**
+  - What: lists and rows use a bracketed brand code from the official name ("Chicago Transit Authority (CTA)" → CTA), or a short name stored in the agency's config (TTC, Muni); a row name longer than 24 characters uses the stored short name if there is one, otherwise the full name. A city or bracketed place is never the short name ("Capital Metro", not "Austin"). The agency card always shows the full name. Short names are stored only for names riders actually use; no new codes are coined (the 18 proposed ones such as GPTC and SETD were dropped).
+  - Why: a short name has to be one people recognise; an unfamiliar code is worse than the full name.
+  - Source: Linear CIV-998 and CIV-967; Ryan, 2026-10-27 ("That second one might be an issue", then "I think 1 is sound"); `agencyNames` in src/utils/format.ts
 
 - **Ryan's UI requirements are logged in his own words**
   - What: record his words verbatim, label AI suggestions as suggestions, and never put AI details under his name.
