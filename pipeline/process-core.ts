@@ -2794,6 +2794,11 @@ export async function processGtfsBuffer(
         // Wintermute: a tail its own trips reach once at midday graded 30 on that departure).
         const stopTiers: Record<string, string> = {};
         publishedStopTiers = stopTiers;
+        // CIV-845 prototype: the published colours cap the same grade at the shown stop value
+        // (the stretch value) instead of the stop's own, so the dot, the line and the card agree;
+        // the route tier (settleTier) keeps reading stopTiers above.
+        const shownStopTiers: Record<string, string> = {};
+        const worseTier = (a: string, b: string) => ((TIER_RANK[a] ?? 99) > (TIER_RANK[b] ?? 99) ? a : b);
         for (const { stopId } of drawnPatternStops()) {
           // A drop-off-only stop has arrivals, not departures: its value stays on the stop
           // card, but it is not graded (#879: RFTA L's terminal read the drawn shape's hourly
@@ -2818,6 +2823,7 @@ export async function processGtfsBuffer(
             if (railGraded == null) continue;
             const byHeadway = headwayToTierOn(headway, routeTierScale());
             stopTiers[stopId] = (TIER_RANK[railGraded] ?? 99) > (TIER_RANK[byHeadway] ?? 99) ? railGraded : byHeadway;
+            shownStopTiers[stopId] = worseTier(railGraded, headwayToTierOn(publishedStopHeadways[stopId] ?? headway, routeTierScale()));
             continue;
           }
           const graded = scopedTerminalHeadline(times, day as DayType, featureRoute?.route_type ?? '', railFeature);
@@ -2838,8 +2844,9 @@ export async function processGtfsBuffer(
           // 10 and the worst-stop rule took the line from 5 to 10.
           const byHeadway = headwayToTierOn(headway, routeTierScale());
           stopTiers[stopId] = (TIER_RANK[best] ?? 99) > (TIER_RANK[byHeadway] ?? 99) ? best : byHeadway;
+          shownStopTiers[stopId] = worseTier(best, headwayToTierOn(publishedStopHeadways[stopId] ?? headway, routeTierScale()));
         }
-        if (Object.keys(stopTiers).length > 0) feature.properties.stopTiers = stopTiers;
+        if (Object.keys(shownStopTiers).length > 0) feature.properties.stopTiers = shownStopTiers;
         // The drawn stops with no boardable stop time (#879): the client colours them from
         // their neighbours instead of reading their missing grade as limited service.
         const dropOffOnlyDrawn = drawnPatternStops().map(p => p.stopId).filter(stopId => !gradesAt(stopId));
