@@ -330,9 +330,9 @@ export const ROUTE_DATA_QUALITY_EXPLANATION = 'We still show the route. Its freq
 /** E5 and E6 paragraph 3. */
 export const ROUTE_DATA_QUALITY_REPORT = 'If something looks off, report it with the flag on this card.';
 // E7 edge-gap-allowance
-// Ryan's approved wording (CIV-1045), replacing both old lines.
-export const EDGE_GAP_ALLOWANCE_LEAD = 'A route can still count at its frequency when the first or last trip of the day comes a little later than the rest.';
-export const EDGE_GAP_ALLOWANCE_EXPLANATION = "Gaps in the middle of the day don't get this allowance.";
+// Ryan's two paragraphs (CIV-1051); 10 minutes is EDGE_GAP_ALLOWANCE_MINUTES (pipeline/transit-phase2.ts).
+export const EDGE_GAP_ALLOWANCE_LEAD = 'The first or last trip of the day can come up to 10 minutes later than usual, and the route still counts at its frequency.';
+export const EDGE_GAP_ALLOWANCE_EXPLANATION = "Many routes start or end their day with one longer gap. Gaps in the middle of the day don't get this allowance.";
 // E8 weekday-variation
 export const WEEKDAY_VARIATION_LEAD = 'Weekday schedules differ for this route.';
 export const WEEKDAY_VARIATION_EXPLANATION =
