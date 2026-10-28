@@ -211,8 +211,13 @@ export function formatOnDemandClock(hour: number): string {
   return clockTime(hour * 60);
 }
 
-/** One time range: "6 AM–4 PM" (CIV-1095). */
+/** Service that runs round the clock (Ryan, CIV-1095 Q2): "24 hours", not "12 AM–12 AM". */
+export const ROUND_THE_CLOCK_HOURS = '24 hours';
+
+/** One time range: "6 AM–4 PM" (CIV-1095); a window covering the whole day (0–24, or start = end) reads "24 hours". */
 export function formatOnDemandHoursRange(window: OnDemandHours): string {
+  const span = window.endHour - window.startHour;
+  if (span >= 24 || span === 0) return ROUND_THE_CLOCK_HOURS;
   return timeRange(window.startHour * 60, window.endHour * 60);
 }
 
