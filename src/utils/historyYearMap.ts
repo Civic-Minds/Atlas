@@ -1,5 +1,5 @@
 import { routesForYear, shapeForYear, snapshotValue, type HistoryShapesFile, type HistorySnapshotLike, type HistoryRouteLike, type SnapshotValue } from '../../shared/historyV2Reader';
-import type { HeadwayByPeriod } from '../../shared/config';
+import type { HeadwayByPeriod, PeriodKey } from '../../shared/config';
 import type { TimePeriod } from '../hooks/useIntervalStats';
 import { isDrawableLineCoordinates } from '../../shared/routeGeometry';
 import { localRouteHeadwayColor } from '../components/Interval/map/routeStyle';
@@ -23,7 +23,7 @@ export interface HistoryYearRoute {
   approximate?: boolean;
 }
 
-type Snapshot = HistorySnapshotLike & { headwayByPeriod?: HeadwayByPeriod };
+type Snapshot = HistorySnapshotLike & { headwayByPeriod?: HeadwayByPeriod; noTripPeriods?: readonly PeriodKey[] };
 
 /** What History shows: a time period ('all' = the weekday all-day value) and a frequency limit (Infinity = All). */
 export interface HistoryView {
@@ -35,12 +35,14 @@ export const HISTORY_VIEW_ALL: HistoryView = { period: 'all', maxHeadway: Infini
 /**
  * A snapshot's value in a period (CIV-389): 'all' is the weekday all-day value (snapshotValue);
  * a period reads the snapshot's own per-period headway (v2 rep.p, else the v1 headwayByPeriod).
- * A period the snapshot doesn't have is blank, never borrowed from another period or day.
+ * A period the snapshot doesn't have is blank, never borrowed from another period or day; it is `none` only when the
+ * build recorded that the route ran no trip at all in it that weekday (noTripPeriods, CIV-471).
  */
 export function historyPeriodValue(snapshot: Snapshot, period: TimePeriod): SnapshotValue {
   if (period === 'all') return snapshotValue(snapshot, 'weekday');
   const min = snapshot.v2?.rep?.p?.[period] ?? snapshot.headwayByPeriod?.[period];
-  return typeof min === 'number' && Number.isFinite(min) && min > 0 ? { kind: 'value', min } : { kind: 'blank' };
+  if (typeof min === 'number' && Number.isFinite(min) && min > 0) return { kind: 'value', min };
+  return snapshot.noTripPeriods?.includes(period) ? { kind: 'none' } : { kind: 'blank' };
 }
 
 /**

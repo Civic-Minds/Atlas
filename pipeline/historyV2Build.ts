@@ -5,7 +5,7 @@
  *  - drop invalid snapshots (empty/unparseable label, bad refDate/year, year after the build year)
  *  - order by real date, then keep one snapshot per route per year
  */
-import type { HeadwayByPeriod } from '../shared/config.js';
+import type { HeadwayByPeriod, PeriodKey } from '../shared/config.js';
 import { yearOfRefDate, type HistorySnapshotV2, type HistoryV2SidecarRoute } from '../shared/historyV2.js';
 import type { HolidayPeriodDrop, RepickedPeriod } from './historyRefQuality.js';
 import { getPeriodKeySortValue, labelFromRefDate, parsePeriodKey } from './historyPeriods.js';
@@ -16,6 +16,8 @@ export interface ArchiveChange {
   routeLongName?: string;
   label?: string;
   headwayByPeriod?: HeadwayByPeriod;
+  /** CIV-471: the weekday periods the route ran no trip at all (absent: unknown). */
+  noTripPeriods?: PeriodKey[];
   geometry?: unknown;
   processedAt?: string;
 }
@@ -26,6 +28,7 @@ export interface BuiltSnapshot {
   year: number;
   weekdayHeadwayMin: number;
   headwayByPeriod?: HeadwayByPeriod;
+  noTripPeriods?: PeriodKey[];
   geometry?: unknown;
   v2?: HistorySnapshotV2;
   processedAt?: string;
@@ -215,6 +218,8 @@ export function buildRouteSnapshots(
       year,
       weekdayHeadwayMin: h,
       headwayByPeriod: v2 ? v2.rep.p : c.change?.headwayByPeriod,
+      // Route-level, read from the same feed as the sidecar, so it holds for either source (CIV-471).
+      ...(c.change?.noTripPeriods ? { noTripPeriods: c.change.noTripPeriods } : {}),
       geometry: c.change?.geometry,
       v2,
       processedAt: c.change?.processedAt,

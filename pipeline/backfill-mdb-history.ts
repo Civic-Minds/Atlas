@@ -15,6 +15,7 @@ import { dirname, resolve } from 'path';
 import { config } from 'dotenv';
 config({ path: resolve('.env.local') });
 import JSZip from 'jszip';
+import { historyNoTripPeriods, type NoTripPeriodsByRoute } from './noTripPeriods.js';
 import { processGtfsBuffer } from './process-core.js';
 import { backfillRouteKey } from './historyRouteKey.js';
 import { r2PutArchive, r2PutArchiveJson, r2GetArchive } from './r2.js';
@@ -103,10 +104,13 @@ async function peekFeedInfo(buf: Buffer): Promise<{ feedExpiry: string | null; f
 interface SnapshotWriteOptions {
   dryRun?: boolean;
   previous?: Record<string, { headway: number }>;
+  /** CIV-471: the processed feed's routes with no weekday trip in a period. */
+  noTripPeriodsByRoute?: NoTripPeriodsByRoute;
 }
 
 async function writeSnapshot(slug: string, geojson: string, periodKey: string, options: SnapshotWriteOptions = {}) {
   const fc = JSON.parse(geojson) as { features: Array<{ properties: Record<string, unknown> }> };
+  const noTrips = historyNoTripPeriods(fc.features, backfillRouteKey, options.noTripPeriodsByRoute);
   const current: Record<string, { headway: number; tier: string | null; routeLongName?: string; headwayByPeriod?: HeadwayByPeriod }> = {};
 
   for (const f of fc.features) {
@@ -147,6 +151,7 @@ async function writeSnapshot(slug: string, geojson: string, periodKey: string, o
       headway: route.headway, prevHeadway, tier: route.tier,
       routeLongName: route.routeLongName ?? null,
       headwayByPeriod: route.headwayByPeriod ?? null,
+      noTripPeriods: noTrips[routeShortName] ?? null,
       processedAt,
     });
     snapshots.push({ key, body });
@@ -237,6 +242,7 @@ async function main() {
       const { changed, total, latest, snapshots } = await writeSnapshot(slug, result.geojson, periodKey, {
         dryRun,
         previous: dryRunPrevious,
+        noTripPeriodsByRoute: result.noTripPeriodsByRoute,
       });
       if (dryRun) dryRunPrevious = latest;
       if (dryRun) dryRunSnapshots.push(...snapshots);

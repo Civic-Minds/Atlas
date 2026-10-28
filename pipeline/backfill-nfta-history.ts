@@ -11,6 +11,7 @@ import { readFileSync } from 'fs';
 import { config } from 'dotenv';
 import { resolve } from 'path';
 config({ path: resolve('.env.local') });
+import { historyNoTripPeriods, type NoTripPeriodsByRoute } from './noTripPeriods.js';
 import { processGtfsBuffer } from './process-core.js';
 import { r2GetArchive, r2PutArchive, r2PutArchiveJson } from './r2.js';
 import { historyRouteKey } from './historyRouteKey.js';
@@ -30,8 +31,9 @@ const FEEDS = [
   },
 ];
 
-async function writeSnapshot(slug: string, geojson: string, periodKey: string) {
+async function writeSnapshot(slug: string, geojson: string, periodKey: string, noTripPeriodsByRoute?: NoTripPeriodsByRoute) {
   const fc = JSON.parse(geojson) as { features: Array<{ properties: Record<string, unknown> }> };
+  const noTrips = historyNoTripPeriods(fc.features, p => historyRouteKey(p), noTripPeriodsByRoute);
   const current: Record<string, {
     headway: number;
     tier: string | null;
@@ -83,6 +85,7 @@ async function writeSnapshot(slug: string, geojson: string, periodKey: string) {
       tier: route.tier,
       routeLongName: route.routeLongName ?? null,
       headwayByPeriod: route.headwayByPeriod ?? null,
+      noTripPeriods: noTrips[routeKey] ?? null,
       processedAt,
     });
     writes.push(() => r2PutArchiveJson(key, body));
@@ -114,7 +117,7 @@ async function main() {
     await r2PutArchive(`gtfs/archive/${SLUG}/${feed.periodKey}.zip`, buf, 'application/zip');
     console.log(`  Archived → gtfs/archive/${SLUG}/${feed.periodKey}.zip`);
 
-    const { changed, total } = await writeSnapshot(SLUG, result.geojson, feed.periodKey);
+    const { changed, total } = await writeSnapshot(SLUG, result.geojson, feed.periodKey, result.noTripPeriodsByRoute);
     console.log(`  History: ${changed.length}/${total} routes changed (${changed.slice(0, 8).join(', ')}${changed.length > 8 ? '…' : ''})`);
   }
 

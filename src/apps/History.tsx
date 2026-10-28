@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo, useCallback, useRef, useLayoutEffe
 import { loadHistoryConfig as loadHistoryConfigShared } from '../utils/historyConfig';
 import { History as HistoryIcon } from 'lucide-react';
 import { useHistoryMapOverlay } from '../context/HistoryMapOverlay';
-import { type HeadwayByPeriod } from '../../shared/config';
+import { type HeadwayByPeriod, type PeriodKey } from '../../shared/config';
 import type { HistorySnapshotV2 } from '../../shared/historyV2';
 import { countOf } from '../../shared/overflowText';
 import { isDrawableLineCoordinates } from '../../shared/routeGeometry';
@@ -50,12 +50,16 @@ import PanelEmpty from '../components/ui/PanelEmpty';
 import { loadingText, loadErrorText, NO_ROUTES_LOADED, noRoutesMatchText, RETRY_HINT } from '../content/stateCopy';
 import { compareAgencyName, compareRegion } from '../utils/sortCompare';
 import { inViewFirst } from '../utils/historyOpen';
+import { noTripsInPeriodText } from '../content/noticeCopy';
+import { effectiveMode, VIRTUAL_LRT_MODE } from '../../shared/modes';
 
 export interface RouteSnapshot {
   label: string;
   year: number;
   weekdayHeadwayMin: number;
   headwayByPeriod?: HeadwayByPeriod;
+  /** CIV-471: the weekday periods the route ran no trip at all (absent: unknown, the row stays blank). */
+  noTripPeriods?: PeriodKey[];
   geometry?: number[][];
   note?: string;
 }
@@ -125,6 +129,19 @@ function periodMinutes(snapshot: RouteSnapshot, period: TimePeriod): number | nu
  * do instead, return headwayAboutMinutes(minutes) here.
  */
 const shownMinutes = (minutes: number): number => minutes;
+
+/**
+ * The vehicle word for "No midday buses" (CIV-471), by the route's effective mode: buses, trains (subway, light rail,
+ * commuter rail) or ferries. Any other mode, or a route with no current route type, gets none, so its row stays blank.
+ */
+function historyVehicleWord(route: RouteHistoryEntry, agencySlug: string): 'buses' | 'trains' | 'ferries' | null {
+  if (route.currentRouteType == null || route.currentRouteType === '') return null;
+  const mode = effectiveMode({ routeType: route.currentRouteType, routeShortName: route.routeShortName, routeLongName: route.routeName, agencySlug });
+  if (mode === 3) return 'buses';
+  if (mode === 1 || mode === 2 || mode === VIRTUAL_LRT_MODE) return 'trains';
+  if (mode === 4) return 'ferries';
+  return null;
+}
 
 function changeSummary(entry: RouteHistoryEntry, period: TimePeriod = 'all'): { text: string; subtext: string; worse: boolean } | null {
   // Only snapshots with a value in the period take part (CIV-389).
@@ -204,6 +221,7 @@ function RouteHistoryCard({
   // url(#…) invalid, so the fill fell back to solid black. Only letters, digits, - and _ are kept.
   const gradientId = `sparkline-grad-${useId().replace(/[^A-Za-z0-9_-]/g, '')}`;
   const { newestFirst: snaps } = routeHistorySnapshots(route);
+  const vehicleWord = historyVehicleWord(route, agencySlug);
   // The chart and summary use the snapshots with a value in the period; rows list every snapshot.
   const valued = snaps.filter(s => periodMinutes(s, period) != null);
   const chartSnaps = [...valued].reverse();
@@ -282,6 +300,8 @@ function RouteHistoryCard({
           const older = i < snaps.length - 1 ? periodMinutes(snaps[i + 1], period) : null;
           const delta = hw != null && older != null ? hw - older : null;
           const charted = hw != null && chartSnaps.length >= 2;
+          // A year that ran no trip at all in the period says so (CIV-471); a blank period without that record stays blank.
+          const noTrips = hw == null && historyPeriodValue(snap, period).kind === 'none' ? noTripsInPeriodText(period, vehicleWord) : null;
           return (
             // Focus and a tap highlight the row and its point too (a tap elsewhere moves focus and clears it); the row's own hover does it for the pointer.
             <div
@@ -300,6 +320,8 @@ function RouteHistoryCard({
               headwayLabel={hw != null ? headwayEvery(shownMinutes(hw)) : undefined}
               headwaySuffix={delta ? (delta > 0 ? `+${delta}` : `${delta}`) : undefined}
               headwaySuffixTone={delta ? (delta > 0 ? 'negative' : 'positive') : undefined}
+              limited={noTrips != null}
+              limitedLabel={noTrips ?? undefined}
               // Regular weight, like the map cards' destination rows (CIV-971).
               labelWeight="regular"
               onHoverStart={charted ? () => setHoveredSnap(snap) : undefined}

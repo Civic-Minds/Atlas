@@ -77,3 +77,15 @@ describe('History period and frequency limit (CIV-389, CIV-392)', () => {
     expect(historyYearRoutes(agency, 2020, 'default', view)).toEqual([]);
   });
 });
+
+describe('historyPeriodValue: no trips (CIV-471)', () => {
+  it('reads none only for a blank period the build recorded with no trip', () => {
+    const s = { label: 'Oct 2019', year: 2019, weekdayHeadwayMin: 30, headwayByPeriod: { midday: null, amPeak: 30 }, noTripPeriods: ['midday' as const, 'amPeak' as const] };
+    expect(historyPeriodValue(s, 'midday')).toEqual({ kind: 'none' });
+    // A value wins over the record, and All day never reads it.
+    expect(historyPeriodValue(s, 'amPeak')).toEqual({ kind: 'value', min: 30 });
+    expect(historyPeriodValue(s, 'all')).toEqual({ kind: 'value', min: 30 });
+    expect(historyPeriodValue({ ...s, noTripPeriods: undefined }, 'midday')).toEqual({ kind: 'blank' });
+  });
+});
+

@@ -58,6 +58,7 @@ import {
 } from './countryLaunchGate.js';
 import { buildHiddenRoutesForAgency, mergeHiddenRoutes, type HiddenRoutesFile, type HiddenRouteRecord } from './hiddenRoutes.js';
 import type { FeedQuality } from '../shared/feedQuality.js';
+import { historyNoTripPeriods, type NoTripPeriodsByRoute } from './noTripPeriods.js';
 import { historyRouteKey } from './historyRouteKey.js';
 import { baselineFingerprint, buildSidecar, buildV2Routes, buildV2RoutesMerged, fingerprintChanged, fingerprintOf, historyV2Enabled, r2ArchiveSink, splitFeaturesBySource, writeSidecar, type LatestRouteEntry, type V2FeedPart } from './historyV2.js';
 import { readFeedEvidence } from './historyWeekend.js';
@@ -154,8 +155,10 @@ interface HistoryV2Input {
   featureSources?: Array<{ url: string | null; count: number }>;
 }
 
-async function writeHistorySnapshot(slug: string, geojson: string, feedExpiry: string | null, feedVersion: string | null, v2Input?: HistoryV2Input): Promise<string> {
+async function writeHistorySnapshot(slug: string, geojson: string, feedExpiry: string | null, feedVersion: string | null, v2Input?: HistoryV2Input, noTripPeriodsByRoute?: NoTripPeriodsByRoute): Promise<string> {
   const fc = JSON.parse(geojson) as { features: Array<{ properties: Record<string, unknown> }> };
+  // CIV-471: the weekday periods each route runs no trip at all; History reads them for "No midday buses".
+  const noTrips = historyNoTripPeriods(fc.features, p => historyRouteKey(p), noTripPeriodsByRoute);
   const current: Record<string, RouteSummary> = {};
   for (const f of fc.features) {
     const p = f.properties;
@@ -232,7 +235,7 @@ async function writeHistorySnapshot(slug: string, geojson: string, feedExpiry: s
     // Capture the route's geometry at this historical period for map rendering in History app (AI-162, AI-161)
     // Only a real line is stored; routes with no map shape (Point features) store null.
     const geometry = historyGeometryForRoute(fc.features, routeShortName);
-    const body = JSON.stringify({ headway: route.headway, prevHeadway, tier: route.tier, routeLongName: route.routeLongName ?? null, headwayByPeriod: route.headwayByPeriod ?? null, geometry, processedAt });
+    const body = JSON.stringify({ headway: route.headway, prevHeadway, tier: route.tier, routeLongName: route.routeLongName ?? null, headwayByPeriod: route.headwayByPeriod ?? null, noTripPeriods: noTrips[routeShortName] ?? null, geometry, processedAt });
     routeWrites.push(() => r2PutArchiveJson(key, body));
   }
 
@@ -709,7 +712,7 @@ async function refreshAgency(
   }
 
   // Write a compact headway snapshot for history tracking (all agencies with a feedUrl).
-  const histResult = await writeHistorySnapshot(agency.slug, geojson, feedExpiry, feedVersion, historyV2Enabled(process.env.ATLAS_HISTORY_V2) ? { buf, referenceDateFromRunDate: agency.referenceDateFromRunDate, supplemental: supplementalFeeds.map(f => ({ url: f.url, buf: f.buf })), featureSources: primary.featureSources } : undefined);
+  const histResult = await writeHistorySnapshot(agency.slug, geojson, feedExpiry, feedVersion, historyV2Enabled(process.env.ATLAS_HISTORY_V2) ? { buf, referenceDateFromRunDate: agency.referenceDateFromRunDate, supplemental: supplementalFeeds.map(f => ({ url: f.url, buf: f.buf })), featureSources: primary.featureSources } : undefined, primary.noTripPeriodsByRoute);
   writeLog(`  history: ${histResult}\n`);
 
   if (nightServiceCollector) {

@@ -7,6 +7,7 @@
 import { mkdir, writeFile } from 'fs/promises';
 import { dirname, resolve } from 'path';
 import JSZip from 'jszip';
+import { historyNoTripPeriods, type NoTripPeriodsByRoute } from './noTripPeriods.js';
 import { processGtfsBuffer } from './process-core.js';
 import { backfillRouteKey } from './historyRouteKey.js';
 import type { HeadwayByPeriod } from '../shared/config.js';
@@ -60,8 +61,9 @@ async function peekFeedInfo(buf: Buffer): Promise<{ feedExpiry: string | null; f
   return { feedExpiry: get('feed_end_date'), feedVersion: get('feed_version') };
 }
 
-function snapshotRoutes(geojson: string, previous: Record<string, { headway: number }>, periodKey: string) {
+function snapshotRoutes(geojson: string, previous: Record<string, { headway: number }>, periodKey: string, noTripPeriodsByRoute?: NoTripPeriodsByRoute) {
   const fc = JSON.parse(geojson) as { features: Array<{ properties: Record<string, unknown> }> };
+  const noTrips = historyNoTripPeriods(fc.features, backfillRouteKey, noTripPeriodsByRoute);
   const current: Record<string, { headway: number; tier: string | null; routeLongName?: string; headwayByPeriod?: HeadwayByPeriod }> = {};
   for (const feature of fc.features) {
     const properties = feature.properties;
@@ -89,6 +91,7 @@ function snapshotRoutes(geojson: string, previous: Record<string, { headway: num
       tier: value.tier,
       routeLongName: value.routeLongName ?? null,
       headwayByPeriod: value.headwayByPeriod ?? null,
+      noTripPeriods: noTrips[route] ?? null,
     }));
   return { current, snapshots };
 }
@@ -123,13 +126,13 @@ async function main() {
       const result = await processGtfsBuffer(buffer, message => process.stdout.write(`  ${message}\n`), { slug: SLUG });
       const periodKey = info.feedExpiry ?? info.feedVersion ?? feed.dateKey;
       coverageYears.add(feed.year);
-      const { current, snapshots } = snapshotRoutes(result.geojson, previous, periodKey);
+      const { current, snapshots } = snapshotRoutes(result.geojson, previous, periodKey, result.noTripPeriodsByRoute);
       const routeFeatures = (JSON.parse(result.geojson) as { features: Array<{ geometry?: { type?: string }; properties?: Record<string, unknown> }> }).features
         .filter(feature => feature.geometry?.type === 'LineString' && feature.properties?.routeShortName != null).length;
       previous = Object.fromEntries(Object.entries(current).map(([route, value]) => [route, { headway: value.headway }]));
       allSnapshots.push(...snapshots.map(snapshot => ({
         key: snapshot.key,
-        body: JSON.stringify({ headway: snapshot.headway, prevHeadway: snapshot.prevHeadway, tier: snapshot.tier, routeLongName: snapshot.routeLongName, headwayByPeriod: snapshot.headwayByPeriod, processedAt: new Date().toISOString() }),
+        body: JSON.stringify({ headway: snapshot.headway, prevHeadway: snapshot.prevHeadway, tier: snapshot.tier, routeLongName: snapshot.routeLongName, headwayByPeriod: snapshot.headwayByPeriod, noTripPeriods: snapshot.noTripPeriods, processedAt: new Date().toISOString() }),
       })));
       reports.push({ year: feed.year, url: feed.url, feedEndDate: info.feedExpiry, feedVersion: info.feedVersion, features: result.featureCount, routeFeatures, quality: result.feedQuality.status, qualityScore: result.feedQuality.score, qualityReasons: result.feedQuality.reasons, snapshots: snapshots.length });
       console.log(`  Processed ${result.featureCount} features (${routeFeatures} route features, ${result.feedQuality.status}); ${snapshots.length} route changes.`);

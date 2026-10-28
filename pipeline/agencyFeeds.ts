@@ -218,6 +218,9 @@ export async function processAgencyFeeds(
   const shapeAnomalies = [...(primary.shapeAnomalies ?? [])];
   const supplementalFeatureCounts: AgencyFeedResult['supplementalFeatureCounts'] = [];
   let featureCount = primary.featureCount;
+  // CIV-471: a route_id two feeds share is left out (unknown), since the feeds' trips were never read together.
+  const noTripPeriodsByRoute = { ...(primary.noTripPeriodsByRoute ?? {}) };
+  const sharedRouteIds = new Set<string>();
 
   for (const { url, buf } of supplementalFeeds) {
     const supp = await processGtfsBuffer(buf, onProgress, withNextServiceDates(url));
@@ -233,6 +236,10 @@ export async function processAgencyFeeds(
     shapeAnomalies.push(...(supp.shapeAnomalies ?? []));
     featureCount += supp.featureCount;
     supplementalFeatureCounts.push({ url, featureCount: supp.featureCount });
+    for (const [routeId, periods] of Object.entries(supp.noTripPeriodsByRoute ?? {})) {
+      if (routeId in noTripPeriodsByRoute) sharedRouteIds.add(routeId);
+      else noTripPeriodsByRoute[routeId] = periods;
+    }
   }
   stopsMeta.stopCount = stopsMeta.stops.length;
   Object.assign(runningTimes, primaryCollection.runningTimes ?? {});
@@ -253,5 +260,6 @@ export async function processAgencyFeeds(
     supplementalFeatureCounts,
     featureSources,
     sectionsJson: JSON.stringify(sections),
+    noTripPeriodsByRoute: Object.fromEntries(Object.entries(noTripPeriodsByRoute).filter(([routeId]) => !sharedRouteIds.has(routeId))),
   };
 }

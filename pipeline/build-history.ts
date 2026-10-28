@@ -33,7 +33,7 @@ import { parsePeriodKey, getPeriodKeySortValue, isRefreshRunPeriodKey } from './
 import { writeHistoryAgencyList } from '../scripts/build-history-agency-list.js';
 import { historyGeometryForRoute } from './historyGeometry.js';
 import { isDrawableLineCoordinates, lineStringCoordinatesOrNull } from '../shared/routeGeometry.js';
-import type { HeadwayByPeriod } from '../shared/config.js';
+import type { HeadwayByPeriod, PeriodKey } from '../shared/config.js';
 
 config({ path: resolve('.env.local') });
 
@@ -252,7 +252,7 @@ async function main() {
   // Map: slug → routeShortName → sorted array of change events
   const archiveRoutes: Record<string, Record<string, Array<{
     periodKey: string; headway: number; routeLongName?: string; label?: string;
-    headwayByPeriod?: HeadwayByPeriod; geometry?: unknown;
+    headwayByPeriod?: HeadwayByPeriod; noTripPeriods?: PeriodKey[]; geometry?: unknown;
   }>>> = {};
   const coverageBySlug: Record<string, { coverageYears: number[]; materializeAllPeriods?: boolean }> = {};
   let failedFiles = 0;
@@ -315,6 +315,8 @@ async function main() {
           headway: h,
           routeLongName: data.routeLongName ?? undefined,
           headwayByPeriod: data.headwayByPeriod ?? undefined,
+          // CIV-471: periods with no weekday trip at all; files written before it have none (unknown).
+          ...(Array.isArray(data.noTripPeriods) ? { noTripPeriods: data.noTripPeriods as PeriodKey[] } : {}),
         });
       } catch (err) {
         recordFailure(key);
@@ -459,7 +461,7 @@ async function main() {
     const keptByRoute: Record<string, Array<{ label: string; year: number; weekdayHeadwayMin: number }>> = {};
 
     for (const [routeShortName, changes] of Object.entries(routeMap)) {
-      let snapshots: Array<{ label: string; year: number; weekdayHeadwayMin: number; headwayByPeriod?: HeadwayByPeriod; geometry?: number[][] }>;
+      let snapshots: Array<{ label: string; year: number; weekdayHeadwayMin: number; headwayByPeriod?: HeadwayByPeriod; noTripPeriods?: PeriodKey[]; geometry?: number[][] }>;
       if (v2) {
         // v2: join change files with sidecar entries by period key, drop invalid snapshots,
         // order by real date and keep one snapshot per year (see historyV2Build.ts).
@@ -479,7 +481,7 @@ async function main() {
         changes.sort((a, b) => getPeriodKeySortValue(a.periodKey) - getPeriodKeySortValue(b.periodKey));
         snapshots = changes.map(c => {
           const { year, label } = parsePeriodKey(c.periodKey);
-          return { label: c.label ?? label, year, weekdayHeadwayMin: c.headway, headwayByPeriod: c.headwayByPeriod, geometry: isDrawableLineCoordinates(c.geometry) ? c.geometry : undefined };
+          return { label: c.label ?? label, year, weekdayHeadwayMin: c.headway, headwayByPeriod: c.headwayByPeriod, ...(c.noTripPeriods ? { noTripPeriods: c.noTripPeriods } : {}), geometry: isDrawableLineCoordinates(c.geometry) ? c.geometry : undefined };
         });
       }
 

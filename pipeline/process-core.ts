@@ -7,6 +7,7 @@ import { boardableDrawnStops, drawnStopsBeforeTerminal } from './drawnStops.js';
 import { parseGtfsZip } from './parseGtfs.js';
 import { computeRunningTimes, runningTimesJson } from './runningTime.js';
 import { pickRepresentativeWeekday } from './representativeWeekday.js';
+import { weekdayNoTripPeriods, type NoTripPeriodsByRoute } from './noTripPeriods.js';
 import type { GtfsData, AnalysisResult, RawRouteDepartures } from '../types/gtfs.js';
 import { computeRawDepartures, findBlockOnlyTripIds } from './transit-phase1.js';
 import { applyAnalysisCriteria, BURST_MAX_SPAN_MINUTES, determineTierWithEdgeGapAllowance, previousNightTailDays } from './transit-phase2.js';
@@ -551,6 +552,8 @@ export interface ProcessResult {
   livePollingSidecar?: Record<string, any>;
   shapeAnomalies?: import('../types/gtfs.js').ShapeAnomaly[];
   feedQuality: FeedQuality;
+  /** CIV-471: route_id -> the weekday periods it runs no trip at all (noTripPeriods.ts). History writers read it; no map artifact carries it. */
+  noTripPeriodsByRoute?: NoTripPeriodsByRoute;
 }
 
 /**
@@ -846,6 +849,8 @@ export async function processGtfsBuffer(
   // Converging origins (TTC 29 northbound) get a route variant so each origin draws its own
   // row, judged on the same active service sets the rest of the pipeline draws.
   labelConvergingOrigins(gtfs, activeServiceIdsByCalendarDay);
+  // CIV-471: the weekday periods each route runs no trip at all, for History's "No midday buses" (noTripPeriods.ts).
+  const noTripPeriodsByRoute = weekdayNoTripPeriods(gtfs, activeServiceIdsByCalendarDay);
   const activeServiceIdsByDay = new Map<DayType, Set<string>>();
   const calendarDaysForType = (dayType: DayType): DayName[] =>
     dayType === 'Weekday' ? [...WEEKDAYS] : [dayType as DayName];
@@ -3805,5 +3810,6 @@ export async function processGtfsBuffer(
     livePollingSidecar,
     shapeAnomalies: gtfs.shapeAnomalies,
     feedQuality,
+    noTripPeriodsByRoute,
   };
 }

@@ -102,3 +102,13 @@ export function listingEndedPanelLead(agencyName: string, date: string, ended: b
 export const E1_WEEKLY_CHECK = 'We check for new schedules every week.';
 /** E1 paragraph 3, above Check current schedules and Report a problem. */
 export const E1_AGENCY_WEBSITE = "A newer schedule may be on the agency's website.";
+
+// ---- History ----
+// N122 no-trips-in-period (CIV-471, Ryan's pattern "No {period} {vehicles}"): a History row whose year ran no trip at
+// all in the chosen period. Only the words Ryan has approved are listed; any other period or vehicle stays blank.
+const NO_TRIPS_IN_PERIOD: Partial<Record<string, Record<'buses' | 'trains' | 'ferries', string>>> = {
+  midday: { buses: 'No midday buses', trains: 'No midday trains', ferries: 'No midday ferries' },
+};
+export function noTripsInPeriodText(period: string, vehicles: 'buses' | 'trains' | 'ferries' | null): string | null {
+  return vehicles ? NO_TRIPS_IN_PERIOD[period]?.[vehicles] ?? null : null;
+}
