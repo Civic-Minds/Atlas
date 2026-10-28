@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { CARD_NOTICE, CARD_NOTICE_FOOTER } from '../styles';
-import { HIDDEN_ROUTES_UNAVAILABLE, NO_DEGRADED_FEEDS, NO_FEED_MATCHES, NO_LIMITED_ROUTES_IN_VIEW, NO_MATCHING_AGENCIES, NO_MATCHING_ROUTES, noSearchMatchText, storyMapFailedText, storyMapLoadingText, NEW_SCHEDULE_DATA_NOTICE, expiredFeedCheckHistory, expiredFeedNotice, nightNoRoutesNotice, noServiceOnDayNotice, selectedRouteFilterNotice, selectedRouteOutsideFilterNotice, stopNoRoutesNotice } from './noticeCopy';
+import { HIDE_DEGRADED_FEEDS_SETTING, HIDE_ONE_OFF_SETTING, HIDE_PART_TIME_SETTING, LIMITED_SERVICE_LABEL, NO_REGULAR_SERVICE_LABEL, NO_REGULAR_SERVICE_SHORT_LABEL, HIDDEN_ROUTES_UNAVAILABLE, NO_DEGRADED_FEEDS, NO_FEED_MATCHES, NO_LIMITED_ROUTES_IN_VIEW, NO_MATCHING_AGENCIES, NO_MATCHING_ROUTES, noSearchMatchText, storyMapFailedText, storyMapLoadingText, NEW_SCHEDULE_DATA_NOTICE, expiredFeedCheckHistory, expiredFeedNotice, nightNoRoutesNotice, noServiceOnDayNotice, selectedRouteFilterNotice, selectedRouteOutsideFilterNotice, stopNoRoutesNotice } from './noticeCopy';
 
 describe('expiredFeedNotice', () => {
   it('names the agency once, without region or duplicated articles', () => {
@@ -93,5 +93,17 @@ describe('empty and loading states (CIV-957)', () => {
     expect(NO_FEED_MATCHES).toBe('No feeds match your search or filter.');
     expect(storyMapLoadingText('MiWay')).toBe('Loading MiWay’s network…');
     expect(storyMapFailedText('MiWay')).toBe('The MiWay network preview is unavailable.');
+  });
+});
+
+// CIV-957 item 2: route labels and setting definitions live here once; the words are unchanged.
+describe('route labels and setting definitions (CIV-957)', () => {
+  it('keep their wording', () => {
+    expect(LIMITED_SERVICE_LABEL).toBe('limited');
+    expect(NO_REGULAR_SERVICE_LABEL).toBe('no regular service during this period');
+    expect(NO_REGULAR_SERVICE_SHORT_LABEL).toBe('no regular service');
+    expect(HIDE_ONE_OFF_SETTING).toEqual({ label: 'Hide one-off routes', description: 'School runs, a few trips a day, on-demand.' });
+    expect(HIDE_PART_TIME_SETTING).toEqual({ label: 'Hide part-time routes', description: 'Only at rush hour, evenings, or some days.' });
+    expect(HIDE_DEGRADED_FEEDS_SETTING.label).toBe('Hide degraded feeds');
   });
 });
