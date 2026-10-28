@@ -7,7 +7,7 @@ vi.mock('../../lib/liveDashboardFetch', () => ({
   fetchLiveDashboard: (_agency: string, route: string) => new Promise(resolve => { pending.set(route, resolve); }),
 }));
 
-import { useRouteAnalysisPatterns } from '../useRouteAnalysisPatterns';
+import { useRouteAnalysis, useRouteAnalysisPatterns } from '../useRouteAnalysisPatterns';
 import { cardTripEnd } from '../../components/Live/vehicleCardModel';
 
 const file = (stop: string) => ({ status: 'ready', v3: { runningTime: { patterns: { 0: [{ kind: 'main', fromName: 'High Park Loop', toName: 'Main St at Danforth Ave' }] } }, stops: [{ name: stop }] } });
@@ -30,5 +30,13 @@ describe('the vehicle card reads the route analysis only when it is there (CIV-1
     // The 506 file must never tag a 504 card.
     expect(result.current).toBeNull();
     expect(cardTripEnd('Spadina', 'High Park', result.current)).toBeUndefined();
+  });
+
+  it('says when the answer is in, so the card waits instead of guessing (CIV-1068)', async () => {
+    pending.clear();
+    const { result } = renderHook(({ route }) => useRouteAnalysis('ttc', route, true), { initialProps: { route: '504' } });
+    expect(result.current).toEqual({ value: null, settled: false });
+    await act(async () => { pending.get('504')!({ status: 'unknown_route', reason: '' }); });
+    expect(result.current).toEqual({ value: null, settled: true });
   });
 });
