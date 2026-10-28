@@ -21,7 +21,6 @@ export const ON_DEMAND_NOT_MAPPED: Readonly<Record<string, OnDemandNotMapped>> =
   'fort-mcmurray': { serviceName: 'On-demand service' },
   'sunline': { serviceName: 'SunRide' },
   'oakville': { serviceName: 'Ride On-Demand' },
-  'sjsr': { serviceName: 'Taxibus' },
   'saskatoon': { serviceName: 'On-Demand Transit' },
   'sct': { serviceName: 'Suffolk On-Demand' },
   'winnipeg': { serviceName: 'On-Request' },
@@ -31,7 +30,6 @@ export const ON_DEMAND_NOT_MAPPED: Readonly<Record<string, OnDemandNotMapped>> =
   'yrt': { serviceName: 'On-Request' },
   'calgary': { serviceName: 'Calgary Transit On Demand' },
   'codiac': { serviceName: 'On-demand service' },
-  'cornwall': { serviceName: 'Riverdale On-Demand' },
   'dart': { serviceName: 'GoLink' },
   'dcta': { serviceName: 'GoZone' },
   'drt': { serviceName: 'DRT On Demand' },
@@ -56,7 +54,6 @@ export const ON_DEMAND_NOT_MAPPED: Readonly<Record<string, OnDemandNotMapped>> =
   'trimet': { serviceName: 'SPOT Southwest' },
   'tulsa-transit': { serviceName: 'Broken Arrow On-Demand' },
   'valley-regional-transit': { serviceName: 'Route 150 On-Demand' },
-  'dutchess': { serviceName: 'Dutchess Flex' },
   'fast-ca': { serviceName: 'FAST Connect' },
   'lavta': { serviceName: 'Go Tri-Valley' },
   'lacmta': { serviceName: 'Metro Micro' },
@@ -65,14 +62,22 @@ export const ON_DEMAND_NOT_MAPPED: Readonly<Record<string, OnDemandNotMapped>> =
   'nice': { serviceName: 'NICE Mini' },
   'rtcsnv': { serviceName: 'RTC OnDemand' },
   'riovista': { serviceName: 'Delta Breeze' },
-  'rts': { serviceName: 'RTS On Demand' },
   'smart-ca': { serviceName: 'SMART Connect' },
   'sportran': { serviceName: 'SporTran OnDemand' },
   'torrance-transit': { serviceName: 'Connect Torrance' },
   'trinitymetro': { serviceName: 'ZIPZONE' },
   'vine': { serviceName: 'On-demand service' },
   'yolobus': { serviceName: 'BeeLine' },
+  // CIV-1063 (checked 2026-10-27), general public and running, with no zone source:
+  // https://www.dartfirststate.com/Programs/dartconnect/ (zone maps are PDFs only)
+  'dart-first-state': { serviceName: 'DART Connect', url: 'https://www.dartfirststate.com/Programs/dartconnect/' },
+  // https://www.bctransit.com/squamish/schedules-and-maps/ondemand/ (zone map is a JPG/PDF only)
+  'squamish': { serviceName: 'OnDemand', url: 'https://www.bctransit.com/squamish/schedules-and-maps/ondemand/' },
+  // https://www.bctransit.com/kelowna/schedules-and-maps/ondemand/ (zone map is a JPG only)
+  'kelowna': { serviceName: 'OnDemand', url: 'https://www.bctransit.com/kelowna/schedules-and-maps/ondemand/' },
 };
+// Removed in CIV-1063: rts (RTS Gainesville; Rochester's RTS On Demand is rgrta, not confirmed yet), dutchess (Flex
+// needs a registration), cornwall (an on-request stop on a fixed route), sjsr (Taxibus picks up at fixed points on a schedule).
 
 /** Mapped agencies whose drawn zones leave out part of the service, and what's missing. */
 // Empty: every mapped agency's source covers all the zones it runs today (Ryan, 2026-10-11).
