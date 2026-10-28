@@ -993,6 +993,11 @@ export default function History({ active, view = HISTORY_VIEW_ALL, initialAgency
   // at its width on desktop (#1033 parity B). Each panel adds its own top, as its regular card does.
   const frameStyle = sidebarFrameStyle(sidebarLeft, searchBarWidth);
   const frameClassName = `transition-opacity ${TRANSITION_BASE} ${visible ? 'opacity-100' : 'opacity-0 pointer-events-none'} ${!panelInteractive ? 'pointer-events-none' : ''}`;
+  // The agency chooser fades out with the same transition once dismissed (#1031). One opacity class only: with the
+  // frame's opacity-100 beside an opacity-0, the stylesheet order kept it showing.
+  const chooserFrameClassName = showAgencyChooser || searchFocused
+    ? frameClassName
+    : `transition-opacity ${TRANSITION_BASE} opacity-0 pointer-events-none`;
 
   return (
     <>
@@ -1063,7 +1068,7 @@ export default function History({ active, view = HISTORY_VIEW_ALL, initialAgency
         ) : (
         <Panel
           sidebar
-          className={`overflow-y-auto custom-scrollbar ${frameClassName} ${showAgencyChooser || searchFocused ? '' : 'opacity-0 pointer-events-none'}`}
+          className={`overflow-y-auto custom-scrollbar ${chooserFrameClassName}`}
           style={frameStyle}
           onMouseDown={e => e.preventDefault()}
         >
