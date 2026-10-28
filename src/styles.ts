@@ -197,9 +197,17 @@ export const MAP_FOOTER_PILLS_PHONE_SLOT = 'max-sm:absolute max-sm:bottom-6 max-
 export const MAP_COUNTS_PHONE_SLOT = 'max-sm:absolute max-sm:bottom-16 max-sm:left-6';
 /** The locate, export and zoom stack in the bottom-right corner. */
 export const MAP_CONTROLS_SLOT = 'absolute bottom-6 right-3 max-sm:right-6';
-/** A centred notice pill along the bottom, clear of the controls; `raised` sits one row up. */
-export const MAP_NOTICE_SLOT = 'absolute bottom-6 left-6 right-24 sm:right-56 flex justify-center';
-export const MAP_NOTICE_SLOT_RAISED = 'absolute bottom-16 left-6 right-24 sm:right-56 flex justify-center';
+/** A centred notice pill one row above the bottom-left pills, clear of the controls; `raised` sits one row higher
+ *  (CIV-1057). Phones stack it above the counts row. On sm and up the footer row can wrap upward, so the pill sits
+ *  above its measured height (--map-footer-h, from mapFooterStyle on the map app's root). */
+export const MAP_NOTICE_SLOT = 'absolute bottom-[6.5rem] sm:bottom-[calc(2rem+var(--map-footer-h))] left-6 right-24 sm:right-56 flex justify-center';
+export const MAP_NOTICE_SLOT_RAISED = 'absolute bottom-[9rem] sm:bottom-[calc(4.5rem+var(--map-footer-h))] left-6 right-24 sm:right-56 flex justify-center';
+/** The footer row's height before it is measured: one row of pills (h-8). */
+export const MAP_FOOTER_HEIGHT_FALLBACK = '2rem';
+/** Sets --map-footer-h, the footer row's measured height in px, for the notice slots; the fallback until measured. */
+export function mapFooterStyle(footerHeight?: number | null): CSSProperties {
+  return { '--map-footer-h': footerHeight ? `${footerHeight}px` : MAP_FOOTER_HEIGHT_FALLBACK } as CSSProperties;
+}
 /** The analytics prompt where the footer row doesn't draw it: under the header on phones, at the bottom edge otherwise. */
 export const MAP_CONSENT_SLOT = 'fixed inset-x-0 top-[4.25rem] mx-auto sm:top-auto sm:bottom-6';
 /** App-level status pills (loading the map, a load error), centred along the bottom. */
