@@ -72,6 +72,9 @@ describe('build-history with ATLAS_HISTORY_V2=1', () => {
     expect(route('10').routeName).toBe('Main Street');
     // Current endpoint is the representative all-day value (20), not the fastest pattern (8).
     expect(r10[r10.length - 1].weekdayHeadwayMin).toBe(20);
+    // A file keyed by an end date after this year is dated by when it was read (CIV-394): route 40's current
+    // timetable (read May 2026, ends Dec 2030) is 2026's point, not dropped as a future year.
+    expect(route('40').snapshots.map(s => [s.year, s.label, s.weekdayHeadwayMin])).toEqual([[2018, 'Sep 2018', 30], [2026, 'May 2026', 10]]);
     // A limited route gets no current endpoint.
     expect(pairs('20')).toEqual([[2018, 30], [2023, 60]]);
     // Long-name and route_id keys are kept.
