@@ -63,5 +63,22 @@ export function stretchLabel(fromName: string, toName: string): string {
   return stretchEnds(fromName, toName).join(' to ');
 }
 
-/** A stop as Live lists it: normal case, then the short name ("Bathurst", not "KING ST WEST AT BATHURST ST"). */
-export const liveStopName = (name: string): string => shortStopName(titleCase(name));
+/** Words that make a side of " and " a place rather than a street ("Jane and Finch Station", "Guild Park and Gardens"). */
+const PLACE_WORDS = /\b(station|stn|college|park|gardens?|hospital|centre|center|library|mall|plaza|loop|square|village|campus|school|university|terminal|beach)\b/i;
+const STREET_SIDE = /^[A-Z][A-Za-z.'-]*( [A-Z][A-Za-z.'-]*){0,2}$/;
+
+/**
+ * "Broadview & Queen" for "Broadview and Queen": two street names joined with "&", as Live writes them (CIV-1043).
+ * Only a whole name of exactly two sides, each one to three capitalized words with no place word ("Station",
+ * "Park"...), so "Jane and Finch Station", "Guild Park and Gardens" and "… via Distillery and Ookwemin Minising"
+ * are left as they are.
+ */
+export function streetJoin(name: string): string {
+  const m = /^(.+?) and (.+)$/.exec(name);
+  if (!m || / and | via /.test(m[2]) || / via /.test(m[1])) return name;
+  const [a, b] = [m[1], m[2]];
+  return STREET_SIDE.test(a) && STREET_SIDE.test(b) && !PLACE_WORDS.test(a) && !PLACE_WORDS.test(b) ? `${a} & ${b}` : name;
+}
+
+/** A stop as Live lists it: normal case, then the short name ("Bathurst", not "KING ST WEST AT BATHURST ST"), streets joined with "&". */
+export const liveStopName = (name: string): string => streetJoin(shortStopName(titleCase(name)));

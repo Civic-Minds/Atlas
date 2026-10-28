@@ -15,6 +15,8 @@ import { PHONE_MEDIA_QUERY, useMediaQuery } from '../hooks/useMediaQuery';
 import { BOTTOM_SHEET_FRAME, BottomSheetHandle, bottomSheetBodyClass, useBottomSheet } from '../components/ui/BottomSheet';
 import ListRow from '../components/ui/ListRow';
 import Tag from '../components/ui/Tag';
+import { useRouteAnalysisPatterns } from '../hooks/useRouteAnalysisPatterns';
+import { streetJoin } from '../utils/stopLabel';
 import ArrowLink from '../components/ui/ArrowLink';
 import { AgencyList, AgencyListRow } from '../components/ui/AgencyList';
 import RouteListRow from '../components/RouteListRow';
@@ -33,7 +35,7 @@ import { buildRouteKey, routeFeatureForShortName, routeKeyForShortName, splitRou
 import type { MapFocus } from '../utils/routeFocus';
 import { getNowDay } from '../../shared/dayTypes';
 import { capitalizeFirst, headwayAbout, headwayEvery } from '../utils/headwayText';
-import { delayLabel, vehicleCardName, vehicleCardRows, vehicleRowName } from '../components/Live/vehicleCardModel';
+import { cardTripEnd, delayLabel, vehicleCardName, vehicleCardRows, vehicleRowName } from '../components/Live/vehicleCardModel';
 import Panel, { PanelBody, PanelTitleBar } from '../components/ui/Panel';
 import LiveRoutePerformance from '../components/Live/LiveRoutePerformance';
 import { useLiveFeeds } from '../hooks/useLiveFeeds';
@@ -206,7 +208,9 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
         const cached = resolvedDirections.get(vehicle);
         if (cached && (known == null || cached.directionId === known)) return cached;
         const match = inferLiveDirection(known == null ? vehicle : { ...vehicle, directionId: known }, routeFeatures);
-        const out = { ...vehicle, directionId: match.directionId, headsign: match.headsign };
+        // Destinations read with "&" between two street names, like the direction labels below (CIV-1043).
+        // Destinations read with "&" between two street names, like the direction labels below (CIV-1043).
+        const out = { ...vehicle, directionId: match.directionId, headsign: match.headsign && streetJoin(match.headsign) };
         if (routeFeatures.length > 0) resolvedDirections.set(vehicle, out);
         return out;
       });
@@ -495,12 +499,15 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
     return vehiclePick.map(id => byId.get(id)).filter((v): v is LiveVehicle => !!v);
   }, [vehiclePick, allVehicles]);
 
+  // Short turn or branch, from the route's Live analysis, read only while a vehicle card is open (CIV-1043).
+  const cardAnalysis = useRouteAnalysisPatterns(selectedGroup?.agencySlug ?? null, selectedGroup?.routeShortName ?? null, !!cardVehicle);
+
   // Direction label lookup from GeoJSON features: the route's main destination per direction, i.e. the
   // headsign of its longest shape (a short turn like Roncesvalles must not rename the Humber direction).
   const directionLabels = useMemo(() => {
     if (!selectedGroup) return new Map<number, string>();
     const fc = routeLayer(selectedGroup.agencySlug);
-    return fc ? routeDirectionLabels(fc.features, selectedGroup.routeShortName) : new Map<number, string>();
+    return fc ? new Map([...routeDirectionLabels(fc.features, selectedGroup.routeShortName)].map(([d, l]) => [d, streetJoin(l)])) : new Map<number, string>();
   }, [selectedGroup, routeLayer]);
 
   // Direction drill-down within a route
@@ -648,6 +655,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
   const hasLiveElsewhere = offScreenOnly && !query;
   const fade = selectionActive ? 'opacity-0 pointer-events-none' : 'opacity-100 pointer-events-auto';
 
+  const cardDirectionLabel = cardVehicle?.directionId != null ? directionLabels.get(cardVehicle.directionId) : undefined;
   const cardBody = selectedGroup && cardVehicle ? (
     <SidebarCardShell>
       <SidebarCardHeaderBlock>
@@ -666,14 +674,20 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
         />
       </SidebarCardHeaderBlock>
       <SidebarCardSection label={vehicleCardName(cardVehicle, selectedRouteModeWord) ?? selectedRouteModeWord}>
-        {vehicleCardRows(cardVehicle, cardVehicle.directionId != null ? directionLabels.get(cardVehicle.directionId) : null).map(row => (
+        {vehicleCardRows(cardVehicle, cardDirectionLabel, cardTripEnd(cardVehicle.headsign, cardDirectionLabel, cardAnalysis)).map(row => (
           <div key={row.label} className="flex items-start justify-between gap-3">
-            <span className="text-xs font-bold text-[var(--text-dim)]">{row.label}</span>
+            <span className="text-xs font-bold text-[var(--text-dim)] shrink-0 whitespace-nowrap">{row.label}</span>
             <span
               style={row.status && row.status !== 'no_data' ? { color: getVehicleColors(row.status, colorMode).border } : undefined}
               className={`${CARD_LIST_ROUTE} text-right min-w-0`}
             >
-              {row.value}
+              {row.tag ? (
+                // The name stays whole; the tag drops under it when both don't fit on one line.
+                <span className="inline-flex flex-wrap items-center justify-end gap-x-1.5 gap-y-1">
+                  <span>{row.value}</span>
+                  <Tag className="whitespace-nowrap">{row.tag}</Tag>
+                </span>
+              ) : row.value}
             </span>
           </div>
         ))}

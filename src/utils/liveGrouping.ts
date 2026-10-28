@@ -28,6 +28,44 @@ export function featureSpan(f: GeoJSON.Feature): number {
   return best;
 }
 
+/** The words a stop name starts with, before " at " ("Broadview Station at Bay 7" → ["broadview", "station"]). */
+const placeWords = (name: string) => name.split(/ at /i)[0].toLowerCase().split(/\s+/).filter(Boolean);
+/** The destination's words lead the stop's ("Broadview" leads "Broadview Station", "Dufferin Gate" leads "Dufferin Gate Loop"). */
+const leads = (destination: string, stop: string | undefined) => {
+  if (!stop) return false;
+  const d = destination.toLowerCase().split(/\s+/), s = placeWords(stop);
+  return d.length <= s.length && d.every((w, i) => w === s[i]);
+};
+
+/** Every word of the destination ("Broadview & Gerrard": broadview, gerrard) is in one of the route's stop names. */
+function namesAStop(destination: string, stopNames: readonly string[]): boolean {
+  const words = destination.toLowerCase().split(/[^a-z0-9']+/).filter(w => w.length > 1 && w !== 'and');
+  return words.length > 0 && stopNames.some(n => { const own = new Set(n.toLowerCase().split(/[^a-z0-9']+/)); return words.every(w => own.has(w)); });
+}
+
+/**
+ * Whether a destination short of its direction's end is a short turn or a branch, from the route's Live analysis
+ * (its run-time patterns, each "main", "branch" or "shortTurn", keyed by the analysis's own direction, and its stop
+ * names). A destination that leads a main end ("High Park" for "High Park Loop") is an end, not a short turn. On a
+ * route with no branch, any other destination that names one of the route's stops is a short turn. On a route with
+ * a branch it is a branch only when its name leads exactly one branch end in a direction. Anything less clear
+ * ("Replacement Bus", an end the analysis names differently) is null and the card shows no tag (CIV-1043: a wrong
+ * label is worse than none).
+ */
+export function destinationKind(
+  patterns: Readonly<Record<string, ReadonlyArray<{ kind: string; fromName?: string; toName?: string }>>> | null | undefined,
+  destination: string,
+  stopNames: readonly string[] = [],
+): 'shortTurn' | 'branch' | null {
+  const dirs = Object.values(patterns ?? {});
+  if (!dirs.some(list => list.length)) return null;
+  const hit = (p: { fromName?: string; toName?: string }) => leads(destination, p.fromName) || leads(destination, p.toName);
+  if (dirs.some(list => list.some(p => p.kind === 'main' && hit(p)))) return null;
+  if (!dirs.some(list => list.some(p => p.kind === 'branch'))) return namesAStop(destination, stopNames) ? 'shortTurn' : null;
+  const branchHits = dirs.map(list => list.filter(p => p.kind === 'branch' && hit(p)).length);
+  return branchHits.some(n => n > 1) || !branchHits.some(n => n === 1) ? null : 'branch';
+}
+
 /** Each direction named by its longest shape's headsign (a short turn never names a direction). */
 export function routeDirectionLabels(features: readonly GeoJSON.Feature[], routeShortName: string): Map<number, string> {
   const labels = new Map<number, string>();
