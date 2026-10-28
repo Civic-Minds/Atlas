@@ -89,7 +89,7 @@ export function expiredFeedCheckHistory(options: {
 }
 
 // N25 listing-ended (Ryan's exact text, CIV-1011; shown since CIV-1055). Defined beside the agency page text it shares.
-export { listingEndedNotice, listingEndHasPassed } from '../../shared/agencyPages';
+export { listingEndedNotice, listingEndedPageLine, listingEndHasPassed } from '../../shared/agencyPages';
 
 // ---- E1 Outdated schedule: three paragraphs, Ryan's approved text (CIV-1051) ----
 // (1) the issue, (2) what we're doing about it, (3) what the reader can do. No labels on the site.

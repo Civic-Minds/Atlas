@@ -140,13 +140,17 @@ describe('dates', () => {
       .toBe("Based on the agency's published timetable, not live arrivals. This timetable ended on Sep 1, 2026; the agency hasn't published a newer one yet. Atlas last updated this page Oct 13, 2026.");
   });
 
-  it('N25: says most routes ended when the listing ended (CIV-1055)', () => {
+  it('N112: the agency page names the through date and the listing end (CIV-1055)', () => {
     const dutchess = { lastRefreshedAt: '2026-08-07', validThrough: '20270131', listingEndedOn: '20261028' };
     // Ryan: "ended is past but ends is upcoming".
     expect(agencyDatesText(dutchess, '2026-10-27', '20261027'))
-      .toBe("Based on the agency's published timetable, not live arrivals. This agency's scheduled service for most routes ends Oct 28, 2026, and they have not released updated data. Atlas last updated this page Oct 27, 2026.");
-    expect(agencyDatesText(dutchess, '2026-10-27', '20261028')).toContain('for most routes ended Oct 28, 2026,');
-    expect(agencyDatesText(dutchess, '2026-10-27', '20261103')).toContain('for most routes ended Oct 28, 2026,');
+      .toBe("Based on the agency's published timetable, not live arrivals. This timetable covers service until Jan 31, 2027, but most of its routes end Oct 28, 2026. Atlas last updated this page Oct 27, 2026.");
+    expect(agencyDatesText(dutchess, '2026-10-27', '20261028')).toContain('This timetable covers service until Jan 31, 2027, but most of its routes ended Oct 28, 2026.');
+    expect(agencyDatesText(dutchess, '2026-10-27', '20261103')).toContain('but most of its routes ended Oct 28, 2026.');
+    // No through date: N25 as on the cards.
+    expect(agencyDatesText({ ...dutchess, validThrough: null }, '2026-10-27', '20261027'))
+      .toContain("This agency's scheduled service for most routes ends Oct 28, 2026, and they have not released updated data.");
+    expect(agencyDatesText({ ...dutchess, validThrough: null }, '2026-10-27', '20261028')).toContain('for most routes ended Oct 28, 2026,');
     // An ended timetable says more, so it wins.
     expect(agencyDatesText({ lastRefreshedAt: '2026-01-05', validThrough: '20260901', listingEndedOn: '20260814' }, '2026-10-13', '20261013'))
       .toContain('This timetable ended on Sep 1, 2026');

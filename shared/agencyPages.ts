@@ -370,6 +370,9 @@ function endedBefore(through: string | null | undefined, releaseDate: string | n
 export const listingEndedNotice = (date: string, ended: boolean) => `This agency's scheduled service for most routes ${ended ? 'ended' : 'ends'} ${date}, and they have not released updated data.`;
 /** Whether the listing-end date (yyyymmdd) has arrived, given today's agency-local yyyymmdd. */
 export const listingEndHasPassed = (listingEndedOn: string, todayYmd: string) => todayYmd >= listingEndedOn;
+// N112 listing-ended-page (Ryan's exact text, CIV-1055): agency pages only, when the timetable has a through date.
+// Cards and notices keep N25.
+export const listingEndedPageLine = (through: string, date: string, ended: boolean) => `This timetable covers service until ${through}, but most of its routes ${ended ? 'ended' : 'end'} ${date}.`;
 
 export function agencyDatesText(a: Pick<AgencyPageSummary, 'lastRefreshedAt' | 'validThrough' | 'listingEndedOn'>, releaseDate: string | null, todayYmd: string = agencyTodayYmd({})): string {
   const published = formatDataDate(a.lastRefreshedAt);
@@ -378,7 +381,8 @@ export function agencyDatesText(a: Pick<AgencyPageSummary, 'lastRefreshedAt' | '
   const listingEnded = formatDataDate(a.listingEndedOn);
   const timetable = through && endedBefore(a.validThrough, releaseDate)
     ? `This timetable ended on ${through}; the agency hasn't published a newer one yet.`
-    // N25 (CIV-1055), Ryan's text: "covers service until" would overstate a timetable whose routes mostly stopped.
+    // N112 with a through date, else N25 (CIV-1055): "covers service until" alone would overstate a timetable whose routes mostly stopped.
+    : listingEnded && through ? listingEndedPageLine(through, listingEnded, listingEndHasPassed(a.listingEndedOn!, todayYmd))
     : listingEnded ? listingEndedNotice(listingEnded, listingEndHasPassed(a.listingEndedOn!, todayYmd))
     : published && through ? `This timetable was published ${published} and covers service until ${through}.`
     : published ? `This timetable was published ${published}.`
