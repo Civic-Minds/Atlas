@@ -33,10 +33,23 @@ describe('rowTrips (CIV-1069): a row reads its value, gap and part-period words 
     expect(rowTrips(r, 'late')).toMatchObject({ value: 13, longestGap: 15 });
   });
 
-  it('a period that is not steady reads its full-window wait, not the median (CTA 9 Ashland & 95th midday, CIV-1074 2a)', () => {
+  it('a period that is not steady, off a stretch, reads its full-window wait, not the median (CIV-1074 2a)', () => {
     const r = row({ headwayByPeriod: { midday: 13 }, headwayByPeriodSustained: { midday: false }, periodCoverageHeadway: { midday: 256 }, maxGapByPeriod: { midday: 256 } });
     expect(rowTrips(r, 'midday')).toMatchObject({ value: 256, longestGap: 256 });
     expect(rowTrips({ ...r, headwayByPeriodSustained: { midday: true } } as ShapeProperties, 'midday').value).toBe(13);
+  });
+
+  it('a row unsteady on its own trips reads its stretch where the stretch runs regularly (CTA 9 Ashland & 95th midday, CIV-1074 2a)', () => {
+    // GTFS: the headsign's own 8 midday trips start at 13:04; every bus on 74th-95th comes every 10 (the stretch's 177 trips).
+    const main = row({
+      stretchRole: 'main', stretchIndex: 0, headwayByPeriod: { midday: 13 }, headwayByPeriodSustained: { midday: false },
+      periodCoverageHeadway: { midday: 256 }, maxGapByPeriod: { midday: 256 },
+      stretchMeta: { main: { stops: 15, refStop: '6118', trips: 177, period: { midday: 10 }, maxGap: { midday: 10 }, noRegular: [] }, tails: [] },
+    });
+    expect(rowTrips(main, 'midday')).toMatchObject({ value: 10, longestGap: 10 });
+    // A stretch with no regular service in the period leaves the row its own full-window wait.
+    const noRegular = { ...main, stretchMeta: { main: { ...main.stretchMeta!.main!, noRegular: ['midday'] }, tails: [] } } as ShapeProperties;
+    expect(rowTrips(noRegular, 'midday')).toMatchObject({ value: 256, longestGap: 256 });
   });
 
   it('a row slower than its stretch reads one branch of it and keeps its own gap (Phoenix 35: 30 on a shared 15)', () => {

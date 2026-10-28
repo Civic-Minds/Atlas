@@ -28,7 +28,8 @@ function stretchSlot(d: ShapeProperties) {
 /**
  * One row's value, longest gap and part-period words for a period, all from the trips the value reads (CIV-1069).
  * - A headsign with no service of its own in the period (noOwnServiceByPeriod) reads nothing: the row shows no regular service.
- * - A period that is not steady reads its full-window wait, unless a main stretch's words (late start, early end, one gap) say it.
+ * - A period that is not steady for the row's own trips reads its stretch's value where the stretch runs regularly, else its
+ *   full-window wait, unless a main stretch's words (late start, early end, one gap) say it.
  * - A main or tail row whose value is its stretch's pairs it with that stretch's longest gap (stretchMeta maxGap, the same pooled
  *   departures; Sun Metro 205's "Mesa Inbound" no longer reads one headsign's 315-minute hole). A row with a value of its own,
  *   faster or slower than its stretch (NYCT R late; Phoenix 35's branch rows), keeps its own trips' gap.
@@ -40,13 +41,16 @@ export function rowTrips(d: ShapeProperties, period: TimePeriod): RowTrips {
   if (d.noOwnServiceByPeriod?.includes(key)) return { ...NONE, noOwnService: true };
   const partPeriod = d.stretchRole === 'main' && !isOneGapRow(d, period) ? routeCardPeriodShapeText(d, period) : undefined;
   let value = routeCardDisplayHeadway(d, period);
-  // CIV-1074 2a: a period that is not steady reads its full-window wait (the settled rule, #567-#571), not the median of the
-  // gaps between its trips (CTA 9 Ashland & 95th midday: "every 13" beside a 256-minute hole), unless its words say it.
-  const wait = d.periodCoverageHeadway?.[key];
-  if (value != null && !partPeriod && d.headwayByPeriodSustained?.[key] === false && typeof wait === 'number' && wait > value) value = wait;
   const slot = stretchSlot(d);
   const slotGap = slot?.maxGap?.[key];
   const slotValue = slot?.period?.[key];
+  // CIV-1074 2a: a period that is not steady for the row's own trips reads the trips its riders get. A main or tail row on a
+  // stretch with regular service reads the stretch (CTA 9 Ashland & 95th midday: every 10 at 74th-95th, where its own 8 trips
+  // start at 13:04); any other row reads its full-window wait (the settled rule, #567-#571), not the median of its gaps.
+  const unsteady = value != null && !partPeriod && d.headwayByPeriodSustained?.[key] === false;
+  const wait = d.periodCoverageHeadway?.[key];
+  if (unsteady && typeof slotValue === 'number' && !slot?.noRegular?.includes(key)) value = slotValue;
+  else if (unsteady && typeof wait === 'number' && wait > value!) value = wait;
   // The stretch's gap goes with the stretch's value: a row with a value of its own, faster (NYCT R late: 13 beside the
   // stretch's 165, CIV-1074 2c) or slower (Phoenix 35: 30 on a shared 15), keeps its own trips' gap. A row with no value of its
   // own, or on data without the slot's period (public tails: it lives in the sections file), takes its stretch's gap.
