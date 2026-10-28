@@ -10,7 +10,7 @@ import {
     DAY_TO_TYPE,
 } from '../types/gtfs';
 import { computeMedian } from './transit-utils';
-import { RAIL_TIER_WINDOW, TIER_RANK, typicalOfGaps } from './headway-utils';
+import { computePeriodHeadways, RAIL_TIER_WINDOW, TIER_RANK, typicalOfGaps } from './headway-utils';
 import { DEFAULT_CRITERIA, getTiersForCriteria } from './defaults';
 import { SURFACE_TIER_MAXES, TIME_PERIODS } from '../shared/config.js';
 import { isRailLikeRoute } from '../shared/modes.js';
@@ -813,8 +813,12 @@ export function applyAnalysisCriteria(
         // sailing on alternate Mondays, so that Monday reads split-peak and the Weekday flipped
         // between one-off and every 70 from week to week. That day still holds the tier at
         // infrequent at best (never better than it runs), and the weekday-variation note shows.
+        // The other days must each hold a period headway: GO 90 to Oshawa runs 05:30, 00:55 and
+        // 02:20 Monday to Thursday and drops the 00:55 on Friday, which leaves nothing to rate.
         const irregularWeekdays = dayType === 'Weekday' ? tierEntries.filter(e => e.result.serviceClass === 'irregular') : [];
-        const loneIrregularWeekday = irregularWeekdays.length === 1 && tierEntries.length >= 4 ? irregularWeekdays[0] : null;
+        const loneIrregularWeekday = irregularWeekdays.length === 1 && tierEntries.length >= 4
+            && tierEntries.every(e => e === irregularWeekdays[0] || Object.values(computePeriodHeadways(e.result.times)).some(v => v != null))
+            ? irregularWeekdays[0] : null;
         const classEntries = loneIrregularWeekday ? tierEntries.filter(e => e !== loneIrregularWeekday) : tierEntries;
         const INFREQUENT_VAL = 1e6; // sentinel: worse than any real tier, better than span (Infinity)
         const tierValues = classEntries.map(e =>
