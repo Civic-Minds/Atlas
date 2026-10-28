@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useLayoutEffect, useRef, useState, useMemo } from 'react';
 import * as maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
-import { cardFramePadding } from './map/routeFraming';
+import { cardFramePadding, cardInFramingPlace } from './map/routeFraming';
 import type { MapboxOverlay } from '@deck.gl/mapbox';
 import { LocateFixed, Link2, Flag, Download } from 'lucide-react';
 import MapZoomButtons from '../MapZoomButtons';
@@ -1207,7 +1207,9 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   // Live's card is not the regular route card: frame a Live route clear of where that card really is.
   const liveCardRef = liveOverlay?.cardRef;
   const liveFramePadding = useMemo(
-    () => (liveCardRef && !selectedRoute ? (map: maplibregl.Map) => cardFramePadding(map, liveCardRef.current) : null),
+    () => (liveCardRef && !selectedRoute
+      ? (map: maplibregl.Map) => (cardInFramingPlace(map, liveCardRef.current) ? cardFramePadding(map, liveCardRef.current) : null)
+      : null),
     [liveCardRef, selectedRoute],
   );
 
