@@ -66,6 +66,7 @@ exports[`processed fixture output is pinned > matches the recorded hash for ever
   "nyct-subway-s-weekday": "39 features eabfb2d5c97f",
   "octranspo-226-weekday": "75 features 9e9254108680",
   "pace-533-molitor": "116 features 82f7a3ff6891",
+  "prt-g3-weekday": "36 features 1ef69a11d7ea",
   "raba-summer-weekend-removals": "54 features 317bc6db3c6f",
   "rct-expired-summer-period": "39 features 4f36a270f107",
   "rem-a3-weekday-platforms": "53 features fdbcda927b10",
