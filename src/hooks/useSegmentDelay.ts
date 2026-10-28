@@ -20,16 +20,25 @@ function load(slug: string, route: string): Promise<SegmentDelayData | null> {
   return p;
 }
 
-/** Archived "where vehicles lose time" stats for a live route (Live mode only). */
-export function useSegmentDelay(slug: string | null | undefined, routeShortName: string | null | undefined) {
-  const [data, setData] = useState<SegmentDelayData | null>(null);
+/**
+ * Archived "where vehicles lose time" stats for a live route (Live mode only), and whether the answer is in: settled is
+ * false only while a route that has stats is still loading.
+ */
+export function useSegmentDelayStatus(slug: string | null | undefined, routeShortName: string | null | undefined): { data: SegmentDelayData | null; settled: boolean } {
+  const [loaded, setLoaded] = useState<{ key: string; data: SegmentDelayData | null } | null>(null);
   const enabled = FEATURES.live && !!slug && !!routeShortName && !!getPolledRoute(slug, routeShortName);
+  const key = `${slug}::${routeShortName}`;
   useEffect(() => {
-    setData(null);
     if (!enabled) return;
     let cancelled = false;
-    load(slug!, routeShortName!).then(d => { if (!cancelled) setData(d); });
+    load(slug!, routeShortName!).then(d => { if (!cancelled) setLoaded({ key, data: d }); });
     return () => { cancelled = true; };
-  }, [enabled, slug, routeShortName]);
-  return enabled ? data : null;
+  }, [enabled, slug, routeShortName, key]);
+  if (!enabled) return { data: null, settled: true };
+  return loaded?.key === key ? { data: loaded.data, settled: true } : { data: null, settled: false };
+}
+
+/** Archived "where vehicles lose time" stats for a live route (Live mode only). */
+export function useSegmentDelay(slug: string | null | undefined, routeShortName: string | null | undefined) {
+  return useSegmentDelayStatus(slug, routeShortName).data;
 }
