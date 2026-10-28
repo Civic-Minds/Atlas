@@ -28,5 +28,6 @@
   "timezone": "America/New_York",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://s3.amazonaws.com/datatools-511ny/public/Dutchess_County_Transit.zip",
-  "lastPeekedExpiry": "20510930"
+  "lastPeekedExpiry": "20510930",
+  "listingEndedOn": "20261028"
 }
