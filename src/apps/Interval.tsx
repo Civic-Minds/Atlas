@@ -1218,7 +1218,8 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
               </div>
             </div>
           )}
-          {(nightServiceView || frequentServiceView) && <ResearchLegend view={nightServiceView ? 'night' : 'frequent'} frequentFrequency={frequentServiceFrequency} />}
+          {/* No key in the Night view: every line is the same colour and width (Ryan, CIV-1070). */}
+          {frequentServiceView && <ResearchLegend view="frequent" frequentFrequency={frequentServiceFrequency} />}
           {/* N39: phones hide the counts, so a view the filters leave empty says so there. */}
           {!compareActive && !nightServiceView && !frequentServiceView && stats && (showMapContext || !isLoading)
             && (showMapContext ? (mapContextRouteCount ?? 0) : stats.matching) === 0 && (
