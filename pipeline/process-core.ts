@@ -1020,6 +1020,19 @@ export async function processGtfsBuffer(
   // headsign alone doesn't separate them. Keying by the feature's own display shape_id
   // catches this — two trips only pool together here if they trace the same physical path.
   const stopDepsByShapeGroup = new Map<string, Map<string, number[]>>();
+  // CIV-1071: each stop list above has a departure twin: the same visits, less the stop times a rider
+  // cannot board at (boardsAt). The lists above say which stops a pattern serves and feed drawing, stop
+  // order and every route value; the twins feed only the stop values a feature publishes (stopHeadways,
+  // stopPeriodHeadways, stopPeriodCoverageHeadways), so a drop-off-only terminal stays drawn but shows
+  // no departures. departuresOf links a list to its twin.
+  const departuresOf = new WeakMap<Map<string, number[]>, Map<string, number[]>>();
+  const departureTwin = (maps: Map<string, Map<string, number[]>>, key: string): Map<string, number[]> => {
+    let served = maps.get(key);
+    if (!served) { served = new Map(); maps.set(key, served); }
+    let twin = departuresOf.get(served);
+    if (!twin) { twin = new Map(); departuresOf.set(served, twin); }
+    return twin;
+  };
   // The stops of each shape and day where a rider can board: at least one stop time whose
   // pickup_type is not 1. A stop the shape only drops off at (a layover it starts from, a
   // terminal it ends at: LA Metro 28's Division 13 layover and Century City, RFTA L's last stop)
@@ -1530,6 +1543,11 @@ export async function processGtfsBuffer(
           const shKey = grp.shapeId ? `${grp.shapeId}::${grp.dayType}` : null;
           const smKey = sharedMemberKey(grp);
           const rushKey = rushMemberKey(grp);
+          const pushTwin = (twin: Map<string, number[]>, stopId: string, mins: number) => {
+            let arr = twin.get(stopId);
+            if (!arr) { arr = []; twin.set(stopId, arr); }
+            arr.push(mins);
+          };
           const pushDep = (maps: Map<string, Map<string, number[]>>, key: string, stopId: string, mins: number) => {
             let map = maps.get(key);
             if (!map) { map = new Map(); maps.set(key, map); }
@@ -1544,6 +1562,9 @@ export async function processGtfsBuffer(
             if (grp.inGroup && pooledOk) pushDep(stopDepsByGroup, gKey, stopId, mins);
             if (hsKey && grp.inHeadsign && headsignOk) pushDep(stopDepsByHeadsignGroup, hsKey, stopId, mins);
             if (shKey && grp.inShape) pushDep(stopDepsByShapeGroup, shKey, stopId, mins);
+            if (grp.inGroup && pooledOk) pushTwin(departureTwin(stopDepsByGroup, gKey), stopId, mins);
+            if (hsKey && grp.inHeadsign && headsignOk) pushTwin(departureTwin(stopDepsByHeadsignGroup, hsKey), stopId, mins);
+            if (shKey && grp.inShape) pushTwin(departureTwin(stopDepsByShapeGroup, shKey), stopId, mins);
             // Drop-off-only stop times (pickup_type 1) are not departures a rider can take.
             if (smKey && grp.inGroup && pooledOk && boardsAt(st)) pushDep(stopDepsBySharedMember, smKey, stopId, mins);
             if (rushKey && grp.inGroup && pooledOk && boardsAt(st)) pushDep(stopDepsByRushMember, rushKey, stopId, mins);
@@ -1714,11 +1735,19 @@ export async function processGtfsBuffer(
     if (!arr.includes(mins)) arr.push(mins);
     stopMap.set(stopId, arr);
   };
+  const pushUniqueTwin = (twin: Map<string, number[]>, stopId: string, mins: number) => {
+    const arr = twin.get(stopId) ?? [];
+    if (!arr.includes(mins)) arr.push(mins);
+    twin.set(stopId, arr);
+  };
   const addFrequencyDeparture = (grp: StopTripGroup, stopId: string, mins: number, pickupAllowed = true) => {
     const groupKey = `${grp.shortName}::${grp.dirId}::${grp.dayType}`;
     if (grp.inGroup) pushUnique(stopDepsByGroup, groupKey, stopId, mins);
     if (grp.headsign && grp.inHeadsign) pushUnique(stopDepsByHeadsignGroup, `${grp.shortName}::${grp.dirId}::${grp.dayType}::${grp.headsign}`, stopId, mins);
     if (grp.shapeId && grp.inShape) pushUnique(stopDepsByShapeGroup, `${grp.shapeId}::${grp.dayType}`, stopId, mins);
+    if (grp.inGroup) pushUniqueTwin(departureTwin(stopDepsByGroup, groupKey), stopId, mins);
+    if (grp.headsign && grp.inHeadsign) pushUniqueTwin(departureTwin(stopDepsByHeadsignGroup, `${grp.shortName}::${grp.dirId}::${grp.dayType}::${grp.headsign}`), stopId, mins);
+    if (grp.shapeId && grp.inShape) pushUniqueTwin(departureTwin(stopDepsByShapeGroup, `${grp.shapeId}::${grp.dayType}`), stopId, mins);
     if (grp.shapeId && grp.inShape && pickupAllowed) markBoardable(`${grp.shapeId}::${grp.dayType}`, stopId);
     const smKey = sharedMemberKey(grp);
     if (smKey && grp.inGroup && pickupAllowed) pushUnique(stopDepsBySharedMember, smKey, stopId, mins);
@@ -2256,135 +2285,150 @@ export async function processGtfsBuffer(
     }
 
     // Step 1: compute all-day, per-period, and per-hour headways for every stop in the route+dir group.
-    const allStopHw: Record<string, number> = {};
-    // The same all-day and midday values on the plain median. Step 4's branch decision reads
-    // these, so the alternating-gap reading only ever raises a headline (#772).
-    const allStopHwPlain: Record<string, number> = {};
-    const allStopMiddayHwPlain: Record<string, number> = {};
-    const allStopPeriodHw: Record<string, Partial<Record<PeriodKey, number>>> = {};
-    // #897: a stop's overnight value withheld as a sparse window, by stop.
-    const sparseOvernightStopHw: Record<string, number> = {};
-    const allStopPeriodCoverageHw: Record<string, HeadwayByPeriod> = {};
-    const allStopPeriodMaxGaps: Record<string, HeadwayByPeriodMaxGap> = {};
-    const allStopPeriodSustained: Record<string, HeadwayByPeriodSustained> = {};
-    const allStopHourHw: Record<string, HeadwayByHour> = {};
-    // #771: pooled stops whose pooled reading published nothing and fell back to the drawn
-    // pattern's own trips (all-day value, and per period). Other trips serve these stops, so the
-    // fallback is not the stop's service and the worst-drawn-stop rule leaves it out.
-    const ownFallbackHw = new Set<string>();
-    const ownFallbackPeriodHw = new Map<string, Set<PeriodKey>>();
-    // The fallback periods where the other patterns add under three departures in the window:
-    // the pool adds nothing the pooled rule could read there, so the stop's service is the
-    // merged list's plain wait and the worst-drawn-stop rule keeps it (TTC 29's Dufferin Gate
-    // Loop pools one departure from a one-trip shape; the pooled rule refused the evening on
-    // the own list's 26-minute gap, and the row's evening showed the trunk's 8 over a stop that
-    // runs every 16, CIV-221). The floor reads the merged list, not the own list alone, so the
-    // one or two pooled departures still count (TriMet 72 Saturday morning at N Anchor &
-    // Channel: 3 own and 2 from a same-stop-list shape are every 33, not every 51). The stop's
-    // published value and companions still follow the own list, as for any fallback.
-    const thinPoolFallbackPeriodHw = new Map<string, Map<PeriodKey, PeriodValue>>();
-    for (const [stopId, times] of stopMetricMap) {
-      times.sort((a, b) => a - b);
-      // Prefer midday (9–15h) then PM peak (15–19h) rather than a raw all-day window.
-      // An all-day median is skewed by peak clusters: Halifax 330 inbound has 9 AM trips
-      // in a 105-min window → all-day median gap = 10 min despite no off-peak service.
-      // Midday ?? PM peak correctly returns null for AM-peak-only routes, preventing them
-      // from appearing with a misleading green dot in the stop card.
-      //
-      // Falls back further to a raw all-day (6–22h) window only when NEITHER midday nor PM
-      // peak found enough departures, rather than nulling the stop out entirely (issue #279).
-      // That window uses sustainedMedianHeadwayInWindow, not the plain median, specifically so
-      // it doesn't reintroduce the original Halifax 330 bug: a plain all-day median is still
-      // robust to a single outlier trip, so a route with a tight AM-peak cluster plus one stray
-      // afternoon trip (330 is a rush-hour-only commuter express, not real all-day service)
-      // would median right back down to the misleading peak-cluster gap. Rejecting a
-      // disproportionate single gap catches that case while still rescuing routes with real,
-      // consistent service that simply falls outside 9h–19h (e.g. TTC 32, 5–15min gaps all day).
-      // A pooled stop (#690) reads the merged list with the pooled rule (pooledHeadwayInWindow:
-      // never better than the mean gap, even gaps only); where that publishes nothing the stop
-      // keeps its own pattern's value, as before.
-      const isPooled = pooled?.pooledStops.has(stopId) === true;
-      const own = isPooled ? [...(metricStopMap.get(stopId) ?? [])].sort((a, b) => a - b) : times;
-      let usedOwnFallback = false;
-      const windowHw = (start: number, end: number, allDay = false): number | null => {
-        usedOwnFallback = false;
-        if (isPooled) {
-          const v = pooledHeadwayInWindow(times, start, end, 3, allDay, own);
-          if (v != null) return v;
-        }
-        const v = allDay
-          ? sustainedMedianHeadwayInWindow(own, start, end, 3, undefined, true)
-          : medianHeadwayInWindow(own, start, end, 3, true);
-        // The flag describes the window that produced the value: a later window read from the
-        // pool clears it, and a window with no value from either list leaves no fallback.
-        if (isPooled && v != null) usedOwnFallback = true;
-        return v;
-      };
-      const hw = windowHw(HEADLINE_WINDOWS.midday.start, HEADLINE_WINDOWS.midday.end)   // midday 9–15h
-              ?? windowHw(HEADLINE_WINDOWS.pmPeak.start, HEADLINE_WINDOWS.pmPeak.end)   // PM peak 15–19h
-              ?? windowHw(HEADLINE_WINDOWS.allDay.start, HEADLINE_WINDOWS.allDay.end, true);   // last resort: raw all-day 6–22h
-      if (hw != null) allStopHw[stopId] = hw;
+    // CIV-1071: run once on the served lists (every value and structure below) and once on their
+    // departure twins (only the stop values the feature publishes).
+    const computeStopValues = (stopMetricMap: Map<string, number[]>, metricStopMap: Map<string, number[]>, pooled: ReturnType<typeof buildPooledStopMap> | null) => {
+      const allStopHw: Record<string, number> = {};
+      // The same all-day and midday values on the plain median. Step 4's branch decision reads
+      // these, so the alternating-gap reading only ever raises a headline (#772).
+      const allStopHwPlain: Record<string, number> = {};
+      const allStopMiddayHwPlain: Record<string, number> = {};
+      const allStopPeriodHw: Record<string, Partial<Record<PeriodKey, number>>> = {};
+      // #897: a stop's overnight value withheld as a sparse window, by stop.
+      const sparseOvernightStopHw: Record<string, number> = {};
+      const allStopPeriodCoverageHw: Record<string, HeadwayByPeriod> = {};
+      const allStopPeriodMaxGaps: Record<string, HeadwayByPeriodMaxGap> = {};
+      const allStopPeriodSustained: Record<string, HeadwayByPeriodSustained> = {};
+      const allStopHourHw: Record<string, HeadwayByHour> = {};
+      // #771: pooled stops whose pooled reading published nothing and fell back to the drawn
+      // pattern's own trips (all-day value, and per period). Other trips serve these stops, so the
+      // fallback is not the stop's service and the worst-drawn-stop rule leaves it out.
+      const ownFallbackHw = new Set<string>();
+      const ownFallbackPeriodHw = new Map<string, Set<PeriodKey>>();
+      // The fallback periods where the other patterns add under three departures in the window:
+      // the pool adds nothing the pooled rule could read there, so the stop's service is the
+      // merged list's plain wait and the worst-drawn-stop rule keeps it (TTC 29's Dufferin Gate
+      // Loop pools one departure from a one-trip shape; the pooled rule refused the evening on
+      // the own list's 26-minute gap, and the row's evening showed the trunk's 8 over a stop that
+      // runs every 16, CIV-221). The floor reads the merged list, not the own list alone, so the
+      // one or two pooled departures still count (TriMet 72 Saturday morning at N Anchor &
+      // Channel: 3 own and 2 from a same-stop-list shape are every 33, not every 51). The stop's
+      // published value and companions still follow the own list, as for any fallback.
+      const thinPoolFallbackPeriodHw = new Map<string, Map<PeriodKey, PeriodValue>>();
+      for (const [stopId, times] of stopMetricMap) {
+        times.sort((a, b) => a - b);
+        // Prefer midday (9–15h) then PM peak (15–19h) rather than a raw all-day window.
+        // An all-day median is skewed by peak clusters: Halifax 330 inbound has 9 AM trips
+        // in a 105-min window → all-day median gap = 10 min despite no off-peak service.
+        // Midday ?? PM peak correctly returns null for AM-peak-only routes, preventing them
+        // from appearing with a misleading green dot in the stop card.
+        //
+        // Falls back further to a raw all-day (6–22h) window only when NEITHER midday nor PM
+        // peak found enough departures, rather than nulling the stop out entirely (issue #279).
+        // That window uses sustainedMedianHeadwayInWindow, not the plain median, specifically so
+        // it doesn't reintroduce the original Halifax 330 bug: a plain all-day median is still
+        // robust to a single outlier trip, so a route with a tight AM-peak cluster plus one stray
+        // afternoon trip (330 is a rush-hour-only commuter express, not real all-day service)
+        // would median right back down to the misleading peak-cluster gap. Rejecting a
+        // disproportionate single gap catches that case while still rescuing routes with real,
+        // consistent service that simply falls outside 9h–19h (e.g. TTC 32, 5–15min gaps all day).
+        // A pooled stop (#690) reads the merged list with the pooled rule (pooledHeadwayInWindow:
+        // never better than the mean gap, even gaps only); where that publishes nothing the stop
+        // keeps its own pattern's value, as before.
+        const isPooled = pooled?.pooledStops.has(stopId) === true;
+        const own = isPooled ? [...(metricStopMap.get(stopId) ?? [])].sort((a, b) => a - b) : times;
+        let usedOwnFallback = false;
+        const windowHw = (start: number, end: number, allDay = false): number | null => {
+          usedOwnFallback = false;
+          if (isPooled) {
+            const v = pooledHeadwayInWindow(times, start, end, 3, allDay, own);
+            if (v != null) return v;
+          }
+          const v = allDay
+            ? sustainedMedianHeadwayInWindow(own, start, end, 3, undefined, true)
+            : medianHeadwayInWindow(own, start, end, 3, true);
+          // The flag describes the window that produced the value: a later window read from the
+          // pool clears it, and a window with no value from either list leaves no fallback.
+          if (isPooled && v != null) usedOwnFallback = true;
+          return v;
+        };
+        const hw = windowHw(HEADLINE_WINDOWS.midday.start, HEADLINE_WINDOWS.midday.end)   // midday 9–15h
+                ?? windowHw(HEADLINE_WINDOWS.pmPeak.start, HEADLINE_WINDOWS.pmPeak.end)   // PM peak 15–19h
+                ?? windowHw(HEADLINE_WINDOWS.allDay.start, HEADLINE_WINDOWS.allDay.end, true);   // last resort: raw all-day 6–22h
+        if (hw != null) allStopHw[stopId] = hw;
 
-      // The plain values feed the #772 branch decision, which compares the own pattern's stops
-      // with a shared terminal: they read the own list at a pooled stop too (ttc 38 weekday: the
-      // pooled terminal's plain 7 would have beaten the branch's 15).
-      const hwPlain = headlineWindowValue(own);
-      if (hwPlain != null) allStopHwPlain[stopId] = hwPlain;
-      const middayPlain = medianHeadwayInWindow(forCrossMidnightWindow(own, PERIODS.midday.end), PERIODS.midday.start, PERIODS.midday.end, 3);
-      if (middayPlain != null) allStopMiddayHwPlain[stopId] = middayPlain;
-      if (hw != null && usedOwnFallback) ownFallbackHw.add(stopId);
-      const byPeriod: Partial<Record<PeriodKey, number>> = {};
-      for (const [pk, { start, end }] of Object.entries(PERIODS) as [PeriodKey, { start: number; end: number }][]) {
-        const pooledPh = isPooled ? pooledHeadwayInWindow(times, start, end, 3, false, own) : null;
-        const ph = isPooled
-          ? (pooledPh ?? medianHeadwayInWindow(forCrossMidnightWindow(own, end), start, end, 3, true))
-          : medianHeadwayInWindow(forCrossMidnightWindow(times, end), start, end, 3, true);
-        if (isPooled && pooledPh == null && ph != null) {
-          const set = ownFallbackPeriodHw.get(stopId) ?? new Set<PeriodKey>();
-          set.add(pk);
-          ownFallbackPeriodHw.set(stopId, set);
-          if (isThinPool(forCrossMidnightWindow(times, end), forCrossMidnightWindow(own, end), start, end)) {
-            const merged = medianHeadwayInWindow(forCrossMidnightWindow(times, end), start, end, 3, true);
-            if (merged != null) {
-              const thin = thinPoolFallbackPeriodHw.get(stopId) ?? new Map<PeriodKey, PeriodValue>();
-              const sparse = pk === 'overnight' && isSparseOvernightWindow(times);
-              thin.set(pk, { headway: merged, coverage: computePeriodCoverageHeadways(times)[pk] ?? null, maxGap: computePeriodMaxGaps(times)[pk] ?? null, sustained: computePeriodSustained(times)[pk], ...(sparse ? { sparse } : {}) });
-              thinPoolFallbackPeriodHw.set(stopId, thin);
+        // The plain values feed the #772 branch decision, which compares the own pattern's stops
+        // with a shared terminal: they read the own list at a pooled stop too (ttc 38 weekday: the
+        // pooled terminal's plain 7 would have beaten the branch's 15).
+        const hwPlain = headlineWindowValue(own);
+        if (hwPlain != null) allStopHwPlain[stopId] = hwPlain;
+        const middayPlain = medianHeadwayInWindow(forCrossMidnightWindow(own, PERIODS.midday.end), PERIODS.midday.start, PERIODS.midday.end, 3);
+        if (middayPlain != null) allStopMiddayHwPlain[stopId] = middayPlain;
+        if (hw != null && usedOwnFallback) ownFallbackHw.add(stopId);
+        const byPeriod: Partial<Record<PeriodKey, number>> = {};
+        for (const [pk, { start, end }] of Object.entries(PERIODS) as [PeriodKey, { start: number; end: number }][]) {
+          const pooledPh = isPooled ? pooledHeadwayInWindow(times, start, end, 3, false, own) : null;
+          const ph = isPooled
+            ? (pooledPh ?? medianHeadwayInWindow(forCrossMidnightWindow(own, end), start, end, 3, true))
+            : medianHeadwayInWindow(forCrossMidnightWindow(times, end), start, end, 3, true);
+          if (isPooled && pooledPh == null && ph != null) {
+            const set = ownFallbackPeriodHw.get(stopId) ?? new Set<PeriodKey>();
+            set.add(pk);
+            ownFallbackPeriodHw.set(stopId, set);
+            if (isThinPool(forCrossMidnightWindow(times, end), forCrossMidnightWindow(own, end), start, end)) {
+              const merged = medianHeadwayInWindow(forCrossMidnightWindow(times, end), start, end, 3, true);
+              if (merged != null) {
+                const thin = thinPoolFallbackPeriodHw.get(stopId) ?? new Map<PeriodKey, PeriodValue>();
+                const sparse = pk === 'overnight' && isSparseOvernightWindow(times);
+                thin.set(pk, { headway: merged, coverage: computePeriodCoverageHeadways(times)[pk] ?? null, maxGap: computePeriodMaxGaps(times)[pk] ?? null, sustained: computePeriodSustained(times)[pk], ...(sparse ? { sparse } : {}) });
+                thinPoolFallbackPeriodHw.set(stopId, thin);
+              }
             }
           }
+          // #897: the value reads null when the list it came from is a sparse overnight window; the
+          // fallback choice, coverage and max gap stay as they were. Step 5 still weighs it.
+          if (ph != null && pk === 'overnight' && isSparseOvernightWindow(isPooled && pooledPh == null ? own : times)) {
+            sparseOvernightStopHw[stopId] = ph;
+            continue;
+          }
+          if (ph != null) byPeriod[pk] = ph;
         }
-        // #897: the value reads null when the list it came from is a sparse overnight window; the
-        // fallback choice, coverage and max gap stay as they were. Step 5 still weighs it.
-        if (ph != null && pk === 'overnight' && isSparseOvernightWindow(isPooled && pooledPh == null ? own : times)) {
-          sparseOvernightStopHw[stopId] = ph;
-          continue;
+        // The max gap, coverage and sustained flag describe the list the shown value came from:
+        // the merged list where the pool published, the own pattern where it fell back.
+        const fellBack = ownFallbackPeriodHw.get(stopId);
+        const pickByPeriod = <T extends Partial<Record<PeriodKey, unknown>>>(merged: T, ownOnly: T): T => {
+          if (!fellBack?.size) return merged;
+          const out = { ...merged };
+          for (const pk of fellBack) (out as Record<string, unknown>)[pk] = (ownOnly as Record<string, unknown>)[pk];
+          return out;
+        };
+        allStopPeriodMaxGaps[stopId] = isPooled ? pickByPeriod(computePeriodMaxGaps(times), computePeriodMaxGaps(own)) : computePeriodMaxGaps(times);
+        allStopPeriodCoverageHw[stopId] = isPooled ? pickByPeriod(computePeriodCoverageHeadways(times), computePeriodCoverageHeadways(own)) : computePeriodCoverageHeadways(times);
+        if (Object.keys(byPeriod).length > 0) {
+          allStopPeriodHw[stopId] = byPeriod;
+          allStopPeriodSustained[stopId] = isPooled ? pickByPeriod(computePeriodSustained(times), computePeriodSustained(own)) : computePeriodSustained(times);
         }
-        if (ph != null) byPeriod[pk] = ph;
+        // Hourly: widen past a strict hour only when it doesn't already have >=3 departures on its
+        // own, up to a 90-min window [h*60, h*60+90] so 30-min routes still show up (issue #282).
+        const byHour: HeadwayByHour = {};
+        for (const h of SPARKLINE_HOURS) {
+          const hh = adaptiveMedianHeadwayInWindow(times, h * 60, 3);
+          byHour[h] = hh;
+        }
+        allStopHourHw[stopId] = byHour;
       }
-      // The max gap, coverage and sustained flag describe the list the shown value came from:
-      // the merged list where the pool published, the own pattern where it fell back.
-      const fellBack = ownFallbackPeriodHw.get(stopId);
-      const pickByPeriod = <T extends Partial<Record<PeriodKey, unknown>>>(merged: T, ownOnly: T): T => {
-        if (!fellBack?.size) return merged;
-        const out = { ...merged };
-        for (const pk of fellBack) (out as Record<string, unknown>)[pk] = (ownOnly as Record<string, unknown>)[pk];
-        return out;
-      };
-      allStopPeriodMaxGaps[stopId] = isPooled ? pickByPeriod(computePeriodMaxGaps(times), computePeriodMaxGaps(own)) : computePeriodMaxGaps(times);
-      allStopPeriodCoverageHw[stopId] = isPooled ? pickByPeriod(computePeriodCoverageHeadways(times), computePeriodCoverageHeadways(own)) : computePeriodCoverageHeadways(times);
-      if (Object.keys(byPeriod).length > 0) {
-        allStopPeriodHw[stopId] = byPeriod;
-        allStopPeriodSustained[stopId] = isPooled ? pickByPeriod(computePeriodSustained(times), computePeriodSustained(own)) : computePeriodSustained(times);
-      }
-      // Hourly: widen past a strict hour only when it doesn't already have >=3 departures on its
-      // own, up to a 90-min window [h*60, h*60+90] so 30-min routes still show up (issue #282).
-      const byHour: HeadwayByHour = {};
-      for (const h of SPARKLINE_HOURS) {
-        const hh = adaptiveMedianHeadwayInWindow(times, h * 60, 3);
-        byHour[h] = hh;
-      }
-      allStopHourHw[stopId] = byHour;
-    }
+      return { allStopHw, allStopHwPlain, allStopMiddayHwPlain, allStopPeriodHw, sparseOvernightStopHw, allStopPeriodCoverageHw, allStopPeriodMaxGaps, allStopPeriodSustained, allStopHourHw, ownFallbackHw, ownFallbackPeriodHw, thinPoolFallbackPeriodHw };
+    };
+    const { allStopHw, allStopHwPlain, allStopMiddayHwPlain, allStopPeriodHw, sparseOvernightStopHw, allStopPeriodCoverageHw, allStopPeriodMaxGaps, allStopPeriodSustained, allStopHourHw, ownFallbackHw, ownFallbackPeriodHw, thinPoolFallbackPeriodHw } = computeStopValues(stopMetricMap, metricStopMap, pooled);
+    // The departure twins of the same lists (CIV-1071), pooled with the same sharers.
+    const departureMetricMap = departuresOf.get(metricStopMap) ?? metricStopMap;
+    const departurePooled = pooled && ownMember
+      ? buildPooledStopMap(departureMetricMap, stopSharersFor(poolKey).get(ownMember), key => stopDepsBySharedMember.get(`${poolKey}::${key}`), childToParent,
+        stopDepsBySharedMember.get(`${poolKey}::${ownMember}`))
+      : null;
+    const departureValues = departureMetricMap === metricStopMap
+      ? { allStopHw, allStopPeriodHw, allStopPeriodCoverageHw }
+      : computeStopValues(departurePooled?.map ?? departureMetricMap, departureMetricMap, departurePooled);
     // #690: the route-level fallbacks (all-stop median, branch detection, the minimum stop
     // headways the filter reads) keep reading the own pattern, so pooled stop values never
     // reach a route-level value by a side door. Only the pooled stops differ.
@@ -2437,7 +2481,7 @@ export async function processGtfsBuffer(
       ? maplessStopProjection
       : projectStopsOntoShape([...metricStopMap.keys()], stopsById, shapePts).filter(p => p.dev2 <= MAX_STOP_DEV2);
     feature.properties.stopPeriodCoverageHeadways = Object.fromEntries(
-      coverageStops.map(({ stopId }) => [stopId, allStopPeriodCoverageHw[stopId]]),
+      coverageStops.map(({ stopId }) => [stopId, departureValues.allStopPeriodCoverageHw[stopId]]),
     );
     // #690: the line's destination pool at its terminal, the same branch-scoped sample #728
     // grades the tier on (the headsign's trips serving at least two thirds of the drawn stops
@@ -2662,14 +2706,20 @@ export async function processGtfsBuffer(
         if (allStopHw[stopId] != null) stopHeadways[stopId] = allStopHw[stopId];
       }
       if (Object.keys(stopHeadways).length === 0) return null;
-      feature.properties.stopHeadways = stopHeadways;
+      // CIV-1071: the published stop values read the departure twins; stopHeadways above (returned to
+      // the route-level steps) reads the served lists.
+      const publishedStopHeadways: Record<string, number> = {};
+      for (const { stopId } of onShape) {
+        if (departureValues.allStopHw[stopId] != null) publishedStopHeadways[stopId] = departureValues.allStopHw[stopId];
+      }
+      feature.properties.stopHeadways = publishedStopHeadways;
 
       // Per-stop period headways for on-shape stops — used by Corridors to show
       // frequency at the user's chosen TO stop, not just the route terminal.
       const stopPeriodHeadways: Record<string, Partial<Record<PeriodKey, number>>> = {};
       for (const { stopId } of onShape) {
         const overlay = rushPeriodOverlay.get(stopId);
-        const periods = overlay ? { ...allStopPeriodHw[stopId], ...overlay } : allStopPeriodHw[stopId];
+        const periods = overlay ? { ...departureValues.allStopPeriodHw[stopId], ...overlay } : departureValues.allStopPeriodHw[stopId];
         if (periods && Object.keys(periods).length > 0) stopPeriodHeadways[stopId] = periods;
       }
       if (Object.keys(stopPeriodHeadways).length > 0) {
