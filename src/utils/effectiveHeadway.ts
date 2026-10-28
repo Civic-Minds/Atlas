@@ -343,6 +343,19 @@ export interface RouteListDisplay {
   noRegular?: boolean;
   /** Lower end of a display-only range on the shared stretch; absent when there is none. */
   sharedHeadway?: number;
+  /** Compare (CIV-844): each map's own reading of the route, for "A every 3 · B every 4". */
+  compare?: { A: RouteListDisplay; B: RouteListDisplay };
+}
+
+/**
+ * One compare side in a list row (CIV-844, Ryan's format "A every 3 · B every 4"): the side's letter and its number,
+ * or its existing limited / no-regular-service word. Null when the route has nothing on that side.
+ */
+export function compareSideListText(label: 'A' | 'B', display: RouteListDisplay): string | null {
+  if (display.headway != null && display.headway < 999) return `${label} every ${display.headway}`;
+  if (display.noRegular) return `${label} ${NO_REGULAR_SERVICE_SHORT_LABEL}`;
+  if (display.limited) return `${label} limited`;
+  return null;
 }
 
 /** Headway, shared-stretch range and limited flag for one route list row, from the same shared rule. */

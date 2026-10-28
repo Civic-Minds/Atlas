@@ -81,6 +81,24 @@ export function compareCardSummary(rows: readonly CompareRowFacts[]): { headline
   return { headline: null, lines };
 }
 
+/** Longest side value kept whole on one line ("every 120 min, not on map"). */
+const COMPARE_VALUE_NOWRAP_MAX = 26;
+
+/**
+ * A side's line wraps between its title and its value, never inside a short value, so "on map" never sits alone on a
+ * line (CIV-844): "A · Weekday PM peak:" then "every 3 min, on map". A long value keeps only its last word with
+ * "on map". Same words, non-breaking spaces only.
+ */
+export function compareLineNoOrphan(line: string): string {
+  const at = line.lastIndexOf(': ');
+  if (at < 0) return line;
+  const value = line.slice(at + 2);
+  const kept = value.length <= COMPARE_VALUE_NOWRAP_MAX
+    ? value.replace(/ /g, '\u00A0')
+    : value.replace(/ (\S+, (?:not )?on) (map)$/, (_m, last: string, map: string) => `\u00A0${last.replace(/ /g, '\u00A0')}\u00A0${map}`);
+  return `${line.slice(0, at + 2)}${kept}`;
+}
+
 /**
  * Whether a map's drawn routes can be counted yet (#1075). Until its route layers exist and every
  * tile has arrived the map draws nothing or only some routes, so a count then would read "0 routes"

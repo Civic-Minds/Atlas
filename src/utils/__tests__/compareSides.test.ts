@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { compareCardSummary, compareSideHeading, defaultCompareSide, frequencyWords, type CompareSide } from '../compareSides';
+import { compareCardSummary, compareLineNoOrphan, compareSideHeading, defaultCompareSide, frequencyWords, type CompareSide } from '../compareSides';
 
 const side = (over: Partial<CompareSide> = {}): CompareSide => ({ day: 'Weekday', period: 'late', maxHeadway: 10, ...over });
 
@@ -40,3 +40,19 @@ describe('starting compare', () => {
     expect(defaultCompareSide(side({ day: 'Saturday', maxHeadway: 15 }))).toEqual({ day: 'Sunday', period: 'late', maxHeadway: 15 });
   });
 });
+
+describe('compareLineNoOrphan (CIV-844)', () => {
+  const nb = (text: string) => text.replace(/ /g, '\u00A0');
+  it('keeps a short value whole, so "on map" never sits alone', () => {
+    expect(compareLineNoOrphan('A · Weekday PM peak: every 3 min, on map')).toBe(`A · Weekday PM peak: ${nb('every 3 min, on map')}`);
+    expect(compareLineNoOrphan('B · Saturday PM peak: every 4 min, not on map')).toBe(`B · Saturday PM peak: ${nb('every 4 min, not on map')}`);
+  });
+  it('keeps only the last word with "on map" in a long value', () => {
+    expect(compareLineNoOrphan('A · Weekday late: no regular service during this period, not on map'))
+      .toBe(`A · Weekday late: no regular service during this ${nb('period, not on map')}`.replace('this period', 'this\u00A0period'));
+  });
+  it('leaves a line with no value as it is', () => {
+    expect(compareLineNoOrphan('On map A (≤60 min) · not on map B (≤10 min)')).toBe('On map A (≤60 min) · not on map B (≤10 min)');
+  });
+});
+
