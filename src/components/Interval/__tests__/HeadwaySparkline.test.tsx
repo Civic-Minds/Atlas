@@ -535,52 +535,37 @@ describe('HeadwaySparkline full-day link', () => {
 describe('layoutBandLabels (CIV-1094)', () => {
   // 7px per character stands in for the real 12px label font.
   const width = (text: string) => text.length * 7;
-  const shown = (chartWidth: number, phone = false) =>
-    Object.fromEntries(layoutBandLabels(PERIOD_OVERVIEW_BANDS, chartWidth, width, phone).map(l => [l.key, l.text]));
+  const shown = (chartWidth: number) =>
+    Object.fromEntries(layoutBandLabels(PERIOD_OVERVIEW_BANDS, chartWidth, width).map(l => [l.key, l.text]));
 
-  it('names every period in full where the chart is wide enough', () => {
-    expect(shown(800)).toEqual({ amPeak: 'AM peak', midday: 'Midday', pmPeak: 'PM peak', evening: 'Evening', late: 'Late', overnight: 'Overnight' });
+  it('names every period where the chart is wide enough, the peaks always short', () => {
+    expect(shown(800)).toEqual({ amPeak: 'AM', midday: 'Midday', pmPeak: 'PM', evening: 'Evening', late: 'Late', overnight: 'Overnight' });
   });
 
-  it('shortens only the peak that would run into the next name', () => {
-    // AM peak's band (3 hours) is narrower than PM peak's (4 hours).
-    const narrow = shown(380);
-    expect(narrow.amPeak).toBe('AM');
-    expect(narrow.pmPeak).toBe('PM peak');
-  });
-
-  it('leaves off a name with no room for either form', () => {
-    expect(shown(150, true)).not.toHaveProperty('late');
-  });
-
-  it('always uses the short peaks on phones', () => {
-    const phone = shown(800, true);
-    expect(phone.amPeak).toBe('AM');
-    expect(phone.pmPeak).toBe('PM');
-  });
-
-  it('never lets two names overlap', () => {
-    for (const chartWidth of [200, 260, 330, 420, 600]) {
-      for (const phone of [false, true]) {
-        const placed = layoutBandLabels(PERIOD_OVERVIEW_BANDS, chartWidth, width, phone).map(l => {
-          const band = PERIOD_OVERVIEW_BANDS.find(b => b.key === l.key)!;
-          const start = l.alignRight ? chartWidth - width(l.text) : band.left * chartWidth + 4;
-          return [start, start + width(l.text)] as const;
-        }).sort((a, b) => a[0] - b[0]);
-        for (let i = 1; i < placed.length; i++) expect(placed[i][0]).toBeGreaterThanOrEqual(placed[i - 1][1]);
-        for (const [, end] of placed) expect(end).toBeLessThanOrEqual(chartWidth);
-      }
-    }
+  it('leaves off a name with no room', () => {
+    expect(shown(150)).not.toHaveProperty('late');
   });
 
   it('drops the last name rather than let it start on the band before', () => {
     // Overnight's band (4 hours) is too narrow for its name at 330; ending at the edge would start it in Late's band.
-    const narrow = layoutBandLabels(PERIOD_OVERVIEW_BANDS, 330, width, true);
+    const narrow = layoutBandLabels(PERIOD_OVERVIEW_BANDS, 330, width);
     expect(narrow.map(l => l.key)).not.toContain('overnight');
     expect(narrow.map(l => l.key)).toContain('late');
   });
 
-  it('shows every name, short peaks, before the width is known', () => {
+  it('never lets two names overlap', () => {
+    for (const chartWidth of [200, 260, 330, 420, 600]) {
+      const placed = layoutBandLabels(PERIOD_OVERVIEW_BANDS, chartWidth, width).map(l => {
+        const band = PERIOD_OVERVIEW_BANDS.find(b => b.key === l.key)!;
+        const start = l.alignRight ? chartWidth - width(l.text) : band.left * chartWidth + 4;
+        return [start, start + width(l.text)] as const;
+      }).sort((a, b) => a[0] - b[0]);
+      for (let i = 1; i < placed.length; i++) expect(placed[i][0]).toBeGreaterThanOrEqual(placed[i - 1][1]);
+      for (const [, end] of placed) expect(end).toBeLessThanOrEqual(chartWidth);
+    }
+  });
+
+  it('shows every name before the width is known', () => {
     expect(Object.values(shown(0))).toEqual(['AM', 'Midday', 'PM', 'Evening', 'Late', 'Overnight']);
   });
 });

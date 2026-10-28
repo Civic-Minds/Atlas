@@ -153,6 +153,8 @@ export const CARD_SECTION = 'text-xs font-black text-[var(--text-dim)]';
 export const CHART_PERIOD_LABEL = 'text-xs font-black text-[var(--text-muted)]';
 /** A heading inside the chart area (the trip-time strip's "Trip time"). */
 export const CHART_HEADING = 'text-xs font-bold text-[var(--text-muted)]';
+/** The gap under a small heading before its content (a list's section head, a chart's title). */
+export const HEADING_GAP = 'mb-1';
 /** Footer block under card content (spacing only, no divider) */
 export const CARD_NOTICE_FOOTER = 'mt-2 pt-1';
 /** In-list notice padding (e.g. outside-filters control) */
