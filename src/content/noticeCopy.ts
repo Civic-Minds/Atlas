@@ -77,13 +77,8 @@ export const NO_ROUTE_SHAPE_NOTICE = "This route's line can't be shown on the ma
 /** CIV-1006: a route riders must book ahead (Ryan's wording). */
 export const BOOKING_REQUIRED_NOTICE = 'Rides on this route must be booked ahead.';
 
-// E6 no-route-shape (line 1)
-export const NO_ROUTE_SHAPE_EXPLANATION =
-  'This route\'s source feed includes schedule information but does not include a usable map shape.';
-
-// E6 no-route-shape (line 2)
-export const NO_ROUTE_SHAPE_DETAIL =
-  'Atlas can still show the route\'s schedule, stops, and frequency, but it cannot draw the route line.';
+// E6 no-route-shape: Ryan's three paragraphs (CIV-1051). Paragraph 1 is N7; paragraph 3 is E5's.
+export const NO_ROUTE_SHAPE_EXPLANATION = 'We still show the route on this card. Its frequency comes from the timetable and is still accurate.';
 
 // N11 not-in-period, N12 misses-filter
 /** Notices name the chosen time of day, never "the selected period" (Ryan); `periodRange` is "6–9 AM", or null for all day. */
@@ -332,6 +327,7 @@ export const BETA_ROLLOUT_EXPLANATION = "We're still verifying its schedule, and
 // Ryan's three paragraphs (CIV-1051).
 export const ROUTE_DATA_QUALITY_LEAD = "Part of this route's line on the map may be missing or drawn in the wrong place.";
 export const ROUTE_DATA_QUALITY_EXPLANATION = 'We still show the route. Its frequency on this card comes from the timetable and is still accurate.';
+/** E5 and E6 paragraph 3. */
 export const ROUTE_DATA_QUALITY_REPORT = 'If something looks off, report it with the flag on this card.';
 // E7 edge-gap-allowance
 // Ryan's approved wording (CIV-1045), replacing both old lines.

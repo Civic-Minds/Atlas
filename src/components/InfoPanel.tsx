@@ -19,7 +19,7 @@ import type { Agency } from '../App';
 import { isAgencyFeedExpired } from '../../shared/feedAvailability';
 import { trackEvent } from '../lib/analytics';
 import { OutboundLink } from './OutboundLink';
-import { BETA_ROLLOUT_EXPLANATION, betaRolloutLead, CORRECTED_DATA_EXPLANATION, CORRECTED_DATA_REPORT, EDGE_GAP_ALLOWANCE_EXPLANATION, EDGE_GAP_ALLOWANCE_LEAD, E1_AGENCY_WEBSITE, E1_WEEKLY_CHECK, EXPIRED_FEED_EXPLANATION, expiredFeedCheckHistory, expiredFeedNotice, EXPLAINERS, type HelpTopic, MANUAL_FEED_CONTEXT, NEW_SCHEDULE_DATA_EXPLANATION, NEW_SCHEDULE_DATA_WEBSITE, newScheduleDataLead, NO_AGENCIES_MATCH, NO_ROUTE_SHAPE_DETAIL, NO_ROUTE_SHAPE_EXPLANATION, ROUTE_DATA_QUALITY_EXPLANATION, ROUTE_DATA_QUALITY_LEAD, ROUTE_DATA_QUALITY_REPORT, WEEKDAY_VARIATION_EXPLANATION, WEEKDAY_VARIATION_LEAD } from '../content/noticeCopy';
+import { BETA_ROLLOUT_EXPLANATION, betaRolloutLead, CORRECTED_DATA_EXPLANATION, CORRECTED_DATA_REPORT, EDGE_GAP_ALLOWANCE_EXPLANATION, EDGE_GAP_ALLOWANCE_LEAD, E1_AGENCY_WEBSITE, E1_WEEKLY_CHECK, EXPIRED_FEED_EXPLANATION, expiredFeedCheckHistory, expiredFeedNotice, EXPLAINERS, type HelpTopic, MANUAL_FEED_CONTEXT, NEW_SCHEDULE_DATA_EXPLANATION, NEW_SCHEDULE_DATA_WEBSITE, newScheduleDataLead, NO_AGENCIES_MATCH, NO_ROUTE_SHAPE_EXPLANATION, NO_ROUTE_SHAPE_NOTICE, ROUTE_DATA_QUALITY_EXPLANATION, ROUTE_DATA_QUALITY_LEAD, ROUTE_DATA_QUALITY_REPORT, WEEKDAY_VARIATION_EXPLANATION, WEEKDAY_VARIATION_LEAD } from '../content/noticeCopy';
 import RegionFilterPills from './RegionFilterPills';
 import ListRow from './ui/ListRow';
 import { AgencyList, AgencyListRow, AgencyRegionSection } from './ui/AgencyList';
@@ -639,12 +639,9 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
 
           {view === 'no-route-shape' && (
             <div className="h-full overflow-y-auto px-5 py-4 space-y-4">
-              <p className="text-xs text-[var(--text-dim)] leading-relaxed">
-                {NO_ROUTE_SHAPE_EXPLANATION}
-              </p>
-              <p className="text-xs text-[var(--text-dim)] leading-relaxed">
-                {NO_ROUTE_SHAPE_DETAIL}
-              </p>
+              <p className="text-xs text-[var(--text-primary)] leading-relaxed">{NO_ROUTE_SHAPE_NOTICE}</p>
+              <p className="text-xs text-[var(--text-dim)] leading-relaxed">{NO_ROUTE_SHAPE_EXPLANATION}</p>
+              <p className="text-xs text-[var(--text-dim)] leading-relaxed">{ROUTE_DATA_QUALITY_REPORT}</p>
             </div>
           )}
 
