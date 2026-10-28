@@ -49,5 +49,12 @@
       "mode": 100,
       "reason": "ION is light rail; the Region's feed publishes it as route_type 0 (tram) while the earlier GRT feed had it as 2"
     }
+  ],
+  "lastSupplementalFeeds": [
+    {
+      "feedExpiry": "20280703",
+      "feedVersion": null,
+      "rawArchiveKey": "20280703-9f872bb7bc6ca990"
+    }
   ]
 }
