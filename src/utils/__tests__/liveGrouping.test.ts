@@ -122,9 +122,18 @@ describe('destinationKind (CIV-1043)', () => {
     1: [{ kind: 'main', fromName: 'Dundas West Station at Bay 4', toName: 'King St East at Sumach St' }, { kind: 'branch', fromName: 'Dufferin Gate Loop', toName: 'Broadview Ave at Wolfrey Ave' }],
   };
   const p506 = { 0: [{ kind: 'main', fromName: 'Main Street Station at Bay 7', toName: 'Howard Park Ave at Indian Rd' }], 1: [{ kind: 'main', fromName: 'High Park Loop', toName: 'Main St at Danforth Ave' }] };
-  it('calls every early destination a short turn on a route with no branch', () => {
-    expect(destinationKind(p506, 'Spadina')).toBe('shortTurn');
-    expect(destinationKind(p506, 'Broadview & Gerrard')).toBe('shortTurn');
+  const stops506 = ['College St at Spadina Ave', 'Gerrard St East at Broadview Ave', 'Howard Park Ave at Indian Rd', 'High Park Loop'];
+  it('calls a destination that names one of the route\'s stops a short turn on a route with no branch', () => {
+    expect(destinationKind(p506, 'Spadina', stops506)).toBe('shortTurn');
+    expect(destinationKind(p506, 'Broadview & Gerrard', stops506)).toBe('shortTurn');
+  });
+  it('never tags an end or a destination that isn\'t a stop on the route', () => {
+    // "High Park" leads "High Park Loop", a main end (the other direction's, or this one's under another name).
+    expect(destinationKind(p506, 'High Park', stops506)).toBeNull();
+    expect(destinationKind(p506, 'Main Street', stops506)).toBeNull();
+    expect(destinationKind(p506, 'Replacement Bus', stops506)).toBeNull();
+    // Without the route's stop names nothing can be checked: no tag.
+    expect(destinationKind(p506, 'Spadina')).toBeNull();
   });
   it('names a branch only on a clear match, and nothing when unsure', () => {
     expect(destinationKind(p504, 'Dufferin Gate')).toBe('branch');
