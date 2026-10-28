@@ -3,7 +3,6 @@ import { X, Search, Radio } from 'lucide-react';
 import { DROPDOWN_PANEL, dropdownAnim, SEARCH_PILL, SEARCH_ICON, SEARCH_FIELD, AGENCY_LIST_FILTERS, PILL_SCROLL_ROW, Z_MODAL_BG, AGENCY_LIST_PRIMARY } from '../styles';
 import Pill from './ui/Pill';
 import LinkCard from './ui/LinkCard';
-import ArrowLink from './ui/ArrowLink';
 import Tag from './ui/Tag';
 import PanelEmpty from './ui/PanelEmpty';
 import AgencyName from './ui/AgencyName';
@@ -20,7 +19,7 @@ import type { Agency } from '../App';
 import { isAgencyFeedExpired } from '../../shared/feedAvailability';
 import { trackEvent } from '../lib/analytics';
 import { OutboundLink } from './OutboundLink';
-import { BETA_ROLLOUT_EXPLANATION, betaRolloutLead, CORRECTED_DATA_EXPLANATION, EDGE_GAP_ALLOWANCE_EXPLANATION, EDGE_GAP_ALLOWANCE_LEAD, EXPIRED_FEED_CADENCE, EXPIRED_FEED_CONTEXT, EXPIRED_FEED_EXPLANATION, expiredFeedCheckHistory, expiredFeedNotice, EXPLAINERS, type HelpTopic, MANUAL_FEED_CONTEXT, NEW_SCHEDULE_DATA_EXPLANATION, NEW_SCHEDULE_DATA_TEMPORARY, newScheduleDataLead, NO_AGENCIES_MATCH, NO_ROUTE_SHAPE_DETAIL, NO_ROUTE_SHAPE_EXPLANATION, ROUTE_DATA_QUALITY_DETAIL, ROUTE_DATA_QUALITY_EXPLANATION, routeDataQualityLead, WEEKDAY_VARIATION_EXPLANATION, WEEKDAY_VARIATION_LEAD } from '../content/noticeCopy';
+import { BETA_ROLLOUT_EXPLANATION, betaRolloutLead, CORRECTED_DATA_EXPLANATION, EDGE_GAP_ALLOWANCE_EXPLANATION, EDGE_GAP_ALLOWANCE_LEAD, E1_AGENCY_WEBSITE, E1_WEEKLY_CHECK, EXPIRED_FEED_EXPLANATION, expiredFeedCheckHistory, expiredFeedNotice, EXPLAINERS, type HelpTopic, MANUAL_FEED_CONTEXT, NEW_SCHEDULE_DATA_EXPLANATION, NEW_SCHEDULE_DATA_TEMPORARY, newScheduleDataLead, NO_AGENCIES_MATCH, NO_ROUTE_SHAPE_DETAIL, NO_ROUTE_SHAPE_EXPLANATION, ROUTE_DATA_QUALITY_DETAIL, ROUTE_DATA_QUALITY_EXPLANATION, routeDataQualityLead, WEEKDAY_VARIATION_EXPLANATION, WEEKDAY_VARIATION_LEAD } from '../content/noticeCopy';
 import RegionFilterPills from './RegionFilterPills';
 import ListRow from './ui/ListRow';
 import { AgencyList, AgencyListRow, AgencyRegionSection } from './ui/AgencyList';
@@ -524,21 +523,16 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
             });
             return (
             <div className="h-full overflow-y-auto px-5 py-4 space-y-4">
-              {helpContext?.agencyName && (
-                <p className="text-xs text-[var(--text-primary)] leading-relaxed">
-                  {expiredFeedNotice(helpContext.agencyName, helpContext.expDateStr, helpContext.manualFeedSource)}
-                </p>
-              )}
-              {helpContext?.agencyName && checkHistory && (
-                <p className="text-xs text-[var(--text-primary)] leading-relaxed">{checkHistory}</p>
-              )}
-              <p className="text-xs text-[var(--text-dim)] leading-relaxed">
-                {EXPIRED_FEED_EXPLANATION}{' '}
-                <ArrowLink href="/about/docs#quality" tone="inline" size="xs" className="whitespace-nowrap">Learn more</ArrowLink>
+              {/* E1, N2 and N3 versions (Ryan, CIV-1051): the issue / what we're doing / what you can do. */}
+              <p className="text-xs text-[var(--text-primary)] leading-relaxed">
+                {helpContext?.agencyName && `${expiredFeedNotice(helpContext.agencyName, helpContext.expDateStr, helpContext.manualFeedSource)} `}
+                {EXPIRED_FEED_EXPLANATION}
               </p>
               <p className="text-xs text-[var(--text-dim)] leading-relaxed">
-                {EXPIRED_FEED_CADENCE} {helpContext?.manualFeedSource ? MANUAL_FEED_CONTEXT : EXPIRED_FEED_CONTEXT}
+                {helpContext?.manualFeedSource ? MANUAL_FEED_CONTEXT : E1_WEEKLY_CHECK}
+                {helpContext?.agencyName && checkHistory ? ` ${checkHistory}` : ''}
               </p>
+              <p className="text-xs text-[var(--text-dim)] leading-relaxed">{E1_AGENCY_WEBSITE}</p>
               {helpContext?.websiteUrl && (
                 <LinkCard as={OutboundLink}
                   href={helpContext.websiteUrl}
