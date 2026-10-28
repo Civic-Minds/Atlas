@@ -20,22 +20,13 @@ import { ROUTE_LINE_WIDTH_BY_ZOOM } from './routeStyle';
 export type CorridorWaits = Record<PeriodKey, number | null>;
 
 export interface CorridorDetail {
-  agencySlug: string;
   corridorId: string;
-  routeNames: string[];
-  fromStop: string | null;
-  toStop: string | null;
+  routeIds: string[];
   day: string;
   waits: CorridorWaits;
-  routeWaits: Record<string, CorridorWaits>;
 }
 
 export const CORRIDOR_LAYER_IDS = { line: 'corridors-line', hit: 'corridors-hit-layer' } as const;
-
-/** The period a corridor's card highlights: the chosen one, or midday for "All day". */
-export function corridorPeriod(period: TimePeriod): PeriodKey {
-  return period === 'all' ? 'midday' : period;
-}
 
 const DAYTIME: PeriodKey[] = ['amPeak', 'midday', 'pmPeak', 'evening'];
 
@@ -77,13 +68,15 @@ function overlapShare(a: LonLat[], b: LonLat[], metres: number): number {
  * set) is folded into the longer one, which takes the worse (longer) wait of the two, as the
  * route filter's worst-direction rule does.
  */
-export function oneLinePerStreet<T extends { line: LonLat[]; wait: number }>(items: T[], metres = 40): T[] {
+export function oneLinePerStreet<T extends { line: LonLat[]; wait: number; routeIds?: string[] }>(items: T[], metres = 40): T[] {
   const sorted = [...items].sort((a, b) => b.line.length - a.line.length);
   const kept: T[] = [];
   for (const item of sorted) {
     const host = kept.find(k => overlapShare(item.line, k.line, metres) >= 0.6);
-    if (host) host.wait = Math.max(host.wait, item.wait);
-    else kept.push({ ...item });
+    if (host) {
+      host.wait = Math.max(host.wait, item.wait);
+      if (host.routeIds && item.routeIds) host.routeIds = [...new Set([...host.routeIds, ...item.routeIds])];
+    } else kept.push({ ...item });
   }
   return kept;
 }
@@ -93,14 +86,10 @@ export function corridorDetail(slug: string, properties: Record<string, unknown>
   const waits = properties.corridorWaits as CorridorWaits | undefined;
   if (!waits || typeof waits !== 'object') return null;
   return {
-    agencySlug: slug,
     corridorId: String(properties.corridorId),
-    routeNames: (properties.corridorShortNames as string[] | undefined) ?? [],
-    fromStop: (properties.corridorFromStop as string | null | undefined) ?? null,
-    toStop: (properties.corridorToStop as string | null | undefined) ?? null,
+    routeIds: ((properties.routeIds as string[] | undefined) ?? []).map(String),
     day: String(properties.day),
     waits,
-    routeWaits: (properties.corridorRouteWaits as Record<string, CorridorWaits> | undefined) ?? {},
   };
 }
 
@@ -117,21 +106,22 @@ export function corridorFeaturesFor(
 ): GeoJSON.Feature[] {
   const out: GeoJSON.Feature[] = [];
   for (const [slug, features] of bySlug) {
-    const items: Array<{ line: LonLat[]; wait: number; corridorId: string }> = [];
+    const items: Array<{ line: LonLat[]; wait: number; corridorId: string; routeIds: string[] }> = [];
     for (const f of features) {
       const detail = corridorDetail(slug, (f.properties ?? {}) as Record<string, unknown>);
       if (!detail || detail.day !== day || f.geometry.type !== 'LineString') continue;
       const wait = corridorWait(detail.waits, period);
       if (wait == null) continue;
-      items.push({ line: f.geometry.coordinates as LonLat[], wait, corridorId: detail.corridorId });
+      items.push({ line: f.geometry.coordinates as LonLat[], wait, corridorId: detail.corridorId, routeIds: detail.routeIds });
     }
     // Fold the directions first, then filter: a street passes only if its worse direction does.
-    for (const { line, wait, corridorId } of oneLinePerStreet(items)) {
+    for (const { line, wait, corridorId, routeIds } of oneLinePerStreet(items)) {
       if (wait > maxHeadway) continue;
       out.push({
         type: 'Feature',
         geometry: { type: 'LineString', coordinates: line },
-        properties: { agencySlug: slug, corridorId, wait, color: headwayToTierColor(wait, colorMode) },
+        // Route ids joined: a click opens these routes (map feature properties hold no arrays).
+        properties: { agencySlug: slug, corridorId, routeIds: routeIds.join('|'), wait, color: headwayToTierColor(wait, colorMode) },
       });
     }
   }
@@ -176,12 +166,11 @@ function setVisible(map: maplibregl.Map, visible: boolean) {
   }
 }
 
-/** Corridor details by agency and id, for the card a click opens. */
 export function useCorridorsLayer(
   mapRef: React.RefObject<maplibregl.Map | null>,
   mapLoaded: boolean,
   options: { enabled: boolean; agencies: Agency[]; day: DayType; period: TimePeriod; colorMode: ColorVisionMode; maxHeadway: number },
-): { details: ReadonlyMap<string, GeoJSON.Feature[]> } {
+): void {
   const { enabled, agencies, day, period, colorMode, maxHeadway } = options;
   const [bySlug, setBySlug] = useState<ReadonlyMap<string, GeoJSON.Feature[]>>(new Map());
   const requested = useRef(new Set<string>());
@@ -219,21 +208,4 @@ export function useCorridorsLayer(
     });
     setVisible(map, true);
   }, [mapRef, mapLoaded, enabled, bySlug, day, period, colorMode, maxHeadway]);
-
-  return { details: bySlug };
 }
-
-/** The full detail of a clicked corridor, read back from the loaded file. */
-export function findCorridor(
-  details: ReadonlyMap<string, GeoJSON.Feature[]>,
-  slug: string,
-  corridorId: string,
-  day: DayType,
-): CorridorDetail | null {
-  for (const f of details.get(slug) ?? []) {
-    const d = corridorDetail(slug, (f.properties ?? {}) as Record<string, unknown>);
-    if (d && d.corridorId === corridorId && d.day === day) return d;
-  }
-  return null;
-}
-

@@ -5,7 +5,7 @@ import { TOP_BAR_ICON_BTN, DROPDOWN_PANEL, SEARCH_FIELD, SEARCH_PILL, SEARCH_ICO
 import Pill from '../ui/Pill';
 import ActiveDot from '../ui/ActiveDot';
 import Toggle from '../ui/Toggle';
-import { CORRIDOR_MODE_TEXT } from './CorridorCard';
+import { CORRIDOR_MODE_TEXT } from './corridorModeText';
 import { AVAILABLE_FILTER_MODES } from '../../utils/shareUrlState';
 import type { DayType } from '../../../shared/dayTypes';
 import type { TimePeriod } from '../../hooks/useIntervalStats';

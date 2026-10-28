@@ -2,7 +2,7 @@ import type { MapGeoJSONFeature, Map as MaplibreMap, PointLike } from 'maplibre-
 
 /**
  * What a click on the map picks, in order (CIV-1011 #13): a stop, then an on-demand zone or its stop
- * point, then a corridor (beta prototype, only while shown), then a route line. The first kind with a feature under the pointer wins, so a zone never takes
+ * point, then a route line, then a shared stretch (corridor mode, beta only). The first kind with a feature under the pointer wins, so a zone never takes
  * a click meant for a stop (#1071) and a route crossing a zone never takes a click inside the zone (#1073).
  * The click handler and the pointer cursor both read this list, so the cursor shows exactly where a
  * click does something. (Live's vehicles are picked on their own deck.gl layer before any of these.)
@@ -10,9 +10,6 @@ import type { MapGeoJSONFeature, Map as MaplibreMap, PointLike } from 'maplibre-
 export const MAP_HIT_PRIORITY = [
   { kind: 'stop', layers: ['stops-layer'], tolerancePx: 0 },
   { kind: 'serviceArea', layers: ['on-demand-service-area-fill', 'on-demand-service-area-line', 'on-demand-stop-points'], tolerancePx: 0 },
-  // Corridors prototype (CIV-1092, beta only): drawn over the route lines while switched on, with
-  // its own wide hit line, so a click on it opens the corridor rather than the route underneath.
-  { kind: 'corridor', layers: ['corridors-hit-layer'], tolerancePx: 0 },
   {
     kind: 'route',
     layers: [
@@ -22,6 +19,9 @@ export const MAP_HIT_PRIORITY = [
     // Route lines are thin, so they answer within 12 px of the pointer.
     tolerancePx: 12,
   },
+  // Corridor mode (CIV-1092, beta only): a shared stretch drawn where its routes are filtered out
+  // still opens those routes, as a route line would.
+  { kind: 'corridor', layers: ['corridors-hit-layer'], tolerancePx: 12 },
 ] as const;
 
 export type MapHitKind = typeof MAP_HIT_PRIORITY[number]['kind'];

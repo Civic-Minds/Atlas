@@ -17,12 +17,13 @@ function fakeMap(hits: Record<string, string[]>, missing: string[] = []) {
 const P = { x: 100, y: 100 };
 
 describe('map click priority (CIV-1011 #13)', () => {
-  it('orders stop, on-demand zone, corridor (beta prototype, CIV-1092), route', () => {
-    expect(MAP_HIT_PRIORITY.map(p => p.kind)).toEqual(['stop', 'serviceArea', 'corridor', 'route']);
+  it('orders stop, on-demand zone, route, shared stretch (corridor mode, CIV-1092)', () => {
+    expect(MAP_HIT_PRIORITY.map(p => p.kind)).toEqual(['stop', 'serviceArea', 'route', 'corridor']);
   });
 
-  it('a corridor drawn over a route opens the corridor; a stop on it still opens the stop', () => {
-    expect(topMapHit(fakeMap({ 'corridors-hit-layer': ['c1'], 'routes-hit-layer': ['r1'] }), P)?.kind).toBe('corridor');
+  it('a shared stretch over a route opens the route; alone (its routes filtered out) it answers itself', () => {
+    expect(topMapHit(fakeMap({ 'corridors-hit-layer': ['c1'], 'routes-hit-layer': ['r1'] }), P)?.kind).toBe('route');
+    expect(topMapHit(fakeMap({ 'corridors-hit-layer': ['c1'] }), P)?.kind).toBe('corridor');
     expect(topMapHit(fakeMap({ 'stops-layer': ['s1'], 'corridors-hit-layer': ['c1'] }), P)?.kind).toBe('stop');
   });
 
@@ -54,10 +55,10 @@ describe('map click priority (CIV-1011 #13)', () => {
     expect(hit?.features.map(f => f.id).sort()).toEqual(['r1', 'r2', 'r3']);
   });
 
-  it('routes answer within 12 px; stops, zones and corridors only at the point', () => {
+  it('routes answer within 12 px; stops and zones only at the point', () => {
     const map = fakeMap({ 'routes-hit-layer': ['r1'] });
     topMapHit(map, P);
-    expect(map.queries.map(q => q.where)).toEqual([[100, 100], [100, 100], [100, 100], [[88, 88], [112, 112]]]);
+    expect(map.queries.map(q => q.where)).toEqual([[100, 100], [100, 100], [[88, 88], [112, 112]]]);
   });
 
   it('skips layers that are not on the map, and is null over empty map', () => {

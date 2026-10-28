@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { CORRIDOR_MODE_TEXT } from '../CorridorCard';
+import { CORRIDOR_MODE_TEXT } from '../corridorModeText';
 
 describe('corridor mode switch wording (CIV-1092, Ryan 2026-10-28)', () => {
   it('reads "Combine shared stretches", and screen readers hear the same label', () => {

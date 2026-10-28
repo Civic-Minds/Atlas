@@ -37,6 +37,17 @@ describe('oneLinePerStreet', () => {
     });
     const bySlug = new Map([['ttc', [feature(east, 14, 'e'), feature(west, 17, 'w')]]]);
     expect(corridorFeaturesFor(bySlug, 'Weekday', 'midday', 'default', 15)).toHaveLength(0);
-    expect(corridorFeaturesFor(bySlug, 'Weekday', 'midday', 'default', 20)).toHaveLength(1);
+    const [street] = corridorFeaturesFor(bySlug, 'Weekday', 'midday', 'default', 20);
+    expect(street.properties?.wait).toBe(17);
+  });
+
+  it('a drawn stretch carries the routes a click on it opens, from both directions', () => {
+    const feature = (coordinates: [number, number][], routeIds: string[], id: string) => ({
+      type: 'Feature' as const,
+      geometry: { type: 'LineString' as const, coordinates },
+      properties: { corridorId: id, day: 'Weekday', routeIds, corridorWaits: waits() },
+    });
+    const [street] = corridorFeaturesFor(new Map([['ttc', [feature(east, ['91', '93'], 'e'), feature(west, ['93', '91', '62'], 'w')]]]), 'Weekday', 'midday', 'default');
+    expect(String(street.properties?.routeIds).split('|').sort()).toEqual(['62', '91', '93']);
   });
 });
