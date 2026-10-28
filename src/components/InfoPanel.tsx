@@ -19,7 +19,7 @@ import type { Agency } from '../App';
 import { isAgencyFeedExpired } from '../../shared/feedAvailability';
 import { trackEvent } from '../lib/analytics';
 import { OutboundLink } from './OutboundLink';
-import { BETA_ROLLOUT_EXPLANATION, betaRolloutLead, CORRECTED_DATA_EXPLANATION, CORRECTED_DATA_REPORT, EDGE_GAP_ALLOWANCE_EXPLANATION, EDGE_GAP_ALLOWANCE_LEAD, E1_AGENCY_WEBSITE, E1_WEEKLY_CHECK, EXPIRED_FEED_EXPLANATION, expiredFeedCheckHistory, expiredFeedNotice, EXPLAINERS, type HelpTopic, MANUAL_FEED_CONTEXT, NEW_SCHEDULE_DATA_EXPLANATION, NEW_SCHEDULE_DATA_WEBSITE, newScheduleDataLead, NO_AGENCIES_MATCH, NO_ROUTE_SHAPE_EXPLANATION, NO_ROUTE_SHAPE_NOTICE, ROUTE_DATA_QUALITY_EXPLANATION, ROUTE_DATA_QUALITY_LEAD, ROUTE_DATA_QUALITY_REPORT, WEEKDAY_VARIATION_EXPLANATION, WEEKDAY_VARIATION_LEAD, WEEKDAY_VARIATION_WEBSITE } from '../content/noticeCopy';
+import { betaRolloutLead, EDGE_GAP_ALLOWANCE_LEAD, EXPIRED_FEED_EXPLANATION, expiredFeedCheckHistory, expiredFeedNotice, EXPLAINER_LAYOUT, EXPLAINER_PIECES, EXPLAINERS, type ExplainerLayoutKey, type ExplainerLink, type HelpTopic, newScheduleDataLead, NO_AGENCIES_MATCH, NO_ROUTE_SHAPE_NOTICE, pieceText, ROUTE_DATA_QUALITY_LEAD, WEEKDAY_VARIATION_LEAD } from '../content/noticeCopy';
 import RegionFilterPills from './RegionFilterPills';
 import ListRow from './ui/ListRow';
 import { AgencyList, AgencyListRow, AgencyRegionSection } from './ui/AgencyList';
@@ -88,6 +88,41 @@ interface Props {
 function tabToView(tab: Tab): View {
   if (tab === 'about') return 'home';
   return 'agencies';
+}
+
+/** One explainer: its own paragraph 1, then the pieces its layout names (EXPLAINER_LAYOUT), then their links. */
+function ExplainerBody({ layout, lead, p2After = '', helpContext }: { layout: ExplainerLayoutKey; lead: string; p2After?: string; helpContext?: HelpContext | null }) {
+  const { p2, p3 } = EXPLAINER_LAYOUT[layout];
+  const last: { text: string; links?: readonly ExplainerLink[]; needsWebsite?: boolean } | null = p3 ? EXPLAINER_PIECES[p3] : null;
+  const showLast = !!last && (!last.needsWebsite || !!helpContext?.websiteUrl);
+  const issueUrls = [...(helpContext?.issueUrls ?? []), ...(helpContext?.issueUrls?.length ? [] : [helpContext?.issueUrl])]
+    .filter((url): url is string => !!url);
+  const link = (kind: ExplainerLink) => {
+    if (kind === 'agency-website') return helpContext?.websiteUrl
+      ? <LinkCard key={kind} as={OutboundLink} href={helpContext.websiteUrl} kind="agency_website" icon="external">Check current schedules</LinkCard>
+      : null;
+    if (kind === 'technical-details') return issueUrls.map((url, index) => {
+      const issueNumber = url.match(/\/issues\/(\d+)/)?.[1];
+      return (
+        <LinkCard key={url} href={url} target="_blank" rel="noreferrer" icon="external">
+          {issueNumber ? `Technical details (#${issueNumber})` : `Technical details ${index + 1}`}
+        </LinkCard>
+      );
+    });
+    const data = kind === 'report-data';
+    return (
+      <LinkCard key={kind} href={`mailto:hey@ryanisnota.pro?subject=Atlas%20${data ? 'data' : 'schedule'}%20feedback`}
+        onClick={() => trackEvent('feedback_opened', { source: data ? 'info_panel_data' : 'info_panel_schedule' })} icon="mail">Report a problem</LinkCard>
+    );
+  };
+  return (
+    <div className="h-full overflow-y-auto px-5 py-4 space-y-4">
+      {lead && <p className="text-xs text-[var(--text-primary)] leading-relaxed">{lead}</p>}
+      <p className="text-xs text-[var(--text-dim)] leading-relaxed">{[...p2.map(pieceText), p2After].filter(Boolean).join(' ')}</p>
+      {showLast && <p className="text-xs text-[var(--text-dim)] leading-relaxed">{last.text}</p>}
+      {showLast && last.links?.map(link)}
+    </div>
+  );
 }
 
 export default function InfoPanel({ open, onClose, agencies, defaultTab, featureFilter = 'all', helpContext, feedRefreshMeta, onAgencySelect, onLiveRouteClick, layers }: Props) {
@@ -512,6 +547,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
             </div>
           )}
 
+          {/* Explainers (CIV-1061): paragraph 1 is each one's own; paragraphs 2 and 3 are shared pieces. */}
           {view === 'outdated-schedule' && (() => {
             const checkHistory = expiredFeedCheckHistory({
               count: helpContext?.expiredFeedCheckCount,
@@ -520,136 +556,29 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
               lastRefreshed: helpContext?.lastRefreshedAt,
             });
             return (
-            <div className="h-full overflow-y-auto px-5 py-4 space-y-4">
-              {/* E1, N2 and N3 versions (Ryan, CIV-1051): the issue / what we're doing / what you can do. */}
-              <p className="text-xs text-[var(--text-primary)] leading-relaxed">
-                {helpContext?.agencyName && `${expiredFeedNotice(helpContext.agencyName, helpContext.expDateStr, helpContext.manualFeedSource)} `}
-                {EXPIRED_FEED_EXPLANATION}
-              </p>
-              <p className="text-xs text-[var(--text-dim)] leading-relaxed">
-                {helpContext?.manualFeedSource ? MANUAL_FEED_CONTEXT : E1_WEEKLY_CHECK}
-                {helpContext?.agencyName && checkHistory ? ` ${checkHistory}` : ''}
-              </p>
-              <p className="text-xs text-[var(--text-dim)] leading-relaxed">{E1_AGENCY_WEBSITE}</p>
-              {helpContext?.websiteUrl && (
-                <LinkCard as={OutboundLink}
-                  href={helpContext.websiteUrl}
-                  kind="agency_website" icon="external">Check current schedules</LinkCard>
-              )}
-              <LinkCard href="mailto:hey@ryanisnota.pro?subject=Atlas%20schedule%20feedback"
-                onClick={() => trackEvent('feedback_opened', { source: 'info_panel_schedule' })} icon="mail">Report a problem</LinkCard>
-            </div>
+              <ExplainerBody
+                layout={helpContext?.manualFeedSource ? 'outdated-schedule-manual' : 'outdated-schedule'}
+                lead={`${helpContext?.agencyName ? `${expiredFeedNotice(helpContext.agencyName, helpContext.expDateStr, helpContext.manualFeedSource)} ` : ''}${EXPIRED_FEED_EXPLANATION}`}
+                p2After={helpContext?.agencyName ? checkHistory : ''}
+                helpContext={helpContext}
+              />
             );
           })()}
-
-          {view === 'edge-gap-allowance' && (
-            <div className="h-full overflow-y-auto px-5 py-4 space-y-4">
-              <p className="text-xs text-[var(--text-primary)] leading-relaxed">
-                {EDGE_GAP_ALLOWANCE_LEAD}
-              </p>
-              <p className="text-xs text-[var(--text-dim)] leading-relaxed">
-                {EDGE_GAP_ALLOWANCE_EXPLANATION}
-              </p>
-            </div>
-          )}
-
-          {view === 'weekday-variation' && (
-            <div className="h-full overflow-y-auto px-5 py-4 space-y-4">
-              <p className="text-xs text-[var(--text-primary)] leading-relaxed">
-                {WEEKDAY_VARIATION_LEAD}
-              </p>
-              <p className="text-xs text-[var(--text-dim)] leading-relaxed">
-                {WEEKDAY_VARIATION_EXPLANATION}
-              </p>
-              {helpContext?.websiteUrl && (
-                <>
-                  <p className="text-xs text-[var(--text-dim)] leading-relaxed">{WEEKDAY_VARIATION_WEBSITE}</p>
-                  <LinkCard as={OutboundLink} href={helpContext.websiteUrl} kind="agency_website" icon="external">Check current schedules</LinkCard>
-                </>
-              )}
-            </div>
-          )}
-
+          {view === 'edge-gap-allowance' && <ExplainerBody layout="edge-gap-allowance" lead={EDGE_GAP_ALLOWANCE_LEAD} helpContext={helpContext} />}
+          {view === 'weekday-variation' && <ExplainerBody layout="weekday-variation" lead={WEEKDAY_VARIATION_LEAD} helpContext={helpContext} />}
           {view === 'new-schedule-data' && (
-            <div className="h-full overflow-y-auto px-5 py-4 space-y-4">
-              {helpContext?.agencyName && (
-                <p className="text-xs text-[var(--text-primary)] leading-relaxed">
-                  {newScheduleDataLead(helpContext.agencyName, helpContext.lastRefreshedAt ? formatStoredDate(helpContext.lastRefreshedAt) : null)}
-                </p>
-              )}
-              <p className="text-xs text-[var(--text-dim)] leading-relaxed">
-                {NEW_SCHEDULE_DATA_EXPLANATION}
-              </p>
-              {helpContext?.websiteUrl && (
-                <>
-                  <p className="text-xs text-[var(--text-dim)] leading-relaxed">{NEW_SCHEDULE_DATA_WEBSITE}</p>
-                  <LinkCard as={OutboundLink} href={helpContext.websiteUrl} kind="agency_website" icon="external">Check current schedules</LinkCard>
-                </>
-              )}
-            </div>
+            <ExplainerBody layout="new-schedule-data" helpContext={helpContext}
+              lead={helpContext?.agencyName ? newScheduleDataLead(helpContext.agencyName, helpContext.lastRefreshedAt ? formatStoredDate(helpContext.lastRefreshedAt) : null) : ''} />
           )}
-
           {view === 'corrected-data' && (
-            <div className="h-full overflow-y-auto px-5 py-4 space-y-4">
-              {helpContext?.agencyName && helpContext.overrideNote && (
-                <p className="text-xs text-[var(--text-primary)] leading-relaxed">
-                  {helpContext.overrideNote}
-                </p>
-              )}
-              <p className="text-xs text-[var(--text-dim)] leading-relaxed">
-                {CORRECTED_DATA_EXPLANATION}
-              </p>
-              <p className="text-xs text-[var(--text-dim)] leading-relaxed">{CORRECTED_DATA_REPORT}</p>
-              {(helpContext?.issueUrls?.length || helpContext?.issueUrl) ? (
-                <>
-                  {[...(helpContext.issueUrls ?? []), ...(helpContext.issueUrls?.length ? [] : [helpContext.issueUrl])]
-                    .filter((url): url is string => !!url)
-                    .map((url, index) => {
-                      const issueNumber = url.match(/\/issues\/(\d+)/)?.[1];
-                      return (
-                        <LinkCard key={url}
-                          href={url}
-                          target="_blank"
-                          rel="noreferrer" icon="external">
-                            {issueNumber ? `Technical details (#${issueNumber})` : `Technical details ${index + 1}`}
-                          </LinkCard>
-                      );
-                    })}
-                </>
-              ) : null}
-              <LinkCard href="mailto:hey@ryanisnota.pro?subject=Atlas%20data%20feedback"
-                onClick={() => trackEvent('feedback_opened', { source: 'info_panel_data' })} icon="mail">Report a problem</LinkCard>
-            </div>
+            <ExplainerBody layout="corrected-data" helpContext={helpContext}
+              lead={helpContext?.agencyName && helpContext.overrideNote ? helpContext.overrideNote : ''} />
           )}
-
           {view === 'beta-rollout' && (
-            <div className="h-full overflow-y-auto px-5 py-4 space-y-4">
-              {helpContext?.agencyName && (
-                <p className="text-xs text-[var(--text-primary)] leading-relaxed">
-                  {betaRolloutLead(helpContext.agencyName)}
-                </p>
-              )}
-              <p className="text-xs text-[var(--text-dim)] leading-relaxed">
-                {BETA_ROLLOUT_EXPLANATION}
-              </p>
-            </div>
+            <ExplainerBody layout="beta-rollout" helpContext={helpContext} lead={helpContext?.agencyName ? betaRolloutLead(helpContext.agencyName) : ''} />
           )}
-
-          {view === 'route-data-quality' && (
-            <div className="h-full overflow-y-auto px-5 py-4 space-y-4">
-              <p className="text-xs text-[var(--text-primary)] leading-relaxed">{ROUTE_DATA_QUALITY_LEAD}</p>
-              <p className="text-xs text-[var(--text-dim)] leading-relaxed">{ROUTE_DATA_QUALITY_EXPLANATION}</p>
-              <p className="text-xs text-[var(--text-dim)] leading-relaxed">{ROUTE_DATA_QUALITY_REPORT}</p>
-            </div>
-          )}
-
-          {view === 'no-route-shape' && (
-            <div className="h-full overflow-y-auto px-5 py-4 space-y-4">
-              <p className="text-xs text-[var(--text-primary)] leading-relaxed">{NO_ROUTE_SHAPE_NOTICE}</p>
-              <p className="text-xs text-[var(--text-dim)] leading-relaxed">{NO_ROUTE_SHAPE_EXPLANATION}</p>
-              <p className="text-xs text-[var(--text-dim)] leading-relaxed">{ROUTE_DATA_QUALITY_REPORT}</p>
-            </div>
-          )}
+          {view === 'route-data-quality' && <ExplainerBody layout="route-data-quality" lead={ROUTE_DATA_QUALITY_LEAD} helpContext={helpContext} />}
+          {view === 'no-route-shape' && <ExplainerBody layout="no-route-shape" lead={NO_ROUTE_SHAPE_NOTICE} helpContext={helpContext} />}
 
           {view === 'agency-detail' && (
             <div className="h-full overflow-y-auto px-5 py-4 space-y-4">
