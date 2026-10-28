@@ -9993,7 +9993,7 @@
         35.28,
         -120.66
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-44/latest.zip",
+      "feedUrl": "https://slocity.connexionz.net/rtt/public/resource/gtfs.zip",
       "lastFeedExpiry": "20270101",
       "lastFeedVersion": "2026-03-27T18:13:21Z",
       "region": "California",
@@ -13985,7 +13985,7 @@
         40.44,
         -79.99
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-409/latest.zip",
+      "feedUrl": "https://www.portauthority.org/developerresources/GTFS.zip",
       "lastFeedExpiry": "20261024",
       "lastFeedVersion": "Merged_Clever_2606_2",
       "region": "Pennsylvania",
@@ -14021,22 +14021,40 @@
       "feedRefreshRetryCount": 0,
       "modeOverrides": [
         {
+          "routeType": 1,
+          "routeShortName": "BLUE",
+          "mode": 100,
+          "reason": "The T (Blue, Red, Silver) is light rail, published as route_type 1 (subway/metro) in the official feed"
+        },
+        {
+          "routeType": 1,
+          "routeShortName": "RED",
+          "mode": 100,
+          "reason": "The T (Blue, Red, Silver) is light rail, published as route_type 1 (subway/metro) in the official feed"
+        },
+        {
+          "routeType": 1,
+          "routeShortName": "SLVR",
+          "mode": 100,
+          "reason": "The T (Blue, Red, Silver) is light rail, published as route_type 1 (subway/metro) in the official feed"
+        },
+        {
           "routeType": 2,
           "routeShortName": "BLUE",
           "mode": 100,
-          "reason": "The T (Blue, Red, Silver) is light rail, published as route_type 2 (commuter rail)"
+          "reason": "The T (Blue, Red, Silver) is light rail, published as route_type 2 (commuter rail) in the MobilityDatabase copy; kept until the live data comes from the official feed"
         },
         {
           "routeType": 2,
           "routeShortName": "RED",
           "mode": 100,
-          "reason": "The T (Blue, Red, Silver) is light rail, published as route_type 2 (commuter rail)"
+          "reason": "The T (Blue, Red, Silver) is light rail, published as route_type 2 (commuter rail) in the MobilityDatabase copy; kept until the live data comes from the official feed"
         },
         {
           "routeType": 2,
           "routeShortName": "SLVR",
           "mode": 100,
-          "reason": "The T (Blue, Red, Silver) is light rail, published as route_type 2 (commuter rail)"
+          "reason": "The T (Blue, Red, Silver) is light rail, published as route_type 2 (commuter rail) in the MobilityDatabase copy; kept until the live data comes from the official feed"
         }
       ],
       "lastPeekedExpiry": "20261024"
