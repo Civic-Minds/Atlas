@@ -337,7 +337,6 @@ function RouteHistoryCard({
           <div className={`mt-3 rounded-xl px-3 py-2.5 ${summary.worse ? 'bg-[var(--status-negative-bg)]' : 'bg-[var(--status-positive-bg)]'}`}>
             <p className={`text-xs font-bold leading-tight ${summary.worse ? 'text-[var(--status-negative-text)]' : 'text-[var(--status-positive-text)]'}`}>{summary.text}</p>
             <p className="text-xs text-[var(--text-muted)] mt-0.5">{summary.subtext}</p>
-            <p className="text-xs text-[var(--text-dim)] mt-1">Latest archived snapshot: {last.label}</p>
           </div>
         )}
 
@@ -358,7 +357,7 @@ function RouteHistoryCard({
 }
 
 /** The agency card's top (AgencyCard sets the same 80px over the sidebar default). */
-const AGENCY_PANEL_TOP = 80;
+const AGENCY_PANEL_TOP = 56;
 
 /** History's suggestions are recent searches only: its routes have no map keys to suggest. */
 const NO_RECENT_ROUTES: RecentRoute[] = [];
@@ -475,14 +474,16 @@ function HistoryAgencyPanel({
       <div className={CARD_HEADER_BLOCK}>
         <div className="flex items-start gap-2 min-w-0">
         <div className="min-w-0 flex-1">
-        <CardBackLink onClick={onBack}>Historical service</CardBackLink>
-        <h2 className={`${CARD_TITLE} truncate`}>{nameParts.primary}</h2>
-        {/* The agency card's summary: the agency's place (not the state), then the counts. */}
+        <CardBackLink onClick={onBack}>← All agencies</CardBackLink>
+        <h2 className={`${CARD_TITLE} truncate`}>
+          {nameParts.primary}
+          {nameParts.secondary && <span className="font-medium text-[var(--text-muted)]"> {nameParts.secondary}</span>}
+        </h2>
         <p className={CARD_SUMMARY}>
-          {[nameParts.secondary, countOf(agencyHistory.routes.length, 'route'), minYear === maxYear ? String(minYear) : `${minYear}–${maxYear}`].filter(Boolean).join(' · ')}
+          {[countOf(agencyHistory.routes.length, 'route'), minYear === maxYear ? String(minYear) : `${minYear}–${maxYear}`].join(' · ')}
         </p>
         {!routeQuery && !activeFilter && (
-          <p className="text-xs text-[var(--text-dim)] mt-1">Routes ordered by biggest frequency change</p>
+          <p className="text-xs text-[var(--text-dim)] mt-1">Biggest changes first</p>
         )}
         </div>
         <CardReportButton

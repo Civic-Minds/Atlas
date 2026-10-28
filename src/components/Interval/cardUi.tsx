@@ -24,7 +24,7 @@ export const CARD_HEADER_BLOCK = 'shrink-0 px-4 pt-4 pb-3 border-b border-[var(-
 /** The route card's scrolling body on desktop (the map's route card and History's route view). */
 export const SIDEBAR_CARD_BODY = `relative flex-1 min-h-0 ${FLOATING_CARD} px-4 pt-4 pb-2 overflow-y-auto overflow-x-hidden custom-scrollbar`;
 /** The line under a card title ("Atlanta · 102 routes · 2013–2026"). */
-export const CARD_SUMMARY = 'text-xs font-bold text-[var(--text-dim)] mt-1 leading-snug';
+export const CARD_SUMMARY = 'text-xs font-medium text-[var(--text-dim)] mt-1 leading-snug';
 
 const REPORT_REASONS = [
   'Route or agency is missing',
@@ -441,7 +441,7 @@ export function CardBackLink({ onClick, children }: { onClick: () => void; child
     <button
       type="button"
       onClick={onClick}
-      className="block max-w-full truncate text-xs font-bold text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors leading-snug mb-0.5"
+      className="block max-w-full truncate text-xs font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors leading-snug mb-0.5"
     >
       {children}
     </button>
@@ -704,7 +704,7 @@ export function AgencyDataSourceLink({ agency }: { agency: { slug: string; websi
   if (!FEATURES.dataSourceLink || !agency.websiteUrl) return null;
   return (
     <ArrowLink as={OutboundLink} size="xs" tone="inline" href={agency.websiteUrl} kind="agency_website" agencySlug={agency.slug} aria-label="Data source (opens in a new tab)" title="Opens in a new tab">
-      Data source
+      Source
     </ArrowLink>
   );
 }

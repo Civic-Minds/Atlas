@@ -421,7 +421,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
         enter
         className="max-h-[calc(100vh-104px)]"
         style={{
-          top: 80, // main's offset (the shared sidebar anchor sits 12px higher)
+          top: 56, // main's offset (the shared sidebar anchor sits 12px higher)
           '--sidebar-left': `${sidebarLeft ?? SIDEBAR_LEFT_FALLBACK}px`,
           ...(searchBarWidth ? { width: `${searchBarWidth}px`, maxWidth: 'none' } : {}),
         } as React.CSSProperties}
@@ -499,7 +499,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
       enter
       className="max-h-[calc(100vh-104px)]"
       style={{
-        top: 80, // main's offset (the shared sidebar anchor sits 12px higher)
+        top: 56, // main's offset (the shared sidebar anchor sits 12px higher)
           '--sidebar-left': `${sidebarLeft ?? SIDEBAR_LEFT_FALLBACK}px`,
         ...(searchBarWidth ? { width: `${searchBarWidth}px`, maxWidth: 'none' } : {}),
       } as React.CSSProperties}
@@ -509,15 +509,18 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
             floats in the corner so the chip can use the full header width. Otherwise the header is exactly as it was. */}
         <div className={grouped ? 'relative min-w-0' : 'flex items-start gap-2 min-w-0'}>
           <div className={grouped ? 'min-w-0' : 'min-w-0 flex-1'}>
-            <p className={`${CARD_TITLE} mb-0${grouped ? ' pr-7' : ''}`}>{agencyNamePrimary}</p>
+            <p className={`${CARD_TITLE} mb-0${grouped ? ' pr-7' : ''}`}>
+              {agencyNamePrimary}
+              {agencyNameSecondary && <span className="font-medium text-[var(--text-muted)]"> {agencyNameSecondary}</span>}
+            </p>
           {(() => {
             const hasAboutPage = FEATURES.agencyPages && (agencyPageSlugs as string[]).includes(agency.slug);
             const area = hasAboutPage ? areaLinkFor(agency.slug, FEATURES.agencyPages) : null;
             const summary = (
               <p className={`${CARD_SUMMARY}${grouped ? ' pr-7' : ''}`}>
                 {agency.onDemandOnly
-                  ? [agencyNameSecondary, 'On-demand service'].filter(Boolean).join(' · ')
-                  : [agencyNameSecondary, buildHeaderSummary(visibleRoutes, maxHeadway)].filter(Boolean).join(' · ')}
+                  ? 'On-demand service'
+                  : buildHeaderSummary(visibleRoutes, maxHeadway)}
               </p>
             );
             if (!grouped) {
@@ -535,14 +538,12 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
             }
             return (
               <>
-                <div className="flex flex-wrap items-baseline gap-x-2">
-                  {summary}
-                  {area && <AgencyAreaChip href={area.href} label={area.label} />}
-                </div>
-                {(hasAboutPage || agency.websiteUrl) && (
+                {summary}
+                {(hasAboutPage || agency.websiteUrl || area) && (
                   <p className="mt-1 flex flex-wrap gap-x-3 text-xs">
-                    {hasAboutPage && <ArrowLink size="xs" tone="inline" href={agencyPagePath(agency.slug)}>About this agency</ArrowLink>}
+                    {hasAboutPage && <ArrowLink size="xs" tone="inline" href={agencyPagePath(agency.slug)}>About</ArrowLink>}
                     <AgencyDataSourceLink agency={agency} />
+                    {area && <ArrowLink size="xs" tone="inline" href={area.href}>{area.shortLabel}</ArrowLink>}
                   </p>
                 )}
               </>
