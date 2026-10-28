@@ -13,7 +13,6 @@ import { useMediaQuery } from './hooks/useMediaQuery';
 import { TILE } from './pageStyles';
 import ArrowLink from './components/ui/ArrowLink';
 import { SectionTitle } from './components/ui/PageTitle';
-import MethodSection from './components/Live/sections/MethodSection';
 import LateByHourSection from './components/Live/sections/LateByHourSection';
 import RunTimeSection from './components/Live/sections/RunTimeSection';
 import WorstStopsSection from './components/Live/sections/WorstStopsSection';
@@ -217,8 +216,6 @@ export default function LiveDashboardView({ v3, data, band, dir, uncertain, filt
       <ErrorBoundary label={bad('The route strip')}><AlongRoute v3={v3} dir={null} uncertain={uncertain} /></ErrorBoundary>
       <ErrorBoundary label={bad(LATE_BY_HOUR_TITLE)}><LateByHourSection chart="spark" title={LATE_BY_HOUR_TITLE} v3={v3} data={data} band={band} dir={null} allOnly oneDay={yesterday ? yesterdayHours(yesterday) : undefined} /></ErrorBoundary>
       <p className="mt-8"><ArrowLink href="?view=analysis" onClick={(e: React.MouseEvent) => { e.preventDefault(); toFull(''); }}>Full analysis</ArrowLink></p>
-      {/* The week's method, open: how the figures above are counted (not shown over a single day, whose days counted say nothing about it). */}
-      {!yesterday && <ErrorBoundary label={bad('How this is measured')}><MethodSection scope="week" v3={v3} toFull={toFull} /></ErrorBoundary>}
     </>
   );
   return (
@@ -233,7 +230,6 @@ export default function LiveDashboardView({ v3, data, band, dir, uncertain, filt
       <ErrorBoundary label={bad(LATE_BY_HOUR_TITLE)}><LateByHourSection chart="spark" title={LATE_BY_HOUR_TITLE} v3={v3} data={data} band={band} dir={dir} /></ErrorBoundary>
       <WorstStopsSection v3={v3} data={data} dir={dir} uncertain={uncertain} limit={5} columns="compact" title="Stops most often late" boundary={bad('The stop list')}
         footerLink={{ text: 'Every stop, in Full analysis', href: '?view=analysis#b2', onClick: () => toFull('b2') }} />
-      <MethodSection scope="week" v3={v3} toFull={toFull} />
     </>
   );
 }
