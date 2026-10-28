@@ -334,9 +334,11 @@ export const ROUTE_DATA_QUALITY_REPORT = 'If something looks off, report it with
 export const EDGE_GAP_ALLOWANCE_LEAD = 'The first or last trip of the day can come up to 10 minutes later than usual, and the route still counts at its frequency.';
 export const EDGE_GAP_ALLOWANCE_EXPLANATION = "Many routes start or end their day with one longer gap. Gaps in the middle of the day don't get this allowance.";
 // E8 weekday-variation
-export const WEEKDAY_VARIATION_LEAD = 'Weekday schedules differ for this route.';
+// Ryan's three paragraphs (CIV-1051).
+export const WEEKDAY_VARIATION_LEAD = "This route's weekday schedules vary by day. Some weekdays run more or less often than others.";
 export const WEEKDAY_VARIATION_EXPLANATION =
-  'Monday to Friday are checked separately. The frequency tier shown on the route card reflects the slowest actual weekday, while the displayed cadence uses a typical actual weekday. This keeps the summary from combining departures that ran on different days.';
+  "We check each weekday separately, which means one busier day can't make the route look more frequent than it usually is.";
+export const WEEKDAY_VARIATION_WEBSITE = "The agency's website has each day's schedule.";
 
 /**
  * Which explainer each notice's Learn more opens (N-code to panel). Every Learn-more notice is listed here; components

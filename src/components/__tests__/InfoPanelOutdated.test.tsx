@@ -89,3 +89,15 @@ describe('E7 frequency allowance, two paragraphs (CIV-1051)', () => {
     expect(t).toContain("Many routes start or end their day with one longer gap. Gaps in the middle of the day don't get this allowance.");
   });
 });
+
+describe('E8 weekday variation, three paragraphs (CIV-1051)', () => {
+  it("reads Ryan's text, with the agency's website last", () => {
+    const t = render(
+      <InfoPanel open onClose={() => {}} agencies={[]} helpContext={{ topic: 'weekday-variation', websiteUrl: 'https://www.ttc.ca' }} />,
+    ).container.textContent ?? '';
+    expect(t).toContain("This route's weekday schedules vary by day. Some weekdays run more or less often than others.");
+    expect(t).toContain("We check each weekday separately, which means one busier day can't make the route look more frequent than it usually is.");
+    expect(t).toContain("The agency's website has each day's schedule.");
+    expect(t).toContain('Check current schedules');
+  });
+});
