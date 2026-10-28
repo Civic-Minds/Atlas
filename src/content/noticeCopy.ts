@@ -159,6 +159,16 @@ export const storyMapFailedText = (agencyName: string) => `The ${agencyName} net
 // N118 settings-no-feed-matches
 export const NO_FEED_MATCHES = 'No feeds match your search or filter.';
 
+// ---- Map keys (CIV-957) ----
+// K1 frequency-key heading
+export const MAP_KEY_FREQUENCY = 'Frequency';
+// K2 frequency-key selected
+export const MAP_KEY_SELECTED = 'Selected / qualifying';
+// K3 frequency-key other
+export const MAP_KEY_OTHER = 'Other routes';
+// K4 night-key (also the exported image's key)
+export const MAP_KEY_NIGHT = 'Night service';
+
 // ---- Route card ----
 // N1 weekday-variation
 export const WEEKDAY_VARIATION_NOTICE = "This route's weekday schedules vary by day.";

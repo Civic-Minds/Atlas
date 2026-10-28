@@ -1,4 +1,5 @@
 import type { Agency } from '../App';
+import { MAP_KEY_NIGHT } from '../content/noticeCopy';
 import type { DayType } from '../../shared/dayTypes';
 import type { TimePeriod } from '../hooks/useIntervalStats';
 import { PERIOD_LABELS } from '../hooks/useIntervalStats';
@@ -154,7 +155,7 @@ export function keyCandidates(state: Pick<MapExportState, 'view' | 'colorMode' |
           { color: getTierColor('30', state.colorMode), label: headwayBandLabel(16, 30) },
         ];
     case 'night':
-      return [{ color: getNightServiceColor(state.colorMode), label: 'Night service' }];
+      return [{ color: getNightServiceColor(state.colorMode), label: MAP_KEY_NIGHT }];
     default:
       return [];
   }
