@@ -2776,7 +2776,9 @@ export async function processGtfsBuffer(
         const headline = (id: string) => publishedStopHeadways[id] == null ? null
           : waitIn(id, HEADLINE_WINDOWS.midday.start, HEADLINE_WINDOWS.midday.end) ?? waitIn(id, HEADLINE_WINDOWS.pmPeak.start, HEADLINE_WINDOWS.pmPeak.end);
         for (const [stopId, value] of stretchMedians(order, keys, headline)) {
-          if (debug) stretchDebug.push({ routeId: feature.properties.routeId, shortName: feature.properties.routeShortName, day, headsign: feature.properties.headsign, period: 'headline', stopId, key: keyOf.get(stopId), before: publishedStopHeadways[stopId], after: value, wait: riderWait(lists.get(stopId) ?? [], HEADLINE_WINDOWS.midday.start, HEADLINE_WINDOWS.midday.end, 2) });
+          // The check reads the window the stop's own value came from: midday, else the PM peak.
+          const headlineWindow = waitIn(stopId, HEADLINE_WINDOWS.midday.start, HEADLINE_WINDOWS.midday.end) != null ? HEADLINE_WINDOWS.midday : HEADLINE_WINDOWS.pmPeak;
+          if (debug) stretchDebug.push({ routeId: feature.properties.routeId, shortName: feature.properties.routeShortName, day, headsign: feature.properties.headsign, period: 'headline', stopId, key: keyOf.get(stopId), before: publishedStopHeadways[stopId], after: value, wait: riderWait(lists.get(stopId) ?? [], headlineWindow.start, headlineWindow.end, 2) });
           publishedStopHeadways[stopId] = value;
         }
       }
