@@ -27,7 +27,7 @@ import type { HistoryV2Sidecar } from '../shared/historyV2.js';
 import { historyRouteKey } from './historyRouteKey.js';
 import { holidayDropFor, repickedFor, type HolidayPeriodDrop, type RepickedPeriod } from './historyRefQuality.js';
 import { historyV2FromEnv } from './historyV2Flag.js';
-import { compileAgencyShapes, type ShapeRouteYear } from './historyShapes.js';
+import { compileAgencyShapes, formatShapeGap, shapeGaps, type ShapeRouteYear } from './historyShapes.js';
 import type { HistoryPeriodShapes } from '../shared/historyV2.js';
 import { parsePeriodKey, getPeriodKeySortValue, isRefreshRunPeriodKey } from './historyPeriods.js';
 import { writeHistoryAgencyList } from '../scripts/build-history-agency-list.js';
@@ -625,6 +625,12 @@ async function main() {
   }
 
   if (v2) {
+    // CIV-843: years about to be published whose routes lose their real line (no shape_id, or one not in
+    // shapes.txt). Only agencies with shape files are checked; one without any has no lines to lose.
+    for (const slug of Object.keys(shapeRouteYears).sort()) {
+      const periods = shapePeriods[slug];
+      if (periods?.size) buildReport.shapeGaps.push(...shapeGaps(slug, periods, shapeRouteYears[slug]));
+    }
     // Build report: every dropped snapshot (slug, route, label, reason) and the year rules' effects.
     const reportPath = resolve('tmp/history-build-report.json');
     mkdirSync(dirname(reportPath), { recursive: true });
@@ -639,6 +645,9 @@ async function main() {
     for (const d of buildReport.droppedHolidayPeriods) console.log(`  dropped holiday period ${d.slug}/${d.periodKey} (refDate ${d.refDate}, ${d.routesAffected} routes): ${d.reason}`);
     for (const d of buildReport.repickedPeriods) console.log(`  re-picked ${d.slug}/${d.periodKey}: refDate ${d.from} -> ${d.to} (year ${d.fromYear} -> ${d.toYear}, ${d.routes} routes): ${d.reason}`);
     for (const d of buildReport.drops.slice(0, 50)) console.log(`  dropped ${d.slug}/${d.route} "${d.label}": ${d.reason}`);
+    // Loud on purpose (CIV-843): a GitHub Actions annotation in CI, a warning line locally.
+    for (const g of buildReport.shapeGaps) console.warn(`${process.env.GITHUB_ACTIONS ? '::warning title=History shape gap::' : ''}${formatShapeGap(g)}`);
+    if (buildReport.shapeGaps.length) console.warn(`${buildReport.shapeGaps.length} History years would publish routes without their real line (see shapeGaps in ${reportPath}).`);
   }
 
   if (verifyOnly) {

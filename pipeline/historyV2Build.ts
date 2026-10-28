@@ -9,6 +9,7 @@ import type { HeadwayByPeriod } from '../shared/config.js';
 import { yearOfRefDate, type HistorySnapshotV2, type HistoryV2SidecarRoute } from '../shared/historyV2.js';
 import type { HolidayPeriodDrop, RepickedPeriod } from './historyRefQuality.js';
 import { getPeriodKeySortValue, labelFromRefDate, parsePeriodKey } from './historyPeriods.js';
+import type { ShapeGap } from './historyShapes.js';
 
 export interface ArchiveChange {
   periodKey: string;
@@ -54,10 +55,12 @@ export interface BuildReport {
   droppedHolidayPeriods: HolidayPeriodDrop[];
   /** Sidecar periods the v2 backfill read at a normal week of the same feed instead of a holiday or split week (kept, with the new date). */
   repickedPeriods: RepickedPeriod[];
+  /** Years whose routes lack real shape lines (CIV-843). */
+  shapeGaps: ShapeGap[];
 }
 
 export function newBuildReport(): BuildReport {
-  return { drops: [], yearDisagreements: [], superseded: 0, mixedMethodRoutes: [], visibility: [], droppedHolidayPeriods: [], repickedPeriods: [] };
+  return { drops: [], yearDisagreements: [], superseded: 0, mixedMethodRoutes: [], visibility: [], droppedHolidayPeriods: [], repickedPeriods: [], shapeGaps: [] };
 }
 
 export interface VisibilitySpike { route: string; label: string; year: number; value: number; prev: number; next: number }

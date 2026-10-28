@@ -13,7 +13,7 @@
  * Nothing here runs unless ATLAS_HISTORY_V2=1 builds or the v2 backfill is run with --shapes.
  */
 import { createHash } from 'node:crypto';
-import type { HistoryPeriodShapes, HistoryShapeLine, HistoryShapesFile } from '../shared/historyV2.js';
+import type { HistoryPeriodShapes, HistoryShapeLine, HistoryShapesFile, ShapeTripStats } from '../shared/historyV2.js';
 import { simplifyLine } from './geometry.js';
 import { historyRouteKey } from './historyRouteKey.js';
 import { haversineDistance } from './utils.js';
@@ -186,9 +186,22 @@ export function periodShapesKey(slug: string, periodKey: string): string {
 }
 
 /** One archived period's prepared shapes (immutable object). Routes with no shape are simply absent. */
+/** How many of a feed's trips have a blank shape_id, or one with no line in shapes.txt (CIV-843). */
+export function shapeTripStats(feed: Pick<ShapeFeedInput, 'trips' | 'shapes'>): ShapeTripStats {
+  const known = new Set(feed.shapes.filter(s => s.points.length >= 2).map(s => s.id));
+  const stats: ShapeTripStats = { total: 0, emptyShapeId: 0, unknownShapeId: 0 };
+  for (const t of feed.trips) {
+    stats.total++;
+    const id = (t.shape_id ?? '').trim();
+    if (!id) stats.emptyShapeId++;
+    else if (!known.has(id)) stats.unknownShapeId++;
+  }
+  return stats;
+}
+
 export function buildPeriodShapes(
   slug: string, periodKey: string, refDate: string, extracted: Map<string, RouteShape>,
-  opts: { toleranceM?: number; decimals?: number } = {},
+  opts: { toleranceM?: number; decimals?: number; trips?: ShapeTripStats } = {},
 ): HistoryPeriodShapes {
   const routes: HistoryPeriodShapes['routes'] = {};
   for (const [key, s] of [...extracted.entries()].sort(([a], [b]) => a.localeCompare(b))) {
@@ -200,6 +213,7 @@ export function buildPeriodShapes(
     decimals: opts.decimals ?? HISTORY_SHAPE_DECIMALS,
     toleranceM: opts.toleranceM ?? HISTORY_SHAPE_TOLERANCE_M,
     routes,
+    ...(opts.trips ? { trips: opts.trips } : {}),
   };
 }
 
@@ -274,4 +288,60 @@ export function compileAgencyShapes(
   stats.missingPeriods = [...missing].sort();
   const file: HistoryShapesFile = { version: 1, slug, decimals, toleranceM, shapes, ...(approx.size ? { approx: [...approx].sort((a, b) => a - b) } : {}), years };
   return { file, stats };
+}
+
+/** One History year whose route lines are partly missing or drawn from the stop order (CIV-843). */
+export interface ShapeGap {
+  slug: string;
+  year: number;
+  periodKeys: string[];
+  routes: number;
+  /** Route-years with a real shapes.txt line. */
+  shaped: number;
+  /** Drawn as straight links between stops. */
+  approximate: number;
+  /** No line at all (no shape and too few located stops, or the period's shapes object is missing). */
+  none: number;
+  /** Summed over the year's periods that recorded trip counts; null when none did (written before CIV-843). */
+  trips: ShapeTripStats | null;
+}
+
+/**
+ * The years about to be published whose routes would lose their real line (CIV-843; MBTA 2010-2012, STM 2013-2014):
+ * any route-year drawn from the stop order or not drawn, or any trip without a usable shape_id. Same lookups as
+ * compileAgencyShapes, so it reports exactly what the published file will hold.
+ */
+export function shapeGaps(
+  slug: string,
+  periods: ReadonlyMap<string, HistoryPeriodShapes>,
+  routeYears: ReadonlyArray<ShapeRouteYear>,
+): ShapeGap[] {
+  const byYear = new Map<number, ShapeGap>();
+  for (const ry of routeYears) {
+    let gap = byYear.get(ry.year);
+    if (!gap) { gap = { slug, year: ry.year, periodKeys: [], routes: 0, shaped: 0, approximate: 0, none: 0, trips: null }; byYear.set(ry.year, gap); }
+    gap.routes++;
+    if (!gap.periodKeys.includes(ry.periodKey)) {
+      gap.periodKeys.push(ry.periodKey);
+      const t = periods.get(ry.periodKey)?.trips;
+      if (t) gap.trips = { total: (gap.trips?.total ?? 0) + t.total, emptyShapeId: (gap.trips?.emptyShapeId ?? 0) + t.emptyShapeId, unknownShapeId: (gap.trips?.unknownShapeId ?? 0) + t.unknownShapeId };
+    }
+    const period = periods.get(ry.periodKey);
+    let rec: HistoryPeriodShapes['routes'][string] | undefined;
+    for (const k of ry.lookupKeys ?? [ry.routeKey]) { rec = period?.routes[k]; if (rec) break; }
+    if (!rec) gap.none++;
+    else if (rec.a) gap.approximate++;
+    else gap.shaped++;
+  }
+  return [...byYear.values()]
+    .filter(g => g.approximate > 0 || g.none > 0 || (g.trips != null && g.trips.emptyShapeId + g.trips.unknownShapeId > 0))
+    .map(g => ({ ...g, periodKeys: [...g.periodKeys].sort() }))
+    .sort((a, b) => a.year - b.year);
+}
+
+/** One loud build-log line per gap year. */
+export function formatShapeGap(g: ShapeGap): string {
+  const parts = [`${g.routes - g.shaped} of ${g.routes} routes without a real line (${g.approximate} drawn from stops, ${g.none} not drawn)`];
+  if (g.trips) parts.push(`${g.trips.emptyShapeId + g.trips.unknownShapeId} of ${g.trips.total} trips without a usable shape_id (${g.trips.emptyShapeId} blank, ${g.trips.unknownShapeId} not in shapes.txt)`);
+  return `WARNING shape gap ${g.slug} ${g.year}: ${parts.join('; ')}`;
 }
