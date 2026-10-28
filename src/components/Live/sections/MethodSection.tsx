@@ -14,27 +14,15 @@ const weekWindowItems = (w: NonNullable<LiveV3['weekly']>): ReactNode[] => { con
 
 
 /**
- * "How this is measured", the one block every Live surface ends with. The scope picks the lines: the week comparison
- * (dashboard), one route's full method, or the agency's. Each scope keeps its element id, so #method still anchors.
+ * "How this is measured", the one block every Live surface ends with. The scope picks the lines: one route's full
+ * method (its Summary and Full analysis alike, CIV-308), or the agency's. Each scope keeps its element id, so #method
+ * still anchors.
  */
 export type MethodSectionProps =
-  | { scope: 'week'; v3: LiveV3; toFull: (hash: string) => void }
   | { scope: 'route'; data: Ready }
   | { scope: 'agency'; s: AgencySummary };
 
 export default function MethodSection(props: MethodSectionProps): ReactNode {
-  if (props.scope === 'week') {
-    const { v3, toFull } = props;
-    if (!v3.weekly) return null;
-    return (
-      <MethodFootnote id="dash-method" after={<p className="mt-2 text-xs"><ArrowLink href="?view=analysis#method" onClick={(e: React.MouseEvent) => { e.preventDefault(); toFull('method'); }}>The full method, in Full analysis</ArrowLink></p>}
-        groups={[
-          { label: METHOD_GROUPS.data, items: weekWindowItems(v3.weekly) },
-          { label: METHOD_GROUPS.colours, items: [colourLine] },
-          { label: METHOD_GROUPS.limits, items: [recordingGapsLine] },
-        ]} />
-    );
-  }
   if (props.scope === 'route') {
     const { data } = props;
     const { v3 } = data;
