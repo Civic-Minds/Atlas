@@ -55,6 +55,8 @@ import { decideDedupe, runsInDay, type DedupePattern } from './featureDedupe.js'
 import { decideHeadline, decidePeriod, liftTierOnDestinationPool, ownStepOneHeadway, pooledStepOneHeadway, settleTier, terminalReading, type PeriodValue } from './routeGrading.js';
 import type { SharedStretchPattern } from './sharedStretch.js';
 import { directionStretches, nightOnlyTrips, periodSustainedMid, runsAcrossNightMidpoint, stampStretchShadow, type DirectionStretches, type TripVisit } from './tripSets.js';
+import { riderWait, stretchDebug, stretchKeys, stretchMedians } from './stretchMedian.js';
+import { PERIOD_COVERAGE_MAX_HEADWAY } from '../shared/periodEligibility.js';
 import { buildPooledStopMap, computeStopSharers, pooledHeadwayInWindow, type StopSharers } from './stopPools.js';
 
 export type { GtfsPreprocess };
@@ -2751,6 +2753,35 @@ export async function processGtfsBuffer(
         const periods = overlay ? { ...departureValues.allStopPeriodHw[stopId], ...overlay } : departureValues.allStopPeriodHw[stopId];
         if (periods && Object.keys(periods).length > 0) stopPeriodHeadways[stopId] = periods;
       }
+      // CIV-845 prototype: one value per shared stretch (consecutive stops served by the same
+      // patterns), the median of its stops' average waits on the published (departure) lists.
+      // Only values already published are replaced; route-level values never read these.
+      {
+        const order = onShape.map(p => p.stopId);
+        const lists = departurePooled?.map ?? departureMetricMap;
+        const keys = stretchKeys(order, ownMember ? stopSharersFor(poolKey).get(ownMember) : undefined, childToParent,
+          key => stopDepsBySharedMember.get(`${poolKey}::${key}`));
+        const keyOf = new Map(order.map((id, i) => [id, keys[i]]));
+        const debug = process.env.CIV845_DEBUG === '1';
+        const waitIn = (stopId: string, start: number, end: number) => riderWait(lists.get(stopId) ?? [], start, end, 3, PERIOD_COVERAGE_MAX_HEADWAY);
+        for (const [pk, { start, end }] of Object.entries(PERIODS) as [PeriodKey, { start: number; end: number }][]) {
+          if (rushPeriodOverlay.size > 0 && order.some(id => rushPeriodOverlay.get(id)?.[pk] != null)) continue;
+          const medians = stretchMedians(order, keys, id => stopPeriodHeadways[id]?.[pk] != null ? waitIn(id, start, end) : null);
+          for (const [stopId, value] of medians) {
+            const before = stopPeriodHeadways[stopId][pk]!;
+            if (debug) stretchDebug.push({ routeId: feature.properties.routeId, shortName: feature.properties.routeShortName, day, headsign: feature.properties.headsign, period: pk, stopId, key: keyOf.get(stopId), before, after: value, wait: riderWait(lists.get(stopId) ?? [], start, end, 2) });
+            stopPeriodHeadways[stopId] = { ...stopPeriodHeadways[stopId], [pk]: value };
+          }
+        }
+        const headline = (id: string) => publishedStopHeadways[id] == null ? null
+          : waitIn(id, HEADLINE_WINDOWS.midday.start, HEADLINE_WINDOWS.midday.end) ?? waitIn(id, HEADLINE_WINDOWS.pmPeak.start, HEADLINE_WINDOWS.pmPeak.end);
+        for (const [stopId, value] of stretchMedians(order, keys, headline)) {
+          // The check reads the window the stop's own value came from: midday, else the PM peak.
+          const headlineWindow = waitIn(stopId, HEADLINE_WINDOWS.midday.start, HEADLINE_WINDOWS.midday.end) != null ? HEADLINE_WINDOWS.midday : HEADLINE_WINDOWS.pmPeak;
+          if (debug) stretchDebug.push({ routeId: feature.properties.routeId, shortName: feature.properties.routeShortName, day, headsign: feature.properties.headsign, period: 'headline', stopId, key: keyOf.get(stopId), before: publishedStopHeadways[stopId], after: value, wait: riderWait(lists.get(stopId) ?? [], headlineWindow.start, headlineWindow.end, 2) });
+          publishedStopHeadways[stopId] = value;
+        }
+      }
       if (Object.keys(stopPeriodHeadways).length > 0) {
         feature.properties.stopPeriodHeadways = stopPeriodHeadways;
       }
@@ -2763,6 +2794,11 @@ export async function processGtfsBuffer(
         // Wintermute: a tail its own trips reach once at midday graded 30 on that departure).
         const stopTiers: Record<string, string> = {};
         publishedStopTiers = stopTiers;
+        // CIV-845 prototype: the published colours cap the same grade at the shown stop value
+        // (the stretch value) instead of the stop's own, so the dot, the line and the card agree;
+        // the route tier (settleTier) keeps reading stopTiers above.
+        const shownStopTiers: Record<string, string> = {};
+        const worseTier = (a: string, b: string) => ((TIER_RANK[a] ?? 99) > (TIER_RANK[b] ?? 99) ? a : b);
         for (const { stopId } of drawnPatternStops()) {
           // A drop-off-only stop has arrivals, not departures: its value stays on the stop
           // card, but it is not graded (#879: RFTA L's terminal read the drawn shape's hourly
@@ -2787,6 +2823,7 @@ export async function processGtfsBuffer(
             if (railGraded == null) continue;
             const byHeadway = headwayToTierOn(headway, routeTierScale());
             stopTiers[stopId] = (TIER_RANK[railGraded] ?? 99) > (TIER_RANK[byHeadway] ?? 99) ? railGraded : byHeadway;
+            shownStopTiers[stopId] = worseTier(railGraded, headwayToTierOn(publishedStopHeadways[stopId] ?? headway, routeTierScale()));
             continue;
           }
           const graded = scopedTerminalHeadline(times, day as DayType, featureRoute?.route_type ?? '', railFeature);
@@ -2807,8 +2844,9 @@ export async function processGtfsBuffer(
           // 10 and the worst-stop rule took the line from 5 to 10.
           const byHeadway = headwayToTierOn(headway, routeTierScale());
           stopTiers[stopId] = (TIER_RANK[best] ?? 99) > (TIER_RANK[byHeadway] ?? 99) ? best : byHeadway;
+          shownStopTiers[stopId] = worseTier(best, headwayToTierOn(publishedStopHeadways[stopId] ?? headway, routeTierScale()));
         }
-        if (Object.keys(stopTiers).length > 0) feature.properties.stopTiers = stopTiers;
+        if (Object.keys(shownStopTiers).length > 0) feature.properties.stopTiers = shownStopTiers;
         // The drawn stops with no boardable stop time (#879): the client colours them from
         // their neighbours instead of reading their missing grade as limited service.
         const dropOffOnlyDrawn = drawnPatternStops().map(p => p.stopId).filter(stopId => !gradesAt(stopId));
