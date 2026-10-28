@@ -1,9 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import {
   HISTORY_SHAPE_DECIMALS, HISTORY_SHAPE_TOLERANCE_M,
-  buildPeriodShapes, compileAgencyShapes, extractRouteShapes, prepareShape, shapeHash, type ShapeFeedInput,
+  buildPeriodShapes, compileAgencyShapes, extractRouteShapes, formatShapeGap, prepareShape, shapeGaps, shapeHash, shapeTripStats, type ShapeFeedInput,
 } from '../historyShapes.js';
 import { shapeForYear } from '../../shared/historyV2Reader.js';
+import type { HistoryPeriodShapes } from '../../shared/historyV2.js';
 
 // parseGtfsZip shape points are [lat, lon]; stored lines are [lon, lat].
 const feed = (over: Partial<ShapeFeedInput> = {}): ShapeFeedInput => ({
@@ -182,5 +183,52 @@ describe('compileAgencyShapes', () => {
     ]));
     expect(Object.keys(p.routes)).toEqual(['ok']);
     expect(p).toMatchObject({ version: 1, slug: 's', periodKey: 'p', refDate: '20140101', toleranceM: 15, decimals: 5 });
+  });
+});
+
+describe('shape gaps in published years (CIV-843)', () => {
+  const line = [[-71.06, 42.35], [-71.05, 42.36]];
+  const period = (periodKey: string, routes: HistoryPeriodShapes['routes'], trips?: HistoryPeriodShapes['trips']): HistoryPeriodShapes => ({
+    version: 1, slug: 'mbta', periodKey, refDate: '20110301', decimals: 5, toleranceM: 15, routes, ...(trips ? { trips } : {}),
+  });
+
+  it('counts blank and unknown shape_ids per feed', () => {
+    const stats = shapeTripStats({
+      trips: [
+        { route_id: 'CR', trip_id: '1', shape_id: '' },
+        { route_id: 'CR', trip_id: '2' },
+        { route_id: 'F4', trip_id: '3', shape_id: 'gone' },
+        { route_id: '1', trip_id: '4', shape_id: 's1' },
+      ],
+      shapes: [{ id: 's1', points: [[42.35, -71.06], [42.36, -71.05]] }],
+    });
+    expect(stats).toEqual({ total: 4, emptyShapeId: 2, unknownShapeId: 1 });
+  });
+
+  it('lists a year whose routes are drawn from stops or not at all, and leaves a fully shaped year out', () => {
+    const periods = new Map([
+      ['2011-03', period('2011-03', { '1': { c: line }, CR: { c: line, a: true } }, { total: 100, emptyShapeId: 30, unknownShapeId: 2 })],
+      ['2015-03', period('2015-03', { '1': { c: line }, CR: { c: line } }, { total: 100, emptyShapeId: 0, unknownShapeId: 0 })],
+    ]);
+    const gaps = shapeGaps('mbta', periods, [
+      { routeKey: '1', year: 2011, periodKey: '2011-03' },
+      { routeKey: 'CR', year: 2011, periodKey: '2011-03' },
+      { routeKey: 'F4', year: 2011, periodKey: '2011-03' },
+      { routeKey: '1', year: 2015, periodKey: '2015-03' },
+      { routeKey: 'CR', year: 2015, periodKey: '2015-03' },
+    ]);
+    expect(gaps).toEqual([{
+      slug: 'mbta', year: 2011, periodKeys: ['2011-03'], routes: 3, shaped: 1, approximate: 1, none: 1,
+      trips: { total: 100, emptyShapeId: 30, unknownShapeId: 2 },
+    }]);
+    expect(formatShapeGap(gaps[0])).toBe('WARNING shape gap mbta 2011: 2 of 3 routes without a real line (1 drawn from stops, 1 not drawn); 32 of 100 trips without a usable shape_id (30 blank, 2 not in shapes.txt)');
+  });
+
+  it('flags a year whose lines all exist but whose trips miss shape_ids, and works without trip counts', () => {
+    const tripsOnly = shapeGaps('stm', new Map([['2013-09', period('2013-09', { '24': { c: line } }, { total: 10, emptyShapeId: 1, unknownShapeId: 0 })]]), [{ routeKey: '24', year: 2013, periodKey: '2013-09' }]);
+    expect(tripsOnly.map(g => g.year)).toEqual([2013]);
+    const old = shapeGaps('stm', new Map([['2014-01', period('2014-01', { '24': { c: line, a: true } })]]), [{ routeKey: '24', year: 2014, periodKey: '2014-01' }]);
+    expect(old[0].trips).toBeNull();
+    expect(formatShapeGap(old[0])).toBe('WARNING shape gap stm 2014: 1 of 1 routes without a real line (1 drawn from stops, 0 not drawn)');
   });
 });
