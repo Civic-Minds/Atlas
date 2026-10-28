@@ -574,7 +574,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                 </>
               )}
 
-              {/* Corridor mode (CIV-1092, beta only). Wording awaits Ryan's OK. */}
+              {/* Corridor mode (CIV-1092, beta only). Wording approved by Ryan, 2026-10-28. */}
               {setCorridorsOn && (
                 <div className="px-5 pb-3">
                   <div className="flex items-start justify-between gap-4">

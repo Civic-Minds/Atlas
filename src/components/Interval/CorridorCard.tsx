@@ -11,9 +11,11 @@ import type { TimePeriod } from '../../hooks/useIntervalStats';
  * Ryan's word-for-word OK before it leaves beta.
  */
 export const CORRIDOR_MODE_TEXT = {
-  label: 'Combined frequency',
+  // Ryan, 2026-10-28: "Combine shared stretches" (the stop card's "Shared stretch" term); the
+  // screen-reader label is the same as the switch label.
+  label: 'Combine shared stretches',
   description: 'Where routes share stops, colours the street by how often any of them comes.',
-  toggleLabel: 'Toggle combined frequency',
+  toggleLabel: 'Combine shared stretches',
 };
 
 export const CORRIDOR_TEXT = {
