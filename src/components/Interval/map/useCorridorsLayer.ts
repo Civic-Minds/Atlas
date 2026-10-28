@@ -32,9 +32,60 @@ export interface CorridorDetail {
 
 export const CORRIDOR_LAYER_IDS = { line: 'corridors-line', hit: 'corridors-hit-layer' } as const;
 
-/** The period a corridor is coloured by: the chosen one, or midday for "All day". */
+/** The period a corridor's card highlights: the chosen one, or midday for "All day". */
 export function corridorPeriod(period: TimePeriod): PeriodKey {
   return period === 'all' ? 'midday' : period;
+}
+
+const DAYTIME: PeriodKey[] = ['amPeak', 'midday', 'pmPeak', 'evening'];
+
+/** The value a corridor is drawn and filtered by: the period's, or for "All day" the worst daytime period (never better than any of them). */
+export function corridorWait(waits: CorridorWaits, period: TimePeriod): number | null {
+  if (period !== 'all') return waits[period];
+  if (waits.midday == null) return null;
+  return Math.max(...DAYTIME.map(pk => waits[pk]).filter((v): v is number => v != null));
+}
+
+type LonLat = [number, number];
+const METRES_PER_DEG = 111_320;
+
+/** Distance in metres from a point to a polyline (flat approximation, fine at street scale). */
+function distanceToLine(p: LonLat, line: LonLat[]): number {
+  const k = Math.cos((p[1] * Math.PI) / 180);
+  let best = Infinity;
+  for (let i = 1; i < line.length; i++) {
+    const ax = (line[i - 1][0] - p[0]) * k, ay = line[i - 1][1] - p[1];
+    const bx = (line[i][0] - p[0]) * k, by = line[i][1] - p[1];
+    const dx = bx - ax, dy = by - ay;
+    const t = dx || dy ? Math.max(0, Math.min(1, -(ax * dx + ay * dy) / (dx * dx + dy * dy))) : 0;
+    best = Math.min(best, Math.hypot(ax + t * dx, ay + t * dy) * METRES_PER_DEG);
+  }
+  return best;
+}
+
+/** Share of a line's points within `metres` of another line. */
+function overlapShare(a: LonLat[], b: LonLat[], metres: number): number {
+  const step = Math.max(1, Math.floor(a.length / 12));
+  let near = 0, n = 0;
+  for (let i = 0; i < a.length; i += step) { n++; if (distanceToLine(a[i], b) <= metres) near++; }
+  return n ? near / n : 0;
+}
+
+/**
+ * One line per street, as the route lines draw it: a corridor that runs along another (the
+ * opposite direction on the other side of the street, or the same stops seen from another route
+ * set) is folded into the longer one, which takes the worse (longer) wait of the two, as the
+ * route filter's worst-direction rule does.
+ */
+export function oneLinePerStreet<T extends { line: LonLat[]; wait: number }>(items: T[], metres = 40): T[] {
+  const sorted = [...items].sort((a, b) => b.line.length - a.line.length);
+  const kept: T[] = [];
+  for (const item of sorted) {
+    const host = kept.find(k => overlapShare(item.line, k.line, metres) >= 0.6);
+    if (host) host.wait = Math.max(host.wait, item.wait);
+    else kept.push({ ...item });
+  }
+  return kept;
 }
 
 /** A corridor file feature in the CIV-1092 shape; older files (one averaged value) are skipped. */
@@ -64,18 +115,23 @@ export function corridorFeaturesFor(
   colorMode: ColorVisionMode,
   maxHeadway = Infinity,
 ): GeoJSON.Feature[] {
-  const pk = corridorPeriod(period);
   const out: GeoJSON.Feature[] = [];
   for (const [slug, features] of bySlug) {
+    const items: Array<{ line: LonLat[]; wait: number; corridorId: string }> = [];
     for (const f of features) {
       const detail = corridorDetail(slug, (f.properties ?? {}) as Record<string, unknown>);
-      if (!detail || detail.day !== day) continue;
-      const wait = detail.waits[pk];
-      if (wait == null || wait > maxHeadway) continue;
+      if (!detail || detail.day !== day || f.geometry.type !== 'LineString') continue;
+      const wait = corridorWait(detail.waits, period);
+      if (wait == null) continue;
+      items.push({ line: f.geometry.coordinates as LonLat[], wait, corridorId: detail.corridorId });
+    }
+    // Fold the directions first, then filter: a street passes only if its worse direction does.
+    for (const { line, wait, corridorId } of oneLinePerStreet(items)) {
+      if (wait > maxHeadway) continue;
       out.push({
         type: 'Feature',
-        geometry: f.geometry,
-        properties: { agencySlug: slug, corridorId: detail.corridorId, wait, color: headwayToTierColor(wait, colorMode) },
+        geometry: { type: 'LineString', coordinates: line },
+        properties: { agencySlug: slug, corridorId, wait, color: headwayToTierColor(wait, colorMode) },
       });
     }
   }
