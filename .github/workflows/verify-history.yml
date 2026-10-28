@@ -41,3 +41,12 @@ jobs:
           R2_ARCHIVE_BUCKET_NAME: ${{ secrets.R2_ARCHIVE_BUCKET_NAME }}
           R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
           R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+
+      # The full build report (drops, year disagreements, mixed routes, shape gaps): the log prints counts only.
+      - name: Upload the build report
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: history-build-report
+          path: tmp/history-build-report.json
+          if-no-files-found: warn
