@@ -72,13 +72,13 @@ export function extractAgencySections(features: ReadonlyArray<{ geometry?: { typ
     if (meta && typeof meta === 'object') {
       const split = (m: StretchMetaEntry | null) => {
         if (!m) return null;
-        const row: { period?: unknown; noRegular?: unknown; maxGap?: unknown } = {};
+        const row: { period?: unknown; noRegular?: unknown } = {};
         if (m.period !== undefined) { row.period = m.period; delete m.period; }
         if (m.noRegular !== undefined) { row.noRegular = m.noRegular; delete m.noRegular; }
-        if (m.maxGap !== undefined) { row.maxGap = m.maxGap; delete m.maxGap; }
         return row;
       };
-      // The main stretch's values stay on the route file: public route cards read them (CIV-937). Only the tails move.
+      // The main stretch's values stay on the route file: public route cards read them (CIV-937). Only the tails'
+      // period and noRegular move; every stretch's maxGap stays (CIV-1069: public tail rows pair it with their value).
       const main = null;
       const tails = meta.tails.map(t => split(t) ?? {});
       if (tails.some(t => Object.keys(t).length > 0)) entry.stretchRows = { main, tails };
