@@ -6,16 +6,27 @@ const base = { headsign: 'Humber Loop', directionId: 0, speedKmh: 23, delayMin: 
 
 describe('vehicle card content', () => {
   it('maps direction, destination, speed and schedule', () => {
-    expect(vehicleCardRows(base, 'Westbound')).toEqual([
-      { label: 'Direction', value: 'Westbound' },
-      { label: 'Destination', value: 'Humber Loop' },
+    expect(vehicleCardRows(base, 'Neville Park', 'shortTurn')).toEqual([
+      { label: 'Direction', value: 'to Neville Park' },
+      { label: 'Ends at', value: 'Humber Loop', tag: 'Short turn' },
       { label: 'Speed', value: '23 km/h' },
       { label: 'Schedule', value: '7 min late', status: 'late' },
     ]);
   });
   it('omits what the feed did not give and never repeats the destination as direction', () => {
     const rows = vehicleCardRows({ ...base, speedKmh: null, delayMin: null, status: 'no_data' }, 'Humber Loop');
-    expect(rows).toEqual([{ label: 'Destination', value: 'Humber Loop' }]);
+    // A trip to the line's end: "Direction" only, as on every other card in the list (CIV-1043).
+    expect(rows).toEqual([{ label: 'Direction', value: 'to Humber Loop' }]);
+    // A short turn (its last stop on the line) adds where it ends, tagged; with no direction known, only where the trip ends (no tag).
+    const quiet = { speedKmh: null, delayMin: null, status: 'no_data' as const };
+    expect(vehicleCardRows({ ...base, ...quiet, headsign: 'Broadview & Queen' }, 'Distillery', 'shortTurn'))
+      .toEqual([{ label: 'Direction', value: 'to Distillery' }, { label: 'Ends at', value: 'Broadview & Queen', tag: 'Short turn' }]);
+    // A branch (504B) runs to its own end: that is its direction, untagged.
+    expect(vehicleCardRows({ ...base, ...quiet, headsign: 'Broadview' }, 'Distillery', 'branch')).toEqual([{ label: 'Direction', value: 'to Broadview' }]);
+    // A destination from the feed, with no shape to say what kind of trip it is: where it ends, untagged.
+    expect(vehicleCardRows({ ...base, ...quiet, headsign: 'Broadview' }, 'Distillery'))
+      .toEqual([{ label: 'Direction', value: 'to Distillery' }, { label: 'Ends at', value: 'Broadview' }]);
+    expect(vehicleCardRows({ ...base, speedKmh: null, delayMin: null, status: 'no_data' }, null)).toEqual([{ label: 'Ends at', value: 'Humber Loop' }]);
   });
   it('says on time and early in the list wording', () => {
     expect(delayLabel({ delayMin: 1, statusLabel: null })).toBe('On time');
