@@ -81,11 +81,13 @@ export function buildStopRoutes({ siblingIdsByAgency, routesByAgency, layers, da
   day: string;
   period: TimePeriod;
 }): StopRoute[] {
-  type Branch = { rKey: string; headsign: string | null; service: ReturnType<typeof buildRouteStopMetric>; rowHeadway: number | null; directionId: number; periodText?: string };
+  type Branch = { rKey: string; headsign: string | null; service: ReturnType<typeof buildRouteStopMetric>; rowHeadway: number | null; directionId: number; periodText?: string; dirKey: string; patterns: number };
 
   const routeMap = new Map<string, { shortName: string; label: RouteLabel; longName: string; agencyName: string; agencySlug: string; routeType?: number; branches: Map<string, Branch> }>();
   // Pooled values at shared stops (CIV-82), so the stop card agrees with the map and route card.
   const sharedIndexBySlug = new Map(Object.entries(layers).map(([slug, fc]) => [slug, buildSharedStopIndex(fc.features)]));
+  // Every destination each route's direction has at the stop in the day, whatever the period (CIV-1080).
+  const headsignsAtStop = new Map<string, Set<string>>();
 
 
   for (const [slug, fc] of Object.entries(layers)) {
@@ -99,6 +101,10 @@ export function buildStopRoutes({ siblingIdsByAgency, routesByAgency, layers, da
       const p = f.properties as unknown as ShapeProperties;
       if (!p.routeId || !routeIds.has(p.routeId)) continue;
       if (p.day !== undefined && p.day !== day) continue;
+      const dirKey = `${slug}::${p.routeId}::${(p as any).directionId ?? 0}`;
+      if ([...siblingIds].some(sId => p.stopHeadways?.[sId] != null)) {
+        (headsignsAtStop.get(dirKey) ?? headsignsAtStop.set(dirKey, new Set()).get(dirKey)!).add(p.headsign ?? '');
+      }
       // #934: a direction the route only runs on one side of the period shows the route card's
       // words ("until 9:37am, every 12 min") instead of a cadence, at a stop its shape serves.
       const periodText = partPeriodText(p, period);
@@ -140,6 +146,8 @@ export function buildStopRoutes({ siblingIdsByAgency, routesByAgency, layers, da
       const service = buildRouteStopMetric(p, matchingStopId, sharedIndexBySlug.get(slug));
       const newHeadway = service.value ?? p.headway ?? null;
       const existing = entry.branches.get(branchKey);
+      const patterns = (existing?.patterns ?? 0) + 1;
+      if (existing) existing.patterns = patterns;
       if (!existing || (newHeadway != null && (existing.service.value == null || newHeadway < existing.service.value))) {
         entry.branches.set(branchKey, {
           rKey: facts.key,
@@ -153,8 +161,19 @@ export function buildStopRoutes({ siblingIdsByAgency, routesByAgency, layers, da
           rowHeadway: branchDisplayPeriodHeadway(p, period),
           directionId: dirId,
           ...(periodText ? { periodText } : {}),
+          dirKey,
+          patterns,
         });
       }
+    }
+  }
+  // Two patterns to one destination (TTC 29's two northbound trips to Wilson, from either loop) are one row, and
+  // each pattern's own value counts only half its trips (CIV-1080). Where the direction has no other destination at
+  // the stop, every trip of the direction there goes to it, so the row is the stop's own pooled value.
+  for (const entry of routeMap.values()) {
+    for (const b of entry.branches.values()) {
+      const only = headsignsAtStop.get(b.dirKey);
+      if (b.patterns > 1 && !b.periodText && only?.size === 1 && only.has(b.headsign ?? '')) b.rowHeadway = null;
     }
   }
   return Array.from(routeMap.entries())
