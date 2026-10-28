@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { LiveVehicle } from '../../context/LiveVehiclesMapOverlay';
-import { DIRECTION_UNCLEAR, compareLiveRoutes, destinationKind, focusDirectionKey, groupVehiclesByDirection, orderDirectionGroups, routeDirectionLabels, vehicleDirectionKey } from '../liveGrouping';
+import { DIRECTION_UNCLEAR, compareLiveRoutes, destinationKind, focusDirectionKey, groupVehiclesByDirection, orderDirectionGroups, riderHeadsign, routeDirectionLabels, vehicleDirectionKey } from '../liveGrouping';
 
 const v = (id: string, extra: Partial<LiveVehicle> = {}): LiveVehicle => ({
   id, routeShortName: '501', displayName: '501', tripId: 't', lat: 43.65, lon: -79.4, bearing: null, speedKmh: null, tsEpoch: null,
@@ -143,5 +143,18 @@ describe('destinationKind (CIV-1043)', () => {
     // It matches a main end too: unclear.
     expect(destinationKind(p504, 'Distillery')).toBeNull();
     expect(destinationKind(null, 'Spadina')).toBeNull();
+  });
+});
+
+describe('riderHeadsign', () => {
+  it('drops an internal short-turn name (CIV-1062)', () => {
+    expect(riderHeadsign('506 Carlton Short Turn', '506')).toBeNull();
+    expect(riderHeadsign('512 St Clair Short Turn', '512')).toBeNull();
+  });
+  it('keeps every real destination', () => {
+    expect(riderHeadsign('Broadview & Gerrard', '506')).toBe('Broadview & Gerrard');
+    expect(riderHeadsign('Roncesvalles (short turn)', '501')).toBe('Roncesvalles (short turn)');
+    expect(riderHeadsign('506 Carlton Short Turn', '505')).toBe('506 Carlton Short Turn');
+    expect(riderHeadsign(null, '506')).toBeNull();
   });
 });
