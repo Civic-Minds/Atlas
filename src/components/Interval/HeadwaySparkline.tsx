@@ -280,9 +280,9 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
           >
             {labelRow && (
               <span className={`absolute -top-6 left-0.5 sm:left-1 ${CHART_PERIOD_LABEL} whitespace-nowrap`}>
-                {band.label.endsWith(' Peak') ? (
+                {band.label.endsWith(' peak') ? (
                   <>
-                    <span className="sm:hidden" aria-hidden="true">{band.label.replace(' Peak', '')}</span>
+                    <span className="sm:hidden" aria-hidden="true">{band.label.replace(' peak', '')}</span>
                     <span className="hidden sm:inline">{band.label}</span>
                   </>
                 ) : band.label}
@@ -448,7 +448,7 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
                           style={phone && band.key === 'overnight' ? undefined : { left: `${band.left * 100}%` }}
                         >
                           {/* The frequency column is half the dialog wide, so the peaks use the short form ("AM", "PM"). */}
-                          {band.label.replace(' Peak', '')}
+                          {band.label.replace(' peak', '')}
                         </span>
                       ))}
                     </div>

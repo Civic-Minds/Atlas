@@ -1,5 +1,5 @@
 import { lazy, Suspense, useEffect, type ReactNode } from 'react';
-import { FEATURES } from '../shared/config';
+import { FEATURES, PERIOD_LABELS } from '../shared/config';
 import SiteContact from './components/SiteContact';
 import DocsPageLayout from './components/ui/DocsPageLayout';
 import DataTable, { type DataTableColumn } from './components/ui/DataTable';
@@ -99,7 +99,7 @@ export default function AboutDocsPage() {
               <li><strong className="text-[var(--text-primary)]">Hourly schedule chart{showBetaFeatures ? ' and trip time' : ''}:</strong> each hour shows the slower direction{showBetaFeatures ? '; the full-day view also shows how long the trip takes by hour' : ''}.</li>
               <li><strong className="text-[var(--text-primary)]">Data quality:</strong> expose source dates, stale schedules, review states, corrections, geometry repairs, and known limitations.</li>
               <li><strong className="text-[var(--text-primary)]">Specialized service:</strong> represent on-demand and GTFS-Flex service as zones or virtual stops where a fixed route is the wrong model.</li>
-              <li><strong className="text-[var(--text-primary)]">Research:</strong> {showResearch ? 'a night-service view and a frequent-service story, which sit under Research. Beta also adds history comparisons.' : 'research and validation surfaces are documented in the Beta version of this page.'}</li>
+              <li><strong className="text-[var(--text-primary)]">Research:</strong> {showResearch ? 'an overnight-service view and a frequent-service story, which sit under Research. Beta also adds history comparisons.' : 'research and validation surfaces are documented in the Beta version of this page.'}</li>
               <li><strong className="text-[var(--text-primary)]">Reusable data infrastructure:</strong> publish stable route, stop, tile, and freshness contracts that other transit tools can consume.</li>
             </ul>
             <p>Some surfaces are public, some are in beta, and some remain research or validation tools. The same processed data model supports all of them without making every experimental feature part of the main map.</p>
@@ -125,7 +125,7 @@ export default function AboutDocsPage() {
               {showHistory && <li><strong className="text-[var(--text-primary)]">History:</strong> selected agencies with usable archived GTFS periods, showing documented service changes without fabricating missing years.</li>}
               {showAgencyPages && <li><strong className="text-[var(--text-primary)]">Agency and area pages:</strong> each agency has a page with a bar showing how many of its routes fall in each weekday-midday frequency band, a route table by mode with AM peak, Midday, PM peak, Evening and Overnight waits, and nearby agencies. The first sentence names the agencies it connects with, meaning agencies with a stop within 150 m of one of its stops, and counts its stops as unique places (stops with the same name within 150 m count once). Area pages do the same for every agency in a city region, such as the Greater Toronto and Hamilton Area.</li>}
               <li><strong className="text-[var(--text-primary)]">On-demand service:</strong> GTFS-Flex and source-backed service areas represented separately from fixed-route frequency so booking-based service is not misread as a normal route.</li>
-              {showResearch && <li><strong className="text-[var(--text-primary)]">Research:</strong> two focused views, night service and frequent service, built on source-reviewed data before anything becomes a general map feature.</li>}
+              {showResearch && <li><strong className="text-[var(--text-primary)]">Research:</strong> two focused views, overnight service and frequent service, built on source-reviewed data before anything becomes a general map feature.</li>}
             </ul>
             {showHistory && <p>The History eligibility rule requires at least 10 distinct snapshot years. Historical route identity is matched by exact route short name by default, with explicit aliases for documented redesigns.</p>}
             {showResearch && <p>Research outputs can become product features only after their definitions, coverage, and source quality are clear. This is why Atlas sometimes contains a capability in the data or code before exposing it in the primary navigation.</p>}
@@ -355,7 +355,7 @@ export default function AboutDocsPage() {
             <p><strong className="text-[var(--text-primary)]">GTFS:</strong> A standard set of files describing transit routes, stops, trips, calendars, and shapes.</p>
             <p><strong className="text-[var(--text-primary)]">GTFS-Flex:</strong> GTFS extensions for demand-responsive service, including service areas, location groups, virtual stops, and booking rules.</p>
             <p><strong className="text-[var(--text-primary)]">Headway:</strong> The time between consecutive scheduled departures.</p>
-            <p><strong className="text-[var(--text-primary)]">Service period:</strong> A named time window: AM Peak (6 to 9 a.m.), Midday (9 a.m. to 3 p.m.), PM Peak (3 to 7 p.m.), Evening (7 to 11 p.m.), Night (11 p.m. to 2 a.m.), or Overnight (2 to 6 a.m.).</p>
+            <p><strong className="text-[var(--text-primary)]">Service period:</strong> A named time window: {PERIOD_LABELS.amPeak} (6 to 9 a.m.), {PERIOD_LABELS.midday} (9 a.m. to 3 p.m.), {PERIOD_LABELS.pmPeak} (3 to 7 p.m.), {PERIOD_LABELS.evening} (7 to 11 p.m.), {PERIOD_LABELS.late} (11 p.m. to 2 a.m.), or {PERIOD_LABELS.overnight} (2 to 6 a.m.).</p>
             <p><strong className="text-[var(--text-primary)]">Frequency tier:</strong> A broad band, such as every 10, 15, 20, 30, or 60 minutes or less, used to colour and filter service on the map.</p>
             <p><strong className="text-[var(--text-primary)]">Service class:</strong> The operating pattern assigned to a route or pattern: regular, part-time, or irregular.</p>
             <p><strong className="text-[var(--text-primary)]">Sustained service:</strong> Service whose departure gaps remain within the qualification tolerance across the analysed window, rather than only appearing frequent in a short burst.</p>

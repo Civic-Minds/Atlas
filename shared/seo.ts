@@ -100,7 +100,7 @@ export const SEO_ROUTES: readonly SeoRoute[] = [
   },
   {
     path: '/research/night',
-    title: 'Night service: Transit Atlas',
+    title: 'Overnight service: Transit Atlas',
     description: 'Find routes with sustained scheduled service between 2am and 5am.',
     indexable: false,
     gate: 'researchApps',
