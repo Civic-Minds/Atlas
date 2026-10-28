@@ -14,9 +14,7 @@ import RouteCardTitle from '../../RouteCardTitle';
 import {
   CardDirectionRow,
   CardDivider,
-  CardCallout,
-  CARD_CALLOUT_HEADLINE,
-  CARD_CALLOUT_TEXT,
+  CARD_SUMMARY,
   CardSectionLabel,
   CardHelpNotice,
   CorrectedDataNotice,
@@ -51,8 +49,6 @@ import { activeHourRanges, partPeriodNoticeApplies, partPeriodNoticeHeadway, par
 import { rowLabelWithOrigin } from '../../../utils/rowOriginLabel';
 import { hasStretchRoles, routeAllDayContract, routeContract } from '../../../utils/stretchCard';
 import type { VariantFamily } from '../../../utils/routeVariants';
-import type { CompareRouteRow } from '../compareTypes';
-import { compareCardSummary, compareLineNoOrphan } from '../../../utils/compareSides';
 import { reportDetails } from '../../../utils/reportIssue';
 import { ROUTE_DATA_QUALITY_WARNING } from '../../../../shared/routeDataQuality';
 import { BOOKING_REQUIRED_NOTICE, expiredFeedNotice, explainerFor, NO_ROUTE_SHAPE_NOTICE, periodServiceNotice, ROUTE_DATA_QUALITY_WARNING_MESSAGE, selectedRouteFilterNotice, selectedRouteOutsideFilterNotice, unevenServiceNotice, variantsIncludedNotice, WEEKDAY_VARIATION_NOTICE } from '../../../content/noticeCopy';
@@ -201,8 +197,8 @@ export interface RouteCardHeadwayProps {
    * 5am check the Night view runs), never a daytime value.
    */
   nightView?: boolean;
-  /** Compare mode: this route on each side. */
-  compareRows?: CompareRouteRow[] | null;
+  /** Compare mode: this card's side in one facts line, "A · Weekday PM peak · every 3 min" (CIV-844). */
+  compareFacts?: string | null;
   expDateStr: string;
   hoveredBranch: HoveredBranch | null;
   setHoveredBranch: (b: HoveredBranch | null) => void;
@@ -227,7 +223,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
   selectedRouteOutOfFilter,
   hideFilterNotices = false,
   nightView = false,
-  compareRows = null,
+  compareFacts = null,
   expDateStr,
   hoveredBranch,
   setHoveredBranch,
@@ -438,20 +434,10 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
             excludeReasons={['Stop is missing, misplaced, or assigned incorrectly']}
           />
         </div>
+        {/* Compare: this map's side in one grey facts line under the title row, across the card's width (CIV-844). */}
+        {compareFacts && <p className={`${CARD_SUMMARY} whitespace-nowrap`} data-testid="compare-card-facts">{compareFacts}</p>}
       </SidebarCardHeaderBlock>
       {(<>
-      {compareRows && (() => {
-        const { headline, lines } = compareCardSummary(compareRows);
-        return (
-          <CardCallout className="mb-3" data-testid="compare-card-summary">
-            {/* The shared callout styles (CIV-971): a headline, then its lines; with no headline each line is one. */}
-            {headline && <p className={CARD_CALLOUT_HEADLINE}>{headline}</p>}
-            {/* A bracketed frequency ("(≤5 min)") stays on one line. */}
-            {/* A side's value stays together, so "on map" never sits on a line of its own (CIV-844). */}
-            {lines.map(line => <p key={line} className={headline ? CARD_CALLOUT_TEXT : `${CARD_CALLOUT_HEADLINE} py-0.5`}>{compareLineNoOrphan(line.replace(/\([^)]+\)/g, part => part.replace(/ /g, '\u00A0')))}</p>)}
-          </CardCallout>
-        );
-      })()}
       {patternLabel && (
         <p className={`${CARD_NOTE} -mt-1 mb-3 truncate`} data-testid="route-pattern-label">{patternLabel}</p>
       )}
