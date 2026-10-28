@@ -51,7 +51,7 @@ import { isOnDemandStopShown, isOnDemandZoneShown, localDateIn, onDemandHoursCon
 import Panel from '../ui/Panel';
 import ListRow from '../ui/ListRow';
 import { drawnRouteLayers, queryDrawnRouteFeatures } from './map/drawnRoutes';
-import { approximateLocationHint, CLIPBOARD_DENIED, LOCATION_DENIED, LOCATION_TIMED_OUT, LOCATION_UNAVAILABLE, LOCATION_URL_COPIED, ON_DEMAND_AREAS_FAILED, ON_DEMAND_COVERAGE_GROWING } from '../../content/noticeCopy';
+import { approximateLocationHint, CLIPBOARD_DENIED, LOCATION_DENIED, LOCATION_TIMED_OUT, LOCATION_UNAVAILABLE, LOCATION_URL_COPIED, ON_DEMAND_AREAS_FAILED } from '../../content/noticeCopy';
 
 // Keep the Live/Deck.gl graph out of public builds entirely when Live is disabled.
 const LiveVehiclesLayer = import.meta.env.VITE_LIVE_ENABLED === 'true'
@@ -1250,14 +1250,9 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
           {ON_DEMAND_AREAS_FAILED}
         </MapNoticePill>
       )}
-      {mapHint ? (
+      {mapHint && (
         <MapNoticePill raised={onDemandStatus === 'error' && onDemandShown} className="px-3 py-1.5 text-xs text-[var(--text-muted)]">
           {mapHint}
-        </MapNoticePill>
-      ) : onDemandStatus !== 'error' && onDemandAllowed && selectedModes.has(ON_DEMAND_MODE) && (
-        // A missing zone must never read as "no on-demand service here" (CIV-23).
-        <MapNoticePill className="px-3 py-1.5 text-xs text-[var(--text-muted)]">
-          {ON_DEMAND_COVERAGE_GROWING}
         </MapNoticePill>
       )}
 
