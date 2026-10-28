@@ -39,6 +39,8 @@ export type HelpContext = {
   expDateStr?: string;
   /** N25 (CIV-1055): set when opened from the listing-ended notice; the panel shows its variant. */
   listingEndedDate?: string;
+  /** Whether that date has arrived (agency-local): 'ended', else 'ends'. */
+  listingEnded?: boolean;
   manualFeedSource?: boolean;
   lastRefreshedAt?: string;
   lastFeedCheckAt?: string;
@@ -58,6 +60,8 @@ export type OpenInfoOptions = {
   expDateStr?: string;
   /** N25 (CIV-1055): set when opened from the listing-ended notice; the panel shows its variant. */
   listingEndedDate?: string;
+  /** Whether that date has arrived (agency-local): 'ended', else 'ends'. */
+  listingEnded?: boolean;
   manualFeedSource?: boolean;
   lastRefreshedAt?: string;
   lastFeedCheckAt?: string;
@@ -537,7 +541,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
               {helpContext?.listingEndedDate ? (
                 // N25 variant: only the lines that are true when most routes stopped being listed
                 // (no "timetable ended", no "keeps showing the most recent feed"), until Ryan approves its wording.
-                <p className="text-xs text-[var(--text-primary)] leading-relaxed">{listingEndedNotice(helpContext.listingEndedDate)}</p>
+                <p className="text-xs text-[var(--text-primary)] leading-relaxed">{listingEndedNotice(helpContext.listingEndedDate, helpContext.listingEnded ?? true)}</p>
               ) : helpContext?.agencyName && (
                 <p className="text-xs text-[var(--text-primary)] leading-relaxed">
                   {expiredFeedNotice(helpContext.agencyName, helpContext.expDateStr, helpContext.manualFeedSource)}
