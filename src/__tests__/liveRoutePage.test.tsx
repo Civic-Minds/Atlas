@@ -1,3 +1,4 @@
+import { LATE_DEFINITION } from '../../shared/liveWording';
 import { render, screen, within, fireEvent } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -288,6 +289,19 @@ describe('Live route dashboard', () => {
     expect(screen.getByText(/^Excluding .+ this week, .+ last week\.$/).className).toMatch(/block/);
     expect(document.querySelector('details')).toBeNull();
     expect(screen.queryByRole('button', { name: 'Summary' })).toBeNull(); // still no view switcher on the shareable page
+  });
+
+  it('shows the same "How this is measured" on Summary as on Full analysis (CIV-308)', async () => {
+    window.history.replaceState(null, '', '/apps/live/ttc/505');
+    const first = renderPage(ready);
+    await screen.findByRole('heading', { level: 1, name: 'TTC 505' });
+    const summary = document.getElementById('method')?.textContent;
+    first.unmount();
+    window.history.replaceState(null, '', '/apps/live/ttc/505?view=analysis');
+    renderPage(ready, '/apps/live/ttc/505?view=analysis');
+    await screen.findByRole('heading', { level: 1, name: 'TTC 505' });
+    expect(summary).toContain(LATE_DEFINITION);
+    expect(document.getElementById('method')?.textContent).toBe(summary);
   });
 
   it('says why when there is nothing to show', async () => {
