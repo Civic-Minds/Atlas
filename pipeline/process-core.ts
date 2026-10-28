@@ -45,7 +45,7 @@ import { isRailRoute } from './routeMode.js';
 import { computePeriodCoverageHeadways } from './headway-utils.js';
 import { isNightRouteDirection, nextServiceDay, nightStartsBeforeWindow, overnightPeriodValues, overnightWindowTimes } from './overnightTerminal.js';
 import { makeShapeCoverChecker } from './shapeCoverage.js';
-import { annotateSharedStretches, isPoolablePattern } from './sharedStretch.js';
+import { annotateSharedStretches, contiguousSharedRuns, isPoolablePattern } from './sharedStretch.js';
 import { boardsAt } from './stopEligibility.js';
 import { nearDuplicateTripIds } from './nearDuplicateTrips.js';
 import { decideDedupe, runsInDay, type DedupePattern } from './featureDedupe.js';
@@ -1021,6 +1021,9 @@ export async function processGtfsBuffer(
   // by headsign for rail, the same scope as each feature's own stop metrics. Read only by
   // annotateSharedStretches; no existing value uses it.
   const stopDepsBySharedMember = new Map<string, Map<string, number[]>>();
+  // CIV-850: the same lists for rush-hour-only bus patterns (rushEligibleHeadsigns), which never
+  // join stopDepsBySharedMember. Read only by rushPeriodOverlay, for the pattern's own stop values.
+  const stopDepsByRushMember = new Map<string, Map<string, number[]>>();
   // The patterns of each route direction and day with a midday reading at some stop, built
   // once from stopDepsBySharedMember after the stop_times pass. A pattern whose own terminal
   // has no midday reading while a sibling here has one is a variant (short turn, peak branch)
@@ -1097,6 +1100,13 @@ export async function processGtfsBuffer(
   const sharedEligibleHeadsigns = new Set<string>();
   const sharedMemberKey = (grp: { routeId: string; shortName: string; dirId: string; dayType: string; headsign: string | null; shapeId: string | null }): string | null => {
     if (!sharedEligibleHeadsigns.has(`${grp.shortName}::${grp.dirId}::${grp.dayType}::${grp.routeId}::${grp.headsign ?? ''}`)) return null;
+    const member = sharedPatternKey(grp.routeId, grp.headsign, grp.shapeId);
+    return member ? `${grp.shortName}::${grp.dirId}::${grp.dayType}::${member}` : null;
+  };
+  // CIV-850: headsigns of rush-hour-only bus features (readsRushPool), keyed like sharedEligibleHeadsigns.
+  const rushEligibleHeadsigns = new Set<string>();
+  const rushMemberKey = (grp: { routeId: string; shortName: string; dirId: string; dayType: string; headsign: string | null; shapeId: string | null }): string | null => {
+    if (!rushEligibleHeadsigns.has(`${grp.shortName}::${grp.dirId}::${grp.dayType}::${grp.routeId}::${grp.headsign ?? ''}`)) return null;
     const member = sharedPatternKey(grp.routeId, grp.headsign, grp.shapeId);
     return member ? `${grp.shortName}::${grp.dirId}::${grp.dayType}::${member}` : null;
   };
@@ -1185,11 +1195,17 @@ export async function processGtfsBuffer(
    * CIV-1011 #6: which patterns pool, written once. A pattern adds its trips to the shared stretch
    * pool unless it is partial-weekday or previous-night-tail, rush-hour only, or not a poolable
    * pattern (span, irregular, drop-off only: isPoolablePattern). A feature reads the pool on its own
-   * stops under the same rule, except that a rush-hour-only pattern still reads it (it only stays
-   * out of what others read).
+   * stops only when its own pattern is in the pool: readsSharedPool lets a rush-hour-only pattern
+   * through, but it is never a pool member, so that read finds nothing (CIV-850). A rush-hour-only
+   * bus pattern reads the pool through its own narrower path instead (readsRushPool, rushPeriodOverlay
+   * below): its rush-period stop values only, never adding its trips to what others read.
    */
   const addsToSharedPool = (feature: GeoJsonFeature): boolean => !partialWeekdayFeatures.has(feature) && !rushHourOnlyFeatures.has(feature) && isPoolablePattern(feature);
   const readsSharedPool = (feature: GeoJsonFeature): boolean => feature.geometry.type === 'LineString' && !partialWeekdayFeatures.has(feature) && isPoolablePattern(feature);
+  // CIV-850: a rush-hour-only bus pattern that would pool but for being rush-hour only. Its own
+  // trips are kept in their own map (stopDepsByRushMember), apart from the shared pool.
+  const readsRushPool = (feature: GeoJsonFeature): boolean => readsSharedPool(feature) && rushHourOnlyFeatures.has(feature)
+    && !railRouteIds.has(feature.properties.routeId as string);
   // #961: rows whose own overnight value #897 withheld as a sparse window.
   const withheldOvernightFeatures = new Set<GeoJsonFeature>();
   const featureBranchTripCount = new Map<GeoJsonFeature, number>();
@@ -1405,8 +1421,10 @@ export async function processGtfsBuffer(
   }
 
   for (const [feature, slot] of featureStopHeadwaySlots) {
+    const headsignKey = `${slot.shortName}::${slot.dirId}::${slot.day}::${feature.properties.routeId}::${(feature.properties.headsign as string | null) ?? ''}`;
+    if (readsRushPool(feature)) rushEligibleHeadsigns.add(headsignKey);
     if (!addsToSharedPool(feature)) continue;
-    sharedEligibleHeadsigns.add(`${slot.shortName}::${slot.dirId}::${slot.day}::${feature.properties.routeId}::${(feature.properties.headsign as string | null) ?? ''}`);
+    sharedEligibleHeadsigns.add(headsignKey);
   }
 
   // Extract stops for clickable stations
@@ -1474,6 +1492,7 @@ export async function processGtfsBuffer(
           const hsKey = grp.headsign ? `${grp.shortName}::${grp.dirId}::${grp.dayType}::${grp.headsign}` : null;
           const shKey = grp.shapeId ? `${grp.shapeId}::${grp.dayType}` : null;
           const smKey = sharedMemberKey(grp);
+          const rushKey = rushMemberKey(grp);
           const pushDep = (maps: Map<string, Map<string, number[]>>, key: string, stopId: string, mins: number) => {
             let map = maps.get(key);
             if (!map) { map = new Map(); maps.set(key, map); }
@@ -1490,6 +1509,7 @@ export async function processGtfsBuffer(
             if (shKey && grp.inShape) pushDep(stopDepsByShapeGroup, shKey, stopId, mins);
             // Drop-off-only stop times (pickup_type 1) are not departures a rider can take.
             if (smKey && grp.inGroup && pooledOk && boardsAt(st)) pushDep(stopDepsBySharedMember, smKey, stopId, mins);
+            if (rushKey && grp.inGroup && pooledOk && boardsAt(st)) pushDep(stopDepsByRushMember, rushKey, stopId, mins);
             // Night-service-only shift (#297) -- see stopDepsByGroupNight declaration above.
             if (night) {
               if (grp.inGroup && pooledOk) pushDep(stopDepsByGroupNight, gKey, stopId, mins + 1440);
@@ -1665,6 +1685,8 @@ export async function processGtfsBuffer(
     if (grp.shapeId && grp.inShape && pickupAllowed) markBoardable(`${grp.shapeId}::${grp.dayType}`, stopId);
     const smKey = sharedMemberKey(grp);
     if (smKey && grp.inGroup && pickupAllowed) pushUnique(stopDepsBySharedMember, smKey, stopId, mins);
+    const rushKey = rushMemberKey(grp);
+    if (rushKey && grp.inGroup && pickupAllowed) pushUnique(stopDepsByRushMember, rushKey, stopId, mins);
     if (mins < NIGHT_SHIFT_EARLY_CUTOFF && (serviceIdMaxMinute.get(grp.serviceId) ?? Infinity) < NIGHT_SHIFT_EARLY_CUTOFF) {
       const shifted = mins + 1440;
       if (grp.inGroup) pushUnique(stopDepsByGroupNight, groupKey, stopId, shifted);
@@ -1893,6 +1915,41 @@ export async function processGtfsBuffer(
     let hit = stopSharersByPool.get(poolKey);
     if (!hit) { hit = computeStopSharers(sharedPatternsOf(poolKey), stopsById, childToParent); stopSharersByPool.set(poolKey, hit); }
     return hit;
+  };
+  // CIV-850: each rush-hour-only bus pattern's stop sequence (its longest trip on the day, as
+  // sharedPatternTrip), and the pool members it reads at each station: only inside a run that
+  // serves every stop of the member between its ends (contiguousSharedRuns), so a skip-stop
+  // express never reads its local. The shared pool and its sharers are not changed.
+  const rushPatternTrip = new Map<string, { tripId: string; stops: number }>();
+  for (const trip of gtfs.trips ?? []) {
+    const stops = stopTimesByTripId.get(trip.trip_id)?.length ?? 0;
+    if (stops < 2) continue;
+    for (const grp of tripGroupByTripId.get(trip.trip_id) ?? []) {
+      if (!grp.inGroup) continue;
+      const key = rushMemberKey(grp);
+      if (!key) continue;
+      const prev = rushPatternTrip.get(key);
+      if (!prev || stops > prev.stops) rushPatternTrip.set(key, { tripId: trip.trip_id, stops });
+    }
+  }
+  const rushSharersFor = (poolKey: string, rushMember: string): StopSharers | undefined => {
+    const own = rushPatternTrip.get(`${poolKey}::${rushMember}`);
+    if (!own) return undefined;
+    const station = (stopId: string) => childToParent.get(stopId) ?? stopId;
+    const ownStops = firstVisitStopTimes(stopTimesByTripId.get(own.tripId) ?? []).map(st => st.stop_id);
+    const ownStations = ownStops.map(station);
+    const out = new Map<string, Set<string>>();
+    for (const pattern of sharedPatternsOf(poolKey)) {
+      const otherStations = pattern.stopOrder.map(station);
+      for (const [from, to] of contiguousSharedRuns(ownStations, otherStations, stopsById, ownStops)) {
+        for (let i = from; i <= to; i++) {
+          const set = out.get(ownStations[i]) ?? new Set<string>();
+          set.add(pattern.memberKey);
+          out.set(ownStations[i], set);
+        }
+      }
+    }
+    return out.size > 0 ? out : undefined;
   };
 
   // #896: each trip's first departure, per route direction, day and headsign (frequency templates
@@ -2319,6 +2376,36 @@ export async function processGtfsBuffer(
       }
       if (Object.keys(byPeriod).length > 0) ownStopPeriodHw[stopId] = byPeriod; else delete ownStopPeriodHw[stopId];
     }
+    // CIV-850: a rush-hour-only bus pattern's published stop values in the rush periods it runs read
+    // what serves the stop, as #690 gives every other pattern: at a stop of a run it shares stop for
+    // stop with a pool member, in AM or PM peak, when its own boarding departures there number at
+    // least 3 in the window and give the stop a value, the merged list's pooled value
+    // (pooledHeadwayInWindow: even gaps only, never worse than its own). lacmta 40 to Patsaouras
+    // Transit Plaza: every 18-21 on its own, every 10-11 with the Division 13 trips between stops
+    // 45 and 87. Only stopPeriodHeadways reads this. Its trips stay out of the pool, and its
+    // headline, tier, all-day stop values, row periods and every route field keep its own trips (#720).
+    const rushPeriodOverlay = new Map<string, Partial<Record<PeriodKey, number>>>();
+    const rushMember = !pooled && readsRushPool(feature) && ownIsPattern && !railFeature
+      ? sharedPatternKey(feature.properties.routeId as string, featureHeadsign, featureShape)
+      : null;
+    const rushOwnDeps = rushMember ? stopDepsByRushMember.get(`${poolKey}::${rushMember}`) : undefined;
+    const rushSharers = rushMember && rushOwnDeps ? rushSharersFor(poolKey, rushMember) : undefined;
+    if (rushMember && rushOwnDeps && rushSharers) {
+      const rushPool = buildPooledStopMap(metricStopMap, rushSharers, key => stopDepsBySharedMember.get(`${poolKey}::${key}`), childToParent, rushOwnDeps);
+      for (const stopId of rushPool.pooledStops) {
+        const merged = rushPool.map.get(stopId) ?? [];
+        const own = [...(metricStopMap.get(stopId) ?? [])].sort((a, b) => a - b);
+        const boarding = rushOwnDeps.get(stopId) ?? [];
+        for (const pk of ['amPeak', 'pmPeak'] as const) {
+          const { start, end } = PERIODS[pk];
+          if (allStopPeriodHw[stopId]?.[pk] == null) continue;
+          if (boarding.filter(t => t >= start && t <= end).length < 3) continue;
+          const value = pooledHeadwayInWindow(merged, start, end, 3, false, own);
+          if (value == null || value === allStopPeriodHw[stopId]?.[pk]) continue;
+          rushPeriodOverlay.set(stopId, { ...(rushPeriodOverlay.get(stopId) ?? {}), [pk]: value });
+        }
+      }
+    }
     // Coverage needs only one departure, so publish it before the legacy median bail-outs.
     // Project separately to keep historical stopOrder and geometry completely unchanged.
     const coverageStops = isMapless
@@ -2552,7 +2639,8 @@ export async function processGtfsBuffer(
       // frequency at the user's chosen TO stop, not just the route terminal.
       const stopPeriodHeadways: Record<string, Partial<Record<PeriodKey, number>>> = {};
       for (const { stopId } of onShape) {
-        const periods = allStopPeriodHw[stopId];
+        const overlay = rushPeriodOverlay.get(stopId);
+        const periods = overlay ? { ...allStopPeriodHw[stopId], ...overlay } : allStopPeriodHw[stopId];
         if (periods && Object.keys(periods).length > 0) stopPeriodHeadways[stopId] = periods;
       }
       if (Object.keys(stopPeriodHeadways).length > 0) {

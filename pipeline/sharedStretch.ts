@@ -83,6 +83,37 @@ export function qualifyingSharedRuns(
     && runLengthKm(aStops, from, to, stopsById) >= SHARED_STRETCH_MIN_KM);
 }
 
+/**
+ * CIV-850: qualifying runs of `a` that serve every stop of `b` between their ends, in order: each
+ * next stop of `a` is the next stop of `b` (a station listed twice continues the run). A skip-stop
+ * express aligns with its local over its whole length under alignedSharedRuns, since that only
+ * needs the order; here it breaks at every skipped stop, so a rush-hour express never reads the
+ * local's frequency (only runs of SHARED_STRETCH_MIN_STOPS consecutive common stops remain).
+ */
+export function contiguousSharedRuns(
+  a: readonly string[],
+  b: readonly string[],
+  stopsById: ReadonlyMap<string, { lat: number; lon: number }>,
+  aStops: readonly string[] = a,
+): Array<[number, number]> {
+  const bIndex = new Map<string, number>();
+  b.forEach((stopId, index) => { if (!bIndex.has(stopId)) bIndex.set(stopId, index); });
+  const runs: Array<[number, number]> = [];
+  let start = -1;
+  let prevB = -1;
+  for (let i = 0; i <= a.length; i++) {
+    const bi = i < a.length ? bIndex.get(a[i]) : undefined;
+    const continues = bi !== undefined && start >= 0 && (bi === prevB + 1 || (bi === prevB && a[i] === a[i - 1]));
+    if (continues) { prevB = bi!; continue; }
+    if (start >= 0 && i - 1 > start) runs.push([start, i - 1]);
+    start = bi !== undefined ? i : -1;
+    prevB = bi ?? -1;
+  }
+  return runs.filter(([from, to]) =>
+    new Set(a.slice(from, to + 1)).size >= SHARED_STRETCH_MIN_STOPS
+    && runLengthKm(aStops, from, to, stopsById) >= SHARED_STRETCH_MIN_KM);
+}
+
 /** One pattern of a route direction: its own departure list and its stop sequence. */
 export interface SharedStretchPattern {
   memberKey: string;
