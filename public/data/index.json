@@ -540,7 +540,7 @@
       "supplementalFeedUrls": [
         "https://webapps.regionofwaterloo.ca/api/grt-routes/api/staticfeeds/2"
       ],
-      "lastFeedExpiry": "20260426",
+      "lastFeedExpiry": "20261220",
       "lastFeedVersion": null,
       "lastRefreshedAt": "20260811",
       "cities": [
@@ -574,7 +574,8 @@
           "feedVersion": null,
           "rawArchiveKey": "20280703-9f872bb7bc6ca990"
         }
-      ]
+      ],
+      "lastPeekedExpiry": "20261220"
     },
     {
       "slug": "guelph",
@@ -3717,7 +3718,7 @@
         },
         "checkedAt": "2026-10-12"
       },
-      "lastFeedExpiry": "20281027",
+      "lastFeedExpiry": "20281028",
       "lastFeedVersion": "Fall 2026 Version 10122026",
       "lastRefreshedAt": "2026-10-12",
       "lastFeedCheckAt": "20261019",
@@ -4669,7 +4670,7 @@
         -105.753
       ],
       "feedUrl": "https://www.citypa.ca/media/gnsfaref/2025-01-20-google-transit-gtfs.zip",
-      "lastFeedExpiry": "20281027",
+      "lastFeedExpiry": "20281028",
       "lastFeedVersion": null,
       "lastRefreshedAt": "2026-08-10",
       "lastFeedCheckAt": "20261019",
@@ -8806,7 +8807,7 @@
       ],
       "feedUrl": "https://mysmartbus.com/gtfs",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2706/latest.zip",
-      "lastFeedExpiry": "20281027",
+      "lastFeedExpiry": "20281028",
       "lastFeedVersion": "FY27 Q1",
       "lastRefreshedAt": "2026-10-12",
       "cities": [
@@ -9151,7 +9152,7 @@
       ],
       "region": "California",
       "feedUrl": "https://files.mobilitydatabase.org/mdb-1999/latest.zip",
-      "lastFeedExpiry": "20281027",
+      "lastFeedExpiry": "20281028",
       "lastFeedVersion": "New Schedule",
       "lastRefreshedAt": "2026-10-12",
       "cities": [
@@ -9856,7 +9857,7 @@
         -120.48
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-3117/latest.zip",
-      "lastFeedExpiry": "20281027",
+      "lastFeedExpiry": "20281028",
       "lastFeedVersion": "PASAT 8 Route Update",
       "region": "California",
       "lastRefreshedAt": "2026-08-10",
@@ -10068,7 +10069,7 @@
         -116.1
       ],
       "feedUrl": "https://sunlinebus.com/gtfs",
-      "lastFeedExpiry": "20281027",
+      "lastFeedExpiry": "20281028",
       "lastFeedVersion": "Add training route",
       "region": "California",
       "lastRefreshedAt": "2026-10-12",
@@ -10308,7 +10309,7 @@
         -111.65
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-1979/latest.zip",
-      "lastFeedExpiry": "20281027",
+      "lastFeedExpiry": "20281028",
       "lastFeedVersion": "10/9/2026",
       "region": "Arizona",
       "lastRefreshedAt": "2026-10-12",
@@ -11647,7 +11648,7 @@
         -118.31
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-2149/latest.zip",
-      "lastFeedExpiry": "20281027",
+      "lastFeedExpiry": "20281028",
       "lastFeedVersion": "7/8/2026",
       "region": "California",
       "lastRefreshedAt": "2026-10-12",
@@ -13821,7 +13822,7 @@
       ],
       "feedUrl": "https://tracksctbus.org/gtfs",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-3115/latest.zip",
-      "lastFeedExpiry": "20281027",
+      "lastFeedExpiry": "20281028",
       "lastFeedVersion": "272-10/1/2026,262-10/17/2026,265-7/30/2026",
       "lastRefreshedAt": "2026-10-19",
       "cities": [
@@ -13921,7 +13922,8 @@
       "timezone": "America/New_York",
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://s3.amazonaws.com/datatools-511ny/public/Dutchess_County_Transit.zip",
-      "lastPeekedExpiry": "20510930"
+      "lastPeekedExpiry": "20510930",
+      "listingEndedOn": "20261028"
     },
     {
       "slug": "metro-transit",
@@ -14467,7 +14469,7 @@
         "Kauaʻi County, Hawaii"
       ],
       "timezone": "Pacific/Honolulu",
-      "lastFeedExpiry": "20281027",
+      "lastFeedExpiry": "20281028",
       "lastFeedVersion": "CORRECTED RUN NUMBERS Routes with 900/950 Express and Kilauea Food Mart.",
       "lastRefreshedAt": "2026-10-12",
       "feedQuality": {
@@ -14656,7 +14658,7 @@
         "Maui County, Hawaii"
       ],
       "timezone": "Pacific/Honolulu",
-      "lastFeedExpiry": "20281027",
+      "lastFeedExpiry": "20281028",
       "lastFeedVersion": "FixedRoute_NewCommuterRouteNames",
       "lastRefreshedAt": "2026-10-12",
       "feedQuality": {
@@ -14752,7 +14754,7 @@
         "Muscogee County, Georgia"
       ],
       "timezone": "America/New_York",
-      "lastFeedExpiry": "20281027",
+      "lastFeedExpiry": "20281028",
       "lastFeedVersion": "6/17/2026 Saturday Reduced",
       "lastRefreshedAt": "2026-10-12",
       "feedQuality": {
@@ -14999,7 +15001,7 @@
         "Whitman County, Washington"
       ],
       "timezone": "America/Los_Angeles",
-      "lastFeedExpiry": "20281027",
+      "lastFeedExpiry": "20281028",
       "lastFeedVersion": "back to regular service, removed football and Wheat-Lentil detours,football + Greyhound open,Greyhound closed,removed football routes",
       "lastRefreshedAt": "2026-10-19",
       "feedQuality": {
@@ -16207,7 +16209,7 @@
         -79.05
       ],
       "feedUrl": "https://files.mobilitydatabase.org/tld-89/latest.zip",
-      "lastFeedExpiry": "20281027",
+      "lastFeedExpiry": "20281028",
       "lastFeedVersion": "Fall 2026 Update (No Special Services)",
       "region": "North Carolina",
       "lastRefreshedAt": "2026-10-12",
@@ -16888,7 +16890,8 @@
       "timezone": "America/New_York",
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-352/latest.zip",
-      "lastPeekedExpiry": "20270529"
+      "lastPeekedExpiry": "20270529",
+      "listingEndedOn": "20260815"
     },
     {
       "slug": "cat-savannah",
@@ -17301,7 +17304,7 @@
         -85.6206
       ],
       "feedUrl": "https://batabustracker.com/gtfs",
-      "lastFeedExpiry": "20281027",
+      "lastFeedExpiry": "20281028",
       "lastFeedVersion": "9/7/2026",
       "lastRefreshedAt": "2026-10-12",
       "cities": [
@@ -17428,7 +17431,7 @@
       "feedUrl": "https://ridematbus.com/gtfs",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-80003/latest.zip",
       "region": "North Dakota",
-      "lastFeedExpiry": "20281027",
+      "lastFeedExpiry": "20281028",
       "lastFeedVersion": "9/7/2026 Schedule",
       "lastRefreshedAt": "2026-10-12",
       "cities": [
@@ -17555,7 +17558,7 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-2274/latest.zip",
       "region": "Virginia",
-      "lastFeedExpiry": "20281027",
+      "lastFeedExpiry": "20281028",
       "lastFeedVersion": "10/17/2026",
       "lastRefreshedAt": "2026-10-19",
       "cities": [
@@ -19008,7 +19011,7 @@
         "51D"
       ],
       "region": "Tennessee",
-      "lastFeedExpiry": "20281027",
+      "lastFeedExpiry": "20281028",
       "lastFeedVersion": "August 2026 Shake-Up",
       "lastRefreshedAt": "2026-10-12",
       "cities": [
@@ -19545,7 +19548,7 @@
       "feedUrl": "https://trackmygta.com/gtfs",
       "region": "North Carolina",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-615/latest.zip",
-      "lastFeedExpiry": "20281027",
+      "lastFeedExpiry": "20281028",
       "lastFeedVersion": "7/4/2024",
       "lastRefreshedAt": "2026-10-12",
       "websiteUrl": "http://www.greensboro-nc.gov/index.aspx?page=2180",
@@ -19637,7 +19640,7 @@
       "feedUrl": "https://ridewsta.com/gtfs",
       "region": "North Carolina",
       "mdbFeedUrl": "https://ridewsta.com/gtfs",
-      "lastFeedExpiry": "20281027",
+      "lastFeedExpiry": "20281028",
       "lastFeedVersion": "Aug 30 start - Rev 1",
       "lastRefreshedAt": "2026-10-12",
       "cities": [
@@ -20710,7 +20713,7 @@
       ],
       "feedUrl": "https://kenoshatransit.com/gtfs",
       "mdbFeedUrl": "https://kenoshatransit.com/gtfs",
-      "lastFeedExpiry": "20281027",
+      "lastFeedExpiry": "20281028",
       "lastFeedVersion": "Route 1",
       "lastRefreshedAt": "2026-10-12",
       "region": "Wisconsin",
@@ -21028,7 +21031,8 @@
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://www.bt4uclassic.org/gtfs/google_transit.zip",
-      "lastPeekedExpiry": "20261230"
+      "lastPeekedExpiry": "20261230",
+      "listingEndedOn": "20261030"
     },
     {
       "slug": "cata-state-college",
@@ -22370,7 +22374,8 @@
       "timezone": "America/New_York",
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-1110/latest.zip",
-      "lastPeekedExpiry": "20261231"
+      "lastPeekedExpiry": "20261231",
+      "listingEndedOn": "20251211"
     },
     {
       "slug": "st-george",
@@ -22562,7 +22567,7 @@
         -82.8532
       ],
       "feedUrl": "https://catbus.ridesystems.net/Secure/Admin/Reports/GTFSDownload.aspx",
-      "lastFeedExpiry": "20281027",
+      "lastFeedExpiry": "20281028",
       "skipBlockTripHeadways": true,
       "lastFeedVersion": null,
       "lastRefreshedAt": "2026-10-03",
@@ -22789,7 +22794,7 @@
         -88.99
       ],
       "feedUrl": "https://rideconnecttransit.com/gtfs",
-      "lastFeedExpiry": "20281027",
+      "lastFeedExpiry": "20281028",
       "lastFeedVersion": "Sapphire Change 9/14/2026",
       "lastRefreshedAt": "2026-10-12",
       "region": "Illinois",
@@ -26637,7 +26642,7 @@
         },
         "checkedAt": "2026-08-21"
       },
-      "lastFeedExpiry": "20281027",
+      "lastFeedExpiry": "20281028",
       "lastFeedVersion": null,
       "lastRefreshedAt": "2026-08-21",
       "lastFeedCheckAt": "20261019",
@@ -26728,7 +26733,7 @@
         },
         "checkedAt": "2026-10-12"
       },
-      "lastFeedExpiry": "20281027",
+      "lastFeedExpiry": "20281028",
       "lastFeedVersion": "Yellow Route Fixed",
       "lastRefreshedAt": "2026-10-12",
       "lastFeedCheckAt": "20261019",
@@ -26829,7 +26834,7 @@
         },
         "checkedAt": "2026-08-21"
       },
-      "lastFeedExpiry": "20281027",
+      "lastFeedExpiry": "20281028",
       "lastFeedVersion": null,
       "lastRefreshedAt": "2026-08-21",
       "lastFeedCheckAt": "20261019",
@@ -27074,7 +27079,7 @@
         },
         "checkedAt": "2026-08-21"
       },
-      "lastFeedExpiry": "20281027",
+      "lastFeedExpiry": "20281028",
       "lastFeedVersion": null,
       "lastRefreshedAt": "2026-08-21",
       "lastFeedCheckAt": "20261019",
@@ -27169,7 +27174,7 @@
         },
         "checkedAt": "2026-10-12"
       },
-      "lastFeedExpiry": "20281027",
+      "lastFeedExpiry": "20281028",
       "lastFeedVersion": "10/6/2026",
       "lastRefreshedAt": "2026-10-12",
       "lastFeedCheckAt": "20261019",
@@ -27795,7 +27800,7 @@
         -105.7631
       ],
       "feedUrl": "https://theliftwp.ridesystems.net/Secure/Admin/Reports/GTFSDownload.aspx",
-      "lastFeedExpiry": "20281027",
+      "lastFeedExpiry": "20281028",
       "lastFeedVersion": null,
       "lastRefreshedAt": "2026-08-21",
       "cities": [
@@ -28232,7 +28237,7 @@
       "feedUrl": "https://gobg.ridesystems.net/Secure/Admin/Reports/GTFSDownload.aspx",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-40184/latest.zip",
       "region": "Kentucky",
-      "lastFeedExpiry": "20281027",
+      "lastFeedExpiry": "20281028",
       "lastFeedVersion": null,
       "lastRefreshedAt": "2026-10-12",
       "feedQuality": {

@@ -22,7 +22,7 @@
   "supplementalFeedUrls": [
     "https://webapps.regionofwaterloo.ca/api/grt-routes/api/staticfeeds/2"
   ],
-  "lastFeedExpiry": "20260426",
+  "lastFeedExpiry": "20261220",
   "lastFeedVersion": null,
   "lastRefreshedAt": "20260811",
   "cities": [
@@ -56,5 +56,6 @@
       "feedVersion": null,
       "rawArchiveKey": "20280703-9f872bb7bc6ca990"
     }
-  ]
+  ],
+  "lastPeekedExpiry": "20261220"
 }

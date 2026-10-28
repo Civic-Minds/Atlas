@@ -47,5 +47,6 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://www.bt4uclassic.org/gtfs/google_transit.zip",
-  "lastPeekedExpiry": "20261230"
+  "lastPeekedExpiry": "20261230",
+  "listingEndedOn": "20261030"
 }
