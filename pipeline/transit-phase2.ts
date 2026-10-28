@@ -808,21 +808,29 @@ export function applyAnalysisCriteria(
         // 19:38-23:49 Monday to Thursday, but only its first 3 on Friday.
         const scheduledEntries = ownOrAllEntries.filter(e => !demotedBursts.has(e.result));
         const tierEntries = scheduledEntries.length > 0 ? scheduledEntries : ownOrAllEntries;
+        // CIV-1084: one weekday that reads one-off does not make the whole Weekday one-off while at
+        // least three others run it as a schedule. Pierce County Ferries 18987 drops one midday
+        // sailing on alternate Mondays, so that Monday reads split-peak and the Weekday flipped
+        // between one-off and every 70 from week to week. That day still holds the tier at
+        // infrequent at best (never better than it runs), and the weekday-variation note shows.
+        const irregularWeekdays = dayType === 'Weekday' ? tierEntries.filter(e => e.result.serviceClass === 'irregular') : [];
+        const loneIrregularWeekday = irregularWeekdays.length === 1 && tierEntries.length >= 4 ? irregularWeekdays[0] : null;
+        const classEntries = loneIrregularWeekday ? tierEntries.filter(e => e !== loneIrregularWeekday) : tierEntries;
         const INFREQUENT_VAL = 1e6; // sentinel: worse than any real tier, better than span (Infinity)
-        const tierValues = tierEntries.map(e =>
+        const tierValues = classEntries.map(e =>
             e.result.tier === 'span' ? Infinity
             : e.result.tier === 'infrequent' ? INFREQUENT_VAL
             : parseInt(e.result.tier)
         );
-        const worstTierValue = Math.max(...tierValues);
+        const worstTierValue = Math.max(...tierValues, loneIrregularWeekday ? INFREQUENT_VAL : -Infinity);
         const worstTier = worstTierValue === Infinity ? 'span'
             : worstTierValue >= INFREQUENT_VAL ? 'infrequent'
             : String(worstTierValue);
         const weekdayTierVariation = dayType === 'Weekday'
             && new Set(tierEntries.map(entry => entry.result.tier)).size > 1;
-        const ownServiceClass = tierEntries.some(e => e.result.serviceClass === 'irregular')
+        const ownServiceClass = classEntries.some(e => e.result.serviceClass === 'irregular')
             ? 'irregular'
-            : tierEntries.some(e => e.result.serviceClass === 'time-limited')
+            : classEntries.some(e => e.result.serviceClass === 'time-limited')
             ? 'time-limited'
             : 'regular';
 
@@ -923,7 +931,7 @@ export function applyAnalysisCriteria(
                 : undefined,
             previousNightTailOnly: previousNightTailOnly || undefined,
             // The rollup is rush-hour-only when every pattern-day it reads is (#720).
-            rushHourOnly: tierEntries.every(e => e.result.rushHourOnly) || undefined,
+            rushHourOnly: classEntries.every(e => e.result.rushHourOnly) || undefined,
             weekdayTierVariation: (weekdayTierVariation && !noTimetable) || undefined,
             edgeGapAllowance: (() => {
                 const sides = new Set(entries.map(e => e.result.edgeGapAllowance).filter(Boolean));

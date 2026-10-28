@@ -233,6 +233,27 @@ describe('applyAnalysisCriteria', () => {
     expect(weekday).toMatchObject({ tier: '30', weekdayTierVariation: true });
   });
 
+  describe('one weekday that reads one-off does not decide the Weekday (CIV-1084)', () => {
+    // Pierce County Ferries 18987 to Steilacoom: alternate Mondays drop the 11:10 sailing, leaving
+    // two departures 09:00-15:00, so that Monday alone reads split-peak (one-off).
+    const hm = (s: string) => s.split(' ').map(t => Number(t.slice(0, 2)) * 60 + Number(t.slice(3)));
+    const fullDay = hm('05:15 06:20 07:35 08:55 10:05 11:10 12:45 15:15 16:25 17:35 18:45 19:55 21:10 22:50');
+    const thinDay = fullDay.filter(t => t !== 11 * 60 + 10);
+    const weekday = (thinDays: string[]) => applyAnalysisCriteria(WEEKDAYS.map(day => raw({
+      route: '18987', routeType: '4', modeName: 'Ferry', day, departureTimes: thinDays.includes(day) ? thinDay : fullDay,
+    }))).find(item => item.day === 'Weekday');
+
+    it('rates the Weekday from the other four days, no better than infrequent, and notes the variation', () => {
+      expect(weekday([])).toMatchObject({ serviceClass: 'regular', tier: 'infrequent' });
+      expect(weekday(['Monday'])).toMatchObject({ serviceClass: 'regular', tier: 'infrequent', weekdayTierVariation: true });
+    });
+
+    it('stays one-off when two weekdays, or all five, read one-off', () => {
+      expect(weekday(['Monday', 'Tuesday'])).toMatchObject({ serviceClass: 'irregular', tier: 'span' });
+      expect(weekday([...WEEKDAYS])).toMatchObject({ serviceClass: 'irregular', tier: 'span' });
+    });
+  });
+
   it('keeps full-day departure times in a rail weekday rollup', () => {
     const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'] as const;
     const results = applyAnalysisCriteria(days.map(day => raw({
