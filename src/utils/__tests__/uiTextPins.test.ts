@@ -56,17 +56,17 @@ describe('list and count wording stays exactly as it was', () => {
     const d = (days: string[]) => describeMapExport({ ...base, frequentServiceDays: days as never, frequentServiceFrequency: 15, frequentServiceWindow: 'daytime' }, [], []).lines;
     expect(d(['Weekday'])).toMatchInlineSnapshot(`
       [
-        "≤15 min · Weekday · 7am–7pm",
+        "≤15 min · Weekday · 7 AM–7 PM",
       ]
     `);
     expect(d(['Weekday', 'Saturday'])).toMatchInlineSnapshot(`
       [
-        "≤15 min · Weekday and Saturday · 7am–7pm",
+        "≤15 min · Weekday and Saturday · 7 AM–7 PM",
       ]
     `);
     expect(d(['Weekday', 'Saturday', 'Sunday'])).toMatchInlineSnapshot(`
       [
-        "≤15 min · Weekday, Saturday and Sunday · 7am–7pm",
+        "≤15 min · Weekday, Saturday and Sunday · 7 AM–7 PM",
       ]
     `);
     const f = (modes: number[]) => describeMapExport({ ...base, view: 'frequency', selectedModes: modes }, [], []).lines;

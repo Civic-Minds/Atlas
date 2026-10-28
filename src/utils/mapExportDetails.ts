@@ -5,7 +5,7 @@ import type { TimePeriod } from '../hooks/useIntervalStats';
 import { PERIOD_LABELS } from '../hooks/useIntervalStats';
 import { FILTER_MODES } from '../../shared/modes';
 import { joinList } from '../../shared/overflowText';
-import type { FrequentServiceFrequency, FrequentServiceWindow } from '../../shared/frequentService';
+import { FREQUENT_WINDOW_LABELS, type FrequentServiceFrequency, type FrequentServiceWindow } from '../../shared/frequentService';
 import type { NightServiceFrequency } from '../../shared/nightService';
 import { formatStoredDate } from './format';
 import { agencyNames } from './agencyName';
@@ -103,11 +103,6 @@ function periodPhrase(period: TimePeriod): string {
 export function describeDayAndPeriod(day: DayType, period: TimePeriod): string {
   return period === 'all' ? `${day}, all day` : `${day} ${periodPhrase(period)}`;
 }
-
-const FREQUENT_WINDOW_LABELS: Record<FrequentServiceWindow, string> = {
-  daytime: '7am–7pm',
-  extended: '7am–midnight',
-};
 
 /** The highest headway tier the map draws at this zoom (the app hides less frequent routes when zoomed out). */
 function zoomCeiling(zoom: number): number {

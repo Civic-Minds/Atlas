@@ -51,7 +51,7 @@ describe('Night route card (CIV-934)', () => {
   it('draws no chart and no period', () => {
     // The chart's hour labels mark it.
     renderCard(true, 'midday');
-    expect(screen.queryByText('12p')).toBeNull();
+    expect(screen.queryByText('12 PM')).toBeNull();
     expect(screen.queryByText(/Midday|All day/)).toBeNull();
   });
 });
