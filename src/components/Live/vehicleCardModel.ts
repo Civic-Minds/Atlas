@@ -51,6 +51,14 @@ export function vehicleCardRows(
   return rows;
 }
 
+/**
+ * The card's rows, less Direction and Ends at until the vehicles have been placed by their trips (ready), so a card
+ * opened from a link never shows the nearest-shape guess first (CIV-1068).
+ */
+export function placedRows(rows: VehicleCardRow[], ready: boolean): VehicleCardRow[] {
+  return ready ? rows : rows.filter(row => row.label !== 'Direction' && row.label !== 'Ends at');
+}
+
 /** "Bus 8123" (or "4412" on a streetcar route, CIV-926) when the feed names the vehicle; null when it would only be a generic "Vehicle N". */
 export function vehicleCardName(
   v: Pick<LiveVehicle, 'id' | 'vehicleLabel'>,

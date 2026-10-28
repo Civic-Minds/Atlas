@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { delayLabel, vehicleCardName, vehicleCardRows, vehicleRowName } from '../vehicleCardModel';
+import { delayLabel, placedRows, vehicleCardName, vehicleCardRows, vehicleRowName } from '../vehicleCardModel';
 import { vehicleModeWord } from '../../../utils/format';
 
 const base = { headsign: 'Humber Loop', directionId: 0, speedKmh: 23, delayMin: 7.2, statusLabel: null, status: 'late' as const };
@@ -43,5 +43,15 @@ describe('vehicle card content', () => {
     expect(vehicleRowName({ id: 'x', vehicleLabel: '4412' }, 3, vehicleModeWord(0))).toBe('4412');
     expect(vehicleRowName({ id: 'a1b2c3d4-0000-0000-0000-000000000000', vehicleLabel: null }, 2, vehicleModeWord(0))).toBe('Vehicle 3');
     expect(vehicleRowName({ id: 'a1b2c3d4-0000-0000-0000-000000000000', vehicleLabel: null }, 2, 'Bus')).toBe('Vehicle 3');
+  });
+});
+
+describe('placedRows (CIV-1068)', () => {
+  const rows = [{ label: 'Direction', value: 'to High Park' }, { label: 'Ends at', value: 'Spadina', tag: 'Short turn' }, { label: 'Speed', value: '0 km/h' }];
+  it('holds Direction and Ends at back until the vehicles are placed by their trips (a card opened from a link)', () => {
+    expect(placedRows(rows, false)).toEqual([{ label: 'Speed', value: '0 km/h' }]);
+  });
+  it('shows every row once they are', () => {
+    expect(placedRows(rows, true)).toEqual(rows);
   });
 });

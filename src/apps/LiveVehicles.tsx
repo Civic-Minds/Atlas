@@ -15,7 +15,8 @@ import { PHONE_MEDIA_QUERY, useMediaQuery } from '../hooks/useMediaQuery';
 import { BOTTOM_SHEET_FRAME, BottomSheetHandle, bottomSheetBodyClass, useBottomSheet } from '../components/ui/BottomSheet';
 import ListRow from '../components/ui/ListRow';
 import Tag from '../components/ui/Tag';
-import { useRouteAnalysisPatterns } from '../hooks/useRouteAnalysisPatterns';
+import { useRouteAnalysis } from '../hooks/useRouteAnalysisPatterns';
+import { useLiveTripDirections } from '../hooks/useLiveTripDirections';
 import { streetJoin } from '../utils/stopLabel';
 import ArrowLink from '../components/ui/ArrowLink';
 import { AgencyList, AgencyListRow } from '../components/ui/AgencyList';
@@ -35,7 +36,7 @@ import { buildRouteKey, routeFeatureForShortName, routeKeyForShortName, splitRou
 import type { MapFocus } from '../utils/routeFocus';
 import { getNowDay } from '../../shared/dayTypes';
 import { capitalizeFirst, headwayAbout, headwayEvery } from '../utils/headwayText';
-import { cardTripEnd, delayLabel, vehicleCardName, vehicleCardRows, vehicleRowName } from '../components/Live/vehicleCardModel';
+import { cardTripEnd, delayLabel, placedRows, vehicleCardName, vehicleCardRows, vehicleRowName } from '../components/Live/vehicleCardModel';
 import Panel, { PanelBody, PanelTitleBar } from '../components/ui/Panel';
 import LiveRoutePerformance from '../components/Live/LiveRoutePerformance';
 import { useLiveFeeds } from '../hooks/useLiveFeeds';
@@ -110,6 +111,7 @@ const MIN_LIVE_ZOOM = 9;
 
 /** Direction work per polled vehicle, kept across zoom steps (see resolvedVehiclesBySlug). */
 const resolvedDirections = new WeakMap<LiveVehicle, LiveVehicle>();
+const NO_VEHICLES: LiveVehicle[] = [];
 
 export default function LiveVehicles({ agencies, lightMode, setLightMode, active, onInfoOpen, query, layers = {}, sidebarLeft, selectionActive = false, routeRequest = null, onAgencyClick, searchBarWidth }: Props) {
   const { colorVisionFriendly } = useColorVision();
@@ -181,7 +183,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
 
   const { vehiclesBySlug, headwaysBySlug, loadingBySlug, errorBySlug, failCountBySlug, degradedBySlug } = useLiveFeeds(active, visibleSlugs, visibleSlugKey);
 
-  // The picked route's vehicles' directions from their trips (the analysis's timetable, via LiveRoutePerformance).
+  // The picked route's vehicles' directions from their trips (the analysis's timetable, via useLiveTripDirections below).
   const [tripDirections, setTripDirections] = useState<ReadonlyMap<string, number> | null>(null);
 
   // Fill missing direction metadata from static directional route shapes. Some
@@ -470,6 +472,13 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
   const cardVehicle = vehicleCard && vehicleCard.routeKey === selectedRoute
     ? selectedGroup?.vehicles.find(v => v.id === vehicleCard.id) ?? null
     : null;
+  // The picked route's trip directions, kept on the route card and the vehicle card alike (a card opened from a link
+  // has never shown the route card) (CIV-1068).
+  const routeTrips = useLiveTripDirections(selectedGroup?.agencySlug ?? null, selectedGroup?.routeShortName ?? null, selectedGroup?.vehicles ?? NO_VEHICLES);
+  useEffect(() => { setTripDirections(routeTrips.byVehicle); }, [routeTrips.byVehicle]);
+  // The card's Direction and Ends at rows wait until the vehicles have been placed by their trips (and, below, until the
+  // route's analysis has said short turn or branch), so it never shows the nearest-shape guess first.
+  const cardDirectionsReady = routeTrips.settled && tripDirections === routeTrips.byVehicle;
   const selectedAgencyName = selectedGroup
     // The full feed name, not agencyDisplayName: RouteCardTitle's routeLabels keys agency-specific name rules on it.
     ? (agencies.find(a => a.slug === selectedGroup.agencySlug)?.name ?? selectedGroup.agencySlug)
@@ -501,7 +510,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
   }, [vehiclePick, allVehicles]);
 
   // Short turn or branch, from the route's Live analysis, read only while a vehicle card is open (CIV-1043).
-  const cardAnalysis = useRouteAnalysisPatterns(selectedGroup?.agencySlug ?? null, selectedGroup?.routeShortName ?? null, !!cardVehicle);
+  const { value: cardAnalysis, settled: cardAnalysisSettled } = useRouteAnalysis(selectedGroup?.agencySlug ?? null, selectedGroup?.routeShortName ?? null, !!cardVehicle);
 
   // Direction label lookup from GeoJSON features: the route's main destination per direction, i.e. the
   // headsign of its longest shape (a short turn like Roncesvalles must not rename the Humber direction).
@@ -675,7 +684,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
         />
       </SidebarCardHeaderBlock>
       <SidebarCardSection label={vehicleCardName(cardVehicle, selectedRouteModeWord) ?? selectedRouteModeWord}>
-        {vehicleCardRows(cardVehicle, cardDirectionLabel, cardTripEnd(cardVehicle.headsign, cardDirectionLabel, cardAnalysis)).map(row => (
+        {placedRows(vehicleCardRows(cardVehicle, cardDirectionLabel, cardTripEnd(cardVehicle.headsign, cardDirectionLabel, cardAnalysis)), cardDirectionsReady && cardAnalysisSettled).map(row => (
           <div key={row.label} className="flex items-start justify-between gap-3">
             <span className="text-xs font-bold text-[var(--text-dim)] shrink-0 whitespace-nowrap">{row.label}</span>
             <span
@@ -722,7 +731,6 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
         vehicles={selectedGroup.vehicles}
         feedDegraded={!!degradedBySlug[selectedGroup.agencySlug] || !!errorBySlug[selectedGroup.agencySlug]}
         onCounted={setCounted}
-        onTripDirections={setTripDirections}
       />
       <SidebarCardSection label={selectedDirection ?? selectedRouteHeadwayLine ?? undefined}>
         {/* Match static route cards: destinations first, live vehicles second. */}
