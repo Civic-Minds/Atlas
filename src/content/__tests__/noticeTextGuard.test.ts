@@ -24,10 +24,14 @@ const RULES: Array<{ name: string; pattern: RegExp }> = [
   { name: 'map hint written inline', pattern: /showMapHint\(\s*['"`]/ },
   { name: 'error label written inline', pattern: /<ErrorBoundary\b[^>]*\blabel="/ },
   { name: 'card notice written inline', pattern: /className=\{`?\$?\{?CARD_NOTICE\b[^>]*>\s*[A-Za-z]/ },
+  // CIV-957: an empty list's sentence as a quoted string or bare JSX text ("No feeds match…", "No … in view.").
+  { name: 'empty list text written inline', pattern: /['"`]No [a-z][^'"`\n]*\b(match|in view|recorded)[^'"`\n]*\.['"`]|>\s*No [a-z][^<{\n]*\b(match|in view|recorded)[^<{\n]*\.\s*</ },
+  { name: 'loading text written inline', pattern: /['"`>]\s*Loading[^'"`<\n]*(…|\.\.\.)\s*['"`<]/ },
 ];
 
-// Live is Atlas Live's own app and lane; its texts move here when that work is scheduled.
-const ALLOWED = [/^apps\/LiveVehicles\.tsx$/, /^Live[A-Za-z]*\.tsx$/, /^components\/Live\//, /^components\/LiveOffNotice\.tsx$/, /^components\/Interval\/panels\/LiveStopArrivals\.tsx$/];
+// Live is Atlas Live's own app and lane; its texts move here when that work is scheduled. The Diagnostics pages are
+// internal tools, not rider-facing.
+const ALLOWED = [/^Diagnostics[A-Za-z]*\.tsx$/, /^apps\/LiveVehicles\.tsx$/, /^Live[A-Za-z]*\.tsx$/, /^components\/Live\//, /^components\/LiveOffNotice\.tsx$/, /^components\/Interval\/panels\/LiveStopArrivals\.tsx$/];
 
 describe('notice text lives in noticeCopy.ts', () => {
   for (const rule of RULES) {
@@ -35,7 +39,8 @@ describe('notice text lives in noticeCopy.ts', () => {
       const offenders = files(SRC)
         .map(f => relative(SRC, f))
         .filter(f => !f.startsWith('content/') && !ALLOWED.some(a => a.test(f)))
-        .filter(f => rule.pattern.test(readFileSync(join(SRC, f), 'utf8')));
+        // Comments may quote a text ("the ring beside \"Loading...\""); only code counts.
+        .filter(f => rule.pattern.test(readFileSync(join(SRC, f), 'utf8').replace(/\/\*[\s\S]*?\*\/|^\s*\/\/.*$/gm, '')));
       expect(offenders).toEqual([]);
     });
   }
@@ -49,6 +54,8 @@ describe('notice text lives in noticeCopy.ts', () => {
       "showMapHint('Location URL copied')",
       '<ErrorBoundary label="The map encountered an error.">',
       '<p className={CARD_NOTICE}>Biggest changes first</p>',
+      "{list.length === 0 ? 'No hidden routes match your search.' : null}",
+      '<div className="py-24">Loading…</div>',
     ];
     RULES.forEach((rule, i) => expect(rule.pattern.test(samples[i])).toBe(true));
   });
