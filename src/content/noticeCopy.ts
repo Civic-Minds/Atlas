@@ -225,8 +225,7 @@ export const networksFailedHint = (names: readonly string[]) => `${joinList(name
 export const networksLoadingText = (loaded: number, requested: number) => `Loading ${loaded} of ${requested} agencies…`;
 // N34 on-demand-failed
 export const ON_DEMAND_AREAS_FAILED = "On-demand areas couldn't load.";
-// N33 on-demand-growing
-export const ON_DEMAND_COVERAGE_GROWING = 'On-demand coverage is still growing. Not every service is mapped yet.';
+// N33 removed (Ryan, 2026-10-27: scheduled service and Live carry no such notice; CIV-1063 adds a per-agency one).
 // N47 link-copied
 export const LOCATION_URL_COPIED = 'Location link copied.';
 // N47 copy-denied
