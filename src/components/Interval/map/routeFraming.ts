@@ -130,7 +130,12 @@ export function frameRoute(
     const [[w, s], [e, n]] = target.bounds as [[number, number], [number, number]];
     map.flyTo({ center: paddedCenter([(w + e) / 2, (s + n) / 2], zoom, padding), zoom, ...(duration !== undefined && { duration }) });
   } else if (target.kind === 'bounds') map.fitBounds(target.bounds, { padding, maxZoom, ...(duration !== undefined && { duration }) });
-  else map.flyTo({ center: target.center, zoom: Math.max(map.getZoom(), maxZoom), padding, duration: duration ?? 900 });
+  else {
+    // The padding goes into the centre, not the camera: MapLibre keeps a flyTo's padding, and the next route fit
+    // would add the card's width a second time (a route picked after a vehicle zoomed out to the region).
+    const zoom = Math.max(map.getZoom(), maxZoom);
+    map.flyTo({ center: paddedCenter(target.center, zoom, padding), zoom, duration: duration ?? 900 });
+  }
   return true;
 }
 
