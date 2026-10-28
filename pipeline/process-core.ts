@@ -3080,6 +3080,23 @@ export async function processGtfsBuffer(
         plainNonTerminalStopHws,
         pooledPlainTerminalHw: pooledTerminalHeadway(terminalId ? headsignMap?.get(terminalId) : undefined),
       });
+      // DEBUG CIV-1087 (count only, never merge): a headline read at the terminal that beats the
+      // worst boarding drawn stop by more than 1 min. One line per feature, prefix CIV1087\t + JSON.
+      if (headway != null && terminalId != null && (headway === terminalComputedHw || headway === plainTerminalComputedHw)) {
+        const boarding = drawnPatternStops().map(p => p.stopId)
+          .filter(stopId => stopId !== terminalId && !dropOffOnlyStops.has(stopId))
+          .map(stopId => ({ stopId, hw: allStopHw[stopId] }))
+          .filter((s): s is { stopId: string; hw: number } => s.hw != null);
+        const worst = boarding.length ? Math.max(...boarding.map(s => s.hw)) : null;
+        if (worst != null && headway < worst - 1) {
+          console.log(`CIV1087\t${JSON.stringify({
+            agency: options?.slug, route: shortName, dir: dirId, day, headsign: featureHeadsign ?? null, rail: railFeature,
+            type: dropOffOnlyStops.has(terminalId) ? 'dropoff' : 'paired', headline: headway, terminalId,
+            terminal: terminalComputedHw, plainTerminal: plainTerminalComputedHw, boardingWorst: worst,
+            boardingBest: Math.min(...boarding.map(s => s.hw)), origin: boarding[0] ?? null, branchHw, poolUsed,
+          })}`);
+        }
+      }
       feature.properties.headway = headway;
       feature.properties.tier = settleTier(feature.properties.tier as string, headway, scoped, routeTierScale());
       // #898: a rail row's tier is phase 2's grade of the drawn pattern's own midday departures,
