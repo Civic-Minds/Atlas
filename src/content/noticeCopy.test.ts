@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { CARD_NOTICE, CARD_NOTICE_FOOTER } from '../styles';
-import { expiredFeedCheckHistory, expiredFeedNotice, nightNoRoutesNotice, noServiceOnDayNotice, selectedRouteFilterNotice, selectedRouteOutsideFilterNotice, stopNoRoutesNotice } from './noticeCopy';
+import { NEW_SCHEDULE_DATA_NOTICE, expiredFeedCheckHistory, expiredFeedNotice, nightNoRoutesNotice, noServiceOnDayNotice, selectedRouteFilterNotice, selectedRouteOutsideFilterNotice, stopNoRoutesNotice } from './noticeCopy';
 
 describe('expiredFeedNotice', () => {
   it('names the agency once, without region or duplicated articles', () => {
@@ -71,5 +71,11 @@ describe('approved notice wording (CIV-1045)', () => {
   it('N17 and N26: no scheduled service on the day', () => {
     expect(noServiceOnDayNotice('route', 'Sunday')).toBe('This route has no scheduled service on Sundays.');
     expect(noServiceOnDayNotice('agency', 'Weekday')).toBe('This agency has no scheduled service on weekdays.');
+  });
+});
+
+describe('N4 (CIV-1051)', () => {
+  it('says verified, matching E2', () => {
+    expect(NEW_SCHEDULE_DATA_NOTICE.route).toBe("This route's new schedule is still being verified.");
   });
 });

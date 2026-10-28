@@ -189,7 +189,7 @@ export function getRolloutNotice(agency: { betaOnly?: boolean; rolloutNotice?: s
 }
 // N4 new-schedule (route), N21 new-schedule (agency)
 /** The route card and the agency card word these for what they show (CIV-941). */
-export const NEW_SCHEDULE_DATA_NOTICE = { route: "This route's new schedule is still being checked for errors.", agency: "This agency's new schedule data is being verified." } as const;
+export const NEW_SCHEDULE_DATA_NOTICE = { route: "This route's new schedule is still being verified.", agency: "This agency's new schedule data is being verified." } as const;
 // N5 corrected (route), N22 corrected (agency)
 export const CORRECTED_DATA_NOTICE = { route: "We corrected an error in this route's schedule.", agency: "We corrected an error in this agency's schedule." } as const;
 // N23 routes-outside-show
@@ -316,25 +316,23 @@ export const EXPLAINERS = {
 } as const;
 export type HelpTopic = keyof typeof EXPLAINERS;
 
-// E2 new-schedule-data
-export const newScheduleDataLead = (agencyName: string, publishedOn?: string | null) =>
-  `${agencyName} recently published new schedule data.${publishedOn ? ` Atlas published it on ${publishedOn}.` : ''}`;
+// E2 new-schedule-data: Ryan's three paragraphs (CIV-1051). The date is the day it went on the map.
+export const newScheduleDataLead = (agencyName: string, onMapOn?: string | null) =>
+  `${agencyNames(agencyName).card.primary}'s new schedule went on the map${onMapOn ? ` on ${onMapOn}` : ''}. It may have errors we haven't found yet.`;
 export const NEW_SCHEDULE_DATA_EXPLANATION =
-  "Atlas publishes new feeds automatically so the map stays current. We're checking this feed for missing service and data-quality problems before treating it as verified.";
-export const NEW_SCHEDULE_DATA_TEMPORARY =
-  'This notice is temporary. It will disappear after review, or become a correction notice if we find a known problem.';
-// E3 corrected-data
-export const CORRECTED_DATA_EXPLANATION =
-  'Sometimes agencies publish incorrect data in their GTFS feed. When we find a known problem, we filter it out during processing so the map reflects real service.';
-// E4 beta-rollout
-export const betaRolloutLead = (agencyName: string) => `${agencyName} is currently available in Atlas beta while its schedule data is being validated.`;
-export const BETA_ROLLOUT_EXPLANATION =
-  'This coverage is still being checked before it is added to the main Atlas map. Some routes or schedule details may change during testing.';
+  "We're verifying it for missing service and other errors, and we'll correct anything we find.";
+export const NEW_SCHEDULE_DATA_WEBSITE = "The agency's website has its current schedule.";
+// E3 corrected-data: Ryan's three paragraphs (CIV-1051); paragraph 1 is the agency's correction note.
+export const CORRECTED_DATA_EXPLANATION = 'We correct errors like this before a schedule goes on the map.';
+export const CORRECTED_DATA_REPORT = 'If something still looks wrong, report it below.';
+// E4 beta-rollout: Ryan's two paragraphs (CIV-1051); no rollout link (it pointed riders at internal tracking).
+export const betaRolloutLead = (agencyName: string) => `${agencyNames(agencyName).card.primary} is only available on Atlas beta.`;
+export const BETA_ROLLOUT_EXPLANATION = "We're still verifying its schedule, and some routes or times may change.";
 // E5 route-data-quality
-export const routeDataQualityLead = (agencyName: string) => `${agencyName} has a problem with this route's shape in the source feed.`;
-export const ROUTE_DATA_QUALITY_EXPLANATION =
-  "Transit agencies publish the route shapes Atlas uses to draw routes. Atlas identified a specific problem in this route's source geometry, so the route stays visible with a warning instead of hiding the entire agency.";
-export const ROUTE_DATA_QUALITY_DETAIL = 'The line may be incomplete or adjusted. The schedule information is separate from the map geometry.';
+// Ryan's three paragraphs (CIV-1051).
+export const ROUTE_DATA_QUALITY_LEAD = "Part of this route's line on the map may be missing or drawn in the wrong place.";
+export const ROUTE_DATA_QUALITY_EXPLANATION = 'We still show the route. Its frequency on this card comes from the timetable and is still accurate.';
+export const ROUTE_DATA_QUALITY_REPORT = 'If something looks off, report it with the flag on this card.';
 // E7 edge-gap-allowance
 // Ryan's approved wording (CIV-1045), replacing both old lines.
 export const EDGE_GAP_ALLOWANCE_LEAD = 'A route can still count at its frequency when the first or last trip of the day comes a little later than the rest.';

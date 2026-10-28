@@ -19,7 +19,7 @@ import type { Agency } from '../App';
 import { isAgencyFeedExpired } from '../../shared/feedAvailability';
 import { trackEvent } from '../lib/analytics';
 import { OutboundLink } from './OutboundLink';
-import { BETA_ROLLOUT_EXPLANATION, betaRolloutLead, CORRECTED_DATA_EXPLANATION, EDGE_GAP_ALLOWANCE_EXPLANATION, EDGE_GAP_ALLOWANCE_LEAD, E1_AGENCY_WEBSITE, E1_WEEKLY_CHECK, EXPIRED_FEED_EXPLANATION, expiredFeedCheckHistory, expiredFeedNotice, EXPLAINERS, type HelpTopic, MANUAL_FEED_CONTEXT, NEW_SCHEDULE_DATA_EXPLANATION, NEW_SCHEDULE_DATA_TEMPORARY, newScheduleDataLead, NO_AGENCIES_MATCH, NO_ROUTE_SHAPE_DETAIL, NO_ROUTE_SHAPE_EXPLANATION, ROUTE_DATA_QUALITY_DETAIL, ROUTE_DATA_QUALITY_EXPLANATION, routeDataQualityLead, WEEKDAY_VARIATION_EXPLANATION, WEEKDAY_VARIATION_LEAD } from '../content/noticeCopy';
+import { BETA_ROLLOUT_EXPLANATION, betaRolloutLead, CORRECTED_DATA_EXPLANATION, CORRECTED_DATA_REPORT, EDGE_GAP_ALLOWANCE_EXPLANATION, EDGE_GAP_ALLOWANCE_LEAD, E1_AGENCY_WEBSITE, E1_WEEKLY_CHECK, EXPIRED_FEED_EXPLANATION, expiredFeedCheckHistory, expiredFeedNotice, EXPLAINERS, type HelpTopic, MANUAL_FEED_CONTEXT, NEW_SCHEDULE_DATA_EXPLANATION, NEW_SCHEDULE_DATA_WEBSITE, newScheduleDataLead, NO_AGENCIES_MATCH, NO_ROUTE_SHAPE_DETAIL, NO_ROUTE_SHAPE_EXPLANATION, ROUTE_DATA_QUALITY_EXPLANATION, ROUTE_DATA_QUALITY_LEAD, ROUTE_DATA_QUALITY_REPORT, WEEKDAY_VARIATION_EXPLANATION, WEEKDAY_VARIATION_LEAD } from '../content/noticeCopy';
 import RegionFilterPills from './RegionFilterPills';
 import ListRow from './ui/ListRow';
 import { AgencyList, AgencyListRow, AgencyRegionSection } from './ui/AgencyList';
@@ -47,7 +47,6 @@ export type HelpContext = {
   issueUrl?: string;
   issueUrls?: string[];
   rolloutNotice?: string;
-  rolloutIssueUrl?: string;
 };
 export type OpenInfoOptions = {
   featureFilter?: 'live' | 'history';
@@ -64,7 +63,6 @@ export type OpenInfoOptions = {
   issueUrl?: string;
   issueUrls?: string[];
   rolloutNotice?: string;
-  rolloutIssueUrl?: string;
 };
 export type OpenInfoFn = (tab?: Tab, opts?: OpenInfoOptions) => void;
 
@@ -576,11 +574,11 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
               <p className="text-xs text-[var(--text-dim)] leading-relaxed">
                 {NEW_SCHEDULE_DATA_EXPLANATION}
               </p>
-              <p className="text-xs text-[var(--text-dim)] leading-relaxed">
-                {NEW_SCHEDULE_DATA_TEMPORARY}
-              </p>
               {helpContext?.websiteUrl && (
-                <LinkCard as={OutboundLink} href={helpContext.websiteUrl} kind="agency_website" icon="external">Check current schedules</LinkCard>
+                <>
+                  <p className="text-xs text-[var(--text-dim)] leading-relaxed">{NEW_SCHEDULE_DATA_WEBSITE}</p>
+                  <LinkCard as={OutboundLink} href={helpContext.websiteUrl} kind="agency_website" icon="external">Check current schedules</LinkCard>
+                </>
               )}
             </div>
           )}
@@ -595,6 +593,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
               <p className="text-xs text-[var(--text-dim)] leading-relaxed">
                 {CORRECTED_DATA_EXPLANATION}
               </p>
+              <p className="text-xs text-[var(--text-dim)] leading-relaxed">{CORRECTED_DATA_REPORT}</p>
               {(helpContext?.issueUrls?.length || helpContext?.issueUrl) ? (
                 <>
                   {[...(helpContext.issueUrls ?? []), ...(helpContext.issueUrls?.length ? [] : [helpContext.issueUrl])]
@@ -627,31 +626,14 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
               <p className="text-xs text-[var(--text-dim)] leading-relaxed">
                 {BETA_ROLLOUT_EXPLANATION}
               </p>
-              {helpContext?.rolloutIssueUrl && (
-                <LinkCard href={helpContext.rolloutIssueUrl}
-                  target="_blank"
-                  rel="noopener noreferrer" icon="external">
-                    {helpContext.rolloutIssueUrl.match(/\/issues\/(\d+)/)?.[1]
-                      ? `Follow rollout (#${helpContext.rolloutIssueUrl.match(/\/issues\/(\d+)/)?.[1]})`
-                      : 'Follow rollout'}
-                  </LinkCard>
-              )}
             </div>
           )}
 
           {view === 'route-data-quality' && (
             <div className="h-full overflow-y-auto px-5 py-4 space-y-4">
-              {helpContext?.agencyName && (
-                <p className="text-xs text-[var(--text-primary)] leading-relaxed">
-                  {routeDataQualityLead(helpContext.agencyName)}
-                </p>
-              )}
-              <p className="text-xs text-[var(--text-dim)] leading-relaxed">
-                {ROUTE_DATA_QUALITY_EXPLANATION}
-              </p>
-              <p className="text-xs text-[var(--text-dim)] leading-relaxed">
-                {ROUTE_DATA_QUALITY_DETAIL}
-              </p>
+              <p className="text-xs text-[var(--text-primary)] leading-relaxed">{ROUTE_DATA_QUALITY_LEAD}</p>
+              <p className="text-xs text-[var(--text-dim)] leading-relaxed">{ROUTE_DATA_QUALITY_EXPLANATION}</p>
+              <p className="text-xs text-[var(--text-dim)] leading-relaxed">{ROUTE_DATA_QUALITY_REPORT}</p>
             </div>
           )}
 
