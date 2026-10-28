@@ -32,6 +32,7 @@ export interface AgencyFeedConfig {
   skipLetterSuffixMerge?: boolean;
   mergeEquivalentShapeVariants?: boolean;
   mergeEquivalentShapeVariantsAllModes?: boolean;
+  mergeEquivalentShapeVariantsRouteTypes?: string[];
   keepLongShapeJumps?: boolean;
   skipClusteredJumpRepair?: boolean;
   poolSingleTripShapes?: boolean;
@@ -100,6 +101,7 @@ export function agencyProcessOptions(agency: AgencyFeedConfig, overrides: Agency
     skipLetterSuffixMerge: agency.skipLetterSuffixMerge,
     mergeEquivalentShapeVariants: agency.mergeEquivalentShapeVariants,
     mergeEquivalentShapeVariantsAllModes: agency.mergeEquivalentShapeVariantsAllModes,
+    mergeEquivalentShapeVariantsRouteTypes: agency.mergeEquivalentShapeVariantsRouteTypes,
     keepLongShapeJumps: agency.keepLongShapeJumps,
     skipClusteredJumpRepair: agency.skipClusteredJumpRepair,
     poolSingleTripShapes: agency.poolSingleTripShapes,
