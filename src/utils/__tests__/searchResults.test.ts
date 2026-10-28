@@ -11,6 +11,10 @@ import {
   searchRouteResults,
   searchStopResults,
   splitByViewport,
+  searchIndexRouteResults,
+  searchIndexStopResults,
+  mergeRouteResults,
+  mergeStopResults,
 } from '../searchResults';
 import type { AgencySearchGroup } from '../agencySearch';
 
@@ -217,5 +221,58 @@ describe('searchResults', () => {
     expect(results).toHaveLength(1);
     expect(results[0].stopName).toBe('Rosemont'); // "Rosemont" is shorter and matches "rosemont" query exactly (rank 2 vs rank 4)
     expect(results[0].routes).toEqual(['811', 'Blue']);
+  });
+});
+
+describe('every-agency search index results (CIV-1048)', () => {
+  // A view over downtown Toronto.
+  const toronto = { s: 43.6, w: -79.5, n: 43.7, e: -79.3 };
+  const names = new Map([['muni', 'Muni'], ['ttc', 'TTC'], ['actransit', 'AC Transit']]);
+  const nameOf = (slug: string) => names.get(slug) ?? null;
+  const routesFile = {
+    v: 1,
+    agencies: ['actransit', 'hidden', 'muni', 'ttc'],
+    routes: [
+      [0, '38', '38', 'Fruitvale', 3, 37.78, -122.22],
+      [1, '38', '38', 'Hidden 38', 3, 40, -100],
+      [2, '38', '38', 'Geary', 3, 37.78, -122.45],
+      [3, '38', '38', 'Highland Creek', 3, 43.78, -79.2],
+      [3, '504', '504', 'King', 0, 43.65, -79.38],
+    ],
+  } as const;
+
+  it('finds "38 Geary" in an agency far from the view', () => {
+    const results = searchIndexRouteResults(routesFile as never, '38 geary', toronto, nameOf);
+    expect(results.map(r => r.key)).toEqual(['muni::38']);
+    expect(results[0].inView).toBe(false);
+    expect(results[0].agencyName).toBe('Muni');
+  });
+
+  it('ranks by match, then distance from the view, and skips agencies the app does not list', () => {
+    const results = searchIndexRouteResults(routesFile as never, '38', toronto, nameOf);
+    expect(results.map(r => r.key)).toEqual(['ttc::38', 'actransit::38', 'muni::38']);
+  });
+
+  it('does not list every route of an agency for its slug alone', () => {
+    expect(searchIndexRouteResults(routesFile as never, 'ttc', toronto, nameOf)).toEqual([]);
+  });
+
+  it('reads stops with accents folded, one row per place', () => {
+    const split = {
+      muni: [['Geary Blvd & Park Presidio', 'a', 37.78, -122.47, 'c', 37.9, -122.47]],
+      ttc: [['Église Saint-Pierre', 'e', 43.65, -79.4]],
+    };
+    // The copy 13 km further north is nearer Toronto.
+    expect(searchIndexStopResults(split, 'geary', toronto, nameOf).map(s => s.key)).toEqual(['muni::c', 'muni::a']);
+    const eglise = searchIndexStopResults(split, 'eglise', toronto, nameOf);
+    expect(eglise.map(s => [s.key, s.inView])).toEqual([['ttc::e', true]]);
+  });
+
+  it('merges index results only for agencies not loaded', () => {
+    const loaded = searchRouteResults([], '38', toronto);
+    const fromIndex = searchIndexRouteResults(routesFile as never, '38', toronto, nameOf);
+    expect(mergeRouteResults(loaded, fromIndex, new Set(['ttc']))!.map(r => r.key)).toEqual(['actransit::38', 'muni::38']);
+    expect(mergeRouteResults(null, fromIndex, new Set())).toBeNull();
+    expect(mergeStopResults([], [], new Set())).toEqual([]);
   });
 });

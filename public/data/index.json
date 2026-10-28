@@ -537,6 +537,9 @@
         -79.99
       ],
       "feedUrl": "https://webapps.regionofwaterloo.ca/api/grt-routes/api/staticfeeds/1",
+      "supplementalFeedUrls": [
+        "https://webapps.regionofwaterloo.ca/api/grt-routes/api/staticfeeds/2"
+      ],
       "lastFeedExpiry": "20260426",
       "lastFeedVersion": null,
       "lastRefreshedAt": "20260811",
@@ -556,7 +559,22 @@
       "feedRefreshErrorAt": "20261019",
       "feedRefreshRetryCount": 4,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-grand-river-transit-gtfs-721.zip?alt=media"
+      "lastFeedSourceUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-grand-river-transit-gtfs-721.zip?alt=media",
+      "modeOverrides": [
+        {
+          "routeType": 0,
+          "routeShortName": "301",
+          "mode": 100,
+          "reason": "ION is light rail; the Region's feed publishes it as route_type 0 (tram) while the earlier GRT feed had it as 2"
+        }
+      ],
+      "lastSupplementalFeeds": [
+        {
+          "feedExpiry": "20280703",
+          "feedVersion": null,
+          "rawArchiveKey": "20280703-9f872bb7bc6ca990"
+        }
+      ]
     },
     {
       "slug": "guelph",

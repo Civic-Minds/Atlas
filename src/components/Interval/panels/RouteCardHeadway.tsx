@@ -4,7 +4,7 @@ import { routePatternLabel } from '../../../utils/routePattern';
 import type { Agency } from '../../../App';
 import type { OpenInfoFn } from '../../InfoPanel';
 import type { HeadwayByPeriod } from '../../../hooks/useAgencyData';
-import { routeLabels, resolveBranchLabel, formatBranchLabel } from '../../../utils/format';
+import { routeLabels, resolveBranchLabel, formatBranchLabel, formatStoredDate } from '../../../utils/format';
 import { agencyNames } from '../../../utils/agencyName';
 import { HeadwaySparkline } from '../HeadwaySparkline';
 import { hourChartMaxFreq } from '../../../utils/hourChartModel';
@@ -44,6 +44,7 @@ import {
   sharedStopIdsForBranches,
   sharedStretchHeadway,
   shouldShowTrunkSummary,
+  stretchSharedHeadway,
   trunkSparklineByHour,
 } from '../../../utils/routeCardTrunk';
 import { shouldShowDirectionSections } from '../../../utils/routeCardDirectionLayout';
@@ -56,7 +57,8 @@ import { compareCardSummary } from '../../../utils/compareSides';
 import { reportDetails } from '../../../utils/reportIssue';
 import { ROUTE_DATA_QUALITY_WARNING, ROUTE_DATA_QUALITY_WARNING_MESSAGE } from '../../../../shared/routeDataQuality';
 import { featurePassesHeadwayFilter } from '../../../../shared/routeHeadwayFilter';
-import { BOOKING_REQUIRED_NOTICE, expiredFeedNotice, NO_ROUTE_SHAPE_NOTICE, periodServiceNotice, selectedRouteFilterNotice, selectedRouteOutsideFilterNotice, unevenServiceNotice } from '../../../content/noticeCopy';
+import { BOOKING_REQUIRED_NOTICE, expiredFeedNotice, listingEndedNotice, listingEndHasPassed, NO_ROUTE_SHAPE_NOTICE, periodServiceNotice, selectedRouteFilterNotice, selectedRouteOutsideFilterNotice, unevenServiceNotice } from '../../../content/noticeCopy';
+import { agencyTodayYmd } from '../../../../shared/feedAvailability';
 import { headwayAbout, headwayAboutRange } from '../../../utils/headwayText';
 import type { RouteLabel } from '../../../utils/routeFacts';
 
@@ -236,6 +238,9 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
   const [hoveredHour, setHoveredHour] = React.useState<number | null>(null);
   const reportRef = React.useRef<CardReportButtonHandle>(null);
   const agencyDisplayName = agencyNames(routeAgency?.name ?? routeSlug ?? '').name;
+  // An ended timetable (N2) says more, so it wins over the listing end.
+  const listingEndedDate = !routeIsStale && routeAgency?.listingEndedOn ? formatStoredDate(routeAgency.listingEndedOn) : '';
+  const listingEnded = !!routeAgency?.listingEndedOn && listingEndHasPassed(routeAgency.listingEndedOn, agencyTodayYmd(routeAgency));
   const routeOverrideNote = routeAgency?.overrideNote
     && (!routeAgency.overrideNoteRoutes?.length || routeAgency.overrideNoteRoutes.includes(currentRoute.routeShortName ?? ''))
     ? routeAgency.overrideNote
@@ -632,9 +637,11 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
             // A route that fails the filter as a whole can still have a shared stretch that passes.
             const onlySharedPasses = groupShared != null && maxHeadway !== Infinity
               && group.realTier.some(d => !featurePassesHeadwayFilter(d, period, maxHeadway));
+            // CIV-937: with stretch data, the shared main stretch's own value ("Shared stretch every 15") above the branch rows.
+            const stretchShared = stretchMode && !nightView ? stretchSharedHeadway(group, period) : null;
             // A shared or combined value is a daytime reading: none on the Night card (CIV-934).
-            const groupHasCoreSummary = !nightView && !stretchMode && (groupShared != null || shouldShowTrunkSummary(group.realTier, period));
-            const groupCoreHeadway = groupShared?.headway ?? (groupHasCoreSummary
+            const groupHasCoreSummary = !nightView && (stretchMode ? stretchShared != null : groupShared != null || shouldShowTrunkSummary(group.realTier, period));
+            const groupCoreHeadway = groupShared?.headway ?? stretchShared ?? (groupHasCoreSummary
               ? groupTrunkHeadway(group.realTier, period === 'all' ? 'midday' : period)
               : null);
             const groupSharedStopIds = groupShared?.stopIds ?? (groupHasCoreSummary ? sharedStopIdsForBranches(group.realTier) : []);
@@ -683,7 +690,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                 {groupHasCoreSummary && groupCoreHeadway != null && (
                   <>
                     <CardDirectionRow
-                      label={groupShared ? 'Shared stretch' : 'Combined'}
+                      label={groupShared || stretchShared != null ? 'Shared stretch' : 'Combined'}
                       headway={groupCoreHeadway}
                       branchHovered={coreHovered}
                       branchDimmed={!!hoveredBranch && !coreHovered}
@@ -775,7 +782,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
             <CardHelpNotice message={BOOKING_REQUIRED_NOTICE} />
           </div>
         )}
-        {(routeIsStale || routeAgency?.feedReviewStatus === 'review' || routeOverrideNote || hasRouteDataQualityWarning || hasNoRouteShape || hasWeekdayTierVariation) && onInfoOpen && (
+        {(routeIsStale || listingEndedDate || routeAgency?.feedReviewStatus === 'review' || routeOverrideNote || hasRouteDataQualityWarning || hasNoRouteShape || hasWeekdayTierVariation) && onInfoOpen && (
           <div className={`${CARD_NOTICE_FOOTER} space-y-1`}>
             {hasNoRouteShape && (
               <CardHelpNotice
@@ -792,6 +799,23 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                 onLearnMore={() => onInfoOpen('about', {
                   helpTopic: 'route-data-quality',
                   agencyName: routeAgency?.name,
+                })}
+              />
+            )}
+            {listingEndedDate && (
+              // N25 (CIV-1055): most of the agency's routes stopped being listed; the card shows their last listed week.
+              <CardHelpNotice
+                message={listingEndedNotice(listingEndedDate, listingEnded)}
+                onLearnMore={() => onInfoOpen('about', {
+                  helpTopic: 'outdated-schedule',
+                  agencyName: routeAgency?.name,
+                  listingEndedDate,
+                  listingEnded,
+                  lastRefreshedAt: routeAgency?.lastRefreshedAt ?? undefined,
+                  lastFeedCheckAt: routeAgency?.lastFeedCheckAt ?? undefined,
+                  expiredFeedCheckCount: routeAgency?.expiredFeedCheckCount,
+                  expiredFeedCheckSince: routeAgency?.expiredFeedCheckSince ?? undefined,
+                  websiteUrl: routeAgency?.websiteUrl ?? undefined,
                 })}
               />
             )}

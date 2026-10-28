@@ -54,6 +54,8 @@ interface SidebarControlsProps {
   searchMatches: number | null;
   searchMatchResults: RouteSearchResult[] | null;
   searchStopMatchResults: StopSearchResult[] | null;
+  /** The search index is still loading for this query (CIV-1048). */
+  searchPending?: boolean;
   maxHeadway: number;
   agencies: Agency[];
   period: TimePeriod;
@@ -108,6 +110,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   searchMatches,
   searchMatchResults,
   searchStopMatchResults,
+  searchPending = false,
   maxHeadway,
   agencies,
   period,
@@ -916,6 +919,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
             onRouteHover={onSearchRouteHover}
             hasMoreResults={hasMoreSearchResults}
             onShowMoreResults={() => setShowAllSearchResults(true)}
+            searchPending={searchPending}
           />
         )}
 

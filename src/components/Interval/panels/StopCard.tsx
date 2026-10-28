@@ -167,6 +167,8 @@ export const StopCard: React.FC<StopCardProps> = ({
       {nearbyConnections.length > 0 && (
         <SidebarCardSection label="Nearby routes">
           {nearbyConnections.map(({ rKey, label: route, headway, nearestStopName, distanceMeters }) => {
+            // Hovering shows the whole route on the map, as the stop's own route lines do (CIV-1053).
+            const hovered = !!hoveredBranch && hoveredBranch.routeKey === rKey && hoveredBranch.directionId == null;
             return (
               <CardDirectionRow
                 key={rKey}
@@ -179,6 +181,12 @@ export const StopCard: React.FC<StopCardProps> = ({
                 subLabelWeight="medium"
                 headway={headway ?? undefined}
                 onClick={() => openRoute(rKey)}
+                {...(setHoveredBranch ? {
+                  onHoverStart: () => setHoveredBranch({ routeKey: rKey }),
+                  onHoverEnd: () => setHoveredBranch(null),
+                  branchHovered: hovered,
+                  branchDimmed: !!hoveredBranch && !hovered,
+                } : {})}
               />
             );
           })}

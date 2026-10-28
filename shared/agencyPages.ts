@@ -4,6 +4,7 @@
  * the per-route headways already published in the data release (see
  * scripts/build-agency-page-summaries.ts); nothing here measures anything new.
  */
+import { agencyTodayYmd } from './feedAvailability';
 import { headwayEvery, headwayEveryRange, headwayOrBetter } from './headwayText';
 import { modeLabel, sortModes } from './modes';
 import { compareAgencyName, compareNullableAscending } from './sortCompare';
@@ -79,6 +80,8 @@ export interface AgencyPageSummary extends AgencyPageIdentity {
   lastRefreshedAt: string | null;
   /** Last day the published feed covers (the catalog's lastFeedExpiry), yyyymmdd. */
   validThrough?: string | null;
+  /** CIV-1011: the catalog's listingEndedOn, yyyymmdd: most routes stopped being listed then (Ryan's notice). */
+  listingEndedOn?: string | null;
   /** Whether the release has Saturday / Sunday service for this agency (published day types). */
   sat?: boolean;
   sun?: boolean;
@@ -362,12 +365,25 @@ function endedBefore(through: string | null | undefined, releaseDate: string | n
  * The page footer in plain words: what the numbers are based on, when the timetable was published and how long it runs,
  * and when Atlas last updated the page. A clause whose date is missing is left out; an ended timetable says so.
  */
-export function agencyDatesText(a: Pick<AgencyPageSummary, 'lastRefreshedAt' | 'validThrough'>, releaseDate: string | null): string {
+// N25 listing-ended (Ryan's exact text, CIV-1011). One definition for the agency page and the map (content/noticeCopy re-exports it).
+// Ryan: "ended is past but ends is upcoming": "ends" before the listing-end date (agency-local), "ended" from it on.
+export const listingEndedNotice = (date: string, ended: boolean) => `This agency's scheduled service for most routes ${ended ? 'ended' : 'ends'} ${date}, and they have not released updated data.`;
+/** Whether the listing-end date (yyyymmdd) has arrived, given today's agency-local yyyymmdd. */
+export const listingEndHasPassed = (listingEndedOn: string, todayYmd: string) => todayYmd >= listingEndedOn;
+// N112 listing-ended-page (Ryan's exact text, CIV-1055): agency pages only, when the timetable has a through date.
+// Cards and notices keep N25.
+export const listingEndedPageLine = (through: string, date: string, ended: boolean) => `This timetable covers service until ${through}, but most of its routes ${ended ? 'ended' : 'end'} ${date}.`;
+
+export function agencyDatesText(a: Pick<AgencyPageSummary, 'lastRefreshedAt' | 'validThrough' | 'listingEndedOn'>, releaseDate: string | null, todayYmd: string = agencyTodayYmd({})): string {
   const published = formatDataDate(a.lastRefreshedAt);
   const through = formatDataDate(a.validThrough);
   const release = formatDataDate(releaseDate);
+  const listingEnded = formatDataDate(a.listingEndedOn);
   const timetable = through && endedBefore(a.validThrough, releaseDate)
     ? `This timetable ended on ${through}; the agency hasn't published a newer one yet.`
+    // N112 with a through date, else N25 (CIV-1055): "covers service until" alone would overstate a timetable whose routes mostly stopped.
+    : listingEnded && through ? listingEndedPageLine(through, listingEnded, listingEndHasPassed(a.listingEndedOn!, todayYmd))
+    : listingEnded ? listingEndedNotice(listingEnded, listingEndHasPassed(a.listingEndedOn!, todayYmd))
     : published && through ? `This timetable was published ${published} and covers service until ${through}.`
     : published ? `This timetable was published ${published}.`
     : through ? `This timetable covers service until ${through}.`

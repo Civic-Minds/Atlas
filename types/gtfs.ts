@@ -157,6 +157,8 @@ export interface GtfsData {
     stopTimes: GtfsStopTime[];
     calendar: GtfsCalendar[];
     calendarDates: GtfsCalendarDate[];
+    /** calendar.txt was missing or empty, so `calendar` was synthesized from calendar_dates (parseGtfs). */
+    calendarSynthesized?: boolean;
     shapes: GtfsShape[];
     feedInfo?: GtfsFeedInfo[];
     frequencies?: GtfsFrequency[];
