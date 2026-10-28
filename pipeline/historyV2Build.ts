@@ -156,6 +156,15 @@ export function invalidReason(label: string, year: number, v2: HistorySnapshotV2
   return null;
 }
 
+/** When an old change file was written (its processedAt), as a year and label; null if unknown or after this year. */
+function readDate(processedAt: string | undefined, buildYear: number): { year: number; label: string } | null {
+  const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(processedAt ?? '');
+  if (!m) return null;
+  const year = Number(m[1]);
+  const label = labelFromRefDate(`${m[1]}${m[2]}${m[3]}`);
+  return year <= buildYear && label ? { year, label } : null;
+}
+
 export interface Candidate {
   periodKey: string;
   change?: ArchiveChange;
@@ -217,8 +226,12 @@ export function buildRouteSnapshots(
     const v2 = c.v2 ? { refDate: c.v2.refDate, key: route, rep: c.v2.rep, sat: c.v2.sat, sun: c.v2.sun, flag: c.v2.flag } : undefined;
     if (v2) { for (const k of ['sat', 'sun', 'flag'] as const) if (v2[k] === undefined) delete v2[k]; }
     const parsed = parsePeriodKey(c.periodKey);
-    const year = v2 ? (yearOfRefDate(v2.refDate) ?? NaN) : parsed.year;
-    const label = c.change?.label ?? (v2 ? (labelFromRefDate(v2.refDate) ?? '') : parsed.label);
+    // An old change file is keyed by its feed's END date (refresh.ts), so a timetable still running
+    // that ends after this year read as a future year and was dropped, leaving an earlier timetable as
+    // this year's point (CIV-394: AC Transit "Apr 2027"). Such a file is dated by when it was read.
+    const read = !v2 && parsed.year > buildYear ? readDate(c.change?.processedAt, buildYear) : null;
+    const year = v2 ? (yearOfRefDate(v2.refDate) ?? NaN) : read ? read.year : parsed.year;
+    const label = read ? read.label : c.change?.label ?? (v2 ? (labelFromRefDate(v2.refDate) ?? '') : parsed.label);
     const reason = invalidReason(label, year, v2, buildYear);
     if (reason) { report.drops.push({ slug, route, label, reason }); continue; }
     // A v2 value is the representative; a limited or blank route has no number and is never
