@@ -150,11 +150,15 @@ describe('riderHeadsign', () => {
   it('drops an internal short-turn name (CIV-1062)', () => {
     expect(riderHeadsign('506 Carlton Short Turn', '506')).toBeNull();
     expect(riderHeadsign('512 St Clair Short Turn', '512')).toBeNull();
+    expect(riderHeadsign('88S South Leaside Short Turn', '88')).toBeNull();
+    expect(riderHeadsign('301S Queen Replacement Bus Short Turn', '301')).toBeNull();
   });
   it('keeps every real destination', () => {
     expect(riderHeadsign('Broadview & Gerrard', '506')).toBe('Broadview & Gerrard');
     expect(riderHeadsign('Roncesvalles (short turn)', '501')).toBe('Roncesvalles (short turn)');
     expect(riderHeadsign('506 Carlton Short Turn', '505')).toBe('506 Carlton Short Turn');
+    expect(riderHeadsign('88S South Leaside Short Turn', '8')).toBe('88S South Leaside Short Turn');
+    expect(riderHeadsign('5065 Carlton Short Turn', '506')).toBe('5065 Carlton Short Turn');
     expect(riderHeadsign(null, '506')).toBeNull();
   });
 });
