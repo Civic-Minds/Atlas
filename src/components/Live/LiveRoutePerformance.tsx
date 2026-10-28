@@ -6,7 +6,7 @@ import { readUrlNumberParam, syncUrlParams } from '../../utils/syncUrlParams';
 import { periodKeyForHour } from '../../../shared/config';
 import { LIVE_AGENCY_TIMEZONES } from '../../../shared/livePollingConfig';
 import { halfMinutes, type SegmentBand, type SegmentDelayData } from '../../utils/segmentDelayView';
-import { addSnapshot, analysisTripDirections, lineModel, liveGaps, liveTripDirections, mapDirectionPairing, positionsSnapshot, type RecentSnapshot, withStats, type LineModel } from '../../utils/livePerformance';
+import { addSnapshot, lineModel, liveGaps, liveTripDirections, positionsSnapshot, type RecentSnapshot, withStats, type LineModel } from '../../utils/livePerformance';
 import type { LiveVehicle } from '../../context/LiveVehiclesMapOverlay';
 import { getVehicleStatus } from '../../utils/colors';
 import { LIVE_FEED_INCOMPLETE, LIVE_GAP_NOT_SEEN, LIVE_REPLACEMENT_BUSES } from '../../content/noticeCopy';
@@ -79,11 +79,6 @@ interface Props {
    * null while "Right now" has no count (no analysis, feed down or incomplete). Must be stable (a state setter).
    */
   onCounted?: (counted: { directionId: number; label: string; ids: string[] } | null) => void;
-  /**
-   * Each vehicle's direction from its trip in the analysis's timetable, in the map's numbering (vehicle id → map direction id), so the map
-   * names its destination from that direction instead of guessing from the nearest shape (#1164). Must be stable.
-   */
-  onTripDirections?: (byVehicle: ReadonlyMap<string, number> | null) => void;
 }
 
 /**
@@ -99,7 +94,7 @@ function useRecentPositions(vehicles: readonly LiveVehicle[]): RecentSnapshot[] 
 }
 
 /** The Live route card: only what is live now ("Right now"), per direction. */
-export default function LiveRoutePerformance({ slug, routeShortName, vehicles, feedDegraded, onCounted, onTripDirections }: Props) {
+export default function LiveRoutePerformance({ slug, routeShortName, vehicles, feedDegraded, onCounted }: Props) {
   const data = useSegmentDelay(slug, routeShortName) as (SegmentDelayData & { tripDirections?: Record<string, string[]> }) | null;
   // The direction lives in the URL (dir) so a shared link reopens it.
   const directions = useMemo(() => Object.entries(data?.directionLabels ?? {}).map(([id, label]) => [Number(id), label] as const), [data]);
@@ -137,23 +132,6 @@ export default function LiveRoutePerformance({ slug, routeShortName, vehicles, f
   }, [onCounted, countedKey, directionId, directionLabel]);
   useEffect(() => () => onCounted?.(null), [onCounted]);
 
-  // Only trips the timetable lists: a trip it doesn't list gets its direction from the map, the guess this corrects.
-  // The map numbers directions its own way, so each is turned into the map's number through the learned pairing
-  // (a direction the pairing doesn't name says nothing).
-  const dirOfTrip = useMemo(() => analysisTripDirections(data?.tripDirections), [data]);
-  // Where two of the map's directions pair with the same analysis direction (a few misplaced cars outvoting none),
-  // the one more cars back wins.
-  const support = (m: number, a: number) => vehicles.filter(v => v.directionId === m && dirOfTrip.get(v.tripId) === a).length;
-  const toMapDir = new Map<number, number>();
-  for (const [m, a] of mapDirectionPairing(vehicles, dirOfTrip)) {
-    const had = toMapDir.get(a);
-    if (had == null || support(m, a) > support(had, a)) toMapDir.set(a, m);
-  }
-  const tripDirKey = vehicles.flatMap(v => { const a = dirOfTrip.get(v.tripId); return a != null && toMapDir.has(a) ? [`${v.id}\t${toMapDir.get(a)}`] : []; }).sort().join('\n');
-  useEffect(() => {
-    onTripDirections?.(tripDirKey ? new Map(tripDirKey.split('\n').map(x => { const [id, d] = x.split('\t'); return [id, Number(d)] as const; })) : null);
-  }, [onTripDirections, tripDirKey]);
-  useEffect(() => () => onTripDirections?.(null), [onTripDirections]);
 
   if (!data || !line) return null;
 
