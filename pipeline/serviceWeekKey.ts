@@ -4,6 +4,11 @@
  * depends on the run date, so an unchanged zip is reprocessed when this moves (a new timetable starts,
  * a listing ends) and skipped otherwise, not reprocessed every week. Read from the zip's own calendar
  * files, the same inputs process-core gives pickRiderWeek before the agency's route filters.
+ *
+ * CIV-1066: it also carries a hash of trips.txt and stop_times.txt, so a feed whose times or trips
+ * change under the same service_ids (and the same latest end date, with no feed_version: Miami-Dade's
+ * replaced bus package) is processed, while a zip rebuilt byte-differently with the same files is
+ * still skipped. Line endings are ignored.
  */
 import { createHash } from 'node:crypto';
 import JSZip from 'jszip';
@@ -27,8 +32,23 @@ export async function serviceWeekKey(buf: Buffer, anchor: string = serviceAnchor
       anchor,
     });
     const text = DAY_NAMES.map(day => `${day}:${week.week.services[day].join(',')}`).join('|') + `|end:${week.listingEnd?.date ?? ''}`;
-    return createHash('sha1').update(text).digest('hex').slice(0, 16);
+    const hash = createHash('sha1').update(text);
+    for (const name of ['trips.txt', 'stop_times.txt']) {
+      const entry = file(name);
+      hash.update(`|${name}:`);
+      if (entry) hash.update(withoutCarriageReturns(await entry.async('nodebuffer')));
+    }
+    return hash.digest('hex').slice(0, 16);
   } catch {
     return null;
   }
+}
+
+/** The file's bytes with every carriage return removed, so CRLF and LF copies hash the same. */
+function withoutCarriageReturns(buf: Buffer): Buffer {
+  if (!buf.includes(13)) return buf;
+  const out = Buffer.allocUnsafe(buf.length);
+  let n = 0;
+  for (const b of buf) if (b !== 13) out[n++] = b;
+  return out.subarray(0, n);
 }
