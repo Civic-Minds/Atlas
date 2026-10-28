@@ -1562,9 +1562,6 @@ export async function processGtfsBuffer(
             if (grp.inGroup && pooledOk) pushDep(stopDepsByGroup, gKey, stopId, mins);
             if (hsKey && grp.inHeadsign && headsignOk) pushDep(stopDepsByHeadsignGroup, hsKey, stopId, mins);
             if (shKey && grp.inShape) pushDep(stopDepsByShapeGroup, shKey, stopId, mins);
-            if (grp.inGroup && pooledOk) pushTwin(departureTwin(stopDepsByGroup, gKey), stopId, mins);
-            if (hsKey && grp.inHeadsign && headsignOk) pushTwin(departureTwin(stopDepsByHeadsignGroup, hsKey), stopId, mins);
-            if (shKey && grp.inShape) pushTwin(departureTwin(stopDepsByShapeGroup, shKey), stopId, mins);
             // Drop-off-only stop times (pickup_type 1) are not departures a rider can take.
             if (smKey && grp.inGroup && pooledOk && boardsAt(st)) pushDep(stopDepsBySharedMember, smKey, stopId, mins);
             if (rushKey && grp.inGroup && pooledOk && boardsAt(st)) pushDep(stopDepsByRushMember, rushKey, stopId, mins);
@@ -1573,6 +1570,15 @@ export async function processGtfsBuffer(
               if (grp.inGroup && pooledOk) pushDep(stopDepsByGroupNight, gKey, stopId, mins + 1440);
               if (hsKey && grp.inHeadsign && headsignOk) pushDep(stopDepsByHeadsignGroupNight, hsKey, stopId, mins + 1440);
             }
+          };
+          // CIV-1071: the departure twins take each (trip, stop)'s first BOARDING visit only (boardsAt), under
+          // the same list rules; a loop whose first visit only drops off still departs on the other.
+          const pushTwins = (stopId: string) => {
+            const pooledOk = chainedEnd === undefined;
+            const headsignOk = chainedEnd !== true;
+            if (grp.inGroup && pooledOk) pushTwin(departureTwin(stopDepsByGroup, gKey), stopId, mins);
+            if (hsKey && grp.inHeadsign && headsignOk) pushTwin(departureTwin(stopDepsByHeadsignGroup, hsKey), stopId, mins);
+            if (shKey && grp.inShape) pushTwin(departureTwin(stopDepsByShapeGroup, shKey), stopId, mins);
           };
           // Every visit marks the stop boardable, not only the first counted one: a loop
           // terminal whose first-listed visit is drop-off only still boards on the other.
@@ -1600,6 +1606,16 @@ export async function processGtfsBuffer(
             if (parentId && parentVisitKey && !visitSet.has(parentVisitKey)) {
               visitSet.add(parentVisitKey);
               pushAll(parentId);
+            }
+          }
+          const boardKey = `board:${visitKey}`;
+          if (boardsAt(st) && !visitSet.has(boardKey)) {
+            visitSet.add(boardKey);
+            pushTwins(st.stop_id);
+            const parentBoardKey = parentId ? `board:${grp.dayType}:${parentId}` : null;
+            if (parentId && parentBoardKey && !visitSet.has(parentBoardKey)) {
+              visitSet.add(parentBoardKey);
+              pushTwins(parentId);
             }
           }
         }
@@ -1745,9 +1761,10 @@ export async function processGtfsBuffer(
     if (grp.inGroup) pushUnique(stopDepsByGroup, groupKey, stopId, mins);
     if (grp.headsign && grp.inHeadsign) pushUnique(stopDepsByHeadsignGroup, `${grp.shortName}::${grp.dirId}::${grp.dayType}::${grp.headsign}`, stopId, mins);
     if (grp.shapeId && grp.inShape) pushUnique(stopDepsByShapeGroup, `${grp.shapeId}::${grp.dayType}`, stopId, mins);
-    if (grp.inGroup) pushUniqueTwin(departureTwin(stopDepsByGroup, groupKey), stopId, mins);
-    if (grp.headsign && grp.inHeadsign) pushUniqueTwin(departureTwin(stopDepsByHeadsignGroup, `${grp.shortName}::${grp.dirId}::${grp.dayType}::${grp.headsign}`), stopId, mins);
-    if (grp.shapeId && grp.inShape) pushUniqueTwin(departureTwin(stopDepsByShapeGroup, `${grp.shapeId}::${grp.dayType}`), stopId, mins);
+    // CIV-1071: a drop-off-only frequency visit is no departure in the twins.
+    if (grp.inGroup && pickupAllowed) pushUniqueTwin(departureTwin(stopDepsByGroup, groupKey), stopId, mins);
+    if (grp.headsign && grp.inHeadsign && pickupAllowed) pushUniqueTwin(departureTwin(stopDepsByHeadsignGroup, `${grp.shortName}::${grp.dirId}::${grp.dayType}::${grp.headsign}`), stopId, mins);
+    if (grp.shapeId && grp.inShape && pickupAllowed) pushUniqueTwin(departureTwin(stopDepsByShapeGroup, `${grp.shapeId}::${grp.dayType}`), stopId, mins);
     if (grp.shapeId && grp.inShape && pickupAllowed) markBoardable(`${grp.shapeId}::${grp.dayType}`, stopId);
     const smKey = sharedMemberKey(grp);
     if (smKey && grp.inGroup && pickupAllowed) pushUnique(stopDepsBySharedMember, smKey, stopId, mins);
