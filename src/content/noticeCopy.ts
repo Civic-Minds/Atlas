@@ -95,20 +95,18 @@ export function selectedRouteOutsideFilterNotice(maxHeadway: number, periodRange
     : `This route doesn't meet the ${maxHeadway}\u2011minute filter ${when ? `for all of ${when}` : 'all day'}.`;
 }
 
-// N74 / E1 outdated-schedule (line 3)
+// ---- E1 Outdated schedule: three paragraphs, Ryan's approved text (CIV-1051) ----
+// (1) the issue, (2) what we're doing about it, (3) what the reader can do. No labels on the site.
+// N74 / E1 paragraph 1 end (N2 and N3 versions)
 export const EXPIRED_FEED_EXPLANATION =
   'This is the latest schedule the agency has published that we could verify.';
-
-// N75 / E1 outdated-schedule (line 4)
-export const EXPIRED_FEED_CONTEXT =
-  'A newer schedule may exist on the agency\'s website without a downloadable feed we can verify.';
-
-// N76 / E1 outdated-schedule (line 4, kept by hand)
+// N76 / E1 paragraph 2, kept by hand (N3 version), in place of the weekly check
 export const MANUAL_FEED_CONTEXT =
   "This agency doesn't publish a feed we can check automatically. We update it when a newer file is provided and verified.";
-
-// E1 outdated-schedule (line 4 start)
-export const EXPIRED_FEED_CADENCE = 'We check all feeds weekly.';
+/** E1 paragraph 2 start (N2 and N25 versions; N3 uses N76 instead). */
+export const E1_WEEKLY_CHECK = 'We check for new schedules every week.';
+/** E1 paragraph 3, above Check current schedules and Report a problem. */
+export const E1_AGENCY_WEBSITE = "A newer schedule may be on the agency's website.";
 
 // N77 check-history, N78 last-refreshed / E1 line 2
 export function expiredFeedCheckHistory(options: {
