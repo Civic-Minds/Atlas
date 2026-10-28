@@ -42,7 +42,8 @@ export function historyBuildFixture(): R2Contents {
   // decision must behave exactly as origin/main (last archived point is the future year, so it is appended).
   put('alpha', '40', '20180901', 30);
   put('alpha', '40', '20260301', 12);
-  put('alpha', '40', '20301201', 10);
+  // Real-shaped refresh file (CIV-394): keyed by its feed's end date, read in May 2026, so v2 dates it 2026.
+  put('alpha', '40', '20301201', 10, { prevHeadway: 12, tier: '10', headwayByPeriod: null, geometry: null, processedAt: '2026-05-04T06:12:00.000Z' });
   // alpha / route 20: limited today.
   put('alpha', '20', '20180901', 30);
   put('alpha', '20', '20230901', 60);

@@ -252,7 +252,7 @@ async function main() {
   // Map: slug → routeShortName → sorted array of change events
   const archiveRoutes: Record<string, Record<string, Array<{
     periodKey: string; headway: number; routeLongName?: string; label?: string;
-    headwayByPeriod?: HeadwayByPeriod; geometry?: unknown;
+    headwayByPeriod?: HeadwayByPeriod; geometry?: unknown; processedAt?: string;
   }>>> = {};
   const coverageBySlug: Record<string, { coverageYears: number[]; materializeAllPeriods?: boolean }> = {};
   let failedFiles = 0;
@@ -315,6 +315,8 @@ async function main() {
           headway: h,
           routeLongName: data.routeLongName ?? undefined,
           headwayByPeriod: data.headwayByPeriod ?? undefined,
+          // v2 dates a file keyed by a feed end date after this year by when it was read (CIV-394).
+          processedAt: typeof data.processedAt === 'string' ? data.processedAt : undefined,
         });
       } catch (err) {
         recordFailure(key);
