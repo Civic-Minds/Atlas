@@ -86,8 +86,6 @@ export const ON_DEMAND_NOT_MAPPED: Readonly<Record<string, OnDemandNotMapped>> =
   'riovista': { serviceName: 'Delta Breeze', url: 'https://www.riovistacity.com/deltabreeze/page/route-51-rio-vistaisleton-city-circulator' },
   // Confirmed 2026-10-27 (CIV-1063): https://www.sonomamarintrain.org/shuttleFAQs
   'smart-ca': { serviceName: 'SMART Connect', url: 'https://www.sonomamarintrain.org/shuttleFAQs' },
-  // Unclear (CIV-1063, 2026-10-27): Official sources conflict: the FAQ says ADA-certified riders only, while the tracker and app describe general-public zones. If the FAQ is current, thi
-  'sportran': { serviceName: 'SporTran OnDemand' },
   'torrance-transit': { serviceName: 'Connect Torrance' },
   // Confirmed 2026-10-27 (CIV-1063): https://ridetrinitymetro.org/rider-services/ondemand/
   'trinitymetro': { serviceName: 'ZIPZONE', url: 'https://ridetrinitymetro.org/rider-services/ondemand/' },
@@ -105,7 +103,8 @@ export const ON_DEMAND_NOT_MAPPED: Readonly<Record<string, OnDemandNotMapped>> =
 // Removed in CIV-1063: rts (RTS Gainesville; Rochester's RTS On Demand is rgrta, not confirmed yet), dutchess (Flex
 // needs a registration), cornwall (an on-request stop on a fixed route), sjsr (Taxibus picks up at fixed points on a schedule);
 // then codiac (run by the City of Dieppe), mcts (FlexRide is run by MobiliSE), trimet (SPOT is run by Washington County) and
-// lavta (Go Tri-Valley is an Uber/Lyft discount, not on-demand transit).
+// lavta (Go Tri-Valley is an Uber/Lyft discount, not on-demand transit); sportran (its own FAQ says OnDemand is for
+// riders certified for paratransit; it can come back once confirmed open to the public).
 
 /** Mapped agencies whose drawn zones leave out part of the service, and what's missing. */
 // Empty: every mapped agency's source covers all the zones it runs today (Ryan, 2026-10-11).
