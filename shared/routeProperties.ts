@@ -53,6 +53,8 @@ export interface RouteProperties {
   worstDirectionMiddayCap?: number;
   minStopHeadway?: number;
   minStopHeadwayByPeriod?: Partial<Record<string, number>>;
+  /** CIV-1069: periods whose value is read from other headsigns' trips at the stop (this headsign runs under three times); a card row reads no regular service there. */
+  noOwnServiceByPeriod?: string[];
   headsignMinStopHeadwayByPeriod?: Partial<Record<string, number>>;
   stopHeadways?: Record<string, number | null>;
   /** CIV-152: each drawn stop's every-gap tier on its pooled list (the route tier's method); stops with no all-day reading are absent. */

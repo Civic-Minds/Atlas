@@ -20,6 +20,7 @@ import { ALL_DAY_MIDDAY_MAX_WAIT } from '../shared/worstDirection.js';
 import { NO_PERIOD_SERVICE_TILE_VALUE } from '../shared/pmtilesProps.js';
 import {
   computePeriodCoverageHeadways,
+  computePeriodMaxGaps,
   computePeriodHeadways,
   BOUNDARY_DOMINANT_RATIO,
   computePeriodSustained,
@@ -552,8 +553,11 @@ export function stopPeriodValues(stops: readonly string[], throughTimesAlong: No
  * section needs the usual three departures for a value, then the same filter and limited-service
  * handling; no thresholds of its own).
  */
-export function stretchMetaPeriods(s: Stretch): { period: Record<PeriodKey, number | null>; noRegular: PeriodKey[] } {
+export function stretchMetaPeriods(s: Stretch): { period: Record<PeriodKey, number | null>; noRegular: PeriodKey[]; maxGap: Record<PeriodKey, number | null> } {
   const own = stretchPeriods(s);
+  // CIV-1069: the longest gap between the same departures the value reads, so a card row never pairs
+  // the stretch's value with a gap measured over one headsign's trips.
+  const gaps = computePeriodMaxGaps([...s.times]);
   // The card's guard (#955): a period whose value is one gap, or that has under three departures (no
   // cadence to read, only the full-window wait), reads "no regular service" on a row; the map keeps
   // the filter value.
@@ -561,6 +565,7 @@ export function stretchMetaPeriods(s: Stretch): { period: Record<PeriodKey, numb
   return {
     period: Object.fromEntries(PERIOD_WINDOWS.map(({ key }) => [key, stretchFilterValue(own[key])])) as Record<PeriodKey, number | null>,
     noRegular: PERIOD_WINDOWS.filter(({ key, start, end }) => own[key].coverage != null && (own[key].oneGap || departures(start, end) < 3)).map(w => w.key),
+    maxGap: Object.fromEntries(PERIOD_WINDOWS.map(({ key }) => [key, own[key].value == null ? null : gaps[key] ?? null])) as Record<PeriodKey, number | null>,
   };
 }
 

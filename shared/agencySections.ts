@@ -9,7 +9,7 @@
 export const SECTION_FIELDS = ['stretchStopPeriodValues', 'fullLine', 'fullStopOrder', 'fullStopPositions'] as const;
 
 type Props = Record<string, unknown>;
-type StretchMetaEntry = Record<string, unknown> & { period?: unknown; noRegular?: unknown };
+type StretchMetaEntry = Record<string, unknown> & { period?: unknown; noRegular?: unknown; maxGap?: unknown };
 type StretchMeta = { main: StretchMetaEntry | null; tails: StretchMetaEntry[] };
 
 export interface AgencySectionEntry {
@@ -19,7 +19,7 @@ export interface AgencySectionEntry {
   fullStopPositions?: unknown;
   /** The stretch row values (stretchMeta's period and noRegular) of the tails. `main` is null in files written
    * since CIV-937, which keeps the main stretch's values on the route file; older files may still carry it. */
-  stretchRows?: { main: { period?: unknown; noRegular?: unknown } | null; tails: Array<{ period?: unknown; noRegular?: unknown }> };
+  stretchRows?: { main: { period?: unknown; noRegular?: unknown; maxGap?: unknown } | null; tails: Array<{ period?: unknown; noRegular?: unknown; maxGap?: unknown }> };
 }
 
 export interface AgencySections {
@@ -72,9 +72,10 @@ export function extractAgencySections(features: ReadonlyArray<{ geometry?: { typ
     if (meta && typeof meta === 'object') {
       const split = (m: StretchMetaEntry | null) => {
         if (!m) return null;
-        const row: { period?: unknown; noRegular?: unknown } = {};
+        const row: { period?: unknown; noRegular?: unknown; maxGap?: unknown } = {};
         if (m.period !== undefined) { row.period = m.period; delete m.period; }
         if (m.noRegular !== undefined) { row.noRegular = m.noRegular; delete m.noRegular; }
+        if (m.maxGap !== undefined) { row.maxGap = m.maxGap; delete m.maxGap; }
         return row;
       };
       // The main stretch's values stay on the route file: public route cards read them (CIV-937). Only the tails move.

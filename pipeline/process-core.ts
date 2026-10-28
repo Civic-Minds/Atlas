@@ -3083,6 +3083,7 @@ export async function processGtfsBuffer(
     // #897: the overnight value decidePeriod withheld; the headsign trunk minimum below still
     // compares against it, so only the period value itself changes.
     let sparseOvernightDecided: number | null = null;
+    const noOwnService: PeriodKey[] = [];
     for (const pk of Object.keys(PERIODS) as PeriodKey[]) {
       // #897: a sparse overnight window's withheld value still picks the source (decidePeriod).
       const hsSparseH = pk === 'overnight' && headsignTerminalPeriodHw ? sparseOvernightHeadway(terminalScopedTimes ?? []) : null;
@@ -3130,6 +3131,15 @@ export async function processGtfsBuffer(
         termSparse,
         branchSparse: branchSparseH != null,
       });
+      // CIV-1069: a headsign with its own terminal list but under three of its own departures in the period
+      // shows a value read from other headsigns' trips at the stop (CTA 77 Belmont & Octavia: "every 10" at
+      // AM peak with no trip of its own). The value stays (the route filter reads it: a short variant's far
+      // end may really be served that rarely); the card row reads no regular service for these periods.
+      if (headsignTerminalPeriodHw && period.headway != null && hsSparseH == null) {
+        const { start, end } = PERIODS[pk];
+        const own = new Set(forCrossMidnightWindow(terminalScopedTimes ?? [], end).filter(t => t >= start && t <= end)).size;
+        if (own < 3) noOwnService.push(pk);
+      }
       if (period.withheld != null) sparseOvernightDecided = period.withheld;
       if (pk === 'overnight' && period.withheld != null && period.headway == null) withheldOvernightFeatures.add(feature);
       periodMedians[pk] = period.headway;
@@ -3146,6 +3156,7 @@ export async function processGtfsBuffer(
     feature.properties.maxGapByPeriod = periodMaxGaps;
     feature.properties.headwayByPeriodSustained = periodSustained;
     feature.properties.minStopHeadwayByPeriod = periodMins;
+    if (noOwnService.length > 0) feature.properties.noOwnServiceByPeriod = noOwnService;
 
 
     // Headsign-scoped trunk minimums for route-card range display. minStopHeadwayByPeriod
