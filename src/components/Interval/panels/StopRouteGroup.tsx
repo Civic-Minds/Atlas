@@ -60,7 +60,11 @@ export default function StopRouteGroup({
 
   if (items.length === 0) return null;
 
-  const slug = branches[0]?.rKey.split('::')[0] ?? '';
+  const rKey = branches[0]?.rKey ?? '';
+  const slug = rKey.split('::')[0] ?? '';
+  // The route line shows the whole route on the map (CIV-1053); a row of another route fades.
+  const routeHovered = !!hoveredBranch && hoveredBranch.routeKey === rKey && hoveredBranch.directionId == null;
+  const otherRouteHovered = !!hoveredBranch && hoveredBranch.routeKey !== rKey;
   const live = isLivePollingRoute(slug, shortName);
 
   // The route card's rows (CIV-918): every destination has its own frequency on its first line, and
@@ -69,8 +73,13 @@ export default function StopRouteGroup({
     <div>
       <CardSummaryRow
         label={routeLabel}
-        onClick={() => onOpenRoute(branches[0]?.rKey ?? '')}
+        onClick={() => onOpenRoute(rKey)}
         headway={routeHeadway}
+        {...(setHoveredBranch ? {
+          onHoverStart: () => setHoveredBranch({ routeKey: rKey }),
+          onHoverEnd: () => setHoveredBranch(null),
+          dimmed: otherRouteHovered,
+        } : {})}
       />
       <SidebarCardListRows className="space-y-1 mt-0.5">
         {items.map(item => {
@@ -91,7 +100,7 @@ export default function StopRouteGroup({
                 onHoverStart: () => setHoveredBranch({ routeKey: item.rKey, directionId: item.directionId, headsign: item.headsign ?? undefined }),
                 onHoverEnd: () => setHoveredBranch(null),
                 branchHovered: hovered,
-                branchDimmed: !!hoveredBranch && !hovered,
+                branchDimmed: !!hoveredBranch && !hovered && !routeHovered,
               } : {})}
             />
           );

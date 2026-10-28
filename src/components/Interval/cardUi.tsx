@@ -16,6 +16,7 @@ import { OutboundLink } from '../OutboundLink';
 import { CardBackLink } from '../CardBack';
 import type { Agency } from '../../App';
 import type { OpenInfoFn } from '../InfoPanel';
+import { keyboardFocusHover } from './RouteDirectionRow';
 
 export { default as CardDirectionRow } from './RouteDirectionRow';
 
@@ -813,6 +814,9 @@ export function CardSummaryRow({
   headwaySuffix,
   below,
   text,
+  onHoverStart,
+  onHoverEnd,
+  dimmed,
 }: {
   label: React.ReactNode;
   onClick?: () => void;
@@ -822,14 +826,23 @@ export function CardSummaryRow({
   below?: React.ReactNode;
   /** Words in place of the headway badge (#934 part-period: "until 9:37am, every 12 min"). */
   text?: string;
+  /** The map hover, as on a direction row (CIV-1053): the route stands out on the map. */
+  onHoverStart?: () => void;
+  onHoverEnd?: () => void;
+  /** Another row is hovered: fade, as a direction row does. */
+  dimmed?: boolean;
 }) {
   const labelCls = `${CARD_LIST_ROUTE} block text-left w-full`;
   return (
     // The badge lines up with the label's first line, as on the route card's rows (CIV-918).
-    <div className="flex justify-between gap-2 items-start">
+    <div
+      className={`flex justify-between gap-2 items-start transition-opacity duration-150 ${dimmed ? 'opacity-35' : ''}`}
+      onMouseEnter={onHoverStart}
+      onMouseLeave={onHoverEnd}
+    >
       <div className="flex-1 min-w-0">
         {onClick ? (
-          <button type="button" onClick={onClick} className={`${labelCls} hover:text-[var(--accent)]`}>
+          <button type="button" onClick={onClick} className={`${labelCls} hover:text-[var(--accent)]`} {...keyboardFocusHover(onHoverStart, onHoverEnd)}>
             {label}
           </button>
         ) : (
