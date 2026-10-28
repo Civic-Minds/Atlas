@@ -4,7 +4,7 @@ import { useColorMode } from '../../hooks/useColorMode';
 import type { ShapeProperties, TimePeriod, DayType, HoveredBranch, ViewportBounds } from '../../hooks/useIntervalStats';
 import type { Agency } from '../../App';
 import { findVariantFamily } from '../../utils/routeVariants';
-import { routeLabels, searchOverlayHidesPanel, comparePanelTop } from '../../utils/format';
+import { routeLabels, searchOverlayHidesPanel, comparePanelTop, COMPARE_PANEL_LEFT } from '../../utils/format';
 import { agencyNames } from '../../utils/agencyName';
 import { routeListDisplay, type RouteListDisplay } from '../../utils/effectiveHeadway';
 import { combineSuggestedRouteNames, suggestedRouteGroupKey } from '../../utils/routeSuggestion';
@@ -36,6 +36,7 @@ import { splitRouteKey } from '../../utils/routeKey';
 import { effectiveFeedExpiry, isAgencyFeedExpired } from '../../../shared/feedAvailability';
 import { trackEvent } from '../../lib/analytics';
 import type { CompareRouteRow } from './compareTypes';
+import type { CompareSide } from '../../utils/compareSides';
 import { FEATURES } from '../../../shared/config';
 import { PHONE_MEDIA_QUERY, useMediaQuery } from '../../hooks/useMediaQuery';
 import { buildStopRoutes } from '../../utils/stopRoutes';
@@ -83,6 +84,9 @@ interface SidebarControlsProps {
    * below that row instead of covering map A's settings.
    */
   compareActive?: boolean;
+  /** Compare: map B's day, time and frequency, for the route card on map B (CIV-844); its period menu sets B's time. */
+  compareSideB?: CompareSide | null;
+  setCompareSideB?: (side: CompareSide) => void;
   onInfoOpen?: OpenInfoFn;
   searchEnterRef?: React.MutableRefObject<(() => void) | null>;
   /** The stop card's back link: where it goes and its words (CIV-832). */
@@ -98,6 +102,73 @@ interface SidebarControlsProps {
  * Time chips about 108px into it. The short sheet starts below them, so they stay usable with a card
  * open; dragging the sheet up still covers them on purpose.
  */
+/** The route card's route for one day and period: its features, lettered variants folded in (CIV-844: each Compare map's card). */
+function buildCurrentRoute(selectedRoute: string | null, nonCorridorLayers: Record<string, GeoJSON.FeatureCollection>, currentDay: DayType, period: TimePeriod) {
+  if (!selectedRoute) return null;
+  const all = Object.entries(nonCorridorLayers)
+    .flatMap(([slug, fc]) => fc.features.map(f => ({ ...f, properties: { ...f.properties, agencySlug: slug } })))
+    .filter(f => {
+      const p = f.properties as unknown as ShapeProperties;
+      return p.routeId && (p.day === undefined || p.day === currentDay);
+    });
+  let features = all.filter(f => {
+    const p = f.properties as unknown as ShapeProperties;
+    return buildRouteFacts(p).key === selectedRoute;
+  });
+  if (features.length === 0) return null;
+  const first = features[0].properties as unknown as ShapeProperties;
+  const firstFacts = buildRouteFacts(first);
+
+  // Lettered variants (1/1A/1B/1C) are the same route: fold siblings' features in
+  // so the destinations list and combined headways cover the whole family.
+  const slug = (first as any).agencySlug as string;
+  const slugProps = all
+    .filter(f => (f.properties as any).agencySlug === slug)
+    .map(f => f.properties as unknown as ShapeProperties);
+  const fam = findVariantFamily(slugProps, first.routeShortName ?? null, period, slug);
+  if (fam) {
+    const siblingIds = new Set(fam.members.map(m => m.routeId));
+    siblingIds.delete(String(first.routeId));
+    features = [
+      ...features,
+      ...all.filter(f => {
+        const p = f.properties as unknown as ShapeProperties;
+        return (p as any).agencySlug === slug && siblingIds.has(String(p.routeId));
+      }),
+    ];
+  }
+
+    const directions = features
+    .map(f => f.properties as unknown as ShapeProperties)
+    .sort((a, b) => {
+      const aH = branchDisplayPeriodHeadway(a, period) ?? Infinity;
+      const bH = branchDisplayPeriodHeadway(b, period) ?? Infinity;
+      if (aH !== bH) return aH - bH;
+      return (a.directionId ?? 0) - (b.directionId ?? 0);
+    });
+  return {
+    ...first,
+    agencySlug: slug,
+    routeShortName: firstFacts.shortName,
+    label: firstFacts.label,
+    routeLongName: firstFacts.longName,
+    directions,
+    features,
+  };
+}
+
+/** The route's lettered variant family (GRTC 1/1A/1B/1C style) on that day and period. */
+function routeVariantFamily(currentRoute: ReturnType<typeof buildCurrentRoute>, nonCorridorLayers: Record<string, GeoJSON.FeatureCollection>, currentDay: DayType, period: TimePeriod) {
+  if (!currentRoute) return null;
+  const slug = (currentRoute as any).agencySlug as string | undefined;
+  const fc = slug ? nonCorridorLayers[slug] : undefined;
+  if (!fc) return null;
+  const feats = fc.features
+    .map(f => f.properties as unknown as ShapeProperties)
+    .filter(p => p.routeId && (p.day === undefined || p.day === currentDay));
+  return findVariantFamily(feats, currentRoute.routeShortName ?? null, period, slug);
+}
+
 const COMPARE_SHEET_HEIGHT = 'h-[calc(50dvh-108px)]';
 
 export const SidebarControls: React.FC<SidebarControlsProps> = ({
@@ -132,6 +203,8 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   selectedRouteOutOfFilter = false,
   compareRows = null,
   compareActive = false,
+  compareSideB = null,
+  setCompareSideB,
   onInfoOpen,
   searchEnterRef,
   stopBack,
@@ -315,6 +388,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     return notableRoutes.filter(r => !viewedKeys.has(r.key));
   }, [notableRoutes, recentlyViewed]);
 
+  const compareListSideB = compareActive ? compareSideB : null;
   const displayForRouteKey = useCallback((key: string): RouteListDisplay => {
     const [slug, routeId] = key.split('::');
     const fc = nonCorridorLayers[slug];
@@ -323,14 +397,16 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       return p.routeId === routeId && !(p as { stopId?: string }).stopId;
     });
     if (!feat) return { headway: null, limited: false };
-    const routeFeatures = fc?.features
+    const displayOn = (day: DayType, onPeriod: TimePeriod) => routeListDisplay(fc?.features
       .filter(candidate => {
         const p = candidate.properties as ShapeProperties;
-        return !p.stopId && p.routeId === routeId && (p.day === undefined || p.day === currentDay);
+        return !p.stopId && p.routeId === routeId && (p.day === undefined || p.day === day);
       })
-      .map(candidate => candidate.properties as ShapeProperties) ?? [];
-    return routeListDisplay(routeFeatures, period);
-  }, [nonCorridorLayers, period, currentDay]);
+      .map(candidate => candidate.properties as ShapeProperties) ?? [], onPeriod);
+    const display = displayOn(currentDay, period);
+    // Compare (CIV-844): the row reads both maps, each on its own day and time.
+    return compareListSideB ? { ...display, compare: { A: display, B: displayOn(compareListSideB.day, compareListSideB.period) } } : display;
+  }, [nonCorridorLayers, period, currentDay, compareListSideB]);
 
   const checkScroll = useCallback(() => {
     const el = scrollRef.current;
@@ -347,75 +423,31 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     setStopAgencyFilter(null);
   }, [selectedStop]);
 
-  const currentRoute = useMemo(() => {
-    if (!selectedRoute) return null;
-    const all = Object.entries(nonCorridorLayers)
-      .flatMap(([slug, fc]) => fc.features.map(f => ({ ...f, properties: { ...f.properties, agencySlug: slug } })))
-      .filter(f => {
-        const p = f.properties as unknown as ShapeProperties;
-        return p.routeId && (p.day === undefined || p.day === currentDay);
-      });
-    let features = all.filter(f => {
-      const p = f.properties as unknown as ShapeProperties;
-      return buildRouteFacts(p).key === selectedRoute;
-    });
-    if (features.length === 0) return null;
-    const first = features[0].properties as unknown as ShapeProperties;
-    const firstFacts = buildRouteFacts(first);
-
-    // Lettered variants (1/1A/1B/1C) are the same route: fold siblings' features in
-    // so the destinations list and combined headways cover the whole family.
-    const slug = (first as any).agencySlug as string;
-    const slugProps = all
-      .filter(f => (f.properties as any).agencySlug === slug)
-      .map(f => f.properties as unknown as ShapeProperties);
-    const fam = findVariantFamily(slugProps, first.routeShortName ?? null, period, slug);
-    if (fam) {
-      const siblingIds = new Set(fam.members.map(m => m.routeId));
-      siblingIds.delete(String(first.routeId));
-      features = [
-        ...features,
-        ...all.filter(f => {
-          const p = f.properties as unknown as ShapeProperties;
-          return (p as any).agencySlug === slug && siblingIds.has(String(p.routeId));
-        }),
-      ];
-    }
-
-      const directions = features
-      .map(f => f.properties as unknown as ShapeProperties)
-      .sort((a, b) => {
-        const aH = branchDisplayPeriodHeadway(a, period) ?? Infinity;
-        const bH = branchDisplayPeriodHeadway(b, period) ?? Infinity;
-        if (aH !== bH) return aH - bH;
-        return (a.directionId ?? 0) - (b.directionId ?? 0);
-      });
-    return {
-      ...first,
-      agencySlug: slug,
-      routeShortName: firstFacts.shortName,
-      label: firstFacts.label,
-      routeLongName: firstFacts.longName,
-      directions,
-      features,
-    };
-  }, [selectedRoute, nonCorridorLayers, currentDay, period]);
+  const currentRoute = useMemo(
+    () => buildCurrentRoute(selectedRoute, nonCorridorLayers, currentDay, period),
+    [selectedRoute, nonCorridorLayers, currentDay, period],
+  );
 
   // Lettered variant family (GRTC 1/1A/1B/1C style) for the selected route
-  const variantFamily = useMemo(() => {
-    if (!currentRoute) return null;
-    const slug = (currentRoute as any).agencySlug as string | undefined;
-    const fc = slug ? nonCorridorLayers[slug] : undefined;
-    if (!fc) return null;
-    const feats = fc.features
-      .map(f => f.properties as unknown as ShapeProperties)
-      .filter(p => p.routeId && (p.day === undefined || p.day === currentDay));
-    return findVariantFamily(feats, currentRoute.routeShortName ?? null, period, slug);
-  }, [currentRoute, nonCorridorLayers, currentDay, period]);
+  const variantFamily = useMemo(
+    () => routeVariantFamily(currentRoute, nonCorridorLayers, currentDay, period),
+    [currentRoute, nonCorridorLayers, currentDay, period],
+  );
 
   const { directionLabels: directionLabelOverrides, directionHeadsigns } = useMemo(
     () => (currentRoute ? routeDirectionOverrides(agencies, (currentRoute as any).agencySlug as string | undefined, currentRoute.routeShortName) : {}),
     [agencies, currentRoute],
+  );
+
+  // Compare (CIV-844): map B's own card, from the same route on B's day and time.
+  const sideB = compareActive ? compareSideB : null;
+  const currentRouteB = useMemo(
+    () => (sideB ? buildCurrentRoute(selectedRoute, nonCorridorLayers, sideB.day, sideB.period) : null),
+    [sideB, selectedRoute, nonCorridorLayers],
+  );
+  const variantFamilyB = useMemo(
+    () => (sideB ? routeVariantFamily(currentRouteB, nonCorridorLayers, sideB.day, sideB.period) : null),
+    [sideB, currentRouteB, nonCorridorLayers],
   );
 
   // Group directions by directionId so outbound/inbound are visually separated,
@@ -425,6 +457,11 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   const directionGroups = useMemo(
     () => buildDirectionGroups(currentRoute, cardPeriod, directionLabelOverrides, directionHeadsigns),
     [currentRoute, directionLabelOverrides, directionHeadsigns, cardPeriod],
+  );
+
+  const directionGroupsB = useMemo(
+    () => (sideB && currentRouteB ? buildDirectionGroups(currentRouteB, sideB.period, directionLabelOverrides, directionHeadsigns) : []),
+    [sideB, currentRouteB, directionLabelOverrides, directionHeadsigns],
   );
 
   const currentStop = useMemo(() => {
@@ -803,14 +840,18 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
 
   const compareTop = comparePanelTop(compareActive, searchFocused, query);
 
+  // Map B's card sits in map B's own left corner, as A's does in A's (CIV-844). Desktop and tablet only (Compare is off on phones).
+  const showCardB = !sheetMode && compareTop != null && !!panelRoute && !!sideB && !!currentRouteB;
+
   return (
+    <>
     <div
       className={sheetMode
         ? bottomSheetFrameClass(panelVisible)
         : `${SIDEBAR_CARD_SLOT} ${searchOverlayHidesPanel(searchFocused, query) ? Z_DROPDOWN : Z_PANEL} ${SIDEBAR_PANEL_WIDTH} ${phonePanelWidth} ${SIDEBAR_CARD_MAX_H} flex flex-col gap-3 transition-[opacity,transform] duration-200 ease-out ${panelVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2 pointer-events-none'}`}
       style={sheetMode ? undefined : {
         ...sidebarFrameStyle(sidebarLeft, matchSearchBarWidth ? searchBarWidth : undefined),
-        ...(compareTop != null ? { top: `${compareTop}px`, maxHeight: `calc(100vh - ${compareTop + 64}px)` } : {}),
+        ...(compareTop != null ? { top: `${compareTop}px`, maxHeight: `calc(100vh - ${compareTop + 64}px)`, '--sidebar-left': `${COMPARE_PANEL_LEFT}px` } : {}),
       }}
     >
       {searchFocused && query === '' && (
@@ -926,5 +967,46 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       </div>}
 
     </div>
+    {showCardB && (
+      <div
+        className={`${SIDEBAR_CARD_SLOT} ${Z_PANEL} ${SIDEBAR_PANEL_WIDTH} ${SIDEBAR_CARD_MAX_H} flex flex-col gap-3 transition-[opacity,transform] duration-200 ease-out ${panelVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2 pointer-events-none'}`}
+        style={{
+          ...sidebarFrameStyle(sidebarLeft, matchSearchBarWidth ? searchBarWidth : undefined),
+          top: `${compareTop}px`,
+          maxHeight: `calc(100vh - ${compareTop! + 64}px)`,
+          // Map B starts half a gap past the middle (the maps sit 4px apart).
+          '--sidebar-left': `calc(50% + 2px + ${COMPARE_PANEL_LEFT}px)`,
+        } as React.CSSProperties}
+        data-compare-card="B"
+      >
+        <div data-report-anchor="true" className={`${SIDEBAR_CARD_BODY} transition-colors ${TRANSITION_BASE}`}>
+          <RouteCardHeadway
+            currentRoute={currentRouteB!}
+            agencyFeatures={routeSlug ? nonCorridorLayers[routeSlug]?.features : undefined}
+            variantFamily={variantFamilyB}
+            routeSlug={routeSlug}
+            routeAgency={routeAgency}
+            setSelectedAgencySlug={setSelectedAgencySlug}
+            setSelectedRoute={setSelectedRoute}
+            back={routeBack}
+            maxHeadway={sideB!.maxHeadway}
+            period={sideB!.period}
+            setPeriod={next => setCompareSideB?.({ ...sideB!, period: next })}
+            directionGroups={directionGroupsB}
+            hideSpan={hideSpan}
+            routeIsStale={routeIsStale}
+            selectedRouteOutOfFilter={false}
+            hideFilterNotices={false}
+            nightView={false}
+            compareRows={null}
+            expDateStr={expDateStr}
+            hoveredBranch={hoveredBranch}
+            setHoveredBranch={setHoveredBranch}
+            onInfoOpen={onInfoOpen}
+          />
+        </div>
+      </div>
+    )}
+    </>
   );
 };

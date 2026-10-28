@@ -21,6 +21,9 @@ export function searchOverlayHidesPanel(searchFocused: boolean, query: string): 
  * search bar, like outside Compare.
  */
 export const COMPARE_PANEL_TOP = 160;
+/** ...and to map A's own left corner, at the phone slot's inset (left-6), not beside the logo: on tablets the logo
+ * offset put the card in the middle of the screen, against the divider (CIV-844). */
+export const COMPARE_PANEL_LEFT = 24;
 
 /** Top offset in px for the floating sidebar panel in Compare, or null to keep the normal slot under the search bar. */
 export function comparePanelTop(compareActive: boolean, searchFocused: boolean, query: string): number | null {
