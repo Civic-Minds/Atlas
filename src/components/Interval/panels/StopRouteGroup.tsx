@@ -97,7 +97,6 @@ export default function StopRouteGroup({
               key={`${rKey}::${item.directionId}::shared`}
               label="Shared stretch"
               headway={sharedHeadway}
-              live={live}
               onClick={() => onOpenRoute(rKey)}
               {...(setHoveredBranch ? {
                 onHoverStart: () => setHoveredBranch({ routeKey: rKey, directionId: item.directionId }),
