@@ -252,6 +252,14 @@ describe('applyAnalysisCriteria', () => {
       expect(weekday(['Monday', 'Tuesday'])).toMatchObject({ serviceClass: 'irregular', tier: 'span' });
       expect(weekday([...WEEKDAYS])).toMatchObject({ serviceClass: 'irregular', tier: 'span' });
     });
+
+    it('stays one-off when the other weekdays have no period headway either (GO 90 to Oshawa)', () => {
+      // 05:30, 00:55 and 02:20 Monday to Thursday; Friday drops the 00:55.
+      const go90 = applyAnalysisCriteria(WEEKDAYS.map(day => raw({
+        route: '90', day, departureTimes: day === 'Friday' ? hm('05:30 26:20') : hm('05:30 24:55 26:20'),
+      }))).find(item => item.day === 'Weekday');
+      expect(go90).toMatchObject({ serviceClass: 'irregular', tier: 'span' });
+    });
   });
 
   it('keeps full-day departure times in a rail weekday rollup', () => {
