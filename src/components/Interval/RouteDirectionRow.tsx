@@ -5,7 +5,7 @@ import { fmtHeadwayRange } from '../../utils/format';
 import { shouldShowBranchHeadwayRange } from '../../utils/routeCardTrunk';
 import { HeadwayBadge, LimitedBadge } from './cardUi';
 import RouteRowName from '../RouteRowName';
-import { FIRST_LAST_TRIP_ALLOWANCE_HINT } from '../../content/noticeCopy';
+import { LIMITED_SERVICE_LABEL, FIRST_LAST_TRIP_ALLOWANCE_HINT } from '../../content/noticeCopy';
 
 interface Props {
   label: string;
@@ -56,7 +56,7 @@ interface Props {
  * Owns label color, headway display, and limited-service variants
  * so there's one place to change instead of hunting across SidebarControls.
  */
-export default function RouteDirectionRow({ label, routeName, labelWeight = 'bold', singleLine = false, headway, colorHeadway, headwayLabel, trunkHeadway, headwaySuffix, headwaySuffixTone, subLabel, subLabelTrailing, subLabelWeight = 'bold', live, limited, limitedLabel = 'limited', edgeGapAllowance, onEdgeGapAllowanceClick, dimmed, onHoverStart, onHoverEnd, branchHovered, branchDimmed, onClick, holdLayout = false }: Props) {
+export default function RouteDirectionRow({ label, routeName, labelWeight = 'bold', singleLine = false, headway, colorHeadway, headwayLabel, trunkHeadway, headwaySuffix, headwaySuffixTone, subLabel, subLabelTrailing, subLabelWeight = 'bold', live, limited, limitedLabel = LIMITED_SERVICE_LABEL, edgeGapAllowance, onEdgeGapAllowanceClick, dimmed, onHoverStart, onHoverEnd, branchHovered, branchDimmed, onClick, holdLayout = false }: Props) {
   const interactive = !!(onHoverStart && onHoverEnd);
   const clickable = !!onClick;
   const faded = dimmed || branchDimmed;

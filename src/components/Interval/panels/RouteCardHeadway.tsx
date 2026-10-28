@@ -51,7 +51,7 @@ import { hasStretchRoles, routeAllDayContract, routeContract } from '../../../ut
 import type { VariantFamily } from '../../../utils/routeVariants';
 import { reportDetails } from '../../../utils/reportIssue';
 import { ROUTE_DATA_QUALITY_WARNING } from '../../../../shared/routeDataQuality';
-import { BOOKING_REQUIRED_NOTICE, expiredFeedNotice, explainerFor, NO_ROUTE_SHAPE_NOTICE, periodServiceNotice, ROUTE_DATA_QUALITY_WARNING_MESSAGE, selectedRouteFilterNotice, selectedRouteOutsideFilterNotice, unevenServiceNotice, variantsIncludedNotice, WEEKDAY_VARIATION_NOTICE } from '../../../content/noticeCopy';
+import { LIMITED_SERVICE_LABEL, BOOKING_REQUIRED_NOTICE, expiredFeedNotice, explainerFor, NO_ROUTE_SHAPE_NOTICE, periodServiceNotice, ROUTE_DATA_QUALITY_WARNING_MESSAGE, selectedRouteFilterNotice, selectedRouteOutsideFilterNotice, unevenServiceNotice, variantsIncludedNotice, WEEKDAY_VARIATION_NOTICE } from '../../../content/noticeCopy';
 import { featurePassesHeadwayFilter } from '../../../../shared/routeHeadwayFilter';
 import { headwayAbout, headwayAboutRange } from '../../../utils/headwayText';
 import type { RouteLabel } from '../../../utils/routeFacts';
@@ -252,7 +252,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
   const allDay = period === 'all' ? routeAllDayContract(currentRoute.directions) : undefined;
   const noRegularService = (contract != null && contract.filterValue == null && contract.runs)
     || (allDay != null && allDay.filterValue == null);
-  const noRegularLabel = allDay?.limited ? 'limited' : NO_REGULAR_SERVICE_LABEL;
+  const noRegularLabel = allDay?.limited ? LIMITED_SERVICE_LABEL : NO_REGULAR_SERVICE_LABEL;
   const selectedPeriod = period !== 'all' ? TIME_PERIODS.find(p => p.key === period) : undefined;
   const hasPeriodService = period === 'all' || directionGroups.some(group =>
     group.realTier.some(direction => routeCardDisplayHeadway(direction, period) != null) ||
