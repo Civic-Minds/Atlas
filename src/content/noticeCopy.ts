@@ -17,7 +17,7 @@ import { delayAmount, headwayAbout } from '../utils/headwayText';
 export function expiredFeedNotice(agencyName: string, expDateStr?: string, manualFeedSource = false): string {
   const { primary } = agencyNames(agencyName).card;
   const ended = `${primary}'s timetable ended${expDateStr ? ` on ${expDateStr}` : ''}.`;
-  // N3 (Ryan): the kept-by-hand detail is in its explainer (E1's MANUAL_FEED_CONTEXT), not the notice.
+  // N3 (Ryan): the kept-by-hand detail is in its explainer (E1's MANUAL_FEED piece, N76), not the notice.
   void manualFeedSource;
   return `${ended} Times shown may be out of date.`;
 }
@@ -77,8 +77,6 @@ export const NO_ROUTE_SHAPE_NOTICE = "This route's line can't be shown on the ma
 /** CIV-1006: a route riders must book ahead (Ryan's wording). */
 export const BOOKING_REQUIRED_NOTICE = 'Rides on this route must be booked ahead.';
 
-// E6 no-route-shape: Ryan's three paragraphs (CIV-1051). Paragraph 1 is N7; paragraph 3 is E5's.
-export const NO_ROUTE_SHAPE_EXPLANATION = 'We still show the route on this card. Its frequency comes from the timetable and is still accurate.';
 
 // N11 not-in-period, N12 misses-filter
 /** Notices name the chosen time of day, never "the selected period" (Ryan); `periodRange` is "6–9 AM", or null for all day. */
@@ -90,18 +88,9 @@ export function selectedRouteOutsideFilterNotice(maxHeadway: number, periodRange
     : `This route doesn't meet the ${maxHeadway}\u2011minute filter ${when ? `for all of ${when}` : 'all day'}.`;
 }
 
-// ---- E1 Outdated schedule: three paragraphs, Ryan's approved text (CIV-1051) ----
-// (1) the issue, (2) what we're doing about it, (3) what the reader can do. No labels on the site.
-// N74 / E1 paragraph 1 end (N2 and N3 versions)
+// E1 outdated-schedule, paragraph 1 end (N2 and N3 versions); the rest of E1 is pieces (EXPLAINER_PIECES).
 export const EXPIRED_FEED_EXPLANATION =
   'This is the latest schedule the agency has published that we could verify.';
-// N76 / E1 paragraph 2, kept by hand (N3 version), in place of the weekly check
-export const MANUAL_FEED_CONTEXT =
-  "This agency doesn't publish a feed we can check automatically. We update it when a newer file is provided and verified.";
-/** E1 paragraph 2 start (N2 and N25 versions; N3 uses N76 instead). */
-export const E1_WEEKLY_CHECK = 'We check for new schedules every week.';
-/** E1 paragraph 3, above Check current schedules and Report a problem. */
-export const E1_AGENCY_WEBSITE = "A newer schedule may be on the agency's website.";
 
 // N77 check-history, N78 last-refreshed / E1 line 2
 export function expiredFeedCheckHistory(options: {
@@ -310,34 +299,69 @@ export const EXPLAINERS = {
 } as const;
 export type HelpTopic = keyof typeof EXPLAINERS;
 
-// E2 new-schedule-data: Ryan's three paragraphs (CIV-1051). The date is the day it went on the map.
+// ---- Explainer paragraph 1, one per explainer (Ryan's approved text, CIV-1051) ----
+// Paragraphs 2 and 3 are shared pieces, below. E1's lead is the notice plus EXPIRED_FEED_EXPLANATION;
+// E3's is the agency's correction note; E6's is N7 itself.
+// E2: the date is the day the schedule went on the map.
 export const newScheduleDataLead = (agencyName: string, onMapOn?: string | null) =>
   `${agencyNames(agencyName).card.primary}'s new schedule went on the map${onMapOn ? ` on ${onMapOn}` : ''}. It may have errors we haven't found yet.`;
-export const NEW_SCHEDULE_DATA_EXPLANATION =
-  "We're verifying it for missing service and other errors, and we'll correct anything we find.";
-export const NEW_SCHEDULE_DATA_WEBSITE = "The agency's website has its current schedule.";
-// E3 corrected-data: Ryan's three paragraphs (CIV-1051); paragraph 1 is the agency's correction note.
-export const CORRECTED_DATA_EXPLANATION = 'We correct errors like this before a schedule goes on the map.';
-export const CORRECTED_DATA_REPORT = 'If something still looks wrong, report it below.';
-// E4 beta-rollout: Ryan's two paragraphs (CIV-1051); no rollout link (it pointed riders at internal tracking).
+// E4
 export const betaRolloutLead = (agencyName: string) => `${agencyNames(agencyName).card.primary} is only available on Atlas beta.`;
-export const BETA_ROLLOUT_EXPLANATION = "We're still verifying its schedule, and some routes or times may change.";
-// E5 route-data-quality
-// Ryan's three paragraphs (CIV-1051).
+// E5
 export const ROUTE_DATA_QUALITY_LEAD = "Part of this route's line on the map may be missing or drawn in the wrong place.";
-export const ROUTE_DATA_QUALITY_EXPLANATION = 'We still show the route. Its frequency on this card comes from the timetable and is still accurate.';
-/** E5 and E6 paragraph 3. */
-export const ROUTE_DATA_QUALITY_REPORT = 'If something looks off, report it with the flag on this card.';
-// E7 edge-gap-allowance
-// Ryan's two paragraphs (CIV-1051); 10 minutes is EDGE_GAP_ALLOWANCE_MINUTES (pipeline/transit-phase2.ts).
+// E7: 10 minutes is EDGE_GAP_ALLOWANCE_MINUTES (pipeline/transit-phase2.ts).
 export const EDGE_GAP_ALLOWANCE_LEAD = 'The first or last trip of the day can come up to 10 minutes later than usual, and the route still counts at its frequency.';
-export const EDGE_GAP_ALLOWANCE_EXPLANATION = "Many routes start or end their day with one longer gap. Gaps in the middle of the day don't get this allowance.";
-// E8 weekday-variation
-// Ryan's three paragraphs (CIV-1051).
-export const WEEKDAY_VARIATION_LEAD = "This route's weekday schedules vary by day. Some weekdays run more or less often than others.";
-export const WEEKDAY_VARIATION_EXPLANATION =
-  "We check each weekday separately, which means one busier day can't make the route look more frequent than it usually is.";
-export const WEEKDAY_VARIATION_WEBSITE = "The agency's website has each day's schedule.";
+// E8: N1 itself, then one more sentence.
+export const WEEKDAY_VARIATION_LEAD = `${WEEKDAY_VARIATION_NOTICE} Some weekdays run more or less often than others.`;
+
+// ---- Explainer pieces (CIV-1061): every paragraph 2 and 3 sentence, written once ----
+/** Where a paragraph-3 piece's links go, in order. */
+export type ExplainerLink = 'agency-website' | 'report-schedule' | 'technical-details' | 'report-data';
+type ExplainerPieceDef = {
+  /** Permanent code (X1, X2…), never reused, like N and E codes. */
+  code: string;
+  text: string;
+  /** Paragraph 3 only: the links under it. */
+  links?: readonly ExplainerLink[];
+  /** Paragraph 3 only: shown only when the agency has a website (its only link is the website). */
+  needsWebsite?: boolean;
+};
+export const EXPLAINER_PIECES = {
+  // Paragraph 2: what we're doing about it.
+  WEEKLY_CHECK: { code: 'X1', text: "We check for new schedules every week." },
+  /** N76: the kept-by-hand version of WEEKLY_CHECK. */
+  MANUAL_FEED: { code: 'X2', text: "This agency doesn't publish a feed we can check automatically. We update it when a newer file is provided and verified." },
+  VERIFYING_NEW_SCHEDULE: { code: 'X3', text: "We're verifying it for missing service and other errors, and we'll correct anything we find." },
+  CORRECTED_BEFORE_MAP: { code: 'X4', text: "We correct errors like this before a schedule goes on the map." },
+  VERIFYING_BETA: { code: 'X5', text: "We're still verifying its schedule, and some routes or times may change." },
+  FREQUENCY_FROM_TIMETABLE_LINE_WRONG: { code: 'X6', text: "We still show the route. Its frequency on this card comes from the timetable and is still accurate." },
+  FREQUENCY_FROM_TIMETABLE_NO_LINE: { code: 'X7', text: "We still show the route on this card. Its frequency comes from the timetable and is still accurate." },
+  MIDDAY_GAPS: { code: 'X8', text: "Many routes start or end their day with one longer gap. Gaps in the middle of the day don't get this allowance." },
+  WEEKDAYS_SEPARATE: { code: 'X9', text: "We check each weekday separately, which means one busier day can't make the route look more frequent than it usually is." },
+  // Paragraph 3: what the reader can do.
+  AGENCY_WEBSITE_NEWER: { code: 'X10', text: "A newer schedule may be on the agency's website.", links: ['agency-website', 'report-schedule'] },
+  AGENCY_WEBSITE_CURRENT: { code: 'X11', text: "The agency's website has its current schedule.", links: ['agency-website'], needsWebsite: true },
+  AGENCY_WEBSITE_EACH_DAY: { code: 'X12', text: "The agency's website has each day's schedule.", links: ['agency-website'], needsWebsite: true },
+  REPORT_BELOW: { code: 'X13', text: "If something still looks wrong, report it below.", links: ['technical-details', 'report-data'] },
+  REPORT_WITH_FLAG: { code: 'X14', text: "If something looks off, report it with the flag on this card." },
+} as const satisfies Record<string, ExplainerPieceDef>;
+export type ExplainerPiece = keyof typeof EXPLAINER_PIECES;
+export const pieceText = (piece: ExplainerPiece): string => EXPLAINER_PIECES[piece].text;
+
+/** E1 opened from N3 (a schedule kept by hand) swaps its paragraph 2. */
+export type ExplainerLayoutKey = HelpTopic | 'outdated-schedule-manual';
+/** Each explainer after its own paragraph 1: its paragraph-2 piece(s), then at most one paragraph-3 piece. */
+export const EXPLAINER_LAYOUT: Record<ExplainerLayoutKey, { p2: readonly ExplainerPiece[]; p3?: ExplainerPiece }> = {
+  'outdated-schedule': { p2: ['WEEKLY_CHECK'], p3: 'AGENCY_WEBSITE_NEWER' },
+  'outdated-schedule-manual': { p2: ['MANUAL_FEED'], p3: 'AGENCY_WEBSITE_NEWER' },
+  'new-schedule-data': { p2: ['VERIFYING_NEW_SCHEDULE'], p3: 'AGENCY_WEBSITE_CURRENT' },
+  'corrected-data': { p2: ['CORRECTED_BEFORE_MAP'], p3: 'REPORT_BELOW' },
+  'beta-rollout': { p2: ['VERIFYING_BETA'] },
+  'route-data-quality': { p2: ['FREQUENCY_FROM_TIMETABLE_LINE_WRONG'], p3: 'REPORT_WITH_FLAG' },
+  'no-route-shape': { p2: ['FREQUENCY_FROM_TIMETABLE_NO_LINE'], p3: 'REPORT_WITH_FLAG' },
+  'edge-gap-allowance': { p2: ['MIDDAY_GAPS'] },
+  'weekday-variation': { p2: ['WEEKDAYS_SEPARATE'], p3: 'AGENCY_WEBSITE_EACH_DAY' },
+};
 
 /**
  * Which explainer each notice's Learn more opens (N-code to panel). Every Learn-more notice is listed here; components
