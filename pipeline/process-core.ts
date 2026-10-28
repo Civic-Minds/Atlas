@@ -48,6 +48,7 @@ import { isNightRouteDirection, nextServiceDay, nightStartsBeforeWindow, overnig
 import { makeShapeCoverChecker } from './shapeCoverage.js';
 import { annotateSharedStretches, contiguousSharedRuns, isPoolablePattern } from './sharedStretch.js';
 import { boardsAt, isThinPool } from './stopEligibility.js';
+import { noOwnServicePeriods } from './noOwnService.js';
 import { nearDuplicateTripIds } from './nearDuplicateTrips.js';
 import { decideDedupe, runsInDay, type DedupePattern } from './featureDedupe.js';
 import { decideHeadline, decidePeriod, liftTierOnDestinationPool, ownStepOneHeadway, pooledStepOneHeadway, settleTier, terminalReading, type PeriodValue } from './routeGrading.js';
@@ -3466,6 +3467,14 @@ export async function processGtfsBuffer(
     for (const feature of withheldOvernightFeatures) {
       const byDirection = feature.properties.directionFilterHeadwayByPeriod as Partial<Record<PeriodKey, number | null>> | undefined;
       if (byDirection && byDirection.overnight != null) byDirection.overnight = null;
+    }
+    // CIV-1074: every period a row does not run itself (under three own departures), whatever supplies
+    // its number (a borrowed stop list, a sparse window, the stretch a variant row reads). Display only.
+    for (const feature of features) {
+      const p = feature.properties as Parameters<typeof noOwnServicePeriods>[0] & { stopId?: unknown };
+      if (p.stopId != null || !(feature.properties as { routeId?: unknown }).routeId) continue;
+      const periods = noOwnServicePeriods(p);
+      if (periods.length > 0) (feature.properties as Record<string, unknown>).noOwnServiceByPeriod = periods;
     }
     // A partial-weekday route-day (#710) keeps today's filter: its stretch reads one weekday, while
     // its service runs on others and continues on the next day's service after midnight.
