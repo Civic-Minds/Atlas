@@ -126,6 +126,9 @@ function periodMinutes(snapshot: RouteSnapshot, period: TimePeriod): number | nu
  */
 const shownMinutes = (minutes: number): number => minutes;
 
+/** The route card's chart shows only with this many snapshots valued in the period (CIV-471, Ryan's call); with fewer, the rows alone. */
+export const MIN_CHART_VALUES = 3;
+
 function changeSummary(entry: RouteHistoryEntry, period: TimePeriod = 'all'): { text: string; subtext: string; worse: boolean } | null {
   // Only snapshots with a value in the period take part (CIV-389).
   const snaps = sortSnapshotsNewestFirst(entry.snapshots).filter(s => periodMinutes(s, period) != null);
@@ -207,6 +210,7 @@ function RouteHistoryCard({
   // The chart and summary use the snapshots with a value in the period; rows list every snapshot.
   const valued = snaps.filter(s => periodMinutes(s, period) != null);
   const chartSnaps = [...valued].reverse();
+  const showChart = chartSnaps.length >= MIN_CHART_VALUES;
   const snapHeadway = (snap: RouteSnapshot): number => periodMinutes(snap, period) ?? NaN;
 
   const first = valued[valued.length - 1] ?? snaps[snaps.length - 1];
@@ -262,13 +266,13 @@ function RouteHistoryCard({
       </SidebarCardHeaderBlock>
 
       {/* The chart sits on the card with no box, as the route card's hour chart does (#1028 item 10); its icon opens the wide view. */}
-      {chartSnaps.length >= 2 && (
+      {showChart && (
         <div className="mt-3 relative pt-5">
           <ExpandButton label="Expand chart" onClick={() => setChartExpanded(true)} />
           <RouteHistoryChart snaps={chartSnaps} minutes={hws} lineColor={lineColor} gradientId={gradientId} hoveredSnap={hoveredSnap} onHover={setHoveredSnap} />
         </div>
       )}
-      {chartExpanded && chartSnaps.length >= 2 && (
+      {chartExpanded && showChart && (
         <ExpandDialog title={`${route.routeShortName}${route.routeName ? ` ${titleCase(route.routeName)}` : ''}`} ariaLabel="Route history chart" closeLabel="Close chart" onClose={closeChart}>
           <div className="mt-4">
             <RouteHistoryChart wide snaps={chartSnaps} minutes={hws} lineColor={lineColor} gradientId={`${gradientId}-wide`} hoveredSnap={hoveredSnap} onHover={setHoveredSnap} />
@@ -281,7 +285,7 @@ function RouteHistoryCard({
           const hw = periodMinutes(snap, period);
           const older = i < snaps.length - 1 ? periodMinutes(snaps[i + 1], period) : null;
           const delta = hw != null && older != null ? hw - older : null;
-          const charted = hw != null && chartSnaps.length >= 2;
+          const charted = hw != null && showChart;
           return (
             // Focus and a tap highlight the row and its point too (a tap elsewhere moves focus and clears it); the row's own hover does it for the pointer.
             <div
