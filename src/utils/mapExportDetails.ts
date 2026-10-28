@@ -247,7 +247,7 @@ function filenameParts(state: MapExportState, place: string | null): string[] {
       if (state.frequentServiceWindow) parts.push(state.frequentServiceWindow);
       break;
     case 'night':
-      parts.push('night service');
+      parts.push('overnight service');
       if (state.nightServiceFrequency) parts.push(`${state.nightServiceFrequency}min`);
       break;
     default:

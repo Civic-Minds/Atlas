@@ -305,7 +305,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
   if (nightServiceMode && setNightServiceFrequency) {
     return (
       <div ref={rowRef} className="flex items-center gap-2">
-        <PillGroup outlined label="Night frequency" value={String(nightServiceFrequency)} onChange={v => setNightServiceFrequency(Number(v) as 30 | 60)}
+        <PillGroup outlined label="Overnight frequency" value={String(nightServiceFrequency)} onChange={v => setNightServiceFrequency(Number(v) as 30 | 60)}
           options={([30, 60] as const).map(value => [String(value), headwayAmount(value)] as const)} />
       </div>
     );
