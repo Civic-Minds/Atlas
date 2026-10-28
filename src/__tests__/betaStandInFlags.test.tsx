@@ -14,6 +14,7 @@ const STAND_IN_FLAGS = [
   'routeVariants',
   'runningTimes',
   'sparklineExpand',
+  'corridors',
 ] as const;
 
 async function configFor(env: Record<string, string>, dev: boolean) {

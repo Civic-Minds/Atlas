@@ -10,6 +10,8 @@ import { useViewport } from '../../context/ViewportContext';
 import { useHistoryMapOverlay } from '../../context/HistoryMapOverlay';
 import { useLiveVehiclesMapOverlay } from '../../context/LiveVehiclesMapOverlay';
 import { useHistoryLayer } from './map/useHistoryLayer';
+import { findCorridor, useCorridorsLayer } from './map/useCorridorsLayer';
+import CorridorCard from './CorridorCard';
 import { addMapLayers } from './map/mapLayers';
 import { topMapHit } from './map/mapHitTargets';
 import { resetRoutesLayerDefaultPaint as resetRouteLayersPaint, localRouteHeadwayColor } from './map/routeStyle';
@@ -229,6 +231,8 @@ interface MapCanvasProps {
   agencyDataLoading?: boolean;
   /** Number of agencies whose route data failed to load. */
   agencyDataFailedCount?: number;
+  /** Corridors prototype layer (CIV-1092, beta only), off until switched on. */
+  corridorsOn?: boolean;
 }
 
 const MapCanvasInner: React.FC<MapCanvasProps> = ({
@@ -300,6 +304,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   exportTitle = 'Transit map',
   agencyDataLoading = false,
   agencyDataFailedCount = 0,
+  corridorsOn = false,
 }) => {
   const { colorVisionFriendly } = useColorVision();
   const colorMode = useColorMode();
@@ -308,6 +313,8 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   const [pmtilesRoutesAvailable, setPmtilesRoutesAvailable] = useState<boolean | null>(null);
   const [pmtilesRouteAgencies, setPmtilesRouteAgencies] = useState<Set<string> | null>(null);
   const [mapLoaded, setMapLoaded] = useState(false);
+  const [selectedCorridor, setSelectedCorridor] = useState<{ slug: string; corridorId: string } | null>(null);
+  const setSelectedCorridorRef = useRef(setSelectedCorridor);
   const [zoom, setZoom] = useState(11);
   // Stop visibility only changes at zoom 12/14/17, so the style/filter effect depends on this tier
   // rather than raw zoom and doesn't rebuild on every zoom tick (CIV-104).
@@ -824,6 +831,13 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         return;
       }
 
+      if (hit?.kind === 'corridor') {
+        const props = hit.features[0].properties;
+        setSelectedCorridorRef.current({ slug: String(props.agencySlug), corridorId: String(props.corridorId) });
+        return;
+      }
+      setSelectedCorridorRef.current(null);
+
       const routeHits = hit?.kind === 'route' ? hit.features : [];
       if (routeHits.length > 0) {
         const props = routeHits[0].properties;
@@ -1207,6 +1221,13 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
 
   // Overlay layers (history, live vehicles) — extracted to hooks
   useHistoryLayer(mapRef, mapLoaded);
+  const corridorColorMode = colorVisionFriendly ? 'friendly' : 'default';
+  const { details: corridorDetails } = useCorridorsLayer(mapRef, mapLoaded, {
+    enabled: corridorsOn, agencies, day: day ?? 'Weekday', period, colorMode: corridorColorMode,
+  });
+  const openCorridor = corridorsOn && selectedCorridor
+    ? findCorridor(corridorDetails, selectedCorridor.slug, selectedCorridor.corridorId, day ?? 'Weekday')
+    : null;
   // Clean up deck overlay on unmount
   useEffect(() => {
     return () => {
@@ -1218,6 +1239,10 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     <div style={{ height: '100%', width: '100%', position: 'relative', background: 'var(--bg-app)' }}>
       {/* Map Element */}
       <div ref={mapContainerRef} style={{ height: '100%', width: '100%' }} />
+
+      {openCorridor && (
+        <CorridorCard corridor={openCorridor} period={period} colorMode={corridorColorMode} onClose={() => setSelectedCorridor(null)} />
+      )}
 
       {LiveVehiclesLayer && liveLayerRequested && (
         <React.Suspense fallback={null}>

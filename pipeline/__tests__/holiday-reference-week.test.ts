@@ -311,7 +311,8 @@ describe('running-period reference guards (#734 follow-up)', () => {
     const result = await processGtfsBuffer(await fixtureZip('carta-stale-main-corridor'), undefined, { slug: 'carta' });
     const trunk = JSON.parse(result.corridorsGeojson).features
       .map((feature: any) => feature.properties)
-      .filter((p: any) => p.day === 'Weekday' && p.corridorId === '764916->764333');
+      // 764916 is set-down only on this trunk, so the corridor runs 764370 > 764337 > 764333 (CIV-1092).
+      .filter((p: any) => p.day === 'Weekday' && p.corridorStopIds.includes('764337') && p.corridorStopIds.includes('764333'));
     expect(trunk).toHaveLength(1);
     expect([...trunk[0].routeIds].sort()).toEqual(['1235', '1236']);
   });

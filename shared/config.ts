@@ -137,6 +137,9 @@ export const ROUTE_VARIANTS_ENABLED = BETA_BUILD;
 export const RUNNING_TIMES_ENABLED = BETA_BUILD;
 // The expand control on the route card's frequency chart.
 export const SPARKLINE_EXPAND_ENABLED = BETA_BUILD;
+// Corridors prototype (CIV-1092): combined service where route numbers share stops, as a map
+// layer that is off until switched on. Beta and dev only.
+export const CORRIDORS_ENABLED = BETA_BUILD;
 // "Source" link to the agency's own website on the agency card (CIV-467; renamed in CIV-841).
 // Off everywhere (CIV-940): it links to the agency's website, not its data feed.
 export const DATA_SOURCE_LINK_ENABLED = false;
@@ -175,6 +178,7 @@ export const FEATURES = {
   routeVariants: ROUTE_VARIANTS_ENABLED,
   runningTimes: RUNNING_TIMES_ENABLED,
   sparklineExpand: SPARKLINE_EXPAND_ENABLED,
+  corridors: CORRIDORS_ENABLED,
   dataSourceLink: DATA_SOURCE_LINK_ENABLED,
 } as const;
 

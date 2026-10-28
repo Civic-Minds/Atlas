@@ -351,14 +351,17 @@ export interface AnalysisResult {
 }
 
 export interface CorridorResult {
-    linkId: string;
-    stopA: string;
-    stopB: string;
+    /** The corridor's stop-to-stop links, joined. */
+    corridorId: string;
+    /** Its stops in travel order (at least three). */
+    stopIds: string[];
     routeIds: string[];
-    tripCount: number;
-    avgHeadway: number;
-    peakHeadway: number;
-    reliabilityScore: number;
+    /** The route numbers sharing it, sorted. */
+    routeNames: string[];
+    /** Combined rider wait per period, minutes as an even headway; null where it is not read. */
+    waits: Record<'amPeak' | 'midday' | 'pmPeak' | 'evening' | 'late' | 'overnight', number | null>;
+    /** Each route's own wait on the same stops, by route number. */
+    routeWaits: Record<string, Record<'amPeak' | 'midday' | 'pmPeak' | 'evening' | 'late' | 'overnight', number | null>>;
 }
 
 export interface SpacingResult {

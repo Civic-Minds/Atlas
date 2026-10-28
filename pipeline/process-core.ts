@@ -3401,14 +3401,13 @@ export async function processGtfsBuffer(
     excluded: partialWeekdayFeatures,
   });
 
-  // Combined frequency corridors (AI-17): overlapping routes (2+ sharing consecutive stop links)
-  // get aggregate headway from the *union* of their departures. Reuse a matching route shape
-  // between each shared stop pair so the overlay follows the street instead of drawing a
-  // misleading straight stop-to-stop chord.
+  // Combined service corridors (CIV-1092): two or more route numbers sharing at least three
+  // consecutive stops in the same direction, valued by the pooled rider wait per period (see
+  // transit-corridors.ts). Drawn along a route shape that runs through every corridor stop in
+  // order, so the overlay follows the street; a corridor no shape covers is left out.
   //
   // Corridors are skipped for all-rail feeds (route_type=2): rail lines run on dedicated
-  // single-operator corridors where combined frequency is not meaningful, and the stop-pair
-  // chord geometry creates misleading straight-line visuals over the actual shaped route.
+  // single-operator corridors where combined frequency is not meaningful.
   const allRailFeed = (gtfs.routes ?? []).length > 0 &&
     (gtfs.routes ?? []).every(r => String(r.route_type) === '2');
 
@@ -3417,55 +3416,42 @@ export async function processGtfsBuffer(
   if (!allRailFeed) {
   const dayTypes: DayType[] = [...DAY_TYPES];
   for (const d of dayTypes) {
-    const dayCfg = DEFAULT_CRITERIA.dayTypes[d];
-    if (!dayCfg) continue;
-    const corrs = calculateCorridors(gtfs, d, dayCfg.timeWindow.start, dayCfg.timeWindow.end, refDate);
-    for (const c of corrs) {
-      const from = stopsById.get(c.stopA);
-      const to = stopsById.get(c.stopB);
-      if (!from || !to) continue;
-
+    if (!DEFAULT_CRITERIA.dayTypes[d]) continue;
+    for (const c of calculateCorridors(gtfs, d, refDate)) {
+      const n = c.stopIds.length;
       const corridorGeometry = features
         .filter(feature =>
           feature.geometry.type === 'LineString' &&
           feature.properties.day === d &&
           c.routeIds.includes(String(feature.properties.routeId)),
         )
-        // A route can have multiple branches/shapes close to the same stops. Only use a
-        // shape whose serialized stop order contains this exact consecutive link; otherwise
-        // projecting the two stops onto an unrelated branch can draw the corridor off-road.
-        .filter(feature => {
-          const stopOrder = feature.properties.stopOrder as string[] | undefined;
-          if (!stopOrder) return false;
-          return stopOrder.some((stopId, i) =>
-            stopId === c.stopA && stopOrder[i + 1] === c.stopB,
-          );
-        })
         .map(feature => {
-          const stopOrder = feature.properties.stopOrder as string[];
+          const stopOrder = feature.properties.stopOrder as string[] | undefined;
           const stopPositions = feature.properties.stopPositions as number[] | undefined;
-          const pairIndex = stopOrder.findIndex((stopId, i) =>
-            stopId === c.stopA && stopOrder[i + 1] === c.stopB,
-          );
-          if (pairIndex < 0) return null;
+          if (!stopOrder) return null;
+          // The corridor's stops in this order along the shape; a stop a trip only sets down at is
+          // not a corridor stop, so the shape may have other stops between them.
+          const at: number[] = [];
+          for (const id of c.stopIds) {
+            const i = stopOrder.indexOf(id, at.length ? at[at.length - 1] + 1 : 0);
+            if (i < 0) return null;
+            at.push(i);
+          }
           if (stopPositions && stopPositions.length === stopOrder.length) {
             return clipLineBetweenPositions(
               feature.geometry.coordinates as number[][],
-              stopPositions[pairIndex],
-              stopPositions[pairIndex + 1],
+              stopPositions[at[0]],
+              stopPositions[at[n - 1]],
             );
           }
-          return clipLineBetweenStops(feature.geometry.coordinates as number[][], from, to);
+          const from = stopsById.get(c.stopIds[0]);
+          const to = stopsById.get(c.stopIds[n - 1]);
+          return from && to ? clipLineBetweenStops(feature.geometry.coordinates as number[][], from, to) : null;
         })
-        .find((geometry): geometry is number[][] => geometry != null);
-      // A corridor without a matching shaped route is safer to omit than to render as a
-      // straight line through places where no vehicle travels.
+        .find((geometry): geometry is number[][] => geometry != null && geometry.length >= 2);
       if (!corridorGeometry) continue;
 
-      const h = Math.round(c.avgHeadway);
-      const shortNames = c.routeIds
-        .map((rid: string) => routeById.get(rid)?.route_short_name ?? rid)
-        .filter(Boolean);
+      const headline = c.waits.midday ?? c.waits.pmPeak ?? null;
       corridorFeatures.push({
         type: 'Feature',
         geometry: {
@@ -3474,13 +3460,17 @@ export async function processGtfsBuffer(
         },
         properties: {
           isCorridor: true,
-          corridorId: c.linkId,
-          headway: h,
-          tier: headwayToTier(h),
+          corridorId: c.corridorId,
+          headway: headline,
+          tier: headline != null ? headwayToTier(headline) : 'span',
           routeIds: c.routeIds,
-          corridorShortNames: shortNames,
+          corridorShortNames: c.routeNames,
+          corridorStopIds: c.stopIds,
+          corridorFromStop: stopNameById.get(c.stopIds[0]) ?? null,
+          corridorToStop: stopNameById.get(c.stopIds[n - 1]) ?? null,
+          corridorWaits: c.waits,
+          corridorRouteWaits: c.routeWaits,
           day: d,
-          reliabilityScore: c.reliabilityScore,
         },
       });
     }

@@ -606,27 +606,24 @@ describe('processGtfsBuffer corridor clipping', () => {
     return JSON.parse(result.corridorsGeojson).features as any[];
   }
 
-  it('clips each corridor to the shape between its two stops, dropping the tails', async () => {
+  it('clips each corridor to the shape between its first and last stops, dropping the tails', async () => {
     const corridors = (await corridorFixture(true)).filter(f => f.properties.day === 'Weekday');
-    expect(corridors.map(f => f.properties.corridorId).sort()).toEqual(['s1->s2', 's2->s3']);
-    const byId = Object.fromEntries(corridors.map(f => [f.properties.corridorId, f.geometry.coordinates]));
+    // One corridor (CIV-1092): the three stops both routes serve, s1 to s3.
+    expect(corridors.map(f => f.properties.corridorStopIds)).toEqual([['s1', 's2', 's3']]);
+    const coords = corridors[0].geometry.coordinates as number[][];
     // [lon, lat]; the shape's tail points (43.640-43.645 and 43.665-43.670) must be gone.
-    expect(byId['s1->s2'][0][0]).toBeCloseTo(-79.380, 4);
-    expect(byId['s1->s2'][0][1]).toBeCloseTo(43.650, 4);
-    expect(byId['s1->s2'][byId['s1->s2'].length - 1][0]).toBeCloseTo(-79.375, 4);
-    expect(byId['s1->s2'][byId['s1->s2'].length - 1][1]).toBeCloseTo(43.655, 4);
-    expect(byId['s2->s3'][0][0]).toBeCloseTo(-79.375, 4);
-    expect(byId['s2->s3'][0][1]).toBeCloseTo(43.655, 4);
-    expect(byId['s2->s3'][byId['s2->s3'].length - 1][0]).toBeCloseTo(-79.370, 4);
-    expect(byId['s2->s3'][byId['s2->s3'].length - 1][1]).toBeCloseTo(43.660, 4);
-    for (const coords of Object.values(byId) as number[][][]) {
-      for (const [, lat] of coords) {
-        expect(lat).toBeGreaterThan(43.6499);
-        expect(lat).toBeLessThan(43.6601);
-      }
+    expect(coords[0][0]).toBeCloseTo(-79.380, 4);
+    expect(coords[0][1]).toBeCloseTo(43.650, 4);
+    expect(coords[coords.length - 1][0]).toBeCloseTo(-79.370, 4);
+    expect(coords[coords.length - 1][1]).toBeCloseTo(43.660, 4);
+    for (const [, lat] of coords) {
+      expect(lat).toBeGreaterThan(43.6499);
+      expect(lat).toBeLessThan(43.6601);
     }
     expect(corridors[0].properties.routeIds.sort()).toEqual(['r1', 'r2']);
-    expect(corridors[0].properties.headway).toBe(10);
+    // r1 and r2 every 20, ten minutes apart: every 10 together, every 20 alone.
+    expect(corridors[0].properties.corridorWaits.midday).toBe(10);
+    expect(corridors[0].properties.corridorRouteWaits['1'].midday).toBe(20);
   });
 
   it('omits corridors when no shaped route covers the link rather than drawing a straight line', async () => {

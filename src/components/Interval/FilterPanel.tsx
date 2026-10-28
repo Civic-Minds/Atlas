@@ -25,6 +25,9 @@ import { compareAgencyName, compareRegion, compareRouteNumber } from '../../util
 import PanelHeader from '../ui/PanelHeader';
 
 interface FilterPanelProps {
+  /** Corridors prototype (CIV-1092, beta only): the switch shows only when the setter is given. */
+  corridorsOn?: boolean;
+  setCorridorsOn?: (on: boolean) => void;
   lightMode: boolean;
   setLightMode: (v: boolean | ((prev: boolean) => boolean)) => void;
   hideSpan: boolean;
@@ -103,6 +106,8 @@ const SETTINGS = [
 ] as const;
 
 export const FilterPanel: React.FC<FilterPanelProps> = ({
+  corridorsOn,
+  setCorridorsOn,
   compare,
   lightMode,
   setLightMode,
@@ -635,6 +640,12 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                   <PickerSection title="Frequency" className="px-5 pt-4 pb-3"><FrequencyPicker value={maxHeadway} onChange={max => setMaxHeadway?.(max)} /></PickerSection>
                   <PickerSection title="Day of service" className="px-5 pt-2 pb-3"><DayPicker fill value={day as DayType} onChange={d => setDay?.(d)} /></PickerSection>
                   <PickerSection title="Time period" className="px-5 pt-2 pb-3"><PeriodPicker includeAll value={period as TimePeriod} onChange={p => setPeriod?.(p)} /></PickerSection>
+                  {setCorridorsOn && (
+                    <div className="px-5 pt-2 pb-3 flex items-center justify-between gap-3">
+                      <p className={CARD_NOTE}>Corridors</p>
+                      <Toggle on={!!corridorsOn} onToggle={() => setCorridorsOn(!corridorsOn)} label="Corridors" />
+                    </div>
+                  )}
 
                   {compare?.side && (
                     <div className="px-5 pt-2 pb-3">
