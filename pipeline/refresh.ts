@@ -49,7 +49,7 @@ import {
 } from './overrideAudit.js';
 import { readFeedReviewHistory, shouldReviewNextFeed } from './feedReview.js';
 import { compareStopSnapshots, formatStopAuditLog, type AuditedStop } from './stopAudit.js';
-import { candidateIsOlderThanActive, shouldClearStaged, decideRefreshSkipUnchanged, isFeedExpired, markFeedStale, shouldReplaceExpiredFeed, shouldSkipAllExpiredFeeds, shouldStampFeedMeta, stampFeedMeta, routeLineCount, stampSupplementalFeedMeta } from './refreshMeta.js';
+import { lowerStoredFeedExpiry, candidateIsOlderThanActive, shouldClearStaged, decideRefreshSkipUnchanged, isFeedExpired, markFeedStale, shouldReplaceExpiredFeed, shouldSkipAllExpiredFeeds, shouldStampFeedMeta, stampFeedMeta, routeLineCount, stampSupplementalFeedMeta } from './refreshMeta.js';
 import {
   COUNTRY_LAUNCH_FLAG,
   isCountryLaunchBlocked,
@@ -464,7 +464,7 @@ async function refreshAgency(
 
   // #1144: a timetable that hasn't started waits while the current one still runs. The zip is
   // archived and the agency marked, so the run on its start date (heldFeedsDue) processes it.
-  const { feedStart: peekedStart } = await peekFeedDates(buf, agency.excludeRouteShortNames);
+  const { feedStart: peekedStart, feedExpiry: peekedCalendarEnd, feedInfoEnd: peekedFeedInfoEnd, calendarOnlyEnd: peekedCalendarOnlyEnd } = await peekFeedDates(buf, agency.excludeRouteShortNames);
   const heldUntil = futureFeedHoldUntil({ feedStart: peekedStart, todayYmd: expiryToday, liveFeedExpiry: agency.lastFeedExpiry });
   if (heldUntil) {
     agency.heldFeedStart = heldUntil;
@@ -551,6 +551,11 @@ async function refreshAgency(
     }
     if (!artifactNeedsReprocess) {
       await tryArchiveUnchangedFeed(agency.slug, buf, peekedExpiry, peekedVersion, writeLog);
+      // The feed is unchanged, but the expiry rule may not be (CIV-443): record what it gives now.
+      const previousExpiry = lowerStoredFeedExpiry(agency, {
+        feedInfoEnd: peekedFeedInfoEnd ?? null, calendarEnd: peekedCalendarEnd ?? null, calendarOnlyEnd: peekedCalendarOnlyEnd ?? null, todayYmd: todayUtcYmd(),
+      });
+      if (previousExpiry) writeLog(`\n  [info] recorded expiry ${previousExpiry} -> ${agency.lastFeedExpiry} (calendar's last service date)\n  `);
       return { summary: skipDecision.reason };
     }
     writeLog(`\n  ${agency.slug.padEnd(12)} ... reprocessing (current feed, legacy or missing route artifact)\n`);
