@@ -20,7 +20,7 @@ import { useColorMode } from '../../hooks/useColorMode';
 import ArrowLink from '../ui/ArrowLink';
 import PanelEmpty from '../ui/PanelEmpty';
 import AgencyName from '../ui/AgencyName';
-import { loadingText } from '../../content/noticeCopy';
+import { HIDDEN_ROUTES_UNAVAILABLE, loadingText, NO_DEGRADED_FEEDS, NO_FEED_MATCHES, NO_LIMITED_ROUTES_IN_VIEW, noSearchMatchText } from '../../content/noticeCopy';
 import { compareAgencyName, compareRegion, compareRouteNumber } from '../../utils/sortCompare';
 import PanelHeader from '../ui/PanelHeader';
 
@@ -424,8 +424,8 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                   ) : filteredHiddenRoutes.length === 0 ? (
                     <PanelEmpty>
                       {listRoutes.length === 0
-                        ? (limitedView ? 'No limited-service routes in view.' : 'The hidden-route list is unavailable right now.')
-                        : (limitedView ? 'No limited-service routes match your search.' : 'No hidden routes match your search.')}
+                        ? (limitedView ? NO_LIMITED_ROUTES_IN_VIEW : HIDDEN_ROUTES_UNAVAILABLE)
+                        : noSearchMatchText(limitedView ? 'limited-service routes' : 'hidden routes')}
                     </PanelEmpty>
                   ) : (
                     <div className="px-5 pb-4">
@@ -486,11 +486,11 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                   )}
                   {hiddenFeedAgencies.length === 0 ? (
                     <p className="py-4 text-xs text-[var(--text-muted)]">
-                      No degraded or unusable feeds are currently recorded.
+                      {NO_DEGRADED_FEEDS}
                     </p>
                   ) : filteredDegradedFeeds.length === 0 ? (
                     <p className="py-4 text-xs text-[var(--text-muted)]">
-                      No feeds match your search or filter.
+                      {NO_FEED_MATCHES}
                     </p>
                   ) : (
                     <div className="divide-y divide-[var(--border-primary)]">

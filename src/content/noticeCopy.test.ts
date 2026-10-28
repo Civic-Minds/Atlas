@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { CARD_NOTICE, CARD_NOTICE_FOOTER } from '../styles';
-import { NEW_SCHEDULE_DATA_NOTICE, expiredFeedCheckHistory, expiredFeedNotice, nightNoRoutesNotice, noServiceOnDayNotice, selectedRouteFilterNotice, selectedRouteOutsideFilterNotice, stopNoRoutesNotice } from './noticeCopy';
+import { HIDDEN_ROUTES_UNAVAILABLE, NO_DEGRADED_FEEDS, NO_FEED_MATCHES, NO_LIMITED_ROUTES_IN_VIEW, NO_MATCHING_AGENCIES, NO_MATCHING_ROUTES, noSearchMatchText, storyMapFailedText, storyMapLoadingText, NEW_SCHEDULE_DATA_NOTICE, expiredFeedCheckHistory, expiredFeedNotice, nightNoRoutesNotice, noServiceOnDayNotice, selectedRouteFilterNotice, selectedRouteOutsideFilterNotice, stopNoRoutesNotice } from './noticeCopy';
 
 describe('expiredFeedNotice', () => {
   it('names the agency once, without region or duplicated articles', () => {
@@ -77,5 +77,21 @@ describe('approved notice wording (CIV-1045)', () => {
 describe('N4 (CIV-1051)', () => {
   it('says verified, matching E2', () => {
     expect(NEW_SCHEDULE_DATA_NOTICE.route).toBe("This route's new schedule is still being verified.");
+  });
+});
+
+// CIV-957: empty and loading states moved into this file read exactly as before.
+describe('empty and loading states (CIV-957)', () => {
+  it('keep their wording', () => {
+    expect(NO_MATCHING_ROUTES).toBe('No routes match.');
+    expect(NO_MATCHING_AGENCIES).toBe('No agencies match.');
+    expect(noSearchMatchText('hidden routes')).toBe('No hidden routes match your search.');
+    expect(noSearchMatchText('limited-service routes')).toBe('No limited-service routes match your search.');
+    expect(NO_LIMITED_ROUTES_IN_VIEW).toBe('No limited-service routes in view.');
+    expect(HIDDEN_ROUTES_UNAVAILABLE).toBe('The hidden-route list is unavailable right now.');
+    expect(NO_DEGRADED_FEEDS).toBe('No degraded or unusable feeds are currently recorded.');
+    expect(NO_FEED_MATCHES).toBe('No feeds match your search or filter.');
+    expect(storyMapLoadingText('MiWay')).toBe('Loading MiWay’s network…');
+    expect(storyMapFailedText('MiWay')).toBe('The MiWay network preview is unavailable.');
   });
 });

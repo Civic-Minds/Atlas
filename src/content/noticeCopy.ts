@@ -132,10 +132,10 @@ export const noRoutesMatchText = (modeLabel?: string | null) => `No ${modeLabel 
 export const NO_SEARCH_MATCHES = 'No matches found.';
 // N40 no-agencies-match
 export const NO_AGENCIES_MATCH = 'No agencies match.';
-// N41 in-view-no-agencies
-export const NO_MATCHING_AGENCIES = 'No agencies match.';
-// N42 in-view-no-routes
-export const NO_MATCHING_ROUTES = 'No routes match.';
+// N41 in-view-no-agencies: the same words as N40, from one place.
+export const NO_MATCHING_AGENCIES = NO_AGENCIES_MATCH;
+// N42 in-view-no-routes: N29 with no mode pill.
+export const NO_MATCHING_ROUTES = noRoutesMatchText();
 // N37 no-routes-nearby
 export const NO_ROUTES_NEARBY = 'No routes within 500 m';
 // N44 no-suggestions
@@ -144,6 +144,20 @@ export const NO_ROUTE_SUGGESTIONS = 'No route suggestions in this area.';
 export const NO_AGENCIES_IN_VIEW = 'No agencies in view.';
 // N52 night-no-agencies
 export const NO_AGENCIES_MATCH_SEARCH = 'No agencies match that search.';
+// N115, N116 settings-list-no-search-matches (CIV-957): "No hidden routes match your search."
+export const noSearchMatchText = (things: string) => `No ${things} match your search.`;
+// N113 settings-no-limited-routes
+export const NO_LIMITED_ROUTES_IN_VIEW = 'No limited-service routes in view.';
+// N114 settings-hidden-routes-unavailable
+export const HIDDEN_ROUTES_UNAVAILABLE = 'The hidden-route list is unavailable right now.';
+// N117 settings-no-degraded-feeds
+export const NO_DEGRADED_FEEDS = 'No degraded or unusable feeds are currently recorded.';
+// N119 story-map-loading: loadingText with the agency's network, "Loading MiWay’s network…".
+export const storyMapLoadingText = (agencyName: string) => loadingText(`${agencyName}’s network`);
+// N120 story-map-failed
+export const storyMapFailedText = (agencyName: string) => `The ${agencyName} network preview is unavailable.`;
+// N118 settings-no-feed-matches
+export const NO_FEED_MATCHES = 'No feeds match your search or filter.';
 
 // ---- Route card ----
 // N1 weekday-variation
