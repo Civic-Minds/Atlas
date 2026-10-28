@@ -388,6 +388,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     return notableRoutes.filter(r => !viewedKeys.has(r.key));
   }, [notableRoutes, recentlyViewed]);
 
+  const compareListSideB = compareActive ? compareSideB : null;
   const displayForRouteKey = useCallback((key: string): RouteListDisplay => {
     const [slug, routeId] = key.split('::');
     const fc = nonCorridorLayers[slug];
@@ -396,14 +397,16 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       return p.routeId === routeId && !(p as { stopId?: string }).stopId;
     });
     if (!feat) return { headway: null, limited: false };
-    const routeFeatures = fc?.features
+    const displayOn = (day: DayType, onPeriod: TimePeriod) => routeListDisplay(fc?.features
       .filter(candidate => {
         const p = candidate.properties as ShapeProperties;
-        return !p.stopId && p.routeId === routeId && (p.day === undefined || p.day === currentDay);
+        return !p.stopId && p.routeId === routeId && (p.day === undefined || p.day === day);
       })
-      .map(candidate => candidate.properties as ShapeProperties) ?? [];
-    return routeListDisplay(routeFeatures, period);
-  }, [nonCorridorLayers, period, currentDay]);
+      .map(candidate => candidate.properties as ShapeProperties) ?? [], onPeriod);
+    const display = displayOn(currentDay, period);
+    // Compare (CIV-844): the row reads both maps, each on its own day and time.
+    return compareListSideB ? { ...display, compare: { A: display, B: displayOn(compareListSideB.day, compareListSideB.period) } } : display;
+  }, [nonCorridorLayers, period, currentDay, compareListSideB]);
 
   const checkScroll = useCallback(() => {
     const el = scrollRef.current;
