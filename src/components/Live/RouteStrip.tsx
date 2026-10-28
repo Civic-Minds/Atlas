@@ -2,7 +2,7 @@ import { Fragment, useCallback, useEffect, useId, useMemo, useRef, useState, typ
 import DataTable from '../ui/DataTable';
 import { useMediaQuery } from '../../hooks/useMediaQuery';
 import {
-  LEGEND_TITLE, MIN_N, bunchParts, delayText, legendSteps, shownDelayMin, stepLabel, keyStops, labelLines, labelWidth, pct, pickLabels, stepColor, stopDetail, stopStep, stopN, stopValue, stretchSpan, stripSummary,
+  LEGEND_LAST_STEP_TAIL, LEGEND_TITLE, MIN_N, bunchParts, delayText, legendSteps, shownDelayMin, stepLabel, keyStops, labelLines, labelWidth, pct, pickLabels, stepColor, stopDetail, stopStep, stopN, stopValue, stretchSpan, stripSummary,
   type RouteStripMode, type RouteStripStop, type RouteStripStretch, type Step, type StretchSpan,
 } from './routeStripModel';
 import { shortStopName, stretchLabel } from '../../utils/stopLabel';
@@ -80,8 +80,8 @@ export function StripLegend({ modes, anyUncertain, anyFaded, anyMissing, anyEarl
       {modes.map(mode => (
         <span key={mode} className="inline-flex flex-wrap items-center gap-x-1.5 gap-y-1">
           <span className="font-bold text-[var(--text-secondary)]">{LEGEND_TITLE[mode]}:</span>
-          {legendSteps(mode).filter(step => step !== 'early' || anyEarly).map(step => (
-            <span key={step} className="inline-flex items-center gap-1"><Swatch mode={mode} step={step} />{stepLabel(mode, step)}</span>
+          {legendSteps(mode).filter(step => step !== 'early' || anyEarly).map((step, i, shown) => (
+            <span key={step} className="inline-flex items-center gap-1"><Swatch mode={mode} step={step} />{stepLabel(mode, step)}{i === shown.length - 1 ? LEGEND_LAST_STEP_TAIL[mode] ?? '' : ''}</span>
           ))}
         </span>
       ))}

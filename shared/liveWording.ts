@@ -6,7 +6,7 @@ import { dateRangeText } from './liveDashboard';
  */
 
 /** What Late means, once, for every page, panel and the glossary (approved by Ryan 2026-10-17). Reads after "Late:". */
-export const LATE_DEFINITION = "more than 5½ min behind the timetable: the TTC's 5-minute standard, plus 30 seconds because we see each vehicle about once a minute.";
+export const LATE_DEFINITION = "is more than 5½ min behind schedule. This is based on the TTC's 5-minute standard, plus 30 seconds because we only record each vehicle's location once a minute.";
 /** The title of every late-by-hour section and card (approved by Ryan 2026-10-17). */
 export const LATE_BY_HOUR_TITLE = 'Late departures by hour';
 /** The threshold in one phrase, wherever a caption or intro says how late counts as Late (approved by Ryan 2026-10-17). */
@@ -77,7 +77,7 @@ export const METHOD_GROUPS = {
 } as const;
 
 /** The recording-gaps limit, said once per page. */
-export const RECORDING_GAPS = "days with gaps in our recordings are left out, and trips during those gaps aren't counted.";
+export const RECORDING_GAPS = "are times our recording missed, such as when the feed went down. Trips during a gap aren't counted, and days with gaps are left out.";
 
 /** Run time against the timetable in whole minutes: "2 min faster than the timetable" (the tile's caption), or without the tail in a table cell. */
 export const runTimeDiffText = (diffMin: number, tail = true): string => (diffMin === 0 ? 'same as the timetable' : `${Math.abs(diffMin)} min ${diffMin < 0 ? 'faster' : 'slower'}${tail ? ' than the timetable' : ''}`);
