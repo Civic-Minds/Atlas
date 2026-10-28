@@ -28,7 +28,7 @@ import { branchDisplayPeriodHeadway } from '../utils/routeFacts';
 import { periodKeyForHour } from '../../shared/config';
 import { countOf } from '../../shared/overflowText';
 import { inferLiveDirection } from '../utils/liveDirection';
-import { DIRECTION_UNCLEAR, compareLiveRoutes, focusDirectionKey, groupVehiclesByDirection, orderDirectionGroups, routeDirectionLabels } from '../utils/liveGrouping';
+import { DIRECTION_UNCLEAR, compareLiveRoutes, focusDirectionKey, groupVehiclesByDirection, orderDirectionGroups, riderHeadsign, routeDirectionLabels } from '../utils/liveGrouping';
 import { CardDirectionRow, CardHelpNotice, SidebarCardHeaderBlock, SidebarCardListRows, SidebarCardSection, SidebarCardShell, CARD_LIST_ROUTE, SIDEBAR_CARD_BODY } from '../components/Interval/cardUi';
 import { liveVehiclesFingerprint } from '../utils/liveVehiclesFingerprint';
 import { buildRouteKey, routeFeatureForShortName, routeKeyForShortName, splitRouteKey } from '../utils/routeKey';
@@ -208,9 +208,10 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
         const cached = resolvedDirections.get(vehicle);
         if (cached && (known == null || cached.directionId === known)) return cached;
         const match = inferLiveDirection(known == null ? vehicle : { ...vehicle, directionId: known }, routeFeatures);
-        // Destinations read with "&" between two street names, like the direction labels below (CIV-1043).
-        // Destinations read with "&" between two street names, like the direction labels below (CIV-1043).
-        const out = { ...vehicle, directionId: match.directionId, headsign: match.headsign && streetJoin(match.headsign) };
+        // Destinations read with "&" between two street names, like the direction labels below (CIV-1043); an
+        // internal headsign ("506 Carlton Short Turn") never reaches the list or the card (CIV-1062).
+        const headsign = riderHeadsign(match.headsign, vehicle.routeShortName);
+        const out = { ...vehicle, directionId: match.directionId, headsign: headsign && streetJoin(headsign) };
         if (routeFeatures.length > 0) resolvedDirections.set(vehicle, out);
         return out;
       });
