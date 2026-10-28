@@ -35,10 +35,10 @@ describe('the period History opens on (CIV-1097)', () => {
     expect(historyDefaultPeriod(at(20))).toBe('evening');
   });
 
-  it('is Evening late at night, where few snapshots have values', () => {
-    expect(historyDefaultPeriod(at(23))).toBe('evening');
-    expect(historyDefaultPeriod(at(1))).toBe('evening');
-    expect(historyDefaultPeriod(at(4))).toBe('evening');
+  it('is Late or Overnight at night too, with no special rule', () => {
+    expect(historyDefaultPeriod(at(23))).toBe('late');
+    expect(historyDefaultPeriod(at(1))).toBe('late');
+    expect(historyDefaultPeriod(at(4))).toBe('overnight');
   });
 
   it('starts Frequency at All', () => {

@@ -1,15 +1,10 @@
-import { periodKeyForHour } from '../../shared/config';
+import { getNowPeriodForTimezone } from '../components/Interval/FilterChips';
 import { PERIOD_KEYS, type TimePeriod } from '../hooks/useIntervalStats';
 import { type HistoryView } from './historyYearMap';
 
-/**
- * The period History opens on (CIV-1097): the current one, as the map does, except Late and Overnight, which open on
- * Evening. Few History snapshots have values that late (Late 27%, Overnight 5% of the published ones, against 68% for
- * Evening), so those would open on mostly blank rows.
- */
+/** The period History opens on (CIV-1097): the current one, from the same helper the map opens on. */
 export function historyDefaultPeriod(now: Date = new Date()): TimePeriod {
-  const current = periodKeyForHour(now.getHours()) ?? 'evening';
-  return current === 'late' || current === 'overnight' ? 'evening' : current;
+  return getNowPeriodForTimezone(null, now);
 }
 
 /** History's Frequency (All) and Time (the default period) when nothing else says otherwise. */

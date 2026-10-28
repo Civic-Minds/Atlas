@@ -413,7 +413,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   const handleMapDismiss = useCallback(() => setHistoryDismissKey(k => k + 1), []);
   const [historyPanelOpen, setHistoryPanelOpen] = useState(false);
   // History's own Frequency and Time (CIV-389, CIV-392), separate from the map's: All, and the current period
-  // (Evening late at night, CIV-1097). Read from the link's h/p (the map's params) when the app opens on History.
+  // (CIV-1097). Read from the link's h/p (the map's params) when the app opens on History.
   const [historyView, setHistoryView] = useState<HistoryView>(() => (
     window.location.pathname.startsWith('/apps/history') ? parseHistoryView(window.location.search) : historyDefaultView()
   ));
