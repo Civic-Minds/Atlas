@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { readdirSync, readFileSync } from 'node:fs';
 import { featureFilter } from '@maplibre/maplibre-gl-style-spec';
-import { effectiveMode, isRailLikeRoute, MODE_OVERRIDES, VIRTUAL_LRT_MODE } from '../modes';
+import { effectiveMode, FILTER_MODES, isRailLikeRoute, modeLabel, MODE_OVERRIDES, ON_DEMAND_MODE, VIRTUAL_LRT_MODE } from '../modes';
 import { buildModeFilterClause } from '../tileFilterExprs';
 import { generateAgencyIndex, generateModeOverrides } from '../../scripts/agencyIndexGeneration';
 
@@ -52,7 +52,7 @@ describe('per-route mode overrides (#827)', () => {
     expect(at('miami-dade-transit', 2, '2600')).toBe(1);
     expect(at('qline', 2, 'ML')).toBe(0);
     expect(at('nfta', 0, 'Metro Rail', 'Metro Rail')).toBe(VIRTUAL_LRT_MODE);
-    expect(at('capmetro', 0, '550', '550-Metro Rail Red Line')).toBe(0);
+    expect(at('capmetro', 0, '550', '550-Metro Rail Red Line')).toBe(2); // commuter rail, published as tram (CIV-956)
     expect(at('rioc-tram', 0, '', 'Roosevelt Island Aerial Tramway')).toBe(6);
     expect(at('rioc-tram', 3, '', 'RIOC Red Bus')).toBe(3);
   });
@@ -62,6 +62,12 @@ describe('per-route mode overrides (#827)', () => {
     expect(isRailLikeRoute({ agencySlug: 'kenosha', routeType: 3, routeShortName: 'SC' })).toBe(false);
     // The pipeline passes no agencySlug, so overrides never change its tiering.
     expect(isRailLikeRoute({ routeType: 0, routeShortName: 'BLUE' })).toBe(false);
+  });
+
+  it('CapMetro 550 is commuter rail for the pipeline too, now that #1138 keeps event trains out', () => {
+    const red = { agencySlug: 'capmetro', routeType: 0, routeShortName: '550', routeLongName: '550-Metro Rail Red Line' };
+    expect(effectiveMode(red)).toBe(2);
+    expect(isRailLikeRoute(red)).toBe(true);
   });
 
   it('the map filter and effectiveMode agree for every override and a control route', () => {
@@ -74,14 +80,29 @@ describe('per-route mode overrides (#827)', () => {
       { agencySlug: 'x', routeType: 702, routeShortName: '9', routeLongName: 'Express' },
       { agencySlug: 'x', routeType: 6, routeShortName: 'G', routeLongName: 'Gondola' },
       { agencySlug: 'x', routeType: 4, routeShortName: 'F', routeLongName: 'Ferry' },
+      { agencySlug: 'exo-terrebonne', routeType: 1501, routeShortName: 'T12', routeLongName: 'Taxibus', bookingRequired: true },
+      { agencySlug: 'x', routeType: 3, routeShortName: '7', routeLongName: 'Call-in', bookingRequired: true },
     ];
-    for (const mode of [0, 1, 2, 3, 4, 6, VIRTUAL_LRT_MODE]) {
+    for (const mode of [0, 1, 2, 3, 4, 6, VIRTUAL_LRT_MODE, ON_DEMAND_MODE]) {
       const compiled = featureFilter(buildModeFilterClause(new Set([mode])) as never, {} as never);
       for (const s of samples) {
-        const props = { routeType: s.routeType, routeShortName: s.routeShortName, routeLongName: s.routeLongName, agencySlug: s.agencySlug };
+        const props = { routeType: s.routeType, routeShortName: s.routeShortName, routeLongName: s.routeLongName, agencySlug: s.agencySlug, bookingRequired: (s as { bookingRequired?: boolean }).bookingRequired };
         expect(compiled.filter({ zoom: 10 } as never, { type: 2, properties: props } as never), `${JSON.stringify(s)} in mode ${mode}`)
           .toBe(effectiveMode(s) === mode);
       }
     }
+  });
+});
+
+describe('people movers published as streetcars (#1119)', () => {
+  it.each([
+    ['wvu-prt', 'PRT'], ['detroit-people-mover', 'DPM'], ['jfk-airtrain', 'AirTrain'],
+    ['miami-dade-transit', 'MMI'], ['miami-dade-transit', 'MMO'], ['miami-dade-transit', 'MIA'],
+  ])('%s %s reads People mover', (agencySlug, routeShortName) => {
+    expect(modeLabel(effectiveMode({ agencySlug, routeShortName, routeType: 0 }))).toBe('People mover');
+  });
+
+  it('is a label only: no filter chip', () => {
+    expect(FILTER_MODES.map(m => m.label)).not.toContain('People mover');
   });
 });

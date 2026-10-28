@@ -16,6 +16,7 @@ import { basename, join, resolve } from 'node:path';
 import '../../pipeline/loadEnv.js';
 import { r2GetArchiveBuffer, r2ListArchiveObjects } from '../../pipeline/r2.js';
 import { peekFeedDates, selectArchiveForAgency, selectByFeedDates } from '../../pipeline/archiveSelection.js';
+import { agencyTodayYmd } from '../../shared/feedAvailability.js';
 
 export interface ResolvedArchiveZip { zip: string; key: string | null; reason: string; source: 'local' | 'r2-archive' }
 
@@ -73,7 +74,10 @@ if (process.argv[1] && resolve(process.argv[1]).endsWith('resolve-archive-zip.ts
   }
   const cacheArg = process.argv.indexOf('--cache');
   const cacheRoot = resolve(cacheArg > 0 ? process.argv[cacheArg + 1] : (process.env.ORACLE_ARCHIVE_CACHE ?? '../_feeds/archive-cache'));
-  const todayYmd = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+  // The reprocess reads each agency's own local date (agencyTodayYmd).
+  const indexAgency = (JSON.parse(readFileSync(resolve('public/data/index.json'), 'utf8')) as { agencies: Array<{ slug: string; timezone?: string }> })
+    .agencies.find(a => a.slug === slug) ?? {};
+  const todayYmd = agencyTodayYmd(indexAgency);
   resolveArchiveZip(slug, cacheRoot, todayYmd).then(r => console.log(JSON.stringify(r))).catch(err => {
     console.error(err instanceof Error ? err.message : err);
     process.exit(1);

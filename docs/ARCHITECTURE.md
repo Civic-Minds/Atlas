@@ -118,11 +118,10 @@ Triggered by: the `refresh-feeds.yml` GitHub Actions workflow (Mondays 06:00 UTC
 ## Vercel API routes
 
 Every file in `api/` is deployed as a Vercel function at `/api/{name}`; they do not run in the Vite dev server.
-Local: `npm run dev:api` (custom tsx server on port 5001; registers `carto-tiles` and `privacy-region` plus the local-only handlers in `local-api/`: `live-vehicles`, `live-segments`, `live-recent`, `live-stop`, `live-dashboard`, `live-agency`, and `history-adherence`). To run Live, use `npm run live` (starts this server and Vite together).
+Local: `npm run dev:api` (custom tsx server on port 5001; registers `privacy-region` and, for dev only, `carto-tiles` (the basemap with the server key, since localhost is not on the public key) plus the local-only handlers in `local-api/`: `live-vehicles`, `live-segments`, `live-recent`, `live-stop`, `live-dashboard`, `live-agency`, and `history-adherence`). To run Live, use `npm run live` (starts this server and Vite together).
 Production-like: `vercel dev` if preferred.
 
 Used by the deployed app:
-- `/api/carto-tiles` — basemap tile proxy (keeps `CARTO_BASEMAP_API_KEY` server-side)
 - `/api/geo` — approximate location fallback from Vercel's edge headers
 - `/api/version` — current build ID for the app-update banner
 - `/api/privacy-region` — country lookup for the analytics consent prompt (rewritten in `vercel.json` to `/api/geo?mode=privacy-region`)
@@ -147,7 +146,7 @@ Local only, never deployed (in `local-api/`): the Live handlers and `history-adh
 | STM_API_KEY | local-api/live-*; Worker archiver | STM GTFS-RT |
 | MUNI_511_API_KEY | local-api/live-* (sfmta); pipeline (511-hosted static feeds, e.g. lavta) | 511 SF Bay |
 | SWIFTLY_API_KEY | local-api/live-* (lacmta, parked) | Swiftly — not active until UI/API unparked |
-| CARTO_BASEMAP_API_KEY | api/carto-tiles | Basemap tile key; keep private |
+| CARTO_BASEMAP_API_KEY | local-api/carto-tiles (dev only) | Server basemap key for `npm run dev`; keep private. Builds use the public, host-locked key in `src/lib/basemap.ts` (override: `VITE_CARTO_BASEMAP_KEY`) and load tiles straight from CARTO: CARTO's terms forbid proxying or server-side caching, so basemap tiles never go through Vercel |
 | VITE_GA_MEASUREMENT_ID | frontend | Google Analytics 4 measurement ID |
 | ATLAS_ENV / ATLAS_ENV_FILE | pipeline | `ATLAS_ENV=staging` loads `.env.staging`; default is `.env.local` |
 

@@ -10,6 +10,7 @@ import { parseCsv } from './parseGtfs.js';
 import { detectReferenceDate } from './transit-calendar.js';
 import { synthesizeCalendarFromDates } from './parseGtfs.js';
 import { historyRouteKey } from './historyRouteKey.js';
+import { addDaysYmd } from './serviceDates.js';
 import type { GtfsCalendar, GtfsCalendarDate } from '../types/gtfs.js';
 import type { HistoryDayValue } from '../shared/historyV2.js';
 import { NO_PERIOD_SERVICE_TILE_VALUE } from '../shared/pmtilesProps.js';
@@ -43,14 +44,6 @@ const DAY_INDEX: Record<WeekendDayName, number> = { Sunday: 0, Saturday: 6 };
 function toDate(ymd: string): Date {
   return new Date(Date.UTC(Number(ymd.slice(0, 4)), Number(ymd.slice(4, 6)) - 1, Number(ymd.slice(6, 8))));
 }
-function toYmd(d: Date): string {
-  return `${d.getUTCFullYear()}${String(d.getUTCMonth() + 1).padStart(2, '0')}${String(d.getUTCDate()).padStart(2, '0')}`;
-}
-function addDays(ymd: string, n: number): string {
-  const d = toDate(ymd);
-  d.setUTCDate(d.getUTCDate() + n);
-  return toYmd(d);
-}
 function weekdayOf(ymd: string): number {
   return toDate(ymd).getUTCDay();
 }
@@ -58,8 +51,8 @@ function weekdayOf(ymd: string): number {
 /** The Monday..Sunday dates of the week holding `refDate`. */
 function referenceWeek(refDate: string): string[] {
   const dow = weekdayOf(refDate);
-  const monday = addDays(refDate, -((dow + 6) % 7));
-  return Array.from({ length: 7 }, (_, i) => addDays(monday, i));
+  const monday = addDaysYmd(refDate, -((dow + 6) % 7));
+  return Array.from({ length: 7 }, (_, i) => addDaysYmd(monday, i));
 }
 
 export function computeFeedEvidence(rows: FeedRows, opts: { referenceDate?: string } = {}): FeedEvidence {

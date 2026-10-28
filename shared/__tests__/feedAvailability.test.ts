@@ -1,5 +1,5 @@
-import { describe, expect, it } from 'vitest';
-import { effectiveFeedExpiry, isActiveProductionFeed, isStalePrimaryProductionFeed, isCurrentFeedExpiry, isExpiredFeedExpiry, isCurrentProductionFeed, isStaleProductionFeed } from '../feedAvailability.js';
+import { describe, expect, it, vi } from 'vitest';
+import { agencyTodayYmd, effectiveFeedExpiry, isAgencyFeedExpired, isActiveProductionFeed, isStalePrimaryProductionFeed, isCurrentFeedExpiry, isExpiredFeedExpiry, isCurrentProductionFeed, isStaleProductionFeed } from '../feedAvailability.js';
 
 describe('isCurrentFeedExpiry', () => {
   it('accepts service through today or later', () => {
@@ -74,5 +74,44 @@ describe('isStalePrimaryProductionFeed', () => {
     expect(isStaleProductionFeed(agency, '20261022')).toBe(true);
     expect(isStalePrimaryProductionFeed(agency, '20261022')).toBe(false);
     expect(isStalePrimaryProductionFeed({ ...agency, lastFeedExpiry: '20261001' }, '20261022')).toBe(true);
+  });
+});
+
+describe('feed expiry reads the agency\'s local date (Ryan, 2026-10-27)', () => {
+  // 01:30 UTC on Aug 10 is still Aug 9 in Toronto and Los Angeles, and already Aug 10 in Berlin.
+  const lateEvening = new Date('2026-08-10T01:30:00Z');
+
+  it('keeps a feed running through its last local day', () => {
+    expect(agencyTodayYmd({ timezone: 'America/Toronto' }, lateEvening)).toBe('20260809');
+    expect(isAgencyFeedExpired({ timezone: 'America/Toronto', lastFeedExpiry: '20260809' }, lateEvening)).toBe(false);
+    expect(isAgencyFeedExpired({ timezone: 'America/Los_Angeles', lastFeedExpiry: '20260809' }, lateEvening)).toBe(false);
+  });
+
+  it('ends it once the local day is over', () => {
+    expect(isAgencyFeedExpired({ timezone: 'Europe/Berlin', lastFeedExpiry: '20260809' }, lateEvening)).toBe(true);
+    expect(isAgencyFeedExpired({ timezone: 'America/Toronto', lastFeedExpiry: '20240518' }, lateEvening)).toBe(true);
+  });
+
+  it('with no time zone on file, waits for the last place on Earth to reach midnight', () => {
+    expect(isAgencyFeedExpired({ lastFeedExpiry: '20260809' }, new Date('2026-08-10T11:30:00Z'))).toBe(false);
+    expect(isAgencyFeedExpired({ lastFeedExpiry: '20260809' }, new Date('2026-08-10T12:30:00Z'))).toBe(true);
+  });
+
+  it('reads the earliest feed, and ignores missing and malformed dates', () => {
+    const now = new Date('2026-08-09T12:00:00Z');
+    expect(isAgencyFeedExpired({ timezone: 'America/Toronto', lastFeedExpiry: '20261017', lastSupplementalFeeds: [{ feedExpiry: '20260801', feedVersion: null, rawArchiveKey: null }] }, now)).toBe(true);
+    expect(isAgencyFeedExpired({ timezone: 'America/Toronto', lastFeedExpiry: null }, now)).toBe(false);
+    expect(isAgencyFeedExpired({ timezone: 'America/Toronto', lastFeedExpiry: 'not-a-date' }, now)).toBe(false);
+  });
+
+  it('is the default "today" of the production feed checks', () => {
+    const agency = { timezone: 'America/Toronto', lastFeedExpiry: '20260809', lastRefreshedAt: '20260801' };
+    vi.useFakeTimers({ toFake: ['Date'], now: lateEvening });
+    try {
+      expect(isStaleProductionFeed(agency)).toBe(false);
+      expect(isStaleProductionFeed({ ...agency, timezone: 'Europe/Berlin' })).toBe(true);
+    } finally {
+      vi.useRealTimers();
+    }
   });
 });

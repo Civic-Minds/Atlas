@@ -6,7 +6,7 @@ import { processGtfsBuffer } from '../process-core';
 import { normalizeRouteFilterFeatures, routePassesHeadwayFilter } from '../../shared/routeHeadwayFilter';
 import { isLimitedService } from '../../shared/irregularRoutes';
 import { decodeStopRuns } from '../../shared/stopRuns';
-import { directionStretches, encodeStopRuns, rollupDirection, rollupRoute, stopPeriodValues, stretchMetaPeriods, stretchFilterValue, stretchPeriods, type DirectionStretches, type DirectionTrip } from '../tripSets';
+import { directionStretches, encodeStopRuns, rollupDirection, rollupRoute, stopPeriodValues, stretchMetaPeriods, stretchFilterValue, stretchPeriods, tailNotThrough, type DirectionStretches, type DirectionTrip } from '../tripSets';
 
 // Frequency focus step 3 (`_reports/step3-tripsets-spec.md`): the direction trip-set selector, in
 // shadow. Expected values are the GTFS oracle's (scripts/handcheck/stretch-departures.py --at mid
@@ -153,8 +153,11 @@ describe('route values from the selector (shadow fields)', () => {
   it('TTC 102 Weekday midday: main every 5; the Major Mackenzie branch (102D, 18% of trips, every 30 all day) sets the route at 30', async () => {
     // 102D runs steadily all day, so it is regular despite its share and its own run is a tail.
     const r = await run('ttc-102-weekday');
-    expect(mainValue(r, '102::0::Weekday', 'midday')).toBe(5);
-    expect(mainValue(r, '102::1::Weekday', 'midday')).toBe(5);
+    // #1142: the main stretch runs a 5, 5, 10 cycle at midday, so it reads its longest wait (13 and
+    // 14) with a typical gap of 5; the branch still sets the route at 30.
+    expect(mainValue(r, '102::0::Weekday', 'midday')).toBe(13);
+    expect(mainValue(r, '102::1::Weekday', 'midday')).toBe(14);
+    expect(rollupDirection(r.stretches.get('102::0::Weekday')!)!.period.midday.typical).toBeNull();
     expect(row(r, '102', 'Weekday', 1).stretchPeriodHeadway.midday).toBe(30);
     expect(row(r, '102', 'Weekday').stretchRoutePeriodHeadway.midday).toBe(30);
     expect(row(r, '102', 'Weekday').stretchPeriodRange.midday).toEqual([5, 30]);
@@ -835,5 +838,27 @@ describe('rule 3: sibling branches that take turns through a period (#1072, HSR 
   it('legitimate: a sibling at a slower cadence (every 60 after every 30) is not a handover', () => {
     const d = build(every(360, 720, 30), every(780, 1380, 60), f);
     expect(rollupDirection(d)).toEqual(without(d));
+  });
+});
+
+describe('a tail that does not run through a period, by the main stretch\'s rule (#1115)', () => {
+  const tail = (times: number[]) => ({ kind: 'tail' as const, stops: ['a'], refStop: 'a', lengthKm: 1, times, nightTimes: [], tripCount: times.length });
+  const every = (from: number, to: number, step: number) => Array.from({ length: Math.floor((to - from) / step) + 1 }, (_, i) => from + i * step);
+
+  it('a peak-only branch (TTC 84 to Pioneer Village: every 20 to 9:35, none until 15:12) does not run through midday', () => {
+    const { notThrough } = tailNotThrough(tail([...every(375, 575, 20), ...every(912, 1110, 30)]));
+    expect(notThrough).toContain('midday');
+    expect(notThrough).not.toContain('amPeak');
+    expect(notThrough).not.toContain('pmPeak');
+  });
+
+  it('a branch running through the period unevenly still runs through it (OC Transpo 63 PM: every 15 with one 32-minute gap)', () => {
+    const pm = [929, 944, 959, 1014, 1029, 1061, 1076, 1091, 1106, 1121];
+    expect(tailNotThrough(tail(pm)).notThrough).not.toContain('pmPeak');
+  });
+
+  it('a branch running every 12 all day runs through every daytime period', () => {
+    const { notThrough } = tailNotThrough(tail(every(360, 1380, 12)));
+    expect(notThrough.filter(p => ['amPeak', 'midday', 'pmPeak', 'evening'].includes(p))).toEqual([]);
   });
 });

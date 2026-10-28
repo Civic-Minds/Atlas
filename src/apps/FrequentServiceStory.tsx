@@ -7,6 +7,7 @@ import FrequentServicePublishedMapMontage from '../components/FrequentServicePub
 import FrequentServicePublishedMapCollage from '../components/FrequentServicePublishedMapCollage';
 import FrequentServiceStoryMap from '../components/FrequentServiceStoryMap';
 import type { Agency } from '../App';
+import { headwayAmount } from '../../shared/headwayText';
 
 interface Props {
   onExploreMap: () => void;
@@ -116,7 +117,7 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
                     title={`Show examples for ${bar.minutes}-minute service (${bar.agencies} agencies)`}
                     className="grid w-full grid-cols-[4.5rem_1fr_3rem] items-center gap-3 rounded-lg text-left text-sm outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)]"
                   >
-                    <span className="font-black text-[var(--text-primary)]">{bar.minutes} min</span>
+                    <span className="font-black text-[var(--text-primary)]">{headwayAmount(bar.minutes)}</span>
                     <div className="h-3 overflow-hidden rounded-full bg-[var(--bg-stat)]">
                       <div className="h-full rounded-full transition-[width,background-color]" style={{ width: `${(bar.agencies / maxBar) * 100}%`, backgroundColor: selectedMinutes === bar.minutes ? 'var(--accent)' : 'var(--text-muted)' }} />
                     </div>

@@ -1,15 +1,27 @@
 import { joinList, plural } from '../../shared/overflowText';
-import { agencyDisplayParts, formatStoredDate } from '../utils/format';
+import { formatStoredDate } from '../utils/format';
+import { agencyNames } from '../utils/agencyName';
 import { delayAmount, headwayAbout } from '../utils/headwayText';
 
 /** Shared user-facing copy for every expired-feed notice. */
 export function expiredFeedNotice(agencyName: string, expDateStr?: string, manualFeedSource = false): string {
-  const { primary } = agencyDisplayParts(agencyName);
+  const { primary } = agencyNames(agencyName).card;
   const ended = `${primary}'s timetable ended${expDateStr ? ` on ${expDateStr}` : ''}.`;
   if (manualFeedSource) {
     return `${ended} It is maintained manually, so Atlas will keep showing it until a newer file is provided and verified.`;
   }
   return ended;
+}
+
+/**
+ * A time range kept on one line in running text (#1133): no break at its dash ("7–" / "11 PM") or before
+ * its AM/PM. Word joiners hold the dash to its numbers and a no-break space holds the AM/PM; both are
+ * invisible, so the words read and copy the same.
+ */
+export function keepRangeTogether(range: string): string {
+  return range
+    .replace(/\s*–\s*/g, '\u2060–\u2060')
+    .replace(/ (AM|PM|a\.m\.|p\.m\.)/gi, '\u00a0$1');
 }
 
 export function selectedRouteFilterNotice(options: {
@@ -19,13 +31,13 @@ export function selectedRouteFilterNotice(options: {
   periodRange: string;
 }): string {
   const runs = options.headway != null ? `Service runs ${headwayAbout(options.headway)}` : 'Service runs';
-  return `${runs} from ${options.activeRange}, but not throughout the selected ${options.periodRange} period.`;
+  return `${runs} from ${keepRangeTogether(options.activeRange)}, but not throughout the selected ${keepRangeTogether(options.periodRange)} period.`;
 }
 
 export function periodServiceNotice(periodRange: string, partial: boolean, activeRange?: string): string {
   return partial
-    ? `Limited service during the selected ${activeRange || periodRange} period.`
-    : `No scheduled service during the selected ${periodRange} period.`;
+    ? `Limited service during the selected ${keepRangeTogether(activeRange || periodRange)} period.`
+    : `No scheduled service during the selected ${keepRangeTogether(periodRange)} period.`;
 }
 
 export function unevenServiceNotice(longestGap: number): string {
@@ -33,6 +45,9 @@ export function unevenServiceNotice(longestGap: number): string {
 }
 
 export const NO_ROUTE_SHAPE_NOTICE = 'Route map unavailable.';
+
+/** CIV-1006: a route riders must book ahead (Ryan's wording). */
+export const BOOKING_REQUIRED_NOTICE = 'Rides on this route must be booked ahead.';
 
 export const NO_ROUTE_SHAPE_EXPLANATION =
   'This route\'s source feed includes schedule information but does not include a usable map shape.';
@@ -65,10 +80,10 @@ export function expiredFeedCheckHistory(options: {
   lastRefreshed?: string;
 }): string {
   if (options.count != null && options.since && options.lastChecked && formatStoredDate(options.lastChecked)) {
-    return `Atlas has checked for a new timetable ${options.count} ${plural(options.count, 'time')} since ${formatStoredDate(options.since)}, most recently on ${formatStoredDate(options.lastChecked)}.`;
+    return `We've checked for a new timetable ${options.count} ${plural(options.count, 'time')} since ${formatStoredDate(options.since)}, with our most recent check on ${formatStoredDate(options.lastChecked)}.`;
   }
   if (options.lastRefreshed && formatStoredDate(options.lastRefreshed)) {
-    return `Atlas last successfully refreshed the feed on ${formatStoredDate(options.lastRefreshed)}.`;
+    return `The feed was last refreshed on ${formatStoredDate(options.lastRefreshed)}.`;
   }
   return '';
 }
@@ -124,3 +139,17 @@ export const LIVE_TOO_FEW_SCHEDULED_DEPARTURES = 'Not enough departures at stops
 export const LIVE_TOO_FEW_DEPARTURES = 'too few departures';
 /** Run time with too few trips for a time of day ("in the AM peak"). */
 export const liveTooFewTrips = (bandWords: string) => `Too few trips were measured ${bandWords} to draw this.`;
+// N25 listing-ended (Ryan's exact text, CIV-1011; shown since CIV-1055). Defined beside the agency page text it shares.
+export { listingEndedNotice, listingEndedPageLine, listingEndHasPassed } from '../../shared/agencyPages';
+
+// ---- E1 Outdated schedule: three paragraphs, Ryan's approved text (CIV-1051) ----
+// (1) the issue, (2) what we're doing about it, (3) what the reader can do. No labels on the site.
+/** E1, N25 version, paragraph 1: "ends" before the listing-end date, "ended" from it on. */
+export function listingEndedPanelLead(agencyName: string, date: string, ended: boolean): string {
+  const { primary } = agencyNames(agencyName).card;
+  return `${primary}'s scheduled service for most routes ${ended ? 'ended' : 'ends'} ${date}, and they have not released updated data. The map shows the last full week in their schedule, for every route.`;
+}
+/** E1 paragraph 2 start (N2 and N25 versions; N3 uses N76 instead). */
+export const E1_WEEKLY_CHECK = 'We check for new schedules every week.';
+/** E1 paragraph 3, above Check current schedules and Report a problem. */
+export const E1_AGENCY_WEBSITE = "A newer schedule may be on the agency's website.";

@@ -13,7 +13,7 @@ describe('LegalPage', () => {
 
     expect(screen.getByRole('heading', { name: 'Privacy Policy' })).toBeTruthy();
     expect(screen.getByRole('link', { name: 'Go to Atlas' })).toHaveAttribute('href', '/');
-    expect(screen.getByText('Last updated October 3, 2026.')).toBeTruthy();
+    expect(screen.getByText('Last updated October 27, 2026.')).toBeTruthy();
     expect(screen.getByRole('heading', { name: 'Analytics' })).toBeTruthy();
     expect(screen.getByRole('heading', { name: 'Location' })).toBeTruthy();
     expect(screen.getAllByRole('link', { name: 'hey@ryanisnota.pro' })).toHaveLength(2);
@@ -48,7 +48,7 @@ describe('LegalPage text comes from docs/legal', () => {
         .filter(el => el.tagName !== 'A' || el.parentElement?.tagName !== 'P')
         .map(el => el.textContent);
       expect(rendered).toEqual(blocks);
-      expect(article.querySelector('header p')?.textContent).toBe('Last updated October 3, 2026.');
+      expect(article.querySelector('header p')?.textContent).toBe(sources[document].match(/^Last updated .+$/m)![0]);
     });
 
     it(`keeps every ${document} link and section anchor from the markdown`, () => {
@@ -66,7 +66,7 @@ describe('LegalPage text comes from docs/legal', () => {
     it(`prerenders ${document} with the markdown text`, () => {
       const html = renderToString(<StaticRouter location={`/${document}`}><LegalPage document={document} /></StaticRouter>);
       for (const section of LEGAL_DOCS[document].sections) expect(html).toContain(`id="${section.id}"`);
-      expect(html).toContain('Last updated October 3, 2026.');
+      expect(html).toContain(sources[document].match(/^Last updated .+$/m)![0]);
     });
   }
 

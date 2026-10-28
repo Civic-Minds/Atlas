@@ -15,7 +15,7 @@
     -73.9391
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-508/latest.zip",
-  "lastFeedExpiry": "20270313",
+  "lastFeedExpiry": "20270417",
   "lastFeedVersion": null,
   "lastRefreshedAt": "2026-10-12",
   "cities": [
@@ -58,5 +58,5 @@
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
-  "lastPeekedExpiry": "20270313"
+  "lastPeekedExpiry": "20270417"
 }

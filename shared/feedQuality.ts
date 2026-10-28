@@ -1,3 +1,4 @@
+import { isExpiredFeedExpiry } from './feedAvailability';
 import { plural } from './overflowText';
 
 export type FeedQualityStatus = 'healthy' | 'review' | 'degraded' | 'unusable';
@@ -40,7 +41,7 @@ export const FEED_QUALITY_NO_ROUTES_REASON = 'Atlas could not find any usable ro
 export const FEED_QUALITY_VALIDATION_ERROR_REASON = 'Atlas found errors while reading this feed.';
 
 function isExpired(expiry: string | null | undefined, today: string): boolean {
-  return Boolean(expiry && /^\d{8}$/.test(expiry) && expiry < today.replaceAll('-', ''));
+  return isExpiredFeedExpiry(expiry, today.replaceAll('-', ''));
 }
 
 /**

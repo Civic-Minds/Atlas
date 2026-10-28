@@ -16,6 +16,21 @@
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261122",
   "timezone": "America/Denver",
+  "directionLabels": {
+    "BG": {
+      "0": "Inbound",
+      "1": "Outbound"
+    },
+    "HC": {
+      "0": "Outbound",
+      "1": "Inbound"
+    }
+  },
+  "directionHeadsigns": {
+    "HC": {
+      "1": "Rubey Park"
+    }
+  },
   "feedQuality": {
     "status": "healthy",
     "score": 100,

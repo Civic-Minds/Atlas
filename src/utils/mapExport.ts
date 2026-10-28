@@ -1,4 +1,5 @@
 import { FEATURES } from '../../shared/config';
+import { BASEMAP_ATTRIBUTION } from '../lib/basemap';
 import { withShareTags, SHARE_UTM_MEDIUM_IMAGE } from '../lib/analytics';
 import { slugifyForFilename } from './mapExportDetails';
 
@@ -52,7 +53,7 @@ interface MapExportOptions extends MapExportText {
 }
 
 export const MAP_EXPORT_BRAND = 'Explore the map at transitatlas.fyi';
-export const MAP_EXPORT_CREDIT = 'Map tiles by CARTO, under CC BY 3.0. Data by OpenStreetMap, under ODbL.';
+export const MAP_EXPORT_CREDIT = BASEMAP_ATTRIBUTION;
 
 const FONT = 'Inter, ui-sans-serif, system-ui, sans-serif';
 

@@ -112,6 +112,8 @@ html.map-page .overflow-y-scroll {
   --accent: #3f3f46;
   --accent-bg: rgba(63, 63, 70, 0.08);
   --accent-border: rgba(63, 63, 70, 0.2);
+  /* The map top bar's unselected pill and button outline (CIV-1020); the same in dark, stronger in high contrast. */
+  --top-bar-outline: var(--accent-border);
   /* Selected fill and edge are opaque so every selected option is the same shade whatever sits behind it
      (today's 20% / 50% tint composited over the panel). */
   --accent-selected-bg: #d8d8da;
@@ -134,6 +136,8 @@ html.map-page .overflow-y-scroll {
   --strip-bunching-1: #c084fc;
   --strip-bunching-2: #6d28d9;
   --strip-ring: rgba(0, 0, 0, 0.28);
+  /* On-demand service hours bars (CIV-964): the light green from the review page, never a dark fill. */
+  --hours-band: rgba(63, 143, 90, 0.45);
 }
 
 [data-theme='dark'] {
@@ -179,9 +183,11 @@ html.map-page .overflow-y-scroll {
   --strip-bunching-1: #e9a5ff;
   --strip-bunching-2: #a855f7;
   --strip-ring: rgba(255, 255, 255, 0.3);
+  --hours-band: rgba(63, 143, 90, 0.55);
 }
 
 [data-color-vision='high-contrast'] {
+  --top-bar-outline: var(--accent-selected-border);
   --text-muted: #374151;
   --text-dim: #374151;
   --text-legend: #1f2937;
@@ -215,6 +221,7 @@ html.map-page .overflow-y-scroll {
 }
 
 [data-theme='dark'][data-color-vision='high-contrast'] {
+  --top-bar-outline: var(--accent-selected-border);
   --control-active-bg: #374151;
   --text-muted: rgba(255, 255, 255, 0.82);
   --text-dim: rgba(255, 255, 255, 0.82);
@@ -294,7 +301,6 @@ input:focus-visible {
   border: 1px solid var(--border-primary);
   border-radius: 8px;
   pointer-events: none;
-  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
 }
 
 .tooltip-name {
@@ -364,13 +370,11 @@ input:focus-visible {
   border: 2px solid var(--accent);
   border-radius: 50%;
   cursor: pointer;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
-  transition: transform 0.1s ease, box-shadow 0.1s ease;
+  transition: transform 0.1s ease;
 }
 
 .time-scrubber-range::-webkit-slider-thumb:hover {
   transform: scale(1.05);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
 }
 
 .time-scrubber-range::-moz-range-track {
@@ -386,11 +390,9 @@ input:focus-visible {
   border: 2px solid var(--accent);
   border-radius: 50%;
   cursor: pointer;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
-  transition: transform 0.1s ease, box-shadow 0.1s ease;
+  transition: transform 0.1s ease;
 }
 
 .time-scrubber-range::-moz-range-thumb:hover {
   transform: scale(1.05);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
 }

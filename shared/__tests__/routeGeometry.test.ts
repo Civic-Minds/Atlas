@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { isDrawableLineCoordinates, lineCoordinates, lineStringCoordinatesOrNull, pointCoordinate } from '../routeGeometry';
+import { boundingBox, isDrawableLineCoordinates, lineCoordinates, lineStringCoordinatesOrNull, pointCoordinate } from '../routeGeometry';
 
 const point = { type: 'Point', coordinates: [-79.38, 43.65] };
 const line = { type: 'LineString', coordinates: [[-79.38, 43.65], [-79.37, 43.66]] };
@@ -35,5 +35,19 @@ describe('routeGeometry', () => {
     expect(isDrawableLineCoordinates([-79.38, 43.65])).toBe(false);
     expect(isDrawableLineCoordinates(undefined)).toBe(false);
     expect(isDrawableLineCoordinates(line.coordinates)).toBe(true);
+  });
+});
+
+describe('boundingBox', () => {
+  it('is null for no points', () => {
+    expect(boundingBox([])).toBeNull();
+  });
+
+  it('is a zero-size box for one point', () => {
+    expect(boundingBox([[-79.4, 43.6]])).toEqual({ minLng: -79.4, minLat: 43.6, maxLng: -79.4, maxLat: 43.6 });
+  });
+
+  it('spans every point', () => {
+    expect(boundingBox([[-79.4, 43.6], [-79.2, 43.9], [-79.5, 43.7]])).toEqual({ minLng: -79.5, minLat: 43.6, maxLng: -79.2, maxLat: 43.9 });
   });
 });

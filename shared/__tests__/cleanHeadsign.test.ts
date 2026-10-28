@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { cleanHeadsign, getRouteLabel, isMiwayExpressHeadsign } from '../cleanHeadsign';
+import { cleanHeadsign, isMiwayExpressHeadsign } from '../cleanHeadsign';
+import { getRouteLabel } from '../routeDisplay';
 
 describe('cleanHeadsign', () => {
   it('removes NJ Transit fare instructions from destination headsigns', () => {
@@ -79,6 +80,44 @@ describe('cleanHeadsign', () => {
     expect(cleanHeadsign('Léon Blum - Quai E', '2', null)).not.toBe(cleanHeadsign('Léon Blum - Quai C', '2', null));
     // Saint-Nazaire: different real origin towns feeding the same terminus.
     expect(cleanHeadsign('Redon > Saint-Nazaire', '305', null)).not.toBe(cleanHeadsign('Besné > Saint-Nazaire', '305', null));
+  });
+
+  it('strips the unpadded route number when the short name is zero-padded (#1098)', () => {
+    expect(cleanHeadsign('5  LOVE FIELD AIRPORT', '005', 'LOVE FIELD SHUTTLE')).toBe('LOVE FIELD AIRPORT');
+    expect(cleanHeadsign('4 Downtown', '004', null)).toBe('Downtown');
+    expect(cleanHeadsign('9 Wilmington - Bowers & 12th Sts', '009', null)).toBe('Wilmington - Bowers & 12th Sts');
+  });
+
+  it('keeps a first word that only starts with the route number or letter (#1139)', () => {
+    expect(cleanHeadsign('12th Street/31st & Van Brunt', '12', null)).toBe('12th Street/31st & Van Brunt');
+    expect(cleanHeadsign('63rd St/67th & Blue Ridge', '63', null)).toBe('63rd St/67th & Blue Ridge');
+    expect(cleanHeadsign('211', '21', null)).toBe('211');
+    expect(cleanHeadsign('AMERICAN CENTER', 'A', null)).toBe('AMERICAN CENTER');
+    expect(cleanHeadsign('BIG BEND - NORTHBOUND', 'B', null)).toBe('BIG BEND - NORTHBOUND');
+    expect(cleanHeadsign('UC Davis MU Terminal', 'U', null)).toBe('UC Davis MU Terminal');
+  });
+
+  it('still strips the route number and its variant letter when they open the headsign (#1139)', () => {
+    expect(cleanHeadsign('54S Lawrence East Short Turn', '54', null)).toBe('Lawrence East Short Turn');
+    expect(cleanHeadsign('504 King', '504', null)).toBe('King');
+    expect(cleanHeadsign('31 - Downtown', '31', null)).toBe('Downtown');
+    expect(cleanHeadsign('A Downtown', 'A', null)).toBe('Downtown');
+  });
+
+  it('keeps a leading number that is not the unpadded route number', () => {
+    expect(cleanHeadsign('50 Waterfront Station', '005', null)).toBe('50 Waterfront Station');
+    expect(cleanHeadsign('5th Street', '005', null)).toBe('5th Street');
+    expect(cleanHeadsign('29th Ave Station', '029', null)).toBe('29th Ave Station');
+  });
+
+  it('closes a lone slash followed by a space (#1098)', () => {
+    expect(cleanHeadsign('5 INWOOD/ LOVE FIELD STATION', '005', 'LOVE FIELD SHUTTLE')).toBe('INWOOD/LOVE FIELD STATION');
+    expect(cleanHeadsign('Parkrose/ Sumner Transit Center', '12', null)).toBe('Parkrose/Sumner Transit Center');
+  });
+
+  it('leaves evenly spaced slashes and multi-slash lists alone', () => {
+    expect(cleanHeadsign('JB JACKSON TC / MLK JR STATION', '104', null)).toBe('JB JACKSON TC / MLK JR STATION');
+    expect(cleanHeadsign('Main St/ Wicks/ Lk Elmo/ 6th Ave N/ Downtown', '16', null)).toBe('Main St/ Wicks/ Lk Elmo/ 6th Ave N/ Downtown');
   });
 });
 

@@ -93,7 +93,7 @@ export default function FrequentServiceStoryMap({ agencies, stage, frequencyMinu
   const stagePaths = useMemo(() => [0, 1, 2, 3].map(currentStage => projectFeatures(features, featuresForStage(features, currentStage, frequencyMinutes))), [features, frequencyMinutes]);
 
   return (
-    <figure className="flex h-[calc(100dvh-8rem)] min-h-0 flex-col overflow-hidden border-y border-[var(--border-primary)] bg-[var(--bg-panel)] shadow-sm sm:rounded-[2rem] sm:border">
+    <figure className="flex h-[calc(100dvh-8rem)] min-h-0 flex-col overflow-hidden border-y border-[var(--border-primary)] bg-[var(--bg-panel)] sm:rounded-[2rem] sm:border">
       <div className="relative min-h-0 flex-1 bg-[var(--bg-app)]">
         {loadState === 'ready' && stagePaths[0] ? (
           <svg viewBox="0 0 1000 620" className="h-full w-full" role="img" aria-label={stage === 3 ? `Toronto routes with weekday daytime service ${headwayOrBetter(frequencyMinutes)}` : 'Toronto routes remaining in the story'}>
@@ -108,7 +108,7 @@ export default function FrequentServiceStoryMap({ agencies, stage, frequencyMinu
             {loadState === 'error' ? `The ${researchRecord.agencyName} network preview is unavailable.` : `Loading ${researchRecord.agencyName}’s network…`}
           </div>
         )}
-        <div className="absolute left-5 top-5 z-10 w-[calc(100%-2.5rem)] max-w-md rounded-2xl bg-[var(--bg-app)]/90 p-5 shadow-sm backdrop-blur">
+        <div className="absolute left-5 top-5 z-10 w-[calc(100%-2.5rem)] max-w-md rounded-2xl bg-[var(--bg-app)]/90 p-5 backdrop-blur">
           {stage === 0 && <>
             <h2 id="network-story-heading" className="text-3xl font-black tracking-tight">Start with the whole network.</h2>
             <p className="mt-4 text-base leading-7 text-[var(--text-muted)]">This is coverage: every route that reaches somewhere, whether it comes often or not.</p>

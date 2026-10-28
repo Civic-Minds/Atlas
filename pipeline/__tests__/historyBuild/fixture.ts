@@ -38,6 +38,12 @@ export function historyBuildFixture(): R2Contents {
   put('alpha', '10', '20190301', 25);
   put('alpha', '10', '20301201', 10);
   archive['history/alpha/10/.json'] = j({ headway: 99 });
+  // alpha / route 40: an archived current-year (2026) snapshot, then a future one: the live endpoint
+  // decision must behave exactly as origin/main (last archived point is the future year, so it is appended).
+  put('alpha', '40', '20180901', 30);
+  put('alpha', '40', '20260301', 12);
+  // Real-shaped refresh file (CIV-394): keyed by its feed's end date, read in May 2026, so v2 dates it 2026.
+  put('alpha', '40', '20301201', 10, { prevHeadway: 12, tier: '10', headwayByPeriod: null, geometry: null, processedAt: '2026-05-04T06:12:00.000Z' });
   // alpha / route 20: limited today.
   put('alpha', '20', '20180901', 30);
   put('alpha', '20', '20230901', 60);
@@ -54,7 +60,7 @@ export function historyBuildFixture(): R2Contents {
   archive['trip-duration/alpha/30/20240901.json'] = j({ durationMinutes: 25, stopSequence: ['a', 'b', 'c'] });
 
   // beta: passes the 10-year bar by coverage metadata only (2012-2022), two real routes.
-  archive['history/beta/coverage.json'] = j({ coverageYears: Array.from({ length: 11 }, (_, i) => 2012 + i), materializeAllPeriods: false });
+  archive['history/beta/coverage.json'] = j({ coverageYears: [...Array.from({ length: 11 }, (_, i) => 2012 + i), 2031], materializeAllPeriods: false });
   put('beta', '1', '20130901', 30);
   put('beta', '1', '20210901', 15);
   put('beta', '2', '20140901', 20);
@@ -98,6 +104,7 @@ export function historyBuildFixture(): R2Contents {
         // long-name only route.
         feature({ routeShortName: '', routeId: '', routeLongName: 'Lake Line', headway: 20, routeAllDayHeadway: 20 }, 5),
         feature({ routeShortName: '30', routeLongName: 'Thirty', headway: 20, routeAllDayHeadway: 20 }, 6),
+        feature({ routeShortName: '40', routeLongName: 'Forty', headway: 6, routeAllDayHeadway: 6 }, 10),
       ],
     }),
     'atlas/beta.json': j({

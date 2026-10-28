@@ -70,6 +70,16 @@ export function variantRowHeadway(f: ShapeProperties, period: TimePeriod): numbe
   return f.directionFilterHeadwayByPeriod?.[period as PeriodKey];
 }
 
+/**
+ * #1115 (Ryan, 2026-10-26): a tail whose branch does not run through the period (the main stretch's rule, read over every
+ * trip at the tail's reference stop) has no row on the card for that period (TTC 84 to Pioneer Village at midday read
+ * "every 21"; TTC 927 to Humber College via Attwell read the trunk's "every 10"). False on data without the field.
+ */
+export function tailNotThroughPeriod(f: ShapeProperties, period: TimePeriod): boolean {
+  if (period === 'all' || f.stretchRole !== 'tail') return false;
+  return f.stretchMeta?.tails?.[f.stretchIndex ?? 0]?.notThrough?.includes(period as PeriodKey) ?? false;
+}
+
 export interface RouteContract {
   /** The route's filter value in the period: a number, or null for no regular service. */
   filterValue: number | null;

@@ -92,7 +92,8 @@ export default function DiagnosticsPerformancePage() {
         <div className={`${FLOATING_CARD} p-5 grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm`}>
           <div><div className="text-xs text-[var(--text-dim)]">Mode</div><div className="font-black">{ATLAS_MODE}</div></div>
           <div><div className="text-xs text-[var(--text-dim)]">Visible agencies</div><div className="font-black">{agenciesLoadState === 'ready' ? agencies.length : 'Loading…'}</div></div>
-          <div><div className="text-xs text-[var(--text-dim)]">URL</div><div className="font-black">{window.location.pathname}</div></div>
+          {/* A long path has no spaces to wrap at: it shortens with "…" in its own column, full path on hover (#1101). */}
+          <div className="min-w-0"><div className="text-xs text-[var(--text-dim)]">URL</div><div className="font-black truncate" title={window.location.pathname}>{window.location.pathname}</div></div>
           <div><div className="text-xs text-[var(--text-dim)]">Captured</div><div className="font-black">{new Date().toLocaleTimeString()}</div></div>
         </div>
 

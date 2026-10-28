@@ -537,7 +537,10 @@
         -79.99
       ],
       "feedUrl": "https://webapps.regionofwaterloo.ca/api/grt-routes/api/staticfeeds/1",
-      "lastFeedExpiry": "20260426",
+      "supplementalFeedUrls": [
+        "https://webapps.regionofwaterloo.ca/api/grt-routes/api/staticfeeds/2"
+      ],
+      "lastFeedExpiry": "20261220",
       "lastFeedVersion": null,
       "lastRefreshedAt": "20260811",
       "cities": [
@@ -556,7 +559,23 @@
       "feedRefreshErrorAt": "20261019",
       "feedRefreshRetryCount": 4,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-grand-river-transit-gtfs-721.zip?alt=media"
+      "lastFeedSourceUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-grand-river-transit-gtfs-721.zip?alt=media",
+      "modeOverrides": [
+        {
+          "routeType": 0,
+          "routeShortName": "301",
+          "mode": 100,
+          "reason": "ION is light rail; the Region's feed publishes it as route_type 0 (tram) while the earlier GRT feed had it as 2"
+        }
+      ],
+      "lastSupplementalFeeds": [
+        {
+          "feedExpiry": "20280703",
+          "feedVersion": null,
+          "rawArchiveKey": "20280703-9f872bb7bc6ca990"
+        }
+      ],
+      "lastPeekedExpiry": "20261220"
     },
     {
       "slug": "guelph",
@@ -959,7 +978,7 @@
       ],
       "feedUrl": "https://oct-gtfs-emasagcnfmcgeham.z01.azurefd.net/public-access/GTFSExport.zip",
       "mdbFeedUrl": "https://oct-gtfs-emasagcnfmcgeham.z01.azurefd.net/public-access/GTFSExport.zip",
-      "lastFeedExpiry": "20261116",
+      "lastFeedExpiry": "20261123",
       "lastFeedVersion": "S1000523",
       "lastRefreshedAt": "2026-10-19",
       "cities": [
@@ -999,7 +1018,7 @@
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://oct-gtfs-emasagcnfmcgeham.z01.azurefd.net/public-access/GTFSExport.zip",
-      "lastPeekedExpiry": "20261116"
+      "lastPeekedExpiry": "20261123"
     },
     {
       "slug": "oakville",
@@ -1876,7 +1895,7 @@
         -73.21
       ],
       "feedUrl": "https://www.stlaval.ca/datas/opendata/GTF_STL.zip",
-      "lastFeedExpiry": "20261030",
+      "lastFeedExpiry": "20270108",
       "lastFeedVersion": "20261019044646",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-3190/latest.zip",
       "lastRefreshedAt": "2026-10-19",
@@ -1918,7 +1937,7 @@
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://www.stlaval.ca/datas/opendata/GTF_STL.zip",
-      "lastPeekedExpiry": "20261030"
+      "lastPeekedExpiry": "20270108"
     },
     {
       "slug": "stlevis",
@@ -2053,7 +2072,7 @@
         -75.391
       ],
       "feedUrl": "https://contenu.sto.ca/GTFS/GTFS.zip",
-      "lastFeedExpiry": "20261213",
+      "lastFeedExpiry": "20261219",
       "lastFeedVersion": null,
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-740/latest.zip",
       "lastRefreshedAt": "2026-10-19",
@@ -2090,7 +2109,7 @@
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://contenu.sto.ca/GTFS/GTFS.zip",
-      "lastPeekedExpiry": "20261213"
+      "lastPeekedExpiry": "20261219"
     },
     {
       "slug": "sjsr",
@@ -3266,7 +3285,7 @@
       ],
       "feedUrl": "http://www.metrobustransit.ca/google/google_transit.zip",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-758/latest.zip",
-      "lastFeedExpiry": "20261111",
+      "lastFeedExpiry": "20270103",
       "lastFeedVersion": null,
       "lastRefreshedAt": "2026-09-07",
       "cities": [
@@ -3294,7 +3313,7 @@
       },
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "http://www.metrobustransit.ca/google/google_transit.zip",
-      "lastPeekedExpiry": "20261111"
+      "lastPeekedExpiry": "20270103"
     },
     {
       "slug": "nfta",
@@ -3470,7 +3489,15 @@
       "timezone": "America/Detroit",
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2281/latest.zip",
-      "lastPeekedExpiry": "20271231"
+      "lastPeekedExpiry": "20271231",
+      "modeOverrides": [
+        {
+          "routeType": 0,
+          "routeShortName": "DPM",
+          "mode": 101,
+          "reason": "The Detroit People Mover is an automated people mover, published as route_type 0 (streetcar)"
+        }
+      ]
     },
     {
       "slug": "qline",
@@ -3691,7 +3718,7 @@
         },
         "checkedAt": "2026-10-12"
       },
-      "lastFeedExpiry": "20281021",
+      "lastFeedExpiry": "20281028",
       "lastFeedVersion": "Fall 2026 Version 10122026",
       "lastRefreshedAt": "2026-10-12",
       "lastFeedCheckAt": "20261019",
@@ -3796,7 +3823,7 @@
       "feedUrl": "https://s3.amazonaws.com/etatransit.gtfs/tarta.etaspot.net/gtfs.zip",
       "region": "Ohio",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-1716_1/latest.zip",
-      "lastFeedExpiry": "20271015",
+      "lastFeedExpiry": "20271023",
       "lastFeedVersion": "462",
       "lastRefreshedAt": "2026-10-19",
       "cities": [
@@ -3828,7 +3855,7 @@
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://s3.amazonaws.com/etatransit.gtfs/tarta.etaspot.net/gtfs.zip",
-      "lastPeekedExpiry": "20271015"
+      "lastPeekedExpiry": "20271023"
     },
     {
       "slug": "rgrta",
@@ -4461,7 +4488,7 @@
         -71.802
       ],
       "feedUrl": "https://gtfs.wrta.cadavl.com/WRTA/GTFS/GTFS_WRTA.zip",
-      "lastFeedExpiry": "20270116",
+      "lastFeedExpiry": "20270124",
       "lastFeedVersion": null,
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-432/latest.zip",
       "lastRefreshedAt": "2026-10-19",
@@ -4494,7 +4521,7 @@
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://gtfs.wrta.cadavl.com/WRTA/GTFS/GTFS_WRTA.zip",
-      "lastPeekedExpiry": "20270116"
+      "lastPeekedExpiry": "20270124"
     },
     {
       "slug": "cttransit",
@@ -4643,7 +4670,7 @@
         -105.753
       ],
       "feedUrl": "https://www.citypa.ca/media/gnsfaref/2025-01-20-google-transit-gtfs.zip",
-      "lastFeedExpiry": "20281021",
+      "lastFeedExpiry": "20281028",
       "lastFeedVersion": null,
       "lastRefreshedAt": "2026-08-10",
       "lastFeedCheckAt": "20261019",
@@ -5731,7 +5758,7 @@
       ],
       "feedUrl": "https://gtfs.gptd.cadavl.com/GPTD/GTFS/GTFS_GPTD.zip",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2642/latest.zip",
-      "lastFeedExpiry": "20261118",
+      "lastFeedExpiry": "20261125",
       "lastFeedVersion": null,
       "lastRefreshedAt": "2026-10-19",
       "cities": [
@@ -5761,7 +5788,7 @@
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://gtfs.gptd.cadavl.com/GPTD/GTFS/GTFS_GPTD.zip",
-      "lastPeekedExpiry": "20261118"
+      "lastPeekedExpiry": "20261125"
     },
     {
       "slug": "southportlandme",
@@ -7405,7 +7432,7 @@
       ],
       "feedUrl": "https://marintransit.gov/data/google_transit.zip",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2937/latest.zip",
-      "lastFeedExpiry": "20270109",
+      "lastFeedExpiry": "20270110",
       "lastFeedVersion": "UTC: 04-Feb-2026 00:08",
       "lastRefreshedAt": "2026-10-14",
       "cities": [
@@ -7436,7 +7463,7 @@
         },
         "checkedAt": "2026-10-14"
       },
-      "lastPeekedExpiry": "20270109",
+      "lastPeekedExpiry": "20270110",
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
       "feedRefreshErrorAt": null,
@@ -8075,6 +8102,7 @@
     {
       "slug": "ace",
       "name": "Altamont Corridor Express",
+      "displayArea": "Northern California",
       "center": [
         37.2902,
         -121.0684
@@ -8143,7 +8171,7 @@
       ],
       "feedUrl": "https://gtfs.rvtd.cadavl.com/RVTD/GTFS/GTFS_RVTD.zip",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-3219/latest.zip",
-      "lastFeedExpiry": "20261122",
+      "lastFeedExpiry": "20261206",
       "lastFeedVersion": "10-19-26  02:35",
       "lastRefreshedAt": "2026-10-19",
       "cities": [
@@ -8173,7 +8201,7 @@
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://gtfs.rvtd.cadavl.com/RVTD/GTFS/GTFS_RVTD.zip",
-      "lastPeekedExpiry": "20261122"
+      "lastPeekedExpiry": "20261206"
     },
     {
       "slug": "bts-or",
@@ -8692,7 +8720,7 @@
       ],
       "feedUrl": "https://unitrans.ucdavis.edu/media/gtfs/Unitrans_GTFS.zip",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-82/latest.zip",
-      "lastFeedExpiry": "20261213",
+      "lastFeedExpiry": "20270103",
       "lastFeedVersion": "Fall2026_V5",
       "lastRefreshedAt": "2026-10-07",
       "cities": [
@@ -8725,7 +8753,7 @@
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://unitrans.ucdavis.edu/media/gtfs/Unitrans_GTFS.zip",
-      "lastPeekedExpiry": "20261213"
+      "lastPeekedExpiry": "20270103"
     },
     {
       "slug": "roseville",
@@ -8779,7 +8807,7 @@
       ],
       "feedUrl": "https://mysmartbus.com/gtfs",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2706/latest.zip",
-      "lastFeedExpiry": "20281021",
+      "lastFeedExpiry": "20281028",
       "lastFeedVersion": "FY27 Q1",
       "lastRefreshedAt": "2026-10-12",
       "cities": [
@@ -9124,7 +9152,7 @@
       ],
       "region": "California",
       "feedUrl": "https://files.mobilitydatabase.org/mdb-1999/latest.zip",
-      "lastFeedExpiry": "20281021",
+      "lastFeedExpiry": "20281028",
       "lastFeedVersion": "New Schedule",
       "lastRefreshedAt": "2026-10-12",
       "cities": [
@@ -9829,7 +9857,7 @@
         -120.48
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-3117/latest.zip",
-      "lastFeedExpiry": "20281021",
+      "lastFeedExpiry": "20281028",
       "lastFeedVersion": "PASAT 8 Route Update",
       "region": "California",
       "lastRefreshedAt": "2026-08-10",
@@ -9883,7 +9911,7 @@
         -121.89
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-56/latest.zip",
-      "lastFeedExpiry": "20261106",
+      "lastFeedExpiry": "20261204",
       "lastFeedVersion": "202603v11",
       "region": "California",
       "lastRefreshedAt": "2026-10-03",
@@ -9917,7 +9945,7 @@
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-56/latest.zip",
-      "lastPeekedExpiry": "20261106"
+      "lastPeekedExpiry": "20261204"
     },
     {
       "slug": "sbmtd",
@@ -10041,7 +10069,7 @@
         -116.1
       ],
       "feedUrl": "https://sunlinebus.com/gtfs",
-      "lastFeedExpiry": "20281021",
+      "lastFeedExpiry": "20281028",
       "lastFeedVersion": "Add training route",
       "region": "California",
       "lastRefreshedAt": "2026-10-12",
@@ -10281,7 +10309,7 @@
         -111.65
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-1979/latest.zip",
-      "lastFeedExpiry": "20281021",
+      "lastFeedExpiry": "20281028",
       "lastFeedVersion": "10/9/2026",
       "region": "Arizona",
       "lastRefreshedAt": "2026-10-12",
@@ -10460,6 +10488,7 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-2280/latest.zip",
       "region": "Colorado",
+      "displayArea": "Colorado",
       "bbox": [
         38.8,
         -108.6,
@@ -10644,6 +10673,14 @@
       "feedRefreshError": null,
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
+      "modeOverrides": [
+        {
+          "routeType": 0,
+          "routeShortName": "550",
+          "mode": 2,
+          "reason": "CapMetro Rail Red Line (550) is commuter rail, published as route_type 0 (tram)"
+        }
+      ],
       "lastPeekedExpiry": "20270109"
     },
     {
@@ -10916,7 +10953,7 @@
         -97.52
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-2062/latest.zip",
-      "lastFeedExpiry": "20271018",
+      "lastFeedExpiry": "20271025",
       "lastFeedVersion": "17/10/2026-22:30",
       "region": "Oklahoma",
       "lastRefreshedAt": "2026-10-19",
@@ -11037,7 +11074,7 @@
         -89.9687
       ],
       "feedUrl": "https://gtfs.mata.cadavl.com/MATA/GTFS/GTFS_MATA.zip",
-      "lastFeedExpiry": "20261117",
+      "lastFeedExpiry": "20261124",
       "lastFeedVersion": null,
       "region": "Tennessee",
       "lastRefreshedAt": "2026-10-19",
@@ -11075,7 +11112,7 @@
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://gtfs.mata.cadavl.com/MATA/GTFS/GTFS_MATA.zip",
-      "lastPeekedExpiry": "20261117"
+      "lastPeekedExpiry": "20261124"
     },
     {
       "slug": "norta",
@@ -11611,7 +11648,7 @@
         -118.31
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-2149/latest.zip",
-      "lastFeedExpiry": "20281021",
+      "lastFeedExpiry": "20281028",
       "lastFeedVersion": "7/8/2026",
       "region": "California",
       "lastRefreshedAt": "2026-10-12",
@@ -12206,7 +12243,7 @@
         -84.55
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-3193/latest.zip",
-      "lastFeedExpiry": "20261231",
+      "lastFeedExpiry": "20270327",
       "lastFeedVersion": "20260924",
       "region": "Georgia",
       "lastRefreshedAt": "2026-10-12",
@@ -12239,7 +12276,7 @@
       "feedRefreshError": null,
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
-      "lastPeekedExpiry": "20261231"
+      "lastPeekedExpiry": "20270327"
     },
     {
       "slug": "gwinnett-transit",
@@ -12324,6 +12361,24 @@
           "routeShortName": "2600",
           "mode": 1,
           "reason": "Metrorail is a heavy-rail metro, published as route_type 2 (commuter rail)"
+        },
+        {
+          "routeType": 0,
+          "routeShortName": "MMI",
+          "mode": 101,
+          "reason": "Metromover MMI is an automated people mover, published as route_type 0 (streetcar)"
+        },
+        {
+          "routeType": 0,
+          "routeShortName": "MMO",
+          "mode": 101,
+          "reason": "Metromover MMO is an automated people mover, published as route_type 0 (streetcar)"
+        },
+        {
+          "routeType": 0,
+          "routeShortName": "MIA",
+          "mode": 101,
+          "reason": "Metromover MIA is an automated people mover, published as route_type 0 (streetcar)"
         }
       ],
       "lastPeekedExpiry": "20271231"
@@ -12616,6 +12671,7 @@
     {
       "slug": "vre",
       "name": "Virginia Railway Express (VRE)",
+      "displayArea": "Northern Virginia",
       "websiteUrl": "http://www.vre.org",
       "region": "Virginia",
       "center": [
@@ -12630,7 +12686,7 @@
       ],
       "feedUrl": "https://gtfs.vre.org/containercdngtfsupload/google_transit.zip",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-61/latest.zip",
-      "lastFeedExpiry": "20270117",
+      "lastFeedExpiry": "20270124",
       "lastFeedVersion": null,
       "lastRefreshedAt": "2026-10-19",
       "cities": [
@@ -12665,7 +12721,7 @@
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://gtfs.vre.org/containercdngtfsupload/google_transit.zip",
-      "lastPeekedExpiry": "20270117"
+      "lastPeekedExpiry": "20270124"
     },
     {
       "slug": "marc",
@@ -13510,7 +13566,7 @@
         -73.9391
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-508/latest.zip",
-      "lastFeedExpiry": "20270313",
+      "lastFeedExpiry": "20270417",
       "lastFeedVersion": null,
       "lastRefreshedAt": "2026-10-12",
       "cities": [
@@ -13553,7 +13609,7 @@
       "feedRefreshError": null,
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
-      "lastPeekedExpiry": "20270313"
+      "lastPeekedExpiry": "20270417"
     },
     {
       "slug": "path",
@@ -13766,7 +13822,7 @@
       ],
       "feedUrl": "https://tracksctbus.org/gtfs",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-3115/latest.zip",
-      "lastFeedExpiry": "20281021",
+      "lastFeedExpiry": "20281028",
       "lastFeedVersion": "272-10/1/2026,262-10/17/2026,265-7/30/2026",
       "lastRefreshedAt": "2026-10-19",
       "cities": [
@@ -13866,7 +13922,8 @@
       "timezone": "America/New_York",
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://s3.amazonaws.com/datatools-511ny/public/Dutchess_County_Transit.zip",
-      "lastPeekedExpiry": "20510930"
+      "lastPeekedExpiry": "20510930",
+      "listingEndedOn": "20261028"
     },
     {
       "slug": "metro-transit",
@@ -13877,7 +13934,7 @@
         -93.27
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-205/latest.zip",
-      "lastFeedExpiry": "20261204",
+      "lastFeedExpiry": "20261211",
       "lastFeedVersion": "1791990332",
       "region": "Minnesota",
       "lastRefreshedAt": "2026-10-19",
@@ -13920,7 +13977,7 @@
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-205/latest.zip",
-      "lastPeekedExpiry": "20261204"
+      "lastPeekedExpiry": "20261211"
     },
     {
       "slug": "port-authority-pa",
@@ -14394,7 +14451,7 @@
         "Kauaʻi County, Hawaii"
       ],
       "timezone": "Pacific/Honolulu",
-      "lastFeedExpiry": "20281021",
+      "lastFeedExpiry": "20281028",
       "lastFeedVersion": "CORRECTED RUN NUMBERS Routes with 900/950 Express and Kilauea Food Mart.",
       "lastRefreshedAt": "2026-10-12",
       "feedQuality": {
@@ -14583,7 +14640,7 @@
         "Maui County, Hawaii"
       ],
       "timezone": "Pacific/Honolulu",
-      "lastFeedExpiry": "20281021",
+      "lastFeedExpiry": "20281028",
       "lastFeedVersion": "FixedRoute_NewCommuterRouteNames",
       "lastRefreshedAt": "2026-10-12",
       "feedQuality": {
@@ -14679,7 +14736,7 @@
         "Muscogee County, Georgia"
       ],
       "timezone": "America/New_York",
-      "lastFeedExpiry": "20281021",
+      "lastFeedExpiry": "20281028",
       "lastFeedVersion": "6/17/2026 Saturday Reduced",
       "lastRefreshedAt": "2026-10-12",
       "feedQuality": {
@@ -14926,7 +14983,7 @@
         "Whitman County, Washington"
       ],
       "timezone": "America/Los_Angeles",
-      "lastFeedExpiry": "20281021",
+      "lastFeedExpiry": "20281028",
       "lastFeedVersion": "back to regular service, removed football and Wheat-Lentil detours,football + Greyhound open,Greyhound closed,removed football routes",
       "lastRefreshedAt": "2026-10-19",
       "feedQuality": {
@@ -16134,7 +16191,7 @@
         -79.05
       ],
       "feedUrl": "https://files.mobilitydatabase.org/tld-89/latest.zip",
-      "lastFeedExpiry": "20281021",
+      "lastFeedExpiry": "20281028",
       "lastFeedVersion": "Fall 2026 Update (No Special Services)",
       "region": "North Carolina",
       "lastRefreshedAt": "2026-10-12",
@@ -16177,7 +16234,7 @@
       ],
       "feedUrl": "http://srv.mvta.com/InfoPoint/GTFS-Zip.ashx",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-206/latest.zip",
-      "lastFeedExpiry": "20261101",
+      "lastFeedExpiry": "20261206",
       "lastFeedVersion": "20260909",
       "region": "Minnesota",
       "lastRefreshedAt": "2026-10-03",
@@ -16217,7 +16274,7 @@
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "http://srv.mvta.com/InfoPoint/GTFS-Zip.ashx",
-      "lastPeekedExpiry": "20261101"
+      "lastPeekedExpiry": "20261206"
     },
     {
       "slug": "xpress-ga",
@@ -16624,7 +16681,7 @@
       ],
       "feedUrl": "https://gtfs.wata.cadavl.com/WATA/GTFS/GTFS_WATA.zip",
       "region": "Virginia",
-      "lastFeedExpiry": "20261119",
+      "lastFeedExpiry": "20261126",
       "lastFeedVersion": null,
       "lastRefreshedAt": "2026-10-19",
       "cities": [
@@ -16655,11 +16712,12 @@
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://gtfs.wata.cadavl.com/WATA/GTFS/GTFS_WATA.zip",
-      "lastPeekedExpiry": "20261119"
+      "lastPeekedExpiry": "20261126"
     },
     {
       "slug": "dart-first-state",
-      "name": "DART First State (Wilmington, DE)",
+      "name": "DART First State",
+      "displayArea": "Delaware",
       "websiteUrl": "http://www.dartfirststate.com",
       "center": [
         39.1,
@@ -16814,7 +16872,8 @@
       "timezone": "America/New_York",
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-352/latest.zip",
-      "lastPeekedExpiry": "20270529"
+      "lastPeekedExpiry": "20270529",
+      "listingEndedOn": "20260815"
     },
     {
       "slug": "cat-savannah",
@@ -17048,7 +17107,7 @@
       "feedUrl": "https://files.mobilitydatabase.org/tld-490/latest.zip",
       "region": "South Carolina",
       "lastRefreshedAt": "2026-10-19",
-      "lastFeedExpiry": "20271013",
+      "lastFeedExpiry": "20271020",
       "lastFeedVersion": null,
       "cities": [
         "Greenville, South Carolina"
@@ -17077,7 +17136,7 @@
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://files.mobilitydatabase.org/tld-490/latest.zip",
-      "lastPeekedExpiry": "20271013"
+      "lastPeekedExpiry": "20271020"
     },
     {
       "slug": "carta-chattanooga",
@@ -17227,7 +17286,7 @@
         -85.6206
       ],
       "feedUrl": "https://batabustracker.com/gtfs",
-      "lastFeedExpiry": "20281021",
+      "lastFeedExpiry": "20281028",
       "lastFeedVersion": "9/7/2026",
       "lastRefreshedAt": "2026-10-12",
       "cities": [
@@ -17354,7 +17413,7 @@
       "feedUrl": "https://ridematbus.com/gtfs",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-80003/latest.zip",
       "region": "North Dakota",
-      "lastFeedExpiry": "20281021",
+      "lastFeedExpiry": "20281028",
       "lastFeedVersion": "9/7/2026 Schedule",
       "lastRefreshedAt": "2026-10-12",
       "cities": [
@@ -17481,7 +17540,7 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-2274/latest.zip",
       "region": "Virginia",
-      "lastFeedExpiry": "20281021",
+      "lastFeedExpiry": "20281028",
       "lastFeedVersion": "10/17/2026",
       "lastRefreshedAt": "2026-10-19",
       "cities": [
@@ -18247,6 +18306,21 @@
       "expiredFeedCheckSince": null,
       "expiredFeedCheckExpiry": "20261122",
       "timezone": "America/Denver",
+      "directionLabels": {
+        "BG": {
+          "0": "Inbound",
+          "1": "Outbound"
+        },
+        "HC": {
+          "0": "Outbound",
+          "1": "Inbound"
+        }
+      },
+      "directionHeadsigns": {
+        "HC": {
+          "1": "Rubey Park"
+        }
+      },
       "feedQuality": {
         "status": "healthy",
         "score": 100,
@@ -18582,9 +18656,13 @@
         39.6345,
         -79.9553
       ],
+      "hiddenInProduction": true,
       "feedUrl": "https://files.mobilitydatabase.org/tld-7068_1/latest.zip",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-7068_1/latest.zip",
-      "preprocess": "wvu-prt-shapes",
+      "preprocess": "wvu-prt-line",
+      "onDemandRoutes": [
+        "PRT"
+      ],
       "lastFeedExpiry": "20261218",
       "lastFeedVersion": "2",
       "lastRefreshedAt": "2026-08-18",
@@ -18611,7 +18689,15 @@
       "timezone": "America/New_York",
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://files.mobilitydatabase.org/tld-7068_1/latest.zip",
-      "lastPeekedExpiry": "20261218"
+      "lastPeekedExpiry": "20261218",
+      "modeOverrides": [
+        {
+          "routeType": 0,
+          "routeShortName": "PRT",
+          "mode": 101,
+          "reason": "WVU PRT is an automated people mover, published as route_type 0 (streetcar)"
+        }
+      ]
     },
     {
       "slug": "visalia",
@@ -18649,7 +18735,7 @@
       ],
       "feedUrl": "https://www.greenbaywi.gov/DocumentCenter/View/12124/Transit-Data-March-2026",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-917/latest.zip",
-      "lastFeedExpiry": "20270410",
+      "lastFeedExpiry": "20270424",
       "lastFeedVersion": null,
       "lastRefreshedAt": "2026-10-19",
       "websiteUrl": "https://greenbaywi.gov/231/Metro-Transit",
@@ -18681,7 +18767,7 @@
         },
         "checkedAt": "2026-10-19"
       },
-      "lastPeekedExpiry": "20270410"
+      "lastPeekedExpiry": "20270424"
     },
     {
       "slug": "cota",
@@ -18737,7 +18823,7 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-193/latest.zip",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-193/latest.zip",
-      "lastFeedExpiry": "20261121",
+      "lastFeedExpiry": "20270221",
       "lastFeedVersion": null,
       "lastRefreshedAt": "2026-08-24",
       "cities": [
@@ -18765,7 +18851,7 @@
       "timezone": "America/Chicago",
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-193/latest.zip",
-      "lastPeekedExpiry": "20261121"
+      "lastPeekedExpiry": "20270221"
     },
     {
       "slug": "wichita",
@@ -18907,7 +18993,7 @@
         "51D"
       ],
       "region": "Tennessee",
-      "lastFeedExpiry": "20281021",
+      "lastFeedExpiry": "20281028",
       "lastFeedVersion": "August 2026 Shake-Up",
       "lastRefreshedAt": "2026-10-12",
       "cities": [
@@ -18977,7 +19063,7 @@
       "feedUrl": "https://gismap.augustaga.gov/AugGAgis/GISWebLinks/Transit/GTFS/google_transit.zip",
       "region": "Georgia",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-5780/latest.zip",
-      "lastFeedExpiry": "20261201",
+      "lastFeedExpiry": "20270130",
       "lastFeedVersion": null,
       "lastRefreshedAt": "20260811",
       "timezone": "America/New_York",
@@ -18992,7 +19078,7 @@
       "feedRefreshRetryCount": 3,
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://gismap.augustaga.gov/AugGAgis/GISWebLinks/Transit/GTFS/google_transit.zip",
-      "lastPeekedExpiry": "20261201"
+      "lastPeekedExpiry": "20270130"
     },
     {
       "slug": "lincoln",
@@ -19077,6 +19163,10 @@
       "feedUrl": "https://rmtd.org/rmtdgtfs/GTFS_FILES.zip",
       "region": "Illinois",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2019/latest.zip",
+      "expiredFeedPin": {
+        "feedVersion": "S1000085",
+        "feedExpiry": "20261010"
+      },
       "lastFeedExpiry": "20261010",
       "lastFeedVersion": "S1000085",
       "lastRefreshedAt": "2026-08-07",
@@ -19093,7 +19183,8 @@
       "feedRefreshStatus": "stale",
       "feedRefreshError": "all available feeds expired (latest 20261010)",
       "feedRefreshErrorAt": "20261019",
-      "feedRefreshRetryCount": 2
+      "feedRefreshRetryCount": 2,
+      "lastPeekedExpiry": "20261010"
     },
     {
       "slug": "racine",
@@ -19401,7 +19492,7 @@
       "feedUrl": "http://api.nextlift.ca/gtfs.zip",
       "region": "Ontario",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-736/latest.zip",
-      "lastFeedExpiry": "20261114",
+      "lastFeedExpiry": "20270220",
       "lastFeedVersion": "1/20260819 15:43:36/20260823 04:00:00",
       "lastRefreshedAt": "2026-08-24",
       "cities": [
@@ -19427,7 +19518,7 @@
       "timezone": "America/Thunder_Bay",
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "http://api.nextlift.ca/gtfs.zip",
-      "lastPeekedExpiry": "20261114"
+      "lastPeekedExpiry": "20270220"
     },
     {
       "slug": "greensboro",
@@ -19439,7 +19530,7 @@
       "feedUrl": "https://trackmygta.com/gtfs",
       "region": "North Carolina",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-615/latest.zip",
-      "lastFeedExpiry": "20281021",
+      "lastFeedExpiry": "20281028",
       "lastFeedVersion": "7/4/2024",
       "lastRefreshedAt": "2026-10-12",
       "websiteUrl": "http://www.greensboro-nc.gov/index.aspx?page=2180",
@@ -19531,7 +19622,7 @@
       "feedUrl": "https://ridewsta.com/gtfs",
       "region": "North Carolina",
       "mdbFeedUrl": "https://ridewsta.com/gtfs",
-      "lastFeedExpiry": "20281021",
+      "lastFeedExpiry": "20281028",
       "lastFeedVersion": "Aug 30 start - Rev 1",
       "lastRefreshedAt": "2026-10-12",
       "cities": [
@@ -20604,7 +20695,7 @@
       ],
       "feedUrl": "https://kenoshatransit.com/gtfs",
       "mdbFeedUrl": "https://kenoshatransit.com/gtfs",
-      "lastFeedExpiry": "20281021",
+      "lastFeedExpiry": "20281028",
       "lastFeedVersion": "Route 1",
       "lastRefreshedAt": "2026-10-12",
       "region": "Wisconsin",
@@ -20922,7 +21013,8 @@
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://www.bt4uclassic.org/gtfs/google_transit.zip",
-      "lastPeekedExpiry": "20261230"
+      "lastPeekedExpiry": "20261230",
+      "listingEndedOn": "20261030"
     },
     {
       "slug": "cata-state-college",
@@ -21801,7 +21893,7 @@
         -96.7354
       ],
       "feedUrl": "https://s3.amazonaws.com/etatransit.gtfs/siouxareametro.etaspot.net/gtfs.zip",
-      "lastFeedExpiry": "20271013",
+      "lastFeedExpiry": "20271023",
       "lastFeedVersion": "100",
       "lastRefreshedAt": "2026-10-19",
       "region": "South Dakota",
@@ -21840,7 +21932,7 @@
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://s3.amazonaws.com/etatransit.gtfs/siouxareametro.etaspot.net/gtfs.zip",
-      "lastPeekedExpiry": "20271013"
+      "lastPeekedExpiry": "20271023"
     },
     {
       "slug": "yakima",
@@ -22264,7 +22356,8 @@
       "timezone": "America/New_York",
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-1110/latest.zip",
-      "lastPeekedExpiry": "20261231"
+      "lastPeekedExpiry": "20261231",
+      "listingEndedOn": "20251211"
     },
     {
       "slug": "st-george",
@@ -22456,7 +22549,8 @@
         -82.8532
       ],
       "feedUrl": "https://catbus.ridesystems.net/Secure/Admin/Reports/GTFSDownload.aspx",
-      "lastFeedExpiry": "20281021",
+      "lastFeedExpiry": "20281028",
+      "skipBlockTripHeadways": true,
       "lastFeedVersion": null,
       "lastRefreshedAt": "2026-10-03",
       "region": "South Carolina",
@@ -22682,7 +22776,7 @@
         -88.99
       ],
       "feedUrl": "https://rideconnecttransit.com/gtfs",
-      "lastFeedExpiry": "20281021",
+      "lastFeedExpiry": "20281028",
       "lastFeedVersion": "Sapphire Change 9/14/2026",
       "lastRefreshedAt": "2026-10-12",
       "region": "Illinois",
@@ -22831,7 +22925,15 @@
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://s3.amazonaws.com/datatools-511ny/public/AirTrain_JFK.zip",
-      "lastPeekedExpiry": "20270228"
+      "lastPeekedExpiry": "20270228",
+      "modeOverrides": [
+        {
+          "routeType": 0,
+          "routeShortName": "AirTrain",
+          "mode": 101,
+          "reason": "AirTrain JFK (all three routes) is an automated people mover, published as route_type 0 (streetcar)"
+        }
+      ]
     },
     {
       "slug": "staten-island-ferry",
@@ -26422,7 +26524,7 @@
         },
         "checkedAt": "2026-10-03"
       },
-      "lastFeedExpiry": "20261231",
+      "lastFeedExpiry": "20270131",
       "lastFeedVersion": "20260930",
       "lastRefreshedAt": "2026-10-03",
       "lastFeedCheckAt": "20261019",
@@ -26436,7 +26538,7 @@
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://godurham.rideralerts.com/InfoPoint/GTFS-Zip.ashx",
-      "lastPeekedExpiry": "20261231"
+      "lastPeekedExpiry": "20270131"
     },
     {
       "slug": "jacksonville-nc",
@@ -26522,7 +26624,7 @@
         },
         "checkedAt": "2026-08-21"
       },
-      "lastFeedExpiry": "20281021",
+      "lastFeedExpiry": "20281028",
       "lastFeedVersion": null,
       "lastRefreshedAt": "2026-08-21",
       "lastFeedCheckAt": "20261019",
@@ -26613,7 +26715,7 @@
         },
         "checkedAt": "2026-10-12"
       },
-      "lastFeedExpiry": "20281021",
+      "lastFeedExpiry": "20281028",
       "lastFeedVersion": "Yellow Route Fixed",
       "lastRefreshedAt": "2026-10-12",
       "lastFeedCheckAt": "20261019",
@@ -26714,7 +26816,7 @@
         },
         "checkedAt": "2026-08-21"
       },
-      "lastFeedExpiry": "20281021",
+      "lastFeedExpiry": "20281028",
       "lastFeedVersion": null,
       "lastRefreshedAt": "2026-08-21",
       "lastFeedCheckAt": "20261019",
@@ -26959,7 +27061,7 @@
         },
         "checkedAt": "2026-08-21"
       },
-      "lastFeedExpiry": "20281021",
+      "lastFeedExpiry": "20281028",
       "lastFeedVersion": null,
       "lastRefreshedAt": "2026-08-21",
       "lastFeedCheckAt": "20261019",
@@ -26974,6 +27076,7 @@
     {
       "slug": "brazos",
       "name": "Brazos Transit District",
+      "displayArea": "Brazos Valley",
       "websiteUrl": "https://www.btd.org/",
       "region": "Texas",
       "center": [
@@ -27053,7 +27156,7 @@
         },
         "checkedAt": "2026-10-12"
       },
-      "lastFeedExpiry": "20281021",
+      "lastFeedExpiry": "20281028",
       "lastFeedVersion": "10/6/2026",
       "lastRefreshedAt": "2026-10-12",
       "lastFeedCheckAt": "20261019",
@@ -27679,7 +27782,7 @@
         -105.7631
       ],
       "feedUrl": "https://theliftwp.ridesystems.net/Secure/Admin/Reports/GTFSDownload.aspx",
-      "lastFeedExpiry": "20281021",
+      "lastFeedExpiry": "20281028",
       "lastFeedVersion": null,
       "lastRefreshedAt": "2026-08-21",
       "cities": [
@@ -28116,7 +28219,7 @@
       "feedUrl": "https://gobg.ridesystems.net/Secure/Admin/Reports/GTFSDownload.aspx",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-40184/latest.zip",
       "region": "Kentucky",
-      "lastFeedExpiry": "20281021",
+      "lastFeedExpiry": "20281028",
       "lastFeedVersion": null,
       "lastRefreshedAt": "2026-10-12",
       "feedQuality": {

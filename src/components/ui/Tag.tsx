@@ -5,18 +5,24 @@ const TONES = {
   quiet: {
     sm: 'rounded-full border bg-[var(--control-inactive-bg)] border-[var(--control-inactive-border)] text-[var(--text-muted)] px-1.5 py-0.5 text-xs font-medium',
     md: 'rounded-full border bg-[var(--control-inactive-bg)] border-[var(--control-inactive-border)] text-[var(--control-inactive-fg)] px-2.5 py-0.5 text-xs font-bold',
+
+    /** As tight around the word as the accent tags, for a tag at the end of a line of text (agency list, CIV-967). */
+    inline: 'inline-block rounded-full border bg-[var(--control-inactive-bg)] border-[var(--control-inactive-border)] text-[var(--text-muted)] px-1.5 py-px text-xs font-medium leading-tight align-baseline',
   },
   /** Accent outline that sits in running text ("New", "Beta"). The text size comes from the caller. */
   accent: {
     sm: 'inline-block rounded-full border border-[var(--accent-border)] px-1.5 py-px font-bold leading-tight text-[var(--accent)] align-middle',
     md: 'inline-block rounded-full border border-[var(--accent-border)] px-1.5 py-px font-bold leading-tight text-[var(--accent)] align-middle',
+
+    /** The accent tags are already tight. */
+    inline: 'inline-block rounded-full border border-[var(--accent-border)] px-1.5 py-px font-bold leading-tight text-[var(--accent)] align-middle',
   },
 } as const;
 
 interface TagProps extends HTMLAttributes<HTMLSpanElement> {
   tone?: keyof typeof TONES;
-  /** sm: the small label beside a name. md: the roomier static chip (Live vehicle lists). */
-  size?: 'sm' | 'md';
+  /** sm: the small label beside a name. md: the roomier static chip (Live vehicle lists). inline: tight, for the end of a text line. */
+  size?: 'sm' | 'md' | 'inline';
 }
 
 /** Small rounded label. The one component for every tag, so "Live" and "New" look the same on every screen. */

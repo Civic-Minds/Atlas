@@ -1,9 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import {
-  agencyIntroSentence, introName, agencySpansArea, namesList, agencySpanShort, agencyBreadcrumbs, agencyDatesText, agencyLeadSentence, agencyMapHref, agencyPageDescription, agencyPageH1, agencyPageJsonLd,
-  agencyPageData, agencyPagePath, agencyPageTitle, agencySpanText, agencyStats, bandCounts, formatDataDate, nearbyAgencies, resolveAgencySeo, trimRedundantCity,
-  type AgencyPageRoute, type AgencyPageSummary, bestRoute, modesText, weekendLabel,
+  agencyIntroSentence, introName, agencySpansArea, namesList, agencyBreadcrumbs, agencyDatesText, agencyLeadSentence, agencyMapHref, agencyPageDescription, agencyPageH1, agencyPageJsonLd, hasMiddayService,
+  agencyPageData, agencyPagePath, agencyPageTitle, agencyStats, bandCounts, formatDataDate, nearbyAgencies, resolveAgencySeo, trimRedundantCity,
+  type AgencyPageRoute, type AgencyPageSummary, bestRoute, modesText, listingEndedNotice, listingEndHasPassed,
 } from './agencyPages';
+import { agencyTodayYmd } from './feedAvailability';
 import { agencyPageSummaries, getAgencyPageSummary } from './agencyPagesData';
 
 const r = (name: string, mode: number, midday: number | null, am = midday, pm = midday): AgencyPageRoute => ({ name, longName: `${name} St`, mode, midday, am, pm, evening: null, overnight: null });
@@ -43,23 +44,9 @@ describe('agency page text', () => {
     expect(bestRoute([r('x', 3, 8), r('y', 3, 8)])?.route.name).toBe('x');
   });
 
-  it('writes the modes line and the weekend label', () => {
+  it('writes the modes line', () => {
     expect(modesText([{ label: 'Subway/Metro', routes: 3 }, { label: 'Light rail', routes: 2 }, { label: 'Bus', routes: 209 }])).toBe('3 subway/metro · 2 light rail · 209 bus');
     expect(modesText([])).toBe('');
-    expect(weekendLabel(true, true)).toBe('Runs Sat & Sun');
-    expect(weekendLabel(true, false)).toBe('Runs Saturdays');
-    expect(weekendLabel(false, true)).toBe('Runs Sundays');
-    expect(weekendLabel(false, false)).toBe('Weekdays only');
-    expect(weekendLabel(undefined, undefined)).toBeNull();
-  });
-
-  it('describes the service span in clock hours', () => {
-    expect(agencySpanText({ span: { first: 5, last: 25 } })).toBe('5am to 2am');
-    expect(agencySpanText({ span: { first: 5, last: 28 } })).toBe('Runs 24 hours');
-    expect(agencySpanText({ span: null })).toBeNull();
-    expect(agencySpanShort({ span: { first: 5, last: 28 } })).toBe('24 h');
-    expect(agencySpanShort({ span: { first: 5, last: 25 } })).toBe('5am–2am');
-    expect(agencySpanShort({ span: null })).toBeNull();
   });
 
   it('links to the map with only this agency on and the agency area in view', () => {
@@ -109,6 +96,12 @@ describe('head and structured data', () => {
     expect(ld['@graph'][2].dateModified).toBe('2026-08-27');
     expect(JSON.stringify(ld)).not.toContain('FAQ');
   });
+
+  it('names a statewide place once when the city is the state itself (#1130)', () => {
+    const statewide = { ...TTC, city: 'Colorado', region: 'Colorado', country: 'United States' };
+    const ld = agencyPageJsonLd(statewide, 'https://x/agency/a', 'https://x') as { '@graph': Array<Record<string, unknown>> };
+    expect(ld['@graph'][0].areaServed).toEqual({ '@type': 'Place', name: 'Colorado, United States' });
+  });
 });
 
 describe('committed summary data', () => {
@@ -145,6 +138,31 @@ describe('dates', () => {
   it('says plainly when the timetable has ended', () => {
     expect(agencyDatesText({ lastRefreshedAt: '2026-01-05', validThrough: '20260901' }, '2026-10-13T00:00:00Z'))
       .toBe("Based on the agency's published timetable, not live arrivals. This timetable ended on Sep 1, 2026; the agency hasn't published a newer one yet. Atlas last updated this page Oct 13, 2026.");
+  });
+
+  it('N112: the agency page names the through date and the listing end (CIV-1055)', () => {
+    const dutchess = { lastRefreshedAt: '2026-08-07', validThrough: '20270131', listingEndedOn: '20261028' };
+    // Ryan: "ended is past but ends is upcoming".
+    expect(agencyDatesText(dutchess, '2026-10-27', '20261027'))
+      .toBe("Based on the agency's published timetable, not live arrivals. This timetable covers service until Jan 31, 2027, but most of its routes end Oct 28, 2026. Atlas last updated this page Oct 27, 2026.");
+    expect(agencyDatesText(dutchess, '2026-10-27', '20261028')).toContain('This timetable covers service until Jan 31, 2027, but most of its routes ended Oct 28, 2026.');
+    expect(agencyDatesText(dutchess, '2026-10-27', '20261103')).toContain('but most of its routes ended Oct 28, 2026.');
+    // No through date: N25 as on the cards.
+    expect(agencyDatesText({ ...dutchess, validThrough: null }, '2026-10-27', '20261027'))
+      .toContain("This agency's scheduled service for most routes ends Oct 28, 2026, and they have not released updated data.");
+    expect(agencyDatesText({ ...dutchess, validThrough: null }, '2026-10-27', '20261028')).toContain('for most routes ended Oct 28, 2026,');
+    // An ended timetable says more, so it wins.
+    expect(agencyDatesText({ lastRefreshedAt: '2026-01-05', validThrough: '20260901', listingEndedOn: '20260814' }, '2026-10-13', '20261013'))
+      .toContain('This timetable ended on Sep 1, 2026');
+  });
+
+  it('N25: switches tense on the agency-local listing-end date', () => {
+    expect(listingEndHasPassed('20261028', '20261027')).toBe(false);
+    expect(listingEndHasPassed('20261028', '20261028')).toBe(true);
+    expect(listingEndedNotice('Oct 28, 2026', false)).toBe("This agency's scheduled service for most routes ends Oct 28, 2026, and they have not released updated data.");
+    expect(listingEndedNotice('Oct 28, 2026', true)).toBe("This agency's scheduled service for most routes ended Oct 28, 2026, and they have not released updated data.");
+    // Agency-local: 11 PM Oct 27 in New York is already Oct 28 in UTC, but still "ends".
+    expect(listingEndHasPassed('20261028', agencyTodayYmd({ timezone: 'America/New_York' }, new Date('2026-10-28T03:00:00Z')))).toBe(false);
   });
 
   it('drops a trailing city from the agency name only when the sentence names that place', () => {
@@ -209,3 +227,12 @@ describe('beta-only agencies', () => {
     expect(names).toEqual(BETA_BUILD ? ['metz', 'hsr'] : ['hsr']);
   });
 });
+
+describe('hasMiddayService', () => {
+  it('is true with one route that has a midday cadence, false when none do', () => {
+    expect(hasMiddayService({ routes: [r('1', 3, null), r('2', 3, 20)] })).toBe(true);
+    expect(hasMiddayService({ routes: [r('1', 3, null)] })).toBe(false);
+    expect(hasMiddayService({ routes: [] })).toBe(false);
+  });
+});
+

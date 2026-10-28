@@ -8,7 +8,7 @@
   "feedUrl": "http://api.nextlift.ca/gtfs.zip",
   "region": "Ontario",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-736/latest.zip",
-  "lastFeedExpiry": "20261114",
+  "lastFeedExpiry": "20270220",
   "lastFeedVersion": "1/20260819 15:43:36/20260823 04:00:00",
   "lastRefreshedAt": "2026-08-24",
   "cities": [
@@ -34,5 +34,5 @@
   "timezone": "America/Thunder_Bay",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "http://api.nextlift.ca/gtfs.zip",
-  "lastPeekedExpiry": "20261114"
+  "lastPeekedExpiry": "20270220"
 }

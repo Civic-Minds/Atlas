@@ -14,6 +14,7 @@ import { parseCsv } from '../pipeline/parseGtfs.js';
 import { effectiveFeedExpiry } from '../pipeline/feedFreshness.js';
 import { resolveFeedUrl } from '../pipeline/feedUrl.js';
 import {
+import { agencyTodayYmd } from '../shared/feedAvailability.js';
   buildFeedCandidates,
   classifyExpiredCandidates,
   sha256,
@@ -134,9 +135,10 @@ async function inspectCandidate(candidate: FeedCandidate, today: string): Promis
 
 async function main(): Promise<void> {
   const index = JSON.parse(readFileSync(resolve('public/data/index.json'), 'utf8')) as { agencies: Agency[] };
+  // Expired in each agency's own local date (agencyTodayYmd); `today` is the run date in the report.
   const today = new Date().toISOString().slice(0, 10).replace(/-/g, '');
   const agencies = index.agencies.filter(agency =>
-    !agency.staged && !agency.hiddenInProduction && agency.lastFeedExpiry && agency.lastFeedExpiry < today,
+    !agency.staged && !agency.hiddenInProduction && agency.lastFeedExpiry && agency.lastFeedExpiry < agencyTodayYmd(agency),
   );
   const queue = [...agencies];
   const results: Array<{
@@ -156,12 +158,13 @@ async function main(): Promise<void> {
         agency.mdbFeedUrl,
         agency.feedFallbackUrls,
       );
-      const inspected = await Promise.all(candidates.map(candidate => inspectCandidate(candidate, today)));
+      const agencyToday = agencyTodayYmd(agency);
+      const inspected = await Promise.all(candidates.map(candidate => inspectCandidate(candidate, agencyToday)));
       results.push({
         slug: agency.slug,
         name: agency.name,
         baselineExpiry: agency.lastFeedExpiry,
-        classification: classifyExpiredCandidates(agency.lastFeedExpiry, today, inspected),
+        classification: classifyExpiredCandidates(agency.lastFeedExpiry, agencyToday, inspected),
         candidates: inspected,
       });
       process.stderr.write(`\rAudited ${results.length}/${agencies.length}`);

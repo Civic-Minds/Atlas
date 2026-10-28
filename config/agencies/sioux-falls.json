@@ -7,7 +7,7 @@
     -96.7354
   ],
   "feedUrl": "https://s3.amazonaws.com/etatransit.gtfs/siouxareametro.etaspot.net/gtfs.zip",
-  "lastFeedExpiry": "20271013",
+  "lastFeedExpiry": "20271023",
   "lastFeedVersion": "100",
   "lastRefreshedAt": "2026-10-19",
   "region": "South Dakota",
@@ -46,5 +46,5 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://s3.amazonaws.com/etatransit.gtfs/siouxareametro.etaspot.net/gtfs.zip",
-  "lastPeekedExpiry": "20271013"
+  "lastPeekedExpiry": "20271023"
 }

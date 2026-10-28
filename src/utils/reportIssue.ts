@@ -12,6 +12,20 @@ export function currentAtlasUrl(): string {
   return window.location.href;
 }
 
+/** One line of a report's details: a labelled field ("**Agency:** TTC") or a line as written (a list item, a blank line). */
+export type ReportDetailLine = readonly [label: string, value: string] | string;
+
+/**
+ * Every card's report details in one format (CIV-999): each field on its own line as "**Label:** value",
+ * other lines as written, and the Atlas URL last, so every report ends with the link to what was on screen.
+ */
+export function reportDetails(lines: readonly ReportDetailLine[], url: string = currentAtlasUrl()): string {
+  return [
+    ...lines.map(line => (typeof line === 'string' ? line : `**${line[0]}:** ${line[1]}`)),
+    `**Atlas URL:** ${url}`,
+  ].join('\n');
+}
+
 export function openAtlasFeedbackEmail(subject: string, body: string): void {
   const encodedSubject = encodeURIComponent(subject);
   const fullMailto = `mailto:${ATLAS_FEEDBACK_EMAIL}?subject=${encodedSubject}&body=${encodeURIComponent(body)}`;

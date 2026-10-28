@@ -14,7 +14,7 @@
     -75.391
   ],
   "feedUrl": "https://contenu.sto.ca/GTFS/GTFS.zip",
-  "lastFeedExpiry": "20261213",
+  "lastFeedExpiry": "20261219",
   "lastFeedVersion": null,
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-740/latest.zip",
   "lastRefreshedAt": "2026-10-19",
@@ -51,5 +51,5 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://contenu.sto.ca/GTFS/GTFS.zip",
-  "lastPeekedExpiry": "20261213"
+  "lastPeekedExpiry": "20261219"
 }

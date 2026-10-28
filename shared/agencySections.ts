@@ -17,7 +17,8 @@ export interface AgencySectionEntry {
   fullLine?: unknown;
   fullStopOrder?: unknown;
   fullStopPositions?: unknown;
-  /** The stretch row values (stretchMeta's period and noRegular), main then tails. */
+  /** The stretch row values (stretchMeta's period and noRegular) of the tails. `main` is null in files written
+   * since CIV-937, which keeps the main stretch's values on the route file; older files may still carry it. */
   stretchRows?: { main: { period?: unknown; noRegular?: unknown } | null; tails: Array<{ period?: unknown; noRegular?: unknown }> };
 }
 
@@ -76,9 +77,10 @@ export function extractAgencySections(features: ReadonlyArray<{ geometry?: { typ
         if (m.noRegular !== undefined) { row.noRegular = m.noRegular; delete m.noRegular; }
         return row;
       };
-      const main = split(meta.main);
+      // The main stretch's values stay on the route file: public route cards read them (CIV-937). Only the tails move.
+      const main = null;
       const tails = meta.tails.map(t => split(t) ?? {});
-      if ((main && Object.keys(main).length > 0) || tails.some(t => Object.keys(t).length > 0)) entry.stretchRows = { main, tails };
+      if (tails.some(t => Object.keys(t).length > 0)) entry.stretchRows = { main, tails };
     }
     if (Object.keys(entry).length > 0) sections[key] = entry;
   });

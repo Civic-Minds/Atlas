@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { COMPARE_PANEL_TOP, comparePanelTop, fmtHeadway, getRouteLabel, ROUTE_NAME_ACRONYMS, routeLabelCase, routeLabels, shouldHideNumericRouteShortName, shortenAgencyName, titleCase, vehicleModeCount, vehicleModeWord } from '../format';
+import { stopNameCase, COMPARE_PANEL_TOP, comparePanelTop, fmtHeadway, getRouteLabel, ROUTE_NAME_ACRONYMS, routeLabelCase, routeLabels, shouldHideNumericRouteShortName, titleCase, vehicleModeCount, vehicleModeWord } from '../format';
+import { agencyNames } from '../agencyName';
+
+const shortenAgencyName = (name: string) => agencyNames(name).short;
+// The bracket-aware short name is the row name for every name below (none is past the length rule).
+const agencyBackLinkName = (name: string) => agencyNames(name).name;
 import indexData from '../../../public/data/index.json';
 
 interface IndexAgency {
@@ -8,6 +13,57 @@ interface IndexAgency {
 }
 
 const agencies = (indexData as { agencies: IndexAgency[] }).agencies;
+
+describe('one capitals rule for stop and destination names (CIV-935)', () => {
+  it('keeps real abbreviations in capitals and writes the rest in normal case', () => {
+    expect(titleCase('LBJ / CENTRAL STATION')).toBe('LBJ / Central Station');
+    expect(titleCase('Lbj / Central')).toBe('LBJ / Central');
+    expect(titleCase('DFW AIRPORT STATION')).toBe('DFW Airport Station');
+    expect(titleCase('CBD WEST TRANSFER CENTER')).toBe('CBD West Transfer Center');
+    expect(titleCase('MOODY CENTER')).toBe('Moody Center');
+    expect(titleCase('Alameda & Bob Hope EB')).toBe('Alameda & Bob Hope EB');
+    expect(titleCase('2230 3rd Ave (YMCA)')).toBe('2230 3rd Ave (YMCA)');
+  });
+
+  it('leaves French and Spanish words alone', () => {
+    expect(titleCase('LE HAILLAN ROSTAND')).toBe('Le Haillan Rostand');
+    expect(titleCase('GARE DE DIJON VILLE')).toBe('Gare De Dijon Ville');
+    expect(titleCase('PLACE STANISLAS')).toBe('Place Stanislas');
+    expect(titleCase('LA MINERVA')).toBe('La Minerva');
+  });
+
+  it("cases an all-capitals stop name and leaves a feed's own mixed case alone", () => {
+    expect(stopNameCase('MOODY CENTER')).toBe('Moody Center');
+    expect(stopNameCase('Lower Jarvis St at The Esplanade')).toBe('Lower Jarvis St at The Esplanade');
+  });
+
+  it('keeps route-name-only words out of stop names', () => {
+    expect(titleCase('MAX BROWN BLVD')).toBe('Max Brown Blvd');
+    expect(routeLabelCase('MAX BLUE LINE')).toBe('MAX Blue Line');
+    expect(ROUTE_NAME_ACRONYMS.has('CBD')).toBe(true);
+    expect(ROUTE_NAME_ACRONYMS.has('LBJ')).toBe(true);
+  });
+});
+
+describe('agencyBackLinkName', () => {
+  it('never swaps the name for a bracketed city (#1102)', () => {
+    expect(agencyBackLinkName('Valley Metro (Phoenix)')).toBe('Valley Metro');
+    expect(agencyBackLinkName('Capital Metro (Austin)')).toBe('Capital Metro');
+    expect(agencyBackLinkName('Cascades East Transit (Bend, OR)')).toBe('Cascades East Transit');
+  });
+
+  it('still uses a bracketed brand code, and otherwise matches shortenAgencyName', () => {
+    expect(agencyBackLinkName('Dallas Area Rapid Transit (DART)')).toBe('DART');
+    expect(agencyBackLinkName('Clemson Area Transit (CATbus)')).toBe('CATbus');
+    expect(agencyBackLinkName('Sacramento Regional Transit (SacRT)')).toBe('SacRT');
+    expect(agencyBackLinkName('Los Angeles County Metropolitan Transportation Authority (LA Metro)')).toBe('LA Metro');
+    expect(agencyBackLinkName('Toronto Transit Commission')).toBe('TTC');
+  });
+
+  it('leaves lists on the shortened name', () => {
+    expect(shortenAgencyName('Valley Metro (Phoenix)')).toBe('Phoenix');
+  });
+});
 
 describe('shortenAgencyName', () => {
   // Specific regressions for confirmed substring collisions — a short
@@ -132,8 +188,9 @@ describe('titleCase', () => {
 
 describe('titleCase and accented first letters', () => {
   it('does not split a word after an accented first letter', () => {
-    expect(titleCase('ÎLE-DES-SOEURS')).toBe('Île-Des-Soeurs');
-    expect(titleCase('Île-des-Soeurs')).toBe('Île-Des-Soeurs');
+    // The linking word inside the hyphenated name stays small (CIV-1054).
+    expect(titleCase('ÎLE-DES-SOEURS')).toBe('Île-des-Soeurs');
+    expect(titleCase('Île-des-Soeurs')).toBe('Île-des-Soeurs');
     expect(titleCase('ÉCOLE SECONDAIRE')).toBe('École Secondaire');
   });
 });
@@ -226,5 +283,35 @@ describe('vehicleModeCount', () => {
     expect(vehicleModeCount(1, 'Bus')).toBe('1 bus');
     expect(vehicleModeCount(2, 'Ferry')).toBe('2 ferries');
     expect(vehicleModeCount(0, 'Train')).toBe('0 trains');
+  });
+});
+
+describe('names in capitals with French linking words (CIV-1054)', () => {
+  it('cases STO names whose only small letters are linking words, keeping those words as written', () => {
+    expect(stopNameCase('SPORTHÈQUE')).toBe('Sporthèque');
+    expect(stopNameCase('SAINT-LOUIS/de NANTEL')).toBe('Saint-Louis/de Nantel');
+    expect(stopNameCase('FREEMAN/du TALUS')).toBe('Freeman/du Talus');
+    expect(stopNameCase('des ALLUMETTIÈRES/BROAD')).toBe('des Allumettières/Broad');
+    expect(stopNameCase("du PRADO/de l'ACROPOLE")).toBe("du Prado/de l'Acropole");
+    expect(routeLabelCase("de L'AMÉRIQUE-FRANÇAISE")).toBe("de l'Amérique-Française");
+  });
+
+  it('cases French elisions and hyphenated linking words in names sent in capitals', () => {
+    expect(stopNameCase("JEANNE D'ARC / ST JOSEPH")).toBe("Jeanne d'Arc / St Joseph");
+    expect(stopNameCase('STATION CÔTE-DES-NEIGES')).toBe('Station Côte-des-Neiges');
+    expect(stopNameCase("STATION LUCIEN-L'ALLIER")).toBe("Station Lucien-L'Allier");
+    expect(stopNameCase("L'ACADIE")).toBe("L'Acadie");
+    expect(stopNameCase('SECAUCUS CUL-DE-SAC')).toBe('Secaucus Cul-de-Sac');
+    // D'Arcy is a surname, not "de Arcy"; a feed's own mixed-case "D'" stays as written.
+    expect(stopNameCase("LA VÉRENDRYE / THOMAS D'ARCY MCGEE SCHOOL")).toBe("La Vérendrye / Thomas D'Arcy McGee School");
+    expect(titleCase("Thomas D'Arcy McGee")).toBe("Thomas D'Arcy McGee");
+    expect(titleCase("Rue D'Anjou")).toBe("Rue D'Anjou");
+  });
+
+  it('leaves names that are really mixed case, and English names with small words, as the feed wrote them', () => {
+    expect(stopNameCase('Saint-Joseph/Jean-Proulx')).toBe('Saint-Joseph/Jean-Proulx');
+    expect(stopNameCase('US-9W at CHARLOTTE PL')).toBe('US-9W at CHARLOTTE PL');
+    expect(stopNameCase('Granville-YVR')).toBe('Granville-YVR');
+    expect(routeLabelCase('Kendall/MIT Station')).toBe('Kendall/MIT Station');
   });
 });

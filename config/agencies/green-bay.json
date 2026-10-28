@@ -8,7 +8,7 @@
   ],
   "feedUrl": "https://www.greenbaywi.gov/DocumentCenter/View/12124/Transit-Data-March-2026",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-917/latest.zip",
-  "lastFeedExpiry": "20270410",
+  "lastFeedExpiry": "20270424",
   "lastFeedVersion": null,
   "lastRefreshedAt": "2026-10-19",
   "websiteUrl": "https://greenbaywi.gov/231/Metro-Transit",
@@ -40,5 +40,5 @@
     },
     "checkedAt": "2026-10-19"
   },
-  "lastPeekedExpiry": "20270410"
+  "lastPeekedExpiry": "20270424"
 }

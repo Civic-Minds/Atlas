@@ -3,7 +3,7 @@ import { publishedMapFrames } from './FrequentServicePublishedMapMontage';
 
 export default function FrequentServicePublishedMapCollage() {
   return (
-    <figure className="mt-5 w-full overflow-hidden rounded-[1.5rem] border border-[var(--border-primary)] bg-[#f4f3ef] shadow-sm">
+    <figure className="mt-5 w-full overflow-hidden rounded-[1.5rem] border border-[var(--border-primary)] bg-[#f4f3ef]">
       <div className="grid auto-rows-[6.5rem] grid-cols-2 gap-1 bg-[var(--border-primary)] sm:auto-rows-[8rem] sm:grid-cols-4">
         {publishedMapFrames.map((frame, index) => (
           <OutboundLink

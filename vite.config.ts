@@ -5,6 +5,9 @@ import { existsSync, statSync, createReadStream } from 'fs';
 import { resolve } from 'path';
 import { DEFAULT_BETA_R2_PUBLIC_URL, DEFAULT_R2_PUBLIC_URL } from './shared/config';
 
+/** Modules that import maplibre-gl, pmtiles or deck.gl (CIV-977: kept out of the shared chunk). */
+const MAP_MODULE = /[\\/]src[\\/](components[\\/]Interval[\\/](map[\\/]|MapCanvas)|components[\\/]Live[\\/]RouteMap|lib[\\/](mapStyle|pmtilesRetrySource)|apps[\\/]Interval)/;
+
 // https://vitejs.dev/config/
 // base: '/' for local dev and Vercel, '/Atlas/' for GitHub Pages
 // Dev server only (never `vite build`, so Vercel and CI are unaffected): fail
@@ -214,9 +217,18 @@ export default defineConfig(({ mode, command, isPreview }) => {
           // Map/render libraries change far less often than app code — keeping
           // them in their own file lets returning visitors reuse the cached
           // copy instead of re-downloading it on every deploy.
-          manualChunks(id) {
-            if (id.includes('node_modules/maplibre-gl')) return 'maplibre';
-            if (id.includes('node_modules/@deck.gl')) return 'deck';
+          // CIV-977: every file is a request to Vercel (about 40 on a first visit). Libraries stay in their own long-cached
+          // files; small shared app modules are grouped.
+          codeSplitting: {
+            groups: [
+              { name: 'maplibre', test: /node_modules[\\/]maplibre-gl/, priority: 30 },
+              { name: 'deck', test: /node_modules[\\/]@deck\.gl/, priority: 30 },
+              { name: 'vendor', test: /node_modules/, priority: 20 },
+              // Small modules (under 10 kB each) shared by two or more chunks: one file instead of a dozen 1-2 kB ones.
+              // Bigger shared modules keep their own chunks, so a page never downloads another page's code.
+              // Map code stays out: it imports maplibre, and grouping it would load the map library on every page.
+              { name: 'shared', test: (id: string) => /[\\/](src|shared)[\\/]/.test(id) && !MAP_MODULE.test(id), minShareCount: 3, maxModuleSize: 10000, priority: 10 },
+            ],
           },
         },
       },

@@ -15,7 +15,7 @@
   ],
   "feedUrl": "https://gtfs.gptd.cadavl.com/GPTD/GTFS/GTFS_GPTD.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2642/latest.zip",
-  "lastFeedExpiry": "20261118",
+  "lastFeedExpiry": "20261125",
   "lastFeedVersion": null,
   "lastRefreshedAt": "2026-10-19",
   "cities": [
@@ -45,5 +45,5 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://gtfs.gptd.cadavl.com/GPTD/GTFS/GTFS_GPTD.zip",
-  "lastPeekedExpiry": "20261118"
+  "lastPeekedExpiry": "20261125"
 }

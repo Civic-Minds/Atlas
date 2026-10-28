@@ -3,11 +3,13 @@ import { PANEL_SECTION_HEAD, LIST_ROW_PRIMARY, LIST_ROW_DIM, SELECTION_ACTIVE, S
 import type { AgencySearchGroup } from '../../utils/agencySearch';
 import type { RouteSearchResult, StopSearchResult } from '../../utils/searchResults';
 import RouteListRow from '../RouteListRow';
-import { routeRowLabels, routeRowRight } from './SearchSuggestionsPanel';
-import { splitRouteKey } from '../../utils/routeKey';
-import { agencyDisplayParts, shortenAgencyName, titleCase } from '../../utils/format';
+import AgencyName from '../ui/AgencyName';
+import { routeRowRight } from './SearchSuggestionsPanel';
+import { stopNameCase } from '../../utils/format';
+import { agencyNames } from '../../utils/agencyName';
 import type { RouteListDisplay } from '../../utils/effectiveHeadway';
 import ListRow from '../ui/ListRow';
+import PanelEmpty from '../ui/PanelEmpty';
 import type { AreaSearchResult } from '../../../shared/areaSearch';
 import { plural } from '../../../shared/overflowText';
 
@@ -65,6 +67,8 @@ interface SearchResultsListProps {
   onRouteHover?: (key: string | null) => void;
   hasMoreResults?: boolean;
   onShowMoreResults?: () => void;
+  /** Index results for agencies not loaded are still coming: hold "No matches found." until they are in. */
+  searchPending?: boolean;
 }
 
 export const SearchResultsList: React.FC<SearchResultsListProps> = ({
@@ -94,6 +98,7 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({
   onRouteHover,
   hasMoreResults = false,
   onShowMoreResults,
+  searchPending = false,
 }) => {
   const areaBlock = areaResults.length > 0 && onSelectArea ? (
     <SearchSplitList
@@ -128,22 +133,22 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({
       elsewhere={agencySections.elsewhere}
       itemKey={(g: AgencySearchGroup) => g.key}
       renderItem={(g: AgencySearchGroup) => {
-        const { primary, secondary } = agencyDisplayParts(g.name, g.cities, g.displayArea);
+        const { primary, secondary } = agencyNames({ name: g.name, cities: g.cities, displayArea: g.displayArea }).list;
+        // "Agency · place", as every agency list writes it (CIV-971).
         return (
-          <RouteListRow
-            shortName={primary}
+          <ListRow
             variant="spaced"
             onClick={() => {
               setSelectedAgencySlug?.(g.slug);
               setQuery('');
               setSearchFocused?.(false);
             }}
-            right={secondary && (
-              <span className={`${LIST_ROW_DIM} shrink-0 ml-2 text-right`}>
-                {secondary}
-              </span>
-            )}
-          />
+          >
+            {/* One line: a long place ends in "…" and the full name shows on hover. */}
+            <p className={`${LIST_ROW_PRIMARY} truncate min-w-0 text-left`} title={g.name}>
+              <AgencyName primary={primary} secondary={secondary} />
+            </p>
+          </ListRow>
         );
       }}
     />
@@ -156,7 +161,7 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({
       elsewhere={routeSections.elsewhere}
       itemKey={(r: RouteSearchResult) => r.key}
       renderItem={(r: RouteSearchResult) => {
-        const labels = routeRowLabels({ shortName: r.routeShortName ?? '', longName: r.routeLongName, routeType: r.routeType, agencySlug: splitRouteKey(r.key).agencySlug, agencyName: r.agencyName });
+        const labels = { shortName: r.label.primary, name: r.label.secondary };
         const name = r.variantCount && r.variantCount > 1
           ? `${labels.name ? `${labels.name} · ` : ''}${r.variantCount} variants`
           : labels.name;
@@ -192,7 +197,7 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({
       elsewhere={stopSections.elsewhere}
       itemKey={(s: StopSearchResult) => s.key}
       renderItem={(s: StopSearchResult) => {
-        const name = `${titleCase(s.stopName)}${s.direction ? ` — ${s.direction}` : ''}`;
+        const name = `${stopNameCase(s.stopName)}${s.direction ? ` — ${s.direction}` : ''}`;
         return (
           <ListRow
             variant="spaced"
@@ -211,12 +216,13 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({
             </div>
             <div className="flex flex-col items-end text-right ml-2 shrink-0 min-w-0 max-w-[34%]">
               {s.routes.length > 0 && (
-                <span className="text-xs font-bold text-[var(--text-secondary)] truncate max-w-full">
+                // The routes and agency in the route rows' right-hand style (CIV-971).
+                <span className={`${LIST_ROW_DIM} truncate max-w-full`}>
                   {s.routes.length === 1 ? `Route ${s.routes[0]}` : `Routes ${s.routes.join(', ')}`}
                 </span>
               )}
-              <span className="text-xs font-black text-[var(--text-dim)] truncate max-w-full">
-                {shortenAgencyName(s.agencyName || '')}
+              <span className={`${LIST_ROW_DIM} truncate max-w-full`}>
+                {agencyNames(s.agencyName || '').name}
               </span>
             </div>
           </ListRow>
@@ -234,9 +240,7 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({
   return (
     <div className="-mx-4 mb-4 flex flex-col gap-5">
       {noResults ? (
-        <div className="px-4 text-xs font-bold text-[var(--text-dim)] py-2">
-          No matches found.
-        </div>
+        searchPending ? null : <PanelEmpty>No matches found.</PanelEmpty>
       ) : routesFirst ? (
         <>
           {areaBlock}

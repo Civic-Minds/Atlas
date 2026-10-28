@@ -1,8 +1,18 @@
 import { useEffect, useRef } from 'react';
 import * as maplibregl from 'maplibre-gl';
 import { useHistoryMapOverlay } from '../../../context/HistoryMapOverlay';
-import { isDrawableLineCoordinates, lineCoordinates } from '../../../../shared/routeGeometry';
+import { isDrawableLineCoordinates, lineCoordinates, type LonLat } from '../../../../shared/routeGeometry';
+import { fitTargetForPoints } from '../../../utils/routeFitTarget';
 import { routeFramePadding } from './routeFraming';
+
+/**
+ * Fits the camera to History's route lines, beside the card on the right. A single point is left
+ * alone: these fits can run from a moveend handler, and a fly there would start another move (#478).
+ */
+function fitHistoryLines(map: maplibregl.Map, points: ReadonlyArray<LonLat>, maxZoom: number) {
+  const target = fitTargetForPoints(points);
+  if (target?.kind === 'bounds') map.fitBounds(target.bounds, { padding: routeFramePadding(map, 'right'), maxZoom });
+}
 
 /** History map layers: route shape, time-scrubber routes, and camera fit. */
 export function useHistoryLayer(
@@ -58,29 +68,9 @@ export function useHistoryLayer(
     const ownShapes = (historyOverlay.yearRoutes ?? []).filter(r => isDrawableLineCoordinates(r.coordinates));
     const hasHistoricalRouteGeometry = ownShapes.length > 0;
     if (routeGeometry && routeGeometry.length > 1) {
-      const coords = routeGeometry;
-      let minLng = 180, maxLng = -180, minLat = 90, maxLat = -90;
-      coords.forEach((coord) => {
-        const [lng, lat] = coord;
-        if (lng < minLng) minLng = lng; if (lng > maxLng) maxLng = lng;
-        if (lat < minLat) minLat = lat; if (lat > maxLat) maxLat = lat;
-      });
-      if (minLng < maxLng) {
-        map.fitBounds([[minLng, minLat], [maxLng, maxLat]], { padding: routeFramePadding(map, 'right'), maxZoom: 14 });
-      }
+      fitHistoryLines(map, routeGeometry as LonLat[], 14);
     } else if (hasHistoricalRouteGeometry) {
-      let minLng = 180, maxLng = -180, minLat = 90, maxLat = -90;
-      for (const route of ownShapes) {
-        for (const [lng, lat] of route.coordinates!) {
-          minLng = Math.min(minLng, lng);
-          maxLng = Math.max(maxLng, lng);
-          minLat = Math.min(minLat, lat);
-          maxLat = Math.max(maxLat, lat);
-        }
-      }
-      if (minLng < maxLng && minLat < maxLat) {
-        map.fitBounds([[minLng, minLat], [maxLng, maxLat]], { padding: routeFramePadding(map, 'right'), maxZoom: 11 });
-      }
+      fitHistoryLines(map, ownShapes.flatMap(route => route.coordinates! as LonLat[]), 11);
     }
 
     if (historyOverlay.agencyCenter) {
@@ -94,18 +84,7 @@ export function useHistoryLayer(
           const features = map.queryRenderedFeatures(undefined, {
             layers: ['overview-routes-layer', 'routes-layer', 'local-routes-layer'],
           }).filter(feature => String(feature.properties?.agencySlug ?? '') === historyOverlay.slug);
-          let minLng = 180, maxLng = -180, minLat = 90, maxLat = -90;
-          for (const feature of features) {
-            for (const [lng, lat] of lineCoordinates(feature.geometry)) {
-              minLng = Math.min(minLng, lng);
-              maxLng = Math.max(maxLng, lng);
-              minLat = Math.min(minLat, lat);
-              maxLat = Math.max(maxLat, lat);
-            }
-          }
-          if (minLng < maxLng && minLat < maxLat) {
-            map.fitBounds([[minLng, minLat], [maxLng, maxLat]], { padding: routeFramePadding(map, 'right'), maxZoom: 11 });
-          }
+          fitHistoryLines(map, features.flatMap(feature => lineCoordinates(feature.geometry)), 11);
         };
         tryZoomHandlerRef.current = fitAgencyRoutes;
         map.once('moveend', fitAgencyRoutes);
@@ -122,16 +101,7 @@ export function useHistoryLayer(
           const features = map.queryRenderedFeatures(undefined, { layers: ['routes-layer'] })
             .filter((f: maplibregl.MapGeoJSONFeature) => String(f.properties?.routeShortName ?? '') === rsn);
           if (features.length === 0) return;
-          let minLng = 180, maxLng = -180, minLat = 90, maxLat = -90;
-          features.forEach(f => {
-            lineCoordinates(f.geometry).forEach(([lng, lat]: [number, number]) => {
-              if (lng < minLng) minLng = lng; if (lng > maxLng) maxLng = lng;
-              if (lat < minLat) minLat = lat; if (lat > maxLat) maxLat = lat;
-            });
-          });
-          if (minLng < maxLng) {
-            map.fitBounds([[minLng, minLat], [maxLng, maxLat]], { padding: routeFramePadding(map, 'right'), maxZoom: 14 });
-          }
+          fitHistoryLines(map, features.flatMap(f => lineCoordinates(f.geometry)), 14);
         };
         tryZoomHandlerRef.current = tryZoom;
         map.on('moveend', tryZoom);

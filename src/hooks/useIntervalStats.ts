@@ -4,8 +4,8 @@ import { matchesRouteQuery, searchRouteResults, searchStopResults, type StopSear
 import { HEADWAY_TIERS, getTierColor } from '../utils/colors';
 import { isLivePollingRoute } from '../utils/livePolling';
 import { TIME_PERIODS, PERIOD_LABELS as PERIOD_LABELS_BY_KEY, PERIOD_KEYS, type PeriodKey } from '../../shared/config';
-import { buildModeFilterClause, buildTileHeadwayFilterClause, tileLimitedServiceExpr, tileRouteKeyExpr } from '../../shared/tileFilterExprs';
-import { effectiveMode, ON_DEMAND_MODE } from '../../shared/modes';
+import { buildRouteTileFilter } from '../../shared/routeTileFilter';
+import { effectiveMode } from '../../shared/modes';
 import { featurePassesHeadwayFilter, headwayFilterApplies } from '../../shared/routeHeadwayFilter';
 import { collectStopHubSiblings } from '../utils/stopHub';
 import { isHiddenByIrregularFilter, isLimitedService } from '../../shared/irregularRoutes';
@@ -49,7 +49,10 @@ export const routeKey = (p: ShapeProperties) => buildRouteKey(
 
 /** Sidebar hover target for branch/core highlight on the map. */
 export interface HoveredBranch {
-  directionId: number;
+  /** The route a stop card row belongs to (CIV-918). The route card's rows leave it out: theirs is the selected route. */
+  routeKey?: string;
+  /** Absent for a stop card's route line or Nearby routes row (CIV-1053): every direction of routeKey. */
+  directionId?: number;
   headsign?: string;
   headsigns?: string[];
   /**
@@ -137,14 +140,15 @@ export function passesRouteFilter(
   // bidirectional routes are acceptable for accuracy.
 
   if (filters.modes.size > 0) {
-    const routeModes = [...filters.modes].filter(mode => mode !== ON_DEMAND_MODE);
-    if (routeModes.length === 0) return false;
+    // On-demand matches booked routes (CIV-1006) as well as the zones.
+    const routeModes = [...filters.modes];
     const modeSlug = (p as ShapeProperties).agencySlug ?? agencySlug;
     if (!routeModes.includes(effectiveMode({
       routeType: p.routeType,
       routeLongName: p.routeLongName,
       routeShortName: p.routeShortName,
       agencySlug: modeSlug,
+      bookingRequired: (p as ShapeProperties).bookingRequired,
     }))) return false;
   }
   if (p.day !== undefined && p.day !== filters.day) return false;
@@ -417,69 +421,16 @@ export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters)
 
   const searchMatches = (searchMatchResults?.length ?? 0) + (searchStopMatchResults?.length ?? 0) || null;
 
-  // MapLibre tile filter derived from the same inputs as passesRouteFilter.
-  // MapCanvas combines this with map-state-specific clauses (zoom gate, search).
-  const tileFilter = useMemo((): any => {
-    const clauses: any[] = [];
-
-    // Agency allowlist
-    if (agencies.size === 0) {
-      return ['==', ['get', 'agencySlug'], '']; // hide everything
-    }
-    clauses.push(['in', ['get', 'agencySlug'], ['literal', Array.from(agencies)]]);
-
-    // Routes layer features always carry day + directionId (corridors are a separate layer).
-    clauses.push(['==', ['get', 'day'], day]);
-
-    // Direction 0 by default. When hovering an inbound branch on the selected route,
-    // show that direction for the selected route only; all others stay dir 0.
-    if (hoveredBranch && selectedRoute) {
-      const routeKeyExpr: any = tileRouteKeyExpr();
-      clauses.push(['case',
-        ['==', routeKeyExpr, selectedRoute],
-        ['==', ['get', 'directionId'], hoveredBranch.directionId],
-        ['==', ['get', 'directionId'], 0],
-      ]);
-    } else {
-      // Render both directions so that a route with good freq in one dir (e.g. RGRTA)
-      // is visible when the filter matches that dir's headway.
-      // (Previously forced dir 0 only.)
-    }
-
-    // Span filter -- also hides a route whose *other* direction has no sustained pattern at
-    // all (#318), not just features that are themselves span-tier.
-    if (hideSpan) {
-      clauses.push(['all',
-        ['!=', ['coalesce', ['get', 'serviceClass'], ['get', 'tier'], ''], 'irregular'],
-        ['!=', ['coalesce', ['get', 'tier'], ''], 'span'],
-        ['!=', ['coalesce', ['get', 'routeHasIrregularDirection'], false], true],
-      ]);
-    }
-    if (hideLimitedService) {
-      clauses.push(['!', tileLimitedServiceExpr()]);
-    }
-
-    // Mode (virtual LRT rules need agencySlug + routeLongName on features)
-    const modeClause = buildModeFilterClause(modes);
-    if (modeClause) clauses.push(modeClause);
-
-    // Headway pill — the same clause passesRouteFilter evaluates in memory (routeHeadwayFilter).
-    // A period filter must still exclude routes with no service when Frequency is set
-    // to All. Use a threshold just below the no-service sentinel so real headways pass
-    // without turning the period filter into an all-day filter.
-    if (headwayFilterApplies(period, maxHeadway)) {
-      // Frequency = All means any service in the selected period, including one-direction
-      // or irregular service. The strict worst-direction coverage metric is reserved for
-      // actual frequency thresholds; using it here hides routes such as Nashville 87 PM peak.
-      // Do not OR the selected route into the tile filter: an out-of-period
-      // selection must stay filtered off the map (period-eligibility honesty).
-      // MapLibre 6-safe headway/period predicate lives in buildTileHeadwayFilterClause.
-      clauses.push(buildTileHeadwayFilterClause(period, maxHeadway));
-    }
-
-    return clauses.length === 1 ? clauses[0] : ['all', ...clauses];
+  // The map's route filter: the tile side of passesRouteFilter, from one builder (CIV-1011 #8).
+  const tileFilter = useMemo((): any => buildRouteTileFilter({
+    agencies, day, modes, period, maxHeadway, hideSpan, hideLimitedService,
+    // Hovering an inbound branch on the selected route shows that direction for it; all others stay direction 0.
+    // A stop card row does the same for its own route (CIV-1053); its route line keeps both directions.
+    hoveredDirection: hoveredBranch?.directionId != null && (hoveredBranch.routeKey ?? selectedRoute)
+      ? { routeKey: (hoveredBranch.routeKey ?? selectedRoute)!, directionId: hoveredBranch.directionId }
+      : null,
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [agencies, day, hideLimitedService, hideSpan, modes, maxHeadway, period, hoveredBranch, selectedRoute]);
+  }), [agencies, day, hideLimitedService, hideSpan, modes, maxHeadway, period, hoveredBranch, selectedRoute]);
 
   return { stats, searchMatches, searchMatchResults, searchStopMatchResults, matchesQuery, q, filteredLayers, mapFilteredLayers, routesForStop, tileFilter };
 }

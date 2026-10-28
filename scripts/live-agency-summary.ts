@@ -14,7 +14,7 @@ import { resolve } from 'path';
 import { LIVE_ANALYSIS_ROUTES } from '../shared/livePollingConfig';
 import { LIVE_DASHBOARD_HOLD, LIVE_DASHBOARD_UNCERTAIN_START, qualityHold, type LiveV3 } from '../shared/liveDashboard';
 import { agencySummary, type AgencyRouteInput } from '../shared/liveAgency';
-import { getRouteLabel, routeLabelParts } from '../shared/cleanHeadsign';
+import { getRouteLabel, routeLabelParts } from '../shared/routeDisplay';
 import { titleCase } from '../src/utils/format';
 
 /** Quote-aware CSV (stop and route names hold commas). */

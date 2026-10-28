@@ -96,7 +96,25 @@ describe('release diff gate: red flags', () => {
     const next = summarizeArtifact(fixture('rtl-new.json'), null);
     const flags = evaluateAgency({ slug: 'rtl', live, next, allowMissingLive: true }, [], TODAY);
     expect(names(flags)).toEqual(['rtl:headway-shift:red']);
-    expect(flags[0].message).toMatch(/7 of 12 routes/);
+    // Read with the map filter's rule since CIV-117 item 2: 6 routes' filter value halves (the weekday medians moved on 7).
+    expect(flags[0].message).toMatch(/6 of 12 routes/);
+  });
+
+  it('flags a weekend-only shift that weekday medians never saw (CIV-117 item 2)', () => {
+    const line = (routeId: string, day: string, headway: number) => ({
+      type: 'Feature', geometry: { type: 'LineString', coordinates: [[0, 0], [0.01, 0.01]] },
+      properties: { routeId, routeShortName: routeId, day, directionId: 0, headway, tier: '15' },
+    });
+    const artifact = (saturday: number) => JSON.stringify({ type: 'FeatureCollection', atlasSchemaVersion: 2, features: [
+      ...['1', '2', '3', '4', '5', '6'].map(id => line(id, 'Weekday', 15)),
+      ...['1', '2', '3', '4', '5', '6'].map(id => line(id, 'Saturday', saturday)),
+    ] });
+    const live = summarizeArtifact(artifact(15), null);
+    const next = summarizeArtifact(artifact(30), null);
+    expect(live.weekdayHeadways).toEqual(next.weekdayHeadways);
+    const flags = evaluateAgency({ slug: 'x', live, next, allowMissingLive: true }, [], TODAY);
+    expect(names(flags)).toEqual(['x:headway-shift:red']);
+    expect(flags[0].message).toMatch(/6 of 6 routes.*Saturday all 15->30 min/);
   });
 
   it('flags the TTC Oct 12 holiday case: weekday headways halve on most routes, 506 included (#658)', () => {

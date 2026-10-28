@@ -37,7 +37,7 @@ import type { AgencyPageIdentity, AgencyPageRoute, AgencyPageSummary, AgencyPage
 import { agencyShortLabel, trimRedundantCity } from '../shared/agencyPages';
 import { computeConnections, extractStops, type AgencyStops } from './agency-connections';
 import { countryForRegion } from '../shared/regionCountry';
-import { agencyDisplayParts } from '../src/utils/format';
+import { agencyNames } from '../src/utils/agencyName';
 import { compareRouteNumber } from '../shared/sortCompare';
 import { areasForStops, type AreaBoundaries } from '../shared/areaBoundaries';
 
@@ -49,7 +49,7 @@ const BOUNDARIES = 'shared/data/area-boundaries.json';
 const base = (process.env.R2_PUBLIC_URL || DEFAULT_R2_PUBLIC_URL).replace(/\/$/, '');
 const only = new Set(process.argv.slice(2).filter(arg => !arg.startsWith('--')));
 
-type CatalogAgency = AgencyPageIdentity & { lastRefreshedAt?: string | null; lastFeedExpiry?: string | null; displayArea?: string };
+type CatalogAgency = AgencyPageIdentity & { lastRefreshedAt?: string | null; lastFeedExpiry?: string | null; listingEndedOn?: string | null; displayArea?: string };
 type Catalog = { agencies: CatalogAgency[] };
 type Feature = { geometry: { type: string }; properties: Record<string, unknown> };
 
@@ -146,7 +146,7 @@ export function summarize(
     routes.set(key, {
       name: prev?.name ?? (shortName || longName || String(p.routeId ?? '')),
       longName: prev?.longName ?? longName,
-      mode: prev?.mode ?? effectiveMode({ routeType: p.routeType as number, routeLongName: longName, routeShortName: shortName, agencySlug: slug }),
+      mode: prev?.mode ?? effectiveMode({ routeType: p.routeType as number, routeLongName: longName, routeShortName: shortName, agencySlug: slug, bookingRequired: p.bookingRequired === true }),
       midday: null, am: null, pm: null, evening: null, overnight: null,
     });
     (rows.get(key) ?? rows.set(key, []).get(key)!).push(p as unknown as ShapeProperties);
@@ -221,7 +221,7 @@ export function primaryCity(a: { displayArea?: string; cities?: string[]; region
  *   Transit"), since the first city is then often just where the stops happen to be densest.
  */
 export function displayNameFor(a: CatalogAgency & { shortName?: string; labelPlace?: string }): string {
-  const { primary, secondary } = agencyDisplayParts(a.name, a.cities, a.displayArea);
+  const { primary, secondary } = agencyNames({ name: a.name, cities: a.cities, displayArea: a.displayArea }).card;
   const base = a.shortName ?? primary;
   if (a.labelPlace !== undefined) return trimRedundantCity(a.labelPlace ? `${base} (${a.labelPlace})` : base);
   if (a.shortName) return trimRedundantCity(`${a.shortName} (${primaryCity(a)})`);
@@ -246,6 +246,7 @@ function identityFor(a: CatalogAgency) {
     websiteUrl: a.websiteUrl,
     ...(a.betaOnly ? { betaOnly: true as const } : {}),
     validThrough: a.lastFeedExpiry ?? null,
+    ...(a.listingEndedOn ? { listingEndedOn: a.listingEndedOn } : {}),
   };
 }
 
@@ -257,7 +258,8 @@ function writeAtomic(file: string, contents: string): void {
 
 function writeOutputs(out: AgencyPageSummaries): void {
   writeAtomic(OUT, JSON.stringify(out) + '\n');
-  writeAtomic(SLUGS_OUT, JSON.stringify(out.agencies.filter(a => a.routes.some(r => r.midday != null)).map(a => a.slug)) + '\n');
+  // Every agency gets a page, including ones with no regular midday service (CIV-965).
+  writeAtomic(SLUGS_OUT, JSON.stringify(out.agencies.map(a => a.slug)) + '\n');
 }
 
 async function main() {

@@ -38,6 +38,9 @@ describe('sectionRuns', () => {
     // Drop-off-only stops (#879) take the neighbour's grade at either end, however many in a row.
     expect(sectionRuns([null, '10', '10', '10'], '10', [], [true, false, false, false])).toEqual([]);
     expect(sectionRuns([null, null, '10', '10'], '10', [], [true, true, false, false])).toEqual([]);
+    // CIV-224: a drop-off-only stop's arrival value never sets the section's headway.
+    expect(sectionRuns(['20', null, '20', '10'], '10', [20, 45, 18, 8], [false, true, false, false]))
+      .toEqual([{ from: 0, to: 2, tier: '20', headway: 20 }]);
     expect(sectionRuns(['10', '10', null, null], '10', [], [false, false, true, true])).toEqual([]);
     // A drop-off-only stop beside a graded run inside the line joins the worse neighbour, as any interior stop does.
     expect(sectionRuns(['10', null, '20', '20'], '10', [], [false, true, false, false])).toEqual([{ from: 1, to: 3, tier: '20', headway: null }]);

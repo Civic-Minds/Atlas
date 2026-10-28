@@ -1,13 +1,67 @@
 import * as maplibregl from 'maplibre-gl';
-import { getHeadwayTiers, buildDefaultRouteLineOpacityExpression, type ColorVisionMode } from '../../../utils/colors';
+import { getHeadwayTiers, getTierColor, buildDefaultRouteLineOpacityExpression, type ColorVisionMode } from '../../../utils/colors';
 import type { TimePeriod } from '../../../hooks/useIntervalStats';
 import { tileEffectiveHeadwayExpr, tileRouteKeyExpr } from '../../../../shared/tileFilterExprs';
 import { splitRouteKey } from '../../../utils/routeKey';
 import { buildPartialMatchFilterExpression, type computeFrequencySegmentOverlay } from '../../../utils/frequencySegments';
+import { buildFocusedRoutePaint } from '../../../utils/routeFocus';
 
 /** Base route line width by zoom, shared by the regular map and the Live context lines. */
 export const ROUTE_LINE_WIDTH_STOPS = [8, 1.5, 11, 2, 14, 2.5, 17, 3.5] as const;
 export const ROUTE_LINE_WIDTH_BY_ZOOM = ['interpolate', ['linear'], ['zoom'], ...ROUTE_LINE_WIDTH_STOPS] as const;
+
+/** Night Service overlay line width by zoom (no route selected). */
+export const NIGHT_SERVICE_WIDTH_BY_ZOOM = ['interpolate', ['linear'], ['zoom'], 8, 2, 11, 2.5, 14, 3.2, 17, 4.5] as const;
+
+/** Frequent Service overlay line width by zoom: the every-15 band drawn wider than the every-30 band. */
+export const FREQUENT_SERVICE_WIDTH_BY_ZOOM = ['interpolate', ['linear'], ['zoom'],
+  8, ['match', ['get', 'frequentServiceBand'], '15', 3.2, 2.0],
+  11, ['match', ['get', 'frequentServiceBand'], '15', 3.8, 2.5],
+  14, ['match', ['get', 'frequentServiceBand'], '15', 4.6, 3.2],
+  17, ['match', ['get', 'frequentServiceBand'], '15', 6.0, 4.5],
+] as const;
+
+/** Frequent Service overlay line colour: the every-15 band and the every-30 band in their tier colours. */
+export function frequentServiceColorExpression(mode: ColorVisionMode): unknown[] {
+  return ['match', ['get', 'frequentServiceBand'], '15', getTierColor('15', mode), getTierColor('30', mode)];
+}
+
+/** Opacity of a research overlay's lines when no route is selected. */
+export const OVERLAY_ROUTE_OPACITY = 0.9;
+
+/** The research views' own route overlays, with each one's line width when no route is selected. */
+export const RESEARCH_OVERLAY_LAYERS = [
+  { id: 'night-service-routes-layer', view: 'night', width: NIGHT_SERVICE_WIDTH_BY_ZOOM },
+  { id: 'frequent-service-routes-layer', view: 'frequent', width: FREQUENT_SERVICE_WIDTH_BY_ZOOM },
+] as const;
+
+/**
+ * Paint for a research overlay layer (Night, Frequent Service). With a route selected in that view the
+ * other lines fade behind it with the same shared focus paint as the main map's route layers;
+ * otherwise the layer's own default opacity and width.
+ */
+export function researchOverlayPaint(defaultWidth: unknown, selectedRoute: string | null): { opacity: unknown; width: unknown } {
+  if (!selectedRoute) return { opacity: OVERLAY_ROUTE_OPACITY, width: defaultWidth };
+  const focused = buildFocusedRoutePaint(routeKeyMatchExpression(selectedRoute));
+  return { opacity: focused.opacity, width: focusedOverlayWidth(defaultWidth, focused.width) };
+}
+
+/**
+ * The overlay's width with a route selected: the shared focus case at every zoom stop, except the selected
+ * line never draws thinner than it did unselected (the overlays' own widths pass the shared 3.5 at street
+ * zoom, so a flat 3.5 would thin the selection). A zoom expression must stay the top-level interpolate,
+ * so the case goes inside each stop.
+ */
+function focusedOverlayWidth(defaultWidth: unknown, focusedWidth: unknown): unknown {
+  const [, match, selectedWidth, fadedWidth] = focusedWidth as [string, unknown, number, number];
+  if (!Array.isArray(defaultWidth) || defaultWidth[0] !== 'interpolate') return focusedWidth;
+  const [op, curve, input, ...stops] = defaultWidth as unknown[];
+  const out: unknown[] = [op, curve, input];
+  for (let i = 0; i < stops.length; i += 2) {
+    out.push(stops[i], ['case', match, ['max', selectedWidth, stops[i + 1]], fadedWidth]);
+  }
+  return out;
+}
 
 type PartialMatches = ReturnType<typeof computeFrequencySegmentOverlay>['partialMatches'];
 

@@ -2,13 +2,14 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import { MapContextPanel } from '../MapContextPanel';
 import type { MapContextAgency } from '../../../utils/mapContext';
+import { routeLabels } from '../../../utils/format';
 
 function agency(slug: string, name: string, shortNames: string[]): MapContextAgency {
   return {
     slug,
     name,
     routeCount: shortNames.length,
-    routes: shortNames.map(shortName => ({ key: `${slug}:${shortName}`, agencySlug: slug, agencyName: name, shortName, longName: `${name} ${shortName}` })),
+    routes: shortNames.map(shortName => ({ key: `${slug}:${shortName}`, agencySlug: slug, agencyName: name, shortName, longName: `${name} ${shortName}`, label: routeLabels({ shortName, longName: `${name} ${shortName}` }) })),
   };
 }
 

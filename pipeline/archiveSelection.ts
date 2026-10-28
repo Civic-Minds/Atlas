@@ -131,8 +131,15 @@ export interface FeedDates {
   calendarOnlyEnd?: string | null;
 }
 
-/** Read the first and latest advertised service dates and feed_version from a GTFS zip. */
-export async function peekFeedDates(buf: Buffer): Promise<FeedDates> {
+/**
+ * Read the first and latest advertised service dates and feed_version from a GTFS zip.
+ *
+ * With `excludeRouteShortNames` (the agency's config), the calendar dates count only services
+ * that a kept route's trips use, as the processed output does (#1140, CIV-829): an excluded route
+ * running past the rest kept Snowmass "current" to Dec 29 while its kept route ended Nov 25.
+ * feed_info's end date is feed-wide and stays as published.
+ */
+export async function peekFeedDates(buf: Buffer, excludeRouteShortNames?: readonly string[]): Promise<FeedDates> {
   try {
     const zip = await JSZip.loadAsync(buf);
     const findEntry = (name: string) => zip.file(name) ?? zip.file(
@@ -144,8 +151,17 @@ export async function peekFeedDates(buf: Buffer): Promise<FeedDates> {
       return parseCsv<Record<string, string>>(await entry.async('text'));
     };
     const feedInfo = (await readRows('feed_info.txt'))[0] ?? {};
-    const calendar = await readRows('calendar.txt');
-    const calendarDates = await readRows('calendar_dates.txt');
+    let calendar = await readRows('calendar.txt');
+    let calendarDates = await readRows('calendar_dates.txt');
+    if (excludeRouteShortNames?.length) {
+      const excluded = new Set(excludeRouteShortNames);
+      const excludedRouteIds = new Set((await readRows('routes.txt')).filter(r => excluded.has(r.route_short_name ?? '')).map(r => r.route_id));
+      if (excludedRouteIds.size > 0) {
+        const keptServices = new Set((await readRows('trips.txt')).filter(t => !excludedRouteIds.has(t.route_id)).map(t => t.service_id));
+        calendar = calendar.filter(row => keptServices.has(row.service_id));
+        calendarDates = calendarDates.filter(row => keptServices.has(row.service_id));
+      }
+    }
     return {
       feedStart: effectiveFeedStart({
         feedInfoStart: feedInfo.feed_start_date,
@@ -170,12 +186,30 @@ export async function peekFeedDates(buf: Buffer): Promise<FeedDates> {
 }
 
 /**
+ * A one-off approval to rebuild an agency from its last official feed after that feed has ended
+ * (`expiredFeedPin` in config/agencies/<slug>.json), so the map shows its last real timetable with
+ * the expired notice instead of an older file (Rockford, #1036: Ryan 2026-10-27). It holds only for
+ * the exact feed_version and expiry approved: once the agency publishes another feed, the pin no
+ * longer matches and the normal rules apply.
+ */
+export interface ExpiredFeedPin {
+  feedVersion: string;
+  feedExpiry: string;
+}
+
+/** Whether a source zip is the exact feed an expiredFeedPin approves. */
+export function matchesExpiredFeedPin(pin: ExpiredFeedPin | null | undefined, feed: { feedVersion: string | null; feedExpiry: string | null }): boolean {
+  return !!pin && feed.feedVersion === pin.feedVersion && feed.feedExpiry === pin.feedExpiry;
+}
+
+/**
  * Refuse a source zip whose service dates are unknown, already over, or older
  * than the feed the live data was built from. Returns a reason, or null if OK.
+ * A zip matching an expiredFeedPin may have ended; the other checks still apply.
  */
-export function feedDateRefusal(feedExpiry: string | null, liveFeedExpiry: string | null | undefined, todayYmd: string): string | null {
+export function feedDateRefusal(feedExpiry: string | null, liveFeedExpiry: string | null | undefined, todayYmd: string, pinnedExpiry?: string | null): string | null {
   if (!feedExpiry) return 'source zip has no service dates, so it cannot be shown to be current';
-  if (feedExpiry < todayYmd) return `source zip service ended ${feedExpiry}, before today (${todayYmd})`;
+  if (feedExpiry < todayYmd && feedExpiry !== pinnedExpiry) return `source zip service ended ${feedExpiry}, before today (${todayYmd})`;
   if (liveFeedExpiry && /^\d{8}$/.test(liveFeedExpiry) && feedExpiry < liveFeedExpiry) {
     return `source zip service ends ${feedExpiry}, older than the live data's ${liveFeedExpiry}`;
   }
@@ -213,16 +247,6 @@ export function outputDropRefusal(live: ArtifactCounts, next: ArtifactCounts, ma
     .filter(field => live[field] > 0 && next[field] < live[field] * (1 - maxDrop))
     .map(field => `${field} ${live[field]} -> ${next[field]}`);
   return drops.length ? `output would drop sharply against live data (${drops.join(', ')})` : null;
-}
-
-/** Count the live route and stops artifacts for an agency, or null when there is no live route artifact. */
-export async function readLiveArtifactCounts(
-  slug: string,
-  get: (key: string) => Promise<string | null>,
-): Promise<ArtifactCounts | null> {
-  const geojson = await get(`atlas/${slug}.json`);
-  if (!geojson) return null;
-  return countArtifacts(geojson, await get(`atlas/${slug}-stops.json`));
 }
 
 /**

@@ -1,6 +1,6 @@
 import { act, fireEvent, render, renderHook, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
-import { BottomSheetHandle, bottomSheetBodyClass, useBottomSheet } from '../BottomSheet';
+import { BOTTOM_SHEET_FRAME, BottomSheetHandle, bottomSheetBodyClass, bottomSheetFrameClass, useBottomSheet } from '../BottomSheet';
 
 function Sheet({ subject }: { subject: string }) {
   const { expanded, handle } = useBottomSheet(subject);
@@ -32,5 +32,11 @@ describe('BottomSheet (#1028 item 23)', () => {
   it('a custom short height replaces the default', () => {
     expect(bottomSheetBodyClass(false, 'h-[30dvh]')).toContain('h-[30dvh]');
     expect(bottomSheetBodyClass(false, 'h-[30dvh]')).not.toContain('h-[42dvh]');
+  });
+
+  it('opens by fading in and sliding up 16px, and closes the same way back (map sheet and History, CIV-900 P1)', () => {
+    expect(bottomSheetFrameClass(true)).toBe(`${BOTTOM_SHEET_FRAME} opacity-100 translate-y-0`);
+    expect(bottomSheetFrameClass(false)).toBe(`${BOTTOM_SHEET_FRAME} opacity-0 translate-y-4 pointer-events-none`);
+    expect(BOTTOM_SHEET_FRAME).toContain('transition-[opacity,transform]');
   });
 });

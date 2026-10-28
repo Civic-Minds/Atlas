@@ -57,3 +57,20 @@ describe('every agency has a place', () => {
     expect(missing.filter(s => !EXPLICITLY_UNASSIGNED.includes(s))).toEqual([]);
   });
 });
+
+describe('agencyIndexRegionHref (CIV-966)', () => {
+  it('links to the state or province heading, and nowhere without a place', async () => {
+    const { agencyIndexRegionHref, agencyIndexRegionId } = await import('./agencyIndex');
+    expect(agencyIndexRegionHref({ country: 'United States', region: 'Colorado' })).toBe('/agencies#index-united-states-colorado');
+    expect(agencyIndexRegionId('Canada', 'Québec')).toBe('index-canada-quebec');
+    expect(agencyIndexRegionHref({ country: 'Canada' })).toBeNull();
+  });
+});
+
+describe('agency index short names (CIV-967)', () => {
+  it('carries each agency\'s name without its bracketed city, for rows too tight for the full name', () => {
+    const cdta = { ...ag('cdta', 'Capital District Transportation Authority', 'United States', 'New York', 50), displayName: 'CDTA (Albany)' };
+    const row = buildAgencyIndexData([cdta], [], null).groups[0].regions[0].agencies[0];
+    expect(row).toMatchObject({ name: 'Capital District Transportation Authority', shortName: 'CDTA' });
+  });
+});

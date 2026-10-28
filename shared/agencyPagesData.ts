@@ -13,7 +13,7 @@ export function getAgencyPageSummary(slug: string | undefined): AgencyPageSummar
   return slug ? bySlug.get(slug) : undefined;
 }
 
-/** Agencies that get a page: those with weekday midday service in the release that this build may show. */
+/** Agencies that get a page: every agency this build may show, including ones with no regular midday service (CIV-965). */
 export function agencyPageSummaries(): AgencyPageSummary[] {
-  return VISIBLE_AGENCIES.filter(a => a.routes.some(r => r.midday != null));
+  return VISIBLE_AGENCIES;
 }

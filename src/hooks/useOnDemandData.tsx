@@ -126,10 +126,18 @@ export function useReportOnDemandVisible(visible: boolean): void {
   useEffect(() => { setVisible(visible); }, [visible, setVisible]);
 }
 
-/** Requests geometry for every service whose area is in view (or near it). Renders nothing. */
-export function OnDemandViewportLoader({ data }: { data: OnDemandData }) {
+/**
+ * Requests geometry for every service whose area is in view (or near it), plus the service a link opened
+ * (`linkedSlug`, from `?ondemand=`), wherever the map is: the card and the map framing both need that
+ * service's zones, and the map only moves there once they load. Renders nothing.
+ */
+export function OnDemandViewportLoader({ data, linkedSlug = null }: { data: OnDemandData; linkedSlug?: string | null }) {
   const { bounds } = useViewport();
   const { index, visible, requestGeometry } = data;
+  useEffect(() => {
+    if (!index || !visible || !linkedSlug) return;
+    if (index.services.some(s => s.slug === linkedSlug)) requestGeometry([linkedSlug]);
+  }, [index, visible, linkedSlug, requestGeometry]);
   useEffect(() => {
     if (!index || !bounds || !visible) return;
     // Pad the view by half its size so zones are ready just before they scroll in.

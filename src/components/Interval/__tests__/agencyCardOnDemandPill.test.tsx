@@ -15,7 +15,7 @@ const card = (agency: Agency) => render(
     selectedModes={new Set()}
     hideSpan={false}
     hideLimitedService={false}
-    onRouteSelect={() => {}}
+    onRouteSelect={() => {}} onClose={() => {}}
   />,
 );
 

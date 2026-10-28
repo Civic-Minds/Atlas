@@ -44,13 +44,37 @@ export function historyRouteFromRouteKey(
   return match ? { slug, routeShortName: String(match.properties!.routeShortName) } : null;
 }
 
+/** Capitalized names that are said as a word, not letter by letter (#1136): "a MAX", "a LYNX", "a SMART". */
+const SPOKEN_AS_WORDS = new Set(['MAX', 'LYNX', 'SMART']);
+
+/** Letters whose spoken name starts with a vowel sound ("ef", "aitch", "em"...). */
+const VOWEL_SOUND_LETTERS = 'AEFHILMNORSX';
+
+/**
+ * "an" before a name that starts with a vowel sound, "a" otherwise. A name read letter by letter (all
+ * capitals, and three letters or fewer or no vowel in its first two) goes by its first letter's name:
+ * "an NFTA", "an MBTA", "a TTC". Any other name goes by its first letter: "a MARTA", "an IndyGo",
+ * except a "you" or "yoo" sound ("a Unitrans", "a Utah").
+ */
+export function indefiniteArticle(name: string): 'a' | 'an' {
+  const word = name.trim().split(/[\s-]/)[0] ?? '';
+  if (!word) return 'a';
+  const readAsLetters = !SPOKEN_AS_WORDS.has(word)
+    && ((/^[A-Z0-9]+$/.test(word) && /[A-Z]/.test(word) && (word.length <= 3 || !/[AEIOU]/.test(word.slice(0, 2))))
+      // Capitals run into a lowercase part: "STLévis", "CTtransit", "QLine".
+      || /^[A-Z]{2,}[a-zà-ÿ]/.test(word));
+  if (readAsLetters) return VOWEL_SOUND_LETTERS.includes(word[0]) ? 'an' : 'a';
+  if (/^(uni|eu|one\b|u[^aeiou][aeiou])/i.test(word)) return 'a';
+  return /^[aeiou]/i.test(word) ? 'an' : 'a';
+}
+
 /**
  * The top search bar's hint while a History agency is open: it searches that agency's routes, so it
- * names the agency (CIV-402). Proposed wording, pending Ryan's OK; the alternatives are
- * "Search MARTA routes…" and "Find a route in MARTA…".
+ * names the agency ("Find a MARTA route…", "Find an NFTA route…"). Proposed wording, pending Ryan's OK;
+ * the alternatives are "Search MARTA routes…" and "Find a route in MARTA…".
  */
 export function historyRouteSearchPlaceholder(agencyName: string): string {
-  return `Find a ${agencyName} route…`;
+  return `Find ${indefiniteArticle(agencyName)} ${agencyName} route…`;
 }
 
 /**

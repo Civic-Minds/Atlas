@@ -2,57 +2,48 @@ import { useEffect, useState } from 'react';
 import {
   AGENCY_INDEX_DATA_SCRIPT_ID,
   agencyIndexDescription,
+  agencyIndexRegionId,
   resolveAgencyIndexSeo,
   type AgencyIndexData,
 } from '../shared/agencyIndex';
 import { agencyPagePath } from '../shared/agencyPages';
+import { fitAgencyName } from './utils/agencyName';
 import { areaPagePath } from '../shared/areas';
 import { ATLAS_MODE, FEATURES } from '../shared/config';
 import { plural } from '../shared/overflowText';
 import historyAgencies from '../shared/data/history-agencies.json';
 import type { HistoryAgencyList } from '../shared/historyEligibility';
 import { isLiveEligibleSlug } from '../shared/livePollingConfig';
-import { applySeoToDocument } from './lib/seoDom';
-import { LINK } from './pageStyles';
+import { applySeoToDocument, seoOrigin } from './lib/seoDom';
+import { readEmbeddedJson } from './lib/embeddedData';
+import { LINK, UNDERLINED_LINK } from './pageStyles';
 import Tag from './components/ui/Tag';
 import { PageTitle, SectionTitle } from './components/ui/PageTitle';
 import PageShell from './components/ui/PageShell';
 import DocsPageLayout from './components/ui/DocsPageLayout';
 
-/** Read this page's data from the JSON the prerender embedded next to the app root. */
-function readEmbeddedData(): AgencyIndexData | null {
-  if (typeof document === 'undefined') return null;
-  try {
-    const raw = document.getElementById(AGENCY_INDEX_DATA_SCRIPT_ID)?.textContent;
-    return raw ? (JSON.parse(raw) as AgencyIndexData) : null;
-  } catch {
-    return null;
-  }
-}
-
-/**
- * Every region and agency page in one list. The prerender writes the whole list as plain links, so it works
- * without scripts. The dev server (no prerendered
- * HTML) loads from the summary file instead (dead code in production builds).
- */
 /** Shared multi-column layout for the Regions list and every country's agency list. */
 const INDEX_COLUMNS = 'sm:columns-2 lg:columns-3 sm:gap-x-8';
 
 /** Beta only: agencies with 10+ years of schedule history, from the small list build-history writes. */
 const HISTORY_SLUGS: ReadonlySet<string> = new Set((historyAgencies as HistoryAgencyList).slugs);
 
-/** Beta-only "Live" / "History" tags beside an agency name, in the page's existing pill style. */
+/** Beta-only "Live" / "History" tags after an agency's route count, tight around the word (CIV-967). */
 function AgencyTags({ live, history }: { live: boolean; history: boolean }) {
   return (
     <>
-      {live && <Tag className="ml-1.5 inline-block">Live</Tag>}
-      {history && <Tag className="ml-1 inline-block">History</Tag>}
+      {live && <Tag size="inline" className="ml-1.5">Live</Tag>}
+      {history && <Tag size="inline" className={live ? 'ml-1' : 'ml-1.5'}>History</Tag>}
     </>
   );
 }
 
+/**
+ * Every region and agency page in one list. The prerender writes the whole list as plain links, so it works
+ * without scripts. The dev server (no prerendered HTML) loads from the summary file instead (dead code in production builds).
+ */
 export default function AgenciesIndexPage({ data: dataProp }: { data?: AgencyIndexData }) {
-  const [data, setData] = useState<AgencyIndexData | null>(() => dataProp ?? readEmbeddedData());
+  const [data, setData] = useState<AgencyIndexData | null>(() => dataProp ?? readEmbeddedJson<AgencyIndexData>(AGENCY_INDEX_DATA_SCRIPT_ID));
   useEffect(() => {
     if (data || !import.meta.env.DEV) return;
     void import('./agenciesIndexDevData').then(m => setData(m.devAgencyIndexData()));
@@ -61,8 +52,13 @@ export default function AgenciesIndexPage({ data: dataProp }: { data?: AgencyInd
     if (!data) return;
     applySeoToDocument(document, resolveAgencyIndexSeo(data, {
       mode: ATLAS_MODE,
-      origin: ATLAS_MODE === 'public' ? undefined : window.location.origin,
+      origin: seoOrigin(),
     }));
+  }, [data]);
+  // A link to a state or province heading (CIV-966) lands on it even when the list renders after the page loads.
+  useEffect(() => {
+    if (!data || !window.location.hash) return;
+    document.getElementById(decodeURIComponent(window.location.hash.slice(1)))?.scrollIntoView();
   }, [data]);
 
   if (!data) {
@@ -83,7 +79,7 @@ export default function AgenciesIndexPage({ data: dataProp }: { data?: AgencyInd
             <section className="mt-12" aria-labelledby="index-regions">
               <SectionTitle id="index-regions">Regions</SectionTitle>
               <ul className={`mt-3 text-sm ${INDEX_COLUMNS}`}>
-                {areas.map(a => <li key={a.slug} className="break-inside-avoid py-1"><a className={`${LINK} underline underline-offset-2`} href={areaPagePath(a.slug)}>{a.shortName}</a></li>)}
+                {areas.map(a => <li key={a.slug} className="break-inside-avoid py-1"><a className={UNDERLINED_LINK} href={areaPagePath(a.slug)}>{a.shortName}</a></li>)}
               </ul>
             </section>
           )}
@@ -93,24 +89,26 @@ export default function AgenciesIndexPage({ data: dataProp }: { data?: AgencyInd
               <SectionTitle id={`index-${g.country}`}>{g.country}</SectionTitle>
               {g.regions.map(r => (
                 <div key={r.region} className="mt-5">
-                  {r.region !== g.country && <h3 className="text-base font-black">{r.region}</h3>}
+                  {r.region !== g.country && <h3 id={agencyIndexRegionId(g.country, r.region)} className="scroll-mt-24 text-base font-black">{r.region}</h3>}
                   <ul className={`mt-2 text-sm ${INDEX_COLUMNS}`}>
                     {r.agencies.map(a => {
                       const routes = <span className="text-[var(--text-muted)]">{'\u00A0'}·{'\u00A0'}{a.routes.toLocaleString('en-US')}{'\u00A0'}{plural(a.routes, 'route')}</span>;
                       const live = FEATURES.live && isLiveEligibleSlug(a.slug);
                       const history = FEATURES.history && HISTORY_SLUGS.has(a.slug);
                       if (live || history) {
-                        // Tagged rows stay on one line: a long name shortens with "…" instead of wrapping.
+                        // Tagged rows stay on one line: a name too long for the column shows its short name ("CDTA"), with
+                        // the full name on hover (CIV-967); one still too long shortens with "…".
+                        const { text, title } = fitAgencyName(a.name, a.shortName);
                         return (
                           <li key={a.slug} className="flex min-w-0 items-baseline break-inside-avoid py-[3px]">
-                            <a className={`${LINK} min-w-0 truncate underline underline-offset-2`} href={agencyPagePath(a.slug)} title={a.name}>{a.name}</a>
-                            <span className="shrink-0 whitespace-nowrap"><AgencyTags live={live} history={history} />{routes}</span>
+                            <a className={`${LINK} min-w-0 truncate underline underline-offset-2`} href={agencyPagePath(a.slug)} title={title ?? a.name}>{text}</a>
+                            <span className="shrink-0 whitespace-nowrap">{routes}<AgencyTags live={live} history={history} /></span>
                           </li>
                         );
                       }
                       return (
                         <li key={a.slug} className="break-inside-avoid py-[3px]">
-                          <a className={`${LINK} underline underline-offset-2`} href={agencyPagePath(a.slug)}>{a.name}</a>
+                          <a className={UNDERLINED_LINK} href={agencyPagePath(a.slug)}>{a.name}</a>
                           {routes}
                         </li>
                       );

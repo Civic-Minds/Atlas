@@ -4,17 +4,21 @@
  * the per-route headways already published in the data release (see
  * scripts/build-agency-page-summaries.ts); nothing here measures anything new.
  */
-import { headwayEvery } from './headwayText';
+import { agencyTodayYmd } from './feedAvailability';
+import { headwayEvery, headwayEveryRange, headwayOrBetter } from './headwayText';
 import { modeLabel, sortModes } from './modes';
 import { compareAgencyName, compareNullableAscending } from './sortCompare';
 import { areaRegionName, areaRegionTitle } from './areaRegions';
 import { BETA_BUILD } from './config';
 import { DESCRIPTION_MAX, DESCRIPTION_MIN, TITLE_MAX, firstThatFits, truncateAtWord } from './seoText';
-import { SITE_URL } from './seo';
+import { SITE_URL, seoTitlePrefix, type SeoMode } from './seo';
+import { AGENCY_PATH_PREFIX, agencyPagePath, areaPagePath } from './pagePaths';
+import { zoomForSpan } from './mapZoom';
+import { haversineM } from './shapeProjection';
 import { andOthers, joinList, plural } from './overflowText';
 
 export { headwayEvery };
-export const MAX_NEARBY = 8;
+const MAX_NEARBY = 8;
 
 export interface AgencyPageRoute {
   name: string;
@@ -76,6 +80,8 @@ export interface AgencyPageSummary extends AgencyPageIdentity {
   lastRefreshedAt: string | null;
   /** Last day the published feed covers (the catalog's lastFeedExpiry), yyyymmdd. */
   validThrough?: string | null;
+  /** CIV-1011: the catalog's listingEndedOn, yyyymmdd: most routes stopped being listed then (Ryan's notice). */
+  listingEndedOn?: string | null;
   /** Whether the release has Saturday / Sunday service for this agency (published day types). */
   sat?: boolean;
   sun?: boolean;
@@ -147,13 +153,19 @@ export function agencyIntroSentence(
   return `${s}.`;
 }
 
+/** "TTC (Toronto)" as ["TTC", "Toronto"]; null for a name with no bracketed place at the end. */
+function splitBracketedPlace(name: string): [string, string] | null {
+  const m = /^(.*\S)\s+\(([^)]+)\)$/.exec(name);
+  return m ? [m[1], m[2]] : null;
+}
+
 /** The agency name without a trailing "(Place)" when the sentence names that same place: "UM Transit Services (Ann Arbor)" in Ann Arbor. */
 export function introName(name: string, place: string): string {
-  const m = /^(.*\S)\s+\(([^)]+)\)$/.exec(name);
+  const m = splitBracketedPlace(name);
   if (!m) return name;
-  const paren = m[2].toLowerCase();
+  const paren = m[1].toLowerCase();
   const where = place.toLowerCase();
-  return where.includes(paren) || paren.includes(where.replace(/^the /, '')) ? m[1] : name;
+  return where.includes(paren) || paren.includes(where.replace(/^the /, '')) ? m[0] : name;
 }
 
 /** Everything in the intro before the place: "Hamilton Street Railway operates 31 routes in ". */
@@ -182,7 +194,8 @@ export function agencyPageData(
         .sort((x, y) => (a.center && x.center ? distanceKm(a.center, x.center) : 0) - (a.center && y.center ? distanceKm(a.center, y.center) : 0))
         .slice(0, MAX_AREA_LIST)
     : nearbyAgencies(a, all);
-  const hasPage = new Set(all.filter(o => o.routes.some(r => r.midday != null)).map(o => o.slug));
+  // Every agency in the list has a page (CIV-965), so a connection links whenever its agency is in it.
+  const hasPage = new Set(all.map(o => o.slug));
   const fullName = new Map(all.map(o => [o.slug, o.name]));
   const connections = (a.connections ?? []).filter(c => !c.betaOnly || BETA_BUILD).map(c => ({ ...c, name: fullName.get(c.slug) ?? c.name, page: hasPage.has(c.slug) }));
   const place = area && agencySpansArea(a.bbox, area.bbox) ? areaRegionName(area) : a.city;
@@ -194,11 +207,7 @@ export function agencyPageData(
 
 const MAX_AREA_LIST = 12;
 
-export const AGENCY_PATH_PREFIX = '/agency/';
-
-export function agencyPagePath(slug: string): string {
-  return `${AGENCY_PATH_PREFIX}${encodeURIComponent(slug)}`;
-}
+export { AGENCY_PATH_PREFIX, agencyPagePath };
 
 /** "TTC frequency: how often routes run | Transit Atlas", dropping the brand, then the phrase, for long names (60 characters at most). */
 export function agencyPageTitle(a: Pick<AgencyPageSummary, 'displayName'>): string {
@@ -217,19 +226,26 @@ export function agencyPageH1(a: Pick<AgencyPageSummary, 'name' | 'city'>): strin
   return introName(a.name, a.city);
 }
 
-export { modeLabel };
 
 /** Weekday-midday frequency bands, best first; the last one is routes with no regular midday service. */
 export const FREQUENCY_BANDS = [
-  { key: 'b10', phrase: 'every 10 min or better', short: '≤10', test: (m: number) => m <= 10 },
-  { key: 'b15', phrase: 'every 11–15 min', short: '11–15', test: (m: number) => m <= 15 },
-  { key: 'b20', phrase: 'every 16–20 min', short: '16–20', test: (m: number) => m <= 20 },
-  { key: 'b30', phrase: 'every 21–30 min', short: '21–30', test: (m: number) => m <= 30 },
-  { key: 'b60', phrase: 'every 31–60 min', short: '31–60', test: (m: number) => m <= 60 },
-  { key: 'b60plus', phrase: 'less often than every 60 min', short: '60+', test: () => true },
+  { key: 'b10', phrase: headwayOrBetter(10), short: '≤10', test: (m: number) => m <= 10 },
+  { key: 'b15', phrase: headwayEveryRange(11, 15), short: '11–15', test: (m: number) => m <= 15 },
+  { key: 'b20', phrase: headwayEveryRange(16, 20), short: '16–20', test: (m: number) => m <= 20 },
+  { key: 'b30', phrase: headwayEveryRange(21, 30), short: '21–30', test: (m: number) => m <= 30 },
+  { key: 'b60', phrase: headwayEveryRange(31, 60), short: '31–60', test: (m: number) => m <= 60 },
+  { key: 'b60plus', phrase: `less often than ${headwayEvery(60)}`, short: '60+', test: () => true },
 ] as const;
 export const NO_MIDDAY_PHRASE = 'with no regular midday service';
 export const NO_MIDDAY_SHORT = 'no midday';
+
+/**
+ * At least one route with a regular weekday midday cadence. Area pages and their area files list only these agencies;
+ * every agency has its own page either way (CIV-965). The one place this rule is written.
+ */
+export function hasMiddayService(a: { routes: ReadonlyArray<{ midday: number | null }> }): boolean {
+  return a.routes.some(r => r.midday != null);
+}
 
 /** Route counts per band (same order as FREQUENCY_BANDS), then routes with no midday cadence last. */
 export function bandCounts(routes: ReadonlyArray<Pick<AgencyPageRoute, 'midday'>>): number[] {
@@ -284,15 +300,6 @@ export function modesText(byMode: ReadonlyArray<{ label: string; routes: number 
   return byMode.map(m => `${m.routes} ${m.label.toLowerCase()}`).join(separator);
 }
 
-/** What the release has for Saturday and Sunday: a short sub-label, or null when unknown. */
-export function weekendLabel(sat: boolean | undefined, sun: boolean | undefined): string | null {
-  if (sat === undefined && sun === undefined) return null;
-  if (sat && sun) return 'Runs Sat & Sun';
-  if (sat) return 'Runs Saturdays';
-  if (sun) return 'Runs Sundays';
-  return 'Weekdays only';
-}
-
 /** One sentence that stands alone: "210 weekday routes." */
 export function agencyLeadSentence(a: Pick<AgencyPageSummary, 'routes'>): string {
   const n = a.routes.length;
@@ -320,29 +327,9 @@ export function agencyPageDescription(a: AgencyPageSummary, intro?: string): str
   return tail ? `${base}${tail}` : base;
 }
 
-function hourLabel(h: number): string {
-  const hour = h % 24;
-  const suffix = hour < 12 ? 'am' : 'pm';
-  return `${hour % 12 === 0 ? 12 : hour % 12}${suffix}`;
-}
-
-export function agencySpanText(a: Pick<AgencyPageSummary, 'span'>): string | null {
-  if (!a.span) return null;
-  if (a.span.last + 1 - a.span.first >= 24) return 'Runs 24 hours';
-  return `${hourLabel(a.span.first)} to ${hourLabel(a.span.last + 1)}`;
-}
-
-/** Short form for a tile: "24 h" or "5am–2am", so it stays on one line. */
-export function agencySpanShort(a: Pick<AgencyPageSummary, 'span'>): string | null {
-  if (!a.span) return null;
-  if (a.span.last + 1 - a.span.first >= 24) return '24 h';
-  return `${hourLabel(a.span.first)}–${hourLabel(a.span.last + 1)}`;
-}
-
 /** The agency's name without its bracketed city: "TTC (Toronto)" becomes "TTC". */
 export function agencyShortLabel(a: Pick<AgencyPageSummary, 'displayName'>): string {
-  const m = /^(.*\S)\s+\([^)]+\)$/.exec(a.displayName);
-  return m ? m[1] : a.displayName;
+  return splitBracketedPlace(a.displayName)?.[0] ?? a.displayName;
 }
 
 /** The map link for the big button: the agency's area, with only that agency on. */
@@ -354,7 +341,7 @@ export function agencyMapHref(a: AgencyPageIdentity): string {
     params.set('lon', lon.toFixed(4));
     if (a.bbox) {
       const span = Math.max(a.bbox[2] - a.bbox[0], (a.bbox[3] - a.bbox[1]) * Math.cos((lat * Math.PI) / 180));
-      params.set('z', String(span > 3 ? 7 : span > 1.5 ? 8 : span > 0.7 ? 9 : span > 0.35 ? 10 : 11));
+      params.set('z', String(zoomForSpan(span)));
     } else {
       params.set('z', '10');
     }
@@ -362,11 +349,15 @@ export function agencyMapHref(a: AgencyPageIdentity): string {
   return `/?${params.toString()}`;
 }
 
-/** The dates, each named for what it is: the agency's schedule, and the Atlas data release it came from. */
+/** The year, month and day of an ISO or yyyymmdd date (match groups 1 to 3), or null. */
+function dateParts(value: string | null | undefined): RegExpExecArray | null {
+  return value ? /^(\d{4})-?(\d{2})-?(\d{2})/.exec(value) : null;
+}
+
 /** True when a yyyymmdd or ISO date is before the release's date (the day the data was last updated). */
 function endedBefore(through: string | null | undefined, releaseDate: string | null): boolean {
-  const t = through ? /^(\d{4})-?(\d{2})-?(\d{2})/.exec(through) : null;
-  const r = releaseDate ? /^(\d{4})-?(\d{2})-?(\d{2})/.exec(releaseDate) : null;
+  const t = dateParts(through);
+  const r = dateParts(releaseDate);
   return !!t && !!r && `${t[1]}${t[2]}${t[3]}` < `${r[1]}${r[2]}${r[3]}`;
 }
 
@@ -374,12 +365,25 @@ function endedBefore(through: string | null | undefined, releaseDate: string | n
  * The page footer in plain words: what the numbers are based on, when the timetable was published and how long it runs,
  * and when Atlas last updated the page. A clause whose date is missing is left out; an ended timetable says so.
  */
-export function agencyDatesText(a: Pick<AgencyPageSummary, 'lastRefreshedAt' | 'validThrough'>, releaseDate: string | null): string {
+// N25 listing-ended (Ryan's exact text, CIV-1011). One definition for the agency page and the map (content/noticeCopy re-exports it).
+// Ryan: "ended is past but ends is upcoming": "ends" before the listing-end date (agency-local), "ended" from it on.
+export const listingEndedNotice = (date: string, ended: boolean) => `This agency's scheduled service for most routes ${ended ? 'ended' : 'ends'} ${date}, and they have not released updated data.`;
+/** Whether the listing-end date (yyyymmdd) has arrived, given today's agency-local yyyymmdd. */
+export const listingEndHasPassed = (listingEndedOn: string, todayYmd: string) => todayYmd >= listingEndedOn;
+// N112 listing-ended-page (Ryan's exact text, CIV-1055): agency pages only, when the timetable has a through date.
+// Cards and notices keep N25.
+export const listingEndedPageLine = (through: string, date: string, ended: boolean) => `This timetable covers service until ${through}, but most of its routes ${ended ? 'ended' : 'end'} ${date}.`;
+
+export function agencyDatesText(a: Pick<AgencyPageSummary, 'lastRefreshedAt' | 'validThrough' | 'listingEndedOn'>, releaseDate: string | null, todayYmd: string = agencyTodayYmd({})): string {
   const published = formatDataDate(a.lastRefreshedAt);
   const through = formatDataDate(a.validThrough);
   const release = formatDataDate(releaseDate);
+  const listingEnded = formatDataDate(a.listingEndedOn);
   const timetable = through && endedBefore(a.validThrough, releaseDate)
     ? `This timetable ended on ${through}; the agency hasn't published a newer one yet.`
+    // N112 with a through date, else N25 (CIV-1055): "covers service until" alone would overstate a timetable whose routes mostly stopped.
+    : listingEnded && through ? listingEndedPageLine(through, listingEnded, listingEndHasPassed(a.listingEndedOn!, todayYmd))
+    : listingEnded ? listingEndedNotice(listingEnded, listingEndHasPassed(a.listingEndedOn!, todayYmd))
     : published && through ? `This timetable was published ${published} and covers service until ${through}.`
     : published ? `This timetable was published ${published}.`
     : through ? `This timetable covers service until ${through}.`
@@ -389,15 +393,16 @@ export function agencyDatesText(a: Pick<AgencyPageSummary, 'lastRefreshedAt' | '
 
 /** "Oct 12, 2026" from an ISO or yyyymmdd date; null when unusable. */
 export function formatDataDate(value: string | null | undefined): string | null {
-  const m = value ? /^(\d{4})-?(\d{2})-?(\d{2})/.exec(value) : null;
+  const m = dateParts(value);
   if (!m) return null;
   const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   const month = months[Number(m[2]) - 1];
   return month ? `${month} ${Number(m[3])}, ${m[1]}` : null;
 }
 
-function formatIso(value: string | null | undefined): string | null {
-  const m = value ? /^(\d{4})-?(\d{2})-?(\d{2})/.exec(value) : null;
+/** "2026-10-12" from an ISO or yyyymmdd date; null when unusable. */
+export function formatIso(value: string | null | undefined): string | null {
+  const m = dateParts(value);
   return m ? `${m[1]}-${m[2]}-${m[3]}` : null;
 }
 
@@ -412,18 +417,14 @@ export function agencyBreadcrumbs(a: AgencyPageSummary, area?: { slug: string; n
   const crumbs: Crumb[] = [{ name: 'Transit Atlas', href: '/' }];
   if (a.country) crumbs.push({ name: a.country });
   if (a.region) crumbs.push({ name: a.region });
-  if (area) crumbs.push({ name: areaRegionTitle(area), href: `/area/${area.slug}` });
+  if (area) crumbs.push({ name: areaRegionTitle(area), href: areaPagePath(area.slug) });
   else if (a.city && a.city !== a.region && a.city !== a.displayName) crumbs.push({ name: a.city });
   crumbs.push({ name: a.displayName });
   return crumbs;
 }
 
 function distanceKm(a: [number, number], b: [number, number]): number {
-  const rad = Math.PI / 180;
-  const dLat = (b[0] - a[0]) * rad;
-  const dLon = (b[1] - a[1]) * rad;
-  const h = Math.sin(dLat / 2) ** 2 + Math.cos(a[0] * rad) * Math.cos(b[0] * rad) * Math.sin(dLon / 2) ** 2;
-  return 6371 * 2 * Math.asin(Math.sqrt(h));
+  return haversineM(a[0], a[1], b[0], b[1]) / 1000;
 }
 
 /** Other agencies with a page in the same region, nearest first. */
@@ -440,10 +441,10 @@ export function nearbyAgencies(a: AgencyPageSummary, all: readonly AgencyPageSum
 /** Everything the head needs for an agency page, in the same shape as the other routes. */
 export function resolveAgencySeo(
   a: AgencyPageSummary,
-  ctx: { mode: 'public' | 'preview' | 'beta' | 'dev'; origin?: string; intro?: string },
+  ctx: { mode: SeoMode; origin?: string; intro?: string },
 ): { title: string; description: string; canonicalUrl: string; noindex: boolean; matchedPath: string } {
   const origin = (ctx.origin ?? SITE_URL).replace(/\/$/, '');
-  const prefix = ctx.mode === 'preview' ? '[Preview] ' : ctx.mode === 'public' ? '' : '[Beta] ';
+  const prefix = seoTitlePrefix(ctx.mode);
   return {
     title: `${prefix}${agencyPageTitle(a)}`,
     description: agencyPageDescription(a, ctx.intro),
@@ -457,7 +458,8 @@ export function resolveAgencySeo(
 export function agencyPageJsonLd(a: AgencyPageSummary, canonicalUrl: string, origin: string, area?: { slug: string; name: string }, intro?: string): object {
   const crumbs = agencyBreadcrumbs(a, area);
   const modified = formatIso(a.lastRefreshedAt);
-  const place = [a.city, a.region, a.country].filter(Boolean).join(', ');
+  // A city that is the state itself ("Colorado" for a statewide service) is named once, not "Colorado, Colorado" (#1130).
+  const place = [a.city, a.region, a.country].filter((p, i, all): p is string => !!p && p !== all[i + 1]).join(', ');
   return {
     '@context': 'https://schema.org',
     '@graph': [
@@ -493,8 +495,8 @@ export function agencyPageJsonLd(a: AgencyPageSummary, canonicalUrl: string, ori
 
 /** Drops a bracketed city the name already holds: "Halifax Transit (Halifax)" becomes "Halifax Transit". */
 export function trimRedundantCity(displayName: string): string {
-  const m = /^(.*\S)\s+\(([^)]+)\)$/.exec(displayName);
+  const m = splitBracketedPlace(displayName);
   if (!m) return displayName;
-  const [outer, inner] = [m[1].toLowerCase(), m[2].toLowerCase()];
-  return outer.includes(inner) || inner.includes(outer) ? m[1] : displayName;
+  const [outer, inner] = [m[0].toLowerCase(), m[1].toLowerCase()];
+  return outer.includes(inner) || inner.includes(outer) ? m[0] : displayName;
 }

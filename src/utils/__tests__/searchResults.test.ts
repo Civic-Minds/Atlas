@@ -11,8 +11,15 @@ import {
   searchRouteResults,
   searchStopResults,
   splitByViewport,
+  searchIndexRouteResults,
+  searchIndexStopResults,
+  mergeRouteResults,
+  mergeStopResults,
 } from '../searchResults';
 import type { AgencySearchGroup } from '../agencySearch';
+
+// Labels are not under test here.
+const NO_LABEL = { primary: '', secondary: undefined, text: '' };
 
 describe('searchResults', () => {
   it('detects route-primary queries', () => {
@@ -35,7 +42,7 @@ describe('searchResults', () => {
     const slugOnlyRoutes = Array.from({ length: 20 }, (_, i) => ({
       key: `ttc::${i}`,
       routeShortName: String(i + 1),
-      routeLongName: null,
+      routeLongName: null, label: NO_LABEL,
       inView: true,
       distanceM: 0,
       matchRank: 7,
@@ -66,7 +73,7 @@ describe('searchResults', () => {
     const incidentalRoute = [{
       key: 'santaclarita::799',
       routeShortName: '799',
-      routeLongName: 'Los Angeles',
+      routeLongName: 'Los Angeles', label: NO_LABEL,
       inView: false,
       distanceM: 50,
       matchRank: 4,
@@ -88,7 +95,7 @@ describe('searchResults', () => {
     const manyRoutes = Array.from({ length: 50 }, (_, i) => ({
       key: `a::${i}`,
       routeShortName: String(i + 1),
-      routeLongName: null,
+      routeLongName: null, label: NO_LABEL,
       inView: true,
       distanceM: i,
       matchRank: 4,
@@ -100,8 +107,8 @@ describe('searchResults', () => {
   });
 
   it('ranks exact route number above substring', () => {
-    const exact = { routeId: '501', routeShortName: '501', routeLongName: 'Queen', directionId: 0, tier: '5', headway: 5 };
-    const partial = { routeId: '5010', routeShortName: '5010', routeLongName: 'Other', directionId: 0, tier: '5', headway: 5 };
+    const exact = { routeId: '501', routeShortName: '501', routeLongName: 'Queen', label: NO_LABEL, directionId: 0, tier: '5', headway: 5 };
+    const partial = { routeId: '5010', routeShortName: '5010', routeLongName: 'Other', label: NO_LABEL, directionId: 0, tier: '5', headway: 5 };
     expect(routeQueryMatchRank(exact, '501')).toBeLessThan(routeQueryMatchRank(partial, '501'));
   });
 
@@ -110,12 +117,12 @@ describe('searchResults', () => {
       {
         type: 'Feature' as const,
         geometry: { type: 'LineString' as const, coordinates: [[-80, 43], [-79.9, 43.1]] },
-        properties: { routeId: '1', routeShortName: 'MAX', routeLongName: 'Max', agencySlug: 'far', agencyName: 'Far' },
+        properties: { routeId: '1', routeShortName: 'MAX', routeLongName: 'Max', label: NO_LABEL, agencySlug: 'far', agencyName: 'Far' },
       },
       {
         type: 'Feature' as const,
         geometry: { type: 'LineString' as const, coordinates: [[-79.4, 43.65], [-79.3, 43.7]] },
-        properties: { routeId: '2', routeShortName: '6X', routeLongName: 'Six', agencySlug: 'ttc', agencyName: 'TTC' },
+        properties: { routeId: '2', routeShortName: '6X', routeLongName: 'Six', label: NO_LABEL, agencySlug: 'ttc', agencyName: 'TTC' },
       },
     ];
     const bounds = { s: 43.5, w: -79.6, n: 43.9, e: -79.1 };
@@ -131,7 +138,7 @@ describe('searchResults', () => {
         geometry: { type: 'LineString' as const, coordinates: [[-118.4, 34.0], [-118.3, 34.1]] },
         properties: {
           routeId: '7X', agencySlug: 'gtrans', agencyName: 'GTrans',
-          routeShortName: '7X', routeLongName: 'Line 7x', headway: 6, directionId: 0,
+          routeShortName: '7X', routeLongName: 'Line 7x', label: NO_LABEL, headway: 6, directionId: 0,
         },
       },
       {
@@ -139,7 +146,7 @@ describe('searchResults', () => {
         geometry: { type: 'LineString' as const, coordinates: [[-122.4, 37.7], [-122.3, 37.8]] },
         properties: {
           routeId: '7X', agencySlug: 'sfmta', agencyName: 'SFMTA',
-          routeShortName: '7X', routeLongName: 'Noriega', headway: 8, directionId: 0,
+          routeShortName: '7X', routeLongName: 'Noriega', label: NO_LABEL, headway: 8, directionId: 0,
         },
       },
     ];
@@ -152,7 +159,7 @@ describe('searchResults', () => {
   });
 
   it('puts routes first for numeric queries', () => {
-    const routes = [{ key: 'a::1', routeShortName: '501', routeLongName: null, inView: true, distanceM: 0, matchRank: 0 }];
+    const routes = [{ key: 'a::1', routeShortName: '501', routeLongName: null, label: NO_LABEL, inView: true, distanceM: 0, matchRank: 0 }];
     const agencies = [{ key: 'TTC', name: 'TTC', region: 'Ontario', slug: 'ttc', inView: true, distanceM: 0 }];
     expect(routesBeforeAgencies('501', routes, agencies)).toBe(true);
   });
@@ -180,7 +187,7 @@ describe('searchResults', () => {
     const route = {
       key: 'stratford::1',
       routeShortName: '1',
-      routeLongName: 'Main',
+      routeLongName: 'Main', label: NO_LABEL,
       inView: false,
       distanceM: 1000,
       matchRank: 0,
@@ -214,5 +221,58 @@ describe('searchResults', () => {
     expect(results).toHaveLength(1);
     expect(results[0].stopName).toBe('Rosemont'); // "Rosemont" is shorter and matches "rosemont" query exactly (rank 2 vs rank 4)
     expect(results[0].routes).toEqual(['811', 'Blue']);
+  });
+});
+
+describe('every-agency search index results (CIV-1048)', () => {
+  // A view over downtown Toronto.
+  const toronto = { s: 43.6, w: -79.5, n: 43.7, e: -79.3 };
+  const names = new Map([['muni', 'Muni'], ['ttc', 'TTC'], ['actransit', 'AC Transit']]);
+  const nameOf = (slug: string) => names.get(slug) ?? null;
+  const routesFile = {
+    v: 1,
+    agencies: ['actransit', 'hidden', 'muni', 'ttc'],
+    routes: [
+      [0, '38', '38', 'Fruitvale', 3, 37.78, -122.22],
+      [1, '38', '38', 'Hidden 38', 3, 40, -100],
+      [2, '38', '38', 'Geary', 3, 37.78, -122.45],
+      [3, '38', '38', 'Highland Creek', 3, 43.78, -79.2],
+      [3, '504', '504', 'King', 0, 43.65, -79.38],
+    ],
+  } as const;
+
+  it('finds "38 Geary" in an agency far from the view', () => {
+    const results = searchIndexRouteResults(routesFile as never, '38 geary', toronto, nameOf);
+    expect(results.map(r => r.key)).toEqual(['muni::38']);
+    expect(results[0].inView).toBe(false);
+    expect(results[0].agencyName).toBe('Muni');
+  });
+
+  it('ranks by match, then distance from the view, and skips agencies the app does not list', () => {
+    const results = searchIndexRouteResults(routesFile as never, '38', toronto, nameOf);
+    expect(results.map(r => r.key)).toEqual(['ttc::38', 'actransit::38', 'muni::38']);
+  });
+
+  it('does not list every route of an agency for its slug alone', () => {
+    expect(searchIndexRouteResults(routesFile as never, 'ttc', toronto, nameOf)).toEqual([]);
+  });
+
+  it('reads stops with accents folded, one row per place', () => {
+    const split = {
+      muni: [['Geary Blvd & Park Presidio', 'a', 37.78, -122.47, 'c', 37.9, -122.47]],
+      ttc: [['Église Saint-Pierre', 'e', 43.65, -79.4]],
+    };
+    // The copy 13 km further north is nearer Toronto.
+    expect(searchIndexStopResults(split, 'geary', toronto, nameOf).map(s => s.key)).toEqual(['muni::c', 'muni::a']);
+    const eglise = searchIndexStopResults(split, 'eglise', toronto, nameOf);
+    expect(eglise.map(s => [s.key, s.inView])).toEqual([['ttc::e', true]]);
+  });
+
+  it('merges index results only for agencies not loaded', () => {
+    const loaded = searchRouteResults([], '38', toronto);
+    const fromIndex = searchIndexRouteResults(routesFile as never, '38', toronto, nameOf);
+    expect(mergeRouteResults(loaded, fromIndex, new Set(['ttc']))!.map(r => r.key)).toEqual(['actransit::38', 'muni::38']);
+    expect(mergeRouteResults(null, fromIndex, new Set())).toBeNull();
+    expect(mergeStopResults([], [], new Set())).toEqual([]);
   });
 });
