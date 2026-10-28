@@ -1,4 +1,5 @@
 import { headwayTierLabel } from './headwayText';
+import { hourRange, hourTime } from './timeText';
 /**
  * Shared configuration constants
  */
@@ -256,42 +257,20 @@ export const PERIOD_LABELS: Record<PeriodKey, string> = Object.fromEntries(
   TIME_PERIODS.map(p => [p.key, p.label]),
 ) as Record<PeriodKey, string>;
 
-/** Compact hour label for filter chips: 6a, 12p, 2a (handles GTFS extended hours). */
-export function formatPeriodHourChip(h: number): string {
-  const h12 = h % 24;
-  if (h12 === 0 || h12 === 24) return '12a';
-  if (h12 === 12) return '12p';
-  return h12 < 12 ? `${h12}a` : `${h12 - 12}p`;
-}
-
-/** Filter chip range label, e.g. "6a–9a". */
+/** A period's hours for its filter chip, in the app's one time format (CIV-1095): "6–9 AM", "9 AM–3 PM". */
 export function formatPeriodRange(key: string): string {
   const p = TIME_PERIODS.find(t => t.key === key);
-  if (!p) return '';
-  return `${formatPeriodHourChip(p.startHour)}–${formatPeriodHourChip(p.endHour)}`;
+  return p ? hourRange(p.startHour, p.endHour) : '';
 }
 
-/** Long hour label for timelines, e.g. "2 AM" (GTFS hour 26). */
+/** A GTFS hour as a time (CIV-1095): "2 AM" for hour 26. */
 export function formatPeriodHourLong(h: number): string {
-  if (h >= 24) {
-    const hour = h - 24;
-    const h12 = hour === 0 ? 12 : hour;
-    return `${h12} AM`;
-  }
-  const suffix = h >= 12 ? 'PM' : 'AM';
-  const h12 = h % 12 === 0 ? 12 : h % 12;
-  return `${h12} ${suffix}`;
+  return hourTime(h);
 }
 
-/** Long range label for timelines, e.g. "6–9 AM" or "11 PM–2 AM". */
+/** Two GTFS hours as a range (CIV-1095): "6–9 AM", "11 PM–2 AM". */
 export function formatPeriodRangeLong(startHour: number, endHour: number): string {
-  const startStr = formatPeriodHourLong(startHour);
-  const endStr = formatPeriodHourLong(endHour);
-  const startSuffix = startStr.split(' ')[1];
-  const endSuffix = endStr.split(' ')[1];
-  return startSuffix === endSuffix
-    ? `${startStr.split(' ')[0]}–${endStr}`
-    : `${startStr}–${endStr}`;
+  return hourRange(startHour, endHour);
 }
 
 /** Map clock/sparkline hour to GTFS extended hour for period lookup (matches filter chip logic). */
@@ -324,8 +303,8 @@ export const SPARKLINE_HOURS: readonly number[] = [
   ...SPARKLINE_OVERNIGHT_TAIL,
 ];
 
-/** Axis labels the sparkline puts under its bars (keyed by GTFS hour): 6a, 12p, 6p, 12a. Other charts reuse them. */
-export const SPARKLINE_HOUR_LABELS: Readonly<Record<number, string>> = { 6: '6a', 12: '12p', 18: '6p', 24: '12a' };
+/** Axis labels the sparkline puts under its bars (keyed by GTFS hour): 6 AM, 12 PM, 6 PM, 12 AM. Other charts reuse them. */
+export const SPARKLINE_HOUR_LABELS: Readonly<Record<number, string>> = Object.fromEntries([6, 12, 18, 24].map(h => [h, hourTime(h)]));
 
 export type HeadwayByPeriod = Partial<Record<PeriodKey, number | null>>;
 

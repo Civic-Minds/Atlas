@@ -8,8 +8,8 @@ describe('OnDemandHoursRows (CIV-964, variant C)', () => {
   it('one row per group of days with the same hours: its days, a bar per time range, and the times in words', () => {
     const { container } = render(<OnDemandHoursRows availability={split} day="Weekday" className="" />);
     expect(screen.getByText('Mon–Fri').className).toContain('font-bold');
-    expect(screen.getByText('6:00 a.m.–10:00 a.m.')).toBeTruthy();
-    expect(screen.getByText('2:00 p.m.–6:00 p.m.')).toBeTruthy();
+    expect(screen.getByText('6–10 AM')).toBeTruthy();
+    expect(screen.getByText('2–6 PM')).toBeTruthy();
     expect(container.querySelectorAll('.bg-\\[var\\(--hours-band\\)\\]').length).toBe(2);
   });
 

@@ -6,10 +6,10 @@ const row = (edge: ShapeProperties['stretchPeriodEdge'], gap?: ShapeProperties['
 
 describe('routeCardPeriodShapeText (#934, D6)', () => {
   it('a late start reads from the first departure', () => {
-    expect(routeCardPeriodShapeText(row({ amPeak: { from: 437, every: 9 } }), 'amPeak')).toBe('from 7:17am, every 9 min');
+    expect(routeCardPeriodShapeText(row({ amPeak: { from: 437, every: 9 } }), 'amPeak')).toBe('from 7:17 AM, every 9 min');
   });
   it('an early end reads until the last departure', () => {
-    expect(routeCardPeriodShapeText(row({ pmPeak: { until: 1060, every: 10 } }), 'pmPeak')).toBe('until 5:40pm, every 10 min');
+    expect(routeCardPeriodShapeText(row({ pmPeak: { until: 1060, every: 10 } }), 'pmPeak')).toBe('until 5:40 PM, every 10 min');
   });
   it('one gap inside steady service reads the median and the gap', () => {
     expect(routeCardPeriodShapeText(row(undefined, { overnight: { every: 5, gap: 169 } }), 'overnight')).toBe('every 5 min, with a 169 min gap');

@@ -12,10 +12,10 @@ Atlas comparison data was generated locally with the current pipeline in dry-run
 
 The comparison columns mean:
 
-- `daytime15`: no gap over 15 minutes from 7am–7pm
-- `daytime30`: no gap over 30 minutes from 7am–7pm
-- `extended15`: no gap over 15 minutes from 7am–midnight
-- `extended30`: no gap over 30 minutes from 7am–midnight
+- `daytime15`: no gap over 15 minutes from 7 AM–7 PM
+- `daytime30`: no gap over 30 minutes from 7 AM–7 PM
+- `extended15`: no gap over 15 minutes from 7 AM–midnight
+- `extended30`: no gap over 30 minutes from 7 AM–midnight
 
 The authoritative review tracker is the [structured agency catalog](catalog.json). It contains 500 completed records with review statuses `definition_found` (172), `qualitative_definition_only` (73) and `no_definition_found` (255); these statuses are not the numeric/qualitative categories in the analysis (see [INDEX.md](INDEX.md)). The completed international phase contains 100 French agencies across 12 regions. The derived [500-agency analysis](ANALYSIS.md) applies explicit classification rules and keeps numeric observations tied to their source tiers. This is evidence-gathering work: the catalog documents the landscape and does not by itself change Atlas's production frequency definitions. A record may have an Atlas comparison marked `not_run` when the agency has no Atlas configuration or the comparison was not part of the source review.
 
@@ -23,11 +23,11 @@ The authoritative review tracker is the [structured agency catalog](catalog.json
 
 | Agency | Official finding | Weekday Atlas comparison | Saturday | Sunday | Confidence |
 |---|---|---:|---:|---:|---|
-| TTC | 10-Minute Network; 6am–1am Monday–Saturday and all day Sunday | 122 / 316 / 86 / 276 | 91 / 285 / 85 / 269 | 15 / 54 / 15 / 52 | Explicit |
+| TTC | 10-Minute Network; 6 AM–1 AM Monday–Saturday and all day Sunday | 122 / 316 / 86 / 276 | 91 / 285 / 85 / 269 | 15 / 54 / 15 / 52 | Explicit |
 | Calgary Transit | No single frequent-network definition located in the reviewed system-map and service-guideline materials | 6 / 81 / 4 / 54 | 4 / 70 / 4 / 52 | 4 / 66 / 4 / 51 | Not found |
-| TransLink Vancouver | Frequent Transit Network; 15 minutes or better on corridors, with daily starts at 6am weekdays, 7am Saturday, 8am Sunday, until 9pm | 36 / 156 / 17 / 100 | 17 / 120 / 12 / 87 | 4 / 84 / 4 / 65 | Explicit, corridor-based |
-| STM Montréal | Frequent routes usually 2–12 minutes; separate all-day and peak-only categories; all-day span 6am–8pm weekdays | 0 / 0 / 0 / 0 | 8 / 47 / 8 / 31 | 8 / 32 / 8 / 23 | Explicit, but comparison mismatch |
-| SEPTA Philadelphia | Frequent Red bus routes; 15 minutes or better, 6am–9pm weekdays, with enhanced weekend service | 28 / 99 / 5 / 50 | 4 / 45 / 4 / 32 | 3 / 25 / 3 / 16 | Explicit |
+| TransLink Vancouver | Frequent Transit Network; 15 minutes or better on corridors, with daily starts at 6 AM weekdays, 7 AM Saturday, 8 AM Sunday, until 9 PM | 36 / 156 / 17 / 100 | 17 / 120 / 12 / 87 | 4 / 84 / 4 / 65 | Explicit, corridor-based |
+| STM Montréal | Frequent routes usually 2–12 minutes; separate all-day and peak-only categories; all-day span 6 AM–8 PM weekdays | 0 / 0 / 0 / 0 | 8 / 47 / 8 / 31 | 8 / 32 / 8 / 23 | Explicit, but comparison mismatch |
+| SEPTA Philadelphia | Frequent Red bus routes; 15 minutes or better, 6 AM–9 PM weekdays, with enhanced weekend service | 28 / 99 / 5 / 50 | 4 / 45 / 4 / 32 | 3 / 25 / 3 / 16 | Explicit |
 
 Column order is `daytime15 / daytime30 / extended15 / extended30`.
 
@@ -35,7 +35,7 @@ Column order is `daytime15 / daytime30 / extended15 / extended30`.
 
 ### TTC
 
-The current TTC system map identifies a 10-Minute Network and distinguishes it from regular and limited service. The map describes a 6am–1am Monday–Saturday span, with all-day Sunday service. This is stricter than Atlas’s current 15-minute research threshold but has a broadly similar long-span concept.
+The current TTC system map identifies a 10-Minute Network and distinguishes it from regular and limited service. The map describes a 6 AM–1 AM Monday–Saturday span, with all-day Sunday service. This is stricter than Atlas’s current 15-minute research threshold but has a broadly similar long-span concept.
 
 Source: [TTC System Map](https://cdn.ttc.ca/-/media/Project/TTC/DevProto/Images/Home/Routes-and-Schedules/Landing-page-pdfs/TTC_SystemMap.pdf?rev=88203dbcf60c47738cf9acc980c45cad).
 
@@ -47,7 +47,7 @@ The GTFS still produces a small number of routes meeting Atlas’s strict 15-min
 
 ### TransLink
 
-TransLink explicitly defines the Frequent Transit Network as corridors with service at least every 15 minutes throughout the day and evening, every day. The published span starts at 6am weekdays, 7am Saturdays, and 8am Sundays, and runs until 9pm. It may be supplied by buses, SkyTrain, or multiple modes.
+TransLink explicitly defines the Frequent Transit Network as corridors with service at least every 15 minutes throughout the day and evening, every day. The published span starts at 6 AM weekdays, 7 AM Saturdays, and 8 AM Sundays, and runs until 9 PM. It may be supplied by buses, SkyTrain, or multiple modes.
 
 Source: [TransLink Frequent Transit Network](https://www.translink.ca/plans-and-projects/projects/frequent-transit-network).
 
@@ -55,7 +55,7 @@ This is not directly equivalent to Atlas’s route-level terminal test: the agen
 
 ### STM
 
-STM publishes two frequent-route categories. Its all-day frequent routes operate in both directions from 6am–8pm Monday–Friday; its peak-only category operates roughly 6:30–9:30am and 3–6pm in the busiest direction. The published frequency is usually 2–12 minutes, with qualifying language rather than a strict guarantee.
+STM publishes two frequent-route categories. Its all-day frequent routes operate in both directions from 6 AM–8 PM Monday–Friday; its peak-only category operates roughly 6:30–9:30 AM and 3–6 PM in the busiest direction. The published frequency is usually 2–12 minutes, with qualifying language rather than a strict guarantee.
 
 Source: [STM Lignes fréquentes](https://www.stm.info/fr/infos/reseaux/le-reseau-des-bus-et-les-horaires-expliques/lignes-frequentes).
 
@@ -63,11 +63,11 @@ The local Atlas comparison found zero weekday route-pattern/day units under the 
 
 ### SEPTA
 
-SEPTA’s current bus-network materials identify “Frequent Red” routes and define them as arriving every 15 minutes or better from 6am–9pm on weekdays, with enhanced weekend service. The designation is explicitly map-facing: the colour is used on maps, signs, and digital displays.
+SEPTA’s current bus-network materials identify “Frequent Red” routes and define them as arriving every 15 minutes or better from 6 AM–9 PM on weekdays, with enhanced weekend service. The designation is explicitly map-facing: the colour is used on maps, signs, and digital displays.
 
 Sources: [SEPTA Maps](https://wwww.septa.org/maps/) and [New Maps and Signs for a New Bus Network](https://wwww.septa.org/initiatives/bus/maps-signs/).
 
-This is close to Atlas’s 15-minute research rule, but the official span extends two hours later than the current 7am–7pm daytime window.
+This is close to Atlas’s 15-minute research rule, but the official span extends two hours later than the current 7 AM–7 PM daytime window.
 
 ## Round 2: cataloguing every published tier
 
@@ -77,8 +77,8 @@ The second round deliberately records all service tiers shown in the agencies' m
 
 | Agency | Published tier / label | Official threshold or meaning | Span / days | Geography / mode | Confidence |
 |---|---|---|---|---|---|
-| BC Transit (Victoria) | RapidBus | ≤15 min | 7am–10pm, 7 days | Corridor/product; bus | Explicit |
-| BC Transit (Victoria) | Frequent Route | ≤15 min | 7am–7pm, Monday–Friday | Route/product; bus | Explicit |
+| BC Transit (Victoria) | RapidBus | ≤15 min | 7 AM–10 PM, 7 days | Corridor/product; bus | Explicit |
+| BC Transit (Victoria) | Frequent Route | ≤15 min | 7 AM–7 PM, Monday–Friday | Route/product; bus | Explicit |
 | BC Transit (Victoria) | Regional Route | 15–60 min; limited stops | Not specified in map legend | Route/product; bus | Explicit |
 | BC Transit (Victoria) | Local Route | 20–120 min | Not specified in map legend | Route/product; bus | Explicit |
 | Edmonton Transit Service | Frequent Route | ≤15 min most times of day | Not specified | Route category; bus | Explicit, soft span |
@@ -91,7 +91,7 @@ The second round deliberately records all service tiers shown in the agencies' m
 | Winnipeg Transit | Connector Routes | 15–30 min peak/off-peak; 20–60 min nights/weekends | Period-based | Feeder network; bus | Explicit |
 | Winnipeg Transit | Community Routes | 30–60 min | Period-based | Feeder network; bus | Explicit |
 | Winnipeg Transit | Limited-Span Service | Service as needed; limited hours, often peak-only | Limited span | Route/product; bus | Explicit, non-frequency tier |
-| King County Metro | Frequent all-day route | ≤15 min until 6pm Monday–Friday | Weekday daytime | Route/corridor; bus | Explicit |
+| King County Metro | Frequent all-day route | ≤15 min until 6 PM Monday–Friday | Weekday daytime | Route/corridor; bus | Explicit |
 | King County Metro | RapidRide | Rapid transit product; reviewed map distinguishes it from frequent all-day routes | Product-specific | Route/corridor; bus | Product explicit; threshold not normalized |
 | King County Metro | Peak-only route | Peak-only service category | Peak periods | Route category; bus | Explicit, non-frequency tier |
 | Miami-Dade Transit | 10 minutes or less | ≤10 min weekday midday | Map shows midday; peak and span are separate | Network map; bus | Explicit |
@@ -121,7 +121,7 @@ Column order is `daytime15 / daytime30 / extended15 / extended30`, using the sam
 
 **Winnipeg.** The City’s current [Understanding the network](https://www.winnipeg.ca/services-programs/transportation-roads-parking/transit/understanding-network) page defines the Primary Network as Rapid Transit, Frequent Express, Frequent, and Direct lines, with separate Connector, Community, and Limited Span classes. Its period bands make clear that “frequent” does not mean one uniform number across the whole day.
 
-**King County Metro.** The [Metro system map](https://kingcounty.gov/en/-/media/king-county/depts/metro/maps/system/09142024/metro-system-map-central) labels RapidRide, frequent all-day, all-day, and peak-only service. Its frequent all-day example is every 15 minutes or less until 6pm Monday–Friday; multiple routes can combine to create frequent service on a corridor. That is a corridor/service-map concept, not necessarily a route-level all-day guarantee.
+**King County Metro.** The [Metro system map](https://kingcounty.gov/en/-/media/king-county/depts/metro/maps/system/09142024/metro-system-map-central) labels RapidRide, frequent all-day, all-day, and peak-only service. Its frequent all-day example is every 15 minutes or less until 6 PM Monday–Friday; multiple routes can combine to create frequent service on a corridor. That is a corridor/service-map concept, not necessarily a route-level all-day guarantee.
 
 **Miami-Dade.** The official [Better Bus Network report](https://www.miamidade.gov/transit/library/better-bus-network-resilence-plan.pdf) publishes weekday-midday bands of 10 minutes or less, 15, 20, 30, and 40–60 minutes. It separately identifies peak routes, Express Service, and MAX/Rapid products, so those labels should be catalogued alongside frequency bands rather than merged with them.
 
@@ -129,7 +129,7 @@ Column order is `daytime15 / daytime30 / extended15 / extended30`, using the sam
 
 1. There is no single universal agency definition. Across ten agencies, the pilot includes 10-, 12-, 15-, 20-, 30-, and 40–60-minute bands, period-specific ranges, and named products whose maps do not supply a numeric threshold.
 2. “Frequent” often describes corridors or a customer-facing network, not an entire route in both directions. Atlas’s route-level terminal test is therefore a useful comparable metric but not a direct reproduction of every agency’s definition.
-3. The service span matters as much as the threshold. The sample ranges from 6am–8pm to 6am–1am, with different weekend rules.
+3. The service span matters as much as the threshold. The sample ranges from 6 AM–8 PM to 6 AM–1 AM, with different weekend rules.
 4. STM is the first concrete sign that the current endpoint-based comparison can undercount an agency’s official frequent network. It needs a stop/corridor comparison before the metric is used for qualitative conclusions.
 5. Published tiers should be catalogued as first-class records rather than collapsed into one agency threshold. Each record should preserve the label, numeric threshold or qualitative meaning, hours, days, geography, mode, source URL, checked date, and confidence.
 6. The Frequent Service research view should distinguish two concepts:
