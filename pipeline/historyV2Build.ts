@@ -5,7 +5,7 @@
  *  - drop invalid snapshots (empty/unparseable label, bad refDate/year, dated after the build month)
  *  - order by real date, then keep one snapshot per route per year
  */
-import type { HeadwayByPeriod } from '../shared/config.js';
+import type { HeadwayByPeriod, PeriodKey } from '../shared/config.js';
 import { yearOfRefDate, type HistorySnapshotV2, type HistoryV2SidecarRoute } from '../shared/historyV2.js';
 import type { HolidayPeriodDrop, RepickedPeriod } from './historyRefQuality.js';
 import { afterBuildMonth, getPeriodKeySortValue, labelFromRefDate, parsePeriodKey } from './historyPeriods.js';
@@ -20,6 +20,8 @@ export interface ArchiveChange {
   /** CIV-555: the route's shared-stretch value when better than the headline (historyListLowEnd), and per period. */
   trunkHeadway?: number;
   trunkHeadwayByPeriod?: HeadwayByPeriod;
+  /** CIV-471: the weekday periods the route ran no trip at all (absent: unknown). */
+  noTripPeriods?: PeriodKey[];
   geometry?: unknown;
   processedAt?: string;
 }
@@ -34,6 +36,7 @@ export interface BuiltSnapshot {
   /** CIV-555: the shared-stretch value, so History can headline "every 8–60" as the live card does. */
   trunkHeadwayMin?: number;
   trunkHeadwayByPeriod?: HeadwayByPeriod;
+  noTripPeriods?: PeriodKey[];
   geometry?: unknown;
   v2?: HistorySnapshotV2;
   processedAt?: string;
@@ -262,6 +265,8 @@ export function buildRouteSnapshots(
       headwayByPeriod: v2 ? v2.rep.p : c.change?.headwayByPeriod,
       ...(() => { const t = v2 ? v2.rep.t : c.change?.trunkHeadway; return t != null && h != null && t < h ? { trunkHeadwayMin: t } : {}; })(),
       ...(() => { const tp = v2 ? v2.rep.tp : c.change?.trunkHeadwayByPeriod; return tp ? { trunkHeadwayByPeriod: tp } : {}; })(),
+      // Route-level, read from the same feed as the sidecar, so it holds for either source (CIV-471).
+      ...(c.change?.noTripPeriods ? { noTripPeriods: c.change.noTripPeriods } : {}),
       geometry: c.change?.geometry,
       v2,
       processedAt: c.change?.processedAt,

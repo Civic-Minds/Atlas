@@ -7,6 +7,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ## [Unreleased]
 
 - **The report-a-problem form fills the screen width on phones**: it had shrunk to a narrow strip, so its button label wrapped and was cut off
+- **History says "No midday buses" where a route ran no trip in that period (beta)**: it was a blank row, which also looks like a missing number; the same wording covers every time of day and every kind of vehicle
 - **Area and state pages name agencies that only run at rush hour**: "Rush hour only: VRE." on the Washington, DC and Virginia pages (ACE in California, San Francisco and San Jose), each linking to its agency page; they were left out because the pages count weekday midday service
 - **History's frequency change box shows when a route's frequency moves to another grade (beta)**: a 2-minute shift such as 30 to 28 min no longer counts, while 20 to 15 always does, by the same rule Studio uses
 - **Opening and closing Compare and History is smooth**: the second map slides in and out and History fades, instead of the screen jumping between views
