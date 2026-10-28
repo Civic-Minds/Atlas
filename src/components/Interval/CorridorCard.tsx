@@ -10,6 +10,12 @@ import type { TimePeriod } from '../../hooks/useIntervalStats';
  * Corridors prototype card (CIV-1092, beta only). Every string here is a proposal that needs
  * Ryan's word-for-word OK before it leaves beta.
  */
+export const CORRIDOR_MODE_TEXT = {
+  label: 'Combined frequency',
+  description: 'Where routes share stops, colours the street by how often any of them comes.',
+  toggleLabel: 'Toggle combined frequency',
+};
+
 export const CORRIDOR_TEXT = {
   title: 'Combined service',
   closeLabel: 'Close combined service',

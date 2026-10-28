@@ -5,6 +5,7 @@ import { TOP_BAR_ICON_BTN, DROPDOWN_PANEL, SEARCH_FIELD, SEARCH_PILL, SEARCH_ICO
 import Pill from '../ui/Pill';
 import ActiveDot from '../ui/ActiveDot';
 import Toggle from '../ui/Toggle';
+import { CORRIDOR_MODE_TEXT } from './CorridorCard';
 import { AVAILABLE_FILTER_MODES } from '../../utils/shareUrlState';
 import type { DayType } from '../../../shared/dayTypes';
 import type { TimePeriod } from '../../hooks/useIntervalStats';
@@ -25,7 +26,7 @@ import { compareAgencyName, compareRegion, compareRouteNumber } from '../../util
 import PanelHeader from '../ui/PanelHeader';
 
 interface FilterPanelProps {
-  /** Corridors prototype (CIV-1092, beta only): the switch shows only when the setter is given. */
+  /** Corridor mode (CIV-1092, beta only), in Settings: the switch shows only when the setter is given. */
   corridorsOn?: boolean;
   setCorridorsOn?: (on: boolean) => void;
   lightMode: boolean;
@@ -573,6 +574,19 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                 </>
               )}
 
+              {/* Corridor mode (CIV-1092, beta only). Wording awaits Ryan's OK. */}
+              {setCorridorsOn && (
+                <div className="px-5 pb-3">
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="min-w-0">
+                      <p className="text-xs font-bold text-[var(--text-primary)] leading-tight">{CORRIDOR_MODE_TEXT.label}</p>
+                      <p className="text-xs text-[var(--text-muted)] mt-1 leading-relaxed">{CORRIDOR_MODE_TEXT.description}</p>
+                    </div>
+                    <Toggle on={!!corridorsOn} onToggle={() => setCorridorsOn(!corridorsOn)} label={CORRIDOR_MODE_TEXT.toggleLabel} className="mt-0.5 shrink-0" />
+                  </div>
+                </div>
+              )}
+
               {FEATURES.persistedSettings && (
                 <>
                   <div className="px-5 pt-4 pb-1">
@@ -640,12 +654,6 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                   <PickerSection title="Frequency" className="px-5 pt-4 pb-3"><FrequencyPicker value={maxHeadway} onChange={max => setMaxHeadway?.(max)} /></PickerSection>
                   <PickerSection title="Day of service" className="px-5 pt-2 pb-3"><DayPicker fill value={day as DayType} onChange={d => setDay?.(d)} /></PickerSection>
                   <PickerSection title="Time period" className="px-5 pt-2 pb-3"><PeriodPicker includeAll value={period as TimePeriod} onChange={p => setPeriod?.(p)} /></PickerSection>
-                  {setCorridorsOn && (
-                    <div className="px-5 pt-2 pb-3 flex items-center justify-between gap-3">
-                      <p className={CARD_NOTE}>Corridors</p>
-                      <Toggle on={!!corridorsOn} onToggle={() => setCorridorsOn(!corridorsOn)} label="Corridors" />
-                    </div>
-                  )}
 
                   {compare?.side && (
                     <div className="px-5 pt-2 pb-3">

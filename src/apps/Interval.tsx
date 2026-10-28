@@ -171,8 +171,8 @@ const PENDING_ROUTE_TIMEOUT_MS = 20000;
 export default function Interval({ agencies, allAgencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showSelectionUi = false, showRouteLayers = true, liveRoutesOnly = false, filterToAgencies = false, agencyFilterSlugs = null, onHistoryRouteClick, onInfoOpen, selectedAgencySlug, setSelectedAgencySlug, onAgencyCardClose, historyView, onMapDismiss, externalPanelOpen = false, pendingLiveRoute, onPendingLiveRouteHandled, pendingNightRoute, onPendingNightRouteHandled, searchFocused = false, setSearchFocused, hideFilterPanel = false, day, setDay, onLayersChange, onViewportAgencySlugsChange, onUserMoveMap, onSelectedMapAgencyChange, onSelectionActiveChange, onLiveRouteSelected, compareStartRequest = null, onCompareActiveChange, headerPortalContainer, viewTabsPortalContainer, moreMenuPortalContainer, onMoreMenuDone, nightServiceView = false, nightServiceFrequency = 60, setNightServiceFrequency, frequentServiceView = false, frequentServiceDays = ['Weekday'], frequentServiceFrequency = 15, frequentServiceWindow = 'daytime', setFrequentServiceDays, setFrequentServiceFrequency, setFrequentServiceWindow, showMapContext = false, showMatchPercentage = false, sidebarLeft, searchBarWidth, searchEnterRef, analyticsApp = 'frequency', hideLowQuality, setHideLowQuality, feedQualityEnabled = false, showMapLegend, setShowMapLegend, dataSaver, setDataSaver, exportEnabled = false, exportTitle = 'Transit map' }: Props) {
   const [searchParams] = useSearchParams();
   const [mapContextOpen, setMapContextOpen] = useState(false);
-  // Corridors prototype (CIV-1092, beta only): off until switched on (or opened with
-  // ?corridors=1 for review), never remembered.
+  // Corridor mode (CIV-1092, beta only): a Settings switch, off until switched on (or opened
+  // with ?corridors=1 for review), never remembered.
   const [corridorsOn, setCorridorsOn] = useState(() =>
     FEATURES.corridors && typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('corridors') === '1');
   const [mapContextView, setMapContextView] = useState<'agencies' | 'routes'>('routes');
@@ -1418,8 +1418,6 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
               nightServiceMode={nightServiceView}
               nightServiceFrequency={nightServiceFrequency}
               setNightServiceFrequency={setNightServiceFrequency}
-              corridorsOn={corridorsOn}
-              setCorridorsOn={FEATURES.corridors && !nightServiceView && !frequentServiceView ? setCorridorsOn : undefined}
               variant={compareActive ? 'shared' : 'full'}
             />
             )}
@@ -1427,8 +1425,6 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
           {!hideFilterPanel && (
               <FilterPanel
               mode="filters"
-              corridorsOn={corridorsOn}
-              setCorridorsOn={FEATURES.corridors && !nightServiceView && !frequentServiceView && !compareActive ? setCorridorsOn : undefined}
               lightMode={lightMode}
               setLightMode={setLightMode}
               hideSpan={hideSpan}
@@ -1458,6 +1454,8 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
               feedQualityEnabled={feedQualityEnabled}
               showMapLegend={showMapLegend}
               setShowMapLegend={setShowMapLegend}
+              corridorsOn={corridorsOn}
+              setCorridorsOn={FEATURES.corridors && !nightServiceView && !frequentServiceView && !compareActive ? setCorridorsOn : undefined}
               dataSaver={dataSaver}
               setDataSaver={setDataSaver}
               compare={compareAvailable ? { side: compareActive ? compareSide : null, onStart: startCompare, onExit: exitCompare, onChange: setCompareSide } : undefined}
@@ -1495,6 +1493,8 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
               feedQualityEnabled={feedQualityEnabled}
               showMapLegend={showMapLegend}
               setShowMapLegend={setShowMapLegend}
+              corridorsOn={corridorsOn}
+              setCorridorsOn={FEATURES.corridors && !nightServiceView && !frequentServiceView && !compareActive ? setCorridorsOn : undefined}
               dataSaver={dataSaver}
               setDataSaver={setDataSaver}
               compare={compareAvailable ? { side: compareActive ? compareSide : null, onStart: startCompare, onExit: exitCompare, onChange: setCompareSide } : undefined}

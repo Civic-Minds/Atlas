@@ -30,9 +30,6 @@ import { capitalizeFirst, headwayAmount, headwayBandLabel, headwayOrBetter, head
 export { getNowDay };
 
 interface FilterChipsProps {
-  /** Corridors prototype (CIV-1092, beta only): the chip shows only when the setter is given. */
-  corridorsOn?: boolean;
-  setCorridorsOn?: (on: boolean) => void;
   maxHeadway: number;
   setMaxHeadway: (h: number) => void;
   selectedModes: Set<number>;
@@ -230,8 +227,6 @@ function AgenciesPanel({ agencies, selectedAgencies, setSelectedAgencies, bounds
 }
 
 export const FilterChips: React.FC<FilterChipsProps> = ({
-  corridorsOn,
-  setCorridorsOn,
   maxHeadway,
   setMaxHeadway,
   selectedModes,
@@ -541,14 +536,6 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
 
       {/* Agencies */}
       {agenciesChip}
-
-      {/* Corridors prototype (CIV-1092, beta only) */}
-      {setCorridorsOn && (
-        <button onClick={() => setCorridorsOn(!corridorsOn)} className={chipClass(!!corridorsOn)} aria-pressed={!!corridorsOn}>
-          Corridors
-          <Dot show={!!corridorsOn} />
-        </button>
-      )}
 
     </div>
   );

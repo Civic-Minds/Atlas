@@ -7,12 +7,14 @@ import { getAgencyArtifactUrls, type PeriodKey } from '../../../../shared/config
 import type { DayType } from '../../../../shared/dayTypes';
 import type { TimePeriod } from '../../../hooks/useIntervalStats';
 import { headwayToTierColor, type ColorVisionMode } from '../../../utils/colors';
+import { ROUTE_LINE_WIDTH_BY_ZOOM } from './routeStyle';
 
 /**
- * Corridors prototype (CIV-1092, beta only): stretches where two or more route numbers share at
- * least three stops in the same direction, coloured by the combined rider wait for the chosen day
- * and period (pipeline/transit-corridors.ts). Route lines and route values are untouched; this
- * layer draws on top only while switched on.
+ * Corridor mode (CIV-1092, beta only, a Settings switch): stretches where two or more route
+ * numbers share at least three stops in the same direction are drawn in the route lines' own
+ * style over the routes there, coloured by the combined rider wait for the chosen day and period
+ * (pipeline/transit-corridors.ts), and the frequency filter reads that combined value. Elsewhere
+ * the route lines show as today, each route's own value. Route cards and values are untouched.
  */
 
 export type CorridorWaits = Record<PeriodKey, number | null>;
@@ -28,7 +30,7 @@ export interface CorridorDetail {
   routeWaits: Record<string, CorridorWaits>;
 }
 
-export const CORRIDOR_LAYER_IDS = { casing: 'corridors-casing', line: 'corridors-line', hit: 'corridors-hit-layer' } as const;
+export const CORRIDOR_LAYER_IDS = { line: 'corridors-line', hit: 'corridors-hit-layer' } as const;
 
 /** The period a corridor is coloured by: the chosen one, or midday for "All day". */
 export function corridorPeriod(period: TimePeriod): PeriodKey {
@@ -51,12 +53,16 @@ export function corridorDetail(slug: string, properties: Record<string, unknown>
   };
 }
 
-/** The drawable features for one day and period: corridors with a combined wait then, coloured by it. */
+/**
+ * The drawable features for one day and period: corridors whose combined wait then passes the
+ * frequency filter, coloured by it.
+ */
 export function corridorFeaturesFor(
   bySlug: ReadonlyMap<string, GeoJSON.Feature[]>,
   day: DayType,
   period: TimePeriod,
   colorMode: ColorVisionMode,
+  maxHeadway = Infinity,
 ): GeoJSON.Feature[] {
   const pk = corridorPeriod(period);
   const out: GeoJSON.Feature[] = [];
@@ -65,7 +71,7 @@ export function corridorFeaturesFor(
       const detail = corridorDetail(slug, (f.properties ?? {}) as Record<string, unknown>);
       if (!detail || detail.day !== day) continue;
       const wait = detail.waits[pk];
-      if (wait == null) continue;
+      if (wait == null || wait > maxHeadway) continue;
       out.push({
         type: 'Feature',
         geometry: f.geometry,
@@ -95,19 +101,12 @@ async function loadCorridors(agency: Agency): Promise<GeoJSON.Feature[]> {
 function ensureLayers(map: maplibregl.Map) {
   if (map.getSource('corridors')) return;
   map.addSource('corridors', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
-  // Above the route lines, below the stops: a pale casing so a corridor reads apart from the route
-  // line under it, then the corridor in its tier colour.
+  // Above the route lines, below the stops, in the route lines' own width and tier colours.
   const before = map.getLayer('stops-layer') ? 'stops-layer' : undefined;
   map.addLayer({
-    id: CORRIDOR_LAYER_IDS.casing, type: 'line', source: 'corridors',
-    paint: { 'line-color': '#ffffff', 'line-width': ['interpolate', ['linear'], ['zoom'], 9, 6, 14, 12], 'line-opacity': 0.95 },
-    layout: { 'line-cap': 'round', 'line-join': 'round' },
-  }, before);
-  map.addLayer({
     id: CORRIDOR_LAYER_IDS.line, type: 'line', source: 'corridors',
-    // Dashed, so a corridor never reads as one more route line of the same colour.
-    paint: { 'line-color': ['get', 'color'], 'line-width': ['interpolate', ['linear'], ['zoom'], 9, 3, 14, 7], 'line-dasharray': [1.5, 1] },
-    layout: { 'line-cap': 'butt', 'line-join': 'round' },
+    paint: { 'line-color': ['get', 'color'], 'line-width': ROUTE_LINE_WIDTH_BY_ZOOM as any },
+    layout: { 'line-cap': 'round', 'line-join': 'round' },
   }, before);
   map.addLayer({
     id: CORRIDOR_LAYER_IDS.hit, type: 'line', source: 'corridors',
@@ -125,9 +124,9 @@ function setVisible(map: maplibregl.Map, visible: boolean) {
 export function useCorridorsLayer(
   mapRef: React.RefObject<maplibregl.Map | null>,
   mapLoaded: boolean,
-  options: { enabled: boolean; agencies: Agency[]; day: DayType; period: TimePeriod; colorMode: ColorVisionMode },
+  options: { enabled: boolean; agencies: Agency[]; day: DayType; period: TimePeriod; colorMode: ColorVisionMode; maxHeadway: number },
 ): { details: ReadonlyMap<string, GeoJSON.Feature[]> } {
-  const { enabled, agencies, day, period, colorMode } = options;
+  const { enabled, agencies, day, period, colorMode, maxHeadway } = options;
   const [bySlug, setBySlug] = useState<ReadonlyMap<string, GeoJSON.Feature[]>>(new Map());
   const requested = useRef(new Set<string>());
 
@@ -160,10 +159,10 @@ export function useCorridorsLayer(
     ensureLayers(map);
     (map.getSource('corridors') as maplibregl.GeoJSONSource).setData({
       type: 'FeatureCollection',
-      features: corridorFeaturesFor(bySlug, day, period, colorMode),
+      features: corridorFeaturesFor(bySlug, day, period, colorMode, maxHeadway),
     });
     setVisible(map, true);
-  }, [mapRef, mapLoaded, enabled, bySlug, day, period, colorMode]);
+  }, [mapRef, mapLoaded, enabled, bySlug, day, period, colorMode, maxHeadway]);
 
   return { details: bySlug };
 }

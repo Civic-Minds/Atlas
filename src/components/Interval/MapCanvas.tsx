@@ -231,7 +231,7 @@ interface MapCanvasProps {
   agencyDataLoading?: boolean;
   /** Number of agencies whose route data failed to load. */
   agencyDataFailedCount?: number;
-  /** Corridors prototype layer (CIV-1092, beta only), off until switched on. */
+  /** Corridor mode (CIV-1092, beta only): combined frequency where routes share stops, off until switched on in Settings. */
   corridorsOn?: boolean;
 }
 
@@ -1223,7 +1223,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   useHistoryLayer(mapRef, mapLoaded);
   const corridorColorMode = colorVisionFriendly ? 'friendly' : 'default';
   const { details: corridorDetails } = useCorridorsLayer(mapRef, mapLoaded, {
-    enabled: corridorsOn, agencies, day: day ?? 'Weekday', period, colorMode: corridorColorMode,
+    enabled: corridorsOn, agencies, day: day ?? 'Weekday', period, colorMode: corridorColorMode, maxHeadway,
   });
   const openCorridor = corridorsOn && selectedCorridor
     ? findCorridor(corridorDetails, selectedCorridor.slug, selectedCorridor.corridorId, day ?? 'Weekday')
