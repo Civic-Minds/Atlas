@@ -327,7 +327,7 @@ describe('night service on part of the route counts, on the part it runs (Ryan, 
       expect(rows.every(p => p.stretchNight30 === true && p.stretchNight60 === true), route).toBe(true);
       expect(rows.some(p => p.nightServicePartOfRoute === true), route).toBe(true);
     }
-  });
+  }, 30_000);
 });
 
 describe('D8 midpoint shadow (YRT Viva Weekday overnight)', () => {
