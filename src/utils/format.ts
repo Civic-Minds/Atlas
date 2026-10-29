@@ -270,7 +270,10 @@ export function titleCase(s: string): string {
  * as written ("McDonald Ave", "Lower Jarvis St at The Esplanade"), the same rule routeLabelCase uses for route names.
  */
 export function stopNameCase(name: string): string {
-  return writtenInCapitals(name) ? keepFeedParticles(name, titleCase(name)) : name;
+  const cased = writtenInCapitals(name) ? keepFeedParticles(name, titleCase(name)) : name;
+  // Westbound and eastbound ramps stay in capitals even in a mixed-case name ("Gardiner Expressway (WB On Ramp)",
+  // Ryan, CIV-1117 row 6).
+  return cased.replace(/\b(Wb|Eb)\b/g, w => w.toUpperCase());
 }
 
 /**
