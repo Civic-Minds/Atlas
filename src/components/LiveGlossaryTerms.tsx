@@ -4,7 +4,7 @@ import { LIVE_GLOSSARY } from '../../shared/liveGlossary';
 export default function LiveGlossaryTerms() {
   return (
     <>
-      {LIVE_GLOSSARY.map(g => <p key={g.term}><strong className="text-[var(--text-primary)]">{g.term}</strong> {g.text}</p>)}
+      {LIVE_GLOSSARY.map(g => <p key={g.term}><strong className="text-[var(--text-primary)]">{g.term}</strong>{g.legend ? ': ' : ' '}{g.text}</p>)}
     </>
   );
 }

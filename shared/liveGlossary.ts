@@ -3,9 +3,10 @@
  * The Docs page's Glossary shows them. `text` is the rest of the sentence after the bold term, no colon (CIV-1075).
  */
 import { COLOURED_CHANGES } from './liveDashboard.js';
-import { LATE_DEFINITION, RECORDING_GAPS } from './liveWording.js';
+import { DELAY_LEGEND_TITLE, DELAY_STEP_LABELS, EARLY_STEP_LABEL, LATE_DEFINITION, RECORDING_GAPS } from './liveWording.js';
 
-export interface LiveTerm { term: string; text: string }
+/** `legend`: a chart key rather than a definition, shown as "**Term**: …" (E22) and not on the agency page. */
+export interface LiveTerm { term: string; text: string; legend?: boolean }
 
 export const LIVE_GLOSSARY: readonly LiveTerm[] = [
   { term: 'Late', text: LATE_DEFINITION },
@@ -19,4 +20,5 @@ export const LIVE_GLOSSARY: readonly LiveTerm[] = [
   { term: 'Stops', text: 'are listed once they have 30 or more departures, with up to 3 per route direction.' },
   { term: 'Coloured changes', text: COLOURED_CHANGES },
   { term: 'Recording gaps', text: RECORDING_GAPS },
+  { term: DELAY_LEGEND_TITLE, text: [EARLY_STEP_LABEL, ...DELAY_STEP_LABELS].join(' · '), legend: true },
 ];
