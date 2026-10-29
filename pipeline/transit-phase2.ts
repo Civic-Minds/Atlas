@@ -509,7 +509,9 @@ export function applyAnalysisCriteria(
         // pool; full-window rush-hour density gives a spuriously low headway (e.g. every 18 min
         // on KI when actual sustained service is much less frequent). Midday window reflects the
         // honest off-peak combined frequency for both directions.
-        // Falls back to full window when midday has <2 trips (e.g. GO Milton, Kitchener GO).
+        // Falls back to full window when midday has <2 trips (e.g. GO Milton, Kitchener GO), or
+        // fewer than a schedule's three departures (CIV-1085): NJT Rail 1's two midday trains
+        // read irregular although twelve run all day.
         const MIDDAY_START = RAIL_TIER_WINDOW.start; // 09:30
         const MIDDAY_END = RAIL_TIER_WINDOW.end;   // 14:30
         const isRail = raw.railLike ?? isRailLikeRoute({ routeType: raw.routeType });
@@ -517,7 +519,7 @@ export function applyAnalysisCriteria(
         let analysisWindowMins = end - start;
         if (isRail) {
             const midday = windowedTimes.filter(t => t >= MIDDAY_START && t <= MIDDAY_END);
-            if (midday.length >= 2) {
+            if (midday.length >= MIN_SCHEDULE_DEPARTURES) {
                 analysisWindow = midday;
                 analysisWindowMins = MIDDAY_END - MIDDAY_START;
             }

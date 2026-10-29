@@ -89,6 +89,7 @@ import {
   type GateCandidate,
 } from './releaseDiff.js';
 import { ROUTE_ARTIFACT_SCHEMA_VERSION } from '../shared/artifactSchema.js';
+import type { FeedQuality } from '../shared/feedQuality.js';
 import { agencyTodayYmd } from '../shared/feedAvailability.js';
 import { COUNTRY_LAUNCH_FLAG, assertCountryMayWriteToR2, resolveAgencyCountry, type AgencyCountrySource } from './countryLaunchGate.js';
 
@@ -127,6 +128,7 @@ interface Agency {
   hiddenInProduction?: boolean;
   staged?: boolean;
   pmtilesPending?: boolean;
+  feedQuality?: FeedQuality;
 }
 
 interface ReportRow {
@@ -141,6 +143,8 @@ interface ReportRow {
   liveFeedExpiry?: string | null;
   liveCounts?: ArtifactCounts | null;
   outputCounts?: ArtifactCounts;
+  /** The rating this feed gets (CIV-533), recorded when its artifacts are published. */
+  feedQuality?: { status: FeedQuality['status']; score: number };
 }
 
 class Refusal extends Error {}
@@ -149,8 +153,12 @@ class Refusal extends Error {}
 const gateInputs = new Map<string, { candidate: GateCandidate; live: ArtifactSummary | null }>();
 // Live data for the drop and gate checks: the public release first (CIV-522).
 const readBaseline = releaseBaselineReader(r2Get);
-/** The processed feed's raw expiry dates per agency, recorded in index.json once its artifacts are published (#837). */
-const processedExpiries = new Map<string, { feedExpiry: string | null; calendarExpiry: string | null; calendarOnlyEnd: string | null; listingEnd: string | null }>();
+/**
+ * The processed feed's raw expiry dates (#837) and its quality rating (CIV-533) per agency, recorded in
+ * index.json and the agency config once its artifacts are published.
+ */
+const processedExpiries = new Map<string, { feedExpiry: string | null; calendarExpiry: string | null; calendarOnlyEnd: string | null; listingEnd: string | null; feedQuality: FeedQuality }>();
+let qualityUpdates = 0;
 const expiryUpdates: string[] = [];
 const AGENCY_ARTIFACTS = ['', '-stops', '-corridors', '-trips', '-stops-meta', '-sections'] as const;
 
@@ -283,7 +291,8 @@ async function processAgency(agency: Agency): Promise<ReportRow> {
     row.outputCounts = next.counts;
     row.liveCounts = live?.counts ?? null;
     gateInputs.set(agency.slug, { candidate: { slug: agency.slug, next, service: { start: feedStart, end: feedExpiry, calendarEnd, liveFeedExpiry: agency.lastFeedExpiry } }, live });
-    processedExpiries.set(agency.slug, { feedExpiry: result.feedExpiry, calendarExpiry: result.calendarExpiry, calendarOnlyEnd: result.calendarOnlyEnd, listingEnd: result.listingEnd });
+    processedExpiries.set(agency.slug, { feedExpiry: result.feedExpiry, calendarExpiry: result.calendarExpiry, calendarOnlyEnd: result.calendarOnlyEnd, listingEnd: result.listingEnd, feedQuality: result.feedQuality });
+    row.feedQuality = { status: result.feedQuality.status, score: result.feedQuality.score };
 
     const agencyDir = resolve(outputDir, agency.slug);
     mkdirSync(agencyDir, { recursive: true });
@@ -350,17 +359,21 @@ async function publishRow(row: ReportRow, agency: Agency, registry: Agency[]): P
     return r2Put(`atlas/${name}`, readFileSync(resolve(agencyDir, name), 'utf8'));
   }));
   console.log(`  Published ${row.slug} derived artifacts.`);
-  // The live data now comes from this feed: record its expiry like a refresh does (#837).
+  // The live data now comes from this feed: record its expiry like a refresh does (#837), and its
+  // quality rating on every rebuild, so a rating never outlives the code or feed it was made from (CIV-533).
   const dates = processedExpiries.get(row.slug);
-  if (dates && stampReprocessedFeedExpiry(agency, { ...dates, todayYmd })) {
-    const configPath = resolve('config/agencies', `${agency.slug}.json`);
-    if (existsSync(configPath)) {
-      const source = JSON.parse(readFileSync(configPath, 'utf8')) as Agency;
-      stampReprocessedFeedExpiry(source, { ...dates, todayYmd });
-      writeFileSync(configPath, `${JSON.stringify(source, null, 2)}\n`);
-    }
-    expiryUpdates.push(`${agency.slug} ${row.liveFeedExpiry ?? 'none'} -> ${agency.lastFeedExpiry}`);
+  if (!dates) return;
+  const expiryChanged = stampReprocessedFeedExpiry(agency, { ...dates, todayYmd });
+  agency.feedQuality = dates.feedQuality;
+  qualityUpdates++;
+  const configPath = resolve('config/agencies', `${agency.slug}.json`);
+  if (existsSync(configPath)) {
+    const source = JSON.parse(readFileSync(configPath, 'utf8')) as Agency;
+    if (expiryChanged) stampReprocessedFeedExpiry(source, { ...dates, todayYmd });
+    source.feedQuality = dates.feedQuality;
+    writeFileSync(configPath, `${JSON.stringify(source, null, 2)}\n`);
   }
+  if (expiryChanged) expiryUpdates.push(`${agency.slug} ${row.liveFeedExpiry ?? 'none'} -> ${agency.lastFeedExpiry}`);
 }
 
 async function main(): Promise<void> {
@@ -408,8 +421,11 @@ async function main(): Promise<void> {
       await runWithConcurrency(rows.filter(row => row.status === 'processed').map(row => () => publishRow(row, bySlug.get(row.slug)!, index.agencies)), concurrency);
     } finally {
       // Also after a failed upload: the agencies published before it already serve the new feed.
-      if (expiryUpdates.length) {
+      if (qualityUpdates) console.log(`\nRecorded a fresh quality rating for ${qualityUpdates} agencies (commit config/agencies).`);
+      if (expiryUpdates.length || qualityUpdates) {
         writeFileSync(indexPath, `${JSON.stringify(index, null, 2)}\n`);
+      }
+      if (expiryUpdates.length) {
         console.log(`\nUpdated feed expiry in index.json for ${expiryUpdates.length} agencies (commit public/data/index.json and config/agencies):`);
         for (const line of expiryUpdates.sort()) console.log(`  ${line}`);
       }

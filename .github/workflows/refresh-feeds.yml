@@ -105,6 +105,23 @@ jobs:
           delete-branch: true
           labels: data-quality,pipeline
 
+      # As for the rebuild's metadata and agency pages pull requests (CIV-1029): a pull request opened
+      # with GITHUB_TOKEN gets no working CI run of its own, so CI is dispatched on the branch (it
+      # reports the required check as a commit status) and auto-merge finishes it.
+      - name: Run CI on the refresh branch
+        if: steps.refresh-pr.outputs.pull-request-number != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh workflow run ci.yml --ref automation/weekly-gtfs-refresh
+
+      - name: Auto-merge refresh pull request once checks pass
+        if: steps.refresh-pr.outputs.pull-request-number != ''
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ steps.refresh-pr.outputs.pull-request-number }}
+        run: gh pr merge "$PR_NUMBER" --auto --squash
+
       # create-pull-request moves the refreshed files onto its branch and
       # hard-resets this checkout to origin/main. Put them back so PMTiles,
       # History and the release are built from the refreshed index that the
