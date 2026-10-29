@@ -11,16 +11,18 @@ import type { CSSProperties } from 'react';
 export const MAP_OVERLAY_ROWS = {
   /** The bottom edge: the footer pills, the map controls. Every edge is the same 1.5rem (6) inset. */
   edge: 'bottom-6',
-  /** sm and up: one row above a one-row footer (the map key). */
-  aboveFooter: 'bottom-16',
+  /** sm and up: one row above the footer, however far its pills wrap (the map key): its measured height, one row (2rem)
+   *  until measured (CIV-1136). */
+  aboveFooter: 'sm:bottom-[calc(2rem+var(--map-footer-h,2rem))]',
   /** Phones: the row above the footer pills (the loading and count pills). */
   phoneCounts: 'max-sm:bottom-16',
   /** Phones: the row above the counts (the map key). */
   phoneAboveCounts: 'max-sm:bottom-[6.5rem]',
-  /** The notice pill, one row above the footer: phones above the counts, sm and up above the footer's measured height. */
-  notice: 'bottom-[6.5rem] sm:bottom-[calc(2rem+var(--map-footer-h))]',
-  /** The notice pill one row higher still. */
-  noticeRaised: 'bottom-[9rem] sm:bottom-[calc(4.5rem+var(--map-footer-h))]',
+  /** The notice pill, one row above the footer: phones above the counts, sm and up above the footer's measured height;
+   *  above the map key too when the key shows (--map-key-h, 0 without it; CIV-1136). */
+  notice: 'bottom-[calc(6.5rem+var(--map-key-h,0px))] sm:bottom-[calc(2rem+var(--map-footer-h,2rem)+var(--map-key-h,0px))]',
+  /** The notice pill one row higher still (and the update banner, so the two never meet). */
+  noticeRaised: 'bottom-[calc(9rem+var(--map-key-h,0px))] sm:bottom-[calc(4.5rem+var(--map-footer-h,2rem)+var(--map-key-h,0px))]',
   /** App-level status pills, just inside the bottom edge. */
   status: 'bottom-5',
 } as const;
@@ -29,14 +31,29 @@ export const MAP_OVERLAY_ROWS = {
 export const MAP_OVERLAY_EDGES = {
   left: 'left-6',
   phoneLeft: 'max-sm:left-6',
-  /** The footer row stops short of the map controls. */
-  footerRight: 'right-14',
+  /** The footer row stops short of the map controls, and of History's year scrubber when it shows (--map-footer-right),
+   *  so the pills wrap upward instead of running under it (CIV-1136). */
+  footerRight: 'right-[var(--map-footer-right,3.5rem)]',
+  /** History's year scrubber, in the bottom-right corner beside the controls. */
+  scrubberRight: 'right-14',
   controlsRight: 'right-3 max-sm:right-6',
   /** The notice pill stays clear of the controls (and, on sm and up, of the counts). */
   noticeSides: 'left-6 right-24 sm:right-56',
 } as const;
 
 const R = MAP_OVERLAY_ROWS, E = MAP_OVERLAY_EDGES;
+
+/**
+ * The measured sizes the rows read, published on the page root so every overlay can read them, inside the map or not
+ * (History and the update banner sit outside the map app): the footer row's height, the map key's height plus its gap
+ * (absent without a key), and the footer row's right inset while History's scrubber shows.
+ */
+export const MAP_OVERLAY_VARS = { footerHeight: '--map-footer-h', keyHeight: '--map-key-h', footerRight: '--map-footer-right' } as const;
+export function publishMapOverlayVar(name: (typeof MAP_OVERLAY_VARS)[keyof typeof MAP_OVERLAY_VARS], value: string | null): void {
+  if (typeof document === 'undefined') return;
+  if (value == null) document.documentElement.style.removeProperty(name);
+  else document.documentElement.style.setProperty(name, value);
+}
 
 /** The header row: logo and search on the left, mode tabs and buttons on the right. */
 export const MAP_TOP_BAR_SLOT = 'top-6 left-6 right-6 h-[28px]';
@@ -48,7 +65,14 @@ export const MAP_FOOTER_PILLS_PHONE_SLOT = `max-sm:absolute max-sm:bottom-6 ${E.
 export const MAP_COUNTS_PHONE_SLOT = `max-sm:absolute ${R.phoneCounts} ${E.phoneLeft}`;
 /** The map key (Settings, "Show map legend"): bottom-left above the footer row; phones one row higher, above the
  *  loading and count pills (CIV-1070: the loading pill covered its last row). */
-export const MAP_LEGEND_SLOT = `absolute ${R.aboveFooter} ${E.left} ${R.phoneAboveCounts}`;
+export const MAP_LEGEND_SLOT = `absolute ${R.phoneAboveCounts} ${R.aboveFooter} ${E.left}`;
+/** History's year scrubber: the bottom-right corner beside the controls; the footer row keeps clear of it (footerRight). */
+export const MAP_SCRUBBER_SLOT = `absolute ${R.edge} ${E.scrubberRight}`;
+/** The scrubber's width, and the footer row's right inset while it shows: the controls' inset, the scrubber, a gap. */
+export const MAP_SCRUBBER_WIDTH = 'w-[260px]';
+export const MAP_SCRUBBER_FOOTER_RIGHT = 'calc(3.5rem + 260px + 0.5rem)';
+/** The update banner: centred one row above the notice pill, so it never sits on the footer pills or the notice. */
+export const MAP_BANNER_SLOT = `fixed left-1/2 -translate-x-1/2 ${R.noticeRaised}`;
 /** The locate, export and zoom stack in the bottom-right corner. */
 export const MAP_CONTROLS_SLOT = `absolute ${R.edge} ${E.controlsRight}`;
 /** A centred notice pill one row above the bottom-left pills, clear of the controls; `raised` sits one row higher
