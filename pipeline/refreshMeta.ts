@@ -3,6 +3,7 @@
  * Separated so unit tests can cover stamp decisions without R2.
  */
 import { isExpiredFeedExpiry, isYmd, type SupplementalFeedMeta } from '../shared/feedAvailability.js';
+import type { FeedQuality } from '../shared/feedQuality.js';
 
 export interface FeedMetaFields {
   lastFeedExpiry?: string | null;
@@ -230,6 +231,23 @@ export function stampSupplementalFeedMeta(agency: FeedMetaFields, feeds: Supplem
 }
 
 /** Preserve the last good artifact while recording that a refresh needs another attempt. */
+/**
+ * CIV-533: re-rate a feed refresh skips as unchanged, so its rating is recomputed every week and never
+ * outlives the code it was made with. Only the rating changes. When processing fails, the old rating
+ * stays and the reason is returned for the log.
+ */
+export async function rerateUnchangedFeed(
+  agency: { feedQuality?: FeedQuality },
+  rate: () => Promise<{ feedQuality: FeedQuality }>,
+): Promise<string | null> {
+  try {
+    agency.feedQuality = (await rate()).feedQuality;
+    return null;
+  } catch (err) {
+    return err instanceof Error ? err.message : String(err);
+  }
+}
+
 export function markFeedStale(
   agency: FeedMetaFields,
   opts: { reason: string; todayYmd: string },

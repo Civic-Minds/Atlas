@@ -49,7 +49,7 @@ import {
 } from './overrideAudit.js';
 import { readFeedReviewHistory, shouldReviewNextFeed } from './feedReview.js';
 import { compareStopSnapshots, formatStopAuditLog, type AuditedStop } from './stopAudit.js';
-import { lowerStoredFeedExpiry, candidateIsOlderThanActive, shouldClearStaged, decideRefreshSkipUnchanged, isFeedExpired, markFeedStale, shouldReplaceExpiredFeed, shouldSkipAllExpiredFeeds, shouldStampFeedMeta, stampFeedMeta, routeLineCount, stampSupplementalFeedMeta } from './refreshMeta.js';
+import { lowerStoredFeedExpiry, candidateIsOlderThanActive, shouldClearStaged, decideRefreshSkipUnchanged, isFeedExpired, markFeedStale, rerateUnchangedFeed, shouldReplaceExpiredFeed, shouldSkipAllExpiredFeeds, shouldStampFeedMeta, stampFeedMeta, routeLineCount, stampSupplementalFeedMeta } from './refreshMeta.js';
 import {
   COUNTRY_LAUNCH_FLAG,
   isCountryLaunchBlocked,
@@ -560,6 +560,11 @@ async function refreshAgency(
         feedInfoEnd: peekedFeedInfoEnd ?? null, calendarEnd: peekedCalendarEnd ?? null, calendarOnlyEnd: peekedCalendarOnlyEnd ?? null, todayYmd: todayUtcYmd(),
       });
       if (previousExpiry) writeLog(`\n  [info] recorded expiry ${previousExpiry} -> ${agency.lastFeedExpiry} (calendar's last service date)\n  `);
+      // CIV-533: the rating is recomputed every week, unchanged feed or not, so it never outlives the
+      // code it was made with. Only the rating is kept: the artifacts and every other field stay as they are.
+      const rerateError = await rerateUnchangedFeed(agency, () =>
+        processAgencyFeeds(buf, supplementalFeeds, agency, { manualBaseFare: manualBaseFareOverride, fileDate: feedObtainedAt, force: false }));
+      if (rerateError) writeLog(`\n  [warn] could not re-rate the unchanged feed (${rerateError}); its rating from ${agency.feedQuality?.checkedAt ?? 'never'} stays\n  `);
       return { summary: skipDecision.reason };
     }
     writeLog(`\n  ${agency.slug.padEnd(12)} ... reprocessing (current feed, legacy or missing route artifact)\n`);

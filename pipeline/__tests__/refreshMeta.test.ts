@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { decideRefreshSkipUnchanged, lowerStoredFeedExpiry, isFeedExpired, markFeedStale, recordedFeedExpiry, routeLineCount, shouldReplaceExpiredFeed, shouldSkipAllExpiredFeeds, shouldStampFeedMeta, stampFeedMeta, stampReprocessedFeedExpiry, stampSupplementalFeedMeta } from '../refreshMeta.js';
+import { decideRefreshSkipUnchanged, lowerStoredFeedExpiry, isFeedExpired, markFeedStale, rerateUnchangedFeed, recordedFeedExpiry, routeLineCount, shouldReplaceExpiredFeed, shouldSkipAllExpiredFeeds, shouldStampFeedMeta, stampFeedMeta, stampReprocessedFeedExpiry, stampSupplementalFeedMeta } from '../refreshMeta.js';
 import { isCurrentProductionFeed, isStaleProductionFeed } from '../../shared/feedAvailability.js';
 
 describe('feed expiry checks', () => {
@@ -400,5 +400,30 @@ describe('lowerStoredFeedExpiry: an unchanged feed gets today\'s expiry rule (CI
     const agency = { lastFeedExpiry: '20261231' };
     expect(lowerStoredFeedExpiry(agency, { feedInfoEnd: '20261231', calendarEnd: '20261126', calendarOnlyEnd: '20261126', todayYmd: today })).toBe('20261231');
     expect(agency.lastFeedExpiry).toBe('20261126');
+  });
+});
+
+describe('rerateUnchangedFeed (CIV-533)', () => {
+  const rating = (status: 'healthy' | 'degraded', checkedAt: string) => ({
+    status, score: status === 'healthy' ? 100 : 40, reasons: [], checkedAt,
+    metrics: { validationErrors: 0, validationWarnings: 0, shapeAnomalies: 0, routeHeadwayMismatches: 0, featureCount: 10 },
+  });
+
+  it('replaces a stale rating with this run\'s, even though the feed did not change', async () => {
+    const agency = { feedQuality: rating('degraded', '2026-08-27') };
+    expect(await rerateUnchangedFeed(agency, async () => ({ feedQuality: rating('healthy', '2026-11-02') }))).toBeNull();
+    expect(agency.feedQuality).toMatchObject({ status: 'healthy', checkedAt: '2026-11-02' });
+  });
+
+  it('rates an agency that never had a rating', async () => {
+    const agency: { feedQuality?: ReturnType<typeof rating> } = {};
+    await rerateUnchangedFeed(agency, async () => ({ feedQuality: rating('healthy', '2026-11-02') }));
+    expect(agency.feedQuality?.checkedAt).toBe('2026-11-02');
+  });
+
+  it('keeps the old rating and reports why when processing fails', async () => {
+    const agency = { feedQuality: rating('degraded', '2026-08-27') };
+    expect(await rerateUnchangedFeed(agency, async () => { throw new Error('GTFS validation failed'); })).toBe('GTFS validation failed');
+    expect(agency.feedQuality.checkedAt).toBe('2026-08-27');
   });
 });
