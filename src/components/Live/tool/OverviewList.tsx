@@ -22,7 +22,7 @@ export default function OverviewList({ s, measure, band = 'all', route, network,
       </div>
       <ul className="m-0 mt-1 min-h-0 flex-1 overflow-hidden p-0">
         {shown.map(({ r, f }, i) => {
-          const l = routeLabels({ shortName: r.route, longName: r.longName ?? null, mode: r.mode ?? 3, agencyName: s.agency.toUpperCase() });
+          const l = routeLabels({ shortName: r.route, longName: r.longName ?? null, mode: r.mode ?? 3, agencyName: s.agency });
           return (
             <li key={r.route} className="list-none">
               <button type="button" onClick={() => onPick(r.route)} aria-current={r.route === route ? 'true' : undefined}
