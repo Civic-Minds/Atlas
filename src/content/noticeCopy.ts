@@ -249,6 +249,8 @@ export const networksLoadingText = (loaded: number, requested: number) => `Loadi
 export const ON_DEMAND_AREAS_FAILED = "On-demand areas couldn't load.";
 // N121 map-errors (phones): one pill in place of the map's error notices; tapping it lists them (CIV-1057, Ryan's pick).
 export const MAP_ERRORS_PILL = 'Error';
+// N122 map-errors-title (phones): the title of the card the "Error" pill opens. Proposed, waiting on Ryan's word-for-word OK (CIV-1057).
+export const MAP_ERRORS_TITLE = 'Map errors';
 // N33 removed (Ryan, 2026-10-27: scheduled service and Live carry no such notice; CIV-1063 adds a per-agency one).
 // N47 link-copied
 export const LOCATION_URL_COPIED = 'Location link copied.';

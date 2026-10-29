@@ -15,6 +15,7 @@ import { MapAttribution } from '../components/Interval/MapAttribution';
 import { PersistentMapLegend } from '../components/Interval/PersistentMapLegend';
 import { SidebarControls } from '../components/Interval/SidebarControls';
 import { NearbyRoutesPanel } from '../components/Interval/NearbyRoutesPanel';
+import { MapErrorsPanel, MapErrorsPill } from '../components/Interval/MapErrorsPill';
 import { FilterPanel } from '../components/Interval/FilterPanel';
 import { FilterChips, getNowPeriodForTimezone } from '../components/Interval/FilterChips';
 import { AgencyCard } from '../components/Interval/AgencyCard';
@@ -595,7 +596,26 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   useEffect(() => { if (!userLocation) setNearYouRoute(null); }, [userLocation]);
   const nearYouCovered = !!(selectedRoute || selectedStop || selectedAgencySlug || onDemandStopAgencySlug
     || disambiguationRoutes?.length || mapContextOpen || searchOverlayHidesPanel(searchFocused, query));
-  const nearYouShown = showUi && !!userLocation && !nearYouCovered;
+  // Phones (CIV-1057): the map's error notices, as one "Error" pill in the footer row; a tap opens their card in
+  // Near You's slot, with the messages it opened with, closed by a tap outside like Near You.
+  const [phoneMapErrors, setPhoneMapErrors] = useState<string[]>([]);
+  const [listedMapErrors, setListedMapErrors] = useState<string[] | null>(null);
+  const phoneErrorsInRow = isPhoneScreen && phoneMapErrors.length > 0;
+  const mapErrorsPanelRef = useRef<HTMLDivElement>(null);
+  useEffect(() => { if (!isPhoneScreen) setListedMapErrors(null); }, [isPhoneScreen]);
+  useEffect(() => {
+    if (!listedMapErrors) return;
+    function onPointerDown(e: PointerEvent) {
+      const target = e.target as Node;
+      if (mapErrorsPanelRef.current?.contains(target)) return;
+      if ((target as Element).closest?.('[data-map-errors-pill]')) return;
+      setListedMapErrors(null);
+    }
+    document.addEventListener('pointerdown', onPointerDown);
+    return () => document.removeEventListener('pointerdown', onPointerDown);
+  }, [listedMapErrors]);
+  const mapErrorsShown = showUi && !!listedMapErrors && !nearYouCovered;
+  const nearYouShown = showUi && !!userLocation && !nearYouCovered && !mapErrorsShown;
   const openNearYouRoute = useCallback((key: string | null) => {
     setNearYouRoute(key);
     setSelectedRoute(key);
@@ -1086,6 +1106,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
             sidebarLeft={sidebarLeft}
             searchBarWidth={searchBarWidth}
             onMapReady={setMapA}
+            onPhoneErrorsChange={setPhoneMapErrors}
             showMapControls={!compareActive}
         onRenderedRouteKeysChange={compareActive ? setRenderedA : undefined}
           />
@@ -1201,8 +1222,9 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
           <div className={`${MAP_BADGE} h-8 px-3 py-1.5 text-xs text-[var(--text-muted)]`}>{ON_DEMAND_AREAS_FAILED}</div>
         </div>
       )}
-      {((stats && (stats.total > 0 || !isLoading)) || researchCounts || isLoading || isTilesLoading || isBasemapLoading || failedSlugs.size > 0) && (
-        <div data-map-overlay="counts" className={`${MAP_COUNTS_PHONE_SLOT} ${Z_PANEL} shrink-0 flex gap-2 transition-all ${TRANSITION_SLOW} ${showUi || nightServiceView ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
+      {((stats && (stats.total > 0 || !isLoading)) || researchCounts || isLoading || isTilesLoading || isBasemapLoading || failedSlugs.size > 0 || phoneErrorsInRow) && (
+        // An error never fades (CIV-50): with the phone's "Error" pill in the row, the row stays.
+        <div data-map-overlay="counts" className={`${MAP_COUNTS_PHONE_SLOT} ${Z_PANEL} shrink-0 flex gap-2 transition-all ${TRANSITION_SLOW} ${showUi || nightServiceView || phoneErrorsInRow ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
           {(isLoading || isTilesLoading || isBasemapLoading) && (
             <div className={`${MAP_BADGE} h-8 max-sm:h-[32px]`}>
               <Spinner />
@@ -1210,6 +1232,13 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
                 {isLoading ? networksLoadingText(loadedCount, requestedCount) : loadingText('map')}
               </span>
             </div>
+          )}
+          {/* Phones (CIV-1057): right of the loading pill, in its spot when there is none. */}
+          {phoneErrorsInRow && (
+            <MapErrorsPill
+              open={!!listedMapErrors}
+              onToggle={() => setListedMapErrors(listedMapErrors ? null : phoneMapErrors)}
+            />
           )}
           {failedSlugs.size > 0 && (
             <div
@@ -1377,6 +1406,15 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
           />
         );
       })()}
+
+      {mapErrorsShown && (
+        <MapErrorsPanel
+          ref={mapErrorsPanelRef}
+          messages={listedMapErrors!}
+          sidebarLeft={sidebarLeft}
+          searchBarWidth={searchBarWidth}
+        />
+      )}
 
       {nearYouShown && (
         <NearbyRoutesPanel
