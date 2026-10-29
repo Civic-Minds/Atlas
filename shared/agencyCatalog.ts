@@ -13,6 +13,8 @@ export interface AgencyCatalogEntry extends BrowserAgencyVisibility {
   bbox?: [number, number, number, number];
   displayArea?: string;
   lastFeedExpiry?: string | null;
+  /** CIV-1011: the date most routes stopped being listed with nothing replacing them (YYYYMMDD); the agency shows Ryan's notice. Absent otherwise. */
+  listingEndedOn?: string | null;
   lastSupplementalFeeds?: SupplementalFeedMeta[];
   lastRefreshedAt?: string | null;
   lastFeedCheckAt?: string | null;

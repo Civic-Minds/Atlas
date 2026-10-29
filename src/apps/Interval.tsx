@@ -49,6 +49,8 @@ import Spinner from '../components/ui/Spinner';
 import { onDemandSelectionZoneId, resolveSelectedOnDemandSlug } from '../utils/onDemandSelection';
 import { encodeStopBackTarget, parseStopBackTarget, resolveStopBack, STOP_BACK_PARAM, stopBackTarget, type StopBackRoute, type StopBackSnapshot, type StopBackTarget } from '../utils/stopBack';
 import { AGENCY_NOT_FOUND, loadingText, networksFailedHint, networksFailedText, networksLoadingText, noRoutesMatchText, noServiceOnDayNotice, ROUTE_NOT_FOUND, STOP_NOT_FOUND } from '../content/noticeCopy';
+import { useIndexSearch } from '../hooks/useIndexSearch';
+import { mergeRouteResults, mergeStopResults } from '../utils/searchResults';
 
 // Versioned because the original preference could accidentally persist only
 // agencies in the current viewport when the bulk "All" action was used.
@@ -612,7 +614,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   }, [nearYouShown, clearUserLocation]);
 
   const nearbyRoutes = useNearbyRoutes(userLocation, layers, day, period);
-  const { stats, searchMatches, searchMatchResults, searchStopMatchResults, matchesQuery, q, filteredLayers, mapFilteredLayers, routesForStop, tileFilter } = useIntervalStats(layers, {
+  const { stats, searchMatches, searchMatchResults: loadedRouteMatches, searchStopMatchResults: loadedStopMatches, matchesQuery, q, filteredLayers, mapFilteredLayers, routesForStop, tileFilter } = useIntervalStats(layers, {
     query,
     maxHeadway,
     agencies: selectedAgencies,
@@ -629,6 +631,19 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     showCorridorBand: false,
     hoveredBranch,
   });
+
+  // Routes and stops of agencies not loaded yet, from the release's search index (CIV-1048).
+  const catalogAgencyNames = useMemo(() => new Map(agencies.map(a => [a.slug, a.name])), [agencies]);
+  const indexSearch = useIndexSearch(searchFocused ? query : '', bounds ?? null, catalogAgencyNames);
+  const loadedSearchSlugs = useMemo(() => new Set(Object.keys(layers)), [layers]);
+  const searchMatchResults = useMemo(
+    () => mergeRouteResults(loadedRouteMatches, indexSearch.routes, loadedSearchSlugs),
+    [loadedRouteMatches, indexSearch.routes, loadedSearchSlugs],
+  );
+  const searchStopMatchResults = useMemo(
+    () => mergeStopResults(loadedStopMatches, indexSearch.stops, loadedSearchSlugs),
+    [loadedStopMatches, indexSearch.stops, loadedSearchSlugs],
+  );
 
   // Side B runs the shared filter with its own day, time and frequency. With compare off it gets
   // no layers, so the extra pass costs nothing.
@@ -1518,6 +1533,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
         searchMatches={searchMatches}
         searchMatchResults={searchMatchResults}
         searchStopMatchResults={searchStopMatchResults}
+        searchPending={indexSearch.pending}
         maxHeadway={maxHeadway}
         agencies={agencies}
         period={period}

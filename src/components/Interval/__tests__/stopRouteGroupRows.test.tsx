@@ -3,6 +3,7 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import StopRouteGroup from '../panels/StopRouteGroup';
 import type { StopBranch } from '../panels/StopCard';
 import { routeLabels } from '../../../utils/format';
+import { keyboardFocusHover } from '../RouteDirectionRow';
 
 // CIV-918: every destination is a route card row with its own frequency, ordered by direction, no
 // direction lines, and hovering one shows that route and direction on the map.
@@ -44,6 +45,39 @@ describe('StopRouteGroup rows (CIV-918)', () => {
     expect(screen.getAllByText('every 5 min')).toHaveLength(1);
   });
 
+  it('the combined value is the route card\'s "Shared stretch" row, above its direction\'s rows (CIV-1078, LA Metro 40 at 9059)', () => {
+    const at = (headsign: string, directionId: number, own: number, pooled: number) => ({ ...branch(headsign, directionId, pooled), rowHeadway: own });
+    render(
+      <StopRouteGroup
+        shortName="40" label={routeLabels({ shortName: '40', longName: 'Hawthorne Bl' })} longName="Hawthorne Bl"
+        branches={[at('Division 13', 0, 23, 10), at('Patsaouras', 0, 18, 10), at('South Bay Galleria', 1, 12, 12)]}
+        period="midday" onOpenRoute={() => {}}
+      />,
+    );
+    const text = document.body.textContent ?? '';
+    // The route line carries no value of its own; the shared row comes after it and before the branch rows.
+    expect(text.indexOf('Shared stretch')).toBeGreaterThan(text.indexOf('Hawthorne'));
+    expect(text.indexOf('Shared stretch')).toBeLessThan(text.indexOf('Division 13'));
+    expect(screen.getAllByText('Shared stretch')).toHaveLength(1);
+    expect(screen.getAllByText('every 10 min')).toHaveLength(1);
+    expect(screen.getByText('every 23 min')).toBeInTheDocument();
+    expect(screen.getByText('every 18 min')).toBeInTheDocument();
+    // The other direction has one destination: no shared row there.
+    expect(text.indexOf('Shared stretch')).toBeLessThan(text.indexOf('South Bay'));
+  });
+
+  it('a direction with one destination has no shared row, even where the stop sees more buses (TTC 29 at Wilson, northbound)', () => {
+    render(
+      <StopRouteGroup
+        shortName="29" label={routeLabels({ shortName: '29', longName: 'Dufferin' })} longName="Dufferin"
+        branches={[{ ...branch('Wilson', 1, 8), rowHeadway: 16 }]}
+        period="midday" onOpenRoute={() => {}}
+      />,
+    );
+    expect(screen.queryByText('Shared stretch')).toBeNull();
+    expect(screen.getByText('every 16 min')).toBeInTheDocument();
+  });
+
   it("a branch value better than the stop's is not used: the row never claims more service than the stop sees", () => {
     render(
       <StopRouteGroup
@@ -73,5 +107,54 @@ describe('StopRouteGroup rows (CIV-918)', () => {
     const setHoveredBranch = renderGroup();
     fireEvent.mouseEnter(screen.getByText(/Buckner/));
     expect(setHoveredBranch).toHaveBeenCalledWith({ routeKey: 'dart::green', directionId: 1, headsign: 'Buckner' });
+  });
+
+  it('hovering the route line names the whole route for the map (CIV-1053)', () => {
+    const setHoveredBranch = renderGroup();
+    fireEvent.mouseEnter(screen.getByRole('button', { name: /Green Line/ }));
+    expect(setHoveredBranch).toHaveBeenCalledWith({ routeKey: 'dart::green' });
+  });
+
+  it("with the route line hovered, the route's own rows stay; another route's line fades (CIV-1053)", () => {
+    const { container, rerender } = render(
+      <StopRouteGroup
+        shortName="GREEN" label={routeLabels({ shortName: 'GREEN', longName: 'Green Line' })} longName="Green Line"
+        branches={[branch('Buckner', 1, 20)]} period="midday" onOpenRoute={() => {}}
+        hoveredBranch={{ routeKey: 'dart::green' }} setHoveredBranch={() => {}}
+      />,
+    );
+    expect(container.querySelector('.opacity-35')).toBeNull();
+    rerender(
+      <StopRouteGroup
+        shortName="GREEN" label={routeLabels({ shortName: 'GREEN', longName: 'Green Line' })} longName="Green Line"
+        branches={[branch('Buckner', 1, 20)]} period="midday" onOpenRoute={() => {}}
+        hoveredBranch={{ routeKey: 'dart::red' }} setHoveredBranch={() => {}}
+      />,
+    );
+    expect(container.querySelectorAll('.opacity-35')).toHaveLength(2);
+  });
+});
+
+describe('keyboardFocusHover (CIV-1053)', () => {
+  const focusEvent = (keyboard: boolean) => ({ currentTarget: { matches: () => keyboard } }) as unknown as React.FocusEvent<HTMLElement>;
+
+  it('keyboard focus starts the hover and blur ends it', () => {
+    const start = vi.fn();
+    const end = vi.fn();
+    const handlers = keyboardFocusHover(start, end);
+    handlers.onFocus!(focusEvent(true));
+    expect(start).toHaveBeenCalledTimes(1);
+    handlers.onBlur!();
+    expect(end).toHaveBeenCalledTimes(1);
+  });
+
+  it('focus from a tap or click does not start it', () => {
+    const start = vi.fn();
+    keyboardFocusHover(start, vi.fn()).onFocus!(focusEvent(false));
+    expect(start).not.toHaveBeenCalled();
+  });
+
+  it('a row with no hover gets no handlers', () => {
+    expect(keyboardFocusHover(undefined, undefined)).toEqual({});
   });
 });

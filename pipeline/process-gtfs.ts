@@ -38,7 +38,8 @@ import { readFeedReviewHistory, shouldReviewNextFeed } from './feedReview.js';
 import { todayUtcYmd } from './utils.js';
 import { agencyTodayYmd } from '../shared/feedAvailability.js';
 import { readConfigAgencyName, resolveAgencyName } from './agencyName.js';
-import { candidateIsOlderThanActive, recordedFeedExpiry, routeLineCount } from './refreshMeta.js';
+import { pipelineRunDateYmd } from './pipelineTimeZone.js';
+import { candidateIsOlderThanActive, recordedFeedExpiry, routeLineCount, stampListingEnd } from './refreshMeta.js';
 import {
   COUNTRY_LAUNCH_FLAG,
   assertCountryMayWriteToR2,
@@ -203,7 +204,7 @@ async function main() {
   // Supplemental feeds (e.g. a separate rail zip) always come from the agency's
   // configured URLs; any failure aborts rather than publishing a main-only artifact.
   const supplementalFeeds = await loadSupplementalFeeds(agencyConfig, downloadToBuffer);
-  const { geojson, corridorsGeojson, stopsJson, tripsJson, stopsMetaJson, sectionsJson, featureCount, center: computedCenter, timezone, livePollingSidecar, feedExpiry: feedInfoExpiry, calendarExpiry, calendarOnlyEnd, feedVersion, shapeAnomalies, feedQuality, supplementalFeatureCounts } = await processAgencyFeeds(buf, supplementalFeeds, agencyConfig, { manualBaseFare, force }, msg => {
+  const { geojson, corridorsGeojson, stopsJson, tripsJson, stopsMetaJson, sectionsJson, featureCount, center: computedCenter, timezone, livePollingSidecar, feedExpiry: feedInfoExpiry, calendarExpiry, calendarOnlyEnd, listingEnd, feedVersion, shapeAnomalies, feedQuality, supplementalFeatureCounts } = await processAgencyFeeds(buf, supplementalFeeds, agencyConfig, { manualBaseFare, force, fileDate: pipelineRunDateYmd() }, msg => {
     process.stdout.write(`  ${msg.padEnd(60, ' ')}\r`);
   });
   for (const supp of supplementalFeatureCounts) {
@@ -299,6 +300,7 @@ async function main() {
       lastRefreshedAt: todayUtcYmd(),
       feedQuality,
     };
+    stampListingEnd(updated, listingEnd);
     if (upstreamFeedChanged(prev, calendarExpiry, feedVersion)) {
       updated.feedReviewStatus = shouldReviewNextFeed(readFeedReviewHistory().agencies[slug] ?? []) ? 'review' : undefined;
       delete updated.issueUrl;

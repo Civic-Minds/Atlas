@@ -54,6 +54,8 @@ interface SidebarControlsProps {
   searchMatches: number | null;
   searchMatchResults: RouteSearchResult[] | null;
   searchStopMatchResults: StopSearchResult[] | null;
+  /** The search index is still loading for this query (CIV-1048). */
+  searchPending?: boolean;
   maxHeadway: number;
   agencies: Agency[];
   period: TimePeriod;
@@ -177,6 +179,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   searchMatches,
   searchMatchResults,
   searchStopMatchResults,
+  searchPending = false,
   maxHeadway,
   agencies,
   period,
@@ -523,10 +526,26 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       routesByAgency = hub.routesByAgency;
     }
 
+    // CIV-1052: each route's periods at the stop and its siblings, so the card can list a route with no trips here.
+    const routePeriodBitsByAgency: Record<string, Map<string, Array<number | undefined>>> = {};
+    for (const f of allFeatures) {
+      const p = f.properties as any;
+      if (f.geometry.type !== 'Point' || !p?.stopId || !p.agencySlug || !siblingIdsByAgency[p.agencySlug]?.has(p.stopId)) continue;
+      const rids: string[] = Array.isArray(p.routeIds) ? p.routeIds : [];
+      const bits: unknown[] | undefined = Array.isArray(p.routePeriodBits) ? p.routePeriodBits : undefined;
+      const byRoute = routePeriodBitsByAgency[p.agencySlug] ??= new Map();
+      rids.forEach((rid, i) => {
+        const list = byRoute.get(rid) ?? [];
+        list.push(typeof bits?.[i] === 'number' ? bits[i] as number : undefined);
+        byRoute.set(rid, list);
+      });
+    }
+
     return {
       ...props,
       siblingIdsByAgency,
       routesByAgency,
+      routePeriodBitsByAgency,
       lat: clickLat,
       lon: clickLon,
     };
@@ -537,6 +556,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     ? buildStopRoutes({
       siblingIdsByAgency: currentStop.siblingIdsByAgency || {},
       routesByAgency: currentStop.routesByAgency || {},
+      routePeriodBitsByAgency: currentStop.routePeriodBitsByAgency,
       layers: nonCorridorLayers,
       day: currentDay,
       period,
@@ -953,6 +973,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
             onRouteHover={onSearchRouteHover}
             hasMoreResults={hasMoreSearchResults}
             onShowMoreResults={() => setShowAllSearchResults(true)}
+            searchPending={searchPending}
           />
         )}
 

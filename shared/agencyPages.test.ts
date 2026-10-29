@@ -2,8 +2,9 @@ import { describe, expect, it } from 'vitest';
 import {
   agencyIntroSentence, introName, agencySpansArea, namesList, agencyBreadcrumbs, agencyDatesText, agencyLeadSentence, agencyMapHref, agencyPageDescription, agencyPageH1, agencyPageJsonLd, hasMiddayService,
   agencyPageData, agencyPagePath, agencyPageTitle, agencyStats, bandCounts, formatDataDate, nearbyAgencies, resolveAgencySeo, trimRedundantCity,
-  type AgencyPageRoute, type AgencyPageSummary, bestRoute, modesText,
+  type AgencyPageRoute, type AgencyPageSummary, bestRoute, modesText, listingEndedNotice, listingEndHasPassed,
 } from './agencyPages';
+import { agencyTodayYmd } from './feedAvailability';
 import { agencyPageSummaries, getAgencyPageSummary } from './agencyPagesData';
 
 const r = (name: string, mode: number, midday: number | null, am = midday, pm = midday): AgencyPageRoute => ({ name, longName: `${name} St`, mode, midday, am, pm, evening: null, overnight: null });
@@ -137,6 +138,31 @@ describe('dates', () => {
   it('says plainly when the timetable has ended', () => {
     expect(agencyDatesText({ lastRefreshedAt: '2026-01-05', validThrough: '20260901' }, '2026-10-13T00:00:00Z'))
       .toBe("Based on the agency's published timetable, not live arrivals. This timetable ended on Sep 1, 2026; the agency hasn't published a newer one yet. This page was last updated Oct 13, 2026.");
+  });
+
+  it('N112: the agency page names the through date and the listing end (CIV-1055)', () => {
+    const dutchess = { lastRefreshedAt: '2026-08-07', validThrough: '20270131', listingEndedOn: '20261028' };
+    // Ryan: "ended is past but ends is upcoming".
+    expect(agencyDatesText(dutchess, '2026-10-27', '20261027'))
+      .toBe("Based on the agency's published timetable, not live arrivals. This timetable covers service until Jan 31, 2027, but most of its routes end Oct 28, 2026. Atlas last updated this page Oct 27, 2026.");
+    expect(agencyDatesText(dutchess, '2026-10-27', '20261028')).toContain('This timetable covers service until Jan 31, 2027, but most of its routes ended Oct 28, 2026.');
+    expect(agencyDatesText(dutchess, '2026-10-27', '20261103')).toContain('but most of its routes ended Oct 28, 2026.');
+    // No through date: N25 as on the cards.
+    expect(agencyDatesText({ ...dutchess, validThrough: null }, '2026-10-27', '20261027'))
+      .toContain("This agency's scheduled service for most routes ends Oct 28, 2026, and they have not released updated data.");
+    expect(agencyDatesText({ ...dutchess, validThrough: null }, '2026-10-27', '20261028')).toContain('for most routes ended Oct 28, 2026,');
+    // An ended timetable says more, so it wins.
+    expect(agencyDatesText({ lastRefreshedAt: '2026-01-05', validThrough: '20260901', listingEndedOn: '20260814' }, '2026-10-13', '20261013'))
+      .toContain('This timetable ended on Sep 1, 2026');
+  });
+
+  it('N25: switches tense on the agency-local listing-end date', () => {
+    expect(listingEndHasPassed('20261028', '20261027')).toBe(false);
+    expect(listingEndHasPassed('20261028', '20261028')).toBe(true);
+    expect(listingEndedNotice('Oct 28, 2026', false)).toBe("This agency's scheduled service for most routes ends Oct 28, 2026, and they have not released updated data.");
+    expect(listingEndedNotice('Oct 28, 2026', true)).toBe("This agency's scheduled service for most routes ended Oct 28, 2026, and they have not released updated data.");
+    // Agency-local: 11 PM Oct 27 in New York is already Oct 28 in UTC, but still "ends".
+    expect(listingEndHasPassed('20261028', agencyTodayYmd({ timezone: 'America/New_York' }, new Date('2026-10-28T03:00:00Z')))).toBe(false);
   });
 
   it('drops a trailing city from the agency name only when the sentence names that place', () => {

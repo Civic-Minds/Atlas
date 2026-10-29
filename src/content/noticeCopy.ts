@@ -327,8 +327,13 @@ export const ROUTE_NOT_FOUND = "This route couldn't be found. It may have been r
 export const AGENCY_ROUTES_FAILED = `${loadErrorText("this agency's routes")} ${RETRY_HINT}`;
 // N30 agency-not-found (Ryan)
 export const AGENCY_NOT_FOUND = "This agency couldn't be found.";
-// N25 listing-ended (Ryan's exact text, CIV-1011; not shown anywhere yet)
-export const listingEndedNotice = (date: string) => `This agency's scheduled service for most routes ended ${date}, and they have not released updated data.`;
+// N25 listing-ended (Ryan's exact text, CIV-1011; shown since CIV-1055). Defined beside the agency page text it shares.
+export { listingEndedNotice, listingEndedPageLine, listingEndHasPassed } from '../../shared/agencyPages';
+
+/** CIV-1052: a stop's own route that has no trips at the stop in the whole chosen period (Ryan, wording approved 2026-10-27). */
+export function stopRouteNoTripsNotice(periodRange: string): string {
+  return `No trips from ${keepRangeTogether(periodRange)}`;
+}
 
 // ---- Explainers: the Learn more panels (InfoPanel), E1 to E8 ----
 /** Each panel's code and title; the panel text is below, in the panel's own order. */
@@ -347,6 +352,11 @@ export type HelpTopic = keyof typeof EXPLAINERS;
 // ---- Explainer paragraph 1, one per explainer (Ryan's approved text, CIV-1051) ----
 // Paragraphs 2 and 3 are shared pieces, below. E1's lead is the notice plus EXPIRED_FEED_EXPLANATION;
 // E3's is the agency's correction note; E6's is N7 itself.
+// E1, N25 version (CIV-1051): "ends" before the listing-end date, "ended" from it on. Paragraphs 2 and 3 are N2's.
+export function listingEndedPanelLead(agencyName: string, date: string, ended: boolean): string {
+  const { primary } = agencyNames(agencyName).card;
+  return `${primary}'s scheduled service for most routes ${ended ? 'ended' : 'ends'} ${date}, and they have not released updated data. The map shows the last full week in their schedule, for every route.`;
+}
 // E2: the date is the day the schedule went on the map.
 export const newScheduleDataLead = (agencyName: string, onMapOn?: string | null) =>
   `${agencyNames(agencyName).card.primary}'s new schedule went on the map${onMapOn ? ` on ${onMapOn}` : ''}. It may have errors we haven't found yet.`;

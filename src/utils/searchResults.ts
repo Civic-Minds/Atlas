@@ -4,6 +4,8 @@ import type { ViewportBounds } from '../hooks/useIntervalStats';
 import type { AgencySearchGroup } from './agencySearch';
 import { buildRouteFacts, type RouteLabel } from './routeFacts';
 import { compareRouteNumber, compareSearchRelevance, compareText } from './sortCompare';
+import { searchFold } from '../../shared/areaSearch';
+import type { SearchRoutesFile, SearchStopsFile } from '../../shared/searchIndex';
 
 export interface RouteSearchResult {
   key: string;
@@ -226,6 +228,8 @@ export function routeQueryMatchRank(p: ShapeProperties, query: string): number {
   if (shortName.includes(q) || shortNorm.includes(qNorm)) return 4;
   if (routeId.includes(q)) return 5;
   if (q.length >= 2 && longName.includes(q)) return 6;
+  // "38 Geary": the number and name as rows show them (CIV-1048).
+  if (shortName && longName && `${shortName} ${longName}`.startsWith(q)) return 6;
   const agencySlug = ((p as { agencySlug?: string }).agencySlug ?? '').toLowerCase();
   if (agencySlug.startsWith(q)) return 7;
   return 8;
@@ -300,9 +304,17 @@ export function searchRouteResults(
         matchRank,
       };
     })
-    .sort((a, b) => compareSearchRelevance(a, b, (x, y) =>
-      compareRouteNumber(x.routeShortName, y.routeShortName, x.routeLongName, y.routeLongName)
-      || compareText(x.agencyName, y.agencyName)));
+    .sort(compareRouteResults);
+}
+
+function compareRouteResults(a: RouteSearchResult, b: RouteSearchResult): number {
+  return compareSearchRelevance(a, b, (x, y) =>
+    compareRouteNumber(x.routeShortName, y.routeShortName, x.routeLongName, y.routeLongName)
+    || compareText(x.agencyName, y.agencyName));
+}
+
+function compareStopResults(a: StopSearchResult, b: StopSearchResult): number {
+  return compareSearchRelevance(a, b, (x, y) => compareText(x.stopName, y.stopName));
 }
 
 export function splitByViewport<T extends { inView: boolean }>(items: T[]): SplitSearchResults<T> {
@@ -492,9 +504,109 @@ export function searchStopResults(
     }
   }
 
-  return groupedResults.sort((a, b) => compareSearchRelevance(a, b, (x, y) => compareText(x.stopName, y.stopName)));
+  return groupedResults.sort(compareStopResults);
 }
 
 export function splitStopResults(stops: StopSearchResult[]): SplitSearchResults<StopSearchResult> {
   return splitByViewport(stops);
+}
+
+/** Index rows kept per list: the dropdown shows ten, and "show more" a page of the nearest. */
+const INDEX_RESULT_LIMIT = 200;
+
+function pointResult(lat: number, lon: number, bounds: ViewportBounds | null): { inView: boolean; distanceM: number } {
+  if (!bounds) return { inView: false, distanceM: Infinity };
+  const [vLat, vLon] = viewportCenter(bounds);
+  return {
+    inView: lat >= bounds.s && lat <= bounds.n && lon >= bounds.w && lon <= bounds.e,
+    distanceM: distanceMeters(lat, lon, vLat, vLon),
+  };
+}
+
+/**
+ * Routes from the every-agency search index (CIV-1048) for agencies the map has not loaded. They
+ * match on route names the way loaded routes do, but not on the agency slug alone (that is the
+ * agency list's job), and rank by the distance from the view to the route's centre.
+ */
+export function searchIndexRouteResults(
+  file: SearchRoutesFile,
+  query: string,
+  bounds: ViewportBounds | null,
+  agencyNameOf: (slug: string) => string | null,
+): RouteSearchResult[] {
+  const q = query.trim().toLowerCase();
+  if (!q) return [];
+  const out: RouteSearchResult[] = [];
+  for (const [agencyIndex, routeId, short, long, routeType, lat, lon] of file.routes) {
+    const agencySlug = file.agencies[agencyIndex];
+    const agencyName = agencyNameOf(agencySlug);
+    if (!agencyName) continue;
+    const p = {
+      agencySlug, agencyName, routeId,
+      routeShortName: short || undefined,
+      routeLongName: long || undefined,
+      routeType: routeType ?? undefined,
+    } as unknown as ShapeProperties;
+    const matchRank = routeQueryMatchRank(p, q);
+    if (matchRank > 6) continue;
+    const facts = buildRouteFacts(p);
+    out.push({
+      key: facts.key,
+      routeShortName: facts.shortName,
+      label: facts.label,
+      routeLongName: facts.longName,
+      agencyName: facts.agencyName,
+      routeType: facts.routeType,
+      matchRank,
+      ...pointResult(lat, lon, bounds),
+    });
+  }
+  return out.sort(compareRouteResults).slice(0, INDEX_RESULT_LIMIT);
+}
+
+/** Stops from one split of the search index, for agencies the map has not loaded. */
+export function searchIndexStopResults(
+  file: SearchStopsFile,
+  query: string,
+  bounds: ViewportBounds | null,
+  agencyNameOf: (slug: string) => string | null,
+): StopSearchResult[] {
+  const q = searchFold(query);
+  if (!q) return [];
+  const out: StopSearchResult[] = [];
+  for (const [agencySlug, rows] of Object.entries(file)) {
+    const agencyName = agencyNameOf(agencySlug);
+    if (!agencyName) continue;
+    for (const row of rows) {
+      const stopName = String(row[0]);
+      // Folded both sides, so "eglise" finds "Église".
+      const matchRank = matchesStopQuery(searchFold(stopName), null, q);
+      if (matchRank === null) continue;
+      for (let i = 1; i + 2 < row.length; i += 3) {
+        const stopId = String(row[i]);
+        const lat = Number(row[i + 1]);
+        const lon = Number(row[i + 2]);
+        out.push({
+          key: `${agencySlug}::${stopId}`,
+          stopId, stopName, stopCode: null, direction: null,
+          agencyName, agencySlug, routes: [], lat, lon, matchRank,
+          ...pointResult(lat, lon, bounds),
+        });
+      }
+    }
+  }
+  return out.sort(compareStopResults).slice(0, INDEX_RESULT_LIMIT);
+}
+
+/** Loaded results plus index results for agencies not loaded, in one relevance order. */
+export function mergeRouteResults(loaded: RouteSearchResult[] | null, fromIndex: RouteSearchResult[], loadedSlugs: ReadonlySet<string>): RouteSearchResult[] | null {
+  const extra = fromIndex.filter(r => !loadedSlugs.has(r.key.split('::')[0]));
+  if (loaded === null) return null;
+  return extra.length === 0 ? loaded : [...loaded, ...extra].sort(compareRouteResults);
+}
+
+export function mergeStopResults(loaded: StopSearchResult[] | null, fromIndex: StopSearchResult[], loadedSlugs: ReadonlySet<string>): StopSearchResult[] | null {
+  const extra = fromIndex.filter(s => !loadedSlugs.has(s.agencySlug));
+  if (loaded === null) return null;
+  return extra.length === 0 ? loaded : [...loaded, ...extra].sort(compareStopResults);
 }

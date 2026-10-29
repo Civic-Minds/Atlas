@@ -19,7 +19,7 @@ import type { Agency } from '../App';
 import { isAgencyFeedExpired } from '../../shared/feedAvailability';
 import { trackEvent } from '../lib/analytics';
 import { OutboundLink } from './OutboundLink';
-import { betaRolloutLead, EDGE_GAP_ALLOWANCE_LEAD, EXPIRED_FEED_EXPLANATION, expiredFeedCheckHistory, expiredFeedNotice, EXPLAINER_LAYOUT, EXPLAINER_PIECES, EXPLAINERS, type ExplainerLayoutKey, type ExplainerLink, type HelpTopic, newScheduleDataLead, NO_AGENCIES_MATCH, NO_ROUTE_SHAPE_NOTICE, pieceText, ROUTE_DATA_QUALITY_LEAD, WEEKDAY_VARIATION_LEAD } from '../content/noticeCopy';
+import { betaRolloutLead, EDGE_GAP_ALLOWANCE_LEAD, EXPIRED_FEED_EXPLANATION, expiredFeedCheckHistory, expiredFeedNotice, EXPLAINER_LAYOUT, EXPLAINER_PIECES, EXPLAINERS, type ExplainerLayoutKey, type ExplainerLink, type HelpTopic, listingEndedPanelLead, newScheduleDataLead, NO_AGENCIES_MATCH, NO_ROUTE_SHAPE_NOTICE, pieceText, ROUTE_DATA_QUALITY_LEAD, WEEKDAY_VARIATION_LEAD } from '../content/noticeCopy';
 import RegionFilterPills from './RegionFilterPills';
 import ListRow from './ui/ListRow';
 import { AgencyList, AgencyListRow, AgencyRegionSection } from './ui/AgencyList';
@@ -37,6 +37,10 @@ export type HelpContext = {
   topic: HelpTopic;
   agencyName?: string;
   expDateStr?: string;
+  /** N25 (CIV-1055): set when opened from the listing-ended notice; the panel shows its variant. */
+  listingEndedDate?: string;
+  /** Whether that date has arrived (agency-local): 'ended', else 'ends'. */
+  listingEnded?: boolean;
   manualFeedSource?: boolean;
   lastRefreshedAt?: string;
   lastFeedCheckAt?: string;
@@ -53,6 +57,10 @@ export type OpenInfoOptions = {
   helpTopic?: HelpTopic;
   agencyName?: string;
   expDateStr?: string;
+  /** N25 (CIV-1055): set when opened from the listing-ended notice; the panel shows its variant. */
+  listingEndedDate?: string;
+  /** Whether that date has arrived (agency-local): 'ended', else 'ends'. */
+  listingEnded?: boolean;
   manualFeedSource?: boolean;
   lastRefreshedAt?: string;
   lastFeedCheckAt?: string;
@@ -556,10 +564,13 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
               lastRefreshed: helpContext?.lastRefreshedAt,
             });
             return (
+              // E1, N25 version (Ryan, CIV-1051): its own paragraph 1, then N2's paragraphs 2 and 3.
               <ExplainerBody
-                layout={helpContext?.manualFeedSource ? 'outdated-schedule-manual' : 'outdated-schedule'}
-                lead={`${helpContext?.agencyName ? `${expiredFeedNotice(helpContext.agencyName, helpContext.expDateStr, helpContext.manualFeedSource)} ` : ''}${EXPIRED_FEED_EXPLANATION}`}
-                p2After={helpContext?.agencyName ? checkHistory : ''}
+                layout={!helpContext?.listingEndedDate && helpContext?.manualFeedSource ? 'outdated-schedule-manual' : 'outdated-schedule'}
+                lead={helpContext?.listingEndedDate
+                  ? listingEndedPanelLead(helpContext.agencyName ?? 'This agency', helpContext.listingEndedDate, helpContext.listingEnded ?? true)
+                  : `${helpContext?.agencyName ? `${expiredFeedNotice(helpContext.agencyName, helpContext.expDateStr, helpContext.manualFeedSource)} ` : ''}${EXPIRED_FEED_EXPLANATION}`}
+                p2After={helpContext?.agencyName || helpContext?.listingEndedDate ? checkHistory : ''}
                 helpContext={helpContext}
               />
             );

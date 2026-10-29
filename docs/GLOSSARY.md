@@ -52,7 +52,8 @@ Paths are from the repo root. "Main" means `origin/main` as of 2026-10-14 (741ee
 - **placeholder expiry**: a calendar end more than `PLACEHOLDER_EXPIRY_YEARS` = 2 years out (`pipeline/refreshMeta.ts`, `recordedFeedExpiry`). The recorded expiry is capped so a fake end such as 20500101 never hides an outdated feed (#688). The release gate raises it as the yellow `placeholder-expiry` flag.
 - **pmtilesPending**: an agency flag in the index. `build-pmtiles` skips the agency and it is never a reprocess target (`pipeline/build-pmtiles.ts`, `pipeline/archiveSelection.ts` `isReprocessTarget`, `pipeline/pmtilesCoverage.ts`). A public agency with this flag shows "Couldn't load" (#757, #759), so `publicAgenciesExcludedFromRelease` (`pipeline/releaseGuard.ts`) lists it to be hidden.
 - **release gate**: `pipeline/releaseDiff.ts` (`GATE_FLAGS`). It compares each agency's new output with what is live before any R2 write. It runs in refresh, reprocess `--write` and publish. Each flag is `red` (blocks only that agency) or `yellow` (reported). The flags:
-  - red only: `drop`, `empty`, `mode-lost` (a mode such as Commuter Rail is gone), `duplicate`, `day-lost`
+  - red only: `duplicate`, `day-lost`
+  - red, or yellow for a seasonal pause: `drop`, `empty`, `mode-lost` (a mode such as Commuter Rail is gone). Yellow when the feed is current and every missing route runs again later in it (`resumingRoutes`, CIV-1076)
   - red or yellow by size: `headway-shift`, `headway-lost` (route directions that still run on weekdays but have lost their weekday headway, #710)
   - red or yellow by output: `expired` (red when the output changed, yellow when it did not)
   - yellow only: `route-shift` (one route's weekday tier moves 2 or more steps on its own scale, rail 5 and 8 included since #871), `day-shrunk`, `future-start`, `placeholder-expiry`, `added`
