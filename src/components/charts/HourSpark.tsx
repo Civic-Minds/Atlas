@@ -47,7 +47,7 @@ export default function HourSpark({ values, scale, color, barColor, format, aria
   unit: string;
   valueHeader: string;
   minN?: number;
-  /** The hover line for an hour, replacing the default "2 pm 5%, 167 departures" (the late charts: lateHourLine). */
+  /** The hover line for an hour, replacing the default "2 PM 5%, 167 departures" (the late charts: lateHourLine). */
   hoverLine?: (clock: string, v: HourValue) => string;
   /** Draw the departures in each hour as a thin band under the bars, on its own scale (the late charts, CIV-282). */
   departures?: boolean;
