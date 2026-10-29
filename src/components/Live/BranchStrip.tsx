@@ -81,7 +81,8 @@ function useWidth() {
 
 /** Which labels fit on one line: `want` first (always tried), then `majors` evenly spaced candidates; each is centred on its x, kept inside the plot, and none overlaps another. */
 function fitLabels(items: ReadonlyArray<{ x: number; text: string }>, want: readonly number[], majors: number, min: number, max: number, gap = 12): number[] {
-  const widths = items.map(i => labelWidth(i.text) + 6);
+  // Full stop names never wrap here, so they are measured at their whole length (CIV-910 Q3): a long name can't spill into the next one.
+  const widths = items.map(i => labelWidth(i.text, Infinity) + 6);
   const span = (i: number): [number, number] => { const l = Math.max(min, Math.min(max - widths[i], items[i].x - widths[i] / 2)); return [l, l + widths[i]]; };
   const placed: number[] = [];
   const fits = (i: number) => { const [a, b] = span(i); return placed.every(j => { const [c, d] = span(j); return b + gap <= c || d + gap <= a; }); };
@@ -188,7 +189,7 @@ export default function BranchStrip({ model, selected = null, onSelect, modes = 
       const first = l[0];
       if (serving.get(first.stopId) !== 1) return;
       const x = xOf(colOf.get(first.stopId)!) - dot / 2 - 6;
-      if (x - GUTTER >= labelWidth(stripStopName(first.name)) + 6) out.push({ stop: first, row: r, right: x });
+      if (x - GUTTER >= labelWidth(stripStopName(first.name), Infinity) + 6) out.push({ stop: first, row: r, right: x });
     });
     return out;
   }, [vertical, width, model, cols, dot]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -272,10 +273,10 @@ export default function BranchStrip({ model, selected = null, onSelect, modes = 
         onPointerLeave={e => { if (e.pointerType === 'mouse') setActive(null); }}
       />
       {startNames.map(n => (
-        <span key={`start-${n.row}`} className="pointer-events-none absolute whitespace-nowrap text-right text-xs font-bold leading-4 text-[var(--text-primary)]" style={{ left: n.right - (labelWidth(stripStopName(n.stop.name)) + 6), width: labelWidth(stripStopName(n.stop.name)) + 6, top: rowY(0, n.row) - 8 }} title={n.stop.name}>{stripStopName(n.stop.name)}</span>
+        <span key={`start-${n.row}`} className="pointer-events-none absolute whitespace-nowrap text-right text-xs font-bold leading-4 text-[var(--text-primary)]" style={{ left: n.right - (labelWidth(stripStopName(n.stop.name), Infinity) + 6), width: labelWidth(stripStopName(n.stop.name), Infinity) + 6, top: rowY(0, n.row) - 8 }} title={n.stop.name}>{stripStopName(n.stop.name)}</span>
       ))}
       {labels.map(l => {
-        const w = labelWidth(stripStopName(l.stop.name)) + 6;
+        const w = labelWidth(stripStopName(l.stop.name), Infinity) + 6;
         const left = Math.max(GUTTER, Math.min(width - w, l.x - w / 2));
         return (
           <span
