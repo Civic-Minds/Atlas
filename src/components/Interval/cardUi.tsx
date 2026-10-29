@@ -689,7 +689,8 @@ export function SidebarCardHeader({
   back,
 }: {
   eyebrow?: string | null;
-  title: string;
+  /** Text, or a route title drawn by RouteTitleName. */
+  title: React.ReactNode;
   onEyebrowClick?: () => void;
   titleClamp?: boolean;
   /** The card's back link, above the eyebrow. */
