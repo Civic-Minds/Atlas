@@ -5,6 +5,7 @@ import { useSegmentDelay } from '../../hooks/useSegmentDelay';
 import { readUrlNumberParam, syncUrlParams } from '../../utils/syncUrlParams';
 import { periodKeyForHour } from '../../../shared/config';
 import { LIVE_AGENCY_TIMEZONES } from '../../../shared/livePollingConfig';
+import { clockTime } from '../../../shared/timeText';
 import { halfMinutes, type SegmentBand, type SegmentDelayData } from '../../utils/segmentDelayView';
 import { addSnapshot, lineModel, liveGaps, liveTripDirections, positionsSnapshot, type RecentSnapshot, withStats, type LineModel } from '../../utils/livePerformance';
 import type { LiveVehicle } from '../../context/LiveVehiclesMapOverlay';
@@ -36,12 +37,14 @@ export function agencyHour(slug: string, d = new Date()): number {
   return Number(new Intl.DateTimeFormat('en-CA', { hour: 'numeric', hourCycle: 'h23', timeZone: LIVE_AGENCY_TIMEZONES[slug] }).format(d));
 }
 
-/** "Right now" names a time only once the vehicles' newest report is older than this: "Right now · last updated 2:04 pm" (CIV-1034). */
+/** "Right now" names a time only once the vehicles' newest report is older than this: "Right now · last updated 2:04 PM" (CIV-1034). */
 export const RIGHT_NOW_STALE_SEC = 2 * 60;
 
-/** "11:42 pm" on the agency's clock. */
+/** "11:42 PM" on the agency's clock (shared/timeText.ts). */
 export function agencyTime(slug: string, d = new Date()): string {
-  return new Intl.DateTimeFormat('en-CA', { hour: 'numeric', minute: '2-digit', timeZone: LIVE_AGENCY_TIMEZONES[slug] }).format(d).replace('a.m.', 'am').replace('p.m.', 'pm');
+  const parts = new Intl.DateTimeFormat('en-CA', { hour: 'numeric', minute: 'numeric', hourCycle: 'h23', timeZone: LIVE_AGENCY_TIMEZONES[slug] }).formatToParts(d);
+  const n = (t: string) => Number(parts.find(x => x.type === t)?.value ?? 0);
+  return clockTime(n('hour') * 60 + n('minute'));
 }
 
 /** The period now at the agency, when the archive has it (late night included), else all day. */
