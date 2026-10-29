@@ -241,7 +241,7 @@ function RouteHistoryCard({
           <div className="flex-1 min-w-0">
             <RouteCardTitle
               routeShortName={route.routeShortName}
-              routeLongName={route.routeName ? titleCase(route.routeName) : null}
+              routeLongName={route.routeName || null}
               routeType={route.currentRouteType ?? null}
               agencySlug={agencySlug}
               agencyName={agencyName}
@@ -663,7 +663,7 @@ function HistoryAgencyPanel({
             const delta = value.kind === 'value' && before?.kind === 'value' ? value.min - before.min : 0;
             return {
               key: route.routeShortName,
-              route: routeLabels({ shortName: route.routeShortName, longName: titleCase(route.routeName), routeType: route.currentRouteType ?? undefined, agencySlug: agencyHistory.slug }),
+              route: routeLabels({ shortName: route.routeShortName, longName: route.routeName, routeType: route.currentRouteType ?? undefined, agencySlug: agencyHistory.slug }),
               headway: value.kind === 'value' ? value.min : undefined,
               limited: value.kind === 'limited',
               headwaySuffix: delta ? (delta > 0 ? `+${delta}` : `${delta}`) : undefined,
