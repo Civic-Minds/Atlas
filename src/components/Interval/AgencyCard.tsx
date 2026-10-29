@@ -1,10 +1,11 @@
 import React, { useMemo, useState, useEffect, forwardRef } from 'react';
+import { BETA_SITE_URL } from '../../../shared/seo';
 import { LIVE_POLLING_ROUTES } from '../../../shared/livePollingConfig';
-import { FEATURES } from '../../../shared/config';
+import { ATLAS_MODE, FEATURES } from '../../../shared/config';
 import { plural } from '../../../shared/overflowText';
 import { agencyPagePath } from '../../../shared/agencyPages';
 import { AREA_LINK_MAX_CHARS, agencyRegionTitle, areaLinkFor, areaLinkName } from '../../../shared/agencyArea';
-import { ON_DEMAND_NOT_MAPPED_NOTE, ON_DEMAND_PILL_LABEL, onDemandPillSelected } from '../../utils/onDemandPill';
+import { ON_DEMAND_PILL_LABEL, onDemandPillSelected } from '../../utils/onDemandPill';
 import agencyPageSlugs from '../../../shared/data/agency-page-slugs.json';
 import type { Agency } from '../../App';
 import type { OpenInfoFn } from '../InfoPanel';
@@ -25,7 +26,7 @@ import CardRouteList from './CardRouteList';
 import { OutboundLink } from '../OutboundLink';
 import { buildRouteFacts, type RouteLabel } from '../../utils/routeFacts';
 import { reportDetails } from '../../utils/reportIssue';
-import { getRolloutNotice } from '../../../shared/rolloutNotice';
+import { AGENCY_ROUTES_FAILED, BETA_ROLLOUT_NOTICE, BETA_SERVICE_ROLLOUT_NOTICE, explainerFor, getRolloutNotice, NO_ROUTES_LOADED, noRoutesMatchText, noServiceOnDayNotice, notOnMapYetNotice, ON_DEMAND_NOT_MAPPED_NOTE, ROUTES_OUTSIDE_FILTERS_NOTICE, routesOutsideFiltersNotice, VIEW_ON_BETA } from '../../content/noticeCopy';
 import { onDemandCardName } from '../../utils/onDemandSelection';
 import { onDemandCoverageNote } from '../../data/onDemandCoverage';
 import {
@@ -38,7 +39,6 @@ import {
 } from '../../../shared/onDemandAvailability';
 import ArrowLink from '../ui/ArrowLink';
 import PanelEmpty from '../ui/PanelEmpty';
-import { NO_ROUTES_LOADED, noRoutesMatchText } from '../../content/stateCopy';
 import { compareHeadwayThenNumber } from '../../utils/sortCompare';
 
 interface RouteRow {
@@ -384,6 +384,8 @@ interface Props {
   onBackToAgency?: () => void;
   /** Closes the card: the "← Map" back link every card with nothing before it gets (CIV-929). */
   onClose: () => void;
+  /** The agency's route data failed to load (N27). */
+  loadFailed?: boolean;
 }
 
 function RouteListSection({
@@ -427,12 +429,18 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
   onDemandZoneId = null,
   onBackToAgency,
   onClose,
+  loadFailed = false,
 }, ref) {
   const routes = useMemo(
     () => getRoutes(layers, agency.slug, day, period, { maxHeadway, selectedModes, hideSpan, hideLimitedService }),
     [layers, agency.slug, day, period, maxHeadway, selectedModes, hideSpan, hideLimitedService],
   );
   const routeFilters = useMemo(() => buildAgencyRouteFilters(routes), [routes]);
+  // N26: the agency's data is in, with routes on other days but none on this one.
+  const noServiceToday = useMemo(() => routes.length === 0 && (layers[agency.slug]?.features ?? []).some(f => {
+    const p = f.properties as ShapeProperties;
+    return !!p.routeId && !(p as { stopId?: string }).stopId && !!p.day && p.day !== day;
+  }), [routes.length, layers, agency.slug, day]);
   const [activeFilter, setActiveFilter] = useState<AgencyRouteFilterKey | null>(null);
   const [showOtherRoutes, setShowOtherRoutes] = useState(false);
 
@@ -575,7 +583,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
               <CardBodyText>{pickupSentence}</CardBodyText>
             )}
             {coverageNote?.kind === 'partly-mapped' && (
-              <CardBodyText>Not on the map yet: {coverageNote.missing}.</CardBodyText>
+              <CardBodyText>{notOnMapYetNotice(coverageNote.missing)}</CardBodyText>
             )}
           </div>
           {zone.eligibility && (
@@ -659,7 +667,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
                 ))}
                 {service.tripRules && <p className="text-xs leading-snug text-[var(--text-muted)] mt-1">{service.tripRules}</p>}
                 {coverageNote?.kind === 'partly-mapped' && (
-                  <p className="text-xs leading-snug text-[var(--text-muted)] mt-1">Not on the map yet: {coverageNote.missing}.</p>
+                  <p className="text-xs leading-snug text-[var(--text-muted)] mt-1">{notOnMapYetNotice(coverageNote.missing)}</p>
                 )}
                 {service.sourceUrl && (
                   <p className="mt-1 text-xs">
@@ -690,22 +698,27 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
           )}
           {(agency.feedReviewStatus === 'review' || agency.overrideNote || rolloutNotice) && onInfoOpen && (
             <div className={`${CARD_NOTICE_FOOTER} space-y-1`}>
-              {rolloutNotice && (
+              {rolloutNotice && (rolloutNotice === BETA_SERVICE_ROLLOUT_NOTICE || rolloutNotice === BETA_ROLLOUT_NOTICE ? (
+                // N20 and N108 (Ryan): a beta-only agency or service points to the same page on beta, never preview; on beta itself, no link.
+                <CardHelpNotice
+                  message={rolloutNotice}
+                  {...(ATLAS_MODE === 'beta' ? {} : { actionLabel: VIEW_ON_BETA, onLearnMore: () => window.location.assign(`${BETA_SITE_URL}${window.location.pathname}${window.location.search}`) })}
+                />
+              ) : (
                 <CardHelpNotice
                   message={rolloutNotice}
                   onLearnMore={() => onInfoOpen('about', {
-                    helpTopic: 'beta-rollout',
+                    helpTopic: explainerFor('N19'),
                     agencyName: agency.name,
                     rolloutNotice,
-                    rolloutIssueUrl: agency.rolloutIssueUrl,
                   })}
                 />
-              )}
+              ))}
               {agency.feedReviewStatus === 'review' && !agency.overrideNote && (
-                <NewScheduleDataNotice agency={agency} onInfoOpen={onInfoOpen} />
+                <NewScheduleDataNotice on="agency" agency={agency} onInfoOpen={onInfoOpen} />
               )}
               {agency.overrideNote && (
-                <CorrectedDataNotice agency={agency} overrideNote={agency.overrideNote} onInfoOpen={onInfoOpen} />
+                <CorrectedDataNotice on="agency" agency={agency} overrideNote={agency.overrideNote} onInfoOpen={onInfoOpen} />
               )}
             </div>
           )}
@@ -716,7 +729,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
         {onDemandOn ? (
           <PanelEmpty>{ON_DEMAND_NOT_MAPPED_NOTE}</PanelEmpty>
         ) : filteredRoutes.length === 0 ? (
-          <PanelEmpty>{activeFilterLabel ? noRoutesMatchText(activeFilterLabel) : NO_ROUTES_LOADED}</PanelEmpty>
+          <PanelEmpty kind={loadFailed ? 'error' : undefined}>{activeFilterLabel ? noRoutesMatchText(activeFilterLabel) : loadFailed ? AGENCY_ROUTES_FAILED : noServiceToday ? noServiceOnDayNotice('agency', day) : NO_ROUTES_LOADED}</PanelEmpty>
         ) : hasFilterSplit ? (
           <>
             {matchingRoutes.length > 0 && (
@@ -731,13 +744,13 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
                 <div className={CARD_NOTICE_INLINE}>
                   {!showOtherRoutes ? (
                     <CardHelpNotice
-                      message={`${otherRoutes.length} ${plural(otherRoutes.length, 'route')} outside your filters.`}
+                      message={routesOutsideFiltersNotice(otherRoutes.length)}
                       actionLabel="Show"
                       onLearnMore={() => setShowOtherRoutes(true)}
                     />
                   ) : (
                     <CardHelpNotice
-                      message="Routes outside your filters."
+                      message={ROUTES_OUTSIDE_FILTERS_NOTICE}
                       actionLabel="Hide"
                       onLearnMore={() => setShowOtherRoutes(false)}
                     />

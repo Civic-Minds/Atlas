@@ -29,7 +29,7 @@ Downloads all 8 agency GTFS feeds to `data/gtfs/`. If any URL fails, grab the fe
 ```bash
 python scripts/02_find_frequent.py
 ```
-Parses each feed and finds stops served by routes with ≤15 min headway during AM peak (7–9am). Outputs `data/frequent_stops.csv`.
+Parses each feed and finds stops served by routes with ≤15 min headway during AM peak (7–9 AM). Outputs `data/frequent_stops.csv`.
 
 ### Step 3 — Build walkshed
 ```bash

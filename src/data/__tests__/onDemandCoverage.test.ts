@@ -1,3 +1,4 @@
+import { existsSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { ON_DEMAND_NOT_MAPPED, ON_DEMAND_PARTLY_MAPPED, onDemandCoverageNote } from '../onDemandCoverage';
 import * as Services from '../onDemandServiceAreas';
@@ -42,6 +43,15 @@ describe('on-demand coverage notes (CIV-23)', () => {
 
   it('names the missing part for a partly mapped service', () => {
     expect(onDemandCoverageNote({ slug: 'uta', onDemandServiceArea: {} }, { uta: 'North Utah County' })).toEqual({ kind: 'partly-mapped', missing: 'North Utah County' });
+  });
+
+  it('lists only services confirmed open to the general public (CIV-1063)', () => {
+    for (const slug of ['dart-first-state', 'squamish', 'kelowna']) expect(ON_DEMAND_NOT_MAPPED[slug], slug).toBeDefined();
+    for (const slug of ['rts', 'dutchess', 'cornwall', 'sjsr', 'codiac', 'mcts', 'trimet', 'lavta', 'sportran']) expect(ON_DEMAND_NOT_MAPPED[slug], slug).toBeUndefined();
+  });
+
+  it('only names agencies Atlas has', () => {
+    for (const slug of Object.keys(ON_DEMAND_NOT_MAPPED)) expect(existsSync(`config/agencies/${slug}.json`), slug).toBe(true);
   });
 
   it('says nothing for an agency with no on-demand service', () => {

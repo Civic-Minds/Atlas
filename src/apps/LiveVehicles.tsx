@@ -45,8 +45,7 @@ import { useLiveRouteRequest, useLiveViewUrl } from '../hooks/useLiveView';
 import PanelEmpty from '../components/ui/PanelEmpty';
 import AgencyName from '../components/ui/AgencyName';
 import AgencyGroupHeader from '../components/ui/AgencyGroupHeader';
-import { loadingText, liveFeedErrorText, LIVE_FEEDS_DOWN_STUCK, LIVE_NOTHING_ACTIVE, LIVE_NOTHING_ACTIVE_HINT } from '../content/stateCopy';
-import { LIVE_FEEDS_DOWN, LIVE_FEEDS_UNAVAILABLE, LIVE_NO_ROUTE_MATCHES, LIVE_NO_VEHICLES_ON_ROUTE, liveRouteEmptyNotice, liveUnreachableText } from '../content/noticeCopy';
+import { loadingText, liveFeedErrorText, LIVE_FEEDS_DOWN, LIVE_FEEDS_DOWN_STUCK, LIVE_FEEDS_UNAVAILABLE, LIVE_NOTHING_ACTIVE, LIVE_NOTHING_ACTIVE_HINT, LIVE_NO_ROUTE_MATCHES, LIVE_NO_VEHICLES_ON_ROUTE, liveRouteEmptyNotice, liveUnreachableText } from '../content/noticeCopy';
 
 interface Props {
   agencies: Agency[];

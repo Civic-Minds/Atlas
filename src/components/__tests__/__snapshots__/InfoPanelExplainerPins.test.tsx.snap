@@ -1,0 +1,134 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`explainer text is pinned (CIV-1061) > E1, N2 1`] = `
+{
+  "links": [
+    "Check current schedules",
+    "Report a problem",
+  ],
+  "paragraphs": [
+    "Atlas by Civic Minds",
+    "Grand River Transit's timetable ended on Apr 26, 2026. Times shown may be out of date. This is the latest schedule the agency has published that we could verify.",
+    "We check for new schedules every week. We've checked for a new timetable 4 times since Sep 1, 2026, with our most recent check on Oct 26, 2026.",
+    "A newer schedule may be on the agency's website.",
+  ],
+}
+`;
+
+exports[`explainer text is pinned (CIV-1061) > E1, N2 with no check count 1`] = `
+{
+  "links": [
+    "Report a problem",
+  ],
+  "paragraphs": [
+    "Atlas by Civic Minds",
+    "Grand River Transit's timetable ended on Apr 26, 2026. Times shown may be out of date. This is the latest schedule the agency has published that we could verify.",
+    "We check for new schedules every week. The feed was last refreshed on Oct 20, 2026.",
+    "A newer schedule may be on the agency's website.",
+  ],
+}
+`;
+
+exports[`explainer text is pinned (CIV-1061) > E1, N3 (kept by hand) 1`] = `
+{
+  "links": [
+    "Check current schedules",
+    "Report a problem",
+  ],
+  "paragraphs": [
+    "Atlas by Civic Minds",
+    "Grand River Transit's timetable ended on Apr 26, 2026. Times shown may be out of date. This is the latest schedule the agency has published that we could verify.",
+    "This agency doesn't publish a feed we can check automatically. We update it when a newer file is provided and verified.",
+    "A newer schedule may be on the agency's website.",
+  ],
+}
+`;
+
+exports[`explainer text is pinned (CIV-1061) > E2 1`] = `
+{
+  "links": [
+    "Check current schedules",
+  ],
+  "paragraphs": [
+    "Atlas by Civic Minds",
+    "Grand River Transit's new schedule went on the map on Oct 20, 2026. It may have errors we haven't found yet.",
+    "We're verifying it for missing service and other errors, and we'll correct anything we find.",
+    "The agency's website has its current schedule.",
+  ],
+}
+`;
+
+exports[`explainer text is pinned (CIV-1061) > E3 1`] = `
+{
+  "links": [
+    "Technical details (#123)",
+    "Report a problem",
+  ],
+  "paragraphs": [
+    "Atlas by Civic Minds",
+    "This schedule is from January 2026.",
+    "We correct errors like this before a schedule goes on the map.",
+    "If something still looks wrong, report it below.",
+  ],
+}
+`;
+
+exports[`explainer text is pinned (CIV-1061) > E4 1`] = `
+{
+  "links": [],
+  "paragraphs": [
+    "Atlas by Civic Minds",
+    "Metz is only available on Atlas beta.",
+    "We're still verifying its schedule, and some routes or times may change.",
+  ],
+}
+`;
+
+exports[`explainer text is pinned (CIV-1061) > E5 1`] = `
+{
+  "links": [],
+  "paragraphs": [
+    "Atlas by Civic Minds",
+    "Part of this route's line on the map may be missing or drawn in the wrong place.",
+    "We still show the route. Its frequency on this card comes from the timetable and is still accurate.",
+    "If something looks off, report it with the flag on this card.",
+  ],
+}
+`;
+
+exports[`explainer text is pinned (CIV-1061) > E6 1`] = `
+{
+  "links": [],
+  "paragraphs": [
+    "Atlas by Civic Minds",
+    "This route's line can't be shown on the map because it's missing from the agency's data.",
+    "We still show the route on this card. Its frequency comes from the timetable and is still accurate.",
+    "If something looks off, report it with the flag on this card.",
+  ],
+}
+`;
+
+exports[`explainer text is pinned (CIV-1061) > E7 1`] = `
+{
+  "links": [],
+  "paragraphs": [
+    "Atlas by Civic Minds",
+    "The first or last trip of the day can come up to 10 minutes later than usual, and the route still counts at its frequency.",
+    "Many routes start or end their day with one longer gap. Gaps in the middle of the day don't get this allowance.",
+  ],
+}
+`;
+
+exports[`explainer text is pinned (CIV-1061) > E8 1`] = `
+{
+  "links": [
+    "Check current schedules",
+  ],
+  "paragraphs": [
+    "Atlas by Civic Minds",
+    "This route's weekday schedules vary by day. Some weekdays run more or less often than others.",
+    "We check each weekday separately, which means one busier day can't make the route look more frequent than it usually is.",
+    "The agency's website has each day's schedule.",
+  ],
+}
+`;

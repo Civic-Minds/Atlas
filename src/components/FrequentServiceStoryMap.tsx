@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { storyMapFailedText, storyMapLoadingText } from '../content/noticeCopy';
 import { fetchAgencyGeo } from '../lib/agencyGeo';
 import type { Agency } from '../App';
 import { headwayOrBetter } from '../utils/headwayText';
@@ -105,7 +106,7 @@ export default function FrequentServiceStoryMap({ agencies, stage, frequencyMinu
           </svg>
         ) : (
           <div className="flex h-full items-center justify-center text-sm text-[var(--text-muted)]">
-            {loadState === 'error' ? `The ${researchRecord.agencyName} network preview is unavailable.` : `Loading ${researchRecord.agencyName}’s network…`}
+            {loadState === 'error' ? storyMapFailedText(researchRecord.agencyName) : storyMapLoadingText(researchRecord.agencyName)}
           </div>
         )}
         <div className="absolute left-5 top-5 z-10 w-[calc(100%-2.5rem)] max-w-md rounded-2xl bg-[var(--bg-app)]/90 p-5 backdrop-blur">

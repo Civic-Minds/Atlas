@@ -1,9 +1,7 @@
 {
   "minYears": 10,
   "slugs": [
-    "brampton",
     "burlington",
-    "caltrain",
     "cdta",
     "communitytransit",
     "ddot",
@@ -11,17 +9,14 @@
     "grt",
     "halifax",
     "indygo",
-    "kingston",
     "lacmta",
     "marta",
+    "mbta",
     "metro-transit",
     "metrostlouis",
     "miami-dade-transit",
-    "nfta",
     "rtd-denver",
-    "sacrt",
     "spokane",
-    "stm",
-    "wrta"
+    "stm"
   ]
 }

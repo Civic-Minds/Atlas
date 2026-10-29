@@ -97,7 +97,7 @@ describe('colour key', () => {
 
   it('never shows headway tiers for night service', () => {
     const key = buildExportKey(keyCandidates({ ...BASE, view: 'night' }), [getNightServiceColor('default'), HEADWAY_TIERS[0].color]);
-    expect(key).toEqual([{ color: getNightServiceColor('default'), label: 'Night service' }]);
+    expect(key).toEqual([{ color: getNightServiceColor('default'), label: 'Overnight service' }]);
   });
 });
 

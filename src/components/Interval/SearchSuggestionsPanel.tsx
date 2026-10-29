@@ -10,13 +10,14 @@ import { agencyNames } from '../../utils/agencyName';
 import { splitRouteKey } from '../../utils/routeKey';
 import type { RouteLabel } from '../../utils/routeFacts';
 import RouteListRow from '../RouteListRow';
-import { NO_REGULAR_SERVICE_SHORT_LABEL, routeListHeadwayText, type RouteListDisplay } from '../../utils/effectiveHeadway';
+import { compareSideListText, NO_REGULAR_SERVICE_SHORT_LABEL, routeListHeadwayText, type RouteListDisplay } from '../../utils/effectiveHeadway';
 import ListRow from '../ui/ListRow';
 import PanelEmpty from '../ui/PanelEmpty';
 import { CardDivider } from './cardUi';
 import { headwayToTierColor } from './HeadwaySparkline';
 import { getTierColor } from '../../utils/colors';
 import { useColorMode } from '../../hooks/useColorMode';
+import { LIMITED_SERVICE_LABEL, NO_ROUTE_SUGGESTIONS } from '../../content/noticeCopy';
 
 // Reusable/helper interfaces for route snippets
 export interface RecentRoute {
@@ -83,11 +84,31 @@ function TierDot({ headway }: { headway: number | null }) {
   );
 }
 
-export function routeRowRight(agencyName: string, headway?: number | null, stacked = false, limited = false, sharedHeadway?: number | null, noRegular = false) {
+export function routeRowRight(agencyName: string, headway?: number | null, stacked = false, limited = false, sharedHeadway?: number | null, noRegular = false, compare?: RouteListDisplay['compare']) {
   const agency = agencyNames(agencyName).name;
   const layout = stacked
     ? 'block max-w-full truncate mt-1 ml-0 text-left'
     : 'min-w-0 max-w-[34%] truncate shrink-0 ml-2 text-right';
+  // Compare (CIV-844): both maps' readings, "A every 3 · B every 4", each with its own tier dot.
+  if (compare) {
+    const sides = (['A', 'B'] as const)
+      .map(side => ({ side, text: compareSideListText(side, compare[side]), headway: compare[side].headway != null && compare[side].headway! < 999 ? compare[side].headway : null }))
+      .filter((s): s is { side: 'A' | 'B'; text: string; headway: number | null } => s.text != null);
+    if (sides.length > 0) {
+      return (
+        <span className={`${LIST_ROW_DIM} ${layout} whitespace-nowrap`}>
+          {agency}
+          {sides.map(({ side, text, headway: h }) => (
+            <React.Fragment key={side}>
+              <span className="text-[var(--text-dim)] font-normal"> · </span>
+              <TierDot headway={h} />
+              {text}
+            </React.Fragment>
+          ))}
+        </span>
+      );
+    }
+  }
   if (headway != null && headway < 999) {
     return (
       <span className={`${LIST_ROW_DIM} ${layout} whitespace-nowrap`}>
@@ -104,7 +125,7 @@ export function routeRowRight(agencyName: string, headway?: number | null, stack
         {agency}
         <span className="text-[var(--text-dim)] font-normal"> · </span>
         <TierDot headway={null} />
-        {noRegular ? NO_REGULAR_SERVICE_SHORT_LABEL : 'limited'}
+        {noRegular ? NO_REGULAR_SERVICE_SHORT_LABEL : LIMITED_SERVICE_LABEL}
       </span>
     );
   }
@@ -170,7 +191,7 @@ export const SearchSuggestionsPanel: React.FC<SearchSuggestionsPanelProps> = ({
                       name={labels.name}
                       right={(() => {
                         const display = displayForRouteKey(r.key);
-                        return routeRowRight(r.agencyName, display.headway, true, display.limited, display.sharedHeadway, display.noRegular);
+                        return routeRowRight(r.agencyName, display.headway, true, display.limited, display.sharedHeadway, display.noRegular, display.compare);
                       })()}
                       stacked
                       onClick={() => pickRoute(r.key)}
@@ -194,7 +215,7 @@ export const SearchSuggestionsPanel: React.FC<SearchSuggestionsPanelProps> = ({
                       key={r.key}
                       shortName={labels.shortName}
                       name={labels.name}
-                      right={routeRowRight(r.agencyName, r.headway, true, r.limited, r.sharedHeadway, r.noRegular)}
+                      right={routeRowRight(r.agencyName, r.headway, true, r.limited, r.sharedHeadway, r.noRegular, displayForRouteKey(r.key).compare)}
                       stacked
                       onClick={() => pickRoute(r.key)}
                     />
@@ -204,7 +225,7 @@ export const SearchSuggestionsPanel: React.FC<SearchSuggestionsPanelProps> = ({
             </>
           )}
           {recentSearches.length === 0 && recentlyViewed.length === 0 && suggestedRoutes.length === 0 && (
-            <PanelEmpty>No route suggestions in this area.</PanelEmpty>
+            <PanelEmpty>{NO_ROUTE_SUGGESTIONS}</PanelEmpty>
           )}
       </>
       </PanelBody>

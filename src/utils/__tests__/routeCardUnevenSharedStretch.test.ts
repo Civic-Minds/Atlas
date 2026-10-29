@@ -7,14 +7,15 @@ const stops = Array.from({ length: 13 }, (_, i) => `s${i}`);
 const filter = { amPeak: 15, midday: 18, pmPeak: 15, evening: null, late: null, overnight: null };
 
 // Sun Metro 205 Mesa BRIO, weekday (CIV-939, #1103): direction 1 has 58 trips; 9 carry the headsign "Mesa Inbound",
-// the rest are named for the last stop. Both draw the same 13 stops. The 9-trip feature's own midday gap is 315.
+// the rest are named for the last stop. Both draw the same 13 stops. The 9-trip feature's own midday gap is 315; the
+// stretch's 58 trips together (stretchMeta maxGap, CIV-1069) have no gap past 22.
 const outbound = {
   routeId: '205', routeShortName: '205', directionId: 0, day: 'Weekday', headsign: 'Mesa Outbound', tier: '20', headway: 18,
   stretchRole: 'main', stretchIndex: 0, stopOrder: stops,
   headwayByPeriod: { amPeak: 15, midday: 18, pmPeak: 15, evening: 18, late: null, overnight: null },
   headwayByPeriodSustained: { amPeak: true, midday: true, pmPeak: true, evening: false },
   maxGapByPeriod: { amPeak: 15, midday: 18, pmPeak: 18, evening: 18, late: 180, overnight: 220 },
-  stretchMeta: { main: { stops: 13, refStop: '4157', trips: 55 }, tails: [] },
+  stretchMeta: { main: { stops: 13, refStop: '4157', trips: 55, period: { amPeak: 15, midday: 18, pmPeak: 15 }, maxGap: { amPeak: 15, midday: 18, pmPeak: 18 } }, tails: [] },
   directionFilterHeadwayByPeriod: filter, routeFilterHeadwayByPeriod: filter,
 } as unknown as ShapeProperties;
 const downtown = {
@@ -24,7 +25,7 @@ const downtown = {
   headwayByPeriodSustained: { amPeak: true, midday: true, pmPeak: false, evening: false },
   maxGapByPeriod: { amPeak: 15, midday: 55, pmPeak: 72, evening: 18, late: 180, overnight: 220 },
   periodCoverageHeadway: { amPeak: 15, midday: 55, pmPeak: 72, evening: 107, late: null, overnight: 220 },
-  stretchMeta: { main: { stops: 13, refStop: '4166', trips: 58 }, tails: [] },
+  stretchMeta: { main: { stops: 13, refStop: '4166', trips: 58, period: { amPeak: 15, midday: 18, pmPeak: 18 }, maxGap: { amPeak: 15, midday: 20, pmPeak: 22 } }, tails: [] },
   directionFilterHeadwayByPeriod: filter, routeFilterHeadwayByPeriod: filter,
 } as unknown as ShapeProperties;
 const mesaInbound = {
@@ -34,7 +35,7 @@ const mesaInbound = {
   headwayByPeriodSustained: { amPeak: false, midday: false, pmPeak: false },
   maxGapByPeriod: { amPeak: 15, midday: 315, pmPeak: 123, evening: null, late: 180, overnight: 240 },
   periodCoverageHeadway: { amPeak: null, midday: 315, pmPeak: 123, evening: null, late: null, overnight: null },
-  stretchMeta: { main: { stops: 13, refStop: '4166', trips: 58 }, tails: [] },
+  stretchMeta: { main: { stops: 13, refStop: '4166', trips: 58, period: { amPeak: 15, midday: 18, pmPeak: 18 }, maxGap: { amPeak: 15, midday: 20, pmPeak: 22 } }, tails: [] },
   directionFilterHeadwayByPeriod: filter, routeFilterHeadwayByPeriod: filter,
 } as unknown as ShapeProperties;
 

@@ -20,7 +20,7 @@ import PanelEmpty from '../components/ui/PanelEmpty';
 import { CARD_SUMMARY } from '../components/Interval/cardUi';
 import AgencyGroupHeader from '../components/ui/AgencyGroupHeader';
 import AgencyName from '../components/ui/AgencyName';
-import { loadingText, loadErrorText } from '../content/stateCopy';
+import { loadingText, NIGHT_LOAD_FAILED, nightNoRoutesNotice, NO_AGENCIES_MATCH_SEARCH } from '../content/noticeCopy';
 import { boundingBox, lineCoordinates } from '../../shared/routeGeometry';
 
 interface NightServiceRoute {
@@ -63,7 +63,7 @@ function nightReportDetails(
   bounds: { n: number; s: number; e: number; w: number } | null | undefined,
 ): string {
   return reportDetails([
-    ['View', `routes ${headwayOrBetter(frequency)} from 2am to 5am`],
+    ['View', `routes ${headwayOrBetter(frequency)} from 2–5 AM`],
     ['Map bounds', bounds ? `${bounds.s.toFixed(4)},${bounds.w.toFixed(4)} to ${bounds.n.toFixed(4)},${bounds.e.toFixed(4)}` : 'unknown'],
     '**Listed:**',
     ...(agencies.length > 0 ? agencies.flatMap(agency => [`- ${agency.name}`, ...agency.routes.map(route => `  - ${route}`)]) : ['- Nothing listed']),
@@ -214,11 +214,11 @@ export default function NightService({ active, sidebarLeft, searchBarWidth, laye
       <Panel sidebarSurface data-report-anchor="true" className="min-h-0 flex-1">
         <PanelTitleBar>
           <Moon className="w-3 h-3 text-[var(--text-dim)] shrink-0" />
-          <span className={PANEL_TITLE}>Night Service</span>
+          <span className={PANEL_TITLE}>Overnight service</span>
           {/* The list shows data, so it has the report flag (CIV-932); the negative margin keeps the bar's height. */}
           <div className="ml-auto -my-1">
             <CardReportButton
-              title={`Night service (${frequency} min view)`}
+              title={`Overnight service (${frequency} min view)`}
               details={nightReportDetails(frequency, agencies.map(agency => ({
                 name: agency.agencyName,
                 routes: agency.routes.map(route => {
@@ -232,10 +232,10 @@ export default function NightService({ active, sidebarLeft, searchBarWidth, laye
         </PanelTitleBar>
 
         <PanelBody>
-          {loadState === 'loading' && <PanelEmpty kind="loading">{loadingText('night service')}</PanelEmpty>}
-          {loadState === 'error' && <PanelEmpty kind="error">{loadErrorText('night service data')}</PanelEmpty>}
+          {loadState === 'loading' && <PanelEmpty kind="loading">{loadingText('overnight service')}</PanelEmpty>}
+          {loadState === 'error' && <PanelEmpty kind="error">{NIGHT_LOAD_FAILED}</PanelEmpty>}
           {loadState === 'ready' && agencies.length === 0 && (
-            <PanelEmpty>No agencies match that search.</PanelEmpty>
+            <PanelEmpty>{query.trim() ? NO_AGENCIES_MATCH_SEARCH : nightNoRoutesNotice(frequency)}</PanelEmpty>
           )}
           {loadState === 'ready' && agencies.map((agency, agencyIndex) => (
             <div key={agency.slug}>
@@ -252,7 +252,7 @@ export default function NightService({ active, sidebarLeft, searchBarWidth, laye
                   route: nightRouteLabel(route, agency),
                   // Ryan's approved row: "● every 30 min". The grade is an upper bound, so this never overstates.
                   headway: nightGrade(route, agency.slug),
-                  subLabel: route.partOfRoute ? 'Night service on part of the route' : undefined,
+                  subLabel: route.partOfRoute ? 'Overnight service on part of the route' : undefined,
                   disabled: !route.routeId || !onRouteSelect,
                 }))}
                 onSelect={key => {

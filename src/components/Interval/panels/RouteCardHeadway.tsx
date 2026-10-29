@@ -14,9 +14,6 @@ import RouteCardTitle from '../../RouteCardTitle';
 import {
   CardDirectionRow,
   CardDivider,
-  CardCallout,
-  CARD_CALLOUT_HEADLINE,
-  CARD_CALLOUT_TEXT,
   CardSectionLabel,
   CardHelpNotice,
   CorrectedDataNotice,
@@ -29,11 +26,12 @@ import {
   type CardReportButtonHandle,
 } from '../cardUi';
 import { CARD_NOTE, CARD_NOTICE, CARD_NOTICE_FOOTER } from '../../../styles';
-import { FEATURES, SPARKLINE_HOURS, TIME_PERIODS, formatPeriodRangeLong, periodKeyForHour } from '../../../../shared/config';
+import { FEATURES, SPARKLINE_HOURS, TIME_PERIODS, formatPeriodHourLong, formatPeriodRangeLong, periodKeyForHour } from '../../../../shared/config';
 import { hasDirectionPeriodService, NO_REGULAR_SERVICE_LABEL, NO_REGULAR_SERVICE_SHORT_LABEL, routeCardDisplayHeadway, routeCardDisplayHeadwayRange, routeCardDisplayLimited } from '../../../utils/effectiveHeadway';
 import { branchDisplayHourHeadway, branchDisplayPeriodHeadway, buildRouteServiceSummary } from '../../../utils/routeFacts';
 import { branchStackColor } from '../../../utils/colors';
 import { unevenPeriodMaxGap } from '../../../utils/routeCardUneven';
+import { rowTrips } from '../../../utils/rowTrips';
 import { routeCardRowValue } from '../../../utils/routeCardRowValue';
 import {
   dirIdNum,
@@ -48,16 +46,14 @@ import {
   trunkSparklineByHour,
 } from '../../../utils/routeCardTrunk';
 import { shouldShowDirectionSections } from '../../../utils/routeCardDirectionLayout';
-import { activeHourRanges, partPeriodNoticeApplies, partPeriodNoticeHeadway } from '../../../utils/periodActiveRanges';
+import { activeHourRanges, partPeriodNoticeApplies, partPeriodNoticeHeadway, partPeriodOutside } from '../../../utils/periodActiveRanges';
 import { rowLabelWithOrigin } from '../../../utils/rowOriginLabel';
 import { hasStretchRoles, routeAllDayContract, routeContract } from '../../../utils/stretchCard';
 import type { VariantFamily } from '../../../utils/routeVariants';
-import type { CompareRouteRow } from '../compareTypes';
-import { compareCardSummary } from '../../../utils/compareSides';
 import { reportDetails } from '../../../utils/reportIssue';
-import { ROUTE_DATA_QUALITY_WARNING, ROUTE_DATA_QUALITY_WARNING_MESSAGE } from '../../../../shared/routeDataQuality';
+import { ROUTE_DATA_QUALITY_WARNING } from '../../../../shared/routeDataQuality';
+import { LIMITED_SERVICE_LABEL, BOOKING_REQUIRED_NOTICE, expiredFeedNotice, explainerFor, listingEndedNotice, listingEndHasPassed, NO_ROUTE_SHAPE_NOTICE, periodServiceNotice, ROUTE_DATA_QUALITY_WARNING_MESSAGE, selectedRouteFilterNotice, selectedRouteOutsideFilterNotice, unevenServiceNotice, variantsIncludedNotice, WEEKDAY_VARIATION_NOTICE } from '../../../content/noticeCopy';
 import { featurePassesHeadwayFilter } from '../../../../shared/routeHeadwayFilter';
-import { BOOKING_REQUIRED_NOTICE, expiredFeedNotice, listingEndedNotice, listingEndHasPassed, NO_ROUTE_SHAPE_NOTICE, periodServiceNotice, selectedRouteFilterNotice, selectedRouteOutsideFilterNotice, unevenServiceNotice } from '../../../content/noticeCopy';
 import { agencyTodayYmd } from '../../../../shared/feedAvailability';
 import { headwayAbout, headwayAboutRange } from '../../../utils/headwayText';
 import type { RouteLabel } from '../../../utils/routeFacts';
@@ -203,8 +199,6 @@ export interface RouteCardHeadwayProps {
    * 5am check the Night view runs), never a daytime value.
    */
   nightView?: boolean;
-  /** Compare mode: this route on each side. */
-  compareRows?: CompareRouteRow[] | null;
   expDateStr: string;
   hoveredBranch: HoveredBranch | null;
   setHoveredBranch: (b: HoveredBranch | null) => void;
@@ -229,7 +223,6 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
   selectedRouteOutOfFilter,
   hideFilterNotices = false,
   nightView = false,
-  compareRows = null,
   expDateStr,
   hoveredBranch,
   setHoveredBranch,
@@ -261,10 +254,10 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
   const allDay = period === 'all' ? routeAllDayContract(currentRoute.directions) : undefined;
   const noRegularService = (contract != null && contract.filterValue == null && contract.runs)
     || (allDay != null && allDay.filterValue == null);
-  const noRegularLabel = allDay?.limited ? 'limited' : NO_REGULAR_SERVICE_LABEL;
+  const noRegularLabel = allDay?.limited ? LIMITED_SERVICE_LABEL : NO_REGULAR_SERVICE_LABEL;
   const selectedPeriod = period !== 'all' ? TIME_PERIODS.find(p => p.key === period) : undefined;
   const hasPeriodService = period === 'all' || directionGroups.some(group =>
-    group.realTier.some(direction => routeCardDisplayHeadway(direction, period) != null) ||
+    group.realTier.some(direction => rowTrips(direction, period).value != null) ||
     group.span.length > 0,
   );
   const hasPartialPeriodService = selectedPeriod != null && !hasPeriodService && currentRoute.directions.some(direction =>
@@ -336,7 +329,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
         // whole job is completeness, so a branch with real data must never be silently dropped
         // just because it has nothing distinctive to say (#300). Fall back to something, not null.
         const reportLabel = label || direction.headsign?.trim() || `Direction ${direction.directionId ?? gi}`;
-        const headway = routeCardDisplayHeadway(direction, period);
+        const headway = rowTrips(direction, period).value;
         // Not "no scheduled service" -- null means the pipeline didn't compute a value for this
         // period, which can happen even when real service exists (#297). Don't assert absence.
         const range = routeCardDisplayHeadwayRange(direction, period);
@@ -353,7 +346,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
     // CIV-82: pooled shared-stretch cadence from real departures, when the data has it.
     const shared = sharedStretchHeadway(agencyFeatures, group.realTier, period, maxHeadway);
     const branchHeadways = [...new Set(group.realTier
-      .map(direction => routeCardDisplayHeadway(direction, period))
+      .map(direction => rowTrips(direction, period).value)
       .filter((v): v is number => v != null))].sort((a, b) => a - b);
     const sharedLines = shared && branchHeadways.length > 0
       ? [`- Shared stretch ${headwayAbout(shared.headway)}; each branch ${branchHeadways.length === 1 ? headwayAbout(branchHeadways[0]) : headwayAboutRange(branchHeadways[0], branchHeadways[branchHeadways.length - 1])}`]
@@ -445,23 +438,12 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
         </div>
       </SidebarCardHeaderBlock>
       {(<>
-      {compareRows && (() => {
-        const { headline, lines } = compareCardSummary(compareRows);
-        return (
-          <CardCallout className="mb-3" data-testid="compare-card-summary">
-            {/* The shared callout styles (CIV-971): a headline, then its lines; with no headline each line is one. */}
-            {headline && <p className={CARD_CALLOUT_HEADLINE}>{headline}</p>}
-            {/* A bracketed frequency ("(≤5 min)") stays on one line. */}
-            {lines.map(line => <p key={line} className={headline ? CARD_CALLOUT_TEXT : `${CARD_CALLOUT_HEADLINE} py-0.5`}>{line.replace(/\([^)]+\)/g, part => part.replace(/ /g, '\u00A0'))}</p>)}
-          </CardCallout>
-        );
-      })()}
       {patternLabel && (
         <p className={`${CARD_NOTE} -mt-1 mb-3 truncate`} data-testid="route-pattern-label">{patternLabel}</p>
       )}
       {FEATURES.routeVariants && variantFamily && (
         <p className={`${CARD_NOTICE} -mt-1 mb-3`}>
-          Includes variants {variantFamily.members.map(m => m.shortName).join(', ')}
+          {variantsIncludedNotice(variantFamily.members.map(m => m.shortName).join(', '))}
         </p>
       )}
       {!nightView && (() => {
@@ -599,19 +581,32 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
           <div className={CARD_NOTICE_FOOTER}>
             <p className={CARD_NOTICE}>
               {doesNotRun
-                ? selectedRouteOutsideFilterNotice(Infinity)
+                ? selectedRouteOutsideFilterNotice(Infinity, selectedPeriod ? formatPeriodRangeLong(selectedPeriod.startHour, selectedPeriod.endHour) : null)
                 : selectedPeriod && activePeriodRangeText && showPartPeriodNotice
                 ? selectedRouteFilterNotice({
-                  headway: partPeriodNoticeHeadway(
-                    contract?.filterValue,
-                    displayGroups.flatMap(g => g.realTier).map(d => routeCardRowValue(d, {
+                  // CIV-1069: the notice names the rows' own value (the slowest row), not the route's filter value,
+                  // which also counts the wait before the first trip; CIV-975's rule still checks it against every row.
+                  headway: (() => {
+                    const rowHeadways = displayGroups.flatMap(g => g.realTier).map(d => routeCardRowValue(d, {
                       period, hoveredHour: null, stretchMode, allDay, contract, noRegularService, maxHeadway,
-                    }).headway),
-                  ),
-                  activeRange: activePeriodRangeText,
+                    }).headway).filter((h): h is number => typeof h === 'number');
+                    return partPeriodNoticeHeadway(rowHeadways.length > 0 ? Math.max(...rowHeadways) : null, rowHeadways);
+                  })(),
+                  ...(() => {
+                    // N13 (Ryan): name what the rest of the period has, from the card's own hourly data.
+                    const split = partPeriodOutside(activeRangeDirections, selectedPeriod.startHour, selectedPeriod.endHour);
+                    return split
+                      ? {
+                        activeRange: formatPeriodRangeLong(split.active[0], split.active[1]),
+                        outside: split.parts.map(part => (part.at === 'start'
+                          ? { service: part.service, range: formatPeriodRangeLong(part.hours[0], part.hours[1]) }
+                          : { service: part.service, after: formatPeriodHourLong(part.hours[0]) })),
+                      }
+                      : { activeRange: activePeriodRangeText };
+                  })(),
                   periodRange: formatPeriodRangeLong(selectedPeriod.startHour, selectedPeriod.endHour),
                 })
-                : selectedRouteOutsideFilterNotice(maxHeadway)}
+                : selectedRouteOutsideFilterNotice(maxHeadway, selectedPeriod ? formatPeriodRangeLong(selectedPeriod.startHour, selectedPeriod.endHour) : null)}
             </p>
           </div>
         )}
@@ -722,7 +717,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                               headway={grade ?? undefined}
                               limited={grade == null}
                               limitedLabel={grade == null ? NO_REGULAR_SERVICE_SHORT_LABEL : undefined}
-                              subLabel={grade != null && d.nightServicePartOfRoute === true ? 'Night service on part of the route' : undefined}
+                              subLabel={grade != null && d.nightServicePartOfRoute === true ? 'Overnight service on part of the route' : undefined}
                               {...branchHoverProps(group.dirId, d.headsign, d.routeVariant)}
                             />
                           </FlaggableValue>
@@ -742,7 +737,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                             headwayLabel={row.headwayLabel}
                             trunkHeadway={row.trunkHeadway}
                             edgeGapAllowance={d.edgeGapAllowance}
-                            onEdgeGapAllowanceClick={onInfoOpen ? () => onInfoOpen('about', { helpTopic: 'edge-gap-allowance' }) : undefined}
+                            onEdgeGapAllowanceClick={onInfoOpen ? () => onInfoOpen('about', { helpTopic: explainerFor('N14') }) : undefined}
                             dimmed={row.dimmed}
                             limited={row.isLimited}
                             {...branchHoverProps(group.dirId, d.headsign, d.routeVariant)}
@@ -788,7 +783,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
               <CardHelpNotice
                 message={NO_ROUTE_SHAPE_NOTICE}
                 onLearnMore={() => onInfoOpen('about', {
-                  helpTopic: 'no-route-shape',
+                  helpTopic: explainerFor('N7'),
                   agencyName: routeAgency?.name,
                 })}
               />
@@ -797,7 +792,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
               <CardHelpNotice
                 message={ROUTE_DATA_QUALITY_WARNING_MESSAGE}
                 onLearnMore={() => onInfoOpen('about', {
-                  helpTopic: 'route-data-quality',
+                  helpTopic: explainerFor('N6'),
                   agencyName: routeAgency?.name,
                 })}
               />
@@ -807,7 +802,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
               <CardHelpNotice
                 message={listingEndedNotice(listingEndedDate, listingEnded)}
                 onLearnMore={() => onInfoOpen('about', {
-                  helpTopic: 'outdated-schedule',
+                  helpTopic: explainerFor('N25'),
                   agencyName: routeAgency?.name,
                   listingEndedDate,
                   listingEnded,
@@ -823,7 +818,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
               <CardHelpNotice
                 message={expiredFeedNotice(routeAgency?.name ?? 'This agency', expDateStr, routeAgency?.manualFeedSource)}
                 onLearnMore={() => onInfoOpen('about', {
-                  helpTopic: 'outdated-schedule',
+                  helpTopic: explainerFor(routeAgency?.manualFeedSource ? 'N3' : 'N2'),
                   agencyName: routeAgency?.name,
                   expDateStr: expDateStr || undefined,
                   manualFeedSource: routeAgency?.manualFeedSource,
@@ -836,15 +831,15 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
               />
             )}
             {routeAgency?.feedReviewStatus === 'review' && !routeAgency.overrideNote && (
-              <NewScheduleDataNotice agency={routeAgency} onInfoOpen={onInfoOpen} />
+              <NewScheduleDataNotice on="route" agency={routeAgency} onInfoOpen={onInfoOpen} />
             )}
             {routeAgency && routeOverrideNote && (
-              <CorrectedDataNotice agency={routeAgency} overrideNote={routeOverrideNote} onInfoOpen={onInfoOpen} />
+              <CorrectedDataNotice on="route" agency={routeAgency} overrideNote={routeOverrideNote} onInfoOpen={onInfoOpen} />
             )}
             {hasWeekdayTierVariation && (
               <CardHelpNotice
-                message="Weekday schedules vary. The tier shown reflects the slowest weekday."
-                onLearnMore={() => onInfoOpen('about', { helpTopic: 'weekday-variation' })}
+                message={WEEKDAY_VARIATION_NOTICE}
+                onLearnMore={() => onInfoOpen('about', { helpTopic: explainerFor('N1'), agencyName: routeAgency?.name, websiteUrl: routeAgency?.websiteUrl ?? undefined })}
               />
             )}
           </div>

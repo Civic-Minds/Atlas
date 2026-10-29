@@ -5,6 +5,7 @@ import { fmtHeadwayRange } from '../../utils/format';
 import { shouldShowBranchHeadwayRange } from '../../utils/routeCardTrunk';
 import { HeadwayBadge, LimitedBadge } from './cardUi';
 import RouteRowName from '../RouteRowName';
+import { LIMITED_SERVICE_LABEL, FIRST_LAST_TRIP_ALLOWANCE_HINT } from '../../content/noticeCopy';
 
 interface Props {
   label: string;
@@ -73,7 +74,7 @@ export function keyboardFocusHover(onHoverStart?: () => void, onHoverEnd?: () =>
  * Owns label color, headway display, and limited-service variants
  * so there's one place to change instead of hunting across SidebarControls.
  */
-export default function RouteDirectionRow({ label, routeName, labelWeight = 'bold', singleLine = false, headway, colorHeadway, headwayLabel, trunkHeadway, headwaySuffix, headwaySuffixTone, subLabel, subLabelTrailing, subLabelWeight = 'bold', live, limited, limitedLabel = 'limited', edgeGapAllowance, onEdgeGapAllowanceClick, dimmed, onHoverStart, onHoverEnd, branchHovered, branchDimmed, onClick, holdLayout = false, chevron = false }: Props) {
+export default function RouteDirectionRow({ label, routeName, labelWeight = 'bold', singleLine = false, headway, colorHeadway, headwayLabel, trunkHeadway, headwaySuffix, headwaySuffixTone, subLabel, subLabelTrailing, subLabelWeight = 'bold', live, limited, limitedLabel = LIMITED_SERVICE_LABEL, edgeGapAllowance, onEdgeGapAllowanceClick, dimmed, onHoverStart, onHoverEnd, branchHovered, branchDimmed, onClick, holdLayout = false, chevron = false }: Props) {
   const interactive = !!(onHoverStart && onHoverEnd);
   const clickable = !!onClick;
   const faded = dimmed || branchDimmed;
@@ -124,7 +125,7 @@ export default function RouteDirectionRow({ label, routeName, labelWeight = 'bol
                 onEdgeGapAllowanceClick?.();
               }}
               className="inline-flex items-center text-[var(--text-dim)] hover:text-[var(--accent)] transition-colors shrink-0"
-              title="Atlas added a small allowance for the first or last trip of the day."
+              title={FIRST_LAST_TRIP_ALLOWANCE_HINT}
               aria-label="About the first-or-last-trip allowance"
             >
               <Info aria-hidden="true" className="w-3 h-3" />

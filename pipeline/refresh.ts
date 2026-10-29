@@ -58,6 +58,7 @@ import {
 } from './countryLaunchGate.js';
 import { buildHiddenRoutesForAgency, mergeHiddenRoutes, type HiddenRoutesFile, type HiddenRouteRecord } from './hiddenRoutes.js';
 import type { FeedQuality } from '../shared/feedQuality.js';
+import { historyHeadlineWins } from './historyHeadlinePick.js';
 import { historyRouteKey } from './historyRouteKey.js';
 import { baselineFingerprint, buildSidecar, buildV2Routes, buildV2RoutesMerged, fingerprintChanged, fingerprintOf, historyV2Enabled, r2ArchiveSink, splitFeaturesBySource, writeSidecar, type LatestRouteEntry, type V2FeedPart } from './historyV2.js';
 import { readFeedEvidence } from './historyWeekend.js';
@@ -167,7 +168,8 @@ async function writeHistorySnapshot(slug: string, geojson: string, feedExpiry: s
     const t = p.tier != null ? String(p.tier) : null;
     const ln = p.routeLongName ? String(p.routeLongName) : undefined;
     const byp = p.headwayByPeriod as HeadwayByPeriod | undefined;
-    if (!current[sn] || h < current[sn].headway) {
+    // CIV-1081: a feature with period values beats one with none (historyHeadlinePick.ts).
+    if (historyHeadlineWins({ headway: h, headwayByPeriod: byp }, current[sn])) {
       current[sn] = {
         headway: h, tier: t,
         routeLongName: ln ?? current[sn]?.routeLongName,
@@ -325,6 +327,7 @@ interface AgencyEntry {
   skipLetterSuffixMerge?: boolean;
   mergeEquivalentShapeVariants?: boolean;
   mergeEquivalentShapeVariantsAllModes?: boolean;
+  mergeEquivalentShapeVariantsRouteTypes?: string[];
   keepLongShapeJumps?: boolean;
   skipClusteredJumpRepair?: boolean;
   poolSingleTripShapes?: boolean;

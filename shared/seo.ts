@@ -7,6 +7,8 @@
  */
 
 export const SITE_URL = 'https://www.transitatlas.fyi';
+/** The beta site, where beta-only agencies and services can be seen (never the preview site, which is for agencies' own previews). */
+export const BETA_SITE_URL = 'https://beta.transitatlas.fyi';
 export const SITE_NAME = 'Transit Atlas';
 export const ORG_NAME = 'Civic Minds';
 
@@ -98,8 +100,8 @@ export const SEO_ROUTES: readonly SeoRoute[] = [
   },
   {
     path: '/research/night',
-    title: 'Night service: Transit Atlas',
-    description: 'Find routes with sustained scheduled service between 2am and 5am.',
+    title: 'Overnight service: Transit Atlas',
+    description: 'Find routes with sustained scheduled service from 2–5 AM.',
     indexable: false,
     gate: 'researchApps',
   },

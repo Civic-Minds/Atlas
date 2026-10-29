@@ -62,8 +62,12 @@ function equivalentGeometry(a: GtfsShape, b: GtfsShape): boolean {
  * other routes one shape per trip: SamTrans 120 on weekdays has 142 trips on 142
  * shape IDs with identical geometry, so every phase 1 group had one departure and
  * the route had no Weekday features (#775).
+ *
+ * `routeTypes` is the same opt-in for the listed route types only: CapMetro gives each pair of bus
+ * trips its own shape (201 northbound: 31 trips on 16 identical shapes), but its Red Line keeps its
+ * own shapes (CIV-1083).
  */
-export function mergeEquivalentShapeVariants(gtfs: GtfsData, options: { allModes?: boolean } = {}): { gtfs: GtfsData; mergedGroups: number; mergedTrips: number } {
+export function mergeEquivalentShapeVariants(gtfs: GtfsData, options: { allModes?: boolean; routeTypes?: readonly string[] } = {}): { gtfs: GtfsData; mergedGroups: number; mergedTrips: number } {
   const routeById = new Map(gtfs.routes.map(route => [route.route_id, route]));
   const shapeById = new Map(gtfs.shapes.map(shape => [shape.id, shape]));
   const shapeTripCounts = new Map<string, number>();
@@ -73,7 +77,9 @@ export function mergeEquivalentShapeVariants(gtfs: GtfsData, options: { allModes
   for (const trip of gtfs.trips) {
     if (!trip.shape_id || !shapeById.has(trip.shape_id)) continue;
     const route = routeById.get(trip.route_id);
-    if (!route || (!options.allModes && route.route_type !== '0')) continue;
+    if (!route) continue;
+    const merges = options.routeTypes ? options.routeTypes.includes(route.route_type) : options.allModes || route.route_type === '0';
+    if (!merges) continue;
     const groupKey = `${trip.route_id}::${trip.direction_id ?? '0'}::${trip.trip_headsign ?? ''}`;
     let shapeIds = groups.get(groupKey);
     if (!shapeIds) {

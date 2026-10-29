@@ -30,8 +30,8 @@ import type { HistoryAgencyList } from '../shared/historyEligibility';
 import { preloadHistory } from './utils/historyConfig';
 import { historyAgencyToOpen, historyRouteSearchPlaceholder } from './utils/historyOpen';
 import { useHistoryRouteLink } from './hooks/useHistoryRouteLink';
-import { HISTORY_VIEW_ALL, type HistoryView } from './utils/historyYearMap';
-import { encodeHistoryView, parseHistoryView } from './utils/historyViewUrl';
+import { type HistoryView } from './utils/historyYearMap';
+import { encodeHistoryView, historyDefaultView, parseHistoryView } from './utils/historyViewUrl';
 import historyAgencyList from '../shared/data/history-agencies.json';
 import ErrorBoundary from './components/ErrorBoundary';
 import LiveOffNotice from './components/LiveOffNotice';
@@ -52,7 +52,7 @@ const ResearchPage = React.lazy(() => import('./apps/ResearchPage'));
 import { applyOnDemand } from './lib/onDemandLoader';
 import { OnDemandStatusProvider, OnDemandViewportLoader, useOnDemandData } from './hooks/useOnDemandData';
 import type { OnDemandAvailability, OnDemandPickup, OnDemandZoneDetails } from '../shared/onDemandAvailability';
-import { loadErrorText, loadingText } from './content/stateCopy';
+import { loadErrorText, loadingText, MAP_ERROR_TEXT } from './content/noticeCopy';
 import Panel from './components/ui/Panel';
 import PanelEmpty from './components/ui/PanelEmpty';
 
@@ -260,7 +260,6 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
       issueUrl: opts.issueUrl,
       issueUrls: opts.issueUrls,
       rolloutNotice: opts.rolloutNotice,
-      rolloutIssueUrl: opts.rolloutIssueUrl,
     } : null);
     setInfoOpen(true);
   }, []);
@@ -417,10 +416,10 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   const [historyDismissKey, setHistoryDismissKey] = useState(0);
   const handleMapDismiss = useCallback(() => setHistoryDismissKey(k => k + 1), []);
   const [historyPanelOpen, setHistoryPanelOpen] = useState(false);
-  // History's own Frequency and Time (CIV-389, CIV-392): start at All and All day, separate from the map's.
-  // Read from the link's h/p (the map's params) when the app opens on History.
+  // History's own Frequency and Time (CIV-389, CIV-392), separate from the map's: All, and the current period
+  // (CIV-1097). Read from the link's h/p (the map's params) when the app opens on History.
   const [historyView, setHistoryView] = useState<HistoryView>(() => (
-    window.location.pathname.startsWith('/apps/history') ? parseHistoryView(window.location.search) : HISTORY_VIEW_ALL
+    window.location.pathname.startsWith('/apps/history') ? parseHistoryView(window.location.search) : historyDefaultView()
   ));
 
   const historyViewControl = useMemo(() => ({ view: historyView, setView: setHistoryView }), [historyView]);
@@ -800,7 +799,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
       {FEATURES.updateBanner && <AppUpdateBanner />}
 
       <main className="absolute inset-0 overflow-hidden">
-        <ErrorBoundary label="The map encountered an error.">
+        <ErrorBoundary label={MAP_ERROR_TEXT}>
           <React.Suspense fallback={<div className="flex items-center justify-center h-full text-[var(--text-dim)] text-sm">{loadingText('map')}</div>}>
           {inResearch ? (
             <ResearchPage />
@@ -822,7 +821,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
               nightServiceFrequency={nightServiceFrequency}
               setNightServiceFrequency={setNightServiceFrequency}
               exportEnabled={FEATURES.mapExport || inFrequentService}
-              exportTitle={inFrequentService ? 'Frequent Service' : inNight ? 'Night Service' : inHistory ? 'Service History' : inLive ? 'Live Transit' : 'Transit Frequency'}
+              exportTitle={inFrequentService ? 'Frequent Service' : inNight ? 'Overnight service' : inHistory ? 'Service History' : inLive ? 'Live Transit' : 'Transit Frequency'}
               frequentServiceView={inFrequentService}
               frequentServiceDays={frequentServiceDays}
               frequentServiceFrequency={frequentServiceFrequency}
@@ -925,7 +924,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
         )}
         {agenciesLoadState === 'error' && (
           <div className={`${MAP_STATUS_SLOT} flex items-center gap-3 rounded-full bg-[var(--bg-panel)]/95 px-3 py-1.5 text-xs text-[var(--text-dim)]`} data-map-overlay="status">
-            <span>{loadErrorText('agency data')}</span>
+            <span>{loadErrorText('the list of agencies')}</span>
             <button
               type="button"
               className="font-bold text-[var(--text-primary)] hover:text-[var(--accent)]"
