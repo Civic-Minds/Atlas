@@ -23,6 +23,7 @@ const ALLOWED_LABEL_CALLS: Record<string, { count: number; why: string }> = {
   'src/apps/History.tsx': { count: 1, why: 'History route names' },
   'src/pageParts.tsx': { count: 2, why: 'agency pages (RouteNameCell), from the page data' },
   'src/components/Live/tool/OverviewList.tsx': { count: 1, why: 'Live route list' },
+  'src/LiveToolPage.tsx': { count: 1, why: 'Live route menu, named as the list rows (CIV-1117 row 5)' },
 };
 const SRC = resolve(__dirname, '../..');
 const sourceFiles = (dir: string): string[] => readdirSync(dir, { withFileTypes: true }).flatMap(e => {
