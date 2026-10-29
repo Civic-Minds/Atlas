@@ -93,7 +93,7 @@ describe('buildAreaPageData', () => {
   });
 
   it('names the dates', () => {
-    expect(areaDatesText(d)).toBe("Based on the agencies' published timetables, not live arrivals. Newest timetable published Sep 1, 2026. This page was last updated Oct 13, 2026.");
+    expect(areaDatesText(d)).toBe("Based on the agencies' published schedules, not live arrivals. Newest schedule published Sep 1, 2026. This page was last updated Oct 13, 2026.");
   });
 });
 
