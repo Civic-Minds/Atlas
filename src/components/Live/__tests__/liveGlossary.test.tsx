@@ -16,10 +16,14 @@ describe('Live glossary', () => {
     'Vehicle positions': positionsLine, 'Trip matching': tripMatchLine(), 'Network figures': networkFiguresLine, Stops: stopsLine, 'Recording gaps': recordingGapsLine,
     'Coloured changes': colourLine,
   };
-  for (const { term, text: def } of LIVE_GLOSSARY) {
+  for (const { term, text: def } of LIVE_GLOSSARY.filter(g => !g.legend)) {
     it(`${term} reads the same on the agency page and in the glossary`, () => {
       // The bold term, then the rest of the sentence, no colon (CIV-1075).
       expect(text(lines[term])).toBe(`${term} ${def}`);
     });
   }
+  it('shows the delay legend in its own words (E22)', () => {
+    const legend = LIVE_GLOSSARY.find(g => g.legend);
+    expect(`${legend?.term}: ${legend?.text}`).toBe('Typical delay: 1+ min ahead · On time · 1–3 min · 3+ min behind');
+  });
 });

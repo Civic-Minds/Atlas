@@ -6,7 +6,7 @@
 import { directionLabel, type DashboardBand, type LiveV3, type UncertainStart } from '../../../shared/liveDashboard';
 import { titleCase } from '../../utils/format';
 import { pct, tenth } from '../../../shared/liveFormat';
-import { USUALLY_ON_TIME, bunchTotalParts, bunchedAndLong, lateShareText, usuallyOffBy } from '../../../shared/liveWording';
+import { DELAY_LEGEND_TITLE, DELAY_STEP_LABELS, EARLY_STEP_LABEL, USUALLY_ON_TIME, bunchTotalParts, bunchedAndLong, lateShareText, usuallyOffBy } from '../../../shared/liveWording';
 
 export type RouteStripMode = 'delay' | 'bunching';
 
@@ -47,18 +47,17 @@ export const DELAY_STEP_LIMITS = [1, 3] as const;
 /** A typical departure this many minutes early or more is its own (blue) step, not "on time". */
 export const EARLY_STEP_MIN = 1;
 /** The early step's legend label (Ryan, CIV-1075 E22: "ahead", as in the Ahead definition). */
-export const EARLY_STEP_LABEL = '1+ min ahead';
+export { EARLY_STEP_LABEL };
 /** Bunching steps: share of gaps too short or too long. */
 export const BUNCHING_STEP_LIMITS = [0.15, 0.25] as const;
 export const MIN_N = 30;
 
 export const STEP_LABELS: Record<RouteStripMode, readonly [string, string, string]> = {
-  // "behind", not "late": Late means more than 5½ min (E9, E22).
-  delay: ['On time', '1–3 min behind', '3+ min behind'],
+  delay: DELAY_STEP_LABELS,
   bunching: ['Under 15%', '15–25%', '25% or more'],
 };
 export const LEGEND_TITLE: Record<RouteStripMode, string> = {
-  delay: 'Typical delay',
+  delay: DELAY_LEGEND_TITLE,
   bunching: 'Bunching',
 };
 /** Words after a legend's last step (E23: "25% or more of gaps"). */

@@ -7,6 +7,12 @@ import { clockTime } from './timeText';
  */
 
 /** What Late means, once, for every page, panel and the glossary (approved by Ryan 2026-10-17). Reads after "Late:". */
+/** The route strip's delay legend (E22, Ryan, CIV-1075): "Typical delay: 1+ min ahead · On time · 1–3 min · 3+ min behind". The early step shows only when a stop is ahead. */
+export const DELAY_LEGEND_TITLE = 'Typical delay';
+export const EARLY_STEP_LABEL = '1+ min ahead';
+/** "behind", not "late": Late means more than 5½ min (E9); "behind" only on the last step (E22). */
+export const DELAY_STEP_LABELS = ['On time', '1–3 min', '3+ min behind'] as const;
+
 export const LATE_DEFINITION = "is more than 5½ min behind schedule. This is based on the TTC's 5-minute standard, plus 30 seconds because we only record each vehicle's location once a minute.";
 /** The title of every late-by-hour section and card (approved by Ryan 2026-10-17). */
 export const LATE_BY_HOUR_TITLE = 'Late departures by hour';
