@@ -22,7 +22,8 @@ const SCENES = [
   { name: 'frequent', path: '/research/frequent-service', visitors: ['default'] },
   // An agency with several years, so the year scrubber shows (History is off on phones: the map shows instead).
   { name: 'history', path: '/apps/history?agency=marta', visitors: ['default'] },
-  { name: 'compare', path: '/', visitors: ['default'], open: page => page.getByRole('button', { name: 'Compare two maps' }).click() },
+  // Compare is off on phones (phoneModeFlags), so it starts at the sm width.
+  { name: 'compare', path: '/', visitors: ['default'], minWidth: 640, open: page => page.getByRole('button', { name: 'Compare two maps' }).click() },
   { name: 'live', path: '/apps/live', visitors: ['default'] },
 ].filter(s => !only || only.includes(s.name));
 const WIDTHS = [360, 390, 768, 1024, 1280];
@@ -70,6 +71,7 @@ const failures = [];
 const skipped = [];
 try {
   for (const width of WIDTHS) for (const scene of SCENES) for (const visitor of scene.visitors) {
+    if (scene.minWidth && width < scene.minWidth) continue;
     const label = `${width} ${scene.name} ${visitor}`;
     const ctx = await browser.newContext({ viewport: { width, height: HEIGHT } });
     const page = await ctx.newPage();
