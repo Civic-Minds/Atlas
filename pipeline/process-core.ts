@@ -56,6 +56,8 @@ import { decideDedupe, runsInDay, type DedupePattern } from './featureDedupe.js'
 import { decideHeadline, decidePeriod, liftTierOnDestinationPool, ownStepOneHeadway, pooledStepOneHeadway, settleTier, terminalReading, type PeriodValue } from './routeGrading.js';
 import type { SharedStretchPattern } from './sharedStretch.js';
 import { directionStretches, nightOnlyTrips, periodSustainedMid, runsAcrossNightMidpoint, stampStretchShadow, type DirectionStretches, type TripVisit } from './tripSets.js';
+import { riderWait, stretchKeys, stretchMedians } from './stretchMedian.js';
+import { PERIOD_COVERAGE_MAX_HEADWAY } from '../shared/periodEligibility.js';
 import { buildPooledStopMap, computeStopSharers, pooledHeadwayInWindow, type StopSharers } from './stopPools.js';
 
 export type { GtfsPreprocess };
@@ -2755,6 +2757,27 @@ export async function processGtfsBuffer(
         const overlay = rushPeriodOverlay.get(stopId);
         const periods = overlay ? { ...departureValues.allStopPeriodHw[stopId], ...overlay } : departureValues.allStopPeriodHw[stopId];
         if (periods && Object.keys(periods).length > 0) stopPeriodHeadways[stopId] = periods;
+      }
+      // CIV-845: one value per shared stretch (consecutive stops served by the same patterns),
+      // the median of its stops' average waits on the published (departure) lists. Only values
+      // already published are replaced; route-level values never read these (rule 11).
+      {
+        const order = onShape.map(p => p.stopId);
+        const lists = departurePooled?.map ?? departureMetricMap;
+        const keys = stretchKeys(order, ownMember ? stopSharersFor(poolKey).get(ownMember) : undefined, childToParent,
+          key => stopDepsBySharedMember.get(`${poolKey}::${key}`));
+        const waitIn = (stopId: string, start: number, end: number) => riderWait(lists.get(stopId) ?? [], start, end, 3, PERIOD_COVERAGE_MAX_HEADWAY);
+        for (const [pk, { start, end }] of Object.entries(PERIODS) as [PeriodKey, { start: number; end: number }][]) {
+          // Rush-period overlays keep their values.
+          if (rushPeriodOverlay.size > 0 && order.some(id => rushPeriodOverlay.get(id)?.[pk] != null)) continue;
+          const medians = stretchMedians(order, keys, id => stopPeriodHeadways[id]?.[pk] != null ? waitIn(id, start, end) : null);
+          for (const [stopId, value] of medians) stopPeriodHeadways[stopId] = { ...stopPeriodHeadways[stopId], [pk]: value };
+        }
+        // The headline value is the midday wait, else the PM peak wait, so the 1-minute check
+        // reads the window the stop's own value came from.
+        const headline = (id: string) => publishedStopHeadways[id] == null ? null
+          : waitIn(id, HEADLINE_WINDOWS.midday.start, HEADLINE_WINDOWS.midday.end) ?? waitIn(id, HEADLINE_WINDOWS.pmPeak.start, HEADLINE_WINDOWS.pmPeak.end);
+        for (const [stopId, value] of stretchMedians(order, keys, headline)) publishedStopHeadways[stopId] = value;
       }
       if (Object.keys(stopPeriodHeadways).length > 0) {
         feature.properties.stopPeriodHeadways = stopPeriodHeadways;

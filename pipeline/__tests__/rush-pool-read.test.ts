@@ -64,9 +64,10 @@ describe('a rush-hour-only bus pattern reads what serves its stops in its own ru
 
   it('the Division 13 line is unchanged: the rush trips never join what it reads', () => {
     const p = row('Division 13 Layover');
-    // Stops 86 and 88 are drop-off only for it: no departures, no value (CIV-1071).
-    expect(periodRow(p, 'pmPeak')).toEqual(runs('23x7,22x6,21x12,20x19,16x3,11x26,10x3,11,10,11x2,10x5,-,10,-'));
-    expect(periodRow(p, 'amPeak')).toEqual(runs('10x6,9,10x5,9,10,9,10x55,11x15,-,11,-'));
+    // Stops 86 and 88 are drop-off only for it: no departures, no value (CIV-1071). The stop
+    // values are each shared stretch's average wait (CIV-845); the row-level values are unchanged.
+    expect(periodRow(p, 'pmPeak')).toEqual(runs('32x3,31x4,30x11,25x3,24,25,24x11,23x6,22x4,19x33,16x8,-,14,-'));
+    expect(periodRow(p, 'amPeak')).toEqual(runs('9x18,10x49,12x9,13x9,-,14,-'));
     expect(periodRow(p, 'midday')).toEqual(runs('10x85,-,10,-'));
     expect(p).toMatchObject({ headway: 10, tier: '60', serviceClass: 'regular' });
     expect(p.headwayByPeriod).toMatchObject({ amPeak: 11, midday: 10, pmPeak: 23, evening: 33 });

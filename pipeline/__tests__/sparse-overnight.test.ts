@@ -153,6 +153,7 @@ describe('sparse overnight window (#897)', () => {
   it('keeps a steady three-trip overnight short turn at route and stop (TTC 300 shape)', async () => {
     const p = await route(at('04:38', '04:53', '04:57'));
     expect(p.headwayByPeriod.overnight).toBe(10);
-    expect(p.stopPeriodHeadways.s1.overnight).toBe(10);
+    // The stop shows the rider's average wait (CIV-845): gaps 15 and 4 read 12.7.
+    expect(p.stopPeriodHeadways.s1.overnight).toBe(13);
   });
 });

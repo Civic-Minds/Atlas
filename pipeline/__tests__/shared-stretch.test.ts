@@ -272,11 +272,12 @@ describe('shared stretch pooling (patterns)', () => {
     ]);
     // One destination: dedupe keeps one line and every stop reads the whole destination: gaps
     // 15, 15, 30, mean 20 (19 where the 9-15h window cuts the terminal's list to 17 gaps), and
-    // the headline is the worst stop on the drawn line (#771).
+    // the headline is the worst stop on the drawn line (#771). The stops show the rider's average
+    // wait (CIV-845): gaps 15, 15, 30 read 22.
     expect(routes).toHaveLength(1);
     const line = routes[0];
     expect([19, 20]).toContain(line.headway);
-    for (const stopId of line.stopOrder.slice(0, 10)) expect([19, 20]).toContain(line.stopHeadways[stopId]);
+    for (const stopId of line.stopOrder.slice(0, 10)) expect(line.stopHeadways[stopId]).toBe(22);
     expectStretchesSound(routes);
   });
 
@@ -401,9 +402,10 @@ describe('shared stretch pooling (real feeds)', () => {
       expect(p.sharedStretches[0].from).toBe(0);
       // Near the start the gaps alternate 12/12, 11/13, 10/14; further on they drift to 9/15
       // and 8/16. typicalOfGaps reads the mean of an alternation, so no shared stop ever reads
-      // better than every 12 (the median alone would say 7 to 9).
+      // better than every 12 (the median alone would say 7 to 9). The stops show the stretch's
+      // average wait (CIV-845), 13.
       const pooled = stretchStops(p).map(s => p.stopHeadways[s]);
-      expect(pooled.slice(0, 4)).toEqual([12, 12, 12, 12]);
+      expect(pooled.slice(0, 4)).toEqual([13, 13, 13, 13]);
       expect(pooled.every(v => v >= 12)).toBe(true);
     }
     expectStretchesSound(routes);

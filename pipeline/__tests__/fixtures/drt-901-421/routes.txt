@@ -1,0 +1,3 @@
+route_desc,route_url,route_color,route_id,route_type,route_long_name,agency_id,route_short_name,route_text_color
+,,006633,421,3,Route 421,drt,421,ffffff
+,,cc6600,901,3,PULSE 901,drt,901,000000
