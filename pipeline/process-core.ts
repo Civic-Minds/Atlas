@@ -59,6 +59,9 @@ import { directionStretches, nightOnlyTrips, periodSustainedMid, runsAcrossNight
 import { buildPooledStopMap, computeStopSharers, pooledHeadwayInWindow, type StopSharers } from './stopPools.js';
 
 export type { GtfsPreprocess };
+
+/** Douglas-Peucker tolerance for published route lines (~11 m); corridors clip the same line (CIV-1092). */
+const ROUTE_LINE_SIMPLIFY_DEG = 0.0001;
 export type { HeadwayByPeriod };
 export type HeadwayByHour = Partial<Record<number, number | null>>;
 export type { GeoJsonFeature, StopEntry };
@@ -3612,6 +3615,9 @@ export async function processGtfsBuffer(
           const stopOrder = feature.properties.stopOrder as string[] | undefined;
           const stopPositions = feature.properties.stopPositions as number[] | undefined;
           if (!stopOrder) return null;
+          // CIV-1092: clip the route line as it is published (simplified below), so the corridor lies on
+          // the drawn line instead of the raw shape's jogs into each stop, which zigzag beside it.
+          const routeLine = simplifyLine(feature.geometry.coordinates as number[][], ROUTE_LINE_SIMPLIFY_DEG);
           // The corridor's stops in this order along the shape; a stop a trip only sets down at is
           // not a corridor stop, so the shape may have other stops between them.
           const at: number[] = [];
@@ -3622,14 +3628,14 @@ export async function processGtfsBuffer(
           }
           if (stopPositions && stopPositions.length === stopOrder.length) {
             return clipLineBetweenPositions(
-              feature.geometry.coordinates as number[][],
+              routeLine,
               stopPositions[at[0]],
               stopPositions[at[n - 1]],
             );
           }
           const from = stopsById.get(c.stopIds[0]);
           const to = stopsById.get(c.stopIds[n - 1]);
-          return from && to ? clipLineBetweenStops(feature.geometry.coordinates as number[][], from, to) : null;
+          return from && to ? clipLineBetweenStops(routeLine, from, to) : null;
         })
         .find((geometry): geometry is number[][] => geometry != null && geometry.length >= 2);
       if (!corridorGeometry) continue;
@@ -3694,7 +3700,7 @@ export async function processGtfsBuffer(
   // Reduces file size for dense networks without visible change at typical zoom levels.
   for (const f of features) {
     if (f.geometry.type === 'LineString') {
-      f.geometry.coordinates = simplifyLine(f.geometry.coordinates as number[][], 0.0001);
+      f.geometry.coordinates = simplifyLine(f.geometry.coordinates as number[][], ROUTE_LINE_SIMPLIFY_DEG);
     }
   }
 

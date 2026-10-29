@@ -573,7 +573,7 @@ describe('processGtfsBuffer terminal headway', () => {
 describe('processGtfsBuffer corridor clipping', () => {
   // Two routes share the consecutive links s1->s2->s3. The shape has long tails before s1 and
   // after s3 that the corridor must not include.
-  async function corridorFixture(withShapes: boolean) {
+  async function corridorFixture(withShapes: boolean, jogs = false) {
     const zip = new JSZip();
     zip.file('agency.txt', 'agency_id,agency_name,agency_url,agency_timezone\na,Corridor Transit,https://example.test,America/Toronto\n');
     zip.file('routes.txt', 'route_id,route_short_name,route_long_name,route_type\nr1,1,One,3\nr2,2,Two,3\n');
@@ -584,6 +584,8 @@ describe('processGtfsBuffer corridor clipping', () => {
         'shape_id,shape_pt_lat,shape_pt_lon,shape_pt_sequence',
         'sh1,43.640,-79.390,1', 'sh1,43.645,-79.385,2', 'sh1,43.650,-79.380,3', 'sh1,43.655,-79.375,4',
         'sh1,43.660,-79.370,5', 'sh1,43.665,-79.365,6', 'sh1,43.670,-79.360,7',
+        // A raw shape that jogs about 5 m toward the curb on each side of s2, as TTC's do at stops.
+        ...(jogs ? ['sh1,43.6524,-79.3776,3.5', 'sh1,43.65245,-79.37745,3.6', 'sh1,43.6576,-79.3726,4.5', 'sh1,43.65755,-79.37265,4.6'] : []),
       ].join('\n') + '\n');
     }
     const trips = ['route_id,service_id,trip_id,trip_headsign,direction_id,shape_id'];
@@ -603,8 +605,10 @@ describe('processGtfsBuffer corridor clipping', () => {
     zip.file('trips.txt', trips.join('\n') + '\n');
     zip.file('stop_times.txt', stopTimes.join('\n') + '\n');
     const result = await processGtfsBuffer(await zip.generateAsync({ type: 'nodebuffer' }), undefined, { slug: 'corridor-transit' });
+    lastRouteLines = (JSON.parse(result.geojson).features as any[]).filter(f => f.geometry.type === 'LineString');
     return JSON.parse(result.corridorsGeojson).features as any[];
   }
+  let lastRouteLines: any[] = [];
 
   it('clips each corridor to the shape between its first and last stops, dropping the tails', async () => {
     const corridors = (await corridorFixture(true)).filter(f => f.properties.day === 'Weekday');
@@ -624,6 +628,16 @@ describe('processGtfsBuffer corridor clipping', () => {
     // r1 and r2 every 20, ten minutes apart: every 10 together, every 20 alone.
     expect(corridors[0].properties.corridorWaits.midday).toBe(10);
     expect(corridors[0].properties.corridorRouteWaits['1'].midday).toBe(20);
+  });
+
+  it('lies on the published route line, not the raw shape\'s jogs into each stop (CIV-1092)', async () => {
+    const corridors = (await corridorFixture(true, true)).filter(f => f.properties.day === 'Weekday');
+    const coords = corridors[0].geometry.coordinates as number[][];
+    const routeLine = lastRouteLines.find(f => f.properties.day === 'Weekday').geometry.coordinates as number[][];
+    const onLine = new Set(routeLine.map(p => p.join(',')));
+    // Every interior point is a point of the drawn route line; only the clipped ends are new.
+    for (const p of coords.slice(1, -1)) expect(onLine.has(p.join(','))).toBe(true);
+    for (const [lon, lat] of coords) expect(Math.abs((lat - 43.650) - (lon + 79.380))).toBeLessThan(0.0001);
   });
 
   it('omits corridors when no shaped route covers the link rather than drawing a straight line', async () => {
