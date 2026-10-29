@@ -68,9 +68,9 @@ describe('approved notice wording (CIV-1045)', () => {
     expect(nightNoRoutesNotice(30)).toBe('No routes here run every 30 min or better from 2–5 AM.');
   });
 
-  it('N17 and N26: no scheduled service on the day', () => {
-    expect(noServiceOnDayNotice('route', 'Sunday')).toBe('This route has no scheduled service on Sundays.');
-    expect(noServiceOnDayNotice('agency', 'Weekday')).toBe('This agency has no scheduled service on weekdays.');
+  it('N17 and N26: no scheduled trips on the day (CIV-1077)', () => {
+    expect(noServiceOnDayNotice('route', 'Sunday')).toBe('This route has no scheduled trips on Sundays.');
+    expect(noServiceOnDayNotice('agency', 'Weekday')).toBe('This agency has no scheduled trips on weekdays.');
   });
 });
 
