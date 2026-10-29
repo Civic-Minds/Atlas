@@ -140,9 +140,9 @@ describe('the method line for the days left out', () => {
   const weeks = (a: ReturnType<typeof wk>, b: ReturnType<typeof wk>) => ({ minHealthyDays: 2, health: [], comparable: true, thisWeek: a, lastWeek: b });
   const t = ['2026-10-10', '2026-10-11', '2026-10-12'], l = ['2026-10-03', '2026-10-04', '2026-10-05'];
   it('names this week, last week, both, or nothing', () => {
-    expect(weekWindowParts(weeks(wk(t, ['2026-10-10', '2026-10-12']), wk(l, l))).days).toBe('Excluding Oct 11 this week.');
-    expect(weekWindowParts(weeks(wk(t, t), wk(l, ['2026-10-03', '2026-10-04']))).days).toBe('Excluding Oct 5 last week.');
-    expect(weekWindowParts(weeks(wk(t, ['2026-10-10', '2026-10-12']), wk(l, ['2026-10-03', '2026-10-04']))).days).toBe('Excluding Oct 11 this week, Oct 5 last week.');
+    expect(weekWindowParts(weeks(wk(t, ['2026-10-10', '2026-10-12']), wk(l, l))).days).toBe('Excluding Oct 11.');
+    expect(weekWindowParts(weeks(wk(t, t), wk(l, ['2026-10-03', '2026-10-04']))).days).toBe('Excluding Oct 5.');
+    expect(weekWindowParts(weeks(wk(t, ['2026-10-10', '2026-10-12']), wk(l, ['2026-10-03', '2026-10-04']))).days).toBe('Excluding Oct 11 and Oct 5.');
     expect(weekWindowParts(weeks(wk(t, t), wk(l, l))).days).toBeNull();
   });
 });
