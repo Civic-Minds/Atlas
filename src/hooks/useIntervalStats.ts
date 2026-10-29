@@ -4,7 +4,7 @@ import { matchesRouteQuery, searchRouteResults, searchStopResults, type StopSear
 import { HEADWAY_TIERS, getTierColor } from '../utils/colors';
 import { isLivePollingRoute } from '../utils/livePolling';
 import { TIME_PERIODS, PERIOD_LABELS as PERIOD_LABELS_BY_KEY, PERIOD_KEYS, type PeriodKey } from '../../shared/config';
-import { buildRouteTileFilter } from '../../shared/routeTileFilter';
+import { buildRouteTileFilter, routeFeaturePassesMapFilter } from '../../shared/routeTileFilter';
 import { effectiveMode } from '../../shared/modes';
 import { featurePassesHeadwayFilter, headwayFilterApplies } from '../../shared/routeHeadwayFilter';
 import { collectStopHubSiblings } from '../utils/stopHub';
@@ -134,11 +134,23 @@ export function passesRouteFilter(
     if (routeCount < 3 && headway > 15) return false;
   }
 
-  // Note: we no longer force directionId === 0 here.
-  // Both directions are considered for filters so routes with good frequency in one direction
-  // (e.g. RGRTA 22 dir1 =15min while dir0=30) are not hidden. Overlapping lines for
-  // bidirectional routes are acceptable for accuracy.
+  // A route feature passes exactly when the map draws it (CIV-1135): the map's own route filter expression
+  // (buildRouteTileFilter: agency, day, irregular, limited service, mode and the one frequency rule) evaluated on
+  // the feature, so the counter and the lines can never disagree. Both directions count (RGRTA 22 dir1 every 15 while
+  // dir0 is every 30 is not hidden). skipFrequency drops only the frequency clause (the #317 overlay applies it itself).
+  if (p.routeId != null && !isCorridor) {
+    return routeFeaturePassesMapFilter(p, {
+      agencies: filters.agencies,
+      day: filters.day,
+      modes: filters.modes,
+      period: options?.skipFrequency ? 'all' : filters.period ?? 'all',
+      maxHeadway: options?.skipFrequency ? Infinity : filters.maxHeadway,
+      hideSpan: filters.hideSpan,
+      hideLimitedService: filters.hideLimitedService,
+    }, agencySlug);
+  }
 
+  // Stops and corridors: their own checks, not the route filter.
   if (filters.modes.size > 0) {
     // On-demand matches booked routes (CIV-1006) as well as the zones.
     const routeModes = [...filters.modes];
@@ -152,17 +164,11 @@ export function passesRouteFilter(
     }))) return false;
   }
   if (p.day !== undefined && p.day !== filters.day) return false;
-  // A route where any direction has no sustained/real-tier pattern at all (e.g. a peak-only
-  // commuter route with a genuinely irregular return direction, Halifax 330 #318) is irregular
-  // as a whole, not just in that one direction -- hide the whole route, not just that branch.
   if (filters.hideSpan && isHiddenByIrregularFilter(p)) return false;
   if (filters.hideLimitedService && isLimitedService(p)) return false;
   if (options?.skipFrequency) return true;
   // Stops and other non-route features are not subject to the frequency threshold.
-  if (p.routeId == null && !isCorridor) return true;
-  // The one frequency rule (shared/routeHeadwayFilter.ts): worst direction decides, busiest
-  // stretch / shared trunk never makes a route pass, and the decision is identical to the
-  // PMTiles map filter for the same feature.
+  if (!isCorridor) return true;
   return featurePassesHeadwayFilter(p, filters.period, filters.maxHeadway);
 }
 
