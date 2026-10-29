@@ -128,7 +128,7 @@ describe('Live route dashboard', () => {
     await screen.findByText(/Last 6 service days/);
     const text = document.body.textContent ?? '';
     expect(text).toMatch(/60 runs \(2% of the vehicle trips seen\)/);
-    expect(text).toMatch(/2% of trips ran under a trip number that did not fit their own timetable slot: 3 were matched to the slot that fit, 4 were left out\./);
+    expect(text).toMatch(/2% of trips ran under a trip number that did not fit their own scheduled slot: 3 were matched to the slot that fit, 4 were left out\./);
     expect(text).toMatch(/the 8% of trips leaving the end of the line within 45 seconds of a limit/);
     expect(text).not.toMatch(/300 runs|10% of the vehicle trips|4% of trips ran|the 12% of trips leaving/);
     unmount();
@@ -231,7 +231,7 @@ describe('Live route dashboard', () => {
     // The kept count is the trips the figures describe (the header's count), not the raw runs before matching (CIV-910).
     renderPage({ ...ready, v3: { ...v3, leftOut: { noTimetableTrip: 600, excluded: 500, excludedLabel: 'replacement buses', kept: 900 } } });
     await screen.findByRole('heading', { level: 1 });
-    expect(screen.getByText(/600 runs \(30% of the vehicle trips seen\) under a trip number not on the timetable, such as extra or unscheduled buses, are left out; the figures describe the 1,234 timetabled trips kept/)).toBeTruthy();
+    expect(screen.getByText(/600 runs \(30% of the vehicle trips seen\) under a trip number not on the schedule, such as extra or unscheduled buses, are left out; the figures describe the 1,234 scheduled trips kept/)).toBeTruthy();
     expect(screen.getByText(/500 runs by replacement buses that share this route number are left out/)).toBeTruthy();
   });
 

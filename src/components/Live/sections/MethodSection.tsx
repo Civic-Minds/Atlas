@@ -51,7 +51,7 @@ export default function MethodSection(props: MethodSectionProps): ReactNode {
         ...(v3.weekly ? weekWindowItems(v3.weekly) : []),
         positionsLine,
         tripMatchLine(true),
-        data.replacementBuses && <Term t="Replacement buses">this route is run by replacement buses in this timetable, so every figure describes the buses.</Term>,
+        data.replacementBuses && <Term t="Replacement buses">this route is run by replacement buses in this schedule, so every figure describes the buses.</Term>,
         `${builtText(data.generatedAt)}.`,
       ] },
       { label: METHOD_GROUPS.colours, items: [v3.weekly && colourLine] },
@@ -59,9 +59,9 @@ export default function MethodSection(props: MethodSectionProps): ReactNode {
         recordingGapsLine,
         <Term t="Near a limit">vehicles are seen only about once a minute, so the {pct(lim.nearCutoffShare)} of trips leaving the end of the line within {Math.round(v3.uncertainty.withinMin * 60)} seconds of a limit could land on either side of it.</Term>,
         // The share is of the raw runs seen; the kept count is the trips the figures describe, the header's count (CIV-910).
-        glo && glo.noTimetableTrip > 0 && <Term t="Unscheduled trips">{glo.noTimetableTrip.toLocaleString()} runs ({pct(glo.noTimetableTrip / (glo.kept + glo.noTimetableTrip + glo.excluded))} of the vehicle trips seen) under a trip number not on the timetable, such as extra or unscheduled buses, are left out; the figures describe the {good.runs.toLocaleString()} timetabled trips kept.</Term>,
+        glo && glo.noTimetableTrip > 0 && <Term t="Unscheduled trips">{glo.noTimetableTrip.toLocaleString()} runs ({pct(glo.noTimetableTrip / (glo.kept + glo.noTimetableTrip + glo.excluded))} of the vehicle trips seen) under a trip number not on the schedule, such as extra or unscheduled buses, are left out; the figures describe the {good.runs.toLocaleString()} scheduled trips kept.</Term>,
         lo && lo.excluded > 0 && <Term t="Other services">{lo.excluded.toLocaleString()} runs by {lo.excludedLabel ?? 'another service'} that share this route number are left out.</Term>,
-        <Term t="Mismatched trip numbers">{pct(lim.swaps.rate)} of trips ran under a trip number that did not fit their own timetable slot: {lim.swaps.reassigned} were matched to the slot that fit, {lim.swaps.dropped} were left out.</Term>,
+        <Term t="Mismatched trip numbers">{pct(lim.swaps.rate)} of trips ran under a trip number that did not fit their own scheduled slot: {lim.swaps.reassigned} were matched to the slot that fit, {lim.swaps.dropped} were left out.</Term>,
         unknown > 0 && <Term t="Unjudged trips">{unknown.toLocaleString()} trips that could not be judged are left out of Delivered.</Term>,
       ] },
     

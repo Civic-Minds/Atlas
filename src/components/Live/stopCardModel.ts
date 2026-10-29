@@ -11,7 +11,7 @@ import { bunchParts, type RouteStripStop } from './routeStripModel';
 export interface CardGroup { heading: string | null; lines: string[] }
 
 export const STOP_CARD_WORDS = {
-  vehicles: 'Vehicles vs timetable',
+  vehicles: 'Vehicles vs schedule',
   wait: 'Rider wait at this stop',
   lateShare: (pct: string) => `${pct} are 5½+ min late`,
   // The measures keep the names the switcher and the table use, with the key's approved definitions.
