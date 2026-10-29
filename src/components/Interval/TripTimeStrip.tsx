@@ -3,6 +3,7 @@ import { SPARKLINE_HOURS } from '../../../shared/config';
 import { tripTimeBarHeight, type TripTimeSeries } from '../../utils/tripTime';
 import { CHART_HEADING } from '../../styles';
 import { runTimeAmount } from '../../utils/headwayText';
+import { FullDayPeriodBands } from './FullDayPeriodBands';
 
 /**
  * The full-day chart's hour column row and bar shape (width and round ends); the trip-time strip
@@ -76,7 +77,7 @@ export function AxisOverlay({ ticks, height, className = '' }: { ticks: AxisTick
  * reports that hour through the chart's hover line; the hours with the longest trip time are drawn
  * darker. Renders nothing without data.
  */
-export function TripTimeStrip({ series, label = TRIP_TIME_LABEL, height, serviceHours, hoveredHour, onHourHover, className = 'mt-3', labelClassName = '', barsClassName = 'mt-1', scaleMax, axis, above }: {
+export function TripTimeStrip({ series, label = TRIP_TIME_LABEL, height, serviceHours, hoveredHour, onHourHover, className = 'mt-3', labelClassName = '', barsClassName = 'mt-1', scaleMax, axis, above, bands }: {
   series: TripTimeSeries | null | undefined;
   label?: string;
   /** The bar area height: the frequency chart's own, so the two charts match. */
@@ -95,6 +96,8 @@ export function TripTimeStrip({ series, label = TRIP_TIME_LABEL, height, service
   axis?: AxisTick[];
   /** Drawn between the label and the bars (the full-day grid's per-chart hover number). */
   above?: React.ReactNode;
+  /** The full-day view's period bands behind the bars, as on the frequency chart beside it (CIV-1094). */
+  bands?: boolean;
 }) {
   const values = series ? SPARKLINE_HOURS.map(h => series.byHour[h]).filter((v): v is number => v != null) : [];
   if (!series || values.length === 0) return null;
@@ -107,39 +110,42 @@ export function TripTimeStrip({ series, label = TRIP_TIME_LABEL, height, service
         {tripTimeHeading(series.loop, label)}
       </div>
       {above}
-      <div className={`relative ${barsClassName} ${FULL_DAY_COLUMN_ROW} items-end`} onMouseLeave={() => onHourHover?.(null)}>
-        {axis && <AxisOverlay ticks={axis} height={height} />}
-        {SPARKLINE_HOURS.map(h => {
-          const minutes = series.byHour[h];
-          const hovered = hoveredHour === h && minutes != null;
-          // Every hour at the longest trip time is drawn darker, so the chart shows them without a caption.
-          const slowest = minutes != null && max > min && minutes === max;
-          return (
-            <div
-              key={h}
-              className="relative flex min-w-0 flex-1 items-end justify-center"
-              style={{ height }}
-              onMouseEnter={() => onHourHover?.(minutes != null ? h : null)}
-              onClick={() => onHourHover?.(minutes != null ? h : null)}
-            >
-              {hovered && <div className="absolute inset-0 rounded-sm bg-[var(--bg-btn-hover)] pointer-events-none" />}
-              {minutes != null ? (
-                <div
-                  data-testid="trip-time-bar"
-                  className={`relative ${FULL_DAY_BAR_SHAPE} bg-[var(--text-dim)] ${slowest ? 'opacity-100' : hovered ? 'opacity-75' : 'opacity-50'}`}
-                  style={{ height: tripTimeBarHeight(minutes, top, height) }}
-                />
-              ) : serviceHours?.has(h) ? (
-                // An empty slot, not a value: a dashed outline at a neutral height.
-                <div
-                  data-testid="trip-time-missing"
-                  className={`${FULL_DAY_BAR_SHAPE} border border-dashed border-[var(--text-dim)] opacity-40`}
-                  style={{ height: Math.round(height * 0.4) }}
-                />
-              ) : null}
-            </div>
-          );
-        })}
+      <div className={`relative ${barsClassName} ${bands ? 'pt-1' : ''}`}>
+        {bands && <FullDayPeriodBands className="inset-x-0 top-1 bottom-0" />}
+        <div className={`relative ${FULL_DAY_COLUMN_ROW} items-end`} onMouseLeave={() => onHourHover?.(null)}>
+          {axis && <AxisOverlay ticks={axis} height={height} />}
+          {SPARKLINE_HOURS.map(h => {
+            const minutes = series.byHour[h];
+            const hovered = hoveredHour === h && minutes != null;
+            // Every hour at the longest trip time is drawn darker, so the chart shows them without a caption.
+            const slowest = minutes != null && max > min && minutes === max;
+            return (
+              <div
+                key={h}
+                className="relative flex min-w-0 flex-1 items-end justify-center"
+                style={{ height }}
+                onMouseEnter={() => onHourHover?.(minutes != null ? h : null)}
+                onClick={() => onHourHover?.(minutes != null ? h : null)}
+              >
+                {hovered && <div className="absolute inset-0 rounded-sm bg-[var(--bg-btn-hover)] pointer-events-none" />}
+                {minutes != null ? (
+                  <div
+                    data-testid="trip-time-bar"
+                    className={`relative ${FULL_DAY_BAR_SHAPE} bg-[var(--text-dim)] ${slowest ? 'opacity-100' : hovered ? 'opacity-75' : 'opacity-50'}`}
+                    style={{ height: tripTimeBarHeight(minutes, top, height) }}
+                  />
+                ) : serviceHours?.has(h) ? (
+                  // An empty slot, not a value: a dashed outline at a neutral height.
+                  <div
+                    data-testid="trip-time-missing"
+                    className={`${FULL_DAY_BAR_SHAPE} border border-dashed border-[var(--text-dim)] opacity-40`}
+                    style={{ height: Math.round(height * 0.4) }}
+                  />
+                ) : null}
+              </div>
+            );
+          })}
+        </div>
       </div>
     </div>
   );

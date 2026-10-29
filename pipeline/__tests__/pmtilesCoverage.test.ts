@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { isBuiltIntoTiles, isScheduleOnlyRouteArtifact, lonLatToTile, mustAppearInTiles, tilesForAgency } from '../pmtilesCoverage.js';
+import { isBuiltIntoTiles, isScheduleOnlyRouteArtifact, isSeasonalPauseRouteArtifact, lonLatToTile, mustAppearInTiles, tilesForAgency } from '../pmtilesCoverage.js';
 
 describe('PMTiles coverage sampling', () => {
   it('always samples the center tile for agencies without a bbox', () => {
@@ -33,6 +33,27 @@ describe('isScheduleOnlyRouteArtifact', () => {
     expect(isScheduleOnlyRouteArtifact({ features: [route('LineString'), route('Point')] })).toBe(false);
     expect(isScheduleOnlyRouteArtifact({ features: [stop] })).toBe(false);
     expect(isScheduleOnlyRouteArtifact(null)).toBe(false);
+  });
+});
+
+describe('isSeasonalPauseRouteArtifact (CIV-1082)', () => {
+  const today = '20261028';
+  const line = { geometry: { type: 'LineString' }, properties: { routeId: '17117' } };
+  const stop = { geometry: { type: 'Point' }, properties: { stopId: 's1' } };
+  // Telluride between seasons: no routes this week, the Goose and the gondola run again in November.
+  const paused = { features: [stop], resumingRoutes: { 17117: '20261123', 17119: '20261120' } };
+
+  it('lets a current feed with no routes this week and every route resuming later through', () => {
+    expect(isSeasonalPauseRouteArtifact(paused, '20270404', today)).toBe(true);
+    expect(isSeasonalPauseRouteArtifact({ ...paused, features: [] }, null, today)).toBe(true);
+  });
+
+  it('keeps failing an empty agency that is not paused, an expired feed, or one with a line drawn', () => {
+    expect(isSeasonalPauseRouteArtifact({ features: [stop] }, '20270404', today)).toBe(false);
+    expect(isSeasonalPauseRouteArtifact({ features: [], resumingRoutes: {} }, '20270404', today)).toBe(false);
+    expect(isSeasonalPauseRouteArtifact(paused, '20261027', today)).toBe(false);
+    expect(isSeasonalPauseRouteArtifact({ ...paused, features: [line, stop] }, '20270404', today)).toBe(false);
+    expect(isSeasonalPauseRouteArtifact(null, '20270404', today)).toBe(false);
   });
 });
 

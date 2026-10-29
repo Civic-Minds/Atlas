@@ -457,24 +457,45 @@
     },
     {
       "agencySlug": "port-authority-pa",
+      "routeType": 1,
+      "routeShortName": "BLUE",
+      "mode": 100,
+      "reason": "The T (Blue, Red, Silver) is light rail, published as route_type 1 (subway/metro) in the official feed"
+    },
+    {
+      "agencySlug": "port-authority-pa",
+      "routeType": 1,
+      "routeShortName": "RED",
+      "mode": 100,
+      "reason": "The T (Blue, Red, Silver) is light rail, published as route_type 1 (subway/metro) in the official feed"
+    },
+    {
+      "agencySlug": "port-authority-pa",
+      "routeType": 1,
+      "routeShortName": "SLVR",
+      "mode": 100,
+      "reason": "The T (Blue, Red, Silver) is light rail, published as route_type 1 (subway/metro) in the official feed"
+    },
+    {
+      "agencySlug": "port-authority-pa",
       "routeType": 2,
       "routeShortName": "BLUE",
       "mode": 100,
-      "reason": "The T (Blue, Red, Silver) is light rail, published as route_type 2 (commuter rail)"
+      "reason": "The T (Blue, Red, Silver) is light rail, published as route_type 2 (commuter rail) in the MobilityDatabase copy; kept until the live data comes from the official feed"
     },
     {
       "agencySlug": "port-authority-pa",
       "routeType": 2,
       "routeShortName": "RED",
       "mode": 100,
-      "reason": "The T (Blue, Red, Silver) is light rail, published as route_type 2 (commuter rail)"
+      "reason": "The T (Blue, Red, Silver) is light rail, published as route_type 2 (commuter rail) in the MobilityDatabase copy; kept until the live data comes from the official feed"
     },
     {
       "agencySlug": "port-authority-pa",
       "routeType": 2,
       "routeShortName": "SLVR",
       "mode": 100,
-      "reason": "The T (Blue, Red, Silver) is light rail, published as route_type 2 (commuter rail)"
+      "reason": "The T (Blue, Red, Silver) is light rail, published as route_type 2 (commuter rail) in the MobilityDatabase copy; kept until the live data comes from the official feed"
     },
     {
       "agencySlug": "uta",

@@ -38,6 +38,7 @@
     "audit-current-gtfs": "npx tsx pipeline/audit-current-gtfs.ts",
     "build-pmtiles": "npx tsx pipeline/build-pmtiles.ts",
     "prune-releases": "npx tsx pipeline/prune-releases.ts",
+    "prune-search-index": "npx tsx pipeline/prune-search-index.ts",
     "verify-pmtiles-remote": "npx tsx pipeline/verify-pmtiles-remote.ts",
     "build-pmtiles:staging": "ATLAS_ENV=staging npx tsx pipeline/build-pmtiles.ts",
     "build-pmtiles-incremental": "npx tsx pipeline/build-pmtiles-incremental.ts",

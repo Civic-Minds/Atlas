@@ -10,4 +10,3 @@ export function onDemandPillSelected(options: { hasPill: boolean; choice: boolea
 }
 
 export const ON_DEMAND_PILL_LABEL = 'On-Demand';
-export const ON_DEMAND_NOT_MAPPED_NOTE = "This service runs by request in a zone that isn't on the map yet.";

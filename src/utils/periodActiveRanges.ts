@@ -54,6 +54,44 @@ export function hourHasService(direction: Partial<HourFields>, hour: number): bo
   return (direction.departuresByHour?.[hour] ?? 0) > 0 || direction.headwayByHour?.[hour] != null || direction.maxGapByHour?.[hour] != null;
 }
 
+/** A part of the selected period outside the route's one run of service (N13): whether trips run there at all. */
+export interface OutsidePart {
+  at: 'start' | 'end';
+  /** [start, end) hours of the part, inside the period. */
+  hours: [number, number];
+  /** 'none': no trips; 'less': trips, less often; 'unknown': the data can't tell the two apart. */
+  service: 'none' | 'less' | 'unknown';
+}
+
+/**
+ * The selected period split around the route's run of service, for the part-period notice (N13, Ryan: "every 12 min
+ * from 7-9 AM, with no service from 6-7 AM"). Null when the route has more than one run in the period (the notice then
+ * keeps its general wording) or none. A part has trips when any direction has service in one of its hours
+ * (hourHasService). Without the departure counts (CIV-1010) a part at the end can't be told apart: the day's last
+ * departure has no maxGapByHour, so a lone late trip would read as no service; that part is 'unknown'. A part at the
+ * start always has later service after it, so its trips carry a maxGapByHour and the answer holds.
+ */
+export function partPeriodOutside(
+  directions: Partial<HourFields>[],
+  startHour: number,
+  endHour: number,
+): { active: [number, number]; parts: OutsidePart[] } | null {
+  const runs = activeHourRanges(directions, Math.max(0, startHour - 1), endHour)
+    .map(([a, b]) => [Math.max(a, startHour), Math.min(b, endHour)] as [number, number])
+    .filter(([a, b]) => b > a);
+  if (runs.length !== 1) return null;
+  const [active] = runs;
+  const counted = directions.some(direction => direction.departuresByHour);
+  const service = (from: number, to: number, at: OutsidePart['at']): OutsidePart['service'] => {
+    for (let hour = from; hour < to; hour++) if (directions.some(direction => hourHasService(direction, hour))) return 'less';
+    return counted || at === 'start' ? 'none' : 'unknown';
+  };
+  const parts: OutsidePart[] = [];
+  if (active[0] > startHour) parts.push({ at: 'start', hours: [startHour, active[0]], service: service(startHour, active[0], 'start') });
+  if (active[1] < endHour) parts.push({ at: 'end', hours: [active[1], endHour], service: service(active[1], endHour, 'end') });
+  return { active, parts };
+}
+
 /**
  * Whether a selected route outside the filter gets the part-period notice for this
  * period (#995). It needs some service near the period (the scan starts an hour

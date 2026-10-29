@@ -6,7 +6,7 @@ Data: live Atlas release `release-mvislmj9`, generated 2026-10-22 00:22 UTC (202
 
 ## The question
 
-Per agency: what share of route-kilometres has service every 15 minutes or better at about 9 am Monday, versus about 9 pm Sunday, and how big is the drop?
+Per agency: what share of route-kilometres has service every 15 minutes or better at about 9 AM Monday, versus about 9 PM Sunday, and how big is the drop?
 
 ## Headline
 
@@ -568,7 +568,7 @@ GTHA notes:
 
 Same method as the 2026-10-11 run. The script that produced that run was not kept in the repo or the research bundle, so this is a reimplementation from the old report's method section (see Caveats for what that can change).
 
-- **Periods (the project's own definitions in `shared/config.ts`).** "9 am Monday" uses **AM Peak (6–9 am) on Weekday** service. Strictly, 9:00 falls on the AM Peak/Midday boundary, and the app's hour lookup assigns 9 am to Midday (9 am–3 pm). The CSV includes a `weekday_midday_pct` column for that reading. "9 pm Sunday" uses **Evening (7–11 pm) on Sunday** service. Monday = Weekday.
+- **Periods (the project's own definitions in `shared/config.ts`).** "9 AM Monday" uses **AM Peak (6–9 AM) on Weekday** service. Strictly, 9:00 falls on the AM Peak/Midday boundary, and the app's hour lookup assigns 9 AM to Midday (9 AM–3 PM). The CSV includes a `weekday_midday_pct` column for that reading. "9 PM Sunday" uses **Evening (7–11 PM) on Sunday** service. Monday = Weekday.
 - **Passing "every 15 or better".** Each route is tested with the repo's shared filter, `routePassesHeadwayFilter(features, period, day, 15)` from `shared/routeHeadwayFilter.ts`, after `normalizeRouteFilterFeatures` stamps worst-direction values over the whole agency file. That is the same normalisation the PMTiles build does (`pipeline/prepareAgencyRoutesForTiles.ts`). So a route passes here only if the map would draw it under "≤15 min" for that day and period. Worst direction decides (`docs/product/FREQUENCY_RULES.md`). The rule code is commit `8a33431e`, which is the release's own `codeVersion`, so these numbers match the live tiles by construction. Since the previous run the rule has changed: the coverage stamp now uses the same pattern pool as the period headway, and the filter reads the stretch selector's per-period value where a route has one (frequency focus steps 2a, 5a and 6, 2026-10-15).
 - **Route unit.** Route short name (or route ID when there's no short name) plus route branch. This is the same grouping the worst-direction rule uses.
 - **Route-km.** For each route, the length of its **longest single drawn pattern** (great-circle length of the LineString) across all days and directions. Both directions are never added together, and short-turns are never added on top. Branched routes are under-counted where their tails differ. Separately branched routes (1 branch groups across all agencies) can double-count a shared trunk.

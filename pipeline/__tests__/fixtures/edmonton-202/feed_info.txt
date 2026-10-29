@@ -1,0 +1,2 @@
+feed_publisher_name,feed_publisher_url,feed_lang,feed_start_date,feed_end_date,feed_version, feed_contact_email
+Edmonton Transit Service,http://www.takeets.com,EN,20260920,20261128,261002_1029,ets-gtfs@edmonton.ca

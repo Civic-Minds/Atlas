@@ -3,7 +3,7 @@ import { periodKeyForHour } from '../../shared/config';
 import { branchDisplayPeriodHeadway, buildRouteServiceSummary } from './routeFacts';
 import { MIN_SHARED_STOPS_FOR_TRUNK, sharedStopIds, sharesOrderedTrunk } from './routeBranchGeometry';
 import { sharedStretchStopPass } from './frequencySegments';
-import { routeCardDisplayHeadway } from './effectiveHeadway';
+import { rowTrips } from './rowTrips';
 import { stretchRowsFromMeta } from './stretchCard';
 
 /** Headsign-scoped trunk minimum for route-card range display (not route-wide combined deps). */
@@ -172,7 +172,7 @@ export function stretchSharedHeadway(
   const meta = group.directionFeatures.find(d => d.stretchRole === 'main') ?? group.directionFeatures.find(d => d.stretchMeta?.main);
   const shared = meta ? stretchRowsFromMeta(meta, period).find(r => r.role === 'main') : undefined;
   if (shared?.value == null || shared.noRegular) return null;
-  const rowValues = rows.map(d => routeCardDisplayHeadway(d, period));
+  const rowValues = rows.map(d => rowTrips(d, period).value);
   if (rowValues.some(v => v == null)) return null;
   return trunkBeatsBranches(shared.value, medianHeadway(rowValues as number[])) ? shared.value : null;
 }

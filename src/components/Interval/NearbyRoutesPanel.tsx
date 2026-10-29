@@ -3,13 +3,14 @@ import { stopNameCase } from '../../utils/format';
 import { HeadwayBadge, LimitedBadge } from './cardUi';
 import { headwayEveryRange } from '../../utils/headwayText';
 import { NO_REGULAR_SERVICE_SHORT_LABEL } from '../../utils/effectiveHeadway';
+import { LIMITED_SERVICE_LABEL } from '../../content/noticeCopy';
 import type { NearbyRoute } from '../../hooks/useNearbyRoutes';
 import { PANEL_TITLE, sidebarFrameStyle } from '../../styles';
 import Panel, { PanelBody, PanelTitleBar } from '../ui/Panel';
 import ListRow from '../ui/ListRow';
 import { ROUTE_ROW_NAME } from '../RouteRowName';
 import PanelEmpty from '../ui/PanelEmpty';
-import { loadingText } from '../../content/stateCopy';
+import { loadingText, NO_ROUTES_NEARBY } from '../../content/noticeCopy';
 
 interface NearbyRoutesPanelProps {
   routes: NearbyRoute[];
@@ -46,7 +47,7 @@ export const NearbyRoutesPanel = forwardRef<HTMLDivElement, NearbyRoutesPanelPro
       {loading ? (
         <PanelEmpty kind="loading">{loadingText('nearby routes')}</PanelEmpty>
       ) : routes.length === 0 ? (
-        <PanelEmpty>No routes within 500 m</PanelEmpty>
+        <PanelEmpty>{NO_ROUTES_NEARBY}</PanelEmpty>
       ) : (
         <PanelBody>
           {routes.map(r => (
@@ -80,7 +81,7 @@ export const NearbyRoutesPanel = forwardRef<HTMLDivElement, NearbyRoutesPanelPro
                       className="ml-auto"
                     />
                   ) : (r.limited || r.noRegular) ? (
-                    <LimitedBadge label={r.noRegular ? NO_REGULAR_SERVICE_SHORT_LABEL : 'limited'} className="ml-auto" />
+                    <LimitedBadge label={r.noRegular ? NO_REGULAR_SERVICE_SHORT_LABEL : LIMITED_SERVICE_LABEL} className="ml-auto" />
                   ) : (
                     // No frequency and no words: the grey dot alone, as the row showed before the shared badge.
                     <LimitedBadge className="ml-auto" />

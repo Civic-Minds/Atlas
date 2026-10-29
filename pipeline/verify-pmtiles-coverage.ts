@@ -19,7 +19,7 @@ import { PMTiles, type Source } from 'pmtiles';
 import { PbfReader } from 'pbf';
 import { VectorTile } from '@mapbox/vector-tile';
 import { getAgencyArtifactUrls, R2_PUBLIC_URL } from '../shared/config.js';
-import { isScheduleOnlyRouteArtifact, mustAppearInTiles, tilesForAgency, type TileInclusionAgency } from './pmtilesCoverage.js';
+import { isScheduleOnlyRouteArtifact, isSeasonalPauseRouteArtifact, mustAppearInTiles, tilesForAgency, type TileInclusionAgency } from './pmtilesCoverage.js';
 import { runWithConcurrency } from './utils.js';
 
 interface Agency extends TileInclusionAgency {
@@ -226,7 +226,9 @@ async function main() {
     return res.ok ? res.json() : null;
   };
   const scheduleOnly: Agency[] = [];
+  const seasonalPause: Agency[] = [];
   const missing: Agency[] = [];
+  const todayYmd = new Date().toISOString().slice(0, 10).replace(/-/g, '');
   for (const agency of unexplainedMissing) {
     let artifact: unknown = null;
     try {
@@ -234,12 +236,20 @@ async function main() {
     } catch (e) {
       console.error(`Could not read route artifact for ${agency.slug}:`, (e as Error).message);
     }
-    if (isScheduleOnlyRouteArtifact(artifact as Parameters<typeof isScheduleOnlyRouteArtifact>[0])) scheduleOnly.push(agency);
+    const routeArtifact = artifact as Parameters<typeof isScheduleOnlyRouteArtifact>[0];
+    if (isScheduleOnlyRouteArtifact(routeArtifact)) scheduleOnly.push(agency);
+    else if (isSeasonalPauseRouteArtifact(routeArtifact, agency.lastFeedExpiry, todayYmd)) seasonalPause.push(agency);
     else missing.push(agency);
   }
   if (scheduleOnly.length > 0) {
     console.log(`\n${scheduleOnly.length} agenc${scheduleOnly.length === 1 ? 'y has' : 'ies have'} schedules but no drawable route lines (feed has no usable shapes — not counted as a failure):`);
     for (const a of scheduleOnly) console.log(`  - ${a.slug} (${a.name})`);
+  }
+  // CIV-1082: between seasons (Telluride, Mountain Village) a current feed has no route lines this week but
+  // every route runs again later in it, the same signal the release diff gate reads (CIV-1076).
+  if (seasonalPause.length > 0) {
+    console.log(`\n${seasonalPause.length} agenc${seasonalPause.length === 1 ? 'y is' : 'ies are'} in a seasonal pause (no routes this week, every route runs again later in the current feed — not counted as a failure):`);
+    for (const a of seasonalPause) console.log(`  - ${a.slug} (${a.name})`);
   }
   const stillPending = allMissing.filter(a => a.pmtilesPending && a.lastFeedExpiry);
   const resolvedPending = agencies.filter(a => a.pmtilesPending && foundSlugs.has(a.slug));
@@ -255,7 +265,7 @@ async function main() {
   }
 
   if (missing.length === 0) {
-    console.log(`\nOK — all ${agencies.filter(mustAppearInTiles).length - scheduleOnly.length} built agencies with route lines have route features present in the PMTiles archive (hidden, staged and pending agencies are left out of the tiles).`);
+    console.log(`\nOK — all ${agencies.filter(mustAppearInTiles).length - scheduleOnly.length - seasonalPause.length} built agencies with route lines have route features present in the PMTiles archive (hidden, staged and pending agencies are left out of the tiles).`);
     return;
   }
 

@@ -127,4 +127,14 @@ describe('decideDedupe: a rush-hour-only pattern competes unrated against any ot
     expect(decideDedupe(peak({ dedupeHeadway: 20, headway: 20 }), peak(), undefined)).toBe('replace');
     expect(decideDedupe(allDay, peak({ rushHourOnly: false, line: line(-79.9) }), undefined)).toBe('replace');
   });
+
+  it('against a pattern rated nowhere in the day, the rush-hour pattern keeps its rating, whichever arrives first (#1174)', () => {
+    // Pittsburgh G3 inbound: 2 PM trips with no headway and no period value, 5 AM trips every 30.
+    const unratedPm = pattern({ dedupeHeadway: null, headway: null, departures: 2, runsInDay: false, runsMidday: false, line: line(-79.9) });
+    expect(explainDedupe(unratedPm, peak({ dedupeHeadway: 30, headway: 30 }), undefined)).toEqual({ decision: 'replace', reason: 'headway' });
+    expect(explainDedupe(peak({ dedupeHeadway: 30, headway: 30 }), unratedPm, undefined)).toEqual({ decision: 'keep', reason: 'headway' });
+    // A pattern with a period value somewhere in the day still counts as rated (#720 holds).
+    const partDay = pattern({ dedupeHeadway: null, headway: null, departures: 12, runsInDay: true, runsMidday: true, line: line() });
+    expect(decideDedupe(partDay, peak(), undefined)).toBe('keep');
+  });
 });

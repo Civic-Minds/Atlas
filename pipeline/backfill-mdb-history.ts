@@ -15,6 +15,7 @@ import { dirname, resolve } from 'path';
 import { config } from 'dotenv';
 config({ path: resolve('.env.local') });
 import JSZip from 'jszip';
+import { historyHeadlineWins } from './historyHeadlinePick.js';
 import { processGtfsBuffer } from './process-core.js';
 import { backfillRouteKey } from './historyRouteKey.js';
 import { r2PutArchive, r2PutArchiveJson, r2GetArchive } from './r2.js';
@@ -119,7 +120,8 @@ async function writeSnapshot(slug: string, geojson: string, periodKey: string, o
     const t = p.tier != null ? String(p.tier) : null;
     const ln = p.routeLongName ? String(p.routeLongName) : undefined;
     const byp = p.headwayByPeriod as HeadwayByPeriod | undefined;
-    if (!current[sn] || h < current[sn].headway) {
+    // CIV-1081: a feature with period values beats one with none (historyHeadlinePick.ts).
+    if (historyHeadlineWins({ headway: h, headwayByPeriod: byp }, current[sn])) {
       current[sn] = { headway: h, tier: t, routeLongName: ln ?? current[sn]?.routeLongName, headwayByPeriod: byp };
     }
   }

@@ -30,7 +30,7 @@ Paths are from the repo root. "Main" means `origin/main` as of 2026-10-14 (741ee
 
   `span` and `infrequent` are tier values, not classes. "limited" is not a serviceClass: it is `isLimitedService` (`shared/irregularRoutes.ts`), meaning `time-limited` or `routeHasLimitedDirection`, plus the null-headline cases above. `routeHasIrregularDirection` and `routeHasLimitedDirection` are set per route and day by `pipeline/worst-direction.ts`.
 - **shared stretch** (CIV-82): `pipeline/sharedStretch.ts`. Two patterns of one route direction and day pool at a stop only inside an aligned run of at least 5 stops (`SHARED_STRETCH_MIN_STOPS`) and 1 km (`SHARED_STRETCH_MIN_KM`). Same-headsign variants that cover two-thirds of the pattern's stops pool at every common stop (`SAME_HEADSIGN_COVERAGE`, `pipeline/stopPools.ts`). The result is published as `sharedStretches`, which is stripped from tiles. The rule: a route may show the stretches that themselves pass, but a pooled stretch never makes the whole route pass.
-- **periods**: `TIME_PERIODS` (`shared/config.ts`), in GTFS hours: `amPeak` 6-9, `midday` 9-15, `pmPeak` 15-19, `evening` 19-23, `late` 23-26, `overnight` 26-30. The labels are "AM Peak", "Midday", "PM Peak", "Evening", "Night" and "Overnight". The analysis window used for tiers is separate (`DEFAULT_CRITERIA`): Weekday and Saturday 7:00-22:00, Sunday 9:00-21:00.
+- **periods**: `TIME_PERIODS` (`shared/config.ts`), in GTFS hours: `amPeak` 6-9, `midday` 9-15, `pmPeak` 15-19, `evening` 19-23, `late` 23-26, `overnight` 26-30. The labels are "AM peak", "Midday", "PM peak", "Evening", "Late" and "Overnight" (CIV-1065). The analysis window used for tiers is separate (`DEFAULT_CRITERIA`): Weekday and Saturday 7:00-22:00, Sunday 9:00-21:00.
 
 ### Lines, patterns and dedupe
 
@@ -52,7 +52,8 @@ Paths are from the repo root. "Main" means `origin/main` as of 2026-10-14 (741ee
 - **placeholder expiry**: a calendar end more than `PLACEHOLDER_EXPIRY_YEARS` = 2 years out (`pipeline/refreshMeta.ts`, `recordedFeedExpiry`). The recorded expiry is capped so a fake end such as 20500101 never hides an outdated feed (#688). The release gate raises it as the yellow `placeholder-expiry` flag.
 - **pmtilesPending**: an agency flag in the index. `build-pmtiles` skips the agency and it is never a reprocess target (`pipeline/build-pmtiles.ts`, `pipeline/archiveSelection.ts` `isReprocessTarget`, `pipeline/pmtilesCoverage.ts`). A public agency with this flag shows "Couldn't load" (#757, #759), so `publicAgenciesExcludedFromRelease` (`pipeline/releaseGuard.ts`) lists it to be hidden.
 - **release gate**: `pipeline/releaseDiff.ts` (`GATE_FLAGS`). It compares each agency's new output with what is live before any R2 write. It runs in refresh, reprocess `--write` and publish. Each flag is `red` (blocks only that agency) or `yellow` (reported). The flags:
-  - red only: `drop`, `empty`, `mode-lost` (a mode such as Commuter Rail is gone), `duplicate`, `day-lost`
+  - red only: `duplicate`, `day-lost`
+  - red, or yellow for a seasonal pause: `drop`, `empty`, `mode-lost` (a mode such as Commuter Rail is gone). Yellow when the feed is current and every missing route runs again later in it (`resumingRoutes`, CIV-1076)
   - red or yellow by size: `headway-shift`, `headway-lost` (route directions that still run on weekdays but have lost their weekday headway, #710)
   - red or yellow by output: `expired` (red when the output changed, yellow when it did not)
   - yellow only: `route-shift` (one route's weekday tier moves 2 or more steps on its own scale, rail 5 and 8 included since #871), `day-shrunk`, `future-start`, `placeholder-expiry`, `added`

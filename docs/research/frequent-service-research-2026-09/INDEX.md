@@ -107,7 +107,7 @@ as a current, network-wide, named frequent tier.
 
 No product decision. For a cross-agency comparison, use
 `frequent-definitions-by-agency.json` and show only `verified` rows, with the
-quote, source and check date. The CRITERIA brief's weekday 7am–7pm, 15-minute
+quote, source and check date. The CRITERIA brief's weekday 7 AM–7 PM, 15-minute
 measure remains a proposed rule.
 
 ## Limitations and next steps

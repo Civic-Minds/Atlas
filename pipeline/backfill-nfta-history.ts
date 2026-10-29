@@ -11,6 +11,7 @@ import { readFileSync } from 'fs';
 import { config } from 'dotenv';
 import { resolve } from 'path';
 config({ path: resolve('.env.local') });
+import { historyHeadlineWins } from './historyHeadlinePick.js';
 import { processGtfsBuffer } from './process-core.js';
 import { r2GetArchive, r2PutArchive, r2PutArchiveJson } from './r2.js';
 import { historyRouteKey } from './historyRouteKey.js';
@@ -49,7 +50,8 @@ async function writeSnapshot(slug: string, geojson: string, periodKey: string) {
     const tier = p.tier != null ? String(p.tier) : null;
     const routeLongName = p.routeLongName ? String(p.routeLongName) : undefined;
     const headwayByPeriod = p.headwayByPeriod as HeadwayByPeriod | undefined;
-    if (!current[routeKey] || headway < current[routeKey].headway) {
+    // CIV-1081: a feature with period values beats one with none (historyHeadlinePick.ts).
+    if (historyHeadlineWins({ headway, headwayByPeriod }, current[routeKey])) {
       current[routeKey] = {
         headway,
         tier,

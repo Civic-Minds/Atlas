@@ -64,7 +64,8 @@ describe('feedQualityListItems', () => {
     expect(feedQualityListItems([
       '3 minor schedule issues found while reading the feed.',
       '4 route shapes needed adjustment before display.',
-    ])).toEqual(['4 shapes adjusted', '3 minor schedule issues found while reading the feed']);
+    ])).toEqual(['4 shapes adjusted']); // N81: warnings stay out of rider-facing lists
+    expect(feedQualityListItems(["1 schedule-data warning — Atlas found a minor issue while reading the schedule."])).toEqual([]);
     expect(feedQualityListItems(['The schedule dates in this feed have passed.'])).toEqual(['The schedule dates in this feed have passed']);
   });
 });

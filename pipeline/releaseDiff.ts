@@ -80,6 +80,8 @@ export const HEADWAY_SHIFT_MIN_SHIFTED = 3;
 export const ROUTE_SHIFT_TIER_STEPS = 2;
 /** At most this many routes are named in a route-shift message. */
 const ROUTE_SHIFT_MAX_LISTED = 10;
+/** The route id of a `routeId|start|end` signature. */
+const routeIdOfSignature = (sig: string): string => sig.slice(0, sig.lastIndexOf('|', sig.lastIndexOf('|') - 1));
 /**
  * headway-lost is red when at least this share of the live weekday
  * route/directions with a headway lose it while still running on weekdays, and
@@ -120,6 +122,11 @@ export interface ArtifactSummary {
   contentHash: string;
   /** One `routeId|start|end` signature per distinct route line shape. */
   routeSignatures: string[];
+  /**
+   * Routes with trips in the feed but none in the read week, and the first later date each runs (CIV-1076).
+   * A route live has that is missing here but listed is a seasonal pause, not a loss.
+   */
+  resumingRoutes?: Record<string, string>;
   /** Median weekday headway per route, from the route lines' `headway`. Names a route-shift's minutes. */
   weekdayHeadways: Record<string, number>;
   /**
@@ -200,7 +207,7 @@ function gateModeName(p: Record<string, unknown>, slug: string | undefined): str
 /** Summarize a route artifact (and its stops index) for the gate. Pass the slug to apply its mode overrides. */
 export function summarizeArtifact(geojson: string, stopsJson: string | null, slug?: string): ArtifactSummary {
   const counts = countArtifacts(geojson, stopsJson);
-  const parsed = JSON.parse(geojson) as { features?: LineFeature[]; atlasSchemaVersion?: unknown };
+  const parsed = JSON.parse(geojson) as { features?: LineFeature[]; atlasSchemaVersion?: unknown; resumingRoutes?: Record<string, string> };
   const features = (parsed.features ?? [])
     .filter(f => f.geometry?.type === 'LineString' || f.geometry?.type === 'MultiLineString');
   const modes = new Set<string>();
@@ -252,6 +259,7 @@ export function summarizeArtifact(geojson: string, stopsJson: string | null, slu
     modes: [...modes].sort(),
     contentHash: createHash('sha256').update(JSON.stringify(features)).digest('hex'),
     routeSignatures: [...signatures].sort(),
+    ...(parsed.resumingRoutes && Object.keys(parsed.resumingRoutes).length ? { resumingRoutes: parsed.resumingRoutes } : {}),
     weekdayHeadways: Object.fromEntries(Object.entries(headways).map(([id, values]) => [id, median(values)])),
     weekdayTiers: tiers,
     weekdayDirectionHeadway: directionHeadway,
@@ -359,7 +367,7 @@ export function routeShifts(live: ArtifactSummary, next: ArtifactSummary): { shi
  */
 export function gainedWeekdayRoutes(live: ArtifactSummary, next: ArtifactSummary): string[] {
   const routeIdOf = (key: string) => key.slice(0, key.lastIndexOf('|'));
-  const liveRoutes = new Set(live.routeSignatures.map(sig => sig.slice(0, sig.lastIndexOf('|', sig.lastIndexOf('|') - 1))));
+  const liveRoutes = new Set(live.routeSignatures.map(routeIdOfSignature));
   const liveWeekdayRoutes = new Set(Object.keys(live.weekdayDirectionHeadway).map(routeIdOf));
   const gained = new Set<string>();
   for (const key of Object.keys(next.weekdayDirectionHeadway)) {
@@ -418,6 +426,22 @@ const flag = (slug: string, name: GateFlagName, level: GateLevel, message: strin
  * after this publish (their new output when it is in the same run, otherwise
  * what is live).
  */
+/**
+ * A seasonal pause (CIV-1076): the feed is current, and every route live has that the new output lacks
+ * has trips later in the same feed. Returns the note for the flag, or null. A partial zip (Miami) or a
+ * route that never runs again leaves a missing route unlisted, so the flag stays red.
+ */
+export function seasonalPause(live: ArtifactSummary, next: ArtifactSummary, serviceEnd: string | null, todayYmd: string): string | null {
+  if (serviceEnd && /^\d{8}$/.test(serviceEnd) && serviceEnd < todayYmd) return null;
+  const resuming = next.resumingRoutes ?? {};
+  const nextRoutes = new Set(next.routeSignatures.map(routeIdOfSignature));
+  const missing = [...new Set(live.routeSignatures.map(routeIdOfSignature))].filter(id => !nextRoutes.has(id)).sort();
+  if (missing.length === 0 || missing.some(id => !resuming[id])) return null;
+  const restart = missing.map(id => resuming[id]).sort()[0];
+  const listed = missing.slice(0, ROUTE_SHIFT_MAX_LISTED).map(id => `${id} ${resuming[id]}`).join(', ');
+  return `seasonal pause: ${missing.length} route${missing.length === 1 ? '' : 's'} run again later in this feed, first on ${restart} (${listed}${missing.length > ROUTE_SHIFT_MAX_LISTED ? ', ...' : ''})`;
+}
+
 export function evaluateAgency(input: AgencyGateInput, peers: GatePeer[], todayYmd: string): GateFlag[] {
   const { slug, next } = input;
   const flags: GateFlag[] = [];
@@ -435,16 +459,21 @@ export function evaluateAgency(input: AgencyGateInput, peers: GatePeer[], todayY
 
   // The drop guard shared with refresh and reprocess since #628/#657.
   const drop = dropGuardRefusal(live?.counts ?? null, next.counts, { allowDrop: false, allowMissingLive: input.allowMissingLive || legacyLive });
-  if (drop) flags.push(flag(slug, 'drop', 'red', drop));
+  // CIV-1076: every route live has that the new output lacks runs again later in the same current feed
+  // (Telluride's Goose between seasons). The drop is reviewed, not blocked; an expired feed stays red below.
+  const pause = live ? seasonalPause(live, next, input.service?.end ?? null, todayYmd) : null;
+  if (drop) flags.push(pause ? flag(slug, 'drop', 'yellow', `${drop}; ${pause}`) : flag(slug, 'drop', 'red', drop));
 
   if (live && live.counts.routes > 0 && next.counts.routes === 0) {
-    flags.push(flag(slug, 'empty', 'red', `live has ${live.counts.routes} routes, the new output has none`));
+    const message = `live has ${live.counts.routes} routes, the new output has none`;
+    flags.push(pause ? flag(slug, 'empty', 'yellow', `${message}; ${pause}`) : flag(slug, 'empty', 'red', message));
   }
 
   if (live) {
     const lost = live.modes.filter(mode => !next.modes.includes(mode));
     if (lost.length && next.counts.routes > 0) {
-      flags.push(flag(slug, 'mode-lost', 'red', `loses ${lost.join(', ')} (live ${live.modes.join(', ')}; new ${next.modes.join(', ') || 'none'})`));
+      const message = `loses ${lost.join(', ')} (live ${live.modes.join(', ')}; new ${next.modes.join(', ') || 'none'})`;
+      flags.push(pause ? flag(slug, 'mode-lost', 'yellow', `${message}; ${pause}`) : flag(slug, 'mode-lost', 'red', message));
     }
 
     const shift = headwayShift(live, next);

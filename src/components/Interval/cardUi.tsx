@@ -26,6 +26,7 @@ export const CARD_LIST_ROUTE = 'text-xs font-bold text-[var(--text-primary)] lea
 // The section label lives in styles.ts with the other shared text styles (CIV-395), so non-card panels use it too.
 export { CARD_SECTION } from '../../styles';
 import { CARD_NOTE, CARD_SECTION } from '../../styles';
+import { CORRECTED_DATA_NOTICE, explainerFor, NEW_SCHEDULE_DATA_NOTICE, REPORT_FORM_HINT, REPORT_NEEDS_FREQUENCY_DETAIL, REPORT_NEEDS_REASON } from '../../content/noticeCopy';
 /** A list card's header block (agency card, History's agency view): one divider under it. */
 export const CARD_HEADER_BLOCK = 'shrink-0 px-4 pt-4 pb-3 border-b border-[var(--border-primary)]';
 /** The same header spacing for a card that is only a header (no divider sitting on the card's own edge). */
@@ -270,11 +271,11 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
   const submit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (hasFrequencyReason && frequencyReasons.length === 0) {
-      setValidationError('Select at least one frequency detail.');
+      setValidationError(REPORT_NEEDS_FREQUENCY_DETAIL);
       return;
     }
     if (selectedReasons.length === 0 && !description.trim()) {
-      setValidationError('Select a reason or describe what is wrong.');
+      setValidationError(REPORT_NEEDS_REASON);
       return;
     }
     openAtlasProblemEmail(title, details, {
@@ -320,7 +321,7 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
             <div className={`${CARD_HEADER_BLOCK} flex items-center justify-between`}>
               <div>
                 <h2 id={dialogTitleId} className={CARD_TITLE}>Report a problem</h2>
-                <p className={`${CARD_NOTICE} mt-0.5`}>Choose a category, or click a card value to preselect its reason.</p>
+                <p className={`${CARD_NOTICE} mt-0.5`}>{REPORT_FORM_HINT}</p>
               </div>
               <RoundIconButton onClick={reset} aria-label="Close report form">
                 <X className="w-3.5 h-3.5" />
@@ -600,6 +601,18 @@ export function LimitedBadge({ label, className = '' }: { label?: string; classN
   const colorMode = useColorMode();
   const dot = <span className="w-2 h-2 rounded-full shrink-0" style={{ background: getTierColor(null, colorMode) }} />;
   if (label && twoPart(label)) return <TwoPartBadge dot={dot} text={label} className={`text-xs font-black text-[var(--text-primary)] leading-snug ${className}`} />;
+  // A several-word label ("no regular service during this period") breaks between words, right-aligned, where the row is
+  // too narrow, instead of running over the destination (TTC 25 northbound AM; the #1128 rule). It stays one line where it fits.
+  if (label?.includes(' ')) {
+    return (
+      <span className={`inline-flex min-w-0 text-xs font-black text-[var(--text-primary)] leading-snug ${className}`.trim()}>
+        <span className="min-w-0 text-right">
+          <span className="inline-block w-2 h-2 rounded-full mr-1 align-middle" style={{ background: getTierColor(null, colorMode) }} />
+          {label}
+        </span>
+      </span>
+    );
+  }
   return (
     <span className={`inline-flex items-center gap-1 text-xs font-black text-[var(--text-primary)] leading-snug shrink-0 whitespace-nowrap ${label ? '' : 'min-h-[1lh]'} ${className}`.trim()}>
       {dot}
@@ -746,12 +759,12 @@ export function CardHelpNotice({
 }
 
 /** "New schedule data is being verified.": the agency card and the route card show it the same way. */
-export function NewScheduleDataNotice({ agency, onInfoOpen }: { agency: Agency; onInfoOpen: OpenInfoFn }) {
+export function NewScheduleDataNotice({ agency, onInfoOpen, on }: { agency: Agency; onInfoOpen: OpenInfoFn; on: 'route' | 'agency' }) {
   return (
     <CardHelpNotice
-      message="New schedule data is being verified."
+      message={NEW_SCHEDULE_DATA_NOTICE[on]}
       onLearnMore={() => onInfoOpen('about', {
-        helpTopic: 'new-schedule-data',
+        helpTopic: explainerFor(on === 'route' ? 'N4' : 'N21'),
         agencyName: agency.name,
         lastRefreshedAt: agency.lastRefreshedAt ?? undefined,
         lastFeedCheckAt: agency.lastFeedCheckAt ?? undefined,
@@ -764,12 +777,12 @@ export function NewScheduleDataNotice({ agency, onInfoOpen }: { agency: Agency; 
 }
 
 /** "We corrected this data.": the agency card and the route card show it the same way, with the note that applies. */
-export function CorrectedDataNotice({ agency, overrideNote, onInfoOpen }: { agency: Agency; overrideNote: string; onInfoOpen: OpenInfoFn }) {
+export function CorrectedDataNotice({ agency, overrideNote, onInfoOpen, on }: { agency: Agency; overrideNote: string; onInfoOpen: OpenInfoFn; on: 'route' | 'agency' }) {
   return (
     <CardHelpNotice
-      message="We corrected this data."
+      message={CORRECTED_DATA_NOTICE[on]}
       onLearnMore={() => onInfoOpen('about', {
-        helpTopic: 'corrected-data',
+        helpTopic: explainerFor(on === 'route' ? 'N5' : 'N22'),
         agencyName: agency.name,
         overrideNote,
         issueUrl: agency.issueUrl,

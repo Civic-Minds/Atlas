@@ -1,7 +1,18 @@
 import { DAY_TYPES, type DayType } from './dayTypes';
+import { hourRange } from './timeText';
 
 export type FrequentServiceWindow = 'daytime' | 'extended';
 export type FrequentServiceFrequency = 15 | 30;
+
+/** Each window's hours (GTFS hours) and its label in the app's one time format (CIV-1095): "7 AM–7 PM". */
+export const FREQUENT_WINDOW_HOURS: Record<FrequentServiceWindow, { start: number; end: number }> = {
+  daytime: { start: 7, end: 19 },
+  extended: { start: 7, end: 24 },
+};
+export const FREQUENT_WINDOW_LABELS: Record<FrequentServiceWindow, string> = {
+  daytime: hourRange(FREQUENT_WINDOW_HOURS.daytime.start, FREQUENT_WINDOW_HOURS.daytime.end),
+  extended: hourRange(FREQUENT_WINDOW_HOURS.extended.start, FREQUENT_WINDOW_HOURS.extended.end),
+};
 export type FrequentServiceBand = '15' | '30';
 
 export const FREQUENT_SERVICE_DAY_ORDER = DAY_TYPES;

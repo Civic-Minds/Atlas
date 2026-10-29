@@ -1,11 +1,10 @@
 import type { ShapeProperties, TimePeriod } from '../hooks/useIntervalStats';
 import { shouldShowTrunkSummary } from './routeCardTrunk';
+import { rowTrips } from './rowTrips';
 import { MIN_UNSUSTAINED_EXCESS_MINUTES, MIN_UNSUSTAINED_RATIO } from '../../shared/unevenGap';
 
 interface DirectionGroupLike {
   realTier: ShapeProperties[];
-  /** Every feature of the direction, when its rows come from the stretches (CIV-939). */
-  directionFeatures?: readonly ShapeProperties[];
 }
 
 // The pipeline's thresholds, from one shared place (CIV-996).
@@ -30,26 +29,6 @@ export function isRiderMeaningfulGap(
 ): boolean {
   if (!headway || headway <= 0 || maxGap <= 0) return false;
   return (maxGap - headway >= minExcessMinutes) && (maxGap / headway >= minRatio);
-}
-
-/**
- * CIV-939: another main or tail feature fills the same stretch slot under a different headsign and has a headway in the period. The
- * pipeline measures a feature's period gaps over its own headsign's trips, so this feature's longest gap leaves those trips out
- * (Sun Metro 205: 9 "Mesa Inbound" trips of 58 read a 315-minute midday gap while the direction runs every 18).
- */
-export function stretchSlotSharedWithOtherHeadsign(
-  f: ShapeProperties,
-  directionFeatures: readonly ShapeProperties[],
-  period: TimePeriod,
-): boolean {
-  if (period === 'all' || (f.stretchRole !== 'main' && f.stretchRole !== 'tail')) return false;
-  const headsign = (f.headsign ?? '').trim();
-  return directionFeatures.some(o => o !== f
-    && o.stretchRole === f.stretchRole
-    && (o.stretchIndex ?? 0) === (f.stretchIndex ?? 0)
-    && (o.headsign ?? '').trim() !== headsign
-    // A period headway needs departures inside the window; a gap alone can be the whole window between two outside it.
-    && o.headwayByPeriod?.[period] != null);
 }
 
 /**
@@ -79,12 +58,13 @@ export function unevenPeriodMaxGap(
         // Keep primary / near-primary; drop branches clearly sparser short-turns.
         return direction.headway == null || direction.headway <= primaryHw * 1.5;
       })
-      // A row whose stretch another headsign shares: its own gap leaves those trips out (CIV-939).
-      .filter(direction => !group.directionFeatures || !stretchSlotSharedWithOtherHeadsign(direction, group.directionFeatures, period))
-      .filter(direction => isRiderMeaningfulGap(
-        direction.maxGapByPeriod?.[period] ?? 0,
-        direction.headwayByPeriod?.[period] ?? direction.headway,
+      // The gap of the trips the row's value reads (CIV-1069): a stretch row shared with another headsign reads the
+      // stretch's gap, not one headsign's (CIV-939, Sun Metro 205); a row with no service of its own has none.
+      .map(direction => ({ direction, trips: rowTrips(direction, period) }))
+      .filter(({ direction, trips }) => trips.longestGap != null && isRiderMeaningfulGap(
+        trips.longestGap,
+        trips.value ?? direction.headway,
       ))
-      .map(direction => direction.maxGapByPeriod?.[period] ?? 0);
+      .map(({ trips }) => trips.longestGap ?? 0);
   }));
 }

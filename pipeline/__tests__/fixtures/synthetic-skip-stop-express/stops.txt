@@ -1,0 +1,21 @@
+stop_id,stop_name,stop_lat,stop_lon
+S00,Main St & 0 Ave,43.7000,-79.40000
+S01,Main St & 1 Ave,43.7000,-79.39500
+S02,Main St & 2 Ave,43.7000,-79.39000
+S03,Main St & 3 Ave,43.7000,-79.38500
+S04,Main St & 4 Ave,43.7000,-79.38000
+S05,Main St & 5 Ave,43.7000,-79.37500
+S06,Main St & 6 Ave,43.7000,-79.37000
+S07,Main St & 7 Ave,43.7000,-79.36500
+S08,Main St & 8 Ave,43.7000,-79.36000
+S09,Main St & 9 Ave,43.7000,-79.35500
+S10,Main St & 10 Ave,43.7000,-79.35000
+S11,Main St & 11 Ave,43.7000,-79.34500
+S12,Main St & 12 Ave,43.7000,-79.34000
+S13,Main St & 13 Ave,43.7000,-79.33500
+S14,Main St & 14 Ave,43.7000,-79.33000
+S15,Main St & 15 Ave,43.7000,-79.32500
+S16,Main St & 16 Ave,43.7000,-79.32000
+S17,Main St & 17 Ave,43.7000,-79.31500
+S18,Main St & 18 Ave,43.7000,-79.31000
+S19,Main St & 19 Ave,43.7000,-79.30500

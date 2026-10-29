@@ -1,7 +1,7 @@
 import type { AnchorHTMLAttributes } from 'react';
 import { trackEvent } from '../lib/analytics';
 
-export type OutboundLinkKind = 'agency_website' | 'fares' | 'on_demand_source' | 'coverage_note' | 'attribution' | 'published_map';
+export type OutboundLinkKind = 'agency_website' | 'fares' | 'on_demand_source' | 'attribution' | 'published_map';
 
 type Props = AnchorHTMLAttributes<HTMLAnchorElement> & {
   href: string;

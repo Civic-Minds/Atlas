@@ -19,8 +19,9 @@ import { spawnSync } from 'child_process';
 import path from 'path';
 import { PMTiles } from 'pmtiles';
 import './loadEnv.js';
-import { r2Put } from './r2.js';
+import { r2DeleteKeys, r2Get, r2ListObjects, r2Put } from './r2.js';
 import { pruneOldReleases } from './pruneReleases.js';
+import { pruneSearchIndex } from './searchPrune.js';
 import { RELEASE_HISTORY_KEY, appendReleaseHistory } from '../shared/releaseHistory.js';
 import { bumpPublicDataVersion } from './dataVersion.js';
 import { isBuiltIntoTiles, type TileInclusionAgency } from './pmtilesCoverage.js';
@@ -177,6 +178,14 @@ try {
   await pruneOldReleases({ dryRun: process.argv.includes('--prune-dry-run') });
 } catch (err) {
   console.warn(`Release published, but pruning old releases failed: ${err instanceof Error ? err.message : err}`);
+}
+// Search index files no release names any more (CIV-1056): a dry run unless --prune-search, until
+// the first real delete has been reviewed. Runs after the release prune, so it keeps exactly what the
+// remaining releases name.
+try {
+  await pruneSearchIndex({ dryRun: !process.argv.includes('--prune-search') }, { getText: r2Get, listObjects: r2ListObjects, deleteKeys: r2DeleteKeys });
+} catch (err) {
+  console.warn(`Release published, but the search prune failed: ${err instanceof Error ? err.message : err}`);
 }
 // A published manifest must not be publishable again from a later run.
 fs.rmSync(manifestPath);

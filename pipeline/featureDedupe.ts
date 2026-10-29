@@ -141,7 +141,12 @@ export function explainDedupe(
   // the same destination (MBTA 7 City Point every 6 in place of every 36 all day, centro 21980
   // every 40 in place of every 80) and the all-day line reads part-time. Two rush-hour-only
   // patterns still compete on headway.
-  if ((incumbent.rushHourOnly === true) !== (candidate.rushHourOnly === true)) {
+  // #1174: only against a pattern rated somewhere in the day. Against one with no headway and no
+  // period value (Pittsburgh G3 inbound's 2 PM trips), unrating left both null, so whichever
+  // arrived first held the slot and the 5 AM trips every 30 lost their line.
+  const other = incumbent.rushHourOnly === true ? candidate : incumbent;
+  const otherRated = other.headway != null || other.runsInDay;
+  if ((incumbent.rushHourOnly === true) !== (candidate.rushHourOnly === true) && otherRated) {
     const unrated = (p: DedupePattern): DedupePattern => p.rushHourOnly ? { ...p, headway: null, dedupeHeadway: null } : p;
     incumbent = unrated(incumbent);
     candidate = unrated(candidate);

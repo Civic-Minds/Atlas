@@ -3,6 +3,7 @@ import {
   isOnDemandActive,
   formatOnDemandClock,
   formatOnDemandHoursLines,
+  formatOnDemandHoursRange,
   isOnDemandStopShown,
   isOnDemandZoneShown,
   localDateIn,
@@ -43,23 +44,33 @@ describe('formatOnDemandHoursLines', () => {
       Sunday: [{ startHour: 5.5, endHour: 25 }],
     });
     expect(lines).toMatchObject([
-      { dayTypes: ['Weekday', 'Saturday'], text: 'Mon–Sat 4:30 a.m.–2:00 a.m.' },
-      { dayTypes: ['Sunday'], text: 'Sun 5:30 a.m.–1:00 a.m.' },
+      { dayTypes: ['Weekday', 'Saturday'], text: 'Mon–Sat 4:30 AM–2 AM' },
+      { dayTypes: ['Sunday'], text: 'Sun 5:30 AM–1 AM' },
     ]);
     expect(formatOnDemandHoursLines({
       Weekday: [{ startHour: 7, endHour: 19 }],
       Saturday: [{ startHour: 7, endHour: 19 }],
       Sunday: [{ startHour: 7, endHour: 19 }],
-    })).toMatchObject([{ dayTypes: ['Weekday', 'Saturday', 'Sunday'], text: 'Daily 7:00 a.m.–7:00 p.m.' }]);
+    })).toMatchObject([{ dayTypes: ['Weekday', 'Saturday', 'Sunday'], text: 'Daily 7 AM–7 PM' }]);
+  });
+
+  it('says "24 hours" for service round the clock, and only then (CIV-1095, Ryan)', () => {
+    expect(formatOnDemandHoursRange({ startHour: 0, endHour: 24 })).toBe('24 hours');
+    expect(formatOnDemandHoursRange({ startHour: 5, endHour: 29 })).toBe('24 hours');
+    expect(formatOnDemandHoursRange({ startHour: 6, endHour: 6 })).toBe('24 hours');
+    expect(formatOnDemandHoursLines({ Weekday: [{ startHour: 0, endHour: 24 }], Saturday: [{ startHour: 0, endHour: 24 }], Sunday: [{ startHour: 0, endHour: 24 }] }))
+      .toMatchObject([{ text: 'Daily 24 hours' }]);
+    expect(formatOnDemandHoursRange({ startHour: 0, endHour: 23.5 })).toBe('12 AM–11:30 PM');
+    expect(formatOnDemandHoursRange({ startHour: 7, endHour: 24 })).toBe('7 AM–12 AM');
   });
 
   it('shows hours past 24 as next-day clock times, rounding to the minute', () => {
-    expect(formatOnDemandClock(26)).toBe('2:00 a.m.');
-    expect(formatOnDemandClock(24)).toBe('midnight');
-    expect(formatOnDemandClock(24.25)).toBe('12:15 a.m.');
-    expect(formatOnDemandClock(12)).toBe('noon');
-    expect(formatOnDemandClock(18.583)).toBe('6:35 p.m.');
-    expect(formatOnDemandClock(5.917)).toBe('5:55 a.m.');
+    expect(formatOnDemandClock(26)).toBe('2 AM');
+    expect(formatOnDemandClock(24)).toBe('12 AM');
+    expect(formatOnDemandClock(24.25)).toBe('12:15 AM');
+    expect(formatOnDemandClock(12)).toBe('12 PM');
+    expect(formatOnDemandClock(18.583)).toBe('6:35 PM');
+    expect(formatOnDemandClock(5.917)).toBe('5:55 AM');
   });
 
   it('lists every window and marks days with no service', () => {
@@ -68,7 +79,7 @@ describe('formatOnDemandHoursLines', () => {
       Saturday: [],
       Sunday: [],
     })).toMatchObject([
-      { dayTypes: ['Weekday'], text: 'Mon–Fri 6:00 a.m.–10:00 a.m., 2:00 p.m.–6:00 p.m.' },
+      { dayTypes: ['Weekday'], text: 'Mon–Fri 6–10 AM, 2–6 PM' },
       { dayTypes: ['Saturday', 'Sunday'], text: 'Sat–Sun: no service' },
     ]);
   });
@@ -76,7 +87,7 @@ describe('formatOnDemandHoursLines', () => {
   it('leaves out day types the data does not cover instead of guessing', () => {
     expect(formatOnDemandHoursLines(undefined)).toEqual([]);
     expect(formatOnDemandHoursLines({ Weekday: [{ startHour: 7, endHour: 19 }] })).toMatchObject([
-      { dayTypes: ['Weekday'], text: 'Mon–Fri 7:00 a.m.–7:00 p.m.' },
+      { dayTypes: ['Weekday'], text: 'Mon–Fri 7 AM–7 PM' },
     ]);
   });
 });

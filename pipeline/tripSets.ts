@@ -20,6 +20,7 @@ import { ALL_DAY_MIDDAY_MAX_WAIT } from '../shared/worstDirection.js';
 import { NO_PERIOD_SERVICE_TILE_VALUE } from '../shared/pmtilesProps.js';
 import {
   computePeriodCoverageHeadways,
+  computePeriodMaxGaps,
   computePeriodHeadways,
   BOUNDARY_DOMINANT_RATIO,
   computePeriodSustained,
@@ -505,8 +506,33 @@ function longestInnerGap(times: readonly number[], start: number, end: number): 
   return Math.max(...t.slice(1).map((x, i) => x - t[i]));
 }
 
+/**
+ * CIV-1064: an uneven main stretch's longest wait. It counts every gap between its departures in
+ * [start, end). It also counts the wait from the window's start to its first departure, or from its
+ * last departure to the window's end, but only where the stretch has a departure on the other side
+ * of that boundary. Then the wait is a real gap that the window cuts. Where it has none, the edge is
+ * the start or end of its service, which is not a gap between buses. Like the settled edge rules
+ * (#568), a window boundary is never an edge, and the first and last gaps between buses always count.
+ * TTC 320 weekday overnight is the case: night service only, its last northbound bus at Eglinton is
+ * 5:32, and its gaps are 5-15, but it read 28, the run from 5:32 to 6:00. A true start or end longer
+ * than PERIOD_COVERAGE_MAX_HEADWAY keeps the full-window wait, as a steady period's does
+ * (stretchFilterValue).
+ */
+function unevenMainWait(times: readonly number[], start: number, end: number, coverage: number | null): number | null {
+  if (coverage == null || coverage > PERIOD_COVERAGE_MAX_HEADWAY) return coverage;
+  const all = [...new Set(forCrossMidnightWindow([...times], end))].sort((a, b) => a - b);
+  const t = all.filter(x => x >= start && x < end);
+  if (t.length === 0) return coverage;
+  let worst = 0;
+  for (let i = 1; i < t.length; i++) worst = Math.max(worst, t[i] - t[i - 1]);
+  if (all[0] < start) worst = Math.max(worst, t[0] - start);
+  if (all[all.length - 1] >= end) worst = Math.max(worst, end - t[t.length - 1]);
+  return Math.ceil(worst);
+}
+
 export function stretchFilterValue(p: StretchPeriod): number | null {
-  // An uneven period reads its value: the full-window wait, or for a tail its longest inner gap.
+  // An uneven period reads its value: its longest wait (for a tail, between its own departures; for
+  // a main stretch, leaving out a true start or end of service, unevenMainWait).
   if (p.uneven) return p.value;
   return p.sustained === true && !p.uneven && p.coverage != null && p.coverage <= PERIOD_COVERAGE_MAX_HEADWAY ? p.headway : p.coverage;
 }
@@ -552,8 +578,11 @@ export function stopPeriodValues(stops: readonly string[], throughTimesAlong: No
  * section needs the usual three departures for a value, then the same filter and limited-service
  * handling; no thresholds of its own).
  */
-export function stretchMetaPeriods(s: Stretch): { period: Record<PeriodKey, number | null>; noRegular: PeriodKey[] } {
+export function stretchMetaPeriods(s: Stretch): { period: Record<PeriodKey, number | null>; noRegular: PeriodKey[]; maxGap: Record<PeriodKey, number | null> } {
   const own = stretchPeriods(s);
+  // CIV-1069: the longest gap between the same departures the value reads, so a card row never pairs
+  // the stretch's value with a gap measured over one headsign's trips.
+  const gaps = computePeriodMaxGaps([...s.times]);
   // The card's guard (#955): a period whose value is one gap, or that has under three departures (no
   // cadence to read, only the full-window wait), reads "no regular service" on a row; the map keeps
   // the filter value.
@@ -561,6 +590,7 @@ export function stretchMetaPeriods(s: Stretch): { period: Record<PeriodKey, numb
   return {
     period: Object.fromEntries(PERIOD_WINDOWS.map(({ key }) => [key, stretchFilterValue(own[key])])) as Record<PeriodKey, number | null>,
     noRegular: PERIOD_WINDOWS.filter(({ key, start, end }) => own[key].coverage != null && (own[key].oneGap || departures(start, end) < 3)).map(w => w.key),
+    maxGap: Object.fromEntries(PERIOD_WINDOWS.map(({ key }) => [key, own[key].value == null ? null : gaps[key] ?? null])) as Record<PeriodKey, number | null>,
   };
 }
 
@@ -606,9 +636,13 @@ export function stretchPeriods(s: Stretch): Record<PeriodKey, StretchPeriod> {
     const uneven = runs && steady && isUnevenPeriod(times, start, end, headways[key]);
     // An uneven tail reads its longest wait between its own departures in the period, not the lead-in
     // before its first or the run after its last: the 6's Pelham Bay tail starts its evening at 19:41,
-    // when the <6> express (another route) serves it, and read 41 though its gaps are 5-18. A main
-    // stretch keeps its full-window wait (TTC 320 overnight: 5-18).
-    const value = !runs ? null : steady && !uneven ? (headways[key] ?? null) : uneven && s.kind === 'tail' ? longestInnerGap(times, start, end) ?? coverage[key] ?? null : coverage[key] ?? null;
+    // when the <6> express (another route) serves it, and read 41 though its gaps are 5-18. An uneven
+    // main stretch leaves out only a true start or end of its service (CIV-1064, unevenMainWait).
+    const value = !runs ? null
+      : steady && !uneven ? (headways[key] ?? null)
+      : uneven && s.kind === 'tail' ? longestInnerGap(times, start, end) ?? coverage[key] ?? null
+      : uneven ? unevenMainWait(times, start, end, coverage[key] ?? null)
+      : coverage[key] ?? null;
     out[key] = {
       // A tail speaks for the direction only where it runs steadily through the period.
       counts: runs && (s.kind === 'main' || (steady && sustainedWithMidpoint([...new Set(forCrossMidnightWindow(times, end))].sort((a, b) => a - b), sustained[key], start, end) === true)),

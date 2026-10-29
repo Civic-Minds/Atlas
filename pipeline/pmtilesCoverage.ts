@@ -67,6 +67,7 @@ export function tilesForAgency(agency: CoverageAgency, zoom: number, maxTiles = 
 }
 
 type RouteArtifact = {
+  resumingRoutes?: Record<string, string> | null;
   features?: Array<{
     geometry?: { type?: string } | null;
     properties?: Record<string, unknown> | null;
@@ -84,6 +85,20 @@ export function isScheduleOnlyRouteArtifact(artifact: RouteArtifact): boolean {
   const routes = (artifact?.features ?? []).filter(f => f?.properties?.routeId != null && f.properties.stopId == null);
   if (routes.length === 0) return false;
   return routes.every(f => f.geometry?.type !== 'LineString' && f.geometry?.type !== 'MultiLineString');
+}
+
+/**
+ * Whether a published route artifact is a recognised seasonal pause (CIV-1082, the CIV-1076 signal): no
+ * route lines this week, every route in the feed runs again later in the same feed (`resumingRoutes`), and
+ * the feed has not expired. Telluride and Mountain Village between seasons publish exactly this, so the
+ * tiles have nothing of theirs to find. An empty artifact without `resumingRoutes` (a broken or partial
+ * feed), one with any line still drawn, or an expired feed keeps failing the gate.
+ */
+export function isSeasonalPauseRouteArtifact(artifact: RouteArtifact, lastFeedExpiry: string | null | undefined, todayYmd: string): boolean {
+  if (!artifact || Object.keys(artifact.resumingRoutes ?? {}).length === 0) return false;
+  if (lastFeedExpiry && /^\d{8}$/.test(lastFeedExpiry) && lastFeedExpiry < todayYmd) return false;
+  return !(artifact.features ?? []).some(f => f?.properties?.routeId != null && f.properties.stopId == null
+    && (f.geometry?.type === 'LineString' || f.geometry?.type === 'MultiLineString'));
 }
 
 export interface TileInclusionAgency {

@@ -1,4 +1,4 @@
-import { periodKeyForHour, SPARKLINE_HOURS, TIME_PERIODS } from '../../shared/config';
+import { PERIOD_LABELS, periodKeyForHour, SPARKLINE_HOURS, TIME_PERIODS } from '../../shared/config';
 
 /**
  * The hour-to-period map and the hover bands of the route card's schedule sparkline, shared with every other hour
@@ -73,8 +73,8 @@ export function hourAtOn(hours: readonly number[], clientX: number, rect: { left
   return hours[Math.min(Math.floor(fraction * hours.length), hours.length - 1)];
 }
 
-/** The period names the hour charts' period band shows: the Live switchers' own names. */
-export const PERIOD_BAND_LABELS: Record<string, string> = { amPeak: 'AM peak', midday: 'Midday', pmPeak: 'PM peak', evening: 'Evening', late: 'Late' };
+/** The period names the hour charts' period band shows: the shared period names, overnight left unnamed as before (CIV-1065). */
+export const PERIOD_BAND_LABELS: Record<string, string> = (({ overnight: _overnight, ...daytime }) => daytime)(PERIOD_LABELS);
 
 /** What the pointer is on across a row of hour charts: an hour (with its period), or a whole period named on the band. Shared so every chart highlights the same thing. */
 export interface HourHover { hour: number | null; period: string | null }

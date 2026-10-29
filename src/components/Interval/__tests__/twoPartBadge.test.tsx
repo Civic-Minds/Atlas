@@ -17,6 +17,20 @@ describe('part-period badges', () => {
     expect(container.querySelector('.flex-wrap')).not.toBeNull();
   });
 
+  it('lets a several-word limited value break between words instead of running over the row (TTC 25 northbound AM)', () => {
+    const { container } = render(<LimitedBadge label="no regular service during this period" />);
+    expect(container.textContent).toBe('no regular service during this period');
+    expect(container.querySelector('.whitespace-nowrap')).toBeNull();
+    expect(container.querySelector('.shrink-0.whitespace-nowrap')).toBeNull();
+    expect(container.firstElementChild?.className).toContain('min-w-0');
+    expect(container.firstElementChild?.className).not.toContain('whitespace-nowrap');
+  });
+
+  it('keeps a one-word limited value on one line', () => {
+    const { container } = render(<LimitedBadge label="limited" />);
+    expect(container.firstElementChild?.className).toContain('whitespace-nowrap');
+  });
+
   it('keeps a plain value on one line', () => {
     const { container } = render(<HeadwayBadge headway={10} />);
     expect(container.querySelector('.flex-wrap')).toBeNull();

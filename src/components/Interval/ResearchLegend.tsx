@@ -2,7 +2,8 @@ import { getNightServiceColor, getTierColor } from '../../utils/colors';
 import { useColorMode } from '../../hooks/useColorMode';
 import { headwayBandLabel, headwayTierLabel } from '../../utils/headwayText';
 import { MAP_BADGE, MAP_BADGE_LABEL } from '../../styles';
-import LegendItem from '../ui/LegendItem';
+import MapKey from '../ui/MapKey';
+import { MAP_KEY_NIGHT } from '../../content/noticeCopy';
 import type { FrequentServiceFrequency } from '../../../shared/frequentService';
 
 /**
@@ -14,16 +15,12 @@ export default function ResearchLegend({ view, frequentFrequency }: { view: 'nig
   const mode = useColorMode();
   return (
     <div className={`${MAP_BADGE} h-8 max-sm:h-[32px]`} role="group" aria-label="Map colours">
-      {view === 'night' ? (
-        <LegendItem kind="line" color={getNightServiceColor(mode)}><span className={MAP_BADGE_LABEL}>Night service</span></LegendItem>
-      ) : (
-        <>
-          <LegendItem kind="line" color={getTierColor('15', mode)}><span className={MAP_BADGE_LABEL}>{headwayTierLabel(15)}</span></LegendItem>
-          {frequentFrequency === 30 && (
-            <LegendItem kind="line" color={getTierColor('30', mode)}><span className={MAP_BADGE_LABEL}>{headwayBandLabel(16, 30)}</span></LegendItem>
-          )}
-        </>
-      )}
+      <MapKey steps={view === 'night'
+        ? [{ color: getNightServiceColor(mode), label: <span className={MAP_BADGE_LABEL}>{MAP_KEY_NIGHT}</span> }]
+        : [
+          { color: getTierColor('15', mode), label: <span className={MAP_BADGE_LABEL}>{headwayTierLabel(15)}</span> },
+          ...(frequentFrequency === 30 ? [{ color: getTierColor('30', mode), label: <span className={MAP_BADGE_LABEL}>{headwayBandLabel(16, 30)}</span> }] : []),
+        ]} />
     </div>
   );
 }
