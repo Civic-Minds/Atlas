@@ -4,7 +4,7 @@ import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { parseGtfsZip } from '../pipeline/parseGtfs.js';
 import { normalizeGtfs } from '../pipeline/preprocess/run.js';
-import { detectReferenceDate } from '../pipeline/transit-calendar.js';
+import { readWeekOf } from '../pipeline/readWeek.js';
 import { computeRawDepartures } from '../pipeline/transit-phase1.js';
 import { computePeriodSustained, computePeriodSustainedWithEdgeTransitionGap, forCrossMidnightWindow, medianHeadwayInWindow } from '../pipeline/headway-utils.js';
 import { TIME_PERIODS, type PeriodKey } from '../shared/config.js';
@@ -74,8 +74,9 @@ async function main() {
     const agency = agencies.get(slug)!;
     const buffer = await fetchBuffer(agency.feedUrl ?? agency.mdbFeedUrl!);
     const gtfs = normalizeGtfs(await parseGtfsZip(buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength) as ArrayBuffer), processOptions(slug));
-    const referenceDate = detectReferenceDate(gtfs.calendar ?? [], gtfs.calendarDates ?? [], gtfs.trips ?? []);
-    const raw = computeRawDepartures(gtfs, referenceDate, undefined, slug);
+    // CIV-1101: the pipeline's own week (readWeekOf), read through that week's calendar rows.
+    const week = readWeekOf(gtfs);
+    const raw = computeRawDepartures({ ...gtfs, calendar: week.calendar, calendarDates: week.calendarDates }, week.referenceDate, undefined, slug);
     for (const target of agencyTargets) {
       const rawDay = dayMap[target.day] ?? target.day;
       const routeGroups = raw.filter(item => item.route === target.routeId && String(item.dir) === target.direction && item.day === rawDay);

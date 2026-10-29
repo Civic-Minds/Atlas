@@ -274,8 +274,15 @@ describe('decideRefreshSkipUnchanged with a run-date reference (#774)', () => {
   it('skips an unchanged feed by default', () => {
     expect(decideRefreshSkipUnchanged(same).skip).toBe(true);
   });
-  it('never skips an agency read as of the run date', () => {
+  it('never skips an agency read as of the run date on the old picker (no service-week key)', () => {
     expect(decideRefreshSkipUnchanged({ ...same, referenceDateFromRunDate: true }).skip).toBe(false);
+  });
+  // CIV-1101: on the one service-day model the run-date agencies follow the service-week key.
+  it('reprocesses a run-date agency when its picked week moved', () => {
+    expect(decideRefreshSkipUnchanged({ ...same, referenceDateFromRunDate: true, serviceWeek: 'b', lastServiceWeek: 'a' }).skip).toBe(false);
+  });
+  it('skips a run-date agency whose picked week did not move', () => {
+    expect(decideRefreshSkipUnchanged({ ...same, referenceDateFromRunDate: true, serviceWeek: 'a', lastServiceWeek: 'a' }).skip).toBe(true);
   });
 });
 
