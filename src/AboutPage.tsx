@@ -32,7 +32,7 @@ export default function AboutPage() {
             </div>
             <div className="border-t-2 border-[var(--accent-border)] pt-4">
               <h3 className="text-base font-black">How often</h3>
-              <p className="mt-2 text-sm leading-6 text-[var(--text-muted)]">Compare scheduled frequency without opening a timetable.</p>
+              <p className="mt-2 text-sm leading-6 text-[var(--text-muted)]">Compare scheduled frequency without opening a schedule.</p>
             </div>
           </div>
         </section>
