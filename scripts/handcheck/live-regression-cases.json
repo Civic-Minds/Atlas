@@ -3,7 +3,7 @@
   "cases": [
     {
       "route": "501",
-      "checked": "snapshot 2026-10-17, not hand-checked",
+      "checked": "501 westbound delays start hand-checked 2026-10-29 (CIV-910 Q5); the rest is the 2026-10-17 snapshot, not hand-checked",
       "directions": {
         "0": {
           "stretch": {
@@ -15,11 +15,15 @@
             "typicalMin": 84.1,
             "toleranceMin": 0.5
           },
-          "delaysStart": null,
+          "delaysStart": {
+            "fromStopId": "4690",
+            "toStopId": "5534"
+          },
           "terminalStopIds": [
             "7762",
             "18248"
-          ]
+          ],
+          "delaysStartNote": "Borderline: the analysis gives Soho St -> Spadina Ave a median added delay of 0.5 min (784 runs), an independent count from raw positions and the surface GTFS 0.35 min (808 runs; _reports/civ910-handcheck501.py), against a 0.5 min threshold. The two methods differ by 0.1-0.26 min on other Queen St stretches, so this call is inside measurement noise and may flip on new data."
         },
         "1": {
           "stretch": {
