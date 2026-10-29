@@ -29,7 +29,7 @@ import { holidayDropFor, repickedFor, type HolidayPeriodDrop, type RepickedPerio
 import { historyV2FromEnv } from './historyV2Flag.js';
 import { compileAgencyShapes, type ShapeRouteYear } from './historyShapes.js';
 import type { HistoryPeriodShapes } from '../shared/historyV2.js';
-import { parsePeriodKey, getPeriodKeySortValue, isRefreshRunPeriodKey } from './historyPeriods.js';
+import { parsePeriodKey, getPeriodKeySortValue, isRefreshRunPeriodKey, labelFromRefDate, afterBuildMonth, yearMonthOf } from './historyPeriods.js';
 import { writeHistoryAgencyList } from '../scripts/build-history-agency-list.js';
 import { historyGeometryForRoute } from './historyGeometry.js';
 import { isDrawableLineCoordinates, lineStringCoordinatesOrNull } from '../shared/routeGeometry.js';
@@ -215,7 +215,7 @@ async function main() {
   const tripDurationKeys = await r2ListArchive('trip-duration/');
   console.log(`Found ${tripDurationKeys.length} files in atlas-archive/trip-duration/`);
   const tripDurationRoutes: Record<string, Record<string, Array<{
-    periodKey: string; durationMinutes: number; stopSequence: string[];
+    periodKey: string; durationMinutes: number; stopSequence: string[]; refDate?: string;
   }>>> = {};
   const tripDurationTasks: (() => Promise<void>)[] = [];
   for (const key of tripDurationKeys) {
@@ -235,6 +235,7 @@ async function main() {
           periodKey,
           durationMinutes: data.durationMinutes,
           stopSequence: data.stopSequence,
+          refDate: typeof data.refDate === 'string' ? data.refDate : undefined,
         });
       } catch (err) {
         console.error(`Failed to parse: ${key}`, err);
@@ -346,6 +347,9 @@ async function main() {
   const holidayDrops: HolidayPeriodDrop[] = [];
   const repickedPeriods: RepickedPeriod[] = [];
   const holidayPeriods: Record<string, Set<string>> = {};
+  // Each sidecar period's in-service date, so a trip-duration file with the same period key can be
+  // dated by when its feed ran, not when it ends (CIV-1124).
+  const sidecarRefDates: Record<string, Record<string, string>> = {};
   const sidecarKeys = !v2 ? [] : (await r2ListArchive('history-v2/')).filter(k => k.split('/').length === 3 && k.endsWith('.json'));
   if (v2) console.log(`Found ${sidecarKeys.length} v2 sidecar files in atlas-archive/history-v2/`);
   await runWithConcurrency(sidecarKeys.map(key => async () => {
@@ -356,6 +360,7 @@ async function main() {
       if (sc.version !== 2 || !sc.routes) return;
       const slug = key.split('/')[1];
       const periodKey = key.split('/')[2].replace('.json', '');
+      if (typeof sc.refDate === 'string') (sidecarRefDates[slug] ??= {})[periodKey] = sc.refDate;
       const holidayDrop = holidayDropFor(slug, periodKey, sc);
       if (holidayDrop) {
         holidayDrops.push(holidayDrop);
@@ -395,6 +400,8 @@ async function main() {
   buildReport.droppedHolidayPeriods = holidayDrops.sort((a, b) => a.slug.localeCompare(b.slug) || a.periodKey.localeCompare(b.periodKey));
   buildReport.repickedPeriods = repickedPeriods.sort((a, b) => a.slug.localeCompare(b.slug) || a.periodKey.localeCompare(b.periodKey));
   const buildYear = new Date().getFullYear();
+  const buildYm = yearMonthOf(new Date());
+  let tripDurationUndated = 0;
 
   // 2. Merge BASE_HISTORY manual seeds into archiveRoutes
   for (const agency of BASE_HISTORY) {
@@ -466,7 +473,7 @@ async function main() {
         // v2: join change files with sidecar entries by period key, drop invalid snapshots,
         // order by real date and keep one snapshot per year (see historyV2Build.ts).
         const candidates: Candidate[] = joinCandidates(holidayPeriods[slug] ? changes.filter(c => !holidayPeriods[slug].has(c.periodKey)) : changes, sidecarRoutes[slug]?.[routeShortName] ?? []);
-        const built = buildRouteSnapshots(slug, routeShortName, candidates, buildYear, buildReport);
+        const built = buildRouteSnapshots(slug, routeShortName, candidates, buildYear, buildReport, buildYm);
         for (const b of built) {
           (shapeRouteYears[slug] ??= []).push({ routeKey: routeShortName, year: b.year, periodKey: b.periodKey, lookupKeys: [routeShortName, ...(routeAliases[slug]?.[routeShortName] ?? [])] });
         }
@@ -530,10 +537,23 @@ async function main() {
       // physical alignments (see docs/roadmap/EXPERIMENT_IDEAS.md).
       // De-dupe by periodKey (routine weekly refreshes can archive the same
       // service period more than once) before looking for a stable run.
+      // v2: a trip-duration file is keyed by its feed's END date, so the key is never its label: each
+      // period is dated by when its feed ran (the file's refDate, else the same period's v2 sidecar),
+      // a period with no such date is left out, and so is one dated after the build month (CIV-1124:
+      // BART "Jan 2027"). Default: origin/main's period-key labels.
       const rawTripDurationEntries = tripDurationRoutes[slug]?.[routeShortName] ?? [];
-      const tripDurationEntries = rawTripDurationEntries.filter((entry, i) =>
-        i === 0 || entry.periodKey !== rawTripDurationEntries[i - 1].periodKey,
-      );
+      const uniqueTripDurationEntries = rawTripDurationEntries
+        .filter((entry, i) => i === 0 || entry.periodKey !== rawTripDurationEntries[i - 1].periodKey);
+      const tripDurationEntries = !v2
+        ? uniqueTripDurationEntries.map(entry => ({ ...entry, label: parsePeriodKey(entry.periodKey).label }))
+        : uniqueTripDurationEntries
+          .flatMap(entry => {
+            const refDate = entry.refDate ?? sidecarRefDates[slug]?.[entry.periodKey];
+            const label = labelFromRefDate(refDate);
+            if (!label) { tripDurationUndated++; return []; }
+            return afterBuildMonth(label, Number(refDate!.slice(0, 4)), buildYm) ? [] : [{ ...entry, refDate: refDate!, label }];
+          })
+          .sort((a, b) => Number(a.refDate) - Number(b.refDate));
 
       let tripDuration: { firstLabel: string; firstMinutes: number; lastLabel: string; lastMinutes: number } | undefined;
       if (tripDurationEntries.length >= 2) {
@@ -558,9 +578,9 @@ async function main() {
           const firstEntry = stableRun[0];
           const lastEntry = stableRun[stableRun.length - 1];
           tripDuration = {
-            firstLabel: parsePeriodKey(firstEntry.periodKey).label,
+            firstLabel: firstEntry.label,
             firstMinutes: firstEntry.durationMinutes,
-            lastLabel: parsePeriodKey(lastEntry.periodKey).label,
+            lastLabel: lastEntry.label,
             lastMinutes: lastEntry.durationMinutes,
           };
         }
@@ -636,6 +656,7 @@ async function main() {
       }
     }
     for (const v of buildReport.visibility) for (const note of v.supplementalNotes) console.log(`  ${note}`);
+    if (tripDurationUndated) console.log(`  left out ${tripDurationUndated} trip-duration periods with no in-service date`);
     for (const d of buildReport.droppedHolidayPeriods) console.log(`  dropped holiday period ${d.slug}/${d.periodKey} (refDate ${d.refDate}, ${d.routesAffected} routes): ${d.reason}`);
     for (const d of buildReport.repickedPeriods) console.log(`  re-picked ${d.slug}/${d.periodKey}: refDate ${d.from} -> ${d.to} (year ${d.fromYear} -> ${d.toYear}, ${d.routes} routes): ${d.reason}`);
     for (const d of buildReport.drops.slice(0, 50)) console.log(`  dropped ${d.slug}/${d.route} "${d.label}": ${d.reason}`);
