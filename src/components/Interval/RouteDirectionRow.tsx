@@ -51,6 +51,8 @@ interface Props {
   holdLayout?: boolean;
   /** A trailing chevron: the row opens a list (Live's direction rows). Off by default. */
   chevron?: boolean;
+  /** Any other figure at the right end of the row, in place of a frequency (Live's vehicle delay). */
+  value?: React.ReactNode;
 }
 
 /**
@@ -74,7 +76,7 @@ export function keyboardFocusHover(onHoverStart?: () => void, onHoverEnd?: () =>
  * Owns label color, headway display, and limited-service variants
  * so there's one place to change instead of hunting across SidebarControls.
  */
-export default function RouteDirectionRow({ label, routeName, labelWeight = 'bold', singleLine = false, headway, colorHeadway, headwayLabel, trunkHeadway, headwaySuffix, headwaySuffixTone, subLabel, subLabelTrailing, subLabelWeight = 'bold', live, limited, limitedLabel = LIMITED_SERVICE_LABEL, edgeGapAllowance, onEdgeGapAllowanceClick, dimmed, onHoverStart, onHoverEnd, branchHovered, branchDimmed, onClick, holdLayout = false, chevron = false }: Props) {
+export default function RouteDirectionRow({ label, routeName, labelWeight = 'bold', singleLine = false, headway, colorHeadway, headwayLabel, trunkHeadway, headwaySuffix, headwaySuffixTone, subLabel, subLabelTrailing, subLabelWeight = 'bold', live, limited, limitedLabel = LIMITED_SERVICE_LABEL, edgeGapAllowance, onEdgeGapAllowanceClick, dimmed, onHoverStart, onHoverEnd, branchHovered, branchDimmed, onClick, holdLayout = false, chevron = false, value }: Props) {
   const interactive = !!(onHoverStart && onHoverEnd);
   const clickable = !!onClick;
   const faded = dimmed || branchDimmed;
@@ -82,7 +84,7 @@ export default function RouteDirectionRow({ label, routeName, labelWeight = 'bol
   const rangeText = showRange && headway != null && trunkHeadway != null
     ? fmtHeadwayRange(trunkHeadway, headway)
     : null;
-  const hasValueCell = !!edgeGapAllowance || limited || (headway != null && !showRange) || !!rangeText;
+  const hasValueCell = !!edgeGapAllowance || limited || (headway != null && !showRange) || !!rangeText || value != null;
   // Measured only while not held, so the held size is always the pre-hover layout.
   const rowRef = React.useRef<HTMLDivElement>(null);
   const valueRef = React.useRef<HTMLSpanElement>(null);
@@ -137,6 +139,7 @@ export default function RouteDirectionRow({ label, routeName, labelWeight = 'bol
           )}
           {/* The trunk-to-branch range ("every 6–12 min") is the shared badge, coloured by the trunk (CIV-1000). */}
           {!limited && rangeText && <HeadwayBadge headway={trunkHeadway!} label={rangeText} />}
+          {value}
         </span>}
         {chevron && <ChevronRight aria-hidden="true" className="w-3 h-3 text-[var(--text-dim)] shrink-0" />}
       </div>
