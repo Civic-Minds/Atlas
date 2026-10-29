@@ -421,7 +421,8 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
                     <div className={`flex items-baseline justify-between gap-2 leading-4 ${CHART_HEADING} ${HEADING_GAP}`} data-testid={testId}>
                       <span>{title}</span>
                       <span className="flex items-baseline gap-2" aria-hidden="true">
-                        <HoveredPeriodName period={modalPeriod} />
+                        {/* The title line's own line height, so the name never makes the line taller. */}
+                        <HoveredPeriodName period={modalPeriod} className="leading-[inherit]" />
                         <span className="text-[var(--text-muted)]" data-testid="full-day-chart-value">{value}</span>
                       </span>
                     </div>
