@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { pairedTripPeriodFloor, pairedTripSafeHeadway, routeCardDisplayHeadway, routeListDisplayHeadway } from '../effectiveHeadway';
 import { groupTrunkHeadway, medianTerminalHeadway } from '../routeCardTrunk';
 import { branchDisplayHourHeadway, branchDisplayPeriodHeadway, buildRouteStopMetric, metricValueForPeriod } from '../routeFacts';
-import { sparklineHeadwayByHour } from '../../components/Interval/panels/RouteCardHeadway';
+import { sparklineHeadwayByHour } from '../hourChartModel';
 import type { ShapeProperties } from '../../hooks/useIntervalStats';
 import { buildSharedStopIndex } from '../../../shared/sharedStops';
 
