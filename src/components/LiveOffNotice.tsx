@@ -1,6 +1,5 @@
-import PageShell from './ui/PageShell';
+import EmptyPage from './ui/EmptyPage';
 import ArrowLink from './ui/ArrowLink';
-import { PageTitle } from './ui/PageTitle';
 import { LIVE_OFF_BODY, LIVE_OFF_TITLE } from '../content/noticeCopy';
 
 /**
@@ -9,12 +8,10 @@ import { LIVE_OFF_BODY, LIVE_OFF_TITLE } from '../content/noticeCopy';
  */
 export default function LiveOffNotice() {
   return (
-    <PageShell variant="wide">
-      <PageTitle className="mt-24">{LIVE_OFF_TITLE}</PageTitle>
-      <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--text-muted)]">
-        {LIVE_OFF_BODY.start} <code className="font-black">{LIVE_OFF_BODY.command}</code> {LIVE_OFF_BODY.middle} <code className="font-black">{LIVE_OFF_BODY.path}</code> {LIVE_OFF_BODY.end}
-      </p>
-      <ArrowLink href="/" className="mt-6">Open the Atlas map</ArrowLink>
-    </PageShell>
+    <EmptyPage
+      title={LIVE_OFF_TITLE}
+      body={<>{LIVE_OFF_BODY.start} <code className="font-black">{LIVE_OFF_BODY.command}</code> {LIVE_OFF_BODY.middle} <code className="font-black">{LIVE_OFF_BODY.path}</code> {LIVE_OFF_BODY.end}</>}
+      action={<ArrowLink href="/">Open the Atlas map</ArrowLink>}
+    />
   );
 }

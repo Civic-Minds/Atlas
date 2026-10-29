@@ -7,6 +7,7 @@ import { getMapStyle } from '../../lib/mapStyle';
 import { MAP_STEP_LIMITS, mapStep, type MapMeasure, type RouteMapModel } from './routeMapModel';
 import type { HeatPoint } from './delayHeatModel';
 import { frameRoute } from '../Interval/map/routeFraming';
+import { FOCUS_DIM_OPACITY } from '../../utils/routeFocus';
 
 export type MapPick = { kind: 'segment'; fromStopId: string; toStopId: string; route?: string } | { kind: 'stop'; stopId: string };
 
@@ -89,7 +90,8 @@ export default function RouteMap({ model, measure, selected, onPick, anchor = nu
         geometry: { type: 'Point' as const, coordinates: p.lonLat },
       })),
     });
-    map.setPaintProperty('seg', 'line-opacity', me === 'delayStarts' ? ['case', ['==', ['get', 'dim'], 1], 0.15, 0.5] : ['case', ['==', ['get', 'dim'], 1], 0.25, 1]);
+    // Other routes fade by the map's one fade amount; under Delay starts every line is already at half, so they fade by half of it.
+    map.setPaintProperty('seg', 'line-opacity', me === 'delayStarts' ? ['case', ['==', ['get', 'dim'], 1], FOCUS_DIM_OPACITY / 2, 0.5] : ['case', ['==', ['get', 'dim'], 1], FOCUS_DIM_OPACITY, 1]);
     seg.setData({
       type: 'FeatureCollection',
       features: m.segments.map(s => ({
@@ -126,7 +128,7 @@ export default function RouteMap({ model, measure, selected, onPick, anchor = nu
       map.addSource('segments', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
       map.addSource('stops', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
       map.addLayer({ id: 'seg-halo', type: 'line', source: 'segments', layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': halo, 'line-offset': ['get', 'off'], 'line-width': ['interpolate', ['linear'], ['zoom'], 10, 5, 15, 12] } });
-      map.addLayer({ id: 'seg', type: 'line', source: 'segments', layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': ['get', 'color'], 'line-offset': ['get', 'off'], 'line-opacity': ['case', ['==', ['get', 'dim'], 1], 0.25, 1], 'line-width': ['interpolate', ['linear'], ['zoom'], 10, 3, 15, 8] } });
+      map.addLayer({ id: 'seg', type: 'line', source: 'segments', layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': ['get', 'color'], 'line-offset': ['get', 'off'], 'line-opacity': ['case', ['==', ['get', 'dim'], 1], FOCUS_DIM_OPACITY, 1], 'line-width': ['interpolate', ['linear'], ['zoom'], 10, 3, 15, 8] } });
       map.addLayer({ id: 'seg-sel', type: 'line', source: 'segments', filter: ['==', ['get', 'sel'], 1], layout: { 'line-cap': 'round' }, paint: { 'line-color': ['get', 'color'], 'line-width': ['interpolate', ['linear'], ['zoom'], 10, 7, 15, 15], 'line-opacity': 0.35 } });
       // The heat: one soft dot per stop in its own step colour, bigger the more it adds (never summed with its neighbours,
       // so the colour is always the stop's own figure and matches the key). Hottest drawn on top.

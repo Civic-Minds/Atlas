@@ -16,6 +16,7 @@ import { titleCase } from './utils/format';
 import { liveStopName as stop, stretchLabel } from './utils/stopLabel';
 import ErrorBoundary from './components/ErrorBoundary';
 import PageShell from './components/ui/PageShell';
+import EmptyPage from './components/ui/EmptyPage';
 import DataTable from './components/ui/DataTable';
 import SortableDataTable from './components/ui/SortableDataTable';
 import LiveOffNotice from './components/LiveOffNotice';
@@ -183,11 +184,11 @@ export default function LiveAgencyPage() {
   }, [agency]);
   if (!FEATURES.liveReports) return <LiveOffNotice />;
   const name = agency.toUpperCase();
-  const back = FEATURES.live ? <ArrowLink href="/apps/live" className="mt-6">Open Live</ArrowLink> : null;
+  const back = FEATURES.live ? <ArrowLink href="/apps/live">Open Live</ArrowLink> : null;
   if (state.kind === 'loading') return <PageShell variant="wide"><p className="mt-24 text-sm text-[var(--text-muted)]" aria-busy="true">Loading {name}…</p></PageShell>;
   if (state.kind === 'error' || state.data.status !== 'ready') {
     const reason = state.kind === 'error' ? state.reason : state.data.status === 'no_analysis' ? devOnly(state.data.reason) : (state.data as { reason: string }).reason;
-    return <PageShell variant="wide"><PageTitle className="mt-24">{name}</PageTitle><p className="mt-4 max-w-2xl text-base leading-7 text-[var(--text-muted)]">{reason}</p>{back}</PageShell>;
+    return <EmptyPage title={name} body={reason} action={back} />;
   }
   const s = state.data.summary;
   const coverage = coveredRoutesText(s.agency, s.routes);
