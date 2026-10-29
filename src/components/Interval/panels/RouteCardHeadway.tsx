@@ -338,7 +338,9 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
   const matchesHoveredBranch = (headsign: string | null | undefined, routeVariant: string | null | undefined) =>
     (hoveredBranch?.headsign === headsign || hoveredBranch?.headsigns?.includes(headsign ?? '') === true)
     && (!hoveredBranch?.routeVariant || (routeVariant ?? '') === hoveredBranch.routeVariant);
-  const routeTitle = currentRoute.label?.text ?? routeLabels({ shortName: currentRoute.routeShortName, longName: currentRoute.routeLongName, routeType: currentRoute.routeType ?? currentRoute.directions[0]?.routeType, agencySlug: currentRoute.agencySlug ?? routeSlug, agencyName: agencyDisplayName }).text;
+  const routeLabel = currentRoute.label ?? routeLabels({ shortName: currentRoute.routeShortName, longName: currentRoute.routeLongName, routeType: currentRoute.routeType ?? currentRoute.directions[0]?.routeType, agencySlug: currentRoute.agencySlug ?? routeSlug, agencyName: agencyDisplayName });
+  // Plain text keeps the dash (report details, the chart window's screen-reader name); on screen the title is RouteTitleName (CIV-1128).
+  const routeTitle = routeLabel.text;
   const reportPeriod = selectedPeriod
     ? `${selectedPeriod.label} (${formatPeriodRangeLong(selectedPeriod.startHour, selectedPeriod.endHour)})`
     : 'All day';
@@ -363,7 +365,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
         <div className="flex items-start gap-2">
           <div className="flex-1 min-w-0">
             <RouteCardTitle
-              title={routeTitle}
+              label={routeLabel}
               routeShortName={currentRoute.routeShortName}
               routeLongName={currentRoute.routeLongName}
               routeType={currentRoute.routeType ?? currentRoute.directions[0]?.routeType}
@@ -463,6 +465,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
               allowExpand={FEATURES.sparklineExpand}
               reserveStackedLegendSpace={hasTrunkSparkline}
               title={routeTitle}
+              titleLabel={routeLabel}
             />
           </>
         );

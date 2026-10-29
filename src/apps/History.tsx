@@ -7,7 +7,8 @@ import type { HistorySnapshotV2 } from '../../shared/historyV2';
 import { countOf } from '../../shared/overflowText';
 import { isDrawableLineCoordinates } from '../../shared/routeGeometry';
 import { TRANSITION_BASE, AGENCY_LIST_FILTERS, PILL_SURFACE, PILL_SCROLL_ROW, SIDEBAR_CARD, SIDEBAR_CARD_MAX_H, sidebarFrameStyle, sidebarCardFrame, SIDEBAR_PANEL_WIDTH, Z_PANEL, CARD_NOTICE, CARD_NOTE } from '../styles';
-import { routeLabels, titleCase } from '../utils/format';
+import { routeLabels } from '../utils/format';
+import { RouteTitleName } from '../components/RouteRowName';
 import { agencyNames } from '../utils/agencyName';
 import CardRouteList from '../components/Interval/CardRouteList';
 import { AgencyCardTop, CardHelpNotice, CARD_CALLOUT_HEADLINE, CARD_CALLOUT_HEADLINE_TONE, CARD_CALLOUT_TEXT, CARD_HEADER_BLOCK, CardCallout, CardDirectionRow, CardReportButton, SIDEBAR_CARD_BODY, SidebarCardHeaderBlock, SidebarCardListRows, SidebarCardShell } from '../components/Interval/cardUi';
@@ -270,7 +271,7 @@ function RouteHistoryCard({
         </div>
       )}
       {chartExpanded && chartSnaps.length >= 2 && (
-        <ExpandDialog title={`${route.routeShortName}${route.routeName ? ` ${titleCase(route.routeName)}` : ''}`} ariaLabel="Route history chart" closeLabel="Close chart" onClose={closeChart}>
+        <ExpandDialog title={<RouteTitleName label={routeLabels({ shortName: route.routeShortName, longName: route.routeName || null, routeType: route.currentRouteType ?? undefined, agencySlug, agencyName })} />} ariaLabel="Route history chart" closeLabel="Close chart" onClose={closeChart}>
           <div className="mt-4">
             <RouteHistoryChart wide snaps={chartSnaps} minutes={hws} lineColor={lineColor} gradientId={`${gradientId}-wide`} hoveredSnap={hoveredSnap} onHover={setHoveredSnap} />
           </div>
