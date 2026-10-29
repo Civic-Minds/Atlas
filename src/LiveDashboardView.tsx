@@ -12,7 +12,7 @@ import { shortStopName } from './utils/stopLabel';
 import { useMediaQuery } from './hooks/useMediaQuery';
 import { TILE } from './pageStyles';
 import ArrowLink from './components/ui/ArrowLink';
-import { SectionTitle } from './components/ui/PageTitle';
+import Section from './components/Live/sections/Section';
 import LateByHourSection from './components/Live/sections/LateByHourSection';
 import RunTimeSection from './components/Live/sections/RunTimeSection';
 import WorstStopsSection from './components/Live/sections/WorstStopsSection';
@@ -170,11 +170,7 @@ function AlongRoute({ v3, dir, uncertain }: { v3: LiveV3; dir: number | null; un
   const pickable = phone && all.length > 1;
   const dirs = pickable ? [all[Math.min(phoneDir, all.length - 1)]] : all;
   return (
-    <section aria-labelledby="dash-strip" className="mt-10">
-      <SectionTitle id="dash-strip">Along the route</SectionTitle>
-      <p className="mt-1 max-w-3xl text-sm text-[var(--text-muted)]">
-        Each stop coloured twice, over the whole day: how late cars typically leave it, and how often the gaps between cars are too close or too far apart. Hover or tap a stop for its figures.
-      </p>
+    <Section id="dash-strip" title="Along the route" intro="Each stop coloured twice, over the whole day: how late cars typically leave it, and how often the gaps between cars are too close or too far apart. Hover or tap a stop for its figures.">
       {pickable && (
         <div className={`mt-3 ${PILL_ROW}`}>
           <PillGroup label="Direction shown" value={String(Math.min(phoneDir, all.length - 1))} onChange={v => setPhoneDir(Number(v))} options={all.map((d, i) => [String(i), d.label] as const)} />
@@ -194,7 +190,7 @@ function AlongRoute({ v3, dir, uncertain }: { v3: LiveV3; dir: number | null; un
           })}
         </div>
       ) : <p className="mt-3 text-sm text-[var(--text-muted)]">{LIVE_NO_STOPS_MEASURED}</p>}
-    </section>
+    </Section>
   );
 }
 

@@ -8,7 +8,6 @@ import { lateForDays, type DayKind } from '../../../utils/liveKpi';
 import ErrorBoundary from '../../ErrorBoundary';
 import HourSpark, { type HourValue } from '../../charts/HourSpark';
 import LegendItem from '../../ui/LegendItem';
-import { SectionTitle } from '../../ui/PageTitle';
 import Widget from '../tool/Widget';
 import { LATE_SHARE_SWATCH, lateShareColor } from '../lateShare';
 import Section from './Section';
@@ -138,14 +137,9 @@ function Spark({ v3, data, band, dir, allOnly = false, oneDay, title }: Props & 
     return { kind, label, late, hours: m.sparkHours(kind, band), thin: !oneDay && isThin(late?.days), leftOut: oneDay ? [] : leftOutDays(v3, kind) };
   });
   return (
-    <section aria-labelledby="dash-days" className="mt-10">
-      <SectionTitle id="dash-days">{title}</SectionTitle>
-      <p className="mt-1 max-w-3xl text-sm text-[var(--text-muted)]">
-        How often trips leave the end of the line {LATE_THRESHOLD}, by kind of day and the hour they start.
-        {dir != null && ' Both directions: this view is not split by direction yet.'}
-      </p>
+    <Section id="dash-days" title={title} intro={<>How often trips leave the end of the line {LATE_THRESHOLD}, by kind of day and the hour they start.{dir != null && ' Both directions: this view is not split by direction yet.'}</>}>
       <ChartRow cols={cols} tall={allOnly} showNote={!allOnly} />
-    </section>
+    </Section>
   );
 }
 
