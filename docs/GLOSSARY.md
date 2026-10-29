@@ -107,7 +107,7 @@ Every entry in this section is **on feature/live-local-poc, not main yet**, unle
   - Rounding: nearest ½ min. At most 2 stop pairs are listed.
 - **"too tight"**: no card label and no code name. It is shorthand for a stop pair where the timetable gives less time than vehicles need, which is the amber or red running-time case. Do not put "too tight" on the card. Use the running-time wording.
 - **EWT (excess wait time)**: `excessWaitSec` (`headwayBandStat`). The average wait for a rider arriving at random is Σgap² ÷ (2 × Σgap). EWT is that value from actual gaps minus the same value from scheduled gaps, computed per headway window and then weighted by each window's scheduled span.
-  - Card row: "Where every scheduled trip ran, riders waited {X} longer than the timetable implies; {P}% of gaps were close to scheduled". "Close" means within ±50% of the window's scheduled median gap (`withinShare`). The footer calls the measure "Extra wait". The methods note calls it "excess wait".
+  - Card row: "Where every scheduled trip ran, riders waited {X} longer than the schedule implies; {P}% of gaps were close to scheduled". "Close" means within ±50% of the window's scheduled median gap (`withinShare`). The footer calls the measure "Extra wait". The methods note calls it "excess wait".
   - Never use: "late", "delay", "at least", "bunching" (unless that is measured separately).
   - It is a lower bound, because cancelled or unseen trips are left out, and the card says so.
   - Rounding: nearest ½ min. Colour and flags: amber from 30 s, red from 90 s. A stop is listed only from 30 s.
@@ -151,7 +151,7 @@ These measures are different things. Never combine them, convert one into anothe
 
 1. **"late / early / on time"** is only for one vehicle against its own scheduled time at one point. That is main's live adherence (`getVehicleStatus` in `src/utils/colors.ts` and `LiveAdherenceCard`, main). Main writes it as "on time" or "+N min" / "−N min".
 2. **"takes N min longer than scheduled"** is only for running time between two stops. Never call it "late": a stop pair can lose time while the vehicle is still early.
-3. **"riders waited N min longer than the timetable implies"** (label "Extra wait") is only for spacing. Never call it "late" or "delay". Always keep the caveat that it is a lower bound.
+3. **"riders waited N min longer than the schedule implies"** (label "Extra wait") is only for spacing. Never call it "late" or "delay". Always keep the caveat that it is a lower bound.
 4. **"the schedule allows N more than vehicles need"** is only for the looser-than-needed case. Never call it "early".
 5. **"stood still"** is a count of events, never a duration, a delay or a "hold".
 6. Use "+" or "at least" only on a value that was rounded down (the 1-in-10). Values rounded to nearest get a plain number.
@@ -172,7 +172,7 @@ These measures are different things. Never combine them, convert one into anothe
 | `gainedMedianSec` (Live) | `segmentDelayView.ts` | "Takes X longer than scheduled" | branch only |
 | `gainedP90Sec` (Live) | | "1 in 10 take X+ min longer" | branch only |
 | `isPadded` (Live) | | "looser than needed", "The schedule allows X more than vehicles need" | branch only |
-| `excessWaitSec` / EWT (Live) | | "Extra wait" (footer), "riders waited X longer than the timetable implies" (row) | branch only |
+| `excessWaitSec` / EWT (Live) | | "Extra wait" (footer), "riders waited X longer than the schedule implies" (row) | branch only |
 | `detectHolds` / `HoldEvent` (Live) | | "Stood still", "Standing still" | branch only; never "hold" |
 | `not_seen` (Live) | | "No vehicle reported under this trip's number" | not on card |
 | Late (Live) | `LATE_DEFINITION` | "**Late** is more than 5½ min behind schedule. This is based on the TTC's 5-minute standard, plus 30 seconds because we only record each vehicle's location once a minute." | How this is measured and the Docs glossary (E9). Each definition reads "**Term** is …", no colon after the term (CIV-1075) |

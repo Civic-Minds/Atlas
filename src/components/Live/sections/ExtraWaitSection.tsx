@@ -57,7 +57,7 @@ export default function ExtraWaitSection({ v3, band, dir, detail, boundary }: { 
                 formatY={y => `${num(y)} min`}
                 unit="gaps"
                 valueHeader="Extra wait"
-                caption={full ? undefined : 'How much longer riders wait than the timetable says, at each stop.'}
+                caption={full ? undefined : 'How much longer riders wait than the schedule says, at each stop.'}
                 fadedNote={!full}
                 peakLabel={full}
                 axisTitle="Extra minutes"
@@ -74,7 +74,7 @@ export default function ExtraWaitSection({ v3, band, dir, detail, boundary }: { 
         <SortableDataTable
           narrowFit
           rowTitle={s => `${s.name}: ${s.gaps.toLocaleString()} gaps`}
-          caption="Stops where riders wait longest compared with the timetable"
+          caption="Stops where riders wait longest compared with the schedule"
           defaultSort="extra"
           rows={worst}
           rowKey={s => `${s.stopId}-${s.directionId}`}

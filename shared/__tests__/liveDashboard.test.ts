@@ -37,7 +37,7 @@ describe('sentences', () => {
   });
   it('shows every link with its number', () => {
     expect(linkValueText('stood_still', 0.57)).toBe('0.6 a day');
-    expect(linkValueText('slow_stretch', 273)).toBe('+273 s vs timetable');
+    expect(linkValueText('slow_stretch', 273)).toBe('+273 s vs schedule');
     expect(linkValueText('terminal_departures', null)).toBe('not measured');
   });
 });

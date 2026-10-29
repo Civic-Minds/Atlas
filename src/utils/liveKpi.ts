@@ -53,7 +53,7 @@ export function kpiDelta(key: CompareKey, now: number | null, before: number | n
   };
 }
 
-/** "2 min faster than the timetable", from the same whole minutes the tile and the Run time section show. */
+/** "2 min faster than the schedule", from the same whole minutes the tile and the Run time section show. */
 function runTimeCaption(typicalMin: number, scheduledMin: number): string {
   return runTimeDiffText(runTimeDiffMin(typicalMin, scheduledMin));
 }

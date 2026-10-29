@@ -14,9 +14,9 @@ export function runTimeShareText(over: number): string {
   return p === 0 ? 'on time' : `${p}% ${over < 0 ? 'faster' : 'slower'}`;
 }
 /** The row's name on All routes, so the share reads against the timetable (wording to confirm, CIV-945). */
-export const NETWORK_RUN_TIME_LABEL = 'Run time vs timetable';
+export const NETWORK_RUN_TIME_LABEL = 'Run time vs schedule';
 /** The tile's caption and hover text (wording to confirm, CIV-945). */
-export const NETWORK_RUN_TIME_SUB = 'typical trip against the timetable, all routes';
+export const NETWORK_RUN_TIME_SUB = 'typical trip against the schedule, all routes';
 
 export function agencyKpiTiles(s: AgencySummary): Kpi[] {
   const w = s.weekly;

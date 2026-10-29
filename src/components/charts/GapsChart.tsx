@@ -72,7 +72,7 @@ export default function GapsChart({ gaps, ariaLabel, height: H = 180 }: { gaps: 
       </div>
       <div className="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-xs text-[var(--text-muted)]">
         <LegendItem color={STEP_COLOR[2]}>Too close together</LegendItem>
-        <LegendItem color={STEP_COLOR[0]}>Near the timetable</LegendItem>
+        <LegendItem color={STEP_COLOR[0]}>Near the schedule</LegendItem>
         <LegendItem color={STEP_COLOR[1]}>Too far apart</LegendItem>
         <span className="inline-flex items-center gap-1.5"><svg width="14" height="4" aria-hidden="true"><line x1="0" x2="14" y1="2" y2="2" stroke="var(--text-secondary)" strokeWidth="1.5" strokeDasharray="4 3" /></svg>Scheduled</span>
       </div>

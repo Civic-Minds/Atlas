@@ -87,9 +87,9 @@ describe('visible days, peak label and run time wording', () => {
     expect([risePointsText(0.31), risePointsText(0.045), risePointsText(0)]).toEqual(['+31 pt', '+5 pt', '0 pt']);
   });
   it('writes run time against the timetable in minutes', () => {
-    expect(runTimeDiffText(-2)).toBe('2 min faster than the timetable');
+    expect(runTimeDiffText(-2)).toBe('2 min faster than the schedule');
     expect(runTimeDiffText(7, false)).toBe('7 min slower');
-    expect(runTimeDiffText(0, false)).toBe('same as the timetable');
+    expect(runTimeDiffText(0, false)).toBe('same as the schedule');
   });
 });
 
