@@ -143,6 +143,9 @@ describe('the method line for the days left out', () => {
     expect(weekWindowParts(weeks(wk(t, ['2026-10-10', '2026-10-12']), wk(l, l))).days).toBe('Excluding Oct 11.');
     expect(weekWindowParts(weeks(wk(t, t), wk(l, ['2026-10-03', '2026-10-04']))).days).toBe('Excluding Oct 5.');
     expect(weekWindowParts(weeks(wk(t, ['2026-10-10', '2026-10-12']), wk(l, ['2026-10-03', '2026-10-04']))).days).toBe('Excluding Oct 11 and Oct 5.');
+    // CIV-910 Q2: the network names only the days every route left out.
+    expect(weekWindowParts({ ...weeks(wk(t, ['2026-10-10', '2026-10-12']), wk(l, ['2026-10-03', '2026-10-04'])), leftOutEverywhere: { thisWeek: [], lastWeek: [] } }).days).toBeNull();
+    expect(weekWindowParts({ ...weeks(wk(t, ['2026-10-10', '2026-10-12']), wk(l, l)), leftOutEverywhere: { thisWeek: ['2026-10-11'], lastWeek: [] } }).days).toBe('Excluding Oct 11.');
     expect(weekWindowParts(weeks(wk(t, t), wk(l, l))).days).toBeNull();
   });
 });
