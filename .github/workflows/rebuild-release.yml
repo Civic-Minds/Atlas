@@ -34,9 +34,14 @@ on:
         required: false
         type: string
       concurrency:
-        description: 'Agencies reprocessed in parallel (1-4). The runner has 16 GB; 2 matches the local run.'
+        description: 'Agencies each reprocess process keeps in flight (1-4). Processing is CPU work on one core, so this only overlaps downloads; 2 matches the local run.'
         required: false
         default: '2'
+        type: string
+      shards:
+        description: 'Separate reprocess processes, one per core (1-4; CIV-1110). The release diff gate still runs once over every agency before any R2 write.'
+        required: false
+        default: '3'
         type: string
       start_at:
         description: 'Publish only. Resume a stopped run: reprocess (everything), pmtiles (agency artifacts already in R2), history, or publish. history and publish need resume_run_id.'
@@ -88,6 +93,7 @@ jobs:
       REF_INPUT: ${{ inputs.ref }}
       ALLOW_INPUT: ${{ inputs.allow }}
       CONCURRENCY_INPUT: ${{ inputs.concurrency }}
+      SHARDS_INPUT: ${{ inputs.shards }}
       AGENCIES_INPUT: ${{ inputs.agencies }}
       NODE_OPTIONS: --max-old-space-size=8192
     steps:
@@ -97,6 +103,7 @@ jobs:
           RO_SECRET: ${{ secrets.R2_RO_SECRET_ACCESS_KEY }}
         run: |
           [[ "$CONCURRENCY_INPUT" =~ ^[1-4]$ ]] || { echo "concurrency must be 1-4, got: $CONCURRENCY_INPUT"; exit 1; }
+          [[ "$SHARDS_INPUT" =~ ^[1-4]$ ]] || { echo "shards must be 1-4, got: $SHARDS_INPUT"; exit 1; }
           for pair in $ALLOW_INPUT; do
             [[ "$pair" =~ ^[a-z0-9-]+:[a-z-]+$ ]] || { echo "Bad allow value: $pair (expected <slug>:<flag>)"; exit 1; }
           done
@@ -147,7 +154,7 @@ jobs:
         run: |
           allow_args=()
           for pair in $ALLOW_INPUT; do allow_args+=(--allow "$pair"); done
-          REPROCESS_CONCURRENCY="$CONCURRENCY_INPUT" npm run reprocess-derived-artifacts -- "${allow_args[@]}"
+          REPROCESS_CONCURRENCY="$CONCURRENCY_INPUT" REPROCESS_SHARDS="$SHARDS_INPUT" bash pipeline/reprocess-sharded.sh ${allow_args[@]+"${allow_args[@]}"}
         env:
           R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
           R2_BUCKET_NAME: ${{ secrets.R2_BUCKET_NAME }}
@@ -289,11 +296,13 @@ jobs:
       RESUME_RUN_ID: ${{ inputs.resume_run_id }}
       ALLOW_INPUT: ${{ inputs.allow }}
       CONCURRENCY_INPUT: ${{ inputs.concurrency }}
+      SHARDS_INPUT: ${{ inputs.shards }}
       NODE_OPTIONS: --max-old-space-size=8192
     steps:
       - name: Check the inputs
         run: |
           [[ "$CONCURRENCY_INPUT" =~ ^[1-4]$ ]] || { echo "concurrency must be 1-4, got: $CONCURRENCY_INPUT"; exit 1; }
+          [[ "$SHARDS_INPUT" =~ ^[1-4]$ ]] || { echo "shards must be 1-4, got: $SHARDS_INPUT"; exit 1; }
           for pair in $ALLOW_INPUT; do
             [[ "$pair" =~ ^[a-z0-9-]+:[a-z-]+$ ]] || { echo "Bad allow value: $pair (expected <slug>:<flag>)"; exit 1; }
           done
@@ -404,7 +413,7 @@ jobs:
         run: |
           allow_args=()
           for pair in $ALLOW_INPUT; do allow_args+=(--allow "$pair"); done
-          REPROCESS_CONCURRENCY="$CONCURRENCY_INPUT" npm run reprocess-derived-artifacts -- --write "${allow_args[@]}"
+          REPROCESS_CONCURRENCY="$CONCURRENCY_INPUT" REPROCESS_SHARDS="$SHARDS_INPUT" bash pipeline/reprocess-sharded.sh --write ${allow_args[@]+"${allow_args[@]}"}
         env:
           R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
           R2_BUCKET_NAME: ${{ secrets.R2_BUCKET_NAME }}
