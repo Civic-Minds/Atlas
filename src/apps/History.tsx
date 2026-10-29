@@ -225,7 +225,7 @@ function RouteHistoryCard({
   const closeChart = useCallback(() => setChartExpanded(false), []);
   const hws = chartSnaps.map(snapHeadway);
   // The status tokens follow the colour-vision setting on their own (index.css).
-  const lineColor = worse ? 'var(--status-negative)' : better ? 'var(--status-positive)' : '#9ca3af';
+  const lineColor = worse ? 'var(--status-negative)' : better ? 'var(--status-positive)' : 'var(--status-neutral)';
 
   return (
     // The regular route card's frame, title and rows (RouteCardTitle, direction rows): the agency name
