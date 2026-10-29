@@ -2,7 +2,7 @@ import type { ShapeProperties, TimePeriod } from '../hooks/useIntervalStats';
 import { periodKeyForHour } from '../../shared/config';
 import { branchDisplayPeriodHeadway, buildRouteServiceSummary } from './routeFacts';
 import { MIN_SHARED_STOPS_FOR_TRUNK, sharedStopIds, sharesOrderedTrunk } from './routeBranchGeometry';
-import { sharedStretchStopPass } from './frequencySegments';
+import { failingRouteSharedRanges, sharedStretchStopPass } from './frequencySegments';
 import { rowTrips } from './rowTrips';
 import { stretchRowsFromMeta } from './stretchCard';
 import { hourHasService } from './periodActiveRanges';
@@ -252,4 +252,21 @@ export function sharedStretchHeadway(
     }
   }
   return worst == null ? null : { headway: worst, stopIds: [...stopIds] };
+}
+
+/**
+ * CIV-514: whether part of a route that misses the filter still qualifies, by the same per-stop pass that draws the
+ * map's shared-stretch overlay for failing routes (failingRouteSharedRanges), so the card's note and the map agree.
+ * `directions` are the card's copies of the route's features; their stopOrder arrays identify the features.
+ */
+export function routePartMeetsFilter(
+  agencyFeatures: readonly GeoJSON.Feature[] | undefined,
+  directions: ShapeProperties[],
+  period: TimePeriod,
+  maxHeadway: number,
+): boolean {
+  if (!agencyFeatures || directions.length === 0) return false;
+  const wanted = new Set<unknown>(directions.map(d => d.stopOrder).filter(Boolean));
+  const routeFeatures = agencyFeatures.filter(f => wanted.has((f.properties as any)?.stopOrder));
+  return failingRouteSharedRanges(routeFeatures, agencyFeatures, period, maxHeadway).some(r => r.ranges.length > 0);
 }
