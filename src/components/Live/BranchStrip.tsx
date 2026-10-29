@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useId, useMemo, useRef, useState, type KeyboardEvent } from 'react';
 import DataTable from '../ui/DataTable';
 import { useMediaQuery } from '../../hooks/useMediaQuery';
-import { isMajorStop, shortStopName } from '../../utils/stopLabel';
+import { isMajorStop, shortStopName, stripStopName } from '../../utils/stopLabel';
 import {
   MIN_N, bunchParts, delayText, labelWidth, pct, shownDelayMin, stopDetail, stopN, stopStep, stretchSpan,
   type RouteStripMode, type RouteStripStop,
@@ -188,7 +188,7 @@ export default function BranchStrip({ model, selected = null, onSelect, modes = 
       const first = l[0];
       if (serving.get(first.stopId) !== 1) return;
       const x = xOf(colOf.get(first.stopId)!) - dot / 2 - 6;
-      if (x - GUTTER >= labelWidth(shortStopName(first.name)) + 6) out.push({ stop: first, row: r, right: x });
+      if (x - GUTTER >= labelWidth(stripStopName(first.name)) + 6) out.push({ stop: first, row: r, right: x });
     });
     return out;
   }, [vertical, width, model, cols, dot]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -199,7 +199,7 @@ export default function BranchStrip({ model, selected = null, onSelect, modes = 
     if (vertical || width === 0) return [] as Array<{ stop: RouteStripStop; x: number; end: boolean }>;
     const exclusiveEnd = (id: string) => serving.get(id) === 1 && model.lines.some(l => l.at(-1)!.stopId === id);
     const keep = cols.map((id, i) => ({ id, i })).filter(c => !named.has(c.id) && !exclusiveEnd(c.id));
-    const items = keep.map(c => ({ x: xOf(c.i), text: shortStopName(byId.get(c.id)!.name) }));
+    const items = keep.map(c => ({ x: xOf(c.i), text: stripStopName(byId.get(c.id)!.name) }));
     const ends = [...new Set(model.lines.flatMap(l => [l[0], l.at(-1)!]).map(s => s.stopId))];
     const want = ends.map(id => keep.findIndex(c => c.id === id)).filter(i => i >= 0 && !named.has(keep[i].id));
     const picked = fitLabels(items, want, Math.max(2, Math.min(6, Math.floor(plotW / 150))), GUTTER, width);
@@ -272,10 +272,10 @@ export default function BranchStrip({ model, selected = null, onSelect, modes = 
         onPointerLeave={e => { if (e.pointerType === 'mouse') setActive(null); }}
       />
       {startNames.map(n => (
-        <span key={`start-${n.row}`} className="pointer-events-none absolute whitespace-nowrap text-right text-xs font-bold leading-4 text-[var(--text-primary)]" style={{ left: n.right - (labelWidth(shortStopName(n.stop.name)) + 6), width: labelWidth(shortStopName(n.stop.name)) + 6, top: rowY(0, n.row) - 8 }} title={n.stop.name}>{shortStopName(n.stop.name)}</span>
+        <span key={`start-${n.row}`} className="pointer-events-none absolute whitespace-nowrap text-right text-xs font-bold leading-4 text-[var(--text-primary)]" style={{ left: n.right - (labelWidth(stripStopName(n.stop.name)) + 6), width: labelWidth(stripStopName(n.stop.name)) + 6, top: rowY(0, n.row) - 8 }} title={n.stop.name}>{stripStopName(n.stop.name)}</span>
       ))}
       {labels.map(l => {
-        const w = labelWidth(shortStopName(l.stop.name)) + 6;
+        const w = labelWidth(stripStopName(l.stop.name)) + 6;
         const left = Math.max(GUTTER, Math.min(width - w, l.x - w / 2));
         return (
           <span
@@ -283,7 +283,7 @@ export default function BranchStrip({ model, selected = null, onSelect, modes = 
             className={`pointer-events-none absolute whitespace-nowrap text-center text-xs leading-4 ${l.end ? 'font-bold text-[var(--text-primary)]' : 'text-[var(--text-dim)]'}`}
             style={{ left, width: w, top: namesTop + 3 }}
             title={l.stop.name}
-          >{shortStopName(l.stop.name)}</span>
+          >{stripStopName(l.stop.name)}</span>
         );
       })}
       {activeStop && colOf.has(activeStop.stopId) && <Tooltip stop={activeStop} x={xOf(colOf.get(activeStop.stopId)!)} width={width} top={namesTop + 14} />}
