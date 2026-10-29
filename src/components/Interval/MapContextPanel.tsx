@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import type { MapContextAgency, MapContextRoute } from '../../utils/mapContext';
-import { FLOATING_CARD, LIST_ROW_PRIMARY, PANEL_TITLE, SIDEBAR_PANEL_WIDTH, PANEL_SIDEBAR, sidebarFrameStyle } from '../../styles';
+import { AGENCY_LIST_FILTERS, FLOATING_CARD, LIST_ROW_PRIMARY, PANEL_TITLE, PILL_SCROLL_ROW, SIDEBAR_PANEL_WIDTH, PANEL_SIDEBAR, sidebarFrameStyle } from '../../styles';
 import RouteListRow from '../RouteListRow';
 import RegionFilterPills from '../RegionFilterPills';
 import Panel, { PanelBody, PanelTitleBar } from '../ui/Panel';
@@ -75,12 +75,15 @@ export const MapContextPanel: React.FC<MapContextPanelProps> = ({ agencies, mode
       </PanelTitleBar>
 
       {showRegionPills && (
-        <div className="shrink-0 flex gap-1.5 overflow-x-auto items-center px-4 py-2 border-b border-[var(--border-primary)] [&::-webkit-scrollbar]:hidden" style={{ scrollbarWidth: 'none' }}>
+        // The agency lists' filter row (History, the agency browser): AGENCY_LIST_FILTERS + PILL_SCROLL_ROW (CIV-1117 preview).
+        <div className={AGENCY_LIST_FILTERS}>
+        <div className={PILL_SCROLL_ROW} style={{ scrollbarWidth: 'none' }}>
           <RegionFilterPills
             regions={regionsInView}
             selectedRegions={regionFilter}
             setSelectedRegions={setRegionFilter}
           />
+        </div>
         </div>
       )}
 
