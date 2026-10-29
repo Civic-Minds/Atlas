@@ -59,6 +59,9 @@ const RULES: Array<{ name: string; pattern: RegExp; use: string }> = [
   // CIV-1011 #4: the outlined segmented group (Night 30/60, Frequent Service) and the active-filter corner dot.
   { name: 'hand-rolled segmented group', pattern: /rounded-full border border-\[var\(--border-primary\)\] p-0\.5/, use: 'PillGroup outlined' },
   { name: 'hand-rolled active-filter dot', pattern: /-top-0\.5 -right-0\.5 w-2 h-2 rounded-full bg-\[var\(--accent\)\]/, use: 'ActiveDot' },
+  // CIV-1117: the item heading inside a page section, and a static info chip.
+  { name: 'hand-rolled item heading', pattern: /<h3 className="text-base font-black/, use: 'SectionTitle' },
+  { name: 'hand-rolled chip', pattern: /rounded-full px-2\.5 py-1\b/, use: 'Tag' },
   { name: 'agency name helper called directly', pattern: /\b(shortenAgencyName|agencyBackLinkName|agencyDisplayParts|agencyListParts|agencyNameParts|agencyDisplayName)\(/, use: 'agencyNames (utils/agencyName.ts)' },
 ];
 
@@ -67,7 +70,6 @@ const RULES: Array<{ name: string; pattern: RegExp; use: string }> = [
 const ALLOWED: Record<string, string[]> = {
   'components/Interval/FilterChips.tsx': ['option pill classes'],
   'components/Interval/pickers.tsx': ['hand-rolled frequency picker'],
-  // Live is local-only and its route groups carry no route type; it still names routes its own way (audit R8).
   // Maintainer-only diagnostics, the story page's own opening layout, and a dialog title (panel headers are a later step).
   'DiagnosticsPerformancePage.tsx': ['hand-rolled page heading'],
   'components/Interval/HeadwaySparkline.tsx': ['hand-rolled section heading'],
@@ -77,12 +79,20 @@ const ALLOWED: Record<string, string[]> = {
   'components/Interval/cardUi.tsx': ['hand-drawn frequency dot', 'hand-rolled card title', 'hand-rolled card facts line'],
   'components/CardBack.tsx': ['hand-written back arrow'],
   'components/RouteListRow.tsx': ['hand-drawn frequency dot'],
-  // Live is its own app and team (CIV-899); its performance panel keeps its own title for now.
-  'components/Live/LiveRoutePerformance.tsx': ['hand-rolled card title', 'hand-rolled grey note', 'hand-rolled section label'],
-  // Live keeps its own sidebar height and tool-page back button until it moves to the shared ones (merge of main, 2026-10-28).
-  'apps/LiveVehicles.tsx': ['route label written by hand', 'route label joined by hand', 'hand-rolled grey note', 'hand-rolled sidebar card top or height'],
+  // Live copies listed in CIV-1117, waiting for Ryan's call on the visible change each move makes.
+  'components/Live/LiveRoutePerformance.tsx': ['hand-rolled grey note'],
+  // Live sidebars never scroll, so LiveVehicles keeps its own height (CIV-1117 LV2, dropped).
+  'apps/LiveVehicles.tsx': ['route label written by hand', 'hand-rolled grey note', 'hand-rolled sidebar card top or height'],
   'LiveToolPage.tsx': ['hand-written back arrow'],
-  'components/Interval/panels/LiveStopArrivals.tsx': ['hand-rolled grey note'],
+  'components/Interval/panels/LiveStopArrivals.tsx': ['hand-rolled grey note', 'hand-rolled chip'],
+  // SectionTitle always renders an h2; these item headings wait for its level prop (CIV-1117 LV10).
+  'AboutPage.tsx': ['hand-rolled item heading'],
+  'LiveDashboardView.tsx': ['hand-rolled item heading'],
+  'components/Live/sections/BuildupSection.tsx': ['hand-rolled item heading'],
+  'components/Live/sections/BunchingSection.tsx': ['hand-rolled item heading'],
+  'components/Live/sections/ExtraWaitSection.tsx': ['hand-rolled item heading'],
+  'components/Live/sections/LateByHourSection.tsx': ['hand-rolled item heading'],
+  'components/Live/sections/RunTimeSection.tsx': ['hand-rolled item heading'],
 };
 
 describe('shared UI components', () => {
