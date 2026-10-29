@@ -115,6 +115,34 @@ describe('routeCardTrunk', () => {
     expect(byHour[28]).toBe(byHour[26]);
   });
 
+  // CIV-1106: TTC 504 eastbound, weekday. At 3 AM the branches have two streetcars between them, not the Overnight
+  // trunk's "every 10"; a busy hour and a thin hour close to the period's value keep it.
+  it("shows a thin hour's own wait from its departures, never better than they allow", () => {
+    const branches = hsrWestBranches.slice(0, 2).map(b => ({
+      ...b,
+      headwayByPeriod: { ...b.headwayByPeriod, late: 20, overnight: 20 },
+      headwayByHour: { 25: null, 26: 20, 27: null },
+      departuresByHour: { 25: 3, 26: 3, 27: 1 },
+      maxGapByHour: { 26: 20, 27: null },
+    })) as ShapeProperties[];
+    const trunk = groupTrunkHeadway(branches, 'overnight');
+    expect(trunk).toBe(10);
+    const byHour = trunkSparklineByHour(branches, [25, 26, 27]);
+    expect(byHour[27]).toBe(30);
+    expect(byHour[26]).toBe(trunk);
+    expect(byHour[25]).toBe(10);
+  });
+
+  it('keeps the period value in a thin hour on data without departure counts', () => {
+    const branches = hsrWestBranches.slice(0, 2).map(b => ({
+      ...b,
+      headwayByPeriod: { ...b.headwayByPeriod, overnight: 20 },
+      headwayByHour: { 27: null },
+      maxGapByHour: { 27: 40 },
+    })) as ShapeProperties[];
+    expect(trunkSparklineByHour(branches, [27])[27]).toBe(10);
+  });
+
   it('reads headsign-scoped trunk minimum separately from route-wide combined deps', () => {
     const branch = {
       ...hsrWestBranches[0],
