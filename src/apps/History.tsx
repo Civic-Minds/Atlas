@@ -232,7 +232,8 @@ function RouteHistoryCard({
     // above the title goes back to the agency, as on the map's route card.
     // On phones it opens in the map route card's bottom sheet (#1028 item 23).
     <div className={sheetMode ? bottomSheetFrameClass(sheetVisible && sheetEntered) : `${SIDEBAR_CARD} ${SIDEBAR_PANEL_WIDTH} ${SIDEBAR_CARD_MAX_H} flex flex-col ${frameClassName}`} style={sheetMode ? undefined : frameStyle}>
-    <div className={sheetMode ? bottomSheetBodyClass(sheetExpanded) : SIDEBAR_CARD_BODY}>
+    {/* The report form takes the card's width, as on the map's route card. */}
+    <div data-report-anchor="true" className={sheetMode ? bottomSheetBodyClass(sheetExpanded) : SIDEBAR_CARD_BODY}>
     {sheetMode && <BottomSheetHandle expanded={sheetExpanded} handle={sheetHandle} />}
     <SidebarCardShell>
       <SidebarCardHeaderBlock>
@@ -619,7 +620,7 @@ function HistoryAgencyPanel({
 
   return (
     // The agency card's placement: sidebar Panel, 80px from the top, the search bar's width.
-    <Panel sidebar enter className={frameClassName} style={frameStyle}>
+    <Panel sidebar enter data-report-anchor="true" className={frameClassName} style={frameStyle}>
       {/* Header: the agency card's header block, with the route filter and mode pills inside it. */}
       <div className={CARD_HEADER_BLOCK}>
         <AgencyCardTop
