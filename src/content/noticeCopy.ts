@@ -58,8 +58,9 @@ export function selectedRouteFilterNotice(options: {
   return `${lead}${clauses.map((clause, i) => (i === 0 && clause.startsWith('with') ? `, ${clause}` : `, and ${clause}`)).join('')}.`;
 }
 
-// N8 no-trips-in-period and N11 not-in-period (CIV-1077: one sentence): "This route has no scheduled trips from 6–9 AM."
-const routeNoTripsText = (when: string) => `This route has no scheduled trips ${when}.`;
+// N8 no-trips-in-period, N11 not-in-period, N17 and N26 (CIV-1077: one sentence): "This route has no scheduled trips from 6–9 AM."
+const noTripsText = (subject: 'route' | 'agency', when: string) => `This ${subject} has no scheduled trips ${when}.`;
+const routeNoTripsText = (when: string) => noTripsText('route', when);
 
 // N8 no-trips-in-period, N9 limited-in-period
 export function periodServiceNotice(periodRange: string, partial: boolean, activeRange?: string): string {
@@ -145,10 +146,10 @@ export const NO_ROUTES_NEARBY = 'No routes within 500 m';
 export const NO_ROUTE_SUGGESTIONS = 'No route suggestions in this area.';
 // N43 no-agencies-in-view
 export const NO_AGENCIES_IN_VIEW = 'No agencies in view.';
-// N52 night-no-agencies
-export const NO_AGENCIES_MATCH_SEARCH = 'No agencies match that search.';
 // N115, N116 settings-list-no-search-matches (CIV-957): "No hidden routes match your search."
 export const noSearchMatchText = (things: string) => `No ${things} match your search.`;
+// N52 night-no-agencies (CIV-1077: "your search", as N115)
+export const NO_AGENCIES_MATCH_SEARCH = noSearchMatchText('agencies');
 // N113 settings-no-limited-routes
 export const NO_LIMITED_ROUTES_IN_VIEW = 'No limited-service routes in view.';
 // N114 settings-hidden-routes-unavailable
@@ -216,7 +217,7 @@ export function getRolloutNotice(agency: { betaOnly?: boolean; rolloutNotice?: s
 }
 // N4 new-schedule (route), N21 new-schedule (agency)
 /** The route card and the agency card word these for what they show (CIV-941). */
-export const NEW_SCHEDULE_DATA_NOTICE = { route: "This route's new schedule is still being verified.", agency: "This agency's new schedule data is being verified." } as const;
+export const NEW_SCHEDULE_DATA_NOTICE = { route: "This route's new schedule is still being verified.", agency: "This agency's new schedule is still being verified." } as const;
 // N5 corrected (route), N22 corrected (agency)
 export const CORRECTED_DATA_NOTICE = { route: "We corrected an error in this route's schedule.", agency: "We corrected an error in this agency's schedule." } as const;
 // N23 routes-outside-show
@@ -244,7 +245,7 @@ export const HISTORY_ROUTE_ORDER_NOTE = 'Biggest changes first';
 
 // ---- Map ----
 // N46 networks-failed
-export const networksFailedText = (count: number) => (count === 1 ? "1 agency didn't load" : `${count} agencies didn't load`);
+export const networksFailedText = (count: number) => (count === 1 ? "1 agency couldn't load" : `${count} agencies couldn't load`);
 // N46 networks-failed (hover)
 /** The agencies' names: "TTC and YRT couldn't load." */
 export const networksFailedHint = (names: readonly string[]) => `${joinList(names)} couldn't load.`;
@@ -290,9 +291,9 @@ export const UPDATE_AVAILABLE_NOTICE = 'A newer version of this page is availabl
 // N63 analytics-prompt
 export const ANALYTICS_CONSENT_PROMPT = 'Optional analytics help improve Atlas.';
 // N64 analytics-setting
-export const ANALYTICS_SETTING_NOTE = 'Optional analytics helps us understand which parts of Atlas people use.';
+export const ANALYTICS_SETTING_NOTE = 'Optional analytics help us understand which parts of Atlas people use.';
 // N68 view-error
-export const VIEW_ERROR_TEXT = "This view couldn't load because something went wrong.";
+export const VIEW_ERROR_TEXT = "This view couldn't load because of an error.";
 // N68 map-error
 export const MAP_ERROR_TEXT = "The map couldn't be shown because of an error.";
 // N71 not-found
@@ -307,8 +308,8 @@ export const AREA_PAGE_NOT_FOUND_TITLE = 'No page for this region';
 export const NO_FREQUENCY_PAGE_BODY = 'This address has no frequency page.';
 
 const DAYS_PLURAL: Record<string, string> = { Weekday: 'weekdays', Saturday: 'Saturdays', Sunday: 'Sundays' };
-// N17 route-no-service-day, N26 agency-no-service-day (Ryan)
-export const noServiceOnDayNotice = (subject: 'route' | 'agency', day: string) => `This ${subject} has no scheduled service on ${DAYS_PLURAL[day] ?? day}.`;
+// N17 route-no-service-day, N26 agency-no-service-day (Ryan; "trips", as N8, CIV-1077)
+export const noServiceOnDayNotice = (subject: 'route' | 'agency', day: string) => noTripsText(subject, `on ${DAYS_PLURAL[day] ?? day}`);
 // N35 stop-no-routes-in-period (Ryan)
 export const stopNoRoutesNotice = (periodRange: string) => `No routes stop here from ${keepRangeTogether(periodRange)}.`;
 // N36 stop-not-found (Ryan)
@@ -364,8 +365,8 @@ export const newScheduleDataLead = (agencyName: string, onMapOn?: string | null)
 export const betaRolloutLead = (agencyName: string) => onlyOnBetaText(agencyNames(agencyName).card.primary);
 // E5
 export const ROUTE_DATA_QUALITY_LEAD = "Part of this route's line on the map may be missing or drawn in the wrong place.";
-// E7: 10 minutes is EDGE_GAP_ALLOWANCE_MINUTES (pipeline/transit-phase2.ts).
-export const EDGE_GAP_ALLOWANCE_LEAD = 'The first or last trip of the day can come up to 10 minutes later than usual, and the route still counts at its frequency.';
+// E7: N14 itself, then the allowance (CIV-1077); 10 minutes is EDGE_GAP_ALLOWANCE_MINUTES (pipeline/transit-phase2.ts).
+export const EDGE_GAP_ALLOWANCE_LEAD = `${FIRST_LAST_TRIP_ALLOWANCE_HINT} That trip can come up to 10 minutes later than usual.`;
 // E8: N1 itself, then one more sentence.
 export const WEEKDAY_VARIATION_LEAD = `${WEEKDAY_VARIATION_NOTICE} Some weekdays run more or less often than others.`;
 
@@ -398,7 +399,7 @@ export const EXPLAINER_PIECES = {
   AGENCY_WEBSITE_CURRENT: { code: 'X11', text: "The agency's website has its current schedule.", links: ['agency-website'], needsWebsite: true },
   AGENCY_WEBSITE_EACH_DAY: { code: 'X12', text: "The agency's website has each day's schedule.", links: ['agency-website'], needsWebsite: true },
   REPORT_BELOW: { code: 'X13', text: "If something still looks wrong, report it below.", links: ['technical-details', 'report-data'] },
-  REPORT_WITH_FLAG: { code: 'X14', text: "If something looks off, report it with the flag on this card." },
+  REPORT_WITH_FLAG: { code: 'X14', text: "If something looks wrong, report it with the flag on this card." },
 } as const satisfies Record<string, ExplainerPieceDef>;
 export type ExplainerPiece = keyof typeof EXPLAINER_PIECES;
 export const pieceText = (piece: ExplainerPiece): string => EXPLAINER_PIECES[piece].text;

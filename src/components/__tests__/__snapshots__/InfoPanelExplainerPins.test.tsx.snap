@@ -91,7 +91,7 @@ exports[`explainer text is pinned (CIV-1061) > E5 1`] = `
     "Atlas by Civic Minds",
     "Part of this route's line on the map may be missing or drawn in the wrong place.",
     "We still show the route. Its frequency on this card comes from the timetable and is still accurate.",
-    "If something looks off, report it with the flag on this card.",
+    "If something looks wrong, report it with the flag on this card.",
   ],
 }
 `;
@@ -103,7 +103,7 @@ exports[`explainer text is pinned (CIV-1061) > E6 1`] = `
     "Atlas by Civic Minds",
     "This route's line can't be shown on the map because it's missing from the agency's data.",
     "We still show the route on this card. Its frequency comes from the timetable and is still accurate.",
-    "If something looks off, report it with the flag on this card.",
+    "If something looks wrong, report it with the flag on this card.",
   ],
 }
 `;
@@ -113,7 +113,7 @@ exports[`explainer text is pinned (CIV-1061) > E7 1`] = `
   "links": [],
   "paragraphs": [
     "Atlas by Civic Minds",
-    "The first or last trip of the day can come up to 10 minutes later than usual, and the route still counts at its frequency.",
+    "This route's frequency allows a slightly longer wait for the first or last trip of the day. That trip can come up to 10 minutes later than usual.",
     "Many routes start or end their day with one longer gap. Gaps in the middle of the day don't get this allowance.",
   ],
 }
