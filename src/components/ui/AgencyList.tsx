@@ -12,10 +12,10 @@ export function AgencyList({ children }: { children: ReactNode }) {
 }
 
 /** One region's heading and its agency rows. */
-export function AgencyRegionSection({ region, children }: { region: string; children: ReactNode }) {
+export function AgencyRegionSection({ region, compact = false, children }: { region: string; /** The tight padding of a dropdown list (the Agencies filter). */ compact?: boolean; children: ReactNode }) {
   return (
     <div>
-      <p className={LIST_REGION_HEAD}>{region}</p>
+      <p className={compact ? LIST_REGION_HEAD.replace('px-5 pt-3 pb-1', 'px-2 pt-2 pb-0.5') : LIST_REGION_HEAD}>{region}</p>
       {children}
     </div>
   );
