@@ -98,6 +98,23 @@ describe('routeCardTrunk', () => {
     expect(byHour[15]).toBe(8);
   });
 
+  // CIV-1106: TTC 504 westbound, weekday. Its branches run at 2 AM, none at 3 AM, then again from 4 AM;
+  // the Overnight trunk value used to fill all three hours.
+  it('leaves an hour no branch runs in empty, and keeps the period value in hours with service', () => {
+    const branches = hsrWestBranches.map((b, i) => ({
+      ...b,
+      headwayByHour: { 15: 30, 26: 10, 27: null, 28: i === 0 ? 15 : null },
+      departuresByHour: { 15: 2, 26: 5 },
+      maxGapByHour: { 15: 30, 26: 15, 27: null, 28: null },
+    })) as ShapeProperties[];
+    const byHour = trunkSparklineByHour(branches, [15, 26, 27, 28]);
+    expect(byHour[15]).toBe(groupTrunkHeadway(branches, 'pmPeak'));
+    expect(byHour[26]).toBe(groupTrunkHeadway(branches, 'overnight'));
+    expect(byHour[26]).not.toBeNull();
+    expect(byHour[27]).toBeNull();
+    expect(byHour[28]).toBe(byHour[26]);
+  });
+
   it('reads headsign-scoped trunk minimum separately from route-wide combined deps', () => {
     const branch = {
       ...hsrWestBranches[0],

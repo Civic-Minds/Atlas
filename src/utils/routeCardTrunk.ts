@@ -5,6 +5,7 @@ import { MIN_SHARED_STOPS_FOR_TRUNK, sharedStopIds, sharesOrderedTrunk } from '.
 import { sharedStretchStopPass } from './frequencySegments';
 import { rowTrips } from './rowTrips';
 import { stretchRowsFromMeta } from './stretchCard';
+import { hourHasService } from './periodActiveRanges';
 
 /** Headsign-scoped trunk minimum for route-card range display (not route-wide combined deps). */
 export function headsignTrunkHeadway(d: ShapeProperties, period: string): number | null {
@@ -177,15 +178,20 @@ export function stretchSharedHeadway(
   return trunkBeatsBranches(shared.value, medianHeadway(rowValues as number[])) ? shared.value : null;
 }
 
-/** Trunk hourly curve from combined stop headways (flat within each period). */
+/**
+ * Trunk hourly curve from combined stop headways (flat within each period). An hour no branch runs in stays empty
+ * (CIV-1106): the period's value covers only the hours with service, so TTC 504 westbound shows no bar at 3 AM, when
+ * no streetcar runs, beside the Overnight value at 2 AM. Data without hourly fields keeps the flat curve.
+ */
 export function trunkSparklineByHour(
   branches: ShapeProperties[],
   hours: readonly number[],
 ): Record<number, number | null> {
+  const hourly = branches.some(b => b.headwayByHour || b.departuresByHour || b.maxGapByHour);
   const out: Record<number, number | null> = {};
   for (const h of hours) {
     const pk = periodKeyForHour(h);
-    out[h] = pk ? groupTrunkHeadway(branches, pk) : null;
+    out[h] = pk && (!hourly || branches.some(b => hourHasService(b, h))) ? groupTrunkHeadway(branches, pk) : null;
   }
   return out;
 }
