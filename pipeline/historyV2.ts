@@ -45,6 +45,23 @@ function periodsOf(features: Props[]): HeadwayByPeriod | undefined {
 }
 
 /**
+ * CIV-555: a route's shared-stretch (trunk) value for History's "every 8–60" headline: each direction's best
+ * minStopHeadway (the live card's trunk reading, headsignTrunkHeadway, reads the same field), then the worst
+ * direction, as the frequency filter judges every direction. Null without the field.
+ */
+export function routeTrunkHeadway(features: Props[]): number | null {
+  const byDirection = new Map<string, number>();
+  for (const f of features) {
+    const v = finiteOrNull(f.minStopHeadway);
+    if (v == null) continue;
+    const direction = String(f.directionId ?? 0);
+    const best = byDirection.get(direction);
+    if (best == null || v < best) byDirection.set(direction, v);
+  }
+  return byDirection.size > 0 ? Math.max(...byDirection.values()) : null;
+}
+
+/**
  * The representative weekday value of a route from its Weekday features: the route-level
  * stamp routeAllDayHeadway read as the map reads it (sentinel, or an all-span route, = limited).
  * No stamp = blank rep ({}): never a minimum across patterns or directions.
@@ -58,7 +75,8 @@ export function representativeRep(features: Props[]): RepResult {
   const p = periodsOf(stamped);
   const allSpan = stamped.every(f => f.tier === 'span');
   if (worst >= NO_PERIOD_SERVICE_TILE_VALUE || allSpan) return { rep: { lim: true, ...(p ? { p } : {}) }, conflict };
-  return { rep: { h: worst, ...(p ? { p } : {}) }, conflict };
+  const t = routeTrunkHeadway(features);
+  return { rep: { h: worst, ...(p ? { p } : {}), ...(t != null && t < worst ? { t } : {}) }, conflict };
 }
 
 export interface BuildV2Report {
