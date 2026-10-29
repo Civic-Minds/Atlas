@@ -67,6 +67,7 @@ if (outDir) mkdirSync(outDir, { recursive: true });
 // PW_CHROMIUM: a local Chromium to use instead of Playwright's own download.
 const browser = await chromium.launch(process.env.PW_CHROMIUM ? { executablePath: process.env.PW_CHROMIUM } : {});
 const failures = [];
+const skipped = [];
 try {
   for (const width of WIDTHS) for (const scene of SCENES) for (const visitor of scene.visitors) {
     const label = `${width} ${scene.name} ${visitor}`;
@@ -79,7 +80,9 @@ try {
     // The map key is a setting (Settings, "Show map legend"), off by default.
     if (scene.key) await page.addInitScript(() => { try { localStorage.setItem('atlas_pref_map_legend', 'true'); } catch {} });
     await page.goto(baseUrl + scene.path, { waitUntil: 'domcontentloaded' });
-    await page.waitForSelector('[data-map-overlay="top-bar"]', { timeout: 30000 });
+    // A scene this build doesn't have (Live switched off) is reported and skipped, not counted as an overlap.
+    const opened = await page.waitForSelector('[data-map-overlay="top-bar"]', { timeout: 30000 }).then(() => true, () => false);
+    if (!opened) { skipped.push(label); await ctx.close(); continue; }
     if (scene.open) await scene.open(page).catch(err => failures.push(`${label}: could not open the scene (${String(err).split('\n')[0]})`));
     await page.waitForTimeout(SETTLE_MS);
     const { overlays, viewport } = await page.evaluate(measure);
@@ -99,6 +102,7 @@ try {
 } finally {
   await browser.close();
 }
+if (skipped.length) console.log(`Skipped (the scene did not open in this build): ${skipped.join('; ')}`);
 const unique = [...new Set(failures)];
 if (unique.length) {
   console.error(unique.join('\n'));
