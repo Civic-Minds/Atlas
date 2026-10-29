@@ -92,6 +92,13 @@ export function selectedRouteOutsideFilterNotice(maxHeadway: number, periodRange
     : `This route doesn't meet the ${maxHeadway}\u2011minute filter ${when ? `for all of ${when}` : 'all day'}.`;
 }
 
+// N123 part-of-route-meets-filter (Ryan's exact wording, CIV-514): the selected route misses the filter, but part of it
+// qualifies, as the shared-stretch overlay draws (failingRouteSharedRanges). Ryan approved "the selected period" here,
+// an exception to the time-of-day rule above. A no-break space keeps "15 minutes" on one line, as the hyphen does above.
+export function selectedRoutePartMeetsFilterNotice(maxHeadway: number): string {
+  return `Only part of this route runs every ${maxHeadway}\u00A0minutes or better during the selected period.`;
+}
+
 // E1 outdated-schedule, paragraph 1 end (N2 and N3 versions); the rest of E1 is pieces (EXPLAINER_PIECES).
 export const EXPIRED_FEED_EXPLANATION =
   'This is the latest schedule the agency has published that we could verify.';
