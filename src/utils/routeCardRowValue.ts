@@ -1,9 +1,10 @@
 import type { ShapeProperties, TimePeriod } from '../hooks/useIntervalStats';
 import { featurePassesHeadwayFilter, routeFilterHeadway } from '../../shared/routeHeadwayFilter';
-import { routeCardDisplayHeadway, routeCardDisplayLimited, routeCardPeriodShapeText } from './effectiveHeadway';
+import { routeCardDisplayLimited } from './effectiveHeadway';
 import { headwayAboutRange } from './headwayText';
 import { branchDisplayHourHeadway } from './routeFacts';
 import { headsignTrunkHeadway } from './routeCardTrunk';
+import { rowTrips } from './rowTrips';
 import { hasRegularServiceInPeriod, isOneGapRow, variantRowHeadway, type RouteContract } from './stretchCard';
 
 /** The card-level facts every row of the route card reads (CIV-992). */
@@ -52,9 +53,11 @@ export function routeCardRowValue(d: ShapeProperties, ctx: RouteCardRowContext):
   const variantH = hoveredHour == null ? variantRowHeadway(d, period) : undefined;
   // A main-stretch row the card cannot read a cadence for (its own gaps are uneven) takes its direction's filter
   // value. A tail never does: that value is the trunk's (#1115, Ryan 2026-10-26).
+  // CIV-1069: the row's value, gap and part-period words come from the same trips.
+  const trips = rowTrips(d, period);
   const ownH = hoveredHour != null
-    ? branchDisplayHourHeadway(d, hoveredHour) ?? routeCardDisplayHeadway(d, period)
-    : routeCardDisplayHeadway(d, period);
+    ? branchDisplayHourHeadway(d, hoveredHour) ?? trips.value
+    : trips.value;
   const directionH = stretchMode && hoveredHour == null && ownH == null && period !== 'all' && d.stretchRole !== 'tail'
     ? d.directionFilterHeadwayByPeriod?.[period as keyof NonNullable<ShapeProperties['directionFilterHeadwayByPeriod']>]
     : undefined;
@@ -64,13 +67,20 @@ export function routeCardRowValue(d: ShapeProperties, ctx: RouteCardRowContext):
   const fallbackRange = directionFallback != null && contract?.range && contract.range[0] < directionFallback && contract.range[1] >= directionFallback
     ? headwayAboutRange(contract.range[0], directionFallback)
     : undefined;
-  const displayH = variantH !== undefined ? variantH : directionFallback ?? ownH;
+  // #1142 (CIV-1018): an uneven period reads typical to worst ("every 5–18 min") on the main stretch's row, its number the
+  // direction's worst wait, as the filter and colour use. A tail's own value stays (the direction's is the trunk's).
+  const periodKey = period as keyof NonNullable<ShapeProperties['stretchPeriodTypical']>;
+  const typical = period !== 'all' ? d.stretchPeriodTypical?.[periodKey] : undefined;
+  const worst = period !== 'all' ? d.stretchPeriodHeadway?.[periodKey] : undefined;
+  const uneven = stretchMode && hoveredHour == null && d.stretchRole === 'main' && variantH === undefined && allDayH == null
+    && typeof typical === 'number' && typeof worst === 'number' && typical < worst
+    ? { typical, worst }
+    : undefined;
+  const displayH = variantH !== undefined ? variantH : uneven?.worst ?? directionFallback ?? ownH;
   // #934 and D6: the main stretch's row names a late start, an early end or one gap inside
   // steady service, in place of a long wait or "limited"; the dot keeps the filter's colour.
   // A period that is one gap between a few departures (#955) has no cadence to word.
-  const edgeText = hoveredHour == null && variantH === undefined && allDayH == null && d.stretchRole === 'main' && !isOneGapRow(d, period)
-    ? routeCardPeriodShapeText(d, period)
-    : undefined;
+  const edgeText = hoveredHour == null && variantH === undefined && allDayH == null ? trips.partPeriod : undefined;
   const trunkHeadway = hoveredHour == null && period !== 'all'
     ? headsignTrunkHeadway(d, period)
     : undefined;
@@ -80,9 +90,11 @@ export function routeCardRowValue(d: ShapeProperties, ctx: RouteCardRowContext):
   // the one-gap flag; every other row, and All day, reads as the route does. #955: a number
   // that is one gap between a few departures is not a cadence (TTC 10 weekday midday to
   // Victoria Park, 09:07 then 14:22: "every 315"); a row with a steady value of its own keeps it.
+  // CIV-1069: a headsign that does not run itself in the period reads no regular service, not the stop's other trips.
   const rowNoRegular = hoveredHour == null && (
     (noRegularService && (period === 'all' || d.stretchPeriodOneGap === undefined || !hasRegularServiceInPeriod(d, period) || displayH == null))
-    || isOneGapRow(d, period));
+    || isOneGapRow(d, period)
+    || (trips.noOwnService && variantH === undefined && allDayH == null));
   const isLimited = rowNoRegular
     ? true
     : displayH == null && hoveredHour == null && routeCardDisplayLimited(d, period);
@@ -92,7 +104,9 @@ export function routeCardRowValue(d: ShapeProperties, ctx: RouteCardRowContext):
     isLimited,
     rowNoRegular,
     edgeText,
-    headwayLabel: hoveredHour == null && variantH === undefined ? (edgeText ?? fallbackRange) : undefined,
+    headwayLabel: hoveredHour == null && variantH === undefined
+      ? (edgeText ?? (uneven ? headwayAboutRange(uneven.typical, uneven.worst) : fallbackRange))
+      : undefined,
     colorHeadway: hoveredHour == null && !rowNoRegular ? branchFilterHeadway : undefined,
     trunkHeadway,
     dimmed,

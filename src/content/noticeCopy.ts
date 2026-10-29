@@ -102,3 +102,8 @@ export function listingEndedPanelLead(agencyName: string, date: string, ended: b
 export const E1_WEEKLY_CHECK = 'We check for new schedules every week.';
 /** E1 paragraph 3, above Check current schedules and Report a problem. */
 export const E1_AGENCY_WEBSITE = "A newer schedule may be on the agency's website.";
+
+/** CIV-1052: a stop's own route that has no trips at the stop in the whole chosen period (Ryan, wording approved 2026-10-27). */
+export function stopRouteNoTripsNotice(periodRange: string): string {
+  return `No trips from ${keepRangeTogether(periodRange)}`;
+}

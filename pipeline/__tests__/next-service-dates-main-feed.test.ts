@@ -157,18 +157,20 @@ describe('nextServiceDatesSkipWeekendEvents (Sound Transit Sounder game days, CI
   afterEach(() => { vi.useRealTimers(); });
   const st = { slug: 'st', feedUrl: MAIN_URL, nextServiceDatesFeedUrls: [MAIN_URL] };
   const skip = { ...st, nextServiceDatesSkipWeekendEvents: true };
+  // The opt-in is read only by the old picker (the kill switch and History backfills, CIV-1101).
+  const OLD = { legacyReferenceDate: true };
 
   it('without the option, a run on Mon Nov 2 reads the game-day Sunday for S (the reported limit)', async () => {
     vi.useFakeTimers({ toFake: ['Date'], now: new Date('2026-11-02T08:00:00') });
-    const result = await processAgencyFeeds(await soundTransitZip({ sounder: true }), [], st);
+    const result = await processAgencyFeeds(await soundTransitZip({ sounder: true }), [], st, OLD);
     expect(daysByRoute(lineFeatures(result.geojson)).S).toEqual(['Sunday', 'Weekday']);
   });
 
   it('with the option, S keeps Weekday only and every other line is unchanged', async () => {
     vi.useFakeTimers({ toFake: ['Date'], now: new Date('2026-11-02T08:00:00') });
     const buf = await soundTransitZip({ sounder: true });
-    const plain = lineFeatures((await processAgencyFeeds(buf, [], st)).geojson);
-    const skipped = lineFeatures((await processAgencyFeeds(buf, [], skip)).geojson);
+    const plain = lineFeatures((await processAgencyFeeds(buf, [], st, OLD)).geojson);
+    const skipped = lineFeatures((await processAgencyFeeds(buf, [], skip, OLD)).geojson);
     expect(daysByRoute(skipped).S).toEqual(['Weekday']);
     expect(daysByRoute(skipped).T).toEqual(['Saturday', 'Sunday', 'Weekday']);
     expect(skipped).toEqual(plain.filter(p => !(p.routeId === 'S' && p.day === 'Sunday')));
@@ -177,15 +179,15 @@ describe('nextServiceDatesSkipWeekendEvents (Sound Transit Sounder game days, CI
   it('skips the two-Sunday game-day row too (run Wed Sep 30)', async () => {
     vi.useFakeTimers({ toFake: ['Date'], now: new Date('2026-09-30T08:00:00') });
     const buf = await soundTransitZip({ sounder: true });
-    expect(daysByRoute(lineFeatures((await processAgencyFeeds(buf, [], st)).geojson)).S).toEqual(['Sunday', 'Weekday']);
-    expect(daysByRoute(lineFeatures((await processAgencyFeeds(buf, [], skip)).geojson)).S).toEqual(['Weekday']);
+    expect(daysByRoute(lineFeatures((await processAgencyFeeds(buf, [], st, OLD)).geojson)).S).toEqual(['Sunday', 'Weekday']);
+    expect(daysByRoute(lineFeatures((await processAgencyFeeds(buf, [], skip, OLD)).geojson)).S).toEqual(['Weekday']);
   });
 
   it('keeps a weekend-only shuttle and leaves a week with no game day byte-identical (run Mon Nov 9)', async () => {
     vi.useFakeTimers({ toFake: ['Date'], now: new Date('2026-11-09T08:00:00') });
     const buf = await soundTransitZip({ sounder: true });
-    const plain = await processAgencyFeeds(buf, [], st);
-    const skipped = await processAgencyFeeds(buf, [], skip);
+    const plain = await processAgencyFeeds(buf, [], st, OLD);
+    const skipped = await processAgencyFeeds(buf, [], skip, OLD);
     expect(daysByRoute(lineFeatures(skipped.geojson)).X).toEqual(['Saturday', 'Sunday']);
     expect(skipped.geojson).toBe(plain.geojson);
     expect(skipped.stopsJson).toBe(plain.stopsJson);
@@ -194,8 +196,27 @@ describe('nextServiceDatesSkipWeekendEvents (Sound Transit Sounder game days, CI
   it('does nothing for a feed with no occasional weekend service', async () => {
     vi.useFakeTimers({ toFake: ['Date'], now: RUN });
     const buf = await soundTransitZip();
-    const plain = await processAgencyFeeds(buf, [], st);
-    const skipped = await processAgencyFeeds(buf, [], skip);
+    const plain = await processAgencyFeeds(buf, [], st, OLD);
+    const skipped = await processAgencyFeeds(buf, [], skip, OLD);
     expect(skipped.geojson).toBe(plain.geojson);
   });
+});
+
+// CIV-1101: the live map reads Sound Transit on the one service-day model, where a one-day game
+// Sunday loses the week-by-week vote, so no opt-in is needed. The weekend shuttle here runs on 2
+// of its 5 weekends, so it loses the vote too and is not drawn (the old opt-in drew it).
+describe('Sound Transit game days on the one service-day model (CIV-1101)', () => {
+  afterEach(() => { vi.useRealTimers(); });
+  const st = { slug: 'st', feedUrl: MAIN_URL, nextServiceDatesFeedUrls: [MAIN_URL], nextServiceDatesSkipWeekendEvents: true };
+
+  for (const run of ['2026-11-02T08:00:00', '2026-11-09T08:00:00']) {
+    it(`S keeps Weekday only, L and T keep every day (run ${run.slice(0, 10)})`, async () => {
+      vi.useFakeTimers({ toFake: ['Date'], now: new Date(run) });
+      const days = daysByRoute(lineFeatures((await processAgencyFeeds(await soundTransitZip({ sounder: true }), [], st)).geojson));
+      expect(days.S).toEqual(['Weekday']);
+      expect(days.L).toEqual(['Saturday', 'Sunday', 'Weekday']);
+      expect(days.T).toEqual(['Saturday', 'Sunday', 'Weekday']);
+      expect(days.X).toBeUndefined();
+    });
+  }
 });

@@ -93,6 +93,27 @@ function stopHeadwayAt(p: ShapeProperties, period: TimePeriod, stopId: string): 
   return p.stopHeadways?.[stopId] ?? null;
 }
 
+/**
+ * Per-stop values along a line for the partial-segment pass. A drop-off-only stop with no value
+ * (CIV-1071: its times are arrivals, not departures) takes the worse of its nearest valued
+ * neighbours, as sectionRuns grades it (#879), so it neither breaks a stretch nor cuts a passing
+ * line short of its terminal. Any other stop without a value still breaks the run.
+ */
+export function lineStopHeadways(p: ShapeProperties, period: TimePeriod): Array<number | null> {
+  const stopOrder = p.stopOrder ?? [];
+  const values = stopOrder.map(stopId => stopHeadwayAt(p, period, stopId));
+  const dropOffOnly = new Set(p.dropOffOnlyStops ?? []);
+  if (dropOffOnly.size === 0) return values;
+  return values.map((v, i) => {
+    if (v != null || !dropOffOnly.has(stopOrder[i])) return v;
+    let prev = i - 1; while (prev >= 0 && values[prev] == null && dropOffOnly.has(stopOrder[prev])) prev--;
+    let next = i + 1; while (next < values.length && values[next] == null && dropOffOnly.has(stopOrder[next])) next++;
+    const a = prev >= 0 ? values[prev] : null;
+    const b = next < values.length ? values[next] : null;
+    return a == null ? b : b == null ? a : Math.max(a, b);
+  });
+}
+
 function branchHeadway(p: ShapeProperties, period: TimePeriod): number | null {
   if (period !== 'all') return p.headwayByPeriod?.[period as PeriodKey] ?? null;
   return p.headway ?? null;
@@ -526,7 +547,8 @@ export function computeFrequencySegmentOverlay(
       const stopPositions = p.stopPositions;
       if (!stopOrder || !stopPositions || stopOrder.length < 2 || stopPositions.length !== stopOrder.length) continue;
 
-      const ranges = findQualifyingStopRanges(stopOrder, id => stopHeadwayAt(p, period, id), maxHeadway);
+      const lineValues = lineStopHeadways(p, period);
+      const ranges = findQualifyingStopRanges(stopOrder.map((_, i) => String(i)), i => lineValues[Number(i)], maxHeadway);
       if (ranges.length === 0) continue; // no on-shape stop data supports a qualifying stretch -- leave as-is, don't guess
       const fullyQualifies = ranges.length === 1 && ranges[0][0] === 0 && ranges[0][1] === stopOrder.length - 1;
       if (fullyQualifies) continue; // whole route already qualifies -- base rendering is already correct
@@ -535,9 +557,8 @@ export function computeFrequencySegmentOverlay(
       for (const [from, to] of ranges) {
         const clipped = clipBetweenStopIndices(coords, stopPositions, from, to);
         if (!clipped) continue;
-        const hwVals = stopOrder
+        const hwVals = lineValues
           .slice(from, to + 1)
-          .map(id => stopHeadwayAt(p, period, id))
           .filter((v): v is number => v != null);
         const repHw = hwVals.length > 0 ? Math.max(...hwVals) : maxHeadway;
         segments.push({

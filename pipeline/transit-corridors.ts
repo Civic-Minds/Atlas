@@ -1,6 +1,7 @@
 import { GtfsData, CorridorResult, DayName } from '../types/gtfs';
 import { t2m } from './transit-utils';
-import { detectReferenceDate, getActiveServiceIds } from './transit-calendar';
+import { getActiveServiceIds } from './transit-calendar';
+import { readWeekOf } from './readWeek';
 import { PERIOD_KEYS, PERIOD_MINUTES, type PeriodKey } from '../shared/config.js';
 
 /**
@@ -86,8 +87,11 @@ export const calculateCorridors = (
     day: string,
     referenceDate?: string
 ): CorridorResult[] => {
-    const { trips, stopTimes, calendar, calendarDates, routes } = gtfs;
-    const refDate = referenceDate ?? detectReferenceDate(calendar, calendarDates);
+    const { trips, stopTimes, routes } = gtfs;
+    // CIV-1101: with no date passed in, read the one service-day model's week (readWeekOf).
+    const { calendar, calendarDates, referenceDate: refDate } = referenceDate
+        ? { calendar: gtfs.calendar, calendarDates: gtfs.calendarDates, referenceDate }
+        : readWeekOf(gtfs);
     const dayNames: DayName[] = day === 'Weekday'
         ? ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
         : day === 'Saturday' ? ['Saturday'] : ['Sunday'];

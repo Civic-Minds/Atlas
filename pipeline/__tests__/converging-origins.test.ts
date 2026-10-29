@@ -1,7 +1,7 @@
 import { readdirSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import JSZip from 'jszip';
-import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it, onTestFinished, vi } from 'vitest';
 import { clearLoneOriginRows, labelConvergingOrigins, MIN_TRIPS } from '../convergingOrigins';
 import { processGtfsBuffer } from '../process-core';
 import type { GtfsData } from '../../types/gtfs';
@@ -82,6 +82,9 @@ describe('labelConvergingOrigins', () => {
   const cal = (service_id: string, start_date: string, end_date: string, days = '1') => ({ service_id, start_date, end_date, monday: days, tuesday: days, wednesday: days, thursday: days, friday: days, saturday: days, sunday: days });
 
   it('needs both origins on the same day: one terminal across two service periods is not two branches (TriMet 79)', () => {
+    // The week is read from the run date (CIV-1101), so pin it inside the overlap of the second pair.
+    vi.useFakeTimers({ toFake: ['Date'], now: new Date('2026-11-15T12:00:00') });
+    onTestFinished(() => { vi.useRealTimers(); });
     const trunk = ids(20);
     // Oregon City Transit Center until 28 November, then Main & 12th from 29 November: never together.
     const periods = feed([{ shape: 'A', stops: ['oc1', 'oc2', ...trunk], trips: 20, service: 'P1' }, { shape: 'B', stops: ['m1', 'm2', ...trunk], trips: 20, service: 'P2' }],

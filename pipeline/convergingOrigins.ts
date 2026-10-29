@@ -22,7 +22,8 @@
 import type { DayName, DayType, GtfsData } from '../types/gtfs.js';
 import { ALL_DAYS, WEEKDAYS } from '../shared/dayTypes.js';
 import { getModeCategory } from './defaults.js';
-import { detectReferenceDate, getActiveServiceIds } from './transit-calendar.js';
+import { getActiveServiceIds } from './transit-calendar.js';
+import { readWeekOf } from './readWeek.js';
 
 /**
  * Both origins must run on the same calendar day the pipeline draws: on at least one of the
@@ -40,8 +41,9 @@ import { detectReferenceDate, getActiveServiceIds } from './transit-calendar.js'
  */
 export function activeServiceIdsByCalendarDay(gtfs: GtfsData): Map<DayName, Set<string>> | null {
   if (!(gtfs.calendar?.length || gtfs.calendarDates?.length)) return null;
-  const refDate = detectReferenceDate(gtfs.calendar ?? [], gtfs.calendarDates, gtfs.trips);
-  return new Map(ALL_DAYS.map(day => [day, getActiveServiceIds(gtfs.calendar ?? [], gtfs.calendarDates ?? [], day, refDate)]));
+  // CIV-1101: the one service-day model's week (readWeekOf), as process-core reads it.
+  const { calendar, calendarDates, referenceDate } = readWeekOf(gtfs);
+  return new Map(ALL_DAYS.map(day => [day, getActiveServiceIds(calendar, calendarDates, day, referenceDate)]));
 }
 
 /** The origin label of a feature's row, or null when the feature carries no origin label. */

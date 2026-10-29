@@ -45,6 +45,39 @@ describe('StopRouteGroup rows (CIV-918)', () => {
     expect(screen.getAllByText('every 5 min')).toHaveLength(1);
   });
 
+  it('the combined value is the route card\'s "Shared stretch" row, above its direction\'s rows (CIV-1078, LA Metro 40 at 9059)', () => {
+    const at = (headsign: string, directionId: number, own: number, pooled: number) => ({ ...branch(headsign, directionId, pooled), rowHeadway: own });
+    render(
+      <StopRouteGroup
+        shortName="40" label={routeLabels({ shortName: '40', longName: 'Hawthorne Bl' })} longName="Hawthorne Bl"
+        branches={[at('Division 13', 0, 23, 10), at('Patsaouras', 0, 18, 10), at('South Bay Galleria', 1, 12, 12)]}
+        period="midday" onOpenRoute={() => {}}
+      />,
+    );
+    const text = document.body.textContent ?? '';
+    // The route line carries no value of its own; the shared row comes after it and before the branch rows.
+    expect(text.indexOf('Shared stretch')).toBeGreaterThan(text.indexOf('Hawthorne'));
+    expect(text.indexOf('Shared stretch')).toBeLessThan(text.indexOf('Division 13'));
+    expect(screen.getAllByText('Shared stretch')).toHaveLength(1);
+    expect(screen.getAllByText('every 10 min')).toHaveLength(1);
+    expect(screen.getByText('every 23 min')).toBeInTheDocument();
+    expect(screen.getByText('every 18 min')).toBeInTheDocument();
+    // The other direction has one destination: no shared row there.
+    expect(text.indexOf('Shared stretch')).toBeLessThan(text.indexOf('South Bay'));
+  });
+
+  it('a direction with one destination has no shared row, even where the stop sees more buses (TTC 29 at Wilson, northbound)', () => {
+    render(
+      <StopRouteGroup
+        shortName="29" label={routeLabels({ shortName: '29', longName: 'Dufferin' })} longName="Dufferin"
+        branches={[{ ...branch('Wilson', 1, 8), rowHeadway: 16 }]}
+        period="midday" onOpenRoute={() => {}}
+      />,
+    );
+    expect(screen.queryByText('Shared stretch')).toBeNull();
+    expect(screen.getByText('every 16 min')).toBeInTheDocument();
+  });
+
   it("a branch value better than the stop's is not used: the row never claims more service than the stop sees", () => {
     render(
       <StopRouteGroup

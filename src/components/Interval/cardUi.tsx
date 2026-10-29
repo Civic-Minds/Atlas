@@ -600,6 +600,18 @@ export function LimitedBadge({ label, className = '' }: { label?: string; classN
   const colorMode = useColorMode();
   const dot = <span className="w-2 h-2 rounded-full shrink-0" style={{ background: getTierColor(null, colorMode) }} />;
   if (label && twoPart(label)) return <TwoPartBadge dot={dot} text={label} className={`text-xs font-black text-[var(--text-primary)] leading-snug ${className}`} />;
+  // A several-word label ("no regular service during this period") breaks between words, right-aligned, where the row is
+  // too narrow, instead of running over the destination (TTC 25 northbound AM; the #1128 rule). It stays one line where it fits.
+  if (label?.includes(' ')) {
+    return (
+      <span className={`inline-flex min-w-0 text-xs font-black text-[var(--text-primary)] leading-snug ${className}`.trim()}>
+        <span className="min-w-0 text-right">
+          <span className="inline-block w-2 h-2 rounded-full mr-1 align-middle" style={{ background: getTierColor(null, colorMode) }} />
+          {label}
+        </span>
+      </span>
+    );
+  }
   return (
     <span className={`inline-flex items-center gap-1 text-xs font-black text-[var(--text-primary)] leading-snug shrink-0 whitespace-nowrap ${label ? '' : 'min-h-[1lh]'} ${className}`.trim()}>
       {dot}

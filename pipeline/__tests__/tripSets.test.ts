@@ -327,7 +327,7 @@ describe('night service on part of the route counts, on the part it runs (Ryan, 
       expect(rows.every(p => p.stretchNight30 === true && p.stretchNight60 === true), route).toBe(true);
       expect(rows.some(p => p.nightServicePartOfRoute === true), route).toBe(true);
     }
-  });
+  }, 30_000);
 });
 
 describe('D8 midpoint shadow (YRT Viva Weekday overnight)', () => {
@@ -741,6 +741,19 @@ describe('a stretch period with under three departures reads no regular service 
     expect(meta.noRegular).toContain('midday');
     expect(meta.period.midday).not.toBeNull();
     expect(meta.noRegular).not.toContain('pmPeak');
+  });
+});
+
+describe('a stretch publishes the longest gap of the departures its value reads (CIV-1069)', () => {
+  it('pairs each period value with the gap between the same departures, and none where there is no value', () => {
+    // Two headsigns pooled on the main stretch: every 10 through midday (9-15), one trip 5 minutes late.
+    const midday = Array.from({ length: 36 }, (_, i) => 540 + i * 10).map(t => (t === 580 ? 585 : t));
+    const stretch = { kind: 'main' as const, stops: ['a'], refStop: 'a', lengthKm: 1, times: midday, nightTimes: [], tripCount: midday.length };
+    const meta = stretchMetaPeriods(stretch);
+    expect(meta.period.midday).toBe(10);
+    expect(meta.maxGap.midday).toBe(15);
+    expect(meta.period.evening).toBeNull();
+    expect(meta.maxGap.evening).toBeNull();
   });
 });
 

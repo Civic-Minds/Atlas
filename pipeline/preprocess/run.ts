@@ -11,13 +11,14 @@ import { normalizeBrantfordRouteLabels } from '../transforms/brantford-route-lab
 import { fixMountainLineFrequencyWindow } from '../transforms/mountain-line-frequency-fix.js';
 import { addSantaFePickUpWeekendFrequency } from '../transforms/santafe-pickup-schedule.js';
 import { interpolateUntimedStops } from '../transforms/interpolate-untimed-stops.js';
+import { dropMnrExpressBusPairs } from '../transforms/mnr-bus-pairs.js';
 import { mergeEquivalentShapeVariants } from './merge-equivalent-shapes.js';
 import { mergeTerminalBays } from './merge-terminal-bays.js';
 import { poolSingleTripShapes } from './pool-single-trip-shapes.js';
 
 // WVU PRT publishes route geometry separately from the schedule feed.
 // Keep this agency-specific transform opt-in rather than changing shared shape handling.
-export type GtfsPreprocess = 'nrt-day-night' | 'nrt-cleanup' | 'london-route-names' | 'metrolink-shapes' | 'wvu-prt-shapes' | 'wvu-prt-line' | 'brantford-route-labels' | 'interpolate-untimed-stops' | 'mountain-line-frequency-fix' | 'santafe-pickup-schedule';
+export type GtfsPreprocess = 'nrt-day-night' | 'nrt-cleanup' | 'london-route-names' | 'metrolink-shapes' | 'wvu-prt-shapes' | 'wvu-prt-line' | 'brantford-route-labels' | 'interpolate-untimed-stops' | 'mountain-line-frequency-fix' | 'santafe-pickup-schedule' | 'mnr-bus-pairs';
 
 export interface GtfsTransformOptions {
   agencyId?: string;
@@ -30,6 +31,8 @@ export interface GtfsTransformOptions {
   mergeEquivalentShapeVariants?: boolean;
   /** Also merge equivalent shape variants on non-light-rail routes (SamTrans 120, #775). */
   mergeEquivalentShapeVariantsAllModes?: boolean;
+  /** Merge equivalent shape variants on these route types only (CapMetro buses, CIV-1083). */
+  mergeEquivalentShapeVariantsRouteTypes?: string[];
   /** Keep shapes whole across long point-to-point steps (rural highways, #776). Read at parse time. */
   keepLongShapeJumps?: boolean;
   /** Leave shapes flagged for clustered jumps unrepaired (Streamline Goldline, #433). Read at parse time. */
@@ -144,6 +147,11 @@ export function normalizeGtfs(
     gtfs = result.gtfs;
     if (result.added > 0) onStatus?.(`Santa Fe Pick-Up: added ${result.added} Saturday-Sunday trips for its published every-15 daytime service (#1076)`);
   }
+  if (options?.preprocess === 'mnr-bus-pairs') {
+    const result = dropMnrExpressBusPairs(gtfs);
+    gtfs = result.gtfs;
+    onStatus?.(`MNR buses: ${result.dropped} express trips left out beside the local that leaves with them (CIV-1086)`);
+  }
   if (options?.preprocess === 'interpolate-untimed-stops') {
     const result = interpolateUntimedStops(gtfs);
     gtfs = result.gtfs;
@@ -154,8 +162,11 @@ export function normalizeGtfs(
   gtfs = bays.gtfs;
   if (bays.mergedTrips > 0) onStatus?.(`Terminal bays: ${bays.mergedTrips} trips of ${bays.mergedPatterns} pattern(s) end at the other bay of their terminal (#754)`);
   gtfs = synthesizeTripHeadsigns(gtfs);
-  if (options?.mergeEquivalentShapeVariants || options?.mergeEquivalentShapeVariantsAllModes) {
-    const merged = mergeEquivalentShapeVariants(gtfs, { allModes: options.mergeEquivalentShapeVariantsAllModes === true });
+  if (options?.mergeEquivalentShapeVariants || options?.mergeEquivalentShapeVariantsAllModes || options?.mergeEquivalentShapeVariantsRouteTypes) {
+    const merged = mergeEquivalentShapeVariants(gtfs, {
+      allModes: options.mergeEquivalentShapeVariantsAllModes === true,
+      ...(options.mergeEquivalentShapeVariantsRouteTypes ? { routeTypes: options.mergeEquivalentShapeVariantsRouteTypes } : {}),
+    });
     gtfs = merged.gtfs;
     if (merged.mergedTrips > 0) {
       onStatus?.(

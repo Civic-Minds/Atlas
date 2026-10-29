@@ -8,8 +8,8 @@ import { sectionRuns } from '../../src/utils/sectionColours';
 // per-stop pool skips those times, so such a stop read the drawn shape's own arrivals alone and
 // its every-gap grade dragged the route tier (RFTA L Sunday: the terminal graded on one shape's
 // hourly arrivals while all 37 trips end there every 30; LA Metro 28: Division 13 layover and
-// Century City graded 60 on one shape while the next stop grades 30). It keeps its stop value and
-// gets no grade.
+// Century City graded 60 on one shape while the next stop grades 30). It gets no grade, and since
+// CIV-1071 no stop value either: its times are arrivals, not departures.
 
 const hm = (m: number) => `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}:00`;
 const every = (from: number, to: number, step: number) => { const out: number[] = []; for (let t = from; t <= to; t += step) out.push(t); return out; };
@@ -74,14 +74,14 @@ describe('drop-off-only stops are not graded (#879)', () => {
   // A hourly 06:00-22:00, B the same hourly offset by 30: pooled, a bus every 30 at every stop.
   const a = every(360, 1320, 60); const b = a.map(t => t + 30);
 
-  it('a terminal that only drops off keeps its value and gets no grade; the tier reads the other stops', async () => {
+  it('a terminal that only drops off gets no value and no grade; the tier reads the other stops', async () => {
     const line = await weekdayLine(await feed({ a, b, dropOffOnly: ['s8'] }));
     expect(line.tier).toBe('30');
     expect(line.headway).toBe(30);
     expect(line.stopTiers.s8).toBeUndefined();
     expect(new Set(Object.values(line.stopTiers))).toEqual(new Set(['30']));
-    // The stop card still shows the terminal's own value.
-    expect(line.stopHeadways.s8).toBeDefined();
+    // No value from its arrivals (CIV-1071: drop-off-only times are not departures).
+    expect(line.stopHeadways.s8).toBeUndefined();
   });
 
   it('a stop that only some trips drop off at is still graded', async () => {

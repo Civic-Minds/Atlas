@@ -12,7 +12,7 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { parseGtfsZip } from '../pipeline/parseGtfs.js';
-import { detectReferenceDate } from '../pipeline/transit-calendar.js';
+import { readWeekOf } from '../pipeline/readWeek.js';
 import { computeRawDepartures } from '../pipeline/transit-phase1.js';
 import { TIME_PERIODS } from '../shared/config.js';
 
@@ -153,8 +153,10 @@ async function auditAgency(agency: Agency, selected: ReturnType<typeof chooseRou
   const publishedArtifact = await fetchJson<{ features: JsonFeature[] }>(`${ARTIFACT_ORIGIN}/${agency.slug}.json`);
   const buffer = await fetchBuffer(agency.feedUrl || agency.mdbFeedUrl || '');
   const gtfs = await parseGtfsZip(buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength) as ArrayBuffer);
-  const refDate = detectReferenceDate(gtfs.calendar ?? [], gtfs.calendarDates ?? [], gtfs.trips ?? []);
-  const raw = computeRawDepartures(gtfs, refDate).filter(item => item.day === 'Wednesday');
+  // CIV-1101: the pipeline's own week (readWeekOf), read through that week's calendar rows.
+  const week = readWeekOf(gtfs);
+  const refDate = week.referenceDate;
+  const raw = computeRawDepartures({ ...gtfs, calendar: week.calendar, calendarDates: week.calendarDates }, refDate).filter(item => item.day === 'Wednesday');
   const freshFeatures = freshArtifact.features;
   const routeMap = new Map((gtfs.routes ?? []).map(route => [route.route_id, route]));
 

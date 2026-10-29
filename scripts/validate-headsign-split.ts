@@ -10,7 +10,8 @@ import { readFileSync } from 'fs';
 import { resolve } from 'path';
 import { parseGtfsZip } from '../pipeline/parseGtfs.js';
 import { processGtfsBuffer } from '../pipeline/process-core.js';
-import { detectReferenceDate, getActiveServiceIds } from '../pipeline/transit-calendar.js';
+import { getActiveServiceIds } from '../pipeline/transit-calendar.js';
+import { readWeekOf } from '../pipeline/readWeek.js';
 import { filterGtfsByRouteTypes } from '../pipeline/filterGtfs.js';
 
 interface AgencyEntry {
@@ -37,8 +38,9 @@ function analyzeHeadsignSplit(gtfs: Awaited<ReturnType<typeof parseGtfsZip>>, la
   const trips = gtfs.trips ?? [];
   const routeById = new Map(routes.map(r => [r.route_id, r]));
 
-  const refDate = detectReferenceDate(gtfs.calendar ?? [], gtfs.calendarDates, trips);
-  const weekdayIds = getActiveServiceIds(gtfs.calendar ?? [], gtfs.calendarDates ?? [], 'Monday', refDate);
+  // CIV-1101: the pipeline's own week (readWeekOf).
+  const week = readWeekOf({ ...gtfs, trips });
+  const weekdayIds = getActiveServiceIds(week.calendar, week.calendarDates, 'Monday', week.referenceDate);
 
   const activeTrips = trips.filter(t => weekdayIds.has(t.service_id));
   const missingDir = activeTrips.filter(t => !t.direction_id?.trim()).length;

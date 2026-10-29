@@ -58,6 +58,7 @@ import {
 } from './countryLaunchGate.js';
 import { buildHiddenRoutesForAgency, mergeHiddenRoutes, type HiddenRoutesFile, type HiddenRouteRecord } from './hiddenRoutes.js';
 import type { FeedQuality } from '../shared/feedQuality.js';
+import { historyHeadlineWins } from './historyHeadlinePick.js';
 import { historyRouteKey } from './historyRouteKey.js';
 import { baselineFingerprint, buildSidecar, buildV2Routes, buildV2RoutesMerged, fingerprintChanged, fingerprintOf, historyV2Enabled, r2ArchiveSink, splitFeaturesBySource, writeSidecar, type LatestRouteEntry, type V2FeedPart } from './historyV2.js';
 import { readFeedEvidence } from './historyWeekend.js';
@@ -167,7 +168,8 @@ async function writeHistorySnapshot(slug: string, geojson: string, feedExpiry: s
     const t = p.tier != null ? String(p.tier) : null;
     const ln = p.routeLongName ? String(p.routeLongName) : undefined;
     const byp = p.headwayByPeriod as HeadwayByPeriod | undefined;
-    if (!current[sn] || h < current[sn].headway) {
+    // CIV-1081: a feature with period values beats one with none (historyHeadlinePick.ts).
+    if (historyHeadlineWins({ headway: h, headwayByPeriod: byp }, current[sn])) {
       current[sn] = {
         headway: h, tier: t,
         routeLongName: ln ?? current[sn]?.routeLongName,
@@ -325,6 +327,7 @@ interface AgencyEntry {
   skipLetterSuffixMerge?: boolean;
   mergeEquivalentShapeVariants?: boolean;
   mergeEquivalentShapeVariantsAllModes?: boolean;
+  mergeEquivalentShapeVariantsRouteTypes?: string[];
   keepLongShapeJumps?: boolean;
   skipClusteredJumpRepair?: boolean;
   poolSingleTripShapes?: boolean;
@@ -516,7 +519,8 @@ async function refreshAgency(
   // CIV-1011 safeguard: when Atlas first obtained this file. A new version or expiry is obtained
   // today; an unchanged one keeps its recorded date (older records: the last refresh that processed it).
   const newFile = (peekedVersion ?? null) !== (agency.lastFeedVersion ?? null) || (peekedExpiry ?? null) !== (agency.lastPeekedExpiry ?? agency.lastFeedExpiry ?? null);
-  const feedObtainedAt = newFile ? today : agency.feedObtainedAt ?? agency.lastRefreshedAt?.replace(/-/g, '') ?? null;
+  // The run date in the pipeline's time zone, as the picker's anchor reads it (CIV-1101), not UTC `today`.
+  const feedObtainedAt = newFile ? pipelineRunDateYmd() : agency.feedObtainedAt ?? agency.lastRefreshedAt?.replace(/-/g, '') ?? null;
   // CIV-1011 stage 4: the week the map reads moves with the run date, so an unchanged zip whose
   // picked week moved is reprocessed (the old picker's kill switch leaves the check as it was).
   const serviceWeek = process.env.ATLAS_LEGACY_REFERENCE_DATE === '1' ? null : await serviceWeekKey(buf);
