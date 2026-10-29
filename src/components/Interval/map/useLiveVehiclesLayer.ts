@@ -197,7 +197,8 @@ export function useLiveVehiclesLayer(
         raf = 0;
         const deck = deckOverlayRef.current;
         if (!deck) return hide();
-        const info = deck.pickObject({ x: e.point.x, y: e.point.y, radius: 16, layerIds: ['vehicles-dots'] });
+        // The hover tip shows within the same reach as a click, so a tip never shows where a click opens nothing (CIV-1117).
+        const info = deck.pickObject({ x: e.point.x, y: e.point.y, radius: LIVE_VEHICLE_PICK_RADIUS_PX, layerIds: ['vehicles-dots'] });
         const html = info?.object ? vehicleTooltipHtml(info.object as LiveVehicle, colorMode) : null;
         if (html) {
           tip.innerHTML = html;

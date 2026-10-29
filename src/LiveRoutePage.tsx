@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
+import { useLiveAgencyName } from './hooks/useLiveAgencyName';
 import { ATLAS_MODE, FEATURES } from '../shared/config';
 import {
   dateRangeText, freshness, goodDayCounts,
@@ -112,6 +113,7 @@ export const BOUNDARY = liveDrawError;
 
 function AnalysisPage() {
   const { agency = '', route = '' } = useParams();
+  const agencyName = useLiveAgencyName(agency);
   const state = useLiveDashboard(FEATURES.liveReports ? agency : null, route);
   const gaps = useLiveGaps(FEATURES.liveReports ? agency : null, route);
   // No time-of-day toggle: every section shows the whole day; hour charts highlight a period on hover, and sections
@@ -131,10 +133,10 @@ function AnalysisPage() {
   const routeTitle = state.kind === 'done' && state.data.status === 'ready' ? state.data.routeTitle : null;
   useEffect(() => {
     if (!agency || !route) return;
-    applySeoToDocument(document, { title: liveReportTitle(routeTitle || `${agency.toUpperCase()} ${route}`), description: '', canonicalUrl: `${ATLAS_MODE === 'public' ? SITE_URL : window.location.origin}${window.location.pathname}`, noindex: true, matchedPath: window.location.pathname });
-  }, [agency, route, routeTitle]);
+    applySeoToDocument(document, { title: liveReportTitle(routeTitle || `${agencyName} ${route}`), description: '', canonicalUrl: `${ATLAS_MODE === 'public' ? SITE_URL : window.location.origin}${window.location.pathname}`, noindex: true, matchedPath: window.location.pathname });
+  }, [agencyName, route, routeTitle]);
   if (!FEATURES.liveReports) return <LiveOffNotice />;
-  const title = `${agency.toUpperCase()} ${route}`;
+  const title = `${agencyName} ${route}`;
   const back = FEATURES.live ? <ArrowLink href="/apps/live">Open Live</ArrowLink> : null;
   if (state.kind === 'loading') return <PageShell variant="wide"><p className="mt-24 text-sm text-[var(--text-muted)]" aria-busy="true">Loading {title}…</p></PageShell>;
   if (state.kind === 'error') return <EmptyPage title={title} body={state.reason} action={back} />;
