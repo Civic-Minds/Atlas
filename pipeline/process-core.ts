@@ -13,7 +13,7 @@ import { applyAnalysisCriteria, BURST_MAX_SPAN_MINUTES, determineTierWithEdgeGap
 import { calculateCorridors } from './transit-logic.js';
 import { detectReferenceDate, getActiveServiceIds } from './transit-calendar.js';
 import { calendarFromNextServiceDates } from './serviceDates.js';
-import { feedVersionDate, pickRiderWeek, serviceAnchor } from './serviceDays.js';
+import { readWeekOf } from './readWeek.js';
 import { dropOneOffRailTrips } from './oneOffServices.js';
 import { bookingRequiredRouteIds } from './bookedRoutes.js';
 import { DEFAULT_CRITERIA, getTiersForCriteria } from './defaults.js';
@@ -498,9 +498,10 @@ export interface ProcessOptions extends GtfsTransformOptions {
   referenceDate?: string;
   /**
    * Stage 4 of the reference-date plan (CIV-1011): read the week riders face from the run date
-   * (pickRiderWeek, serviceDays.ts) instead of detectReferenceDate. Set by processAgencyFeeds for
+   * (readWeekOf / pickRiderWeek) instead of detectReferenceDate. Set by processAgencyFeeds for
    * the live map; History backfills and direct callers keep the old picker. An explicit
-   * referenceDate and the referenceDateFromRunDate / next-service-dates opt-ins take precedence.
+   * referenceDate takes precedence; the referenceDateFromRunDate and next-service-dates opt-ins
+   * are ignored while it is on (CIV-1101).
    */
   riderWeek?: boolean;
   /** The anchor for riderWeek (YYYYMMDD); serviceAnchor() of the run date when unset. Tests pin it. */
@@ -772,17 +773,16 @@ export async function processGtfsBuffer(
     }
   }
 
-  // Agency opt-in: read the feed as of the run date. NCSU Wolfline (Passio) gives every
-  // service a 2025-2027 calendar.txt period and switches semester and summer timetables only
-  // with calendar_dates removals, so the period midpoint (Jul 2, 2026) always read the summer
-  // timetable and dropped the semester-only routes 40 and 51 (#774).
-  // The feed's own calendar, kept for the expiry below when a feed opts into next service dates.
+  // The feed's own calendar, kept for the expiry below when the week replaces the calendar.
   const feedCalendar = gtfs.calendar;
   const feedCalendarDates = gtfs.calendarDates;
-  // Feed opt-in (an agency's nextServiceDatesFeedUrls): rolling per-day service_ids, read from one
-  // typical real weekday, Saturday and Sunday after the run date instead of one reference date. LA Metro Rail lost
-  // Weekday and Sunday on A, B and D in release-mvf8jscd. See serviceDates.ts.
-  const nextServiceDates = options?.dayTypesFromNextServiceDates
+  // CIV-1101: the live map reads one model, the week riders face (readWeekOf, pickRiderWeek), for
+  // every agency. The run-date and next-service-dates opt-ins below are read only by the old
+  // picker: the kill switch (ATLAS_LEGACY_REFERENCE_DATE=1), History backfills and direct callers.
+  const useRiderWeek = !!options?.riderWeek && !options.referenceDate;
+  // Old picker, feed opt-in (an agency's nextServiceDatesFeedUrls): rolling per-day service_ids, read
+  // from one typical real weekday, Saturday and Sunday after the run date. See serviceDates.ts.
+  const nextServiceDates = !useRiderWeek && options?.dayTypesFromNextServiceDates
     ? calendarFromNextServiceDates(gtfs.calendar ?? [], gtfs.calendarDates ?? [], gtfs.trips ?? [], runDateYmd(), {
       skipWeekendEvents: options?.nextServiceDatesSkipWeekendEvents,
     })
@@ -792,18 +792,10 @@ export async function processGtfsBuffer(
     const { Weekday, Saturday, Sunday } = nextServiceDates.dates;
     onStatus?.(`Next service dates: Weekday ${Weekday}, Saturday ${Saturday}, Sunday ${Sunday}`);
   }
-  // Stage 4 (CIV-1011): the week riders face, from the feed's own calendar files (never the
-  // calendar parseGtfs synthesizes from calendar_dates), written back as that week's calendar so
-  // every reader below (phase 1, corridors, converging origins, part-week counts) reads it.
-  const riderWeek = options?.riderWeek && !nextServiceDates && !options.referenceDate && !options.referenceDateFromRunDate
-    ? pickRiderWeek({
-      calendar: gtfs.calendarSynthesized ? [] : gtfs.calendar ?? [],
-      calendarDates: gtfs.calendarDates ?? [],
-      trips: gtfs.trips ?? [],
-      routes: gtfs.routes ?? [],
-      anchor: options.serviceAnchor ?? serviceAnchor(),
-      fileDate: [options.fileDate, feedVersionDate(gtfs.feedInfo?.[0]?.feed_version)].filter((d): d is string => !!d && /^\d{8}$/.test(d)).sort()[0] ?? null,
-    })
+  // Stage 4 (CIV-1011): the week riders face, written back as that week's calendar so every reader
+  // below (phase 1, corridors, converging origins, part-week counts) reads it.
+  const riderWeek = useRiderWeek
+    ? readWeekOf(gtfs, { anchor: options!.serviceAnchor, fileDate: options!.fileDate, legacy: false }).riderWeek
     : null;
   // CIV-1076: routes with trips in the file but none in the read week, and the date each runs again.
   const resumingRoutes = riderWeek
