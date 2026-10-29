@@ -191,9 +191,27 @@ export function trunkSparklineByHour(
   const out: Record<number, number | null> = {};
   for (const h of hours) {
     const pk = periodKeyForHour(h);
-    out[h] = pk && (!hourly || branches.some(b => hourHasService(b, h))) ? groupTrunkHeadway(branches, pk) : null;
+    const trunk = pk && (!hourly || branches.some(b => hourHasService(b, h))) ? groupTrunkHeadway(branches, pk) : null;
+    out[h] = trunk == null ? null : thinHourHeadway(branches, h, trunk) ?? trunk;
   }
   return out;
+}
+
+/**
+ * The hour's own wait from the branches' departures, when the hour is thin and the period's value would overstate it
+ * (CIV-1106): TTC 504 eastbound at 3 AM has one or two streetcars, not "every 10". Thin means every branch has no
+ * hourly headway or at most three departures in the hour; the hour's own wait counts only when it is at least twice
+ * the period's, so a busy hour, or one a few minutes off its period, keeps the period's value. Null otherwise, and on
+ * data without the departure counts (CIV-1010).
+ */
+function thinHourHeadway(branches: ShapeProperties[], hour: number, trunk: number): number | null {
+  const counted = branches.filter(b => !isLimitedBranch(b));
+  if (counted.length === 0 || !counted.every(b => b.departuresByHour)) return null;
+  if (!counted.every(b => b.headwayByHour?.[hour] == null || (b.departuresByHour?.[hour] ?? Infinity) <= 3)) return null;
+  const departures = counted.reduce((sum, b) => sum + (b.departuresByHour?.[hour] ?? 0), 0);
+  if (departures === 0) return null;
+  const own = 60 / departures;
+  return own >= 2 * trunk ? Math.round(own) : null;
 }
 
 /**
