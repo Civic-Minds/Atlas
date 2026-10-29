@@ -51,22 +51,20 @@ describe('HeadwaySparkline', () => {
     }
   });
 
-  it('draws the full-day period bands unnamed, and names the hovered period above the bars as the card does (CIV-1094)', () => {
+  it('draws the full-day period bands unnamed, right under the title, with the hover band over the bars (CIV-1094)', () => {
     const { container } = render(
       <HeadwaySparkline byHour={{ 6: 30, 12: 20, 18: 25, 21: 20, 24: 45 }} period="all" onPeriodChange={() => {}} expanded />,
     );
     const area = container.querySelector('.cursor-pointer') as HTMLElement;
-    expect(area).toHaveClass('pt-5');
+    expect(area).toHaveClass('pt-1');
     const bands = screen.getByTestId('full-day-period-bands');
-    expect(bands).toHaveClass('top-5', 'bottom-0');
+    expect(bands).toHaveClass('top-1', 'bottom-0');
     expect(bands.children).toHaveLength(6);
     expect(bands).toHaveTextContent('');
-    expect(screen.queryByTestId('hovered-period-name')).toBeNull();
     area.getBoundingClientRect = () => ({ left: 0, width: 240, top: 0, height: 48, right: 240, bottom: 48, x: 0, y: 0, toJSON: () => ({}) });
     fireEvent.mouseMove(area, { clientX: ((SPARKLINE_HOURS.indexOf(12) + 0.5) / SPARKLINE_HOURS.length) * 240 });
-    for (const band of screen.getAllByTestId('sparkline-hover-band')) expect(band).toHaveClass('top-5', 'bottom-0');
-    expect(screen.getByTestId('hovered-period-name')).toHaveTextContent('Midday');
-    fireEvent.mouseLeave(area);
+    for (const band of screen.getAllByTestId('sparkline-hover-band')) expect(band).toHaveClass('top-1', 'bottom-0');
+    // The full-day view names the period on each chart's title line instead.
     expect(screen.queryByTestId('hovered-period-name')).toBeNull();
   });
 
@@ -314,7 +312,7 @@ describe('HeadwaySparkline', () => {
     // Each chart shows its own number for that hour above it; a chart with no value there shows nothing.
     const values = within(dialog).getAllByTestId('full-day-chart-value').map(el => el.textContent);
     expect(values).toEqual(['every 25 min', 'about 52 min', 'every 35 min', 'about 50 min']);
-    // The same hour is lit in all four charts, and each names its period, as the card's chart does (CIV-1094).
+    // The same hour is lit in all four charts, and each title line names its period, as the card's chart does (CIV-1094).
     expect(dialog.querySelectorAll('[data-testid="sparkline-hover-column"]')).toHaveLength(2);
     expect(within(dialog).getAllByTestId('hovered-period-name').map(el => el.textContent)).toEqual(['PM peak', 'PM peak', 'PM peak', 'PM peak']);
     const lit = (strip: HTMLElement) => within(strip).getAllByTestId('trip-time-bar').filter(bar => bar.className.includes('opacity-75') || bar.className.includes('opacity-100'));

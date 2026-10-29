@@ -241,8 +241,8 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
   const hoverPeriod = sharedMode ? (sharedHour != null ? HOUR_TO_PERIOD[sharedHour] ?? null : null) : hoveredPeriod;
   const litPeriod = hourChartLitPeriod(hoverPeriod, activePeriodKey, displayedByHour, HOURS);
   const bands = litPeriod ? PERIOD_BANDS[litPeriod] : null;
-  // The hovered period's name, as on the route card's chart; the card also names its selected period (CIV-1094).
-  const activeLabelKey = (expanded ? hoverPeriod : hoveredPeriod ?? (period && period !== 'all' ? period : null)) as TimePeriod | null;
+  // The full-day view names the hovered period on each chart's title line (CIV-1094), so only the card's chart names it here.
+  const activeLabelKey = (expanded ? null : hoveredPeriod ?? (period && period !== 'all' ? period : null)) as TimePeriod | null;
   const legendSource = legendStackedByHour ?? stackedByHour;
   const stackedLegend = legendSource
     ? Array.from(new Map(
@@ -267,21 +267,21 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
     <div className={`relative ${sharedMode ? '' : expanded ? 'mt-2 mb-4' : 'mt-6 mb-4'}`}>
       {allowExpand && !expanded && <ExpandButton label="Expand schedule" onClick={() => setIsExpanded(true)} />}
       <div
-        className={`relative pt-5 ${interactive ? 'cursor-pointer select-none' : ''}`}
+        className={`relative ${expanded ? 'pt-1' : 'pt-5'} ${interactive ? 'cursor-pointer select-none' : ''}`}
         onClick={handleClick}
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
         >
-        {expanded && <FullDayPeriodBands className="inset-x-0 top-5 bottom-0" />}
-        {yAxis && <AxisOverlay ticks={yAxis} height={H} className="top-5" />}
-        <HoveredPeriodName period={activeLabelKey} className={allowExpand && !expanded ? 'right-7' : 'right-0'} />
+        {expanded && <FullDayPeriodBands className="inset-x-0 top-1 bottom-0" />}
+        {yAxis && <AxisOverlay ticks={yAxis} height={H} className="top-1" />}
+        <HoveredPeriodName period={activeLabelKey} className={`absolute top-0 ${allowExpand ? 'right-7' : 'right-0'}`} />
         {/* Hover region highlight — visible on light bg. It starts below the label row
             (the top padding), so the period label sits above it, not inside it. */}
         {bands?.map((band, i) => (
           <div
             key={i}
             data-testid="sparkline-hover-band"
-            className="absolute top-5 bottom-0 rounded-sm pointer-events-none"
+            className={`absolute ${expanded ? 'top-1' : 'top-5'} bottom-0 rounded-sm pointer-events-none`}
             style={{
               left: `${band.left * 100}%`,
               width: `${band.width * 100}%`,
@@ -414,12 +414,16 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
             <>
                 {(() => {
                   const loop = gridBlocks.some(option => option.tripTime?.loop);
-                  // Each chart's title sits right above it, with its number for the hovered hour at the other end of
-                  // the same line, so nothing jumps and no line is left empty.
+                  // Each chart's title sits right above it, with the hovered hour's period name (as on the card's chart)
+                  // and its number at the other end of the same line, so nothing jumps and no line is left empty.
+                  const modalPeriod = modalHour != null ? (HOUR_TO_PERIOD[modalHour] as TimePeriod | undefined) ?? null : null;
                   const titleRow = (title: string, value: string, testId: string) => (
                     <div className={`flex items-baseline justify-between gap-2 leading-4 ${CHART_HEADING} ${HEADING_GAP}`} data-testid={testId}>
                       <span>{title}</span>
-                      <span className="text-[var(--text-muted)]" data-testid="full-day-chart-value" aria-hidden="true">{value}</span>
+                      <span className="flex items-baseline gap-2" aria-hidden="true">
+                        <HoveredPeriodName period={modalPeriod} />
+                        <span className="text-[var(--text-muted)]" data-testid="full-day-chart-value">{value}</span>
+                      </span>
                     </div>
                   );
                   const frequencyCell = (option: typeof gridBlocks[number]) => {
