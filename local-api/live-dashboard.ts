@@ -6,6 +6,7 @@
 import { readFile, readdir } from 'fs/promises';
 import { resolve } from 'path';
 import { getPolledRoute, hasLiveAnalysis } from '../shared/livePollingConfig.js';
+import { liveAgencyName } from './agencyName.js';
 import { LIVE_DASHBOARD_NOTES, LIVE_DASHBOARD_UNCERTAIN_START, dashboardUnavailable, qualityHold, type LiveDashboardResponse, type LiveV3 } from '../shared/liveDashboard.js';
 
 function json(body: LiveDashboardResponse, status = 200): Response {
@@ -22,7 +23,7 @@ async function handler(req: Request): Promise<Response> {
   // listing reaches the filesystem, never the request's text.
   const cfg = getPolledRoute(agency, route);
   const listed = (await readdir(dir).catch(() => [] as string[])).find(f => f === `${agency.toLowerCase()}-${route}-segments.json`);
-  if (!cfg && !listed) return json({ status: 'unknown_route', reason: `Live has no analysis for ${agency.toUpperCase()} route ${route}. Build it with "npm run live:analyze -- ${route}".` }, 404);
+  if (!cfg && !listed) return json({ status: 'unknown_route', reason: `Live has no analysis for ${await liveAgencyName(agency)} route ${route}. Build it with "npm run live:analyze -- ${route}".` }, 404);
   const slug = cfg?.slug ?? agency.toLowerCase();
   const name = cfg?.displayRouteShortName ?? route;
   const unavailable = dashboardUnavailable(slug, name, !!listed || hasLiveAnalysis(slug, name));
@@ -34,7 +35,7 @@ async function handler(req: Request): Promise<Response> {
       return json({ status: 'no_analysis', reason: `The analysis file for ${name} is from an older version. Rebuild it with "npm run live:analyze -- ${name}".` });
     }
     const quality = qualityHold(data.v3);
-    if (quality) return json({ status: 'held', reason: `${slug.toUpperCase()} ${name} is held back: ${quality.charAt(0).toLowerCase()}${quality.slice(1)}` });
+    if (quality) return json({ status: 'held', reason: `${await liveAgencyName(slug)} ${name} is held back: ${quality.charAt(0).toLowerCase()}${quality.slice(1)}` });
     const routeTitle = await readFile(resolve(dir, `${slug}-agency.json`), 'utf8')
       .then(t => (JSON.parse(t) as { routes?: Array<{ route: string; titleLabel?: string }> }).routes?.find(r => r.route === name)?.titleLabel ?? null)
       .catch(() => null);
