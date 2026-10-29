@@ -46,3 +46,12 @@ export function liveGapsDataUrl(agency: string, route: string): string {
 
 /** R2 answers a missing file with an error page, not JSON: read that as "no such route", the API's own answer. */
 export const liveDataMissing = (r: Response) => fromR2 && !r.ok;
+
+/**
+ * A Live page's route title in parts, for RouteTitleName (CIV-1128): the analysis file's title ("510 Spadina") starts
+ * with the route's number; the rest is its name. A title that doesn't is shown whole.
+ */
+export function liveRouteTitleLabel(title: string, route: string): { primary: string; secondary?: string; text: string } {
+  const rest = title.startsWith(`${route} `) ? title.slice(route.length + 1).trim() : '';
+  return rest ? { primary: route, secondary: rest, text: `${route} — ${rest}` } : { primary: title, text: title };
+}

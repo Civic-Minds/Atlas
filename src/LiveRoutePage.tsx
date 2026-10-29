@@ -8,7 +8,8 @@ import {
 } from '../shared/liveDashboard';
 import { useLiveDashboard, liveToolPath } from './hooks/useLiveDashboard';
 import { useLiveGaps } from './hooks/useLiveGaps';
-import { devOnly, liveReportTitle } from './lib/liveReportData';
+import { devOnly, liveReportTitle, liveRouteTitleLabel } from './lib/liveReportData';
+import { RouteTitleName } from './components/RouteRowName';
 import DevHint from './components/Live/DevHint';
 import { applySeoToDocument } from './lib/seoDom';
 import { SITE_URL } from '../shared/seo';
@@ -152,7 +153,7 @@ function AnalysisPage() {
     <PageShell variant="wide">
       <article className="pb-16 pt-10 sm:pt-14">
         <div className="flex flex-col gap-1 sm:grid sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center sm:gap-x-4">
-          <div className="min-w-0"><PageTitle>{data.routeTitle || title}</PageTitle></div>
+          <div className="min-w-0"><PageTitle>{data.routeTitle ? <RouteTitleName label={liveRouteTitleLabel(data.routeTitle, route)} /> : title}</PageTitle></div>
           <p className="m-0 text-sm text-[var(--text-muted)] sm:col-span-2 sm:row-start-2">
             <RouteSubtitle v3={v3} agency={agency} route={route} />
           </p>
