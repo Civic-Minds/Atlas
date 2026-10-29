@@ -78,7 +78,7 @@ describe('stripSummary', () => {
     const span = stretchSpan(STOPS, { fromStopId: 'S3', toStopId: 'S5' }, 'delaysStart');
     const text = stripSummary(STOPS, 'delay', 'Southbound', span);
     expect(text).toContain('12 stops');
-    expect(text).toContain('2 on time, 4 1–3 min behind, 6 3+ min behind');
+    expect(text).toContain('2 on time, 4 1–3 min, 6 3+ min behind');
     expect(text).toContain('Delays start between Spadina Ave at Street 3 South Side and Spadina Ave at Street 5 South Side');
   });
 });
