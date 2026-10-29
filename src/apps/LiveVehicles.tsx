@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useLayoutEffect, useMemo, useCallback, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { CardBackLink } from '../components/CardBack';
 import { Info, Moon, Sun, ChevronRight } from 'lucide-react';
@@ -28,7 +28,7 @@ import { cleanRouteShortName, cleanRouteDisplayName, routeListCompanionName, veh
 import { agencyNames, agencyShortNameBySlug } from '../utils/agencyName';
 import { branchDisplayPeriodHeadway } from '../utils/routeFacts';
 import { periodKeyForHour } from '../../shared/config';
-import { countOf } from '../../shared/overflowText';
+import { andOthers, countOf } from '../../shared/overflowText';
 import { inferLiveDirection } from '../utils/liveDirection';
 import { DIRECTION_UNCLEAR, compareLiveRoutes, focusDirectionKey, groupVehiclesByDirection, orderDirectionGroups, riderHeadsign, routeDirectionLabels } from '../utils/liveGrouping';
 import { CardDirectionRow, CardHelpNotice, SidebarCardHeaderBlock, SidebarCardListRows, SidebarCardSection, SidebarCardShell, CARD_LIST_ROUTE, SIDEBAR_CARD_BODY } from '../components/Interval/cardUi';
@@ -662,6 +662,29 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
   const sheetMode = FEATURES.mobileRouteSheet && isPhone && cardOpen;
   const { expanded: sheetExpanded, handle: sheetHandle } = useBottomSheet(cardOpen ? `${selectedRoute}|${cardVehicle?.id ?? ''}|${selectedDirection ?? ''}` : null);
 
+  // CIV-1125 option D: how many vehicle rows fit in the card without it scrolling.
+  const allListed = selectedDirection ? (vehiclesByDirection?.get(selectedDirection) ?? []) : listVehicles;
+  const [fitCount, setFitCount] = useState<number | null>(null);
+  const vehicleListRef = useRef<HTMLDivElement>(null);
+  useEffect(() => { setFitCount(null); }, [selectedRoute, selectedDirection, allListed.length]);
+  useLayoutEffect(() => {
+    const list = vehicleListRef.current;
+    if (!list) return;
+    let scroller: HTMLElement | null = list.parentElement;
+    while (scroller && !/(auto|scroll)/.test(getComputedStyle(scroller).overflowY)) scroller = scroller.parentElement;
+    if (!scroller) return;
+    const overflow = scroller.scrollHeight - scroller.clientHeight;
+    const rows = list.querySelectorAll<HTMLElement>(':scope > button, :scope > div[role]');
+    if (overflow <= 0 || rows.length === 0) return;
+    const rowH = rows[0].getBoundingClientRect().height || 50;
+    const current = fitCount ?? allListed.length;
+    // Room for the "and N other vehicles" line too.
+    const next = Math.max(1, current - Math.ceil((overflow + 28) / rowH));
+    if (next < current) setFitCount(next);
+  });
+  const shownVehicles = fitCount != null && fitCount < allListed.length ? allListed.slice(0, fitCount) : allListed;
+  const hiddenVehicles = allListed.length - shownVehicles.length;
+
   if (!active) return null;
 
   const totalVehicles = allVehicles.length;
@@ -751,10 +774,8 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
             />
           ))
         ) : (
-          (selectedDirection
-            ? (vehiclesByDirection?.get(selectedDirection) ?? [])
-            : listVehicles
-          ).map((v, i) => {
+          <div ref={vehicleListRef} className="space-y-2">
+          {shownVehicles.map((v, i) => {
             const colors = getVehicleColors(v.status, colorMode);
             return (
               // The route card's direction row (CIV-1117 preview), with the vehicle's delay at the right end.
@@ -785,7 +806,10 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                 ) : undefined}
               />
             );
-          })
+          })}
+          {/* The card never scrolls: at the busiest times it lists as many vehicles as fit and counts the rest (all are on the map). */}
+          {hiddenVehicles > 0 && <p className="text-xs font-bold text-[var(--text-dim)] pt-1">{andOthers(hiddenVehicles, 'vehicle')}</p>}
+          </div>
         )}
       </SidebarCardSection>
     </SidebarCardShell>
