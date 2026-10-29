@@ -762,19 +762,25 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                 key={v.id}
                 label={vehicleRowName(v, i, selectedRouteModeWord)}
                 singleLine
-                subLabel={v.speedKmh != null ? `${v.speedKmh} km/h` : undefined}
+
                 onClick={() => {
                   setVehicleFly({ lat: v.lat, lon: v.lon, ts: Date.now() });
                   setFocusedVehicle({ id: v.id, lat: v.lat, lon: v.lon, ts: Date.now() });
                   setVehicleCard({ routeKey: buildRouteKey(v.agencySlug, v.routeShortName), id: v.id });
                 }}
                 // No status at all where the feed gives none (TTC streetcars), not an empty field (CIV-1043).
-                value={delayLabel(v) ? (
-                  <span
-                    style={{ color: v.status === 'no_data' ? undefined : colors.border }}
-                    className={`text-xs font-black shrink-0 whitespace-nowrap ${v.status === 'no_data' ? 'text-[var(--text-muted)]' : ''}`}
-                  >
-                    {delayLabel(v)}
+                // One line per vehicle (CIV-1125 option B): the speed beside the delay, at the right.
+                value={(v.speedKmh != null || delayLabel(v)) ? (
+                  <span className="inline-flex items-center gap-2 shrink-0 whitespace-nowrap">
+                    {v.speedKmh != null && <span className="text-xs font-bold text-[var(--text-dim)]">{v.speedKmh} km/h</span>}
+                    {delayLabel(v) && (
+                      <span
+                        style={{ color: v.status === 'no_data' ? undefined : colors.border }}
+                        className={`text-xs font-black ${v.status === 'no_data' ? 'text-[var(--text-muted)]' : ''}`}
+                      >
+                        {delayLabel(v)}
+                      </span>
+                    )}
                   </span>
                 ) : undefined}
               />
