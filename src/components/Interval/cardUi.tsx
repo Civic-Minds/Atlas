@@ -741,15 +741,18 @@ export function CardHelpNotice({
   message,
   onLearnMore,
   actionLabel = 'Learn more',
+  className = '',
 }: {
   message: string;
   /** Without it the notice is the sentence alone, no link. */
   onLearnMore?: () => void;
   actionLabel?: string;
+  /** Spacing from the caller (mt-1 under a card title). */
+  className?: string;
 }) {
   return (
     // The link runs on right after the sentence's last word, as text, not in a column beside it (CIV-920).
-    <p className={`${CARD_NOTICE} min-w-0 whitespace-normal break-words leading-relaxed`}>
+    <p className={`${CARD_NOTICE} min-w-0 whitespace-normal break-words leading-relaxed ${className}`.trim()}>
       {message}
       {onLearnMore && (
         <>
