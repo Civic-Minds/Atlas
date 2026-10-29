@@ -887,10 +887,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                   ? [errorGroups[0].agencyNames[0], liveFeedErrorText(errorGroups[0].message, errorGroups[0].stuck)]
                   : [LIVE_FEEDS_UNAVAILABLE, allStuck ? LIVE_FEEDS_DOWN_STUCK : LIVE_FEEDS_DOWN];
                 return (
-                  <>
-                    <PanelEmpty kind="error">{title}</PanelEmpty>
-                    <div className="px-4 pb-3 -mt-2"><CardHelpNotice message={message} /></div>
-                  </>
+                  <PanelEmpty kind="error" detail={<CardHelpNotice message={message} />}>{title}</PanelEmpty>
                 );
               })()
             ) : displayedRouteGroups.length === 0 && routeGroups.length === 0 ? (
@@ -898,8 +895,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                 <PanelEmpty>{LIVE_NO_ROUTE_MATCHES}</PanelEmpty>
               ) : (
                 <>
-                  <PanelEmpty>{LIVE_NOTHING_ACTIVE}</PanelEmpty>
-                  <div className="px-4 pb-3 -mt-2"><CardHelpNotice message={LIVE_NOTHING_ACTIVE_HINT} /></div>
+                  <PanelEmpty detail={<CardHelpNotice message={LIVE_NOTHING_ACTIVE_HINT} />}>{LIVE_NOTHING_ACTIVE}</PanelEmpty>
                   {monitoredRoutes.length > 0 && (
                     <>
                       <div className={`${PANEL_SECTION_HEAD} border-t border-[var(--border-primary)]`}>
