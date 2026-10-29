@@ -11,6 +11,7 @@ import PillGroup, { PILL_ROW } from './components/ui/PillGroup';
 import { shortStopName } from './utils/stopLabel';
 import { useMediaQuery } from './hooks/useMediaQuery';
 import { TILE } from './pageStyles';
+import { KPI_TILE } from './components/Live/kpiTileStyle';
 import ArrowLink from './components/ui/ArrowLink';
 import Section from './components/Live/sections/Section';
 import LateByHourSection from './components/Live/sections/LateByHourSection';
@@ -64,12 +65,12 @@ export function KpiRow({ v3 }: { v3: LiveV3 }) {
 export function KpiTile({ k, className = '', math, bare = false, caption = false }: { k: Kpi; className?: string; /** With `bare`: still show the one caption line under the figure. */ caption?: boolean; /** A line that explains how the figure is worked out (a threshold or a rule), under the caption. */ math?: string; /** The figure and its change only, no caption: where the explanation is shown once elsewhere. */ bare?: boolean }) {
   const faded = k.n < MIN_N;
   return (
-    <li className={`${TILE} flex list-none flex-col px-2.5 ${faded ? 'opacity-60' : ''} ${className}`.trim()} title={`${bare ? `${k.sub}. ` : ''}${k.n.toLocaleString()} ${k.unit} this week${k.nLastWeek != null ? `, ${k.nLastWeek.toLocaleString()} last week` : ''}${faded ? '. Few measurements: treat with care.' : ''}`}>
-      <div className="text-sm font-bold text-[var(--text-muted)]">{k.label}</div>
-      <div className="mt-1 text-3xl font-black tracking-tight">{k.value}</div>
+    <li className={`${KPI_TILE.frame} ${faded ? 'opacity-60' : ''} ${className}`.trim()} title={`${bare ? `${k.sub}. ` : ''}${k.n.toLocaleString()} ${k.unit} this week${k.nLastWeek != null ? `, ${k.nLastWeek.toLocaleString()} last week` : ''}${faded ? '. Few measurements: treat with care.' : ''}`}>
+      <div className={KPI_TILE.label}>{k.label}</div>
+      <div className={KPI_TILE.value}>{k.value}</div>
       {(!bare || caption) && <div className={`${bare ? 'mt-0 leading-3' : 'mt-0.5 leading-4'} text-xs text-[var(--text-dim)]`}>{k.sub}</div>}
-      {math && !bare && <div className="mt-0.5 text-xs leading-4 text-[var(--text-dim)]">{math}</div>}
-      {k.scope && !bare && <div className="mt-0.5 text-xs leading-4 text-[var(--text-dim)]">{k.scope}</div>}
+      {math && !bare && <div className={KPI_TILE.line}>{math}</div>}
+      {k.scope && !bare && <div className={KPI_TILE.line}>{k.scope}</div>}
       <div className={`mt-auto ${bare && caption ? 'pt-0.5' : 'pt-2'}`}><Delta k={k} /></div>
     </li>
   );
