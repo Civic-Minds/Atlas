@@ -1,31 +1,25 @@
 import { fireEvent, render, screen } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
-import MapErrorsPill from '../MapErrorsPill';
-import { LOCATION_DENIED, MAP_ERRORS_PILL, ON_DEMAND_AREAS_FAILED } from '../../../content/noticeCopy';
+import { describe, expect, it, vi } from 'vitest';
+import { MapErrorsPanel, MapErrorsPill } from '../MapErrorsPill';
+import { LOCATION_DENIED, MAP_ERRORS_PILL, MAP_ERRORS_TITLE, ON_DEMAND_AREAS_FAILED } from '../../../content/noticeCopy';
 
 describe('MapErrorsPill (CIV-1057, phones)', () => {
-  it('shows one "Error" pill for any number of errors, and nothing for none', () => {
-    const { rerender, container } = render(<MapErrorsPill messages={[ON_DEMAND_AREAS_FAILED]} />);
-    expect(screen.getByRole('button', { name: MAP_ERRORS_PILL })).toBeTruthy();
-    expect(container.textContent).toBe(MAP_ERRORS_PILL);
-    rerender(<MapErrorsPill messages={[ON_DEMAND_AREAS_FAILED, LOCATION_DENIED]} />);
-    expect(screen.getAllByRole('button')).toHaveLength(1);
-    rerender(<MapErrorsPill messages={[]} />);
-    expect(container.textContent).toBe('');
+  it('is one "Error" pill that says whether its card is open and toggles it', () => {
+    const onToggle = vi.fn();
+    const { rerender } = render(<MapErrorsPill open={false} onToggle={onToggle} />);
+    const pill = screen.getByRole('button', { name: MAP_ERRORS_PILL });
+    expect(pill.getAttribute('aria-expanded')).toBe('false');
+    fireEvent.click(pill);
+    expect(onToggle).toHaveBeenCalledTimes(1);
+    rerender(<MapErrorsPill open onToggle={onToggle} />);
+    expect(screen.getByRole('button', { name: MAP_ERRORS_PILL }).getAttribute('aria-expanded')).toBe('true');
   });
 
-  it('lists the messages on a tap and keeps them until it closes', () => {
-    const { rerender, container } = render(<MapErrorsPill messages={[ON_DEMAND_AREAS_FAILED, LOCATION_DENIED]} />);
-    const pill = screen.getByRole('button', { name: MAP_ERRORS_PILL });
-    fireEvent.click(pill);
-    expect(pill.getAttribute('aria-expanded')).toBe('true');
-    expect(container.textContent).toContain(ON_DEMAND_AREAS_FAILED);
-    expect(container.textContent).toContain(LOCATION_DENIED);
-    // The location hint times out while the list is open: the list keeps it.
-    rerender(<MapErrorsPill messages={[ON_DEMAND_AREAS_FAILED]} />);
-    expect(container.textContent).toContain(LOCATION_DENIED);
-    fireEvent.pointerDown(document.body);
-    expect(container.textContent).not.toContain(LOCATION_DENIED);
-    expect(screen.getByRole('button', { name: MAP_ERRORS_PILL }).getAttribute('aria-expanded')).toBe('false');
+  it('opens a card that lists every message under its title', () => {
+    render(<MapErrorsPanel messages={[ON_DEMAND_AREAS_FAILED, LOCATION_DENIED]} />);
+    const panel = screen.getByTestId('map-errors-panel');
+    expect(panel.textContent).toContain(MAP_ERRORS_TITLE);
+    expect(panel.textContent).toContain(ON_DEMAND_AREAS_FAILED);
+    expect(panel.textContent).toContain(LOCATION_DENIED);
   });
 });

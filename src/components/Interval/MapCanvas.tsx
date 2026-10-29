@@ -34,7 +34,6 @@ import { computeFrequencySegmentOverlay } from '../../utils/frequencySegments';
 import { buildSharedHoverSegments } from '../../utils/sharedHoverSegments';
 import { dedupeMapContextByDisplay, getMapContextAgenciesFromFeatures, isMapContextOutsideClick, type MapContextAgency } from '../../utils/mapContext';
 import { MapContextPanel } from './MapContextPanel';
-import MapErrorsPill from './MapErrorsPill';
 import MapExportDialog from '../MapExportDialog';
 import { waitForMapExportReady } from '../../utils/mapExport';
 import { describeMapExport, type MapExportBox, type MapExportDetails, type MapExportView, type RenderedRouteSample } from '../../utils/mapExportDetails';
@@ -167,6 +166,8 @@ interface MapCanvasProps {
   onMapContextRouteCountChange?: (count: number) => void;
   /** Route keys drawn in view, counted the same way as the route-count badge (compare mode labels). */
   onRenderedRouteKeysChange?: (keys: Set<string>) => void;
+  /** Phones (CIV-1057): the map's error notices, for the footer row's "Error" pill. */
+  onPhoneErrorsChange?: (messages: string[]) => void;
   day?: DayType;
   routesForStop?: {
     slug: string;
@@ -262,6 +263,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   onMapContextAgencyCountChange,
   onMapContextRouteCountChange,
   onRenderedRouteKeysChange,
+  onPhoneErrorsChange,
   day = 'Weekday',
   routesForStop,
   showRouteLayers = true,
@@ -480,6 +482,14 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   // running are hidden, like fixed routes); ones with no hours on file stay
   // visible but are drawn muted so they never read as confirmed service.
   const onDemandShown = FEATURES.onDemand && viewShowsOnDemand(mapViewKind({ nightServiceView, frequentServiceView, liveRoutesOnly }), selectedModes);
+  // Phones: the error notices go to Interval's footer row as one "Error" pill (CIV-1057).
+  const phoneErrorsKey = isPhone ? JSON.stringify([
+    ...(onDemandStatus === 'error' && onDemandShown ? [ON_DEMAND_AREAS_FAILED] : []),
+    ...(mapHint?.error ? [mapHint.text] : []),
+  ]) : '[]';
+  const phoneErrorsRef = useRef(onPhoneErrorsChange);
+  phoneErrorsRef.current = onPhoneErrorsChange;
+  useEffect(() => { phoneErrorsRef.current?.(JSON.parse(phoneErrorsKey) as string[]); }, [phoneErrorsKey]);
   useReportOnDemandVisible(onDemandShown);
   const onDemandAgencies = useMemo(() => (
     onDemandShown
@@ -1252,17 +1262,11 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
           here with any hint one row above. Phones show every error as one "Error" pill that lists them on a tap, with
           any other hint one row above it. */}
       {isPhone ? (
-        <>
-          <MapErrorsPill messages={[
-            ...(onDemandStatus === 'error' && onDemandShown ? [ON_DEMAND_AREAS_FAILED] : []),
-            ...(mapHint?.error ? [mapHint.text] : []),
-          ]} />
-          {mapHint && !mapHint.error && (
-            <MapNoticePill raised={onDemandStatus === 'error' && onDemandShown} className="px-3 py-1.5 text-xs text-[var(--text-muted)]">
-              {mapHint.text}
-            </MapNoticePill>
-          )}
-        </>
+        mapHint && !mapHint.error && (
+          <MapNoticePill className="px-3 py-1.5 text-xs text-[var(--text-muted)]">
+            {mapHint.text}
+          </MapNoticePill>
+        )
       ) : (
         <>
           {!onDemandNoticeInFooter && onDemandStatus === 'error' && onDemandShown && (
