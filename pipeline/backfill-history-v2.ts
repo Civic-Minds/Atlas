@@ -70,7 +70,7 @@ async function main(): Promise<void> {
         const picked = await readFeedEvidence(buf);
         chosen = chooseReferenceDate(await readRepickRows(buf), picked.refDate);
       }
-      const processed = await processAgencyFeeds(buf, [], { ...agency, supplementalFeedUrls: [] } as any, chosen?.quality.repicked ? { referenceDate: chosen.refDate } : {}, m => process.stdout.write(`  ${m}`));
+      const processed = await processAgencyFeeds(buf, [], { ...agency, supplementalFeedUrls: [] } as any, chosen?.quality.repicked ? { referenceDate: chosen.refDate, legacyReferenceDate: true } : { legacyReferenceDate: true }, m => process.stdout.write(`  ${m}`));
       const evidence = await readFeedEvidence(buf, chosen?.quality.repicked ? { referenceDate: chosen.refDate } : agency.referenceDateFromRunDate ? { referenceDate: pipelineRunDateYmd() } : {});
       const built = buildV2Routes((JSON.parse(processed.geojson) as { features: Array<{ properties?: Record<string, unknown> }> }).features, evidence);
       const sidecar = buildSidecar(slug, periodKey, evidence.refDate, built.routes);

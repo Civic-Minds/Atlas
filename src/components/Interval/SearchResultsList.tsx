@@ -68,6 +68,8 @@ interface SearchResultsListProps {
   onRouteHover?: (key: string | null) => void;
   hasMoreResults?: boolean;
   onShowMoreResults?: () => void;
+  /** Index results for agencies not loaded are still coming: hold "No matches found." until they are in. */
+  searchPending?: boolean;
 }
 
 export const SearchResultsList: React.FC<SearchResultsListProps> = ({
@@ -97,6 +99,7 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({
   onRouteHover,
   hasMoreResults = false,
   onShowMoreResults,
+  searchPending = false,
 }) => {
   const areaBlock = areaResults.length > 0 && onSelectArea ? (
     <SearchSplitList
@@ -238,7 +241,7 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({
   return (
     <div className="-mx-4 mb-4 flex flex-col gap-5">
       {noResults ? (
-        <PanelEmpty>{NO_SEARCH_MATCHES}</PanelEmpty>
+        searchPending ? null : <PanelEmpty>{NO_SEARCH_MATCHES}</PanelEmpty>
       ) : routesFirst ? (
         <>
           {areaBlock}

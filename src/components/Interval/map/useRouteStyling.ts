@@ -347,10 +347,11 @@ export function useRouteStyling(
         let stopFocusWidth: any;
         if (hoveredBranch?.routeKey) {
           // A stop card destination row is hovered (CIV-918): that route and direction stand out, the stop's
-          // other routes fade, and the rest stays dim, as on the route card.
+          // other routes fade, and the rest stays dim, as on the route card. Its route line or a Nearby routes
+          // row: the whole route (CIV-1053).
           const branchMatch: any = ['all',
             routeKeyMatchExpression(hoveredBranch.routeKey),
-            ['==', ['get', 'directionId'], hoveredBranch.directionId],
+            ...(hoveredBranch.directionId != null ? [['==', ['get', 'directionId'], hoveredBranch.directionId]] : []),
             ...(hoveredBranch.headsign ? [['==', ['get', 'headsign'], hoveredBranch.headsign]] : []),
           ];
           stopFocusOpacity = ['case', branchMatch, 1.0, servingMatch, 0.4, DIM_OPACITY];

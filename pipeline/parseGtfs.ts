@@ -614,6 +614,7 @@ export const parseGtfsZip = async (
     if ((!gtfsData.calendar || gtfsData.calendar.length === 0) && gtfsData.calendarDates && gtfsData.calendarDates.length > 0) {
         onStatus?.('Synthesizing calendar from calendar_dates.txt...');
         gtfsData.calendar = synthesizeCalendarFromDates(gtfsData.calendarDates);
+        gtfsData.calendarSynthesized = true;
     }
 
     // If both are missing (or empty after synthesis), that's a problem.

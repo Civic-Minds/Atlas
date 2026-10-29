@@ -51,6 +51,7 @@ interface Agency extends FeedAvailabilityEntry {
   skipLetterSuffixMerge?: boolean;
   mergeEquivalentShapeVariants?: boolean;
   mergeEquivalentShapeVariantsAllModes?: boolean;
+  mergeEquivalentShapeVariantsRouteTypes?: string[];
   keepLongShapeJumps?: boolean;
   skipClusteredJumpRepair?: boolean;
   poolSingleTripShapes?: boolean;

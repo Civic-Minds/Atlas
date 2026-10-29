@@ -55,12 +55,22 @@ export default function StopRouteGroup({
     }))
     .filter(item => item.label)
     .sort((a, b) => a.directionId - b.directionId);
-  // The route line's own value, only where the route comes more often than any one destination (stopRouteLineHeadway).
-  const routeHeadway = stopRouteLineHeadway(items, period);
+  // CIV-1078: where a direction's destinations share the stop, the route card's "Shared stretch" row carries their
+  // combined value above that direction's rows (stopRouteLineHeadway: only where it is better than every destination).
+  const directionIds = [...new Set(items.map(item => item.directionId))];
+  // A direction with one destination has no branches to combine: no shared row there, as on the route card.
+  const sharedByDirection = new Map(directionIds.map(dirId => {
+    const rows = items.filter(item => item.directionId === dirId);
+    return [dirId, rows.length > 1 ? stopRouteLineHeadway(rows, period) : null];
+  }));
 
   if (items.length === 0) return null;
 
-  const slug = branches[0]?.rKey.split('::')[0] ?? '';
+  const rKey = branches[0]?.rKey ?? '';
+  const slug = rKey.split('::')[0] ?? '';
+  // The route line shows the whole route on the map (CIV-1053); a row of another route fades.
+  const routeHovered = !!hoveredBranch && hoveredBranch.routeKey === rKey && hoveredBranch.directionId == null;
+  const otherRouteHovered = !!hoveredBranch && hoveredBranch.routeKey !== rKey;
   const live = isLivePollingRoute(slug, shortName);
 
   // The route card's rows (CIV-918): every destination has its own frequency on its first line, and
@@ -69,14 +79,36 @@ export default function StopRouteGroup({
     <div>
       <CardSummaryRow
         label={routeLabel}
-        onClick={() => onOpenRoute(branches[0]?.rKey ?? '')}
-        headway={routeHeadway}
+        onClick={() => onOpenRoute(rKey)}
+        {...(setHoveredBranch ? {
+          onHoverStart: () => setHoveredBranch({ routeKey: rKey }),
+          onHoverEnd: () => setHoveredBranch(null),
+          dimmed: otherRouteHovered,
+        } : {})}
       />
       <SidebarCardListRows className="space-y-1 mt-0.5">
-        {items.map(item => {
+        {items.flatMap((item, i) => {
+          const sharedHeadway = sharedByDirection.get(item.directionId);
+          const sharedHovered = !!hoveredBranch && hoveredBranch.routeKey === rKey
+            && hoveredBranch.directionId === item.directionId && hoveredBranch.headsign == null;
+          // The direction's first row: the shared row goes above it, as on the route card (CIV-937).
+          const sharedRow = sharedHeadway != null && items[i - 1]?.directionId !== item.directionId ? [
+            <CardDirectionRow
+              key={`${rKey}::${item.directionId}::shared`}
+              label="Shared stretch"
+              headway={sharedHeadway}
+              onClick={() => onOpenRoute(rKey)}
+              {...(setHoveredBranch ? {
+                onHoverStart: () => setHoveredBranch({ routeKey: rKey, directionId: item.directionId }),
+                onHoverEnd: () => setHoveredBranch(null),
+                branchHovered: sharedHovered,
+                branchDimmed: !!hoveredBranch && !sharedHovered && !routeHovered,
+              } : {})}
+            />,
+          ] : [];
           const hovered = !!hoveredBranch && hoveredBranch.routeKey === item.rKey
             && hoveredBranch.directionId === item.directionId && hoveredBranch.headsign === (item.headsign ?? undefined);
-          return (
+          return [...sharedRow, (
             <CardDirectionRow
               key={`${item.rKey}::${item.directionId}::${item.headsign ?? ''}`}
               label={item.label}
@@ -91,10 +123,10 @@ export default function StopRouteGroup({
                 onHoverStart: () => setHoveredBranch({ routeKey: item.rKey, directionId: item.directionId, headsign: item.headsign ?? undefined }),
                 onHoverEnd: () => setHoveredBranch(null),
                 branchHovered: hovered,
-                branchDimmed: !!hoveredBranch && !hovered,
+                branchDimmed: !!hoveredBranch && !hovered && !routeHovered,
               } : {})}
             />
-          );
+          )];
         })}
       </SidebarCardListRows>
     </div>

@@ -51,7 +51,8 @@ export const routeKey = (p: ShapeProperties) => buildRouteKey(
 export interface HoveredBranch {
   /** The route a stop card row belongs to (CIV-918). The route card's rows leave it out: theirs is the selected route. */
   routeKey?: string;
-  directionId: number;
+  /** Absent for a stop card's route line or Nearby routes row (CIV-1053): every direction of routeKey. */
+  directionId?: number;
   headsign?: string;
   headsigns?: string[];
   /**
@@ -424,7 +425,10 @@ export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters)
   const tileFilter = useMemo((): any => buildRouteTileFilter({
     agencies, day, modes, period, maxHeadway, hideSpan, hideLimitedService,
     // Hovering an inbound branch on the selected route shows that direction for it; all others stay direction 0.
-    hoveredDirection: hoveredBranch && selectedRoute ? { routeKey: selectedRoute, directionId: hoveredBranch.directionId } : null,
+    // A stop card row does the same for its own route (CIV-1053); its route line keeps both directions.
+    hoveredDirection: hoveredBranch?.directionId != null && (hoveredBranch.routeKey ?? selectedRoute)
+      ? { routeKey: (hoveredBranch.routeKey ?? selectedRoute)!, directionId: hoveredBranch.directionId }
+      : null,
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }), [agencies, day, hideLimitedService, hideSpan, modes, maxHeadway, period, hoveredBranch, selectedRoute]);
 

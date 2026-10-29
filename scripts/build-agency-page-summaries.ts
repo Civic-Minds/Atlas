@@ -49,7 +49,7 @@ const BOUNDARIES = 'shared/data/area-boundaries.json';
 const base = (process.env.R2_PUBLIC_URL || DEFAULT_R2_PUBLIC_URL).replace(/\/$/, '');
 const only = new Set(process.argv.slice(2).filter(arg => !arg.startsWith('--')));
 
-type CatalogAgency = AgencyPageIdentity & { lastRefreshedAt?: string | null; lastFeedExpiry?: string | null; displayArea?: string };
+type CatalogAgency = AgencyPageIdentity & { lastRefreshedAt?: string | null; lastFeedExpiry?: string | null; listingEndedOn?: string | null; displayArea?: string };
 type Catalog = { agencies: CatalogAgency[] };
 type Feature = { geometry: { type: string }; properties: Record<string, unknown> };
 
@@ -246,6 +246,7 @@ function identityFor(a: CatalogAgency) {
     websiteUrl: a.websiteUrl,
     ...(a.betaOnly ? { betaOnly: true as const } : {}),
     validThrough: a.lastFeedExpiry ?? null,
+    ...(a.listingEndedOn ? { listingEndedOn: a.listingEndedOn } : {}),
   };
 }
 

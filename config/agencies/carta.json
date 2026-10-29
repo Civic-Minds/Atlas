@@ -29,5 +29,6 @@
   "timezone": "America/New_York",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-352/latest.zip",
-  "lastPeekedExpiry": "20270529"
+  "lastPeekedExpiry": "20270529",
+  "listingEndedOn": "20260815"
 }
