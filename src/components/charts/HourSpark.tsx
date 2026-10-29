@@ -1,6 +1,6 @@
 import { useId, useState } from 'react';
 import { SPARKLINE_HOUR_LABELS } from '../../../shared/config';
-import { hourText as clock } from '../../../shared/liveFormat';
+import { hourTime as clock } from '../../../shared/timeText';
 import { HOUR_TO_PERIOD, hoverOfHour, liveChartHours, type HourHover } from '../../utils/sparklinePeriods';
 import PeriodBand from './PeriodBand';
 import DataTable from '../ui/DataTable';

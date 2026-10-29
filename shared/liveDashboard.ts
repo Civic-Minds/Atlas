@@ -4,7 +4,8 @@
  * the plain-language sentences, so the page and the tests share one wording.
  */
 import { hasLiveAnalysis } from './livePollingConfig.js';
-import { hourText, pct, signedMinutes as min } from './liveFormat.js';
+import { pct, signedMinutes as min } from './liveFormat.js';
+import { hourTime } from './timeText.js';
 
 export interface AdherenceCounts {
   n: number;
@@ -316,7 +317,7 @@ export function freshness(v3: LiveV3, route: string, now: number): Freshness {
 export function runningTimeSentence(label: string, r: RunTimeFigures | null | undefined, atHour?: number): string {
   if (!r) return `${label}: too few trips were measured over the main stretch to say.`;
   if (r.n < 30) return `${label}: too few trips (${r.n}) were measured from end to end to say.`;
-  return `${label}: ${runningTimeFigures(r)}${atHour != null ? ` at ${hourText(atHour)}` : ''}.`;
+  return `${label}: ${runningTimeFigures(r)}${atHour != null ? ` at ${hourTime(atHour)}` : ''}.`;
 }
 
 /** The figures of that sentence without the label: "scheduled 34 min · usually 31 · 1 in 10 over 37 min". A missing figure is left out, never invented. */
@@ -487,7 +488,7 @@ export function runTimeTakeaway(label: string, hours: ReadonlyArray<{ hour: numb
   const under = ok.reduce((a, h) => (h.typicalMin - h.scheduledMin < a.typicalMin - a.scheduledMin ? h : a));
   const o = Math.round(over.typicalMin - over.scheduledMin);
   const u = Math.round(under.scheduledMin - under.typicalMin);
-  if (o >= 1) return `${label} runs about ${o} min over schedule at ${hourText(over.hour)}.`;
-  if (u >= 1) return `${label} runs at or under schedule all day, about ${u} min under at ${hourText(under.hour)}.`;
+  if (o >= 1) return `${label} runs about ${o} min over schedule at ${hourTime(over.hour)}.`;
+  if (u >= 1) return `${label} runs at or under schedule all day, about ${u} min under at ${hourTime(under.hour)}.`;
   return `${label} runs close to schedule all day.`;
 }
