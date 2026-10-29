@@ -57,8 +57,9 @@ export interface RouteSnapshot {
   year: number;
   weekdayHeadwayMin: number;
   headwayByPeriod?: HeadwayByPeriod;
-  /** CIV-555: the route's shared-stretch value when better than its all-day value (build-history). */
+  /** CIV-555: the route's shared-stretch value when better than its all-day value (build-history), and per period. */
   trunkHeadwayMin?: number;
+  trunkHeadwayByPeriod?: HeadwayByPeriod;
   geometry?: number[][];
   note?: string;
 }
@@ -130,12 +131,12 @@ function periodMinutes(snapshot: RouteSnapshot, period: TimePeriod): number | nu
 const shownMinutes = (minutes: number): number => minutes;
 
 /**
- * A row's words (CIV-555): all day, "every 8–60 min" where a slow branch sets the value and the shared stretch runs
- * more often, by the live route card's rule (shouldShowBranchHeadwayRange, headwayEveryRange); else "every 60 min".
- * The number that colours and filters stays the all-day value.
+ * A row's words (CIV-555): "every 15–52 min" where a slow branch sets the period's value and the shared stretch runs
+ * more often, by the live route card's rule (shouldShowBranchHeadwayRange, headwayEveryRange); else "every 52 min".
+ * The number that colours and filters stays the period's value.
  */
 function snapshotHeadwayLabel(snapshot: RouteSnapshot, period: TimePeriod, minutes: number): string {
-  const trunk = period === 'all' ? snapshot.trunkHeadwayMin : undefined;
+  const trunk = period === 'all' ? snapshot.trunkHeadwayMin : snapshot.trunkHeadwayByPeriod?.[period] ?? undefined;
   return trunk != null && shouldShowBranchHeadwayRange(trunk, minutes)
     ? headwayEveryRange(trunk, shownMinutes(minutes))
     : headwayEvery(shownMinutes(minutes));
