@@ -33,6 +33,7 @@ import { rowTrips } from '../../../utils/rowTrips';
 import { routeCardRowValue } from '../../../utils/routeCardRowValue';
 import {
   dirIdNum,
+  routePartMeetsFilter,
   groupTrunkHeadway,
   sparklineSourceDirections,
   sharedStopIdsForBranches,
@@ -47,7 +48,7 @@ import { hasStretchRoles, routeAllDayContract, routeContract } from '../../../ut
 import type { VariantFamily } from '../../../utils/routeVariants';
 import { reportDetails } from '../../../utils/reportIssue';
 import { ROUTE_DATA_QUALITY_WARNING } from '../../../../shared/routeDataQuality';
-import { LIMITED_SERVICE_LABEL, BOOKING_REQUIRED_NOTICE, expiredFeedNotice, explainerFor, listingEndedNotice, listingEndHasPassed, NO_ROUTE_SHAPE_NOTICE, periodServiceNotice, ROUTE_DATA_QUALITY_WARNING_MESSAGE, selectedRouteFilterNotice, selectedRouteOutsideFilterNotice, unevenServiceNotice, variantsIncludedNotice, WEEKDAY_VARIATION_NOTICE } from '../../../content/noticeCopy';
+import { LIMITED_SERVICE_LABEL, BOOKING_REQUIRED_NOTICE, expiredFeedNotice, explainerFor, listingEndedNotice, listingEndHasPassed, NO_ROUTE_SHAPE_NOTICE, periodServiceNotice, ROUTE_DATA_QUALITY_WARNING_MESSAGE, selectedRouteFilterNotice, selectedRouteOutsideFilterNotice, selectedRoutePartMeetsFilterNotice, unevenServiceNotice, variantsIncludedNotice, WEEKDAY_VARIATION_NOTICE } from '../../../content/noticeCopy';
 import { featurePassesHeadwayFilter } from '../../../../shared/routeHeadwayFilter';
 import { agencyTodayYmd } from '../../../../shared/feedAvailability';
 import { headwayAbout, headwayAboutRange } from '../../../utils/headwayText';
@@ -497,6 +498,9 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                   })(),
                   periodRange: formatPeriodRangeLong(selectedPeriod.startHour, selectedPeriod.endHour),
                 })
+                // CIV-514: part of the route qualifies, as the map's shared-stretch overlay shows; else the general note.
+                : routePartMeetsFilter(agencyFeatures, currentRoute.directions, period, maxHeadway)
+                ? selectedRoutePartMeetsFilterNotice(maxHeadway)
                 : selectedRouteOutsideFilterNotice(maxHeadway, selectedPeriod ? formatPeriodRangeLong(selectedPeriod.startHour, selectedPeriod.endHour) : null)}
             </p>
           </div>
