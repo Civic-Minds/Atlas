@@ -35,7 +35,7 @@ import { WeekTable } from './LiveDashboardView';
 import { BANDS, mins, pct } from './components/Live/sections/figures';
 import { PILL_ROW } from './components/ui/PillGroup';
 import Pill from './components/ui/Pill';
-import LegendItem from './components/ui/LegendItem';
+import MapKey from './components/ui/MapKey';
 import { MAP_BADGE, MAP_BADGE_LABEL, PHONE_TAP_AREA } from './styles';
 import { DataUpTo, withNiceNames } from './LiveRoutePage';
 
@@ -110,8 +110,10 @@ function Key({ measure }: { measure: MapMeasure }) {
       {KEY_DEFINITION[measure] && <div className={`${MAP_BADGE} min-h-8 max-w-full py-1`}><span className={MAP_BADGE_LABEL}>{KEY_DEFINITION[measure]}</span></div>}
       <div className={`${MAP_BADGE} min-h-8 max-w-full flex-wrap gap-x-3 gap-y-1.5 py-1.5`} role="group" aria-label="Map colours">
         <span className="whitespace-nowrap text-xs font-bold leading-none text-[var(--text-secondary)]">{measureLabel(measure)}</span>
-        {labels.map((l, i) => <LegendItem key={l} kind="line" color={stepColor(measure === 'bunching' ? 'bunching' : 'delay', i as Step)}><span className={`${MAP_BADGE_LABEL} whitespace-nowrap`}>{l}</span></LegendItem>)}
-        <LegendItem kind="line" color="var(--strip-delay-0)" swatchClassName="opacity-45"><span className={`${MAP_BADGE_LABEL} whitespace-nowrap`}>Not measured</span></LegendItem>
+        <MapKey steps={[
+          ...labels.map((l, i) => ({ color: stepColor(measure === 'bunching' ? 'bunching' : 'delay', i as Step), label: <span className={`${MAP_BADGE_LABEL} whitespace-nowrap`}>{l}</span> })),
+          { color: 'var(--strip-delay-0)', swatchClassName: 'opacity-45', label: <span className={`${MAP_BADGE_LABEL} whitespace-nowrap`}>Not measured</span> },
+        ]} />
       </div>
     </div>
   );

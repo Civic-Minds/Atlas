@@ -16,6 +16,7 @@ import { stretchLabel } from './utils/stopLabel';
 import { TILE } from './pageStyles';
 import ErrorBoundary from './components/ErrorBoundary';
 import PageShell from './components/ui/PageShell';
+import EmptyPage from './components/ui/EmptyPage';
 import PillGroup, { PILL_ROW } from './components/ui/PillGroup';
 import ArrowLink from './components/ui/ArrowLink';
 import { PageTitle } from './components/ui/PageTitle';
@@ -195,13 +196,13 @@ export default function LiveExplorePage() {
   }, [agency, route, routeTitle]);
   if (!FEATURES.liveReports) return <LiveOffNotice />;
   const title = `${agency.toUpperCase()} ${route}`;
-  const back = FEATURES.live ? <ArrowLink href="/apps/live" className="mt-6">Open Live</ArrowLink> : null;
+  const back = FEATURES.live ? <ArrowLink href="/apps/live">Open Live</ArrowLink> : null;
   const shell = (body: ReactNode) => <PageShell variant="wide" maxWidth="max-w-[1600px]">{body}</PageShell>;
   if (state.kind === 'loading') return shell(<p className="mt-24 text-sm text-[var(--text-muted)]" aria-busy="true">Loading {title}…</p>);
-  if (state.kind === 'error') return shell(<><PageTitle className="mt-24">{title}</PageTitle><p className="mt-4 max-w-2xl text-base leading-7 text-[var(--text-muted)]">{state.reason}</p>{back}</>);
+  if (state.kind === 'error') return <EmptyPage title={title} body={state.reason} action={back} maxWidth="max-w-[1600px]" />;
   const data = state.data;
   if (data.status !== 'ready') {
-    return shell(<><PageTitle className="mt-24">{title}</PageTitle><p className="mt-4 max-w-2xl text-base leading-7 text-[var(--text-muted)]">{data.status === 'no_analysis' ? devOnly(data.reason) : data.reason}</p>{back}</>);
+    return <EmptyPage title={title} body={data.status === 'no_analysis' ? devOnly(data.reason) : data.reason} action={back} maxWidth="max-w-[1600px]" />;
   }
   const v3 = (() => { try { return withNiceNames(data.v3); } catch { return data.v3; } })();
   const bandData = v3.bands?.[band] as DashboardBandData;

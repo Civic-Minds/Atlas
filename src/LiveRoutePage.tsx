@@ -15,6 +15,7 @@ import { syncUrlParams } from './utils/syncUrlParams';
 import { titleCase } from './utils/format';
 import ErrorBoundary from './components/ErrorBoundary';
 import PageShell from './components/ui/PageShell';
+import EmptyPage from './components/ui/EmptyPage';
 import PillGroup, { PILL_ROW } from './components/ui/PillGroup';
 import LiveOffNotice from './components/LiveOffNotice';
 import LiveDashboardView from './LiveDashboardView';
@@ -134,18 +135,12 @@ function AnalysisPage() {
   }, [agency, route, routeTitle]);
   if (!FEATURES.liveReports) return <LiveOffNotice />;
   const title = `${agency.toUpperCase()} ${route}`;
-  const back = FEATURES.live ? <ArrowLink href="/apps/live" className="mt-6">Open Live</ArrowLink> : null;
+  const back = FEATURES.live ? <ArrowLink href="/apps/live">Open Live</ArrowLink> : null;
   if (state.kind === 'loading') return <PageShell variant="wide"><p className="mt-24 text-sm text-[var(--text-muted)]" aria-busy="true">Loading {title}…</p></PageShell>;
-  if (state.kind === 'error') return <PageShell variant="wide"><PageTitle className="mt-24">{title}</PageTitle><p className="mt-4 max-w-2xl text-base leading-7 text-[var(--text-muted)]">{state.reason}</p>{back}</PageShell>;
+  if (state.kind === 'error') return <EmptyPage title={title} body={state.reason} action={back} />;
   const data = state.data;
   if (data.status !== 'ready') {
-    return (
-      <PageShell variant="wide">
-        <PageTitle className="mt-24">{title}</PageTitle>
-        <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--text-muted)]">{data.status === 'no_analysis' ? devOnly(data.reason) : data.reason}</p>
-        {back}
-      </PageShell>
-    );
+    return <EmptyPage title={title} body={data.status === 'no_analysis' ? devOnly(data.reason) : data.reason} action={back} />;
   }
   // A malformed file must not blank the page: fall back to the raw names and let each section's boundary report its own problem.
   const v3 = (() => { try { return withNiceNames(data.v3); } catch { return data.v3; } })();
