@@ -178,7 +178,8 @@ export function auditAgencyFeatures(agency: string, rawFeatures: Feature[]): Aud
   }
   result.routes = groups.size;
 
-  const baseFilters = { agencies: new Set<string>(), modes: new Set<number>() };
+  // The agency on, as the app passes it (an empty set means none, as on the map; CIV-1135).
+  const baseFilters = { agencies: new Set<string>([agency]), modes: new Set<number>() };
   for (const group of groups.values()) {
     const sample = group[0].client;
     const routeLabel = String(sample.routeShortName || sample.routeId);

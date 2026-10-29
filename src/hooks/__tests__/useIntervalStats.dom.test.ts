@@ -12,6 +12,7 @@ const mockLayers: AgencyLayers = {
         type: 'Feature',
         geometry: { type: 'LineString', coordinates: [[0, 0], [1, 1]] },
         properties: {
+          day: 'Weekday',
           routeId: '504',
           routeShortName: '504',
           routeLongName: 'King',
@@ -24,6 +25,7 @@ const mockLayers: AgencyLayers = {
         type: 'Feature',
         geometry: { type: 'LineString', coordinates: [[0, 0], [1, 1]] },
         properties: {
+          day: 'Weekday',
           routeId: '501',
           routeShortName: '501',
           routeLongName: 'Queen',
@@ -40,7 +42,8 @@ describe('useIntervalStats', () => {
   const defaultFilters: any = {
     query: '',
     maxHeadway: 60,
-    agencies: new Set(),
+    // CIV-1135: the agencies on, as the app passes them (an empty set means none, as on the map).
+    agencies: new Set(['ttc', 'test', 'metz', 'halifax', 'kingston', 'nashville', 'yrt', 'sacrt', 'kalamazoo']),
     modes: new Set(),
     day: 'Weekday',
     bounds: { s: -90, w: -180, n: 90, e: 180 },
@@ -125,7 +128,7 @@ describe('useIntervalStats', () => {
   it('hideSpan also hides a route whose other direction has no sustained pattern at all (Halifax 330, #318)', () => {
     // Eastbound: real 13-min tier, but the pipeline flagged the route because Westbound is span-only.
     const eastbound = {
-      routeId: '330', agencySlug: 'halifax', headway: 13, tier: 'infrequent',
+      routeId: '330', agencySlug: 'halifax', headway: 13, tier: 'infrequent', day: 'Weekday',
       routeHasIrregularDirection: true,
     } as any;
     const filters = { ...defaultFilters, maxHeadway: 20, agencies: new Set(['halifax']), hideSpan: true };
@@ -135,7 +138,7 @@ describe('useIntervalStats', () => {
 
   it('hideSpan does not hide a route where every direction has some real pattern (Kingston 701, #318)', () => {
     const viaDowntown = {
-      routeId: '701', agencySlug: 'kingston', headway: 30, tier: '60',
+      routeId: '701', agencySlug: 'kingston', headway: 30, tier: '60', day: 'Weekday',
       routeHasIrregularDirection: undefined,
     } as any;
     const filters = { ...defaultFilters, maxHeadway: 60, agencies: new Set(['kingston']), hideSpan: true };
@@ -144,9 +147,9 @@ describe('useIntervalStats', () => {
 
   it('hideLimitedService hides time-limited routes but keeps regular infrequent routes visible', () => {
     const filters = { ...defaultFilters, maxHeadway: Infinity, agencies: new Set(['nashville']), hideLimitedService: true };
-    expect(passesRouteFilter({ routeId: '87', serviceClass: 'time-limited', tier: '60', headway: 60 } as any, 'nashville', filters, null)).toBe(false);
-    expect(passesRouteFilter({ routeId: '56', serviceClass: 'regular', tier: 'infrequent', headway: 90 } as any, 'nashville', filters, null)).toBe(true);
-    expect(passesRouteFilter({ routeId: '87', serviceClass: 'time-limited', tier: '60', headway: 60 } as any, 'nashville', { ...filters, hideLimitedService: false }, null)).toBe(true);
+    expect(passesRouteFilter({ routeId: '87', day: 'Weekday', serviceClass: 'time-limited', tier: '60', headway: 60 } as any, 'nashville', filters, null)).toBe(false);
+    expect(passesRouteFilter({ routeId: '56', day: 'Weekday', serviceClass: 'regular', tier: 'infrequent', headway: 90 } as any, 'nashville', filters, null)).toBe(true);
+    expect(passesRouteFilter({ routeId: '87', day: 'Weekday', serviceClass: 'time-limited', tier: '60', headway: 60 } as any, 'nashville', { ...filters, hideLimitedService: false }, null)).toBe(true);
   });
 
   it('does not let an unselected span-route cluster pass frequency filtering', () => {
@@ -223,12 +226,14 @@ describe('useIntervalStats', () => {
           {
             type: 'Feature',
             geometry: { type: 'LineString', coordinates: [[0, 0], [1, 1]] },
-            properties: { routeId: '1', headway: 10, agencyName: 'TTC', routeType: 1 }
+            properties: {
+          day: 'Weekday', routeId: '1', headway: 10, agencyName: 'TTC', routeType: 1 }
           },
           {
             type: 'Feature',
             geometry: { type: 'LineString', coordinates: [[0, 0], [1, 1]] },
-            properties: { routeId: '2', headway: 10, agencyName: 'TTC', routeType: 3 }
+            properties: {
+          day: 'Weekday', routeId: '2', headway: 10, agencyName: 'TTC', routeType: 3 }
           }
         ]
       }
@@ -250,12 +255,14 @@ describe('useIntervalStats', () => {
           {
             type: 'Feature',
             geometry: { type: 'LineString', coordinates: [[0, 0], [1, 1]] },
-            properties: { routeId: '1', headway: 10, agencyName: 'TTC', routeType: '3' }
+            properties: {
+          day: 'Weekday', routeId: '1', headway: 10, agencyName: 'TTC', routeType: '3' }
           },
           {
             type: 'Feature',
             geometry: { type: 'LineString', coordinates: [[0, 0], [1, 1]] },
-            properties: { routeId: '2', headway: 10, agencyName: 'TTC', routeType: '1' }
+            properties: {
+          day: 'Weekday', routeId: '2', headway: 10, agencyName: 'TTC', routeType: '1' }
           }
         ]
       }
@@ -333,6 +340,7 @@ describe('useIntervalStats', () => {
           type: 'Feature',
           geometry: { type: 'LineString', coordinates: [[0, 0], [1, 1]] },
           properties: {
+          day: 'Weekday',
             routeId: '6x',
             routeShortName: '6X',
             routeLongName: 'Express',
@@ -361,12 +369,14 @@ describe('useIntervalStats', () => {
           {
             type: 'Feature',
             geometry: { type: 'LineString', coordinates: [[-79.4, 43.6], [-79.3, 43.7]] }, // Toronto
-            properties: { routeId: '504', headway: 10, agencyName: 'TTC' }
+            properties: {
+          day: 'Weekday', routeId: '504', headway: 10, agencyName: 'TTC' }
           },
           {
             type: 'Feature',
             geometry: { type: 'LineString', coordinates: [[-80.5, 43.4], [-80.4, 43.5]] }, // Waterloo
-            properties: { routeId: '201', headway: 10, agencyName: 'GRT' }
+            properties: {
+          day: 'Weekday', routeId: '201', headway: 10, agencyName: 'GRT' }
           }
         ]
       }
@@ -396,6 +406,7 @@ describe('useIntervalStats', () => {
             type: 'Feature',
             geometry: { type: 'LineString', coordinates: [[0, 0], [1, 1]] },
             properties: {
+          day: 'Weekday',
               isCorridor: true,
               headway: 5,
               routeIds: ['1', '2', '3'],
@@ -426,6 +437,7 @@ describe('useIntervalStats', () => {
             type: 'Feature',
             geometry: { type: 'LineString', coordinates: [[0, 0], [1, 1]] },
             properties: {
+          day: 'Weekday',
               isCorridor: true,
               headway: 20,
               routeIds: ['1', '2'],
@@ -451,6 +463,7 @@ describe('useIntervalStats', () => {
           geometry: { type: 'LineString', coordinates: [[0, 0], [1, 1]] },
           properties: {
             routeId: '1',
+            day: 'Weekday',
             headway: 10,
             tier: '10',
             headwayByPeriod: { midday: 10 },
@@ -485,6 +498,7 @@ describe('useIntervalStats', () => {
           geometry: { type: 'LineString', coordinates: [[0, 0], [1, 1]] },
           properties: {
             routeId: '701',
+            day: 'Weekday',
             headway: 10,
             tier: '10',
             headwayByPeriod: { midday: 10 },
@@ -510,6 +524,7 @@ describe('useIntervalStats', () => {
           type: 'Feature',
           geometry: { type: 'LineString', coordinates: [[0, 0], [1, 1]] },
           properties: {
+          day: 'Weekday',
             routeId: '1',
             headway: 10,
             worstDirectionHeadway: 45,
@@ -567,6 +582,7 @@ describe('useIntervalStats', () => {
           type: 'Feature',
           geometry: { type: 'LineString', coordinates: [[0, 0], [1, 1]] },
           properties: {
+          day: 'Weekday',
             routeId: '1',
             headway: 20,
             worstDirectionHeadway: 20,
@@ -597,6 +613,7 @@ describe('useIntervalStats', () => {
           type: 'Feature',
           geometry: { type: 'LineString', coordinates: [[0, 0], [1, 1]] },
           properties: {
+          day: 'Weekday',
             routeId: '1',
             headway: 20,
             tier: '20',
