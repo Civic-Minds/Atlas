@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { adaptiveMedianHeadwayInWindow, computeHourDepartureCounts, computeHourMaxGaps, computePeriodCoverageHeadways, computePeriodHeadways, computePeriodMaxGaps, computePeriodSustained, computeResearchFrequentService, forCrossMidnightWindow, HEADLINE_MIN_DEPARTURES, HEADLINE_WINDOWS, headlineWindowValue, hasGenuineBranchPattern, hasSustainedFrequentService, hasSustainedNightService, headsignOverlapMinHeadway, isSustainedHeadway, medianHeadwayInWindow, nightServiceDepartureTimes, resolveTerminalHeadway, RAIL_TIER_WINDOW, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from '../headway-utils';
+import { adaptiveMedianHeadwayInWindow, computeHourDepartureCounts, computeHourMaxGaps, computePeriodCoverageHeadways, computePeriodHeadways, computePeriodMaxGaps, computePeriodSustained, computeResearchFrequentService, forCrossMidnightWindow, HEADLINE_MIN_DEPARTURES, HEADLINE_WINDOWS, headlineWindowValue, hasGenuineBranchPattern, hasSustainedFrequentService, hasSustainedNightService, headsignOverlapMinHeadway, isSustainedHeadway, medianHeadwayInWindow, nightServiceDepartureTimes, resolveTerminalHeadway, RAIL_TIER_WINDOW, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK, borrowsNextHalfHour, hasDepartureInHour } from '../headway-utils';
 import { TIME_PERIODS } from '../../shared/config';
 
 describe('computePeriodCoverageHeadways', () => {
@@ -127,6 +127,25 @@ describe('adaptiveMedianHeadwayInWindow', () => {
 
   it('still returns null when neither the strict nor the widened window has enough departures', () => {
     expect(adaptiveMedianHeadwayInWindow([13 * 60 + 20, 13 * 60 + 30], 13 * 60, 3)).toBeNull();
+  });
+
+  // CIV-1109: Madison 80's Eagle Heights branch has no departure between 4 and 5 PM; the 90-minute
+  // window read its 5:00-5:30 trips as 4 PM service.
+  it('does not widen an hour that has no departure of its own', () => {
+    const times = [17 * 60, 17 * 60 + 10, 17 * 60 + 20, 17 * 60 + 30];
+    expect(adaptiveMedianHeadwayInWindow(times, 16 * 60, 3)).toBeNull();
+    expect(borrowsNextHalfHour(times, 16 * 60)).toBe(true);
+    expect(adaptiveMedianHeadwayInWindow(times, 17 * 60, 3)).toBe(10);
+  });
+
+  it('still widens an hour with one departure of its own, and counts #297 folded trips as its own', () => {
+    const times = [5 * 60 + 50, 6 * 60 + 5, 6 * 60 + 20];
+    expect(adaptiveMedianHeadwayInWindow(times, 5 * 60, 3)).toBe(15);
+    expect(borrowsNextHalfHour(times, 5 * 60)).toBe(false);
+    // TTC 504 eastbound: plain-notation 04:39/04:49/04:59 fill the 4 AM slot after midnight.
+    const night = [4 * 60 + 39, 4 * 60 + 49, 4 * 60 + 59];
+    expect(hasDepartureInHour(night, 28 * 60)).toBe(true);
+    expect(adaptiveMedianHeadwayInWindow(night, 28 * 60, 3)).toBe(10);
   });
 });
 

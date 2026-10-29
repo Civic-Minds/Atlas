@@ -29,7 +29,7 @@ import { DAY_TYPES, WEEKDAYS, type DayName, type DayType } from '../types/gtfs.j
 import { ALL_DAYS } from '../shared/dayTypes.js';
 import { buildStopRoutePeriodBits } from './stopRoutePeriods.js';
 import { expandFrequencyWindow, expandTripFrequencyWindows, isSingleTripFrequencyWindow, parseFrequencyWindow, SINGLE_TRIP_WINDOW_MAX_DEPARTURES, SINGLE_TRIP_WINDOW_SPAN_TOLERANCE_MIN, t2m, type FrequencyWindow } from './transit-utils.js';
-import { adaptiveMedianHeadwayInWindow, computeHourMaxGaps, computeHourDepartureCounts, computePeriodHeadways, computePeriodHeadwayRanges, computePeriodMaxGaps, computePeriodSustained, computeResearchFrequentService, forCrossMidnightWindow, HEADLINE_MIN_DEPARTURES, HEADLINE_WINDOWS, headlineWindowValue, hasSustainedNightService, headsignOverlapMinHeadway, headwayToTier, headwayToTierOn, isSparseOvernightWindow, isThinAllDayTerminalSample, isUnevenTwoGapMiddayTerminalSample, medianHeadwayInWindow, MIN_ALL_DAY_TERMINAL_DEPARTURES, nightServiceDepartureTimes, NIGHT_SERVICE_WINDOW_END_MIN, periodHeadwayInWindow, RAIL_TIER_WINDOW, resolveTerminalHeadline, sparseOvernightHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
+import { adaptiveMedianHeadwayInWindow, borrowsNextHalfHour, computeHourMaxGaps, computeHourDepartureCounts, computePeriodHeadways, computePeriodHeadwayRanges, computePeriodMaxGaps, computePeriodSustained, computeResearchFrequentService, forCrossMidnightWindow, HEADLINE_MIN_DEPARTURES, HEADLINE_WINDOWS, headlineWindowValue, hasSustainedNightService, headsignOverlapMinHeadway, headwayToTier, headwayToTierOn, isSparseOvernightWindow, isThinAllDayTerminalSample, isUnevenTwoGapMiddayTerminalSample, medianHeadwayInWindow, MIN_ALL_DAY_TERMINAL_DEPARTURES, nightServiceDepartureTimes, NIGHT_SERVICE_WINDOW_END_MIN, periodHeadwayInWindow, RAIL_TIER_WINDOW, resolveTerminalHeadline, sparseOvernightHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
 import { computeRouteBaseFares, detectBusSubType } from './route-metadata.js';
 import { buildStopsMeta } from './stopsMeta.js';
 import { haversineDistance } from './utils.js';
@@ -3406,9 +3406,8 @@ export async function processGtfsBuffer(
       ? computeHourMaxGaps(terminalScopedTimes, SPARKLINE_HOURS)
       : undefined;
     // CIV-1010: departures per hour from the same list as the hour's gap, so the two always agree on the source.
-    const terminalHourDepartures = terminalScopedTimes
-      ? computeHourDepartureCounts(terminalScopedTimes, SPARKLINE_HOURS)
-      : terminalStopId ? computeHourDepartureCounts(metricStopMap.get(terminalStopId) ?? [], SPARKLINE_HOURS) : undefined;
+    const terminalHourTimes = terminalScopedTimes ?? (terminalStopId ? metricStopMap.get(terminalStopId) ?? [] : undefined);
+    const terminalHourDepartures = terminalHourTimes ? computeHourDepartureCounts(terminalHourTimes, SPARKLINE_HOURS) : undefined;
     const terminalHourIsBranchScoped = !!headsignTerminalHourHw;
     const branchHourHw = feature.properties.headwayByHour as HeadwayByHour | undefined;
     if (branchHourHw) {
@@ -3418,6 +3417,14 @@ export async function processGtfsBuffer(
       const branchHourDepartures = feature.properties.departuresByHour as Record<number, number> | undefined;
       const mergedHourDepartures: Record<number, number> = {};
       for (const h of SPARKLINE_HOURS) {
+        // CIV-1109: an hour whose terminal value only borrowed the next half hour (no departure of
+        // its own) stays empty; the branch-wide value, read on a list other patterns share, never
+        // fills it (Madison 80's Eagle Heights branch at 4 PM read every 5 from the Memorial Union trips).
+        if (terminalHourTimes && borrowsNextHalfHour(terminalHourTimes, h * 60)) {
+          mergedHourHw[h] = null;
+          mergedHourGaps[h] = null;
+          continue;
+        }
         const termH = headsignTerminalHourHw?.[h] ?? terminalHourHw?.[h] ?? null;
         const bH = branchHourHw[h] ?? null;
         const resolvedH = resolveTerminalPeriodHeadway(termH, bH, terminalHourIsBranchScoped);

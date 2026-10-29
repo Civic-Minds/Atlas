@@ -164,9 +164,40 @@ export const ADAPTIVE_WINDOW_BASE_MINUTES = 60;
 export const ADAPTIVE_WINDOW_MAX_MINUTES = 90;
 
 /**
+ * Whether the strict hour from `start` has a departure, on the same #297 cross-midnight list the
+ * hour's value is read from (a plain-notation 04:39 counts in the 4 AM slot after midnight).
+ */
+export function hasDepartureInHour(
+  departureTimes: number[],
+  start: number,
+  baseMinutes: number = ADAPTIVE_WINDOW_BASE_MINUTES,
+): boolean {
+  const end = start + baseMinutes;
+  return forCrossMidnightWindow(departureTimes, end).some(t => t >= start && t < end);
+}
+
+/**
+ * True when the hour from `start` has no departure of its own but the widened window would read a
+ * value from the next half hour: the case adaptiveMedianHeadwayInWindow leaves empty (CIV-1109).
+ */
+export function borrowsNextHalfHour(
+  departureTimes: number[],
+  start: number,
+  minDeps = 3,
+  baseMinutes: number = ADAPTIVE_WINDOW_BASE_MINUTES,
+  maxMinutes: number = ADAPTIVE_WINDOW_MAX_MINUTES,
+): boolean {
+  if (hasDepartureInHour(departureTimes, start, baseMinutes)) return false;
+  const wideEnd = start + maxMinutes;
+  return medianHeadwayInWindow(forCrossMidnightWindow(departureTimes, wideEnd), start, wideEnd, minDeps) != null;
+}
+
+/**
  * Like medianHeadwayInWindow, but only widens past a strict `baseMinutes`-wide window when that
  * window doesn't already have enough departures on its own -- rescuing sparse hours (TTC 10
- * above) without blending hours that don't need it (TTC 5 above).
+ * above) without blending hours that don't need it (TTC 5 above). An hour with no departure of
+ * its own never widens (CIV-1109): its value would be the next half hour's service (Madison 80's
+ * Eagle Heights branch read every 12 at 4 PM from its 5:00-5:30 trips).
  */
 export function adaptiveMedianHeadwayInWindow(
   departureTimes: number[],
@@ -178,6 +209,7 @@ export function adaptiveMedianHeadwayInWindow(
   const narrowEnd = start + baseMinutes;
   const narrow = medianHeadwayInWindow(forCrossMidnightWindow(departureTimes, narrowEnd), start, narrowEnd, minDeps);
   if (narrow != null) return narrow;
+  if (!hasDepartureInHour(departureTimes, start, baseMinutes)) return null;
   const wideEnd = start + maxMinutes;
   return medianHeadwayInWindow(forCrossMidnightWindow(departureTimes, wideEnd), start, wideEnd, minDeps);
 }
