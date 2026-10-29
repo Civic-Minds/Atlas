@@ -65,7 +65,7 @@ describe('E5 route line, three paragraphs (CIV-1051)', () => {
     ).container.textContent ?? '';
     expect(t).toContain("Part of this route's line on the map may be missing or drawn in the wrong place.");
     expect(t).toContain('We still show the route. Its frequency on this card comes from the timetable and is still accurate.');
-    expect(t).toContain('If something looks off, report it with the flag on this card.');
+    expect(t).toContain('If something looks wrong, report it with the flag on this card.');
   });
 });
 
@@ -76,7 +76,7 @@ describe('E6 route with no line, three paragraphs (CIV-1051)', () => {
     ).container.textContent ?? '';
     expect(t).toContain("This route's line can't be shown on the map because it's missing from the agency's data.");
     expect(t).toContain('We still show the route on this card. Its frequency comes from the timetable and is still accurate.');
-    expect(t).toContain('If something looks off, report it with the flag on this card.');
+    expect(t).toContain('If something looks wrong, report it with the flag on this card.');
   });
 });
 
@@ -85,7 +85,7 @@ describe('E7 frequency allowance, two paragraphs (CIV-1051)', () => {
     const t = render(
       <InfoPanel open onClose={() => {}} agencies={[]} helpContext={{ topic: 'edge-gap-allowance' }} />,
     ).container.textContent ?? '';
-    expect(t).toContain('The first or last trip of the day can come up to 10 minutes later than usual, and the route still counts at its frequency.');
+    expect(t).toContain("This route's frequency allows a slightly longer wait for the first or last trip of the day. That trip can come up to 10 minutes later than usual.");
     expect(t).toContain("Many routes start or end their day with one longer gap. Gaps in the middle of the day don't get this allowance.");
   });
 });
