@@ -12,7 +12,7 @@ const spread = { late: [0.01, 0.2, 0.1], tripTime: [20, 40, 30], extraWait: [0.1
 
 describe('WeekTable', () => {
   const tiles = kpiTiles(weekly, spread);
-  const view = () => render(<WeekTable tiles={tiles} scope="TTC" notes={['more than 5½ min late']} caption="Grey = within normal day-to-day change" captionTitle="rule" excluding="Excluding Oct 11 this week, Oct 4 last week" excludingTitle="Oct 4, 11 left out: gaps in our recordings those days" />);
+  const view = () => render(<WeekTable tiles={tiles} scope="TTC" notes={['more than 5½ min late']} caption="Grey = within normal day-to-day change" captionTitle="rule" excluding="Excluding Oct 11 and Oct 4" excludingTitle="Oct 4, 11 left out: gaps in our recordings those days" />);
 
   it('is a real table: measures as row headers, This week and Last week as column headers', () => {
     view();
@@ -38,8 +38,8 @@ describe('WeekTable', () => {
     view();
     expect(screen.getByText('more than 5½ min late')).toBeTruthy();
     expect(screen.getByText('Grey = within normal day-to-day change').getAttribute('title')).toBe('rule');
-    expect(screen.getAllByText('Excluding Oct 11 this week, Oct 4 last week')).toHaveLength(1); // once, directly under the table
-    expect(screen.getByText('Excluding Oct 11 this week, Oct 4 last week').getAttribute('title')).toMatch(/left out: gaps in our recordings/);
+    expect(screen.getAllByText('Excluding Oct 11 and Oct 4')).toHaveLength(1); // once, directly under the table
+    expect(screen.getByText('Excluding Oct 11 and Oct 4').getAttribute('title')).toMatch(/left out: gaps in our recordings/);
   });
 });
 

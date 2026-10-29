@@ -57,7 +57,11 @@ export interface AgencySummary {
   totalRoutes: number;
   covered: string[];
   held: Array<{ route: string }>;
-  weekly: { thisWeek: WeekMetrics; lastWeek: WeekMetrics; comparable: boolean; minHealthyDays: number } | null;
+  weekly: {
+    thisWeek: WeekMetrics; lastWeek: WeekMetrics; comparable: boolean; minHealthyDays: number;
+    /** The days every route left out (the footer names only these; each route page lists its own). Older files: absent. */
+    leftOutEverywhere?: { thisWeek: string[]; lastWeek: string[] };
+  } | null;
   /** Network late share per day of this week (days with good recordings), for the change's noise. */
   daily: Required<DailyValues>;
   routes: AgencyRouteRow[];
@@ -150,7 +154,14 @@ export function agencySummary(input: {
     const thisWeek = combineWeeks(withWeekly.map(r => r.v3.weekly!.thisWeek));
     const lastWeek = combineWeeks(withWeekly.map(r => r.v3.weekly!.lastWeek));
     const minHealthyDays = Math.max(...withWeekly.map(r => r.v3.weekly!.minHealthyDays));
-    return { thisWeek, lastWeek, minHealthyDays, comparable: thisWeek.healthyDates.length >= minHealthyDays && lastWeek.healthyDates.length >= minHealthyDays };
+    // A day every route that ran it left out (CIV-910 Q2). A day only some routes left out still counts on the others.
+    const everywhere = (weeks: readonly WeekMetrics[]) => [...new Set(weeks.flatMap(w => w.dates))].sort()
+      .filter(d => weeks.every(w => !w.dates.includes(d) || !w.healthyDates.includes(d)));
+    const leftOutEverywhere = {
+      thisWeek: everywhere(withWeekly.map(r => r.v3.weekly!.thisWeek)),
+      lastWeek: everywhere(withWeekly.map(r => r.v3.weekly!.lastWeek)),
+    };
+    return { thisWeek, lastWeek, minHealthyDays, comparable: thisWeek.healthyDates.length >= minHealthyDays && lastWeek.healthyDates.length >= minHealthyDays, leftOutEverywhere };
   })() : null;
 
   const rows: AgencyRouteRow[] = routes.map(({ route, label, titleLabel, mode, longName, v3 }) => {

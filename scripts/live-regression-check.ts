@@ -15,6 +15,8 @@ interface DirectionCase {
   runTime: { scheduledMin: number; typicalMin: number; toleranceMin: number };
   /** Where delays start (B3 'forms'), or null when the route page says it builds slowly or stays level. */
   delaysStart: Stretch | null;
+  /** Why a pinned 'delays start' is borderline, when it is (read by people, not the check). */
+  delaysStartNote?: string;
   /** Terminal and loop stops: no hotspot (B3 or B4) may start or end at one. */
   terminalStopIds: string[];
 }

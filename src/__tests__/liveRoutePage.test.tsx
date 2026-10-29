@@ -107,7 +107,7 @@ describe('Live route dashboard', () => {
     const withBadDay: LiveV3 = { ...v3, window: { days: 7, dates, requestedDays: 7, goodDates: good }, totals: { runs: 2693, stopPassages: 80000, droppedOffTimetable: 0, goodRuns: 2368, goodStopPassages: 70000 }, weekly };
     renderPage({ ...ready, v3: withBadDay });
     expect(await screen.findByText(/Last 6 service days, Oct 10–16: 2,368 trips and 70,000 stop departures\./)).toBeTruthy();
-    expect(screen.getAllByText(/Excluding Oct 11 this week\./).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Excluding Oct 11\./).length).toBeGreaterThan(0);
     expect(document.body.textContent).toMatch(/· 2,368 trips ·/);
     expect(document.body.textContent).not.toMatch(/2,693/);
   });
@@ -209,7 +209,7 @@ describe('Live route dashboard', () => {
     expect(screen.queryByText(/^Changes compared with the week before/)).toBeNull();
     // The weeks, then the days counted on a line of their own; the method is open (no disclosure).
     expect(screen.getByText(/This week is .+ and last week is .+\./)).toBeTruthy();
-    expect(screen.getByText(/^Excluding .+ this week, .+ last week\.$/).className).toMatch(/block/);
+    expect(screen.getByText(/^Excluding .+ and .+\.$/).className).toMatch(/block/);
     expect(document.querySelector('details')).toBeNull();
     expect(screen.getAllByText((_, el) => el?.tagName === 'P' && (el.textContent ?? '').split('Recording gaps are times our recording missed').length === 2).length).toBe(1);
     // One paragraph: each group opens with its bold run-in label.
@@ -286,7 +286,7 @@ describe('Live route dashboard', () => {
     renderPage({ ...ready, v3: { ...v3, weekly: { minHealthyDays: 1, health: [], comparable: true, thisWeek: wk, lastWeek: wk } } } as LiveDashboardResponse);
     await screen.findByRole('heading', { level: 1, name: 'TTC 505' });
     expect(screen.getByText('How this is measured')).toBeTruthy();
-    expect(screen.getByText(/^Excluding .+ this week, .+ last week\.$/).className).toMatch(/block/);
+    expect(screen.getByText(/^Excluding .+ and .+\.$/).className).toMatch(/block/);
     expect(document.querySelector('details')).toBeNull();
     expect(screen.queryByRole('button', { name: 'Summary' })).toBeNull(); // still no view switcher on the shareable page
   });

@@ -134,13 +134,12 @@ export function leftOutReason(dates: readonly string[]): string | null {
 }
 
 /**
- * Where this week and last week are compared: "Excluding Oct 11 this week, Oct 4 last week" (only the week that left days
- * out is named). Null when every day of both weeks counted.
+ * Where this week and last week are compared, the days left out in one list, this week's first (Ryan, CIV-910):
+ * "Excluding Oct 11", "Excluding Oct 11 and Oct 4", "Excluding Oct 11, Oct 12 and Oct 4". Null when every day of both
+ * weeks counted.
  */
 export function excludingWeeksText(thisWeek: readonly string[], lastWeek: readonly string[]): string | null {
-  const t = leftOutList(thisWeek), l = leftOutList(lastWeek);
-  if (t && l) return `Excluding ${t} this week, ${l} last week`;
-  if (t) return `Excluding ${t} this week`;
-  if (l) return `Excluding ${l} last week`;
-  return null;
+  const days = [...[...new Set(thisWeek)].sort(), ...[...new Set(lastWeek)].sort()].map(d => dateRangeText(d, d));
+  if (!days.length) return null;
+  return `Excluding ${days.length === 1 ? days[0] : `${days.slice(0, -1).join(', ')} and ${days[days.length - 1]}`}`;
 }

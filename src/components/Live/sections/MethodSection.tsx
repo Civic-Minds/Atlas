@@ -11,7 +11,7 @@ import { aheadLine, bunchingLine, colourLine, deliveredLine, extraWaitLine, late
 import type { Ready } from '../../../LiveRoutePage';
 
 /** The two weeks, then the days left out on a line of their own (no line when every day counted). */
-const weekWindowItems = (w: NonNullable<LiveV3['weekly']>): ReactNode[] => { const p = weekWindowParts(w); return p.days ? [p.weeks, <OwnLine key="days" title={p.reason ?? undefined}>{p.days}</OwnLine>] : [p.weeks]; };
+const weekWindowItems = (w: Parameters<typeof weekWindowParts>[0]): ReactNode[] => { const p = weekWindowParts(w); return p.days ? [p.weeks, <OwnLine key="days" title={p.reason ?? undefined}>{p.days}</OwnLine>] : [p.weeks]; };
 
 
 /**
@@ -61,7 +61,8 @@ export default function MethodSection(props: MethodSectionProps): ReactNode {
         <Term t="Near a limit" colon>{pct(lim.nearCutoffShare)} of trips left their first stop within {Math.round(v3.uncertainty.withinMin * 60)} seconds of the late or ahead cutoff. Because we record each vehicle once a minute, some of these could be labelled wrong.</Term>,
         // The share is of the raw runs seen; the kept count is the trips the figures describe, the header's count (CIV-910).
         glo && glo.noTimetableTrip > 0 && <Term t="Unscheduled trips">are runs whose trip number isn't on the schedule, such as extra buses. We left out {glo.noTimetableTrip.toLocaleString()} of them ({pct(glo.noTimetableTrip / (glo.kept + glo.noTimetableTrip + glo.excluded))} of trips seen), so the figures cover the {good.runs.toLocaleString()} scheduled trips.</Term>,
-        lo && lo.excluded > 0 && <Term t="Other services">are runs by {lo.excludedLabel ?? 'another service'} that shares this route number. We left out {lo.excluded.toLocaleString()} of them.</Term>,
+        // Counted over the good days, like every other figure (Ryan, CIV-910 Q4).
+        glo && glo.excluded > 0 && <Term t="Other services">are runs by {lo?.excludedLabel ?? 'another service'} that shares this route number. We left out {glo.excluded.toLocaleString()} of them.</Term>,
         <Term t="Mismatched trip numbers">are trips that ran far from the time their trip number is scheduled for ({pct(lim.swaps.rate)} of trips). We matched {lim.swaps.reassigned} to the trip they fit and left out {lim.swaps.dropped}.</Term>,
         unknown > 0 && <Term t="Unjudged trips">are trips we couldn't judge as run or not run. We left out {unknown.toLocaleString()} of them from Delivered.</Term>,
       ] },

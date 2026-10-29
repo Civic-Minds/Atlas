@@ -52,4 +52,12 @@ describe('agencySummary on the good-days basis', () => {
     expect(s.routes[0].lateByHour).toEqual([{ hour: 8, value: 0.2, n: 200 }]);
     expect(s.daily.tripTime).toEqual([30, 32]);
   });
+  // CIV-910 Q2 (Ryan): the footer names only days every route left out; a day one route counted is not named.
+  it('lists only the days every route left out', () => {
+    const other = { ...v3, weekly: { ...v3.weekly!, thisWeek: week({ dates: ['a', 'b', 'c'], healthyDates: ['a', 'c'] }) } } as unknown as LiveV3;
+    const both = agencySummary({ agency: 'ttc', totalRoutes: 2, routes: [{ route: '1', label: '1', v3 }, { route: '2', label: '2', v3: other }] });
+    expect(both.weekly?.leftOutEverywhere?.thisWeek).toEqual([]);
+    const same = agencySummary({ agency: 'ttc', totalRoutes: 2, routes: [{ route: '1', label: '1', v3 }, { route: '2', label: '2', v3 }] });
+    expect(same.weekly?.leftOutEverywhere?.thisWeek).toEqual(['c']);
+  });
 });
