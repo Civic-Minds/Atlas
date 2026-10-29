@@ -1,5 +1,5 @@
 import React from 'react';
-import { PANEL_SECTION_HEAD, LIST_ROW_PRIMARY, LIST_ROW_DIM, SELECTION_ACTIVE, SELECTION_ACTIVE_TEXT } from '../../styles';
+import { HEADING_GAP, PANEL_SECTION_HEAD, LIST_ROW_PRIMARY, LIST_ROW_DIM, SELECTION_ACTIVE, SELECTION_ACTIVE_TEXT } from '../../styles';
 import type { AgencySearchGroup } from '../../utils/agencySearch';
 import type { RouteSearchResult, StopSearchResult } from '../../utils/searchResults';
 import RouteListRow from '../RouteListRow';
@@ -33,7 +33,7 @@ export function SearchSplitList<T>({
   const items = [...inView, ...elsewhere];
   return (
     <div className="flex flex-col">
-      <div className={`${PANEL_SECTION_HEAD} mb-1`}>{headLabel}</div>
+      <div className={`${PANEL_SECTION_HEAD} ${HEADING_GAP}`}>{headLabel}</div>
       {items.map(item => <React.Fragment key={itemKey(item)}>{renderItem(item)}</React.Fragment>)}
     </div>
   );

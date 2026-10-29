@@ -1,6 +1,6 @@
 import { fireEvent, render, screen, within } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
-import { HeadwaySparkline, sparklineBarHeight, slowerDirectionKey, headwayAxisTicks } from '../HeadwaySparkline';
+import { HeadwaySparkline, sparklineBarHeight, slowerDirectionKey, headwayAxisTicks, FREQUENCY_LABEL } from '../HeadwaySparkline';
 import { SPARKLINE_HOURS } from '../../../../shared/config';
 
 describe('HeadwaySparkline', () => {
@@ -51,18 +51,21 @@ describe('HeadwaySparkline', () => {
     }
   });
 
-  it('draws every full-day period band and the hover band over the same plot height, with no second period label', () => {
+  it('draws the full-day period bands unnamed, right under the title, with the hover band over the bars (CIV-1094)', () => {
     const { container } = render(
       <HeadwaySparkline byHour={{ 6: 30, 12: 20, 18: 25, 21: 20, 24: 45 }} period="all" onPeriodChange={() => {}} expanded />,
     );
     const area = container.querySelector('.cursor-pointer') as HTMLElement;
-    const staticBands = Array.from(area.querySelectorAll(':scope > div.opacity-40'));
-    expect(staticBands).toHaveLength(6);
-    for (const band of staticBands) expect(band).toHaveClass('top-12', 'bottom-0');
+    expect(area).toHaveClass('pt-1');
+    const bands = screen.getByTestId('full-day-period-bands');
+    expect(bands).toHaveClass('top-1', 'bottom-0');
+    expect(bands.children).toHaveLength(6);
+    expect(bands).toHaveTextContent('');
     area.getBoundingClientRect = () => ({ left: 0, width: 240, top: 0, height: 48, right: 240, bottom: 48, x: 0, y: 0, toJSON: () => ({}) });
-    fireEvent.mouseMove(area, { clientX: 120 });
-    for (const band of screen.getAllByTestId('sparkline-hover-band')) expect(band).toHaveClass('top-12', 'bottom-0');
-    expect(area.querySelectorAll(':scope > span')).toHaveLength(0);
+    fireEvent.mouseMove(area, { clientX: ((SPARKLINE_HOURS.indexOf(12) + 0.5) / SPARKLINE_HOURS.length) * 240 });
+    for (const band of screen.getAllByTestId('sparkline-hover-band')) expect(band).toHaveClass('top-1', 'bottom-0');
+    // The full-day view names the period on each chart's title line instead.
+    expect(screen.queryByTestId('hovered-period-name')).toBeNull();
   });
 
   it('keeps the active period label clear of the expand control', () => {
@@ -97,18 +100,19 @@ describe('HeadwaySparkline', () => {
 
     const dialog = screen.getByRole('dialog', { name: 'Route 14 — Lakeshore full-day schedule' });
     expect(dialog).toBeInTheDocument();
-    // The frequency column is half the dialog wide, so the peaks use the short form.
-    expect(within(dialog).getByText('AM')).toBeInTheDocument();
-    expect(within(dialog).getByText('Midday')).toBeInTheDocument();
-    expect(within(dialog).getByText('Overnight')).toBeInTheDocument();
+    // Plain bands on every chart, no period names until an hour is hovered (Ryan, CIV-1094).
+    expect(within(dialog).getAllByTestId('full-day-period-bands')).toHaveLength(2);
+    expect(within(dialog).queryByTestId('hovered-period-name')).toBeNull();
     expect(within(dialog).queryByRole('button', { name: 'All directions' })).not.toBeInTheDocument();
     // Two directions show at once, so there is no toggle; each is named above its charts.
     expect(within(dialog).queryByRole('group', { name: 'Schedule direction' })).not.toBeInTheDocument();
     expect(within(dialog).getByText('Southbound')).toBeInTheDocument();
     expect(within(dialog).getByText('Northbound')).toBeInTheDocument();
     expect(within(dialog).getAllByTestId('full-day-direction')).toHaveLength(2);
-    // The period names show once, above the first direction.
-    expect(within(dialog).getAllByText('Midday')).toHaveLength(1);
+    // Each direction's frequency chart is titled right above it; with no trip times, there is no trip time chart.
+    for (const heading of within(dialog).getAllByTestId('full-day-frequency-heading')) expect(heading).toHaveTextContent(FREQUENCY_LABEL);
+    expect(within(dialog).getAllByTestId('full-day-frequency-heading')).toHaveLength(2);
+    expect(within(dialog).queryByTestId('full-day-trip-time-heading')).toBeNull();
     expect(within(dialog).queryByText(/Hover over an hour/)).toBeNull();
   });
 
@@ -267,24 +271,21 @@ describe('HeadwaySparkline', () => {
     expect(blocks).toHaveLength(2);
     const strips = within(dialog).getAllByTestId('trip-time-strip');
     expect(strips).toHaveLength(2);
-    // The column is named once (desktop); each strip keeps its own label for the stacked phone layout, hidden from sm up.
-    expect(within(dialog).getAllByText('Trip time')).toHaveLength(3);
-    // 2x2: frequency charts in the left column, trip time in the right, a direction heading once per row, Westbound over Eastbound.
+    // Each trip time chart is titled once, on its own title row.
+    expect(within(dialog).getAllByTestId('full-day-trip-time-heading')).toHaveLength(2);
+    // A row per direction: its heading, then Frequency beside Trip time (stacked on a phone).
     const grid = within(dialog).getByTestId('full-day-grid');
-    expect(grid).toHaveClass('sm:grid-cols-2');
     expect(within(grid).getAllByText(/^(Eastbound|Westbound)$/)).toHaveLength(2);
     for (const block of blocks) {
-      expect(block.className).toContain('contents');
-      expect(block.children[0]).toHaveClass('sm:col-span-2');
-      expect(block.children[1].querySelector('.relative.z-10.flex')).not.toBeNull();
-      expect(block.children[2].querySelector('[data-testid="trip-time-strip"]')).not.toBeNull();
+      expect(block.children[0]).toHaveTextContent(/^(Eastbound|Westbound)$/);
+      const row = block.children[1];
+      expect(row).toHaveClass('sm:grid-cols-2');
+      expect(row.children[0].querySelector('.relative.z-10.flex')).not.toBeNull();
+      expect(row.children[1].querySelector('[data-testid="trip-time-strip"]')).not.toBeNull();
+      // Every chart has its own clock row directly under it.
+      for (const cell of Array.from(row.children)) expect(cell.lastElementChild).toHaveAttribute('data-testid', 'full-day-clock-labels');
     }
-    // Every one of the four charts has its own clock row directly under it.
     expect(within(dialog).getAllByTestId('full-day-clock-labels')).toHaveLength(4);
-    for (const block of blocks) {
-      expect(block.children[1].lastElementChild).toHaveAttribute('data-testid', 'full-day-clock-labels');
-      expect(block.children[2].lastElementChild).toHaveAttribute('data-testid', 'full-day-clock-labels');
-    }
     // Four charts at the paired height (96px on desktop).
     const columns = dialog.querySelectorAll<HTMLElement>('.relative.z-10.flex > div > div');
     expect(columns.length).toBeGreaterThan(0);
@@ -311,14 +312,16 @@ describe('HeadwaySparkline', () => {
     // Each chart shows its own number for that hour above it; a chart with no value there shows nothing.
     const values = within(dialog).getAllByTestId('full-day-chart-value').map(el => el.textContent);
     expect(values).toEqual(['every 25 min', 'about 52 min', 'every 35 min', 'about 50 min']);
-    // The same hour is lit in all four charts.
+    // The same hour is lit in all four charts, and each title line names its period, as the card's chart does (CIV-1094).
     expect(dialog.querySelectorAll('[data-testid="sparkline-hover-column"]')).toHaveLength(2);
+    expect(within(dialog).getAllByTestId('hovered-period-name').map(el => el.textContent)).toEqual(['PM peak', 'PM peak', 'PM peak', 'PM peak']);
     const lit = (strip: HTMLElement) => within(strip).getAllByTestId('trip-time-bar').filter(bar => bar.className.includes('opacity-75') || bar.className.includes('opacity-100'));
     expect(lit(strips[1])).toHaveLength(1);
     fireEvent.mouseLeave(strips[0].querySelector(".items-end")!);
     expect(readout.textContent).toBe('');
     expect(within(dialog).getAllByTestId('full-day-chart-value').map(el => el.textContent)).toEqual(['', '', '', '']);
     expect(dialog.querySelectorAll('[data-testid="sparkline-hover-column"]')).toHaveLength(0);
+    expect(within(dialog).queryAllByTestId('hovered-period-name')).toHaveLength(0);
 
     // Hovering the second direction's frequency chart shows its period's band in both directions.
     const chart = blocks[1].querySelector('.relative.z-10.flex')!.parentElement!;
@@ -350,11 +353,13 @@ describe('HeadwaySparkline', () => {
     // One block, no direction heading (the title already names the route), frequency left and trip time right.
     const [block] = within(dialog).getAllByTestId('full-day-direction');
     expect(within(dialog).getAllByTestId('full-day-direction')).toHaveLength(1);
-    expect(block.children).toHaveLength(2);
-    expect(block.children[0].querySelector('.relative.z-10.flex')).not.toBeNull();
-    expect(block.children[1].querySelector('[data-testid="trip-time-strip"]')).not.toBeNull();
+    expect(block.children).toHaveLength(1);
+    const row = block.children[0];
+    expect(row.children).toHaveLength(2);
+    expect(row.children[0].querySelector('.relative.z-10.flex')).not.toBeNull();
+    expect(row.children[1].querySelector('[data-testid="trip-time-strip"]')).not.toBeNull();
     // A clock row directly under each chart, and a y axis on each.
-    for (const cell of Array.from(block.children)) {
+    for (const cell of Array.from(row.children)) {
       expect(cell.lastElementChild).toHaveAttribute('data-testid', 'full-day-clock-labels');
       expect(within(cell as HTMLElement).getByTestId('full-day-axis')).toBeInTheDocument();
     }
@@ -381,7 +386,7 @@ describe('HeadwaySparkline', () => {
         />,
       );
       fireEvent.click(screen.getByRole('button', { name: 'Expand schedule' }));
-      const header = within(screen.getByRole('dialog')).getByTestId('full-day-grid').querySelector('.hidden.sm\\:block.pl-11')!;
+      const header = within(screen.getByRole('dialog')).getByTestId('full-day-trip-time-heading');
       const text = header.textContent;
       unmount();
       return text;

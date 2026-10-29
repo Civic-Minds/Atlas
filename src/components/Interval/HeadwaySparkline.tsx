@@ -2,10 +2,9 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { headwayToTierColor } from '../../utils/colors';
 import { useColorMode } from '../../hooks/useColorMode';
 export { headwayToTierColor };
-import { CARD_NOTE, CHART_HEADING, CHART_PERIOD_LABEL } from '../../styles';
+import { CARD_NOTE, CHART_HEADING, HEADING_GAP } from '../../styles';
 import { SPARKLINE_HOURS, SPARKLINE_HOUR_LABELS } from '../../../shared/config';
 import { clockTime } from '../../../shared/timeText';
-import { PERIOD_LABELS } from '../../hooks/useIntervalStats';
 import type { TimePeriod } from '../../hooks/useIntervalStats';
 import type { HeadwayByPeriod, HeadwayByHour } from '../../hooks/useAgencyData';
 import type { HeadwayByHourMaxGap } from '../../../shared/config';
@@ -18,7 +17,8 @@ import { type TripTimeSeries } from '../../utils/tripTime';
 import { syncUrlParams } from '../../utils/syncUrlParams';
 import { PHONE_MEDIA_QUERY, useMediaQuery } from '../../hooks/useMediaQuery';
 import { encodeFullDayUrlState, parseFullDayUrlState } from '../../utils/shareUrlState';
-import { HOUR_TO_PERIOD, PERIOD_BANDS, PERIOD_OVERVIEW_BANDS } from '../../utils/sparklinePeriods';
+import { HOUR_TO_PERIOD, PERIOD_BANDS } from '../../utils/sparklinePeriods';
+import { FullDayPeriodBands, HoveredPeriodName } from './FullDayPeriodBands';
 import { headwayAxisTicks, hourBarColorHeadway, hourBarEmphasis, hourChartLitPeriod, hourChartMaxFreq, sparklineBarHeight } from '../../utils/hourChartModel';
 export { headwayAxisTicks, sparklineBarHeight };
 
@@ -59,6 +59,9 @@ function ClockLabels({ className = '' }: { className?: string }) {
     </div>
   );
 }
+
+/** The full-day view's frequency chart title, beside "Trip time" (Ryan, CIV-1094). */
+export const FREQUENCY_LABEL = 'Frequency';
 
 function formatHourTitle(h: number, headway: number): string {
   return `${formatClock(h * 60)}: ${headwayEvery(headway)}`;
@@ -134,13 +137,11 @@ interface HourlySparklineProps {
    */
   sharedHour?: number | null;
   onSharedHour?: (hour: number | null) => void;
-  /** Name the periods along the top (default). Off for the second block, so the names show once. */
-  showPeriodLabels?: boolean;
   /** Y-axis ticks (full-day, both directions): drawn over the bars, labels in a gutter the parent leaves. */
   yAxis?: AxisTick[];
 }
 
-export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directionOptions, period, onPeriodChange, onPeriodHover, onHourHover, allowExpand = false, reserveStackedLegendSpace = false, title = 'Schedule overview', seriesLabel, expanded = false, tripTime, legendStackedByHour, legendInvisible = false, scaleMaxFreq, sharedHour, onSharedHour, showPeriodLabels = true, yAxis }: HourlySparklineProps) {
+export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directionOptions, period, onPeriodChange, onPeriodHover, onHourHover, allowExpand = false, reserveStackedLegendSpace = false, title = 'Schedule overview', seriesLabel, expanded = false, tripTime, legendStackedByHour, legendInvisible = false, scaleMaxFreq, sharedHour, onSharedHour, yAxis }: HourlySparklineProps) {
   const colorMode = useColorMode();
   const [hoveredPeriod, setHoveredPeriod] = useState<string | null>(null);
   const [hoveredHour, setHoveredHour] = useState<number | null>(null);
@@ -176,7 +177,6 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
       ? (phone ? SPARKLINE_PAIRED_HEIGHT_PHONE : SPARKLINE_PAIRED_HEIGHT)
       : (phone ? SPARKLINE_EXPANDED_HEIGHT_PHONE : SPARKLINE_EXPANDED_HEIGHT))
     : SPARKLINE_CARD_HEIGHT;
-  const labelRow = expanded && showPeriodLabels;
   const displayedByHour = byHour;
   // The full-day view shows the direction picked with the pills above it;
   // the inline chart always shows the route's merged schedule.
@@ -237,7 +237,7 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
   const hoverPeriod = sharedMode ? (sharedHour != null ? HOUR_TO_PERIOD[sharedHour] ?? null : null) : hoveredPeriod;
   const litPeriod = hourChartLitPeriod(hoverPeriod, activePeriodKey, displayedByHour, HOURS);
   const bands = litPeriod ? PERIOD_BANDS[litPeriod] : null;
-  // The full-day chart already labels every period along its top, so only the route card's chart names the hovered one.
+  // The full-day view names the hovered period on each chart's title line (CIV-1094), so only the card's chart names it here.
   const activeLabelKey = (expanded ? null : hoveredPeriod ?? (period && period !== 'all' ? period : null)) as TimePeriod | null;
   const legendSource = legendStackedByHour ?? stackedByHour;
   const stackedLegend = legendSource
@@ -263,42 +263,21 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
     <div className={`relative ${sharedMode ? '' : expanded ? 'mt-2 mb-4' : 'mt-6 mb-4'}`}>
       {allowExpand && !expanded && <ExpandButton label="Expand schedule" onClick={() => setIsExpanded(true)} />}
       <div
-        className={`relative ${expanded ? (labelRow ? 'pt-12' : 'pt-2') : 'pt-5'} ${interactive ? 'cursor-pointer select-none' : ''}`}
+        className={`relative ${expanded ? 'pt-1' : 'pt-5'} ${interactive ? 'cursor-pointer select-none' : ''}`}
         onClick={handleClick}
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
         >
-        {expanded && PERIOD_OVERVIEW_BANDS.map(band => (
-          <div
-            key={band.key}
-            className={`absolute ${labelRow ? 'top-12' : 'top-2'} bottom-0 rounded-sm pointer-events-none odd:bg-[var(--bg-btn-hover)] even:bg-transparent opacity-40`}
-            style={{ left: `${band.left * 100}%`, width: `${band.width * 100}%` }}
-          >
-            {labelRow && (
-              <span className={`absolute -top-6 left-0.5 sm:left-1 ${CHART_PERIOD_LABEL} whitespace-nowrap`}>
-                {band.label.endsWith(' peak') ? (
-                  <>
-                    <span className="sm:hidden" aria-hidden="true">{band.label.replace(' peak', '')}</span>
-                    <span className="hidden sm:inline">{band.label}</span>
-                  </>
-                ) : band.label}
-              </span>
-            )}
-          </div>
-        ))}
-        {yAxis && <AxisOverlay ticks={yAxis} height={H} className={labelRow ? 'top-12' : 'top-2'} />}
-        {activeLabelKey && (
-          <span className={`absolute top-0 ${CARD_NOTE} pointer-events-none ${allowExpand && !expanded ? 'right-7' : 'right-0'}`}>
-            {PERIOD_LABELS[activeLabelKey]}
-          </span>
-        )}
+        {expanded && <FullDayPeriodBands className="inset-x-0 top-1 bottom-0" />}
+        {yAxis && <AxisOverlay ticks={yAxis} height={H} className="top-1" />}
+        <HoveredPeriodName period={activeLabelKey} className={`absolute top-0 ${allowExpand ? 'right-7' : 'right-0'}`} />
         {/* Hover region highlight — visible on light bg. It starts below the label row
             (the top padding), so the period label sits above it, not inside it. */}
         {bands?.map((band, i) => (
           <div
             key={i}
             data-testid="sparkline-hover-band"
-            className={`absolute ${expanded ? (labelRow ? 'top-12' : 'top-2') : 'top-5'} bottom-0 rounded-sm pointer-events-none`}
+            className={`absolute ${expanded ? 'top-1' : 'top-5'} bottom-0 rounded-sm pointer-events-none`}
             style={{
               left: `${band.left * 100}%`,
               width: `${band.width * 100}%`,
@@ -429,79 +408,84 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
               </div>
             )}
             <>
-                {/* Two columns on desktop: the frequency charts on the left, the trip time charts on the right
-                    (Westbound over Eastbound when both directions show). On a phone the same cells stack. */}
-                <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 sm:gap-x-4" data-testid="full-day-grid">
-                  {/* The period names sit once above the frequency column (the bands matter only there). */}
-                  <div className="pl-11 sm:col-start-1 sm:row-start-1" data-testid="full-day-period-labels">
-                    <div className="relative h-4 mb-1">
-                      {PERIOD_OVERVIEW_BANDS.map(band => (
-                        <span
-                          key={band.key}
-                          // On a phone the last name ends at the chart's right edge (its start would run past it) and Night is
-                          // dropped: it would overlap both its neighbours.
-                          className={`absolute top-0 ${CHART_PERIOD_LABEL} whitespace-nowrap ${band.key === 'late' ? 'hidden sm:inline' : ''} ${phone && band.key === 'overnight' ? 'right-0' : ''}`}
-                          style={phone && band.key === 'overnight' ? undefined : { left: `${band.left * 100}%` }}
-                        >
-                          {/* The frequency column is half the dialog wide, so the peaks use the short form ("AM", "PM"). */}
-                          {band.label.replace(' peak', '')}
-                        </span>
-                      ))}
+                {(() => {
+                  const loop = gridBlocks.some(option => option.tripTime?.loop);
+                  // Each chart's title sits right above it, with the hovered hour's period name (as on the card's chart)
+                  // and its number at the other end of the same line, so nothing jumps and no line is left empty.
+                  const modalPeriod = modalHour != null ? (HOUR_TO_PERIOD[modalHour] as TimePeriod | undefined) ?? null : null;
+                  const titleRow = (title: string, value: string, testId: string) => (
+                    <div className={`flex items-baseline justify-between gap-2 leading-4 ${CHART_HEADING} ${HEADING_GAP}`} data-testid={testId}>
+                      <span>{title}</span>
+                      <span className="flex items-baseline gap-2" aria-hidden="true">
+                        {/* The title line's own line height, so the name never makes the line taller. */}
+                        <HoveredPeriodName period={modalPeriod} className="leading-[inherit]" />
+                        <span className="text-[var(--text-muted)]" data-testid="full-day-chart-value">{value}</span>
+                      </span>
                     </div>
-                  </div>
-                  <div className={`hidden sm:block pl-11 ${CHART_HEADING} sm:col-start-2 sm:row-start-1 sm:mb-1`}>{tripTimeHeading(gridBlocks.some(option => option.tripTime?.loop))}</div>
-                  {gridBlocks.map(option => {
+                  );
+                  const frequencyCell = (option: typeof gridBlocks[number]) => {
                     const hw = modalHour != null ? option.byHour[modalHour] : null;
-                    const tt = modalHour != null ? option.tripTime?.byHour[modalHour] : null;
                     return (
-                      <div key={option.key} className="contents" data-testid="full-day-direction">
-                        {bothDirections && <div className="mt-3 mb-1 sm:col-span-2 text-sm font-black text-[var(--text-primary)]">{option.label}</div>}
-                        <div className="relative pl-11">
-                          {/* This chart's own number for the hovered hour, in a fixed spot so nothing jumps. */}
-                          <div className="h-4 text-xs font-bold leading-4 text-[var(--text-muted)]" data-testid="full-day-chart-value" aria-hidden="true">
-                            {hw != null ? headwayEvery(hw) : ''}
-                          </div>
-                          <HeadwaySparkline
-                            byHour={option.byHour}
-                            period="all"
-                            onPeriodChange={() => {}}
-                            onPeriodHover={onPeriodHover}
-                            onHourHover={onHourHover}
-                            title={title}
-                            expanded
-                            scaleMaxFreq={pairMaxFreq}
-                            sharedHour={modalHour}
-                            onSharedHour={setModalHour}
-                            showPeriodLabels={false}
-                            yAxis={pairFreqTicks}
-                          />
-                          <ClockLabels />
-                        </div>
-                        {HOURS.some(h => option.tripTime?.byHour[h] != null) && <div className="relative pl-11">
-                          <TripTimeStrip
-                            above={(
-                              <div className="h-4 text-xs font-bold leading-4 text-[var(--text-muted)]" data-testid="full-day-chart-value" aria-hidden="true">
-                                {tt != null ? tripTimeAbout(tt) : ''}
-                              </div>
-                            )}
-                            series={option.tripTime}
-                            height={pairH}
-                            serviceHours={new Set(HOURS.filter(h => option.byHour[h] != null))}
-                            hoveredHour={modalHour}
-                            onHourHover={setModalHour}
-                            className="mt-3 sm:mt-0"
-                            labelClassName="sm:hidden"
-                            barsClassName="mt-1 sm:mt-2"
-                            scaleMax={pairTripMax}
-                            axis={pairTripTicks}
-                          />
-                          {/* Every chart has its own clock row directly under it. */}
-                          <ClockLabels />
-                        </div>}
+                      <div className="relative pl-11" data-testid="full-day-frequency-cell">
+                        {titleRow(FREQUENCY_LABEL, hw != null ? headwayEvery(hw) : '', 'full-day-frequency-heading')}
+                        <HeadwaySparkline
+                          byHour={option.byHour}
+                          period="all"
+                          onPeriodChange={() => {}}
+                          onPeriodHover={onPeriodHover}
+                          onHourHover={onHourHover}
+                          title={title}
+                          expanded
+                          scaleMaxFreq={pairMaxFreq}
+                          sharedHour={modalHour}
+                          onSharedHour={setModalHour}
+                          yAxis={pairFreqTicks}
+                        />
+                        <ClockLabels />
                       </div>
                     );
-                  })}
-                </div>
+                  };
+                  const tripTimeCell = (option: typeof gridBlocks[number]) => {
+                    if (!HOURS.some(h => option.tripTime?.byHour[h] != null)) return null;
+                    const tt = modalHour != null ? option.tripTime?.byHour[modalHour] : null;
+                    return (
+                      <div className="relative pl-11" data-testid="full-day-trip-time-cell">
+                        <TripTimeStrip
+                          above={titleRow(tripTimeHeading(loop), tt != null ? tripTimeAbout(tt) : '', 'full-day-trip-time-heading')}
+                          series={option.tripTime}
+                          height={pairH}
+                          serviceHours={new Set(HOURS.filter(h => option.byHour[h] != null))}
+                          hoveredHour={modalHour}
+                          onHourHover={setModalHour}
+                          className=""
+                          labelClassName="hidden"
+                          barsClassName=""
+                          scaleMax={pairTripMax}
+                          axis={pairTripTicks}
+                          bands
+                        />
+                        <ClockLabels />
+                      </div>
+                    );
+                  };
+                  const directionLabel = (option: typeof gridBlocks[number]) => bothDirections && (
+                    <div className={`${HEADING_GAP} text-sm font-black text-[var(--text-primary)]`}>{option.label}</div>
+                  );
+                  return (
+                    // A row per direction, Frequency beside Trip time, on plain bands (Ryan, CIV-1094). On a phone the two stack.
+                    <div className="mt-3 flex flex-col gap-y-4" data-testid="full-day-grid">
+                      {gridBlocks.map(option => (
+                        <div key={option.key} data-testid="full-day-direction">
+                          {directionLabel(option)}
+                          <div className="grid grid-cols-1 gap-y-3 sm:grid-cols-2 sm:gap-x-4">
+                            {frequencyCell(option)}
+                            {tripTimeCell(option)}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  );
+                })()}
                 {/* Screen-reader text only: the hovered hour once, then each direction's frequency and
                     trip time in their existing wording. Nothing visible, so the dialog reserves no space. */}
                 <div className="sr-only" aria-live="polite" data-testid="full-day-readout">
