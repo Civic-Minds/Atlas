@@ -9,6 +9,11 @@ export interface FeedQualityMetrics {
   shapeAnomalies: number;
   routeHeadwayMismatches: number;
   featureCount: number;
+  /**
+   * The expiry the rating was scored with (CIV-533), so a later re-score reads the same date.
+   * Missing on ratings made before it was stored.
+   */
+  feedExpiry?: string | null;
 }
 
 export interface FeedQuality {
@@ -16,11 +21,13 @@ export interface FeedQuality {
   score: number;
   reasons: string[];
   metrics: FeedQualityMetrics;
+  /** When the feed was processed and measured. */
   checkedAt: string;
+  /** When the date-based part (the expiry check) was last scored, if later than checkedAt (CIV-533). */
+  scoredAt?: string;
 }
 
 export interface FeedQualityInput extends FeedQualityMetrics {
-  feedExpiry?: string | null;
   checkedAt?: string;
 }
 
@@ -89,6 +96,27 @@ export function assessFeedQuality(input: FeedQualityInput): FeedQuality {
   return { status, score: Math.max(0, score), reasons, metrics: metricsFrom(input), checkedAt };
 }
 
+/**
+ * CIV-533: re-score a stored rating for `today` without reprocessing the feed. The only date-based
+ * part is the expiry check; everything else comes from the stored metrics, with the expiry the rating
+ * was scored with. checkedAt stays the date the feed was measured; scoredAt records today.
+ *
+ * A rating made before the expiry was stored is re-scored with the registry's `fallbackExpiry` only
+ * when that reproduces the stored score and status on its own date. Otherwise the expiry it used is
+ * unknown (coast-transit-ms: scored expired, registry now 20261231), and it stays as it is rather than
+ * reading healthier than it was measured.
+ */
+export function rescoreFeedQuality(quality: FeedQuality, fallbackExpiry: string | null | undefined, today: string): FeedQuality {
+  let feedExpiry = quality.metrics.feedExpiry;
+  if (feedExpiry === undefined) {
+    const own = assessFeedQuality({ ...quality.metrics, feedExpiry: fallbackExpiry, checkedAt: quality.scoredAt ?? quality.checkedAt });
+    if (own.status !== quality.status || own.score !== quality.score) return quality;
+    feedExpiry = fallbackExpiry ?? null;
+  }
+  const scored = assessFeedQuality({ ...quality.metrics, feedExpiry, checkedAt: today });
+  return { ...scored, checkedAt: quality.checkedAt, scoredAt: today };
+}
+
 function metricsFrom(input: FeedQualityInput): FeedQualityMetrics {
   return {
     validationErrors: input.validationErrors,
@@ -96,6 +124,7 @@ function metricsFrom(input: FeedQualityInput): FeedQualityMetrics {
     shapeAnomalies: input.shapeAnomalies,
     routeHeadwayMismatches: input.routeHeadwayMismatches,
     featureCount: input.featureCount,
+    ...(input.feedExpiry !== undefined ? { feedExpiry: input.feedExpiry } : {}),
   };
 }
 

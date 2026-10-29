@@ -57,7 +57,7 @@ import {
   type AgencyCountrySource,
 } from './countryLaunchGate.js';
 import { buildHiddenRoutesForAgency, mergeHiddenRoutes, type HiddenRoutesFile, type HiddenRouteRecord } from './hiddenRoutes.js';
-import type { FeedQuality } from '../shared/feedQuality.js';
+import { rescoreFeedQuality, type FeedQuality } from '../shared/feedQuality.js';
 import { historyHeadlineWins } from './historyHeadlinePick.js';
 import { historyRouteKey } from './historyRouteKey.js';
 import { baselineFingerprint, buildSidecar, buildV2Routes, buildV2RoutesMerged, fingerprintChanged, fingerprintOf, historyV2Enabled, r2ArchiveSink, splitFeaturesBySource, writeSidecar, type LatestRouteEntry, type V2FeedPart } from './historyV2.js';
@@ -827,6 +827,11 @@ async function main() {
       if (result.stale) stale++;
       if (result.refused) refused.push(agency.slug);
       refreshStatuses[agency.slug] = result.processed ? 'processed' : result.stale ? 'stale' : result.refused ? 'refused' : 'unchanged';
+      // CIV-533: a feed this run did not process (unchanged, stale, refused) keeps its measured rating,
+      // re-scored for today's date; a processed feed already has this run's rating.
+      if (!result.processed && agency.feedQuality) {
+        agency.feedQuality = rescoreFeedQuality(agency.feedQuality, agency.lastFeedExpiry, new Date().toISOString().slice(0, 10));
+      }
       if (result.processed) {
         uploads++;
         if (result.hiddenRoutes) refreshedHiddenRoutes.set(agency.slug, result.hiddenRoutes);
