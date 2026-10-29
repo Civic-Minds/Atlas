@@ -575,6 +575,7 @@ export function HeadwayBadge({
   suffix,
   suffixTone = 'dim',
   className = '',
+  secondLine = false,
 }: {
   headway: number;
   colorHeadway?: number | null;
@@ -584,10 +585,13 @@ export function HeadwayBadge({
   /** Colour of the suffix: dim by default; negative (red) or positive (green) for a change, as History's snapshot rows show it. */
   suffixTone?: 'dim' | 'negative' | 'positive';
   className?: string;
+  /** In a lighter second line of text (search suggestions): the dot and words take that line's own style. */
+  secondLine?: boolean;
 }) {
   const colorMode = useColorMode();
-  const dot = <span className="w-2 h-2 rounded-full shrink-0" style={{ background: headwayToTierColor(colorHeadway ?? headway, colorMode) }} />;
   const words = label ?? fmtHeadway(headway);
+  if (secondLine) return <SecondLineBadge color={headwayToTierColor(colorHeadway ?? headway, colorMode)} words={words} />;
+  const dot = <span className="w-2 h-2 rounded-full shrink-0" style={{ background: headwayToTierColor(colorHeadway ?? headway, colorMode) }} />;
   const base = 'font-black text-[var(--text-primary)] text-xs leading-snug';
   return (
     <span className={`inline-flex items-center gap-1 ${base} ${twoPart(words) ? 'min-w-0' : 'shrink-0'} ${className}`}>
@@ -602,8 +606,14 @@ export function HeadwayBadge({
  * A route with no regular frequency to show: the grey dot and a word ("limited", "no regular service"), styled like HeadwayBadge.
  * With no label it is the grey dot alone, kept one text line tall so it sits beside the row's first line.
  */
-export function LimitedBadge({ label, className = '' }: { label?: string; className?: string }) {
+/** The tier dot and words inside a line of text that sets its own weight and colour (HeadwayBadge / LimitedBadge `secondLine`). */
+function SecondLineBadge({ color, words }: { color: string; words: string }) {
+  return <><span className="inline-block w-2 h-2 rounded-full shrink-0 mr-1 align-[1px]" style={{ background: color }} />{words}</>;
+}
+
+export function LimitedBadge({ label, className = '', secondLine = false }: { label?: string; className?: string; /** See HeadwayBadge. */ secondLine?: boolean }) {
   const colorMode = useColorMode();
+  if (secondLine) return <SecondLineBadge color={getTierColor(null, colorMode)} words={label ?? ''} />;
   const dot = <span className="w-2 h-2 rounded-full shrink-0" style={{ background: getTierColor(null, colorMode) }} />;
   if (label && twoPart(label)) return <TwoPartBadge dot={dot} text={label} className={`text-xs font-black text-[var(--text-primary)] leading-snug ${className}`} />;
   // A several-word label ("no regular service during this period") breaks between words, right-aligned, where the row is
