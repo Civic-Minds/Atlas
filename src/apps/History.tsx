@@ -10,7 +10,7 @@ import { TRANSITION_BASE, AGENCY_LIST_FILTERS, PILL_SURFACE, PILL_SCROLL_ROW, SI
 import { routeLabels, titleCase } from '../utils/format';
 import { agencyNames } from '../utils/agencyName';
 import CardRouteList from '../components/Interval/CardRouteList';
-import { AgencyCardTop, CARD_CALLOUT_HEADLINE, CARD_CALLOUT_HEADLINE_TONE, CARD_CALLOUT_TEXT, CARD_HEADER_BLOCK, CardCallout, CardDirectionRow, CardReportButton, SIDEBAR_CARD_BODY, SidebarCardHeaderBlock, SidebarCardListRows, SidebarCardShell } from '../components/Interval/cardUi';
+import { AgencyCardTop, CardHelpNotice, CARD_CALLOUT_HEADLINE, CARD_CALLOUT_HEADLINE_TONE, CARD_CALLOUT_TEXT, CARD_HEADER_BLOCK, CardCallout, CardDirectionRow, CardReportButton, SIDEBAR_CARD_BODY, SidebarCardHeaderBlock, SidebarCardListRows, SidebarCardShell } from '../components/Interval/cardUi';
 import RouteCardTitle from '../components/RouteCardTitle';
 import { SearchSuggestionsPanel, type RecentRoute, type SuggestedRoute } from '../components/Interval/SearchSuggestionsPanel';
 import type { RouteListDisplay } from '../utils/effectiveHeadway';
@@ -638,9 +638,9 @@ function HistoryAgencyPanel({
           )}
         >
           {/* N55 (Ryan): a linked route History has no past schedules for says so, above the agency's list. */}
-          {missingRoute && <p className={`${CARD_NOTICE} mt-1`}>{HISTORY_ROUTE_NOT_COVERED}</p>}
+          {missingRoute && <CardHelpNotice className="mt-1" message={HISTORY_ROUTE_NOT_COVERED} />}
           {!routeQuery && !activeFilter && (
-            <p className={`${CARD_NOTICE} mt-1`}>{HISTORY_ROUTE_ORDER_NOTE}</p>
+            <CardHelpNotice className="mt-1" message={HISTORY_ROUTE_ORDER_NOTE} />
           )}
         </AgencyCardTop>
         {routeFilters.length > 0 && (
