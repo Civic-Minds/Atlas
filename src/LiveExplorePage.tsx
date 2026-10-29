@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { useParams } from 'react-router';
+import { useLiveAgencyName } from './hooks/useLiveAgencyName';
 import { ATLAS_MODE, FEATURES } from '../shared/config';
 import {
   LINK_LABELS, linkValueText,
@@ -183,6 +184,7 @@ function Main({ v3, band, dir, uncertain, sel, setSel }: {
 
 export default function LiveExplorePage() {
   const { agency = '', route = '' } = useParams();
+  const agencyName = useLiveAgencyName(agency);
   const state = useLiveDashboard(FEATURES.liveReports ? agency : null, route);
   const [dir, setDir] = useState<number | null>(() => readUrlNumberParam('dir'));
   const [day, setDay] = useState<Day>(() => { const d = readParam('day'); return d === 'weekday' || d === 'weekend' ? d : 'all'; });
@@ -192,10 +194,10 @@ export default function LiveExplorePage() {
   const routeTitle = state.kind === 'done' && state.data.status === 'ready' ? state.data.routeTitle : null;
   useEffect(() => {
     if (!agency || !route) return;
-    applySeoToDocument(document, { title: liveReportTitle(routeTitle || `${agency.toUpperCase()} ${route}`), description: '', canonicalUrl: `${ATLAS_MODE === 'public' ? SITE_URL : window.location.origin}${window.location.pathname}`, noindex: true, matchedPath: window.location.pathname });
-  }, [agency, route, routeTitle]);
+    applySeoToDocument(document, { title: liveReportTitle(routeTitle || `${agencyName} ${route}`), description: '', canonicalUrl: `${ATLAS_MODE === 'public' ? SITE_URL : window.location.origin}${window.location.pathname}`, noindex: true, matchedPath: window.location.pathname });
+  }, [agencyName, route, routeTitle]);
   if (!FEATURES.liveReports) return <LiveOffNotice />;
-  const title = `${agency.toUpperCase()} ${route}`;
+  const title = `${agencyName} ${route}`;
   const back = FEATURES.live ? <ArrowLink href="/apps/live">Open Live</ArrowLink> : null;
   const shell = (body: ReactNode) => <PageShell variant="wide" maxWidth="max-w-[1600px]">{body}</PageShell>;
   if (state.kind === 'loading') return shell(<p className="mt-24 text-sm text-[var(--text-muted)]" aria-busy="true">Loading {title}…</p>);

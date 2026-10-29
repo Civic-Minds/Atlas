@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { useParams } from 'react-router';
+import { useLiveAgencyName } from './hooks/useLiveAgencyName';
 import { FEATURES } from '../shared/config';
 
 import type { AgencySummary } from '../shared/liveAgency';
@@ -212,8 +213,8 @@ function LoadingWidget() {
 }
 
 /** The whole screen under the top bar: the map always, the overview on the left, the widgets on the right. */
-function Body({ agency, pickSlot, s, route, setRoute, dir, setDir, dirSlot, dataSlot, band, measure, setMeasure, pick, setPick }: {
-  agency: string; pickSlot: HTMLElement | null; dirSlot: HTMLElement | null; dataSlot: HTMLElement | null; s: AgencySummary; route: string | null; setRoute: (r: string | null) => void; dir: number | null; setDir: (d: number | null) => void; band: DashboardBand; measure: MapMeasure; setMeasure: (m: MapMeasure) => void; pick: MapPick | null; setPick: (p: MapPick | null) => void;
+function Body({ agency, agencyName, pickSlot, s, route, setRoute, dir, setDir, dirSlot, dataSlot, band, measure, setMeasure, pick, setPick }: {
+  agency: string; /** The agency's short name, for the back link. */ agencyName: string; pickSlot: HTMLElement | null; dirSlot: HTMLElement | null; dataSlot: HTMLElement | null; s: AgencySummary; route: string | null; setRoute: (r: string | null) => void; dir: number | null; setDir: (d: number | null) => void; band: DashboardBand; measure: MapMeasure; setMeasure: (m: MapMeasure) => void; pick: MapPick | null; setPick: (p: MapPick | null) => void;
 }) {
   const wide = useMediaQuery('(min-width: 1024px)');
   // On a phone the map sits above the widgets: a stop or stretch picked lower down (a "Stops most often late" row)
@@ -264,7 +265,7 @@ function Body({ agency, pickSlot, s, route, setRoute, dir, setDir, dirSlot, data
   const summary = useMemo(() => summaryWidgets(s), [s]);
   const backToNetwork = () => { setRoute(null); setDir(null); setPick(null); };
   // One panel, on the left: the network's overview with no route picked; the route's own figures once one is picked, with a way back.
-  const back: PanelWidget = { key: 'back', size: 'medium', node: <button type="button" onClick={backToNetwork} className="-my-[13px] py-[13px] pr-4 text-left text-sm font-bold text-[var(--text-primary)] hover:underline">← {agency.toUpperCase()}</button> };
+  const back: PanelWidget = { key: 'back', size: 'medium', node: <button type="button" onClick={backToNetwork} className="-my-[13px] py-[13px] pr-4 text-left text-sm font-bold text-[var(--text-primary)] hover:underline">← {agencyName}</button> };
   const routePanel: PanelWidget[] | null = !route ? null
     : v3 && ready ? [back, ...routeWidgets({ data: ready, v3, dir: shown, band, setPick, route: ready.route })]
     : [back, ...(own.kind === 'loading' ? [{ key: 'loading', size: 'medium' as const, node: <LoadingWidget /> }] : [])];
@@ -346,6 +347,7 @@ function Body({ agency, pickSlot, s, route, setRoute, dir, setDir, dirSlot, data
 /** The Live planner: the map always, the agency overview on the left, widgets that follow the selection on the right. State is in the address. */
 export default function LiveToolPage() {
   const { agency = '' } = useParams();
+  const agencyName = useLiveAgencyName(agency);
   const state = useLiveAgency(FEATURES.liveReports ? agency : '');
   const [route, setRoute] = useState<string | null>(() => readParam('route'));
   const [dir, setDir] = useState<number | null>(() => readUrlNumberParam('dir'));
@@ -366,10 +368,10 @@ export default function LiveToolPage() {
       stop: pick?.kind === 'stop' ? pick.stopId : null, seg: pick?.kind === 'segment' ? `${pick.fromStopId}>${pick.toStopId}` : null,
     });
   }, [route, dir, band, measure, pick]);
-  useEffect(() => { applySeoToDocument(document, { title: liveReportTitle(agency.toUpperCase()), description: '', canonicalUrl: window.location.href, noindex: true, matchedPath: window.location.pathname }); }, [agency]);
+  useEffect(() => { applySeoToDocument(document, { title: liveReportTitle(agencyName), description: '', canonicalUrl: window.location.href, noindex: true, matchedPath: window.location.pathname }); }, [agencyName]);
   if (!FEATURES.liveReports) return <LiveOffNotice />;
   const shell = (body: ReactNode) => <main className="relative flex h-screen min-h-0 flex-col overflow-hidden bg-[var(--bg-app)] text-[var(--text-primary)]">{body}</main>;
-  if (state.kind === 'loading') return shell(<p className="p-6 text-sm text-[var(--text-muted)]" aria-busy="true">Loading {agency.toUpperCase()}…</p>);
+  if (state.kind === 'loading') return shell(<p className="p-6 text-sm text-[var(--text-muted)]" aria-busy="true">Loading {agencyName}…</p>);
   if (state.kind === 'error') return shell(<p className="p-6 text-sm text-[var(--text-muted)]">{state.reason}</p>);
   if (state.data.status !== 'ready') return shell(<p className="p-6 text-sm text-[var(--text-muted)]">{state.data.status === 'no_analysis' ? devOnly(state.data.reason) : state.data.reason}</p>);
   const s = state.data.summary;
@@ -378,13 +380,13 @@ export default function LiveToolPage() {
       {/* On phones the bar's pills take two rows: 20px between rows and 10px below, so each pill's 44px tap area (PHONE_TAP_AREA) is its own. */}
       <header className={`${PILL_ROW} border-b border-[var(--border-primary)] bg-[var(--bg-header)] px-4 py-2 max-sm:gap-y-[20px] max-sm:pb-[10px]`}>
         <AtlasLogo href="/" ariaLabel="Atlas by Civic Minds" showMark={false} />
-        <button type="button" onClick={() => { setRoute(null); setDir(null); setPick(null); }} className="text-sm font-bold hover:underline">{agency.toUpperCase()}</button>
+        <button type="button" onClick={() => { setRoute(null); setDir(null); setPick(null); }} className="text-sm font-bold hover:underline">{agencyName}</button>
         <div ref={setDirSlot} className="contents" />
         <div ref={setDataSlot} className="contents" />
         {/* Time of day at the right end of the top bar (Ryan, 2026-10-26). */}
         <div className="ml-auto flex items-center gap-2"><div ref={setPickSlot} className="contents" /><PeriodMenu band={band} setBand={setBand} /></div>
       </header>
-      <Body agency={agency} pickSlot={pickSlot} dirSlot={dirSlot} dataSlot={dataSlot} s={s} route={route} setRoute={setRoute} dir={dir} setDir={setDir} band={band} measure={measure} setMeasure={setMeasure} pick={pick} setPick={setPick} />
+      <Body agency={agency} agencyName={agencyName} pickSlot={pickSlot} dirSlot={dirSlot} dataSlot={dataSlot} s={s} route={route} setRoute={setRoute} dir={dir} setDir={setDir} band={band} measure={measure} setMeasure={setMeasure} pick={pick} setPick={setPick} />
     </>,
   );
 }

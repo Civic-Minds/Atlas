@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
+import { useLiveAgencyName } from './hooks/useLiveAgencyName';
 import { ATLAS_MODE, FEATURES } from '../shared/config';
 import { type AgencyHotspotStop, type AgencyHotspotStretch, type AgencyRouteRow, type AgencySummary } from '../shared/liveAgency';
 import type { LiveAgencyResponse } from '../local-api/live-agency';
@@ -176,14 +177,15 @@ function StretchTable({ s, rows, caption, valueHeader, format }: { s: AgencySumm
 
 export default function LiveAgencyPage() {
   const { agency = '' } = useParams();
+  const agencyName = useLiveAgencyName(agency);
   // Live off: no request at all, only the notice.
   const state = useLiveAgency(FEATURES.liveReports ? agency : '');
   useEffect(() => {
     if (!agency) return;
-    applySeoToDocument(document, { title: liveReportTitle(agency.toUpperCase()), description: '', canonicalUrl: `${ATLAS_MODE === 'public' ? SITE_URL : window.location.origin}${window.location.pathname}`, noindex: true, matchedPath: window.location.pathname });
-  }, [agency]);
+    applySeoToDocument(document, { title: liveReportTitle(agencyName), description: '', canonicalUrl: `${ATLAS_MODE === 'public' ? SITE_URL : window.location.origin}${window.location.pathname}`, noindex: true, matchedPath: window.location.pathname });
+  }, [agency, agencyName]);
   if (!FEATURES.liveReports) return <LiveOffNotice />;
-  const name = agency.toUpperCase();
+  const name = agencyName;
   const back = FEATURES.live ? <ArrowLink href="/apps/live">Open Live</ArrowLink> : null;
   if (state.kind === 'loading') return <PageShell variant="wide"><p className="mt-24 text-sm text-[var(--text-muted)]" aria-busy="true">Loading {name}…</p></PageShell>;
   if (state.kind === 'error' || state.data.status !== 'ready') {
