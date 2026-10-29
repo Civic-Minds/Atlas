@@ -13,7 +13,7 @@ import DevHint from './components/Live/DevHint';
 import { applySeoToDocument } from './lib/seoDom';
 import { SITE_URL } from '../shared/seo';
 import { syncUrlParams } from './utils/syncUrlParams';
-import { titleCase } from './utils/format';
+import { stopNameCase } from './utils/format';
 import ErrorBoundary from './components/ErrorBoundary';
 import PageShell from './components/ui/PageShell';
 import EmptyPage from './components/ui/EmptyPage';
@@ -43,7 +43,7 @@ const NAME_KEYS = new Set(['name', 'fromName', 'toName']);
 /** Big per-stop number tables that hold no names, left alone. */
 const NO_NAMES = new Set(['stopHours', 'segmentLines']);
 const niceDeep = (x: unknown, key = ''): unknown => {
-  if (typeof x === 'string') return NAME_KEYS.has(key) ? titleCase(x) : x;
+  if (typeof x === 'string') return NAME_KEYS.has(key) ? stopNameCase(x) : x;
   if (Array.isArray(x)) return x.map(v => niceDeep(v, key));
   if (x && typeof x === 'object') return Object.fromEntries(Object.entries(x).map(([k, v]) => [k, NO_NAMES.has(k) ? v : niceDeep(v, k)]));
   return x;

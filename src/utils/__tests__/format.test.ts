@@ -315,3 +315,16 @@ describe('names in capitals with French linking words (CIV-1054)', () => {
     expect(routeLabelCase('Kendall/MIT Station')).toBe('Kendall/MIT Station');
   });
 });
+
+// CIV-1117 row 6 (Ryan): westbound and eastbound stay in capitals, even in a name the feed wrote in mixed case.
+describe('stopNameCase keeps WB and EB in capitals', () => {
+  it('fixes a mixed-case feed name', () => {
+    expect(stopNameCase('Park Lawn Rd at Gardiner Expressway (Wb On Ramp)')).toBe('Park Lawn Rd at Gardiner Expressway (WB On Ramp)');
+    expect(stopNameCase('Penn St. & 2nd St. Farside Eb')).toBe('Penn St. & 2nd St. Farside EB');
+  });
+  it('leaves words that only start with the letters alone', () => {
+    expect(stopNameCase('Webb Ave')).toBe('Webb Ave');
+    expect(stopNameCase('Eby St')).toBe('Eby St');
+    expect(stopNameCase('125 The Queensway')).toBe('125 The Queensway');
+  });
+});
