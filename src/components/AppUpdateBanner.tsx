@@ -1,5 +1,6 @@
 import { RefreshCw } from 'lucide-react';
 import { MAP_BADGE, Z_HEADER } from '../styles';
+import { MAP_BANNER_SLOT } from '../mapOverlayLayout';
 import { useAppUpdate } from '../utils/appUpdate';
 import { UPDATE_AVAILABLE_NOTICE } from '../content/noticeCopy';
 
@@ -12,7 +13,7 @@ export default function AppUpdateBanner() {
       role="status"
       aria-live="polite"
       data-map-overlay="update-banner"
-      className={`fixed bottom-6 left-1/2 h-8 max-sm:h-[32px] max-w-[calc(100vw-2rem)] -translate-x-1/2 ${Z_HEADER} ${MAP_BADGE} gap-3 text-xs font-bold text-[var(--text-muted)]`}
+      className={`${MAP_BANNER_SLOT} h-8 max-sm:h-[32px] max-w-[calc(100vw-2rem)] ${Z_HEADER} ${MAP_BADGE} gap-3 text-xs font-bold text-[var(--text-muted)]`}
     >
       <span>{UPDATE_AVAILABLE_NOTICE}</span>
       <button

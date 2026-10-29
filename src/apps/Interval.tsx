@@ -1,4 +1,5 @@
 import { PHONE_MEDIA_QUERY, phoneModeFlags, useMediaQuery } from '../hooks/useMediaQuery';
+import { MAP_OVERLAY_VARS, publishMapOverlayVar } from '../mapOverlayLayout';
 import React, { useState, useCallback, useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useLocation, useSearchParams } from 'react-router';
@@ -1035,11 +1036,16 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   useEffect(() => {
     const el = footerRowRef.current;
     if (!el || typeof ResizeObserver === 'undefined') return;
-    const measure = () => setFooterHeight(Math.round(el.getBoundingClientRect().height) || null);
+    const measure = () => {
+      const h = Math.round(el.getBoundingClientRect().height) || null;
+      setFooterHeight(h);
+      // On the page root too, for the overlays outside the map app (History's scrubber, the update banner; CIV-1136).
+      publishMapOverlayVar(MAP_OVERLAY_VARS.footerHeight, h ? `${h}px` : null);
+    };
     measure();
     const observer = new ResizeObserver(measure);
     observer.observe(el);
-    return () => observer.disconnect();
+    return () => { observer.disconnect(); publishMapOverlayVar(MAP_OVERLAY_VARS.footerHeight, null); };
   }, []);
 
   return (

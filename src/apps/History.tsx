@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef, useLayoutEffect, useId } from 'react';
+import { MAP_OVERLAY_VARS, MAP_SCRUBBER_FOOTER_RIGHT, MAP_SCRUBBER_SLOT, MAP_SCRUBBER_WIDTH, publishMapOverlayVar } from '../mapOverlayLayout';
 import { loadHistoryConfig as loadHistoryConfigShared } from '../utils/historyConfig';
 import { History as HistoryIcon } from 'lucide-react';
 import { useHistoryMapOverlay } from '../context/HistoryMapOverlay';
@@ -983,6 +984,13 @@ export default function History({ active, view = HISTORY_VIEW_ALL, initialAgency
     }, latestYear));
   }, [active, historyData, selectedSlug, selectedRouteShortName, selectedYear, latestYear, regionList, routeQuery, activeFilter]);
 
+  // While the year scrubber shows, the map's footer row stops short of it, so its pills wrap upward (CIV-1136).
+  const scrubberShows = shouldRender && visible && !!selectedSlug && availableYears.length > 1;
+  useEffect(() => {
+    if (!scrubberShows) return;
+    publishMapOverlayVar(MAP_OVERLAY_VARS.footerRight, MAP_SCRUBBER_FOOTER_RIGHT);
+    return () => publishMapOverlayVar(MAP_OVERLAY_VARS.footerRight, null);
+  }, [scrubberShows]);
 
   if (!shouldRender) return null;
 
@@ -1128,7 +1136,7 @@ export default function History({ active, view = HISTORY_VIEW_ALL, initialAgency
       {showScrubber && (
         <div
           data-map-overlay="history-scrubber"
-          className={`absolute bottom-6 right-14 ${Z_PANEL} w-[260px] ${PILL_SURFACE} gap-2 px-2.5 text-xs`}
+          className={`${MAP_SCRUBBER_SLOT} ${Z_PANEL} ${MAP_SCRUBBER_WIDTH} ${PILL_SURFACE} gap-2 px-2.5 text-xs`}
           title="Older to newer"
           onPointerDown={event => event.stopPropagation()}
           onPointerMove={event => event.stopPropagation()}
