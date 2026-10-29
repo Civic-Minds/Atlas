@@ -291,8 +291,8 @@ describe('HeadwaySparkline', () => {
     expect(columns.length).toBeGreaterThan(0);
     for (const column of columns) expect(column.style.height).toBe('96px');
     for (const strip of strips) expect((strip.querySelector('[data-testid="trip-time-bar"]')!.parentElement as HTMLElement).style.height).toBe('96px');
-    // Eastbound 9 p.m. and Westbound noon have trips but no trip time: a faint tick, not a gap that reads as no service.
-    expect(within(dialog).getAllByTestId('trip-time-missing')).toHaveLength(2);
+    // Eastbound 9 p.m. and Westbound noon have trips but no trip time: nothing is drawn, as for an hour with no trips (CIV-1102).
+    expect(within(dialog).queryAllByTestId('trip-time-missing')).toHaveLength(0);
     // No native title tooltips in the full-day view.
     expect(dialog.querySelectorAll('[title]:not([aria-label])')).toHaveLength(0);
 
