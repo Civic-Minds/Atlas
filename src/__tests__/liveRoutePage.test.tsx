@@ -88,14 +88,14 @@ describe('Live route dashboard', () => {
     expect(screen.getAllByText('Uneven departures at the terminal: Not linked (5% of gaps off)').length).toBe(2);
     // The caveat is said once, in the method (not again under the chips).
     expect(screen.queryByText(/Linked means it was measured in this stretch/)).toBeNull();
-    expect(document.body.textContent).toMatch(/measured in the same stretch, not the cause/);
+    expect(document.body.textContent).toMatch(/shows what was measured in the same stretch\. It is not the cause\./);
     // Method.
     expect(screen.getByText(/Last 7 service days, Oct 8–14: 1,234 trips and 20,000 stop departures\./)).toBeTruthy();
-    expect(screen.getByText(/4% of trips ran under a trip number/)).toBeTruthy();
+    expect(screen.getByText(/scheduled for \(4% of trips\)/)).toBeTruthy();
     // One Late definition (no second "Late at a stop" line), then what ahead means, from the file's own limit.
     expect(screen.getAllByText(/is more than 5½ min behind schedule\. This is based on the TTC's 5-minute standard/).length).toBeGreaterThan(0);
     expect(screen.queryByText(/Late at a stop/)).toBeNull();
-    expect(screen.getAllByText((_, el) => el?.tagName === 'P' && /once a minute\. Ahead is 1\.5 min or more ahead of schedule\./.test(el.textContent ?? '')).length).toBeGreaterThan(0);
+    expect(screen.getAllByText((_, el) => el?.tagName === 'P' && /once a minute\.\s?Ahead is 1\.5 min or more ahead of schedule\./.test(el.textContent ?? '')).length).toBeGreaterThan(0);
   });
 
   it('the header trip count and the service-days line count only the good days, and the excluded day is still named (CIV-910)', async () => {
@@ -127,10 +127,10 @@ describe('Live route dashboard', () => {
     const { unmount } = renderPage({ ...ready, v3: withBadDay });
     await screen.findByText(/Last 6 service days/);
     const text = document.body.textContent ?? '';
-    expect(text).toMatch(/60 runs \(2% of the vehicle trips seen\)/);
-    expect(text).toMatch(/2% of trips ran under a trip number that did not fit their own scheduled slot: 3 were matched to the slot that fit, 4 were left out\./);
-    expect(text).toMatch(/the 8% of trips leaving the end of the line within 45 seconds of a limit/);
-    expect(text).not.toMatch(/300 runs|10% of the vehicle trips|4% of trips ran|the 12% of trips leaving/);
+    expect(text).toMatch(/We left out 60 of them \(2% of trips seen\)/);
+    expect(text).toMatch(/ran far from the time their trip number is scheduled for \(2% of trips\)\. We matched 3 to the trip they fit and left out 4\./);
+    expect(text).toMatch(/Near a limit: 8% of trips left their first stop within 45 seconds of the late or ahead cutoff\./);
+    expect(text).not.toMatch(/300 of them|10% of trips seen|\(4% of trips\)|12% of trips left/);
     unmount();
     clearLiveDashboardCache();
     // A file without the good-day fields shows the whole-window figures.
@@ -138,9 +138,9 @@ describe('Live route dashboard', () => {
     renderPage({ ...ready, v3: older });
     await screen.findByText(/Last 6 service days/);
     const oldText = document.body.textContent ?? '';
-    expect(oldText).toMatch(/300 runs \(10% of the vehicle trips seen\)/);
-    expect(oldText).toMatch(/4% of trips ran under a trip number/);
-    expect(oldText).toMatch(/the 12% of trips leaving/);
+    expect(oldText).toMatch(/We left out 300 of them \(10% of trips seen\)/);
+    expect(oldText).toMatch(/scheduled for \(4% of trips\)/);
+    expect(oldText).toMatch(/12% of trips left their first stop/);
   });
 
   it('has no time-of-day toggle: the whole day, a per-period list where the answer differs, and the direction in the address', async () => {
@@ -215,7 +215,7 @@ describe('Live route dashboard', () => {
     // One paragraph: each group opens with its bold run-in label.
     for (const g of ['What each number means', 'Where the data comes from', 'How changes are coloured', 'Limits']) expect(screen.getByText(`${g}.`, { selector: 'strong' })).toBeTruthy();
     expect(screen.queryByText(/trip time/i)).toBeNull();
-    expect(screen.getByText(/3 trips that could not be judged are left out of Delivered/)).toBeTruthy();
+    expect(screen.getByText(/are trips we couldn't judge as run or not run\. We left out 3 of them from Delivered\./)).toBeTruthy();
     // Run time is a dot on a line per pattern: the figures are the row's hover text and screen-reader text.
     // Each opens with its direction, and the main row is introduced by the stretch line above it.
     expect(screen.getByText(/^\w+bound: scheduled 22 min · usually 27 · 1 in 10 over 34 min \(120 trips\)$/)).toBeTruthy();
@@ -231,8 +231,8 @@ describe('Live route dashboard', () => {
     // The kept count is the trips the figures describe (the header's count), not the raw runs before matching (CIV-910).
     renderPage({ ...ready, v3: { ...v3, leftOut: { noTimetableTrip: 600, excluded: 500, excludedLabel: 'replacement buses', kept: 900 } } });
     await screen.findByRole('heading', { level: 1 });
-    expect(screen.getByText(/600 runs \(30% of the vehicle trips seen\) under a trip number not on the schedule, such as extra or unscheduled buses, are left out; the figures describe the 1,234 scheduled trips kept/)).toBeTruthy();
-    expect(screen.getByText(/500 runs by replacement buses that share this route number are left out/)).toBeTruthy();
+    expect(screen.getByText(/are runs whose trip number isn't on the schedule, such as extra buses\. We left out 600 of them \(30% of trips seen\), so the figures cover the 1,234 scheduled trips\./)).toBeTruthy();
+    expect(screen.getByText(/are runs by replacement buses that shares this route number\. We left out 500 of them\./)).toBeTruthy();
   });
 
   it('says the 510 first stops are less exact and leaves them out of the ranking', async () => {
