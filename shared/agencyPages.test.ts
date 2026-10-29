@@ -144,7 +144,7 @@ describe('dates', () => {
     const dutchess = { lastRefreshedAt: '2026-08-07', validThrough: '20270131', listingEndedOn: '20261028' };
     // Ryan: "ended is past but ends is upcoming".
     expect(agencyDatesText(dutchess, '2026-10-27', '20261027'))
-      .toBe("Based on the agency's published timetable, not live arrivals. This timetable covers service until Jan 31, 2027, but most of its routes end Oct 28, 2026. Atlas last updated this page Oct 27, 2026.");
+      .toBe("Based on the agency's published timetable, not live arrivals. This timetable covers service until Jan 31, 2027, but most of its routes end Oct 28, 2026. This page was last updated Oct 27, 2026.");
     expect(agencyDatesText(dutchess, '2026-10-27', '20261028')).toContain('This timetable covers service until Jan 31, 2027, but most of its routes ended Oct 28, 2026.');
     expect(agencyDatesText(dutchess, '2026-10-27', '20261103')).toContain('but most of its routes ended Oct 28, 2026.');
     // No through date: N25 as on the cards.
