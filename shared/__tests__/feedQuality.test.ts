@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { assessFeedQuality, feedQualityListItems, presentFeedQualityReason } from '../feedQuality';
+import { readdirSync, readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+import { assessFeedQuality, feedQualityListItems, presentFeedQualityReason, rescoreFeedQuality, type FeedQuality } from '../feedQuality';
 
 const healthy = {
   validationErrors: 0,
@@ -66,5 +68,48 @@ describe('feedQualityListItems', () => {
       '4 route shapes needed adjustment before display.',
     ])).toEqual(['4 shapes adjusted', '3 minor schedule issues found while reading the feed']);
     expect(feedQualityListItems(['The schedule dates in this feed have passed.'])).toEqual(['The schedule dates in this feed have passed']);
+  });
+});
+
+describe('rescoreFeedQuality (CIV-533)', () => {
+  const measured = assessFeedQuality({ ...healthy, routeHeadwayMismatches: 1, feedExpiry: '20261231', checkedAt: '2026-10-07' });
+
+  it('stores the expiry the rating was scored with', () => {
+    expect(measured.metrics.feedExpiry).toBe('20261231');
+    expect(measured).toMatchObject({ status: 'review', score: 90 });
+  });
+
+  it('checks the expiry against the run date, and keeps the measured date as checkedAt', () => {
+    const later = rescoreFeedQuality(measured, '20271231', '2027-01-05');
+    expect(later).toMatchObject({ status: 'degraded', score: 55, checkedAt: '2026-10-07', scoredAt: '2027-01-05' });
+    expect(later.reasons).toContain('The schedule dates in this feed have passed.');
+    expect(rescoreFeedQuality(measured, null, '2026-11-02')).toMatchObject({ status: 'review', score: 90, scoredAt: '2026-11-02' });
+  });
+
+  it('re-scores a rating made before the expiry was stored only when the registry date reproduces it', () => {
+    const { feedExpiry: _drop, ...legacyMetrics } = measured.metrics;
+    const legacy: FeedQuality = { ...measured, metrics: legacyMetrics };
+    expect(rescoreFeedQuality(legacy, '20261231', '2026-11-02')).toMatchObject({ status: 'review', scoredAt: '2026-11-02' });
+    // coast-transit-ms: scored expired on 2026-10-07, while the registry now records 20261231.
+    const expired = assessFeedQuality({ ...healthy, validationWarnings: 1, feedExpiry: '20261001', checkedAt: '2026-10-07' });
+    const { feedExpiry: _gone, ...expiredMetrics } = expired.metrics;
+    const unknown: FeedQuality = { ...expired, metrics: expiredMetrics };
+    expect(rescoreFeedQuality(unknown, '20261231', '2026-11-02')).toBe(unknown);
+  });
+
+  it('every stored rating re-scores to its own status and score on its own date', () => {
+    const dir = resolve(__dirname, '../../config/agencies');
+    const mismatches: string[] = [];
+    let checked = 0;
+    for (const file of readdirSync(dir).filter(name => name.endsWith('.json') && name !== 'order.json')) {
+      const agency = JSON.parse(readFileSync(resolve(dir, file), 'utf8')) as { slug?: string; lastFeedExpiry?: string | null; feedQuality?: FeedQuality };
+      const quality = agency.feedQuality;
+      if (!quality) continue;
+      checked++;
+      const again = rescoreFeedQuality(quality, agency.lastFeedExpiry, quality.scoredAt ?? quality.checkedAt);
+      if (again.status !== quality.status || again.score !== quality.score) mismatches.push(`${agency.slug}: ${quality.status}/${quality.score} -> ${again.status}/${again.score}`);
+    }
+    expect(checked).toBeGreaterThan(100);
+    expect(mismatches).toEqual([]);
   });
 });
