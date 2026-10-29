@@ -11,7 +11,7 @@ import { aheadLine, bunchingLine, colourLine, deliveredLine, extraWaitLine, late
 import type { Ready } from '../../../LiveRoutePage';
 
 /** The two weeks, then the days left out on a line of their own (no line when every day counted). */
-const weekWindowItems = (w: NonNullable<LiveV3['weekly']>): ReactNode[] => { const p = weekWindowParts(w); return p.days ? [p.weeks, <OwnLine key="days" title={p.reason ?? undefined}>{p.days}</OwnLine>] : [p.weeks]; };
+const weekWindowItems = (w: Parameters<typeof weekWindowParts>[0]): ReactNode[] => { const p = weekWindowParts(w); return p.days ? [p.weeks, <OwnLine key="days" title={p.reason ?? undefined}>{p.days}</OwnLine>] : [p.weeks]; };
 
 
 /**

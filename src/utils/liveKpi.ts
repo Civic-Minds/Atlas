@@ -109,15 +109,17 @@ export function excludingDays(w: { thisWeek: WeekMetrics; lastWeek: WeekMetrics;
  * Oct 1–7." and "Excluding Oct 11 this week, Oct 5 last week." (only the week that left days out is named; null when every day
  * of both weeks counted).
  */
-export function weekWindowParts(w: NonNullable<LiveV3['weekly']>): { weeks: string; days: string | null; reason: string | null } {
+export function weekWindowParts(w: NonNullable<LiveV3['weekly']> & { leftOutEverywhere?: { thisWeek: string[]; lastWeek: string[] } }): { weeks: string; days: string | null; reason: string | null } {
   const range = (wk: WeekMetrics) => (wk.dates.length ? dateRangeText(wk.dates[0], wk.dates[wk.dates.length - 1]) : 'no days');
   const weeks = `This week is ${range(w.thisWeek)} and last week is ${range(w.lastWeek)}.`;
-  const text = excludingWeeksText(leftOutDates(w.thisWeek), leftOutDates(w.lastWeek));
+  // The network names only the days every route left out (CIV-910 Q2); a route names its own.
+  const thisLeft = w.leftOutEverywhere?.thisWeek ?? leftOutDates(w.thisWeek), lastLeft = w.leftOutEverywhere?.lastWeek ?? leftOutDates(w.lastWeek);
+  const text = excludingWeeksText(thisLeft, lastLeft);
   const days = text ? `${text}.` : null;
   return {
     weeks: w.comparable ? weeks : `Not enough days of good recordings to compare two weeks: each needs at least ${w.minHealthyDays}. ${weeks}`,
     days,
-    reason: leftOutReason([...leftOutDates(w.thisWeek), ...leftOutDates(w.lastWeek)]),
+    reason: leftOutReason([...thisLeft, ...lastLeft]),
   };
 }
 
