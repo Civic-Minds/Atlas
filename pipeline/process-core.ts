@@ -3092,11 +3092,24 @@ export async function processGtfsBuffer(
         const originId = onShape[0]?.stopId;
         const originTimes = (originId ? metricStopMap.get(originId) : undefined) ?? [];
         const origin = originId ? terminalReading({ terminalId: originId, ownTerminalTimes: originTimes, pool: null, ownStopHwsSorted: hwVals }) : null;
+        // CIV-1087 options (a) and (b): the same reading at the last stop a rider can board (the agency's drop-off-only flag),
+        // and at the stop before the last one.
+        const readAt = (stopId: string | undefined) => stopId
+          ? terminalReading({ terminalId: stopId, ownTerminalTimes: metricStopMap.get(stopId) ?? [], pool: null, ownStopHwsSorted: hwVals }).terminalComputedHw
+          : null;
+        const lastBoardId = [...onShape].reverse().find(({ stopId }) => !dropOffOnlyStops.has(stopId))?.stopId;
+        const penultId = onShape.length > 2 ? onShape[onShape.length - 2]?.stopId : undefined;
+        const boardHws = onShape.filter(({ stopId }) => !dropOffOnlyStops.has(stopId)).map(({ stopId }) => ownStopHw[stopId]).filter((v): v is number => v != null).sort((a, b) => a - b);
         console.log('CIV1098\t' + JSON.stringify({
           agency: options?.slug, route: shortName, dir: dirId, day, headsign: featureHeadsign, rail: railFeature,
           headline: headway, terminalId, terminal: terminalComputedHw, poolUsed,
           originId, originHw: origin?.terminalComputedHw ?? null, originMiddayHw: origin?.terminalMiddayHw ?? null,
           originDepartures: new Set(originTimes).size, terminalDepartures: new Set(ownTerminalTimes).size,
+          terminalDropOff: terminalId ? dropOffOnlyStops.has(terminalId) : false,
+          lastBoardId, lastBoardHw: lastBoardId === terminalId ? terminalComputedHw : readAt(lastBoardId),
+          penultId, penultHw: readAt(penultId),
+          boardMedian: boardHws.length ? boardHws[Math.floor(boardHws.length / 2)] : null,
+          boardWorst: boardHws.length ? boardHws[boardHws.length - 1] : null,
         }));
       }
       feature.properties.tier = settleTier(feature.properties.tier as string, headway, scoped, routeTierScale());
