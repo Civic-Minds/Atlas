@@ -3086,6 +3086,19 @@ export async function processGtfsBuffer(
         pooledPlainTerminalHw: pooledTerminalHeadway(terminalId ? headsignMap?.get(terminalId) : undefined),
       });
       feature.properties.headway = headway;
+      // CIV-1098 debug (logging only, not for merge): the same Step 1 reading at the drawn line's first
+      // stop, where trips leaving in the same minute are one departure (option (c) of CIV-1087).
+      {
+        const originId = onShape[0]?.stopId;
+        const originTimes = (originId ? metricStopMap.get(originId) : undefined) ?? [];
+        const origin = originId ? terminalReading({ terminalId: originId, ownTerminalTimes: originTimes, pool: null, ownStopHwsSorted: hwVals }) : null;
+        console.log('CIV1098\t' + JSON.stringify({
+          agency: options?.slug, route: shortName, dir: dirId, day, headsign: featureHeadsign, rail: railFeature,
+          headline: headway, terminalId, terminal: terminalComputedHw, poolUsed,
+          originId, originHw: origin?.terminalComputedHw ?? null, originMiddayHw: origin?.terminalMiddayHw ?? null,
+          originDepartures: new Set(originTimes).size, terminalDepartures: new Set(ownTerminalTimes).size,
+        }));
+      }
       feature.properties.tier = settleTier(feature.properties.tier as string, headway, scoped, routeTierScale());
       // #898: a rail row's tier is phase 2's grade of the drawn pattern's own midday departures,
       // while its headline reads the headsign's pooled terminal sample. Where that sample has
