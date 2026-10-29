@@ -350,7 +350,6 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
         <TripTimeStrip
           series={tripTime}
           height={H}
-          serviceHours={new Set(HOURS.filter(h => displayedByHour[h] != null))}
           // Two-way hover (CIV-505): an hour hovered in either chart lights the same column in both.
           hoveredHour={hoveredTripHour ?? hoveredHour}
           onHourHover={setHoveredTripHour}
@@ -454,7 +453,6 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
                           above={titleRow(tripTimeHeading(loop), tt != null ? tripTimeAbout(tt) : '', 'full-day-trip-time-heading')}
                           series={option.tripTime}
                           height={pairH}
-                          serviceHours={new Set(HOURS.filter(h => option.byHour[h] != null))}
                           hoveredHour={modalHour}
                           onHourHover={setModalHour}
                           className=""
