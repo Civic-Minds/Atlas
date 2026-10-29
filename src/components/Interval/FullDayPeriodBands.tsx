@@ -3,13 +3,13 @@ import { PERIOD_LABELS, type TimePeriod } from '../../hooks/useIntervalStats';
 import { PERIOD_OVERVIEW_BANDS } from '../../utils/sparklinePeriods';
 
 /**
- * The hovered (or selected) period's name, in the row a chart leaves above its bars: the route card's chart and both
- * full-day charts (CIV-1094). Positioned inside that chart's relative wrapper.
+ * The hovered (or selected) period's name: above the route card's chart, and on each full-day chart's title line
+ * (CIV-1094). `className` places it.
  */
-export function HoveredPeriodName({ period, className = 'right-0' }: { period: TimePeriod | null; className?: string }) {
+export function HoveredPeriodName({ period, className = '' }: { period: TimePeriod | null; className?: string }) {
   if (!period) return null;
   return (
-    <span className={`absolute top-0 ${CARD_NOTE} pointer-events-none ${className}`} data-testid="hovered-period-name">
+    <span className={`${CARD_NOTE} pointer-events-none ${className}`} data-testid="hovered-period-name">
       {PERIOD_LABELS[period]}
     </span>
   );

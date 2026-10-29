@@ -3,9 +3,7 @@ import { SPARKLINE_HOURS } from '../../../shared/config';
 import { tripTimeBarHeight, type TripTimeSeries } from '../../utils/tripTime';
 import { CHART_HEADING } from '../../styles';
 import { runTimeAmount } from '../../utils/headwayText';
-import { FullDayPeriodBands, HoveredPeriodName } from './FullDayPeriodBands';
-import { HOUR_TO_PERIOD } from '../../utils/sparklinePeriods';
-import type { TimePeriod } from '../../hooks/useIntervalStats';
+import { FullDayPeriodBands } from './FullDayPeriodBands';
 
 /**
  * The full-day chart's hour column row and bar shape (width and round ends); the trip-time strip
@@ -98,10 +96,7 @@ export function TripTimeStrip({ series, label = TRIP_TIME_LABEL, height, service
   axis?: AxisTick[];
   /** Drawn between the label and the bars (the full-day grid's per-chart hover number). */
   above?: React.ReactNode;
-  /**
-   * The full-day view's period bands behind the bars, and the hovered period's name above them, as on the frequency
-   * chart beside it (CIV-1094).
-   */
+  /** The full-day view's period bands behind the bars, as on the frequency chart beside it (CIV-1094). */
   bands?: boolean;
 }) {
   const values = series ? SPARKLINE_HOURS.map(h => series.byHour[h]).filter((v): v is number => v != null) : [];
@@ -115,9 +110,8 @@ export function TripTimeStrip({ series, label = TRIP_TIME_LABEL, height, service
         {tripTimeHeading(series.loop, label)}
       </div>
       {above}
-      <div className={`relative ${barsClassName} ${bands ? 'pt-5' : ''}`}>
-        {bands && <FullDayPeriodBands className="inset-x-0 top-5 bottom-0" />}
-        {bands && <HoveredPeriodName period={hoveredHour != null ? (HOUR_TO_PERIOD[hoveredHour] as TimePeriod | undefined) ?? null : null} />}
+      <div className={`relative ${barsClassName} ${bands ? 'pt-1' : ''}`}>
+        {bands && <FullDayPeriodBands className="inset-x-0 top-1 bottom-0" />}
         <div className={`relative ${FULL_DAY_COLUMN_ROW} items-end`} onMouseLeave={() => onHourHover?.(null)}>
           {axis && <AxisOverlay ticks={axis} height={height} />}
           {SPARKLINE_HOURS.map(h => {
