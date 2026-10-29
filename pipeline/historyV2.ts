@@ -62,6 +62,21 @@ export function routeTrunkHeadway(features: Props[]): number | null {
 }
 
 /**
+ * The same per period, from headsignMinStopHeadwayByPeriod (the field the live card's headsignTrunkHeadway reads for a
+ * period), kept only where better than the route's own period value in `periods`. Undefined when none is.
+ */
+export function routeTrunkHeadwayByPeriod(features: Props[], periods: HeadwayByPeriod | undefined): HeadwayByPeriod | undefined {
+  if (!periods) return undefined;
+  const out: Partial<Record<PeriodKey, number | null>> = {};
+  for (const [k, value] of Object.entries(periods) as Array<[PeriodKey, number | null | undefined]>) {
+    if (value == null) continue;
+    const t = routeTrunkHeadway(features.map(f => ({ directionId: f.directionId, minStopHeadway: (f.headsignMinStopHeadwayByPeriod as Record<string, unknown> | undefined)?.[k] })));
+    if (t != null && t < value) out[k] = t;
+  }
+  return Object.keys(out).length > 0 ? out : undefined;
+}
+
+/**
  * The representative weekday value of a route from its Weekday features: the route-level
  * stamp routeAllDayHeadway read as the map reads it (sentinel, or an all-span route, = limited).
  * No stamp = blank rep ({}): never a minimum across patterns or directions.
@@ -76,7 +91,8 @@ export function representativeRep(features: Props[]): RepResult {
   const allSpan = stamped.every(f => f.tier === 'span');
   if (worst >= NO_PERIOD_SERVICE_TILE_VALUE || allSpan) return { rep: { lim: true, ...(p ? { p } : {}) }, conflict };
   const t = routeTrunkHeadway(features);
-  return { rep: { h: worst, ...(p ? { p } : {}), ...(t != null && t < worst ? { t } : {}) }, conflict };
+  const tp = routeTrunkHeadwayByPeriod(features, p);
+  return { rep: { h: worst, ...(p ? { p } : {}), ...(t != null && t < worst ? { t } : {}), ...(tp ? { tp } : {}) }, conflict };
 }
 
 export interface BuildV2Report {

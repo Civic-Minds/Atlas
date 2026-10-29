@@ -110,6 +110,12 @@ describe('representative value', () => {
       { routeAllDayHeadway: 60, directionId: 1, minStopHeadway: 9 },
     ]);
     expect(rep).toEqual({ h: 60, t: 9 });
+    // Per period from headsignMinStopHeadwayByPeriod, kept only where better than the period's own value.
+    const byPeriod = representativeRep([
+      { routeAllDayHeadway: 60, directionId: 0, routeFilterHeadwayByPeriod: { amPeak: 30, midday: 60 }, headsignMinStopHeadwayByPeriod: { amPeak: 8, midday: 60 } },
+      { routeAllDayHeadway: 60, directionId: 1, routeFilterHeadwayByPeriod: { amPeak: 30, midday: 60 }, headsignMinStopHeadwayByPeriod: { amPeak: 10, midday: 70 } },
+    ]).rep;
+    expect(byPeriod.tp).toEqual({ amPeak: 10 });
     // No better trunk, or no field: no t, so old sidecars and plain routes read as before.
     expect(representativeRep([{ routeAllDayHeadway: 20, minStopHeadway: 20 }]).rep).toEqual({ h: 20 });
     expect(representativeRep([{ routeAllDayHeadway: 20 }]).rep).toEqual({ h: 20 });
@@ -199,9 +205,10 @@ describe('build-time rules', () => {
   it('carries the shared-stretch value onto the snapshot from v2 and old change files (CIV-555)', () => {
     const { snaps } = build(joinCandidates(
       [{ periodKey: '20150630', headway: 60, trunkHeadway: 8, label: 'Jun 2015' }],
-      [{ periodKey: '20240615', v2: { refDate: '20240615', rep: { h: 60, t: 8 } } }],
+      [{ periodKey: '20240615', v2: { refDate: '20240615', rep: { h: 60, t: 8, tp: { midday: 9 } } } }],
     ));
     expect(snaps.map(s => [s.year, s.weekdayHeadwayMin, s.trunkHeadwayMin])).toEqual([[2015, 60, 8], [2024, 60, 8]]);
+    expect(snaps[1].trunkHeadwayByPeriod).toEqual({ midday: 9 });
     const plain = build(joinCandidates([{ periodKey: '20240630', headway: 20 }], [])).snaps[0];
     expect(plain.trunkHeadwayMin).toBeUndefined();
   });

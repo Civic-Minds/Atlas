@@ -16,8 +16,9 @@ export interface ArchiveChange {
   routeLongName?: string;
   label?: string;
   headwayByPeriod?: HeadwayByPeriod;
-  /** CIV-555: the route's shared-stretch value when better than the headline (routeTrunkHeadway). */
+  /** CIV-555: the route's shared-stretch value when better than the headline (routeTrunkHeadway), and per period. */
   trunkHeadway?: number;
+  trunkHeadwayByPeriod?: HeadwayByPeriod;
   geometry?: unknown;
   processedAt?: string;
 }
@@ -30,6 +31,7 @@ export interface BuiltSnapshot {
   headwayByPeriod?: HeadwayByPeriod;
   /** CIV-555: the shared-stretch value, so History can headline "every 8–60" as the live card does. */
   trunkHeadwayMin?: number;
+  trunkHeadwayByPeriod?: HeadwayByPeriod;
   geometry?: unknown;
   v2?: HistorySnapshotV2;
   processedAt?: string;
@@ -238,6 +240,7 @@ export function buildRouteSnapshots(
       weekdayHeadwayMin: h,
       headwayByPeriod: v2 ? v2.rep.p : c.change?.headwayByPeriod,
       ...(() => { const t = v2 ? v2.rep.t : c.change?.trunkHeadway; return t != null && t < h ? { trunkHeadwayMin: t } : {}; })(),
+      ...(() => { const tp = v2 ? v2.rep.tp : c.change?.trunkHeadwayByPeriod; return tp ? { trunkHeadwayByPeriod: tp } : {}; })(),
       geometry: c.change?.geometry,
       v2,
       processedAt: c.change?.processedAt,

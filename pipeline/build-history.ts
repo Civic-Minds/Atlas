@@ -21,7 +21,7 @@ import { config } from 'dotenv';
 import { r2ListArchive, r2GetArchive, r2Get, r2Put } from './r2.js';
 import { runWithConcurrency } from './utils.js';
 import { resolveCurrentHistoryRoute, mergeAliasedRoutes, currentRouteShortNamesFor, type HistoryRouteAliases } from './historyIdentity.js';
-import { representativeRep, routeTrunkHeadway } from './historyV2.js';
+import { representativeRep, routeTrunkHeadway, routeTrunkHeadwayByPeriod } from './historyV2.js';
 import { buildRouteSnapshots, filterSnapshotsForPublish, isFlatRouteToSkip, joinCandidates, newBuildReport, visibilityCheck, type Candidate } from './historyV2Build.js';
 import type { HistoryV2Sidecar } from '../shared/historyV2.js';
 import { historyRouteKey } from './historyRouteKey.js';
@@ -90,6 +90,7 @@ async function loadCurrentHeadwaysLegacy(slug: string): Promise<Record<string, {
   busSubType?: string;
   headwayByPeriod?: HeadwayByPeriod;
   trunkHeadway?: number;
+  trunkHeadwayByPeriod?: HeadwayByPeriod;
   geometry?: number[][];
 }>> {
   try {
@@ -103,6 +104,7 @@ async function loadCurrentHeadwaysLegacy(slug: string): Promise<Record<string, {
       busSubType?: string;
       headwayByPeriod?: HeadwayByPeriod;
       trunkHeadway?: number;
+      trunkHeadwayByPeriod?: HeadwayByPeriod;
       geometry?: number[][];
     }> = {};
     for (const feature of fc.features ?? []) {
@@ -133,6 +135,8 @@ async function loadCurrentHeadwaysLegacy(slug: string): Promise<Record<string, {
     for (const [routeShortName, route] of Object.entries(current)) {
       const t = routeTrunkHeadway(weekdayByRoute[routeShortName] ?? []);
       if (t != null && t < route.headway) route.trunkHeadway = t;
+      const tp = routeTrunkHeadwayByPeriod(weekdayByRoute[routeShortName] ?? [], route.headwayByPeriod);
+      if (tp) route.trunkHeadwayByPeriod = tp;
     }
     // The most frequent pattern may be a route with no map shape (a Point). Its bare [lon, lat]
     // is never stored as a line; borrow another shaped pattern of the same route, or store none.
@@ -153,6 +157,7 @@ async function loadCurrentHeadwaysV2(slug: string): Promise<Record<string, {
   busSubType?: string;
   headwayByPeriod?: HeadwayByPeriod;
   trunkHeadway?: number;
+  trunkHeadwayByPeriod?: HeadwayByPeriod;
   geometry?: number[][];
 }>> {
   try {
@@ -167,6 +172,7 @@ async function loadCurrentHeadwaysV2(slug: string): Promise<Record<string, {
       busSubType?: string;
       headwayByPeriod?: HeadwayByPeriod;
       trunkHeadway?: number;
+      trunkHeadwayByPeriod?: HeadwayByPeriod;
       geometry?: number[][];
     }> = {};
     for (const feature of fc.features ?? []) {
@@ -193,6 +199,7 @@ async function loadCurrentHeadwaysV2(slug: string): Promise<Record<string, {
       current[key].headway = rep.h ?? null;
       current[key].headwayByPeriod = rep.p;
       if (rep.t != null) current[key].trunkHeadway = rep.t;
+      if (rep.tp) current[key].trunkHeadwayByPeriod = rep.tp;
     }
     // The most frequent pattern may be a route with no map shape (a Point). Its bare [lon, lat]
     // is never stored as a line; borrow another shaped pattern of the same route, or store none.
@@ -269,7 +276,7 @@ async function main() {
   // Map: slug → routeShortName → sorted array of change events
   const archiveRoutes: Record<string, Record<string, Array<{
     periodKey: string; headway: number; routeLongName?: string; label?: string;
-    headwayByPeriod?: HeadwayByPeriod; trunkHeadway?: number; geometry?: unknown; processedAt?: string;
+    headwayByPeriod?: HeadwayByPeriod; trunkHeadway?: number; trunkHeadwayByPeriod?: HeadwayByPeriod; geometry?: unknown; processedAt?: string;
   }>>> = {};
   const coverageBySlug: Record<string, { coverageYears: number[]; materializeAllPeriods?: boolean }> = {};
   let failedFiles = 0;
@@ -333,6 +340,7 @@ async function main() {
           routeLongName: data.routeLongName ?? undefined,
           headwayByPeriod: data.headwayByPeriod ?? undefined,
           ...(typeof data.trunkHeadway === 'number' ? { trunkHeadway: data.trunkHeadway } : {}),
+          ...(data.trunkHeadwayByPeriod && typeof data.trunkHeadwayByPeriod === 'object' ? { trunkHeadwayByPeriod: data.trunkHeadwayByPeriod } : {}),
           // v2 dates a file keyed by a feed end date after this year by when it was read (CIV-394).
           processedAt: typeof data.processedAt === 'string' ? data.processedAt : undefined,
         });
@@ -505,7 +513,7 @@ async function main() {
         changes.sort((a, b) => getPeriodKeySortValue(a.periodKey) - getPeriodKeySortValue(b.periodKey));
         snapshots = changes.map(c => {
           const { year, label } = parsePeriodKey(c.periodKey);
-          return { label: c.label ?? label, year, weekdayHeadwayMin: c.headway, headwayByPeriod: c.headwayByPeriod, ...(c.trunkHeadway != null ? { trunkHeadwayMin: c.trunkHeadway } : {}), geometry: isDrawableLineCoordinates(c.geometry) ? c.geometry : undefined };
+          return { label: c.label ?? label, year, weekdayHeadwayMin: c.headway, headwayByPeriod: c.headwayByPeriod, ...(c.trunkHeadway != null ? { trunkHeadwayMin: c.trunkHeadway } : {}), ...(c.trunkHeadwayByPeriod ? { trunkHeadwayByPeriod: c.trunkHeadwayByPeriod } : {}), geometry: isDrawableLineCoordinates(c.geometry) ? c.geometry : undefined };
         });
       }
 
@@ -543,6 +551,7 @@ async function main() {
             weekdayHeadwayMin: currentRoute.headway,
             headwayByPeriod: currentRoute.headwayByPeriod,
             ...(currentRoute.trunkHeadway != null ? { trunkHeadwayMin: currentRoute.trunkHeadway } : {}),
+            ...(currentRoute.trunkHeadwayByPeriod ? { trunkHeadwayByPeriod: currentRoute.trunkHeadwayByPeriod } : {}),
             geometry: currentRoute.geometry,
           });
         }
