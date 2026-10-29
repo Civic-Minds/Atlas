@@ -107,6 +107,7 @@ interface Agency {
   skipLetterSuffixMerge?: boolean;
   mergeEquivalentShapeVariants?: boolean;
   mergeEquivalentShapeVariantsAllModes?: boolean;
+  mergeEquivalentShapeVariantsRouteTypes?: string[];
   keepLongShapeJumps?: boolean;
   skipClusteredJumpRepair?: boolean;
   poolSingleTripShapes?: boolean;

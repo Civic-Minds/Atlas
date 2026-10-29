@@ -41,4 +41,18 @@ describe('a rush-hour-only pattern never takes an all-day slot (#720, dedupe Ste
     // rush-hour pattern to ESP/Downtown Albany pooled with it, against 385 before.
     expect(await weekdayLine('cdta-233', 'cdta', 1, 'Pearl & Hudson')).toMatchObject({ headway: 385 });
   });
+
+  it('a rush-hour-only pattern still takes a slot from a pattern with no rating at all (Pittsburgh G3, #1174)', async () => {
+    // Pittsburgh Regional Transit G3 inbound, official feed S1000171 (Oct 2026), trimmed to G3:
+    // 5 AM trips every 30 on shp-G3-02 (13 stops) and 2 PM trips on shp-G3-01 (17 stops). The
+    // PM pattern has no headway and no period value; it took the slot first, and the unrated AM
+    // pattern tied and lost, leaving a line with no stops and no value.
+    const inbound = await weekdayLine('prt-g3-weekday', 'port-authority-pa', 1, 'INBOUND-DOWNTOWN');
+    expect(inbound).toMatchObject({ headway: 30, tier: '30' });
+    expect(inbound.headwayByPeriod).toMatchObject({ amPeak: 30 });
+    expect(inbound.stopOrder).toHaveLength(13);
+    // Outbound, where the AM pattern arrived first, is unchanged.
+    const outbound = await weekdayLine('prt-g3-weekday', 'port-authority-pa', 0, 'OUTBOUND-UNIVERSITY BLVD PARK AND RIDE');
+    expect(outbound).toMatchObject({ headway: 31 });
+  });
 });

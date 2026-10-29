@@ -1,5 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { stopRouteBestHeadway, stopRouteLineHeadway, stopRowHeadway, type StopBranch } from '../stopRoutes';
+import { buildStopRoutes, stopRouteBestHeadway, stopRouteLineHeadway, stopRowHeadway, type StopBranch } from '../stopRoutes';
+import ttc29json from './fixtures/ttc-29-weekday.json';
+
+// Properties only (no geometry): the stop card reads none.
+const ttc29 = ttc29json as unknown as GeoJSON.FeatureCollection;
 
 // CIV-997 / CIV-918: the stop card never states a destination as more frequent than it is.
 const branch = (atStop: number | null, own: number | null, extra: Partial<StopBranch> = {}): StopBranch => ({
@@ -41,5 +45,58 @@ describe('stopRouteBestHeadway', () => {
   it("orders routes by the stop's best value", () => {
     expect(stopRouteBestHeadway([branch(12, 20), branch(8, 10)], 'midday')).toBe(8);
     expect(stopRouteBestHeadway([branch(null, 20)], 'midday')).toBeNull();
+  });
+});
+
+// CIV-1080: TTC 29's two northbound patterns (from either Exhibition loop) both go to Wilson, each every 16. At the
+// Wilson stop the bus comes every 8 (the GTFS: 45 midday departures, a median gap of 8), so the one "to Wilson" row says 8.
+describe('buildStopRoutes: one destination served by two patterns (CIV-1080)', () => {
+  const rows = (fc: GeoJSON.FeatureCollection, period: 'midday' | 'all') => buildStopRoutes({
+    siblingIdsByAgency: { ttc: new Set(['2108']) }, routesByAgency: { ttc: new Set(['29']) }, layers: { ttc: fc }, day: 'Weekday', period,
+  })[0].branches.filter(b => b.directionId === 1).map(b => [b.headsign, stopRowHeadway(b, period)]);
+
+  it("reads the stop's own value when every trip of the direction there goes to that destination", () => {
+    expect(rows(ttc29, 'midday')).toEqual([['Wilson', 8]]);
+    expect(rows(ttc29, 'all')).toEqual([['Wilson', 8]]);
+  });
+
+  it('keeps each destination\'s own value when another destination shares the stop (never overstates)', () => {
+    const fc = structuredClone(ttc29);
+    const north = fc.features.filter(f => f.properties?.directionId === 1);
+    north[0].properties!.headsign = 'Lawrence West';
+    expect(rows(fc, 'midday').map(([, hw]) => hw)).toEqual([16, 16]);
+  });
+});
+
+describe('buildStopRoutes: a stop\'s own route with no trips in the period (CIV-1052)', () => {
+  // MiWay 314 at stop 0814 (#1169): one 08:20 school trip on weekdays, none at midday.
+  const miway314 = {
+    type: 'Feature', geometry: null,
+    properties: { routeId: '314', routeShortName: '314', routeLongName: 'Rick Hansen', day: 'Weekday', directionId: 0, headsign: 'School', tier: 'span' },
+  };
+  const layer = { type: 'FeatureCollection', features: [...ttc29.features, miway314] } as unknown as GeoJSON.FeatureCollection;
+  const amPeakWeekday = 1;
+  const build = (period: 'amPeak' | 'midday' | 'all', bits: Array<number | undefined>, routeIds = ['314']) => buildStopRoutes({
+    siblingIdsByAgency: { ttc: new Set(['2108']) },
+    routesByAgency: { ttc: new Set(routeIds) },
+    routePeriodBitsByAgency: { ttc: new Map(routeIds.map(rid => [rid, bits])) },
+    layers: { ttc: layer }, day: 'Weekday', period,
+  });
+
+  it('lists the route with no rows where every stop point proves no trip in the period', () => {
+    const idle = build('midday', [amPeakWeekday]);
+    expect(idle.map(r => [r.shortName, r.branches.length, r.noTrips?.rKey != null])).toEqual([['314', 0, true]]);
+  });
+
+  it('leaves it out (as before) where it has a trip in the period, the data has no field, or the period is All day', () => {
+    expect(build('amPeak', [amPeakWeekday])).toEqual([]);
+    expect(build('midday', [undefined])).toEqual([]);
+    expect(build('midday', [0, undefined])).toEqual([]);
+    expect(build('all', [0])).toEqual([]);
+  });
+
+  it('never lists a route that runs here as idle', () => {
+    const rows = build('midday', [0], ['29']);
+    expect(rows.map(r => [r.shortName, r.noTrips])).toEqual([['29', undefined]]);
   });
 });

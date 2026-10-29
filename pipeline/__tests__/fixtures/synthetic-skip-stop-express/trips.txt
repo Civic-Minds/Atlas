@@ -1,0 +1,122 @@
+route_id,service_id,trip_id,trip_headsign,direction_id,shape_id
+X1,WK,L000,Downtown,0,LOCAL
+X1,WK,L001,Downtown,0,LOCAL
+X1,WK,L002,Downtown,0,LOCAL
+X1,WK,L003,Downtown,0,LOCAL
+X1,WK,L004,Downtown,0,LOCAL
+X1,WK,L005,Downtown,0,LOCAL
+X1,WK,L006,Downtown,0,LOCAL
+X1,WK,L007,Downtown,0,LOCAL
+X1,WK,L008,Downtown,0,LOCAL
+X1,WK,L009,Downtown,0,LOCAL
+X1,WK,L010,Downtown,0,LOCAL
+X1,WK,L011,Downtown,0,LOCAL
+X1,WK,L012,Downtown,0,LOCAL
+X1,WK,L013,Downtown,0,LOCAL
+X1,WK,L014,Downtown,0,LOCAL
+X1,WK,L015,Downtown,0,LOCAL
+X1,WK,L016,Downtown,0,LOCAL
+X1,WK,L017,Downtown,0,LOCAL
+X1,WK,L018,Downtown,0,LOCAL
+X1,WK,L019,Downtown,0,LOCAL
+X1,WK,L020,Downtown,0,LOCAL
+X1,WK,L021,Downtown,0,LOCAL
+X1,WK,L022,Downtown,0,LOCAL
+X1,WK,L023,Downtown,0,LOCAL
+X1,WK,L024,Downtown,0,LOCAL
+X1,WK,L025,Downtown,0,LOCAL
+X1,WK,L026,Downtown,0,LOCAL
+X1,WK,L027,Downtown,0,LOCAL
+X1,WK,L028,Downtown,0,LOCAL
+X1,WK,L029,Downtown,0,LOCAL
+X1,WK,L030,Downtown,0,LOCAL
+X1,WK,L031,Downtown,0,LOCAL
+X1,WK,L032,Downtown,0,LOCAL
+X1,WK,L033,Downtown,0,LOCAL
+X1,WK,L034,Downtown,0,LOCAL
+X1,WK,L035,Downtown,0,LOCAL
+X1,WK,L036,Downtown,0,LOCAL
+X1,WK,L037,Downtown,0,LOCAL
+X1,WK,L038,Downtown,0,LOCAL
+X1,WK,L039,Downtown,0,LOCAL
+X1,WK,L040,Downtown,0,LOCAL
+X1,WK,L041,Downtown,0,LOCAL
+X1,WK,L042,Downtown,0,LOCAL
+X1,WK,L043,Downtown,0,LOCAL
+X1,WK,L044,Downtown,0,LOCAL
+X1,WK,L045,Downtown,0,LOCAL
+X1,WK,L046,Downtown,0,LOCAL
+X1,WK,L047,Downtown,0,LOCAL
+X1,WK,L048,Downtown,0,LOCAL
+X1,WK,L049,Downtown,0,LOCAL
+X1,WK,L050,Downtown,0,LOCAL
+X1,WK,L051,Downtown,0,LOCAL
+X1,WK,L052,Downtown,0,LOCAL
+X1,WK,L053,Downtown,0,LOCAL
+X1,WK,L054,Downtown,0,LOCAL
+X1,WK,L055,Downtown,0,LOCAL
+X1,WK,L056,Downtown,0,LOCAL
+X1,WK,L057,Downtown,0,LOCAL
+X1,WK,L058,Downtown,0,LOCAL
+X1,WK,L059,Downtown,0,LOCAL
+X1,WK,L060,Downtown,0,LOCAL
+X1,WK,L061,Downtown,0,LOCAL
+X1,WK,L062,Downtown,0,LOCAL
+X1,WK,L063,Downtown,0,LOCAL
+X1,WK,L064,Downtown,0,LOCAL
+X1,WK,L065,Downtown,0,LOCAL
+X1,WK,L066,Downtown,0,LOCAL
+X1,WK,L067,Downtown,0,LOCAL
+X1,WK,L068,Downtown,0,LOCAL
+X1,WK,L069,Downtown,0,LOCAL
+X1,WK,L070,Downtown,0,LOCAL
+X1,WK,L071,Downtown,0,LOCAL
+X1,WK,L072,Downtown,0,LOCAL
+X1,WK,L073,Downtown,0,LOCAL
+X1,WK,L074,Downtown,0,LOCAL
+X1,WK,L075,Downtown,0,LOCAL
+X1,WK,L076,Downtown,0,LOCAL
+X1,WK,L077,Downtown,0,LOCAL
+X1,WK,L078,Downtown,0,LOCAL
+X1,WK,L079,Downtown,0,LOCAL
+X1,WK,L080,Downtown,0,LOCAL
+X1,WK,L081,Downtown,0,LOCAL
+X1,WK,L082,Downtown,0,LOCAL
+X1,WK,L083,Downtown,0,LOCAL
+X1,WK,L084,Downtown,0,LOCAL
+X1,WK,L085,Downtown,0,LOCAL
+X1,WK,L086,Downtown,0,LOCAL
+X1,WK,L087,Downtown,0,LOCAL
+X1,WK,L088,Downtown,0,LOCAL
+X1,WK,L089,Downtown,0,LOCAL
+X1,WK,L090,Downtown,0,LOCAL
+X1,WK,L091,Downtown,0,LOCAL
+X1,WK,L092,Downtown,0,LOCAL
+X1,WK,L093,Downtown,0,LOCAL
+X1,WK,L094,Downtown,0,LOCAL
+X1,WK,L095,Downtown,0,LOCAL
+X1,WK,L096,Downtown,0,LOCAL
+X1,WK,E000,Express Downtown,0,EXPRESS
+X1,WK,E001,Express Downtown,0,EXPRESS
+X1,WK,E002,Express Downtown,0,EXPRESS
+X1,WK,E003,Express Downtown,0,EXPRESS
+X1,WK,E004,Express Downtown,0,EXPRESS
+X1,WK,E005,Express Downtown,0,EXPRESS
+X1,WK,E006,Express Downtown,0,EXPRESS
+X1,WK,E007,Express Downtown,0,EXPRESS
+X1,WK,E008,Express Downtown,0,EXPRESS
+X1,WK,E009,Express Downtown,0,EXPRESS
+X1,WK,E010,Express Downtown,0,EXPRESS
+X1,WK,E011,Express Downtown,0,EXPRESS
+X1,WK,E012,Express Downtown,0,EXPRESS
+X1,WK,E013,Express Downtown,0,EXPRESS
+X1,WK,E014,Express Downtown,0,EXPRESS
+X1,WK,E015,Express Downtown,0,EXPRESS
+X1,WK,E016,Express Downtown,0,EXPRESS
+X1,WK,E017,Express Downtown,0,EXPRESS
+X1,WK,E018,Express Downtown,0,EXPRESS
+X1,WK,E019,Express Downtown,0,EXPRESS
+X1,WK,E020,Express Downtown,0,EXPRESS
+X1,WK,E021,Express Downtown,0,EXPRESS
+X1,WK,E022,Express Downtown,0,EXPRESS
+X1,WK,E023,Express Downtown,0,EXPRESS

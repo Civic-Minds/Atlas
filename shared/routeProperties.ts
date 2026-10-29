@@ -53,6 +53,8 @@ export interface RouteProperties {
   worstDirectionMiddayCap?: number;
   minStopHeadway?: number;
   minStopHeadwayByPeriod?: Partial<Record<string, number>>;
+  /** CIV-1069: periods whose value is read from other headsigns' trips at the stop (this headsign runs under three times); a card row reads no regular service there. */
+  noOwnServiceByPeriod?: string[];
   headsignMinStopHeadwayByPeriod?: Partial<Record<string, number>>;
   stopHeadways?: Record<string, number | null>;
   /** CIV-152: each drawn stop's every-gap tier on its pooled list (the route tier's method); stops with no all-day reading are absent. */
@@ -83,6 +85,8 @@ export interface RouteProperties {
   directionFilterHeadwayByPeriod?: Partial<Record<PeriodKey, number | null>>;
   /** The direction's value is one gap between departures, not a cadence (pipeline isOneGapPeriod). Display only. */
   stretchPeriodOneGap?: Partial<Record<PeriodKey, boolean>>;
+  /** The direction's own value per period (pipeline stampStretchShadow): for an uneven period, its longest wait. Display only. */
+  stretchPeriodHeadway?: Partial<Record<PeriodKey, number | null>>;
   /** #1142: the typical gap of a period whose value is an uneven stretch's longest wait (card range "every typical–worst"); null: steady. Display only. */
   stretchPeriodTypical?: Partial<Record<PeriodKey, number | null>>;
   /** The route's range, [best stretch, worst] ("every 8–25"); null: one number. Display only. */
@@ -101,10 +105,10 @@ export interface RouteProperties {
   stretchRole?: 'main' | 'tail' | 'variant';
   /** 0 for the main stretch; a tail's index into stretchMeta.tails. Absent for variants. */
   stretchIndex?: number;
-  /** CIV-321 S2: period = each stretch's own filter value per period (same rules as a whole route); noRegular = periods its card row reads "no regular service" (one gap, or under three departures). */
+  /** CIV-321 S2: period = each stretch's own filter value per period (same rules as a whole route); maxGap = the longest gap of the same departures (CIV-1069); noRegular = periods its card row reads "no regular service" (one gap, or under three departures). */
   stretchMeta?: {
-    main: { stops: number; refStop: string; trips: number; period?: Partial<Record<PeriodKey, number | null>>; noRegular?: PeriodKey[] } | null;
-    tails: Array<{ refStop: string; stops: number; km: number; trips: number; period?: Partial<Record<PeriodKey, number | null>>; noRegular?: PeriodKey[]; notThrough?: PeriodKey[] }>;
+    main: { stops: number; refStop: string; trips: number; period?: Partial<Record<PeriodKey, number | null>>; maxGap?: Partial<Record<PeriodKey, number | null>>; noRegular?: PeriodKey[] } | null;
+    tails: Array<{ refStop: string; stops: number; km: number; trips: number; period?: Partial<Record<PeriodKey, number | null>>; maxGap?: Partial<Record<PeriodKey, number | null>>; noRegular?: PeriodKey[]; notThrough?: PeriodKey[] }>;
   };
   /** The row's night grade (pipeline/process-core.ts): it passes the 2am to 5am check at 30 or 60 minutes; nightService is the older 60. */
   nightService30?: boolean;

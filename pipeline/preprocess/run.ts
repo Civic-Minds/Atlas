@@ -30,6 +30,8 @@ export interface GtfsTransformOptions {
   mergeEquivalentShapeVariants?: boolean;
   /** Also merge equivalent shape variants on non-light-rail routes (SamTrans 120, #775). */
   mergeEquivalentShapeVariantsAllModes?: boolean;
+  /** Merge equivalent shape variants on these route types only (CapMetro buses, CIV-1083). */
+  mergeEquivalentShapeVariantsRouteTypes?: string[];
   /** Keep shapes whole across long point-to-point steps (rural highways, #776). Read at parse time. */
   keepLongShapeJumps?: boolean;
   /** Leave shapes flagged for clustered jumps unrepaired (Streamline Goldline, #433). Read at parse time. */
@@ -154,8 +156,11 @@ export function normalizeGtfs(
   gtfs = bays.gtfs;
   if (bays.mergedTrips > 0) onStatus?.(`Terminal bays: ${bays.mergedTrips} trips of ${bays.mergedPatterns} pattern(s) end at the other bay of their terminal (#754)`);
   gtfs = synthesizeTripHeadsigns(gtfs);
-  if (options?.mergeEquivalentShapeVariants || options?.mergeEquivalentShapeVariantsAllModes) {
-    const merged = mergeEquivalentShapeVariants(gtfs, { allModes: options.mergeEquivalentShapeVariantsAllModes === true });
+  if (options?.mergeEquivalentShapeVariants || options?.mergeEquivalentShapeVariantsAllModes || options?.mergeEquivalentShapeVariantsRouteTypes) {
+    const merged = mergeEquivalentShapeVariants(gtfs, {
+      allModes: options.mergeEquivalentShapeVariantsAllModes === true,
+      ...(options.mergeEquivalentShapeVariantsRouteTypes ? { routeTypes: options.mergeEquivalentShapeVariantsRouteTypes } : {}),
+    });
     gtfs = merged.gtfs;
     if (merged.mergedTrips > 0) {
       onStatus?.(
