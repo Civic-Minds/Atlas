@@ -79,7 +79,7 @@ function Section({ id, title, intro, children }: { id: string; title: string; in
 /** A hotspot's route, in the Routes table's name style, on one line (its direction sits in its own column). */
 function HotspotRoute({ s, route }: { s: AgencySummary; route: string }) {
   const r = s.routes.find(x => x.route === route);
-  return <a href={liveDashboardPath(s.agency, route)} className="whitespace-nowrap hover:underline"><RouteNameCell shortName={route} longName={r?.longName} mode={r?.mode ?? 3} agencyName={s.agency.toUpperCase()} /></a>;
+  return <a href={liveDashboardPath(s.agency, route)} className="whitespace-nowrap hover:underline"><RouteNameCell shortName={route} longName={r?.longName} mode={r?.mode ?? 3} agencyName={s.agency} /></a>;
 }
 
 function RoutesTable({ s }: { s: AgencySummary }) {
@@ -111,7 +111,7 @@ function RoutesTable({ s }: { s: AgencySummary }) {
             rows={group.routes}
             rowKey={r => r.route}
             columns={[
-              { key: 'route', header: 'Route', rowHeader: true, width: FIRST_COL, className: 'font-normal', cell: r => <a href={liveDashboardPath(s.agency, r.route)} className="hover:underline"><RouteNameCell shortName={r.route} longName={r.longName} mode={r.mode} agencyName={s.agency.toUpperCase()} /></a> },
+              { key: 'route', header: 'Route', rowHeader: true, width: FIRST_COL, className: 'font-normal', cell: r => <a href={liveDashboardPath(s.agency, r.route)} className="hover:underline"><RouteNameCell shortName={r.route} longName={r.longName} mode={r.mode} agencyName={s.agency} /></a> },
               { key: 'late', sortable: true, header: 'Late', cell: r => <span title={`${r.lateN.toLocaleString()} trips this week`}>{pct(r.lateShare)}</span> },
               { key: 'lastWeek', header: 'Last week', narrowHide: true, className: 'text-[var(--text-muted)]', cell: r => pct(r.lateLastWeek) },
               { key: 'runTime', sortable: true, header: 'Run time', cell: r => (r.runTimeDiffMin != null ? runTimeDiffText(r.runTimeDiffMin, false) : pctSigned(r.runTimeOver)) },
