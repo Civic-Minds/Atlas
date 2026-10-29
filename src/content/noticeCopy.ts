@@ -390,8 +390,8 @@ export const EXPLAINER_PIECES = {
   VERIFYING_NEW_SCHEDULE: { code: 'X3', text: "We're verifying it for missing service and other errors, and we'll correct anything we find." },
   CORRECTED_BEFORE_MAP: { code: 'X4', text: "We correct errors like this before a schedule goes on the map." },
   VERIFYING_BETA: { code: 'X5', text: "We're still verifying its schedule, and some routes or times may change." },
-  FREQUENCY_FROM_TIMETABLE_LINE_WRONG: { code: 'X6', text: "We still show the route. Its frequency on this card comes from the timetable and is still accurate." },
-  FREQUENCY_FROM_TIMETABLE_NO_LINE: { code: 'X7', text: "We still show the route on this card. Its frequency comes from the timetable and is still accurate." },
+  FREQUENCY_FROM_TIMETABLE_LINE_WRONG: { code: 'X6', text: "We still show the route. Its frequency on this card comes from the schedule and is still accurate." },
+  FREQUENCY_FROM_TIMETABLE_NO_LINE: { code: 'X7', text: "We still show the route on this card. Its frequency comes from the schedule and is still accurate." },
   MIDDAY_GAPS: { code: 'X8', text: "Many routes start or end their day with one longer gap. Gaps in the middle of the day don't get this allowance." },
   WEEKDAYS_SEPARATE: { code: 'X9', text: "We check each weekday separately, which means one busier day can't make the route look more frequent than it usually is." },
   // Paragraph 3: what the reader can do.
