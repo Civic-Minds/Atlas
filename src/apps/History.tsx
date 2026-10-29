@@ -311,22 +311,27 @@ function RouteHistoryCard({
         })}
       </SidebarCardListRows>
 
-        {summary && (
-          <CardCallout tone={summary.worse ? 'negative' : 'positive'} className="mt-3">
-            {/* The shared callout headline in the summary's better or worse colour (CIV-971). */}
-            <p className={CARD_CALLOUT_HEADLINE_TONE[summary.worse ? 'negative' : 'positive']}>{summary.text}</p>
-            <p className={CARD_CALLOUT_TEXT}>{summary.subtext}</p>
-          </CardCallout>
-        )}
-
-        {route.tripDuration && (
-          <CardCallout className="mt-3">
-            <p className={CARD_CALLOUT_HEADLINE}>
-              Trip time: {runTimeAmount(route.tripDuration.firstMinutes)} ({route.tripDuration.firstLabel}) → {runTimeAmount(route.tripDuration.lastMinutes)} ({route.tripDuration.lastLabel})
-            </p>
-            <p className={`${CARD_NOTICE} mt-1`}>
-              {HISTORY_TRIP_TIME_NOTE}
-            </p>
+        {/* One box (CIV-1127): the frequency change first, in its better or worse colour (CIV-971), then the trip time
+            as one line under it. A route with only one of the two shows that one. */}
+        {(summary || route.tripDuration) && (
+          <CardCallout tone={summary ? (summary.worse ? 'negative' : 'positive') : 'neutral'} className="mt-3">
+            {summary && (
+              <>
+                <p className={CARD_CALLOUT_HEADLINE_TONE[summary.worse ? 'negative' : 'positive']}>{summary.text}</p>
+                <p className={CARD_CALLOUT_TEXT}>{summary.subtext}</p>
+              </>
+            )}
+            {route.tripDuration && (
+              <>
+                <p className={summary ? `${CARD_CALLOUT_TEXT} mt-2` : CARD_CALLOUT_HEADLINE} data-testid="history-trip-time">
+                  Trip time: {runTimeAmount(route.tripDuration.firstMinutes)} ({route.tripDuration.firstLabel}) → {runTimeAmount(route.tripDuration.lastMinutes)} ({route.tripDuration.lastLabel})
+                </p>
+                {/* The long explanation stays here until Ryan picks where it goes: History has no explainer link (CIV-1127). */}
+                <p className={`${CARD_NOTICE} mt-1`}>
+                  {HISTORY_TRIP_TIME_NOTE}
+                </p>
+              </>
+            )}
           </CardCallout>
         )}
     </SidebarCardShell>
