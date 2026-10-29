@@ -1,4 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import RouteRowName from './components/RouteRowName';
+import { routeLabels } from './utils/format';
 import { createPortal } from 'react-dom';
 import { useParams } from 'react-router';
 import { useLiveAgencyName } from './hooks/useLiveAgencyName';
@@ -71,7 +73,7 @@ function PeriodMenu({ band, setBand }: { band: DashboardBand; setBand: (b: Dashb
 }
 
 /** One pill showing the current choice; a click opens the choices under it (the time of day and route menus). */
-function PillMenu({ label, value, options, onPick, alignRight = false }: { label: string; value: string; options: ReadonlyArray<readonly [string, string]>; onPick: (k: string) => void; alignRight?: boolean }) {
+function PillMenu({ label, value, options, onPick, alignRight = false }: { label: string; value: string; /** key, what the row shows, and its plain-text name when what it shows is not plain text. */ options: ReadonlyArray<readonly [string, ReactNode] | readonly [string, ReactNode, string]>; onPick: (k: string) => void; alignRight?: boolean }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -88,8 +90,8 @@ function PillMenu({ label, value, options, onPick, alignRight = false }: { label
       </Pill>
       {open && (
         <div role="menu" aria-label={label} className={`absolute ${alignRight ? 'right-0' : 'left-0'} top-full z-50 mt-1 flex min-w-full flex-col gap-0.5 rounded-xl border border-[var(--border-primary)] bg-[var(--bg-header)] p-1 shadow-lg`}>
-          {options.map(([k, text]) => (
-            <button key={k} type="button" role="menuitemradio" aria-checked={k === value} onClick={() => { onPick(k); setOpen(false); }}
+          {options.map(([k, text, plain]) => (
+            <button key={k} type="button" role="menuitemradio" aria-checked={k === value} aria-label={plain} onClick={() => { onPick(k); setOpen(false); }}
               // A finger-sized row on phones (44px), the compact row with a pointer (#1151).
               className={`whitespace-nowrap rounded-lg px-2.5 py-1 text-left text-xs font-bold max-sm:min-h-[44px] ${k === value ? 'bg-[var(--accent-selected-bg)]' : 'hover:bg-[var(--bg-hover)]'}`}>{text}</button>
           ))}
@@ -304,7 +306,11 @@ function Body({ agency, agencyName, pickSlot, s, route, setRoute, dir, setDir, d
   const direction = ids.length > 1 && dirSlot ? createPortal(<Pill size="segment" selected className={PHONE_TAP_AREA} aria-label="Direction" onClick={() => { setDir(ids[(ids.indexOf(shown) + 1) % ids.length]); setPick(null); }}>{v3!.directionLabels[String(shown)]}</Pill>, dirSlot) : null;
   // The picked route's name, in the top bar beside the direction pills (the name the route page's title uses).
   // The route menu at the right end of the top bar: the panel list's routes in its order, plus All routes; a pick sets route= as a list click does.
-  const routeOptions = useMemo(() => [['', 'All routes'] as const, ...rankRoutes(s, networkV3, measure, band).map(({ r }) => [r.route, `${r.route} ${r.longName ?? ''}`.trim()] as const)], [s, networkV3, measure, band]);
+  // Each route as the list rows show it: the number in bold, the name regular, no dash (Ryan, CIV-1117 row 5).
+  const routeOptions = useMemo(() => [['', 'All routes'] as const, ...rankRoutes(s, networkV3, measure, band).map(({ r }) => {
+    const l = routeLabels({ shortName: r.route, longName: r.longName ?? null, mode: r.mode ?? 3, agencyName: s.agency });
+    return [r.route, <RouteRowName key={r.route} shortName={l.primary} name={l.secondary} />, l.text] as const;
+  })], [s, networkV3, measure, band]);
   const routeMenu = pickSlot ? createPortal(<PillMenu label="Route" alignRight value={route ?? ''} options={routeOptions} onPick={r => { if (r) { setRoute(r); setPick(null); } else { setRoute(null); setDir(null); setPick(null); } }} />, pickSlot) : null;
   // The newest day in the figures, in the header: the picked route's, or the network summary's week.
   const upTo = dataSlot ? createPortal(<DataUpTo dates={v3 ? v3.window.dates : route ? [] : s.weekly?.thisWeek.dates ?? []} route={v3 ? ready?.route : ''} />, dataSlot) : null;
