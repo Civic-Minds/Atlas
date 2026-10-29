@@ -4,7 +4,6 @@ import { useColorMode } from '../../hooks/useColorMode';
 export { headwayToTierColor };
 import { CARD_NOTE, CHART_HEADING, HEADING_GAP } from '../../styles';
 import { SPARKLINE_HOURS, SPARKLINE_HOUR_LABELS } from '../../../shared/config';
-import { PERIOD_LABELS } from '../../hooks/useIntervalStats';
 import type { TimePeriod } from '../../hooks/useIntervalStats';
 import type { HeadwayByPeriod, HeadwayByHour } from '../../hooks/useAgencyData';
 import type { HeadwayByHourMaxGap } from '../../../shared/config';
@@ -18,8 +17,7 @@ import { syncUrlParams } from '../../utils/syncUrlParams';
 import { PHONE_MEDIA_QUERY, useMediaQuery } from '../../hooks/useMediaQuery';
 import { encodeFullDayUrlState, parseFullDayUrlState } from '../../utils/shareUrlState';
 import { HOUR_TO_PERIOD, PERIOD_BANDS } from '../../utils/sparklinePeriods';
-import { BAND_NAMES_ROW, FullDayPeriodBands } from './FullDayPeriodBands';
-export { layoutBandLabels } from './FullDayPeriodBands';
+import { FullDayPeriodBands, HoveredPeriodName } from './FullDayPeriodBands';
 import { headwayAxisTicks, hourBarColorHeadway, hourBarEmphasis, hourChartLitPeriod, hourChartMaxFreq, sparklineBarHeight } from '../../utils/hourChartModel';
 export { headwayAxisTicks, sparklineBarHeight };
 
@@ -68,16 +66,6 @@ function ClockLabels({ className = '' }: { className?: string }) {
 
 /** The full-day view's frequency chart title, beside "Trip time" (Ryan, CIV-1094). */
 export const FREQUENCY_LABEL = 'Frequency';
-
-/**
- * Review only (CIV-1094): which of the three full-day layouts to draw, from ?fdlayout=a|b|c (default a). A: rows per
- * direction, named bands on both charts. B: the same rows, plain bands. C: a column per direction. Removed once
- * Ryan picks one.
- */
-function fullDayLayout(): 'a' | 'b' | 'c' {
-  const value = typeof window === 'undefined' ? null : new URLSearchParams(window.location.search).get('fdlayout');
-  return value === 'b' || value === 'c' ? value : 'a';
-}
 
 function formatHourTitle(h: number, headway: number): string {
   return `${formatClock(h * 60)}: ${headwayEvery(headway)}`;
@@ -153,13 +141,11 @@ interface HourlySparklineProps {
    */
   sharedHour?: number | null;
   onSharedHour?: (hour: number | null) => void;
-  /** Name the periods on the shaded bands (default). Off for the second block, so the names show once. */
-  showPeriodLabels?: boolean;
   /** Y-axis ticks (full-day, both directions): drawn over the bars, labels in a gutter the parent leaves. */
   yAxis?: AxisTick[];
 }
 
-export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directionOptions, period, onPeriodChange, onPeriodHover, onHourHover, allowExpand = false, reserveStackedLegendSpace = false, title = 'Schedule overview', seriesLabel, expanded = false, tripTime, legendStackedByHour, legendInvisible = false, scaleMaxFreq, sharedHour, onSharedHour, showPeriodLabels = true, yAxis }: HourlySparklineProps) {
+export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directionOptions, period, onPeriodChange, onPeriodHover, onHourHover, allowExpand = false, reserveStackedLegendSpace = false, title = 'Schedule overview', seriesLabel, expanded = false, tripTime, legendStackedByHour, legendInvisible = false, scaleMaxFreq, sharedHour, onSharedHour, yAxis }: HourlySparklineProps) {
   const colorMode = useColorMode();
   const [hoveredPeriod, setHoveredPeriod] = useState<string | null>(null);
   const [hoveredHour, setHoveredHour] = useState<number | null>(null);
@@ -195,7 +181,6 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
       ? (phone ? SPARKLINE_PAIRED_HEIGHT_PHONE : SPARKLINE_PAIRED_HEIGHT)
       : (phone ? SPARKLINE_EXPANDED_HEIGHT_PHONE : SPARKLINE_EXPANDED_HEIGHT))
     : SPARKLINE_CARD_HEIGHT;
-  const labelRow = expanded && showPeriodLabels;
   const displayedByHour = byHour;
   // The full-day view shows the direction picked with the pills above it;
   // the inline chart always shows the route's merged schedule.
@@ -256,8 +241,8 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
   const hoverPeriod = sharedMode ? (sharedHour != null ? HOUR_TO_PERIOD[sharedHour] ?? null : null) : hoveredPeriod;
   const litPeriod = hourChartLitPeriod(hoverPeriod, activePeriodKey, displayedByHour, HOURS);
   const bands = litPeriod ? PERIOD_BANDS[litPeriod] : null;
-  // The full-day chart already names every period on its bands, so only the route card's chart names the hovered one.
-  const activeLabelKey = (expanded ? null : hoveredPeriod ?? (period && period !== 'all' ? period : null)) as TimePeriod | null;
+  // The hovered period's name, as on the route card's chart; the card also names its selected period (CIV-1094).
+  const activeLabelKey = (expanded ? hoverPeriod : hoveredPeriod ?? (period && period !== 'all' ? period : null)) as TimePeriod | null;
   const legendSource = legendStackedByHour ?? stackedByHour;
   const stackedLegend = legendSource
     ? Array.from(new Map(
@@ -282,26 +267,21 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
     <div className={`relative ${sharedMode ? '' : expanded ? 'mt-2 mb-4' : 'mt-6 mb-4'}`}>
       {allowExpand && !expanded && <ExpandButton label="Expand schedule" onClick={() => setIsExpanded(true)} />}
       <div
-        className={`relative ${expanded ? (labelRow ? BAND_NAMES_ROW : 'pt-1') : 'pt-5'} ${interactive ? 'cursor-pointer select-none' : ''}`}
+        className={`relative pt-5 ${interactive ? 'cursor-pointer select-none' : ''}`}
         onClick={handleClick}
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
         >
-        {/* With names on, each shaded band reaches up behind its name (CIV-1094). */}
-        {expanded && <FullDayPeriodBands names={labelRow} className={`inset-x-0 ${labelRow ? 'top-0' : 'top-1'} bottom-0`} />}
-        {yAxis && <AxisOverlay ticks={yAxis} height={H} className={labelRow ? 'top-6' : 'top-1'} />}
-        {activeLabelKey && (
-          <span className={`absolute top-0 ${CARD_NOTE} pointer-events-none ${allowExpand && !expanded ? 'right-7' : 'right-0'}`}>
-            {PERIOD_LABELS[activeLabelKey]}
-          </span>
-        )}
+        {expanded && <FullDayPeriodBands className="inset-x-0 top-5 bottom-0" />}
+        {yAxis && <AxisOverlay ticks={yAxis} height={H} className="top-5" />}
+        <HoveredPeriodName period={activeLabelKey} className={allowExpand && !expanded ? 'right-7' : 'right-0'} />
         {/* Hover region highlight — visible on light bg. It starts below the label row
             (the top padding), so the period label sits above it, not inside it. */}
         {bands?.map((band, i) => (
           <div
             key={i}
             data-testid="sparkline-hover-band"
-            className={`absolute ${expanded ? (labelRow ? 'top-6' : 'top-1') : 'top-5'} bottom-0 rounded-sm pointer-events-none`}
+            className="absolute top-5 bottom-0 rounded-sm pointer-events-none"
             style={{
               left: `${band.left * 100}%`,
               width: `${band.width * 100}%`,
@@ -433,8 +413,6 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
             )}
             <>
                 {(() => {
-                  const layout = fullDayLayout();
-                  const names = layout !== 'b';
                   const loop = gridBlocks.some(option => option.tripTime?.loop);
                   // Each chart's title sits right above it, with its number for the hovered hour at the other end of
                   // the same line, so nothing jumps and no line is left empty.
@@ -460,7 +438,6 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
                           scaleMaxFreq={pairMaxFreq}
                           sharedHour={modalHour}
                           onSharedHour={setModalHour}
-                          showPeriodLabels={names}
                           yAxis={pairFreqTicks}
                         />
                         <ClockLabels />
@@ -484,7 +461,7 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
                           barsClassName=""
                           scaleMax={pairTripMax}
                           axis={pairTripTicks}
-                          bands={{ names }}
+                          bands
                         />
                         <ClockLabels />
                       </div>
@@ -493,21 +470,8 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
                   const directionLabel = (option: typeof gridBlocks[number]) => bothDirections && (
                     <div className={`${HEADING_GAP} text-sm font-black text-[var(--text-primary)]`}>{option.label}</div>
                   );
-                  return layout === 'c' ? (
-                    // C: a column per direction, Frequency over Trip time in each.
-                    <div className={`mt-3 grid grid-cols-1 gap-y-4 ${bothDirections ? 'sm:grid-cols-2 sm:gap-x-4' : ''}`} data-testid="full-day-grid">
-                      {gridBlocks.map(option => (
-                        <div key={option.key} data-testid="full-day-direction">
-                          {directionLabel(option)}
-                          <div className="flex flex-col gap-y-3">
-                            {frequencyCell(option)}
-                            {tripTimeCell(option)}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    // A and B: a row per direction, Frequency beside Trip time. On a phone the two stack.
+                  return (
+                    // A row per direction, Frequency beside Trip time, on plain bands (Ryan, CIV-1094). On a phone the two stack.
                     <div className="mt-3 flex flex-col gap-y-4" data-testid="full-day-grid">
                       {gridBlocks.map(option => (
                         <div key={option.key} data-testid="full-day-direction">
