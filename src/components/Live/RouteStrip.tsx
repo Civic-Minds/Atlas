@@ -5,7 +5,7 @@ import {
   LEGEND_LAST_STEP_TAIL, LEGEND_TITLE, MIN_N, bunchParts, delayText, legendSteps, shownDelayMin, stepLabel, keyStops, labelLines, labelWidth, pct, pickLabels, stepColor, stopDetail, stopStep, stopN, stopValue, stretchSpan, stripSummary,
   type RouteStripMode, type RouteStripStop, type RouteStripStretch, type Step, type StretchSpan,
 } from './routeStripModel';
-import { shortStopName, stretchLabel } from '../../utils/stopLabel';
+import { shortStopName, stretchLabel, stripStopName } from '../../utils/stopLabel';
 
 export type { RouteStripMode, RouteStripStop, RouteStripStretch } from './routeStripModel';
 export { routeStripFromV3 } from './routeStripModel';
@@ -162,7 +162,7 @@ export default function RouteStrip({ stops, modes = ['delay', 'bunching'], direc
   const xs = useMemo(() => stops.map((_, i) => GUTTER + INSET + (count > 1 ? (i * inner) / (count - 1) : inner / 2)), [stops, count, inner]);
   const spacing = count > 1 ? inner / (count - 1) : inner;
   const dot = Math.max(6, Math.min(12, Math.floor(spacing - 3)));
-  const labelText = useMemo(() => stops.map(s => shortStopName(s.name)), [stops]);
+  const labelText = useMemo(() => stops.map(s => stripStopName(s.name)), [stops]);
   const priority = useMemo(() => tracks.flatMap(t => (t.stretch ? [t.stretch.from, t.stretch.to] : [])), [tracks]);
   const labels = useMemo(() => {
     if (vertical || width === 0) return [];
