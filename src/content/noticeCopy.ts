@@ -16,7 +16,7 @@ import { delayAmount, headwayAbout } from '../utils/headwayText';
 /** Shared user-facing copy for every expired-feed notice. */
 export function expiredFeedNotice(agencyName: string, expDateStr?: string, manualFeedSource = false): string {
   const { primary } = agencyNames(agencyName).card;
-  const ended = `${primary}'s timetable ended${expDateStr ? ` on ${expDateStr}` : ''}.`;
+  const ended = `${primary}'s schedule ended${expDateStr ? ` on ${expDateStr}` : ''}.`;
   // N3 (Ryan): the kept-by-hand detail is in its explainer (E1's MANUAL_FEED piece, N76), not the notice.
   void manualFeedSource;
   return `${ended} Times shown may be out of date.`;
@@ -103,7 +103,7 @@ export function expiredFeedCheckHistory(options: {
   lastRefreshed?: string;
 }): string {
   if (options.count != null && options.since && options.lastChecked && formatStoredDate(options.lastChecked)) {
-    return `We've checked for a new timetable ${options.count} ${plural(options.count, 'time')} since ${formatStoredDate(options.since)}, with our most recent check on ${formatStoredDate(options.lastChecked)}.`;
+    return `We've checked for a new schedule ${options.count} ${plural(options.count, 'time')} since ${formatStoredDate(options.since)}, with our most recent check on ${formatStoredDate(options.lastChecked)}.`;
   }
   if (options.lastRefreshed && formatStoredDate(options.lastRefreshed)) {
     return `The feed was last refreshed on ${formatStoredDate(options.lastRefreshed)}.`;

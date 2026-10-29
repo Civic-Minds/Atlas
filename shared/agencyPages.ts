@@ -372,7 +372,7 @@ export const listingEndedNotice = (date: string, ended: boolean) => `This agency
 export const listingEndHasPassed = (listingEndedOn: string, todayYmd: string) => todayYmd >= listingEndedOn;
 // N112 listing-ended-page (Ryan's exact text, CIV-1055): agency pages only, when the timetable has a through date.
 // Cards and notices keep N25.
-export const listingEndedPageLine = (through: string, date: string, ended: boolean) => `This timetable covers service until ${through}, but most of its routes ${ended ? 'ended' : 'end'} ${date}.`;
+export const listingEndedPageLine = (through: string, date: string, ended: boolean) => `This schedule covers service until ${through}, but most of its routes ${ended ? 'ended' : 'end'} ${date}.`;
 
 export function agencyDatesText(a: Pick<AgencyPageSummary, 'lastRefreshedAt' | 'validThrough' | 'listingEndedOn'>, releaseDate: string | null, todayYmd: string = agencyTodayYmd({})): string {
   const published = formatDataDate(a.lastRefreshedAt);
@@ -380,15 +380,15 @@ export function agencyDatesText(a: Pick<AgencyPageSummary, 'lastRefreshedAt' | '
   const release = formatDataDate(releaseDate);
   const listingEnded = formatDataDate(a.listingEndedOn);
   const timetable = through && endedBefore(a.validThrough, releaseDate)
-    ? `This timetable ended on ${through}; the agency hasn't published a newer one yet.`
+    ? `This schedule ended on ${through}; the agency hasn't published a newer one yet.`
     // N112 with a through date, else N25 (CIV-1055): "covers service until" alone would overstate a timetable whose routes mostly stopped.
     : listingEnded && through ? listingEndedPageLine(through, listingEnded, listingEndHasPassed(a.listingEndedOn!, todayYmd))
     : listingEnded ? listingEndedNotice(listingEnded, listingEndHasPassed(a.listingEndedOn!, todayYmd))
-    : published && through ? `This timetable was published ${published} and covers service until ${through}.`
-    : published ? `This timetable was published ${published}.`
-    : through ? `This timetable covers service until ${through}.`
+    : published && through ? `This schedule was published ${published} and covers service until ${through}.`
+    : published ? `This schedule was published ${published}.`
+    : through ? `This schedule covers service until ${through}.`
     : '';
-  return ["Based on the agency's published timetable, not live arrivals.", timetable, release ? `This page was last updated ${release}.` : ''].filter(Boolean).join(' ');
+  return ["Based on the agency's published schedule, not live arrivals.", timetable, release ? `This page was last updated ${release}.` : ''].filter(Boolean).join(' ');
 }
 
 /** "Oct 12, 2026" from an ISO or yyyymmdd date; null when unusable. */
