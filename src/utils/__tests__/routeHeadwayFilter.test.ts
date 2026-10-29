@@ -17,7 +17,7 @@ function routeFeatures(agency: string, shortName: string, day = 'Weekday') {
 }
 
 const appPasses = (p: object, period: 'all' | 'overnight', maxHeadway: number) =>
-  passesRouteFilter(p as ShapeProperties, 'test', { maxHeadway, agencies: new Set(), modes: new Set(), day: 'Weekday', period }, null);
+  passesRouteFilter(p as ShapeProperties, 'test', { maxHeadway, agencies: new Set(['test', String((p as ShapeProperties).agencySlug ?? 'test')]), modes: new Set(), day: 'Weekday', period }, null);
 
 describe('the one frequency-filter rule: worst direction decides', () => {
   // MiWay 3 Bloor, weekday overnight (release 2026-10-09). Toward Kipling: typical 25, busiest

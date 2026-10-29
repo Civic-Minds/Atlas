@@ -62,6 +62,18 @@ describe('map filter and in-memory filter agree (CIV-1011 #8)', () => {
     expect(buildRouteTileFilter({ ...filters, agencies: new Set() })).toEqual(['==', ['get', 'agencySlug'], '']);
   });
 
+  // CIV-1135: the counter evaluates the map's own expression, so the two edge states where the old JS predicate
+  // differed now follow the drawn map: no agencies counts nothing, and a route feature without a day is not counted.
+  it('counts what the map draws in the edge states too', () => {
+    const p = features[0];
+    const filters = { agencies: new Set<string>(), day: p.day!, period: 'all' as const, maxHeadway: Infinity, modes: new Set<number>() };
+    expect(passesRouteFilter(p, p.agencySlug!, filters, null)).toBe(false);
+    const noDay = { ...p, day: undefined } as ShapeProperties;
+    const all = { ...filters, agencies: AGENCIES };
+    expect(passesRouteFilter(noDay, noDay.agencySlug!, all, null)).toBe(false);
+    expect(featureFilter(buildRouteTileFilter(all) as never, {} as never).filter({ zoom: 10 } as never, { properties: routeFilterTileProps(noDay) } as never)).toBe(false);
+  });
+
   it('a hovered branch shows its direction for the selected route only', () => {
     const expr = buildRouteTileFilter({ agencies: new Set(['ttc']), day: 'Weekday', period: 'all', maxHeadway: Infinity, modes: new Set(), hoveredDirection: { routeKey: 'ttc::51', directionId: 1 } });
     expect(expr).toEqual(['all',
