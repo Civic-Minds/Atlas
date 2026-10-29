@@ -103,6 +103,11 @@ function evaluate(expr: unknown, props: Props): unknown {
       return evaluate(args[0], props) === evaluate(args[1], props);
     case '!=':
       return evaluate(args[0], props) !== evaluate(args[1], props);
+    case 'in': {
+      // ['in', needle, ['literal', [...]]]: the route filter's agency allowlist.
+      const haystack = evaluate(args[1], props);
+      return Array.isArray(haystack) && haystack.includes(evaluate(args[0], props));
+    }
     case '<':
     case '<=': {
       const a = evaluate(args[0], props);
@@ -112,6 +117,19 @@ function evaluate(expr: unknown, props: Props): unknown {
     }
     default:
       throw new Error(`routeHeadwayFilter: unsupported expression operator "${op}"`);
+  }
+}
+
+/**
+ * Whether a feature's tile view passes a whole map filter expression, as a MapLibre layer filter decides it (a
+ * runtime type error is false). The route counter evaluates the map's own route filter with this (CIV-1135).
+ */
+export function evaluateMapFilter(expr: unknown, props: Props): boolean {
+  try {
+    return evaluate(expr, props) === true;
+  } catch (err) {
+    if (err instanceof ExpressionTypeError) return false;
+    throw err;
   }
 }
 
