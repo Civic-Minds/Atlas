@@ -15,6 +15,15 @@ export function shortStopName(name: string): string {
   return short.split('(').length > short.split(')').length ? `${short})` : short;
 }
 
+/**
+ * A stop's whole name under a route strip (Ryan, CIV-910 Q3: "Bathurst St - Toronto Western Hospital", not the cross street
+ * alone). Only closes a bracket the feed leaves open, as shortStopName does.
+ */
+export function stripStopName(name: string): string {
+  const n = name.trim();
+  return n.split('(').length > n.split(')').length ? `${n})` : n;
+}
+
 /** A stop worth naming on an axis even when space is short: stations, loops and terminals. */
 export function isMajorStop(name: string): boolean {
   return /\b(station|loop|terminal)\b/i.test(name);
