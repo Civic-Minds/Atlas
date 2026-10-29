@@ -90,7 +90,7 @@ exports[`explainer text is pinned (CIV-1061) > E5 1`] = `
   "paragraphs": [
     "Atlas by Civic Minds",
     "Part of this route's line on the map may be missing or drawn in the wrong place.",
-    "We still show the route. Its frequency on this card comes from the timetable and is still accurate.",
+    "We still show the route. Its frequency on this card comes from the schedule and is still accurate.",
     "If something looks wrong, report it with the flag on this card.",
   ],
 }
@@ -102,7 +102,7 @@ exports[`explainer text is pinned (CIV-1061) > E6 1`] = `
   "paragraphs": [
     "Atlas by Civic Minds",
     "This route's line can't be shown on the map because it's missing from the agency's data.",
-    "We still show the route on this card. Its frequency comes from the timetable and is still accurate.",
+    "We still show the route on this card. Its frequency comes from the schedule and is still accurate.",
     "If something looks wrong, report it with the flag on this card.",
   ],
 }
