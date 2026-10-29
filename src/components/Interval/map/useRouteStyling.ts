@@ -6,7 +6,7 @@ import type { TimePeriod, HoveredBranch } from '../../../hooks/useIntervalStats'
 import type { HistoryMapOverlay } from '../../../context/HistoryMapOverlay';
 import { LIVE_ANALYSIS_ROUTES } from '../../../../shared/livePollingConfig';
 import { tileEffectiveHeadwayExpr } from '../../../../shared/tileFilterExprs';
-import { buildFocusedRoutePaint } from '../../../utils/routeFocus';
+import { buildFocusCase, buildFocusedRoutePaint } from '../../../utils/routeFocus';
 import { buildPartialMatchFilterExpression, broadenFilterForPartialMatches, selectedSharedStretchRoutes, type computeFrequencySegmentOverlay } from '../../../utils/frequencySegments';
 import { buildRouteSortKeyExpression } from '../../../utils/routeSort';
 import type { OnDemandFocusTarget } from './onDemandFocus';
@@ -272,13 +272,11 @@ export function useRouteStyling(
         // History agency selection keeps the whole agency visible while dimming
         // the surrounding network, matching route-level focus without hiding context.
         const historyAgencyMatch: any = ['==', ['get', 'agencySlug'], historyOverlay.slug];
-        setRouteLayerPaint(map, 'line-opacity', [
-          'case', historyAgencyMatch, 1.0, DIM_OPACITY,
-        ] as any);
+        setRouteLayerPaint(map, 'line-opacity', buildFocusCase(historyAgencyMatch, 1.0, DIM_OPACITY) as any);
         // The agency's lines at the regular route widths (ROUTE_LINE_WIDTH_STOPS), the rest dimmed.
         const widthStops: unknown[] = [];
         for (let i = 0; i < ROUTE_LINE_WIDTH_STOPS.length; i += 2) {
-          widthStops.push(ROUTE_LINE_WIDTH_STOPS[i], ['case', historyAgencyMatch, ROUTE_LINE_WIDTH_STOPS[i + 1], DIM_WIDTH]);
+          widthStops.push(ROUTE_LINE_WIDTH_STOPS[i], buildFocusCase(historyAgencyMatch, ROUTE_LINE_WIDTH_STOPS[i + 1], DIM_WIDTH));
         }
         setRouteLayerPaint(map, 'line-width', ['interpolate', ['linear'], ['zoom'], ...widthStops] as any);
         if (map.getLayer('history-routes-layer')) {
