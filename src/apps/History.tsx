@@ -6,11 +6,11 @@ import { type HeadwayByPeriod } from '../../shared/config';
 import type { HistorySnapshotV2 } from '../../shared/historyV2';
 import { countOf } from '../../shared/overflowText';
 import { isDrawableLineCoordinates } from '../../shared/routeGeometry';
-import { TRANSITION_BASE, AGENCY_LIST_FILTERS, PILL_SURFACE, PILL_SCROLL_ROW, PANEL_TITLE, SIDEBAR_CARD, SIDEBAR_CARD_MAX_H, sidebarFrameStyle, SIDEBAR_PANEL_WIDTH, Z_PANEL, CARD_NOTICE, CARD_NOTE } from '../styles';
+import { TRANSITION_BASE, AGENCY_LIST_FILTERS, PILL_SURFACE, PILL_SCROLL_ROW, SIDEBAR_CARD, SIDEBAR_CARD_MAX_H, sidebarFrameStyle, SIDEBAR_PANEL_WIDTH, Z_PANEL, CARD_NOTICE, CARD_NOTE } from '../styles';
 import { routeLabels, titleCase } from '../utils/format';
 import { agencyNames } from '../utils/agencyName';
 import CardRouteList from '../components/Interval/CardRouteList';
-import { AgencyCardTop, CARD_CALLOUT_HEADLINE, CARD_CALLOUT_TEXT, CARD_HEADER_BLOCK, CardCallout, CardDirectionRow, CardReportButton, SIDEBAR_CARD_BODY, SidebarCardHeaderBlock, SidebarCardListRows, SidebarCardShell } from '../components/Interval/cardUi';
+import { AgencyCardTop, CARD_CALLOUT_HEADLINE, CARD_CALLOUT_HEADLINE_TONE, CARD_CALLOUT_TEXT, CARD_HEADER_BLOCK, CardCallout, CardDirectionRow, CardReportButton, SIDEBAR_CARD_BODY, SidebarCardHeaderBlock, SidebarCardListRows, SidebarCardShell } from '../components/Interval/cardUi';
 import RouteCardTitle from '../components/RouteCardTitle';
 import { SearchSuggestionsPanel, type RecentRoute, type SuggestedRoute } from '../components/Interval/SearchSuggestionsPanel';
 import type { RouteListDisplay } from '../utils/effectiveHeadway';
@@ -314,7 +314,7 @@ function RouteHistoryCard({
         {summary && (
           <CardCallout tone={summary.worse ? 'negative' : 'positive'} className="mt-3">
             {/* The shared callout headline in the summary's better or worse colour (CIV-971). */}
-            <p className={`${CARD_CALLOUT_HEADLINE} ${summary.worse ? '!text-[var(--status-negative-text)]' : '!text-[var(--status-positive-text)]'}`}>{summary.text}</p>
+            <p className={CARD_CALLOUT_HEADLINE_TONE[summary.worse ? 'negative' : 'positive']}>{summary.text}</p>
             <p className={CARD_CALLOUT_TEXT}>{summary.subtext}</p>
           </CardCallout>
         )}
@@ -517,12 +517,6 @@ const NO_RECENT_ROUTES: RecentRoute[] = [];
 const NO_SUGGESTED_ROUTES: SuggestedRoute[] = [];
 const NO_ROUTE_PICK = () => {};
 const NO_ROUTE_DISPLAY = () => ({}) as RouteListDisplay;
-
-const SINCE_FILTERS = [
-  { label: 'All time', year: 0 },
-  { label: 'Since 2018', year: 2018 },
-  { label: 'Since 2022', year: 2022 },
-] as const;
 
 function HistoryAgencyPanel({
   agencyHistory,
@@ -1072,10 +1066,7 @@ export default function History({ active, view = HISTORY_VIEW_ALL, initialAgency
           style={frameStyle}
           onMouseDown={e => e.preventDefault()}
         >
-          <PanelTitleBar>
-            <HistoryIcon className="w-3 h-3 text-[var(--text-dim)] shrink-0" />
-            <span className={PANEL_TITLE}>Historical service</span>
-          </PanelTitleBar>
+          <PanelTitleBar icon={<HistoryIcon className="w-3 h-3 text-[var(--text-dim)] shrink-0" />} title="Historical service" />
           {(
             <>
               {historyData !== null && !historyLoadFailed && (
