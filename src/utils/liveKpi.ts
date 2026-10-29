@@ -98,8 +98,9 @@ export function weekNotComparableLine(w: NonNullable<LiveV3['weekly']>): string 
 export const leftOutDates = (wk: WeekMetrics): string[] => wk.dates.filter(d => !wk.healthyDates.includes(d));
 
 /** The days two weeks leave out, as the week table's "Excluding …" line (empty when none) and that line's hover text. */
-export function excludingDays(w: { thisWeek: WeekMetrics; lastWeek: WeekMetrics } | null | undefined): { text: string | null; title: string | null } {
-  const thisLeft = w ? leftOutDates(w.thisWeek) : [], lastLeft = w ? leftOutDates(w.lastWeek) : [];
+export function excludingDays(w: { thisWeek: WeekMetrics; lastWeek: WeekMetrics; leftOutEverywhere?: { thisWeek: string[]; lastWeek: string[] } } | null | undefined): { text: string | null; title: string | null } {
+  // The network names only the days every route left out (CIV-910 Q2); a route names its own.
+  const thisLeft = w ? w.leftOutEverywhere?.thisWeek ?? leftOutDates(w.thisWeek) : [], lastLeft = w ? w.leftOutEverywhere?.lastWeek ?? leftOutDates(w.lastWeek) : [];
   return { text: excludingWeeksText(thisLeft, lastLeft), title: leftOutReason([...lastLeft, ...thisLeft]) };
 }
 
