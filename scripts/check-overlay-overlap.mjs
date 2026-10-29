@@ -1,16 +1,31 @@
-// Overlap check for the map's fixed overlays (CIV-1011 #12). Usage:
-//   node scripts/check-overlay-overlap.mjs <baseUrl> [screenshotDir]
-// Needs a running dev server. At 360, 640, 820, 1024 and 1440 wide it opens the map four times: as a default visitor, as
-// one from a strict-consent country (so the analytics prompt shows), with the on-demand areas failing to load (so the
-// map notice pill shows, CIV-1057), and with both. It measures every overlay marked data-map-overlay (styles.ts, "Map overlay slots"):
-// the header's left and right groups, the footer pills, the counts, the map controls, notice and status pills, and the
-// analytics prompt. Each overlay is measured by its visible pieces, not its container, so a full-width row only counts
-// where something is drawn. It fails when two overlays' pieces overlap, or when a piece runs off the screen.
+// Overlap check for the map's fixed overlays (CIV-1011 #12, CIV-1136). Usage:
+//   node scripts/check-overlay-overlap.mjs <baseUrl> [screenshotDir] [--scenes=frequency,history,...]
+// Needs a running dev server. At 360, 390, 768, 1024 and 1280 wide it opens each map scene: the Frequency map as a
+// default visitor, as one from a strict-consent country (so the analytics prompt shows), with the on-demand areas failing
+// to load (so the notice pill shows, CIV-1057), and with both; the map key switched on (with and without the notice);
+// Night; Frequent Service; History with an agency open (its year scrubber); Compare; and Live. It measures every overlay
+// marked data-map-overlay (src/mapOverlayLayout.ts): the header's left and right groups, the footer pills, the counts, the
+// map controls, key, notice and status pills, the update banner, History's scrubber, Compare's labels and link, Live's
+// toolbar, and the analytics prompt. Each overlay is measured by its visible pieces, not its container, so a full-width
+// row only counts where something is drawn. It fails when two overlays' pieces overlap, or when a piece runs off the screen.
 import { mkdirSync } from 'node:fs';
 import { chromium } from 'playwright';
 
-const [baseUrl = 'http://localhost:5180', outDir] = process.argv.slice(2);
-const WIDTHS = [360, 640, 820, 1024, 1440];
+const args = process.argv.slice(2);
+const only = args.find(a => a.startsWith('--scenes='))?.slice(9).split(',');
+const [baseUrl = 'http://localhost:5180', outDir] = args.filter(a => !a.startsWith('--'));
+/** The map scenes: where to open, which visitors, and anything to do before measuring. */
+const SCENES = [
+  { name: 'frequency', path: '/', visitors: ['default', 'consent', 'notice', 'consent-notice'] },
+  { name: 'key', path: '/', visitors: ['default', 'notice'], key: true },
+  { name: 'night', path: '/research/night', visitors: ['default'] },
+  { name: 'frequent', path: '/research/frequent-service', visitors: ['default'] },
+  // An agency with several years, so the year scrubber shows (History is off on phones: the map shows instead).
+  { name: 'history', path: '/apps/history?agency=marta', visitors: ['default'] },
+  { name: 'compare', path: '/', visitors: ['default'], open: page => page.getByRole('button', { name: 'Compare two maps' }).click() },
+  { name: 'live', path: '/apps/live', visitors: ['default'] },
+].filter(s => !only || only.includes(s.name));
+const WIDTHS = [360, 390, 768, 1024, 1280];
 const HEIGHT = 900;
 const SETTLE_MS = 6000;
 
@@ -49,31 +64,36 @@ function measure() {
 const overlaps = (a, b) => a.x < b.x + b.w - 0.5 && b.x < a.x + a.w - 0.5 && a.y < b.y + b.h - 0.5 && b.y < a.y + a.h - 0.5;
 
 if (outDir) mkdirSync(outDir, { recursive: true });
-const browser = await chromium.launch();
+// PW_CHROMIUM: a local Chromium to use instead of Playwright's own download.
+const browser = await chromium.launch(process.env.PW_CHROMIUM ? { executablePath: process.env.PW_CHROMIUM } : {});
 const failures = [];
 try {
-  for (const width of WIDTHS) for (const visitor of ['default', 'consent', 'notice', 'consent-notice']) {
+  for (const width of WIDTHS) for (const scene of SCENES) for (const visitor of scene.visitors) {
+    const label = `${width} ${scene.name} ${visitor}`;
     const ctx = await browser.newContext({ viewport: { width, height: HEIGHT } });
     const page = await ctx.newPage();
     // A visitor from a strict-consent country sees the analytics prompt; the default visitor doesn't.
     if (visitor.startsWith('consent')) await page.route('**/api/privacy-region*', route => route.fulfill({ json: { country: 'FR' } }));
     // On-demand areas that fail to load put the notice pill along the bottom edge.
     if (visitor.endsWith('notice')) await page.route('**/on-demand/manifest.json*', route => route.fulfill({ status: 500, body: '' }));
-    await page.goto(baseUrl + '/', { waitUntil: 'domcontentloaded' });
+    // The map key is a setting (Settings, "Show map legend"), off by default.
+    if (scene.key) await page.addInitScript(() => { try { localStorage.setItem('atlas_pref_map_legend', 'true'); } catch {} });
+    await page.goto(baseUrl + scene.path, { waitUntil: 'domcontentloaded' });
     await page.waitForSelector('[data-map-overlay="top-bar"]', { timeout: 30000 });
+    if (scene.open) await scene.open(page).catch(err => failures.push(`${label}: could not open the scene (${String(err).split('\n')[0]})`));
     await page.waitForTimeout(SETTLE_MS);
     const { overlays, viewport } = await page.evaluate(measure);
     const names = overlays.map(o => `${o.name}(${o.boxes.length})`).join(' ');
-    console.log(`${width} ${visitor}: ${names}`);
+    console.log(`${label}: ${names}`);
     for (const o of overlays) for (const b of o.boxes) {
-      if (b.x < -0.5 || b.y < -0.5 || b.x + b.w > viewport.w + 0.5 || b.y + b.h > viewport.h + 0.5) failures.push(`${width} ${visitor}: ${o.name} runs off the screen (${Math.round(b.x)},${Math.round(b.y)} ${Math.round(b.w)}x${Math.round(b.h)})`);
+      if (b.x < -0.5 || b.y < -0.5 || b.x + b.w > viewport.w + 0.5 || b.y + b.h > viewport.h + 0.5) failures.push(`${label}: ${o.name} runs off the screen (${Math.round(b.x)},${Math.round(b.y)} ${Math.round(b.w)}x${Math.round(b.h)})`);
     }
     for (let i = 0; i < overlays.length; i++) for (let j = i + 1; j < overlays.length; j++) {
       for (const a of overlays[i].boxes) for (const b of overlays[j].boxes) {
-        if (overlaps(a, b)) failures.push(`${width} ${visitor}: ${overlays[i].name} overlaps ${overlays[j].name}`);
+        if (overlaps(a, b)) failures.push(`${label}: ${overlays[i].name} overlaps ${overlays[j].name}`);
       }
     }
-    if (outDir) await page.screenshot({ path: `${outDir}/overlays-${width}-${visitor}.png` });
+    if (outDir) await page.screenshot({ path: `${outDir}/overlays-${width}-${scene.name}-${visitor}.png` });
     await ctx.close();
   }
 } finally {
