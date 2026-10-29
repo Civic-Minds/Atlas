@@ -275,6 +275,33 @@ describe('applyAnalysisCriteria', () => {
     expect(weekday?.times).toEqual([480, 600, 840, 1080, 1320]);
   });
 
+  it('rates a rail direction from the whole day when its midday sample is two trains (CIV-1085, NJT Rail 1)', () => {
+    // NJT Atlantic City Line to Philadelphia, weekdays: 12 trains every 70-120 min; only 10:12 and
+    // 12:04 fall in 09:30-14:30, so the midday sample read irregular.
+    const hhmm = (s: string) => Number(s.slice(0, 2)) * 60 + Number(s.slice(3));
+    const results = applyAnalysisCriteria([raw({
+      route: 'njt-rail-1',
+      routeType: '2',
+      departureTimes: ['04:11', '05:38', '06:49', '08:20', '10:12', '12:04', '14:38', '15:47', '16:59', '18:54', '20:53', '22:51'].map(hhmm),
+    })]);
+    const weekday = results.find(item => item.route === 'njt-rail-1' && item.day === 'Weekday');
+
+    expect(weekday).toMatchObject({ serviceClass: 'regular', tier: 'infrequent' });
+  });
+
+  it('keeps a rush-hour rail line with two midday trains off the all-day scale (CIV-1085)', () => {
+    const peak = (from: number) => Array.from({ length: 9 }, (_, i) => from + i * 15);
+    const results = applyAnalysisCriteria([raw({
+      route: 'rush-rail',
+      routeType: '2',
+      departureTimes: [...peak(390), 660, 780, ...peak(960)],
+    })]);
+    const weekday = results.find(item => item.route === 'rush-rail' && item.day === 'Weekday');
+
+    // Rush-hour-only service as before (#720), not an all-day line rated from the peaks.
+    expect(weekday?.serviceClass).not.toBe('regular');
+  });
+
   it('correctly falls to infrequent/span rather than a false tight tier when a day bucket mixes two separate overnight blocks (real TTC 300 pattern)', () => {
     // Tail of one night's run (233-263, non-extended) plus the start of the next night's run
     // (1512+, extended) landing in the same calendar-day bucket -- a real GTFS quirk confirmed
