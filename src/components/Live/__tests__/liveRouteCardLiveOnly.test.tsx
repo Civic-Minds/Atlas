@@ -20,7 +20,7 @@ const car = (id: string, tripId: string, at: number, tsEpoch: number): LiveVehic
 });
 const card = (vehicles: LiveVehicle[] = []) => render(<LiveRoutePerformance slug="ttc" routeShortName="505" vehicles={vehicles} feedDegraded={false} />);
 
-// 2026-10-26 13:00 UTC = 9:00 am in Toronto.
+// 2026-10-26 13:00 UTC = 9 AM in Toronto.
 const T0_MS = Date.UTC(2026, 9, 26, 13, 0, 0);
 const T0 = T0_MS / 1000;
 
@@ -69,9 +69,9 @@ describe('"Right now" from the map\'s live positions (CIV-893)', () => {
     const view = card([car('a', 't1', 2, T0)]);
     expect(screen.getByText('Right now')).toBeTruthy();
     view.unmount();
-    // The newest report is 2½ min old at 9:00 am: it was last updated at 8:57 am.
+    // The newest report is 2½ min old at 9 AM: it was last updated at 8:57 AM.
     card([car('a', 't1', 2, T0 - 150)]);
-    expect(screen.getByText('Right now · last updated 8:57 am')).toBeTruthy();
+    expect(screen.getByText('Right now · last updated 8:57 AM')).toBeTruthy();
   });
 
   it('shows the count and keeps the direction pills with only one car, and never "Fewer than 2 cars"', () => {
@@ -125,8 +125,8 @@ describe('"Right now" from the map\'s live positions (CIV-893)', () => {
 describe('agency clock (CIV-899 item 13)', () => {
   it('uses the agency\'s own time zone, not Toronto\'s', () => {
     const d = new Date(T0_MS);
-    expect(agencyTime('ttc', d)).toBe('9:00 am');
-    expect(agencyTime('sfmta', d)).toBe('6:00 am');
+    expect(agencyTime('ttc', d)).toBe('9 AM');
+    expect(agencyTime('sfmta', d)).toBe('6 AM');
     expect(agencyHour('sfmta', d)).toBe(6);
     expect(agencyHour('halifax', d)).toBe(10);
   });

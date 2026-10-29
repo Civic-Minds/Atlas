@@ -18,8 +18,8 @@ describe('liveLinkPreview', () => {
 });
 
 describe('lateHourLine', () => {
-  it('reads "2 pm: 8 of 167 trips left the end of the line late"', async () => {
+  it('reads "2 PM: 8 of 167 trips left the end of the line late"', async () => {
     const { lateHourLine, lateCount } = await import('../liveWording');
-    expect(lateHourLine('2 pm', lateCount(8 / 167, 167), 167)).toBe('2 pm: 8 of 167 trips left the end of the line late');
+    expect(lateHourLine('2 PM', lateCount(8 / 167, 167), 167)).toBe('2 PM: 8 of 167 trips left the end of the line late');
   });
 });
