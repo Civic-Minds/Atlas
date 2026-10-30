@@ -1,0 +1,290 @@
+# Population coverage study (CIV-1182): how many people live within a 10-minute walk of frequent service, in
+# Canada and the US. Runs the scripts in docs/research/canada-transit-coverage-2026-09/src, one job per Canadian
+# province and per US state bundle, against Atlas's current published data (read-only, public URLs).
+# Never writes to R2: the only secrets it can use are the read-only keys, and only for the StatCan fallback files.
+# Reports come back as workflow artifacts. Plan and costs: docs/research/canada-transit-coverage-2026-09/CLOUD-RUN.md
+name: Coverage study
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'smoke runs one small Canadian province (Saskatchewan) and one US bundle (Hawaii). full runs everything.'
+        type: choice
+        options: [smoke, full]
+        default: smoke
+      rule:
+        description: 'Frequency rule. study = the September 2026 rule (reproduces the published figures); no-sustained = the same without Atlas''s sustained flag; map-filter is not built yet (waits for Ryan).'
+        type: choice
+        options: [study, no-sustained, map-filter]
+        default: study
+      provinces:
+        description: 'Optional, full mode: comma-separated provinces to run instead of all (e.g. "Ontario,Quebec").'
+        required: false
+        default: ''
+      bundles:
+        description: 'Optional, full mode: comma-separated US bundle ids to run instead of all (e.g. "15,55").'
+        required: false
+        default: ''
+
+permissions:
+  contents: read
+
+concurrency:
+  group: coverage-study
+  cancel-in-progress: false
+
+env:
+  STUDY: docs/research/canada-transit-coverage-2026-09
+  COVERAGE_RULE: ${{ inputs.rule }}
+  NODE_OPTIONS: --max-old-space-size=12288
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    outputs:
+      provinces: ${{ steps.matrix.outputs.provinces }}
+      bundles: ${{ steps.matrix.outputs.bundles }}
+    env:
+      MODE: ${{ inputs.mode }}
+      PROVINCES_INPUT: ${{ inputs.provinces }}
+      BUNDLES_INPUT: ${{ inputs.bundles }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Check the inputs
+        run: |
+          [[ "$PROVINCES_INPUT" =~ ^[A-Za-z\ ,]*$ ]] || { echo "Bad provinces: $PROVINCES_INPUT"; exit 1; }
+          [[ "$BUNDLES_INPUT" =~ ^[0-9,\-]*$ ]] || { echo "Bad bundles: $BUNDLES_INPUT"; exit 1; }
+          node -e "import('./$STUDY/src/coverage.mjs').then(m => m.coverageRule())"
+      - name: Plan the US bundles (smoke mode plans Hawaii only)
+        run: |
+          mkdir -p plan
+          if [ "$MODE" = smoke ]; then
+            node -e "const fs=require('fs');const i=JSON.parse(fs.readFileSync('public/data/index.json'));i.agencies=i.agencies.filter(a=>a.region==='Hawaii');fs.writeFileSync('plan/index.json',JSON.stringify(i))"
+          else
+            cp public/data/index.json plan/index.json
+          fi
+          node $STUDY/src/plan-us-bundles.mjs --index plan/index.json --headway 30 --out plan/us-service-bundles.json
+      - name: Build the job matrix
+        id: matrix
+        run: |
+          node -e "
+            const fs = require('fs');
+            const ca = new Set(['Alberta','British Columbia','Manitoba','New Brunswick','Newfoundland','Newfoundland and Labrador','Northwest Territories','Nova Scotia','Ontario','Prince Edward Island','Quebec','Saskatchewan','Yukon']);
+            const index = JSON.parse(fs.readFileSync('public/data/index.json'));
+            let provinces = [...new Set(index.agencies.filter(a => ca.has(a.region)).map(a => a.region))].sort();
+            let bundles = JSON.parse(fs.readFileSync('plan/us-service-bundles.json')).bundles.map(b => b.id);
+            const pick = (all, input) => input ? input.split(',').map(s => s.trim()).filter(Boolean).filter(x => all.includes(x)) : all;
+            if (process.env.MODE === 'smoke') provinces = ['Saskatchewan'];
+            else { provinces = pick(provinces, process.env.PROVINCES_INPUT); bundles = pick(bundles, process.env.BUNDLES_INPUT); }
+            fs.appendFileSync(process.env.GITHUB_OUTPUT, 'provinces=' + JSON.stringify(provinces) + '\n' + 'bundles=' + JSON.stringify(bundles) + '\n');
+            console.log({ provinces, bundles });
+          "
+      - uses: actions/upload-artifact@v4
+        with:
+          name: plan
+          path: plan/us-service-bundles.json
+          retention-days: 14
+
+  canada-inputs:
+    needs: plan
+    if: needs.plan.outputs.provinces != '[]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Cache the Statistics Canada files
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.STUDY }}/data/source/statcan
+          key: statcan-2021-v1
+      - name: Get the Statistics Canada files (StatCan, else the private archive)
+        env:
+          R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+          R2_ARCHIVE_BUCKET_NAME: ${{ secrets.R2_ARCHIVE_BUCKET_NAME }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.R2_RO_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_RO_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: auto
+        run: |
+          set -euo pipefail
+          dir=$STUDY/data/source/statcan; mkdir -p "$dir"
+          get() {
+            local file=$1 url=$2
+            [ -s "$dir/$file" ] && { echo "cached: $file"; return; }
+            if curl -fsSL --retry 2 -A "Atlas coverage study (github.com/Civic-Minds/Atlas)" -o "$dir/$file" "$url"; then echo "from StatCan: $file"; return; fi
+            rm -f "$dir/$file"
+            echo "StatCan refused $file; reading the copy in the private archive (research/coverage-inputs/)"
+            [ -n "${AWS_ACCESS_KEY_ID:-}" ] || { echo "No read-only R2 keys and StatCan refused. See CLOUD-RUN.md, 'StatCan fallback'."; exit 1; }
+            aws s3 cp --endpoint-url "https://$R2_ACCOUNT_ID.r2.cloudflarestorage.com" "s3://$R2_ARCHIVE_BUCKET_NAME/research/coverage-inputs/$file" "$dir/$file"
+          }
+          get 2021_92-150-X_eng.zip https://www12.statcan.gc.ca/census-recensement/2021/geo/aip-pia/geosuite/files-fichiers/2021_92-150-X_eng.zip
+          get lcma000b21a_e.zip https://www12.statcan.gc.ca/census-recensement/2021/geo/sip-pis/boundary-limites/files-fichiers/lcma000b21a_e.zip
+          ls -la "$dir"
+      - name: Prepare population points and metro boundaries
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq && sudo apt-get install -y -qq gdal-bin > /dev/null
+          cd $STUDY
+          mkdir -p data/source data/derived
+          cp data/source/statcan/2021_92-150-X_eng.zip data/source/
+          node src/prepare-statcan.mjs
+          unzip -o -q data/source/statcan/lcma000b21a_e.zip -d data/source/cma
+          ogr2ogr -f GeoJSON -t_srs EPSG:4326 -select CMAUID,CMANAME,PRUID data/derived/cma-2021.geojson data/source/cma/*.shp
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ca-inputs
+          path: |
+            ${{ env.STUDY }}/data/derived/population-areas.geojson
+            ${{ env.STUDY }}/data/derived/cma-2021.geojson
+          retention-days: 14
+
+  canada:
+    needs: [plan, canada-inputs]
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    strategy:
+      fail-fast: false
+      max-parallel: 6
+      matrix:
+        province: ${{ fromJSON(needs.plan.outputs.provinces) }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Free disk space and install osmium
+        run: |
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL
+          sudo apt-get update -qq && sudo apt-get install -y -qq osmium-tool > /dev/null
+          df -h /
+      - uses: actions/download-artifact@v4
+        with:
+          name: ca-inputs
+          path: ${{ env.STUDY }}/data/derived
+      - name: Name the province's OSM extract
+        id: osm
+        env:
+          PROVINCE: ${{ matrix.province }}
+        run: |
+          slug=$(echo "$PROVINCE" | tr 'A-Z ' 'a-z-' | sed 's/^newfoundland$/newfoundland-and-labrador/')
+          echo "slug=$slug" >> "$GITHUB_OUTPUT"
+          echo "month=$(date -u +%Y-%m)" >> "$GITHUB_OUTPUT"
+      - name: Cache the OSM extract (one per province per month)
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.STUDY }}/data/source/ca-osm
+          key: geofabrik-ca-${{ steps.osm.outputs.slug }}-${{ steps.osm.outputs.month }}
+      - name: Run the province
+        env:
+          PROVINCE: ${{ matrix.province }}
+          SLUG: ${{ steps.osm.outputs.slug }}
+        run: |
+          set -euo pipefail
+          cd $STUDY
+          mkdir -p data/source/ca-osm
+          pbf=data/source/ca-osm/$SLUG-latest.osm.pbf
+          [ -s "$pbf" ] || curl -fsSL --retry 3 -o "$pbf" "https://download.geofabrik.de/north-america/canada/$SLUG-latest.osm.pbf"
+          node src/run-ca-province.mjs --province "$PROVINCE" --pbf "$pbf" \
+            --population data/derived/population-areas.geojson --cma data/derived/cma-2021.geojson \
+            --index ../../../public/data/index.json --headways 15,30 --out-root "output/ca/$SLUG"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: report-ca-${{ steps.osm.outputs.slug }}
+          path: ${{ env.STUDY }}/output/ca
+          retention-days: 14
+          if-no-files-found: warn
+
+  us:
+    needs: plan
+    if: needs.plan.outputs.bundles != '[]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    strategy:
+      fail-fast: false
+      max-parallel: 10
+      matrix:
+        bundle: ${{ fromJSON(needs.plan.outputs.bundles) }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Free disk space and install osmium
+        run: |
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL
+          sudo apt-get update -qq && sudo apt-get install -y -qq osmium-tool > /dev/null
+          df -h /
+      - uses: actions/download-artifact@v4
+        with:
+          name: plan
+          path: plan
+      - name: Month key
+        id: month
+        run: echo "month=$(date -u +%Y-%m)" >> "$GITHUB_OUTPUT"
+      - name: Cache OSM extracts and Census block groups (per bundle, per month)
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ env.STUDY }}/data/source/us-osm
+            ${{ env.STUDY }}/data/derived/us-census
+          key: us-inputs-${{ matrix.bundle }}-${{ steps.month.outputs.month }}
+      - name: Run the bundle at 30, then 15 minutes (the 15-minute run reuses the 30-minute walking network)
+        env:
+          BUNDLE: ${{ matrix.bundle }}
+        run: |
+          set -euo pipefail
+          cd $STUDY
+          for h in 30 15; do
+            node src/run-us-bundle.mjs --bundle "$BUNDLE" --headway $h --index ../../../public/data/index.json \
+              --bundles ../../../plan/us-service-bundles.json --data-root "data/derived/us-bundles/$BUNDLE" \
+              --source-root data/source/us-osm --census-root data/derived/us-census --out-root "output/us/$BUNDLE/$h-minute"
+          done
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: report-us-${{ matrix.bundle }}
+          path: ${{ env.STUDY }}/output/us
+          retention-days: 14
+          if-no-files-found: warn
+
+  summarize:
+    needs: [plan, canada, us]
+    if: always() && needs.plan.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: report-*
+          path: reports
+      - name: Merge per country and threshold, then summarize
+        env:
+          RULE: ${{ inputs.rule }}
+        run: |
+          set -euo pipefail
+          mkdir -p merged
+          for h in 15 30; do
+            ca=$(find reports -path "*report-ca-*" -path "*/$h-minute/coverage-report.json" | sort)
+            us=$(find reports -path "*report-us-*" -path "*/$h-minute/coverage-report.json" | sort)
+            if [ -n "$ca" ]; then node $STUDY/src/merge-reports.mjs --out merged/canada-$h-minute.json $ca; fi
+            if [ -n "$us" ]; then node $STUDY/src/merge-reports.mjs --out merged/us-$h-minute.json $us; fi
+          done
+          node $STUDY/src/summarize-cloud.mjs --dir merged --rule "$RULE"
+          cat merged/summary.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: coverage-summary
+          path: merged
+          retention-days: 30

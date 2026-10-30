@@ -91,11 +91,26 @@ export function metros(collection) {
   });
 }
 
-export function qualifies(properties, maxHeadwayMinutes = 15) {
+/**
+ * Which frequency rule decides a qualifying route (CIV-1182). Set with COVERAGE_RULE:
+ * - "study" (default): the September 2026 rule, kept so the published figures can be reproduced. It needs Atlas's
+ *   headwayByPeriodSustained flag, which drops some very frequent lines (CIV-1179).
+ * - "no-sustained": the same rule without that flag (a sensitivity check).
+ * - "map-filter": the map's own frequency filter. Not built: it waits for Ryan's pick of the rule.
+ */
+export const RULES = ['study', 'no-sustained', 'map-filter'];
+export function coverageRule() {
+  const rule = process.env.COVERAGE_RULE || 'study';
+  if (!RULES.includes(rule)) throw new Error(`COVERAGE_RULE must be one of ${RULES.join(', ')}`);
+  if (rule === 'map-filter') throw new Error('COVERAGE_RULE=map-filter is not built yet: the rule waits for Ryan (CIV-1179)');
+  return rule;
+}
+
+export function qualifies(properties, maxHeadwayMinutes = 15, rule = coverageRule()) {
   if (properties.day !== 'Weekday') return false;
   const headways = properties.headwayByPeriod; const sustained = properties.headwayByPeriodSustained;
-  if (!headways || !sustained) return false;
-  if (PERIODS.some(period => sustained[period] !== true || (num(headways[period]) ?? Infinity) > maxHeadwayMinutes)) return false;
+  if (!headways || (rule === 'study' && !sustained)) return false;
+  if (PERIODS.some(period => (rule === 'study' && sustained[period] !== true) || (num(headways[period]) ?? Infinity) > maxHeadwayMinutes)) return false;
   const hourly = properties.headwayByHour;
   return !hourly || HOURS.every(hour => (num(hourly[hour]) ?? Infinity) <= maxHeadwayMinutes);
 }

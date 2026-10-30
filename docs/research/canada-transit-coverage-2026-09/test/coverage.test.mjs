@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { calculateReport, pointInGeometry, populationAreas, qualifyingRoutes } from '../src/coverage.mjs';
+import { calculateReport, pointInGeometry, populationAreas, qualifies, qualifyingRoutes } from '../src/coverage.mjs';
 import { bufferedBounds, deriveServiceBundles, mergeCoverageReports } from '../src/bundles.mjs';
 
 const square = (w, s, e, n) => ({ type: 'Polygon', coordinates: [[[w, s], [e, s], [e, n], [w, n], [w, s]]] });
@@ -59,4 +59,11 @@ test('service bundles connect shared states and merge duplicate population areas
   assert.equal(merged.scope.coveredPopulation, 100);
   assert.equal(merged.diagnostics.duplicateAreaCount, 1);
   assert.equal(merged.scope.atlasCoveragePopulation, 150);
+});
+
+test('the frequency rule is a parameter: the study rule needs the sustained flag, no-sustained does not (CIV-1182)', () => {
+  const unsustained = { ...props(0, ['a']), headwayByPeriodSustained: { amPeak: false, midday: true, pmPeak: true } };
+  assert.equal(qualifies(unsustained, 15, 'study'), false);
+  assert.equal(qualifies(unsustained, 15, 'no-sustained'), true);
+  assert.equal(qualifies({ ...unsustained, headwayByPeriod: { amPeak: 20, midday: 12, pmPeak: 15 } }, 15, 'no-sustained'), false);
 });
