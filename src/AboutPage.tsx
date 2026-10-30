@@ -4,8 +4,8 @@ import ArrowLink from './components/ui/ArrowLink';
 import { PageTitle } from './components/ui/PageTitle';
 import { newestResearch } from './data/research';
 
-/** "Keep looking" shows the newest research, so a new page appears here without editing this one (CIV-1205). */
-const KEEP_LOOKING_COUNT = 2;
+/** "Explore our research" (Ryan) shows the newest research, so a new page appears here without editing this one (CIV-1205). */
+const KEEP_LOOKING_COUNT = 3;
 
 export default function AboutPage() {
   return (
@@ -51,14 +51,14 @@ export default function AboutPage() {
         </section>
 
         {FEATURES.researchApps && <section className="border-t border-[var(--border-primary)] py-12" aria-labelledby="research-heading">
-          <h2 id="research-heading" className="text-2xl font-black tracking-tight">Keep looking.</h2>
-          <div className="mt-8 grid gap-8 sm:grid-cols-2">
-            {newestResearch(KEEP_LOOKING_COUNT).map(({ href, title, body }) => (
+          <h2 id="research-heading" className="text-2xl font-black tracking-tight">Explore our research</h2>
+          <div className="mt-8 grid gap-8 sm:grid-cols-3">
+            {newestResearch(KEEP_LOOKING_COUNT).map(({ href, title, body, linkText }) => (
               <a key={href} href={href} className="group flex flex-col border-l-2 border-[var(--accent-border)] pl-4">
                 <h3 className="text-lg font-black group-hover:text-[var(--accent)]">{title}</h3>
                 <p className="mt-2 text-sm leading-6 text-[var(--text-muted)]">{body}</p>
                 {/* Pinned to the bottom so the links line up across the row, as on /research. */}
-                <ArrowLink as="span" nudge className="mt-auto self-start pt-4">Open</ArrowLink>
+                <ArrowLink as="span" nudge className="mt-auto self-start pt-4">{linkText}</ArrowLink>
               </a>
             ))}
           </div>

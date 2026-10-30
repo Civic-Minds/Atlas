@@ -1,7 +1,7 @@
 import { Moon, Ticket, Zap, type LucideIcon } from 'lucide-react';
 import { FEATURE_ROUTES } from '../../shared/config';
 
-/** One piece of Atlas research: the /research index lists them all, and the About page's "Keep looking" the newest (CIV-1205). */
+/** One piece of Atlas research: the /research index lists them all, and the About page's "Explore our research" the newest (CIV-1205). */
 export interface ResearchEntry {
   href: string;
   Icon: LucideIcon;
@@ -9,6 +9,8 @@ export interface ResearchEntry {
   kind: 'Map' | 'Story' | 'Data';
   title: string;
   body: string;
+  /** The card's link text, Ryan's wording per card (CIV-1205). */
+  linkText: string;
   /** When it was published (YYYY-MM-DD), for "newest first". */
   published: string;
 }
@@ -20,7 +22,9 @@ export const RESEARCH: readonly ResearchEntry[] = [
     Icon: Moon,
     kind: 'Map',
     title: 'Overnight service',
-    body: 'Find routes with sustained service from 2–5 AM.',
+    // A word joiner after the dash keeps "2–5 AM" on one line.
+    body: 'See which routes keep running from 2–\u20605 AM, and how often they come.',
+    linkText: 'Find routes running all night',
     published: '2026-08-15',
   },
   {
@@ -28,7 +32,8 @@ export const RESEARCH: readonly ResearchEntry[] = [
     Icon: Zap,
     kind: 'Story',
     title: 'Frequent service',
-    body: 'See what frequent service means and which routes meet Atlas’s sustained-frequency thresholds.',
+    body: 'What agencies in Canada and the US mean when they call a bus frequent.',
+    linkText: 'Compare agency definitions',
     published: '2026-09-17',
   },
   {
@@ -36,7 +41,8 @@ export const RESEARCH: readonly ResearchEntry[] = [
     Icon: Ticket,
     kind: 'Data',
     title: 'Free child fares',
-    body: "See up to what age children ride free.",
+    body: 'Up to what age children ride free on transit in Canada and the US, and which systems are free for everyone.',
+    linkText: 'See which ages ride free',
     published: '2026-10-30',
   },
 ];
