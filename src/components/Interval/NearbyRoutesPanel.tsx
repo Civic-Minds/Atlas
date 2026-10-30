@@ -1,6 +1,7 @@
 import React, { forwardRef } from 'react';
 import { stopNameCase } from '../../utils/format';
-import { HeadwayBadge, LimitedBadge } from './cardUi';
+import { CardReportButton, HeadwayBadge, LimitedBadge } from './cardUi';
+import { reportDetails } from '../../utils/reportIssue';
 import { headwayEveryRange } from '../../utils/headwayText';
 import { NO_REGULAR_SERVICE_SHORT_LABEL } from '../../utils/effectiveHeadway';
 import { LIMITED_SERVICE_LABEL } from '../../content/noticeCopy';
@@ -19,6 +20,23 @@ interface NearbyRoutesPanelProps {
   sidebarLeft?: number;
   /** The search bar's width on desktop, so the card lines up with it like every other card. */
   searchBarWidth?: number;
+  /** The point the list is near, and the day and period it reads, for a report (CIV-932). */
+  point?: { lat: number; lon: number } | null;
+  day?: string;
+  period?: string;
+}
+
+/** What a report from Near You sends (CIV-932): the point, the day and period, and every route listed with its nearest stop and value. */
+export function nearYouReportDetails(routes: readonly NearbyRoute[], point: { lat: number; lon: number } | null | undefined, day?: string, period?: string): string {
+  return reportDetails([
+    ['Point', point ? `${point.lat.toFixed(5)},${point.lon.toFixed(5)}` : 'unknown'],
+    ['Day', day ?? 'unknown'],
+    ['Period', period ?? 'unknown'],
+    '**Listed:**',
+    ...(routes.length > 0
+      ? routes.map(r => `- ${r.agencyName} ${r.displayShortName ?? r.routeShortName}${r.routeLongName ? ` ${r.routeLongName}` : ''} (${r.rKey}): ${r.limited ? 'limited' : r.noRegular ? 'no regular service' : r.headway != null ? `every ${r.headway} min` : 'no value'}, nearest stop ${r.nearestStopName}, ${fmtDist(r.distanceMeters)}`)
+      : ['- Nothing listed']),
+  ]);
 }
 
 function fmtDist(m: number): string {
@@ -31,6 +49,9 @@ export const NearbyRoutesPanel = forwardRef<HTMLDivElement, NearbyRoutesPanelPro
   setSelectedRoute,
   sidebarLeft,
   searchBarWidth,
+  point,
+  day,
+  period,
 }, ref) {
   return (
     // The left card slot at the shared card width, where the in-view lists open (CIV-930).
@@ -38,9 +59,17 @@ export const NearbyRoutesPanel = forwardRef<HTMLDivElement, NearbyRoutesPanelPro
       sidebar
       enter
       ref={ref}
+      data-report-anchor="true"
       style={sidebarFrameStyle(sidebarLeft, searchBarWidth)}
     >
-      <PanelTitleBar title="Near You" />
+      {/* The list shows data, so it has the report flag (CIV-932), as the Night list does. */}
+      <PanelTitleBar title="Near You" action={(
+        <CardReportButton
+          title="Near You"
+          details={nearYouReportDetails(routes, point, day, period)}
+          excludeReasons={['Route line is missing or follows the wrong path']}
+        />
+      )} />
 
       {loading ? (
         <PanelEmpty kind="loading">{loadingText('nearby routes')}</PanelEmpty>

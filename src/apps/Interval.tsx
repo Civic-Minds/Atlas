@@ -1468,6 +1468,9 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
           setSelectedRoute={openNearYouRoute}
           sidebarLeft={sidebarLeft}
           searchBarWidth={searchBarWidth}
+          point={userLocation}
+          day={day}
+          period={period}
         />
       )}
 
