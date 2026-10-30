@@ -564,6 +564,10 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   useEffect(() => {
     syncUrlParams(urlParamUpdate(MAP_URL.day, day));
   }, [day]);
+  // Night's frequency in its link, so a shared Night link keeps 30 (60, the default, is left out) (CIV-1139).
+  useEffect(() => {
+    if (inNight) syncUrlParams(urlParamUpdate(NIGHT_URL.frequency, nightServiceFrequency));
+  }, [inNight, nightServiceFrequency, pathname]);
   // A tab switch drops the link (setActiveApp navigates to a bare path) and the effects above write only on a change:
   // when the map's own view opens again, the app's part of its link is written once more, as Interval does for the
   // map's filters (CIV-1139).
