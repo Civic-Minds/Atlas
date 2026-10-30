@@ -41,14 +41,15 @@ export default function ResearchPage() {
             </header>
             <div className="grid gap-4 sm:grid-cols-2">
               {CARDS.map(({ href, Icon, kind, title, body }) => (
-                <a key={href} href={href} className={`${SURFACE} group block rounded-2xl p-5 transition-colors hover:border-[var(--accent-border)]`}>
+                <a key={href} href={href} className={`${SURFACE} group flex flex-col rounded-2xl p-5 transition-colors hover:border-[var(--accent-border)]`}>
                   <div className="flex items-center justify-between gap-3">
                     <Icon className="h-4 w-4 text-[var(--text-dim)]" aria-hidden="true" />
                     <Tag>{kind}</Tag>
                   </div>
                   <SectionTitle level="item" className="mt-4">{title}</SectionTitle>
                   <p className="mt-2">{body}</p>
-                  <ArrowLink as="span" tone="inline" size="xs" nudge className="mt-4">Open</ArrowLink>
+                  {/* Pinned to the bottom so the links line up across a row. */}
+                  <ArrowLink as="span" tone="inline" size="xs" nudge className="mt-auto self-start pt-4">Open</ArrowLink>
                 </a>
               ))}
             </div>
