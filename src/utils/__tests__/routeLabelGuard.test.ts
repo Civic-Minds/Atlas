@@ -21,7 +21,7 @@ const ALLOWED_LABEL_CALLS: Record<string, { count: number; why: string }> = {
   'src/utils/stopBack.ts': { count: 1, why: 'raw feed names for the stop card back link' },
   'src/apps/NightService.tsx': { count: 1, why: 'raw feed names from the night data' },
   'src/apps/History.tsx': { count: 2, why: 'History route names, and the chart window title (CIV-1128)' },
-  'src/pageParts.tsx': { count: 2, why: 'agency pages (RouteNameCell), from the page data' },
+  'src/pageParts.tsx': { count: 3, why: 'agency pages (RouteNameCell), from the page data; one more for summaries that store the feed short name (CIV-984 3B)' },
   'src/components/Live/RoutePicker.tsx': { count: 1, why: 'Live route names' },
   'src/components/Live/tool/OverviewList.tsx': { count: 1, why: 'Live route list' },
 };
