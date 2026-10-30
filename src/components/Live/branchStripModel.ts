@@ -132,7 +132,7 @@ export function branchStripFromV3(v3: LiveV3, directionId: number, band: Dashboa
     const b = branchBunching.get(s.stopId);
     return {
       stopId: s.stopId,
-      name: nameCase(s.name, 'title'),
+      name: nameCase(s.name, 'stop'),
       delayMin: st && st.n > 0 ? st.medianMin : null,
       lateShare: st && st.n > 0 ? st.lateShare : null,
       bunchingShare: b && b.n > 0 ? b.badShare : null,

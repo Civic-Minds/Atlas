@@ -122,7 +122,7 @@ export default function StringLineView({ agency, route, v3, dir, onClose }: { ag
       <div ref={box} className="mt-3 min-h-0 flex-1">
         {size.w > 0 && data && (
           <svg width={size.w} height={size.h} onPointerMove={move} onPointerLeave={() => setHot(null)} role="img" aria-label="String-line chart: each line is one vehicle trip, time across and stops down the route.">
-            {names.map(i => <text key={i} x={M.left - 10} y={y(i) + 4} textAnchor="end" fontSize={12} fill="var(--text-secondary)">{clip(shortStopName(nameCase(stops[i].name, 'title')), M.left === M_NARROW.left ? 13 : 30)}</text>)}
+            {names.map(i => <text key={i} x={M.left - 10} y={y(i) + 4} textAnchor="end" fontSize={12} fill="var(--text-secondary)">{clip(shortStopName(nameCase(stops[i].name, 'stop')), M.left === M_NARROW.left ? 13 : 30)}</text>)}
             {ticks.map(t => <text key={t} x={x(t)} y={size.h - 6} textAnchor="middle" fontSize={12} fill="var(--text-dim)">{clockAt(t)}</text>)}
             <g fill="none" strokeLinecap="round">
               {neutral.map(({ l, k }) => l.pts.slice(0, -1).map((p, n) => { const q = l.pts[n + 1]; return l.bunchedAt.has(p.i) ? null : <line key={`${l.id}-${k}-${n}`} x1={x(p.h)} y1={y(p.i)} x2={x(q.h)} y2={y(q.i)} stroke={hot?.line === k ? 'var(--accent)' : 'var(--text-primary)'} strokeOpacity={hot ? (hot.line === k ? 1 : 0.1) : 0.28} strokeWidth={hot?.line === k ? 2.5 : 1} />; }))}

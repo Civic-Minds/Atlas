@@ -37,7 +37,7 @@ const pct = (x: number | null) => (x == null ? '–' : `${Math.round(x * 100)}%`
 const pctSigned = (x: number | null) => (x == null ? '–' : `${x > 0 ? '+' : x < 0 ? MINUS : ''}${Math.abs(Math.round(x * 100))}%`);
 const num = tenth;
 const mins = (x: number) => `${x > 0 ? '+' : ''}${num(x)} min`;
-const stop = (name: string) => shortStopName(nameCase(name, 'title'));
+const stop = (name: string) => shortStopName(nameCase(name, 'stop'));
 
 type Sort = LiveSort;
 const SORTS: [Sort, string][] = [['late', 'Late'], ['runTime', 'Run time'], ['bunching', 'Bunching'], ['delivered', 'Service delivered']];
@@ -136,7 +136,7 @@ function StopsTable({ s, rows }: { s: AgencySummary; rows: AgencyHotspotStop[] }
         columns={[
           { key: 'stop', header: 'Stop', rowHeader: true, width: FIRST_COL, className: 'font-normal break-words', cell: r => <span title={stop(r.name)}>{stop(r.name)}</span> },
           { key: 'route', header: 'Route', width: ROUTE_COL, className: 'truncate', cell: r => <HotspotRoute s={s} route={r.route} /> },
-          { key: 'dir', header: 'Direction', width: DIR_COL, cell: r => nameCase(r.direction, 'title') },
+          { key: 'dir', header: 'Direction', width: DIR_COL, cell: r => nameCase(r.direction, 'stop') },
           { key: 'late', header: 'Late', worst: r => r.lateShare, cell: r => pct(r.lateShare) },
           { key: 'typical', header: 'Typical', worst: r => r.medianMin, cell: r => mins(r.medianMin) },
           { key: 'n', header: 'Departures', cell: r => r.n.toLocaleString() },
@@ -159,9 +159,9 @@ function StretchTable({ s, rows, caption, valueHeader, format }: { s: AgencySumm
         defaultSort={valueHeader ? 'value' : undefined}
         rowKey={r => `${r.route}-${r.directionId}-${r.fromStopId}-${r.toStopId}`}
         columns={[
-          { key: 'stretch', header: 'Stretch', rowHeader: true, width: FIRST_COL, className: 'font-normal break-words', cell: r => { const [a, b] = stretchEnds(nameCase(r.fromName, 'title'), nameCase(r.toName, 'title')); return <span title={`${a} to ${b}`}>{a} to {b}</span>; } },
+          { key: 'stretch', header: 'Stretch', rowHeader: true, width: FIRST_COL, className: 'font-normal break-words', cell: r => { const [a, b] = stretchEnds(nameCase(r.fromName, 'stop'), nameCase(r.toName, 'stop')); return <span title={`${a} to ${b}`}>{a} to {b}</span>; } },
           { key: 'route', header: 'Route', width: ROUTE_COL, className: 'truncate', cell: r => <HotspotRoute s={s} route={r.route} /> },
-          { key: 'dir', header: 'Direction', width: DIR_COL, cell: r => nameCase(r.direction, 'title') },
+          { key: 'dir', header: 'Direction', width: DIR_COL, cell: r => nameCase(r.direction, 'stop') },
           ...(valueHeader && format ? [{ key: 'value', header: valueHeader, worst: (r: AgencyHotspotStretch) => r.value, cell: (r: AgencyHotspotStretch) => format(r.value) }] : []),
         ]}
       />

@@ -41,7 +41,7 @@ const NAME_KEYS = new Set(['name', 'fromName', 'toName']);
 /** Big per-stop number tables that hold no names, left alone. */
 const NO_NAMES = new Set(['stopHours', 'segmentLines']);
 const niceDeep = (x: unknown, key = ''): unknown => {
-  if (typeof x === 'string') return NAME_KEYS.has(key) ? nameCase(x, 'title') : x;
+  if (typeof x === 'string') return NAME_KEYS.has(key) ? nameCase(x, 'stop') : x;
   if (Array.isArray(x)) return x.map(v => niceDeep(v, key));
   if (x && typeof x === 'object') return Object.fromEntries(Object.entries(x).map(([k, v]) => [k, NO_NAMES.has(k) ? v : niceDeep(v, k)]));
   return x;

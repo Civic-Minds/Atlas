@@ -1,9 +1,9 @@
 /**
  * The one module that cases stop, place and route names (CIV-1001). Every caller goes through nameCase with a mode:
  * - 'title': rewrite the whole name in title case, whatever the feed sent ("at The Esplanade" -> "at the Esplanade").
+ *   No surface uses it: every name follows the feed-capitals rule below (Ryan, CIV-1001); the other two modes build on it.
  * - 'stop': stop and destination names; cased only when the feed sent them in capitals (CIV-935).
  * - 'route': one part of a route label; the stop rule plus the route-name acronyms (ROUTE_NAME_ACRONYMS).
- * The three modes keep today's three behaviours exactly; moving callers onto one rule is a separate, visible change.
  */
 export type NameCaseMode = 'title' | 'stop' | 'route';
 

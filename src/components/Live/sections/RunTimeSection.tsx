@@ -25,7 +25,7 @@ export const runTimeLine = (f: { typicalMin: number; scheduledMin: number; p90Mi
   `Usually ${Math.round(f.typicalMin)} min · timetable ${Math.round(f.scheduledMin)} · 1 in 10 over ${Math.round(f.p90Min)}`;
 
 /** The stretch the run time covers, in short stop names (empty when the file does not say). */
-export const runTimeStretchOf = (v3: LiveV3, d: number) => runTimeStretchLabel(v3.runningTime?.stretch?.[String(d)], n => shortStopName(nameCase(n, 'title')));
+export const runTimeStretchOf = (v3: LiveV3, d: number) => runTimeStretchLabel(v3.runningTime?.stretch?.[String(d)], n => shortStopName(nameCase(n, 'stop')));
 
 const INSET = 6; // px each end, so a dot on the first or last minute is not clipped
 /** Room on the right of the rows for "min" at the end of the scale (and the slow end's number). */
@@ -144,7 +144,7 @@ export default function RunTimeSection({ v3, band, dir, detail, id, shrink, boun
     : <section aria-labelledby="dash-runtime" className="mt-10"><SectionTitle id="dash-runtime">Run time</SectionTitle>{children}</section>;
   if (!rt && detail !== 'brief') return id && detail === 'compact' ? frame(null) : null;
   const full = detail === 'full', compact = detail === 'compact';
-  const rowsByDir = runTimeRows(v3, band, dirs, n => shortStopName(nameCase(n, 'title')));
+  const rowsByDir = runTimeRows(v3, band, dirs, n => shortStopName(nameCase(n, 'stop')));
   const rowScale = runTimeRowScale(Object.values(rowsByDir).flat());
   return frame(<>
     {full && <p className="mt-2 text-sm text-[var(--text-muted)]">How long the trip takes against the schedule, by the hour it starts, over the stops every regular trip serves, so short turns count too.</p>}
