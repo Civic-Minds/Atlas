@@ -7,6 +7,8 @@ const PAGE = {
   hero: 'max-w-3xl text-5xl font-black tracking-[-0.045em] sm:text-7xl',
   /** A research page's title, under "Atlas research" (ResearchHeader, CIV-1176). */
   research: 'text-4xl sm:text-6xl font-black tracking-[-0.045em] leading-[0.98]',
+  /** A page whose title is on screen some other way (the map): read by screen readers only (#1195). */
+  hidden: 'sr-only',
 } as const;
 
 const SECTION = {
