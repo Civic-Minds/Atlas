@@ -5,8 +5,8 @@ import type { DataTableColumn } from '../components/ui/DataTable';
 import { freeChildAgeBars, freeChildFareStats, freeChildOtherBars, type FreeChildFareBar } from '../data/freeChildFares';
 
 const TABLE_COLUMNS: DataTableColumn<FreeChildFareBar>[] = [
-  { key: 'group', header: 'Group', cell: bar => bar.label, rowHeader: true, className: 'font-normal' },
-  { key: 'agencies', header: 'Agencies', cell: bar => bar.agencies, className: 'tabular-nums' },
+  { key: 'group', header: 'Group', cell: bar => bar.label, rowHeader: true, className: 'font-normal', width: 12 },
+  { key: 'agencies', header: 'Agencies', cell: bar => bar.agencies, className: 'tabular-nums', width: 6 },
 ];
 
 // "Not found yet" is drawn hatched: no current official rule, not a policy.

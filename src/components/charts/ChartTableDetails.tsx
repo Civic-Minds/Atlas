@@ -11,7 +11,7 @@ export default function ChartTableDetails<T>({ caption, columns, rows, rowKey }:
         <ChevronDown className="h-3.5 w-3.5 transition-transform group-open:rotate-180" aria-hidden="true" />
       </summary>
       <div className="mt-3 overflow-x-auto">
-        <DataTable variant="compact" caption={caption} columns={columns} rows={rows} rowKey={rowKey} />
+        <DataTable variant="compact" layout="fixed" caption={caption} columns={columns} rows={rows} rowKey={rowKey} />
       </div>
     </details>
   );
