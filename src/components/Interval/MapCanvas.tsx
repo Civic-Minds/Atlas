@@ -42,8 +42,7 @@ import { describeMapExport, type MapExportBox, type MapExportDetails, type MapEx
 import { routeLabels } from '../../utils/format';
 import { canCountRenderedRoutes } from '../../utils/compareSides';
 import type { FrequentServiceFrequency, FrequentServiceWindow } from '../../../shared/frequentService';
-import { ON_DEMAND_MODE } from '../../../shared/modes';
-import { mapViewKind, viewAllowsOnDemand } from '../../../shared/viewLayers';
+import { mapViewKind, viewShowsOnDemand } from '../../../shared/viewLayers';
 import { useOnDemandStatus, useReportOnDemandVisible } from '../../hooks/useOnDemandData';
 import { FEATURES } from '../../../shared/config';
 import { trackEvent, withShareTags, SHARE_UTM_MEDIUM_LINK, type ShareMedium } from '../../lib/analytics';
@@ -54,6 +53,7 @@ import Panel from '../ui/Panel';
 import ListRow from '../ui/ListRow';
 import { drawnRouteLayers, queryDrawnRouteFeatures } from './map/drawnRoutes';
 import { approximateLocationHint, CLIPBOARD_DENIED, LOCATION_DENIED, LOCATION_TIMED_OUT, LOCATION_UNAVAILABLE, LOCATION_URL_COPIED, ON_DEMAND_AREAS_FAILED } from '../../content/noticeCopy';
+import { FOOTER_NOTICE_MEDIA_QUERY, PHONE_MEDIA_QUERY, useMediaQuery } from '../../hooks/useMediaQuery';
 
 // Keep the Live/Deck.gl graph out of public builds entirely when Live is disabled.
 const LiveVehiclesLayer = import.meta.env.VITE_LIVE_ENABLED === 'true'
@@ -168,6 +168,8 @@ interface MapCanvasProps {
   onMapContextRouteCountChange?: (count: number) => void;
   /** Route keys drawn in view, counted the same way as the route-count badge (compare mode labels). */
   onRenderedRouteKeysChange?: (keys: Set<string>) => void;
+  /** Phones (CIV-1057): the map's error notices, for the footer row's "Error" pill. */
+  onPhoneErrorsChange?: (messages: string[]) => void;
   day?: DayType;
   routesForStop?: {
     slug: string;
@@ -263,6 +265,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   onMapContextAgencyCountChange,
   onMapContextRouteCountChange,
   onRenderedRouteKeysChange,
+  onPhoneErrorsChange,
   day = 'Weekday',
   routesForStop,
   showRouteLayers = true,
@@ -315,7 +318,11 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   // Stop visibility only changes at zoom 12/14/17, so the style/filter effect depends on this tier
   // rather than raw zoom and doesn't rebuild on every zoom tick (CIV-104).
   const stopZoomTier = zoom >= 17 ? 3 : zoom >= 14 ? 2 : zoom >= 12 ? 1 : 0;
-  const [mapHint, setMapHint] = useState<string | null>(null);
+  // A map hint, and whether it reports an error: on phones errors collapse into the one "Error" pill (CIV-1057).
+  const [mapHint, setMapHint] = useState<{ text: string; error: boolean } | null>(null);
+  const isPhone = useMediaQuery(PHONE_MEDIA_QUERY);
+  // From 768 up the on-demand failed notice is in Interval's footer row instead (CIV-1057).
+  const onDemandNoticeInFooter = useMediaQuery(FOOTER_NOTICE_MEDIA_QUERY);
   const [exportDialogOpen, setExportDialogOpen] = useState(false);
   const agencyDataLoadingRef = useRef(agencyDataLoading);
   agencyDataLoadingRef.current = agencyDataLoading;
@@ -451,8 +458,8 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   const [mapContextMenu, setMapContextMenu] = useState<{ x: number; y: number; lat: number; lon: number } | null>(null);
   const mapContextPanelRef = useRef<HTMLDivElement>(null);
   const hintTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
-  const showMapHint = (msg: string) => {
-    setMapHint(msg);
+  const showMapHint = (text: string, kind: 'error' | 'info' = 'info') => {
+    setMapHint({ text, error: kind === 'error' });
     if (hintTimerRef.current) clearTimeout(hintTimerRef.current);
     hintTimerRef.current = setTimeout(() => setMapHint(null), 2500);
   };
@@ -476,8 +483,15 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   // Each zone and stop is filtered on its own hours (zones/stops that aren't
   // running are hidden, like fixed routes); ones with no hours on file stay
   // visible but are drawn muted so they never read as confirmed service.
-  const onDemandAllowed = viewAllowsOnDemand(mapViewKind({ nightServiceView, frequentServiceView, liveRoutesOnly }));
-  const onDemandShown = FEATURES.onDemand && onDemandAllowed && (selectedModes.size === 0 || selectedModes.has(ON_DEMAND_MODE));
+  const onDemandShown = FEATURES.onDemand && viewShowsOnDemand(mapViewKind({ nightServiceView, frequentServiceView, liveRoutesOnly }), selectedModes);
+  // Phones: the error notices go to Interval's footer row as one "Error" pill (CIV-1057).
+  const phoneErrorsKey = isPhone ? JSON.stringify([
+    ...(onDemandStatus === 'error' && onDemandShown ? [ON_DEMAND_AREAS_FAILED] : []),
+    ...(mapHint?.error ? [mapHint.text] : []),
+  ]) : '[]';
+  const phoneErrorsRef = useRef(onPhoneErrorsChange);
+  phoneErrorsRef.current = onPhoneErrorsChange;
+  useEffect(() => { phoneErrorsRef.current?.(JSON.parse(phoneErrorsKey) as string[]); }, [phoneErrorsKey]);
   useReportOnDemandVisible(onDemandShown);
   const onDemandAgencies = useMemo(() => (
     onDemandShown
@@ -1098,7 +1112,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     const url = buildLocationUrl(mapContextMenu.lat, mapContextMenu.lon, SHARE_UTM_MEDIUM_LINK);
     navigator.clipboard.writeText(url).then(
       () => showMapHint(LOCATION_URL_COPIED),
-      () => showMapHint(CLIPBOARD_DENIED),
+      () => showMapHint(CLIPBOARD_DENIED, 'error'),
     );
     setMapContextMenu(null);
   };
@@ -1187,7 +1201,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         // fix from Vercel's edge IP-geolocation headers rather than just erroring out. Skip the
         // fallback for PERMISSION_DENIED -- the user explicitly said no, respect that.
         if (error.code === error.PERMISSION_DENIED) {
-          showMapHint(LOCATION_DENIED);
+          showMapHint(LOCATION_DENIED, 'error');
           return;
         }
         fetch('/api/geo')
@@ -1202,7 +1216,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
             const message = error.code === error.TIMEOUT
               ? LOCATION_TIMED_OUT
               : LOCATION_UNAVAILABLE;
-            showMapHint(message);
+            showMapHint(message, 'error');
           });
       },
       { timeout: 8000 }
@@ -1242,17 +1256,29 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       )}
 
       {/* Geolocate Button Control Overlay */}
-      {onDemandStatus === 'error' && onDemandShown && (
-        // Zones that failed to load must not read as "no on-demand service here" (CIV-50), so no
-        // other hint hides this; a transient hint sits above it instead.
-        <MapNoticePill className="px-3 py-1.5 text-xs text-[var(--text-muted)]">
-          {ON_DEMAND_AREAS_FAILED}
-        </MapNoticePill>
-      )}
-      {mapHint && (
-        <MapNoticePill raised={onDemandStatus === 'error' && onDemandShown} className="px-3 py-1.5 text-xs text-[var(--text-muted)]">
-          {mapHint}
-        </MapNoticePill>
+      {/* Zones that failed to load must not read as "no on-demand service here" (CIV-50), so nothing hides that notice.
+          From 768 up it sits in the footer row beside the agencies loading pill (Interval, CIV-1057); 640-767 keeps it
+          here with any hint one row above. Phones show every error as one "Error" pill that lists them on a tap, with
+          any other hint one row above it. */}
+      {isPhone ? (
+        mapHint && !mapHint.error && (
+          <MapNoticePill className="px-3 py-1.5 text-xs text-[var(--text-muted)]">
+            {mapHint.text}
+          </MapNoticePill>
+        )
+      ) : (
+        <>
+          {!onDemandNoticeInFooter && onDemandStatus === 'error' && onDemandShown && (
+            <MapNoticePill className="px-3 py-1.5 text-xs text-[var(--text-muted)]">
+              {ON_DEMAND_AREAS_FAILED}
+            </MapNoticePill>
+          )}
+          {mapHint && (
+            <MapNoticePill raised={!onDemandNoticeInFooter && onDemandStatus === 'error' && onDemandShown} className="px-3 py-1.5 text-xs text-[var(--text-muted)]">
+              {mapHint.text}
+            </MapNoticePill>
+          )}
+        </>
       )}
 
       {mapContextMenu && (

@@ -25,6 +25,11 @@ export function viewAllowsOnDemand(view: MapViewKind): boolean {
   return !FREQUENCY_RESEARCH_VIEWS.has(view);
 }
 
+/** Whether the map draws on-demand zones: the view allows them and the Mode filter is off or includes On-demand. */
+export function viewShowsOnDemand(view: MapViewKind, selectedModes: ReadonlySet<number>): boolean {
+  return viewAllowsOnDemand(view) && (selectedModes.size === 0 || selectedModes.has(ON_DEMAND_MODE));
+}
+
 /** Mode options a view offers: research views drop On-demand. */
 export function modesForView<T extends { id: number }>(modes: ReadonlyArray<T>, view: MapViewKind): ReadonlyArray<T> {
   return viewAllowsOnDemand(view) ? modes : modes.filter(m => m.id !== ON_DEMAND_MODE);

@@ -58,6 +58,10 @@ export function publishMapOverlayVar(name: (typeof MAP_OVERLAY_VARS)[keyof typeo
 export const MAP_TOP_BAR_SLOT = 'top-6 left-6 right-6 h-[28px]';
 /** sm and up: the bottom-left pills and the bottom-right counts share one row, so the pills wrap upward before the counts. Phones drop it (contents). */
 export const MAP_FOOTER_ROW_SLOT = `max-sm:contents absolute ${R.edge} ${E.left} ${E.footerRight} flex items-end justify-between gap-2 pointer-events-none`;
+/** sm and up: the footer row's right end, the on-demand failed notice (768 up) then the counts (CIV-1057). Phones drop it (contents). */
+export const MAP_FOOTER_RIGHT_SLOT = 'max-sm:contents ml-auto shrink-0 flex items-end gap-2';
+/** 768 and up: the on-demand failed notice in the footer row, beside the agencies loading pill (CIV-1057). */
+export const MAP_FOOTER_NOTICE_SLOT = 'flex shrink-0 pointer-events-none';
 /** Phones: the About, What's new and Feedback pills along the bottom edge. */
 export const MAP_FOOTER_PILLS_PHONE_SLOT = `max-sm:absolute max-sm:bottom-6 ${E.phoneLeft} max-sm:max-w-[calc(100vw-3rem)]`;
 /** Phones: the loading and count pills, one row above the footer pills. */
@@ -73,7 +77,7 @@ export const MAP_BANNER_SLOT = `fixed left-1/2 -translate-x-1/2 ${R.noticeRaised
 /** The locate, export and zoom stack in the bottom-right corner. */
 export const MAP_CONTROLS_SLOT = `absolute ${R.edge} ${E.controlsRight}`;
 /** A centred notice pill one row above the bottom-left pills, clear of the controls; `raised` sits one row higher
- *  (CIV-1057). Phones stack it above the counts row. On sm and up the footer row can wrap upward, so the pill sits
+ *  (CIV-1057). Phones put it above the counts row: the "Error" pill, with any other hint raised over it. On sm and up the footer row can wrap upward, so the pill sits
  *  above its measured height (--map-footer-h, from mapFooterStyle on the map app's root). */
 export const MAP_NOTICE_SLOT = `absolute ${R.notice} ${E.noticeSides} flex justify-center`;
 export const MAP_NOTICE_SLOT_RAISED = `absolute ${R.noticeRaised} ${E.noticeSides} flex justify-center`;
