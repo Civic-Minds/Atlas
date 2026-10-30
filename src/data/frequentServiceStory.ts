@@ -2,7 +2,8 @@ import audit from '../../docs/research/system-map-audit-2026-09/data.json';
 import recheck from '../../docs/research/frequent-service-research-2026-09/definition-recheck-2026-10-30.json';
 import definitions from '../../docs/research/frequent-service-research-2026-09/frequent-definitions-by-agency.json';
 
-const storyThresholds = [10, 12, 15, 20, 30, 60];
+/** The chart's fixed steps; any other wait in the data (Fort McMurray's 25, CIV-1178) gets its own bar too. */
+const storyScaleSteps = [10, 12, 15, 20, 30, 60];
 const storyCountries = new Set(['Canada', 'United States']);
 const records = audit.records.filter(record => storyCountries.has(record.country));
 export const frequentServiceStoryResearchRecord = records.find(record => record.agencyId === 'ttc') ?? records[0];
@@ -41,6 +42,7 @@ function ruleMinutes(row: RecheckRow): number | null {
 }
 const chartedRows = heldNumericRows.filter(row => ruleMinutes(row) !== null);
 const chartedRowsOct11 = recheckedNumericRows.filter(row => ruleMinutes(row) !== null);
+const storyThresholds = [...new Set([...storyScaleSteps, ...[...chartedRows, ...chartedRowsOct11].map(row => ruleMinutes(row) as number)])].sort((a, b) => a - b);
 
 // The method's sample (CIV-1174): the October 11 check of every Canada and US agency's official definition, the same
 // file the recheck above starts from.
@@ -68,7 +70,7 @@ export const frequentServiceStoryStats = {
   categoryCounts,
   /** Still held on the October 30 recheck (before the tier rule). */
   namedNumericAgencies: heldNumericRows.length,
-  /** On the chart after the tier rule (CIV-1178). An agency whose value has no bar (Fort McMurray, 25) is counted here but drawn nowhere. */
+  /** On the chart after the tier rule (CIV-1178); every one has a bar. */
   chartedAgencies: chartedRows.length,
   /** Canada and US agencies with a number on October 11 whose source was opened again on October 30. */
   recheckedAgencies: recheckedNumericRows.length,
