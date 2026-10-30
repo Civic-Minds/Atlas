@@ -144,3 +144,48 @@ export function orderDirectionGroups(groups: ReadonlyMap<string, LiveVehicle[]>,
     .sort((a, b) => a.r[0] - b.r[0] || a.r[1] - b.r[1] || a.r[2] - b.r[2] || a.entry[0].localeCompare(b.entry[0]))
     .map(x => x.entry);
 }
+
+const ALONG_MAX_OFF_LINE_M = 1_200;
+const METRES_PER_DEGREE = Math.PI / 180 * 6_371_000;
+
+/** Metres from the line's start to the point on it nearest (lat, lon); null when the line is more than 1.2 km away. */
+export function metresAlongLine(parts: readonly (readonly number[])[][], lat: number, lon: number): number | null {
+  let walked = 0, best = Infinity, bestAlong: number | null = null;
+  for (const part of parts) {
+    for (let i = 0; i < part.length - 1; i++) {
+      const [ax, ay] = part[i], [bx, by] = part[i + 1];
+      const cos = Math.cos(((ay + by) / 2) * Math.PI / 180);
+      const sx = (bx - ax) * METRES_PER_DEGREE * cos, sy = (by - ay) * METRES_PER_DEGREE;
+      const px = (lon - ax) * METRES_PER_DEGREE * cos, py = (lat - ay) * METRES_PER_DEGREE;
+      const len = Math.hypot(sx, sy);
+      const t = len > 0 ? Math.max(0, Math.min(1, (px * sx + py * sy) / (len * len))) : 0;
+      const off = Math.hypot(px - t * sx, py - t * sy);
+      if (off < best) { best = off; bestAlong = walked + t * len; }
+      walked += len;
+    }
+  }
+  return best <= ALONG_MAX_OFF_LINE_M ? bestAlong : null;
+}
+
+/**
+ * A route's vehicles in order along the route, first stop to last (Ryan, CIV-1125): direction 0 before direction 1,
+ * each vehicle placed on its direction's main line (the longest shape, as routeDirectionLabels picks) by how far it
+ * has gone. A vehicle with no direction, or too far from the line to place, goes last, in the order it came.
+ */
+export function orderAlongRoute<V extends Pick<LiveVehicle, 'lat' | 'lon' | 'directionId'>>(vehicles: readonly V[], features: readonly GeoJSON.Feature[], routeShortName: string): V[] {
+  const lines = new Map<number, { span: number; parts: number[][][] }>();
+  for (const f of features) {
+    const p = f.properties as Record<string, unknown> | null;
+    const g = f.geometry;
+    if (!p || p.routeShortName !== routeShortName || p.directionId == null || !g) continue;
+    if (g.type !== 'LineString' && g.type !== 'MultiLineString') continue;
+    const dir = Number(p.directionId), span = featureSpan(f);
+    if (span > (lines.get(dir)?.span ?? -1)) lines.set(dir, { span, parts: g.type === 'LineString' ? [g.coordinates] : g.coordinates });
+  }
+  const placed = vehicles.map((v, i) => {
+    const line = v.directionId == null ? undefined : lines.get(v.directionId);
+    const along = line ? metresAlongLine(line.parts, v.lat, v.lon) : null;
+    return { v, i, dir: along == null ? Infinity : v.directionId!, along: along ?? Infinity };
+  });
+  return placed.sort((a, b) => a.dir - b.dir || a.along - b.along || a.i - b.i).map(x => x.v);
+}
