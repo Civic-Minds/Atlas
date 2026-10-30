@@ -10,7 +10,7 @@ import CardRouteList from '../components/Interval/CardRouteList';
 import { CardReportButton } from '../components/Interval/cardUi';
 import { reportDetails } from '../utils/reportIssue';
 import { routeLabels } from '../utils/format';
-import { placeAlreadyInName } from '../utils/agencyName';
+import { agencyNames } from '../utils/agencyName';
 import { headwayEvery, headwayOrBetter } from '../utils/headwayText';
 import ResearchInfo from '../components/ResearchInfo';
 import { NIGHT_INFO_HEADING, nightRuleText } from '../content/researchRules';
@@ -93,6 +93,8 @@ interface Props {
   onBackToMap: () => void;
   /** A route is selected: its card takes this panel's place, as in Live. */
   selectionActive?: boolean;
+  /** The agency registry, for each agency's short name and place (CIV-998). */
+  agencyCatalog?: ReadonlyArray<{ slug: string; name: string; cities?: string[]; displayArea?: string }>;
 }
 
 function featureIntersectsBounds(feature: GeoJSON.Feature, bounds: { s: number; w: number; n: number; e: number }): boolean {
@@ -101,7 +103,7 @@ function featureIntersectsBounds(feature: GeoJSON.Feature, bounds: { s: number; 
   return box.maxLng >= bounds.w && box.minLng <= bounds.e && box.maxLat >= bounds.s && box.minLat <= bounds.n;
 }
 
-export default function NightService({ active, sidebarLeft, searchBarWidth, layers, query = '', frequency, onRouteSelect, onBackToMap, selectionActive = false }: Props) {
+export default function NightService({ active, sidebarLeft, searchBarWidth, layers, query = '', frequency, onRouteSelect, onBackToMap, selectionActive = false, agencyCatalog = [] }: Props) {
   const [data, setData] = useState<NightServiceIndexFile | null>(null);
   const [loadState, setLoadState] = useState<'loading' | 'ready' | 'error'>('loading');
   const { bounds } = useViewport();
@@ -240,7 +242,8 @@ export default function NightService({ active, sidebarLeft, searchBarWidth, laye
             <div key={agency.slug}>
               {/* The shared agency heading of the list panels (CIV-1019), with the route count under it in the card facts line's own spacing. */}
               <AgencyGroupHeader rule={agencyIndex > 0 ? 'above' : 'below'}>
-                <AgencyName primary={agency.agencyName} secondary={agency.region && !placeAlreadyInName(agency.agencyName, agency.region) ? agency.region : undefined} />
+                {/* The lists' short name and place (Ryan, CIV-998; CIV-1117 row 17). */}
+                <AgencyName {...agencyNames(agencyCatalog.find(a => a.slug === agency.slug) ?? agency.agencyName).list} />
                 <p className={CARD_SUMMARY}>{countOf(agency.routes.length, 'route')}</p>
               </AgencyGroupHeader>
               {/* The agency card's route list (CIV-931): "**300** Bloor-Danforth" and the night frequency on the right.
