@@ -7,7 +7,7 @@ type ContentsItem = { id: string; label: string };
 type Props = {
   /** Extra classes for the content column (text size and colour differ between pages). */
   articleClassName?: string;
-  /** A research page's "How we did this" section (PageShell's method slot). */
+  /** A research page's "How we did this" section: at the end of the text column on reading pages, PageShell's slot on wide ones. */
   method?: ReactNode;
   children: ReactNode;
 } & (
@@ -41,10 +41,13 @@ export default function DocsPageLayout({ width = 'reading', contents, articleCla
     );
   }
   return (
-    <PageShell stickyHeader method={method}>
+    <PageShell stickyHeader>
       <div className="mt-10 lg:grid lg:grid-cols-[12rem_minmax(0,42rem)] lg:gap-12 lg:items-start">
         {contents && <PageContents title={contents.title} items={contents.items} />}
-        <article className={`space-y-8 ${contents ? '' : 'lg:col-start-2'} ${articleClassName}`.replace(/\s+/g, ' ').trim()}>{children}</article>
+        <article className={`space-y-8 ${contents ? '' : 'lg:col-start-2'} ${articleClassName}`.replace(/\s+/g, ' ').trim()}>
+          {children}
+          {method && <section data-research-method className="mt-10 border-t border-[var(--border-primary)] pt-8">{method}</section>}
+        </article>
       </div>
     </PageShell>
   );

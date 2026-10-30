@@ -58,8 +58,21 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
     onExploreMap();
   }
 
+  const method = (
+    <ResearchMethod parts={{
+      dateConducted: <>{frequentServiceStoryStats.reviewedAt}.</>,
+      dateUpdated: <>October 30, 2026.</>,
+      sample: <>For this Atlas-facing story, we reviewed {frequentServiceStoryStats.agenciesReviewed} agencies currently represented in Atlas: {frequentServiceStoryStats.countryCounts.map(item => `${item.agencies} in ${item.country}`).join(', ')}. The broader research audit contains {frequentServiceStoryStats.fullAuditAgencies} agencies across additional countries, which are not included here because Atlas does not currently publish data for them. Of the Atlas sample, {frequentServiceStoryStats.categoryCounts.numericDefinition} published a numeric definition, {frequentServiceStoryStats.categoryCounts.qualitativeDefinition} published a qualitative frequent label, {frequentServiceStoryStats.categoryCounts.noDefinitionFound} had no named definition on the reviewed map, and {frequentServiceStoryStats.categoryCounts.mapUnavailable} did not have a current system map we could verify.</>,
+      sources: <>Only current official system maps, map legends, and approved rider-guide maps counted as evidence. Official route pages, schedules, planning documents, and service standards were used only to locate those materials and were never treated as definitions.</>,
+      whatCounted: <>A numeric definition required the agency to name frequent/high-frequency service and give a frequency value or range. A qualitative definition required the named frequent/high-frequency label without a number. “No definition” means the reviewed official material did not name one; it does not mean the agency has no frequent service. “Unavailable” means the current system map could not be located or verified.</>,
+      numbers: <>We recorded every named tier. The chart counts each agency once using its general or representative frequent tier; express, peak-only, rail-only, and other secondary tiers remain in the audit as context.</>,
+      rechecked: <>On October 30, 2026, we opened the source again for each of the {frequentServiceStoryStats.recheckedAgencies} agencies the chart counted. {frequentServiceStoryStats.namedNumericAgencies} still matched and stay in the chart. {frequentServiceStoryStats.recheckLeftOut} are left out: Anchorage's and VIA's maps are gone, DART's site returned an error, Foothill's and Sun Tran's sites block automated visits, and STM's page doesn't show the times to one.</>,
+      limitations: <>This is a source-backed sample, not an exhaustive census of every transit agency or a universal definition of frequent service. It describes the research sample and does not change Atlas’s production frequency definitions.</>,
+    }} />
+  );
+
   return (
-    <PageShell stickyHeader>
+    <PageShell stickyHeader method={method}>
       <article className="pb-16 pt-10 sm:pt-14">
         <header className="mx-auto max-w-4xl text-center">
           <p className="text-xs font-black text-[var(--accent)]">Atlas research</p>
@@ -176,21 +189,6 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
               </button>
             </div>
           </section>
-
-          <footer className="mx-auto max-w-3xl border-t border-[var(--border-primary)] pt-10">
-            <div className="w-full">
-              <ResearchMethod parts={{
-                dateConducted: <>{frequentServiceStoryStats.reviewedAt}.</>,
-                dateUpdated: <>October 30, 2026.</>,
-                sample: <>For this Atlas-facing story, we reviewed {frequentServiceStoryStats.agenciesReviewed} agencies currently represented in Atlas: {frequentServiceStoryStats.countryCounts.map(item => `${item.agencies} in ${item.country}`).join(', ')}. The broader research audit contains {frequentServiceStoryStats.fullAuditAgencies} agencies across additional countries, which are not included here because Atlas does not currently publish data for them. Of the Atlas sample, {frequentServiceStoryStats.categoryCounts.numericDefinition} published a numeric definition, {frequentServiceStoryStats.categoryCounts.qualitativeDefinition} published a qualitative frequent label, {frequentServiceStoryStats.categoryCounts.noDefinitionFound} had no named definition on the reviewed map, and {frequentServiceStoryStats.categoryCounts.mapUnavailable} did not have a current system map we could verify.</>,
-                sources: <>Only current official system maps, map legends, and approved rider-guide maps counted as evidence. Official route pages, schedules, planning documents, and service standards were used only to locate those materials and were never treated as definitions.</>,
-                whatCounted: <>A numeric definition required the agency to name frequent/high-frequency service and give a frequency value or range. A qualitative definition required the named frequent/high-frequency label without a number. “No definition” means the reviewed official material did not name one; it does not mean the agency has no frequent service. “Unavailable” means the current system map could not be located or verified.</>,
-                numbers: <>We recorded every named tier. The chart counts each agency once using its general or representative frequent tier; express, peak-only, rail-only, and other secondary tiers remain in the audit as context.</>,
-                rechecked: <>On October 30, 2026, we opened the source again for each of the {frequentServiceStoryStats.recheckedAgencies} agencies the chart counted. {frequentServiceStoryStats.namedNumericAgencies} still matched and stay in the chart. {frequentServiceStoryStats.recheckLeftOut} are left out: Anchorage's and VIA's maps are gone, DART's site returned an error, Foothill's and Sun Tran's sites block automated visits, and STM's page doesn't show the times to one.</>,
-                limitations: <>This is a source-backed sample, not an exhaustive census of every transit agency or a universal definition of frequent service. It describes the research sample and does not change Atlas’s production frequency definitions.</>,
-              }} />
-            </div>
-          </footer>
         </div>
       </article>
     </PageShell>

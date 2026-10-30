@@ -25,7 +25,7 @@ export default function PageShell({ variant = 'docs', stickyHeader = false, foot
           </div>
         ) : <SiteHeader />}
         <div className="flex-1">{children}</div>
-        {method && <section className="mx-auto mt-16 w-full max-w-3xl border-t border-[var(--border-primary)] pt-10">{method}</section>}
+        {method && <section data-research-method className="mx-auto mt-8 w-full max-w-3xl border-t border-[var(--border-primary)] pt-10 sm:mt-16">{method}</section>}
         {footer && <SiteFooter />}
       </div>
     </main>
