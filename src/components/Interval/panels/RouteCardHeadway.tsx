@@ -632,8 +632,9 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                         <FlaggableValue key={`r${i}`} reason="Frequency is wrong" reportRef={reportRef} className="block w-full text-left">
                           <CardDirectionRow
                             labelWeight="regular"
-                            singleLine
-                            labelWraps={stableColors && row.rowNoRegular}
+                            // Compare (CIV-844): a row that reads "no regular service during this period" puts the whole
+                            // destination name on its line and the value under it (the row's own wrap layout), never "to Roncesval…".
+                            singleLine={!(stableColors && row.rowNoRegular)}
                             label={label}
                             headway={row.headway}
                             limitedLabel={row.isLimited && row.edgeText ? row.edgeText : row.rowNoRegular ? noRegularLabel : undefined}
