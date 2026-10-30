@@ -4,6 +4,7 @@ import { hasDirectionPeriodService, routeCardDisplayHeadway } from './effectiveH
 import { dedupeCrossDirectionHeadsigns } from './crossDirectionDedup';
 import { branchDisplayPeriodHeadway, buildRouteServiceSummary, metricValueForPeriod } from './routeFacts';
 import { hasStretchRoles, stretchRowFeatures, tailNotThroughPeriod, variantOnlyRow } from './stretchCard';
+import { pooledMainStretch } from './routeCardTrunk';
 
 export interface RouteCardDirectionGroup {
   dirId: number;
@@ -12,6 +13,8 @@ export interface RouteCardDirectionGroup {
   boundLabel?: string;
   /** Every feature of the direction, when its rows come from the stretches. */
   directionFeatures?: ShapeProperties[];
+  /** #1185: the one row of a main stretch several patterns to one destination share, and the pooled value it reads. */
+  pooledMain?: { feature: ShapeProperties; headway: number };
 }
 
 /** An agency's per-route direction overrides, keyed by route short name (config `directionLabels`, `directionHeadsigns`). */
@@ -83,6 +86,15 @@ export function buildDirectionGroups(
     const variantRow = variantOnlyRow(directionFeatures);
     if (variantRow) rows = [variantRow];
     if (rows.some(d => d.stretchRole === 'tail')) rows = rows.filter(d => d.stretchRole !== 'main' || routeCardDisplayHeadway(d, period) != null);
+    // #1185: a main stretch two destinations share gets a row per destination (under its "Shared stretch" row); one
+    // destination keeps one row, which reads the pooled value (pooledMain).
+    const pooled = variantRow ? null : pooledMainStretch(directionFeatures, period);
+    if (pooled && pooled.destinations.length >= 2 && rows.some(d => d.stretchRole === 'main')) {
+      rows = [...pooled.destinations, ...rows.filter(d => d.stretchRole !== 'main')];
+    } else if (pooled && pooled.destinations.length === 1) {
+      g.pooledMain = { feature: pooled.destinations[0], headway: pooled.pooled };
+      rows = rows.map(d => (d.stretchRole === 'main' ? pooled.destinations[0] : d));
+    }
     if (rows.length > 0 || notThrough.length > 0) { g.realTier = rows; g.span = []; g.directionFeatures = directionFeatures; }
   }
   // Deduplicate realTier entries with the same headsign — keep the one with the best (lowest) headway.
