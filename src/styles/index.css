@@ -272,6 +272,12 @@ input:focus-visible {
   outline: none !important;
 }
 
+/* A text box's ring sits on its pill, and only after a Tab: a click into it shows none (#1196). */
+html[data-keyboard-focus] [data-focus-ring]:focus-within {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

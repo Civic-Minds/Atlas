@@ -668,7 +668,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
         {/* The outer box keeps the search slot's width, which the side cards measure; in Compare only the pill inside
             stops short of the divider, so the cards keep their width (CIV-844). */}
         <div ref={searchBarRef} className={`${SEARCH_BAR_WIDTH} min-w-0 relative ${phoneSearchCollapsed ? 'hidden' : ''}`}>
-        <div className={`relative w-full min-w-0 ${TOP_BAR_PILL_SURFACE} pl-1 pr-3`} style={compareActive && !isPhone ? { maxWidth: compareSearchMaxWidth(sidebarLeft) } : undefined}>
+        <div data-focus-ring className={`relative w-full min-w-0 ${TOP_BAR_PILL_SURFACE} pl-1 pr-3`} style={compareActive && !isPhone ? { maxWidth: compareSearchMaxWidth(sidebarLeft) } : undefined}>
           <Search className={`absolute left-2 top-1/2 -translate-y-1/2 ${SEARCH_ICON} pointer-events-none`} />
           <input
             ref={searchInputRef}
