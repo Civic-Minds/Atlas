@@ -3,11 +3,10 @@ import type { ShapeProperties, TimePeriod, HoveredBranch } from '../../../hooks/
 import { routePatternLabel } from '../../../utils/routePattern';
 import type { Agency } from '../../../App';
 import type { OpenInfoFn } from '../../InfoPanel';
-import type { HeadwayByPeriod } from '../../../hooks/useAgencyData';
 import { routeLabels, resolveBranchLabel, formatBranchLabel, formatStoredDate } from '../../../utils/format';
 import { agencyNames } from '../../../utils/agencyName';
 import { HeadwaySparkline } from '../HeadwaySparkline';
-import { hourChartMaxFreq } from '../../../utils/hourChartModel';
+import { branchHourStack, routeHourModel, stableBranchColors, stackBranches, stackHeadway } from '../../../utils/hourChartModel';
 import { getCachedAgencyGeo } from '../../../lib/agencyGeo';
 import { tripTimeSeriesFor, type PublishedRunningTimes } from '../../../utils/tripTime';
 import RouteCardTitle from '../../RouteCardTitle';
@@ -26,24 +25,21 @@ import {
   type CardReportButtonHandle,
 } from '../cardUi';
 import { CARD_NOTE, CARD_NOTICE, CARD_NOTICE_FOOTER } from '../../../styles';
-import { FEATURES, SPARKLINE_HOURS, TIME_PERIODS, formatPeriodHourLong, formatPeriodRangeLong, periodKeyForHour } from '../../../../shared/config';
+import { FEATURES, SPARKLINE_HOURS, TIME_PERIODS, formatPeriodHourLong, formatPeriodRangeLong } from '../../../../shared/config';
 import { hasDirectionPeriodService, NO_REGULAR_SERVICE_LABEL, NO_REGULAR_SERVICE_SHORT_LABEL, routeCardDisplayHeadway, routeCardDisplayHeadwayRange, routeCardDisplayLimited } from '../../../utils/effectiveHeadway';
-import { branchDisplayHourHeadway, branchDisplayPeriodHeadway, buildRouteServiceSummary } from '../../../utils/routeFacts';
-import { branchStackColor } from '../../../utils/colors';
+import { buildRouteServiceSummary } from '../../../utils/routeFacts';
 import { unevenPeriodMaxGap } from '../../../utils/routeCardUneven';
 import { rowTrips } from '../../../utils/rowTrips';
 import { routeCardRowValue } from '../../../utils/routeCardRowValue';
 import {
   dirIdNum,
+  routePartMeetsFilter,
   groupTrunkHeadway,
-  medianHeadway,
   sparklineSourceDirections,
-  worstDirectionByHour,
   sharedStopIdsForBranches,
   sharedStretchHeadway,
   shouldShowTrunkSummary,
   stretchSharedHeadway,
-  trunkSparklineByHour,
 } from '../../../utils/routeCardTrunk';
 import { shouldShowDirectionSections } from '../../../utils/routeCardDirectionLayout';
 import { activeHourRanges, partPeriodNoticeApplies, partPeriodNoticeHeadway, partPeriodOutside } from '../../../utils/periodActiveRanges';
@@ -52,7 +48,7 @@ import { hasStretchRoles, routeAllDayContract, routeContract } from '../../../ut
 import type { VariantFamily } from '../../../utils/routeVariants';
 import { reportDetails } from '../../../utils/reportIssue';
 import { ROUTE_DATA_QUALITY_WARNING } from '../../../../shared/routeDataQuality';
-import { LIMITED_SERVICE_LABEL, BOOKING_REQUIRED_NOTICE, expiredFeedNotice, explainerFor, listingEndedNotice, listingEndHasPassed, NO_ROUTE_SHAPE_NOTICE, periodServiceNotice, ROUTE_DATA_QUALITY_WARNING_MESSAGE, selectedRouteFilterNotice, selectedRouteOutsideFilterNotice, unevenServiceNotice, variantsIncludedNotice, WEEKDAY_VARIATION_NOTICE } from '../../../content/noticeCopy';
+import { LIMITED_SERVICE_LABEL, BOOKING_REQUIRED_NOTICE, expiredFeedNotice, explainerFor, listingEndedNotice, listingEndHasPassed, NO_ROUTE_SHAPE_NOTICE, noServiceInPeriodText, ONLY_SHARED_SECTION_MEETS_FILTER, periodServiceNotice, ROUTE_DATA_QUALITY_WARNING_MESSAGE, selectedRouteFilterNotice, selectedRouteOutsideFilterNotice, selectedRoutePartMeetsFilterNotice, SHARED_STRETCH_LABEL, unevenServiceNotice, variantsIncludedNotice, WEEKDAY_VARIATION_NOTICE } from '../../../content/noticeCopy';
 import { featurePassesHeadwayFilter } from '../../../../shared/routeHeadwayFilter';
 import { agencyTodayYmd } from '../../../../shared/feedAvailability';
 import { headwayAbout, headwayAboutRange } from '../../../utils/headwayText';
@@ -69,21 +65,6 @@ function formatMetricMap(
   return entries.length > 0
     ? entries.map(([key, value]) => `${keyLabel}=${key}, ${valueLabel}=${value ?? 'none'}`).join(separator)
     : 'none';
-}
-
-/** Merge hourly headways across branches — median per hour avoids min-spike artifacts (#98). */
-function mergeHeadwayByHour(
-  directions: ShapeProperties[],
-  hours: readonly number[],
-): Record<number, number | null> {
-  const merged: Record<number, number | null> = {};
-  for (const h of hours) {
-    const values = directions
-      .map(d => buildRouteServiceSummary(d).branch.byHour?.[h])
-      .filter((v): v is number => v != null);
-    merged[h] = values.length === 0 ? null : values.length === 1 ? values[0] : medianHeadway(values);
-  }
-  return merged;
 }
 
 /**
@@ -115,40 +96,6 @@ export function directionPillLabels(
     resolved.indexOf(label) === index ? label : `${label} (${resolved.slice(0, index + 1).filter(l => l === label).length})`);
 }
 
-/** Cap hourly values below period summary when paired departures bunch (#91). */
-export function sparklineHeadwayByHour(
-  directions: ShapeProperties[],
-  hours: readonly number[],
-): Record<number, number | null> {
-  const raw = mergeHeadwayByHour(directions, hours);
-  const out: Record<number, number | null> = {};
-  for (const h of hours) {
-    const hw = raw[h];
-    if (hw == null) { out[h] = null; continue; }
-    const pk = periodKeyForHour(h);
-    if (!pk) { out[h] = hw; continue; }
-    const periodVals = directions
-      .map(d => branchDisplayPeriodHeadway(d, pk as keyof HeadwayByPeriod))
-      .filter((v): v is number => v != null);
-    if (periodVals.length === 0) { out[h] = hw; continue; }
-    const periodRep = periodVals.length === 1 ? periodVals[0] : medianHeadway(periodVals);
-    out[h] = hw < periodRep * 0.75 ? periodRep : hw;
-  }
-  return out;
-}
-
-function sparklineMaxGapByHour(
-  directions: ShapeProperties[],
-  hours: readonly number[],
-): Record<number, number | null> {
-  return Object.fromEntries(hours.map(h => {
-    const values = directions
-      .map(d => d.maxGapByHour?.[h])
-      .filter((v): v is number => v != null);
-    return [h, values.length > 0 ? Math.max(...values) : null];
-  }));
-}
-
 function activePeriodRanges(directions: ShapeProperties[], startHour: number, endHour: number): string[] {
   return activeHourRanges(directions, startHour, endHour).map(([start, end]) => formatPeriodRangeLong(start, end));
 }
@@ -177,6 +124,8 @@ export interface RouteCardHeadwayProps {
   currentRoute: CurrentRouteData;
   /** The route's agency features (stops, pooled shared-stretch block, both directions), CIV-82. */
   agencyFeatures?: readonly GeoJSON.Feature[];
+  /** Compare (CIV-844): colour each destination by name, so it matches on both cards. */
+  stableBranchColors?: boolean;
   /** Lettered variants sharing this route's base number (GRTC 1/1A/1B/1C style). */
   variantFamily?: VariantFamily | null;
   routeSlug: string | undefined;
@@ -205,9 +154,15 @@ export interface RouteCardHeadwayProps {
   onInfoOpen?: OpenInfoFn;
 }
 
+/** The last two words held together, so a wrapped value never leaves one word alone on its line (Compare, CIV-844). */
+function keepLastWordsTogether(text: string): string {
+  return text.replace(/ (\S+)$/, '\u00A0$1');
+}
+
 export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
   currentRoute,
   agencyFeatures,
+  stableBranchColors: stableColors = false,
   variantFamily,
   routeSlug,
   routeAgency,
@@ -450,87 +405,33 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
       )}
       {!nightView && (() => {
         const HOURS = SPARKLINE_HOURS;
+        const branchColorOf = stableColors ? stableBranchColors(agencyFeatures, currentRoute.routeShortName) : undefined;
         const hoveredSingleBranch = hoveredBranch?.headsign != null;
-        const defaultSparklineDirs = sparklineSourceDirections(currentRoute.directions, primaryMultiBranch?.realTier);
-        // One hourly series per direction, as shown by the direction pills. A
-        // multi-branch direction whose branches share a trunk uses the combined
-        // trunk curve; otherwise its branches are merged.
-        const directionSeries = (group: DirectionGroup) =>
-          group.realTier.length >= 2 && shouldShowTrunkSummary(group.realTier, period)
-            ? trunkSparklineByHour(group.realTier, HOURS)
-            : sparklineHeadwayByHour(group.realTier, HOURS);
-        const perDirection = displayGroups.map(group => ({ group, byHour: directionSeries(group) }));
-        const directionsWithHours = perDirection.filter(entry => HOURS.some(h => entry.byHour[h] != null));
-        // Inline chart = the slower direction each hour, never one direction silently.
-        const allDirections = directionsWithHours.length > 0
-          ? worstDirectionByHour(directionsWithHours.map(entry => entry.byHour), HOURS)
-          : sparklineHeadwayByHour(defaultSparklineDirs, HOURS);
-        const hasTrunkSparkline = !!primaryMultiBranch && shouldShowTrunkSummary(primaryMultiBranch.realTier, period);
-        const defaultMerged = allDirections;
-        const mergedMaxGaps = sparklineMaxGapByHour(
-          directionsWithHours.length > 0 ? directionsWithHours.flatMap(entry => entry.group.realTier) : defaultSparklineDirs,
-          HOURS,
-        );
-        // Branch stacks describe the primary multi-branch direction: every hour that direction
-        // runs is stacked, so whether an hour shows branch colours never depends on two series
-        // landing on the same number (CIV-497).
-        const primaryTrunkByHour = hasTrunkSparkline ? trunkSparklineByHour(primaryMultiBranch!.realTier, HOURS) : null;
-        const defaultStackedByHour = hasTrunkSparkline
-          ? Object.fromEntries(HOURS.map(h => [h, primaryTrunkByHour![h] != null && defaultMerged[h] != null
-            ? primaryMultiBranch!.realTier
-              .map((branch, i) => ({
-                label: branch.headsign ?? `Branch ${i + 1}`,
-                headway: branchDisplayHourHeadway(branch, h),
-                color: branchStackColor(i),
-              }))
-              .filter((segment): segment is { label: string; headway: number; color: string } => segment.headway != null)
-            : []]))
-          : undefined;
+        // One hourly series per direction (the direction pills), the inline chart's series, its gap colours,
+        // the default branch stack and the route's y-axis top, from the shared hour model (CIV-1118).
+        const { perDirection, directionsWithHours, defaultMerged, hasTrunkSparkline, mergedMaxGaps, defaultStackedByHour, scaleMaxFreq } =
+          routeHourModel({ groups: displayGroups, directions: currentRoute.directions, primaryMultiBranch, period, hours: HOURS, colorOf: branchColorOf });
         // A selected branch row (CIV-512) keeps the chart and its scale: the bars become that direction's
         // trips each hour, split by branch (part-day branches too), each segment its own trips on the
         // route's fixed axis, with the selected branch in full colour and the others faded.
-        const branchesOf = (group: DirectionGroup) => [...group.realTier, ...group.span];
-        const stackOf = (group: DirectionGroup, h: number, isSelected?: (b: ShapeProperties) => boolean) => branchesOf(group)
-          .map((branch, i) => ({
-            label: branch.headsign ?? `Branch ${i + 1}`,
-            headway: branchDisplayHourHeadway(branch, h),
-            color: branchStackColor(i),
-            ...(isSelected ? { faded: !isSelected(branch) } : {}),
-          }))
-          .filter((segment): segment is { label: string; headway: number; color: string; faded?: boolean } => segment.headway != null);
-        const tripsEvery = (segments: { headway: number }[]) => {
-          const perMinute = segments.reduce((sum, segment) => sum + 1 / segment.headway, 0);
-          // Whole minutes, like the Combined row (groupTrunkHeadway), so the hour tooltip reads "every 15 min".
-          return perMinute > 0 ? Math.max(1, Math.round(1 / perMinute)) : null;
-        };
         // Only a direction with two or more branches has a share to show; a one-branch row (Milton 4,
         // MARTA 20's Five Points, TTC 94) leaves the chart exactly as it is.
         const hoveredGroup = hoveredSingleBranch
           ? displayGroups.find(group => dirIdNum(group.dirId) === dirIdNum(hoveredBranch!.directionId))
           : undefined;
-        const selectedGroup = hoveredGroup && branchesOf(hoveredGroup).length >= 2 ? hoveredGroup : undefined;
+        const selectedGroup = hoveredGroup && stackBranches(hoveredGroup).length >= 2 ? hoveredGroup : undefined;
         const isSelectedBranch = (b: ShapeProperties) => matchesHoveredBranch(b.headsign, b.routeVariant);
         const selectionStacked = selectedGroup
-          ? Object.fromEntries(HOURS.map(h => [h, stackOf(selectedGroup, h, isSelectedBranch)]))
+          ? Object.fromEntries(HOURS.map(h => [h, branchHourStack(stackBranches(selectedGroup), h, isSelectedBranch, branchColorOf)]))
           : null;
         const selectionByHour = selectionStacked
-          ? Object.fromEntries(HOURS.map(h => [h, tripsEvery(selectionStacked[h])])) as Record<number, number | null>
+          ? Object.fromEntries(HOURS.map(h => [h, stackHeadway(selectionStacked[h])])) as Record<number, number | null>
           : null;
         // A selected branch's direction can have no hourly data in the active period. Falling back to
         // the route chart keeps the chart mounted, so its layout does not shift under the pointer (#550).
         const selected = !!selectionByHour && HOURS.some(h => selectionByHour[h] != null);
         const merged = selected ? selectionByHour! : defaultMerged;
         const stackedByHour = selected ? selectionStacked! : defaultStackedByHour;
-        // One y-axis top for the route: the busiest hour of anything the card or the full-day view can
-        // draw (the default chart, each direction, each direction's branches together).
-        const scaleMaxFreq = hourChartMaxFreq([
-          defaultMerged,
-          ...perDirection.map(entry => entry.byHour),
-          // Only directions that can draw a branch stack (two or more branches): a one-branch direction's raw
-          // hourly reading is never drawn, so it must not set the top (Milton 4: a 6 a.m. reading of 18 vs 30 shown).
-          ...displayGroups.filter(group => branchesOf(group).length >= 2)
-            .map(group => Object.fromEntries(HOURS.map(h => [h, tripsEvery(stackOf(group, h))]))),
-        ], HOURS);
         // Full-day view: one pill per direction, opening on the slower one.
         // Single-direction routes get no pills.
         const pillLabels = directionPillLabels(
@@ -609,6 +510,9 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                   })(),
                   periodRange: formatPeriodRangeLong(selectedPeriod.startHour, selectedPeriod.endHour),
                 })
+                // CIV-514: part of the route qualifies, as the map's shared-stretch overlay shows; else the general note.
+                : routePartMeetsFilter(agencyFeatures, currentRoute.directions, period, maxHeadway)
+                ? selectedRoutePartMeetsFilterNotice(maxHeadway)
                 : selectedRouteOutsideFilterNotice(maxHeadway, selectedPeriod ? formatPeriodRangeLong(selectedPeriod.startHour, selectedPeriod.endHour) : null)}
             </p>
           </div>
@@ -620,7 +524,8 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
           // rows sharing a headsign from different origins highlight one at a time (#1064).
           const branchHoverProps = (dirId: number, headsign: string | null | undefined, routeVariant?: string | null) => {
             if (!headsign) return {};
-            const isHovered = dirIdNum(hoveredBranch?.directionId) === dirIdNum(dirId) && matchesHoveredBranch(headsign, routeVariant);
+            // Hovering the Shared stretch row lights only that row, not the destination rows it combines.
+            const isHovered = dirIdNum(hoveredBranch?.directionId) === dirIdNum(dirId) && hoveredBranch?.isCore !== true && matchesHoveredBranch(headsign, routeVariant);
             return {
               onHoverStart: () => setHoveredBranch({ directionId: dirId, headsign, ...(routeVariant ? { routeVariant } : {}) }),
               onHoverEnd: () => setHoveredBranch(null),
@@ -675,20 +580,20 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                     <CardSectionLabel className="mb-0">{group.boundLabel}</CardSectionLabel>
                     {!hasVisibleDirectionRows && selectedPeriod && !nightView && (
                       <p className={`${CARD_NOTE} mt-2 mb-2`}>
-                        No {selectedPeriod.label.toLowerCase()} service.
+                        {noServiceInPeriodText(selectedPeriod.label)}
                       </p>
                     )}
                   </>
                 )}
                 {onlySharedPasses && !nightView && (
                   <p className={`${CARD_NOTE} mt-2 mb-2`}>
-                    Only the shared section meets this filter. The branches do not.
+                    {ONLY_SHARED_SECTION_MEETS_FILTER}
                   </p>
                 )}
                 {groupHasCoreSummary && groupCoreHeadway != null && (
                   <>
                     <CardDirectionRow
-                      label={groupShared || stretchShared != null ? 'Shared stretch' : 'Combined'}
+                      label={groupShared || stretchShared != null ? SHARED_STRETCH_LABEL : 'Combined'}
                       headway={groupCoreHeadway}
                       branchHovered={coreHovered}
                       branchDimmed={!!hoveredBranch && !coreHovered}
@@ -732,10 +637,13 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                         <FlaggableValue key={`r${i}`} reason="Frequency is wrong" reportRef={reportRef} className="block w-full text-left">
                           <CardDirectionRow
                             labelWeight="regular"
-                            singleLine
+                            // Compare (CIV-844): a row that reads "no regular service during this period" puts the whole
+                            // destination name on its line and the value under it (the row's own wrap layout), never "to Roncesval…".
+                            singleLine={!(stableColors && row.rowNoRegular)}
+                            valueEnd={stableColors && row.rowNoRegular}
                             label={label}
                             headway={row.headway}
-                            limitedLabel={row.isLimited && row.edgeText ? row.edgeText : row.rowNoRegular ? noRegularLabel : undefined}
+                            limitedLabel={row.isLimited && row.edgeText ? row.edgeText : row.rowNoRegular ? (stableColors ? keepLastWordsTogether(noRegularLabel) : noRegularLabel) : undefined}
                             colorHeadway={row.colorHeadway}
                             headwayLabel={row.headwayLabel}
                             trunkHeadway={row.trunkHeadway}

@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import type { LiveVehicle } from '../context/LiveVehiclesMapOverlay';
-import { readUrlParam, syncUrlParams } from '../utils/syncUrlParams';
+import { syncUrlParams } from '../utils/syncUrlParams';
+import { LIVE_MAP_URL, currentSearch, linkUpdate, readLink } from '../utils/urlSchema';
 import { buildRouteKey, splitRouteKey } from '../utils/routeKey';
 
 /**
@@ -18,10 +19,13 @@ export function useLiveViewUrl({ active, selectedRoute, cardVehicleId, selectedD
   pendingRouteRef: React.RefObject<string | null>;
   onRestore: (vehicle: LiveVehicle | null, group: string | null) => void;
 }) {
-  const restoreRef = useRef(active ? { vehicle: readUrlParam('vehicle'), group: readUrlParam('group') } : null);
+  const restoreRef = useRef(active ? (() => {
+    const link = readLink(currentSearch(), LIVE_MAP_URL);
+    return { vehicle: link.vehicle ?? null, group: link.group ?? null };
+  })() : null);
   useEffect(() => {
     if (!active || pendingRouteRef.current) return;
-    syncUrlParams({ route: selectedRoute, vehicle: cardVehicleId, group: selectedDirection });
+    syncUrlParams(linkUpdate(LIVE_MAP_URL, { route: selectedRoute, vehicle: cardVehicleId, group: selectedDirection }));
   }, [active, selectedRoute, cardVehicleId, selectedDirection, pendingRouteRef]);
   useEffect(() => {
     const r = restoreRef.current;

@@ -4,7 +4,8 @@ import { Search, X, Info, History as HistoryIcon, ChevronDown, Radio } from 'luc
 import { CompareTab } from './components/Interval/CompareControl';
 import { useUrlPathname } from './hooks/useUrlPathname';
 import ModeTab from './components/ModeTab';
-import { MAP_TOP_BAR_SLOT, MAP_STATUS_SLOT, TOP_BAR_PILL_SURFACE, TOP_BAR_ICON_BTN, FLOATING_CARD, SEARCH_BAR_WIDTH, TRANSITION_BASE, TRANSITION_SLOW, Z_MAP_OVERLAY, Z_HEADER, Z_MODAL_TOP, SIDEBAR_LEFT_FALLBACK, sidebarFrameStyle, SEARCH_ICON, CARD_NOTE } from './styles';
+import { MAP_TOP_BAR_SLOT, MAP_STATUS_SLOT, TOP_BAR_PILL_SURFACE, TOP_BAR_ICON_BTN, FLOATING_CARD, SEARCH_BAR_WIDTH, TRANSITION_BASE, TRANSITION_SLOW, Z_MAP_OVERLAY, Z_PANEL, Z_HEADER, Z_MODAL_TOP, SIDEBAR_LEFT_FALLBACK, sidebarFrameStyle, SEARCH_ICON, CARD_NOTE } from './styles';
+import { compareSearchMaxWidth } from './mapOverlayLayout';
 import { R2_PUBLIC_URL, getAgencyArtifactUrls, getAgencyCatalogUrl, FEATURES, FEATURE_ROUTES, ATLAS_MODE } from '../shared/config';
 import AtlasLogo from './components/AtlasLogo';
 import { isAgencyVisibleInBrowser } from '../shared/agencyVisibility';
@@ -39,20 +40,20 @@ import ResearchInfo from './components/ResearchInfo';
 import { FREQUENT_INFO_HEADING, frequentRuleText } from './content/researchRules';
 import { DAY_TYPES, getNowDay, type DayType } from '../shared/dayTypes';
 import { syncUrlParams } from './utils/syncUrlParams';
-import { MAP_URL, readUrlParam, urlParamUpdate } from './utils/mapUrlState';
+import { APP_URL, FREQUENT_URL, MAP_URL, NIGHT_URL, currentSearch, linkUpdate, readLink, readUrlParam, urlParamUpdate } from './utils/urlSchema';
 import { AGENCY_CARD_PARAM, parseAgencyCardParam } from './utils/shareUrlState';
 import AppUpdateBanner from './components/AppUpdateBanner';
 import type { FeedQuality } from '../shared/feedQuality';
 import { trackEvent } from './lib/analytics';
 import { markAtlasOnce } from './lib/performance';
-import { parseFrequentServiceDays, type FrequentServiceFrequency, type FrequentServiceWindow } from '../shared/frequentService';
+import { type FrequentServiceFrequency, type FrequentServiceWindow } from '../shared/frequentService';
 import type { NightServiceFrequency } from '../shared/nightService';
 const FrequentServiceStory = React.lazy(() => import('./apps/FrequentServiceStory'));
 const ResearchPage = React.lazy(() => import('./apps/ResearchPage'));
 import { applyOnDemand } from './lib/onDemandLoader';
 import { OnDemandStatusProvider, OnDemandViewportLoader, useOnDemandData } from './hooks/useOnDemandData';
 import type { OnDemandAvailability, OnDemandPickup, OnDemandZoneDetails } from '../shared/onDemandAvailability';
-import { loadErrorText, loadingText, MAP_ERROR_TEXT } from './content/noticeCopy';
+import { loadErrorText, loadingText, MAP_ERROR_TEXT, RETRY_LABEL } from './content/noticeCopy';
 import Panel from './components/ui/Panel';
 import PanelEmpty from './components/ui/PanelEmpty';
 
@@ -172,7 +173,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   const { pathname } = useLocation();
   // The on-demand service a shared link opens (?ondemand=<slug>[::zone]), read once: its zones load
   // wherever the map starts, so the link opens the same card a click does and the map moves to it.
-  const [linkedOnDemandSlug] = useState(() => new URLSearchParams(window.location.search).get('ondemand')?.split('::', 1)[0] || null);
+  const [linkedOnDemandSlug] = useState(() => readUrlParam(currentSearch(), MAP_URL.onDemand)?.split('::', 1)[0] || null);
   // The map route is the map regardless of which map-state parameters are in the URL.
   // Requiring one of the filter parameters made links such as ?p=overnight render the
   // normal frequency controls and left the research controls out of the header.
@@ -285,7 +286,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   const [selectedMapAgencySlug, setSelectedMapAgencySlug] = useState<string | null>(null);
   const [pendingLiveRoute, setPendingLiveRoute] = useState<{ slug: string; routeShortName: string } | null>(null);
   const [pendingNightRoute, setPendingNightRoute] = useState<{ slug: string; routeId: string; frequency: NightServiceFrequency } | null>(null);
-  const [nightServiceFrequency, setNightServiceFrequency] = useState<NightServiceFrequency>(() => new URLSearchParams(window.location.search).get('nightFrequency') === '30' ? 30 : 60);
+  const [nightServiceFrequency, setNightServiceFrequency] = useState<NightServiceFrequency>(() => readUrlParam(currentSearch(), NIGHT_URL.frequency) ?? 60);
   const [pendingHistoryRoute, setPendingHistoryRoute] = useState<{ slug: string; routeShortName: string } | null>(null);
   const [headerPortalEl, setHeaderPortalEl] = useState<Element | null>(null);
   const headerPortalRef = useCallback((el: HTMLDivElement | null) => { setHeaderPortalEl(el); }, []);
@@ -338,8 +339,8 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   });
   const [hideLowQuality, setHideLowQuality] = useState(() => {
     if (!FEATURES.persistedSettings || typeof window === 'undefined') return false;
-    const urlValue = new URLSearchParams(window.location.search).get('quality');
-    if (urlValue != null) return urlValue === '1';
+    const fromLink = readUrlParam(currentSearch(), APP_URL.hideLowQuality);
+    if (fromLink != null) return fromLink;
     return localStorage.getItem('atlas_pref_hide_low_quality') === 'true';
   });
   const [showMapLegend, setShowMapLegend] = useState(() => (
@@ -348,15 +349,13 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   const [dataSaver, setDataSaver] = useState(() => (
     (() => {
       if (!FEATURES.persistedSettings || typeof window === 'undefined') return false;
-      const urlValue = new URLSearchParams(window.location.search).get('dataSaver');
-      if (urlValue != null) return urlValue === '1';
       return localStorage.getItem('atlas_pref_data_saver') === 'true';
     })()
   ));
 
   useEffect(() => {
     if (FEATURES.persistedSettings) localStorage.setItem('atlas_pref_hide_low_quality', String(hideLowQuality));
-    syncUrlParams({ quality: FEATURES.persistedSettings && hideLowQuality ? '1' : null });
+    syncUrlParams(urlParamUpdate(APP_URL.hideLowQuality, FEATURES.persistedSettings && hideLowQuality));
   }, [hideLowQuality]);
 
   useEffect(() => {
@@ -378,6 +377,8 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   // On phones the search box is too narrow to read what you type (#698), so while it is
   // focused it takes the whole top bar and the other header buttons step aside.
   const phoneSearchExpanded = isPhone && searchFocused;
+  // CIV-449 (mock): the phone search rests as a button until opened, unless it holds a query.
+  const phoneSearchCollapsed = isPhone && !searchFocused && query === '';
   const searchBlurTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
@@ -396,7 +397,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   const [compareActive, setCompareActive] = useState(false);
   const [day, setDay] = useState<DayType>(() => {
     try {
-      const fromLink = readUrlParam(window.location.search, MAP_URL.day);
+      const fromLink = readUrlParam(currentSearch(), MAP_URL.day);
       if (fromLink != null) return fromLink;
     } catch {}
     try {
@@ -424,19 +425,13 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
 
   const historyViewControl = useMemo(() => ({ view: historyView, setView: setHistoryView }), [historyView]);
   const handleUserMoveMap = useCallback(() => setUserMovedMap(true), []);
-  const [frequentServiceDays, setFrequentServiceDays] = useState(() => {
-    const days = parseFrequentServiceDays(new URLSearchParams(window.location.search).get('days'));
-    return days.length ? days : ['Weekday' as const];
-  });
-  const [frequentServiceFrequency, setFrequentServiceFrequency] = useState<FrequentServiceFrequency>(() => new URLSearchParams(window.location.search).get('frequency') === '30' ? 30 : 15);
-  const [frequentServiceWindow, setFrequentServiceWindow] = useState<FrequentServiceWindow>(() => new URLSearchParams(window.location.search).get('window') === 'extended' ? 'extended' : 'daytime');
+  const [frequentLink] = useState(() => readLink(currentSearch(), FREQUENT_URL));
+  const [frequentServiceDays, setFrequentServiceDays] = useState<DayType[]>(() => frequentLink.days ?? ['Weekday']);
+  const [frequentServiceFrequency, setFrequentServiceFrequency] = useState<FrequentServiceFrequency>(() => frequentLink.frequency ?? 15);
+  const [frequentServiceWindow, setFrequentServiceWindow] = useState<FrequentServiceWindow>(() => frequentLink.window ?? 'daytime');
 
   useEffect(() => {
-    syncUrlParams({
-      days: frequentServiceDays.length === 1 && frequentServiceDays[0] === 'Weekday' ? null : frequentServiceDays.join(','),
-      frequency: frequentServiceFrequency === 15 ? null : String(frequentServiceFrequency),
-      window: frequentServiceWindow === 'daytime' ? null : frequentServiceWindow,
-    });
+    syncUrlParams(linkUpdate(FREQUENT_URL, { days: frequentServiceDays, frequency: frequentServiceFrequency, window: frequentServiceWindow }));
   }, [frequentServiceDays, frequentServiceFrequency, frequentServiceWindow]);
 
   const inFrequency = activeApp === 'frequency';
@@ -570,6 +565,27 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   useEffect(() => {
     syncUrlParams(urlParamUpdate(MAP_URL.day, day));
   }, [day]);
+  // Night's frequency in its link, so a shared Night link keeps 30 (60, the default, is left out) (CIV-1139).
+  useEffect(() => {
+    if (inNight) syncUrlParams(urlParamUpdate(NIGHT_URL.frequency, nightServiceFrequency));
+  }, [inNight, nightServiceFrequency, pathname]);
+  // A tab switch drops the link (setActiveApp navigates to a bare path) and the effects above write only on a change:
+  // when the map's own view opens again, the app's part of its link is written once more, as Interval does for the
+  // map's filters (CIV-1139).
+  const linkPathRef = useRef(pathname);
+  useEffect(() => {
+    if (linkPathRef.current === pathname) return;
+    linkPathRef.current = pathname;
+    if (!inFrequency && !inFrequentService) return;
+    syncUrlParams({
+      ...urlParamUpdate(MAP_URL.day, day),
+      ...urlParamUpdate(APP_URL.hideLowQuality, FEATURES.persistedSettings && hideLowQuality),
+      [AGENCY_CARD_PARAM]: selectedAgencySlug,
+      ...(inFrequentService ? linkUpdate(FREQUENT_URL, { days: frequentServiceDays, frequency: frequentServiceFrequency, window: frequentServiceWindow }) : {}),
+    });
+  // Only a path change rewrites the link; each value's own effect keeps it current.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname, inFrequency, inFrequentService]);
 
   useEffect(() => {
     setAgenciesLoadState('loading');
@@ -654,7 +670,21 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
 
         {!inFrequentServiceStory && !inResearch && <div className="flex items-center gap-2 flex-1 min-w-0 lg:flex-initial">
         <div className="flex-1 min-w-0 sm:flex">
-        <div ref={searchBarRef} className={`${SEARCH_BAR_WIDTH} min-w-0 relative ${TOP_BAR_PILL_SURFACE} pl-1 pr-3`}>
+        {/* CIV-449 (mock): on every phone width the search rests as a round button, like the About button, and opens into the box. */}
+        {phoneSearchCollapsed && (
+          <button
+            type="button"
+            onClick={() => { setSearchFocused(true); requestAnimationFrame(() => searchInputRef.current?.focus()); }}
+            aria-label={searchPlaceholder}
+            className={TOP_BAR_ICON_BTN}
+          >
+            <Search className="w-4 h-4" />
+          </button>
+        )}
+        {/* The outer box keeps the search slot's width, which the side cards measure; in Compare only the pill inside
+            stops short of the divider, so the cards keep their width (CIV-844). */}
+        <div ref={searchBarRef} className={`${SEARCH_BAR_WIDTH} min-w-0 relative ${phoneSearchCollapsed ? 'hidden' : ''}`}>
+        <div className={`relative w-full min-w-0 ${TOP_BAR_PILL_SURFACE} pl-1 pr-3`} style={compareActive && !isPhone ? { maxWidth: compareSearchMaxWidth(sidebarLeft) } : undefined}>
           <Search className={`absolute left-2 top-1/2 -translate-y-1/2 ${SEARCH_ICON} pointer-events-none`} />
           <input
             ref={searchInputRef}
@@ -705,6 +735,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
               <X className="w-3.5 h-3.5" />
             </button>
           )}
+        </div>
         </div>
         </div>
 
@@ -878,7 +909,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
               <React.Suspense fallback={inHistory ? (
                 // The shared loading panel, where History's panels open (#1028 item 20).
                 <Panel sidebar style={sidebarFrameStyle(sidebarLeft, isPhone ? undefined : searchBarWidth)}>
-                  <PanelEmpty kind="loading">{loadingText('history data')}</PanelEmpty>
+                  <PanelEmpty kind="loading">{loadingText('history')}</PanelEmpty>
                 </Panel>
               ) : null}>
                 <History active={inHistory} view={historyView} agencyCatalog={agencies} searchBarWidth={isPhone ? undefined : searchBarWidth} initialAgencySlug={historyAgencyForView} inViewAgencySlugs={viewportAgencySlugs} onOpenAgencyChange={setHistoryOpenAgencyName} dismissKey={historyDismissKey} onPanelOpenChange={setHistoryPanelOpen} onInfoOpen={openInfo} query={deferredQuery} searchFocused={searchFocused} setQuery={setQuery} pendingRouteClick={pendingHistoryRoute} onPendingRouteHandled={() => setPendingHistoryRoute(null)} sidebarLeft={sidebarLeft} />
@@ -886,7 +917,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
             )}
             {FEATURES.beta && (nightOpened || inNight) && (
               <React.Suspense fallback={null}>
-                <NightService active={inNight} sidebarLeft={sidebarLeft} searchBarWidth={isPhone ? undefined : searchBarWidth} layers={layers} query={deferredQuery} frequency={nightServiceFrequency} onRouteSelect={handleNightRouteClick} onBackToMap={() => setActiveApp('frequency')} selectionActive={intervalSelectionActive} />
+                <NightService active={inNight} sidebarLeft={sidebarLeft} searchBarWidth={isPhone ? undefined : searchBarWidth} layers={layers} query={deferredQuery} frequency={nightServiceFrequency} onRouteSelect={handleNightRouteClick} onBackToMap={() => setActiveApp('frequency')} selectionActive={intervalSelectionActive} agencyCatalog={agencies} />
               </React.Suspense>
             )}
             {inFrequentService && (
@@ -918,12 +949,12 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
           </React.Suspense>
           </ErrorBoundary>
         {(agenciesLoadState === 'loading' || modeCatchingUp) && (
-          <div className={`${MAP_STATUS_SLOT} rounded-full bg-[var(--bg-panel)]/90 px-3 py-1.5 text-xs font-semibold text-[var(--text-dim)] pointer-events-none`} data-map-overlay="status">
+          <div className={`${MAP_STATUS_SLOT} ${Z_PANEL} rounded-full bg-[var(--bg-panel)]/90 px-3 py-1.5 text-xs font-semibold text-[var(--text-dim)] pointer-events-none`} data-map-overlay="status">
             {loadingText('map')}
           </div>
         )}
         {agenciesLoadState === 'error' && (
-          <div className={`${MAP_STATUS_SLOT} flex items-center gap-3 rounded-full bg-[var(--bg-panel)]/95 px-3 py-1.5 text-xs text-[var(--text-dim)]`} data-map-overlay="status">
+          <div className={`${MAP_STATUS_SLOT} ${Z_PANEL} flex items-center gap-3 rounded-full bg-[var(--bg-panel)]/95 px-3 py-1.5 text-xs text-[var(--text-dim)]`} data-map-overlay="status">
             <span>{loadErrorText('the list of agencies')}</span>
             <button
               type="button"
@@ -952,7 +983,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
                   .catch(() => setAgenciesLoadState('error'));
               }}
             >
-              Retry
+              {RETRY_LABEL}
             </button>
           </div>
         )}

@@ -32,7 +32,8 @@ import { applySeoToDocument, seoOrigin } from './lib/seoDom';
 import { readEmbeddedJson } from './lib/embeddedData';
 import { LINK, UNDERLINED_LINK } from './pageStyles';
 import { FrequencyBar, RouteNameCell } from './pageParts';
-import { AGENCY_PAGE_NOT_FOUND_TITLE, NO_FREQUENCY_PAGE_BODY } from './content/noticeCopy';
+import { AGENCY_PAGE_NOT_FOUND_TITLE, LIMITED_SERVICE_LABEL, NO_FREQUENCY_PAGE_BODY } from './content/noticeCopy';
+import { capitalizeFirst } from './utils/headwayText';
 
 /** Read this page's numbers from the JSON the prerender embedded next to the app root. */
 function readEmbeddedData(slug: string | undefined): AgencyPageData | null {
@@ -86,7 +87,7 @@ function Intro({ data }: { data: AgencyPageData }) {
 function cell(col: 'am' | 'midday' | 'pm' | 'evening' | 'overnight', r: AgencyPageRoute): string {
   const v = r[col];
   if (v != null) return routeListHeadwayText(v, r.shared?.[col], true);
-  return Array.isArray(r.limited) && r.limited.includes(col) ? 'Limited' : headwayEvery(null);
+  return Array.isArray(r.limited) && r.limited.includes(col) ? capitalizeFirst(LIMITED_SERVICE_LABEL) : headwayEvery(null);
 }
 
 /**
@@ -153,7 +154,7 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
                     rows={group.routes}
                     rowKey={r => `${r.name}-${r.longName ?? ''}`}
                     columns={[
-                      { key: 'route', header: 'Route', rowHeader: true, className: 'font-normal', cell: r => <RouteNameCell shortName={r.name} longName={r.longName} mode={r.mode} agencyName={agency.name} /> },
+                      { key: 'route', header: 'Route', rowHeader: true, className: 'font-normal', cell: r => <RouteNameCell shortName={r.name} feedShortName={r.shortName} longName={r.longName} mode={r.mode} agencyName={agency.name} /> },
                       { key: 'am', header: PERIOD_LABELS.amPeak, cell: r => cell('am', r) },
                       { key: 'midday', header: PERIOD_LABELS.midday, cell: r => cell('midday', r) },
                       { key: 'pm', header: PERIOD_LABELS.pmPeak, cell: r => cell('pm', r) },

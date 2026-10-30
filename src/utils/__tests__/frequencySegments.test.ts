@@ -6,6 +6,9 @@ import {
   broadenFilterForPartialMatches,
   selectedSharedStretchRoutes,
 } from '../frequencySegments';
+import { routePartMeetsFilter } from '../routeCardTrunk';
+import { selectedRoutePartMeetsFilterNotice } from '../../content/noticeCopy';
+import type { ShapeProperties } from '../../hooks/useIntervalStats';
 import type { AgencyLayers } from '../../hooks/useAgencyData';
 
 describe('findQualifyingStopRanges', () => {
@@ -462,5 +465,17 @@ describe('shared-stretch-only routes (#850)', () => {
     expect(selectedSharedStretchRoutes(sharedStretchRoutes, 'ttc::52')).toHaveLength(4);
     expect(selectedSharedStretchRoutes(sharedStretchRoutes, 'ttc::29')).toEqual([]);
     expect(selectedSharedStretchRoutes(sharedStretchRoutes, null)).toEqual([]);
+  });
+
+  // CIV-514: the card says part of the route qualifies exactly when the map draws a shared stretch for it.
+  it("says only part of the route qualifies when the map draws its shared stretch, and not otherwise", () => {
+    const features = (layers.ttc as GeoJSON.FeatureCollection).features;
+    const directions = features.filter(f => f.geometry.type === 'LineString').map(f => ({ ...(f.properties as ShapeProperties) }));
+    expect(computeFrequencySegmentOverlay(layers, 'midday', 10).sharedStretchRoutes.length).toBeGreaterThan(0);
+    expect(routePartMeetsFilter(features, directions, 'midday', 10)).toBe(true);
+    // At 5 min no stretch qualifies: the map draws none and the card keeps the general note.
+    expect(computeFrequencySegmentOverlay(layers, 'midday', 5).sharedStretchRoutes).toEqual([]);
+    expect(routePartMeetsFilter(features, directions, 'midday', 5)).toBe(false);
+    expect(selectedRoutePartMeetsFilterNotice(15)).toBe('Only part of this route runs every 15\u00A0minutes or better during the selected period.');
   });
 });

@@ -62,6 +62,8 @@ const RULES: Array<{ name: string; pattern: RegExp; use: string }> = [
   // CIV-1117: the item heading inside a page section, and a static info chip.
   { name: 'hand-rolled item heading', pattern: /<h3 className="text-base font-black/, use: 'SectionTitle' },
   { name: 'hand-rolled chip', pattern: /rounded-full px-2\.5 py-1\b/, use: 'Tag' },
+  // CIV-1117: a shared style forced to another colour with !important; give the shared piece a tone instead.
+  { name: 'shared style overridden with !important', pattern: /!text-\[/, use: 'a tone on the shared piece (e.g. CARD_CALLOUT_HEADLINE_TONE)' },
   { name: 'agency name helper called directly', pattern: /\b(shortenAgencyName|agencyBackLinkName|agencyDisplayParts|agencyListParts|agencyNameParts|agencyDisplayName)\(/, use: 'agencyNames (utils/agencyName.ts)' },
 ];
 
@@ -70,9 +72,8 @@ const RULES: Array<{ name: string; pattern: RegExp; use: string }> = [
 const ALLOWED: Record<string, string[]> = {
   'components/Interval/FilterChips.tsx': ['option pill classes'],
   'components/Interval/pickers.tsx': ['hand-rolled frequency picker'],
-  // Maintainer-only diagnostics, the story page's own opening layout, and a dialog title (panel headers are a later step).
+  // Maintainer-only diagnostics and the story page's own opening layout.
   'DiagnosticsPerformancePage.tsx': ['hand-rolled page heading'],
-  'components/Interval/HeadwaySparkline.tsx': ['hand-rolled section heading'],
   // A filled call-to-action button (not a link) that ends in an arrow.
   'apps/FrequentServiceStory.tsx': ['hand-rolled arrow link', 'hand-rolled page heading'],
   // The card pieces' own homes (CIV-395): the badges and card text styles, the back link, and the route row's tier dot.

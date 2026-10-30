@@ -13,6 +13,7 @@ import { RouteNameCell } from './pageParts';
 import { agencyKpiTiles } from './utils/liveAgencyKpi';
 import { weekNotComparableLine } from './utils/liveKpi';
 import { syncUrlParams } from './utils/syncUrlParams';
+import { LIVE_AGENCY_URL, currentSearch, linkUpdate, readUrlParam, type LiveSort } from './utils/urlSchema';
 import { stopNameCase } from './utils/format';
 import { liveStopName as stop, stretchLabel } from './utils/stopLabel';
 import ErrorBoundary from './components/ErrorBoundary';
@@ -38,7 +39,7 @@ const FIRST_COL = 15, ROUTE_COL = 10, DIR_COL = 6.5;
 const pct = (x: number | null) => (x == null ? '–' : pctOf(x));
 const pctSigned = (x: number | null) => (x == null ? '–' : signedPct(x));
 
-type Sort = 'late' | 'runTime' | 'bunching' | 'delivered';
+type Sort = LiveSort;
 const SORTS: [Sort, string][] = [['late', 'Late'], ['runTime', 'Run time'], ['bunching', 'Bunching'], ['delivered', 'Service delivered']];
 /** The value a route is sorted by, highest first. A switch, not an object lookup, so no outside value picks a method. */
 function sortValue(sort: Sort, r: AgencyRouteRow): number {
@@ -83,12 +84,9 @@ function HotspotRoute({ s, route }: { s: AgencySummary; route: string }) {
 }
 
 function RoutesTable({ s }: { s: AgencySummary }) {
-  const [sort, setSort] = useState<Sort>(() => {
-    const v = new URLSearchParams(window.location.search).get('sort');
-    return SORTS.some(([k]) => k === v) ? v as Sort : 'late';
-  });
+  const [sort, setSort] = useState<Sort>(() => readUrlParam(currentSearch(), LIVE_AGENCY_URL.sort) ?? 'late');
   const [reversed, setReversed] = useState(false);
-  useEffect(() => { syncUrlParams({ sort: sort === 'late' ? null : sort }); }, [sort]);
+  useEffect(() => { syncUrlParams(linkUpdate(LIVE_AGENCY_URL, { sort })); }, [sort]);
   // A header click sorts worst first; clicking the sorted header again turns the order round.
   const onSort = (key: string) => {
     const next = SORTS.find(([k]) => k === key)?.[0];

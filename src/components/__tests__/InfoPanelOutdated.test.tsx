@@ -64,7 +64,7 @@ describe('E5 route line, three paragraphs (CIV-1051)', () => {
       <InfoPanel open onClose={() => {}} agencies={[]} helpContext={{ topic: 'route-data-quality', agencyName: 'TTC' }} />,
     ).container.textContent ?? '';
     expect(t).toContain("Part of this route's line on the map may be missing or drawn in the wrong place.");
-    expect(t).toContain('We still show the route. Its frequency on this card comes from the timetable and is still accurate.');
+    expect(t).toContain('We still show the route. Its frequency on this card comes from the schedule and is still accurate.');
     expect(t).toContain('If something looks wrong, report it with the flag on this card.');
   });
 });
@@ -75,7 +75,7 @@ describe('E6 route with no line, three paragraphs (CIV-1051)', () => {
       <InfoPanel open onClose={() => {}} agencies={[]} helpContext={{ topic: 'no-route-shape' }} />,
     ).container.textContent ?? '';
     expect(t).toContain("This route's line can't be shown on the map because it's missing from the agency's data.");
-    expect(t).toContain('We still show the route on this card. Its frequency comes from the timetable and is still accurate.');
+    expect(t).toContain('We still show the route on this card. Its frequency comes from the schedule and is still accurate.');
     expect(t).toContain('If something looks wrong, report it with the flag on this card.');
   });
 });

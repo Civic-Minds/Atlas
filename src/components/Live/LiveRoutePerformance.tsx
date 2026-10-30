@@ -2,7 +2,8 @@ import { Fragment, useEffect, useMemo, useState } from 'react';
 import PillGroup from '../ui/PillGroup';
 import { SidebarCardSection } from '../Interval/cardUi';
 import { useSegmentDelay } from '../../hooks/useSegmentDelay';
-import { readUrlNumberParam, syncUrlParams } from '../../utils/syncUrlParams';
+import { syncUrlParams } from '../../utils/syncUrlParams';
+import { LIVE_MAP_URL, currentSearch, linkUpdate, readLink } from '../../utils/urlSchema';
 import { periodKeyForHour } from '../../../shared/config';
 import { LIVE_AGENCY_TIMEZONES } from '../../../shared/livePollingConfig';
 import { clockTime } from '../../../shared/timeText';
@@ -101,7 +102,7 @@ export default function LiveRoutePerformance({ slug, routeShortName, vehicles, f
   const data = useSegmentDelay(slug, routeShortName) as (SegmentDelayData & { tripDirections?: Record<string, string[]> }) | null;
   // The direction lives in the URL (dir) so a shared link reopens it.
   const directions = useMemo(() => Object.entries(data?.directionLabels ?? {}).map(([id, label]) => [Number(id), label] as const), [data]);
-  const [dir, setDir] = useState<number | null>(() => readUrlNumberParam('dir'));
+  const [dir, setDir] = useState<number | null>(() => readLink(currentSearch(), LIVE_MAP_URL).dir ?? null);
   const directionId = directions.some(([id]) => id === dir) ? dir! : directions[0]?.[0] ?? 0;
   const recent = useRecentPositions(vehicles);
   // Re-checked every 30 s, so a feed that stops updating shows as incomplete instead of frozen.
@@ -116,9 +117,9 @@ export default function LiveRoutePerformance({ slug, routeShortName, vehicles, f
 
   useEffect(() => {
     if (!data) return;
-    syncUrlParams({ dir: dir == null ? null : String(directionId) });
+    syncUrlParams(linkUpdate(LIVE_MAP_URL, { dir: dir == null ? null : directionId }));
   }, [data, dir, directionId]);
-  useEffect(() => () => syncUrlParams({ dir: null }), []);
+  useEffect(() => () => syncUrlParams(linkUpdate(LIVE_MAP_URL, { dir: null })), []);
 
   // From the map's own polls, not the archive, over the whole route (CIV-899). A trip the timetable
   // doesn't list is placed by its own movement since the card opened; until it has been seen twice it

@@ -2,9 +2,10 @@ import type { ShapeProperties, TimePeriod } from '../hooks/useIntervalStats';
 import { periodKeyForHour } from '../../shared/config';
 import { branchDisplayPeriodHeadway, buildRouteServiceSummary } from './routeFacts';
 import { MIN_SHARED_STOPS_FOR_TRUNK, sharedStopIds, sharesOrderedTrunk } from './routeBranchGeometry';
-import { sharedStretchStopPass } from './frequencySegments';
+import { failingRouteSharedRanges, sharedStretchStopPass } from './frequencySegments';
 import { rowTrips } from './rowTrips';
 import { stretchRowsFromMeta } from './stretchCard';
+import { hourHasService } from './periodActiveRanges';
 
 /** Headsign-scoped trunk minimum for route-card range display (not route-wide combined deps). */
 export function headsignTrunkHeadway(d: ShapeProperties, period: string): number | null {
@@ -177,17 +178,40 @@ export function stretchSharedHeadway(
   return trunkBeatsBranches(shared.value, medianHeadway(rowValues as number[])) ? shared.value : null;
 }
 
-/** Trunk hourly curve from combined stop headways (flat within each period). */
+/**
+ * Trunk hourly curve from combined stop headways (flat within each period). An hour no branch runs in stays empty
+ * (CIV-1106): the period's value covers only the hours with service, so TTC 504 westbound shows no bar at 3 AM, when
+ * no streetcar runs, beside the Overnight value at 2 AM. Data without hourly fields keeps the flat curve.
+ */
 export function trunkSparklineByHour(
   branches: ShapeProperties[],
   hours: readonly number[],
 ): Record<number, number | null> {
+  const hourly = branches.some(b => b.headwayByHour || b.departuresByHour || b.maxGapByHour);
   const out: Record<number, number | null> = {};
   for (const h of hours) {
     const pk = periodKeyForHour(h);
-    out[h] = pk ? groupTrunkHeadway(branches, pk) : null;
+    const trunk = pk && (!hourly || branches.some(b => hourHasService(b, h))) ? groupTrunkHeadway(branches, pk) : null;
+    out[h] = trunk == null ? null : thinHourHeadway(branches, h, trunk) ?? trunk;
   }
   return out;
+}
+
+/**
+ * The hour's own wait from the branches' departures, when the hour is thin and the period's value would overstate it
+ * (CIV-1106): TTC 504 eastbound at 3 AM has one or two streetcars, not "every 10". Thin means every branch has no
+ * hourly headway or at most three departures in the hour; the hour's own wait counts only when it is at least twice
+ * the period's, so a busy hour, or one a few minutes off its period, keeps the period's value. Null otherwise, and on
+ * data without the departure counts (CIV-1010).
+ */
+function thinHourHeadway(branches: ShapeProperties[], hour: number, trunk: number): number | null {
+  const counted = branches.filter(b => !isLimitedBranch(b));
+  if (counted.length === 0 || !counted.every(b => b.departuresByHour)) return null;
+  if (!counted.every(b => b.headwayByHour?.[hour] == null || (b.departuresByHour?.[hour] ?? Infinity) <= 3)) return null;
+  const departures = counted.reduce((sum, b) => sum + (b.departuresByHour?.[hour] ?? 0), 0);
+  if (departures === 0) return null;
+  const own = 60 / departures;
+  return own >= 2 * trunk ? Math.round(own) : null;
 }
 
 /**
@@ -228,4 +252,21 @@ export function sharedStretchHeadway(
     }
   }
   return worst == null ? null : { headway: worst, stopIds: [...stopIds] };
+}
+
+/**
+ * CIV-514: whether part of a route that misses the filter still qualifies, by the same per-stop pass that draws the
+ * map's shared-stretch overlay for failing routes (failingRouteSharedRanges), so the card's note and the map agree.
+ * `directions` are the card's copies of the route's features; their stopOrder arrays identify the features.
+ */
+export function routePartMeetsFilter(
+  agencyFeatures: readonly GeoJSON.Feature[] | undefined,
+  directions: ShapeProperties[],
+  period: TimePeriod,
+  maxHeadway: number,
+): boolean {
+  if (!agencyFeatures || directions.length === 0) return false;
+  const wanted = new Set<unknown>(directions.map(d => d.stopOrder).filter(Boolean));
+  const routeFeatures = agencyFeatures.filter(f => wanted.has((f.properties as any)?.stopOrder));
+  return failingRouteSharedRanges(routeFeatures, agencyFeatures, period, maxHeadway).some(r => r.ranges.length > 0);
 }

@@ -999,7 +999,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
       </SheetPortal>
 
       {/* Toolbar */}
-      <div className={`absolute top-6 right-6 ${Z_HEADER} flex items-center gap-1.5 pointer-events-auto`}>
+      <div data-map-overlay="live-toolbar" className={`absolute top-6 right-6 ${Z_HEADER} flex items-center gap-1.5 pointer-events-auto`}>
         <button onClick={() => setLightMode(!lightMode)} className={ICON_BTN} aria-label="Toggle light mode">
           {lightMode ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
         </button>

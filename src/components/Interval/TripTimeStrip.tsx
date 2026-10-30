@@ -77,13 +77,11 @@ export function AxisOverlay({ ticks, height, className = '' }: { ticks: AxisTick
  * reports that hour through the chart's hover line; the hours with the longest trip time are drawn
  * darker. Renders nothing without data.
  */
-export function TripTimeStrip({ series, label = TRIP_TIME_LABEL, height, serviceHours, hoveredHour, onHourHover, className = 'mt-3', labelClassName = '', barsClassName = 'mt-1', scaleMax, axis, above, bands }: {
+export function TripTimeStrip({ series, label = TRIP_TIME_LABEL, height, hoveredHour, onHourHover, className = 'mt-3', labelClassName = '', barsClassName = 'mt-1', scaleMax, axis, above, bands }: {
   series: TripTimeSeries | null | undefined;
   label?: string;
   /** The bar area height: the frequency chart's own, so the two charts match. */
   height: number;
-  /** Hours the chart above has trips in; one with no trip time gets a faint tick, so the gap doesn't read as no service. */
-  serviceHours?: ReadonlySet<number>;
   hoveredHour?: number | null;
   onHourHover?: (hour: number | null) => void;
   /** Spacing overrides: the 2x2 grid names the column once and aligns the strip with the chart beside it. */
@@ -133,13 +131,6 @@ export function TripTimeStrip({ series, label = TRIP_TIME_LABEL, height, service
                     data-testid="trip-time-bar"
                     className={`relative ${FULL_DAY_BAR_SHAPE} bg-[var(--text-dim)] ${slowest ? 'opacity-100' : hovered ? 'opacity-75' : 'opacity-50'}`}
                     style={{ height: tripTimeBarHeight(minutes, top, height) }}
-                  />
-                ) : serviceHours?.has(h) ? (
-                  // An empty slot, not a value: a dashed outline at a neutral height.
-                  <div
-                    data-testid="trip-time-missing"
-                    className={`${FULL_DAY_BAR_SHAPE} border border-dashed border-[var(--text-dim)] opacity-40`}
-                    style={{ height: Math.round(height * 0.4) }}
                   />
                 ) : null}
               </div>

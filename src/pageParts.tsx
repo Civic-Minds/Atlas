@@ -57,7 +57,19 @@ export function FrequencyBar({ counts, mapHref }: { counts: number[]; /** The pa
 }
 
 /** A route's name cell in a routes table: the same cleaned names the map's lists show (bold part, then the lighter name). */
-export function RouteNameCell({ shortName, longName, mode, agencyName }: { shortName: string; longName?: string | null; mode: number; agencyName: string }) {
+export function RouteNameCell({ shortName, feedShortName, longName, mode, agencyName }: {
+  shortName: string;
+  /** CIV-984: the feed's own short name ('' when it has none). Given, it labels the route as every other surface does. */
+  feedShortName?: string;
+  longName?: string | null;
+  mode: number;
+  agencyName: string;
+}) {
+  // A route with neither a short nor a long name is named by its route ID (the page data's name).
+  if (feedShortName !== undefined && (feedShortName || longName)) {
+    const label = routeLabels({ shortName: feedShortName, longName: longName ?? null, mode, agencyName });
+    return <><span className="font-black">{label.primary}</span>{label.secondary ? <span className="text-[var(--text-muted)]"> {label.secondary}</span> : null}</>;
+  }
   const named = routeLabels({ shortName, longName: longName ?? null, mode, agencyName });
   // The page data names a route with no short name by its long name, so the two match. Where that makes the long name show
   // twice (#1122: Orillia "West Ridge Via Coldwater Road  West Ridge"), label it as having no short name. A feed that

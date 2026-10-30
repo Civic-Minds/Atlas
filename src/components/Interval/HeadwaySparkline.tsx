@@ -21,6 +21,7 @@ import { encodeFullDayUrlState, parseFullDayUrlState } from '../../utils/shareUr
 import { HOUR_TO_PERIOD, PERIOD_BANDS } from '../../utils/sparklinePeriods';
 import { FullDayPeriodBands, HoveredPeriodName } from './FullDayPeriodBands';
 import { headwayAxisTicks, hourBarColorHeadway, hourBarEmphasis, hourChartLitPeriod, hourChartMaxFreq, sparklineBarHeight } from '../../utils/hourChartModel';
+import { FREQUENCY_LABEL } from '../../content/noticeCopy';
 export { headwayAxisTicks, sparklineBarHeight };
 
 /** Bar area height of the route card's compact sparkline, in px. The one place to change it. */
@@ -61,8 +62,8 @@ function ClockLabels({ className = '' }: { className?: string }) {
   );
 }
 
-/** The full-day view's frequency chart title, beside "Trip time" (Ryan, CIV-1094). */
-export const FREQUENCY_LABEL = 'Frequency';
+/** The full-day view's frequency chart title, beside "Trip time" (Ryan, CIV-1094); the word lives in noticeCopy (CIV-1160). */
+export { FREQUENCY_LABEL };
 
 function formatHourTitle(h: number, headway: number): string {
   return `${formatClock(h * 60)}: ${headwayEvery(headway)}`;
@@ -171,7 +172,7 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
   // Closing the route card closes the full-day view, so its params go with it.
   useEffect(() => {
     if (!ownsUrl) return;
-    return () => syncUrlParams({ fullday: null, fdir: null });
+    return () => syncUrlParams(encodeFullDayUrlState({ open: false, direction: null }, null));
   }, [ownsUrl]);
 
   const sharedMode = !!onSharedHour;
@@ -222,7 +223,8 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
   const handleClick = interactive ? (e: React.MouseEvent<HTMLDivElement>) => {
     if (expanded) return;
     const clicked = HOUR_TO_PERIOD[HOURS[posFromEvent(e)]];
-    if (clicked) onPeriodChange(period === clicked ? 'all' : clicked);
+    // CIV-239: clicking the chosen band again keeps it; there is no All day to go back to.
+    if (clicked && clicked !== period) onPeriodChange(clicked);
   } : undefined;
 
   const handleMouseLeave = interactive ? () => {
@@ -353,7 +355,6 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
         <TripTimeStrip
           series={tripTime}
           height={H}
-          serviceHours={new Set(HOURS.filter(h => displayedByHour[h] != null))}
           // Two-way hover (CIV-505): an hour hovered in either chart lights the same column in both.
           hoveredHour={hoveredTripHour ?? hoveredHour}
           onHourHover={setHoveredTripHour}
@@ -457,7 +458,6 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
                           above={titleRow(tripTimeHeading(loop), tt != null ? tripTimeAbout(tt) : '', 'full-day-trip-time-heading')}
                           series={option.tripTime}
                           height={pairH}
-                          serviceHours={new Set(HOURS.filter(h => option.byHour[h] != null))}
                           hoveredHour={modalHour}
                           onHourHover={setModalHour}
                           className=""

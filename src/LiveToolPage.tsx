@@ -14,7 +14,8 @@ import { useMediaQuery } from './hooks/useMediaQuery';
 import { useLiveAgency } from './LiveAgencyPage';
 import { devOnly, liveReportTitle } from './lib/liveReportData';
 import { applySeoToDocument } from './lib/seoDom';
-import { readUrlNumberParam, readUrlParam as readParam, syncUrlParams } from './utils/syncUrlParams';
+import { syncUrlParams } from './utils/syncUrlParams';
+import { LIVE_TOOL_URL, currentSearch, linkUpdate, readLink } from './utils/urlSchema';
 import { stretchLabel } from './utils/stopLabel';
 import { agencyKpiTiles } from './utils/liveAgencyKpi';
 import { excludingDays, kpiTiles } from './utils/liveKpi';
@@ -356,24 +357,24 @@ export default function LiveToolPage() {
   const { agency = '' } = useParams();
   const agencyName = useLiveAgencyName(agency);
   const state = useLiveAgency(FEATURES.liveReports ? agency : '');
-  const [route, setRoute] = useState<string | null>(() => readParam('route'));
-  const [dir, setDir] = useState<number | null>(() => readUrlNumberParam('dir'));
-  const [band, setBand] = useState<DashboardBand>(() => { const b = readParam('band'); return BANDS.some(([k]) => k === b) ? (b as DashboardBand) : 'all'; });
-  const [measure, setMeasure] = useState<MapMeasure>(() => { const m = readParam('measure'); return MEASURES.some(([k]) => k === m) || m === 'delayStarts' ? (m as MapMeasure) : 'late'; });
+  const [link] = useState(() => readLink(currentSearch(), LIVE_TOOL_URL));
+  const [route, setRoute] = useState<string | null>(() => link.route ?? null);
+  const [dir, setDir] = useState<number | null>(() => link.dir ?? null);
+  const [band, setBand] = useState<DashboardBand>(() => link.band ?? 'all');
+  const [measure, setMeasure] = useState<MapMeasure>(() => link.measure ?? 'late');
   const [dirSlot, setDirSlot] = useState<HTMLElement | null>(null);
   const [dataSlot, setDataSlot] = useState<HTMLElement | null>(null);
   const [pickSlot, setPickSlot] = useState<HTMLElement | null>(null);
   const [pick, setPick] = useState<MapPick | null>(() => {
-    const stop = readParam('stop'), seg = readParam('seg');
-    if (stop) return { kind: 'stop', stopId: stop };
-    const [f, t] = (seg ?? '').split('>');
+    if (link.stop) return { kind: 'stop', stopId: link.stop };
+    const [f, t] = (link.segment ?? '').split('>');
     return f && t ? { kind: 'segment', fromStopId: f, toStopId: t } : null;
   });
   useEffect(() => {
-    syncUrlParams({
-      view: null, tab: null, route, dir: dir == null ? null : String(dir), band: band === 'all' ? null : band, measure: measure === 'late' ? null : measure,
-      stop: pick?.kind === 'stop' ? pick.stopId : null, seg: pick?.kind === 'segment' ? `${pick.fromStopId}>${pick.toStopId}` : null,
-    });
+    syncUrlParams(linkUpdate(LIVE_TOOL_URL, {
+      view: null, tab: null, route, dir, band, measure,
+      stop: pick?.kind === 'stop' ? pick.stopId : null, segment: pick?.kind === 'segment' ? `${pick.fromStopId}>${pick.toStopId}` : null,
+    }));
   }, [route, dir, band, measure, pick]);
   useEffect(() => { applySeoToDocument(document, { title: liveReportTitle(agencyName), description: '', canonicalUrl: window.location.href, noindex: true, matchedPath: window.location.pathname }); }, [agencyName]);
   if (!FEATURES.liveReports) return <LiveOffNotice />;

@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { Search } from 'lucide-react';
 import { HEADWAY_TIERS, getTierColor } from '../../utils/colors';
 import { FLOATING_CARD, GLASS_PILL, PILL_SURFACE, PANEL_ENTER_TOP, CONTROL_ACTIVE, CONTROL_ACTIVE_GLASS, CONTROL_INACTIVE, SEARCH_PILL, SEARCH_ICON, SEARCH_FIELD, CARD_SECTION, TOP_BAR_OUTLINE } from '../../styles';
+import { AgencyRegionSection } from '../ui/AgencyList';
 import Pill from '../ui/Pill';
 import PillGroup from '../ui/PillGroup';
 import ActiveDot from '../ui/ActiveDot';
@@ -26,7 +27,7 @@ import { SideBadge } from '../ui/SideBadge';
 import PanelEmpty from '../ui/PanelEmpty';
 import AgencyName from '../ui/AgencyName';
 import { capitalizeFirst, headwayAmount, headwayBandLabel, headwayOrBetter, headwayTierLabel } from '../../utils/headwayText';
-import { NO_AGENCIES_IN_VIEW } from '../../content/noticeCopy';
+import { FREQUENCY_LABEL, NO_AGENCIES_IN_VIEW, OTHER_REGION_LABEL } from '../../content/noticeCopy';
 
 export { getNowDay };
 
@@ -123,7 +124,7 @@ function AgenciesPanel({ agencies, selectedAgencies, setSelectedAgencies, bounds
   const allGroups = useMemo(() => {
     const groups: { name: string; slugs: string[]; region: string; loaded: boolean; cities?: string[]; displayArea?: string }[] = [];
     for (const a of agencies) {
-      const region = a.region ?? 'Other';
+      const region = a.region ?? OTHER_REGION_LABEL;
       const inView = bboxInViewport(a, bounds);
       const g = groups.find(x => x.name === a.name && x.region === region);
       if (g) { g.slugs.push(a.slug); if (inView) g.loaded = true; }
@@ -190,8 +191,7 @@ function AgenciesPanel({ agencies, selectedAgencies, setSelectedAgencies, bounds
           <PanelEmpty>{NO_AGENCIES_IN_VIEW}</PanelEmpty>
         )}
         {[...byRegion.entries()].map(([region, groups]) => (
-          <div key={region}>
-            <p className={`px-2 pt-2 pb-0.5 ${CARD_SECTION}`}>{region}</p>
+          <AgencyRegionSection key={region} region={region} compact>
             {groups.map(g => {
               const active = g.slugs.every(s => selectedAgencies.has(s));
               const { primary, secondary } = agencyNames({ name: g.name, cities: g.cities, displayArea: g.displayArea }).list;
@@ -215,7 +215,7 @@ function AgenciesPanel({ agencies, selectedAgencies, setSelectedAgencies, bounds
                 </button>
               );
             })}
-          </div>
+          </AgencyRegionSection>
         ))}
         {!agencyQuery && (
           <ArrowLink as="button" tone="inline" size="xs" back={showAll} onClick={() => setShowAll(v => !v)} className="mt-1 mb-0.5 mx-2 text-left">
@@ -327,7 +327,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
             {DAY_TYPES.map(dayType => <button key={dayType} onClick={() => toggleResearchDay(dayType)} className={researchButton(researchDays.includes(dayType))}>{dayType}</button>)}
           </div>}
         </div>
-        <PillGroup outlined label="Frequency" value={String(researchFrequency)} onChange={v => setResearchFrequency(Number(v) as 15 | 30)}
+        <PillGroup outlined label={FREQUENCY_LABEL} value={String(researchFrequency)} onChange={v => setResearchFrequency(Number(v) as 15 | 30)}
           options={([15, 30] as const).map(value => [String(value), headwayAmount(value)] as const)} />
         <PillGroup outlined label="Time window" value={researchWindow} onChange={v => setResearchWindow(v as FrequentServiceWindow)}
           options={(['daytime', 'extended'] as const).map(w => [w, FREQUENT_WINDOW_LABELS[w]] as const)} />
@@ -345,7 +345,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
   const frequencyChip = (className: string) => (
     <div className={`relative ${className}`}>
       <button onClick={() => toggle('frequency')} className={chipClass(maxHeadway !== Infinity)}>
-        Frequency
+        {FREQUENCY_LABEL}
         <Dot show={maxHeadway !== Infinity} />
       </button>
       {openChip === 'frequency' && (
@@ -508,7 +508,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
         {openChip === 'compact' && (
           <div className={`absolute top-10 right-0 ${FLOATING_CARD} p-3 w-72 ${PANEL_ENTER_TOP} flex flex-col gap-3`}>
             {/* Frequency */}
-            <PickerSection title="Frequency"><FrequencyPicker value={maxHeadway} onChange={setMaxHeadway} /></PickerSection>
+            <PickerSection title={FREQUENCY_LABEL}><FrequencyPicker value={maxHeadway} onChange={setMaxHeadway} /></PickerSection>
             {/* Day */}
             <PickerSection title="Day"><DayPicker value={day} onChange={setDay} /></PickerSection>
             {/* Time */}

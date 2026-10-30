@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { SPARKLINE_HOURS } from '../../../shared/config';
-import { hourBarColorHeadway, hourBarEmphasis, hourChartLitPeriod, hourChartMaxFreq } from '../hourChartModel';
+import { hourBarColorHeadway, hourBarEmphasis, hourChartLitPeriod, hourChartMaxFreq, stableBranchColors } from '../hourChartModel';
 
 // CIV-1011 #10: one model for the route card's chart and every chart of its full-day view.
 describe('hour chart model', () => {
@@ -31,5 +31,23 @@ describe('hour chart model', () => {
     expect(hourChartLitPeriod(null, 'amPeak', { 7: 10 }, SPARKLINE_HOURS)).toBe('amPeak');
     expect(hourChartLitPeriod(null, 'midday', { 7: 10 }, SPARKLINE_HOURS)).toBeNull();
     expect(hourChartLitPeriod(null, null, { 7: 10 }, SPARKLINE_HOURS)).toBeNull();
+  });
+});
+
+describe('stableBranchColors (Compare, CIV-844)', () => {
+  const f = (headsign: string, directionId: number, day = 'Weekday'): GeoJSON.Feature => ({ type: 'Feature', geometry: null as never, properties: { routeShortName: '504', headsign, directionId, dayType: day } });
+  const features = [f('Roncesvalles and Queen', 1), f('Dundas West', 1), f('Dufferin Gate', 1), f('Dundas West', 1, 'Saturday'), f('Dufferin Gate', 1, 'Saturday'), f('Broadview', 0)];
+  it('gives a destination the same colour whichever day the card shows', () => {
+    const colorOf = stableBranchColors(features, '504')!;
+    const dundas = colorOf({ headsign: 'Dundas West', directionId: 1 } as never, 0);
+    expect(colorOf({ headsign: 'Dundas West', directionId: 1 } as never, 1)).toBe(dundas);
+    expect(colorOf({ headsign: 'Dufferin Gate', directionId: 1 } as never, 0)).not.toBe(dundas);
+    expect(colorOf({ headsign: 'Roncesvalles and Queen', directionId: 1 } as never, 0)).not.toBe(dundas);
+  });
+  it('orders each direction on its own and leaves unknown names to the stack', () => {
+    const colorOf = stableBranchColors(features, '504')!;
+    expect(colorOf({ headsign: 'Broadview', directionId: 0 } as never, 3)).toBe(colorOf({ headsign: 'Dufferin Gate', directionId: 1 } as never, 0));
+    expect(colorOf({ headsign: 'Nowhere', directionId: 1 } as never, 0)).toBeUndefined();
+    expect(stableBranchColors(undefined, '504')).toBeUndefined();
   });
 });

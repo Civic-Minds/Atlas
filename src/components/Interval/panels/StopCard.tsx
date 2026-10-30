@@ -24,7 +24,7 @@ import { stopRouteBestHeadway, type StopRoute } from '../../../utils/stopRoutes'
 import LiveStopArrivals from './LiveStopArrivals';
 import { compareHeadwayThenNumber } from '../../../utils/sortCompare';
 import type { RouteLabel } from '../../../utils/routeFacts';
-import { stopNoRoutesNotice, stopRouteNoTripsNotice } from '../../../content/noticeCopy';
+import { BACK_TO_MAP_LABEL, stopNoRoutesNotice, stopRouteNoTripsNotice } from '../../../content/noticeCopy';
 import { formatPeriodRangeLong, TIME_PERIODS } from '../../../../shared/config';
 
 // The stop card's route and branch shapes live with the code that builds them (CIV-997).
@@ -120,7 +120,7 @@ export const StopCard: React.FC<StopCardProps> = ({
       <SidebarCardHeaderBlock>
         <div className="flex items-start gap-2">
           <div className="flex-1 min-w-0">
-            <CardBackLink onClick={back?.onClick ?? (() => setSelectedStop(null))}>{back?.to ?? 'Map'}</CardBackLink>
+            <CardBackLink onClick={back?.onClick ?? (() => setSelectedStop(null))}>{back?.to ?? BACK_TO_MAP_LABEL}</CardBackLink>
             {stopAgencies.length === 1 ? (
               <FlaggableValue reason="Stop is missing, misplaced, or assigned incorrectly" reportRef={reportRef} className="block w-full text-left">
                 <SidebarCardHeader

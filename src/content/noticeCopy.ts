@@ -12,6 +12,7 @@ import { METHOD_TITLE } from '../../shared/liveWording';
 import { formatStoredDate } from '../utils/format';
 import { agencyNames } from '../utils/agencyName';
 import { delayAmount, headwayAbout } from '../utils/headwayText';
+import { onDemandStopZoneNames, resolveOnDemandZone, type OnDemandPickupStop, type OnDemandServiceDetails } from '../../shared/onDemandAvailability';
 
 // N2 timetable-ended, N3 manual-timetable-ended
 /** Shared user-facing copy for every expired-feed notice. */
@@ -91,6 +92,13 @@ export function selectedRouteOutsideFilterNotice(maxHeadway: number, periodRange
     ? routeNoTripsText(when ? `from ${when}` : 'all day')
     // Non-breaking hyphen (U+2011) keeps "15-minute" on one line instead of wrapping after "15-".
     : `This route doesn't meet the ${maxHeadway}\u2011minute filter ${when ? `for all of ${when}` : 'all day'}.`;
+}
+
+// N123 part-of-route-meets-filter (Ryan's exact wording, CIV-514): the selected route misses the filter, but part of it
+// qualifies, as the shared-stretch overlay draws (failingRouteSharedRanges). Ryan approved "the selected period" here,
+// an exception to the time-of-day rule above. A no-break space keeps "15 minutes" on one line, as the hyphen does above.
+export function selectedRoutePartMeetsFilterNotice(maxHeadway: number): string {
+  return `Only part of this route runs every ${maxHeadway}\u00A0minutes or better during the selected period.`;
 }
 
 // E1 outdated-schedule, paragraph 1 end (N2 and N3 versions); the rest of E1 is pieces (EXPLAINER_PIECES).
@@ -178,6 +186,32 @@ export const HIDE_PART_TIME_SETTING = { label: 'Hide part-time routes', descript
 // D6 setting-hide-degraded-feeds
 export const HIDE_DEGRADED_FEEDS_SETTING = { label: 'Hide degraded feeds', description: 'Hides agencies with known data-quality problems. Feeds still being reviewed remain visible.' } as const;
 
+// ---- Shared labels and card sentences (CIV-1160): moved here with the same words; no review-page codes yet ----
+// The back link from an agency or stop card to the map.
+export const BACK_TO_MAP_LABEL = 'Map';
+// The region pill and group for an agency with no region.
+export const OTHER_REGION_LABEL = 'Other';
+// The row for the shared main stretch above a direction's branch rows (route card, stop card).
+export const SHARED_STRETCH_LABEL = 'Shared stretch';
+// The frequency heading and button (full-day chart, filter chip, Frequency picker).
+export const FREQUENCY_LABEL = 'Frequency';
+// The default title of an exported map image.
+export const DEFAULT_EXPORT_TITLE = 'Transit map';
+// The privacy settings title and the About panel link that opens it.
+export const PRIVACY_SETTINGS_TITLE = 'Privacy & analytics';
+// The button that tries a failed load again.
+export const RETRY_LABEL = 'Retry';
+// The link that closes a card that couldn't be shown.
+export const CLOSE_LABEL = 'Close';
+// Route card: a direction with no rows in the chosen period ("No midday service.").
+export const noServiceInPeriodText = (periodLabel: string) => `No ${periodLabel.toLowerCase()} service.`;
+// Route card: only the shared section passes the frequency filter.
+export const ONLY_SHARED_SECTION_MEETS_FILTER = 'Only the shared section meets this filter. The branches do not.';
+// Filter panel: the route settings shown outside the Frequency view.
+export const SETTINGS_APPLY_TO_FREQUENCY_MAP = 'These settings apply to the Frequency map.';
+// Filter panel: the Compare map B note beside the B badge.
+export const COMPARE_B_PICKER_NOTE = 'The frequency, day and time above are map A; pick map B here. Modes and agencies apply to both maps. Leave Compare from the More menu.';
+
 // ---- Map keys (CIV-957) ----
 // K1 frequency-key heading
 export const MAP_KEY_FREQUENCY = 'Frequency';
@@ -254,6 +288,10 @@ export const networksFailedHint = (names: readonly string[]) => `${joinList(name
 export const networksLoadingText = (loaded: number, requested: number) => `Loading ${loaded} of ${requested} agencies…`;
 // N34 on-demand-failed
 export const ON_DEMAND_AREAS_FAILED = loadErrorText('on-demand areas');
+// N121 map-errors (phones): one pill in place of the map's error notices; tapping it lists them (CIV-1057, Ryan's pick).
+export const MAP_ERRORS_PILL = 'Error';
+// N122 map-errors-title (phones): the title of the card the "Error" pill opens (CIV-1057, approved by Ryan).
+export const MAP_ERRORS_TITLE = 'Map errors';
 // N33 removed (Ryan, 2026-10-27: scheduled service and Live carry no such notice; CIV-1063 adds a per-agency one).
 // N47 link-copied
 export const LOCATION_URL_COPIED = 'Location link copied.';
@@ -451,8 +489,8 @@ export const EXPLAINER_PIECES = {
   VERIFYING_NEW_SCHEDULE: { code: 'X3', text: "We're verifying it for missing service and other errors, and we'll correct anything we find." },
   CORRECTED_BEFORE_MAP: { code: 'X4', text: "We correct errors like this before a schedule goes on the map." },
   VERIFYING_BETA: { code: 'X5', text: "We're still verifying its schedule, and some routes or times may change." },
-  FREQUENCY_FROM_TIMETABLE_LINE_WRONG: { code: 'X6', text: "We still show the route. Its frequency on this card comes from the timetable and is still accurate." },
-  FREQUENCY_FROM_TIMETABLE_NO_LINE: { code: 'X7', text: "We still show the route on this card. Its frequency comes from the timetable and is still accurate." },
+  FREQUENCY_FROM_TIMETABLE_LINE_WRONG: { code: 'X6', text: "We still show the route. Its frequency on this card comes from the schedule and is still accurate." },
+  FREQUENCY_FROM_TIMETABLE_NO_LINE: { code: 'X7', text: "We still show the route on this card. Its frequency comes from the schedule and is still accurate." },
   MIDDAY_GAPS: { code: 'X8', text: "Many routes start or end their day with one longer gap. Gaps in the middle of the day don't get this allowance." },
   WEEKDAYS_SEPARATE: { code: 'X9', text: "We check each weekday separately, which means one busier day can't make the route look more frequent than it usually is." },
   // Paragraph 3: what the reader can do.
@@ -501,3 +539,57 @@ export const NOTICE_EXPLAINERS = {
 } as const satisfies Record<string, HelpTopic>;
 export type LearnMoreCode = keyof typeof NOTICE_EXPLAINERS;
 export const explainerFor = (code: LearnMoreCode): HelpTopic => NOTICE_EXPLAINERS[code];
+
+// N124 on-demand-shaded-area: the on-demand card's line when the map shades this service's area (CIV-941).
+export const ON_DEMAND_SHADED_AREA = 'The shaded map area shows where this on-demand service operates.';
+
+// N125 on-demand-pickup: how riders board an on-demand zone (CIV-941, moved here from shared/onDemandAvailability.ts unchanged).
+/**
+ * One sentence on how riders board, specific to the selected zone (or the
+ * service when no zone is selected). Returns null when the data says nothing.
+ */
+export function onDemandPickupSentence(service: OnDemandServiceDetails, areaName: string | undefined): string | null {
+  const resolved = resolveOnDemandZone(service, areaName);
+  const stops = (service.stopFeatures ?? []).filter(stop => {
+    const zones = onDemandStopZoneNames(service, stop.properties);
+    return areaName ? zones.includes(areaName) : zones.length === 0;
+  });
+  const count = stops.length;
+  const allTransferPoints = count > 0 && stops.every(stop => (stop.properties as OnDemandPickupStop | undefined)?.serviceType === 'on-demand-transfer-point');
+  const plural = (singular: string, pluralForm: string) => `${count} ${count === 1 ? singular : pluralForm}`;
+  const scope = areaName ? 'This zone' : 'This service';
+  const pickup = resolved.pickup;
+  let sentence: string | null = null;
+  switch (pickup?.method) {
+    case 'door-to-door':
+      sentence = 'Pickups and drop-offs are door to door within the shaded area.';
+      break;
+    case 'curb-to-curb':
+      sentence = 'Pickups and drop-offs are curb to curb within the shaded area.';
+      break;
+    case 'fixed-stops':
+      sentence = count > 0
+        ? `Pickups and drop-offs are at ${plural('set stop', 'set stops')}, shown on the map.`
+        : 'Pickups and drop-offs are at set stops, not door to door.';
+      break;
+    case 'virtual-stops':
+      sentence = count > 0
+        ? `Pickups and drop-offs are at ${plural('virtual stop', 'virtual stops')}, shown on the map.`
+        : 'Pickups and drop-offs are at virtual stops, not door to door.';
+      break;
+    case 'connection-points':
+      sentence = 'This area is a connection point.';
+      break;
+    case 'transfer-point-trips':
+      sentence = count > 0
+        ? `Every trip starts or ends at this zone's ${count === 1 ? 'transfer point' : 'transfer points'}, shown on the map.`
+        : 'Every trip starts or ends at a transfer point.';
+      break;
+    default:
+      if (count > 0) {
+        sentence = `${scope} has ${allTransferPoints ? plural('transfer point', 'transfer points') : plural('stop', 'stops')}, shown on the map.`;
+      }
+  }
+  if (!sentence) return null;
+  return pickup?.note ? `${sentence} ${pickup.note}` : sentence;
+}

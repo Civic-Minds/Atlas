@@ -1,5 +1,6 @@
 import type { PeriodKey } from './config.js';
-import { headwayFilterApplies } from './routeHeadwayFilter.js';
+import { evaluateMapFilter, headwayFilterApplies, routeFilterTileProps } from './routeHeadwayFilter.js';
+import { effectiveMode, type EffectiveModeInput } from './modes.js';
 import { buildModeFilterClause, buildTileHeadwayFilterClause, tileLimitedServiceExpr, tileRouteKeyExpr, tileShownByIrregularFilterExpr } from './tileFilterExprs.js';
 
 type PeriodFilter = PeriodKey | 'all';
@@ -45,4 +46,29 @@ export function buildRouteTileFilter(input: RouteTileFilterInput): unknown[] {
     clauses.push(buildTileHeadwayFilterClause(input.period, input.maxHeadway));
   }
   return clauses.length === 1 ? clauses[0] as unknown[] : ['all', ...clauses];
+}
+
+const filterCache = new Map<string, unknown[]>();
+
+/**
+ * The one route predicate (CIV-1135): whether a route feature passes the map's route filter, by evaluating the very
+ * expression the map draws with (buildRouteTileFilter) on the feature's tile view. The route counter, the agency
+ * lists and the local GeoJSON fallback call this, so they count exactly the routes the map draws. The mode clause is
+ * the one part read in JS (effectiveMode, the function its expression mirrors; routeFilterParity.test.ts holds the two
+ * equal), since its string operators are beyond the small evaluator. `agencySlug` stands in for a loaded feature that
+ * lacks the stamp the tiles carry.
+ */
+export function routeFeaturePassesMapFilter(props: object, input: RouteTileFilterInput, agencySlug?: string): boolean {
+  const key = JSON.stringify([[...input.agencies].sort(), input.day, input.period, String(input.maxHeadway), !!input.hideSpan, !!input.hideLimitedService, input.hoveredDirection ?? null]);
+  let expr = filterCache.get(key);
+  if (!expr) {
+    expr = buildRouteTileFilter({ ...input, modes: new Set() });
+    if (filterCache.size > 32) filterCache.clear();
+    filterCache.set(key, expr);
+  }
+  const view = routeFilterTileProps(props);
+  if (!evaluateMapFilter(expr, agencySlug && view.agencySlug == null ? { ...view, agencySlug } : view)) return false;
+  if (input.modes.size === 0) return true;
+  const p = props as EffectiveModeInput & { agencySlug?: string };
+  return input.modes.has(effectiveMode({ ...p, agencySlug: p.agencySlug ?? agencySlug }));
 }

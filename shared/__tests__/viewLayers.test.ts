@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { ON_DEMAND_MODE } from '../modes';
-import { FREQUENCY_RESEARCH_VIEWS, mapViewKind, modesForView, viewAllowsOnDemand } from '../viewLayers';
+import { FREQUENCY_RESEARCH_VIEWS, mapViewKind, modesForView, viewAllowsOnDemand, viewShowsOnDemand } from '../viewLayers';
 
 describe('viewLayers', () => {
   it('maps view flags to a view kind', () => {
@@ -20,5 +20,12 @@ describe('viewLayers', () => {
     const modes = [{ id: 3 }, { id: ON_DEMAND_MODE }];
     expect(modesForView(modes, 'frequent-service').map(m => m.id)).toEqual([3]);
     expect(modesForView(modes, 'map')).toEqual(modes);
+  });
+
+  it('shows on-demand when the view allows it and the Mode filter is off or includes it', () => {
+    expect(viewShowsOnDemand('map', new Set())).toBe(true);
+    expect(viewShowsOnDemand('map', new Set([ON_DEMAND_MODE]))).toBe(true);
+    expect(viewShowsOnDemand('map', new Set([3]))).toBe(false);
+    expect(viewShowsOnDemand('night', new Set())).toBe(false);
   });
 });

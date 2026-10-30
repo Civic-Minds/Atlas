@@ -63,9 +63,9 @@ export function DayPicker({ value, onChange, fill = false }: { value: DayType; o
   );
 }
 
-/** The time periods. `includeAll` adds "All day" first (Settings and Compare have it; the map's own chips do not). */
-export function PeriodPicker({ value, onChange, includeAll = false }: { value: TimePeriod; onChange: (period: TimePeriod) => void; includeAll?: boolean }) {
-  const options: TimePeriod[] = includeAll ? ['all', ...PERIOD_KEYS] : [...PERIOD_KEYS];
+/** The time periods. There is no All day (CIV-239). */
+export function PeriodPicker({ value, onChange }: { value: TimePeriod; onChange: (period: TimePeriod) => void }) {
+  const options: TimePeriod[] = [...PERIOD_KEYS];
   return (
     <div className="flex flex-wrap gap-1">
       {options.map(p => (

@@ -6,7 +6,7 @@ import { MAP_CONSENT_SLOT, DROPDOWN_PANEL, dropdownAnim, MAP_BADGE, Z_HEADER, Z_
 import Toggle from './ui/Toggle';
 import ArrowLink from './ui/ArrowLink';
 import PanelHeader from './ui/PanelHeader';
-import { ANALYTICS_CONSENT_PROMPT, ANALYTICS_SETTING_NOTE } from '../content/noticeCopy';
+import { ANALYTICS_CONSENT_PROMPT, ANALYTICS_SETTING_NOTE, PRIVACY_SETTINGS_TITLE } from '../content/noticeCopy';
 
 declare global { interface Navigator { globalPrivacyControl?: boolean } }
 
@@ -17,7 +17,7 @@ function Controls({ onClose }: { onClose: () => void }) {
   const choose = (value: AnalyticsConsent) => { setAnalyticsConsent(value); setConsent(value); };
   return <div className={`fixed inset-0 ${Z_MODAL_TOP}`} onClick={onClose}>
     <div className={`${DROPDOWN_PANEL} ${dropdownAnim(true)}`} onClick={event => event.stopPropagation()} role="dialog" aria-modal="true" aria-labelledby="privacy-settings-title">
-      <PanelHeader titleId="privacy-settings-title" title={'Privacy & analytics'} onBack={onClose} backLabel="Back to About Atlas" onClose={onClose} closeLabel="Close privacy and analytics settings" />
+      <PanelHeader titleId="privacy-settings-title" title={PRIVACY_SETTINGS_TITLE} onBack={onClose} backLabel="Back to About Atlas" onClose={onClose} closeLabel="Close privacy and analytics settings" />
       <div className="overflow-y-auto px-5 py-4 space-y-5 text-xs">
         <p className="leading-relaxed text-[var(--text-dim)]">When enabled, Atlas sends page views and basic usage information to Google Analytics. Atlas does not use this information for advertising or account profiling.</p>
         <div className="space-y-2">

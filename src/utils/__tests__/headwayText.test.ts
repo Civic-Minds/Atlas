@@ -107,3 +107,15 @@ describe('headwayText', () => {
     expect(capitalizeFirst('')).toBe('');
   });
 });
+
+describe('headwayAboutRange: ends that print the same (CIV-1155)', () => {
+  it('reads as one value, never "every 60–60 min"', () => {
+    expect(headwayAboutRange(59.96, 60.04)).toBe('every 60 min');
+    expect(headwayAboutRange(80, 100)).toBe('every 90 min');
+    expect(headwayAboutRange(14.98, 15.02)).toBe('every 15 min');
+  });
+  it('keeps ranges whose ends differ', () => {
+    expect(headwayAboutRange(6, 12)).toBe('every 6–12 min');
+    expect(headwayAboutRange(50, 100)).toBe('every 50–90 min');
+  });
+});

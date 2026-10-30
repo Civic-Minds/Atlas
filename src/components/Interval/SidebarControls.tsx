@@ -4,7 +4,7 @@ import { useColorMode } from '../../hooks/useColorMode';
 import type { ShapeProperties, TimePeriod, DayType, HoveredBranch, ViewportBounds } from '../../hooks/useIntervalStats';
 import type { Agency } from '../../App';
 import { findVariantFamily } from '../../utils/routeVariants';
-import { routeLabels, searchOverlayHidesPanel, comparePanelTop, COMPARE_PANEL_LEFT } from '../../utils/format';
+import { routeLabels, searchOverlayHidesPanel, comparePanelTop, COMPARE_PANEL_LEFT, formatStoredDate } from '../../utils/format';
 import { agencyNames } from '../../utils/agencyName';
 import { routeListDisplay, type RouteListDisplay } from '../../utils/effectiveHeadway';
 import { combineSuggestedRouteNames, suggestedRouteGroupKey } from '../../utils/routeSuggestion';
@@ -22,7 +22,8 @@ import {
   type RouteSearchResult,
   type StopSearchResult,
 } from '../../utils/searchResults';
-import { FLOATING_CARD, TRANSITION_BASE, SIDEBAR_CARD_SLOT, SIDEBAR_CARD_MAX_H, Z_PANEL, Z_DROPDOWN, sidebarFrameStyle, SIDEBAR_PANEL_WIDTH } from '../../styles';
+import { FLOATING_CARD, TRANSITION_BASE, Z_PANEL, Z_DROPDOWN, sidebarFrameStyle, sidebarCardFrame } from '../../styles';
+import { compareSearchMaxWidth } from '../../mapOverlayLayout';
 import { DisambiguationPanel } from './panels/DisambiguationPanel';
 import { StopCard } from './panels/StopCard';
 import type { StopRoute, NearbyConnection, StopCardBack } from './panels/StopCard';
@@ -846,11 +847,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   const expDateStr = (() => {
     const exp = routeAgency ? effectiveFeedExpiry(routeAgency) : null;
     if (!exp || exp.length !== 8) return '';
-    const y = exp.slice(0, 4);
-    const m = exp.slice(4, 6);
-    const d = exp.slice(6, 8);
-    const date = new Date(Date.UTC(parseInt(y), parseInt(m) - 1, parseInt(d)));
-    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
+    return formatStoredDate(exp);
   })();
 
   if (!panelShouldRender) return null;
@@ -865,10 +862,12 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     <div
       className={sheetMode
         ? bottomSheetFrameClass(panelVisible)
-        : `${SIDEBAR_CARD_SLOT} ${searchOverlayHidesPanel(searchFocused, query) ? Z_DROPDOWN : Z_PANEL} ${SIDEBAR_PANEL_WIDTH} ${phonePanelWidth} ${SIDEBAR_CARD_MAX_H} flex flex-col gap-3 transition-[opacity,transform] duration-200 ease-out ${panelVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2 pointer-events-none'}`}
+        : sidebarCardFrame(panelVisible, { z: searchOverlayHidesPanel(searchFocused, query) ? Z_DROPDOWN : Z_PANEL, extra: phonePanelWidth })}
       style={sheetMode ? undefined : {
         ...sidebarFrameStyle(sidebarLeft, matchSearchBarWidth ? searchBarWidth : undefined),
         ...(compareTop != null ? { top: `${compareTop}px`, maxHeight: `calc(100vh - ${compareTop + 64}px)`, '--sidebar-left': `${COMPARE_PANEL_LEFT}px` } : {}),
+        // Compare: search results open under the search box, which stops short of the divider; so do they (CIV-844).
+        ...(compareActive && compareTop == null && matchSearchBarWidth ? { maxWidth: compareSearchMaxWidth(sidebarLeft ?? 0) } : {}),
       }}
     >
       {searchFocused && query === '' && (
@@ -923,6 +922,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                 <RouteCardHeadway
                   currentRoute={currentRoute}
                   agencyFeatures={routeSlug ? nonCorridorLayers[routeSlug]?.features : undefined}
+                  stableBranchColors={compareActive}
                   variantFamily={variantFamily}
                   routeSlug={routeSlug}
                   routeAgency={routeAgency}
@@ -986,7 +986,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     </div>
     {showCardB && (
       <div
-        className={`${SIDEBAR_CARD_SLOT} ${Z_PANEL} ${SIDEBAR_PANEL_WIDTH} ${SIDEBAR_CARD_MAX_H} flex flex-col gap-3 transition-[opacity,transform] duration-200 ease-out ${panelVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2 pointer-events-none'}`}
+        className={sidebarCardFrame(panelVisible)}
         style={{
           ...sidebarFrameStyle(sidebarLeft, matchSearchBarWidth ? searchBarWidth : undefined),
           top: `${compareTop}px`,
@@ -1000,6 +1000,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
           <RouteCardHeadway
             currentRoute={currentRouteB!}
             agencyFeatures={routeSlug ? nonCorridorLayers[routeSlug]?.features : undefined}
+            stableBranchColors
             variantFamily={variantFamilyB}
             routeSlug={routeSlug}
             routeAgency={routeAgency}
