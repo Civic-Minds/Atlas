@@ -3,6 +3,7 @@ import { ArrowDown, ArrowRight, MapPinned } from 'lucide-react';
 import { trackEvent } from '../lib/analytics';
 import DataTable, { type DataTableColumn } from '../components/ui/DataTable';
 import ChartTableDetails from '../components/charts/ChartTableDetails';
+import RankedBars from '../components/charts/RankedBars';
 import ResearchMethod from '../components/research/ResearchMethod';
 import { frequentServiceCoverageInterpretation, frequentServiceCoverageStats, frequentServiceStoryResearchRecord, frequentServiceStoryStats } from '../data/frequentServiceStory';
 import FrequentServicePublishedMapMontage from '../components/FrequentServicePublishedMapMontage';
@@ -125,25 +126,18 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
               </p>
             </div>
             <div className="mt-10" aria-label="Interactive chart showing the number of agencies by the selected published frequent-service threshold">
-              <div className="space-y-4">
-                {frequentServiceStoryStats.headwayBars.map(bar => (
-                  <button
-                    key={bar.minutes}
-                    type="button"
-                    aria-pressed={selectedMinutes === bar.minutes}
-                    aria-label={`Show examples for ${bar.minutes}-minute service (${bar.agencies} agencies)`}
-                    onClick={() => setSelectedMinutes(bar.minutes)}
-                    title={`Show examples for ${bar.minutes}-minute service (${bar.agencies} agencies)`}
-                    className="grid w-full grid-cols-[4.5rem_1fr_3rem] items-center gap-3 rounded-lg text-left text-sm outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)]"
-                  >
-                    <span className="font-black text-[var(--text-primary)]">{headwayAmount(bar.minutes)}</span>
-                    <div className="h-3 overflow-hidden rounded-full bg-[var(--bg-stat)]">
-                      <div className="h-full rounded-full transition-[width,background-color]" style={{ width: `${(bar.agencies / maxBar) * 100}%`, backgroundColor: selectedMinutes === bar.minutes ? 'var(--accent)' : 'var(--text-muted)' }} />
-                    </div>
-                    <span className="text-right tabular-nums text-[var(--text-muted)]">{bar.agencies}</span>
-                  </button>
-                ))}
-              </div>
+              <RankedBars
+                as="buttons"
+                bars={frequentServiceStoryStats.headwayBars.map(bar => ({ key: bar.minutes, label: headwayAmount(bar.minutes), value: bar.agencies, fill: selectedMinutes === bar.minutes ? 'var(--accent)' : 'var(--text-muted)' }))}
+                max={maxBar}
+                listClassName="space-y-4"
+                rowClassName="grid w-full grid-cols-[4.5rem_1fr_3rem] items-center gap-3 rounded-lg text-left text-sm outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)]"
+                labelClassName="font-black text-[var(--text-primary)]"
+                fillClassName="transition-[width,background-color]"
+                selectedKey={selectedMinutes}
+                onSelect={key => setSelectedMinutes(key as number)}
+                describe={bar => `Show examples for ${bar.key}-minute service (${bar.value} agencies)`}
+              />
               <p className="mt-5 text-xs leading-5 text-[var(--text-dim)]">Each agency appears once, at the slowest wait its source gives for weekday daytime service: “every 15–20 minutes” counts as 20. Other times of day and secondary tiers remain in the research. Checked again on October 30, 2026. {frequentServiceStoryStats.recheckLeftOut} agencies are left out because their page is gone or couldn't be checked again.</p>
               <ChartTableDetails caption="There is no single “frequent.”" columns={HEADWAY_COLUMNS} rows={frequentServiceStoryStats.headwayBars} rowKey={bar => bar.minutes} />
             </div>
