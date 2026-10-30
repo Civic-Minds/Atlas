@@ -7,7 +7,7 @@ import {
   type RouteStripMode, type RouteStripStop,
 } from './routeStripModel';
 import { COL_X, NAME_LEFT, StretchBracketPiece, StretchNote, phoneDotSize, phoneRowHeight, StripLegend, Tooltip, swatchStyle } from './RouteStrip';
-import { allBranchStops, columnsOf, phoneSections, phoneStretchRows, type BranchModel } from './branchStripModel';
+import { allBranchStops, columnsOf, phoneSections, phoneStretchRows, type BranchModel, type PhoneSection } from './branchStripModel';
 
 export interface BranchStripProps {
   model: BranchModel;
@@ -340,14 +340,16 @@ function VerticalBranches({ model, modes, minN, allStops, active, setActive }: {
   sections.forEach(sec => sec.stops.forEach(s => { if (!rowOf.has(s.stopId)) rowOf.set(s.stopId, rowOf.size); }));
   const routeFirst = model.starts.length === 0 ? model.trunk[0]?.stopId : null;
   const routeLast = model.ends.length === 0 ? model.trunk[model.trunk.length - 1]?.stopId : null;
+  const rails = useMemo(() => phoneRails(sections), [sections]);
   return (
     <div aria-hidden="true">
       <div className="relative h-5 text-xs font-bold text-[var(--text-secondary)]">
         {modes.map((m, k) => <span key={m} className={`absolute top-0 whitespace-nowrap ${k === 0 ? '' : '-translate-x-1/2'}`} style={{ left: k === 0 ? 0 : COL_X[k] }}>{TRACK_NAME[m]}</span>)}
       </div>
-      {sections.map(sec => (
+      {sections.map((sec, si) => (
         <div key={sec.key}>
           {sec.stops.map((s, i) => {
+            const rail = rails[si][i];
             const isEnd = (sec.branch && i === sec.terminal) || s.stopId === routeFirst || s.stopId === routeLast;
             const stretchEnd = stretches.some(st => st && (st.firstId === s.stopId || st.lastId === s.stopId));
             const named = allStops || i === 0 || i === sec.stops.length - 1 || isMajorStop(s.name) || stretchEnd;
@@ -356,7 +358,9 @@ function VerticalBranches({ model, modes, minN, allStops, active, setActive }: {
             const on = active === s.stopId;
             return (
               <button key={s.stopId} type="button" tabIndex={-1} onClick={() => setActive(s.stopId)} className={`relative flex w-full items-center rounded-md text-left ${on ? 'bg-[var(--accent-selected-bg)]' : ''}`} style={{ minHeight: phoneRowHeight(named, !!s.uncertain), paddingLeft: NAME_LEFT }}>
-                {modes.map((m, k) => <span key={m} className="pointer-events-none absolute bottom-0 top-0 w-0.5 bg-[var(--text-dim)] opacity-40" style={{ left: COL_X[k] - 1 }} />)}
+                {/* Each track's line: solid on the shared line, dotted through a branch's stops, broken between two branches; a
+                    branch that joins past another runs beside that one's stops and merges into the shared line (CIV-515). */}
+                {modes.map((m, k) => <RailPieces key={`r${m}`} x={COL_X[k]} row={rail} />)}
                 {modes.map((m, k) => {
                   const st = stretches[k], row = rowOf.get(s.stopId)!;
                   return st && st.ids.has(s.stopId) && <StretchBracketPiece key={`b-${m}`} track={k} first={row === st.first} last={row === st.last} centred="50%" />;
@@ -381,5 +385,67 @@ function VerticalBranches({ model, modes, minN, allStops, active, setActive }: {
         </div>
       ))}
     </div>
+  );
+}
+
+/** One row's pieces of a phone strip's line (CIV-515): its own line, and the lines of branches passing beside it. */
+export interface RailRow {
+  /** The row's own line: where it starts and ends in the row, and whether it is a branch's (dotted). */
+  main: { top: '0' | '50%'; bottom: '0' | '50%'; dotted: boolean };
+  /** Branch lines passing beside this row's stops, `dx` px right of the dots, over the given part of the row. */
+  lanes: Array<{ dx: number; top: '0' | '50%'; bottom: '0' | '50%' }>;
+  /** Short crossings at mid-row, between the dots' line (dx 0) and a passing branch's lane. */
+  jogs: number[];
+}
+
+const RAIL_LANE = 8;
+
+/**
+ * The phone strip's line, row by row (CIV-515, Ryan's wordless join mark). The shared line is solid; a branch's stops
+ * sit on a dotted line that starts at its end stop. The branch next to the shared line runs straight into it. A branch
+ * further out leaves its last stop for a lane 8px to the right, passes the nearer branch's stops there, and crosses
+ * back into the shared line at its first stop (lead-outs the same way at its last), so where each branch joins is drawn.
+ */
+export function phoneRails(sections: readonly PhoneSection[]): RailRow[][] {
+  const t = sections.findIndex(sec => !sec.branch);
+  const rows: RailRow[][] = sections.map((sec, si) => sec.stops.map((_, i) => {
+    const last = i === sec.stops.length - 1;
+    if (!sec.branch) return { main: { top: '0', bottom: '0', dotted: false }, lanes: [], jogs: [] };
+    const leadIn = si < t;
+    const nextToTrunk = si === t - 1 || si === t + 1;
+    const top = i === 0 && (!leadIn ? !nextToTrunk : true) ? '50%' : '0';
+    const bottom = last && (leadIn ? !nextToTrunk : true) ? '50%' : '0';
+    return { main: { top, bottom, dotted: true }, lanes: [], jogs: [] };
+  }));
+  if (t < 0) return rows;
+  sections.forEach((sec, si) => {
+    if (!sec.branch || si === t - 1 || si === t + 1) return;
+    const leadIn = si < t;
+    const dx = RAIL_LANE * (leadIn ? t - 1 - si : si - t - 1);
+    const own = rows[si], trunk = rows[t];
+    // Leaves (or reaches) its own end stop across to the lane.
+    const end = leadIn ? own[own.length - 1] : own[0];
+    end.jogs.push(dx);
+    end.lanes.push(leadIn ? { dx, top: '50%', bottom: '0' } : { dx, top: '0', bottom: '50%' });
+    // Beside every stop between it and the shared line.
+    for (let k = Math.min(si, t) + 1; k < Math.max(si, t); k++) rows[k].forEach(r => r.lanes.push({ dx, top: '0', bottom: '0' }));
+    // Into the shared line at its first stop (out of it at its last).
+    const join = leadIn ? trunk[0] : trunk[trunk.length - 1];
+    join.jogs.push(dx);
+    join.lanes.push(leadIn ? { dx, top: '0', bottom: '50%' } : { dx, top: '50%', bottom: '0' });
+  });
+  return rows;
+}
+
+const DOTS_DOWN = 'repeating-linear-gradient(to bottom, var(--text-dim) 0 2px, transparent 2px 5px)';
+
+function RailPieces({ x, row }: { x: number; row: RailRow }) {
+  const line = (dotted: boolean) => (dotted ? { backgroundImage: DOTS_DOWN } : { background: 'var(--text-dim)' });
+  return (
+    <>
+      <span className="pointer-events-none absolute w-0.5 opacity-40" style={{ ...line(row.main.dotted), left: x - 1, top: row.main.top, bottom: row.main.bottom }} />
+      {row.lanes.map((l, n) => <span key={`l${n}`} className="pointer-events-none absolute w-0.5 opacity-40" style={{ ...line(true), left: x - 1 + l.dx, top: l.top, bottom: l.bottom }} />)}
+      {row.jogs.map(dx => <span key={`j${dx}`} className="pointer-events-none absolute h-0.5 opacity-40" style={{ background: 'var(--text-dim)', left: x - 1, width: dx + 2, top: 'calc(50% - 1px)' }} />)}
+    </>
   );
 }
