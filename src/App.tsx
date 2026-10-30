@@ -904,7 +904,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
               <React.Suspense fallback={inHistory ? (
                 // The shared loading panel, where History's panels open (#1028 item 20).
                 <Panel sidebar style={sidebarFrameStyle(sidebarLeft, isPhone ? undefined : searchBarWidth)}>
-                  <PanelEmpty kind="loading">{loadingText('history data')}</PanelEmpty>
+                  <PanelEmpty kind="loading">{loadingText('history')}</PanelEmpty>
                 </Panel>
               ) : null}>
                 <History active={inHistory} view={historyView} agencyCatalog={agencies} searchBarWidth={isPhone ? undefined : searchBarWidth} initialAgencySlug={historyAgencyForView} inViewAgencySlugs={viewportAgencySlugs} onOpenAgencyChange={setHistoryOpenAgencyName} dismissKey={historyDismissKey} onPanelOpenChange={setHistoryPanelOpen} onInfoOpen={openInfo} query={deferredQuery} searchFocused={searchFocused} setQuery={setQuery} pendingRouteClick={pendingHistoryRoute} onPendingRouteHandled={() => setPendingHistoryRoute(null)} sidebarLeft={sidebarLeft} />
