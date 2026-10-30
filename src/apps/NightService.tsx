@@ -4,7 +4,7 @@ import { useViewport } from '../context/ViewportContext';
 import { R2_PUBLIC_URL } from '../../shared/config';
 import { countOf } from '../../shared/overflowText';
 import type { NightServiceFrequency } from '../../shared/nightService';
-import { nightServiceKey, routeNightGrade } from '../../shared/nightService';
+import { routeNightGrade } from '../../shared/nightService';
 import Panel, { PanelBody, PanelTitleBar } from '../components/ui/Panel';
 import CardRouteList from '../components/Interval/CardRouteList';
 import { CardReportButton } from '../components/Interval/cardUi';
@@ -20,7 +20,7 @@ import { CARD_SUMMARY } from '../components/Interval/cardUi';
 import AgencyGroupHeader from '../components/ui/AgencyGroupHeader';
 import AgencyName from '../components/ui/AgencyName';
 import { loadingText, NIGHT_LOAD_FAILED, nightNoRoutesNotice, NO_AGENCIES_MATCH_SEARCH } from '../content/noticeCopy';
-import { boundingBox, lineCoordinates } from '../../shared/routeGeometry';
+import { nightRouteKey, nightRoutesInView, type NightServiceFeatureProperties } from '../utils/nightRoutesInView';
 
 interface NightServiceRoute {
   agencySlug: string;
@@ -40,19 +40,6 @@ interface NightServiceRouteSummary {
   routeType?: number;
   partOfRoute?: boolean;
   destinations: string[];
-}
-
-interface NightServiceFeatureProperties {
-  nightService?: boolean;
-  nightService30?: boolean;
-  nightService60?: boolean;
-  nightServicePartOfRoute?: boolean;
-  routeId?: string | null;
-  routeShortName?: string | null;
-  routeLongName?: string | null;
-  routeType?: number;
-  headsign?: string | null;
-  agencyName?: string | null;
 }
 
 /** What a report from the Night list sends (CIV-932): the view, every agency and route it lists with its night value, and the map's bounds. */
@@ -97,29 +84,14 @@ interface Props {
   agencyCatalog?: ReadonlyArray<{ slug: string; name: string; cities?: string[]; displayArea?: string }>;
 }
 
-function featureIntersectsBounds(feature: GeoJSON.Feature, bounds: { s: number; w: number; n: number; e: number }): boolean {
-  const box = boundingBox(lineCoordinates(feature.geometry));
-  if (!box) return false;
-  return box.maxLng >= bounds.w && box.minLng <= bounds.e && box.maxLat >= bounds.s && box.minLat <= bounds.n;
-}
-
 export default function NightService({ active, sidebarLeft, searchBarWidth, layers, query = '', frequency, onRouteSelect, onBackToMap, selectionActive = false, agencyCatalog = [] }: Props) {
   const [data, setData] = useState<NightServiceIndexFile | null>(null);
   const [loadState, setLoadState] = useState<'loading' | 'ready' | 'error'>('loading');
   const { bounds } = useViewport();
-  const visibleRoutes = useMemo(() => {
-    if (!bounds || Object.keys(layers).length === 0) return [];
-    const routes: Array<{ agencySlug: string; properties: NightServiceFeatureProperties }> = [];
-    for (const [agencySlug, collection] of Object.entries(layers)) {
-      for (const feature of collection.features) {
-        const properties = feature.properties as NightServiceFeatureProperties | null;
-        if (properties?.[nightServiceKey(frequency)] !== true && !(frequency === 60 && properties?.nightService === true)) continue;
-        if (!featureIntersectsBounds(feature, bounds)) continue;
-        routes.push({ agencySlug, properties });
-      }
-    }
-    return routes;
-  }, [bounds, layers, frequency]);
+  const visibleRoutes = useMemo(
+    () => (Object.keys(layers).length === 0 ? [] : nightRoutesInView(layers, frequency, bounds)),
+    [bounds, layers, frequency],
+  );
   // Every row of each route that runs at night, in either view and anywhere on the map, so a route's night
   // value covers all of it: a direction that only makes 60 keeps the route at 60 in the 30 view too (CIV-931).
   const nightGrades = useMemo(() => {
@@ -128,7 +100,7 @@ export default function NightService({ active, sidebarLeft, searchBarWidth, laye
       for (const feature of collection.features) {
         const properties = feature.properties as NightServiceFeatureProperties | null;
         if (!properties || (properties.nightService60 !== true && properties.nightService !== true && properties.nightService30 !== true)) continue;
-        const key = `${agencySlug}::${properties.routeShortName ?? ''}::${properties.routeLongName ?? ''}`;
+        const key = nightRouteKey(agencySlug, properties);
         rows.set(key, [...(rows.get(key) ?? []), { nightService30: properties.nightService30 }]);
       }
     }
@@ -155,13 +127,13 @@ export default function NightService({ active, sidebarLeft, searchBarWidth, laye
   const agencies = useMemo(() => {
     if (!data) return [];
     const indexRoutes = new Map(data.routes.map(route => [
-      `${route.agencySlug}::${route.routeShortName ?? ''}::${route.routeLongName ?? ''}`,
+      nightRouteKey(route.agencySlug, route),
       route,
     ]));
     const byAgency = new Map<string, { agencyName: string; region: string | null; routes: Map<string, NightServiceRouteSummary> }>();
     for (const visible of visibleRoutes) {
       const properties = visible.properties;
-      const routeKey = `${visible.agencySlug}::${properties.routeShortName ?? ''}::${properties.routeLongName ?? ''}`;
+      const routeKey = nightRouteKey(visible.agencySlug, properties);
       const indexed = indexRoutes.get(routeKey);
       const entry = byAgency.get(visible.agencySlug) ?? {
         agencyName: properties.agencyName ?? indexed?.agencyName ?? visible.agencySlug,
@@ -206,7 +178,7 @@ export default function NightService({ active, sidebarLeft, searchBarWidth, laye
   }, [data, query, visibleRoutes, frequency]);
 
   const nightGrade = (route: NightServiceRouteSummary, agencySlug: string) =>
-    nightGrades.get(`${agencySlug}::${route.routeShortName ?? ''}::${route.routeLongName ?? ''}`) ?? 60;
+    nightGrades.get(nightRouteKey(agencySlug, route)) ?? 60;
 
   if (!active) return null;
 

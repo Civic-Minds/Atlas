@@ -45,7 +45,9 @@ import type { FrequentServiceFrequency, FrequentServiceWindow } from '../../shar
 import type { NightServiceFrequency } from '../../shared/nightService';
 import { getRegionalView, getSavedView, parseUrlView } from '../utils/regionView';
 import ResearchLegend from '../components/Interval/ResearchLegend';
-import { selectFrequentServiceFeatures, selectNightServiceFeatures } from '../components/Interval/map/useOverlaySources';
+import { selectFrequentServiceFeatures } from '../components/Interval/map/useOverlaySources';
+import { countNightRoutesInView } from '../utils/nightRoutesInView';
+import { useViewport } from '../context/ViewportContext';
 import { areaFitZoom } from '../../shared/areaIndex';
 import type { AreaSearchResult } from '../../shared/areaSearch';
 import Spinner from '../components/ui/Spinner';
@@ -731,12 +733,16 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   }, [compareActive, renderedA, renderedB]);
 
   // Whole routes and agencies for the research views' stat pills, counted from the routes each overlay
-  // draws (the night index has no 30 minute data, so it cannot answer for both settings).
+  // draws (the night index has no 30 minute data, so it cannot answer for both settings). Night counts the
+  // routes in view, the same count as its list (#1233).
+  const { bounds: viewBounds } = useViewport();
   const researchCounts = useMemo(() => {
     if (!nightServiceView && !frequentServiceView) return null;
-    const features = nightServiceView
-      ? selectNightServiceFeatures(layers, nightServiceFrequency)
-      : selectFrequentServiceFeatures(layers, { frequentServiceDays, frequentServiceFrequency, frequentServiceWindow, selectedModes });
+    if (nightServiceView) {
+      const night = countNightRoutesInView(layers, nightServiceFrequency, viewBounds);
+      return night.routes === 0 ? null : night;
+    }
+    const features = selectFrequentServiceFeatures(layers, { frequentServiceDays, frequentServiceFrequency, frequentServiceWindow, selectedModes });
     if (features.length === 0) return null;
     const routes = new Set<string>();
     const agencySlugs = new Set<string>();
@@ -746,7 +752,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
       agencySlugs.add(String(p.agencySlug ?? ''));
     }
     return { routes: routes.size, agencies: agencySlugs.size };
-  }, [nightServiceView, nightServiceFrequency, frequentServiceView, layers, frequentServiceDays, frequentServiceFrequency, frequentServiceWindow, selectedModes]);
+  }, [nightServiceView, nightServiceFrequency, viewBounds, frequentServiceView, layers, frequentServiceDays, frequentServiceFrequency, frequentServiceWindow, selectedModes]);
 
   const selectedRouteOutOfFilter = useMemo(() => {
     if (!selectedRoute || frequentServiceView || nightServiceView || (maxHeadway === Infinity && period === 'all')) return false;
