@@ -27,5 +27,24 @@
   "timezone": "America/Denver",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://passio3.com/billings/passioTransit/gtfs/google_transit.zip",
-  "lastPeekedExpiry": "20271231"
+  "lastPeekedExpiry": "20271231",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 33,
+      "feedExpiry": "20271231",
+      "routeCount": 13,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
+    },
+    "checkedAt": "2026-10-30"
+  }
 }

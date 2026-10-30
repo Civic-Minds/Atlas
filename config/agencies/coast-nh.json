@@ -29,5 +29,26 @@
   "timezone": "America/New_York",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/tld-4668/latest.zip",
-  "lastPeekedExpiry": "20271231"
+  "lastPeekedExpiry": "20271231",
+  "feedQuality": {
+    "status": "review",
+    "score": 90,
+    "reasons": [
+      "1 minor schedule issue found while reading the feed."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 1,
+      "shapeAnomalies": 1,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 42,
+      "feedExpiry": "20271231",
+      "routeCount": 11,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
+    },
+    "checkedAt": "2026-10-30"
+  }
 }

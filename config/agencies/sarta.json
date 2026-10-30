@@ -23,5 +23,24 @@
   "timezone": "America/New_York",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/11346/gtfs.zip",
-  "lastPeekedExpiry": "20261107"
+  "lastPeekedExpiry": "20261107",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 98,
+      "feedExpiry": "20261107",
+      "routeCount": 24,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
+    },
+    "checkedAt": "2026-10-30"
+  }
 }

@@ -23,5 +23,24 @@
   "timezone": "America/Los_Angeles",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://gis4u.fresno.gov/downloads/fax_gtfs.zip",
-  "lastPeekedExpiry": "20261101"
+  "lastPeekedExpiry": "20261101",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 123,
+      "feedExpiry": "20261101",
+      "routeCount": 19,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
+    },
+    "checkedAt": "2026-10-30"
+  }
 }

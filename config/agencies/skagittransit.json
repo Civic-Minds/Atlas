@@ -32,19 +32,23 @@
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://strweb.skagittransit.org/GTFS/google_transit.zip",
   "feedQuality": {
-    "status": "review",
-    "score": 70,
-    "reasons": [
-      "7 route shapes needed adjustment before display."
-    ],
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
-      "shapeAnomalies": 7,
+      "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 80
+      "featureCount": 80,
+      "feedExpiry": "20270103",
+      "routeCount": 19,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-14"
+    "checkedAt": "2026-10-30"
   },
   "lastPeekedExpiry": "20270103",
   "feedRefreshStatus": "current",

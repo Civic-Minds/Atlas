@@ -32,18 +32,24 @@
   "lastFeedSourceUrl": "https://www.avta.com/userfiles/files/AVTA_GTFS.zip",
   "feedQuality": {
     "status": "review",
-    "score": 70,
+    "score": 90,
     "reasons": [
-      "48 route shapes needed adjustment before display."
+      "14 route shapes needed adjustment before display."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
-      "shapeAnomalies": 48,
+      "shapeAnomalies": 14,
       "routeHeadwayMismatches": 0,
-      "featureCount": 82
+      "featureCount": 88,
+      "feedExpiry": "20270228",
+      "routeCount": 20,
+      "problemShapes": 14,
+      "problemShapeRoutes": 2,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-14"
+    "checkedAt": "2026-10-30"
   },
   "lastPeekedExpiry": "20270228",
   "feedRefreshStatus": "current",

@@ -12,20 +12,23 @@
     "Johnstown, Pennsylvania"
   ],
   "feedQuality": {
-    "status": "review",
-    "score": 60,
-    "reasons": [
-      "13 shape corrections needed.",
-      "1 route frequency metric need review."
-    ],
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
-      "shapeAnomalies": 13,
-      "routeHeadwayMismatches": 1,
-      "featureCount": 87
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 96,
+      "feedExpiry": "20290131",
+      "routeCount": 22,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-08-21"
+    "checkedAt": "2026-10-30"
   },
   "lastFeedExpiry": "20290131",
   "lastFeedVersion": "20260716",
