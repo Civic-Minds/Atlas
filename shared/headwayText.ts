@@ -96,11 +96,11 @@ export function headwayEveryRange(low: number | null | undefined, high: number |
 /** "every 6–12 min": a spread of typical spacings. Above 60 minutes each end rounds to the half hour. */
 export function headwayAboutRange(low: number, high: number): string {
   if (low === high) return headwayAbout(low);
-  if (isUsable(low) && isUsable(high) && low <= 60 && high <= 60) {
-    return `every ${num(low)}–${num(high)} min`;
-  }
-  const round = (m: number) => (m <= 60 ? num(m) : String(Math.round(m / 30) * 30));
-  return `every ${round(low)}–${round(high)} min`;
+  const shown = isUsable(low) && isUsable(high) && low <= 60 && high <= 60
+    ? [num(low), num(high)]
+    : [low, high].map(m => (m <= 60 ? num(m) : String(Math.round(m / 30) * 30)));
+  // Ends that print the same read as one value, never "every 60–60 min" (CIV-1155).
+  return shown[0] === shown[1] ? `every ${shown[0]} min` : `every ${shown[0]}–${shown[1]} min`;
 }
 
 /** "≤10 min": a frequency band in a legend or key. */
