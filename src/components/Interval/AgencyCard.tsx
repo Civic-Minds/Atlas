@@ -540,6 +540,25 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
       : service.features.some(feature => resolveOnDemandZone(service, (feature.properties as { areaName?: string } | undefined)?.areaName).sameServiceAsParent);
     const runningNote = onDemandRunningNote(zone.availability, day, period);
     const backToAgency = onBackToAgency && (onDemandZoneId || !agency.onDemandOnly) ? onBackToAgency : undefined;
+    // An on-demand card's report names the service, the zone and its hours as published (CIV-932), so a report about the
+    // area or its hours says which one; the agency's own report says only the agency.
+    const onDemandReport = (
+      <CardReportButton
+        title={`On-demand issue: ${onDemandCardName(service, onDemandZoneId, agencyNamePrimary)}`}
+        details={reportDetails([
+          ['Agency', agency.name],
+          ['Agency slug', agency.slug],
+          ['On-demand service', zone.serviceName ?? service.serviceName ?? 'unknown'],
+          ['Zone', zoneName ?? 'whole service'],
+          ['Hours', zone.serviceHours ?? 'not published'],
+          ['Availability', zone.availability ? JSON.stringify(zone.availability) : 'none'],
+          ['Day', day],
+          ['Period', period],
+          ['Agency data refreshed', agency.lastRefreshedAt ?? 'unknown'],
+        ])}
+        excludeReasons={['Stop is missing, misplaced, or assigned incorrectly', 'Frequency is wrong', 'Route or branch is incorrectly combined']}
+      />
+    );
     return (
       <Panel
         ref={ref}
@@ -552,7 +571,10 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
           {backToAgency ? (
             // A zone (or a fixed-route agency's service) reads like a route card: "← Agency" back to the agency
             // card, then the bold zone name (Ryan: "the on demand should be closer to the route card").
-            <SidebarCardHeader title={onDemandCardName(service, onDemandZoneId, agencyNamePrimary)} back={{ to: agencyCardName, onClick: backToAgency }} />
+            <div className="flex items-start gap-2">
+              <SidebarCardHeader title={onDemandCardName(service, onDemandZoneId, agencyNamePrimary)} back={{ to: agencyCardName, onClick: backToAgency }} />
+              {onDemandReport}
+            </div>
           ) : (
             // An on-demand-only agency's whole-service card is its agency card: the shared agency card top, named
             // once, with no facts line (the "On-demand service" section label below says it) (CIV-929).
@@ -560,7 +582,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
               name={agencyCardName}
               place={null}
               back={{ to: BACK_TO_MAP_LABEL, onClick: onClose }}
-              report={reportButton}
+              report={onDemandReport}
               links={hasSource ? [<AgencyDataSourceLink key="source" agency={agency} />] : []}
             />
           )}
