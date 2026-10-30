@@ -243,37 +243,65 @@ function titleCase(s: string): string {
  * as written ("McDonald Ave", "Lower Jarvis St at The Esplanade"), the same rule routeLabelCase uses for route names.
  */
 function stopNameCase(name: string): string {
-  return writtenInCapitals(name) ? keepFeedParticles(name, titleCase(name)) : name;
+  return writtenInCapitals(name) ? keepFeedCodes(name, keepFeedParticles(name, titleCase(name))) : name;
+}
+
+/**
+ * Road and route codes keep the feed's capitals: a word with a digit in it ("US-9W", "SR-7", "CR-527", "A1A", "418X"),
+ * except an ordinal, which reads "3rd" (CIV-1166).
+ */
+function keepFeedCodes(original: string, cased: string): string {
+  if (cased.length !== original.length) return cased;
+  let out = cased;
+  const keep = (at: number, word: string) => { out = out.slice(0, at) + word + out.slice(at + word.length); };
+  const isCode = (word: string) => /\p{N}/u.test(word) && !/^\d+(st|nd|rd|th)$/iu.test(word);
+  for (const m of original.matchAll(/[\p{L}\p{N}]+/gu)) {
+    const word = m[0], at = m.index!;
+    // A code, or a short road prefix joined to one ("US" in "US-9W", "I" in "I-70"; not "KING" in "KING-2").
+    const next = /^-([\p{L}\p{N}]+)/u.exec(original.slice(at + word.length));
+    if (isCode(word) || (next && isCode(next[1]) && /^\p{L}{1,3}$/u.test(word))) keep(at, word);
+  }
+  return out;
 }
 
 /**
  * French linking words a feed writes in lower case inside an otherwise all-capitals name: STO's
- * "SAINT-LOUIS/de NANTEL", "des ALLUMETTIÈRES/BROAD" (CIV-1054). English ones ("at", "of") are left out on purpose:
- * names like NJ Transit's "US-9W at CHARLOTTE PL" would meet casing gaps ("Us-9w") that all-capitals names have today.
+ * "SAINT-LOUIS/de NANTEL", "des ALLUMETTIÈRES/BROAD" (CIV-1054). Kept exactly as the feed wrote them.
  */
 const LOWER_PARTICLES = /^(de|du|des|la|le|les|d|l|et|à|au|aux|sur|en)$/u;
 
 /**
+ * English connectors a feed writes in lower case inside an otherwise all-capitals name: Hamilton's "STERLING at HADDON", "ABERDEEN opposite CHEDOKE", "At 100 MACKLIN"
+ * (CIV-1166). They don't stop the name counting as capitals, and stay as the feed wrote them ("to LAKE DR" -> "to Lake Dr").
+ */
+const LOWER_CONNECTORS = /^(at|and|of|to|the|or|in|by|for|via|on|opposite|near|after|before)$/u;
+/** A connector as the feed wrote it: all small, or with only its first letter capital ("At 100 MACKLIN"). */
+const isConnector = (word: string) => LOWER_CONNECTORS.test(word.toLowerCase()) && word.slice(1) === word.slice(1).toLowerCase();
+
+/**
  * True when the feed wrote the name in capitals: it has a capital, and every word with a small letter is one of the
- * lower-case linking words above. Accented capitals count as capitals ("SPORTHÈQUE"). Shared by the stop and route
+ * lower-case linking words or connectors above. Accented capitals count as capitals ("SPORTHÈQUE"). Shared by the stop and route
  * casing (CIV-1001).
  */
 export function writtenInCapitals(text: string): boolean {
   if (!text || !/\p{Lu}/u.test(text)) return false;
+  let capitalsWord = false;
   for (const word of text.match(/\p{L}+/gu) ?? []) {
-    if (/\p{Ll}/u.test(word) && !(word === word.toLowerCase() && LOWER_PARTICLES.test(word))) return false;
+    if (!/\p{Ll}/u.test(word)) { if (word.length > 1) capitalsWord = true; continue; }
+    if (!(word === word.toLowerCase() && LOWER_PARTICLES.test(word)) && !isConnector(word)) return false;
   }
-  return true;
+  // Needs a real word in capitals: a capitalised connector beside initials ("At", "U Of A") is not a name sent in capitals.
+  return capitalsWord;
 }
 
-/** After casing, the linking words the feed wrote in lower case stay as written ("Saint-Louis/de Nantel"). */
+/** After casing, the linking words and connectors the feed wrote in lower case stay as written ("Saint-Louis/de Nantel"). */
 function keepFeedParticles(original: string, cased: string): string {
   // Casing keeps each letter in place; if a rule ever changes the length, keep its result as it is.
   if (cased.length !== original.length) return cased;
   let out = cased;
   for (const m of original.matchAll(/\p{L}+/gu)) {
     const word = m[0];
-    if (word === word.toLowerCase() && LOWER_PARTICLES.test(word)) {
+    if (word === word.toLowerCase() && (LOWER_PARTICLES.test(word) || LOWER_CONNECTORS.test(word))) {
       out = out.slice(0, m.index) + word + out.slice(m.index! + word.length);
     }
   }
