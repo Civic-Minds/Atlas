@@ -53,7 +53,7 @@ import { noOwnServicePeriods } from './noOwnService.js';
 import { laterServiceByRoute } from './seasonalPause.js';
 import { nearDuplicateTripIds } from './nearDuplicateTrips.js';
 import { decideDedupe, runsInDay, type DedupePattern } from './featureDedupe.js';
-import { decideHeadline, decidePeriod, liftTierOnDestinationPool, ownStepOneHeadway, pooledStepOneHeadway, settleTier, terminalReading, type PeriodValue } from './routeGrading.js';
+import { boardingMainStretchWait, decideHeadline, decidePeriod, liftTierOnDestinationPool, OVERSTATED_HEADLINE_MARGIN, ownStepOneHeadway, pooledStepOneHeadway, settleTier, terminalReading, type PeriodValue } from './routeGrading.js';
 import type { SharedStretchPattern } from './sharedStretch.js';
 import { directionStretches, nightOnlyTrips, periodSustainedMid, runsAcrossNightMidpoint, stampStretchShadow, type DirectionStretches, type TripVisit } from './tripSets.js';
 import { buildPooledStopMap, computeStopSharers, pooledHeadwayInWindow, type StopSharers } from './stopPools.js';
@@ -3489,6 +3489,27 @@ export async function processGtfsBuffer(
       const slot = featureStopHeadwaySlots.get(feature as GeoJsonFeature);
       return slot ? { group: slot.shortName, dirId: slot.dirId, day: slot.day } : null;
     }, feature => Object.keys((feature.properties.stopPeriodCoverageHeadways as Record<string, unknown> | undefined) ?? {}));
+    // CIV-1161 step 1, logging only: the longest regular wait where riders board the main stretch
+    // beside today's headline, and whether step 1 would replace it (10+ minutes longer).
+    for (const feature of features) {
+      const slot = featureStopHeadwaySlots.get(feature as GeoJsonFeature);
+      const p = feature.properties;
+      const headline = p.headway as number | null | undefined;
+      if (!slot || p.stopId != null || headline == null) continue;
+      const stretches = stretchesByKey.get(`${slot.shortName}::${slot.dirId}::${slot.day}`);
+      if (!stretches?.main || !stretches.timesAtStop) continue;
+      const dropOff = new Set((p.dropOffOnlyStops as string[] | undefined) ?? []);
+      const board = boardingMainStretchWait(stretches.main.stops, stop => stretches.timesAtStop!(stop).times, dropOff);
+      const replace = board != null && board.wait >= headline + OVERSTATED_HEADLINE_MARGIN;
+      const scale = getTiersForCriteria(String(p.routeType ?? ''), DEFAULT_CRITERIA.dayTypes[slot.day as DayType]?.tiers ?? SURFACE_TIER_MAXES, DEFAULT_CRITERIA.modeTierOverrides);
+      const tierAfter = replace && (TIER_RANK[headwayToTierOn(board!.wait, scale)] ?? -1) > (TIER_RANK[p.tier as string] ?? -1) ? headwayToTierOn(board!.wait, scale) : p.tier;
+      console.log('CIV1161A\t' + JSON.stringify({
+        agency: options?.slug, route: slot.shortName, dir: slot.dirId, day: slot.day, headsign: p.headsign ?? null,
+        role: p.stretchRole ?? null, routeType: p.routeType ?? null, headline, tier: p.tier ?? null,
+        mainWait: board?.wait ?? null, boardStops: board?.stops ?? 0, allDayStops: board?.allDayStops ?? 0, mainStops: stretches.main.stops.length,
+        replace, headlineAfter: replace ? board!.wait : headline, tierAfter,
+      }));
+    }
     // #961: a row whose own overnight value #897 withheld carries no direction overnight value
     // either, so the card's fallback cannot print the window's wait as "every N". The stretch
     // check in tripSets reads the reference stop, where the window can look different from the

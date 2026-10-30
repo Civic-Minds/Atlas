@@ -299,3 +299,60 @@ function decideSourcedPeriod(i: PeriodInputs): PeriodValue {
   const sparse = headway == null ? false : (headway === i.termH ? !!i.termSparse : (headway === i.branchH && !!i.branchSparse));
   return { headway, coverage, maxGap, sustained, ...(sparse ? { sparse } : {}) };
 }
+
+/**
+ * CIV-1161 step 1 (attempt 2): the wait a rider arriving at a random time faces, in the first
+ * headline window (midday, then PM peak, then all day) that has HEADLINE_MIN_DEPARTURES
+ * departures. It is the time-weighted median gap: each gap between the window's departures counts
+ * by its length, and the value is the gap at which half the time between departures is covered,
+ * the shorter one on an exact half. Two slow gaps at one end of the window don't set it
+ * (Saskatoon 18 Saturday: 60, 62, then 32 six times reads 32); slow gaps that cover most of
+ * the window do (TransLink 371 Sunday: 60 three times, then 30 five times reads 60).
+ */
+export function riderWait(times: readonly number[]): { wait: number; window: keyof typeof HEADLINE_WINDOWS } | null {
+  for (const window of ['midday', 'pmPeak', 'allDay'] as const) {
+    const { start, end } = HEADLINE_WINDOWS[window];
+    const t = [...new Set(times)].filter(x => x >= start && x <= end).sort((a, b) => a - b);
+    if (t.length < HEADLINE_MIN_DEPARTURES) continue;
+    // Try 3: on the all-day fallback (no midday or PM-peak reading), a gap that spans a whole headline period is a
+    // hole in service, not a wait (Whistler 30: 6:07 and 6:37, then every 30 from 19:51, read 794).
+    const hole = (from: number, to: number) => window === 'allDay'
+      && [HEADLINE_WINDOWS.midday, HEADLINE_WINDOWS.pmPeak].some(p => from <= p.start && to >= p.end);
+    const gaps = t.slice(1).map((x, i) => ({ gap: x - t[i], from: t[i], to: x }))
+      .filter(g => !hole(g.from, g.to)).map(g => g.gap).sort((a, b) => a - b);
+    if (gaps.length === 0) return null;
+    const half = gaps.reduce((sum, g) => sum + g, 0) / 2;
+    let covered = 0;
+    for (const gap of gaps) {
+      covered += gap;
+      if (covered >= half) return { wait: Math.round(gap), window };
+    }
+  }
+  return null;
+}
+
+/**
+ * CIV-1161 step 1: the wait where riders board the main stretch: the median of
+ * riderWait over its stops a rider can board (drop-off-only stops left out), each read
+ * over every trip of the direction that stops there. Null when no such stop has a reading.
+ */
+export function boardingMainStretchWait(
+  stops: readonly string[],
+  timesAt: (stopId: string) => readonly number[],
+  dropOffOnly: ReadonlySet<string>,
+): { wait: number; stops: number; allDayStops: number } | null {
+  const readings = stops.filter(stop => !dropOffOnly.has(stop))
+    .map(stop => riderWait(timesAt(stop)))
+    .filter((r): r is NonNullable<ReturnType<typeof riderWait>> => r != null);
+  const waits = readings.map(r => r.wait).sort((a, b) => a - b);
+  if (waits.length === 0) return null;
+  const mid = Math.floor(waits.length / 2);
+  return {
+    wait: waits.length % 2 ? waits[mid] : Math.round((waits[mid - 1] + waits[mid]) / 2),
+    stops: waits.length,
+    allDayStops: readings.filter(r => r.window === 'allDay').length,
+  };
+}
+
+/** CIV-1161 step 1: the headline overstates when riders on the main stretch can wait 10+ minutes longer. */
+export const OVERSTATED_HEADLINE_MARGIN = 10;

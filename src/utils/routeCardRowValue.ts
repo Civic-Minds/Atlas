@@ -58,9 +58,22 @@ export function routeCardRowValue(d: ShapeProperties, ctx: RouteCardRowContext):
   const ownH = hoveredHour != null
     ? branchDisplayHourHeadway(d, hoveredHour) ?? trips.value
     : trips.value;
-  const directionH = stretchMode && hoveredHour == null && ownH == null && period !== 'all' && d.stretchRole !== 'tail'
+  const directionWorst = stretchMode && hoveredHour == null && ownH == null && period !== 'all' && d.stretchRole !== 'tail'
     ? d.directionFilterHeadwayByPeriod?.[period as keyof NonNullable<ShapeProperties['directionFilterHeadwayByPeriod']>]
     : undefined;
+  // CIV-1156 (Ryan, 2026-10-30): a main row whose own median the infrequent guard dropped shows the main stretch's own
+  // value when the direction's value is longer than the main stretch's longest gap, so a tail's wait never stands for it
+  // (SEPTA 67 northbound weekday evening: 169 from the Philadelphia Mills tail; the main stretch runs every 25, longest gap 30).
+  const mainKey = period as keyof NonNullable<NonNullable<ShapeProperties['stretchMeta']>['main']>['period'] & string;
+  const mainGap = d.stretchMeta?.main?.maxGap?.[mainKey];
+  const mainValue = d.stretchMeta?.main?.period?.[mainKey];
+  // A row that already reads a range keeps it: the range's slow end is real somewhere on the route (TTC 17 to Warden: every
+  // 10–30, the Markham stops north of Steeles get every 27–30).
+  const showsRange = typeof directionWorst === 'number' && contract?.range != null && contract.range[0] < directionWorst && contract.range[1] >= directionWorst;
+  const directionH = d.stretchRole === 'main' && d.tier === 'infrequent' && d.headwayByPeriod?.[period as keyof NonNullable<ShapeProperties['headwayByPeriod']>] != null
+    && typeof directionWorst === 'number' && typeof mainGap === 'number' && typeof mainValue === 'number' && directionWorst > mainGap && !showsRange
+    ? mainValue
+    : directionWorst;
   const allDayH = allDay?.filterValue != null && hoveredHour == null ? allDay.filterValue : undefined;
   // All day: every row reads the route's all-day value, the number the lists and the map filter use.
   const directionFallback = allDayH ?? (typeof directionH === 'number' ? directionH : undefined);
