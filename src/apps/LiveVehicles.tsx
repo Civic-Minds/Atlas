@@ -567,6 +567,11 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
   }, [selectedGroup, listVehicles, directionLabels, counted?.label]);
 
   // Worth showing groups when there is more than one, or the one group has a real destination name.
+  // Where "Right now" counts a direction, the list is that whole direction, in route order, never one destination of it, so
+  // its Vehicles and On time count exactly the cars listed (CIV-1151; 506 read 12 over a High Park list of 10). The
+  // destination step stays for routes "Right now" doesn't count.
+  const destination = counted ? null : selectedDirection;
+  useEffect(() => { if (counted) setSelectedDirection(null); }, [counted]);
   const canGroupByDirection = useMemo(() => {
     if (!vehiclesByDirection || vehiclesByDirection.size === 0) return false;
     if (vehiclesByDirection.size > 1) return true;
@@ -665,10 +670,10 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
   // CIV-1125 option D: how many vehicle rows fit in the card without it scrolling.
   // Listed along the route, first stop to last, so a cut-off is always the vehicles nearest the end (Ryan, CIV-1125).
   const allListed = useMemo(() => {
-    const list = selectedDirection ? (vehiclesByDirection?.get(selectedDirection) ?? []) : listVehicles;
+    const list = destination ? (vehiclesByDirection?.get(destination) ?? []) : listVehicles;
     const fc = selectedGroup ? routeLayer(selectedGroup.agencySlug) : undefined;
     return fc && selectedGroup ? orderAlongRoute(list, fc.features, selectedGroup.routeShortName) : list;
-  }, [selectedDirection, vehiclesByDirection, listVehicles, selectedGroup, routeLayer]);
+  }, [destination, vehiclesByDirection, listVehicles, selectedGroup, routeLayer]);
   const [fitCount, setFitCount] = useState<number | null>(null);
   const vehicleListRef = useRef<HTMLDivElement>(null);
   useEffect(() => { setFitCount(null); }, [selectedRoute, selectedDirection, allListed.length]);
@@ -746,7 +751,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
       <SidebarCardHeaderBlock>
         {/* The same header in the direction list as on the route and vehicle cards; the back link goes up one level. */}
         <CardBackLink
-          onClick={selectedDirection
+          onClick={destination
             ? () => setSelectedDirection(null)
             : () => { setSelectedRoute(null); setFocusedVehicle(null); }}
         >
@@ -770,11 +775,11 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
         feedDegraded={!!degradedBySlug[selectedGroup.agencySlug] || !!errorBySlug[selectedGroup.agencySlug]}
         onCounted={setCounted}
       />
-      <SidebarCardSection label={selectedDirection ?? selectedRouteHeadwayLine ?? undefined}>
+      <SidebarCardSection label={destination ?? selectedRouteHeadwayLine ?? undefined}>
         {/* Match static route cards: destinations first, live vehicles second. */}
         {selectedGroup.vehicles.length === 0 ? (
           <PanelEmpty>{LIVE_NO_VEHICLES_ON_ROUTE}</PanelEmpty>
-        ) : canGroupByDirection && !selectedDirection ? (
+        ) : canGroupByDirection && !counted && !destination ? (
           orderDirectionGroups(vehiclesByDirection ?? new Map(), directionLabels).map(([dirKey, vehicles]) => (
             <CardDirectionRow
               key={dirKey}
