@@ -11,12 +11,13 @@ import { routePartMeetsFilter } from './routeCardTrunk';
 import type { RouteCardModel } from './routeCardRows';
 
 /**
- * Every notice the route card shows, decided in one place (CIV-1200). The card renders what this returns, slot by slot;
- * it decides nothing itself. Codes are noticeCopy's (N1 … N123). The wording is unchanged.
+ * Every notice the route card shows, decided in one place (CIV-1200). The card renders what this returns and decides
+ * nothing itself. Codes are noticeCopy's (N1 … N123).
  *
- * Each notice also carries the place it belongs to (Ryan's trial, CIV-1202; one kind of notice, one place):
+ * Each notice has one place (Ryan, CIV-1202; one kind of notice, one place; docs/STYLE.md "Card notices"):
  * 1 under the title, what the card is (variants, data warnings); 2 on the rows, anything about one direction or row;
- * 3 below the rows, the whole route in the period. `slot` is where the card draws it today, unchanged.
+ * 3 below the rows, the whole route in the period. And each fact once: a notice shows only when it says something the
+ * rows don't.
  */
 export type NoticePlace = 1 | 2 | 3;
 export const NOTICE_PLACE_NAMES: Record<NoticePlace, string> = { 1: 'under the title', 2: 'on the rows', 3: 'below the rows' };
@@ -62,21 +63,18 @@ export interface CardDirectionNotice { dirId: number; kind: 'no-service' | 'only
 export interface RouteCardNotices {
   /** Under the title: the variants the card includes. */
   variants: CardNotice | null;
-  /** Above the rows: why the route misses the filter. */
+  /** Below the rows (place 3), first: why the route misses the filter. */
   filter: CardNotice | null;
-  /** Under the rows: when the route runs in the period, or how uneven its gaps are. */
+  /** Below the rows (place 3): when the route runs in the period, or how uneven its gaps are. */
   period: CardNotice | null;
-  /** Under the rows: rides must be booked ahead. */
+  /** Below the rows (place 3): rides must be booked ahead. */
   booking: CardNotice | null;
-  /** Under a direction's heading. */
+  /** On the rows (place 2): a direction with no service in the period, or only its shared section passing. */
   directions: CardDirectionNotice[];
-  /** The card's last block, in this order: data and schedule notices, each with a Learn more. */
+  /** Data and schedule notices, each with a Learn more: place 1 (under the title) except N1 (below the rows). */
   footer: CardFooterNotice[];
-  /**
-   * Whether the card draws its last block. The same test as before CIV-1200, which also draws it for an agency under
-   * review that carries its own override note (N4 then stands aside for N5), even when N5 doesn't apply to this route.
-   */
-  showFooter: boolean;
+  /** Notices left out because the rows already say it (CIV-1202, "each fact once"), with why: for counts and tests. */
+  dropped: Array<{ code: CardNoticeCode; why: string }>;
 }
 
 export function routeCardNotices(input: RouteCardNoticeInput): RouteCardNotices {
@@ -166,7 +164,7 @@ export function routeCardNotices(input: RouteCardNoticeInput): RouteCardNotices 
   }
   if (input.agency?.feedReviewStatus === 'review' && !input.agency.overrideNote) footer.push({ code: 'N4', place: 1 });
   if (input.agency && input.routeOverrideNote) footer.push({ code: 'N5', place: 1 });
-  if (directions.some(direction => direction.weekdayTierVariation)) // N1 is about the route's service (its weekdays differ), not its data: place 3.
+  // N1 is about the route's service (its weekdays differ), not its data: place 3.
   if (directions.some(direction => direction.weekdayTierVariation)) footer.push({ code: 'N1', text: WEEKDAY_VARIATION_NOTICE, place: 3 });
 
   // Direction notes, in the card's group order: a heading with no rows in the period, and a direction whose only
@@ -181,6 +179,66 @@ export function routeCardNotices(input: RouteCardNoticeInput): RouteCardNotices 
     }
   }
 
+  // Each fact once (CIV-1202): what the rows already say, read from the rows as the card shows them.
+  const rowNumbers: number[] = [];
+  const rowWords: string[] = [];
+  const hoursText = /\b(until|from) \d/;
+  // Whether every row names its own hours: only then do the rows say when the whole route runs (AC Transit 70: one row
+  // "from 7:14 AM" and one "every 30 min" don't say the route has no trips from 6–7 AM).
+  let everyRowGivesHours = true;
+  let rowCount = 0;
+  for (const group of model.groups) {
+    if (group.shared) { rowNumbers.push(group.shared.headway); everyRowGivesHours = false; }
+    for (const row of group.rows) {
+      if (row.night) continue;
+      const shown = row.display(null);
+      const v = shown.value;
+      if (v.headwayLabel) rowWords.push(v.headwayLabel);
+      if (shown.limitedLabel) rowWords.push(shown.limitedLabel);
+      rowCount++;
+      if (!hoursText.test(`${v.headwayLabel ?? ''} ${shown.limitedLabel ?? ''}`)) everyRowGivesHours = false;
+      if (v.rowNoRegular || v.isLimited) continue;
+      if (v.headway != null) rowNumbers.push(v.headway);
+    }
+  }
+  const words = rowWords.join(' | ');
+  const rowGivesHours = hoursText.test(words);
+  // The gaps the rows name: "with a 32 min gap", "longest gap 32 min", and a range's top ("every 25–30 min").
+  const rowGaps = [...words.matchAll(/(\d+) min gap|longest gap (\d+) min|\u2013(\d+) min/g)].map(m => Number(m[1] ?? m[2] ?? m[3]));
+  const rowsGiveHours = rowCount > 0 && everyRowGivesHours;
+  const dropped: RouteCardNotices['dropped'] = [];
+  const drop = (notice: CardNotice | null, why: string): null => {
+    if (notice) dropped.push({ code: notice.code, why });
+    return null;
+  };
+
+  if (periodNotice?.code === 'N10') {
+    const gap = model.unevenGap();
+    // A row naming a smaller gap doesn't say this one (CTA 74 overnight: rows name 24–25 min, the route's gap is 116).
+    if (rowGaps.some(g => g >= gap)) periodNotice = drop(periodNotice, 'a row names that gap or a longer one');
+    else if (rowNumbers.length > 0 && gap <= Math.max(...rowNumbers)) periodNotice = drop(periodNotice, "the gap isn't longer than a row's wait");
+    else if (rowGivesHours) periodNotice = drop(periodNotice, 'a row gives its hours, so the route does not run all period');
+  }
+  // #1225: the period line and the filter line can be the same sentence ("no scheduled trips from 6–9 AM").
+  if (periodNotice && filter && periodNotice.text === filter.text) periodNotice = drop(periodNotice, 'the filter line says the same');
+  // #1226: "No frequency is shown" is wrong beside a row that shows one: the line keeps its first sentence. With no
+  // number on the rows, a row that gives the hours already says what the line says.
+  if (periodNotice?.code === 'N9') {
+    if (rowNumbers.length > 0) periodNotice = { ...periodNotice, text: periodServiceNotice(periodRange!, true, periodRanges.map(([start, end]) => formatPeriodRangeLong(start, end)).join(', '), true) };
+    else if (rowsGiveHours) periodNotice = drop(periodNotice, 'every row gives its hours');
+  }
+  if (filter?.code === 'N13' && rowsGiveHours) filter = drop(filter, 'every row gives its hours');
+  if (filter?.code === 'N12') {
+    // The rows or the period line already say why the route misses the filter.
+    if (periodNotice && (periodNotice.code === 'N8' || periodNotice.code === 'N9')) filter = drop(filter, 'the period line says when it runs');
+    else if (rowNumbers.length > 0 && rowNumbers.every(h => h > maxHeadway)) filter = drop(filter, 'every row shows a longer wait');
+    // #1227: rows that read every 15 beside "doesn't meet the 15-minute filter". Every direction must pass the filter, so
+    // the gap line, or one row naming its gap or hours, says why.
+    else if (periodNotice?.code === 'N10') filter = drop(filter, 'the gap line says why');
+    else if (rowGaps.some(g => g > maxHeadway)) filter = drop(filter, "a row's gap is longer than the filter");
+    else if (rowGivesHours) filter = drop(filter, 'a row gives its hours');
+  }
+
   return {
     variants: input.variantShortNames?.length ? { code: 'N15', text: variantsIncludedNotice(input.variantShortNames.join(', ')), place: 1 } : null,
     directions: directionNotices,
@@ -188,7 +246,6 @@ export function routeCardNotices(input: RouteCardNoticeInput): RouteCardNotices 
     period: periodNotice,
     booking: directions.some(direction => direction.bookingRequired === true) ? { code: 'N16', text: BOOKING_REQUIRED_NOTICE, place: 3 } : null,
     footer,
-    showFooter: input.routeIsStale || !!input.listingEndedDate || input.agency?.feedReviewStatus === 'review' || !!input.routeOverrideNote
-      || footer.some(notice => notice.code === 'N6' || notice.code === 'N7' || notice.code === 'N1'),
+    dropped,
   };
 }
