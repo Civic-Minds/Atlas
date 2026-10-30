@@ -28,6 +28,7 @@ import ArrowLink from './components/ui/ArrowLink';
 import { PageTitle, SectionTitle } from './components/ui/PageTitle';
 import EmptyPage from './components/ui/EmptyPage';
 import DataTable from './components/ui/DataTable';
+import ScrollX from './components/ui/ScrollX';
 import { applySeoToDocument, seoOrigin } from './lib/seoDom';
 import { readEmbeddedJson } from './lib/embeddedData';
 import { LINK, UNDERLINED_LINK } from './pageStyles';
@@ -146,8 +147,9 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
             <FrequencyBar counts={bandCounts(agency.routes)} mapHref={agencyMapHref(agency)} />
             <p className="mt-2 text-sm leading-6 text-[var(--text-muted)]">The bar splits this agency's routes by how often they run on a weekday midday. Each route is judged by its slower direction.</p>
             {stats.byMode.map(group => (
-              <div key={group.mode} className="mt-4 overflow-x-auto">
+              <div key={group.mode} className="mt-4">
                 <h3 className="pb-2 text-base font-black" aria-hidden="true">{group.label} <span className="ml-1 font-normal text-[var(--text-muted)]">{group.routes.length}</span></h3>
+                <ScrollX>
                   <DataTable
                     caption={`${group.label} ${group.routes.length}`}
                     layout="page"
@@ -162,6 +164,7 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
                       { key: 'overnight', header: PERIOD_LABELS.overnight, cell: r => cell('overnight', r) },
                     ]}
                   />
+                </ScrollX>
               </div>
             ))}
           </section>
