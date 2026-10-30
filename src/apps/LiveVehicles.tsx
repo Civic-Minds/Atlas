@@ -30,7 +30,7 @@ import { branchDisplayPeriodHeadway } from '../utils/routeFacts';
 import { periodKeyForHour } from '../../shared/config';
 import { andOthers, countOf } from '../../shared/overflowText';
 import { inferLiveDirection } from '../utils/liveDirection';
-import { DIRECTION_UNCLEAR, compareLiveRoutes, focusDirectionKey, groupVehiclesByDirection, orderDirectionGroups, riderHeadsign, routeDirectionLabels } from '../utils/liveGrouping';
+import { DIRECTION_UNCLEAR, compareLiveRoutes, focusDirectionKey, groupVehiclesByDirection, orderAlongRoute, orderDirectionGroups, riderHeadsign, routeDirectionLabels } from '../utils/liveGrouping';
 import { CardDirectionRow, CardHelpNotice, SidebarCardHeaderBlock, SidebarCardListRows, SidebarCardSection, SidebarCardShell, CARD_LIST_ROUTE, SIDEBAR_CARD_BODY } from '../components/Interval/cardUi';
 import { liveVehiclesFingerprint } from '../utils/liveVehiclesFingerprint';
 import { buildRouteKey, routeFeatureForShortName, routeKeyForShortName, splitRouteKey } from '../utils/routeKey';
@@ -663,10 +663,21 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
   const { expanded: sheetExpanded, handle: sheetHandle } = useBottomSheet(cardOpen ? `${selectedRoute}|${cardVehicle?.id ?? ''}|${selectedDirection ?? ''}` : null);
 
   // CIV-1125 option D: how many vehicle rows fit in the card without it scrolling.
-  const allListed = selectedDirection ? (vehiclesByDirection?.get(selectedDirection) ?? []) : listVehicles;
+  // Listed along the route, first stop to last, so a cut-off is always the vehicles nearest the end (Ryan, CIV-1125).
+  const allListed = useMemo(() => {
+    const list = selectedDirection ? (vehiclesByDirection?.get(selectedDirection) ?? []) : listVehicles;
+    const fc = selectedGroup ? routeLayer(selectedGroup.agencySlug) : undefined;
+    return fc && selectedGroup ? orderAlongRoute(list, fc.features, selectedGroup.routeShortName) : list;
+  }, [selectedDirection, vehiclesByDirection, listVehicles, selectedGroup, routeLayer]);
   const [fitCount, setFitCount] = useState<number | null>(null);
   const vehicleListRef = useRef<HTMLDivElement>(null);
   useEffect(() => { setFitCount(null); }, [selectedRoute, selectedDirection, allListed.length]);
+  // A taller window may fit them all again: measure afresh.
+  useEffect(() => {
+    const reset = () => setFitCount(null);
+    window.addEventListener('resize', reset);
+    return () => window.removeEventListener('resize', reset);
+  }, []);
   useLayoutEffect(() => {
     const list = vehicleListRef.current;
     if (!list) return;
