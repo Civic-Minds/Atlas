@@ -276,3 +276,19 @@ describe('every-agency search index results (CIV-1048)', () => {
     expect(mergeStopResults([], [], new Set())).toEqual([]);
   });
 });
+
+describe('route search matches only what riders see (#1183)', () => {
+  const route = (routeId: string, routeShortName?: string, routeLongName?: string) =>
+    ({ agencySlug: 'x', routeId, routeShortName, routeLongName }) as unknown as Parameters<typeof routeQueryMatchRank>[0];
+  it('ignores a hidden route ID', () => {
+    // UTA 240's feed ID is 34504; riders see "240 4000 West/ Dixie Valley".
+    expect(routeQueryMatchRank(route('34504', '240', '4000 WEST/ DIXIE VALLEY'), '504')).toBeGreaterThan(6);
+    expect(routeQueryMatchRank(route('19504', undefined, 'Colonial Beach Trolley'), '504')).toBeGreaterThan(6);
+  });
+  it('still matches the number and name, and an ID shown as the route number', () => {
+    expect(routeQueryMatchRank(route('34504', '240', '4000 WEST/ DIXIE VALLEY'), '240')).toBe(0);
+    expect(routeQueryMatchRank(route('34504', '240', '4000 WEST/ DIXIE VALLEY'), 'dixie')).toBeLessThanOrEqual(6);
+    // Metra's BNSF has no number or name in the feed: its ID is what the row shows.
+    expect(routeQueryMatchRank(route('BNSF'), 'bnsf')).toBe(2);
+  });
+});
