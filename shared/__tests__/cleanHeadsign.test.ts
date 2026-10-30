@@ -133,4 +133,42 @@ describe('isMiwayExpressHeadsign', () => {
     expect(isMiwayExpressHeadsign('110 Express University Exp')).toBe(true);
     expect(isMiwayExpressHeadsign('57 E Courtneypark To Renforth Station')).toBe(false);
   });
+
+  it('keeps a hyphenated place name whole: REM "Bois-Franc", not "Franc" (CIV-1146)', () => {
+    expect(cleanHeadsign('Bois-Franc', 'S2', 'A1')).toBe('Bois-Franc');
+    expect(cleanHeadsign('Saint-Jérôme')).toBe('Saint-Jérôme');
+    expect(cleanHeadsign('Kippa-Ring station')).toBe('Kippa-Ring station');
+    expect(cleanHeadsign('Vieux-Québec (Sud)')).toBe('Vieux-Québec (Sud)');
+    expect(cleanHeadsign('15th-Market')).toBe('15th-Market');
+  });
+
+  it('still strips a branch or direction prefix, spaced or a code in capitals (CIV-1146)', () => {
+    expect(cleanHeadsign('A - Oshawa Centre')).toBe('Oshawa Centre');
+    expect(cleanHeadsign('KI - Kitchener GO')).toBe('Kitchener GO');
+    expect(cleanHeadsign('East - Kennedy Station')).toBe('Kennedy Station');
+    expect(cleanHeadsign('601-SYCAMORE')).toBe('SYCAMORE');
+    expect(cleanHeadsign('WELL-Express')).toBe('Express');
+    // Only the first prefix goes: the second "HUB - " stays.
+    expect(cleanHeadsign('51 - HUB - GRAHAM PARK RD')).toBe('HUB - GRAHAM PARK RD');
+  });
+
+  it('reads REM headsigns whole, and leaves other agencies\' Orme, Brossard and Deux-Montagnes names alone (CIV-1153)', () => {
+    expect(cleanHeadsign('A1 - Brossard', 'A4-A1', 'A4 - Deux-Montagnes / A1 - Brossard')).toBe('Brossard');
+    expect(cleanHeadsign('A4 - Deux-Montagnes', 'A4-A1', 'A4 - Deux-Montagnes / A1 - Brossard')).toBe('Deux-Montagnes');
+    expect(cleanHeadsign("A3 - Anse-à-l'Orme", 'A3-A1', "A3 - Anse-à-l'Orme / A1 - Brossard")).toBe("Anse-à-l'Orme");
+    expect(cleanHeadsign('Bois-Franc', 'A1', 'Bois-Franc / A1 - Brossard')).toBe('Bois-Franc');
+    expect(cleanHeadsign('Les Ormes')).toBe('Les Ormes');
+    expect(cleanHeadsign('Purmerend via Wormerveer')).toBe('Purmerend via Wormerveer');
+    expect(cleanHeadsign('Ormeau station')).toBe('Ormeau station');
+    expect(cleanHeadsign('Terminus Brossard')).toBe('Terminus Brossard');
+    expect(cleanHeadsign('Station Deux-Montagnes')).toBe('Station Deux-Montagnes');
+  });
+});
+
+describe('the literal word "Destination" (exo, STM)', () => {
+  it('goes with its spaces, so no double space is left (CIV-1154)', () => {
+    expect(cleanHeadsign("Ouest Destination Anse-à-l'Orme / Timberlea-Trail", '68', null)).toBe("Ouest Anse-à-l'Orme / Timberlea-Trail");
+    expect(cleanHeadsign('Est destination Station Snowdon', '51', null)).toBe('Est Station Snowdon');
+    expect(cleanHeadsign('Destination Gare Centrale', null, null)).toBe('Gare Centrale');
+  });
 });

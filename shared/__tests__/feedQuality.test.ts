@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { assessFeedQuality, feedQualityListItems, presentFeedQualityReason } from '../feedQuality';
+import { readdirSync, readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+import { assessFeedQuality, feedQualityListItems, presentFeedQualityReason, rescoreFeedQuality, type FeedQuality } from '../feedQuality';
 
 const healthy = {
   validationErrors: 0,
@@ -36,6 +38,43 @@ describe('assessFeedQuality', () => {
   });
 });
 
+describe('assessFeedQuality share rules (CIV-533)', () => {
+  const shares = { ...healthy, routeCount: 200, problemShapes: 0, problemShapeRoutes: 0, mismatchRoutes: 0, resumesOn: null };
+
+  it('reads the share of routes a problem touches, so size alone never lowers a score', () => {
+    // TTC-sized: 7 mismatch routes and 4 problem shapes on 2 routes of 200 lose 4 and 1 points, not 30 and 30.
+    expect(assessFeedQuality({ ...shares, mismatchRoutes: 7, problemShapes: 4, problemShapeRoutes: 2 })).toMatchObject({ status: 'review', score: 95 });
+    // Small agency: 1 of 3 routes is a third of the service, capped like the count rules.
+    expect(assessFeedQuality({ ...shares, routeCount: 3, mismatchRoutes: 1 })).toMatchObject({ status: 'review', score: 70 });
+    expect(assessFeedQuality({ ...shares, routeCount: 4, mismatchRoutes: 2, problemShapes: 2, problemShapeRoutes: 2 })).toMatchObject({ status: 'degraded', score: 40 });
+  });
+
+  it('leaves out shapes Atlas repaired: only problem shapes give a reason or a penalty', () => {
+    expect(assessFeedQuality({ ...shares, shapeAnomalies: 4 })).toMatchObject({ status: 'healthy', score: 100, reasons: [] });
+  });
+
+  it('keeps the count rules for validation warnings and expiry', () => {
+    expect(assessFeedQuality({ ...shares, validationWarnings: 2 })).toMatchObject({ status: 'review', score: 80 });
+    expect(assessFeedQuality({ ...shares, feedExpiry: '20260801' })).toMatchObject({ status: 'degraded', score: 65 });
+  });
+
+  it('rates a seasonal pause paused until it resumes, then unusable as a feed with no routes', () => {
+    const pause = { ...shares, featureCount: 0, routeCount: 0, resumesOn: '20261122', checkedAt: '2026-10-29' };
+    const paused = assessFeedQuality(pause);
+    expect(paused).toMatchObject({ status: 'paused', reasons: [] });
+    expect(paused.metrics.resumesOn).toBe('20261122');
+    expect(rescoreFeedQuality(paused, null, '2026-11-21').status).toBe('paused');
+    expect(rescoreFeedQuality(paused, null, '2026-11-22')).toMatchObject({ status: 'unusable', reasons: ['Atlas could not find any usable routes in this feed.'] });
+    expect(assessFeedQuality({ ...pause, resumesOn: null }).status).toBe('unusable');
+    expect(assessFeedQuality({ ...pause, validationErrors: 1 }).status).toBe('unusable');
+  });
+
+  it('a rating made with the share rules re-scores to itself', () => {
+    const rated = assessFeedQuality({ ...shares, mismatchRoutes: 7, feedExpiry: '20261231' });
+    expect(rescoreFeedQuality(rated, null, rated.checkedAt)).toMatchObject({ status: rated.status, score: rated.score, metrics: rated.metrics });
+  });
+});
+
 describe('presentFeedQualityReason', () => {
   it('normalizes older persisted route-shape wording', () => {
     expect(presentFeedQualityReason('369 map lines were repaired — Atlas fixed unusual route geometry before displaying it.'))
@@ -66,5 +105,48 @@ describe('feedQualityListItems', () => {
       '4 route shapes needed adjustment before display.',
     ])).toEqual(['4 shapes adjusted', '3 minor schedule issues found while reading the feed']);
     expect(feedQualityListItems(['The schedule dates in this feed have passed.'])).toEqual(['The schedule dates in this feed have passed']);
+  });
+});
+
+describe('rescoreFeedQuality (CIV-533)', () => {
+  const measured = assessFeedQuality({ ...healthy, routeHeadwayMismatches: 1, feedExpiry: '20261231', checkedAt: '2026-10-07' });
+
+  it('stores the expiry the rating was scored with', () => {
+    expect(measured.metrics.feedExpiry).toBe('20261231');
+    expect(measured).toMatchObject({ status: 'review', score: 90 });
+  });
+
+  it('checks the expiry against the run date, and keeps the measured date as checkedAt', () => {
+    const later = rescoreFeedQuality(measured, '20271231', '2027-01-05');
+    expect(later).toMatchObject({ status: 'degraded', score: 55, checkedAt: '2026-10-07', scoredAt: '2027-01-05' });
+    expect(later.reasons).toContain('The schedule dates in this feed have passed.');
+    expect(rescoreFeedQuality(measured, null, '2026-11-02')).toMatchObject({ status: 'review', score: 90, scoredAt: '2026-11-02' });
+  });
+
+  it('re-scores a rating made before the expiry was stored only when the registry date reproduces it', () => {
+    const { feedExpiry: _drop, ...legacyMetrics } = measured.metrics;
+    const legacy: FeedQuality = { ...measured, metrics: legacyMetrics };
+    expect(rescoreFeedQuality(legacy, '20261231', '2026-11-02')).toMatchObject({ status: 'review', scoredAt: '2026-11-02' });
+    // coast-transit-ms: scored expired on 2026-10-07, while the registry now records 20261231.
+    const expired = assessFeedQuality({ ...healthy, validationWarnings: 1, feedExpiry: '20261001', checkedAt: '2026-10-07' });
+    const { feedExpiry: _gone, ...expiredMetrics } = expired.metrics;
+    const unknown: FeedQuality = { ...expired, metrics: expiredMetrics };
+    expect(rescoreFeedQuality(unknown, '20261231', '2026-11-02')).toBe(unknown);
+  });
+
+  it('every stored rating re-scores to its own status and score on its own date', () => {
+    const dir = resolve(__dirname, '../../config/agencies');
+    const mismatches: string[] = [];
+    let checked = 0;
+    for (const file of readdirSync(dir).filter(name => name.endsWith('.json') && name !== 'order.json')) {
+      const agency = JSON.parse(readFileSync(resolve(dir, file), 'utf8')) as { slug?: string; lastFeedExpiry?: string | null; feedQuality?: FeedQuality };
+      const quality = agency.feedQuality;
+      if (!quality) continue;
+      checked++;
+      const again = rescoreFeedQuality(quality, agency.lastFeedExpiry, quality.scoredAt ?? quality.checkedAt);
+      if (again.status !== quality.status || again.score !== quality.score) mismatches.push(`${agency.slug}: ${quality.status}/${quality.score} -> ${again.status}/${again.score}`);
+    }
+    expect(checked).toBeGreaterThan(100);
+    expect(mismatches).toEqual([]);
   });
 });

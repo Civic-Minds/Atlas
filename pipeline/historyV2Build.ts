@@ -2,13 +2,13 @@
  * Build-time rules for History snapshots (pure; build-history.ts only calls these).
  *
  *  - join legacy per-route change files and v2 sidecar entries by period key
- *  - drop invalid snapshots (empty/unparseable label, bad refDate/year, year after the build year)
+ *  - drop invalid snapshots (empty/unparseable label, bad refDate/year, dated after the build month)
  *  - order by real date, then keep one snapshot per route per year
  */
 import type { HeadwayByPeriod } from '../shared/config.js';
 import { yearOfRefDate, type HistorySnapshotV2, type HistoryV2SidecarRoute } from '../shared/historyV2.js';
 import type { HolidayPeriodDrop, RepickedPeriod } from './historyRefQuality.js';
-import { getPeriodKeySortValue, labelFromRefDate, parsePeriodKey } from './historyPeriods.js';
+import { afterBuildMonth, getPeriodKeySortValue, labelFromRefDate, parsePeriodKey } from './historyPeriods.js';
 
 export interface ArchiveChange {
   periodKey: string;
@@ -16,6 +16,9 @@ export interface ArchiveChange {
   routeLongName?: string;
   label?: string;
   headwayByPeriod?: HeadwayByPeriod;
+  /** CIV-555: the route's shared-stretch value when better than the headline (routeTrunkHeadway), and per period. */
+  trunkHeadway?: number;
+  trunkHeadwayByPeriod?: HeadwayByPeriod;
   geometry?: unknown;
   processedAt?: string;
 }
@@ -26,6 +29,9 @@ export interface BuiltSnapshot {
   year: number;
   weekdayHeadwayMin: number;
   headwayByPeriod?: HeadwayByPeriod;
+  /** CIV-555: the shared-stretch value, so History can headline "every 8–60" as the live card does. */
+  trunkHeadwayMin?: number;
+  trunkHeadwayByPeriod?: HeadwayByPeriod;
   geometry?: unknown;
   v2?: HistorySnapshotV2;
   processedAt?: string;
@@ -37,6 +43,7 @@ export type DropReason =
   | 'bad refDate'
   | 'bad year'
   | 'after build year'
+  | 'after build month'
   | 'no weekday headline';
 
 export interface DropRecord { slug: string; route: string; label: string; reason: DropReason }
@@ -142,22 +149,24 @@ export function visibilityCheck(
 const MIN_YEAR = 1990;
 
 /** Why a candidate cannot be published, or null when it is fine. */
-export function invalidReason(label: string, year: number, v2: HistorySnapshotV2 | undefined, buildYear: number): DropReason | null {
+export function invalidReason(label: string, year: number, v2: HistorySnapshotV2 | undefined, buildYear: number, buildYm = buildYear * 100 + 12): DropReason | null {
   if (v2 && yearOfRefDate(v2.refDate) == null) return 'bad refDate';
   if (!label || !label.trim()) return 'empty label';
   if (!/(?:19|20)\d{2}/.test(label)) return 'unparseable label';
   if (!Number.isInteger(year) || year < MIN_YEAR) return 'bad year';
   if (year > buildYear) return 'after build year';
+  // A month that has not happened yet (CIV-1124: "Dec 2026" read in Oct 2026).
+  if (afterBuildMonth(label, year, buildYm)) return 'after build month';
   return null;
 }
 
-/** When an old change file was written (its processedAt), as a year and label; null if unknown or after this year. */
-function readDate(processedAt: string | undefined, buildYear: number): { year: number; label: string } | null {
+/** When an old change file was written (its processedAt), as a year and label; null if unknown or after the build month. */
+function readDate(processedAt: string | undefined, buildYm: number): { year: number; label: string } | null {
   const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(processedAt ?? '');
   if (!m) return null;
   const year = Number(m[1]);
   const label = labelFromRefDate(`${m[1]}${m[2]}${m[3]}`);
-  return year <= buildYear && label ? { year, label } : null;
+  return label && !afterBuildMonth(label, year, buildYm) ? { year, label } : null;
 }
 
 export interface Candidate {
@@ -201,6 +210,7 @@ export function buildRouteSnapshots(
   candidates: Candidate[],
   buildYear: number,
   report: BuildReport,
+  buildYm = buildYear * 100 + 12,
 ): BuiltSnapshot[] {
   const valid: BuiltSnapshot[] = [];
   let usedV1 = false;
@@ -210,12 +220,13 @@ export function buildRouteSnapshots(
     if (v2) { for (const k of ['sat', 'sun', 'flag'] as const) if (v2[k] === undefined) delete v2[k]; }
     const parsed = parsePeriodKey(c.periodKey);
     // An old change file is keyed by its feed's END date (refresh.ts), so a timetable still running
-    // that ends after this year read as a future year and was dropped, leaving an earlier timetable as
-    // this year's point (CIV-394: AC Transit "Apr 2027"). Such a file is dated by when it was read.
-    const read = !v2 && parsed.year > buildYear ? readDate(c.change?.processedAt, buildYear) : null;
+    // that ends after this month read as a future date: dropped when the year was later (CIV-394: AC
+    // Transit "Apr 2027"), or shown as a month that has not happened yet (CIV-1124: "Dec 2026" in
+    // Oct 2026). Such a file is dated by when it was read, while the timetable was running.
+    const read = !v2 && afterBuildMonth(parsed.label, parsed.year, buildYm) ? readDate(c.change?.processedAt, buildYm) : null;
     const year = v2 ? (yearOfRefDate(v2.refDate) ?? NaN) : read ? read.year : parsed.year;
     const label = read ? read.label : c.change?.label ?? (v2 ? (labelFromRefDate(v2.refDate) ?? '') : parsed.label);
-    const reason = invalidReason(label, year, v2, buildYear);
+    const reason = invalidReason(label, year, v2, buildYear, buildYm);
     if (reason) { report.drops.push({ slug, route, label, reason }); continue; }
     // A v2 value is the representative; a limited or blank route has no number and is never
     // backfilled from the fastest pattern in the old change file.
@@ -228,6 +239,8 @@ export function buildRouteSnapshots(
       year,
       weekdayHeadwayMin: h,
       headwayByPeriod: v2 ? v2.rep.p : c.change?.headwayByPeriod,
+      ...(() => { const t = v2 ? v2.rep.t : c.change?.trunkHeadway; return t != null && t < h ? { trunkHeadwayMin: t } : {}; })(),
+      ...(() => { const tp = v2 ? v2.rep.tp : c.change?.trunkHeadwayByPeriod; return tp ? { trunkHeadwayByPeriod: tp } : {}; })(),
       geometry: c.change?.geometry,
       v2,
       processedAt: c.change?.processedAt,

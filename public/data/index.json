@@ -13427,6 +13427,7 @@
         -72.9218
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-524/latest.zip",
+      "preprocess": "mnr-bus-pairs",
       "lastFeedExpiry": "20270523",
       "lastFeedVersion": null,
       "lastRefreshedAt": "2026-10-12",

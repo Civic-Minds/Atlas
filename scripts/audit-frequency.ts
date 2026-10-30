@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { parseGtfsZip } from '../pipeline/parseGtfs';
-import { detectReferenceDate } from '../pipeline/transit-calendar';
+import { readWeekOf } from '../pipeline/readWeek';
 import { computeRawDepartures } from '../pipeline/transit-phase1';
 import { medianHeadwayInWindow } from '../pipeline/headway-utils';
 
@@ -70,10 +70,12 @@ async function main() {
     const arrayBuffer = buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength) as ArrayBuffer;
 
     const gtfs = await parseGtfsZip(arrayBuffer);
-    const refDate = detectReferenceDate(gtfs.calendar || [], gtfs.calendarDates || [], gtfs.trips || []);
+    // CIV-1101: the pipeline's own week (readWeekOf), read through that week's calendar rows.
+    const week = readWeekOf(gtfs);
+    const refDate = week.referenceDate;
     console.log(`- Reference date for ${agency.name}: ${refDate}`);
 
-    const rawDeps = computeRawDepartures(gtfs, refDate);
+    const rawDeps = computeRawDepartures({ ...gtfs, calendar: week.calendar, calendarDates: week.calendarDates }, refDate);
     const wednesdayDeps = rawDeps.filter(d => d.day === 'Wednesday');
 
     const routeMap = new Map((gtfs.routes || []).map(r => [r.route_id, r]));
