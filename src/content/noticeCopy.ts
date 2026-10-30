@@ -7,6 +7,7 @@
  * review page (_review/notices). A new text takes the next free number; numbers are never reused. Every notice with
  * Learn more names its explainer in NOTICE_EXPLAINERS, so the two can be checked against each other.
  */
+import { agencyInSentence, agencyPossessive } from '../../shared/agencyArticle';
 import { joinList, plural } from '../../shared/overflowText';
 import { formatStoredDate } from '../utils/format';
 import { agencyNames } from '../utils/agencyName';
@@ -16,7 +17,7 @@ import { delayAmount, headwayAbout } from '../utils/headwayText';
 /** Shared user-facing copy for every expired-feed notice. */
 export function expiredFeedNotice(agencyName: string, expDateStr?: string, manualFeedSource = false): string {
   const { primary } = agencyNames(agencyName).card;
-  const ended = `${primary}'s schedule ended${expDateStr ? ` on ${expDateStr}` : ''}.`;
+  const ended = `${agencyPossessive(primary, true)} schedule ended${expDateStr ? ` on ${expDateStr}` : ''}.`;
   // N3 (Ryan): the kept-by-hand detail is in its explainer (E1's MANUAL_FEED piece, N76), not the notice.
   void manualFeedSource;
   return `${ended} Times shown may be out of date.`;
@@ -164,7 +165,7 @@ export const HIDDEN_ROUTES_UNAVAILABLE = 'The hidden-route list is unavailable r
 // N117 settings-no-degraded-feeds
 export const NO_DEGRADED_FEEDS = 'No degraded or unusable feeds are currently recorded.';
 // N119 story-map-loading: loadingText with the agency's network, "Loading MiWay’s network…".
-export const storyMapLoadingText = (agencyName: string) => loadingText(`${agencyName}’s network`);
+export const storyMapLoadingText = (agencyName: string) => loadingText(`${agencyPossessive(agencyName).replace(/'/g, '’')} network`);
 // N120 story-map-failed
 export const storyMapFailedText = (agencyName: string) => `The ${agencyName} network preview is unavailable.`;
 // N118 settings-no-feed-matches
@@ -367,13 +368,13 @@ export type HelpTopic = keyof typeof EXPLAINERS;
 // E1, N25 version (CIV-1051): "ends" before the listing-end date, "ended" from it on. Paragraphs 2 and 3 are N2's.
 export function listingEndedPanelLead(agencyName: string, date: string, ended: boolean): string {
   const { primary } = agencyNames(agencyName).card;
-  return `${primary}'s scheduled service for most routes ${ended ? 'ended' : 'ends'} ${date}, and they have not released updated data. The map shows the last full week in their schedule, for every route.`;
+  return `${agencyPossessive(primary, true)} scheduled service for most routes ${ended ? 'ended' : 'ends'} ${date}, and they have not released updated data. The map shows the last full week in their schedule, for every route.`;
 }
 // E2: the date is the day the schedule went on the map.
 export const newScheduleDataLead = (agencyName: string, onMapOn?: string | null) =>
-  `${agencyNames(agencyName).card.primary}'s new schedule went on the map${onMapOn ? ` on ${onMapOn}` : ''}. It may have errors we haven't found yet.`;
+  `${agencyPossessive(agencyNames(agencyName).card.primary, true)} new schedule went on the map${onMapOn ? ` on ${onMapOn}` : ''}. It may have errors we haven't found yet.`;
 // E4
-export const betaRolloutLead = (agencyName: string) => onlyOnBetaText(agencyNames(agencyName).card.primary);
+export const betaRolloutLead = (agencyName: string) => onlyOnBetaText(agencyInSentence(agencyNames(agencyName).card.primary, true));
 // E5
 export const ROUTE_DATA_QUALITY_LEAD = "Part of this route's line on the map may be missing or drawn in the wrong place.";
 // E7: N14 itself, then the allowance (CIV-1077); 10 minutes is EDGE_GAP_ALLOWANCE_MINUTES (pipeline/transit-phase2.ts).

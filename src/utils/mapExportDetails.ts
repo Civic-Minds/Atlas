@@ -1,3 +1,4 @@
+import { agencyInSentence } from '../../shared/agencyArticle';
 import type { Agency } from '../App';
 import { MAP_KEY_NIGHT } from '../content/noticeCopy';
 import type { DayType } from '../../shared/dayTypes';
@@ -288,7 +289,7 @@ export function buildExportSourceLine(samples: RenderedRouteSample[], agencies: 
   const known = inView.filter((agency): agency is Agency => !!agency);
 
   let source = 'Transit schedules';
-  if (!unknownAgency && known.length === 1) source = `Schedules from ${known[0].name}`;
+  if (!unknownAgency && known.length === 1) source = `Schedules from ${agencyInSentence(known[0].name)}`;
   else if (!unknownAgency && known.length > 1) source = `Schedules from ${known.length} agencies`;
 
   const day = isoDay(releaseGeneratedAt);

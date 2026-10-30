@@ -1,3 +1,4 @@
+import { agencyTakesThe } from '../shared/agencyArticle';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import {
@@ -68,7 +69,7 @@ function Intro({ data }: { data: AgencyPageData }) {
           {named.map((c, i) => (
             <span key={c.slug}>
               {i > 0 ? (i === named.length - 1 && others === 0 ? ' and ' : ', ') : ''}
-              {c.page ? <a className={UNDERLINED_LINK} href={agencyPagePath(c.slug)}>{c.name}</a> : c.name}
+              {agencyTakesThe(c.name) ? 'the ' : ''}{c.page ? <a className={UNDERLINED_LINK} href={agencyPagePath(c.slug)}>{c.name}</a> : c.name}
             </span>
           ))}
           {others > 0 ? ` ${andOthers(others, 'agency', 'agencies')}` : ''}

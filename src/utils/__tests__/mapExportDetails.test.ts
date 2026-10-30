@@ -151,7 +151,7 @@ describe('buildExportSourceLine', () => {
   const RELEASE = '2026-10-10T04:12:00.000Z';
 
   it('names one agency and uses the release date, not the agency publish date', () => {
-    expect(buildExportSourceLine(samples({ ttc: 5 }), dated, RELEASE)).toBe('Schedules from Toronto Transit Commission · updated Oct 10, 2026 · transitatlas.fyi');
+    expect(buildExportSourceLine(samples({ ttc: 5 }), dated, RELEASE)).toBe('Schedules from the Toronto Transit Commission · updated Oct 10, 2026 · transitatlas.fyi');
   });
 
   it('counts several agencies', () => {
@@ -159,8 +159,8 @@ describe('buildExportSourceLine', () => {
   });
 
   it('leaves the date out only when there is no release date', () => {
-    expect(buildExportSourceLine(samples({ ttc: 3 }), dated, null)).toBe('Schedules from Toronto Transit Commission · transitatlas.fyi');
-    expect(buildExportSourceLine(samples({ ttc: 3 }), dated, 'not a date')).toBe('Schedules from Toronto Transit Commission · transitatlas.fyi');
+    expect(buildExportSourceLine(samples({ ttc: 3 }), dated, null)).toBe('Schedules from the Toronto Transit Commission · transitatlas.fyi');
+    expect(buildExportSourceLine(samples({ ttc: 3 }), dated, 'not a date')).toBe('Schedules from the Toronto Transit Commission · transitatlas.fyi');
   });
 
   it('gives no agency count when some drawn routes have no known agency', () => {
@@ -171,6 +171,6 @@ describe('buildExportSourceLine', () => {
 
   it('is part of the export description', () => {
     const details = describeMapExport({ ...BASE, releaseGeneratedAt: RELEASE }, samples({ ttc: 5 }), dated);
-    expect(details.citation).toBe('Schedules from Toronto Transit Commission · updated Oct 10, 2026 · transitatlas.fyi');
+    expect(details.citation).toBe('Schedules from the Toronto Transit Commission · updated Oct 10, 2026 · transitatlas.fyi');
   });
 });

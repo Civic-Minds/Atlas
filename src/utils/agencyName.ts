@@ -432,3 +432,6 @@ export function agencyShortNameBySlug(agencies: { slug: string; name: string }[]
   const agency = agencies.find(a => a.slug === slug);
   return agency ? agencyNames(agency.name).short : slug;
 }
+
+// CIV-1103: an agency's name inside a sentence (shared/agencyArticle.ts, also used by the agency pages).
+export { agencyTakesThe, agencyInSentence, agencyPossessive } from '../../shared/agencyArticle';

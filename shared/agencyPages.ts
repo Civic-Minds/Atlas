@@ -4,6 +4,7 @@
  * the per-route headways already published in the data release (see
  * scripts/build-agency-page-summaries.ts); nothing here measures anything new.
  */
+import { agencyInSentence } from './agencyArticle';
 import { agencyTodayYmd } from './feedAvailability';
 import { headwayEvery, headwayEveryRange, headwayOrBetter } from './headwayText';
 import { modeLabel, sortModes } from './modes';
@@ -146,10 +147,10 @@ export function agencyIntroSentence(
   modes: ReadonlyArray<{ label: string; routes: number }> = [],
 ): string {
   const n = a.routes.length;
-  if (n === 0) return `${a.name} has no weekday routes in the data.`;
+  if (n === 0) return `${agencyInSentence(a.name, true)} has no weekday routes in the data.`;
   let s = `${introLead(a, place, modes)}${place}`;
   if (a.stops) s += ` with ${a.stops.toLocaleString('en-US')} ${plural(a.stops, 'stop')}`;
-  if (connections.length) s += `${CONNECTS_WITH}${namesList(connections.map(c => c.name))}`;
+  if (connections.length) s += `${CONNECTS_WITH}${namesList(connections.map(c => agencyInSentence(c.name)))}`;
   return `${s}.`;
 }
 
@@ -175,7 +176,7 @@ export function introLead(
   modes: ReadonlyArray<{ label: string; routes: number }> = [],
 ): string {
   const n = a.routes.length;
-  return `${introName(a.name, place)} operates ${n.toLocaleString('en-US')} ${plural(n, 'route')}${modes.length > 1 ? ` (${modesText(modes, ', ')})` : ''} in `;
+  return `${agencyInSentence(introName(a.name, place), true)} operates ${n.toLocaleString('en-US')} ${plural(n, 'route')}${modes.length > 1 ? ` (${modesText(modes, ', ')})` : ''} in `;
 }
 
 /** The prerendered HTML carries its data in <script type="application/json" id=...>. */
@@ -308,7 +309,7 @@ export function agencyLeadSentence(a: Pick<AgencyPageSummary, 'routes'>): string
 
 /** The fuller sentence for structured data: the intro plus what the page is. */
 export function agencyDatasetDescription(a: AgencyPageSummary, intro?: string): string {
-  return `${intro ?? agencyLeadSentence(a)} Route-by-route frequency for ${a.displayName}, from the published schedule.`;
+  return `${intro ?? agencyLeadSentence(a)} Route-by-route frequency for ${agencyInSentence(a.displayName)}, from the published schedule.`;
 }
 
 /**
