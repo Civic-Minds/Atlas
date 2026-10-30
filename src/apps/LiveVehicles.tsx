@@ -31,7 +31,8 @@ import { periodKeyForHour } from '../../shared/config';
 import { andOthers, countOf } from '../../shared/overflowText';
 import { inferLiveDirection } from '../utils/liveDirection';
 import { DIRECTION_UNCLEAR, compareLiveRoutes, focusDirectionKey, groupVehiclesByDirection, orderAlongRoute, orderDirectionGroups, riderHeadsign, routeDirectionLabels } from '../utils/liveGrouping';
-import { CardDirectionRow, CardHelpNotice, SidebarCardHeaderBlock, SidebarCardListRows, SidebarCardSection, SidebarCardShell, CARD_LIST_ROUTE, SIDEBAR_CARD_BODY } from '../components/Interval/cardUi';
+import { liveRouteReportDetails, liveVehicleReportDetails } from '../components/Live/liveReport';
+import { CardDirectionRow, CardHelpNotice, CardReportButton, SidebarCardHeaderBlock, SidebarCardListRows, SidebarCardSection, SidebarCardShell, CARD_LIST_ROUTE, SIDEBAR_CARD_BODY } from '../components/Interval/cardUi';
 import { liveVehiclesFingerprint } from '../utils/liveVehiclesFingerprint';
 import { buildRouteKey, routeFeatureForShortName, routeKeyForShortName, splitRouteKey } from '../utils/routeKey';
 import type { MapFocus } from '../utils/routeFocus';
@@ -707,19 +708,29 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
   const cardBody = selectedGroup && cardVehicle ? (
     <SidebarCardShell>
       <SidebarCardHeaderBlock>
-        {/* Same header as the Live route card. */}
-        <CardBackLink onClick={() => { setVehicleCard(null); setSelectedRoute(null); setFocusedVehicle(null); }}>
-          {agencyShortNameBySlug(agencies, selectedGroup.agencySlug)}
-        </CardBackLink>
-        <RouteCardTitle
-          routeShortName={selectedGroup.routeShortName}
-          routeLongName={selectedRouteLongName}
-          routeType={selectedRouteType}
-          agencySlug={selectedGroup.agencySlug}
-          agencyName={selectedAgencyName}
-          onAgencyClick={onAgencyClick ? () => onAgencyClick(selectedGroup.agencySlug) : undefined}
-          showAgency={false}
-        />
+        {/* Same header as the Live route card, with the report flag beside it as on the static route card (CIV-932). */}
+        <div className="flex items-start gap-2">
+          <div className="flex-1 min-w-0">
+            <CardBackLink onClick={() => { setVehicleCard(null); setSelectedRoute(null); setFocusedVehicle(null); }}>
+              {agencyShortNameBySlug(agencies, selectedGroup.agencySlug)}
+            </CardBackLink>
+            <RouteCardTitle
+              routeShortName={selectedGroup.routeShortName}
+              routeLongName={selectedRouteLongName}
+              routeType={selectedRouteType}
+              agencySlug={selectedGroup.agencySlug}
+              agencyName={selectedAgencyName}
+              onAgencyClick={onAgencyClick ? () => onAgencyClick(selectedGroup.agencySlug) : undefined}
+              showAgency={false}
+            />
+          </div>
+          <CardReportButton
+            title={`Live ${selectedAgencyName ?? selectedGroup.agencySlug} ${selectedGroup.routeShortName}, vehicle ${cardVehicle.vehicleLabel ?? cardVehicle.id}`}
+            details={liveVehicleReportDetails({ agencySlug: selectedGroup.agencySlug, agencyName: selectedAgencyName ?? selectedGroup.agencySlug, routeShortName: selectedGroup.routeShortName, vehicle: cardVehicle })}
+            showLiveReason
+            excludeReasons={['Stop is missing, misplaced, or assigned incorrectly']}
+          />
+        </div>
       </SidebarCardHeaderBlock>
       <SidebarCardSection label={vehicleCardName(cardVehicle, selectedRouteModeWord) ?? selectedRouteModeWord}>
         {placedRows(vehicleCardRows(cardVehicle, cardDirectionLabel, cardTripEnd(cardVehicle.headsign, cardDirectionLabel, cardAnalysis)), cardDirectionsReady && cardAnalysisSettled).map(row => (
@@ -744,23 +755,34 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
   ) : selectedGroup ? (
     <SidebarCardShell>
       <SidebarCardHeaderBlock>
-        {/* The same header in the direction list as on the route and vehicle cards; the back link goes up one level. */}
-        <CardBackLink
-          onClick={selectedDirection
-            ? () => setSelectedDirection(null)
-            : () => { setSelectedRoute(null); setFocusedVehicle(null); }}
-        >
-          {agencyShortNameBySlug(agencies, selectedGroup.agencySlug)}
-        </CardBackLink>
-        <RouteCardTitle
-          routeShortName={selectedGroup.routeShortName}
-          routeLongName={selectedRouteLongName}
-          routeType={selectedRouteType}
-          agencySlug={selectedGroup.agencySlug}
-          agencyName={selectedAgencyName}
-          onAgencyClick={onAgencyClick ? () => onAgencyClick(selectedGroup.agencySlug) : undefined}
-          showAgency={false}
-        />
+        {/* The same header in the direction list as on the route and vehicle cards; the back link goes up one level.
+            The report flag sits beside it, as on the static route card (CIV-932). */}
+        <div className="flex items-start gap-2">
+          <div className="flex-1 min-w-0">
+            <CardBackLink
+              onClick={selectedDirection
+                ? () => setSelectedDirection(null)
+                : () => { setSelectedRoute(null); setFocusedVehicle(null); }}
+            >
+              {agencyShortNameBySlug(agencies, selectedGroup.agencySlug)}
+            </CardBackLink>
+            <RouteCardTitle
+              routeShortName={selectedGroup.routeShortName}
+              routeLongName={selectedRouteLongName}
+              routeType={selectedRouteType}
+              agencySlug={selectedGroup.agencySlug}
+              agencyName={selectedAgencyName}
+              onAgencyClick={onAgencyClick ? () => onAgencyClick(selectedGroup.agencySlug) : undefined}
+              showAgency={false}
+            />
+          </div>
+          <CardReportButton
+            title={`Live ${selectedAgencyName ?? selectedGroup.agencySlug} ${selectedGroup.routeShortName}`}
+            details={liveRouteReportDetails({ agencySlug: selectedGroup.agencySlug, agencyName: selectedAgencyName ?? selectedGroup.agencySlug, routeShortName: selectedGroup.routeShortName, direction: selectedDirection, vehicles: allListed })}
+            showLiveReason
+            excludeReasons={['Stop is missing, misplaced, or assigned incorrectly']}
+          />
+        </div>
       </SidebarCardHeaderBlock>
       <LiveRoutePerformance
         key={selectedRoute ?? ''}
@@ -839,7 +861,8 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
         } as React.CSSProperties}
       >
         {cardOpen ? (
-          <div className={sheetMode ? bottomSheetBodyClass(sheetExpanded) : SIDEBAR_CARD_BODY}>
+          // The report form takes the card's width (CIV-932), as History's card does (CIV-1117).
+          <div data-report-anchor="true" className={sheetMode ? bottomSheetBodyClass(sheetExpanded) : SIDEBAR_CARD_BODY}>
             {sheetMode && <BottomSheetHandle expanded={sheetExpanded} handle={sheetHandle} />}
             {cardBody}
           </div>
