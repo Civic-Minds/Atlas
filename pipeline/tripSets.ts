@@ -658,10 +658,27 @@ export function stretchPeriods(s: Stretch): Record<PeriodKey, StretchPeriod> {
   return out;
 }
 
-/** Night (D7: 26:00-29:00), every gap including both edges at most maxGap. null: no departure in the window. */
+/**
+ * CIV-1198 (Ryan, 2026-10-30): the longest wait a stretch that runs at night may have before its first
+ * 2:00-5:00 departure and after its last. Night networks start when day service and the subway stop,
+ * and that hand-over falls inside the window (TTC 304 King from 2:32, while the 504 runs to about 3:10).
+ */
+export const NIGHT_EDGE_MAX_WAIT_MIN = 60;
+
+/**
+ * Night (D7: 26:00-29:00), every gap between departures at most maxGap. A stretch that runs at night
+ * (D3: departures on both sides of 3:30) may wait up to NIGHT_EDGE_MAX_WAIT_MIN before its first
+ * departure and after its last (CIV-1198: TTC 300's Danforth Rd branch runs every 15 from its first
+ * bus at 2:39). Any other stretch keeps both edges at maxGap, so day service starting at 4:30 never
+ * passes. null: no departure in the window.
+ */
 export function stretchNight(s: Stretch, maxGap: 30 | 60): boolean | null {
   if (!s.nightTimes.some(t => t >= STRETCH_NIGHT_START_MIN && t <= STRETCH_NIGHT_END_MIN)) return null;
-  return hasSustainedServiceInWindow([...s.nightTimes], STRETCH_NIGHT_START_MIN, STRETCH_NIGHT_END_MIN, maxGap);
+  if (!runsAcrossNightMidpoint(s.nightTimes)) return hasSustainedServiceInWindow([...s.nightTimes], STRETCH_NIGHT_START_MIN, STRETCH_NIGHT_END_MIN, maxGap);
+  const times = [...new Set(s.nightTimes)].filter(t => t >= STRETCH_NIGHT_START_MIN && t <= STRETCH_NIGHT_END_MIN).sort((a, b) => a - b);
+  const edge = Math.max(maxGap, NIGHT_EDGE_MAX_WAIT_MIN);
+  if (times[0] - STRETCH_NIGHT_START_MIN > edge || STRETCH_NIGHT_END_MIN - times[times.length - 1] > edge) return false;
+  return times.every((t, i) => i === 0 || t - times[i - 1] <= maxGap);
 }
 
 /**

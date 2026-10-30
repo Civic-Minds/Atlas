@@ -213,6 +213,10 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 
 Dated, newest first. The rules above are the short form; this is the reasoning.
 
+### 2026-10-30 — Night service: the wait for the first night bus is held to an hour
+
+Ryan, 2026-10-30 (Linear CIV-1198, [#1219](https://github.com/Civic-Minds/Atlas/issues/1219)): approved the guarded night rule as written. A stretch that runs at night (departures on both sides of 3:30, D3) passes at 30 or 60 when every gap between its 2:00-5:00 departures is at most that, its first departure is by 3:00 and its last is from 4:00. Any other stretch keeps today's test. Why: TTC's night network starts when day service and the subway stop, about 2:30, so 13 of its 15 routes graded every 60 failed every 30 only on the wait for the first night bus (TTC 300, 304 King, 337, 373). Routes with a real gap between night buses still fail (TTC 352 and 384), and day service starting at 4:30 never passes. See [FREQUENCY_RULES.md](FREQUENCY_RULES.md) rule 10.
+
 ### 2026-10-18 — Line sections, the route grade and skipped stations follow the route rules
 
 Ryan (Linear CIV-321, 2026-10-18): a route's grade follows the existing branch and steady rule ("we break it down based on branch and provide a range"); a line section needs 3 departures in a period, then the same filter and "Hide limited service" behaviour as a route; a line is coloured by every train along it, including trains that skip a stop, while the station card shows the station's own frequency. A value needs 3 departures (4 after an edge allowance), not a percentage. See the rules under "How a route's frequency is decided" and "What the map shows".
