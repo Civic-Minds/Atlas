@@ -6,7 +6,7 @@
 // Night; Frequent Service; History with an agency open (its year scrubber); Compare; and Live. It measures every overlay
 // marked data-map-overlay (src/mapOverlayLayout.ts): the header's left and right groups, the footer pills, the counts, the
 // map controls, key, notice and status pills, the update banner, History's scrubber, Compare's labels and link, Live's
-// toolbar, and the analytics prompt. Each overlay is measured by its visible pieces, not its container, so a full-width
+// toolbar, the logo and search box apart, every side panel or card, and the analytics prompt. Each overlay is measured by its visible pieces, not its container, so a full-width
 // row only counts where something is drawn. It fails when two overlays' pieces overlap, or when a piece runs off the screen.
 import { mkdirSync } from 'node:fs';
 import { chromium } from 'playwright';
@@ -46,13 +46,24 @@ function measure() {
   for (const el of document.querySelectorAll('[data-map-overlay]')) {
     const name = el.getAttribute('data-map-overlay');
     if (name === 'top-bar') {
-      [...el.children].filter(visible).forEach((group, i) => out.push({ name: `top-bar:${i === 0 ? 'left' : 'right'}`, boxes: pieces(group).length ? pieces(group) : [] }));
+      // The left group's pieces (the logo, the search box) are measured against each other too: a long search box can
+      // run over the logo's words (CIV-1136). The right group's buttons count as one.
+      [...el.children].filter(visible).forEach((group, i) => {
+        if (i === 0) [...group.children].filter(visible).forEach((piece, k) => { const r = piece.getBoundingClientRect(); out.push({ name: `top-bar:left:${k === 0 ? 'logo' : k === 1 ? 'search' : k}`, boxes: [{ x: r.left, y: r.top, w: r.width, h: r.height }] }); });
+        else out.push({ name: 'top-bar:right', boxes: pieces(group) });
+      });
       continue;
     }
     if (!visible(el) && getComputedStyle(el).display !== 'contents') continue;
     const boxes = pieces(el);
     if (boxes.length) out.push({ name, boxes });
   }
+  // The side panels and cards (every one is placed by sidebarFrameStyle, which sets --sidebar-left): each is one box.
+  document.querySelectorAll('[style*="--sidebar-left"]').forEach((el, i) => {
+    if (!visible(el) || el.closest('[data-map-overlay]')) return;
+    const r = el.getBoundingClientRect();
+    out.push({ name: `side-panel:${el.getAttribute('aria-label') || el.querySelector('h2,h3,[class*="font-black"]')?.textContent?.trim().slice(0, 24) || i}`, boxes: [{ x: r.left, y: r.top, w: r.width, h: r.height }] });
+  });
   // The analytics prompt's own fixed copy (phones); on wider screens it is a pill inside the footer row, measured there.
   const pill = [...document.querySelectorAll('[role="dialog"][aria-label="Analytics consent"]')].find(el => visible(el) && !el.closest('[data-map-overlay]'));
   if (pill) {
