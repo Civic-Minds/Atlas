@@ -104,5 +104,33 @@ export function runStopClustering(stops: ClusterStop[], radiusM = GROUP_RADIUS_M
       }
     }
   }
+  placeDotsAtCentre(stops, anchorOf, coords, radiusM);
   return groups;
+}
+
+/**
+ * CIV-758: when no stop in a group carries rail, hub or route fields (the build's compact stop files
+ * have only a name and a position), every stop ties and the anchor is just the first one listed, often
+ * at the group's edge. The group keeps its stops; its dot moves to the stop nearest the group's centre,
+ * among those that keep every stop within radiusM. A group whose anchor won on those fields keeps it, and
+ * a two-stop group keeps its anchor (its centre is halfway between them).
+ */
+function placeDotsAtCentre(stops: ClusterStop[], anchorOf: Int32Array, coords: Array<{ lon: number; lat: number }>, radiusM: number): void {
+  const members = new Map<number, number[]>();
+  for (let i = 0; i < anchorOf.length; i++) (members.get(anchorOf[i]) ?? members.set(anchorOf[i], []).get(anchorOf[i])!).push(i);
+  const dist = (a: number, b: number) => getDistanceMeters(coords[a].lat, coords[a].lon, coords[b].lat, coords[b].lon);
+  for (const [anchor, group] of members) {
+    if (group.length < 3 || anchorScore(stops[anchor].properties) > 0) continue;
+    const lat = group.reduce((sum, i) => sum + coords[i].lat, 0) / group.length;
+    const lon = group.reduce((sum, i) => sum + coords[i].lon, 0) / group.length;
+    let dot = anchor;
+    let best = getDistanceMeters(lat, lon, coords[anchor].lat, coords[anchor].lon);
+    for (const i of group) {
+      const d = getDistanceMeters(lat, lon, coords[i].lat, coords[i].lon);
+      if (d < best && group.every(j => dist(i, j) <= radiusM)) { best = d; dot = i; }
+    }
+    if (dot === anchor) continue;
+    delete stops[anchor].properties.isHubRef;
+    stops[dot].properties.isHubRef = true;
+  }
 }
