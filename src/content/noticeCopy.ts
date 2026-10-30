@@ -11,6 +11,7 @@ import { joinList, plural } from '../../shared/overflowText';
 import { formatStoredDate } from '../utils/format';
 import { agencyNames } from '../utils/agencyName';
 import { delayAmount, headwayAbout } from '../utils/headwayText';
+import { onDemandStopZoneNames, resolveOnDemandZone, type OnDemandPickupStop, type OnDemandServiceDetails } from '../../shared/onDemandAvailability';
 
 // N2 timetable-ended, N3 manual-timetable-ended
 /** Shared user-facing copy for every expired-feed notice. */
@@ -451,3 +452,57 @@ export const NOTICE_EXPLAINERS = {
 } as const satisfies Record<string, HelpTopic>;
 export type LearnMoreCode = keyof typeof NOTICE_EXPLAINERS;
 export const explainerFor = (code: LearnMoreCode): HelpTopic => NOTICE_EXPLAINERS[code];
+
+// N124 on-demand-shaded-area: the on-demand card's line when the map shades this service's area (CIV-941).
+export const ON_DEMAND_SHADED_AREA = 'The shaded map area shows where this on-demand service operates.';
+
+// N125 on-demand-pickup: how riders board an on-demand zone (CIV-941, moved here from shared/onDemandAvailability.ts unchanged).
+/**
+ * One sentence on how riders board, specific to the selected zone (or the
+ * service when no zone is selected). Returns null when the data says nothing.
+ */
+export function onDemandPickupSentence(service: OnDemandServiceDetails, areaName: string | undefined): string | null {
+  const resolved = resolveOnDemandZone(service, areaName);
+  const stops = (service.stopFeatures ?? []).filter(stop => {
+    const zones = onDemandStopZoneNames(service, stop.properties);
+    return areaName ? zones.includes(areaName) : zones.length === 0;
+  });
+  const count = stops.length;
+  const allTransferPoints = count > 0 && stops.every(stop => (stop.properties as OnDemandPickupStop | undefined)?.serviceType === 'on-demand-transfer-point');
+  const plural = (singular: string, pluralForm: string) => `${count} ${count === 1 ? singular : pluralForm}`;
+  const scope = areaName ? 'This zone' : 'This service';
+  const pickup = resolved.pickup;
+  let sentence: string | null = null;
+  switch (pickup?.method) {
+    case 'door-to-door':
+      sentence = 'Pickups and drop-offs are door to door within the shaded area.';
+      break;
+    case 'curb-to-curb':
+      sentence = 'Pickups and drop-offs are curb to curb within the shaded area.';
+      break;
+    case 'fixed-stops':
+      sentence = count > 0
+        ? `Pickups and drop-offs are at ${plural('set stop', 'set stops')}, shown on the map.`
+        : 'Pickups and drop-offs are at set stops, not door to door.';
+      break;
+    case 'virtual-stops':
+      sentence = count > 0
+        ? `Pickups and drop-offs are at ${plural('virtual stop', 'virtual stops')}, shown on the map.`
+        : 'Pickups and drop-offs are at virtual stops, not door to door.';
+      break;
+    case 'connection-points':
+      sentence = 'This area is a connection point.';
+      break;
+    case 'transfer-point-trips':
+      sentence = count > 0
+        ? `Every trip starts or ends at this zone's ${count === 1 ? 'transfer point' : 'transfer points'}, shown on the map.`
+        : 'Every trip starts or ends at a transfer point.';
+      break;
+    default:
+      if (count > 0) {
+        sentence = `${scope} has ${allTransferPoints ? plural('transfer point', 'transfer points') : plural('stop', 'stops')}, shown on the map.`;
+      }
+  }
+  if (!sentence) return null;
+  return pickup?.note ? `${sentence} ${pickup.note}` : sentence;
+}
