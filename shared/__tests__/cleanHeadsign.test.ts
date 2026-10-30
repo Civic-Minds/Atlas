@@ -133,4 +133,22 @@ describe('isMiwayExpressHeadsign', () => {
     expect(isMiwayExpressHeadsign('110 Express University Exp')).toBe(true);
     expect(isMiwayExpressHeadsign('57 E Courtneypark To Renforth Station')).toBe(false);
   });
+
+  it('keeps a hyphenated place name whole: REM "Bois-Franc", not "Franc" (CIV-1146)', () => {
+    expect(cleanHeadsign('Bois-Franc', 'S2', 'A1')).toBe('Bois-Franc');
+    expect(cleanHeadsign('Saint-Jérôme')).toBe('Saint-Jérôme');
+    expect(cleanHeadsign('Kippa-Ring station')).toBe('Kippa-Ring station');
+    expect(cleanHeadsign('Vieux-Québec (Sud)')).toBe('Vieux-Québec (Sud)');
+    expect(cleanHeadsign('15th-Market')).toBe('15th-Market');
+  });
+
+  it('still strips a branch or direction prefix, spaced or a code in capitals (CIV-1146)', () => {
+    expect(cleanHeadsign('A - Oshawa Centre')).toBe('Oshawa Centre');
+    expect(cleanHeadsign('KI - Kitchener GO')).toBe('Kitchener GO');
+    expect(cleanHeadsign('East - Kennedy Station')).toBe('Kennedy Station');
+    expect(cleanHeadsign('601-SYCAMORE')).toBe('SYCAMORE');
+    expect(cleanHeadsign('WELL-Express')).toBe('Express');
+    // Only the first prefix goes: the second "HUB - " stays.
+    expect(cleanHeadsign('51 - HUB - GRAHAM PARK RD')).toBe('HUB - GRAHAM PARK RD');
+  });
 });

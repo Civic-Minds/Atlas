@@ -64,8 +64,10 @@ export function cleanHeadsign(
   h = h.replace(/^4FUN\s+(?:East|West)\s+(?:Mystic Lake\s+to\s+)?/i, '');
   h = h.replace(/^4FUN\s+(?:East|West)\s+to\s+/i, '');
 
-  // Generic branch/direction prefix: DRT "A - ", GO Transit "KI - ", TTC "East - "
-  h = h.replace(/^(?:[A-Za-z0-9]{1,5}|East|West|North|South)\s*-\s*/i, '');
+  // Generic branch/direction prefix: DRT "A - ", GO Transit "KI - ", TTC "East - ". Without a space at the dash only a
+  // code in capitals or digits is a prefix (Madison "601-SYCAMORE", Metlink "WELL-Express"); a word in a hyphenated
+  // place name stays: REM "Bois-Franc" read "Franc", and "Saint-Jérôme", "Kippa-Ring" lost their first word (CIV-1146).
+  h = h.replace(/^(?:[A-Za-z0-9]{1,5}(?:\s+-\s*|-\s+)|[A-Z0-9]{1,5}-)/, '');
 
   // Strip orphaned leading dash after branch/route-name prefix removal
   // e.g. "Gold Line - 8th & K Only" → (after stripping "Gold Line ") → "- 8th & K Only"
