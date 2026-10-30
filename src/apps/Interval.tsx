@@ -160,7 +160,7 @@ const EMPTY_LAYERS: Record<string, GeoJSON.FeatureCollection> = {};
  */
 function CompareSideSlot({ side, children }: { side: 'A' | 'B'; children: React.ReactNode }) {
   return (
-    <div className={`absolute ${side === 'A' ? SIDEBAR_CARD_TOP : `top-3 ${SIDEBAR_CARD_TOP_DESKTOP}`} left-1/2 -translate-x-1/2 sm:left-4 sm:translate-x-0 sm:right-4 sm:flex sm:justify-end ${Z_PANEL_RAISED} pointer-events-none`}>
+    <div data-map-overlay={`compare-label-${side}`} className={`absolute ${side === 'A' ? SIDEBAR_CARD_TOP : `top-3 ${SIDEBAR_CARD_TOP_DESKTOP}`} left-1/2 -translate-x-1/2 sm:left-4 sm:translate-x-0 sm:right-4 sm:flex sm:justify-end ${Z_PANEL_RAISED} pointer-events-none`}>
       {children}
     </div>
   );
@@ -1185,7 +1185,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
           </div>
         )}
         {compareActive && (
-          <div className={`absolute left-1/2 top-1/2 ${Z_PANEL_RAISED} -translate-x-1/2 -translate-y-1/2 max-sm:hidden`}>
+          <div data-map-overlay="compare-link" className={`absolute left-1/2 top-1/2 ${Z_PANEL_RAISED} -translate-x-1/2 -translate-y-1/2 max-sm:hidden`}>
             <CompareLinkToggle linked={compareLinked} onChange={setCompareLinked} />
           </div>
         )}

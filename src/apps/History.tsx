@@ -1141,6 +1141,7 @@ export default function History({ active, view = HISTORY_VIEW_ALL, initialAgency
 
       {showScrubber && (
         <div
+          data-map-overlay="history-scrubber"
           className={`absolute bottom-6 right-14 ${Z_PANEL} w-[260px] ${PILL_SURFACE} gap-2 px-2.5 text-xs`}
           title="Older to newer"
           onPointerDown={event => event.stopPropagation()}
