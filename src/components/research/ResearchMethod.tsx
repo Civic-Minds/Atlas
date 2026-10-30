@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 
 /**
  * "How we did this" at the bottom of every research page (CIV-1167). Each part is a paragraph that opens with its
- * bold label, always in this order; an optional part shows only when a page passes it. Labels and order are
+ * bold label (ending in a colon, CIV-1177), always in this order; an optional part shows only when a page passes it. Labels and order are
  * Editorial's template, approved by Ryan on 2026-10-30.
  */
 export interface ResearchMethodParts {
@@ -25,16 +25,16 @@ export interface ResearchMethodParts {
 }
 
 const PARTS: ReadonlyArray<[keyof ResearchMethodParts, string]> = [
-  ['dateConducted', 'Date conducted.'],
-  ['dateUpdated', 'Date updated.'],
-  ['whatWeChecked', 'What we checked.'],
-  ['sample', 'Sample.'],
-  ['sources', 'Sources.'],
-  ['whatCounted', 'What counted.'],
-  ['numbers', 'How we handled numbers.'],
-  ['notFound', 'Not found yet.'],
-  ['rechecked', 'Rechecked.'],
-  ['limitations', 'Limitations.'],
+  ['dateConducted', 'Date conducted:'],
+  ['dateUpdated', 'Date updated:'],
+  ['whatWeChecked', 'What we checked:'],
+  ['sample', 'Sample:'],
+  ['sources', 'Sources:'],
+  ['whatCounted', 'What counted:'],
+  ['numbers', 'How we handled numbers:'],
+  ['notFound', 'Not found yet:'],
+  ['rechecked', 'Rechecked:'],
+  ['limitations', 'Limitations:'],
 ];
 
 /** The heading and the parts. No outer margin or border: the page (or its layout's method slot) places it. */
