@@ -108,8 +108,9 @@ export function cleanHeadsign(
   // Evenly spaced "TC / MLK JR STATION" and headsigns with several slashes (lists of streets) are left alone.
   if ((h.match(/\//g) ?? []).length === 1) h = h.replace(/(\S)\/\s+(?=\S)/, '$1/');
 
-  // exo / STM Montreal buses: headsigns sometimes include "Destination" as a literal word
-  h = h.replace(/\bDestination\b/gi, '');
+  // exo / STM Montreal buses: headsigns sometimes include "Destination" as a literal word. It goes with the spaces
+  // around it, so "Ouest Destination Anse-à-l'Orme" reads "Ouest Anse-à-l'Orme", not with two spaces (CIV-1154).
+  h = h.replace(/\s*\bDestination\b\s*/gi, ' ');
 
   // (CIV-1153) A REM-only lookup used to rename any headsign containing "orme", "brossard" or "montagnes" to a REM
   // station, for every agency ("Les Ormes", "Terminus Brossard"). REM's own headsigns come out whole without it since
