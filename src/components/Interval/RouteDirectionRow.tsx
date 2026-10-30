@@ -115,7 +115,8 @@ export default function RouteDirectionRow({ label, routeName, labelWeight = 'bol
           className={`${labelWeight === 'regular' ? 'font-normal' : 'font-bold'} flex-1 min-w-[6rem] ${singleLine && !labelWraps ? 'truncate' : 'break-words'} leading-snug ${clickable ? '' : 'text-[var(--text-primary)]'}`}
           title={singleLine && !labelWraps ? label : undefined}
         >
-          {routeName ? <RouteRowName shortName={routeName.shortName} name={routeName.name} /> : label}
+          {/* A wrapping label keeps its first word with the next ("to Roncesvalles"), never "to" alone on a line. */}
+          {routeName ? <RouteRowName shortName={routeName.shortName} name={routeName.name} /> : labelWraps && typeof label === 'string' ? label.replace(' ', '\u00A0') : label}
         </span>
         {hasValueCell && <span ref={valueRef} style={held.value} className="inline-flex items-center justify-end gap-2 min-w-0">
           {edgeGapAllowance && (

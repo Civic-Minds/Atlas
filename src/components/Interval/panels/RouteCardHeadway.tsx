@@ -633,7 +633,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                           <CardDirectionRow
                             labelWeight="regular"
                             singleLine
-                            labelWraps={row.rowNoRegular}
+                            labelWraps={stableColors && row.rowNoRegular}
                             label={label}
                             headway={row.headway}
                             limitedLabel={row.isLimited && row.edgeText ? row.edgeText : row.rowNoRegular ? noRegularLabel : undefined}
