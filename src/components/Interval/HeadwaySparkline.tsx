@@ -168,7 +168,7 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
   // Closing the route card closes the full-day view, so its params go with it.
   useEffect(() => {
     if (!ownsUrl) return;
-    return () => syncUrlParams({ fullday: null, fdir: null });
+    return () => syncUrlParams(encodeFullDayUrlState({ open: false, direction: null }, null));
   }, [ownsUrl]);
 
   const sharedMode = !!onSharedHour;

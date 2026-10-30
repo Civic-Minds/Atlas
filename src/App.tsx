@@ -39,13 +39,13 @@ import ResearchInfo from './components/ResearchInfo';
 import { FREQUENT_INFO_HEADING, frequentRuleText } from './content/researchRules';
 import { DAY_TYPES, getNowDay, type DayType } from '../shared/dayTypes';
 import { syncUrlParams } from './utils/syncUrlParams';
-import { MAP_URL, readUrlParam, urlParamUpdate } from './utils/mapUrlState';
+import { APP_URL, FREQUENT_URL, MAP_URL, NIGHT_URL, currentSearch, linkUpdate, readLink, readUrlParam, urlParamUpdate } from './utils/urlSchema';
 import { AGENCY_CARD_PARAM, parseAgencyCardParam } from './utils/shareUrlState';
 import AppUpdateBanner from './components/AppUpdateBanner';
 import type { FeedQuality } from '../shared/feedQuality';
 import { trackEvent } from './lib/analytics';
 import { markAtlasOnce } from './lib/performance';
-import { parseFrequentServiceDays, type FrequentServiceFrequency, type FrequentServiceWindow } from '../shared/frequentService';
+import { type FrequentServiceFrequency, type FrequentServiceWindow } from '../shared/frequentService';
 import type { NightServiceFrequency } from '../shared/nightService';
 const FrequentServiceStory = React.lazy(() => import('./apps/FrequentServiceStory'));
 const ResearchPage = React.lazy(() => import('./apps/ResearchPage'));
@@ -172,7 +172,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   const { pathname } = useLocation();
   // The on-demand service a shared link opens (?ondemand=<slug>[::zone]), read once: its zones load
   // wherever the map starts, so the link opens the same card a click does and the map moves to it.
-  const [linkedOnDemandSlug] = useState(() => new URLSearchParams(window.location.search).get('ondemand')?.split('::', 1)[0] || null);
+  const [linkedOnDemandSlug] = useState(() => readUrlParam(currentSearch(), MAP_URL.onDemand)?.split('::', 1)[0] || null);
   // The map route is the map regardless of which map-state parameters are in the URL.
   // Requiring one of the filter parameters made links such as ?p=overnight render the
   // normal frequency controls and left the research controls out of the header.
@@ -285,7 +285,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   const [selectedMapAgencySlug, setSelectedMapAgencySlug] = useState<string | null>(null);
   const [pendingLiveRoute, setPendingLiveRoute] = useState<{ slug: string; routeShortName: string } | null>(null);
   const [pendingNightRoute, setPendingNightRoute] = useState<{ slug: string; routeId: string; frequency: NightServiceFrequency } | null>(null);
-  const [nightServiceFrequency, setNightServiceFrequency] = useState<NightServiceFrequency>(() => new URLSearchParams(window.location.search).get('nightFrequency') === '30' ? 30 : 60);
+  const [nightServiceFrequency, setNightServiceFrequency] = useState<NightServiceFrequency>(() => readUrlParam(currentSearch(), NIGHT_URL.frequency) ?? 60);
   const [pendingHistoryRoute, setPendingHistoryRoute] = useState<{ slug: string; routeShortName: string } | null>(null);
   const [headerPortalEl, setHeaderPortalEl] = useState<Element | null>(null);
   const headerPortalRef = useCallback((el: HTMLDivElement | null) => { setHeaderPortalEl(el); }, []);
@@ -338,8 +338,8 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   });
   const [hideLowQuality, setHideLowQuality] = useState(() => {
     if (!FEATURES.persistedSettings || typeof window === 'undefined') return false;
-    const urlValue = new URLSearchParams(window.location.search).get('quality');
-    if (urlValue != null) return urlValue === '1';
+    const fromLink = readUrlParam(currentSearch(), APP_URL.hideLowQuality);
+    if (fromLink != null) return fromLink;
     return localStorage.getItem('atlas_pref_hide_low_quality') === 'true';
   });
   const [showMapLegend, setShowMapLegend] = useState(() => (
@@ -348,15 +348,13 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   const [dataSaver, setDataSaver] = useState(() => (
     (() => {
       if (!FEATURES.persistedSettings || typeof window === 'undefined') return false;
-      const urlValue = new URLSearchParams(window.location.search).get('dataSaver');
-      if (urlValue != null) return urlValue === '1';
       return localStorage.getItem('atlas_pref_data_saver') === 'true';
     })()
   ));
 
   useEffect(() => {
     if (FEATURES.persistedSettings) localStorage.setItem('atlas_pref_hide_low_quality', String(hideLowQuality));
-    syncUrlParams({ quality: FEATURES.persistedSettings && hideLowQuality ? '1' : null });
+    syncUrlParams(urlParamUpdate(APP_URL.hideLowQuality, FEATURES.persistedSettings && hideLowQuality));
   }, [hideLowQuality]);
 
   useEffect(() => {
@@ -396,7 +394,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   const [compareActive, setCompareActive] = useState(false);
   const [day, setDay] = useState<DayType>(() => {
     try {
-      const fromLink = readUrlParam(window.location.search, MAP_URL.day);
+      const fromLink = readUrlParam(currentSearch(), MAP_URL.day);
       if (fromLink != null) return fromLink;
     } catch {}
     try {
@@ -424,19 +422,13 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
 
   const historyViewControl = useMemo(() => ({ view: historyView, setView: setHistoryView }), [historyView]);
   const handleUserMoveMap = useCallback(() => setUserMovedMap(true), []);
-  const [frequentServiceDays, setFrequentServiceDays] = useState(() => {
-    const days = parseFrequentServiceDays(new URLSearchParams(window.location.search).get('days'));
-    return days.length ? days : ['Weekday' as const];
-  });
-  const [frequentServiceFrequency, setFrequentServiceFrequency] = useState<FrequentServiceFrequency>(() => new URLSearchParams(window.location.search).get('frequency') === '30' ? 30 : 15);
-  const [frequentServiceWindow, setFrequentServiceWindow] = useState<FrequentServiceWindow>(() => new URLSearchParams(window.location.search).get('window') === 'extended' ? 'extended' : 'daytime');
+  const [frequentLink] = useState(() => readLink(currentSearch(), FREQUENT_URL));
+  const [frequentServiceDays, setFrequentServiceDays] = useState<DayType[]>(() => frequentLink.days ?? ['Weekday']);
+  const [frequentServiceFrequency, setFrequentServiceFrequency] = useState<FrequentServiceFrequency>(() => frequentLink.frequency ?? 15);
+  const [frequentServiceWindow, setFrequentServiceWindow] = useState<FrequentServiceWindow>(() => frequentLink.window ?? 'daytime');
 
   useEffect(() => {
-    syncUrlParams({
-      days: frequentServiceDays.length === 1 && frequentServiceDays[0] === 'Weekday' ? null : frequentServiceDays.join(','),
-      frequency: frequentServiceFrequency === 15 ? null : String(frequentServiceFrequency),
-      window: frequentServiceWindow === 'daytime' ? null : frequentServiceWindow,
-    });
+    syncUrlParams(linkUpdate(FREQUENT_URL, { days: frequentServiceDays, frequency: frequentServiceFrequency, window: frequentServiceWindow }));
   }, [frequentServiceDays, frequentServiceFrequency, frequentServiceWindow]);
 
   const inFrequency = activeApp === 'frequency';
@@ -570,6 +562,27 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   useEffect(() => {
     syncUrlParams(urlParamUpdate(MAP_URL.day, day));
   }, [day]);
+  // Night's frequency in its link, so a shared Night link keeps 30 (60, the default, is left out) (CIV-1139).
+  useEffect(() => {
+    if (inNight) syncUrlParams(urlParamUpdate(NIGHT_URL.frequency, nightServiceFrequency));
+  }, [inNight, nightServiceFrequency, pathname]);
+  // A tab switch drops the link (setActiveApp navigates to a bare path) and the effects above write only on a change:
+  // when the map's own view opens again, the app's part of its link is written once more, as Interval does for the
+  // map's filters (CIV-1139).
+  const linkPathRef = useRef(pathname);
+  useEffect(() => {
+    if (linkPathRef.current === pathname) return;
+    linkPathRef.current = pathname;
+    if (!inFrequency && !inFrequentService) return;
+    syncUrlParams({
+      ...urlParamUpdate(MAP_URL.day, day),
+      ...urlParamUpdate(APP_URL.hideLowQuality, FEATURES.persistedSettings && hideLowQuality),
+      [AGENCY_CARD_PARAM]: selectedAgencySlug,
+      ...(inFrequentService ? linkUpdate(FREQUENT_URL, { days: frequentServiceDays, frequency: frequentServiceFrequency, window: frequentServiceWindow }) : {}),
+    });
+  // Only a path change rewrites the link; each value's own effect keeps it current.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname, inFrequency, inFrequentService]);
 
   useEffect(() => {
     setAgenciesLoadState('loading');

@@ -1,7 +1,7 @@
 import { PHONE_MEDIA_QUERY, phoneModeFlags, useMediaQuery } from '../hooks/useMediaQuery';
 import React, { useState, useCallback, useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { useSearchParams } from 'react-router';
+import { useLocation, useSearchParams } from 'react-router';
 import { useViewportLoadGate } from '../hooks/useViewportLoadGate';
 import { agencyNames } from '../utils/agencyName';
 import SelectionLoadPanel, { SelectionNoticePanel } from '../components/Interval/SelectionLoadPanel';
@@ -31,16 +31,16 @@ import { DAY_TYPES, type DayType as DayTypeName } from '../../shared/dayTypes';
 import { splitRouteKey } from '../utils/routeKey';
 import { getPolledRoute } from '../../shared/livePollingConfig';
 import { resolveRouteSelectionForDay, routeOnAnyDay } from '../utils/routeSelection';
-import { MAP_URL, readUrlParam, urlParamPresent, urlParamUpdate } from '../utils/mapUrlState';
+import { MAP_URL, currentSearch, linkUpdate, readUrlParam, urlParamPresent, urlParamUpdate } from '../utils/urlSchema';
 import { syncUrlParams } from '../utils/syncUrlParams';
 import type { HistoryView } from '../utils/historyYearMap';
 import { usePersistedFilterPref } from '../hooks/usePersistedFilterPref';
-import { encodeCompareSideParams, encodeSelectionParams, encodeModesParam, isAgencyOff, parseAgencyUrlRule, parseAreaBounds, parseCompareSideParams, parseModesParam, parseRouteChooserParam, encodeRouteChooserParam, ROUTE_CHOOSER_PARAM, settleAgencyUrlRule, shouldPersistAgencySelection, type AgencyUrlRule } from '../utils/shareUrlState';
+import { encodeCompareSideParams, encodeSelectionParams, encodeModesParam, isAgencyOff, parseAgencyUrlRule, parseAreaBounds, parseCompareSideParams, parseModesParam, parseRouteChooserParam, encodeRouteChooserParam, MODES_PARAM, ROUTE_CHOOSER_PARAM, settleAgencyUrlRule, shouldPersistAgencySelection, type AgencyUrlRule } from '../utils/shareUrlState';
 import { searchOverlayHidesPanel } from '../utils/format';
 import { trackEvent } from '../lib/analytics';
 import type { FrequentServiceFrequency, FrequentServiceWindow } from '../../shared/frequentService';
 import type { NightServiceFrequency } from '../../shared/nightService';
-import { getRegionalView, parseUrlView } from '../utils/regionView';
+import { getRegionalView, getSavedView, parseUrlView } from '../utils/regionView';
 import ResearchLegend from '../components/Interval/ResearchLegend';
 import { selectFrequentServiceFeatures, selectNightServiceFeatures } from '../components/Interval/map/useOverlaySources';
 import { areaFitZoom } from '../../shared/areaIndex';
@@ -400,7 +400,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   });
   const [hideSpan, setHideSpan] = useState(() => {
     try {
-      const fromLink = readUrlParam(window.location.search, MAP_URL.hideSpan);
+      const fromLink = readUrlParam(currentSearch(), MAP_URL.hideSpan);
       if (fromLink != null) return fromLink;
       const saved = localStorage.getItem('atlas_pref_hide_span');
       return saved == null ? true : saved === 'true';
@@ -412,7 +412,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   // saved preference keeps its meaning; only a visitor with neither gets the new default.
   const [hideLimitedService, setHideLimitedService] = useState(() => {
     try {
-      const fromLink = readUrlParam(window.location.search, MAP_URL.hideLimited);
+      const fromLink = readUrlParam(currentSearch(), MAP_URL.hideLimited);
       if (fromLink != null) return fromLink;
       const saved = localStorage.getItem('atlas_pref_hide_limited');
       return saved == null ? true : saved === 'true';
@@ -746,7 +746,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   // Filters a shared link set when the page opened apply to this visit only; they become the
   // saved preference once the viewer changes them (#891). Mirrors each initializer's URL read.
   const [filtersFromUrl] = useState(() => {
-    const sp = new URLSearchParams(window.location.search);
+    const sp = new URLSearchParams(currentSearch());
     return {
       headway: urlParamPresent(sp, MAP_URL.headway),
       day: urlParamPresent(sp, MAP_URL.day),
@@ -780,7 +780,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     syncUrlParams(encodeSelectionParams(selectedAgencies, agencies.map(a => a.slug)));
   }, [selectedAgencies, agencies]);
   useEffect(() => {
-    syncUrlParams({ m: encodeModesParam(selectedModes) });
+    syncUrlParams({ [MODES_PARAM]: encodeModesParam(selectedModes) });
   }, [selectedModes]);
 
   useEffect(() => {
@@ -1001,6 +1001,27 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   useEffect(() => {
     syncUrlParams(urlParamUpdate(MAP_URL.period, period));
   }, [period]);
+
+  // A tab switch opens the new view on a bare path (App's setActiveApp), and the effects above write only on a change,
+  // so coming back left the link without the map's filters and a copied link opened on the viewer's own (CIV-1139).
+  // When the map's own view opens again it writes its whole link once; any view showing the map writes its position.
+  const { pathname } = useLocation();
+  const linkPathRef = useRef(pathname);
+  useEffect(() => {
+    if (linkPathRef.current === pathname) return;
+    linkPathRef.current = pathname;
+    const saved = getSavedView();
+    if (showUi || showSelectionUi) syncUrlParams(saved ? linkUpdate(MAP_URL, { lat: saved.lat, lon: saved.lon, zoom: saved.zoom }) : {});
+    if (!showUi) return;
+    syncUrlParams({
+      ...linkUpdate(MAP_URL, { headway: maxHeadway, period, hideSpan, hideLimited: hideLimitedService, route: selectedRoute, stop: selectedStop, onDemand: selectedOnDemandSelection }),
+      ...(agencies.length ? encodeSelectionParams(selectedAgencies, agencies.map(a => a.slug)) : {}),
+      [MODES_PARAM]: encodeModesParam(selectedModes),
+      ...encodeCompareSideParams(compareActive ? compareSide : null),
+    });
+  // Only a path change rewrites the whole link; each value's own effect above keeps it current.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname, showUi, showSelectionUi]);
 
   // Search-result hover → highlight that route on the map, fading the rest
   const [hoveredSearchRoute, setHoveredSearchRoute] = useState<string | null>(null);

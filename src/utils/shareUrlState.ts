@@ -18,6 +18,7 @@
 import { AREA_INDEX, AREA_PARAM, areaMatchingSelection, lookupArea, type AreaIndex } from '../../shared/areaIndex';
 import { FEATURES } from '../../shared/config';
 import { filterModeOptions } from '../../shared/modes';
+import { MAP_URL } from './urlSchema';
 
 export const AGENCY_URL_MAX_SLUGS = 60;
 export const AGENCIES_PARAM = 'agencies';
@@ -178,14 +179,11 @@ export interface CompareSideParams<Day extends string = string, Period extends s
 
 /** Frequency value from a URL (`h` or `ch`): a positive number of minutes, or "all" for no limit. */
 export function parseHeadwayValue(raw: string | null | undefined): number | null {
-  if (!raw) return null;
-  if (raw === 'all' || raw === 'inf' || raw === 'Infinity') return Infinity;
-  const n = Number(raw);
-  return isFinite(n) && n > 0 ? n : null;
+  return raw ? MAP_URL.headway.parse(raw) ?? null : null;
 }
 
 export function encodeHeadwayValue(maxHeadway: number): string {
-  return maxHeadway === Infinity ? 'all' : String(maxHeadway);
+  return MAP_URL.headway.serialize(maxHeadway);
 }
 
 /** Side B from the URL, or null when the link isn't a compare link (or names an unknown day). */
