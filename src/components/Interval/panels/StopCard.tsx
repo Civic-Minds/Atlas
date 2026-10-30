@@ -1,7 +1,7 @@
 import PanelEmpty from '../../ui/PanelEmpty';
 import React, { useMemo } from 'react';
 import { CardBackLink } from '../../CardBack';
-import { stopNameCase } from '../../../utils/format';
+import { nameCase } from '../../../utils/format';
 import type { HoveredBranch, TimePeriod } from '../../../hooks/useIntervalStats';
 import {
   AgencyFilterChips,
@@ -125,7 +125,7 @@ export const StopCard: React.FC<StopCardProps> = ({
               <FlaggableValue reason="Stop is missing, misplaced, or assigned incorrectly" reportRef={reportRef} className="block w-full text-left">
                 <SidebarCardHeader
                   eyebrow={back?.namesAgency || back?.to === stopAgencies[0] ? null : stopAgencies[0]}
-                  title={`${stopNameCase(currentStop.stopName)}${currentStop.direction ? ` — ${currentStop.direction}` : ''}`}
+                  title={`${nameCase(currentStop.stopName, 'stop')}${currentStop.direction ? ` — ${currentStop.direction}` : ''}`}
                   titleClamp
                 />
               </FlaggableValue>
@@ -138,7 +138,7 @@ export const StopCard: React.FC<StopCardProps> = ({
                 />
                 <FlaggableValue reason="Stop is missing, misplaced, or assigned incorrectly" reportRef={reportRef} className="block w-full text-left">
                   <SidebarCardHeader
-                    title={`${stopNameCase(currentStop.stopName)}${currentStop.direction ? ` — ${currentStop.direction}` : ''}`}
+                    title={`${nameCase(currentStop.stopName, 'stop')}${currentStop.direction ? ` — ${currentStop.direction}` : ''}`}
                     titleClamp
                   />
                 </FlaggableValue>
@@ -147,9 +147,9 @@ export const StopCard: React.FC<StopCardProps> = ({
           </div>
           <CardReportButton
             ref={reportRef}
-            title={`Stop issue: ${stopNameCase(currentStop.stopName)}`}
+            title={`Stop issue: ${nameCase(currentStop.stopName, 'stop')}`}
             details={reportDetails([
-              ['Stop', `${stopNameCase(currentStop.stopName)}${currentStop.direction ? ` — ${currentStop.direction}` : ''}`],
+              ['Stop', `${nameCase(currentStop.stopName, 'stop')}${currentStop.direction ? ` — ${currentStop.direction}` : ''}`],
               ['Agencies', stopAgencies.join(', ') || 'Unknown'],
               ['Period', period],
             ])}
@@ -201,7 +201,7 @@ export const StopCard: React.FC<StopCardProps> = ({
                 routeName={{ shortName: route.primary, name: route.secondary }}
                 // "Moody Center", not the feed's "MOODY CENTER"; a feed's own mixed case stays as written (CIV-935).
                 // The stop name shortens; the distance always shows (#1154).
-                subLabel={stopNameCase(nearestStopName)}
+                subLabel={nameCase(nearestStopName, 'stop')}
                 subLabelTrailing={` · ${Math.round(distanceMeters)} m away`}
                 subLabelWeight="medium"
                 headway={headway ?? undefined}

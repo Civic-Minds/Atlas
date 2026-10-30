@@ -4,7 +4,7 @@
  * from the Live analysis file (v3).
  */
 import type { DashboardBand, LiveV3, UncertainStart } from '../../../shared/liveDashboard';
-import { titleCase } from '../../utils/format';
+import { nameCase } from '../../utils/format';
 import { USUALLY_ON_TIME, bunchTotalParts, bunchedAndLong, lateShareText, usuallyOffBy } from '../../../shared/liveWording';
 
 export type RouteStripMode = 'delay' | 'bunching';
@@ -279,7 +279,7 @@ export function routeStripFromV3(v3: LiveV3, directionId: number, band: Dashboar
       const b = bunchingById.get(s.stopId);
       return {
         stopId: s.stopId,
-        name: titleCase(s.name),
+        name: nameCase(s.name, 'title'),
         delayMin: s.n > 0 ? s.medianMin : null,
         lateShare: s.n > 0 ? s.lateShare : null,
         bunchingShare: b && b.n > 0 ? b.badShare : null,
