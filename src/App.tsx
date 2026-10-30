@@ -10,6 +10,7 @@ import { R2_PUBLIC_URL, getAgencyArtifactUrls, getAgencyCatalogUrl, FEATURES, FE
 import AtlasLogo from './components/AtlasLogo';
 import { isAgencyVisibleInBrowser } from '../shared/agencyVisibility';
 import { LIVE_POLLING_ROUTES } from '../shared/livePollingConfig';
+import { findSeoRoute } from '../shared/seo';
 const Interval = React.lazy(() => import('./apps/Interval'));
 import { useDebouncedValue } from './hooks/useDebouncedValue';
 import { PHONE_MEDIA_QUERY, phoneModeFlags, useMediaQuery } from './hooks/useMediaQuery';
@@ -186,6 +187,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   const historyOn = FEATURES.history && phoneModes.history;
   const compareOn = FEATURES.compareMode && phoneModes.compareMode;
   const routedApp: AppId = PATH_TO_APP[pathname] ?? 'frequency';
+  const pageHeading = findSeoRoute(pathname)?.title;
   // Direct URL access (e.g. /apps/live) would otherwise bypass the LIVE_ENABLED / HISTORY_ENABLED
   // gate below -- fall back to the frequency map, and correct the URL so it
   // doesn't lie about what's actually showing.
@@ -643,6 +645,8 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
     <HistoryMapOverlayProvider>
     <LiveVehiclesMapOverlayProvider>
     <div className={`relative h-dvh w-screen bg-[var(--bg-app)] text-[var(--text-primary)] font-sans overflow-hidden transition-colors ${TRANSITION_BASE}`}>
+      {/* The page's heading for screen readers, in the page's own title words (#1195). */}
+      {!inResearch && pageHeading && <h1 className="sr-only">{pageHeading}</h1>}
       {/* Unified header row — left and right sections share one flex container so they can never overlap. Fixed row height so a taller control in one view (e.g. Night's 30/60 toggle) can't push the logo and search off the line they sit on in every other view (#908). */}
       <div className={`absolute ${MAP_TOP_BAR_SLOT} ${infoOpen ? Z_MODAL_TOP : Z_HEADER} flex items-center justify-between pointer-events-none`} data-map-overlay="top-bar">
       <div ref={headerLeftRef} className={`flex items-center gap-2 pointer-events-auto flex-1 min-w-0 ${phoneSearchExpanded ? '' : 'max-w-[calc(100%-3rem)] mr-2'} sm:max-w-none sm:mr-0`}>
