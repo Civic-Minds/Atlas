@@ -1,0 +1,38 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`card rows read their value, gap and words from the same trips, across every fixture (CIV-1069) > no number from fewer than 3 own departures, and no plain number beside a gap of half the period or more 1`] = `
+{
+  "borrowed": [
+    "septa-98 98 Weekday d1 "Norristown Transit Center" amPeak: every 30 from 1 own",
+    "septa-98 98 Weekday d1 "Norristown Transit Center" midday: every 31 from 0 own",
+    "septa-98 98 Weekday d1 "Norristown Transit Center" pmPeak: every 30 from 0 own",
+    "septa-98 98 Weekday d1 "Norristown Transit Center" evening: every 70 from 1 own",
+    "ttc-191-weekday 191 Sunday d1 "York Mills" pmPeak: every 25 from 0 own",
+    "ttc-191-weekday 191 Sunday d1 "York Mills" evening: every 20 from 0 own",
+    "ttc-191-weekday 191 Sunday d1 "York Mills" late: every 20 from 0 own",
+    "ttc-320-sunday-night 320 Sunday d0 "Queens Quay" amPeak: every 56 from 0 own",
+    "ttc-337-373-night 337 Saturday d1 "Steeles" overnight: every 30 from 2 own",
+    "ttc-337-373-night 373 Saturday d1 "Steeles and Kipling" overnight: every 78 from 1 own",
+    "ttc-337-373-night 373 Sunday d1 "Steeles and Kipling" overnight: every 30 from 2 own",
+    "ttc-340-night 340 Weekday d1 "St Clair and Oakwood" overnight: every 30 from 1 own",
+  ],
+  "holes": [
+    "actransit-211 211 Saturday d1 "Union City BART" late: every 30 beside 98",
+    "actransit-211 211 Sunday d1 "Union City BART" late: every 30 beside 98",
+    "capmetro-335-392-243 335 Weekday d1 "Berkman EB" late: every 30 beside 126",
+    "capmetro-335-392-243 335 Saturday d1 "Berkman EB" late: every 30 beside 131",
+    "cta-9-weekday 9 Weekday d0 "Ashland & 95th Street" midday: every 13 beside 256",
+    "cta-9-weekday 9 Weekday d0 "Ashland & 95th Street" pmPeak: every 14 beside 158",
+    "drt-900-pulse 900 Weekday d0 "Ritson" late: every 20 beside 153",
+    "lacmta-40-weekday 40 Weekday d0 "Division 13 Layover" evening: every 33 beside 126",
+    "nyct-subway-night-weekday M Weekday d1 "Middle Village-Metropolitan Av" overnight: every 20 beside 224",
+    "nyct-subway-night-weekday R Weekday d1 "Bay Ridge-95 St" late: every 13 beside 165",
+    "nyct-subway-night-weekday R Weekday d1 "Bay Ridge-95 St" overnight: every 20 beside 237",
+    "septa-66-weekday 66 Weekday d0 "Express Frankford Transit Center" pmPeak: every 12 beside 131",
+    "ttc-129-weekday-pool-hole 129 Weekday d1 "Major Mackenzie via Scarborough Centre Stn" late: every 29 beside 118",
+    "ttc-25-weekday 25 Weekday d0 "Broadview via Don Mills and Don Valley" amPeak: every 6 beside 144",
+    "ttc-line1-weekday 1 Weekday d0 "Vaughan Metropolitan Centre Station" overnight: every 5 beside 204",
+    "ttc-line1-weekday 1 Weekday d1 "Finch Station" overnight: every 7 beside 207",
+  ],
+}
+`;

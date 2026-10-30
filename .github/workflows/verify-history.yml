@@ -8,6 +8,16 @@ on:
         required: true
         default: '10'
         type: string
+      v2:
+        description: 'Verify the History v2 build (ATLAS_HISTORY_V2=1) instead of the published default build. Read-only unless publish is set.'
+        required: false
+        default: false
+        type: boolean
+      publish:
+        description: 'WRITES TO LIVE R2 (needs Ryan''s go): back up atlas/history-config.json, then run the real History v2 build (runbook steps 3 and 5). Requires v2.'
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: read
@@ -32,12 +42,57 @@ jobs:
         run: npm run test
 
       - name: Verify history archive
+        if: ${{ !inputs.publish }}
         run: npm run build-history -- --verify-only
         env:
           HISTORY_DOWNLOAD_CONCURRENCY: ${{ inputs.concurrency }}
+          ATLAS_HISTORY_V2: ${{ inputs.v2 && '1' || '' }}
           R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
           R2_BUCKET_NAME: ${{ secrets.R2_BUCKET_NAME }}
           R2_PUBLIC_URL: ${{ secrets.R2_PUBLIC_URL }}
           R2_ARCHIVE_BUCKET_NAME: ${{ secrets.R2_ARCHIVE_BUCKET_NAME }}
           R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
           R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+
+      # History v2 publish (docs/data/DATA_HISTORY.md runbook steps 3 and 5). Only with publish=true and v2=true.
+      - name: Back up the live history config
+        if: ${{ inputs.publish && inputs.v2 }}
+        run: npm run history:backup -- --write
+        env:
+          ATLAS_HISTORY_V2: '1'
+          R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+          R2_BUCKET_NAME: ${{ secrets.R2_BUCKET_NAME }}
+          R2_PUBLIC_URL: ${{ secrets.R2_PUBLIC_URL }}
+          R2_ARCHIVE_BUCKET_NAME: ${{ secrets.R2_ARCHIVE_BUCKET_NAME }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+
+      - name: Build and publish History v2
+        if: ${{ inputs.publish && inputs.v2 }}
+        run: npm run build-history
+        env:
+          HISTORY_DOWNLOAD_CONCURRENCY: ${{ inputs.concurrency }}
+          ATLAS_HISTORY_V2: '1'
+          R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+          R2_BUCKET_NAME: ${{ secrets.R2_BUCKET_NAME }}
+          R2_PUBLIC_URL: ${{ secrets.R2_PUBLIC_URL }}
+          R2_ARCHIVE_BUCKET_NAME: ${{ secrets.R2_ARCHIVE_BUCKET_NAME }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+
+      # Runbook step 6: the rewritten shared/data/history-agencies.json, to commit by hand.
+      - name: Upload the History agencies list
+        if: ${{ inputs.publish && inputs.v2 }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: history-agencies
+          path: shared/data/history-agencies.json
+
+      # The full build report (drops, year disagreements, mixed routes, shape gaps): the log prints counts only.
+      - name: Upload the build report
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: history-build-report
+          path: tmp/history-build-report.json
+          if-no-files-found: warn

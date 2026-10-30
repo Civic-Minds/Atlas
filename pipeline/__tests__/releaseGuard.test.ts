@@ -134,10 +134,14 @@ describe('tile rules fingerprint', () => {
   // #1147 moves stop grouping into stopClustering.ts and caps each group at 250 m. hubId and isHubRef
   // values change, but they are only ever set at tile build and never re-derived by the app, so any
   // app draws any tiles as before (older tiles keep their larger groups): hash only.
+  // CIV-1048 writes the search index beside the release files; no tile value changes: hash only.
+  // CIV-1135 adds an 'in' operator and evaluateMapFilter to routeHeadwayFilter.ts's evaluator for the route
+  // counter. The tile build only calls normalizeRouteFilterFeatures there, which is unchanged, and no tile expression
+  // used 'in' (it threw before): no tile value changes, hash only.
   it('changes only together with a deliberate TILE_RULES_VERSION decision', () => {
     expect({ version: TILE_RULES_VERSION, fingerprint: tileRulesFingerprint() }).toEqual({
       version: 5,
-      fingerprint: 'c4e8101b481a87e0885f07945c32f260846f3e9b8c967bbaca6b2de191b54379',
+      fingerprint: '6a457c026c66e12e4bec37c962c699a4763b6fbfc137ac887610bb07ebd01121',
     });
   });
 });

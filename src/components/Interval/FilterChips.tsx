@@ -16,7 +16,7 @@ import { bboxInViewport } from '../../utils/agencySearch';
 import { filterModeOptions } from '../../../shared/modes';
 import { modesForView } from '../../../shared/viewLayers';
 import { DAY_TYPES, getNowDay, type DayType } from '../../../shared/dayTypes';
-import type { FrequentServiceFrequency, FrequentServiceWindow } from '../../../shared/frequentService';
+import { FREQUENT_WINDOW_LABELS, type FrequentServiceFrequency, type FrequentServiceWindow } from '../../../shared/frequentService';
 import type { NightServiceFrequency } from '../../../shared/nightService';
 import { useColorMode } from '../../hooks/useColorMode';
 import ArrowLink from '../ui/ArrowLink';
@@ -56,8 +56,8 @@ interface FilterChipsProps {
   /**
    * Compare mode. 'shared': only the filters both maps share (Mode and Agencies), labelled as
    * such. 'side': only Frequency, Day and Time, for one map's own controls. Same chips and menus
-   * as the full bar either way. 'history': only Frequency and Time (History is weekday only), with
-   * "All day" in the Time menu since History's default is the weekday all-day value (CIV-389, CIV-392).
+   * as the full bar either way. 'history': only Frequency and Time (History is weekday only), with the
+   * map's own Time menu (CIV-389, CIV-392; no "All day" since CIV-1097).
    */
   variant?: 'full' | 'shared' | 'side' | 'history';
   /** Accessible name for the 'side' variant's group, e.g. "Map B settings". */
@@ -305,7 +305,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
   if (nightServiceMode && setNightServiceFrequency) {
     return (
       <div ref={rowRef} className="flex items-center gap-2">
-        <PillGroup outlined label="Night frequency" value={String(nightServiceFrequency)} onChange={v => setNightServiceFrequency(Number(v) as 30 | 60)}
+        <PillGroup outlined label="Overnight frequency" value={String(nightServiceFrequency)} onChange={v => setNightServiceFrequency(Number(v) as 30 | 60)}
           options={([30, 60] as const).map(value => [String(value), headwayAmount(value)] as const)} />
       </div>
     );
@@ -330,7 +330,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
         <PillGroup outlined label="Frequency" value={String(researchFrequency)} onChange={v => setResearchFrequency(Number(v) as 15 | 30)}
           options={([15, 30] as const).map(value => [String(value), headwayAmount(value)] as const)} />
         <PillGroup outlined label="Time window" value={researchWindow} onChange={v => setResearchWindow(v as FrequentServiceWindow)}
-          options={[['daytime', '7am–7pm'], ['extended', '7am–midnight']] as const} />
+          options={(['daytime', 'extended'] as const).map(w => [w, FREQUENT_WINDOW_LABELS[w]] as const)} />
         <div className="relative">
           <button onClick={() => toggle('mode')} className={chipClass(selectedModes.size > 0)}>Mode<Dot show={selectedModes.size > 0} /></button>
           {openChip === 'mode' && <div className={`${PANEL} w-48`}>
@@ -400,7 +400,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
       </button>
       {openChip === 'period' && (
         <div className={`${PANEL} w-56`}>
-          {(variant === 'history' ? (['all', ...PERIOD_KEYS] as TimePeriod[]) : PERIOD_KEYS).map((p) => (
+          {PERIOD_KEYS.map((p) => (
             <button
               key={p}
               onClick={() => { setPeriod(p); setOpenChip(null); }}
@@ -408,7 +408,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
               aria-pressed={period === p}
             >
               <span className="whitespace-nowrap">{PERIOD_LABELS[p]}</span>
-              {p !== 'all' && <span className="text-xs opacity-70 shrink-0 whitespace-nowrap">{formatPeriodRange(p)}</span>}
+              <span className="text-xs opacity-70 shrink-0 whitespace-nowrap">{formatPeriodRange(p)}</span>
             </button>
           ))}
         </div>

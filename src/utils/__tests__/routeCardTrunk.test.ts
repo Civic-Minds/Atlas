@@ -8,6 +8,7 @@ import {
   shouldShowBranchHeadwayRange,
   sparklineSourceDirections,
   sharedStopIdsForBranches,
+  stretchSharedHeadway,
 } from '../routeCardTrunk';
 import type { ShapeProperties } from '../../hooks/useIntervalStats';
 
@@ -95,6 +96,51 @@ describe('routeCardTrunk', () => {
   it('sparkline at 3 PM uses pmPeak trunk not 30-min terminal', () => {
     const byHour = trunkSparklineByHour(hsrWestBranches, [15]);
     expect(byHour[15]).toBe(8);
+  });
+
+  // CIV-1106: TTC 504 westbound, weekday. Its branches run at 2 AM, none at 3 AM, then again from 4 AM;
+  // the Overnight trunk value used to fill all three hours.
+  it('leaves an hour no branch runs in empty, and keeps the period value in hours with service', () => {
+    const branches = hsrWestBranches.map((b, i) => ({
+      ...b,
+      headwayByHour: { 15: 30, 26: 10, 27: null, 28: i === 0 ? 15 : null },
+      departuresByHour: { 15: 2, 26: 5 },
+      maxGapByHour: { 15: 30, 26: 15, 27: null, 28: null },
+    })) as ShapeProperties[];
+    const byHour = trunkSparklineByHour(branches, [15, 26, 27, 28]);
+    expect(byHour[15]).toBe(groupTrunkHeadway(branches, 'pmPeak'));
+    expect(byHour[26]).toBe(groupTrunkHeadway(branches, 'overnight'));
+    expect(byHour[26]).not.toBeNull();
+    expect(byHour[27]).toBeNull();
+    expect(byHour[28]).toBe(byHour[26]);
+  });
+
+  // CIV-1106: TTC 504 eastbound, weekday. At 3 AM the branches have two streetcars between them, not the Overnight
+  // trunk's "every 10"; a busy hour and a thin hour close to the period's value keep it.
+  it("shows a thin hour's own wait from its departures, never better than they allow", () => {
+    const branches = hsrWestBranches.slice(0, 2).map(b => ({
+      ...b,
+      headwayByPeriod: { ...b.headwayByPeriod, late: 20, overnight: 20 },
+      headwayByHour: { 25: null, 26: 20, 27: null },
+      departuresByHour: { 25: 3, 26: 3, 27: 1 },
+      maxGapByHour: { 26: 20, 27: null },
+    })) as ShapeProperties[];
+    const trunk = groupTrunkHeadway(branches, 'overnight');
+    expect(trunk).toBe(10);
+    const byHour = trunkSparklineByHour(branches, [25, 26, 27]);
+    expect(byHour[27]).toBe(30);
+    expect(byHour[26]).toBe(trunk);
+    expect(byHour[25]).toBe(10);
+  });
+
+  it('keeps the period value in a thin hour on data without departure counts', () => {
+    const branches = hsrWestBranches.slice(0, 2).map(b => ({
+      ...b,
+      headwayByPeriod: { ...b.headwayByPeriod, overnight: 20 },
+      headwayByHour: { 27: null },
+      maxGapByHour: { 27: 40 },
+    })) as ShapeProperties[];
+    expect(trunkSparklineByHour(branches, [27])[27]).toBe(10);
   });
 
   it('reads headsign-scoped trunk minimum separately from route-wide combined deps', () => {
@@ -202,5 +248,43 @@ describe('worstDirectionByHour', () => {
   it('returns null for hours with no service in any direction', () => {
     expect(worstDirectionByHour([{ 6: null }, {}], [6])[6]).toBeNull();
     expect(worstDirectionByHour([], [6])[6]).toBeNull();
+  });
+});
+
+describe('stretchSharedHeadway (CIV-937)', () => {
+  // Phoenix 35 northbound, weekday midday: the shared 50 stops every 15, each branch every 30.
+  const meta = { main: { stops: 50, refStop: 's', trips: 67, period: { midday: 15, evening: 30 }, noRegular: [] }, tails: [] };
+  const row = (headsign: string, stretchRole: 'main' | 'tail', midday: number | undefined): ShapeProperties => ({
+    routeId: '35', directionId: 0, tier: '30', headway: 30, routeShortName: '35', routeLongName: '35th Ave', headsign,
+    headwayByPeriod: { midday, evening: 30 }, stretchRole, stretchIndex: 0, stretchMeta: meta,
+  } as ShapeProperties);
+  const branches = [row('Thelda Williams TC', 'main', 30), row('Happy Valley+23rd Av', 'tail', 30)];
+  const group = { realTier: branches, directionFeatures: branches };
+
+  it('reads the shared value from stretchMeta.main above two branch rows', () => {
+    expect(stretchSharedHeadway(group, 'midday')).toBe(15);
+  });
+
+  it('reads it on a direction of tails alone (MARTA 20 eastbound)', () => {
+    const tails = [row('Snapfinger Wds Dr', 'tail', 30), row('S DeKalb Transfer', 'tail', 30)];
+    expect(stretchSharedHeadway({ realTier: tails, directionFeatures: tails }, 'midday')).toBe(15);
+  });
+
+  it('shows nothing when the shared value is no better than the branches', () => {
+    expect(stretchSharedHeadway(group, 'evening')).toBeNull();
+  });
+
+  it('shows nothing for one row, a direction with no tail, All day, or data without the value', () => {
+    expect(stretchSharedHeadway({ realTier: [branches[0]], directionFeatures: branches }, 'midday')).toBeNull();
+    const mains = [row('A', 'main', 30), row('B', 'main', 30)];
+    expect(stretchSharedHeadway({ realTier: mains, directionFeatures: mains }, 'midday')).toBeNull();
+    expect(stretchSharedHeadway(group, 'all')).toBeNull();
+    const bare = branches.map(b => ({ ...b, stretchMeta: { main: { stops: 50, refStop: 's', trips: 67 }, tails: [] } }));
+    expect(stretchSharedHeadway({ realTier: bare, directionFeatures: bare }, 'midday')).toBeNull();
+  });
+
+  it('shows nothing when the shared stretch has no regular service in the period', () => {
+    const noReg = branches.map(b => ({ ...b, stretchMeta: { main: { ...meta.main, noRegular: ['midday' as const] }, tails: [] } }));
+    expect(stretchSharedHeadway({ realTier: noReg, directionFeatures: noReg }, 'midday')).toBeNull();
   });
 });

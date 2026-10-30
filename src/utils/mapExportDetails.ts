@@ -5,7 +5,7 @@ import type { TimePeriod } from '../hooks/useIntervalStats';
 import { PERIOD_LABELS } from '../hooks/useIntervalStats';
 import { FILTER_MODES } from '../../shared/modes';
 import { joinList } from '../../shared/overflowText';
-import type { FrequentServiceFrequency, FrequentServiceWindow } from '../../shared/frequentService';
+import { FREQUENT_WINDOW_LABELS, type FrequentServiceFrequency, type FrequentServiceWindow } from '../../shared/frequentService';
 import type { NightServiceFrequency } from '../../shared/nightService';
 import { formatStoredDate } from './format';
 import { agencyNames } from './agencyName';
@@ -92,7 +92,7 @@ export function describeHeadwayFilter(maxHeadway: number): string {
 }
 
 function periodPhrase(period: TimePeriod): string {
-  // "AM Peak" -> "AM peak", "Midday" -> "midday", "All day" -> "all day".
+  // "AM peak" stays, "Midday" -> "midday", "All day" -> "all day".
   return PERIOD_LABELS[period]
     .split(' ')
     .map(word => (/^[AP]M$/.test(word) ? word : word.toLowerCase()))
@@ -103,11 +103,6 @@ function periodPhrase(period: TimePeriod): string {
 export function describeDayAndPeriod(day: DayType, period: TimePeriod): string {
   return period === 'all' ? `${day}, all day` : `${day} ${periodPhrase(period)}`;
 }
-
-const FREQUENT_WINDOW_LABELS: Record<FrequentServiceWindow, string> = {
-  daytime: '7am–7pm',
-  extended: '7am–midnight',
-};
 
 /** The highest headway tier the map draws at this zoom (the app hides less frequent routes when zoomed out). */
 function zoomCeiling(zoom: number): number {
@@ -136,7 +131,7 @@ function filterLine(state: MapExportState): string | null {
       ].filter(Boolean).join(' · ') || null;
     }
     case 'night':
-      return state.nightServiceFrequency ? `Night service ${headwayOrBetter(state.nightServiceFrequency)}` : null;
+      return state.nightServiceFrequency ? `Overnight service ${headwayOrBetter(state.nightServiceFrequency)}` : null;
     default:
       return null;
   }
@@ -247,7 +242,7 @@ function filenameParts(state: MapExportState, place: string | null): string[] {
       if (state.frequentServiceWindow) parts.push(state.frequentServiceWindow);
       break;
     case 'night':
-      parts.push('night service');
+      parts.push('overnight service');
       if (state.nightServiceFrequency) parts.push(`${state.nightServiceFrequency}min`);
       break;
     default:

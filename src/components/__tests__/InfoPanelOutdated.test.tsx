@@ -10,8 +10,8 @@ const text = (ctx: Record<string, unknown>) => render(
 describe('E1 outdated schedule, three paragraphs (CIV-1051)', () => {
   it('N2: the issue, the weekly check with its history, then the website', () => {
     const t = text({});
-    expect(t).toContain("Grand River Transit's timetable ended on Apr 26, 2026. Times shown may be out of date. This is the latest schedule the agency has published that we could verify.");
-    expect(t).toContain("We check for new schedules every week. We've checked for a new timetable 4 times since Sep 1, 2026, with our most recent check on Oct 26, 2026.");
+    expect(t).toContain("Grand River Transit's schedule ended on Apr 26, 2026. Times shown may be out of date. This is the latest schedule the agency has published that we could verify.");
+    expect(t).toContain("We check for new schedules every week. We've checked for a new schedule 4 times since Sep 1, 2026, with our most recent check on Oct 26, 2026.");
     expect(t).toContain("A newer schedule may be on the agency's website.");
     expect(t).not.toContain('We check all feeds weekly');
   });
@@ -64,8 +64,8 @@ describe('E5 route line, three paragraphs (CIV-1051)', () => {
       <InfoPanel open onClose={() => {}} agencies={[]} helpContext={{ topic: 'route-data-quality', agencyName: 'TTC' }} />,
     ).container.textContent ?? '';
     expect(t).toContain("Part of this route's line on the map may be missing or drawn in the wrong place.");
-    expect(t).toContain('We still show the route. Its frequency on this card comes from the timetable and is still accurate.');
-    expect(t).toContain('If something looks off, report it with the flag on this card.');
+    expect(t).toContain('We still show the route. Its frequency on this card comes from the schedule and is still accurate.');
+    expect(t).toContain('If something looks wrong, report it with the flag on this card.');
   });
 });
 
@@ -75,8 +75,8 @@ describe('E6 route with no line, three paragraphs (CIV-1051)', () => {
       <InfoPanel open onClose={() => {}} agencies={[]} helpContext={{ topic: 'no-route-shape' }} />,
     ).container.textContent ?? '';
     expect(t).toContain("This route's line can't be shown on the map because it's missing from the agency's data.");
-    expect(t).toContain('We still show the route on this card. Its frequency comes from the timetable and is still accurate.');
-    expect(t).toContain('If something looks off, report it with the flag on this card.');
+    expect(t).toContain('We still show the route on this card. Its frequency comes from the schedule and is still accurate.');
+    expect(t).toContain('If something looks wrong, report it with the flag on this card.');
   });
 });
 
@@ -85,7 +85,7 @@ describe('E7 frequency allowance, two paragraphs (CIV-1051)', () => {
     const t = render(
       <InfoPanel open onClose={() => {}} agencies={[]} helpContext={{ topic: 'edge-gap-allowance' }} />,
     ).container.textContent ?? '';
-    expect(t).toContain('The first or last trip of the day can come up to 10 minutes later than usual, and the route still counts at its frequency.');
+    expect(t).toContain("This route's frequency allows a slightly longer wait for the first or last trip of the day. That trip can come up to 10 minutes later than usual.");
     expect(t).toContain("Many routes start or end their day with one longer gap. Gaps in the middle of the day don't get this allowance.");
   });
 });

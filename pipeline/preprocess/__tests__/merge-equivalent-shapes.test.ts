@@ -83,4 +83,32 @@ describe('mergeEquivalentShapeVariants', () => {
     // A different path under the same headsign stays its own shape.
     expect(result.gtfs.trips.map(trip => trip.shape_id)).toEqual(['platform-1', 'platform-1', 'far']);
   });
+
+  it('merges only the listed route types when the agency names them (CapMetro buses, CIV-1083)', () => {
+    const gtfs = {
+      agencies: [],
+      routes: [
+        { route_id: '201', route_type: '3', route_short_name: '201' },
+        { route_id: '550', route_type: '0', route_short_name: '550' },
+      ],
+      trips: [
+        { route_id: '201', direction_id: '1', trip_id: 'bus-1', trip_headsign: 'William Cannon NB', shape_id: 'platform-1', service_id: 'weekday' },
+        { route_id: '201', direction_id: '1', trip_id: 'bus-2', trip_headsign: 'William Cannon NB', shape_id: 'platform-2', service_id: 'weekday' },
+        { route_id: '550', direction_id: '1', trip_id: 'rail-1', trip_headsign: 'Leander Station NB', shape_id: 'rail-a', service_id: 'weekday' },
+        { route_id: '550', direction_id: '1', trip_id: 'rail-2', trip_headsign: 'Leander Station NB', shape_id: 'rail-b', service_id: 'weekday' },
+      ],
+      stops: [], stopTimes: [], calendar: [], calendarDates: [],
+      shapes: [
+        baseShape,
+        { ...baseShape, id: 'platform-2' },
+        { ...baseShape, id: 'rail-a' },
+        { ...baseShape, id: 'rail-b' },
+      ],
+    } as unknown as GtfsData;
+
+    const result = mergeEquivalentShapeVariants(gtfs, { routeTypes: ['3'] });
+    expect(result.mergedTrips).toBe(1);
+    // The light-rail route is not listed, so its equivalent shapes stay apart.
+    expect(result.gtfs.trips.map(trip => trip.shape_id)).toEqual(['platform-1', 'platform-1', 'rail-a', 'rail-b']);
+  });
 });

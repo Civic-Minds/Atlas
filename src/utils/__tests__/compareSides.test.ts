@@ -5,7 +5,7 @@ const side = (over: Partial<CompareSide> = {}): CompareSide => ({ day: 'Weekday'
 
 describe('compare side labels', () => {
   it('spells out each side: day, time and frequency', () => {
-    expect(compareSideHeading(side())).toBe('Weekday night · ≤10 min');
+    expect(compareSideHeading(side())).toBe('Weekday late · ≤10 min');
     expect(compareSideHeading(side({ maxHeadway: Infinity, period: 'all' }))).toBe('Weekday, all day · All');
     expect(frequencyWords(15)).toBe('≤15 min');
   });

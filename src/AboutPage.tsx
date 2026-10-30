@@ -32,7 +32,7 @@ export default function AboutPage() {
             </div>
             <div className="border-t-2 border-[var(--accent-border)] pt-4">
               <h3 className="text-base font-black">How often</h3>
-              <p className="mt-2 text-sm leading-6 text-[var(--text-muted)]">Compare scheduled frequency without opening a timetable.</p>
+              <p className="mt-2 text-sm leading-6 text-[var(--text-muted)]">Compare scheduled frequency without opening a schedule.</p>
             </div>
           </div>
         </section>
@@ -56,8 +56,8 @@ export default function AboutPage() {
             </a>
             <a href={FEATURE_ROUTES.nightService} className="group border-l-2 border-[var(--accent-border)] pl-4">
               <h3 className="text-lg font-black group-hover:text-[var(--accent)]">What still runs overnight?</h3>
-              <p className="mt-2 text-sm leading-6 text-[var(--text-muted)]">Find routes with sustained scheduled service from 2am to 5am.</p>
-              <ArrowLink as="span" nudge className="mt-4">Explore Night Service</ArrowLink>
+              <p className="mt-2 text-sm leading-6 text-[var(--text-muted)]">Find routes with sustained scheduled service from 2–5 AM.</p>
+              <ArrowLink as="span" nudge className="mt-4">Explore overnight service</ArrowLink>
             </a>
           </div>
         </section>}

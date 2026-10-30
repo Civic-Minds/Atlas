@@ -73,6 +73,9 @@ export function routeRowLabels(route: Parameters<typeof routeLabels>[0]) {
   return { shortName: primary, name: secondary };
 }
 
+/** The dot between an agency and its frequency in a suggestion's second line. */
+const SEP = <span className="text-[var(--text-dim)] font-normal"> · </span>;
+
 /** The frequency's tier dot, as the route rows' badge shows it (CIV-971): coloured by the headway, grey for none. */
 function TierDot({ headway }: { headway: number | null }) {
   const colorMode = useColorMode();
@@ -100,7 +103,7 @@ export function routeRowRight(agencyName: string, headway?: number | null, stack
           {agency}
           {sides.map(({ side, text, headway: h }) => (
             <React.Fragment key={side}>
-              <span className="text-[var(--text-dim)] font-normal"> · </span>
+              {SEP}
               <TierDot headway={h} />
               {text}
             </React.Fragment>
@@ -113,7 +116,7 @@ export function routeRowRight(agencyName: string, headway?: number | null, stack
     return (
       <span className={`${LIST_ROW_DIM} ${layout} whitespace-nowrap`}>
         {agency}
-        <span className="text-[var(--text-dim)] font-normal"> · </span>
+        {SEP}
         <TierDot headway={headway} />
         {routeListHeadwayText(headway, sharedHeadway)}
       </span>
@@ -123,7 +126,7 @@ export function routeRowRight(agencyName: string, headway?: number | null, stack
     return (
       <span className={`${LIST_ROW_DIM} ${layout} whitespace-nowrap`}>
         {agency}
-        <span className="text-[var(--text-dim)] font-normal"> · </span>
+        {SEP}
         <TierDot headway={null} />
         {noRegular ? NO_REGULAR_SERVICE_SHORT_LABEL : LIMITED_SERVICE_LABEL}
       </span>

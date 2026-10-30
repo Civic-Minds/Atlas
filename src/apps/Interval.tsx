@@ -51,6 +51,8 @@ import Spinner from '../components/ui/Spinner';
 import { onDemandSelectionZoneId, resolveSelectedOnDemandSlug } from '../utils/onDemandSelection';
 import { encodeStopBackTarget, parseStopBackTarget, resolveStopBack, STOP_BACK_PARAM, stopBackTarget, type StopBackRoute, type StopBackSnapshot, type StopBackTarget } from '../utils/stopBack';
 import { AGENCY_NOT_FOUND, loadingText, ON_DEMAND_AREAS_FAILED, networksFailedHint, networksFailedText, networksLoadingText, noRoutesMatchText, noServiceOnDayNotice, ROUTE_NOT_FOUND, STOP_NOT_FOUND } from '../content/noticeCopy';
+import { useIndexSearch } from '../hooks/useIndexSearch';
+import { mergeRouteResults, mergeStopResults } from '../utils/searchResults';
 
 // Versioned because the original preference could accidentally persist only
 // agencies in the current viewport when the bulk "All" action was used.
@@ -160,7 +162,7 @@ const EMPTY_LAYERS: Record<string, GeoJSON.FeatureCollection> = {};
  */
 function CompareSideSlot({ side, children }: { side: 'A' | 'B'; children: React.ReactNode }) {
   return (
-    <div className={`absolute ${side === 'A' ? SIDEBAR_CARD_TOP : `top-3 ${SIDEBAR_CARD_TOP_DESKTOP}`} left-1/2 -translate-x-1/2 sm:left-4 sm:translate-x-0 sm:right-4 sm:flex sm:justify-end ${Z_PANEL_RAISED} pointer-events-none`}>
+    <div data-map-overlay={`compare-label-${side}`} className={`absolute ${side === 'A' ? SIDEBAR_CARD_TOP : `top-3 ${SIDEBAR_CARD_TOP_DESKTOP}`} left-1/2 -translate-x-1/2 sm:left-4 sm:translate-x-0 sm:right-4 sm:flex sm:justify-end ${Z_PANEL_RAISED} pointer-events-none`}>
       {children}
     </div>
   );
@@ -640,7 +642,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   }, [nearYouShown, clearUserLocation]);
 
   const nearbyRoutes = useNearbyRoutes(userLocation, layers, day, period);
-  const { stats, searchMatches, searchMatchResults, searchStopMatchResults, matchesQuery, q, filteredLayers, mapFilteredLayers, routesForStop, tileFilter } = useIntervalStats(layers, {
+  const { stats, searchMatches, searchMatchResults: loadedRouteMatches, searchStopMatchResults: loadedStopMatches, matchesQuery, q, filteredLayers, mapFilteredLayers, routesForStop, tileFilter } = useIntervalStats(layers, {
     query,
     maxHeadway,
     agencies: selectedAgencies,
@@ -657,6 +659,19 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     showCorridorBand: false,
     hoveredBranch,
   });
+
+  // Routes and stops of agencies not loaded yet, from the release's search index (CIV-1048).
+  const catalogAgencyNames = useMemo(() => new Map(agencies.map(a => [a.slug, a.name])), [agencies]);
+  const indexSearch = useIndexSearch(searchFocused ? query : '', bounds ?? null, catalogAgencyNames);
+  const loadedSearchSlugs = useMemo(() => new Set(Object.keys(layers)), [layers]);
+  const searchMatchResults = useMemo(
+    () => mergeRouteResults(loadedRouteMatches, indexSearch.routes, loadedSearchSlugs),
+    [loadedRouteMatches, indexSearch.routes, loadedSearchSlugs],
+  );
+  const searchStopMatchResults = useMemo(
+    () => mergeStopResults(loadedStopMatches, indexSearch.stops, loadedSearchSlugs),
+    [loadedStopMatches, indexSearch.stops, loadedSearchSlugs],
+  );
 
   // Side B runs the shared filter with its own day, time and frequency. With compare off it gets
   // no layers, so the extra pass costs nothing.
@@ -1199,7 +1214,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
           </div>
         )}
         {compareActive && (
-          <div className={`absolute left-1/2 top-1/2 ${Z_PANEL_RAISED} -translate-x-1/2 -translate-y-1/2 max-sm:hidden`}>
+          <div data-map-overlay="compare-link" className={`absolute left-1/2 top-1/2 ${Z_PANEL_RAISED} -translate-x-1/2 -translate-y-1/2 max-sm:hidden`}>
             <CompareLinkToggle linked={compareLinked} onChange={setCompareLinked} />
           </div>
         )}
@@ -1263,7 +1278,8 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
               </div>
             </div>
           )}
-          {(nightServiceView || frequentServiceView) && <ResearchLegend view={nightServiceView ? 'night' : 'frequent'} frequentFrequency={frequentServiceFrequency} />}
+          {/* No key in the Night view: every line is the same colour and width (Ryan, CIV-1070). */}
+          {frequentServiceView && <ResearchLegend view="frequent" frequentFrequency={frequentServiceFrequency} />}
           {/* N39: phones hide the counts, so a view the filters leave empty says so there. */}
           {!compareActive && !nightServiceView && !frequentServiceView && stats && (showMapContext || !isLoading)
             && (showMapContext ? (mapContextRouteCount ?? 0) : stats.matching) === 0 && (
@@ -1572,6 +1588,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
         searchMatches={searchMatches}
         searchMatchResults={searchMatchResults}
         searchStopMatchResults={searchStopMatchResults}
+        searchPending={indexSearch.pending}
         maxHeadway={maxHeadway}
         agencies={agencies}
         period={period}
