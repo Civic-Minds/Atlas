@@ -3,15 +3,16 @@ import * as maplibregl from 'maplibre-gl';
 import { useHistoryMapOverlay } from '../../../context/HistoryMapOverlay';
 import { isDrawableLineCoordinates, lineCoordinates, type LonLat } from '../../../../shared/routeGeometry';
 import { fitTargetForPoints } from '../../../utils/routeFitTarget';
-import { routeFramePadding } from './routeFraming';
+import { selectionFramePadding } from './routeFraming';
 
 /**
- * Fits the camera to History's route lines, beside the card on the right. A single point is left
- * alone: these fits can run from a moveend handler, and a fly there would start another move (#478).
+ * Fits the camera to History's route lines with the main map's route framing: clear of the card on the
+ * left, or above the bottom sheet on a phone (CIV-1117). A single point is left alone: these fits can
+ * run from a moveend handler, and a fly there would start another move (#478).
  */
 function fitHistoryLines(map: maplibregl.Map, points: ReadonlyArray<LonLat>, maxZoom: number) {
   const target = fitTargetForPoints(points);
-  if (target?.kind === 'bounds') map.fitBounds(target.bounds, { padding: routeFramePadding(map, 'right'), maxZoom });
+  if (target?.kind === 'bounds') map.fitBounds(target.bounds, { padding: selectionFramePadding(map), maxZoom });
 }
 
 /** History map layers: route shape, time-scrubber routes, and camera fit. */

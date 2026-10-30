@@ -198,6 +198,14 @@ export const SIDEBAR_CARD = `${SIDEBAR_CARD_SLOT} ${Z_PANEL}`;
  *  on desktop, 53px on phones) and its list scrolls inside. */
 export const SIDEBAR_CARD_MAX_H = 'max-h-[calc(100vh-112px)] max-sm:max-h-[calc(100dvh-118px)]';
 
+/**
+ * The one sidebar card frame (the map's route card, Compare's second card, History's route card; CIV-1117 row 15): the
+ * slot under the search bar, its width and tallest size, and the fade and small slide as it opens and closes.
+ */
+export function sidebarCardFrame(visible: boolean, { z = Z_PANEL, extra = '' }: { z?: string; /** More classes (a phone width). */ extra?: string } = {}): string {
+  return `${SIDEBAR_CARD_SLOT} ${z} ${SIDEBAR_PANEL_WIDTH} ${extra} ${SIDEBAR_CARD_MAX_H} flex flex-col gap-3 transition-[opacity,transform] duration-200 ease-out ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2 pointer-events-none'}`.replace(/\s+/g, ' ');
+}
+
 
 /** Live's sidebar placement, kept apart from the cards' while Live is rebuilt on its own branch
  *  (Live sidebars never scroll or collapse). */

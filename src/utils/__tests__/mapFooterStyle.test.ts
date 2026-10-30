@@ -15,14 +15,14 @@ describe('mapFooterStyle', () => {
 });
 
 describe('map notice slots', () => {
-  it('sit above the measured footer row on sm and up', () => {
-    expect(MAP_NOTICE_SLOT).toContain('sm:bottom-[calc(2rem+var(--map-footer-h))]');
-    expect(MAP_NOTICE_SLOT_RAISED).toContain('sm:bottom-[calc(4.5rem+var(--map-footer-h))]');
+  it('sit above the measured footer row, and above the map key when it shows, on sm and up (CIV-1136)', () => {
+    expect(MAP_NOTICE_SLOT).toContain('sm:bottom-[calc(2rem+var(--map-footer-h,2rem)+var(--map-key-h,0px))]');
+    expect(MAP_NOTICE_SLOT_RAISED).toContain('sm:bottom-[calc(4.5rem+var(--map-footer-h,2rem)+var(--map-key-h,0px))]');
   });
 
-  it('sit above the pills (bottom-6) and counts (bottom-16) rows on phones', () => {
-    expect(MAP_NOTICE_SLOT).toMatch(/(^| )bottom-\[6\.5rem\]/);
-    expect(MAP_NOTICE_SLOT_RAISED).toMatch(/(^| )bottom-\[9rem\]/);
+  it('sit above the pills (bottom-6) and counts (bottom-16) rows on phones, and above the key', () => {
+    expect(MAP_NOTICE_SLOT).toMatch(/(^| )bottom-\[calc\(6\.5rem\+var\(--map-key-h,0px\)\)\]/);
+    expect(MAP_NOTICE_SLOT_RAISED).toMatch(/(^| )bottom-\[calc\(9rem\+var\(--map-key-h,0px\)\)\]/);
     expect(MAP_NOTICE_SLOT).not.toMatch(/(^| )bottom-6( |$)/);
   });
 });

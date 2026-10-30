@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { Search } from 'lucide-react';
 import { HEADWAY_TIERS, getTierColor } from '../../utils/colors';
 import { FLOATING_CARD, GLASS_PILL, PILL_SURFACE, PANEL_ENTER_TOP, CONTROL_ACTIVE, CONTROL_ACTIVE_GLASS, CONTROL_INACTIVE, SEARCH_PILL, SEARCH_ICON, SEARCH_FIELD, CARD_SECTION, TOP_BAR_OUTLINE } from '../../styles';
+import { AgencyRegionSection } from '../ui/AgencyList';
 import Pill from '../ui/Pill';
 import PillGroup from '../ui/PillGroup';
 import ActiveDot from '../ui/ActiveDot';
@@ -190,8 +191,7 @@ function AgenciesPanel({ agencies, selectedAgencies, setSelectedAgencies, bounds
           <PanelEmpty>{NO_AGENCIES_IN_VIEW}</PanelEmpty>
         )}
         {[...byRegion.entries()].map(([region, groups]) => (
-          <div key={region}>
-            <p className={`px-2 pt-2 pb-0.5 ${CARD_SECTION}`}>{region}</p>
+          <AgencyRegionSection key={region} region={region} compact>
             {groups.map(g => {
               const active = g.slugs.every(s => selectedAgencies.has(s));
               const { primary, secondary } = agencyNames({ name: g.name, cities: g.cities, displayArea: g.displayArea }).list;
@@ -215,7 +215,7 @@ function AgenciesPanel({ agencies, selectedAgencies, setSelectedAgencies, bounds
                 </button>
               );
             })}
-          </div>
+          </AgencyRegionSection>
         ))}
         {!agencyQuery && (
           <ArrowLink as="button" tone="inline" size="xs" back={showAll} onClick={() => setShowAll(v => !v)} className="mt-1 mb-0.5 mx-2 text-left">

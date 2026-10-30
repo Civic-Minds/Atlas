@@ -5,6 +5,7 @@ import { useLiveDashboard, liveDashboardPath } from '../../hooks/useLiveDashboar
 import { cardSummary } from '../../../shared/liveDashboard';
 import { useSegmentDelay } from '../../hooks/useSegmentDelay';
 import { syncUrlParams } from '../../utils/syncUrlParams';
+import { LIVE_MAP_URL, currentSearch, linkUpdate, readLink } from '../../utils/urlSchema';
 import { periodKeyForHour } from '../../../shared/config';
 import {
   MIN_DAYS, MIN_SEGMENT_TRIPS, SEGMENT_BAND_OPTIONS, halfMinutes, halfMinutesDown, stopNameParts, usableStandingStill,
@@ -201,16 +202,13 @@ export default function LiveRoutePerformance({ slug, routeShortName, feedDegrade
   const dashData = dash.kind === 'done' && dash.data.status === 'ready' ? dash.data : null;
   const data = useSegmentDelay(slug, routeShortName) as (SegmentDelayData & { tripDirections?: Record<string, string[]> }) | null;
   // View state lives in the URL (p, dir, stretch, view) so a shared link reopens it.
-  const [initial] = useState(() => new URLSearchParams(window.location.search));
-  const [band, setBand] = useState<SegmentBand>(() => {
-    const p = initial.get('p');
-    return SEGMENT_BAND_OPTIONS.some(o => o.id === p) ? (p as SegmentBand) : currentBand();
-  });
+  const [initial] = useState(() => readLink(currentSearch(), LIVE_MAP_URL));
+  const [band, setBand] = useState<SegmentBand>(() => initial.band ?? currentBand());
   const directions = useMemo(() => Object.entries(data?.directionLabels ?? {}).map(([id, label]) => ({ id: Number(id), label })), [data]);
-  const [dir, setDir] = useState<number | null>(() => (initial.get('dir') != null && !Number.isNaN(Number(initial.get('dir'))) ? Number(initial.get('dir')) : null));
+  const [dir, setDir] = useState<number | null>(() => initial.dir ?? null);
   const directionId = directions.some(d => d.id === dir) ? dir! : directions[0]?.id ?? 0;
-  const [screen, setScreen] = useState<Screen>(() => (initial.get('view') === 'details' ? { kind: 'details' } : { kind: 'card' }));
-  const pendingStretch = React.useRef<string | null>(initial.get('stretch'));
+  const [screen, setScreen] = useState<Screen>(() => (initial.details ? { kind: 'details' } : { kind: 'card' }));
+  const pendingStretch = React.useRef<string | null>(initial.stretch ?? null);
   const [now, setNow] = useState(() => Date.now());
   // The last 30 min of archived positions for this route, refreshed every 30 s (archive is written each minute).
   const [recent, setRecent] = useState<RecentSnapshot[] | null>(null);
@@ -248,14 +246,15 @@ export default function LiveRoutePerformance({ slug, routeShortName, feedDegrade
   }, [line, stops]);
   useEffect(() => {
     if (!data) return;
-    syncUrlParams({
-      p: band,
-      dir: dir == null ? null : String(directionId),
+    syncUrlParams(linkUpdate(LIVE_MAP_URL, {
+      band,
+      dir: dir == null ? null : directionId,
       stretch: stretch ? `${stretch.from.stopId}~${stretch.to.stopId}` : pendingStretch.current,
-      view: screen.kind === 'details' ? 'details' : null,
-    });
+      details: screen.kind === 'details',
+    }));
   }, [data, band, dir, directionId, stretch, screen.kind]);
-  useEffect(() => () => syncUrlParams({ dir: null, stretch: null, view: null }), []);
+  // Closing the route clears its view, the band (p) included, so the map underneath doesn't read it as its period (CIV-1139).
+  useEffect(() => () => syncUrlParams(linkUpdate(LIVE_MAP_URL, { band: null, dir: null, stretch: null, details: null })), []);
   useEffect(() => { onHighlight(stretch ? stretch.coordinates : null); }, [stretch, onHighlight]);
   useEffect(() => () => onHighlight(null), [onHighlight]);
 

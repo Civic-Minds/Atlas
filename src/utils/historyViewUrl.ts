@@ -1,6 +1,7 @@
 import { getNowPeriodForTimezone } from '../components/Interval/FilterChips';
-import { PERIOD_KEYS, type TimePeriod } from '../hooks/useIntervalStats';
+import { type TimePeriod } from '../hooks/useIntervalStats';
 import { type HistoryView } from './historyYearMap';
+import { HISTORY_VIEW_URL, linkUpdate, readLink } from './urlSchema';
 
 /** The period History opens on (CIV-1097): the current one, from the same helper the map opens on. */
 export function historyDefaultPeriod(now: Date = new Date()): TimePeriod {
@@ -20,21 +21,10 @@ export function historyDefaultView(now: Date = new Date()): HistoryView {
  * all-day view History no longer has) opens on the default period (CIV-1097).
  */
 export function parseHistoryView(search: string | URLSearchParams, now: Date = new Date()): HistoryView {
-  const sp = typeof search === 'string' ? new URLSearchParams(search) : search;
-  const h = sp.get('h') || sp.get('headway') || sp.get('max');
-  let maxHeadway = Infinity;
-  if (h && h !== 'all' && h !== 'inf' && h !== 'Infinity') {
-    const n = Number(h);
-    if (Number.isFinite(n) && n > 0) maxHeadway = n;
-  }
-  const p = sp.get('p') || sp.get('period');
-  const period: TimePeriod = p && (PERIOD_KEYS as readonly string[]).includes(p) ? (p as TimePeriod) : historyDefaultPeriod(now);
-  return { period, maxHeadway };
+  const link = readLink(search, HISTORY_VIEW_URL);
+  return { period: link.period ?? historyDefaultPeriod(now), maxHeadway: link.headway ?? Infinity };
 }
 
 export function encodeHistoryView(view: HistoryView): { h: string; p: string } {
-  return {
-    h: Number.isFinite(view.maxHeadway) ? String(view.maxHeadway) : 'all',
-    p: view.period,
-  };
+  return linkUpdate(HISTORY_VIEW_URL, { headway: view.maxHeadway, period: view.period }) as { h: string; p: string };
 }

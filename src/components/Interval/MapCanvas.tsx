@@ -6,6 +6,8 @@ import { LocateFixed, Link2, Flag, Download } from 'lucide-react';
 import MapZoomButtons from '../MapZoomButtons';
 import { routeKey } from '../../hooks/useIntervalStats';
 import { getRegionalView, getSavedView } from '../../utils/regionView';
+import { mergeUrlSearchParams } from '../../utils/syncUrlParams';
+import { MAP_URL, linkUpdate } from '../../utils/urlSchema';
 import { useViewport } from '../../context/ViewportContext';
 import { useHistoryMapOverlay } from '../../context/HistoryMapOverlay';
 import { useLiveVehiclesMapOverlay } from '../../context/LiveVehiclesMapOverlay';
@@ -1100,11 +1102,8 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
 
   const buildLocationUrl = (lat: number, lon: number, medium?: ShareMedium): string => {
     const map = mapRef.current;
-    const sp = new URLSearchParams(window.location.search);
-    sp.set('lat', lat.toFixed(5));
-    sp.set('lon', lon.toFixed(5));
-    sp.set('z', (map?.getZoom() ?? zoom).toFixed(2));
-    const url = `${window.location.origin}${window.location.pathname}?${sp.toString()}`;
+    const qs = mergeUrlSearchParams(window.location.search, linkUpdate({ lat: MAP_URL.lat, lon: MAP_URL.lon, zoom: MAP_URL.zoom }, { lat, lon, zoom: map?.getZoom() ?? zoom }));
+    const url = `${window.location.origin}${window.location.pathname}?${qs}`;
     return withShareTags(url, medium);
   };
 

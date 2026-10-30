@@ -12,6 +12,7 @@ import { useLiveDashboard } from './hooks/useLiveDashboard';
 import { devOnly, liveReportTitle } from './lib/liveReportData';
 import { applySeoToDocument } from './lib/seoDom';
 import { syncUrlParams } from './utils/syncUrlParams';
+import { LIVE_ROUTE_URL, currentSearch, linkUpdate, readLink } from './utils/urlSchema';
 import { shortStopName } from './utils/stopLabel';
 import { TILE } from './pageStyles';
 import ErrorBoundary from './components/ErrorBoundary';
@@ -44,7 +45,6 @@ export { BANDS };
 type Selection = { dir: number; kind: 'stop'; stopId: string } | { dir: number; kind: 'stretch'; mode: RouteStripMode };
 
 export { dirsOf };
-const readParam = (key: string) => new URLSearchParams(window.location.search).get(key);
 
 export const Group = PillGroup;
 
@@ -187,11 +187,12 @@ function Main({ v3, band, dir, uncertain, sel, setSel }: {
 export default function LiveExplorePage() {
   const { agency = '', route = '' } = useParams();
   const state = useLiveDashboard(FEATURES.liveReports ? agency : null, route);
-  const [dir, setDir] = useState<number | null>(() => { const d = readParam('dir'); return d != null && d !== '' && !Number.isNaN(Number(d)) ? Number(d) : null; });
-  const [day, setDay] = useState<Day>(() => { const d = readParam('day'); return d === 'weekday' || d === 'weekend' ? d : 'all'; });
-  const [band, setBand] = useState<DashboardBand>(() => { const b = readParam('band'); return BANDS.some(([k]) => k === b) ? (b as DashboardBand) : 'all'; });
+  const [link] = useState(() => readLink(currentSearch(), LIVE_ROUTE_URL));
+  const [dir, setDir] = useState<number | null>(() => link.dir ?? null);
+  const [day, setDay] = useState<Day>(() => link.day ?? 'all');
+  const [band, setBand] = useState<DashboardBand>(() => link.band ?? 'all');
   const [picked, setPicked] = useState<Selection | null>(null);
-  useEffect(() => { syncUrlParams({ view: 'explore', dir: dir == null ? null : String(dir), day: day === 'all' ? null : day, band: band === 'all' ? null : band }); }, [dir, day, band]);
+  useEffect(() => { syncUrlParams(linkUpdate(LIVE_ROUTE_URL, { view: 'explore', dir, day, band })); }, [dir, day, band]);
   const routeTitle = state.kind === 'done' && state.data.status === 'ready' ? state.data.routeTitle : null;
   useEffect(() => {
     if (!agency || !route) return;
