@@ -1,4 +1,5 @@
 import { Fragment, type ReactNode } from 'react';
+import { METHOD_TITLE } from '../../../shared/liveWording';
 
 /** One group of "How this is measured": its heading, then its items as one paragraph. Falsy items are skipped. */
 export interface MethodGroup { label: string; items: ReactNode[] }
@@ -18,7 +19,7 @@ export function Term({ t, colon = false, children }: { t: string; colon?: boolea
  * Always open: the explanations of the math stay visible on every page. `after` sits below.
  */
 export default function MethodFootnote({ id, groups, after }: { id?: string; groups: MethodGroup[]; after?: ReactNode }) {
-  const title = 'How this is measured';
+  const title = METHOD_TITLE;
   const body = (
     <>
       <div className="mt-2 space-y-3 text-xs leading-5 text-[var(--text-muted)]">

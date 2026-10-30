@@ -77,6 +77,9 @@ export function builtText(iso: string): string {
   return `Built ${p('month')} ${p('day')}, ${clockTime(Number(p('hour')) * 60 + Number(p('minute')))}`;
 }
 
+/** The heading at the foot of every Live page (MethodFootnote), and the name its draw error uses. */
+export const METHOD_TITLE = 'How this is measured';
+
 /** The four group labels of "How this is measured", the same on every Live page. */
 export const METHOD_GROUPS = {
   numbers: 'What each number means',

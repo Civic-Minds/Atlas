@@ -8,6 +8,7 @@
  * Learn more names its explainer in NOTICE_EXPLAINERS, so the two can be checked against each other.
  */
 import { joinList, plural } from '../../shared/overflowText';
+import { METHOD_TITLE } from '../../shared/liveWording';
 import { formatStoredDate } from '../utils/format';
 import { agencyNames } from '../utils/agencyName';
 import { delayAmount, headwayAbout } from '../utils/headwayText';
@@ -335,7 +336,7 @@ export const AGENCY_NOT_FOUND = "This agency couldn't be found.";
 
 /** A Live section that failed to draw (its error boundary). */
 export const liveDrawError = (what: string) => `${what} could not be drawn: the analysis file may be from an older version.`;
-export const LIVE_METHOD_DRAW_ERROR = 'How this is measured could not be drawn.';
+export const LIVE_METHOD_DRAW_ERROR = `${METHOD_TITLE} could not be drawn.`;
 export const liveNoAgencyAnalysis = (agency: string) => `Live has no route analysis for ${agency}.`;
 export const LIVE_API_NO_ANSWER = 'The Live API did not answer. Start Live with "npm run live" and open this page on the address it prints.';
 export const LIVE_OFF_TITLE = 'Live is switched off in this copy of Atlas';

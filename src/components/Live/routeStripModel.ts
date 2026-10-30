@@ -60,6 +60,27 @@ export const LEGEND_TITLE: Record<RouteStripMode, string> = {
   delay: DELAY_LEGEND_TITLE,
   bunching: 'Bunching',
 };
+/** The words both strips (RouteStrip, BranchStrip) write, kept in one place so the two cannot drift apart (CIV-1160). */
+/** A track's name in its hover and screen-reader text. */
+export const TRACK_NAME: Record<RouteStripMode, string> = { delay: 'Delay', bunching: 'Bunching' };
+/** The screen-reader table's caption: "Eastbound: delay and bunching at each stop". */
+export const stripTableCaption = (label: string): string => `${label}: delay and bunching at each stop`;
+/** The screen-reader table's column headers. */
+export const STRIP_COLUMNS = { stop: 'Stop', delay: 'Typical delay', late: 'Late', bunch: 'Gaps off', n: 'Departures' } as const;
+/** A table cell or hover value with nothing measured. */
+export const NOT_MEASURED_CELL = 'not measured';
+/** The phone list's switch between key stops and every stop. */
+export const SHOW_KEY_STOPS = 'Show key stops only';
+export const showAllStopsText = (n: number): string => `Show all ${n} stops`;
+/** What a screen reader calls the strip. */
+export const STRIP_ROLE = 'route strip';
+/** The legend's extra keys. */
+export const LESS_EXACT = 'Less exact';
+export const fewerThanText = (minN: number): string => `Fewer than ${minN} departures or gaps`;
+export const NOT_MEASURED_KEY = 'Not measured';
+/** A bunching value in the hover: "12% of gaps off". */
+export const gapsOffText = (pct: string): string => `${pct} of gaps off`;
+
 /** Words after a legend's last step (E23: "25% or more of gaps"). */
 export const LEGEND_LAST_STEP_TAIL: Partial<Record<RouteStripMode, string>> = { bunching: ' of gaps' };
 
