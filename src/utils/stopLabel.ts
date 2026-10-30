@@ -1,14 +1,43 @@
-/** Short names for chart axes: the cross street or the station, not the whole stop name. */
+// "Station" as a stop's name, not part of a street name ("Village Station Rd", "Station Av").
+const STATION = /\bStation\b(?!\s+(?:Rd|Road|Av|Ave|Avenue|St|Street|Dr|Drive|Blvd|Ln|Lane|Way|Sq|Square|Pl|Place)\b)/i;
+
+/** The last " - " outside brackets, or -1 ("MEMORIAL DR @ 5019 (GPTC - NORTH ENTRANCE)" has none). */
+function lastTopLevelDash(n: string): number {
+  let depth = 0;
+  let at = -1;
+  for (let i = 0; i < n.length; i++) {
+    if (n[i] === '(') depth++;
+    else if (n[i] === ')') depth = Math.max(0, depth - 1);
+    else if (depth === 0 && n.startsWith(' - ', i)) at = i;
+  }
+  return at;
+}
+
+// What follows " - " when it only says where the stop sits: SEPTA's "FS", "MBNS", "2 NS", "onsite", a "Bay C" or a platform.
+const STOP_DETAIL = /^(?:(?:\d+\s*)?(?:FS|NS|MBFS|MBNS)|\d+|onsite|Bay\s+[A-Z0-9]{1,2}|.*\bPlatform)$/i;
+
+/**
+ * Short names for chart axes and the Live strip: the cross street or the station, not the whole stop name.
+ * Around " - ", the place after it wins ("Bay St at Bloor St West - Bay Station", "2395 Bayview Ave - Bob Rumball
+ * Centre For The Deaf"), unless only the part before it is a station, loop or terminal ("Decatur Station - Church St NB",
+ * "Warden Station - Westbound Platform") or the part after it is only a stop detail ("Broad St & Pattison Av - FS") (#1235).
+ */
 export function shortStopName(name: string): string {
   let n = name.replace(/\s+(North|South|East|West)\s+Side$/i, '').replace(/\s+Streetcar Platform$/i, '').trim();
-  if (n.includes(' - ')) n = n.slice(n.lastIndexOf(' - ') + 3);
+  const dash = lastTopLevelDash(n);
+  if (dash >= 0) {
+    const head = n.slice(0, dash), tail = n.slice(dash + 3);
+    const isPlace = (part: string) => STATION.test(part) || /\b(loop|terminal)\b/i.test(part);
+    const headIsPlace = isPlace(head) && !isPlace(tail) && !/\s+at\s+/i.test(head);
+    n = headIsPlace || STOP_DETAIL.test(tail.trim()) ? head : tail;
+  }
   const segments = n.split(/\s+at\s+/i);
   if (segments.length > 1) {
-    const station = segments.find(s => /station/i.test(s)) ?? segments.find(s => /\b(loop|terminal)\b/i.test(s));
+    const station = segments.find(s => STATION.test(s)) ?? segments.find(s => /\b(loop|terminal)\b/i.test(s));
     n = station ?? segments[segments.length - 1];
   }
-  const station = n.match(/^(.*?\bStation)\b/i);
-  const short = (station ? station[1] : n).trim();
+  const station = STATION.exec(n);
+  const short = (station ? n.slice(0, station.index + station[0].length) : n).trim();
   // Close a bracket the name leaves open (the TTC feed has "University Ave (Queen's Park Station" with no closing one).
   return short.split('(').length > short.split(')').length ? `${short})` : short;
 }
