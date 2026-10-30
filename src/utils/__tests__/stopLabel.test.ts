@@ -27,6 +27,28 @@ describe('shortStopName', () => {
     expect(shortStopName('Whitman Plaza - 1')).toBe('Whitman Plaza');
     expect(shortStopName('Warden Station - Westbound Platform')).toBe('Warden Station');
   });
+  // #1237: SEPTA and MBTA labels read only "MBNS 1", "north" or "Green Line".
+  it('drops a direction, bay, route or line after " - "', () => {
+    expect(shortStopName('Welsh Rd & Blair Mill Rd - MBNS 1')).toBe('Welsh Rd & Blair Mill Rd');
+    expect(shortStopName('Decatur Rd & Comly Rd - MBNS Route 50')).toBe('Decatur Rd & Comly Rd');
+    expect(shortStopName('52nd St & Market St - north')).toBe('52nd St & Market St');
+    expect(shortStopName('Einstein Medical Ctr - south entrance')).toBe('Einstein Medical Ctr');
+    expect(shortStopName('Chichester Av & Beeson Av - opposite')).toBe('Chichester Av & Beeson Av');
+    expect(shortStopName('Olney Transit Center - Rts 22 80')).toBe('Olney Transit Center');
+    expect(shortStopName('Olney Transit Center - B2 & B3')).toBe('Olney Transit Center');
+    expect(shortStopName('Frankford Transit Center - Drop-off Only')).toBe('Frankford Transit Center');
+    expect(shortStopName('Boston Ave @ College Ave - Green Line')).toBe('Boston Ave @ College Ave');
+    expect(shortStopName('449 Mystic St - Winchester Line')).toBe('449 Mystic St');
+    expect(shortStopName('400 Centre St - West')).toBe('400 Centre St');
+    expect(shortStopName('Long Wharf (North) - Gate 5B')).toBe('Long Wharf (North)');
+  });
+  it('keeps a place after " - " that only starts like a detail', () => {
+    expect(shortStopName('Beach St @ Shirley Ave - Bell Circle')).toBe('Bell Circle');
+    expect(shortStopName('North Ave @ Chestnut St - Commuter Rail Station')).toBe('Commuter Rail Station');
+    expect(shortStopName('Dundas St West - Bay St')).toBe('Bay St');
+    expect(shortStopName('Main St - Route 66 Diner')).toBe('Route 66 Diner');
+    expect(shortStopName('Pier Rd - Gate House')).toBe('Gate House');
+  });
   it('keeps the station before " - "', () => {
     expect(shortStopName('INDIAN CREEK STATION - BAY C')).toBe('INDIAN CREEK STATION');
     expect(shortStopName('DECATUR STATION - CHURCH ST NB')).toBe('DECATUR STATION');
