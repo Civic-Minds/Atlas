@@ -24,14 +24,13 @@ type Table = Record<string, UrlParam<any>>;
 /** The tables each page reads, by path. The map stays mounted under History, Night, Frequent Service and Live. */
 function tablesFor(path: string): Table[] {
   const { highlight: _debugOnly, ...map } = MAP_URL;
-  const { dataSaver: _readOnly, ...app } = APP_URL;
   // History's h and p are read through parseHistoryView below (it always writes both).
   if (path.startsWith('/apps/history')) return [];
   if (/^\/apps\/live\/[^/]+\/[^/]+/.test(path)) return [LIVE_ROUTE_URL];
-  if (path.startsWith('/apps/live')) return [map, app, LIVE_MAP_URL];
-  if (path.startsWith('/research/night') || path.startsWith('/apps/night')) return [map, app, NIGHT_URL];
-  if (path.startsWith('/research/frequent-service')) return [map, app, FREQUENT_URL];
-  if (path === '/' || path === '/apps/frequency') return [map, app];
+  if (path.startsWith('/apps/live')) return [map, APP_URL, LIVE_MAP_URL];
+  if (path.startsWith('/research/night') || path.startsWith('/apps/night')) return [map, APP_URL, NIGHT_URL];
+  if (path.startsWith('/research/frequent-service')) return [map, APP_URL, FREQUENT_URL];
+  if (path === '/' || path === '/apps/frequency') return [map, APP_URL];
   return [];
 }
 

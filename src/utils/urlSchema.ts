@@ -127,8 +127,6 @@ export const HISTORY_VIEW_URL = {
 export const APP_URL = {
   /** Low-quality feeds hidden: written as 1 when on, left out when off. */
   hideLowQuality: { key: 'quality', presence: 'any', parse: raw => raw === '1', serialize: value => (value ? '1' : null) } satisfies UrlParam<boolean>,
-  /** Data saver: read from a link, never written. */
-  dataSaver: { key: 'dataSaver', presence: 'any', parse: raw => raw === '1', serialize: () => null } satisfies UrlParam<boolean>,
 } as const;
 
 /** Night Service (/research/night). Written while Night is open; 60 is the default and left out. */
