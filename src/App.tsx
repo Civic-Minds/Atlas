@@ -376,6 +376,8 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   // On phones the search box is too narrow to read what you type (#698), so while it is
   // focused it takes the whole top bar and the other header buttons step aside.
   const phoneSearchExpanded = isPhone && searchFocused;
+  // CIV-449 (mock): the phone search rests as a button until opened, unless it holds a query.
+  const phoneSearchCollapsed = isPhone && !searchFocused && query === '';
   const searchBlurTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
@@ -667,7 +669,18 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
 
         {!inFrequentServiceStory && !inResearch && <div className="flex items-center gap-2 flex-1 min-w-0 lg:flex-initial">
         <div className="flex-1 min-w-0 sm:flex">
-        <div ref={searchBarRef} className={`${SEARCH_BAR_WIDTH} min-w-0 relative ${TOP_BAR_PILL_SURFACE} pl-1 pr-3`}>
+        {/* CIV-449 (mock): on every phone width the search rests as a round button, like the About button, and opens into the box. */}
+        {phoneSearchCollapsed && (
+          <button
+            type="button"
+            onClick={() => { setSearchFocused(true); requestAnimationFrame(() => searchInputRef.current?.focus()); }}
+            aria-label={searchPlaceholder}
+            className={TOP_BAR_ICON_BTN}
+          >
+            <Search className="w-4 h-4" />
+          </button>
+        )}
+        <div ref={searchBarRef} className={`${SEARCH_BAR_WIDTH} min-w-0 relative ${TOP_BAR_PILL_SURFACE} pl-1 pr-3 ${phoneSearchCollapsed ? 'hidden' : ''}`}>
           <Search className={`absolute left-2 top-1/2 -translate-y-1/2 ${SEARCH_ICON} pointer-events-none`} />
           <input
             ref={searchInputRef}
