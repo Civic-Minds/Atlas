@@ -55,6 +55,17 @@ describe('Free child fares (CIV-1149)', () => {
     expect((rows[5].querySelector('div > div') as HTMLElement).style.background).toContain('repeating-linear-gradient');
   });
 
+  it('splits all 553 agencies into one bar by policy, counts in the legend (CIV-1176)', () => {
+    render(<FreeChildFaresPage />);
+    const bar = screen.getByRole('group', { name: 'Agencies by free child fare policy' });
+    const parts = [...bar.querySelectorAll('button')].map(b => b.getAttribute('aria-label'));
+    expect(parts).toEqual([
+      '374 agencies: Free up to a set age', '63 agencies: Free for everyone', '39 agencies: Free below a height',
+      '24 agencies: Through a student program', '4 agencies: Only under a program', '15 agencies: No free child fare', '34 agencies: Not found yet',
+    ]);
+    expect(parts.reduce((sum, p) => sum + Number(p!.split(' ')[0]), 0)).toBe(553);
+  });
+
   it('opens with the three key figures, each straight from the data', () => {
     const { container } = render(<FreeChildFaresPage />);
     const figure = (label: string) => [...container.querySelectorAll('dt')].find(dt => dt.textContent === label)?.nextElementSibling?.textContent;

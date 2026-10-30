@@ -2,6 +2,7 @@ import PageShell from '../components/ui/PageShell';
 import ProfileBars, { type ProfilePoint } from '../components/charts/ProfileBars';
 import ChartTableDetails from '../components/charts/ChartTableDetails';
 import RankedBars from '../components/charts/RankedBars';
+import SplitBar, { type SplitBarSegment } from '../components/charts/SplitBar';
 import ResearchMethod from '../components/research/ResearchMethod';
 import type { DataTableColumn } from '../components/ui/DataTable';
 import { FREE_CHILD_AGE_COUNTS, FREE_CHILD_AGENCIES_BY_COUNTRY, FREE_CHILD_OTHER_POLICIES, freeChildAgeBars, freeChildFareStats, freeChildOtherBars, type FreeChildFareBar } from '../data/freeChildFares';
@@ -31,6 +32,21 @@ const agePoints: ProfilePoint[] = Array.from({ length: Math.max(...ages) - Math.
   return { label: `Up to ${age}`, short: String(age), y: n, empty: n === 0, major: namedAges.has(age) || age === Math.min(...ages) || age === Math.max(...ages) };
 });
 
+// CIV-1176 (Ryan: the agency page's split bar here too): every agency once, by policy group, in the chart's order.
+// Greys from the research charts, a step lighter each; "Not found yet" striped as in its bar.
+const SPLIT_GREYS = [100, 78, 60, 46, 34, 24];
+const splitSegments: SplitBarSegment[] = [
+  { key: 'age', label: 'Free up to a set age', value: freeChildFareStats.freeUpToAge },
+  ...FREE_CHILD_OTHER_POLICIES.map(p => ({ key: p.policyType, label: p.label, value: p.agencies, unknown: p.unknown })),
+].map((s, i) => ({
+  key: s.key,
+  value: s.value,
+  fill: 'unknown' in s && s.unknown ? HATCHED : `color-mix(in srgb, var(--text-muted) ${SPLIT_GREYS[i]}%, transparent)`,
+  sentence: `${s.value} ${s.value === 1 ? 'agency' : 'agencies'}: ${s.label}`,
+  legend: <span><span className="font-black">{s.value}</span> {s.label}</span>,
+}));
+const SPLIT_LABEL = 'Agencies by free child fare policy';
+
 const peakAge = [...FREE_CHILD_AGE_COUNTS].sort((a, b) => b[1] - a[1])[0];
 const keyFigures = [
   { label: `Free up to age ${peakAge[0]}`, value: peakAge[1] },
@@ -59,6 +75,9 @@ export default function FreeChildFaresPage() {
           <div className="mt-6 space-y-4 text-left text-base leading-8 text-[var(--text-muted)] sm:text-lg">
             <p>Most transit agencies let young children ride free. Where that free fare ends changes from one agency to the next.</p>
             <p>We read the official fare rules of {freeChildFareStats.agencies} transit agencies in Canada and the United States to find up to what age children ride free, and under what conditions.</p>
+          </div>
+          <div className="text-left">
+            <SplitBar segments={splitSegments} label={SPLIT_LABEL} />
           </div>
         </header>
 
