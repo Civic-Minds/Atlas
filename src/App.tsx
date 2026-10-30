@@ -5,6 +5,7 @@ import { CompareTab } from './components/Interval/CompareControl';
 import { useUrlPathname } from './hooks/useUrlPathname';
 import ModeTab from './components/ModeTab';
 import { MAP_TOP_BAR_SLOT, MAP_STATUS_SLOT, TOP_BAR_PILL_SURFACE, TOP_BAR_ICON_BTN, FLOATING_CARD, SEARCH_BAR_WIDTH, TRANSITION_BASE, TRANSITION_SLOW, Z_MAP_OVERLAY, Z_PANEL, Z_HEADER, Z_MODAL_TOP, SIDEBAR_LEFT_FALLBACK, sidebarFrameStyle, SEARCH_ICON, CARD_NOTE } from './styles';
+import { compareSearchMaxWidth } from './mapOverlayLayout';
 import { R2_PUBLIC_URL, getAgencyArtifactUrls, getAgencyCatalogUrl, FEATURES, FEATURE_ROUTES, ATLAS_MODE } from '../shared/config';
 import AtlasLogo from './components/AtlasLogo';
 import { isAgencyVisibleInBrowser } from '../shared/agencyVisibility';
@@ -680,7 +681,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
             <Search className="w-4 h-4" />
           </button>
         )}
-        <div ref={searchBarRef} className={`${SEARCH_BAR_WIDTH} min-w-0 relative ${TOP_BAR_PILL_SURFACE} pl-1 pr-3 ${phoneSearchCollapsed ? 'hidden' : ''}`}>
+        <div ref={searchBarRef} className={`${SEARCH_BAR_WIDTH} min-w-0 relative ${TOP_BAR_PILL_SURFACE} pl-1 pr-3 ${phoneSearchCollapsed ? 'hidden' : ''}`} style={compareActive && !isPhone ? { maxWidth: compareSearchMaxWidth(sidebarLeft) } : undefined}>
           <Search className={`absolute left-2 top-1/2 -translate-y-1/2 ${SEARCH_ICON} pointer-events-none`} />
           <input
             ref={searchInputRef}

@@ -148,17 +148,44 @@ export interface HourStackSegment {
   faded?: boolean;
 }
 
+/** A branch's colour, or undefined to keep its place in the stack's colour. */
+export type BranchColorOf = (branch: ShapeProperties, index: number) => string | undefined;
+
+/**
+ * Compare's two cards (CIV-844): each destination keeps one colour on both. A direction's destinations across every day
+ * type in the agency file, in alphabetical order, each take the next branch colour, so a destination one side doesn't
+ * run (a weekday-only short turn) can't shift the other side's colours.
+ */
+export function stableBranchColors(features: readonly GeoJSON.Feature[] | undefined, routeShortName: string | null | undefined): BranchColorOf | undefined {
+  if (!features || !routeShortName) return undefined;
+  // Per direction, so one direction's destinations never push the other's along the palette.
+  const byDirection = new Map<string, Set<string>>();
+  for (const f of features) {
+    const p = f.properties as { routeShortName?: string; headsign?: string; directionId?: number | string } | null;
+    if (p?.routeShortName !== routeShortName || !p.headsign) continue;
+    const dir = String(p.directionId ?? '');
+    (byDirection.get(dir) ?? byDirection.set(dir, new Set()).get(dir)!).add(p.headsign);
+  }
+  const sorted = new Map([...byDirection].map(([dir, names]) => [dir, [...names].sort((a, b) => a.localeCompare(b))]));
+  return branch => {
+    const i = branch.headsign ? sorted.get(String(branch.directionId ?? ''))?.indexOf(branch.headsign) ?? -1 : -1;
+    return i >= 0 ? branchStackColor(i) : undefined;
+  };
+}
+
 /** One hour of a branch stack: each branch's own trips that hour, in its branch colour, faded when not selected. */
 export function branchHourStack(
   branches: ShapeProperties[],
   hour: number,
   isSelected?: (branch: ShapeProperties) => boolean,
+  /** A branch's colour by something steadier than its place in the stack (Compare's two cards, CIV-844). */
+  colorOf?: BranchColorOf,
 ): HourStackSegment[] {
   return branches
     .map((branch, i) => ({
       label: branch.headsign ?? `Branch ${i + 1}`,
       headway: branchDisplayHourHeadway(branch, hour),
-      color: branchStackColor(i),
+      color: colorOf?.(branch, i) ?? branchStackColor(i),
       ...(isSelected ? { faded: !isSelected(branch) } : {}),
     }))
     .filter((segment): segment is HourStackSegment & { headway: number } => segment.headway != null);
@@ -180,7 +207,7 @@ export function stackBranches(group: HourChartGroup): ShapeProperties[] {
  * never one direction silently), its gap colours, the primary multi-branch direction's branch stack, and one y-axis
  * top for everything the card or its full-day view can draw.
  */
-export function routeHourModel<G extends HourChartGroup>({ groups, directions, primaryMultiBranch, period, hours }: {
+export function routeHourModel<G extends HourChartGroup>({ groups, directions, primaryMultiBranch, period, hours, colorOf }: {
   /** The direction groups the card shows. */
   groups: G[];
   /** The route's directions, for the fallback series when no group has hours. */
@@ -189,6 +216,8 @@ export function routeHourModel<G extends HourChartGroup>({ groups, directions, p
   primaryMultiBranch: HourChartGroup | undefined;
   period: TimePeriod;
   hours: readonly number[];
+  /** Branch colours by name instead of stack place (Compare, CIV-844). */
+  colorOf?: BranchColorOf;
 }) {
   const defaultSparklineDirs = sparklineSourceDirections(directions, primaryMultiBranch?.realTier);
   const perDirection = groups.map(group => ({ group, byHour: directionHourSeries(group, period, hours) }));
@@ -207,7 +236,7 @@ export function routeHourModel<G extends HourChartGroup>({ groups, directions, p
   const primaryTrunkByHour = hasTrunkSparkline ? trunkSparklineByHour(primaryMultiBranch!.realTier, hours) : null;
   const defaultStackedByHour = hasTrunkSparkline
     ? Object.fromEntries(hours.map(h => [h, primaryTrunkByHour![h] != null && defaultMerged[h] != null
-      ? branchHourStack(primaryMultiBranch!.realTier, h)
+      ? branchHourStack(primaryMultiBranch!.realTier, h, undefined, colorOf)
       : []])) as Record<number, HourStackSegment[]>
     : undefined;
   // One y-axis top for the route: the busiest hour of anything the card or the full-day view can

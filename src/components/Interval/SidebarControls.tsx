@@ -923,6 +923,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                 <RouteCardHeadway
                   currentRoute={currentRoute}
                   agencyFeatures={routeSlug ? nonCorridorLayers[routeSlug]?.features : undefined}
+                  stableBranchColors={compareActive}
                   variantFamily={variantFamily}
                   routeSlug={routeSlug}
                   routeAgency={routeAgency}
@@ -1000,6 +1001,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
           <RouteCardHeadway
             currentRoute={currentRouteB!}
             agencyFeatures={routeSlug ? nonCorridorLayers[routeSlug]?.features : undefined}
+            stableBranchColors
             variantFamily={variantFamilyB}
             routeSlug={routeSlug}
             routeAgency={routeAgency}

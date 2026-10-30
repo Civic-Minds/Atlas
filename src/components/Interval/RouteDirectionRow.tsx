@@ -19,6 +19,9 @@ interface Props {
    *  beside it (the stop and route cards' destination rows, CIV-918). It keeps 6rem, so a long value
    *  ("until 9:37am, every 12 min") never squeezes it to a bare ellipsis. */
   singleLine?: boolean;
+  /** With singleLine: the label wraps instead of cutting, for a row whose value already takes two lines ("no regular
+   *  service during this period"), so the name uses the height the row has anyway (CIV-844: "to Roncesval…"). */
+  labelWraps?: boolean;
   // Regular service
   headway?: number | null;
   colorHeadway?: number | null;
@@ -72,7 +75,7 @@ export function keyboardFocusHover(onHoverStart?: () => void, onHoverEnd?: () =>
  * Owns label color, headway display, and limited-service variants
  * so there's one place to change instead of hunting across SidebarControls.
  */
-export default function RouteDirectionRow({ label, routeName, labelWeight = 'bold', singleLine = false, headway, colorHeadway, headwayLabel, trunkHeadway, headwaySuffix, headwaySuffixTone, subLabel, subLabelTrailing, subLabelWeight = 'bold', live, limited, limitedLabel = LIMITED_SERVICE_LABEL, edgeGapAllowance, onEdgeGapAllowanceClick, dimmed, onHoverStart, onHoverEnd, branchHovered, branchDimmed, onClick, holdLayout = false }: Props) {
+export default function RouteDirectionRow({ label, routeName, labelWeight = 'bold', singleLine = false, labelWraps = false, headway, colorHeadway, headwayLabel, trunkHeadway, headwaySuffix, headwaySuffixTone, subLabel, subLabelTrailing, subLabelWeight = 'bold', live, limited, limitedLabel = LIMITED_SERVICE_LABEL, edgeGapAllowance, onEdgeGapAllowanceClick, dimmed, onHoverStart, onHoverEnd, branchHovered, branchDimmed, onClick, holdLayout = false }: Props) {
   const interactive = !!(onHoverStart && onHoverEnd);
   const clickable = !!onClick;
   const faded = dimmed || branchDimmed;
@@ -109,8 +112,8 @@ export default function RouteDirectionRow({ label, routeName, labelWeight = 'bol
     >
       <div className={`flex ${singleLine ? '' : 'flex-wrap'} items-start justify-between gap-2`}>
         <span
-          className={`${labelWeight === 'regular' ? 'font-normal' : 'font-bold'} flex-1 min-w-[6rem] ${singleLine ? 'truncate' : 'break-words'} leading-snug ${clickable ? '' : 'text-[var(--text-primary)]'}`}
-          title={singleLine ? label : undefined}
+          className={`${labelWeight === 'regular' ? 'font-normal' : 'font-bold'} flex-1 min-w-[6rem] ${singleLine && !labelWraps ? 'truncate' : 'break-words'} leading-snug ${clickable ? '' : 'text-[var(--text-primary)]'}`}
+          title={singleLine && !labelWraps ? label : undefined}
         >
           {routeName ? <RouteRowName shortName={routeName.shortName} name={routeName.name} /> : label}
         </span>
