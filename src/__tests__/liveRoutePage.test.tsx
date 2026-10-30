@@ -207,13 +207,18 @@ describe('Live route dashboard', () => {
     // (The page is stale by the real clock here, so the last segment is its own element; the line reads the same.)
     expect(screen.getByText((_, el) => el?.tagName === 'P' && el.textContent === 'Week of Oct 8–14, compared with Oct 1–7 · 1,234 trips · estimated from vehicle positions, not reported by the TTC · data up to Oct 14')).toBeTruthy();
     expect(screen.queryByText(/^Changes compared with the week before/)).toBeNull();
-    // The weeks, then the days counted on a line of their own; the method is open (no disclosure).
+    // The weeks, then the days counted, running on in the "Where the data comes from" paragraph (layout A, CIV-1075);
+    // the method is open (no disclosure).
     expect(screen.getByText(/This week is .+ and last week is .+\./)).toBeTruthy();
-    expect(screen.getByText(/^Excluding .+ and .+\.$/).className).toMatch(/block/);
+    const excluding = screen.getByText(/^Excluding .+ and .+\.$/);
+    expect(excluding.parentElement?.tagName).toBe('P');
+    expect(excluding.parentElement?.textContent).toMatch(/This week is .+Excluding/);
+    expect(excluding.closest('div')?.querySelector('h3')?.textContent).toBe('Where the data comes from');
+    expect([...document.querySelectorAll('#method h3')].map(h => h.textContent)).toEqual(['What each number means', 'Where the data comes from', 'How changes are coloured', 'Limits']);
     expect(document.querySelector('details')).toBeNull();
     expect(screen.getAllByText((_, el) => el?.tagName === 'P' && (el.textContent ?? '').split('Recording gaps are times our recording missed').length === 2).length).toBe(1);
-    // One paragraph: each group opens with its bold run-in label.
-    for (const g of ['What each number means', 'Where the data comes from', 'How changes are coloured', 'Limits']) expect(screen.getByText(`${g}.`, { selector: 'strong' })).toBeTruthy();
+    // Layout A (CIV-1075): each group's heading on its own line, no trailing period, then one paragraph.
+    for (const g of ['What each number means', 'Where the data comes from', 'How changes are coloured', 'Limits']) expect(screen.getByText(g, { selector: 'h3' }).nextElementSibling?.tagName).toBe('P');
     expect(screen.queryByText(/trip time/i)).toBeNull();
     expect(screen.getByText(/are trips we couldn't judge as run or not run\. We left out 3 of them from Delivered\./)).toBeTruthy();
     // Run time is a dot on a line per pattern: the figures are the row's hover text and screen-reader text.
@@ -286,7 +291,7 @@ describe('Live route dashboard', () => {
     renderPage({ ...ready, v3: { ...v3, weekly: { minHealthyDays: 1, health: [], comparable: true, thisWeek: wk, lastWeek: wk } } } as LiveDashboardResponse);
     await screen.findByRole('heading', { level: 1, name: 'TTC 505' });
     expect(screen.getByText('How this is measured')).toBeTruthy();
-    expect(screen.getByText(/^Excluding .+ and .+\.$/).className).toMatch(/block/);
+    expect(screen.getByText(/^Excluding .+ and .+\.$/).parentElement?.tagName).toBe('P');
     expect(document.querySelector('details')).toBeNull();
     expect(screen.queryByRole('button', { name: 'Summary' })).toBeNull(); // still no view switcher on the shareable page
   });

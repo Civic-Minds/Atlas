@@ -6,12 +6,12 @@ import { joinList } from '../../../../shared/overflowText';
 import { builtText, coveredRoutesText, METHOD_GROUPS } from '../../../../shared/liveWording';
 import { weekWindowParts } from '../../../utils/liveKpi';
 import ArrowLink from '../../ui/ArrowLink';
-import MethodFootnote, { OwnLine, Term } from '../MethodFootnote';
+import MethodFootnote, { Term } from '../MethodFootnote';
 import { aheadLine, bunchingLine, colourLine, deliveredLine, extraWaitLine, lateLine, networkFiguresLine, positionsLine, recordingGapsLine, runTimeLine, stopsLine, tripMatchLine } from '../methodLines';
 import type { Ready } from '../../../LiveRoutePage';
 
-/** The two weeks, then the days left out on a line of their own (no line when every day counted). */
-const weekWindowItems = (w: Parameters<typeof weekWindowParts>[0]): ReactNode[] => { const p = weekWindowParts(w); return p.days ? [p.weeks, <OwnLine key="days" title={p.reason ?? undefined}>{p.days}</OwnLine>] : [p.weeks]; };
+/** The two weeks, then the days left out (nothing when every day counted), running on in the paragraph (CIV-1075). */
+const weekWindowItems = (w: Parameters<typeof weekWindowParts>[0]): ReactNode[] => { const p = weekWindowParts(w); return p.days ? [p.weeks, <span key="days" title={p.reason ?? undefined}>{p.days}</span>] : [p.weeks]; };
 
 
 /**
