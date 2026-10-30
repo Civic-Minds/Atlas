@@ -32,7 +32,7 @@ import {
   dirIdNum,
   routePartMeetsFilter,
 } from '../../../utils/routeCardTrunk';
-import { activeHourRanges, partPeriodNoticeApplies, partPeriodNoticeHeadway, partPeriodOutside } from '../../../utils/periodActiveRanges';
+import { activeHourRanges, partPeriodNoticeApplies, partPeriodNoticeHeadway, partPeriodOutside, periodTripRanges } from '../../../utils/periodActiveRanges';
 import type { VariantFamily } from '../../../utils/routeVariants';
 import { reportDetails } from '../../../utils/reportIssue';
 import { ROUTE_DATA_QUALITY_WARNING } from '../../../../shared/routeDataQuality';
@@ -219,11 +219,20 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
     && partPeriodNoticeApplies(
       activeRangeDirections, selectedPeriod.startHour, selectedPeriod.endHour, maxHeadway, contract?.filterValue,
     );
+  // #1186: both period lines read the same window, the hours inside the period. A route runs there when one of those
+  // hours has trips; "This route runs only from …" names those hours, and the "no scheduled trips" line shows only
+  // when there are none (TTC 504 Sunday read both: its run from 1 AM counted the hour before the period).
+  // Whether it runs reads every direction, as the period check does; the hours named are the chart's where it has some.
+  const tripRangesOf = (directions: ShapeProperties[]) => (selectedPeriod ? periodTripRanges(directions, selectedPeriod.startHour, selectedPeriod.endHour) : []);
+  const allDirectionRanges = tripRangesOf(currentRoute.directions);
+  const chartRanges = tripRangesOf(activeRangeDirections);
+  const periodRanges = chartRanges.length > 0 ? chartRanges : allDirectionRanges;
+  const runsInPeriod = hasPartialPeriodService && allDirectionRanges.length > 0;
   const periodNotice = !hideFilterNotices && selectedPeriod && !hasPeriodService
       ? periodServiceNotice(
       formatPeriodRangeLong(selectedPeriod.startHour, selectedPeriod.endHour),
-      hasPartialPeriodService,
-      activePeriodRangeText,
+      runsInPeriod,
+      periodRanges.map(([start, end]) => formatPeriodRangeLong(start, end)).join(', '),
     )
     : null;
   const unevenNotice = !hideFilterNotices && selectedPeriod && hasPeriodService && unevenGap > 0
@@ -400,7 +409,8 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
         );
       })()}
       <SidebarCardList>
-        {selectedRouteOutOfFilter && (
+        {/* #1186: a route with trips inside the period never also reads "no scheduled trips" there; the period notice says when it runs. */}
+        {selectedRouteOutOfFilter && !(doesNotRun && runsInPeriod) && (
           <div className={CARD_NOTICE_FOOTER}>
             <p className={CARD_NOTICE}>
               {doesNotRun

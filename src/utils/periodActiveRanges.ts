@@ -54,6 +54,16 @@ export function hourHasService(direction: Partial<HourFields>, hour: number): bo
   return (direction.departuresByHour?.[hour] ?? 0) > 0 || direction.headwayByHour?.[hour] != null || direction.maxGapByHour?.[hour] != null;
 }
 
+/**
+ * The hours inside the period with trips, for "This route runs only from …" (#1186): the same window the period's trips
+ * are counted in. The headway hours name them where they can; a period with only a few trips has no headway hour, so its
+ * departure hours name them instead of the whole period.
+ */
+export function periodTripRanges(directions: Partial<HourFields>[], startHour: number, endHour: number): Array<[number, number]> {
+  const ranges = activeHourRanges(directions, startHour, endHour);
+  return ranges.length > 0 ? ranges : hourRuns(hour => directions.some(direction => hourHasService(direction, hour)), startHour, endHour);
+}
+
 /** A part of the selected period outside the route's one run of service (N13): whether trips run there at all. */
 export interface OutsidePart {
   at: 'start' | 'end';

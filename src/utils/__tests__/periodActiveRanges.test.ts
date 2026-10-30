@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { TIME_PERIODS } from '../../../shared/config';
 import type { ShapeProperties } from '../../hooks/useIntervalStats';
 import { sparklineSourceDirections } from '../routeCardTrunk';
-import { activeHourRanges, activeRangesCoverPeriod, hourHasService, partPeriodNoticeApplies, partPeriodNoticeHeadway, partPeriodOutside } from '../periodActiveRanges';
+import { activeHourRanges, activeRangesCoverPeriod, hourHasService, partPeriodNoticeApplies, partPeriodNoticeHeadway, partPeriodOutside, periodTripRanges } from '../periodActiveRanges';
 
 // TTC 51 Leslie, published data (2026-10-20): the drawn patterns' hourly headways per day type.
 const TTC_51: Record<'Weekday' | 'Saturday' | 'Sunday', Array<{ directionId: number; headsign: string; headwayByHour: Record<number, number> }>> = {
@@ -239,5 +239,19 @@ describe('partPeriodOutside (N13)', () => {
     expect(partPeriodOutside([d], 6, 9)?.parts.map(p => p.service)).toEqual(['none', 'none']);
     const split = { headwayByHour: hours({ 6: 12, 8: 12 }), departuresByHour: hours({ 6: 5, 8: 5 }) };
     expect(partPeriodOutside([split], 6, 9)).toBeNull();
+  });
+});
+
+describe('periodTripRanges: the hours inside the period with trips (#1186)', () => {
+  it('reads only the period, not the hour before it (TTC 504 Sunday overnight: trips 1-4 AM, period 2-6 AM)', () => {
+    const d = { headwayByHour: { 25: 10, 26: 10 }, departuresByHour: { 25: 6, 26: 6, 27: 1 } };
+    expect(periodTripRanges([d], 26, 30)).toEqual([[26, 28]]);
+  });
+  it('names the departure hours when no hour has a headway (TTC 300 weekday AM peak: one trip, 6-7 AM)', () => {
+    expect(periodTripRanges([{ departuresByHour: { 6: 1 } }], 6, 9)).toEqual([[6, 7]]);
+  });
+  it('is empty when every trip leaves before the period (TTC 15 overnight: last trips before 2 AM)', () => {
+    const d = { departuresByHour: { 24: 2, 25: 2 }, maxGapByHour: { 24: 30, 25: 30 } };
+    expect(periodTripRanges([d], 26, 30)).toEqual([]);
   });
 });
