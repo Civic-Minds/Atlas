@@ -3,12 +3,11 @@ import * as layout from '../../mapOverlayLayout';
 import * as styles from '../../styles';
 
 // CIV-1136: every fixed map overlay's slot comes from the one layout table. A slot that changes here is a visible change,
-// listed for Ryan. Step 2 changed four, each the same as before until it matters: the footer row stops short of History's
-// scrubber (--map-footer-right, 3.5rem otherwise), the key follows the footer's measured height (2rem until measured), and
-// the notice pills sit above the key when it shows (--map-key-h, 0 otherwise).
+// listed for Ryan. Step 2 changed three, each the same as before until it matters: the key follows the footer's measured
+// height (2rem until measured), and the notice pills sit above the key when it shows (--map-key-h, 0 otherwise).
 const PINNED = {
     MAP_TOP_BAR_SLOT: "top-6 left-6 right-6 h-[28px]",
-    MAP_FOOTER_ROW_SLOT: "max-sm:contents absolute bottom-6 left-6 right-[var(--map-footer-right,3.5rem)] flex items-end justify-between gap-2 pointer-events-none",
+    MAP_FOOTER_ROW_SLOT: "max-sm:contents absolute bottom-6 left-6 right-14 flex items-end justify-between gap-2 pointer-events-none",
     MAP_FOOTER_PILLS_PHONE_SLOT: "max-sm:absolute max-sm:bottom-6 max-sm:left-6 max-sm:max-w-[calc(100vw-3rem)]",
     MAP_COUNTS_PHONE_SLOT: "max-sm:absolute max-sm:bottom-16 max-sm:left-6",
     MAP_LEGEND_SLOT: "absolute max-sm:bottom-[6.5rem] sm:bottom-[calc(2rem+var(--map-footer-h,2rem))] left-6",
