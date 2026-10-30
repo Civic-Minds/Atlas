@@ -27,6 +27,8 @@ export const frequentServiceStoryStats = {
   }, {})).map(([country, agencies]) => ({ country, agencies })),
   categoryCounts,
   namedNumericAgencies: heldNumericRows.length,
+  /** Canada and US agencies with a number on October 11 whose source was opened again on October 30. */
+  recheckedAgencies: recheckedNumericRows.length,
   /** Had a number on October 11 but could not be confirmed on October 30 (page gone or not checkable). */
   recheckLeftOut: recheckedNumericRows.length - heldNumericRows.length,
   noDefinitionFound: categoryCounts.noDefinitionFound,
