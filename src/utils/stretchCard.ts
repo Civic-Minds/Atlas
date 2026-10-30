@@ -25,6 +25,14 @@ export interface StretchRow {
   noRegular: boolean;
 }
 
+/** A shared value at or under this share of a row's own value is materially better than it (the Combined rule). */
+export const SHARED_STRETCH_RATIO = 0.65;
+
+/** The shared section is materially better than the typical branch: worth its own row ("Shared stretch every N"). */
+export function trunkBeatsBranches(trunk: number, terminal: number): boolean {
+  return trunk <= terminal * SHARED_STRETCH_RATIO && terminal / trunk <= 4;
+}
+
 /** The stretch rows a feature's stretchMeta describes, main first then tails in order. Empty on data without it. */
 export function stretchRowsFromMeta(f: ShapeProperties, period: TimePeriod): StretchRow[] {
   const meta = f.stretchMeta;

@@ -68,9 +68,10 @@ describe('a branch that does not run through a period has no row for it (#1115, 
     expect(screen.getByText(/every 20 min/)).toBeTruthy();
   });
 
-  it('data without the field keeps the row, as before the rebuild', () => {
+  it('data without the field keeps the row, as before the rebuild, at its full-window wait, 313 shown as about 300 (the period is not steady, CIV-1074)', () => {
     renderCard(features(), 'midday');
-    expect(screen.getByText(/every 21 min/)).toBeTruthy();
+    expect(screen.getAllByText(/every 300 min/).length).toBeGreaterThan(0);
+    expect(screen.queryByText(/every 21 min/)).toBeNull();
   });
 
   it('a branch with no cadence of its own never shows the trunk\'s number', () => {

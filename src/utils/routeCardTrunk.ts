@@ -4,7 +4,7 @@ import { branchDisplayPeriodHeadway, buildRouteServiceSummary } from './routeFac
 import { MIN_SHARED_STOPS_FOR_TRUNK, sharedStopIds, sharesOrderedTrunk } from './routeBranchGeometry';
 import { sharedStretchStopPass } from './frequencySegments';
 import { rowTrips } from './rowTrips';
-import { stretchRowsFromMeta } from './stretchCard';
+import { stretchRowsFromMeta, trunkBeatsBranches } from './stretchCard';
 
 /** Headsign-scoped trunk minimum for route-card range display (not route-wide combined deps). */
 export function headsignTrunkHeadway(d: ShapeProperties, period: string): number | null {
@@ -149,10 +149,6 @@ export function shouldShowTrunkSummary(branches: ShapeProperties[], period: Time
   return trunkBeatsBranches(trunk, terminal);
 }
 
-/** The shared section is materially better than the typical branch: worth its own row. */
-function trunkBeatsBranches(trunk: number, terminal: number): boolean {
-  return trunk <= terminal * 0.65 && terminal / trunk <= 4;
-}
 
 /**
  * CIV-937: the "Shared stretch every N" row of a direction whose rows come from the stretches: the main stretch's own
