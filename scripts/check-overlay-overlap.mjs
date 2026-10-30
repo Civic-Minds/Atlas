@@ -87,6 +87,8 @@ try {
     if (!opened) { skipped.push(label); await ctx.close(); continue; }
     if (scene.open) await scene.open(page).catch(err => failures.push(`${label}: could not open the scene (${String(err).split('\n')[0]})`));
     await page.waitForTimeout(SETTLE_MS);
+    // Measure the settled map, not one still loading: the loading pill and half-drawn counts change the bottom row.
+    await page.waitForFunction(() => !/Loading/.test(document.body.innerText), null, { timeout: 30000 }).catch(() => {});
     const { overlays, viewport } = await page.evaluate(measure);
     const names = overlays.map(o => `${o.name}(${o.boxes.length})`).join(' ');
     console.log(`${label}: ${names}`);
