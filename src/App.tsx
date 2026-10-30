@@ -665,17 +665,6 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
 
         {!inResearch && <div className="flex items-center gap-2 flex-1 min-w-0 lg:flex-initial">
         <div className="flex-1 min-w-0 sm:flex">
-        {/* CIV-449 (mock): on every phone width the search rests as a round button, like the About button, and opens into the box. */}
-        {phoneSearchCollapsed && (
-          <button
-            type="button"
-            onClick={() => { setSearchFocused(true); requestAnimationFrame(() => searchInputRef.current?.focus()); }}
-            aria-label={searchPlaceholder}
-            className={TOP_BAR_ICON_BTN}
-          >
-            <Search className="w-4 h-4" />
-          </button>
-        )}
         {/* The outer box keeps the search slot's width, which the side cards measure; in Compare only the pill inside
             stops short of the divider, so the cards keep their width (CIV-844). */}
         <div ref={searchBarRef} className={`${SEARCH_BAR_WIDTH} min-w-0 relative ${phoneSearchCollapsed ? 'hidden' : ''}`}>
@@ -810,6 +799,19 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
       </div>
       {/* Portal target for Interval's right header (FilterChips + Now + FilterPanel) */}
       <div className={`${phoneSearchExpanded ? 'hidden' : 'flex'} items-center gap-2 pointer-events-auto`}>
+        {/* CIV-449: on every phone width the search rests as a round button in the right group, just left of the
+            filter button (Ryan, 2026-10-30), and opens into the box, which takes the whole bar while the other
+            buttons step aside (#698). */}
+        {phoneSearchCollapsed && !inResearch && (
+          <button
+            type="button"
+            onClick={() => { setSearchFocused(true); requestAnimationFrame(() => searchInputRef.current?.focus()); }}
+            aria-label={searchPlaceholder}
+            className={TOP_BAR_ICON_BTN}
+          >
+            <Search className="w-4 h-4" />
+          </button>
+        )}
         <div ref={headerPortalRef} className="flex items-center gap-2" />
         <button
           type="button"
