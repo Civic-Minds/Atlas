@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { routeCardNotices, type RouteCardNoticeInput } from '../routeCardNotices';
+import { formatPeriodRangeLong } from '../../../shared/config';
 
 // A card with service all period and no rows of note: only the inputs a test sets decide what shows.
 const model = {
@@ -44,5 +45,19 @@ describe('routeCardNotices (CIV-1200)', () => {
     const withSections = { ...model, groups, showDirectionSections: true } as unknown as RouteCardNoticeInput['model'];
     expect(routeCardNotices({ ...base, model: withSections }).directions).toEqual([{ dirId: 1, kind: 'no-service', text: 'No midday service.', place: 2 }]);
     expect(routeCardNotices({ ...base, model: withSections, nightView: true }).directions).toEqual([]);
+  });
+
+  it('#1186: the part-period line names the hours inside the period, as the period line does', () => {
+    // Trips in the hour before overnight (1 AM) and at 3 and 5 AM: the line used to read "runs from 1–2 AM, …".
+    const night = { headsign: 'A', headwayByHour: { 25: 20, 27: 20, 29: 20 } } as any;
+    const partial = { ...model, hasPeriodService: false, hasPartialPeriodService: true, activeRangeDirections: [night], contract: { filterValue: 60 } } as unknown as RouteCardNoticeInput['model'];
+    const n = routeCardNotices({ ...base, directions: [night], model: partial, period: 'overnight', maxHeadway: 15, selectedRouteOutOfFilter: true });
+    const named = `${formatPeriodRangeLong(27, 28)}, ${formatPeriodRangeLong(29, 30)}`;
+    expect(n.filter?.code).toBe('N13');
+    // The notices keep their ranges on one line (word joiners, no-break spaces).
+    const plain = (text: string | undefined) => text?.replaceAll('\u2060', '').replace(/[\u00a0\u202f]/g, ' ');
+    expect(plain(n.filter?.text)).toContain(named);
+    expect(plain(n.filter?.text)).not.toContain(formatPeriodRangeLong(25, 26));
+    expect(plain(n.period?.text)).toContain(named);
   });
 });

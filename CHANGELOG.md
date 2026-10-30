@@ -8,6 +8,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Map and route behavior
 
+- **A route that runs for only part of a period names the hours inside that period**: [TTC 31 overnight](https://github.com/Civic-Minds/Atlas/issues/1186) read "runs from 1–2 AM, but not throughout 2–6 AM" next to "runs only from 2–3 AM"
 - **Stop cards no longer give a start or end time for a destination with no trips of its own**: [TTC 100 to Pape](https://github.com/Civic-Minds/Atlas/issues/1228) read "from 5:34 AM" overnight where its route card shows no regular service
 - **Top bar buttons have a light outline so they stand out on the map**: Mode, Agencies and the search bar blended into the light map; high contrast mode uses a stronger outline
 - **Stop dots at middle zoom sit where their stops are**: each dot groups stops within 250 m instead of chaining up to 8 km along a street ([#1147](https://github.com/Civic-Minds/Atlas/issues/1147))
