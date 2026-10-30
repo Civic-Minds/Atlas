@@ -36,7 +36,7 @@ import {
   agencyQualifiesForHistory,
   type HistoryTier,
 } from '../../shared/historyEligibility';
-import { capitalizeFirst, headwayEvery, headwayExactAmount, runTimeAmount } from '../utils/headwayText';
+import { capitalizeFirst, headwayEvery, runTimeAmount } from '../utils/headwayText';
 import { historyChartPoints, historyDotPriority, historyYearTicks, placeHistoryDots, snapshotMonth } from '../utils/historyChart';
 import ExpandDialog, { ExpandButton } from '../components/ui/ExpandDialog';
 import Panel, { PanelBody, PanelTitleBar } from '../components/ui/Panel';
@@ -347,8 +347,12 @@ function RouteHistoryCard({
   );
 }
 
-/** Value labels are about 28 by 9 chart units; two closer than that (with a little room) in both directions would overlap. */
-const labelsOverlap = (a: { x: number; y: number }, b: { x: number; y: number }) => Math.abs(a.x - b.x) < 30 && Math.abs(a.y - b.y) < 12;
+/** Value labels read "every 349 min" like the rows (CIV-408 #18): about 56 by 9 chart units, so half is 28. */
+const LABEL_HALF = 28;
+/** Two labels closer than a label's width (with a little room) in both directions would overlap. */
+const labelsOverlap = (a: { x: number; y: number }, b: { x: number; y: number }) => Math.abs(a.x - b.x) < 2 * LABEL_HALF + 2 && Math.abs(a.y - b.y) < 12;
+/** A label near either end of the chart lines up with that edge instead of running past it. */
+const labelAnchor = (x: number, width: number) => (x > width - LABEL_HALF ? 'end' : x < LABEL_HALF ? 'start' : 'middle');
 
 /** How high and low the line runs within `half` units either side of x (chart y grows downward). */
 function lineExtentNear(points: ReadonlyArray<{ x: number; y: number }>, x: number, half: number): { top: number; bottom: number } {
@@ -428,7 +432,7 @@ function RouteHistoryChart({ snaps, minutes, lineColor, gradientId, hoveredSnap,
       if (valued.includes(i) || (i !== snaps.length - 1 && !spot(i))) continue;
       // Not where another point sits inside the label, which would make it unclear which point it names.
       const at = valueAt(i);
-      if (i !== snaps.length - 1 && points.some((p, k) => k !== i && Math.abs(p.x - at.x) < 16 && p.y > at.y - 11 && p.y < at.y + 3)) continue;
+      if (i !== snaps.length - 1 && points.some((p, k) => k !== i && Math.abs(p.x - at.x) < LABEL_HALF + 2 && p.y > at.y - 11 && p.y < at.y + 3)) continue;
       if (valued.every(k => !labelsOverlap(valueAt(i), valueAt(k)))) valued.push(i);
     }
   } else {
@@ -436,7 +440,7 @@ function RouteHistoryChart({ snaps, minutes, lineColor, gradientId, hoveredSnap,
   }
   // A hovered snapshot's value always shows; a label close to it steps aside while it does, so the two never stack.
   const hovered = snaps.findIndex(snap => snap === hoveredSnap);
-  const shownValues = hovered < 0 ? valued : [hovered, ...valued.filter(k => k !== hovered && !(Math.abs(valueAt(hovered).x - valueAt(k).x) < 30 && Math.abs(valueAt(hovered).y - valueAt(k).y) < 18))];
+  const shownValues = hovered < 0 ? valued : [hovered, ...valued.filter(k => k !== hovered && !(Math.abs(valueAt(hovered).x - valueAt(k).x) < 2 * LABEL_HALF + 2 && Math.abs(valueAt(hovered).y - valueAt(k).y) < 18))];
 
   const linePath = 'M ' + points.map(p => `${p.x} ${p.y}`).join(' L ');
   const fillPath = `${linePath} L ${points[points.length - 1].x} ${height - 18} L ${points[0].x} ${height - 18} Z`;
@@ -476,8 +480,8 @@ function RouteHistoryChart({ snaps, minutes, lineColor, gradientId, hoveredSnap,
           <g key={i}>
             {(dots.has(i) || i === hovered) && <circle cx={p.x} cy={p.y} r={i === hovered ? 4.5 : 3} fill={lineColor} stroke="var(--bg-panel)" strokeWidth="1.5" />}
             {shownValues.includes(i) && (
-              <text x={p.x} y={valueAt(i).y} textAnchor="middle" fontSize="8" fontWeight="700" fill="var(--text-primary)" fontFamily="inherit" stroke="var(--bg-panel)" strokeWidth="3" strokeLinejoin="round" paintOrder="stroke">
-                {headwayExactAmount(shownMinutes(minutes[i]))}
+              <text x={p.x} y={valueAt(i).y} textAnchor={labelAnchor(p.x, width)} fontSize="8" fontWeight="700" fill="var(--text-primary)" fontFamily="inherit" stroke="var(--bg-panel)" strokeWidth="3" strokeLinejoin="round" paintOrder="stroke">
+                {headwayEvery(shownMinutes(minutes[i]))}
               </text>
             )}
           </g>
