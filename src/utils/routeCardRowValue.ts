@@ -67,8 +67,11 @@ export function routeCardRowValue(d: ShapeProperties, ctx: RouteCardRowContext):
   const mainKey = period as keyof NonNullable<NonNullable<ShapeProperties['stretchMeta']>['main']>['period'] & string;
   const mainGap = d.stretchMeta?.main?.maxGap?.[mainKey];
   const mainValue = d.stretchMeta?.main?.period?.[mainKey];
+  // A row that already reads a range keeps it: the range's slow end is real somewhere on the route (TTC 17 to Warden: every
+  // 10–30, the Markham stops north of Steeles get every 27–30).
+  const showsRange = typeof directionWorst === 'number' && contract?.range != null && contract.range[0] < directionWorst && contract.range[1] >= directionWorst;
   const directionH = d.stretchRole === 'main' && d.tier === 'infrequent' && d.headwayByPeriod?.[period as keyof NonNullable<ShapeProperties['headwayByPeriod']>] != null
-    && typeof directionWorst === 'number' && typeof mainGap === 'number' && typeof mainValue === 'number' && directionWorst > mainGap
+    && typeof directionWorst === 'number' && typeof mainGap === 'number' && typeof mainValue === 'number' && directionWorst > mainGap && !showsRange
     ? mainValue
     : directionWorst;
   const allDayH = allDay?.filterValue != null && hoveredHour == null ? allDay.filterValue : undefined;

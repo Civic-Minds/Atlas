@@ -60,4 +60,12 @@ describe('routeCardRowValue (CIV-992)', () => {
     expect(routeCardRowValue(septa67({ tier: 'span', headway: null, headwayByPeriod: {} }), evening).headway).toBe(169);
     expect(routeCardRowValue(septa67({ stretchRole: 'variant' }), evening).headway).toBe(169);
   });
+  it('keeps a row that already reads a range (CIV-1156: TTC 17 to Warden, every 10–30; the Markham stops get every 27–30)', () => {
+    const ttc17 = septa67({ routeShortName: '17', headsign: 'Warden', headwayByPeriod: { amPeak: 10 }, maxGapByPeriod: { amPeak: 21 },
+      directionFilterHeadwayByPeriod: { amPeak: 30 },
+      stretchMeta: { main: { stops: 40, refStop: 's', trips: 60, period: { amPeak: 10 }, maxGap: { amPeak: 12 } }, tails: [] } });
+    const row = routeCardRowValue(ttc17, { ...ctx, period: 'amPeak', stretchMode: true, contract: { filterValue: 30, runs: true, range: [10, 30] } });
+    expect(row.headway).toBe(30);
+    expect(row.headwayLabel).toBe('every 10–30 min');
+  });
 });
