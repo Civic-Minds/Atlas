@@ -13,6 +13,7 @@ import AboutDocsPage from './AboutDocsPage';
 import AboutPage from './AboutPage';
 import LegalPage from './LegalPage';
 import ResearchPage from './apps/ResearchPage';
+import FreeChildFaresPage from './apps/FreeChildFaresPage';
 import AgencyPage from './AgencyPage';
 import AreaPage from './AreaPage';
 import type { AreaPageData } from '../shared/areaPages';
@@ -26,6 +27,7 @@ const PAGES: Record<string, () => ReactElement> = {
   '/privacy': () => <LegalPage document="privacy" />,
   '/terms': () => <LegalPage document="terms" />,
   '/research': () => <ResearchPage />,
+  '/research/free-child-fares': () => <FreeChildFaresPage />,
 };
 
 export const BUILD_MODE = ATLAS_MODE;

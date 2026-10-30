@@ -1,4 +1,4 @@
-import { Moon, Zap } from 'lucide-react';
+import { Moon, Ticket, Zap } from 'lucide-react';
 import { FEATURE_ROUTES } from '../../shared/config';
 import DocsPageLayout from '../components/ui/DocsPageLayout';
 import ArrowLink from '../components/ui/ArrowLink';
@@ -17,6 +17,12 @@ const CARDS = [
     Icon: Zap,
     title: 'Frequent service',
     body: 'See what frequent service means and which routes meet Atlas’s sustained-frequency thresholds.',
+  },
+  {
+    href: FEATURE_ROUTES.freeChildFares,
+    Icon: Ticket,
+    title: 'Free child fares',
+    body: 'See up to what age children ride free at 697 transit agencies.',
   },
 ];
 
