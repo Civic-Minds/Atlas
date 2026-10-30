@@ -2842,8 +2842,7 @@ export async function processGtfsBuffer(
       // drawn on shape 1122587, 4 trips 05:12-05:41: headline 12 and no period values for a
       // branch that runs about every 15 (79 trips at Mount Dennis, 6-22h median 15). Apply Step
       // 4's thin-terminal rule here: same guard, same scoped headline, tier only degrades.
-      // CIV-1157: a drop-off-only end reads its nearest boarding stop instead (headlineReadingStop).
-      const terminalId = headlineReadingStop(coverageStops.map(p => p.stopId), dropOffOnlyStops) ?? undefined;
+      const terminalId = coverageStops.at(-1)?.stopId;
       let rescued = false;
       const limitedVariant = middayVariant(terminalId);
       if (!limitedVariant && feature.properties.serviceClass !== 'irregular' && feature.properties.tier !== 'span'
@@ -2984,13 +2983,23 @@ export async function processGtfsBuffer(
     // Headline period uses trip-dispatch midday when that's denser than times-at-terminus-in-window:
     // long trip runtimes drop late-midday departures from the terminal clock window (GO 94).
     if (feature.properties.serviceClass !== 'irregular' && feature.properties.tier !== 'span') {
-      // CIV-1157: a drop-off-only end reads its nearest boarding stop instead: arrivals bunch by running time.
-      const terminalId = headlineReadingStop(onShape.map(p => p.stopId), dropOffOnlyStops) ?? undefined;
+      const hwVals = onShape.map(({ stopId }) => ownStopHw[stopId]).filter((v): v is number => v != null).sort((a, b) => a - b);
+      // CIV-1157: a drop-off-only end records arrivals, which bunch by running time (CapMetro 985 southbound read 28 where
+      // its trips leave every 30). The nearest boarding stop (headlineReadingStop) is read instead, but only when it reads
+      // slower: its earlier clock pulls a later, busier part of the day into the window (MTA BxM10 Saturday, hourly until
+      // about 1 PM then every 30, read 30 there), so it never makes the headline better than the end's.
+      const terminalId = (() => {
+        const end = onShape[onShape.length - 1]?.stopId;
+        const boarding = headlineReadingStop(onShape.map(p => p.stopId), dropOffOnlyStops) ?? undefined;
+        if (!end || !boarding || boarding === end) return end;
+        const read = (stopId: string) => terminalReading({ terminalId: stopId, ownTerminalTimes: metricStopMap.get(stopId) ?? [], pool: pooledHeadlineTimes(stopId), ownStopHwsSorted: hwVals }).terminalHw;
+        const atEnd = read(end), atBoarding = read(boarding);
+        return atEnd != null && atBoarding != null && atBoarding > atEnd ? boarding : end;
+      })();
       // The headline reads the own pattern at the terminal (allStopHw may hold a pooled value
       // there, #690) or the qualifying destination pool.
       const ownTerminalTimes = (terminalId ? metricStopMap.get(terminalId) : undefined) ?? [];
       const headlinePool = pooledHeadlineTimes(terminalId);
-      const hwVals = onShape.map(({ stopId }) => ownStopHw[stopId]).filter((v): v is number => v != null).sort((a, b) => a - b);
       // Step 4.1 (routeGrading.ts): the terminal's value, from the pool or the own pattern.
       const { ownTerminalMiddayHw, terminalHw, terminalMiddayHw, allStopMedian, poolUsed, terminalComputedHw } = terminalReading({ terminalId, ownTerminalTimes, pool: headlinePool, ownStopHwsSorted: hwVals });
 
