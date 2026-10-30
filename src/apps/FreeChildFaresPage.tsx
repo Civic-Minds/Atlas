@@ -1,6 +1,7 @@
 import DocsPageLayout from '../components/ui/DocsPageLayout';
 import { PageTitle } from '../components/ui/PageTitle';
 import ChartTableDetails from '../components/charts/ChartTableDetails';
+import RankedBars from '../components/charts/RankedBars';
 import ResearchMethod from '../components/research/ResearchMethod';
 import type { DataTableColumn } from '../components/ui/DataTable';
 import { FREE_CHILD_AGENCIES_BY_COUNTRY, freeChildAgeBars, freeChildFareStats, freeChildOtherBars, type FreeChildFareBar } from '../data/freeChildFares';
@@ -18,24 +19,15 @@ function BarGroup({ title, bars, plain, separate }: { title: string; bars: FreeC
   return (
     <div className={separate ? 'mt-8 border-t border-[var(--border-primary)] pt-6' : 'mt-8'}>
       <h3 className="text-xs font-black text-[var(--text-primary)]">{title}</h3>
-      <ul className="mt-3 space-y-1.5">
-        {bars.map(bar => (
-          <li
-            key={bar.label}
-            title={`${bar.label}: ${bar.agencies} ${bar.agencies === 1 ? 'agency' : 'agencies'}`}
-            className="grid cursor-default grid-cols-[7.5rem_1fr_2.25rem] items-center gap-2 rounded-lg py-0.5 text-sm hover:bg-[var(--bg-btn-hover)] sm:grid-cols-[9.5rem_1fr_2.5rem] sm:gap-3"
-          >
-            <span className={`${plain ? 'font-semibold' : 'font-black'} text-[var(--text-primary)]`}>{bar.label}</span>
-            <div className="h-3 overflow-hidden rounded-full bg-[var(--bg-stat)]">
-              <div
-                className="h-full rounded-full"
-                style={{ width: `${(bar.agencies / freeChildFareStats.maxBar) * 100}%`, background: bar.unknown ? HATCHED : 'var(--text-muted)' }}
-              />
-            </div>
-            <span className="text-right tabular-nums text-[var(--text-muted)]">{bar.agencies}</span>
-          </li>
-        ))}
-      </ul>
+      <RankedBars
+        as="list"
+        bars={bars.map(bar => ({ key: bar.label, label: bar.label, value: bar.agencies, fill: bar.unknown ? HATCHED : 'var(--text-muted)' }))}
+        max={freeChildFareStats.maxBar}
+        listClassName="mt-3 space-y-1.5"
+        rowClassName="grid cursor-default grid-cols-[7.5rem_1fr_2.25rem] items-center gap-2 rounded-lg py-0.5 text-sm hover:bg-[var(--bg-btn-hover)] sm:grid-cols-[9.5rem_1fr_2.5rem] sm:gap-3"
+        labelClassName={`${plain ? 'font-semibold' : 'font-black'} text-[var(--text-primary)]`}
+        title={bar => `${bar.label}: ${bar.value} ${bar.value === 1 ? 'agency' : 'agencies'}`}
+      />
       <ChartTableDetails caption={title} columns={TABLE_COLUMNS} rows={bars} rowKey={bar => bar.label} />
     </div>
   );
