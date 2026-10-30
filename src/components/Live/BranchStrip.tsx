@@ -398,12 +398,12 @@ export interface RailRow {
   jogs: number[];
 }
 
-const RAIL_LANE = 8;
+const RAIL_LANE = 12;
 
 /**
  * The phone strip's line, row by row (CIV-515, Ryan's wordless join mark). The shared line is solid; a branch's stops
  * sit on a dotted line that starts at its end stop. The branch next to the shared line runs straight into it. A branch
- * further out leaves its last stop for a lane 8px to the right, passes the nearer branch's stops there, and crosses
+ * further out leaves its last stop for a lane 12px to the right, passes the nearer branch's stops there, and crosses
  * back into the shared line at its first stop (lead-outs the same way at its last), so where each branch joins is drawn.
  */
 export function phoneRails(sections: readonly PhoneSection[]): RailRow[][] {
