@@ -131,7 +131,7 @@ export const APP_URL = {
   dataSaver: { key: 'dataSaver', presence: 'any', parse: raw => raw === '1', serialize: () => null } satisfies UrlParam<boolean>,
 } as const;
 
-/** Night Service (/research/night). 60 is the default and left out. */
+/** Night Service (/research/night). Written while Night is open; 60 is the default and left out. */
 export const NIGHT_URL = {
   frequency: {
     key: 'nightFrequency', presence: 'nonEmpty',
