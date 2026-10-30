@@ -15,7 +15,8 @@ import Panel, { PanelBody } from '../ui/Panel';
 import RouteRowName from '../RouteRowName';
 import Pill from '../ui/Pill';
 import ModeFilterPillRow from '../ui/ModeFilterPillRow';
-import { effectiveMode, isRailReplacementBus, knownModeLabel, sortModes } from '../../../shared/modes';
+import { isRailReplacementBus } from '../../../shared/modes';
+import { buildRouteModeFilters, routeMatchesModeFilter, type RouteModeFilter, type RouteModeFilterKey, type RouteModeFilterRoute } from '../../utils/routeModeFilters';
 import { headwayEveryRange } from '../../utils/headwayText';
 import { agencyNames } from '../../utils/agencyName';
 import type { DayType, TimePeriod, ShapeProperties } from '../../hooks/useIntervalStats';
@@ -288,73 +289,21 @@ export function buildHeaderSummary(
   return parts.join(' · ');
 }
 
-function routeMode(route: RouteRow): number {
-  return effectiveMode({
-    routeType: route.routeType,
-    routeLongName: route.longName,
-    routeShortName: route.shortName,
-    agencySlug: route.agencySlug,
-    bookingRequired: route.bookingRequired,
-  });
+
+/** A route row as the shared mode-chip builder reads it (CIV-408 item 15). */
+function modeFilterRoute(route: RouteRow): RouteModeFilterRoute {
+  return { routeType: route.routeType, routeLongName: route.longName, routeShortName: route.shortName, agencySlug: route.agencySlug, busSubType: route.busSubType, bookingRequired: route.bookingRequired };
 }
 
-/** Mode chip label for non-bus routes (buses are the default and get no chip). */
-function railBlurbLabel(route: RouteRow): string | null {
-  const mode = routeMode(route);
-  return mode === 3 ? null : knownModeLabel(mode);
-}
-
-export type AgencyRouteFilterKey = `mode:${number}` | 'subtype:brt' | 'subtype:express';
-
-export interface AgencyRouteFilter {
-  key: AgencyRouteFilterKey;
-  label: string;
-  count: number;
-}
+export type AgencyRouteFilterKey = RouteModeFilterKey;
+export type AgencyRouteFilter = RouteModeFilter;
 
 export function buildAgencyRouteFilters(routes: RouteRow[]): AgencyRouteFilter[] {
-  const chips: AgencyRouteFilter[] = [];
-  const byMode = new Map<number, RouteRow[]>();
-
-  for (const r of routes) {
-    const label = railBlurbLabel(r);
-    if (!label) continue;
-    const mode = routeMode(r);
-    const list = byMode.get(mode) ?? [];
-    list.push(r);
-    byMode.set(mode, list);
-  }
-
-  for (const [mode, rs] of sortModes(byMode.entries(), ([m]) => m)) {
-    const label = railBlurbLabel(rs[0]);
-    if (!label) continue;
-    chips.push({
-      key: `mode:${mode}`,
-      label,
-      count: rs.length,
-    });
-  }
-
-  const brt = routes.filter(r => r.busSubType === 'brt');
-  if (brt.length) {
-    chips.push({ key: 'subtype:brt', label: 'BRT', count: brt.length });
-  }
-
-  const express = routes.filter(r => r.busSubType === 'express');
-  if (express.length) {
-    chips.push({ key: 'subtype:express', label: 'Express', count: express.length });
-  }
-
-  return chips;
+  return buildRouteModeFilters(routes.map(modeFilterRoute));
 }
 
 export function routeMatchesAgencyFilter(r: RouteRow, filter: AgencyRouteFilterKey): boolean {
-  if (filter.startsWith('mode:')) {
-    return routeMode(r) === Number(filter.slice(5));
-  }
-  if (filter === 'subtype:brt') return r.busSubType === 'brt';
-  if (filter === 'subtype:express') return r.busSubType === 'express';
-  return true;
+  return routeMatchesModeFilter(modeFilterRoute(r), filter);
 }
 
 export function buildAgencyRouteBuckets(routes: RouteRow[]): { matching: RouteRow[]; other: RouteRow[] } {
