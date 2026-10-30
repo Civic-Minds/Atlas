@@ -81,7 +81,9 @@ export function routeCardRowValue(d: ShapeProperties, ctx: RouteCardRowContext):
   // steady service, in place of a long wait or "limited"; the dot keeps the filter's colour.
   // A period that is one gap between a few departures (#955) has no cadence to word.
   const edgeText = hoveredHour == null && variantH === undefined && allDayH == null ? trips.partPeriod : undefined;
-  const trunkHeadway = hoveredHour == null && period !== 'all'
+  // CIV-1143 (Ryan 2026-10-30, option B): a row with its own "until / from / with a gap" words keeps them; a shared-stretch
+  // range never replaces them (OC Transpo 84 weekday PM read "every 60–120" where the last trip is at 5:05 PM).
+  const trunkHeadway = hoveredHour == null && period !== 'all' && edgeText == null
     ? headsignTrunkHeadway(d, period)
     : undefined;
   // The stop card's rule (hasRegularServiceInPeriod), so the two cards agree. #954: when

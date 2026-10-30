@@ -48,8 +48,9 @@ const cityCollege = {
   directionFilterHeadwayByPeriod: { pmPeak: null, midday: 10 }, stretchPeriodOneGap: { pmPeak: false, midday: false },
 } as unknown as ShapeProperties;
 
-// A part-period value is drawn in two parts that may wrap after the comma (#1128); match the whole badge.
-const partPeriodBadge = (re: RegExp) => (_: string, el: Element | null) => !!el?.classList.contains('flex-wrap') && re.test(el.textContent ?? '');
+// A part-period value is drawn in two parts that may wrap after the comma (#1128); match the whole badge. A row whose
+// value is long also wraps (CIV-1143), so the row itself (justify-between) is left out.
+const partPeriodBadge = (re: RegExp) => (_: string, el: Element | null) => !!el?.classList.contains('flex-wrap') && !el.classList.contains('justify-between') && re.test(el.textContent ?? '');
 
 describe('route card rows when the route has no regular service (#954)', () => {
   it("shows a row's own direction value; a row without one still reads no regular service", () => {

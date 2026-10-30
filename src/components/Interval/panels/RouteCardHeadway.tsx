@@ -641,6 +641,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                             // destination name on its line and the value under it (the row's own wrap layout), never "to Roncesval…".
                             singleLine={!(stableColors && row.rowNoRegular)}
                             valueEnd={stableColors && row.rowNoRegular}
+                            wrapLongValue
                             label={label}
                             headway={row.headway}
                             limitedLabel={row.isLimited && row.edgeText ? row.edgeText : row.rowNoRegular ? (stableColors ? keepLastWordsTogether(noRegularLabel) : noRegularLabel) : undefined}
