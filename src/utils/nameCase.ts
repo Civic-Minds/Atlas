@@ -246,9 +246,26 @@ function stopNameCase(name: string): string {
   return writtenInCapitals(name) ? keepFeedCodes(name, keepFeedParticles(name, titleCase(name))) : name;
 }
 
+/** Compass points and travel directions, always in capitals ("SE", "NB"). */
+const COMPASS = new Set(['N', 'S', 'E', 'W', 'NE', 'NW', 'SE', 'SW', 'NNE', 'ENE', 'ESE', 'SSE', 'SSW', 'WSW', 'WNW', 'NNW', 'NB', 'SB', 'EB', 'WB']);
+
 /**
- * Road and route codes keep the feed's capitals: a word with a digit in it ("US-9W", "SR-7", "CR-527", "A1A", "418X"),
- * except an ordinal, which reads "3rd" (CIV-1166).
+ * Street and place abbreviations with no vowel, which read as words ("Rd", "Blvd", "Hts"), not initials. Built from the
+ * capitals names in the local feeds (CIV-1166); any other 2 to 4 letter word with no vowel is initials ("WPB", "RVH").
+ */
+const STREET_ABBREVIATIONS = new Set([
+  'ST', 'RD', 'DR', 'BLVD', 'BLV', 'BL', 'BD', 'PL', 'LN', 'CT', 'CRT', 'TRL', 'TR', 'PK', 'PKY', 'PKWY', 'PRK', 'CTR', 'CNTR',
+  'MT', 'JR', 'CR', 'SQ', 'SQR', 'BLDG', 'BLD', 'BCH', 'PLZ', 'FT', 'BTW', 'BTWN', 'LP', 'CL', 'HTS', 'HGTS', 'LK', 'SDRD',
+  'STN', 'STS', 'STR', 'VLG', 'BLK', 'CLV', 'MKT', 'GRN', 'GDNS', 'GRDN', 'BRDG', 'BR', 'TWP', 'TWN', 'TWRS', 'RDG', 'CRK',
+  'SVC', 'LTD', 'TRN', 'SCH', 'TPK', 'GR', 'JCT', 'RVR', 'FRNT', 'FRT', 'HWY', 'FWY', 'XWY', 'CRWN', 'PT', 'RT', 'TH', 'WY',
+  'CV', 'BYP', 'CMNS', 'FLD', 'SPGS', 'DRV', 'PRKY', 'CNTY', 'SHPG', 'BDWY', 'RDS', 'GRT', 'CH',
+]);
+const VOWEL = /[AEIOUYÀ-ÆÈ-ÏÒ-ÖØ-Ý]/u;
+
+/**
+ * Capitals the feed's name keeps after casing (CIV-1166): a word with a digit in it ("US-9W", "SR-7", "A1A", "418X")
+ * except an ordinal, which reads "3rd"; compass points and directions ("SE", "NB"); and initials, a 2 to 4 letter word
+ * with no vowel that isn't a street abbreviation ("WPB", "RVH", but "Rd", "Blvd").
  */
 function keepFeedCodes(original: string, cased: string): string {
   if (cased.length !== original.length) return cased;
@@ -260,6 +277,9 @@ function keepFeedCodes(original: string, cased: string): string {
     // A code, or a short road prefix joined to one ("US" in "US-9W", "I" in "I-70"; not "KING" in "KING-2").
     const next = /^-([\p{L}\p{N}]+)/u.exec(original.slice(at + word.length));
     if (isCode(word) || (next && isCode(next[1]) && /^\p{L}{1,3}$/u.test(word))) keep(at, word);
+    // Not a possessive's "S" ("MARY'S"); a distance's direction ("200'N") is one.
+    else if (COMPASS.has(word) && !/\p{L}['’]$/u.test(original.slice(0, at))) keep(at, word);
+    else if (/^\p{Lu}{2,4}$/u.test(word) && !VOWEL.test(word) && !STREET_ABBREVIATIONS.has(word)) keep(at, word);
   }
   return out;
 }

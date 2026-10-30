@@ -332,6 +332,12 @@ describe('names in capitals with lower-case connectors (CIV-1166)', () => {
     expect(stopNameCase('US-9W at CHARLOTTE PL')).toBe('US-9W at Charlotte Pl');
     expect(stopNameCase('SR-7 at 10TH AVE N')).toBe('SR-7 at 10th Ave N');
     expect(stopNameCase('49 A1A')).toBe('49 A1A');
+    // Compass points, directions and initials keep their capitals; street abbreviations and possessives read as words.
+    expect(stopNameCase('EB 86 AV SE @ W. of 60 ST SE')).toBe('EB 86 Av SE @ W. of 60 St SE');
+    expect(stopNameCase('OKEECHOBEE BLVD at WPB')).toBe('Okeechobee Blvd at WPB');
+    expect(stopNameCase('EXPRESS to RVH')).toBe('Express to RVH');
+    expect(stopNameCase("ST MARY'S HOSPITAL")).toBe("St Mary's Hospital");
+    expect(stopNameCase("AVALON WAY 72'S OF QUAKERBRIDGE RD")).toBe("Avalon Way 72'S of Quakerbridge Rd");
   });
   it('leaves the feed spelling of mixed-case names and initials alone', () => {
     expect(stopNameCase('Main St After Bay')).toBe('Main St After Bay');
