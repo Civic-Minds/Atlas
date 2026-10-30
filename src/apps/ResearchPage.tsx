@@ -4,6 +4,7 @@ import DocsPageLayout from '../components/ui/DocsPageLayout';
 import ArrowLink from '../components/ui/ArrowLink';
 import { SURFACE } from '../styles';
 import { PageTitle, SectionTitle } from '../components/ui/PageTitle';
+import { freeChildFareStats } from '../data/freeChildFares';
 
 const CARDS = [
   {
@@ -22,7 +23,7 @@ const CARDS = [
     href: FEATURE_ROUTES.freeChildFares,
     Icon: Ticket,
     title: 'Free child fares',
-    body: 'See up to what age children ride free at 697 transit agencies.',
+    body: `See up to what age children ride free at ${freeChildFareStats.agencies} transit agencies.`,
   },
 ];
 

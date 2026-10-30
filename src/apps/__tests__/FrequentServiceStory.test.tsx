@@ -36,6 +36,7 @@ describe('FrequentServiceStory', () => {
     expect(rows).toHaveLength(67);
     expect(frequentServiceStoryStats.namedNumericAgencies).toBe(61);
     expect(frequentServiceStoryStats.recheckLeftOut).toBe(6);
+    expect(frequentServiceStoryStats.recheckedAgencies).toBe(67);
     expect(frequentServiceStoryStats.headwayBars).toEqual([
       { minutes: 10, agencies: 5, agenciesOct11: 5 },
       { minutes: 12, agencies: 1, agenciesOct11: 2 },
@@ -44,6 +45,11 @@ describe('FrequentServiceStory', () => {
       { minutes: 30, agencies: 9, agenciesOct11: 9 },
       { minutes: 60, agencies: 0, agenciesOct11: 0 },
     ]);
+  });
+
+  it('says in How we did this that the chart was checked again (CIV-1149)', () => {
+    render(<FrequentServiceStory agencies={agencies} onExploreMap={vi.fn()} />);
+    expect(screen.getByText(/On October 30, 2026, we opened the source again for each of the 67 agencies the chart counted\. 61 still matched and stay in the chart\. 6 are left out:/)).toBeInTheDocument();
   });
 
   it('offers the chart as a table', () => {
