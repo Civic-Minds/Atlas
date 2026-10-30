@@ -36,7 +36,8 @@ import {
   agencyQualifiesForHistory,
   type HistoryTier,
 } from '../../shared/historyEligibility';
-import { capitalizeFirst, headwayEvery, runTimeAmount } from '../utils/headwayText';
+import { capitalizeFirst, headwayEvery, headwayEveryRange, runTimeAmount } from '../utils/headwayText';
+import { shouldShowBranchHeadwayRange } from '../utils/routeCardTrunk';
 import { historyChartPoints, historyDotPriority, historyYearTicks, placeHistoryDots, snapshotMonth } from '../utils/historyChart';
 import ExpandDialog, { ExpandButton } from '../components/ui/ExpandDialog';
 import Panel, { PanelBody, PanelTitleBar } from '../components/ui/Panel';
@@ -58,6 +59,9 @@ export interface RouteSnapshot {
   year: number;
   weekdayHeadwayMin: number;
   headwayByPeriod?: HeadwayByPeriod;
+  /** CIV-555: the route's shared-stretch value when better than its all-day value (build-history), and per period. */
+  trunkHeadwayMin?: number;
+  trunkHeadwayByPeriod?: HeadwayByPeriod;
   geometry?: number[][];
   note?: string;
 }
@@ -130,6 +134,18 @@ const shownMinutes = (minutes: number): number => minutes;
 
 /** The route card's chart shows only with this many snapshots valued in the period (CIV-471, Ryan's call); with fewer, the rows alone. */
 export const MIN_CHART_VALUES = 3;
+
+/**
+ * A row's words (CIV-555): "every 15–52 min" where a slow branch sets the period's value and the shared stretch runs
+ * more often, by the live route card's rule (shouldShowBranchHeadwayRange, headwayEveryRange); else "every 52 min".
+ * The number that colours and filters stays the period's value.
+ */
+function snapshotHeadwayLabel(snapshot: RouteSnapshot, period: TimePeriod, minutes: number): string {
+  const trunk = period === 'all' ? snapshot.trunkHeadwayMin : snapshot.trunkHeadwayByPeriod?.[period] ?? undefined;
+  return trunk != null && shouldShowBranchHeadwayRange(trunk, minutes)
+    ? headwayEveryRange(trunk, shownMinutes(minutes))
+    : headwayEvery(shownMinutes(minutes));
+}
 
 function changeSummary(entry: RouteHistoryEntry, period: TimePeriod = 'all'): { text: string; subtext: string; worse: boolean } | null {
   // Only snapshots with a value in the period take part (CIV-389).
@@ -304,7 +320,7 @@ function RouteHistoryCard({
               headway={hw ?? undefined}
               // The snapshot's own minutes, as in the chart, the summary and the change beside it (#1085):
               // the map cards' rounding to the half hour made NFTA 76 read 360 beside a chart reading 349.
-              headwayLabel={hw != null ? headwayEvery(shownMinutes(hw)) : undefined}
+              headwayLabel={hw != null ? snapshotHeadwayLabel(snap, period, hw) : undefined}
               headwaySuffix={delta ? (delta > 0 ? `+${delta}` : `${delta}`) : undefined}
               headwaySuffixTone={delta ? (delta > 0 ? 'negative' : 'positive') : undefined}
               // Regular weight, like the map cards' destination rows (CIV-971).
