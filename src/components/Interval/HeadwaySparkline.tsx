@@ -21,6 +21,7 @@ import { encodeFullDayUrlState, parseFullDayUrlState } from '../../utils/shareUr
 import { HOUR_TO_PERIOD, PERIOD_BANDS } from '../../utils/sparklinePeriods';
 import { FullDayPeriodBands, HoveredPeriodName } from './FullDayPeriodBands';
 import { headwayAxisTicks, hourBarColorHeadway, hourBarEmphasis, hourChartLitPeriod, hourChartMaxFreq, sparklineBarHeight } from '../../utils/hourChartModel';
+import { FREQUENCY_LABEL } from '../../content/noticeCopy';
 export { headwayAxisTicks, sparklineBarHeight };
 
 /** Bar area height of the route card's compact sparkline, in px. The one place to change it. */
@@ -61,8 +62,8 @@ function ClockLabels({ className = '' }: { className?: string }) {
   );
 }
 
-/** The full-day view's frequency chart title, beside "Trip time" (Ryan, CIV-1094). */
-export const FREQUENCY_LABEL = 'Frequency';
+/** The full-day view's frequency chart title, beside "Trip time" (Ryan, CIV-1094); the word lives in noticeCopy (CIV-1160). */
+export { FREQUENCY_LABEL };
 
 function formatHourTitle(h: number, headway: number): string {
   return `${formatClock(h * 60)}: ${headwayEvery(headway)}`;

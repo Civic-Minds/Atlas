@@ -7,7 +7,7 @@ import { pairedTripPeriodFloor, pairedTripSafeHeadway } from './pairedTripFloor'
 import { delayAmount, headwayAboutRange, headwayEvery, headwayEveryRange, headwayPeriodShape } from './headwayText';
 import { routeAllDayContract, routeContract, routeValueIsOneGap } from './stretchCard';
 import { clockTime } from '../../shared/timeText';
-import { NO_REGULAR_SERVICE_LABEL, NO_REGULAR_SERVICE_SHORT_LABEL } from '../content/noticeCopy';
+import { LIMITED_SERVICE_LABEL, NO_REGULAR_SERVICE_LABEL, NO_REGULAR_SERVICE_SHORT_LABEL } from '../content/noticeCopy';
 
 export { pairedTripPeriodFloor, pairedTripSafeHeadway } from './pairedTripFloor';
 
@@ -353,7 +353,7 @@ export interface RouteListDisplay {
 export function compareSideListText(label: 'A' | 'B', display: RouteListDisplay): string | null {
   if (display.headway != null && display.headway < 999) return `${label} every ${display.headway}`;
   if (display.noRegular) return `${label} ${NO_REGULAR_SERVICE_SHORT_LABEL}`;
-  if (display.limited) return `${label} limited`;
+  if (display.limited) return `${label} ${LIMITED_SERVICE_LABEL}`;
   return null;
 }
 

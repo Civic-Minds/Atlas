@@ -185,6 +185,32 @@ export const HIDE_PART_TIME_SETTING = { label: 'Hide part-time routes', descript
 // D6 setting-hide-degraded-feeds
 export const HIDE_DEGRADED_FEEDS_SETTING = { label: 'Hide degraded feeds', description: 'Hides agencies with known data-quality problems. Feeds still being reviewed remain visible.' } as const;
 
+// ---- Shared labels and card sentences (CIV-1160): moved here with the same words; no review-page codes yet ----
+// The back link from an agency or stop card to the map.
+export const BACK_TO_MAP_LABEL = 'Map';
+// The region pill and group for an agency with no region.
+export const OTHER_REGION_LABEL = 'Other';
+// The row for the shared main stretch above a direction's branch rows (route card, stop card).
+export const SHARED_STRETCH_LABEL = 'Shared stretch';
+// The frequency heading and button (full-day chart, filter chip, Frequency picker).
+export const FREQUENCY_LABEL = 'Frequency';
+// The default title of an exported map image.
+export const DEFAULT_EXPORT_TITLE = 'Transit map';
+// The privacy settings title and the About panel link that opens it.
+export const PRIVACY_SETTINGS_TITLE = 'Privacy & analytics';
+// The button that tries a failed load again.
+export const RETRY_LABEL = 'Retry';
+// The link that closes a card that couldn't be shown.
+export const CLOSE_LABEL = 'Close';
+// Route card: a direction with no rows in the chosen period ("No midday service.").
+export const noServiceInPeriodText = (periodLabel: string) => `No ${periodLabel.toLowerCase()} service.`;
+// Route card: only the shared section passes the frequency filter.
+export const ONLY_SHARED_SECTION_MEETS_FILTER = 'Only the shared section meets this filter. The branches do not.';
+// Filter panel: the route settings shown outside the Frequency view.
+export const SETTINGS_APPLY_TO_FREQUENCY_MAP = 'These settings apply to the Frequency map.';
+// Filter panel: the Compare map B note beside the B badge.
+export const COMPARE_B_PICKER_NOTE = 'The frequency, day and time above are map A; pick map B here. Modes and agencies apply to both maps. Leave Compare from the More menu.';
+
 // ---- Map keys (CIV-957) ----
 // K1 frequency-key heading
 export const MAP_KEY_FREQUENCY = 'Frequency';

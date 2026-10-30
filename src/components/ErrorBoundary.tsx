@@ -1,7 +1,7 @@
 import { devHintsOn } from '../lib/devHints';
 import React from 'react';
 import { ANALYZE_DEV_HINT } from '../lib/liveReportData';
-import { VIEW_ERROR_TEXT } from '../content/noticeCopy';
+import { RETRY_LABEL, VIEW_ERROR_TEXT } from '../content/noticeCopy';
 
 interface Props {
   children: React.ReactNode;
@@ -41,7 +41,7 @@ export default class ErrorBoundary extends React.Component<Props, State> {
             className="px-3 py-1.5 rounded-full bg-[var(--bg-btn-hover)] text-[var(--text-primary)]"
             onClick={this.handleRetry}
           >
-            Retry
+            {RETRY_LABEL}
           </button>
         </div>
       );

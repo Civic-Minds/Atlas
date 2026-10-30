@@ -32,7 +32,8 @@ import { applySeoToDocument, seoOrigin } from './lib/seoDom';
 import { readEmbeddedJson } from './lib/embeddedData';
 import { LINK, UNDERLINED_LINK } from './pageStyles';
 import { FrequencyBar, RouteNameCell } from './pageParts';
-import { AGENCY_PAGE_NOT_FOUND_TITLE, NO_FREQUENCY_PAGE_BODY } from './content/noticeCopy';
+import { AGENCY_PAGE_NOT_FOUND_TITLE, LIMITED_SERVICE_LABEL, NO_FREQUENCY_PAGE_BODY } from './content/noticeCopy';
+import { capitalizeFirst } from './utils/headwayText';
 
 /** Read this page's numbers from the JSON the prerender embedded next to the app root. */
 function readEmbeddedData(slug: string | undefined): AgencyPageData | null {
@@ -86,7 +87,7 @@ function Intro({ data }: { data: AgencyPageData }) {
 function cell(col: 'am' | 'midday' | 'pm' | 'evening' | 'overnight', r: AgencyPageRoute): string {
   const v = r[col];
   if (v != null) return routeListHeadwayText(v, r.shared?.[col], true);
-  return Array.isArray(r.limited) && r.limited.includes(col) ? 'Limited' : headwayEvery(null);
+  return Array.isArray(r.limited) && r.limited.includes(col) ? capitalizeFirst(LIMITED_SERVICE_LABEL) : headwayEvery(null);
 }
 
 /**

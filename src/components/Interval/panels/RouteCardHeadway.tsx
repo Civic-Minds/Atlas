@@ -48,7 +48,7 @@ import { hasStretchRoles, routeAllDayContract, routeContract } from '../../../ut
 import type { VariantFamily } from '../../../utils/routeVariants';
 import { reportDetails } from '../../../utils/reportIssue';
 import { ROUTE_DATA_QUALITY_WARNING } from '../../../../shared/routeDataQuality';
-import { LIMITED_SERVICE_LABEL, BOOKING_REQUIRED_NOTICE, expiredFeedNotice, explainerFor, listingEndedNotice, listingEndHasPassed, NO_ROUTE_SHAPE_NOTICE, periodServiceNotice, ROUTE_DATA_QUALITY_WARNING_MESSAGE, selectedRouteFilterNotice, selectedRouteOutsideFilterNotice, selectedRoutePartMeetsFilterNotice, unevenServiceNotice, variantsIncludedNotice, WEEKDAY_VARIATION_NOTICE } from '../../../content/noticeCopy';
+import { LIMITED_SERVICE_LABEL, BOOKING_REQUIRED_NOTICE, expiredFeedNotice, explainerFor, listingEndedNotice, listingEndHasPassed, NO_ROUTE_SHAPE_NOTICE, noServiceInPeriodText, ONLY_SHARED_SECTION_MEETS_FILTER, periodServiceNotice, ROUTE_DATA_QUALITY_WARNING_MESSAGE, selectedRouteFilterNotice, selectedRouteOutsideFilterNotice, selectedRoutePartMeetsFilterNotice, SHARED_STRETCH_LABEL, unevenServiceNotice, variantsIncludedNotice, WEEKDAY_VARIATION_NOTICE } from '../../../content/noticeCopy';
 import { featurePassesHeadwayFilter } from '../../../../shared/routeHeadwayFilter';
 import { agencyTodayYmd } from '../../../../shared/feedAvailability';
 import { headwayAbout, headwayAboutRange } from '../../../utils/headwayText';
@@ -571,20 +571,20 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                     <CardSectionLabel className="mb-0">{group.boundLabel}</CardSectionLabel>
                     {!hasVisibleDirectionRows && selectedPeriod && !nightView && (
                       <p className={`${CARD_NOTE} mt-2 mb-2`}>
-                        No {selectedPeriod.label.toLowerCase()} service.
+                        {noServiceInPeriodText(selectedPeriod.label)}
                       </p>
                     )}
                   </>
                 )}
                 {onlySharedPasses && !nightView && (
                   <p className={`${CARD_NOTE} mt-2 mb-2`}>
-                    Only the shared section meets this filter. The branches do not.
+                    {ONLY_SHARED_SECTION_MEETS_FILTER}
                   </p>
                 )}
                 {groupHasCoreSummary && groupCoreHeadway != null && (
                   <>
                     <CardDirectionRow
-                      label={groupShared || stretchShared != null ? 'Shared stretch' : 'Combined'}
+                      label={groupShared || stretchShared != null ? SHARED_STRETCH_LABEL : 'Combined'}
                       headway={groupCoreHeadway}
                       branchHovered={coreHovered}
                       branchDimmed={!!hoveredBranch && !coreHovered}

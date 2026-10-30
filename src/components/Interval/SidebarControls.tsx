@@ -4,7 +4,7 @@ import { useColorMode } from '../../hooks/useColorMode';
 import type { ShapeProperties, TimePeriod, DayType, HoveredBranch, ViewportBounds } from '../../hooks/useIntervalStats';
 import type { Agency } from '../../App';
 import { findVariantFamily } from '../../utils/routeVariants';
-import { routeLabels, searchOverlayHidesPanel, comparePanelTop, COMPARE_PANEL_LEFT } from '../../utils/format';
+import { routeLabels, searchOverlayHidesPanel, comparePanelTop, COMPARE_PANEL_LEFT, formatStoredDate } from '../../utils/format';
 import { agencyNames } from '../../utils/agencyName';
 import { routeListDisplay, type RouteListDisplay } from '../../utils/effectiveHeadway';
 import { combineSuggestedRouteNames, suggestedRouteGroupKey } from '../../utils/routeSuggestion';
@@ -846,11 +846,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   const expDateStr = (() => {
     const exp = routeAgency ? effectiveFeedExpiry(routeAgency) : null;
     if (!exp || exp.length !== 8) return '';
-    const y = exp.slice(0, 4);
-    const m = exp.slice(4, 6);
-    const d = exp.slice(6, 8);
-    const date = new Date(Date.UTC(parseInt(y), parseInt(m) - 1, parseInt(d)));
-    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
+    return formatStoredDate(exp);
   })();
 
   if (!panelShouldRender) return null;

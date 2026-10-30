@@ -9,6 +9,7 @@ import { SideBadge } from '../ui/SideBadge';
 import { DayPicker, FrequencyPicker, PeriodPicker, PickerSection } from './pickers';
 import { compareSideHeading, type CompareSide } from '../../utils/compareSides';
 import { plural } from '../../../shared/overflowText';
+import { FREQUENCY_LABEL } from '../../content/noticeCopy';
 
 export { SideBadge } from '../ui/SideBadge';
 export { compareSideLabel, defaultCompareSide, type CompareSide } from '../../utils/compareSides';
@@ -17,7 +18,7 @@ export { compareSideLabel, defaultCompareSide, type CompareSide } from '../../ut
 export function CompareSidePicker({ side, onChange }: { side: CompareSide; onChange: (side: CompareSide) => void }) {
   return (
     <div className="flex flex-col gap-3">
-      <PickerSection title="Frequency"><FrequencyPicker value={side.maxHeadway} onChange={maxHeadway => onChange({ ...side, maxHeadway })} /></PickerSection>
+      <PickerSection title={FREQUENCY_LABEL}><FrequencyPicker value={side.maxHeadway} onChange={maxHeadway => onChange({ ...side, maxHeadway })} /></PickerSection>
       <PickerSection title="Day"><DayPicker value={side.day} onChange={day => onChange({ ...side, day })} /></PickerSection>
       <PickerSection title="Time"><PeriodPicker value={side.period} onChange={period => onChange({ ...side, period })} /></PickerSection>
     </div>

@@ -26,7 +26,7 @@ import CardRouteList from './CardRouteList';
 import { OutboundLink } from '../OutboundLink';
 import { buildRouteFacts, type RouteLabel } from '../../utils/routeFacts';
 import { reportDetails } from '../../utils/reportIssue';
-import { AGENCY_ROUTES_FAILED, BETA_ROLLOUT_NOTICE, BETA_SERVICE_ROLLOUT_NOTICE, explainerFor, getRolloutNotice, NO_ROUTES_LOADED, noRoutesMatchText, noServiceOnDayNotice, notOnMapYetNotice, ON_DEMAND_NOT_MAPPED_NOTE, ON_DEMAND_SHADED_AREA, onDemandPickupSentence, ROUTES_OUTSIDE_FILTERS_NOTICE, routesOutsideFiltersNotice, VIEW_ON_BETA } from '../../content/noticeCopy';
+import { AGENCY_ROUTES_FAILED, BACK_TO_MAP_LABEL, BETA_ROLLOUT_NOTICE, BETA_SERVICE_ROLLOUT_NOTICE, explainerFor, getRolloutNotice, NO_ROUTES_LOADED, noRoutesMatchText, noServiceOnDayNotice, notOnMapYetNotice, ON_DEMAND_NOT_MAPPED_NOTE, ON_DEMAND_SHADED_AREA, onDemandPickupSentence, ROUTES_OUTSIDE_FILTERS_NOTICE, routesOutsideFiltersNotice, VIEW_ON_BETA } from '../../content/noticeCopy';
 import { onDemandCardName } from '../../utils/onDemandSelection';
 import { onDemandCoverageNote } from '../../data/onDemandCoverage';
 import {
@@ -559,7 +559,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
             <AgencyCardTop
               name={agencyCardName}
               place={null}
-              back={{ to: 'Map', onClick: onClose }}
+              back={{ to: BACK_TO_MAP_LABEL, onClick: onClose }}
               report={reportButton}
               links={hasSource ? [<AgencyDataSourceLink key="source" agency={agency} />] : []}
             />
@@ -633,7 +633,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
         <AgencyCardTop
           name={agencyCardName}
           place={agency.onDemandOnly ? null : agencyNameSecondary}
-          back={{ to: 'Map', onClick: onClose }}
+          back={{ to: BACK_TO_MAP_LABEL, onClick: onClose }}
           facts={agency.onDemandOnly ? 'On-demand service' : buildHeaderSummary(filteredRoutes, maxHeadway)}
           report={reportButton}
           links={agencyLinks}

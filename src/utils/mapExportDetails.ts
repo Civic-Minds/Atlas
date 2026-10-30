@@ -1,5 +1,5 @@
 import type { Agency } from '../App';
-import { MAP_KEY_NIGHT } from '../content/noticeCopy';
+import { DEFAULT_EXPORT_TITLE, MAP_KEY_NIGHT } from '../content/noticeCopy';
 import type { DayType } from '../../shared/dayTypes';
 import type { TimePeriod } from '../hooks/useIntervalStats';
 import { PERIOD_LABELS } from '../hooks/useIntervalStats';
@@ -305,7 +305,7 @@ export function describeMapExport(state: MapExportState, samples: RenderedRouteS
   const drawnColors = samples.map(sample => sample.color).filter((color): color is string => !!color);
   const key = buildExportKey(keyCandidates(state), drawnColors);
 
-  const viewName = sentenceCase(state.viewTitle || 'Transit map');
+  const viewName = sentenceCase(state.viewTitle || DEFAULT_EXPORT_TITLE);
   // With no clear place, the view name becomes the heading instead of a guessed place.
   const lines: string[] = [];
   const route = state.view === 'frequency' && state.routeLabel
