@@ -35,6 +35,13 @@ describe('Free child fares (CIV-1149)', () => {
     expect(tables[1].textContent).toContain('Not found yet');
   });
 
+  it('draws both charts on one scale: equal counts draw equal bars', () => {
+    const { container } = render(<FreeChildFaresPage />);
+    const width = (label: string) => ([...container.querySelectorAll('li[title]')].find(row => row.textContent?.startsWith(label))!.querySelector('div > div') as HTMLElement).style.width;
+    expect(width('Up to 5')).toBe('100%');
+    expect(width('Free for everyone')).toBe(`${(63 / 129) * 100}%`);
+  });
+
   it('chart rows show the normal arrow, not the text cursor, in both groups', () => {
     // The rows only show a tooltip and a highlight on hover; nothing is clicked, so no pointer either.
     const { container } = render(<FreeChildFaresPage />);

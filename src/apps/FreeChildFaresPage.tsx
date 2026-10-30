@@ -13,9 +13,8 @@ const TABLE_COLUMNS: DataTableColumn<FreeChildFareBar>[] = [
 // "Not found yet" is drawn hatched: no current official rule, not a policy.
 const HATCHED = 'repeating-linear-gradient(135deg, var(--text-muted) 0 3px, transparent 3px 6px)';
 
-/** One chart: its title, bars on their own scale, and its own "Show as a table". */
+/** One chart: its title, its bars (on the scale both charts share) and its own "Show as a table". */
 function BarGroup({ title, bars, plain, separate }: { title: string; bars: FreeChildFareBar[]; plain?: boolean; separate?: boolean }) {
-  const maxBar = Math.max(...bars.map(bar => bar.agencies));
   return (
     <div className={separate ? 'mt-8 border-t border-[var(--border-primary)] pt-6' : 'mt-8'}>
       <h3 className="text-xs font-black text-[var(--text-primary)]">{title}</h3>
@@ -30,7 +29,7 @@ function BarGroup({ title, bars, plain, separate }: { title: string; bars: FreeC
             <div className="h-3 overflow-hidden rounded-full bg-[var(--bg-stat)]">
               <div
                 className="h-full rounded-full"
-                style={{ width: `${(bar.agencies / maxBar) * 100}%`, background: bar.unknown ? HATCHED : 'var(--text-muted)' }}
+                style={{ width: `${(bar.agencies / freeChildFareStats.maxBar) * 100}%`, background: bar.unknown ? HATCHED : 'var(--text-muted)' }}
               />
             </div>
             <span className="text-right tabular-nums text-[var(--text-muted)]">{bar.agencies}</span>

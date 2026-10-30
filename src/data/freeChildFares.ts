@@ -39,4 +39,6 @@ export const freeChildFareStats = {
   agencies: sum(freeChildAgeBars) + sum(freeChildOtherBars),
   freeUpToAge: sum(freeChildAgeBars),
   notFound: FREE_CHILD_OTHER_POLICIES.find(p => p.policyType === 'unresolved')!.agencies,
+  /** Both charts share one scale, so a bar's length means the same count in either. */
+  maxBar: Math.max(...freeChildAgeBars.map(b => b.agencies), ...freeChildOtherBars.map(b => b.agencies)),
 };
