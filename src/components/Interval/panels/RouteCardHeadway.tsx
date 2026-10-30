@@ -515,7 +515,8 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
           // rows sharing a headsign from different origins highlight one at a time (#1064).
           const branchHoverProps = (dirId: number, headsign: string | null | undefined, routeVariant?: string | null) => {
             if (!headsign) return {};
-            const isHovered = dirIdNum(hoveredBranch?.directionId) === dirIdNum(dirId) && matchesHoveredBranch(headsign, routeVariant);
+            // Hovering the Shared stretch row lights only that row, not the destination rows it combines.
+            const isHovered = dirIdNum(hoveredBranch?.directionId) === dirIdNum(dirId) && hoveredBranch?.isCore !== true && matchesHoveredBranch(headsign, routeVariant);
             return {
               onHoverStart: () => setHoveredBranch({ directionId: dirId, headsign, ...(routeVariant ? { routeVariant } : {}) }),
               onHoverEnd: () => setHoveredBranch(null),
