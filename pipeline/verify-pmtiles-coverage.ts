@@ -21,9 +21,11 @@ import { VectorTile } from '@mapbox/vector-tile';
 import { getAgencyArtifactUrls, R2_PUBLIC_URL } from '../shared/config.js';
 import { isScheduleOnlyRouteArtifact, isSeasonalPauseRouteArtifact, mustAppearInTiles, tilesForAgency, type TileInclusionAgency } from './pmtilesCoverage.js';
 import { runWithConcurrency } from './utils.js';
+import { agencyTodayYmd, effectiveFeedExpiry, type SupplementalFeedExpiryEntry } from '../shared/feedAvailability.js';
 
-interface Agency extends TileInclusionAgency {
+interface Agency extends TileInclusionAgency, SupplementalFeedExpiryEntry {
   slug: string;
+  timezone?: string | null;
   name: string;
   center: [number, number]; // [lat, lon]
   bbox?: [number, number, number, number]; // [s, w, n, e]
@@ -228,7 +230,6 @@ async function main() {
   const scheduleOnly: Agency[] = [];
   const seasonalPause: Agency[] = [];
   const missing: Agency[] = [];
-  const todayYmd = new Date().toISOString().slice(0, 10).replace(/-/g, '');
   for (const agency of unexplainedMissing) {
     let artifact: unknown = null;
     try {
@@ -238,7 +239,8 @@ async function main() {
     }
     const routeArtifact = artifact as Parameters<typeof isScheduleOnlyRouteArtifact>[0];
     if (isScheduleOnlyRouteArtifact(routeArtifact)) scheduleOnly.push(agency);
-    else if (isSeasonalPauseRouteArtifact(routeArtifact, agency.lastFeedExpiry, todayYmd)) seasonalPause.push(agency);
+    // The map's rule (isAgencyFeedExpired): every feed's end, on the agency's own date. An ended feed is never a pause.
+    else if (isSeasonalPauseRouteArtifact(routeArtifact, effectiveFeedExpiry(agency), agencyTodayYmd(agency))) seasonalPause.push(agency);
     else missing.push(agency);
   }
   if (scheduleOnly.length > 0) {

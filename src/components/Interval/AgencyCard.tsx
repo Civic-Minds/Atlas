@@ -40,6 +40,7 @@ import {
 import ArrowLink from '../ui/ArrowLink';
 import PanelEmpty from '../ui/PanelEmpty';
 import { compareHeadwayThenNumber } from '../../utils/sortCompare';
+import { effectiveFeedExpiry } from '../../../shared/feedAvailability';
 
 interface RouteRow {
   routeId: string;
@@ -466,7 +467,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
         ['Day', day],
         ['Period', period],
         ['Agency data refreshed', agency.lastRefreshedAt ?? 'unknown'],
-        ['Feed expiry', agency.lastFeedExpiry ?? 'unknown'],
+        ['Feed expiry', effectiveFeedExpiry(agency) ?? 'unknown'],
       ])}
       excludeReasons={['Stop is missing, misplaced, or assigned incorrectly', 'Route line is missing or follows the wrong path']}
     />
