@@ -37,14 +37,22 @@ describe('FrequentServiceStory', () => {
     expect(frequentServiceStoryStats.namedNumericAgencies).toBe(61);
     expect(frequentServiceStoryStats.recheckLeftOut).toBe(6);
     expect(frequentServiceStoryStats.recheckedAgencies).toBe(67);
+  });
+
+  it('applies the tier rule: fastest multi-route frequent tier, slowest weekday daytime wait (CIV-1178)', () => {
+    // CTtransit and Intercity Transit leave (one-corridor and one-route tiers); ART 10→12, CapMetro 20→15,
+    // RTC 20→15, DRT 15→20, Fort McMurray 15→25 (its own 25 bar).
+    expect(frequentServiceStoryStats.chartedAgencies).toBe(59);
     expect(frequentServiceStoryStats.headwayBars).toEqual([
-      { minutes: 10, agencies: 5, agenciesOct11: 5 },
-      { minutes: 12, agencies: 1, agenciesOct11: 2 },
-      { minutes: 15, agencies: 40, agenciesOct11: 42 },
-      { minutes: 20, agencies: 6, agenciesOct11: 9 },
+      { minutes: 10, agencies: 3, agenciesOct11: 3 },
+      { minutes: 12, agencies: 2, agenciesOct11: 3 },
+      { minutes: 15, agencies: 39, agenciesOct11: 41 },
+      { minutes: 20, agencies: 5, agenciesOct11: 8 },
+      { minutes: 25, agencies: 1, agenciesOct11: 1 },
       { minutes: 30, agencies: 9, agenciesOct11: 9 },
       { minutes: 60, agencies: 0, agenciesOct11: 0 },
     ]);
+    expect(frequentServiceStoryStats.headwayBars.reduce((sum, bar) => sum + bar.agencies, 0)).toBe(59);
   });
 
   it('says in How we did this that the chart was checked again (CIV-1149)', () => {
