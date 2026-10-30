@@ -58,7 +58,7 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
   }
 
   return (
-    <PageShell variant="wide" maxWidth="max-w-6xl">
+    <PageShell stickyHeader>
       <article className="pb-16 pt-10 sm:pt-14">
         <header className="mx-auto max-w-4xl text-center">
           <p className="text-xs font-black text-[var(--accent)]">Atlas research</p>
@@ -76,7 +76,7 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
           </a>
         </header>
 
-        <section id="story" aria-labelledby="network-story-heading" className="relative left-1/2 mt-24 w-screen -translate-x-1/2 px-2 sm:mt-32 sm:px-3">
+        <section id="story" aria-labelledby="network-story-heading" className="scroll-mt-16 relative left-1/2 mt-24 w-screen -translate-x-1/2 px-2 sm:mt-32 sm:px-3">
           <div className="relative min-w-0 pb-[12vh]">
             <div className="min-w-0 lg:sticky lg:top-24">
               <FrequentServiceStoryMap agencies={agencies} stage={storyStage} frequencyMinutes={frequencyMinutes} researchRecord={frequentServiceStoryResearchRecord} />
