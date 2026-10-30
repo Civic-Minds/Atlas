@@ -19,6 +19,8 @@ interface Props {
    *  beside it (the stop and route cards' destination rows, CIV-918). It keeps 6rem, so a long value
    *  ("until 9:37am, every 12 min") never squeezes it to a bare ellipsis. */
   singleLine?: boolean;
+  /** The value keeps to the right edge when the row wraps it onto a line of its own (Compare, CIV-844). */
+  valueEnd?: boolean;
   // Regular service
   headway?: number | null;
   colorHeadway?: number | null;
@@ -72,7 +74,7 @@ export function keyboardFocusHover(onHoverStart?: () => void, onHoverEnd?: () =>
  * Owns label color, headway display, and limited-service variants
  * so there's one place to change instead of hunting across SidebarControls.
  */
-export default function RouteDirectionRow({ label, routeName, labelWeight = 'bold', singleLine = false, headway, colorHeadway, headwayLabel, trunkHeadway, headwaySuffix, headwaySuffixTone, subLabel, subLabelTrailing, subLabelWeight = 'bold', live, limited, limitedLabel = LIMITED_SERVICE_LABEL, edgeGapAllowance, onEdgeGapAllowanceClick, dimmed, onHoverStart, onHoverEnd, branchHovered, branchDimmed, onClick, holdLayout = false }: Props) {
+export default function RouteDirectionRow({ label, routeName, labelWeight = 'bold', singleLine = false, valueEnd = false, headway, colorHeadway, headwayLabel, trunkHeadway, headwaySuffix, headwaySuffixTone, subLabel, subLabelTrailing, subLabelWeight = 'bold', live, limited, limitedLabel = LIMITED_SERVICE_LABEL, edgeGapAllowance, onEdgeGapAllowanceClick, dimmed, onHoverStart, onHoverEnd, branchHovered, branchDimmed, onClick, holdLayout = false }: Props) {
   const interactive = !!(onHoverStart && onHoverEnd);
   const clickable = !!onClick;
   const faded = dimmed || branchDimmed;
@@ -114,7 +116,7 @@ export default function RouteDirectionRow({ label, routeName, labelWeight = 'bol
         >
           {routeName ? <RouteRowName shortName={routeName.shortName} name={routeName.name} /> : label}
         </span>
-        {hasValueCell && <span ref={valueRef} style={held.value} className="inline-flex items-center justify-end gap-2 min-w-0">
+        {hasValueCell && <span ref={valueRef} style={held.value} className={`inline-flex items-center justify-end gap-2 min-w-0 ${valueEnd ? 'ml-auto' : ''}`}>
           {edgeGapAllowance && (
             <button
               type="button"

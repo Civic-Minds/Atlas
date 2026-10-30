@@ -640,6 +640,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                             // Compare (CIV-844): a row that reads "no regular service during this period" puts the whole
                             // destination name on its line and the value under it (the row's own wrap layout), never "to Roncesval…".
                             singleLine={!(stableColors && row.rowNoRegular)}
+                            valueEnd={stableColors && row.rowNoRegular}
                             label={label}
                             headway={row.headway}
                             limitedLabel={row.isLimited && row.edgeText ? row.edgeText : row.rowNoRegular ? (stableColors ? keepLastWordsTogether(noRegularLabel) : noRegularLabel) : undefined}
