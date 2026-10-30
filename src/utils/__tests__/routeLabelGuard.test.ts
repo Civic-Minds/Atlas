@@ -14,7 +14,7 @@ const ALLOWED_LABEL_CALLS: Record<string, { count: number; why: string }> = {
   'src/utils/chooserRoutes.ts': { count: 1, why: 'the chooser fallback row for a route with no loaded feature: labels the route ID, never the whole key' },
   'src/components/Interval/SearchSuggestionsPanel.tsx': { count: 1, why: 'a recent saved by an older build has no label' },
   'src/components/Interval/panels/RouteCardHeadway.tsx': { count: 1, why: 'title fallback when the route card data has no label (the map always sets it)' },
-  'src/components/RouteCardTitle.tsx': { count: 1, why: 'title fallback when no title is passed (History, Live)' },
+  'src/components/RouteCardTitle.tsx': { count: 1, why: 'title fallback when no label is passed (History, Live)' },
   'src/components/Interval/FilterPanel.tsx': { count: 1, why: 'raw feed names from the layer, no ID fallback' },
   'src/components/Interval/MapCanvas.tsx': { count: 1, why: 'raw tile names, no ID fallback' },
   'src/hooks/useNearbyRoutes.ts': { count: 1, why: 'raw feed names (Near You), no ID fallback' },
@@ -23,6 +23,7 @@ const ALLOWED_LABEL_CALLS: Record<string, { count: number; why: string }> = {
   'src/apps/History.tsx': { count: 1, why: 'History route names' },
   'src/pageParts.tsx': { count: 2, why: 'agency pages (RouteNameCell), from the page data' },
   'src/components/Live/tool/OverviewList.tsx': { count: 1, why: 'Live route list' },
+  'src/LiveToolPage.tsx': { count: 1, why: 'Live route menu, named as the list rows (CIV-1117 row 5)' },
 };
 const SRC = resolve(__dirname, '../..');
 const sourceFiles = (dir: string): string[] => readdirSync(dir, { withFileTypes: true }).flatMap(e => {

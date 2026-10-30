@@ -4,7 +4,6 @@ import { runTimeStretchLabel, runTimeTakeaway, runningTimeSentence, type Dashboa
 import { liveStopName } from '../../../utils/stopLabel';
 import { liveChartHours } from '../../../utils/sparklinePeriods';
 import RunTimeChart, { runTimeScale } from '../../charts/RunTimeChart';
-import { SectionTitle } from '../../ui/PageTitle';
 import Section from './Section';
 import { BAND_WORDS, dirsOf } from './figures';
 import { MIN_PATTERN_TRIPS, placeRowLabels, rowPercent, runTimeRowScale, runTimeRows, type RowLabel, type RunTimeRow } from './runTimeRows';
@@ -141,7 +140,7 @@ export default function RunTimeSection({ v3, band, dir, detail, id, shrink, boun
   const { rt, dirs, hoursOf, scale, axis } = m;
   const frame = (children: ReactNode) => id
     ? <Section id={id} title="Run time" shrink={shrink} boundary={boundary}>{children}</Section>
-    : <section aria-labelledby="dash-runtime" className="mt-10"><SectionTitle id="dash-runtime">Run time</SectionTitle>{children}</section>;
+    : <Section id="dash-runtime" title="Run time">{children}</Section>;
   if (!rt && detail !== 'brief') return id && detail === 'compact' ? frame(null) : null;
   const full = detail === 'full', compact = detail === 'compact';
   const rowsByDir = runTimeRows(v3, band, dirs, liveStopName);

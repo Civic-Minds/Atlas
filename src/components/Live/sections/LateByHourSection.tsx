@@ -2,13 +2,12 @@ import { useState, type ReactNode } from 'react';
 import { periodKeyForHour } from '../../../../shared/config';
 import { healthyCounts, healthyDatesOf, healthyLateByHour, isWeekendDate, type DashboardBand, type DashboardBandData, type LiveV3 } from '../../../../shared/liveDashboard';
 import { excludingText, lateCount, lateHourLine, leftOutReason, LATE_BY_HOUR_TITLE, LATE_THRESHOLD } from '../../../../shared/liveWording';
-import { TILE } from '../../../pageStyles';
+import { KPI_TILE } from '../kpiTileStyle';
 import { liveChartHours, type HourHover } from '../../../utils/sparklinePeriods';
 import { lateForDays, type DayKind } from '../../../utils/liveKpi';
 import ErrorBoundary from '../../ErrorBoundary';
 import HourSpark, { type HourValue } from '../../charts/HourSpark';
 import LegendItem from '../../ui/LegendItem';
-import { SectionTitle } from '../../ui/PageTitle';
 import Widget from '../tool/Widget';
 import { LATE_SHARE_SWATCH, lateShareColor } from '../lateShare';
 import Section from './Section';
@@ -138,24 +137,20 @@ function Spark({ v3, data, band, dir, allOnly = false, oneDay, title }: Props & 
     return { kind, label, late, hours: m.sparkHours(kind, band), thin: !oneDay && isThin(late?.days), leftOut: oneDay ? [] : leftOutDays(v3, kind) };
   });
   return (
-    <section aria-labelledby="dash-days" className="mt-10">
-      <SectionTitle id="dash-days">{title}</SectionTitle>
-      <p className="mt-1 max-w-3xl text-sm text-[var(--text-muted)]">
-        How often trips leave the end of the line {LATE_THRESHOLD}, by kind of day and the hour they start.
-        {dir != null && ' Both directions: this view is not split by direction yet.'}
-      </p>
+    <Section id="dash-days" title={title} intro={<>How often trips leave the end of the line {LATE_THRESHOLD}, by kind of day and the hour they start.{dir != null && ' Both directions: this view is not split by direction yet.'}</>}>
       <ChartRow cols={cols} tall={allOnly} showNote={!allOnly} />
-    </section>
+    </Section>
   );
 }
 
 function Tile({ label, value, sub, thin = false }: { label: string; value: string; sub: string; thin?: boolean }) {
   return (
-    <div className={`${TILE} ${thin ? 'opacity-60' : ''}`} title={thin ? THIN_HINT : undefined}>
-      <div className="text-xs font-bold text-[var(--text-muted)]">{label}</div>
-      <div className="mt-1 text-3xl font-black tracking-tight">{value}</div>
-      <div className="mt-1 text-xs text-[var(--text-dim)]">{sub}</div>
-      {thin && <div className="mt-1 text-xs text-[var(--text-dim)]">{THIN_HINT}</div>}
+    // The week tiles' look (KpiTile), from the one tile style (CIV-1117 row 3).
+    <div className={`${KPI_TILE.frame} ${thin ? 'opacity-60' : ''}`} title={thin ? THIN_HINT : undefined}>
+      <div className={KPI_TILE.label}>{label}</div>
+      <div className={KPI_TILE.value}>{value}</div>
+      <div className={KPI_TILE.line}>{sub}</div>
+      {thin && <div className={KPI_TILE.line}>{THIN_HINT}</div>}
     </div>
   );
 }
@@ -195,12 +190,12 @@ function BarsOne({ v3, data, band, dir, day }: { v3: LiveV3; data: DashboardBand
   const col: DayChart = { kind: day, label, late: { share: c.lateShare, n: c.n, days: c.days ?? 0 }, hours: m.sparkHours(day, band), thin: isThin(c.days) };
   return (
     <div className="mt-4 grid items-start gap-6 md:grid-cols-[14rem_minmax(0,1fr)]">
-      <div className={`${TILE} ${isThin(c.days) ? 'opacity-60' : ''}`} title={isThin(c.days) ? THIN_HINT : undefined}>
-        <div className="text-xs font-bold text-[var(--text-muted)]">{label}</div>
-        <div className="mt-1 text-3xl font-black tracking-tight">{pct(c.lateShare)}</div>
-        <div className="mt-1 text-xs text-[var(--text-dim)]">late, of {c.n.toLocaleString()} · {pct(c.earlyShare)} ahead</div>
-        <div className="mt-1 text-xs text-[var(--text-dim)]">{LATE_THRESHOLD}</div>
-        {isThin(c.days) && <div className="mt-1 text-xs text-[var(--text-dim)]">{THIN_HINT}</div>}
+      <div className={`${KPI_TILE.frame} ${isThin(c.days) ? 'opacity-60' : ''}`} title={isThin(c.days) ? THIN_HINT : undefined}>
+        <div className={KPI_TILE.label}>{label}</div>
+        <div className={KPI_TILE.value}>{pct(c.lateShare)}</div>
+        <div className={KPI_TILE.line}>late, of {c.n.toLocaleString()} · {pct(c.earlyShare)} ahead</div>
+        <div className={KPI_TILE.line}>{LATE_THRESHOLD}</div>
+        {isThin(c.days) && <div className={KPI_TILE.line}>{THIN_HINT}</div>}
       </div>
       <div className="min-w-0"><ChartRow cols={[col]} withLabels={false} showNote /></div>
     </div>

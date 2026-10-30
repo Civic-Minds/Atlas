@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
+import { useLiveAgencyName } from './hooks/useLiveAgencyName';
 import { ATLAS_MODE, FEATURES } from '../shared/config';
 import { type AgencyHotspotStop, type AgencyHotspotStretch, type AgencyRouteRow, type AgencySummary } from '../shared/liveAgency';
 import type { LiveAgencyResponse } from '../local-api/live-agency';
@@ -12,7 +13,7 @@ import { RouteNameCell } from './pageParts';
 import { agencyKpiTiles } from './utils/liveAgencyKpi';
 import { weekNotComparableLine } from './utils/liveKpi';
 import { syncUrlParams } from './utils/syncUrlParams';
-import { titleCase } from './utils/format';
+import { stopNameCase } from './utils/format';
 import { liveStopName as stop, stretchLabel } from './utils/stopLabel';
 import ErrorBoundary from './components/ErrorBoundary';
 import PageShell from './components/ui/PageShell';
@@ -78,7 +79,7 @@ function Section({ id, title, intro, children }: { id: string; title: string; in
 /** A hotspot's route, in the Routes table's name style, on one line (its direction sits in its own column). */
 function HotspotRoute({ s, route }: { s: AgencySummary; route: string }) {
   const r = s.routes.find(x => x.route === route);
-  return <a href={liveDashboardPath(s.agency, route)} className="whitespace-nowrap hover:underline"><RouteNameCell shortName={route} longName={r?.longName} mode={r?.mode ?? 3} agencyName={s.agency.toUpperCase()} /></a>;
+  return <a href={liveDashboardPath(s.agency, route)} className="whitespace-nowrap hover:underline"><RouteNameCell shortName={route} longName={r?.longName} mode={r?.mode ?? 3} agencyName={s.agency} /></a>;
 }
 
 function RoutesTable({ s }: { s: AgencySummary }) {
@@ -110,7 +111,7 @@ function RoutesTable({ s }: { s: AgencySummary }) {
             rows={group.routes}
             rowKey={r => r.route}
             columns={[
-              { key: 'route', header: 'Route', rowHeader: true, width: FIRST_COL, className: 'font-normal', cell: r => <a href={liveDashboardPath(s.agency, r.route)} className="hover:underline"><RouteNameCell shortName={r.route} longName={r.longName} mode={r.mode} agencyName={s.agency.toUpperCase()} /></a> },
+              { key: 'route', header: 'Route', rowHeader: true, width: FIRST_COL, className: 'font-normal', cell: r => <a href={liveDashboardPath(s.agency, r.route)} className="hover:underline"><RouteNameCell shortName={r.route} longName={r.longName} mode={r.mode} agencyName={s.agency} /></a> },
               { key: 'late', sortable: true, header: 'Late', cell: r => <span title={`${r.lateN.toLocaleString()} trips this week`}>{pct(r.lateShare)}</span> },
               { key: 'lastWeek', header: 'Last week', narrowHide: true, className: 'text-[var(--text-muted)]', cell: r => pct(r.lateLastWeek) },
               { key: 'runTime', sortable: true, header: 'Run time', cell: r => (r.runTimeDiffMin != null ? runTimeDiffText(r.runTimeDiffMin, false) : pctSigned(r.runTimeOver)) },
@@ -140,7 +141,7 @@ function StopsTable({ s, rows }: { s: AgencySummary; rows: AgencyHotspotStop[] }
         columns={[
           { key: 'stop', header: 'Stop', rowHeader: true, width: FIRST_COL, className: 'font-normal break-words', cell: r => <span title={stop(r.name)}>{stop(r.name)}</span> },
           { key: 'route', header: 'Route', width: ROUTE_COL, className: 'truncate', cell: r => <HotspotRoute s={s} route={r.route} /> },
-          { key: 'dir', header: 'Direction', width: DIR_COL, narrowHide: true, cell: r => titleCase(r.direction) },
+          { key: 'dir', header: 'Direction', width: DIR_COL, narrowHide: true, cell: r => stopNameCase(r.direction) },
           { key: 'late', header: 'Late', worst: r => r.lateShare, cell: r => pct(r.lateShare) },
           { key: 'typical', header: 'Typical', worst: r => r.medianMin, cell: r => mins(r.medianMin) },
           { key: 'n', header: 'Departures', narrowHide: true, cell: r => r.n.toLocaleString() },
@@ -164,9 +165,9 @@ function StretchTable({ s, rows, caption, valueHeader, format }: { s: AgencySumm
         defaultSort={valueHeader ? 'value' : undefined}
         rowKey={r => `${r.route}-${r.directionId}-${r.fromStopId}-${r.toStopId}`}
         columns={[
-          { key: 'stretch', header: 'Stretch', rowHeader: true, width: FIRST_COL, className: 'font-normal break-words', cell: r => { const name = stretchLabel(titleCase(r.fromName), titleCase(r.toName)); return <span title={name}>{name}</span>; } },
+          { key: 'stretch', header: 'Stretch', rowHeader: true, width: FIRST_COL, className: 'font-normal break-words', cell: r => { const name = stretchLabel(stopNameCase(r.fromName), stopNameCase(r.toName)); return <span title={name}>{name}</span>; } },
           { key: 'route', header: 'Route', width: ROUTE_COL, className: 'truncate', cell: r => <HotspotRoute s={s} route={r.route} /> },
-          { key: 'dir', header: 'Direction', width: DIR_COL, narrowHide: !!valueHeader, cell: r => titleCase(r.direction) },
+          { key: 'dir', header: 'Direction', width: DIR_COL, narrowHide: !!valueHeader, cell: r => stopNameCase(r.direction) },
           ...(valueHeader && format ? [{ key: 'value', header: valueHeader, worst: (r: AgencyHotspotStretch) => r.value, cell: (r: AgencyHotspotStretch) => <span className="whitespace-nowrap">{format(r.value)}</span> }] : []),
         ]}
       />
@@ -176,14 +177,15 @@ function StretchTable({ s, rows, caption, valueHeader, format }: { s: AgencySumm
 
 export default function LiveAgencyPage() {
   const { agency = '' } = useParams();
+  const agencyName = useLiveAgencyName(agency);
   // Live off: no request at all, only the notice.
   const state = useLiveAgency(FEATURES.liveReports ? agency : '');
   useEffect(() => {
     if (!agency) return;
-    applySeoToDocument(document, { title: liveReportTitle(agency.toUpperCase()), description: '', canonicalUrl: `${ATLAS_MODE === 'public' ? SITE_URL : window.location.origin}${window.location.pathname}`, noindex: true, matchedPath: window.location.pathname });
-  }, [agency]);
+    applySeoToDocument(document, { title: liveReportTitle(agencyName), description: '', canonicalUrl: `${ATLAS_MODE === 'public' ? SITE_URL : window.location.origin}${window.location.pathname}`, noindex: true, matchedPath: window.location.pathname });
+  }, [agency, agencyName]);
   if (!FEATURES.liveReports) return <LiveOffNotice />;
-  const name = agency.toUpperCase();
+  const name = agencyName;
   const back = FEATURES.live ? <ArrowLink href="/apps/live">Open Live</ArrowLink> : null;
   if (state.kind === 'loading') return <PageShell variant="wide"><p className="mt-24 text-sm text-[var(--text-muted)]" aria-busy="true">Loading {name}…</p></PageShell>;
   if (state.kind === 'error' || state.data.status !== 'ready') {

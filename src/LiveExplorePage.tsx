@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { useParams } from 'react-router';
+import { useLiveAgencyName } from './hooks/useLiveAgencyName';
 import { ATLAS_MODE, FEATURES } from '../shared/config';
 import {
   LINK_LABELS, linkValueText,
@@ -9,7 +10,8 @@ import { headwayAmount } from '../shared/headwayText';
 import { minutesText } from '../shared/liveFormat';
 import { SITE_URL } from '../shared/seo';
 import { useLiveDashboard, liveToolPath } from './hooks/useLiveDashboard';
-import { devOnly, liveReportTitle } from './lib/liveReportData';
+import { devOnly, liveReportTitle, liveRouteTitleLabel } from './lib/liveReportData';
+import { RouteTitleName } from './components/RouteRowName';
 import { applySeoToDocument } from './lib/seoDom';
 import { readUrlNumberParam, readUrlParam as readParam, syncUrlParams } from './utils/syncUrlParams';
 import { stretchLabel } from './utils/stopLabel';
@@ -183,6 +185,7 @@ function Main({ v3, band, dir, uncertain, sel, setSel }: {
 
 export default function LiveExplorePage() {
   const { agency = '', route = '' } = useParams();
+  const agencyName = useLiveAgencyName(agency);
   const state = useLiveDashboard(FEATURES.liveReports ? agency : null, route);
   const [dir, setDir] = useState<number | null>(() => readUrlNumberParam('dir'));
   const [day, setDay] = useState<Day>(() => { const d = readParam('day'); return d === 'weekday' || d === 'weekend' ? d : 'all'; });
@@ -192,10 +195,10 @@ export default function LiveExplorePage() {
   const routeTitle = state.kind === 'done' && state.data.status === 'ready' ? state.data.routeTitle : null;
   useEffect(() => {
     if (!agency || !route) return;
-    applySeoToDocument(document, { title: liveReportTitle(routeTitle || `${agency.toUpperCase()} ${route}`), description: '', canonicalUrl: `${ATLAS_MODE === 'public' ? SITE_URL : window.location.origin}${window.location.pathname}`, noindex: true, matchedPath: window.location.pathname });
-  }, [agency, route, routeTitle]);
+    applySeoToDocument(document, { title: liveReportTitle(routeTitle || `${agencyName} ${route}`), description: '', canonicalUrl: `${ATLAS_MODE === 'public' ? SITE_URL : window.location.origin}${window.location.pathname}`, noindex: true, matchedPath: window.location.pathname });
+  }, [agencyName, route, routeTitle]);
   if (!FEATURES.liveReports) return <LiveOffNotice />;
-  const title = `${agency.toUpperCase()} ${route}`;
+  const title = `${agencyName} ${route}`;
   const back = FEATURES.live ? <ArrowLink href="/apps/live">Open Live</ArrowLink> : null;
   const shell = (body: ReactNode) => <PageShell variant="wide" maxWidth="max-w-[1600px]">{body}</PageShell>;
   if (state.kind === 'loading') return shell(<p className="mt-24 text-sm text-[var(--text-muted)]" aria-busy="true">Loading {title}…</p>);
@@ -238,7 +241,7 @@ export default function LiveExplorePage() {
   return shell(
     <article className="pb-16 pt-10 sm:pt-14">
       <div className="flex flex-col gap-1 sm:grid sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center sm:gap-x-4">
-        <div className="min-w-0"><PageTitle>{data.routeTitle || title}</PageTitle></div>
+        <div className="min-w-0"><PageTitle>{data.routeTitle ? <RouteTitleName label={liveRouteTitleLabel(data.routeTitle, route)} /> : title}</PageTitle></div>
         <p className="m-0 text-sm text-[var(--text-muted)] sm:col-span-2 sm:row-start-2">
           <RouteSubtitle v3={v3} agency={agency} route={route} />
         </p>

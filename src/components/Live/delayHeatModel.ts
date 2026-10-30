@@ -6,7 +6,7 @@
  * few trips and the less exact first stops are left out, as everywhere else in Live.
  */
 import { LIVE_DASHBOARD_UNCERTAIN_START, type DashboardBand, type LiveV3, type UncertainStart } from '../../../shared/liveDashboard';
-import { titleCase } from '../../utils/format';
+import { stopNameCase } from '../../utils/format';
 import { HOLDS_STOPS } from '../../../shared/stopDelay';
 
 /** The analysis's own minimum: a stretch with fewer runs is listed but never ranked (shared/stopDelay.ts MIN_SAMPLES). */
@@ -70,9 +70,9 @@ export function delayHeatPoints(
         // Measured against the timetable like the "Where delays start" panel: falling back from early running counts too.
         const added = Math.max(0, Math.min(x.medianAddedMin, Math.min(...later) - before));
         // A stop id is one side of the street, so routes are combined by stop id (their direction numbers need not agree).
-        const hit = acc.get(x.toStopId) ?? acc.set(x.toStopId, { kept: -1, raw: 0, n: 0, point: { stopId: x.toStopId, directionId: b.directionId, name: titleCase(stop.name), lonLat: stop.lonLat as [number, number], addedMin: 0, rawAddedMin: 0, fromStopId: x.fromStopId, fromName: titleCase(x.fromName ?? x.fromStopId), route, n: 0, routes: [] } }).get(x.toStopId)!;
+        const hit = acc.get(x.toStopId) ?? acc.set(x.toStopId, { kept: -1, raw: 0, n: 0, point: { stopId: x.toStopId, directionId: b.directionId, name: stopNameCase(stop.name), lonLat: stop.lonLat as [number, number], addedMin: 0, rawAddedMin: 0, fromStopId: x.fromStopId, fromName: stopNameCase(x.fromName ?? x.fromStopId), route, n: 0, routes: [] } }).get(x.toStopId)!;
         // Routes sharing a stop: the one that adds the most (a quieter route never hides another route's delay start).
-        if (added > hit.kept) { hit.kept = added; hit.raw = x.medianAddedMin; hit.n = x.n; Object.assign(hit.point, { fromStopId: x.fromStopId, fromName: titleCase(x.fromName ?? x.fromStopId), route, directionId: b.directionId }); }
+        if (added > hit.kept) { hit.kept = added; hit.raw = x.medianAddedMin; hit.n = x.n; Object.assign(hit.point, { fromStopId: x.fromStopId, fromName: stopNameCase(x.fromName ?? x.fromStopId), route, directionId: b.directionId }); }
         if (!hit.point.routes.includes(route)) hit.point.routes.push(route);
       });
     }
