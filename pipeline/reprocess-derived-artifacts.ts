@@ -63,6 +63,7 @@ import { r2Get, r2GetArchiveBuffer, r2ListArchiveObjects, r2Put } from './r2.js'
 import { recordedFeedExpiry, stampReprocessedFeedExpiry } from './refreshMeta.js';
 import { bumpPublicDataVersion } from './dataVersion.js';
 import { runWithConcurrency } from './utils.js';
+import { AGENCY_ARTIFACT_SUFFIXES, parseRunPrefixArg } from './runArtifacts.js';
 import { parseMergeShardsArg, parseShardArg, readShardResults, shardResultPath, shardTargets, type ShardResult } from './reprocessShards.js';
 import {
   feedDateRefusal,
@@ -171,7 +172,6 @@ const readBaseline = releaseBaselineReader(r2Get);
 const processedExpiries = new Map<string, { feedExpiry: string | null; calendarExpiry: string | null; calendarOnlyEnd: string | null; listingEnd: string | null; feedQuality: FeedQuality }>();
 let qualityUpdates = 0;
 const expiryUpdates: string[] = [];
-const AGENCY_ARTIFACTS = ['', '-stops', '-corridors', '-trips', '-stops-meta', '-sections'] as const;
 
 const indexPath = resolve('public/data/index.json');
 const outputDir = resolve('tmp/derived-reprocess');
@@ -179,6 +179,9 @@ const localArchiveDir = process.env.ATLAS_LOCAL_ARCHIVE_DIR
   ? resolve(process.env.ATLAS_LOCAL_ARCHIVE_DIR)
   : null;
 const writeToR2 = process.argv.includes('--write');
+// CIV-522: with --run-prefix atlas/runs/<run id>, --write puts each agency's files under that prefix
+// and leaves the top-level files alone; promote-run-artifacts copies them up once the release is public.
+const runPrefix = parseRunPrefixArg(process.argv.slice(2), '--run-prefix');
 const overrides = parseGateOverrides(process.argv.slice(2));
 const todayYmd = new Date().toISOString().slice(0, 10).replace(/-/g, '');
 const onlySlugs = process.argv.flatMap((arg, i, all) => (arg === '--only-slug' && all[i + 1] ? [all[i + 1]] : []));
@@ -371,11 +374,11 @@ async function publishRow(row: ReportRow, agency: Agency, registry: Agency[]): P
     action: 'reprocess-derived-artifacts --write',
   });
   const agencyDir = resolve(outputDir, row.slug);
-  await Promise.all(AGENCY_ARTIFACTS.map(suffix => {
+  await Promise.all(AGENCY_ARTIFACT_SUFFIXES.map(suffix => {
     const name = `${row.slug}${suffix}.json`;
-    return r2Put(`atlas/${name}`, readFileSync(resolve(agencyDir, name), 'utf8'));
+    return r2Put(`${runPrefix ?? 'atlas'}/${name}`, readFileSync(resolve(agencyDir, name), 'utf8'));
   }));
-  console.log(`  Published ${row.slug} derived artifacts.`);
+  console.log(runPrefix ? `  Staged ${row.slug} derived artifacts under ${runPrefix}/.` : `  Published ${row.slug} derived artifacts.`);
   // The live data now comes from this feed: record its expiry like a refresh does (#837), and its
   // quality rating on every rebuild, so a rating never outlives the code or feed it was made from (CIV-533).
   const dates = processedExpiries.get(row.slug);
@@ -497,7 +500,8 @@ async function main(): Promise<void> {
   writeFileSync(resolve(outputDir, 'report.json'), JSON.stringify(report, null, 2));
   console.log(`\nWrote ${report.totals.processed} reprocessed agencies to ${outputDir}`);
   console.log(`Report: ${resolve(outputDir, 'report.json')}`);
-  if (writeToR2) await bumpPublicDataVersion(`derived artifact reprocess (${report.totals.processed})`);
+  // Staged files are not public yet: the publish and promote steps bump the version.
+  if (writeToR2 && !runPrefix) await bumpPublicDataVersion(`derived artifact reprocess (${report.totals.processed})`);
   for (const row of skipRows) console.log(`  skipped ${row.slug}: ${row.reason}`);
   for (const row of rows.filter(r => r.status === 'refused')) console.log(`  refused ${row.slug}: ${row.reason}`);
   if (report.totals.failed > 0 || report.totals.refused > 0) process.exitCode = 1;
