@@ -4,6 +4,17 @@ This is the one place for settled rules and the decisions behind them. Check "Se
 
 Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comment of date" is a decision by Ryan recorded in Linear.
 
+**Settled rules, by topic:**
+
+- [How a route's frequency is decided](#how-a-routes-frequency-is-decided)
+- [What the map shows and never shows](#what-the-map-shows-and-never-shows)
+- [How Atlas is built](#how-atlas-is-built)
+- [Data and pipeline fixes](#data-and-pipeline-fixes)
+- [How Live reads](#how-live-reads)
+- [How we talk to riders and planners](#how-we-talk-to-riders-and-planners)
+- [Who decides what](#who-decides-what)
+- [Decision log](#decision-log), newest first
+
 ## Settled rules
 
 ### How a route's frequency is decided
