@@ -38,6 +38,43 @@ describe('assessFeedQuality', () => {
   });
 });
 
+describe('assessFeedQuality share rules (CIV-533)', () => {
+  const shares = { ...healthy, routeCount: 200, problemShapes: 0, problemShapeRoutes: 0, mismatchRoutes: 0, resumesOn: null };
+
+  it('reads the share of routes a problem touches, so size alone never lowers a score', () => {
+    // TTC-sized: 7 mismatch routes and 4 problem shapes on 2 routes of 200 lose 4 and 1 points, not 30 and 30.
+    expect(assessFeedQuality({ ...shares, mismatchRoutes: 7, problemShapes: 4, problemShapeRoutes: 2 })).toMatchObject({ status: 'review', score: 95 });
+    // Small agency: 1 of 3 routes is a third of the service, capped like the count rules.
+    expect(assessFeedQuality({ ...shares, routeCount: 3, mismatchRoutes: 1 })).toMatchObject({ status: 'review', score: 70 });
+    expect(assessFeedQuality({ ...shares, routeCount: 4, mismatchRoutes: 2, problemShapes: 2, problemShapeRoutes: 2 })).toMatchObject({ status: 'degraded', score: 40 });
+  });
+
+  it('leaves out shapes Atlas repaired: only problem shapes give a reason or a penalty', () => {
+    expect(assessFeedQuality({ ...shares, shapeAnomalies: 4 })).toMatchObject({ status: 'healthy', score: 100, reasons: [] });
+  });
+
+  it('keeps the count rules for validation warnings and expiry', () => {
+    expect(assessFeedQuality({ ...shares, validationWarnings: 2 })).toMatchObject({ status: 'review', score: 80 });
+    expect(assessFeedQuality({ ...shares, feedExpiry: '20260801' })).toMatchObject({ status: 'degraded', score: 65 });
+  });
+
+  it('rates a seasonal pause paused until it resumes, then unusable as a feed with no routes', () => {
+    const pause = { ...shares, featureCount: 0, routeCount: 0, resumesOn: '20261122', checkedAt: '2026-10-29' };
+    const paused = assessFeedQuality(pause);
+    expect(paused).toMatchObject({ status: 'paused', reasons: [] });
+    expect(paused.metrics.resumesOn).toBe('20261122');
+    expect(rescoreFeedQuality(paused, null, '2026-11-21').status).toBe('paused');
+    expect(rescoreFeedQuality(paused, null, '2026-11-22')).toMatchObject({ status: 'unusable', reasons: ['Atlas could not find any usable routes in this feed.'] });
+    expect(assessFeedQuality({ ...pause, resumesOn: null }).status).toBe('unusable');
+    expect(assessFeedQuality({ ...pause, validationErrors: 1 }).status).toBe('unusable');
+  });
+
+  it('a rating made with the share rules re-scores to itself', () => {
+    const rated = assessFeedQuality({ ...shares, mismatchRoutes: 7, feedExpiry: '20261231' });
+    expect(rescoreFeedQuality(rated, null, rated.checkedAt)).toMatchObject({ status: rated.status, score: rated.score, metrics: rated.metrics });
+  });
+});
+
 describe('presentFeedQualityReason', () => {
   it('normalizes older persisted route-shape wording', () => {
     expect(presentFeedQualityReason('369 map lines were repaired — Atlas fixed unusual route geometry before displaying it.'))

@@ -97,7 +97,7 @@ import {
   type GateCandidate,
 } from './releaseDiff.js';
 import { ROUTE_ARTIFACT_SCHEMA_VERSION } from '../shared/artifactSchema.js';
-import type { FeedQuality } from '../shared/feedQuality.js';
+import { assessByCounts, type FeedQuality } from '../shared/feedQuality.js';
 import { agencyTodayYmd } from '../shared/feedAvailability.js';
 import { COUNTRY_LAUNCH_FLAG, assertCountryMayWriteToR2, resolveAgencyCountry, type AgencyCountrySource } from './countryLaunchGate.js';
 
@@ -153,6 +153,9 @@ interface ReportRow {
   outputCounts?: ArtifactCounts;
   /** The rating this feed gets (CIV-533), recorded when its artifacts are published. */
   feedQuality?: { status: FeedQuality['status']; score: number };
+  /** The same feed under the count rules it replaced, and the metrics both read (CIV-533 audit; report only). */
+  feedQualityCountRules?: { status: FeedQuality['status']; score: number };
+  feedQualityMetrics?: FeedQuality['metrics'];
 }
 
 class Refusal extends Error {}
@@ -304,6 +307,9 @@ async function processAgency(agency: Agency): Promise<ReportRow> {
     gateInputs.set(agency.slug, { candidate: { slug: agency.slug, next, service: { start: feedStart, end: feedExpiry, calendarEnd, liveFeedExpiry: agency.lastFeedExpiry } }, live });
     processedExpiries.set(agency.slug, { feedExpiry: result.feedExpiry, calendarExpiry: result.calendarExpiry, calendarOnlyEnd: result.calendarOnlyEnd, listingEnd: result.listingEnd, feedQuality: result.feedQuality });
     row.feedQuality = { status: result.feedQuality.status, score: result.feedQuality.score };
+    const countRules = assessByCounts({ ...result.feedQuality.metrics, checkedAt: result.feedQuality.checkedAt });
+    row.feedQualityCountRules = { status: countRules.status, score: countRules.score };
+    row.feedQualityMetrics = result.feedQuality.metrics;
 
     const agencyDir = resolve(outputDir, agency.slug);
     mkdirSync(agencyDir, { recursive: true });
