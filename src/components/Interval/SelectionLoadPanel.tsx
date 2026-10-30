@@ -3,7 +3,7 @@ import { sidebarFrameStyle } from '../../styles';
 import Panel from '../ui/Panel';
 import { useDelayedFlag } from '../../hooks/useDelayedFlag';
 import PanelEmpty from '../ui/PanelEmpty';
-import ArrowLink from '../ui/ArrowLink';
+import { PanelCloseButton } from '../ui/PanelHeader';
 import { loadingText, loadErrorText } from '../../content/noticeCopy';
 
 interface SelectionLoadPanelProps {
@@ -27,7 +27,7 @@ export default function SelectionLoadPanel({ kind, failed, onClose, sidebarLeft,
       style={sidebarFrameStyle(sidebarLeft, searchBarWidth)}
     >
       {failed ? (
-        <PanelEmpty kind="error" action={<ArrowLink as="button" tone="inline" size="xs" onClick={onClose} className="shrink-0 whitespace-nowrap">Close</ArrowLink>}>
+        <PanelEmpty kind="error" action={<PanelCloseButton onClick={onClose} label="Close" className="shrink-0" />}>
           {loadErrorText(`this ${kind}`)}
         </PanelEmpty>
       ) : (
@@ -41,7 +41,7 @@ export default function SelectionLoadPanel({ kind, failed, onClose, sidebarLeft,
 export function SelectionNoticePanel({ message, onClose, sidebarLeft, searchBarWidth }: { message: string; onClose: () => void; sidebarLeft?: number; searchBarWidth?: number }) {
   return (
     <Panel sidebar enter style={sidebarFrameStyle(sidebarLeft, searchBarWidth)}>
-      <PanelEmpty action={<ArrowLink as="button" tone="inline" size="xs" onClick={onClose} className="shrink-0 whitespace-nowrap">Close</ArrowLink>}>
+      <PanelEmpty action={<PanelCloseButton onClick={onClose} label="Close" className="shrink-0" />}>
         {message}
       </PanelEmpty>
     </Panel>
