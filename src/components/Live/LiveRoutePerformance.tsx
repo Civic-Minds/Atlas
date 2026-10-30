@@ -253,7 +253,8 @@ export default function LiveRoutePerformance({ slug, routeShortName, feedDegrade
       details: screen.kind === 'details',
     }));
   }, [data, band, dir, directionId, stretch, screen.kind]);
-  useEffect(() => () => syncUrlParams(linkUpdate(LIVE_MAP_URL, { dir: null, stretch: null, details: null })), []);
+  // Closing the route clears its view, the band (p) included, so the map underneath doesn't read it as its period (CIV-1139).
+  useEffect(() => () => syncUrlParams(linkUpdate(LIVE_MAP_URL, { band: null, dir: null, stretch: null, details: null })), []);
   useEffect(() => { onHighlight(stretch ? stretch.coordinates : null); }, [stretch, onHighlight]);
   useEffect(() => () => onHighlight(null), [onHighlight]);
 
