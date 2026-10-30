@@ -103,6 +103,16 @@ describe('BWG on-demand service area', () => {
     expect(METRO_MICRO_SERVICE_AREA.features.every(feature => feature.geometry.type === 'MultiPolygon' || feature.geometry.type === 'Polygon')).toBe(true);
   });
 
+  it('finds hours for every Metro micro zone by its polygon name (CIV-32)', () => {
+    const zones: Record<string, { serviceHours: string } | undefined> = METRO_MICRO_SERVICE_AREA.zoneMetadata;
+    for (const feature of METRO_MICRO_SERVICE_AREA.features) {
+      const areaName = (feature.properties as { areaName: string }).areaName;
+      expect(zones[areaName]?.serviceHours, areaName).toBeTruthy();
+    }
+    expect(METRO_MICRO_SERVICE_AREA.zoneMetadata?.['Woodbury Area Zone']).toEqual(METRO_MICRO_SERVICE_AREA.zoneMetadata?.['Woodbury Area']);
+    expect(METRO_MICRO_SERVICE_AREA.zoneMetadata?.['Blaine Area Zone']).toEqual(METRO_MICRO_SERVICE_AREA.zoneMetadata?.['Blaine Area']);
+  });
+
   it('keeps The Current service areas and virtual stops source-backed', () => {
     expect(C_TRAN_CURRENT_SERVICE_AREA.features).toHaveLength(7);
     expect(C_TRAN_CURRENT_SERVICE_AREA.stopFeatures).toHaveLength(27);

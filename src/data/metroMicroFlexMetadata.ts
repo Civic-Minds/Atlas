@@ -75,6 +75,30 @@ export const GTFS_FLEX_METADATA = {
       ]
     }
   },
+  "North Minneapolis Area Zone": {
+    "serviceName": "Metro micro",
+    "serviceHours": "Weekdays: 5:30 a.m.–10:30 p.m.; Saturday: 7:00 a.m.–10:30 p.m.; Sunday: 7:00 a.m.–10:30 p.m.",
+    "availability": {
+      "Weekday": [
+        {
+          "startHour": 5.5,
+          "endHour": 22.5
+        }
+      ],
+      "Saturday": [
+        {
+          "startHour": 7,
+          "endHour": 22.5
+        }
+      ],
+      "Sunday": [
+        {
+          "startHour": 7,
+          "endHour": 22.5
+        }
+      ]
+    }
+  },
   "Metro micro - Woodbury": {
     "serviceName": "Metro micro",
     "serviceHours": "Weekdays: 5:30 a.m.–10:30 p.m.; Saturday: 7:00 a.m.–10:30 p.m.; Sunday: 7:00 a.m.–10:30 p.m.",
@@ -124,6 +148,30 @@ export const GTFS_FLEX_METADATA = {
     }
   },
   "Woodbury Area": {
+    "serviceName": "Metro micro",
+    "serviceHours": "Weekdays: 5:30 a.m.–10:30 p.m.; Saturday: 7:00 a.m.–10:30 p.m.; Sunday: 7:00 a.m.–10:30 p.m.",
+    "availability": {
+      "Weekday": [
+        {
+          "startHour": 5.5,
+          "endHour": 22.5
+        }
+      ],
+      "Saturday": [
+        {
+          "startHour": 7,
+          "endHour": 22.5
+        }
+      ],
+      "Sunday": [
+        {
+          "startHour": 7,
+          "endHour": 22.5
+        }
+      ]
+    }
+  },
+  "Woodbury Area Zone": {
     "serviceName": "Metro micro",
     "serviceHours": "Weekdays: 5:30 a.m.–10:30 p.m.; Saturday: 7:00 a.m.–10:30 p.m.; Sunday: 7:00 a.m.–10:30 p.m.",
     "availability": {
@@ -219,6 +267,30 @@ export const GTFS_FLEX_METADATA = {
       ]
     }
   },
+  "Roseville Area Zone": {
+    "serviceName": "Metro micro",
+    "serviceHours": "Weekdays: 5:30 a.m.–10:30 p.m.; Saturday: 7:00 a.m.–10:30 p.m.; Sunday: 7:00 a.m.–10:30 p.m.",
+    "availability": {
+      "Weekday": [
+        {
+          "startHour": 5.5,
+          "endHour": 22.5
+        }
+      ],
+      "Saturday": [
+        {
+          "startHour": 7,
+          "endHour": 22.5
+        }
+      ],
+      "Sunday": [
+        {
+          "startHour": 7,
+          "endHour": 22.5
+        }
+      ]
+    }
+  },
   "Metro micro - Bloomington": {
     "serviceName": "Metro micro",
     "serviceHours": "Weekdays: 5:30 a.m.–10:30 p.m.; Saturday: 7:00 a.m.–10:30 p.m.; Sunday: 7:00 a.m.–10:30 p.m.",
@@ -291,6 +363,30 @@ export const GTFS_FLEX_METADATA = {
       ]
     }
   },
+  "Bloomington Area Zone": {
+    "serviceName": "Metro micro",
+    "serviceHours": "Weekdays: 5:30 a.m.–10:30 p.m.; Saturday: 7:00 a.m.–10:30 p.m.; Sunday: 7:00 a.m.–10:30 p.m.",
+    "availability": {
+      "Weekday": [
+        {
+          "startHour": 5.5,
+          "endHour": 22.5
+        }
+      ],
+      "Saturday": [
+        {
+          "startHour": 7,
+          "endHour": 22.5
+        }
+      ],
+      "Sunday": [
+        {
+          "startHour": 7,
+          "endHour": 22.5
+        }
+      ]
+    }
+  },
   "Metro micro - Blaine": {
     "serviceName": "Metro micro",
     "serviceHours": "Weekdays: 5:30 a.m.–10:30 p.m.; Saturday: 7:00 a.m.–10:30 p.m.; Sunday: 7:00 a.m.–10:30 p.m.",
@@ -340,6 +436,126 @@ export const GTFS_FLEX_METADATA = {
     }
   },
   "Blaine Area": {
+    "serviceName": "Metro micro",
+    "serviceHours": "Weekdays: 5:30 a.m.–10:30 p.m.; Saturday: 7:00 a.m.–10:30 p.m.; Sunday: 7:00 a.m.–10:30 p.m.",
+    "availability": {
+      "Weekday": [
+        {
+          "startHour": 5.5,
+          "endHour": 22.5
+        }
+      ],
+      "Saturday": [
+        {
+          "startHour": 7,
+          "endHour": 22.5
+        }
+      ],
+      "Sunday": [
+        {
+          "startHour": 7,
+          "endHour": 22.5
+        }
+      ]
+    }
+  },
+  "Blaine Area Zone": {
+    "serviceName": "Metro micro",
+    "serviceHours": "Weekdays: 5:30 a.m.–10:30 p.m.; Saturday: 7:00 a.m.–10:30 p.m.; Sunday: 7:00 a.m.–10:30 p.m.",
+    "availability": {
+      "Weekday": [
+        {
+          "startHour": 5.5,
+          "endHour": 22.5
+        }
+      ],
+      "Saturday": [
+        {
+          "startHour": 7,
+          "endHour": 22.5
+        }
+      ],
+      "Sunday": [
+        {
+          "startHour": 7,
+          "endHour": 22.5
+        }
+      ]
+    }
+  },
+  "Metro micro - Brooklyn Park": {
+    "serviceName": "Metro micro",
+    "serviceHours": "Weekdays: 5:30 a.m.–10:30 p.m.; Saturday: 7:00 a.m.–10:30 p.m.; Sunday: 7:00 a.m.–10:30 p.m.",
+    "availability": {
+      "Weekday": [
+        {
+          "startHour": 5.5,
+          "endHour": 22.5
+        }
+      ],
+      "Saturday": [
+        {
+          "startHour": 7,
+          "endHour": 22.5
+        }
+      ],
+      "Sunday": [
+        {
+          "startHour": 7,
+          "endHour": 22.5
+        }
+      ]
+    }
+  },
+  "Brooklyn Park": {
+    "serviceName": "Metro micro",
+    "serviceHours": "Weekdays: 5:30 a.m.–10:30 p.m.; Saturday: 7:00 a.m.–10:30 p.m.; Sunday: 7:00 a.m.–10:30 p.m.",
+    "availability": {
+      "Weekday": [
+        {
+          "startHour": 5.5,
+          "endHour": 22.5
+        }
+      ],
+      "Saturday": [
+        {
+          "startHour": 7,
+          "endHour": 22.5
+        }
+      ],
+      "Sunday": [
+        {
+          "startHour": 7,
+          "endHour": 22.5
+        }
+      ]
+    }
+  },
+  "Brooklyn Park Area": {
+    "serviceName": "Metro micro",
+    "serviceHours": "Weekdays: 5:30 a.m.–10:30 p.m.; Saturday: 7:00 a.m.–10:30 p.m.; Sunday: 7:00 a.m.–10:30 p.m.",
+    "availability": {
+      "Weekday": [
+        {
+          "startHour": 5.5,
+          "endHour": 22.5
+        }
+      ],
+      "Saturday": [
+        {
+          "startHour": 7,
+          "endHour": 22.5
+        }
+      ],
+      "Sunday": [
+        {
+          "startHour": 7,
+          "endHour": 22.5
+        }
+      ]
+    }
+  },
+  "Brooklyn Park Area Zone": {
     "serviceName": "Metro micro",
     "serviceHours": "Weekdays: 5:30 a.m.–10:30 p.m.; Saturday: 7:00 a.m.–10:30 p.m.; Sunday: 7:00 a.m.–10:30 p.m.",
     "availability": {
