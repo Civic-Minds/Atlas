@@ -70,7 +70,7 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 - **The History route chart needs 3 dates**
   - What: a History route card draws its chart only when 3 or more dates have a value in the period; with 1 or 2 the chart is left out and the rows below stay. The chart itself follows CIV-1026: a line through every snapshot, dots by priority (first and latest, then each year's last, then other changes) at least 24 px apart, the latest value labelled, expand for the wide view.
   - Why: with two dates the chart repeats the two rows below it.
-  - Source: Linear CIV-1144, comment of 2026-10-29; Linear CIV-1026
+  - Source: Linear CIV-1144, comment of 2026-10-29; Linear CIV-471 (`MIN_CHART_VALUES` in `src/apps/History.tsx`); Linear CIV-1026
 
 ### How Atlas is built
 

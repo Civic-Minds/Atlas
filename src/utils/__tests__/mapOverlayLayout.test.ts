@@ -2,17 +2,20 @@ import { describe, expect, it } from 'vitest';
 import * as layout from '../../mapOverlayLayout';
 import * as styles from '../../styles';
 
-// CIV-1136: every fixed map overlay's slot comes from the one layout table. These are the classes each slot drew before
-// the table, so moving them into it changed nothing; a slot that changes here is a visible change, listed for Ryan.
+// CIV-1136: every fixed map overlay's slot comes from the one layout table. A slot that changes here is a visible change,
+// listed for Ryan. Step 2 changed three, each the same as before until it matters: the key follows the footer's measured
+// height (2rem until measured), and the notice pills sit above the key when it shows (--map-key-h, 0 otherwise).
 const PINNED = {
     MAP_TOP_BAR_SLOT: "top-6 left-6 right-6 h-[28px]",
     MAP_FOOTER_ROW_SLOT: "max-sm:contents absolute bottom-6 left-6 right-14 flex items-end justify-between gap-2 pointer-events-none",
+    MAP_FOOTER_RIGHT_SLOT: "max-sm:contents ml-auto shrink-0 flex items-end gap-2",
+    MAP_FOOTER_NOTICE_SLOT: "flex shrink-0 pointer-events-none",
     MAP_FOOTER_PILLS_PHONE_SLOT: "max-sm:absolute max-sm:bottom-6 max-sm:left-6 max-sm:max-w-[calc(100vw-3rem)]",
     MAP_COUNTS_PHONE_SLOT: "max-sm:absolute max-sm:bottom-16 max-sm:left-6",
-    MAP_LEGEND_SLOT: "absolute bottom-16 left-6 max-sm:bottom-[6.5rem]",
+    MAP_LEGEND_SLOT: "absolute max-sm:bottom-[6.5rem] sm:bottom-[calc(2rem+var(--map-footer-h,2rem))] left-6",
     MAP_CONTROLS_SLOT: "absolute bottom-6 right-3 max-sm:right-6",
-    MAP_NOTICE_SLOT: "absolute bottom-[6.5rem] sm:bottom-[calc(2rem+var(--map-footer-h))] left-6 right-24 sm:right-56 flex justify-center",
-    MAP_NOTICE_SLOT_RAISED: "absolute bottom-[9rem] sm:bottom-[calc(4.5rem+var(--map-footer-h))] left-6 right-24 sm:right-56 flex justify-center",
+    MAP_NOTICE_SLOT: "absolute bottom-[calc(6.5rem+var(--map-key-h,0px))] sm:bottom-[calc(2rem+var(--map-footer-h,2rem)+var(--map-key-h,0px))] left-6 right-24 sm:right-56 flex justify-center",
+    MAP_NOTICE_SLOT_RAISED: "absolute bottom-[calc(9rem+var(--map-key-h,0px))] sm:bottom-[calc(4.5rem+var(--map-footer-h,2rem)+var(--map-key-h,0px))] left-6 right-24 sm:right-56 flex justify-center",
     MAP_FOOTER_HEIGHT_FALLBACK: "2rem",
     MAP_CONSENT_SLOT: "fixed inset-x-0 top-[4.25rem] mx-auto sm:top-auto sm:bottom-6",
     MAP_STATUS_SLOT: "absolute left-1/2 bottom-5 -translate-x-1/2",

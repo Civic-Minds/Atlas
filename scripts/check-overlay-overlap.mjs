@@ -37,10 +37,18 @@ function measure() {
     const r = el.getBoundingClientRect();
     return s.visibility !== 'hidden' && s.display !== 'none' && Number(s.opacity) > 0.05 && r.width > 1 && r.height > 1;
   };
-  /** The overlay's drawn pieces: leaf-ish children with a box, merged per direct child. */
-  const pieces = (root) => [...root.children].filter(visible).map(child => {
+  /** The overlay's drawn pieces, one per direct child: the child's box grown to cover any descendant drawn outside
+   *  it, so a pill that spills out of a squeezed group is measured where it is drawn (CIV-1057, About Atlas at 640).
+   *  The header's groups keep their own boxes: their search field and menus hold descendants laid out off the bar. */
+  const pieces = (root, spill = true) => [...root.children].filter(visible).map(child => {
     const r = child.getBoundingClientRect();
-    return { x: r.left, y: r.top, w: r.width, h: r.height };
+    let [x1, y1, x2, y2] = [r.left, r.top, r.right, r.bottom];
+    for (const d of spill ? child.querySelectorAll('*') : []) {
+      if (!visible(d)) continue;
+      const b = d.getBoundingClientRect();
+      x1 = Math.min(x1, b.left); y1 = Math.min(y1, b.top); x2 = Math.max(x2, b.right); y2 = Math.max(y2, b.bottom);
+    }
+    return { x: x1, y: y1, w: x2 - x1, h: y2 - y1 };
   });
   const out = [];
   for (const el of document.querySelectorAll('[data-map-overlay]')) {
@@ -50,7 +58,7 @@ function measure() {
       // run over the logo's words (CIV-1136). The right group's buttons count as one.
       [...el.children].filter(visible).forEach((group, i) => {
         if (i === 0) [...group.children].filter(visible).forEach((piece, k) => { const r = piece.getBoundingClientRect(); out.push({ name: `top-bar:left:${k === 0 ? 'logo' : k === 1 ? 'search' : k}`, boxes: [{ x: r.left, y: r.top, w: r.width, h: r.height }] }); });
-        else out.push({ name: 'top-bar:right', boxes: pieces(group) });
+        else out.push({ name: 'top-bar:right', boxes: pieces(group, false) });
       });
       continue;
     }
