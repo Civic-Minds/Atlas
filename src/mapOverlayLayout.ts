@@ -89,11 +89,12 @@ export const MAP_NOTICE_SLOT_RAISED = `absolute ${R.noticeRaised} ${E.noticeSide
 /** Sidebar cards on sm and up stop 7px above the footer row however far it wraps (CIV-1137): 56px top, the row's
  *  1.5rem inset and its measured height (--map-footer-h, published on <html>, so the cards outside the map app see it). */
 export const SIDEBAR_CARD_BOTTOM_LIMIT = 'max-h-[calc(100vh-80px-var(--map-footer-h,2rem))]';
-/** Phones: while the analytics prompt shows under the header (MAP_CONSENT_SLOT, 68px down, 32px tall), the sidebar cards
- *  start the same 8px below it instead of under the search bar, so it never covers a card's back link (CIV-1137). */
-export const SIDEBAR_CARD_TOP_BELOW_CONSENT = 'max-sm:[html[data-consent-prompt]_&]:top-[108px]';
-/** ...and stop at the same place above the bottom pills, 50px shorter. */
-export const SIDEBAR_CARD_MAX_H_BELOW_CONSENT = 'max-sm:[html[data-consent-prompt]_&]:max-h-[calc(100dvh-168px)]';
+/** Phones: while the analytics prompt shows under the header (its bottom edge measured at 92px), the sidebar cards start
+ *  below it instead of under the search bar, so it never covers a card's back link (CIV-1137). The gap is the cards' own
+ *  8px (gap-2), so the prompt sits like one more card above them (Ryan). */
+export const SIDEBAR_CARD_TOP_BELOW_CONSENT = 'max-sm:[html[data-consent-prompt]_&]:top-[100px]';
+/** ...and stop at the same place above the bottom pills, 42px shorter. */
+export const SIDEBAR_CARD_MAX_H_BELOW_CONSENT = 'max-sm:[html[data-consent-prompt]_&]:max-h-[calc(100dvh-160px)]';
 /** The footer row's height before it is measured: one row of pills (h-8). */
 export const MAP_FOOTER_HEIGHT_FALLBACK = '2rem';
 /** Sets --map-footer-h, the footer row's measured height in px, for the notice slots; the fallback until measured. */
