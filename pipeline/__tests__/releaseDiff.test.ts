@@ -10,6 +10,7 @@ import {
   evaluateRun,
   overrideArgs,
   parseGateOverrides,
+  routeShifts,
   summarizeArtifact,
   unknownOverrideSlugs,
   writeGateReport,
@@ -556,3 +557,30 @@ describe('mode-lost reads the agency mode overrides (#861)', () => {
     expect(names(evaluateAgency({ slug: 'rioc-tram', live, next, allowMissingLive: true }, [], TODAY))).toContain('rioc-tram:mode-lost:red');
   });
 });
+
+// CIV-1162: route-shift compares what riders see, the route's all-day filter value per day, not a median over rows.
+describe('route-shift reads the route as riders see it (CIV-1162)', () => {
+  const base = summarizeArtifact(JSON.stringify({ type: 'FeatureCollection', features: [] }), null);
+  const summary = (over: Partial<ArtifactSummary>): ArtifactSummary => ({ ...base, ...over });
+
+  it('stays quiet when a headsign split moves the row median but not the route (SEPTA T5 10 -> 21)', () => {
+    const live = summary({ weekdayHeadways: { T5: 10 }, weekdayTiers: { T5: '10' }, filterHeadways: { 'Weekday|all|T5': 10, 'Saturday|all|T5': 12, 'Sunday|all|T5': 12 } });
+    const next = summary({ weekdayHeadways: { T5: 21 }, weekdayTiers: { T5: '10' }, filterHeadways: { 'Weekday|all|T5': 10, 'Saturday|all|T5': 12, 'Sunday|all|T5': 12 } });
+    expect(routeShifts(live, next).shifted).toEqual([]);
+  });
+
+  it('flags a route whose weekend value doubles, naming the day', () => {
+    const live = summary({ weekdayHeadways: { A: 15 }, weekdayTiers: { A: '15' }, filterHeadways: { 'Weekday|all|A': 15, 'Saturday|all|A': 30 } });
+    const next = summary({ weekdayHeadways: { A: 15 }, weekdayTiers: { A: '15' }, filterHeadways: { 'Weekday|all|A': 15, 'Saturday|all|A': 60 } });
+    expect(routeShifts(live, next).shifted).toEqual(['A Saturday 30->60 min']);
+  });
+
+  it('flags a halved weekday value as before, and falls back to the medians without filter values', () => {
+    const live = summary({ weekdayHeadways: { B: 60 }, weekdayTiers: { B: '60' }, filterHeadways: { 'Weekday|all|B': 60 } });
+    const next = summary({ weekdayHeadways: { B: 60 }, weekdayTiers: { B: '60' }, filterHeadways: { 'Weekday|all|B': 25 } });
+    expect(routeShifts(live, next).shifted).toEqual(['B 60->25 min']);
+    const old = (h: number) => summary({ weekdayHeadways: { B: h }, weekdayTiers: { B: '60' }, filterHeadways: undefined });
+    expect(routeShifts(old(60), old(25)).shifted).toEqual(['B 60->25 min']);
+  });
+});
+
