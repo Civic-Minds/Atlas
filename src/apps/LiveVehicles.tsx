@@ -794,7 +794,6 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                 key={v.id}
                 label={vehicleRowName(v, i, selectedRouteModeWord)}
                 singleLine
-
                 onClick={() => {
                   setVehicleFly({ lat: v.lat, lon: v.lon, ts: Date.now() });
                   setFocusedVehicle({ id: v.id, lat: v.lat, lon: v.lon, ts: Date.now() });
