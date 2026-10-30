@@ -30,7 +30,7 @@ import { coveredRoutesText, LATE_THRESHOLD, bunchPartsText, liveSubtitle, risePo
 import { pct as pctOf, pctTenth, signedPct } from '../shared/liveFormat';
 import { mins } from './components/Live/sections/figures';
 import MethodSection from './components/Live/sections/MethodSection';
-import { LIVE_API_NO_ANSWER, LIVE_NO_STOP_TO_RANK_YET, LIVE_NO_STRETCH_STANDS_OUT, LIVE_WEEK_NOT_IN_FILES, liveNoAgencyAnalysis } from './content/noticeCopy';
+import { LIVE_API_NO_ANSWER, LIVE_NO_STOP_TO_RANK_YET, LIVE_NO_STRETCH_STANDS_OUT, LIVE_WEEK_NOT_IN_FILES, liveNoAgencyAnalysis, loadingText } from './content/noticeCopy';
 
 /** One column grid for every table on the page, so the first column, Route and Direction line up from table to table (widths in rem; the number columns share the rest of the width equally). */
 const FIRST_COL = 15, ROUTE_COL = 10, DIR_COL = 6.5;
@@ -187,7 +187,7 @@ export default function LiveAgencyPage() {
   if (!FEATURES.liveReports) return <LiveOffNotice />;
   const name = agencyName;
   const back = FEATURES.live ? <ArrowLink href="/apps/live">Open Live</ArrowLink> : null;
-  if (state.kind === 'loading') return <PageShell variant="wide"><p className="mt-24 text-sm text-[var(--text-muted)]" aria-busy="true">Loading {name}…</p></PageShell>;
+  if (state.kind === 'loading') return <PageShell variant="wide"><p className="mt-24 text-sm text-[var(--text-muted)]" aria-busy="true">{loadingText(name)}</p></PageShell>;
   if (state.kind === 'error' || state.data.status !== 'ready') {
     const reason = state.kind === 'error' ? state.reason : state.data.status === 'no_analysis' ? devOnly(state.data.reason) : (state.data as { reason: string }).reason;
     return <EmptyPage title={name} body={reason} action={back} />;

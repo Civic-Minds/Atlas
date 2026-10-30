@@ -38,7 +38,7 @@ import BuildupSection from './components/Live/sections/BuildupSection';
 import { BANDS, DAYS, dirsOf, mins, pct } from './components/Live/sections/figures';
 import { BOUNDARY, RouteDevHint, RouteSubtitle, withNiceNames } from './LiveRoutePage';
 import { LATE_BY_HOUR_TITLE } from '../shared/liveWording';
-import { LIVE_LESS_EXACT_HERE, LIVE_METHOD_DRAW_ERROR, LIVE_NOTHING_LINKED } from './content/noticeCopy';
+import { LIVE_LESS_EXACT_HERE, LIVE_METHOD_DRAW_ERROR, LIVE_NOTHING_LINKED, loadingText } from './content/noticeCopy';
 
 type Day = 'all' | 'weekday' | 'weekend';
 
@@ -201,7 +201,7 @@ export default function LiveExplorePage() {
   const title = `${agencyName} ${route}`;
   const back = FEATURES.live ? <ArrowLink href="/apps/live">Open Live</ArrowLink> : null;
   const shell = (body: ReactNode) => <PageShell variant="wide" maxWidth="max-w-[1600px]">{body}</PageShell>;
-  if (state.kind === 'loading') return shell(<p className="mt-24 text-sm text-[var(--text-muted)]" aria-busy="true">Loading {title}…</p>);
+  if (state.kind === 'loading') return shell(<p className="mt-24 text-sm text-[var(--text-muted)]" aria-busy="true">{loadingText(title)}</p>);
   if (state.kind === 'error') return <EmptyPage title={title} body={state.reason} action={back} maxWidth="max-w-[1600px]" />;
   const data = state.data;
   if (data.status !== 'ready') {

@@ -36,7 +36,7 @@ import BunchingSection from './components/Live/sections/BunchingSection';
 import DeliveredSection from './components/Live/sections/DeliveredSection';
 import ExtraWaitSection from './components/Live/sections/ExtraWaitSection';
 import { dirsOf } from './components/Live/sections/figures';
-import { LIVE_METHOD_DRAW_ERROR, liveDrawError } from './content/noticeCopy';
+import { LIVE_METHOD_DRAW_ERROR, liveDrawError, loadingText } from './content/noticeCopy';
 
 
 /** The stop-name fields of a v3 file; every one of them is shown in normal case. */
@@ -139,7 +139,7 @@ function AnalysisPage() {
   if (!FEATURES.liveReports) return <LiveOffNotice />;
   const title = `${agencyName} ${route}`;
   const back = FEATURES.live ? <ArrowLink href="/apps/live">Open Live</ArrowLink> : null;
-  if (state.kind === 'loading') return <PageShell variant="wide"><p className="mt-24 text-sm text-[var(--text-muted)]" aria-busy="true">Loading {title}…</p></PageShell>;
+  if (state.kind === 'loading') return <PageShell variant="wide"><p className="mt-24 text-sm text-[var(--text-muted)]" aria-busy="true">{loadingText(title)}</p></PageShell>;
   if (state.kind === 'error') return <EmptyPage title={title} body={state.reason} action={back} />;
   const data = state.data;
   if (data.status !== 'ready') {

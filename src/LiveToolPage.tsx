@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { loadingText } from './content/noticeCopy';
 import RouteRowName from './components/RouteRowName';
 import { routeLabels } from './utils/format';
 import { createPortal } from 'react-dom';
@@ -377,7 +378,7 @@ export default function LiveToolPage() {
   useEffect(() => { applySeoToDocument(document, { title: liveReportTitle(agencyName), description: '', canonicalUrl: window.location.href, noindex: true, matchedPath: window.location.pathname }); }, [agencyName]);
   if (!FEATURES.liveReports) return <LiveOffNotice />;
   const shell = (body: ReactNode) => <main className="relative flex h-screen min-h-0 flex-col overflow-hidden bg-[var(--bg-app)] text-[var(--text-primary)]">{body}</main>;
-  if (state.kind === 'loading') return shell(<p className="p-6 text-sm text-[var(--text-muted)]" aria-busy="true">Loading {agencyName}…</p>);
+  if (state.kind === 'loading') return shell(<p className="p-6 text-sm text-[var(--text-muted)]" aria-busy="true">{loadingText(agencyName)}</p>);
   if (state.kind === 'error') return shell(<p className="p-6 text-sm text-[var(--text-muted)]">{state.reason}</p>);
   if (state.data.status !== 'ready') return shell(<p className="p-6 text-sm text-[var(--text-muted)]">{state.data.status === 'no_analysis' ? devOnly(state.data.reason) : state.data.reason}</p>);
   const s = state.data.summary;
