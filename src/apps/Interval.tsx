@@ -1,4 +1,5 @@
-import { PHONE_MEDIA_QUERY, phoneModeFlags, useMediaQuery } from '../hooks/useMediaQuery';
+import { FOOTER_NOTICE_MEDIA_QUERY, PHONE_MEDIA_QUERY, phoneModeFlags, useMediaQuery } from '../hooks/useMediaQuery';
+import { useOnDemandStatus } from '../hooks/useOnDemandData';
 import { MAP_OVERLAY_VARS, publishMapOverlayVar } from '../mapOverlayLayout';
 import React, { useState, useCallback, useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import { createPortal } from 'react-dom';
@@ -15,13 +16,14 @@ import { MapAttribution } from '../components/Interval/MapAttribution';
 import { PersistentMapLegend } from '../components/Interval/PersistentMapLegend';
 import { SidebarControls } from '../components/Interval/SidebarControls';
 import { NearbyRoutesPanel } from '../components/Interval/NearbyRoutesPanel';
+import { MapErrorsPanel, MapErrorsPill } from '../components/Interval/MapErrorsPill';
 import { FilterPanel } from '../components/Interval/FilterPanel';
 import { FilterChips, getNowPeriodForTimezone } from '../components/Interval/FilterChips';
 import { AgencyCard } from '../components/Interval/AgencyCard';
-import { MAP_FOOTER_ROW_SLOT, MAP_COUNTS_PHONE_SLOT, mapFooterStyle, TRANSITION_BASE, TRANSITION_SLOW, Z_PANEL, MAP_BADGE, MAP_BADGE_COUNT, MAP_BADGE_LABEL, SIDEBAR_CARD_TOP, SIDEBAR_CARD_TOP_DESKTOP, Z_PANEL_RAISED } from '../styles';
+import { MAP_FOOTER_ROW_SLOT, MAP_FOOTER_RIGHT_SLOT, MAP_FOOTER_NOTICE_SLOT, MAP_COUNTS_PHONE_SLOT, mapFooterStyle, TRANSITION_BASE, TRANSITION_SLOW, Z_PANEL, MAP_BADGE, MAP_BADGE_COUNT, MAP_BADGE_LABEL, SIDEBAR_CARD_TOP, SIDEBAR_CARD_TOP_DESKTOP, Z_PANEL_RAISED } from '../styles';
 import type { Agency } from '../App';
 import type { OpenInfoFn } from '../components/InfoPanel';
-import { mapViewKind, viewAllowsOnDemand } from '../../shared/viewLayers';
+import { mapViewKind, viewAllowsOnDemand, viewShowsOnDemand } from '../../shared/viewLayers';
 import { ON_DEMAND_MODE } from '../../shared/modes';
 import { ATLAS_MODE, FEATURES, VIEWPORT_BBOX_PAD } from '../../shared/config';
 import { countOf, plural } from '../../shared/overflowText';
@@ -49,7 +51,7 @@ import type { AreaSearchResult } from '../../shared/areaSearch';
 import Spinner from '../components/ui/Spinner';
 import { onDemandSelectionZoneId, resolveSelectedOnDemandSlug } from '../utils/onDemandSelection';
 import { encodeStopBackTarget, parseStopBackTarget, resolveStopBack, STOP_BACK_PARAM, stopBackTarget, type StopBackRoute, type StopBackSnapshot, type StopBackTarget } from '../utils/stopBack';
-import { AGENCY_NOT_FOUND, loadingText, networksFailedHint, networksFailedText, networksLoadingText, noRoutesMatchText, noServiceOnDayNotice, ROUTE_NOT_FOUND, STOP_NOT_FOUND } from '../content/noticeCopy';
+import { AGENCY_NOT_FOUND, loadingText, ON_DEMAND_AREAS_FAILED, networksFailedHint, networksFailedText, networksLoadingText, noRoutesMatchText, noServiceOnDayNotice, ROUTE_NOT_FOUND, STOP_NOT_FOUND } from '../content/noticeCopy';
 import { useIndexSearch } from '../hooks/useIndexSearch';
 import { mergeRouteResults, mergeStopResults } from '../utils/searchResults';
 
@@ -426,6 +428,13 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   // Compare mode (beta): side A is the normal day, time and frequency; side B has its own day, time
   // and frequency. Modes, agencies and the irregular-route settings are shared by both maps.
   const isPhoneScreen = useMediaQuery(PHONE_MEDIA_QUERY);
+  // From 768 up the on-demand failed notice sits in the footer row beside the agencies loading pill (CIV-1057, Ryan:
+  // "Just move the on demand notice to beside the 6/11 networks then"). Narrower, the row has no room once the counts
+  // load, so 640-767 keeps the centred spot above the row and phones show it in the map's "Error" pill.
+  const footerHasNoticeRoom = useMediaQuery(FOOTER_NOTICE_MEDIA_QUERY);
+  const onDemandStatus = useOnDemandStatus();
+  const onDemandFailedInFooter = footerHasNoticeRoom && onDemandStatus === 'error' && FEATURES.onDemand
+    && viewShowsOnDemand(mapViewKind({ nightServiceView, frequentServiceView, liveRoutesOnly }), selectedModes);
   const compareAvailable = FEATURES.compareMode && phoneModeFlags(isPhoneScreen).compareMode && showRouteLayers && !nightServiceView
     && !frequentServiceView && !liveRoutesOnly && !filterToAgencies;
   const [compareSide, setCompareSide] = useState<CompareSide | null>(() => {
@@ -590,7 +599,26 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   useEffect(() => { if (!userLocation) setNearYouRoute(null); }, [userLocation]);
   const nearYouCovered = !!(selectedRoute || selectedStop || selectedAgencySlug || onDemandStopAgencySlug
     || disambiguationRoutes?.length || mapContextOpen || searchOverlayHidesPanel(searchFocused, query));
-  const nearYouShown = showUi && !!userLocation && !nearYouCovered;
+  // Phones (CIV-1057): the map's error notices, as one "Error" pill in the footer row; a tap opens their card in
+  // Near You's slot, with the messages it opened with, closed by a tap outside like Near You.
+  const [phoneMapErrors, setPhoneMapErrors] = useState<string[]>([]);
+  const [listedMapErrors, setListedMapErrors] = useState<string[] | null>(null);
+  const phoneErrorsInRow = isPhoneScreen && phoneMapErrors.length > 0;
+  const mapErrorsPanelRef = useRef<HTMLDivElement>(null);
+  useEffect(() => { if (!isPhoneScreen) setListedMapErrors(null); }, [isPhoneScreen]);
+  useEffect(() => {
+    if (!listedMapErrors) return;
+    function onPointerDown(e: PointerEvent) {
+      const target = e.target as Node;
+      if (mapErrorsPanelRef.current?.contains(target)) return;
+      if ((target as Element).closest?.('[data-map-errors-pill]')) return;
+      setListedMapErrors(null);
+    }
+    document.addEventListener('pointerdown', onPointerDown);
+    return () => document.removeEventListener('pointerdown', onPointerDown);
+  }, [listedMapErrors]);
+  const mapErrorsShown = showUi && !!listedMapErrors && !nearYouCovered;
+  const nearYouShown = showUi && !!userLocation && !nearYouCovered && !mapErrorsShown;
   const openNearYouRoute = useCallback((key: string | null) => {
     setNearYouRoute(key);
     setSelectedRoute(key);
@@ -1120,6 +1148,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
             sidebarLeft={sidebarLeft}
             searchBarWidth={searchBarWidth}
             onMapReady={setMapA}
+            onPhoneErrorsChange={setPhoneMapErrors}
             showMapControls={!compareActive}
         onRenderedRouteKeysChange={compareActive ? setRenderedA : undefined}
           />
@@ -1227,8 +1256,17 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
       <div ref={footerRowRef} className={MAP_FOOTER_ROW_SLOT}>
       <MapAttribution />
 
-      {((stats && (stats.total > 0 || !isLoading)) || researchCounts || isLoading || isTilesLoading || isBasemapLoading || failedSlugs.size > 0) && (
-        <div data-map-overlay="counts" className={`${MAP_COUNTS_PHONE_SLOT} ${Z_PANEL} shrink-0 ml-auto flex gap-2 transition-all ${TRANSITION_SLOW} ${showUi || nightServiceView ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
+      {/* The notice, then the counts: one group at the row's right end, so the notice sits beside the loading pill.
+          It is its own overlay and never fades with the counts, since nothing may hide it (CIV-50). */}
+      <div className={MAP_FOOTER_RIGHT_SLOT}>
+      {onDemandFailedInFooter && (
+        <div data-map-overlay="notice" className={`${MAP_FOOTER_NOTICE_SLOT} ${Z_PANEL}`}>
+          <div className={`${MAP_BADGE} h-8 px-3 py-1.5 text-xs text-[var(--text-muted)]`}>{ON_DEMAND_AREAS_FAILED}</div>
+        </div>
+      )}
+      {((stats && (stats.total > 0 || !isLoading)) || researchCounts || isLoading || isTilesLoading || isBasemapLoading || failedSlugs.size > 0 || phoneErrorsInRow) && (
+        // An error never fades (CIV-50): with the phone's "Error" pill in the row, the row stays.
+        <div data-map-overlay="counts" className={`${MAP_COUNTS_PHONE_SLOT} ${Z_PANEL} shrink-0 flex gap-2 transition-all ${TRANSITION_SLOW} ${showUi || nightServiceView || phoneErrorsInRow ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
           {(isLoading || isTilesLoading || isBasemapLoading) && (
             <div className={`${MAP_BADGE} h-8 max-sm:h-[32px]`}>
               <Spinner />
@@ -1236,6 +1274,13 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
                 {isLoading ? networksLoadingText(loadedCount, requestedCount) : loadingText('map')}
               </span>
             </div>
+          )}
+          {/* Phones (CIV-1057): right of the loading pill, in its spot when there is none. */}
+          {phoneErrorsInRow && (
+            <MapErrorsPill
+              open={!!listedMapErrors}
+              onToggle={() => setListedMapErrors(listedMapErrors ? null : phoneMapErrors)}
+            />
           )}
           {failedSlugs.size > 0 && (
             <div
@@ -1315,6 +1360,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
           )}
         </div>
       )}
+      </div>
       </div>
 
       {(showUi || showSelectionUi) && selectedOnDemandSlug && !selectedRoute && !selectedStop && !disambiguationRoutes?.length && !searchOverlayHidesPanel(searchFocused, query) && (() => {
@@ -1403,6 +1449,15 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
           />
         );
       })()}
+
+      {mapErrorsShown && (
+        <MapErrorsPanel
+          ref={mapErrorsPanelRef}
+          messages={listedMapErrors!}
+          sidebarLeft={sidebarLeft}
+          searchBarWidth={searchBarWidth}
+        />
+      )}
 
       {nearYouShown && (
         <NearbyRoutesPanel

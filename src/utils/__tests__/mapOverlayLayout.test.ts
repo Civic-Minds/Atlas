@@ -8,6 +8,8 @@ import * as styles from '../../styles';
 const PINNED = {
     MAP_TOP_BAR_SLOT: "top-6 left-6 right-6 h-[28px]",
     MAP_FOOTER_ROW_SLOT: "max-sm:contents absolute bottom-6 left-6 right-14 flex items-end justify-between gap-2 pointer-events-none",
+    MAP_FOOTER_RIGHT_SLOT: "max-sm:contents ml-auto shrink-0 flex items-end gap-2",
+    MAP_FOOTER_NOTICE_SLOT: "flex shrink-0 pointer-events-none",
     MAP_FOOTER_PILLS_PHONE_SLOT: "max-sm:absolute max-sm:bottom-6 max-sm:left-6 max-sm:max-w-[calc(100vw-3rem)]",
     MAP_COUNTS_PHONE_SLOT: "max-sm:absolute max-sm:bottom-16 max-sm:left-6",
     MAP_LEGEND_SLOT: "absolute max-sm:bottom-[6.5rem] sm:bottom-[calc(2rem+var(--map-footer-h,2rem))] left-6",
