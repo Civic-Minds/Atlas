@@ -270,6 +270,12 @@ describe('stretchSharedHeadway (CIV-937)', () => {
     expect(stretchSharedHeadway({ realTier: tails, directionFeatures: tails }, 'midday')).toBe(15);
   });
 
+  it('has no 4x limit: a long, fast shared stretch above slow branches still reads (CIV-1143, TTC 52)', () => {
+    const slowMeta = { main: { stops: 40, refStop: 's', trips: 90, period: { midday: 6 }, noRegular: [] }, tails: [] };
+    const slow = branches.map(b => ({ ...b, headwayByPeriod: { midday: 30 }, stretchMeta: slowMeta }));
+    expect(stretchSharedHeadway({ realTier: slow, directionFeatures: slow }, 'midday')).toBe(6);
+  });
+
   it('shows nothing when the shared value is no better than the branches', () => {
     expect(stretchSharedHeadway(group, 'evening')).toBeNull();
   });

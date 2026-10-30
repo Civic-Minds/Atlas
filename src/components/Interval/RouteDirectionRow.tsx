@@ -21,6 +21,9 @@ interface Props {
   singleLine?: boolean;
   /** The value keeps to the right edge when the row wraps it onto a line of its own (Compare, CIV-844). */
   valueEnd?: boolean;
+  /** A long value (words such as "until 5:05 PM, every 60 min") goes on a line of its own at the right, under the
+   *  whole destination name, as Compare's no-regular-service rows do (CIV-1143, Ryan 2026-10-30), never "to Centrepoi…". */
+  wrapLongValue?: boolean;
   // Regular service
   headway?: number | null;
   colorHeadway?: number | null;
@@ -74,7 +77,10 @@ export function keyboardFocusHover(onHoverStart?: () => void, onHoverEnd?: () =>
  * Owns label color, headway display, and limited-service variants
  * so there's one place to change instead of hunting across SidebarControls.
  */
-export default function RouteDirectionRow({ label, routeName, labelWeight = 'bold', singleLine = false, valueEnd = false, headway, colorHeadway, headwayLabel, trunkHeadway, headwaySuffix, headwaySuffixTone, subLabel, subLabelTrailing, subLabelWeight = 'bold', live, limited, limitedLabel = LIMITED_SERVICE_LABEL, edgeGapAllowance, onEdgeGapAllowanceClick, dimmed, onHoverStart, onHoverEnd, branchHovered, branchDimmed, onClick, holdLayout = false }: Props) {
+/** Longer than this, a value counts as long: a plain value or range ("every 60–120 min", 16) stays beside the name. */
+export const LONG_VALUE_CHARS = 16;
+
+export default function RouteDirectionRow({ label, routeName, labelWeight = 'bold', singleLine: singleLineProp = false, valueEnd: valueEndProp = false, wrapLongValue = false, headway, colorHeadway, headwayLabel, trunkHeadway, headwaySuffix, headwaySuffixTone, subLabel, subLabelTrailing, subLabelWeight = 'bold', live, limited, limitedLabel = LIMITED_SERVICE_LABEL, edgeGapAllowance, onEdgeGapAllowanceClick, dimmed, onHoverStart, onHoverEnd, branchHovered, branchDimmed, onClick, holdLayout = false }: Props) {
   const interactive = !!(onHoverStart && onHoverEnd);
   const clickable = !!onClick;
   const faded = dimmed || branchDimmed;
@@ -83,6 +89,10 @@ export default function RouteDirectionRow({ label, routeName, labelWeight = 'bol
     ? fmtHeadwayRange(trunkHeadway, headway)
     : null;
   const hasValueCell = !!edgeGapAllowance || limited || (headway != null && !showRange) || !!rangeText;
+  const valueWords = limited ? limitedLabel : rangeText ?? (headway != null ? headwayLabel : undefined);
+  const longValue = wrapLongValue && (valueWords?.length ?? 0) > LONG_VALUE_CHARS;
+  const singleLine = singleLineProp && !longValue;
+  const valueEnd = valueEndProp || longValue;
   // Measured only while not held, so the held size is always the pre-hover layout.
   const rowRef = React.useRef<HTMLDivElement>(null);
   const valueRef = React.useRef<HTMLSpanElement>(null);
@@ -111,7 +121,7 @@ export default function RouteDirectionRow({ label, routeName, labelWeight = 'bol
     >
       <div className={`flex ${singleLine ? '' : 'flex-wrap'} items-start justify-between gap-2`}>
         <span
-          className={`${labelWeight === 'regular' ? 'font-normal' : 'font-bold'} flex-1 min-w-[6rem] ${singleLine ? 'truncate' : 'break-words'} leading-snug ${clickable ? '' : 'text-[var(--text-primary)]'}`}
+          className={`${labelWeight === 'regular' ? 'font-normal' : 'font-bold'} flex-1 min-w-[6rem] ${longValue ? 'basis-full' : ''} ${singleLine ? 'truncate' : 'break-words'} leading-snug ${clickable ? '' : 'text-[var(--text-primary)]'}`}
           title={singleLine ? label : undefined}
         >
           {routeName ? <RouteRowName shortName={routeName.shortName} name={routeName.name} /> : label}
