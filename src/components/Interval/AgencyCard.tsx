@@ -26,13 +26,12 @@ import CardRouteList from './CardRouteList';
 import { OutboundLink } from '../OutboundLink';
 import { buildRouteFacts, type RouteLabel } from '../../utils/routeFacts';
 import { reportDetails } from '../../utils/reportIssue';
-import { AGENCY_ROUTES_FAILED, BETA_ROLLOUT_NOTICE, BETA_SERVICE_ROLLOUT_NOTICE, explainerFor, getRolloutNotice, NO_ROUTES_LOADED, noRoutesMatchText, noServiceOnDayNotice, notOnMapYetNotice, ON_DEMAND_NOT_MAPPED_NOTE, ROUTES_OUTSIDE_FILTERS_NOTICE, routesOutsideFiltersNotice, VIEW_ON_BETA } from '../../content/noticeCopy';
+import { AGENCY_ROUTES_FAILED, BETA_ROLLOUT_NOTICE, BETA_SERVICE_ROLLOUT_NOTICE, explainerFor, getRolloutNotice, NO_ROUTES_LOADED, noRoutesMatchText, noServiceOnDayNotice, notOnMapYetNotice, ON_DEMAND_NOT_MAPPED_NOTE, ON_DEMAND_SHADED_AREA, onDemandPickupSentence, ROUTES_OUTSIDE_FILTERS_NOTICE, routesOutsideFiltersNotice, VIEW_ON_BETA } from '../../content/noticeCopy';
 import { onDemandCardName } from '../../utils/onDemandSelection';
 import { onDemandCoverageNote } from '../../data/onDemandCoverage';
 import {
   formatOnDemandHoursLines,
   formatOnDemandHoursRange,
-  onDemandPickupSentence,
   onDemandRunningNote,
   resolveOnDemandZone,
   type OnDemandAvailability,
@@ -576,7 +575,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
             <CardSectionLabel>On-demand service</CardSectionLabel>
             {showsShadedArea && (
               <CardBodyText>
-                The shaded map area shows where this on-demand service operates.
+                {ON_DEMAND_SHADED_AREA}
               </CardBodyText>
             )}
             {pickupSentence && (

@@ -24,7 +24,8 @@ import {
 import * as Services from '../onDemandServiceAreas';
 import { HSR_MY_RIDE_STOP_FEATURES } from '../hsrMyRideStops';
 import { HAMILTON_TRANS_CAB_SERVICE_AREAS, HAMILTON_TRANS_CAB_TRANSFER_POINTS } from '../transCabServiceArea';
-import { isOnDemandActive, isOnDemandStopShown, isOnDemandZoneShown, onDemandPickupSentence, resolveOnDemandZone } from '../../../shared/onDemandAvailability';
+import { isOnDemandActive, isOnDemandStopShown, isOnDemandZoneShown, resolveOnDemandZone } from '../../../shared/onDemandAvailability';
+import { onDemandPickupSentence } from '../../content/noticeCopy';
 
 describe('BWG on-demand service area', () => {
   it('keeps the captured Argo polygon closed and non-trivial', () => {

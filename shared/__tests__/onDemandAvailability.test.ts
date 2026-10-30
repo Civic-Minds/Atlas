@@ -8,11 +8,11 @@ import {
   isOnDemandZoneShown,
   localDateIn,
   onDemandHoursConfirmed,
-  onDemandPickupSentence,
   onDemandRunningNote,
   resolveOnDemandZone,
   type OnDemandServiceDetails,
 } from '../onDemandAvailability.js';
+import { onDemandPickupSentence } from '../../src/content/noticeCopy';
 
 describe('isOnDemandActive', () => {
   const availability = {
