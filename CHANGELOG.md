@@ -8,6 +8,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Map and route behavior
 
+- **Agency pages and the map agree on when a [schedule ends](https://github.com/Civic-Minds/Atlas/issues/1229)**: an agency whose separate rail feed ends first (LA Metro, SEPTA) no longer reads as running months longer on its page
 - **Top bar buttons have a light outline so they stand out on the map**: Mode, Agencies and the search bar blended into the light map; high contrast mode uses a stronger outline
 - **Stop dots at middle zoom sit where their stops are**: each dot groups stops within 250 m instead of chaining up to 8 km along a street ([#1147](https://github.com/Civic-Minds/Atlas/issues/1147))
 - **WVU's PRT shows as one people mover**: its [20 station-pair "routes"](https://github.com/Civic-Minds/Atlas/issues/1119) are one line
