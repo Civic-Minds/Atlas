@@ -6,6 +6,7 @@ import ChartTableDetails from '../components/charts/ChartTableDetails';
 import { frequentServiceCoverageInterpretation, frequentServiceCoverageStats, frequentServiceStoryResearchRecord, frequentServiceStoryStats } from '../data/frequentServiceStory';
 import FrequentServicePublishedMapMontage from '../components/FrequentServicePublishedMapMontage';
 import FrequentServiceStoryMap from '../components/FrequentServiceStoryMap';
+import PageShell from '../components/ui/PageShell';
 import type { Agency } from '../App';
 import { headwayAmount } from '../../shared/headwayText';
 
@@ -33,13 +34,11 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
   const [selectedMinutes, setSelectedMinutes] = useState(15);
   const [storyStage, setStoryStage] = useState(0);
   const frequencyMinutes = 15 as const;
-  const storyScrollRef = useRef<HTMLDivElement>(null);
   const storyStepRefs = useRef<Array<HTMLDivElement | null>>([]);
   const maxBar = Math.max(...frequentServiceStoryStats.headwayBars.map(bar => bar.agencies));
 
   useEffect(() => {
-    const root = storyScrollRef.current;
-    if (!root || typeof IntersectionObserver === 'undefined') return;
+    if (typeof IntersectionObserver === 'undefined') return;
     const visibleStages = new Set<number>();
     const observer = new IntersectionObserver(entries => {
       entries.forEach(entry => {
@@ -48,7 +47,7 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
         else visibleStages.delete(stage);
       });
       setStoryStage(Math.max(...visibleStages, 0));
-    }, { root, threshold: 0.35 });
+    }, { threshold: 0.35 });
     storyStepRefs.current.forEach(step => { if (step) observer.observe(step); });
     return () => observer.disconnect();
   }, []);
@@ -59,8 +58,8 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
   }
 
   return (
-    <div ref={storyScrollRef} className="h-full overflow-x-hidden overflow-y-auto bg-[var(--bg-app)] text-[var(--text-primary)]">
-      <article className="mx-auto max-w-6xl px-5 pb-24 pt-28 sm:px-8 sm:pt-32">
+    <PageShell variant="wide" maxWidth="max-w-6xl">
+      <article className="pb-16 pt-10 sm:pt-14">
         <header className="mx-auto max-w-4xl text-center">
           <p className="text-xs font-black text-[var(--accent)]">Atlas research</p>
           <h1 className="mt-5 text-4xl sm:text-6xl font-black tracking-[-0.045em] leading-[0.98]">What happens when you miss the bus?</h1>
@@ -77,7 +76,7 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
           </a>
         </header>
 
-        <section aria-labelledby="network-story-heading" className="relative left-1/2 mt-24 w-screen -translate-x-1/2 px-2 sm:mt-32 sm:px-3">
+        <section id="story" aria-labelledby="network-story-heading" className="relative left-1/2 mt-24 w-screen -translate-x-1/2 px-2 sm:mt-32 sm:px-3">
           <div className="relative min-w-0 pb-[12vh]">
             <div className="min-w-0 lg:sticky lg:top-24">
               <FrequentServiceStoryMap agencies={agencies} stage={storyStage} frequencyMinutes={frequencyMinutes} researchRecord={frequentServiceStoryResearchRecord} />
@@ -88,7 +87,7 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
           </div>
         </section>
 
-        <div id="story" className="mx-auto mt-24 max-w-4xl space-y-24 sm:mt-32 sm:space-y-32">
+        <div className="mx-auto mt-24 max-w-4xl space-y-24 sm:mt-32 sm:space-y-32">
           <section aria-labelledby="why-heading" className="mx-auto w-full max-w-[48rem]">
             <div>
               <h2 id="why-heading" className="text-3xl sm:text-4xl font-black tracking-tight">Coverage and frequency do different jobs.</h2>
@@ -192,6 +191,6 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
           </footer>
         </div>
       </article>
-    </div>
+    </PageShell>
   );
 }

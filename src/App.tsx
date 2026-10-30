@@ -48,7 +48,6 @@ import { trackEvent } from './lib/analytics';
 import { markAtlasOnce } from './lib/performance';
 import { type FrequentServiceFrequency, type FrequentServiceWindow } from '../shared/frequentService';
 import type { NightServiceFrequency } from '../shared/nightService';
-const FrequentServiceStory = React.lazy(() => import('./apps/FrequentServiceStory'));
 const ResearchPage = React.lazy(() => import('./apps/ResearchPage'));
 import { applyOnDemand } from './lib/onDemandLoader';
 import { OnDemandStatusProvider, OnDemandViewportLoader, useOnDemandData } from './hooks/useOnDemandData';
@@ -178,9 +177,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   // Requiring one of the filter parameters made links such as ?p=overnight render the
   // normal frequency controls and left the research controls out of the header.
   const isFrequentServiceMapRoute = pathname === FEATURE_ROUTES.frequentService.map;
-  const isFrequentServiceStoryRoute = pathname === FEATURE_ROUTES.frequentService.story;
   const frequentServiceMapView = FEATURES.frequentService && isFrequentServiceMapRoute;
-  const inFrequentServiceStory = FEATURES.frequentService && isFrequentServiceStoryRoute;
   const inFrequentService = frequentServiceMapView;
   const inResearch = FEATURES.researchApps && pathname === FEATURE_ROUTES.research;
   const isPhone = useMediaQuery(PHONE_MEDIA_QUERY);
@@ -193,7 +190,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   // gate below -- fall back to the frequency map, and correct the URL so it
   // doesn't lie about what's actually showing.
   const gated = isAppGated(routedApp, { ...FEATURES, history: historyOn })
-    || ((isFrequentServiceMapRoute || isFrequentServiceStoryRoute) && !FEATURES.frequentService);
+    || (isFrequentServiceMapRoute && !FEATURES.frequentService);
   const activeApp: AppId = gated ? 'frequency' : routedApp;
   // The router's view of the address lags the address bar while the next mode renders (a
   // transition). Follow the bar urgently so a mode never stays on screen after its URL is gone.
@@ -647,16 +644,14 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
     <LiveVehiclesMapOverlayProvider>
     <div className={`relative h-dvh w-screen bg-[var(--bg-app)] text-[var(--text-primary)] font-sans overflow-hidden transition-colors ${TRANSITION_BASE}`}>
       {/* Unified header row — left and right sections share one flex container so they can never overlap. Fixed row height so a taller control in one view (e.g. Night's 30/60 toggle) can't push the logo and search off the line they sit on in every other view (#908). */}
-      <div className={`absolute ${inFrequentServiceStory ? 'top-0 left-0 right-0 bg-[var(--bg-app)] px-6 py-6' : MAP_TOP_BAR_SLOT} ${infoOpen ? Z_MODAL_TOP : Z_HEADER} flex items-center justify-between pointer-events-none`} data-map-overlay="top-bar">
+      <div className={`absolute ${MAP_TOP_BAR_SLOT} ${infoOpen ? Z_MODAL_TOP : Z_HEADER} flex items-center justify-between pointer-events-none`} data-map-overlay="top-bar">
       <div ref={headerLeftRef} className={`flex items-center gap-2 pointer-events-auto flex-1 min-w-0 ${phoneSearchExpanded ? '' : 'max-w-[calc(100%-3rem)] mr-2'} sm:max-w-none sm:mr-0`}>
         {/* The logo is "home": it clears every selection, mode and URL parameter, like a fresh visit to "/". */}
         <AtlasLogo
           hideByline
           hideWordmark={phoneSearchExpanded}
           onClick={() => {
-            if (inFrequentServiceStory) {
-              navigate(FEATURE_ROUTES.frequentService.map);
-            } else if (inLive || inHistory || inNight) {
+            if (inLive || inHistory || inNight) {
               // Leaving a mode: switch in place like the mode's own tab, so the map isn't torn down and rebuilt.
               setActiveApp('frequency');
             } else if (onGoHome) {
@@ -665,10 +660,10 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
               navigate('/');
             }
           }}
-          ariaLabel={inFrequentServiceStory ? 'Back to frequency map' : 'Atlas home'}
+          ariaLabel="Atlas home"
         />
 
-        {!inFrequentServiceStory && !inResearch && <div className="flex items-center gap-2 flex-1 min-w-0 lg:flex-initial">
+        {!inResearch && <div className="flex items-center gap-2 flex-1 min-w-0 lg:flex-initial">
         <div className="flex-1 min-w-0 sm:flex">
         {/* CIV-449 (mock): on every phone width the search rests as a round button, like the About button, and opens into the box. */}
         {phoneSearchCollapsed && (
@@ -834,8 +829,6 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
           <React.Suspense fallback={<div className="flex items-center justify-center h-full text-[var(--text-dim)] text-sm">{loadingText('map')}</div>}>
           {inResearch ? (
             <ResearchPage />
-          ) : inFrequentServiceStory ? (
-            <FrequentServiceStory agencies={visibleAgencies} onExploreMap={() => navigate(FEATURE_ROUTES.frequentService.map)} />
           ) : <>
             <Interval
               agencies={intervalAgencies}
