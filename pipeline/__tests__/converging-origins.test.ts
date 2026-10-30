@@ -72,10 +72,7 @@ describe('labelConvergingOrigins', () => {
     const tagged = feed([{ shape: 'A', stops: ['a', ...trunk], trips: 10 }, { shape: 'B', stops: ['b', ...trunk], trips: 10 }], ['a', 'b', ...trunk].map(id => ({ id })));
     for (const t of tagged.trips) t.route_variant = '12B';
     expect(labelConvergingOrigins(tagged)).toBe(0);
-    // Rail keeps one row per headsign: the same two origins on a subway are not labelled.
-    const rail = feed([{ shape: 'A', stops: ['a', ...trunk], trips: 10 }, { shape: 'B', stops: ['b', ...trunk], trips: 10 }], ['a', 'b', ...trunk].map(id => ({ id })));
-    (rail.routes[0] as any).route_type = '1';
-    expect(labelConvergingOrigins(rail)).toBe(0);
+    // Rail is labelled the same way since CIV-1152 (CTA Green Harlem-bound, pinned in shared-stretch-overlay.test.ts).
     void stopsOf;
   });
 

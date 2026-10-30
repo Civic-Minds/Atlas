@@ -18,7 +18,7 @@ import { dropOneOffRailTrips } from './oneOffServices.js';
 import { bookingRequiredRouteIds } from './bookedRoutes.js';
 import { DEFAULT_CRITERIA, getTiersForCriteria } from './defaults.js';
 import { normalizeGtfs, type GtfsPreprocess, type GtfsTransformOptions } from './preprocess/run.js';
-import { clearLoneOriginRows, labelConvergingOrigins } from './convergingOrigins.js';
+import { clearLoneOriginRows, labelConvergingOrigins, originLabelOf } from './convergingOrigins.js';
 import { validateGtfs, type ValidationReport } from './validation.js';
 import { resolveDisplayHeadsign } from '../shared/headsignDisplay.js';
 import { routeGroupKey } from '../shared/routeGroupKey.js';
@@ -902,12 +902,25 @@ export async function processGtfsBuffer(
   // is already swapped for a typical week by getActiveServiceIds (#658).
   type StopTripGroup = {
     routeId: string; shortName: string; dirId: string; dayType: DayType; headsign: string | null;
+    /** The trip's display headsign: `headsign` without a rail origin (metricHeadsign, CIV-1152). */
+    displayHeadsign: string | null;
     shapeId: string | null; serviceId: string; routeVariant: string | null;
     // Whether this trip's departures go into the group, headsign and shape maps. Always
     // true outside Weekday; for Weekday, true only when the trip runs on that map's day.
     inGroup: boolean; inHeadsign: boolean; inShape: boolean;
   };
-  const stopTripMeta = new Map<string, { shortName: string; dirId: string; headsign: string | null; shapeId: string | null }>();
+  const railRouteIds = new Set((gtfs.routes ?? []).filter(route => isRailRoute(route, options?.slug)).map(route => route.route_id));
+  // CIV-1152: a rail line's stop values are scoped by headsign, so the origins of a rail direction that converge under
+  // one headsign (convergingOrigins: CTA Green's Harlem-bound trips from Ashland/63rd and from Cottage Grove) each key
+  // their stop data by headsign and origin. Otherwise every origin row read the whole headsign's trips (every 10, where
+  // each branch runs every 20). Every other trip and feature keeps its plain headsign key.
+  const metricHeadsign = (routeId: string, headsign: string | null, variant: unknown): string | null => {
+    const origin = originLabelOf(variant);
+    return headsign && origin && railRouteIds.has(routeId) ? `${headsign} ${origin}` : headsign;
+  };
+  const featureMetricHeadsign = (feature: GeoJsonFeature): string | null =>
+    metricHeadsign(feature.properties.routeId as string, feature.properties.headsign as string | null, feature.properties.routeVariant);
+  const stopTripMeta = new Map<string, { shortName: string; dirId: string; headsign: string | null; displayHeadsign: string | null; shapeId: string | null }>();
   for (const trip of gtfs.trips ?? []) {
     if (!serviceIdToDayTypes.has(trip.service_id)) continue;
     // Use shortName as the group key so agencies with multiple route_ids per line (e.g. GO Transit
@@ -922,8 +935,9 @@ export async function processGtfsBuffer(
       const lastStopId = lastStopByTrip.get(trip.trip_id);
       if (lastStopId) rawHeadsign = stopNameById.get(lastStopId) ?? null;
     }
-    const headsign = resolveDisplayHeadsign(rawHeadsign, shortName, longName);
-    stopTripMeta.set(trip.trip_id, { shortName: groupName, dirId: String(trip.direction_id ?? '0'), headsign, shapeId: trip.shape_id || null });
+    const displayHeadsign = resolveDisplayHeadsign(rawHeadsign, shortName, longName);
+    const headsign = metricHeadsign(trip.route_id, displayHeadsign, trip.route_variant);
+    stopTripMeta.set(trip.trip_id, { shortName: groupName, dirId: String(trip.direction_id ?? '0'), headsign, displayHeadsign, shapeId: trip.shape_id || null });
   }
   const frequencyDepartureCount = frequencyDepartureCounts(gtfs.frequencies, gtfs.stopTimes);
   // Stop maps are keyed by short name + direction (plus headsign and shape), while phase 2
@@ -1114,7 +1128,7 @@ export async function processGtfsBuffer(
         // span or irregular pattern never does (capmetro 550 NB: the midday short turns to
         // Lakeline are span, so the Leander line is not their variant).
         if (feature.geometry.type !== 'LineString' || partialWeekdayFeatures.has(feature) || !keepsHeadline(feature)) continue;
-        const member = sharedPatternKey(feature.properties.routeId as string, feature.properties.headsign as string | null, featureShapeId.get(feature));
+        const member = sharedPatternKey(feature.properties.routeId as string, featureMetricHeadsign(feature), featureShapeId.get(feature));
         if (!member) continue;
         const pool = `${shortName}::${dirId}::${day}`;
         let members = drawnMembersByPool.get(pool);
@@ -1137,12 +1151,11 @@ export async function processGtfsBuffer(
         const pool = `${shortName}::${dirId}::${day}`;
         let set = drawnHeadsignsByPool.get(pool);
         if (!set) { set = new Set(); drawnHeadsignsByPool.set(pool, set); }
-        set.add(`${feature.properties.routeId}|${feature.properties.headsign}`);
+        set.add(`${feature.properties.routeId}|${featureMetricHeadsign(feature)}`);
       }
     }
     return drawnHeadsignsByPool.get(poolKey) ?? new Set();
   };
-  const railRouteIds = new Set((gtfs.routes ?? []).filter(route => isRailRoute(route, options?.slug)).map(route => route.route_id));
   // A pattern: route_id + shape for buses (every trip on the feature's own shape, as in its
   // shape-scoped stop metrics), route_id + headsign for rail (headsign-scoped metrics).
   const sharedPatternKey = (routeId: string, headsign: string | null, shapeId: string | null | undefined): string | null => {
@@ -1327,7 +1340,7 @@ export async function processGtfsBuffer(
     // The slot's representative weekday (#716) and how much of the slot this pattern carries
     // on it: the dedupe rules themselves are in featureDedupe.ts.
     const repWeekday = result.day === 'Weekday'
-      ? (cleanedForDedup ? representativeWeekday.headsign.get(`${groupName}::${result.dir}::${cleanedForDedup}`) : undefined)
+      ? (cleanedForDedup ? representativeWeekday.headsign.get(`${groupName}::${result.dir}::${metricHeadsign(result.route, cleanedForDedup, result.routeVariant)}`) : undefined)
         ?? representativeWeekday.group.get(`${groupName}::${result.dir}`)
       : undefined;
     // A pattern "carries" the representative weekday when it has at least half of the slot's
@@ -1335,7 +1348,7 @@ export async function processGtfsBuffer(
     // never preferred over a more frequent pattern just for running on that day.
     const repIndex = repWeekday != null ? WEEKDAYS.indexOf(repWeekday) : -1;
     const slotCounts = repWeekday == null ? undefined
-      : (cleanedForDedup ? weekdayCounts.headsign.get(`${groupName}::${result.dir}::${cleanedForDedup}`) : undefined)
+      : (cleanedForDedup ? weekdayCounts.headsign.get(`${groupName}::${result.dir}::${metricHeadsign(result.route, cleanedForDedup, result.routeVariant)}`) : undefined)
         ?? weekdayCounts.group.get(`${groupName}::${result.dir}`);
     const shapeCounts = result.shapeId ? weekdayCounts.shape.get(result.shapeId) : undefined;
     const newRunsOnRepDay = repWeekday != null && (result.daysIncluded?.includes(repWeekday) ?? false);
@@ -1476,7 +1489,7 @@ export async function processGtfsBuffer(
   }
 
   for (const [feature, slot] of featureStopHeadwaySlots) {
-    const headsignKey = `${slot.shortName}::${slot.dirId}::${slot.day}::${feature.properties.routeId}::${(feature.properties.headsign as string | null) ?? ''}`;
+    const headsignKey = `${slot.shortName}::${slot.dirId}::${slot.day}::${feature.properties.routeId}::${featureMetricHeadsign(feature) ?? ''}`;
     if (readsRushPool(feature)) rushEligibleHeadsigns.add(headsignKey);
     if (!addsToSharedPool(feature)) continue;
     sharedEligibleHeadsigns.add(headsignKey);
@@ -1987,9 +2000,10 @@ export async function processGtfsBuffer(
       const poolKey = `${grp.shortName}::${grp.dirId}::${grp.dayType}`;
       const key = `${poolKey}::${member}`;
       const prev = sharedPatternTrip.get(key);
-      if (!prev) sharedPatternTrip.set(key, { poolKey, routeId: grp.routeId, headsigns: new Set([grp.headsign ?? '']), tripId: trip.trip_id, stops });
+      // The display headsign: a rail origin's member is told apart by its route variant, as on a bus (CIV-1152).
+      if (!prev) sharedPatternTrip.set(key, { poolKey, routeId: grp.routeId, headsigns: new Set([grp.displayHeadsign ?? '']), tripId: trip.trip_id, stops });
       else {
-        prev.headsigns.add(grp.headsign ?? '');
+        prev.headsigns.add(grp.displayHeadsign ?? '');
         if (stops > prev.stops) { prev.tripId = trip.trip_id; prev.stops = stops; }
       }
     }
@@ -2144,7 +2158,7 @@ export async function processGtfsBuffer(
       feature.properties.nightService = false;
       continue;
     }
-    const featureHeadsign = feature.properties.headsign as string | null;
+    const featureHeadsign = featureMetricHeadsign(feature);
     const featureRoute = routeById.get(feature.properties.routeId as string);
     const railFeature = isRailRoute(featureRoute, options?.slug);
     const headsignMap = featureHeadsign
@@ -3190,7 +3204,7 @@ export async function processGtfsBuffer(
     // pool and a sibling pattern ends at another terminal nearby (terminalReadsSibling).
     const terminalStopId = terminalReadsSibling().reads ? terminalReadsSibling().lastPooled ?? onShape[onShape.length - 1]?.stopId : onShape[onShape.length - 1]?.stopId;
     const terminalPeriodHw = terminalStopId ? allStopPeriodHw[terminalStopId] : undefined;
-    const featHeadsign = feature.properties.headsign as string | null;
+    const featHeadsign = featureMetricHeadsign(feature);
     const hsStopMap = featHeadsign
       ? stopDepsByHeadsignGroup.get(`${shortName}::${dirId}::${day}::${featHeadsign}`)
       : undefined;
@@ -3572,7 +3586,7 @@ export async function processGtfsBuffer(
       if (!slot) return null;
       const member = sharedPatternKey(
         feature.properties.routeId as string,
-        feature.properties.headsign as string | null,
+        featureMetricHeadsign(feature),
         featureShapeId.get(feature),
       );
       return member ? { poolKey: `${slot.shortName}::${slot.dirId}::${slot.day}`, memberKey: member } : null;
