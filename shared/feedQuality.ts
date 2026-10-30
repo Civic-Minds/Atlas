@@ -1,7 +1,7 @@
 import { isExpiredFeedExpiry } from './feedAvailability';
 import { plural } from './overflowText';
 
-export type FeedQualityStatus = 'healthy' | 'review' | 'degraded' | 'unusable';
+export type FeedQualityStatus = 'healthy' | 'review' | 'degraded' | 'unusable' | 'paused';
 
 export interface FeedQualityMetrics {
   validationErrors: number;
@@ -14,6 +14,19 @@ export interface FeedQualityMetrics {
    * Missing on ratings made before it was stored.
    */
   feedExpiry?: string | null;
+  /**
+   * CIV-533 share rules: the agency's route count and the routes each problem touches. A rating made
+   * before these were stored has none of them and keeps the count rules it was made with.
+   */
+  routeCount?: number;
+  /** Shapes Atlas could not repair: cut short at an implausible jump, or a detour the repair left in place. */
+  problemShapes?: number;
+  /** Routes drawn on one of those shapes. */
+  problemShapeRoutes?: number;
+  /** Routes with a main-line row whose headline is far slower than its own stops (tail and variant rows are left out). */
+  mismatchRoutes?: number;
+  /** With no routes in the read week: the first later date one of the file's routes runs again (a seasonal pause). */
+  resumesOn?: string | null;
 }
 
 export interface FeedQuality {
@@ -56,6 +69,67 @@ function isExpired(expiry: string | null | undefined, today: string): boolean {
  * A review rating keeps usable data visible; only clearly broken output is unusable.
  */
 export function assessFeedQuality(input: FeedQualityInput): FeedQuality {
+  return input.routeCount === undefined ? assessByCounts(input) : assessByShares(input);
+}
+
+/** Share of the agency's routes, as a penalty of one point per percent, capped like the count rules. */
+function sharePenalty(routes: number, routeCount: number): number {
+  return routeCount > 0 ? Math.min(30, Math.round((100 * routes) / routeCount)) : 0;
+}
+
+/**
+ * CIV-533 (Ryan, 2026-10-29): penalties read the share of the agency's routes a problem touches, so
+ * size alone never lowers a score. Shapes Atlas repaired are not problems, and a tail or variant row
+ * (split from the main line by design) is not a mismatch. A feed with no routes in the read week but
+ * routes that run again later in the same file is a seasonal pause, rated paused until that date.
+ */
+function assessByShares(input: FeedQualityInput): FeedQuality {
+  const reasons: string[] = [];
+  let score = 100;
+  const checkedAt = input.checkedAt ?? new Date().toISOString().slice(0, 10);
+  const routeCount = input.routeCount ?? 0;
+
+  if (input.validationErrors === 0 && input.featureCount === 0 && input.resumesOn && checkedAt.replaceAll('-', '') < input.resumesOn) {
+    return { status: 'paused', score: 0, reasons: [], metrics: metricsFrom(input), checkedAt };
+  }
+  if (input.featureCount === 0 || input.validationErrors > 0) {
+    return {
+      status: 'unusable',
+      score: 0,
+      reasons: [input.featureCount === 0 ? FEED_QUALITY_NO_ROUTES_REASON : FEED_QUALITY_VALIDATION_ERROR_REASON],
+      metrics: metricsFrom(input),
+      checkedAt,
+    };
+  }
+
+  if (input.validationWarnings > 0) {
+    score -= Math.min(30, input.validationWarnings * 10);
+    reasons.push(feedQualityReasonForValidationWarnings(input.validationWarnings));
+  }
+  if ((input.problemShapes ?? 0) > 0) {
+    score -= sharePenalty(input.problemShapeRoutes ?? 0, routeCount);
+    reasons.push(feedQualityReasonForShapeAnomalies(input.problemShapes!));
+  }
+  if ((input.mismatchRoutes ?? 0) > 0) {
+    score -= sharePenalty(input.mismatchRoutes!, routeCount);
+    reasons.push(feedQualityReasonForHeadwayMismatches(input.mismatchRoutes!));
+  }
+  if (isExpired(input.feedExpiry, checkedAt)) {
+    score -= 35;
+    reasons.push(FEED_QUALITY_EXPIRED_REASON);
+  }
+
+  const status: FeedQualityStatus = isExpired(input.feedExpiry, checkedAt) || score < 60
+    ? 'degraded'
+    : reasons.length > 0
+      ? 'review'
+      : 'healthy';
+
+  return { status, score: Math.max(0, score), reasons, metrics: metricsFrom(input), checkedAt };
+}
+
+/** The count rules every rating made before CIV-533's share rules was scored with. */
+export function assessByCounts(input: FeedQualityInput): FeedQuality {
   const reasons: string[] = [];
   let score = 100;
   const checkedAt = input.checkedAt ?? new Date().toISOString().slice(0, 10);
@@ -125,6 +199,13 @@ function metricsFrom(input: FeedQualityInput): FeedQualityMetrics {
     routeHeadwayMismatches: input.routeHeadwayMismatches,
     featureCount: input.featureCount,
     ...(input.feedExpiry !== undefined ? { feedExpiry: input.feedExpiry } : {}),
+    ...(input.routeCount !== undefined ? {
+      routeCount: input.routeCount,
+      problemShapes: input.problemShapes ?? 0,
+      problemShapeRoutes: input.problemShapeRoutes ?? 0,
+      mismatchRoutes: input.mismatchRoutes ?? 0,
+      resumesOn: input.resumesOn ?? null,
+    } : {}),
   };
 }
 
@@ -134,6 +215,7 @@ export function qualityStatusLabel(status: FeedQualityStatus): string {
     review: 'Review',
     degraded: 'Degraded',
     unusable: 'Unusable',
+    paused: 'Paused',
   }[status];
 }
 

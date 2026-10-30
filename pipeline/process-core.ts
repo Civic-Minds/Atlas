@@ -3727,17 +3727,31 @@ export async function processGtfsBuffer(
   const routeFeatures = features.filter(feature =>
     feature.properties.routeShortName != null,
   );
-  const routeHeadwayMismatches = routeFeatures.filter(feature => {
+  const mismatchFeatures = routeFeatures.filter(feature => {
     const headway = Number(feature.properties.headway);
     const minStopHeadway = Number(feature.properties.minStopHeadway);
     return Number.isFinite(headway) && Number.isFinite(minStopHeadway) && minStopHeadway > 0 && headway >= minStopHeadway * 1.8;
-  }).length;
+  });
+  const routeHeadwayMismatches = mismatchFeatures.length;
+  // CIV-533 share rules: the routes each problem touches. A shape counts only when Atlas could not
+  // repair it (cut short at an implausible jump, or a detour the repair left in place), and a
+  // mismatch only on a main-line row: a tail or variant row is split from the line by design.
+  const routeIdsOf = (list: readonly GeoJsonFeature[]) => new Set(list.map(feature => String(feature.properties.routeId)));
+  const problemShapeIds = new Set((gtfs.shapeAnomalies ?? [])
+    .filter(anomaly => anomaly.truncated || (anomaly.clusteredJumps && !anomaly.repairedClusteredJumps))
+    .map(anomaly => anomaly.shapeId));
+  const resumeDates = Object.values(resumingRoutes).sort();
   const feedQuality = assessFeedQuality({
     validationErrors: validation.errors,
     validationWarnings: validation.warnings,
     shapeAnomalies: gtfs.shapeAnomalies?.length ?? 0,
     routeHeadwayMismatches,
     featureCount: routeFeatures.length,
+    routeCount: routeIdsOf(routeFeatures).size,
+    problemShapes: problemShapeIds.size,
+    problemShapeRoutes: routeIdsOf(routeFeatures.filter(feature => problemShapeIds.has(featureShapeId.get(feature) ?? ''))).size,
+    mismatchRoutes: routeIdsOf(mismatchFeatures.filter(feature => feature.properties.stretchRole !== 'tail' && feature.properties.stretchRole !== 'variant')).size,
+    resumesOn: routeFeatures.length === 0 ? resumeDates[0] ?? null : null,
     // Same rule as the registry's lastFeedExpiry, so a stale feed_info end date
     // does not mark a feed whose calendar runs on as expired (#687).
     feedExpiry: recordedFeedExpiry(feedInfo?.feed_end_date ?? null, calendarExpiry, new Date().toISOString().slice(0, 10), calendarOnlyEnd),
