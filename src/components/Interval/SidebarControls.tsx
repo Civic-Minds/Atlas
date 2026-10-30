@@ -23,6 +23,7 @@ import {
   type StopSearchResult,
 } from '../../utils/searchResults';
 import { FLOATING_CARD, TRANSITION_BASE, Z_PANEL, Z_DROPDOWN, sidebarFrameStyle, sidebarCardFrame } from '../../styles';
+import { compareSearchMaxWidth } from '../../mapOverlayLayout';
 import { DisambiguationPanel } from './panels/DisambiguationPanel';
 import { StopCard } from './panels/StopCard';
 import type { StopRoute, NearbyConnection, StopCardBack } from './panels/StopCard';
@@ -865,6 +866,8 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       style={sheetMode ? undefined : {
         ...sidebarFrameStyle(sidebarLeft, matchSearchBarWidth ? searchBarWidth : undefined),
         ...(compareTop != null ? { top: `${compareTop}px`, maxHeight: `calc(100vh - ${compareTop + 64}px)`, '--sidebar-left': `${COMPARE_PANEL_LEFT}px` } : {}),
+        // Compare: search results open under the search box, which stops short of the divider; so do they (CIV-844).
+        ...(compareActive && compareTop == null && matchSearchBarWidth ? { maxWidth: compareSearchMaxWidth(sidebarLeft ?? 0) } : {}),
       }}
     >
       {searchFocused && query === '' && (
@@ -919,6 +922,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                 <RouteCardHeadway
                   currentRoute={currentRoute}
                   agencyFeatures={routeSlug ? nonCorridorLayers[routeSlug]?.features : undefined}
+                  stableBranchColors={compareActive}
                   variantFamily={variantFamily}
                   routeSlug={routeSlug}
                   routeAgency={routeAgency}
@@ -996,6 +1000,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
           <RouteCardHeadway
             currentRoute={currentRouteB!}
             agencyFeatures={routeSlug ? nonCorridorLayers[routeSlug]?.features : undefined}
+            stableBranchColors
             variantFamily={variantFamilyB}
             routeSlug={routeSlug}
             routeAgency={routeAgency}

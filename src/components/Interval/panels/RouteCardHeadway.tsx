@@ -6,7 +6,7 @@ import type { OpenInfoFn } from '../../InfoPanel';
 import { routeLabels, resolveBranchLabel, formatBranchLabel, formatStoredDate } from '../../../utils/format';
 import { agencyNames } from '../../../utils/agencyName';
 import { HeadwaySparkline } from '../HeadwaySparkline';
-import { branchHourStack, routeHourModel, stackBranches, stackHeadway } from '../../../utils/hourChartModel';
+import { branchHourStack, routeHourModel, stableBranchColors, stackBranches, stackHeadway } from '../../../utils/hourChartModel';
 import { getCachedAgencyGeo } from '../../../lib/agencyGeo';
 import { tripTimeSeriesFor, type PublishedRunningTimes } from '../../../utils/tripTime';
 import RouteCardTitle from '../../RouteCardTitle';
@@ -124,6 +124,8 @@ export interface RouteCardHeadwayProps {
   currentRoute: CurrentRouteData;
   /** The route's agency features (stops, pooled shared-stretch block, both directions), CIV-82. */
   agencyFeatures?: readonly GeoJSON.Feature[];
+  /** Compare (CIV-844): colour each destination by name, so it matches on both cards. */
+  stableBranchColors?: boolean;
   /** Lettered variants sharing this route's base number (GRTC 1/1A/1B/1C style). */
   variantFamily?: VariantFamily | null;
   routeSlug: string | undefined;
@@ -152,9 +154,15 @@ export interface RouteCardHeadwayProps {
   onInfoOpen?: OpenInfoFn;
 }
 
+/** The last two words held together, so a wrapped value never leaves one word alone on its line (Compare, CIV-844). */
+function keepLastWordsTogether(text: string): string {
+  return text.replace(/ (\S+)$/, '\u00A0$1');
+}
+
 export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
   currentRoute,
   agencyFeatures,
+  stableBranchColors: stableColors = false,
   variantFamily,
   routeSlug,
   routeAgency,
@@ -397,11 +405,12 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
       )}
       {!nightView && (() => {
         const HOURS = SPARKLINE_HOURS;
+        const branchColorOf = stableColors ? stableBranchColors(agencyFeatures, currentRoute.routeShortName) : undefined;
         const hoveredSingleBranch = hoveredBranch?.headsign != null;
         // One hourly series per direction (the direction pills), the inline chart's series, its gap colours,
         // the default branch stack and the route's y-axis top, from the shared hour model (CIV-1118).
         const { perDirection, directionsWithHours, defaultMerged, hasTrunkSparkline, mergedMaxGaps, defaultStackedByHour, scaleMaxFreq } =
-          routeHourModel({ groups: displayGroups, directions: currentRoute.directions, primaryMultiBranch, period, hours: HOURS });
+          routeHourModel({ groups: displayGroups, directions: currentRoute.directions, primaryMultiBranch, period, hours: HOURS, colorOf: branchColorOf });
         // A selected branch row (CIV-512) keeps the chart and its scale: the bars become that direction's
         // trips each hour, split by branch (part-day branches too), each segment its own trips on the
         // route's fixed axis, with the selected branch in full colour and the others faded.
@@ -413,7 +422,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
         const selectedGroup = hoveredGroup && stackBranches(hoveredGroup).length >= 2 ? hoveredGroup : undefined;
         const isSelectedBranch = (b: ShapeProperties) => matchesHoveredBranch(b.headsign, b.routeVariant);
         const selectionStacked = selectedGroup
-          ? Object.fromEntries(HOURS.map(h => [h, branchHourStack(stackBranches(selectedGroup), h, isSelectedBranch)]))
+          ? Object.fromEntries(HOURS.map(h => [h, branchHourStack(stackBranches(selectedGroup), h, isSelectedBranch, branchColorOf)]))
           : null;
         const selectionByHour = selectionStacked
           ? Object.fromEntries(HOURS.map(h => [h, stackHeadway(selectionStacked[h])])) as Record<number, number | null>
@@ -628,10 +637,13 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                         <FlaggableValue key={`r${i}`} reason="Frequency is wrong" reportRef={reportRef} className="block w-full text-left">
                           <CardDirectionRow
                             labelWeight="regular"
-                            singleLine
+                            // Compare (CIV-844): a row that reads "no regular service during this period" puts the whole
+                            // destination name on its line and the value under it (the row's own wrap layout), never "to Roncesval…".
+                            singleLine={!(stableColors && row.rowNoRegular)}
+                            valueEnd={stableColors && row.rowNoRegular}
                             label={label}
                             headway={row.headway}
-                            limitedLabel={row.isLimited && row.edgeText ? row.edgeText : row.rowNoRegular ? noRegularLabel : undefined}
+                            limitedLabel={row.isLimited && row.edgeText ? row.edgeText : row.rowNoRegular ? (stableColors ? keepLastWordsTogether(noRegularLabel) : noRegularLabel) : undefined}
                             colorHeadway={row.colorHeadway}
                             headwayLabel={row.headwayLabel}
                             trunkHeadway={row.trunkHeadway}
