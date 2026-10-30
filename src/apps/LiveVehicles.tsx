@@ -26,7 +26,8 @@ import { getVehicleColors, getVehicleStatus } from '../utils/colors';
 import { useColorVision } from '../context/ColorVisionContext';
 import { cleanRouteShortName, cleanRouteDisplayName, routeListCompanionName, liveVehicleRowLabel, vehicleModeWord, vehicleModeCount, nameCase } from '../utils/format';
 import { agencyNames, agencyShortNameBySlug } from '../utils/agencyName';
-import { branchDisplayPeriodHeadway } from '../utils/routeFacts';
+import { liveScheduledHeadway } from '../utils/liveScheduledHeadway';
+import { routeDirectionOverrides } from '../utils/routeCardDirectionGroups';
 import { periodKeyForHour } from '../../shared/config';
 import { andOthers, countOf } from '../../shared/overflowText';
 import { inferLiveDirection } from '../utils/liveDirection';
@@ -629,26 +630,20 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
     if (!observed || observed.samples < 3) return null;
     const gap = Math.round(observed.gapMin);
 
+    // The route card's own number for the picked direction (#1234): pooled branches read as the card does.
     const fc = routeLayer(selectedGroup.agencySlug);
-    let scheduled: number | null = null;
-    if (fc) {
-      const day = getNowDay();
-      const hour = new Date().getHours();
-      const vehicleHeadsigns = new Set(selectedGroup.vehicles.map(v => v.headsign).filter((h): h is string => !!h));
-      for (const f of fc.features) {
-        const p = f.properties as any;
-        if (!p || p.routeShortName !== selectedGroup.routeShortName) continue;
-        if (p.day && p.day !== day) continue;
-        if (vehicleHeadsigns.size > 0 && p.headsign && !vehicleHeadsigns.has(p.headsign)) continue;
-        const hw = branchDisplayPeriodHeadway(p, periodKeyForHour(hour) ?? 'all');
-        if (hw != null && (scheduled === null || Number(hw) < scheduled)) scheduled = Number(hw);
-      }
-    }
+    const routeKey = fc ? routeKeyForShortName(selectedGroup.agencySlug, fc.features, selectedGroup.routeShortName, getNowDay()) : null;
+    const scheduled = fc && routeKey
+      ? liveScheduledHeadway(
+        fc, routeKey, getNowDay(), periodKeyForHour(new Date().getHours()) ?? 'all', counted?.directionId ?? null,
+        routeDirectionOverrides(agencies, selectedGroup.agencySlug, selectedGroup.routeShortName),
+      )
+      : null;
 
     return scheduled != null
       ? `${capitalizeFirst(headwayAbout(gap))} · scheduled ${headwayEvery(Math.round(scheduled))}`
       : capitalizeFirst(headwayAbout(gap));
-  }, [selectedGroup, headwaysBySlug, routeLayer]);
+  }, [selectedGroup, headwaysBySlug, routeLayer, counted?.directionId, agencies]);
 
   // A route picked (from a link or the address) that has no card: say why, never show nothing.
   const requestedRouteNote = useMemo((): string | null => {
