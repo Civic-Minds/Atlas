@@ -228,7 +228,9 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
   const chartRanges = tripRangesOf(activeRangeDirections);
   const periodRanges = chartRanges.length > 0 ? chartRanges : allDirectionRanges;
   const runsInPeriod = hasPartialPeriodService && allDirectionRanges.length > 0;
-  const periodNotice = !hideFilterNotices && selectedPeriod && !hasPeriodService
+  // When the route has no trips in the period, the out-of-filter line already says so: the period line would repeat it.
+  const noTripsLineShown = selectedRouteOutOfFilter && doesNotRun && !runsInPeriod;
+  const periodNotice = !hideFilterNotices && selectedPeriod && !hasPeriodService && !noTripsLineShown
       ? periodServiceNotice(
       formatPeriodRangeLong(selectedPeriod.startHour, selectedPeriod.endHour),
       runsInPeriod,
