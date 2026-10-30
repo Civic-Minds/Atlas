@@ -2,7 +2,7 @@ import { FEATURES } from '../../shared/config';
 import { BASEMAP_ATTRIBUTION } from '../lib/basemap';
 import { withShareTags, SHARE_UTM_MEDIUM_IMAGE } from '../lib/analytics';
 import { slugifyForFilename } from './mapExportDetails';
-import { MAP_EXPORT_BLOCKED_MESSAGES } from '../content/noticeCopy';
+import { DEFAULT_EXPORT_TITLE, MAP_EXPORT_BLOCKED_MESSAGES } from '../content/noticeCopy';
 
 export const MAP_EXPORT_SIZES = [
   { id: 'social', label: 'Social', width: 1200, height: 630 },
@@ -217,7 +217,7 @@ function planMapExport(text: MapExportText, portrait: boolean, measure: Measure)
   const routeWidth = (label: string) => m.route.swatch[0] + m.route.gap + measure(label, ROUTE_WEIGHT, m.route.size);
   const titleWidth = (value: string) => measure(value, TITLE_WEIGHT, m.title.size);
 
-  const rawTitle = text.title.trim() || 'Transit map';
+  const rawTitle = text.title.trim() || DEFAULT_EXPORT_TITLE;
   let route: MapExportPlan['route'] = null;
   let titleMax = textWidth;
   if (text.route?.label) {
@@ -635,7 +635,7 @@ export async function shareMapExport(blob: Blob, title: string, filename: string
   if (!canShareMapExport()) throw new Error('This browser cannot share image files');
   const file = new File([blob], mapExportFilename(filename), { type: 'image/png' });
   await navigator.share({
-    title: `${title.trim() || 'Transit map'} · Atlas`,
+    title: `${title.trim() || DEFAULT_EXPORT_TITLE} · Atlas`,
     text: 'Map exported from Atlas by Civic Minds',
     files: [file],
     ...(FEATURES.shareUtm && typeof window !== 'undefined'

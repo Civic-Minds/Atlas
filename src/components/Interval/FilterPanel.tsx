@@ -20,7 +20,7 @@ import { useColorMode } from '../../hooks/useColorMode';
 import ArrowLink from '../ui/ArrowLink';
 import PanelEmpty from '../ui/PanelEmpty';
 import AgencyName from '../ui/AgencyName';
-import { HIDE_DEGRADED_FEEDS_SETTING, HIDE_ONE_OFF_SETTING, HIDE_PART_TIME_SETTING, HIDDEN_ROUTES_UNAVAILABLE, loadingText, NO_DEGRADED_FEEDS, NO_FEED_MATCHES, NO_LIMITED_ROUTES_IN_VIEW, noSearchMatchText } from '../../content/noticeCopy';
+import { COMPARE_B_PICKER_NOTE, FREQUENCY_LABEL, HIDE_DEGRADED_FEEDS_SETTING, HIDE_ONE_OFF_SETTING, HIDE_PART_TIME_SETTING, HIDDEN_ROUTES_UNAVAILABLE, loadingText, NO_DEGRADED_FEEDS, NO_FEED_MATCHES, NO_LIMITED_ROUTES_IN_VIEW, noSearchMatchText, OTHER_REGION_LABEL, SETTINGS_APPLY_TO_FREQUENCY_MAP } from '../../content/noticeCopy';
 import { compareAgencyName, compareRegion, compareRouteNumber } from '../../utils/sortCompare';
 import PanelHeader from '../ui/PanelHeader';
 
@@ -230,11 +230,11 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
       route.agencyName,
       route.region ?? '',
     ].some(value => value.toLowerCase().includes(q))
-      && (hiddenRegionFilter.size === 0 || hiddenRegionFilter.has(route.region ?? 'Other')));
+      && (hiddenRegionFilter.size === 0 || hiddenRegionFilter.has(route.region ?? OTHER_REGION_LABEL)));
   }, [listRoutes, hiddenRoutesQuery, hiddenRegionFilter]);
 
   const hiddenRouteRegions = useMemo(
-    () => [...new Set(listRoutes.map(route => route.region ?? 'Other'))].sort(compareRegion),
+    () => [...new Set(listRoutes.map(route => route.region ?? OTHER_REGION_LABEL))].sort(compareRegion),
     [listRoutes],
   );
 
@@ -585,7 +585,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
               <div className="px-5 pt-4 pb-1">
                 <p className={CARD_NOTE}>Routes shown</p>
                 {!inFrequency && (
-                  <p className="text-xs text-[var(--text-muted)] mt-1">These settings apply to the Frequency map.</p>
+                  <p className="text-xs text-[var(--text-muted)] mt-1">{SETTINGS_APPLY_TO_FREQUENCY_MAP}</p>
                 )}
               </div>
               <div className="px-5 pb-3 flex flex-col gap-4 pt-1">
@@ -626,13 +626,13 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
               {/* Mobile-only Core Filters */}
               {isFilters && maxHeadway !== undefined && (
                 <div className="block sm:hidden pb-4">
-                  <PickerSection title="Frequency" className="px-5 pt-4 pb-3"><FrequencyPicker value={maxHeadway} onChange={max => setMaxHeadway?.(max)} /></PickerSection>
+                  <PickerSection title={FREQUENCY_LABEL} className="px-5 pt-4 pb-3"><FrequencyPicker value={maxHeadway} onChange={max => setMaxHeadway?.(max)} /></PickerSection>
                   <PickerSection title="Day of service" className="px-5 pt-2 pb-3"><DayPicker fill value={day as DayType} onChange={d => setDay?.(d)} /></PickerSection>
                   <PickerSection title="Time period" className="px-5 pt-2 pb-3"><PeriodPicker includeAll value={period as TimePeriod} onChange={p => setPeriod?.(p)} /></PickerSection>
 
                   {compare?.side && (
                     <div className="px-5 pt-2 pb-3">
-                      <p className={`mb-2 flex items-center gap-1.5 ${CARD_NOTE}`}><SideBadge side="B" /> The frequency, day and time above are map A; pick map B here. Modes and agencies apply to both maps. Leave Compare from the More menu.</p>
+                      <p className={`mb-2 flex items-center gap-1.5 ${CARD_NOTE}`}><SideBadge side="B" /> {COMPARE_B_PICKER_NOTE}</p>
                       <CompareSidePicker side={compare.side} onChange={compare.onChange} />
                     </div>
                   )}

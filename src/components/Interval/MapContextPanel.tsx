@@ -11,7 +11,7 @@ import { CARD_SUMMARY } from './cardUi';
 import PanelEmpty from '../ui/PanelEmpty';
 import { compareAgencyName, compareRegion } from '../../utils/sortCompare';
 import { countOf } from '../../../shared/overflowText';
-import { NO_MATCHING_AGENCIES, NO_MATCHING_ROUTES } from '../../content/noticeCopy';
+import { NO_MATCHING_AGENCIES, NO_MATCHING_ROUTES, OTHER_REGION_LABEL } from '../../content/noticeCopy';
 
 interface MapContextPanelProps {
   agencies: MapContextAgency[];
@@ -26,7 +26,7 @@ interface MapContextPanelProps {
 
 export const MapContextPanel: React.FC<MapContextPanelProps> = ({ agencies, mode, regionBySlug, sidebarLeft, searchBarWidth, onSelectAgency, onSelectRoute }) => {
   const [regionFilter, setRegionFilter] = useState<Set<string>>(() => new Set());
-  const regionOf = useCallback((slug: string) => regionBySlug?.get(slug) ?? 'Other', [regionBySlug]);
+  const regionOf = useCallback((slug: string) => regionBySlug?.get(slug) ?? OTHER_REGION_LABEL, [regionBySlug]);
   // Only regions with routes in view get a pill, so no pill ever matches nothing.
   const regionsInView = useMemo(() => {
     if (!regionBySlug) return [];

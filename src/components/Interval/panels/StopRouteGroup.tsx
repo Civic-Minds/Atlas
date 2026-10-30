@@ -9,6 +9,7 @@ import {
 } from '../cardUi';
 import { stopRouteLineHeadway, stopRowHeadway, type StopBranch } from '../../../utils/stopRoutes';
 import type { RouteLabel } from '../../../utils/routeFacts';
+import { SHARED_STRETCH_LABEL } from '../../../content/noticeCopy';
 
 interface Props {
   shortName: string;
@@ -95,7 +96,7 @@ export default function StopRouteGroup({
           const sharedRow = sharedHeadway != null && items[i - 1]?.directionId !== item.directionId ? [
             <CardDirectionRow
               key={`${rKey}::${item.directionId}::shared`}
-              label="Shared stretch"
+              label={SHARED_STRETCH_LABEL}
               headway={sharedHeadway}
               onClick={() => onOpenRoute(rKey)}
               {...(setHoveredBranch ? {

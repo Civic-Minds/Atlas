@@ -52,7 +52,7 @@ import { isOnDemandStopShown, isOnDemandZoneShown, localDateIn, onDemandHoursCon
 import Panel from '../ui/Panel';
 import ListRow from '../ui/ListRow';
 import { drawnRouteLayers, queryDrawnRouteFeatures } from './map/drawnRoutes';
-import { approximateLocationHint, CLIPBOARD_DENIED, LOCATION_DENIED, LOCATION_TIMED_OUT, LOCATION_UNAVAILABLE, LOCATION_URL_COPIED, ON_DEMAND_AREAS_FAILED } from '../../content/noticeCopy';
+import { approximateLocationHint, CLIPBOARD_DENIED, DEFAULT_EXPORT_TITLE, LOCATION_DENIED, LOCATION_TIMED_OUT, LOCATION_UNAVAILABLE, LOCATION_URL_COPIED, ON_DEMAND_AREAS_FAILED } from '../../content/noticeCopy';
 import { FOOTER_NOTICE_MEDIA_QUERY, PHONE_MEDIA_QUERY, useMediaQuery } from '../../hooks/useMediaQuery';
 
 // Keep the Live/Deck.gl graph out of public builds entirely when Live is disabled.
@@ -303,7 +303,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   sidebarLeft,
   searchBarWidth,
   exportEnabled = false,
-  exportTitle = 'Transit map',
+  exportTitle = DEFAULT_EXPORT_TITLE,
   agencyDataLoading = false,
   agencyDataFailedCount = 0,
 }) => {

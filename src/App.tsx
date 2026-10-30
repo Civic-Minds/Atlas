@@ -52,7 +52,7 @@ const ResearchPage = React.lazy(() => import('./apps/ResearchPage'));
 import { applyOnDemand } from './lib/onDemandLoader';
 import { OnDemandStatusProvider, OnDemandViewportLoader, useOnDemandData } from './hooks/useOnDemandData';
 import type { OnDemandAvailability, OnDemandPickup, OnDemandZoneDetails } from '../shared/onDemandAvailability';
-import { loadErrorText, loadingText, MAP_ERROR_TEXT } from './content/noticeCopy';
+import { loadErrorText, loadingText, MAP_ERROR_TEXT, RETRY_LABEL } from './content/noticeCopy';
 import Panel from './components/ui/Panel';
 import PanelEmpty from './components/ui/PanelEmpty';
 
@@ -964,7 +964,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
                   .catch(() => setAgenciesLoadState('error'));
               }}
             >
-              Retry
+              {RETRY_LABEL}
             </button>
           </div>
         )}
