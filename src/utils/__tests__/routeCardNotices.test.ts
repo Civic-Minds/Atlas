@@ -60,4 +60,14 @@ describe('routeCardNotices (CIV-1200)', () => {
     expect(plain(n.filter?.text)).not.toContain(formatPeriodRangeLong(25, 26));
     expect(plain(n.period?.text)).toContain(named);
   });
+
+  it('#1186: never names another direction\'s hours; with none on the chart in the period the filter line stays (MiWay 49 midday)', () => {
+    const early = { headsign: 'A', departuresByHour: { 6: 3, 7: 3, 8: 2 }, headwayByHour: { 6: 20, 7: 20, 8: 30 } } as any;
+    const allDay = { headsign: 'B', departuresByHour: { 9: 2, 11: 2, 13: 2 }, headwayByHour: { 9: 45, 11: 45, 13: 45 } } as any;
+    const m = { ...model, hasPeriodService: false, hasPartialPeriodService: true, activeRangeDirections: [early], contract: { filterValue: 45 } } as unknown as RouteCardNoticeInput['model'];
+    const n = routeCardNotices({ ...base, directions: [early, allDay], model: m, period: 'midday', maxHeadway: 15, selectedRouteOutOfFilter: true });
+    expect(n.filter?.code).toBe('N12');
+  });
+
 });
+

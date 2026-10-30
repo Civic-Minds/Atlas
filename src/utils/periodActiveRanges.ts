@@ -3,6 +3,7 @@ import { headwayAboutMinutes } from './headwayText';
 
 type HourFields = Pick<ShapeProperties, 'headwayByHour' | 'maxGapByHour' | 'departuresByHour'>;
 
+
 function hourRuns(hourActive: (hour: number) => boolean, scanStart: number, endHour: number): Array<[number, number]> {
   const ranges: Array<[number, number]> = [];
   let runStart: number | null = null;
@@ -104,8 +105,8 @@ export function partPeriodOutside(
 
 /**
  * Whether a selected route outside the filter gets the part-period notice for this
- * period (#995). It needs some service near the period (the scan starts an hour
- * early, as the notice's range does) and, under a frequency filter, a service
+ * period (#995). It needs trips inside the period (#1186) and a headway near it (that
+ * scan starts an hour early) and, under a frequency filter, a service
  * window that stops short of the period: some hour of it with no departure. Without a
  * frequency filter, or when the route's filter value meets it, the earlier behaviour stands.
  */
@@ -117,6 +118,9 @@ export function partPeriodNoticeApplies(
   /** The route's filter value for the period; the swap applies only when it misses the frequency filter. */
   filterValue: number | null | undefined,
 ): boolean {
+  // #1186: trips inside the period, not only in the hour before it. The scan an hour early stays as well, so the
+  // departure counts never add a notice.
+  if (periodTripRanges(directions, startHour, endHour).length === 0) return false;
   if (activeHourRanges(directions, Math.max(0, startHour - 1), endHour).length === 0) return false;
   // No frequency filter, or the route meets it (hidden by span, limited, mode or agency filters
   // instead): the frequency notice would be false, so the earlier behaviour stands.

@@ -99,9 +99,10 @@ export function routeCardNotices(input: RouteCardNoticeInput): RouteCardNotices 
   // period notice says when it runs.
   let filter: CardNotice | null = null;
   if (input.selectedRouteOutOfFilter && !(model.doesNotRun && runsInPeriod)) {
-    // #1186: the hours named are the period line's, inside the period (TTC 31 overnight read "runs from 1–2 AM, but not
-    // throughout 2–6 AM" beside "runs only from 2–3 AM"). Whether the notice shows is unchanged (partPeriodNoticeApplies).
-    const activePeriodRangeText = periodRanges.map(([start, end]) => formatPeriodRangeLong(start, end)).join(', ');
+    // #1186: the hours named are the chart's, inside the period (TTC 31 overnight read "runs from 1–2 AM, but not
+    // throughout 2–6 AM" beside "runs only from 2–3 AM"). Never another direction's hours: with none of its own the notice
+    // doesn't show (MiWay 49 weekday midday read "runs every 45 min from 9 AM–3 PM, but not throughout … 9 AM–3 PM").
+    const activePeriodRangeText = chartRanges.map(([start, end]) => formatPeriodRangeLong(start, end)).join(', ');
     // #995: "but not throughout the selected period" only when service really stops short of it;
     // a route running the whole period that misses the frequency filter gets the filter notice.
     const showPartPeriodNotice = selectedPeriod != null
