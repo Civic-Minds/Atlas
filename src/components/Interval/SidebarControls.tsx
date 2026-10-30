@@ -158,7 +158,10 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     return result;
   }, [layers]);
 
-  const scrollRef = useRef<HTMLDivElement>(null);
+  const scrollRef = useRef<HTMLDivElement | null>(null);
+  // The card body as state too, so the fade's observers follow it when it remounts (#1187).
+  const [scrollBody, setScrollBody] = useState<HTMLDivElement | null>(null);
+  const setScrollRef = useCallback((el: HTMLDivElement | null) => { scrollRef.current = el; setScrollBody(el); }, []);
   const [canScrollMore, setCanScrollMore] = useState(false);
   const [stopAgencyFilter, setStopAgencyFilter] = useState<string | null>(null);
   const { recentSearches, saveRecentSearch, clearRecentSearches } = useRecentSearches(!!searchFocused);
@@ -748,6 +751,25 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
 
   const panelStop = currentStop && !searchOverlayHidesPanel(searchFocused, query);
   const panelRoute = currentRoute && !searchOverlayHidesPanel(searchFocused, query);
+
+  // The card's content arrives after it opens and its tallest size follows the footer row, so the fade is rechecked
+  // whenever either changes size (#1187: at 200% zoom the frequency rows sat below the fold with no fade).
+  useEffect(() => {
+    const el = scrollBody;
+    if (!el || typeof ResizeObserver === 'undefined') return;
+    const resize = new ResizeObserver(checkScroll);
+    const observeChildren = () => {
+      resize.disconnect();
+      resize.observe(el);
+      for (const child of Array.from(el.children)) resize.observe(child);
+      checkScroll();
+    };
+    observeChildren();
+    const mutation = new MutationObserver(observeChildren);
+    mutation.observe(el, { childList: true });
+    return () => { resize.disconnect(); mutation.disconnect(); };
+  }, [checkScroll, scrollBody]);
+
   const hasContent = !!(
     panelStop
     || panelRoute
@@ -823,7 +845,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         />
       )}
       {(panelStop || panelRoute || hasSearchResults) && <div
-        ref={scrollRef}
+        ref={setScrollRef}
         onScroll={checkScroll}
         data-report-anchor="true"
         className={sheetMode
