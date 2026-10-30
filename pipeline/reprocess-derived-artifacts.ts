@@ -41,6 +41,13 @@
  * report is written to tmp/release-diff/. Agencies with no archived zip and no
  * local recovery input are skipped.
  *
+ * Sharded (CIV-1110): processing is CPU work on one core, so the cloud rebuild runs
+ * `--shard 1/3`, `--shard 2/3` and `--shard 3/3` as separate processes (each processes every
+ * third agency and saves tmp/derived-reprocess/shard-<i>.json, with no gate and no R2 write),
+ * then `--merge-shards 3` (with --write when publishing) reads all three, runs the release diff
+ * gate once over the whole batch and writes as an unsharded run. A missing shard fails the merge.
+ * pipeline/reprocess-sharded.sh runs the whole sequence.
+ *
  * With --write, each published agency's lastFeedExpiry/lastPeekedExpiry in
  * public/data/index.json and config/agencies/<slug>.json are set from the feed
  * it was rebuilt from (refresh's placeholder cap applies), so publish and the
@@ -56,6 +63,7 @@ import { r2Get, r2GetArchiveBuffer, r2ListArchiveObjects, r2Put } from './r2.js'
 import { recordedFeedExpiry, stampReprocessedFeedExpiry } from './refreshMeta.js';
 import { bumpPublicDataVersion } from './dataVersion.js';
 import { runWithConcurrency } from './utils.js';
+import { parseMergeShardsArg, parseShardArg, readShardResults, shardResultPath, shardTargets, type ShardResult } from './reprocessShards.js';
 import {
   feedDateRefusal,
   matchesExpiredFeedPin,
@@ -175,6 +183,9 @@ const concurrency = Math.max(1, Number(process.env.REPROCESS_CONCURRENCY ?? 2));
 const includeHidden = process.argv.includes('--include-hidden');
 const skipArgs = parseSkipSlugs(process.argv.slice(2));
 const forceCountryLaunch = process.argv.includes(COUNTRY_LAUNCH_FLAG);
+// CIV-1110: --shard i/n processes every n-th target and saves its results; --merge-shards n gates and writes them.
+const shard = parseShardArg(process.argv.slice(2));
+const mergeShards = parseMergeShardsArg(process.argv.slice(2));
 
 function shouldProcess(agency: Agency): boolean {
   return isReprocessTarget(agency, { includeHidden });
@@ -389,7 +400,9 @@ async function main(): Promise<void> {
     ...skipSlugArgErrors(skipArgs.slugs, onlySlugs, knownSlugs),
   ];
   if (overrideErrors.length) throw new Error(overrideErrors.join('\n'));
-  rmSync(outputDir, { recursive: true, force: true });
+  if (shard && (writeToR2 || mergeShards)) throw new Error('--shard only processes and saves its results: it never runs with --write or --merge-shards.');
+  // Shards share the output directory and the merge reads it: only an unsharded run starts it clean.
+  if (!shard && !mergeShards) rmSync(outputDir, { recursive: true, force: true });
   mkdirSync(outputDir, { recursive: true });
 
   const rows: ReportRow[] = [];
@@ -403,15 +416,43 @@ async function main(): Promise<void> {
     return reason ? [[agency.slug, reason] as const] : [];
   }));
   const targets = selected.filter(agency => shouldProcess(agency) && !countrySkips.has(agency.slug));
-  console.log(`Reprocessing ${targets.length} ${includeHidden ? 'named (hidden included)' : 'production-visible'} agencies from archived GTFS (concurrency ${concurrency}).`);
+  if (shard) {
+    const mine = shardTargets(targets, shard);
+    console.log(`Shard ${shard.index}/${shard.count}: reprocessing ${mine.length} of ${targets.length} ${includeHidden ? 'named (hidden included)' : 'production-visible'} agencies from archived GTFS (concurrency ${concurrency}).`);
+    const shardRows = await runWithConcurrency(mine.map(agency => () => processAgency(agency)), concurrency);
+    const result: ShardResult<ReportRow, unknown, unknown> = {
+      shard,
+      slugs: mine.map(agency => agency.slug),
+      rows: shardRows,
+      gateInputs: [...gateInputs],
+      processedExpiries: [...processedExpiries],
+    };
+    writeFileSync(shardResultPath(outputDir, shard.index), JSON.stringify(result));
+    // Peak memory for sizing the shards: the OS maximum resident set size of this process (kB on Linux).
+    const peakMb = Math.round(process.resourceUsage().maxRSS / 1024);
+    const minutes = (process.uptime() / 60).toFixed(1);
+    console.log(`\nShard ${shard.index}/${shard.count} done: ${shardRows.filter(row => row.status === 'processed').length} processed in ${minutes} min, peak memory ${peakMb} MB. The merge gates and writes them.`);
+    return;
+  }
+  console.log(mergeShards
+    ? `Merging ${mergeShards} shards for ${targets.length} ${includeHidden ? 'named (hidden included)' : 'production-visible'} agencies.`
+    : `Reprocessing ${targets.length} ${includeHidden ? 'named (hidden included)' : 'production-visible'} agencies from archived GTFS (concurrency ${concurrency}).`);
 
   rows.push(...selected
     .filter(agency => !shouldProcess(agency))
     .map(agency => ({ slug: agency.slug, status: 'skipped' as const, reason: 'not production-visible or no refresh marker' })));
   rows.push(...skipRows);
   rows.push(...[...countrySkips].map(([slug, reason]) => ({ slug, status: 'skipped' as const, reason })));
-  const tasks = targets.map(agency => () => processAgency(agency));
-  rows.push(...await runWithConcurrency(tasks, concurrency));
+  if (mergeShards) {
+    const merged = readShardResults<ReportRow, { candidate: GateCandidate; live: ArtifactSummary | null }, typeof processedExpiries extends Map<string, infer V> ? V : never>(
+      outputDir, mergeShards, targets.map(agency => agency.slug));
+    for (const [slug, input] of merged.gateInputs) gateInputs.set(slug, input);
+    for (const [slug, dates] of merged.processedExpiries) processedExpiries.set(slug, dates);
+    rows.push(...merged.rows);
+  } else {
+    const tasks = targets.map(agency => () => processAgency(agency));
+    rows.push(...await runWithConcurrency(tasks, concurrency));
+  }
 
   // Fail closed: nothing reaches R2 until the whole batch has passed the gate.
   await gateProcessedRows(rows, index.agencies);
