@@ -25,18 +25,14 @@ import {
   type CardReportButtonHandle,
 } from '../cardUi';
 import { CARD_NOTE, CARD_NOTICE, CARD_NOTICE_FOOTER } from '../../../styles';
-import { FEATURES, SPARKLINE_HOURS, TIME_PERIODS, formatPeriodHourLong, formatPeriodRangeLong } from '../../../../shared/config';
+import { FEATURES, SPARKLINE_HOURS, TIME_PERIODS, formatPeriodRangeLong } from '../../../../shared/config';
 import { NO_REGULAR_SERVICE_SHORT_LABEL, routeCardDisplayHeadway } from '../../../utils/effectiveHeadway';
 import { buildRouteCardModel, matchesHoveredBranch, rowIsHovered, sharedIsHovered } from '../../../utils/routeCardRows';
-import {
-  dirIdNum,
-  routePartMeetsFilter,
-} from '../../../utils/routeCardTrunk';
-import { activeHourRanges, partPeriodNoticeApplies, partPeriodNoticeHeadway, partPeriodOutside, periodTripRanges } from '../../../utils/periodActiveRanges';
+import { routeCardNotices } from '../../../utils/routeCardNotices';
+import { dirIdNum } from '../../../utils/routeCardTrunk';
 import type { VariantFamily } from '../../../utils/routeVariants';
 import { reportDetails } from '../../../utils/reportIssue';
-import { ROUTE_DATA_QUALITY_WARNING } from '../../../../shared/routeDataQuality';
-import { BOOKING_REQUIRED_NOTICE, expiredFeedNotice, explainerFor, listingEndedNotice, listingEndHasPassed, NO_ROUTE_SHAPE_NOTICE, noServiceInPeriodText, ONLY_SHARED_SECTION_MEETS_FILTER, periodServiceNotice, ROUTE_DATA_QUALITY_WARNING_MESSAGE, selectedRouteFilterNotice, selectedRouteOutsideFilterNotice, selectedRoutePartMeetsFilterNotice, unevenServiceNotice, variantsIncludedNotice, WEEKDAY_VARIATION_NOTICE } from '../../../content/noticeCopy';
+import { explainerFor, listingEndHasPassed } from '../../../content/noticeCopy';
 import { agencyTodayYmd } from '../../../../shared/feedAvailability';
 import type { RouteLabel } from '../../../utils/routeFacts';
 
@@ -80,10 +76,6 @@ export function directionPillLabels(
   const resolved = labels.map((label, index) => label ?? generic(index));
   return resolved.map((label, index) =>
     resolved.indexOf(label) === index ? label : `${label} (${resolved.slice(0, index + 1).filter(l => l === label).length})`);
-}
-
-function activePeriodRanges(directions: ShapeProperties[], startHour: number, endHour: number): string[] {
-  return activeHourRanges(directions, startHour, endHour).map(([start, end]) => formatPeriodRangeLong(start, end));
 }
 
 export interface DirectionGroup {
@@ -174,15 +166,6 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
     && (!routeAgency.overrideNoteRoutes?.length || routeAgency.overrideNoteRoutes.includes(currentRoute.routeShortName ?? ''))
     ? routeAgency.overrideNote
     : undefined;
-  const hasRouteDataQualityWarning = currentRoute.directions.some(
-    direction => direction.routeDataQualityWarning === ROUTE_DATA_QUALITY_WARNING,
-  );
-  // Only say the map is unavailable when nothing of this route is drawn. A route with one
-  // shaped direction still shows its line, so a missing shape on the other is not news.
-  const hasNoRouteShape = currentRoute.directions.length > 0
-    && currentRoute.directions.every(direction => direction.noRouteShape);
-  const hasWeekdayTierVariation = currentRoute.directions.some(direction => direction.weekdayTierVariation);
-  const bookingRequired = currentRoute.directions.some(direction => direction.bookingRequired === true);
   // The card's rows, built once (CIV-987): every part below reads this model.
   const model = React.useMemo(() => buildRouteCardModel({
     directions: currentRoute.directions,
@@ -198,48 +181,25 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
   }), [currentRoute, directionGroups, agencyFeatures, period, maxHeadway, nightView, stableColors, hideSpan]);
   const { contract, displayGroups, showDirectionSections, doesNotRun, hasPeriodService, primaryMultiBranch, activeRangeDirections } = model;
   const selectedPeriod = period !== 'all' ? TIME_PERIODS.find(p => p.key === period) : undefined;
-  const hasPartialPeriodService = selectedPeriod != null && model.hasPartialPeriodService;
-  // Only primary patterns per direction drive the uneven banner. A rare short-turn
-  // branch (TTC 63 midday "to St Clair") can show a multi-hour max gap even when
-  // the direction's real service is even — that gap is not the rider message. When
-  // the card already has a qualifying combined trunk summary, do not contradict it
-  // with an individual branch's terminal gap (#381).
-  const unevenGap = FEATURES.unevenBanner ? model.unevenGap() : 0;
-
-  const activePeriodRangeText = selectedPeriod
-    ? activePeriodRanges(
-      activeRangeDirections,
-      Math.max(0, selectedPeriod.startHour - 1),
-      selectedPeriod.endHour,
-    ).join(', ')
-    : '';
-  // #995: "but not throughout the selected period" only when service really stops short of it;
-  // a route running the whole period that misses the frequency filter gets the filter notice.
-  const showPartPeriodNotice = selectedPeriod != null
-    && partPeriodNoticeApplies(
-      activeRangeDirections, selectedPeriod.startHour, selectedPeriod.endHour, maxHeadway, contract?.filterValue,
-    );
-  // #1186: both period lines read the same window, the hours inside the period. A route runs there when one of those
-  // hours has trips; "This route runs only from …" names those hours, and the "no scheduled trips" line shows only
-  // when there are none (TTC 504 Sunday read both: its run from 1 AM counted the hour before the period).
-  // Whether it runs reads every direction, as the period check does; the hours named are the chart's where it has some.
-  const tripRangesOf = (directions: ShapeProperties[]) => (selectedPeriod ? periodTripRanges(directions, selectedPeriod.startHour, selectedPeriod.endHour) : []);
-  const allDirectionRanges = tripRangesOf(currentRoute.directions);
-  const chartRanges = tripRangesOf(activeRangeDirections);
-  const periodRanges = chartRanges.length > 0 ? chartRanges : allDirectionRanges;
-  const runsInPeriod = hasPartialPeriodService && allDirectionRanges.length > 0;
-  // When the route has no trips in the period, the out-of-filter line already says so: the period line would repeat it.
-  const noTripsLineShown = selectedRouteOutOfFilter && doesNotRun && !runsInPeriod;
-  const periodNotice = !hideFilterNotices && selectedPeriod && !hasPeriodService && !noTripsLineShown
-      ? periodServiceNotice(
-      formatPeriodRangeLong(selectedPeriod.startHour, selectedPeriod.endHour),
-      runsInPeriod,
-      periodRanges.map(([start, end]) => formatPeriodRangeLong(start, end)).join(', '),
-    )
-    : null;
-  const unevenNotice = !hideFilterNotices && selectedPeriod && hasPeriodService && unevenGap > 0
-    ? unevenServiceNotice(unevenGap)
-    : null;
+  // Every notice on the card, decided in one place (CIV-1200).
+  const notices = routeCardNotices({
+    directions: currentRoute.directions,
+    model,
+    nightView,
+    agencyFeatures,
+    period,
+    maxHeadway,
+    selectedRouteOutOfFilter,
+    hideFilterNotices,
+    unevenEnabled: FEATURES.unevenBanner,
+    variantShortNames: FEATURES.routeVariants && variantFamily ? variantFamily.members.map(m => m.shortName) : null,
+    agency: routeAgency ? { name: routeAgency.name, feedReviewStatus: routeAgency.feedReviewStatus, overrideNote: routeAgency.overrideNote, manualFeedSource: routeAgency.manualFeedSource } : undefined,
+    routeOverrideNote,
+    routeIsStale,
+    expDateStr,
+    listingEndedDate,
+    listingEnded,
+  });
 
   const reportServiceLines = model.reportServiceLines;
   const reportRawMetrics = currentRoute.directions.map((direction, index) => {
@@ -328,9 +288,9 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
       {patternLabel && (
         <p className={`${CARD_NOTE} -mt-1 mb-3 truncate`} data-testid="route-pattern-label">{patternLabel}</p>
       )}
-      {FEATURES.routeVariants && variantFamily && (
+      {notices.variants && (
         <p className={`${CARD_NOTICE} -mt-1 mb-3`}>
-          {variantsIncludedNotice(variantFamily.members.map(m => m.shortName).join(', '))}
+          {notices.variants.text}
         </p>
       )}
       {!nightView && (() => {
@@ -411,39 +371,9 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
         );
       })()}
       <SidebarCardList>
-        {/* #1186: a route with trips inside the period never also reads "no scheduled trips" there; the period notice says when it runs. */}
-        {selectedRouteOutOfFilter && !(doesNotRun && runsInPeriod) && (
+        {notices.filter && (
           <div className={CARD_NOTICE_FOOTER}>
-            <p className={CARD_NOTICE}>
-              {doesNotRun
-                ? selectedRouteOutsideFilterNotice(Infinity, selectedPeriod ? formatPeriodRangeLong(selectedPeriod.startHour, selectedPeriod.endHour) : null)
-                : selectedPeriod && activePeriodRangeText && showPartPeriodNotice
-                ? selectedRouteFilterNotice({
-                  // CIV-1069: the notice names the rows' own value (the slowest row), not the route's filter value,
-                  // which also counts the wait before the first trip; CIV-975's rule still checks it against every row.
-                  headway: (() => {
-                    const rowHeadways = model.rowHeadways;
-                    return partPeriodNoticeHeadway(rowHeadways.length > 0 ? Math.max(...rowHeadways) : null, rowHeadways);
-                  })(),
-                  ...(() => {
-                    // N13 (Ryan): name what the rest of the period has, from the card's own hourly data.
-                    const split = partPeriodOutside(activeRangeDirections, selectedPeriod.startHour, selectedPeriod.endHour);
-                    return split
-                      ? {
-                        activeRange: formatPeriodRangeLong(split.active[0], split.active[1]),
-                        outside: split.parts.map(part => (part.at === 'start'
-                          ? { service: part.service, range: formatPeriodRangeLong(part.hours[0], part.hours[1]) }
-                          : { service: part.service, after: formatPeriodHourLong(part.hours[0]) })),
-                      }
-                      : { activeRange: activePeriodRangeText };
-                  })(),
-                  periodRange: formatPeriodRangeLong(selectedPeriod.startHour, selectedPeriod.endHour),
-                })
-                // CIV-514: part of the route qualifies, as the map's shared-stretch overlay shows; else the general note.
-                : routePartMeetsFilter(agencyFeatures, currentRoute.directions, period, maxHeadway)
-                ? selectedRoutePartMeetsFilterNotice(maxHeadway)
-                : selectedRouteOutsideFilterNotice(maxHeadway, selectedPeriod ? formatPeriodRangeLong(selectedPeriod.startHour, selectedPeriod.endHour) : null)}
-            </p>
+            <p className={CARD_NOTICE}>{notices.filter.text}</p>
           </div>
         )}
         {(() => {
@@ -466,18 +396,14 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                 {showDirectionSections && group.boundLabel && (
                   <>
                     <CardSectionLabel className="mb-0">{group.boundLabel}</CardSectionLabel>
-                    {!group.hasVisibleRows && selectedPeriod && !nightView && (
-                      <p className={`${CARD_NOTE} mt-2 mb-2`}>
-                        {noServiceInPeriodText(selectedPeriod.label)}
-                      </p>
-                    )}
+                    {notices.directions.filter(n => n.dirId === group.dirId && n.kind === 'no-service').map(n => (
+                      <p key={n.kind} className={`${CARD_NOTE} mt-2 mb-2`}>{n.text}</p>
+                    ))}
                   </>
                 )}
-                {group.onlySharedPasses && !nightView && (
-                  <p className={`${CARD_NOTE} mt-2 mb-2`}>
-                    {ONLY_SHARED_SECTION_MEETS_FILTER}
-                  </p>
-                )}
+                {notices.directions.filter(n => n.dirId === group.dirId && n.kind === 'only-shared').map(n => (
+                  <p key={n.kind} className={`${CARD_NOTE} mt-2 mb-2`}>{n.text}</p>
+                ))}
                 {group.shared && (
                   <>
                     <CardDirectionRow
@@ -552,81 +478,81 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
             );
           });
         })()}
-        {(periodNotice || unevenNotice) && (
+        {notices.period && (
           <div className={`${CARD_NOTICE_FOOTER} space-y-1`}>
-            <CardHelpNotice message={(periodNotice ?? unevenNotice) as string} />
+            <CardHelpNotice message={notices.period.text} />
           </div>
         )}
-        {bookingRequired && (
+        {notices.booking && (
           <div className={`${CARD_NOTICE_FOOTER} space-y-1`}>
-            <CardHelpNotice message={BOOKING_REQUIRED_NOTICE} />
+            <CardHelpNotice message={notices.booking.text} />
           </div>
         )}
-        {(routeIsStale || listingEndedDate || routeAgency?.feedReviewStatus === 'review' || routeOverrideNote || hasRouteDataQualityWarning || hasNoRouteShape || hasWeekdayTierVariation) && onInfoOpen && (
+        {notices.showFooter && onInfoOpen && (
           <div className={`${CARD_NOTICE_FOOTER} space-y-1`}>
-            {hasNoRouteShape && (
-              <CardHelpNotice
-                message={NO_ROUTE_SHAPE_NOTICE}
-                onLearnMore={() => onInfoOpen('about', {
-                  helpTopic: explainerFor('N7'),
-                  agencyName: routeAgency?.name,
-                })}
-              />
-            )}
-            {hasRouteDataQualityWarning && (
-              <CardHelpNotice
-                message={ROUTE_DATA_QUALITY_WARNING_MESSAGE}
-                onLearnMore={() => onInfoOpen('about', {
-                  helpTopic: explainerFor('N6'),
-                  agencyName: routeAgency?.name,
-                })}
-              />
-            )}
-            {listingEndedDate && (
-              // N25 (CIV-1055): most of the agency's routes stopped being listed; the card shows their last listed week.
-              <CardHelpNotice
-                message={listingEndedNotice(listingEndedDate, listingEnded)}
-                onLearnMore={() => onInfoOpen('about', {
-                  helpTopic: explainerFor('N25'),
-                  agencyName: routeAgency?.name,
-                  listingEndedDate,
-                  listingEnded,
-                  lastRefreshedAt: routeAgency?.lastRefreshedAt ?? undefined,
-                  lastFeedCheckAt: routeAgency?.lastFeedCheckAt ?? undefined,
-                  expiredFeedCheckCount: routeAgency?.expiredFeedCheckCount,
-                  expiredFeedCheckSince: routeAgency?.expiredFeedCheckSince ?? undefined,
-                  websiteUrl: routeAgency?.websiteUrl ?? undefined,
-                })}
-              />
-            )}
-            {routeIsStale && (
-              <CardHelpNotice
-                message={expiredFeedNotice(routeAgency?.name ?? 'This agency', expDateStr, routeAgency?.manualFeedSource)}
-                onLearnMore={() => onInfoOpen('about', {
-                  helpTopic: explainerFor(routeAgency?.manualFeedSource ? 'N3' : 'N2'),
-                  agencyName: routeAgency?.name,
-                  expDateStr: expDateStr || undefined,
-                  manualFeedSource: routeAgency?.manualFeedSource,
-                  lastRefreshedAt: routeAgency?.lastRefreshedAt ?? undefined,
-                  lastFeedCheckAt: routeAgency?.lastFeedCheckAt ?? undefined,
-                  expiredFeedCheckCount: routeAgency?.expiredFeedCheckCount,
-                  expiredFeedCheckSince: routeAgency?.expiredFeedCheckSince ?? undefined,
-                  websiteUrl: routeAgency?.websiteUrl ?? undefined,
-                })}
-              />
-            )}
-            {routeAgency?.feedReviewStatus === 'review' && !routeAgency.overrideNote && (
-              <NewScheduleDataNotice on="route" agency={routeAgency} onInfoOpen={onInfoOpen} />
-            )}
-            {routeAgency && routeOverrideNote && (
-              <CorrectedDataNotice on="route" agency={routeAgency} overrideNote={routeOverrideNote} onInfoOpen={onInfoOpen} />
-            )}
-            {hasWeekdayTierVariation && (
-              <CardHelpNotice
-                message={WEEKDAY_VARIATION_NOTICE}
-                onLearnMore={() => onInfoOpen('about', { helpTopic: explainerFor('N1'), agencyName: routeAgency?.name, websiteUrl: routeAgency?.websiteUrl ?? undefined })}
-              />
-            )}
+            {notices.footer.map(notice => {
+              switch (notice.code) {
+                case 'N4':
+                  return <NewScheduleDataNotice key={notice.code} on="route" agency={routeAgency!} onInfoOpen={onInfoOpen} />;
+                case 'N5':
+                  return <CorrectedDataNotice key={notice.code} on="route" agency={routeAgency!} overrideNote={routeOverrideNote!} onInfoOpen={onInfoOpen} />;
+                case 'N25':
+                  // N25 (CIV-1055): most of the agency's routes stopped being listed; the card shows their last listed week.
+                  return (
+                    <CardHelpNotice
+                      key={notice.code}
+                      message={notice.text!}
+                      onLearnMore={() => onInfoOpen('about', {
+                        helpTopic: explainerFor('N25'),
+                        agencyName: routeAgency?.name,
+                        listingEndedDate,
+                        listingEnded,
+                        lastRefreshedAt: routeAgency?.lastRefreshedAt ?? undefined,
+                        lastFeedCheckAt: routeAgency?.lastFeedCheckAt ?? undefined,
+                        expiredFeedCheckCount: routeAgency?.expiredFeedCheckCount,
+                        expiredFeedCheckSince: routeAgency?.expiredFeedCheckSince ?? undefined,
+                        websiteUrl: routeAgency?.websiteUrl ?? undefined,
+                      })}
+                    />
+                  );
+                case 'N2':
+                case 'N3':
+                  return (
+                    <CardHelpNotice
+                      key={notice.code}
+                      message={notice.text!}
+                      onLearnMore={() => onInfoOpen('about', {
+                        helpTopic: explainerFor(notice.code),
+                        agencyName: routeAgency?.name,
+                        expDateStr: expDateStr || undefined,
+                        manualFeedSource: routeAgency?.manualFeedSource,
+                        lastRefreshedAt: routeAgency?.lastRefreshedAt ?? undefined,
+                        lastFeedCheckAt: routeAgency?.lastFeedCheckAt ?? undefined,
+                        expiredFeedCheckCount: routeAgency?.expiredFeedCheckCount,
+                        expiredFeedCheckSince: routeAgency?.expiredFeedCheckSince ?? undefined,
+                        websiteUrl: routeAgency?.websiteUrl ?? undefined,
+                      })}
+                    />
+                  );
+                case 'N1':
+                  return (
+                    <CardHelpNotice
+                      key={notice.code}
+                      message={notice.text!}
+                      onLearnMore={() => onInfoOpen('about', { helpTopic: explainerFor('N1'), agencyName: routeAgency?.name, websiteUrl: routeAgency?.websiteUrl ?? undefined })}
+                    />
+                  );
+                default:
+                  // N6 and N7: a Learn more naming the agency.
+                  return (
+                    <CardHelpNotice
+                      key={notice.code}
+                      message={notice.text!}
+                      onLearnMore={() => onInfoOpen('about', { helpTopic: explainerFor(notice.code), agencyName: routeAgency?.name })}
+                    />
+                  );
+              }
+            })}
           </div>
         )}
       </SidebarCardList>
