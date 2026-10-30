@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { boardableDrawnStops, drawnStopsBeforeTerminal } from '../drawnStops';
+import { boardableDrawnStops, drawnStopsBeforeTerminal, headlineReadingStop } from '../drawnStops';
 
 // CIV-994: the drawn-stop rules process-core applies, in one place.
 describe('drawn stops that count', () => {
@@ -23,5 +23,20 @@ describe('drawn stops that count', () => {
 
   it('boardable: every drop-off-only stop is left out (tier grading, #879)', () => {
     expect(boardableDrawnStops(['a', 'b', 'c'], new Set(['b', 'c']))).toEqual(['a']);
+  });
+});
+
+describe('headlineReadingStop (CIV-1157)', () => {
+  it('reads the last stop when a rider can board there', () => {
+    expect(headlineReadingStop(['a', 'b', 'c'], new Set())).toBe('c');
+    expect(headlineReadingStop(['a', 'b', 'c'], new Set(['b']))).toBe('c');
+  });
+  it('steps back from a drop-off-only end to the nearest boarding stop (CapMetro 985 southbound)', () => {
+    expect(headlineReadingStop(['a', 'b', 'c'], new Set(['c']))).toBe('b');
+    expect(headlineReadingStop(['a', 'b', 'c', 'd'], new Set(['c', 'd']))).toBe('b');
+  });
+  it('keeps the end when no drawn stop is boardable, and null on no stops', () => {
+    expect(headlineReadingStop(['a', 'b'], new Set(['a', 'b']))).toBe('b');
+    expect(headlineReadingStop([], new Set())).toBeNull();
   });
 });

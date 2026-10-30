@@ -19,3 +19,15 @@ export function drawnStopsBeforeTerminal(drawn: readonly string[], dropOffOnly: 
   while (end > 0 && dropOffOnly.has(drawn[end - 1]) && drawn.slice(end).every(stopId => dropOffOnly.has(stopId) || stopId === drawn[drawn.length - 1])) end--;
   return drawn.slice(0, Math.max(end, 0));
 }
+
+/**
+ * The stop the headline reads (Step 4): the last drawn stop, unless that stop is drop-off only (#879), then the nearest
+ * stop before it where a rider can board (CIV-1157). A drop-off-only end records arrivals, which bunch by running time:
+ * CapMetro 985 southbound read 28 at its end where its trips leave every 30. Null when no drawn stop is boardable.
+ */
+export function headlineReadingStop(drawn: readonly string[], dropOffOnly: ReadonlySet<string>): string | null {
+  const last = drawn.at(-1);
+  if (last == null || !dropOffOnly.has(last)) return last ?? null;
+  for (let i = drawn.length - 2; i >= 0; i--) if (!dropOffOnly.has(drawn[i])) return drawn[i];
+  return last;
+}
