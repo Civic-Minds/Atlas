@@ -35,6 +35,8 @@ export const MAP_OVERLAY_EDGES = {
   footerRight: 'right-14',
   /** History's year scrubber, in the bottom-right corner beside the controls. */
   scrubberRight: 'right-14',
+  /** Compare (sm and up): the footer row stops the same 1.5rem short of the divider, 2px right of centre (CIV-1137). */
+  compareFooterRight: 'right-[calc(50%+2px+1.5rem)]',
   controlsRight: 'right-3 max-sm:right-6',
   /** The notice pill stays clear of the controls (and, on sm and up, of the counts). */
   noticeSides: 'left-6 right-24 sm:right-56',
@@ -62,6 +64,9 @@ export const MAP_FOOTER_ROW_SLOT = `max-sm:contents absolute ${R.edge} ${E.left}
 export const MAP_FOOTER_RIGHT_SLOT = 'max-sm:contents ml-auto shrink-0 flex items-end gap-2';
 /** 768 and up: the on-demand failed notice in the footer row, beside the agencies loading pill (CIV-1057). */
 export const MAP_FOOTER_NOTICE_SLOT = 'flex shrink-0 pointer-events-none';
+/** Compare: the same row over the left map only, so its pills and the analytics prompt wrap upward instead of running
+ *  across the divider (CIV-1137). */
+export const MAP_FOOTER_ROW_COMPARE_SLOT = `max-sm:contents absolute ${R.edge} ${E.left} ${E.compareFooterRight} flex items-end justify-between gap-2 pointer-events-none`;
 /** Phones: the About, What's new and Feedback pills along the bottom edge. */
 export const MAP_FOOTER_PILLS_PHONE_SLOT = `max-sm:absolute max-sm:bottom-6 ${E.phoneLeft} max-sm:max-w-[calc(100vw-3rem)]`;
 /** Phones: the loading and count pills, one row above the footer pills. */
@@ -81,6 +86,14 @@ export const MAP_CONTROLS_SLOT = `absolute ${R.edge} ${E.controlsRight}`;
  *  above its measured height (--map-footer-h, from mapFooterStyle on the map app's root). */
 export const MAP_NOTICE_SLOT = `absolute ${R.notice} ${E.noticeSides} flex justify-center`;
 export const MAP_NOTICE_SLOT_RAISED = `absolute ${R.noticeRaised} ${E.noticeSides} flex justify-center`;
+/** Sidebar cards on sm and up stop 7px above the footer row however far it wraps (CIV-1137): 56px top, the row's
+ *  1.5rem inset and its measured height (--map-footer-h, published on <html>, so the cards outside the map app see it). */
+export const SIDEBAR_CARD_BOTTOM_LIMIT = 'max-h-[calc(100vh-80px-var(--map-footer-h,2rem))]';
+/** Phones: while the analytics prompt shows under the header (MAP_CONSENT_SLOT, 68px down, 32px tall), the sidebar cards
+ *  start the same 8px below it instead of under the search bar, so it never covers a card's back link (CIV-1137). */
+export const SIDEBAR_CARD_TOP_BELOW_CONSENT = 'max-sm:[html[data-consent-prompt]_&]:top-[108px]';
+/** ...and stop at the same place above the bottom pills, 50px shorter. */
+export const SIDEBAR_CARD_MAX_H_BELOW_CONSENT = 'max-sm:[html[data-consent-prompt]_&]:max-h-[calc(100dvh-168px)]';
 /** The footer row's height before it is measured: one row of pills (h-8). */
 export const MAP_FOOTER_HEIGHT_FALLBACK = '2rem';
 /** Sets --map-footer-h, the footer row's measured height in px, for the notice slots; the fallback until measured. */

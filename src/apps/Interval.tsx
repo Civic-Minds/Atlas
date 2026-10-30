@@ -20,7 +20,7 @@ import { MapErrorsPanel, MapErrorsPill } from '../components/Interval/MapErrorsP
 import { FilterPanel } from '../components/Interval/FilterPanel';
 import { FilterChips, getNowPeriodForTimezone } from '../components/Interval/FilterChips';
 import { AgencyCard } from '../components/Interval/AgencyCard';
-import { MAP_FOOTER_ROW_SLOT, MAP_FOOTER_RIGHT_SLOT, MAP_FOOTER_NOTICE_SLOT, MAP_COUNTS_PHONE_SLOT, mapFooterStyle, TRANSITION_BASE, TRANSITION_SLOW, Z_PANEL, MAP_BADGE, MAP_BADGE_COUNT, MAP_BADGE_LABEL, SIDEBAR_CARD_TOP, SIDEBAR_CARD_TOP_DESKTOP, Z_PANEL_RAISED } from '../styles';
+import { MAP_FOOTER_ROW_SLOT, MAP_FOOTER_ROW_COMPARE_SLOT, MAP_FOOTER_RIGHT_SLOT, MAP_FOOTER_NOTICE_SLOT, MAP_COUNTS_PHONE_SLOT, mapFooterStyle, TRANSITION_BASE, TRANSITION_SLOW, Z_PANEL, MAP_BADGE, MAP_BADGE_COUNT, MAP_BADGE_LABEL, SIDEBAR_CARD_TOP, SIDEBAR_CARD_TOP_DESKTOP, Z_PANEL_RAISED } from '../styles';
 import type { Agency } from '../App';
 import type { OpenInfoFn } from '../components/InfoPanel';
 import { mapViewKind, viewAllowsOnDemand, viewShowsOnDemand } from '../../shared/viewLayers';
@@ -1253,7 +1253,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
           (and the analytics prompt, their last pill) wrap upward before they reach the counts (#999).
           Phones drop the wrapper (contents) and keep each group's own position. No z-index here, so
           the pills keep their own layer and the What's new panel still opens above the header. */}
-      <div ref={footerRowRef} className={MAP_FOOTER_ROW_SLOT}>
+      <div ref={footerRowRef} className={compareActive ? MAP_FOOTER_ROW_COMPARE_SLOT : MAP_FOOTER_ROW_SLOT}>
       <MapAttribution />
 
       {/* The notice, then the counts: one group at the row's right end, so the notice sits beside the loading pill.

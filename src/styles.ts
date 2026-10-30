@@ -185,18 +185,19 @@ export const Z_PANEL_RAISED = 'z-[1001]'; // One step above the panels: Compare'
  *  The desktop step is its own token for a phone layout that starts somewhere else (Compare's lower map). */
 // Map overlay slots: one layout table for every fixed overlay over the map (CIV-1136), kept in mapOverlayLayout.ts.
 export {
-  MAP_TOP_BAR_SLOT, MAP_FOOTER_ROW_SLOT, MAP_FOOTER_RIGHT_SLOT, MAP_FOOTER_NOTICE_SLOT, MAP_FOOTER_PILLS_PHONE_SLOT, MAP_COUNTS_PHONE_SLOT, MAP_LEGEND_SLOT, MAP_CONTROLS_SLOT,
+  MAP_TOP_BAR_SLOT, MAP_FOOTER_ROW_SLOT, MAP_FOOTER_ROW_COMPARE_SLOT, MAP_FOOTER_RIGHT_SLOT, MAP_FOOTER_NOTICE_SLOT, MAP_FOOTER_PILLS_PHONE_SLOT, MAP_COUNTS_PHONE_SLOT, MAP_LEGEND_SLOT, MAP_CONTROLS_SLOT,
   MAP_NOTICE_SLOT, MAP_NOTICE_SLOT_RAISED, MAP_FOOTER_HEIGHT_FALLBACK, mapFooterStyle, MAP_CONSENT_SLOT, MAP_STATUS_SLOT,
 } from './mapOverlayLayout';
+import { SIDEBAR_CARD_BOTTOM_LIMIT, SIDEBAR_CARD_TOP_BELOW_CONSENT, SIDEBAR_CARD_MAX_H_BELOW_CONSENT } from './mapOverlayLayout';
 
 export const SIDEBAR_CARD_TOP_DESKTOP = 'sm:top-[56px]';
 export const SIDEBAR_CARD_TOP = `top-[58px] ${SIDEBAR_CARD_TOP_DESKTOP}`;
 /** Every sidebar card's placement: SIDEBAR_CARD_TOP plus its left edge. */
-export const SIDEBAR_CARD_SLOT = `absolute ${SIDEBAR_CARD_TOP} left-6 sm:left-[var(--sidebar-left)]`;
+export const SIDEBAR_CARD_SLOT = `absolute ${SIDEBAR_CARD_TOP} ${SIDEBAR_CARD_TOP_BELOW_CONSENT} left-6 sm:left-[var(--sidebar-left)]`;
 export const SIDEBAR_CARD = `${SIDEBAR_CARD_SLOT} ${Z_PANEL}`;
-/** Every sidebar card's tallest size: it stops 7px above the bottom pills (measured: their top is 49px up
- *  on desktop, 53px on phones) and its list scrolls inside. */
-export const SIDEBAR_CARD_MAX_H = 'max-h-[calc(100vh-112px)] max-sm:max-h-[calc(100dvh-118px)]';
+/** Every sidebar card's tallest size: it stops above the bottom pills, on sm and up however far the footer row wraps,
+ *  and its list scrolls inside. */
+export const SIDEBAR_CARD_MAX_H = `${SIDEBAR_CARD_BOTTOM_LIMIT} max-sm:max-h-[calc(100dvh-118px)] ${SIDEBAR_CARD_MAX_H_BELOW_CONSENT}`;
 
 /**
  * The one sidebar card frame (the map's route card, Compare's second card, History's route card; CIV-1117 row 15): the
