@@ -3824,6 +3824,12 @@ export async function processGtfsBuffer(
     onStatus?.(`Booking required: ${bookedRouteIds.size} route(s)`);
   }
 
+  // CIV-224 debug (logging only, not for merge): every drawn line's headline and period values, to diff two runs.
+  for (const f of mainFeatures) {
+    const p = f.properties as Record<string, unknown> | null;
+    if (!p || p.stopId != null || !p.routeId) continue;
+    console.log('CIV224\t' + JSON.stringify({ a: options?.slug, r: p.routeShortName || p.routeId, d: p.directionId, day: p.day, h: p.headsign, v: p.routeVariant ?? null, hw: p.headway, t: p.tier, hbp: p.headwayByPeriod, mg: p.maxGapByPeriod }));
+  }
   // Build trips lookup for live vehicle enrichment (agencies whose GTFS-RT omits directionId/headsign)
   const tripsLookup: Record<string, { d: number; h: string | null }> = {};
   for (const trip of gtfs.trips ?? []) {
