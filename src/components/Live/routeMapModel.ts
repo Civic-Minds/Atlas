@@ -6,7 +6,7 @@
  * analysis has them (street lines), else straight between stops.
  */
 import type { DashboardBand, LiveV3 } from '../../../shared/liveDashboard';
-import { titleCase } from '../../utils/format';
+import { nameCase } from '../../utils/format';
 import { shortStopName } from './routeStripModel';
 
 export type MapMeasure = 'late' | 'runTime' | 'extraWait' | 'bunching';
@@ -71,14 +71,14 @@ export function routeMapModel(v3: LiveV3, directionId: number, band: DashboardBa
 
   const stops: MapStop[] = stopsHere.filter(s => s.lonLat && (mainOrder.includes(s.stopId) || v3.patterns?.[String(directionId)]?.some(p => p.stops.some(x => x.stopId === s.stopId)))).map(s => {
     const value = measure === 'runTime' ? null : stopValue(s.stopId);
-    return { stopId: s.stopId, name: titleCase(s.name), lonLat: s.lonLat as [number, number], value, step: mapStep(measure, value), n: s.n };
+    return { stopId: s.stopId, name: nameCase(s.name, 'title'), lonLat: s.lonLat as [number, number], value, step: mapStep(measure, value), n: s.n };
   });
   const segments: MapSegment[] = [];
   for (const [from, to] of stopPairs(v3, directionId, mainOrder)) {
     const a = byId.get(from), b = byId.get(to);
     if (!a?.lonLat || !b?.lonLat) continue;
     const value = segmentValue(from, to);
-    segments.push({ label: `${shortStopName(titleCase(a.name))} to ${shortStopName(titleCase(b.name))}`, fromStopId: from, toStopId: to, coordinates: lines.get(key(from, to)) ?? [a.lonLat as [number, number], b.lonLat as [number, number]], value, step: mapStep(measure, value) });
+    segments.push({ label: `${shortStopName(nameCase(a.name, 'title'))} to ${shortStopName(nameCase(b.name, 'title'))}`, fromStopId: from, toStopId: to, coordinates: lines.get(key(from, to)) ?? [a.lonLat as [number, number], b.lonLat as [number, number]], value, step: mapStep(measure, value) });
   }
   return { directionId, segments, stops };
 }
