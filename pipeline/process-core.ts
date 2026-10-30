@@ -29,7 +29,7 @@ import { DAY_TYPES, WEEKDAYS, type DayName, type DayType } from '../types/gtfs.j
 import { ALL_DAYS } from '../shared/dayTypes.js';
 import { buildStopRoutePeriodBits } from './stopRoutePeriods.js';
 import { expandFrequencyWindow, expandTripFrequencyWindows, isSingleTripFrequencyWindow, parseFrequencyWindow, SINGLE_TRIP_WINDOW_MAX_DEPARTURES, SINGLE_TRIP_WINDOW_SPAN_TOLERANCE_MIN, t2m, type FrequencyWindow } from './transit-utils.js';
-import { adaptiveMedianHeadwayInWindow, computeHourMaxGaps, computeHourDepartureCounts, computePeriodHeadways, computePeriodHeadwayRanges, computePeriodMaxGaps, computePeriodSustained, computeResearchFrequentService, forCrossMidnightWindow, HEADLINE_MIN_DEPARTURES, HEADLINE_WINDOWS, headlineWindowValue, hasSustainedNightService, headsignOverlapMinHeadway, headwayToTier, headwayToTierOn, isSparseOvernightWindow, isThinAllDayTerminalSample, isUnevenTwoGapMiddayTerminalSample, medianHeadwayInWindow, MIN_ALL_DAY_TERMINAL_DEPARTURES, nightServiceDepartureTimes, NIGHT_SERVICE_WINDOW_END_MIN, periodHeadwayInWindow, RAIL_TIER_WINDOW, resolveTerminalHeadline, sparseOvernightHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
+import { adaptiveMedianHeadwayInWindow, computeHourMaxGaps, computeHourDepartureCounts, computePeriodHeadways, computePeriodHeadwayRanges, computePeriodMaxGaps, computePeriodSustained, computeResearchFrequentService, isUnevenPeriod, forCrossMidnightWindow, HEADLINE_MIN_DEPARTURES, HEADLINE_WINDOWS, headlineWindowValue, hasSustainedNightService, headsignOverlapMinHeadway, headwayToTier, headwayToTierOn, isSparseOvernightWindow, isThinAllDayTerminalSample, isUnevenTwoGapMiddayTerminalSample, medianHeadwayInWindow, MIN_ALL_DAY_TERMINAL_DEPARTURES, nightServiceDepartureTimes, NIGHT_SERVICE_WINDOW_END_MIN, periodHeadwayInWindow, RAIL_TIER_WINDOW, resolveTerminalHeadline, sparseOvernightHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
 import { computeRouteBaseFares, detectBusSubType } from './route-metadata.js';
 import { buildStopsMeta } from './stopsMeta.js';
 import { haversineDistance } from './utils.js';
@@ -3141,6 +3141,11 @@ export async function processGtfsBuffer(
           // midday departures. Unsustained (CTA 108: no service 8:45 to 2:00) reads the next window, PM peak then the
           // sustained 6-22h value, as Step 1 does for a list without midday service.
           originMiddaySustained: computePeriodSustained([...originTimes]).midday ?? null,
+          // CIV-1087 attempt 3: the settled #1142 uneven check on the start's midday departures, around the start's own
+          // midday value. A period that steps up partway (Brampton 501 WB: every 11-12 to 1:30, then every 5) is uneven.
+          originMiddayUneven: origin?.terminalMiddayHw != null
+            ? isUnevenPeriod(originTimes, PERIODS.midday.start, PERIODS.midday.end, origin.terminalMiddayHw)
+            : null,
           originGuardedHw: computePeriodSustained([...originTimes]).midday === false
             ? (medianHeadwayInWindow([...originTimes], HEADLINE_WINDOWS.pmPeak.start, HEADLINE_WINDOWS.pmPeak.end, HEADLINE_MIN_DEPARTURES, true)
               ?? sustainedMedianHeadwayInWindow([...originTimes].sort((a, b) => a - b), HEADLINE_WINDOWS.allDay.start, HEADLINE_WINDOWS.allDay.end, HEADLINE_MIN_DEPARTURES, undefined, true))
