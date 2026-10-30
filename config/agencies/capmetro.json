@@ -10,6 +10,9 @@
   "feedUrl": "https://files.mobilitydatabase.org/mdb-150/latest.zip",
   "lastFeedExpiry": "20270109",
   "lastFeedVersion": "261007_1345",
+  "mergeEquivalentShapeVariantsRouteTypes": [
+    "3"
+  ],
   "region": "Texas",
   "lastRefreshedAt": "2026-10-12",
   "cities": [

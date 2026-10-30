@@ -30,8 +30,8 @@ import type { HistoryAgencyList } from '../shared/historyEligibility';
 import { preloadHistory } from './utils/historyConfig';
 import { historyAgencyToOpen, historyRouteSearchPlaceholder } from './utils/historyOpen';
 import { useHistoryRouteLink } from './hooks/useHistoryRouteLink';
-import { HISTORY_VIEW_ALL, type HistoryView } from './utils/historyYearMap';
-import { encodeHistoryView, parseHistoryView } from './utils/historyViewUrl';
+import { type HistoryView } from './utils/historyYearMap';
+import { encodeHistoryView, historyDefaultView, parseHistoryView } from './utils/historyViewUrl';
 import historyAgencyList from '../shared/data/history-agencies.json';
 import ErrorBoundary from './components/ErrorBoundary';
 import LiveOffNotice from './components/LiveOffNotice';
@@ -69,6 +69,8 @@ export interface Agency {
   /** Optional service-area label for regional agencies; avoids presenting one stop-density city as the agency's home. */
   displayArea?: string;
   lastFeedExpiry?: string | null;
+  /** CIV-1011: the date most routes stopped being listed with nothing replacing them (YYYYMMDD); the agency shows Ryan's notice. Absent otherwise. */
+  listingEndedOn?: string | null;
   /** Expiry/version/archive key per supplemental feed (e.g. separate rail GTFS), in supplementalFeedUrls order. */
   lastSupplementalFeeds?: SupplementalFeedMeta[];
   lastRefreshedAt?: string | null;
@@ -246,6 +248,8 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
       topic: opts.helpTopic,
       agencyName: opts.agencyName,
       expDateStr: opts.expDateStr,
+      listingEndedDate: opts.listingEndedDate,
+      listingEnded: opts.listingEnded,
       manualFeedSource: opts.manualFeedSource,
       lastRefreshedAt: opts.lastRefreshedAt,
       lastFeedCheckAt: opts.lastFeedCheckAt,
@@ -412,10 +416,10 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   const [historyDismissKey, setHistoryDismissKey] = useState(0);
   const handleMapDismiss = useCallback(() => setHistoryDismissKey(k => k + 1), []);
   const [historyPanelOpen, setHistoryPanelOpen] = useState(false);
-  // History's own Frequency and Time (CIV-389, CIV-392): start at All and All day, separate from the map's.
-  // Read from the link's h/p (the map's params) when the app opens on History.
+  // History's own Frequency and Time (CIV-389, CIV-392), separate from the map's: All, and the current period
+  // (CIV-1097). Read from the link's h/p (the map's params) when the app opens on History.
   const [historyView, setHistoryView] = useState<HistoryView>(() => (
-    window.location.pathname.startsWith('/apps/history') ? parseHistoryView(window.location.search) : HISTORY_VIEW_ALL
+    window.location.pathname.startsWith('/apps/history') ? parseHistoryView(window.location.search) : historyDefaultView()
   ));
 
   const historyViewControl = useMemo(() => ({ view: historyView, setView: setHistoryView }), [historyView]);
@@ -817,7 +821,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
               nightServiceFrequency={nightServiceFrequency}
               setNightServiceFrequency={setNightServiceFrequency}
               exportEnabled={FEATURES.mapExport || inFrequentService}
-              exportTitle={inFrequentService ? 'Frequent Service' : inNight ? 'Night Service' : inHistory ? 'Service History' : inLive ? 'Live Transit' : 'Transit Frequency'}
+              exportTitle={inFrequentService ? 'Frequent Service' : inNight ? 'Overnight service' : inHistory ? 'Service History' : inLive ? 'Live Transit' : 'Transit Frequency'}
               frequentServiceView={inFrequentService}
               frequentServiceDays={frequentServiceDays}
               frequentServiceFrequency={frequentServiceFrequency}

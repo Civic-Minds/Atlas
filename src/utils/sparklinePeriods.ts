@@ -1,4 +1,4 @@
-import { periodKeyForHour, SPARKLINE_HOURS, TIME_PERIODS } from '../../shared/config';
+import { PERIOD_LABELS, periodKeyForHour, SPARKLINE_HOURS, TIME_PERIODS } from '../../shared/config';
 
 /**
  * The hour-to-period map and the hover bands of the route card's schedule sparkline, shared with every other hour
@@ -9,33 +9,27 @@ export const HOUR_TO_PERIOD: Record<number, string> = Object.fromEntries(
 ) as Record<number, string>;
 
 /** Contiguous hover bands per period, as fractions of the chart width (overnight tail: 2 AM, 3 AM, 4 AM, 5 AM). */
-export const PERIOD_BANDS: Record<string, { left: number; width: number }[]> = (() => {
-  const result: Record<string, { left: number; width: number }[]> = {};
-  let i = 0;
-  while (i < SPARKLINE_HOURS.length) {
-    const p = HOUR_TO_PERIOD[SPARKLINE_HOURS[i]];
-    if (!p) { i++; continue; }
-    const start = i;
-    while (i < SPARKLINE_HOURS.length && HOUR_TO_PERIOD[SPARKLINE_HOURS[i]] === p) i++;
-    (result[p] ??= []).push({ left: start / SPARKLINE_HOURS.length, width: (i - start) / SPARKLINE_HOURS.length });
-  }
-  return result;
-})();
+export const PERIOD_BANDS: Record<string, { left: number; width: number }[]> = periodBandsFor(SPARKLINE_HOURS);
 
 /** One band per period from its first to its last hour, for the expanded chart's period labels. */
-export const PERIOD_OVERVIEW_BANDS = TIME_PERIODS.map(period => {
-  const bands = PERIOD_BANDS[period.key] ?? [];
-  const first = bands[0];
-  const last = bands[bands.length - 1];
-  return first && last
-    ? { ...period, left: first.left, width: last.left + last.width - first.left }
-    : null;
-}).filter((band): band is (typeof TIME_PERIODS)[number] & { left: number; width: number } => band != null);
+export const PERIOD_OVERVIEW_BANDS = periodOverviewBandsFor(SPARKLINE_HOURS);
+
+/** One band per period from its first to its last hour on a given hour axis. */
+export function periodOverviewBandsFor(hours: readonly number[]) {
+  const bandsByPeriod = periodBandsFor(hours);
+  return TIME_PERIODS.map(period => {
+    const bands = bandsByPeriod[period.key] ?? [];
+    const first = bands[0];
+    const last = bands[bands.length - 1];
+    return first && last
+      ? { ...period, left: first.left, width: last.left + last.width - first.left }
+      : null;
+  }).filter((band): band is (typeof TIME_PERIODS)[number] & { left: number; width: number } => band != null);
+}
 
 /** The sparkline hour under a pointer position, from the chart element's box. */
 export function sparklineHourAt(clientX: number, rect: { left: number; width: number }): number {
-  const fraction = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
-  return SPARKLINE_HOURS[Math.min(Math.floor(fraction * SPARKLINE_HOURS.length), SPARKLINE_HOURS.length - 1)];
+  return hourAtOn(SPARKLINE_HOURS, clientX, rect);
 }
 
 /**
@@ -53,7 +47,10 @@ export function liveChartHours(enough: (hour24: number) => boolean): number[] {
   return LIVE_DAY_HOURS.slice(first, last + 1);
 }
 
-/** Contiguous hover bands per period for a given hour axis, as fractions of the chart width. */
+/**
+ * Contiguous hover bands per period for a given hour axis, as fractions of the chart width: the one band rule every
+ * hour chart reads, the route card's (SPARKLINE_HOURS) and Live's (liveChartHours) alike (CIV-1118).
+ */
 export function periodBandsFor(hours: readonly number[]): Record<string, { left: number; width: number }[]> {
   const result: Record<string, { left: number; width: number }[]> = {};
   let i = 0;
@@ -73,8 +70,8 @@ export function hourAtOn(hours: readonly number[], clientX: number, rect: { left
   return hours[Math.min(Math.floor(fraction * hours.length), hours.length - 1)];
 }
 
-/** The period names the hour charts' period band shows: the Live switchers' own names. */
-export const PERIOD_BAND_LABELS: Record<string, string> = { amPeak: 'AM peak', midday: 'Midday', pmPeak: 'PM peak', evening: 'Evening', late: 'Late' };
+/** The period names the hour charts' period band shows: the shared period names, overnight left unnamed as before (CIV-1065). */
+export const PERIOD_BAND_LABELS: Record<string, string> = (({ overnight: _overnight, ...daytime }) => daytime)(PERIOD_LABELS);
 
 /** What the pointer is on across a row of hour charts: an hour (with its period), or a whole period named on the band. Shared so every chart highlights the same thing. */
 export interface HourHover { hour: number | null; period: string | null }

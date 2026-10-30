@@ -1,5 +1,5 @@
 import React from 'react';
-import { PANEL_SECTION_HEAD, LIST_ROW_PRIMARY, LIST_ROW_DIM, SELECTION_ACTIVE, SELECTION_ACTIVE_TEXT } from '../../styles';
+import { HEADING_GAP, PANEL_SECTION_HEAD, LIST_ROW_PRIMARY, LIST_ROW_DIM, SELECTION_ACTIVE, SELECTION_ACTIVE_TEXT } from '../../styles';
 import type { AgencySearchGroup } from '../../utils/agencySearch';
 import type { RouteSearchResult, StopSearchResult } from '../../utils/searchResults';
 import RouteListRow from '../RouteListRow';
@@ -33,7 +33,7 @@ export function SearchSplitList<T>({
   const items = [...inView, ...elsewhere];
   return (
     <div className="flex flex-col">
-      <div className={`${PANEL_SECTION_HEAD} mb-1`}>{headLabel}</div>
+      <div className={`${PANEL_SECTION_HEAD} ${HEADING_GAP}`}>{headLabel}</div>
       {items.map(item => <React.Fragment key={itemKey(item)}>{renderItem(item)}</React.Fragment>)}
     </div>
   );
@@ -68,6 +68,8 @@ interface SearchResultsListProps {
   onRouteHover?: (key: string | null) => void;
   hasMoreResults?: boolean;
   onShowMoreResults?: () => void;
+  /** Index results for agencies not loaded are still coming: hold "No matches found." until they are in. */
+  searchPending?: boolean;
 }
 
 export const SearchResultsList: React.FC<SearchResultsListProps> = ({
@@ -97,6 +99,7 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({
   onRouteHover,
   hasMoreResults = false,
   onShowMoreResults,
+  searchPending = false,
 }) => {
   const areaBlock = areaResults.length > 0 && onSelectArea ? (
     <SearchSplitList
@@ -238,7 +241,7 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({
   return (
     <div className="-mx-4 mb-4 flex flex-col gap-5">
       {noResults ? (
-        <PanelEmpty>{NO_SEARCH_MATCHES}</PanelEmpty>
+        searchPending ? null : <PanelEmpty>{NO_SEARCH_MATCHES}</PanelEmpty>
       ) : routesFirst ? (
         <>
           {areaBlock}

@@ -113,7 +113,7 @@ describe('skipBlockTripHeadways (Clemson, #1040)', () => {
     expect(find(lines(viaAgencyOn.geojson), 'B', 'Weekday')?.headway).toBeNull();
   });
 
-  // The run-date half of #1040 (referenceDateFromRunDate for Clemson) waits on reference-date stage 4.
+  // The run-date half of #1040 needs no switch: reference-date stage 4 reads Clemson's current week (CIV-846, clemson-current-week.test.ts).
   it('only Clemson opts in', () => {
     const dir = resolve(__dirname, '../../config/agencies');
     const flagged = readdirSync(dir).filter(f => f.endsWith('.json'))

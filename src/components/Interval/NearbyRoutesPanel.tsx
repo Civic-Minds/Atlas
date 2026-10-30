@@ -5,7 +5,7 @@ import { headwayEveryRange } from '../../utils/headwayText';
 import { NO_REGULAR_SERVICE_SHORT_LABEL } from '../../utils/effectiveHeadway';
 import { LIMITED_SERVICE_LABEL } from '../../content/noticeCopy';
 import type { NearbyRoute } from '../../hooks/useNearbyRoutes';
-import { PANEL_TITLE, sidebarFrameStyle } from '../../styles';
+import { sidebarFrameStyle } from '../../styles';
 import Panel, { PanelBody, PanelTitleBar } from '../ui/Panel';
 import ListRow from '../ui/ListRow';
 import { ROUTE_ROW_NAME } from '../RouteRowName';
@@ -40,9 +40,7 @@ export const NearbyRoutesPanel = forwardRef<HTMLDivElement, NearbyRoutesPanelPro
       ref={ref}
       style={sidebarFrameStyle(sidebarLeft, searchBarWidth)}
     >
-      <PanelTitleBar>
-        <span className={PANEL_TITLE}>Near You</span>
-      </PanelTitleBar>
+      <PanelTitleBar title="Near You" />
 
       {loading ? (
         <PanelEmpty kind="loading">{loadingText('nearby routes')}</PanelEmpty>

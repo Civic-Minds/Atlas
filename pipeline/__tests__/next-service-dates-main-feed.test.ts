@@ -105,9 +105,14 @@ describe('nextServiceDatesFeedUrls naming the main feed (Sound Transit, #1035)',
   beforeEach(() => { vi.useFakeTimers({ toFake: ['Date'], now: RUN }); });
   afterEach(() => { vi.useRealTimers(); });
 
-  it('default logic loses the light rail weekend while the other line keeps it (the reported bug)', async () => {
-    const plain = await processAgencyFeeds(await soundTransitZip(), [], { slug: 'st', feedUrl: MAIN_URL });
+  it('the old picker loses the light rail weekend while the other line keeps it (the reported bug)', async () => {
+    const plain = await processAgencyFeeds(await soundTransitZip(), [], { slug: 'st', feedUrl: MAIN_URL }, { legacyReferenceDate: true });
     expect(daysByRoute(lineFeatures(plain.geojson))).toEqual({ L: ['Weekday'], T: ['Saturday', 'Sunday', 'Weekday'] });
+  });
+
+  it('the week from the run date (CIV-1011 stage 4) keeps the light rail weekend with no opt-in', async () => {
+    const plain = await processAgencyFeeds(await soundTransitZip(), [], { slug: 'st', feedUrl: MAIN_URL });
+    expect(daysByRoute(lineFeatures(plain.geojson))).toEqual({ L: ['Saturday', 'Sunday', 'Weekday'], T: ['Saturday', 'Sunday', 'Weekday'] });
   });
 
   it('gives the light rail Weekday, Saturday and Sunday when the main feed is listed', async () => {

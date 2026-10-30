@@ -6,6 +6,9 @@ import {
   broadenFilterForPartialMatches,
   selectedSharedStretchRoutes,
 } from '../frequencySegments';
+import { routePartMeetsFilter } from '../routeCardTrunk';
+import { selectedRoutePartMeetsFilterNotice } from '../../content/noticeCopy';
+import type { ShapeProperties } from '../../hooks/useIntervalStats';
 import type { AgencyLayers } from '../../hooks/useAgencyData';
 
 describe('findQualifyingStopRanges', () => {
@@ -310,6 +313,28 @@ describe('computeFrequencySegmentOverlay', () => {
     expect(overlay.segments).toHaveLength(1);
   });
 
+  // CIV-1071: a drop-off-only stop publishes no value (its times are arrivals). It takes the worse
+  // of its valued neighbours, so a passing line is not cut at it or short of its terminal.
+  it('a drop-off-only stop with no value neither breaks a passing line nor trims its terminal', () => {
+    const feature = makeRouteFeature({ routeId: 'E', stopIds: ['s1', 's2', 's3', 's4', 's5'], stopHeadways: { s1: 8, s2: 8, s4: 8 } });
+    feature.properties = { ...feature.properties, worstDirectionHeadway: 8, dropOffOnlyStops: ['s3', 's5'] };
+    const overlay = computeFrequencySegmentOverlay({ agency: { type: 'FeatureCollection', features: [feature] } }, 'all', 15);
+    expect(overlay.segments).toEqual([]);
+    expect(overlay.partialMatches).toEqual([]);
+  });
+
+  it('a drop-off-only stop takes the worse neighbour, and any other missing value still breaks the run', () => {
+    // s3 (drop-off only) sits between 8 and 30: it reads 30, so the passing stretch ends at s2.
+    // s5 has no value and is not drop-off only: s4-s5 is not drawn.
+    const feature = makeRouteFeature({ routeId: 'F', stopIds: ['s1', 's2', 's3', 's4', 's5', 's6', 's7'], stopHeadways: { s1: 8, s2: 8, s4: 30, s6: 8, s7: 8 } });
+    feature.properties = { ...feature.properties, worstDirectionHeadway: 15, dropOffOnlyStops: ['s3'] };
+    const overlay = computeFrequencySegmentOverlay({ agency: { type: 'FeatureCollection', features: [feature] } }, 'all', 15);
+    expect(overlay.partialMatches).toHaveLength(1);
+    // Stops sit at x = index * 0.01 and a stretch ends half way to the next stop: s1-s2 and s6-s7.
+    expect(overlay.segments.map(s => [s.geometry.coordinates[0][0], s.geometry.coordinates.at(-1)![0]].map(x => Math.round(x * 1000))))
+      .toEqual([[0, 15], [45, 60]]);
+  });
+
   it('uses scheduled period headways instead of coverage gaps', () => {
     const stopIds = ['s1', 's2', 's3'];
     const feature = makeRouteFeature({
@@ -440,5 +465,17 @@ describe('shared-stretch-only routes (#850)', () => {
     expect(selectedSharedStretchRoutes(sharedStretchRoutes, 'ttc::52')).toHaveLength(4);
     expect(selectedSharedStretchRoutes(sharedStretchRoutes, 'ttc::29')).toEqual([]);
     expect(selectedSharedStretchRoutes(sharedStretchRoutes, null)).toEqual([]);
+  });
+
+  // CIV-514: the card says part of the route qualifies exactly when the map draws a shared stretch for it.
+  it("says only part of the route qualifies when the map draws its shared stretch, and not otherwise", () => {
+    const features = (layers.ttc as GeoJSON.FeatureCollection).features;
+    const directions = features.filter(f => f.geometry.type === 'LineString').map(f => ({ ...(f.properties as ShapeProperties) }));
+    expect(computeFrequencySegmentOverlay(layers, 'midday', 10).sharedStretchRoutes.length).toBeGreaterThan(0);
+    expect(routePartMeetsFilter(features, directions, 'midday', 10)).toBe(true);
+    // At 5 min no stretch qualifies: the map draws none and the card keeps the general note.
+    expect(computeFrequencySegmentOverlay(layers, 'midday', 5).sharedStretchRoutes).toEqual([]);
+    expect(routePartMeetsFilter(features, directions, 'midday', 5)).toBe(false);
+    expect(selectedRoutePartMeetsFilterNotice(15)).toBe('Only part of this route runs every 15\u00A0minutes or better during the selected period.');
   });
 });

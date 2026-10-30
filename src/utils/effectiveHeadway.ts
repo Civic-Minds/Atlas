@@ -6,7 +6,7 @@ import { buildRouteServiceSummary, metricValueForPeriod } from './routeFacts';
 import { pairedTripPeriodFloor, pairedTripSafeHeadway } from './pairedTripFloor';
 import { delayAmount, headwayAboutRange, headwayEvery, headwayEveryRange, headwayPeriodShape } from './headwayText';
 import { routeAllDayContract, routeContract, routeValueIsOneGap } from './stretchCard';
-import { clockText } from '../content/researchRules';
+import { clockTime } from '../../shared/timeText';
 import { NO_REGULAR_SERVICE_LABEL, NO_REGULAR_SERVICE_SHORT_LABEL } from '../content/noticeCopy';
 
 export { pairedTripPeriodFloor, pairedTripSafeHeadway } from './pairedTripFloor';
@@ -134,8 +134,8 @@ export function routeCardPeriodShapeText(p: ShapeProperties, period: TimePeriod)
   const edge = p.stretchPeriodEdge?.[period];
   if (edge && (edge.from != null || edge.until != null)) {
     return headwayPeriodShape({
-      from: edge.from != null ? clockText(edge.from) : undefined,
-      until: edge.until != null ? clockText(edge.until) : undefined,
+      from: edge.from != null ? clockTime(edge.from) : undefined,
+      until: edge.until != null ? clockTime(edge.until) : undefined,
       every: edge.every,
     });
   }

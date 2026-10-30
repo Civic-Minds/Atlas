@@ -32,6 +32,7 @@ export interface AgencyFeedConfig {
   skipLetterSuffixMerge?: boolean;
   mergeEquivalentShapeVariants?: boolean;
   mergeEquivalentShapeVariantsAllModes?: boolean;
+  mergeEquivalentShapeVariantsRouteTypes?: string[];
   keepLongShapeJumps?: boolean;
   skipClusteredJumpRepair?: boolean;
   poolSingleTripShapes?: boolean;
@@ -63,6 +64,10 @@ export interface AgencyProcessOverrides {
   force?: boolean;
   /** History v2 backfill only: read the feed at this reference date (YYYYMMDD) instead of the detected one. */
   referenceDate?: string;
+  /** History backfills: keep the old reference-date picker (the new one, stage 4, reads the week from the run date). */
+  legacyReferenceDate?: boolean;
+  /** When Atlas first obtained the main feed's file (YYYYMMDD), for the listing-end safeguard. */
+  fileDate?: string | null;
 }
 
 export interface SupplementalFeed {
@@ -96,6 +101,7 @@ export function agencyProcessOptions(agency: AgencyFeedConfig, overrides: Agency
     skipLetterSuffixMerge: agency.skipLetterSuffixMerge,
     mergeEquivalentShapeVariants: agency.mergeEquivalentShapeVariants,
     mergeEquivalentShapeVariantsAllModes: agency.mergeEquivalentShapeVariantsAllModes,
+    mergeEquivalentShapeVariantsRouteTypes: agency.mergeEquivalentShapeVariantsRouteTypes,
     keepLongShapeJumps: agency.keepLongShapeJumps,
     skipClusteredJumpRepair: agency.skipClusteredJumpRepair,
     poolSingleTripShapes: agency.poolSingleTripShapes,
@@ -104,6 +110,10 @@ export function agencyProcessOptions(agency: AgencyFeedConfig, overrides: Agency
     manualBaseFare: overrides.manualBaseFare ?? agency.fare,
     force: overrides.force ?? false,
     ...(overrides.referenceDate ? { referenceDate: overrides.referenceDate } : {}),
+    // Stage 4 of the reference-date plan (CIV-1011): the live map reads the week from the run date
+    // (pickRiderWeek). ATLAS_LEGACY_REFERENCE_DATE=1 is the kill switch back to the old picker.
+    ...(overrides.legacyReferenceDate || process.env.ATLAS_LEGACY_REFERENCE_DATE === '1' ? {} : { riderWeek: true }),
+    ...(overrides.fileDate ? { fileDate: overrides.fileDate } : {}),
   };
 }
 
@@ -164,7 +174,7 @@ export async function loadSupplementalFeeds(
   return feeds;
 }
 
-type FeatureCollection = { type: string; features: unknown[]; runningTimes?: Record<string, unknown> };
+type FeatureCollection = { type: string; features: unknown[]; runningTimes?: Record<string, unknown>; resumingRoutes?: Record<string, string> };
 type StopsMeta = { generatedAt: string; stopCount: number; stops: unknown[] };
 
 /**
@@ -201,6 +211,8 @@ export async function processAgencyFeeds(
   const featureSources: AgencyFeedResult['featureSources'] = [{ url: null, count: features.length }];
   // Running time (CIV-84) per feed; the main feed wins any key a supplemental feed repeats.
   const runningTimes: Record<string, unknown> = {};
+  // CIV-1076: routes paused in the read week, and when each runs again; a supplemental feed's add to the main feed's.
+  const resumingRoutes: Record<string, string> = { ...(primaryCollection.resumingRoutes ?? {}) };
   const corridorFeatures = (JSON.parse(primary.corridorsGeojson) as FeatureCollection).features;
   const stopsIndex = JSON.parse(primary.stopsJson) as Record<string, unknown>;
   const tripsIndex = JSON.parse(primary.tripsJson) as Record<string, unknown>;
@@ -215,6 +227,7 @@ export async function processAgencyFeeds(
     features.push(...suppCollection.features);
     featureSources.push({ url, count: suppCollection.features.length });
     Object.assign(runningTimes, suppCollection.runningTimes ?? {});
+    for (const [id, date] of Object.entries(suppCollection.resumingRoutes ?? {})) resumingRoutes[id] ??= date;
     corridorFeatures.push(...(JSON.parse(supp.corridorsGeojson) as FeatureCollection).features);
     Object.assign(stopsIndex, JSON.parse(supp.stopsJson));
     Object.assign(tripsIndex, JSON.parse(supp.tripsJson));
@@ -232,7 +245,7 @@ export async function processAgencyFeeds(
 
   return {
     ...primary,
-    geojson: JSON.stringify({ type: 'FeatureCollection', atlasSchemaVersion: ROUTE_ARTIFACT_SCHEMA_VERSION, features, runningTimes }),
+    geojson: JSON.stringify({ type: 'FeatureCollection', atlasSchemaVersion: ROUTE_ARTIFACT_SCHEMA_VERSION, features, runningTimes, ...(Object.keys(resumingRoutes).length ? { resumingRoutes } : {}) }),
     corridorsGeojson: JSON.stringify({ type: 'FeatureCollection', features: corridorFeatures }),
     stopsJson: JSON.stringify(stopsIndex),
     tripsJson: JSON.stringify(tripsIndex),

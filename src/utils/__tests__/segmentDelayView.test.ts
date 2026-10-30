@@ -43,6 +43,6 @@ describe('segmentDelayView', () => {
   });
 
   it('band chips use Atlas\'s period names', () => {
-    expect(SEGMENT_BAND_OPTIONS.map(o => o.label)).toEqual(['All day', 'AM Peak', 'Midday', 'PM Peak', 'Evening']);
+    expect(SEGMENT_BAND_OPTIONS.map(o => o.label)).toEqual(['All day', 'AM peak', 'Midday', 'PM peak', 'Evening']);
   });
 });

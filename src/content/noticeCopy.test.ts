@@ -1,17 +1,17 @@
 import { describe, expect, it } from 'vitest';
 import { CARD_NOTICE, CARD_NOTICE_FOOTER } from '../styles';
-import { HIDE_DEGRADED_FEEDS_SETTING, HIDE_ONE_OFF_SETTING, HIDE_PART_TIME_SETTING, LIMITED_SERVICE_LABEL, NO_REGULAR_SERVICE_LABEL, NO_REGULAR_SERVICE_SHORT_LABEL, HIDDEN_ROUTES_UNAVAILABLE, NO_DEGRADED_FEEDS, NO_FEED_MATCHES, NO_LIMITED_ROUTES_IN_VIEW, NO_MATCHING_AGENCIES, NO_MATCHING_ROUTES, noSearchMatchText, storyMapFailedText, storyMapLoadingText, NEW_SCHEDULE_DATA_NOTICE, expiredFeedCheckHistory, expiredFeedNotice, nightNoRoutesNotice, noServiceOnDayNotice, selectedRouteFilterNotice, selectedRouteOutsideFilterNotice, stopNoRoutesNotice } from './noticeCopy';
+import { listingEndedPanelLead, HIDE_DEGRADED_FEEDS_SETTING, HIDE_ONE_OFF_SETTING, HIDE_PART_TIME_SETTING, LIMITED_SERVICE_LABEL, NO_REGULAR_SERVICE_LABEL, NO_REGULAR_SERVICE_SHORT_LABEL, HIDDEN_ROUTES_UNAVAILABLE, NO_DEGRADED_FEEDS, NO_FEED_MATCHES, NO_LIMITED_ROUTES_IN_VIEW, NO_MATCHING_AGENCIES, NO_MATCHING_ROUTES, noSearchMatchText, storyMapFailedText, storyMapLoadingText, NEW_SCHEDULE_DATA_NOTICE, expiredFeedCheckHistory, expiredFeedNotice, nightNoRoutesNotice, noServiceOnDayNotice, selectedRouteFilterNotice, selectedRouteOutsideFilterNotice, stopNoRoutesNotice } from './noticeCopy';
 
 describe('expiredFeedNotice', () => {
   it('names the agency once, without region or duplicated articles', () => {
     expect(expiredFeedNotice('Grand River Transit (Waterloo Region)', 'Apr 26, 2026')).toBe(
-      "Grand River Transit's timetable ended on Apr 26, 2026. Times shown may be out of date.",
+      "Grand River Transit's schedule ended on Apr 26, 2026. Times shown may be out of date.",
     );
   });
 
   it('omits the date when unknown', () => {
     expect(expiredFeedNotice('Grand River Transit')).toBe(
-      "Grand River Transit's timetable ended. Times shown may be out of date.",
+      "Grand River Transit's schedule ended. Times shown may be out of date.",
     );
   });
 
@@ -23,7 +23,7 @@ describe('expiredFeedNotice', () => {
 describe('expiredFeedCheckHistory', () => {
   it('reads as its own sentence', () => {
     expect(expiredFeedCheckHistory({ count: 5, since: '2026-06-22', lastChecked: '2026-10-12' })).toBe(
-      "We've checked for a new timetable 5 times since Jun 22, 2026, with our most recent check on Oct 12, 2026.",
+      "We've checked for a new schedule 5 times since Jun 22, 2026, with our most recent check on Oct 12, 2026.",
     );
   });
 });
@@ -68,9 +68,9 @@ describe('approved notice wording (CIV-1045)', () => {
     expect(nightNoRoutesNotice(30)).toBe('No routes here run every 30 min or better from 2–5 AM.');
   });
 
-  it('N17 and N26: no scheduled service on the day', () => {
-    expect(noServiceOnDayNotice('route', 'Sunday')).toBe('This route has no scheduled service on Sundays.');
-    expect(noServiceOnDayNotice('agency', 'Weekday')).toBe('This agency has no scheduled service on weekdays.');
+  it('N17 and N26: no scheduled trips on the day (CIV-1077)', () => {
+    expect(noServiceOnDayNotice('route', 'Sunday')).toBe('This route has no scheduled trips on Sundays.');
+    expect(noServiceOnDayNotice('agency', 'Weekday')).toBe('This agency has no scheduled trips on weekdays.');
   });
 });
 
@@ -105,5 +105,12 @@ describe('route labels and setting definitions (CIV-957)', () => {
     expect(HIDE_ONE_OFF_SETTING).toEqual({ label: 'Hide one-off routes', description: 'School runs, a few trips a day, on-demand.' });
     expect(HIDE_PART_TIME_SETTING).toEqual({ label: 'Hide part-time routes', description: 'Only at rush hour, evenings, or some days.' });
     expect(HIDE_DEGRADED_FEEDS_SETTING.label).toBe('Hide degraded feeds');
+  });
+});
+
+describe('E1, N25 version (CIV-1051)', () => {
+  it('names the agency and switches tense', () => {
+    expect(listingEndedPanelLead('Dutchess Transit', 'Oct 28, 2026', false)).toBe("Dutchess Transit's scheduled service for most routes ends Oct 28, 2026, and they have not released updated data. The map shows the last full week in their schedule, for every route.");
+    expect(listingEndedPanelLead('Dutchess Transit', 'Oct 28, 2026', true)).toContain('most routes ended Oct 28, 2026,');
   });
 });
