@@ -3,7 +3,7 @@ import DataTable from '../ui/DataTable';
 import { useMediaQuery } from '../../hooks/useMediaQuery';
 import { isMajorStop, shortStopName, stripStopName } from '../../utils/stopLabel';
 import {
-  MIN_N, bunchParts, delayText, labelWidth, pct, shownDelayMin, stopDetail, stopN, stopStep, stretchSpan,
+  MIN_N, NOT_MEASURED_CELL, SHOW_KEY_STOPS, STRIP_COLUMNS, STRIP_ROLE, TRACK_NAME, bunchParts, delayText, labelWidth, pct, shownDelayMin, stopDetail, stopN, stopStep, stretchSpan, showAllStopsText, stripTableCaption,
   type RouteStripMode, type RouteStripStop,
 } from './routeStripModel';
 import { COL_X, NAME_LEFT, StretchBracketPiece, StretchNote, phoneDotSize, phoneRowHeight, StripLegend, Tooltip, swatchStyle } from './RouteStrip';
@@ -40,7 +40,6 @@ const LABEL_H = 22;
 const GROUP_GAP = 10;
 /** A branch's bar beside its names: a thin dashed line, so it never reads as the solid bracket of a marked stretch. */
 const BRANCH_BAR = { width: 1, backgroundImage: 'repeating-linear-gradient(to bottom, var(--text-dim) 0 2px, transparent 2px 6px)', opacity: 0.7 } as const;
-const TRACK_NAME: Record<RouteStripMode, string> = { delay: 'Delay', bunching: 'Bunching' };
 
 let measurer: CanvasRenderingContext2D | null | undefined;
 /** Whether a line's name needs two lines in the gutter (measured in the gutter's own 12px type; about 6px a letter where there is no canvas). */
@@ -135,15 +134,15 @@ export default function BranchStrip({ model, selected = null, onSelect, modes = 
   const table = (
     <div id={tableId} className="sr-only">
       <DataTable
-        caption={`${model.label}: delay and bunching at each stop`}
+        caption={stripTableCaption(model.label)}
         rows={stops}
         rowKey={s => s.stopId}
         columns={[
-          { key: 'stop', header: 'Stop', rowHeader: true, className: 'font-normal', cell: s => s.name },
-          { key: 'delay', header: 'Typical delay', cell: s => (shownDelayMin(s) != null && s.n > 0 ? delayText(shownDelayMin(s)!) : 'not measured') },
-          { key: 'late', header: 'Late', cell: s => (s.lateShare != null && s.n > 0 ? pct(s.lateShare) : '') },
-          { key: 'bunch', header: 'Gaps off', cell: s => { const b = bunchParts(s); return b ? `${b.total}%` : 'not measured'; } },
-          { key: 'n', header: 'Departures', cell: s => s.n.toLocaleString() },
+          { key: 'stop', header: STRIP_COLUMNS.stop, rowHeader: true, className: 'font-normal', cell: s => s.name },
+          { key: 'delay', header: STRIP_COLUMNS.delay, cell: s => (shownDelayMin(s) != null && s.n > 0 ? delayText(shownDelayMin(s)!) : NOT_MEASURED_CELL) },
+          { key: 'late', header: STRIP_COLUMNS.late, cell: s => (s.lateShare != null && s.n > 0 ? pct(s.lateShare) : '') },
+          { key: 'bunch', header: STRIP_COLUMNS.bunch, cell: s => { const b = bunchParts(s); return b ? `${b.total}%` : NOT_MEASURED_CELL; } },
+          { key: 'n', header: STRIP_COLUMNS.n, cell: s => s.n.toLocaleString() },
         ]}
       />
     </div>
@@ -296,7 +295,7 @@ export default function BranchStrip({ model, selected = null, onSelect, modes = 
       <div
         ref={ref}
         role="group"
-        aria-roledescription="route strip"
+        aria-roledescription={STRIP_ROLE}
         aria-label={summary}
         aria-describedby={tableId}
         tabIndex={0}
@@ -309,7 +308,7 @@ export default function BranchStrip({ model, selected = null, onSelect, modes = 
       </div>
       {vertical && stops.length > 2 && (
         <button type="button" onClick={() => setAllStops(v => !v)} aria-expanded={allStops} className="mt-2 text-xs font-bold text-[var(--accent)]">
-          {allStops ? 'Show key stops only' : `Show all ${stops.length} stops`}
+          {allStops ? SHOW_KEY_STOPS : showAllStopsText(stops.length)}
         </button>
       )}
       <StripLegend modes={modes} anyUncertain={anyUncertain} anyFaded={anyFaded} anyMissing={anyMissing} anyEarly={anyEarly} minN={minN} />

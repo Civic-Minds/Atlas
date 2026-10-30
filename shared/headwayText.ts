@@ -15,6 +15,7 @@
  *   headwayTierLabel(10)      "≤10 min"                  a frequency band in a legend or key
  *   headwayBandLabel(16, 30)  "16–30 min"                  the band between two tiers in a key
  *   headwayAmount(10)         "10 min"                   a bare spacing with no "every" (tables, chart cells)
+ *   scheduledEveryText(10)    "Scheduled every 10 min"   Live's scheduled spacing under a measured figure (whole minutes)
  *   delayAmount(3)            "3 min"                    a delay or gap length that is not a headway
  *   runTimeAmount(42)         "42 min"                   a trip's run time, rounded to the whole minute
  *
@@ -52,6 +53,11 @@ export function headwayExactAmount(minutes: number | null | undefined): string {
 export function headwayAmount(minutes: number | null | undefined): string {
   if (!isUsable(minutes)) return MISSING;
   return `${Math.round(minutes)} min`;
+}
+
+/** "Scheduled every 10 min": Live's scheduled spacing under a measured figure, rounded to the whole minute as headwayAmount. */
+export function scheduledEveryText(minutes: number | null | undefined): string {
+  return `Scheduled every ${headwayAmount(minutes)}`;
 }
 
 /** "every 10 min": a stated or scheduled spacing. */

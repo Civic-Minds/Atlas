@@ -6,7 +6,7 @@ import {
   LINK_LABELS, linkValueText,
   type DashboardBand, type DashboardBandData, type LiveV3, type UncertainStart,
 } from '../shared/liveDashboard';
-import { headwayAmount } from '../shared/headwayText';
+import { scheduledEveryText } from '../shared/headwayText';
 import { minutesText } from '../shared/liveFormat';
 import { SITE_URL } from '../shared/seo';
 import { useLiveDashboard, liveToolPath } from './hooks/useLiveDashboard';
@@ -133,7 +133,7 @@ function DetailPanel({ v3, band, sel, stops, data }: { v3: LiveV3; band: Dashboa
       )}
       {extra && (
         <Block>
-          <Fact label="Extra wait" value={minutesText(Math.max(0, extra.extraWaitMin))} sub={`Scheduled every ${headwayAmount(extra.scheduledGapMin)}`} />
+          <Fact label="Extra wait" value={minutesText(Math.max(0, extra.extraWaitMin))} sub={scheduledEveryText(extra.scheduledGapMin)} />
         </Block>
       )}
       {into && into.n > 0 && (
