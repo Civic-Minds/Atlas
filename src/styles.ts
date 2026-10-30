@@ -185,7 +185,7 @@ export const Z_PANEL_RAISED = 'z-[1001]'; // One step above the panels: Compare'
  *  The desktop step is its own token for a phone layout that starts somewhere else (Compare's lower map). */
 // Map overlay slots: one layout table for every fixed overlay over the map (CIV-1136), kept in mapOverlayLayout.ts.
 export {
-  MAP_TOP_BAR_SLOT, MAP_FOOTER_ROW_SLOT, MAP_FOOTER_PILLS_PHONE_SLOT, MAP_COUNTS_PHONE_SLOT, MAP_LEGEND_SLOT, MAP_CONTROLS_SLOT,
+  MAP_TOP_BAR_SLOT, MAP_FOOTER_ROW_SLOT, MAP_FOOTER_RIGHT_SLOT, MAP_FOOTER_NOTICE_SLOT, MAP_FOOTER_PILLS_PHONE_SLOT, MAP_COUNTS_PHONE_SLOT, MAP_LEGEND_SLOT, MAP_CONTROLS_SLOT,
   MAP_NOTICE_SLOT, MAP_NOTICE_SLOT_RAISED, MAP_FOOTER_HEIGHT_FALLBACK, mapFooterStyle, MAP_CONSENT_SLOT, MAP_STATUS_SLOT,
 } from './mapOverlayLayout';
 

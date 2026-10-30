@@ -64,9 +64,6 @@ export function historyChartPoints(
   }));
 }
 
-/** Fewest dated values a History route chart draws (CIV-1144): with two, it repeats the two rows below it. */
-export const HISTORY_CHART_MIN_DATES = 3;
-
 /** The closest two drawn dots may be, in straight-line screen distance (CIV-1026). */
 export const HISTORY_DOT_MIN_GAP_PX = 24;
 

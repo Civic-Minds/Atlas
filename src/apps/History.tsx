@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef, useLayoutEffect, useId } from 'react';
+import { MAP_SCRUBBER_SLOT, MAP_SCRUBBER_WIDTH } from '../mapOverlayLayout';
 import { loadHistoryConfig as loadHistoryConfigShared } from '../utils/historyConfig';
 import { History as HistoryIcon } from 'lucide-react';
 import { useHistoryMapOverlay } from '../context/HistoryMapOverlay';
@@ -36,7 +37,7 @@ import {
   type HistoryTier,
 } from '../../shared/historyEligibility';
 import { capitalizeFirst, headwayEvery, headwayExactAmount, runTimeAmount } from '../utils/headwayText';
-import { HISTORY_CHART_MIN_DATES, historyChartPoints, historyDotPriority, historyYearTicks, placeHistoryDots, snapshotMonth } from '../utils/historyChart';
+import { historyChartPoints, historyDotPriority, historyYearTicks, placeHistoryDots, snapshotMonth } from '../utils/historyChart';
 import ExpandDialog, { ExpandButton } from '../components/ui/ExpandDialog';
 import Panel, { PanelBody, PanelTitleBar } from '../components/ui/Panel';
 import ListRow from '../components/ui/ListRow';
@@ -127,6 +128,9 @@ function periodMinutes(snapshot: RouteSnapshot, period: TimePeriod): number | nu
  */
 const shownMinutes = (minutes: number): number => minutes;
 
+/** The route card's chart shows only with this many snapshots valued in the period (CIV-471, Ryan's call); with fewer, the rows alone. */
+export const MIN_CHART_VALUES = 3;
+
 function changeSummary(entry: RouteHistoryEntry, period: TimePeriod = 'all'): { text: string; subtext: string; worse: boolean } | null {
   // Only snapshots with a value in the period take part (CIV-389).
   const snaps = sortSnapshotsNewestFirst(entry.snapshots).filter(s => periodMinutes(s, period) != null);
@@ -208,6 +212,7 @@ function RouteHistoryCard({
   // The chart and summary use the snapshots with a value in the period; rows list every snapshot.
   const valued = snaps.filter(s => periodMinutes(s, period) != null);
   const chartSnaps = [...valued].reverse();
+  const showChart = chartSnaps.length >= MIN_CHART_VALUES;
   const snapHeadway = (snap: RouteSnapshot): number => periodMinutes(snap, period) ?? NaN;
 
   const first = valued[valued.length - 1] ?? snaps[snaps.length - 1];
@@ -263,15 +268,14 @@ function RouteHistoryCard({
         </div>
       </SidebarCardHeaderBlock>
 
-      {/* The chart sits on the card with no box, as the route card's hour chart does (#1028 item 10); its icon opens the wide view.
-          Under 3 dates it is left out: the rows below say the same (CIV-1144). */}
-      {chartSnaps.length >= HISTORY_CHART_MIN_DATES && (
+      {/* The chart sits on the card with no box, as the route card's hour chart does (#1028 item 10); its icon opens the wide view. */}
+      {showChart && (
         <div className="mt-3 relative pt-5">
           <ExpandButton label="Expand chart" onClick={() => setChartExpanded(true)} />
           <RouteHistoryChart snaps={chartSnaps} minutes={hws} lineColor={lineColor} gradientId={gradientId} hoveredSnap={hoveredSnap} onHover={setHoveredSnap} />
         </div>
       )}
-      {chartExpanded && chartSnaps.length >= HISTORY_CHART_MIN_DATES && (
+      {chartExpanded && showChart && (
         <ExpandDialog title={<RouteTitleName label={routeLabels({ shortName: route.routeShortName, longName: route.routeName || null, routeType: route.currentRouteType ?? undefined, agencySlug, agencyName })} />} ariaLabel="Route history chart" closeLabel="Close chart" onClose={closeChart}>
           <div className="mt-4">
             <RouteHistoryChart wide snaps={chartSnaps} minutes={hws} lineColor={lineColor} gradientId={`${gradientId}-wide`} hoveredSnap={hoveredSnap} onHover={setHoveredSnap} />
@@ -284,7 +288,7 @@ function RouteHistoryCard({
           const hw = periodMinutes(snap, period);
           const older = i < snaps.length - 1 ? periodMinutes(snaps[i + 1], period) : null;
           const delta = hw != null && older != null ? hw - older : null;
-          const charted = hw != null && chartSnaps.length >= 2;
+          const charted = hw != null && showChart;
           return (
             // Focus and a tap highlight the row and its point too (a tap elsewhere moves focus and clears it); the row's own hover does it for the pointer.
             <div
@@ -1129,7 +1133,7 @@ export default function History({ active, view = HISTORY_VIEW_ALL, initialAgency
       {showScrubber && (
         <div
           data-map-overlay="history-scrubber"
-          className={`absolute bottom-6 right-14 ${Z_PANEL} w-[260px] ${PILL_SURFACE} gap-2 px-2.5 text-xs`}
+          className={`${MAP_SCRUBBER_SLOT} ${Z_PANEL} ${MAP_SCRUBBER_WIDTH} ${PILL_SURFACE} gap-2 px-2.5 text-xs`}
           title="Older to newer"
           onPointerDown={event => event.stopPropagation()}
           onPointerMove={event => event.stopPropagation()}
