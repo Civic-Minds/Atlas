@@ -44,8 +44,12 @@ describe('Free child fares (CIV-1149)', () => {
     for (const row of rows) expect(row).toHaveClass('cursor-default');
   });
 
-  it('is a card on the Research page', () => {
+  it('is a card on the Research page, under Data; the others sit under Maps and Stories (CIV-1167)', () => {
     render(<ResearchPage />);
+    const group = (name: string) => screen.getByRole('heading', { name }).closest('section')!;
+    expect(group('Maps')).toHaveTextContent('Overnight service');
+    expect(group('Stories')).toHaveTextContent('Frequent service');
+    expect(group('Data')).toHaveTextContent('Free child fares');
     const card = screen.getByRole('link', { name: /Free child fares/ });
     expect(card).toHaveAttribute('href', '/research/free-child-fares');
     expect(card).toHaveTextContent('See up to what age children ride free at 553 transit agencies.');
