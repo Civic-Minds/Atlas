@@ -67,10 +67,11 @@ export const MAP_URL = {
    * the viewer's saved frequency, not the sender's (#1141).
    */
   headway: { key: 'h', aliases: ['headway', 'max'], presence: 'nonEmpty', ...headwayValue } satisfies UrlParam<number>,
-  /** Time period. Always written, "all" included: without it a link opens on the current period (#1141). */
+  /** Time period. Always written: without it a link opens on the current period (#1141). The map has no All day
+   * (CIV-239): an old p=all link reads as absent and opens on the current period, as History does. */
   period: {
     key: 'p', aliases: ['period'], presence: 'nonEmpty',
-    parse: raw => (raw === 'all' || (PERIOD_KEYS as readonly string[]).includes(raw) ? raw as TimePeriod : undefined),
+    parse: raw => ((PERIOD_KEYS as readonly string[]).includes(raw) ? raw as TimePeriod : undefined),
     serialize: value => value,
   } satisfies UrlParam<TimePeriod>,
   day: {
@@ -117,10 +118,7 @@ export const MAP_URL = {
  */
 export const HISTORY_VIEW_URL = {
   headway: MAP_URL.headway,
-  period: {
-    ...MAP_URL.period,
-    parse: raw => ((PERIOD_KEYS as readonly string[]).includes(raw) ? raw as TimePeriod : undefined),
-  } satisfies UrlParam<TimePeriod>,
+  period: MAP_URL.period,
 } as const;
 
 /** App-wide settings a link can carry. */

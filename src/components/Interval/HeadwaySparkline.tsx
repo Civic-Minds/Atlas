@@ -222,7 +222,8 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
   const handleClick = interactive ? (e: React.MouseEvent<HTMLDivElement>) => {
     if (expanded) return;
     const clicked = HOUR_TO_PERIOD[HOURS[posFromEvent(e)]];
-    if (clicked) onPeriodChange(period === clicked ? 'all' : clicked);
+    // CIV-239: clicking the chosen band again keeps it; there is no All day to go back to.
+    if (clicked && clicked !== period) onPeriodChange(clicked);
   } : undefined;
 
   const handleMouseLeave = interactive ? () => {

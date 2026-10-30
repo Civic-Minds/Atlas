@@ -19,7 +19,7 @@ export function CompareSidePicker({ side, onChange }: { side: CompareSide; onCha
     <div className="flex flex-col gap-3">
       <PickerSection title="Frequency"><FrequencyPicker value={side.maxHeadway} onChange={maxHeadway => onChange({ ...side, maxHeadway })} /></PickerSection>
       <PickerSection title="Day"><DayPicker value={side.day} onChange={day => onChange({ ...side, day })} /></PickerSection>
-      <PickerSection title="Time"><PeriodPicker includeAll value={side.period} onChange={period => onChange({ ...side, period })} /></PickerSection>
+      <PickerSection title="Time"><PeriodPicker value={side.period} onChange={period => onChange({ ...side, period })} /></PickerSection>
     </div>
   );
 }

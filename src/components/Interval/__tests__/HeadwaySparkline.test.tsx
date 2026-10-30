@@ -31,6 +31,20 @@ describe('HeadwaySparkline', () => {
     expect(screen.queryAllByTestId('sparkline-hover-band')).toHaveLength(0);
   });
 
+  it('clicking the chosen period again keeps it; there is no All day to go back to (CIV-239)', () => {
+    const calls: string[] = [];
+    const { container } = render(
+      <HeadwaySparkline byHour={{ 7: 10, 12: 20, 18: 25 }} period="midday" onPeriodChange={p => calls.push(p)} />,
+    );
+    const area = container.querySelector('.cursor-pointer') as HTMLElement;
+    area.getBoundingClientRect = () => ({ left: 0, width: 240, top: 0, height: 48, right: 240, bottom: 48, x: 0, y: 0, toJSON: () => ({}) });
+    const x = (hour: number) => ((SPARKLINE_HOURS as readonly number[]).indexOf(hour) + 0.5) * (240 / SPARKLINE_HOURS.length);
+    fireEvent.click(area, { clientX: x(12) });
+    expect(calls).toEqual([]);
+    fireEvent.click(area, { clientX: x(7) });
+    expect(calls).toEqual(['amPeak']);
+  });
+
   it('draws no band for a selected period with no bars (a night route at midday)', () => {
     render(<HeadwaySparkline byHour={{ 26: 30, 27: 30 }} period="midday" onPeriodChange={() => {}} />);
     expect(screen.queryAllByTestId('sparkline-hover-band')).toHaveLength(0);
