@@ -103,7 +103,7 @@ html.map-page .overflow-y-scroll {
   --status-positive-bg: rgba(16, 185, 129, 0.1);
   --status-negative-bg: rgba(239, 68, 68, 0.1);
   /* No change, neither better nor worse (History's chart line, CIV-1117 row 16). */
-  --status-neutral: #9ca3af;
+  --status-neutral: #8e949f;
   /* Status colours safe to use as text (4.5:1 on app/panel backgrounds) */
   --status-positive-text: #047857;
   --status-negative-text: #b91c1c;
@@ -214,7 +214,7 @@ html.map-page .overflow-y-scroll {
   --status-positive: #009e73;
   --status-negative: #d55e00;
   /* No change, neither better nor worse (History's chart line): a grey apart from the two status colours. */
-  --status-neutral: #999999;
+  --status-neutral: #949494;
   --status-caution: #e69f00;
   --status-positive-bg: rgba(0, 158, 115, 0.14);
   --status-negative-bg: rgba(213, 94, 0, 0.14);
