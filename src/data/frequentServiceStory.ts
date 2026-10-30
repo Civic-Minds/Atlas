@@ -1,4 +1,5 @@
 import audit from '../../docs/research/system-map-audit-2026-09/data.json';
+import recheck from '../../docs/research/frequent-service-research-2026-09/definition-recheck-2026-10-30.json';
 
 const storyThresholds = [10, 12, 15, 20, 30, 60];
 const storyCountries = new Set(['Canada', 'United States']);
@@ -10,7 +11,10 @@ const categoryCounts = {
   noDefinitionFound: records.filter(record => record.status === 'no_definition_on_map').length,
   mapUnavailable: records.filter(record => record.status === 'map_unavailable').length,
 };
-const representativeNumericRecords = records.filter(record => Number.isInteger(record.representativeThresholdMinutes));
+// The chart reads the October 30 recheck (CIV-1149): every Canada and US agency that had a number on October 11 was
+// checked again, and only the ones whose source still holds are counted.
+const recheckedNumericRows = recheck.rows.filter(row => storyCountries.has(row.country) && Number.isInteger(row.threshold));
+const heldNumericRows = recheckedNumericRows.filter(row => row.result === 'holds');
 
 export const frequentServiceStoryStats = {
   agenciesReviewed: records.length,
@@ -22,12 +26,15 @@ export const frequentServiceStoryStats = {
     return counts;
   }, {})).map(([country, agencies]) => ({ country, agencies })),
   categoryCounts,
-  namedNumericAgencies: representativeNumericRecords.length,
+  namedNumericAgencies: heldNumericRows.length,
+  /** Had a number on October 11 but could not be confirmed on October 30 (page gone or not checkable). */
+  recheckLeftOut: recheckedNumericRows.length - heldNumericRows.length,
   noDefinitionFound: categoryCounts.noDefinitionFound,
   countries: new Set(records.map(record => record.country)).size,
   headwayBars: storyThresholds.map(minutes => ({
     minutes,
-    agencies: representativeNumericRecords.filter(record => record.representativeThresholdMinutes === minutes).length,
+    agencies: heldNumericRows.filter(row => row.threshold === minutes).length,
+    agenciesOct11: recheckedNumericRows.filter(row => row.threshold === minutes).length,
   })),
 };
 

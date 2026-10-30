@@ -256,6 +256,14 @@
       "destination": "/index.html"
     },
     {
+      "source": "/research/free-child-fares",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/research/free-child-fares/",
+      "destination": "/index.html"
+    },
+    {
       "source": "/research/frequent-service",
       "destination": "/index.html"
     },

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { ArrowDown, ArrowRight, MapPinned } from 'lucide-react';
 import { trackEvent } from '../lib/analytics';
 import DataTable, { type DataTableColumn } from '../components/ui/DataTable';
+import ChartTableDetails from '../components/charts/ChartTableDetails';
 import { frequentServiceCoverageInterpretation, frequentServiceCoverageStats, frequentServiceStoryResearchRecord, frequentServiceStoryStats } from '../data/frequentServiceStory';
 import FrequentServicePublishedMapMontage from '../components/FrequentServicePublishedMapMontage';
 import FrequentServicePublishedMapCollage from '../components/FrequentServicePublishedMapCollage';
@@ -20,6 +21,13 @@ const COVERAGE_COLUMNS: DataTableColumn<CoverageRow>[] = [
   { key: 'fifteen', header: '15 min', cell: row => row.fifteenMinute, className: 'tabular-nums text-[var(--text-muted)]' },
   { key: 'thirty', header: '30 min', cell: row => row.thirtyMinute, className: 'tabular-nums text-[var(--text-muted)]' },
   { key: 'scope', header: 'Scope', cell: row => `${row.metros} · ${row.fifteenMinuteMetros} at 15 min`, className: 'text-[var(--text-muted)]' },
+];
+
+type HeadwayBar = (typeof frequentServiceStoryStats.headwayBars)[number];
+const HEADWAY_COLUMNS: DataTableColumn<HeadwayBar>[] = [
+  { key: 'wait', header: 'Wait', cell: bar => headwayAmount(bar.minutes), rowHeader: true, className: 'font-normal', width: 5 },
+  { key: 'oct11', header: 'Agencies, Oct\u00a011', cell: bar => bar.agenciesOct11, className: 'tabular-nums', width: 6.5 },
+  { key: 'oct30', header: 'Agencies, Oct\u00a030', cell: bar => bar.agencies, className: 'tabular-nums', width: 6.5 },
 ];
 
 export default function FrequentServiceStory({ onExploreMap, agencies }: Props) {
@@ -102,7 +110,7 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
             <div className="max-w-2xl">
               <h2 id="chart-heading" className="text-3xl sm:text-4xl font-black tracking-tight">There is no single “frequent.”</h2>
               <p className="mt-5 text-base leading-8 text-[var(--text-muted)]">
-                Pick a representative threshold to see how agencies turn that number into a service promise. This chart covers {frequentServiceStoryStats.namedNumericAgencies} agencies with a defensible representative numeric definition; secondary tiers remain in the audit instead of being flattened.
+                Pick a representative threshold to see how agencies turn that number into a service promise. This chart covers {frequentServiceStoryStats.namedNumericAgencies} agencies with a verified numeric definition; secondary tiers remain in the research instead of being flattened.
               </p>
             </div>
             <div className="mt-10" aria-label="Interactive chart showing the number of agencies by the selected published frequent-service threshold">
@@ -125,7 +133,8 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
                   </button>
                 ))}
               </div>
-              <p className="mt-5 text-xs leading-5 text-[var(--text-dim)]">Each agency appears once. The chart uses the agency’s general or representative frequent-service tier; ranges, time periods, and secondary tiers remain in the audit rather than being assigned one misleading number.</p>
+              <p className="mt-5 text-xs leading-5 text-[var(--text-dim)]">Each agency appears once, at the slowest wait its source gives for weekday daytime service: “every 15–20 minutes” counts as 20. Other times of day and secondary tiers remain in the research. Checked again on October 30, 2026. {frequentServiceStoryStats.recheckLeftOut} agencies are left out because their page is gone or couldn't be checked again.</p>
+              <ChartTableDetails caption="There is no single “frequent.”" columns={HEADWAY_COLUMNS} rows={frequentServiceStoryStats.headwayBars} rowKey={bar => bar.minutes} />
             </div>
           </section>
 
