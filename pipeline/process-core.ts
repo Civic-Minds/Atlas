@@ -2692,10 +2692,19 @@ export async function processGtfsBuffer(
     const servedByFewerTrips = (pool: readonly number[] | null): string[] => {
       if (!pool) return [];
       const poolCount = new Set(pool).size;
-      // The terminal and the drop-off-only stops that run up to it are left out (#1116, CIV-994), and so is any other
-      // drop-off-only stop (CIV-224, #879): a layover first stop no rider boards has no departures to floor the line on.
-      return drawnStopsBeforeTerminal(drawnPatternStops().map(p => p.stopId), dropOffOnlyStops)
-        .filter(stopId => !dropOffOnlyStops.has(stopId) && new Set(stopMetricMap.get(stopId) ?? []).size < poolCount);
+      // The terminal and the drop-off-only stops that run up to it are left out (#1116, CIV-994). Any other drop-off-only
+      // stop (CIV-224, #879; a layover first stop no rider boards) is read at the next stop riders can board, where its
+      // trips leave: LA Metro 40's Division 13 layover reads as Patsaouras (every 30 in the evening, not the far end's 15),
+      // and LA Metro 105's Division 7 layover as the stop its trips and the others share (every 10 in the AM peak).
+      const drawn = drawnPatternStops().map(p => p.stopId);
+      const floor = new Set<string>();
+      for (const stopId of drawnStopsBeforeTerminal(drawn, dropOffOnlyStops)) {
+        if (dropOffOnlyStops.has(stopId)) {
+          const next = drawn.slice(drawn.indexOf(stopId) + 1, -1).find(s => !dropOffOnlyStops.has(s));
+          if (next) floor.add(next);
+        } else if (new Set(stopMetricMap.get(stopId) ?? []).size < poolCount) floor.add(stopId);
+      }
+      return [...floor];
     };
     // Steps 2-3 and the line's segments (#690), shared by the thin-own-sample path below and
     // the full path: stop data is published from the pooled values whenever any stop has one.
