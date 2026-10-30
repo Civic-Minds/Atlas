@@ -154,6 +154,11 @@ export interface RouteCardHeadwayProps {
   onInfoOpen?: OpenInfoFn;
 }
 
+/** The last two words held together, so a wrapped value never leaves one word alone on its line (Compare, CIV-844). */
+function keepLastWordsTogether(text: string): string {
+  return text.replace(/ (\S+)$/, '\u00A0$1');
+}
+
 export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
   currentRoute,
   agencyFeatures,
@@ -637,7 +642,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                             singleLine={!(stableColors && row.rowNoRegular)}
                             label={label}
                             headway={row.headway}
-                            limitedLabel={row.isLimited && row.edgeText ? row.edgeText : row.rowNoRegular ? noRegularLabel : undefined}
+                            limitedLabel={row.isLimited && row.edgeText ? row.edgeText : row.rowNoRegular ? (stableColors ? keepLastWordsTogether(noRegularLabel) : noRegularLabel) : undefined}
                             colorHeadway={row.colorHeadway}
                             headwayLabel={row.headwayLabel}
                             trunkHeadway={row.trunkHeadway}
