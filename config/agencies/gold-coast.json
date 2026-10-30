@@ -29,19 +29,23 @@
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270102",
   "feedQuality": {
-    "status": "review",
-    "score": 90,
-    "reasons": [
-      "1 route shape needed adjustment before display."
-    ],
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
       "shapeAnomalies": 1,
       "routeHeadwayMismatches": 0,
-      "featureCount": 99
+      "featureCount": 107,
+      "feedExpiry": "20270102",
+      "routeCount": 24,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-03"
+    "checkedAt": "2026-10-30"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,

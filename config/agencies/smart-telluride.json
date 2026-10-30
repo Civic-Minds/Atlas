@@ -28,20 +28,25 @@
     "Naturita, Colorado"
   ],
   "feedQuality": {
-    "status": "degraded",
-    "score": 40,
+    "status": "review",
+    "score": 70,
     "reasons": [
-      "3 minor schedule issues found while reading the feed.",
-      "4 route shapes needed adjustment before display."
+      "3 minor schedule issues found while reading the feed."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 3,
-      "shapeAnomalies": 4,
+      "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 33
+      "featureCount": 33,
+      "feedExpiry": "20280503",
+      "routeCount": 8,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-19"
+    "checkedAt": "2026-10-30"
   },
   "lastFeedCheckAt": "20261019",
   "expiredFeedCheckCount": 0,

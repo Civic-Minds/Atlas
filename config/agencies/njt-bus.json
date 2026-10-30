@@ -39,20 +39,25 @@
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-508/latest.zip",
   "feedQuality": {
-    "status": "degraded",
-    "score": 40,
+    "status": "review",
+    "score": 96,
     "reasons": [
-      "10 route shapes needed adjustment before display.",
-      "32 route have stops whose frequency differs from the overall route schedule."
+      "11 route have stops whose frequency differs from the overall route schedule."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
       "shapeAnomalies": 10,
-      "routeHeadwayMismatches": 32,
-      "featureCount": 2036
+      "routeHeadwayMismatches": 18,
+      "featureCount": 2039,
+      "feedExpiry": "20270417",
+      "routeCount": 261,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 11,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-12"
+    "checkedAt": "2026-10-30"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,

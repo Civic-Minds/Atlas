@@ -26,19 +26,23 @@
     "The Dalles, Oregon"
   ],
   "feedQuality": {
-    "status": "review",
-    "score": 70,
-    "reasons": [
-      "4 shape corrections needed."
-    ],
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
-      "shapeAnomalies": 4,
+      "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 7
+      "featureCount": 7,
+      "feedExpiry": "20270101",
+      "routeCount": 3,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-08-18"
+    "checkedAt": "2026-10-30"
   },
   "lastFeedCheckAt": "20261019",
   "expiredFeedCheckCount": 0,

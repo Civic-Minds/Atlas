@@ -22,18 +22,24 @@
   "expiredFeedCheckExpiry": "20270103",
   "feedQuality": {
     "status": "review",
-    "score": 70,
+    "score": 94,
     "reasons": [
-      "19 map lines were repaired — Atlas fixed unusual route geometry before displaying it."
+      "6 route shapes needed adjustment before display."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
-      "shapeAnomalies": 19,
+      "shapeAnomalies": 13,
       "routeHeadwayMismatches": 0,
-      "featureCount": 72
+      "featureCount": 72,
+      "feedExpiry": "20271231",
+      "routeCount": 18,
+      "problemShapes": 6,
+      "problemShapeRoutes": 1,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-08-27"
+    "checkedAt": "2026-10-30"
   },
   "timezone": "America/New_York",
   "lastFeedSourceKind": "configured",

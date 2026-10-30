@@ -29,5 +29,24 @@
   "expiredFeedCheckExpiry": "20270502",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://go-rts.com/wp-content/uploads/2026/08/RTSGTFS_Fall2026-1.zip",
-  "lastPeekedExpiry": "20270502"
+  "lastPeekedExpiry": "20270502",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 118,
+      "feedExpiry": "20270502",
+      "routeCount": 27,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
+    },
+    "checkedAt": "2026-10-30"
+  }
 }

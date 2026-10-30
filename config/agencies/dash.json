@@ -29,5 +29,26 @@
   "timezone": "America/New_York",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://www.dashbus.com/wp-content/gtfs/google_transit.zip",
-  "lastPeekedExpiry": "20270731"
+  "lastPeekedExpiry": "20270731",
+  "feedQuality": {
+    "status": "review",
+    "score": 92,
+    "reasons": [
+      "1 route has stops whose frequency differs from the overall route schedule."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 1,
+      "featureCount": 64,
+      "feedExpiry": "20270731",
+      "routeCount": 12,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 1,
+      "resumesOn": null
+    },
+    "checkedAt": "2026-10-30"
+  }
 }

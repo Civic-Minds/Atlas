@@ -37,18 +37,24 @@
   "timezone": "America/Montreal",
   "feedQuality": {
     "status": "review",
-    "score": 80,
+    "score": 99,
     "reasons": [
-      "2 route have stops whose frequency differs from the overall route schedule."
+      "1 route has stops whose frequency differs from the overall route schedule."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 2,
-      "featureCount": 467
+      "featureCount": 467,
+      "feedExpiry": "20261101",
+      "routeCount": 148,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 1,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-19"
+    "checkedAt": "2026-10-30"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,

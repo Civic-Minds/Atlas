@@ -27,5 +27,26 @@
   "timezone": "America/Chicago",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://data.trilliumtransit.com/gtfs/montgomerytransit-al-us/montgomerytransit-al-us.zip",
-  "lastPeekedExpiry": "20261231"
+  "lastPeekedExpiry": "20261231",
+  "feedQuality": {
+    "status": "review",
+    "score": 90,
+    "reasons": [
+      "1 minor schedule issue found while reading the feed."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 1,
+      "shapeAnomalies": 2,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 30,
+      "feedExpiry": "20261231",
+      "routeCount": 14,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
+    },
+    "checkedAt": "2026-10-30"
+  }
 }

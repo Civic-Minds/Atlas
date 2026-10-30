@@ -31,20 +31,23 @@
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/tld-1256/latest.zip",
   "feedQuality": {
-    "status": "degraded",
-    "score": 50,
-    "reasons": [
-      "2 route shapes needed adjustment before display.",
-      "3 route have stops whose frequency differs from the overall route schedule."
-    ],
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
       "shapeAnomalies": 2,
-      "routeHeadwayMismatches": 3,
-      "featureCount": 76
+      "routeHeadwayMismatches": 0,
+      "featureCount": 119,
+      "feedExpiry": "20271231",
+      "routeCount": 38,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-12"
+    "checkedAt": "2026-10-30"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,

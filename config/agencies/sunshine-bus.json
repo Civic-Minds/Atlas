@@ -19,21 +19,25 @@
     "St. Augustine, Florida"
   ],
   "feedQuality": {
-    "status": "degraded",
-    "score": 50,
+    "status": "review",
+    "score": 90,
     "reasons": [
-      "1 validation warning.",
-      "5 shape corrections needed.",
-      "1 route frequency metric need review."
+      "1 minor schedule issue found while reading the feed."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 1,
-      "shapeAnomalies": 5,
-      "routeHeadwayMismatches": 1,
-      "featureCount": 20
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 34,
+      "feedExpiry": "20301031",
+      "routeCount": 9,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-08-21"
+    "checkedAt": "2026-10-30"
   },
   "lastFeedExpiry": "20301031",
   "lastFeedVersion": "20240118",

@@ -29,18 +29,24 @@
   "lastPeekedExpiry": "20281231",
   "feedQuality": {
     "status": "review",
-    "score": 60,
+    "score": 73,
     "reasons": [
       "1 minor schedule issue found while reading the feed.",
-      "4 route shapes needed adjustment before display."
+      "1 route shape needed adjustment before display."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 1,
-      "shapeAnomalies": 4,
+      "shapeAnomalies": 1,
       "routeHeadwayMismatches": 0,
-      "featureCount": 22
+      "featureCount": 22,
+      "feedExpiry": "20281231",
+      "routeCount": 6,
+      "problemShapes": 1,
+      "problemShapeRoutes": 1,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-14"
+    "checkedAt": "2026-10-30"
   }
 }
