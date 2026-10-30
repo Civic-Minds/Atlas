@@ -3,6 +3,7 @@ import { describe, expect, it, vi } from 'vitest';
 import FrequentServiceStory from '../FrequentServiceStory';
 import { frequentServiceStoryStats } from '../../data/frequentServiceStory';
 import audit from '../../../docs/research/system-map-audit-2026-09/data.json';
+import recheck from '../../../docs/research/frequent-service-research-2026-09/definition-recheck-2026-10-30.json';
 
 const agencies = [{ slug: 'ttc', name: 'Toronto Transit Commission' }] as any;
 
@@ -12,7 +13,7 @@ describe('FrequentServiceStory', () => {
     expect(screen.getByRole('heading', { name: 'What happens when you miss the bus?' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'There is no single “frequent.”' })).toBeInTheDocument();
     expect(screen.queryByRole('tab')).not.toBeInTheDocument();
-    expect(screen.getByText(/representative frequent-service tier/)).toBeInTheDocument();
+    expect(screen.getByText(/at the slowest wait its source gives for weekday daytime service/)).toBeInTheDocument();
   });
 
   it('hands readers off to the existing map', () => {
@@ -30,22 +31,39 @@ describe('FrequentServiceStory', () => {
     expect(tenMinuteButton).toHaveAttribute('aria-pressed', 'true');
   });
 
-  it('keeps the story chart aligned with exact numeric system-map evidence', () => {
-    const counts = audit.records
-      .filter(record => ['Canada', 'United States'].includes(record.country))
-      .filter(record => Number.isInteger(record.representativeThresholdMinutes))
-      .reduce<Record<string, number>>((result, record) => {
-        result[String(record.representativeThresholdMinutes)] = (result[String(record.representativeThresholdMinutes)] ?? 0) + 1;
-        return result;
-      }, {});
+  it('counts the Canada and US definitions that still held on the October 30 recheck (CIV-1149)', () => {
+    const rows = recheck.rows.filter(row => ['Canada', 'United States'].includes(row.country) && Number.isInteger(row.threshold));
+    expect(rows).toHaveLength(67);
+    expect(frequentServiceStoryStats.namedNumericAgencies).toBe(61);
+    expect(frequentServiceStoryStats.recheckLeftOut).toBe(6);
+    expect(frequentServiceStoryStats.recheckedAgencies).toBe(67);
     expect(frequentServiceStoryStats.headwayBars).toEqual([
-      { minutes: 10, agencies: counts['10'] },
-      { minutes: 12, agencies: counts['12'] },
-      { minutes: 15, agencies: counts['15'] },
-      { minutes: 20, agencies: counts['20'] },
-      { minutes: 30, agencies: counts['30'] },
-      { minutes: 60, agencies: counts['60'] },
+      { minutes: 10, agencies: 5, agenciesOct11: 5 },
+      { minutes: 12, agencies: 1, agenciesOct11: 2 },
+      { minutes: 15, agencies: 40, agenciesOct11: 42 },
+      { minutes: 20, agencies: 6, agenciesOct11: 9 },
+      { minutes: 30, agencies: 9, agenciesOct11: 9 },
+      { minutes: 60, agencies: 0, agenciesOct11: 0 },
     ]);
+  });
+
+  it('says in How we did this that the chart was checked again (CIV-1149)', () => {
+    render(<FrequentServiceStory agencies={agencies} onExploreMap={vi.fn()} />);
+    expect(screen.getByText(/On October 30, 2026, we opened the source again for each of the 67 agencies the chart counted\. 61 still matched and stay in the chart\. 6 are left out:/)).toBeInTheDocument();
+  });
+
+  it('uses the shared method template: Date updated, and Sources in place of Review boundary (CIV-1167)', () => {
+    const { container } = render(<FrequentServiceStory agencies={agencies} onExploreMap={vi.fn()} />);
+    const method = screen.getByRole('heading', { name: 'How we did this' }).closest('section')!;
+    expect([...method.querySelectorAll('strong')].map(el => el.textContent)).toEqual(['Date conducted.', 'Date updated.', 'Sample.', 'Sources.', 'What counted.', 'How we handled numbers.', 'Rechecked.', 'Limitations.']);
+    expect(method).toHaveTextContent('Date updated. October 30, 2026.');
+    expect(container).not.toHaveTextContent('Review boundary');
+  });
+
+  it('offers the chart as a table', () => {
+    render(<FrequentServiceStory agencies={agencies} onExploreMap={() => {}} />);
+    expect(screen.getByText('Show as a table')).toBeInTheDocument();
+    expect(screen.getByRole('columnheader', { name: /^Agencies, Oct\s30$/ })).toBeInTheDocument();
   });
 
   it('does not mistake unavailable or unnamed maps for numeric definitions', () => {
@@ -63,14 +81,6 @@ describe('FrequentServiceStory', () => {
       noDefinitionFound: 120,
       mapUnavailable: 5,
     });
-    expect(frequentServiceStoryStats.headwayBars).toEqual([
-      { minutes: 10, agencies: 1 },
-      { minutes: 12, agencies: 1 },
-      { minutes: 15, agencies: 27 },
-      { minutes: 20, agencies: 5 },
-      { minutes: 30, agencies: 12 },
-      { minutes: 60, agencies: 1 },
-    ]);
   });
 
   it('keeps the audit canonical and unique after alias merging', () => {

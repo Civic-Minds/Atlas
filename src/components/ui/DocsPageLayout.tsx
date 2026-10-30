@@ -7,6 +7,8 @@ type ContentsItem = { id: string; label: string };
 type Props = {
   /** Extra classes for the content column (text size and colour differ between pages). */
   articleClassName?: string;
+  /** A research page's "How we did this" section: at the end of the text column on reading pages, PageShell's slot on wide ones. */
+  method?: ReactNode;
   children: ReactNode;
 } & (
   | {
@@ -30,10 +32,10 @@ type Props = {
  * The one layout for docs-style pages: page shell, optional section menu, content width and section spacing.
  * The site header stays pinned to the top while scrolling on every page that uses it.
  */
-export default function DocsPageLayout({ width = 'reading', contents, articleClassName = '', children }: Props) {
+export default function DocsPageLayout({ width = 'reading', contents, articleClassName = '', method, children }: Props) {
   if (width === 'wide') {
     return (
-      <PageShell variant="wide" stickyHeader>
+      <PageShell variant="wide" stickyHeader method={method}>
         <article className={`pb-16 pt-10 sm:pt-14 ${articleClassName}`.trim()}>{children}</article>
       </PageShell>
     );
@@ -42,7 +44,10 @@ export default function DocsPageLayout({ width = 'reading', contents, articleCla
     <PageShell stickyHeader>
       <div className="mt-10 lg:grid lg:grid-cols-[12rem_minmax(0,42rem)] lg:gap-12 lg:items-start">
         {contents && <PageContents title={contents.title} items={contents.items} />}
-        <article className={`space-y-8 ${contents ? '' : 'lg:col-start-2'} ${articleClassName}`.replace(/\s+/g, ' ').trim()}>{children}</article>
+        <article className={`space-y-8 ${contents ? '' : 'lg:col-start-2'} ${articleClassName}`.replace(/\s+/g, ' ').trim()}>
+          {children}
+          {method && <section data-research-method className="mt-10 border-t border-[var(--border-primary)] pt-8">{method}</section>}
+        </article>
       </div>
     </PageShell>
   );

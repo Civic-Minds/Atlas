@@ -114,6 +114,14 @@ export const SEO_ROUTES: readonly SeoRoute[] = [
     prerender: true,
   },
   {
+    path: '/research/free-child-fares',
+    title: 'Free child fares: Transit Atlas',
+    description: 'See up to what age children ride free at 697 transit agencies.',
+    indexable: false,
+    gate: 'researchApps',
+    prerender: true,
+  },
+  {
     path: '/research/frequent-service',
     title: 'Frequent service map: Transit Atlas',
     description: 'Routes that meet Atlas sustained-frequency thresholds, mapped across agencies.',

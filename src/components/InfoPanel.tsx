@@ -9,7 +9,7 @@ import AgencyName from './ui/AgencyName';
 import { LIVE_POLLING_ROUTES, liveCoverageForRouteNames, type LiveCoverage } from '../../shared/livePollingConfig';
 import { R2_PUBLIC_URL, FEATURES as BASE_FEATURES } from '../../shared/config';
 import { PHONE_MEDIA_QUERY, phoneModeFlags, useMediaQuery } from '../hooks/useMediaQuery';
-import { formatStoredDate, routeLabelCase } from '../utils/format';
+import { formatStoredDate, nameCase } from '../utils/format';
 import { agencyNames } from '../utils/agencyName';
 import { feedRefreshCountdownLabel, type FeedRefreshMeta } from '../../shared/feedRefresh';
 import { agencyQualifiesForHistory, agencyQualifiesForHistoryExplore } from '../../shared/historyEligibility';
@@ -75,7 +75,7 @@ export type OpenInfoOptions = {
 export type OpenInfoFn = (tab?: Tab, opts?: OpenInfoOptions) => void;
 
 export function liveRouteLabel(r: { displayRouteShortName: string; displayName?: string }): string {
-  if (r.displayName) return routeLabelCase(r.displayName);
+  if (r.displayName) return nameCase(r.displayName, 'route');
   const n = parseInt(r.displayRouteShortName, 10);
   return `Route ${isNaN(n) ? r.displayRouteShortName : n}`;
 }

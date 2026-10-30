@@ -151,8 +151,10 @@ export function shouldShowTrunkSummary(branches: ShapeProperties[], period: Time
 }
 
 /** The shared section is materially better than the typical branch: worth its own row. */
+const TRUNK_BEATS_SHARE = 0.65;
+
 function trunkBeatsBranches(trunk: number, terminal: number): boolean {
-  return trunk <= terminal * 0.65 && terminal / trunk <= 4;
+  return trunk <= terminal * TRUNK_BEATS_SHARE && terminal / trunk <= 4;
 }
 
 /**
@@ -175,7 +177,9 @@ export function stretchSharedHeadway(
   if (shared?.value == null || shared.noRegular) return null;
   const rowValues = rows.map(d => rowTrips(d, period).value);
   if (rowValues.some(v => v == null)) return null;
-  return trunkBeatsBranches(shared.value, medianHeadway(rowValues as number[])) ? shared.value : null;
+  // CIV-1143: no 4x limit here. This row names the shared stretch itself and the rows keep their own waits, so a slow
+  // branch never makes it read faster than it is (TTC 52, SEPTA 63).
+  return shared.value <= medianHeadway(rowValues as number[]) * TRUNK_BEATS_SHARE ? shared.value : null;
 }
 
 /**

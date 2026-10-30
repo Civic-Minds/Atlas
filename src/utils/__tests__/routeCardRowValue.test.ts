@@ -38,5 +38,22 @@ describe('routeCardRowValue (CIV-992)', () => {
     expect(routeCardRowValue(uneven('tail', 5), overnight).headwayLabel).toBeUndefined();
     expect(routeCardRowValue(uneven('main', 5), { ...overnight, hoveredHour: 2 }).headwayLabel).toBeUndefined();
   });
-});
 
+  // CIV-1143 (option B): OC Transpo 84 to Centrepointe, weekday PM: the last trip is at 5:05 PM. The row keeps its own words;
+  // the shared-stretch range ("every 60–120 min") never replaces them.
+  const oc84 = (edge: boolean) => ({
+    routeId: '84', routeShortName: '84', routeLongName: '', directionId: 0, headsign: 'Centrepointe', tier: '60', headway: 60,
+    headwayByPeriod: { pmPeak: 60 }, headsignMinStopHeadwayByPeriod: { pmPeak: 20 }, stretchRole: 'main', stretchIndex: 0,
+    ...(edge ? { stretchPeriodEdge: { pmPeak: { until: 1025, every: 60 } } } : {}),
+  }) as unknown as ShapeProperties;
+  const pm = { ...ctx, period: 'pmPeak' as const, stretchMode: true };
+
+  it('gives no shared-stretch range to a row with its own until / from / gap words (CIV-1143)', () => {
+    const row = routeCardRowValue(oc84(true), pm);
+    expect(row.edgeText).toBe('until 5:05 PM, every 60 min');
+    expect(row.trunkHeadway).toBeUndefined();
+  });
+  it('keeps the range on a row without such words', () => {
+    expect(routeCardRowValue(oc84(false), pm).trunkHeadway).toBe(20);
+  });
+});

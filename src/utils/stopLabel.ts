@@ -1,4 +1,4 @@
-import { stopNameCase } from './format';
+import { nameCase } from './format';
 
 /** Short names for chart axes: the cross street or the station, not the whole stop name. */
 export function shortStopName(name: string): string {
@@ -90,4 +90,4 @@ export function streetJoin(name: string): string {
 }
 
 /** A stop as Live lists it: normal case, then the short name ("Bathurst", not "KING ST WEST AT BATHURST ST"), streets joined with "&". */
-export const liveStopName = (name: string): string => streetJoin(shortStopName(stopNameCase(name)));
+export const liveStopName = (name: string): string => streetJoin(shortStopName(nameCase(name, 'stop')));

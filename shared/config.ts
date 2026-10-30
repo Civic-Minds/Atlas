@@ -193,6 +193,7 @@ export function seoFlags() {
 export const FEATURE_ROUTES = {
   research: '/research',
   nightService: '/research/night',
+  freeChildFares: '/research/free-child-fares',
   frequentService: {
     map: '/research/frequent-service',
     story: '/research/frequent-service/story',
