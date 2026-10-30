@@ -861,7 +861,8 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
         } as React.CSSProperties}
       >
         {cardOpen ? (
-          <div className={sheetMode ? bottomSheetBodyClass(sheetExpanded) : SIDEBAR_CARD_BODY}>
+          // The report form takes the card's width (CIV-932), as History's card does (CIV-1117).
+          <div data-report-anchor="true" className={sheetMode ? bottomSheetBodyClass(sheetExpanded) : SIDEBAR_CARD_BODY}>
             {sheetMode && <BottomSheetHandle expanded={sheetExpanded} handle={sheetHandle} />}
             {cardBody}
           </div>
