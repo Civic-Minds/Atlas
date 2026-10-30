@@ -3100,7 +3100,40 @@ export async function processGtfsBuffer(
         const lastBoardId = [...onShape].reverse().find(({ stopId }) => !dropOffOnlyStops.has(stopId))?.stopId;
         const penultId = onShape.length > 2 ? onShape[onShape.length - 2]?.stopId : undefined;
         const boardHws = onShape.filter(({ stopId }) => !dropOffOnlyStops.has(stopId)).map(({ stopId }) => ownStopHw[stopId]).filter((v): v is number => v != null).sort((a, b) => a - b);
+        // CIV-1087 gates: the start reading through the same Step 4 resolution today's headline takes: the thin all-day
+        // sample (#733) and its scoped rescue, the uneven two-gap midday sample (#745), the sparse own-sample check, and
+        // the branch decision on plain medians (#263, #772). Own-pattern rows only (no pool).
+        let originGated: number | null = null;
+        if (origin && originId && !poolUsed) {
+          const thinO = branchHw != null && origin.ownTerminalMiddayHw == null && origin.terminalHw != null
+            && isThinAllDayTerminalSample(originTimes, branchTripCount);
+          const scopedO = thinO
+            ? scopedTerminalHeadline(selectTerminalDepartureTimes(shapeMap?.get(originId), headsignMap?.get(originId)), day as DayType, featureRoute?.route_type ?? '', railFeature)
+            : null;
+          const unevenO = branchHw != null && origin.terminalMiddayHw != null
+            && isUnevenTwoGapMiddayTerminalSample(originTimes, branchTripCount, branchHw);
+          const daytimeO = new Set([...originTimes].filter(t => t >= HEADLINE_WINDOWS.allDay.start && t <= HEADLINE_WINDOWS.allDay.end)).size;
+          const mergedDaytimeO = new Set([...(stopMetricMap.get(originId) ?? [])].filter(t => t >= HEADLINE_WINDOWS.allDay.start && t <= HEADLINE_WINDOWS.allDay.end)).size;
+          const ownHasReadingO = daytimeO >= MIN_ALL_DAY_TERMINAL_DEPARTURES && !(daytimeO < MIN_POOLED_TIER_DEPARTURES && mergedDaytimeO >= 2 * daytimeO);
+          const hasReadingO = stopHasReading(originId);
+          originGated = !lineHasReading || middayVariant(terminalId) ? null
+            : ((!hasReadingO || !ownHasReadingO) && scopedO == null && lineRunsByDay() && worstReadingStop() != null) ? worstReadingStop()!
+            : decideHeadline({
+              unevenMiddayTerminal: unevenO,
+              branchHw,
+              branchTripCount,
+              terminalComputedHw: origin.terminalComputedHw,
+              hasPool: false,
+              thinTerminalSample: thinO,
+              scoped: scopedO,
+              worstDrawnStopHw: undefined,
+              plainTerminalComputedHw: allStopMiddayHwPlain[originId] ?? allStopHwPlain[originId] ?? plainAllStopMedian,
+              plainNonTerminalStopHws,
+              pooledPlainTerminalHw: pooledTerminalHeadway(headsignMap?.get(originId)),
+            });
+        }
         console.log('CIV1098\t' + JSON.stringify({
+          originGated, originUneven: origin && originId && branchHw != null && origin.terminalMiddayHw != null ? isUnevenTwoGapMiddayTerminalSample(originTimes, branchTripCount, branchHw) : null,
           agency: options?.slug, route: shortName, dir: dirId, day, headsign: featureHeadsign, rail: railFeature,
           headline: headway, terminalId, terminal: terminalComputedHw, poolUsed,
           originId, originHw: origin?.terminalComputedHw ?? null, originMiddayHw: origin?.terminalMiddayHw ?? null,
