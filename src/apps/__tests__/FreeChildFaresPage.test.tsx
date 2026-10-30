@@ -17,6 +17,15 @@ describe('Free child fares (CIV-1149)', () => {
     expect(screen.getByText('Show as a table')).toBeInTheDocument();
   });
 
+  it('chart rows show the normal arrow, not the text cursor, in both groups', () => {
+    // The rows only show a tooltip and a highlight on hover; nothing is clicked, so no pointer either.
+    const { container } = render(<FreeChildFaresPage />);
+    const rows = [...container.querySelectorAll('li[title]')];
+    expect(rows.some(row => row.textContent?.startsWith('Up to 5'))).toBe(true);
+    expect(rows.some(row => row.textContent?.startsWith('Not found yet'))).toBe(true);
+    for (const row of rows) expect(row).toHaveClass('cursor-default');
+  });
+
   it('is a card on the Research page', () => {
     render(<ResearchPage />);
     const card = screen.getByRole('link', { name: /Free child fares/ });

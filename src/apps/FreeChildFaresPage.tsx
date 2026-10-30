@@ -21,7 +21,7 @@ function BarGroup({ title, bars, plain }: { title: string; bars: FreeChildFareBa
           <li
             key={bar.label}
             title={`${bar.label}: ${bar.agencies} ${bar.agencies === 1 ? 'agency' : 'agencies'}`}
-            className="grid grid-cols-[7.5rem_1fr_2.25rem] items-center gap-2 rounded-lg py-0.5 text-sm hover:bg-[var(--bg-btn-hover)] sm:grid-cols-[9.5rem_1fr_2.5rem] sm:gap-3"
+            className="grid cursor-default grid-cols-[7.5rem_1fr_2.25rem] items-center gap-2 rounded-lg py-0.5 text-sm hover:bg-[var(--bg-btn-hover)] sm:grid-cols-[9.5rem_1fr_2.5rem] sm:gap-3"
           >
             <span className={`${plain ? 'font-semibold' : 'font-black'} text-[var(--text-primary)]`}>{bar.label}</span>
             <div className="h-3 overflow-hidden rounded-full bg-[var(--bg-stat)]">
