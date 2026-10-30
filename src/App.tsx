@@ -564,6 +564,23 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   useEffect(() => {
     syncUrlParams(urlParamUpdate(MAP_URL.day, day));
   }, [day]);
+  // A tab switch drops the link (setActiveApp navigates to a bare path) and the effects above write only on a change:
+  // when the map's own view opens again, the app's part of its link is written once more, as Interval does for the
+  // map's filters (CIV-1139).
+  const linkPathRef = useRef(pathname);
+  useEffect(() => {
+    if (linkPathRef.current === pathname) return;
+    linkPathRef.current = pathname;
+    if (!inFrequency && !inFrequentService) return;
+    syncUrlParams({
+      ...urlParamUpdate(MAP_URL.day, day),
+      ...urlParamUpdate(APP_URL.hideLowQuality, FEATURES.persistedSettings && hideLowQuality),
+      [AGENCY_CARD_PARAM]: selectedAgencySlug,
+      ...(inFrequentService ? linkUpdate(FREQUENT_URL, { days: frequentServiceDays, frequency: frequentServiceFrequency, window: frequentServiceWindow }) : {}),
+    });
+  // Only a path change rewrites the link; each value's own effect keeps it current.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname, inFrequency, inFrequentService]);
 
   useEffect(() => {
     setAgenciesLoadState('loading');
