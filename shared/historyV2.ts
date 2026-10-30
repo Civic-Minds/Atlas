@@ -23,10 +23,6 @@ export interface HistoryRep {
   h?: number;
   lim?: true;
   p?: HeadwayByPeriod;
-  /** CIV-555: the route's shared-stretch (trunk) value when it is better than h, for the "every 8–60" headline. */
-  t?: number;
-  /** CIV-555: the same per period, only where better than p's value (History shows one period at a time). */
-  tp?: HeadwayByPeriod;
 }
 
 export interface HistorySnapshotV2 {

@@ -60,7 +60,7 @@ import { buildHiddenRoutesForAgency, mergeHiddenRoutes, type HiddenRoutesFile, t
 import { rescoreFeedQuality, type FeedQuality } from '../shared/feedQuality.js';
 import { historyHeadlineWins } from './historyHeadlinePick.js';
 import { historyRouteKey } from './historyRouteKey.js';
-import { baselineFingerprint, buildSidecar, buildV2Routes, buildV2RoutesMerged, fingerprintChanged, fingerprintOf, historyV2Enabled, r2ArchiveSink, routeTrunkHeadway, routeTrunkHeadwayByPeriod, splitFeaturesBySource, writeSidecar, type LatestRouteEntry, type V2FeedPart } from './historyV2.js';
+import { baselineFingerprint, buildSidecar, buildV2Routes, buildV2RoutesMerged, fingerprintChanged, fingerprintOf, historyV2Enabled, r2ArchiveSink, splitFeaturesBySource, writeSidecar, type LatestRouteEntry, type V2FeedPart } from './historyV2.js';
 import { readFeedEvidence } from './historyWeekend.js';
 import { readRefDateQuality } from './historyRefQuality.js';
 import { assessWithWeekCheck, readRepickRows } from './historyRefRepick.js';
@@ -132,9 +132,6 @@ interface RouteSummary {
   tier: string | null;
   routeLongName?: string;
   headwayByPeriod?: HeadwayByPeriod;
-  /** CIV-555: the route's shared-stretch value (routeTrunkHeadway), when better than the headway, and per period. */
-  trunkHeadway?: number;
-  trunkHeadwayByPeriod?: HeadwayByPeriod;
 }
 
 interface RefreshAgencyResult {
@@ -179,19 +176,6 @@ async function writeHistorySnapshot(slug: string, geojson: string, feedExpiry: s
         headwayByPeriod: byp ?? undefined,
       };
     }
-  }
-  // CIV-555: each route's shared-stretch value from all its Weekday features, for History's "every 8–60".
-  const weekdayByRoute = new Map<string, Array<Record<string, unknown>>>();
-  for (const f of fc.features) {
-    if (f.properties.day !== 'Weekday') continue;
-    const sn = historyRouteKey(f.properties);
-    if (sn && current[sn]) (weekdayByRoute.get(sn) ?? weekdayByRoute.set(sn, []).get(sn)!).push(f.properties);
-  }
-  for (const [sn, route] of Object.entries(current)) {
-    const t = routeTrunkHeadway(weekdayByRoute.get(sn) ?? []);
-    if (t != null && t < route.headway) route.trunkHeadway = t;
-    const tp = routeTrunkHeadwayByPeriod(weekdayByRoute.get(sn) ?? [], route.headwayByPeriod);
-    if (tp) route.trunkHeadwayByPeriod = tp;
   }
 
   // Load previous headways from agency-level latest.json (compact baseline for diffing).
@@ -250,7 +234,7 @@ async function writeHistorySnapshot(slug: string, geojson: string, feedExpiry: s
     // Capture the route's geometry at this historical period for map rendering in History app (AI-162, AI-161)
     // Only a real line is stored; routes with no map shape (Point features) store null.
     const geometry = historyGeometryForRoute(fc.features, routeShortName);
-    const body = JSON.stringify({ headway: route.headway, prevHeadway, tier: route.tier, routeLongName: route.routeLongName ?? null, headwayByPeriod: route.headwayByPeriod ?? null, ...(route.trunkHeadway != null ? { trunkHeadway: route.trunkHeadway } : {}), ...(route.trunkHeadwayByPeriod ? { trunkHeadwayByPeriod: route.trunkHeadwayByPeriod } : {}), geometry, processedAt });
+    const body = JSON.stringify({ headway: route.headway, prevHeadway, tier: route.tier, routeLongName: route.routeLongName ?? null, headwayByPeriod: route.headwayByPeriod ?? null, geometry, processedAt });
     routeWrites.push(() => r2PutArchiveJson(key, body));
   }
 
