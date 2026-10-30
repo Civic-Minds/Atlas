@@ -13,8 +13,23 @@ function lastTopLevelDash(n: string): number {
   return at;
 }
 
-// What follows " - " when it only says where the stop sits: SEPTA's "FS", "MBNS", "2 NS", "onsite", a "Bay C" or a platform.
-const STOP_DETAIL = /^(?:(?:\d+\s*)?(?:FS|NS|MBFS|MBNS)|\d+|onsite|Bay\s+[A-Z0-9]{1,2}|.*\bPlatform)$/i;
+// What follows " - " when it only says where the stop sits, not the place: SEPTA's "FS", "MBNS 1", "onsite 2", "Rt 58",
+// "B1", "north", "opposite"; MBTA's "West" and town or transit lines ("Winchester Line", "Green Line") (#1237); a
+// "Bay C", a gate or a platform.
+const STOP_DETAIL = new RegExp(`^(?:${[
+  '(?:\\d+\\s*)?(?:FS|NS|MBFS|MBNS|onsite)(?:\\s+(?:\\d+|layover|Route\\s+\\w+))?',
+  '\\d+(?:\\s+bus)?',
+  'bus',
+  '(?:Rts?|Route)\\s+(?:\\d+\\w?|[A-Z])\\b(?:(?:\\s*&\\s*|\\s+)(?:\\d+\\w?|[A-Z])\\b)*(?:\\s+drop)?',
+  '(?:north|south|east|west)(?:bound)?(?:\\s+(?:side|entrance))?',
+  'opposite(?:\\s+shelter)?',
+  '(?:Main\\s+)?Drop-?off(?:\\s+Only)?',
+  'B\\d+(?:\\s*&\\s*B\\d+)?',
+  'Bay\\s+(?:[A-Z]|\\d+)',
+  'Gate\\s+#?\\d+\\w?',
+  '\\w+(?:\\s+\\w+)?\\s+Line',
+  '.*\\bPlatform',
+].join('|')})$`, 'i');
 
 /**
  * Short names for chart axes and the Live strip: the cross street or the station, not the whole stop name.
