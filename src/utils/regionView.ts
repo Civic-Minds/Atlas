@@ -1,5 +1,6 @@
 import type { Agency } from '../App';
 import { DEFAULT_MAP_CENTER, DEFAULT_MAP_ZOOM } from '../../shared/config';
+import { MAP_URL, readLink } from './urlSchema';
 const VIEW_KEY = 'atlas_view';
 
 export interface SavedView { lat: number; lon: number; zoom: number }
@@ -11,10 +12,8 @@ export function isValidLatitude(lat: number): boolean {
 
 /** The ?lat, ?lon and ?z share-link values, or undefined when any is missing or unusable. */
 export function parseUrlView(params: URLSearchParams): { lat: number; lon: number; zoom: number } | undefined {
-  const lat = parseFloat(params.get('lat') ?? '');
-  const lon = parseFloat(params.get('lon') ?? '');
-  const zoom = parseFloat(params.get('z') ?? '');
-  if (isValidLatitude(lat) && Number.isFinite(lon) && Number.isFinite(zoom)) return { lat, lon, zoom };
+  const { lat, lon, zoom } = readLink(params, { lat: MAP_URL.lat, lon: MAP_URL.lon, zoom: MAP_URL.zoom });
+  if (lat != null && lon != null && zoom != null && isValidLatitude(lat)) return { lat, lon, zoom };
   return undefined;
 }
 
