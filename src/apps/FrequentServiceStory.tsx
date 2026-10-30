@@ -5,7 +5,6 @@ import DataTable, { type DataTableColumn } from '../components/ui/DataTable';
 import ChartTableDetails from '../components/charts/ChartTableDetails';
 import { frequentServiceCoverageInterpretation, frequentServiceCoverageStats, frequentServiceStoryResearchRecord, frequentServiceStoryStats } from '../data/frequentServiceStory';
 import FrequentServicePublishedMapMontage from '../components/FrequentServicePublishedMapMontage';
-import FrequentServicePublishedMapCollage from '../components/FrequentServicePublishedMapCollage';
 import FrequentServiceStoryMap from '../components/FrequentServiceStoryMap';
 import type { Agency } from '../App';
 import { headwayAmount } from '../../shared/headwayText';
@@ -72,7 +71,6 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
           </div>
           <div className="w-full max-w-5xl text-left">
             <FrequentServicePublishedMapMontage />
-            <FrequentServicePublishedMapCollage />
           </div>
           <a href="#story" className="mt-9 inline-flex items-center gap-2 rounded-full border border-[var(--border-primary)] bg-[var(--bg-panel)] px-4 py-2.5 text-xs font-bold text-[var(--text-primary)] hover:bg-[var(--bg-btn-hover)]">
             Explore the research <ArrowDown className="h-3.5 w-3.5" aria-hidden="true" />
