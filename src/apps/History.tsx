@@ -345,12 +345,16 @@ function RouteHistoryCard({
             </p>
             <p className={CARD_CALLOUT_TEXT}>
               {tripTime.firstLabel} to {tripTime.lastLabel}
+              {/* The dot moves with Learn more, so a narrow card never ends the dates line on a dangling dot. */}
               {onInfoOpen && (
                 <>
-                  {' · '}
-                  <ArrowLink as="button" tone="inline" size="xs" wrap onClick={() => onInfoOpen('about', { helpTopic: explainerFor('N124') })} className="whitespace-nowrap">
-                    Learn more
-                  </ArrowLink>
+                  {' '}
+                  <span className="whitespace-nowrap">
+                    {'· '}
+                    <ArrowLink as="button" tone="inline" size="xs" onClick={() => onInfoOpen('about', { helpTopic: explainerFor('N124') })}>
+                      Learn more
+                    </ArrowLink>
+                  </span>
                 </>
               )}
             </p>
