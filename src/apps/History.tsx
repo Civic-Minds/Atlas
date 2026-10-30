@@ -6,11 +6,12 @@ import { type HeadwayByPeriod } from '../../shared/config';
 import type { HistorySnapshotV2 } from '../../shared/historyV2';
 import { countOf } from '../../shared/overflowText';
 import { isDrawableLineCoordinates } from '../../shared/routeGeometry';
-import { TRANSITION_BASE, AGENCY_LIST_FILTERS, PILL_SURFACE, PILL_SCROLL_ROW, SIDEBAR_CARD, SIDEBAR_CARD_MAX_H, sidebarFrameStyle, SIDEBAR_PANEL_WIDTH, Z_PANEL, CARD_NOTICE, CARD_NOTE } from '../styles';
-import { routeLabels, titleCase } from '../utils/format';
+import { TRANSITION_BASE, AGENCY_LIST_FILTERS, PILL_SURFACE, PILL_SCROLL_ROW, SIDEBAR_CARD, SIDEBAR_CARD_MAX_H, sidebarFrameStyle, sidebarCardFrame, SIDEBAR_PANEL_WIDTH, Z_PANEL, CARD_NOTICE, CARD_NOTE } from '../styles';
+import { routeLabels } from '../utils/format';
+import { RouteTitleName } from '../components/RouteRowName';
 import { agencyNames } from '../utils/agencyName';
 import CardRouteList from '../components/Interval/CardRouteList';
-import { AgencyCardTop, CARD_CALLOUT_HEADLINE, CARD_CALLOUT_HEADLINE_TONE, CARD_CALLOUT_TEXT, CARD_HEADER_BLOCK, CardCallout, CardDirectionRow, CardReportButton, SIDEBAR_CARD_BODY, SidebarCardHeaderBlock, SidebarCardListRows, SidebarCardShell } from '../components/Interval/cardUi';
+import { AgencyCardTop, CardHelpNotice, CARD_CALLOUT_HEADLINE, CARD_CALLOUT_HEADLINE_TONE, CARD_CALLOUT_TEXT, CARD_HEADER_BLOCK, CardCallout, CardDirectionRow, CardReportButton, SIDEBAR_CARD_BODY, SidebarCardHeaderBlock, SidebarCardListRows, SidebarCardShell } from '../components/Interval/cardUi';
 import RouteCardTitle from '../components/RouteCardTitle';
 import { SearchSuggestionsPanel, type RecentRoute, type SuggestedRoute } from '../components/Interval/SearchSuggestionsPanel';
 import type { RouteListDisplay } from '../utils/effectiveHeadway';
@@ -225,14 +226,15 @@ function RouteHistoryCard({
   const closeChart = useCallback(() => setChartExpanded(false), []);
   const hws = chartSnaps.map(snapHeadway);
   // The status tokens follow the colour-vision setting on their own (index.css).
-  const lineColor = worse ? 'var(--status-negative)' : better ? 'var(--status-positive)' : '#9ca3af';
+  const lineColor = worse ? 'var(--status-negative)' : better ? 'var(--status-positive)' : 'var(--status-neutral)';
 
   return (
     // The regular route card's frame, title and rows (RouteCardTitle, direction rows): the agency name
     // above the title goes back to the agency, as on the map's route card.
     // On phones it opens in the map route card's bottom sheet (#1028 item 23).
-    <div className={sheetMode ? bottomSheetFrameClass(sheetVisible && sheetEntered) : `${SIDEBAR_CARD} ${SIDEBAR_PANEL_WIDTH} ${SIDEBAR_CARD_MAX_H} flex flex-col ${frameClassName}`} style={sheetMode ? undefined : frameStyle}>
-    <div className={sheetMode ? bottomSheetBodyClass(sheetExpanded) : SIDEBAR_CARD_BODY}>
+    <div className={sheetMode ? bottomSheetFrameClass(sheetVisible && sheetEntered) : sidebarCardFrame(sheetVisible && sheetEntered)} style={sheetMode ? undefined : frameStyle}>
+    {/* The report form takes the card's width, as on the map's route card. */}
+    <div data-report-anchor="true" className={sheetMode ? bottomSheetBodyClass(sheetExpanded) : SIDEBAR_CARD_BODY}>
     {sheetMode && <BottomSheetHandle expanded={sheetExpanded} handle={sheetHandle} />}
     <SidebarCardShell>
       <SidebarCardHeaderBlock>
@@ -240,7 +242,7 @@ function RouteHistoryCard({
           <div className="flex-1 min-w-0">
             <RouteCardTitle
               routeShortName={route.routeShortName}
-              routeLongName={route.routeName ? titleCase(route.routeName) : null}
+              routeLongName={route.routeName || null}
               routeType={route.currentRouteType ?? null}
               agencySlug={agencySlug}
               agencyName={agencyName}
@@ -269,7 +271,7 @@ function RouteHistoryCard({
         </div>
       )}
       {chartExpanded && chartSnaps.length >= 2 && (
-        <ExpandDialog title={`${route.routeShortName}${route.routeName ? ` ${titleCase(route.routeName)}` : ''}`} ariaLabel="Route history chart" closeLabel="Close chart" onClose={closeChart}>
+        <ExpandDialog title={<RouteTitleName label={routeLabels({ shortName: route.routeShortName, longName: route.routeName || null, routeType: route.currentRouteType ?? undefined, agencySlug, agencyName })} />} ariaLabel="Route history chart" closeLabel="Close chart" onClose={closeChart}>
           <div className="mt-4">
             <RouteHistoryChart wide snaps={chartSnaps} minutes={hws} lineColor={lineColor} gradientId={`${gradientId}-wide`} hoveredSnap={hoveredSnap} onHover={setHoveredSnap} />
           </div>
@@ -624,7 +626,7 @@ function HistoryAgencyPanel({
 
   return (
     // The agency card's placement: sidebar Panel, 80px from the top, the search bar's width.
-    <Panel sidebar enter className={frameClassName} style={frameStyle}>
+    <Panel sidebar enter data-report-anchor="true" className={frameClassName} style={frameStyle}>
       {/* Header: the agency card's header block, with the route filter and mode pills inside it. */}
       <div className={CARD_HEADER_BLOCK}>
         <AgencyCardTop
@@ -642,9 +644,9 @@ function HistoryAgencyPanel({
           )}
         >
           {/* N55 (Ryan): a linked route History has no past schedules for says so, above the agency's list. */}
-          {missingRoute && <p className={`${CARD_NOTICE} mt-1`}>{HISTORY_ROUTE_NOT_COVERED}</p>}
+          {missingRoute && <CardHelpNotice className="mt-1" message={HISTORY_ROUTE_NOT_COVERED} />}
           {!routeQuery && !activeFilter && (
-            <p className={`${CARD_NOTICE} mt-1`}>{HISTORY_ROUTE_ORDER_NOTE}</p>
+            <CardHelpNotice className="mt-1" message={HISTORY_ROUTE_ORDER_NOTE} />
           )}
         </AgencyCardTop>
         {routeFilters.length > 0 && (
@@ -667,7 +669,7 @@ function HistoryAgencyPanel({
             const delta = value.kind === 'value' && before?.kind === 'value' ? value.min - before.min : 0;
             return {
               key: route.routeShortName,
-              route: routeLabels({ shortName: route.routeShortName, longName: titleCase(route.routeName), routeType: route.currentRouteType ?? undefined, agencySlug: agencyHistory.slug }),
+              route: routeLabels({ shortName: route.routeShortName, longName: route.routeName, routeType: route.currentRouteType ?? undefined, agencySlug: agencyHistory.slug }),
               headway: value.kind === 'value' ? value.min : undefined,
               limited: value.kind === 'limited',
               headwaySuffix: delta ? (delta > 0 ? `+${delta}` : `${delta}`) : undefined,
