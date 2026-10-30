@@ -99,6 +99,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Live
 
+- **Live's scheduled frequency matches the route card**: it read one branch's own wait, so [TTC 29](https://github.com/Civic-Minds/Atlas/issues/1234) northbound said every 16 where the card says every 8
 - **Live is one mode that opens on the vehicles**: a route's card matches the regular card and shows gaps, stand-still points and run time for TTC 503-511, counts every vehicle (half the 501s were missing), and loads lateness and arrivals again (CIV-325, CIV-331)
 - **Live has a vehicle card and frames what you click**: a vehicle shows its direction, destination, speed and on-time status, list clicks frame any route or vehicle, and running routes draw thin lines under the dots (CIV-332, CIV-329, CIV-328, CIV-326)
 - **Live's place list says what each agency offers**: places are tagged "Vehicles" or "Vehicles + performance" under the name, and picking Toronto no longer lists [York Region](https://github.com/Civic-Minds/Atlas/issues/900) routes (CIV-219, CIV-229)
