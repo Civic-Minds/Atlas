@@ -442,7 +442,8 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     return parseCompareSideParams<DayTypeName, TimePeriod>(searchParams, {
       days: DAY_TYPES,
       periods: PERIOD_KEYS as readonly TimePeriod[],
-      allPeriod: 'all',
+      // CIV-239: no All day; a Compare link without map B's time opens B on map A's.
+      allPeriod: period,
       fallbackHeadway: maxHeadway,
     });
   });

@@ -628,7 +628,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                 <div className="block sm:hidden pb-4">
                   <PickerSection title="Frequency" className="px-5 pt-4 pb-3"><FrequencyPicker value={maxHeadway} onChange={max => setMaxHeadway?.(max)} /></PickerSection>
                   <PickerSection title="Day of service" className="px-5 pt-2 pb-3"><DayPicker fill value={day as DayType} onChange={d => setDay?.(d)} /></PickerSection>
-                  <PickerSection title="Time period" className="px-5 pt-2 pb-3"><PeriodPicker includeAll value={period as TimePeriod} onChange={p => setPeriod?.(p)} /></PickerSection>
+                  <PickerSection title="Time period" className="px-5 pt-2 pb-3"><PeriodPicker value={period as TimePeriod} onChange={p => setPeriod?.(p)} /></PickerSection>
 
                   {compare?.side && (
                     <div className="px-5 pt-2 pb-3">
