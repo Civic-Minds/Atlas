@@ -44,12 +44,13 @@ import ListRow from '../components/ui/ListRow';
 import Pill from '../components/ui/Pill';
 import { AgencyList, AgencyListRow, AgencyRegionSection } from '../components/ui/AgencyList';
 import ArrowLink from '../components/ui/ArrowLink';
+import type { OpenInfoFn } from '../components/InfoPanel';
 import { reportDetails } from '../utils/reportIssue';
 import ModeFilterPillRow from '../components/ui/ModeFilterPillRow';
 import { syncUrlParams } from '../utils/syncUrlParams';
 import { encodeHistoryUrlState, parseHistoryUrlState, type HistoryUrlState } from '../utils/shareUrlState';
 import PanelEmpty from '../components/ui/PanelEmpty';
-import { HISTORY_LOAD_FAILED, HISTORY_ROUTE_NOT_COVERED, HISTORY_ROUTE_ORDER_NOTE, HISTORY_TRIP_TIME_NOTE, loadingText, NO_AGENCIES_MATCH, NO_ROUTES_LOADED, noRoutesMatchText, RETRY_HINT } from '../content/noticeCopy';
+import { HISTORY_LOAD_FAILED, HISTORY_ROUTE_NOT_COVERED, HISTORY_ROUTE_ORDER_NOTE, HISTORY_TRIP_TIME_MIN_CHANGE, historyTripTimeChange, explainerFor, loadingText, NO_AGENCIES_MATCH, NO_ROUTES_LOADED, noRoutesMatchText, RETRY_HINT } from '../content/noticeCopy';
 import { compareAgencyName, compareRegion } from '../utils/sortCompare';
 import { inViewFirst } from '../utils/historyOpen';
 
@@ -94,7 +95,7 @@ interface Props {
   initialAgencySlug?: string | null;
   /** Agencies in the map's view, listed first in the chooser. */
   inViewAgencySlugs?: readonly string[];
-  onInfoOpen?: (tab?: 'about' | 'agencies' | 'live') => void;
+  onInfoOpen?: OpenInfoFn;
   query: string;
   searchFocused: boolean;
   setQuery: (q: string) => void;
@@ -177,6 +178,12 @@ function formatXLabel(label: string): string {
   return label;
 }
 
+/** The trip time to show, or null when it changed by less than HISTORY_TRIP_TIME_MIN_CHANGE minutes as shown (CIV-1127). */
+export function shownTripTimeChange(trip: RouteTripDurationSummary | undefined): RouteTripDurationSummary | null {
+  if (!trip) return null;
+  return Math.abs(Math.round(trip.lastMinutes) - Math.round(trip.firstMinutes)) >= HISTORY_TRIP_TIME_MIN_CHANGE ? trip : null;
+}
+
 function RouteHistoryCard({
   route,
   agencyName,
@@ -186,7 +193,10 @@ function RouteHistoryCard({
   frameStyle,
   sheetVisible,
   period,
+  onInfoOpen,
 }: {
+  /** Opens E26 from the trip-time box's Learn more. */
+  onInfoOpen?: OpenInfoFn;
   /** The Time chip's period: the rows, chart and summary read that period's values (CIV-389). */
   period: TimePeriod;
   route: RouteHistoryEntry;
@@ -223,6 +233,7 @@ function RouteHistoryCard({
   const worse = lastHw > firstHw;
   const better = lastHw < firstHw;
   const summary = changeSummary(route, period);
+  const tripTime = shownTripTimeChange(route.tripDuration);
   // The snapshot under the pointer or keyboard, on a row or a chart point: its row highlights like a route card row and
   // its point grows and shows its value (Ryan: "when u hover over a date in this list does it hihglight it on the date on the chart too").
   const [hoveredSnap, setHoveredSnap] = useState<RouteSnapshot | null>(null);
@@ -318,27 +329,31 @@ function RouteHistoryCard({
         })}
       </SidebarCardListRows>
 
-        {/* One box (CIV-1127): the frequency change first, in its better or worse colour (CIV-971), then the trip time
-            as one line under it. A route with only one of the two shows that one. */}
-        {(summary || route.tripDuration) && (
-          <CardCallout tone={summary ? (summary.worse ? 'negative' : 'positive') : 'neutral'} className="mt-3">
-            {summary && (
-              <>
-                <p className={CARD_CALLOUT_HEADLINE_TONE[summary.worse ? 'negative' : 'positive']}>{summary.text}</p>
-                <p className={CARD_CALLOUT_TEXT}>{summary.subtext}</p>
-              </>
-            )}
-            {route.tripDuration && (
-              <>
-                <p className={summary ? `${CARD_CALLOUT_TEXT} mt-2` : CARD_CALLOUT_HEADLINE} data-testid="history-trip-time">
-                  Trip time: {runTimeAmount(route.tripDuration.firstMinutes)} ({route.tripDuration.firstLabel}) → {runTimeAmount(route.tripDuration.lastMinutes)} ({route.tripDuration.lastLabel})
-                </p>
-                {/* The long explanation stays here until Ryan picks where it goes: History has no explainer link (CIV-1127). */}
-                <p className={`${CARD_NOTICE} mt-1`}>
-                  {HISTORY_TRIP_TIME_NOTE}
-                </p>
-              </>
-            )}
+        {/* Two short boxes (CIV-1127, Ryan's layout B): the frequency change in its better or worse colour (CIV-971), then
+            a neutral trip-time box with its dates and a Learn more to E26. The trip time shows only when it changed by
+            HISTORY_TRIP_TIME_MIN_CHANGE minutes or more, as shown. */}
+        {summary && (
+          <CardCallout tone={summary.worse ? 'negative' : 'positive'} className="mt-3">
+            <p className={CARD_CALLOUT_HEADLINE_TONE[summary.worse ? 'negative' : 'positive']}>{summary.text}</p>
+            <p className={CARD_CALLOUT_TEXT}>{summary.subtext}</p>
+          </CardCallout>
+        )}
+        {tripTime && (
+          <CardCallout tone="neutral" className={summary ? 'mt-2' : 'mt-3'}>
+            <p className={CARD_CALLOUT_HEADLINE} data-testid="history-trip-time">
+              {historyTripTimeChange(runTimeAmount(tripTime.firstMinutes), runTimeAmount(tripTime.lastMinutes))}
+            </p>
+            <p className={CARD_CALLOUT_TEXT}>
+              {tripTime.firstLabel} to {tripTime.lastLabel}
+              {onInfoOpen && (
+                <>
+                  {' · '}
+                  <ArrowLink as="button" tone="inline" size="xs" wrap onClick={() => onInfoOpen('about', { helpTopic: explainerFor('N124') })} className="whitespace-nowrap">
+                    Learn more
+                  </ArrowLink>
+                </>
+              )}
+            </p>
           </CardCallout>
         )}
     </SidebarCardShell>
@@ -1037,6 +1052,7 @@ export default function History({ active, view = HISTORY_VIEW_ALL, initialAgency
                   frameStyle={frameStyle}
                   sheetVisible={visible}
                   period={view.period}
+                  onInfoOpen={onInfoOpen}
                 />
               );
             }
