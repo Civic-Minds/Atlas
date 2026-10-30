@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { boardingMainStretchWait, longestRegularWait } from '../routeGrading';
+import { boardingMainStretchWait, riderWait } from '../routeGrading';
 
 const hm = (s: string) => { const [h, m] = s.split(':').map(Number); return h * 60 + m; };
 const every = (from: string, to: string, step: number) => {
@@ -8,21 +8,27 @@ const every = (from: string, to: string, step: number) => {
   return out;
 };
 
-describe('longestRegularWait (CIV-1161 step 1)', () => {
+describe('riderWait (CIV-1161 step 1)', () => {
+  it('is the gap a rider arriving at a random time faces (time-weighted median)', () => {
+    // TransLink 371 Sunday: 60 three times, then 30 five times; the 60s cover 55% of the time.
+    expect(riderWait([...every('09:00', '12:00', 60), ...every('12:30', '14:30', 30)])?.wait).toBe(60);
+    // Saskatoon 18 Saturday: 60 and 62, then 32 six times; the 32s cover 61% of the time.
+    expect(riderWait([hm('09:00'), hm('10:00'), hm('11:02'), hm('11:34'), hm('12:06'), hm('12:38'), hm('13:10'), hm('13:42'), hm('14:14')])?.wait).toBe(32);
+  });
   it('reads the wait a midday rider gets when service thins inside the window (MTA BxM7 to Midtown)', () => {
     // Every 15 until 10:00, then every 30 to 15:00.
-    expect(longestRegularWait([...every('09:00', '10:00', 15), ...every('10:30', '15:00', 30)])).toEqual({ wait: 30, window: 'midday' });
+    expect(riderWait([...every('09:00', '10:00', 15), ...every('10:30', '15:00', 30)])).toEqual({ wait: 30, window: 'midday' });
   });
-  it('does not let one long gap decide (CapMetro 985 southbound: 40, then 30, 30, 30)', () => {
-    expect(longestRegularWait([hm('05:50'), hm('06:30'), hm('07:00'), hm('07:30'), hm('08:00')])).toEqual({ wait: 30, window: 'allDay' });
-    expect(longestRegularWait([hm('09:00'), hm('09:40'), hm('10:10'), hm('10:40'), hm('11:10')])?.wait).toBe(30);
+  it('reads the common gap past one long one (CapMetro 985 southbound: 40, then 30, 30, 30)', () => {
+    expect(riderWait([hm('05:50'), hm('06:30'), hm('07:00'), hm('07:30'), hm('08:00')])).toEqual({ wait: 30, window: 'allDay' });
+    expect(riderWait([hm('09:00'), hm('09:40'), hm('10:10'), hm('10:40'), hm('11:10')])?.wait).toBe(30);
   });
   it('keeps an hourly half of the window (MTA BxM10 Saturday: hourly until 12:20, then every 30)', () => {
-    expect(longestRegularWait([...every('09:20', '12:20', 60), ...every('12:50', '14:50', 30)])?.wait).toBe(60);
+    expect(riderWait([...every('09:20', '12:20', 60), ...every('12:50', '14:50', 30)])?.wait).toBe(60);
   });
   it('falls back to the PM peak, then all day, like the headline', () => {
-    expect(longestRegularWait(every('15:00', '18:00', 20))).toEqual({ wait: 20, window: 'pmPeak' });
-    expect(longestRegularWait([hm('09:00'), hm('20:00')])).toBeNull();
+    expect(riderWait(every('15:00', '18:00', 20))).toEqual({ wait: 20, window: 'pmPeak' });
+    expect(riderWait([hm('09:00'), hm('20:00')])).toBeNull();
   });
 });
 

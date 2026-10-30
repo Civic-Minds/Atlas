@@ -301,26 +301,33 @@ function decideSourcedPeriod(i: PeriodInputs): PeriodValue {
 }
 
 /**
- * CIV-1161 step 1: the longest regular wait in the first headline window (midday, then PM peak,
- * then all day) that has HEADLINE_MIN_DEPARTURES departures. It is the longest gap between the
- * window's departures that happens at least twice (the second-longest gap), so neither the wait
- * before the first departure or after the last one, nor one long gap, decides it (CapMetro 985
- * southbound: 30, 30, 30 after a first gap of 40 reads 30).
+ * CIV-1161 step 1 (attempt 2): the wait a rider arriving at a random time faces, in the first
+ * headline window (midday, then PM peak, then all day) that has HEADLINE_MIN_DEPARTURES
+ * departures. It is the time-weighted median gap: each gap between the window's departures counts
+ * by its length, and the value is the gap at which half the time between departures is covered,
+ * the shorter one on an exact half. Two slow gaps at one end of the window don't set it
+ * (Saskatoon 18 Saturday: 60, 62, then 32 six times reads 32); slow gaps that cover most of
+ * the window do (TransLink 371 Sunday: 60 three times, then 30 five times reads 60).
  */
-export function longestRegularWait(times: readonly number[]): { wait: number; window: keyof typeof HEADLINE_WINDOWS } | null {
+export function riderWait(times: readonly number[]): { wait: number; window: keyof typeof HEADLINE_WINDOWS } | null {
   for (const window of ['midday', 'pmPeak', 'allDay'] as const) {
     const { start, end } = HEADLINE_WINDOWS[window];
     const t = [...new Set(times)].filter(x => x >= start && x <= end).sort((a, b) => a - b);
     if (t.length < HEADLINE_MIN_DEPARTURES) continue;
-    const gaps = t.slice(1).map((x, i) => x - t[i]).sort((a, b) => b - a);
-    return { wait: Math.round(gaps[1]), window };
+    const gaps = t.slice(1).map((x, i) => x - t[i]).sort((a, b) => a - b);
+    const half = gaps.reduce((sum, g) => sum + g, 0) / 2;
+    let covered = 0;
+    for (const gap of gaps) {
+      covered += gap;
+      if (covered >= half) return { wait: Math.round(gap), window };
+    }
   }
   return null;
 }
 
 /**
- * CIV-1161 step 1: the longest regular wait where riders board the main stretch: the median of
- * longestRegularWait over its stops a rider can board (drop-off-only stops left out), each read
+ * CIV-1161 step 1: the wait where riders board the main stretch: the median of
+ * riderWait over its stops a rider can board (drop-off-only stops left out), each read
  * over every trip of the direction that stops there. Null when no such stop has a reading.
  */
 export function boardingMainStretchWait(
@@ -329,7 +336,7 @@ export function boardingMainStretchWait(
   dropOffOnly: ReadonlySet<string>,
 ): { wait: number; stops: number } | null {
   const waits = stops.filter(stop => !dropOffOnly.has(stop))
-    .map(stop => longestRegularWait(timesAt(stop))?.wait)
+    .map(stop => riderWait(timesAt(stop))?.wait)
     .filter((w): w is number => w != null)
     .sort((a, b) => a - b);
   if (waits.length === 0) return null;
