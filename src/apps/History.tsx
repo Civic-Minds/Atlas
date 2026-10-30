@@ -325,6 +325,9 @@ function RouteHistoryCard({
               headwaySuffixTone={delta ? (delta > 0 ? 'negative' : 'positive') : undefined}
               // Regular weight, like the map cards' destination rows (CIV-971).
               labelWeight="regular"
+              // A value that does not fit beside the date ("every 15–30 min -6" in a narrow panel) goes under it at the
+              // right, as the route cards' long values do (CIV-1143, Ryan 2026-10-30).
+              valueEnd
               onHoverStart={charted ? () => setHoveredSnap(snap) : undefined}
               onHoverEnd={charted ? () => setHoveredSnap(null) : undefined}
               branchHovered={charted && snap === hoveredSnap}
