@@ -59,11 +59,12 @@ export const CARD_CALLOUT_HEADLINE_TONE = {
   positive: 'text-xs font-bold leading-tight text-[var(--status-positive-text)]',
 } as const;
 
-/** The tinted callouts (History's better or worse summary): the status tint in place of the outline. */
+/** The tinted callouts (History's better or worse summary): the status tint over the same outline as every callout,
+ *  so a tinted box and a plain one beside it read as the same kind of box (CIV-1127). */
 const CARD_CALLOUT_TONE = {
   neutral: CARD_CALLOUT,
-  negative: 'rounded-xl px-3 py-2.5 bg-[var(--status-negative-bg)]',
-  positive: 'rounded-xl px-3 py-2.5 bg-[var(--status-positive-bg)]',
+  negative: 'rounded-xl border border-[var(--border-primary)] px-3 py-2.5 bg-[var(--status-negative-bg)]',
+  positive: 'rounded-xl border border-[var(--border-primary)] px-3 py-2.5 bg-[var(--status-positive-bg)]',
 } as const;
 
 /** A callout box inside a card (Compare's summary, History's trip time and change summary). Spacing and text styles come from the caller. */

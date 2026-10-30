@@ -245,13 +245,15 @@ export const REPORT_NEEDS_FREQUENCY_DETAIL = 'Select at least one frequency deta
 export const REPORT_NEEDS_REASON = 'Select a reason or describe what is wrong.';
 
 // ---- History ----
-// N53 history-trip-time: since CIV-1127 the paragraph of E26, behind the trip-time box's Learn more, not on the card.
-export const HISTORY_TRIP_TIME_NOTE = "This is the scheduled time for one typical weekday trip end to end, shown only when the route's stops and path stayed the same across these years.";
-// N124 history-trip-time-change (Ryan's layout B, CIV-1127): the trip-time box's line, with Learn more opening E26.
+// N53 history-trip-time (retired by CIV-1127: Ryan wanted a short sentence in each box instead of the long note).
 export const historyTripTimeChange = (first: string, last: string) => `Trip time: ${first} → ${last}`;
 /** CIV-1127: the box shows only when the shown trip time changed by this many minutes or more (Ryan, "is 64 mins to
  *  63 mins worth showing?"). A percent of the trip is on hold until History has more than BART's 5 routes to test it. */
 export const HISTORY_TRIP_TIME_MIN_CHANGE = 2;
+// N125 history-frequency-explainer and N126 history-trip-time-explainer (CIV-1127): one sentence under each box's dates,
+// in place of Learn more. Proposed, waiting on Ryan's word-for-word OK.
+export const HISTORY_FREQUENCY_EXPLAINER = 'How often it runs on weekdays, oldest schedule to newest.';
+export const HISTORY_TRIP_TIME_EXPLAINER = 'How long one typical weekday trip takes end to end, by the schedule.';
 // N56 history-order
 export const HISTORY_ROUTE_ORDER_NOTE = 'Biggest changes first';
 
@@ -363,8 +365,6 @@ export const EXPLAINERS = {
   'no-route-shape': { code: 'E6', title: 'Route map unavailable' },
   'edge-gap-allowance': { code: 'E7', title: 'Frequency allowance' },
   'weekday-variation': { code: 'E8', title: 'Weekday variation' },
-  // E26 (CIV-1127): History's trip time. Title proposed, waiting on Ryan's word-for-word OK.
-  'trip-time': { code: 'E26', title: 'Trip time' },
 } as const;
 export type HelpTopic = keyof typeof EXPLAINERS;
 
@@ -435,8 +435,6 @@ export const EXPLAINER_LAYOUT: Record<ExplainerLayoutKey, { p2: readonly Explain
   'no-route-shape': { p2: ['FREQUENCY_FROM_TIMETABLE_NO_LINE'], p3: 'REPORT_WITH_FLAG' },
   'edge-gap-allowance': { p2: ['MIDDAY_GAPS'] },
   'weekday-variation': { p2: ['WEEKDAYS_SEPARATE'], p3: 'AGENCY_WEBSITE_EACH_DAY' },
-  // E26: N53 alone, nothing after it.
-  'trip-time': { p2: [] },
 };
 
 /**
@@ -457,7 +455,6 @@ export const NOTICE_EXPLAINERS = {
   N21: 'new-schedule-data',
   N22: 'corrected-data',
   N25: 'outdated-schedule',
-  N124: 'trip-time',
 } as const satisfies Record<string, HelpTopic>;
 export type LearnMoreCode = keyof typeof NOTICE_EXPLAINERS;
 export const explainerFor = (code: LearnMoreCode): HelpTopic => NOTICE_EXPLAINERS[code];

@@ -10,13 +10,12 @@ describe('Card callout box (CIV-900 S3)', () => {
     expect(box.textContent).toBe('Text');
   });
 
-  it('tinted tones swap the outline for the status tint (History\'s better or worse summary)', () => {
+  it('tinted tones keep the shared outline under the status tint (History\'s better or worse summary, CIV-1127)', () => {
     const { getByTestId } = render(<>
       <CardCallout tone="negative" data-testid="worse">Worse</CardCallout>
       <CardCallout tone="positive" data-testid="better">Better</CardCallout>
     </>);
-    expect(getByTestId('worse').className).toBe('rounded-xl px-3 py-2.5 bg-[var(--status-negative-bg)]');
-    expect(getByTestId('better').className).toBe('rounded-xl px-3 py-2.5 bg-[var(--status-positive-bg)]');
-    expect(getByTestId('worse').className).not.toContain('border');
+    expect(getByTestId('worse').className).toBe('rounded-xl border border-[var(--border-primary)] px-3 py-2.5 bg-[var(--status-negative-bg)]');
+    expect(getByTestId('better').className).toBe('rounded-xl border border-[var(--border-primary)] px-3 py-2.5 bg-[var(--status-positive-bg)]');
   });
 });

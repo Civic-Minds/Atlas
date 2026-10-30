@@ -1,4 +1,5 @@
-import { fireEvent, getByRole, render, waitFor } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
+import { HISTORY_FREQUENCY_EXPLAINER, HISTORY_TRIP_TIME_EXPLAINER } from '../../content/noticeCopy';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import History, { shownTripTimeChange, type AgencyHistory, type RouteHistoryEntry } from '../History';
 import { HistoryMapOverlayProvider } from '../../context/HistoryMapOverlay';
@@ -20,24 +21,22 @@ afterEach(() => {
   window.history.replaceState(null, '', '/');
 });
 
-async function open(routeName: string, onInfoOpen?: (...args: unknown[]) => void) {
+async function open(routeName: string) {
   window.history.replaceState(null, '', `/apps/history?agency=demo&hroute=${routeName}&year=2024`);
   vi.stubGlobal('fetch', vi.fn(async () => ({ ok: true, json: async () => [agency] })));
-  const view = render(<HistoryMapOverlayProvider><History active query="" searchFocused={false} setQuery={() => {}} onInfoOpen={onInfoOpen} /></HistoryMapOverlayProvider>);
+  const view = render(<HistoryMapOverlayProvider><History active query="" searchFocused={false} setQuery={() => {}} /></HistoryMapOverlayProvider>);
   await waitFor(() => expect(view.container.textContent).toContain('Aug 2024'));
   return view.container;
 }
 
 describe('History route card callouts (CIV-1127, layout B)', () => {
-  it('shows the frequency change and the trip time as two boxes, the trip time with its dates and Learn more', async () => {
-    const onInfoOpen = vi.fn();
-    const c = await open('1', onInfoOpen);
+  it('shows the frequency change and the trip time as two boxes, each with its dates and one sentence', async () => {
+    const c = await open('1');
     const tripBox = c.querySelector('[data-testid="history-trip-time"]')!.parentElement!;
-    expect(tripBox.textContent).toBe('Trip time: 52 min → 58 minFeb 2022 to Aug 2024 · Learn more');
+    expect(tripBox.textContent).toBe(`Trip time: 52 min → 58 minFeb 2022 to Aug 2024${HISTORY_TRIP_TIME_EXPLAINER}`);
     const freqBox = tripBox.previousElementSibling!;
-    expect(freqBox.textContent).toBe('Every 15 min → every 20 minFeb 2022 to Aug 2024');
-    fireEvent.click(getByRole(tripBox, 'button', { name: /Learn more/ }));
-    expect(onInfoOpen).toHaveBeenCalledWith('about', { helpTopic: 'trip-time' });
+    expect(freqBox.textContent).toBe(`Every 15 min → every 20 minFeb 2022 to Aug 2024${HISTORY_FREQUENCY_EXPLAINER}`);
+    expect(c.textContent).not.toContain('Learn more');
   });
 
   it('shows the frequency change alone when there is no trip time', async () => {

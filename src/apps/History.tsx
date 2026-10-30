@@ -44,13 +44,12 @@ import ListRow from '../components/ui/ListRow';
 import Pill from '../components/ui/Pill';
 import { AgencyList, AgencyListRow, AgencyRegionSection } from '../components/ui/AgencyList';
 import ArrowLink from '../components/ui/ArrowLink';
-import type { OpenInfoFn } from '../components/InfoPanel';
 import { reportDetails } from '../utils/reportIssue';
 import ModeFilterPillRow from '../components/ui/ModeFilterPillRow';
 import { syncUrlParams } from '../utils/syncUrlParams';
 import { encodeHistoryUrlState, parseHistoryUrlState, type HistoryUrlState } from '../utils/shareUrlState';
 import PanelEmpty from '../components/ui/PanelEmpty';
-import { HISTORY_LOAD_FAILED, HISTORY_ROUTE_NOT_COVERED, HISTORY_ROUTE_ORDER_NOTE, HISTORY_TRIP_TIME_MIN_CHANGE, historyTripTimeChange, explainerFor, loadingText, NO_AGENCIES_MATCH, NO_ROUTES_LOADED, noRoutesMatchText, RETRY_HINT } from '../content/noticeCopy';
+import { HISTORY_LOAD_FAILED, HISTORY_ROUTE_NOT_COVERED, HISTORY_ROUTE_ORDER_NOTE, HISTORY_FREQUENCY_EXPLAINER, HISTORY_TRIP_TIME_EXPLAINER, HISTORY_TRIP_TIME_MIN_CHANGE, historyTripTimeChange, loadingText, NO_AGENCIES_MATCH, NO_ROUTES_LOADED, noRoutesMatchText, RETRY_HINT } from '../content/noticeCopy';
 import { compareAgencyName, compareRegion } from '../utils/sortCompare';
 import { inViewFirst } from '../utils/historyOpen';
 
@@ -95,7 +94,7 @@ interface Props {
   initialAgencySlug?: string | null;
   /** Agencies in the map's view, listed first in the chooser. */
   inViewAgencySlugs?: readonly string[];
-  onInfoOpen?: OpenInfoFn;
+  onInfoOpen?: (tab?: 'about' | 'agencies' | 'live') => void;
   query: string;
   searchFocused: boolean;
   setQuery: (q: string) => void;
@@ -193,10 +192,8 @@ function RouteHistoryCard({
   frameStyle,
   sheetVisible,
   period,
-  onInfoOpen,
 }: {
-  /** Opens E26 from the trip-time box's Learn more. */
-  onInfoOpen?: OpenInfoFn;
+
   /** The Time chip's period: the rows, chart and summary read that period's values (CIV-389). */
   period: TimePeriod;
   route: RouteHistoryEntry;
@@ -329,13 +326,14 @@ function RouteHistoryCard({
         })}
       </SidebarCardListRows>
 
-        {/* Two short boxes (CIV-1127, Ryan's layout B): the frequency change in its better or worse colour (CIV-971), then
-            a neutral trip-time box with its dates and a Learn more to E26. The trip time shows only when it changed by
-            HISTORY_TRIP_TIME_MIN_CHANGE minutes or more, as shown. */}
+        {/* Two short boxes, the same outline on both (CIV-1127, Ryan's layout B): the frequency change in its better or
+            worse colour (CIV-971), then the trip time, each with its dates and one sentence saying what it measures. The
+            trip time shows only when it changed by HISTORY_TRIP_TIME_MIN_CHANGE minutes or more, as shown. */}
         {summary && (
           <CardCallout tone={summary.worse ? 'negative' : 'positive'} className="mt-3">
             <p className={CARD_CALLOUT_HEADLINE_TONE[summary.worse ? 'negative' : 'positive']}>{summary.text}</p>
             <p className={CARD_CALLOUT_TEXT}>{summary.subtext}</p>
+            <p className={CARD_CALLOUT_TEXT}>{HISTORY_FREQUENCY_EXPLAINER}</p>
           </CardCallout>
         )}
         {tripTime && (
@@ -343,21 +341,8 @@ function RouteHistoryCard({
             <p className={CARD_CALLOUT_HEADLINE} data-testid="history-trip-time">
               {historyTripTimeChange(runTimeAmount(tripTime.firstMinutes), runTimeAmount(tripTime.lastMinutes))}
             </p>
-            <p className={CARD_CALLOUT_TEXT}>
-              {tripTime.firstLabel} to {tripTime.lastLabel}
-              {/* The dot moves with Learn more, so a narrow card never ends the dates line on a dangling dot. */}
-              {onInfoOpen && (
-                <>
-                  {' '}
-                  <span className="whitespace-nowrap">
-                    {'· '}
-                    <ArrowLink as="button" tone="inline" size="xs" onClick={() => onInfoOpen('about', { helpTopic: explainerFor('N124') })}>
-                      Learn more
-                    </ArrowLink>
-                  </span>
-                </>
-              )}
-            </p>
+            <p className={CARD_CALLOUT_TEXT}>{tripTime.firstLabel} to {tripTime.lastLabel}</p>
+            <p className={CARD_CALLOUT_TEXT}>{HISTORY_TRIP_TIME_EXPLAINER}</p>
           </CardCallout>
         )}
     </SidebarCardShell>
@@ -1056,7 +1041,6 @@ export default function History({ active, view = HISTORY_VIEW_ALL, initialAgency
                   frameStyle={frameStyle}
                   sheetVisible={visible}
                   period={view.period}
-                  onInfoOpen={onInfoOpen}
                 />
               );
             }
