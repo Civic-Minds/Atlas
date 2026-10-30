@@ -26,29 +26,52 @@ describe('Free child fares (CIV-1149)', () => {
     expect(screen.getByText(/553 in all, 465 in the United States and 88 in Canada\./)).toBeInTheDocument();
   });
 
-  it('draws two charts, each with its own table named by its title', () => {
+  it('draws the ages and the other policies as two separate charts, each with its own table (CIV-1176)', () => {
     render(<FreeChildFaresPage />);
-    const tables = screen.getAllByRole('table', { hidden: true });
-    expect(tables.map(t => t.querySelector('caption')?.textContent)).toEqual(['Free up to a set age', 'Other policies']);
-    expect(tables[0].textContent).toContain('Up to 5');
-    expect(tables[0].textContent).not.toContain('Not found yet');
-    expect(tables[1].textContent).toContain('Not found yet');
+    const captions = screen.getAllByRole('table', { hidden: true }).map(t => t.querySelector('caption')?.textContent);
+    expect(captions).toContain('Free up to a set age');
+    expect(captions).toContain('Other policies');
+    const ages = screen.getByRole('img', { name: 'How many agencies let children ride free up to each age, from 1 to 18. Age 5 is the most common, at 129 agencies.' });
+    expect(ages).toBeInTheDocument();
+    const other = screen.getAllByRole('table', { hidden: true }).find(t => t.querySelector('caption')?.textContent === 'Other policies')!;
+    expect(other.textContent).toContain('Not found yet');
+    expect(other.textContent).not.toContain('Up to 5');
   });
 
-  it('draws both charts on one scale: equal counts draw equal bars', () => {
+  it('gives every age from 1 to 18 a column, ages no agency uses at zero', () => {
     const { container } = render(<FreeChildFaresPage />);
-    const width = (label: string) => ([...container.querySelectorAll('li[title]')].find(row => row.textContent?.startsWith(label))!.querySelector('div > div') as HTMLElement).style.width;
-    expect(width('Up to 5')).toBe('100%');
-    expect(width('Free for everyone')).toBe(`${(63 / 129) * 100}%`);
+    const columns = [...container.querySelectorAll('[role="img"] [title]')].map(el => el.getAttribute('title'));
+    expect(columns).toHaveLength(18);
+    expect(columns).toContain('Up to 5: 129');
+    expect(columns).toContain('Up to 15: 0');
+    expect(columns).toContain('Up to 18: 47');
   });
 
-  it('chart rows show the normal arrow, not the text cursor, in both groups', () => {
-    // The rows only show a tooltip and a highlight on hover; nothing is clicked, so no pointer either.
+  it('other policies rows show the normal arrow, not the text cursor, and the stripes for not found', () => {
     const { container } = render(<FreeChildFaresPage />);
     const rows = [...container.querySelectorAll('li[title]')];
-    expect(rows.some(row => row.textContent?.startsWith('Up to 5'))).toBe(true);
-    expect(rows.some(row => row.textContent?.startsWith('Not found yet'))).toBe(true);
+    expect(rows.map(row => row.textContent?.replace(/\d+$/, ''))).toEqual(['Free for everyone', 'Free below a height', 'Through a student program', 'Only under a program', 'No free child fare', 'Not found yet']);
     for (const row of rows) expect(row).toHaveClass('cursor-default');
+    expect((rows[5].querySelector('div > div') as HTMLElement).style.background).toContain('repeating-linear-gradient');
+  });
+
+  it('splits all 553 agencies into one bar by policy, counts in the legend (CIV-1176)', () => {
+    render(<FreeChildFaresPage />);
+    const bar = screen.getByRole('group', { name: 'How many agencies have each kind of free child fare policy, out of 553.' });
+    const parts = [...bar.querySelectorAll('button')].map(b => b.getAttribute('aria-label'));
+    expect(parts).toEqual([
+      '374 agencies: Free up to a set age', '63 agencies: Free for everyone', '39 agencies: Free below a height',
+      '24 agencies: Through a student program', '4 agencies: Only under a program', '15 agencies: No free child fare', '34 agencies: Not found yet',
+    ]);
+    expect(parts.reduce((sum, p) => sum + Number(p!.split(' ')[0]), 0)).toBe(553);
+  });
+
+  it('opens with the three key figures, each straight from the data', () => {
+    const { container } = render(<FreeChildFaresPage />);
+    const figure = (label: string) => [...container.querySelectorAll('dt')].find(dt => dt.textContent === label)?.nextElementSibling?.textContent;
+    expect(figure('Free up to age 5')).toBe('129');
+    expect(figure('Free up to age 18')).toBe('47');
+    expect(figure('Free for everyone')).toBe('63');
   });
 
   it('is a card on the Research page, labelled Data; the others are a Map and a Story (CIV-1167)', () => {
