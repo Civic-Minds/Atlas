@@ -1,10 +1,11 @@
 import { routeLabels } from '../utils/format';
 import { agencyNames } from '../utils/agencyName';
 import { SidebarCardHeader } from './Interval/cardUi';
+import { RouteTitleName } from './RouteRowName';
 
 interface Props {
-  /** The title, when the caller already has the route's label (the map's route card, CIV-984); else built from the names. */
-  title?: string;
+  /** The route's label, when the caller already has it (the map's route card, CIV-984); else built from the names. */
+  label?: { primary: string; secondary?: string; text: string };
   routeShortName: string | null | undefined;
   routeLongName?: string | null;
   agencyName?: string | null;
@@ -23,8 +24,9 @@ interface Props {
   back?: { to: string; onClick: () => void };
 }
 
-export default function RouteCardTitle({ title: givenTitle, routeShortName, routeLongName, agencyName, routeType, agencySlug, onAgencyClick, showAgency = true, agencyBackLink = false, agencyFullName, back: otherBack }: Props) {
-  const title = givenTitle ?? routeLabels({ shortName: routeShortName, longName: routeLongName, routeType, agencySlug, agencyName }).text;
+export default function RouteCardTitle({ label: givenLabel, routeShortName, routeLongName, agencyName, routeType, agencySlug, onAgencyClick, showAgency = true, agencyBackLink = false, agencyFullName, back: otherBack }: Props) {
+  // On screen the number in bold and the name lighter, no dash (CIV-1128).
+  const label = givenLabel ?? routeLabels({ shortName: routeShortName, longName: routeLongName, routeType, agencySlug, agencyName });
   const displayAgency = showAgency && agencyName ? agencyNames(agencyName).name : null;
   const back = otherBack
     ?? (agencyBackLink && onAgencyClick && displayAgency ? { to: agencyNames(agencyFullName ?? agencyName!).backLink, onClick: onAgencyClick } : undefined);
@@ -32,7 +34,7 @@ export default function RouteCardTitle({ title: givenTitle, routeShortName, rout
     <SidebarCardHeader
       back={back}
       eyebrow={back && !otherBack ? null : displayAgency}
-      title={title}
+      title={<RouteTitleName label={label} />}
       onEyebrowClick={back && !otherBack ? undefined : onAgencyClick}
       titleClamp
     />

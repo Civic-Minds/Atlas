@@ -102,6 +102,8 @@ html.map-page .overflow-y-scroll {
   --status-caution: #f59e0b;
   --status-positive-bg: rgba(16, 185, 129, 0.1);
   --status-negative-bg: rgba(239, 68, 68, 0.1);
+  /* No change, neither better nor worse (History's chart line, CIV-1117 row 16). */
+  --status-neutral: #8e949f;
   /* Status colours safe to use as text (4.5:1 on app/panel backgrounds) */
   --status-positive-text: #047857;
   --status-negative-text: #b91c1c;
@@ -160,6 +162,7 @@ html.map-page .overflow-y-scroll {
   --text-legend: rgba(255, 255, 255, 0.7);
   --status-positive-text: #34d399;
   --status-negative-text: #f87171;
+  --status-neutral: #6b7280;
   --status-caution-text: #fbbf24;
   --dim-route: #334155;
   /* Accent */
@@ -210,6 +213,8 @@ html.map-page .overflow-y-scroll {
   --action-primary-fg: #ffffff;
   --status-positive: #009e73;
   --status-negative: #d55e00;
+  /* No change, neither better nor worse (History's chart line): a grey apart from the two status colours. */
+  --status-neutral: #949494;
   --status-caution: #e69f00;
   --status-positive-bg: rgba(0, 158, 115, 0.14);
   --status-negative-bg: rgba(213, 94, 0, 0.14);
@@ -221,6 +226,7 @@ html.map-page .overflow-y-scroll {
 }
 
 [data-theme='dark'][data-color-vision='high-contrast'] {
+  --status-neutral: #a3a3a3;
   --top-bar-outline: var(--accent-selected-border);
   --control-active-bg: #374151;
   --text-muted: rgba(255, 255, 255, 0.82);

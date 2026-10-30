@@ -13,10 +13,7 @@ import RouteListRow from '../RouteListRow';
 import { compareSideListText, NO_REGULAR_SERVICE_SHORT_LABEL, routeListHeadwayText, type RouteListDisplay } from '../../utils/effectiveHeadway';
 import ListRow from '../ui/ListRow';
 import PanelEmpty from '../ui/PanelEmpty';
-import { CardDivider } from './cardUi';
-import { headwayToTierColor } from './HeadwaySparkline';
-import { getTierColor } from '../../utils/colors';
-import { useColorMode } from '../../hooks/useColorMode';
+import { CardDivider, HeadwayBadge, LimitedBadge } from './cardUi';
 import { LIMITED_SERVICE_LABEL, NO_ROUTE_SUGGESTIONS } from '../../content/noticeCopy';
 
 // Reusable/helper interfaces for route snippets
@@ -76,17 +73,6 @@ export function routeRowLabels(route: Parameters<typeof routeLabels>[0]) {
 /** The dot between an agency and its frequency in a suggestion's second line. */
 const SEP = <span className="text-[var(--text-dim)] font-normal"> · </span>;
 
-/** The frequency's tier dot, as the route rows' badge shows it (CIV-971): coloured by the headway, grey for none. */
-function TierDot({ headway }: { headway: number | null }) {
-  const colorMode = useColorMode();
-  return (
-    <span
-      className="inline-block w-2 h-2 rounded-full shrink-0 mr-1 align-[1px]"
-      style={{ background: headway != null ? headwayToTierColor(headway, colorMode) : getTierColor(null, colorMode) }}
-    />
-  );
-}
-
 export function routeRowRight(agencyName: string, headway?: number | null, stacked = false, limited = false, sharedHeadway?: number | null, noRegular = false, compare?: RouteListDisplay['compare']) {
   const agency = agencyNames(agencyName).name;
   const layout = stacked
@@ -104,8 +90,7 @@ export function routeRowRight(agencyName: string, headway?: number | null, stack
           {sides.map(({ side, text, headway: h }) => (
             <React.Fragment key={side}>
               {SEP}
-              <TierDot headway={h} />
-              {text}
+              {h != null ? <HeadwayBadge secondLine headway={h} label={text} /> : <LimitedBadge secondLine label={text} />}
             </React.Fragment>
           ))}
         </span>
@@ -117,8 +102,7 @@ export function routeRowRight(agencyName: string, headway?: number | null, stack
       <span className={`${LIST_ROW_DIM} ${layout} whitespace-nowrap`}>
         {agency}
         {SEP}
-        <TierDot headway={headway} />
-        {routeListHeadwayText(headway, sharedHeadway)}
+        <HeadwayBadge secondLine headway={headway} label={routeListHeadwayText(headway, sharedHeadway)} />
       </span>
     );
   }
@@ -127,8 +111,7 @@ export function routeRowRight(agencyName: string, headway?: number | null, stack
       <span className={`${LIST_ROW_DIM} ${layout} whitespace-nowrap`}>
         {agency}
         {SEP}
-        <TierDot headway={null} />
-        {noRegular ? NO_REGULAR_SERVICE_SHORT_LABEL : LIMITED_SERVICE_LABEL}
+        <LimitedBadge secondLine label={noRegular ? NO_REGULAR_SERVICE_SHORT_LABEL : LIMITED_SERVICE_LABEL} />
       </span>
     );
   }

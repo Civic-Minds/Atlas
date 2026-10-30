@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
+import { RouteTitleName } from '../RouteRowName';
 import { headwayToTierColor } from '../../utils/colors';
 import { useColorMode } from '../../hooks/useColorMode';
 export { headwayToTierColor };
@@ -124,6 +125,8 @@ interface HourlySparklineProps {
   /** Keep the legend's vertical space while a route branch is hovered. */
   reserveStackedLegendSpace?: boolean;
   title?: string;
+  /** The route, when the full-day window's title names it: drawn as the route title (CIV-1128); `title` stays its plain text. */
+  titleLabel?: { primary: string; secondary?: string; text: string };
   /** Names what the bars show in hour tooltips, e.g. "slower direction". */
   seriesLabel?: string;
   /** Used by the modal's larger, all-period rendering. */
@@ -141,7 +144,7 @@ interface HourlySparklineProps {
   yAxis?: AxisTick[];
 }
 
-export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directionOptions, period, onPeriodChange, onPeriodHover, onHourHover, allowExpand = false, reserveStackedLegendSpace = false, title = 'Schedule overview', seriesLabel, expanded = false, tripTime, legendStackedByHour, legendInvisible = false, scaleMaxFreq, sharedHour, onSharedHour, yAxis }: HourlySparklineProps) {
+export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directionOptions, period, onPeriodChange, onPeriodHover, onHourHover, allowExpand = false, reserveStackedLegendSpace = false, title = 'Schedule overview', titleLabel, seriesLabel, expanded = false, tripTime, legendStackedByHour, legendInvisible = false, scaleMaxFreq, sharedHour, onSharedHour, yAxis }: HourlySparklineProps) {
   const colorMode = useColorMode();
   const [hoveredPeriod, setHoveredPeriod] = useState<string | null>(null);
   const [hoveredHour, setHoveredHour] = useState<number | null>(null);
@@ -168,7 +171,7 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
   // Closing the route card closes the full-day view, so its params go with it.
   useEffect(() => {
     if (!ownsUrl) return;
-    return () => syncUrlParams({ fullday: null, fdir: null });
+    return () => syncUrlParams(encodeFullDayUrlState({ open: false, direction: null }, null));
   }, [ownsUrl]);
 
   const sharedMode = !!onSharedHour;
@@ -385,7 +388,7 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
       )}
       {allowExpand && !expanded && isExpanded && (
         <ExpandDialog
-          title={title}
+          title={titleLabel ? <RouteTitleName label={titleLabel} /> : title}
           note="All time periods are shown together."
           ariaLabel={`${title} full-day schedule`}
           closeLabel="Close schedule"

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { LiveVehicle } from '../context/LiveVehiclesMapOverlay';
 import { syncUrlParams } from '../utils/syncUrlParams';
+import { LIVE_MAP_URL, currentSearch, linkUpdate, readLink } from '../utils/urlSchema';
 
 type Bounds = [number, number, number, number];
 type LineClick = (lonLat: [number, number], toleranceM: number) => void;
@@ -33,12 +34,12 @@ export function useLiveViewUrl({ active, selectedRoute, focusedVehicle, selected
   onRestore: (vehicle: LiveVehicle | null, group: string | null) => void;
 }) {
   const restoreRef = useRef(active ? (() => {
-    const sp = new URLSearchParams(window.location.search);
-    return { vehicle: sp.get('vehicle'), group: sp.get('group') };
+    const link = readLink(currentSearch(), LIVE_MAP_URL);
+    return { vehicle: link.vehicle ?? null, group: link.group ?? null };
   })() : null);
   useEffect(() => {
     if (!active || pendingRouteRef.current) return;
-    syncUrlParams({ route: selectedRoute, vehicle: focusedVehicle?.id ?? null, group: selectedDirection });
+    syncUrlParams(linkUpdate(LIVE_MAP_URL, { route: selectedRoute, vehicle: focusedVehicle?.id ?? null, group: selectedDirection }));
   }, [active, selectedRoute, focusedVehicle?.id, selectedDirection, pendingRouteRef]);
   useEffect(() => {
     const r = restoreRef.current;
