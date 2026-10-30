@@ -181,14 +181,17 @@ export default function LiveRoutePerformance({ slug, routeShortName, vehicles, f
                 ['Scheduled', `every ${schedLabel}`],
               ]} />
               {/* Only once a gap is known: right after the card opens the map has no track of the cars ahead yet. */}
+              {/* Label above, figures below, as in Stats, so a long row wraps among its figures and never leaves one stranded under the label (CIV-1163). */}
               {live.gapsMin.some(g => g != null) && (
-                <div className="flex flex-wrap items-baseline gap-x-1.5 gap-y-0.5 text-xs font-bold tabular-nums">
-                  <span className="text-[var(--text-dim)]">Gaps, front to back (min)</span>
-                  {live.gapsMin.map((g, i) => (
-                    g == null
-                      ? <span key={i} className="text-[var(--text-dim)]" title={LIVE_GAP_NOT_SEEN}>–</span>
-                      : <span key={i} style={late(g, i) ? { color: AMBER } : undefined} className={late(g, i) ? 'font-black' : 'text-[var(--text-primary)]'}>{g}</span>
-                  ))}
+                <div className="flex flex-col">
+                  <div className="text-xs font-bold text-[var(--text-dim)] leading-snug">Gaps, front to back (min)</div>
+                  <div className="flex flex-wrap items-baseline gap-x-2 text-sm font-black tabular-nums">
+                    {live.gapsMin.map((g, i) => (
+                      g == null
+                        ? <span key={i} className="text-[var(--text-dim)]" title={LIVE_GAP_NOT_SEEN}>–</span>
+                        : <span key={i} style={late(g, i) ? { color: AMBER } : undefined} className={late(g, i) ? undefined : 'text-[var(--text-primary)]'}>{g}</span>
+                    ))}
+                  </div>
                 </div>
               )}
             </>
