@@ -4,6 +4,7 @@ import ChartTableDetails from '../components/charts/ChartTableDetails';
 import RankedBars from '../components/charts/RankedBars';
 import SplitBar, { type SplitBarSegment } from '../components/charts/SplitBar';
 import ResearchMethod from '../components/research/ResearchMethod';
+import ResearchHeader from '../components/research/ResearchHeader';
 import type { DataTableColumn } from '../components/ui/DataTable';
 import { FREE_CHILD_AGE_COUNTS, FREE_CHILD_AGENCIES_BY_COUNTRY, FREE_CHILD_OTHER_POLICIES, freeChildAgeBars, freeChildFareStats, freeChildOtherBars, type FreeChildFareBar } from '../data/freeChildFares';
 
@@ -15,10 +16,9 @@ const TABLE_COLUMNS: DataTableColumn<FreeChildFareBar>[] = [
 // "Not found yet" is drawn hatched: no current official rule, not a policy.
 const HATCHED = 'repeating-linear-gradient(135deg, var(--text-muted) 0 3px, transparent 3px 6px)';
 
-// CIV-1176 (proposed wording, held for Ryan's OK on _review/civ-1176): the age chart's axis, its screen-reader name and
+// CIV-1176, approved by Ryan (2026-10-30): the age chart's axis and
 // the key figures' names.
 const AGE_AXIS_TITLE = 'Agencies, by the oldest age that rides free';
-const AGE_CHART_ARIA = 'Agencies by the oldest age that rides free, from 1 to 18. Age 5 has the most.';
 
 /** Every age from the youngest to the oldest cutoff, with the ages no agency uses at zero, so the axis reads as ages. */
 const ageCounts = new Map(FREE_CHILD_AGE_COUNTS);
@@ -45,9 +45,11 @@ const splitSegments: SplitBarSegment[] = [
   sentence: `${s.value} ${s.value === 1 ? 'agency' : 'agencies'}: ${s.label}`,
   legend: <span><span className="font-black">{s.value}</span> {s.label}</span>,
 }));
-const SPLIT_LABEL = 'Agencies by free child fare policy';
+// Ryan's words (2026-10-30), with the numbers read from the data.
+const SPLIT_LABEL = `How many agencies have each kind of free child fare policy, out of ${freeChildFareStats.agencies}.`;
 
 const peakAge = [...FREE_CHILD_AGE_COUNTS].sort((a, b) => b[1] - a[1])[0];
+const AGE_CHART_ARIA = `How many agencies let children ride free up to each age, from ${Math.min(...ages)} to ${Math.max(...ages)}. Age ${peakAge[0]} is the most common, at ${peakAge[1]} agencies.`;
 const keyFigures = [
   { label: `Free up to age ${peakAge[0]}`, value: peakAge[1] },
   { label: 'Free up to age 18', value: ageCounts.get(18) ?? 0 },
@@ -69,17 +71,17 @@ export default function FreeChildFaresPage() {
   return (
     <PageShell stickyHeader method={method}>
       <article className="pb-16 pt-10 sm:pt-14">
-        <header className="mx-auto max-w-3xl text-center">
-          <p className="text-xs font-black text-[var(--accent)]">Atlas research</p>
-          <h1 className="mt-5 text-4xl sm:text-6xl font-black tracking-[-0.045em] leading-[0.98]">Free child fares</h1>
-          <div className="mt-6 space-y-4 text-left text-base leading-8 text-[var(--text-muted)] sm:text-lg">
+        <ResearchHeader
+          title="Free child fares"
+          intro={<>
             <p>Most transit agencies let young children ride free. Where that free fare ends changes from one agency to the next.</p>
             <p>We read the official fare rules of {freeChildFareStats.agencies} transit agencies in Canada and the United States to find up to what age children ride free, and under what conditions.</p>
-          </div>
+          </>}
+        >
           <div className="text-left">
             <SplitBar segments={splitSegments} label={SPLIT_LABEL} />
           </div>
-        </header>
+        </ResearchHeader>
 
         <div className="mx-auto mt-14 max-w-3xl space-y-10 sm:mt-20 sm:space-y-14">
           <section aria-labelledby="free-child-fares-heading">

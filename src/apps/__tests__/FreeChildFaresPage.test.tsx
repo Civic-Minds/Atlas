@@ -31,7 +31,7 @@ describe('Free child fares (CIV-1149)', () => {
     const captions = screen.getAllByRole('table', { hidden: true }).map(t => t.querySelector('caption')?.textContent);
     expect(captions).toContain('Free up to a set age');
     expect(captions).toContain('Other policies');
-    const ages = screen.getByRole('img', { name: /oldest age that rides free/ });
+    const ages = screen.getByRole('img', { name: 'How many agencies let children ride free up to each age, from 1 to 18. Age 5 is the most common, at 129 agencies.' });
     expect(ages).toBeInTheDocument();
     const other = screen.getAllByRole('table', { hidden: true }).find(t => t.querySelector('caption')?.textContent === 'Other policies')!;
     expect(other.textContent).toContain('Not found yet');
@@ -57,7 +57,7 @@ describe('Free child fares (CIV-1149)', () => {
 
   it('splits all 553 agencies into one bar by policy, counts in the legend (CIV-1176)', () => {
     render(<FreeChildFaresPage />);
-    const bar = screen.getByRole('group', { name: 'Agencies by free child fare policy' });
+    const bar = screen.getByRole('group', { name: 'How many agencies have each kind of free child fare policy, out of 553.' });
     const parts = [...bar.querySelectorAll('button')].map(b => b.getAttribute('aria-label'));
     expect(parts).toEqual([
       '374 agencies: Free up to a set age', '63 agencies: Free for everyone', '39 agencies: Free below a height',
