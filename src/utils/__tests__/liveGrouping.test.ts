@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { LiveVehicle } from '../../context/LiveVehiclesMapOverlay';
-import { DIRECTION_UNCLEAR, compareLiveRoutes, destinationKind, focusDirectionKey, groupVehiclesByDirection, orderDirectionGroups, riderHeadsign, routeDirectionLabels, vehicleDirectionKey } from '../liveGrouping';
+import { DIRECTION_UNCLEAR, compareLiveRoutes, destinationKind, focusDirectionKey, groupVehiclesByDirection, orderAlongRoute, orderDirectionGroups, riderHeadsign, routeDirectionLabels, vehicleDirectionKey } from '../liveGrouping';
 
 const v = (id: string, extra: Partial<LiveVehicle> = {}): LiveVehicle => ({
   id, routeShortName: '501', displayName: '501', tripId: 't', lat: 43.65, lon: -79.4, bearing: null, speedKmh: null, tsEpoch: null,
@@ -160,5 +160,29 @@ describe('riderHeadsign', () => {
     expect(riderHeadsign('88S South Leaside Short Turn', '8')).toBe('88S South Leaside Short Turn');
     expect(riderHeadsign('5065 Carlton Short Turn', '506')).toBe('5065 Carlton Short Turn');
     expect(riderHeadsign(null, '506')).toBeNull();
+  });
+});
+
+describe('orderAlongRoute (CIV-1125)', () => {
+  // Direction 0 runs east from -79.5, direction 1 runs west from -79.3 (its line starts at the east end).
+  const east = line(0, 'East', 0.2);
+  const west: GeoJSON.Feature = { type: 'Feature', properties: { routeShortName: '501', directionId: 1, headsign: 'West' }, geometry: { type: 'LineString', coordinates: [[-79.3, 43.6], [-79.5, 43.6]] } };
+  const shortTurn = line(0, 'Short', 0.05);
+  const at = (id: string, lon: number, directionId: number | null, lat = 43.6) => v(id, { lon, lat, directionId });
+
+  it('lists each direction first stop to last, by distance along its main (longest) line', () => {
+    const out = orderAlongRoute([at('c', -79.32, 0), at('a', -79.48, 0), at('b', -79.4, 0)], [shortTurn, east, west], '501');
+    expect(out.map(x => x.id)).toEqual(['a', 'b', 'c']);
+    // Direction 1 starts at the east end, so its order runs the other way.
+    expect(orderAlongRoute([at('w1', -79.48, 1), at('w2', -79.32, 1)], [east, west], '501').map(x => x.id)).toEqual(['w2', 'w1']);
+  });
+
+  it('puts direction 0 before direction 1, and vehicles it cannot place last in the order they came', () => {
+    const out = orderAlongRoute([at('none', -79.4, null), at('w', -79.4, 1), at('far', -79.4, 0, 43.7), at('e', -79.4, 0), at('none2', -79.45, null)], [east, west], '501');
+    expect(out.map(x => x.id)).toEqual(['e', 'w', 'none', 'far', 'none2']);
+  });
+
+  it('leaves the list as it is when the route has no shapes', () => {
+    expect(orderAlongRoute([at('b', -79.4, 0), at('a', -79.45, 0)], [], '501').map(x => x.id)).toEqual(['b', 'a']);
   });
 });
