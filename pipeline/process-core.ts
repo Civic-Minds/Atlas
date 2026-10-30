@@ -3104,6 +3104,14 @@ export async function processGtfsBuffer(
           agency: options?.slug, route: shortName, dir: dirId, day, headsign: featureHeadsign, rail: railFeature,
           headline: headway, terminalId, terminal: terminalComputedHw, poolUsed,
           originId, originHw: origin?.terminalComputedHw ?? null, originMiddayHw: origin?.terminalMiddayHw ?? null,
+          // CIV-1087 guard: the settled per-period sustained check (#281 gap rule plus the boundary ratio) on the start's
+          // midday departures. Unsustained (CTA 108: no service 8:45 to 2:00) reads the next window, PM peak then the
+          // sustained 6-22h value, as Step 1 does for a list without midday service.
+          originMiddaySustained: computePeriodSustained([...originTimes]).midday ?? null,
+          originGuardedHw: computePeriodSustained([...originTimes]).midday === false
+            ? (medianHeadwayInWindow([...originTimes], HEADLINE_WINDOWS.pmPeak.start, HEADLINE_WINDOWS.pmPeak.end, HEADLINE_MIN_DEPARTURES, true)
+              ?? sustainedMedianHeadwayInWindow([...originTimes].sort((a, b) => a - b), HEADLINE_WINDOWS.allDay.start, HEADLINE_WINDOWS.allDay.end, HEADLINE_MIN_DEPARTURES, undefined, true))
+            : origin?.terminalComputedHw ?? null,
           originDepartures: new Set(originTimes).size, terminalDepartures: new Set(ownTerminalTimes).size,
           terminalDropOff: terminalId ? dropOffOnlyStops.has(terminalId) : false,
           lastBoardId, lastBoardHw: lastBoardId === terminalId ? terminalComputedHw : readAt(lastBoardId),
