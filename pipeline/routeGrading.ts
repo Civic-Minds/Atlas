@@ -299,3 +299,43 @@ function decideSourcedPeriod(i: PeriodInputs): PeriodValue {
   const sparse = headway == null ? false : (headway === i.termH ? !!i.termSparse : (headway === i.branchH && !!i.branchSparse));
   return { headway, coverage, maxGap, sustained, ...(sparse ? { sparse } : {}) };
 }
+
+/**
+ * CIV-1161 step 1: the longest regular wait in the first headline window (midday, then PM peak,
+ * then all day) that has HEADLINE_MIN_DEPARTURES departures. It is the longest gap between the
+ * window's departures that happens at least twice (the second-longest gap), so neither the wait
+ * before the first departure or after the last one, nor one long gap, decides it (CapMetro 985
+ * southbound: 30, 30, 30 after a first gap of 40 reads 30).
+ */
+export function longestRegularWait(times: readonly number[]): { wait: number; window: keyof typeof HEADLINE_WINDOWS } | null {
+  for (const window of ['midday', 'pmPeak', 'allDay'] as const) {
+    const { start, end } = HEADLINE_WINDOWS[window];
+    const t = [...new Set(times)].filter(x => x >= start && x <= end).sort((a, b) => a - b);
+    if (t.length < HEADLINE_MIN_DEPARTURES) continue;
+    const gaps = t.slice(1).map((x, i) => x - t[i]).sort((a, b) => b - a);
+    return { wait: Math.round(gaps[1]), window };
+  }
+  return null;
+}
+
+/**
+ * CIV-1161 step 1: the longest regular wait where riders board the main stretch: the median of
+ * longestRegularWait over its stops a rider can board (drop-off-only stops left out), each read
+ * over every trip of the direction that stops there. Null when no such stop has a reading.
+ */
+export function boardingMainStretchWait(
+  stops: readonly string[],
+  timesAt: (stopId: string) => readonly number[],
+  dropOffOnly: ReadonlySet<string>,
+): { wait: number; stops: number } | null {
+  const waits = stops.filter(stop => !dropOffOnly.has(stop))
+    .map(stop => longestRegularWait(timesAt(stop))?.wait)
+    .filter((w): w is number => w != null)
+    .sort((a, b) => a - b);
+  if (waits.length === 0) return null;
+  const mid = Math.floor(waits.length / 2);
+  return { wait: waits.length % 2 ? waits[mid] : Math.round((waits[mid - 1] + waits[mid]) / 2), stops: waits.length };
+}
+
+/** CIV-1161 step 1: the headline overstates when riders on the main stretch can wait 10+ minutes longer. */
+export const OVERSTATED_HEADLINE_MARGIN = 10;
