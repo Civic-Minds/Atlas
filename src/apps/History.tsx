@@ -36,7 +36,7 @@ import {
   type HistoryTier,
 } from '../../shared/historyEligibility';
 import { capitalizeFirst, headwayEvery, headwayExactAmount, runTimeAmount } from '../utils/headwayText';
-import { historyChartPoints, historyDotPriority, historyYearTicks, placeHistoryDots, snapshotMonth } from '../utils/historyChart';
+import { HISTORY_CHART_MIN_DATES, historyChartPoints, historyDotPriority, historyYearTicks, placeHistoryDots, snapshotMonth } from '../utils/historyChart';
 import ExpandDialog, { ExpandButton } from '../components/ui/ExpandDialog';
 import Panel, { PanelBody, PanelTitleBar } from '../components/ui/Panel';
 import ListRow from '../components/ui/ListRow';
@@ -263,14 +263,15 @@ function RouteHistoryCard({
         </div>
       </SidebarCardHeaderBlock>
 
-      {/* The chart sits on the card with no box, as the route card's hour chart does (#1028 item 10); its icon opens the wide view. */}
-      {chartSnaps.length >= 2 && (
+      {/* The chart sits on the card with no box, as the route card's hour chart does (#1028 item 10); its icon opens the wide view.
+          Under 3 dates it is left out: the rows below say the same (CIV-1144). */}
+      {chartSnaps.length >= HISTORY_CHART_MIN_DATES && (
         <div className="mt-3 relative pt-5">
           <ExpandButton label="Expand chart" onClick={() => setChartExpanded(true)} />
           <RouteHistoryChart snaps={chartSnaps} minutes={hws} lineColor={lineColor} gradientId={gradientId} hoveredSnap={hoveredSnap} onHover={setHoveredSnap} />
         </div>
       )}
-      {chartExpanded && chartSnaps.length >= 2 && (
+      {chartExpanded && chartSnaps.length >= HISTORY_CHART_MIN_DATES && (
         <ExpandDialog title={<RouteTitleName label={routeLabels({ shortName: route.routeShortName, longName: route.routeName || null, routeType: route.currentRouteType ?? undefined, agencySlug, agencyName })} />} ariaLabel="Route history chart" closeLabel="Close chart" onClose={closeChart}>
           <div className="mt-4">
             <RouteHistoryChart wide snaps={chartSnaps} minutes={hws} lineColor={lineColor} gradientId={`${gradientId}-wide`} hoveredSnap={hoveredSnap} onHover={setHoveredSnap} />
