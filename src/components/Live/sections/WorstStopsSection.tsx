@@ -23,7 +23,7 @@ const EMPTY = 'No stop has enough departures to rank.';
 
 /** The tool panel's short clickable list, built from the same model: a stop name and its late share. */
 export function worstStopRows(v3: LiveV3, data: DashboardBandData, dir: number | null, uncertain: readonly UncertainStart[], limit: number, onPick: (stopId: string) => void) {
-  return worstStopsModel(v3, data, dir, uncertain, limit).top.map(x => ({ key: x.stopId, label: shortStopName(nameCase(x.name, 'title')), value: pct(x.lateShare), onPick: () => onPick(x.stopId) }));
+  return worstStopsModel(v3, data, dir, uncertain, limit).top.map(x => ({ key: x.stopId, label: shortStopName(nameCase(x.name, 'stop')), value: pct(x.lateShare), onPick: () => onPick(x.stopId) }));
 }
 
 /**

@@ -110,7 +110,7 @@ export default function StringLine({ data, directionId, band, compact = false, c
           {!compact && yTicks.map(i => (
             <g key={i}>
               <line x1={M.left} x2={width - M.right} y1={y(i)} y2={y(i)} stroke="var(--border-primary)" strokeWidth={1} />
-              <text x={M.left - 8} y={y(i) + 4} textAnchor="end" fontSize={12} fill="var(--text-secondary)">{shortStopName(nameCase(stops[i].name, 'title'))}</text>
+              <text x={M.left - 8} y={y(i) + 4} textAnchor="end" fontSize={12} fill="var(--text-secondary)">{shortStopName(nameCase(stops[i].name, 'stop'))}</text>
             </g>
           ))}
           {hourTicks.filter((_, k) => !compact || k % 3 === 0).map(t => (

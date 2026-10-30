@@ -279,7 +279,7 @@ export function routeStripFromV3(v3: LiveV3, directionId: number, band: Dashboar
       const b = bunchingById.get(s.stopId);
       return {
         stopId: s.stopId,
-        name: nameCase(s.name, 'title'),
+        name: nameCase(s.name, 'stop'),
         delayMin: s.n > 0 ? s.medianMin : null,
         lateShare: s.n > 0 ? s.lateShare : null,
         bunchingShare: b && b.n > 0 ? b.badShare : null,

@@ -8,7 +8,7 @@ import Widget from './Widget';
 /** The picked direction's main pattern as one dot on a line, the same row as the Run time section's (longer patterns stay on the route pages). */
 export default function RunTimeWidget({ v3, dir, band }: { v3: LiveV3; dir: number; band: DashboardBand }) {
   if (!v3.runningTime?.bands[band]?.[String(dir)]) return null;
-  const rows = (runTimeRows(v3, band, [dir], n => shortStopName(nameCase(n, 'title')))[dir] ?? []).filter(r => r.main);
+  const rows = (runTimeRows(v3, band, [dir], n => shortStopName(nameCase(n, 'stop')))[dir] ?? []).filter(r => r.main);
   const stretch = runTimeStretchOf(v3, dir);
   return (
     <Widget title="Run time" size="medium" className="!p-2.5 [&>div:last-child]:!mt-0.5" action={<RowLegend dense inline />}>

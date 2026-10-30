@@ -65,9 +65,9 @@ export function writeAgencySummary(agency: string, gtfs: string, out: string): s
     if (quality) { held.push({ route, reason: quality }); continue; }
     const r = byShort.get(route);
     // The route card's title rule (until the one route-label helper, UI step 9, reaches this branch).
-    const label = nameCase(getRouteLabel(route, r?.route_long_name || null), 'title');
+    const label = nameCase(getRouteLabel(route, r?.route_long_name || null), 'route');
     const parts = routeLabelParts(route, r?.route_long_name || null);
-    const titleLabel = nameCase([parts.primary, parts.secondary].filter(Boolean).join(' '), 'title');
+    const titleLabel = nameCase([parts.primary, parts.secondary].filter(Boolean).join(' '), 'route');
     routes.push({ route, label, titleLabel, mode: Number(r?.route_type ?? 3), longName: r?.route_long_name || null, v3, uncertainStart: LIVE_DASHBOARD_UNCERTAIN_START[`${agency}::${route}`] ?? [] });
   }
   const summary = agencySummary({ agency, totalRoutes, routes, held });
