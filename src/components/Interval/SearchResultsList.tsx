@@ -5,7 +5,7 @@ import type { RouteSearchResult, StopSearchResult } from '../../utils/searchResu
 import RouteListRow from '../RouteListRow';
 import AgencyName from '../ui/AgencyName';
 import { routeRowRight } from './SearchSuggestionsPanel';
-import { stopNameCase } from '../../utils/format';
+import { nameCase } from '../../utils/format';
 import { agencyNames } from '../../utils/agencyName';
 import type { RouteListDisplay } from '../../utils/effectiveHeadway';
 import ListRow from '../ui/ListRow';
@@ -198,7 +198,7 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({
       elsewhere={stopSections.elsewhere}
       itemKey={(s: StopSearchResult) => s.key}
       renderItem={(s: StopSearchResult) => {
-        const name = `${stopNameCase(s.stopName)}${s.direction ? ` — ${s.direction}` : ''}`;
+        const name = `${nameCase(s.stopName, 'stop')}${s.direction ? ` — ${s.direction}` : ''}`;
         return (
           <ListRow
             variant="spaced"

@@ -3,7 +3,7 @@ import { periodKeyForHour } from '../../../shared/config';
 import type { DashboardBand } from '../../../shared/liveDashboard';
 import { liveStringsDataUrl } from '../../lib/liveReportData';
 import { isMajorStop, shortStopName } from '../../utils/stopLabel';
-import { titleCase } from '../../utils/format';
+import { nameCase } from '../../utils/format';
 
 /** One service day's per-trip stop times (scripts/live-segment-delay.ts --strings-dir). Times are seconds after `base` (epoch seconds). */
 export interface StringsFile {
@@ -110,7 +110,7 @@ export default function StringLine({ data, directionId, band, compact = false, c
           {!compact && yTicks.map(i => (
             <g key={i}>
               <line x1={M.left} x2={width - M.right} y1={y(i)} y2={y(i)} stroke="var(--border-primary)" strokeWidth={1} />
-              <text x={M.left - 8} y={y(i) + 4} textAnchor="end" fontSize={12} fill="var(--text-secondary)">{shortStopName(titleCase(stops[i].name))}</text>
+              <text x={M.left - 8} y={y(i) + 4} textAnchor="end" fontSize={12} fill="var(--text-secondary)">{shortStopName(nameCase(stops[i].name, 'title'))}</text>
             </g>
           ))}
           {hourTicks.filter((_, k) => !compact || k % 3 === 0).map(t => (
