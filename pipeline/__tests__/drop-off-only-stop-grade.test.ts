@@ -84,6 +84,13 @@ describe('drop-off-only stops are not graded (#879)', () => {
     expect(line.stopHeadways.s8).toBeUndefined();
   });
 
+  it('a layover first stop that only drops off does not floor the headline either (CIV-224, #879)', async () => {
+    const line = await weekdayLine(await feed({ a, b, dropOffOnly: ['s0', 's8'] }));
+    expect(line.headway).toBe(30);
+    expect(line.tier).toBe('30');
+    expect(line.stopTiers.s0).toBeUndefined();
+  });
+
   it('a stop that only some trips drop off at is still graded', async () => {
     const line = await weekdayLine(await feed({ a, b, dropOffOnlyOnB: ['s8'] }));
     expect(line.stopTiers.s8).toBeDefined();

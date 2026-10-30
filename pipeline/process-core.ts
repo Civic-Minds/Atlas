@@ -2692,9 +2692,10 @@ export async function processGtfsBuffer(
     const servedByFewerTrips = (pool: readonly number[] | null): string[] => {
       if (!pool) return [];
       const poolCount = new Set(pool).size;
-      // The terminal and the drop-off-only stops that run up to it are left out (#1116, CIV-994).
+      // The terminal and the drop-off-only stops that run up to it are left out (#1116, CIV-994), and so is any other
+      // drop-off-only stop (CIV-224, #879): a layover first stop no rider boards has no departures to floor the line on.
       return drawnStopsBeforeTerminal(drawnPatternStops().map(p => p.stopId), dropOffOnlyStops)
-        .filter(stopId => new Set(stopMetricMap.get(stopId) ?? []).size < poolCount);
+        .filter(stopId => !dropOffOnlyStops.has(stopId) && new Set(stopMetricMap.get(stopId) ?? []).size < poolCount);
     };
     // Steps 2-3 and the line's segments (#690), shared by the thin-own-sample path below and
     // the full path: stop data is published from the pooled values whenever any stop has one.
