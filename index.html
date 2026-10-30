@@ -49,6 +49,11 @@
     }
   </script>
   <script>
+    // The saved light or dark theme (the map's setting, stored as 'theme' by App.tsx) applies to every page before it
+    // draws, so the agency, research and other content pages follow it too (#1190).
+    try { document.documentElement.setAttribute('data-theme', localStorage.getItem('theme') === 'dark' ? 'dark' : 'light'); } catch (e) { /* light */ }
+  </script>
+  <script>
     // Start the data-release lookup and the PMTiles headers before the app code has loaded.
     // src/lib/earlyData.ts picks these up; the placeholder is filled in at build time.
     (function () {
