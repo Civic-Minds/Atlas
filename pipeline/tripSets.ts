@@ -1293,6 +1293,10 @@ export interface DirectionRollup {
      * so the card can read "every typical-worst". null otherwise.
      */
     typical: number | null;
+    /** CIV-238 research only: the main stretch's wait from the period start to its first departure, or from its last to the period end, the longer. */
+    edgeWait: number | null;
+    /** CIV-238 research only: the same, counting only an end with no departure past the boundary (a true start or end of service). */
+    trueEdgeWait: number | null;
   }>;
   night30: boolean;
   night60: boolean;
@@ -1519,6 +1523,8 @@ export function rollupDirection(d: DirectionStretches): DirectionRollup | null {
       filterValue: null,
       trunkFilterValue: null,
       typical: null,
+      edgeWait: null,
+      trueEdgeWait: null,
       runs: false,
       hasService: false,
       edge: null,
@@ -1544,6 +1550,18 @@ export function rollupDirection(d: DirectionStretches): DirectionRollup | null {
     period[key].runs = runs;
     period[key].hasService = departuresInWindow(d.main.times, start, end, true).length > 0;
     period[key].filterValue = runs && !sparse(d.main) && values.length > 0 ? Math.max(...values) : null;
+    {
+      // CIV-238 research: the opening and closing waits of the main stretch in the period.
+      const all = [...new Set(forCrossMidnightWindow([...d.main.times], end))].sort((a, b) => a - b);
+      const t = all.filter(x => x >= start && x < end);
+      if (t.length > 0) {
+        const open = t[0] - start, close = end - t[t.length - 1];
+        period[key].edgeWait = Math.ceil(Math.max(open, close));
+        const trueOpen = all[0] < start ? 0 : open;
+        const trueClose = all[all.length - 1] >= end ? 0 : close;
+        period[key].trueEdgeWait = Math.ceil(Math.max(trueOpen, trueClose));
+      }
+    }
     period[key].trunkFilterValue = runs && !sparse(d.main) && main[key].counts && trunkLongEnough ? filterOf(main[key]) : null;
     const setterAt = period[key].filterValue == null ? undefined : countingStretches.find(c => filterOf(c.p) === period[key].filterValue);
     const setter = setterAt?.p;
@@ -1665,6 +1683,9 @@ export interface RouteRollup {
     trunkFilterValue: number | null;
     /** At least one direction runs through the period ("All" for that period still draws the route). */
     runs: boolean;
+    /** CIV-238 research only: the serving directions' worst edgeWait / trueEdgeWait. */
+    edgeWait: number | null;
+    trueEdgeWait: number | null;
   }>;
   night30: boolean;
   night60: boolean;
@@ -1695,6 +1716,11 @@ export interface RouteRollup {
  * null when they agree. Night: every direction the route runs by day must pass. `dirs` holds one
  * entry per direction the route runs by day, null where it has no stretch data.
  */
+const worstOf = (values: Array<number | null>): number | null => {
+  const known = values.filter((v): v is number => v != null);
+  return known.length > 0 ? Math.max(...known) : null;
+};
+
 export function rollupRoute(dirs: readonly (DirectionRollup | null)[]): RouteRollup {
   const period = {} as RouteRollup['period'];
   const known = dirs.filter((d): d is DirectionRollup => d != null);
@@ -1718,6 +1744,8 @@ export function rollupRoute(dirs: readonly (DirectionRollup | null)[]): RouteRol
       filterValue: complete && serving.length > 0 && filterValues.every(v => v != null) ? Math.max(...(filterValues as number[])) : null,
       trunkFilterValue: complete && serving.length > 0 && trunkValues.every(v => v != null) ? Math.max(...(trunkValues as number[])) : null,
       runs: known.some(d => d.period[key].runs),
+      edgeWait: worstOf(serving.map(d => d.period[key].edgeWait)),
+      trueEdgeWait: worstOf(serving.map(d => d.period[key].trueEdgeWait)),
     };
   }
   return {
@@ -1755,6 +1783,8 @@ export function rollupRoute(dirs: readonly (DirectionRollup | null)[]): RouteRol
 
 /** Shadow keys stamped by stampStretchShadow. JSON only: tiles leave them out (prepareAgencyRoutesForTiles). */
 export const STRETCH_SHADOW_KEYS = [
+  'researchEdgeWaitByPeriod',
+  'researchTrueEdgeWaitByPeriod',
   'stretchRouteLimited',
   'stretchPeriodHeadway',
   'stretchPeriodCoverage',
@@ -1899,6 +1929,9 @@ export function stampStretchShadow(
       const onMain = new Set(stretches.main.stops);
       p.trunkStopMask = encodeStopRuns(ownStops.map(stop => (onMain.has(stop) ? 1 : null)));
     } else delete p.trunkStopMask;
+    // CIV-238 research only (never merged): the route's worst opening/closing wait per period.
+    p.researchEdgeWaitByPeriod = byPeriod(k => route.period[k].edgeWait);
+    p.researchTrueEdgeWaitByPeriod = byPeriod(k => route.period[k].trueEdgeWait);
     // CIV-321: per drawn stop and period, every trip of the direction running through the stop, along
     // the display-only full line where the row has one (S4), else the row's own stops.
     const stopOrder = (p.fullStopOrder ?? p.stopOrder) as readonly string[] | undefined;
