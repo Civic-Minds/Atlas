@@ -1,12 +1,7 @@
 import { Fragment, type ReactNode } from 'react';
 
-/** One group of "How this is measured": a small label, then one line per item. Falsy items are skipped. */
+/** One group of "How this is measured": its heading, then its items as one paragraph. Falsy items are skipped. */
 export interface MethodGroup { label: string; items: ReactNode[] }
-
-/** An item that stands on a line of its own inside the running paragraph. */
-export function OwnLine({ children, title }: { children: ReactNode; title?: string }) {
-  return <span className="block" title={title}>{children}</span>;
-}
 
 /**
  * A glossary line: the term in bold, then its definition as the rest of the sentence ("**Late** is …"), no colon (Ryan, CIV-1075).
@@ -18,26 +13,26 @@ export function Term({ t, colon = false, children }: { t: string; colon?: boolea
 
 /**
  * "How this is measured" at the foot of every Live page: one look everywhere, small muted type (12px, tight lines), compact, full content
- * width. The notes come in labelled groups (METHOD_GROUPS in shared/liveWording), each label on its own line and one line per item under it, no bullets.
+ * width. The notes come in groups (METHOD_GROUPS in shared/liveWording): each group's heading on its own line, then one paragraph with its
+ * items running on as sentences, and space between groups (Ryan's layout A, CIV-1075). No bullets.
  * Always open: the explanations of the math stay visible on every page. `after` sits below.
  */
 export default function MethodFootnote({ id, groups, after }: { id?: string; groups: MethodGroup[]; after?: ReactNode }) {
   const title = 'How this is measured';
-  // One compact block (CIV-303): each group's bold label, then each definition on its own line under it (Ryan, CIV-1075).
   const body = (
     <>
-      <p className="mt-2 text-xs leading-5 text-[var(--text-muted)]">
+      <div className="mt-2 space-y-3 text-xs leading-5 text-[var(--text-muted)]">
         {groups.map(g => {
           const items = g.items.filter(Boolean);
           if (!items.length) return null;
           return (
-            <Fragment key={g.label}>
-              <strong className="block font-semibold text-[var(--text-secondary)]">{g.label}.</strong>
-              {items.map((item, i) => <span key={i} className="block">{item}</span>)}
-            </Fragment>
+            <div key={g.label}>
+              <h3 className="font-semibold text-[var(--text-secondary)]">{g.label}</h3>
+              <p>{items.map((item, i) => <Fragment key={i}>{i > 0 && ' '}{item}</Fragment>)}</p>
+            </div>
           );
         })}
-      </p>
+      </div>
       {after}
     </>
   );
