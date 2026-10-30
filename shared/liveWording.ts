@@ -52,7 +52,7 @@ export const changesComparedWith = (from: string, to: string): string => `compar
 export const estimatedNote = (agency: string): string => `estimated from vehicle positions, not reported by the ${agency.toUpperCase()}`;
 
 /**
- * A Live page subtitle (approved by Ryan): "Week of Oct 8–14, compared with Oct 1–7 · 9 TTC streetcar routes ·
+ * A Live page subtitle (approved by Ryan): "Week of Oct 8–14, compared with Oct 1–7 · 9 TTC routes ·
  * estimated from vehicle positions, not reported by the TTC · data up to Oct 14". `middle` is the page's own count (routes or trips);
  * "compared with" only when the two weeks can be compared.
  */
@@ -62,10 +62,12 @@ export function liveSubtitle(o: { thisWeek: readonly string[]; lastWeek?: readon
   return [week, o.middle, estimatedNote(o.agency), o.upTo ? `data up to ${dateRangeText(o.upTo, o.upTo)}` : ''].filter(Boolean).join(' · ');
 }
 
-/** "9 TTC streetcar routes": the routes a page covers, naming the mode only when every one is a streetcar (GTFS route_type 0). */
-export function coveredRoutesText(agency: string, routes: ReadonlyArray<{ mode?: number }>): string {
-  const streetcar = routes.length > 0 && routes.every(r => r.mode === 0);
-  return `${routes.length} ${agency.toUpperCase()} ${streetcar ? 'streetcar ' : ''}route${routes.length === 1 ? '' : 's'}`;
+/**
+ * "9 TTC routes": the routes a page covers. No mode word: a streetcar timetable can run entirely as replacement buses
+ * (503, 507), which the agency figures can't tell apart (Ryan, CIV-1075).
+ */
+export function coveredRoutesText(agency: string, routes: ReadonlyArray<unknown>): string {
+  return `${routes.length} ${agency.toUpperCase()} route${routes.length === 1 ? '' : 's'}`;
 }
 
 /** "Built Oct 16, 6:12 PM", in Toronto time (the agencies Live covers), from an ISO timestamp (shared/timeText.ts). */
