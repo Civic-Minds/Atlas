@@ -65,7 +65,8 @@ for (const route of routes) {
   for (const rule of rules) for (const day of rule.days) addWindow(availability, day, rule.startHour, rule.endHour);
   const routeName = route.route_long_name ?? route.route_id;
   const routeZoneName = routeName.includes(' - ') ? routeName.slice(routeName.lastIndexOf(' - ') + 3) : routeName;
-  const zoneNames = new Set([routeName, routeZoneName, `${routeZoneName} Area`]);
+  // The zone polygons name some areas "<zone> Area Zone" (Woodbury, Blaine), so that name maps too (CIV-32).
+  const zoneNames = new Set([routeName, routeZoneName, `${routeZoneName} Area`, `${routeZoneName} Area Zone`]);
   for (const zoneName of zoneNames) {
     const existing = zoneMetadata[zoneName];
     zoneMetadata[zoneName] = {
