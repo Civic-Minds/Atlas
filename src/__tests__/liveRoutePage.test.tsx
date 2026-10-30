@@ -10,6 +10,9 @@ vi.mock('../../shared/config', async importOriginal => {
   return { ...actual, FEATURES: { ...actual.FEATURES, live: true, liveReports: true } };
 });
 
+// The agency registry gives the title's short name; this test's fetch stub answers only the dashboard.
+vi.mock('../hooks/useLiveAgencyName', () => ({ useLiveAgencyName: (slug: string) => (slug === 'ttc' ? 'TTC' : slug) }));
+
 import LiveRoutePage from '../LiveRoutePage';
 
 const counts = (n: number, late: number, early: number) => ({ n, early: Math.round(n * early), onTime: n - Math.round(n * early) - Math.round(n * late), late: Math.round(n * late), earlyShare: early, onTimeShare: 1 - early - late, lateShare: late, notLateShare: 1 - late });

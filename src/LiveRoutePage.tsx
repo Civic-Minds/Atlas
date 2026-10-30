@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
+import { useLiveAgencyName } from './hooks/useLiveAgencyName';
 import { ATLAS_MODE, FEATURES } from '../shared/config';
 import {
   dateRangeText, freshness, goodDayCounts,
@@ -7,12 +8,13 @@ import {
 } from '../shared/liveDashboard';
 import { useLiveDashboard, liveToolPath } from './hooks/useLiveDashboard';
 import { useLiveGaps } from './hooks/useLiveGaps';
-import { devOnly, liveReportTitle } from './lib/liveReportData';
+import { devOnly, liveReportTitle, liveRouteTitleLabel } from './lib/liveReportData';
+import { RouteTitleName } from './components/RouteRowName';
 import DevHint from './components/Live/DevHint';
 import { applySeoToDocument } from './lib/seoDom';
 import { SITE_URL } from '../shared/seo';
 import { syncUrlParams } from './utils/syncUrlParams';
-import { titleCase } from './utils/format';
+import { stopNameCase } from './utils/format';
 import ErrorBoundary from './components/ErrorBoundary';
 import PageShell from './components/ui/PageShell';
 import EmptyPage from './components/ui/EmptyPage';
@@ -42,7 +44,7 @@ const NAME_KEYS = new Set(['name', 'fromName', 'toName']);
 /** Big per-stop number tables that hold no names, left alone. */
 const NO_NAMES = new Set(['stopHours', 'segmentLines']);
 const niceDeep = (x: unknown, key = ''): unknown => {
-  if (typeof x === 'string') return NAME_KEYS.has(key) ? titleCase(x) : x;
+  if (typeof x === 'string') return NAME_KEYS.has(key) ? stopNameCase(x) : x;
   if (Array.isArray(x)) return x.map(v => niceDeep(v, key));
   if (x && typeof x === 'object') return Object.fromEntries(Object.entries(x).map(([k, v]) => [k, NO_NAMES.has(k) ? v : niceDeep(v, k)]));
   return x;
@@ -112,6 +114,7 @@ export const BOUNDARY = liveDrawError;
 
 function AnalysisPage() {
   const { agency = '', route = '' } = useParams();
+  const agencyName = useLiveAgencyName(agency);
   const state = useLiveDashboard(FEATURES.liveReports ? agency : null, route);
   const gaps = useLiveGaps(FEATURES.liveReports ? agency : null, route);
   // No time-of-day toggle: every section shows the whole day; hour charts highlight a period on hover, and sections
@@ -131,10 +134,10 @@ function AnalysisPage() {
   const routeTitle = state.kind === 'done' && state.data.status === 'ready' ? state.data.routeTitle : null;
   useEffect(() => {
     if (!agency || !route) return;
-    applySeoToDocument(document, { title: liveReportTitle(routeTitle || `${agency.toUpperCase()} ${route}`), description: '', canonicalUrl: `${ATLAS_MODE === 'public' ? SITE_URL : window.location.origin}${window.location.pathname}`, noindex: true, matchedPath: window.location.pathname });
-  }, [agency, route, routeTitle]);
+    applySeoToDocument(document, { title: liveReportTitle(routeTitle || `${agencyName} ${route}`), description: '', canonicalUrl: `${ATLAS_MODE === 'public' ? SITE_URL : window.location.origin}${window.location.pathname}`, noindex: true, matchedPath: window.location.pathname });
+  }, [agencyName, route, routeTitle]);
   if (!FEATURES.liveReports) return <LiveOffNotice />;
-  const title = `${agency.toUpperCase()} ${route}`;
+  const title = `${agencyName} ${route}`;
   const back = FEATURES.live ? <ArrowLink href="/apps/live">Open Live</ArrowLink> : null;
   if (state.kind === 'loading') return <PageShell variant="wide"><p className="mt-24 text-sm text-[var(--text-muted)]" aria-busy="true">Loading {title}…</p></PageShell>;
   if (state.kind === 'error') return <EmptyPage title={title} body={state.reason} action={back} />;
@@ -150,7 +153,7 @@ function AnalysisPage() {
     <PageShell variant="wide">
       <article className="pb-16 pt-10 sm:pt-14">
         <div className="flex flex-col gap-1 sm:grid sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center sm:gap-x-4">
-          <div className="min-w-0"><PageTitle>{data.routeTitle || title}</PageTitle></div>
+          <div className="min-w-0"><PageTitle>{data.routeTitle ? <RouteTitleName label={liveRouteTitleLabel(data.routeTitle, route)} /> : title}</PageTitle></div>
           <p className="m-0 text-sm text-[var(--text-muted)] sm:col-span-2 sm:row-start-2">
             <RouteSubtitle v3={v3} agency={agency} route={route} />
           </p>

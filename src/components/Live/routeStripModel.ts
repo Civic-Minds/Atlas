@@ -4,7 +4,7 @@
  * from the Live analysis file (v3).
  */
 import { directionLabel, type DashboardBand, type LiveV3, type UncertainStart } from '../../../shared/liveDashboard';
-import { titleCase } from '../../utils/format';
+import { stopNameCase } from '../../utils/format';
 import { pct, tenth } from '../../../shared/liveFormat';
 import { DELAY_LEGEND_TITLE, DELAY_STEP_LABELS, EARLY_STEP_LABEL, USUALLY_ON_TIME, bunchTotalParts, bunchedAndLong, lateShareText, usuallyOffBy } from '../../../shared/liveWording';
 
@@ -269,7 +269,7 @@ export function routeStripFromV3(v3: LiveV3, directionId: number, band: Dashboar
       const b = bunchingById.get(s.stopId);
       return {
         stopId: s.stopId,
-        name: titleCase(s.name),
+        name: stopNameCase(s.name),
         delayMin: s.n > 0 ? s.medianMin : null,
         lateShare: s.n > 0 ? s.lateShare : null,
         bunchingShare: b && b.n > 0 ? b.badShare : null,

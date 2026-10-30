@@ -80,7 +80,7 @@ export default function WorstStopsSection({ v3, data, dir, uncertain, limit, col
   );
   if (id) return <Section id={id} title={title} shrink={shrink} boundary={boundary}>{introLine}{table}{note}</Section>;
   return (
-    <section className="mt-10 max-w-xl" aria-label="The stops most often late">
+    <section className="mt-12 max-w-xl" aria-label="The stops most often late">
       <ErrorBoundary label={boundary ?? ''}>
         <div className="min-w-0">
           <SectionTitle>{title}</SectionTitle>

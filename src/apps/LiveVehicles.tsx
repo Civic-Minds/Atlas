@@ -757,36 +757,27 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
           ).map((v, i) => {
             const colors = getVehicleColors(v.status, colorMode);
             return (
-              <ListRow
+              // The route card's direction row (CIV-1117 preview), with the vehicle's delay at the right end.
+              <CardDirectionRow
                 key={v.id}
-                variant="spaced"
-                className="items-start gap-3"
-                // Full card width, so the row's text lines up with the card's (the card body has px-4).
-                style={{ width: 'calc(100% + 2rem)', marginLeft: '-1rem', marginRight: '-1rem' }}
+                label={vehicleRowName(v, i, selectedRouteModeWord)}
+                singleLine
+                subLabel={v.speedKmh != null ? `${v.speedKmh} km/h` : undefined}
                 onClick={() => {
                   setVehicleFly({ lat: v.lat, lon: v.lon, ts: Date.now() });
                   setFocusedVehicle({ id: v.id, lat: v.lat, lon: v.lon, ts: Date.now() });
                   setVehicleCard({ routeKey: buildRouteKey(v.agencySlug, v.routeShortName), id: v.id });
                 }}
-              >
-                <div className="min-w-0">
-                  <p className={`${CARD_LIST_ROUTE} truncate`}>
-                    {vehicleRowName(v, i, selectedRouteModeWord)}
-                  </p>
-                  {v.speedKmh != null && (
-                    <p className="text-xs font-bold text-[var(--text-dim)] mt-0.5">{v.speedKmh} km/h</p>
-                  )}
-                </div>
-                {/* No status at all where the feed gives none (TTC streetcars), not an empty field (CIV-1043). */}
-                {delayLabel(v) && (
+                // No status at all where the feed gives none (TTC streetcars), not an empty field (CIV-1043).
+                value={delayLabel(v) ? (
                   <span
                     style={{ color: v.status === 'no_data' ? undefined : colors.border }}
                     className={`text-xs font-black shrink-0 whitespace-nowrap ${v.status === 'no_data' ? 'text-[var(--text-muted)]' : ''}`}
                   >
                     {delayLabel(v)}
                   </span>
-                )}
-              </ListRow>
+                ) : undefined}
+              />
             );
           })
         )}
