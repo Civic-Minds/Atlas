@@ -21,7 +21,13 @@ export { headwayEvery };
 const MAX_NEARBY = 8;
 
 export interface AgencyPageRoute {
+  /** The route's key and sort value on agency pages: the feed's short name, else its long name, else its route ID. */
   name: string;
+  /**
+   * CIV-984: the feed's own short name, '' when it has none, so pages label the route with routeLabels.
+   * Missing in summaries written before it was added.
+   */
+  shortName?: string;
   longName: string | null;
   /** effectiveMode() (shared/modes.ts): 0 streetcar, 1 subway/metro, 2 commuter rail, 3 bus, 4 ferry, 100 light rail, ... */
   mode: number;

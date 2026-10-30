@@ -145,6 +145,7 @@ export function summarize(
     const prev = routes.get(key);
     routes.set(key, {
       name: prev?.name ?? (shortName || longName || String(p.routeId ?? '')),
+      shortName: prev?.shortName ?? shortName,
       longName: prev?.longName ?? longName,
       mode: prev?.mode ?? effectiveMode({ routeType: p.routeType as number, routeLongName: longName, routeShortName: shortName, agencySlug: slug, bookingRequired: p.bookingRequired === true }),
       midday: null, am: null, pm: null, evening: null, overnight: null,

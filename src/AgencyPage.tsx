@@ -153,7 +153,7 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
                     rows={group.routes}
                     rowKey={r => `${r.name}-${r.longName ?? ''}`}
                     columns={[
-                      { key: 'route', header: 'Route', rowHeader: true, className: 'font-normal', cell: r => <RouteNameCell shortName={r.name} longName={r.longName} mode={r.mode} agencyName={agency.name} /> },
+                      { key: 'route', header: 'Route', rowHeader: true, className: 'font-normal', cell: r => <RouteNameCell shortName={r.name} feedShortName={r.shortName} longName={r.longName} mode={r.mode} agencyName={agency.name} /> },
                       { key: 'am', header: PERIOD_LABELS.amPeak, cell: r => cell('am', r) },
                       { key: 'midday', header: PERIOD_LABELS.midday, cell: r => cell('midday', r) },
                       { key: 'pm', header: PERIOD_LABELS.pmPeak, cell: r => cell('pm', r) },
