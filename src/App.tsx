@@ -348,8 +348,6 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   const [dataSaver, setDataSaver] = useState(() => (
     (() => {
       if (!FEATURES.persistedSettings || typeof window === 'undefined') return false;
-      const fromLink = readUrlParam(currentSearch(), APP_URL.dataSaver);
-      if (fromLink != null) return fromLink;
       return localStorage.getItem('atlas_pref_data_saver') === 'true';
     })()
   ));
