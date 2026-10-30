@@ -102,25 +102,25 @@
     "publish-on-demand:staging": "ATLAS_ENV=staging npx tsx pipeline/publish-on-demand.ts"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.1152.0",
-    "@aws-sdk/lib-storage": "^3.1152.0",
+    "@aws-sdk/client-s3": "^3.1156.0",
+    "@aws-sdk/lib-storage": "^3.1156.0",
     "@deck.gl/core": "^9.3.11",
     "@deck.gl/layers": "^9.3.11",
     "@deck.gl/mapbox": "^9.3.11",
     "@mapbox/vector-tile": "^3.0.0",
     "@vercel/analytics": "^2.0.1",
     "@vercel/speed-insights": "^2.0.0",
-    "dotenv": "^18.0.8",
+    "dotenv": "^18.0.9",
     "gtfs-realtime-bindings": "^2.2.0",
     "jszip": "^3.10.2",
-    "lucide-react": "^1.55.0",
-    "maplibre-gl": "^6.14.0",
+    "lucide-react": "^1.61.0",
+    "maplibre-gl": "^6.15.0",
     "papaparse": "^5.7.0",
     "pbf": "^5.1.2",
     "pmtiles": "^4.5.0",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
-    "react-router": "^8.4.0"
+    "react-router": "^8.5.0"
   },
   "overrides": {
     "@emnapi/core": "1.11.3",
@@ -128,7 +128,7 @@
     "brace-expansion": "^2.1.3"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^5.20261016.1",
+    "@cloudflare/workers-types": "^5.20261023.1",
     "@emnapi/core": "1.11.3",
     "@emnapi/runtime": "1.11.3",
     "@mapbox/vector-tile": "^3.0.0",
@@ -144,11 +144,11 @@
     "jsdom": "^30.1.3",
     "pbf": "^5.1.2",
     "playwright": "^1.64.1",
-    "postcss": "^8.5.30",
+    "postcss": "^8.5.31",
     "tailwindcss": "^4.3.3",
     "tsx": "^4.23.15",
     "typescript": "^6.0.3",
-    "vite": "^8.3.4",
+    "vite": "^8.3.5",
     "vitest": "^5.0.5"
   }
 }
