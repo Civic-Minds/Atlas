@@ -22,7 +22,7 @@ describe('Free child fares (CIV-1149)', () => {
     const { container } = render(<FreeChildFaresPage />);
     expect(screen.getByText('We read the official fare rules of 553 transit agencies in Canada and the United States to find up to what age children ride free, and under what conditions.')).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'How we did this' })).toBeInTheDocument();
-    expect([...container.querySelectorAll('footer strong')].map(el => el.textContent)).toEqual(['Date conducted.', 'Sample.', 'Sources.', 'What counted.', 'Not found yet.', 'Limitations.']);
+    expect([...container.querySelectorAll('[data-research-method] strong')].map(el => el.textContent)).toEqual(['Date conducted.', 'Sample.', 'Sources.', 'What counted.', 'Not found yet.', 'Limitations.']);
     expect(screen.getByText(/553 in all, 465 in the United States and 88 in Canada\./)).toBeInTheDocument();
   });
 
