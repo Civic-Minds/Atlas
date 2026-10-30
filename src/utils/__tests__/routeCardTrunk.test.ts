@@ -280,10 +280,13 @@ describe('stretchSharedHeadway (CIV-937)', () => {
     expect(stretchSharedHeadway(group, 'evening')).toBeNull();
   });
 
-  it('shows nothing for one row, a direction with no tail, All day, or data without the value', () => {
-    expect(stretchSharedHeadway({ realTier: [branches[0]], directionFeatures: branches }, 'midday')).toBeNull();
+  it('reads it above two destinations that share the main stretch with no tail (#1185, TTC 29 southbound)', () => {
     const mains = [row('A', 'main', 30), row('B', 'main', 30)];
-    expect(stretchSharedHeadway({ realTier: mains, directionFeatures: mains }, 'midday')).toBeNull();
+    expect(stretchSharedHeadway({ realTier: mains, directionFeatures: mains }, 'midday')).toBe(15);
+  });
+
+  it('shows nothing for one row, All day, or data without the value', () => {
+    expect(stretchSharedHeadway({ realTier: [branches[0]], directionFeatures: branches }, 'midday')).toBeNull();
     expect(stretchSharedHeadway(group, 'all')).toBeNull();
     const bare = branches.map(b => ({ ...b, stretchMeta: { main: { stops: 50, refStop: 's', trips: 67 }, tails: [] } }));
     expect(stretchSharedHeadway({ realTier: bare, directionFeatures: bare }, 'midday')).toBeNull();

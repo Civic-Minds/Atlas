@@ -1,6 +1,7 @@
 import type { ShapeProperties, TimePeriod } from '../hooks/useIntervalStats';
 import { periodKeyForHour } from '../../shared/config';
 import { branchDisplayPeriodHeadway, buildRouteServiceSummary } from './routeFacts';
+import { hasDirectionPeriodService } from './effectiveHeadway';
 import { MIN_SHARED_STOPS_FOR_TRUNK, sharedStopIds, sharesOrderedTrunk } from './routeBranchGeometry';
 import { failingRouteSharedRanges, sharedStretchStopPass } from './frequencySegments';
 import { rowTrips } from './rowTrips';
@@ -158,6 +159,40 @@ function trunkBeatsBranches(trunk: number, terminal: number): boolean {
 }
 
 /**
+ * #1185: a direction whose main stretch is run by two or more patterns with no tail (TTC 29 southbound: 29A to Dufferin
+ * Gate and 29C to Princes' Gates, both every 16 over the same stops, together every 8). The pooled main-stretch value
+ * (stretchMeta.main) is what riders on the shared stops get.
+ * - Different destinations: one row per destination, each keeping its own wait, under a "Shared stretch" row (TTC 504's
+ *   pattern, stretchSharedHeadway).
+ * - One destination (TTC 29 northbound, both to Wilson): the one row reads the pooled value.
+ * Only when the pooled value is materially better than the patterns' own (the Combined rule); null otherwise.
+ */
+export function pooledMainStretch(
+  directionFeatures: readonly ShapeProperties[],
+  period: TimePeriod,
+): { destinations: ShapeProperties[]; pooled: number } | null {
+  if (period === 'all') return null;
+  if (directionFeatures.some(d => d.stretchRole === 'tail')) return null;
+  // The patterns that run in the period: one with no trips then has no row (GO KI's Georgetown at midday).
+  const mains = directionFeatures.filter(d => d.stretchRole === 'main' && (d.stretchIndex ?? 0) === 0 && hasDirectionPeriodService(d, period));
+  if (mains.length < 2) return null;
+  const shared = stretchRowsFromMeta(mains[0], period).find(r => r.role === 'main');
+  if (shared?.value == null || shared.noRegular) return null;
+  // A pattern that runs but has no wait of its own to show keeps today's card (GO LW to Confederation).
+  const own = mains.map(d => rowTrips(d, period).value);
+  if (own.some(v => v == null)) return null;
+  if (shared.value > medianHeadway(own as number[]) * TRUNK_BEATS_SHARE) return null;
+  // One row per destination: the pattern that draws the most stops stands for it.
+  const byDestination = new Map<string, ShapeProperties>();
+  for (const d of mains) {
+    const key = (d.headsign ?? '').trim().toLowerCase();
+    const current = byDestination.get(key);
+    if (!current || (d.stopOrder?.length ?? 0) > (current.stopOrder?.length ?? 0)) byDestination.set(key, d);
+  }
+  return { destinations: [...byDestination.values()], pooled: shared.value };
+}
+
+/**
  * CIV-937: the "Shared stretch every N" row of a direction whose rows come from the stretches: the main stretch's own
  * value (stretchMeta.main) above its branch rows, each branch keeping its own wait. Only when the direction shows two
  * or more rows with a tail among them (the main stretch's own row is the branch that runs on past it), and the shared
@@ -170,7 +205,8 @@ export function stretchSharedHeadway(
 ): number | null {
   if (period === 'all' || !group.directionFeatures) return null;
   const rows = group.realTier;
-  if (rows.length < 2 || !rows.some(d => d.stretchRole === 'tail')) return null;
+  // #1185: two or more destinations on one main stretch (pooledMainStretch) get the row too.
+  if (rows.length < 2 || !(rows.some(d => d.stretchRole === 'tail') || rows.filter(d => d.stretchRole === 'main').length >= 2)) return null;
   // Every feature of the direction carries the same stretchMeta; a direction of tails alone (MARTA 20) has no main feature.
   const meta = group.directionFeatures.find(d => d.stretchRole === 'main') ?? group.directionFeatures.find(d => d.stretchMeta?.main);
   const shared = meta ? stretchRowsFromMeta(meta, period).find(r => r.role === 'main') : undefined;
