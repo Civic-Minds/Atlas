@@ -7,7 +7,7 @@
  */
 import type { DashboardBand, LiveV3 } from '../../../shared/liveDashboard';
 import { nameCase } from '../../utils/format';
-import { shortStopName } from './routeStripModel';
+import { shortStopName } from '../../utils/stopLabel';
 
 export type MapMeasure = 'late' | 'runTime' | 'extraWait' | 'bunching';
 /** The measure switch, in order, with the labels the tiles already use. */
