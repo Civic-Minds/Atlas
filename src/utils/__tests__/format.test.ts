@@ -303,3 +303,14 @@ describe('names in capitals with French linking words (CIV-1054)', () => {
     expect(routeLabelCase('Kendall/MIT Station')).toBe('Kendall/MIT Station');
   });
 });
+
+describe('route-name acronyms from the feeds (CIV-984)', () => {
+  it('keeps college, hospital and service acronyms in all-caps route names, and title-cases real words', () => {
+    expect(routeLabels({ shortName: '', longName: 'USI', mode: 3, agencyName: 'METS' }).text).toBe('USI');
+    expect(routeLabelCase('THIBODAUX/NSU INBOUND')).toBe('Thibodaux/NSU Inbound');
+    expect(routeLabelCase('LYNNHAVEN MALL/TCC VB')).toBe('Lynnhaven Mall/TCC VB');
+    expect(routeLabelCase('Q70-SBS')).toBe('Q70-SBS');
+    expect(routeLabelCase('COASTER')).toBe('Coaster');
+    expect(routeLabelCase('EAGLE MTN/SARATOGA SPR/LEHI STN/UVU')).toBe('Eagle Mtn/Saratoga Spr/Lehi Stn/UVU');
+  });
+});

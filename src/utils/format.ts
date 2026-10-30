@@ -171,6 +171,11 @@ const NAME_ACRONYMS: Record<string, string> = {
 const ROUTE_NAME_ONLY_ACRONYMS = [
   'AM', 'PM', 'MAX', 'UP', 'TC', 'PATH', 'MARC', 'STO', 'SU',
   'N', 'S', 'E', 'W', 'NE', 'SE', 'US',
+  // CIV-984: acronyms in all-caps route names across the feeds (colleges, hospitals, places, services), which title case read as
+  // words ("USI" -> "Usi"). Abbreviations of words (ST, RD, BLVD, MTN, PKWY) and brand words (DASH, VIVA) are left to title case.
+  'USI', 'UIS', 'UVU', 'UVX', 'BYU', 'NSU', 'OSU', 'UCF', 'UCSB', 'UCCS', 'CSULB', 'USM', 'UTD', 'OCCC', 'LLCC', 'SFCC', 'NRCC', 'GRCC',
+  'NCC', 'TCC', 'FLC', 'KJHS', 'CGHS', 'HSC', 'TMC', 'RRMC', 'RVH', 'NRGH', 'RCMP', 'SBS', 'PCH', 'VRE', 'ORBT', 'TRAX', 'DART',
+  'SLO', 'OIA', 'BDO', 'GOG', 'FPL', 'HTC', 'DNTC', 'PNR', 'WCWS', 'CCX', 'CGP', 'ATC', 'CIC', 'URP', 'XP', 'SR', 'VB', 'NN', 'WP', 'WC', 'MC',
 ];
 
 // Articles/prepositions that stay lowercase unless they open the string
