@@ -111,20 +111,9 @@ export function cleanHeadsign(
   // exo / STM Montreal buses: headsigns sometimes include "Destination" as a literal word
   h = h.replace(/\bDestination\b/gi, '');
 
-  // REM: normalize station name fragments that survive stripping back to canonical form
-  const remNames: Record<string, string> = {
-    'brossard': 'Brossard',
-    'orme': "Anse-à-l'Orme",
-    'deux-montagnes': 'Deux-Montagnes',
-    'montagnes': 'Deux-Montagnes',
-  };
-  let lowerH = h.toLowerCase();
-  for (const [key, full] of Object.entries(remNames)) {
-    if (lowerH.includes(key)) {
-      h = full;
-      break;
-    }
-  }
+  // (CIV-1153) A REM-only lookup used to rename any headsign containing "orme", "brossard" or "montagnes" to a REM
+  // station, for every agency ("Les Ormes", "Terminus Brossard"). REM's own headsigns come out whole without it since
+  // CIV-1146, so it is gone.
 
   // Known same-destination headsign variants where the source feed itself is inconsistent,
   // found via route-report --live triage before a France candidate's real launch:

@@ -151,4 +151,16 @@ describe('isMiwayExpressHeadsign', () => {
     // Only the first prefix goes: the second "HUB - " stays.
     expect(cleanHeadsign('51 - HUB - GRAHAM PARK RD')).toBe('HUB - GRAHAM PARK RD');
   });
+
+  it('reads REM headsigns whole, and leaves other agencies\' Orme, Brossard and Deux-Montagnes names alone (CIV-1153)', () => {
+    expect(cleanHeadsign('A1 - Brossard', 'A4-A1', 'A4 - Deux-Montagnes / A1 - Brossard')).toBe('Brossard');
+    expect(cleanHeadsign('A4 - Deux-Montagnes', 'A4-A1', 'A4 - Deux-Montagnes / A1 - Brossard')).toBe('Deux-Montagnes');
+    expect(cleanHeadsign("A3 - Anse-à-l'Orme", 'A3-A1', "A3 - Anse-à-l'Orme / A1 - Brossard")).toBe("Anse-à-l'Orme");
+    expect(cleanHeadsign('Bois-Franc', 'A1', 'Bois-Franc / A1 - Brossard')).toBe('Bois-Franc');
+    expect(cleanHeadsign('Les Ormes')).toBe('Les Ormes');
+    expect(cleanHeadsign('Purmerend via Wormerveer')).toBe('Purmerend via Wormerveer');
+    expect(cleanHeadsign('Ormeau station')).toBe('Ormeau station');
+    expect(cleanHeadsign('Terminus Brossard')).toBe('Terminus Brossard');
+    expect(cleanHeadsign('Station Deux-Montagnes')).toBe('Station Deux-Montagnes');
+  });
 });
