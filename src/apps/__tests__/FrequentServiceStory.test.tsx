@@ -49,7 +49,7 @@ describe('FrequentServiceStory', () => {
   it('offers the chart as a table', () => {
     render(<FrequentServiceStory agencies={agencies} onExploreMap={() => {}} />);
     expect(screen.getByText('Show as a table')).toBeInTheDocument();
-    expect(screen.getByRole('columnheader', { name: 'Agencies, Oct 30' })).toBeInTheDocument();
+    expect(screen.getByRole('columnheader', { name: /^Agencies, Oct\s30$/ })).toBeInTheDocument();
   });
 
   it('does not mistake unavailable or unnamed maps for numeric definitions', () => {

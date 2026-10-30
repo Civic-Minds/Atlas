@@ -26,8 +26,8 @@ const COVERAGE_COLUMNS: DataTableColumn<CoverageRow>[] = [
 type HeadwayBar = (typeof frequentServiceStoryStats.headwayBars)[number];
 const HEADWAY_COLUMNS: DataTableColumn<HeadwayBar>[] = [
   { key: 'wait', header: 'Wait', cell: bar => headwayAmount(bar.minutes), rowHeader: true, className: 'font-normal', width: 5 },
-  { key: 'oct11', header: 'Agencies, Oct 11', cell: bar => bar.agenciesOct11, className: 'tabular-nums', width: 6.5 },
-  { key: 'oct30', header: 'Agencies, Oct 30', cell: bar => bar.agencies, className: 'tabular-nums', width: 6.5 },
+  { key: 'oct11', header: 'Agencies, Oct\u00a011', cell: bar => bar.agenciesOct11, className: 'tabular-nums', width: 6.5 },
+  { key: 'oct30', header: 'Agencies, Oct\u00a030', cell: bar => bar.agencies, className: 'tabular-nums', width: 6.5 },
 ];
 
 export default function FrequentServiceStory({ onExploreMap, agencies }: Props) {
