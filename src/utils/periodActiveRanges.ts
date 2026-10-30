@@ -3,6 +3,25 @@ import { headwayAboutMinutes } from './headwayText';
 
 type HourFields = Pick<ShapeProperties, 'headwayByHour' | 'maxGapByHour' | 'departuresByHour'>;
 
+/**
+ * #1236: overnight (2-6 AM, hours 26-29) also holds the next morning's trips at clock hours 2-5, as the pipeline counts
+ * them (forCrossMidnightWindow): TTC 100's 5:34 AM first trip runs in the period, so the card never says "no scheduled
+ * trips from 2-6 AM" for it. Rule 5 (D8) still keeps such first trips from counting as service through the period.
+ */
+const morningHour = (hour: number): number | null => (hour >= 26 ? hour - 24 : null);
+const departuresAt = (d: Partial<HourFields>, hour: number): number => {
+  const morning = morningHour(hour);
+  return (d.departuresByHour?.[hour] ?? 0) + (morning != null ? d.departuresByHour?.[morning] ?? 0 : 0);
+};
+const headwayAt = (d: Partial<HourFields>, hour: number) => {
+  const morning = morningHour(hour);
+  return d.headwayByHour?.[hour] ?? (morning != null ? d.headwayByHour?.[morning] : undefined);
+};
+const gapAt = (d: Partial<HourFields>, hour: number) => {
+  const morning = morningHour(hour);
+  return d.maxGapByHour?.[hour] ?? (morning != null ? d.maxGapByHour?.[morning] : undefined);
+};
+
 function hourRuns(hourActive: (hour: number) => boolean, scanStart: number, endHour: number): Array<[number, number]> {
   const ranges: Array<[number, number]> = [];
   let runStart: number | null = null;
@@ -29,9 +48,9 @@ export function activeHourRanges(
   scanStart: number,
   endHour: number,
 ): Array<[number, number]> {
-  const byHeadway = hourRuns(hour => directions.some(direction => direction.headwayByHour?.[hour] != null), scanStart, endHour);
+  const byHeadway = hourRuns(hour => directions.some(direction => headwayAt(direction, hour) != null), scanStart, endHour);
   if (byHeadway.length === 0 || !directions.some(direction => direction.departuresByHour)) return byHeadway;
-  return hourRuns(hour => directions.some(direction => (direction.departuresByHour?.[hour] ?? 0) > 0), scanStart, endHour);
+  return hourRuns(hour => directions.some(direction => departuresAt(direction, hour) > 0), scanStart, endHour);
 }
 
 /**
@@ -51,7 +70,7 @@ export function activeRangesCoverPeriod(ranges: Array<[number, number]>, startHo
  * only ever drop a part-period notice, never add one.
  */
 export function hourHasService(direction: Partial<HourFields>, hour: number): boolean {
-  return (direction.departuresByHour?.[hour] ?? 0) > 0 || direction.headwayByHour?.[hour] != null || direction.maxGapByHour?.[hour] != null;
+  return departuresAt(direction, hour) > 0 || headwayAt(direction, hour) != null || gapAt(direction, hour) != null;
 }
 
 /**
@@ -92,8 +111,10 @@ export function partPeriodOutside(
   if (runs.length !== 1) return null;
   const [active] = runs;
   const counted = directions.some(direction => direction.departuresByHour);
+  // #1236: overnight reads the counts alone: an hour's headway there can be the next morning's trips seen through its
+  // 90-minute window (TTC 99: a 4 AM headway from 5 AM trips), which would read as "less often from 2-5 AM".
   const service = (from: number, to: number, at: OutsidePart['at']): OutsidePart['service'] => {
-    for (let hour = from; hour < to; hour++) if (directions.some(direction => hourHasService(direction, hour))) return 'less';
+    for (let hour = from; hour < to; hour++) if (directions.some(direction => (counted && morningHour(hour) != null ? departuresAt(direction, hour) > 0 : hourHasService(direction, hour)))) return 'less';
     return counted || at === 'start' ? 'none' : 'unknown';
   };
   const parts: OutsidePart[] = [];
@@ -104,8 +125,8 @@ export function partPeriodOutside(
 
 /**
  * Whether a selected route outside the filter gets the part-period notice for this
- * period (#995). It needs some service near the period (the scan starts an hour
- * early, as the notice's range does) and, under a frequency filter, a service
+ * period (#995). It needs trips inside the period (#1186) and a headway near it (that
+ * scan starts an hour early) and, under a frequency filter, a service
  * window that stops short of the period: some hour of it with no departure. Without a
  * frequency filter, or when the route's filter value meets it, the earlier behaviour stands.
  */
@@ -117,6 +138,9 @@ export function partPeriodNoticeApplies(
   /** The route's filter value for the period; the swap applies only when it misses the frequency filter. */
   filterValue: number | null | undefined,
 ): boolean {
+  // #1186: trips inside the period, not only in the hour before it. The scan an hour early stays as well, so the
+  // departure counts never add a notice.
+  if (periodTripRanges(directions, startHour, endHour).length === 0) return false;
   if (activeHourRanges(directions, Math.max(0, startHour - 1), endHour).length === 0) return false;
   // No frequency filter, or the route meets it (hidden by span, limited, mode or agency filters
   // instead): the frequency notice would be false, so the earlier behaviour stands.
