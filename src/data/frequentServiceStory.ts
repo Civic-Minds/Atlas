@@ -1,5 +1,6 @@
 import audit from '../../docs/research/system-map-audit-2026-09/data.json';
 import recheck from '../../docs/research/frequent-service-research-2026-09/definition-recheck-2026-10-30.json';
+import definitions from '../../docs/research/frequent-service-research-2026-09/frequent-definitions-by-agency.json';
 
 const storyThresholds = [10, 12, 15, 20, 30, 60];
 const storyCountries = new Set(['Canada', 'United States']);
@@ -15,6 +16,20 @@ const categoryCounts = {
 // checked again, and only the ones whose source still holds are counted.
 const recheckedNumericRows = recheck.rows.filter(row => storyCountries.has(row.country) && Number.isInteger(row.threshold));
 const heldNumericRows = recheckedNumericRows.filter(row => row.result === 'holds');
+
+// The method's sample (CIV-1174): the October 11 check of every Canada and US agency's official definition, the same
+// file the recheck above starts from.
+const definitionAgencies = definitions.agencies.filter(agency => storyCountries.has(agency.country));
+const namedNetworkAgencies = definitionAgencies.filter(agency => agency.definitionStatus === 'verified');
+
+/** Counts for the method's "Sample" line, from the October 11 definitions file. */
+export const frequentServiceDefinitionSample = {
+  agencies: definitionAgencies.length,
+  canada: definitionAgencies.filter(agency => agency.country === 'Canada').length,
+  unitedStates: definitionAgencies.filter(agency => agency.country === 'United States').length,
+  namedNetwork: namedNetworkAgencies.length,
+  withWait: namedNetworkAgencies.filter(agency => Number.isInteger(agency.definition?.thresholdMinutes)).length,
+};
 
 export const frequentServiceStoryStats = {
   agenciesReviewed: records.length,
