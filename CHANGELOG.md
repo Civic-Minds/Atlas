@@ -8,6 +8,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Map and route behavior
 
+- **Routes whose first trip leaves before 6 AM no longer say they have no overnight trips**: [TTC 100](https://github.com/Civic-Minds/Atlas/issues/1236) read "no scheduled trips from 2–6 AM" with buses from 5:22 AM; the card now says it runs only from 5–6 AM
 - **A route that runs for only part of a period names the hours inside that period**: [TTC 31 overnight](https://github.com/Civic-Minds/Atlas/issues/1186) read "runs from 1–2 AM, but not throughout 2–6 AM" next to "runs only from 2–3 AM"
 - **Stop cards no longer give a start or end time for a destination with no trips of its own**: [TTC 100 to Pape](https://github.com/Civic-Minds/Atlas/issues/1228) read "from 5:34 AM" overnight where its route card shows no regular service
 - **Top bar buttons have a light outline so they stand out on the map**: Mode, Agencies and the search bar blended into the light map; high contrast mode uses a stronger outline

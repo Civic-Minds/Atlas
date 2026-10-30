@@ -259,6 +259,29 @@ describe('periodTripRanges: the hours inside the period with trips (#1186)', () 
   });
 });
 
+describe('overnight holds the next morning\'s 2-6 AM trips (#1236)', () => {
+  const [start, end] = [26, 30];
+
+  it('reads TTC 100\'s 5:34 AM first trip as running from 5-6 AM', () => {
+    // TTC 100 to Pape, weekday: nothing after midnight, the day's first departures in the 5 AM hour.
+    const pape = { departuresByHour: { 5: 3, 6: 12, 7: 12 }, headwayByHour: { 5: 5, 6: 5 } } as Partial<ShapeProperties>;
+    expect(periodTripRanges([pape], start, end)).toEqual([[29, 30]]);
+    expect(hourHasService(pape, 29)).toBe(true);
+    expect(hourHasService(pape, 28)).toBe(false);
+  });
+
+  it('leaves a route with no overnight trips at all with none (a 6 AM start)', () => {
+    const daytime = { departuresByHour: { 6: 4, 7: 6, 22: 2 }, headwayByHour: { 6: 15, 7: 10 }, maxGapByHour: { 6: 15, 7: 10 } } as Partial<ShapeProperties>;
+    expect(periodTripRanges([daytime], start, end)).toEqual([]);
+    expect(partPeriodNoticeApplies([daytime], start, end, 15, 60)).toBe(false);
+  });
+
+  it('names no service before a morning start where the counts show none (TTC 99: a headway in the 4 AM hour reads the 5 AM trips)', () => {
+    const tt99 = { departuresByHour: { 5: 4 }, headwayByHour: { 5: 15, 28: 14 }, maxGapByHour: { 5: 18 } } as Partial<ShapeProperties>;
+    expect(partPeriodOutside([tt99], start, end)).toEqual({ active: [29, 30], parts: [{ at: 'start', hours: [26, 29], service: 'none' }] });
+  });
+});
+
 describe('the part-period notice needs trips inside the period (#1186)', () => {
   const midday = TIME_PERIODS.find(p => p.key === 'midday')!;
 

@@ -69,5 +69,18 @@ describe('routeCardNotices (CIV-1200)', () => {
     expect(n.filter?.code).toBe('N12');
   });
 
+  it('#1236: a 5 AM first trip runs in the overnight period (TTC 100), so the card says when, not "no scheduled trips"', () => {
+    const pape = { headsign: 'Pape', departuresByHour: { 5: 3, 6: 12 }, headwayByHour: { 5: 5, 6: 5 } } as any;
+    const m = { ...model, doesNotRun: true, hasPeriodService: false, hasPartialPeriodService: true, activeRangeDirections: [pape] } as unknown as RouteCardNoticeInput['model'];
+    const n = routeCardNotices({ ...base, directions: [pape], model: m, period: 'overnight', maxHeadway: Infinity, selectedRouteOutOfFilter: true });
+    const plain = (text: string | undefined) => text?.replaceAll('\u2060', '').replace(/[\u00a0\u202f]/g, ' ');
+    expect(n.filter).toBeNull();
+    expect(n.period?.code).toBe('N9');
+    expect(plain(n.period?.text)).toContain(formatPeriodRangeLong(29, 30));
+    // A route with no overnight trips at all keeps the line.
+    const daytime = { headsign: 'Pape', departuresByHour: { 6: 12 }, headwayByHour: { 6: 5 } } as any;
+    const none = { ...m, hasPartialPeriodService: false, activeRangeDirections: [daytime] } as unknown as RouteCardNoticeInput['model'];
+    expect(routeCardNotices({ ...base, directions: [daytime], model: none, period: 'overnight', maxHeadway: Infinity, selectedRouteOutOfFilter: true }).filter?.code).toBe('N11');
+  });
 });
 
