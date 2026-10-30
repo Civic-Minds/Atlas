@@ -164,3 +164,11 @@ describe('isMiwayExpressHeadsign', () => {
     expect(cleanHeadsign('Station Deux-Montagnes')).toBe('Station Deux-Montagnes');
   });
 });
+
+describe('the literal word "Destination" (exo, STM)', () => {
+  it('goes with its spaces, so no double space is left (CIV-1154)', () => {
+    expect(cleanHeadsign("Ouest Destination Anse-à-l'Orme / Timberlea-Trail", '68', null)).toBe("Ouest Anse-à-l'Orme / Timberlea-Trail");
+    expect(cleanHeadsign('Est destination Station Snowdon', '51', null)).toBe('Est Station Snowdon');
+    expect(cleanHeadsign('Destination Gare Centrale', null, null)).toBe('Gare Centrale');
+  });
+});
