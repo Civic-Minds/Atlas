@@ -4,7 +4,7 @@ import AtlasLogo from './AtlasLogo';
 
 export default function SiteHeader({ showWordmark = true }: { showWordmark?: boolean }) {
   return (
-    <header className="flex items-center justify-between gap-6">
+    <header className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3">
       {showWordmark ? (
         <AtlasLogo href="/" ariaLabel="Atlas by Civic Minds" showMark={false} size="page" hideByline />
       ) : <span aria-hidden="true" />}
