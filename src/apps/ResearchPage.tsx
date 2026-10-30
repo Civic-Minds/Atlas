@@ -5,7 +5,6 @@ import ArrowLink from '../components/ui/ArrowLink';
 import Tag from '../components/ui/Tag';
 import { SURFACE } from '../styles';
 import { PageTitle, SectionTitle } from '../components/ui/PageTitle';
-import { freeChildFareStats } from '../data/freeChildFares';
 
 /** Each card names its kind of page with a small label (CIV-1167, Ryan's "Sure"). */
 const CARDS = [
@@ -28,7 +27,7 @@ const CARDS = [
     Icon: Ticket,
     kind: 'Data',
     title: 'Free child fares',
-    body: `See up to what age children ride free at ${freeChildFareStats.agencies} transit agencies.`,
+    body: "See up to what age children ride free.",
   },
 ];
 
