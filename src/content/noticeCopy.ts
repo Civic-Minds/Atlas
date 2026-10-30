@@ -347,7 +347,7 @@ export function stopRouteNoTripsNotice(periodRange: string): string {
   return `No trips from ${keepRangeTogether(periodRange)}`;
 }
 
-// ---- Explainers: the Learn more panels (InfoPanel), E1 to E8 ----
+// ---- Explainers: the Learn more panels (InfoPanel), E1 to E8 and E27 ----
 /** Each panel's code and title; the panel text is below, in the panel's own order. */
 export const EXPLAINERS = {
   'outdated-schedule': { code: 'E1', title: 'Outdated schedule' },
@@ -358,6 +358,7 @@ export const EXPLAINERS = {
   'no-route-shape': { code: 'E6', title: 'Route map unavailable' },
   'edge-gap-allowance': { code: 'E7', title: 'Frequency allowance' },
   'weekday-variation': { code: 'E8', title: 'Weekday variation' },
+  'no-regular-service': { code: 'E27', title: 'No regular service' },
 } as const;
 export type HelpTopic = keyof typeof EXPLAINERS;
 
@@ -380,6 +381,8 @@ export const ROUTE_DATA_QUALITY_LEAD = "Part of this route's line on the map may
 export const EDGE_GAP_ALLOWANCE_LEAD = `${FIRST_LAST_TRIP_ALLOWANCE_HINT} That trip can come up to 10 minutes later than usual.`;
 // E8: N1 itself, then one more sentence.
 export const WEEKDAY_VARIATION_LEAD = `${WEEKDAY_VARIATION_NOTICE} Some weekdays run more or less often than others.`;
+// E27: what D2 means (Ryan's approved text, CIV-1142).
+export const NO_REGULAR_SERVICE_LEAD = 'This route still runs during this period, but only a few trips, with no set wait between them.';
 
 // ---- Explainer pieces (CIV-1061): every paragraph 2 and 3 sentence, written once ----
 /** Where a paragraph-3 piece's links go, in order. */
@@ -405,6 +408,7 @@ export const EXPLAINER_PIECES = {
   FREQUENCY_FROM_TIMETABLE_NO_LINE: { code: 'X7', text: "We still show the route on this card. Its frequency comes from the schedule and is still accurate." },
   MIDDAY_GAPS: { code: 'X8', text: "Many routes start or end their day with one longer gap. Gaps in the middle of the day don't get this allowance." },
   WEEKDAYS_SEPARATE: { code: 'X9', text: "We check each weekday separately, which means one busier day can't make the route look more frequent than it usually is." },
+  NO_PATTERN: { code: 'X15', text: "We show how often a route runs only when its trips follow a pattern. A few trips, or one long wait between them, don't show one." },
   // Paragraph 3: what the reader can do.
   AGENCY_WEBSITE_NEWER: { code: 'X10', text: "A newer schedule may be on the agency's website.", links: ['agency-website', 'report-schedule'] },
   AGENCY_WEBSITE_CURRENT: { code: 'X11', text: "The agency's website has its current schedule.", links: ['agency-website'], needsWebsite: true },
@@ -428,6 +432,7 @@ export const EXPLAINER_LAYOUT: Record<ExplainerLayoutKey, { p2: readonly Explain
   'no-route-shape': { p2: ['FREQUENCY_FROM_TIMETABLE_NO_LINE'], p3: 'REPORT_WITH_FLAG' },
   'edge-gap-allowance': { p2: ['MIDDAY_GAPS'] },
   'weekday-variation': { p2: ['WEEKDAYS_SEPARATE'], p3: 'AGENCY_WEBSITE_EACH_DAY' },
+  'no-regular-service': { p2: ['NO_PATTERN'], p3: 'AGENCY_WEBSITE_CURRENT' },
 };
 
 /**
@@ -443,6 +448,8 @@ export const NOTICE_EXPLAINERS = {
   N6: 'route-data-quality',
   N7: 'no-route-shape',
   N14: 'edge-gap-allowance',
+  /** D2, the row label "no regular service during this period" (CIV-1142). */
+  D2: 'no-regular-service',
   /** An agency's own rollout note from its config (none set today); the beta-only notices link to beta instead. */
   N19: 'beta-rollout',
   N21: 'new-schedule-data',
