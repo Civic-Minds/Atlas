@@ -73,7 +73,7 @@ const ALLOWED: Record<string, string[]> = {
   // Maintainer-only diagnostics and the story page's own opening layout.
   'DiagnosticsPerformancePage.tsx': ['hand-rolled page heading'],
   // A filled call-to-action button (not a link) that ends in an arrow.
-  'apps/FrequentServiceStory.tsx': ['hand-rolled arrow link', 'hand-rolled page heading'],
+  'apps/FrequentServiceStory.tsx': ['hand-rolled arrow link'],
   // The card pieces' own homes (CIV-395): the badges and card text styles, the back link, and the route row's tier dot.
   'components/Interval/cardUi.tsx': ['hand-drawn frequency dot', 'hand-rolled card title', 'hand-rolled card facts line'],
   'components/CardBack.tsx': ['hand-written back arrow'],
