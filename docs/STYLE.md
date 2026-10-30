@@ -56,6 +56,7 @@ Frequencies
   - ranges with an en dash: "every 6–12 min", "every 30–60 min" (`headwayAboutRange`, `headwayEveryRange`)
   - "≤10 min" and "16–30 min" in legends and keys (`headwayTierLabel`, `headwayBandLabel`)
   - "10 min" with no "every" in tables and chart cells (`headwayAmount`); "3 min" for a delay or gap that is not a headway (`delayAmount`)
+- The frequency comes first, then its limit: "every 12 min until 9:40 PM", not "until 9:40 PM, every 12 min" (Ryan, 2026-10-30). #962.
 - Frequencies are always in minutes, never hours ("every 90 min", "every 120 min"), so a column never mixes units. #938.
 - Don't summarise agencies or areas by a fixed cutoff such as "every 15 min or better" (or 10, 30 or any other). Many agencies have no routes that frequent. Show the real waits for each period instead.
 - Frequency filter work: read `docs/product/FREQUENCY_RULES.md` first.
