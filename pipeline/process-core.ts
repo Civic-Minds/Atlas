@@ -3506,7 +3506,7 @@ export async function processGtfsBuffer(
       console.log('CIV1161A\t' + JSON.stringify({
         agency: options?.slug, route: slot.shortName, dir: slot.dirId, day: slot.day, headsign: p.headsign ?? null,
         role: p.stretchRole ?? null, routeType: p.routeType ?? null, headline, tier: p.tier ?? null,
-        mainWait: board?.wait ?? null, boardStops: board?.stops ?? 0, mainStops: stretches.main.stops.length,
+        mainWait: board?.wait ?? null, boardStops: board?.stops ?? 0, allDayStops: board?.allDayStops ?? 0, mainStops: stretches.main.stops.length,
         replace, headlineAfter: replace ? board!.wait : headline, tierAfter,
       }));
     }

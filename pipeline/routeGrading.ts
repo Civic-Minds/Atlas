@@ -314,7 +314,13 @@ export function riderWait(times: readonly number[]): { wait: number; window: key
     const { start, end } = HEADLINE_WINDOWS[window];
     const t = [...new Set(times)].filter(x => x >= start && x <= end).sort((a, b) => a - b);
     if (t.length < HEADLINE_MIN_DEPARTURES) continue;
-    const gaps = t.slice(1).map((x, i) => x - t[i]).sort((a, b) => a - b);
+    // Try 3: on the all-day fallback (no midday or PM-peak reading), a gap that spans a whole headline period is a
+    // hole in service, not a wait (Whistler 30: 6:07 and 6:37, then every 30 from 19:51, read 794).
+    const hole = (from: number, to: number) => window === 'allDay'
+      && [HEADLINE_WINDOWS.midday, HEADLINE_WINDOWS.pmPeak].some(p => from <= p.start && to >= p.end);
+    const gaps = t.slice(1).map((x, i) => ({ gap: x - t[i], from: t[i], to: x }))
+      .filter(g => !hole(g.from, g.to)).map(g => g.gap).sort((a, b) => a - b);
+    if (gaps.length === 0) return null;
     const half = gaps.reduce((sum, g) => sum + g, 0) / 2;
     let covered = 0;
     for (const gap of gaps) {
@@ -334,14 +340,18 @@ export function boardingMainStretchWait(
   stops: readonly string[],
   timesAt: (stopId: string) => readonly number[],
   dropOffOnly: ReadonlySet<string>,
-): { wait: number; stops: number } | null {
-  const waits = stops.filter(stop => !dropOffOnly.has(stop))
-    .map(stop => riderWait(timesAt(stop))?.wait)
-    .filter((w): w is number => w != null)
-    .sort((a, b) => a - b);
+): { wait: number; stops: number; allDayStops: number } | null {
+  const readings = stops.filter(stop => !dropOffOnly.has(stop))
+    .map(stop => riderWait(timesAt(stop)))
+    .filter((r): r is NonNullable<ReturnType<typeof riderWait>> => r != null);
+  const waits = readings.map(r => r.wait).sort((a, b) => a - b);
   if (waits.length === 0) return null;
   const mid = Math.floor(waits.length / 2);
-  return { wait: waits.length % 2 ? waits[mid] : Math.round((waits[mid - 1] + waits[mid]) / 2), stops: waits.length };
+  return {
+    wait: waits.length % 2 ? waits[mid] : Math.round((waits[mid - 1] + waits[mid]) / 2),
+    stops: waits.length,
+    allDayStops: readings.filter(r => r.window === 'allDay').length,
+  };
 }
 
 /** CIV-1161 step 1: the headline overstates when riders on the main stretch can wait 10+ minutes longer. */

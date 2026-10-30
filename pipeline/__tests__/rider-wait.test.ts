@@ -26,6 +26,12 @@ describe('riderWait (CIV-1161 step 1)', () => {
   it('keeps an hourly half of the window (MTA BxM10 Saturday: hourly until 12:20, then every 30)', () => {
     expect(riderWait([...every('09:20', '12:20', 60), ...every('12:50', '14:50', 30)])?.wait).toBe(60);
   });
+  it('does not count a hole in service as a wait on the all-day fallback (CIV-1161 try 3: Whistler 30)', () => {
+    // 6:07 and 6:37, then every 30 from 19:51: no midday or PM-peak reading.
+    expect(riderWait([hm('06:07'), hm('06:37'), ...every('19:51', '21:51', 30)])).toEqual({ wait: 30, window: 'allDay' });
+    // A gap inside a period is still a wait.
+    expect(riderWait([hm('06:00'), hm('06:30'), hm('07:00'), hm('10:00')])?.wait).toBe(180);
+  });
   it('falls back to the PM peak, then all day, like the headline', () => {
     expect(riderWait(every('15:00', '18:00', 20))).toEqual({ wait: 20, window: 'pmPeak' });
     expect(riderWait([hm('09:00'), hm('20:00')])).toBeNull();
@@ -40,7 +46,7 @@ describe('boardingMainStretchWait (CIV-1161 step 1)', () => {
     z: [hm('09:00'), hm('09:50'), hm('10:40'), hm('11:30'), hm('12:20')],
   };
   it('reads the median over the stops a rider can board, leaving drop-off-only stops out', () => {
-    expect(boardingMainStretchWait(['a', 'b', 'z'], s => times[s] ?? [], new Set(['z']))).toEqual({ wait: 20, stops: 2 });
+    expect(boardingMainStretchWait(['a', 'b', 'z'], s => times[s] ?? [], new Set(['z']))).toEqual({ wait: 20, stops: 2, allDayStops: 0 });
   });
   it('has no reading when no boarding stop has one', () => {
     expect(boardingMainStretchWait(['z'], s => times[s] ?? [], new Set(['z']))).toBeNull();
