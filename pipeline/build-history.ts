@@ -27,6 +27,7 @@ import type { HistoryV2Sidecar } from '../shared/historyV2.js';
 import { historyRouteKey } from './historyRouteKey.js';
 import { holidayDropFor, repickedFor, type HolidayPeriodDrop, type RepickedPeriod } from './historyRefQuality.js';
 import { historyV2FromEnv } from './historyV2Flag.js';
+import { splitKey, splitRouteHistory, terminiOf } from './historyRouteIdentity.js';
 import { compileAgencyShapes, type ShapeRouteYear } from './historyShapes.js';
 import type { HistoryPeriodShapes } from '../shared/historyV2.js';
 import { parsePeriodKey, getPeriodKeySortValue, isRefreshRunPeriodKey, labelFromRefDate, afterBuildMonth, yearMonthOf } from './historyPeriods.js';
@@ -439,6 +440,48 @@ async function main() {
     aliasMerged += a.merged;
   }
   if (aliasMerged > 0) console.log(`Merged ${aliasMerged} aliased route keys.`);
+  // CIV-422: a reused route number becomes separate routes, by long name and how much of the line ran before.
+  // Off unless ATLAS_HISTORY_ROUTE_IDENTITY=1; an earlier route is published as "<number> (<years>)".
+  const splitOrigin: Record<string, Record<string, string>> = {};
+  if (v2 && process.env.ATLAS_HISTORY_ROUTE_IDENTITY === '1') {
+    let splitCount = 0;
+    for (const [slug, routes] of Object.entries(sidecarRoutes)) {
+      for (const [key, entries] of Object.entries({ ...routes })) {
+        const { segments, splits } = splitRouteHistory(entries.map(e => ({
+          periodKey: e.periodKey,
+          sortKey: e.v2.refDate,
+          year: Number(e.v2.refDate.slice(0, 4)),
+          name: e.v2.name,
+          termini: terminiOf(shapePeriods[slug]?.get(e.periodKey)?.routes[key]?.c),
+          line: shapePeriods[slug]?.get(e.periodKey)?.routes[key]?.c ?? null,
+        })), key);
+        if (segments.length < 2) continue;
+        splitCount++;
+        for (const sp of splits) console.log(`  identity split ${slug}/${key}: ${sp.fromYear} "${sp.before}" -> ${sp.toYear} "${sp.after}" (${sp.verdict.reason})`);
+        // Change files with no sidecar go to the segment their date falls in.
+        const starts = segments.map(seg => Math.min(...seg.periodKeys.map(getPeriodKeySortValue)));
+        const segmentOf = (periodKey: string) => {
+          const v = getPeriodKeySortValue(periodKey);
+          let i = 0;
+          while (i + 1 < starts.length && v >= starts[i + 1]) i++;
+          return i;
+        };
+        const changes = archiveRoutes[slug]?.[key] ?? [];
+        segments.slice(0, -1).forEach((seg, i) => {
+          const newKey = splitKey(key, seg);
+          const keys = new Set(seg.periodKeys);
+          routes[newKey] = entries.filter(e => keys.has(e.periodKey));
+          routes[key] = routes[key].filter(e => !keys.has(e.periodKey));
+          if (archiveRoutes[slug]) {
+            archiveRoutes[slug][newKey] = changes.filter(c => segmentOf(c.periodKey) === i);
+            archiveRoutes[slug][key] = archiveRoutes[slug][key].filter(c => segmentOf(c.periodKey) !== i);
+          }
+          (splitOrigin[slug] ??= {})[newKey] = key;
+        });
+      }
+    }
+    console.log(`Route identity: ${splitCount} route keys split.`);
+  }
 
   // 3. Load current headways from the public Atlas artifact. This keeps the
   // history endpoint aligned with the current map after route redesigns or
@@ -475,7 +518,7 @@ async function main() {
         const candidates: Candidate[] = joinCandidates(holidayPeriods[slug] ? changes.filter(c => !holidayPeriods[slug].has(c.periodKey)) : changes, sidecarRoutes[slug]?.[routeShortName] ?? []);
         const built = buildRouteSnapshots(slug, routeShortName, candidates, buildYear, buildReport, buildYm);
         for (const b of built) {
-          (shapeRouteYears[slug] ??= []).push({ routeKey: routeShortName, year: b.year, periodKey: b.periodKey, lookupKeys: [routeShortName, ...(routeAliases[slug]?.[routeShortName] ?? [])] });
+          (shapeRouteYears[slug] ??= []).push({ routeKey: routeShortName, year: b.year, periodKey: b.periodKey, lookupKeys: [routeShortName, ...(splitOrigin[slug]?.[routeShortName] ? [splitOrigin[slug][routeShortName]] : []), ...(routeAliases[slug]?.[routeShortName] ?? [])] });
         }
         snapshots = built
           .map(({ periodKey: _pk, processedAt: _pa, ...snap }) => ({
