@@ -18,6 +18,7 @@ import RouteTracker from './components/RouteTracker';
 import RouteSeo from './components/RouteSeo';
 import HomeRemount from './components/HomeRemount';
 import { isInternalTestSession } from './lib/internalTest';
+import { trackKeyboardFocus } from './lib/keyboardFocus';
 import { findSeoRoute } from '../shared/seo';
 
 const AgencyPage = React.lazy(() => import('./AgencyPage'));
@@ -58,6 +59,8 @@ if (import.meta.env.PROD && !isInternalTestSession()) {
   inject();
   injectSpeedInsights();
 }
+
+trackKeyboardFocus();
 
 const rootElement = document.getElementById('root')!;
 // A prerendered page already has its text in #root. Keep showing that same HTML while the page's code chunk
