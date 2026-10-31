@@ -21,20 +21,25 @@
   "expiredFeedCheckExpiry": "20261219",
   "timezone": "America/Chicago",
   "feedQuality": {
-    "status": "degraded",
-    "score": 50,
+    "status": "review",
+    "score": 99,
     "reasons": [
-      "29 route shapes needed adjustment before display.",
-      "2 route have stops whose frequency differs from the overall route schedule."
+      "3 route shapes needed adjustment before display."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
-      "shapeAnomalies": 29,
+      "shapeAnomalies": 10,
       "routeHeadwayMismatches": 2,
-      "featureCount": 150
+      "featureCount": 191,
+      "feedExpiry": "20261219",
+      "routeCount": 73,
+      "problemShapes": 3,
+      "problemShapeRoutes": 1,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-03"
+    "checkedAt": "2026-10-30"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,

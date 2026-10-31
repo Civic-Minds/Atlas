@@ -33,9 +33,8 @@
   "expiredFeedCheckExpiry": "20261205",
   "feedQuality": {
     "status": "review",
-    "score": 80,
+    "score": 98,
     "reasons": [
-      "1 route shape needed adjustment before display.",
       "1 route has stops whose frequency differs from the overall route schedule."
     ],
     "metrics": {
@@ -43,9 +42,15 @@
       "validationWarnings": 0,
       "shapeAnomalies": 1,
       "routeHeadwayMismatches": 1,
-      "featureCount": 291
+      "featureCount": 283,
+      "feedExpiry": "20261205",
+      "routeCount": 55,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 1,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-19"
+    "checkedAt": "2026-10-30"
   },
   "timezone": "America/New_York",
   "feedRefreshStatus": "current",

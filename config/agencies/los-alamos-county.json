@@ -31,9 +31,15 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 17
+      "featureCount": 22,
+      "feedExpiry": "20261231",
+      "routeCount": 11,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-09-08"
+    "checkedAt": "2026-10-30"
   },
   "lastFeedCheckAt": "20261019",
   "expiredFeedCheckCount": 0,

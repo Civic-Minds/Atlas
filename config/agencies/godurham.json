@@ -18,19 +18,23 @@
     "Durham, North Carolina"
   ],
   "feedQuality": {
-    "status": "review",
-    "score": 70,
-    "reasons": [
-      "4 route have stops whose frequency differs from the overall route schedule."
-    ],
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
       "shapeAnomalies": 0,
-      "routeHeadwayMismatches": 4,
-      "featureCount": 118
+      "routeHeadwayMismatches": 0,
+      "featureCount": 112,
+      "feedExpiry": "20270131",
+      "routeCount": 17,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-03"
+    "checkedAt": "2026-10-30"
   },
   "lastFeedExpiry": "20270131",
   "lastFeedVersion": "20260930",

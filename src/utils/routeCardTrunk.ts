@@ -5,7 +5,7 @@ import { hasDirectionPeriodService } from './effectiveHeadway';
 import { MIN_SHARED_STOPS_FOR_TRUNK, sharedStopIds, sharesOrderedTrunk } from './routeBranchGeometry';
 import { failingRouteSharedRanges, sharedStretchStopPass } from './frequencySegments';
 import { rowTrips } from './rowTrips';
-import { stretchRowsFromMeta } from './stretchCard';
+import { SHARED_STRETCH_RATIO, stretchRowsFromMeta, trunkBeatsBranches } from './stretchCard';
 import { hourHasService } from './periodActiveRanges';
 
 /** Headsign-scoped trunk minimum for route-card range display (not route-wide combined deps). */
@@ -151,13 +151,6 @@ export function shouldShowTrunkSummary(branches: ShapeProperties[], period: Time
   return trunkBeatsBranches(trunk, terminal);
 }
 
-/** The shared section is materially better than the typical branch: worth its own row. */
-const TRUNK_BEATS_SHARE = 0.65;
-
-function trunkBeatsBranches(trunk: number, terminal: number): boolean {
-  return trunk <= terminal * TRUNK_BEATS_SHARE && terminal / trunk <= 4;
-}
-
 /**
  * #1185: a direction whose main stretch is run by two or more patterns with no tail (TTC 29 southbound: 29A to Dufferin
  * Gate and 29C to Princes' Gates, both every 16 over the same stops, together every 8). The pooled main-stretch value
@@ -181,7 +174,7 @@ export function pooledMainStretch(
   // A pattern that runs but has no wait of its own to show keeps today's card (GO LW to Confederation).
   const own = mains.map(d => rowTrips(d, period).value);
   if (own.some(v => v == null)) return null;
-  if (shared.value > medianHeadway(own as number[]) * TRUNK_BEATS_SHARE) return null;
+  if (shared.value > medianHeadway(own as number[]) * SHARED_STRETCH_RATIO) return null;
   // One row per destination: the pattern that draws the most stops stands for it.
   const byDestination = new Map<string, ShapeProperties>();
   for (const d of mains) {
@@ -215,7 +208,7 @@ export function stretchSharedHeadway(
   if (rowValues.some(v => v == null)) return null;
   // CIV-1143: no 4x limit here. This row names the shared stretch itself and the rows keep their own waits, so a slow
   // branch never makes it read faster than it is (TTC 52, SEPTA 63).
-  return shared.value <= medianHeadway(rowValues as number[]) * TRUNK_BEATS_SHARE ? shared.value : null;
+  return shared.value <= medianHeadway(rowValues as number[]) * SHARED_STRETCH_RATIO ? shared.value : null;
 }
 
 /**

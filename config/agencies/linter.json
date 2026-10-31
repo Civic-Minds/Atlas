@@ -27,5 +27,24 @@
   "timezone": "America/Toronto",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://zenbus.net/gtfs/static/download.zip?dataset=linter",
-  "lastPeekedExpiry": "20270807"
+  "lastPeekedExpiry": "20270807",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 6,
+      "feedExpiry": "20270807",
+      "routeCount": 1,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
+    },
+    "checkedAt": "2026-10-30"
+  }
 }

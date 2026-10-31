@@ -42,7 +42,7 @@
   "lastFeedSourceUrl": "https://exo.quebec/uploads/ressources-telechargeables/a-propos/donnees-ouvertes/citla/google_transit.zip",
   "feedQuality": {
     "status": "review",
-    "score": 80,
+    "score": 96,
     "reasons": [
       "2 route have stops whose frequency differs from the overall route schedule."
     ],
@@ -50,10 +50,16 @@
       "validationErrors": 0,
       "validationWarnings": 0,
       "shapeAnomalies": 0,
-      "routeHeadwayMismatches": 2,
-      "featureCount": 180
+      "routeHeadwayMismatches": 3,
+      "featureCount": 187,
+      "feedExpiry": "20270103",
+      "routeCount": 49,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 2,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-12"
+    "checkedAt": "2026-10-30"
   },
   "lastPeekedExpiry": "20270103"
 }

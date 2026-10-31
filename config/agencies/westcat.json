@@ -31,19 +31,24 @@
   "expiredFeedCheckExpiry": "20270611",
   "feedQuality": {
     "status": "review",
-    "score": 60,
+    "score": 90,
     "reasons": [
-      "1 schedule-data warning — Atlas found a minor issue while reading the schedule.",
-      "7 map lines were repaired — Atlas fixed unusual route geometry before displaying it."
+      "1 minor schedule issue found while reading the feed."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 1,
-      "shapeAnomalies": 7,
+      "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 26
+      "featureCount": 26,
+      "feedExpiry": "20270611",
+      "routeCount": 12,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-09-07"
+    "checkedAt": "2026-10-30"
   },
   "timezone": "America/Los_Angeles",
   "lastFeedSourceKind": "configured",

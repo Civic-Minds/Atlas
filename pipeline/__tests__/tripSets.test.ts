@@ -6,7 +6,7 @@ import { processGtfsBuffer } from '../process-core';
 import { normalizeRouteFilterFeatures, routePassesHeadwayFilter } from '../../shared/routeHeadwayFilter';
 import { isLimitedService } from '../../shared/irregularRoutes';
 import { decodeStopRuns } from '../../shared/stopRuns';
-import { directionStretches, encodeStopRuns, rollupDirection, rollupRoute, stopPeriodValues, stretchMetaPeriods, stretchFilterValue, stretchPeriods, tailNotThrough, type DirectionStretches, type DirectionTrip } from '../tripSets';
+import { directionStretches, encodeStopRuns, rollupDirection, rollupRoute, stopPeriodValues, stretchMetaPeriods, stretchFilterValue, stretchNight, stretchPeriods, tailNotThrough, type DirectionStretches, type DirectionTrip, type Stretch } from '../tripSets';
 
 // Frequency focus step 3 (`_reports/step3-tripsets-spec.md`): the direction trip-set selector, in
 // shadow. Expected values are the GTFS oracle's (scripts/handcheck/stretch-departures.py --at mid
@@ -284,15 +284,42 @@ describe('night from the selector (D2, D3, D7: 2-5am at the middle stop)', () =>
     const r = await run('ttc-301-weekday-night');
     expect([row(r, '301', 'Weekday').stretchNight30, row(r, '301', 'Weekday').stretchNight60]).toEqual([true, true]);
   });
-  it('TTC 337 and 373 Weekday: every 30 with longer edges, so they pass every 60 and fail every 30', async () => {
+  it('TTC 337 and 373 Weekday: every 30 after a first bus past 2:30, so they pass every 30 and every 60 (CIV-1198)', async () => {
+    // Before CIV-1198 the 31- and 44-minute waits for the first night bus failed every 30.
     const r = await run('ttc-337-373-night');
     for (const route of ['337', '373']) {
-      expect([row(r, route, 'Weekday').stretchNight30, row(r, route, 'Weekday').stretchNight60], route).toEqual([false, true]);
+      expect([row(r, route, 'Weekday').stretchNight30, row(r, route, 'Weekday').stretchNight60], route).toEqual([true, true]);
     }
+  });
+  it('TTC 300 Weekday: the Bloor trunk every 8 and its Danforth Rd branch every 15 from 2:39 pass every 30 (CIV-1198)', async () => {
+    const r = await run('ttc-300-weekday-night');
+    expect([row(r, '300', 'Weekday').stretchNight30, row(r, '300', 'Weekday').stretchNight60]).toEqual([true, true]);
   });
   it('TTC 320 Sunday: passes both', async () => {
     const r = await run('ttc-320-sunday-night');
     expect([row(r, '320', 'Sunday').stretchNight30, row(r, '320', 'Sunday').stretchNight60]).toEqual([true, true]);
+  });
+});
+
+describe('night edges: the wait for the first and after the last night bus (CIV-1198, Ryan 2026-10-30)', () => {
+  const hm = (h: number, m: number) => h * 60 + m;
+  const every = (from: number, to: number, step: number) => Array.from({ length: Math.floor((to - from) / step) + 1 }, (_, i) => from + i * step);
+  const stretch = (nightTimes: number[]) => ({ kind: 'tail', stops: ['a'], refStop: 'a', lengthKm: 6, times: nightTimes, nightTimes, tripCount: nightTimes.length }) as Stretch;
+  it("TTC 300's Danforth Rd branch: every 15 from its first bus at 2:39 passes every 30", () => {
+    expect(stretchNight(stretch(every(hm(26, 39), hm(29, 24), 15)), 30)).toBe(true);
+  });
+  it('a real gap between night buses still fails every 30 (TTC 352 northbound, 38 minutes)', () => {
+    expect(stretchNight(stretch([...every(hm(26, 9), hm(27, 39), 30), hm(28, 17), hm(28, 47)]), 30)).toBe(false);
+  });
+  it('day service starting at 4:30 never passes as night service, at 30 or 60', () => {
+    const day = stretch(every(hm(28, 30), hm(30, 0), 15));
+    expect([stretchNight(day, 30), stretchNight(day, 60)]).toEqual([false, false]);
+  });
+  it('a first night bus after 3:00 still fails, even every 30 after it', () => {
+    expect(stretchNight(stretch(every(hm(27, 5), hm(29, 5), 30)), 30)).toBe(false);
+  });
+  it('a stretch that stops before 3:30 keeps both edges at the grade', () => {
+    expect(stretchNight(stretch(every(hm(26, 0), hm(27, 20), 20)), 60)).toBe(false);
   });
 });
 
@@ -327,7 +354,7 @@ describe('night service on part of the route counts, on the part it runs (Ryan, 
       expect(rows.every(p => p.stretchNight30 === true && p.stretchNight60 === true), route).toBe(true);
       expect(rows.some(p => p.nightServicePartOfRoute === true), route).toBe(true);
     }
-  });
+  }, 30_000);
 });
 
 describe('D8 midpoint shadow (YRT Viva Weekday overnight)', () => {
@@ -425,11 +452,11 @@ describe('Night flags read the stretches (step 4 switch)', () => {
     const r = await run('cta-87-weekday');
     expect(r.rows.filter(p => p.routeShortName === '87' && p.day === 'Weekday').some(p => p.nightService30)).toBe(false);
   });
-  it('TTC 337 rows pass 60 and not 30, as the route does', async () => {
+  it('TTC 337 rows light at 30 as well as 60, as the route does (CIV-1198)', async () => {
     const r = await run('ttc-337-373-night');
     const rows = r.rows.filter(p => p.routeShortName === '337' && p.day === 'Weekday' && p.nightService60);
     expect(rows.length).toBeGreaterThan(0);
-    expect(rows.some(p => p.nightService30)).toBe(false);
+    expect(rows.every(p => p.nightService30)).toBe(true);
   });
 });
 

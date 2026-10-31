@@ -50,7 +50,7 @@
   "expiredFeedCheckExpiry": "20261220",
   "feedQuality": {
     "status": "review",
-    "score": 80,
+    "score": 97,
     "reasons": [
       "2 route have stops whose frequency differs from the overall route schedule."
     ],
@@ -59,9 +59,15 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 2,
-      "featureCount": 338
+      "featureCount": 338,
+      "feedExpiry": "20261220",
+      "routeCount": 70,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 2,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-19"
+    "checkedAt": "2026-10-30"
   },
   "timezone": "America/New_York",
   "lastFeedSourceKind": "configured",

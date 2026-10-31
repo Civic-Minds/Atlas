@@ -27,17 +27,25 @@
   "expiredFeedCheckExpiry": "20270102",
   "timezone": "America/New_York",
   "feedQuality": {
-    "status": "healthy",
-    "score": 100,
-    "reasons": [],
+    "status": "review",
+    "score": 90,
+    "reasons": [
+      "2 route have stops whose frequency differs from the overall route schedule."
+    ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
       "shapeAnomalies": 0,
-      "routeHeadwayMismatches": 0,
-      "featureCount": 252
+      "routeHeadwayMismatches": 6,
+      "featureCount": 252,
+      "feedExpiry": "20270102",
+      "routeCount": 21,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 2,
+      "resumesOn": null
     },
-    "checkedAt": "2026-09-07"
+    "checkedAt": "2026-10-30"
   },
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-403/latest.zip",

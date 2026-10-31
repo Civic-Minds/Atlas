@@ -7,7 +7,7 @@
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { parseGtfsZip } from '../pipeline/parseGtfs.js';
-import { detectReferenceDate } from '../pipeline/transit-calendar.js';
+import { readWeekOf } from '../pipeline/readWeek.js';
 import { computeRawDepartures } from '../pipeline/transit-phase1.js';
 import { computePeriodSustained, computePeriodSustainedWithEdgeTransitionGap } from '../pipeline/headway-utils.js';
 import { TIME_PERIODS, type PeriodKey } from '../shared/config.js';
@@ -35,9 +35,11 @@ async function main() {
   if (!artifactResponse.ok) throw new Error(`Atlas artifact request failed: HTTP ${artifactResponse.status}`);
   const artifact = await artifactResponse.json() as Artifact;
   const gtfs = await parseGtfsZip(feedBuffer.buffer.slice(feedBuffer.byteOffset, feedBuffer.byteOffset + feedBuffer.byteLength) as ArrayBuffer);
-  const referenceDate = detectReferenceDate(gtfs.calendar ?? [], gtfs.calendarDates ?? [], gtfs.trips ?? []);
+  // CIV-1101: the pipeline's own week (readWeekOf), read through that week's calendar rows.
+  const week = readWeekOf(gtfs);
+  const referenceDate = week.referenceDate;
   const orbtRouteId = (gtfs.routes ?? []).find(route => route.route_short_name === '00')?.route_id;
-  const raw = computeRawDepartures(gtfs, referenceDate)
+  const raw = computeRawDepartures({ ...gtfs, calendar: week.calendar, calendarDates: week.calendarDates }, referenceDate)
     .filter(item => item.day === 'Wednesday' && item.route === orbtRouteId);
   const published = (artifact.features ?? []).filter(feature => feature.properties?.routeShortName === '00' && feature.properties?.day === 'Weekday');
   const directions = [...new Set(raw.map(item => item.dir))].sort();

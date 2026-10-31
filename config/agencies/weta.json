@@ -32,19 +32,23 @@
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261101",
   "feedQuality": {
-    "status": "review",
-    "score": 70,
-    "reasons": [
-      "3 map lines were repaired — Atlas fixed unusual route geometry before displaying it."
-    ],
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
-      "shapeAnomalies": 3,
+      "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 45
+      "featureCount": 41,
+      "feedExpiry": "20261101",
+      "routeCount": 7,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-08-27"
+    "checkedAt": "2026-10-30"
   },
   "timezone": "America/Los_Angeles",
   "lastFeedSourceKind": "configured",

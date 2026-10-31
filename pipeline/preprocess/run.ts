@@ -11,13 +11,14 @@ import { normalizeBrantfordRouteLabels } from '../transforms/brantford-route-lab
 import { fixMountainLineFrequencyWindow } from '../transforms/mountain-line-frequency-fix.js';
 import { addSantaFePickUpWeekendFrequency } from '../transforms/santafe-pickup-schedule.js';
 import { interpolateUntimedStops } from '../transforms/interpolate-untimed-stops.js';
+import { dropMnrExpressBusPairs } from '../transforms/mnr-bus-pairs.js';
 import { mergeEquivalentShapeVariants } from './merge-equivalent-shapes.js';
 import { mergeTerminalBays } from './merge-terminal-bays.js';
 import { poolSingleTripShapes } from './pool-single-trip-shapes.js';
 
 // WVU PRT publishes route geometry separately from the schedule feed.
 // Keep this agency-specific transform opt-in rather than changing shared shape handling.
-export type GtfsPreprocess = 'nrt-day-night' | 'nrt-cleanup' | 'london-route-names' | 'metrolink-shapes' | 'wvu-prt-shapes' | 'wvu-prt-line' | 'brantford-route-labels' | 'interpolate-untimed-stops' | 'mountain-line-frequency-fix' | 'santafe-pickup-schedule';
+export type GtfsPreprocess = 'nrt-day-night' | 'nrt-cleanup' | 'london-route-names' | 'metrolink-shapes' | 'wvu-prt-shapes' | 'wvu-prt-line' | 'brantford-route-labels' | 'interpolate-untimed-stops' | 'mountain-line-frequency-fix' | 'santafe-pickup-schedule' | 'mnr-bus-pairs';
 
 export interface GtfsTransformOptions {
   agencyId?: string;
@@ -145,6 +146,11 @@ export function normalizeGtfs(
     const result = addSantaFePickUpWeekendFrequency(gtfs);
     gtfs = result.gtfs;
     if (result.added > 0) onStatus?.(`Santa Fe Pick-Up: added ${result.added} Saturday-Sunday trips for its published every-15 daytime service (#1076)`);
+  }
+  if (options?.preprocess === 'mnr-bus-pairs') {
+    const result = dropMnrExpressBusPairs(gtfs);
+    gtfs = result.gtfs;
+    onStatus?.(`MNR buses: ${result.dropped} express trips left out beside the local that leaves with them (CIV-1086)`);
   }
   if (options?.preprocess === 'interpolate-untimed-stops') {
     const result = interpolateUntimedStops(gtfs);

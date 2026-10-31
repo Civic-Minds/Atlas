@@ -88,6 +88,8 @@ describe('card rows read their value, gap and words from the same trips, across 
         for (const period of PERIOD_KEYS) {
           const contract = routeContract(directions, period);
           const noRegularService = contract != null && contract.filterValue == null && contract.runs;
+          // The card shows no rows for a period the route does not run in (RouteCardHeadway's doesNotRun).
+          if (contract != null && contract.filterValue == null && !contract.runs) continue;
           for (const group of buildDirectionGroups({ directions }, period)) {
             for (const p of group.realTier) {
               const shown = routeCardRowValue(p, { period, hoveredHour: null, stretchMode, contract, noRegularService, maxHeadway: Infinity });

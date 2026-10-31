@@ -24,20 +24,23 @@
     "Telluride, Colorado"
   ],
   "feedQuality": {
-    "status": "degraded",
-    "score": 40,
-    "reasons": [
-      "3 minor schedule issues found while reading the feed.",
-      "4 route shapes needed adjustment before display."
-    ],
+    "status": "paused",
+    "score": 0,
+    "reasons": [],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 3,
-      "shapeAnomalies": 4,
+      "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 12
+      "featureCount": 0,
+      "feedExpiry": "20270404",
+      "routeCount": 0,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": "20261120"
     },
-    "checkedAt": "2026-10-19"
+    "checkedAt": "2026-10-30"
   },
   "lastFeedCheckAt": "20261019",
   "expiredFeedCheckCount": 0,

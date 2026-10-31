@@ -3,7 +3,8 @@ import path from 'path';
 import { execSync } from 'child_process';
 // loadEnv first so shared/config sees staging R2_PUBLIC_URL
 import { LOADED_ENV_FILE } from './loadEnv.js';
-import { IMMUTABLE_CACHE_CONTROL, r2List, r2Put, r2PutFile } from './r2';
+import { IMMUTABLE_CACHE_CONTROL, r2List, r2Put, r2PutFile, r2PublicUrl } from './r2';
+import { parseRunPrefixArg, stagedAgencySlugs } from './runArtifacts.js';
 import { getAgencyArtifactUrls, pmtilesMinZoomForHeadway } from '../shared/config.js';
 import { runWithConcurrency } from './utils.js';
 import { runStopClustering } from './stopClustering.js';
@@ -149,6 +150,14 @@ async function main() {
     : index.agencies || [];
   
   console.log(`Found ${agencies.length} agencies to process.`);
+  // CIV-522: a rebuild's agency files sit under its run prefix until the release is public. Those
+  // agencies are read from there, and a staged file that cannot be read fails the build: falling
+  // back to the top-level copy would ship the last release's data under this release's stamp.
+  const sourcePrefix = parseRunPrefixArg(process.argv.slice(2), '--source-prefix');
+  const staged = sourcePrefix
+    ? stagedAgencySlugs(await r2List(`${sourcePrefix}/`), sourcePrefix, agencies.map(agency => agency.slug))
+    : new Set<string>();
+  if (sourcePrefix) console.log(`Reading ${staged.size} agencies from ${sourcePrefix}/; the others from their published files.`);
 
   const tmpDir = path.resolve('tmp/geojson-build');
   fs.mkdirSync(tmpDir, { recursive: true });
@@ -171,10 +180,13 @@ async function main() {
       return;
     }
     const arts = getAgencyArtifactUrls(slug);
-    const url = agency.url || arts.url;
-    const stopsUrl = agency.stopsUrl || arts.stopsUrl;
-    const corridorsUrl = agency.corridorsUrl || arts.corridorsUrl;
-    const sectionsUrl = arts.sectionsUrl;
+    const isStaged = staged.has(slug);
+    const stagedUrl = (suffix: string) => r2PublicUrl(`${sourcePrefix}/${slug}${suffix}.json`);
+    const url = isStaged ? stagedUrl('') : agency.url || arts.url;
+    const stopsUrl = isStaged ? stagedUrl('-stops') : agency.stopsUrl || arts.stopsUrl;
+    const corridorsUrl = isStaged ? stagedUrl('-corridors') : agency.corridorsUrl || arts.corridorsUrl;
+    const sectionsUrl = isStaged ? stagedUrl('-sections') : arts.sectionsUrl;
+    const missingStaged = (fileUrl: string) => { if (isStaged) failedRouteFetches.push(`${slug}: ${fileUrl} (staged)`); };
     console.log(`Processing agency: ${slug}...`);
 
     // 1. Routes
@@ -189,7 +201,9 @@ async function main() {
         fs.writeFileSync(path.join(releaseAgencyDir, `${slug}.json`), JSON.stringify(data));
         allRoutes.push(...prepareAgencyRouteFeaturesForTiles(data.features, slug));
       } else if (!data) {
-        if (agency.pmtilesPending) {
+        if (isStaged) {
+          missingStaged(url);
+        } else if (agency.pmtilesPending) {
           console.warn(`  Skipping ${slug}: marked "pmtilesPending" (no route data published yet — excluded from fail-closed check, not from the map once it is).`);
         } else {
           failedRouteFetches.push(`${slug}: ${url}`);
@@ -225,6 +239,8 @@ async function main() {
           }
           allStops.push(f);
         });
+      } else {
+        missingStaged(stopsUrl);
       }
     }
 
@@ -237,6 +253,8 @@ async function main() {
         : await fetchJson(corridorsUrl);
       if (data && data.features) {
         fs.writeFileSync(path.join(releaseAgencyDir, `${slug}-corridors.json`), JSON.stringify(data));
+      } else {
+        missingStaged(corridorsUrl);
       }
     }
 
@@ -246,10 +264,12 @@ async function main() {
       const localPath = localPreviewDir ? path.join(localPreviewDir, slug, `${slug}-sections.json`) : null;
       const data = localPath && fs.existsSync(localPath)
         ? JSON.parse(fs.readFileSync(localPath, 'utf8')) as Record<string, unknown>
-        : await fetchJson(sectionsUrl, 5, true) as unknown as Record<string, unknown> | null;
+        : await fetchJson(sectionsUrl, 5, !isStaged) as unknown as Record<string, unknown> | null;
       if (data && data.sections) {
         data[RELEASE_STAMP_FIELD] = releaseId;
         fs.writeFileSync(path.join(releaseAgencyDir, `${slug}-sections.json`), JSON.stringify(data));
+      } else if (!data) {
+        missingStaged(sectionsUrl);
       }
     }
   });

@@ -27,9 +27,15 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 626
+      "featureCount": 631,
+      "feedExpiry": "20270110",
+      "routeCount": 88,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-08-24"
+    "checkedAt": "2026-10-30"
   },
   "timezone": "America/Chicago",
   "lastFeedSourceKind": "configured",
