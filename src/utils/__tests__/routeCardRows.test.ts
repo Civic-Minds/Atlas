@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { ShapeProperties } from '../../hooks/useIntervalStats';
-import { buildRouteCardModel, matchesHoveredBranch, rowIsHovered, sharedIsHovered } from '../routeCardRows';
+import { buildRouteCardModel, matchesHoveredBranch, reportRowValueText, rowIsHovered, sharedIsHovered } from '../routeCardRows';
 
 const row = (directionId: number, headsign: string, midday: number, routeVariant?: string) => ({
   routeId: '52', routeShortName: '52', directionId, headsign, tier: '15', headway: midday,
@@ -45,5 +45,25 @@ describe('route card rows, built once (CIV-987)', () => {
     expect(matchesHoveredBranch({ headsign: 'Westwood', routeVariant: 'via Dixon' }, 'Westwood', 'from Westwood')).toBe(false);
     expect(rowIsHovered({ directionId: 0, headsigns: ['Westwood'], isCore: true }, westwood)).toBe(false);
     expect(sharedIsHovered({ directionId: 0, isCore: true }, 0)).toBe(true);
+  });
+
+  it('writes the issue report from the rows the card shows (#1230)', () => {
+    const m = model(directions);
+    // The card's Combined row is in the report too, with the value the card shows.
+    expect(m.groups[0].shared).toMatchObject({ label: 'Combined', headway: 10 });
+    expect(m.reportServiceLines).toEqual([
+      '- Combined every 10 min; each branch every 17–24 min',
+      '- to Pearson Airport: every 17 min',
+      '- from Westwood to Westwood: every 24 min',
+      '- to Lawrence West Station: every 20 min',
+    ]);
+  });
+
+  it('reports a row the card reads as limited with the card\'s word', () => {
+    // It runs in the period (the direction's coverage) but has no cadence of its own.
+    const limited = { ...row(0, 'Pearson Airport', 17), headway: null, headwayByPeriod: {}, worstDirectionPeriodCoverageHeadway: { midday: 90 } } as unknown as ShapeProperties;
+    const [first] = model([limited, row(1, 'Lawrence West Station', 20)]).groups[0].rows;
+    expect(first.display(null).value.isLimited).toBe(true);
+    expect(reportRowValueText(first)).toBe('limited');
   });
 });
