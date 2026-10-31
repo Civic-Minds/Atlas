@@ -88,4 +88,35 @@ describe('rowTrips (CIV-1069): a row reads its value, gap and part-period words 
   it('a row without stretch data reads its own value and its own gap', () => {
     expect(rowTrips(row({ headwayByPeriod: { pmPeak: 12 }, maxGapByPeriod: { pmPeak: 14 } }), 'pmPeak')).toMatchObject({ value: 12, longestGap: 14, noOwnService: false });
   });
+
+  describe('#1239: a main stretch\'s row reads the number at the filter\'s stop', () => {
+    // AC Transit 281 AM to NewPark Mall: one destination, steady every 63 at the stretch's stop, one 66 min gap sets the filter.
+    const main = (over: Partial<ShapeProperties> = {}) => row({
+      stretchRole: 'main', stretchIndex: 0, headwayByPeriod: { amPeak: 60 }, maxGapByPeriod: { amPeak: 66 },
+      departuresByHour: { 6: 1, 7: 1, 8: 1, 9: 1 }, stretchPeriodHeadway: { amPeak: 63 }, stretchPeriodSustained: { amPeak: true },
+      stretchMeta: { main: { stops: 30, refStop: 's', trips: 4, period: { amPeak: 66 }, maxGap: { amPeak: 66 } }, tails: [] },
+      ...over,
+    });
+
+    it('the stretch\'s spacing, with no gap words under 1.5 times it (281: every 63, not "with a 66 min gap")', () => {
+      expect(rowTrips(main(), 'amPeak')).toMatchObject({ value: 63, partPeriod: undefined });
+    });
+
+    it('a gap at least 1.5 times the spacing goes into the words', () => {
+      const r = main({ stretchPeriodHeadway: { amPeak: 42 }, stretchMeta: { main: { stops: 30, refStop: 's', trips: 4, period: { amPeak: 65 }, maxGap: { amPeak: 65 } }, tails: [] } });
+      const trips = rowTrips(r, 'amPeak');
+      expect(trips.value).toBe(42);
+      expect(trips.partPeriod).toContain('65 min gap');
+    });
+
+    it('a row whose trips are only some of the stretch\'s keeps its own (SEPTA 19 Saturday midday: 120 on a stretch every 63)', () => {
+      const r = main({ headwayByPeriod: { amPeak: 120 }, stretchPeriodHeadway: { amPeak: 63 }, stretchMeta: { main: { stops: 30, refStop: 's', trips: 8, period: { amPeak: 63 }, maxGap: { amPeak: 66 } }, tails: [] } });
+      expect(rowTrips(r, 'amPeak').value).toBe(120);
+    });
+
+    it('a late start or early end keeps its own reading (A2), and the pooling reads the row\'s own trips', () => {
+      expect(rowTrips(main({ stretchPeriodEdge: { amPeak: { from: 480, every: 63 } } }), 'amPeak').value).toBe(60);
+      expect(rowTrips(main(), 'amPeak', { ownTrips: true }).value).toBe(60);
+    });
+  });
 });

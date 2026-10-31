@@ -89,6 +89,8 @@ export interface RouteProperties {
   stretchPeriodOneGap?: Partial<Record<PeriodKey, boolean>>;
   /** The direction's own value per period (pipeline stampStretchShadow): for an uneven period, its longest wait. Display only. */
   stretchPeriodHeadway?: Partial<Record<PeriodKey, number | null>>;
+  /** The direction's period is steady at its stretches' reference stops (pipeline stampStretchShadow). Display only. */
+  stretchPeriodSustained?: Partial<Record<PeriodKey, boolean | null>>;
   /** #1142: the typical gap of a period whose value is an uneven stretch's longest wait (card range "every typical–worst"); null: steady. Display only. */
   stretchPeriodTypical?: Partial<Record<PeriodKey, number | null>>;
   /** The route's range, [best stretch, worst] ("every 8–25"); null: one number. Display only. */

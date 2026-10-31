@@ -59,6 +59,15 @@ These are settled; don't change them without a new decision (Ryan, 2026-10-15).
 
 The first three live in `pipeline/headway-utils.ts`, the last in `shared/periodEligibility.ts`.
 
+**C. Card rows** (how a row says what the filter read).
+
+| What | Value | Decided in |
+|---|---|---|
+| A main stretch's row shows the number at the filter's stop (AC Transit 281 AM: every 63, not its own trips' 60) | the stretch's steady spacing, when the row's trips are all of the stretch's (one destination) | Ryan, 2026-10-31, #1239 |
+| Gap words ("every 42 min, with a 65 min gap") | only when the gap that sets the filter value is at least `ROW_GAP_WORDS_RATIO` (1.5) times the row's spacing; "every 63 min, with a 66 min gap" isn't worth mentioning | Ryan, 2026-10-31, #1239 |
+
+Both live in `src/utils/rowTrips.ts`.
+
 ## Checks
 
 - The GTFS oracle, `scripts/handcheck/stretch-departures.py`, reads a route's main stretch and tails straight from the feed and shares no code with the pipeline. Expected values in the selector tests come from it.

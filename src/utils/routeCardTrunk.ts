@@ -172,7 +172,7 @@ export function pooledMainStretch(
   const shared = stretchRowsFromMeta(mains[0], period).find(r => r.role === 'main');
   if (shared?.value == null || shared.noRegular) return null;
   // A pattern that runs but has no wait of its own to show keeps today's card (GO LW to Confederation).
-  const own = mains.map(d => rowTrips(d, period).value);
+  const own = mains.map(d => rowTrips(d, period, { ownTrips: true }).value);
   if (own.some(v => v == null)) return null;
   if (shared.value > medianHeadway(own as number[]) * SHARED_STRETCH_RATIO) return null;
   // One row per destination: the pattern that draws the most stops stands for it.
@@ -204,7 +204,7 @@ export function stretchSharedHeadway(
   const meta = group.directionFeatures.find(d => d.stretchRole === 'main') ?? group.directionFeatures.find(d => d.stretchMeta?.main);
   const shared = meta ? stretchRowsFromMeta(meta, period).find(r => r.role === 'main') : undefined;
   if (shared?.value == null || shared.noRegular) return null;
-  const rowValues = rows.map(d => rowTrips(d, period).value);
+  const rowValues = rows.map(d => rowTrips(d, period, { ownTrips: true }).value);
   if (rowValues.some(v => v == null)) return null;
   // CIV-1143: no 4x limit here. This row names the shared stretch itself and the rows keep their own waits, so a slow
   // branch never makes it read faster than it is (TTC 52, SEPTA 63).
