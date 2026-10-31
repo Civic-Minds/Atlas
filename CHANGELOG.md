@@ -146,6 +146,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Data pipeline
 
+- **Agencies whose main timetable ran out without an update now say so**: a file Atlas had skipped as unchanged read as just obtained, so [Miami-Dade's](https://github.com/Civic-Minds/Atlas/issues/1253) ended April bus package showed no notice; a seasonal or retired route ending on schedule (Avon's summer express, UNCW shuttles) no longer triggers it
 - **A timetable that hasn't started yet no longer replaces the current one**: [TANK and TTC](https://github.com/Civic-Minds/Atlas/issues/1144) showed next season's service a week early
 - **Feed expiry counts only the routes Atlas shows, on the agency's own date**: [Snowmass](https://github.com/Civic-Minds/Atlas/issues/1140) read current after its kept route ended, and a feed ending on Sunday read as ended on Sunday evening in Los Angeles
 - **A feed whose calendar ended earlier than it claims now shows the [expired notice](https://github.com/Civic-Minds/Atlas/issues/1039)**: MAX said it ran to 2035 while its schedule stopped in May 2025, so it looked current; a calendar can only shorten the end date, never extend it

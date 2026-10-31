@@ -75,6 +75,7 @@ import {
   partitionSkippedSlugs,
   skipSlugArgErrors,
   peekFeedDates,
+  zipFileDate,
   reprocessCountryLaunchSkip,
   selectArchiveForAgency,
   selectByFeedDates,
@@ -295,8 +296,9 @@ async function processAgency(agency: Agency): Promise<ReportRow> {
     if (dateRefusal) throw new Refusal(dateRefusal);
 
     const supplementalFeeds = await loadSupplementalFeeds(agency, url => readSupplementalFeed(agency, url));
-    // The safeguard's file date: the archive upload, or for a pinned or local file the agency's record.
-    const fileDate = selected?.uploaded ?? agency.feedObtainedAt ?? agency.lastRefreshedAt?.replace(/-/g, '') ?? null;
+    // The safeguard's file date: the archive upload, or for a pinned or local file the agency's record,
+    // else the zip's own date (#1253), never the last refresh.
+    const fileDate = selected?.uploaded ?? agency.feedObtainedAt ?? await zipFileDate(body, todayYmd) ?? null;
     const result = await processAgencyFeeds(body, supplementalFeeds, agency, { fileDate }, message => process.stdout.write(`  ${message}`));
     for (const supp of result.supplementalFeatureCounts) console.log(`  + supplemental ${supp.url}: ${supp.featureCount} features`);
     if (result.featureCount === 0) throw new Error('processed feed produced 0 route features');
