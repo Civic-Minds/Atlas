@@ -53,9 +53,9 @@ import { noOwnServicePeriods } from './noOwnService.js';
 import { laterServiceByRoute } from './seasonalPause.js';
 import { nearDuplicateTripIds } from './nearDuplicateTrips.js';
 import { decideDedupe, runsInDay, type DedupePattern } from './featureDedupe.js';
-import { decideHeadline, decidePeriod, liftTierOnDestinationPool, ownStepOneHeadway, pooledStepOneHeadway, settleTier, terminalReading, type PeriodValue } from './routeGrading.js';
+import { decideHeadline, decidePeriod, liftTierOnDestinationPool, OVERSTATED_HEADLINE_MARGIN, ownStepOneHeadway, pooledStepOneHeadway, settleTier, terminalReading, type PeriodValue } from './routeGrading.js';
 import type { SharedStretchPattern } from './sharedStretch.js';
-import { directionStretches, nightOnlyTrips, periodSustainedMid, runsAcrossNightMidpoint, stampStretchShadow, type DirectionStretches, type TripVisit } from './tripSets.js';
+import { directionStretches, gatedRiderWait, nightOnlyTrips, periodSustainedMid, rollupDirection, runsAcrossNightMidpoint, stampStretchShadow, type DirectionStretches, type TripVisit } from './tripSets.js';
 import { buildPooledStopMap, computeStopSharers, pooledHeadwayInWindow, type StopSharers } from './stopPools.js';
 
 export type { GtfsPreprocess };
@@ -3458,6 +3458,9 @@ export async function processGtfsBuffer(
   stampWorstDirectionHeadways(features);
   stampRouteIrregularDirection(features);
 
+  // CIV-1204: the headline each row had before the rider wait replaced it. Feed quality's stop-versus-route check
+  // measures the feed, so it keeps reading this value (a longer rider wait is not a feed problem).
+  const headlineBeforeRiderWait = new Map<GeoJsonFeature, number>();
   // Frequency focus step 3, shadow only: the stretch selector's values beside today's, for the
   // report. Nothing reads them, and tiles leave them out. Routes with no direction_id in the feed
   // get no stretch data, as the midday cap does.
@@ -3489,6 +3492,50 @@ export async function processGtfsBuffer(
       const slot = featureStopHeadwaySlots.get(feature as GeoJsonFeature);
       return slot ? { group: slot.shortName, dirId: slot.dirId, day: slot.day } : null;
     }, feature => Object.keys((feature.properties.stopPeriodCoverageHeadways as Record<string, unknown> | undefined) ?? {}));
+    // CIV-1161 step 1 with the CIV-1204 gate (Ryan, 2026-10-31): a headline that riders wait 10+ minutes longer than, at
+    // the main stretch's reference stop (#1255), reads their wait instead (riderWait, never faster), and its tier can only
+    // get worse, where the direction runs through the window that wait reads there (gatedRiderWait). Where it does not, the
+    // headline and tier stay, and the row says the headline window has no regular service (headlineNoRegular), the
+    // route card's verdict, so no fallback prints the headline as "every N". The filter values are untouched.
+    {
+      const rollups = new Map<string, ReturnType<typeof rollupDirection>>();
+      for (const feature of features) {
+        const slot = featureStopHeadwaySlots.get(feature as GeoJsonFeature);
+        const p = feature.properties;
+        const headline = p.headway as number | null | undefined;
+        if (!slot || p.stopId != null || headline == null || p.tier === 'span') continue;
+        const key = `${slot.shortName}::${slot.dirId}::${slot.day}`;
+        const stretches = stretchesByKey.get(key);
+        if (!stretches?.main || !stretches.timesAtStop) continue;
+        if (!rollups.has(key)) rollups.set(key, rollupDirection(stretches));
+        const rollup = rollups.get(key);
+        if (!rollup) continue;
+        const dropOff = new Set((p.dropOffOnlyStops as string[] | undefined) ?? []);
+        // #1255 (Ryan's one-calculation rule): the wait is read at the main stretch's reference stop, the stop and
+        // departures the filter and the card read (main.refStop, main.times), not as a median over every stop of the
+        // main stretch: where the one regular pattern is a minor one (Pace 542: 6 of 28 trips; MATA 30 Saturday: 3 of 6),
+        // most of those stops see only its few trips and read the all-day fallback (337, 240).
+        const main = stretches.main;
+        const board = gatedRiderWait([main.refStop], () => main.times, dropOff,
+          { middayRuns: rollup.midday.runs, limited: rollup.limitedOnly, gradingWindow: DEFAULT_CRITERIA.dayTypes[slot.day as DayType]?.timeWindow ?? { start: 420, end: 1320 } });
+        if (!board || board.wait < headline + OVERSTATED_HEADLINE_MARGIN) continue;
+        const tierBefore = p.tier as string | undefined;
+        if (board.passes) {
+          const scale = getTiersForCriteria(String(p.routeType ?? ''), DEFAULT_CRITERIA.dayTypes[slot.day as DayType]?.tiers ?? SURFACE_TIER_MAXES, DEFAULT_CRITERIA.modeTierOverrides);
+          const byWait = headwayToTierOn(board.wait, scale);
+          headlineBeforeRiderWait.set(feature as GeoJsonFeature, headline);
+          p.headway = board.wait;
+          if ((TIER_RANK[byWait] ?? -1) > (TIER_RANK[tierBefore ?? ''] ?? -1)) p.tier = byWait;
+        } else {
+          p.headlineNoRegular = true;
+        }
+        console.log('CIV1204\t' + JSON.stringify({
+          agency: options?.slug, route: slot.shortName, dir: slot.dirId, day: slot.day, headsign: p.headsign ?? null,
+          routeType: p.routeType ?? null, headline, tier: tierBefore ?? null, wait: board.wait, boardStops: board.stops,
+          allDayStops: board.allDayStops, passes: board.passes, headlineAfter: p.headway, tierAfter: p.tier ?? null,
+        }));
+      }
+    }
     // #961: a row whose own overnight value #897 withheld carries no direction overnight value
     // either, so the card's fallback cannot print the window's wait as "every N". The stretch
     // check in tripSets reads the reference stop, where the window can look different from the
@@ -3742,7 +3789,7 @@ export async function processGtfsBuffer(
     feature.properties.routeShortName != null,
   );
   const mismatchFeatures = routeFeatures.filter(feature => {
-    const headway = Number(feature.properties.headway);
+    const headway = Number(headlineBeforeRiderWait.get(feature) ?? feature.properties.headway);
     const minStopHeadway = Number(feature.properties.minStopHeadway);
     return Number.isFinite(headway) && Number.isFinite(minStopHeadway) && minStopHeadway > 0 && headway >= minStopHeadway * 1.8;
   });

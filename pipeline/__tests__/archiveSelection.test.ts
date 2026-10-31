@@ -10,6 +10,7 @@ import {
   matchesExpiredFeedPin,
   outputDropRefusal,
   peekFeedDates,
+  zipFileDate,
   reprocessCountryLaunchSkip,
   selectArchiveForAgency,
   selectByFeedDates,
@@ -361,5 +362,22 @@ describe('reprocess and publish read one expiry (#875)', () => {
     zip.file('calendar.txt', 'service_id,start_date,end_date\nwk,20260101,20500101\n');
     const { feedExpiry: calendarEnd, feedInfoEnd } = await peekFeedDates(await zip.generateAsync({ type: 'nodebuffer' }));
     expect(feedDateRefusal(recordedFeedExpiry(feedInfoEnd, calendarEnd, '20261015'), null, '20261015')).toBeNull();
+  });
+});
+
+describe('zipFileDate (#1253)', () => {
+  it('reads the newest .txt modification date as stored in the zip', async () => {
+    const zip = new JSZip();
+    zip.file('BUS 27APR26/agency.txt', 'agency_id\n', { date: new Date(Date.UTC(2026, 3, 21, 8, 59)) });
+    zip.file('BUS 27APR26/calendar.txt', 'service_id\n', { date: new Date(Date.UTC(2026, 3, 21, 9, 1)) });
+    zip.file('readme.md', 'x', { date: new Date(Date.UTC(2026, 9, 1)) });
+    const buf = await zip.generateAsync({ type: 'nodebuffer' });
+    expect(await zipFileDate(buf, '20261102')).toBe('20260421');
+  });
+  it('ignores dates after today or before 2000, and a file that is not a zip', async () => {
+    const zip = new JSZip();
+    zip.file('calendar.txt', 'service_id\n', { date: new Date(Date.UTC(2030, 0, 1)) });
+    expect(await zipFileDate(await zip.generateAsync({ type: 'nodebuffer' }), '20261102')).toBeNull();
+    expect(await zipFileDate(Buffer.from('not a zip'), '20261102')).toBeNull();
   });
 });

@@ -44,7 +44,8 @@ describe('Weekday shape maps on a non-representative weekday', () => {
     const nb = weekday.find((p: any) => p.headsign === 'Leander Station NB');
     expect(sb.headway).toBe(54);
     expect(sb.headwayByPeriod.midday).toBe(54);
-    expect(nb.headway).toBe(34);
+    // CIV-1161/CIV-1204: northbound's headline reads the rider's wait on the main stretch, trains about hourly at midday.
+    expect(nb.headway).toBe(56);
     expect(sb.worstDirectionHeadway).toBe(54);
     // Tier follows the hand count: no 30-minute weekday service in either direction.
     expect(sb.tier).toBe('infrequent');
@@ -86,7 +87,8 @@ describe('Weekday shape maps on a non-representative weekday', () => {
     expect(sb.headway).toBe(54);
     expect(sb.headwayByPeriod.midday).toBe(54);
     expect(sb.tier).toBe('infrequent');
-    expect(nb.headway).toBe(34);
+    // CIV-1161/CIV-1204: northbound's headline reads the rider's wait on the main stretch, trains about hourly at midday.
+    expect(nb.headway).toBe(56);
     expect(sb.worstDirectionHeadway).toBe(54);
   });
 

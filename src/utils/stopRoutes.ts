@@ -44,6 +44,14 @@ export interface StopRoute {
   noTrips?: { rKey: string };
 }
 
+/**
+ * The route's headline, standing in where the stop has no all-day value of its own. CIV-1204: none where the headline's
+ * window has no regular service (the route card's verdict), so it never reads as "every N".
+ */
+export function headlineStandIn(p: Pick<ShapeProperties, 'headway' | 'headlineNoRegular'>): number | null {
+  return p.headlineNoRegular ? null : p.headway ?? null;
+}
+
 /** The stop's own value for a branch in the period: every trip of the direction at the stop, pooled where patterns share it. */
 export function stopBranchHeadway(branch: StopBranch, period: TimePeriod): number | null {
   return metricValueForPeriod(branch.service, period);
@@ -157,7 +165,8 @@ export function buildStopRoutes({ siblingIdsByAgency, routesByAgency, routePerio
       const branchKey = `${dirId}::${p.headsign ?? ''}`;
       // Prefer stop-specific headway over feature headway; keep the best (lowest) when deduping.
       const service = buildRouteStopMetric(p, matchingStopId, sharedIndexBySlug.get(slug));
-      const newHeadway = service.value ?? p.headway ?? null;
+      const standIn = headlineStandIn(p);
+      const newHeadway = service.value ?? standIn;
       const existing = entry.branches.get(branchKey);
       const patterns = (existing?.patterns ?? 0) + 1;
       if (existing) existing.patterns = patterns;
@@ -165,8 +174,8 @@ export function buildStopRoutes({ siblingIdsByAgency, routesByAgency, routePerio
         entry.branches.set(branchKey, {
           rKey: facts.key,
           headsign: p.headsign ?? null,
-          service: service.value == null && p.headway != null && !periodText
-            ? { ...service, value: p.headway, provenance: 'all-day-summary' }
+          service: service.value == null && standIn != null && !periodText
+            ? { ...service, value: standIn, provenance: 'all-day-summary' }
             : service,
           // A destination row says how often that destination comes (CIV-918): the branch's own value, the
           // same number its row on the route card shows. The stop's value counts every trip of the

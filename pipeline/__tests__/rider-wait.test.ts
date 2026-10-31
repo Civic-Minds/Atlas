@@ -1,0 +1,102 @@
+import { describe, expect, it } from 'vitest';
+import { boardingMainStretchWait, riderWait } from '../routeGrading';
+import { gatedRiderWait } from '../tripSets';
+
+const hm = (s: string) => { const [h, m] = s.split(':').map(Number); return h * 60 + m; };
+const every = (from: string, to: string, step: number) => {
+  const out: number[] = [];
+  for (let t = hm(from); t <= hm(to); t += step) out.push(t);
+  return out;
+};
+
+describe('riderWait (CIV-1161 step 1)', () => {
+  it('is the gap a rider arriving at a random time faces (time-weighted median)', () => {
+    // TransLink 371 Sunday: 60 three times, then 30 five times; the 60s cover 55% of the time.
+    expect(riderWait([...every('09:00', '12:00', 60), ...every('12:30', '14:30', 30)])?.wait).toBe(60);
+    // Saskatoon 18 Saturday: 60 and 62, then 32 six times; the 32s cover 61% of the time.
+    expect(riderWait([hm('09:00'), hm('10:00'), hm('11:02'), hm('11:34'), hm('12:06'), hm('12:38'), hm('13:10'), hm('13:42'), hm('14:14')])?.wait).toBe(32);
+  });
+  it('reads the wait a midday rider gets when service thins inside the window (MTA BxM7 to Midtown)', () => {
+    // Every 15 until 10:00, then every 30 to 15:00.
+    expect(riderWait([...every('09:00', '10:00', 15), ...every('10:30', '15:00', 30)])).toEqual({ wait: 30, window: 'midday' });
+  });
+  it('reads the common gap past one long one (CapMetro 985 southbound: 40, then 30, 30, 30)', () => {
+    expect(riderWait([hm('05:50'), hm('06:30'), hm('07:00'), hm('07:30'), hm('08:00')])).toEqual({ wait: 30, window: 'allDay' });
+    expect(riderWait([hm('09:00'), hm('09:40'), hm('10:10'), hm('10:40'), hm('11:10')])?.wait).toBe(30);
+  });
+  it('keeps an hourly half of the window (MTA BxM10 Saturday: hourly until 12:20, then every 30)', () => {
+    expect(riderWait([...every('09:20', '12:20', 60), ...every('12:50', '14:50', 30)])?.wait).toBe(60);
+  });
+  it('does not count a hole in service as a wait on the all-day fallback (CIV-1161 try 3: Whistler 30)', () => {
+    // 6:07 and 6:37, then every 30 from 19:51: no midday or PM-peak reading.
+    expect(riderWait([hm('06:07'), hm('06:37'), ...every('19:51', '21:51', 30)])).toEqual({ wait: 30, window: 'allDay' });
+    // A gap inside a period is still a wait.
+    expect(riderWait([hm('06:00'), hm('06:30'), hm('07:00'), hm('10:00')])?.wait).toBe(180);
+  });
+  it('falls back to the PM peak, then all day, like the headline', () => {
+    expect(riderWait(every('15:00', '18:00', 20))).toEqual({ wait: 20, window: 'pmPeak' });
+    expect(riderWait([hm('09:00'), hm('20:00')])).toBeNull();
+  });
+});
+
+describe('boardingMainStretchWait (CIV-1161 step 1)', () => {
+  const times: Record<string, number[]> = {
+    a: every('09:00', '15:00', 20),
+    b: every('09:05', '15:05', 20),
+    // A drop-off-only stop where bunched arrivals would read otherwise.
+    z: [hm('09:00'), hm('09:50'), hm('10:40'), hm('11:30'), hm('12:20')],
+  };
+  it('reads the median over the stops a rider can board, leaving drop-off-only stops out', () => {
+    expect(boardingMainStretchWait(['a', 'b', 'z'], s => times[s] ?? [], new Set(['z']))).toEqual({ wait: 20, stops: 2, allDayStops: 0 });
+  });
+  it('has no reading when no boarding stop has one', () => {
+    expect(boardingMainStretchWait(['z'], s => times[s] ?? [], new Set(['z']))).toBeNull();
+  });
+});
+
+describe('gatedRiderWait (CIV-1204 run-shape gate)', () => {
+  const at = (times: Record<string, number[]>) => (s: string) => times[s] ?? [];
+  const runs = { middayRuns: true, limited: false, gradingWindow: { start: 420, end: 1320 } };
+  it('blocks a peak route whose last morning and first afternoon trips reach into midday (TTC 945 to Kipling)', () => {
+    // Every 10 to 9:28, then 14:40 on: a 312-minute "wait" across a midday it does not run.
+    const t = { a: [...every('06:00', '09:28', 10), ...every('14:40', '18:40', 10)] };
+    const r = gatedRiderWait(['a'], at(t), new Set(), { middayRuns: false, limited: true, gradingWindow: { start: 420, end: 1320 } });
+    expect(r?.wait).toBeGreaterThan(300);
+    expect(r?.passes).toBe(false);
+  });
+  it('blocks a midday of stray trips even when rule 7 alone would pass (CTA 120: 9:10, 9:31, then 14:44)', () => {
+    const t = { a: [hm('07:00'), hm('07:20'), hm('09:10'), hm('09:31'), hm('14:44'), hm('16:00'), hm('16:20')] };
+    expect(gatedRiderWait(['a'], at(t), new Set(), runs)?.passes).toBe(true);
+    expect(gatedRiderWait(['a'], at(t), new Set(), { middayRuns: false, limited: true, gradingWindow: { start: 420, end: 1320 } })?.passes).toBe(false);
+  });
+  it('blocks the all-day fallback of a limited direction (CAT 14 to Springwood: 6:16, 7:31, 10:16, 16:31, 17:01)', () => {
+    const t = { a: [hm('06:16'), hm('07:31'), hm('10:16'), hm('16:31'), hm('17:01')] };
+    const r = gatedRiderWait(['a'], at(t), new Set(), { middayRuns: false, limited: true, gradingWindow: { start: 420, end: 1320 } });
+    expect(r?.passes).toBe(false);
+  });
+  it('blocks the row when any boarding stop fails, never re-reading the median over the rest', () => {
+    const t = { a: every('09:00', '15:00', 30), b: [hm('09:00'), hm('09:20'), hm('09:40')] };
+    expect(gatedRiderWait(['a', 'b'], at(t), new Set(), runs)?.passes).toBe(false);
+    expect(gatedRiderWait(['a', 'b'], at(t), new Set(['b']), runs)).toEqual({ wait: 30, stops: 1, allDayStops: 0, passes: true });
+  });
+  it('keeps a midday that thins but runs through (MTA BxM7 to Midtown: 15, then 30)', () => {
+    const t = { a: [...every('09:00', '10:00', 15), ...every('10:30', '15:00', 30)] };
+    expect(gatedRiderWait(['a'], at(t), new Set(), runs)).toEqual({ wait: 30, stops: 1, allDayStops: 0, passes: true });
+  });
+  it('keeps an hourly then half-hourly midday (TransLink 371 Sunday reads 60)', () => {
+    const t = { a: [...every('09:00', '12:00', 60), ...every('12:30', '14:30', 30)] };
+    expect(gatedRiderWait(['a'], at(t), new Set(), runs)).toEqual({ wait: 60, stops: 1, allDayStops: 0, passes: true });
+  });
+  it('leaves a thin three-departure midday as it is (Collier 25 Saturday: 10:15, 11:54, 14:57)', () => {
+    const t = { a: [hm('10:15'), hm('11:54'), hm('14:57')] };
+    expect(gatedRiderWait(['a'], at(t), new Set(), runs)).toEqual({ wait: 183, stops: 1, allDayStops: 0, passes: true });
+  });
+  it('keeps the all-day fallback of a direction that runs all day (sparse but not limited)', () => {
+    const t = { a: [hm('06:53'), hm('08:53'), hm('15:53'), hm('19:53'), hm('22:00')] };
+    expect(gatedRiderWait(['a'], at(t), new Set(), runs)?.passes).toBe(true);
+  });
+  it('reads the PM peak where it runs through it', () => {
+    const t = { a: every('15:00', '18:40', 20) };
+    expect(gatedRiderWait(['a'], at(t), new Set(), { middayRuns: false, limited: true, gradingWindow: { start: 420, end: 1320 } })).toEqual({ wait: 20, stops: 1, allDayStops: 0, passes: true });
+  });
+});
