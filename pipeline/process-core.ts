@@ -3492,9 +3492,9 @@ export async function processGtfsBuffer(
       const slot = featureStopHeadwaySlots.get(feature as GeoJsonFeature);
       return slot ? { group: slot.shortName, dirId: slot.dirId, day: slot.day } : null;
     }, feature => Object.keys((feature.properties.stopPeriodCoverageHeadways as Record<string, unknown> | undefined) ?? {}));
-    // CIV-1161 step 1 with the CIV-1204 gate (Ryan, 2026-10-31): a headline that riders on the main stretch wait 10+
-    // minutes longer than reads their wait instead (riderWait, never faster), and its tier can only get worse, where the
-    // direction runs through the window that wait reads at every boarding stop (gatedRiderWait). Where it does not, the
+    // CIV-1161 step 1 with the CIV-1204 gate (Ryan, 2026-10-31): a headline that riders wait 10+ minutes longer than, at
+    // the main stretch's reference stop (#1255), reads their wait instead (riderWait, never faster), and its tier can only
+    // get worse, where the direction runs through the window that wait reads there (gatedRiderWait). Where it does not, the
     // headline and tier stay, and the row says the headline window has no regular service (headlineNoRegular), the
     // route card's verdict, so no fallback prints the headline as "every N". The filter values are untouched.
     {
@@ -3511,7 +3511,12 @@ export async function processGtfsBuffer(
         const rollup = rollups.get(key);
         if (!rollup) continue;
         const dropOff = new Set((p.dropOffOnlyStops as string[] | undefined) ?? []);
-        const board = gatedRiderWait(stretches.main.stops, stop => stretches.timesAtStop!(stop).times, dropOff,
+        // #1255 (Ryan's one-calculation rule): the wait is read at the main stretch's reference stop, the stop and
+        // departures the filter and the card read (main.refStop, main.times), not as a median over every stop of the
+        // main stretch: where the one regular pattern is a minor one (Pace 542: 6 of 28 trips; MATA 30 Saturday: 3 of 6),
+        // most of those stops see only its few trips and read the all-day fallback (337, 240).
+        const main = stretches.main;
+        const board = gatedRiderWait([main.refStop], () => main.times, dropOff,
           { middayRuns: rollup.midday.runs, limited: rollup.limitedOnly, gradingWindow: DEFAULT_CRITERIA.dayTypes[slot.day as DayType]?.timeWindow ?? { start: 420, end: 1320 } });
         if (!board || board.wait < headline + OVERSTATED_HEADLINE_MARGIN) continue;
         const tierBefore = p.tier as string | undefined;

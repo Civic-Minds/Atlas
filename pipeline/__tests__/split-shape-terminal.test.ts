@@ -86,7 +86,7 @@ describe('terminal headline when a branch is split over many shape IDs', () => {
     // kept as it reads (2026-10-31); the 248 of the drawn shape's own 3 trips is still not counted.
     expect(await weekday('freedom-m-split-shapes', 'freedom-transit')).toEqual([
       [0, 'Washington', 175],
-      [1, 'Pittsburgh', 165],
+      [1, 'Pittsburgh', 164],
     ]);
   });
 
