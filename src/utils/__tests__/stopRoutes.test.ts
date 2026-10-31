@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { buildStopRoutes, stopRouteBestHeadway, stopRouteLineHeadway, stopRowHeadway, type StopBranch } from '../stopRoutes';
+import { buildStopRoutes, headlineStandIn, stopRouteBestHeadway, stopRouteLineHeadway, stopRowHeadway, type StopBranch } from '../stopRoutes';
 import ttc29json from './fixtures/ttc-29-weekday.json';
 
 // Properties only (no geometry): the stop card reads none.
@@ -31,6 +31,16 @@ describe('stopRowHeadway: never overstate', () => {
 
   it('shows words, not a number, for a part-period row', () => {
     expect(stopRowHeadway(branch(5, 10, { periodText: 'every 12 min until 9:37 AM' }), 'midday')).toBeNull();
+  });
+});
+
+describe('headlineStandIn (CIV-1204)', () => {
+  it("never stands a headline in where its window has no regular service (CAT 14 to Transfer Center: 315)", () => {
+    expect(headlineStandIn({ headway: 315, headlineNoRegular: true })).toBeNull();
+  });
+  it('keeps the headline as the stand-in otherwise', () => {
+    expect(headlineStandIn({ headway: 30 })).toBe(30);
+    expect(headlineStandIn({ headway: null })).toBeNull();
   });
 });
 

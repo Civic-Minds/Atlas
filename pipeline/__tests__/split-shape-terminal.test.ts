@@ -81,10 +81,12 @@ describe('terminal headline when a branch is split over many shape IDs', () => {
     // the 10 trips, 69, the same reading the thin-shape rescue gives. Every drawn stop is served
     // by all 10 trips, so no stop lowers it; the drawn terminal's own 3 trips (248) are not
     // counted. Toward Washington the pooled value is capped at the own pattern's reading, 60
-    // (62 floored at the merged list's mean before).
+    // (62 floored at the merged list's mean before). CIV-1161/CIV-1204: the headline then reads the rider's wait over
+    // the main stretch, a thin midday that runs through (165 toward Pittsburgh: 9:30, 12:15, 13:20, 14:20), which Ryan
+    // kept as it reads (2026-10-31); the 248 of the drawn shape's own 3 trips is still not counted.
     expect(await weekday('freedom-m-split-shapes', 'freedom-transit')).toEqual([
-      [0, 'Washington', 60],
-      [1, 'Pittsburgh', 69],
+      [0, 'Washington', 175],
+      [1, 'Pittsburgh', 165],
     ]);
   });
 

@@ -36,6 +36,7 @@ import {
 } from './headway-utils.js';
 import { SHARED_STRETCH_MIN_KM, SHARED_STRETCH_MIN_STOPS } from './sharedStretch.js';
 import { SAME_TERMINAL_METERS } from './featureDedupe.js';
+import { boardingMainStretchWait, riderWait } from './routeGrading.js';
 
 /** A short turn (stops all on a longer regular pattern) under this share of trips is a variant (the spec's regular-pattern share). */
 export const SHORT_TURN_MIN_SHARE = 0.2;
@@ -612,6 +613,33 @@ export function runsThroughPeriod(times: readonly number[], start: number, end: 
   let longest = 0;
   for (let i = 1; i < t.length; i++) longest = Math.max(longest, t[i] - t[i - 1]);
   return !(longest / median > BOUNDARY_DOMINANT_RATIO);
+}
+
+/**
+ * CIV-1204 (Ryan, 2026-10-31): the rider wait (CIV-1161) stands for the headline only where the direction runs through
+ * the window it read, by the settled verdicts, at every boarding stop that has a reading: at midday, runsThroughPeriod
+ * there and the #899 midday test (rule 7); at the PM peak, runsThroughPeriod there; on the all-day fallback, a direction
+ * that is not limited (#720). A peak route's few trips reaching into midday (TTC 945: 9:28, then 14:40) are not a
+ * 312-minute wait. Null when no boarding stop has a reading.
+ */
+export function gatedRiderWait(
+  stops: readonly string[],
+  timesAt: (stopId: string) => readonly number[],
+  dropOffOnly: ReadonlySet<string>,
+  direction: { middayRuns: boolean; limited: boolean },
+): { wait: number; stops: number; allDayStops: number; passes: boolean } | null {
+  const board = boardingMainStretchWait(stops, timesAt, dropOffOnly);
+  if (!board) return null;
+  const passes = stops.filter(stop => !dropOffOnly.has(stop)).every(stop => {
+    const times = timesAt(stop);
+    const reading = riderWait(times);
+    if (!reading) return true;
+    if (reading.window === 'allDay') return !direction.limited;
+    const { start, end } = PERIOD_MINUTES[reading.window];
+    const runs = runsThroughPeriod(times, start, end, computePeriodSustained([...times])[reading.window]);
+    return reading.window === 'midday' ? runs && direction.middayRuns : runs;
+  });
+  return { ...board, passes };
 }
 
 /**

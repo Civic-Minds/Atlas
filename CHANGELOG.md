@@ -146,6 +146,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Data pipeline
 
+- **Route headlines read the wait riders face where the route runs through that time of day**: a midday that thins reads its real gap (BxM7 every 30, not 15), and a peak-only route's stray midday trips never count as a wait
 - **A timetable that hasn't started yet no longer replaces the current one**: [TANK and TTC](https://github.com/Civic-Minds/Atlas/issues/1144) showed next season's service a week early
 - **Feed expiry counts only the routes Atlas shows, on the agency's own date**: [Snowmass](https://github.com/Civic-Minds/Atlas/issues/1140) read current after its kept route ended, and a feed ending on Sunday read as ended on Sunday evening in Los Angeles
 - **A feed whose calendar ended earlier than it claims now shows the [expired notice](https://github.com/Civic-Minds/Atlas/issues/1039)**: MAX said it ran to 2035 while its schedule stopped in May 2025, so it looked current; a calendar can only shorten the end date, never extend it
