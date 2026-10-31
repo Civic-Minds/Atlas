@@ -1,6 +1,7 @@
 import audit from '../../docs/research/system-map-audit-2026-09/data.json';
 import recheck from './definition-recheck-2026-10-30.json';
 import definitions from './frequent-definitions-by-agency.json';
+import { headwayEvery, headwayEveryRange } from '../../shared/headwayText';
 
 /** The chart's fixed steps; any other wait in the data (Fort McMurray's 25, CIV-1178) gets its own bar too. */
 const storyScaleSteps = [10, 12, 15, 20, 30, 60];
@@ -28,10 +29,10 @@ export const frequentTierRuleOverrides: Record<string, { minutes: number | null;
   cttransit: { minutes: null, reason: 'Only frequent tier is one corridor (Routes 64 and 66, downtown Hartford to West Hartford Center).' },
   intercitytransit: { minutes: null, reason: 'Only frequent tier is one route (9X).' },
   art: { minutes: 12, reason: 'Premium Transit Network covers 3 corridors: 10-minute peak, 12-minute off-peak.' },
-  capmetro: { minutes: 15, reason: 'High-Frequency Rapid covers 4 routes (800, 801, 803, 837): every 10-15 minutes during weekday day times.' },
+  capmetro: { minutes: 15, reason: `High-Frequency Rapid covers 4 routes (800, 801, 803, 837): ${headwayEveryRange(10, 15)} during weekday day times.` },
   rtcsnv: { minutes: 15, reason: 'Every 15 minutes or better during weekday daytime hours (20 is evenings and weekends).' },
   drt: { minutes: 20, reason: 'Frequent Corridors: 15 or better at peak, 20 or better during other periods.' },
-  'fort-mcmurray': { minutes: 25, reason: 'Core routes: 15 at weekday peaks, every 25 minutes off-peak.' },
+  'fort-mcmurray': { minutes: 25, reason: `Core routes: 15 at weekday peaks, ${headwayEvery(25)} off-peak.` },
 };
 
 type RecheckRow = (typeof recheck.rows)[number];
