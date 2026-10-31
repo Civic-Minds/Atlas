@@ -33,7 +33,7 @@ import { dirIdNum } from '../../../utils/routeCardTrunk';
 import type { VariantFamily } from '../../../utils/routeVariants';
 import { reportDetails } from '../../../utils/reportIssue';
 import { explainerFor, listingEndHasPassed } from '../../../content/noticeCopy';
-import { agencyTodayYmd } from '../../../../shared/feedAvailability';
+import { agencyTodayYmd, effectiveFeedExpiry } from '../../../../shared/feedAvailability';
 import type { RouteLabel } from '../../../utils/routeFacts';
 
 function formatMetricMap(
@@ -314,7 +314,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
     ['Route', `${routeTitle || 'Unknown'} (feed short name: ${currentRoute.routeShortName ?? 'none'}; long name: ${currentRoute.routeLongName ?? 'none'})`],
     ['Period', reportPeriod],
     ['Agency data refreshed', routeAgency?.lastRefreshedAt ?? 'unknown'],
-    ['Feed expiry', routeAgency?.lastFeedExpiry ?? 'unknown'],
+    ['Feed expiry', (routeAgency && effectiveFeedExpiry(routeAgency)) ?? 'unknown'],
     '**Displayed service:**',
     ...(reportServiceLines.length > 0 ? reportServiceLines : ['- No displayed service rows']),
     '',

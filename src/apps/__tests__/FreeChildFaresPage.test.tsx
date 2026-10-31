@@ -82,6 +82,6 @@ describe('Free child fares (CIV-1149)', () => {
     expect(card(/Free child fares/)).toHaveTextContent(/^Data/);
     expect(screen.queryByRole('heading', { name: 'Stories' })).toBeNull();
     expect(card(/Free child fares/)).toHaveAttribute('href', '/research/free-child-fares');
-    expect(card(/Free child fares/)).toHaveTextContent('See up to what age children ride free.');
+    expect(card(/Free child fares/)).toHaveTextContent('Up to what age children ride free on transit in Canada and the US, and which systems are free for everyone.');
   });
 });

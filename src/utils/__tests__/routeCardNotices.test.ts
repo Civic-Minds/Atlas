@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { routeCardNotices, type RouteCardNoticeInput } from '../routeCardNotices';
+import { formatPeriodRangeLong } from '../../../shared/config';
 
 // A card with service all period and no rows of note: only the inputs a test sets decide what shows.
 const model = {
@@ -41,6 +42,46 @@ describe('routeCardNotices (CIV-1200)', () => {
     const withSections = { ...model, groups, showDirectionSections: true } as unknown as RouteCardNoticeInput['model'];
     expect(routeCardNotices({ ...base, model: withSections }).directions).toEqual([{ dirId: 1, kind: 'no-service', text: 'No midday service.', place: 2 }]);
     expect(routeCardNotices({ ...base, model: withSections, nightView: true }).directions).toEqual([]);
+  });
+
+  it('#1186: the part-period line names the hours inside the period, as the period line does', () => {
+    // Trips in the hour before overnight (1 AM) and at 3 and 5 AM: the line used to read "runs from 1–2 AM, …".
+    const night = { headsign: 'A', headwayByHour: { 25: 20, 27: 20, 29: 20 } } as any;
+    const partial = { ...model, hasPeriodService: false, hasPartialPeriodService: true, activeRangeDirections: [night], contract: { filterValue: 60 } } as unknown as RouteCardNoticeInput['model'];
+    const n = routeCardNotices({ ...base, directions: [night], model: partial, period: 'overnight', maxHeadway: 15, selectedRouteOutOfFilter: true });
+    const named = `${formatPeriodRangeLong(27, 28)}, ${formatPeriodRangeLong(29, 30)}`;
+    expect(n.filter?.code).toBe('N13');
+    // The notices keep their ranges on one line (word joiners, no-break spaces).
+    const plain = (text: string | undefined) => text?.replaceAll('\u2060', '').replace(/[\u00a0\u202f]/g, ' ');
+    expect(plain(n.filter?.text)).toContain(named);
+    expect(plain(n.filter?.text)).not.toContain(formatPeriodRangeLong(25, 26));
+    expect(plain(n.period?.text)).toContain(named);
+  });
+
+  it('#1186: never names another direction\'s hours; with none on the chart in the period the filter line stays (MiWay 49 midday)', () => {
+    const early = { headsign: 'A', departuresByHour: { 6: 3, 7: 3, 8: 2 }, headwayByHour: { 6: 20, 7: 20, 8: 30 } } as any;
+    const allDay = { headsign: 'B', departuresByHour: { 9: 2, 11: 2, 13: 2 }, headwayByHour: { 9: 45, 11: 45, 13: 45 } } as any;
+    const m = { ...model, hasPeriodService: false, hasPartialPeriodService: true, activeRangeDirections: [early], contract: { filterValue: 45 } } as unknown as RouteCardNoticeInput['model'];
+    const n = routeCardNotices({ ...base, directions: [early, allDay], model: m, period: 'midday', maxHeadway: 15, selectedRouteOutOfFilter: true });
+    // Never the part-period line with another direction's hours. The filter line is N12, left out here only because
+    // the period line already says when the route runs (CIV-1202, each fact once).
+    expect(n.filter).toBeNull();
+    expect(n.dropped).toEqual([{ code: 'N12', why: 'the period line says when it runs' }]);
+    expect(n.period?.code).toBe('N9');
+  });
+
+  it('#1236: a 5 AM first trip runs in the overnight period (TTC 100), so the card says when, not "no scheduled trips"', () => {
+    const pape = { headsign: 'Pape', departuresByHour: { 5: 3, 6: 12 }, headwayByHour: { 5: 5, 6: 5 } } as any;
+    const m = { ...model, doesNotRun: true, hasPeriodService: false, hasPartialPeriodService: true, activeRangeDirections: [pape] } as unknown as RouteCardNoticeInput['model'];
+    const n = routeCardNotices({ ...base, directions: [pape], model: m, period: 'overnight', maxHeadway: Infinity, selectedRouteOutOfFilter: true });
+    const plain = (text: string | undefined) => text?.replaceAll('\u2060', '').replace(/[\u00a0\u202f]/g, ' ');
+    expect(n.filter).toBeNull();
+    expect(n.period?.code).toBe('N9');
+    expect(plain(n.period?.text)).toContain(formatPeriodRangeLong(29, 30));
+    // A route with no overnight trips at all keeps the line.
+    const daytime = { headsign: 'Pape', departuresByHour: { 6: 12 }, headwayByHour: { 6: 5 } } as any;
+    const none = { ...m, hasPartialPeriodService: false, activeRangeDirections: [daytime] } as unknown as RouteCardNoticeInput['model'];
+    expect(routeCardNotices({ ...base, directions: [daytime], model: none, period: 'overnight', maxHeadway: Infinity, selectedRouteOutOfFilter: true }).filter?.code).toBe('N11');
   });
 });
 

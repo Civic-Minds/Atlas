@@ -1,4 +1,4 @@
-import { isExpiredFeedExpiry } from './feedAvailability';
+import { isAgencyFeedExpired, isExpiredFeedExpiry, type SupplementalFeedExpiryEntry } from './feedAvailability';
 import { plural } from './overflowText';
 
 export type FeedQualityStatus = 'healthy' | 'review' | 'degraded' | 'unusable';
@@ -92,6 +92,24 @@ export function assessFeedQuality(input: FeedQualityInput): FeedQuality {
       : 'healthy';
 
   return { status, score: Math.max(0, score), reasons, metrics: metricsFrom(input), checkedAt };
+}
+
+/**
+ * The rating as of today. The stored one was made when the main feed was processed, so its
+ * expired reason can be out of date and misses a supplemental feed that has ended. This swaps
+ * that reason for the map's rule (isAgencyFeedExpired) and rescores the same way assessFeedQuality does.
+ */
+export function feedQualityToday(quality: FeedQuality, expired: boolean): FeedQuality {
+  if (quality.status === 'unusable' || quality.reasons.includes(FEED_QUALITY_EXPIRED_REASON) === expired) return quality;
+  const reasons = expired ? [...quality.reasons, FEED_QUALITY_EXPIRED_REASON] : quality.reasons.filter(r => r !== FEED_QUALITY_EXPIRED_REASON);
+  const score = Math.max(0, Math.min(100, quality.score + (expired ? -35 : 35)));
+  const status: FeedQualityStatus = expired || score < 60 ? 'degraded' : reasons.length > 0 ? 'review' : 'healthy';
+  return { ...quality, status, score, reasons };
+}
+
+/** The agency with its feed rating as of today (feedQualityToday), for every reader of the catalog. */
+export function withFeedQualityToday<T extends SupplementalFeedExpiryEntry & { timezone?: string | null; feedQuality?: FeedQuality }>(agency: T, now: Date = new Date()): T {
+  return agency.feedQuality ? { ...agency, feedQuality: feedQualityToday(agency.feedQuality, isAgencyFeedExpired(agency, now)) } : agency;
 }
 
 function metricsFrom(input: FeedQualityInput): FeedQualityMetrics {

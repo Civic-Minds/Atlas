@@ -45,7 +45,7 @@ import { syncUrlParams } from './utils/syncUrlParams';
 import { APP_URL, FREQUENT_URL, MAP_URL, NIGHT_URL, currentSearch, linkUpdate, readLink, readUrlParam, urlParamUpdate } from './utils/urlSchema';
 import { AGENCY_CARD_PARAM, parseAgencyCardParam } from './utils/shareUrlState';
 import AppUpdateBanner from './components/AppUpdateBanner';
-import type { FeedQuality } from '../shared/feedQuality';
+import { withFeedQualityToday, type FeedQuality } from '../shared/feedQuality';
 import { trackEvent } from './lib/analytics';
 import { markAtlasOnce } from './lib/performance';
 import { type FrequentServiceFrequency, type FrequentServiceWindow } from '../shared/frequentService';
@@ -597,7 +597,8 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
       .then((data: { agencies: Agency[] }) => {
         const enriched = data.agencies
           .filter((a: Agency) => isAgencyVisibleInBrowser(a, { mode: ATLAS_MODE }))
-          .map(withArtifactUrls);
+          .map(withArtifactUrls)
+          .map(a => withFeedQualityToday(a));
         setAgencies(enriched);
         markAtlasOnce('agency-catalog-ready');
         setAgenciesLoadState('ready');
@@ -974,7 +975,8 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
                           return { ...a, url: arts.url, stopsUrl: a.stopsUrl ?? arts.stopsUrl, corridorsUrl: a.corridorsUrl ?? arts.corridorsUrl };
                         }
                         return a;
-                      });
+                      })
+                      .map(a => withFeedQualityToday(a));
                     setAgencies(enriched);
                     markAtlasOnce('agency-catalog-ready');
                     setAgenciesLoadState('ready');

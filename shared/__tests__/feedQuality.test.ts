@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { assessFeedQuality, feedQualityListItems, presentFeedQualityReason } from '../feedQuality';
+import { FEED_QUALITY_EXPIRED_REASON, assessFeedQuality, feedQualityListItems, feedQualityToday, presentFeedQualityReason, withFeedQualityToday } from '../feedQuality';
 
 const healthy = {
   validationErrors: 0,
@@ -67,5 +67,32 @@ describe('feedQualityListItems', () => {
     ])).toEqual(['4 shapes adjusted']); // N81: warnings stay out of rider-facing lists
     expect(feedQualityListItems(["1 schedule-data warning — Atlas found a minor issue while reading the schedule."])).toEqual([]);
     expect(feedQualityListItems(['The schedule dates in this feed have passed.'])).toEqual(['The schedule dates in this feed have passed']);
+  });
+});
+
+describe('feedQualityToday (#1229)', () => {
+  const base = { validationErrors: 0, validationWarnings: 0, shapeAnomalies: 0, routeHeadwayMismatches: 0, featureCount: 10 };
+  const now = new Date('2026-11-01T12:00:00Z');
+
+  it('adds the expired reason when a supplemental feed has ended since processing, as the map does', () => {
+    const stored = assessFeedQuality({ ...base, feedExpiry: '20270401', checkedAt: '2026-10-19' });
+    const lacmta = { lastFeedExpiry: '20270401', lastSupplementalFeeds: [{ feedExpiry: '20261031', feedVersion: null, rawArchiveKey: null }], timezone: 'America/Los_Angeles', feedQuality: stored };
+    const today = withFeedQualityToday(lacmta, now).feedQuality!;
+    expect(today.reasons).toContain(FEED_QUALITY_EXPIRED_REASON);
+    expect(today.status).toBe('degraded');
+    expect(today).toEqual({ ...assessFeedQuality({ ...base, feedExpiry: '20261031', checkedAt: '2026-11-01' }), checkedAt: '2026-10-19' });
+  });
+
+  it('drops a stale expired reason once a newer feed is on file', () => {
+    const stored = assessFeedQuality({ ...base, validationWarnings: 1, feedExpiry: '20261001', checkedAt: '2026-10-05' });
+    const today = withFeedQualityToday({ lastFeedExpiry: '20261231', timezone: 'America/Toronto', feedQuality: stored }, now).feedQuality!;
+    expect(today).toEqual({ ...assessFeedQuality({ ...base, validationWarnings: 1, feedExpiry: '20261231', checkedAt: '2026-10-05' }) });
+  });
+
+  it('leaves a current or unusable rating as it is', () => {
+    const current = assessFeedQuality({ ...base, feedExpiry: '20261231', checkedAt: '2026-10-05' });
+    expect(feedQualityToday(current, false)).toBe(current);
+    const unusable = assessFeedQuality({ ...base, featureCount: 0, checkedAt: '2026-10-05' });
+    expect(feedQualityToday(unusable, true)).toBe(unusable);
   });
 });

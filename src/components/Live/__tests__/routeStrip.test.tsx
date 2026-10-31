@@ -4,7 +4,8 @@ import type { LiveV3 } from '../../../../shared/liveDashboard';
 import RouteStrip, { ROW_DOT } from '../RouteStrip';
 import BranchStrip from '../BranchStrip';
 import { branchesOf, type BranchModel } from '../branchStripModel';
-import { keyStops, pickLabels, routeStripFromV3, shortStopName, stepFor, stretchSpan, stripSummary, type RouteStripStop } from '../routeStripModel';
+import { shortStopName } from '../../../utils/stopLabel';
+import { keyStops, pickLabels, routeStripFromV3, stepFor, stretchSpan, stripSummary, type RouteStripStop } from '../routeStripModel';
 
 const stop = (i: number, over: Partial<RouteStripStop> = {}): RouteStripStop => ({
   stopId: `S${i}`, name: `Spadina Ave at Street ${i} South Side`, delayMin: i * 0.5, lateShare: 0.1, bunchingShare: 0.1 + i * 0.02, n: 500, bunchingN: 400, ...over,
@@ -27,15 +28,6 @@ describe('stepFor', () => {
     expect(stepFor('bunching', 0.14)).toBe(0);
     expect(stepFor('bunching', 0.2)).toBe(1);
     expect(stepFor('bunching', 0.33)).toBe(2);
-  });
-});
-
-describe('shortStopName', () => {
-  it('keeps the cross street, or the station or loop name', () => {
-    expect(shortStopName('Spadina Ave at Queen St West South Side')).toBe('Queen St West');
-    expect(shortStopName('Broadview Station at Bay 6')).toBe('Broadview Station');
-    expect(shortStopName('Spadina Station Streetcar Platform')).toBe('Spadina Station');
-    expect(shortStopName('Queens Quay Loop at Lower Spadina Ave')).toBe('Queens Quay Loop');
   });
 });
 

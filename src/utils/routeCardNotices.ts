@@ -6,7 +6,7 @@ import {
   ROUTE_DATA_QUALITY_WARNING_MESSAGE, selectedRouteFilterNotice, selectedRouteOutsideFilterNotice,
   selectedRoutePartMeetsFilterNotice, unevenServiceNotice, variantsIncludedNotice, WEEKDAY_VARIATION_NOTICE,
 } from '../content/noticeCopy';
-import { activeHourRanges, partPeriodNoticeApplies, partPeriodNoticeHeadway, partPeriodOutside, periodTripRanges } from './periodActiveRanges';
+import { partPeriodNoticeApplies, partPeriodNoticeHeadway, partPeriodOutside, periodTripRanges } from './periodActiveRanges';
 import { routePartMeetsFilter } from './routeCardTrunk';
 import type { RouteCardModel } from './routeCardRows';
 
@@ -97,10 +97,10 @@ export function routeCardNotices(input: RouteCardNoticeInput): RouteCardNotices 
   // period notice says when it runs.
   let filter: CardNotice | null = null;
   if (input.selectedRouteOutOfFilter && !(model.doesNotRun && runsInPeriod)) {
-    const activePeriodRangeText = selectedPeriod
-      ? activeHourRanges(model.activeRangeDirections, Math.max(0, selectedPeriod.startHour - 1), selectedPeriod.endHour)
-        .map(([start, end]) => formatPeriodRangeLong(start, end)).join(', ')
-      : '';
+    // #1186: the hours named are the chart's, inside the period (TTC 31 overnight read "runs from 1–2 AM, but not
+    // throughout 2–6 AM" beside "runs only from 2–3 AM"). Never another direction's hours: with none of its own the notice
+    // doesn't show (MiWay 49 weekday midday read "runs every 45 min from 9 AM–3 PM, but not throughout … 9 AM–3 PM").
+    const activePeriodRangeText = chartRanges.map(([start, end]) => formatPeriodRangeLong(start, end)).join(', ');
     // #995: "but not throughout the selected period" only when service really stops short of it;
     // a route running the whole period that misses the frequency filter gets the filter notice.
     const showPartPeriodNotice = selectedPeriod != null
