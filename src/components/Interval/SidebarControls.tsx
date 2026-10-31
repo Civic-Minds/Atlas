@@ -615,7 +615,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   const disambigDetails = useMemo(() => {
     if (!disambiguationRoutes) return null;
     const details = disambiguationRoutes
-      .map(key => chooserRouteRow(key, nonCorridorLayers, agencies, colorMode))
+      .map(key => chooserRouteRow(key, nonCorridorLayers, agencies, colorMode, currentDay, period))
       .filter((route, index, routes) => {
         const displayKey = `${route.agencyName.trim().toLowerCase()}::${routeLabels({ shortName: route.shortName, longName: route.longName, routeType: route.routeType, agencySlug: route.agencySlug, agencyName: route.agencyName }).text.trim().toLowerCase().replace(/\s+/g, ' ')}`;
         return routes.findIndex(candidate => {
@@ -626,7 +626,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       .sort((a, b) => compareAgencyName(a.agencyName, b.agencyName)
         || compareRouteNumber(a.shortName, b.shortName, a.longName, b.longName));
     return details;
-  }, [disambiguationRoutes, nonCorridorLayers, colorMode, agencies]);
+  }, [disambiguationRoutes, nonCorridorLayers, colorMode, agencies, currentDay, period]);
 
   // A recent route saved by an older build has no route type; read it from the loaded route so the row names the route like every other list.
   const recentlyViewedWithType = useMemo(() => recentlyViewed.map(r => {
