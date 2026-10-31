@@ -29,7 +29,7 @@ async function main() {
   const results = await runWithConcurrency(candidates.map(c => () => checkCandidate(c, downloadFeed)), 4);
   for (const r of results) {
     const feeds = r.feeds.map(f => `${f.kind} ${f.recorded ?? '-'} -> ${f.peeked ?? (f.error ? `error: ${f.error}` : '-')}`).join(', ');
-    console.error(`  ${r.newer ? 'REFRESH' : 'skip   '} ${r.slug.padEnd(22)} ${r.reason} | ${feeds}`);
+    console.error(`  ${r.newer ? 'REFRESH' : 'skip   '} ${r.slug.padEnd(22)} ${r.reason} | ${feeds}${r.refusedAgain ? ' (same zips the release gate refused)' : ''}`);
   }
   const slugs = results.filter(r => r.newer).map(r => r.slug).sort();
   console.error(slugs.length ? `Newer feeds: ${slugs.join(' ')}` : 'No feed is newer: nothing to refresh');

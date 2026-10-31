@@ -35,7 +35,7 @@ import { buildAgencyIndex } from './agencyIndex.js';
 import { buildNightServiceIndex, extractNightServiceRoutes, mergeNightServiceIndex, type NightServiceIndexFile, type NightServiceRouteEntry } from './nightServiceIndex.js';
 import type { HeadwayByPeriod } from '../shared/config.js';
 import { R2_PUBLIC_URL } from '../shared/config.js';
-import { downloadFeed, peekFeedInfo, pickFeedSource } from './feedPeek.js';
+import { downloadFeed, feedSetSha256, peekFeedInfo, pickFeedSource } from './feedPeek.js';
 import { runWithConcurrency, todayUtcYmd } from './utils.js';
 import {
   clearOverrideUserFacingOnFeedChange,
@@ -298,6 +298,8 @@ interface AgencyEntry {
   lastFeedCheckAt?: string | null;
   /** A fetched timetable starting on this date waits until then (#1144). */
   heldFeedStart?: string | null;
+  /** CIV-1223: the zips the release gate last refused, so the daily check doesn't start the same refresh again. */
+  refusedFeedSha256?: string | null;
   /** CIV-1011 stage 4: the picked week's key at the last refresh (serviceWeekKey). */
   lastServiceWeek?: string | null;
   /** When Atlas first obtained the current main feed file (YYYYMMDD). */
@@ -580,6 +582,7 @@ async function refreshAgency(
   if (dropRefusal) {
     for (const key of Object.keys(agency)) delete (agency as unknown as Record<string, unknown>)[key];
     Object.assign(agency, agencyBeforeRebuild);
+    agency.refusedFeedSha256 = feedSetSha256([buf, ...supplementalFeeds.map(feed => feed.buf)]);
     writeLog(`  [warn] refused: ${dropRefusal} — retaining the live artifact\n`);
     return { summary: `refused (${dropRefusal})`, refused: true };
   }

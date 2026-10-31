@@ -7,9 +7,10 @@
 import { agencyTodayYmd, type SupplementalFeedMeta } from '../shared/feedAvailability.js';
 import { isZipBuffer } from './agencyFeeds.js';
 import { isCountryLaunchBlocked, resolveAgencyCountry, type AgencyCountrySource } from './countryLaunchGate.js';
-import { peekFeedInfo, pickFeedSource } from './feedPeek.js';
+import { feedSetSha256, peekFeedInfo, pickFeedSource } from './feedPeek.js';
 import { buildFeedCandidates, type FeedCandidate } from './feedSourceCandidates.js';
 import { resolveFeedUrl } from './feedUrl.js';
+import { isFeedExpired } from './refreshMeta.js';
 
 export interface ExpiryCheckAgency extends AgencyCountrySource {
   slug: string;
@@ -25,6 +26,10 @@ export interface ExpiryCheckAgency extends AgencyCountrySource {
   supplementalFeedUrls?: string[];
   lastSupplementalFeeds?: SupplementalFeedMeta[];
   nextServiceDatesFeedUrls?: string[];
+  /** A fetched timetable waits for this start date (#1144); the weekly refresh handles it. */
+  heldFeedStart?: string | null;
+  /** The zips the release gate last refused (feedSetSha256). */
+  refusedFeedSha256?: string | null;
 }
 
 export interface FeedToPeek {
@@ -40,6 +45,7 @@ export interface ExpiryCandidate {
   reason: string;
   timezone?: string | null;
   feeds: FeedToPeek[];
+  refusedFeedSha256?: string | null;
 }
 
 const later = (a: string | null | undefined, b: string | null | undefined): string | null =>
@@ -67,6 +73,8 @@ export function expiringFeedCandidates(
     // Refresh skips these without the launch flag, so a check would pick them every day.
     if (isCountryLaunchBlocked(resolveAgencyCountry(agency), agencies)) continue;
     const pending = pendingBySlug.get(agency.slug);
+    // #1144: a timetable that hasn't started is already archived and waits; refresh would only hold it again.
+    if (agency.heldFeedStart || pending?.heldFeedStart) continue;
     const mainRecorded = later(agency.lastPeekedExpiry ?? agency.lastFeedExpiry, pending?.lastPeekedExpiry ?? pending?.lastFeedExpiry);
     const supplementalRecorded = (agency.supplementalFeedUrls ?? []).map((_, i) =>
       later(agency.lastSupplementalFeeds?.[i]?.feedExpiry, pending?.lastSupplementalFeeds?.[i]?.feedExpiry));
@@ -87,22 +95,28 @@ export function expiringFeedCandidates(
     if (mainCandidates.length > 0) feeds.push({ kind: 'main', candidates: mainCandidates, recorded: mainRecorded });
     (agency.supplementalFeedUrls ?? []).forEach((url, i) =>
       feeds.push({ kind: 'supplemental', candidates: [{ kind: 'configured', url }], recorded: supplementalRecorded[i] }));
-    out.push({ slug: agency.slug, reason: reasons.join('; '), timezone: agency.timezone, feeds });
+    const refusedFeedSha256 = pending ? pending.refusedFeedSha256 : agency.refusedFeedSha256;
+    out.push({ slug: agency.slug, reason: reasons.join('; '), timezone: agency.timezone, feeds, ...(refusedFeedSha256 ? { refusedFeedSha256 } : {}) });
   }
   return out;
 }
 
 export interface PeekedFeed extends FeedToPeek { peeked: string | null; url: string | null; error?: string }
-export interface CheckResult { slug: string; reason: string; newer: boolean; feeds: PeekedFeed[] }
+export interface CheckResult { slug: string; reason: string; newer: boolean; feeds: PeekedFeed[]; refusedAgain?: boolean }
 
-/** A peeked end date counts only when it is later than a recorded one; nothing recorded, or nothing read, is no evidence. */
-export function feedIsNewer(peeked: string | null, recorded: string | null): boolean {
-  return peeked != null && recorded != null && peeked > recorded;
+/**
+ * A peeked end date counts only when it is later than a recorded one and hasn't passed: refresh skips a feed set that
+ * has all ended, so an ended zip would start the same refresh every day. Nothing recorded, or nothing read, is no
+ * evidence.
+ */
+export function feedIsNewer(peeked: string | null, recorded: string | null, expiryToday: string): boolean {
+  return peeked != null && recorded != null && peeked > recorded && !isFeedExpired(peeked, expiryToday);
 }
 
 /**
  * Peek one candidate's feeds. The main feed goes through refresh's own source choice (pickFeedSource: usable zips
- * only, an ended source gives way to a current one); a supplemental is read the way refresh loads it.
+ * only, an ended source gives way to a current one); a supplemental is read the way refresh loads it. The same zips
+ * the release gate refused last time are not named again until a different zip appears.
  */
 export async function checkCandidate(
   candidate: ExpiryCandidate,
@@ -111,9 +125,11 @@ export async function checkCandidate(
 ): Promise<CheckResult> {
   const expiryToday = agencyTodayYmd({ timezone: candidate.timezone }, now);
   const feeds: PeekedFeed[] = [];
+  const bufs: Buffer[] = [];
   for (const feed of candidate.feeds) {
     if (feed.kind === 'main') {
       const picked = await pickFeedSource(feed.candidates, { download, expiryToday, log: () => {} });
+      if (picked.buf) bufs.push(picked.buf);
       feeds.push({
         ...feed,
         url: picked.selectedCandidate?.url ?? null,
@@ -126,10 +142,14 @@ export async function checkCandidate(
     try {
       const buf = await download(url);
       if (!isZipBuffer(buf)) throw new Error(`not a zip file (${buf.length} bytes)`);
+      bufs.push(buf);
       feeds.push({ ...feed, url, peeked: (await peekFeedInfo(buf)).feedExpiry });
     } catch (e) {
       feeds.push({ ...feed, url: null, peeked: null, error: e instanceof Error ? e.message : String(e) });
     }
   }
-  return { slug: candidate.slug, reason: candidate.reason, newer: feeds.some(f => feedIsNewer(f.peeked, f.recorded)), feeds };
+  const newer = feeds.some(f => feedIsNewer(f.peeked, f.recorded, expiryToday));
+  const refusedAgain = newer && candidate.refusedFeedSha256 != null && bufs.length === candidate.feeds.length
+    && feedSetSha256(bufs) === candidate.refusedFeedSha256;
+  return { slug: candidate.slug, reason: candidate.reason, newer: newer && !refusedAgain, feeds, ...(refusedAgain ? { refusedAgain } : {}) };
 }

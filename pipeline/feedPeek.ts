@@ -2,6 +2,7 @@
  * Download and peek a feed without processing it, and refresh's choice among an agency's sources.
  */
 import { execFileSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
 import JSZip from 'jszip';
 import { effectiveFeedExpiry } from './feedFreshness.js';
 import type { FeedCandidate } from './feedSourceCandidates.js';
@@ -114,4 +115,14 @@ export async function pickFeedSource(
     }
   }
   return { buf, peekedExpiry, peekedVersion, selectedCandidate, firstCandidateError };
+}
+
+/**
+ * CIV-1223: one hash for the zips a refresh reads (the main feed, then each supplemental in config order), so a
+ * set the release gate refused is recognised when the same zips are served again.
+ */
+export function feedSetSha256(bufs: readonly Buffer[]): string {
+  const hash = createHash('sha256');
+  for (const buf of bufs) hash.update(createHash('sha256').update(buf).digest('hex'));
+  return hash.digest('hex');
 }
