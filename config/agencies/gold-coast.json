@@ -1,6 +1,7 @@
 {
   "slug": "gold-coast",
-  "name": "Gold Coast Transit District (Oxnard)",
+  "officialName": "Gold Coast Transit District",
+  "nameQualifier": "Oxnard",
   "websiteUrl": "http://www.goldcoasttransit.org",
   "center": [
     34.2396,

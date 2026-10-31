@@ -1,6 +1,7 @@
 {
   "slug": "sacrt",
-  "name": "Sacramento Regional Transit (SacRT)",
+  "officialName": "Sacramento Regional Transit",
+  "commonName": "SacRT",
   "center": [
     38.5939,
     -121.4032

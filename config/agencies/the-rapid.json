@@ -1,6 +1,7 @@
 {
   "slug": "the-rapid",
-  "name": "The Rapid (Grand Rapids)",
+  "officialName": "The Rapid",
+  "nameQualifier": "Grand Rapids",
   "websiteUrl": "http://www.ridetherapid.org",
   "region": "Michigan",
   "center": [

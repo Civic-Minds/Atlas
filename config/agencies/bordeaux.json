@@ -1,6 +1,7 @@
 {
   "slug": "bordeaux",
-  "name": "TBM (Bordeaux)",
+  "officialName": "TBM",
+  "nameQualifier": "Bordeaux",
   "region": "Nouvelle-Aquitaine",
   "center": [
     44.8378,

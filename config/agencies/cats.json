@@ -1,6 +1,7 @@
 {
   "slug": "cats",
-  "name": "Charlotte Area Transit System (CATS)",
+  "officialName": "Charlotte Area Transit System",
+  "commonName": "CATS",
   "websiteUrl": "http://www.ridetransit.org",
   "center": [
     35.23,

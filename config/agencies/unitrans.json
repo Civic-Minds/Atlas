@@ -1,6 +1,7 @@
 {
   "slug": "unitrans",
-  "name": "Unitrans (Davis)",
+  "officialName": "Unitrans",
+  "nameQualifier": "Davis",
   "websiteUrl": "http://unitrans.ucdavis.edu",
   "center": [
     38.5529,

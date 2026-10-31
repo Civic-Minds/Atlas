@@ -1,6 +1,7 @@
 {
   "slug": "septa",
-  "name": "SEPTA (Philadelphia)",
+  "officialName": "SEPTA",
+  "nameQualifier": "Philadelphia",
   "shortName": "SEPTA",
   "displayArea": "Philadelphia",
   "websiteUrl": "https://septa.org/",

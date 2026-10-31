@@ -1,6 +1,7 @@
 {
   "slug": "grt",
-  "name": "Grand River Transit (Waterloo Region)",
+  "officialName": "Grand River Transit",
+  "nameQualifier": "Waterloo Region",
   "websiteUrl": "http://www.grt.ca",
   "searchAliases": [
     "Kitchener",

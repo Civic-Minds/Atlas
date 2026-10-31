@@ -1,6 +1,7 @@
 {
   "slug": "abqride",
-  "name": "ABQ RIDE (Albuquerque)",
+  "officialName": "ABQ RIDE",
+  "nameQualifier": "Albuquerque",
   "websiteUrl": "https://abqride.com",
   "center": [
     35.09,

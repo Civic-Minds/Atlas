@@ -1,6 +1,7 @@
 {
   "slug": "tridelta",
-  "name": "Tri Delta Transit (Antioch)",
+  "officialName": "Tri Delta Transit",
+  "nameQualifier": "Antioch",
   "websiteUrl": "http://trideltatransit.com",
   "center": [
     37.9967,

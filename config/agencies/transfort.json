@@ -1,6 +1,7 @@
 {
   "slug": "transfort",
-  "name": "Transfort (Fort Collins)",
+  "officialName": "Transfort",
+  "nameQualifier": "Fort Collins",
   "center": [
     40.4552,
     -105.0936

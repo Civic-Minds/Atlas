@@ -1,6 +1,7 @@
 {
   "slug": "cowichan",
-  "name": "BC Transit (Cowichan Valley)",
+  "officialName": "BC Transit",
+  "nameQualifier": "Cowichan Valley",
   "displayArea": "Cowichan Valley",
   "websiteUrl": "https://www.bctransit.com/",
   "region": "British Columbia",

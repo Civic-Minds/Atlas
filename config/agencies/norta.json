@@ -1,6 +1,7 @@
 {
   "slug": "norta",
-  "name": "New Orleans Regional Transit Authority (NORTA)",
+  "officialName": "New Orleans Regional Transit Authority",
+  "commonName": "NORTA",
   "websiteUrl": "http://www.norta.com/",
   "center": [
     29.95,

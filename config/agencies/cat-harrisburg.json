@@ -1,6 +1,7 @@
 {
   "slug": "cat-harrisburg",
-  "name": "Capital Area Transit (Harrisburg)",
+  "officialName": "Capital Area Transit",
+  "nameQualifier": "Harrisburg",
   "websiteUrl": "https://www.rabbittransit.org/",
   "center": [
     40.27,

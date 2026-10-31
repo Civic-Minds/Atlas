@@ -1,6 +1,7 @@
 {
   "slug": "fast-ca",
-  "name": "Fairfield and Suisun Transit (FAST Transit)",
+  "officialName": "Fairfield and Suisun Transit",
+  "commonName": "FAST Transit",
   "center": [
     38.2422,
     -122.0853

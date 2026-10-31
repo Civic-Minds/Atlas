@@ -1,6 +1,7 @@
 {
   "slug": "sioux-falls",
-  "name": "Sioux Area Metro (SAM)",
+  "officialName": "Sioux Area Metro",
+  "commonName": "SAM",
   "websiteUrl": "https://www.siouxfalls.gov/resident-services/sam",
   "center": [
     43.542,

@@ -1,6 +1,7 @@
 {
   "slug": "quimperle",
-  "name": "TBK (Quimperlé)",
+  "officialName": "TBK",
+  "nameQualifier": "Quimperlé",
   "websiteUrl": "https://www.tbk.bzh/",
   "region": "Bretagne",
   "center": [

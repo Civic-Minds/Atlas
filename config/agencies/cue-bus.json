@@ -1,6 +1,7 @@
 {
   "slug": "cue-bus",
-  "name": "CUE Bus (Fairfax)",
+  "officialName": "CUE Bus",
+  "nameQualifier": "Fairfax",
   "displayArea": "Fairfax",
   "websiteUrl": "http://www.ridesystems.net",
   "center": [

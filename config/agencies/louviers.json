@@ -1,6 +1,7 @@
 {
   "slug": "louviers",
-  "name": "SEMO (Louviers)",
+  "officialName": "SEMO",
+  "nameQualifier": "Louviers",
   "region": "Normandie",
   "center": [
     49.2156,

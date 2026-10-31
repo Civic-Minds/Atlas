@@ -1,6 +1,7 @@
 {
   "slug": "appleton",
-  "name": "Valley Transit (Appleton/Fox Cities)",
+  "officialName": "Valley Transit",
+  "nameQualifier": "Appleton/Fox Cities",
   "websiteUrl": "https://myvalleytransit.com/",
   "region": "Wisconsin",
   "center": [

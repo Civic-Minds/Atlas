@@ -1,6 +1,7 @@
 {
   "slug": "smart-telluride",
-  "name": "San Miguel Authority for Regional Transportation (SMART)",
+  "officialName": "San Miguel Authority for Regional Transportation",
+  "commonName": "SMART",
   "center": [
     37.9375,
     -107.8123

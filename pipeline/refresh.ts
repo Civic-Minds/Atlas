@@ -37,6 +37,7 @@ import { buildAgencyIndex } from './agencyIndex.js';
 import { buildNightServiceIndex, extractNightServiceRoutes, mergeNightServiceIndex, type NightServiceIndexFile, type NightServiceRouteEntry } from './nightServiceIndex.js';
 import type { HeadwayByPeriod } from '../shared/config.js';
 import { R2_PUBLIC_URL } from '../shared/config.js';
+import { configFromIndexEntry } from '../shared/agencyRegistryName.js';
 import { parseCsv } from './parseGtfs.js';
 import { runWithConcurrency, todayUtcYmd } from './utils.js';
 import {
@@ -762,7 +763,8 @@ function bumpCacheBuild(): void {
 
 function writeAgencySource(agency: AgencyEntry): void {
   const sourcePath = resolve('config/agencies', `${agency.slug}.json`);
-  writeFileSync(sourcePath, JSON.stringify(agency, null, 2) + '\n');
+  // The config keeps the name fields; index.json's `name` is built from them (#1245).
+  writeFileSync(sourcePath, JSON.stringify(configFromIndexEntry(agency as unknown as Record<string, unknown>), null, 2) + '\n');
 }
 
 async function main() {

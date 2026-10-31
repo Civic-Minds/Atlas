@@ -1,6 +1,7 @@
 {
   "slug": "sbmtd",
-  "name": "Santa Barbara Metropolitan Transit District (MTD)",
+  "officialName": "Santa Barbara Metropolitan Transit District",
+  "commonName": "MTD",
   "websiteUrl": "https://sbmtd.gov",
   "center": [
     34.42,

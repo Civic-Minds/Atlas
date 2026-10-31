@@ -1,6 +1,7 @@
 {
   "slug": "ddot",
-  "name": "DDOT (Detroit)",
+  "officialName": "DDOT",
+  "nameQualifier": "Detroit",
   "region": "Michigan",
   "center": [
     42.3314,

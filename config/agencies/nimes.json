@@ -1,6 +1,7 @@
 {
   "slug": "nimes",
-  "name": "Tango (Nîmes)",
+  "officialName": "Tango",
+  "nameQualifier": "Nîmes",
   "region": "Occitanie",
   "center": [
     43.8367,

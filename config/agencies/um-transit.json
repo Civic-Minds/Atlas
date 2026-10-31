@@ -1,6 +1,7 @@
 {
   "slug": "um-transit",
-  "name": "University of Michigan Transit Services (Ann Arbor)",
+  "officialName": "University of Michigan Transit Services",
+  "nameQualifier": "Ann Arbor",
   "websiteUrl": "https://ltp.umich.edu",
   "center": [
     42.28,

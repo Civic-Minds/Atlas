@@ -1,6 +1,7 @@
 {
   "slug": "omnitrans",
-  "name": "OmniTrans (San Bernardino)",
+  "officialName": "OmniTrans",
+  "nameQualifier": "San Bernardino",
   "websiteUrl": "https://omnitrans.org",
   "center": [
     34.11,

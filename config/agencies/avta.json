@@ -1,6 +1,7 @@
 {
   "slug": "avta",
-  "name": "Antelope Valley Transit Authority (AVTA)",
+  "officialName": "Antelope Valley Transit Authority",
+  "commonName": "AVTA",
   "center": [
     34.6012,
     -118.1182

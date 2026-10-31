@@ -1,6 +1,7 @@
 {
   "slug": "quimper",
-  "name": "Qub (Quimper)",
+  "officialName": "Qub",
+  "nameQualifier": "Quimper",
   "region": "Bretagne",
   "center": [
     47.9975,

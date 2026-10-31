@@ -1,6 +1,7 @@
 {
   "slug": "le-havre",
-  "name": "LiA (Le Havre)",
+  "officialName": "LiA",
+  "nameQualifier": "Le Havre",
   "region": "Normandie",
   "center": [
     49.4944,

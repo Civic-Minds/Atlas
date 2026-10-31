@@ -1,6 +1,7 @@
 {
   "slug": "tulsa-transit",
-  "name": "Tulsa Transit (MTTA)",
+  "officialName": "Tulsa Transit",
+  "nameQualifier": "MTTA",
   "center": [
     36.12,
     -95.96

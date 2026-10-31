@@ -1,6 +1,7 @@
 {
   "slug": "upexpress",
-  "name": "UP Express (Toronto)",
+  "officialName": "UP Express",
+  "nameQualifier": "Toronto",
   "displayArea": "Toronto",
   "websiteUrl": "https://www.upexpress.com",
   "region": "Ontario",

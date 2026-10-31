@@ -1,6 +1,6 @@
 {
   "slug": "elmonte",
-  "name": "El Monte Transit",
+  "officialName": "El Monte Transit",
   "hiddenInProduction": true,
   "issueUrl": "https://github.com/Civic-Minds/Atlas/issues/634",
   "center": [

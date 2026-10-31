@@ -1,6 +1,7 @@
 {
   "slug": "vre",
-  "name": "Virginia Railway Express (VRE)",
+  "officialName": "Virginia Railway Express",
+  "commonName": "VRE",
   "displayArea": "Northern Virginia",
   "websiteUrl": "http://www.vre.org",
   "region": "Virginia",

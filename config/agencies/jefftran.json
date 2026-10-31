@@ -1,6 +1,7 @@
 {
   "slug": "jefftran",
-  "name": "Jefferson City Transit (JeffTran)",
+  "officialName": "Jefferson City Transit",
+  "commonName": "JeffTran",
   "center": [
     38.5792,
     -92.1729

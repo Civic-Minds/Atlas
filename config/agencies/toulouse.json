@@ -1,6 +1,7 @@
 {
   "slug": "toulouse",
-  "name": "Tisséo (Toulouse)",
+  "officialName": "Tisséo",
+  "nameQualifier": "Toulouse",
   "region": "Occitanie",
   "center": [
     43.6047,

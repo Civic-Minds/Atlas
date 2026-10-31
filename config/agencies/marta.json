@@ -1,6 +1,7 @@
 {
   "slug": "marta",
-  "name": "MARTA (Atlanta)",
+  "officialName": "MARTA",
+  "nameQualifier": "Atlanta",
   "shortName": "MARTA",
   "websiteUrl": "https://www.itsmarta.com",
   "center": [

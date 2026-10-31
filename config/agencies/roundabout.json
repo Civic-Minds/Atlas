@@ -1,6 +1,7 @@
 {
   "slug": "roundabout",
-  "name": "Clear Creek County Transit (RoundAbout)",
+  "officialName": "Clear Creek County Transit",
+  "commonName": "RoundAbout",
   "websiteUrl": "https://www.clearcreekcounty.us/857/RoundAbout-Bus-Service",
   "region": "Colorado",
   "center": [

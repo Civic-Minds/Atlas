@@ -1,6 +1,7 @@
 {
   "slug": "cincinnatimetro",
-  "name": "Cincinnati Metro (SORTA)",
+  "officialName": "Cincinnati Metro",
+  "nameQualifier": "SORTA",
   "websiteUrl": "http://www.go-metro.com",
   "center": [
     39.1,

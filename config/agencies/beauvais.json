@@ -1,6 +1,7 @@
 {
   "slug": "beauvais",
-  "name": "Corolis (Beauvais)",
+  "officialName": "Corolis",
+  "nameQualifier": "Beauvais",
   "websiteUrl": "https://www.corolis.fr",
   "region": "Hauts-de-France",
   "center": [

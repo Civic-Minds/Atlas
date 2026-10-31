@@ -1,6 +1,7 @@
 {
   "slug": "cascades-east",
-  "name": "Cascades East Transit (Bend, OR)",
+  "officialName": "Cascades East Transit",
+  "nameQualifier": "Bend, OR",
   "websiteUrl": "http://cascadeseasttransit.com/",
   "region": "Oregon",
   "center": [

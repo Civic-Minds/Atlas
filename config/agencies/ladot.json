@@ -1,6 +1,7 @@
 {
   "slug": "ladot",
-  "name": "Los Angeles Department of Transportation (LADOT/DASH)",
+  "officialName": "Los Angeles Department of Transportation",
+  "commonName": "LADOT/DASH",
   "websiteUrl": "https://www.ladottransit.com/",
   "center": [
     34.05,

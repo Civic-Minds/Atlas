@@ -1,6 +1,7 @@
 {
   "slug": "votran",
-  "name": "Votran (Volusia County)",
+  "officialName": "Votran",
+  "nameQualifier": "Volusia County",
   "center": [
     29.1432,
     -81.0746

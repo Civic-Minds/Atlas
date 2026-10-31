@@ -1,6 +1,7 @@
 {
   "slug": "citibus",
-  "name": "Citibus (Lubbock)",
+  "officialName": "Citibus",
+  "nameQualifier": "Lubbock",
   "websiteUrl": "https://citibus.com/citibus-pass/",
   "center": [
     33.59,

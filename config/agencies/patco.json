@@ -1,6 +1,7 @@
 {
   "slug": "patco",
-  "name": "PATCO Speedline (Philadelphia-Camden)",
+  "officialName": "PATCO Speedline",
+  "nameQualifier": "Philadelphia-Camden",
   "websiteUrl": "https://www.ridepatco.org/",
   "center": [
     39.95,

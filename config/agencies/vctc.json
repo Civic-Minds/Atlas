@@ -1,6 +1,7 @@
 {
   "slug": "vctc",
-  "name": "Ventura County Transportation Commission (VCTC Intercity)",
+  "officialName": "Ventura County Transportation Commission",
+  "commonName": "VCTC Intercity",
   "center": [
     34.27,
     -119.23

@@ -1,6 +1,7 @@
 {
   "slug": "uta",
-  "name": "Utah Transit Authority (UTA)",
+  "officialName": "Utah Transit Authority",
+  "commonName": "UTA",
   "websiteUrl": "http://www.rideuta.com",
   "center": [
     40.76,

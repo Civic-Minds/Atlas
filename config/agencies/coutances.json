@@ -1,6 +1,7 @@
 {
   "slug": "coutances",
-  "name": "Cosibus (Coutances)",
+  "officialName": "Cosibus",
+  "nameQualifier": "Coutances",
   "region": "Normandie",
   "center": [
     49.0454,

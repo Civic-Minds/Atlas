@@ -4,6 +4,7 @@
  * Surfaces call agencyNames(...) and pick a form; fitAgencyName applies the one length rule.
  */
 import agencyShortNameData from '../../shared/data/agency-short-names.json';
+import { registryAgencyName, type AgencyNameFields } from '../../shared/agencyRegistryName';
 
 /**
  * List-label standard for registry names:
@@ -228,6 +229,11 @@ function isMixedCaseCode(s: string): boolean {
   return !/[\s,]/.test(s) && (s.match(/[A-Z]/g)?.length ?? 0) >= 2;
 }
 
+/** True when a bracket in a registry name is the agency's common name ("ETS", "The M"), not a place or service ("Mississauga", "Trains") (#1245). */
+export function bracketIsCommonName(bracket: string): boolean {
+  return !isPlaceAbbrev(bracket) && (looksLikeBrandCode(bracket) || isMixedCaseCode(bracket));
+}
+
 /**
  * The agency's name in a card's back link ("← Valley Metro"): shortenedName, except that a bracketed city
  * never stands in for the name ("Valley Metro (Phoenix)" → "Valley Metro", not "Phoenix"). A bracketed brand
@@ -383,8 +389,11 @@ function agencyRowName(name: string): string {
   return fitAgencyName(own, CONFIG_SHORT_NAMES.get(name.trim()) ?? own).text;
 }
 
-/** An agency as the name forms read it: the registry name, plus the places that can stand beside it. */
-export type AgencyNameInput = string | { name: string; cities?: string[]; displayArea?: string };
+/**
+ * An agency as the name forms read it: the registry name, or its name fields (#1245: the official name, plus its common
+ * name or qualifier), plus the places that can stand beside it.
+ */
+export type AgencyNameInput = string | ({ name: string; cities?: string[]; displayArea?: string } & Partial<AgencyNameFields>);
 
 /** Every form of an agency's name, from one place (CIV-998, CIV-1023). Callers pick the form by name, not by helper. */
 export interface AgencyNames {
@@ -411,7 +420,9 @@ export interface AgencyNames {
 }
 
 export function agencyNames(agency: AgencyNameInput): AgencyNames {
-  const { name, cities, displayArea } = typeof agency === 'string' ? { name: agency, cities: undefined, displayArea: undefined } : agency;
+  const { cities, displayArea } = typeof agency === 'string' ? { cities: undefined, displayArea: undefined } : agency;
+  // The name fields when the agency has them (#1245); the forms below read the registry form they build.
+  const name = typeof agency === 'string' ? agency : agency.officialName ? registryAgencyName(agency as AgencyNameFields) : agency.name;
   const { primary: full, secondary: place } = displayParts(name, cities, displayArea);
   const row = agencyRowName(name);
   const fallback = typeof agency === 'string' ? undefined : agency.displayArea ?? agency.cities?.[0]?.split(',')[0]?.trim();

@@ -1,6 +1,7 @@
 {
   "slug": "rfta",
-  "name": "Roaring Fork Transportation Authority (RFTA)",
+  "officialName": "Roaring Fork Transportation Authority",
+  "commonName": "RFTA",
   "websiteUrl": "http://www.rfta.com/",
   "center": [
     39.4,

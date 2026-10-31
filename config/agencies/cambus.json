@@ -1,6 +1,7 @@
 {
   "slug": "cambus",
-  "name": "CAMBUS (University of Iowa)",
+  "officialName": "CAMBUS",
+  "nameQualifier": "University of Iowa",
   "websiteUrl": "https://transportation.uiowa.edu/cambus",
   "center": [
     41.66,

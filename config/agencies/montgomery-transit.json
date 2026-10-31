@@ -1,6 +1,7 @@
 {
   "slug": "montgomery-transit",
-  "name": "Montgomery Transit (The M)",
+  "officialName": "Montgomery Transit",
+  "commonName": "The M",
   "websiteUrl": "https://themtransit.com/",
   "center": [
     32.37,

@@ -1,6 +1,7 @@
 {
   "slug": "pvpta",
-  "name": "Palos Verdes Peninsula Transit Authority (PVPTA)",
+  "officialName": "Palos Verdes Peninsula Transit Authority",
+  "commonName": "PVPTA",
   "websiteUrl": "http://www.palosverdes.com/pvtransit/",
   "center": [
     33.74,

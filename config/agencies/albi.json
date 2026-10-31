@@ -1,6 +1,7 @@
 {
   "slug": "albi",
-  "name": "LibéA (Albi)",
+  "officialName": "LibéA",
+  "nameQualifier": "Albi",
   "region": "Occitanie",
   "center": [
     43.9298,

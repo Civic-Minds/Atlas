@@ -1,6 +1,7 @@
 {
   "slug": "start",
-  "name": "Stanislaus Regional Transit (StaRT)",
+  "officialName": "Stanislaus Regional Transit",
+  "commonName": "StaRT",
   "websiteUrl": "http://www.stanrta.org",
   "center": [
     37.64,

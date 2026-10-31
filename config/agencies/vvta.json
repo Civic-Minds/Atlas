@@ -1,6 +1,7 @@
 {
   "slug": "vvta",
-  "name": "Victor Valley Transit Authority (VVTA)",
+  "officialName": "Victor Valley Transit Authority",
+  "commonName": "VVTA",
   "center": [
     34.5885,
     -117.2393
