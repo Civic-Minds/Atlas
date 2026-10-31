@@ -88,6 +88,13 @@ jobs:
           CATA_LANSING_API_KEY: ${{ secrets.CATA_LANSING_API_KEY }}
           GRAND_EST_API_KEY: ${{ secrets.GRAND_EST_API_KEY }}
 
+      # The refresh changes config/agencies and public/data/index.json; the catalogs are generated from
+      # them, and CI checks they match (check:agency-index), so regenerate both before the pull request
+      # (#1262: #1238 and #1259 failed that check). As in rebuild-release, a failed build must not lose
+      # the refreshed metadata itself.
+      - name: Regenerate the agency index and catalogs
+        run: npm run build:agency-index && npm run build:agency-catalog || echo "::warning::index/catalog rebuild failed; the refresh PR may fail the drift check"
+
       # Persist feed metadata through the protected-branch workflow before the
       # independent PMTiles verification gate.
       - name: Open or update refresh pull request
