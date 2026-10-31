@@ -8,6 +8,7 @@ import { delayAmount, headwayAboutRange, headwayEvery, headwayEveryRange, headwa
 import { routeAllDayContract, routeContract, routeValueIsOneGap } from './stretchCard';
 import { clockTime } from '../../shared/timeText';
 import { LIMITED_SERVICE_LABEL, NO_REGULAR_SERVICE_LABEL, NO_REGULAR_SERVICE_SHORT_LABEL } from '../content/noticeCopy';
+import { routeCardLowestHeadway } from './routeListRange';
 
 export { pairedTripPeriodFloor, pairedTripSafeHeadway } from './pairedTripFloor';
 
@@ -362,7 +363,13 @@ export function routeListDisplay(features: readonly ShapeProperties[], period: T
   const { headway, shared } = routeListCadence(features, period);
   const display: RouteListDisplay = { headway, limited: routeListDisplayLimited(features, period) };
   if (routeListNoRegularService(features, period)) display.noRegular = true;
-  if (shared != null) display.sharedHeadway = shared;
+  if (shared != null && headway != null) {
+    // #1231: the range's low end is the lowest number the route card shows, so the list never names a shared value the card
+    // does not (TTC 504 midday read 8–10 beside the card's Shared stretch every 5). A card showing no number keeps the range.
+    const lowest = routeCardLowestHeadway(features, period);
+    const low = lowest === undefined ? shared : lowest;
+    if (low < headway) display.sharedHeadway = low;
+  }
   return display;
 }
 
