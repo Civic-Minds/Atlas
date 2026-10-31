@@ -13,7 +13,7 @@ describe('CardHelpNotice', () => {
 
   it('shows the sentence alone when there is no target', () => {
     render(<CardHelpNotice message={unevenServiceNotice(30)} />);
-    expect(screen.getByText('This route runs all period, but the gaps between trips vary, up to 30 min.')).toBeTruthy();
+    expect(screen.getByText('Gaps between trips can be up to 30 min.')).toBeTruthy();
     expect(screen.queryByText(/Learn more/)).toBeNull();
   });
 });
