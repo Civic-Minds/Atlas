@@ -84,7 +84,7 @@ describe('toCsv', () => {
 describe('running time, extra wait, service delivered', () => {
   it('says scheduled, usual and 1-in-10 in plain words, and does not guess from a handful of trips', () => {
     expect(runningTimeSentence('Eastbound', { n: 120, scheduledMin: 22, typicalMin: 27.2, p90Min: 34.4, overMin: 5 })).toBe('Eastbound: scheduled 22 min · usually 27 · 1 in 10 over 34 min.');
-    expect(runningTimeSentence('Eastbound', { n: 120, scheduledMin: 22, typicalMin: 27, p90Min: 34, overMin: 5 }, 17)).toMatch(/at 5pm\.$/);
+    expect(runningTimeSentence('Eastbound', { n: 120, scheduledMin: 22, typicalMin: 27, p90Min: 34, overMin: 5 }, 17)).toMatch(/at 5 PM\.$/);
     expect(runningTimeSentence('Eastbound', { n: 10, scheduledMin: 22, typicalMin: 27, p90Min: 34, overMin: 5 })).toMatch(/too few trips \(10\)/);
     expect(runningTimeSentence('Eastbound', null)).toMatch(/too few trips were measured over the main stretch/);
   });

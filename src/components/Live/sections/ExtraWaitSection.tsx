@@ -4,6 +4,7 @@ import { isMajorStop, shortStopName } from '../../../utils/stopLabel';
 import ProfileBars, { sharedScale, type ProfilePoint } from '../../charts/ProfileBars';
 import SortableDataTable from '../../ui/SortableDataTable';
 import Section from './Section';
+import { headwayExactAmount } from '../../../utils/headwayText';
 import { dirsOf, num } from './figures';
 
 /** The one derivation of the extra-wait figures, so every surface draws the same numbers. */
@@ -81,7 +82,7 @@ export default function ExtraWaitSection({ v3, band, dir, detail, boundary }: { 
             { key: 'stop', header: 'Stop', rowHeader: true, className: full ? 'font-normal break-words' : 'font-normal', cell: s => (full ? <span title={s.name}>{s.name}</span> : s.name) },
             ...(dir == null ? [{ key: 'dir', header: 'Direction', cell: (s: (typeof worst)[number]) => v3.directionLabels[String(s.directionId)] }] : []),
             { key: 'extra', header: 'Extra wait', worst: s => s.extraWaitMin, cell: s => `${num(s.extraWaitMin)} min` },
-            { key: 'sched', header: 'Scheduled every', narrowHide: true, cell: s => `${num(s.scheduledGapMin)} min` },
+            { key: 'sched', header: 'Scheduled every', narrowHide: true, cell: s => headwayExactAmount(s.scheduledGapMin) },
             { key: 'n', header: 'Gaps', narrowHide: true, cell: s => s.gaps.toLocaleString() },
           ]}
         />

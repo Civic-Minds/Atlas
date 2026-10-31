@@ -1,4 +1,5 @@
 import { dateRangeText } from './liveDashboard';
+import { clockTime } from './timeText';
 
 /**
  * Approved Live wording used in more than one place (tiles, page subtitles, link previews), kept here so the copies
@@ -66,11 +67,11 @@ export function coveredRoutesText(agency: string, routes: ReadonlyArray<{ mode?:
   return `${routes.length} ${agency.toUpperCase()} ${streetcar ? 'streetcar ' : ''}route${routes.length === 1 ? '' : 's'}`;
 }
 
-/** "Built Oct 16, 6:12 pm", in Toronto time (the agencies Live covers), from an ISO timestamp. */
+/** "Built Oct 16, 6:12 PM", in Toronto time (the agencies Live covers), from an ISO timestamp. */
 export function builtText(iso: string): string {
-  const parts = new Intl.DateTimeFormat('en-US', { timeZone: 'America/Toronto', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true }).formatToParts(new Date(iso));
+  const parts = new Intl.DateTimeFormat('en-US', { timeZone: 'America/Toronto', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', hourCycle: 'h23' }).formatToParts(new Date(iso));
   const p = (t: string) => parts.find(x => x.type === t)?.value ?? '';
-  return `Built ${p('month')} ${p('day')}, ${p('hour')}:${p('minute')} ${p('dayPeriod').toLowerCase()}`;
+  return `Built ${p('month')} ${p('day')}, ${clockTime(Number(p('hour')) * 60 + Number(p('minute')))}`;
 }
 
 /** The four group labels of "How this is measured", the same on every Live page. */

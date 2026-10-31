@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { periodKeyForHour } from '../../../shared/config';
+import { clockTime, hourTime } from '../../../shared/timeText';
 import type { DashboardBand } from '../../../shared/liveDashboard';
 import { liveStringsDataUrl } from '../../lib/liveReportData';
 import { isMajorStop, shortStopName } from '../../utils/stopLabel';
@@ -34,8 +35,8 @@ export function useStrings(agency: string, route: string, date: string | null): 
 
 const WIDE = { m: { left: 150, right: 20, top: 12, bottom: 28 }, h: 440 };
 const SMALL = { m: { left: 8, right: 8, top: 6, bottom: 22 }, h: 250 };
-export const clock = (h: number) => `${Math.floor(h) % 12 === 0 ? 12 : Math.floor(h) % 12}${Math.floor(h) % 24 < 12 ? ' am' : ' pm'}`;
-export const clockAt = (h: number) => { const m = Math.round((h - Math.floor(h)) * 60); const hh = Math.floor(h) + (m === 60 ? 1 : 0); return `${hh % 12 === 0 ? 12 : hh % 12}:${String(m === 60 ? 0 : m).padStart(2, '0')} ${hh % 24 < 12 ? 'am' : 'pm'}`; };
+export const clock = (h: number) => hourTime(Math.floor(h));
+export const clockAt = (h: number) => clockTime(h * 60);
 
 /** Hours of the local service day for each trip point (can pass 24 after midnight). */
 export function dayStartEpoch(base: number, timeZone: string): number {

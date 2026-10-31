@@ -1,5 +1,6 @@
 import { useId, useState } from 'react';
 import { SPARKLINE_HOUR_LABELS } from '../../../shared/config';
+import { hourTime } from '../../../shared/timeText';
 import { HOUR_TO_PERIOD, hoverOfHour, liveChartHours, type HourHover } from '../../utils/sparklinePeriods';
 import PeriodBand from './PeriodBand';
 import DataTable from '../ui/DataTable';
@@ -17,7 +18,7 @@ const H = 64;
 export const AXIS_W = 36;
 /** Height of the departures band under the bars. */
 const BAND_H = 12;
-const clock = (h24: number) => `${h24 % 12 === 0 ? 12 : h24 % 12} ${h24 % 24 < 12 ? 'am' : 'pm'}`;
+const clock = hourTime;
 
 /**
  * A small bar for each hour of the day, in the route card's sparkline shape (same hour order, narrow rounded bars, 90%
@@ -47,7 +48,7 @@ export default function HourSpark({ values, scale, color, barColor, format, aria
   unit: string;
   valueHeader: string;
   minN?: number;
-  /** The hover line for an hour, replacing the default "2 pm 5%, 167 departures" (the late charts: lateHourLine). */
+  /** The hover line for an hour, replacing the default "2 PM 5%, 167 departures" (the late charts: lateHourLine). */
   hoverLine?: (clock: string, v: HourValue) => string;
   /** Draw the departures in each hour as a thin band under the bars, on its own scale (the late charts, CIV-282). */
   departures?: boolean;

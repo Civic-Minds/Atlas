@@ -2,7 +2,7 @@ import React, { forwardRef } from 'react';
 import { nameCase } from '../../utils/format';
 import { CardReportButton, HeadwayBadge, LimitedBadge } from './cardUi';
 import { reportDetails } from '../../utils/reportIssue';
-import { headwayEveryRange } from '../../utils/headwayText';
+import { headwayEvery, headwayEveryRange } from '../../utils/headwayText';
 import { NO_REGULAR_SERVICE_SHORT_LABEL } from '../../utils/effectiveHeadway';
 import { LIMITED_SERVICE_LABEL } from '../../content/noticeCopy';
 import type { NearbyRoute } from '../../hooks/useNearbyRoutes';
@@ -34,7 +34,7 @@ export function nearYouReportDetails(routes: readonly NearbyRoute[], point: { la
     ['Period', period ?? 'unknown'],
     '**Listed:**',
     ...(routes.length > 0
-      ? routes.map(r => `- ${r.agencyName} ${r.displayShortName ?? r.routeShortName}${r.routeLongName ? ` ${r.routeLongName}` : ''} (${r.rKey}): ${r.limited ? 'limited' : r.noRegular ? 'no regular service' : r.headway != null ? `every ${r.headway} min` : 'no value'}, nearest stop ${r.nearestStopName}, ${fmtDist(r.distanceMeters)}`)
+      ? routes.map(r => `- ${r.agencyName} ${r.displayShortName ?? r.routeShortName}${r.routeLongName ? ` ${r.routeLongName}` : ''} (${r.rKey}): ${r.limited ? 'limited' : r.noRegular ? 'no regular service' : r.headway != null ? headwayEvery(r.headway) : 'no value'}, nearest stop ${r.nearestStopName}, ${fmtDist(r.distanceMeters)}`)
       : ['- Nothing listed']),
   ]);
 }

@@ -238,7 +238,7 @@ const DAY_GROUP_LABELS: Record<string, string> = {
 export interface OnDemandHoursLine {
   dayTypes: DayType[];
   text: string;
-  /** The line's days ("Mon–Fri") and its times in words ("6:00 a.m.–4:00 p.m.", or "No service"), for the hours rows. */
+  /** The line's days ("Mon–Fri") and its times in words ("6 AM–4 PM", or "No service"), for the hours rows. */
   days: string;
   times: string;
   windows: readonly OnDemandHours[];

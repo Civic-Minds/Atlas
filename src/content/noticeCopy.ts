@@ -10,7 +10,7 @@
 import { joinList, plural } from '../../shared/overflowText';
 import { formatStoredDate } from '../utils/format';
 import { agencyNames } from '../utils/agencyName';
-import { delayAmount, headwayAbout } from '../utils/headwayText';
+import { delayAmount, headwayAbout, headwayOrBetter } from '../utils/headwayText';
 import { onDemandStopZoneNames, resolveOnDemandZone, type OnDemandPickupStop, type OnDemandServiceDetails } from '../../shared/onDemandAvailability';
 
 // N2 timetable-ended, N3 manual-timetable-ended
@@ -150,7 +150,7 @@ export const NO_MATCHING_AGENCIES = NO_AGENCIES_MATCH;
 // N42 in-view-no-routes: N29 with no mode pill.
 export const NO_MATCHING_ROUTES = noRoutesMatchText();
 // N37 no-routes-nearby
-export const NO_ROUTES_NEARBY = 'No routes within 500 m';
+export const NO_ROUTES_NEARBY = 'No routes within 500 m.';
 // N44 no-suggestions
 export const NO_ROUTE_SUGGESTIONS = 'No route suggestions in this area.';
 // N43 no-agencies-in-view
@@ -356,7 +356,7 @@ export const STOP_NOT_FOUND = "This stop couldn't be found. It may have been mov
 // N51 night-failed (Ryan)
 export const NIGHT_LOAD_FAILED = loadErrorText('overnight service');
 /** N52 night-empty (Ryan): the Night view's own rule, fixed at 2-5 AM (FREQUENCY_RULES rule 10), at its 30 or 60. A real search with no match keeps N52's old text. */
-export const nightNoRoutesNotice = (frequency: number) => `No routes here run every ${frequency} min or better from 2–5 AM.`;
+export const nightNoRoutesNotice = (frequency: number) => `No routes here run ${headwayOrBetter(frequency)} from 2–5 AM.`;
 // N54 history-failed (Ryan; with RETRY_HINT in the sidebar)
 export const HISTORY_LOAD_FAILED = loadErrorText('history');
 // N55 history-route-not-covered (Ryan)

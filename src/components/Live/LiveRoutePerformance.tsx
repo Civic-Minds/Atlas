@@ -7,6 +7,7 @@ import { useSegmentDelay } from '../../hooks/useSegmentDelay';
 import { syncUrlParams } from '../../utils/syncUrlParams';
 import { LIVE_MAP_URL, currentSearch, linkUpdate, readLink } from '../../utils/urlSchema';
 import { periodKeyForHour } from '../../../shared/config';
+import { clockTime } from '../../../shared/timeText';
 import {
   MIN_DAYS, MIN_SEGMENT_TRIPS, SEGMENT_BAND_OPTIONS, halfMinutes, halfMinutesDown, stopNameParts, usableStandingStill,
   type SegmentBand, type SegmentDelayData,
@@ -53,7 +54,8 @@ function torontoHour(d = new Date()): number {
 }
 
 function torontoTime(d = new Date()): string {
-  return new Intl.DateTimeFormat('en-CA', { hour: 'numeric', minute: '2-digit', timeZone: 'America/Toronto' }).format(d).replace('a.m.', 'am').replace('p.m.', 'pm');
+  const minute = Number(new Intl.DateTimeFormat('en-CA', { minute: 'numeric', timeZone: 'America/Toronto' }).format(d));
+  return clockTime(torontoHour(d) * 60 + minute);
 }
 
 function currentBand(): SegmentBand {

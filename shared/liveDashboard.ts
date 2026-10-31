@@ -5,6 +5,7 @@
  */
 import { hasLiveAnalysis } from './livePollingConfig.js';
 import { tenth } from './liveFormat.js';
+import { hourTime } from './timeText.js';
 
 export interface AdherenceCounts {
   n: number;
@@ -348,7 +349,7 @@ export function toCsv(header: readonly string[], rows: ReadonlyArray<ReadonlyArr
 // --- running time, extra wait, service delivered and the week-over-week comparison ---
 
 const m1 = tenth;
-const hourName = (h: number) => `${h % 12 === 0 ? 12 : h % 12}${h % 24 < 12 ? 'am' : 'pm'}`;
+const hourName = hourTime;
 
 /** "Scheduled 22 min · usually 27 · 1 in 10 over 34 min" (with the hour when one is given). */
 export function runningTimeSentence(label: string, r: RunTimeFigures | null | undefined, atHour?: number): string {
