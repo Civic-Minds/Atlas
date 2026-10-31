@@ -192,7 +192,7 @@ export default function AboutDocsPage() {
           <Section id="data-flow" title="Pipeline">
             <p>Atlas primarily ingests General Transit Feed Specification (GTFS) schedule data published by transit agencies and transit data providers. An official agency feed is preferred; a provider-hosted mirror or fallback may be used when the primary source is unavailable.</p>
             <ol className="list-decimal pl-5 space-y-1">
-              <li>Feeds are downloaded and checked on a weekly refresh schedule.</li>
+              <li>Every feed is checked weekly. A feed whose schedule ends within the next week is also checked daily, until a newer schedule appears.</li>
               <li>The pipeline identifies the schedule periods that are active around the refresh date.</li>
               <li>Routes, stops, calendars, trips, stop times, and shapes are normalized into a shared model.</li>
               <li>Frequency metrics and quality signals are calculated from the normalized schedule.</li>
