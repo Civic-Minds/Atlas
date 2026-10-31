@@ -66,7 +66,7 @@ if (mod.BUILD_FLAGS.agencyPages) {
     }
     for (const a of agencies) {
       const data = agencyPageData(a, agencies, AGENCY_PAGE_DATA.generatedAt, areaOf.get(a.slug), areaMembers.get(a.slug));
-      const seo = resolveAgencySeo(a, { mode: mod.BUILD_MODE, origin, intro: data.intro });
+      const seo = resolveAgencySeo(a, { mode: mod.BUILD_MODE, origin, intro: data.intro, description: data.description });
       writePage(agencyPagePath(a.slug), seo, mod.renderAgencyPage(data), { id: AGENCY_DATA_SCRIPT_ID, value: data }, agencyPageJsonLd(a, seo.canonicalUrl, origin, data.area, data.intro));
       urls.push(seo.canonicalUrl);
     }

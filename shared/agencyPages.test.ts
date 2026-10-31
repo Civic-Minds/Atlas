@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import {
-  agencyIntroSentence, introName, agencySpansArea, namesList, agencyBreadcrumbs, agencyDatesText, agencyLeadSentence, agencyMapHref, agencyPageDescription, agencyPageH1, agencyPageJsonLd, hasMiddayService,
+  agencyIntroSentence, agencyMention, agencyTitle, sharedOfficialNames, agencySpansArea, namesList, agencyBreadcrumbs, agencyDatesText, agencyLeadSentence, agencyMapHref, agencyPageDescription, agencyPageH1, agencyPageJsonLd, hasMiddayService,
   agencyPageData, agencyPagePath, agencyPageTitle, agencyStats, bandCounts, formatDataDate, nearbyAgencies, resolveAgencySeo, trimRedundantCity,
   type AgencyPageRoute, type AgencyPageSummary, bestRoute, modesText, listingEndedNotice, listingEndHasPassed,
 } from './agencyPages';
@@ -20,9 +20,12 @@ describe('agency page text', () => {
   it('uses the agreed title and H1', () => {
     expect(agencyPageTitle(TTC)).toBe('TTC frequency: how often routes run | Transit Atlas');
     expect(agencyPageH1(TTC)).toBe('Toronto Transit Commission');
-    expect(agencyPageH1({ name: 'Hamilton Street Railway', city: 'Hamilton' })).toBe('Hamilton Street Railway');
-    expect(agencyPageH1({ name: 'University of Michigan Transit Services (Ann Arbor)', city: 'Ann Arbor' })).toBe('University of Michigan Transit Services');
-    expect(agencyPageH1({ name: 'GO Transit', city: 'Toronto' })).toBe('GO Transit');
+    expect(agencyPageH1({ name: 'Hamilton Street Railway' })).toBe('Hamilton Street Railway');
+    expect(agencyPageH1({ name: 'University of Michigan Transit Services (Ann Arbor)' })).toBe('University of Michigan Transit Services');
+    // #1245: the heading is the card's title, never the registry form with its bracket.
+    expect(agencyPageH1({ name: 'Montgomery Transit (The M)' })).toBe(agencyTitle({ name: 'Montgomery Transit (The M)' }));
+    expect(agencyPageH1({ name: 'Montgomery Transit (The M)' })).not.toContain('(');
+    expect(agencyPageH1({ name: 'GO Transit' })).toBe('GO Transit');
   });
 
   it('writes a standalone lead sentence from the route numbers', () => {
@@ -181,12 +184,20 @@ describe('dates', () => {
     expect(listingEndHasPassed('20261028', agencyTodayYmd({ timezone: 'America/New_York' }, new Date('2026-10-28T03:00:00Z')))).toBe(false);
   });
 
-  it('drops a trailing city from the agency name only when the sentence names that place', () => {
-    expect(introName('University of Michigan Transit Services (Ann Arbor)', 'Ann Arbor')).toBe('University of Michigan Transit Services');
-    expect(introName('University of Michigan Transit Services (Ann Arbor)', 'the Greater Toronto and Hamilton Area')).toBe('University of Michigan Transit Services (Ann Arbor)');
-    expect(introName('Alameda-Contra Costa Transit District (AC Transit)', 'Berkeley')).toBe('Alameda-Contra Costa Transit District (AC Transit)');
-    expect(introName('ABQ RIDE (Albuquerque)', 'Albuquerque')).toBe('ABQ RIDE');
-    expect(introName('Toronto Transit Commission', 'Toronto')).toBe('Toronto Transit Commission');
+  it('names agencies through agencyNames, never with a raw bracket (#1245)', () => {
+    expect(agencyTitle({ name: 'University of Michigan Transit Services (Ann Arbor)' })).toBe('University of Michigan Transit Services');
+    expect(agencyTitle({ name: 'ABQ RIDE (Albuquerque)' })).toBe('ABQ RIDE');
+    expect(agencyTitle({ name: 'Toronto Transit Commission' })).toBe('Toronto Transit Commission');
+    expect(agencyMention({ name: 'Toronto Transit Commission' })).toBe('TTC');
+    expect(agencyMention({ name: 'San Francisco Municipal Transportation Agency (SFMTA - Muni)' })).toBe('Muni');
+    expect(agencyMention({ name: 'Capital Metro (Austin)' })).toBe('Capital Metro');
+  });
+
+  it('keeps the place of agencies that share an official name (#1245)', () => {
+    const shared = sharedOfficialNames([{ name: 'BC Transit (Kelowna)' }, { name: 'BC Transit (Victoria)' }, { name: 'MiWay (Mississauga)' }]);
+    expect([...shared]).toEqual(['BC Transit']);
+    expect(agencyTitle({ name: 'BC Transit (Kelowna)' }, shared)).toBe('BC Transit · Kelowna');
+    expect(agencyTitle({ name: 'MiWay (Mississauga)' }, shared)).toBe('MiWay');
   });
 });
 

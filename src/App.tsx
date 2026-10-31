@@ -60,7 +60,11 @@ import PanelEmpty from './components/ui/PanelEmpty';
 
 export interface Agency {
   slug: string;
+  /** The registry name, built from the name fields below (#1245); read it through agencyNames() for display. */
   name: string;
+  officialName?: string;
+  commonName?: string;
+  nameQualifier?: string;
   center: [number, number];
   /** Artifact URL on R2. Derived at load time from slug if absent (see getAgencyArtifactUrls). */
   url: string;

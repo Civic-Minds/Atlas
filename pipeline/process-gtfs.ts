@@ -37,7 +37,7 @@ import {
 import { readFeedReviewHistory, shouldReviewNextFeed } from './feedReview.js';
 import { todayUtcYmd } from './utils.js';
 import { agencyTodayYmd } from '../shared/feedAvailability.js';
-import { configFromIndexEntry } from '../shared/agencyRegistryName.js';
+import { configFromIndexEntry, withRegistryName } from '../shared/agencyRegistryName.js';
 import { readConfigAgencyName, resolveAgencyName } from './agencyName.js';
 import { pipelineRunDateYmd } from './pipelineTimeZone.js';
 import { candidateIsOlderThanActive, recordedFeedExpiry, routeLineCount, stampListingEnd } from './refreshMeta.js';
@@ -292,8 +292,8 @@ async function main() {
   if (existing >= 0) {
     const prev = index.agencies[existing];
     const updated = {
-      ...prev,
-      name: agencyName,
+      // A name argument renames the agency's name fields too (#1245), so the next index build keeps it.
+      ...withRegistryName(prev, agencyName),
       center,
       timezone: resolveAgencyTimezone(timezone, { timezone: prev.timezone, timezoneOverride: agencyConfig.timezoneOverride ?? prev.timezoneOverride }),
       lastFeedExpiry: feedExpiry,
