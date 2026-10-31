@@ -25,6 +25,8 @@ export interface FeedMetaFields {
   lastSupplementalFeeds?: SupplementalFeedMeta[];
   /** A fetched timetable starting on this date waits until then (#1144); cleared once one is processed. */
   heldFeedStart?: string | null;
+  /** CIV-1223: the zips the release gate last refused (feedSetSha256); cleared once a feed is processed. */
+  refusedFeedSha256?: string | null;
 }
 
 /** Whether a feed's declared service end date is before the refresh date. */
@@ -178,6 +180,7 @@ export function stampFeedMeta(
   agency.feedRefreshErrorAt = null;
   agency.feedRefreshRetryCount = 0;
   delete agency.heldFeedStart;
+  delete agency.refusedFeedSha256;
   stampListingEnd(agency, opts.listingEnd);
   if (opts.serviceWeek) agency.lastServiceWeek = opts.serviceWeek;
   else if (opts.serviceWeek === null) delete agency.lastServiceWeek;

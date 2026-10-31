@@ -21,15 +21,13 @@
  *
  * The index.json stores feed sources + metadata. Artifact URLs are derived from slug.
  */
-import { readFileSync, writeFileSync, renameSync } from 'fs';
+import { appendFileSync, readFileSync, writeFileSync, renameSync } from 'fs';
 import { pipelineRunDateYmd } from './pipelineTimeZone.js';
-import { execFileSync } from 'child_process';
 import { resolve } from 'path';
 import { canRebuildPmtilesAfterRefresh, clearDataRefreshHandoff, writeDataRefreshMarker, writeRefreshRunResult, type RefreshAgencyStatus } from './dataRefreshMarker.js';
 // loadEnv first so shared/config sees staging R2_PUBLIC_URL
 import { LOADED_ENV_FILE, isProductionPublicR2Bucket } from './loadEnv.js';
 import { r2Put, r2Get, r2PutArchive, r2PutArchiveJson, r2GetArchive, rawFeedArchiveKey } from './r2.js';
-import JSZip from 'jszip';
 import { GtfsValidationError, type GtfsPreprocess } from './process-core.js';
 import { loadSupplementalFeeds, processAgencyFeeds, supplementalArchiveStem, type SupplementalFeed } from './agencyFeeds.js';
 import { serviceWeekKey } from './serviceWeekKey.js';
@@ -37,7 +35,7 @@ import { buildAgencyIndex } from './agencyIndex.js';
 import { buildNightServiceIndex, extractNightServiceRoutes, mergeNightServiceIndex, type NightServiceIndexFile, type NightServiceRouteEntry } from './nightServiceIndex.js';
 import type { HeadwayByPeriod } from '../shared/config.js';
 import { R2_PUBLIC_URL } from '../shared/config.js';
-import { parseCsv } from './parseGtfs.js';
+import { downloadFeed, feedSetSha256, peekFeedInfo, pickFeedSource } from './feedPeek.js';
 import { runWithConcurrency, todayUtcYmd } from './utils.js';
 import {
   clearOverrideUserFacingOnFeedChange,
@@ -49,7 +47,7 @@ import {
 } from './overrideAudit.js';
 import { readFeedReviewHistory, shouldReviewNextFeed } from './feedReview.js';
 import { compareStopSnapshots, formatStopAuditLog, type AuditedStop } from './stopAudit.js';
-import { lowerStoredFeedExpiry, candidateIsOlderThanActive, shouldClearStaged, decideRefreshSkipUnchanged, isFeedExpired, markFeedStale, shouldReplaceExpiredFeed, shouldSkipAllExpiredFeeds, shouldStampFeedMeta, stampFeedMeta, routeLineCount, stampSupplementalFeedMeta } from './refreshMeta.js';
+import { lowerStoredFeedExpiry, candidateIsOlderThanActive, shouldClearStaged, decideRefreshSkipUnchanged, isFeedExpired, markFeedStale, shouldSkipAllExpiredFeeds, shouldStampFeedMeta, stampFeedMeta, routeLineCount, stampSupplementalFeedMeta } from './refreshMeta.js';
 import {
   COUNTRY_LAUNCH_FLAG,
   isCountryLaunchBlocked,
@@ -65,7 +63,6 @@ import { readFeedEvidence } from './historyWeekend.js';
 import { readRefDateQuality } from './historyRefQuality.js';
 import { assessWithWeekCheck, readRepickRows } from './historyRefRepick.js';
 import { historyGeometryForRoute } from './historyGeometry.js';
-import { effectiveFeedExpiry } from './feedFreshness.js';
 import { agencyTodayYmd, isActiveProductionFeed, type SupplementalFeedMeta } from '../shared/feedAvailability.js';
 import { recordFeedCheck, type FeedCheckFields } from './feedCheckTracking.js';
 import { buildFeedCandidates, type FeedCandidate } from './feedSourceCandidates.js';
@@ -142,6 +139,8 @@ interface RefreshAgencyResult {
   processed?: boolean;
   stale?: boolean;
   refused?: boolean;
+  /** #1251: every source was rejected (failed, empty or invalid); the run summary names these loudly. */
+  noUsableSource?: string;
   hiddenRoutes?: HiddenRouteRecord[];
 }
 
@@ -275,34 +274,6 @@ async function writeHistorySnapshot(slug: string, geojson: string, feedExpiry: s
   return `${changed.length} route${changed.length !== 1 ? 's' : ''} changed (${changed.slice(0, 4).join(', ')}${changed.length > 4 ? '…' : ''})${collisionNote}`;
 }
 
-async function peekFeedInfo(buf: Buffer): Promise<{ feedExpiry: string | null; feedVersion: string | null }> {
-  try {
-    const zip = await JSZip.loadAsync(buf);
-    const findEntry = (name: string) => zip.file(name) ?? zip.file(
-      Object.keys(zip.files).find(f => f.endsWith(`/${name}`) && !zip.files[f].dir) ?? '',
-    );
-    const readRows = async (name: string) => {
-      const entry = findEntry(name);
-      if (!entry) return [] as Array<Record<string, string>>;
-      return parseCsv<Record<string, string>>(await entry.async('text'));
-    };
-    const feedInfoRows = await readRows('feed_info.txt');
-    const row = feedInfoRows[0] ?? {};
-    const calendarRows = await readRows('calendar.txt');
-    const calendarDateRows = await readRows('calendar_dates.txt');
-    return {
-      feedExpiry: effectiveFeedExpiry({
-        feedInfoEnd: row.feed_end_date,
-        calendarEnds: calendarRows.map(calendar => calendar.end_date),
-        calendarDates: calendarDateRows,
-      }),
-      feedVersion: row.feed_version || null,
-    };
-  } catch {
-    return { feedExpiry: null, feedVersion: null };
-  }
-}
-
 interface AgencyEntry {
   slug: string;
   name: string;
@@ -327,6 +298,8 @@ interface AgencyEntry {
   lastFeedCheckAt?: string | null;
   /** A fetched timetable starting on this date waits until then (#1144). */
   heldFeedStart?: string | null;
+  /** CIV-1223: the zips the release gate last refused, so the daily check doesn't start the same refresh again. */
+  refusedFeedSha256?: string | null;
   /** CIV-1011 stage 4: the picked week's key at the last refresh (serviceWeekKey). */
   lastServiceWeek?: string | null;
   /** When Atlas first obtained the current main feed file (YYYYMMDD). */
@@ -366,28 +339,6 @@ interface AgencyEntry {
 
 type GeoJsonFc = { type: string; features: unknown[] };
 
-async function downloadFeed(url: string): Promise<Buffer> {
-  try {
-    const res = await fetch(url, {
-      redirect: 'follow',
-      headers: { 'User-Agent': 'atlas-frequency-map/1.0' },
-      signal: AbortSignal.timeout(120_000),
-    });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    return Buffer.from(await res.arrayBuffer());
-  } catch (fetchErr) {
-    // Some agency hosts (e.g. NFTA) have TLS chains Node rejects; curl uses system trust store.
-    try {
-      return execFileSync('curl', ['-fsSL', url], {
-        maxBuffer: 64 * 1024 * 1024,
-        timeout: 120_000,
-      });
-    } catch {
-      throw fetchErr instanceof Error ? fetchErr : new Error(String(fetchErr));
-    }
-  }
-}
-
 async function refreshAgency(
   agency: AgencyEntry,
   manualBaseFareOverride?: number,
@@ -413,52 +364,18 @@ async function refreshAgency(
   const expiryToday = agencyTodayYmd(agency);
   const configuredFeedUrl = resolveFeedUrl(agency.feedUrl, agency.feedApiKeyEnvVar, agency.feedApiKeyParam);
   const feedCandidates = buildFeedCandidates(configuredFeedUrl, agency.mdbFeedUrl, agency.feedFallbackUrls);
-  let buf: Buffer | null = null;
-  let peekedExpiry: string | null = null;
-  let peekedVersion: string | null = null;
-  let selectedCandidate: FeedCandidate | null = null;
-  let firstCandidateError: Error | null = null;
-
-  for (const candidate of feedCandidates) {
-    try {
-      const candidateBuf = await downloadFeed(candidate.url);
-      if (candidateBuf.length < 4 || candidateBuf[0] !== 0x50 || candidateBuf[1] !== 0x4b) {
-        throw new Error(`not a zip file (got ${candidateBuf.length} bytes starting ${candidateBuf.subarray(0, 4).toString('hex')})`);
-      }
-      const metadata = await peekFeedInfo(candidateBuf);
-
-      // Keep the first usable source unless a dated current candidate is found.
-      // An expired primary must yield to a current configured or derived backup,
-      // but an undated backup is not enough evidence to replace known data.
-      if (!buf) {
-        buf = candidateBuf;
-        peekedExpiry = metadata.feedExpiry;
-        peekedVersion = metadata.feedVersion;
-        selectedCandidate = candidate;
-        if (!isFeedExpired(metadata.feedExpiry, expiryToday)) break;
-      } else if (shouldReplaceExpiredFeed({
-        selectedExpiry: peekedExpiry,
-        candidateExpiry: metadata.feedExpiry,
-        todayYmd: expiryToday,
-      })) {
-        buf = candidateBuf;
-        peekedExpiry = metadata.feedExpiry;
-        peekedVersion = metadata.feedVersion;
-        selectedCandidate = candidate;
-        break;
-      }
-      writeLog(`\n  [warn] ${candidate.kind} feed expired (${metadata.feedExpiry ?? 'unknown'}) — trying next source\n`);
-    } catch (error) {
-      firstCandidateError ??= error instanceof Error ? error : new Error(String(error));
-      writeLog(`\n  [warn] ${candidate.kind} feed failed (${error instanceof Error ? error.message : String(error)}) — trying next source\n`);
-    }
-  }
+  const picked = await pickFeedSource(feedCandidates, { download: downloadFeed, expiryToday, log: writeLog });
+  let buf = picked.buf;
+  let peekedExpiry = picked.peekedExpiry;
+  let peekedVersion = picked.peekedVersion;
+  const selectedCandidate = picked.selectedCandidate;
+  const firstCandidateError = picked.firstCandidateError;
 
   if (!buf || !selectedCandidate) {
     const reason = firstCandidateError?.message ?? `no usable feed source for ${agency.slug}`;
     markFeedStale(agency, { reason, todayYmd: today });
     writeLog(`\n  [warn] refresh unavailable (${reason}) — retaining the last good artifact\n`);
-    return { summary: `stale (feed unavailable: ${reason})`, stale: true };
+    return { summary: `stale (feed unavailable: ${reason})`, stale: true, noUsableSource: reason };
   }
   if (selectedCandidate.kind !== 'configured' || selectedCandidate.url !== configuredFeedUrl) {
     writeLog(`\n  [info] using ${selectedCandidate.kind} source: ${selectedCandidate.url}\n`);
@@ -665,6 +582,7 @@ async function refreshAgency(
   if (dropRefusal) {
     for (const key of Object.keys(agency)) delete (agency as unknown as Record<string, unknown>)[key];
     Object.assign(agency, agencyBeforeRebuild);
+    agency.refusedFeedSha256 = feedSetSha256([buf, ...supplementalFeeds.map(feed => feed.buf)]);
     writeLog(`  [warn] refused: ${dropRefusal} — retaining the live artifact\n`);
     return { summary: `refused (${dropRefusal})`, refused: true };
   }
@@ -804,6 +722,7 @@ async function main() {
   let uploads = 0;
   let countryLaunchSkips = 0;
   const refused: string[] = [];
+  const noUsableSource: string[] = [];
   const refreshStatuses: Record<string, RefreshAgencyStatus> = {};
   const allNightServiceRoutes: NightServiceRouteEntry[] = [];
   const refreshedNightServiceAgencySlugs = new Set<string>();
@@ -842,6 +761,7 @@ async function main() {
       if (result.processed) refreshedNightServiceAgencySlugs.add(agency.slug);
       if (result.stale) stale++;
       if (result.refused) refused.push(agency.slug);
+      if (result.noUsableSource) noUsableSource.push(`${agency.slug}: ${result.noUsableSource}`);
       refreshStatuses[agency.slug] = result.processed ? 'processed' : result.stale ? 'stale' : result.refused ? 'refused' : 'unchanged';
       // CIV-533: a feed this run did not process (unchanged, stale, refused) keeps its measured rating,
       // re-scored for today's date; a processed feed already has this run's rating.
@@ -904,6 +824,15 @@ async function main() {
   }
   if (stale > 0) {
     console.warn(`${stale} agencies are stale and retained their last good artifact.`);
+  }
+  // #1251: an agency with no usable source at all must not fail quietly week after week (TTC, two months).
+  if (noUsableSource.length > 0) {
+    const lines = noUsableSource.sort();
+    console.error(`\nNO USABLE FEED SOURCE for ${lines.length} agencies (every source failed, was empty or invalid):`);
+    for (const line of lines) console.error(`::error title=No usable feed source::${line}`);
+    if (process.env.GITHUB_STEP_SUMMARY) {
+      appendFileSync(process.env.GITHUB_STEP_SUMMARY, `\n### No usable feed source (${lines.length})\n\nEvery source failed, was empty or invalid; each kept its last timetable.\n\n${lines.map(l => `- ${l}`).join('\n')}\n`);
+    }
   }
 
   try {

@@ -1,0 +1,78 @@
+name: Daily check for expiring feeds
+
+# CIV-1223: rolling feeds (LA Metro rail, Sound Transit) cover about two weeks, so the weekly refresh can leave a gap.
+# Each day this peeks every agency whose recorded schedule (main or supplemental) ends within 7 days, plus every
+# rolling feed, and runs refresh-feeds.yml for only the agencies whose new zip ends later. Nothing newer, no run.
+
+on:
+  schedule:
+    # Daily 14:00 UTC (~09:00 Toronto), well clear of the Monday 06:00 weekly refresh.
+    - cron: '0 14 * * *'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Only list the agencies that would refresh; start nothing.'
+        required: false
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+  actions: write
+
+env:
+  TZ: America/Toronto
+
+# This job does not join atlas-data-release itself: a queued run there replaces the one already waiting, so a check
+# waiting behind a release could cancel a pending refresh or publish. The refresh it starts is in that group, and the
+# check starts nothing while a refresh or rebuild is running or waiting.
+concurrency:
+  group: daily-feed-check
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+          cache: npm
+
+      - run: npm ci
+
+      # Dates the weekly refresh recorded but has not merged yet: compared too, so an agency it already refreshed is
+      # not refreshed again.
+      - name: Read the open refresh pull request's dates
+        run: |
+          if git fetch --quiet --depth 1 origin automation/weekly-gtfs-refresh 2>/dev/null; then
+            git show FETCH_HEAD:public/data/index.json > "$RUNNER_TEMP/pending-index.json" || true
+          fi
+
+      - name: Peek feeds that end within 7 days
+        id: peek
+        run: npx tsx scripts/check-expiring-feeds.ts --days 7 --pending-index "$RUNNER_TEMP/pending-index.json" --github-output "$GITHUB_OUTPUT"
+        env:
+          MUNI_511_API_KEY: ${{ secrets.MUNI_511_API_KEY }}
+          CATA_LANSING_API_KEY: ${{ secrets.CATA_LANSING_API_KEY }}
+          GRAND_EST_API_KEY: ${{ secrets.GRAND_EST_API_KEY }}
+
+      - name: Refresh only the newer agencies
+        if: steps.peek.outputs.slugs != '' && !(github.event_name == 'workflow_dispatch' && inputs.dry_run)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SLUGS: ${{ steps.peek.outputs.slugs }}
+        run: |
+          busy=0
+          for wf in refresh-feeds.yml rebuild-release.yml; do
+            for status in queued in_progress waiting pending; do
+              n=$(gh run list --workflow "$wf" --status "$status" --limit 20 --json databaseId --jq 'length')
+              [ "$n" -gt 0 ] && { echo "$wf has a $status run; leaving these for tomorrow's check: $SLUGS"; busy=1; }
+            done
+          done
+          [ "$busy" -eq 1 ] && exit 0
+          echo "Refreshing: $SLUGS"
+          gh workflow run refresh-feeds.yml -f agencies="$SLUGS"
