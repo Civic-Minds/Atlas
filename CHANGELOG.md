@@ -59,6 +59,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Route cards and frequency
 
+- **A card shows one shared value per direction**: a destination under the Shared stretch row reads its own frequency, not a [second shared range](https://github.com/Civic-Minds/Atlas/issues/1232) (TTC 102 PM read "Shared stretch every 7" above "to Warden every 15–30")
 - **A period with a long slow stretch shows its longest wait**: [TTC 320](https://github.com/Civic-Minds/Atlas/issues/1142) overnight runs every 5 and then every 15, so it now reads "every 5–18" and is coloured by 18
 - **Branch rows show only the time a branch actually runs**: a [rush-hour branch](https://github.com/Civic-Minds/Atlas/issues/1115) no longer borrows the main line's midday frequency (TTC 84 Pioneer Village)
 - **Longest gaps leave out drop-off-only stops at the end of the line**: [MBTA 71 and 16](https://github.com/Civic-Minds/Atlas/issues/1116) no longer read a 135-minute gap in the rush hour

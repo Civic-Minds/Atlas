@@ -16,6 +16,8 @@ export interface RouteCardRowContext {
   stretchMode: boolean;
   /** #1185: the pooled main-stretch value this row reads (one destination run by several patterns, TTC 29 northbound). */
   pooledMainH?: number;
+  /** #1232: the row's group shows a Shared stretch / Combined row, the one shared value the group has. */
+  sharedRowShown?: boolean;
   /** The route's all-day contract, on All day only. */
   allDay?: { filterValue: number | null; limited: boolean };
   /** The route's contract for the selected period. */
@@ -87,7 +89,9 @@ export function routeCardRowValue(d: ShapeProperties, ctx: RouteCardRowContext):
   // CIV-1143 (Ryan 2026-10-30, option B): a row with its own "until / from / with a gap" words keeps them; a shared-stretch
   // range never replaces them (OC Transpo 84 weekday PM read "every 60–120" where the last trip is at 5:05 PM).
   // #1185: a pooled row already reads the shared stops' value: no trunk-to-branch range beside it.
-  const trunkHeadway = hoveredHour == null && period !== 'all' && edgeText == null && pooledH == null
+  // #1232: under a Shared stretch row neither, so the card never shows a second shared value (TTC 102 PM: "Shared stretch
+  // every 7" above "to Warden every 15–30"); the row reads its own value.
+  const trunkHeadway = hoveredHour == null && period !== 'all' && edgeText == null && pooledH == null && !ctx.sharedRowShown
     ? headsignTrunkHeadway(d, period)
     : undefined;
   // The stop card's rule (hasRegularServiceInPeriod), so the two cards agree. #954: when
