@@ -125,7 +125,7 @@ export function hasDirectionPeriodService(p: ShapeProperties, period: TimePeriod
 }
 
 /**
- * #934 and D6: the main stretch's row names a late start or early end ("from 7:17am, every 9 min")
+ * #934 and D6: the main stretch's row names a late start or early end ("every 9 min from 7:17 AM")
  * or one gap inside steady service ("every 5 min, with a 169 min gap") instead of a long wait or
  * "limited". Wording: headwayPeriodShape.
  */
@@ -144,8 +144,8 @@ export function routeCardPeriodShapeText(p: ShapeProperties, period: TimePeriod)
 }
 
 /**
- * #934: the part-period wording for a direction with no value in the period ("until 9:37am, every
- * 12 min"): the route card's main-stretch row shows it, and the stop card the same, so both agree.
+ * #934: the part-period wording for a direction with no value in the period ("every 12 min until
+ * 9:37 AM"): the route card's main-stretch row shows it, and the stop card the same, so both agree.
  */
 export function partPeriodText(p: ShapeProperties, period: TimePeriod): string | undefined {
   if (period === 'all' || p.stretchRole !== 'main') return undefined;

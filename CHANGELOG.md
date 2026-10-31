@@ -8,6 +8,8 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Map and route behavior
 
+- **Route card notices say each fact once, in one place**: lines that repeated a row are gone, ["no scheduled trips"](https://github.com/Civic-Minds/Atlas/issues/1225) shows once, ["No frequency is shown"](https://github.com/Civic-Minds/Atlas/issues/1226) no longer sits beside a frequency, ["doesn't meet the filter"](https://github.com/Civic-Minds/Atlas/issues/1227) no longer shows where the rows already say why, and uneven gaps read "Gaps between trips can be up to N min"
+- **Rows put the frequency first**: route and stop cards read "every 12 min until 9:40 PM", the wait riders scan for, then its limit
 - **Agency pages and the map agree on when a [schedule ends](https://github.com/Civic-Minds/Atlas/issues/1229)**: an agency whose separate rail feed ends first (LA Metro, SEPTA) no longer reads as running months longer on its page
 - **Routes whose first trip leaves before 6 AM no longer say they have no overnight trips**: [TTC 100](https://github.com/Civic-Minds/Atlas/issues/1236) read "no scheduled trips from 2–6 AM" with buses from 5:22 AM; the card now says it runs only from 5–6 AM
 - **A route that runs for only part of a period names the hours inside that period**: [TTC 31 overnight](https://github.com/Civic-Minds/Atlas/issues/1186) read "runs from 1–2 AM, but not throughout 2–6 AM" next to "runs only from 2–3 AM"

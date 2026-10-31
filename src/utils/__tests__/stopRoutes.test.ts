@@ -30,7 +30,7 @@ describe('stopRowHeadway: never overstate', () => {
   });
 
   it('shows words, not a number, for a part-period row', () => {
-    expect(stopRowHeadway(branch(5, 10, { periodText: 'until 9:37am, every 12 min' }), 'midday')).toBeNull();
+    expect(stopRowHeadway(branch(5, 10, { periodText: 'every 12 min until 9:37 AM' }), 'midday')).toBeNull();
   });
 });
 
@@ -69,7 +69,7 @@ describe('buildStopRoutes: one destination served by two patterns (CIV-1080)', (
     const words = () => buildStopRoutes({
       siblingIdsByAgency: { ttc: new Set(['2108']) }, routesByAgency: { ttc: new Set(['29']) }, layers: { ttc: fc }, day: 'Weekday', period: 'midday',
     })[0]?.branches.filter(b => b.directionId === 1).map(b => b.periodText) ?? [];
-    expect(words()).toEqual(['from 12:34 PM, every 8 min']);
+    expect(words()).toEqual(['every 8 min from 12:34 PM']);
     // No trips of its own in the period: the card's row has no words, so neither does the stop card (TTC 100 to Pape, overnight).
     for (const f of fc.features.filter(x => x.properties?.directionId === 1)) f.properties!.noOwnServiceByPeriod = ['midday'];
     expect(words()).toEqual([]);

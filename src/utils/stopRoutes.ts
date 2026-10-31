@@ -116,7 +116,7 @@ export function buildStopRoutes({ siblingIdsByAgency, routesByAgency, routePerio
         (headsignsAtStop.get(dirKey) ?? headsignsAtStop.set(dirKey, new Set()).get(dirKey)!).add(p.headsign ?? '');
       }
       // #934: a direction the route only runs on one side of the period shows the route card's
-      // words ("until 9:37am, every 12 min") instead of a cadence, at a stop its shape serves.
+      // words ("every 12 min until 9:37 AM") instead of a cadence, at a stop its shape serves.
       // #1228: only where the route card's row has the words too (rowTrips): a destination with no trips of its own
       // in the period never reads its stretch's "from 5:34 AM" (TTC 100 to Pape, weekday overnight).
       const trips = rowTrips(p, period);

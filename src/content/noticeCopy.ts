@@ -64,15 +64,16 @@ const noTripsText = (subject: 'route' | 'agency', when: string) => `This ${subje
 const routeNoTripsText = (when: string) => noTripsText('route', when);
 
 // N8 no-trips-in-period, N9 limited-in-period
-export function periodServiceNotice(periodRange: string, partial: boolean, activeRange?: string): string {
+export function periodServiceNotice(periodRange: string, partial: boolean, activeRange?: string, rowShowsFrequency = false): string {
+  // #1226: "No frequency is shown" only when no row shows one.
   return partial
-    ? `This route runs only from ${keepRangeTogether(activeRange || periodRange)} in this period. No frequency is shown.`
+    ? `This route runs only from ${keepRangeTogether(activeRange || periodRange)} in this period.${rowShowsFrequency ? '' : ' No frequency is shown.'}`
     : routeNoTripsText(`from ${keepRangeTogether(periodRange)}`);
 }
 
-// N10 uneven-gaps
+// N10 uneven-gaps (Ryan's wording, CIV-1202)
 export function unevenServiceNotice(longestGap: number): string {
-  return `This route runs all period, but the gaps between trips vary, up to ${delayAmount(longestGap)}.`;
+  return `Gaps between trips can be up to ${delayAmount(longestGap)}.`;
 }
 
 // N7 no-route-line

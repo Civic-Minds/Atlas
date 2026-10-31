@@ -28,7 +28,7 @@ import { CARD_NOTE, CARD_NOTICE, CARD_NOTICE_FOOTER } from '../../../styles';
 import { FEATURES, SPARKLINE_HOURS, TIME_PERIODS, formatPeriodRangeLong } from '../../../../shared/config';
 import { NO_REGULAR_SERVICE_SHORT_LABEL, routeCardDisplayHeadway } from '../../../utils/effectiveHeadway';
 import { buildRouteCardModel, matchesHoveredBranch, rowIsHovered, sharedIsHovered } from '../../../utils/routeCardRows';
-import { routeCardNotices } from '../../../utils/routeCardNotices';
+import { routeCardNotices, type CardFooterNotice } from '../../../utils/routeCardNotices';
 import { dirIdNum } from '../../../utils/routeCardTrunk';
 import type { VariantFamily } from '../../../utils/routeVariants';
 import { reportDetails } from '../../../utils/reportIssue';
@@ -181,7 +181,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
   }), [currentRoute, directionGroups, agencyFeatures, period, maxHeadway, nightView, stableColors, hideSpan]);
   const { contract, displayGroups, showDirectionSections, doesNotRun, hasPeriodService, primaryMultiBranch, activeRangeDirections } = model;
   const selectedPeriod = period !== 'all' ? TIME_PERIODS.find(p => p.key === period) : undefined;
-  // Every notice on the card, decided in one place (CIV-1200).
+  // Every notice on the card, decided in one place (CIV-1200), each in its place (CIV-1202; docs/STYLE.md "Card notices").
   const notices = routeCardNotices({
     directions: currentRoute.directions,
     model,
@@ -200,6 +200,72 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
     listingEndedDate,
     listingEnded,
   });
+  const renderFooterNotice = (notice: CardFooterNotice) => {
+    // Drawn only where the card has an info panel to open.
+    const info = onInfoOpen;
+    if (!info) return null;
+    switch (notice.code) {
+      case 'N4':
+        return <NewScheduleDataNotice key={notice.code} on="route" agency={routeAgency!} onInfoOpen={info} />;
+      case 'N5':
+        return <CorrectedDataNotice key={notice.code} on="route" agency={routeAgency!} overrideNote={routeOverrideNote!} onInfoOpen={info} />;
+      case 'N25':
+        // N25 (CIV-1055): most of the agency's routes stopped being listed; the card shows their last listed week.
+        return (
+          <CardHelpNotice
+            key={notice.code}
+            message={notice.text!}
+            onLearnMore={() => info('about', {
+              helpTopic: explainerFor('N25'),
+              agencyName: routeAgency?.name,
+              listingEndedDate,
+              listingEnded,
+              lastRefreshedAt: routeAgency?.lastRefreshedAt ?? undefined,
+              lastFeedCheckAt: routeAgency?.lastFeedCheckAt ?? undefined,
+              expiredFeedCheckCount: routeAgency?.expiredFeedCheckCount,
+              expiredFeedCheckSince: routeAgency?.expiredFeedCheckSince ?? undefined,
+              websiteUrl: routeAgency?.websiteUrl ?? undefined,
+            })}
+          />
+        );
+      case 'N2':
+      case 'N3':
+        return (
+          <CardHelpNotice
+            key={notice.code}
+            message={notice.text!}
+            onLearnMore={() => info('about', {
+              helpTopic: explainerFor(notice.code),
+              agencyName: routeAgency?.name,
+              expDateStr: expDateStr || undefined,
+              manualFeedSource: routeAgency?.manualFeedSource,
+              lastRefreshedAt: routeAgency?.lastRefreshedAt ?? undefined,
+              lastFeedCheckAt: routeAgency?.lastFeedCheckAt ?? undefined,
+              expiredFeedCheckCount: routeAgency?.expiredFeedCheckCount,
+              expiredFeedCheckSince: routeAgency?.expiredFeedCheckSince ?? undefined,
+              websiteUrl: routeAgency?.websiteUrl ?? undefined,
+            })}
+          />
+        );
+      case 'N1':
+        return (
+          <CardHelpNotice
+            key={notice.code}
+            message={notice.text!}
+            onLearnMore={() => info('about', { helpTopic: explainerFor('N1'), agencyName: routeAgency?.name, websiteUrl: routeAgency?.websiteUrl ?? undefined })}
+          />
+        );
+      default:
+        // N6 and N7: a Learn more naming the agency.
+        return (
+          <CardHelpNotice
+            key={notice.code}
+            message={notice.text!}
+            onLearnMore={() => info('about', { helpTopic: explainerFor(notice.code), agencyName: routeAgency?.name })}
+          />
+        );
+    }
+  };
 
   const reportServiceLines = model.reportServiceLines;
   const reportRawMetrics = currentRoute.directions.map((direction, index) => {
@@ -293,6 +359,9 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
           {notices.variants.text}
         </p>
       )}
+      {onInfoOpen && notices.footer.some(notice => notice.place === 1) && (
+        <div className="-mt-1 mb-3 space-y-1">{notices.footer.filter(notice => notice.place === 1).map(renderFooterNotice)}</div>
+      )}
       {!nightView && (() => {
         const HOURS = SPARKLINE_HOURS;
         const branchColorOf = stableColors ? stableBranchColors(agencyFeatures, currentRoute.routeShortName) : undefined;
@@ -371,11 +440,6 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
         );
       })()}
       <SidebarCardList>
-        {notices.filter && (
-          <div className={CARD_NOTICE_FOOTER}>
-            <p className={CARD_NOTICE}>{notices.filter.text}</p>
-          </div>
-        )}
         {(() => {
           // A row's hover sends its destination (and pattern); the row lights when it is the hovered one (#1064).
           const hoverProps = (dirId: number, feature: ShapeProperties | undefined, hover: HoveredBranch | null) => {
@@ -397,7 +461,8 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                   <>
                     <CardSectionLabel className="mb-0">{group.boundLabel}</CardSectionLabel>
                     {notices.directions.filter(n => n.dirId === group.dirId && n.kind === 'no-service').map(n => (
-                      <p key={n.kind} className={`${CARD_NOTE} mt-2 mb-2`}>{n.text}</p>
+                      // A direction with no service reads as a row saying so (D2), not a note.
+                      <div key={n.kind} className="mt-1"><CardDirectionRow labelWeight="regular" label="" limited limitedLabel={model.noRegularLabel} /></div>
                     ))}
                   </>
                 )}
@@ -478,6 +543,11 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
             );
           });
         })()}
+        {notices.filter && (
+          <div className={`${CARD_NOTICE_FOOTER} space-y-1`}>
+            <CardHelpNotice message={notices.filter.text} />
+          </div>
+        )}
         {notices.period && (
           <div className={`${CARD_NOTICE_FOOTER} space-y-1`}>
             <CardHelpNotice message={notices.period.text} />
@@ -488,71 +558,9 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
             <CardHelpNotice message={notices.booking.text} />
           </div>
         )}
-        {notices.showFooter && onInfoOpen && (
+        {onInfoOpen && notices.footer.some(notice => notice.place === 3) && (
           <div className={`${CARD_NOTICE_FOOTER} space-y-1`}>
-            {notices.footer.map(notice => {
-              switch (notice.code) {
-                case 'N4':
-                  return <NewScheduleDataNotice key={notice.code} on="route" agency={routeAgency!} onInfoOpen={onInfoOpen} />;
-                case 'N5':
-                  return <CorrectedDataNotice key={notice.code} on="route" agency={routeAgency!} overrideNote={routeOverrideNote!} onInfoOpen={onInfoOpen} />;
-                case 'N25':
-                  // N25 (CIV-1055): most of the agency's routes stopped being listed; the card shows their last listed week.
-                  return (
-                    <CardHelpNotice
-                      key={notice.code}
-                      message={notice.text!}
-                      onLearnMore={() => onInfoOpen('about', {
-                        helpTopic: explainerFor('N25'),
-                        agencyName: routeAgency?.name,
-                        listingEndedDate,
-                        listingEnded,
-                        lastRefreshedAt: routeAgency?.lastRefreshedAt ?? undefined,
-                        lastFeedCheckAt: routeAgency?.lastFeedCheckAt ?? undefined,
-                        expiredFeedCheckCount: routeAgency?.expiredFeedCheckCount,
-                        expiredFeedCheckSince: routeAgency?.expiredFeedCheckSince ?? undefined,
-                        websiteUrl: routeAgency?.websiteUrl ?? undefined,
-                      })}
-                    />
-                  );
-                case 'N2':
-                case 'N3':
-                  return (
-                    <CardHelpNotice
-                      key={notice.code}
-                      message={notice.text!}
-                      onLearnMore={() => onInfoOpen('about', {
-                        helpTopic: explainerFor(notice.code),
-                        agencyName: routeAgency?.name,
-                        expDateStr: expDateStr || undefined,
-                        manualFeedSource: routeAgency?.manualFeedSource,
-                        lastRefreshedAt: routeAgency?.lastRefreshedAt ?? undefined,
-                        lastFeedCheckAt: routeAgency?.lastFeedCheckAt ?? undefined,
-                        expiredFeedCheckCount: routeAgency?.expiredFeedCheckCount,
-                        expiredFeedCheckSince: routeAgency?.expiredFeedCheckSince ?? undefined,
-                        websiteUrl: routeAgency?.websiteUrl ?? undefined,
-                      })}
-                    />
-                  );
-                case 'N1':
-                  return (
-                    <CardHelpNotice
-                      key={notice.code}
-                      message={notice.text!}
-                      onLearnMore={() => onInfoOpen('about', { helpTopic: explainerFor('N1'), agencyName: routeAgency?.name, websiteUrl: routeAgency?.websiteUrl ?? undefined })}
-                    />
-                  );
-                default:
-                  // N6 and N7: a Learn more naming the agency.
-                  return (
-                    <CardHelpNotice
-                      key={notice.code}
-                      message={notice.text!}
-                      onLearnMore={() => onInfoOpen('about', { helpTopic: explainerFor(notice.code), agencyName: routeAgency?.name })}
-                    />
-                  );
-              }
-            })}
+            {notices.footer.filter(notice => notice.place === 3).map(renderFooterNotice)}
           </div>
         )}
       </SidebarCardList>
