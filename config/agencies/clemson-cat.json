@@ -8,7 +8,7 @@
     -82.8532
   ],
   "feedUrl": "https://catbus.ridesystems.net/Secure/Admin/Reports/GTFSDownload.aspx",
-  "lastFeedExpiry": "20281030",
+  "lastFeedExpiry": "20281031",
   "skipBlockTripHeadways": true,
   "lastFeedVersion": null,
   "lastRefreshedAt": "2026-10-03",
@@ -41,14 +41,14 @@
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
       "featureCount": 18,
-      "feedExpiry": "20281030",
+      "feedExpiry": "20281031",
       "routeCount": 11,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-10-30"
+    "checkedAt": "2026-10-31"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
