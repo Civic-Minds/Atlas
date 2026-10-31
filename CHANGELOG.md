@@ -147,6 +147,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ### Data pipeline
 
 - **Refresh skips an [empty or broken feed](https://github.com/Civic-Minds/Atlas/issues/1251) download and tries the agency's next source**: Toronto's link began serving an empty file, and the run now names any agency with no usable source
+- **Feeds about to run out are checked every day, not only on Mondays**: rolling feeds like LA Metro rail cover about two weeks, so an agency whose new schedule is already out gets refreshed before its old one ends
 - **A timetable that hasn't started yet no longer replaces the current one**: [TANK and TTC](https://github.com/Civic-Minds/Atlas/issues/1144) showed next season's service a week early
 - **Feed expiry counts only the routes Atlas shows, on the agency's own date**: [Snowmass](https://github.com/Civic-Minds/Atlas/issues/1140) read current after its kept route ended, and a feed ending on Sunday read as ended on Sunday evening in Los Angeles
 - **A feed whose calendar ended earlier than it claims now shows the [expired notice](https://github.com/Civic-Minds/Atlas/issues/1039)**: MAX said it ran to 2035 while its schedule stopped in May 2025, so it looked current; a calendar can only shorten the end date, never extend it
