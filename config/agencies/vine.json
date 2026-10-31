@@ -1,6 +1,7 @@
 {
   "slug": "vine",
-  "name": "VINE Transit (Napa)",
+  "officialName": "VINE Transit",
+  "nameQualifier": "Napa",
   "websiteUrl": "https://vinetransit.com/",
   "center": [
     38.3079,

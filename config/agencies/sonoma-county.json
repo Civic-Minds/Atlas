@@ -1,6 +1,7 @@
 {
   "slug": "sonoma-county",
-  "name": "Sonoma County Transit (SCT)",
+  "officialName": "Sonoma County Transit",
+  "commonName": "SCT",
   "websiteUrl": "http://www.sctransit.com/?referrer=gtfs",
   "center": [
     38.4307,

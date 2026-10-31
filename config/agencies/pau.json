@@ -1,6 +1,7 @@
 {
   "slug": "pau",
-  "name": "Idelis (Pau)",
+  "officialName": "Idelis",
+  "nameQualifier": "Pau",
   "region": "Nouvelle-Aquitaine",
   "center": [
     43.2951,

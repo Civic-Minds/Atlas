@@ -1,6 +1,7 @@
 {
   "slug": "nantes",
-  "name": "Naolib (Nantes)",
+  "officialName": "Naolib",
+  "nameQualifier": "Nantes",
   "region": "Pays de la Loire",
   "center": [
     47.2184,

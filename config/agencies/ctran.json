@@ -1,6 +1,7 @@
 {
   "slug": "ctran",
-  "name": "C-TRAN (Vancouver, WA)",
+  "officialName": "C-TRAN",
+  "nameQualifier": "Vancouver, WA",
   "websiteUrl": "http://www.C-TRAN.com",
   "center": [
     45.6513,

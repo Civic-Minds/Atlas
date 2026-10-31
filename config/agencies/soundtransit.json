@@ -1,6 +1,7 @@
 {
   "slug": "soundtransit",
-  "name": "Sound Transit (Seattle)",
+  "officialName": "Sound Transit",
+  "nameQualifier": "Seattle",
   "websiteUrl": "https://www.soundtransit.org",
   "center": [
     47.5,

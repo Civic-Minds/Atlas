@@ -1,6 +1,7 @@
 {
   "slug": "dinan",
-  "name": "Dinamo (Dinan)",
+  "officialName": "Dinamo",
+  "nameQualifier": "Dinan",
   "region": "Bretagne",
   "center": [
     48.455,

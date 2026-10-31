@@ -1,6 +1,7 @@
 {
   "slug": "beeline",
-  "name": "Westchester County Bee-Line System (BeeLine)",
+  "officialName": "Westchester County Bee-Line System",
+  "commonName": "BeeLine",
   "region": "New York",
   "center": [
     41,

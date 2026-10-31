@@ -1,6 +1,7 @@
 {
   "slug": "angouleme",
-  "name": "Möbius (Angoulême)",
+  "officialName": "Möbius",
+  "nameQualifier": "Angoulême",
   "region": "Nouvelle-Aquitaine",
   "center": [
     45.6484,

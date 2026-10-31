@@ -1,6 +1,7 @@
 {
   "slug": "fax",
-  "name": "Fresno Area Express (FAX)",
+  "officialName": "Fresno Area Express",
+  "commonName": "FAX",
   "websiteUrl": "https://www.fresno.gov/transportation/fax/",
   "center": [
     36.74,

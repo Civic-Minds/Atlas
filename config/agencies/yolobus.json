@@ -1,6 +1,7 @@
 {
   "slug": "yolobus",
-  "name": "Yolo County Transportation District (Yolobus)",
+  "officialName": "Yolo County Transportation District",
+  "commonName": "Yolobus",
   "websiteUrl": "http://avl.yctd.org/",
   "center": [
     38.6169,

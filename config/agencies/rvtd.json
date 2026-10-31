@@ -1,6 +1,7 @@
 {
   "slug": "rvtd",
-  "name": "Rogue Valley Transportation District (RVTD)",
+  "officialName": "Rogue Valley Transportation District",
+  "commonName": "RVTD",
   "websiteUrl": "http://www.rvtd.org",
   "center": [
     42.328,

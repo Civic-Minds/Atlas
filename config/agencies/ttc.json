@@ -1,6 +1,6 @@
 {
   "slug": "ttc",
-  "name": "Toronto Transit Commission",
+  "officialName": "Toronto Transit Commission",
   "shortName": "TTC",
   "websiteUrl": "https://www.ttc.ca",
   "searchAliases": [

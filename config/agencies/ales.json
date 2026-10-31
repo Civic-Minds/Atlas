@@ -1,6 +1,7 @@
 {
   "slug": "ales",
-  "name": "Ales'y (Alès)",
+  "officialName": "Ales'y",
+  "nameQualifier": "Alès",
   "region": "Occitanie",
   "center": [
     44.1272,

@@ -1,6 +1,7 @@
 {
   "slug": "sun-metro",
-  "name": "Sun Metro (El Paso)",
+  "officialName": "Sun Metro",
+  "nameQualifier": "El Paso",
   "center": [
     31.7888,
     -106.4113

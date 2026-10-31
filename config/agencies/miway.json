@@ -1,6 +1,7 @@
 {
   "slug": "miway",
-  "name": "MiWay (Mississauga)",
+  "officialName": "MiWay",
+  "nameQualifier": "Mississauga",
   "websiteUrl": "http://www.miway.ca",
   "region": "Ontario",
   "center": [

@@ -1,6 +1,7 @@
 {
   "slug": "dart",
-  "name": "Dallas Area Rapid Transit (DART)",
+  "officialName": "Dallas Area Rapid Transit",
+  "commonName": "DART",
   "shortName": "DART",
   "websiteUrl": "https://www.dart.org",
   "center": [

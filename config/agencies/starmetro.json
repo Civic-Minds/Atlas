@@ -1,6 +1,7 @@
 {
   "slug": "starmetro",
-  "name": "StarMetro (Tallahassee)",
+  "officialName": "StarMetro",
+  "nameQualifier": "Tallahassee",
   "center": [
     30.4459,
     -84.2889

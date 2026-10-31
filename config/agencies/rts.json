@@ -1,6 +1,7 @@
 {
   "slug": "rts",
-  "name": "RTS (Gainesville)",
+  "officialName": "RTS",
+  "nameQualifier": "Gainesville",
   "center": [
     29.6463,
     -82.3596

@@ -1,6 +1,6 @@
 {
   "slug": "london",
-  "name": "London Transit",
+  "officialName": "London Transit",
   "websiteUrl": "http://www.londontransit.ca",
   "region": "Ontario",
   "preprocess": "london-route-names",

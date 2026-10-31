@@ -1,6 +1,7 @@
 {
   "slug": "wmata",
-  "name": "WMATA (Washington, DC)",
+  "officialName": "WMATA",
+  "nameQualifier": "Washington, DC",
   "shortName": "WMATA",
   "region": "Washington DC",
   "center": [

@@ -1,6 +1,7 @@
 {
   "slug": "privas",
-  "name": "T'CAP (Privas)",
+  "officialName": "T'CAP",
+  "nameQualifier": "Privas",
   "region": "Auvergne-Rhône-Alpes",
   "center": [
     44.7356,

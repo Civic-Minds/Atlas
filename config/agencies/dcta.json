@@ -1,6 +1,7 @@
 {
   "slug": "dcta",
-  "name": "Denton County Transportation Authority (DCTA)",
+  "officialName": "Denton County Transportation Authority",
+  "commonName": "DCTA",
   "websiteUrl": "http://www.dcta.net",
   "region": "Texas",
   "center": [

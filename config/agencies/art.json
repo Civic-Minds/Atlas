@@ -1,6 +1,7 @@
 {
   "slug": "art",
-  "name": "Arlington Transit (ART)",
+  "officialName": "Arlington Transit",
+  "commonName": "ART",
   "websiteUrl": "http://www.arlingtontransit.com",
   "region": "Virginia",
   "center": [

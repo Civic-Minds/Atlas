@@ -1,6 +1,7 @@
 {
   "slug": "cherriots",
-  "name": "Cherriots (Salem, OR)",
+  "officialName": "Cherriots",
+  "nameQualifier": "Salem, OR",
   "websiteUrl": "https://www.cherriots.org/",
   "center": [
     44.9396,

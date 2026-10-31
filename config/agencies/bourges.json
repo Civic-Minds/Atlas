@@ -1,6 +1,7 @@
 {
   "slug": "bourges",
-  "name": "AggloBus (Bourges)",
+  "officialName": "AggloBus",
+  "nameQualifier": "Bourges",
   "region": "Centre-Val de Loire",
   "center": [
     47.081,

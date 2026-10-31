@@ -1,6 +1,7 @@
 {
   "slug": "all-points-transit",
-  "name": "All Points Transit (Montrose)",
+  "officialName": "All Points Transit",
+  "nameQualifier": "Montrose",
   "websiteUrl": "https://www.allpointstransit.com/",
   "center": [
     38.47,

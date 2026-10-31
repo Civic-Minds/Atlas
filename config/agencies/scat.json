@@ -1,6 +1,7 @@
 {
   "slug": "scat",
-  "name": "Breeze Transit (Sarasota County)",
+  "officialName": "Breeze Transit",
+  "nameQualifier": "Sarasota County",
   "websiteUrl": "https://www.scgov.net/government/breeze-transit",
   "center": [
     27.34,

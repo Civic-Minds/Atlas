@@ -1,6 +1,7 @@
 {
   "slug": "metra",
-  "name": "Metra (Chicago)",
+  "officialName": "Metra",
+  "nameQualifier": "Chicago",
   "displayArea": "Chicago",
   "websiteUrl": "http://www.metrarail.com/",
   "center": [

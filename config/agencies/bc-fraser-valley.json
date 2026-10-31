@@ -1,6 +1,7 @@
 {
   "slug": "bc-fraser-valley",
-  "name": "BC Transit (Fraser Valley)",
+  "officialName": "BC Transit",
+  "nameQualifier": "Fraser Valley",
   "region": "British Columbia",
   "center": [
     49.05,

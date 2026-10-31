@@ -1,6 +1,7 @@
 {
   "slug": "psta",
-  "name": "Pinellas Suncoast Transit Authority (PSTA)",
+  "officialName": "Pinellas Suncoast Transit Authority",
+  "commonName": "PSTA",
   "center": [
     27.8704,
     -82.7219

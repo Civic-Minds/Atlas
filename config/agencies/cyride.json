@@ -1,6 +1,7 @@
 {
   "slug": "cyride",
-  "name": "CyRide (Ames)",
+  "officialName": "CyRide",
+  "nameQualifier": "Ames",
   "websiteUrl": "http://www.cyride.com",
   "center": [
     42.03,

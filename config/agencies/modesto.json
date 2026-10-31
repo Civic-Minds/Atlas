@@ -1,6 +1,7 @@
 {
   "slug": "modesto",
-  "name": "Stanislaus Regional Transit Authority (The S)",
+  "officialName": "Stanislaus Regional Transit Authority",
+  "commonName": "The S",
   "websiteUrl": "http://www.stanrta.org",
   "center": [
     37.64,

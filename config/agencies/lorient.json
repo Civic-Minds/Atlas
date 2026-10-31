@@ -1,6 +1,7 @@
 {
   "slug": "lorient",
-  "name": "Izilo (Lorient)",
+  "officialName": "Izilo",
+  "nameQualifier": "Lorient",
   "region": "Bretagne",
   "center": [
     47.7483,

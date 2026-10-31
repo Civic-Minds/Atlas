@@ -1,6 +1,7 @@
 {
   "slug": "rockregion",
-  "name": "Rock Region Metro (Little Rock)",
+  "officialName": "Rock Region Metro",
+  "nameQualifier": "Little Rock",
   "websiteUrl": "https://rrmetro.org/",
   "center": [
     34.7362,

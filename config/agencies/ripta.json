@@ -1,6 +1,7 @@
 {
   "slug": "ripta",
-  "name": "Rhode Island Public Transit Authority (RIPTA)",
+  "officialName": "Rhode Island Public Transit Authority",
+  "commonName": "RIPTA",
   "websiteUrl": "http://www.ripta.com/",
   "center": [
     41.82,

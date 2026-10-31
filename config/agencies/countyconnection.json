@@ -1,6 +1,7 @@
 {
   "slug": "countyconnection",
-  "name": "County Connection (CCCTA)",
+  "officialName": "County Connection",
+  "commonName": "CCCTA",
   "websiteUrl": "http://www.countyconnection.com/",
   "center": [
     37.9068,

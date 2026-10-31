@@ -1,6 +1,7 @@
 {
   "slug": "collier",
-  "name": "Collier Area Transit (Naples)",
+  "officialName": "Collier Area Transit",
+  "nameQualifier": "Naples",
   "displayArea": "Naples",
   "websiteUrl": "https://ridecat.com/",
   "region": "Florida",

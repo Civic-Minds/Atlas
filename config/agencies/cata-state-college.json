@@ -1,6 +1,7 @@
 {
   "slug": "cata-state-college",
-  "name": "CATA (State College)",
+  "officialName": "CATA",
+  "nameQualifier": "State College",
   "websiteUrl": "http://www.catabus.com",
   "center": [
     40.79,

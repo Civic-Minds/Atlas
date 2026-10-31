@@ -1,6 +1,7 @@
 {
   "slug": "youngstown-wrta",
-  "name": "Western Reserve Transit Authority (Youngstown)",
+  "officialName": "Western Reserve Transit Authority",
+  "nameQualifier": "Youngstown",
   "center": [
     41.1,
     -80.65

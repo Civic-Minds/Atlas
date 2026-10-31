@@ -1,6 +1,7 @@
 {
   "slug": "campbell-river",
-  "name": "BC Transit (Campbell River)",
+  "officialName": "BC Transit",
+  "nameQualifier": "Campbell River",
   "websiteUrl": "https://www.bctransit.com/",
   "region": "British Columbia",
   "center": [

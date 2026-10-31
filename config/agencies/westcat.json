@@ -1,6 +1,7 @@
 {
   "slug": "westcat",
-  "name": "WestCAT (Pinole)",
+  "officialName": "WestCAT",
+  "nameQualifier": "Pinole",
   "displayArea": "Pinole",
   "websiteUrl": "http://www.westcat.org/",
   "center": [

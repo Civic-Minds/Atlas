@@ -1,6 +1,7 @@
 {
   "slug": "wilmington-nc",
-  "name": "Wave Transit (Wilmington)",
+  "officialName": "Wave Transit",
+  "nameQualifier": "Wilmington",
   "websiteUrl": "https://www.wavetransit.com/",
   "center": [
     34.23,

@@ -1,6 +1,7 @@
 {
   "slug": "ecat",
-  "name": "ECAT (Escambia County)",
+  "officialName": "ECAT",
+  "nameQualifier": "Escambia County",
   "center": [
     30.4594,
     -87.2423

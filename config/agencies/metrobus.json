@@ -1,6 +1,7 @@
 {
   "slug": "metrobus",
-  "name": "Metrobus (St. John's)",
+  "officialName": "Metrobus",
+  "nameQualifier": "St. John's",
   "websiteUrl": "https://www.metrobus.com",
   "region": "Newfoundland",
   "center": [

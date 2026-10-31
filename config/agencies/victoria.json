@@ -1,6 +1,7 @@
 {
   "slug": "victoria",
-  "name": "BC Transit (Victoria)",
+  "officialName": "BC Transit",
+  "nameQualifier": "Victoria",
   "region": "British Columbia",
   "center": [
     48.4284,

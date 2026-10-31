@@ -1,6 +1,7 @@
 {
   "slug": "terrebonne-parish",
-  "name": "Good Earth Transit (Houma)",
+  "officialName": "Good Earth Transit",
+  "nameQualifier": "Houma",
   "websiteUrl": "https://tpcg.org/index.php?f=public_transit",
   "region": "Louisiana",
   "center": [

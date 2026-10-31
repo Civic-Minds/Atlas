@@ -1,6 +1,7 @@
 {
   "slug": "sunline",
-  "name": "SunLine Transit Agency (Coachella Valley)",
+  "officialName": "SunLine Transit Agency",
+  "nameQualifier": "Coachella Valley",
   "websiteUrl": "https://www.sunline.org/",
   "center": [
     33.87,

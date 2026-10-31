@@ -1,6 +1,7 @@
 {
   "slug": "sam",
-  "name": "Sandy Area Metro (SAM)",
+  "officialName": "Sandy Area Metro",
+  "commonName": "SAM",
   "websiteUrl": "http://www.mthoodexpress.com/",
   "center": [
     45.3855,

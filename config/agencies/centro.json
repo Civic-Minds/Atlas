@@ -1,6 +1,7 @@
 {
   "slug": "centro",
-  "name": "Centro (Syracuse)",
+  "officialName": "Centro",
+  "nameQualifier": "Syracuse",
   "websiteUrl": "http://www.centro.org",
   "region": "New York",
   "center": [

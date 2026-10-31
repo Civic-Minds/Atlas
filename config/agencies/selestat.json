@@ -1,6 +1,7 @@
 {
   "slug": "selestat",
-  "name": "ELSA (Sélestat)",
+  "officialName": "ELSA",
+  "nameQualifier": "Sélestat",
   "websiteUrl": "https://elsa-mobilites.fr/",
   "region": "Grand Est",
   "center": [

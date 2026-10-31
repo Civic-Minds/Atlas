@@ -6,6 +6,7 @@
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { buildAgencyCatalog } from '../shared/agencyCatalog.js';
+import { indexEntryFromConfig } from '../shared/agencyRegistryName.js';
 import type { AtlasMode } from '../shared/config.js';
 
 export const CATALOG_MODES: AtlasMode[] = ['public', 'preview', 'beta', 'dev'];
@@ -19,7 +20,8 @@ export function generateAgencyIndex(sourceDir: string): { contents: string; agen
   const order = files.length > 0 && existsSync(orderPath)
     ? JSON.parse(readFileSync(orderPath, 'utf8')) as string[]
     : files.map(name => name.replace(/\.json$/, '')).sort();
-  const agencies = order.map(slug => JSON.parse(readFileSync(resolve(sourceDir, `${slug}.json`), 'utf8')) as Record<string, unknown>);
+  // Each entry gains its registry `name`, built from the config's name fields (#1245).
+  const agencies = order.map(slug => indexEntryFromConfig(JSON.parse(readFileSync(resolve(sourceDir, `${slug}.json`), 'utf8')) as Record<string, unknown>));
 
   if (agencies.length === 0) throw new Error('No agency source files found');
   const slugs = new Set<unknown>();

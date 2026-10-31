@@ -1,6 +1,7 @@
 {
   "slug": "mulhouse",
-  "name": "Soléa (Mulhouse)",
+  "officialName": "Soléa",
+  "nameQualifier": "Mulhouse",
   "region": "Grand Est",
   "center": [
     47.7508,

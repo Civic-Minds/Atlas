@@ -1,6 +1,7 @@
 {
   "slug": "chambery",
-  "name": "Synchro (Chambéry)",
+  "officialName": "Synchro",
+  "nameQualifier": "Chambéry",
   "region": "Auvergne-Rhône-Alpes",
   "center": [
     45.5646,

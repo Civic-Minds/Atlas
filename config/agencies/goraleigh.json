@@ -1,6 +1,7 @@
 {
   "slug": "goraleigh",
-  "name": "GoRaleigh (Capital Area Transit)",
+  "officialName": "GoRaleigh",
+  "nameQualifier": "Capital Area Transit",
   "shortName": "GoRaleigh",
   "labelPlace": "Raleigh",
   "websiteUrl": "http://www.GoRaleigh.org",

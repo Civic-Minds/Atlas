@@ -1,6 +1,7 @@
 {
   "slug": "codiac",
-  "name": "Codiac Transpo (Moncton)",
+  "officialName": "Codiac Transpo",
+  "nameQualifier": "Moncton",
   "region": "New Brunswick",
   "center": [
     46.0878,

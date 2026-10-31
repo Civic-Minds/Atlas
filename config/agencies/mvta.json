@@ -1,6 +1,7 @@
 {
   "slug": "mvta",
-  "name": "Minnesota Valley Transit Authority (MVTA)",
+  "officialName": "Minnesota Valley Transit Authority",
+  "commonName": "MVTA",
   "websiteUrl": "http://www.mvta.com",
   "center": [
     44.6,

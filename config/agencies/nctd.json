@@ -1,6 +1,7 @@
 {
   "slug": "nctd",
-  "name": "North County Transit District (NCTD)",
+  "officialName": "North County Transit District",
+  "commonName": "NCTD",
   "websiteUrl": "http://www.gonctd.com",
   "center": [
     33.1545,

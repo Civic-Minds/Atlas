@@ -1,6 +1,7 @@
 {
   "slug": "sun-tran",
-  "name": "Sun Tran (Tucson)",
+  "officialName": "Sun Tran",
+  "nameQualifier": "Tucson",
   "websiteUrl": "https://www.SunTran.com",
   "center": [
     32.22,
