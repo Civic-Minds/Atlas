@@ -1,17 +1,17 @@
 import type { HoveredBranch, ShapeProperties, TimePeriod } from '../hooks/useIntervalStats';
 import { resolveBranchLabel } from './format';
-import { routeCardDisplayHeadwayRange, routeCardDisplayLimited, hasDirectionPeriodService, NO_REGULAR_SERVICE_LABEL } from './effectiveHeadway';
+import { hasDirectionPeriodService, NO_REGULAR_SERVICE_LABEL } from './effectiveHeadway';
 import { buildRouteServiceSummary } from './routeFacts';
 import { unevenPeriodMaxGap } from './routeCardUneven';
 import { rowTrips } from './rowTrips';
 import { routeCardRowValue, type RouteCardRowValue } from './routeCardRowValue';
-import { dirIdNum, groupTrunkHeadway, sharedStopIdsForBranches, sharedStretchHeadway, shouldShowTrunkSummary, sparklineSourceDirections, stretchSharedHeadway } from './routeCardTrunk';
+import { dirIdNum, groupTrunkHeadway, sharedStopIdsForBranches, sharedStretchHeadway, shouldShowBranchHeadwayRange, shouldShowTrunkSummary, sparklineSourceDirections, stretchSharedHeadway } from './routeCardTrunk';
 import { shouldShowDirectionSections } from './routeCardDirectionLayout';
 import { rowLabelWithOrigin } from './rowOriginLabel';
 import { hasStretchRoles, routeAllDayContract, routeContract, type RouteContract } from './stretchCard';
 import { featurePassesHeadwayFilter } from '../../shared/routeHeadwayFilter';
 import { headwayAbout, headwayAboutRange } from './headwayText';
-import { LIMITED_SERVICE_LABEL, SHARED_STRETCH_LABEL } from '../content/noticeCopy';
+import { LIMITED_SERVICE_LABEL, NO_REGULAR_SERVICE_SHORT_LABEL, SHARED_STRETCH_LABEL } from '../content/noticeCopy';
 import type { RouteCardDirectionGroup } from './routeCardDirectionGroups';
 
 /**
@@ -86,6 +86,7 @@ export interface RouteCardModelInput {
   nightView: boolean;
   /** Compare (CIV-844). */
   stableColors: boolean;
+  /** Not read: the card and its report show span rows whether or not the irregular-service filter is on (#1230). */
   hideSpan: boolean;
 }
 
@@ -135,8 +136,23 @@ function rowHover(dirId: number, headsign: string | null | undefined, routeVaria
   return { directionId: dirId, headsign, ...(routeVariant ? { routeVariant } : {}) };
 }
 
+/**
+ * The words a row's value shows on the card (RouteDirectionRow): its limited words, the trunk-to-branch range, its own
+ * words or its number. Null data reads "no data for this period", never a claim that nothing runs (#297).
+ */
+export function reportRowValueText(row: CardRow): string {
+  if (row.night) return row.night.grade != null ? headwayAbout(row.night.grade) : NO_REGULAR_SERVICE_SHORT_LABEL;
+  const { value, limitedLabel } = row.display(null);
+  if (value.isLimited) return limitedLabel ?? LIMITED_SERVICE_LABEL;
+  if (value.headway == null) return 'no data for this period';
+  if (value.trunkHeadway != null && shouldShowBranchHeadwayRange(value.trunkHeadway, value.headway)) {
+    return headwayAboutRange(value.trunkHeadway, value.headway);
+  }
+  return value.headwayLabel ?? headwayAbout(value.headway);
+}
+
 export function buildRouteCardModel(input: RouteCardModelInput): RouteCardModel {
-  const { directions, directionGroups, agencyFeatures, period, maxHeadway, nightView, stableColors, hideSpan } = input;
+  const { directions, directionGroups, agencyFeatures, period, maxHeadway, nightView, stableColors } = input;
   // Frequency focus: rows come from the stretches, and the route-level number is the filter's own value with its range.
   const stretchMode = hasStretchRoles(directions);
   const contract = routeContract(directions, period);
@@ -192,41 +208,6 @@ export function buildRouteCardModel(input: RouteCardModelInput): RouteCardModel 
       valueEnd: stableColors && value.rowNoRegular,
     };
   };
-
-  const reportServiceLines = displayGroups.flatMap((group, gi) => {
-    const section = showDirectionSections && group.boundLabel ? [`${group.boundLabel}:`] : [];
-    const branchLines = group.realTier
-      .map(direction => {
-        const label = destinationLabel(group, direction, gi);
-        // resolveBranchLabel can legitimately return '' (e.g. destination redundant with a
-        // section header already shown) -- fine for the polished card, but the report text's
-        // whole job is completeness, so a branch with real data must never be silently dropped
-        // just because it has nothing distinctive to say (#300). Fall back to something, not null.
-        const reportLabel = label || direction.headsign?.trim() || `Direction ${direction.directionId ?? gi}`;
-        const headway = rowTrips(direction, period).value;
-        // Not "no scheduled service" -- null means the pipeline didn't compute a value for this
-        // period, which can happen even when real service exists (#297). Don't assert absence.
-        const range = routeCardDisplayHeadwayRange(direction, period);
-        const isLimited = routeCardDisplayLimited(direction, period);
-        return `- ${reportLabel}: ${headway != null ? headwayAbout(headway) : range ?? (isLimited ? 'limited service' : 'no data for this period')}`;
-      })
-      .filter((line): line is string => line !== null);
-    const limitedLines = !hideSpan
-      ? group.span
-          .map(direction => destinationLabel(group, direction, gi))
-          .filter(Boolean)
-          .map(label => `- ${label}: limited service`)
-      : [];
-    // CIV-82: pooled shared-stretch cadence from real departures, when the data has it.
-    const shared = sharedStretchHeadway(agencyFeatures, group.realTier, period, maxHeadway);
-    const branchHeadways = [...new Set(group.realTier
-      .map(direction => rowTrips(direction, period).value)
-      .filter((v): v is number => v != null))].sort((a, b) => a - b);
-    const sharedLines = shared && branchHeadways.length > 0
-      ? [`- Shared stretch ${headwayAbout(shared.headway)}; each branch ${branchHeadways.length === 1 ? headwayAbout(branchHeadways[0]) : headwayAboutRange(branchHeadways[0], branchHeadways[branchHeadways.length - 1])}`]
-      : [];
-    return [...section, ...sharedLines, ...branchLines, ...limitedLines];
-  });
 
   const groups: CardGroup[] = displayGroups.map((group, gi) => {
     // CIV-82: real pooled departures replace the reciprocal-of-medians estimate when the
@@ -301,6 +282,28 @@ export function buildRouteCardModel(input: RouteCardModelInput): RouteCardModel 
       spanRows,
       hasVisibleRows: groupHasCoreSummary || group.realTier.length > 0 || exclusiveSpans.length > 0,
     };
+  });
+
+  // #1230: the issue report states what the card shows, row by row, read from the same groups and rows (it used to
+  // recompute its own values: TTC 100 AM read "every 32" beside the card's "Shared stretch every 5").
+  const reportServiceLines = groups.flatMap((group, gi) => {
+    const section = showDirectionSections && group.boundLabel ? [`${group.boundLabel}:`] : [];
+    const shown = group.rows.map(row => ({ row, value: row.night ? null : row.display(null).value }));
+    const branchHeadways = [...new Set(shown
+      .map(({ value }) => (value && !value.isLimited ? value.headway : undefined))
+      .filter((h): h is number => h != null))].sort((a, b) => a - b);
+    const sharedLines = group.shared
+      ? [`- ${group.shared.label} ${headwayAbout(group.shared.headway)}${branchHeadways.length === 0 ? ''
+        : `; each branch ${branchHeadways.length === 1 ? headwayAbout(branchHeadways[0]) : headwayAboutRange(branchHeadways[0], branchHeadways[branchHeadways.length - 1])}`}`]
+      : [];
+    const branchLines = shown.map(({ row }) => {
+      // The report's whole job is completeness: a row whose label is empty (redundant with its section) still gets
+      // one (#300).
+      const reportLabel = row.label || row.feature.headsign?.trim() || `Direction ${row.feature.directionId ?? gi}`;
+      return `- ${reportLabel}: ${reportRowValueText(row)}`;
+    });
+    const spanLines = group.spanRows.filter(span => span.label).map(span => `- ${span.label}: ${LIMITED_SERVICE_LABEL}`);
+    return [...section, ...sharedLines, ...branchLines, ...spanLines];
   });
 
   const rowHeadways = groups.flatMap(g => g.source.realTier).map(d => routeCardRowValue(d, rowContext).headway)

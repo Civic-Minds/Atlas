@@ -28,6 +28,11 @@ describe('a main stretch several patterns share (#1185)', () => {
     expect(group.shared?.headway).toBe(8);
     expect(group.rows.map(r => r.display(null).value.headway)).toEqual([16, 16]);
   });
+  it('the issue report states the card\'s Shared stretch value, not one of its own (#1230)', () => {
+    const lines = card([pattern(0, "Exhibition (Princes' Gates)", 49), pattern(0, 'Exhibition (Dufferin Gate)', 45)]).reportServiceLines;
+    expect(lines[0]).toBe('- Shared stretch every 8 min; each branch every 16 min');
+    expect(lines.slice(1).every(line => line.endsWith(': every 16 min'))).toBe(true);
+  });
   it('one destination: its one row reads the pooled value, with no 8-16 range', () => {
     const [group] = card([pattern(1, 'Wilson', 46), pattern(1, 'Wilson', 44)]).groups;
     expect(group.shared).toBeNull();
