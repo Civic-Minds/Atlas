@@ -27,17 +27,9 @@ const RULES: Array<{ name: string; pattern: RegExp }> = [
   { name: 'text set in capitals (uppercase class or textTransform)', pattern: /\buppercase\b|textTransform/ },
 ];
 
-// Waiting for Ryan's word-for-word OK, so not changed yet: remove each entry when its new wording lands. The Live wording
-// is on the CIV-1237 review page; the docs page is CIV-1236's.
-const PENDING: Record<string, string[]> = {
-  '"timetable" (say "schedule")': [
-    'LiveExplorePage.tsx', 'components/charts/GapsChart.tsx', 'components/Live/LiveRoutePerformance.tsx', 'components/Live/methodLines.tsx',
-    'components/Live/sections/BunchingSection.tsx', 'components/Live/sections/ExtraWaitSection.tsx', 'components/Live/sections/MethodSection.tsx',
-    'components/Live/sections/RunTimeSection.tsx',
-  ],
-  '"steady" (say "consistent")': ['AboutDocsPage.tsx'],
-  'a lowercase am/pm or a.m./p.m. (write "7 AM", from shared/timeText.ts)': ['AboutDocsPage.tsx'],
-};
+// Files with a slip still waiting on Ryan's word-for-word OK, by rule; remove each entry when its new wording lands.
+// Empty since the CIV-1237 pass.
+const PENDING: Record<string, string[]> = {};
 
 // Block comments, and line comments that don't start inside a string or a URL.
 const code = (text: string) => text.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:'"`\w])\/\/.*$/gm, '$1');

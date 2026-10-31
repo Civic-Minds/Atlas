@@ -8,7 +8,7 @@ import { clockTime } from './timeText';
 
 /** The Late tile's caption under its percentage. */
 /** What Late means, once, for every page, panel and the glossary (approved by Ryan 2026-10-17). Reads after "Late:". */
-export const LATE_DEFINITION = "more than 5½ min behind the timetable: the TTC's 5-minute standard, plus 30 seconds because we see each vehicle about once a minute.";
+export const LATE_DEFINITION = "more than 5½ min behind the schedule: the TTC's 5-minute standard, plus 30 seconds because we see each vehicle about once a minute.";
 /** The title of every late-by-hour section and card (approved by Ryan 2026-10-17). */
 export const LATE_BY_HOUR_TITLE = 'Late departures by hour';
 /** The threshold in one phrase, wherever a caption or intro says how late counts as Late (approved by Ryan 2026-10-17). */
@@ -85,8 +85,8 @@ export const METHOD_GROUPS = {
 /** The recording-gaps limit, said once per page. */
 export const RECORDING_GAPS = "days with gaps in our recordings are left out, and trips during those gaps aren't counted.";
 
-/** Run time against the timetable in whole minutes: "2 min faster than the timetable" (the tile's caption), or without the tail in a table cell. */
-export const runTimeDiffText = (diffMin: number, tail = true): string => (diffMin === 0 ? 'same as the timetable' : `${Math.abs(diffMin)} min ${diffMin < 0 ? 'faster' : 'slower'}${tail ? ' than the timetable' : ''}`);
+/** Run time against the timetable in whole minutes: "2 min faster than the schedule" (the tile's caption), or without the tail in a table cell. */
+export const runTimeDiffText = (diffMin: number, tail = true): string => (diffMin === 0 ? 'same as the schedule' : `${Math.abs(diffMin)} min ${diffMin < 0 ? 'faster' : 'slower'}${tail ? ' than the schedule' : ''}`);
 
 /** A rise in a share, in percentage points: "+31 pt" (the unit the tiles use for a change in a share). */
 export const risePointsText = (rise: number): string => `${rise > 0 ? '+' : ''}${Math.round(rise * 100)} pt`;
