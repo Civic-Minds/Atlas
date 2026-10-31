@@ -7,7 +7,7 @@ import { pairedTripPeriodFloor, pairedTripSafeHeadway } from './pairedTripFloor'
 import { delayAmount, headwayAboutRange, headwayEvery, headwayEveryRange, headwayPeriodShape } from './headwayText';
 import { routeFilterAllDayContract, routeFilterContract, routeValueIsOneGap } from './stretchCard';
 import { clockTime } from '../../shared/timeText';
-import { LIMITED_SERVICE_LABEL, NO_REGULAR_SERVICE_LABEL, NO_REGULAR_SERVICE_SHORT_LABEL } from '../content/noticeCopy';
+import { LIMITED_SERVICE_LABEL, IRREGULAR_PERIOD_LABEL, IRREGULAR_PERIOD_SHORT_LABEL } from '../content/noticeCopy';
 import { routeCardLowestHeadway } from './routeListRange';
 
 export { pairedTripPeriodFloor, pairedTripSafeHeadway } from './pairedTripFloor';
@@ -315,7 +315,7 @@ export function routeListDisplayHeadway(features: readonly ShapeProperties[], pe
  * number (#708); a direction that runs with no cadence makes the route limited (#821).
  */
 export function routeListDisplayLimited(features: readonly ShapeProperties[], period: TimePeriod): boolean {
-  // No regular service (the filter's null) is its own wording, not "limited".
+  // No regular cadence (the filter's null) is its own wording, not "limited".
   // The filter's null (runs or not) means no number and no "limited" either.
   const contract = routeFilterContract(features, period);
   if (contract != null && contract.filterValue == null) return false;
@@ -327,10 +327,10 @@ export function routeListDisplayLimited(features: readonly ShapeProperties[], pe
     && features.some(feature => routeCardDisplayLimited(feature, period));
 }
 
-/** The words every card and list shows where the filter says a route has no regular service in the period (D2, D3 in noticeCopy). */
-export { NO_REGULAR_SERVICE_LABEL, NO_REGULAR_SERVICE_SHORT_LABEL };
+/** The words every card and list shows where the filter says a route has no regular cadence in the period (D2, D3 in noticeCopy). */
+export { IRREGULAR_PERIOD_LABEL, IRREGULAR_PERIOD_SHORT_LABEL };
 
-/** The filter says the route has no regular service in this period: lists say NO_REGULAR_SERVICE_LABEL, never a number. */
+/** The filter says the route has no regular cadence in this period: lists say IRREGULAR_PERIOD_LABEL, never a number. */
 export function routeListNoRegularService(features: readonly ShapeProperties[], period: TimePeriod): boolean {
   const contract = routeFilterContract(features, period);
   return (contract != null && contract.filterValue == null && contract.runs) || routeValueIsOneGap(features, period);
@@ -339,7 +339,7 @@ export function routeListNoRegularService(features: readonly ShapeProperties[], 
 export interface RouteListDisplay {
   headway: number | null;
   limited: boolean;
-  /** The filter's null for a route that does run in the period: show "no regular service". */
+  /** The filter's null for a route that does run in the period: show "Irregular". */
   noRegular?: boolean;
   /** Lower end of a display-only range on the shared stretch; absent when there is none. */
   sharedHeadway?: number;
@@ -349,11 +349,11 @@ export interface RouteListDisplay {
 
 /**
  * One compare side in a list row (CIV-844, Ryan's format "A every 3 · B every 4"): the side's letter and its number,
- * or its existing limited / no-regular-service word. Null when the route has nothing on that side.
+ * or its existing limited / irregular-period word. Null when the route has nothing on that side.
  */
 export function compareSideListText(label: 'A' | 'B', display: RouteListDisplay): string | null {
   if (display.headway != null && display.headway < 999) return `${label} every ${display.headway}`;
-  if (display.noRegular) return `${label} ${NO_REGULAR_SERVICE_SHORT_LABEL}`;
+  if (display.noRegular) return `${label} ${IRREGULAR_PERIOD_SHORT_LABEL}`;
   if (display.limited) return `${label} ${LIMITED_SERVICE_LABEL}`;
   return null;
 }

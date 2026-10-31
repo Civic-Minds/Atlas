@@ -30,7 +30,7 @@ export interface NearbyRoute {
   headway: number | null;
   /** True when the row shows "limited" instead of a cadence (shared rule, #708). */
   limited: boolean;
-  /** The filter says no regular service in this period (shown instead of a number). */
+  /** The filter finds no regular cadence in this period: shown as "Irregular", not a number. */
   noRegular?: boolean;
   /** Lower end of a shared-stretch range (display only). */
   sharedHeadway?: number;

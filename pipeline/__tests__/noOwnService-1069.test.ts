@@ -6,7 +6,7 @@ import { processAgencyFeeds } from '../agencyFeeds.js';
 
 // CIV-1069: a headsign with under three of its own departures in a period shows a value read from
 // other headsigns' trips at its terminal stop. The value stays (the route filter reads it); the
-// feature lists those periods in noOwnServiceByPeriod so its card row reads no regular service.
+// feature lists those periods in noOwnServiceByPeriod so its card row reads Irregular.
 
 const FIXTURE = join(import.meta.dirname, 'fixtures', 'cta-77-weekday');
 

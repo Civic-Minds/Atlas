@@ -50,7 +50,7 @@ describe('rowTrips (CIV-1069): a row reads its value, gap and part-period words 
       },
     });
     expect(rowTrips(main, 'midday')).toMatchObject({ value: 10, longestGap: 10 });
-    // A stretch with no regular service in the period leaves the row its own full-window wait.
+    // A stretch with no regular cadence in the period leaves the row its own full-window wait.
     const noRegular = { ...main, stretchMeta: { ...main.stretchMeta!, main: { ...main.stretchMeta!.main!, noRegular: ['midday'] } } } as ShapeProperties;
     expect(rowTrips(noRegular, 'midday')).toMatchObject({ value: 256, longestGap: 256 });
   });

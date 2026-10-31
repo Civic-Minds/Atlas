@@ -41,7 +41,7 @@ export interface AgencyPageRoute {
   overnight: number | null;
   /** Periods where the route runs but has no trustworthy cadence (the route card says "limited"). */
   limited?: Array<'am' | 'midday' | 'pm' | 'evening' | 'overnight'>;
-  /** #1249: periods where the route runs but the filter finds no regular service (the map list says "no regular service"). */
+  /** #1249: periods where the route runs but the filter finds no regular cadence (the map list says "Irregular"). */
   noRegular?: Array<'am' | 'midday' | 'pm' | 'evening' | 'overnight'>;
   /** Lower end of a shared-stretch range per period, where alternating branches combine (display only). */
   shared?: Partial<Record<'am' | 'midday' | 'pm' | 'evening' | 'overnight', number>>;

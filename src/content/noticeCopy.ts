@@ -175,12 +175,12 @@ export const NO_FEED_MATCHES = 'No feeds match your search or filter.';
 // ---- Route labels and setting definitions (CIV-957 item 2): each written once, used by every card, list and setting ----
 // D1 route-limited: a row with no steady frequency in the period ("limited" in place of a number).
 export const LIMITED_SERVICE_LABEL = 'limited';
-// D2 no-regular-service: the filter says the route has no regular service in the period.
-export const NO_REGULAR_SERVICE_LABEL = 'no regular service during this period';
-// D3 no-regular-service-short: the same, for the narrow Nearby and search rows.
-export const NO_REGULAR_SERVICE_SHORT_LABEL = 'no regular service';
-// D4 setting-hide-one-off
-export const HIDE_ONE_OFF_SETTING = { label: 'Hide one-off routes', description: 'School runs, a few trips a day, on-demand.' } as const;
+// D2 irregular-period (Ryan's words, CIV-1238): the route runs in the period, but the filter finds no regular cadence. On cards.
+export const IRREGULAR_PERIOD_LABEL = 'Runs irregularly in this period';
+// D3 irregular-period-short: the same, in tight spots (table cells, list values).
+export const IRREGULAR_PERIOD_SHORT_LABEL = 'Irregular';
+// D4 setting-hide-occasional (Ryan, CIV-1238: "Occasional", not "one-off")
+export const HIDE_ONE_OFF_SETTING = { label: 'Hide occasional routes', description: 'School runs, a few trips a day, on-demand.' } as const;
 // D5 setting-hide-part-time
 export const HIDE_PART_TIME_SETTING = { label: 'Hide part-time routes', description: 'Only at rush hour, evenings, or some days.' } as const;
 // D6 setting-hide-degraded-feeds

@@ -51,7 +51,7 @@ const renderCard = (directions: ShapeProperties[], period: 'midday' | 'amPeak') 
     setHoveredBranch={() => {}}
   />,
 );
-const LONG = 'no regular service during this period';
+const LONG = 'Runs irregularly in this period';
 
 describe('a branch that does not run through a period has no row for it (#1115, Ryan 2026-10-26)', () => {
   it('TTC 84 midday: no Pioneer Village row at all (no every 21, no notice line); Weston Rd keeps every 7', () => {

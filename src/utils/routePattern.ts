@@ -1,5 +1,5 @@
 /**
- * The service pattern a route card names for part-time and one-off routes (#720): "Rush hour
+ * The service pattern a route card names for part-time and occasional routes (#720, CIV-1238): "Rush hour
  * only", "Evenings only", "Some days only" or "A few trips a day". Regular all-day routes get no
  * name. Exact day names ("Thu-Fri nights") need a pipeline field and come later.
  */

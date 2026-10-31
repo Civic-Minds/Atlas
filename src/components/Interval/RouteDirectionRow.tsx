@@ -22,7 +22,7 @@ interface Props {
   /** The value keeps to the right edge when the row wraps it onto a line of its own (Compare, CIV-844). */
   valueEnd?: boolean;
   /** A long value (words such as "every 60 min until 5:05 PM") goes on a line of its own at the right, under the
-   *  whole destination name, as Compare's no-regular-service rows do (CIV-1143, Ryan 2026-10-30), never "to Centrepoi…". */
+   *  whole destination name, as Compare's irregular-period rows do (CIV-1143, Ryan 2026-10-30), never "to Centrepoi…". */
   wrapLongValue?: boolean;
   // Regular service
   headway?: number | null;
@@ -40,7 +40,7 @@ interface Props {
   live?: boolean;
   // Limited service
   limited?: boolean;
-  /** Words for the limited state; "no regular service" where the filter says the route has none in the period. */
+  /** Words for the limited state; "Irregular" where the filter says the route has none in the period. */
   limitedLabel?: string;
   edgeGapAllowance?: 'opening' | 'closing' | 'both';
   onEdgeGapAllowanceClick?: () => void;

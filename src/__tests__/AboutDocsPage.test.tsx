@@ -22,6 +22,6 @@ describe('Docs page Notices section (CIV-1236)', () => {
   it('keeps notices out of the glossary', () => {
     const { container } = render(<AboutDocsPage />);
     const glossary = container.querySelector('#glossary')!.textContent!;
-    expect(glossary).not.toMatch(/No regular service during this period|weekday schedules vary|schedule ended on/);
+    expect(glossary).not.toMatch(/Runs irregularly in this period|weekday schedules vary|schedule ended on/);
   });
 });

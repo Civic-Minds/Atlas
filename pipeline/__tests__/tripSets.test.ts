@@ -761,7 +761,7 @@ describe('stop runs encode compactly and round-trip (CIV-321 S3)', () => {
   });
 });
 
-describe('a stretch period with under three departures reads no regular service on a card row (CIV-321 S4)', () => {
+describe('a stretch period with under three departures reads Irregular on a card row (CIV-321 S4)', () => {
   it('flags the sparse period and keeps the filter value for the map', () => {
     const stretch = { kind: 'tail' as const, stops: ['a'], refStop: 'a', lengthKm: 1, times: [600, 783, 1000, 1030, 1060, 1090], nightTimes: [], tripCount: 6 };
     const meta = stretchMetaPeriods(stretch);
