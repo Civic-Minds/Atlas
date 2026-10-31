@@ -240,8 +240,9 @@ Ryan, 2026-10-31 (#1267, Linear CIV-1239): the map's Overnight value reads the n
 
 Implementation choices, pending Ryan's OK through the manager (not part of his decision):
 - A direction where nothing runs at night (departures on both sides of 3:30) has no Overnight value: day service starting at 4:48 is not overnight service (TTC 102).
-- A direction's card row reads its own Overnight value only when the whole direction passes. A direction that passes only on its night path (NYC subway 3 to New Lots Av: every 20 on the night path, 220 minutes apart at the row's own stops) reads no regular service there, while the route keeps its value.
+- A direction's card row reads its own Overnight value only when the whole direction passes. A direction that passes only on its night path (NYC subway 3 to New Lots Av: every 20 on the night path, 220 minutes apart at the row's own stops) has no value there (the card shows the shared irregular label), while the route keeps its value.
 - Overnight shows one number, with no branch range.
+- A direction that passes only at a gap over 60 has no Overnight value, as Night Service has no grade over 60 (TTC 504 had read "every 172").
 
 ### 2026-10-31 — The headline reads the rider's wait only where the route runs through that window
 

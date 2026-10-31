@@ -800,17 +800,21 @@ export function directionNightVerdict(d: DirectionStretches, gap: number): Night
  * most 60 exactly when it is Night Service 60. TTC 301 reads 30, not the 71 a 2-6am window gave it
  * across the 5-6am lull before day service. null: nothing in the direction runs at night (D3: no
  * stretch with departures on both sides of 3:30), as for day service that starts at 4:48 (TTC 102),
- * or no gap passes. `wholeDirection`: only a full pass counts, not one on the night version alone
+ * or no gap of 60 or less passes: Night Service's longest grade, so a wait like TTC 504's 172 minutes
+ * is not overnight service (#1267, pending Ryan's OK). `wholeDirection`: only a full pass counts, not one on the night version alone
  * (the direction's card row, which stands for the whole direction: NYC subway 3 to New Lots Av
  * runs every 20 at night on its night path, but 220 minutes apart at the row's own stops).
  */
+/** #1267: the longest Overnight value; a direction that passes only above it has none (Night Service's 60 grade). */
+export const NIGHT_OVERNIGHT_MAX_VALUE = 60;
+
 export function directionNightValue(d: DirectionStretches, wholeDirection = false): number | null {
   const stretches = [d.main, ...d.tails, ...(wholeDirection ? [] : [d.night?.main, ...(d.night?.tails ?? [])])];
   if (!stretches.some(st => st != null && runsAcrossNightMidpoint(st.nightTimes))) return null;
-  const max = STRETCH_NIGHT_END_MIN - STRETCH_NIGHT_START_MIN;
+  const max = NIGHT_OVERNIGHT_MAX_VALUE;
   const passes = (gap: number) => (wholeDirection ? directionNightVerdict(d, gap) === 'pass' : directionNightVerdict(d, gap) !== 'fail');
   if (!passes(max)) return null;
-  // The verdict only gets easier as the gap grows (the edge allowance is max(gap, 60)).
+  // The verdict only gets easier as the gap grows (the edge allowance stays 60 up to here).
   let lo = 1, hi = max;
   while (lo < hi) {
     const mid = Math.floor((lo + hi) / 2);
