@@ -263,6 +263,15 @@ button:disabled {
   cursor: not-allowed;
 }
 
+/* A picture with a light and a dark version (the About page, CIV-1206): only the current theme's shows. */
+[data-theme='dark'] .theme-light-only {
+  display: none;
+}
+
+:root:not([data-theme='dark']) .theme-dark-only {
+  display: none;
+}
+
 :where(button, a, select, textarea):focus-visible {
   outline: 2px solid var(--accent) !important;
   outline-offset: 2px;
