@@ -49,7 +49,7 @@ import {
 } from './overrideAudit.js';
 import { readFeedReviewHistory, shouldReviewNextFeed } from './feedReview.js';
 import { compareStopSnapshots, formatStopAuditLog, type AuditedStop } from './stopAudit.js';
-import { lowerStoredFeedExpiry, candidateIsOlderThanActive, shouldClearStaged, decideRefreshSkipUnchanged, isFeedExpired, markFeedStale, shouldReplaceExpiredFeed, shouldSkipAllExpiredFeeds, shouldStampFeedMeta, stampFeedMeta, routeLineCount, stampSupplementalFeedMeta } from './refreshMeta.js';
+import { feedFileDate, lowerStoredFeedExpiry, candidateIsOlderThanActive, shouldClearStaged, decideRefreshSkipUnchanged, isFeedExpired, markFeedStale, shouldReplaceExpiredFeed, shouldSkipAllExpiredFeeds, shouldStampFeedMeta, stampFeedMeta, routeLineCount, stampSupplementalFeedMeta } from './refreshMeta.js';
 import {
   COUNTRY_LAUNCH_FLAG,
   isCountryLaunchBlocked,
@@ -71,7 +71,7 @@ import { recordFeedCheck, type FeedCheckFields } from './feedCheckTracking.js';
 import { buildFeedCandidates, type FeedCandidate } from './feedSourceCandidates.js';
 import { resolveFeedUrl } from './feedUrl.js';
 import { ROUTE_ARTIFACT_SCHEMA_VERSION } from '../shared/artifactSchema.js';
-import { peekFeedDates } from './archiveSelection.js';
+import { peekFeedDates, zipFileDate } from './archiveSelection.js';
 import { tryArchiveUnchangedFeed } from './archiveIfMissing.js';
 import { futureFeedHoldUntil, heldFeedSummary } from './futureFeedHold.js';
 import { resolveAgencyTimezone } from '../shared/agencyTimezone.js';
@@ -533,10 +533,14 @@ async function refreshAgency(
   }
 
   // CIV-1011 safeguard: when Atlas first obtained this file. A new version or expiry is obtained
-  // today; an unchanged one keeps its recorded date (older records: the last refresh that processed it).
+  // today; an unchanged one keeps its recorded date, else the zip's own date (#1253).
   const newFile = (peekedVersion ?? null) !== (agency.lastFeedVersion ?? null) || (peekedExpiry ?? null) !== (agency.lastPeekedExpiry ?? agency.lastFeedExpiry ?? null);
   // The run date in the pipeline's time zone, as the picker's anchor reads it (CIV-1101), not UTC `today`.
-  const feedObtainedAt = newFile ? pipelineRunDateYmd() : agency.feedObtainedAt ?? agency.lastRefreshedAt?.replace(/-/g, '') ?? null;
+  const runDate = pipelineRunDateYmd();
+  const feedObtainedAt = feedFileDate({
+    newFile, runDate, feedObtainedAt: agency.feedObtainedAt,
+    zipDate: newFile || agency.feedObtainedAt ? null : await zipFileDate(buf, runDate),
+  });
   // CIV-1011 stage 4: the week the map reads moves with the run date, so an unchanged zip whose
   // picked week moved is reprocessed (the old picker's kill switch leaves the check as it was).
   const serviceWeek = process.env.ATLAS_LEGACY_REFERENCE_DATE === '1' ? null : await serviceWeekKey(buf);
