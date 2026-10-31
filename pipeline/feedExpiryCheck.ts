@@ -9,6 +9,7 @@ import { isZipBuffer } from './agencyFeeds.js';
 import { isCountryLaunchBlocked, resolveAgencyCountry, type AgencyCountrySource } from './countryLaunchGate.js';
 import { feedSetSha256, peekFeedInfo, pickFeedSource } from './feedPeek.js';
 import { buildFeedCandidates, type FeedCandidate } from './feedSourceCandidates.js';
+import { heldFeedsDue } from './futureFeedHold.js';
 import { resolveFeedUrl } from './feedUrl.js';
 import { isFeedExpired } from './refreshMeta.js';
 
@@ -73,12 +74,16 @@ export function expiringFeedCandidates(
     // Refresh skips these without the launch flag, so a check would pick them every day.
     if (isCountryLaunchBlocked(resolveAgencyCountry(agency), agencies)) continue;
     const pending = pendingBySlug.get(agency.slug);
-    // #1144: a timetable that hasn't started is already archived and waits; refresh would only hold it again.
-    if (agency.heldFeedStart || pending?.heldFeedStart) continue;
+    // #1144: a timetable that hasn't started is already archived and waits; refresh would only hold it again. On its
+    // start date it is due, and nothing else processes it before the weekly run.
+    const heldFeedStart = pending ? pending.heldFeedStart : agency.heldFeedStart;
+    const heldDue = heldFeedStart ? heldFeedsDue([{ slug: agency.slug, heldFeedStart }], opts.todayYmd).length > 0 : false;
+    if (heldFeedStart && !heldDue) continue;
     const mainRecorded = later(agency.lastPeekedExpiry ?? agency.lastFeedExpiry, pending?.lastPeekedExpiry ?? pending?.lastFeedExpiry);
     const supplementalRecorded = (agency.supplementalFeedUrls ?? []).map((_, i) =>
       later(agency.lastSupplementalFeeds?.[i]?.feedExpiry, pending?.lastSupplementalFeeds?.[i]?.feedExpiry));
     const reasons: string[] = [];
+    if (heldDue) reasons.push(`held timetable starts ${heldFeedStart}`);
     if ((agency.nextServiceDatesFeedUrls?.length ?? 0) > 0) reasons.push('rolling feed');
     if (mainRecorded && mainRecorded <= horizon) reasons.push(`main ends ${mainRecorded}`);
     supplementalRecorded.forEach((end, i) => { if (end && end <= horizon) reasons.push(`supplemental ${i + 1} ends ${end}`); });
