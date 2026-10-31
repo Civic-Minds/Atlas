@@ -181,8 +181,8 @@ export function buildRouteCardModel(input: RouteCardModelInput): RouteCardModel 
   const branchLabel = (group: RouteCardDirectionGroup, direction: ShapeProperties, gi: number) =>
     rowLabelWithOrigin(destinationLabel(group, direction, gi), direction, group.realTier);
   const rowContext = { period, hoveredHour: null, stretchMode, allDay, contract, noRegularService, maxHeadway };
-  const rowDisplay = (d: ShapeProperties, pooledMainH?: number) => (hoveredHour: number | null): CardRowDisplay => {
-    const value = routeCardRowValue(d, { ...rowContext, hoveredHour, pooledMainH });
+  const rowDisplay = (d: ShapeProperties, pooledMainH?: number, sharedRowShown?: boolean) => (hoveredHour: number | null): CardRowDisplay => {
+    const value = routeCardRowValue(d, { ...rowContext, hoveredHour, pooledMainH, sharedRowShown });
     return {
       value,
       limitedLabel: value.isLimited && value.edgeText ? value.edgeText : value.rowNoRegular ? (stableColors ? keepLastWordsTogether(noRegularLabel) : noRegularLabel) : undefined,
@@ -268,7 +268,7 @@ export function buildRouteCardModel(input: RouteCardModelInput): RouteCardModel 
         const grade = d.nightService30 === true ? 30 : d.nightService60 === true || d.nightService === true ? 60 : null;
         return { ...base, night: { grade, partOfRoute: d.nightServicePartOfRoute === true }, display: rowDisplay(d) };
       }
-      return { ...base, display: rowDisplay(d, group.pooledMain?.feature === d ? group.pooledMain.headway : undefined) };
+      return { ...base, display: rowDisplay(d, group.pooledMain?.feature === d ? group.pooledMain.headway : undefined, shared != null) };
     });
 
     const realHeadsignKeys = new Set(
