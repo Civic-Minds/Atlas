@@ -24,8 +24,8 @@ describe('part-period badges', () => {
   });
 
   it('lets a several-word limited value break between words instead of running over the row (TTC 25 northbound AM)', () => {
-    const { container } = render(<LimitedBadge label="no regular service during this period" />);
-    expect(container.textContent).toBe('no regular service during this period');
+    const { container } = render(<LimitedBadge label="Runs irregularly in this period" />);
+    expect(container.textContent).toBe('Runs irregularly in this period');
     expect(container.querySelector('.whitespace-nowrap')).toBeNull();
     expect(container.querySelector('.shrink-0.whitespace-nowrap')).toBeNull();
     expect(container.firstElementChild?.className).toContain('min-w-0');

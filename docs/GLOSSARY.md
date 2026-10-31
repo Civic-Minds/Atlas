@@ -164,9 +164,10 @@ These measures are different things. Never combine them, convert one into anothe
 | headline | `properties.headway` | "every N min" | `shared/headwayText.ts` only |
 | tier `'10'`…`'60'` | `tier` | "≤10 min" (legend) | `headwayTierLabel` |
 | tier `infrequent` | `tier` | "Infrequent" | |
-| tier `span` | `tier` | hidden by "Hide irregular routes" | not a frequency |
+| tier `span` | `tier` | hidden by "Hide occasional routes" | not a frequency |
 | `serviceClass: 'time-limited'` | `isLimitedService` | "Part-time" (About page, [STYLE.md](STYLE.md)), "Limited" (agency table), "limited service" (card), "Hide part-time routes" (filter) | "Time-limited" is the code value only; the UI word is "Part-time" |
-| `serviceClass: 'irregular'` | `isIrregularService` | "Irregular", "Hide irregular routes" | #720 decided "one-off", not shipped |
+| `serviceClass: 'irregular'` | `isIrregularService` | "Occasional" (About page), "Hide occasional routes" | CIV-1238 replaced #720's "one-off"; never "Irregular", which is the period wording |
+| `noRegular` / the filter's null where the route runs | `routeListNoRegularService`, `IRREGULAR_PERIOD_LABEL` | "Runs irregularly in this period" (cards), "Irregular" (table cells, list values) | CIV-1238; never "no regular service" |
 | midday variant | `middayVariant` | "limited service", headline blank | not a serviceClass |
 | pooled stop value | `stopHeadways` on a shared stretch | the card says the value is pooled | |
 | `gainedMedianSec` (Live) | `segmentDelayView.ts` | "Takes X longer than scheduled" | branch only |
@@ -179,7 +180,7 @@ These measures are different things. Never combine them, convert one into anothe
 ### Known mismatches
 
 - **"limited" vs "time-limited" vs "part-time"** (#720): the code class is `time-limited`. The UI word is "Part-time" (About page, STYLE.md); "Limited" and "limited service" also remain on the card. "Limited" on the card also covers midday variants and stops without a reading, which are not `time-limited`.
-- **"irregular" vs "one-off"** (#720): the code puts split-peak (rush-hour-only) service in `irregular`. So "Hide irregular routes" hides it, while the beta "Hide limited-service routes" description says it hides peak-only service. The About page says routes with only a few trips are labelled "limited", but in the code they are mostly `irregular`. #720 decided that irregular means one-off only and that rush-hour-only becomes part-time. That has not shipped.
+- **"irregular" vs "occasional"** (#720, CIV-1238): the code puts split-peak (rush-hour-only) service in `irregular`. So "Hide occasional routes" hides it, while the beta "Hide limited-service routes" description says it hides peak-only service. The About page says routes with only a few trips are labelled "limited", but in the code they are mostly `irregular`. #720 decided that the class means one-off (now "occasional", CIV-1238) only and that rush-hour-only becomes part-time. That has not shipped.
 - **"Extra wait" vs EWT** (Live, branch): the code says `excessWaitSec` and "TfL-style EWT", the methods note says "excess wait", the card footer says "Extra wait", and the row says "waited X longer". It is one measure under four names. Use "Extra wait" in the UI and `excessWaitSec` in code.
 - **Live card footer**: it says "Rounded to the nearest ½ min", but the 1-in-10 is rounded down. It says "fewer than 30 samples are left out" but leaves out the 5-day minimum.
 - **Stood-still colour**: the `stillColor` comment says red means "most days", but the code makes it red at 2 or more events per day on average (`events ≥ 2 × totalDays`).

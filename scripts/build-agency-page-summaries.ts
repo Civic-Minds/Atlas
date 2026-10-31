@@ -163,14 +163,17 @@ export function summarize(
     const ps = rows.get(key)!;
     const cols = [['midday', 'midday'], ['am', 'amPeak'], ['pm', 'pmPeak'], ['evening', 'evening'], ['overnight', 'overnight']] as const;
     const limited: NonNullable<AgencyPageRoute['limited']> = [];
+    const noRegular: NonNullable<AgencyPageRoute['noRegular']> = [];
     const shared: NonNullable<AgencyPageRoute['shared']> = {};
     for (const [col, period] of cols) {
       const d = routeListDisplay(ps, period);
       r[col] = d.headway;
       if (d.limited) limited.push(col);
+      if (d.noRegular) noRegular.push(col);
       if (d.sharedHeadway != null) shared[col] = d.sharedHeadway;
     }
     if (limited.length) r.limited = limited;
+    if (noRegular.length) r.noRegular = noRegular;
     if (Object.keys(shared).length) r.shared = shared;
   }
   if (boundaries) {

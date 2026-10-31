@@ -65,6 +65,8 @@ Words
 
 - Plain words a non-expert understands at once. No transit or technical jargon in labels, buttons or statuses.
 - "Part-time", not "Time-limited", for service that runs part of the day. CIV-211, #933.
+- "Irregular" for a period with no regular cadence where the route still runs: "Runs irregularly in this period" on cards, "Irregular" in table cells and list values. Never "no regular service", which reads as if nothing runs. CIV-1238.
+- "Occasional", not "one-off" or "irregular", for the route class hidden by default (school runs, a few trips a day, on-demand). CIV-1238.
 - "Schedule", not "timetable", in all UI text, on the map and in Live, including approved texts (Ryan, CIV-1079). Code names (`noTimetableTrip` and the like) stay.
 - "Consistent", not "steady" (Ryan, 2026-10-27: "\"steady\" should not be used - consistent is better"). CIV-1059.
 - Times: "2–5 AM", "11 AM–3 PM", "6:30–9 AM". Uppercase AM/PM after a space, an en dash between times (not "to"), no ":00" on the hour, AM/PM once when both times share it (Ryan, 2026-10-28). CIV-1095.
@@ -82,7 +84,7 @@ Card notices
 - No "so" joining two clauses in a notice or error (Ryan, 2026-10-26). State what happened, then what it means, as two short sentences if needed.
 - One kind of notice, one place (Ryan, CIV-1202). A route card has three:
   1. Under the title: what the card is. "Includes variants …", and data warnings about the schedule (expired or outdated, under review, corrected, map line missing or incomplete). Small, regular weight, grey; the data warnings end with "Learn more".
-  2. On the rows: anything about one direction or row. A direction with no service in the period is a row saying so ("no regular service during this period"), not a note. Row style: small, extra-bold, dark, fading with its row.
+  2. On the rows: anything about one direction or row. A direction with no service in the period is a row saying so ("Runs irregularly in this period"), not a note. Row style: small, extra-bold, dark, fading with its row.
   3. Below the rows: the whole route in the period. The filter line, "runs only from …", "no scheduled trips", uneven gaps, booking ahead and weekday variation, in that order. Small, regular weight, grey.
 - Each fact once: a notice shows only when it says something the rows don't. When a row already names the gap, the hours or a longer wait, the notice that repeats it is left out. `routeCardNotices` (src/utils/routeCardNotices.ts) decides every notice and its place; the card decides nothing.
 

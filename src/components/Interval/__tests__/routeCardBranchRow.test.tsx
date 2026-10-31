@@ -27,10 +27,10 @@ const renderRows = (directions: ShapeProperties[], period: 'midday' | 'pmPeak' |
   />,
 );
 
-const LONG = 'no regular service during this period';
+const LONG = 'Runs irregularly in this period';
 
 // #954: SF Muni 8, weekday PM peak. The route value is empty (City College has no regular
-// service), and the card read every row as "no regular service", including the Fisherman's
+// service), and the card read every row as "Irregular", including the Fisherman's
 // Wharf row that runs every 8.
 const muni = {
   routeId: '8', routeShortName: '8', routeType: 3, day: 'Weekday', tier: '10', serviceClass: 'regular', stretchRole: 'main', stretchIndex: 0,
@@ -52,8 +52,8 @@ const cityCollege = {
 // value is long also wraps (CIV-1143), so the row itself (justify-between) is left out.
 const partPeriodBadge = (re: RegExp) => (_: string, el: Element | null) => !!el?.classList.contains('flex-wrap') && !el.classList.contains('justify-between') && re.test(el.textContent ?? '');
 
-describe('route card rows when the route has no regular service (#954)', () => {
-  it("shows a row's own direction value; a row without one still reads no regular service", () => {
+describe('route card rows when the route has no regular cadence (#954)', () => {
+  it("shows a row's own direction value; a row without one still reads Irregular", () => {
     renderRows([cityCollege, wharf], 'pmPeak', 'sfmta');
     expect(screen.getByText('every 8 min')).toBeTruthy();
     expect(screen.getAllByText(LONG).length).toBe(1);
@@ -61,7 +61,7 @@ describe('route card rows when the route has no regular service (#954)', () => {
     expect(screen.queryByText(/every 40 min/)).toBeNull();
   });
 
-  it('a direction without pipeline fields stays hidden when the route has no regular service, as on main', () => {
+  it('a direction without pipeline fields stays hidden when the route has no regular cadence, as on main', () => {
     const bare = { routeId: '8', routeShortName: '8', routeType: 3, day: 'Weekday', tier: '10', serviceClass: 'regular', directionId: 1,
       headsign: "Fisherman's Wharf", headway: 12, headwayByPeriod: { pmPeak: 12 }, headwayByPeriodSustained: { pmPeak: true } } as unknown as ShapeProperties;
     renderRows([cityCollege, bare], 'pmPeak', 'sfmta');
@@ -131,7 +131,7 @@ describe('a number that is one gap between a few departures (#955)', () => {
     expect(hasRegularServiceInPeriod(steady, 'midday')).toBe(true);
   });
 
-  it('a one-gap period shows no regular service, never the #934 gap or edge wording', () => {
+  it('a one-gap period shows Irregular, never the #934 gap or edge wording', () => {
     const both = { ...vicPark, stretchPeriodGap: { midday: { every: 30, gap: 315 } }, stretchPeriodEdge: { midday: { from: 862, every: 30 } } } as unknown as ShapeProperties;
     renderRows([both], 'midday');
     expect(screen.getByText(LONG)).toBeTruthy();

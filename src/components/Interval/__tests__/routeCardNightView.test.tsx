@@ -40,7 +40,7 @@ describe('Night route card (CIV-934)', () => {
     expect(screen.getByText('every 30 min')).toBeTruthy();
     expect(screen.getByText('every 60 min')).toBeTruthy();
     expect(screen.queryByText('every 10 min')).toBeNull();
-    expect(screen.getByText('no regular service')).toBeTruthy();
+    expect(screen.getByText('Runs irregularly in this period')).toBeTruthy();
   });
 
   it('names a row that runs at night on only part of the route, as the Night list does', () => {

@@ -46,7 +46,7 @@ export interface StopRoute {
 
 /**
  * The route's headline, standing in where the stop has no all-day value of its own. CIV-1204: none where the headline's
- * window has no regular service (the route card's verdict), so it never reads as "every N".
+ * window has no regular cadence (the route card's verdict), so it never reads as "every N".
  */
 export function headlineStandIn(p: Pick<ShapeProperties, 'headway' | 'headlineNoRegular'>): number | null {
   return p.headlineNoRegular ? null : p.headway ?? null;
@@ -129,7 +129,7 @@ export function buildStopRoutes({ siblingIdsByAgency, routesByAgency, routePerio
       // in the period never reads its stretch's "from 5:34 AM" (TTC 100 to Pape, weekday overnight).
       const trips = rowTrips(p, period);
       const periodText = trips.partPeriod != null ? partPeriodText(p, period) : undefined;
-      // No cadence at the stop for a period the route card says has no regular service (#750), or where the
+      // No cadence at the stop for a period the route card says has no regular cadence (#750), or where the
       // destination has no service of its own and its value is other headsigns' trips (CIV-1069, rowTrips).
       if (!periodText && (!hasRegularServiceInPeriod(p, period) || trips.noOwnService)) continue;
 

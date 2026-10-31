@@ -190,7 +190,7 @@ export function pooledMainStretch(
  * value (stretchMeta.main) above its branch rows, each branch keeping its own wait. Only when the direction shows two
  * or more rows with a tail among them (the main stretch's own row is the branch that runs on past it), and the shared
  * value is materially better than the rows' (the Combined rule).
- * Null on data without the value, for All day, and for a period the main stretch has no regular service in.
+ * Null on data without the value, for All day, and for a period the main stretch has no regular cadence in.
  */
 export function stretchSharedHeadway(
   group: { realTier: ShapeProperties[]; directionFeatures?: ShapeProperties[] },

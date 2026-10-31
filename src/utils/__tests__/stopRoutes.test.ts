@@ -35,7 +35,7 @@ describe('stopRowHeadway: never overstate', () => {
 });
 
 describe('headlineStandIn (CIV-1204)', () => {
-  it("never stands a headline in where its window has no regular service (CAT 14 to Transfer Center: 315)", () => {
+  it("never stands a headline in where its window has no regular cadence (CAT 14 to Transfer Center: 315)", () => {
     expect(headlineStandIn({ headway: 315, headlineNoRegular: true })).toBeNull();
   });
   it('keeps the headline as the stand-in otherwise', () => {

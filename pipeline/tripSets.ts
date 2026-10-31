@@ -619,7 +619,7 @@ export function stretchMetaPeriods(s: Stretch): { period: Record<PeriodKey, numb
   // the stretch's value with a gap measured over one headsign's trips.
   const gaps = computePeriodMaxGaps([...s.times]);
   // The card's guard (#955): a period whose value is one gap, or that has under three departures (no
-  // cadence to read, only the full-window wait), reads "no regular service" on a row; the map keeps
+  // cadence to read, only the full-window wait), reads "Irregular" on a row; the map keeps
   // the filter value.
   const departures = (start: number, end: number) => new Set(forCrossMidnightWindow([...s.times], end).filter(t => t >= start && t <= end)).size;
   return {
@@ -816,7 +816,7 @@ export interface DirectionRollup {
      * Step 5a filter value: the worst counting stretch, each read as the tile rule reads a row
      * (steady with a full-window wait of PERIOD_COVERAGE_MAX_HEADWAY or less: its headway; else its
      * wait). null: the main stretch runs only stray or part-day trips in the period (no departure on
-     * one side of its midpoint), so the direction has no regular service there.
+     * one side of its midpoint), so the direction has no regular cadence there.
      */
     filterValue: number | null;
     /** The main stretch runs through the period (departures on both sides of its midpoint). */
@@ -1010,7 +1010,7 @@ export function rollupDirection(d: DirectionStretches): DirectionRollup | null {
     const uneven = period[key].typical != null;
     period[key].edge = uneven ? null : runs ? periodEdge(d.main.times, start, end, period[key].filterValue) : periodPartialEdge(d.main.times, start, end);
     // Only where the settled checks count the period as running: a big-gap period that does not
-    // run (TTC 504 overnight, 169 minutes against a typical 5) keeps "no regular service".
+    // run (TTC 504 overnight, 169 minutes against a typical 5) keeps "Irregular".
     period[key].gap = runs && !uneven && !period[key].edge ? periodOneGap(d.main.times, start, end) : null;
   }
   // D3 with the D8 midpoint test: a tail runs at night only when it has departures on both sides
@@ -1108,7 +1108,7 @@ export interface RouteRollup {
 
 /**
  * Rule 1: the route value is the worst direction, and a direction with no value (no stretch data,
- * or no regular service in the period) leaves the route with none: never one direction alone.
+ * or no regular cadence in the period) leaves the route with none: never one direction alone.
  * The range (D1, display only) runs from the worst direction's main stretch to the route value,
  * null when they agree. Night: every direction the route runs by day must pass. `dirs` holds one
  * entry per direction the route runs by day, null where it has no stretch data.

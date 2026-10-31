@@ -292,7 +292,7 @@ describe('stretchSharedHeadway (CIV-937)', () => {
     expect(stretchSharedHeadway({ realTier: bare, directionFeatures: bare }, 'midday')).toBeNull();
   });
 
-  it('shows nothing when the shared stretch has no regular service in the period', () => {
+  it('shows nothing when the shared stretch has no regular cadence in the period', () => {
     const noReg = branches.map(b => ({ ...b, stretchMeta: { main: { ...meta.main, noRegular: ['midday' as const] }, tails: [] } }));
     expect(stretchSharedHeadway({ realTier: noReg, directionFeatures: noReg }, 'midday')).toBeNull();
   });

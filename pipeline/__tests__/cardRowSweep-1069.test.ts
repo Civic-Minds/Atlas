@@ -4,7 +4,7 @@
  * - No row shows a number when its headsign runs fewer than 3 times itself in the period, unless the row reads its
  *   stretch (a main or tail slot, whose value is every trip of the stretch, CIV-939).
  * - No row shows a plain number beside a longest gap of half the period or more and at least twice the number: such a
- *   period reads its late start, early end or one gap in words (partPeriod), or no regular service.
+ *   period reads its late start, early end or one gap in words (partPeriod), or no regular cadence.
  * Today's cases are pinned in the snapshot (pipeline follow-ups); a new one changes it.
  */
 import { existsSync, readdirSync, readFileSync } from 'node:fs';

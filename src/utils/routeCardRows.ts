@@ -1,6 +1,6 @@
 import type { HoveredBranch, ShapeProperties, TimePeriod } from '../hooks/useIntervalStats';
 import { resolveBranchLabel } from './format';
-import { hasDirectionPeriodService, NO_REGULAR_SERVICE_LABEL } from './effectiveHeadway';
+import { hasDirectionPeriodService } from './effectiveHeadway';
 import { buildRouteServiceSummary } from './routeFacts';
 import { unevenPeriodMaxGap } from './routeCardUneven';
 import { rowTrips } from './rowTrips';
@@ -11,7 +11,7 @@ import { rowLabelWithOrigin } from './rowOriginLabel';
 import { hasStretchRoles, routeFilterAllDayContract, routeFilterContract, type RouteContract } from './stretchCard';
 import { featurePassesHeadwayFilter } from '../../shared/routeHeadwayFilter';
 import { headwayAbout, headwayAboutRange } from './headwayText';
-import { LIMITED_SERVICE_LABEL, NO_REGULAR_SERVICE_SHORT_LABEL, SHARED_STRETCH_LABEL } from '../content/noticeCopy';
+import { LIMITED_SERVICE_LABEL, IRREGULAR_PERIOD_LABEL, SHARED_STRETCH_LABEL } from '../content/noticeCopy';
 import type { RouteCardDirectionGroup } from './routeCardDirectionGroups';
 
 /**
@@ -141,7 +141,7 @@ function rowHover(dirId: number, headsign: string | null | undefined, routeVaria
  * words or its number. Null data reads "no data for this period", never a claim that nothing runs (#297).
  */
 export function reportRowValueText(row: CardRow): string {
-  if (row.night) return row.night.grade != null ? headwayAbout(row.night.grade) : NO_REGULAR_SERVICE_SHORT_LABEL;
+  if (row.night) return row.night.grade != null ? headwayAbout(row.night.grade) : IRREGULAR_PERIOD_LABEL;
   const { value, limitedLabel } = row.display(null);
   if (value.isLimited) return limitedLabel ?? LIMITED_SERVICE_LABEL;
   if (value.headway == null) return 'no data for this period';
@@ -160,7 +160,7 @@ export function buildRouteCardModel(input: RouteCardModelInput): RouteCardModel 
   const allDay = period === 'all' ? routeFilterAllDayContract(directions) : undefined;
   const noRegularService = (contract != null && contract.filterValue == null && contract.runs)
     || (allDay != null && allDay.filterValue == null);
-  const noRegularLabel = allDay?.limited ? LIMITED_SERVICE_LABEL : NO_REGULAR_SERVICE_LABEL;
+  const noRegularLabel = allDay?.limited ? LIMITED_SERVICE_LABEL : IRREGULAR_PERIOD_LABEL;
   const hasPeriodService = period === 'all' || directionGroups.some(group =>
     group.realTier.some(direction => rowTrips(direction, period).value != null) ||
     group.span.length > 0,
@@ -202,7 +202,7 @@ export function buildRouteCardModel(input: RouteCardModelInput): RouteCardModel 
     return {
       value,
       limitedLabel: value.isLimited && value.edgeText ? value.edgeText : value.rowNoRegular ? (stableColors ? keepLastWordsTogether(noRegularLabel) : noRegularLabel) : undefined,
-      // Compare (CIV-844): a row that reads "no regular service during this period" puts the whole
+      // Compare (CIV-844): a row that reads "Runs irregularly in this period" puts the whole
       // destination name on its line and the value under it (the row's own wrap layout), never "to Roncesval…".
       singleLine: !(stableColors && value.rowNoRegular),
       valueEnd: stableColors && value.rowNoRegular,

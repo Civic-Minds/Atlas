@@ -22,7 +22,7 @@ export interface RouteCardRowContext {
   allDay?: { filterValue: number | null; limited: boolean };
   /** The route's contract for the selected period. */
   contract?: RouteContract;
-  /** The route has no regular service in the period. */
+  /** The route has no regular cadence in the period. */
   noRegularService: boolean;
   /** The frequency filter's maximum headway (Infinity when off). */
   maxHeadway: number;
@@ -30,13 +30,13 @@ export interface RouteCardRowContext {
 
 /** What one route card row shows: its number, its words and its colour (CIV-992; moved out of RouteCardHeadway). */
 export interface RouteCardRowValue {
-  /** The row's cadence before the no-regular-service rule (a null row with no label is dropped). */
+  /** The row's cadence before the irregular-period rule (a null row with no label is dropped). */
   displayH: number | null | undefined;
   /** Shown as the row's number. */
   headway: number | undefined;
-  /** The row reads limited (or the no-regular-service label). */
+  /** The row reads limited (or the irregular-period label). */
   isLimited: boolean;
-  /** The row reads as the route does when it has no regular service. */
+  /** The row reads as the route does when it has no regular cadence. */
   rowNoRegular: boolean;
   /** #934 / D6: a late start, an early end or one gap inside steady service, in place of a long wait. */
   edgeText: string | undefined;
@@ -95,12 +95,12 @@ export function routeCardRowValue(d: ShapeProperties, ctx: RouteCardRowContext):
     ? headsignTrunkHeadway(d, period)
     : undefined;
   // The stop card's rule (hasRegularServiceInPeriod), so the two cards agree. #954: when
-  // the route has no regular service in the period, a row still shows its own direction
+  // the route has no regular cadence in the period, a row still shows its own direction
   // value when it has one (SF Muni 8 PM: Fisherman's Wharf every 8), on data that carries
   // the one-gap flag; every other row, and All day, reads as the route does. #955: a number
   // that is one gap between a few departures is not a cadence (TTC 10 weekday midday to
   // Victoria Park, 09:07 then 14:22: "every 315"); a row with a steady value of its own keeps it.
-  // CIV-1069: a headsign that does not run itself in the period reads no regular service, not the stop's other trips.
+  // CIV-1069: a headsign that does not run itself in the period reads Irregular, not the stop's other trips.
   const rowNoRegular = hoveredHour == null && (
     (noRegularService && (period === 'all' || d.stretchPeriodOneGap === undefined || !hasRegularServiceInPeriod(d, period) || displayH == null))
     || isOneGapRow(d, period)

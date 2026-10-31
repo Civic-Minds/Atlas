@@ -12,7 +12,7 @@ describe('routeCardRowValue (CIV-992)', () => {
     expect(row.isLimited).toBe(false);
     expect(row.dimmed).toBe(false);
   });
-  it('reads as the route does when the route has no regular service on All day', () => {
+  it('reads as the route does when the route has no regular cadence on All day', () => {
     const d = { routeId: 'r', routeShortName: '1', routeLongName: '', directionId: 0, headsign: 'A', tier: '10', headway: 10 } as unknown as ShapeProperties;
     const row = routeCardRowValue(d, { ...ctx, period: 'all', noRegularService: true });
     expect(row.rowNoRegular).toBe(true);

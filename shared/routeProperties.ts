@@ -53,9 +53,9 @@ export interface RouteProperties {
   worstDirectionMiddayCap?: number;
   minStopHeadway?: number;
   minStopHeadwayByPeriod?: Partial<Record<string, number>>;
-  /** CIV-1069: periods whose value is read from other headsigns' trips at the stop (this headsign runs under three times); a card row reads no regular service there. */
+  /** CIV-1069: periods whose value is read from other headsigns' trips at the stop (this headsign runs under three times); a card row reads Irregular there. */
   noOwnServiceByPeriod?: string[];
-  /** CIV-1204: the rider wait failed the run-shape gate, so the headline's window has no regular service; no fallback shows the headline as "every N". */
+  /** CIV-1204: the rider wait failed the run-shape gate, so the headline's window has no regular cadence; no fallback shows the headline as "every N". */
   headlineNoRegular?: boolean;
   headsignMinStopHeadwayByPeriod?: Partial<Record<string, number>>;
   stopHeadways?: Record<string, number | null>;
@@ -76,10 +76,10 @@ export interface RouteProperties {
   /**
    * Frequency focus (pipeline/tripSets.ts), agency JSON only. Filter-agreeing fields: stamped on every feature of a route-day
    * or on none; cards and lists show these so they never disagree with the map's filter. A period's null means no regular
-   * service there ("no regular service", never a number).
+   * service there ("Irregular", never a number).
    */
   routeFilterHeadwayByPeriod?: Partial<Record<PeriodKey, number | null>>;
-  /** The route's all-day filter value (step 6); NO_PERIOD_SERVICE_TILE_VALUE when it has none (limited, or no regular service). */
+  /** The route's all-day filter value (step 6); NO_PERIOD_SERVICE_TILE_VALUE when it has none (limited, or no regular cadence). */
   routeAllDayHeadway?: number;
   /** Whether the route runs in the period at all (the "All" level). */
   routeRunsByPeriod?: Partial<Record<PeriodKey, boolean>>;
@@ -107,7 +107,7 @@ export interface RouteProperties {
   stretchRole?: 'main' | 'tail' | 'variant';
   /** 0 for the main stretch; a tail's index into stretchMeta.tails. Absent for variants. */
   stretchIndex?: number;
-  /** CIV-321 S2: period = each stretch's own filter value per period (same rules as a whole route); maxGap = the longest gap of the same departures (CIV-1069); noRegular = periods its card row reads "no regular service" (one gap, or under three departures). */
+  /** CIV-321 S2: period = each stretch's own filter value per period (same rules as a whole route); maxGap = the longest gap of the same departures (CIV-1069); noRegular = periods its card row reads "Irregular" (one gap, or under three departures). */
   stretchMeta?: {
     main: { stops: number; refStop: string; trips: number; period?: Partial<Record<PeriodKey, number | null>>; maxGap?: Partial<Record<PeriodKey, number | null>>; noRegular?: PeriodKey[] } | null;
     tails: Array<{ refStop: string; stops: number; km: number; trips: number; period?: Partial<Record<PeriodKey, number | null>>; maxGap?: Partial<Record<PeriodKey, number | null>>; noRegular?: PeriodKey[]; notThrough?: PeriodKey[] }>;

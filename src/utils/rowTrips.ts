@@ -27,7 +27,7 @@ function stretchSlot(d: ShapeProperties) {
 
 /**
  * One row's value, longest gap and part-period words for a period, all from the trips the value reads (CIV-1069).
- * - A headsign with no service of its own in the period (noOwnServiceByPeriod) reads nothing: the row shows no regular service.
+ * - A headsign with no service of its own in the period (noOwnServiceByPeriod) reads nothing: the row shows Irregular.
  * - A period that is not steady for the row's own trips reads its stretch's value where the stretch runs regularly and is not
  *   materially better than the row's own trips (a short burst never takes the stretch's number), else its own value on a
  *   stretch, or its full-window wait off one, unless a main stretch's words (late start, early end, one gap) say it.

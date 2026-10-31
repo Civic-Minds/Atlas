@@ -115,6 +115,16 @@ describe('AgencyPage intro', () => {
     expect(screen.getByText(/Its routes have no regular midday service\./)).toBeTruthy();
   });
 
+  it('says "Irregular" where the map list does, and a dash where the route does not run (#1249)', () => {
+    // CTA 1, weekday midday: the route runs, but the filter finds no regular cadence.
+    const cta = { ...HSR, routes: [r('1', 3, null, { am: 10, noRegular: ['midday'] }), r('B', 3, null, { am: 10 })] };
+    view(<AgencyPage data={agencyPageData(cta, [cta, TTC], null)} />);
+    const rowOf = (name: string) => screen.getAllByRole('row').find(row => within(row).queryAllByRole('cell')[0]?.textContent?.includes(name) || row.firstElementChild?.textContent?.startsWith(name))!;
+    const cells = (name: string) => Array.from(rowOf(name).children).map(c => c.textContent);
+    expect(cells('1')[2]).toBe('Irregular');
+    expect(cells('B')[2]).not.toBe('Irregular');
+  });
+
   it('has no connects-with clause without connections', () => {
     view(<AgencyPage data={agencyPageData(TTC, [TTC, HSR], null)} />);
     expect(screen.queryByText(/connects with/)).toBeNull();
