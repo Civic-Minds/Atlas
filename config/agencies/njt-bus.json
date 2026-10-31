@@ -42,7 +42,7 @@
     "status": "review",
     "score": 96,
     "reasons": [
-      "11 route have stops whose frequency differs from the overall route schedule."
+      "10 route have stops whose frequency differs from the overall route schedule."
     ],
     "metrics": {
       "validationErrors": 0,
@@ -54,7 +54,7 @@
       "routeCount": 261,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
-      "mismatchRoutes": 11,
+      "mismatchRoutes": 10,
       "resumesOn": null
     },
     "checkedAt": "2026-10-31"
