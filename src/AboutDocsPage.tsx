@@ -4,6 +4,21 @@ import SiteContact from './components/SiteContact';
 import DocsPageLayout from './components/ui/DocsPageLayout';
 import DataTable, { type DataTableColumn } from './components/ui/DataTable';
 import { PageTitle, SectionTitle } from './components/ui/PageTitle';
+import {
+  BETA_ROLLOUT_NOTICE,
+  BOOKING_REQUIRED_NOTICE,
+  LOCATION_DENIED,
+  NEW_SCHEDULE_DATA_NOTICE,
+  NO_ROUTE_SHAPE_NOTICE,
+  ROUTE_DATA_QUALITY_WARNING_MESSAGE,
+  WEEKDAY_VARIATION_NOTICE,
+  expiredFeedNotice,
+  loadErrorText,
+  periodServiceNotice,
+  selectedRouteOutsideFilterNotice,
+  selectedRoutePartMeetsFilterNotice,
+  unevenServiceNotice,
+} from './content/noticeCopy';
 
 const LiveGlossaryTerms = lazy(() => import('./components/LiveGlossaryTerms'));
 
@@ -20,6 +35,7 @@ const DOCS_CONTENTS = [
   ['pipeline-changes', 'Change process'],
   ['quality', 'Quality'],
   ['validation', 'Validation'],
+  ['notices', 'Notices'],
   ['glossary', 'Glossary'],
 ] as const;
 
@@ -40,6 +56,48 @@ function Subsection({ title, children }: { title: string; children: ReactNode })
     </div>
   );
 }
+
+/**
+ * The Notices section (CIV-1236, Ryan's approved groups): each group's examples are the app's own notices, read from
+ * noticeCopy.ts, with [brackets] where the app fills in a name, date or number.
+ */
+const NOTICE_GROUPS: { title: string; text: string; examples: string[] }[] = [
+  {
+    title: 'Old and new schedules',
+    text: "The agency's schedule has ended, is new and still being checked, or had an error we corrected.",
+    examples: [expiredFeedNotice('[Agency]', '[date]'), NEW_SCHEDULE_DATA_NOTICE.route],
+  },
+  {
+    title: "Errors in the agency's data",
+    text: "A route's line is missing or wrong in the agency's data. Its frequency still comes from the schedule.",
+    examples: [NO_ROUTE_SHAPE_NOTICE, ROUTE_DATA_QUALITY_WARNING_MESSAGE],
+  },
+  {
+    title: 'When a route runs',
+    text: "The route doesn't run, or runs for only part of the time, on the day or at the time of day you picked.",
+    examples: [periodServiceNotice('6–9 AM', false), periodServiceNotice('6–9 AM', true, '7–9 AM')],
+  },
+  {
+    title: 'Uneven schedules',
+    text: "The wait between trips isn't the same everywhere: it changes by weekday, through the day, or at the first or last trip.",
+    examples: [WEEKDAY_VARIATION_NOTICE, unevenServiceNotice(999).replace('999', '[N]')],
+  },
+  {
+    title: 'Filters',
+    text: "The route, or part of it, doesn't meet the frequency filter you picked, or is hidden by your filters.",
+    examples: [selectedRouteOutsideFilterNotice(15, '6–9 AM'), selectedRoutePartMeetsFilterNotice(15)],
+  },
+  {
+    title: 'Beta and on-demand service',
+    text: 'Agencies still being tested on Atlas beta, and service riders book ahead or that runs by request in a zone.',
+    examples: [BETA_ROLLOUT_NOTICE, BOOKING_REQUIRED_NOTICE],
+  },
+  {
+    title: 'Loading, errors and empty lists',
+    text: "Something didn't load, a search found nothing, or your browser blocked location or copying. Most clear up when you try again.",
+    examples: [loadErrorText('this route'), LOCATION_DENIED],
+  },
+];
 
 const NEAR_MISS_ROWS: [string, string, string][] = [
   ['10 min', '15 min', '10% of gaps'],
@@ -349,6 +407,18 @@ export default function AboutDocsPage() {
             <p>These checks do not make the underlying agency data perfect. They make the limits visible, prevent known errors from being amplified, and give each correction or research claim a traceable reason for existing.</p>
           </Section>
 
+          <Section id="notices" title="Notices">
+            <p>Notices appear on route, stop and agency cards when something about the schedule needs a word of explanation. They fall into these groups.</p>
+            {NOTICE_GROUPS.map(group => (
+              <Subsection key={group.title} title={group.title}>
+                <p>{group.text}</p>
+                <ul className="list-disc pl-5 space-y-1">
+                  {group.examples.map(example => <li key={example}>“{example}”</li>)}
+                </ul>
+              </Subsection>
+            ))}
+          </Section>
+
           <Section id="glossary" title="Glossary">
             <p><strong className="text-[var(--text-primary)]">GTFS:</strong> A standard set of files describing transit routes, stops, trips, calendars, and shapes. Agencies publish it, and Atlas reads it.</p>
             <p><strong className="text-[var(--text-primary)]">GTFS-Flex:</strong> GTFS extensions for demand-responsive service, including service areas, location groups, virtual stops, and booking rules.</p>
@@ -362,11 +432,8 @@ export default function AboutDocsPage() {
             <p><strong className="text-[var(--text-primary)]">Shared stretch:</strong> The part of a route where its branches run together, and riders there get every branch’s trips. The card shows it as “Shared stretch”, or “Combined” when the value is worked out from the branches’ own schedules. It never makes the whole route pass the filter.</p>
             <p><strong className="text-[var(--text-primary)]">Limited:</strong> Shown when a route runs during the chosen time but not often or regularly enough to give a frequency.</p>
             <p><strong className="text-[var(--text-primary)]">Service class:</strong> The operating pattern assigned to a route or pattern: regular, part-time, or irregular.</p>
-            <p><strong className="text-[var(--text-primary)]">“No regular service during this period”:</strong> Shown instead of a frequency when a route runs only a few trips in the selected period, with no set wait between them.</p>
             <p><strong className="text-[var(--text-primary)]">Sustained service:</strong> Service whose gaps stay within a small allowance across the whole time measured, rather than only looking frequent in a short burst.</p>
             <p><strong className="text-[var(--text-primary)]">Uneven service:</strong> Service that runs all through the selected period, but with gaps that vary. The card names the longest gap.</p>
-            <p><strong className="text-[var(--text-primary)]">“This route’s weekday schedules vary by day”:</strong> Shown when some weekdays run more or less often than others. Atlas checks each weekday separately.</p>
-            <p><strong className="text-[var(--text-primary)]">“[Agency]’s schedule ended on [date]”:</strong> The newest schedule Atlas could verify has run out. Atlas keeps showing it until a newer one is found.</p>
             {FEATURES.onDemand && <p><strong className="text-[var(--text-primary)]">On-demand zone:</strong> An area served by booked rides instead of a fixed route. It is shown as an area on the map and never given a frequency.</p>}
             <p><strong className="text-[var(--text-primary)]">Provenance:</strong> The source, schedule period, freshness state, review status, and correction history attached to an Atlas result.</p>
             <p><strong className="text-[var(--text-primary)]">PMTiles:</strong> A single archive format that lets the map request only the vector-tile regions it needs.</p>
