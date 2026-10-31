@@ -41,6 +41,13 @@
  * report is written to tmp/release-diff/. Agencies with no archived zip and no
  * local recovery input are skipped.
  *
+ * Sharded (CIV-1110): processing is CPU work on one core, so the cloud rebuild runs
+ * `--shard 1/3`, `--shard 2/3` and `--shard 3/3` as separate processes (each processes every
+ * third agency and saves tmp/derived-reprocess/shard-<i>.json, with no gate and no R2 write),
+ * then `--merge-shards 3` (with --write when publishing) reads all three, runs the release diff
+ * gate once over the whole batch and writes as an unsharded run. A missing shard fails the merge.
+ * pipeline/reprocess-sharded.sh runs the whole sequence.
+ *
  * With --write, each published agency's lastFeedExpiry/lastPeekedExpiry in
  * public/data/index.json and config/agencies/<slug>.json are set from the feed
  * it was rebuilt from (refresh's placeholder cap applies), so publish and the
@@ -56,6 +63,8 @@ import { r2Get, r2GetArchiveBuffer, r2ListArchiveObjects, r2Put } from './r2.js'
 import { recordedFeedExpiry, stampReprocessedFeedExpiry } from './refreshMeta.js';
 import { bumpPublicDataVersion } from './dataVersion.js';
 import { runWithConcurrency } from './utils.js';
+import { AGENCY_ARTIFACT_SUFFIXES, parseRunPrefixArg } from './runArtifacts.js';
+import { parseMergeShardsArg, parseShardArg, readShardResults, shardResultPath, shardTargets, type ShardResult } from './reprocessShards.js';
 import {
   feedDateRefusal,
   matchesExpiredFeedPin,
@@ -89,6 +98,7 @@ import {
   type GateCandidate,
 } from './releaseDiff.js';
 import { ROUTE_ARTIFACT_SCHEMA_VERSION } from '../shared/artifactSchema.js';
+import { assessByCounts, type FeedQuality } from '../shared/feedQuality.js';
 import { agencyTodayYmd } from '../shared/feedAvailability.js';
 import { COUNTRY_LAUNCH_FLAG, assertCountryMayWriteToR2, resolveAgencyCountry, type AgencyCountrySource } from './countryLaunchGate.js';
 
@@ -127,6 +137,7 @@ interface Agency {
   hiddenInProduction?: boolean;
   staged?: boolean;
   pmtilesPending?: boolean;
+  feedQuality?: FeedQuality;
 }
 
 interface ReportRow {
@@ -141,6 +152,11 @@ interface ReportRow {
   liveFeedExpiry?: string | null;
   liveCounts?: ArtifactCounts | null;
   outputCounts?: ArtifactCounts;
+  /** The rating this feed gets (CIV-533), recorded when its artifacts are published. */
+  feedQuality?: { status: FeedQuality['status']; score: number };
+  /** The same feed under the count rules it replaced, and the metrics both read (CIV-533 audit; report only). */
+  feedQualityCountRules?: { status: FeedQuality['status']; score: number };
+  feedQualityMetrics?: FeedQuality['metrics'];
 }
 
 class Refusal extends Error {}
@@ -149,10 +165,13 @@ class Refusal extends Error {}
 const gateInputs = new Map<string, { candidate: GateCandidate; live: ArtifactSummary | null }>();
 // Live data for the drop and gate checks: the public release first (CIV-522).
 const readBaseline = releaseBaselineReader(r2Get);
-/** The processed feed's raw expiry dates per agency, recorded in index.json once its artifacts are published (#837). */
-const processedExpiries = new Map<string, { feedExpiry: string | null; calendarExpiry: string | null; calendarOnlyEnd: string | null; listingEnd: string | null }>();
+/**
+ * The processed feed's raw expiry dates (#837) and its quality rating (CIV-533) per agency, recorded in
+ * index.json and the agency config once its artifacts are published.
+ */
+const processedExpiries = new Map<string, { feedExpiry: string | null; calendarExpiry: string | null; calendarOnlyEnd: string | null; listingEnd: string | null; feedQuality: FeedQuality }>();
+let qualityUpdates = 0;
 const expiryUpdates: string[] = [];
-const AGENCY_ARTIFACTS = ['', '-stops', '-corridors', '-trips', '-stops-meta', '-sections'] as const;
 
 const indexPath = resolve('public/data/index.json');
 const outputDir = resolve('tmp/derived-reprocess');
@@ -160,6 +179,9 @@ const localArchiveDir = process.env.ATLAS_LOCAL_ARCHIVE_DIR
   ? resolve(process.env.ATLAS_LOCAL_ARCHIVE_DIR)
   : null;
 const writeToR2 = process.argv.includes('--write');
+// CIV-522: with --run-prefix atlas/runs/<run id>, --write puts each agency's files under that prefix
+// and leaves the top-level files alone; promote-run-artifacts copies them up once the release is public.
+const runPrefix = parseRunPrefixArg(process.argv.slice(2), '--run-prefix');
 const overrides = parseGateOverrides(process.argv.slice(2));
 const todayYmd = new Date().toISOString().slice(0, 10).replace(/-/g, '');
 const onlySlugs = process.argv.flatMap((arg, i, all) => (arg === '--only-slug' && all[i + 1] ? [all[i + 1]] : []));
@@ -167,6 +189,9 @@ const concurrency = Math.max(1, Number(process.env.REPROCESS_CONCURRENCY ?? 2));
 const includeHidden = process.argv.includes('--include-hidden');
 const skipArgs = parseSkipSlugs(process.argv.slice(2));
 const forceCountryLaunch = process.argv.includes(COUNTRY_LAUNCH_FLAG);
+// CIV-1110: --shard i/n processes every n-th target and saves its results; --merge-shards n gates and writes them.
+const shard = parseShardArg(process.argv.slice(2));
+const mergeShards = parseMergeShardsArg(process.argv.slice(2));
 
 function shouldProcess(agency: Agency): boolean {
   return isReprocessTarget(agency, { includeHidden });
@@ -283,7 +308,11 @@ async function processAgency(agency: Agency): Promise<ReportRow> {
     row.outputCounts = next.counts;
     row.liveCounts = live?.counts ?? null;
     gateInputs.set(agency.slug, { candidate: { slug: agency.slug, next, service: { start: feedStart, end: feedExpiry, calendarEnd, liveFeedExpiry: agency.lastFeedExpiry } }, live });
-    processedExpiries.set(agency.slug, { feedExpiry: result.feedExpiry, calendarExpiry: result.calendarExpiry, calendarOnlyEnd: result.calendarOnlyEnd, listingEnd: result.listingEnd });
+    processedExpiries.set(agency.slug, { feedExpiry: result.feedExpiry, calendarExpiry: result.calendarExpiry, calendarOnlyEnd: result.calendarOnlyEnd, listingEnd: result.listingEnd, feedQuality: result.feedQuality });
+    row.feedQuality = { status: result.feedQuality.status, score: result.feedQuality.score };
+    const countRules = assessByCounts({ ...result.feedQuality.metrics, checkedAt: result.feedQuality.checkedAt });
+    row.feedQualityCountRules = { status: countRules.status, score: countRules.score };
+    row.feedQualityMetrics = result.feedQuality.metrics;
 
     const agencyDir = resolve(outputDir, agency.slug);
     mkdirSync(agencyDir, { recursive: true });
@@ -345,22 +374,26 @@ async function publishRow(row: ReportRow, agency: Agency, registry: Agency[]): P
     action: 'reprocess-derived-artifacts --write',
   });
   const agencyDir = resolve(outputDir, row.slug);
-  await Promise.all(AGENCY_ARTIFACTS.map(suffix => {
+  await Promise.all(AGENCY_ARTIFACT_SUFFIXES.map(suffix => {
     const name = `${row.slug}${suffix}.json`;
-    return r2Put(`atlas/${name}`, readFileSync(resolve(agencyDir, name), 'utf8'));
+    return r2Put(`${runPrefix ?? 'atlas'}/${name}`, readFileSync(resolve(agencyDir, name), 'utf8'));
   }));
-  console.log(`  Published ${row.slug} derived artifacts.`);
-  // The live data now comes from this feed: record its expiry like a refresh does (#837).
+  console.log(runPrefix ? `  Staged ${row.slug} derived artifacts under ${runPrefix}/.` : `  Published ${row.slug} derived artifacts.`);
+  // The live data now comes from this feed: record its expiry like a refresh does (#837), and its
+  // quality rating on every rebuild, so a rating never outlives the code or feed it was made from (CIV-533).
   const dates = processedExpiries.get(row.slug);
-  if (dates && stampReprocessedFeedExpiry(agency, { ...dates, todayYmd })) {
-    const configPath = resolve('config/agencies', `${agency.slug}.json`);
-    if (existsSync(configPath)) {
-      const source = JSON.parse(readFileSync(configPath, 'utf8')) as Agency;
-      stampReprocessedFeedExpiry(source, { ...dates, todayYmd });
-      writeFileSync(configPath, `${JSON.stringify(source, null, 2)}\n`);
-    }
-    expiryUpdates.push(`${agency.slug} ${row.liveFeedExpiry ?? 'none'} -> ${agency.lastFeedExpiry}`);
+  if (!dates) return;
+  const expiryChanged = stampReprocessedFeedExpiry(agency, { ...dates, todayYmd });
+  agency.feedQuality = dates.feedQuality;
+  qualityUpdates++;
+  const configPath = resolve('config/agencies', `${agency.slug}.json`);
+  if (existsSync(configPath)) {
+    const source = JSON.parse(readFileSync(configPath, 'utf8')) as Agency;
+    if (expiryChanged) stampReprocessedFeedExpiry(source, { ...dates, todayYmd });
+    source.feedQuality = dates.feedQuality;
+    writeFileSync(configPath, `${JSON.stringify(source, null, 2)}\n`);
   }
+  if (expiryChanged) expiryUpdates.push(`${agency.slug} ${row.liveFeedExpiry ?? 'none'} -> ${agency.lastFeedExpiry}`);
 }
 
 async function main(): Promise<void> {
@@ -376,7 +409,9 @@ async function main(): Promise<void> {
     ...skipSlugArgErrors(skipArgs.slugs, onlySlugs, knownSlugs),
   ];
   if (overrideErrors.length) throw new Error(overrideErrors.join('\n'));
-  rmSync(outputDir, { recursive: true, force: true });
+  if (shard && (writeToR2 || mergeShards)) throw new Error('--shard only processes and saves its results: it never runs with --write or --merge-shards.');
+  // Shards share the output directory and the merge reads it: only an unsharded run starts it clean.
+  if (!shard && !mergeShards) rmSync(outputDir, { recursive: true, force: true });
   mkdirSync(outputDir, { recursive: true });
 
   const rows: ReportRow[] = [];
@@ -390,15 +425,43 @@ async function main(): Promise<void> {
     return reason ? [[agency.slug, reason] as const] : [];
   }));
   const targets = selected.filter(agency => shouldProcess(agency) && !countrySkips.has(agency.slug));
-  console.log(`Reprocessing ${targets.length} ${includeHidden ? 'named (hidden included)' : 'production-visible'} agencies from archived GTFS (concurrency ${concurrency}).`);
+  if (shard) {
+    const mine = shardTargets(targets, shard);
+    console.log(`Shard ${shard.index}/${shard.count}: reprocessing ${mine.length} of ${targets.length} ${includeHidden ? 'named (hidden included)' : 'production-visible'} agencies from archived GTFS (concurrency ${concurrency}).`);
+    const shardRows = await runWithConcurrency(mine.map(agency => () => processAgency(agency)), concurrency);
+    const result: ShardResult<ReportRow, unknown, unknown> = {
+      shard,
+      slugs: mine.map(agency => agency.slug),
+      rows: shardRows,
+      gateInputs: [...gateInputs],
+      processedExpiries: [...processedExpiries],
+    };
+    writeFileSync(shardResultPath(outputDir, shard.index), JSON.stringify(result));
+    // Peak memory for sizing the shards: the OS maximum resident set size of this process (kB on Linux).
+    const peakMb = Math.round(process.resourceUsage().maxRSS / 1024);
+    const minutes = (process.uptime() / 60).toFixed(1);
+    console.log(`\nShard ${shard.index}/${shard.count} done: ${shardRows.filter(row => row.status === 'processed').length} processed in ${minutes} min, peak memory ${peakMb} MB. The merge gates and writes them.`);
+    return;
+  }
+  console.log(mergeShards
+    ? `Merging ${mergeShards} shards for ${targets.length} ${includeHidden ? 'named (hidden included)' : 'production-visible'} agencies.`
+    : `Reprocessing ${targets.length} ${includeHidden ? 'named (hidden included)' : 'production-visible'} agencies from archived GTFS (concurrency ${concurrency}).`);
 
   rows.push(...selected
     .filter(agency => !shouldProcess(agency))
     .map(agency => ({ slug: agency.slug, status: 'skipped' as const, reason: 'not production-visible or no refresh marker' })));
   rows.push(...skipRows);
   rows.push(...[...countrySkips].map(([slug, reason]) => ({ slug, status: 'skipped' as const, reason })));
-  const tasks = targets.map(agency => () => processAgency(agency));
-  rows.push(...await runWithConcurrency(tasks, concurrency));
+  if (mergeShards) {
+    const merged = readShardResults<ReportRow, { candidate: GateCandidate; live: ArtifactSummary | null }, typeof processedExpiries extends Map<string, infer V> ? V : never>(
+      outputDir, mergeShards, targets.map(agency => agency.slug));
+    for (const [slug, input] of merged.gateInputs) gateInputs.set(slug, input);
+    for (const [slug, dates] of merged.processedExpiries) processedExpiries.set(slug, dates);
+    rows.push(...merged.rows);
+  } else {
+    const tasks = targets.map(agency => () => processAgency(agency));
+    rows.push(...await runWithConcurrency(tasks, concurrency));
+  }
 
   // Fail closed: nothing reaches R2 until the whole batch has passed the gate.
   await gateProcessedRows(rows, index.agencies);
@@ -408,8 +471,11 @@ async function main(): Promise<void> {
       await runWithConcurrency(rows.filter(row => row.status === 'processed').map(row => () => publishRow(row, bySlug.get(row.slug)!, index.agencies)), concurrency);
     } finally {
       // Also after a failed upload: the agencies published before it already serve the new feed.
-      if (expiryUpdates.length) {
+      if (qualityUpdates) console.log(`\nRecorded a fresh quality rating for ${qualityUpdates} agencies (commit config/agencies).`);
+      if (expiryUpdates.length || qualityUpdates) {
         writeFileSync(indexPath, `${JSON.stringify(index, null, 2)}\n`);
+      }
+      if (expiryUpdates.length) {
         console.log(`\nUpdated feed expiry in index.json for ${expiryUpdates.length} agencies (commit public/data/index.json and config/agencies):`);
         for (const line of expiryUpdates.sort()) console.log(`  ${line}`);
       }
@@ -434,7 +500,8 @@ async function main(): Promise<void> {
   writeFileSync(resolve(outputDir, 'report.json'), JSON.stringify(report, null, 2));
   console.log(`\nWrote ${report.totals.processed} reprocessed agencies to ${outputDir}`);
   console.log(`Report: ${resolve(outputDir, 'report.json')}`);
-  if (writeToR2) await bumpPublicDataVersion(`derived artifact reprocess (${report.totals.processed})`);
+  // Staged files are not public yet: the publish and promote steps bump the version.
+  if (writeToR2 && !runPrefix) await bumpPublicDataVersion(`derived artifact reprocess (${report.totals.processed})`);
   for (const row of skipRows) console.log(`  skipped ${row.slug}: ${row.reason}`);
   for (const row of rows.filter(r => r.status === 'refused')) console.log(`  refused ${row.slug}: ${row.reason}`);
   if (report.totals.failed > 0 || report.totals.refused > 0) process.exitCode = 1;

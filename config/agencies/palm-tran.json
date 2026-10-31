@@ -30,18 +30,24 @@
   "timezone": "America/New_York",
   "feedQuality": {
     "status": "review",
-    "score": 70,
+    "score": 97,
     "reasons": [
-      "12 route shapes needed adjustment before display."
+      "4 route shapes needed adjustment before display."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
-      "shapeAnomalies": 12,
+      "shapeAnomalies": 4,
       "routeHeadwayMismatches": 0,
-      "featureCount": 181
+      "featureCount": 181,
+      "feedExpiry": "20270109",
+      "routeCount": 29,
+      "problemShapes": 4,
+      "problemShapeRoutes": 1,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-03"
+    "checkedAt": "2026-10-30"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,

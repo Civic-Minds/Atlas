@@ -29,5 +29,24 @@
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-1110/latest.zip",
   "lastPeekedExpiry": "20261231",
-  "listingEndedOn": "20251211"
+  "listingEndedOn": "20251211",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 73,
+      "feedExpiry": "20261231",
+      "routeCount": 17,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
+    },
+    "checkedAt": "2026-10-30"
+  }
 }

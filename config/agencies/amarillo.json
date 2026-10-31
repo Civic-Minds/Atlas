@@ -34,19 +34,23 @@
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/12076/ACT_GTFS_24.zip",
   "feedQuality": {
-    "status": "review",
-    "score": 90,
-    "reasons": [
-      "1 minor schedule issue found while reading the feed."
-    ],
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
     "metrics": {
       "validationErrors": 0,
-      "validationWarnings": 1,
+      "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 36
+      "featureCount": 36,
+      "feedExpiry": "20261230",
+      "routeCount": 9,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-12"
+    "checkedAt": "2026-10-30"
   },
   "lastPeekedExpiry": "20261230"
 }

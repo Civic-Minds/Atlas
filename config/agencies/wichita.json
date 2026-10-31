@@ -27,19 +27,23 @@
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://bus.wichitatransit.org/InfoPoint/gtfs-zip.ashx",
   "feedQuality": {
-    "status": "review",
-    "score": 70,
-    "reasons": [
-      "32 route shapes needed adjustment before display."
-    ],
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
-      "shapeAnomalies": 32,
+      "shapeAnomalies": 28,
       "routeHeadwayMismatches": 0,
-      "featureCount": 90
+      "featureCount": 104,
+      "feedExpiry": "20261218",
+      "routeCount": 23,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-12"
+    "checkedAt": "2026-10-30"
   },
   "lastPeekedExpiry": "20261218"
 }

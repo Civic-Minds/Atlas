@@ -23,19 +23,23 @@
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://www.theride.org/sites/default/files/google/google_transit.zip",
   "feedQuality": {
-    "status": "review",
-    "score": 90,
-    "reasons": [
-      "1 route shape needed adjustment before display."
-    ],
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
       "shapeAnomalies": 1,
       "routeHeadwayMismatches": 0,
-      "featureCount": 155
+      "featureCount": 156,
+      "feedExpiry": "20270130",
+      "routeCount": 30,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-14"
+    "checkedAt": "2026-10-30"
   },
   "lastPeekedExpiry": "20270130",
   "feedRefreshStatus": "current",

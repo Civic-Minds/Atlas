@@ -20,19 +20,23 @@
     "Highland Village, Texas"
   ],
   "feedQuality": {
-    "status": "review",
-    "score": 90,
-    "reasons": [
-      "1 shape correction needed."
-    ],
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
-      "shapeAnomalies": 1,
+      "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 46
+      "featureCount": 46,
+      "feedExpiry": "20270110",
+      "routeCount": 14,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-08-21"
+    "checkedAt": "2026-10-30"
   },
   "lastFeedExpiry": "20270110",
   "lastFeedVersion": "Updated: Jul 10, 2026, 7:27 PM",

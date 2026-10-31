@@ -30,19 +30,23 @@
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270103",
   "feedQuality": {
-    "status": "review",
-    "score": 90,
-    "reasons": [
-      "1 route frequency needs checking — some stops appear to have more frequent service than the route's overall schedule suggests."
-    ],
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
       "shapeAnomalies": 0,
-      "routeHeadwayMismatches": 1,
-      "featureCount": 221
+      "routeHeadwayMismatches": 0,
+      "featureCount": 227,
+      "feedExpiry": "20270103",
+      "routeCount": 45,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-08-27"
+    "checkedAt": "2026-10-30"
   },
   "timezone": "America/Detroit",
   "lastFeedSourceKind": "configured",

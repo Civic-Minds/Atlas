@@ -21,19 +21,23 @@
   "expiredFeedCheckExpiry": "20271231",
   "timezone": "America/Chicago",
   "feedQuality": {
-    "status": "review",
-    "score": 90,
-    "reasons": [
-      "1 map line was repaired — Atlas fixed unusual route geometry before displaying it."
-    ],
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
       "shapeAnomalies": 1,
       "routeHeadwayMismatches": 0,
-      "featureCount": 33
+      "featureCount": 48,
+      "feedExpiry": "20271231",
+      "routeCount": 10,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-09-07"
+    "checkedAt": "2026-10-30"
   },
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://racine.connexionz.net/rtt/public/utility/gtfs.aspx",

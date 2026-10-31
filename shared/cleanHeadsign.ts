@@ -64,8 +64,10 @@ export function cleanHeadsign(
   h = h.replace(/^4FUN\s+(?:East|West)\s+(?:Mystic Lake\s+to\s+)?/i, '');
   h = h.replace(/^4FUN\s+(?:East|West)\s+to\s+/i, '');
 
-  // Generic branch/direction prefix: DRT "A - ", GO Transit "KI - ", TTC "East - "
-  h = h.replace(/^(?:[A-Za-z0-9]{1,5}|East|West|North|South)\s*-\s*/i, '');
+  // Generic branch/direction prefix: DRT "A - ", GO Transit "KI - ", TTC "East - ". Without a space at the dash only a
+  // code in capitals or digits is a prefix (Madison "601-SYCAMORE", Metlink "WELL-Express"); a word in a hyphenated
+  // place name stays: REM "Bois-Franc" read "Franc", and "Saint-Jérôme", "Kippa-Ring" lost their first word (CIV-1146).
+  h = h.replace(/^(?:[A-Za-z0-9]{1,5}(?:\s+-\s*|-\s+)|[A-Z0-9]{1,5}-)/, '');
 
   // Strip orphaned leading dash after branch/route-name prefix removal
   // e.g. "Gold Line - 8th & K Only" → (after stripping "Gold Line ") → "- 8th & K Only"
@@ -106,23 +108,13 @@ export function cleanHeadsign(
   // Evenly spaced "TC / MLK JR STATION" and headsigns with several slashes (lists of streets) are left alone.
   if ((h.match(/\//g) ?? []).length === 1) h = h.replace(/(\S)\/\s+(?=\S)/, '$1/');
 
-  // exo / STM Montreal buses: headsigns sometimes include "Destination" as a literal word
-  h = h.replace(/\bDestination\b/gi, '');
+  // exo / STM Montreal buses: headsigns sometimes include "Destination" as a literal word. It goes with the spaces
+  // around it, so "Ouest Destination Anse-à-l'Orme" reads "Ouest Anse-à-l'Orme", not with two spaces (CIV-1154).
+  h = h.replace(/\s*\bDestination\b\s*/gi, ' ');
 
-  // REM: normalize station name fragments that survive stripping back to canonical form
-  const remNames: Record<string, string> = {
-    'brossard': 'Brossard',
-    'orme': "Anse-à-l'Orme",
-    'deux-montagnes': 'Deux-Montagnes',
-    'montagnes': 'Deux-Montagnes',
-  };
-  let lowerH = h.toLowerCase();
-  for (const [key, full] of Object.entries(remNames)) {
-    if (lowerH.includes(key)) {
-      h = full;
-      break;
-    }
-  }
+  // (CIV-1153) A REM-only lookup used to rename any headsign containing "orme", "brossard" or "montagnes" to a REM
+  // station, for every agency ("Les Ormes", "Terminus Brossard"). REM's own headsigns come out whole without it since
+  // CIV-1146, so it is gone.
 
   // Known same-destination headsign variants where the source feed itself is inconsistent,
   // found via route-report --live triage before a France candidate's real launch:

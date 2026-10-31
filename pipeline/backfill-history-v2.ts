@@ -31,6 +31,7 @@ import { parseGtfsZip } from './parseGtfs.js';
 import { readRefDateQuality } from './historyRefQuality.js';
 import { chooseReferenceDate, readRepickRows, repickEligible } from './historyRefRepick.js';
 import { historyV2FromEnv } from './historyV2Flag.js';
+import { splitLumpedRoutes, type HistoryRouteSplits } from './historyRouteSplits.js';
 import type { RefDateQuality } from '../shared/historyV2.js';
 
 function arg(name: string): string | undefined {
@@ -53,13 +54,16 @@ async function main(): Promise<void> {
   if (zips.length === 0) throw new Error(`no .zip files in ${zipDir}`);
   const sink = localDirSink(outDir, { overwrite: process.argv.includes('--overwrite') });
   const withShapes = process.argv.includes('--shapes');
+  const splitKeys = (JSON.parse(readFileSync(resolve('config/history-route-splits.json'), 'utf8')) as HistoryRouteSplits)[slug] ?? [];
   mkdirSync(outDir, { recursive: true });
 
   const rows: Array<{ zip: string; periodKey?: string; refDate?: string; result?: string; report?: BuildV2Report; error?: string }> = [];
   for (const zip of zips) {
     const stem = basename(zip, '.zip');
     try {
-      const buf = readFileSync(resolve(zipDir, zip));
+      const split = await splitLumpedRoutes(readFileSync(resolve(zipDir, zip)), splitKeys);
+      const buf = split.buf;
+      if (Object.keys(split.report.moved).length || Object.keys(split.report.unsplit).length) console.log(`${zip}: split lumped routes ${JSON.stringify(split.report)}`);
       const dates = await peekFeedDates(buf);
       const periodKey = periodKeyForZip(stem, dates);
       // Under ATLAS_HISTORY_V2=1 a holiday-week or split-week reference date is replaced by a normal

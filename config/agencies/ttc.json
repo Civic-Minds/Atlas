@@ -35,20 +35,25 @@
   "timezone": "America/Toronto",
   "lastRawArchiveKey": "unknown-6a2597e02c81c1c5",
   "feedQuality": {
-    "status": "degraded",
-    "score": 40,
+    "status": "review",
+    "score": 100,
     "reasons": [
-      "4 map lines were repaired — Atlas fixed unusual route geometry before displaying it.",
-      "7 route frequencies need checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+      "1 route has stops whose frequency differs from the overall route schedule."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
       "shapeAnomalies": 4,
-      "routeHeadwayMismatches": 7,
-      "featureCount": 1880
+      "routeHeadwayMismatches": 5,
+      "featureCount": 1920,
+      "feedExpiry": "20261031",
+      "routeCount": 235,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 1,
+      "resumesOn": null
     },
-    "checkedAt": "2026-08-27"
+    "checkedAt": "2026-10-30"
   },
   "lastFeedCheckAt": "20261019",
   "expiredFeedCheckCount": 0,

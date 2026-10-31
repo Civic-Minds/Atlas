@@ -84,6 +84,8 @@ function checkRep(v: unknown, path: string): HistoryV2Error | null {
   if (v.lim !== undefined && v.lim !== true) return { code: 'bad-field', path: `${path}.lim`, message: 'lim must be true when present' };
   if (v.h !== undefined && v.lim !== undefined) return { code: 'bad-field', path, message: 'rep cannot have both h and lim' };
   if (v.p !== undefined && !isObj(v.p)) return { code: 'bad-field', path: `${path}.p`, message: 'p must be an object' };
+  if (v.t !== undefined && (!isMinutes(v.t) || v.h === undefined)) return { code: 'bad-field', path: `${path}.t`, message: 't must be a positive number of minutes beside h' };
+  if (v.tp !== undefined && !isObj(v.tp)) return { code: 'bad-field', path: `${path}.tp`, message: 'tp must be an object' };
   return null;
 }
 

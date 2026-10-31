@@ -26,7 +26,7 @@
   "expiredFeedCheckExpiry": "20261219",
   "feedQuality": {
     "status": "review",
-    "score": 80,
+    "score": 89,
     "reasons": [
       "2 route have stops whose frequency differs from the overall route schedule."
     ],
@@ -35,9 +35,15 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 2,
-      "featureCount": 56
+      "featureCount": 56,
+      "feedExpiry": "20261219",
+      "routeCount": 18,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 2,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-19"
+    "checkedAt": "2026-10-30"
   },
   "timezone": "America/Halifax",
   "feedRefreshStatus": "current",

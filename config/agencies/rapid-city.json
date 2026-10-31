@@ -27,5 +27,26 @@
   "timezone": "America/Denver",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/13102/rts_corc_gtfs.zip",
-  "lastPeekedExpiry": "20280331"
+  "lastPeekedExpiry": "20280331",
+  "feedQuality": {
+    "status": "review",
+    "score": 90,
+    "reasons": [
+      "1 minor schedule issue found while reading the feed."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 1,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 12,
+      "feedExpiry": "20280331",
+      "routeCount": 12,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
+    },
+    "checkedAt": "2026-10-30"
+  }
 }

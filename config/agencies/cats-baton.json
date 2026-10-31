@@ -22,5 +22,26 @@
   "timezone": "America/Chicago",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://cats.rideralerts.com/InfoPoint/gtfs-zip.ashx",
-  "lastPeekedExpiry": "20261231"
+  "lastPeekedExpiry": "20261231",
+  "feedQuality": {
+    "status": "review",
+    "score": 89,
+    "reasons": [
+      "6 route shapes needed adjustment before display."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 6,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 110,
+      "feedExpiry": "20261231",
+      "routeCount": 19,
+      "problemShapes": 6,
+      "problemShapeRoutes": 2,
+      "mismatchRoutes": 0,
+      "resumesOn": null
+    },
+    "checkedAt": "2026-10-30"
+  }
 }

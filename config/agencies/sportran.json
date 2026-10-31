@@ -31,18 +31,24 @@
   "lastFeedSourceUrl": "https://sportran.rideralerts.com/infopoint/gtfs-zip.ashx",
   "feedQuality": {
     "status": "review",
-    "score": 80,
+    "score": 96,
     "reasons": [
-      "2 route shapes needed adjustment before display."
+      "1 route shape needed adjustment before display."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
       "shapeAnomalies": 2,
       "routeHeadwayMismatches": 0,
-      "featureCount": 58
+      "featureCount": 58,
+      "feedExpiry": "20270109",
+      "routeCount": 24,
+      "problemShapes": 1,
+      "problemShapeRoutes": 1,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-14"
+    "checkedAt": "2026-10-30"
   },
   "lastPeekedExpiry": "20270109",
   "feedRefreshStatus": "current",

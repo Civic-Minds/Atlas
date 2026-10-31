@@ -24,6 +24,7 @@ import { parseGtfsZip } from './parseGtfs.js';
 import { normalizeGtfs, type GtfsTransformOptions } from './preprocess/run.js';
 import { effectiveFeedExpiry } from './feedFreshness.js';
 import { computeRailTripDurations, type RouteTripDuration } from './trip-duration.js';
+import { readFeedEvidence } from './historyWeekend.js';
 
 const SLUG = 'bart';
 const write = process.argv.includes('--write');
@@ -46,6 +47,8 @@ function fallbackPeriodKeyFromFilename(key: string): string {
 
 interface PeriodResult {
   periodKey: string;
+  /** A day the feed was in service (YYYYMMDD); History labels the period by it, never by the end-date key (CIV-1124). */
+  refDate: string;
   key: string;
   routes: RouteTripDuration[];
 }
@@ -79,7 +82,8 @@ async function main() {
       }) ?? gtfs.feedInfo?.[0]?.feed_version ?? fallbackPeriodKeyFromFilename(key);
 
       const routes = computeRailTripDurations(gtfs, SLUG);
-      periods.push({ periodKey: sanitizeLabel(periodKey), key, routes });
+      const { refDate } = await readFeedEvidence(buf);
+      periods.push({ periodKey: sanitizeLabel(periodKey), refDate, key, routes });
       console.log(`  ${key} -> period ${periodKey}, ${routes.length} rail route(s)`);
     } catch (err) {
       console.log(`  [skip] ${key} — ${err instanceof Error ? err.message : err}`);
@@ -89,11 +93,11 @@ async function main() {
   periods.sort((a, b) => a.periodKey.localeCompare(b.periodKey));
 
   // Group by routeKey across periods, chronological order.
-  const byRoute = new Map<string, Array<{ periodKey: string; data: RouteTripDuration }>>();
+  const byRoute = new Map<string, Array<{ periodKey: string; refDate: string; data: RouteTripDuration }>>();
   for (const period of periods) {
     for (const route of period.routes) {
       if (!byRoute.has(route.routeKey)) byRoute.set(route.routeKey, []);
-      byRoute.get(route.routeKey)!.push({ periodKey: period.periodKey, data: route });
+      byRoute.get(route.routeKey)!.push({ periodKey: period.periodKey, refDate: period.refDate, data: route });
     }
   }
 
@@ -124,7 +128,7 @@ async function main() {
   console.log('\nWriting to atlas-archive under trip-duration/bart/ ...');
   let written = 0;
   for (const [routeKey, entries] of byRoute) {
-    for (const { periodKey, data } of entries) {
+    for (const { periodKey, refDate, data } of entries) {
       const archiveKey = `trip-duration/${SLUG}/${routeKey}/${periodKey}.json`;
       await r2PutArchiveJson(archiveKey, JSON.stringify({
         routeId: data.routeId,
@@ -134,6 +138,7 @@ async function main() {
         representativeShapeId: data.representativeShapeId,
         departureTime: data.departureTime,
         durationMinutes: data.durationMinutes,
+        refDate,
         stopSequence: data.stopSequenceNormalized,
         stopSequenceRaw: data.stopSequenceRaw,
         processedAt: new Date().toISOString(),

@@ -1,6 +1,7 @@
 import { GtfsData, CorridorResult, DayName } from '../types/gtfs';
 import { t2m } from './transit-utils';
-import { detectReferenceDate, getActiveServiceIds } from './transit-calendar';
+import { getActiveServiceIds } from './transit-calendar';
+import { readWeekOf } from './readWeek';
 
 /**
  * Identifies shared road segments (links) between consecutive stops and
@@ -13,8 +14,11 @@ export const calculateCorridors = (
     endTimeMins: number,
     referenceDate?: string
 ): CorridorResult[] => {
-    const { trips, stopTimes, calendar, calendarDates } = gtfs;
-    const refDate = referenceDate ?? detectReferenceDate(calendar, calendarDates);
+    const { trips, stopTimes } = gtfs;
+    // CIV-1101: with no date passed in, read the one service-day model's week (readWeekOf).
+    const { calendar, calendarDates, referenceDate: refDate } = referenceDate
+        ? { calendar: gtfs.calendar, calendarDates: gtfs.calendarDates, referenceDate }
+        : readWeekOf(gtfs);
 
     const dayNames: DayName[] = day === 'Weekday'
         ? ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']

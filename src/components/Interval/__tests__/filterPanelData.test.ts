@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { getHiddenFeedAgencies, updateHiddenRouteRegions } from '../FilterPanel';
 import type { Agency } from '../../../App';
 
-const agency = (slug: string, name: string, status?: 'healthy' | 'review' | 'degraded' | 'unusable'): Agency => ({
+const agency = (slug: string, name: string, status?: 'healthy' | 'review' | 'degraded' | 'unusable' | 'paused'): Agency => ({
   slug,
   name,
   center: [0, 0],
@@ -32,6 +32,10 @@ describe('getHiddenFeedAgencies', () => {
       agency('h', 'Healthy', 'healthy'),
       agency('n', 'No quality record'),
     ])).toEqual([]);
+  });
+
+  it('never hides a seasonal pause (CIV-533)', () => {
+    expect(getHiddenFeedAgencies([agency('m', 'Mountain Village', 'paused')])).toEqual([]);
   });
 });
 

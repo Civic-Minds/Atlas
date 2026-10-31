@@ -39,18 +39,24 @@
   "timezone": "America/Toronto",
   "feedQuality": {
     "status": "review",
-    "score": 70,
+    "score": 96,
     "reasons": [
-      "6 route frequencies need checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+      "5 route have stops whose frequency differs from the overall route schedule."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 6,
-      "featureCount": 338
+      "featureCount": 427,
+      "feedExpiry": "20261031",
+      "routeCount": 123,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 5,
+      "resumesOn": null
     },
-    "checkedAt": "2026-09-07"
+    "checkedAt": "2026-10-30"
   },
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://www.yrt.ca/google/google_transit.zip",

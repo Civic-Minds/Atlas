@@ -35,19 +35,23 @@
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-280/latest.zip",
   "feedQuality": {
-    "status": "review",
-    "score": 70,
-    "reasons": [
-      "6 route shapes needed adjustment before display."
-    ],
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
-      "shapeAnomalies": 6,
+      "shapeAnomalies": 4,
       "routeHeadwayMismatches": 0,
-      "featureCount": 66
+      "featureCount": 66,
+      "feedExpiry": "20270401",
+      "routeCount": 16,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-12"
+    "checkedAt": "2026-10-30"
   },
   "lastPeekedExpiry": "20270401"
 }
