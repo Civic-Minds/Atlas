@@ -30,7 +30,7 @@ describe('stopRowHeadway: never overstate', () => {
   });
 
   it('shows words, not a number, for a part-period row', () => {
-    expect(stopRowHeadway(branch(5, 10, { periodText: 'until 9:37am, every 12 min' }), 'midday')).toBeNull();
+    expect(stopRowHeadway(branch(5, 10, { periodText: 'every 12 min until 9:37 AM' }), 'midday')).toBeNull();
   });
 });
 

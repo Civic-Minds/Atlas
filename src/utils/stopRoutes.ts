@@ -116,7 +116,7 @@ export function buildStopRoutes({ siblingIdsByAgency, routesByAgency, routePerio
         (headsignsAtStop.get(dirKey) ?? headsignsAtStop.set(dirKey, new Set()).get(dirKey)!).add(p.headsign ?? '');
       }
       // #934: a direction the route only runs on one side of the period shows the route card's
-      // words ("until 9:37am, every 12 min") instead of a cadence, at a stop its shape serves.
+      // words ("every 12 min until 9:37 AM") instead of a cadence, at a stop its shape serves.
       const periodText = partPeriodText(p, period);
       // No cadence at the stop for a period the route card says has no regular service (#750), or where the
       // destination has no service of its own and its value is other headsigns' trips (CIV-1069, rowTrips).

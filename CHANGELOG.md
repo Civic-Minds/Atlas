@@ -9,6 +9,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ### Map and route behavior
 
 - **Route card notices say each fact once, in one place**: lines that repeated a row are gone, ["no scheduled trips"](https://github.com/Civic-Minds/Atlas/issues/1225) shows once, ["No frequency is shown"](https://github.com/Civic-Minds/Atlas/issues/1226) no longer sits beside a frequency, and ["doesn't meet the filter"](https://github.com/Civic-Minds/Atlas/issues/1227) no longer shows where the rows already say why
+- **Rows put the frequency first**: route and stop cards read "every 12 min until 9:40 PM", the wait riders scan for, then its limit
 - **Top bar buttons have a light outline so they stand out on the map**: Mode, Agencies and the search bar blended into the light map; high contrast mode uses a stronger outline
 - **Stop dots at middle zoom sit where their stops are**: each dot groups stops within 250 m instead of chaining up to 8 km along a street ([#1147](https://github.com/Civic-Minds/Atlas/issues/1147))
 - **WVU's PRT shows as one people mover**: its [20 station-pair "routes"](https://github.com/Civic-Minds/Atlas/issues/1119) are one line

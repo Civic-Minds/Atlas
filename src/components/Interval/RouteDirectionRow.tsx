@@ -17,11 +17,11 @@ interface Props {
   labelWeight?: 'bold' | 'regular';
   /** Keep the label on one line, cut with an ellipsis and named in full on hover, so the badge always fits
    *  beside it (the stop and route cards' destination rows, CIV-918). It keeps 6rem, so a long value
-   *  ("until 9:37am, every 12 min") never squeezes it to a bare ellipsis. */
+   *  ("every 12 min until 9:37 AM") never squeezes it to a bare ellipsis. */
   singleLine?: boolean;
   /** The value keeps to the right edge when the row wraps it onto a line of its own (Compare, CIV-844). */
   valueEnd?: boolean;
-  /** A long value (words such as "until 5:05 PM, every 60 min") goes on a line of its own at the right, under the
+  /** A long value (words such as "every 60 min until 5:05 PM") goes on a line of its own at the right, under the
    *  whole destination name, as Compare's no-regular-service rows do (CIV-1143, Ryan 2026-10-30), never "to Centrepoi…". */
   wrapLongValue?: boolean;
   // Regular service

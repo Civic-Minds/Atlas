@@ -50,7 +50,7 @@ describe('routeCardRowValue (CIV-992)', () => {
 
   it('gives no shared-stretch range to a row with its own until / from / gap words (CIV-1143)', () => {
     const row = routeCardRowValue(oc84(true), pm);
-    expect(row.edgeText).toBe('until 5:05 PM, every 60 min');
+    expect(row.edgeText).toBe('every 60 min until 5:05 PM');
     expect(row.trunkHeadway).toBeUndefined();
   });
   it('keeps the range on a row without such words', () => {

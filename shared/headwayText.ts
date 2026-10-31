@@ -125,16 +125,17 @@ export function runTimeAmount(minutes: number | null | undefined): string {
 
 /**
  * A period's service where it runs, for the route card's time-of-day rows (#934, D6; Ryan,
- * 2026-10-16). `from` and `until` are clock text already formatted for the app:
- * "from 7:17 AM, every 9 min", "until 5:40 PM, every 10 min", "every 10 min, with a 45 min gap".
+ * 2026-10-16). `from` and `until` are clock text already formatted for the app. The frequency comes
+ * first, then its limit (Ryan, 2026-10-30, #962): "every 9 min from 7:17 AM", "every 10 min until
+ * 5:40 PM", "every 10 min, with a 45 min gap".
  */
 export function headwayPeriodShape(shape: { from?: string; until?: string; every: number; gap?: number }): string {
-  const parts = [
+  if (shape.gap != null) return `${headwayEvery(shape.every)}, with a ${delayAmount(shape.gap)} gap`;
+  return [
+    headwayEvery(shape.every),
     shape.from != null ? `from ${shape.from}` : null,
     shape.until != null ? `until ${shape.until}` : null,
-    shape.gap != null ? `${headwayEvery(shape.every)}, with a ${delayAmount(shape.gap)} gap` : headwayEvery(shape.every),
-  ].filter((part): part is string => part != null);
-  return parts.join(', ');
+  ].filter((part): part is string => part != null).join(' ');
 }
 
 export function capitalizeFirst(text: string): string {
