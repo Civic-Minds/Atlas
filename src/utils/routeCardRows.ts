@@ -8,7 +8,7 @@ import { routeCardRowValue, type RouteCardRowValue } from './routeCardRowValue';
 import { dirIdNum, groupTrunkHeadway, sharedStopIdsForBranches, sharedStretchHeadway, shouldShowBranchHeadwayRange, shouldShowTrunkSummary, sparklineSourceDirections, stretchSharedHeadway } from './routeCardTrunk';
 import { shouldShowDirectionSections } from './routeCardDirectionLayout';
 import { rowLabelWithOrigin } from './rowOriginLabel';
-import { hasStretchRoles, routeAllDayContract, routeContract, type RouteContract } from './stretchCard';
+import { hasStretchRoles, routeFilterAllDayContract, routeFilterContract, type RouteContract } from './stretchCard';
 import { featurePassesHeadwayFilter } from '../../shared/routeHeadwayFilter';
 import { headwayAbout, headwayAboutRange } from './headwayText';
 import { LIMITED_SERVICE_LABEL, NO_REGULAR_SERVICE_SHORT_LABEL, SHARED_STRETCH_LABEL } from '../content/noticeCopy';
@@ -155,9 +155,9 @@ export function buildRouteCardModel(input: RouteCardModelInput): RouteCardModel 
   const { directions, directionGroups, agencyFeatures, period, maxHeadway, nightView, stableColors } = input;
   // Frequency focus: rows come from the stretches, and the route-level number is the filter's own value with its range.
   const stretchMode = hasStretchRoles(directions);
-  const contract = routeContract(directions, period);
+  const contract = routeFilterContract(directions, period);
   // All day reads the route's all-day filter value (routeAllDayHeadway), the same as the lists.
-  const allDay = period === 'all' ? routeAllDayContract(directions) : undefined;
+  const allDay = period === 'all' ? routeFilterAllDayContract(directions) : undefined;
   const noRegularService = (contract != null && contract.filterValue == null && contract.runs)
     || (allDay != null && allDay.filterValue == null);
   const noRegularLabel = allDay?.limited ? LIMITED_SERVICE_LABEL : NO_REGULAR_SERVICE_LABEL;

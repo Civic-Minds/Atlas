@@ -61,6 +61,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ### Route cards and frequency
 
 - **Route lists start their frequency range where the route card does**: a [range's low end](https://github.com/Civic-Minds/Atlas/issues/1231) named a stretch the card doesn't show (TTC 102 midday read every 5–30 beside the card's 20 and 30)
+- **Route lists no longer show a number for a route the filter reads as having no regular service**: a [stored value on peak-only or span patterns](https://github.com/Civic-Minds/Atlas/issues/1247) showed while the route failed every filter (AC Transit E weekday AM read every 53)
 - **A card shows one shared value per direction**: a destination under the Shared stretch row reads its own frequency, not a [second shared range](https://github.com/Civic-Minds/Atlas/issues/1232) (TTC 102 PM read "Shared stretch every 7" above "to Warden every 15–30")
 - **A period with a long slow stretch shows its longest wait**: [TTC 320](https://github.com/Civic-Minds/Atlas/issues/1142) overnight runs every 5 and then every 15, so it now reads "every 5–18" and is coloured by 18
 - **Branch rows show only the time a branch actually runs**: a [rush-hour branch](https://github.com/Civic-Minds/Atlas/issues/1115) no longer borrows the main line's midday frequency (TTC 84 Pioneer Village)

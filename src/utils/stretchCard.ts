@@ -6,6 +6,7 @@
  */
 import type { ShapeProperties, TimePeriod } from '../hooks/useIntervalStats';
 import { NO_PERIOD_SERVICE_TILE_VALUE } from '../../shared/pmtilesProps';
+import { routeFilterHeadway } from '../../shared/routeHeadwayFilter';
 
 type PeriodKey = Exclude<TimePeriod, 'all'>;
 
@@ -127,6 +128,34 @@ export function routeContract(features: readonly ShapeProperties[], period: Time
     runs: f.routeRunsByPeriod?.[key] ?? value != null,
     range: range && range.length === 2 && range[0] !== range[1] ? [Math.min(range[0], range[1]), Math.max(range[0], range[1])] : null,
   };
+}
+
+/**
+ * #1247: the stored value as the map's filter reads it. The tile rule counts the route value only on a row that is not span and
+ * runs in the period itself, so where no row of the route does (AC Transit E weekday AM: both rows span), the filter reads no
+ * service, and a list or card must not show the stored number ("every 53" while the route fails 60). The value is the lowest
+ * routeFilterHeadway across the route's rows, as routePassesHeadwayFilter decides; null where none qualifies.
+ */
+function filterReadValue(features: readonly ShapeProperties[], period: TimePeriod, stored: number | null): number | null {
+  if (stored == null) return null;
+  let best: number | null = null;
+  for (const feature of features) {
+    const value = routeFilterHeadway(feature, period);
+    if (value != null && (best == null || value < best)) best = value;
+  }
+  return best;
+}
+
+/** routeContract with the filter's reading of its value (#1247): for route lists and the route card. */
+export function routeFilterContract(features: readonly ShapeProperties[], period: TimePeriod): RouteContract | undefined {
+  const contract = routeContract(features, period);
+  return contract && { ...contract, filterValue: filterReadValue(features, period, contract.filterValue) };
+}
+
+/** routeAllDayContract with the filter's reading of its value (#1247). */
+export function routeFilterAllDayContract(features: readonly ShapeProperties[]): { filterValue: number | null; limited: boolean } | undefined {
+  const allDay = routeAllDayContract(features);
+  return allDay && { ...allDay, filterValue: filterReadValue(features, 'all', allDay.filterValue) };
 }
 
 /**

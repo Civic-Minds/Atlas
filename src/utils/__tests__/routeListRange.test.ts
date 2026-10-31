@@ -14,10 +14,9 @@ describe('route list range from the card', () => {
   it('starts at the card\'s Shared stretch row where it has one (TTC 102 PM: every 7)', () => {
     expect(routeListDisplay(ttc102, 'pmPeak').sharedHeadway).toBe(7);
   });
-  it('keeps the range when the card shows no number', () => {
-    // Every pattern limited (span): the card shows no number, so the list keeps the range it had.
+  it('shows no number or range where every pattern is span (#1247: the filter reads no service there)', () => {
     const limited = ttc102.map(d => ({ ...d, tier: 'span' }) as ShapeProperties);
-    const before = routeListDisplay(limited, 'midday');
-    expect(before.sharedHeadway).toBe(5);
+    expect(routeListDisplay(limited, 'midday')).toMatchObject({ headway: null, noRegular: true });
+    expect(routeListDisplay(limited, 'midday').sharedHeadway).toBeUndefined();
   });
 });
