@@ -233,6 +233,16 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 
 Dated, newest first. The rules above are the short form; this is the reasoning.
 
+### 2026-10-31 — The Overnight period reads the Night Service verdict
+
+Ryan, 2026-10-31 (#1267, Linear CIV-1239): the map's Overnight value reads the night verdict's stretch value (rule 10), so Overnight and Night Service never disagree. They were calculated separately (2-6 AM by rules 4-5, 2-5 AM by rule 10) and disagreed on 135 of 646 route-days in 12 agencies: TTC 301 was Night Service every 30 but Overnight "every 71", because the 2-6 AM window took in the gap before day service.
+- A direction's Overnight value is the smallest gap at which it passes rule 10, so it is 30 or less exactly when Night Service 30, and 60 or less exactly when Night Service 60. The route takes the worst direction.
+
+Implementation choices, pending Ryan's OK through the manager (not part of his decision):
+- A direction where nothing runs at night (departures on both sides of 3:30) has no Overnight value: day service starting at 4:48 is not overnight service (TTC 102).
+- A direction's card row reads its own Overnight value only when the whole direction passes. A direction that passes only on its night path (NYC subway 3 to New Lots Av: every 20 on the night path, 220 minutes apart at the row's own stops) reads no regular service there, while the route keeps its value.
+- Overnight shows one number, with no branch range.
+
 ### 2026-10-31 — The headline reads the rider's wait only where the route runs through that window
 
 Ryan, 2026-10-31 (Linear CIV-1204 and CIV-1161): approved the run-shape gate, recommendations 1, 2 and 4 of the run-shape study. A row's headline is replaced by the wait a rider arriving at random faces on the main stretch (CIV-1161: the time-weighted median gap, in the headline's own window: midday, then PM peak, then all day) only when that wait is 10+ minutes longer than the headline, and only when the direction runs through that window at every boarding stop with a reading, by the settled verdicts.
