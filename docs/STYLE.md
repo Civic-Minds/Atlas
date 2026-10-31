@@ -58,6 +58,7 @@ Frequencies
   - "10 min" with no "every" in tables and chart cells (`headwayAmount`); "3 min" for a delay or gap that is not a headway (`delayAmount`)
 - The frequency comes first, then its limit: "every 12 min until 9:40 PM", not "until 9:40 PM, every 12 min" (Ryan, 2026-10-30). #962.
 - Frequencies are always in minutes, never hours ("every 90 min", "every 120 min"), so a column never mixes units. #938.
+- Waits over 60 minutes print their exact minutes ("every 63 min"), never rounded to the half hour, so the words match the number the filter reads (Ryan, 2026-10-31). #1239.
 - Don't summarise agencies or areas by a fixed cutoff such as "every 15 min or better" (or 10, 30 or any other). Many agencies have no routes that frequent. Show the real waits for each period instead.
 - Frequency filter work: read `docs/product/FREQUENCY_RULES.md` first.
 
