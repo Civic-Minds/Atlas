@@ -3512,7 +3512,7 @@ export async function processGtfsBuffer(
         if (!rollup) continue;
         const dropOff = new Set((p.dropOffOnlyStops as string[] | undefined) ?? []);
         const board = gatedRiderWait(stretches.main.stops, stop => stretches.timesAtStop!(stop).times, dropOff,
-          { middayRuns: rollup.midday.runs, limited: rollup.limitedOnly });
+          { middayRuns: rollup.midday.runs, limited: rollup.limitedOnly, gradingWindow: DEFAULT_CRITERIA.dayTypes[slot.day as DayType]?.timeWindow ?? { start: 420, end: 1320 } });
         if (!board || board.wait < headline + OVERSTATED_HEADLINE_MARGIN) continue;
         const tierBefore = p.tier as string | undefined;
         if (board.passes) {

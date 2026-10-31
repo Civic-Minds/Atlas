@@ -619,14 +619,14 @@ export function runsThroughPeriod(times: readonly number[], start: number, end: 
  * CIV-1204 (Ryan, 2026-10-31): the rider wait (CIV-1161) stands for the headline only where the direction runs through
  * the window it read, by the settled verdicts, at every boarding stop that has a reading: at midday, runsThroughPeriod
  * there and the #899 midday test (rule 7); at the PM peak, runsThroughPeriod there; on the all-day fallback, a direction
- * that is not limited (#720). A peak route's few trips reaching into midday (TTC 945: 9:28, then 14:40) are not a
+ * that is not limited (#720) at a stop whose departures span the all-day share of the grading window (#720's coverage). A peak route's few trips reaching into midday (TTC 945: 9:28, then 14:40) are not a
  * 312-minute wait. Null when no boarding stop has a reading.
  */
 export function gatedRiderWait(
   stops: readonly string[],
   timesAt: (stopId: string) => readonly number[],
   dropOffOnly: ReadonlySet<string>,
-  direction: { middayRuns: boolean; limited: boolean },
+  direction: { middayRuns: boolean; limited: boolean; gradingWindow: { start: number; end: number } },
 ): { wait: number; stops: number; allDayStops: number; passes: boolean } | null {
   const board = boardingMainStretchWait(stops, timesAt, dropOffOnly);
   if (!board) return null;
@@ -634,7 +634,13 @@ export function gatedRiderWait(
     const times = timesAt(stop);
     const reading = riderWait(times);
     if (!reading) return true;
-    if (reading.window === 'allDay') return !direction.limited;
+    if (reading.window === 'allDay') {
+      // #720's all-day coverage test, as a branch takes part in the all-day value (spansWindow in rollupDirection): the
+      // stop's departures span at least ALL_DAY_MIN_COVERAGE of the day's grading window.
+      const { start, end } = direction.gradingWindow;
+      const t = times.filter(x => x >= start && x <= end);
+      return !direction.limited && t.length >= 2 && (Math.max(...t) - Math.min(...t)) / (end - start) >= ALL_DAY_MIN_COVERAGE;
+    }
     const { start, end } = PERIOD_MINUTES[reading.window];
     const runs = runsThroughPeriod(times, start, end, computePeriodSustained([...times])[reading.window]);
     return reading.window === 'midday' ? runs && direction.middayRuns : runs;

@@ -56,22 +56,22 @@ describe('boardingMainStretchWait (CIV-1161 step 1)', () => {
 
 describe('gatedRiderWait (CIV-1204 run-shape gate)', () => {
   const at = (times: Record<string, number[]>) => (s: string) => times[s] ?? [];
-  const runs = { middayRuns: true, limited: false };
+  const runs = { middayRuns: true, limited: false, gradingWindow: { start: 420, end: 1320 } };
   it('blocks a peak route whose last morning and first afternoon trips reach into midday (TTC 945 to Kipling)', () => {
     // Every 10 to 9:28, then 14:40 on: a 312-minute "wait" across a midday it does not run.
     const t = { a: [...every('06:00', '09:28', 10), ...every('14:40', '18:40', 10)] };
-    const r = gatedRiderWait(['a'], at(t), new Set(), { middayRuns: false, limited: true });
+    const r = gatedRiderWait(['a'], at(t), new Set(), { middayRuns: false, limited: true, gradingWindow: { start: 420, end: 1320 } });
     expect(r?.wait).toBeGreaterThan(300);
     expect(r?.passes).toBe(false);
   });
   it('blocks a midday of stray trips even when rule 7 alone would pass (CTA 120: 9:10, 9:31, then 14:44)', () => {
     const t = { a: [hm('07:00'), hm('07:20'), hm('09:10'), hm('09:31'), hm('14:44'), hm('16:00'), hm('16:20')] };
     expect(gatedRiderWait(['a'], at(t), new Set(), runs)?.passes).toBe(true);
-    expect(gatedRiderWait(['a'], at(t), new Set(), { middayRuns: false, limited: true })?.passes).toBe(false);
+    expect(gatedRiderWait(['a'], at(t), new Set(), { middayRuns: false, limited: true, gradingWindow: { start: 420, end: 1320 } })?.passes).toBe(false);
   });
   it('blocks the all-day fallback of a limited direction (CAT 14 to Springwood: 6:16, 7:31, 10:16, 16:31, 17:01)', () => {
     const t = { a: [hm('06:16'), hm('07:31'), hm('10:16'), hm('16:31'), hm('17:01')] };
-    const r = gatedRiderWait(['a'], at(t), new Set(), { middayRuns: false, limited: true });
+    const r = gatedRiderWait(['a'], at(t), new Set(), { middayRuns: false, limited: true, gradingWindow: { start: 420, end: 1320 } });
     expect(r?.passes).toBe(false);
   });
   it('blocks the row when any boarding stop fails, never re-reading the median over the rest', () => {
@@ -97,6 +97,6 @@ describe('gatedRiderWait (CIV-1204 run-shape gate)', () => {
   });
   it('reads the PM peak where it runs through it', () => {
     const t = { a: every('15:00', '18:40', 20) };
-    expect(gatedRiderWait(['a'], at(t), new Set(), { middayRuns: false, limited: true })).toEqual({ wait: 20, stops: 1, allDayStops: 0, passes: true });
+    expect(gatedRiderWait(['a'], at(t), new Set(), { middayRuns: false, limited: true, gradingWindow: { start: 420, end: 1320 } })).toEqual({ wait: 20, stops: 1, allDayStops: 0, passes: true });
   });
 });
