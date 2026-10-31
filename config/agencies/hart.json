@@ -1,6 +1,7 @@
 {
   "slug": "hart",
-  "name": "Hillsborough Area Regional Transit (HART)",
+  "officialName": "Hillsborough Area Regional Transit",
+  "commonName": "HART",
   "websiteUrl": "http://www.gohart.org",
   "center": [
     27.96,

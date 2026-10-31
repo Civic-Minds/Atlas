@@ -1,6 +1,7 @@
 {
   "slug": "amiens",
-  "name": "Ametis (Amiens)",
+  "officialName": "Ametis",
+  "nameQualifier": "Amiens",
   "region": "Hauts-de-France",
   "center": [
     49.8941,

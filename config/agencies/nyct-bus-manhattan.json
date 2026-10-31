@@ -1,6 +1,7 @@
 {
   "slug": "nyct-bus-manhattan",
-  "name": "MTA NYCT Bus (Manhattan)",
+  "officialName": "MTA NYCT Bus",
+  "nameQualifier": "Manhattan",
   "displayArea": "Manhattan",
   "websiteUrl": "http://www.mta.info",
   "center": [

@@ -1,6 +1,7 @@
 {
   "slug": "merced",
-  "name": "Merced County Transit (The Bus)",
+  "officialName": "Merced County Transit",
+  "commonName": "The Bus",
   "websiteUrl": "https://www.mercedthebus.com/",
   "center": [
     37.3,

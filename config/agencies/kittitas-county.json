@@ -1,6 +1,7 @@
 {
   "slug": "kittitas-county",
-  "name": "City of Ellensburg Public Transit (Central Transit)",
+  "officialName": "City of Ellensburg Public Transit",
+  "commonName": "Central Transit",
   "websiteUrl": "https://centraltransit.org/",
   "center": [
     47,

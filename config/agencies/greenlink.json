@@ -1,6 +1,7 @@
 {
   "slug": "greenlink",
-  "name": "GreenLink (Greenville, SC)",
+  "officialName": "GreenLink",
+  "nameQualifier": "Greenville, SC",
   "websiteUrl": "http://ridegreenlink.com/",
   "center": [
     34.85,

@@ -1,6 +1,7 @@
 {
   "slug": "rct",
-  "name": "Redwood Coast Transit (RCT)",
+  "officialName": "Redwood Coast Transit",
+  "commonName": "RCT",
   "center": [
     41.4686,
     -124.1049

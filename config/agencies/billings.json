@@ -1,6 +1,7 @@
 {
   "slug": "billings",
-  "name": "MET Transit (Billings)",
+  "officialName": "MET Transit",
+  "nameQualifier": "Billings",
   "websiteUrl": "http://www.mettransit.com",
   "center": [
     45.78,

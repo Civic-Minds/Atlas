@@ -1,6 +1,7 @@
 {
   "slug": "rideon",
-  "name": "Ride On (Montgomery County)",
+  "officialName": "Ride On",
+  "nameQualifier": "Montgomery County",
   "websiteUrl": "https://www.montgomerycountymd.gov/dot-transit/index.html",
   "region": "Maryland",
   "center": [

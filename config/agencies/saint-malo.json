@@ -1,6 +1,7 @@
 {
   "slug": "saint-malo",
-  "name": "MAT (Saint-Malo)",
+  "officialName": "MAT",
+  "nameQualifier": "Saint-Malo",
   "websiteUrl": "http://www.star.fr",
   "region": "Bretagne",
   "center": [

@@ -1,6 +1,7 @@
 {
   "slug": "vannes",
-  "name": "Kicéo (Vannes)",
+  "officialName": "Kicéo",
+  "nameQualifier": "Vannes",
   "region": "Bretagne",
   "center": [
     47.6582,

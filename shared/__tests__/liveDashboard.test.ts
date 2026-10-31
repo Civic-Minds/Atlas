@@ -44,7 +44,7 @@ describe('sentences', () => {
   });
   it('shows every link with its number', () => {
     expect(linkValueText('stood_still', 0.57)).toBe('0.6 a day');
-    expect(linkValueText('slow_stretch', 273)).toBe('+273 s vs timetable');
+    expect(linkValueText('slow_stretch', 273)).toBe('+273 s vs schedule');
     expect(linkValueText('terminal_departures', null)).toBe('not measured');
   });
 });
@@ -84,7 +84,7 @@ describe('toCsv', () => {
 describe('running time, extra wait, service delivered', () => {
   it('says scheduled, usual and 1-in-10 in plain words, and does not guess from a handful of trips', () => {
     expect(runningTimeSentence('Eastbound', { n: 120, scheduledMin: 22, typicalMin: 27.2, p90Min: 34.4, overMin: 5 })).toBe('Eastbound: scheduled 22 min · usually 27 · 1 in 10 over 34 min.');
-    expect(runningTimeSentence('Eastbound', { n: 120, scheduledMin: 22, typicalMin: 27, p90Min: 34, overMin: 5 }, 17)).toMatch(/at 5pm\.$/);
+    expect(runningTimeSentence('Eastbound', { n: 120, scheduledMin: 22, typicalMin: 27, p90Min: 34, overMin: 5 }, 17)).toMatch(/at 5 PM\.$/);
     expect(runningTimeSentence('Eastbound', { n: 10, scheduledMin: 22, typicalMin: 27, p90Min: 34, overMin: 5 })).toMatch(/too few trips \(10\)/);
     expect(runningTimeSentence('Eastbound', null)).toMatch(/too few trips were measured over the main stretch/);
   });
@@ -158,7 +158,7 @@ describe('branch run-time line', () => {
     const { branchRunTimeLine } = await import('../liveDashboard');
     const all = { n: 215, scheduledMin: 14.2, typicalMin: 12.4, p90Min: 16.1, overMin: -1.8 };
     expect(branchRunTimeLine({ fromStopId: 'a', toStopId: 'b', fromName: 'Humber Loop', toName: 'Marine Parade', stops: 14, all, byHour: [] }))
-      .toBe('To Marine Parade: usually 12 min, timetable 14, 1 in 10 over 16 (over 14 stops from Humber Loop, 215 trips).');
+      .toBe('To Marine Parade: usually 12 min, scheduled 14, 1 in 10 over 16 (over 14 stops from Humber Loop, 215 trips).');
   });
 });
 

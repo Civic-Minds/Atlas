@@ -74,3 +74,15 @@ describe('agency index short names (CIV-967)', () => {
     expect(row).toMatchObject({ name: 'Capital District Transportation Authority', shortName: 'CDTA' });
   });
 });
+
+describe('agency index names (#1245)', () => {
+  it('shows the official name without its bracket, and keeps the place where agencies share a name', () => {
+    const rows = buildAgencyIndexData([
+      ag('montgomery', 'Montgomery Transit (The M)', 'United States', 'Alabama', 10),
+      ag('bc-kelowna', 'BC Transit (Kelowna)', 'Canada', 'British Columbia', 30),
+      ag('bc-victoria', 'BC Transit (Victoria)', 'Canada', 'British Columbia', 69),
+      ag('miway', 'MiWay (Mississauga)', 'Canada', 'Ontario', 80),
+    ], [], null).groups.flatMap(g => g.regions.flatMap(r => r.agencies)).map(a => a.name);
+    expect(rows).toEqual(['BC Transit · Kelowna', 'BC Transit · Victoria', 'MiWay', 'Montgomery Transit']);
+  });
+});

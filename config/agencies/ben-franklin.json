@@ -1,6 +1,7 @@
 {
   "slug": "ben-franklin",
-  "name": "Ben Franklin Transit (Tri-Cities, WA)",
+  "officialName": "Ben Franklin Transit",
+  "nameQualifier": "Tri-Cities, WA",
   "websiteUrl": "https://www.bft.org/",
   "center": [
     46.21,

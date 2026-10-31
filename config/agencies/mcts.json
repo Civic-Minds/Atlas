@@ -1,6 +1,7 @@
 {
   "slug": "mcts",
-  "name": "Milwaukee County Transit System (MCTS)",
+  "officialName": "Milwaukee County Transit System",
+  "commonName": "MCTS",
   "websiteUrl": "http://www.ridemcts.com",
   "center": [
     43.0481,

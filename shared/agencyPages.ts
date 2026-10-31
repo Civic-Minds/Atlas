@@ -16,6 +16,8 @@ import { AGENCY_PATH_PREFIX, agencyPagePath, areaPagePath } from './pagePaths';
 import { zoomForSpan } from './mapZoom';
 import { haversineM } from './shapeProjection';
 import { andOthers, joinList, plural } from './overflowText';
+import { agencyNames } from '../src/utils/agencyName';
+import { splitRegistryName } from './agencyRegistryName';
 
 export { headwayEvery };
 const MAX_NEARBY = 8;
@@ -104,6 +106,8 @@ export interface AgencyPageSummaries {
 /** A page's own numbers plus links to nearby agencies: all one page needs, embedded in its HTML. */
 export interface AgencyPageData {
   agency: AgencyPageSummary;
+  /** The page heading and the name its sentences use: agencyTitle, told apart from same-named agencies (#1245). */
+  title: string;
   nearby: Array<{ slug: string; name: string }>;
   /** generatedAt of the data release the numbers come from. */
   releaseDate: string | null;
@@ -111,6 +115,8 @@ export interface AgencyPageData {
   area?: { slug: string; name: string };
   /** The one-sentence introduction, also the opening of the meta description. */
   intro: string;
+  /** The search-result description: the intro, cut as the registry-named intro would be (#1245). */
+  description: string;
   /** The place the intro names, and the text before it, so the page can link the place to its area page. */
   place: string;
   introLead: string;
@@ -152,10 +158,11 @@ export function agencyIntroSentence(
   place: string,
   connections: ReadonlyArray<{ name: string }> = [],
   modes: ReadonlyArray<{ label: string; routes: number }> = [],
+  title: string = agencyTitle(a),
 ): string {
   const n = a.routes.length;
-  if (n === 0) return `${a.name} has no weekday routes in the data.`;
-  let s = `${introLead(a, place, modes)}${place}`;
+  if (n === 0) return `${title} has no weekday routes in the data.`;
+  let s = `${introLead(a, place, modes, title)}${place}`;
   if (a.stops) s += ` with ${a.stops.toLocaleString('en-US')} ${plural(a.stops, 'stop')}`;
   if (connections.length) s += `${CONNECTS_WITH}${namesList(connections.map(c => c.name))}`;
   return `${s}.`;
@@ -167,13 +174,46 @@ function splitBracketedPlace(name: string): [string, string] | null {
   return m ? [m[1], m[2]] : null;
 }
 
-/** The agency name without a trailing "(Place)" when the sentence names that same place: "UM Transit Services (Ann Arbor)" in Ann Arbor. */
-export function introName(name: string, place: string): string {
-  const m = splitBracketedPlace(name);
-  if (!m) return name;
-  const paren = m[1].toLowerCase();
-  const where = place.toLowerCase();
-  return where.includes(paren) || paren.includes(where.replace(/^the /, '')) ? m[0] : name;
+/**
+ * The agency's official name, from agencyNames() (#1245): the page heading, the intro and its "connects with", the nearby
+ * list, the area intro and table, the agency index and the website link. Never the registry form with its bracket
+ * ("Montgomery Transit", not "Montgomery Transit (The M)").
+ */
+export function agencyTitle(a: Pick<AgencyPageIdentity, 'name'>, shared: ReadonlySet<string> = NO_SHARED_NAMES): string {
+  const official = agencyNames(a.name).official;
+  // Agencies that share an official name keep what tells them apart, as a list row shows a place ("BC Transit · Kelowna").
+  const extra = shared.has(official) ? splitRegistryName(a.name)[1] : null;
+  return extra ? `${official} · ${extra}` : official;
+}
+
+const NO_SHARED_NAMES: ReadonlySet<string> = new Set();
+
+/** The official names more than one agency has (BC Transit, exo, MTA NYCT Bus), so agencyTitle can tell them apart. */
+export function sharedOfficialNames(all: readonly Pick<AgencyPageIdentity, 'name'>[]): Set<string> {
+  const seen = new Set<string>();
+  const shared = new Set<string>();
+  for (const a of all) {
+    const official = agencyNames(a.name).official;
+    (seen.has(official) ? shared : seen).add(official);
+  }
+  return shared;
+}
+
+/** Every agency's title in a list, worked out once per list: the prerender builds 547 pages from the same one. */
+const TITLES = new WeakMap<object, Map<string, string>>();
+function titlesOf(all: readonly Pick<AgencyPageIdentity, 'slug' | 'name'>[]): Map<string, string> {
+  let titles = TITLES.get(all);
+  if (!titles) {
+    const shared = sharedOfficialNames(all);
+    titles = new Map(all.map(o => [o.slug, agencyTitle(o, shared)]));
+    TITLES.set(all, titles);
+  }
+  return titles;
+}
+
+/** The agency's short name (#1245), for the agency index's rows too tight for the title ("CDTA", "Muni"). */
+export function agencyMention(a: Pick<AgencyPageIdentity, 'name'>): string {
+  return agencyNames(a.name).name;
 }
 
 /** Everything in the intro before the place: "Hamilton Street Railway operates 31 routes in ". */
@@ -181,9 +221,10 @@ export function introLead(
   a: Pick<AgencyPageSummary, 'name' | 'routes'>,
   place: string,
   modes: ReadonlyArray<{ label: string; routes: number }> = [],
+  title: string = agencyTitle(a),
 ): string {
   const n = a.routes.length;
-  return `${introName(a.name, place)} operates ${n.toLocaleString('en-US')} ${plural(n, 'route')}${modes.length > 1 ? ` (${modesText(modes, ', ')})` : ''} in `;
+  return `${title} operates ${n.toLocaleString('en-US')} ${plural(n, 'route')}${modes.length > 1 ? ` (${modesText(modes, ', ')})` : ''} in `;
 }
 
 /** The prerendered HTML carries its data in <script type="application/json" id=...>. */
@@ -204,13 +245,18 @@ export function agencyPageData(
     : nearbyAgencies(a, all);
   // Every agency in the list has a page (CIV-965), so a connection links whenever its agency is in it.
   const hasPage = new Set(all.map(o => o.slug));
-  const fullName = new Map(all.map(o => [o.slug, o.name]));
-  const connections = (a.connections ?? []).filter(c => !c.betaOnly || BETA_BUILD).map(c => ({ ...c, name: fullName.get(c.slug) ?? c.name, page: hasPage.has(c.slug) }));
+  const titleOf = titlesOf(all);
+  const title = titleOf.get(a.slug) ?? agencyTitle(a);
+  const connections = (a.connections ?? []).filter(c => !c.betaOnly || BETA_BUILD).map(c => ({ ...c, name: titleOf.get(c.slug) ?? agencyTitle({ name: c.name }), page: hasPage.has(c.slug) }));
   const place = area && agencySpansArea(a.bbox, area.bbox) ? areaRegionName(area) : a.city;
   const areaRef = area ? { slug: area.slug, name: area.name } : undefined;
   const { connections: _drop, ...agency } = a;
   const modes = agencyStats(a).byMode.map(m => ({ label: m.label, routes: m.routes.length }));
-  return { agency, releaseDate, ...(areaRef ? { area: areaRef } : {}), nearby: others.map(o => ({ slug: o.slug, name: o.name })), intro: agencyIntroSentence(a, place, connections, modes), place, introLead: introLead(a, place, modes), connections };
+  const intro = agencyIntroSentence(a, place, connections, modes, title);
+  // The same sentence with registry names sizes the search description, so it keeps what it kept before (#1245).
+  const registryName = new Map(all.map(o => [o.slug, o.name]));
+  const sizedBy = agencyIntroSentence(a, place, connections.map(c => ({ ...c, name: registryName.get(c.slug) ?? c.name })), modes, sizingName(a.name, place));
+  return { agency, title, releaseDate, ...(areaRef ? { area: areaRef } : {}), nearby: others.map(o => ({ slug: o.slug, name: titleOf.get(o.slug) ?? agencyTitle(o) })), intro, description: agencyPageDescription(a, intro, sizedBy), place, introLead: introLead(a, place, modes, title), connections };
 }
 
 const MAX_AREA_LIST = 12;
@@ -229,9 +275,9 @@ export function agencyPageTitle(a: Pick<AgencyPageSummary, 'displayName'>): stri
   ], TITLE_MAX);
 }
 
-/** Visible heading: the full agency name, without a parenthetical city ("GO Transit"). The short form lives in <title>. */
-export function agencyPageH1(a: Pick<AgencyPageSummary, 'name' | 'city'>): string {
-  return introName(a.name, a.city);
+/** Visible heading: the agency's official name ("GO Transit", "Montgomery Transit"); agencyPageData's `title` also tells same-named agencies apart. The short form lives in <title>. */
+export function agencyPageH1(a: Pick<AgencyPageSummary, 'name'>): string {
+  return agencyTitle(a);
 }
 
 
@@ -323,16 +369,35 @@ export function agencyDatasetDescription(a: AgencyPageSummary, intro?: string): 
  * The meta description: the intro sentence (name, route count, city, a few connections), losing the mode split, the stop
  * count and the connections in turn until it fits, and topped up with what the page is when short. 155 characters at most.
  */
-export function agencyPageDescription(a: AgencyPageSummary, intro?: string): string {
-  const full = intro ?? agencyLeadSentence(a);
+export function agencyPageDescription(a: AgencyPageSummary, intro?: string, sizedBy?: string): string {
+  const shown = descriptionCuts(intro ?? agencyLeadSentence(a));
+  // Which parts fit is decided on `sizedBy` (the intro with registry names), so shorter names never change what the
+  // description keeps (#1245): it stays as before apart from the names.
+  const sized = sizedBy ? descriptionCuts(sizedBy) : shown;
+  const at = sized.findIndex(c => c.length <= DESCRIPTION_MAX);
+  const base = at >= 0 ? shown[at] : truncateAtWord(shown[shown.length - 1], DESCRIPTION_MAX);
+  const sizedBase = at >= 0 ? sized[at] : truncateAtWord(sized[sized.length - 1], DESCRIPTION_MAX);
+  if (sizedBase.length >= DESCRIPTION_MIN || !sizedBase.endsWith('.')) return base;
+  const tail = [' Weekday route frequency by time of day, from the published schedule.', ' Weekday waits by time of day.']
+    .find(t => sizedBase.length + t.length <= DESCRIPTION_MAX);
+  return tail ? `${base}${tail}` : base;
+}
+
+/** The name the intro used before #1245, only to size the description: the registry name, its "(Place)" dropped when the sentence names that place. */
+function sizingName(name: string, place: string): string {
+  const m = splitBracketedPlace(name);
+  if (!m) return name;
+  const paren = m[1].toLowerCase();
+  const where = place.toLowerCase();
+  return where.includes(paren) || paren.includes(where.replace(/^the /, '')) ? m[0] : name;
+}
+
+/** The intro, then without its modes, its stops and its connections: the description's cuts, best wording first. */
+function descriptionCuts(full: string): string[] {
   const noModes = full.replace(/ \([^)]*\)(?= in )/, '');
   const noStops = noModes.replace(/ with [\d,]+ stops?/, '');
   const noConnections = noStops.replace(/ and connects with .*?\.$/, '.');
-  const base = firstThatFits([full, noModes, noStops, noConnections], DESCRIPTION_MAX);
-  if (base.length >= DESCRIPTION_MIN || !base.endsWith('.')) return base;
-  const tail = [' Weekday route frequency by time of day, from the published schedule.', ' Weekday waits by time of day.']
-    .find(t => base.length + t.length <= DESCRIPTION_MAX);
-  return tail ? `${base}${tail}` : base;
+  return [full, noModes, noStops, noConnections];
 }
 
 /** The agency's name without its bracketed city: "TTC (Toronto)" becomes "TTC". */
@@ -381,7 +446,7 @@ export function agencyDatesText(a: Pick<AgencyPageSummary, 'lastRefreshedAt' | '
   const release = formatDataDate(releaseDate);
   const listingEnded = formatDataDate(a.listingEndedOn);
   // The map's rule (isAgencyFeedExpired): ended from the day after the last day, in the agency's own date.
-  const timetable = through && isExpiredFeedExpiry(a.validThrough, todayYmd)
+  const datesClause = through && isExpiredFeedExpiry(a.validThrough, todayYmd)
     ? `This schedule ended on ${through}; the agency hasn't published a newer one yet.`
     // N112 with a through date, else N25 (CIV-1055): "covers service until" alone would overstate a timetable whose routes mostly stopped.
     : listingEnded && through ? listingEndedPageLine(through, listingEnded, listingEndHasPassed(a.listingEndedOn!, todayYmd))
@@ -390,7 +455,7 @@ export function agencyDatesText(a: Pick<AgencyPageSummary, 'lastRefreshedAt' | '
     : published ? `This schedule was published ${published}.`
     : through ? `This schedule covers service until ${through}.`
     : '';
-  return ["Based on the agency's published schedule, not live arrivals.", timetable, release ? `This page was last updated ${release}.` : ''].filter(Boolean).join(' ');
+  return ["Based on the agency's published schedule, not live arrivals.", datesClause, release ? `This page was last updated ${release}.` : ''].filter(Boolean).join(' ');
 }
 
 /** "Oct 12, 2026" from an ISO or yyyymmdd date; null when unusable. */
@@ -443,13 +508,13 @@ export function nearbyAgencies(a: AgencyPageSummary, all: readonly AgencyPageSum
 /** Everything the head needs for an agency page, in the same shape as the other routes. */
 export function resolveAgencySeo(
   a: AgencyPageSummary,
-  ctx: { mode: SeoMode; origin?: string; intro?: string },
+  ctx: { mode: SeoMode; origin?: string; intro?: string; description?: string },
 ): { title: string; description: string; canonicalUrl: string; noindex: boolean; matchedPath: string } {
   const origin = (ctx.origin ?? SITE_URL).replace(/\/$/, '');
   const prefix = seoTitlePrefix(ctx.mode);
   return {
     title: `${prefix}${agencyPageTitle(a)}`,
-    description: agencyPageDescription(a, ctx.intro),
+    description: ctx.description ?? agencyPageDescription(a, ctx.intro),
     canonicalUrl: `${origin}${agencyPagePath(a.slug)}`,
     noindex: ctx.mode !== 'public',
     matchedPath: agencyPagePath(a.slug),

@@ -1,6 +1,7 @@
 {
   "slug": "kelowna",
-  "name": "BC Transit (Kelowna)",
+  "officialName": "BC Transit",
+  "nameQualifier": "Kelowna",
   "region": "British Columbia",
   "center": [
     49.888,

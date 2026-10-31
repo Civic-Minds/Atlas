@@ -22,7 +22,7 @@ export function runTimeModel(v3: LiveV3, band: DashboardBand, dir: number | null
 
 /** The summary line: the usual trip, the timetable's, and the slow end. Shared by the Explore section and the tool panel's card. */
 export const runTimeLine = (f: { typicalMin: number; scheduledMin: number; p90Min: number }) =>
-  `Usually ${Math.round(f.typicalMin)} min · timetable ${Math.round(f.scheduledMin)} · 1 in 10 over ${Math.round(f.p90Min)}`;
+  `Usually ${Math.round(f.typicalMin)} min · scheduled ${Math.round(f.scheduledMin)} · 1 in 10 over ${Math.round(f.p90Min)}`;
 
 /** The stretch the run time covers, in short stop names (empty when the file does not say). */
 export const runTimeStretchOf = (v3: LiveV3, d: number) => runTimeStretchLabel(v3.runningTime?.stretch?.[String(d)], n => shortStopName(nameCase(n, 'stop')));

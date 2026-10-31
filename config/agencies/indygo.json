@@ -1,6 +1,7 @@
 {
   "slug": "indygo",
-  "name": "IndyGo (Indianapolis)",
+  "officialName": "IndyGo",
+  "nameQualifier": "Indianapolis",
   "center": [
     39.7921,
     -86.153

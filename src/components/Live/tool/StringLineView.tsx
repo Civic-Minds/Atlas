@@ -5,6 +5,7 @@ import { isMajorStop, shortStopName } from '../../../utils/stopLabel';
 import { nameCase } from '../../../utils/format';
 import { TILE } from '../../../pageStyles';
 import Pill from '../../ui/Pill';
+import { timeRange } from '../../../../shared/timeText';
 import { clockAt, dayStartEpoch, useStrings, type StringsFile } from '../StringLine';
 
 const WINDOW_H = 2;
@@ -113,7 +114,7 @@ export default function StringLineView({ agency, route, v3, dir, onClose }: { ag
           </div>
           <div className="flex items-center gap-1" role="group" aria-label="Window">
             <Pill size="segment" aria-label="Earlier" onClick={() => setStart(s => s - 1)}>◀</Pill>
-            <span className="min-w-[8.5rem] text-center text-xs font-bold tabular-nums">{clockAt(start)} – {clockAt(end)}</span>
+            <span className="min-w-[8.5rem] text-center text-xs font-bold tabular-nums">{timeRange(start * 60, end * 60)}</span>
             <Pill size="segment" aria-label="Later" onClick={() => setStart(s => s + 1)}>▶</Pill>
           </div>
           <button type="button" onClick={onClose} aria-label="Close" className="rounded-full p-1 text-[var(--text-dim)] hover:text-[var(--text-primary)]"><X className="h-4 w-4" /></button>

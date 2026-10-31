@@ -1,6 +1,7 @@
 {
   "slug": "streamline",
-  "name": "Streamline (Bozeman)",
+  "officialName": "Streamline",
+  "nameQualifier": "Bozeman",
   "websiteUrl": "http://www.streamlinebus.com/",
   "center": [
     45.6881,

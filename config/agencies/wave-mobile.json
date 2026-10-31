@@ -1,6 +1,7 @@
 {
   "slug": "wave-mobile",
-  "name": "Wave Transit (Mobile)",
+  "officialName": "Wave Transit",
+  "nameQualifier": "Mobile",
   "websiteUrl": "https://thewavetransit.com/",
   "center": [
     30.68,

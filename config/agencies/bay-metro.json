@@ -1,6 +1,7 @@
 {
   "slug": "bay-metro",
-  "name": "Bay Metro (Bay City)",
+  "officialName": "Bay Metro",
+  "nameQualifier": "Bay City",
   "websiteUrl": "https://www.baymetro.com",
   "center": [
     43.5945,

@@ -7,6 +7,7 @@ import { useSegmentDelay } from '../../hooks/useSegmentDelay';
 import { syncUrlParams } from '../../utils/syncUrlParams';
 import { LIVE_MAP_URL, currentSearch, linkUpdate, readLink } from '../../utils/urlSchema';
 import { periodKeyForHour } from '../../../shared/config';
+import { clockTime } from '../../../shared/timeText';
 import {
   MIN_DAYS, MIN_SEGMENT_TRIPS, SEGMENT_BAND_OPTIONS, halfMinutes, halfMinutesDown, stopNameParts, usableStandingStill,
   type SegmentBand, type SegmentDelayData,
@@ -53,7 +54,8 @@ function torontoHour(d = new Date()): number {
 }
 
 function torontoTime(d = new Date()): string {
-  return new Intl.DateTimeFormat('en-CA', { hour: 'numeric', minute: '2-digit', timeZone: 'America/Toronto' }).format(d).replace('a.m.', 'am').replace('p.m.', 'pm');
+  const minute = Number(new Intl.DateTimeFormat('en-CA', { minute: 'numeric', timeZone: 'America/Toronto' }).format(d));
+  return clockTime(torontoHour(d) * 60 + minute);
 }
 
 function currentBand(): SegmentBand {
@@ -320,7 +322,7 @@ export default function LiveRoutePerformance({ slug, routeShortName, feedDegrade
           <GapStrip stops={measured} />
         </Section>
         <Section title="Time between stops">
-          <Plain text={tally.total ? `${tally.within} of ${tally.total} stop pairs within ½ min of timetable or faster` : 'Not enough trips measured'} />
+          <Plain text={tally.total ? `${tally.within} of ${tally.total} stop pairs within ½ min of schedule or faster` : 'Not enough trips measured'} />
         </Section>
         <Section title="Stood still 2+ min">
           <StillRows rows={still.filter(s => ids.has(s.stop.stopId))} totalDays={totalDays} />
@@ -396,7 +398,7 @@ export default function LiveRoutePerformance({ slug, routeShortName, feedDegrade
         )}
         {ewt && ewt.peak.stat!.excessWaitSec! >= 30 && (
           <div className="text-xs font-bold text-[var(--text-muted)] tabular-nums">
-            Extra wait vs timetable: {ewt.first === ewt.peak || ewt.first.stat!.excessWaitSec! < 30
+            Extra wait vs schedule: {ewt.first === ewt.peak || ewt.first.stat!.excessWaitSec! < 30
               ? <>up to {mins(ewt.peak.stat!.excessWaitSec!)} min ({stopLabel(ewt.peak.name)})</>
               : ewt.first.label === ewt.peak.label
                 ? <>{mins(ewt.first.stat!.excessWaitSec!)} → {mins(ewt.peak.stat!.excessWaitSec!)} min ({stopLabel(ewt.first.name)} → {stopLabel(ewt.peak.name)})</>
@@ -414,7 +416,7 @@ export default function LiveRoutePerformance({ slug, routeShortName, feedDegrade
       </Section>
 
       <Section title="Time between stops">
-        <Plain text={tally.total ? `${tally.within} of ${tally.total} stop pairs within ½ min of timetable or faster` : 'Not enough trips measured'} />
+        <Plain text={tally.total ? `${tally.within} of ${tally.total} stop pairs within ½ min of schedule or faster` : 'Not enough trips measured'} />
       </Section>
         </>
       )}
@@ -462,7 +464,7 @@ function Details({ data, line, stops, band, bandLabel, directionLabel, still, ra
         ))}
       </Section>
 
-      <Section title="Time between stops vs timetable">
+      <Section title="Time between stops vs schedule">
         {pairs.map(s => {
           const b = s.bands[band]!;
           const p90 = halfMinutesDown(b.gainedP90Sec);
@@ -470,7 +472,7 @@ function Details({ data, line, stops, band, bandLabel, directionLabel, still, ra
             <div key={`${s.fromStopId}>${s.toStopId}`} className="flex flex-col">
               <span className={ROW_LABEL}>{stopLabel(s.fromName)} to {stopLabel(s.toName)}</span>
               <span className={DETAIL}>
-                Typical {b.gainedMedianSec >= 0 ? '+' : ''}{mins(b.gainedMedianSec)} min vs timetable
+                Typical {b.gainedMedianSec >= 0 ? '+' : ''}{mins(b.gainedMedianSec)} min vs schedule
                 {p90 > halfMinutes(b.gainedMedianSec) && p90 > 0 && <> · 1 in 10 take {p90}+ min longer</>} · {b.trips} trips, {b.days} days
               </span>
             </div>
@@ -486,10 +488,10 @@ function Details({ data, line, stops, band, bandLabel, directionLabel, still, ra
         <ul className="list-disc pl-4 text-xs text-[var(--text-muted)] leading-snug flex flex-col gap-1">
           <li>Vehicle positions recorded about once a minute, {totalDays} days ({range}; last day partial). Each stop's passing time is interpolated between positions.</li>
           <li>Gaps are measured only where every scheduled trip in a row was seen at the stop, so a missing car never shows as one long gap. Trips not seen are left out, so real waits can be longer.</li>
-          <li>"8 in 10 gaps" is the 10th to 90th percentile of actual gaps, widened to the next ½ min at each end; for the shared section, every gap at its stops is pooled. Typical is the median. A scheduled range means the timetable mixes headways in that period. Extra wait is the average wait for a rider arriving at random, minus the same for the timetable.</li>
-          <li>Time between stops compares every car's time for each stop pair with the timetable for that time of day. Line ends and the stop next to them are left out (layover and loop time).</li>
+          <li>"8 in 10 gaps" is the 10th to 90th percentile of actual gaps, widened to the next ½ min at each end; for the shared section, every gap at its stops is pooled. Typical is the median. A scheduled range means the schedule mixes headways in that period. Extra wait is the average wait for a rider arriving at random, minus the same for the schedule.</li>
+          <li>Time between stops compares every car's time for each stop pair with the schedule for that time of day. Line ends and the stop next to them are left out (layover and loop time).</li>
           <li>Stood still: moved 25 m or less for 2+ min within 60 m of a stop. Could be holding for time, a signal or a blockage; the data can't tell which. Terminals, turn-back points and carhouses are left out; a stop needs 10 times on 5 days.</li>
-          <li>Right now: from the last 30 min of recorded positions, a gap is how long ago the car ahead passed the spot where the car behind is now. "–" means that passing wasn't seen. Cars on trips the timetable doesn't list (e.g. added buses) count once their own track shows which way they're going; ones that haven't moved 200 m in 10 min are treated as parked. Hidden when the feed is behind, a moving car's direction can't be told, or fewer than half the scheduled cars are reporting.</li>
+          <li>Right now: from the last 30 min of recorded positions, a gap is how long ago the car ahead passed the spot where the car behind is now. "–" means that passing wasn't seen. Cars on trips the schedule doesn't list (e.g. added buses) count once their own track shows which way they're going; ones that haven't moved 200 m in 10 min are treated as parked. Hidden when the feed is behind, a moving car's direction can't be told, or fewer than half the scheduled cars are reporting.</li>
           <li>Values are rounded to the nearest ½ min; stops with fewer than 30 gaps or 5 days are left out.</li>
         </ul>
       </Section>

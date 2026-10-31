@@ -1,6 +1,7 @@
 {
   "slug": "cats-baton",
-  "name": "Capital Area Transit System (Baton Rouge)",
+  "officialName": "Capital Area Transit System",
+  "nameQualifier": "Baton Rouge",
   "websiteUrl": "https://www.brcats.com/",
   "center": [
     30.45,

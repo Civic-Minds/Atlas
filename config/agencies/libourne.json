@@ -1,6 +1,7 @@
 {
   "slug": "libourne",
-  "name": "Calibus (Libourne)",
+  "officialName": "Calibus",
+  "nameQualifier": "Libourne",
   "websiteUrl": "https://www.calibus.fr",
   "region": "Nouvelle-Aquitaine",
   "center": [

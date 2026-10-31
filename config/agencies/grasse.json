@@ -1,6 +1,7 @@
 {
   "slug": "grasse",
-  "name": "Sillages (Grasse)",
+  "officialName": "Sillages",
+  "nameQualifier": "Grasse",
   "region": "Provence-Alpes-Côte d'Azur",
   "center": [
     43.6585,

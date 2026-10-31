@@ -1,6 +1,7 @@
 {
   "slug": "rtcwashoe",
-  "name": "Regional Transportation Commission of Washoe County (RTC Washoe)",
+  "officialName": "Regional Transportation Commission of Washoe County",
+  "commonName": "RTC Washoe",
   "websiteUrl": "http://www.rtcwashoe.com",
   "center": [
     39.53,

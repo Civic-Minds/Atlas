@@ -11,7 +11,7 @@ import { CardReportButton } from '../components/Interval/cardUi';
 import { reportDetails } from '../utils/reportIssue';
 import { routeLabels } from '../utils/format';
 import { agencyNames } from '../utils/agencyName';
-import { headwayEvery, headwayOrBetter } from '../utils/headwayText';
+import { headwayAmount, headwayEvery, headwayOrBetter } from '../utils/headwayText';
 import ResearchInfo from '../components/ResearchInfo';
 import { NIGHT_INFO_HEADING, nightRuleText } from '../content/researchRules';
 import { compareRouteNumber } from '../utils/sortCompare';
@@ -191,7 +191,7 @@ export default function NightService({ active, sidebarLeft, searchBarWidth, laye
           title="Overnight service"
           action={
             <CardReportButton
-              title={`Overnight service (${frequency} min view)`}
+              title={`Overnight service (${headwayAmount(frequency)} view)`}
               details={nightReportDetails(frequency, agencies.map(agency => ({
                 name: agency.agencyName,
                 routes: agency.routes.map(route => {

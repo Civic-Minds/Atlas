@@ -1,6 +1,7 @@
 {
   "slug": "omniride",
-  "name": "OmniRide (PRTC)",
+  "officialName": "OmniRide",
+  "nameQualifier": "PRTC",
   "websiteUrl": "http://www.omniride.com",
   "center": [
     38.5,

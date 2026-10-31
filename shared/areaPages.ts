@@ -9,7 +9,8 @@ import {
   formatDataDate,
   formatIso,
   hasMiddayService,
-  introName,
+  agencyTitle,
+  sharedOfficialNames,
   modesText,
   type AgencyPageSummary,
 } from './agencyPages';
@@ -32,6 +33,8 @@ export const AREA_DATA_SCRIPT_ID = 'area-page-data';
 export interface AreaAgencyRow {
   slug: string;
   name: string;
+  /** Its name in the intro and table: agencyTitle, told apart from same-named agencies (#1245). */
+  title: string;
   /** The agency's short display name ("WETA (San Francisco Bay)"), for a narrow names column. */
   displayName: string;
   totalRoutes: number;
@@ -123,6 +126,7 @@ function tableModes(byMode: ReadonlyArray<{ label: string; routes: readonly unkn
 
 export function buildAreaPageData(area: AreaConfig, all: ReadonlyMap<string, AgencyPageSummary>, releaseDate: string | null): AreaPageData {
   const members = areaAgencySummaries(area, all);
+  const shared = sharedOfficialNames([...all.values()]);
   const allRoutes = members.flatMap(a => a.routes);
   const modeCounts = new Map<string, number>();
   let newest: string | null = null;
@@ -134,6 +138,7 @@ export function buildAreaPageData(area: AreaConfig, all: ReadonlyMap<string, Age
     rows.push({
       slug: a.slug,
       name: a.name,
+      title: agencyTitle(a, shared),
       displayName: a.displayName,
       totalRoutes: s.totalRoutes,
       modes: tableModes(s.byMode),
@@ -235,9 +240,9 @@ export function areaIntroJoiners(parts: Pick<ReturnType<typeof areaIntroParts>, 
   };
 }
 
-/** An agency's name in the intro: its bracketed city is dropped when the area already names it, as agency intros do ("TheRide", not "TheRide (Ann Arbor)"). */
-export function areaIntroName(d: Pick<AreaPageData, 'area'>, a: Pick<AreaAgencyRow, 'name'>): string {
-  return introName(a.name, [areaRegionTitle(d.area), ...d.area.cities].join(', '));
+/** An agency's name in the intro: its card title, as agency intros use (#1245: "TheRide", not "TheRide (Ann Arbor)"). */
+export function areaIntroName(_d: Pick<AreaPageData, 'area'>, a: Pick<AreaAgencyRow, 'title'>): string {
+  return a.title;
 }
 
 /** The intro as plain text (the page links each name to its agency page). */

@@ -37,6 +37,7 @@ import {
 import { readFeedReviewHistory, shouldReviewNextFeed } from './feedReview.js';
 import { todayUtcYmd } from './utils.js';
 import { agencyTodayYmd } from '../shared/feedAvailability.js';
+import { configFromIndexEntry, withRegistryName } from '../shared/agencyRegistryName.js';
 import { readConfigAgencyName, resolveAgencyName } from './agencyName.js';
 import { pipelineRunDateYmd } from './pipelineTimeZone.js';
 import { candidateIsOlderThanActive, recordedFeedExpiry, routeLineCount, stampListingEnd } from './refreshMeta.js';
@@ -73,7 +74,8 @@ if (!input || !slug) {
 
 function writeAgencySource(agency: Record<string, unknown>): void {
   const sourcePath = resolve('config/agencies', `${String(agency.slug)}.json`);
-  writeFileSync(sourcePath, JSON.stringify(agency, null, 2) + '\n');
+  // The config keeps the name fields; index.json's `name` is built from them (#1245).
+  writeFileSync(sourcePath, JSON.stringify(configFromIndexEntry(agency), null, 2) + '\n');
 }
 
 if (!dryRun && !process.env.R2_ACCESS_KEY_ID) {
@@ -290,8 +292,8 @@ async function main() {
   if (existing >= 0) {
     const prev = index.agencies[existing];
     const updated = {
-      ...prev,
-      name: agencyName,
+      // A name argument renames the agency's name fields too (#1245), so the next index build keeps it.
+      ...withRegistryName(prev, agencyName),
       center,
       timezone: resolveAgencyTimezone(timezone, { timezone: prev.timezone, timezoneOverride: agencyConfig.timezoneOverride ?? prev.timezoneOverride }),
       lastFeedExpiry: feedExpiry,

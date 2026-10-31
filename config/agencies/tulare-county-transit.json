@@ -1,6 +1,7 @@
 {
   "slug": "tulare-county-transit",
-  "name": "Tulare County Area Transit (TCAT)",
+  "officialName": "Tulare County Area Transit",
+  "commonName": "TCAT",
   "websiteUrl": "https://tcrta.wpenginepowered.com/",
   "center": [
     36.33,

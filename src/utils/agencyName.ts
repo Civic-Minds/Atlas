@@ -4,6 +4,7 @@
  * Surfaces call agencyNames(...) and pick a form; fitAgencyName applies the one length rule.
  */
 import agencyShortNameData from '../../shared/data/agency-short-names.json';
+import { registryAgencyName, splitRegistryName, type AgencyNameFields } from '../../shared/agencyRegistryName';
 
 /**
  * List-label standard for registry names:
@@ -228,6 +229,11 @@ function isMixedCaseCode(s: string): boolean {
   return !/[\s,]/.test(s) && (s.match(/[A-Z]/g)?.length ?? 0) >= 2;
 }
 
+/** True when a bracket in a registry name is the agency's common name ("ETS", "The M"), not a place or service ("Mississauga", "Trains") (#1245). */
+export function bracketIsCommonName(bracket: string): boolean {
+  return !isPlaceAbbrev(bracket) && (looksLikeBrandCode(bracket) || isMixedCaseCode(bracket));
+}
+
 /**
  * The agency's name in a card's back link ("← Valley Metro"): shortenedName, except that a bracketed city
  * never stands in for the name ("Valley Metro (Phoenix)" → "Valley Metro", not "Phoenix"). A bracketed brand
@@ -383,8 +389,11 @@ function agencyRowName(name: string): string {
   return fitAgencyName(own, CONFIG_SHORT_NAMES.get(name.trim()) ?? own).text;
 }
 
-/** An agency as the name forms read it: the registry name, plus the places that can stand beside it. */
-export type AgencyNameInput = string | { name: string; cities?: string[]; displayArea?: string };
+/**
+ * An agency as the name forms read it: the registry name, or its name fields (#1245: the official name, plus its common
+ * name or qualifier), plus the places that can stand beside it.
+ */
+export type AgencyNameInput = string | ({ name: string; cities?: string[]; displayArea?: string } & Partial<AgencyNameFields>);
 
 /** Every form of an agency's name, from one place (CIV-998, CIV-1023). Callers pick the form by name, not by helper. */
 export interface AgencyNames {
@@ -397,6 +406,11 @@ export interface AgencyNames {
   backLink: string;
   /** The agency card title: "Toronto Transit Commission", "Gary Public Transportation Corporation". */
   full: string;
+  /**
+   * The agency's official name, without its common name or qualifier (#1245): page headings and the sentences that name it
+   * ("Montgomery Transit", "Bay Area Rapid Transit", "BC Transit"). The page around it says the place.
+   */
+  official: string;
   /** The place shown beside the card title ("Mississauga"), if any. */
   place?: string;
   /** The card title with its place ({ primary, secondary }): the agency card, History's agency card, the zone card fallback. */
@@ -411,7 +425,9 @@ export interface AgencyNames {
 }
 
 export function agencyNames(agency: AgencyNameInput): AgencyNames {
-  const { name, cities, displayArea } = typeof agency === 'string' ? { name: agency, cities: undefined, displayArea: undefined } : agency;
+  const { cities, displayArea } = typeof agency === 'string' ? { cities: undefined, displayArea: undefined } : agency;
+  // The name fields when the agency has them (#1245); the forms below read the registry form they build.
+  const name = typeof agency === 'string' ? agency : agency.officialName ? registryAgencyName(agency as AgencyNameFields) : agency.name;
   const { primary: full, secondary: place } = displayParts(name, cities, displayArea);
   const row = agencyRowName(name);
   const fallback = typeof agency === 'string' ? undefined : agency.displayArea ?? agency.cities?.[0]?.split(',')[0]?.trim();
@@ -420,11 +436,26 @@ export function agencyNames(agency: AgencyNameInput): AgencyNames {
     name: row,
     backLink: row,
     full,
+    official: typeof agency !== 'string' && agency.officialName ? agency.officialName : splitRegistryName(name)[0],
     place,
     card: place ? { primary: full, secondary: place } : { primary: full },
     list: where && !placeAlreadyInName(row, where) ? { primary: row, secondary: where } : { primary: row },
     short: shortenedName(name),
   };
+}
+
+/**
+ * Each agency's short name, with what tells it apart where two in the list share one (#1245): "MTA NYCT Bus · Bronx",
+ * "Valley Metro · Phoenix". For text that names several agencies at once, such as the map's load-error hint.
+ */
+export function distinctAgencyNames(agencies: ReadonlyArray<Exclude<AgencyNameInput, string> & { slug: string }>): Map<string, string> {
+  const names = agencies.map(a => [a, agencyNames(a).name] as const);
+  const count = new Map<string, number>();
+  for (const [, name] of names) count.set(name, (count.get(name) ?? 0) + 1);
+  return new Map(names.map(([a, name]) => {
+    const apart = (count.get(name) ?? 0) > 1 ? a.nameQualifier ?? a.commonName ?? splitRegistryName(a.name)[1] : null;
+    return [a.slug, apart ? `${name} · ${apart}` : name];
+  }));
 }
 
 /** The `short` form of the agency with this slug (Live), or the slug when it is not in the list. */

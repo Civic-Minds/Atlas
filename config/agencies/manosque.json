@@ -1,6 +1,7 @@
 {
   "slug": "manosque",
-  "name": "TransAgglo (Manosque)",
+  "officialName": "TransAgglo",
+  "nameQualifier": "Manosque",
   "websiteUrl": "https://mobilite.dlva.fr/",
   "region": "Provence-Alpes-Côte d'Azur",
   "center": [

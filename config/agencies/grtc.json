@@ -1,6 +1,7 @@
 {
   "slug": "grtc",
-  "name": "GRTC Transit (Richmond, VA)",
+  "officialName": "GRTC Transit",
+  "nameQualifier": "Richmond, VA",
   "center": [
     37.445,
     -77.474

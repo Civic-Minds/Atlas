@@ -1,6 +1,7 @@
 {
   "slug": "telluride",
-  "name": "Town of Telluride (Galloping Goose)",
+  "officialName": "Town of Telluride",
+  "commonName": "Galloping Goose",
   "center": [
     37.9375,
     -107.8123

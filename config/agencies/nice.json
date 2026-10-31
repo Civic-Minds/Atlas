@@ -1,6 +1,7 @@
 {
   "slug": "nice",
-  "name": "Nassau Inter-County Express (NICE Bus)",
+  "officialName": "Nassau Inter-County Express",
+  "commonName": "NICE Bus",
   "shortName": "NICE",
   "labelPlace": "Nassau County",
   "websiteUrl": "http://www.nicebus.com",

@@ -1,6 +1,7 @@
 {
   "slug": "mountainline",
-  "name": "Mountain Line (Flagstaff)",
+  "officialName": "Mountain Line",
+  "nameQualifier": "Flagstaff",
   "websiteUrl": "https://www.mountainline.az.gov/",
   "center": [
     35.2,

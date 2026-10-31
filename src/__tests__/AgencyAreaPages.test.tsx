@@ -168,7 +168,8 @@ describe('AreaPage narrow names column', () => {
     const withOther = buildAreaPageData({ ...AREA, agencies: ['ttc', 'weta'] }, new Map([[TTC.slug, TTC], [weta.slug, weta]]), null);
     view(<AreaPage data={withOther} />);
     const link = screen.getByRole('link', { name: 'WETA (San Francisco Bay)' });
-    expect(link.getAttribute('title')).toBe(long);
+    // The title on hover is the official name, without its bracket (#1245).
+    expect(link.getAttribute('title')).toBe('San Francisco Bay Area Water Emergency Transportation Authority');
     expect(within(screen.getByRole('table')).getByRole('link', { name: 'Toronto Transit Commission' }).getAttribute('title')).toBeNull();
   });
 
@@ -178,7 +179,7 @@ describe('AreaPage narrow names column', () => {
     const data = buildAreaPageData({ ...AREA, agencies: ['ttc', 'beeline'] }, new Map([[TTC.slug, TTC], [beeline.slug, beeline]]), null);
     expect(data.modeColumns).toContain(AREA_TABLE_OTHER);
     view(<AreaPage data={data} />);
-    expect(screen.getByRole('link', { name }).getAttribute('title')).toBeNull();
+    expect(screen.getByRole('link', { name: 'Westchester County Bee-Line System' }).getAttribute('title')).toBeNull();
   });
 
   it('draws the names at normal weight, as the column asks (CIV-973)', () => {

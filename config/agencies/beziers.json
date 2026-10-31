@@ -1,6 +1,7 @@
 {
   "slug": "beziers",
-  "name": "beeMob (Béziers)",
+  "officialName": "beeMob",
+  "nameQualifier": "Béziers",
   "region": "Occitanie",
   "center": [
     43.3442,

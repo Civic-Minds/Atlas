@@ -1,6 +1,7 @@
 {
   "slug": "ccta",
-  "name": "CCTA / Green Mountain Transit (Burlington, VT)",
+  "officialName": "CCTA / Green Mountain Transit",
+  "nameQualifier": "Burlington, VT",
   "websiteUrl": "https://www.ridegmt.com/",
   "center": [
     44.48,

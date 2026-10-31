@@ -1,6 +1,7 @@
 {
   "slug": "embark",
-  "name": "Embark (Oklahoma City)",
+  "officialName": "Embark",
+  "nameQualifier": "Oklahoma City",
   "websiteUrl": "https://embarkok.com",
   "center": [
     35.47,

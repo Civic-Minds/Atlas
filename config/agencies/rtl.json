@@ -1,6 +1,7 @@
 {
   "slug": "rtl",
-  "name": "RTL (Longueuil)",
+  "officialName": "RTL",
+  "nameQualifier": "Longueuil",
   "websiteUrl": "http://www.rtl-longueuil.qc.ca",
   "region": "Quebec",
   "center": [

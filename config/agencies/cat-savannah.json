@@ -1,6 +1,7 @@
 {
   "slug": "cat-savannah",
-  "name": "Chatham Area Transit (CAT)",
+  "officialName": "Chatham Area Transit",
+  "commonName": "CAT",
   "center": [
     32.0542,
     -81.1326

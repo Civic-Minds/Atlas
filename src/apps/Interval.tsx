@@ -5,7 +5,7 @@ import React, { useState, useCallback, useEffect, useLayoutEffect, useMemo, useR
 import { createPortal } from 'react-dom';
 import { useLocation, useSearchParams } from 'react-router';
 import { useViewportLoadGate } from '../hooks/useViewportLoadGate';
-import { agencyNames } from '../utils/agencyName';
+import { agencyNames, distinctAgencyNames } from '../utils/agencyName';
 import SelectionLoadPanel, { SelectionNoticePanel } from '../components/Interval/SelectionLoadPanel';
 import { useAgencyData, viewportAgencySlugs } from '../hooks/useAgencyData';
 import { anyFeaturePassesRouteFilter, useIntervalStats, routeKey, PERIOD_KEYS, type HoveredBranch, type ShapeProperties } from '../hooks/useIntervalStats';
@@ -665,6 +665,8 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   });
 
   // Routes and stops of agencies not loaded yet, from the release's search index (CIV-1048).
+  // The load-error hint's names: short names, told apart where two agencies share one (#1245).
+  const hintNames = useMemo(() => distinctAgencyNames(agencies), [agencies]);
   const catalogAgencyNames = useMemo(() => new Map(agencies.map(a => [a.slug, a.name])), [agencies]);
   const indexSearch = useIndexSearch(searchFocused ? query : '', bounds ?? null, catalogAgencyNames);
   const loadedSearchSlugs = useMemo(() => new Set(Object.keys(layers)), [layers]);
@@ -1292,7 +1294,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
           {failedSlugs.size > 0 && (
             <div
               className={`${MAP_BADGE} h-8 max-sm:h-[32px]`}
-              title={networksFailedHint([...failedSlugs].map(slug => agencyNames(agencies.find(a => a.slug === slug)?.name ?? slug).short))}
+              title={networksFailedHint([...failedSlugs].map(slug => hintNames.get(slug) ?? slug))}
             >
               <span className={MAP_BADGE_LABEL}>
                 {networksFailedText(failedSlugs.size)}

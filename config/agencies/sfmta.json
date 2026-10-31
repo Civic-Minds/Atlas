@@ -1,6 +1,7 @@
 {
   "slug": "sfmta",
-  "name": "San Francisco Municipal Transportation Agency (SFMTA - Muni)",
+  "officialName": "San Francisco Municipal Transportation Agency",
+  "commonName": "SFMTA - Muni",
   "shortName": "SFMTA",
   "websiteUrl": "http://www.sfmta.com",
   "center": [

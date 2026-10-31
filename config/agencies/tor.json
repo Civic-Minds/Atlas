@@ -1,6 +1,7 @@
 {
   "slug": "tor",
-  "name": "Transport of Rockland (TOR)",
+  "officialName": "Transport of Rockland",
+  "commonName": "TOR",
   "displayArea": "Rockland County",
   "region": "New York",
   "center": [

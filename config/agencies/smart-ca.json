@@ -1,6 +1,7 @@
 {
   "slug": "smart-ca",
-  "name": "Sonoma-Marin Area Rail Transit (SMART)",
+  "officialName": "Sonoma-Marin Area Rail Transit",
+  "commonName": "SMART",
   "websiteUrl": "http://www.SonomaMarinTrain.org",
   "center": [
     38.2384,

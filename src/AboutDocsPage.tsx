@@ -1,9 +1,25 @@
 import { lazy, Suspense, useEffect, type ReactNode } from 'react';
 import { FEATURES, PERIOD_LABELS } from '../shared/config';
+import { headwayEvery } from '../shared/headwayText';
 import SiteContact from './components/SiteContact';
 import DocsPageLayout from './components/ui/DocsPageLayout';
 import DataTable, { type DataTableColumn } from './components/ui/DataTable';
 import { PageTitle, SectionTitle } from './components/ui/PageTitle';
+import {
+  BETA_ROLLOUT_NOTICE,
+  BOOKING_REQUIRED_NOTICE,
+  LOCATION_DENIED,
+  NEW_SCHEDULE_DATA_NOTICE,
+  NO_ROUTE_SHAPE_NOTICE,
+  ROUTE_DATA_QUALITY_WARNING_MESSAGE,
+  WEEKDAY_VARIATION_NOTICE,
+  expiredFeedNotice,
+  loadErrorText,
+  periodServiceNotice,
+  selectedRouteOutsideFilterNotice,
+  selectedRoutePartMeetsFilterNotice,
+  unevenServiceNotice,
+} from './content/noticeCopy';
 
 const LiveGlossaryTerms = lazy(() => import('./components/LiveGlossaryTerms'));
 
@@ -20,6 +36,7 @@ const DOCS_CONTENTS = [
   ['pipeline-changes', 'Change process'],
   ['quality', 'Quality'],
   ['validation', 'Validation'],
+  ['notices', 'Notices'],
   ['glossary', 'Glossary'],
 ] as const;
 
@@ -41,12 +58,54 @@ function Subsection({ title, children }: { title: string; children: ReactNode })
   );
 }
 
+/**
+ * The Notices section (CIV-1236, Ryan's approved groups): each group's examples are the app's own notices, read from
+ * noticeCopy.ts, with [brackets] where the app fills in a name, date or number.
+ */
+const NOTICE_GROUPS: { title: string; text: string; examples: string[] }[] = [
+  {
+    title: 'Old and new schedules',
+    text: "The agency's schedule has ended, is new and still being checked, or had an error we corrected.",
+    examples: [expiredFeedNotice('[Agency]', '[date]'), NEW_SCHEDULE_DATA_NOTICE.route],
+  },
+  {
+    title: "Errors in the agency's data",
+    text: "A route's line is missing or wrong in the agency's data. Its frequency still comes from the schedule.",
+    examples: [NO_ROUTE_SHAPE_NOTICE, ROUTE_DATA_QUALITY_WARNING_MESSAGE],
+  },
+  {
+    title: 'When a route runs',
+    text: "The route doesn't run, or runs for only part of the time, on the day or at the time of day you picked.",
+    examples: [periodServiceNotice('6–9 AM', false), periodServiceNotice('6–9 AM', true, '7–9 AM')],
+  },
+  {
+    title: 'Uneven schedules',
+    text: "The wait between trips isn't the same everywhere: it changes by weekday, through the day, or at the first or last trip.",
+    examples: [WEEKDAY_VARIATION_NOTICE, unevenServiceNotice(999).replace('999', '[N]')],
+  },
+  {
+    title: 'Filters',
+    text: "The route, or part of it, doesn't meet the frequency filter you picked, or is hidden by your filters.",
+    examples: [selectedRouteOutsideFilterNotice(15, '6–9 AM'), selectedRoutePartMeetsFilterNotice(15)],
+  },
+  {
+    title: 'Beta and on-demand service',
+    text: 'Agencies still being tested on Atlas beta, and service riders book ahead or that runs by request in a zone.',
+    examples: [BETA_ROLLOUT_NOTICE, BOOKING_REQUIRED_NOTICE],
+  },
+  {
+    title: 'Loading, errors and empty lists',
+    text: "Something didn't load, a search found nothing, or your browser blocked location or copying. Most clear up when you try again.",
+    examples: [loadErrorText('this route'), LOCATION_DENIED],
+  },
+];
+
 const NEAR_MISS_ROWS: [string, string, string][] = [
-  ['10 minutes', '15 minutes', '10% of gaps'],
-  ['15 minutes', '20 minutes', '10% of gaps'],
-  ['20 minutes', '25 minutes', '5% of gaps'],
-  ['30 minutes', '35 minutes', '5% of gaps'],
-  ['60 minutes', '69 minutes', '5% of gaps'],
+  ['10 min', '15 min', '10% of gaps'],
+  ['15 min', '20 min', '10% of gaps'],
+  ['20 min', '25 min', '5% of gaps'],
+  ['30 min', '35 min', '5% of gaps'],
+  ['60 min', '69 min', '5% of gaps'],
 ];
 const NEAR_MISS_COLUMNS: DataTableColumn<[string, string, string]>[] = [
   { key: 'band', header: 'Target band', cell: row => row[0] },
@@ -134,7 +193,7 @@ export default function AboutDocsPage() {
           <Section id="data-flow" title="Pipeline">
             <p>Atlas primarily ingests General Transit Feed Specification (GTFS) schedule data published by transit agencies and transit data providers. An official agency feed is preferred; a provider-hosted mirror or fallback may be used when the primary source is unavailable.</p>
             <ol className="list-decimal pl-5 space-y-1">
-              <li>Feeds are downloaded and checked on a weekly refresh schedule.</li>
+              <li>Every feed is checked weekly. A feed whose schedule ends within the next week is also checked daily, until a newer schedule appears.</li>
               <li>The pipeline identifies the schedule periods that are active around the refresh date.</li>
               <li>Routes, stops, calendars, trips, stop times, and shapes are normalized into a shared model.</li>
               <li>Frequency metrics and quality signals are calculated from the normalized schedule.</li>
@@ -170,7 +229,7 @@ export default function AboutDocsPage() {
           <Section id="frequency" title="Frequency">
             <p>Atlas calculates scheduled headways: the time between consecutive departures. It reads departure times from <code className="text-[var(--text-primary)]">stop_times.txt</code> and expands valid frequency-based trips from <code className="text-[var(--text-primary)]">frequencies.txt</code>; it does not treat that optional table as a single route-level answer.</p>
             <p>Departures are grouped by route, direction, headsign, physical shape, route variant, day, and service period, using each trip’s departure from its first stop. Stop-level cadence is calculated separately. For a group of departures, Atlas sorts the consecutive gaps and uses the median gap as the typical wait.</p>
-            <p>One odd gap does not change the median, so one unusually long gap does not make an otherwise regular 10-minute service look like 30-minute service. The exception is service where short and long gaps alternate (for example 60, 120, 60 minutes): the median would show only the short gap and halve the real wait, so Atlas reads the longer wait instead.</p>
+            <p>One odd gap does not change the median, so one unusually long gap does not make otherwise regular service {headwayEvery(10)} look like service {headwayEvery(30)}. The exception is service where short and long gaps alternate (for example gaps of 60, 120, 60 min): the median would show only the short gap and halve the real wait, so Atlas reads the longer wait instead.</p>
             <p>Period calculations are kept inside their own time windows. Atlas does not silently borrow an all-day average to fill a period with sparse or missing service.</p>
             <p>Atlas keeps separate projections for display cadence, filter cadence, branch cadence, shared-section cadence, and stop-specific cadence. A stop or shared section can have a different value from the whole route because it may combine branches or cover only part of the route.</p>
             <p>Period output also carries separate longest-gap and sustained-service signals. These diagnostics can mark a median as unrepresentative without changing the stored median or silently filling the gap with an all-day value.</p>
@@ -178,15 +237,14 @@ export default function AboutDocsPage() {
               <p>Atlas evaluates Monday through Friday separately. It does not combine departures from different weekdays into one synthetic schedule, because that can create service that never actually ran on any single day.</p>
               <p>The frequency tier is the slowest tier among the weekdays the route runs as a regular schedule; a day that only holds the tail of the previous night, or a short burst of a few trips, does not set it. The displayed cadence uses the actual weekday whose trip count is closest to the median weekday trip count, so it represents a real day without letting an unusually busy or unusually quiet day dominate the summary.</p>
               <p>A route that runs on only one or two weekdays is shown as limited on weekdays instead of borrowing a frequency from those days. Weekday stop and time-of-day numbers all describe the same typical weekday.</p>
-              <p>When weekdays produce different frequency tiers, the route card says that weekday schedules vary. The notice explains that the tier shown reflects the slowest weekday, while the cadence is a typical weekday value.</p>
             </Subsection>
             <Subsection title="Directions, branches, and route qualification">
               <p>Atlas calculates each scheduled direction separately before deciding whether a route qualifies. It uses the feed’s <code className="text-xs text-[var(--text-primary)]">direction_id</code> when present. If that field is missing, trips fall into the default direction group, Atlas records a warning, and the resulting headway may be understated because opposite directions may have been merged.</p>
               <p>Within a direction, Atlas also separates different headsigns and physical shapes so branches and short turns do not get mixed into one artificially frequent series. Surface routes keep the longest meaningful shape groups for analysis, with a trip-volume fallback when length alone would discard most of the service; rail-like routes use their longest available shape. These are analysis choices, not claims that the feed’s direction labels are always correct.</p>
-              <p>The frequency filter and the map colours are direction-aware. For a period or all-day threshold, every direction must meet the threshold, and the worst direction decides, so a route does not pass solely because one direction is frequent while the other is materially slower. The all-day value is each direction’s midday cadence, or its whole-day cadence when it has no midday service. A route with a direction that has no midday service at all, such as a rush-hour-only or few-trips direction, does not pass any all-day threshold; it still appears for the time periods in which every direction runs. Occasional extra trips, such as a short turn or an extension with only a few runs, are set aside when the same direction has a steady main pattern, and a direction is never dropped from the check. For example, a 10-minute direction paired with a 30-minute direction does not qualify the route for a 10-minute threshold; it can qualify for a 30-minute threshold if the other route-level checks also pass. The separate “All” service view is broader by design: it can show service in only one direction or service that has not qualified for a numeric tier. A route/day with a direction that has no sustained, real-tier pattern can also be marked irregular as a whole and hidden by the default irregular-service filter.</p>
+              <p>The frequency filter and the map colours are direction-aware. For a period or all-day threshold, every direction must meet the threshold, and the worst direction decides, so a route does not pass solely because one direction is frequent while the other is materially slower. The all-day value is each direction’s midday cadence, or its whole-day cadence when it has no midday service. A route with a direction that has no midday service at all, such as a rush-hour-only or few-trips direction, does not pass any all-day threshold; it still appears for the time periods in which every direction runs. Occasional extra trips, such as a short turn or an extension with only a few runs, are set aside when the same direction has a consistent main pattern, and a direction is never dropped from the check. For example, a direction {headwayEvery(10)} paired with one {headwayEvery(30)} does not pass ≤10 min; it can pass ≤30 min if the other route-level checks also pass. The separate “All” service view is broader by design: it can show service in only one direction or service that has not qualified for a numeric tier. A route/day with a direction that has no sustained, real-tier pattern can also be marked irregular as a whole and hidden by the default irregular-service filter.</p>
             </Subsection>
             <h3 className="font-black text-[var(--text-primary)]">Band qualification and tolerance</h3>
-            <p>This band test decides whether a pattern counts as steady service, as opposed to infrequent or irregular service. Atlas tests the tightest band first and requires enough departures to cover the analyzed span at that band. For a target of <code className="text-xs text-[var(--text-primary)]">T</code> minutes, the minimum trip count is based on <code className="text-xs text-[var(--text-primary)]">ceil(span ÷ T)</code>.</p>
+            <p>This band test decides whether a pattern counts as consistent service, as opposed to infrequent or irregular service. Atlas tests the tightest band first and requires enough departures to cover the analyzed span at that band. For a target of <code className="text-xs text-[var(--text-primary)]">T</code> minutes, the minimum trip count is based on <code className="text-xs text-[var(--text-primary)]">ceil(span ÷ T)</code>.</p>
             <p>A gap at or below <code className="text-xs text-[var(--text-primary)]">T</code> passes directly. A slightly longer internal gap can count as a near miss when it is no more than <code className="text-xs text-[var(--text-primary)]">T + max(5 minutes, 15% of T)</code>. The number of allowed near misses is tier-specific and capped at three:</p>
             <div className="overflow-x-auto">
               <DataTable
@@ -197,21 +255,20 @@ export default function AboutDocsPage() {
               />
             </div>
             <p>Atlas rounds the percentage down, does not guarantee a minimum exception, and never allows more than three near misses. A first or last gap that is genuinely at the edge of service may receive a separate allowance up to <code className="text-xs text-[var(--text-primary)]">T + 10 minutes</code>. That edge allowance also uses one of the same near-miss slots, and at least four departures must remain after the edge treatment is applied. A gap beyond the relevant limit, or too many near misses, disqualifies the band and Atlas tests the next slower one.</p>
-            <p>These allowances handle ordinary schedule rounding and small deviations without turning a genuinely uneven route into a frequent one. A large gap is still a failure even if the median looks good, and the final tier is the fastest band that survives the full check. Rail uses the same tolerance logic with 5, 8, 10, 15, 30, and 60-minute bands, and is tested on midday service from 9:30 a.m. to 2:30 p.m.; the 5- and 8-minute bands are not separate options in the main map filter.</p>
+            <p>These allowances handle ordinary schedule rounding and small deviations without turning a genuinely uneven route into a frequent one. A large gap is still a failure even if the median looks good, and the final tier is the fastest band that survives the full check. Rail uses the same tolerance logic with 5, 8, 10, 15, 30 and 60 min bands, and is tested on midday service from 9:30 AM–2:30 PM; the 5 and 8 min bands are not separate options in the main map filter.</p>
             <div className="rounded-xl border border-[var(--border-primary)] bg-[var(--bg-btn)] p-3">
               <p className="font-bold text-[var(--text-primary)]">Frequency bands</p>
-              <p className="mt-1">The main Frequency control currently exposes service at or below 10, 15, 20, 30, and 60 minutes. The filter and the line colour use the route’s worst-direction cadence, so a route whose slowest direction runs less often than every 60 minutes appears as infrequent. Irregular service is hidden by default.</p>
-              {showResearch && <p className="mt-2">The separate Frequent Service research view uses 15- and 30-minute criteria. Those criteria are distinct from the main map’s general-purpose filter.</p>}
+              <p className="mt-1">The main Frequency control currently exposes service at ≤10, ≤15, ≤20, ≤30 and ≤60 min. The filter and the line colour use the route’s worst-direction cadence, so a route whose slowest direction runs less often than {headwayEvery(60)} appears as infrequent. Irregular service is hidden by default.</p>
             </div>
             <Subsection title="Sustained service and long gaps">
-              <p>A median alone can hide an important gap. For example, departures might be every 30 minutes during a period except for one three-hour hole. Atlas keeps additional coverage and longest-gap signals so a route can be marked as uneven instead of presenting the median as the whole story.</p>
+              <p>A median alone can hide an important gap. For example, departures might be {headwayEvery(30)} during a period except for one 180-min gap. Atlas keeps additional coverage and longest-gap signals so a route can be marked as uneven instead of presenting the median as the whole story.</p>
               <p>Frequency tiers therefore require sustained service across the relevant window. A route does not qualify for a fast tier simply because it has a short burst of frequent trips at one edge of the period.</p>
               <p>When a route operates only during part of the day, Atlas records that absence as an empty period rather than copying its operating-period value into the rest of the day.</p>
             </Subsection>
           </Section>
 
           <Section id="service-classification" title="Service">
-            <p>Frequency and regularity are separate properties. A route can run every 30 minutes and still be irregular if it only operates for a short burst or has too few repeated departures to establish a sustained pattern.</p>
+            <p>Frequency and regularity are separate properties. A route can run {headwayEvery(30)} and still be irregular if it only operates for a short burst or has too few repeated departures to establish a sustained pattern.</p>
             <dl className="space-y-2">
               <div><dt className="font-bold text-[var(--text-primary)]">Regular</dt><dd>Service covers the normal analysis window. It may be frequent or infrequent.</dd></div>
               <div><dt className="font-bold text-[var(--text-primary)]">Part-time</dt><dd>Predictable service operates during part of the day and has enough repeated departures for a meaningful frequency estimate.</dd></div>
@@ -351,24 +408,33 @@ export default function AboutDocsPage() {
             <p>These checks do not make the underlying agency data perfect. They make the limits visible, prevent known errors from being amplified, and give each correction or research claim a traceable reason for existing.</p>
           </Section>
 
+          <Section id="notices" title="Notices">
+            <p>Notices appear on route, stop and agency cards when something about the schedule needs a word of explanation. They fall into these groups.</p>
+            {NOTICE_GROUPS.map(group => (
+              <Subsection key={group.title} title={group.title}>
+                <p>{group.text}</p>
+                <ul className="list-disc pl-5 space-y-1">
+                  {group.examples.map(example => <li key={example}>“{example}”</li>)}
+                </ul>
+              </Subsection>
+            ))}
+          </Section>
+
           <Section id="glossary" title="Glossary">
             <p><strong className="text-[var(--text-primary)]">GTFS:</strong> A standard set of files describing transit routes, stops, trips, calendars, and shapes. Agencies publish it, and Atlas reads it.</p>
             <p><strong className="text-[var(--text-primary)]">GTFS-Flex:</strong> GTFS extensions for demand-responsive service, including service areas, location groups, virtual stops, and booking rules.</p>
             <p><strong className="text-[var(--text-primary)]">Headway:</strong> The time between one scheduled departure and the next. For a rider who just missed a bus, it is roughly the wait for the next one.</p>
             <p><strong className="text-[var(--text-primary)]">Frequency:</strong> How often a route runs. Atlas shows what the schedule promises, not what happened on the street.</p>
             <p><strong className="text-[var(--text-primary)]">“Every N min”:</strong> The time between trips in the selected period. A range such as “every 8–25 min” runs from the part of the route its regular trips all share to its least frequent branch.</p>
-            <p><strong className="text-[var(--text-primary)]">Frequency tier:</strong> A broad band, such as every 10, 15, 20, 30, or 60 minutes or less, used to colour and filter routes on the map. The filter and the legend show it as “≤10 min”.</p>
+            <p><strong className="text-[var(--text-primary)]">Frequency tier:</strong> A broad band, such as ≤10, ≤15, ≤20, ≤30 or ≤60 min, used to colour and filter routes on the map. The filter and the legend show it as “≤10 min”.</p>
             <p><strong className="text-[var(--text-primary)]">Route rating:</strong> A route’s line colour and filter result come from its slowest direction. Within each direction, the part its regular trips all share and each branch are checked on their own, and the slowest one counts.</p>
-            <p><strong className="text-[var(--text-primary)]">Service period:</strong> A named time window: {PERIOD_LABELS.amPeak} (6 to 9 a.m.), {PERIOD_LABELS.midday} (9 a.m. to 3 p.m.), {PERIOD_LABELS.pmPeak} (3 to 7 p.m.), {PERIOD_LABELS.evening} (7 to 11 p.m.), {PERIOD_LABELS.late} (11 p.m. to 2 a.m.), or {PERIOD_LABELS.overnight} (2 to 6 a.m.). Each period is measured on its own. A quiet evening is not hidden by a busy midday.</p>
+            <p><strong className="text-[var(--text-primary)]">Service period:</strong> A named time window: {PERIOD_LABELS.amPeak} (6–9 AM), {PERIOD_LABELS.midday} (9 AM–3 PM), {PERIOD_LABELS.pmPeak} (3–7 PM), {PERIOD_LABELS.evening} (7–11 PM), {PERIOD_LABELS.late} (11 PM–2 AM), or {PERIOD_LABELS.overnight} (2–6 AM). Each period is measured on its own. A quiet evening is not hidden by a busy midday.</p>
             <p><strong className="text-[var(--text-primary)]">Branch:</strong> One of several paths under one route number, such as trips that split to different destinations or turn back early. The route card lists each one with its own frequency.</p>
             <p><strong className="text-[var(--text-primary)]">Shared stretch:</strong> The part of a route where its branches run together, and riders there get every branch’s trips. The card shows it as “Shared stretch”, or “Combined” when the value is worked out from the branches’ own schedules. It never makes the whole route pass the filter.</p>
             <p><strong className="text-[var(--text-primary)]">Limited:</strong> Shown when a route runs during the chosen time but not often or regularly enough to give a frequency.</p>
             <p><strong className="text-[var(--text-primary)]">Service class:</strong> The operating pattern assigned to a route or pattern: regular, part-time, or irregular.</p>
-            <p><strong className="text-[var(--text-primary)]">“No regular service during this period”:</strong> Shown instead of a frequency when a route runs only a few trips in the selected period, with no set wait between them.</p>
             <p><strong className="text-[var(--text-primary)]">Sustained service:</strong> Service whose gaps stay within a small allowance across the whole time measured, rather than only looking frequent in a short burst.</p>
             <p><strong className="text-[var(--text-primary)]">Uneven service:</strong> Service that runs all through the selected period, but with gaps that vary. The card names the longest gap.</p>
-            <p><strong className="text-[var(--text-primary)]">“This route’s weekday schedules vary by day”:</strong> Shown when some weekdays run more or less often than others. Atlas checks each weekday separately.</p>
-            <p><strong className="text-[var(--text-primary)]">“[Agency]’s schedule ended on [date]”:</strong> The newest schedule Atlas could verify has run out. Atlas keeps showing it until a newer one is found.</p>
             {FEATURES.onDemand && <p><strong className="text-[var(--text-primary)]">On-demand zone:</strong> An area served by booked rides instead of a fixed route. It is shown as an area on the map and never given a frequency.</p>}
             <p><strong className="text-[var(--text-primary)]">Provenance:</strong> The source, schedule period, freshness state, review status, and correction history attached to an Atlas result.</p>
             <p><strong className="text-[var(--text-primary)]">PMTiles:</strong> A single archive format that lets the map request only the vector-tile regions it needs.</p>

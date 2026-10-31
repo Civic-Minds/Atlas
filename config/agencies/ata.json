@@ -1,6 +1,7 @@
 {
   "slug": "ata",
-  "name": "Area Transportation Authority (ATA)",
+  "officialName": "Area Transportation Authority",
+  "commonName": "ATA",
   "agencyId": "30196",
   "websiteUrl": "https://www.rideata.com/",
   "region": "Pennsylvania",

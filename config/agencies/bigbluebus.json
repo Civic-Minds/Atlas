@@ -1,6 +1,7 @@
 {
   "slug": "bigbluebus",
-  "name": "Big Blue Bus (Santa Monica)",
+  "officialName": "Big Blue Bus",
+  "nameQualifier": "Santa Monica",
   "websiteUrl": "http://www.bigbluebus.com",
   "center": [
     34.01,

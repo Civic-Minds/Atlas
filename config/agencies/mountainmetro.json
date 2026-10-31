@@ -1,6 +1,7 @@
 {
   "slug": "mountainmetro",
-  "name": "Mountain Metropolitan Transit (Colorado Springs)",
+  "officialName": "Mountain Metropolitan Transit",
+  "nameQualifier": "Colorado Springs",
   "center": [
     38.845,
     -104.7974

@@ -1,6 +1,7 @@
 {
   "slug": "mst",
-  "name": "Monterey-Salinas Transit (MST)",
+  "officialName": "Monterey-Salinas Transit",
+  "commonName": "MST",
   "websiteUrl": "http://www.mst.org",
   "center": [
     36.6,

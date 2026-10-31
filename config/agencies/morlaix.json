@@ -1,6 +1,7 @@
 {
   "slug": "morlaix",
-  "name": "Linéotim (Morlaix)",
+  "officialName": "Linéotim",
+  "nameQualifier": "Morlaix",
   "websiteUrl": "https://www.lineotim.com/",
   "region": "Bretagne",
   "center": [

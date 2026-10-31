@@ -1,6 +1,7 @@
 {
   "slug": "xpress-ga",
-  "name": "Xpress (Georgia Regional)",
+  "officialName": "Xpress",
+  "nameQualifier": "Georgia Regional",
   "center": [
     33.8203,
     -84.3277

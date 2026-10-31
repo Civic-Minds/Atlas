@@ -1,6 +1,7 @@
 {
   "slug": "qline",
-  "name": "QLine (Detroit)",
+  "officialName": "QLine",
+  "nameQualifier": "Detroit",
   "region": "Michigan",
   "center": [
     42.3463,

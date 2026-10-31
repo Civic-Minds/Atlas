@@ -1,6 +1,7 @@
 {
   "slug": "kcata",
-  "name": "Kansas City Area Transportation Authority (KCATA)",
+  "officialName": "Kansas City Area Transportation Authority",
+  "commonName": "KCATA",
   "websiteUrl": "http://www.kcata.org",
   "center": [
     39.1,

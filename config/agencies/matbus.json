@@ -1,6 +1,7 @@
 {
   "slug": "matbus",
-  "name": "MATBUS (Fargo, ND)",
+  "officialName": "MATBUS",
+  "nameQualifier": "Fargo, ND",
   "websiteUrl": "https://www.matbus.com/",
   "center": [
     46.877,

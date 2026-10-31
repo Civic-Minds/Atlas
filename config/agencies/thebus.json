@@ -1,6 +1,7 @@
 {
   "slug": "thebus",
-  "name": "TheBus (Honolulu)",
+  "officialName": "TheBus",
+  "nameQualifier": "Honolulu",
   "websiteUrl": "http://www.thebus.org",
   "center": [
     21.31,

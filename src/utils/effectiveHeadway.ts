@@ -5,9 +5,10 @@ import { routeFilterHeadway } from '../../shared/routeHeadwayFilter';
 import { buildRouteServiceSummary, metricValueForPeriod } from './routeFacts';
 import { pairedTripPeriodFloor, pairedTripSafeHeadway } from './pairedTripFloor';
 import { delayAmount, headwayAboutRange, headwayEvery, headwayEveryRange, headwayPeriodShape } from './headwayText';
-import { routeAllDayContract, routeContract, routeValueIsOneGap } from './stretchCard';
+import { routeFilterAllDayContract, routeFilterContract, routeValueIsOneGap } from './stretchCard';
 import { clockTime } from '../../shared/timeText';
 import { LIMITED_SERVICE_LABEL, NO_REGULAR_SERVICE_LABEL, NO_REGULAR_SERVICE_SHORT_LABEL } from '../content/noticeCopy';
+import { routeCardLowestHeadway } from './routeListRange';
 
 export { pairedTripPeriodFloor, pairedTripSafeHeadway } from './pairedTripFloor';
 
@@ -247,7 +248,7 @@ interface RouteListCadence {
 function routeListCadence(features: readonly ShapeProperties[], period: TimePeriod): RouteListCadence {
   // The filter's own value for the route (frequency focus): lists never show a number the map's filter disagrees with, and show
   // the D1 range ("every 8–25") as the shared-stretch range: its low end is the best stretch, its high end the filter value.
-  const contract = routeContract(features, period);
+  const contract = routeFilterContract(features, period);
   if (contract) {
     // #955: a route value that is one gap between a few departures is no cadence.
     if (routeValueIsOneGap(features, period)) return { headway: null, shared: null };
@@ -255,7 +256,7 @@ function routeListCadence(features: readonly ShapeProperties[], period: TimePeri
     return { headway: filterValue, shared: filterValue != null && range && range[0] < filterValue ? range[0] : null };
   }
   if (period === 'all') {
-    const allDay = routeAllDayContract(features);
+    const allDay = routeFilterAllDayContract(features);
     if (allDay) return { headway: allDay.filterValue, shared: null };
   }
   const byDirection = new Map<number | null, ShapeProperties[]>();
@@ -316,11 +317,11 @@ export function routeListDisplayHeadway(features: readonly ShapeProperties[], pe
 export function routeListDisplayLimited(features: readonly ShapeProperties[], period: TimePeriod): boolean {
   // No regular service (the filter's null) is its own wording, not "limited".
   // The filter's null (runs or not) means no number and no "limited" either.
-  const contract = routeContract(features, period);
+  const contract = routeFilterContract(features, period);
   if (contract != null && contract.filterValue == null) return false;
   if (routeValueIsOneGap(features, period)) return false;
   // All day: no all-day value is "limited" when a direction does not run at midday (step 6), else no number.
-  const allDay = period === 'all' ? routeAllDayContract(features) : undefined;
+  const allDay = period === 'all' ? routeFilterAllDayContract(features) : undefined;
   if (allDay) return allDay.filterValue == null && allDay.limited;
   return routeListDisplayHeadway(features, period) == null
     && features.some(feature => routeCardDisplayLimited(feature, period));
@@ -331,7 +332,7 @@ export { NO_REGULAR_SERVICE_LABEL, NO_REGULAR_SERVICE_SHORT_LABEL };
 
 /** The filter says the route has no regular service in this period: lists say NO_REGULAR_SERVICE_LABEL, never a number. */
 export function routeListNoRegularService(features: readonly ShapeProperties[], period: TimePeriod): boolean {
-  const contract = routeContract(features, period);
+  const contract = routeFilterContract(features, period);
   return (contract != null && contract.filterValue == null && contract.runs) || routeValueIsOneGap(features, period);
 }
 
@@ -362,7 +363,13 @@ export function routeListDisplay(features: readonly ShapeProperties[], period: T
   const { headway, shared } = routeListCadence(features, period);
   const display: RouteListDisplay = { headway, limited: routeListDisplayLimited(features, period) };
   if (routeListNoRegularService(features, period)) display.noRegular = true;
-  if (shared != null) display.sharedHeadway = shared;
+  if (shared != null && headway != null) {
+    // #1231: the range's low end is the lowest number the route card shows, so the list never names a shared value the card
+    // does not (TTC 504 midday read 8–10 beside the card's Shared stretch every 5). A card showing no number keeps the range.
+    const lowest = routeCardLowestHeadway(features, period);
+    const low = lowest === undefined ? shared : lowest;
+    if (low < headway) display.sharedHeadway = low;
+  }
   return display;
 }
 

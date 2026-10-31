@@ -1,6 +1,7 @@
 {
   "slug": "fougeres",
-  "name": "Surfline (Fougères)",
+  "officialName": "Surfline",
+  "nameQualifier": "Fougères",
   "region": "Bretagne",
   "center": [
     48.3519,

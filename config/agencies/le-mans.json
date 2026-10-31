@@ -1,6 +1,7 @@
 {
   "slug": "le-mans",
-  "name": "SETRAM (Le Mans)",
+  "officialName": "SETRAM",
+  "nameQualifier": "Le Mans",
   "region": "Pays de la Loire",
   "center": [
     48.0061,

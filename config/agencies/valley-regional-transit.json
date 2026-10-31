@@ -1,6 +1,7 @@
 {
   "slug": "valley-regional-transit",
-  "name": "Valley Regional Transit (Boise)",
+  "officialName": "Valley Regional Transit",
+  "nameQualifier": "Boise",
   "websiteUrl": "https://www.valleyregionaltransit.org/",
   "center": [
     43.62,

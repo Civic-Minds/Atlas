@@ -40,7 +40,7 @@ function GapsBlock({ data, gaps, label }: { data: DashboardBunchingBand; gaps: R
           </select>
         </label>
       </div>
-      <GapsChart gaps={gaps[stop.stopId]} ariaLabel={`${label}: every gap between cars at ${stop.name} through the day, against the timetable.`} />
+      <GapsChart gaps={gaps[stop.stopId]} ariaLabel={`${label}: every gap between cars at ${stop.name} through the day, against the schedule.`} />
     </div>
   );
 }
@@ -93,7 +93,7 @@ export default function BunchingSection({ v3, dir, band, gaps, detail, boundary,
                   points={points}
                   formatY={y => pct(y)}
                   unit="gaps"
-                  valueHeader="Gaps off the timetable"
+                  valueHeader="Gaps off the schedule"
                   caption="How often vehicles arrive too close together or too far apart, at each stop."
                   axisTitle="Share of gaps"
                   scale={scale}
@@ -123,7 +123,7 @@ export default function BunchingSection({ v3, dir, band, gaps, detail, boundary,
                   rows={PERIOD_BANDS_ONLY.flatMap(([k, name]) => {
                     const pb = b.bands[k];
                     if (!pb || pb.kind == null) return [];
-                    const text = pb.kind === 'forms' && pb.forms ? `forms by ${shortStopName(pb.forms.toName)}` : pb.kind === 'gradual' ? 'builds slowly, no single stretch' : 'stays close to the timetable';
+                    const text = pb.kind === 'forms' && pb.forms ? `forms by ${shortStopName(pb.forms.toName)}` : pb.kind === 'gradual' ? 'builds slowly, no single stretch' : 'stays close to the schedule';
                     return [{ key: k, label: name, text }];
                   })}
                 />

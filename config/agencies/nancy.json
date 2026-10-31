@@ -1,6 +1,7 @@
 {
   "slug": "nancy",
-  "name": "Réseau Stan (Nancy)",
+  "officialName": "Réseau Stan",
+  "nameQualifier": "Nancy",
   "region": "Grand Est",
   "center": [
     48.6921,

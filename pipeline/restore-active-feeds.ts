@@ -32,6 +32,7 @@ import { recordedFeedExpiry } from './refreshMeta.js';
 import { isActiveProductionFeed, isStalePrimaryProductionFeed, type FeedAvailabilityEntry, todayUtcYmd } from '../shared/feedAvailability.js';
 import { bumpPublicDataVersion } from './dataVersion.js';
 import { resolveAgencyTimezone } from '../shared/agencyTimezone.js';
+import { configFromIndexEntry } from '../shared/agencyRegistryName.js';
 
 interface Agency extends FeedAvailabilityEntry {
   slug: string;
@@ -198,7 +199,7 @@ async function main(): Promise<void> {
       const position = index.agencies.findIndex(item => item.slug === agency.slug);
       index.agencies[position] = updated;
       const configPath = resolve('config/agencies', `${agency.slug}.json`);
-      if (existsSync(configPath)) writeFileSync(configPath, `${JSON.stringify(updated, null, 2)}\n`);
+      if (existsSync(configPath)) writeFileSync(configPath, `${JSON.stringify(configFromIndexEntry(updated as unknown as Record<string, unknown>), null, 2)}\n`);
       hiddenUpdates.push({ agencySlug: agency.slug, routes: result.hiddenRoutes });
       restored.push(agency.slug);
     } catch (error) {

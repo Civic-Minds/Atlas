@@ -56,9 +56,9 @@ function modeHeader(label: string) {
   return title ? <span title={title}>{text}</span> : text;
 }
 
-/** The agency's link in the table: its full name, or in a narrow names column a short one with the full name on hover. */
+/** The agency's link in the table: its card title, or in a narrow names column a short one with the title on hover (#1245). */
 function agencyNameLink(a: AreaAgencyRow, narrow: boolean) {
-  const { text, title } = narrow ? fitAgencyName(a.name, a.displayName, NARROW_NAME_MAX_CHARS) : { text: a.name, title: undefined };
+  const { text, title } = narrow ? fitAgencyName(a.title, a.displayName, NARROW_NAME_MAX_CHARS) : { text: a.title, title: undefined };
   return <a className={LINK} href={agencyPagePath(a.slug)} title={title}>{text}</a>;
 }
 

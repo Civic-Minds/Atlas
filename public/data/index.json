@@ -3,6 +3,7 @@
     {
       "slug": "barrie",
       "name": "Barrie Transit",
+      "officialName": "Barrie Transit",
       "websiteUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit",
       "region": "Ontario",
       "center": [
@@ -58,6 +59,7 @@
     {
       "slug": "belleville",
       "name": "Belleville Transit",
+      "officialName": "Belleville Transit",
       "websiteUrl": "https://www.belleville.ca/transit",
       "region": "Ontario",
       "center": [
@@ -113,6 +115,7 @@
     {
       "slug": "brantford",
       "name": "Brantford Transit",
+      "officialName": "Brantford Transit",
       "websiteUrl": "https://www.brantford.ca/en/transportation/brantford-transit.aspx",
       "region": "Ontario",
       "center": [
@@ -156,6 +159,7 @@
     {
       "slug": "brampton",
       "name": "Brampton Transit",
+      "officialName": "Brampton Transit",
       "websiteUrl": "http://www.bramptontransit.com",
       "region": "Ontario",
       "center": [
@@ -236,6 +240,7 @@
     {
       "slug": "burlington",
       "name": "Burlington Transit",
+      "officialName": "Burlington Transit",
       "websiteUrl": "https://www.burlingtontransit.ca/en/index.aspx",
       "region": "Ontario",
       "center": [
@@ -286,6 +291,7 @@
     {
       "slug": "chatham-kent",
       "name": "Ride CK",
+      "officialName": "Ride CK",
       "region": "Ontario",
       "center": [
         42.4048,
@@ -334,6 +340,7 @@
     {
       "slug": "cobourg",
       "name": "Cobourg Transit",
+      "officialName": "Cobourg Transit",
       "websiteUrl": "https://www.cobourg.ca/home-property/public-transit/",
       "region": "Ontario",
       "center": [
@@ -379,6 +386,7 @@
     {
       "slug": "cornwall",
       "name": "Cornwall Transit",
+      "officialName": "Cornwall Transit",
       "region": "Ontario",
       "center": [
         45.018,
@@ -432,6 +440,7 @@
     {
       "slug": "drt",
       "name": "Durham Region Transit",
+      "officialName": "Durham Region Transit",
       "websiteUrl": "https://www.durhamregiontransit.com",
       "region": "Ontario",
       "center": [
@@ -493,6 +502,7 @@
     {
       "slug": "go",
       "name": "GO Transit",
+      "officialName": "GO Transit",
       "websiteUrl": "https://www.gotransit.com",
       "region": "Ontario",
       "displayArea": "Greater Toronto & Hamilton Area",
@@ -565,6 +575,8 @@
     {
       "slug": "grt",
       "name": "Grand River Transit (Waterloo Region)",
+      "officialName": "Grand River Transit",
+      "nameQualifier": "Waterloo Region",
       "websiteUrl": "http://www.grt.ca",
       "searchAliases": [
         "Kitchener",
@@ -645,6 +657,7 @@
     {
       "slug": "guelph",
       "name": "Guelph Transit",
+      "officialName": "Guelph Transit",
       "region": "Ontario",
       "center": [
         43.5316,
@@ -701,6 +714,7 @@
     {
       "slug": "hamilton",
       "name": "Hamilton Street Railway",
+      "officialName": "Hamilton Street Railway",
       "shortName": "HSR",
       "websiteUrl": "http://www.hamilton.ca/hsr",
       "searchAliases": [
@@ -764,6 +778,7 @@
     {
       "slug": "kingston",
       "name": "Kingston Transit",
+      "officialName": "Kingston Transit",
       "websiteUrl": "https://www.kingstontransit.ca",
       "region": "Ontario",
       "center": [
@@ -819,6 +834,7 @@
     {
       "slug": "london",
       "name": "London Transit",
+      "officialName": "London Transit",
       "websiteUrl": "http://www.londontransit.ca",
       "region": "Ontario",
       "preprocess": "london-route-names",
@@ -877,6 +893,8 @@
     {
       "slug": "miway",
       "name": "MiWay (Mississauga)",
+      "officialName": "MiWay",
+      "nameQualifier": "Mississauga",
       "websiteUrl": "http://www.miway.ca",
       "region": "Ontario",
       "center": [
@@ -938,6 +956,7 @@
     {
       "slug": "milton",
       "name": "Milton Transit",
+      "officialName": "Milton Transit",
       "websiteUrl": "http://www.miltontransit.ca/",
       "region": "Ontario",
       "center": [
@@ -994,6 +1013,7 @@
     {
       "slug": "niagara",
       "name": "Niagara Transit",
+      "officialName": "Niagara Transit",
       "labelPlace": "Niagara Region",
       "region": "Ontario",
       "center": [
@@ -1067,6 +1087,8 @@
     {
       "slug": "octranspo",
       "name": "OC Transpo (Ottawa)",
+      "officialName": "OC Transpo",
+      "nameQualifier": "Ottawa",
       "displayArea": "Ottawa",
       "websiteUrl": "https://www.octranspo.com",
       "searchAliases": [
@@ -1136,6 +1158,7 @@
     {
       "slug": "oakville",
       "name": "Oakville Transit",
+      "officialName": "Oakville Transit",
       "websiteUrl": "http://www.oakvilletransit.ca/",
       "region": "Ontario",
       "center": [
@@ -1189,6 +1212,7 @@
     {
       "slug": "orangeville",
       "name": "Orangeville Transit",
+      "officialName": "Orangeville Transit",
       "region": "Ontario",
       "center": [
         43.9195,
@@ -1237,6 +1261,7 @@
     {
       "slug": "orillia",
       "name": "Orillia Transit",
+      "officialName": "Orillia Transit",
       "region": "Ontario",
       "center": [
         44.6087,
@@ -1285,6 +1310,7 @@
     {
       "slug": "owen-sound",
       "name": "Owen Sound Transit",
+      "officialName": "Owen Sound Transit",
       "region": "Ontario",
       "center": [
         44.5672,
@@ -1335,6 +1361,7 @@
     {
       "slug": "north-bay",
       "name": "North Bay Transit",
+      "officialName": "North Bay Transit",
       "region": "Ontario",
       "center": [
         46.3091,
@@ -1379,6 +1406,7 @@
     {
       "slug": "sarnia",
       "name": "Sarnia Transit",
+      "officialName": "Sarnia Transit",
       "websiteUrl": "https://www.sarnia.ca/transit",
       "center": [
         42.97,
@@ -1427,6 +1455,7 @@
     {
       "slug": "simcoe",
       "name": "Simcoe County LINX",
+      "officialName": "Simcoe County LINX",
       "websiteUrl": "https://www.simcoe.ca/dpt/linx",
       "region": "Ontario",
       "center": [
@@ -1483,6 +1512,7 @@
     {
       "slug": "st-thomas",
       "name": "St. Thomas Transit",
+      "officialName": "St. Thomas Transit",
       "region": "Ontario",
       "center": [
         42.7777,
@@ -1530,6 +1560,7 @@
     {
       "slug": "stratford",
       "name": "Stratford Transit",
+      "officialName": "Stratford Transit",
       "displayArea": "Stratford",
       "region": "Ontario",
       "center": [
@@ -1589,6 +1620,7 @@
     {
       "slug": "ttc",
       "name": "Toronto Transit Commission",
+      "officialName": "Toronto Transit Commission",
       "shortName": "TTC",
       "websiteUrl": "https://www.ttc.ca",
       "searchAliases": [
@@ -1655,6 +1687,7 @@
     {
       "slug": "windsor",
       "name": "Transit Windsor",
+      "officialName": "Transit Windsor",
       "websiteUrl": "https://www.citywindsor.ca/residents/transit-windsor",
       "region": "Ontario",
       "center": [
@@ -1713,6 +1746,8 @@
     {
       "slug": "upexpress",
       "name": "UP Express (Toronto)",
+      "officialName": "UP Express",
+      "nameQualifier": "Toronto",
       "displayArea": "Toronto",
       "websiteUrl": "https://www.upexpress.com",
       "region": "Ontario",
@@ -1770,6 +1805,7 @@
     {
       "slug": "yrt",
       "name": "York Region Transit",
+      "officialName": "York Region Transit",
       "labelPlace": "York Region",
       "shortName": "YRT",
       "websiteUrl": "http://www.yrt.ca",
@@ -1834,6 +1870,7 @@
     {
       "slug": "linter",
       "name": "L'Inter des Laurentides",
+      "officialName": "L'Inter des Laurentides",
       "websiteUrl": "https://www.transportlaurentides.ca/",
       "region": "Quebec",
       "center": [
@@ -1884,6 +1921,7 @@
     {
       "slug": "mont-tremblant",
       "name": "Mont-Tremblant",
+      "officialName": "Mont-Tremblant",
       "region": "Quebec",
       "center": [
         46.15,
@@ -1935,6 +1973,8 @@
     {
       "slug": "rem",
       "name": "REM (Montréal)",
+      "officialName": "REM",
+      "nameQualifier": "Montréal",
       "displayArea": "Montréal",
       "websiteUrl": "https://rem.info/fr",
       "searchAliases": [
@@ -1997,6 +2037,8 @@
     {
       "slug": "rtc",
       "name": "RTC (Québec)",
+      "officialName": "RTC",
+      "nameQualifier": "Québec",
       "displayArea": "Québec",
       "websiteUrl": "https://www.rtcquebec.ca",
       "region": "Quebec",
@@ -2060,6 +2102,8 @@
     {
       "slug": "rtl",
       "name": "RTL (Longueuil)",
+      "officialName": "RTL",
+      "nameQualifier": "Longueuil",
       "websiteUrl": "http://www.rtl-longueuil.qc.ca",
       "region": "Quebec",
       "center": [
@@ -2126,6 +2170,8 @@
     {
       "slug": "stl",
       "name": "STL (Laval)",
+      "officialName": "STL",
+      "nameQualifier": "Laval",
       "websiteUrl": "https://stlaval.ca",
       "region": "Quebec",
       "center": [
@@ -2192,6 +2238,7 @@
     {
       "slug": "stlevis",
       "name": "STLévis",
+      "officialName": "STLévis",
       "displayArea": "Lévis",
       "websiteUrl": "http://www.stlevis.ca/",
       "region": "Quebec",
@@ -2246,6 +2293,8 @@
     {
       "slug": "stm",
       "name": "STM (Montréal)",
+      "officialName": "STM",
+      "nameQualifier": "Montréal",
       "shortName": "STM",
       "displayArea": "Montréal",
       "websiteUrl": "https://www.stm.info",
@@ -2319,6 +2368,8 @@
     {
       "slug": "sto",
       "name": "STO (Gatineau)",
+      "officialName": "STO",
+      "nameQualifier": "Gatineau",
       "websiteUrl": "http://www.sto.ca",
       "region": "Quebec",
       "center": [
@@ -2380,6 +2431,7 @@
     {
       "slug": "sjsr",
       "name": "Saint-Jean-sur-Richelieu",
+      "officialName": "Saint-Jean-sur-Richelieu",
       "websiteUrl": "http://www.sjsr.ca/autobus",
       "region": "Quebec",
       "center": [
@@ -2435,6 +2487,7 @@
     {
       "slug": "saint-hyacinthe",
       "name": "Ville de Saint-Hyacinthe",
+      "officialName": "Ville de Saint-Hyacinthe",
       "websiteUrl": "https://www.st-hyacinthe.ca/services-aux-citoyens/transport-collectif",
       "region": "Quebec",
       "center": [
@@ -2470,6 +2523,8 @@
     {
       "slug": "exo",
       "name": "exo (Trains)",
+      "officialName": "exo",
+      "nameQualifier": "Trains",
       "displayArea": "Greater Montréal",
       "websiteUrl": "https://exo.quebec/fr/planifier-trajet/train",
       "region": "Quebec",
@@ -2536,6 +2591,8 @@
     {
       "slug": "exo-presquile",
       "name": "exo (La Presqu'île)",
+      "officialName": "exo",
+      "nameQualifier": "La Presqu'île",
       "displayArea": "La Presqu'île",
       "websiteUrl": "https://exo.quebec/fr/planifier-trajet/autobus/CITPI",
       "region": "Quebec",
@@ -2593,6 +2650,8 @@
     {
       "slug": "exo-sudouest",
       "name": "exo (Sud-Ouest)",
+      "officialName": "exo",
+      "nameQualifier": "Sud-Ouest",
       "displayArea": "Sud-Ouest",
       "websiteUrl": "https://exo.quebec/fr/planifier-trajet/autobus/CITSO",
       "region": "Quebec",
@@ -2655,6 +2714,8 @@
     {
       "slug": "exo-lrrs",
       "name": "exo (Le Richelain–Roussillon)",
+      "officialName": "exo",
+      "nameQualifier": "Le Richelain–Roussillon",
       "displayArea": "Le Richelain–Roussillon",
       "websiteUrl": "https://exo.quebec/fr/planifier-trajet/autobus/LRRS",
       "region": "Quebec",
@@ -2718,6 +2779,8 @@
     {
       "slug": "exo-laurentides",
       "name": "exo (Laurentides)",
+      "officialName": "exo",
+      "nameQualifier": "Laurentides",
       "displayArea": "Laurentides",
       "websiteUrl": "https://exo.quebec/fr/planifier-trajet/autobus/CITLA",
       "region": "Quebec",
@@ -2783,6 +2846,8 @@
     {
       "slug": "exo-terrebonne",
       "name": "exo (Terrebonne-Mascouche)",
+      "officialName": "exo",
+      "nameQualifier": "Terrebonne-Mascouche",
       "websiteUrl": "https://exo.quebec/fr/planifier-trajet/autobus/MRCLM",
       "region": "Quebec",
       "center": [
@@ -2847,6 +2912,8 @@
     {
       "slug": "exo-vallee-richelieu",
       "name": "exo (Vallée du Richelieu)",
+      "officialName": "exo",
+      "nameQualifier": "Vallée du Richelieu",
       "displayArea": "Vallée du Richelieu",
       "websiteUrl": "https://exo.quebec/fr/planifier-trajet/autobus/CITVR",
       "region": "Quebec",
@@ -2909,6 +2976,8 @@
     {
       "slug": "bc-fraser-valley",
       "name": "BC Transit (Fraser Valley)",
+      "officialName": "BC Transit",
+      "nameQualifier": "Fraser Valley",
       "region": "British Columbia",
       "center": [
         49.05,
@@ -2964,6 +3033,8 @@
     {
       "slug": "kelowna",
       "name": "BC Transit (Kelowna)",
+      "officialName": "BC Transit",
+      "nameQualifier": "Kelowna",
       "region": "British Columbia",
       "center": [
         49.888,
@@ -3015,6 +3086,8 @@
     {
       "slug": "victoria",
       "name": "BC Transit (Victoria)",
+      "officialName": "BC Transit",
+      "nameQualifier": "Victoria",
       "region": "British Columbia",
       "center": [
         48.4284,
@@ -3067,6 +3140,8 @@
     {
       "slug": "translink",
       "name": "TransLink (Vancouver)",
+      "officialName": "TransLink",
+      "nameQualifier": "Vancouver",
       "websiteUrl": "https://www.translink.ca",
       "region": "British Columbia",
       "center": [
@@ -3134,6 +3209,7 @@
     {
       "slug": "calgary",
       "name": "Calgary Transit",
+      "officialName": "Calgary Transit",
       "websiteUrl": "http://www.calgarytransit.com",
       "region": "Alberta",
       "center": [
@@ -3188,6 +3264,8 @@
     {
       "slug": "edmonton",
       "name": "Edmonton Transit Service (ETS)",
+      "officialName": "Edmonton Transit Service",
+      "commonName": "ETS",
       "shortName": "ETS",
       "websiteUrl": "https://www.edmonton.ca/ets",
       "region": "Alberta",
@@ -3248,6 +3326,7 @@
     {
       "slug": "winnipeg",
       "name": "Winnipeg Transit",
+      "officialName": "Winnipeg Transit",
       "websiteUrl": "https://winnipegtransit.com",
       "region": "Manitoba",
       "center": [
@@ -3302,6 +3381,7 @@
     {
       "slug": "regina",
       "name": "Regina Transit",
+      "officialName": "Regina Transit",
       "websiteUrl": "http://www.regina.ca",
       "region": "Saskatchewan",
       "center": [
@@ -3358,6 +3438,7 @@
     {
       "slug": "saskatoon",
       "name": "Saskatoon Transit",
+      "officialName": "Saskatoon Transit",
       "websiteUrl": "http://transit.saskatoon.ca",
       "center": [
         52.1286,
@@ -3417,6 +3498,7 @@
     {
       "slug": "halifax",
       "name": "Halifax Transit",
+      "officialName": "Halifax Transit",
       "displayArea": "Halifax",
       "websiteUrl": "http://www.halifax.ca/transit",
       "region": "Nova Scotia",
@@ -3471,6 +3553,8 @@
     {
       "slug": "codiac",
       "name": "Codiac Transpo (Moncton)",
+      "officialName": "Codiac Transpo",
+      "nameQualifier": "Moncton",
       "region": "New Brunswick",
       "center": [
         46.0878,
@@ -3526,6 +3610,7 @@
     {
       "slug": "fredericton",
       "name": "Fredericton Transit",
+      "officialName": "Fredericton Transit",
       "region": "New Brunswick",
       "center": [
         45.9636,
@@ -3582,6 +3667,7 @@
     {
       "slug": "saint-john",
       "name": "Saint John Transit",
+      "officialName": "Saint John Transit",
       "websiteUrl": "https://saintjohn.ca/en/transit",
       "region": "New Brunswick",
       "center": [
@@ -3632,6 +3718,8 @@
     {
       "slug": "t3-transit",
       "name": "T3 Transit (PEI)",
+      "officialName": "T3 Transit",
+      "nameQualifier": "PEI",
       "websiteUrl": "https://t3transit.ca/",
       "region": "Prince Edward Island",
       "center": [
@@ -3677,6 +3765,8 @@
     {
       "slug": "metrobus",
       "name": "Metrobus (St. John's)",
+      "officialName": "Metrobus",
+      "nameQualifier": "St. John's",
       "websiteUrl": "https://www.metrobus.com",
       "region": "Newfoundland",
       "center": [
@@ -3728,6 +3818,8 @@
     {
       "slug": "nfta",
       "name": "NFTA (Buffalo)",
+      "officialName": "NFTA",
+      "nameQualifier": "Buffalo",
       "websiteUrl": "http://www.nfta.com/",
       "region": "New York",
       "center": [
@@ -3806,6 +3898,8 @@
     {
       "slug": "port-huron",
       "name": "Blue Water Area Transit (Port Huron)",
+      "officialName": "Blue Water Area Transit",
+      "nameQualifier": "Port Huron",
       "displayArea": "Port Huron",
       "websiteUrl": "https://bwbus.com",
       "center": [
@@ -3852,6 +3946,8 @@
     {
       "slug": "ddot",
       "name": "DDOT (Detroit)",
+      "officialName": "DDOT",
+      "nameQualifier": "Detroit",
       "region": "Michigan",
       "center": [
         42.3314,
@@ -3909,6 +4005,7 @@
     {
       "slug": "detroit-people-mover",
       "name": "Detroit People Mover",
+      "officialName": "Detroit People Mover",
       "websiteUrl": "http://www.thepeoplemover.com",
       "region": "Michigan",
       "center": [
@@ -3961,6 +4058,8 @@
     {
       "slug": "qline",
       "name": "QLine (Detroit)",
+      "officialName": "QLine",
+      "nameQualifier": "Detroit",
       "region": "Michigan",
       "center": [
         42.3463,
@@ -4018,6 +4117,8 @@
     {
       "slug": "smart",
       "name": "SMART (Detroit suburbs)",
+      "officialName": "SMART",
+      "nameQualifier": "Detroit suburbs",
       "displayArea": "Detroit suburbs",
       "region": "Michigan",
       "center": [
@@ -4073,6 +4174,8 @@
     {
       "slug": "theride",
       "name": "TheRide (Ann Arbor)",
+      "officialName": "TheRide",
+      "nameQualifier": "Ann Arbor",
       "websiteUrl": "http://www.theride.org",
       "region": "Michigan",
       "center": [
@@ -4122,6 +4225,8 @@
     {
       "slug": "gcrta",
       "name": "GCRTA (Cleveland)",
+      "officialName": "GCRTA",
+      "nameQualifier": "Cleveland",
       "websiteUrl": "https://www.riderta.com",
       "region": "Ohio",
       "center": [
@@ -4174,6 +4279,7 @@
     {
       "slug": "butler-county-rta",
       "name": "Butler County Regional Transit Authority",
+      "officialName": "Butler County Regional Transit Authority",
       "region": "Ohio",
       "center": [
         39.425,
@@ -4222,6 +4328,7 @@
     {
       "slug": "seat",
       "name": "South East Area Transit",
+      "officialName": "South East Area Transit",
       "region": "Ohio",
       "center": [
         39.9403,
@@ -4267,6 +4374,7 @@
     {
       "slug": "richland-county-oh",
       "name": "Richland County Transit",
+      "officialName": "Richland County Transit",
       "region": "Ohio",
       "center": [
         40.7584,
@@ -4312,6 +4420,8 @@
     {
       "slug": "tarta",
       "name": "TARTA (Toledo)",
+      "officialName": "TARTA",
+      "nameQualifier": "Toledo",
       "websiteUrl": "https://tarta.com",
       "center": [
         41.66,
@@ -4361,6 +4471,7 @@
     {
       "slug": "rgrta",
       "name": "Rochester-Genesee Regional Transportation Authority",
+      "officialName": "Rochester-Genesee Regional Transportation Authority",
       "websiteUrl": "https://www.myRTS.com",
       "region": "New York",
       "center": [
@@ -4407,6 +4518,7 @@
     {
       "slug": "cdta",
       "name": "Capital District Transportation Authority",
+      "officialName": "Capital District Transportation Authority",
       "displayArea": "Albany",
       "websiteUrl": "http://www.cdta.org",
       "region": "New York",
@@ -4455,6 +4567,8 @@
     {
       "slug": "centro",
       "name": "Centro (Syracuse)",
+      "officialName": "Centro",
+      "nameQualifier": "Syracuse",
       "websiteUrl": "http://www.centro.org",
       "region": "New York",
       "center": [
@@ -4504,6 +4618,7 @@
     {
       "slug": "tcat",
       "name": "Tompkins Consolidated Area Transit",
+      "officialName": "Tompkins Consolidated Area Transit",
       "labelPlace": "Ithaca",
       "websiteUrl": "http://www.tcatbus.com/",
       "region": "New York",
@@ -4550,6 +4665,7 @@
     {
       "slug": "broome",
       "name": "Broome County Transit",
+      "officialName": "Broome County Transit",
       "region": "New York",
       "center": [
         42.097,
@@ -4595,6 +4711,7 @@
     {
       "slug": "emta",
       "name": "Erie Metropolitan Transit Authority",
+      "officialName": "Erie Metropolitan Transit Authority",
       "region": "Pennsylvania",
       "center": [
         42.082,
@@ -4648,6 +4765,7 @@
     {
       "slug": "akron",
       "name": "Akron Metro Regional Transit Authority",
+      "officialName": "Akron Metro Regional Transit Authority",
       "websiteUrl": "https://www.yourmetrobus.org/",
       "region": "Ohio",
       "center": [
@@ -4695,6 +4813,7 @@
     {
       "slug": "sarta",
       "name": "Stark Area Regional Transit Authority",
+      "officialName": "Stark Area Regional Transit Authority",
       "websiteUrl": "http://www.sartaonline.com",
       "region": "Ohio",
       "center": [
@@ -4741,6 +4860,8 @@
     {
       "slug": "laketran",
       "name": "Laketran (Lake County, OH)",
+      "officialName": "Laketran",
+      "nameQualifier": "Lake County, OH",
       "displayArea": "Lake County, OH",
       "websiteUrl": "https://laketran.com/",
       "region": "Ohio",
@@ -4791,6 +4912,8 @@
     {
       "slug": "mta-flint",
       "name": "Mass Transportation Authority (Flint)",
+      "officialName": "Mass Transportation Authority",
+      "nameQualifier": "Flint",
       "websiteUrl": "https://www.mtaflint.org/",
       "region": "Michigan",
       "center": [
@@ -4838,6 +4961,7 @@
     {
       "slug": "cata-lansing",
       "name": "Capital Area Transportation Authority",
+      "officialName": "Capital Area Transportation Authority",
       "websiteUrl": "https://www.cata.org",
       "region": "Michigan",
       "center": [
@@ -4888,6 +5012,8 @@
     {
       "slug": "the-rapid",
       "name": "The Rapid (Grand Rapids)",
+      "officialName": "The Rapid",
+      "nameQualifier": "Grand Rapids",
       "websiteUrl": "http://www.ridetherapid.org",
       "region": "Michigan",
       "center": [
@@ -4940,6 +5066,7 @@
     {
       "slug": "mbta",
       "name": "Massachusetts Bay Transportation Authority",
+      "officialName": "Massachusetts Bay Transportation Authority",
       "shortName": "MBTA",
       "displayArea": "Boston",
       "websiteUrl": "https://www.mbta.com/",
@@ -5036,6 +5163,7 @@
     {
       "slug": "pvta",
       "name": "Pioneer Valley Transit Authority",
+      "officialName": "Pioneer Valley Transit Authority",
       "labelPlace": "Pioneer Valley",
       "websiteUrl": "https://www.pvta.com",
       "region": "Massachusetts",
@@ -5086,6 +5214,7 @@
     {
       "slug": "wrta",
       "name": "Worcester Regional Transit Authority",
+      "officialName": "Worcester Regional Transit Authority",
       "websiteUrl": "https://therta.com/",
       "region": "Massachusetts",
       "center": [
@@ -5137,6 +5266,7 @@
     {
       "slug": "cttransit",
       "name": "CTtransit",
+      "officialName": "CTtransit",
       "region": "Connecticut",
       "center": [
         41.765,
@@ -5188,6 +5318,7 @@
     {
       "slug": "red-deer",
       "name": "Red Deer Transit",
+      "officialName": "Red Deer Transit",
       "websiteUrl": "http://www.reddeer.ca/city-services/transit/",
       "region": "Alberta",
       "center": [
@@ -5232,6 +5363,7 @@
     {
       "slug": "lethbridge",
       "name": "Lethbridge Transit",
+      "officialName": "Lethbridge Transit",
       "websiteUrl": "https://LethbridgeTransit.ca",
       "region": "Alberta",
       "center": [
@@ -5281,6 +5413,7 @@
     {
       "slug": "moose-jaw",
       "name": "Moose Jaw Transit",
+      "officialName": "Moose Jaw Transit",
       "region": "Saskatchewan",
       "center": [
         50.3983,
@@ -5307,6 +5440,7 @@
     {
       "slug": "prince-albert",
       "name": "Prince Albert Transit",
+      "officialName": "Prince Albert Transit",
       "websiteUrl": "http://www.citypa.ca/transit",
       "region": "Saskatchewan",
       "center": [
@@ -5348,6 +5482,8 @@
     {
       "slug": "kamloops",
       "name": "BC Transit (Kamloops)",
+      "officialName": "BC Transit",
+      "nameQualifier": "Kamloops",
       "websiteUrl": "https://www.bctransit.com/",
       "region": "British Columbia",
       "center": [
@@ -5393,6 +5529,8 @@
     {
       "slug": "south-okanagan",
       "name": "BC Transit (South Okanagan-Similkameen)",
+      "officialName": "BC Transit",
+      "nameQualifier": "South Okanagan-Similkameen",
       "displayArea": "South Okanagan",
       "websiteUrl": "https://www.bctransit.com/",
       "region": "British Columbia",
@@ -5442,6 +5580,8 @@
     {
       "slug": "nanaimo",
       "name": "BC Transit (Nanaimo)",
+      "officialName": "BC Transit",
+      "nameQualifier": "Nanaimo",
       "websiteUrl": "https://www.bctransit.com/",
       "region": "British Columbia",
       "center": [
@@ -5494,6 +5634,8 @@
     {
       "slug": "cowichan",
       "name": "BC Transit (Cowichan Valley)",
+      "officialName": "BC Transit",
+      "nameQualifier": "Cowichan Valley",
       "displayArea": "Cowichan Valley",
       "websiteUrl": "https://www.bctransit.com/",
       "region": "British Columbia",
@@ -5546,6 +5688,8 @@
     {
       "slug": "comox-valley",
       "name": "BC Transit (Comox Valley)",
+      "officialName": "BC Transit",
+      "nameQualifier": "Comox Valley",
       "websiteUrl": "https://www.bctransit.com/",
       "region": "British Columbia",
       "center": [
@@ -5593,6 +5737,8 @@
     {
       "slug": "campbell-river",
       "name": "BC Transit (Campbell River)",
+      "officialName": "BC Transit",
+      "nameQualifier": "Campbell River",
       "websiteUrl": "https://www.bctransit.com/",
       "region": "British Columbia",
       "center": [
@@ -5638,6 +5784,8 @@
     {
       "slug": "squamish",
       "name": "BC Transit (Squamish)",
+      "officialName": "BC Transit",
+      "nameQualifier": "Squamish",
       "displayArea": "Squamish",
       "websiteUrl": "https://www.bctransit.com/",
       "region": "British Columbia",
@@ -5688,6 +5836,8 @@
     {
       "slug": "pemberton",
       "name": "BC Transit (Pemberton Valley)",
+      "officialName": "BC Transit",
+      "nameQualifier": "Pemberton Valley",
       "websiteUrl": "https://www.bctransit.com/",
       "region": "British Columbia",
       "center": [
@@ -5736,6 +5886,8 @@
     {
       "slug": "whistler",
       "name": "BC Transit (Whistler)",
+      "officialName": "BC Transit",
+      "nameQualifier": "Whistler",
       "websiteUrl": "https://www.bctransit.com/",
       "region": "British Columbia",
       "center": [
@@ -5783,6 +5935,8 @@
     {
       "slug": "kingcountymetro",
       "name": "King County Metro (Seattle)",
+      "officialName": "King County Metro",
+      "nameQualifier": "Seattle",
       "websiteUrl": "https://kingcounty.gov/en/dept/metro",
       "center": [
         47.5,
@@ -5846,6 +6000,8 @@
     {
       "slug": "soundtransit",
       "name": "Sound Transit (Seattle)",
+      "officialName": "Sound Transit",
+      "nameQualifier": "Seattle",
       "websiteUrl": "https://www.soundtransit.org",
       "center": [
         47.5,
@@ -5935,6 +6091,7 @@
     {
       "slug": "piercetransit",
       "name": "Pierce Transit",
+      "officialName": "Pierce Transit",
       "center": [
         47.25,
         -122.45
@@ -5999,6 +6156,8 @@
     {
       "slug": "communitytransit",
       "name": "Community Transit (Everett)",
+      "officialName": "Community Transit",
+      "nameQualifier": "Everett",
       "displayArea": "Snohomish County",
       "websiteUrl": "https://www.communitytransit.org/",
       "center": [
@@ -6063,6 +6222,7 @@
     {
       "slug": "everetttransit",
       "name": "Everett Transit",
+      "officialName": "Everett Transit",
       "websiteUrl": "http://www.everetttransit.org/",
       "center": [
         47.97,
@@ -6117,6 +6277,7 @@
     {
       "slug": "kitsaptransit",
       "name": "Kitsap Transit",
+      "officialName": "Kitsap Transit",
       "displayArea": "Kitsap County",
       "center": [
         47.6,
@@ -6175,6 +6336,8 @@
     {
       "slug": "intercitytransit",
       "name": "Intercity Transit (Olympia)",
+      "officialName": "Intercity Transit",
+      "nameQualifier": "Olympia",
       "websiteUrl": "https://www.intercitytransit.com/",
       "center": [
         47.05,
@@ -6233,6 +6396,7 @@
     {
       "slug": "skagittransit",
       "name": "Skagit Transit",
+      "officialName": "Skagit Transit",
       "displayArea": "Skagit County",
       "websiteUrl": "https://www.skagittransit.org",
       "center": [
@@ -6291,6 +6455,7 @@
     {
       "slug": "whatcomtransit",
       "name": "Whatcom Transportation Authority",
+      "officialName": "Whatcom Transportation Authority",
       "websiteUrl": "https://www.ridewta.com/",
       "center": [
         48.75,
@@ -6347,6 +6512,8 @@
     {
       "slug": "islandtransit",
       "name": "Island Transit (Whidbey Island)",
+      "officialName": "Island Transit",
+      "nameQualifier": "Whidbey Island",
       "displayArea": "Whidbey Island",
       "websiteUrl": "https://www.islandtransit.org/",
       "center": [
@@ -6404,6 +6571,7 @@
     {
       "slug": "jeffersontransit",
       "name": "Jefferson Transit",
+      "officialName": "Jefferson Transit",
       "displayArea": "Jefferson County, WA",
       "websiteUrl": "https://jeffersontransit.com/",
       "center": [
@@ -6461,6 +6629,7 @@
     {
       "slug": "clallamtransit",
       "name": "Clallam Transit System",
+      "officialName": "Clallam Transit System",
       "displayArea": "Clallam County",
       "websiteUrl": "https://www.clallamtransit.com/",
       "center": [
@@ -6518,6 +6687,7 @@
     {
       "slug": "portlandme",
       "name": "Greater Portland Metro",
+      "officialName": "Greater Portland Metro",
       "websiteUrl": "https://www.gpmetro.org",
       "center": [
         43.66,
@@ -6573,6 +6743,7 @@
     {
       "slug": "southportlandme",
       "name": "South Portland Bus Service",
+      "officialName": "South Portland Bus Service",
       "center": [
         43.63,
         -70.28
@@ -6623,6 +6794,8 @@
     {
       "slug": "hocts",
       "name": "HOCTS (Utica-Rome)",
+      "officialName": "HOCTS",
+      "nameQualifier": "Utica-Rome",
       "hiddenInProduction": true,
       "issueUrl": "https://github.com/Civic-Minds/Atlas/issues/759",
       "websiteUrl": "https://oneidacountyny.gov/departments/planning/transportation/",
@@ -6659,6 +6832,7 @@
     {
       "slug": "glensfallstransit",
       "name": "Greater Glens Falls Transit",
+      "officialName": "Greater Glens Falls Transit",
       "websiteUrl": "https://cdta.org/warren",
       "center": [
         43.3742,
@@ -6693,6 +6867,7 @@
     {
       "slug": "watertowncitibus",
       "name": "Watertown Citibus",
+      "officialName": "Watertown Citibus",
       "center": [
         43.97,
         -75.91
@@ -6743,6 +6918,7 @@
     {
       "slug": "hudsonlink",
       "name": "Hudson Link",
+      "officialName": "Hudson Link",
       "labelPlace": "",
       "websiteUrl": "https://www.ridehudsonlink.com/Tools/Maps-and-Schedules",
       "center": [
@@ -6800,6 +6976,7 @@
     {
       "slug": "wsf",
       "name": "Washington State Ferries",
+      "officialName": "Washington State Ferries",
       "websiteUrl": "https://www.wsdot.wa.gov/ferries/",
       "center": [
         47.9248,
@@ -6853,6 +7030,7 @@
     {
       "slug": "bc-ferries",
       "name": "BC Ferries",
+      "officialName": "BC Ferries",
       "websiteUrl": "https://www.bcferries.com/",
       "region": "British Columbia",
       "center": [
@@ -6901,6 +7079,7 @@
     {
       "slug": "pierce-county-ferries",
       "name": "Pierce County Ferries",
+      "officialName": "Pierce County Ferries",
       "websiteUrl": "https://www.piercecountywa.gov/ferry",
       "region": "Washington",
       "center": [
@@ -6954,6 +7133,7 @@
     {
       "slug": "sherbrooke",
       "name": "Société de transport de Sherbrooke",
+      "officialName": "Société de transport de Sherbrooke",
       "websiteUrl": "http://www.sts.qc.ca/",
       "center": [
         45.398,
@@ -7005,6 +7185,8 @@
     {
       "slug": "trimet",
       "name": "TriMet (Portland, OR)",
+      "officialName": "TriMet",
+      "nameQualifier": "Portland, OR",
       "shortName": "TriMet",
       "websiteUrl": "https://trimet.org/",
       "center": [
@@ -7098,6 +7280,8 @@
     {
       "slug": "ctran",
       "name": "C-TRAN (Vancouver, WA)",
+      "officialName": "C-TRAN",
+      "nameQualifier": "Vancouver, WA",
       "websiteUrl": "http://www.C-TRAN.com",
       "center": [
         45.6513,
@@ -7155,6 +7339,7 @@
     {
       "slug": "spokane",
       "name": "Spokane Transit Authority",
+      "officialName": "Spokane Transit Authority",
       "websiteUrl": "http://www.spokanetransit.com",
       "center": [
         47.6645,
@@ -7212,6 +7397,7 @@
     {
       "slug": "eugene-ltd",
       "name": "Lane Transit District",
+      "officialName": "Lane Transit District",
       "center": [
         44.0489,
         -123.0488
@@ -7272,6 +7458,8 @@
     {
       "slug": "cherriots",
       "name": "Cherriots (Salem, OR)",
+      "officialName": "Cherriots",
+      "nameQualifier": "Salem, OR",
       "websiteUrl": "https://www.cherriots.org/",
       "center": [
         44.9396,
@@ -7327,6 +7515,7 @@
     {
       "slug": "corvallis",
       "name": "Corvallis Transit System",
+      "officialName": "Corvallis Transit System",
       "websiteUrl": "https://www.corvallisoregon.gov/cts",
       "center": [
         44.5746,
@@ -7382,6 +7571,8 @@
     {
       "slug": "grovelink",
       "name": "Ride Connection (GroveLink)",
+      "officialName": "Ride Connection",
+      "commonName": "GroveLink",
       "websiteUrl": "https://rideconnection.org/ride/",
       "center": [
         45.4948,
@@ -7437,6 +7628,7 @@
     {
       "slug": "rivercities",
       "name": "RiverCities Transit",
+      "officialName": "RiverCities Transit",
       "websiteUrl": "http://rctransit.org",
       "center": [
         45.9434,
@@ -7494,6 +7686,7 @@
     {
       "slug": "tillamook",
       "name": "Tillamook County Transportation District",
+      "officialName": "Tillamook County Transportation District",
       "websiteUrl": "https://nwconnector.org/agencies/tillamook-county-transportation-district/",
       "center": [
         45.4496,
@@ -7552,6 +7745,7 @@
     {
       "slug": "columbia-area-transit",
       "name": "Columbia Area Transit",
+      "officialName": "Columbia Area Transit",
       "websiteUrl": "https://www.ridecatbus.org",
       "center": [
         45.6176,
@@ -7609,6 +7803,7 @@
     {
       "slug": "mats",
       "name": "Mount Adams Transportation Service",
+      "officialName": "Mount Adams Transportation Service",
       "websiteUrl": "https://www.klickitatcounty.org/363/Mount-Adams-Transportation-Service-MATS",
       "center": [
         45.7099,
@@ -7663,6 +7858,7 @@
     {
       "slug": "setd",
       "name": "Sunset Empire Transportation District",
+      "officialName": "Sunset Empire Transportation District",
       "websiteUrl": "https://nwconnector.org/agencies/sunset-empire-transportation-district/",
       "center": [
         46.0328,
@@ -7721,6 +7917,8 @@
     {
       "slug": "sfmta",
       "name": "San Francisco Municipal Transportation Agency (SFMTA - Muni)",
+      "officialName": "San Francisco Municipal Transportation Agency",
+      "commonName": "SFMTA - Muni",
       "shortName": "SFMTA",
       "websiteUrl": "http://www.sfmta.com",
       "center": [
@@ -7818,6 +8016,8 @@
     {
       "slug": "bart",
       "name": "Bay Area Rapid Transit (BART)",
+      "officialName": "Bay Area Rapid Transit",
+      "commonName": "BART",
       "shortName": "BART",
       "websiteUrl": "https://www.bart.gov/",
       "center": [
@@ -7879,6 +8079,7 @@
     {
       "slug": "caltrain",
       "name": "Caltrain",
+      "officialName": "Caltrain",
       "labelPlace": "Bay Area",
       "websiteUrl": "http://www.caltrain.com",
       "center": [
@@ -7941,6 +8142,8 @@
     {
       "slug": "actransit",
       "name": "Alameda-Contra Costa Transit District (AC Transit)",
+      "officialName": "Alameda-Contra Costa Transit District",
+      "commonName": "AC Transit",
       "shortName": "AC Transit",
       "center": [
         37.7688,
@@ -8002,6 +8205,8 @@
     {
       "slug": "vta",
       "name": "Santa Clara Valley Transportation Authority (VTA)",
+      "officialName": "Santa Clara Valley Transportation Authority",
+      "commonName": "VTA",
       "shortName": "VTA",
       "websiteUrl": "https://www.vta.org",
       "center": [
@@ -8085,6 +8290,8 @@
     {
       "slug": "samtrans",
       "name": "San Mateo County Transit District (samTrans)",
+      "officialName": "San Mateo County Transit District",
+      "commonName": "samTrans",
       "websiteUrl": "http://www.samtrans.com",
       "center": [
         37.5672,
@@ -8147,6 +8354,7 @@
     {
       "slug": "goldengate",
       "name": "Golden Gate Transit",
+      "officialName": "Golden Gate Transit",
       "displayArea": "Marin & Sonoma",
       "websiteUrl": "http://www.goldengate.org",
       "center": [
@@ -8211,6 +8419,8 @@
     {
       "slug": "weta",
       "name": "San Francisco Bay Area Water Emergency Transportation Authority (WETA)",
+      "officialName": "San Francisco Bay Area Water Emergency Transportation Authority",
+      "commonName": "WETA",
       "displayArea": "San Francisco Bay",
       "websiteUrl": "https://sanfranciscobayferry.com/",
       "center": [
@@ -8268,6 +8478,8 @@
     {
       "slug": "countyconnection",
       "name": "County Connection (CCCTA)",
+      "officialName": "County Connection",
+      "commonName": "CCCTA",
       "websiteUrl": "http://www.countyconnection.com/",
       "center": [
         37.9068,
@@ -8326,6 +8538,8 @@
     {
       "slug": "westcat",
       "name": "WestCAT (Pinole)",
+      "officialName": "WestCAT",
+      "nameQualifier": "Pinole",
       "displayArea": "Pinole",
       "websiteUrl": "http://www.westcat.org/",
       "center": [
@@ -8383,6 +8597,8 @@
     {
       "slug": "soltrans",
       "name": "SolTrans (Vallejo)",
+      "officialName": "SolTrans",
+      "nameQualifier": "Vallejo",
       "websiteUrl": "https://soltrans.org/",
       "center": [
         38.1087,
@@ -8445,6 +8661,7 @@
     {
       "slug": "marintransit",
       "name": "Marin Transit",
+      "officialName": "Marin Transit",
       "labelPlace": "Marin County",
       "websiteUrl": "https://marintransit.gov",
       "center": [
@@ -8506,6 +8723,8 @@
     {
       "slug": "smart-ca",
       "name": "Sonoma-Marin Area Rail Transit (SMART)",
+      "officialName": "Sonoma-Marin Area Rail Transit",
+      "commonName": "SMART",
       "websiteUrl": "http://www.SonomaMarinTrain.org",
       "center": [
         38.2384,
@@ -8560,6 +8779,8 @@
     {
       "slug": "sonoma-county",
       "name": "Sonoma County Transit (SCT)",
+      "officialName": "Sonoma County Transit",
+      "commonName": "SCT",
       "websiteUrl": "http://www.sctransit.com/?referrer=gtfs",
       "center": [
         38.4307,
@@ -8593,6 +8814,8 @@
     {
       "slug": "vine",
       "name": "VINE Transit (Napa)",
+      "officialName": "VINE Transit",
+      "nameQualifier": "Napa",
       "websiteUrl": "https://vinetransit.com/",
       "center": [
         38.3079,
@@ -8652,6 +8875,7 @@
     {
       "slug": "emerygoround",
       "name": "Emery Go-Round",
+      "officialName": "Emery Go-Round",
       "websiteUrl": "https://emerygoround.com/",
       "center": [
         37.8371,
@@ -8704,6 +8928,8 @@
     {
       "slug": "stanford",
       "name": "Stanford Marguerite Shuttle (SMS)",
+      "officialName": "Stanford Marguerite Shuttle",
+      "commonName": "SMS",
       "websiteUrl": "https://transportation.stanford.edu/marguerite",
       "center": [
         37.4331,
@@ -8760,6 +8986,8 @@
     {
       "slug": "tridelta",
       "name": "Tri Delta Transit (Antioch)",
+      "officialName": "Tri Delta Transit",
+      "nameQualifier": "Antioch",
       "websiteUrl": "http://trideltatransit.com",
       "center": [
         37.9967,
@@ -8818,6 +9046,7 @@
     {
       "slug": "lavta",
       "name": "Livermore Amador Valley Transit Authority",
+      "officialName": "Livermore Amador Valley Transit Authority",
       "center": [
         37.6915,
         -121.8397
@@ -8877,6 +9106,7 @@
     {
       "slug": "unioncity",
       "name": "Union City Transit",
+      "officialName": "Union City Transit",
       "center": [
         37.5967,
         -122.0526
@@ -8933,6 +9163,7 @@
     {
       "slug": "westberkeley",
       "name": "West Berkeley Shuttle",
+      "officialName": "West Berkeley Shuttle",
       "center": [
         37.8543,
         -122.2864
@@ -8968,6 +9199,7 @@
     {
       "slug": "petaluma",
       "name": "Petaluma Transit",
+      "officialName": "Petaluma Transit",
       "center": [
         38.247,
         -122.629
@@ -9023,6 +9255,7 @@
     {
       "slug": "santarosa",
       "name": "Santa Rosa CityBus",
+      "officialName": "Santa Rosa CityBus",
       "websiteUrl": "https://srcitybus.org/",
       "center": [
         38.4456,
@@ -9074,6 +9307,8 @@
     {
       "slug": "fast-ca",
       "name": "Fairfield and Suisun Transit (FAST Transit)",
+      "officialName": "Fairfield and Suisun Transit",
+      "commonName": "FAST Transit",
       "center": [
         38.2422,
         -122.0853
@@ -9133,6 +9368,8 @@
     {
       "slug": "vacaville",
       "name": "City Coach (Vacaville)",
+      "officialName": "City Coach",
+      "nameQualifier": "Vacaville",
       "center": [
         38.3618,
         -121.9668
@@ -9189,6 +9426,7 @@
     {
       "slug": "riovista",
       "name": "Rio Vista Delta Breeze",
+      "officialName": "Rio Vista Delta Breeze",
       "displayArea": "Rio Vista",
       "center": [
         38.219,
@@ -9226,6 +9464,7 @@
     {
       "slug": "ace",
       "name": "Altamont Corridor Express",
+      "officialName": "Altamont Corridor Express",
       "displayArea": "Northern California",
       "center": [
         37.2902,
@@ -9287,6 +9526,8 @@
     {
       "slug": "rvtd",
       "name": "Rogue Valley Transportation District (RVTD)",
+      "officialName": "Rogue Valley Transportation District",
+      "commonName": "RVTD",
       "websiteUrl": "http://www.rvtd.org",
       "center": [
         42.328,
@@ -9342,6 +9583,8 @@
     {
       "slug": "bts-or",
       "name": "Basin Transit Service (BTS)",
+      "officialName": "Basin Transit Service",
+      "commonName": "BTS",
       "websiteUrl": "http://www.basintransit.com/",
       "center": [
         42.2598,
@@ -9392,6 +9635,8 @@
     {
       "slug": "rct",
       "name": "Redwood Coast Transit (RCT)",
+      "officialName": "Redwood Coast Transit",
+      "commonName": "RCT",
       "center": [
         41.4686,
         -124.1049
@@ -9447,6 +9692,7 @@
     {
       "slug": "humboldt",
       "name": "Humboldt Transit Authority",
+      "officialName": "Humboldt Transit Authority",
       "websiteUrl": "https://hta.org/agencies/redwood-transit-system/?referrer=gtfs",
       "center": [
         40.7249,
@@ -9500,6 +9746,7 @@
     {
       "slug": "mendocino",
       "name": "Mendocino Transit Authority",
+      "officialName": "Mendocino Transit Authority",
       "websiteUrl": "https://mendocinotransit.org/",
       "center": [
         39.1417,
@@ -9552,6 +9799,7 @@
     {
       "slug": "raba",
       "name": "Redding Area Bus Authority",
+      "officialName": "Redding Area Bus Authority",
       "websiteUrl": "http://www.rabaride.com/",
       "center": [
         40.5695,
@@ -9608,6 +9856,7 @@
     {
       "slug": "siskiyou",
       "name": "Siskiyou County",
+      "officialName": "Siskiyou County",
       "hiddenInProduction": true,
       "issueUrl": "https://github.com/Civic-Minds/Atlas/issues/492",
       "websiteUrl": "https://www.co.siskiyou.ca.us/generalservices/page/stage-siskiyou-transit-and-general-express",
@@ -9659,6 +9908,7 @@
     {
       "slug": "trinity",
       "name": "Trinity Transit",
+      "officialName": "Trinity Transit",
       "websiteUrl": "https://www.trinitycounty.org/612/Trinity-Transit",
       "center": [
         40.7172,
@@ -9711,6 +9961,8 @@
     {
       "slug": "lassen",
       "name": "Lassen Rural Bus (LRB)",
+      "officialName": "Lassen Rural Bus",
+      "commonName": "LRB",
       "websiteUrl": "https://www.lassentransportation.com/",
       "center": [
         40.3588,
@@ -9763,6 +10015,8 @@
     {
       "slug": "sacrt",
       "name": "Sacramento Regional Transit (SacRT)",
+      "officialName": "Sacramento Regional Transit",
+      "commonName": "SacRT",
       "center": [
         38.5939,
         -121.4032
@@ -9827,6 +10081,8 @@
     {
       "slug": "yolobus",
       "name": "Yolo County Transportation District (Yolobus)",
+      "officialName": "Yolo County Transportation District",
+      "commonName": "Yolobus",
       "websiteUrl": "http://avl.yctd.org/",
       "center": [
         38.6169,
@@ -9888,6 +10144,8 @@
     {
       "slug": "unitrans",
       "name": "Unitrans (Davis)",
+      "officialName": "Unitrans",
+      "nameQualifier": "Davis",
       "websiteUrl": "http://unitrans.ucdavis.edu",
       "center": [
         38.5529,
@@ -9945,6 +10203,7 @@
     {
       "slug": "roseville",
       "name": "Roseville Transit",
+      "officialName": "Roseville Transit",
       "websiteUrl": "http://www.roseville.ca.us/transit",
       "center": [
         38.745,
@@ -10000,6 +10259,8 @@
     {
       "slug": "smart-or",
       "name": "South Metro Area Regional Transit (SMART)",
+      "officialName": "South Metro Area Regional Transit",
+      "commonName": "SMART",
       "displayArea": "Wilsonville",
       "websiteUrl": "https://www.ridesmart.com/",
       "center": [
@@ -10059,6 +10320,8 @@
     {
       "slug": "sam",
       "name": "Sandy Area Metro (SAM)",
+      "officialName": "Sandy Area Metro",
+      "commonName": "SAM",
       "websiteUrl": "http://www.mthoodexpress.com/",
       "center": [
         45.3855,
@@ -10111,6 +10374,8 @@
     {
       "slug": "cat-or",
       "name": "Canby Area Transit (CAT)",
+      "officialName": "Canby Area Transit",
+      "commonName": "CAT",
       "websiteUrl": "https://www.canbyoregon.gov/area-transit",
       "center": [
         45.2591,
@@ -10157,6 +10422,7 @@
     {
       "slug": "yamhill",
       "name": "Yamhill County Transit Area",
+      "officialName": "Yamhill County Transit Area",
       "displayArea": "Yamhill County",
       "websiteUrl": "http://ycta.connexionz.net/rtt/public/",
       "center": [
@@ -10211,6 +10477,8 @@
     {
       "slug": "lacmta",
       "name": "Los Angeles County Metropolitan Transportation Authority (LA Metro)",
+      "officialName": "Los Angeles County Metropolitan Transportation Authority",
+      "commonName": "LA Metro",
       "websiteUrl": "https://www.metro.net",
       "center": [
         34.05,
@@ -10286,6 +10554,7 @@
     {
       "slug": "metrolink",
       "name": "Metrolink",
+      "officialName": "Metrolink",
       "displayArea": "Southern California",
       "websiteUrl": "http://www.metrolinktrains.com",
       "center": [
@@ -10322,6 +10591,7 @@
     {
       "slug": "torrance-transit",
       "name": "Torrance Transit",
+      "officialName": "Torrance Transit",
       "websiteUrl": "http://Transit.TorranceCA.gov",
       "center": [
         33.8586,
@@ -10380,6 +10650,8 @@
     {
       "slug": "beach-cities-transit",
       "name": "Beach Cities Transit (South Bay, CA)",
+      "officialName": "Beach Cities Transit",
+      "nameQualifier": "South Bay, CA",
       "websiteUrl": "https://www.redondo.org/departments/community_services/transit/bus_schedules/index.php",
       "center": [
         33.8492,
@@ -10431,6 +10703,7 @@
     {
       "slug": "carson-circuit",
       "name": "Carson Circuit",
+      "officialName": "Carson Circuit",
       "websiteUrl": "https://ci.carson.ca.us/CommunityServices/Transportation.aspx",
       "center": [
         33.8432,
@@ -10479,6 +10752,8 @@
     {
       "slug": "gold-coast",
       "name": "Gold Coast Transit District (Oxnard)",
+      "officialName": "Gold Coast Transit District",
+      "nameQualifier": "Oxnard",
       "websiteUrl": "http://www.goldcoasttransit.org",
       "center": [
         34.2396,
@@ -10536,6 +10811,8 @@
     {
       "slug": "bigbluebus",
       "name": "Big Blue Bus (Santa Monica)",
+      "officialName": "Big Blue Bus",
+      "nameQualifier": "Santa Monica",
       "websiteUrl": "http://www.bigbluebus.com",
       "center": [
         34.01,
@@ -10585,6 +10862,7 @@
     {
       "slug": "longbeach",
       "name": "Long Beach Transit",
+      "officialName": "Long Beach Transit",
       "websiteUrl": "https://www.ridelbt.com",
       "center": [
         33.77,
@@ -10638,6 +10916,8 @@
     {
       "slug": "octa",
       "name": "Orange County Transportation Authority (OCTA)",
+      "officialName": "Orange County Transportation Authority",
+      "commonName": "OCTA",
       "websiteUrl": "http://www.octa.net/Bus-Transit/Overview",
       "center": [
         33.84,
@@ -10692,6 +10972,7 @@
     {
       "slug": "foothill",
       "name": "Foothill Transit",
+      "officialName": "Foothill Transit",
       "labelPlace": "San Gabriel Valley",
       "websiteUrl": "https://www.foothilltransit.org",
       "center": [
@@ -10752,6 +11033,8 @@
     {
       "slug": "avta",
       "name": "Antelope Valley Transit Authority (AVTA)",
+      "officialName": "Antelope Valley Transit Authority",
+      "commonName": "AVTA",
       "center": [
         34.6012,
         -118.1182
@@ -10811,6 +11094,8 @@
     {
       "slug": "sdmts",
       "name": "Metropolitan Transit System (San Diego MTS)",
+      "officialName": "Metropolitan Transit System",
+      "commonName": "San Diego MTS",
       "websiteUrl": "http://www.sdmts.com",
       "center": [
         32.72,
@@ -10896,6 +11181,8 @@
     {
       "slug": "nctd",
       "name": "North County Transit District (NCTD)",
+      "officialName": "North County Transit District",
+      "commonName": "NCTD",
       "websiteUrl": "http://www.gonctd.com",
       "center": [
         33.1545,
@@ -10964,6 +11251,7 @@
     {
       "slug": "riverside",
       "name": "Riverside Transit Agency",
+      "officialName": "Riverside Transit Agency",
       "websiteUrl": "http://www.riversidetransit.com",
       "center": [
         33.98,
@@ -11021,6 +11309,8 @@
     {
       "slug": "omnitrans",
       "name": "OmniTrans (San Bernardino)",
+      "officialName": "OmniTrans",
+      "nameQualifier": "San Bernardino",
       "websiteUrl": "https://omnitrans.org",
       "center": [
         34.11,
@@ -11075,6 +11365,8 @@
     {
       "slug": "fax",
       "name": "Fresno Area Express (FAX)",
+      "officialName": "Fresno Area Express",
+      "commonName": "FAX",
       "websiteUrl": "https://www.fresno.gov/transportation/fax/",
       "center": [
         36.74,
@@ -11121,6 +11413,8 @@
     {
       "slug": "get",
       "name": "Golden Empire Transit District (GET)",
+      "officialName": "Golden Empire Transit District",
+      "commonName": "GET",
       "websiteUrl": "http://www.getbus.org/",
       "center": [
         35.37,
@@ -11169,6 +11463,7 @@
     {
       "slug": "sjrtd",
       "name": "San Joaquin RTD",
+      "officialName": "San Joaquin RTD",
       "websiteUrl": "http://sanjoaquinrtd.com",
       "center": [
         37.96,
@@ -11218,6 +11513,8 @@
     {
       "slug": "merced",
       "name": "Merced County Transit (The Bus)",
+      "officialName": "Merced County Transit",
+      "commonName": "The Bus",
       "websiteUrl": "https://www.mercedthebus.com/",
       "center": [
         37.3,
@@ -11263,6 +11560,8 @@
     {
       "slug": "start",
       "name": "Stanislaus Regional Transit (StaRT)",
+      "officialName": "Stanislaus Regional Transit",
+      "commonName": "StaRT",
       "websiteUrl": "http://www.stanrta.org",
       "center": [
         37.64,
@@ -11291,6 +11590,8 @@
     {
       "slug": "mst",
       "name": "Monterey-Salinas Transit (MST)",
+      "officialName": "Monterey-Salinas Transit",
+      "commonName": "MST",
       "websiteUrl": "http://www.mst.org",
       "center": [
         36.6,
@@ -11340,6 +11641,8 @@
     {
       "slug": "sbmtd",
       "name": "Santa Barbara Metropolitan Transit District (MTD)",
+      "officialName": "Santa Barbara Metropolitan Transit District",
+      "commonName": "MTD",
       "websiteUrl": "https://sbmtd.gov",
       "center": [
         34.42,
@@ -11384,6 +11687,7 @@
     {
       "slug": "slotransit",
       "name": "City of San Luis Obispo Transit",
+      "officialName": "City of San Luis Obispo Transit",
       "displayArea": "San Luis Obispo",
       "websiteUrl": "https://www.slocity.org/government/department-directory/public-works/slo-transit-bus",
       "center": [
@@ -11410,6 +11714,8 @@
     {
       "slug": "slorta",
       "name": "San Luis Obispo Regional Transit Authority (SLORTA)",
+      "officialName": "San Luis Obispo Regional Transit Authority",
+      "commonName": "SLORTA",
       "displayArea": "San Luis Obispo County",
       "websiteUrl": "https://www.slorta.org/",
       "center": [
@@ -11459,6 +11765,8 @@
     {
       "slug": "sunline",
       "name": "SunLine Transit Agency (Coachella Valley)",
+      "officialName": "SunLine Transit Agency",
+      "nameQualifier": "Coachella Valley",
       "websiteUrl": "https://www.sunline.org/",
       "center": [
         33.87,
@@ -11517,6 +11825,8 @@
     {
       "slug": "rtcsnv",
       "name": "Regional Transportation Commission of Southern Nevada (RTC)",
+      "officialName": "Regional Transportation Commission of Southern Nevada",
+      "commonName": "RTC",
       "websiteUrl": "http://www.rtcsnv.com",
       "center": [
         36.17,
@@ -11567,6 +11877,8 @@
     {
       "slug": "rtcwashoe",
       "name": "Regional Transportation Commission of Washoe County (RTC Washoe)",
+      "officialName": "Regional Transportation Commission of Washoe County",
+      "commonName": "RTC Washoe",
       "websiteUrl": "http://www.rtcwashoe.com",
       "center": [
         39.53,
@@ -11617,6 +11929,7 @@
     {
       "slug": "smat",
       "name": "Santa Maria Area Transit",
+      "officialName": "Santa Maria Area Transit",
       "websiteUrl": "https://smrt.tripshot.com/",
       "center": [
         34.95,
@@ -11667,6 +11980,8 @@
     {
       "slug": "valleymetro",
       "name": "Valley Metro (Phoenix)",
+      "officialName": "Valley Metro",
+      "nameQualifier": "Phoenix",
       "displayArea": "Phoenix",
       "websiteUrl": "https://www.valleymetro.org/",
       "center": [
@@ -11726,6 +12041,8 @@
     {
       "slug": "mountainline",
       "name": "Mountain Line (Flagstaff)",
+      "officialName": "Mountain Line",
+      "nameQualifier": "Flagstaff",
       "websiteUrl": "https://www.mountainline.az.gov/",
       "center": [
         35.2,
@@ -11774,6 +12091,8 @@
     {
       "slug": "mountainmetro",
       "name": "Mountain Metropolitan Transit (Colorado Springs)",
+      "officialName": "Mountain Metropolitan Transit",
+      "nameQualifier": "Colorado Springs",
       "center": [
         38.845,
         -104.7974
@@ -11817,6 +12136,8 @@
     {
       "slug": "rtd-denver",
       "name": "Regional Transportation District (RTD Denver)",
+      "officialName": "Regional Transportation District",
+      "commonName": "RTD Denver",
       "shortName": "RTD",
       "websiteUrl": "https://www.rtd-denver.com",
       "center": [
@@ -11913,6 +12234,8 @@
     {
       "slug": "bustang",
       "name": "Bustang (CDOT)",
+      "officialName": "Bustang",
+      "nameQualifier": "CDOT",
       "websiteUrl": "https://www.ridebustang.com/",
       "center": [
         39.71,
@@ -11977,6 +12300,8 @@
     {
       "slug": "abqride",
       "name": "ABQ RIDE (Albuquerque)",
+      "officialName": "ABQ RIDE",
+      "nameQualifier": "Albuquerque",
       "websiteUrl": "https://abqride.com",
       "center": [
         35.09,
@@ -12026,6 +12351,7 @@
     {
       "slug": "santafetrails",
       "name": "Santa Fe Trails",
+      "officialName": "Santa Fe Trails",
       "center": [
         35.6532,
         -105.9769
@@ -12076,6 +12402,8 @@
     {
       "slug": "capmetro",
       "name": "Capital Metro (Austin)",
+      "officialName": "Capital Metro",
+      "nameQualifier": "Austin",
       "displayArea": "Austin",
       "websiteUrl": "http://www.capmetro.org",
       "center": [
@@ -12141,6 +12469,8 @@
     {
       "slug": "dart",
       "name": "Dallas Area Rapid Transit (DART)",
+      "officialName": "Dallas Area Rapid Transit",
+      "commonName": "DART",
       "shortName": "DART",
       "websiteUrl": "https://www.dart.org",
       "center": [
@@ -12240,6 +12570,8 @@
     {
       "slug": "trinitymetro",
       "name": "Trinity Metro (Fort Worth)",
+      "officialName": "Trinity Metro",
+      "nameQualifier": "Fort Worth",
       "websiteUrl": "https://ridetrinitymetro.org",
       "center": [
         32.73,
@@ -12302,6 +12634,7 @@
     {
       "slug": "metrohouston",
       "name": "METRO Houston",
+      "officialName": "METRO Houston",
       "websiteUrl": "http://www.ridemetro.org",
       "center": [
         29.76,
@@ -12380,6 +12713,8 @@
     {
       "slug": "via",
       "name": "VIA Metropolitan Transit (San Antonio)",
+      "officialName": "VIA Metropolitan Transit",
+      "nameQualifier": "San Antonio",
       "websiteUrl": "http://www.viainfo.net",
       "center": [
         29.42,
@@ -12424,6 +12759,8 @@
     {
       "slug": "embark",
       "name": "Embark (Oklahoma City)",
+      "officialName": "Embark",
+      "nameQualifier": "Oklahoma City",
       "websiteUrl": "https://embarkok.com",
       "center": [
         35.47,
@@ -12476,6 +12813,8 @@
     {
       "slug": "rockregion",
       "name": "Rock Region Metro (Little Rock)",
+      "officialName": "Rock Region Metro",
+      "nameQualifier": "Little Rock",
       "websiteUrl": "https://rrmetro.org/",
       "center": [
         34.7362,
@@ -12526,6 +12865,7 @@
     {
       "slug": "nashvillemta",
       "name": "Nashville MTA WeGo Public Transit",
+      "officialName": "Nashville MTA WeGo Public Transit",
       "websiteUrl": "http://www.wegotransit.com",
       "center": [
         36.16,
@@ -12574,6 +12914,7 @@
     {
       "slug": "mata",
       "name": "Memphis Area Transit Authority",
+      "officialName": "Memphis Area Transit Authority",
       "websiteUrl": "http://www.matatransit.com",
       "center": [
         35.1217,
@@ -12629,6 +12970,8 @@
     {
       "slug": "norta",
       "name": "New Orleans Regional Transit Authority (NORTA)",
+      "officialName": "New Orleans Regional Transit Authority",
+      "commonName": "NORTA",
       "websiteUrl": "http://www.norta.com/",
       "center": [
         29.95,
@@ -12693,6 +13036,8 @@
     {
       "slug": "cincinnatimetro",
       "name": "Cincinnati Metro (SORTA)",
+      "officialName": "Cincinnati Metro",
+      "nameQualifier": "SORTA",
       "websiteUrl": "http://www.go-metro.com",
       "center": [
         39.1,
@@ -12742,6 +13087,8 @@
     {
       "slug": "tarc",
       "name": "Transit Authority of River City (Louisville)",
+      "officialName": "Transit Authority of River City",
+      "nameQualifier": "Louisville",
       "websiteUrl": "https://www.ridetarc.org/",
       "center": [
         38.25,
@@ -12791,6 +13138,8 @@
     {
       "slug": "mcts",
       "name": "Milwaukee County Transit System (MCTS)",
+      "officialName": "Milwaukee County Transit System",
+      "commonName": "MCTS",
       "websiteUrl": "http://www.ridemcts.com",
       "center": [
         43.0481,
@@ -12841,6 +13190,7 @@
     {
       "slug": "metrostlouis",
       "name": "Metro St. Louis",
+      "officialName": "Metro St. Louis",
       "websiteUrl": "http://www.metrostlouis.org",
       "center": [
         38.651,
@@ -12908,6 +13258,8 @@
     {
       "slug": "kcata",
       "name": "Kansas City Area Transportation Authority (KCATA)",
+      "officialName": "Kansas City Area Transportation Authority",
+      "commonName": "KCATA",
       "websiteUrl": "http://www.kcata.org",
       "center": [
         39.1,
@@ -12962,6 +13314,7 @@
     {
       "slug": "omahametro",
       "name": "Omaha Metro",
+      "officialName": "Omaha Metro",
       "websiteUrl": "https://www.ometro.com/",
       "center": [
         41.26,
@@ -13011,6 +13364,8 @@
     {
       "slug": "ladot",
       "name": "Los Angeles Department of Transportation (LADOT/DASH)",
+      "officialName": "Los Angeles Department of Transportation",
+      "commonName": "LADOT/DASH",
       "websiteUrl": "https://www.ladottransit.com/",
       "center": [
         34.05,
@@ -13068,6 +13423,7 @@
     {
       "slug": "culvercitybus",
       "name": "Culver City Bus",
+      "officialName": "Culver City Bus",
       "displayArea": "Culver City",
       "websiteUrl": "https://www.culvercity.org/how-do-i/find/culver-city-bus",
       "center": [
@@ -13120,6 +13476,7 @@
     {
       "slug": "santaclarita",
       "name": "Santa Clarita Transit",
+      "officialName": "Santa Clarita Transit",
       "websiteUrl": "https://santaclaritatransit.com",
       "center": [
         34.41,
@@ -13177,6 +13534,7 @@
     {
       "slug": "montebello",
       "name": "Montebello Bus Lines",
+      "officialName": "Montebello Bus Lines",
       "websiteUrl": "http://www.ridembl.com/",
       "center": [
         34.01,
@@ -13224,6 +13582,7 @@
     {
       "slug": "burbankbus",
       "name": "BurbankBus",
+      "officialName": "BurbankBus",
       "websiteUrl": "http://www.burbankbus.org/",
       "center": [
         34.18,
@@ -13274,6 +13633,7 @@
     {
       "slug": "glendalebeeline",
       "name": "Glendale Beeline",
+      "officialName": "Glendale Beeline",
       "websiteUrl": "http://glendalebeeline.com/",
       "center": [
         34.1695,
@@ -13328,6 +13688,7 @@
     {
       "slug": "pasadenatransit",
       "name": "Pasadena Transit",
+      "officialName": "Pasadena Transit",
       "websiteUrl": "https://www.cityofpasadena.net/pasadena-transit/",
       "center": [
         34.15,
@@ -13377,6 +13738,7 @@
     {
       "slug": "norwalktransit",
       "name": "Norwalk Transit System",
+      "officialName": "Norwalk Transit System",
       "websiteUrl": "https://norwalktransit.com/",
       "center": [
         33.9,
@@ -13411,6 +13773,8 @@
     {
       "slug": "pvpta",
       "name": "Palos Verdes Peninsula Transit Authority (PVPTA)",
+      "officialName": "Palos Verdes Peninsula Transit Authority",
+      "commonName": "PVPTA",
       "websiteUrl": "http://www.palosverdes.com/pvtransit/",
       "center": [
         33.74,
@@ -13459,6 +13823,8 @@
     {
       "slug": "gtrans",
       "name": "GTrans (Gardena Municipal Bus Lines)",
+      "officialName": "GTrans",
+      "nameQualifier": "Gardena Municipal Bus Lines",
       "websiteUrl": "https://ridegtrans.com/",
       "center": [
         33.89,
@@ -13516,6 +13882,8 @@
     {
       "slug": "vvta",
       "name": "Victor Valley Transit Authority (VVTA)",
+      "officialName": "Victor Valley Transit Authority",
+      "commonName": "VVTA",
       "center": [
         34.5885,
         -117.2393
@@ -13573,6 +13941,8 @@
     {
       "slug": "vctc",
       "name": "Ventura County Transportation Commission (VCTC Intercity)",
+      "officialName": "Ventura County Transportation Commission",
+      "commonName": "VCTC Intercity",
       "center": [
         34.27,
         -119.23
@@ -13627,6 +13997,7 @@
     {
       "slug": "elmonte",
       "name": "El Monte Transit",
+      "officialName": "El Monte Transit",
       "hiddenInProduction": true,
       "issueUrl": "https://github.com/Civic-Minds/Atlas/issues/634",
       "center": [
@@ -13674,6 +14045,8 @@
     {
       "slug": "cta",
       "name": "Chicago Transit Authority (CTA)",
+      "officialName": "Chicago Transit Authority",
+      "commonName": "CTA",
       "shortName": "CTA",
       "displayArea": "Chicago",
       "websiteUrl": "http://transitchicago.com",
@@ -13736,6 +14109,8 @@
     {
       "slug": "metra",
       "name": "Metra (Chicago)",
+      "officialName": "Metra",
+      "nameQualifier": "Chicago",
       "displayArea": "Chicago",
       "websiteUrl": "http://www.metrarail.com/",
       "center": [
@@ -13792,6 +14167,8 @@
     {
       "slug": "pace-bus",
       "name": "Pace Bus (Chicago suburbs)",
+      "officialName": "Pace Bus",
+      "nameQualifier": "Chicago suburbs",
       "displayArea": "Chicago suburbs",
       "websiteUrl": "https://www.pacebus.com",
       "center": [
@@ -13852,6 +14229,8 @@
     {
       "slug": "marta",
       "name": "MARTA (Atlanta)",
+      "officialName": "MARTA",
+      "nameQualifier": "Atlanta",
       "shortName": "MARTA",
       "websiteUrl": "https://www.itsmarta.com",
       "center": [
@@ -13908,6 +14287,8 @@
     {
       "slug": "cobblinc",
       "name": "CobbLinc (Marietta, GA)",
+      "officialName": "CobbLinc",
+      "nameQualifier": "Marietta, GA",
       "websiteUrl": "https://www.cobbcounty.gov/transportation/cobblinc",
       "center": [
         33.9,
@@ -13958,6 +14339,7 @@
     {
       "slug": "gwinnett-transit",
       "name": "Gwinnett County Transit",
+      "officialName": "Gwinnett County Transit",
       "displayArea": "Gwinnett County",
       "websiteUrl": "https://www.ridegwinnett.com/",
       "center": [
@@ -14005,6 +14387,7 @@
     {
       "slug": "miami-dade-transit",
       "name": "Miami-Dade Transit",
+      "officialName": "Miami-Dade Transit",
       "displayArea": "Miami-Dade County",
       "websiteUrl": "http://www.miamidade.gov/transit",
       "center": [
@@ -14082,6 +14465,7 @@
     {
       "slug": "broward-transit",
       "name": "Broward County Transit",
+      "officialName": "Broward County Transit",
       "websiteUrl": "http://www.broward.org/bct/Pages/default.aspx",
       "center": [
         26.1224,
@@ -14139,6 +14523,8 @@
     {
       "slug": "transfort",
       "name": "Transfort (Fort Collins)",
+      "officialName": "Transfort",
+      "nameQualifier": "Fort Collins",
       "center": [
         40.4552,
         -105.0936
@@ -14188,6 +14574,8 @@
     {
       "slug": "septa",
       "name": "SEPTA (Philadelphia)",
+      "officialName": "SEPTA",
+      "nameQualifier": "Philadelphia",
       "shortName": "SEPTA",
       "displayArea": "Philadelphia",
       "websiteUrl": "https://septa.org/",
@@ -14316,6 +14704,8 @@
     {
       "slug": "wmata",
       "name": "WMATA (Washington, DC)",
+      "officialName": "WMATA",
+      "nameQualifier": "Washington, DC",
       "shortName": "WMATA",
       "region": "Washington DC",
       "center": [
@@ -14391,6 +14781,8 @@
     {
       "slug": "vre",
       "name": "Virginia Railway Express (VRE)",
+      "officialName": "Virginia Railway Express",
+      "commonName": "VRE",
       "displayArea": "Northern Virginia",
       "websiteUrl": "http://www.vre.org",
       "region": "Virginia",
@@ -14452,6 +14844,8 @@
     {
       "slug": "marc",
       "name": "MARC Train (MTA Maryland)",
+      "officialName": "MARC Train",
+      "nameQualifier": "MTA Maryland",
       "displayArea": "Maryland",
       "websiteUrl": "https://mta.maryland.gov/",
       "region": "Maryland",
@@ -14514,6 +14908,8 @@
     {
       "slug": "rideon",
       "name": "Ride On (Montgomery County)",
+      "officialName": "Ride On",
+      "nameQualifier": "Montgomery County",
       "websiteUrl": "https://www.montgomerycountymd.gov/dot-transit/index.html",
       "region": "Maryland",
       "center": [
@@ -14570,6 +14966,7 @@
     {
       "slug": "fairfax",
       "name": "Fairfax Connector",
+      "officialName": "Fairfax Connector",
       "displayArea": "Fairfax County",
       "websiteUrl": "http://www.fairfaxcounty.gov/connector/routes/",
       "region": "Virginia",
@@ -14630,6 +15027,8 @@
     {
       "slug": "art",
       "name": "Arlington Transit (ART)",
+      "officialName": "Arlington Transit",
+      "commonName": "ART",
       "websiteUrl": "http://www.arlingtontransit.com",
       "region": "Virginia",
       "center": [
@@ -14688,6 +15087,8 @@
     {
       "slug": "dash",
       "name": "DASH (Alexandria)",
+      "officialName": "DASH",
+      "nameQualifier": "Alexandria",
       "websiteUrl": "https://www.dashbus.com/",
       "region": "Virginia",
       "center": [
@@ -14742,6 +15143,7 @@
     {
       "slug": "nyct-subway",
       "name": "MTA NYCT Subway",
+      "officialName": "MTA NYCT Subway",
       "displayArea": "New York City",
       "websiteUrl": "http://www.mta.info",
       "region": "New York",
@@ -14802,6 +15204,8 @@
     {
       "slug": "nyct-bus-manhattan",
       "name": "MTA NYCT Bus (Manhattan)",
+      "officialName": "MTA NYCT Bus",
+      "nameQualifier": "Manhattan",
       "displayArea": "Manhattan",
       "websiteUrl": "http://www.mta.info",
       "center": [
@@ -14866,6 +15270,8 @@
     {
       "slug": "nyct-bus-brooklyn",
       "name": "MTA NYCT Bus (Brooklyn)",
+      "officialName": "MTA NYCT Bus",
+      "nameQualifier": "Brooklyn",
       "displayArea": "Brooklyn",
       "websiteUrl": "http://www.mta.info",
       "center": [
@@ -14932,6 +15338,8 @@
     {
       "slug": "nyct-bus-queens",
       "name": "MTA NYCT Bus (Queens)",
+      "officialName": "MTA NYCT Bus",
+      "nameQualifier": "Queens",
       "websiteUrl": "http://www.mta.info",
       "center": [
         40.728,
@@ -14995,6 +15403,8 @@
     {
       "slug": "nyct-bus-bronx",
       "name": "MTA NYCT Bus (Bronx)",
+      "officialName": "MTA NYCT Bus",
+      "nameQualifier": "Bronx",
       "displayArea": "Bronx",
       "websiteUrl": "http://www.mta.info",
       "center": [
@@ -15059,6 +15469,8 @@
     {
       "slug": "nyct-bus-si",
       "name": "MTA NYCT Bus (Staten Island)",
+      "officialName": "MTA NYCT Bus",
+      "nameQualifier": "Staten Island",
       "websiteUrl": "http://www.mta.info",
       "center": [
         40.634,
@@ -15124,6 +15536,7 @@
     {
       "slug": "mta-bus-company",
       "name": "MTA Bus Company",
+      "officialName": "MTA Bus Company",
       "displayArea": "New York City",
       "websiteUrl": "https://new.mta.info",
       "center": [
@@ -15186,6 +15599,7 @@
     {
       "slug": "lirr",
       "name": "MTA Long Island Rail Road",
+      "officialName": "MTA Long Island Rail Road",
       "displayArea": "Long Island",
       "websiteUrl": "https://new.mta.info/agency/long-island-rail-road",
       "region": "New York",
@@ -15250,6 +15664,8 @@
     {
       "slug": "mnr",
       "name": "Metro-North Railroad (MNR)",
+      "officialName": "Metro-North Railroad",
+      "commonName": "MNR",
       "displayArea": "New York & Connecticut",
       "websiteUrl": "http://www.mta.info/mnr",
       "region": "New York",
@@ -15317,6 +15733,7 @@
     {
       "slug": "njt-rail",
       "name": "NJ Transit Rail",
+      "officialName": "NJ Transit Rail",
       "displayArea": "New Jersey",
       "websiteUrl": "http://www.njtransit.com/",
       "region": "New Jersey",
@@ -15404,6 +15821,7 @@
     {
       "slug": "njt-bus",
       "name": "NJ Transit Bus",
+      "officialName": "NJ Transit Bus",
       "displayArea": "New Jersey",
       "websiteUrl": "http://www.njtransit.com/",
       "region": "New Jersey",
@@ -15471,6 +15889,8 @@
     {
       "slug": "path",
       "name": "PATH (Port Authority Trans-Hudson)",
+      "officialName": "PATH",
+      "nameQualifier": "Port Authority Trans-Hudson",
       "displayArea": "New York & New Jersey",
       "region": "New Jersey",
       "center": [
@@ -15534,6 +15954,8 @@
     {
       "slug": "beeline",
       "name": "Westchester County Bee-Line System (BeeLine)",
+      "officialName": "Westchester County Bee-Line System",
+      "commonName": "BeeLine",
       "region": "New York",
       "center": [
         41,
@@ -15599,6 +16021,8 @@
     {
       "slug": "nice",
       "name": "Nassau Inter-County Express (NICE Bus)",
+      "officialName": "Nassau Inter-County Express",
+      "commonName": "NICE Bus",
       "shortName": "NICE",
       "labelPlace": "Nassau County",
       "websiteUrl": "http://www.nicebus.com",
@@ -15665,6 +16089,8 @@
     {
       "slug": "tor",
       "name": "Transport of Rockland (TOR)",
+      "officialName": "Transport of Rockland",
+      "commonName": "TOR",
       "displayArea": "Rockland County",
       "region": "New York",
       "center": [
@@ -15719,6 +16145,8 @@
     {
       "slug": "sct",
       "name": "Suffolk County Transit (SCT)",
+      "officialName": "Suffolk County Transit",
+      "commonName": "SCT",
       "websiteUrl": "https://sctbus.org/",
       "region": "New York",
       "center": [
@@ -15777,6 +16205,8 @@
     {
       "slug": "part",
       "name": "Putnam Area Rapid Transit (PART)",
+      "officialName": "Putnam Area Rapid Transit",
+      "commonName": "PART",
       "displayArea": "Putnam County",
       "websiteUrl": "http://www.putnamcountyny.com/PART/",
       "region": "New York",
@@ -15831,6 +16261,7 @@
     {
       "slug": "dutchess",
       "name": "Dutchess County Public Transit",
+      "officialName": "Dutchess County Public Transit",
       "displayArea": "Dutchess County",
       "websiteUrl": "https://dutchessny.gov/departments/public-transit/routes-schedules.htm",
       "region": "New York",
@@ -15885,6 +16316,8 @@
     {
       "slug": "metro-transit",
       "name": "Metro Transit (Minneapolis)",
+      "officialName": "Metro Transit",
+      "nameQualifier": "Minneapolis",
       "websiteUrl": "https://www.metrotransit.org",
       "center": [
         44.98,
@@ -15944,6 +16377,7 @@
     {
       "slug": "port-authority-pa",
       "name": "Pittsburgh Regional Transit",
+      "officialName": "Pittsburgh Regional Transit",
       "websiteUrl": "https://www.rideprt.org",
       "center": [
         40.44,
@@ -16026,6 +16460,8 @@
     {
       "slug": "ata",
       "name": "Area Transportation Authority (ATA)",
+      "officialName": "Area Transportation Authority",
+      "commonName": "ATA",
       "agencyId": "30196",
       "websiteUrl": "https://www.rideata.com/",
       "region": "Pennsylvania",
@@ -16086,6 +16522,8 @@
     {
       "slug": "albemarle-county",
       "name": "Charlottesville Area Transit (CAT)",
+      "officialName": "Charlottesville Area Transit",
+      "commonName": "CAT",
       "websiteUrl": "https://charlottesville.gov/470/Transit",
       "center": [
         38.04,
@@ -16138,6 +16576,7 @@
     {
       "slug": "chemung-county",
       "name": "Chemung County C-TRAN",
+      "officialName": "Chemung County C-TRAN",
       "websiteUrl": "https://ridectran.com/",
       "center": [
         42.21,
@@ -16192,6 +16631,7 @@
     {
       "slug": "decatur",
       "name": "Decatur Public Transit System",
+      "officialName": "Decatur Public Transit System",
       "websiteUrl": "https://decaturil.gov/departments/transit/",
       "center": [
         39.86,
@@ -16243,6 +16683,8 @@
     {
       "slug": "essex-county",
       "name": "Cape Ann Transportation Authority (CATA)",
+      "officialName": "Cape Ann Transportation Authority",
+      "commonName": "CATA",
       "websiteUrl": "http://canntran.com/",
       "center": [
         42.61,
@@ -16298,6 +16740,7 @@
     {
       "slug": "fort-mcmurray",
       "name": "Regional Municipality of Wood Buffalo Transit",
+      "officialName": "Regional Municipality of Wood Buffalo Transit",
       "websiteUrl": "http://www.rmwb.ca",
       "center": [
         56.72,
@@ -16353,6 +16796,7 @@
     {
       "slug": "fort-smith",
       "name": "City of Fort Smith",
+      "officialName": "City of Fort Smith",
       "websiteUrl": "https://www.fortsmithar.gov/government/departments/transit",
       "center": [
         35.36,
@@ -16406,6 +16850,7 @@
     {
       "slug": "janesville",
       "name": "Janesville Transit System",
+      "officialName": "Janesville Transit System",
       "websiteUrl": "http://www.ci.janesville.wi.us/index.aspx?page=124",
       "center": [
         42.61,
@@ -16461,6 +16906,7 @@
     {
       "slug": "kaua-i-county",
       "name": "The Kauai Bus",
+      "officialName": "The Kauai Bus",
       "websiteUrl": "https://www.kauai.gov/transportation",
       "center": [
         22.04,
@@ -16516,6 +16962,7 @@
     {
       "slug": "los-alamos-county",
       "name": "Atomic City Transit",
+      "officialName": "Atomic City Transit",
       "websiteUrl": "http://www.atomiccitytransit.com",
       "center": [
         35.84,
@@ -16567,6 +17014,7 @@
     {
       "slug": "marathon-county",
       "name": "Metro Ride",
+      "officialName": "Metro Ride",
       "websiteUrl": "https://www.ci.wausau.wi.us/Departments/MetroRide.aspx",
       "center": [
         44.97,
@@ -16621,6 +17069,7 @@
     {
       "slug": "mason-city",
       "name": "Mason City Public Transit",
+      "officialName": "Mason City Public Transit",
       "websiteUrl": "http://www.masoncity.net/pview.aspx?id=18070&amp;catid=477",
       "center": [
         43.15,
@@ -16668,6 +17117,7 @@
     {
       "slug": "maui-county",
       "name": "Maui County Transit",
+      "officialName": "Maui County Transit",
       "websiteUrl": "https://www.mauicounty.gov/3000/Department-of-Transportation",
       "center": [
         20.84,
@@ -16723,6 +17173,7 @@
     {
       "slug": "medicine-hat",
       "name": "Medicine Hat Transit",
+      "officialName": "Medicine Hat Transit",
       "websiteUrl": "https://www.medicinehat.ca/en/roads-parking-and-transportation/transit.aspx",
       "center": [
         50.03,
@@ -16774,6 +17225,7 @@
     {
       "slug": "muscogee-county",
       "name": "METRA",
+      "officialName": "METRA",
       "labelPlace": "Columbus, GA",
       "websiteUrl": "https://www.columbusga.gov/metra",
       "center": [
@@ -16831,6 +17283,7 @@
     {
       "slug": "nash-county",
       "name": "Tar River Transit",
+      "officialName": "Tar River Transit",
       "websiteUrl": "http://www.tarrivertransit.org",
       "center": [
         35.99,
@@ -16883,6 +17336,7 @@
     {
       "slug": "rock-county",
       "name": "Beloit Transit System",
+      "officialName": "Beloit Transit System",
       "websiteUrl": "http://www.beloittransit.com",
       "center": [
         42.61,
@@ -16941,6 +17395,7 @@
     {
       "slug": "sheboygan-county",
       "name": "Shoreline Metro",
+      "officialName": "Shoreline Metro",
       "websiteUrl": "http://www.shorelinemetro.com/",
       "center": [
         43.74,
@@ -16995,6 +17450,7 @@
     {
       "slug": "washington-county",
       "name": "Johnson City",
+      "officialName": "Johnson City",
       "websiteUrl": "https://www.johnsoncitytransit.org",
       "center": [
         36.33,
@@ -17052,6 +17508,7 @@
     {
       "slug": "whitman-county",
       "name": "City of Pullman",
+      "officialName": "City of Pullman",
       "websiteUrl": "https://www.pullmantransit.com/",
       "center": [
         46.73,
@@ -17108,6 +17565,7 @@
     {
       "slug": "beaver-county",
       "name": "Beaver County Transit Authority",
+      "officialName": "Beaver County Transit Authority",
       "region": "Pennsylvania",
       "center": [
         40.683,
@@ -17152,6 +17610,7 @@
     {
       "slug": "butler-pa",
       "name": "Butler Transit Authority",
+      "officialName": "Butler Transit Authority",
       "region": "Pennsylvania",
       "center": [
         40.8612,
@@ -17196,6 +17655,7 @@
     {
       "slug": "camtran",
       "name": "CamTran",
+      "officialName": "CamTran",
       "region": "Pennsylvania",
       "center": [
         40.3267,
@@ -17240,6 +17700,7 @@
     {
       "slug": "fact",
       "name": "Fayette Area Coordinated Transportation",
+      "officialName": "Fayette Area Coordinated Transportation",
       "region": "Pennsylvania",
       "center": [
         39.9006,
@@ -17284,6 +17745,7 @@
     {
       "slug": "freedom-transit",
       "name": "Freedom Transit",
+      "officialName": "Freedom Transit",
       "region": "Pennsylvania",
       "center": [
         40.1739,
@@ -17328,6 +17790,7 @@
     {
       "slug": "indigo",
       "name": "IndiGO",
+      "officialName": "IndiGO",
       "region": "Pennsylvania",
       "center": [
         40.6215,
@@ -17372,6 +17835,7 @@
     {
       "slug": "mmvta",
       "name": "Mid Mon Valley Transit",
+      "officialName": "Mid Mon Valley Transit",
       "region": "Pennsylvania",
       "center": [
         40.137,
@@ -17421,6 +17885,7 @@
     {
       "slug": "new-castle",
       "name": "New Castle Area Transit Authority",
+      "officialName": "New Castle Area Transit Authority",
       "labelPlace": "",
       "region": "Pennsylvania",
       "center": [
@@ -17466,6 +17931,7 @@
     {
       "slug": "westmoreland",
       "name": "Westmoreland Transit",
+      "officialName": "Westmoreland Transit",
       "labelPlace": "Westmoreland County",
       "region": "Pennsylvania",
       "center": [
@@ -17511,6 +17977,8 @@
     {
       "slug": "uta",
       "name": "Utah Transit Authority (UTA)",
+      "officialName": "Utah Transit Authority",
+      "commonName": "UTA",
       "websiteUrl": "http://www.rideuta.com",
       "center": [
         40.76,
@@ -17588,6 +18056,8 @@
     {
       "slug": "jta",
       "name": "Jacksonville Transportation Authority (JTA)",
+      "officialName": "Jacksonville Transportation Authority",
+      "commonName": "JTA",
       "websiteUrl": "http://www.jtafla.com",
       "center": [
         30.33,
@@ -17632,6 +18102,8 @@
     {
       "slug": "cats",
       "name": "Charlotte Area Transit System (CATS)",
+      "officialName": "Charlotte Area Transit System",
+      "commonName": "CATS",
       "websiteUrl": "http://www.ridetransit.org",
       "center": [
         35.23,
@@ -17689,6 +18161,8 @@
     {
       "slug": "goraleigh",
       "name": "GoRaleigh (Capital Area Transit)",
+      "officialName": "GoRaleigh",
+      "nameQualifier": "Capital Area Transit",
       "shortName": "GoRaleigh",
       "labelPlace": "Raleigh",
       "websiteUrl": "http://www.GoRaleigh.org",
@@ -17741,6 +18215,8 @@
     {
       "slug": "gotriangle",
       "name": "GoTriangle (Raleigh-Durham)",
+      "officialName": "GoTriangle",
+      "nameQualifier": "Raleigh-Durham",
       "websiteUrl": "https://gotriangle.org/",
       "center": [
         35.99,
@@ -17795,6 +18271,8 @@
     {
       "slug": "indygo",
       "name": "IndyGo (Indianapolis)",
+      "officialName": "IndyGo",
+      "nameQualifier": "Indianapolis",
       "center": [
         39.7921,
         -86.153
@@ -17847,6 +18325,8 @@
     {
       "slug": "mta-maryland",
       "name": "Maryland Transit Administration (MTA Maryland)",
+      "officialName": "Maryland Transit Administration",
+      "commonName": "MTA Maryland",
       "websiteUrl": "https://mta.maryland.gov/",
       "center": [
         39.29,
@@ -17925,6 +18405,8 @@
     {
       "slug": "hart",
       "name": "Hillsborough Area Regional Transit (HART)",
+      "officialName": "Hillsborough Area Regional Transit",
+      "commonName": "HART",
       "websiteUrl": "http://www.gohart.org",
       "center": [
         27.96,
@@ -17977,6 +18459,7 @@
     {
       "slug": "tampa-international-airport",
       "name": "Tampa International Airport",
+      "officialName": "Tampa International Airport",
       "center": [
         27.9701,
         -82.5348
@@ -18027,6 +18510,8 @@
     {
       "slug": "lynx",
       "name": "LYNX (Central Florida)",
+      "officialName": "LYNX",
+      "nameQualifier": "Central Florida",
       "websiteUrl": "http://www.golynx.com",
       "center": [
         28.54,
@@ -18083,6 +18568,8 @@
     {
       "slug": "thebus",
       "name": "TheBus (Honolulu)",
+      "officialName": "TheBus",
+      "nameQualifier": "Honolulu",
       "websiteUrl": "http://www.thebus.org",
       "center": [
         21.31,
@@ -18131,6 +18618,8 @@
     {
       "slug": "ripta",
       "name": "Rhode Island Public Transit Authority (RIPTA)",
+      "officialName": "Rhode Island Public Transit Authority",
+      "commonName": "RIPTA",
       "websiteUrl": "http://www.ripta.com/",
       "center": [
         41.82,
@@ -18183,6 +18672,8 @@
     {
       "slug": "valley-regional-transit",
       "name": "Valley Regional Transit (Boise)",
+      "officialName": "Valley Regional Transit",
+      "nameQualifier": "Boise",
       "websiteUrl": "https://www.valleyregionaltransit.org/",
       "center": [
         43.62,
@@ -18234,6 +18725,8 @@
     {
       "slug": "psta",
       "name": "Pinellas Suncoast Transit Authority (PSTA)",
+      "officialName": "Pinellas Suncoast Transit Authority",
+      "commonName": "PSTA",
       "center": [
         27.8704,
         -82.7219
@@ -18291,6 +18784,8 @@
     {
       "slug": "palm-tran",
       "name": "Palm Tran (West Palm Beach)",
+      "officialName": "Palm Tran",
+      "nameQualifier": "West Palm Beach",
       "websiteUrl": "http://www.palmtran.org",
       "center": [
         26.7,
@@ -18350,6 +18845,8 @@
     {
       "slug": "sunrail",
       "name": "SunRail (Orlando)",
+      "officialName": "SunRail",
+      "nameQualifier": "Orlando",
       "websiteUrl": "http://www.sunrail.com",
       "center": [
         28.5,
@@ -18397,6 +18894,8 @@
     {
       "slug": "votran",
       "name": "Votran (Volusia County)",
+      "officialName": "Votran",
+      "nameQualifier": "Volusia County",
       "center": [
         29.1432,
         -81.0746
@@ -18450,6 +18949,7 @@
     {
       "slug": "chapel-hill-transit",
       "name": "Chapel Hill Transit",
+      "officialName": "Chapel Hill Transit",
       "websiteUrl": "https://www.chapelhillnc.gov/Town-Government/Departments-and-Offices/Transit",
       "center": [
         35.91,
@@ -18498,6 +18998,8 @@
     {
       "slug": "mvta",
       "name": "Minnesota Valley Transit Authority (MVTA)",
+      "officialName": "Minnesota Valley Transit Authority",
+      "commonName": "MVTA",
       "websiteUrl": "http://www.mvta.com",
       "center": [
         44.6,
@@ -18554,6 +19056,8 @@
     {
       "slug": "xpress-ga",
       "name": "Xpress (Georgia Regional)",
+      "officialName": "Xpress",
+      "nameQualifier": "Georgia Regional",
       "center": [
         33.8203,
         -84.3277
@@ -18588,6 +19092,8 @@
     {
       "slug": "omniride",
       "name": "OmniRide (PRTC)",
+      "officialName": "OmniRide",
+      "nameQualifier": "PRTC",
       "websiteUrl": "http://www.omniride.com",
       "center": [
         38.5,
@@ -18642,6 +19148,7 @@
     {
       "slug": "loudoun-transit",
       "name": "Loudoun County Transit",
+      "officialName": "Loudoun County Transit",
       "websiteUrl": "https://www.loudoun.gov/bus",
       "center": [
         39.08,
@@ -18696,6 +19203,8 @@
     {
       "slug": "cue-bus",
       "name": "CUE Bus (Fairfax)",
+      "officialName": "CUE Bus",
+      "nameQualifier": "Fairfax",
       "displayArea": "Fairfax",
       "websiteUrl": "http://www.ridesystems.net",
       "center": [
@@ -18722,6 +19231,8 @@
     {
       "slug": "pgc-the-bus",
       "name": "Prince George's County (The Bus)",
+      "officialName": "Prince George's County",
+      "commonName": "The Bus",
       "displayArea": "Prince George's County",
       "websiteUrl": "https://www.princegeorgescountymd.gov/1120/Countys-TheBus",
       "center": [
@@ -18778,6 +19289,7 @@
     {
       "slug": "dc-streetcar",
       "name": "DC Streetcar",
+      "officialName": "DC Streetcar",
       "center": [
         38.8995,
         -76.9841
@@ -18809,6 +19321,8 @@
     {
       "slug": "fred-transit",
       "name": "FXBGO! (Fredericksburg)",
+      "officialName": "FXBGO!",
+      "nameQualifier": "Fredericksburg",
       "hiddenInProduction": false,
       "issueUrl": "https://github.com/Civic-Minds/Atlas/issues/684",
       "overrideNote": "This schedule is from January 2026. The earlier 6:30 a.m. starts FXBGO! added in April 2026 aren't shown yet.",
@@ -18859,6 +19373,7 @@
     {
       "slug": "hrt",
       "name": "Hampton Roads Transit",
+      "officialName": "Hampton Roads Transit",
       "labelPlace": "",
       "websiteUrl": "https://gohrt.com/",
       "center": [
@@ -18929,6 +19444,7 @@
     {
       "slug": "bay-transit",
       "name": "Bay Transit",
+      "officialName": "Bay Transit",
       "websiteUrl": "https://www.baytransit.org/",
       "center": [
         37.77,
@@ -18980,6 +19496,7 @@
     {
       "slug": "wata",
       "name": "Williamsburg Area Transit Authority",
+      "officialName": "Williamsburg Area Transit Authority",
       "displayArea": "Williamsburg",
       "websiteUrl": "http://www.gowata.org",
       "center": [
@@ -19036,6 +19553,7 @@
     {
       "slug": "dart-first-state",
       "name": "DART First State",
+      "officialName": "DART First State",
       "displayArea": "Delaware",
       "websiteUrl": "http://www.dartfirststate.com",
       "center": [
@@ -19087,6 +19605,8 @@
     {
       "slug": "starmetro",
       "name": "StarMetro (Tallahassee)",
+      "officialName": "StarMetro",
+      "nameQualifier": "Tallahassee",
       "center": [
         30.4459,
         -84.2889
@@ -19138,6 +19658,8 @@
     {
       "slug": "max-transit",
       "name": "MAX Transit (Birmingham)",
+      "officialName": "MAX Transit",
+      "nameQualifier": "Birmingham",
       "websiteUrl": "https://maxtransit.org",
       "center": [
         33.51,
@@ -19170,6 +19692,8 @@
     {
       "slug": "montgomery-transit",
       "name": "Montgomery Transit (The M)",
+      "officialName": "Montgomery Transit",
+      "commonName": "The M",
       "websiteUrl": "https://themtransit.com/",
       "center": [
         32.37,
@@ -19222,6 +19746,8 @@
     {
       "slug": "carta",
       "name": "Charleston Area Regional Transportation Authority (CARTA)",
+      "officialName": "Charleston Area Regional Transportation Authority",
+      "commonName": "CARTA",
       "websiteUrl": "https://www.ridecarta.com/",
       "center": [
         32.78,
@@ -19275,6 +19801,8 @@
     {
       "slug": "cat-savannah",
       "name": "Chatham Area Transit (CAT)",
+      "officialName": "Chatham Area Transit",
+      "commonName": "CAT",
       "center": [
         32.0542,
         -81.1326
@@ -19340,6 +19868,8 @@
     {
       "slug": "tulsa-transit",
       "name": "Tulsa Transit (MTTA)",
+      "officialName": "Tulsa Transit",
+      "nameQualifier": "MTTA",
       "center": [
         36.12,
         -95.96
@@ -19372,6 +19902,8 @@
     {
       "slug": "sun-tran",
       "name": "Sun Tran (Tucson)",
+      "officialName": "Sun Tran",
+      "nameQualifier": "Tucson",
       "websiteUrl": "https://www.SunTran.com",
       "center": [
         32.22,
@@ -19421,6 +19953,8 @@
     {
       "slug": "ycat",
       "name": "Yuma County Area Transit (YCAT)",
+      "officialName": "Yuma County Area Transit",
+      "commonName": "YCAT",
       "websiteUrl": "http://www.ycipta.org",
       "center": [
         32.73,
@@ -19452,6 +19986,8 @@
     {
       "slug": "comet",
       "name": "The COMET (Columbia, SC)",
+      "officialName": "The COMET",
+      "nameQualifier": "Columbia, SC",
       "websiteUrl": "https://catchthecometsc.gov/",
       "center": [
         34,
@@ -19502,6 +20038,8 @@
     {
       "slug": "greenlink",
       "name": "GreenLink (Greenville, SC)",
+      "officialName": "GreenLink",
+      "nameQualifier": "Greenville, SC",
       "websiteUrl": "http://ridegreenlink.com/",
       "center": [
         34.85,
@@ -19556,6 +20094,7 @@
     {
       "slug": "carta-chattanooga",
       "name": "Chattanooga Area Regional Transportation Authority",
+      "officialName": "Chattanooga Area Regional Transportation Authority",
       "websiteUrl": "http://www.gocarta.org",
       "center": [
         35.05,
@@ -19612,6 +20151,8 @@
     {
       "slug": "citilink-fw",
       "name": "Citilink (Fort Wayne, IN)",
+      "officialName": "Citilink",
+      "nameQualifier": "Fort Wayne, IN",
       "websiteUrl": "https://www.fwcitilink.com/",
       "center": [
         41.135,
@@ -19662,6 +20203,8 @@
     {
       "slug": "gptc",
       "name": "Gary Public Transportation Corporation (Gary, IN)",
+      "officialName": "Gary Public Transportation Corporation",
+      "nameQualifier": "Gary, IN",
       "websiteUrl": "https://www.gptcbus.com/",
       "region": "Indiana",
       "center": [
@@ -19706,6 +20249,8 @@
     {
       "slug": "bata",
       "name": "Bay Area Transportation Authority (Traverse City, MI)",
+      "officialName": "Bay Area Transportation Authority",
+      "nameQualifier": "Traverse City, MI",
       "websiteUrl": "https://www.bata.net/",
       "region": "Michigan",
       "center": [
@@ -19754,6 +20299,8 @@
     {
       "slug": "citylink-peoria",
       "name": "CityLink (Peoria, IL)",
+      "officialName": "CityLink",
+      "nameQualifier": "Peoria, IL",
       "websiteUrl": "https://www.ridecitylink.org/",
       "center": [
         40.694,
@@ -19807,6 +20354,7 @@
     {
       "slug": "cedar-rapids",
       "name": "Cedar Rapids Transit",
+      "officialName": "Cedar Rapids Transit",
       "websiteUrl": "http://www.cedar-rapids.org/residents/city_buses/index.php",
       "center": [
         42.007,
@@ -19859,6 +20407,8 @@
     {
       "slug": "matbus",
       "name": "MATBUS (Fargo, ND)",
+      "officialName": "MATBUS",
+      "nameQualifier": "Fargo, ND",
       "websiteUrl": "https://www.matbus.com/",
       "center": [
         46.877,
@@ -19914,6 +20464,7 @@
     {
       "slug": "duluth-transit",
       "name": "Duluth Transit Authority",
+      "officialName": "Duluth Transit Authority",
       "websiteUrl": "http://www.duluthtransit.com/",
       "center": [
         46.782,
@@ -19966,6 +20517,8 @@
     {
       "slug": "grtc",
       "name": "GRTC Transit (Richmond, VA)",
+      "officialName": "GRTC Transit",
+      "nameQualifier": "Richmond, VA",
       "center": [
         37.445,
         -77.474
@@ -20020,6 +20573,8 @@
     {
       "slug": "valley-metro-roanoke",
       "name": "Valley Metro (Roanoke, VA)",
+      "officialName": "Valley Metro",
+      "nameQualifier": "Roanoke, VA",
       "websiteUrl": "https://valleymetro.com/",
       "center": [
         37.229,
@@ -20077,6 +20632,7 @@
     {
       "slug": "gltc",
       "name": "Greater Lynchburg Transit Company",
+      "officialName": "Greater Lynchburg Transit Company",
       "websiteUrl": "http://www.gltconline.com",
       "center": [
         37.398,
@@ -20124,6 +20680,7 @@
     {
       "slug": "dayton",
       "name": "Greater Dayton RTA",
+      "officialName": "Greater Dayton RTA",
       "websiteUrl": "http://www.i-riderta.org",
       "center": [
         39.76,
@@ -20177,6 +20734,8 @@
     {
       "slug": "youngstown-wrta",
       "name": "Western Reserve Transit Authority (Youngstown)",
+      "officialName": "Western Reserve Transit Authority",
+      "nameQualifier": "Youngstown",
       "center": [
         41.1,
         -80.65
@@ -20235,6 +20794,8 @@
     {
       "slug": "sun-metro",
       "name": "Sun Metro (El Paso)",
+      "officialName": "Sun Metro",
+      "nameQualifier": "El Paso",
       "center": [
         31.7888,
         -106.4113
@@ -20298,6 +20859,8 @@
     {
       "slug": "b-line",
       "name": "B-Line (Corpus Christi RTA)",
+      "officialName": "B-Line",
+      "nameQualifier": "Corpus Christi RTA",
       "websiteUrl": "https://www.ccrta.org/",
       "center": [
         27.7446,
@@ -20353,6 +20916,8 @@
     {
       "slug": "citibus",
       "name": "Citibus (Lubbock)",
+      "officialName": "Citibus",
+      "nameQualifier": "Lubbock",
       "websiteUrl": "https://citibus.com/citibus-pass/",
       "center": [
         33.59,
@@ -20408,6 +20973,7 @@
     {
       "slug": "amarillo",
       "name": "Amarillo City Transit",
+      "officialName": "Amarillo City Transit",
       "center": [
         35.1991,
         -101.8485
@@ -20464,6 +21030,8 @@
     {
       "slug": "missoula",
       "name": "Mountain Line (Missoula)",
+      "officialName": "Mountain Line",
+      "nameQualifier": "Missoula",
       "websiteUrl": "https://mountainline.com",
       "center": [
         46.87,
@@ -20518,6 +21086,8 @@
     {
       "slug": "sportran",
       "name": "SporTran (Shreveport)",
+      "officialName": "SporTran",
+      "nameQualifier": "Shreveport",
       "websiteUrl": "https://www.sportran.org/",
       "center": [
         32.51,
@@ -20576,6 +21146,8 @@
     {
       "slug": "billings",
       "name": "MET Transit (Billings)",
+      "officialName": "MET Transit",
+      "nameQualifier": "Billings",
       "websiteUrl": "http://www.mettransit.com",
       "center": [
         45.78,
@@ -20626,6 +21198,8 @@
     {
       "slug": "ecat",
       "name": "ECAT (Escambia County)",
+      "officialName": "ECAT",
+      "nameQualifier": "Escambia County",
       "center": [
         30.4594,
         -87.2423
@@ -20662,6 +21236,8 @@
     {
       "slug": "rts",
       "name": "RTS (Gainesville)",
+      "officialName": "RTS",
+      "nameQualifier": "Gainesville",
       "center": [
         29.6463,
         -82.3596
@@ -20714,6 +21290,8 @@
     {
       "slug": "scat",
       "name": "Breeze Transit (Sarasota County)",
+      "officialName": "Breeze Transit",
+      "nameQualifier": "Sarasota County",
       "websiteUrl": "https://www.scgov.net/government/breeze-transit",
       "center": [
         27.34,
@@ -20747,6 +21325,8 @@
     {
       "slug": "leetran",
       "name": "LeeTran (Fort Myers)",
+      "officialName": "LeeTran",
+      "nameQualifier": "Fort Myers",
       "websiteUrl": "http://www.leegov.com/leetran",
       "center": [
         26.64,
@@ -20800,6 +21380,8 @@
     {
       "slug": "wave-mobile",
       "name": "Wave Transit (Mobile)",
+      "officialName": "Wave Transit",
+      "nameQualifier": "Mobile",
       "websiteUrl": "https://thewavetransit.com/",
       "center": [
         30.68,
@@ -20854,6 +21436,7 @@
     {
       "slug": "huntsville",
       "name": "Huntsville Shuttle",
+      "officialName": "Huntsville Shuttle",
       "websiteUrl": "https://www.huntsvilleal.gov/residents/streets/public-transportation/shuttle-bus/",
       "center": [
         34.73,
@@ -20906,6 +21489,7 @@
     {
       "slug": "bustang-outrider",
       "name": "Bustang Outrider",
+      "officialName": "Bustang Outrider",
       "websiteUrl": "http://ridebustang.com/",
       "center": [
         38.5,
@@ -20955,6 +21539,8 @@
     {
       "slug": "rfta",
       "name": "Roaring Fork Transportation Authority (RFTA)",
+      "officialName": "Roaring Fork Transportation Authority",
+      "commonName": "RFTA",
       "websiteUrl": "http://www.rfta.com/",
       "center": [
         39.4,
@@ -21015,6 +21601,7 @@
     {
       "slug": "durango-transit",
       "name": "Durango Transit",
+      "officialName": "Durango Transit",
       "websiteUrl": "https://durangoco.gov/333/Transit",
       "center": [
         37.27,
@@ -21055,6 +21642,7 @@
     {
       "slug": "pueblo-transit",
       "name": "Pueblo Transit",
+      "officialName": "Pueblo Transit",
       "websiteUrl": "https://www.pueblo.us/492/Bus-Schedules",
       "center": [
         38.25,
@@ -21099,6 +21687,7 @@
     {
       "slug": "eco-transit",
       "name": "Core Transit",
+      "officialName": "Core Transit",
       "center": [
         39.64,
         -106.93
@@ -21140,6 +21729,8 @@
     {
       "slug": "all-points-transit",
       "name": "All Points Transit (Montrose)",
+      "officialName": "All Points Transit",
+      "nameQualifier": "Montrose",
       "websiteUrl": "https://www.allpointstransit.com/",
       "center": [
         38.47,
@@ -21183,6 +21774,7 @@
     {
       "slug": "kart",
       "name": "Kings Area Rural Transit",
+      "officialName": "Kings Area Rural Transit",
       "websiteUrl": "http://mykartbus.com/",
       "center": [
         36.33,
@@ -21227,6 +21819,8 @@
     {
       "slug": "tulare-county-transit",
       "name": "Tulare County Area Transit (TCAT)",
+      "officialName": "Tulare County Area Transit",
+      "commonName": "TCAT",
       "websiteUrl": "https://tcrta.wpenginepowered.com/",
       "center": [
         36.33,
@@ -21282,6 +21876,7 @@
     {
       "slug": "madison-metro",
       "name": "Madison Metro Transit",
+      "officialName": "Madison Metro Transit",
       "websiteUrl": "http://mymetrobus.com/",
       "center": [
         43.07,
@@ -21329,6 +21924,7 @@
     {
       "slug": "waukesha-metro",
       "name": "Waukesha Metro Transit",
+      "officialName": "Waukesha Metro Transit",
       "center": [
         43.0187,
         -88.1993
@@ -21356,6 +21952,8 @@
     {
       "slug": "mountain-line",
       "name": "Mountain Line Transit Authority (Morgantown)",
+      "officialName": "Mountain Line Transit Authority",
+      "nameQualifier": "Morgantown",
       "websiteUrl": "https://busride.org",
       "center": [
         39.63,
@@ -21380,6 +21978,8 @@
     {
       "slug": "wvu-prt",
       "name": "West Virginia University PRT (Morgantown, WV)",
+      "officialName": "West Virginia University PRT",
+      "nameQualifier": "Morgantown, WV",
       "websiteUrl": "http://transportation.wvu.edu/",
       "region": "West Virginia",
       "center": [
@@ -21432,6 +22032,7 @@
     {
       "slug": "visalia",
       "name": "Visalia Transit",
+      "officialName": "Visalia Transit",
       "websiteUrl": "http://www.visaliatransit.com/",
       "region": "California",
       "center": [
@@ -21479,6 +22080,7 @@
     {
       "slug": "green-bay",
       "name": "Green Bay Metro",
+      "officialName": "Green Bay Metro",
       "region": "Wisconsin",
       "center": [
         44.5077,
@@ -21529,6 +22131,8 @@
     {
       "slug": "cota",
       "name": "Central Ohio Transit Authority (COTA)",
+      "officialName": "Central Ohio Transit Authority",
+      "commonName": "COTA",
       "websiteUrl": "http://www.cota.com",
       "region": "Ohio",
       "center": [
@@ -21578,6 +22182,8 @@
     {
       "slug": "des-moines",
       "name": "Des Moines Area Regional Transit Authority (DART)",
+      "officialName": "Des Moines Area Regional Transit Authority",
+      "commonName": "DART",
       "websiteUrl": "http://www.ridedart.com",
       "region": "Iowa",
       "center": [
@@ -21625,6 +22231,7 @@
     {
       "slug": "wichita",
       "name": "Wichita Transit",
+      "officialName": "Wichita Transit",
       "websiteUrl": "http://www.wichitatransit.org",
       "region": "Kansas",
       "center": [
@@ -21674,6 +22281,8 @@
     {
       "slug": "appleton",
       "name": "Valley Transit (Appleton/Fox Cities)",
+      "officialName": "Valley Transit",
+      "nameQualifier": "Appleton/Fox Cities",
       "websiteUrl": "https://myvalleytransit.com/",
       "region": "Wisconsin",
       "center": [
@@ -21699,6 +22308,8 @@
     {
       "slug": "modesto",
       "name": "Stanislaus Regional Transit Authority (The S)",
+      "officialName": "Stanislaus Regional Transit Authority",
+      "commonName": "The S",
       "websiteUrl": "http://www.stanrta.org",
       "center": [
         37.64,
@@ -21746,6 +22357,8 @@
     {
       "slug": "cats-baton",
       "name": "Capital Area Transit System (Baton Rouge)",
+      "officialName": "Capital Area Transit System",
+      "nameQualifier": "Baton Rouge",
       "websiteUrl": "https://www.brcats.com/",
       "center": [
         30.45,
@@ -21793,6 +22406,7 @@
     {
       "slug": "knoxville",
       "name": "Knoxville Area Transit",
+      "officialName": "Knoxville Area Transit",
       "websiteUrl": "https://katbus.com/",
       "center": [
         35.96,
@@ -21847,6 +22461,7 @@
     {
       "slug": "mcallen",
       "name": "Metro McAllen",
+      "officialName": "Metro McAllen",
       "websiteUrl": "https://www.mcallen.net/metro/",
       "center": [
         26.2,
@@ -21895,6 +22510,7 @@
     {
       "slug": "augusta",
       "name": "Augusta Transit",
+      "officialName": "Augusta Transit",
       "websiteUrl": "http://www.augustaga.gov/",
       "center": [
         33.4594,
@@ -21942,6 +22558,8 @@
     {
       "slug": "lincoln",
       "name": "StarTran (Lincoln)",
+      "officialName": "StarTran",
+      "nameQualifier": "Lincoln",
       "websiteUrl": "https://www.lincoln.ne.gov/City/Departments/LTU/StarTran",
       "center": [
         40.81,
@@ -21993,6 +22611,7 @@
     {
       "slug": "south-bend",
       "name": "South Bend Transpo",
+      "officialName": "South Bend Transpo",
       "websiteUrl": "http://sbtranspo.com",
       "center": [
         41.68,
@@ -22039,6 +22658,7 @@
     {
       "slug": "rockford",
       "name": "Rockford Mass Transit District",
+      "officialName": "Rockford Mass Transit District",
       "websiteUrl": "https://rmtd.org/",
       "center": [
         42.27,
@@ -22094,6 +22714,7 @@
     {
       "slug": "racine",
       "name": "Ryde Racine",
+      "officialName": "Ryde Racine",
       "websiteUrl": "https://cityofracinewi.gov/transit/",
       "center": [
         42.73,
@@ -22139,6 +22760,7 @@
     {
       "slug": "sudbury",
       "name": "Greater Sudbury Transit",
+      "officialName": "Greater Sudbury Transit",
       "websiteUrl": "https://www.greatersudbury.ca/living/transit/",
       "center": [
         46.49,
@@ -22188,6 +22810,7 @@
     {
       "slug": "anchorage",
       "name": "Anchorage People Mover",
+      "officialName": "Anchorage People Mover",
       "websiteUrl": "http://www.muni.org/Departments/transit/PeopleMover/Pages/default.aspx",
       "center": [
         61.22,
@@ -22213,6 +22836,8 @@
     {
       "slug": "lexington",
       "name": "Lextran (Lexington, KY)",
+      "officialName": "Lextran",
+      "nameQualifier": "Lexington, KY",
       "websiteUrl": "http://www.lextran.com",
       "center": [
         38.05,
@@ -22265,6 +22890,7 @@
     {
       "slug": "mtd-champaign",
       "name": "Champaign-Urbana MTD",
+      "officialName": "Champaign-Urbana MTD",
       "websiteUrl": "https://www.mtd.org/",
       "center": [
         40.11,
@@ -22316,6 +22942,7 @@
     {
       "slug": "kalamazoo",
       "name": "Kalamazoo Metro Transit",
+      "officialName": "Kalamazoo Metro Transit",
       "websiteUrl": "http://www.kmetro.com/",
       "center": [
         42.29,
@@ -22368,6 +22995,8 @@
     {
       "slug": "laredo",
       "name": "El Metro (Laredo)",
+      "officialName": "El Metro",
+      "nameQualifier": "Laredo",
       "websiteUrl": "http://elmetrotransit.com/",
       "center": [
         27.538,
@@ -22423,6 +23052,7 @@
     {
       "slug": "thunder-bay",
       "name": "Thunder Bay Transit",
+      "officialName": "Thunder Bay Transit",
       "center": [
         48.41,
         -89.25
@@ -22467,6 +23097,7 @@
     {
       "slug": "greensboro",
       "name": "Greensboro Transit Authority",
+      "officialName": "Greensboro Transit Authority",
       "center": [
         36.0744,
         -79.8048
@@ -22518,6 +23149,8 @@
     {
       "slug": "lanta",
       "name": "Lehigh and Northampton Transportation Authority (LANTA)",
+      "officialName": "Lehigh and Northampton Transportation Authority",
+      "commonName": "LANTA",
       "websiteUrl": "http://www.lantabus.com",
       "center": [
         40.6,
@@ -22570,6 +23203,8 @@
     {
       "slug": "winston-salem",
       "name": "Winston-Salem Transit Authority (WSTA)",
+      "officialName": "Winston-Salem Transit Authority",
+      "commonName": "WSTA",
       "websiteUrl": "https://wstransit.com/",
       "center": [
         36.1,
@@ -22619,6 +23254,8 @@
     {
       "slug": "cat-harrisburg",
       "name": "Capital Area Transit (Harrisburg)",
+      "officialName": "Capital Area Transit",
+      "nameQualifier": "Harrisburg",
       "websiteUrl": "https://www.rabbittransit.org/",
       "center": [
         40.27,
@@ -22670,6 +23307,8 @@
     {
       "slug": "jackson-ms",
       "name": "City of Jackson (JTRAN)",
+      "officialName": "City of Jackson",
+      "commonName": "JTRAN",
       "websiteUrl": "https://ridejtran.com/",
       "center": [
         32.3,
@@ -22715,6 +23354,8 @@
     {
       "slug": "lancaster",
       "name": "Red Rose Transit Authority (Lancaster, PA)",
+      "officialName": "Red Rose Transit Authority",
+      "nameQualifier": "Lancaster, PA",
       "websiteUrl": "http://www.redrosetransit.com/",
       "center": [
         40.04,
@@ -22763,6 +23404,8 @@
     {
       "slug": "colts",
       "name": "County of Lackawanna Transit System (COLTS)",
+      "officialName": "County of Lackawanna Transit System",
+      "commonName": "COLTS",
       "websiteUrl": "http://www.coltsbus.com",
       "center": [
         41.41,
@@ -22812,6 +23455,7 @@
     {
       "slug": "lcta",
       "name": "Luzerne County Transportation Authority",
+      "officialName": "Luzerne County Transportation Authority",
       "displayArea": "Wilkes-Barre",
       "websiteUrl": "http://www.lctabus.com/",
       "center": [
@@ -22860,6 +23504,8 @@
     {
       "slug": "patco",
       "name": "PATCO Speedline (Philadelphia-Camden)",
+      "officialName": "PATCO Speedline",
+      "nameQualifier": "Philadelphia-Camden",
       "websiteUrl": "https://www.ridepatco.org/",
       "center": [
         39.95,
@@ -22912,6 +23558,8 @@
     {
       "slug": "cascades-east",
       "name": "Cascades East Transit (Bend, OR)",
+      "officialName": "Cascades East Transit",
+      "nameQualifier": "Bend, OR",
       "websiteUrl": "http://cascadeseasttransit.com/",
       "region": "Oregon",
       "center": [
@@ -22966,6 +23614,8 @@
     {
       "slug": "mountain-transit-ca",
       "name": "Mountain Transit (Big Bear Lake)",
+      "officialName": "Mountain Transit",
+      "nameQualifier": "Big Bear Lake",
       "displayArea": "Big Bear Lake",
       "websiteUrl": "http://www.mountaintransit.org/?referrer=gtfs",
       "region": "California",
@@ -23022,6 +23672,8 @@
     {
       "slug": "las-cruces",
       "name": "RoadRUNNER Transit (Las Cruces)",
+      "officialName": "RoadRUNNER Transit",
+      "nameQualifier": "Las Cruces",
       "websiteUrl": "https://lascruces.gov/community/transportation/roadrunner-transit/",
       "region": "New Mexico",
       "center": [
@@ -23072,6 +23724,8 @@
     {
       "slug": "ez-rider",
       "name": "EZ Rider (Midland/Odessa)",
+      "officialName": "EZ Rider",
+      "nameQualifier": "Midland/Odessa",
       "websiteUrl": "http://www.ridesystems.net",
       "region": "Texas",
       "center": [
@@ -23104,6 +23758,8 @@
     {
       "slug": "san-angelo",
       "name": "Concho Valley Transit (San Angelo)",
+      "officialName": "Concho Valley Transit",
+      "nameQualifier": "San Angelo",
       "websiteUrl": "https://www.cvtd.org",
       "region": "Texas",
       "center": [
@@ -23154,6 +23810,7 @@
     {
       "slug": "brownsville",
       "name": "Brownsville Metro",
+      "officialName": "Brownsville Metro",
       "websiteUrl": "BrownsvilleMetro.transloc.com",
       "region": "Texas",
       "center": [
@@ -23193,6 +23850,7 @@
     {
       "slug": "roswell",
       "name": "Roswell Transit",
+      "officialName": "Roswell Transit",
       "hiddenInProduction": true,
       "issueUrl": "https://github.com/Civic-Minds/Atlas/issues/759",
       "websiteUrl": "https://www.roswell-nm.gov/287/Roswell-Transit",
@@ -23244,6 +23902,7 @@
     {
       "slug": "hobbs",
       "name": "City of Hobbs Transit",
+      "officialName": "City of Hobbs Transit",
       "websiteUrl": "https://www.hobbsnm.org/hobbs_express.html",
       "region": "New Mexico",
       "center": [
@@ -23292,6 +23951,7 @@
     {
       "slug": "longview",
       "name": "City of Longview Transit",
+      "officialName": "City of Longview Transit",
       "websiteUrl": "http://www.longviewtransit.com/",
       "region": "Texas",
       "center": [
@@ -23327,6 +23987,7 @@
     {
       "slug": "texarkana",
       "name": "Texarkana T-Line",
+      "officialName": "Texarkana T-Line",
       "websiteUrl": "https://www.t-linebus.org/",
       "region": "Texas",
       "center": [
@@ -23356,6 +24017,7 @@
     {
       "slug": "fort-bend",
       "name": "Fort Bend County Transit",
+      "officialName": "Fort Bend County Transit",
       "hiddenInProduction": true,
       "issueUrl": "https://github.com/Civic-Minds/Atlas/issues/759",
       "websiteUrl": "http://fbctransit.org",
@@ -23406,6 +24068,7 @@
     {
       "slug": "lake-charles",
       "name": "Lake Charles Transit",
+      "officialName": "Lake Charles Transit",
       "websiteUrl": "https://www.cityoflakecharles.com/236/Transit",
       "region": "Louisiana",
       "center": [
@@ -23458,6 +24121,8 @@
     {
       "slug": "terrebonne-parish",
       "name": "Good Earth Transit (Houma)",
+      "officialName": "Good Earth Transit",
+      "nameQualifier": "Houma",
       "websiteUrl": "https://tpcg.org/index.php?f=public_transit",
       "region": "Louisiana",
       "center": [
@@ -23510,6 +24175,8 @@
     {
       "slug": "tangipahoa-parish",
       "name": "Tangipahoa Transit (Hammond)",
+      "officialName": "Tangipahoa Transit",
+      "nameQualifier": "Hammond",
       "hiddenInProduction": true,
       "issueUrl": "https://github.com/Civic-Minds/Atlas/issues/759",
       "websiteUrl": "https://www.tangicoa.com/",
@@ -23561,6 +24228,7 @@
     {
       "slug": "space-coast",
       "name": "Space Coast Area Transit",
+      "officialName": "Space Coast Area Transit",
       "websiteUrl": "https://321transit.com",
       "region": "Florida",
       "center": [
@@ -23594,6 +24262,7 @@
     {
       "slug": "martin-county",
       "name": "Martin County Public Transit",
+      "officialName": "Martin County Public Transit",
       "displayArea": "Martin County, FL",
       "websiteUrl": "https://www.martin.fl.us/transit",
       "region": "Florida",
@@ -23648,6 +24317,7 @@
     {
       "slug": "indian-river",
       "name": "Indian River Transit",
+      "officialName": "Indian River Transit",
       "displayArea": "Indian River County",
       "websiteUrl": "http://www.ridesystems.net",
       "region": "Florida",
@@ -23681,6 +24351,8 @@
     {
       "slug": "collier",
       "name": "Collier Area Transit (Naples)",
+      "officialName": "Collier Area Transit",
+      "nameQualifier": "Naples",
       "displayArea": "Naples",
       "websiteUrl": "https://ridecat.com/",
       "region": "Florida",
@@ -23738,6 +24410,8 @@
     {
       "slug": "springfield-mo",
       "name": "City Utilities Transit (Springfield)",
+      "officialName": "City Utilities Transit",
+      "nameQualifier": "Springfield",
       "websiteUrl": "https://www.cutransit.net/",
       "center": [
         37.209,
@@ -23792,6 +24466,8 @@
     {
       "slug": "evansville",
       "name": "METS (Evansville)",
+      "officialName": "METS",
+      "nameQualifier": "Evansville",
       "websiteUrl": "https://www.evansvillegov.org/city/department/index.php?structureid=225",
       "center": [
         37.9812,
@@ -23828,6 +24504,7 @@
     {
       "slug": "kenosha",
       "name": "Kenosha Area Transit",
+      "officialName": "Kenosha Area Transit",
       "websiteUrl": "https://www.kenosha.org/departments/transportation",
       "center": [
         42.586,
@@ -23892,6 +24569,8 @@
     {
       "slug": "ben-franklin",
       "name": "Ben Franklin Transit (Tri-Cities, WA)",
+      "officialName": "Ben Franklin Transit",
+      "nameQualifier": "Tri-Cities, WA",
       "websiteUrl": "https://www.bft.org/",
       "center": [
         46.21,
@@ -23946,6 +24625,7 @@
     {
       "slug": "asheville",
       "name": "Asheville Rides Transit",
+      "officialName": "Asheville Rides Transit",
       "websiteUrl": "https://www.ashevillenc.gov/department/transit/",
       "center": [
         35.6,
@@ -23997,6 +24677,7 @@
     {
       "slug": "bloomington",
       "name": "Bloomington Transit",
+      "officialName": "Bloomington Transit",
       "websiteUrl": "https://bloomingtontransit.com/",
       "center": [
         39.17,
@@ -24052,6 +24733,7 @@
     {
       "slug": "athens-acc",
       "name": "Athens Clarke County Transit",
+      "officialName": "Athens Clarke County Transit",
       "websiteUrl": "https://accgov.com/199/Transit",
       "center": [
         33.95,
@@ -24103,6 +24785,7 @@
     {
       "slug": "uga",
       "name": "UGA Campus Transit",
+      "officialName": "UGA Campus Transit",
       "websiteUrl": "https://tps.uga.edu/",
       "center": [
         33.95,
@@ -24157,6 +24840,7 @@
     {
       "slug": "blacksburg",
       "name": "Blacksburg Transit",
+      "officialName": "Blacksburg Transit",
       "displayArea": "Blacksburg",
       "websiteUrl": "https://ridebt.org/",
       "center": [
@@ -24215,6 +24899,8 @@
     {
       "slug": "cata-state-college",
       "name": "CATA (State College)",
+      "officialName": "CATA",
+      "nameQualifier": "State College",
       "websiteUrl": "http://www.catabus.com",
       "center": [
         40.79,
@@ -24263,6 +24949,8 @@
     {
       "slug": "cyride",
       "name": "CyRide (Ames)",
+      "officialName": "CyRide",
+      "nameQualifier": "Ames",
       "websiteUrl": "http://www.cyride.com",
       "center": [
         42.03,
@@ -24314,6 +25002,7 @@
     {
       "slug": "iowa-city",
       "name": "Iowa City Transit",
+      "officialName": "Iowa City Transit",
       "websiteUrl": "https://www.icgov.org/city-government/departments-and-divisions/transit",
       "center": [
         41.66,
@@ -24369,6 +25058,7 @@
     {
       "slug": "coralville",
       "name": "Coralville Transit",
+      "officialName": "Coralville Transit",
       "displayArea": "Coralville",
       "websiteUrl": "http://www.coralville.org/166/Bus-Schedules-Route-Maps",
       "center": [
@@ -24427,6 +25117,8 @@
     {
       "slug": "cambus",
       "name": "CAMBUS (University of Iowa)",
+      "officialName": "CAMBUS",
+      "nameQualifier": "University of Iowa",
       "websiteUrl": "https://transportation.uiowa.edu/cambus",
       "center": [
         41.66,
@@ -24480,6 +25172,7 @@
     {
       "slug": "lawrence-ku",
       "name": "Lawrence Transit / KU on Wheels",
+      "officialName": "Lawrence Transit / KU on Wheels",
       "websiteUrl": "http://www.lawrencetransit.org",
       "center": [
         38.97,
@@ -24533,6 +25226,8 @@
     {
       "slug": "springfield-il",
       "name": "SMTD (Springfield IL)",
+      "officialName": "SMTD",
+      "nameQualifier": "Springfield IL",
       "websiteUrl": "https://www.smtd.org",
       "center": [
         39.78,
@@ -24584,6 +25279,7 @@
     {
       "slug": "topeka",
       "name": "Topeka Metro",
+      "officialName": "Topeka Metro",
       "websiteUrl": "https://www.topekametro.org/",
       "center": [
         39.05,
@@ -24639,6 +25335,8 @@
     {
       "slug": "barta",
       "name": "BARTA (Reading)",
+      "officialName": "BARTA",
+      "nameQualifier": "Reading",
       "websiteUrl": "https://www.bartabus.com/",
       "center": [
         40.34,
@@ -24693,6 +25391,8 @@
     {
       "slug": "coast-nh",
       "name": "COAST (Seacoast NH)",
+      "officialName": "COAST",
+      "nameQualifier": "Seacoast NH",
       "displayArea": "Seacoast NH",
       "websiteUrl": "http://www.coastbus.org/",
       "center": [
@@ -24747,6 +25447,8 @@
     {
       "slug": "advance-transit",
       "name": "Advance Transit (Lebanon, NH)",
+      "officialName": "Advance Transit",
+      "nameQualifier": "Lebanon, NH",
       "websiteUrl": "http://www.advancetransit.com/",
       "center": [
         43.7,
@@ -24799,6 +25501,8 @@
     {
       "slug": "ccta",
       "name": "CCTA / Green Mountain Transit (Burlington, VT)",
+      "officialName": "CCTA / Green Mountain Transit",
+      "nameQualifier": "Burlington, VT",
       "websiteUrl": "https://www.ridegmt.com/",
       "center": [
         44.48,
@@ -24851,6 +25555,8 @@
     {
       "slug": "marble-valley",
       "name": "Marble Valley Transit (Rutland)",
+      "officialName": "Marble Valley Transit",
+      "nameQualifier": "Rutland",
       "websiteUrl": "http://www.thebus.com/",
       "center": [
         43.61,
@@ -24903,6 +25609,8 @@
     {
       "slug": "bis-man",
       "name": "Bis-Man Transit (Bismarck-Mandan)",
+      "officialName": "Bis-Man Transit",
+      "nameQualifier": "Bismarck-Mandan",
       "websiteUrl": "https://bismantransit.com/",
       "center": [
         46.81,
@@ -24954,6 +25662,7 @@
     {
       "slug": "bangor",
       "name": "Bangor Community Connector",
+      "officialName": "Bangor Community Connector",
       "websiteUrl": "https://www.bangormaine.gov/634/Community-Connector",
       "center": [
         44.8,
@@ -25004,6 +25713,7 @@
     {
       "slug": "brandon",
       "name": "Brandon Transit",
+      "officialName": "Brandon Transit",
       "websiteUrl": "http://www.brandontransit.ca/",
       "center": [
         49.85,
@@ -25056,6 +25766,8 @@
     {
       "slug": "juneau",
       "name": "Capital Transit (Juneau)",
+      "officialName": "Capital Transit",
+      "nameQualifier": "Juneau",
       "websiteUrl": "https://juneaucapitaltransit.org/",
       "center": [
         58.3,
@@ -25110,6 +25822,7 @@
     {
       "slug": "annapolis",
       "name": "Annapolis Transit",
+      "officialName": "Annapolis Transit",
       "displayArea": "Annapolis",
       "websiteUrl": "https://www.annapolis.gov/159/Transportation",
       "center": [
@@ -25146,6 +25859,7 @@
     {
       "slug": "yellowknife",
       "name": "Yellowknife Transit",
+      "officialName": "Yellowknife Transit",
       "center": [
         62.45,
         -114.37
@@ -25193,6 +25907,7 @@
     {
       "slug": "whitehorse",
       "name": "Whitehorse Transit",
+      "officialName": "Whitehorse Transit",
       "websiteUrl": "https://whitehorse.transloc.com",
       "center": [
         60.72,
@@ -25221,6 +25936,7 @@
     {
       "slug": "santa-cruz-metro",
       "name": "Santa Cruz METRO",
+      "officialName": "Santa Cruz METRO",
       "websiteUrl": "https://scmetro.org",
       "searchAliases": [
         "Santa Cruz",
@@ -25277,6 +25993,8 @@
     {
       "slug": "sioux-falls",
       "name": "Sioux Area Metro (SAM)",
+      "officialName": "Sioux Area Metro",
+      "commonName": "SAM",
       "websiteUrl": "https://www.siouxfalls.gov/resident-services/sam",
       "center": [
         43.542,
@@ -25333,6 +26051,7 @@
     {
       "slug": "yakima",
       "name": "Yakima Transit",
+      "officialName": "Yakima Transit",
       "websiteUrl": "http://www.yakimatransit.org",
       "center": [
         46.6,
@@ -25364,6 +26083,8 @@
     {
       "slug": "grand-forks",
       "name": "Cities Area Transit (Grand Forks)",
+      "officialName": "Cities Area Transit",
+      "nameQualifier": "Grand Forks",
       "websiteUrl": "http://www.ridecat.org",
       "center": [
         47.93,
@@ -25415,6 +26136,8 @@
     {
       "slug": "greeley",
       "name": "Greeley-Evans Transit (GET)",
+      "officialName": "Greeley-Evans Transit",
+      "commonName": "GET",
       "websiteUrl": "https://greeleyevanstransit.com/",
       "center": [
         40.42,
@@ -25468,6 +26191,7 @@
     {
       "slug": "bridgeport-gbt",
       "name": "Greater Bridgeport Transit",
+      "officialName": "Greater Bridgeport Transit",
       "websiteUrl": "http://www.gogbt.com/",
       "center": [
         41.18,
@@ -25529,6 +26253,7 @@
     {
       "slug": "davenport",
       "name": "Davenport CitiBus",
+      "officialName": "Davenport CitiBus",
       "websiteUrl": "https://www.davenportiowa.com/services/citibus_transit",
       "center": [
         41.5468,
@@ -25585,6 +26310,7 @@
     {
       "slug": "bettendorf",
       "name": "Bettendorf Transit",
+      "officialName": "Bettendorf Transit",
       "displayArea": "Bettendorf",
       "websiteUrl": "https://www.bettendorf.org/transit",
       "center": [
@@ -25637,6 +26363,8 @@
     {
       "slug": "dubuque",
       "name": "The Jule (Dubuque)",
+      "officialName": "The Jule",
+      "nameQualifier": "Dubuque",
       "websiteUrl": "https://www.cityofdubuque.org/274/Transit",
       "center": [
         42.5,
@@ -25692,6 +26420,7 @@
     {
       "slug": "pocatello",
       "name": "Pocatello Regional Transit",
+      "officialName": "Pocatello Regional Transit",
       "websiteUrl": "https://pocatellotransit.com/",
       "center": [
         42.87,
@@ -25743,6 +26472,7 @@
     {
       "slug": "albany-ga",
       "name": "Albany Transit System",
+      "officialName": "Albany Transit System",
       "websiteUrl": "http://www.albanyga.gov/about-us/city-departments/albany-transit-system",
       "center": [
         31.5827,
@@ -25799,6 +26529,8 @@
     {
       "slug": "wilmington-nc",
       "name": "Wave Transit (Wilmington)",
+      "officialName": "Wave Transit",
+      "nameQualifier": "Wilmington",
       "websiteUrl": "https://www.wavetransit.com/",
       "center": [
         34.23,
@@ -25851,6 +26583,8 @@
     {
       "slug": "st-george",
       "name": "SunTran (St. George)",
+      "officialName": "SunTran",
+      "nameQualifier": "St. George",
       "websiteUrl": "https://www.sgcity.org/suntran",
       "center": [
         37.1,
@@ -25882,6 +26616,7 @@
     {
       "slug": "grand-junction",
       "name": "Grand Valley Transit",
+      "officialName": "Grand Valley Transit",
       "websiteUrl": "https://gvt.mesacounty.us/para-transit-ada/",
       "center": [
         39.0871,
@@ -25935,6 +26670,8 @@
     {
       "slug": "um-transit",
       "name": "University of Michigan Transit Services (Ann Arbor)",
+      "officialName": "University of Michigan Transit Services",
+      "nameQualifier": "Ann Arbor",
       "websiteUrl": "https://ltp.umich.edu",
       "center": [
         42.28,
@@ -25986,6 +26723,7 @@
     {
       "slug": "ncsu-wolfline",
       "name": "NCSU Wolfline",
+      "officialName": "NCSU Wolfline",
       "displayArea": "Raleigh",
       "websiteUrl": "https://transportation.ncsu.edu/wolfline/",
       "center": [
@@ -26047,6 +26785,8 @@
     {
       "slug": "clemson-cat",
       "name": "Clemson Area Transit (CATbus)",
+      "officialName": "Clemson Area Transit",
+      "commonName": "CATbus",
       "displayArea": "Clemson",
       "websiteUrl": "catbus.transloc.com",
       "center": [
@@ -26107,6 +26847,7 @@
     {
       "slug": "citybus-lafayette",
       "name": "CityBus of Greater Lafayette",
+      "officialName": "CityBus of Greater Lafayette",
       "websiteUrl": "https://gocitybus.com/",
       "center": [
         40.42,
@@ -26162,6 +26903,7 @@
     {
       "slug": "duke",
       "name": "Duke University Transit",
+      "officialName": "Duke University Transit",
       "websiteUrl": "duke.transloc.com",
       "center": [
         36.0028,
@@ -26194,6 +26936,8 @@
     {
       "slug": "streamline",
       "name": "Streamline (Bozeman)",
+      "officialName": "Streamline",
+      "nameQualifier": "Bozeman",
       "websiteUrl": "http://www.streamlinebus.com/",
       "center": [
         45.6881,
@@ -26246,6 +26990,7 @@
     {
       "slug": "athens-oh",
       "name": "Athens Public Transit",
+      "officialName": "Athens Public Transit",
       "websiteUrl": "https://hapcap.org/transportation/athens-public-transit/",
       "center": [
         39.3392,
@@ -26299,6 +27044,8 @@
     {
       "slug": "connect-transit",
       "name": "Connect Transit (Bloomington-Normal)",
+      "officialName": "Connect Transit",
+      "nameQualifier": "Bloomington-Normal",
       "websiteUrl": "https://www.connect-transit.com/",
       "center": [
         40.48,
@@ -26355,6 +27102,7 @@
     {
       "slug": "dekalb",
       "name": "DeKalb Public Transit",
+      "officialName": "DeKalb Public Transit",
       "displayArea": "DeKalb",
       "websiteUrl": "https://cityofdekalb.com/1287/Maps-Schedules",
       "center": [
@@ -26410,6 +27158,7 @@
     {
       "slug": "radford",
       "name": "Radford Transit",
+      "officialName": "Radford Transit",
       "websiteUrl": "https://www.radfordva.gov/1296/Radford-Transit",
       "center": [
         37.13,
@@ -26458,6 +27207,7 @@
     {
       "slug": "jfk-airtrain",
       "name": "JFK AirTrain",
+      "officialName": "JFK AirTrain",
       "websiteUrl": "https://www.jfkairport.com/to-from-airport/air-train",
       "region": "New York",
       "center": [
@@ -26519,6 +27269,7 @@
     {
       "slug": "staten-island-ferry",
       "name": "Staten Island Ferry",
+      "officialName": "Staten Island Ferry",
       "displayArea": "Staten Island",
       "websiteUrl": "https://www1.nyc.gov/html/dot/html/ferrybus/staten-island-ferry.shtml",
       "region": "New York",
@@ -26572,6 +27323,7 @@
     {
       "slug": "nyc-ferry",
       "name": "NYC Ferry",
+      "officialName": "NYC Ferry",
       "displayArea": "New York City",
       "websiteUrl": "https://www.ferry.nyc/",
       "region": "New York",
@@ -26637,6 +27389,7 @@
     {
       "slug": "rioc-tram",
       "name": "Roosevelt Island Tramway",
+      "officialName": "Roosevelt Island Tramway",
       "displayArea": "Roosevelt Island",
       "websiteUrl": "https://www.rioc.ny.gov/community/transportation/tram",
       "region": "New York",
@@ -26702,6 +27455,8 @@
     {
       "slug": "guadalajara",
       "name": "Mi Transporte (Guadalajara)",
+      "officialName": "Mi Transporte",
+      "nameQualifier": "Guadalajara",
       "websiteUrl": "https://setrans.jalisco.gob.mx/",
       "region": "Jalisco",
       "center": [
@@ -26725,6 +27480,8 @@
     {
       "slug": "mexico-city-metro",
       "name": "Sistema de Transporte Colectivo Metro (Mexico City)",
+      "officialName": "Sistema de Transporte Colectivo Metro",
+      "nameQualifier": "Mexico City",
       "hiddenInProduction": true,
       "issueUrl": "https://github.com/Civic-Minds/Atlas/issues/757",
       "region": "Ciudad de México",
@@ -26747,6 +27504,7 @@
     {
       "slug": "cheyenne",
       "name": "Cheyenne Transit Program",
+      "officialName": "Cheyenne Transit Program",
       "websiteUrl": "https://cheyennecity.org/Transit",
       "region": "Wyoming",
       "center": [
@@ -26782,6 +27540,8 @@
     {
       "slug": "rapid-city",
       "name": "Rapid Transit System (Rapid City, SD)",
+      "officialName": "Rapid Transit System",
+      "nameQualifier": "Rapid City, SD",
       "websiteUrl": "https://www.rapidtransitsystem.org/",
       "region": "South Dakota",
       "center": [
@@ -26834,6 +27594,7 @@
     {
       "slug": "sioux-city",
       "name": "Sioux City Transit",
+      "officialName": "Sioux City Transit",
       "websiteUrl": "https://www.sioux-city.org/732/Transit",
       "region": "Iowa",
       "center": [
@@ -26887,6 +27648,7 @@
     {
       "slug": "imperial-valley",
       "name": "Imperial Valley Transit",
+      "officialName": "Imperial Valley Transit",
       "websiteUrl": "http://www.ivtransit.com/",
       "region": "California",
       "center": [
@@ -26942,6 +27704,7 @@
     {
       "slug": "kern-transit",
       "name": "Kern Transit",
+      "officialName": "Kern Transit",
       "displayArea": "Kern County",
       "websiteUrl": "http://kerntransit.org/?referrer=gtfs",
       "region": "California",
@@ -27002,6 +27765,7 @@
     {
       "slug": "banning",
       "name": "Banning Connect",
+      "officialName": "Banning Connect",
       "displayArea": "Banning",
       "websiteUrl": "http://www.ci.banning.ca.us/351/Bus-Schedules",
       "region": "California",
@@ -27059,6 +27823,7 @@
     {
       "slug": "beaumont-ca",
       "name": "Beaumont Transit",
+      "officialName": "Beaumont Transit",
       "displayArea": "Beaumont",
       "websiteUrl": "https://www.beaumontca.gov/index.aspx?NID=90",
       "region": "California",
@@ -27111,6 +27876,7 @@
     {
       "slug": "corona",
       "name": "Corona Cruiser",
+      "officialName": "Corona Cruiser",
       "websiteUrl": "http://www.coronaca.gov/government/departments-divisions/public-works/public-transit/corona-cruiser",
       "region": "California",
       "center": [
@@ -27163,6 +27929,7 @@
     {
       "slug": "thousand-oaks",
       "name": "Thousand Oaks Transit",
+      "officialName": "Thousand Oaks Transit",
       "region": "California",
       "center": [
         34.1875,
@@ -27217,6 +27984,7 @@
     {
       "slug": "simi-valley",
       "name": "Simi Valley Transit",
+      "officialName": "Simi Valley Transit",
       "websiteUrl": "http://www.simivalley.org/departments/community-services/simi-valley-transit",
       "region": "California",
       "center": [
@@ -27250,6 +28018,7 @@
     {
       "slug": "camarillo",
       "name": "Camarillo Area Transit",
+      "officialName": "Camarillo Area Transit",
       "websiteUrl": "https://www.cityofcamarillo.org/residents/public_transportation/camarillo_area_transit.php",
       "region": "California",
       "center": [
@@ -27300,6 +28069,7 @@
     {
       "slug": "basin-transit",
       "name": "Basin Transit",
+      "officialName": "Basin Transit",
       "displayArea": "Morongo Basin",
       "websiteUrl": "http://www.mbtabus.com/",
       "region": "California",
@@ -27353,6 +28123,7 @@
     {
       "slug": "needles",
       "name": "Needles Area Transit",
+      "officialName": "Needles Area Transit",
       "websiteUrl": "https://cityofneedles.com/transit/",
       "region": "California",
       "center": [
@@ -27400,6 +28171,7 @@
     {
       "slug": "arvin",
       "name": "Arvin Transit",
+      "officialName": "Arvin Transit",
       "displayArea": "Arvin",
       "websiteUrl": "https://www.arvin.org/202/Routes-Schedules-Fares",
       "region": "California",
@@ -27452,6 +28224,7 @@
     {
       "slug": "moorpark",
       "name": "Moorpark City Transit",
+      "officialName": "Moorpark City Transit",
       "displayArea": "Moorpark",
       "websiteUrl": "https://www.moorparkca.gov/227/Bus-Ride-Guide",
       "region": "California",
@@ -27503,6 +28276,7 @@
     {
       "slug": "valley-express",
       "name": "Valley Express",
+      "officialName": "Valley Express",
       "websiteUrl": "http://www.valleyexpressbus.org/",
       "region": "California",
       "center": [
@@ -27535,6 +28309,7 @@
     {
       "slug": "laguna-beach",
       "name": "Laguna Beach Transit",
+      "officialName": "Laguna Beach Transit",
       "displayArea": "Laguna Beach",
       "websiteUrl": "http://www.lagunabeachcity.net/cityhall/transit_and_trolleys/",
       "region": "California",
@@ -27589,6 +28364,7 @@
     {
       "slug": "taft",
       "name": "Taft Area Transit",
+      "officialName": "Taft Area Transit",
       "websiteUrl": "https://www.cityoftaft.org/pview.aspx?id=5385&catid=563",
       "region": "California",
       "center": [
@@ -27621,6 +28397,7 @@
     {
       "slug": "seattle-monorail",
       "name": "Seattle Center Monorail",
+      "officialName": "Seattle Center Monorail",
       "websiteUrl": "http://www.seattlemonorail.com",
       "region": "Washington",
       "center": [
@@ -27672,6 +28449,7 @@
     {
       "slug": "snoqualmie-valley",
       "name": "Snoqualmie Valley Transportation",
+      "officialName": "Snoqualmie Valley Transportation",
       "displayArea": "Snoqualmie Valley",
       "websiteUrl": "http://www.svtbus.org/",
       "region": "Washington",
@@ -27729,6 +28507,7 @@
     {
       "slug": "seattle-streetcar",
       "name": "Seattle Streetcar",
+      "officialName": "Seattle Streetcar",
       "websiteUrl": "https://www.seattlestreetcar.org/",
       "region": "Washington",
       "center": [
@@ -27781,6 +28560,8 @@
     {
       "slug": "metz",
       "name": "Le Met' (Metz)",
+      "officialName": "Le Met'",
+      "nameQualifier": "Metz",
       "region": "Grand Est",
       "center": [
         49.1193,
@@ -27819,6 +28600,8 @@
     {
       "slug": "nancy",
       "name": "Réseau Stan (Nancy)",
+      "officialName": "Réseau Stan",
+      "nameQualifier": "Nancy",
       "region": "Grand Est",
       "center": [
         48.6921,
@@ -27837,6 +28620,8 @@
     {
       "slug": "rennes",
       "name": "STAR (Rennes)",
+      "officialName": "STAR",
+      "nameQualifier": "Rennes",
       "region": "Bretagne",
       "center": [
         48.1173,
@@ -27855,6 +28640,8 @@
     {
       "slug": "tours",
       "name": "Fil Bleu (Tours)",
+      "officialName": "Fil Bleu",
+      "nameQualifier": "Tours",
       "region": "Centre-Val de Loire",
       "center": [
         47.3941,
@@ -27873,6 +28660,8 @@
     {
       "slug": "bordeaux",
       "name": "TBM (Bordeaux)",
+      "officialName": "TBM",
+      "nameQualifier": "Bordeaux",
       "region": "Nouvelle-Aquitaine",
       "center": [
         44.8378,
@@ -27891,6 +28680,8 @@
     {
       "slug": "grenoble",
       "name": "TAG (Grenoble)",
+      "officialName": "TAG",
+      "nameQualifier": "Grenoble",
       "region": "Auvergne-Rhône-Alpes",
       "center": [
         45.1885,
@@ -27909,6 +28700,8 @@
     {
       "slug": "dijon",
       "name": "Divia (Dijon)",
+      "officialName": "Divia",
+      "nameQualifier": "Dijon",
       "region": "Bourgogne-Franche-Comté",
       "center": [
         47.322,
@@ -27927,6 +28720,8 @@
     {
       "slug": "angers",
       "name": "Irigo (Angers)",
+      "officialName": "Irigo",
+      "nameQualifier": "Angers",
       "region": "Pays de la Loire",
       "center": [
         47.4784,
@@ -27945,6 +28740,8 @@
     {
       "slug": "chambery",
       "name": "Synchro (Chambéry)",
+      "officialName": "Synchro",
+      "nameQualifier": "Chambéry",
       "region": "Auvergne-Rhône-Alpes",
       "center": [
         45.5646,
@@ -27963,6 +28760,8 @@
     {
       "slug": "nantes",
       "name": "Naolib (Nantes)",
+      "officialName": "Naolib",
+      "nameQualifier": "Nantes",
       "region": "Pays de la Loire",
       "center": [
         47.2184,
@@ -27981,6 +28780,8 @@
     {
       "slug": "le-mans",
       "name": "SETRAM (Le Mans)",
+      "officialName": "SETRAM",
+      "nameQualifier": "Le Mans",
       "region": "Pays de la Loire",
       "center": [
         48.0061,
@@ -27999,6 +28800,8 @@
     {
       "slug": "besancon",
       "name": "Ginko (Besançon)",
+      "officialName": "Ginko",
+      "nameQualifier": "Besançon",
       "region": "Bourgogne-Franche-Comté",
       "center": [
         47.2378,
@@ -28017,6 +28820,8 @@
     {
       "slug": "annecy",
       "name": "Sibra (Annecy)",
+      "officialName": "Sibra",
+      "nameQualifier": "Annecy",
       "region": "Auvergne-Rhône-Alpes",
       "center": [
         45.8992,
@@ -28035,6 +28840,8 @@
     {
       "slug": "amiens",
       "name": "Ametis (Amiens)",
+      "officialName": "Ametis",
+      "nameQualifier": "Amiens",
       "region": "Hauts-de-France",
       "center": [
         49.8941,
@@ -28053,6 +28860,8 @@
     {
       "slug": "annemasse",
       "name": "TAC (Annemasse)",
+      "officialName": "TAC",
+      "nameQualifier": "Annemasse",
       "region": "Auvergne-Rhône-Alpes",
       "center": [
         46.1934,
@@ -28071,6 +28880,8 @@
     {
       "slug": "avignon",
       "name": "Orizo (Avignon)",
+      "officialName": "Orizo",
+      "nameQualifier": "Avignon",
       "region": "Provence-Alpes-Côte d'Azur",
       "center": [
         43.9493,
@@ -28089,6 +28900,7 @@
     {
       "slug": "bayonne",
       "name": "Txik Txak",
+      "officialName": "Txik Txak",
       "region": "Nouvelle-Aquitaine",
       "center": [
         43.4929,
@@ -28109,6 +28921,8 @@
     {
       "slug": "beziers",
       "name": "beeMob (Béziers)",
+      "officialName": "beeMob",
+      "nameQualifier": "Béziers",
       "region": "Occitanie",
       "center": [
         43.3442,
@@ -28127,6 +28941,8 @@
     {
       "slug": "bourges",
       "name": "AggloBus (Bourges)",
+      "officialName": "AggloBus",
+      "nameQualifier": "Bourges",
       "region": "Centre-Val de Loire",
       "center": [
         47.081,
@@ -28145,6 +28961,8 @@
     {
       "slug": "brest",
       "name": "Bibus (Brest)",
+      "officialName": "Bibus",
+      "nameQualifier": "Brest",
       "region": "Bretagne",
       "center": [
         48.3904,
@@ -28163,6 +28981,8 @@
     {
       "slug": "caen",
       "name": "Twisto (Caen)",
+      "officialName": "Twisto",
+      "nameQualifier": "Caen",
       "region": "Normandie",
       "center": [
         49.1829,
@@ -28181,6 +29001,8 @@
     {
       "slug": "chartres",
       "name": "Filibus (Chartres)",
+      "officialName": "Filibus",
+      "nameQualifier": "Chartres",
       "region": "Centre-Val de Loire",
       "center": [
         48.4439,
@@ -28199,6 +29021,7 @@
     {
       "slug": "cholet",
       "name": "Choletbus",
+      "officialName": "Choletbus",
       "region": "Pays de la Loire",
       "center": [
         47.0594,
@@ -28217,6 +29040,8 @@
     {
       "slug": "clermont",
       "name": "T2C (Clermont-Ferrand)",
+      "officialName": "T2C",
+      "nameQualifier": "Clermont-Ferrand",
       "region": "Auvergne-Rhône-Alpes",
       "center": [
         45.7772,
@@ -28235,6 +29060,8 @@
     {
       "slug": "dunkirk",
       "name": "DK'Bus (Dunkerque)",
+      "officialName": "DK'Bus",
+      "nameQualifier": "Dunkerque",
       "region": "Hauts-de-France",
       "center": [
         51.0343,
@@ -28253,6 +29080,8 @@
     {
       "slug": "la-rochelle",
       "name": "Yélo (La Rochelle)",
+      "officialName": "Yélo",
+      "nameQualifier": "La Rochelle",
       "region": "Nouvelle-Aquitaine",
       "center": [
         46.1603,
@@ -28271,6 +29100,8 @@
     {
       "slug": "laval",
       "name": "TUL (Laval)",
+      "officialName": "TUL",
+      "nameQualifier": "Laval",
       "region": "Pays de la Loire",
       "center": [
         48.0785,
@@ -28289,6 +29120,8 @@
     {
       "slug": "le-havre",
       "name": "LiA (Le Havre)",
+      "officialName": "LiA",
+      "nameQualifier": "Le Havre",
       "region": "Normandie",
       "center": [
         49.4944,
@@ -28307,6 +29140,8 @@
     {
       "slug": "lorient",
       "name": "Izilo (Lorient)",
+      "officialName": "Izilo",
+      "nameQualifier": "Lorient",
       "region": "Bretagne",
       "center": [
         47.7483,
@@ -28325,6 +29160,8 @@
     {
       "slug": "lyon",
       "name": "TCL (Lyon)",
+      "officialName": "TCL",
+      "nameQualifier": "Lyon",
       "region": "Auvergne-Rhône-Alpes",
       "center": [
         45.764,
@@ -28343,6 +29180,8 @@
     {
       "slug": "marseille",
       "name": "RTM (Marseille)",
+      "officialName": "RTM",
+      "nameQualifier": "Marseille",
       "region": "Provence-Alpes-Côte d'Azur",
       "center": [
         43.2965,
@@ -28361,6 +29200,8 @@
     {
       "slug": "mulhouse",
       "name": "Soléa (Mulhouse)",
+      "officialName": "Soléa",
+      "nameQualifier": "Mulhouse",
       "region": "Grand Est",
       "center": [
         47.7508,
@@ -28379,6 +29220,8 @@
     {
       "slug": "nice-fr",
       "name": "Lignes d'Azur (Nice)",
+      "officialName": "Lignes d'Azur",
+      "nameQualifier": "Nice",
       "region": "Provence-Alpes-Côte d'Azur",
       "center": [
         43.7102,
@@ -28400,6 +29243,8 @@
     {
       "slug": "nimes",
       "name": "Tango (Nîmes)",
+      "officialName": "Tango",
+      "nameQualifier": "Nîmes",
       "region": "Occitanie",
       "center": [
         43.8367,
@@ -28418,6 +29263,8 @@
     {
       "slug": "orleans",
       "name": "TAO (Orléans)",
+      "officialName": "TAO",
+      "nameQualifier": "Orléans",
       "region": "Centre-Val de Loire",
       "center": [
         47.9029,
@@ -28436,6 +29283,8 @@
     {
       "slug": "pau",
       "name": "Idelis (Pau)",
+      "officialName": "Idelis",
+      "nameQualifier": "Pau",
       "region": "Nouvelle-Aquitaine",
       "center": [
         43.2951,
@@ -28454,6 +29303,8 @@
     {
       "slug": "perpignan",
       "name": "Sankéo (Perpignan)",
+      "officialName": "Sankéo",
+      "nameQualifier": "Perpignan",
       "region": "Occitanie",
       "center": [
         42.6887,
@@ -28472,6 +29323,8 @@
     {
       "slug": "poitiers",
       "name": "Vitalis (Poitiers)",
+      "officialName": "Vitalis",
+      "nameQualifier": "Poitiers",
       "region": "Nouvelle-Aquitaine",
       "center": [
         46.5802,
@@ -28490,6 +29343,8 @@
     {
       "slug": "quimper",
       "name": "Qub (Quimper)",
+      "officialName": "Qub",
+      "nameQualifier": "Quimper",
       "region": "Bretagne",
       "center": [
         47.9975,
@@ -28508,6 +29363,7 @@
     {
       "slug": "reims",
       "name": "Grand Reims Mobilités",
+      "officialName": "Grand Reims Mobilités",
       "region": "Grand Est",
       "center": [
         49.2583,
@@ -28528,6 +29384,8 @@
     {
       "slug": "rouen",
       "name": "Astuce (Rouen)",
+      "officialName": "Astuce",
+      "nameQualifier": "Rouen",
       "region": "Normandie",
       "center": [
         49.4431,
@@ -28546,6 +29404,8 @@
     {
       "slug": "saint-etienne",
       "name": "STAS (Saint-Étienne)",
+      "officialName": "STAS",
+      "nameQualifier": "Saint-Étienne",
       "region": "Auvergne-Rhône-Alpes",
       "center": [
         45.4397,
@@ -28564,6 +29424,8 @@
     {
       "slug": "saint-nazaire",
       "name": "Ycéo (Saint-Nazaire)",
+      "officialName": "Ycéo",
+      "nameQualifier": "Saint-Nazaire",
       "region": "Pays de la Loire",
       "center": [
         47.2735,
@@ -28582,6 +29444,8 @@
     {
       "slug": "toulon",
       "name": "Mistral (Toulon)",
+      "officialName": "Mistral",
+      "nameQualifier": "Toulon",
       "region": "Provence-Alpes-Côte d'Azur",
       "center": [
         43.1242,
@@ -28600,6 +29464,8 @@
     {
       "slug": "toulouse",
       "name": "Tisséo (Toulouse)",
+      "officialName": "Tisséo",
+      "nameQualifier": "Toulouse",
       "region": "Occitanie",
       "center": [
         43.6047,
@@ -28618,6 +29484,8 @@
     {
       "slug": "troyes",
       "name": "TCAT (Troyes)",
+      "officialName": "TCAT",
+      "nameQualifier": "Troyes",
       "region": "Grand Est",
       "center": [
         48.2973,
@@ -28636,6 +29504,8 @@
     {
       "slug": "valence",
       "name": "Citéa (Valence Romans)",
+      "officialName": "Citéa",
+      "nameQualifier": "Valence Romans",
       "region": "Auvergne-Rhône-Alpes",
       "center": [
         44.9334,
@@ -28654,6 +29524,8 @@
     {
       "slug": "vannes",
       "name": "Kicéo (Vannes)",
+      "officialName": "Kicéo",
+      "nameQualifier": "Vannes",
       "region": "Bretagne",
       "center": [
         47.6582,
@@ -28672,6 +29544,7 @@
     {
       "slug": "aix-en-provence",
       "name": "Aixenbus",
+      "officialName": "Aixenbus",
       "region": "Provence-Alpes-Côte d'Azur",
       "center": [
         43.5297,
@@ -28690,6 +29563,8 @@
     {
       "slug": "arles",
       "name": "Envia (Arles)",
+      "officialName": "Envia",
+      "nameQualifier": "Arles",
       "region": "Provence-Alpes-Côte d'Azur",
       "center": [
         43.6766,
@@ -28707,6 +29582,8 @@
     {
       "slug": "beauvais",
       "name": "Corolis (Beauvais)",
+      "officialName": "Corolis",
+      "nameQualifier": "Beauvais",
       "websiteUrl": "https://www.corolis.fr",
       "region": "Hauts-de-France",
       "center": [
@@ -28725,6 +29602,8 @@
     {
       "slug": "belfort",
       "name": "Optymo (Belfort)",
+      "officialName": "Optymo",
+      "nameQualifier": "Belfort",
       "region": "Bourgogne-Franche-Comté",
       "center": [
         47.638,
@@ -28743,6 +29622,8 @@
     {
       "slug": "bergerac",
       "name": "TUB (Bergerac)",
+      "officialName": "TUB",
+      "nameQualifier": "Bergerac",
       "websiteUrl": "https://www.la-cab.fr/transports-urbains-bergeracois-tub/",
       "region": "Nouvelle-Aquitaine",
       "center": [
@@ -28761,6 +29642,8 @@
     {
       "slug": "blois",
       "name": "Azalys (Blois)",
+      "officialName": "Azalys",
+      "nameQualifier": "Blois",
       "region": "Centre-Val de Loire",
       "center": [
         47.5861,
@@ -28779,6 +29662,8 @@
     {
       "slug": "boulogne-sur-mer",
       "name": "Marinéo (Boulogne)",
+      "officialName": "Marinéo",
+      "nameQualifier": "Boulogne",
       "websiteUrl": "https://www.marineo.fr/",
       "region": "Hauts-de-France",
       "center": [
@@ -28797,6 +29682,8 @@
     {
       "slug": "bourgoin",
       "name": "Ruban (Bourgoin-Jallieu)",
+      "officialName": "Ruban",
+      "nameQualifier": "Bourgoin-Jallieu",
       "websiteUrl": "https://www.rubantransport.com",
       "region": "Auvergne-Rhône-Alpes",
       "center": [
@@ -28815,6 +29702,8 @@
     {
       "slug": "brive",
       "name": "Libéo (Brive)",
+      "officialName": "Libéo",
+      "nameQualifier": "Brive",
       "websiteUrl": "https://www.libeo-brive.fr/",
       "region": "Nouvelle-Aquitaine",
       "center": [
@@ -28833,6 +29722,7 @@
     {
       "slug": "cahors",
       "name": "Cahors urbain",
+      "officialName": "Cahors urbain",
       "websiteUrl": "https://www.bus-evidence.fr/",
       "region": "Occitanie",
       "center": [
@@ -28851,6 +29741,8 @@
     {
       "slug": "cannes",
       "name": "Palm Bus (Cannes)",
+      "officialName": "Palm Bus",
+      "nameQualifier": "Cannes",
       "region": "Provence-Alpes-Côte d'Azur",
       "center": [
         43.5528,
@@ -28869,6 +29761,8 @@
     {
       "slug": "carcassonne",
       "name": "RTCA (Carcassonne)",
+      "officialName": "RTCA",
+      "nameQualifier": "Carcassonne",
       "region": "Occitanie",
       "center": [
         43.213,
@@ -28886,6 +29780,8 @@
     {
       "slug": "castres",
       "name": "Libellus (Castres)",
+      "officialName": "Libellus",
+      "nameQualifier": "Castres",
       "websiteUrl": "https://www.castres-mazamet.fr/lignes-regulieres",
       "region": "Occitanie",
       "center": [
@@ -28904,6 +29800,8 @@
     {
       "slug": "charleville",
       "name": "TAC (Charleville)",
+      "officialName": "TAC",
+      "nameQualifier": "Charleville",
       "websiteUrl": "https://www.bustac.fr/",
       "region": "Grand Est",
       "center": [
@@ -28924,6 +29822,8 @@
     {
       "slug": "chateauroux",
       "name": "Horizon (Châteauroux)",
+      "officialName": "Horizon",
+      "nameQualifier": "Châteauroux",
       "region": "Centre-Val de Loire",
       "center": [
         46.8096,
@@ -28941,6 +29841,8 @@
     {
       "slug": "colmar",
       "name": "Trace (Colmar)",
+      "officialName": "Trace",
+      "nameQualifier": "Colmar",
       "websiteUrl": "https://www.trace-colmar.fr",
       "region": "Grand Est",
       "center": [
@@ -28961,6 +29863,8 @@
     {
       "slug": "compiegne",
       "name": "TIC (Compiègne)",
+      "officialName": "TIC",
+      "nameQualifier": "Compiègne",
       "websiteUrl": "https://www.oise-mobilite.fr/",
       "region": "Hauts-de-France",
       "center": [
@@ -28979,6 +29883,8 @@
     {
       "slug": "concarneau",
       "name": "Coralie (Concarneau)",
+      "officialName": "Coralie",
+      "nameQualifier": "Concarneau",
       "websiteUrl": "https://www.coralie-cca.fr",
       "region": "Bretagne",
       "center": [
@@ -28997,6 +29903,8 @@
     {
       "slug": "creil",
       "name": "TCR (Creil)",
+      "officialName": "TCR",
+      "nameQualifier": "Creil",
       "websiteUrl": "https://www.oise-mobilite.fr",
       "region": "Hauts-de-France",
       "center": [
@@ -29015,6 +29923,8 @@
     {
       "slug": "dieppe",
       "name": "Stradibus (Dieppe)",
+      "officialName": "Stradibus",
+      "nameQualifier": "Dieppe",
       "websiteUrl": "https://www.deepmob.fr/",
       "region": "Normandie",
       "center": [
@@ -29033,6 +29943,8 @@
     {
       "slug": "douai",
       "name": "Évasion (Douai)",
+      "officialName": "Évasion",
+      "nameQualifier": "Douai",
       "region": "Hauts-de-France",
       "center": [
         50.3678,
@@ -29050,6 +29962,8 @@
     {
       "slug": "epinal",
       "name": "Imagine (Épinal)",
+      "officialName": "Imagine",
+      "nameQualifier": "Épinal",
       "websiteUrl": "https://www.imaginelebus.com/fr/",
       "region": "Grand Est",
       "center": [
@@ -29070,6 +29984,8 @@
     {
       "slug": "evreux",
       "name": "Transurbain (Évreux)",
+      "officialName": "Transurbain",
+      "nameQualifier": "Évreux",
       "region": "Normandie",
       "center": [
         49.027,
@@ -29087,6 +30003,8 @@
     {
       "slug": "fougeres",
       "name": "Surfline (Fougères)",
+      "officialName": "Surfline",
+      "nameQualifier": "Fougères",
       "region": "Bretagne",
       "center": [
         48.3519,
@@ -29104,6 +30022,8 @@
     {
       "slug": "grasse",
       "name": "Sillages (Grasse)",
+      "officialName": "Sillages",
+      "nameQualifier": "Grasse",
       "region": "Provence-Alpes-Côte d'Azur",
       "center": [
         43.6585,
@@ -29121,6 +30041,7 @@
     {
       "slug": "laon",
       "name": "Laon urbain",
+      "officialName": "Laon urbain",
       "websiteUrl": "http://www.tul-laon.fr",
       "region": "Hauts-de-France",
       "center": [
@@ -29139,6 +30060,8 @@
     {
       "slug": "lens",
       "name": "Tadao (Lens-Liévin)",
+      "officialName": "Tadao",
+      "nameQualifier": "Lens-Liévin",
       "region": "Hauts-de-France",
       "center": [
         50.4289,
@@ -29158,6 +30081,8 @@
     {
       "slug": "limoges",
       "name": "STCL (Limoges)",
+      "officialName": "STCL",
+      "nameQualifier": "Limoges",
       "region": "Nouvelle-Aquitaine",
       "center": [
         45.8336,
@@ -29176,6 +30101,8 @@
     {
       "slug": "menton",
       "name": "Zest (Menton)",
+      "officialName": "Zest",
+      "nameQualifier": "Menton",
       "region": "Provence-Alpes-Côte d'Azur",
       "center": [
         43.7745,
@@ -29193,6 +30120,8 @@
     {
       "slug": "mont-de-marsan",
       "name": "TMA (Mont-de-Marsan)",
+      "officialName": "TMA",
+      "nameQualifier": "Mont-de-Marsan",
       "websiteUrl": "https://bustma.com/fr/",
       "region": "Nouvelle-Aquitaine",
       "center": [
@@ -29211,6 +30140,8 @@
     {
       "slug": "montbeliard",
       "name": "Evolity (Montbéliard)",
+      "officialName": "Evolity",
+      "nameQualifier": "Montbéliard",
       "region": "Bourgogne-Franche-Comté",
       "center": [
         47.5096,
@@ -29229,6 +30160,8 @@
     {
       "slug": "morlaix",
       "name": "Linéotim (Morlaix)",
+      "officialName": "Linéotim",
+      "nameQualifier": "Morlaix",
       "websiteUrl": "https://www.lineotim.com/",
       "region": "Bretagne",
       "center": [
@@ -29247,6 +30180,8 @@
     {
       "slug": "nevers",
       "name": "Taneo (Nevers)",
+      "officialName": "Taneo",
+      "nameQualifier": "Nevers",
       "region": "Bourgogne-Franche-Comté",
       "center": [
         46.9909,
@@ -29265,6 +30200,8 @@
     {
       "slug": "niort",
       "name": "TanLib (Niort)",
+      "officialName": "TanLib",
+      "nameQualifier": "Niort",
       "websiteUrl": "https://tanlib.com/",
       "region": "Nouvelle-Aquitaine",
       "center": [
@@ -29283,6 +30220,8 @@
     {
       "slug": "quimperle",
       "name": "TBK (Quimperlé)",
+      "officialName": "TBK",
+      "nameQualifier": "Quimperlé",
       "websiteUrl": "https://www.tbk.bzh/",
       "region": "Bretagne",
       "center": [
@@ -29301,6 +30240,7 @@
     {
       "slug": "romans",
       "name": "Citéa Romans",
+      "officialName": "Citéa Romans",
       "websiteUrl": "https://www.valenceromansmobilites.fr",
       "region": "Auvergne-Rhône-Alpes",
       "center": [
@@ -29319,6 +30259,8 @@
     {
       "slug": "saint-brieuc",
       "name": "TUB (Saint-Brieuc)",
+      "officialName": "TUB",
+      "nameQualifier": "Saint-Brieuc",
       "region": "Bretagne",
       "center": [
         48.514,
@@ -29336,6 +30278,8 @@
     {
       "slug": "saint-malo",
       "name": "MAT (Saint-Malo)",
+      "officialName": "MAT",
+      "nameQualifier": "Saint-Malo",
       "websiteUrl": "http://www.star.fr",
       "region": "Bretagne",
       "center": [
@@ -29354,6 +30298,8 @@
     {
       "slug": "saint-omer",
       "name": "MouvO (Saint-Omer)",
+      "officialName": "MouvO",
+      "nameQualifier": "Saint-Omer",
       "websiteUrl": "http://www.ca-pso.fr",
       "region": "Hauts-de-France",
       "center": [
@@ -29372,6 +30318,8 @@
     {
       "slug": "saintes",
       "name": "Buséau (Saintes)",
+      "officialName": "Buséau",
+      "nameQualifier": "Saintes",
       "websiteUrl": "https://www.buss-saintes.com/",
       "region": "Nouvelle-Aquitaine",
       "center": [
@@ -29390,6 +30338,8 @@
     {
       "slug": "tarbes",
       "name": "TLP Mobilités (Tarbes)",
+      "officialName": "TLP Mobilités",
+      "nameQualifier": "Tarbes",
       "region": "Occitanie",
       "center": [
         43.2329,
@@ -29407,6 +30357,8 @@
     {
       "slug": "valenciennes",
       "name": "Transvilles (Valenciennes)",
+      "officialName": "Transvilles",
+      "nameQualifier": "Valenciennes",
       "region": "Hauts-de-France",
       "center": [
         50.3591,
@@ -29425,6 +30377,8 @@
     {
       "slug": "vierzon",
       "name": "Le Vib (Vierzon)",
+      "officialName": "Le Vib",
+      "nameQualifier": "Vierzon",
       "region": "Centre-Val de Loire",
       "center": [
         47.2219,
@@ -29442,6 +30396,8 @@
     {
       "slug": "albi",
       "name": "LibéA (Albi)",
+      "officialName": "LibéA",
+      "nameQualifier": "Albi",
       "region": "Occitanie",
       "center": [
         43.9298,
@@ -29459,6 +30415,8 @@
     {
       "slug": "ales",
       "name": "Ales'y (Alès)",
+      "officialName": "Ales'y",
+      "nameQualifier": "Alès",
       "region": "Occitanie",
       "center": [
         44.1272,
@@ -29476,6 +30434,8 @@
     {
       "slug": "angouleme",
       "name": "Möbius (Angoulême)",
+      "officialName": "Möbius",
+      "nameQualifier": "Angoulême",
       "region": "Nouvelle-Aquitaine",
       "center": [
         45.6484,
@@ -29493,6 +30453,8 @@
     {
       "slug": "arcachon",
       "name": "Baïa (Bassin d'Arcachon)",
+      "officialName": "Baïa",
+      "nameQualifier": "Bassin d'Arcachon",
       "websiteUrl": "http://www.bus-baia.fr/",
       "region": "Nouvelle-Aquitaine",
       "center": [
@@ -29512,6 +30474,7 @@
     {
       "slug": "argentan",
       "name": "Argentan Bus",
+      "officialName": "Argentan Bus",
       "websiteUrl": "https://terresdargentan.fr/argentan-intercom-mobilite/",
       "region": "Normandie",
       "center": [
@@ -29530,6 +30493,8 @@
     {
       "slug": "auch",
       "name": "Alliance (Auch)",
+      "officialName": "Alliance",
+      "nameQualifier": "Auch",
       "websiteUrl": "https://www.alliance-bus.com/",
       "region": "Occitanie",
       "center": [
@@ -29548,6 +30513,8 @@
     {
       "slug": "beaune",
       "name": "Côte&Bus (Beaune)",
+      "officialName": "Côte&Bus",
+      "nameQualifier": "Beaune",
       "websiteUrl": "https://www.coteetbus.fr",
       "region": "Bourgogne-Franche-Comté",
       "center": [
@@ -29566,6 +30533,8 @@
     {
       "slug": "cavaillon",
       "name": "Cmonbus (Cavaillon)",
+      "officialName": "Cmonbus",
+      "nameQualifier": "Cavaillon",
       "websiteUrl": "https://www.luberonmontsdevaucluse.fr/agglomeration/c-mon-bus",
       "region": "Provence-Alpes-Côte d'Azur",
       "center": [
@@ -29584,6 +30553,7 @@
     {
       "slug": "chamonix",
       "name": "Chamonix Mobilités",
+      "officialName": "Chamonix Mobilités",
       "region": "Auvergne-Rhône-Alpes",
       "center": [
         45.9237,
@@ -29601,6 +30571,8 @@
     {
       "slug": "cherbourg",
       "name": "Cap Cotentin (Cherbourg)",
+      "officialName": "Cap Cotentin",
+      "nameQualifier": "Cherbourg",
       "region": "Normandie",
       "center": [
         49.6337,
@@ -29618,6 +30590,8 @@
     {
       "slug": "coutances",
       "name": "Cosibus (Coutances)",
+      "officialName": "Cosibus",
+      "nameQualifier": "Coutances",
       "region": "Normandie",
       "center": [
         49.0454,
@@ -29635,6 +30609,8 @@
     {
       "slug": "dinan",
       "name": "Dinamo (Dinan)",
+      "officialName": "Dinamo",
+      "nameQualifier": "Dinan",
       "region": "Bretagne",
       "center": [
         48.455,
@@ -29652,6 +30628,8 @@
     {
       "slug": "gap",
       "name": "Trotibus (Gap)",
+      "officialName": "Trotibus",
+      "nameQualifier": "Gap",
       "websiteUrl": "https://www.gap-tallard-durance.fr",
       "region": "Provence-Alpes-Côte d'Azur",
       "center": [
@@ -29670,6 +30648,7 @@
     {
       "slug": "guingamp",
       "name": "Guingamp-Paimpol Mobilité",
+      "officialName": "Guingamp-Paimpol Mobilité",
       "region": "Bretagne",
       "center": [
         48.5633,
@@ -29687,6 +30666,8 @@
     {
       "slug": "libourne",
       "name": "Calibus (Libourne)",
+      "officialName": "Calibus",
+      "nameQualifier": "Libourne",
       "websiteUrl": "https://www.calibus.fr",
       "region": "Nouvelle-Aquitaine",
       "center": [
@@ -29705,6 +30686,8 @@
     {
       "slug": "louviers",
       "name": "SEMO (Louviers)",
+      "officialName": "SEMO",
+      "nameQualifier": "Louviers",
       "region": "Normandie",
       "center": [
         49.2156,
@@ -29722,6 +30705,8 @@
     {
       "slug": "montauban",
       "name": "TM (Montauban)",
+      "officialName": "TM",
+      "nameQualifier": "Montauban",
       "region": "Occitanie",
       "center": [
         44.0176,
@@ -29739,6 +30724,8 @@
     {
       "slug": "moulins",
       "name": "Aléo (Moulins)",
+      "officialName": "Aléo",
+      "nameQualifier": "Moulins",
       "region": "Auvergne-Rhône-Alpes",
       "center": [
         46.5646,
@@ -29757,6 +30744,8 @@
     {
       "slug": "oyonnax",
       "name": "Duobus (Oyonnax)",
+      "officialName": "Duobus",
+      "nameQualifier": "Oyonnax",
       "websiteUrl": "https://www.duobus.fr/",
       "region": "Auvergne-Rhône-Alpes",
       "center": [
@@ -29775,6 +30764,8 @@
     {
       "slug": "porto-vecchio",
       "name": "A Citadina (Porto-Vecchio)",
+      "officialName": "A Citadina",
+      "nameQualifier": "Porto-Vecchio",
       "websiteUrl": "https://acitadina.fr/",
       "region": "Corse",
       "center": [
@@ -29793,6 +30784,8 @@
     {
       "slug": "privas",
       "name": "T'CAP (Privas)",
+      "officialName": "T'CAP",
+      "nameQualifier": "Privas",
       "region": "Auvergne-Rhône-Alpes",
       "center": [
         44.7356,
@@ -29810,6 +30803,8 @@
     {
       "slug": "saint-quentin",
       "name": "TUC (Saint-Quentin)",
+      "officialName": "TUC",
+      "nameQualifier": "Saint-Quentin",
       "region": "Hauts-de-France",
       "center": [
         49.8466,
@@ -29827,6 +30822,8 @@
     {
       "slug": "selestat",
       "name": "ELSA (Sélestat)",
+      "officialName": "ELSA",
+      "nameQualifier": "Sélestat",
       "websiteUrl": "https://elsa-mobilites.fr/",
       "region": "Grand Est",
       "center": [
@@ -29847,6 +30844,8 @@
     {
       "slug": "vichy",
       "name": "MobiVie (Vichy)",
+      "officialName": "MobiVie",
+      "nameQualifier": "Vichy",
       "region": "Auvergne-Rhône-Alpes",
       "center": [
         46.127,
@@ -29864,6 +30863,8 @@
     {
       "slug": "villeneuve-sur-lot",
       "name": "Elios (Villeneuve-sur-Lot)",
+      "officialName": "Elios",
+      "nameQualifier": "Villeneuve-sur-Lot",
       "region": "Nouvelle-Aquitaine",
       "center": [
         44.4069,
@@ -29881,6 +30882,7 @@
     {
       "slug": "aix-les-bains",
       "name": "Aix-les-Bains",
+      "officialName": "Aix-les-Bains",
       "websiteUrl": "https://www.ondea-bus.fr",
       "region": "Auvergne-Rhône-Alpes",
       "center": [
@@ -29899,6 +30901,7 @@
     {
       "slug": "amberieu",
       "name": "Ambérieu",
+      "officialName": "Ambérieu",
       "websiteUrl": "https://www.laregionvoustransporte.fr",
       "region": "Auvergne-Rhône-Alpes",
       "center": [
@@ -29917,6 +30920,8 @@
     {
       "slug": "chalons",
       "name": "SITAC (Châlons)",
+      "officialName": "SITAC",
+      "nameQualifier": "Châlons",
       "websiteUrl": "http://www.businfo-groupe.com",
       "region": "Grand Est",
       "center": [
@@ -29937,6 +30942,7 @@
     {
       "slug": "cosne",
       "name": "Cosne-Cours-sur-Loire",
+      "officialName": "Cosne-Cours-sur-Loire",
       "websiteUrl": "https://www.coeurdeloire.fr/",
       "region": "Bourgogne-Franche-Comté",
       "center": [
@@ -29955,6 +30961,7 @@
     {
       "slug": "dole",
       "name": "Dole",
+      "officialName": "Dole",
       "region": "Bourgogne-Franche-Comté",
       "center": [
         47.0922,
@@ -29972,6 +30979,8 @@
     {
       "slug": "draguignan",
       "name": "TedBus (Draguignan)",
+      "officialName": "TedBus",
+      "nameQualifier": "Draguignan",
       "websiteUrl": "http://www.tedbus.com",
       "region": "Provence-Alpes-Côte d'Azur",
       "center": [
@@ -29990,6 +30999,7 @@
     {
       "slug": "dreux",
       "name": "Dreux",
+      "officialName": "Dreux",
       "websiteUrl": "http://www.linead.fr/",
       "region": "Centre-Val de Loire",
       "center": [
@@ -30008,6 +31018,7 @@
     {
       "slug": "fecamp",
       "name": "Fécamp",
+      "officialName": "Fécamp",
       "region": "Normandie",
       "center": [
         49.7556,
@@ -30025,6 +31036,7 @@
     {
       "slug": "figeac",
       "name": "Figeac",
+      "officialName": "Figeac",
       "websiteUrl": "http://www.cars-delbos.com/",
       "region": "Occitanie",
       "center": [
@@ -30043,6 +31055,7 @@
     {
       "slug": "flers",
       "name": "Flers",
+      "officialName": "Flers",
       "websiteUrl": "http://www.flers-agglo.fr/cadre-de-vie/transport-et-mobilite/transports-urbains-transports-a-la-demande-tad/",
       "region": "Normandie",
       "center": [
@@ -30061,6 +31074,7 @@
     {
       "slug": "haguenau",
       "name": "Haguenau",
+      "officialName": "Haguenau",
       "websiteUrl": "https://www.ritmo.fr/",
       "region": "Grand Est",
       "center": [
@@ -30079,6 +31093,8 @@
     {
       "slug": "la-roche-sur-yon",
       "name": "Impulsyon (La Roche-sur-Yon)",
+      "officialName": "Impulsyon",
+      "nameQualifier": "La Roche-sur-Yon",
       "websiteUrl": "https://orchestra.ratpdev.com",
       "region": "Pays de la Loire",
       "center": [
@@ -30097,6 +31113,8 @@
     {
       "slug": "lannion",
       "name": "TILT (Lannion)",
+      "officialName": "TILT",
+      "nameQualifier": "Lannion",
       "region": "Bretagne",
       "center": [
         48.7333,
@@ -30114,6 +31132,8 @@
     {
       "slug": "manosque",
       "name": "TransAgglo (Manosque)",
+      "officialName": "TransAgglo",
+      "nameQualifier": "Manosque",
       "websiteUrl": "https://mobilite.dlva.fr/",
       "region": "Provence-Alpes-Côte d'Azur",
       "center": [
@@ -30132,6 +31152,7 @@
     {
       "slug": "mende",
       "name": "Mende",
+      "officialName": "Mende",
       "region": "Occitanie",
       "center": [
         44.5186,
@@ -30149,6 +31170,8 @@
     {
       "slug": "narbonne",
       "name": "Citibus (Narbonne)",
+      "officialName": "Citibus",
+      "nameQualifier": "Narbonne",
       "websiteUrl": "https://www.citibus.fr",
       "region": "Occitanie",
       "center": [
@@ -30167,6 +31190,7 @@
     {
       "slug": "oloron",
       "name": "Oloron-Sainte-Marie",
+      "officialName": "Oloron-Sainte-Marie",
       "websiteUrl": "http://www.oloron-ste-marie.fr/",
       "region": "Nouvelle-Aquitaine",
       "center": [
@@ -30185,6 +31209,7 @@
     {
       "slug": "pont-audemer",
       "name": "Pont-Audemer",
+      "officialName": "Pont-Audemer",
       "websiteUrl": "https://www.ville-pont-audemer.fr/vivre-ici/environnement-cadre-de-vie-transports/transports-2/transports/",
       "region": "Normandie",
       "center": [
@@ -30203,6 +31228,7 @@
     {
       "slug": "redon",
       "name": "Redon",
+      "officialName": "Redon",
       "websiteUrl": "https://www.red.bzh/",
       "region": "Bretagne",
       "center": [
@@ -30221,6 +31247,7 @@
     {
       "slug": "rumilly",
       "name": "Rumilly",
+      "officialName": "Rumilly",
       "region": "Auvergne-Rhône-Alpes",
       "center": [
         45.8667,
@@ -30238,6 +31265,7 @@
     {
       "slug": "sarlat",
       "name": "Sarlat",
+      "officialName": "Sarlat",
       "websiteUrl": "https://perigord-voyagessarl.com/",
       "region": "Nouvelle-Aquitaine",
       "center": [
@@ -30256,6 +31284,7 @@
     {
       "slug": "saumur",
       "name": "Saumur Agglobus",
+      "officialName": "Saumur Agglobus",
       "websiteUrl": "https://ogalosaumurvaldeloire.anvergur.org/ogalosaumurvaldeloire/#!",
       "region": "Pays de la Loire",
       "center": [
@@ -30274,6 +31303,7 @@
     {
       "slug": "sete",
       "name": "Sète",
+      "officialName": "Sète",
       "websiteUrl": "https://www.mobilite.agglopole.fr/",
       "region": "Occitanie",
       "center": [
@@ -30292,6 +31322,7 @@
     {
       "slug": "thiers",
       "name": "Thiers",
+      "officialName": "Thiers",
       "region": "Auvergne-Rhône-Alpes",
       "center": [
         45.8567,
@@ -30309,6 +31340,7 @@
     {
       "slug": "vendome",
       "name": "Vendôme",
+      "officialName": "Vendôme",
       "websiteUrl": "https://move-vendomois.fr/",
       "region": "Centre-Val de Loire",
       "center": [
@@ -30327,6 +31359,7 @@
     {
       "slug": "vesoul",
       "name": "Vesoul",
+      "officialName": "Vesoul",
       "region": "Bourgogne-Franche-Comté",
       "center": [
         47.6231,
@@ -30344,6 +31377,7 @@
     {
       "slug": "godurham",
       "name": "GoDurham",
+      "officialName": "GoDurham",
       "websiteUrl": "https://godurhamtransit.org/",
       "region": "North Carolina",
       "center": [
@@ -30398,6 +31432,7 @@
     {
       "slug": "jacksonville-nc",
       "name": "Jacksonville Transit",
+      "officialName": "Jacksonville Transit",
       "websiteUrl": "https://jacksonvillenc.gov/224/Jacksonville-Transit",
       "region": "North Carolina",
       "center": [
@@ -30454,6 +31489,7 @@
     {
       "slug": "fast-nc",
       "name": "Fayetteville Area System of Transit",
+      "officialName": "Fayetteville Area System of Transit",
       "websiteUrl": "fast.transloc.com",
       "region": "North Carolina",
       "center": [
@@ -30504,6 +31540,7 @@
     {
       "slug": "greenway",
       "name": "Greenway Public Transportation",
+      "officialName": "Greenway Public Transportation",
       "websiteUrl": "http://www.mygreenway.org/",
       "region": "North Carolina",
       "center": [
@@ -30556,6 +31593,7 @@
     {
       "slug": "concord-kannapolis",
       "name": "Rider Transit",
+      "officialName": "Rider Transit",
       "websiteUrl": "http://trackingckrider.com",
       "region": "North Carolina",
       "center": [
@@ -30611,6 +31649,7 @@
     {
       "slug": "gaston-county",
       "name": "Gaston County Transit",
+      "officialName": "Gaston County Transit",
       "websiteUrl": "https://www.gastongov.com/164/ACCESS---Transportation",
       "region": "North Carolina",
       "center": [
@@ -30665,6 +31704,7 @@
     {
       "slug": "coast-rta",
       "name": "Coast RTA",
+      "officialName": "Coast RTA",
       "websiteUrl": "https://coastrta.transloc.com",
       "region": "South Carolina",
       "center": [
@@ -30718,6 +31758,7 @@
     {
       "slug": "sunshine-bus",
       "name": "Sunshine Bus Company",
+      "officialName": "Sunshine Bus Company",
       "labelPlace": "St. Johns County",
       "websiteUrl": "http://www.sunshinebus.net/",
       "region": "Florida",
@@ -30771,6 +31812,7 @@
     {
       "slug": "key-west-transit",
       "name": "Key West Transit",
+      "officialName": "Key West Transit",
       "websiteUrl": "https://kwtransit.com",
       "region": "Florida",
       "center": [
@@ -30827,6 +31869,7 @@
     {
       "slug": "citylink-north",
       "name": "Kootenai County Citylink North",
+      "officialName": "Kootenai County Citylink North",
       "websiteUrl": "https://www.kcgov.us/486/Transit-Services",
       "region": "Idaho",
       "center": [
@@ -30884,6 +31927,8 @@
     {
       "slug": "dcta",
       "name": "Denton County Transportation Authority (DCTA)",
+      "officialName": "Denton County Transportation Authority",
+      "commonName": "DCTA",
       "websiteUrl": "http://www.dcta.net",
       "region": "Texas",
       "center": [
@@ -30936,6 +31981,7 @@
     {
       "slug": "waco",
       "name": "Waco Transit System",
+      "officialName": "Waco Transit System",
       "websiteUrl": "https://wacotransit.transloc.com",
       "region": "Texas",
       "center": [
@@ -30989,6 +32035,7 @@
     {
       "slug": "brazos",
       "name": "Brazos Transit District",
+      "officialName": "Brazos Transit District",
       "displayArea": "Brazos Valley",
       "websiteUrl": "https://www.btd.org/",
       "region": "Texas",
@@ -31046,6 +32093,7 @@
     {
       "slug": "lafayette-la",
       "name": "Lafayette Transit System",
+      "officialName": "Lafayette Transit System",
       "websiteUrl": "https://www.ridelts.com/",
       "region": "Louisiana",
       "center": [
@@ -31100,6 +32148,7 @@
     {
       "slug": "coast-transit-ms",
       "name": "Coast Transit Authority",
+      "officialName": "Coast Transit Authority",
       "websiteUrl": "https://coasttransit.com/",
       "region": "Mississippi",
       "center": [
@@ -31158,6 +32207,7 @@
     {
       "slug": "hub-city-transit",
       "name": "Hub City Transit",
+      "officialName": "Hub City Transit",
       "websiteUrl": "http://www.hattiesburgms.com/government/departments/urban-development/hub-city-transit/",
       "region": "Mississippi",
       "center": [
@@ -31208,6 +32258,8 @@
     {
       "slug": "tank",
       "name": "Transit Authority of Northern Kentucky (TANK)",
+      "officialName": "Transit Authority of Northern Kentucky",
+      "commonName": "TANK",
       "websiteUrl": "https://www.tankbus.org/",
       "region": "Kentucky",
       "center": [
@@ -31260,6 +32312,7 @@
     {
       "slug": "sandusky",
       "name": "Sandusky Transit System",
+      "officialName": "Sandusky Transit System",
       "websiteUrl": "https://www.cityofsandusky.com/community/sandusky_transit_system/index.php",
       "region": "Ohio",
       "center": [
@@ -31311,6 +32364,8 @@
     {
       "slug": "bay-metro",
       "name": "Bay Metro (Bay City)",
+      "officialName": "Bay Metro",
+      "nameQualifier": "Bay City",
       "websiteUrl": "https://www.baymetro.com",
       "center": [
         43.5945,
@@ -31367,6 +32422,8 @@
     {
       "slug": "burlington-ia",
       "name": "Burlington Urban Service (BUS)",
+      "officialName": "Burlington Urban Service",
+      "commonName": "BUS",
       "websiteUrl": "http://www.burlingtoniowa.org/2265/Burlington-Urban-Service-BUS",
       "center": [
         40.8075,
@@ -31425,6 +32482,8 @@
     {
       "slug": "jefftran",
       "name": "Jefferson City Transit (JeffTran)",
+      "officialName": "Jefferson City Transit",
+      "commonName": "JeffTran",
       "center": [
         38.5792,
         -92.1729
@@ -31475,6 +32534,7 @@
     {
       "slug": "muskegon",
       "name": "Muskegon Area Transit System",
+      "officialName": "Muskegon Area Transit System",
       "websiteUrl": "https://matsbus.com/",
       "center": [
         43.2342,
@@ -31531,6 +32591,8 @@
     {
       "slug": "telluride",
       "name": "Town of Telluride (Galloping Goose)",
+      "officialName": "Town of Telluride",
+      "commonName": "Galloping Goose",
       "center": [
         37.9375,
         -107.8123
@@ -31587,6 +32649,7 @@
     {
       "slug": "mountain-village",
       "name": "Town of Mountain Village Transit",
+      "officialName": "Town of Mountain Village Transit",
       "center": [
         37.932,
         -107.856
@@ -31644,6 +32707,8 @@
     {
       "slug": "smart-telluride",
       "name": "San Miguel Authority for Regional Transportation (SMART)",
+      "officialName": "San Miguel Authority for Regional Transportation",
+      "commonName": "SMART",
       "center": [
         37.9375,
         -107.8123
@@ -31707,6 +32772,7 @@
     {
       "slug": "snowmass-village",
       "name": "Snowmass Village Shuttle",
+      "officialName": "Snowmass Village Shuttle",
       "center": [
         39.213,
         -106.937
@@ -31759,6 +32825,7 @@
     {
       "slug": "winter-park",
       "name": "The Lift",
+      "officialName": "The Lift",
       "websiteUrl": "https://www.theliftwp.com/",
       "region": "Colorado",
       "center": [
@@ -31807,6 +32874,8 @@
     {
       "slug": "roundabout",
       "name": "Clear Creek County Transit (RoundAbout)",
+      "officialName": "Clear Creek County Transit",
+      "commonName": "RoundAbout",
       "websiteUrl": "https://www.clearcreekcounty.us/857/RoundAbout-Bus-Service",
       "region": "Colorado",
       "center": [
@@ -31856,6 +32925,7 @@
     {
       "slug": "breck-free-ride",
       "name": "Breckenridge Free Ride",
+      "officialName": "Breckenridge Free Ride",
       "agencyId": "103",
       "websiteUrl": "https://www.breckfreeride.com/",
       "region": "Colorado",
@@ -31905,6 +32975,7 @@
     {
       "slug": "summit-stage",
       "name": "Summit Stage",
+      "officialName": "Summit Stage",
       "labelPlace": "Summit County",
       "websiteUrl": "https://www.summitcountyco.gov/586/Transit-Summit-Stage",
       "region": "Colorado",
@@ -31959,6 +33030,7 @@
     {
       "slug": "vail-transit",
       "name": "Vail Transit",
+      "officialName": "Vail Transit",
       "websiteUrl": "https://www.vail.gov/government/departments/transportation-services/bus-information",
       "region": "Colorado",
       "center": [
@@ -32007,6 +33079,7 @@
     {
       "slug": "avon-transit",
       "name": "Avon Transit",
+      "officialName": "Avon Transit",
       "websiteUrl": "https://www.avon.org/2038/Mobility",
       "region": "Colorado",
       "center": [
@@ -32056,6 +33129,7 @@
     {
       "slug": "timmins",
       "name": "Timmins Transit",
+      "officialName": "Timmins Transit",
       "websiteUrl": "https://www.timmins.ca/our_services/timmins_transit",
       "region": "Ontario",
       "center": [
@@ -32110,6 +33184,7 @@
     {
       "slug": "casper",
       "name": "Casper Area Transit",
+      "officialName": "Casper Area Transit",
       "region": "Wyoming",
       "center": [
         42.8501,
@@ -32159,6 +33234,7 @@
     {
       "slug": "ottumwa",
       "name": "10-15 Transit",
+      "officialName": "10-15 Transit",
       "websiteUrl": "https://www.1015transit.com/",
       "center": [
         41.15,
@@ -32207,6 +33283,7 @@
     {
       "slug": "mckinley-county",
       "name": "A:Shiwi Transit",
+      "officialName": "A:Shiwi Transit",
       "websiteUrl": "https://www.ashiwi.org/Transit.html",
       "center": [
         35.3,
@@ -32255,6 +33332,7 @@
     {
       "slug": "bowling-green",
       "name": "City of Bowling Green",
+      "officialName": "City of Bowling Green",
       "center": [
         36.97,
         -86.44
@@ -32302,6 +33380,7 @@
     {
       "slug": "knox-county",
       "name": "City of Galesburg",
+      "officialName": "City of Galesburg",
       "center": [
         40.96,
         -90.37
@@ -32349,6 +33428,7 @@
     {
       "slug": "sevier-county",
       "name": "City of Gatlinburg Trolley",
+      "officialName": "City of Gatlinburg Trolley",
       "websiteUrl": "https://www.gatlinburg.com/trolley/",
       "center": [
         35.73,
@@ -32395,6 +33475,7 @@
     {
       "slug": "howard-county",
       "name": "City of Kokomo",
+      "officialName": "City of Kokomo",
       "websiteUrl": "https://www.kokomompo.com/cityline-trolley/",
       "center": [
         40.47,
@@ -32441,6 +33522,7 @@
     {
       "slug": "sierra-vista",
       "name": "City of Sierra Vista",
+      "officialName": "City of Sierra Vista",
       "websiteUrl": "https://sierravistaaz.gov/our-city/bus-service/route-information",
       "center": [
         31.55,
@@ -32489,6 +33571,8 @@
     {
       "slug": "kittitas-county",
       "name": "City of Ellensburg Public Transit (Central Transit)",
+      "officialName": "City of Ellensburg Public Transit",
+      "commonName": "Central Transit",
       "websiteUrl": "https://centraltransit.org/",
       "center": [
         47,

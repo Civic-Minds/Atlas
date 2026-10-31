@@ -1,6 +1,7 @@
 {
   "slug": "coast-nh",
-  "name": "COAST (Seacoast NH)",
+  "officialName": "COAST",
+  "nameQualifier": "Seacoast NH",
   "displayArea": "Seacoast NH",
   "websiteUrl": "http://www.coastbus.org/",
   "center": [

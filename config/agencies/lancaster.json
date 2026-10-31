@@ -1,6 +1,7 @@
 {
   "slug": "lancaster",
-  "name": "Red Rose Transit Authority (Lancaster, PA)",
+  "officialName": "Red Rose Transit Authority",
+  "nameQualifier": "Lancaster, PA",
   "websiteUrl": "http://www.redrosetransit.com/",
   "center": [
     40.04,

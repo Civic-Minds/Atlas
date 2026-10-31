@@ -8,6 +8,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Map and route behavior
 
+- **The route chooser's dots match the line colours**: [LA Metro E Line](https://github.com/Civic-Minds/Atlas/issues/1246) showed an every-30 dot beside a line drawn every 10 or better; dots now follow the day and time on screen
 - **Route card notices say each fact once, in one place**: lines that repeated a row are gone, ["no scheduled trips"](https://github.com/Civic-Minds/Atlas/issues/1225) shows once, ["No frequency is shown"](https://github.com/Civic-Minds/Atlas/issues/1226) no longer sits beside a frequency, ["doesn't meet the filter"](https://github.com/Civic-Minds/Atlas/issues/1227) no longer shows where the rows already say why, and uneven gaps read "Gaps between trips can be up to N min"
 - **Rows put the frequency first**: route and stop cards read "every 12 min until 9:40 PM", the wait riders scan for, then its limit
 - **Agency pages and the map agree on when a [schedule ends](https://github.com/Civic-Minds/Atlas/issues/1229)**: an agency whose separate rail feed ends first (LA Metro, SEPTA) no longer reads as running months longer on its page
@@ -59,6 +60,8 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Route cards and frequency
 
+- **Route lists start their frequency range where the route card does**: a [range's low end](https://github.com/Civic-Minds/Atlas/issues/1231) named a stretch the card doesn't show (TTC 102 midday read every 5–30 beside the card's 20 and 30)
+- **Route lists no longer show a number for a route the filter reads as having no regular service**: a [stored value on peak-only or span patterns](https://github.com/Civic-Minds/Atlas/issues/1247) showed while the route failed every filter (AC Transit E weekday AM read every 53)
 - **A card shows one shared value per direction**: a destination under the Shared stretch row reads its own frequency, not a [second shared range](https://github.com/Civic-Minds/Atlas/issues/1232) (TTC 102 PM read "Shared stretch every 7" above "to Warden every 15–30")
 - **A period with a long slow stretch shows its longest wait**: [TTC 320](https://github.com/Civic-Minds/Atlas/issues/1142) overnight runs every 5 and then every 15, so it now reads "every 5–18" and is coloured by 18
 - **Branch rows show only the time a branch actually runs**: a [rush-hour branch](https://github.com/Civic-Minds/Atlas/issues/1115) no longer borrows the main line's midday frequency (TTC 84 Pioneer Village)
@@ -129,6 +132,8 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Agency, area and research pages
 
+- **The About page shows the map and the research up front**: a picture of Toronto's routes in their frequency colours sits beside the headline, the newest research follows as picture tiles you can swipe through on a phone, and Where / When / How often each get a card in a frequency colour
+- **Agency and area pages [name each agency without its bracket](https://github.com/Civic-Minds/Atlas/issues/1245)**: headings and sentences read "Montgomery Transit", not "Montgomery Transit (The M)", agencies that share a name keep their place ("BC Transit · Kelowna"), and the map's load-error hint names the agency, never a city
 - **Area links fit on the agency card**: a name too long for the line drops "Area" ("Greater Toronto and Hamilton →") instead of being cut off
 - **Night lists use the same agency headings as every other list**: counts read "24 routes"
 - **Area pages introduce their biggest agencies and keep their tables on screen**: intros name the two biggest agencies when there are more than three, the subtitle names the state or province instead of repeating the title, and tables group modes into seven columns that fit from 768px wide
@@ -168,6 +173,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Platform and other
 
+- **Times read the same way everywhere ("7 AM", "6–9 AM")**: on-demand hours, Live charts and build times still said "7 a.m.", "7 am" or "7:00 pm"
 - **Atlas makes far fewer server requests**: basemap tiles load straight from CARTO, a first visit loads 17 script files instead of 38, and repeat visits skip the privacy check
 - **The browser tab icon, iPhone home screen icon and link-preview image use the new Atlas logo**: the tab uses a simplified mark that stays readable at tiny sizes, where it used to show a subway emoji, and the preview showed only a city illustration
 - **Maps load faster and cost less to serve**: routes draw from tiles about 90% smaller, [route tiles](https://github.com/Civic-Minds/Atlas/issues/854) load straight from storage, [map tiles](https://github.com/Civic-Minds/Atlas/issues/840) and [basemap images](https://github.com/Civic-Minds/Atlas/issues/856) stay cached, and History's large file loads only when needed (CIV-151, CIV-218)

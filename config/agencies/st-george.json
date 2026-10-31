@@ -1,6 +1,7 @@
 {
   "slug": "st-george",
-  "name": "SunTran (St. George)",
+  "officialName": "SunTran",
+  "nameQualifier": "St. George",
   "websiteUrl": "https://www.sgcity.org/suntran",
   "center": [
     37.1,
