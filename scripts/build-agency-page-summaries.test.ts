@@ -128,6 +128,16 @@ describe('stretch filter fields (frequency focus step 7)', () => {
     const r = summarize([stretch('X', 0, 20, f, {}), stretch('X', 1, 20, f, {})], 'x', null).routes[0];
     expect(r.midday).toBeNull();
     expect(r.limited ?? []).not.toContain('midday');
+    // #1249: kept, so the page says "no regular service" as the map list does, not a blank.
+    expect(r.noRegular).toEqual(['midday', 'evening', 'overnight']);
+  });
+
+  it('a period the route does not run in is not no regular service (#1249)', () => {
+    const f = { amPeak: 20, midday: null, pmPeak: 20, evening: null, late: null, overnight: null };
+    const runs = { amPeak: true, midday: false, pmPeak: true, evening: false, late: false, overnight: false };
+    const r = summarize([stretch('X', 0, 20, f, {}, { routeRunsByPeriod: runs }), stretch('X', 1, 20, f, {}, { routeRunsByPeriod: runs })], 'x', null).routes[0];
+    expect(r.midday).toBeNull();
+    expect(r.noRegular).toBeUndefined();
   });
 });
 

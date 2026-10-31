@@ -9,6 +9,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ### Map and route behavior
 
 - **The route chooser's dots match the line colours**: [LA Metro E Line](https://github.com/Civic-Minds/Atlas/issues/1246) showed an every-30 dot beside a line drawn every 10 or better; dots now follow the day and time on screen
+- **Agency pages say "No regular service" where the map list does**: [CTA 1](https://github.com/Civic-Minds/Atlas/issues/1249) and other routes that run without a regular frequency were left blank, as if they had no service
 - **Route card notices say each fact once, in one place**: lines that repeated a row are gone, ["no scheduled trips"](https://github.com/Civic-Minds/Atlas/issues/1225) shows once, ["No frequency is shown"](https://github.com/Civic-Minds/Atlas/issues/1226) no longer sits beside a frequency, ["doesn't meet the filter"](https://github.com/Civic-Minds/Atlas/issues/1227) no longer shows where the rows already say why, and uneven gaps read "Gaps between trips can be up to N min"
 - **Rows put the frequency first**: route and stop cards read "every 12 min until 9:40 PM", the wait riders scan for, then its limit
 - **Agency pages and the map agree on when a [schedule ends](https://github.com/Civic-Minds/Atlas/issues/1229)**: an agency whose separate rail feed ends first (LA Metro, SEPTA) no longer reads as running months longer on its page
