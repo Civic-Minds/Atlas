@@ -10214,7 +10214,7 @@
       "lastFeedExpiry": "20270401",
       "lastFeedVersion": "",
       "region": "California",
-      "lastRefreshedAt": "2026-10-19",
+      "lastRefreshedAt": "2026-10-31",
       "supplementalFeedUrls": [
         "https://gitlab.com/LACMTA/gtfs_rail/raw/master/gtfs_rail.zip"
       ],
@@ -10233,7 +10233,7 @@
         "North Hills, California",
         "North Hollywood, California"
       ],
-      "lastFeedCheckAt": "20261019",
+      "lastFeedCheckAt": "20261031",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
       "expiredFeedCheckExpiry": "20270401",
@@ -10256,7 +10256,7 @@
           "mismatchRoutes": 1,
           "resumesOn": null
         },
-        "checkedAt": "2026-10-30"
+        "checkedAt": "2026-10-31"
       },
       "timezone": "America/Los_Angeles",
       "feedRefreshStatus": "current",
@@ -10267,12 +10267,14 @@
       "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-29/latest.zip",
       "lastSupplementalFeeds": [
         {
-          "feedExpiry": "20261031",
+          "feedExpiry": "20261113",
           "feedVersion": null,
-          "rawArchiveKey": "20261031-cc21c649b3ff74cf"
+          "rawArchiveKey": "20261113-a12c858a5877d1ec"
         }
       ],
-      "lastPeekedExpiry": "20270401"
+      "lastPeekedExpiry": "20270401",
+      "lastServiceWeek": "8a5859505ca2916d",
+      "feedObtainedAt": "20261031"
     },
     {
       "slug": "metrolink",
