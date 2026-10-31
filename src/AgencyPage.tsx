@@ -3,7 +3,7 @@ import { useParams } from 'react-router';
 import {
   bandCounts,
   agencyDatesText,
-  introName,
+  agencyTitle,
   agencyMapHref,
   agencyPageH1,
   agencyPagePath,
@@ -114,8 +114,9 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
       mode: ATLAS_MODE,
       origin: seoOrigin(),
       intro: data?.intro,
+      description: data?.description,
     }));
-  }, [agency, data?.intro]);
+  }, [agency, data?.intro, data?.description]);
 
   if (!agency && !lookedUp) return <main className="min-h-screen bg-[var(--bg-app)]" aria-busy="true" />;
 
@@ -132,7 +133,7 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
     <DocsPageLayout width="wide">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="min-w-0">
-              <PageTitle>{agencyPageH1(agency)}</PageTitle>
+              <PageTitle>{data!.title ?? agencyPageH1(agency)}</PageTitle>
               {data!.area
                 ? <ArrowLink tone="inline" className="mt-1" href={areaPagePath(data!.area.slug)}>{areaRegionTitle(data!.area)}</ArrowLink>
                 : agency.city && <p className="mt-1 text-sm text-[var(--text-muted)]">{agency.city}</p>}
@@ -191,7 +192,7 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
 
           <p className="mt-12 text-sm leading-6 text-[var(--text-dim)]">
             {agencyDatesText(agency, data!.releaseDate)}
-            {agency.websiteUrl && <> Agency website: <a className={LINK} href={agency.websiteUrl} rel="noopener noreferrer">{introName(agency.name, agency.city)}</a>.</>}
+            {agency.websiteUrl && <> Agency website: <a className={LINK} href={agency.websiteUrl} rel="noopener noreferrer">{data!.title ?? agencyTitle(agency)}</a>.</>}
           </p>
     </DocsPageLayout>
   );

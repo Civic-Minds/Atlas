@@ -1,7 +1,7 @@
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { configAgencyName, configFromIndexEntry, indexEntryFromConfig, registryAgencyName, splitRegistryName } from '../agencyRegistryName';
+import { configAgencyName, configFromIndexEntry, indexEntryFromConfig, registryAgencyName, splitRegistryName, withRegistryName } from '../agencyRegistryName';
 import { agencyNames } from '../../src/utils/agencyName';
 
 const CONFIG_DIR = join(import.meta.dirname, '../../config/agencies');
@@ -47,5 +47,14 @@ describe('agency name fields (#1245)', () => {
   it('lets agencyNames read the fields', () => {
     const fields = { name: 'ignored', officialName: 'Edmonton Transit Service', commonName: 'ETS' };
     expect(agencyNames(fields)).toEqual(agencyNames('Edmonton Transit Service (ETS)'));
+  });
+});
+
+describe('renaming an agency (process-gtfs name argument, #1245)', () => {
+  it('moves the new name into the fields, keeping the bracket kind', () => {
+    const entry = { slug: 'm', name: 'Montgomery Transit (The M)', officialName: 'Montgomery Transit', commonName: 'The M', region: 'Alabama' };
+    expect(withRegistryName(entry, 'Montgomery Area Transit (The M)')).toEqual({ slug: 'm', name: 'Montgomery Area Transit (The M)', officialName: 'Montgomery Area Transit', commonName: 'The M', region: 'Alabama' });
+    expect(withRegistryName(entry, 'Montgomery Transit (The M)')).toEqual(entry);
+    expect(configFromIndexEntry(withRegistryName(entry, 'The M Transit'))).toEqual({ slug: 'm', officialName: 'The M Transit', region: 'Alabama' });
   });
 });

@@ -2,7 +2,7 @@
  * The /agencies index: every area and agency page in one place. Built from the same summaries as the pages
  * themselves; nothing new is measured.
  */
-import { agencyPagePath, agencyShortLabel, type AgencyPageSummary } from './agencyPages';
+import { agencyMention, agencyPagePath, agencyTitle, sharedOfficialNames, type AgencyPageSummary } from './agencyPages';
 import { areaAgencySummaries } from './areaPages';
 import { areaRegionTitle, areaShortName } from './areaRegions';
 import { areaPagePath, areaSlug, type AreaConfig } from './areas';
@@ -27,9 +27,11 @@ export function agencyIndexRegionHref(a: { country?: string; region?: string }):
 
 export interface AgencyIndexAgency {
   slug: string;
+  /** The agency's official name (#1245): "Montgomery Transit", never the registry form "Montgomery Transit (The M)"; "BC Transit · Kelowna" when others share it. */
   name: string;
-  /** The name without its bracketed city ("CDTA"), for a row too tight for the full name. */
+  /** Its short name ("CDTA", "Muni"), for a row too tight for the full name. */
   shortName: string;
+
   routes: number;
 }
 
@@ -55,11 +57,12 @@ export function buildAgencyIndexData(
     .map(a => ({ slug: a.slug, title: areaRegionTitle(a), shortName: areaShortName(a) }))
     .sort((x, y) => compareText(x.shortName, y.shortName));
   const tree = new Map<string, Map<string, AgencyIndexAgency[]>>();
+  const shared = sharedOfficialNames(agencies);
   for (const a of agencies) {
     const country = a.country ?? OTHER;
     const region = a.country && a.region ? a.region : OTHER;
     const regions = tree.get(country) ?? tree.set(country, new Map()).get(country)!;
-    (regions.get(region) ?? regions.set(region, []).get(region)!).push({ slug: a.slug, name: a.name, shortName: agencyShortLabel(a), routes: a.routeCount });
+    (regions.get(region) ?? regions.set(region, []).get(region)!).push({ slug: a.slug, name: agencyTitle(a, shared), shortName: agencyMention(a), routes: a.routeCount });
   }
   const last = (x: string, y: string) => (x === OTHER ? 1 : 0) - (y === OTHER ? 1 : 0) || compareText(x, y);
   const groups = [...tree.entries()].sort(([x], [y]) => last(x, y)).map(([country, regions]) => ({

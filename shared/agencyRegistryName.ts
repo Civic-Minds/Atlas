@@ -43,6 +43,18 @@ export function indexEntryFromConfig(config: Record<string, unknown>): Record<st
   return entry;
 }
 
+/**
+ * An entry renamed to `name` (process-gtfs's name argument): its name fields follow, so the next index build keeps the new
+ * name. A bracket stays the kind it was (a common name stays a common name); a new one is a qualifier.
+ */
+export function withRegistryName<T extends Record<string, unknown>>(entry: T, name: string): T {
+  if (typeof entry.officialName !== 'string' || configAgencyName(entry) === name) return { ...entry, name };
+  const [officialName, bracket] = splitRegistryName(name);
+  const { commonName, nameQualifier: _q, ...rest } = entry;
+  const kind = commonName !== undefined ? 'commonName' : 'nameQualifier';
+  return indexEntryFromConfig({ ...rest, officialName, ...(bracket ? { [kind]: bracket } : {}) }) as T;
+}
+
 /** An index.json entry written back to its config file: the built `name` dropped when the name fields are there. */
 export function configFromIndexEntry<T extends Record<string, unknown>>(entry: T): T {
   if (typeof entry.officialName !== 'string') return entry;

@@ -4,7 +4,7 @@
  * Surfaces call agencyNames(...) and pick a form; fitAgencyName applies the one length rule.
  */
 import agencyShortNameData from '../../shared/data/agency-short-names.json';
-import { registryAgencyName, type AgencyNameFields } from '../../shared/agencyRegistryName';
+import { registryAgencyName, splitRegistryName, type AgencyNameFields } from '../../shared/agencyRegistryName';
 
 /**
  * List-label standard for registry names:
@@ -406,6 +406,11 @@ export interface AgencyNames {
   backLink: string;
   /** The agency card title: "Toronto Transit Commission", "Gary Public Transportation Corporation". */
   full: string;
+  /**
+   * The agency's official name, without its common name or qualifier (#1245): page headings and the sentences that name it
+   * ("Montgomery Transit", "Bay Area Rapid Transit", "BC Transit"). The page around it says the place.
+   */
+  official: string;
   /** The place shown beside the card title ("Mississauga"), if any. */
   place?: string;
   /** The card title with its place ({ primary, secondary }): the agency card, History's agency card, the zone card fallback. */
@@ -431,11 +436,26 @@ export function agencyNames(agency: AgencyNameInput): AgencyNames {
     name: row,
     backLink: row,
     full,
+    official: typeof agency !== 'string' && agency.officialName ? agency.officialName : splitRegistryName(name)[0],
     place,
     card: place ? { primary: full, secondary: place } : { primary: full },
     list: where && !placeAlreadyInName(row, where) ? { primary: row, secondary: where } : { primary: row },
     short: shortenedName(name),
   };
+}
+
+/**
+ * Each agency's short name, with what tells it apart where two in the list share one (#1245): "MTA NYCT Bus · Bronx",
+ * "Valley Metro · Phoenix". For text that names several agencies at once, such as the map's load-error hint.
+ */
+export function distinctAgencyNames(agencies: ReadonlyArray<Exclude<AgencyNameInput, string> & { slug: string }>): Map<string, string> {
+  const names = agencies.map(a => [a, agencyNames(a).name] as const);
+  const count = new Map<string, number>();
+  for (const [, name] of names) count.set(name, (count.get(name) ?? 0) + 1);
+  return new Map(names.map(([a, name]) => {
+    const apart = (count.get(name) ?? 0) > 1 ? a.nameQualifier ?? a.commonName ?? splitRegistryName(a.name)[1] : null;
+    return [a.slug, apart ? `${name} · ${apart}` : name];
+  }));
 }
 
 /** The `short` form of the agency with this slug (Live), or the slug when it is not in the list. */
