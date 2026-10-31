@@ -1,4 +1,5 @@
 import { dateRangeText } from './liveDashboard';
+import { clockTime } from './timeText';
 
 /**
  * Approved Live wording used in more than one place (tiles, page subtitles, link previews), kept here so the copies
@@ -7,7 +8,7 @@ import { dateRangeText } from './liveDashboard';
 
 /** The Late tile's caption under its percentage. */
 /** What Late means, once, for every page, panel and the glossary (approved by Ryan 2026-10-17). Reads after "Late:". */
-export const LATE_DEFINITION = "more than 5½ min behind the timetable: the TTC's 5-minute standard, plus 30 seconds because we see each vehicle about once a minute.";
+export const LATE_DEFINITION = "more than 5½ min behind the schedule: the TTC's 5-minute standard, plus 30 seconds because we see each vehicle about once a minute.";
 /** The title of every late-by-hour section and card (approved by Ryan 2026-10-17). */
 export const LATE_BY_HOUR_TITLE = 'Late departures by hour';
 /** The threshold in one phrase, wherever a caption or intro says how late counts as Late (approved by Ryan 2026-10-17). */
@@ -66,11 +67,11 @@ export function coveredRoutesText(agency: string, routes: ReadonlyArray<{ mode?:
   return `${routes.length} ${agency.toUpperCase()} ${streetcar ? 'streetcar ' : ''}route${routes.length === 1 ? '' : 's'}`;
 }
 
-/** "Built Oct 16, 6:12 pm", in Toronto time (the agencies Live covers), from an ISO timestamp. */
+/** "Built Oct 16, 6:12 PM", in Toronto time (the agencies Live covers), from an ISO timestamp. */
 export function builtText(iso: string): string {
-  const parts = new Intl.DateTimeFormat('en-US', { timeZone: 'America/Toronto', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true }).formatToParts(new Date(iso));
+  const parts = new Intl.DateTimeFormat('en-US', { timeZone: 'America/Toronto', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', hourCycle: 'h23' }).formatToParts(new Date(iso));
   const p = (t: string) => parts.find(x => x.type === t)?.value ?? '';
-  return `Built ${p('month')} ${p('day')}, ${p('hour')}:${p('minute')} ${p('dayPeriod').toLowerCase()}`;
+  return `Built ${p('month')} ${p('day')}, ${clockTime(Number(p('hour')) * 60 + Number(p('minute')))}`;
 }
 
 /** The four group labels of "How this is measured", the same on every Live page. */
@@ -84,8 +85,8 @@ export const METHOD_GROUPS = {
 /** The recording-gaps limit, said once per page. */
 export const RECORDING_GAPS = "days with gaps in our recordings are left out, and trips during those gaps aren't counted.";
 
-/** Run time against the timetable in whole minutes: "2 min faster than the timetable" (the tile's caption), or without the tail in a table cell. */
-export const runTimeDiffText = (diffMin: number, tail = true): string => (diffMin === 0 ? 'same as the timetable' : `${Math.abs(diffMin)} min ${diffMin < 0 ? 'faster' : 'slower'}${tail ? ' than the timetable' : ''}`);
+/** Run time against the timetable in whole minutes: "2 min faster than the schedule" (the tile's caption), or without the tail in a table cell. */
+export const runTimeDiffText = (diffMin: number, tail = true): string => (diffMin === 0 ? 'same as the schedule' : `${Math.abs(diffMin)} min ${diffMin < 0 ? 'faster' : 'slower'}${tail ? ' than the schedule' : ''}`);
 
 /** A rise in a share, in percentage points: "+31 pt" (the unit the tiles use for a change in a share). */
 export const risePointsText = (rise: number): string => `${rise > 0 ? '+' : ''}${Math.round(rise * 100)} pt`;

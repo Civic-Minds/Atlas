@@ -92,9 +92,9 @@ describe('Live route dashboard', () => {
     expect(screen.getByText(/Last 7 service days, Oct 8–14: 1,234 trips and 20,000 stop departures\./)).toBeTruthy();
     expect(screen.getByText(/4% of trips ran under a trip number/)).toBeTruthy();
     // One Late definition (no second "Late at a stop" line), then what ahead means, from the file's own limit.
-    expect(screen.getAllByText(/more than 5½ min behind the timetable/).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/more than 5½ min behind the schedule/).length).toBeGreaterThan(0);
     expect(screen.queryByText(/Late at a stop/)).toBeNull();
-    expect(screen.getAllByText(/more than 5½ min behind the timetable.*? Ahead means 1\.5\+ minutes before it\./).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/more than 5½ min behind the schedule.*? Ahead means 1\.5\+ minutes before it\./).length).toBeGreaterThan(0);
   });
 
   it('has no time-of-day toggle: the whole day, a per-period list where the answer differs, and the direction in the address', async () => {
@@ -184,7 +184,7 @@ describe('Live route dashboard', () => {
   it('says how many runs were left out and why, so the figures are honest about what they cover', async () => {
     renderPage({ ...ready, v3: { ...v3, leftOut: { noTimetableTrip: 600, excluded: 500, excludedLabel: 'replacement buses', kept: 900 } } });
     await screen.findByRole('heading', { level: 1 });
-    expect(screen.getByText(/600 runs \(30% of the vehicle trips seen\) under a trip number not on the timetable, such as extra or unscheduled buses, are left out; the figures describe the 900 timetabled trips kept/)).toBeTruthy();
+    expect(screen.getByText(/600 runs \(30% of the vehicle trips seen\) under a trip number not on the schedule, such as extra or unscheduled buses, are left out; the figures describe the 900 scheduled trips kept/)).toBeTruthy();
     expect(screen.getByText(/500 runs by replacement buses that share this route number are left out/)).toBeTruthy();
   });
 

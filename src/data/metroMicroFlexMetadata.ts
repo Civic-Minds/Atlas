@@ -5,7 +5,7 @@ export const GTFS_FLEX_METADATA = {
   zoneMetadata: {
   "Metro micro - North Minneapolis": {
     "serviceName": "Metro micro",
-    "serviceHours": "Weekdays: 5:30 a.m.–10:30 p.m.; Saturday: 7:00 a.m.–10:30 p.m.; Sunday: 7:00 a.m.–10:30 p.m.",
+    "serviceHours": "Weekdays: 5:30 AM–10:30 PM; Saturday: 7 AM–10:30 PM; Sunday: 7 AM–10:30 PM.",
     "availability": {
       "Weekday": [
         {
@@ -29,7 +29,7 @@ export const GTFS_FLEX_METADATA = {
   },
   "North Minneapolis": {
     "serviceName": "Metro micro",
-    "serviceHours": "Weekdays: 5:30 a.m.–10:30 p.m.; Saturday: 7:00 a.m.–10:30 p.m.; Sunday: 7:00 a.m.–10:30 p.m.",
+    "serviceHours": "Weekdays: 5:30 AM–10:30 PM; Saturday: 7 AM–10:30 PM; Sunday: 7 AM–10:30 PM.",
     "availability": {
       "Weekday": [
         {
@@ -53,7 +53,7 @@ export const GTFS_FLEX_METADATA = {
   },
   "North Minneapolis Area": {
     "serviceName": "Metro micro",
-    "serviceHours": "Weekdays: 5:30 a.m.–10:30 p.m.; Saturday: 7:00 a.m.–10:30 p.m.; Sunday: 7:00 a.m.–10:30 p.m.",
+    "serviceHours": "Weekdays: 5:30 AM–10:30 PM; Saturday: 7 AM–10:30 PM; Sunday: 7 AM–10:30 PM.",
     "availability": {
       "Weekday": [
         {
@@ -77,7 +77,7 @@ export const GTFS_FLEX_METADATA = {
   },
   "North Minneapolis Area Zone": {
     "serviceName": "Metro micro",
-    "serviceHours": "Weekdays: 5:30 a.m.–10:30 p.m.; Saturday: 7:00 a.m.–10:30 p.m.; Sunday: 7:00 a.m.–10:30 p.m.",
+    "serviceHours": "Weekdays: 5:30 AM–10:30 PM; Saturday: 7 AM–10:30 PM; Sunday: 7 AM–10:30 PM.",
     "availability": {
       "Weekday": [
         {
@@ -101,7 +101,7 @@ export const GTFS_FLEX_METADATA = {
   },
   "Metro micro - Woodbury": {
     "serviceName": "Metro micro",
-    "serviceHours": "Weekdays: 5:30 a.m.–10:30 p.m.; Saturday: 7:00 a.m.–10:30 p.m.; Sunday: 7:00 a.m.–10:30 p.m.",
+    "serviceHours": "Weekdays: 5:30 AM–10:30 PM; Saturday: 7 AM–10:30 PM; Sunday: 7 AM–10:30 PM.",
     "availability": {
       "Weekday": [
         {
@@ -125,7 +125,7 @@ export const GTFS_FLEX_METADATA = {
   },
   "Woodbury": {
     "serviceName": "Metro micro",
-    "serviceHours": "Weekdays: 5:30 a.m.–10:30 p.m.; Saturday: 7:00 a.m.–10:30 p.m.; Sunday: 7:00 a.m.–10:30 p.m.",
+    "serviceHours": "Weekdays: 5:30 AM–10:30 PM; Saturday: 7 AM–10:30 PM; Sunday: 7 AM–10:30 PM.",
     "availability": {
       "Weekday": [
         {
@@ -149,7 +149,7 @@ export const GTFS_FLEX_METADATA = {
   },
   "Woodbury Area": {
     "serviceName": "Metro micro",
-    "serviceHours": "Weekdays: 5:30 a.m.–10:30 p.m.; Saturday: 7:00 a.m.–10:30 p.m.; Sunday: 7:00 a.m.–10:30 p.m.",
+    "serviceHours": "Weekdays: 5:30 AM–10:30 PM; Saturday: 7 AM–10:30 PM; Sunday: 7 AM–10:30 PM.",
     "availability": {
       "Weekday": [
         {
@@ -173,7 +173,7 @@ export const GTFS_FLEX_METADATA = {
   },
   "Woodbury Area Zone": {
     "serviceName": "Metro micro",
-    "serviceHours": "Weekdays: 5:30 a.m.–10:30 p.m.; Saturday: 7:00 a.m.–10:30 p.m.; Sunday: 7:00 a.m.–10:30 p.m.",
+    "serviceHours": "Weekdays: 5:30 AM–10:30 PM; Saturday: 7 AM–10:30 PM; Sunday: 7 AM–10:30 PM.",
     "availability": {
       "Weekday": [
         {
@@ -197,7 +197,7 @@ export const GTFS_FLEX_METADATA = {
   },
   "Metro micro - Roseville": {
     "serviceName": "Metro micro",
-    "serviceHours": "Weekdays: 5:30 a.m.–10:30 p.m.; Saturday: 7:00 a.m.–10:30 p.m.; Sunday: 7:00 a.m.–10:30 p.m.",
+    "serviceHours": "Weekdays: 5:30 AM–10:30 PM; Saturday: 7 AM–10:30 PM; Sunday: 7 AM–10:30 PM.",
     "availability": {
       "Weekday": [
         {
@@ -221,7 +221,7 @@ export const GTFS_FLEX_METADATA = {
   },
   "Roseville": {
     "serviceName": "Metro micro",
-    "serviceHours": "Weekdays: 5:30 a.m.–10:30 p.m.; Saturday: 7:00 a.m.–10:30 p.m.; Sunday: 7:00 a.m.–10:30 p.m.",
+    "serviceHours": "Weekdays: 5:30 AM–10:30 PM; Saturday: 7 AM–10:30 PM; Sunday: 7 AM–10:30 PM.",
     "availability": {
       "Weekday": [
         {
@@ -245,7 +245,7 @@ export const GTFS_FLEX_METADATA = {
   },
   "Roseville Area": {
     "serviceName": "Metro micro",
-    "serviceHours": "Weekdays: 5:30 a.m.–10:30 p.m.; Saturday: 7:00 a.m.–10:30 p.m.; Sunday: 7:00 a.m.–10:30 p.m.",
+    "serviceHours": "Weekdays: 5:30 AM–10:30 PM; Saturday: 7 AM–10:30 PM; Sunday: 7 AM–10:30 PM.",
     "availability": {
       "Weekday": [
         {
@@ -269,7 +269,7 @@ export const GTFS_FLEX_METADATA = {
   },
   "Roseville Area Zone": {
     "serviceName": "Metro micro",
-    "serviceHours": "Weekdays: 5:30 a.m.–10:30 p.m.; Saturday: 7:00 a.m.–10:30 p.m.; Sunday: 7:00 a.m.–10:30 p.m.",
+    "serviceHours": "Weekdays: 5:30 AM–10:30 PM; Saturday: 7 AM–10:30 PM; Sunday: 7 AM–10:30 PM.",
     "availability": {
       "Weekday": [
         {
@@ -293,7 +293,7 @@ export const GTFS_FLEX_METADATA = {
   },
   "Metro micro - Bloomington": {
     "serviceName": "Metro micro",
-    "serviceHours": "Weekdays: 5:30 a.m.–10:30 p.m.; Saturday: 7:00 a.m.–10:30 p.m.; Sunday: 7:00 a.m.–10:30 p.m.",
+    "serviceHours": "Weekdays: 5:30 AM–10:30 PM; Saturday: 7 AM–10:30 PM; Sunday: 7 AM–10:30 PM.",
     "availability": {
       "Weekday": [
         {
@@ -317,7 +317,7 @@ export const GTFS_FLEX_METADATA = {
   },
   "Bloomington": {
     "serviceName": "Metro micro",
-    "serviceHours": "Weekdays: 5:30 a.m.–10:30 p.m.; Saturday: 7:00 a.m.–10:30 p.m.; Sunday: 7:00 a.m.–10:30 p.m.",
+    "serviceHours": "Weekdays: 5:30 AM–10:30 PM; Saturday: 7 AM–10:30 PM; Sunday: 7 AM–10:30 PM.",
     "availability": {
       "Weekday": [
         {
@@ -341,7 +341,7 @@ export const GTFS_FLEX_METADATA = {
   },
   "Bloomington Area": {
     "serviceName": "Metro micro",
-    "serviceHours": "Weekdays: 5:30 a.m.–10:30 p.m.; Saturday: 7:00 a.m.–10:30 p.m.; Sunday: 7:00 a.m.–10:30 p.m.",
+    "serviceHours": "Weekdays: 5:30 AM–10:30 PM; Saturday: 7 AM–10:30 PM; Sunday: 7 AM–10:30 PM.",
     "availability": {
       "Weekday": [
         {
@@ -365,7 +365,7 @@ export const GTFS_FLEX_METADATA = {
   },
   "Bloomington Area Zone": {
     "serviceName": "Metro micro",
-    "serviceHours": "Weekdays: 5:30 a.m.–10:30 p.m.; Saturday: 7:00 a.m.–10:30 p.m.; Sunday: 7:00 a.m.–10:30 p.m.",
+    "serviceHours": "Weekdays: 5:30 AM–10:30 PM; Saturday: 7 AM–10:30 PM; Sunday: 7 AM–10:30 PM.",
     "availability": {
       "Weekday": [
         {
@@ -389,7 +389,7 @@ export const GTFS_FLEX_METADATA = {
   },
   "Metro micro - Blaine": {
     "serviceName": "Metro micro",
-    "serviceHours": "Weekdays: 5:30 a.m.–10:30 p.m.; Saturday: 7:00 a.m.–10:30 p.m.; Sunday: 7:00 a.m.–10:30 p.m.",
+    "serviceHours": "Weekdays: 5:30 AM–10:30 PM; Saturday: 7 AM–10:30 PM; Sunday: 7 AM–10:30 PM.",
     "availability": {
       "Weekday": [
         {
@@ -413,7 +413,7 @@ export const GTFS_FLEX_METADATA = {
   },
   "Blaine": {
     "serviceName": "Metro micro",
-    "serviceHours": "Weekdays: 5:30 a.m.–10:30 p.m.; Saturday: 7:00 a.m.–10:30 p.m.; Sunday: 7:00 a.m.–10:30 p.m.",
+    "serviceHours": "Weekdays: 5:30 AM–10:30 PM; Saturday: 7 AM–10:30 PM; Sunday: 7 AM–10:30 PM.",
     "availability": {
       "Weekday": [
         {
@@ -437,7 +437,7 @@ export const GTFS_FLEX_METADATA = {
   },
   "Blaine Area": {
     "serviceName": "Metro micro",
-    "serviceHours": "Weekdays: 5:30 a.m.–10:30 p.m.; Saturday: 7:00 a.m.–10:30 p.m.; Sunday: 7:00 a.m.–10:30 p.m.",
+    "serviceHours": "Weekdays: 5:30 AM–10:30 PM; Saturday: 7 AM–10:30 PM; Sunday: 7 AM–10:30 PM.",
     "availability": {
       "Weekday": [
         {
@@ -461,7 +461,7 @@ export const GTFS_FLEX_METADATA = {
   },
   "Blaine Area Zone": {
     "serviceName": "Metro micro",
-    "serviceHours": "Weekdays: 5:30 a.m.–10:30 p.m.; Saturday: 7:00 a.m.–10:30 p.m.; Sunday: 7:00 a.m.–10:30 p.m.",
+    "serviceHours": "Weekdays: 5:30 AM–10:30 PM; Saturday: 7 AM–10:30 PM; Sunday: 7 AM–10:30 PM.",
     "availability": {
       "Weekday": [
         {
@@ -485,7 +485,7 @@ export const GTFS_FLEX_METADATA = {
   },
   "Metro micro - Brooklyn Park": {
     "serviceName": "Metro micro",
-    "serviceHours": "Weekdays: 5:30 a.m.–10:30 p.m.; Saturday: 7:00 a.m.–10:30 p.m.; Sunday: 7:00 a.m.–10:30 p.m.",
+    "serviceHours": "Weekdays: 5:30 AM–10:30 PM; Saturday: 7 AM–10:30 PM; Sunday: 7 AM–10:30 PM.",
     "availability": {
       "Weekday": [
         {
@@ -509,7 +509,7 @@ export const GTFS_FLEX_METADATA = {
   },
   "Brooklyn Park": {
     "serviceName": "Metro micro",
-    "serviceHours": "Weekdays: 5:30 a.m.–10:30 p.m.; Saturday: 7:00 a.m.–10:30 p.m.; Sunday: 7:00 a.m.–10:30 p.m.",
+    "serviceHours": "Weekdays: 5:30 AM–10:30 PM; Saturday: 7 AM–10:30 PM; Sunday: 7 AM–10:30 PM.",
     "availability": {
       "Weekday": [
         {
@@ -533,7 +533,7 @@ export const GTFS_FLEX_METADATA = {
   },
   "Brooklyn Park Area": {
     "serviceName": "Metro micro",
-    "serviceHours": "Weekdays: 5:30 a.m.–10:30 p.m.; Saturday: 7:00 a.m.–10:30 p.m.; Sunday: 7:00 a.m.–10:30 p.m.",
+    "serviceHours": "Weekdays: 5:30 AM–10:30 PM; Saturday: 7 AM–10:30 PM; Sunday: 7 AM–10:30 PM.",
     "availability": {
       "Weekday": [
         {
@@ -557,7 +557,7 @@ export const GTFS_FLEX_METADATA = {
   },
   "Brooklyn Park Area Zone": {
     "serviceName": "Metro micro",
-    "serviceHours": "Weekdays: 5:30 a.m.–10:30 p.m.; Saturday: 7:00 a.m.–10:30 p.m.; Sunday: 7:00 a.m.–10:30 p.m.",
+    "serviceHours": "Weekdays: 5:30 AM–10:30 PM; Saturday: 7 AM–10:30 PM; Sunday: 7 AM–10:30 PM.",
     "availability": {
       "Weekday": [
         {

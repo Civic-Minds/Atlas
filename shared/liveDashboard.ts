@@ -5,6 +5,7 @@
  */
 import { hasLiveAnalysis } from './livePollingConfig.js';
 import { tenth } from './liveFormat.js';
+import { hourTime } from './timeText.js';
 
 export interface AdherenceCounts {
   n: number;
@@ -66,9 +67,9 @@ export interface RunTimeBranch { fromStopId: string; toStopId: string; fromName:
 export function branchFigures(b: RunTimeBranch, band: DashboardBand): RunTimeFigures | null {
   return b.bands ? b.bands[band] ?? null : band === 'all' ? b.all : null;
 }
-/** "To Marine Parade: usually 12 min, timetable 14 (over 14 stops from Humber Loop, 215 trips)." */
+/** "To Marine Parade: usually 12 min, scheduled 14 (over 14 stops from Humber Loop, 215 trips)." */
 export function branchRunTimeLine(b: RunTimeBranch, nice: (name: string) => string = x => x, f: RunTimeFigures = b.all): string {
-  return `To ${nice(b.toName)}: usually ${Math.round(f.typicalMin)} min, timetable ${Math.round(f.scheduledMin)}, 1 in 10 over ${Math.round(f.p90Min)} (over ${b.stops} stops from ${nice(b.fromName)}, ${f.n.toLocaleString()} trips).`;
+  return `To ${nice(b.toName)}: usually ${Math.round(f.typicalMin)} min, scheduled ${Math.round(f.scheduledMin)}, 1 in 10 over ${Math.round(f.p90Min)} (over ${b.stops} stops from ${nice(b.fromName)}, ${f.n.toLocaleString()} trips).`;
 }
 export interface RunTimeFigures { n: number; scheduledMin: number; typicalMin: number; p90Min: number; overMin: number }
 export interface WeekMetrics {
@@ -188,14 +189,14 @@ export const QUALITY_MAX_UNLISTED_SHARE = 0.5;
 export function qualityHold(v3: LiveV3): string | null {
   // A file without these blocks cannot be judged here; the page says what is missing section by section.
   if (!v3.swaps || !v3.adherence?.timepoints?.all?.overall) return null;
-  if (v3.swaps.rate > QUALITY_MAX_SWAP_RATE) return `About ${Math.round(v3.swaps.rate * 100)}% of its trips ran under a trip number that does not match the timetable, so its delays cannot be trusted yet.`;
+  if (v3.swaps.rate > QUALITY_MAX_SWAP_RATE) return `About ${Math.round(v3.swaps.rate * 100)}% of its trips ran under a trip number that does not match the schedule. Its delays cannot be trusted yet.`;
   const n = v3.adherence.timepoints.all.overall.n;
   if (n < QUALITY_MIN_TIMEPOINT_DEPARTURES) return n === 0
-    ? 'Its timetable gives no stop times to compare with, so how late it runs cannot be measured.'
+    ? 'Its schedule gives no stop times to compare with. How late it runs cannot be measured.'
     : `Only ${n.toLocaleString()} departures at stops with a scheduled time were measured this week, too few to say how late it runs.`;
   const lo = v3.leftOut;
   const seen = lo ? lo.kept + lo.noTimetableTrip + lo.excluded : 0;
-  if (lo && seen > 0 && lo.noTimetableTrip / seen > QUALITY_MAX_UNLISTED_SHARE) return `${Math.round((lo.noTimetableTrip / seen) * 100)}% of its vehicles ran under trip numbers that are not on the timetable, so the figures would describe only a minority of its service.`;
+  if (lo && seen > 0 && lo.noTimetableTrip / seen > QUALITY_MAX_UNLISTED_SHARE) return `${Math.round((lo.noTimetableTrip / seen) * 100)}% of its vehicles ran under trip numbers that are not on the schedule. The figures would describe only a minority of its service.`;
   return null;
 }
 
@@ -204,7 +205,7 @@ export function dashboardUnavailable(agency: string, route: string, analysed = h
   const hold = dashboardHold(agency, route);
   if (hold) return { status: 'held', reason: hold };
   if (!analysed) {
-    return { status: 'no_analysis', reason: `No analysis is built for ${agency.toUpperCase()} ${route} yet. It needs saved vehicle locations and the timetable for the route.`, devHint: `npm run live:analyze -- ${route}` };
+    return { status: 'no_analysis', reason: `No analysis is built for ${agency.toUpperCase()} ${route} yet. It needs saved vehicle locations and the schedule for the route.`, devHint: `npm run live:analyze -- ${route}` };
   }
   return null;
 }
@@ -249,13 +250,13 @@ export function bunchingSentence(label: string, b: DashboardBunchingBand): strin
     const top = b.stops.filter(s => s.n >= 30).reduce((m, s) => Math.max(m, s.badShare), 0);
     return `${label}: bunching builds gradually, from ${first ? pct(first.badShare) : 'the start'} at the first measured stop to ${pct(top)} at its highest. No single stretch steps up by 10 points.`;
   }
-  return `${label}: gaps stay close to the timetable along the route.`;
+  return `${label}: gaps stay close to the schedule along the route.`;
 }
 
 export const LINK_LABELS: Record<BunchingLinkKind, string> = {
   terminal_departures: 'Uneven departures at the terminal',
   stood_still: 'Vehicles standing still in this stretch',
-  slow_stretch: 'Running slower than the timetable in this stretch',
+  slow_stretch: 'Running slower than the schedule in this stretch',
   short_turns: 'Trips cut short in this stretch',
 };
 
@@ -263,7 +264,7 @@ export function linkValueText(kind: BunchingLinkKind, value: number | null): str
   if (value == null) return 'not measured';
   if (kind === 'terminal_departures') return `${pct(value)} of gaps off`;
   if (kind === 'stood_still') return `${Math.round(value * 10) / 10} a day`;
-  if (kind === 'slow_stretch') return `${value >= 0 ? '+' : ''}${Math.round(value)} s vs timetable`;
+  if (kind === 'slow_stretch') return `${value >= 0 ? '+' : ''}${Math.round(value)} s vs schedule`;
   return `${Math.round(value * 10) / 10} a day`;
 }
 
@@ -348,7 +349,7 @@ export function toCsv(header: readonly string[], rows: ReadonlyArray<ReadonlyArr
 // --- running time, extra wait, service delivered and the week-over-week comparison ---
 
 const m1 = tenth;
-const hourName = (h: number) => `${h % 12 === 0 ? 12 : h % 12}${h % 24 < 12 ? 'am' : 'pm'}`;
+const hourName = hourTime;
 
 /** "Scheduled 22 min · usually 27 · 1 in 10 over 34 min" (with the hour when one is given). */
 export function runningTimeSentence(label: string, r: RunTimeFigures | null | undefined, atHour?: number): string {

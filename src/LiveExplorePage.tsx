@@ -97,7 +97,7 @@ function DetailPanel({ v3, band, sel, stops, data }: { v3: LiveV3; band: Dashboa
     return (
       <Panel title={`${nice(b.fromName)} to ${nice(b.toName)}`} sub={strip.label}>
         <Block>
-          <Fact label="Gaps off the timetable" value={`${pct(b.fromBadShare)} to ${pct(b.toBadShare)}`} />
+          <Fact label="Gaps off the schedule" value={`${pct(b.fromBadShare)} to ${pct(b.toBadShare)}`} />
         </Block>
         <Block title={linked.length ? 'Linked to' : 'Nothing measured here is linked to it'}>
           {b.links.map(l => (

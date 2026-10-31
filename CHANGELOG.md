@@ -167,6 +167,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Platform and other
 
+- **Times read the same way everywhere ("7 AM", "6–9 AM")**: on-demand hours, Live charts and build times still said "7 a.m.", "7 am" or "7:00 pm"
 - **Atlas makes far fewer server requests**: basemap tiles load straight from CARTO, a first visit loads 17 script files instead of 38, and repeat visits skip the privacy check
 - **The browser tab icon, iPhone home screen icon and link-preview image use the new Atlas logo**: the tab uses a simplified mark that stays readable at tiny sizes, where it used to show a subway emoji, and the preview showed only a city illustration
 - **Maps load faster and cost less to serve**: routes draw from tiles about 90% smaller, [route tiles](https://github.com/Civic-Minds/Atlas/issues/854) load straight from storage, [map tiles](https://github.com/Civic-Minds/Atlas/issues/840) and [basemap images](https://github.com/Civic-Minds/Atlas/issues/856) stay cached, and History's large file loads only when needed (CIV-151, CIV-218)
