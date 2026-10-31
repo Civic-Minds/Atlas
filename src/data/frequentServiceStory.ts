@@ -1,6 +1,6 @@
 import audit from '../../docs/research/system-map-audit-2026-09/data.json';
-import recheck from '../../docs/research/frequent-service-research-2026-09/definition-recheck-2026-10-30.json';
-import definitions from '../../docs/research/frequent-service-research-2026-09/frequent-definitions-by-agency.json';
+import recheck from './definition-recheck-2026-10-30.json';
+import definitions from './frequent-definitions-by-agency.json';
 
 /** The chart's fixed steps; any other wait in the data (Fort McMurray's 25, CIV-1178) gets its own bar too. */
 const storyScaleSteps = [10, 12, 15, 20, 30, 60];
