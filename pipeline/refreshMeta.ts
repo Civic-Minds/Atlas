@@ -25,6 +25,19 @@ export interface FeedMetaFields {
   lastSupplementalFeeds?: SupplementalFeedMeta[];
   /** A fetched timetable starting on this date waits until then (#1144); cleared once one is processed. */
   heldFeedStart?: string | null;
+  /** CIV-1223: the zips the release gate last refused (feedSetSha256); cleared once a feed is processed. */
+  refusedFeedSha256?: string | null;
+}
+
+/**
+ * CIV-1011 safeguard: when Atlas first obtained the feed file. A new file is obtained today; an unchanged
+ * one keeps its recorded date, else the zip's own date (#1253), never the last refresh: Miami's April file
+ * read as obtained on its 17 Sep refresh, after its bus services ended (Jul 19), so the safeguard took the
+ * end as deliberate and showed no notice.
+ */
+export function feedFileDate(opts: { newFile: boolean; runDate: string; feedObtainedAt?: string | null; zipDate: string | null }): string | null {
+  if (opts.newFile) return opts.runDate;
+  return opts.feedObtainedAt ?? opts.zipDate ?? null;
 }
 
 /** Whether a feed's declared service end date is before the refresh date. */
@@ -178,6 +191,7 @@ export function stampFeedMeta(
   agency.feedRefreshErrorAt = null;
   agency.feedRefreshRetryCount = 0;
   delete agency.heldFeedStart;
+  delete agency.refusedFeedSha256;
   stampListingEnd(agency, opts.listingEnd);
   if (opts.serviceWeek) agency.lastServiceWeek = opts.serviceWeek;
   else if (opts.serviceWeek === null) delete agency.lastServiceWeek;

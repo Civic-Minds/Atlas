@@ -36,6 +36,7 @@ import {
 } from './headway-utils.js';
 import { SHARED_STRETCH_MIN_KM, SHARED_STRETCH_MIN_STOPS } from './sharedStretch.js';
 import { SAME_TERMINAL_METERS } from './featureDedupe.js';
+import { boardingMainStretchWait, riderWait } from './routeGrading.js';
 
 /** A short turn (stops all on a longer regular pattern) under this share of trips is a variant (the spec's regular-pattern share). */
 export const SHORT_TURN_MIN_SHARE = 0.2;
@@ -153,6 +154,14 @@ function middleStop(stops: readonly string[], tripStops: readonly ReadonlySet<st
   return pool[Math.floor(pool.length / 2)];
 }
 
+/** The trips' distinct counted departures at `stop`, earliest first. */
+function departuresAt(trips: readonly DirectionTrip[], stop: string): number[] {
+  return [...new Set(trips
+    .map(trip => trip.visits.find(v => v.stopId === stop))
+    .filter((v): v is NonNullable<typeof v> => v != null && v.counted !== false)
+    .map(v => v.minutes))].sort((x, y) => x - y);
+}
+
 /** True when the trips, read at `stop`, run steadily through at least one period (steady and on both sides of its midpoint). */
 function runsSteadily(trips: readonly DirectionTrip[], stop: string, periods: readonly PeriodKey[]): boolean {
   const times: number[] = [];
@@ -238,10 +247,6 @@ export function directionStretches(
   // spacings and the gap at the handover passing the settled steadiness test against each other.
   if (regular.length > 0) {
     const sameEnds = (a: readonly string[], b: readonly string[]) => sameTerminal(a[0], b[0]) && sameTerminal(a[a.length - 1], b[b.length - 1]);
-    const timesAtStop = (trips: readonly DirectionTrip[], stop: string) => [...new Set(trips
-      .map(trip => trip.visits.find(v => v.stopId === stop))
-      .filter((v): v is NonNullable<typeof v> => v != null && v.counted !== false)
-      .map(v => v.minutes))].sort((x, y) => x - y);
     // Daytime service shapes the stretches (as steadyIn above): a pattern that takes over only at night
     // (OC Transpo 39's after-midnight Place d'Orléans routing, 00:09-02:09) stays a variant by day.
     const daytimeWindows = PERIOD_WINDOWS.filter(w => DAYTIME_PERIODS.includes(w.key));
@@ -253,7 +258,7 @@ export function directionStretches(
       const shared = q.stops.filter(stop => pStops.has(stop));
       if (shared.length === 0) return false;
       const ref = shared[Math.floor(shared.length / 2)];
-      const a = timesAtStop(p.trips, ref), b = timesAtStop(q.trips, ref);
+      const a = departuresAt(p.trips, ref), b = departuresAt(q.trips, ref);
       if (a.length < MIN_SCHEDULE_DEPARTURES || b.length < MIN_SCHEDULE_DEPARTURES) return false;
       const [first, second] = a[a.length - 1] < b[0] ? [a, b] : b[b.length - 1] < a[0] ? [b, a] : [null, null];
       if (!first || !second) return false;
@@ -267,6 +272,36 @@ export function directionStretches(
     const regularNow = new Set(regular);
     const turnTakers = eligible.filter(p => !regularNow.has(p) && regular.some(q => takesTurnsWith(p, q)));
     if (turnTakers.length > 0) regular = [...regular, ...turnTakers];
+  }
+  // #1256: the busiest pattern can fail the steady test only because another pattern takes alternate trips.
+  // Pace 542 on weekdays runs every 30, but a 6-trip pattern from another stop takes the 7:14, 7:50, 8:25,
+  // 14:02, 15:03 and 17:29 slots, so the 22-trip pattern has an hour's hole in every period and only the
+  // 6-trip pattern was regular: the main stretch was its 14 stops, 10 of them served by 6 trips. MATA 30's
+  // two routings each run every 4 hours, alternating. Pooled where they meet, they are one steady service,
+  // so both are regular and the main stretch is the stops they share. Only when the busiest pattern is not
+  // regular itself, the two end (or start) at the same terminal, the other's trips fall between the
+  // busiest's first and last at their shared middle stop, and together they run steadily through a daytime
+  // period that neither does alone: a branch steady on its own, or a peak-only branch beside a steady
+  // all-day pattern (Pace 808), is not pooled.
+  const busiestEligible = eligible.length > 0 ? eligible.reduce((x, y) => (y.trips.length > x.trips.length ? y : x)) : null;
+  if (busiestEligible && !regular.includes(busiestEligible)) {
+    const top = busiestEligible;
+    const alternatesWithTop = (q: (typeof all)[number]): boolean => {
+      if (q === top) return false;
+      const qStops = new Set(q.stops);
+      const shared = top.stops.filter(stop => qStops.has(stop));
+      if (shared.length < 2) return false;
+      const meet = sameTerminal(top.stops[top.stops.length - 1], q.stops[q.stops.length - 1]) || sameTerminal(top.stops[0], q.stops[0]);
+      if (!meet) return false;
+      const ref = shared[Math.floor(shared.length / 2)];
+      const a = departuresAt(top.trips, ref), b = departuresAt(q.trips, ref);
+      if (a.length < MIN_SCHEDULE_DEPARTURES || !b.some(t => t > a[0] && t < a[a.length - 1])) return false;
+      const alone = periodSustainedMid(a), other = periodSustainedMid(b);
+      const together = periodSustainedMid([...new Set([...a, ...b])].sort((x, y) => x - y));
+      return DAYTIME_PERIODS.some(k => together[k] === true && alone[k] !== true && other[k] !== true);
+    };
+    const partners = eligible.filter(alternatesWithTop);
+    if (partners.length > 0) regular = [...new Set([...regular, top, ...partners])];
   }
   // A short turn: a regular pattern whose stops all lie on a longer regular pattern shapes the
   // main stretch only when it carries a real share of the direction's trips (the spec's 20%).
@@ -612,6 +647,39 @@ export function runsThroughPeriod(times: readonly number[], start: number, end: 
   let longest = 0;
   for (let i = 1; i < t.length; i++) longest = Math.max(longest, t[i] - t[i - 1]);
   return !(longest / median > BOUNDARY_DOMINANT_RATIO);
+}
+
+/**
+ * CIV-1204 (Ryan, 2026-10-31): the rider wait (CIV-1161) stands for the headline only where the direction runs through
+ * the window it read, by the settled verdicts, at every boarding stop that has a reading: at midday, runsThroughPeriod
+ * there and the #899 midday test (rule 7); at the PM peak, runsThroughPeriod there; on the all-day fallback, a direction
+ * that is not limited (#720) at a stop whose departures span the all-day share of the grading window (#720's coverage). A peak route's few trips reaching into midday (TTC 945: 9:28, then 14:40) are not a
+ * 312-minute wait. Null when no boarding stop has a reading.
+ */
+export function gatedRiderWait(
+  stops: readonly string[],
+  timesAt: (stopId: string) => readonly number[],
+  dropOffOnly: ReadonlySet<string>,
+  direction: { middayRuns: boolean; limited: boolean; gradingWindow: { start: number; end: number } },
+): { wait: number; stops: number; allDayStops: number; passes: boolean } | null {
+  const board = boardingMainStretchWait(stops, timesAt, dropOffOnly);
+  if (!board) return null;
+  const passes = stops.filter(stop => !dropOffOnly.has(stop)).every(stop => {
+    const times = timesAt(stop);
+    const reading = riderWait(times);
+    if (!reading) return true;
+    if (reading.window === 'allDay') {
+      // #720's all-day coverage test, as a branch takes part in the all-day value (spansWindow in rollupDirection): the
+      // stop's departures span at least ALL_DAY_MIN_COVERAGE of the day's grading window.
+      const { start, end } = direction.gradingWindow;
+      const t = times.filter(x => x >= start && x <= end);
+      return !direction.limited && t.length >= 2 && (Math.max(...t) - Math.min(...t)) / (end - start) >= ALL_DAY_MIN_COVERAGE;
+    }
+    const { start, end } = PERIOD_MINUTES[reading.window];
+    const runs = runsThroughPeriod(times, start, end, computePeriodSustained([...times])[reading.window]);
+    return reading.window === 'midday' ? runs && direction.middayRuns : runs;
+  });
+  return { ...board, passes };
 }
 
 /**

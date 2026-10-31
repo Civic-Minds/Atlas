@@ -233,6 +233,19 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 
 Dated, newest first. The rules above are the short form; this is the reasoning.
 
+### 2026-10-31 — The headline reads the rider's wait only where the route runs through that window
+
+Ryan, 2026-10-31 (Linear CIV-1204 and CIV-1161): approved the run-shape gate, recommendations 1, 2 and 4 of the run-shape study. A row's headline is replaced by the wait a rider arriving at random faces on the main stretch (CIV-1161: the time-weighted median gap, in the headline's own window: midday, then PM peak, then all day) only when that wait is 10+ minutes longer than the headline, and only when the direction runs through that window at every boarding stop with a reading, by the settled verdicts.
+- Midday: the midpoint and hole test (FREQUENCY_RULES rule 5) and the #899 midday test (rule 7).
+- PM peak: the midpoint and hole test.
+- All day: the direction is not limited (rule 7).
+
+Why: a peak route's last morning and first afternoon trips reaching into midday are not a five-hour wait. Examples are TTC 945 (every 10 to 9:28, then 14:40) and CAT Harrisburg 14 (five trips a day).
+- A blocked row keeps its headline and tier. It is marked as having no regular service in the headline's window, so no fallback prints the headline as "every N". Route cards already read "no regular service during this period" there.
+- The tier can only get worse, never `span`. The filter values, map colour and feed-quality check are unchanged.
+- Three-departure middays every 2-3 hours stay as they are (Collier 25 Saturday reads 183).
+- The 8x hole test is unchanged, so clustered timetables (TransLink 620 Saturday) lose their replacement.
+
 ### 2026-10-30 — Night service: the wait for the first night bus is held to an hour
 
 Ryan, 2026-10-30 (Linear CIV-1198, [#1219](https://github.com/Civic-Minds/Atlas/issues/1219)): approved the guarded night rule as written. A stretch that runs at night (departures on both sides of 3:30, D3) passes at 30 or 60 when every gap between its 2:00-5:00 departures is at most that, its first departure is by 3:00 and its last is from 4:00. Any other stretch keeps today's test. Why: TTC's night network starts when day service and the subway stop, about 2:30, so 13 of its 15 routes graded every 60 failed every 30 only on the wait for the first night bus (TTC 300, 304 King, 337, 373). Routes with a real gap between night buses still fail (TTC 352 and 384), and day service starting at 4:30 never passes. See [FREQUENCY_RULES.md](FREQUENCY_RULES.md) rule 10.

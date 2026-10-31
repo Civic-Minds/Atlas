@@ -132,6 +132,26 @@ export interface FeedDates {
 }
 
 /**
+ * #1253: the zip's own date, the newest modification date of its .txt files (YYYYMMDD; zip times carry no
+ * time zone, so the stored wall-clock date is read as is). Dates before 2000 or after `todayYmd` are
+ * ignored. Null when none is usable. The listing-end safeguard reads it when Atlas never recorded when it
+ * first obtained the file: Miami's April file, skipped as unchanged until September, is dated 20260421.
+ */
+export async function zipFileDate(buf: Buffer, todayYmd: string): Promise<string | null> {
+  try {
+    const zip = await JSZip.loadAsync(buf);
+    const dates = Object.values(zip.files)
+      .filter(entry => !entry.dir && entry.name.toLowerCase().endsWith('.txt'))
+      .map(entry => entry.date.toISOString().slice(0, 10).replace(/-/g, ''))
+      .filter(date => date >= '20000101' && date <= todayYmd)
+      .sort();
+    return dates.at(-1) ?? null;
+  } catch {
+    return null;
+  }
+}
+
+/**
  * Read the first and latest advertised service dates and feed_version from a GTFS zip.
  *
  * With `excludeRouteShortNames` (the agency's config), the calendar dates count only services
