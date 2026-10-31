@@ -16,7 +16,7 @@ should Atlas use for a comparable daytime measure?
   (TransLink, STM, OC Transpo, YRT, Sound Transit).
 - [System-map audit](../system-map-audit-2026-09/INDEX.md): 317 agencies after
   the 2026-10-11 duplicate merge, 179 of them in the Atlas registry.
-- [Per-agency file](frequent-definitions-by-agency.json): 532 Atlas agencies,
+- [Per-agency file](../../../src/data/frequent-definitions-by-agency.json): 532 Atlas agencies,
   the union of both sets.
 
 ## Method
@@ -45,7 +45,7 @@ should Atlas use for a comparable daytime measure?
      [definition-quotes-2026-10-11.json](definition-quotes-2026-10-11.json).
 4. **Join.**
    [`scripts/build-frequent-definitions-by-agency.mjs`](../../../scripts/build-frequent-definitions-by-agency.mjs)
-   writes [frequent-definitions-by-agency.json](frequent-definitions-by-agency.json)
+   writes [frequent-definitions-by-agency.json](../../../src/data/frequent-definitions-by-agency.json)
    with one row per Atlas agency.
 
 ## Results and interpretation
@@ -138,7 +138,7 @@ measure remains a proposed rule.
 
 ## Supporting artifacts
 
-- [Per-agency definitions](frequent-definitions-by-agency.json): single source
+- [Per-agency definitions](../../../src/data/frequent-definitions-by-agency.json): single source
   for comparison.
 - [Definition quotes and checks](definition-quotes-2026-10-11.json)
 - [Atlas agency mapping](atlas-agency-map.json)
