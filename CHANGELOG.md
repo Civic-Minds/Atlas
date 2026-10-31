@@ -146,6 +146,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Data pipeline
 
+- **A route whose patterns [take alternate trips](https://github.com/Civic-Minds/Atlas/issues/1256) is read as one service where they meet**: Pace 542's main stretch had been a 6-trip side pattern because it took the every-30 pattern's slots, and MATA 30's two routings each read every 4 hours
 - **Steady rush-hour-only trips show on the map in their peak**: [express routes](https://github.com/Civic-Minds/Atlas/issues/1254) that run every 30 for only an hour and a half, or start before 7 AM, read as one-off trips and were hidden (OC Transpo 187, 117 and 275 AM)
 - **A timetable that hasn't started yet no longer replaces the current one**: [TANK and TTC](https://github.com/Civic-Minds/Atlas/issues/1144) showed next season's service a week early
 - **Feed expiry counts only the routes Atlas shows, on the agency's own date**: [Snowmass](https://github.com/Civic-Minds/Atlas/issues/1140) read current after its kept route ended, and a feed ending on Sunday read as ended on Sunday evening in Los Angeles
