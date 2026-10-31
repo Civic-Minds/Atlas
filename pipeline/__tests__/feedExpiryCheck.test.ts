@@ -65,6 +65,17 @@ describe('expiringFeedCandidates (CIV-1223)', () => {
     expect(expiringFeedCandidates([ending], { todayYmd: today, days: 7 }).map(c => c.slug)).toEqual(['held']);
   });
 
+  it('picks a held agency once its start date arrives, even when its recorded end is not near (TTC, Nov 1)', async () => {
+    const ttc = agency({ slug: 'ttc', lastPeekedExpiry: '20261031' });
+    const onStart = expiringFeedCandidates([ttc], { todayYmd: '20261101', days: 7, pending: [{ ...ttc, heldFeedStart: '20261101' }] });
+    expect(onStart.map(c => [c.slug, c.reason])).toEqual([['ttc', 'held timetable starts 20261101; main ends 20261031']]);
+    const far = agency({ slug: 'far', lastPeekedExpiry: '20261221', heldFeedStart: '20261101' });
+    expect(expiringFeedCandidates([far], { todayYmd: '20261102', days: 7 }).map(c => c.reason)).toEqual(['held timetable starts 20261101']);
+    expect(expiringFeedCandidates([far], { todayYmd: '20261031', days: 7 })).toEqual([]);
+    const r = await checkCandidate(onStart[0], async () => feed('20261221'), new Date('2026-11-01T14:00:00Z'));
+    expect(r.newer).toBe(true);
+  });
+
   it('falls back to lastFeedExpiry when no peeked date is recorded', () => {
     const picked = expiringFeedCandidates([agency({ slug: 'old', lastFeedExpiry: '20261102' })], { todayYmd: today, days: 7 });
     expect(picked[0].feeds[0].recorded).toBe('20261102');
