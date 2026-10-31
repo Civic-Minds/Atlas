@@ -6,7 +6,8 @@ import { buildRouteServiceSummary, metricValueForPeriod } from './routeFacts';
 import { pairedTripPeriodFloor, pairedTripSafeHeadway } from './pairedTripFloor';
 import { delayAmount, headwayAboutRange, headwayEvery, headwayEveryRange, headwayPeriodShape } from './headwayText';
 import { routeAllDayContract, routeContract, routeValueIsOneGap } from './stretchCard';
-import { clockText } from '../content/researchRules';
+import { clockTime } from '../../shared/timeText';
+import { LIMITED_SERVICE_LABEL, NO_REGULAR_SERVICE_LABEL, NO_REGULAR_SERVICE_SHORT_LABEL } from '../content/noticeCopy';
 
 export { pairedTripPeriodFloor, pairedTripSafeHeadway } from './pairedTripFloor';
 
@@ -124,7 +125,7 @@ export function hasDirectionPeriodService(p: ShapeProperties, period: TimePeriod
 }
 
 /**
- * #934 and D6: the main stretch's row names a late start or early end ("from 7:17am, every 9 min")
+ * #934 and D6: the main stretch's row names a late start or early end ("every 9 min from 7:17 AM")
  * or one gap inside steady service ("every 5 min, with a 169 min gap") instead of a long wait or
  * "limited". Wording: headwayPeriodShape.
  */
@@ -133,8 +134,8 @@ export function routeCardPeriodShapeText(p: ShapeProperties, period: TimePeriod)
   const edge = p.stretchPeriodEdge?.[period];
   if (edge && (edge.from != null || edge.until != null)) {
     return headwayPeriodShape({
-      from: edge.from != null ? clockText(edge.from) : undefined,
-      until: edge.until != null ? clockText(edge.until) : undefined,
+      from: edge.from != null ? clockTime(edge.from) : undefined,
+      until: edge.until != null ? clockTime(edge.until) : undefined,
       every: edge.every,
     });
   }
@@ -143,8 +144,8 @@ export function routeCardPeriodShapeText(p: ShapeProperties, period: TimePeriod)
 }
 
 /**
- * #934: the part-period wording for a direction with no value in the period ("until 9:37am, every
- * 12 min"): the route card's main-stretch row shows it, and the stop card the same, so both agree.
+ * #934: the part-period wording for a direction with no value in the period ("every 12 min until
+ * 9:37 AM"): the route card's main-stretch row shows it, and the stop card the same, so both agree.
  */
 export function partPeriodText(p: ShapeProperties, period: TimePeriod): string | undefined {
   if (period === 'all' || p.stretchRole !== 'main') return undefined;
@@ -325,10 +326,8 @@ export function routeListDisplayLimited(features: readonly ShapeProperties[], pe
     && features.some(feature => routeCardDisplayLimited(feature, period));
 }
 
-/** The words every card and list shows where the filter says a route has no regular service in the period. */
-export const NO_REGULAR_SERVICE_LABEL = 'no regular service during this period';
-/** The same, short, for the narrow Nearby and search rows, where the long words do not fit. */
-export const NO_REGULAR_SERVICE_SHORT_LABEL = 'no regular service';
+/** The words every card and list shows where the filter says a route has no regular service in the period (D2, D3 in noticeCopy). */
+export { NO_REGULAR_SERVICE_LABEL, NO_REGULAR_SERVICE_SHORT_LABEL };
 
 /** The filter says the route has no regular service in this period: lists say NO_REGULAR_SERVICE_LABEL, never a number. */
 export function routeListNoRegularService(features: readonly ShapeProperties[], period: TimePeriod): boolean {
@@ -343,6 +342,19 @@ export interface RouteListDisplay {
   noRegular?: boolean;
   /** Lower end of a display-only range on the shared stretch; absent when there is none. */
   sharedHeadway?: number;
+  /** Compare (CIV-844): each map's own reading of the route, for "A every 3 · B every 4". */
+  compare?: { A: RouteListDisplay; B: RouteListDisplay };
+}
+
+/**
+ * One compare side in a list row (CIV-844, Ryan's format "A every 3 · B every 4"): the side's letter and its number,
+ * or its existing limited / no-regular-service word. Null when the route has nothing on that side.
+ */
+export function compareSideListText(label: 'A' | 'B', display: RouteListDisplay): string | null {
+  if (display.headway != null && display.headway < 999) return `${label} every ${display.headway}`;
+  if (display.noRegular) return `${label} ${NO_REGULAR_SERVICE_SHORT_LABEL}`;
+  if (display.limited) return `${label} ${LIMITED_SERVICE_LABEL}`;
+  return null;
 }
 
 /** Headway, shared-stretch range and limited flag for one route list row, from the same shared rule. */

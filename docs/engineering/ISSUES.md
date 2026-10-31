@@ -1,5 +1,14 @@
 # GitHub issue filing guidelines
 
+## Checklist before filing
+
+- **Who files:** the manager chat. Worker chats verify a bug and send the details; they don't file.
+- **Search first:** add to an existing issue (or a sub-issue) when the root cause is already tracked.
+- **Type:** set with `--type Bug` (or `Task`, `Feature`); never a label that repeats the type.
+- **Title:** a concrete example and what's wrong: `{Agency} {Route}: {discrepancy}`.
+- **Body:** one-sentence summary, then `**Expected:**` and `**Actual:**`, then detail ([Standard format](#format)).
+- **Never:** "Linear:" lines, tracker status, chat quotes, or local file paths.
+
 Rules for **all AI agents** (Claude, Grok, Gemini, Codex) filing issues in `Civic-Minds/Atlas`. GitHub Issues is the bug tracker; Linear (team Civic Minds, project Atlas) is the AI-managed to-do list, not a place to file bugs.
 
 ## General rules

@@ -8,12 +8,19 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Map and route behavior
 
+- **Route card notices say each fact once, in one place**: lines that repeated a row are gone, ["no scheduled trips"](https://github.com/Civic-Minds/Atlas/issues/1225) shows once, ["No frequency is shown"](https://github.com/Civic-Minds/Atlas/issues/1226) no longer sits beside a frequency, ["doesn't meet the filter"](https://github.com/Civic-Minds/Atlas/issues/1227) no longer shows where the rows already say why, and uneven gaps read "Gaps between trips can be up to N min"
+- **Rows put the frequency first**: route and stop cards read "every 12 min until 9:40 PM", the wait riders scan for, then its limit
+- **Agency pages and the map agree on when a [schedule ends](https://github.com/Civic-Minds/Atlas/issues/1229)**: an agency whose separate rail feed ends first (LA Metro, SEPTA) no longer reads as running months longer on its page
+- **Routes whose first trip leaves before 6 AM no longer say they have no overnight trips**: [TTC 100](https://github.com/Civic-Minds/Atlas/issues/1236) read "no scheduled trips from 2–6 AM" with buses from 5:22 AM; the card now says it runs only from 5–6 AM
+- **A route that runs for only part of a period names the hours inside that period**: [TTC 31 overnight](https://github.com/Civic-Minds/Atlas/issues/1186) read "runs from 1–2 AM, but not throughout 2–6 AM" next to "runs only from 2–3 AM"
+- **Stop cards no longer give a start or end time for a destination with no trips of its own**: [TTC 100 to Pape](https://github.com/Civic-Minds/Atlas/issues/1228) read "from 5:34 AM" overnight where its route card shows no regular service
+- **The Night map's route count matches its list**: it counted every [night route](https://github.com/Civic-Minds/Atlas/issues/1233) loaded, not those in view, so downtown Toronto read 39 next to a list of 13
 - **Top bar buttons have a light outline so they stand out on the map**: Mode, Agencies and the search bar blended into the light map; high contrast mode uses a stronger outline
 - **Stop dots at middle zoom sit where their stops are**: each dot groups stops within 250 m instead of chaining up to 8 km along a street ([#1147](https://github.com/Civic-Minds/Atlas/issues/1147))
 - **WVU's PRT shows as one people mover**: its [20 station-pair "routes"](https://github.com/Civic-Minds/Atlas/issues/1119) are one line
 - **Booked taxibus lines show as on-demand**: exo's taxibus lines you book ahead appear with on-demand service, and walk-on lines as buses
 - **Agencies are named by their own short name, never a city**: lists, rows and back links say "Capital Metro", not "Austin", and the agency card keeps the full name, so [Gary's](https://github.com/Civic-Minds/Atlas/issues/1134) card no longer reads "Gary, IN"
-- **Copied map links reopen the same view**: [links](https://github.com/Civic-Minds/Atlas/issues/1141) now keep "All day", the 60-minute limit and the irregular and part-time choices, which a recipient's own saved settings used to replace
+- **Copied map links reopen the same view**: [links](https://github.com/Civic-Minds/Atlas/issues/1141) now keep the chosen time of day, the 60-minute limit and the irregular and part-time choices, which a recipient's own saved settings used to replace
 - **Destinations keep their first word**: [KCATA 12](https://github.com/Civic-Minds/Atlas/issues/1139) reads "12th Street", not "Street", and NYC subway B reads "Brighton Beach", not "Beach"
 - **Route destinations no longer repeat the route number**: feeds that pad route numbers with zeros wrote "to 5 Love Field Airport" ([DART 5](https://github.com/Civic-Minds/Atlas/issues/1098), Edmonton, TransLink)
 - **Routes are named by their feed's name, never a [raw route ID](https://github.com/Civic-Minds/Atlas/issues/1099)**: FXBGO routes read "Route 13", [lines](https://github.com/Civic-Minds/Atlas/issues/1100) are named once ("Green Line", not "DART LIGHT RAIL - GREEN LINE"), and [Orillia West Ridge](https://github.com/Civic-Minds/Atlas/issues/1122) is no longer named twice on its agency page
@@ -52,6 +59,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Route cards and frequency
 
+- **A card shows one shared value per direction**: a destination under the Shared stretch row reads its own frequency, not a [second shared range](https://github.com/Civic-Minds/Atlas/issues/1232) (TTC 102 PM read "Shared stretch every 7" above "to Warden every 15–30")
 - **A period with a long slow stretch shows its longest wait**: [TTC 320](https://github.com/Civic-Minds/Atlas/issues/1142) overnight runs every 5 and then every 15, so it now reads "every 5–18" and is coloured by 18
 - **Branch rows show only the time a branch actually runs**: a [rush-hour branch](https://github.com/Civic-Minds/Atlas/issues/1115) no longer borrows the main line's midday frequency (TTC 84 Pioneer Village)
 - **Longest gaps leave out drop-off-only stops at the end of the line**: [MBTA 71 and 16](https://github.com/Civic-Minds/Atlas/issues/1116) no longer read a 135-minute gap in the rush hour
@@ -85,6 +93,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **Lines are drawn at the service they really run**: [WMATA Yellow](https://github.com/Civic-Minds/Atlas/issues/898) is coloured as every 8 where two origins feed one destination and along its [shared trunk](https://github.com/Civic-Minds/Atlas/issues/756), and Knoxville 41's trips to [different bays](https://github.com/Civic-Minds/Atlas/issues/754) show as one line every 30
 - **[Bunched](https://github.com/Civic-Minds/Atlas/issues/826) or [paired trips](https://github.com/Civic-Minds/Atlas/issues/761) no longer look like frequent service**: a short burst no longer reads "every 2 to 4 min", TTC 927 evenings show every 10, [alternating gaps](https://github.com/Civic-Minds/Atlas/issues/772) show the real wait (Basin Transit 1), and [TTC 47](https://github.com/Civic-Minds/Atlas/issues/341) and 63 no longer read every 2
 - **Long gaps and a few odd trips no longer make a made-up headline**: a [long midday gap](https://github.com/Civic-Minds/Atlas/issues/833) no longer promotes the rush-hour number (RTL 25, TTC 39), a [long break](https://github.com/Civic-Minds/Atlas/issues/834) reads 70 not 163, the [all-day frequency](https://github.com/Civic-Minds/Atlas/issues/749) ignores few-trip variants (TTC 102), and [two-stop routes](https://github.com/Civic-Minds/Atlas/issues/745) like Washington State Ferries 131 read their real gap
+- **A route's [problem report](https://github.com/Civic-Minds/Atlas/issues/1230) states the values its card shows**: TTC 100 AM read every 32 beside the card's "Shared stretch every 5"
 
 ### History (beta)
 
@@ -99,6 +108,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Live
 
+- **Live shortens a [stop name](https://github.com/Civic-Minds/Atlas/issues/1235) the same way everywhere**: the route strip and the charts disagreed on about 500 TTC stops, SEPTA stops read "FS", MARTA stations "BAY C", and [SEPTA and MBTA stops](https://github.com/Civic-Minds/Atlas/issues/1237) "MBNS 1", "north" or "Green Line"
 - **Live is one mode that opens on the vehicles**: a route's card matches the regular card and shows gaps, stand-still points and run time for TTC 503-511, counts every vehicle (half the 501s were missing), and loads lateness and arrivals again (CIV-325, CIV-331)
 - **Live has a vehicle card and frames what you click**: a vehicle shows its direction, destination, speed and on-time status, list clicks frame any route or vehicle, and running routes draw thin lines under the dots (CIV-332, CIV-329, CIV-328, CIV-326)
 - **Live's place list says what each agency offers**: places are tagged "Vehicles" or "Vehicles + performance" under the name, and picking Toronto no longer lists [York Region](https://github.com/Civic-Minds/Atlas/issues/900) routes (CIV-219, CIV-229)

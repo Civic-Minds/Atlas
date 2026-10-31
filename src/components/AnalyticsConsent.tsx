@@ -6,6 +6,7 @@ import { MAP_CONSENT_SLOT, DROPDOWN_PANEL, dropdownAnim, MAP_BADGE, Z_HEADER, Z_
 import Toggle from './ui/Toggle';
 import ArrowLink from './ui/ArrowLink';
 import PanelHeader from './ui/PanelHeader';
+import { ANALYTICS_CONSENT_PROMPT, ANALYTICS_SETTING_NOTE, PRIVACY_SETTINGS_TITLE } from '../content/noticeCopy';
 
 declare global { interface Navigator { globalPrivacyControl?: boolean } }
 
@@ -16,14 +17,14 @@ function Controls({ onClose }: { onClose: () => void }) {
   const choose = (value: AnalyticsConsent) => { setAnalyticsConsent(value); setConsent(value); };
   return <div className={`fixed inset-0 ${Z_MODAL_TOP}`} onClick={onClose}>
     <div className={`${DROPDOWN_PANEL} ${dropdownAnim(true)}`} onClick={event => event.stopPropagation()} role="dialog" aria-modal="true" aria-labelledby="privacy-settings-title">
-      <PanelHeader titleId="privacy-settings-title" title={'Privacy & analytics'} onBack={onClose} backLabel="Back to About Atlas" onClose={onClose} closeLabel="Close privacy and analytics settings" />
+      <PanelHeader titleId="privacy-settings-title" title={PRIVACY_SETTINGS_TITLE} onBack={onClose} backLabel="Back to About Atlas" onClose={onClose} closeLabel="Close privacy and analytics settings" />
       <div className="overflow-y-auto px-5 py-4 space-y-5 text-xs">
         <p className="leading-relaxed text-[var(--text-dim)]">When enabled, Atlas sends page views and basic usage information to Google Analytics. Atlas does not use this information for advertising or account profiling.</p>
         <div className="space-y-2">
           <div className="flex items-start justify-between gap-4">
             <div className="min-w-0">
               <p className="text-xs font-bold text-[var(--text-primary)] leading-tight">Google Analytics</p>
-              <p className="text-xs text-[var(--text-muted)] mt-1 leading-relaxed">Optional analytics helps us understand which parts of Atlas people use.</p>
+              <p className="text-xs text-[var(--text-muted)] mt-1 leading-relaxed">{ANALYTICS_SETTING_NOTE}</p>
             </div>
             <Toggle on={consent === 'granted'} onToggle={() => choose(consent === 'granted' ? 'denied' : 'granted')} label="Toggle Google Analytics" />
           </div>
@@ -65,5 +66,5 @@ export default function AnalyticsConsent() {
 
 /** The prompt's pill: the fixed copy above, and the last pill of the map's bottom-left row. */
 export function ConsentPill({ className = '', choose }: { className?: string; choose: (consent: AnalyticsConsent) => void }) {
-  return <div role="dialog" aria-label="Analytics consent" className={`${className} h-8 max-sm:h-[32px] w-fit whitespace-nowrap ${MAP_BADGE} gap-3 max-[370px]:gap-2 max-[370px]:px-2 text-xs font-bold text-[var(--text-muted)]`}><span>Optional analytics help improve Atlas.</span><button type="button" onClick={() => choose('granted')} className="shrink-0 text-[var(--text-primary)] transition-colors hover:text-[var(--accent)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)]">Allow</button><button type="button" onClick={() => choose('denied')} className="shrink-0 text-[var(--text-primary)] transition-colors hover:text-[var(--accent)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)]">Decline</button></div>;
+  return <div role="dialog" aria-label="Analytics consent" className={`${className} h-8 max-sm:h-[32px] w-fit whitespace-nowrap ${MAP_BADGE} gap-3 max-[370px]:gap-2 max-[370px]:px-2 text-xs font-bold text-[var(--text-muted)]`}><span>{ANALYTICS_CONSENT_PROMPT}</span><button type="button" onClick={() => choose('granted')} className="shrink-0 text-[var(--text-primary)] transition-colors hover:text-[var(--accent)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)]">Allow</button><button type="button" onClick={() => choose('denied')} className="shrink-0 text-[var(--text-primary)] transition-colors hover:text-[var(--accent)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)]">Decline</button></div>;
 }

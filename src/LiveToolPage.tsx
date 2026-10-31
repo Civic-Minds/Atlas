@@ -13,8 +13,9 @@ import { useLiveAgency } from './LiveAgencyPage';
 import { devOnly, liveReportTitle } from './lib/liveReportData';
 import { applySeoToDocument } from './lib/seoDom';
 import { syncUrlParams } from './utils/syncUrlParams';
+import { LIVE_TOOL_URL, currentSearch, linkUpdate, readLink } from './utils/urlSchema';
 import { shortStopName, stretchEnds } from './utils/stopLabel';
-import { titleCase } from './utils/format';
+import { nameCase } from './utils/format';
 import { agencyKpiTiles } from './utils/liveAgencyKpi';
 import { kpiTiles, leftOutDates, type Kpi } from './utils/liveKpi';
 import LiveOffNotice from './components/LiveOffNotice';
@@ -39,7 +40,6 @@ import { DataUpTo, withNiceNames } from './LiveRoutePage';
 
 const pct = (x: number) => `${Math.round(x * 100)}%`;
 const mins = (x: number) => `${x > 0 ? '+' : ''}${Math.round(x * 10) / 10} min`.replace('-', '−');
-const readParam = (key: string) => new URLSearchParams(window.location.search).get(key);
 
 /** The three step labels of a measure's key: the bunching key the strips already use, and the same shape for the others. */
 function stepLabels(measure: MapMeasure): [string, string, string] {
@@ -135,8 +135,8 @@ function summaryWidgets(s: AgencySummary, band: DashboardBand): PanelWidget[] {
 /** The widgets with nothing selected: the network's worst places, each a clickable list at full width. */
 function networkWidgets(s: AgencySummary, onOpen: (route: string, dir: number, pick: MapPick) => void): PanelWidget[] {
   const label = (r: string) => s.routes.find(x => x.route === r)?.label ?? r;
-  const stopRows = s.worstStops.slice(0, 5).map(x => ({ key: `${x.route}-${x.stopId}-${x.directionId}`, label: shortStopName(titleCase(x.name)), sub: x.routeLabel, value: pct(x.lateShare), onPick: () => onOpen(x.route, x.directionId, { kind: 'stop', stopId: x.stopId }) }));
-  const stretchRows = (list: AgencySummary['delayStarts'], value: (v: number) => string) => list.slice(0, 5).map(x => ({ key: `${x.route}-${x.directionId}-${x.fromStopId}-${x.toStopId}`, label: stretchEnds(titleCase(x.fromName), titleCase(x.toName)).join(' to '), sub: label(x.route), value: value(x.value), onPick: () => onOpen(x.route, x.directionId, { kind: 'segment', fromStopId: x.fromStopId, toStopId: x.toStopId }) }));
+  const stopRows = s.worstStops.slice(0, 5).map(x => ({ key: `${x.route}-${x.stopId}-${x.directionId}`, label: shortStopName(nameCase(x.name, 'stop')), sub: x.routeLabel, value: pct(x.lateShare), onPick: () => onOpen(x.route, x.directionId, { kind: 'stop', stopId: x.stopId }) }));
+  const stretchRows = (list: AgencySummary['delayStarts'], value: (v: number) => string) => list.slice(0, 5).map(x => ({ key: `${x.route}-${x.directionId}-${x.fromStopId}-${x.toStopId}`, label: stretchEnds(nameCase(x.fromName, 'stop'), nameCase(x.toName, 'stop')).join(' to '), sub: label(x.route), value: value(x.value), onPick: () => onOpen(x.route, x.directionId, { kind: 'segment', fromStopId: x.fromStopId, toStopId: x.toStopId }) }));
   const delays = stretchRows(s.delayStarts, mins), bunching = stretchRows(s.bunchingForms, risePointsText);
   return [
     ...(stopRows.length ? [{ key: 'problems', size: 'medium' as const, node: <ProblemsWidget title="Stops most often late" intro={`The ${stopRows.length} stops with the highest share of departures ${LATE_THRESHOLD}, across all analysed routes.`} rows={stopRows} /> }] : []),
@@ -305,24 +305,24 @@ function Body({ agency, s, route, setRoute, dir, setDir, dirSlot, routeSlot, dat
 export default function LiveToolPage() {
   const { agency = '' } = useParams();
   const state = useLiveAgency(FEATURES.liveReports ? agency : '');
-  const [route, setRoute] = useState<string | null>(() => readParam('route'));
-  const [dir, setDir] = useState<number | null>(() => { const d = readParam('dir'); return d != null && d !== '' && !Number.isNaN(Number(d)) ? Number(d) : null; });
-  const [band, setBand] = useState<DashboardBand>(() => { const b = readParam('band'); return BANDS.some(([k]) => k === b) ? (b as DashboardBand) : 'all'; });
-  const [measure, setMeasure] = useState<MapMeasure>(() => { const m = readParam('measure'); return MEASURES.some(([k]) => k === m) ? (m as MapMeasure) : 'late'; });
+  const [link] = useState(() => readLink(currentSearch(), LIVE_TOOL_URL));
+  const [route, setRoute] = useState<string | null>(() => link.route ?? null);
+  const [dir, setDir] = useState<number | null>(() => link.dir ?? null);
+  const [band, setBand] = useState<DashboardBand>(() => link.band ?? 'all');
+  const [measure, setMeasure] = useState<MapMeasure>(() => link.measure ?? 'late');
   const [dirSlot, setDirSlot] = useState<HTMLElement | null>(null);
   const [routeSlot, setRouteSlot] = useState<HTMLElement | null>(null);
   const [dataSlot, setDataSlot] = useState<HTMLElement | null>(null);
   const [pick, setPick] = useState<MapPick | null>(() => {
-    const stop = readParam('stop'), seg = readParam('seg');
-    if (stop) return { kind: 'stop', stopId: stop };
-    const [f, t] = (seg ?? '').split('>');
+    if (link.stop) return { kind: 'stop', stopId: link.stop };
+    const [f, t] = (link.segment ?? '').split('>');
     return f && t ? { kind: 'segment', fromStopId: f, toStopId: t } : null;
   });
   useEffect(() => {
-    syncUrlParams({
-      view: null, tab: null, route, dir: dir == null ? null : String(dir), band: band === 'all' ? null : band, measure: measure === 'late' ? null : measure,
-      stop: pick?.kind === 'stop' ? pick.stopId : null, seg: pick?.kind === 'segment' ? `${pick.fromStopId}>${pick.toStopId}` : null,
-    });
+    syncUrlParams(linkUpdate(LIVE_TOOL_URL, {
+      view: null, tab: null, route, dir, band, measure,
+      stop: pick?.kind === 'stop' ? pick.stopId : null, segment: pick?.kind === 'segment' ? `${pick.fromStopId}>${pick.toStopId}` : null,
+    }));
   }, [route, dir, band, measure, pick]);
   useEffect(() => { applySeoToDocument(document, { title: liveReportTitle(agency.toUpperCase()), description: '', canonicalUrl: window.location.href, noindex: true, matchedPath: window.location.pathname }); }, [agency]);
   if (!FEATURES.liveReports) return <LiveOffNotice />;

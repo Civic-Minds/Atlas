@@ -370,7 +370,7 @@ describe('a snapshot dated after the build month (CIV-1124)', () => {
     const snaps = buildRouteSnapshots('mbta', '1', joinCandidates([
       { periodKey: '20251214', headway: 12, processedAt: '2025-09-01T06:00:00.000Z' },
       { periodKey: '20261213', headway: 10, processedAt: '2026-10-05T06:00:00.000Z' },
-    ], []), 2026, report, BUILD_YM);
+    ], []), 2026, report, { buildYm: BUILD_YM });
     expect(snaps.map(s => [s.year, s.label, s.weekdayHeadwayMin])).toEqual([[2025, 'Dec 2025', 12], [2026, 'Oct 2026', 10]]);
     expect(report.drops).toEqual([]);
   });
@@ -382,14 +382,14 @@ describe('a snapshot dated after the build month (CIV-1124)', () => {
       { periodKey: '20261213', headway: 10 },
     ], [
       { periodKey: '20270301', v2: { refDate: '20261111', rep: { h: 8 } } as never },
-    ]), 2026, report, BUILD_YM);
+    ]), 2026, report, { buildYm: BUILD_YM });
     expect(snaps.map(s => [s.label, s.weekdayHeadwayMin])).toEqual([['Sep 2026', 11]]);
     expect(report.drops.map(d => [d.label, d.reason])).toEqual([['Dec 2026', 'after build month'], ['Nov 2026', 'after build month']]);
   });
 
   it('keeps this month and earlier as before', () => {
     const report = newBuildReport();
-    const snaps = buildRouteSnapshots('mbta', '1', joinCandidates([{ periodKey: '20261031', headway: 10 }], []), 2026, report, BUILD_YM);
+    const snaps = buildRouteSnapshots('mbta', '1', joinCandidates([{ periodKey: '20261031', headway: 10 }], []), 2026, report, { buildYm: BUILD_YM });
     expect(snaps.map(s => s.label)).toEqual(['Oct 2026']);
   });
 });

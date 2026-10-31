@@ -1,4 +1,4 @@
-import { isExpiredFeedExpiry } from './feedAvailability';
+import { isAgencyFeedExpired, isExpiredFeedExpiry, type SupplementalFeedExpiryEntry } from './feedAvailability';
 import { plural } from './overflowText';
 
 export type FeedQualityStatus = 'healthy' | 'review' | 'degraded' | 'unusable' | 'paused';
@@ -48,6 +48,10 @@ export function feedQualityReasonForValidationWarnings(count: number): string {
   return `${count} minor schedule ${plural(count, 'issue')} found while reading the feed.`;
 }
 
+export function isValidationWarningReason(reason: string): boolean {
+  return /^\d+ minor schedule issues? found while reading the feed\.$/.test(reason);
+}
+
 export function feedQualityReasonForShapeAnomalies(count: number): string {
   return `${count} route ${plural(count, 'shape needed', 'shapes needed')} adjustment before display.`;
 }
@@ -57,8 +61,9 @@ export function feedQualityReasonForHeadwayMismatches(count: number): string {
 }
 
 export const FEED_QUALITY_EXPIRED_REASON = 'The schedule dates in this feed have passed.';
-export const FEED_QUALITY_NO_ROUTES_REASON = 'Atlas could not find any usable routes in this feed.';
-export const FEED_QUALITY_VALIDATION_ERROR_REASON = 'Atlas found errors while reading this feed.';
+// N79, N80
+export const FEED_QUALITY_NO_ROUTES_REASON = "This agency's schedule file has no routes we can show.";
+export const FEED_QUALITY_VALIDATION_ERROR_REASON = "This agency's schedule file has errors.";
 
 function isExpired(expiry: string | null | undefined, today: string): boolean {
   return isExpiredFeedExpiry(expiry, today.replaceAll('-', ''));
@@ -171,6 +176,25 @@ export function assessByCounts(input: FeedQualityInput): FeedQuality {
 }
 
 /**
+ * The rating as of today. The stored one was made when the main feed was processed, so its
+ * expired reason can be out of date and misses a supplemental feed that has ended. This swaps
+ * that reason for the map's rule (isAgencyFeedExpired) and rescores the same way assessFeedQuality does.
+ */
+export function feedQualityToday(quality: FeedQuality, expired: boolean): FeedQuality {
+  // A paused feed (a seasonal break, rated by the pipeline) keeps its rating.
+  if (quality.status === 'unusable' || quality.status === 'paused' || quality.reasons.includes(FEED_QUALITY_EXPIRED_REASON) === expired) return quality;
+  const reasons = expired ? [...quality.reasons, FEED_QUALITY_EXPIRED_REASON] : quality.reasons.filter(r => r !== FEED_QUALITY_EXPIRED_REASON);
+  const score = Math.max(0, Math.min(100, quality.score + (expired ? -35 : 35)));
+  const status: FeedQualityStatus = expired || score < 60 ? 'degraded' : reasons.length > 0 ? 'review' : 'healthy';
+  return { ...quality, status, score, reasons };
+}
+
+/** The agency with its feed rating as of today (feedQualityToday), for every reader of the catalog. */
+export function withFeedQualityToday<T extends SupplementalFeedExpiryEntry & { timezone?: string | null; feedQuality?: FeedQuality }>(agency: T, now: Date = new Date()): T {
+  return agency.feedQuality ? { ...agency, feedQuality: feedQualityToday(agency.feedQuality, isAgencyFeedExpired(agency, now)) } : agency;
+}
+
+/**
  * CIV-533: re-score a stored rating for `today` without reprocessing the feed. The only date-based
  * part is the expiry check; everything else comes from the stored metrics, with the expiry the rating
  * was scored with. checkedAt stays the date the feed was measured; scoredAt records today.
@@ -237,8 +261,8 @@ export function presentFeedQualityReason(reason: string): string {
     return `${count} route ${plural(count, 'has', 'have')} stops whose frequency differs from the overall route schedule.`;
   }
 
-  if (reason === 'No route features were produced.') return FEED_QUALITY_NO_ROUTES_REASON;
-  if (reason === 'The feed has validation errors.') return FEED_QUALITY_VALIDATION_ERROR_REASON;
+  if (reason === 'No route features were produced.' || reason === 'Atlas could not find any usable routes in this feed.') return FEED_QUALITY_NO_ROUTES_REASON;
+  if (reason === 'The feed has validation errors.' || reason === 'Atlas found errors while reading this feed.') return FEED_QUALITY_VALIDATION_ERROR_REASON;
   const warningMatch = reason.match(/^(\d+) schedule-data warnings? — Atlas found a minor issue while reading the schedule\.$/);
   if (warningMatch) {
     const count = Number(warningMatch[1]);
@@ -259,6 +283,8 @@ export function feedQualityListItems(reasons: readonly string[]): string[] {
   const others: string[] = [];
   for (const reason of reasons) {
     const presented = presentFeedQualityReason(reason);
+    // N81: validation warnings don't change the map, so riders never see them (internal diagnostics keep the count).
+    if (isValidationWarningReason(presented)) continue;
     const count = Number(presented.match(/^(\d+)/)?.[1] ?? 0);
     if (count > 0 && /\bshapes?\b|map lines?/.test(presented)) shapes += count;
     else if (count > 0 && /frequenc/.test(presented)) frequencies += count;

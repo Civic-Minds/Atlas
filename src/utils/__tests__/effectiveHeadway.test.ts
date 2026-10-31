@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { routeFilterHeadway } from '../../../shared/routeHeadwayFilter';
-import { hasDirectionPeriodService, routeCardDisplayHeadway, routeListDisplayHeadway } from '../effectiveHeadway';
+import { compareSideListText, hasDirectionPeriodService, routeCardDisplayHeadway, routeListDisplayHeadway } from '../effectiveHeadway';
 import type { ShapeProperties } from '../../hooks/useIntervalStats';
 
 describe('route filter headway and card display', () => {
@@ -301,3 +301,16 @@ describe('route filter headway and card display', () => {
     expect(hasDirectionPeriodService(withZeroService, 'all')).toBe(true);
   });
 });
+
+describe('compareSideListText (CIV-844)', () => {
+  it('reads each side in Ryan\'s format, "A every 3 · B every 4"', () => {
+    expect(compareSideListText('A', { headway: 3, limited: false })).toBe('A every 3');
+    expect(compareSideListText('B', { headway: 4, limited: false, sharedHeadway: 2 })).toBe('B every 4');
+  });
+  it('uses the existing words for a side without a number, and nothing for a side without the route', () => {
+    expect(compareSideListText('A', { headway: null, limited: false, noRegular: true })).toBe('A no regular service');
+    expect(compareSideListText('B', { headway: 999, limited: true })).toBe('B limited');
+    expect(compareSideListText('B', { headway: null, limited: false })).toBeNull();
+  });
+});
+

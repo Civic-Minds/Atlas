@@ -1,9 +1,12 @@
-import { PHONE_MEDIA_QUERY, phoneModeFlags, useMediaQuery } from '../hooks/useMediaQuery';
+import { FOOTER_NOTICE_MEDIA_QUERY, PHONE_MEDIA_QUERY, phoneModeFlags, useMediaQuery } from '../hooks/useMediaQuery';
+import { useOnDemandStatus } from '../hooks/useOnDemandData';
+import { MAP_OVERLAY_VARS, publishMapOverlayVar } from '../mapOverlayLayout';
 import React, { useState, useCallback, useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { useSearchParams } from 'react-router';
+import { useLocation, useSearchParams } from 'react-router';
 import { useViewportLoadGate } from '../hooks/useViewportLoadGate';
-import SelectionLoadPanel from '../components/Interval/SelectionLoadPanel';
+import { agencyNames } from '../utils/agencyName';
+import SelectionLoadPanel, { SelectionNoticePanel } from '../components/Interval/SelectionLoadPanel';
 import { useAgencyData, viewportAgencySlugs } from '../hooks/useAgencyData';
 import { anyFeaturePassesRouteFilter, useIntervalStats, routeKey, PERIOD_KEYS, type HoveredBranch, type ShapeProperties } from '../hooks/useIntervalStats';
 import type { ViewportBounds, TimePeriod, DayType } from '../hooks/useIntervalStats';
@@ -13,42 +16,44 @@ import { MapAttribution } from '../components/Interval/MapAttribution';
 import { PersistentMapLegend } from '../components/Interval/PersistentMapLegend';
 import { SidebarControls } from '../components/Interval/SidebarControls';
 import { NearbyRoutesPanel } from '../components/Interval/NearbyRoutesPanel';
+import { MapErrorsPanel, MapErrorsPill } from '../components/Interval/MapErrorsPill';
 import { FilterPanel } from '../components/Interval/FilterPanel';
 import { FilterChips, getNowPeriodForTimezone } from '../components/Interval/FilterChips';
 import { AgencyCard } from '../components/Interval/AgencyCard';
-import { MAP_FOOTER_ROW_SLOT, MAP_COUNTS_PHONE_SLOT, TRANSITION_BASE, TRANSITION_SLOW, Z_PANEL, MAP_BADGE, MAP_BADGE_COUNT, MAP_BADGE_LABEL, SIDEBAR_CARD_TOP, SIDEBAR_CARD_TOP_DESKTOP, Z_PANEL_RAISED } from '../styles';
+import { MAP_FOOTER_ROW_SLOT, MAP_FOOTER_ROW_COMPARE_SLOT, MAP_FOOTER_RIGHT_SLOT, MAP_FOOTER_NOTICE_SLOT, MAP_COUNTS_PHONE_SLOT, mapFooterStyle, TRANSITION_BASE, TRANSITION_SLOW, Z_PANEL, MAP_BADGE, MAP_BADGE_COUNT, MAP_BADGE_LABEL, SIDEBAR_CARD_TOP, SIDEBAR_CARD_TOP_DESKTOP, Z_PANEL_RAISED } from '../styles';
 import type { Agency } from '../App';
 import type { OpenInfoFn } from '../components/InfoPanel';
-import { mapViewKind, viewAllowsOnDemand } from '../../shared/viewLayers';
+import { mapViewKind, viewAllowsOnDemand, viewShowsOnDemand } from '../../shared/viewLayers';
 import { ON_DEMAND_MODE } from '../../shared/modes';
 import { ATLAS_MODE, FEATURES, VIEWPORT_BBOX_PAD } from '../../shared/config';
 import { countOf, plural } from '../../shared/overflowText';
 import type * as maplibregl from 'maplibre-gl';
 import { CompareSideBar, CompareLinkToggle, CompareTab, CompareMenuItem, defaultCompareSide, type CompareSide } from '../components/Interval/CompareControl';
 import { compareSideBView, linkCompareMaps } from '../utils/compareMapSync';
-import { buildCompareRow } from '../utils/compareRows';
 import { DAY_TYPES, type DayType as DayTypeName } from '../../shared/dayTypes';
 import { splitRouteKey } from '../utils/routeKey';
 import { getPolledRoute } from '../../shared/livePollingConfig';
-import { resolveRouteSelectionForDay } from '../utils/routeSelection';
-import { MAP_URL, readUrlParam, urlParamPresent, urlParamUpdate } from '../utils/mapUrlState';
+import { resolveRouteSelectionForDay, routeOnAnyDay } from '../utils/routeSelection';
+import { MAP_URL, currentSearch, linkUpdate, readUrlParam, urlParamPresent, urlParamUpdate } from '../utils/urlSchema';
 import { syncUrlParams } from '../utils/syncUrlParams';
 import type { HistoryView } from '../utils/historyYearMap';
 import { usePersistedFilterPref } from '../hooks/usePersistedFilterPref';
-import { encodeCompareSideParams, encodeSelectionParams, encodeModesParam, isAgencyOff, parseAgencyUrlRule, parseAreaBounds, parseCompareSideParams, parseModesParam, parseRouteChooserParam, encodeRouteChooserParam, ROUTE_CHOOSER_PARAM, settleAgencyUrlRule, shouldPersistAgencySelection, type AgencyUrlRule } from '../utils/shareUrlState';
+import { encodeCompareSideParams, encodeSelectionParams, encodeModesParam, isAgencyOff, parseAgencyUrlRule, parseAreaBounds, parseCompareSideParams, parseModesParam, parseRouteChooserParam, encodeRouteChooserParam, MODES_PARAM, ROUTE_CHOOSER_PARAM, settleAgencyUrlRule, shouldPersistAgencySelection, type AgencyUrlRule } from '../utils/shareUrlState';
 import { searchOverlayHidesPanel } from '../utils/format';
 import { trackEvent } from '../lib/analytics';
 import type { FrequentServiceFrequency, FrequentServiceWindow } from '../../shared/frequentService';
 import type { NightServiceFrequency } from '../../shared/nightService';
-import { getRegionalView, parseUrlView } from '../utils/regionView';
+import { getRegionalView, getSavedView, parseUrlView } from '../utils/regionView';
 import ResearchLegend from '../components/Interval/ResearchLegend';
-import { selectFrequentServiceFeatures, selectNightServiceFeatures } from '../components/Interval/map/useOverlaySources';
+import { selectFrequentServiceFeatures } from '../components/Interval/map/useOverlaySources';
+import { countNightRoutesInView } from '../utils/nightRoutesInView';
+import { useViewport } from '../context/ViewportContext';
 import { areaFitZoom } from '../../shared/areaIndex';
 import type { AreaSearchResult } from '../../shared/areaSearch';
 import Spinner from '../components/ui/Spinner';
 import { onDemandSelectionZoneId, resolveSelectedOnDemandSlug } from '../utils/onDemandSelection';
 import { encodeStopBackTarget, parseStopBackTarget, resolveStopBack, STOP_BACK_PARAM, stopBackTarget, type StopBackRoute, type StopBackSnapshot, type StopBackTarget } from '../utils/stopBack';
-import { loadingText } from '../content/stateCopy';
+import { AGENCY_NOT_FOUND, loadingText, ON_DEMAND_AREAS_FAILED, networksFailedHint, networksFailedText, networksLoadingText, noRoutesMatchText, noServiceOnDayNotice, ROUTE_NOT_FOUND, STOP_NOT_FOUND } from '../content/noticeCopy';
 import { useIndexSearch } from '../hooks/useIndexSearch';
 import { mergeRouteResults, mergeStopResults } from '../utils/searchResults';
 
@@ -160,7 +165,7 @@ const EMPTY_LAYERS: Record<string, GeoJSON.FeatureCollection> = {};
  */
 function CompareSideSlot({ side, children }: { side: 'A' | 'B'; children: React.ReactNode }) {
   return (
-    <div className={`absolute ${side === 'A' ? SIDEBAR_CARD_TOP : `top-3 ${SIDEBAR_CARD_TOP_DESKTOP}`} left-1/2 -translate-x-1/2 sm:left-4 sm:translate-x-0 sm:right-4 sm:flex sm:justify-end ${Z_PANEL_RAISED} pointer-events-none`}>
+    <div data-map-overlay={`compare-label-${side}`} className={`absolute ${side === 'A' ? SIDEBAR_CARD_TOP : `top-3 ${SIDEBAR_CARD_TOP_DESKTOP}`} left-1/2 -translate-x-1/2 sm:left-4 sm:translate-x-0 sm:right-4 sm:flex sm:justify-end ${Z_PANEL_RAISED} pointer-events-none`}>
       {children}
     </div>
   );
@@ -400,7 +405,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   });
   const [hideSpan, setHideSpan] = useState(() => {
     try {
-      const fromLink = readUrlParam(window.location.search, MAP_URL.hideSpan);
+      const fromLink = readUrlParam(currentSearch(), MAP_URL.hideSpan);
       if (fromLink != null) return fromLink;
       const saved = localStorage.getItem('atlas_pref_hide_span');
       return saved == null ? true : saved === 'true';
@@ -412,7 +417,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   // saved preference keeps its meaning; only a visitor with neither gets the new default.
   const [hideLimitedService, setHideLimitedService] = useState(() => {
     try {
-      const fromLink = readUrlParam(window.location.search, MAP_URL.hideLimited);
+      const fromLink = readUrlParam(currentSearch(), MAP_URL.hideLimited);
       if (fromLink != null) return fromLink;
       const saved = localStorage.getItem('atlas_pref_hide_limited');
       return saved == null ? true : saved === 'true';
@@ -425,6 +430,13 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   // Compare mode (beta): side A is the normal day, time and frequency; side B has its own day, time
   // and frequency. Modes, agencies and the irregular-route settings are shared by both maps.
   const isPhoneScreen = useMediaQuery(PHONE_MEDIA_QUERY);
+  // From 768 up the on-demand failed notice sits in the footer row beside the agencies loading pill (CIV-1057, Ryan:
+  // "Just move the on demand notice to beside the 6/11 networks then"). Narrower, the row has no room once the counts
+  // load, so 640-767 keeps the centred spot above the row and phones show it in the map's "Error" pill.
+  const footerHasNoticeRoom = useMediaQuery(FOOTER_NOTICE_MEDIA_QUERY);
+  const onDemandStatus = useOnDemandStatus();
+  const onDemandFailedInFooter = footerHasNoticeRoom && onDemandStatus === 'error' && FEATURES.onDemand
+    && viewShowsOnDemand(mapViewKind({ nightServiceView, frequentServiceView, liveRoutesOnly }), selectedModes);
   const compareAvailable = FEATURES.compareMode && phoneModeFlags(isPhoneScreen).compareMode && showRouteLayers && !nightServiceView
     && !frequentServiceView && !liveRoutesOnly && !filterToAgencies;
   const [compareSide, setCompareSide] = useState<CompareSide | null>(() => {
@@ -432,7 +444,8 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     return parseCompareSideParams<DayTypeName, TimePeriod>(searchParams, {
       days: DAY_TYPES,
       periods: PERIOD_KEYS as readonly TimePeriod[],
-      allPeriod: 'all',
+      // CIV-239: no All day; a Compare link without map B's time opens B on map A's.
+      allPeriod: period,
       fallbackHeadway: maxHeadway,
     });
   });
@@ -589,7 +602,26 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   useEffect(() => { if (!userLocation) setNearYouRoute(null); }, [userLocation]);
   const nearYouCovered = !!(selectedRoute || selectedStop || selectedAgencySlug || onDemandStopAgencySlug
     || disambiguationRoutes?.length || mapContextOpen || searchOverlayHidesPanel(searchFocused, query));
-  const nearYouShown = showUi && !!userLocation && !nearYouCovered;
+  // Phones (CIV-1057): the map's error notices, as one "Error" pill in the footer row; a tap opens their card in
+  // Near You's slot, with the messages it opened with, closed by a tap outside like Near You.
+  const [phoneMapErrors, setPhoneMapErrors] = useState<string[]>([]);
+  const [listedMapErrors, setListedMapErrors] = useState<string[] | null>(null);
+  const phoneErrorsInRow = isPhoneScreen && phoneMapErrors.length > 0;
+  const mapErrorsPanelRef = useRef<HTMLDivElement>(null);
+  useEffect(() => { if (!isPhoneScreen) setListedMapErrors(null); }, [isPhoneScreen]);
+  useEffect(() => {
+    if (!listedMapErrors) return;
+    function onPointerDown(e: PointerEvent) {
+      const target = e.target as Node;
+      if (mapErrorsPanelRef.current?.contains(target)) return;
+      if ((target as Element).closest?.('[data-map-errors-pill]')) return;
+      setListedMapErrors(null);
+    }
+    document.addEventListener('pointerdown', onPointerDown);
+    return () => document.removeEventListener('pointerdown', onPointerDown);
+  }, [listedMapErrors]);
+  const mapErrorsShown = showUi && !!listedMapErrors && !nearYouCovered;
+  const nearYouShown = showUi && !!userLocation && !nearYouCovered && !mapErrorsShown;
   const openNearYouRoute = useCallback((key: string | null) => {
     setNearYouRoute(key);
     setSelectedRoute(key);
@@ -700,38 +732,17 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     return { a: { total: renderedA.size }, b: { total: renderedB.size } };
   }, [compareActive, renderedA, renderedB]);
 
-  // Route card rows: each side's frequency and whether it passes, from the same helpers the map
-  // and route lists use (worst direction decides).
-  const compareRows = useMemo(() => {
-    if (!compareActive || !selectedRoute) return null;
-    const { agencySlug: slug, routeId, routeBranch } = splitRouteKey(selectedRoute);
-    const routeFeatures = layers[slug]?.features.filter(f => {
-      const p = f.properties as ShapeProperties;
-      return p?.routeId === routeId && (!routeBranch || p.routeBranch === routeBranch);
-    }) ?? [];
-    const filters = {
-      agencies: selectedAgencies,
-      modes: selectedModes,
-      hideSpan,
-      hideLimitedService,
-      livePollingOnly,
-      showCorridors: false,
-      showCorridorBand: false,
-      selectedRoute: null,
-    };
-    return [
-      buildCompareRow('A', compareA, routeFeatures, slug, filters),
-      buildCompareRow('B', compareSide!, routeFeatures, slug, filters),
-    ];
-  }, [compareActive, selectedRoute, layers, compareA, compareSide, selectedAgencies, selectedModes, hideSpan, hideLimitedService, livePollingOnly]);
-
   // Whole routes and agencies for the research views' stat pills, counted from the routes each overlay
-  // draws (the night index has no 30 minute data, so it cannot answer for both settings).
+  // draws (the night index has no 30 minute data, so it cannot answer for both settings). Night counts the
+  // routes in view, the same count as its list (#1233).
+  const { bounds: viewBounds } = useViewport();
   const researchCounts = useMemo(() => {
     if (!nightServiceView && !frequentServiceView) return null;
-    const features = nightServiceView
-      ? selectNightServiceFeatures(layers, nightServiceFrequency)
-      : selectFrequentServiceFeatures(layers, { frequentServiceDays, frequentServiceFrequency, frequentServiceWindow, selectedModes });
+    if (nightServiceView) {
+      const night = countNightRoutesInView(layers, nightServiceFrequency, viewBounds);
+      return night.routes === 0 ? null : night;
+    }
+    const features = selectFrequentServiceFeatures(layers, { frequentServiceDays, frequentServiceFrequency, frequentServiceWindow, selectedModes });
     if (features.length === 0) return null;
     const routes = new Set<string>();
     const agencySlugs = new Set<string>();
@@ -741,7 +752,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
       agencySlugs.add(String(p.agencySlug ?? ''));
     }
     return { routes: routes.size, agencies: agencySlugs.size };
-  }, [nightServiceView, nightServiceFrequency, frequentServiceView, layers, frequentServiceDays, frequentServiceFrequency, frequentServiceWindow, selectedModes]);
+  }, [nightServiceView, nightServiceFrequency, viewBounds, frequentServiceView, layers, frequentServiceDays, frequentServiceFrequency, frequentServiceWindow, selectedModes]);
 
   const selectedRouteOutOfFilter = useMemo(() => {
     if (!selectedRoute || frequentServiceView || nightServiceView || (maxHeadway === Infinity && period === 'all')) return false;
@@ -771,7 +782,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   // Filters a shared link set when the page opened apply to this visit only; they become the
   // saved preference once the viewer changes them (#891). Mirrors each initializer's URL read.
   const [filtersFromUrl] = useState(() => {
-    const sp = new URLSearchParams(window.location.search);
+    const sp = new URLSearchParams(currentSearch());
     return {
       headway: urlParamPresent(sp, MAP_URL.headway),
       day: urlParamPresent(sp, MAP_URL.day),
@@ -805,7 +816,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     syncUrlParams(encodeSelectionParams(selectedAgencies, agencies.map(a => a.slug)));
   }, [selectedAgencies, agencies]);
   useEffect(() => {
-    syncUrlParams({ m: encodeModesParam(selectedModes) });
+    syncUrlParams({ [MODES_PARAM]: encodeModesParam(selectedModes) });
   }, [selectedModes]);
 
   useEffect(() => {
@@ -922,7 +933,9 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     onMapDismiss?.();
   }, [clearMapSelection, clearUserLocation, onMapDismiss]);
 
-  // Drop stale selection when the route card has no data (day change, agency unload, etc.)
+  // A route the card can't show (no service on this day, or not in the agency's data) says why in the card's place
+  // (N17, N18) instead of the card vanishing; picking that route's day again brings the card back.
+  const [missingRoute, setMissingRoute] = useState<{ key: string; found: boolean } | null>(null);
   useEffect(() => {
     if (!selectedRoute) return;
     const [slug] = selectedRoute.split('::');
@@ -932,9 +945,19 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     if (resolvedRoute && resolvedRoute !== selectedRoute) {
       setSelectedRoute(resolvedRoute);
     } else if (!resolvedRoute) {
+      const missing = { key: selectedRoute, found: routeOnAnyDay(selectedRoute, fc.features) };
       clearMapSelection();
+      setMissingRoute(missing);
     }
   }, [selectedRoute, layers, day, clearMapSelection]);
+  useEffect(() => {
+    if (!missingRoute) return;
+    if (selectedRoute || selectedStop || selectedAgencySlug || searchFocused) { setMissingRoute(null); return; }
+    const [slug] = missingRoute.key.split('::');
+    const fc = layers[slug];
+    const resolvedRoute = fc ? resolveRouteSelectionForDay(missingRoute.key, slug, fc.features, day) : null;
+    if (resolvedRoute) { setMissingRoute(null); setSelectedRoute(resolvedRoute); }
+  }, [missingRoute, selectedRoute, selectedStop, selectedAgencySlug, searchFocused, layers, day]);
 
   // Route card is hidden while search is focused — blur so the card appears on map select.
   useEffect(() => {
@@ -1015,14 +1038,53 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     syncUrlParams(urlParamUpdate(MAP_URL.period, period));
   }, [period]);
 
+  // A tab switch opens the new view on a bare path (App's setActiveApp), and the effects above write only on a change,
+  // so coming back left the link without the map's filters and a copied link opened on the viewer's own (CIV-1139).
+  // When the map's own view opens again it writes its whole link once; any view showing the map writes its position.
+  const { pathname } = useLocation();
+  const linkPathRef = useRef(pathname);
+  useEffect(() => {
+    if (linkPathRef.current === pathname) return;
+    linkPathRef.current = pathname;
+    const saved = getSavedView();
+    if (showUi || showSelectionUi) syncUrlParams(saved ? linkUpdate(MAP_URL, { lat: saved.lat, lon: saved.lon, zoom: saved.zoom }) : {});
+    if (!showUi) return;
+    syncUrlParams({
+      ...linkUpdate(MAP_URL, { headway: maxHeadway, period, hideSpan, hideLimited: hideLimitedService, route: selectedRoute, stop: selectedStop, onDemand: selectedOnDemandSelection }),
+      ...(agencies.length ? encodeSelectionParams(selectedAgencies, agencies.map(a => a.slug)) : {}),
+      [MODES_PARAM]: encodeModesParam(selectedModes),
+      ...encodeCompareSideParams(compareActive ? compareSide : null),
+    });
+  // Only a path change rewrites the whole link; each value's own effect above keeps it current.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname, showUi, showSelectionUi]);
+
   // Search-result hover → highlight that route on the map, fading the rest
   const [hoveredSearchRoute, setHoveredSearchRoute] = useState<string | null>(null);
   useEffect(() => {
     if (!searchFocused) setHoveredSearchRoute(null);
   }, [searchFocused]);
 
+  // The footer row's height, so the map notice pill sits above the pills however far they wrap (CIV-1057).
+  const footerRowRef = useRef<HTMLDivElement>(null);
+  const [footerHeight, setFooterHeight] = useState<number | null>(null);
+  useEffect(() => {
+    const el = footerRowRef.current;
+    if (!el || typeof ResizeObserver === 'undefined') return;
+    const measure = () => {
+      const h = Math.round(el.getBoundingClientRect().height) || null;
+      setFooterHeight(h);
+      // On the page root too, for the overlays outside the map app (History's scrubber, the update banner; CIV-1136).
+      publishMapOverlayVar(MAP_OVERLAY_VARS.footerHeight, h ? `${h}px` : null);
+    };
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(el);
+    return () => { observer.disconnect(); publishMapOverlayVar(MAP_OVERLAY_VARS.footerHeight, null); };
+  }, []);
+
   return (
-    <div className={`relative w-full h-full transition-colors ${TRANSITION_BASE}`}>
+    <div className={`relative w-full h-full transition-colors ${TRANSITION_BASE}`} style={mapFooterStyle(footerHeight)}>
 
       <div className={`absolute inset-0 flex ${compareActive ? 'flex-col sm:flex-row gap-1 bg-[var(--text-primary)]' : ''}`}>
         <div className="relative flex-1 min-h-0 min-w-0">
@@ -1093,6 +1155,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
             sidebarLeft={sidebarLeft}
             searchBarWidth={searchBarWidth}
             onMapReady={setMapA}
+            onPhoneErrorsChange={setPhoneMapErrors}
             showMapControls={!compareActive}
         onRenderedRouteKeysChange={compareActive ? setRenderedA : undefined}
           />
@@ -1185,7 +1248,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
           </div>
         )}
         {compareActive && (
-          <div className={`absolute left-1/2 top-1/2 ${Z_PANEL_RAISED} -translate-x-1/2 -translate-y-1/2 max-sm:hidden`}>
+          <div data-map-overlay="compare-link" className={`absolute left-1/2 top-1/2 ${Z_PANEL_RAISED} -translate-x-1/2 -translate-y-1/2 max-sm:hidden`}>
             <CompareLinkToggle linked={compareLinked} onChange={setCompareLinked} />
           </div>
         )}
@@ -1197,26 +1260,42 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
           (and the analytics prompt, their last pill) wrap upward before they reach the counts (#999).
           Phones drop the wrapper (contents) and keep each group's own position. No z-index here, so
           the pills keep their own layer and the What's new panel still opens above the header. */}
-      <div className={MAP_FOOTER_ROW_SLOT}>
+      <div ref={footerRowRef} className={compareActive ? MAP_FOOTER_ROW_COMPARE_SLOT : MAP_FOOTER_ROW_SLOT}>
       <MapAttribution />
 
-      {((stats && (stats.total > 0 || !isLoading)) || researchCounts || isLoading || isTilesLoading || isBasemapLoading || failedSlugs.size > 0) && (
-        <div data-map-overlay="counts" className={`${MAP_COUNTS_PHONE_SLOT} ${Z_PANEL} shrink-0 ml-auto flex gap-2 transition-all ${TRANSITION_SLOW} ${showUi ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
+      {/* The notice, then the counts: one group at the row's right end, so the notice sits beside the loading pill.
+          It is its own overlay and never fades with the counts, since nothing may hide it (CIV-50). */}
+      <div className={MAP_FOOTER_RIGHT_SLOT}>
+      {onDemandFailedInFooter && (
+        <div data-map-overlay="notice" className={`${MAP_FOOTER_NOTICE_SLOT} ${Z_PANEL}`}>
+          <div className={`${MAP_BADGE} h-8 px-3 py-1.5 text-xs text-[var(--text-muted)]`}>{ON_DEMAND_AREAS_FAILED}</div>
+        </div>
+      )}
+      {((stats && (stats.total > 0 || !isLoading)) || researchCounts || isLoading || isTilesLoading || isBasemapLoading || failedSlugs.size > 0 || phoneErrorsInRow) && (
+        // An error never fades (CIV-50): with the phone's "Error" pill in the row, the row stays.
+        <div data-map-overlay="counts" className={`${MAP_COUNTS_PHONE_SLOT} ${Z_PANEL} shrink-0 flex gap-2 transition-all ${TRANSITION_SLOW} ${showUi || nightServiceView || phoneErrorsInRow ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
           {(isLoading || isTilesLoading || isBasemapLoading) && (
             <div className={`${MAP_BADGE} h-8 max-sm:h-[32px]`}>
               <Spinner />
               <span className={MAP_BADGE_LABEL}>
-                {isLoading ? `${loadedCount}/${requestedCount} networks` : loadingText('map')}
+                {isLoading ? networksLoadingText(loadedCount, requestedCount) : loadingText('map')}
               </span>
             </div>
+          )}
+          {/* Phones (CIV-1057): right of the loading pill, in its spot when there is none. */}
+          {phoneErrorsInRow && (
+            <MapErrorsPill
+              open={!!listedMapErrors}
+              onToggle={() => setListedMapErrors(listedMapErrors ? null : phoneMapErrors)}
+            />
           )}
           {failedSlugs.size > 0 && (
             <div
               className={`${MAP_BADGE} h-8 max-sm:h-[32px]`}
-              title={`Couldn't load: ${[...failedSlugs].join(', ')}`}
+              title={networksFailedHint([...failedSlugs].map(slug => agencyNames(agencies.find(a => a.slug === slug)?.name ?? slug).short))}
             >
               <span className={MAP_BADGE_LABEL}>
-                {failedSlugs.size === 1 ? '1 network failed to load' : `${failedSlugs.size} networks failed to load`}
+                {networksFailedText(failedSlugs.size)}
               </span>
             </div>
           )}
@@ -1233,7 +1312,13 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
               </div>
             </div>
           )}
-          {(nightServiceView || frequentServiceView) && <ResearchLegend view={nightServiceView ? 'night' : 'frequent'} frequentFrequency={frequentServiceFrequency} />}
+          {/* No key in the Night view: every line is the same colour and width (Ryan, CIV-1070). */}
+          {frequentServiceView && <ResearchLegend view="frequent" frequentFrequency={frequentServiceFrequency} />}
+          {/* N39: phones hide the counts, so a view the filters leave empty says so there. */}
+          {!compareActive && !nightServiceView && !frequentServiceView && stats && (showMapContext || !isLoading)
+            && (showMapContext ? (mapContextRouteCount ?? 0) : stats.matching) === 0 && (
+            <div className={`sm:hidden ${MAP_BADGE} h-8 max-sm:h-[32px]`}><span className={MAP_BADGE_LABEL}>{noRoutesMatchText()}</span></div>
+          )}
           {/* Counts come from the loaded agency data, so they wait for it (the in-view counts come from the tiles). */}
           {!compareActive && !nightServiceView && !frequentServiceView && stats && (showMapContext || !isLoading) && (
               <div className="hidden sm:flex gap-2">
@@ -1283,6 +1368,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
         </div>
       )}
       </div>
+      </div>
 
       {(showUi || showSelectionUi) && selectedOnDemandSlug && !selectedRoute && !selectedStop && !disambiguationRoutes?.length && !searchOverlayHidesPanel(searchFocused, query) && (() => {
         const agency = agencies.find(a => a.slug === selectedOnDemandSlug);
@@ -1309,8 +1395,29 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
         ) : null;
       })()}
 
+      {(showUi || showSelectionUi) && selectedStop && !selectedRoute && (() => {
+        // N36: a link to a stop that isn't in the agency's data, once that data has loaded.
+        const [slug, stopId] = selectedStop.split('::');
+        const fc = layers[slug];
+        if (!fc || !stopId || fc.features.some(f => (f.properties as { stopId?: string } | null)?.stopId === stopId)) return null;
+        return <SelectionNoticePanel message={STOP_NOT_FOUND} onClose={clearMapSelection} sidebarLeft={sidebarLeft} searchBarWidth={searchBarWidth} />;
+      })()}
+
+      {(showUi || showSelectionUi) && missingRoute && !selectedRoute && !selectedStop && !selectedAgencySlug && (
+        <SelectionNoticePanel
+          message={missingRoute.found ? noServiceOnDayNotice('route', day) : ROUTE_NOT_FOUND}
+          onClose={() => setMissingRoute(null)}
+          sidebarLeft={sidebarLeft}
+          searchBarWidth={searchBarWidth}
+        />
+      )}
+
       {(showUi || showSelectionUi) && selectedAgencySlug && !selectedOnDemandSlug && !selectedRoute && !selectedStop && !disambiguationRoutes?.length && !searchOverlayHidesPanel(searchFocused, query) && (() => {
         const agency = agencies.find(a => a.slug === selectedAgencySlug);
+        // N30: a link to an agency this view doesn't list, once the list has loaded.
+        if (!agency && agencies.length > 0) {
+          return <SelectionNoticePanel message={AGENCY_NOT_FOUND} onClose={closeAgencyCard} sidebarLeft={sidebarLeft} searchBarWidth={searchBarWidth} />;
+        }
         return agency ? (
           <AgencyCard
             ref={agencyCardRef}
@@ -1326,6 +1433,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
             sidebarLeft={sidebarLeft}
             searchBarWidth={searchBarWidth}
             onInfoOpen={onInfoOpen}
+            loadFailed={failedSlugs.has(agency.slug)}
             onClose={closeAgencyCard}
           />
         ) : null;
@@ -1349,6 +1457,15 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
         );
       })()}
 
+      {mapErrorsShown && (
+        <MapErrorsPanel
+          ref={mapErrorsPanelRef}
+          messages={listedMapErrors!}
+          sidebarLeft={sidebarLeft}
+          searchBarWidth={searchBarWidth}
+        />
+      )}
+
       {nearYouShown && (
         <NearbyRoutesPanel
           ref={nearbyPanelRef}
@@ -1357,6 +1474,9 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
           setSelectedRoute={openNearYouRoute}
           sidebarLeft={sidebarLeft}
           searchBarWidth={searchBarWidth}
+          point={userLocation}
+          day={day}
+          period={period}
         />
       )}
 
@@ -1529,8 +1649,9 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
         hoveredBranch={hoveredBranch}
         setHoveredBranch={setHoveredBranch}
         selectedRouteOutOfFilter={selectedRouteOutOfFilter && !compareActive}
-        compareRows={compareRows}
         compareActive={compareActive}
+        compareSideB={compareActive ? compareSide : null}
+        setCompareSideB={setCompareSide}
         onInfoOpen={onInfoOpen}
         searchEnterRef={searchEnterRef}
         stopBack={stopCardBack}

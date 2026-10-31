@@ -4,7 +4,7 @@
  * from the Live analysis file (v3).
  */
 import type { DashboardBand, LiveV3, UncertainStart } from '../../../shared/liveDashboard';
-import { titleCase } from '../../utils/format';
+import { nameCase } from '../../utils/format';
 import { USUALLY_ON_TIME, bunchTotalParts, bunchedAndLong, lateShareText, usuallyOffBy } from '../../../shared/liveWording';
 
 export type RouteStripMode = 'delay' | 'bunching';
@@ -103,17 +103,6 @@ export const pct = (x: number) => `${Math.round(x * 100)}%`;
 export function delayText(min: number): string {
   if (Math.abs(min) < 0.05) return 'on time';
   return min > 0 ? `+${num(min)} min late` : `${num(min)} min early`;
-}
-
-/**
- * A short name for a label under the strip. "Spadina Ave at Queen St West South Side" becomes "Queen St West" (the
- * cross street); stations and loops keep their own name ("Broadview Station at Bay 6" becomes "Broadview Station").
- */
-export function shortStopName(name: string): string {
-  let s = name.replace(/\s+(North|South|East|West)\s+Side$/i, '').replace(/\s+Streetcar Platform$/i, '').replace(/\s+at Bay \d+$/i, '').trim();
-  const at = s.match(/^(.*?)\s+at\s+(.*)$/i);
-  if (at) s = /\b(station|loop|terminal)\b/i.test(at[1]) ? at[1] : at[2];
-  return s;
 }
 
 /** Rough width of a label in px at 12px Inter, capped at `maxPx` (longer labels wrap onto more lines, see labelLines). */
@@ -279,7 +268,7 @@ export function routeStripFromV3(v3: LiveV3, directionId: number, band: Dashboar
       const b = bunchingById.get(s.stopId);
       return {
         stopId: s.stopId,
-        name: titleCase(s.name),
+        name: nameCase(s.name, 'stop'),
         delayMin: s.n > 0 ? s.medianMin : null,
         lateShare: s.n > 0 ? s.lateShare : null,
         bunchingShare: b && b.n > 0 ? b.badShare : null,

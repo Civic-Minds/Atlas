@@ -9,6 +9,7 @@ import { SideBadge } from '../ui/SideBadge';
 import { DayPicker, FrequencyPicker, PeriodPicker, PickerSection } from './pickers';
 import { compareSideHeading, type CompareSide } from '../../utils/compareSides';
 import { plural } from '../../../shared/overflowText';
+import { FREQUENCY_LABEL } from '../../content/noticeCopy';
 
 export { SideBadge } from '../ui/SideBadge';
 export { compareSideLabel, defaultCompareSide, type CompareSide } from '../../utils/compareSides';
@@ -17,9 +18,9 @@ export { compareSideLabel, defaultCompareSide, type CompareSide } from '../../ut
 export function CompareSidePicker({ side, onChange }: { side: CompareSide; onChange: (side: CompareSide) => void }) {
   return (
     <div className="flex flex-col gap-3">
-      <PickerSection title="Frequency"><FrequencyPicker value={side.maxHeadway} onChange={maxHeadway => onChange({ ...side, maxHeadway })} /></PickerSection>
+      <PickerSection title={FREQUENCY_LABEL}><FrequencyPicker value={side.maxHeadway} onChange={maxHeadway => onChange({ ...side, maxHeadway })} /></PickerSection>
       <PickerSection title="Day"><DayPicker value={side.day} onChange={day => onChange({ ...side, day })} /></PickerSection>
-      <PickerSection title="Time"><PeriodPicker includeAll value={side.period} onChange={period => onChange({ ...side, period })} /></PickerSection>
+      <PickerSection title="Time"><PeriodPicker value={side.period} onChange={period => onChange({ ...side, period })} /></PickerSection>
     </div>
   );
 }
@@ -60,7 +61,7 @@ const COMPARE_LINK_ICONS = { linked: Lock, unlinked: LockOpen };
 /**
  * Sits on the divider between the two compare maps. Pressed (the default) means the maps are linked and
  * move together; not pressed, each map moves on its own. Same round icon button and selected look as
- * the other map toggles.
+ * the other map toggles, at the app's icon button size (32px, CIV-844), with a halo so it reads on the divider.
  */
 export function CompareLinkToggle({ linked, onChange }: { linked: boolean; onChange: (linked: boolean) => void }) {
   const Icon = linked ? COMPARE_LINK_ICONS.linked : COMPARE_LINK_ICONS.unlinked;
@@ -71,9 +72,9 @@ export function CompareLinkToggle({ linked, onChange }: { linked: boolean; onCha
       aria-label={COMPARE_LINK_LABEL}
       title={COMPARE_LINK_LABEL}
       data-testid="compare-link-toggle"
-      className={`h-10! w-10! border-2! ring-4 ring-[var(--bg-panel)] backdrop-blur-md ${linked ? '' : 'bg-[var(--bg-panel)]! border-[var(--border-primary)]!'}`}
+      className={`h-8! w-8! border-2! ring-4 ring-[var(--bg-panel)] backdrop-blur-md ${linked ? '' : 'bg-[var(--bg-panel)]! border-[var(--border-primary)]!'}`}
     >
-      <Icon className="h-5 w-5" strokeWidth={2.25} aria-hidden="true" />
+      <Icon className="h-4 w-4" strokeWidth={2.25} aria-hidden="true" />
     </RoundIconButton>
   );
 }

@@ -25,7 +25,7 @@ Tables, controls and labels
 - Page tables (area and agency pages) keep their columns in place. Every area page shows the same mode columns in the shared mode order (Subway/Metro, Light rail, Streetcar, Commuter rail, Bus, Ferry), with a dash where a mode is missing; monorail counts in Subway/Metro and trolleybus in Bus, and every other mode (gondola/aerial tram, cable car, funicular) goes in one last "Other" column, shown only where an area has one. A column that counts more than its own mode says what it counts on hover (`AREA_TABLE_MODES` and `areaTableColumn` in `shared/areaPages.ts`). On desktop the columns sit against the right edge, right-aligned, with the spare space after the names; on phones they start right after the names, left-aligned, so a column cut off at the edge shows there is more to scroll to (`DataTable` `endAligned`). A header too long for its column breaks onto two lines. CIV-958, CIV-973.
 - Pills and segmented buttons use `Pill` (`src/components/ui/Pill.tsx`). On/off switches use `Toggle`. Small labels such as "Live" or "New" use `Tag`. Legend entries use `LegendItem`.
 - Colours come from the CSS tokens in `src/styles/index.css`, written as `var(--accent)`, `var(--text-muted)`, `var(--text-primary)`, `var(--border-primary)` and so on.
-- Route names in lists: the number in bold, then the name in a light weight, with no dash ("**504** King"). A route with no number shows its name in bold alone. Card titles keep "504 — King". Use `RouteRowName` (`src/components/RouteRowName.tsx`). CIV-928.
+- Route names in lists and titles: the number in bold, then the name in a light weight, with no dash ("**504** King"), on every screen: lists, card titles, the chart window and page titles. A route with no number shows its name in bold alone. Plain text keeps the dash ("504 — King"): tab titles, shared-link and preview text, copied text, report details and screen-reader names. Use `RouteRowName` in lists and `RouteTitleName` for titles (both in `src/components/RouteRowName.tsx`). CIV-928, CIV-1128.
 
 Colour and shape
 
@@ -56,6 +56,7 @@ Frequencies
   - ranges with an en dash: "every 6–12 min", "every 30–60 min" (`headwayAboutRange`, `headwayEveryRange`)
   - "≤10 min" and "16–30 min" in legends and keys (`headwayTierLabel`, `headwayBandLabel`)
   - "10 min" with no "every" in tables and chart cells (`headwayAmount`); "3 min" for a delay or gap that is not a headway (`delayAmount`)
+- The frequency comes first, then its limit: "every 12 min until 9:40 PM", not "until 9:40 PM, every 12 min" (Ryan, 2026-10-30). #962.
 - Frequencies are always in minutes, never hours ("every 90 min", "every 120 min"), so a column never mixes units. #938.
 - Don't summarise agencies or areas by a fixed cutoff such as "every 15 min or better" (or 10, 30 or any other). Many agencies have no routes that frequent. Show the real waits for each period instead.
 - Frequency filter work: read `docs/product/FREQUENCY_RULES.md` first.
@@ -64,6 +65,9 @@ Words
 
 - Plain words a non-expert understands at once. No transit or technical jargon in labels, buttons or statuses.
 - "Part-time", not "Time-limited", for service that runs part of the day. CIV-211, #933.
+- "Schedule", not "timetable", in all UI text, on the map and in Live, including approved texts (Ryan, CIV-1079). Code names (`noTimetableTrip` and the like) stay.
+- "Consistent", not "steady" (Ryan, 2026-10-27: "\"steady\" should not be used - consistent is better"). CIV-1059.
+- Times: "2–5 AM", "11 AM–3 PM", "6:30–9 AM". Uppercase AM/PM after a space, an en dash between times (not "to"), no ":00" on the hour, AM/PM once when both times share it (Ryan, 2026-10-28). CIV-1095.
 - Route numbers keep the agency's own form ("1X", "SU 43", "99 B-Line", "SSSF"). Route labels come from `routeLabels` in `src/utils/format.ts`, built on `shared/routeDisplay.ts`, so a route reads the same way on every surface.
 - Internal terms and the UI words for them are listed in `docs/GLOSSARY.md`. Use the UI wording given there.
 
@@ -76,6 +80,11 @@ Card notices
 
 - Plain words: what the card shows and why. One sentence is preferred for short notices; a longer notice may use two. "Learn more →" runs on at the end of the last sentence, not on its own line (CIV-920). CIV-941.
 - No "so" joining two clauses in a notice or error (Ryan, 2026-10-26). State what happened, then what it means, as two short sentences if needed.
+- One kind of notice, one place (Ryan, CIV-1202). A route card has three:
+  1. Under the title: what the card is. "Includes variants …", and data warnings about the schedule (expired or outdated, under review, corrected, map line missing or incomplete). Small, regular weight, grey; the data warnings end with "Learn more".
+  2. On the rows: anything about one direction or row. A direction with no service in the period is a row saying so ("no regular service during this period"), not a note. Row style: small, extra-bold, dark, fading with its row.
+  3. Below the rows: the whole route in the period. The filter line, "runs only from …", "no scheduled trips", uneven gaps, booking ahead and weekday variation, in that order. Small, regular weight, grey.
+- Each fact once: a notice shows only when it says something the rows don't. When a row already names the gap, the hours or a longer wait, the notice that repeats it is left out. `routeCardNotices` (src/utils/routeCardNotices.ts) decides every notice and its place; the card decides nothing.
 
 New wording needs a yes
 

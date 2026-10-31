@@ -1,6 +1,7 @@
+import PanelEmpty from '../../ui/PanelEmpty';
 import React, { useMemo } from 'react';
 import { CardBackLink } from '../../CardBack';
-import { stopNameCase } from '../../../utils/format';
+import { nameCase } from '../../../utils/format';
 import type { HoveredBranch, TimePeriod } from '../../../hooks/useIntervalStats';
 import {
   AgencyFilterChips,
@@ -19,12 +20,12 @@ import {
 import { reportDetails } from '../../../utils/reportIssue';
 import StopRouteGroup from './StopRouteGroup';
 import RouteRowName from '../../RouteRowName';
-import { stopRouteNoTripsNotice } from '../../../content/noticeCopy';
-import { formatPeriodRangeLong, TIME_PERIODS } from '../../../../shared/config';
 import { stopRouteBestHeadway, type StopRoute } from '../../../utils/stopRoutes';
 import LiveStopArrivals from './LiveStopArrivals';
 import { compareHeadwayThenNumber } from '../../../utils/sortCompare';
 import type { RouteLabel } from '../../../utils/routeFacts';
+import { BACK_TO_MAP_LABEL, stopNoRoutesNotice, stopRouteNoTripsNotice } from '../../../content/noticeCopy';
+import { formatPeriodRangeLong, TIME_PERIODS } from '../../../../shared/config';
 
 // The stop card's route and branch shapes live with the code that builds them (CIV-997).
 export type { StopBranch, StopRoute } from '../../../utils/stopRoutes';
@@ -112,18 +113,19 @@ export const StopCard: React.FC<StopCardProps> = ({
       ))
       .map(({ route }) => route);
   }, [filteredStopRoutes, period]);
+  const stopPeriod = period !== 'all' ? TIME_PERIODS.find(p => p.key === period) : undefined;
 
   return (
     <SidebarCardShell>
       <SidebarCardHeaderBlock>
         <div className="flex items-start gap-2">
           <div className="flex-1 min-w-0">
-            <CardBackLink onClick={back?.onClick ?? (() => setSelectedStop(null))}>{back?.to ?? 'Map'}</CardBackLink>
+            <CardBackLink onClick={back?.onClick ?? (() => setSelectedStop(null))}>{back?.to ?? BACK_TO_MAP_LABEL}</CardBackLink>
             {stopAgencies.length === 1 ? (
               <FlaggableValue reason="Stop is missing, misplaced, or assigned incorrectly" reportRef={reportRef} className="block w-full text-left">
                 <SidebarCardHeader
                   eyebrow={back?.namesAgency || back?.to === stopAgencies[0] ? null : stopAgencies[0]}
-                  title={`${stopNameCase(currentStop.stopName)}${currentStop.direction ? ` — ${currentStop.direction}` : ''}`}
+                  title={`${nameCase(currentStop.stopName, 'stop')}${currentStop.direction ? ` — ${currentStop.direction}` : ''}`}
                   titleClamp
                 />
               </FlaggableValue>
@@ -136,7 +138,7 @@ export const StopCard: React.FC<StopCardProps> = ({
                 />
                 <FlaggableValue reason="Stop is missing, misplaced, or assigned incorrectly" reportRef={reportRef} className="block w-full text-left">
                   <SidebarCardHeader
-                    title={`${stopNameCase(currentStop.stopName)}${currentStop.direction ? ` — ${currentStop.direction}` : ''}`}
+                    title={`${nameCase(currentStop.stopName, 'stop')}${currentStop.direction ? ` — ${currentStop.direction}` : ''}`}
                     titleClamp
                   />
                 </FlaggableValue>
@@ -145,9 +147,9 @@ export const StopCard: React.FC<StopCardProps> = ({
           </div>
           <CardReportButton
             ref={reportRef}
-            title={`Stop issue: ${stopNameCase(currentStop.stopName)}`}
+            title={`Stop issue: ${nameCase(currentStop.stopName, 'stop')}`}
             details={reportDetails([
-              ['Stop', `${stopNameCase(currentStop.stopName)}${currentStop.direction ? ` — ${currentStop.direction}` : ''}`],
+              ['Stop', `${nameCase(currentStop.stopName, 'stop')}${currentStop.direction ? ` — ${currentStop.direction}` : ''}`],
               ['Agencies', stopAgencies.join(', ') || 'Unknown'],
               ['Period', period],
             ])}
@@ -181,6 +183,10 @@ export const StopCard: React.FC<StopCardProps> = ({
             setHoveredBranch={setHoveredBranch}
           />
         ))}
+        {/* N35 (Ryan): none of the stop's routes run in the chosen time of day. */}
+        {sortedRoutes.length === 0 && stopPeriod && (
+          <div className="-mx-4"><PanelEmpty>{stopNoRoutesNotice(formatPeriodRangeLong(stopPeriod.startHour, stopPeriod.endHour))}</PanelEmpty></div>
+        )}
       </SidebarCardList>
 
       {nearbyConnections.length > 0 && (
@@ -195,7 +201,7 @@ export const StopCard: React.FC<StopCardProps> = ({
                 routeName={{ shortName: route.primary, name: route.secondary }}
                 // "Moody Center", not the feed's "MOODY CENTER"; a feed's own mixed case stays as written (CIV-935).
                 // The stop name shortens; the distance always shows (#1154).
-                subLabel={stopNameCase(nearestStopName)}
+                subLabel={nameCase(nearestStopName, 'stop')}
                 subLabelTrailing={` · ${Math.round(distanceMeters)} m away`}
                 subLabelWeight="medium"
                 headway={headway ?? undefined}

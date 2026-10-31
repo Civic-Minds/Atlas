@@ -12,7 +12,8 @@ import DevHint from './components/Live/DevHint';
 import { applySeoToDocument } from './lib/seoDom';
 import { SITE_URL } from '../shared/seo';
 import { syncUrlParams } from './utils/syncUrlParams';
-import { titleCase } from './utils/format';
+import { LIVE_ROUTE_URL, currentSearch, linkUpdate, readUrlParam } from './utils/urlSchema';
+import { nameCase } from './utils/format';
 import ErrorBoundary from './components/ErrorBoundary';
 import PageShell from './components/ui/PageShell';
 import PillGroup, { PILL_ROW } from './components/ui/PillGroup';
@@ -40,7 +41,7 @@ const NAME_KEYS = new Set(['name', 'fromName', 'toName']);
 /** Big per-stop number tables that hold no names, left alone. */
 const NO_NAMES = new Set(['stopHours', 'segmentLines']);
 const niceDeep = (x: unknown, key = ''): unknown => {
-  if (typeof x === 'string') return NAME_KEYS.has(key) ? titleCase(x) : x;
+  if (typeof x === 'string') return NAME_KEYS.has(key) ? nameCase(x, 'stop') : x;
   if (Array.isArray(x)) return x.map(v => niceDeep(v, key));
   if (x && typeof x === 'object') return Object.fromEntries(Object.entries(x).map(([k, v]) => [k, NO_NAMES.has(k) ? v : niceDeep(v, k)]));
   return x;
@@ -120,13 +121,13 @@ function AnalysisPage() {
   // No time-of-day toggle: every section shows the whole day; hour charts highlight a period on hover, and sections
   // whose answer differs by period list it per period.
   const band: DashboardBand = 'all';
-  const [dir, setDir] = useState<number | null>(() => { const d = new URLSearchParams(window.location.search).get('dir'); return d != null && d !== '' && !Number.isNaN(Number(d)) ? Number(d) : null; });
+  const [dir, setDir] = useState<number | null>(() => readUrlParam(currentSearch(), LIVE_ROUTE_URL.dir) ?? null);
   // The filters live in the address, so a link reopens the same view.
-  useEffect(() => { syncUrlParams({ band: null, day: null, dir: dir == null ? null : String(dir) }); }, [dir]);
+  useEffect(() => { syncUrlParams(linkUpdate(LIVE_ROUTE_URL, { band: null, day: null, dir })); }, [dir]);
   // The summary (lite) is the route page's default (CIV-284); ?view=lite still opens it. The dashboard stays at
   // ?view=dashboard for now, and ?view=analysis is the full page.
-  const [view, setView] = useState<'dashboard' | 'analysis' | 'lite'>(() => { const v = new URLSearchParams(window.location.search).get('view'); return v === 'analysis' || v === 'dashboard' ? v : 'lite'; });
-  useEffect(() => { syncUrlParams({ view: view === 'lite' ? null : view }); }, [view]);
+  const [view, setView] = useState<'dashboard' | 'analysis' | 'lite'>(() => { const v = readUrlParam(currentSearch(), LIVE_ROUTE_URL.view); return v === 'analysis' || v === 'dashboard' ? v : 'lite'; });
+  useEffect(() => { syncUrlParams(linkUpdate(LIVE_ROUTE_URL, { view })); }, [view]);
   useEffect(() => {
     if (view !== 'analysis' || !window.location.hash) return;
     document.getElementById(window.location.hash.slice(1))?.scrollIntoView();
@@ -194,6 +195,6 @@ function AnalysisPage() {
 
 /** ?view=explore opens the new full-analysis view (beta); everything else is the page above. */
 export default function LiveRoutePage() {
-  const [explore] = useState(() => new URLSearchParams(window.location.search).get('view') === 'explore');
+  const [explore] = useState(() => readUrlParam(currentSearch(), LIVE_ROUTE_URL.view) === 'explore');
   return explore ? <LiveExplorePage /> : <AnalysisPage />;
 }

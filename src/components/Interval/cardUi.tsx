@@ -26,6 +26,7 @@ export const CARD_LIST_ROUTE = 'text-xs font-bold text-[var(--text-primary)] lea
 // The section label lives in styles.ts with the other shared text styles (CIV-395), so non-card panels use it too.
 export { CARD_SECTION } from '../../styles';
 import { CARD_NOTE, CARD_SECTION } from '../../styles';
+import { CORRECTED_DATA_NOTICE, explainerFor, NEW_SCHEDULE_DATA_NOTICE, REPORT_FORM_HINT, REPORT_NEEDS_FREQUENCY_DETAIL, REPORT_NEEDS_REASON } from '../../content/noticeCopy';
 /** A list card's header block (agency card, History's agency view): one divider under it. */
 export const CARD_HEADER_BLOCK = 'shrink-0 px-4 pt-4 pb-3 border-b border-[var(--border-primary)]';
 /** The same header spacing for a card that is only a header (no divider sitting on the card's own edge). */
@@ -52,6 +53,11 @@ export const CARD_CALLOUT = `${CARD_CALLOUT_SURFACE} px-3 py-2.5`;
 /** A callout's headline and its plain lines under it: one style for every callout (Compare, History) (CIV-971). */
 export const CARD_CALLOUT_HEADLINE = 'text-xs font-bold leading-tight text-[var(--text-primary)]';
 export const CARD_CALLOUT_TEXT = 'text-xs text-[var(--text-muted)] mt-0.5';
+/** A tinted callout's headline, in its tone's text colour. */
+export const CARD_CALLOUT_HEADLINE_TONE = {
+  negative: 'text-xs font-bold leading-tight text-[var(--status-negative-text)]',
+  positive: 'text-xs font-bold leading-tight text-[var(--status-positive-text)]',
+} as const;
 
 /** The tinted callouts (History's better or worse summary): the status tint in place of the outline. */
 const CARD_CALLOUT_TONE = {
@@ -270,11 +276,11 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
   const submit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (hasFrequencyReason && frequencyReasons.length === 0) {
-      setValidationError('Select at least one frequency detail.');
+      setValidationError(REPORT_NEEDS_FREQUENCY_DETAIL);
       return;
     }
     if (selectedReasons.length === 0 && !description.trim()) {
-      setValidationError('Select a reason or describe what is wrong.');
+      setValidationError(REPORT_NEEDS_REASON);
       return;
     }
     openAtlasProblemEmail(title, details, {
@@ -320,7 +326,7 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
             <div className={`${CARD_HEADER_BLOCK} flex items-center justify-between`}>
               <div>
                 <h2 id={dialogTitleId} className={CARD_TITLE}>Report a problem</h2>
-                <p className={`${CARD_NOTICE} mt-0.5`}>Choose a category, or click a card value to preselect its reason.</p>
+                <p className={`${CARD_NOTICE} mt-0.5`}>{REPORT_FORM_HINT}</p>
               </div>
               <RoundIconButton onClick={reset} aria-label="Close report form">
                 <X className="w-3.5 h-3.5" />
@@ -544,19 +550,26 @@ const SUFFIX_TONE = {
 } as const;
 
 /**
- * A part-period value ("from 7:05am, every 20 min") may break after its comma: on a narrow row the dot and
- * "from 7:05am," stay on the first line and "every 20 min" goes under it, right-aligned, instead of running
- * past the card edge (#1128). Each part stays whole; a short value stays one line as before.
+ * A part-period value ("every 20 min from 7:05 AM", "every 10 min, with a 45 min gap") may break before its limit: on a
+ * narrow row the dot and "every 20 min" stay on the first line and "from 7:05 AM" goes under it, right-aligned, instead
+ * of running past the card edge (#1128). Each part stays whole; a short value stays one line as before.
  */
-const twoPart = (text: string | undefined) => !!text && text.includes(', ');
+function twoPartSplit(text: string | undefined): [string, string] | null {
+  if (!text) return null;
+  const comma = text.indexOf(', ');
+  if (comma >= 0) return [text.slice(0, comma + 1), text.slice(comma + 2)];
+  const limit = text.search(/ (from|until) /);
+  return limit > 0 ? [text.slice(0, limit), text.slice(limit + 1)] : null;
+}
+const twoPart = (text: string | undefined) => twoPartSplit(text) != null;
 
 function TwoPartBadge({ dot, text, className }: { dot: React.ReactNode; text: string; className: string }) {
-  const comma = text.indexOf(', ');
+  const [first, second] = twoPartSplit(text) ?? [text, ''];
   return (
     <span className={`inline-flex flex-wrap justify-end gap-x-1 min-w-0 ${className}`}>
-      <span className="inline-flex items-center gap-1 whitespace-nowrap">{dot}{text.slice(0, comma + 1)}</span>
+      <span className="inline-flex items-center gap-1 whitespace-nowrap">{dot}{first}</span>
       {' '}
-      <span className="whitespace-nowrap">{text.slice(comma + 2)}</span>
+      <span className="whitespace-nowrap">{second}</span>
     </span>
   );
 }
@@ -569,6 +582,7 @@ export function HeadwayBadge({
   suffix,
   suffixTone = 'dim',
   className = '',
+  secondLine = false,
 }: {
   headway: number;
   colorHeadway?: number | null;
@@ -578,10 +592,13 @@ export function HeadwayBadge({
   /** Colour of the suffix: dim by default; negative (red) or positive (green) for a change, as History's snapshot rows show it. */
   suffixTone?: 'dim' | 'negative' | 'positive';
   className?: string;
+  /** In a lighter second line of text (search suggestions): the dot and words take that line's own style. */
+  secondLine?: boolean;
 }) {
   const colorMode = useColorMode();
-  const dot = <span className="w-2 h-2 rounded-full shrink-0" style={{ background: headwayToTierColor(colorHeadway ?? headway, colorMode) }} />;
   const words = label ?? fmtHeadway(headway);
+  if (secondLine) return <SecondLineBadge color={headwayToTierColor(colorHeadway ?? headway, colorMode)} words={words} />;
+  const dot = <span className="w-2 h-2 rounded-full shrink-0" style={{ background: headwayToTierColor(colorHeadway ?? headway, colorMode) }} />;
   const base = 'font-black text-[var(--text-primary)] text-xs leading-snug';
   return (
     <span className={`inline-flex items-center gap-1 ${base} ${twoPart(words) ? 'min-w-0' : 'shrink-0'} ${className}`}>
@@ -596,8 +613,14 @@ export function HeadwayBadge({
  * A route with no regular frequency to show: the grey dot and a word ("limited", "no regular service"), styled like HeadwayBadge.
  * With no label it is the grey dot alone, kept one text line tall so it sits beside the row's first line.
  */
-export function LimitedBadge({ label, className = '' }: { label?: string; className?: string }) {
+/** The tier dot and words inside a line of text that sets its own weight and colour (HeadwayBadge / LimitedBadge `secondLine`). */
+function SecondLineBadge({ color, words }: { color: string; words: string }) {
+  return <><span className="inline-block w-2 h-2 rounded-full shrink-0 mr-1 align-[1px]" style={{ background: color }} />{words}</>;
+}
+
+export function LimitedBadge({ label, className = '', secondLine = false }: { label?: string; className?: string; /** See HeadwayBadge. */ secondLine?: boolean }) {
   const colorMode = useColorMode();
+  if (secondLine) return <SecondLineBadge color={getTierColor(null, colorMode)} words={label ?? ''} />;
   const dot = <span className="w-2 h-2 rounded-full shrink-0" style={{ background: getTierColor(null, colorMode) }} />;
   if (label && twoPart(label)) return <TwoPartBadge dot={dot} text={label} className={`text-xs font-black text-[var(--text-primary)] leading-snug ${className}`} />;
   // A several-word label ("no regular service during this period") breaks between words, right-aligned, where the row is
@@ -673,7 +696,8 @@ export function SidebarCardHeader({
   back,
 }: {
   eyebrow?: string | null;
-  title: string;
+  /** Text, or a route title drawn by RouteTitleName. */
+  title: React.ReactNode;
   onEyebrowClick?: () => void;
   titleClamp?: boolean;
   /** The card's back link, above the eyebrow. */
@@ -735,15 +759,18 @@ export function CardHelpNotice({
   message,
   onLearnMore,
   actionLabel = 'Learn more',
+  className = '',
 }: {
   message: string;
   /** Without it the notice is the sentence alone, no link. */
   onLearnMore?: () => void;
   actionLabel?: string;
+  /** Spacing from the caller (mt-1 under a card title). */
+  className?: string;
 }) {
   return (
     // The link runs on right after the sentence's last word, as text, not in a column beside it (CIV-920).
-    <p className={`${CARD_NOTICE} min-w-0 whitespace-normal break-words leading-relaxed`}>
+    <p className={`${CARD_NOTICE} min-w-0 whitespace-normal break-words leading-relaxed ${className}`.trim()}>
       {message}
       {onLearnMore && (
         <>
@@ -758,12 +785,12 @@ export function CardHelpNotice({
 }
 
 /** "New schedule data is being verified.": the agency card and the route card show it the same way. */
-export function NewScheduleDataNotice({ agency, onInfoOpen }: { agency: Agency; onInfoOpen: OpenInfoFn }) {
+export function NewScheduleDataNotice({ agency, onInfoOpen, on }: { agency: Agency; onInfoOpen: OpenInfoFn; on: 'route' | 'agency' }) {
   return (
     <CardHelpNotice
-      message="New schedule data is being verified."
+      message={NEW_SCHEDULE_DATA_NOTICE[on]}
       onLearnMore={() => onInfoOpen('about', {
-        helpTopic: 'new-schedule-data',
+        helpTopic: explainerFor(on === 'route' ? 'N4' : 'N21'),
         agencyName: agency.name,
         lastRefreshedAt: agency.lastRefreshedAt ?? undefined,
         lastFeedCheckAt: agency.lastFeedCheckAt ?? undefined,
@@ -776,12 +803,12 @@ export function NewScheduleDataNotice({ agency, onInfoOpen }: { agency: Agency; 
 }
 
 /** "We corrected this data.": the agency card and the route card show it the same way, with the note that applies. */
-export function CorrectedDataNotice({ agency, overrideNote, onInfoOpen }: { agency: Agency; overrideNote: string; onInfoOpen: OpenInfoFn }) {
+export function CorrectedDataNotice({ agency, overrideNote, onInfoOpen, on }: { agency: Agency; overrideNote: string; onInfoOpen: OpenInfoFn; on: 'route' | 'agency' }) {
   return (
     <CardHelpNotice
-      message="We corrected this data."
+      message={CORRECTED_DATA_NOTICE[on]}
       onLearnMore={() => onInfoOpen('about', {
-        helpTopic: 'corrected-data',
+        helpTopic: explainerFor(on === 'route' ? 'N5' : 'N22'),
         agencyName: agency.name,
         overrideNote,
         issueUrl: agency.issueUrl,
@@ -836,7 +863,7 @@ export function CardSummaryRow({
   live?: boolean;
   headwaySuffix?: string;
   below?: React.ReactNode;
-  /** Words in place of the headway badge (#934 part-period: "until 9:37am, every 12 min"). */
+  /** Words in place of the headway badge (#934 part-period: "every 12 min until 9:37 AM"). */
   text?: string;
   /** The map hover, as on a direction row (CIV-1053): the route stands out on the map. */
   onHoverStart?: () => void;

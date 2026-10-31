@@ -30,7 +30,7 @@ describe('stopRowHeadway: never overstate', () => {
   });
 
   it('shows words, not a number, for a part-period row', () => {
-    expect(stopRowHeadway(branch(5, 10, { periodText: 'until 9:37am, every 12 min' }), 'midday')).toBeNull();
+    expect(stopRowHeadway(branch(5, 10, { periodText: 'every 12 min until 9:37 AM' }), 'midday')).toBeNull();
   });
 });
 
@@ -58,6 +58,21 @@ describe('buildStopRoutes: one destination served by two patterns (CIV-1080)', (
   it("reads the stop's own value when every trip of the direction there goes to that destination", () => {
     expect(rows(ttc29, 'midday')).toEqual([['Wilson', 8]]);
     expect(rows(ttc29, 'all')).toEqual([['Wilson', 8]]);
+  });
+
+  it('#1228: shows the part-period words only where the route card\'s row has them (rowTrips)', () => {
+    const fc = structuredClone(ttc29);
+    for (const f of fc.features.filter(x => x.properties?.directionId === 1)) {
+      Object.assign(f.properties!, { stretchRole: 'main', stretchPeriodEdge: { midday: { from: 754, every: 8 } } });
+      delete (f.properties!.directionFilterHeadwayByPeriod as Record<string, unknown> | undefined)?.midday;
+    }
+    const words = () => buildStopRoutes({
+      siblingIdsByAgency: { ttc: new Set(['2108']) }, routesByAgency: { ttc: new Set(['29']) }, layers: { ttc: fc }, day: 'Weekday', period: 'midday',
+    })[0]?.branches.filter(b => b.directionId === 1).map(b => b.periodText) ?? [];
+    expect(words()).toEqual(['every 8 min from 12:34 PM']);
+    // No trips of its own in the period: the card's row has no words, so neither does the stop card (TTC 100 to Pape, overnight).
+    for (const f of fc.features.filter(x => x.properties?.directionId === 1)) f.properties!.noOwnServiceByPeriod = ['midday'];
+    expect(words()).toEqual([]);
   });
 
   it('keeps each destination\'s own value when another destination shares the stop (never overstates)', () => {

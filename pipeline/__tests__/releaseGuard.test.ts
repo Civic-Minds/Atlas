@@ -135,12 +135,15 @@ describe('tile rules fingerprint', () => {
   // values change, but they are only ever set at tile build and never re-derived by the app, so any
   // app draws any tiles as before (older tiles keep their larger groups): hash only.
   // CIV-1048 writes the search index beside the release files; no tile value changes: hash only.
+  // CIV-1135 adds an 'in' operator and evaluateMapFilter to routeHeadwayFilter.ts's evaluator for the route
+  // counter. The tile build only calls normalizeRouteFilterFeatures there, which is unchanged, and no tile expression
+  // used 'in' (it threw before): no tile value changes, hash only.
   // CIV-522 lets build-pmtiles read a rebuild's staged agency files instead of the published ones; it
   // changes where the files come from, not what is baked into the tiles: hash only.
   it('changes only together with a deliberate TILE_RULES_VERSION decision', () => {
     expect({ version: TILE_RULES_VERSION, fingerprint: tileRulesFingerprint() }).toEqual({
       version: 5,
-      fingerprint: 'dae9d30363f5daad60fe0b35e0549025ef34021595adb79da93030790cab3107',
+      fingerprint: '1a43d62d14f513341e114c9a970144783a94012224ab64b47f0fc5ccfaf8252a',
     });
   });
 });

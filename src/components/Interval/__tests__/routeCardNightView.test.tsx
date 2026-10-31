@@ -45,13 +45,13 @@ describe('Night route card (CIV-934)', () => {
 
   it('names a row that runs at night on only part of the route, as the Night list does', () => {
     renderCard(true);
-    expect(screen.getByText('Night service on part of the route')).toBeTruthy();
+    expect(screen.getByText('Overnight service on part of the route')).toBeTruthy();
   });
 
   it('draws no chart and no period', () => {
     // The chart's hour labels mark it.
     renderCard(true, 'midday');
-    expect(screen.queryByText('12p')).toBeNull();
+    expect(screen.queryByText('12 PM')).toBeNull();
     expect(screen.queryByText(/Midday|All day/)).toBeNull();
   });
 });

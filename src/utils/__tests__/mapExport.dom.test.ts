@@ -261,6 +261,35 @@ describe('waitForMapExportReady', () => {
     await expect(promise).rejects.toMatchObject({ reason: 'no-routes' });
   });
 
+  it('saves a route-less image when routes are only hidden by filters', async () => {
+    vi.useFakeTimers();
+    let resolved = false;
+    const promise = waitForMapExportReady({
+      map: fakeMap({ loaded: true, tiles: true }),
+      isDataLoading: () => false,
+      hasRenderedRoutes: () => false,
+      hasRouteData: () => true,
+    }).then(() => {
+      resolved = true;
+    });
+    // Still waits out the short grace in case routes are about to draw.
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(resolved).toBe(false);
+    await vi.advanceTimersByTimeAsync(4000);
+    await promise;
+    expect(resolved).toBe(true);
+  });
+
+  it('still refuses when route data failed, even with routes filtered out', async () => {
+    await expect(waitForMapExportReady({
+      map: fakeMap({ loaded: true, tiles: true }),
+      isDataLoading: () => false,
+      hasFailedData: () => true,
+      hasRenderedRoutes: () => false,
+      hasRouteData: () => true,
+    })).rejects.toMatchObject({ reason: 'failed-networks' });
+  });
+
   it('refuses to export when some route data failed to load', async () => {
     await expect(waitForMapExportReady({
       map: fakeMap({ loaded: true, tiles: true }),

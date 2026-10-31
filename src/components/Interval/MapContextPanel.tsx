@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import type { MapContextAgency, MapContextRoute } from '../../utils/mapContext';
-import { FLOATING_CARD, LIST_ROW_PRIMARY, PANEL_TITLE, SIDEBAR_PANEL_WIDTH, PANEL_SIDEBAR, sidebarFrameStyle } from '../../styles';
+import { AGENCY_LIST_FILTERS, FLOATING_CARD, LIST_ROW_PRIMARY, PANEL_TITLE, PILL_SCROLL_ROW, SIDEBAR_PANEL_WIDTH, PANEL_SIDEBAR, sidebarFrameStyle } from '../../styles';
 import RouteListRow from '../RouteListRow';
 import RegionFilterPills from '../RegionFilterPills';
 import Panel, { PanelBody, PanelTitleBar } from '../ui/Panel';
@@ -11,6 +11,7 @@ import { CARD_SUMMARY } from './cardUi';
 import PanelEmpty from '../ui/PanelEmpty';
 import { compareAgencyName, compareRegion } from '../../utils/sortCompare';
 import { countOf } from '../../../shared/overflowText';
+import { NO_MATCHING_AGENCIES, NO_MATCHING_ROUTES, OTHER_REGION_LABEL } from '../../content/noticeCopy';
 
 interface MapContextPanelProps {
   agencies: MapContextAgency[];
@@ -25,7 +26,7 @@ interface MapContextPanelProps {
 
 export const MapContextPanel: React.FC<MapContextPanelProps> = ({ agencies, mode, regionBySlug, sidebarLeft, searchBarWidth, onSelectAgency, onSelectRoute }) => {
   const [regionFilter, setRegionFilter] = useState<Set<string>>(() => new Set());
-  const regionOf = useCallback((slug: string) => regionBySlug?.get(slug) ?? 'Other', [regionBySlug]);
+  const regionOf = useCallback((slug: string) => regionBySlug?.get(slug) ?? OTHER_REGION_LABEL, [regionBySlug]);
   // Only regions with routes in view get a pill, so no pill ever matches nothing.
   const regionsInView = useMemo(() => {
     if (!regionBySlug) return [];
@@ -74,12 +75,15 @@ export const MapContextPanel: React.FC<MapContextPanelProps> = ({ agencies, mode
       </PanelTitleBar>
 
       {showRegionPills && (
-        <div className="shrink-0 flex gap-1.5 overflow-x-auto items-center px-4 py-2 border-b border-[var(--border-primary)] [&::-webkit-scrollbar]:hidden" style={{ scrollbarWidth: 'none' }}>
+        // The agency lists' filter row (History, the agency browser): AGENCY_LIST_FILTERS + PILL_SCROLL_ROW (CIV-1117 preview).
+        <div className={AGENCY_LIST_FILTERS}>
+        <div className={PILL_SCROLL_ROW} style={{ scrollbarWidth: 'none' }}>
           <RegionFilterPills
             regions={regionsInView}
             selectedRegions={regionFilter}
             setSelectedRegions={setRegionFilter}
           />
+        </div>
         </div>
       )}
 
@@ -101,7 +105,7 @@ export const MapContextPanel: React.FC<MapContextPanelProps> = ({ agencies, mode
               </div>
             );
           }) : (
-            <PanelEmpty>No matching agencies.</PanelEmpty>
+            <PanelEmpty>{NO_MATCHING_AGENCIES}</PanelEmpty>
           )
         ) : (
           filteredRouteGroups.length > 0 ? filteredRouteGroups.map(group => (
@@ -127,7 +131,7 @@ export const MapContextPanel: React.FC<MapContextPanelProps> = ({ agencies, mode
               })}
             </section>
           )) : (
-            <PanelEmpty>No matching routes.</PanelEmpty>
+            <PanelEmpty>{NO_MATCHING_ROUTES}</PanelEmpty>
           )
         )}
       </PanelBody>

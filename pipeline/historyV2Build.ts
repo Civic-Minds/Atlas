@@ -9,6 +9,7 @@ import type { HeadwayByPeriod } from '../shared/config.js';
 import { yearOfRefDate, type HistorySnapshotV2, type HistoryV2SidecarRoute } from '../shared/historyV2.js';
 import type { HolidayPeriodDrop, RepickedPeriod } from './historyRefQuality.js';
 import { afterBuildMonth, getPeriodKeySortValue, labelFromRefDate, parsePeriodKey } from './historyPeriods.js';
+import type { ShapeGap } from './historyShapes.js';
 
 export interface ArchiveChange {
   periodKey: string;
@@ -27,7 +28,8 @@ export interface BuiltSnapshot {
   periodKey: string;
   label: string;
   year: number;
-  weekdayHeadwayMin: number;
+  /** null only for a weekend-only snapshot (see BuildOptions.weekendOnlyRoute): the weekday value is blank, never 0. */
+  weekdayHeadwayMin: number | null;
   headwayByPeriod?: HeadwayByPeriod;
   /** CIV-555: the shared-stretch value, so History can headline "every 8–60" as the live card does. */
   trunkHeadwayMin?: number;
@@ -60,10 +62,12 @@ export interface BuildReport {
   droppedHolidayPeriods: HolidayPeriodDrop[];
   /** Sidecar periods the v2 backfill read at a normal week of the same feed instead of a holiday or split week (kept, with the new date). */
   repickedPeriods: RepickedPeriod[];
+  /** Years whose routes lack real shape lines (CIV-843). */
+  shapeGaps: ShapeGap[];
 }
 
 export function newBuildReport(): BuildReport {
-  return { drops: [], yearDisagreements: [], superseded: 0, mixedMethodRoutes: [], visibility: [], droppedHolidayPeriods: [], repickedPeriods: [] };
+  return { drops: [], yearDisagreements: [], superseded: 0, mixedMethodRoutes: [], visibility: [], droppedHolidayPeriods: [], repickedPeriods: [], shapeGaps: [] };
 }
 
 export interface VisibilitySpike { route: string; label: string; year: number; value: number; prev: number; next: number }
@@ -108,7 +112,7 @@ export const RECENT_YEARS = 5;
  */
 export function visibilityCheck(
   slug: string,
-  history: Record<string, Array<{ label: string; year: number; weekdayHeadwayMin: number }>>,
+  history: Record<string, Array<{ label: string; year: number; weekdayHeadwayMin: number | null }>>,
   currentKeys: string[],
   buildYear: number,
   resolves: (key: string) => boolean = k => currentKeys.includes(k),
@@ -121,6 +125,7 @@ export function visibilityCheck(
     if (snaps.some(s => s.year > buildYear - RECENT_YEARS)) recent.add(route);
     for (let i = 1; i < snaps.length - 1; i++) {
       const v = snaps[i].weekdayHeadwayMin, a = snaps[i - 1].weekdayHeadwayMin, b = snaps[i + 1].weekdayHeadwayMin;
+      if (v == null || a == null || b == null) continue; // a blank (weekend-only) weekday value has no spike
       if (v >= SPIKE_FACTOR * a && v >= SPIKE_FACTOR * b) {
         spikes.push({ route, label: snaps[i].label, year: snaps[i].year, value: v, prev: a, next: b });
       }
@@ -195,8 +200,21 @@ export function joinCandidates(changes: ArchiveChange[], sidecar: Array<{ period
   return [...byPeriod.values()];
 }
 
-function disagree(a: number, b: number): boolean {
+function disagree(a: number | null, b: number | null): boolean {
+  if (a == null || b == null) return false;
   return Math.abs(a - b) / Math.min(a, b) > 0.25;
+}
+
+export interface BuildOptions {
+  /**
+   * True only for a route that takes just the weekend part of a day-type split (config alias with
+   * days: 'weekend'). Then a v2 candidate with a Saturday or Sunday value and no weekday number is kept
+   * with a blank weekday value instead of being dropped as 'no weekday headline'. Every other route
+   * (the default) drops a candidate with no weekday number exactly as before.
+   */
+  weekendOnlyRoute?: boolean;
+  /** CIV-1124: the build's year and month (YYYYMM); a snapshot dated after it is left out. Default: December of buildYear. */
+  buildYm?: number;
 }
 
 /**
@@ -210,8 +228,9 @@ export function buildRouteSnapshots(
   candidates: Candidate[],
   buildYear: number,
   report: BuildReport,
-  buildYm = buildYear * 100 + 12,
+  opts: BuildOptions = {},
 ): BuiltSnapshot[] {
+  const buildYm = opts.buildYm ?? buildYear * 100 + 12;
   const valid: BuiltSnapshot[] = [];
   let usedV1 = false;
   let usedV2 = false;
@@ -231,15 +250,17 @@ export function buildRouteSnapshots(
     // A v2 value is the representative; a limited or blank route has no number and is never
     // backfilled from the fastest pattern in the old change file.
     const h = v2 ? v2.rep.h : c.change?.headway;
-    if (h == null) { report.drops.push({ slug, route, label, reason: 'no weekday headline' }); continue; }
+    const weekendOnly = h == null && opts.weekendOnlyRoute === true && v2 !== undefined
+      && [v2.sat, v2.sun].some(d => d !== undefined && !('none' in d));
+    if (h == null && !weekendOnly) { report.drops.push({ slug, route, label, reason: 'no weekday headline' }); continue; }
     if (v2) usedV2 = true; else usedV1 = true;
     valid.push({
       periodKey: c.periodKey,
       label,
       year,
-      weekdayHeadwayMin: h,
+      weekdayHeadwayMin: h ?? null,
       headwayByPeriod: v2 ? v2.rep.p : c.change?.headwayByPeriod,
-      ...(() => { const t = v2 ? v2.rep.t : c.change?.trunkHeadway; return t != null && t < h ? { trunkHeadwayMin: t } : {}; })(),
+      ...(() => { const t = v2 ? v2.rep.t : c.change?.trunkHeadway; return t != null && h != null && t < h ? { trunkHeadwayMin: t } : {}; })(),
       ...(() => { const tp = v2 ? v2.rep.tp : c.change?.trunkHeadwayByPeriod; return tp ? { trunkHeadwayByPeriod: tp } : {}; })(),
       geometry: c.change?.geometry,
       v2,
@@ -276,7 +297,7 @@ export function buildRouteSnapshots(
  * changes, so for them an unchanged year is unknown and the legacy rule still applies: nothing is
  * invented for a period that has no sidecar.
  */
-export function filterSnapshotsForPublish<T extends { weekdayHeadwayMin: number; v2?: unknown }>(
+export function filterSnapshotsForPublish<T extends { weekdayHeadwayMin: number | null; v2?: unknown }>(
   snapshots: T[],
   opts: { materializeAllPeriods: boolean; keepEveryV2Year: boolean },
 ): T[] {
@@ -291,7 +312,7 @@ export function filterSnapshotsForPublish<T extends { weekdayHeadwayMin: number;
  * map in the year being viewed.
  */
 export function isFlatRouteToSkip(
-  snapshots: Array<{ weekdayHeadwayMin: number; v2?: unknown }>,
+  snapshots: Array<{ weekdayHeadwayMin: number | null; v2?: unknown }>,
   opts: { materializeAllPeriods: boolean; hasTripDuration: boolean; keepEveryV2Year: boolean },
 ): boolean {
   if (opts.materializeAllPeriods || opts.hasTripDuration) return false;

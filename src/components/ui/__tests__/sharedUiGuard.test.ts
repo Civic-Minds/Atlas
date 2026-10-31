@@ -59,6 +59,8 @@ const RULES: Array<{ name: string; pattern: RegExp; use: string }> = [
   // CIV-1011 #4: the outlined segmented group (Night 30/60, Frequent Service) and the active-filter corner dot.
   { name: 'hand-rolled segmented group', pattern: /rounded-full border border-\[var\(--border-primary\)\] p-0\.5/, use: 'PillGroup outlined' },
   { name: 'hand-rolled active-filter dot', pattern: /-top-0\.5 -right-0\.5 w-2 h-2 rounded-full bg-\[var\(--accent\)\]/, use: 'ActiveDot' },
+  // CIV-1117: a shared style forced to another colour with !important; give the shared piece a tone instead.
+  { name: 'shared style overridden with !important', pattern: /!text-\[/, use: 'a tone on the shared piece (e.g. CARD_CALLOUT_HEADLINE_TONE)' },
   { name: 'agency name helper called directly', pattern: /\b(shortenAgencyName|agencyBackLinkName|agencyDisplayParts|agencyListParts|agencyNameParts|agencyDisplayName)\(/, use: 'agencyNames (utils/agencyName.ts)' },
 ];
 
@@ -68,11 +70,10 @@ const ALLOWED: Record<string, string[]> = {
   'components/Interval/FilterChips.tsx': ['option pill classes'],
   'components/Interval/pickers.tsx': ['hand-rolled frequency picker'],
   // Live is local-only and its route groups carry no route type; it still names routes its own way (audit R8).
-  // Maintainer-only diagnostics, the story page's own opening layout, and a dialog title (panel headers are a later step).
+  // Maintainer-only diagnostics and the story page's own opening layout.
   'DiagnosticsPerformancePage.tsx': ['hand-rolled page heading'],
-  'components/Interval/HeadwaySparkline.tsx': ['hand-rolled section heading'],
   // A filled call-to-action button (not a link) that ends in an arrow.
-  'apps/FrequentServiceStory.tsx': ['hand-rolled arrow link', 'hand-rolled page heading'],
+  'apps/FrequentServiceStory.tsx': ['hand-rolled arrow link'],
   // The card pieces' own homes (CIV-395): the badges and card text styles, the back link, and the route row's tier dot.
   'components/Interval/cardUi.tsx': ['hand-drawn frequency dot', 'hand-rolled card title', 'hand-rolled card facts line'],
   'components/CardBack.tsx': ['hand-written back arrow'],

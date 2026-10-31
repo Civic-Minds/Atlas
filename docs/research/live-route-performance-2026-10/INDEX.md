@@ -24,7 +24,7 @@ act on?
   none match it.
 - **Days:** only days the timetable covers. Earlier archived days are dropped,
   not matched to a guessed schedule.
-- **Service day:** times after midnight (before 4 a.m.) belong to the previous
+- **Service day:** times after midnight (before 4 AM) belong to the previous
   service day, as in GTFS.
 
 ## Time bands

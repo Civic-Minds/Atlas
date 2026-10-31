@@ -4,6 +4,17 @@ This is the one place for settled rules and the decisions behind them. Check "Se
 
 Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comment of date" is a decision by Ryan recorded in Linear.
 
+**Settled rules, by topic:**
+
+- [How a route's frequency is decided](#how-a-routes-frequency-is-decided)
+- [What the map shows and never shows](#what-the-map-shows-and-never-shows)
+- [How Atlas is built](#how-atlas-is-built)
+- [Data and pipeline fixes](#data-and-pipeline-fixes)
+- [How Live reads](#how-live-reads)
+- [How we talk to riders and planners](#how-we-talk-to-riders-and-planners)
+- [Who decides what](#who-decides-what)
+- [Decision log](#decision-log), newest first
+
 ## Settled rules
 
 ### How a route's frequency is decided
@@ -67,6 +78,10 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
   - What: an agency with an expired feed is never hidden without Ryan's explicit yes.
   - Why: people can still find the agency, and the notice tells them the schedule may be old.
   - Source: [STYLE.md](../STYLE.md) (Agencies), [DATA_PRINCIPLES.md](../data/DATA_PRINCIPLES.md)
+- **The History route chart needs 3 dates**
+  - What: a History route card draws its chart only when 3 or more dates have a value in the period; with 1 or 2 the chart is left out and the rows below stay. The chart itself follows CIV-1026: a line through every snapshot, dots by priority (first and latest, then each year's last, then other changes) at least 24 px apart, the latest value labelled, expand for the wide view.
+  - Why: with two dates the chart repeats the two rows below it.
+  - Source: Linear CIV-1144, comment of 2026-10-29; Linear CIV-471 (`MIN_CHART_VALUES` in `src/apps/History.tsx`); Linear CIV-1026
 
 ### How Atlas is built
 
@@ -184,6 +199,11 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
   - What: "every 10 min", "every 16 min", ranges with an en dash; never hours, never typed by hand.
   - Why: the same frequency reads the same on every surface, and columns never mix units.
   - Source: [STYLE.md](../STYLE.md) (Frequencies), [#938](https://github.com/Civic-Minds/Atlas/issues/938)
+- **Notice wording: one source, one style**
+  - What: every notice, empty state, error and explainer text lives in src/content/noticeCopy.ts with a permanent code (N1, N2… for notices, E1, E2… for explainers; codes are never reused), and each "Learn more" notice is paired with one explainer. Notices lead with what the rider sees ("This route…", "This agency's…"), never "Atlas…"; one sentence where possible; no "so"; a notice about the chosen time of day names the times ("from 6–9 AM"), never "the selected period"; a beta-only feature says "only available on Atlas beta. View →" and never points to the preview site. Explainers (the "Learn more" side panels) use three short paragraphs: the issue in plain English, what we are doing about it, and what the reader can do; a date-bound notice switches tense on the date ("ends" before, "ended" from that day). An explainer says enough to explain the thing and no more.
+  - Why: the same situation should read the same everywhere, and a notice must match its explainer.
+  - Source: Ryan, 2026-10-27 (Linear CIV-1045): "I think overall we don't use "Atlas..." to start notices", "one single page where the entire site pulls from", "the erros on the route cards/agency cards/etc need to match up to the "explainer""; times rule on N35; explainer paragraphs ("first the issue in plain english. then in second para what we are doing abt it. then third para what they can do abt it"); tense ("ended is past but ends is upcomming"); explainer length ("The trick is these explainers should contain enough information to explain the thing without containing too much info.").
+
 - **Agency names: the agency's own short name, never a city or a made-up code**
   - What: lists and rows use a bracketed brand code from the official name ("Chicago Transit Authority (CTA)" → CTA), or a short name stored in the agency's config (TTC, Muni); a row name longer than 24 characters uses the stored short name if there is one, otherwise the full name. A city or bracketed place is never the short name ("Capital Metro", not "Austin"). The agency card always shows the full name. Short names are stored only for names riders actually use; no new codes are coined (the 18 proposed ones such as GPTC and SETD were dropped).
   - Why: a short name has to be one people recognise; an unfamiliar code is worse than the full name.

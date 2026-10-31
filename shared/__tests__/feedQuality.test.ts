@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { readdirSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { assessFeedQuality, feedQualityListItems, presentFeedQualityReason, rescoreFeedQuality, type FeedQuality } from '../feedQuality';
+import { FEED_QUALITY_EXPIRED_REASON, FEED_QUALITY_NO_ROUTES_REASON, assessFeedQuality, feedQualityListItems, feedQualityToday, presentFeedQualityReason, rescoreFeedQuality, withFeedQualityToday, type FeedQuality } from '../feedQuality';
 
 const healthy = {
   validationErrors: 0,
@@ -64,7 +64,7 @@ describe('assessFeedQuality share rules (CIV-533)', () => {
     expect(paused).toMatchObject({ status: 'paused', reasons: [] });
     expect(paused.metrics.resumesOn).toBe('20261122');
     expect(rescoreFeedQuality(paused, null, '2026-11-21').status).toBe('paused');
-    expect(rescoreFeedQuality(paused, null, '2026-11-22')).toMatchObject({ status: 'unusable', reasons: ['Atlas could not find any usable routes in this feed.'] });
+    expect(rescoreFeedQuality(paused, null, '2026-11-22')).toMatchObject({ status: 'unusable', reasons: [FEED_QUALITY_NO_ROUTES_REASON] });
     expect(assessFeedQuality({ ...pause, resumesOn: null }).status).toBe('unusable');
     expect(assessFeedQuality({ ...pause, validationErrors: 1 }).status).toBe('unusable');
   });
@@ -103,8 +103,39 @@ describe('feedQualityListItems', () => {
     expect(feedQualityListItems([
       '3 minor schedule issues found while reading the feed.',
       '4 route shapes needed adjustment before display.',
-    ])).toEqual(['4 shapes adjusted', '3 minor schedule issues found while reading the feed']);
+    ])).toEqual(['4 shapes adjusted']); // N81: warnings stay out of rider-facing lists
+    expect(feedQualityListItems(["1 schedule-data warning — Atlas found a minor issue while reading the schedule."])).toEqual([]);
     expect(feedQualityListItems(['The schedule dates in this feed have passed.'])).toEqual(['The schedule dates in this feed have passed']);
+  });
+});
+
+describe('feedQualityToday (#1229)', () => {
+  const base = { validationErrors: 0, validationWarnings: 0, shapeAnomalies: 0, routeHeadwayMismatches: 0, featureCount: 10 };
+  const now = new Date('2026-11-01T12:00:00Z');
+
+  it('adds the expired reason when a supplemental feed has ended since processing, as the map does', () => {
+    const stored = assessFeedQuality({ ...base, feedExpiry: '20270401', checkedAt: '2026-10-19' });
+    const lacmta = { lastFeedExpiry: '20270401', lastSupplementalFeeds: [{ feedExpiry: '20261031', feedVersion: null, rawArchiveKey: null }], timezone: 'America/Los_Angeles', feedQuality: stored };
+    const today = withFeedQualityToday(lacmta, now).feedQuality!;
+    expect(today.reasons).toContain(FEED_QUALITY_EXPIRED_REASON);
+    expect(today.status).toBe('degraded');
+    // The metrics stay as measured (the expiry the pipeline scored with); only the rating is today's.
+    expect(today).toEqual({ ...assessFeedQuality({ ...base, feedExpiry: '20261031', checkedAt: '2026-11-01' }), checkedAt: '2026-10-19', metrics: stored.metrics });
+  });
+
+  it('drops a stale expired reason once a newer feed is on file', () => {
+    const stored = assessFeedQuality({ ...base, validationWarnings: 1, feedExpiry: '20261001', checkedAt: '2026-10-05' });
+    const today = withFeedQualityToday({ lastFeedExpiry: '20261231', timezone: 'America/Toronto', feedQuality: stored }, now).feedQuality!;
+    expect(today).toEqual({ ...assessFeedQuality({ ...base, validationWarnings: 1, feedExpiry: '20261231', checkedAt: '2026-10-05' }), metrics: stored.metrics });
+  });
+
+  it('leaves a current or unusable rating as it is', () => {
+    const current = assessFeedQuality({ ...base, feedExpiry: '20261231', checkedAt: '2026-10-05' });
+    expect(feedQualityToday(current, false)).toBe(current);
+    const unusable = assessFeedQuality({ ...base, featureCount: 0, checkedAt: '2026-10-05' });
+    expect(feedQualityToday(unusable, true)).toBe(unusable);
+    const paused: FeedQuality = { status: 'paused', score: 0, reasons: [], metrics: unusable.metrics, checkedAt: '2026-10-05' };
+    expect(feedQualityToday(paused, true)).toBe(paused);
   });
 });
 

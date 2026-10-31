@@ -1,11 +1,15 @@
 import { useEffect, useRef, useState } from 'react';
 import { ArrowDown, ArrowRight, MapPinned } from 'lucide-react';
 import { trackEvent } from '../lib/analytics';
-import DataTable, { type DataTableColumn } from '../components/ui/DataTable';
-import { frequentServiceCoverageInterpretation, frequentServiceCoverageStats, frequentServiceStoryResearchRecord, frequentServiceStoryStats } from '../data/frequentServiceStory';
+import { type DataTableColumn } from '../components/ui/DataTable';
+import ChartTableDetails from '../components/charts/ChartTableDetails';
+import RankedBars from '../components/charts/RankedBars';
+import ResearchMethod from '../components/research/ResearchMethod';
+import ResearchHeader from '../components/research/ResearchHeader';
+import { frequentServiceDefinitionSample, frequentServiceStoryResearchRecord, frequentServiceStoryStats } from '../data/frequentServiceStory';
 import FrequentServicePublishedMapMontage from '../components/FrequentServicePublishedMapMontage';
-import FrequentServicePublishedMapCollage from '../components/FrequentServicePublishedMapCollage';
 import FrequentServiceStoryMap from '../components/FrequentServiceStoryMap';
+import PageShell from '../components/ui/PageShell';
 import type { Agency } from '../App';
 import { headwayAmount } from '../../shared/headwayText';
 
@@ -14,25 +18,22 @@ interface Props {
   agencies: Agency[];
 }
 
-type CoverageRow = (typeof frequentServiceCoverageStats)[number];
-const COVERAGE_COLUMNS: DataTableColumn<CoverageRow>[] = [
-  { key: 'country', header: 'Country', cell: row => row.country, rowHeader: true, className: 'font-black text-[var(--text-primary)]' },
-  { key: 'fifteen', header: '15 min', cell: row => row.fifteenMinute, className: 'tabular-nums text-[var(--text-muted)]' },
-  { key: 'thirty', header: '30 min', cell: row => row.thirtyMinute, className: 'tabular-nums text-[var(--text-muted)]' },
-  { key: 'scope', header: 'Scope', cell: row => `${row.metros} · ${row.fifteenMinuteMetros} at 15 min`, className: 'text-[var(--text-muted)]' },
+type HeadwayBar = (typeof frequentServiceStoryStats.headwayBars)[number];
+const HEADWAY_COLUMNS: DataTableColumn<HeadwayBar>[] = [
+  { key: 'wait', header: 'Wait', cell: bar => headwayAmount(bar.minutes), rowHeader: true, className: 'font-normal', width: 5 },
+  { key: 'oct11', header: 'Agencies, Oct\u00a011', cell: bar => bar.agenciesOct11, className: 'tabular-nums', width: 6.5 },
+  { key: 'oct30', header: 'Agencies, Oct\u00a030', cell: bar => bar.agencies, className: 'tabular-nums', width: 6.5 },
 ];
 
 export default function FrequentServiceStory({ onExploreMap, agencies }: Props) {
   const [selectedMinutes, setSelectedMinutes] = useState(15);
   const [storyStage, setStoryStage] = useState(0);
   const frequencyMinutes = 15 as const;
-  const storyScrollRef = useRef<HTMLDivElement>(null);
   const storyStepRefs = useRef<Array<HTMLDivElement | null>>([]);
   const maxBar = Math.max(...frequentServiceStoryStats.headwayBars.map(bar => bar.agencies));
 
   useEffect(() => {
-    const root = storyScrollRef.current;
-    if (!root || typeof IntersectionObserver === 'undefined') return;
+    if (typeof IntersectionObserver === 'undefined') return;
     const visibleStages = new Set<number>();
     const observer = new IntersectionObserver(entries => {
       entries.forEach(entry => {
@@ -41,7 +42,7 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
         else visibleStages.delete(stage);
       });
       setStoryStage(Math.max(...visibleStages, 0));
-    }, { root, threshold: 0.35 });
+    }, { threshold: 0.35 });
     storyStepRefs.current.forEach(step => { if (step) observer.observe(step); });
     return () => observer.disconnect();
   }, []);
@@ -51,27 +52,40 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
     onExploreMap();
   }
 
+  const method = (
+    <ResearchMethod parts={{
+      dateConducted: <>October 11, 2026.</>,
+      dateUpdated: <>October 30, 2026.</>,
+      sample: <>We looked for an official definition of frequent service at all {frequentServiceDefinitionSample.agencies} agencies Atlas covers in Canada ({frequentServiceDefinitionSample.canada}) and the United States ({frequentServiceDefinitionSample.unitedStates}). {frequentServiceDefinitionSample.namedNetwork} have a named frequent network, such as a “Frequent Network”. {frequentServiceDefinitionSample.withWait} of those say how often the bus comes, such as “every 15 minutes or better”. The chart shows {frequentServiceStoryStats.chartedAgencies} of those {frequentServiceDefinitionSample.withWait} agencies, checked again on October 30.</>,
+      sources: <>The agency’s own current system map, rider guide, frequent network page, service standards, or a plan for the network running today.</>,
+      whatCounted: <>Each quote was checked by script against the saved page. When an agency’s pages disagreed, we used the narrower definition. Not finding a definition does not mean an agency has no frequent service.</>,
+      numbers: <>When an agency has more than one frequent tier, we used the fastest one that covers more than one route. When it gives a range, such as every 15–20 minutes, we used the slower number, for weekday daytime.</>,
+      rechecked: <>On October 30, 2026, we opened the source again for each of the {frequentServiceStoryStats.recheckedAgencies} agencies the chart counted. {frequentServiceStoryStats.namedNumericAgencies} still matched and stay in the chart. {frequentServiceStoryStats.recheckLeftOut} are left out: Anchorage's and VIA's maps are gone, DART's site returned an error, Foothill's and Sun Tran's sites block automated visits, and STM's page doesn't show the times to one.</>,
+      limitations: <>This is a source-backed sample, not an exhaustive census of every transit agency or a universal definition of frequent service. It describes the research sample and does not change Atlas’s production frequency definitions.</>,
+    }} />
+  );
+
   return (
-    <div ref={storyScrollRef} className="h-full overflow-x-hidden overflow-y-auto bg-[var(--bg-app)] text-[var(--text-primary)]">
-      <article className="mx-auto max-w-6xl px-5 pb-24 pt-28 sm:px-8 sm:pt-32">
-        <header className="mx-auto max-w-4xl text-center">
-          <p className="text-xs font-black text-[var(--accent)]">Atlas research</p>
-          <h1 className="mt-5 text-4xl sm:text-6xl font-black tracking-[-0.045em] leading-[0.98]">What happens when you miss the bus?</h1>
-          <div className="mx-auto mt-6 max-w-2xl space-y-4 text-left text-base leading-8 text-[var(--text-muted)] sm:text-lg">
+    <PageShell stickyHeader method={method}>
+      <article className="pb-16 pt-10 sm:pt-14">
+        <ResearchHeader
+          width="story"
+          title="What happens when you miss the bus?"
+          intro={<>
             <p>Miss one when the next vehicle comes in 10 minutes? Annoying, but manageable. Miss one when the next one takes 30? That can change your whole trip.</p>
             <p>Transit maps show where routes go. Transit planning asks the harder questions: how often does service come, how long does it run, and who is it designed to reach?</p>
             <p>We reviewed official transit maps and approved rider guides from {frequentServiceStoryStats.agenciesWithUsableEvidence} agencies to show how those decisions turn a network of lines into service people can actually rely on.</p>
-          </div>
+          </>}
+        >
           <div className="w-full max-w-5xl text-left">
             <FrequentServicePublishedMapMontage />
-            <FrequentServicePublishedMapCollage />
           </div>
           <a href="#story" className="mt-9 inline-flex items-center gap-2 rounded-full border border-[var(--border-primary)] bg-[var(--bg-panel)] px-4 py-2.5 text-xs font-bold text-[var(--text-primary)] hover:bg-[var(--bg-btn-hover)]">
             Explore the research <ArrowDown className="h-3.5 w-3.5" aria-hidden="true" />
           </a>
-        </header>
+        </ResearchHeader>
 
-        <section aria-labelledby="network-story-heading" className="relative left-1/2 mt-24 w-screen -translate-x-1/2 px-2 sm:mt-32 sm:px-3">
+        <section id="story" aria-labelledby="network-story-heading" className="scroll-mt-16 relative left-1/2 mt-24 w-screen -translate-x-1/2 px-2 sm:mt-32 sm:px-3">
           <div className="relative min-w-0 pb-[12vh]">
             <div className="min-w-0 lg:sticky lg:top-24">
               <FrequentServiceStoryMap agencies={agencies} stage={storyStage} frequencyMinutes={frequencyMinutes} researchRecord={frequentServiceStoryResearchRecord} />
@@ -82,7 +96,7 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
           </div>
         </section>
 
-        <div id="story" className="mx-auto mt-24 max-w-4xl space-y-24 sm:mt-32 sm:space-y-32">
+        <div className="mx-auto mt-24 max-w-4xl space-y-24 sm:mt-32 sm:space-y-32">
           <section aria-labelledby="why-heading" className="mx-auto w-full max-w-[48rem]">
             <div>
               <h2 id="why-heading" className="text-3xl sm:text-4xl font-black tracking-tight">Coverage and frequency do different jobs.</h2>
@@ -102,30 +116,24 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
             <div className="max-w-2xl">
               <h2 id="chart-heading" className="text-3xl sm:text-4xl font-black tracking-tight">There is no single “frequent.”</h2>
               <p className="mt-5 text-base leading-8 text-[var(--text-muted)]">
-                Pick a representative threshold to see how agencies turn that number into a service promise. This chart covers {frequentServiceStoryStats.namedNumericAgencies} agencies with a defensible representative numeric definition; secondary tiers remain in the audit instead of being flattened.
+                Pick a representative threshold to see how agencies turn that number into a service promise. This chart covers {frequentServiceStoryStats.chartedAgencies} agencies with a verified numeric definition; secondary tiers remain in the research instead of being flattened.
               </p>
             </div>
             <div className="mt-10" aria-label="Interactive chart showing the number of agencies by the selected published frequent-service threshold">
-              <div className="space-y-4">
-                {frequentServiceStoryStats.headwayBars.map(bar => (
-                  <button
-                    key={bar.minutes}
-                    type="button"
-                    aria-pressed={selectedMinutes === bar.minutes}
-                    aria-label={`Show examples for ${bar.minutes}-minute service (${bar.agencies} agencies)`}
-                    onClick={() => setSelectedMinutes(bar.minutes)}
-                    title={`Show examples for ${bar.minutes}-minute service (${bar.agencies} agencies)`}
-                    className="grid w-full grid-cols-[4.5rem_1fr_3rem] items-center gap-3 rounded-lg text-left text-sm outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)]"
-                  >
-                    <span className="font-black text-[var(--text-primary)]">{headwayAmount(bar.minutes)}</span>
-                    <div className="h-3 overflow-hidden rounded-full bg-[var(--bg-stat)]">
-                      <div className="h-full rounded-full transition-[width,background-color]" style={{ width: `${(bar.agencies / maxBar) * 100}%`, backgroundColor: selectedMinutes === bar.minutes ? 'var(--accent)' : 'var(--text-muted)' }} />
-                    </div>
-                    <span className="text-right tabular-nums text-[var(--text-muted)]">{bar.agencies}</span>
-                  </button>
-                ))}
-              </div>
-              <p className="mt-5 text-xs leading-5 text-[var(--text-dim)]">Each agency appears once. The chart uses the agency’s general or representative frequent-service tier; ranges, time periods, and secondary tiers remain in the audit rather than being assigned one misleading number.</p>
+              <RankedBars
+                as="buttons"
+                bars={frequentServiceStoryStats.headwayBars.map(bar => ({ key: bar.minutes, label: headwayAmount(bar.minutes), value: bar.agencies, fill: selectedMinutes === bar.minutes ? 'var(--accent)' : 'var(--text-muted)' }))}
+                max={maxBar}
+                listClassName="space-y-4"
+                rowClassName="grid w-full grid-cols-[4.5rem_1fr_3rem] items-center gap-3 rounded-lg text-left text-sm outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)]"
+                labelClassName="font-black text-[var(--text-primary)]"
+                fillClassName="transition-[width,background-color]"
+                selectedKey={selectedMinutes}
+                onSelect={key => setSelectedMinutes(key as number)}
+                describe={bar => `Show examples for ${bar.key}-minute service (${bar.value} agencies)`}
+              />
+              <p className="mt-5 text-xs leading-5 text-[var(--text-dim)]">Each agency appears once, at the slowest wait its source gives for weekday daytime service: “every 15–20 minutes” counts as 20. Other times of day and secondary tiers remain in the research. Checked again on October 30, 2026. {frequentServiceStoryStats.recheckLeftOut} agencies are left out because their page is gone or couldn't be checked again.</p>
+              <ChartTableDetails caption="There is no single “frequent.”" columns={HEADWAY_COLUMNS} rows={frequentServiceStoryStats.headwayBars} rowKey={bar => bar.minutes} />
             </div>
           </section>
 
@@ -134,26 +142,6 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
               <h2 id="more-heading" className="text-3xl sm:text-4xl font-black tracking-tight">The number is only the beginning.</h2>
               <p className="mt-5 text-base leading-8 text-[var(--text-muted)]">A frequency threshold is attached to a span, a set of days, and a geography. It may describe a route, a corridor, a network, or a product that combines modes. A 15-minute route that stops at 6pm is a different promise from a 15-minute corridor that runs into the evening. That is why we track three things together: headway, service span, and geography.</p>
             </div>
-          </section>
-
-          <section aria-labelledby="population-heading" className="rounded-[2rem] border border-[var(--border-primary)] bg-[var(--bg-panel)] p-6 sm:p-10">
-            <div className="max-w-2xl">
-              <h2 id="population-heading" className="text-3xl sm:text-4xl font-black tracking-tight">The threshold changes who can rely on the network.</h2>
-              <p className="mt-5 text-base leading-8 text-[var(--text-muted)]">
-                We applied the same test to Atlas route data and population geography: a 10-minute walk to weekday service running from 7am to 7pm. The stricter 15-minute threshold reaches far fewer people than the broader 30-minute threshold.
-              </p>
-            </div>
-            <div className="mt-8 overflow-x-auto">
-              <DataTable
-                variant="ruled"
-                caption="Population within a ten-minute walk of frequent transit by headway threshold"
-                columns={COVERAGE_COLUMNS}
-                rows={frequentServiceCoverageStats}
-                rowKey={row => row.country}
-              />
-            </div>
-            <p className="mt-5 text-xs leading-5 text-[var(--text-dim)]">Each country’s percentages use the same population base at both thresholds. Canada uses 2021 Statistics Canada dissemination areas; the United States uses 2020 Census block groups.</p>
-            <p className="mt-5 text-base leading-8 text-[var(--text-muted)]">The practical difference is large: 30-minute service reaches about {frequentServiceCoverageInterpretation.canadaThirtyToFifteenRatio} times as many people in Canada and {frequentServiceCoverageInterpretation.unitedStatesThirtyToFifteenRatio} times as many in the United States as 15-minute service. Canada is higher at both thresholds in this analysis, but the countries use different population vintages and geographies, so the comparison is descriptive rather than a ranking.</p>
           </section>
 
           <section aria-labelledby="atlas-heading" className="rounded-[2rem] border border-[var(--border-primary)] bg-[var(--bg-panel)] p-6 sm:p-10">
@@ -169,22 +157,8 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
               </button>
             </div>
           </section>
-
-          <footer className="mx-auto max-w-3xl border-t border-[var(--border-primary)] pt-10">
-            <div className="w-full">
-              <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-[var(--text-primary)]">How we did this</h2>
-              <div className="mt-5 space-y-5 text-sm sm:text-base leading-7 sm:leading-8 text-[var(--text-muted)]">
-                <p><strong className="text-[var(--text-primary)]">Date conducted.</strong> {frequentServiceStoryStats.reviewedAt}.</p>
-                <p><strong className="text-[var(--text-primary)]">Sample.</strong> For this Atlas-facing story, we reviewed {frequentServiceStoryStats.agenciesReviewed} agencies currently represented in Atlas: {frequentServiceStoryStats.countryCounts.map(item => `${item.agencies} in ${item.country}`).join(', ')}. The broader research audit contains {frequentServiceStoryStats.fullAuditAgencies} agencies across additional countries, which are not included here because Atlas does not currently publish data for them. Of the Atlas sample, {frequentServiceStoryStats.categoryCounts.numericDefinition} published a numeric definition, {frequentServiceStoryStats.categoryCounts.qualitativeDefinition} published a qualitative frequent label, {frequentServiceStoryStats.categoryCounts.noDefinitionFound} had no named definition on the reviewed map, and {frequentServiceStoryStats.categoryCounts.mapUnavailable} did not have a current system map we could verify.</p>
-                <p><strong className="text-[var(--text-primary)]">Review boundary.</strong> Only current official system maps, map legends, and approved rider-guide maps counted as evidence. Official route pages, schedules, planning documents, and service standards were used only to locate those materials and were never treated as definitions.</p>
-                <p><strong className="text-[var(--text-primary)]">What counted.</strong> A numeric definition required the agency to name frequent/high-frequency service and give a frequency value or range. A qualitative definition required the named frequent/high-frequency label without a number. “No definition” means the reviewed official material did not name one; it does not mean the agency has no frequent service. “Unavailable” means the current system map could not be located or verified.</p>
-                <p><strong className="text-[var(--text-primary)]">How we handled numbers.</strong> We recorded every named tier. The chart counts each agency once using its general or representative frequent tier; express, peak-only, rail-only, and other secondary tiers remain in the audit as context.</p>
-                <p><strong className="text-[var(--text-primary)]">Limitations.</strong> This is a source-backed sample, not an exhaustive census of every transit agency or a universal definition of frequent service. It describes the research sample and does not change Atlas’s production frequency definitions.</p>
-              </div>
-            </div>
-          </footer>
         </div>
       </article>
-    </div>
+    </PageShell>
   );
 }

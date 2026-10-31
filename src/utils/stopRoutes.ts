@@ -116,11 +116,14 @@ export function buildStopRoutes({ siblingIdsByAgency, routesByAgency, routePerio
         (headsignsAtStop.get(dirKey) ?? headsignsAtStop.set(dirKey, new Set()).get(dirKey)!).add(p.headsign ?? '');
       }
       // #934: a direction the route only runs on one side of the period shows the route card's
-      // words ("until 9:37am, every 12 min") instead of a cadence, at a stop its shape serves.
-      const periodText = partPeriodText(p, period);
+      // words ("every 12 min until 9:37 AM") instead of a cadence, at a stop its shape serves.
+      // #1228: only where the route card's row has the words too (rowTrips): a destination with no trips of its own
+      // in the period never reads its stretch's "from 5:34 AM" (TTC 100 to Pape, weekday overnight).
+      const trips = rowTrips(p, period);
+      const periodText = trips.partPeriod != null ? partPeriodText(p, period) : undefined;
       // No cadence at the stop for a period the route card says has no regular service (#750), or where the
       // destination has no service of its own and its value is other headsigns' trips (CIV-1069, rowTrips).
-      if (!periodText && (!hasRegularServiceInPeriod(p, period) || rowTrips(p, period).noOwnService)) continue;
+      if (!periodText && (!hasRegularServiceInPeriod(p, period) || trips.noOwnService)) continue;
 
       // Only include features whose shape actually covers any of the sibling stops.
       let stopHw: number | undefined = undefined;

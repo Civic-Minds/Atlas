@@ -1,17 +1,18 @@
 import React from 'react';
-import { PANEL_SECTION_HEAD, LIST_ROW_PRIMARY, LIST_ROW_DIM, SELECTION_ACTIVE, SELECTION_ACTIVE_TEXT } from '../../styles';
+import { HEADING_GAP, PANEL_SECTION_HEAD, LIST_ROW_PRIMARY, LIST_ROW_DIM, SELECTION_ACTIVE, SELECTION_ACTIVE_TEXT } from '../../styles';
 import type { AgencySearchGroup } from '../../utils/agencySearch';
 import type { RouteSearchResult, StopSearchResult } from '../../utils/searchResults';
 import RouteListRow from '../RouteListRow';
 import AgencyName from '../ui/AgencyName';
 import { routeRowRight } from './SearchSuggestionsPanel';
-import { stopNameCase } from '../../utils/format';
+import { nameCase } from '../../utils/format';
 import { agencyNames } from '../../utils/agencyName';
 import type { RouteListDisplay } from '../../utils/effectiveHeadway';
 import ListRow from '../ui/ListRow';
 import PanelEmpty from '../ui/PanelEmpty';
 import type { AreaSearchResult } from '../../../shared/areaSearch';
 import { plural } from '../../../shared/overflowText';
+import { NO_SEARCH_MATCHES } from '../../content/noticeCopy';
 
 interface SearchSplitListProps<T> {
   headLabel: string;
@@ -32,7 +33,7 @@ export function SearchSplitList<T>({
   const items = [...inView, ...elsewhere];
   return (
     <div className="flex flex-col">
-      <div className={`${PANEL_SECTION_HEAD} mb-1`}>{headLabel}</div>
+      <div className={`${PANEL_SECTION_HEAD} ${HEADING_GAP}`}>{headLabel}</div>
       {items.map(item => <React.Fragment key={itemKey(item)}>{renderItem(item)}</React.Fragment>)}
     </div>
   );
@@ -182,7 +183,7 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({
             }}
             right={(() => {
               const display = displayForRouteKey(r.key);
-              return routeRowRight(r.agencyName || '', display.headway, true, display.limited, display.sharedHeadway, display.noRegular);
+              return routeRowRight(r.agencyName || '', display.headway, true, display.limited, display.sharedHeadway, display.noRegular, display.compare);
             })()}
           />
         );
@@ -197,7 +198,7 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({
       elsewhere={stopSections.elsewhere}
       itemKey={(s: StopSearchResult) => s.key}
       renderItem={(s: StopSearchResult) => {
-        const name = `${stopNameCase(s.stopName)}${s.direction ? ` — ${s.direction}` : ''}`;
+        const name = `${nameCase(s.stopName, 'stop')}${s.direction ? ` — ${s.direction}` : ''}`;
         return (
           <ListRow
             variant="spaced"
@@ -240,7 +241,7 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({
   return (
     <div className="-mx-4 mb-4 flex flex-col gap-5">
       {noResults ? (
-        searchPending ? null : <PanelEmpty>No matches found.</PanelEmpty>
+        searchPending ? null : <PanelEmpty>{NO_SEARCH_MATCHES}</PanelEmpty>
       ) : routesFirst ? (
         <>
           {areaBlock}

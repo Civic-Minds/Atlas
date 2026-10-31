@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useRef } from 'react';
 import { historyRouteFromRouteKey } from '../utils/historyOpen';
 import { splitRouteKey } from '../utils/routeKey';
+import { HISTORY_AGENCY_PARAM } from '../utils/shareUrlState';
+import { MAP_URL, currentSearch, readUrlParam } from '../utils/urlSchema';
 
 type Layers = Record<string, { features: readonly { properties?: { routeId?: unknown; routeShortName?: unknown } | null }[] }>;
 
@@ -22,13 +24,13 @@ export function useHistoryRouteLink({ inHistory, layers, openRoute }: {
   const wasInHistoryRef = useRef(false);
 
   const noteHistorySwitch = useCallback(() => {
-    routeAtSwitchRef.current = new URLSearchParams(window.location.search).get('route');
+    routeAtSwitchRef.current = readUrlParam(currentSearch(), MAP_URL.route) ?? null;
   }, []);
 
   useEffect(() => {
     if (inHistory && !wasInHistoryRef.current) {
-      const params = new URLSearchParams(window.location.search);
-      pendingKeyRef.current = params.get('agency') ? null : (params.get('route') ?? routeAtSwitchRef.current);
+      const params = new URLSearchParams(currentSearch());
+      pendingKeyRef.current = params.get(HISTORY_AGENCY_PARAM) ? null : (readUrlParam(params, MAP_URL.route) ?? routeAtSwitchRef.current);
       routeAtSwitchRef.current = null;
       const linkedSlug = pendingKeyRef.current ? splitRouteKey(pendingKeyRef.current).agencySlug : '';
       if (linkedSlug) openRoute({ slug: linkedSlug, routeShortName: '' });

@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { Search } from 'lucide-react';
 import { HEADWAY_TIERS, getTierColor } from '../../utils/colors';
 import { FLOATING_CARD, GLASS_PILL, PILL_SURFACE, PANEL_ENTER_TOP, CONTROL_ACTIVE, CONTROL_ACTIVE_GLASS, CONTROL_INACTIVE, SEARCH_PILL, SEARCH_ICON, SEARCH_FIELD, CARD_SECTION, TOP_BAR_OUTLINE } from '../../styles';
+import { AgencyRegionSection } from '../ui/AgencyList';
 import Pill from '../ui/Pill';
 import PillGroup from '../ui/PillGroup';
 import ActiveDot from '../ui/ActiveDot';
@@ -16,7 +17,7 @@ import { bboxInViewport } from '../../utils/agencySearch';
 import { filterModeOptions } from '../../../shared/modes';
 import { modesForView } from '../../../shared/viewLayers';
 import { DAY_TYPES, getNowDay, type DayType } from '../../../shared/dayTypes';
-import type { FrequentServiceFrequency, FrequentServiceWindow } from '../../../shared/frequentService';
+import { FREQUENT_WINDOW_LABELS, type FrequentServiceFrequency, type FrequentServiceWindow } from '../../../shared/frequentService';
 import type { NightServiceFrequency } from '../../../shared/nightService';
 import { useColorMode } from '../../hooks/useColorMode';
 import ArrowLink from '../ui/ArrowLink';
@@ -26,6 +27,7 @@ import { SideBadge } from '../ui/SideBadge';
 import PanelEmpty from '../ui/PanelEmpty';
 import AgencyName from '../ui/AgencyName';
 import { capitalizeFirst, headwayAmount, headwayBandLabel, headwayOrBetter, headwayTierLabel } from '../../utils/headwayText';
+import { FREQUENCY_LABEL, NO_AGENCIES_IN_VIEW, OTHER_REGION_LABEL } from '../../content/noticeCopy';
 
 export { getNowDay };
 
@@ -55,8 +57,8 @@ interface FilterChipsProps {
   /**
    * Compare mode. 'shared': only the filters both maps share (Mode and Agencies), labelled as
    * such. 'side': only Frequency, Day and Time, for one map's own controls. Same chips and menus
-   * as the full bar either way. 'history': only Frequency and Time (History is weekday only), with
-   * "All day" in the Time menu since History's default is the weekday all-day value (CIV-389, CIV-392).
+   * as the full bar either way. 'history': only Frequency and Time (History is weekday only), with the
+   * map's own Time menu (CIV-389, CIV-392; no "All day" since CIV-1097).
    */
   variant?: 'full' | 'shared' | 'side' | 'history';
   /** Accessible name for the 'side' variant's group, e.g. "Map B settings". */
@@ -122,7 +124,7 @@ function AgenciesPanel({ agencies, selectedAgencies, setSelectedAgencies, bounds
   const allGroups = useMemo(() => {
     const groups: { name: string; slugs: string[]; region: string; loaded: boolean; cities?: string[]; displayArea?: string }[] = [];
     for (const a of agencies) {
-      const region = a.region ?? 'Other';
+      const region = a.region ?? OTHER_REGION_LABEL;
       const inView = bboxInViewport(a, bounds);
       const g = groups.find(x => x.name === a.name && x.region === region);
       if (g) { g.slugs.push(a.slug); if (inView) g.loaded = true; }
@@ -186,11 +188,10 @@ function AgenciesPanel({ agencies, selectedAgencies, setSelectedAgencies, bounds
       </div>
       <div className="max-h-64 overflow-y-auto custom-scrollbar flex flex-col gap-0.5">
         {byRegion.size === 0 && (
-          <PanelEmpty>No agencies in view.</PanelEmpty>
+          <PanelEmpty>{NO_AGENCIES_IN_VIEW}</PanelEmpty>
         )}
         {[...byRegion.entries()].map(([region, groups]) => (
-          <div key={region}>
-            <p className={`px-2 pt-2 pb-0.5 ${CARD_SECTION}`}>{region}</p>
+          <AgencyRegionSection key={region} region={region} compact>
             {groups.map(g => {
               const active = g.slugs.every(s => selectedAgencies.has(s));
               const { primary, secondary } = agencyNames({ name: g.name, cities: g.cities, displayArea: g.displayArea }).list;
@@ -214,7 +215,7 @@ function AgenciesPanel({ agencies, selectedAgencies, setSelectedAgencies, bounds
                 </button>
               );
             })}
-          </div>
+          </AgencyRegionSection>
         ))}
         {!agencyQuery && (
           <ArrowLink as="button" tone="inline" size="xs" back={showAll} onClick={() => setShowAll(v => !v)} className="mt-1 mb-0.5 mx-2 text-left">
@@ -304,7 +305,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
   if (nightServiceMode && setNightServiceFrequency) {
     return (
       <div ref={rowRef} className="flex items-center gap-2">
-        <PillGroup outlined label="Night frequency" value={String(nightServiceFrequency)} onChange={v => setNightServiceFrequency(Number(v) as 30 | 60)}
+        <PillGroup outlined label="Overnight frequency" value={String(nightServiceFrequency)} onChange={v => setNightServiceFrequency(Number(v) as 30 | 60)}
           options={([30, 60] as const).map(value => [String(value), headwayAmount(value)] as const)} />
       </div>
     );
@@ -326,10 +327,10 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
             {DAY_TYPES.map(dayType => <button key={dayType} onClick={() => toggleResearchDay(dayType)} className={researchButton(researchDays.includes(dayType))}>{dayType}</button>)}
           </div>}
         </div>
-        <PillGroup outlined label="Frequency" value={String(researchFrequency)} onChange={v => setResearchFrequency(Number(v) as 15 | 30)}
+        <PillGroup outlined label={FREQUENCY_LABEL} value={String(researchFrequency)} onChange={v => setResearchFrequency(Number(v) as 15 | 30)}
           options={([15, 30] as const).map(value => [String(value), headwayAmount(value)] as const)} />
         <PillGroup outlined label="Time window" value={researchWindow} onChange={v => setResearchWindow(v as FrequentServiceWindow)}
-          options={[['daytime', '7am–7pm'], ['extended', '7am–midnight']] as const} />
+          options={(['daytime', 'extended'] as const).map(w => [w, FREQUENT_WINDOW_LABELS[w]] as const)} />
         <div className="relative">
           <button onClick={() => toggle('mode')} className={chipClass(selectedModes.size > 0)}>Mode<Dot show={selectedModes.size > 0} /></button>
           {openChip === 'mode' && <div className={`${PANEL} w-48`}>
@@ -344,7 +345,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
   const frequencyChip = (className: string) => (
     <div className={`relative ${className}`}>
       <button onClick={() => toggle('frequency')} className={chipClass(maxHeadway !== Infinity)}>
-        Frequency
+        {FREQUENCY_LABEL}
         <Dot show={maxHeadway !== Infinity} />
       </button>
       {openChip === 'frequency' && (
@@ -399,7 +400,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
       </button>
       {openChip === 'period' && (
         <div className={`${PANEL} w-56`}>
-          {(variant === 'history' ? (['all', ...PERIOD_KEYS] as TimePeriod[]) : PERIOD_KEYS).map((p) => (
+          {PERIOD_KEYS.map((p) => (
             <button
               key={p}
               onClick={() => { setPeriod(p); setOpenChip(null); }}
@@ -407,7 +408,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
               aria-pressed={period === p}
             >
               <span className="whitespace-nowrap">{PERIOD_LABELS[p]}</span>
-              {p !== 'all' && <span className="text-xs opacity-70 shrink-0 whitespace-nowrap">{formatPeriodRange(p)}</span>}
+              <span className="text-xs opacity-70 shrink-0 whitespace-nowrap">{formatPeriodRange(p)}</span>
             </button>
           ))}
         </div>
@@ -507,7 +508,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
         {openChip === 'compact' && (
           <div className={`absolute top-10 right-0 ${FLOATING_CARD} p-3 w-72 ${PANEL_ENTER_TOP} flex flex-col gap-3`}>
             {/* Frequency */}
-            <PickerSection title="Frequency"><FrequencyPicker value={maxHeadway} onChange={setMaxHeadway} /></PickerSection>
+            <PickerSection title={FREQUENCY_LABEL}><FrequencyPicker value={maxHeadway} onChange={setMaxHeadway} /></PickerSection>
             {/* Day */}
             <PickerSection title="Day"><DayPicker value={day} onChange={setDay} /></PickerSection>
             {/* Time */}

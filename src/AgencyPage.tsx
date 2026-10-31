@@ -22,16 +22,19 @@ import { AGENCY_INDEX_PATH, agencyIndexRegionHref } from '../shared/agencyIndex'
 import { areaPagePath } from '../shared/areas';
 import { andOthers } from '../shared/overflowText';
 import { routeListHeadwayText } from './utils/effectiveHeadway';
-import { ATLAS_MODE } from '../shared/config';
+import { ATLAS_MODE, PERIOD_LABELS } from '../shared/config';
 import DocsPageLayout from './components/ui/DocsPageLayout';
 import ArrowLink from './components/ui/ArrowLink';
 import { PageTitle, SectionTitle } from './components/ui/PageTitle';
 import EmptyPage from './components/ui/EmptyPage';
 import DataTable from './components/ui/DataTable';
+import ScrollX from './components/ui/ScrollX';
 import { applySeoToDocument, seoOrigin } from './lib/seoDom';
 import { readEmbeddedJson } from './lib/embeddedData';
 import { LINK, UNDERLINED_LINK } from './pageStyles';
 import { FrequencyBar, RouteNameCell } from './pageParts';
+import { AGENCY_PAGE_NOT_FOUND_TITLE, LIMITED_SERVICE_LABEL, NO_FREQUENCY_PAGE_BODY } from './content/noticeCopy';
+import { capitalizeFirst } from './utils/headwayText';
 
 /** Read this page's numbers from the JSON the prerender embedded next to the app root. */
 function readEmbeddedData(slug: string | undefined): AgencyPageData | null {
@@ -85,7 +88,7 @@ function Intro({ data }: { data: AgencyPageData }) {
 function cell(col: 'am' | 'midday' | 'pm' | 'evening' | 'overnight', r: AgencyPageRoute): string {
   const v = r[col];
   if (v != null) return routeListHeadwayText(v, r.shared?.[col], true);
-  return Array.isArray(r.limited) && r.limited.includes(col) ? 'Limited' : headwayEvery(null);
+  return Array.isArray(r.limited) && r.limited.includes(col) ? capitalizeFirst(LIMITED_SERVICE_LABEL) : headwayEvery(null);
 }
 
 /**
@@ -118,7 +121,7 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
 
   if (!agency) {
     return (
-      <EmptyPage title="No page for this agency" body="Atlas has no frequency page at this address." action={<ArrowLink href="/">Open the Atlas map</ArrowLink>} />
+      <EmptyPage title={AGENCY_PAGE_NOT_FOUND_TITLE} body={NO_FREQUENCY_PAGE_BODY} action={<ArrowLink href="/">Open the Atlas map</ArrowLink>} />
     );
   }
 
@@ -144,22 +147,24 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
             <FrequencyBar counts={bandCounts(agency.routes)} mapHref={agencyMapHref(agency)} />
             <p className="mt-2 text-sm leading-6 text-[var(--text-muted)]">The bar splits this agency's routes by how often they run on a weekday midday. Each route is judged by its slower direction.</p>
             {stats.byMode.map(group => (
-              <div key={group.mode} className="mt-4 overflow-x-auto">
+              <div key={group.mode} className="mt-4">
                 <h3 className="pb-2 text-base font-black" aria-hidden="true">{group.label} <span className="ml-1 font-normal text-[var(--text-muted)]">{group.routes.length}</span></h3>
+                <ScrollX>
                   <DataTable
                     caption={`${group.label} ${group.routes.length}`}
                     layout="page"
                     rows={group.routes}
                     rowKey={r => `${r.name}-${r.longName ?? ''}`}
                     columns={[
-                      { key: 'route', header: 'Route', rowHeader: true, className: 'font-normal', cell: r => <RouteNameCell shortName={r.name} longName={r.longName} mode={r.mode} agencyName={agency.name} /> },
-                      { key: 'am', header: 'AM peak', cell: r => cell('am', r) },
-                      { key: 'midday', header: 'Midday', cell: r => cell('midday', r) },
-                      { key: 'pm', header: 'PM peak', cell: r => cell('pm', r) },
-                      { key: 'evening', header: 'Evening', cell: r => cell('evening', r) },
-                      { key: 'overnight', header: 'Overnight', cell: r => cell('overnight', r) },
+                      { key: 'route', header: 'Route', rowHeader: true, className: 'font-normal', cell: r => <RouteNameCell shortName={r.name} feedShortName={r.shortName} longName={r.longName} mode={r.mode} agencyName={agency.name} /> },
+                      { key: 'am', header: PERIOD_LABELS.amPeak, cell: r => cell('am', r) },
+                      { key: 'midday', header: PERIOD_LABELS.midday, cell: r => cell('midday', r) },
+                      { key: 'pm', header: PERIOD_LABELS.pmPeak, cell: r => cell('pm', r) },
+                      { key: 'evening', header: PERIOD_LABELS.evening, cell: r => cell('evening', r) },
+                      { key: 'overnight', header: PERIOD_LABELS.overnight, cell: r => cell('overnight', r) },
                     ]}
                   />
+                </ScrollX>
               </div>
             ))}
           </section>

@@ -140,4 +140,13 @@ export interface HistoryPeriodShapes {
   toleranceM: number;
   /** route key -> line (`a: true` = derived from the stop order). */
   routes: Record<string, { c: HistoryShapeLine; a?: true }>;
+  /** The feed's trips and how many have no usable shape_id (CIV-843). Absent in files written before it. */
+  trips?: ShapeTripStats;
+}
+
+/** Trips of one feed by shape_id: blank, or naming no line in shapes.txt (CIV-843). */
+export interface ShapeTripStats {
+  total: number;
+  emptyShapeId: number;
+  unknownShapeId: number;
 }

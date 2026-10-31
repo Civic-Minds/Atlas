@@ -11,7 +11,7 @@ const auditPath = 'docs/research/system-map-audit-2026-09/data.json';
 const mapPath = `${dir}/atlas-agency-map.json`;
 const quotesPath = `${dir}/definition-quotes-2026-10-11.json`;
 const registryPath = 'public/data/index.json';
-const outputPath = `${dir}/frequent-definitions-by-agency.json`;
+const outputPath = 'src/data/frequent-definitions-by-agency.json';
 
 const read = path => JSON.parse(fs.readFileSync(path, 'utf8'));
 const catalog = new Map(read(catalogPath).agencies.map(record => [record.agencyId, record]));

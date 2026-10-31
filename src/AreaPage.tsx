@@ -28,6 +28,8 @@ import ArrowLink from './components/ui/ArrowLink';
 import { PageTitle, SectionTitle } from './components/ui/PageTitle';
 import EmptyPage from './components/ui/EmptyPage';
 import DataTable from './components/ui/DataTable';
+import ScrollX from './components/ui/ScrollX';
+import { AREA_PAGE_NOT_FOUND_TITLE, NO_FREQUENCY_PAGE_BODY } from './content/noticeCopy';
 
 /**
  * Desktop widths of the agency table: the names' smallest width, and each mode column's. Seven mode columns fit beside the
@@ -89,7 +91,7 @@ export default function AreaPage({ data: dataProp }: { data?: AreaPageData }) {
 
   if (!data) {
     return (
-      <EmptyPage title="No page for this region" body="Atlas has no frequency page at this address." action={<ArrowLink href="/">Open the Atlas map</ArrowLink>} />
+      <EmptyPage title={AREA_PAGE_NOT_FOUND_TITLE} body={NO_FREQUENCY_PAGE_BODY} action={<ArrowLink href="/">Open the Atlas map</ArrowLink>} />
     );
   }
 
@@ -121,7 +123,7 @@ export default function AreaPage({ data: dataProp }: { data?: AreaPageData }) {
             <p className="mt-3 text-base font-bold">Weekday midday frequency, by route</p>
             <FrequencyBar counts={data.bands} mapHref={areaMapHref(data)} />
             <p className="mt-2 text-sm leading-6 text-[var(--text-muted)]">The bar splits this area's routes by how often they run on a weekday midday. Each route is judged by its slower direction.</p>
-            <div className="mt-6 -mx-2 overflow-x-auto">
+            <ScrollX className="mt-6 -mx-2">
                 <DataTable
                   caption="Agencies and route counts by mode"
                   layout="page"
@@ -134,7 +136,7 @@ export default function AreaPage({ data: dataProp }: { data?: AreaPageData }) {
                     ...data.modeColumns.map(m => ({ key: m, header: modeHeader(m), width: AREA_MODE_COLUMN_REM, cell: (a: (typeof data.agencies)[number]) => a.modes[m] ?? '–' })),
                   ]}
                 />
-            </div>
+            </ScrollX>
           </section>
 
           <p className="mt-12 text-sm leading-6 text-[var(--text-dim)]">

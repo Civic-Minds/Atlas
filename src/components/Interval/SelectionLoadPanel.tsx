@@ -4,7 +4,7 @@ import Panel from '../ui/Panel';
 import { useDelayedFlag } from '../../hooks/useDelayedFlag';
 import PanelEmpty from '../ui/PanelEmpty';
 import ArrowLink from '../ui/ArrowLink';
-import { loadingText, loadErrorText } from '../../content/stateCopy';
+import { CLOSE_LABEL, loadingText, loadErrorText } from '../../content/noticeCopy';
 
 interface SelectionLoadPanelProps {
   /** What is being opened, for the message ("route" or "stop"). */
@@ -27,12 +27,23 @@ export default function SelectionLoadPanel({ kind, failed, onClose, sidebarLeft,
       style={sidebarFrameStyle(sidebarLeft, searchBarWidth)}
     >
       {failed ? (
-        <PanelEmpty kind="error" action={<ArrowLink as="button" tone="inline" size="xs" onClick={onClose} className="shrink-0 whitespace-nowrap">Close</ArrowLink>}>
+        <PanelEmpty kind="error" action={<ArrowLink as="button" tone="inline" size="xs" onClick={onClose} className="shrink-0 whitespace-nowrap">{CLOSE_LABEL}</ArrowLink>}>
           {loadErrorText(`this ${kind}`)}
         </PanelEmpty>
       ) : (
         <PanelEmpty kind="loading">{loadingText(kind)}</PanelEmpty>
       )}
+    </Panel>
+  );
+}
+
+/** A card that can't be shown says why in its place (N17, N18, N30), with Close. */
+export function SelectionNoticePanel({ message, onClose, sidebarLeft, searchBarWidth }: { message: string; onClose: () => void; sidebarLeft?: number; searchBarWidth?: number }) {
+  return (
+    <Panel sidebar enter style={sidebarFrameStyle(sidebarLeft, searchBarWidth)}>
+      <PanelEmpty action={<ArrowLink as="button" tone="inline" size="xs" onClick={onClose} className="shrink-0 whitespace-nowrap">{CLOSE_LABEL}</ArrowLink>}>
+        {message}
+      </PanelEmpty>
     </Panel>
   );
 }

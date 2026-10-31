@@ -24,13 +24,13 @@ describe('map view link parameters', () => {
     expect(urlParamUpdate(MAP_URL.headway, Infinity)).toEqual({ h: 'all' });
   });
 
-  it('period: p, then the older period; all is written too (#1141)', () => {
+  it('period: p, then the older period; an old p=all opens on the current period (#1141, CIV-239)', () => {
     expect(readUrlParam('?p=amPeak', MAP_URL.period)).toBe('amPeak');
     expect(readUrlParam('?period=late', MAP_URL.period)).toBe('late');
-    expect(readUrlParam('?p=all', MAP_URL.period)).toBe('all');
+    expect(readUrlParam('?p=all', MAP_URL.period)).toBeUndefined();
+    expect(readUrlParam('?period=all', MAP_URL.period)).toBeUndefined();
     expect(readUrlParam('?p=brunch', MAP_URL.period)).toBeUndefined();
     expect(urlParamUpdate(MAP_URL.period, 'midday')).toEqual({ p: 'midday' });
-    expect(urlParamUpdate(MAP_URL.period, 'all')).toEqual({ p: 'all' });
   });
 
   it('day: day, then the older d; always written', () => {
@@ -85,8 +85,8 @@ describe('map view link parameters', () => {
     expect([...new URLSearchParams(rewritten)]).toEqual([...new URLSearchParams(link)]);
   });
 
-  it('a copied address reopens the same period and frequency, "All day" and 60 min included (#1141)', () => {
-    for (const [period, headway] of [['all', 60], ['all', Infinity], ['midday', 60], ['amPeak', 15]] as const) {
+  it('a copied address reopens the same period and frequency, 60 min and All included (#1141)', () => {
+    for (const [period, headway] of [['late', 60], ['evening', Infinity], ['midday', 60], ['amPeak', 15]] as const) {
       const address = mergeUrlSearchParams('route=ttc::504', { ...urlParamUpdate(MAP_URL.period, period), ...urlParamUpdate(MAP_URL.headway, headway) });
       expect([readUrlParam(address, MAP_URL.period), readUrlParam(address, MAP_URL.headway)]).toEqual([period, headway]);
     }

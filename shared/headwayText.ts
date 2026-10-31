@@ -96,11 +96,11 @@ export function headwayEveryRange(low: number | null | undefined, high: number |
 /** "every 6–12 min": a spread of typical spacings. Above 60 minutes each end rounds to the half hour. */
 export function headwayAboutRange(low: number, high: number): string {
   if (low === high) return headwayAbout(low);
-  if (isUsable(low) && isUsable(high) && low <= 60 && high <= 60) {
-    return `every ${num(low)}–${num(high)} min`;
-  }
-  const round = (m: number) => (m <= 60 ? num(m) : String(Math.round(m / 30) * 30));
-  return `every ${round(low)}–${round(high)} min`;
+  const shown = isUsable(low) && isUsable(high) && low <= 60 && high <= 60
+    ? [num(low), num(high)]
+    : [low, high].map(m => (m <= 60 ? num(m) : String(Math.round(m / 30) * 30)));
+  // Ends that print the same read as one value, never "every 60–60 min" (CIV-1155).
+  return shown[0] === shown[1] ? `every ${shown[0]} min` : `every ${shown[0]}–${shown[1]} min`;
 }
 
 /** "≤10 min": a frequency band in a legend or key. */
@@ -125,16 +125,17 @@ export function runTimeAmount(minutes: number | null | undefined): string {
 
 /**
  * A period's service where it runs, for the route card's time-of-day rows (#934, D6; Ryan,
- * 2026-10-16). `from` and `until` are clock text already formatted for the app:
- * "from 7:17am, every 9 min", "until 5:40pm, every 10 min", "every 10 min, with a 45 min gap".
+ * 2026-10-16). `from` and `until` are clock text already formatted for the app. The frequency comes
+ * first, then its limit (Ryan, 2026-10-30, #962): "every 9 min from 7:17 AM", "every 10 min until
+ * 5:40 PM", "every 10 min, with a 45 min gap".
  */
 export function headwayPeriodShape(shape: { from?: string; until?: string; every: number; gap?: number }): string {
-  const parts = [
+  if (shape.gap != null) return `${headwayEvery(shape.every)}, with a ${delayAmount(shape.gap)} gap`;
+  return [
+    headwayEvery(shape.every),
     shape.from != null ? `from ${shape.from}` : null,
     shape.until != null ? `until ${shape.until}` : null,
-    shape.gap != null ? `${headwayEvery(shape.every)}, with a ${delayAmount(shape.gap)} gap` : headwayEvery(shape.every),
-  ].filter((part): part is string => part != null);
-  return parts.join(', ');
+  ].filter((part): part is string => part != null).join(' ');
 }
 
 export function capitalizeFirst(text: string): string {

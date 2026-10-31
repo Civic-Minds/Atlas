@@ -1,5 +1,6 @@
 import type { DayType } from './dayTypes.js';
 import { TIME_PERIODS, type PeriodKey } from './config.js';
+import { clockTime, timeRange } from './timeText.js';
 
 export type OnDemandPeriod = 'all' | PeriodKey;
 export interface OnDemandHours {
@@ -205,22 +206,19 @@ export function onDemandHoursConfirmed(service: OnDemandServiceDetails, areaName
   return names.every(name => !!resolveOnDemandZone(service, name).availability?.[day]);
 }
 
-/** 4.5 → "4:30 a.m."; 26 → "2:00 a.m." (next day); 24 → "midnight". */
+/** 4.5 → "4:30 AM"; 26 → "2 AM" (next day); 24 → "12 AM" (CIV-1095). */
 export function formatOnDemandClock(hour: number): string {
-  const totalMinutes = Math.round(hour * 60);
-  const minutesInDay = ((totalMinutes % 1440) + 1440) % 1440;
-  if (minutesInDay === 0) return 'midnight';
-  if (minutesInDay === 720) return 'noon';
-  const h24 = Math.floor(minutesInDay / 60);
-  const minutes = minutesInDay % 60;
-  const suffix = h24 < 12 ? 'a.m.' : 'p.m.';
-  const h12 = h24 % 12 === 0 ? 12 : h24 % 12;
-  return `${h12}:${String(minutes).padStart(2, '0')} ${suffix}`;
+  return clockTime(hour * 60);
 }
 
-/** One time range in words: "6:00 a.m.–4:00 p.m.". */
+/** Service that runs round the clock (Ryan, CIV-1095 Q2): "24 hours", not "12 AM–12 AM". */
+export const ROUND_THE_CLOCK_HOURS = '24 hours';
+
+/** One time range: "6 AM–4 PM" (CIV-1095); a window covering the whole day (0–24, or start = end) reads "24 hours". */
 export function formatOnDemandHoursRange(window: OnDemandHours): string {
-  return `${formatOnDemandClock(window.startHour)}–${formatOnDemandClock(window.endHour)}`;
+  const span = window.endHour - window.startHour;
+  if (span >= 24 || span === 0) return ROUND_THE_CLOCK_HOURS;
+  return timeRange(window.startHour * 60, window.endHour * 60);
 }
 
 function formatWindows(windows: readonly OnDemandHours[]): string {
@@ -280,7 +278,7 @@ const RUNNING_PERIOD_LABELS: Record<OnDemandPeriod, string> = {
   midday: 'midday',
   pmPeak: 'PM peak',
   evening: 'evening',
-  late: 'night',
+  late: 'late',
   overnight: 'overnight',
 };
 
@@ -295,54 +293,4 @@ export function onDemandRunningNote(availability: OnDemandAvailability | undefin
 
 export interface OnDemandPickupStop {
   serviceType?: string;
-}
-
-/**
- * One sentence on how riders board, specific to the selected zone (or the
- * service when no zone is selected). Returns null when the data says nothing.
- */
-export function onDemandPickupSentence(service: OnDemandServiceDetails, areaName: string | undefined): string | null {
-  const resolved = resolveOnDemandZone(service, areaName);
-  const stops = (service.stopFeatures ?? []).filter(stop => {
-    const zones = onDemandStopZoneNames(service, stop.properties);
-    return areaName ? zones.includes(areaName) : zones.length === 0;
-  });
-  const count = stops.length;
-  const allTransferPoints = count > 0 && stops.every(stop => (stop.properties as OnDemandPickupStop | undefined)?.serviceType === 'on-demand-transfer-point');
-  const plural = (singular: string, pluralForm: string) => `${count} ${count === 1 ? singular : pluralForm}`;
-  const scope = areaName ? 'This zone' : 'This service';
-  const pickup = resolved.pickup;
-  let sentence: string | null = null;
-  switch (pickup?.method) {
-    case 'door-to-door':
-      sentence = 'Pickups and drop-offs are door to door within the shaded area.';
-      break;
-    case 'curb-to-curb':
-      sentence = 'Pickups and drop-offs are curb to curb within the shaded area.';
-      break;
-    case 'fixed-stops':
-      sentence = count > 0
-        ? `Pickups and drop-offs are at ${plural('set stop', 'set stops')}, shown on the map.`
-        : 'Pickups and drop-offs are at set stops, not door to door.';
-      break;
-    case 'virtual-stops':
-      sentence = count > 0
-        ? `Pickups and drop-offs are at ${plural('virtual stop', 'virtual stops')}, shown on the map.`
-        : 'Pickups and drop-offs are at virtual stops, not door to door.';
-      break;
-    case 'connection-points':
-      sentence = 'This area is a connection point.';
-      break;
-    case 'transfer-point-trips':
-      sentence = count > 0
-        ? `Every trip starts or ends at this zone's ${count === 1 ? 'transfer point' : 'transfer points'}, shown on the map.`
-        : 'Every trip starts or ends at a transfer point.';
-      break;
-    default:
-      if (count > 0) {
-        sentence = `${scope} has ${allTransferPoints ? plural('transfer point', 'transfer points') : plural('stop', 'stops')}, shown on the map.`;
-      }
-  }
-  if (!sentence) return null;
-  return pickup?.note ? `${sentence} ${pickup.note}` : sentence;
 }

@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { TIME_PERIODS } from '../../../shared/config';
 import type { ShapeProperties } from '../../hooks/useIntervalStats';
 import { sparklineSourceDirections } from '../routeCardTrunk';
-import { activeHourRanges, activeRangesCoverPeriod, hourHasService, partPeriodNoticeApplies, partPeriodNoticeHeadway } from '../periodActiveRanges';
+import { activeHourRanges, activeRangesCoverPeriod, hourHasService, partPeriodNoticeApplies, partPeriodNoticeHeadway, partPeriodOutside, periodTripRanges } from '../periodActiveRanges';
 
 // TTC 51 Leslie, published data (2026-10-20): the drawn patterns' hourly headways per day type.
 const TTC_51: Record<'Weekday' | 'Saturday' | 'Sunday', Array<{ directionId: number; headsign: string; headwayByHour: Record<number, number> }>> = {
@@ -202,9 +202,12 @@ describe('departure counts (CIV-1010)', () => {
   });
 
   it('keeps the notice where an hour has no departure (a peak-only route at midday)', () => {
-    const peak = [{ departuresByHour: { 7: 4, 8: 4, 16: 4, 17: 4 }, headwayByHour: { 7: 15, 8: 15, 16: 15, 17: 15 } }];
+    // The AM peak runs on into the first midday hour; #1186: with no trip inside the period at all there is no notice.
+    const peak = [{ departuresByHour: { 7: 4, 8: 4, 9: 2, 16: 4, 17: 4 }, headwayByHour: { 7: 15, 8: 15, 16: 15, 17: 15 } }];
     expect(partPeriodNoticeApplies(peak, 9, 15, 30, 120)).toBe(true);
-    expect(activeHourRanges(peak, 8, 15)).toEqual([[8, 9]]);
+    expect(activeHourRanges(peak, 8, 15)).toEqual([[8, 10]]);
+    const peakOnly = [{ departuresByHour: { 7: 4, 8: 4, 16: 4, 17: 4 }, headwayByHour: { 7: 15, 8: 15, 16: 15, 17: 15 } }];
+    expect(partPeriodNoticeApplies(peakOnly, 9, 15, 30, 120)).toBe(false);
   });
 
   it('never adds a notice or names hours where no hour has a headway', () => {
@@ -217,5 +220,79 @@ describe('departure counts (CIV-1010)', () => {
     const withoutCounts = [{ headwayByHour: { 18: null, 19: null }, maxGapByHour: { 18: 60, 19: 60 } }];
     expect(activeHourRanges(withoutCounts as any, 18, 20)).toEqual([]);
     expect(hourHasService(withoutCounts[0] as any, 18)).toBe(true);
+  });
+});
+
+describe('partPeriodOutside (N13)', () => {
+  const hours = (h: Record<number, number>) => h;
+  it('no trips before the run, with departure counts: no service', () => {
+    const d = { headwayByHour: hours({ 7: 12, 8: 12 }), departuresByHour: hours({ 7: 5, 8: 5 }) };
+    expect(partPeriodOutside([d], 6, 9)).toEqual({ active: [7, 9], parts: [{ at: 'start', hours: [6, 7], service: 'none' }] });
+  });
+  it('trips before the run that are too few for a headway: less often', () => {
+    const d = { headwayByHour: hours({ 7: 12, 8: 12 }), maxGapByHour: hours({ 6: 40, 7: 12, 8: 12 }) };
+    expect(partPeriodOutside([d], 6, 9)?.parts).toEqual([{ at: 'start', hours: [6, 7], service: 'less' }]);
+  });
+  it('an end part without departure counts cannot be told apart', () => {
+    const d = { headwayByHour: hours({ 6: 12, 7: 12 }), maxGapByHour: hours({ 6: 12 }) };
+    expect(partPeriodOutside([d], 6, 9)?.parts).toEqual([{ at: 'end', hours: [8, 9], service: 'unknown' }]);
+  });
+  it('both ends, and more than one run gives null', () => {
+    const d = { headwayByHour: hours({ 7: 12 }), departuresByHour: hours({ 7: 5 }) };
+    expect(partPeriodOutside([d], 6, 9)?.parts.map(p => p.service)).toEqual(['none', 'none']);
+    const split = { headwayByHour: hours({ 6: 12, 8: 12 }), departuresByHour: hours({ 6: 5, 8: 5 }) };
+    expect(partPeriodOutside([split], 6, 9)).toBeNull();
+  });
+});
+
+describe('periodTripRanges: the hours inside the period with trips (#1186)', () => {
+  it('reads only the period, not the hour before it (TTC 504 Sunday overnight: trips 1-4 AM, period 2-6 AM)', () => {
+    const d = { headwayByHour: { 25: 10, 26: 10 }, departuresByHour: { 25: 6, 26: 6, 27: 1 } };
+    expect(periodTripRanges([d], 26, 30)).toEqual([[26, 28]]);
+  });
+  it('names the departure hours when no hour has a headway (TTC 300 weekday AM peak: one trip, 6-7 AM)', () => {
+    expect(periodTripRanges([{ departuresByHour: { 6: 1 } }], 6, 9)).toEqual([[6, 7]]);
+  });
+  it('is empty when every trip leaves before the period (TTC 15 overnight: last trips before 2 AM)', () => {
+    const d = { departuresByHour: { 24: 2, 25: 2 }, maxGapByHour: { 24: 30, 25: 30 } };
+    expect(periodTripRanges([d], 26, 30)).toEqual([]);
+  });
+});
+
+describe('overnight holds the next morning\'s 2-6 AM trips (#1236)', () => {
+  const [start, end] = [26, 30];
+
+  it('reads TTC 100\'s 5:34 AM first trip as running from 5-6 AM', () => {
+    // TTC 100 to Pape, weekday: nothing after midnight, the day's first departures in the 5 AM hour.
+    const pape = { departuresByHour: { 5: 3, 6: 12, 7: 12 }, headwayByHour: { 5: 5, 6: 5 } } as Partial<ShapeProperties>;
+    expect(periodTripRanges([pape], start, end)).toEqual([[29, 30]]);
+    expect(hourHasService(pape, 29)).toBe(true);
+    expect(hourHasService(pape, 28)).toBe(false);
+  });
+
+  it('leaves a route with no overnight trips at all with none (a 6 AM start)', () => {
+    const daytime = { departuresByHour: { 6: 4, 7: 6, 22: 2 }, headwayByHour: { 6: 15, 7: 10 }, maxGapByHour: { 6: 15, 7: 10 } } as Partial<ShapeProperties>;
+    expect(periodTripRanges([daytime], start, end)).toEqual([]);
+    expect(partPeriodNoticeApplies([daytime], start, end, 15, 60)).toBe(false);
+  });
+
+  it('names no service before a morning start where the counts show none (TTC 99: a headway in the 4 AM hour reads the 5 AM trips)', () => {
+    const tt99 = { departuresByHour: { 5: 4 }, headwayByHour: { 5: 15, 28: 14 }, maxGapByHour: { 5: 18 } } as Partial<ShapeProperties>;
+    expect(partPeriodOutside([tt99], start, end)).toEqual({ active: [29, 30], parts: [{ at: 'start', hours: [26, 29], service: 'none' }] });
+  });
+});
+
+describe('the part-period notice needs trips inside the period (#1186)', () => {
+  const midday = TIME_PERIODS.find(p => p.key === 'midday')!;
+
+  it('does not show for a direction whose only trips are before the period (MiWay 49 weekday midday)', () => {
+    const before = { departuresByHour: { 6: 3, 7: 3, 8: 2 }, headwayByHour: { 6: 20, 7: 20, 8: 30 }, maxGapByHour: { 6: 20, 7: 20 } } as Partial<ShapeProperties>;
+    expect(partPeriodNoticeApplies([before], midday.startHour, midday.endHour, 15, 45)).toBe(false);
+  });
+
+  it('shows for a run that starts exactly at the period\'s first hour, named from that hour', () => {
+    const fromNine = { departuresByHour: { 9: 4, 10: 4 }, headwayByHour: { 9: 15, 10: 15 }, maxGapByHour: { 9: 15, 10: 15 } } as Partial<ShapeProperties>;
+    expect(partPeriodNoticeApplies([fromNine], midday.startHour, midday.endHour, 15, 30)).toBe(true);
+    expect(periodTripRanges([fromNine], midday.startHour, midday.endHour)).toEqual([[9, 11]]);
   });
 });

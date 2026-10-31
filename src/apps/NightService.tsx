@@ -1,17 +1,16 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Moon } from 'lucide-react';
 import { useViewport } from '../context/ViewportContext';
-import { PANEL_TITLE } from '../styles';
 import { R2_PUBLIC_URL } from '../../shared/config';
-import { plural } from '../../shared/overflowText';
+import { countOf } from '../../shared/overflowText';
 import type { NightServiceFrequency } from '../../shared/nightService';
-import { nightServiceKey, routeNightGrade } from '../../shared/nightService';
+import { routeNightGrade } from '../../shared/nightService';
 import Panel, { PanelBody, PanelTitleBar } from '../components/ui/Panel';
 import CardRouteList from '../components/Interval/CardRouteList';
 import { CardReportButton } from '../components/Interval/cardUi';
 import { reportDetails } from '../utils/reportIssue';
 import { routeLabels } from '../utils/format';
-import { placeAlreadyInName } from '../utils/agencyName';
+import { agencyNames } from '../utils/agencyName';
 import { headwayEvery, headwayOrBetter } from '../utils/headwayText';
 import ResearchInfo from '../components/ResearchInfo';
 import { NIGHT_INFO_HEADING, nightRuleText } from '../content/researchRules';
@@ -20,8 +19,8 @@ import PanelEmpty from '../components/ui/PanelEmpty';
 import { CARD_SUMMARY } from '../components/Interval/cardUi';
 import AgencyGroupHeader from '../components/ui/AgencyGroupHeader';
 import AgencyName from '../components/ui/AgencyName';
-import { loadingText, loadErrorText } from '../content/stateCopy';
-import { boundingBox, lineCoordinates } from '../../shared/routeGeometry';
+import { loadingText, NIGHT_LOAD_FAILED, nightNoRoutesNotice, NO_AGENCIES_MATCH_SEARCH } from '../content/noticeCopy';
+import { nightRouteKey, nightRoutesInView, type NightServiceFeatureProperties } from '../utils/nightRoutesInView';
 
 interface NightServiceRoute {
   agencySlug: string;
@@ -43,19 +42,6 @@ interface NightServiceRouteSummary {
   destinations: string[];
 }
 
-interface NightServiceFeatureProperties {
-  nightService?: boolean;
-  nightService30?: boolean;
-  nightService60?: boolean;
-  nightServicePartOfRoute?: boolean;
-  routeId?: string | null;
-  routeShortName?: string | null;
-  routeLongName?: string | null;
-  routeType?: number;
-  headsign?: string | null;
-  agencyName?: string | null;
-}
-
 /** What a report from the Night list sends (CIV-932): the view, every agency and route it lists with its night value, and the map's bounds. */
 function nightReportDetails(
   frequency: NightServiceFrequency,
@@ -63,7 +49,7 @@ function nightReportDetails(
   bounds: { n: number; s: number; e: number; w: number } | null | undefined,
 ): string {
   return reportDetails([
-    ['View', `routes ${headwayOrBetter(frequency)} from 2am to 5am`],
+    ['View', `routes ${headwayOrBetter(frequency)} from 2–5 AM`],
     ['Map bounds', bounds ? `${bounds.s.toFixed(4)},${bounds.w.toFixed(4)} to ${bounds.n.toFixed(4)},${bounds.e.toFixed(4)}` : 'unknown'],
     '**Listed:**',
     ...(agencies.length > 0 ? agencies.flatMap(agency => [`- ${agency.name}`, ...agency.routes.map(route => `  - ${route}`)]) : ['- Nothing listed']),
@@ -94,31 +80,18 @@ interface Props {
   onBackToMap: () => void;
   /** A route is selected: its card takes this panel's place, as in Live. */
   selectionActive?: boolean;
+  /** The agency registry, for each agency's short name and place (CIV-998). */
+  agencyCatalog?: ReadonlyArray<{ slug: string; name: string; cities?: string[]; displayArea?: string }>;
 }
 
-function featureIntersectsBounds(feature: GeoJSON.Feature, bounds: { s: number; w: number; n: number; e: number }): boolean {
-  const box = boundingBox(lineCoordinates(feature.geometry));
-  if (!box) return false;
-  return box.maxLng >= bounds.w && box.minLng <= bounds.e && box.maxLat >= bounds.s && box.minLat <= bounds.n;
-}
-
-export default function NightService({ active, sidebarLeft, searchBarWidth, layers, query = '', frequency, onRouteSelect, onBackToMap, selectionActive = false }: Props) {
+export default function NightService({ active, sidebarLeft, searchBarWidth, layers, query = '', frequency, onRouteSelect, onBackToMap, selectionActive = false, agencyCatalog = [] }: Props) {
   const [data, setData] = useState<NightServiceIndexFile | null>(null);
   const [loadState, setLoadState] = useState<'loading' | 'ready' | 'error'>('loading');
   const { bounds } = useViewport();
-  const visibleRoutes = useMemo(() => {
-    if (!bounds || Object.keys(layers).length === 0) return [];
-    const routes: Array<{ agencySlug: string; properties: NightServiceFeatureProperties }> = [];
-    for (const [agencySlug, collection] of Object.entries(layers)) {
-      for (const feature of collection.features) {
-        const properties = feature.properties as NightServiceFeatureProperties | null;
-        if (properties?.[nightServiceKey(frequency)] !== true && !(frequency === 60 && properties?.nightService === true)) continue;
-        if (!featureIntersectsBounds(feature, bounds)) continue;
-        routes.push({ agencySlug, properties });
-      }
-    }
-    return routes;
-  }, [bounds, layers, frequency]);
+  const visibleRoutes = useMemo(
+    () => (Object.keys(layers).length === 0 ? [] : nightRoutesInView(layers, frequency, bounds)),
+    [bounds, layers, frequency],
+  );
   // Every row of each route that runs at night, in either view and anywhere on the map, so a route's night
   // value covers all of it: a direction that only makes 60 keeps the route at 60 in the 30 view too (CIV-931).
   const nightGrades = useMemo(() => {
@@ -127,7 +100,7 @@ export default function NightService({ active, sidebarLeft, searchBarWidth, laye
       for (const feature of collection.features) {
         const properties = feature.properties as NightServiceFeatureProperties | null;
         if (!properties || (properties.nightService60 !== true && properties.nightService !== true && properties.nightService30 !== true)) continue;
-        const key = `${agencySlug}::${properties.routeShortName ?? ''}::${properties.routeLongName ?? ''}`;
+        const key = nightRouteKey(agencySlug, properties);
         rows.set(key, [...(rows.get(key) ?? []), { nightService30: properties.nightService30 }]);
       }
     }
@@ -154,13 +127,13 @@ export default function NightService({ active, sidebarLeft, searchBarWidth, laye
   const agencies = useMemo(() => {
     if (!data) return [];
     const indexRoutes = new Map(data.routes.map(route => [
-      `${route.agencySlug}::${route.routeShortName ?? ''}::${route.routeLongName ?? ''}`,
+      nightRouteKey(route.agencySlug, route),
       route,
     ]));
     const byAgency = new Map<string, { agencyName: string; region: string | null; routes: Map<string, NightServiceRouteSummary> }>();
     for (const visible of visibleRoutes) {
       const properties = visible.properties;
-      const routeKey = `${visible.agencySlug}::${properties.routeShortName ?? ''}::${properties.routeLongName ?? ''}`;
+      const routeKey = nightRouteKey(visible.agencySlug, properties);
       const indexed = indexRoutes.get(routeKey);
       const entry = byAgency.get(visible.agencySlug) ?? {
         agencyName: properties.agencyName ?? indexed?.agencyName ?? visible.agencySlug,
@@ -205,20 +178,20 @@ export default function NightService({ active, sidebarLeft, searchBarWidth, laye
   }, [data, query, visibleRoutes, frequency]);
 
   const nightGrade = (route: NightServiceRouteSummary, agencySlug: string) =>
-    nightGrades.get(`${agencySlug}::${route.routeShortName ?? ''}::${route.routeLongName ?? ''}`) ?? 60;
+    nightGrades.get(nightRouteKey(agencySlug, route)) ?? 60;
 
   if (!active) return null;
 
   return (
     <ResearchInfo heading={NIGHT_INFO_HEADING} onBack={onBackToMap} sidebarLeft={sidebarLeft} searchBarWidth={searchBarWidth} hidden={selectionActive} below={
       <Panel sidebarSurface data-report-anchor="true" className="min-h-0 flex-1">
-        <PanelTitleBar>
-          <Moon className="w-3 h-3 text-[var(--text-dim)] shrink-0" />
-          <span className={PANEL_TITLE}>Night Service</span>
-          {/* The list shows data, so it has the report flag (CIV-932); the negative margin keeps the bar's height. */}
-          <div className="ml-auto -my-1">
+        {/* The list shows data, so it has the report flag (CIV-932). */}
+        <PanelTitleBar
+          icon={<Moon className="w-3 h-3 text-[var(--text-dim)] shrink-0" />}
+          title="Overnight service"
+          action={
             <CardReportButton
-              title={`Night service (${frequency} min view)`}
+              title={`Overnight service (${frequency} min view)`}
               details={nightReportDetails(frequency, agencies.map(agency => ({
                 name: agency.agencyName,
                 routes: agency.routes.map(route => {
@@ -228,21 +201,22 @@ export default function NightService({ active, sidebarLeft, searchBarWidth, laye
               })), bounds)}
               excludeReasons={['Stop is missing, misplaced, or assigned incorrectly']}
             />
-          </div>
-        </PanelTitleBar>
+          }
+        />
 
         <PanelBody>
-          {loadState === 'loading' && <PanelEmpty kind="loading">{loadingText('night service')}</PanelEmpty>}
-          {loadState === 'error' && <PanelEmpty kind="error">{loadErrorText('night service data')}</PanelEmpty>}
+          {loadState === 'loading' && <PanelEmpty kind="loading">{loadingText('overnight service')}</PanelEmpty>}
+          {loadState === 'error' && <PanelEmpty kind="error">{NIGHT_LOAD_FAILED}</PanelEmpty>}
           {loadState === 'ready' && agencies.length === 0 && (
-            <PanelEmpty>No agencies match that search.</PanelEmpty>
+            <PanelEmpty>{query.trim() ? NO_AGENCIES_MATCH_SEARCH : nightNoRoutesNotice(frequency)}</PanelEmpty>
           )}
           {loadState === 'ready' && agencies.map((agency, agencyIndex) => (
             <div key={agency.slug}>
               {/* The shared agency heading of the list panels (CIV-1019), with the route count under it in the card facts line's own spacing. */}
               <AgencyGroupHeader rule={agencyIndex > 0 ? 'above' : 'below'}>
-                <AgencyName primary={agency.agencyName} secondary={agency.region && !placeAlreadyInName(agency.agencyName, agency.region) ? agency.region : undefined} />
-                <p className={`${CARD_SUMMARY} tracking-normal`}>{agency.routes.length} {plural(agency.routes.length, 'route')}</p>
+                {/* The lists' short name and place (Ryan, CIV-998; CIV-1117 row 17). */}
+                <AgencyName {...agencyNames(agencyCatalog.find(a => a.slug === agency.slug) ?? agency.agencyName).list} />
+                <p className={CARD_SUMMARY}>{countOf(agency.routes.length, 'route')}</p>
               </AgencyGroupHeader>
               {/* The agency card's route list (CIV-931): "**300** Bloor-Danforth" and the night frequency on the right.
                   Destinations stay on the route card. */}
@@ -252,7 +226,7 @@ export default function NightService({ active, sidebarLeft, searchBarWidth, laye
                   route: nightRouteLabel(route, agency),
                   // Ryan's approved row: "● every 30 min". The grade is an upper bound, so this never overstates.
                   headway: nightGrade(route, agency.slug),
-                  subLabel: route.partOfRoute ? 'Night service on part of the route' : undefined,
+                  subLabel: route.partOfRoute ? 'Overnight service on part of the route' : undefined,
                   disabled: !route.routeId || !onRouteSelect,
                 }))}
                 onSelect={key => {

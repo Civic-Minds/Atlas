@@ -57,7 +57,8 @@ export default function ExpandDialog({ title, note, ariaLabel, closeLabel, onClo
       className="fixed inset-0 z-[1700] flex items-center justify-center bg-[var(--bg-app)]/60 p-4 backdrop-blur-sm"
       onMouseDown={event => { if (event.target === event.currentTarget) onClose(); }}
     >
-      <div className="w-full max-w-[900px] max-h-[calc(100vh-2rem)] overflow-y-auto rounded-2xl border border-[var(--border-primary)] bg-[var(--bg-panel)] p-5">
+      {/* Solid: the panel colour is see-through, so it is laid over the page colour and nothing behind shows (CIV-1094). */}
+      <div className="w-full max-w-[900px] max-h-[calc(100vh-2rem)] overflow-y-auto rounded-2xl border border-[var(--border-primary)] bg-[var(--bg-app)] [background-image:linear-gradient(var(--bg-panel),var(--bg-panel))] p-5">
         <div className="flex items-start justify-between gap-4">
           <div>
             <h2 className="text-base font-black text-[var(--text-primary)]">{title}</h2>

@@ -6,7 +6,7 @@
  */
 import type { DashboardBand, LiveV3, UncertainStart } from '../../../shared/liveDashboard';
 import { routeStripFromV3, type RouteStripDirection, type RouteStripStop, type RouteStripStretch } from './routeStripModel';
-import { titleCase } from '../../utils/format';
+import { nameCase } from '../../utils/format';
 
 /** A stop that ends a pattern, to be named where it ends. `row` is the fork's row (0 is the trunk's own line). */
 export interface BranchEnd {
@@ -132,7 +132,7 @@ export function branchStripFromV3(v3: LiveV3, directionId: number, band: Dashboa
     const b = branchBunching.get(s.stopId);
     return {
       stopId: s.stopId,
-      name: titleCase(s.name),
+      name: nameCase(s.name, 'stop'),
       delayMin: st && st.n > 0 ? st.medianMin : null,
       lateShare: st && st.n > 0 ? st.lateShare : null,
       bunchingShare: b && b.n > 0 ? b.badShare : null,

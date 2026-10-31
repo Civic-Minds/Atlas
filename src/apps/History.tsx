@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef, useLayoutEffect, useId } from 'react';
+import { MAP_SCRUBBER_SLOT, MAP_SCRUBBER_WIDTH } from '../mapOverlayLayout';
 import { loadHistoryConfig as loadHistoryConfigShared } from '../utils/historyConfig';
 import { History as HistoryIcon } from 'lucide-react';
 import { useHistoryMapOverlay } from '../context/HistoryMapOverlay';
@@ -6,11 +7,12 @@ import { type HeadwayByPeriod } from '../../shared/config';
 import type { HistorySnapshotV2 } from '../../shared/historyV2';
 import { countOf } from '../../shared/overflowText';
 import { isDrawableLineCoordinates } from '../../shared/routeGeometry';
-import { TRANSITION_BASE, AGENCY_LIST_FILTERS, PILL_SURFACE, PILL_SCROLL_ROW, PANEL_TITLE, SIDEBAR_CARD, SIDEBAR_CARD_MAX_H, sidebarFrameStyle, SIDEBAR_PANEL_WIDTH, Z_PANEL, CARD_NOTICE, CARD_NOTE } from '../styles';
-import { routeLabels, titleCase } from '../utils/format';
+import { TRANSITION_BASE, AGENCY_LIST_FILTERS, PILL_SURFACE, PILL_SCROLL_ROW, SIDEBAR_CARD, SIDEBAR_CARD_MAX_H, sidebarFrameStyle, sidebarCardFrame, SIDEBAR_PANEL_WIDTH, Z_PANEL, CARD_NOTICE, CARD_NOTE } from '../styles';
+import { routeLabels } from '../utils/format';
+import { RouteTitleName } from '../components/RouteRowName';
 import { agencyNames } from '../utils/agencyName';
 import CardRouteList from '../components/Interval/CardRouteList';
-import { AgencyCardTop, CARD_CALLOUT_HEADLINE, CARD_CALLOUT_TEXT, CARD_HEADER_BLOCK, CardCallout, CardDirectionRow, CardReportButton, SIDEBAR_CARD_BODY, SidebarCardHeaderBlock, SidebarCardListRows, SidebarCardShell } from '../components/Interval/cardUi';
+import { AgencyCardTop, CardHelpNotice, CARD_CALLOUT_HEADLINE, CARD_CALLOUT_HEADLINE_TONE, CARD_CALLOUT_TEXT, CARD_HEADER_BLOCK, CardCallout, CardDirectionRow, CardReportButton, SIDEBAR_CARD_BODY, SidebarCardHeaderBlock, SidebarCardListRows, SidebarCardShell } from '../components/Interval/cardUi';
 import RouteCardTitle from '../components/RouteCardTitle';
 import { SearchSuggestionsPanel, type RecentRoute, type SuggestedRoute } from '../components/Interval/SearchSuggestionsPanel';
 import type { RouteListDisplay } from '../utils/effectiveHeadway';
@@ -34,7 +36,8 @@ import {
   agencyQualifiesForHistory,
   type HistoryTier,
 } from '../../shared/historyEligibility';
-import { capitalizeFirst, headwayEvery, headwayExactAmount, runTimeAmount } from '../utils/headwayText';
+import { capitalizeFirst, headwayEvery, headwayEveryRange, runTimeAmount } from '../utils/headwayText';
+import { shouldShowBranchHeadwayRange } from '../utils/routeCardTrunk';
 import { historyChartPoints, historyDotPriority, historyYearTicks, placeHistoryDots, snapshotMonth } from '../utils/historyChart';
 import ExpandDialog, { ExpandButton } from '../components/ui/ExpandDialog';
 import Panel, { PanelBody, PanelTitleBar } from '../components/ui/Panel';
@@ -47,7 +50,7 @@ import ModeFilterPillRow from '../components/ui/ModeFilterPillRow';
 import { syncUrlParams } from '../utils/syncUrlParams';
 import { encodeHistoryUrlState, parseHistoryUrlState, type HistoryUrlState } from '../utils/shareUrlState';
 import PanelEmpty from '../components/ui/PanelEmpty';
-import { loadingText, loadErrorText, NO_ROUTES_LOADED, noRoutesMatchText, RETRY_HINT } from '../content/stateCopy';
+import { HISTORY_LOAD_FAILED, HISTORY_ROUTE_NOT_COVERED, HISTORY_ROUTE_ORDER_NOTE, HISTORY_TRIP_TIME_NOTE, loadingText, NO_AGENCIES_MATCH, NO_ROUTES_LOADED, noRoutesMatchText, RETRY_HINT, RETRY_LABEL } from '../content/noticeCopy';
 import { compareAgencyName, compareRegion } from '../utils/sortCompare';
 import { inViewFirst } from '../utils/historyOpen';
 
@@ -56,6 +59,9 @@ export interface RouteSnapshot {
   year: number;
   weekdayHeadwayMin: number;
   headwayByPeriod?: HeadwayByPeriod;
+  /** CIV-555: the route's shared-stretch value when better than its all-day value (build-history), and per period. */
+  trunkHeadwayMin?: number;
+  trunkHeadwayByPeriod?: HeadwayByPeriod;
   geometry?: number[][];
   note?: string;
 }
@@ -125,6 +131,21 @@ function periodMinutes(snapshot: RouteSnapshot, period: TimePeriod): number | nu
  * do instead, return headwayAboutMinutes(minutes) here.
  */
 const shownMinutes = (minutes: number): number => minutes;
+
+/** The route card's chart shows only with this many snapshots valued in the period (CIV-471, Ryan's call); with fewer, the rows alone. */
+export const MIN_CHART_VALUES = 3;
+
+/**
+ * A row's words (CIV-555): "every 15–52 min" where a slow branch sets the period's value and the shared stretch runs
+ * more often, by the live route card's rule (shouldShowBranchHeadwayRange, headwayEveryRange); else "every 52 min".
+ * The number that colours and filters stays the period's value.
+ */
+function snapshotHeadwayLabel(snapshot: RouteSnapshot, period: TimePeriod, minutes: number): string {
+  const trunk = period === 'all' ? snapshot.trunkHeadwayMin : snapshot.trunkHeadwayByPeriod?.[period] ?? undefined;
+  return trunk != null && shouldShowBranchHeadwayRange(trunk, minutes)
+    ? headwayEveryRange(trunk, shownMinutes(minutes))
+    : headwayEvery(shownMinutes(minutes));
+}
 
 function changeSummary(entry: RouteHistoryEntry, period: TimePeriod = 'all'): { text: string; subtext: string; worse: boolean } | null {
   // Only snapshots with a value in the period take part (CIV-389).
@@ -207,6 +228,7 @@ function RouteHistoryCard({
   // The chart and summary use the snapshots with a value in the period; rows list every snapshot.
   const valued = snaps.filter(s => periodMinutes(s, period) != null);
   const chartSnaps = [...valued].reverse();
+  const showChart = chartSnaps.length >= MIN_CHART_VALUES;
   const snapHeadway = (snap: RouteSnapshot): number => periodMinutes(snap, period) ?? NaN;
 
   const first = valued[valued.length - 1] ?? snaps[snaps.length - 1];
@@ -225,14 +247,15 @@ function RouteHistoryCard({
   const closeChart = useCallback(() => setChartExpanded(false), []);
   const hws = chartSnaps.map(snapHeadway);
   // The status tokens follow the colour-vision setting on their own (index.css).
-  const lineColor = worse ? 'var(--status-negative)' : better ? 'var(--status-positive)' : '#9ca3af';
+  const lineColor = worse ? 'var(--status-negative)' : better ? 'var(--status-positive)' : 'var(--status-neutral)';
 
   return (
     // The regular route card's frame, title and rows (RouteCardTitle, direction rows): the agency name
     // above the title goes back to the agency, as on the map's route card.
     // On phones it opens in the map route card's bottom sheet (#1028 item 23).
-    <div className={sheetMode ? bottomSheetFrameClass(sheetVisible && sheetEntered) : `${SIDEBAR_CARD} ${SIDEBAR_PANEL_WIDTH} ${SIDEBAR_CARD_MAX_H} flex flex-col ${frameClassName}`} style={sheetMode ? undefined : frameStyle}>
-    <div className={sheetMode ? bottomSheetBodyClass(sheetExpanded) : SIDEBAR_CARD_BODY}>
+    <div className={sheetMode ? bottomSheetFrameClass(sheetVisible && sheetEntered) : sidebarCardFrame(sheetVisible && sheetEntered)} style={sheetMode ? undefined : frameStyle}>
+    {/* The report form takes the card's width, as on the map's route card. */}
+    <div data-report-anchor="true" className={sheetMode ? bottomSheetBodyClass(sheetExpanded) : SIDEBAR_CARD_BODY}>
     {sheetMode && <BottomSheetHandle expanded={sheetExpanded} handle={sheetHandle} />}
     <SidebarCardShell>
       <SidebarCardHeaderBlock>
@@ -240,7 +263,7 @@ function RouteHistoryCard({
           <div className="flex-1 min-w-0">
             <RouteCardTitle
               routeShortName={route.routeShortName}
-              routeLongName={route.routeName ? titleCase(route.routeName) : null}
+              routeLongName={route.routeName || null}
               routeType={route.currentRouteType ?? null}
               agencySlug={agencySlug}
               agencyName={agencyName}
@@ -262,14 +285,14 @@ function RouteHistoryCard({
       </SidebarCardHeaderBlock>
 
       {/* The chart sits on the card with no box, as the route card's hour chart does (#1028 item 10); its icon opens the wide view. */}
-      {chartSnaps.length >= 2 && (
+      {showChart && (
         <div className="mt-3 relative pt-5">
           <ExpandButton label="Expand chart" onClick={() => setChartExpanded(true)} />
           <RouteHistoryChart snaps={chartSnaps} minutes={hws} lineColor={lineColor} gradientId={gradientId} hoveredSnap={hoveredSnap} onHover={setHoveredSnap} />
         </div>
       )}
-      {chartExpanded && chartSnaps.length >= 2 && (
-        <ExpandDialog title={`${route.routeShortName}${route.routeName ? ` ${titleCase(route.routeName)}` : ''}`} ariaLabel="Route history chart" closeLabel="Close chart" onClose={closeChart}>
+      {chartExpanded && showChart && (
+        <ExpandDialog title={<RouteTitleName label={routeLabels({ shortName: route.routeShortName, longName: route.routeName || null, routeType: route.currentRouteType ?? undefined, agencySlug, agencyName })} />} ariaLabel="Route history chart" closeLabel="Close chart" onClose={closeChart}>
           <div className="mt-4">
             <RouteHistoryChart wide snaps={chartSnaps} minutes={hws} lineColor={lineColor} gradientId={`${gradientId}-wide`} hoveredSnap={hoveredSnap} onHover={setHoveredSnap} />
           </div>
@@ -281,7 +304,7 @@ function RouteHistoryCard({
           const hw = periodMinutes(snap, period);
           const older = i < snaps.length - 1 ? periodMinutes(snaps[i + 1], period) : null;
           const delta = hw != null && older != null ? hw - older : null;
-          const charted = hw != null && chartSnaps.length >= 2;
+          const charted = hw != null && showChart;
           return (
             // Focus and a tap highlight the row and its point too (a tap elsewhere moves focus and clears it); the row's own hover does it for the pointer.
             <div
@@ -297,11 +320,14 @@ function RouteHistoryCard({
               headway={hw ?? undefined}
               // The snapshot's own minutes, as in the chart, the summary and the change beside it (#1085):
               // the map cards' rounding to the half hour made NFTA 76 read 360 beside a chart reading 349.
-              headwayLabel={hw != null ? headwayEvery(shownMinutes(hw)) : undefined}
+              headwayLabel={hw != null ? snapshotHeadwayLabel(snap, period, hw) : undefined}
               headwaySuffix={delta ? (delta > 0 ? `+${delta}` : `${delta}`) : undefined}
               headwaySuffixTone={delta ? (delta > 0 ? 'negative' : 'positive') : undefined}
               // Regular weight, like the map cards' destination rows (CIV-971).
               labelWeight="regular"
+              // A value that does not fit beside the date ("every 15–30 min -6" in a narrow panel) goes under it at the
+              // right, as the route cards' long values do (CIV-1143, Ryan 2026-10-30).
+              valueEnd
               onHoverStart={charted ? () => setHoveredSnap(snap) : undefined}
               onHoverEnd={charted ? () => setHoveredSnap(null) : undefined}
               branchHovered={charted && snap === hoveredSnap}
@@ -311,22 +337,27 @@ function RouteHistoryCard({
         })}
       </SidebarCardListRows>
 
-        {summary && (
-          <CardCallout tone={summary.worse ? 'negative' : 'positive'} className="mt-3">
-            {/* The shared callout headline in the summary's better or worse colour (CIV-971). */}
-            <p className={`${CARD_CALLOUT_HEADLINE} ${summary.worse ? '!text-[var(--status-negative-text)]' : '!text-[var(--status-positive-text)]'}`}>{summary.text}</p>
-            <p className={CARD_CALLOUT_TEXT}>{summary.subtext}</p>
-          </CardCallout>
-        )}
-
-        {route.tripDuration && (
-          <CardCallout className="mt-3">
-            <p className={CARD_CALLOUT_HEADLINE}>
-              Trip time: {runTimeAmount(route.tripDuration.firstMinutes)} ({route.tripDuration.firstLabel}) → {runTimeAmount(route.tripDuration.lastMinutes)} ({route.tripDuration.lastLabel})
-            </p>
-            <p className={`${CARD_NOTICE} mt-1`}>
-              End-to-end scheduled time on a representative weekday trip. Only shown when the route's stops and alignment haven't changed between these years.
-            </p>
+        {/* One box (CIV-1127): the frequency change first, in its better or worse colour (CIV-971), then the trip time
+            as one line under it. A route with only one of the two shows that one. */}
+        {(summary || route.tripDuration) && (
+          <CardCallout tone={summary ? (summary.worse ? 'negative' : 'positive') : 'neutral'} className="mt-3">
+            {summary && (
+              <>
+                <p className={CARD_CALLOUT_HEADLINE_TONE[summary.worse ? 'negative' : 'positive']}>{summary.text}</p>
+                <p className={CARD_CALLOUT_TEXT}>{summary.subtext}</p>
+              </>
+            )}
+            {route.tripDuration && (
+              <>
+                <p className={summary ? `${CARD_CALLOUT_TEXT} mt-2` : CARD_CALLOUT_HEADLINE} data-testid="history-trip-time">
+                  Trip time: {runTimeAmount(route.tripDuration.firstMinutes)} ({route.tripDuration.firstLabel}) → {runTimeAmount(route.tripDuration.lastMinutes)} ({route.tripDuration.lastLabel})
+                </p>
+                {/* The long explanation stays here until Ryan picks where it goes: History has no explainer link (CIV-1127). */}
+                <p className={`${CARD_NOTICE} mt-1`}>
+                  {HISTORY_TRIP_TIME_NOTE}
+                </p>
+              </>
+            )}
           </CardCallout>
         )}
     </SidebarCardShell>
@@ -335,8 +366,12 @@ function RouteHistoryCard({
   );
 }
 
-/** Value labels are about 28 by 9 chart units; two closer than that (with a little room) in both directions would overlap. */
-const labelsOverlap = (a: { x: number; y: number }, b: { x: number; y: number }) => Math.abs(a.x - b.x) < 30 && Math.abs(a.y - b.y) < 12;
+/** Value labels read "every 349 min" like the rows (CIV-408 #18): about 56 by 9 chart units, so half is 28. */
+const LABEL_HALF = 28;
+/** Two labels closer than a label's width (with a little room) in both directions would overlap. */
+const labelsOverlap = (a: { x: number; y: number }, b: { x: number; y: number }) => Math.abs(a.x - b.x) < 2 * LABEL_HALF + 2 && Math.abs(a.y - b.y) < 12;
+/** A label near either end of the chart lines up with that edge instead of running past it. */
+const labelAnchor = (x: number, width: number) => (x > width - LABEL_HALF ? 'end' : x < LABEL_HALF ? 'start' : 'middle');
 
 /** How high and low the line runs within `half` units either side of x (chart y grows downward). */
 function lineExtentNear(points: ReadonlyArray<{ x: number; y: number }>, x: number, half: number): { top: number; bottom: number } {
@@ -416,7 +451,7 @@ function RouteHistoryChart({ snaps, minutes, lineColor, gradientId, hoveredSnap,
       if (valued.includes(i) || (i !== snaps.length - 1 && !spot(i))) continue;
       // Not where another point sits inside the label, which would make it unclear which point it names.
       const at = valueAt(i);
-      if (i !== snaps.length - 1 && points.some((p, k) => k !== i && Math.abs(p.x - at.x) < 16 && p.y > at.y - 11 && p.y < at.y + 3)) continue;
+      if (i !== snaps.length - 1 && points.some((p, k) => k !== i && Math.abs(p.x - at.x) < LABEL_HALF + 2 && p.y > at.y - 11 && p.y < at.y + 3)) continue;
       if (valued.every(k => !labelsOverlap(valueAt(i), valueAt(k)))) valued.push(i);
     }
   } else {
@@ -424,7 +459,7 @@ function RouteHistoryChart({ snaps, minutes, lineColor, gradientId, hoveredSnap,
   }
   // A hovered snapshot's value always shows; a label close to it steps aside while it does, so the two never stack.
   const hovered = snaps.findIndex(snap => snap === hoveredSnap);
-  const shownValues = hovered < 0 ? valued : [hovered, ...valued.filter(k => k !== hovered && !(Math.abs(valueAt(hovered).x - valueAt(k).x) < 30 && Math.abs(valueAt(hovered).y - valueAt(k).y) < 18))];
+  const shownValues = hovered < 0 ? valued : [hovered, ...valued.filter(k => k !== hovered && !(Math.abs(valueAt(hovered).x - valueAt(k).x) < 2 * LABEL_HALF + 2 && Math.abs(valueAt(hovered).y - valueAt(k).y) < 18))];
 
   const linePath = 'M ' + points.map(p => `${p.x} ${p.y}`).join(' L ');
   const fillPath = `${linePath} L ${points[points.length - 1].x} ${height - 18} L ${points[0].x} ${height - 18} Z`;
@@ -464,8 +499,8 @@ function RouteHistoryChart({ snaps, minutes, lineColor, gradientId, hoveredSnap,
           <g key={i}>
             {(dots.has(i) || i === hovered) && <circle cx={p.x} cy={p.y} r={i === hovered ? 4.5 : 3} fill={lineColor} stroke="var(--bg-panel)" strokeWidth="1.5" />}
             {shownValues.includes(i) && (
-              <text x={p.x} y={valueAt(i).y} textAnchor="middle" fontSize="8" fontWeight="700" fill="var(--text-primary)" fontFamily="inherit" stroke="var(--bg-panel)" strokeWidth="3" strokeLinejoin="round" paintOrder="stroke">
-                {headwayExactAmount(shownMinutes(minutes[i]))}
+              <text x={p.x} y={valueAt(i).y} textAnchor={labelAnchor(p.x, width)} fontSize="8" fontWeight="700" fill="var(--text-primary)" fontFamily="inherit" stroke="var(--bg-panel)" strokeWidth="3" strokeLinejoin="round" paintOrder="stroke">
+                {headwayEvery(shownMinutes(minutes[i]))}
               </text>
             )}
           </g>
@@ -518,12 +553,6 @@ const NO_SUGGESTED_ROUTES: SuggestedRoute[] = [];
 const NO_ROUTE_PICK = () => {};
 const NO_ROUTE_DISPLAY = () => ({}) as RouteListDisplay;
 
-const SINCE_FILTERS = [
-  { label: 'All time', year: 0 },
-  { label: 'Since 2018', year: 2018 },
-  { label: 'Since 2022', year: 2022 },
-] as const;
-
 function HistoryAgencyPanel({
   agencyHistory,
   onRouteSelect,
@@ -536,7 +565,10 @@ function HistoryAgencyPanel({
   nameParts,
   selectedYear,
   view,
+  missingRoute = false,
 }: {
+  /** A route was asked for that History has no past schedules for (N55). */
+  missingRoute?: boolean;
   /** The Time and Frequency chips: the list shows the period's values and only routes within the limit. */
   view: HistoryView;
   /** The agency's name and place, as the agency card and About list show them. */
@@ -622,7 +654,7 @@ function HistoryAgencyPanel({
 
   return (
     // The agency card's placement: sidebar Panel, 80px from the top, the search bar's width.
-    <Panel sidebar enter className={frameClassName} style={frameStyle}>
+    <Panel sidebar enter data-report-anchor="true" className={frameClassName} style={frameStyle}>
       {/* Header: the agency card's header block, with the route filter and mode pills inside it. */}
       <div className={CARD_HEADER_BLOCK}>
         <AgencyCardTop
@@ -639,8 +671,10 @@ function HistoryAgencyPanel({
             />
           )}
         >
+          {/* N55 (Ryan): a linked route History has no past schedules for says so, above the agency's list. */}
+          {missingRoute && <CardHelpNotice className="mt-1" message={HISTORY_ROUTE_NOT_COVERED} />}
           {!routeQuery && !activeFilter && (
-            <p className={`${CARD_NOTICE} mt-1`}>Biggest changes first</p>
+            <CardHelpNotice className="mt-1" message={HISTORY_ROUTE_ORDER_NOTE} />
           )}
         </AgencyCardTop>
         {routeFilters.length > 0 && (
@@ -663,7 +697,7 @@ function HistoryAgencyPanel({
             const delta = value.kind === 'value' && before?.kind === 'value' ? value.min - before.min : 0;
             return {
               key: route.routeShortName,
-              route: routeLabels({ shortName: route.routeShortName, longName: titleCase(route.routeName), routeType: route.currentRouteType ?? undefined, agencySlug: agencyHistory.slug }),
+              route: routeLabels({ shortName: route.routeShortName, longName: route.routeName, routeType: route.currentRouteType ?? undefined, agencySlug: agencyHistory.slug }),
               headway: value.kind === 'value' ? value.min : undefined,
               limited: value.kind === 'limited',
               headwaySuffix: delta ? (delta > 0 ? `+${delta}` : `${delta}`) : undefined,
@@ -988,6 +1022,11 @@ export default function History({ active, view = HISTORY_VIEW_ALL, initialAgency
   // at its width on desktop (#1033 parity B). Each panel adds its own top, as its regular card does.
   const frameStyle = sidebarFrameStyle(sidebarLeft, searchBarWidth);
   const frameClassName = `transition-opacity ${TRANSITION_BASE} ${visible ? 'opacity-100' : 'opacity-0 pointer-events-none'} ${!panelInteractive ? 'pointer-events-none' : ''}`;
+  // The agency chooser fades out with the same transition once dismissed (#1031). One opacity class only: with the
+  // frame's opacity-100 beside an opacity-0, the stylesheet order kept it showing.
+  const chooserFrameClassName = showAgencyChooser || searchFocused
+    ? frameClassName
+    : `transition-opacity ${TRANSITION_BASE} opacity-0 pointer-events-none`;
 
   return (
     <>
@@ -996,7 +1035,7 @@ export default function History({ active, view = HISTORY_VIEW_ALL, initialAgency
           if (openAgencyFailed) {
             return (
               <Panel sidebar style={frameStyle} className={frameClassName}>
-                <PanelEmpty kind="error">{loadErrorText('history data')}</PanelEmpty>
+                <PanelEmpty kind="error">{HISTORY_LOAD_FAILED}</PanelEmpty>
               </Panel>
             );
           }
@@ -1004,7 +1043,7 @@ export default function History({ active, view = HISTORY_VIEW_ALL, initialAgency
           if (!agencyHistory) {
             return (
               <Panel sidebar style={frameStyle} className={frameClassName}>
-                <PanelEmpty kind="loading">{loadingText('history data')}</PanelEmpty>
+                <PanelEmpty kind="loading">{loadingText('history')}</PanelEmpty>
               </Panel>
             );
           }
@@ -1029,6 +1068,7 @@ export default function History({ active, view = HISTORY_VIEW_ALL, initialAgency
             <HistoryAgencyPanel
               agencyHistory={agencyHistory}
               onRouteSelect={setSelectedRouteShortName}
+              missingRoute={!!selectedRouteShortName}
               onBack={() => { setSelectedSlug(null); setSelectedRouteShortName(null); }}
               routeQuery={routeQuery}
               activeFilter={activeFilter}
@@ -1057,14 +1097,11 @@ export default function History({ active, view = HISTORY_VIEW_ALL, initialAgency
         ) : (
         <Panel
           sidebar
-          className={`overflow-y-auto custom-scrollbar ${frameClassName} ${showAgencyChooser || searchFocused ? '' : 'opacity-0 pointer-events-none'}`}
+          className={`overflow-y-auto custom-scrollbar ${chooserFrameClassName}`}
           style={frameStyle}
           onMouseDown={e => e.preventDefault()}
         >
-          <PanelTitleBar>
-            <HistoryIcon className="w-3 h-3 text-[var(--text-dim)] shrink-0" />
-            <span className={PANEL_TITLE}>Historical service</span>
-          </PanelTitleBar>
+          <PanelTitleBar icon={<HistoryIcon className="w-3 h-3 text-[var(--text-dim)] shrink-0" />} title="Historical service" />
           {(
             <>
               {historyData !== null && !historyLoadFailed && (
@@ -1079,18 +1116,18 @@ export default function History({ active, view = HISTORY_VIEW_ALL, initialAgency
                 </div>
               )}
               {historyData === null && (
-                <PanelEmpty kind="loading">{loadingText('history data')}</PanelEmpty>
+                <PanelEmpty kind="loading">{loadingText('history')}</PanelEmpty>
               )}
               {historyData !== null && historyLoadFailed && (
                 <PanelEmpty
                   kind="error"
-                  action={<ArrowLink as="button" tone="inline" size="xs" onClick={loadHistoryConfig} className="shrink-0 whitespace-nowrap">Retry</ArrowLink>}
+                  action={<ArrowLink as="button" tone="inline" size="xs" onClick={loadHistoryConfig} className="shrink-0 whitespace-nowrap">{RETRY_LABEL}</ArrowLink>}
                 >
-                  {loadErrorText('history data')} {RETRY_HINT}
+                  {HISTORY_LOAD_FAILED} {RETRY_HINT}
                 </PanelEmpty>
               )}
               {historyData !== null && !historyLoadFailed && agenciesByRegion.length === 0 && (
-                <PanelEmpty>No agencies match.</PanelEmpty>
+                <PanelEmpty>{NO_AGENCIES_MATCH}</PanelEmpty>
               )}
               {agenciesByRegion.length > 0 && (
                 <AgencyList>
@@ -1118,7 +1155,8 @@ export default function History({ active, view = HISTORY_VIEW_ALL, initialAgency
 
       {showScrubber && (
         <div
-          className={`absolute bottom-6 right-14 ${Z_PANEL} w-[260px] ${PILL_SURFACE} gap-2 px-2.5 text-xs`}
+          data-map-overlay="history-scrubber"
+          className={`${MAP_SCRUBBER_SLOT} ${Z_PANEL} ${MAP_SCRUBBER_WIDTH} ${PILL_SURFACE} gap-2 px-2.5 text-xs`}
           title="Older to newer"
           onPointerDown={event => event.stopPropagation()}
           onPointerMove={event => event.stopPropagation()}

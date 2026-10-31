@@ -1,8 +1,7 @@
 import type { DayType } from '../../shared/dayTypes';
 import type { TimePeriod } from '../hooks/useIntervalStats';
 import { describeDayAndPeriod } from './mapExportDetails';
-import { headwayAbout, headwayFilterLabel } from './headwayText';
-import { NO_REGULAR_SERVICE_LABEL } from './effectiveHeadway';
+import { headwayFilterLabel } from './headwayText';
 
 /** One side of compare mode: its own day, time and frequency threshold (CIV-19). */
 export interface CompareSide {
@@ -35,50 +34,6 @@ export function frequencyWords(maxHeadway: number): string {
 export function compareSideHeading(side: CompareSide): string {
   const title = compareSideLabel(side);
   return `${title.charAt(0).toUpperCase()}${title.slice(1)} · ${frequencyWords(side.maxHeadway)}`;
-}
-
-/** One compare side of a route, as the route card needs it. */
-export interface CompareRowFacts {
-  label: 'A' | 'B';
-  settings: CompareSide;
-  /** Frequency the filter judges, in minutes; null when there is no regular frequency. */
-  headway: number | null;
-  passes: boolean;
-  runs: boolean;
-}
-
-function routeFrequencyWords(row: CompareRowFacts): string {
-  if (!row.runs) return 'no service';
-  if (row.headway == null) return NO_REGULAR_SERVICE_LABEL;
-  return headwayAbout(row.headway);
-}
-
-const capitalize = (text: string) => text.charAt(0).toUpperCase() + text.slice(1);
-
-/**
- * The route card's compare section in plain words.
- * - Same day and time on both sides: the route's frequency once ("Every 16 min"), then which
- *   maps draw it ("On map B (≤20 min) · not on map A (≤10 min)").
- * - Day or time differ: one line per side with that side's own frequency
- *   ("A · Weekday midday: every 16 min, on map").
- */
-export function compareCardSummary(rows: readonly CompareRowFacts[]): { headline: string | null; lines: string[] } {
-  if (rows.length !== 2) return { headline: null, lines: [] };
-  const [a, b] = rows;
-  const sameTime = a.settings.day === b.settings.day && a.settings.period === b.settings.period;
-  if (sameTime) {
-    const ordered = [...rows].sort((x, y) => Number(y.passes) - Number(x.passes));
-    const line = ordered
-      .map(row => `${row.passes ? 'on' : 'not on'} map ${row.label} (${frequencyWords(row.settings.maxHeadway)})`)
-      .join(' · ');
-    return { headline: capitalize(routeFrequencyWords(a)), lines: [capitalize(line)] };
-  }
-  const frequencyDiffers = a.settings.maxHeadway !== b.settings.maxHeadway;
-  const lines = rows.map(row => {
-    const title = capitalize(compareSideLabel(row.settings)) + (frequencyDiffers ? ` · ${frequencyWords(row.settings.maxHeadway)}` : '');
-    return `${row.label} · ${title}: ${routeFrequencyWords(row)}, ${row.passes ? 'on map' : 'not on map'}`;
-  });
-  return { headline: null, lines };
 }
 
 /**

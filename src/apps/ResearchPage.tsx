@@ -1,24 +1,9 @@
-import { Moon, Zap } from 'lucide-react';
-import { FEATURE_ROUTES } from '../../shared/config';
 import DocsPageLayout from '../components/ui/DocsPageLayout';
 import ArrowLink from '../components/ui/ArrowLink';
+import Tag from '../components/ui/Tag';
 import { SURFACE } from '../styles';
 import { PageTitle, SectionTitle } from '../components/ui/PageTitle';
-
-const CARDS = [
-  {
-    href: FEATURE_ROUTES.nightService,
-    Icon: Moon,
-    title: 'Night service',
-    body: 'Find routes with sustained service from 2am to 5am.',
-  },
-  {
-    href: FEATURE_ROUTES.frequentService.story,
-    Icon: Zap,
-    title: 'Frequent service',
-    body: 'See what frequent service means and which routes meet Atlas’s sustained-frequency thresholds.',
-  },
-];
+import { RESEARCH } from '../data/research';
 
 export default function ResearchPage() {
   return (
@@ -28,12 +13,16 @@ export default function ResearchPage() {
               <p className="mt-3">Views of transit service that the main map does not show.</p>
             </header>
             <div className="grid gap-4 sm:grid-cols-2">
-              {CARDS.map(({ href, Icon, title, body }) => (
-                <a key={href} href={href} className={`${SURFACE} group block rounded-2xl p-5 transition-colors hover:border-[var(--accent-border)]`}>
-                  <Icon className="h-4 w-4 text-[var(--text-dim)]" aria-hidden="true" />
+              {RESEARCH.map(({ href, Icon, kind, title, body, linkText }) => (
+                <a key={href} href={href} className={`${SURFACE} group flex flex-col rounded-2xl p-5 transition-colors hover:border-[var(--accent-border)]`}>
+                  <div className="flex items-center justify-between gap-3">
+                    <Icon className="h-4 w-4 text-[var(--text-dim)]" aria-hidden="true" />
+                    <Tag>{kind}</Tag>
+                  </div>
                   <SectionTitle level="item" className="mt-4">{title}</SectionTitle>
                   <p className="mt-2">{body}</p>
-                  <ArrowLink as="span" tone="inline" size="xs" nudge className="mt-4">Open</ArrowLink>
+                  {/* Pinned to the bottom so the links line up across a row. */}
+                  <ArrowLink as="span" tone="inline" size="xs" nudge className="mt-auto self-start pt-4">{linkText}</ArrowLink>
                 </a>
               ))}
             </div>

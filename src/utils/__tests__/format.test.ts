@@ -1,11 +1,17 @@
 import { describe, expect, it } from 'vitest';
-import { stopNameCase, COMPARE_PANEL_TOP, comparePanelTop, fmtHeadway, getRouteLabel, ROUTE_NAME_ACRONYMS, routeLabelCase, routeLabels, shouldHideNumericRouteShortName, titleCase } from '../format';
+import { COMPARE_PANEL_TOP, comparePanelTop, fmtHeadway, getRouteLabel, ROUTE_NAME_ACRONYMS, routeLabels, shouldHideNumericRouteShortName, nameCase } from '../format';
+
 import { agencyNames } from '../agencyName';
 
 const shortenAgencyName = (name: string) => agencyNames(name).short;
 // The bracket-aware short name is the row name for every name below (none is past the length rule).
 const agencyBackLinkName = (name: string) => agencyNames(name).name;
 import indexData from '../../../public/data/index.json';
+
+// Today's three casing behaviours, now modes of nameCase (CIV-1001).
+const titleCase = (s: string) => nameCase(s, 'title');
+const stopNameCase = (s: string) => nameCase(s, 'stop');
+const routeLabelCase = (s: string) => nameCase(s, 'route');
 
 interface IndexAgency {
   slug: string;
@@ -298,8 +304,46 @@ describe('names in capitals with French linking words (CIV-1054)', () => {
 
   it('leaves names that are really mixed case, and English names with small words, as the feed wrote them', () => {
     expect(stopNameCase('Saint-Joseph/Jean-Proulx')).toBe('Saint-Joseph/Jean-Proulx');
-    expect(stopNameCase('US-9W at CHARLOTTE PL')).toBe('US-9W at CHARLOTTE PL');
     expect(stopNameCase('Granville-YVR')).toBe('Granville-YVR');
     expect(routeLabelCase('Kendall/MIT Station')).toBe('Kendall/MIT Station');
+  });
+});
+
+describe('route-name acronyms from the feeds (CIV-984)', () => {
+  it('keeps college, hospital and service acronyms in all-caps route names, and title-cases real words', () => {
+    expect(routeLabels({ shortName: '', longName: 'USI', mode: 3, agencyName: 'METS' }).text).toBe('USI');
+    expect(routeLabelCase('THIBODAUX/NSU INBOUND')).toBe('Thibodaux/NSU Inbound');
+    expect(routeLabelCase('LYNNHAVEN MALL/TCC VB')).toBe('Lynnhaven Mall/TCC VB');
+    expect(routeLabelCase('Q70-SBS')).toBe('Q70-SBS');
+    expect(routeLabelCase('COASTER')).toBe('Coaster');
+    expect(routeLabelCase('EAGLE MTN/SARATOGA SPR/LEHI STN/UVU')).toBe('Eagle Mtn/Saratoga Spr/Lehi Stn/UVU');
+  });
+});
+
+// CIV-1166: a name in capitals apart from its connectors counts as sent in capitals.
+describe('names in capitals with lower-case connectors (CIV-1166)', () => {
+  it('cases them like an all-capitals name', () => {
+    expect(stopNameCase('STERLING at HADDON')).toBe('Sterling at Haddon');
+    expect(stopNameCase('ABERDEEN opposite CHEDOKE')).toBe('Aberdeen opposite Chedoke');
+    expect(stopNameCase('At 100 MACKLIN')).toBe('At 100 Macklin');
+    expect(stopNameCase('to LAKE DR - NORTH AVE.')).toBe('to Lake Dr - North Ave.');
+    expect(stopNameCase('SEACREST BLVD at MINER RD')).toBe('Seacrest Blvd at Miner Rd');
+    // Road codes keep their capitals; ordinals read small (NJ Transit, Palm Tran).
+    expect(stopNameCase('US-9W at CHARLOTTE PL')).toBe('US-9W at Charlotte Pl');
+    expect(stopNameCase('SR-7 at 10TH AVE N')).toBe('SR-7 at 10th Ave N');
+    expect(stopNameCase('49 A1A')).toBe('49 A1A');
+    // Compass points, directions and initials keep their capitals; street abbreviations and possessives read as words.
+    expect(stopNameCase('EB 86 AV SE @ W. of 60 ST SE')).toBe('EB 86 Av SE @ W. of 60 St SE');
+    expect(stopNameCase('OKEECHOBEE BLVD at WPB')).toBe('Okeechobee Blvd at WPB');
+    expect(stopNameCase('EXPRESS to RVH')).toBe('Express to RVH');
+    expect(stopNameCase("ST MARY'S HOSPITAL")).toBe("St Mary's Hospital");
+    expect(stopNameCase("AVALON WAY 72'S OF QUAKERBRIDGE RD")).toBe("Avalon Way 72'S of Quakerbridge Rd");
+  });
+  it('leaves the feed spelling of mixed-case names and initials alone', () => {
+    expect(stopNameCase('Main St After Bay')).toBe('Main St After Bay');
+    expect(stopNameCase('At Home Depot')).toBe('At Home Depot');
+    expect(stopNameCase('U Of A')).toBe('U Of A');
+    expect(stopNameCase('At')).toBe('At');
+    expect(stopNameCase('54B')).toBe('54B');
   });
 });

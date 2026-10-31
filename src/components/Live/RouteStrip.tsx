@@ -1,8 +1,9 @@
 import { Fragment, useCallback, useEffect, useId, useMemo, useRef, useState, type CSSProperties, type KeyboardEvent, type PointerEvent, type ReactNode } from 'react';
 import DataTable from '../ui/DataTable';
 import { useMediaQuery } from '../../hooks/useMediaQuery';
+import { shortStopName } from '../../utils/stopLabel';
 import {
-  LEGEND_TITLE, MIN_N, bunchParts, delayText, legendSteps, shownDelayMin, stepLabel, keyStops, labelLines, labelWidth, pct, pickLabels, shortStopName, stepColor, stepFor, stopDetail, stopStep, stopN, stopValue, stretchSpan, stripSummary,
+  LEGEND_TITLE, MIN_N, bunchParts, delayText, legendSteps, shownDelayMin, stepLabel, keyStops, labelLines, labelWidth, pct, pickLabels, stepColor, stepFor, stopDetail, stopStep, stopN, stopValue, stretchSpan, stripSummary,
   type RouteStripMode, type RouteStripStop, type RouteStripStretch, type Step, type StretchSpan,
 } from './routeStripModel';
 

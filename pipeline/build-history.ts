@@ -20,7 +20,7 @@ import { dirname, resolve } from 'path';
 import { config } from 'dotenv';
 import { r2ListArchive, r2GetArchive, r2Get, r2Put } from './r2.js';
 import { runWithConcurrency } from './utils.js';
-import { resolveCurrentHistoryRoute, mergeAliasedRoutes, currentRouteShortNamesFor, type HistoryRouteAliases } from './historyIdentity.js';
+import { resolveCurrentHistoryRoute, mergeAliasedRoutes, currentRouteShortNamesFor, aliasesFor, weekendOnlyKeysFor, projectArchiveByDay, projectSidecarByDay, type HistoryRouteAliases } from './historyIdentity.js';
 import { representativeRep, routeTrunkHeadway, routeTrunkHeadwayByPeriod } from './historyV2.js';
 import { buildRouteSnapshots, filterSnapshotsForPublish, isFlatRouteToSkip, joinCandidates, newBuildReport, visibilityCheck, type Candidate } from './historyV2Build.js';
 import type { HistoryV2Sidecar } from '../shared/historyV2.js';
@@ -28,7 +28,7 @@ import { historyRouteKey } from './historyRouteKey.js';
 import { holidayDropFor, repickedFor, type HolidayPeriodDrop, type RepickedPeriod } from './historyRefQuality.js';
 import { historyV2FromEnv } from './historyV2Flag.js';
 import { splitKey, splitRouteHistory, terminiOf } from './historyRouteIdentity.js';
-import { compileAgencyShapes, type ShapeRouteYear } from './historyShapes.js';
+import { compileAgencyShapes, formatShapeGap, shapeGaps, type ShapeRouteYear } from './historyShapes.js';
 import type { HistoryPeriodShapes } from '../shared/historyV2.js';
 import { parsePeriodKey, getPeriodKeySortValue, isRefreshRunPeriodKey, labelFromRefDate, afterBuildMonth, yearMonthOf } from './historyPeriods.js';
 import { writeHistoryAgencyList } from '../scripts/build-history-agency-list.js';
@@ -459,9 +459,9 @@ async function main() {
   let aliasMerged = 0;
   if (v2) for (const slug of Object.keys(archiveRoutes)) {
     const slugAliases = routeAliases[slug];
-    const a = mergeAliasedRoutes(archiveRoutes[slug], slugAliases);
+    const a = mergeAliasedRoutes(archiveRoutes[slug], slugAliases, projectArchiveByDay);
     archiveRoutes[slug] = a.routes;
-    if (sidecarRoutes[slug]) sidecarRoutes[slug] = mergeAliasedRoutes(sidecarRoutes[slug], slugAliases).routes;
+    if (sidecarRoutes[slug]) sidecarRoutes[slug] = mergeAliasedRoutes(sidecarRoutes[slug], slugAliases, projectSidecarByDay).routes;
     aliasMerged += a.merged;
   }
   if (aliasMerged > 0) console.log(`Merged ${aliasMerged} aliased route keys.`);
@@ -533,17 +533,18 @@ async function main() {
     const registryEntry = registryBySlug.get(slug);
     const current = currentHeadways[slug] ?? {};
     const agencyRoutes: any[] = [];
-    const keptByRoute: Record<string, Array<{ label: string; year: number; weekdayHeadwayMin: number }>> = {};
+    const weekendOnlyKeys = weekendOnlyKeysFor(routeAliases[slug]);
+    const keptByRoute: Record<string, Array<{ label: string; year: number; weekdayHeadwayMin: number | null }>> = {};
 
     for (const [routeShortName, changes] of Object.entries(routeMap)) {
-      let snapshots: Array<{ label: string; year: number; weekdayHeadwayMin: number; headwayByPeriod?: HeadwayByPeriod; geometry?: number[][] }>;
+      let snapshots: Array<{ label: string; year: number; weekdayHeadwayMin: number | null; headwayByPeriod?: HeadwayByPeriod; geometry?: number[][] }>;
       if (v2) {
         // v2: join change files with sidecar entries by period key, drop invalid snapshots,
         // order by real date and keep one snapshot per year (see historyV2Build.ts).
         const candidates: Candidate[] = joinCandidates(holidayPeriods[slug] ? changes.filter(c => !holidayPeriods[slug].has(c.periodKey)) : changes, sidecarRoutes[slug]?.[routeShortName] ?? []);
-        const built = buildRouteSnapshots(slug, routeShortName, candidates, buildYear, buildReport, buildYm);
+        const built = buildRouteSnapshots(slug, routeShortName, candidates, buildYear, buildReport, { weekendOnlyRoute: weekendOnlyKeys.has(routeShortName), buildYm });
         for (const b of built) {
-          (shapeRouteYears[slug] ??= []).push({ routeKey: routeShortName, year: b.year, periodKey: b.periodKey, lookupKeys: [routeShortName, ...(splitOrigin[slug]?.[routeShortName] ? [splitOrigin[slug][routeShortName]] : []), ...(routeAliases[slug]?.[routeShortName] ?? [])] });
+          (shapeRouteYears[slug] ??= []).push({ routeKey: routeShortName, year: b.year, periodKey: b.periodKey, lookupKeys: [routeShortName, ...(splitOrigin[slug]?.[routeShortName] ? [splitOrigin[slug][routeShortName]] : []), ...aliasesFor(routeAliases, slug, routeShortName)] });
         }
         snapshots = built
           .map(({ periodKey: _pk, processedAt: _pa, ...snap }) => ({
@@ -695,7 +696,8 @@ async function main() {
 
     // Sort routes by magnitude of change (biggest % shift first)
     agencyRoutes.sort((a, b) => {
-      const pct = (r: any[]) => Math.abs(r[r.length - 1].weekdayHeadwayMin / r[0].weekdayHeadwayMin - 1);
+      // A weekend-only route has no weekday value to compare: it sorts as unchanged.
+      const pct = (r: any[]) => r[0].weekdayHeadwayMin == null || r[r.length - 1].weekdayHeadwayMin == null ? 0 : Math.abs(r[r.length - 1].weekdayHeadwayMin / r[0].weekdayHeadwayMin - 1);
       return pct(b.snapshots) - pct(a.snapshots);
     });
 
@@ -715,6 +717,12 @@ async function main() {
   }
 
   if (v2) {
+    // CIV-843: years about to be published whose routes lose their real line (no shape_id, or one not in
+    // shapes.txt). Only agencies with shape files are checked; one without any has no lines to lose.
+    for (const slug of Object.keys(shapeRouteYears).sort()) {
+      const periods = shapePeriods[slug];
+      if (periods?.size) buildReport.shapeGaps.push(...shapeGaps(slug, periods, shapeRouteYears[slug]));
+    }
     // Build report: every dropped snapshot (slug, route, label, reason) and the year rules' effects.
     const reportPath = resolve('tmp/history-build-report.json');
     mkdirSync(dirname(reportPath), { recursive: true });
@@ -730,6 +738,9 @@ async function main() {
     for (const d of buildReport.droppedHolidayPeriods) console.log(`  dropped holiday period ${d.slug}/${d.periodKey} (refDate ${d.refDate}, ${d.routesAffected} routes): ${d.reason}`);
     for (const d of buildReport.repickedPeriods) console.log(`  re-picked ${d.slug}/${d.periodKey}: refDate ${d.from} -> ${d.to} (year ${d.fromYear} -> ${d.toYear}, ${d.routes} routes): ${d.reason}`);
     for (const d of buildReport.drops.slice(0, 50)) console.log(`  dropped ${d.slug}/${d.route} "${d.label}": ${d.reason}`);
+    // Loud on purpose (CIV-843): a GitHub Actions annotation in CI, a warning line locally.
+    for (const g of buildReport.shapeGaps) console.warn(`${process.env.GITHUB_ACTIONS ? '::warning title=History shape gap::' : ''}${formatShapeGap(g)}`);
+    if (buildReport.shapeGaps.length) console.warn(`${buildReport.shapeGaps.length} History years would publish routes without their real line (see shapeGaps in ${reportPath}).`);
   }
 
   if (verifyOnly) {

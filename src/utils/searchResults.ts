@@ -2,7 +2,7 @@ import type { GeoJSON } from 'geojson';
 import type { ShapeProperties } from '../hooks/useAgencyData';
 import type { ViewportBounds } from '../hooks/useIntervalStats';
 import type { AgencySearchGroup } from './agencySearch';
-import { buildRouteFacts, type RouteLabel } from './routeFacts';
+import { buildRouteFacts, labelShortNameOf, type RouteLabel } from './routeFacts';
 import { compareRouteNumber, compareSearchRelevance, compareText } from './sortCompare';
 import { searchFold } from '../../shared/areaSearch';
 import type { SearchRoutesFile, SearchStopsFile } from '../../shared/searchIndex';
@@ -218,7 +218,9 @@ export function routeQueryMatchRank(p: ShapeProperties, query: string): number {
   const qNorm = stripLeadingZeros(q);
   const shortName = (p.routeShortName ?? '').toLowerCase();
   const shortNorm = stripLeadingZeros(shortName);
-  const routeId = (p.routeId ?? '').toLowerCase();
+  // The route ID only counts where riders see it: as the route's number when it has no number or name (labelShortNameOf).
+  // A hidden ID never matches: UTA 240's ID 34504 made it a result for "504" (#1183).
+  const routeId = (labelShortNameOf(p) === p.routeId ? p.routeId ?? '' : '').toLowerCase();
   const longName = (p.routeLongName ?? '').toLowerCase();
 
   if (shortName === q || shortNorm === qNorm) return 0;

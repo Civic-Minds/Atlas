@@ -24,7 +24,8 @@ import {
 import * as Services from '../onDemandServiceAreas';
 import { HSR_MY_RIDE_STOP_FEATURES } from '../hsrMyRideStops';
 import { HAMILTON_TRANS_CAB_SERVICE_AREAS, HAMILTON_TRANS_CAB_TRANSFER_POINTS } from '../transCabServiceArea';
-import { isOnDemandActive, isOnDemandStopShown, isOnDemandZoneShown, onDemandPickupSentence, resolveOnDemandZone } from '../../../shared/onDemandAvailability';
+import { isOnDemandActive, isOnDemandStopShown, isOnDemandZoneShown, resolveOnDemandZone } from '../../../shared/onDemandAvailability';
+import { onDemandPickupSentence } from '../../content/noticeCopy';
 
 describe('BWG on-demand service area', () => {
   it('keeps the captured Argo polygon closed and non-trivial', () => {
@@ -100,6 +101,16 @@ describe('BWG on-demand service area', () => {
     expect(isOnDemandActive(northMinneapolis?.availability, 'Saturday', 'amPeak')).toBe(true);
     expect(isOnDemandActive(northMinneapolis?.availability, 'Sunday', 'overnight')).toBe(false);
     expect(METRO_MICRO_SERVICE_AREA.features.every(feature => feature.geometry.type === 'MultiPolygon' || feature.geometry.type === 'Polygon')).toBe(true);
+  });
+
+  it('finds hours for every Metro micro zone by its polygon name (CIV-32)', () => {
+    const zones: Record<string, { serviceHours: string } | undefined> = METRO_MICRO_SERVICE_AREA.zoneMetadata;
+    for (const feature of METRO_MICRO_SERVICE_AREA.features) {
+      const areaName = (feature.properties as { areaName: string }).areaName;
+      expect(zones[areaName]?.serviceHours, areaName).toBeTruthy();
+    }
+    expect(METRO_MICRO_SERVICE_AREA.zoneMetadata?.['Woodbury Area Zone']).toEqual(METRO_MICRO_SERVICE_AREA.zoneMetadata?.['Woodbury Area']);
+    expect(METRO_MICRO_SERVICE_AREA.zoneMetadata?.['Blaine Area Zone']).toEqual(METRO_MICRO_SERVICE_AREA.zoneMetadata?.['Blaine Area']);
   });
 
   it('keeps The Current service areas and virtual stops source-backed', () => {

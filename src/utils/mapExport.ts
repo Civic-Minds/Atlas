@@ -2,6 +2,7 @@ import { FEATURES } from '../../shared/config';
 import { BASEMAP_ATTRIBUTION } from '../lib/basemap';
 import { withShareTags, SHARE_UTM_MEDIUM_IMAGE } from '../lib/analytics';
 import { slugifyForFilename } from './mapExportDetails';
+import { DEFAULT_EXPORT_TITLE, MAP_EXPORT_BLOCKED_MESSAGES } from '../content/noticeCopy';
 
 export const MAP_EXPORT_SIZES = [
   { id: 'social', label: 'Social', width: 1200, height: 630 },
@@ -216,7 +217,7 @@ function planMapExport(text: MapExportText, portrait: boolean, measure: Measure)
   const routeWidth = (label: string) => m.route.swatch[0] + m.route.gap + measure(label, ROUTE_WEIGHT, m.route.size);
   const titleWidth = (value: string) => measure(value, TITLE_WEIGHT, m.title.size);
 
-  const rawTitle = text.title.trim() || 'Transit map';
+  const rawTitle = text.title.trim() || DEFAULT_EXPORT_TITLE;
   let route: MapExportPlan['route'] = null;
   let titleMax = textWidth;
   if (text.route?.label) {
@@ -507,7 +508,7 @@ export async function createMapExport({ source, lightMode, size = DEFAULT_MAP_EX
   return canvasToBlob(canvas);
 }
 
-export type MapExportBlockReason = 'timeout' | 'no-routes' | 'failed-networks';
+export type MapExportBlockReason = keyof typeof MAP_EXPORT_BLOCKED_MESSAGES;
 
 /** Raised when exporting now would save an image that is missing route data. */
 export class MapExportBlockedError extends Error {
@@ -517,11 +518,7 @@ export class MapExportBlockedError extends Error {
   }
 }
 
-export const MAP_EXPORT_BLOCKED_MESSAGES: Record<MapExportBlockReason, string> = {
-  timeout: 'The map is still loading, so the image would be missing routes. Try again in a moment.',
-  'no-routes': 'No routes are showing in this view yet. Move the map to an area with service and try again.',
-  'failed-networks': 'Some transit networks did not load, so the image would be missing routes. Reload the page and try again.',
-};
+export { MAP_EXPORT_BLOCKED_MESSAGES };
 
 /** The parts of a MapLibre map the export readiness check needs. */
 export interface MapExportReadinessTarget {
@@ -541,6 +538,8 @@ interface WaitForMapExportReadyOptions {
   hasFailedData?: () => boolean;
   /** True when at least one route is drawn in the current view. */
   hasRenderedRoutes: () => boolean;
+  /** True when the view has route data even though none is drawn (every route is hidden by filters). */
+  hasRouteData?: () => boolean;
   timeoutMs?: number;
   pollMs?: number;
   /** How long a fully loaded view must stay empty before it is reported as having no routes. */
@@ -556,6 +555,7 @@ export async function waitForMapExportReady({
   isDataLoading,
   hasFailedData = () => false,
   hasRenderedRoutes,
+  hasRouteData = () => false,
   timeoutMs = 30000,
   pollMs = 250,
   emptyGraceMs = 3000,
@@ -588,7 +588,11 @@ export async function waitForMapExportReady({
         if (hasRenderedRoutes()) return;
         // A view can briefly look empty right before newly requested data arrives.
         emptySince ??= Date.now();
-        if (Date.now() - emptySince >= emptyGraceMs) throw new MapExportBlockedError('no-routes');
+        if (Date.now() - emptySince >= emptyGraceMs) {
+          // Routes only hidden by filters still make a real image of this view.
+          if (hasRouteData()) return;
+          throw new MapExportBlockedError('no-routes');
+        }
       } else {
         emptySince = null;
       }
@@ -631,7 +635,7 @@ export async function shareMapExport(blob: Blob, title: string, filename: string
   if (!canShareMapExport()) throw new Error('This browser cannot share image files');
   const file = new File([blob], mapExportFilename(filename), { type: 'image/png' });
   await navigator.share({
-    title: `${title.trim() || 'Transit map'} · Atlas`,
+    title: `${title.trim() || DEFAULT_EXPORT_TITLE} · Atlas`,
     text: 'Map exported from Atlas by Civic Minds',
     files: [file],
     ...(FEATURES.shareUtm && typeof window !== 'undefined'

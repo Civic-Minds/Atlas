@@ -21,6 +21,8 @@ export interface ProfilePoint {
   major?: boolean;
   /** Measured less exactly (for example in a tunnel): drawn striped, with a shaded band. */
   lessExact?: boolean;
+  /** Nothing to draw here (a place on the axis with no value, such as an age no agency uses): no bar at all, not the 2px stub. */
+  empty?: boolean;
 }
 
 export interface ProfileMark {
@@ -65,6 +67,8 @@ interface ProfileBarsProps {
   whiskers?: boolean;
   /** Most names to print under the chart (default 6). */
   maxLabels?: number;
+  /** Room each printed name needs, in px (default 90). Short names such as ages can sit closer (CIV-1176). */
+  labelSpacing?: number;
   /** What the striped, less exact bars mean, shown in the key (only when some points are `lessExact`). */
   lessExactNote?: string;
   /** Names for the stacked series, in order (y, then y2). */
@@ -120,7 +124,7 @@ function usePlotWidth() {
  * stop names that never overlap (the ends, the marked stretch, major stops), and a shaded, striped look for points that
  * are measured less exactly. The values are also in a table for screen readers.
  */
-export default function ProfileBars({ points, ariaLabel, formatY, unit, minN = 30, caption, fadedNote = true, peakLabel = false, takeaway, axisTitle, marks = [], zero = false, zeroLabel, scale, whiskers = true, maxLabels = 6, lessExactNote, series, valueHeader, refHeader, rowHeader = 'Stop' }: ProfileBarsProps) {
+export default function ProfileBars({ points, ariaLabel, formatY, unit, minN = 30, caption, fadedNote = true, peakLabel = false, takeaway, axisTitle, marks = [], zero = false, zeroLabel, scale, whiskers = true, maxLabels = 6, labelSpacing = 90, lessExactNote, series, valueHeader, refHeader, rowHeader = 'Stop' }: ProfileBarsProps) {
   const [plotRef, plotWidth] = usePlotWidth();
   const tableId = useId();
   if (points.length < 2) return null;
@@ -141,7 +145,7 @@ export default function ProfileBars({ points, ariaLabel, formatY, unit, minN = 3
   // Generous per-character width, capped; a longer name wraps onto more lines inside its width (never cut with an ellipsis), so names never overlap.
   const labelWidths = names.map(n => Math.min(n.length * 7.2 + 8, 132));
   const labels = pickAxisLabels({
-    count, width: plotWidth, max: Math.max(2, Math.min(maxLabels, Math.floor(plotWidth / 90))),
+    count, width: plotWidth, max: Math.max(2, Math.min(maxLabels, Math.floor(plotWidth / labelSpacing))),
     widths: labelWidths,
     marked: marks.map(m => m.index),
     major: points.flatMap((p, i) => (p.major ? [i] : [])),
@@ -179,10 +183,10 @@ export default function ProfileBars({ points, ariaLabel, formatY, unit, minN = 3
                 return (
                   <div key={`${p.label}-${i}`} className="relative h-full min-w-0 flex-1" title={text(p)}>
                     {marked && <div className="pointer-events-none absolute inset-0 rounded-sm bg-[var(--status-caution)] opacity-20" />}
-                    <div className={`absolute left-1/2 flex w-[60%] max-w-[14px] min-w-[3px] -translate-x-1/2 flex-col-reverse overflow-hidden rounded-sm ${faded || p.lessExact ? 'opacity-50' : 'opacity-90'}`} style={{ bottom, height: h1 + h2 }}>
+                    {!p.empty && <div className={`absolute left-1/2 flex w-[60%] max-w-[14px] min-w-[3px] -translate-x-1/2 flex-col-reverse overflow-hidden rounded-sm ${faded || p.lessExact ? 'opacity-50' : 'opacity-90'}`} style={{ bottom, height: h1 + h2 }}>
                       <div style={{ height: h1, background: p.lessExact ? stripe(color0) : color0 }} />
                       {h2 > 0 ? <div style={{ height: h2, background: p.lessExact ? stripe(color1) : color1 }} /> : null}
-                    </div>
+                    </div>}
                     {p.ref != null && (
                       <div className="pointer-events-none absolute left-1/2 h-[2px] w-[90%] max-w-[22px] -translate-x-1/2 bg-[var(--text-primary)]" style={{ bottom: pos(p.ref) }} />
                     )}

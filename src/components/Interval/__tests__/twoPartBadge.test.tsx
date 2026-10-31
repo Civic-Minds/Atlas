@@ -2,18 +2,24 @@ import { describe, expect, it } from 'vitest';
 import { render } from '@testing-library/react';
 import { HeadwayBadge, LimitedBadge } from '../cardUi';
 
-// #1128: a part-period value can break after its comma, so it never runs past the card edge.
+// #1128: a part-period value can break before its limit, so it never runs past the card edge.
 describe('part-period badges', () => {
-  it('splits "from 7:05am, every 20 min" into two whole parts that may wrap', () => {
-    const { container } = render(<HeadwayBadge headway={20} label="from 7:05am, every 20 min" />);
+  it('splits "every 20 min from 7:05 AM" into two whole parts that may wrap, frequency first', () => {
+    const { container } = render(<HeadwayBadge headway={20} label="every 20 min from 7:05 AM" />);
     const parts = [...container.querySelectorAll('span.whitespace-nowrap')].map(el => el.textContent);
-    expect(parts).toEqual(['from 7:05am,', 'every 20 min']);
+    expect(parts).toEqual(['every 20 min', 'from 7:05 AM']);
     expect(container.querySelector('.flex-wrap')).not.toBeNull();
   });
 
+  it('still breaks a gap value after its comma', () => {
+    const { container } = render(<HeadwayBadge headway={10} label="every 10 min, with a 45 min gap" />);
+    const parts = [...container.querySelectorAll('span.whitespace-nowrap')].map(el => el.textContent);
+    expect(parts).toEqual(['every 10 min,', 'with a 45 min gap']);
+  });
+
   it('does the same for a limited value', () => {
-    const { container } = render(<LimitedBadge label="until 9:05pm, every 20 min" />);
-    expect(container.textContent).toBe('until 9:05pm, every 20 min');
+    const { container } = render(<LimitedBadge label="every 20 min until 9:05 PM" />);
+    expect(container.textContent).toBe('every 20 min until 9:05 PM');
     expect(container.querySelector('.flex-wrap')).not.toBeNull();
   });
 

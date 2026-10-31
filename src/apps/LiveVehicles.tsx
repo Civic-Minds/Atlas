@@ -12,7 +12,7 @@ import RouteListRow from '../components/RouteListRow';
 import RouteCardTitle from '../components/RouteCardTitle';
 import { getVehicleColors } from '../utils/colors';
 import { useColorVision } from '../context/ColorVisionContext';
-import { cleanRouteShortName, cleanRouteDisplayName, routeListCompanionName, liveVehicleRowLabel, vehicleModeWord, routeLabelCase } from '../utils/format';
+import { cleanRouteShortName, cleanRouteDisplayName, routeListCompanionName, liveVehicleRowLabel, vehicleModeWord, nameCase } from '../utils/format';
 import { agencyNames, agencyShortNameBySlug } from '../utils/agencyName';
 import { branchDisplayPeriodHeadway } from '../utils/routeFacts';
 import { periodKeyForHour } from '../../shared/config';
@@ -32,7 +32,7 @@ import { useSegmentDelay } from '../hooks/useSegmentDelay';
 import PanelEmpty from '../components/ui/PanelEmpty';
 import AgencyName from '../components/ui/AgencyName';
 import AgencyGroupHeader from '../components/ui/AgencyGroupHeader';
-import { loadingText } from '../content/stateCopy';
+import { loadingText } from '../content/noticeCopy';
 
 interface Props {
   agencies: Agency[];
@@ -378,10 +378,10 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
         const earlyCount = vs.filter(v => v.status === 'early').length;
         const dominantStatus: LiveVehicle['status'] =
           lateCount > 0 ? 'late' : earlyCount > 0 ? 'early' : vs[0].status;
-        const displayName = routeLabelCase(cleanRouteDisplayName(
+        const displayName = nameCase(cleanRouteDisplayName(
           routeNamesByKey.get(`${agencySlug}::${routeShortName}`) || vs[0].displayName || `Route ${routeShortName}`,
           routeShortName,
-        ));
+        ), 'route');
         return { agencySlug, routeShortName, displayName, vehicles: vs, lateCount, earlyCount, dominantStatus };
       });
   }, [allVehicles, query, layers, localLayers]);
@@ -409,7 +409,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
         key: `${r.slug}::${r.displayRouteShortName}`,
         agencySlug: r.slug,
         routeShortName: r.displayRouteShortName,
-        label: r.displayName ? routeLabelCase(r.displayName) : r.displayRouteShortName,
+        label: r.displayName ? nameCase(r.displayName, 'route') : r.displayRouteShortName,
         agencyName: agencyNames(agencies.find(a => a.slug === r.slug)?.name ?? r.slug).short,
       }));
   }, [visibleSlugs, agencies]);
@@ -897,7 +897,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
       </div>
 
       {/* Toolbar */}
-      <div className={`absolute top-6 right-6 ${Z_HEADER} flex items-center gap-1.5 pointer-events-auto`}>
+      <div data-map-overlay="live-toolbar" className={`absolute top-6 right-6 ${Z_HEADER} flex items-center gap-1.5 pointer-events-auto`}>
         <button onClick={() => setLightMode(!lightMode)} className={ICON_BTN} aria-label="Toggle light mode">
           {lightMode ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
         </button>
