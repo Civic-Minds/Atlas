@@ -13,6 +13,11 @@ export interface ResearchEntry {
   linkText: string;
   /** When it was published (YYYY-MM-DD), for "newest first". */
   published: string;
+  /**
+   * Its share picture, as `${picture}-light.svg` and `${picture}-dark.svg` (CIV-1167): the About page's story tiles show it (CIV-1206).
+   * Overnight is Ryan's pick 1; Frequent and Free child fares are stand-ins until he picks theirs.
+   */
+  picture: string;
 }
 
 /** Every research page, in the /research index's order. A new page is added here and shows up on both pages. */
@@ -26,6 +31,7 @@ export const RESEARCH: readonly ResearchEntry[] = [
     body: 'See which routes keep running from 2–\u20605 AM, and how often they come.',
     linkText: 'Find routes running all night',
     published: '2026-08-15',
+    picture: '/assets/research/share/night',
   },
   {
     href: FEATURE_ROUTES.frequentService.story,
@@ -35,6 +41,7 @@ export const RESEARCH: readonly ResearchEntry[] = [
     body: 'What agencies in Canada and the US mean when they call a bus frequent.',
     linkText: 'Compare agency definitions',
     published: '2026-09-17',
+    picture: '/assets/research/share/frequent',
   },
   {
     href: FEATURE_ROUTES.freeChildFares,
@@ -44,6 +51,7 @@ export const RESEARCH: readonly ResearchEntry[] = [
     body: 'Up to what age children ride free on transit in Canada and the US, and which systems are free for everyone.',
     linkText: 'See which ages ride free',
     published: '2026-10-30',
+    picture: '/assets/research/share/free-child-fares',
   },
 ];
 

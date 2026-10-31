@@ -131,6 +131,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Agency, area and research pages
 
+- **The About page shows the map and the research up front**: a picture of Toronto's routes in their frequency colours sits beside the headline, the newest research follows as picture tiles you can swipe through on a phone, and Where / When / How often each get a card in a frequency colour
 - **Area links fit on the agency card**: a name too long for the line drops "Area" ("Greater Toronto and Hamilton →") instead of being cut off
 - **Night lists use the same agency headings as every other list**: counts read "24 routes"
 - **Area pages introduce their biggest agencies and keep their tables on screen**: intros name the two biggest agencies when there are more than three, the subtitle names the state or province instead of repeating the title, and tables group modes into seven columns that fit from 768px wide
