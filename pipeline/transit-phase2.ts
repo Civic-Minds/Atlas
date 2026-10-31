@@ -81,7 +81,10 @@ export function peakBlockHoldsTier(tier: string, gaps: readonly number[], span: 
     if (tier === 'span' || gaps.length === 0) return false;
     const cycle = Number(tier);
     const sorted = [...gaps].sort((a, b) => a - b);
-    const tierCycle = Number.isFinite(cycle) ? cycle : sorted[Math.floor(sorted.length / 2)];
+    // #1254: a block whose buses all come well inside the tier reads its own longest gap as the cycle, not the tier's
+    // ceiling: OC Transpo 187 AM (06:38, 07:08, 07:36, 08:08) misses every 30 on one 32-minute gap, so it reads every 60,
+    // and two cycles of 60 (two hours) would leave a steady 90-minute block one-off.
+    const tierCycle = Number.isFinite(cycle) ? Math.min(cycle, sorted[sorted.length - 1]) : sorted[Math.floor(sorted.length / 2)];
     return span >= Math.max(MIN_PEAK_BLOCK_SPAN_MINUTES, 2 * tierCycle);
 }
 /** A burst is a variant only of a regular pattern running within this many minutes of it (#732). */
@@ -554,6 +557,13 @@ export function applyAnalysisCriteria(
         const hasRepeatedPeakService = periodTripCounts.amPeak >= 3 || periodTripCounts.pmPeak >= 3;
         const hasRepeatedOffPeakService = periodTripCounts.midday >= 3 || periodTripCounts.evening >= 3;
         const isSplitPeakService = !isOvernightFallback && hasRepeatedPeakService && !hasRepeatedOffPeakService;
+        // #1254: the same test with the rush hours counted from the raw departures, as the blocks below are. The analysis
+        // window opens at 07:00, so an AM block that starts at 06:00 (OC Transpo 275: 06:04 to 08:16, four of six trips before
+        // 07:00) read as two trips and the pattern as one-off. Only ever an upgrade: it applies below only to a pattern the
+        // windowed counts leave one-off, and only when its blocks hold a tier.
+        const rawPeakCount = (startHour: number, endHour: number) => new Set(raw.departureTimes.filter(t => t >= startHour * 60 && t < endHour * 60)).size;
+        const rawRepeatedPeak = TIME_PERIODS.some(({ key, startHour, endHour }) => (key === 'amPeak' || key === 'pmPeak') && rawPeakCount(startHour, endHour) >= 3);
+        const earlySplitPeak = !isOvernightFallback && !isSplitPeakService && rawRepeatedPeak && !hasRepeatedOffPeakService;
         // #720: rush-hour-only service with a steady schedule is limited (time-limited), like
         // evening-only service, not one-off: SF Muni 8BX runs every 8 from 06:32 to 09:04. Each
         // rush-hour block with three or more departures must hold a tier of its own, read by the
@@ -565,7 +575,7 @@ export function applyAnalysisCriteria(
         // trips is left out; any block of three or more that holds no tier leaves the whole
         // pattern one-off as before (this understates a route with one steady block beside one
         // burst, by design).
-        const peakBlockTiers = isSplitPeakService
+        const peakBlockTiers = isSplitPeakService || earlySplitPeak
             ? TIME_PERIODS.filter(({ key }) => key === 'amPeak' || key === 'pmPeak')
                 // The whole rush-hour period from the raw departures: the analysis window opens at
                 // 07:00, which would cut an AM block that starts at 06:00 down to under an hour.
@@ -649,20 +659,24 @@ export function applyAnalysisCriteria(
         // that merely fall outside the daytime window (stl AOUT2626E: 06:09 and 10:07) are made
         // irregular below, as they would be inside it, when the route has regular service (#732).
         const tooFewFallbackTrips = isOvernightFallback && analysisWindow.length < 3;
-        const serviceClass = fewTripsADay
+        const windowedClass = fewTripsADay
             ? 'irregular'
             : isSplitPeakService
             ? (splitPeakTier != null ? 'time-limited' : 'irregular')
             : isLimitedService
             ? (hasSustainedCadence ? 'time-limited' : 'irregular')
             : 'regular';
+        // #1254: the raw rush-hour counts only lift a one-off pattern whose blocks hold a tier.
+        const earlySplitPeakHolds = earlySplitPeak && windowedClass === 'irregular' && !fewTripsADay && splitPeakTier != null;
+        const serviceClass = earlySplitPeakHolds ? 'time-limited' : windowedClass;
+        const peakTier = isSplitPeakService || earlySplitPeakHolds ? splitPeakTier : null;
         // A regular route that is slower than the published finite tiers is infrequent. Only
         // genuinely irregular service keeps the span sentinel used by the UI and map filters.
         const tier = serviceClass === 'irregular'
             ? 'span'
-            : splitPeakTier ?? (determinedTier === 'span' ? 'infrequent' : determinedTier);
+            : peakTier ?? (determinedTier === 'span' ? 'infrequent' : determinedTier);
         // Rush-hour-only and limited: dedupe never lets it take an all-day pattern's slot (#720).
-        const rushHourOnly = serviceClass === 'time-limited' && splitPeakTier != null;
+        const rushHourOnly = serviceClass === 'time-limited' && peakTier != null;
         // A burst (≤90 minutes, the limited-service rule above) and the route direction's regular
         // all-day patterns. Used below to demote short-turn and burst variants (#732). The burst
         // is measured over the whole day's window, not the rail midday sample: a 64-train AM
