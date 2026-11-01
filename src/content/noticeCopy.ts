@@ -59,8 +59,8 @@ export function selectedRouteFilterNotice(options: {
   return `${lead}${clauses.map((clause, i) => (i === 0 && clause.startsWith('with') ? `, ${clause}` : `, and ${clause}`)).join('')}.`;
 }
 
-// N8 no-trips-in-period, N11 not-in-period, N17 and N26 (CIV-1077: one sentence): "This route has no scheduled trips from 6–9 AM."
-const noTripsText = (subject: 'route' | 'agency', when: string) => `This ${subject} has no scheduled trips ${when}.`;
+// N8 no-trips-in-period, N11 not-in-period, N17 and N26 (CIV-1077: one sentence; CIV-1251 "no trips", as the stop card says): "This route has no trips from 6–9 AM."
+const noTripsText = (subject: 'route' | 'agency', when: string) => `This ${subject} has no trips ${when}.`;
 const routeNoTripsText = (when: string) => noTripsText('route', when);
 
 // N8 no-trips-in-period, N9 limited-in-period
@@ -90,8 +90,8 @@ export function selectedRouteOutsideFilterNotice(maxHeadway: number, periodRange
   const when = periodRange ? keepRangeTogether(periodRange) : null;
   return maxHeadway === Infinity
     ? routeNoTripsText(when ? `from ${when}` : 'all day')
-    // Non-breaking hyphen (U+2011) keeps "15-minute" on one line instead of wrapping after "15-".
-    : `This route doesn't meet the ${maxHeadway}\u2011minute filter ${when ? `for all of ${when}` : 'all day'}.`;
+    // CIV-1251: a threshold in a sentence reads "every 15 min or better" (STYLE.md).
+    : `This route doesn't run ${headwayOrBetter(maxHeadway)} ${when ? `for all of ${when}` : 'all day'}.`;
 }
 
 // N123 part-of-route-meets-filter (Ryan's exact wording, CIV-514): the selected route misses the filter, but part of it
@@ -169,6 +169,8 @@ export const NO_FEED_MATCHES = 'No feeds match your search or filter.';
 export const LIMITED_SERVICE_LABEL = 'limited';
 // D2 irregular-period (Ryan's words, CIV-1238): the route runs in the period, but the filter finds no regular cadence. On cards.
 export const IRREGULAR_PERIOD_LABEL = 'Runs irregularly in this period';
+/** CIV-1251: a Night card row with no grade. The Night view isn't a period in the picker, so not "in this period". */
+export const IRREGULAR_OVERNIGHT_LABEL = 'Runs irregularly overnight';
 // D3 irregular-period-short: the same, in tight spots (table cells, list values).
 export const IRREGULAR_PERIOD_SHORT_LABEL = 'Irregular';
 // D4 setting-hide-occasional (Ryan, CIV-1238: "Occasional", not "one-off")
@@ -195,8 +197,8 @@ export const PRIVACY_SETTINGS_TITLE = 'Privacy & analytics';
 export const RETRY_LABEL = 'Retry';
 // The link that closes a card that couldn't be shown.
 export const CLOSE_LABEL = 'Close';
-// Route card: a direction with no rows in the chosen period ("No midday service.").
-export const noServiceInPeriodText = (periodLabel: string) => `No ${periodLabel.toLowerCase()} service.`;
+// Route card: a direction with no rows in the chosen period, by its times as the stop card says it (CIV-1251): "No trips from 9 AM–3 PM".
+export const noServiceInPeriodText = (periodRange: string) => stopRouteNoTripsNotice(periodRange);
 // Route card: only the shared section passes the frequency filter.
 export const ONLY_SHARED_SECTION_MEETS_FILTER = 'Only the shared section meets this filter. The branches do not.';
 // Filter panel: the route settings shown outside the Frequency view.

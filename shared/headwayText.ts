@@ -128,7 +128,7 @@ export function runTimeAmount(minutes: number | null | undefined): string {
  * 5:40 PM", "every 10 min, with a 45 min gap".
  */
 export function headwayPeriodShape(shape: { from?: string; until?: string; every: number; gap?: number }): string {
-  if (shape.gap != null) return `${headwayEvery(shape.every)}, with a ${delayAmount(shape.gap)} gap`;
+  if (shape.gap != null) return `${headwayEvery(shape.every)}, with one ${delayAmount(shape.gap)} gap`;
   return [
     headwayEvery(shape.every),
     shape.from != null ? `from ${shape.from}` : null,

@@ -177,12 +177,12 @@ describe('route card rows word part-period and one-gap service (#934)', () => {
     expect(screen.getByText(partPeriodBadge(/every 12 min until 9:37 AM/))).toBeTruthy();
     expect(partPeriodText(row, 'midday')).toBe('every 12 min until 9:37 AM');
   });
-  it('one gap inside steady service reads "every 10 min, with a 45 min gap"', () => {
+  it('one gap inside steady service reads "every 10 min, with one 45 min gap"', () => {
     const row = { ...bx, directionId: 0, headsign: 'North', headway: 10, headwayByPeriod: { midday: 10 },
       routeFilterHeadwayByPeriod: { midday: 45 }, routeRunsByPeriod: { midday: true }, directionFilterHeadwayByPeriod: { midday: 45 },
       stretchPeriodOneGap: { midday: false }, stretchPeriodGap: { midday: { every: 10, gap: 45 } } } as unknown as ShapeProperties;
     renderRows([row], 'midday', 'ttc');
-    expect(screen.getByText(partPeriodBadge(/every 10 min, with a 45 min gap/))).toBeTruthy();
+    expect(screen.getByText(partPeriodBadge(/every 10 min, with one 45 min gap/))).toBeTruthy();
   });
   it('the stop card shows the same part-period words (route card and stop card agree)', () => {
     render(<StopRouteGroup shortName="134" label={routeLabels({ shortName: '134', longName: 'Stony Island' })} longName="Stony Island" branches={[

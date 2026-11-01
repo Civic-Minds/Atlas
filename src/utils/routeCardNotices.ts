@@ -176,7 +176,7 @@ export function routeCardNotices(input: RouteCardNoticeInput): RouteCardNotices 
   const directionNotices: CardDirectionNotice[] = [];
   for (const group of model.groups) {
     if (model.showDirectionSections && group.boundLabel && !group.hasVisibleRows && selectedPeriod && !input.nightView) {
-      directionNotices.push({ dirId: group.dirId, kind: 'no-service', text: noServiceInPeriodText(selectedPeriod.label), place: 2 });
+      directionNotices.push({ dirId: group.dirId, kind: 'no-service', text: noServiceInPeriodText(formatPeriodRangeLong(selectedPeriod.startHour, selectedPeriod.endHour)), place: 2 });
     }
     if (group.onlySharedPasses && !input.nightView) {
       directionNotices.push({ dirId: group.dirId, kind: 'only-shared', text: ONLY_SHARED_SECTION_MEETS_FILTER, place: 2 });

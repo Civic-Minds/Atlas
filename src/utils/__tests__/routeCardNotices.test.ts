@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { routeCardNotices, type RouteCardNoticeInput } from '../routeCardNotices';
 import { formatPeriodRangeLong } from '../../../shared/config';
+import { noServiceInPeriodText } from '../../content/noticeCopy';
 
 // N123 reads the map's shared-stretch ranges from the agency's features: a test that passes any says part of the route qualifies.
 vi.mock('../routeCardTrunk', async importOriginal => ({
@@ -46,7 +47,7 @@ describe('routeCardNotices (CIV-1200)', () => {
   it('notes a direction with no rows in the period on the rows (place 2), not on the Night card', () => {
     const groups = [{ dirId: 1, boundLabel: 'Northbound', hasVisibleRows: false, onlySharedPasses: false, rows: [] }];
     const withSections = { ...model, groups, showDirectionSections: true } as unknown as RouteCardNoticeInput['model'];
-    expect(routeCardNotices({ ...base, model: withSections }).directions).toEqual([{ dirId: 1, kind: 'no-service', text: 'No midday service.', place: 2 }]);
+    expect(routeCardNotices({ ...base, model: withSections }).directions).toEqual([{ dirId: 1, kind: 'no-service', text: noServiceInPeriodText(formatPeriodRangeLong(9, 15)), place: 2 }]);
     expect(routeCardNotices({ ...base, model: withSections, nightView: true }).directions).toEqual([]);
   });
 

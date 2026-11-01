@@ -42,9 +42,9 @@ describe('card notice styling', () => {
 
 describe('approved notice wording (CIV-1045)', () => {
   it('N12: the frequency filter', () => {
-    expect(selectedRouteOutsideFilterNotice(15, '6–9 AM').replace(/\u2060/g, '').replace(/\u00a0/g, ' ')).toBe("This route doesn't meet the 15\u2011minute filter for all of 6–9 AM.");
+    expect(selectedRouteOutsideFilterNotice(15, '6–9 AM').replace(/\u2060/g, '').replace(/\u00a0/g, ' ')).toBe("This route doesn't run every 15 min or better for all of 6–9 AM.");
     // N11: the same times as N8.
-    expect(selectedRouteOutsideFilterNotice(Infinity, '6–9 AM').replace(/\u2060/g, '').replace(/\u00a0/g, ' ')).toBe('This route has no scheduled trips from 6–9 AM.');
+    expect(selectedRouteOutsideFilterNotice(Infinity, '6–9 AM').replace(/\u2060/g, '').replace(/\u00a0/g, ' ')).toBe('This route has no trips from 6–9 AM.');
   });
 
   it('N13: names what the rest of the period has', () => {
@@ -72,9 +72,9 @@ describe('approved notice wording (CIV-1045)', () => {
     expect(nightNoRoutesNotice(30)).toBe('No routes here run every 30 min or better from 2–5 AM.');
   });
 
-  it('N17 and N26: no scheduled trips on the day (CIV-1077)', () => {
-    expect(noServiceOnDayNotice('route', 'Sunday')).toBe('This route has no scheduled trips on Sundays.');
-    expect(noServiceOnDayNotice('agency', 'Weekday')).toBe('This agency has no scheduled trips on weekdays.');
+  it('N17 and N26: no trips on the day (CIV-1077, CIV-1251)', () => {
+    expect(noServiceOnDayNotice('route', 'Sunday')).toBe('This route has no trips on Sundays.');
+    expect(noServiceOnDayNotice('agency', 'Weekday')).toBe('This agency has no trips on weekdays.');
   });
 });
 

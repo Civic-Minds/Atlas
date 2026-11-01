@@ -26,13 +26,13 @@ import {
 } from '../cardUi';
 import { CARD_NOTE, CARD_NOTICE, CARD_NOTICE_FOOTER } from '../../../styles';
 import { FEATURES, SPARKLINE_HOURS, TIME_PERIODS, formatPeriodRangeLong } from '../../../../shared/config';
-import { IRREGULAR_PERIOD_LABEL, routeCardDisplayHeadway } from '../../../utils/effectiveHeadway';
+import { routeCardDisplayHeadway } from '../../../utils/effectiveHeadway';
 import { buildRouteCardModel, matchesHoveredBranch, rowIsHovered, sharedIsHovered } from '../../../utils/routeCardRows';
 import { routeCardNotices, type CardFooterNotice } from '../../../utils/routeCardNotices';
 import { dirIdNum } from '../../../utils/routeCardTrunk';
 import type { VariantFamily } from '../../../utils/routeVariants';
 import { reportDetails } from '../../../utils/reportIssue';
-import { explainerFor, listingEndHasPassed } from '../../../content/noticeCopy';
+import { explainerFor, IRREGULAR_OVERNIGHT_LABEL, listingEndHasPassed } from '../../../content/noticeCopy';
 import { agencyTodayYmd, effectiveFeedExpiry } from '../../../../shared/feedAvailability';
 import type { RouteLabel } from '../../../utils/routeFacts';
 
@@ -494,7 +494,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                             label={row.label}
                             headway={grade ?? undefined}
                             limited={grade == null}
-                            limitedLabel={grade == null ? IRREGULAR_PERIOD_LABEL : undefined}
+                            limitedLabel={grade == null ? IRREGULAR_OVERNIGHT_LABEL : undefined}
                             subLabel={grade != null && row.night.partOfRoute ? 'Overnight service on part of the route' : undefined}
                             {...hoverProps(group.dirId, d, row.hover)}
                           />
