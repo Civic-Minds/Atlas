@@ -86,8 +86,9 @@ Card notices
 - One kind of notice, one place (Ryan, CIV-1202). A route card has three:
   1. Under the title: what the card is. "Includes variants …", and data warnings about the schedule (expired or outdated, under review, corrected, map line missing or incomplete). Small, regular weight, grey; the data warnings end with "Learn more".
   2. On the rows: anything about one direction or row. A direction with no service in the period is a row saying so ("Runs irregularly in this period"), not a note. Row style: small, extra-bold, dark, fading with its row.
-  3. Below the rows: the whole route in the period. The filter line, "runs only from …", "no scheduled trips", uneven gaps, booking ahead and weekday variation, in that order. Small, regular weight, grey.
+  3. Below the rows: the whole route in the period. The filter line, "This route runs only from …", "no trips", uneven gaps, booking ahead and weekday variation, in that order. Small, regular weight, grey.
 - Each fact once: a notice shows only when it says something the rows don't. When a row already names the gap, the hours or a longer wait, the notice that repeats it is left out. `routeCardNotices` (src/utils/routeCardNotices.ts) decides every notice and its place; the card decides nothing.
+- One set of words per situation (Ryan, CIV-1251, 2026-11-01): "Shared stretch" is the only name for the shared part (never "Combined" or "the shared section"), and a branch row shows only its own number; a period with no number reads "Runs irregularly in this period" on cards and "Irregular" in tight spots (never "limited"); All day reads "Part-time" for a route that doesn't run all day; a route that doesn't run reads "no trips"; part of a period reads "This route runs only from 7–9 AM." with the rest as a second sentence. `_review/card-wording` holds the approved table.
 
 New wording needs a yes
 

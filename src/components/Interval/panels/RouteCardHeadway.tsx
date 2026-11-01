@@ -461,14 +461,11 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                   <>
                     <CardSectionLabel className="mb-0">{group.boundLabel}</CardSectionLabel>
                     {notices.directions.filter(n => n.dirId === group.dirId && n.kind === 'no-service').map(n => (
-                      // A direction with no service reads as a row saying so (D2), not a note.
-                      <div key={n.kind} className="mt-1"><CardDirectionRow labelWeight="regular" label="" limited limitedLabel={model.noRegularLabel} /></div>
+                      // A direction with no service reads as a row saying so, not a note: "No trips from 9 AM–3 PM" (CIV-1251).
+                      <div key={n.kind} className="mt-1"><CardDirectionRow labelWeight="regular" label="" limited limitedLabel={n.text} /></div>
                     ))}
                   </>
                 )}
-                {notices.directions.filter(n => n.dirId === group.dirId && n.kind === 'only-shared').map(n => (
-                  <p key={n.kind} className={`${CARD_NOTE} mt-2 mb-2`}>{n.text}</p>
-                ))}
                 {group.shared && (
                   <>
                     <CardDirectionRow
@@ -535,6 +532,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                       key={span.feature ? `s${si}` : 'smulti'}
                       label={span.label}
                       limited
+                      limitedLabel={model.limitedWord}
                       {...hoverProps(group.dirId, span.feature, span.hover)}
                     />
                   ))}

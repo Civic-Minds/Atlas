@@ -49,7 +49,7 @@ describe('AgencyPage', () => {
     expect(screen.queryByText(/15 min or better/)).toBeNull();
     expect(screen.getByRole('button', { name: /1 route every 10 min or better/ })).toBeTruthy();
     expect(screen.getByRole('button', { name: /route every 16–20 min/ })).toBeTruthy();
-    expect(screen.getByRole('button', { name: /with no regular midday service/ })).toBeTruthy();
+    expect(screen.getByRole('button', { name: /irregularly or not at all at midday/ })).toBeTruthy();
     expect(screen.queryByRole('tooltip')).toBeNull(); // no tooltip: the legend item is highlighted instead
     const segment = screen.getByRole('button', { name: /route every 16–20 min/ });
     const other = screen.getByRole('button', { name: /1 route every 10 min or better/ });

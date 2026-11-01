@@ -90,7 +90,8 @@ function cell(col: 'am' | 'midday' | 'pm' | 'evening' | 'overnight', r: AgencyPa
   const v = r[col];
   if (v != null) return routeListHeadwayText(v, r.shared?.[col], true);
   if (Array.isArray(r.noRegular) && r.noRegular.includes(col)) return IRREGULAR_PERIOD_SHORT_LABEL;
-  return Array.isArray(r.limited) && r.limited.includes(col) ? capitalizeFirst(LIMITED_SERVICE_LABEL) : headwayEvery(null);
+  // CIV-1251: a period column with service but no number reads Irregular, whichever check found it.
+  return Array.isArray(r.limited) && r.limited.includes(col) ? IRREGULAR_PERIOD_SHORT_LABEL : headwayEvery(null);
 }
 
 /**

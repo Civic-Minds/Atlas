@@ -34,41 +34,40 @@ export function keepRangeTogether(range: string): string {
     .replace(/ (AM|PM|a\.m\.|p\.m\.)/gi, '\u00a0$1');
 }
 
-// N13 part-period-filter
+// N13 part-period-filter. CIV-1251 (Ryan, 2026-11-01): one sentence shape with N9, "This route runs every 45 min, only from
+// 9 AM–1 PM.", and the rest of the period as a second sentence ("It has no trips from 6–7 AM.", "It runs less often after
+// 9 AM."). A part the data can't tell about adds nothing: the sentence just stops.
 export function selectedRouteFilterNotice(options: {
   /** The route's own filter value for the period; without one the notice names no frequency. */
   headway?: number | null;
   activeRange: string;
   periodRange: string;
-  /**
-   * The period's parts outside the run of service, with their times formatted (N13, Ryan): "with no service from 6–7
-   * AM", "and less often after 9 AM", or "and not from 6–7 AM" where the data can't tell. Without it, the general wording.
-   */
+  /** The period's parts outside the run of service, with their times formatted: no trips there, fewer, or unknown. */
   outside?: Array<{ service: 'none' | 'less' | 'unknown'; /** A part at the start: "6–7 AM". */ range?: string; /** A part at the end: "9 AM". */ after?: string }>;
 }): string {
-  const runs = options.headway != null ? `This route runs ${headwayAbout(options.headway)}` : 'This route runs';
-  const lead = `${runs} from ${keepRangeTogether(options.activeRange)}`;
-  if (!options.outside?.length) return `${lead}, but not throughout the selected ${keepRangeTogether(options.periodRange)} period.`;
+  const only = `only from ${keepRangeTogether(options.activeRange)}`;
+  const lead = options.headway != null ? `This route runs ${headwayAbout(options.headway)}, ${only}.` : `This route runs ${only}.`;
   const where = (part: NonNullable<typeof options.outside>[number]) => (part.after != null ? `after ${keepRangeTogether(part.after)}` : `from ${keepRangeTogether(part.range ?? '')}`);
-  const of = (service: 'none' | 'less' | 'unknown') => options.outside!.filter(part => part.service === service).map(where).join(' or ');
-  const clauses = [
-    of('none') && `with no service ${of('none')}`,
-    of('less') && `less often ${of('less')}`,
-    of('unknown') && `not ${of('unknown')}`,
-  ].filter(Boolean) as string[];
-  return `${lead}${clauses.map((clause, i) => (i === 0 && clause.startsWith('with') ? `, ${clause}` : `, and ${clause}`)).join('')}.`;
+  const of = (service: 'none' | 'less') => (options.outside ?? []).filter(part => part.service === service).map(where).join(' or ');
+  const rest = [of('none') && `It has no trips ${of('none')}.`, of('less') && `It runs less often ${of('less')}.`].filter(Boolean);
+  return [lead, ...rest].join(' ');
 }
 
 // N8 no-trips-in-period, N11 not-in-period, N17 and N26 (CIV-1077: one sentence; CIV-1251 "no trips", as the stop card says): "This route has no trips from 6–9 AM."
 const noTripsText = (subject: 'route' | 'agency', when: string) => `This ${subject} has no trips ${when}.`;
 const routeNoTripsText = (when: string) => noTripsText('route', when);
 
-// N8 no-trips-in-period, N9 limited-in-period
-export function periodServiceNotice(periodRange: string, partial: boolean, activeRange?: string, rowShowsFrequency = false): string {
-  // #1226: "No frequency is shown" only when no row shows one.
+// N8 no-trips-in-period, N9 limited-in-period. CIV-1251: N13's shape, "This route runs only from 7–9 AM." The card already
+// shows whether there is a number, so no sentence says so.
+export function periodServiceNotice(periodRange: string, partial: boolean, activeRange?: string): string {
   return partial
-    ? `This route runs only from ${keepRangeTogether(activeRange || periodRange)} in this period.${rowShowsFrequency ? '' : ' No frequency is shown.'}`
+    ? selectedRouteFilterNotice({ activeRange: activeRange || periodRange, periodRange })
     : routeNoTripsText(`from ${keepRangeTogether(periodRange)}`);
+}
+
+/** CIV-1251: the stop card's N9, "Runs only from 7–9 AM", for a route the route card says runs only part of the period. */
+export function stopRunsOnlyText(activeRange: string): string {
+  return `Runs only from ${keepRangeTogether(activeRange)}`;
 }
 
 // N10 uneven-gaps (Ryan's wording, CIV-1202)
@@ -94,11 +93,12 @@ export function selectedRouteOutsideFilterNotice(maxHeadway: number, periodRange
     : `This route doesn't run ${headwayOrBetter(maxHeadway)} ${when ? `for all of ${when}` : 'all day'}.`;
 }
 
-// N123 part-of-route-meets-filter (Ryan's exact wording, CIV-514): the selected route misses the filter, but part of it
-// qualifies, as the shared-stretch overlay draws (failingRouteSharedRanges). Ryan approved "the selected period" here,
-// an exception to the time-of-day rule above. A no-break space keeps "15 minutes" on one line, as the hyphen does above.
-export function selectedRoutePartMeetsFilterNotice(maxHeadway: number): string {
-  return `Only part of this route runs every ${maxHeadway}\u00A0minutes or better during the selected period.`;
+// N123 part-of-route-meets-filter (CIV-514; CIV-1251, Ryan 2026-11-01): the selected route misses the filter, but its shared
+// stretch qualifies, as the shared-stretch overlay draws (failingRouteSharedRanges). Names the times, and the direction when
+// only one is like this: "Northbound, only the shared stretch runs every 15 min or better from 3–7 PM."
+export function selectedRoutePartMeetsFilterNotice(maxHeadway: number, periodRange: string | null, direction?: string): string {
+  const when = periodRange ? `from ${keepRangeTogether(periodRange)}` : 'all day';
+  return `${direction ? `${direction}, only` : 'Only'} the shared stretch runs ${headwayOrBetter(maxHeadway)} ${when}.`;
 }
 
 // E1 outdated-schedule, paragraph 1 end (N2 and N3 versions); the rest of E1 is pieces (EXPLAINER_PIECES).
@@ -152,7 +152,7 @@ export const noSearchMatchText = (things: string) => `No ${things} match your se
 // N52 night-no-agencies (CIV-1077: "your search", as N115)
 export const NO_AGENCIES_MATCH_SEARCH = noSearchMatchText('agencies');
 // N113 settings-no-limited-routes
-export const NO_LIMITED_ROUTES_IN_VIEW = 'No limited-service routes in view.';
+export const NO_LIMITED_ROUTES_IN_VIEW = 'No part-time routes in view.';
 // N114 settings-hidden-routes-unavailable
 export const HIDDEN_ROUTES_UNAVAILABLE = 'The hidden-route list is unavailable right now.';
 // N117 settings-no-degraded-feeds
@@ -165,8 +165,16 @@ export const storyMapFailedText = (agencyName: string) => `The ${agencyName} net
 export const NO_FEED_MATCHES = 'No feeds match your search or filter.';
 
 // ---- Route labels and setting definitions (CIV-957 item 2): each written once, used by every card, list and setting ----
-// D1 route-limited: a row with no steady frequency in the period ("limited" in place of a number).
+// D1 route-limited: a row with no steady frequency ("limited" in place of a number). CIV-1251: only on All day for a route
+// that isn't part-time, until Ryan words that case; in a time period every such row reads Irregular (D2, D3).
 export const LIMITED_SERVICE_LABEL = 'limited';
+// CIV-1251 (Ryan, 2026-11-01): an All day row of a route that doesn't run all day. The same check as "Hide part-time routes"
+// (routeHasLimitedDirection, isLimitedService).
+export const PART_TIME_LABEL = 'Part-time';
+/** CIV-1251: the word a card row with no number reads: in a time period always D2; on All day Part-time or, else, D1. */
+export function noNumberRowLabel(period: string, partTime: boolean): string {
+  return period !== 'all' ? IRREGULAR_PERIOD_LABEL : partTime ? PART_TIME_LABEL : LIMITED_SERVICE_LABEL;
+}
 // D2 irregular-period (Ryan's words, CIV-1238): the route runs in the period, but the filter finds no regular cadence. On cards.
 export const IRREGULAR_PERIOD_LABEL = 'Runs irregularly in this period';
 /** CIV-1251: a Night card row with no grade. The Night view isn't a period in the picker, so not "in this period". */
@@ -199,8 +207,6 @@ export const RETRY_LABEL = 'Retry';
 export const CLOSE_LABEL = 'Close';
 // Route card: a direction with no rows in the chosen period, by its times as the stop card says it (CIV-1251): "No trips from 9 AM–3 PM".
 export const noServiceInPeriodText = (periodRange: string) => stopRouteNoTripsNotice(periodRange);
-// Route card: only the shared section passes the frequency filter.
-export const ONLY_SHARED_SECTION_MEETS_FILTER = 'Only the shared section meets this filter. The branches do not.';
 // Filter panel: the route settings shown outside the Frequency view.
 export const SETTINGS_APPLY_TO_FREQUENCY_MAP = 'These settings apply to the Frequency map.';
 // Filter panel: the Compare map B note beside the B badge.

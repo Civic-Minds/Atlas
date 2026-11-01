@@ -188,7 +188,7 @@ describe('buildStopRoutes: a stop\'s own route with trips here but no number in 
   it('lists the route with the route card\'s own words for the period', () => {
     const rows = build([sundayAm]);
     expect(rows.map(r => [r.shortName, r.branches.length, r.noTrips])).toEqual([['110', 0, undefined]]);
-    expect(plain(rows[0].noNumber?.text)).toBe('This route runs only from 7–9 AM in this period. No frequency is shown.');
+    expect(plain(rows[0].noNumber?.text)).toBe('Runs only from 7–9 AM');
   });
 
   it('leaves it out where the stop has no trip in the period, or the data has no field', () => {

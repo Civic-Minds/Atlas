@@ -290,16 +290,18 @@ export function sharedStretchHeadway(
 /**
  * CIV-514: whether part of a route that misses the filter still qualifies, by the same per-stop pass that draws the
  * map's shared-stretch overlay for failing routes (failingRouteSharedRanges), so the card's note and the map agree.
- * `directions` are the card's copies of the route's features; their stopOrder arrays identify the features.
+ * `directions` are the card's copies of the route's features; their stopOrder arrays identify the features. CIV-1251: the
+ * directions whose shared stretch qualifies, from the same pass, so the card's one line can name a single direction.
  */
 export function routePartMeetsFilter(
   agencyFeatures: readonly GeoJSON.Feature[] | undefined,
   directions: ShapeProperties[],
   period: TimePeriod,
   maxHeadway: number,
-): boolean {
-  if (!agencyFeatures || directions.length === 0) return false;
+): number[] {
+  if (!agencyFeatures || directions.length === 0) return [];
   const wanted = new Set<unknown>(directions.map(d => d.stopOrder).filter(Boolean));
   const routeFeatures = agencyFeatures.filter(f => wanted.has((f.properties as any)?.stopOrder));
-  return failingRouteSharedRanges(routeFeatures, agencyFeatures, period, maxHeadway).some(r => r.ranges.length > 0);
+  const passing = failingRouteSharedRanges(routeFeatures, agencyFeatures, period, maxHeadway).filter(r => r.ranges.length > 0);
+  return [...new Set(passing.map(r => (r.feature.properties as { directionId?: number } | null)?.directionId ?? 0))].sort();
 }

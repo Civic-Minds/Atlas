@@ -14,7 +14,7 @@ describe('Docs page Notices section (CIV-1236)', () => {
     expect(examples).toHaveLength(14);
     expect(examples).toContain("“[Agency]'s schedule ended on [date]. Times shown may be out of date.”");
     expect(examples).toContain('“Gaps between trips can be up to [N] min.”');
-    expect(examples).toContain('“This route runs only from 7–9 AM in this period. No frequency is shown.”');
+    expect(examples).toContain('“This route runs only from 7–9 AM.”');
     expect(examples).toContain("“This route couldn't load.”");
     expect(screen.getByRole('link', { name: 'Notices' })).toHaveAttribute('href', '#notices');
   });

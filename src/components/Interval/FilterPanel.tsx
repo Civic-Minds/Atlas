@@ -372,7 +372,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
               title={view === 'hidden-routes'
                 ? 'Hidden routes'
                 : view === 'limited-routes'
-                  ? 'Limited-service routes'
+                  ? 'Part-time routes'
                 : view === 'degraded-feeds'
                   ? (hideLowQuality ? 'Hidden feeds' : 'Degraded feeds')
                   : isFilters ? 'Filters' : 'Settings'}
@@ -391,7 +391,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                       <input
                         value={hiddenRoutesQuery}
                         onChange={event => setHiddenRoutesQuery(event.target.value)}
-                        placeholder={limitedView ? 'Search limited-service routes…' : 'Search hidden routes…'}
+                        placeholder={limitedView ? 'Search part-time routes…' : 'Search hidden routes…'}
                         className={SEARCH_FIELD}
                         autoFocus
                       />
@@ -419,7 +419,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                     <PanelEmpty>
                       {listRoutes.length === 0
                         ? (limitedView ? NO_LIMITED_ROUTES_IN_VIEW : HIDDEN_ROUTES_UNAVAILABLE)
-                        : noSearchMatchText(limitedView ? 'limited-service routes' : 'hidden routes')}
+                        : noSearchMatchText(limitedView ? 'part-time routes' : 'hidden routes')}
                     </PanelEmpty>
                   ) : (
                     <div className="px-5 pb-4">

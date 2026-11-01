@@ -20,7 +20,7 @@ describe('route lists show a range where alternating branches share a stretch', 
     // No pooled PM value on the shared stretch: the single number (the map's 64) stays.
     expect(routeListDisplay(lw, 'pmPeak')).toEqual({ headway: 64, limited: false });
     // Limited stays limited, never a range.
-    expect(routeListDisplay(lw, 'amPeak')).toEqual({ headway: null, limited: true });
+    expect(routeListDisplay(lw, 'amPeak')).toEqual({ headway: null, limited: true, noRegular: true });
   });
 
   it('Expo Line Saturday: every 3 on the trunk, 6 on each branch', () => {

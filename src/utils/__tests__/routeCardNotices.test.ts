@@ -6,7 +6,7 @@ import { noServiceInPeriodText } from '../../content/noticeCopy';
 // N123 reads the map's shared-stretch ranges from the agency's features: a test that passes any says part of the route qualifies.
 vi.mock('../routeCardTrunk', async importOriginal => ({
   ...(await importOriginal<typeof import('../routeCardTrunk')>()),
-  routePartMeetsFilter: (agencyFeatures: unknown) => agencyFeatures != null,
+  routePartMeetsFilter: (agencyFeatures: unknown) => (agencyFeatures != null ? [0] : []),
 }));
 
 // A card with service all period and no rows of note: only the inputs a test sets decide what shows.
@@ -62,7 +62,9 @@ describe('routeCardNotices (CIV-1200)', () => {
     const plain = (text: string | undefined) => text?.replaceAll('\u2060', '').replace(/[\u00a0\u202f]/g, ' ');
     expect(plain(n.filter?.text)).toContain(named);
     expect(plain(n.filter?.text)).not.toContain(formatPeriodRangeLong(25, 26));
-    expect(plain(n.period?.text)).toContain(named);
+    // CIV-1251: the period line is now the same sentence, so it shows once.
+    expect(n.period).toBeNull();
+    expect(n.dropped).toContainEqual({ code: 'N9', why: 'the filter line says the same' });
   });
 
   it('#1186: never names another direction\'s hours; with none on the chart in the period the filter line stays (MiWay 49 midday)', () => {
@@ -140,14 +142,14 @@ describe('each fact once (CIV-1202)', () => {
     expect(n.dropped).toEqual([{ code: 'N8', why: 'the filter line says the same' }]);
   });
 
-  it('#1226: never says "No frequency is shown" beside a row that shows one', () => {
+  it('#1226, CIV-1251: the line says only when the route runs, with or without a number on the rows', () => {
     // Trips from 10 AM to noon only, inside midday (9 AM–3 PM).
     const directions = [{ headsign: 'A', departuresByHour: { 10: 3, 11: 3 } } as any];
     const partial = (rows: Parameters<typeof withRows>[0]) => withRows(rows, { hasPeriodService: false, hasPartialPeriodService: true });
     const plain = routeCardNotices({ ...base, directions, model: partial([]) });
-    expect(plain.period?.text).toMatch(/^This route runs only from .* in this period\. No frequency is shown\.$/);
+    expect(plain.period?.text).toMatch(/^This route runs only from [^.]*\.$/);
     const shown = routeCardNotices({ ...base, directions, model: partial([{ headway: 12 }]) });
-    expect(shown.period?.text).toMatch(/^This route runs only from .* in this period\.$/);
+    expect(shown.period?.text).toBe(plain.period?.text);
     // No number on the rows, but a row gives the hours: the line would repeat it.
     const hours = routeCardNotices({ ...base, directions, model: partial([{ headway: null, limited: true, label: 'from 10:04 AM' }]) });
     expect([hours.period, hours.dropped]).toEqual([null, [{ code: 'N9', why: 'every row gives its hours' }]]);

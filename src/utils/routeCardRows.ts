@@ -11,7 +11,7 @@ import { rowLabelWithOrigin } from './rowOriginLabel';
 import { hasStretchRoles, routeFilterAllDayContract, routeFilterContract, type RouteContract } from './stretchCard';
 import { featurePassesHeadwayFilter } from '../../shared/routeHeadwayFilter';
 import { headwayAbout, headwayAboutRange } from './headwayText';
-import { LIMITED_SERVICE_LABEL, IRREGULAR_OVERNIGHT_LABEL, IRREGULAR_PERIOD_LABEL, SHARED_STRETCH_LABEL } from '../content/noticeCopy';
+import { LIMITED_SERVICE_LABEL, IRREGULAR_OVERNIGHT_LABEL, IRREGULAR_PERIOD_LABEL, noNumberRowLabel, PART_TIME_LABEL, SHARED_STRETCH_LABEL } from '../content/noticeCopy';
 import type { RouteCardDirectionGroup } from './routeCardDirectionGroups';
 
 /**
@@ -96,6 +96,8 @@ export interface RouteCardModel {
   allDay: { filterValue: number | null; limited: boolean } | undefined;
   noRegularService: boolean;
   noRegularLabel: string;
+  /** CIV-1251: what a row the card can't give a number reads (noNumberRowLabel): Irregular in a period, Part-time or limited on All day. */
+  limitedWord: string;
   hasPeriodService: boolean;
   hasPartialPeriodService: boolean;
   /** The longest rider-meaningful gap for the uneven notice (0: none). Read only when the beta flag is on. */
@@ -160,7 +162,8 @@ export function buildRouteCardModel(input: RouteCardModelInput): RouteCardModel 
   const allDay = period === 'all' ? routeFilterAllDayContract(directions) : undefined;
   const noRegularService = (contract != null && contract.filterValue == null && contract.runs)
     || (allDay != null && allDay.filterValue == null);
-  const noRegularLabel = nightView ? IRREGULAR_OVERNIGHT_LABEL : allDay?.limited ? LIMITED_SERVICE_LABEL : IRREGULAR_PERIOD_LABEL;
+  const noRegularLabel = nightView ? IRREGULAR_OVERNIGHT_LABEL : allDay?.limited ? PART_TIME_LABEL : IRREGULAR_PERIOD_LABEL;
+  const limitedWord = noNumberRowLabel(period, allDay?.limited === true);
   const hasPeriodService = period === 'all' || directionGroups.some(group =>
     group.realTier.some(direction => rowTrips(direction, period).value != null) ||
     group.span.length > 0,
@@ -210,7 +213,9 @@ export function buildRouteCardModel(input: RouteCardModelInput): RouteCardModel 
     const value = routeCardRowValue(d, { ...rowContext, hoveredHour, pooledMainH, sharedRowShown });
     return {
       value,
-      limitedLabel: value.isLimited && value.edgeText ? value.edgeText : value.rowNoRegular ? (stableColors ? keepLastWordsTogether(noRegularLabel) : noRegularLabel) : undefined,
+      limitedLabel: value.isLimited && value.edgeText ? value.edgeText : value.rowNoRegular || value.isLimited
+        ? (word => (stableColors ? keepLastWordsTogether(word) : word))(value.rowNoRegular ? noRegularLabel : limitedWord)
+        : undefined,
       // Compare (CIV-844): a row that reads "Runs irregularly in this period" puts the whole
       // destination name on its line and the value under it (the row's own wrap layout), never "to Roncesval…".
       singleLine: !(stableColors && value.rowNoRegular),
@@ -238,7 +243,8 @@ export function buildRouteCardModel(input: RouteCardModelInput): RouteCardModel 
       .filter((headsign): headsign is string => !!headsign);
     const shared: CardSharedRow | null = groupHasCoreSummary && groupCoreHeadway != null
       ? {
-        label: groupShared || stretchShared != null ? SHARED_STRETCH_LABEL : 'Combined',
+        // CIV-1251: one name for the shared part of a route; how its number was worked out belongs in the glossary.
+        label: SHARED_STRETCH_LABEL,
         headway: groupCoreHeadway,
         hover: { directionId: group.dirId, headsigns: coreHeadsigns, sharedStopIds: groupSharedStopIds, sharedHeadway: groupCoreHeadway, isCore: true },
       }
@@ -276,7 +282,7 @@ export function buildRouteCardModel(input: RouteCardModelInput): RouteCardModel 
     // Span-only branches use the same limited row whether or not the irregular-service
     // filter is on: the filter hides them from the map, not from the route's own card.
     const spanRows: CardSpanRow[] = exclusiveSpans.length === 1
-      ? [{ label: branchLabel(group, exclusiveSpans[0], gi) || 'limited service', feature: exclusiveSpans[0], hover: rowHover(group.dirId, exclusiveSpans[0].headsign, exclusiveSpans[0].routeVariant) }]
+      ? [{ label: branchLabel(group, exclusiveSpans[0], gi) || (period === 'all' ? 'limited service' : ''), feature: exclusiveSpans[0], hover: rowHover(group.dirId, exclusiveSpans[0].headsign, exclusiveSpans[0].routeVariant) }]
       : exclusiveSpans.length > 1
         ? [{ label: exclusiveSpans.map(d => branchLabel(group, d, gi)).filter(Boolean).join(' · '), hover: null }]
         : [];
@@ -311,7 +317,7 @@ export function buildRouteCardModel(input: RouteCardModelInput): RouteCardModel 
       const reportLabel = row.label || row.feature.headsign?.trim() || `Direction ${row.feature.directionId ?? gi}`;
       return `- ${reportLabel}: ${reportRowValueText(row)}`;
     });
-    const spanLines = group.spanRows.filter(span => span.label).map(span => `- ${span.label}: ${LIMITED_SERVICE_LABEL}`);
+    const spanLines = group.spanRows.filter(span => span.label).map(span => `- ${span.label}: ${limitedWord}`);
     return [...section, ...sharedLines, ...branchLines, ...spanLines];
   });
 
@@ -319,7 +325,7 @@ export function buildRouteCardModel(input: RouteCardModelInput): RouteCardModel 
     .filter((h): h is number => typeof h === 'number');
 
   return {
-    stretchMode, contract, allDay, noRegularService, noRegularLabel, hasPeriodService, hasPartialPeriodService,
+    stretchMode, contract, allDay, noRegularService, noRegularLabel, limitedWord, hasPeriodService, hasPartialPeriodService,
     unevenGap: () => unevenPeriodMaxGap(directionGroups, period),
     primaryMultiBranch, activeRangeDirections, doesNotRun, collapseGroups, displayGroups, showDirectionSections, groups, rowHeadways, reportServiceLines,
   };

@@ -48,8 +48,6 @@ const CODE_NAMES: Record<string, string[]> = {
 // Exact texts Ryan approved word for word, or quotes of an agency's own words, that keep "minutes". Each is removed
 // from its file before the rules run, so only that exact text passes.
 const APPROVED_TEXT: Record<string, string[]> = {
-  // N123 part-of-route-meets-filter (Ryan's exact wording, CIV-514).
-  'src/content/noticeCopy.ts': ['Only part of this route runs every ${maxHeadway}\\u00A0minutes or better during the selected period.'],
   // The frequent-service story quoting agencies' definitions.
   'src/apps/FrequentServiceStory.tsx': ['“every 15 minutes or better”', '“every 15–20 minutes”'],
 };

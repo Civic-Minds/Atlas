@@ -386,7 +386,8 @@ export function compareSideListText(label: 'A' | 'B', display: RouteListDisplay)
 export function routeListDisplay(features: readonly ShapeProperties[], period: TimePeriod): RouteListDisplay {
   const { headway, shared } = routeListCadence(features, period);
   const display: RouteListDisplay = { headway, limited: routeListDisplayLimited(features, period) };
-  if (routeListNoRegularService(features, period)) display.noRegular = true;
+  // CIV-1251: in a time period a row with no number reads Irregular, whichever check found it (one word, row 4).
+  if (routeListNoRegularService(features, period) || (period !== 'all' && display.limited)) display.noRegular = true;
   if (shared != null && headway != null) {
     // #1231: the range's low end is the lowest number the route card shows, so the list never names a shared value the card
     // does not (TTC 504 midday read 8–10 beside the card's Shared stretch every 5). A card showing no number keeps the range.

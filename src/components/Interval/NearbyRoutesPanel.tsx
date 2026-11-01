@@ -34,7 +34,7 @@ export function nearYouReportDetails(routes: readonly NearbyRoute[], point: { la
     ['Period', period ?? 'unknown'],
     '**Listed:**',
     ...(routes.length > 0
-      ? routes.map(r => `- ${r.agencyName} ${r.displayShortName ?? r.routeShortName}${r.routeLongName ? ` ${r.routeLongName}` : ''} (${r.rKey}): ${r.limited ? LIMITED_SERVICE_LABEL : r.noRegular ? IRREGULAR_PERIOD_SHORT_LABEL : r.headway != null ? headwayEvery(r.headway) : 'no value'}, nearest stop ${r.nearestStopName}, ${fmtDist(r.distanceMeters)}`)
+      ? routes.map(r => `- ${r.agencyName} ${r.displayShortName ?? r.routeShortName}${r.routeLongName ? ` ${r.routeLongName}` : ''} (${r.rKey}): ${r.noRegular ? IRREGULAR_PERIOD_SHORT_LABEL : r.limited ? LIMITED_SERVICE_LABEL : r.headway != null ? headwayEvery(r.headway) : 'no value'}, nearest stop ${r.nearestStopName}, ${fmtDist(r.distanceMeters)}`)
       : ['- Nothing listed']),
   ]);
 }

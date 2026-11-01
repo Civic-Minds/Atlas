@@ -50,9 +50,9 @@ describe('route card rows, built once (CIV-987)', () => {
   it('writes the issue report from the rows the card shows (#1230)', () => {
     const m = model(directions);
     // The card's Combined row is in the report too, with the value the card shows.
-    expect(m.groups[0].shared).toMatchObject({ label: 'Combined', headway: 10 });
+    expect(m.groups[0].shared).toMatchObject({ label: 'Shared stretch', headway: 10 });
     expect(m.reportServiceLines).toEqual([
-      '- Combined every 10 min; each branch every 17–24 min',
+      '- Shared stretch every 10 min; each branch every 17–24 min',
       '- to Pearson Airport: every 17 min',
       '- from Westwood to Westwood: every 24 min',
       '- to Lawrence West Station: every 20 min',
@@ -64,7 +64,8 @@ describe('route card rows, built once (CIV-987)', () => {
     const limited = { ...row(0, 'Pearson Airport', 17), headway: null, headwayByPeriod: {}, worstDirectionPeriodCoverageHeadway: { midday: 90 } } as unknown as ShapeProperties;
     const [first] = model([limited, row(1, 'Lawrence West Station', 20)]).groups[0].rows;
     expect(first.display(null).value.isLimited).toBe(true);
-    expect(reportRowValueText(first)).toBe('limited');
+    // CIV-1251: in a time period a row with no number reads Irregular, whichever check found it.
+    expect(reportRowValueText(first)).toBe('Runs irregularly in this period');
   });
 });
 

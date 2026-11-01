@@ -78,7 +78,7 @@ describe('routeCardRowValue (CIV-992)', () => {
     expect(row.edgeText).toBe('every 60 min until 5:05 PM');
     expect(row.trunkHeadway).toBeUndefined();
   });
-  it('keeps the range on a row without such words', () => {
-    expect(routeCardRowValue(oc84(false), pm).trunkHeadway).toBe(20);
+  it('CIV-1251: no row reads the shared-stretch range, with or without such words', () => {
+    expect(routeCardRowValue(oc84(false), pm).trunkHeadway).toBeUndefined();
   });
 });

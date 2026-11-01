@@ -8,7 +8,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Map and route behavior
 
-- **Route cards use one set of words for the same situation**: "no trips" everywhere a route doesn't run, "every 15 min or better" for the filter in sentences, "with one 65 min gap", and the glossary says "consistent" instead of "regular" or "sustained"
+- **Route cards use one set of words for the same situation**: "Shared stretch" is the only name for a route's shared part, "Irregular" replaces "limited" in a time period and "Part-time" on All day, "no trips" everywhere a route doesn't run, "This route runs only from 7–9 AM." for part of a period, and "every 15 min or better" for the filter in sentences
 - **Route card rows show the frequency the filter reads**: [AC Transit 281](https://github.com/Civic-Minds/Atlas/issues/1239) read every 60 where the filter reads 66 at the same stop, and waits over an hour now print their exact minutes instead of rounding to the half hour; a long gap is named only when it is at least 1.5 times the usual wait, and a [branch that stops partway](https://github.com/Civic-Minds/Atlas/issues/1276) says when, on the rows that run there (TTC 110 via 30th Street: every 30 until 5:55 PM), with no second line saying only part of the route qualifies
 - **Routes that run only part of a period say when instead of showing nothing**: [TTC 110](https://github.com/Civic-Minds/Atlas/issues/1277) Sunday mornings read "every 15 min from 8:07 AM" where the card had no rows
 - **The info panel no longer gives a last-checked or last-refreshed date**: it says how many times Atlas has checked since a schedule ended, and when it checks next

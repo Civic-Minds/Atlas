@@ -8,7 +8,6 @@ import {
   LIMITED_SERVICE_LABEL,
   noServiceInPeriodText,
   ON_DEMAND_SHADED_AREA,
-  ONLY_SHARED_SECTION_MEETS_FILTER,
   OTHER_REGION_LABEL,
   PRIVACY_SETTINGS_TITLE,
   RETRY_LABEL,
@@ -38,7 +37,6 @@ describe('CIV-1160 shared copy keeps the same words', () => {
   it('card sentences', () => {
     expect(ON_DEMAND_SHADED_AREA).toBe('The shaded map area shows where this on-demand service operates.');
     expect(noServiceInPeriodText('9 AM–3 PM').replace(/\u2060/g, '').replace(/\u00a0/g, ' ')).toBe('No trips from 9 AM–3 PM');
-    expect(ONLY_SHARED_SECTION_MEETS_FILTER).toBe('Only the shared section meets this filter. The branches do not.');
     expect(SETTINGS_APPLY_TO_FREQUENCY_MAP).toBe('These settings apply to the Frequency map.');
     expect(COMPARE_B_PICKER_NOTE).toBe('The frequency, day and time above are map A; pick map B here. Modes and agencies apply to both maps. Leave Compare from the More menu.');
   });
