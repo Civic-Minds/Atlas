@@ -9,6 +9,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ### Map and route behavior
 
 - **Route card rows show the frequency the filter reads**: [AC Transit 281](https://github.com/Civic-Minds/Atlas/issues/1239) read every 60 where the filter reads 66 at the same stop, and waits over an hour now print their exact minutes instead of rounding to the half hour; a long gap is named only when it is at least 1.5 times the usual wait
+- **The info panel no longer gives a last-checked or last-refreshed date**: it says how many times Atlas has checked since a schedule ended, and when it checks next
 - **The route chooser's dots match the line colours**: [LA Metro E Line](https://github.com/Civic-Minds/Atlas/issues/1246) showed an every-30 dot beside a line drawn every 10 or better; dots now follow the day and time on screen
 - **Rows with only a few trips in a period read "Irregular", not "no regular service"**: the old words read as if nothing ran; cards say "Runs irregularly in this period", and the route class hidden by default is now "Occasional" ("Hide occasional routes"), since "one-off" read as once a day
 - **Agency pages say "Irregular" where the map list does**: [CTA 1](https://github.com/Civic-Minds/Atlas/issues/1249) and other routes that run without a regular frequency were left blank, as if they had no service
@@ -18,6 +19,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **Routes whose first trip leaves before 6 AM no longer say they have no overnight trips**: [TTC 100](https://github.com/Civic-Minds/Atlas/issues/1236) read "no scheduled trips from 2–6 AM" with buses from 5:22 AM; the card now says it runs only from 5–6 AM
 - **A route that runs for only part of a period names the hours inside that period**: [TTC 31 overnight](https://github.com/Civic-Minds/Atlas/issues/1186) read "runs from 1–2 AM, but not throughout 2–6 AM" next to "runs only from 2–3 AM"
 - **Stop cards no longer give a start or end time for a destination with no trips of its own**: [TTC 100 to Pape](https://github.com/Civic-Minds/Atlas/issues/1228) read "from 5:34 AM" overnight where its route card shows no regular service
+- **The Overnight frequency agrees with Night Service**: [TTC 301](https://github.com/Civic-Minds/Atlas/issues/1267) was Night Service every 30 but Overnight "every 71", because the two were calculated over different hours
 - **The Night map's route count matches its list**: it counted every [night route](https://github.com/Civic-Minds/Atlas/issues/1233) loaded, not those in view, so downtown Toronto read 39 next to a list of 13
 - **Top bar buttons have a light outline so they stand out on the map**: Mode, Agencies and the search bar blended into the light map; high contrast mode uses a stronger outline
 - **Stop dots at middle zoom sit where their stops are**: each dot groups stops within 250 m instead of chaining up to 8 km along a street ([#1147](https://github.com/Civic-Minds/Atlas/issues/1147))
@@ -135,6 +137,8 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Agency, area and research pages
 
+- **The Docs page's "On this page" list [highlights the section being read](https://github.com/Civic-Minds/Atlas/issues/1275)**: it could stay on an earlier section, or show none after opening a link to a section
+- **A shared research link previews its own page (beta)**: each research page has its own title and description in link previews, and Overnight service shows its own picture (CIV-1167)
 - **The About page shows the map and the research up front**: a picture of Toronto's routes in their frequency colours sits beside the headline, the newest research follows as picture tiles you can swipe through on a phone, and Where / When / How often each get a card in a frequency colour
 - **Agency and area pages [name each agency without its bracket](https://github.com/Civic-Minds/Atlas/issues/1245)**: headings and sentences read "Montgomery Transit", not "Montgomery Transit (The M)", agencies that share a name keep their place ("BC Transit · Kelowna"), and the map's load-error hint names the agency, never a city
 - **Area links fit on the agency card**: a name too long for the line drops "Area" ("Greater Toronto and Hamilton →") instead of being cut off
@@ -156,7 +160,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 - **A route whose patterns [take alternate trips](https://github.com/Civic-Minds/Atlas/issues/1256) is read as one service where they meet**: Pace 542's main stretch had been a 6-trip side pattern because it took the every-30 pattern's slots, and MATA 30's two routings each read every 4 hours
 - **Steady rush-hour-only trips show on the map in their peak**: [express routes](https://github.com/Civic-Minds/Atlas/issues/1254) that run every 30 for only an hour and a half, or start before 7 AM, read as one-off trips and were hidden (OC Transpo 187, 117 and 275 AM)
-- **Route headlines read the wait riders face where the route runs through that time of day**: a midday that thins reads its real gap (BxM7 every 30, not 15), and a peak-only route's stray midday trips never count as a wait
+- **Route headlines read the wait riders face where the route runs through that time of day**: a midday that thins reads its real gap (BxM7 every 30, not 15), and a peak-only route's stray midday trips never count as a wait, nor do [fewer than three trips](https://github.com/Civic-Minds/Atlas/issues/1257) across the day
 - **Agencies whose main timetable ran out without an update now say so**: a file Atlas had skipped as unchanged read as just obtained, so [Miami-Dade's](https://github.com/Civic-Minds/Atlas/issues/1253) ended April bus package showed no notice; a seasonal or retired route ending on schedule (Avon's summer express, UNCW shuttles) no longer triggers it
 - **Refresh skips an [empty or broken feed](https://github.com/Civic-Minds/Atlas/issues/1251) download and tries the agency's next source**: Toronto's link began serving an empty file, and the run now names any agency with no usable source
 - **Feeds about to run out are checked every day, not only on Mondays**: rolling feeds like LA Metro rail cover about two weeks, so an agency whose new schedule is already out gets refreshed before its old one ends
