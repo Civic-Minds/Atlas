@@ -41,9 +41,9 @@
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
-      "shapeAnomalies": 0,
+      "shapeAnomalies": 4,
       "routeHeadwayMismatches": 4,
-      "featureCount": 1877,
+      "featureCount": 1906,
       "feedExpiry": "20261221",
       "routeCount": 230,
       "problemShapes": 0,
