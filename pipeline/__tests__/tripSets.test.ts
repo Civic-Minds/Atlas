@@ -37,6 +37,10 @@ const row = (r: Run, route: string, day: string, dir = 0) =>
   r.rows.find(p => p.routeShortName === route && p.day === day && p.directionId === dir);
 const mainValue = (r: Run, key: string, period: string) => rollupDirection(r.stretches.get(key)!)!.period[period as 'midday'].mainValue;
 
+// #1272: each fixture test processes a GTFS cut, which can pass vitest's 5 s default under load
+// (CTA 77 in a publish run); the NYC night tests already took 30 s.
+vi.setConfig({ testTimeout: 30_000 });
+
 beforeAll(() => {
   vi.useFakeTimers({ toFake: ['Date'], now: new Date('2026-10-20T12:00:00') });
 });
