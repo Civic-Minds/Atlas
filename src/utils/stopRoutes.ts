@@ -8,6 +8,7 @@ import { agencyNames } from './agencyName';
 import { rowTrips } from './rowTrips';
 import { compareRouteNumber } from './sortCompare';
 import { noTripsInPeriod } from '../../shared/stopRoutePeriods';
+import { routeCardNoNumberWords } from './routeCardNotices';
 import type { DayType } from '../../shared/dayTypes';
 import type { PeriodKey } from '../../shared/config';
 
@@ -42,6 +43,11 @@ export interface StopRoute {
    * (its stop points' routePeriodBits). It has no branches; the card lists it with "No trips from {range}".
    */
   noTrips?: { rKey: string };
+  /**
+   * #1278: the route has trips at this stop in the period (its routePeriodBits) but no stop row, since it has no number
+   * there (#750). It has no branches; the card lists it with the route card's own words (routeCardNoNumberWords).
+   */
+  noNumber?: { rKey: string; text: string };
 }
 
 /**
@@ -229,6 +235,36 @@ export function buildStopRoutes({ siblingIdsByAgency, routesByAgency, routePerio
       }
     }
   }
+  // #1278: the stop's own route with trips here in the period that got no row (#750: no number in the period) is listed
+  // with the route card's words for the period, where every stop point proves the trips (TTC 110 Sunday AM, 7:52 first trip).
+  const noNumber = new Map<string, StopRoute>();
+  if (period !== 'all') {
+    for (const [slug, fc] of Object.entries(layers)) {
+      const bitsByRoute = routePeriodBitsByAgency?.[slug];
+      if (!bitsByRoute) continue;
+      for (const rid of routesByAgency[slug] ?? []) {
+        if (noTripsInPeriod(bitsByRoute.get(rid) ?? [], day as DayType, period as PeriodKey) !== false) continue;
+        const features = fc.features
+          .map(f => f.properties as unknown as ShapeProperties)
+          .filter(p => (p as any).stopId == null && p.routeId === rid && p.day === day);
+        if (features.length === 0) continue;
+        const facts = buildRouteFacts(features[0], slug);
+        if (routeMap.has(facts.shortName) || idle.has(facts.shortName) || noNumber.has(facts.shortName)) continue;
+        const text = routeCardNoNumberWords(features, period);
+        if (!text) continue;
+        noNumber.set(facts.shortName, {
+          shortName: facts.shortName,
+          label: facts.label,
+          longName: facts.longName || '',
+          agencyName: agencyNames(facts.agencyName).name,
+          agencySlug: slug,
+          routeType: facts.routeType,
+          branches: [],
+          noNumber: { rKey: facts.key, text },
+        });
+      }
+    }
+  }
   return [...Array.from(routeMap.entries())
     .sort(([a], [b]) => compareRouteNumber(a, b))
     .map(([, v]) => ({
@@ -241,5 +277,5 @@ export function buildStopRoutes({ siblingIdsByAgency, routesByAgency, routePerio
       branches: Array.from(v.branches.values())
         .sort((a, b) => a.directionId - b.directionId || (a.service.value ?? Infinity) - (b.service.value ?? Infinity))
         .map(b => ({ rKey: b.rKey, headsign: b.headsign, service: b.service, rowHeadway: b.rowHeadway, directionId: b.directionId, ...(b.periodText ? { periodText: b.periodText } : {}) })),
-    })), ...[...idle.values()].sort((a, b) => compareRouteNumber(a.shortName, b.shortName))];
+    })), ...[...noNumber.values(), ...idle.values()].sort((a, b) => compareRouteNumber(a.shortName, b.shortName))];
 }

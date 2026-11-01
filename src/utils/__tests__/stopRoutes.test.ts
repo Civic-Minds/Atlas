@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { buildStopRoutes, headlineStandIn, stopRouteBestHeadway, stopRouteLineHeadway, stopRowHeadway, type StopBranch } from '../stopRoutes';
 import ttc29json from './fixtures/ttc-29-weekday.json';
+import { stopRoutePeriodBit } from '../../../shared/stopRoutePeriods';
 
 // Properties only (no geometry): the stop card reads none.
 const ttc29 = ttc29json as unknown as GeoJSON.FeatureCollection;
@@ -123,5 +124,39 @@ describe('buildStopRoutes: a stop\'s own route with no trips in the period (CIV-
   it('never lists a route that runs here as idle', () => {
     const rows = build('midday', [0], ['29']);
     expect(rows.map(r => [r.shortName, r.noTrips])).toEqual([['29', undefined]]);
+  });
+});
+
+describe('buildStopRoutes: a stop\'s own route with trips here but no number in the period (#1278)', () => {
+  // TTC 110 on Sunday, AM peak (published 2026-11-01): first trip 7:52, a direction value in the period, but the route
+  // reads as not running (no filter value), so it had no stop row and the stop card left it out.
+  const ttc110 = (directionId: number, headsign: string) => ({
+    type: 'Feature', geometry: null,
+    properties: {
+      routeId: '110', routeShortName: '110', routeLongName: 'Islington South', day: 'Sunday', directionId, headsign, tier: '30',
+      headwayByPeriod: { amPeak: 15, midday: 30 },
+      routeFilterHeadwayByPeriod: { amPeak: null, midday: 30 }, routeRunsByPeriod: { amPeak: false, midday: true },
+      departuresByHour: { 7: 1, 8: 2, 9: 2, 10: 2 }, headwayByHour: { 7: 15, 8: 30, 9: 30, 10: 30 }, maxGapByHour: { 7: 30, 8: 30, 9: 30, 10: 30 },
+    },
+  });
+  const layer = { type: 'FeatureCollection', features: [ttc110(0, 'Kipling and Lake Shore'), ttc110(1, 'Islington')] } as unknown as GeoJSON.FeatureCollection;
+  const sundayAm = stopRoutePeriodBit('Sunday', 'amPeak');
+  const build = (bits: Array<number | undefined>) => buildStopRoutes({
+    siblingIdsByAgency: { ttc: new Set(['2713']) },
+    routesByAgency: { ttc: new Set(['110']) },
+    routePeriodBitsByAgency: { ttc: new Map([['110', bits]]) },
+    layers: { ttc: layer }, day: 'Sunday', period: 'amPeak',
+  });
+  const plain = (text: string | undefined) => text?.replaceAll('\u2060', '').replace(/[\u00a0\u202f]/g, ' ');
+
+  it('lists the route with the route card\'s own words for the period', () => {
+    const rows = build([sundayAm]);
+    expect(rows.map(r => [r.shortName, r.branches.length, r.noTrips])).toEqual([['110', 0, undefined]]);
+    expect(plain(rows[0].noNumber?.text)).toBe('This route runs only from 7–9 AM in this period. No frequency is shown.');
+  });
+
+  it('leaves it out where the stop has no trip in the period, or the data has no field', () => {
+    expect(build([undefined])).toEqual([]);
+    expect(build([0]).map(r => [r.shortName, r.noNumber, r.noTrips != null])).toEqual([['110', undefined, true]]);
   });
 });

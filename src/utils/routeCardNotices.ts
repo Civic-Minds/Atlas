@@ -8,7 +8,8 @@ import {
 } from '../content/noticeCopy';
 import { partPeriodNoticeApplies, partPeriodNoticeHeadway, partPeriodOutside, periodTripRanges } from './periodActiveRanges';
 import { routePartMeetsFilter } from './routeCardTrunk';
-import type { RouteCardModel } from './routeCardRows';
+import { buildRouteCardModel, type RouteCardModel } from './routeCardRows';
+import { buildDirectionGroups } from './routeCardDirectionGroups';
 
 /**
  * Every notice the route card shows, decided in one place (CIV-1200). The card renders what this returns and decides
@@ -251,4 +252,30 @@ export function routeCardNotices(input: RouteCardNoticeInput): RouteCardNotices 
     footer,
     dropped,
   };
+}
+
+/**
+ * #1278: the route card's own words for a period in which the route has trips but shows no number: its period line
+ * ("This route runs only from 7–9 AM in this period. No frequency is shown.", TTC 110 Sunday AM) or, without one and
+ * where every row reads it, the rows' label ("Runs irregularly in this period"). Null when the card shows a number or neither. The stop
+ * card lists such a route with these words, so the two cards agree. `features` are the route's for the day, as the card's.
+ */
+export function routeCardNoNumberWords(features: readonly ShapeProperties[], period: TimePeriod): string | null {
+  if (period === 'all' || features.length === 0) return null;
+  const directions = [...features];
+  const route = { routeShortName: directions[0].routeShortName ?? null, routeLongName: directions[0].routeLongName ?? null, directions };
+  const model = buildRouteCardModel({
+    ...route, directionGroups: buildDirectionGroups(route, period), agencyFeatures: undefined,
+    period, maxHeadway: Infinity, nightView: false, stableColors: false, hideSpan: false,
+  });
+  const rows = model.groups.flatMap(group => group.rows.filter(row => !row.night).map(row => row.display(null).value));
+  if (model.groups.some(group => group.shared) || rows.some(value => !value.rowNoRegular)) return null;
+  // The card's period line says when the route runs (#1277; TTC 72 weekday overnight beside its "irregularly" rows);
+  // without one, the rows' label.
+  const notices = routeCardNotices({
+    directions, model, period, maxHeadway: Infinity, selectedRouteOutOfFilter: model.doesNotRun, hideFilterNotices: false,
+    unevenEnabled: false, routeIsStale: false, expDateStr: '', listingEndedDate: '', listingEnded: false,
+  });
+  if (notices.period?.code === 'N9') return notices.period.text;
+  return rows.length > 0 ? model.noRegularLabel : null;
 }
