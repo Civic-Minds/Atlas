@@ -4,17 +4,32 @@ import { useMediaQuery } from '../hooks/useMediaQuery';
 
 type PageContentsItem = { id: string; label: string };
 
-/** Height of the sticky site header: a section counts as being read once its top passes this line. */
-const HEADER_OFFSET = 72;
-/** Slack for "scrolled to the very bottom" (sub-pixel scroll positions). */
-const BOTTOM_SLACK = 2;
+/**
+ * The reading line, in px from the top of the window: a section counts as being read once its top passes it. It sits
+ * below the sticky header and below where a clicked or linked section's heading lands (`scroll-mt-24`).
+ */
+const READING_LINE = 120;
 /** Fallback for browsers without `scrollend`: how long a click keeps its section active while the page scrolls there. */
 const CLICK_LOCK_MS = 1000;
 
 /**
- * Scroll-spy: the id of the section being read. A 1px observer band sits just under the sticky header; the
- * section crossing it is active. In the gaps between sections the previous one stays active, and at the very
- * bottom of the page the last section wins even when its heading can never reach the top. A click marks its
+ * The index of the section being read, or null before the first one starts. `tops` are the sections' tops relative to
+ * the window. Over the last screen of scrolling the reading line slides down to the bottom of the window, so short
+ * sections near the end each get their turn and the last section is active at the very bottom, even when its heading
+ * can never reach the top (#1275).
+ */
+export function activeSectionIndex(tops: readonly number[], viewportHeight: number, remainingScroll: number): number | null {
+  const slide = viewportHeight > 0 ? Math.max(0, 1 - Math.max(0, remainingScroll) / viewportHeight) : 0;
+  const line = READING_LINE + Math.max(0, viewportHeight - READING_LINE) * slide;
+  let found: number | null = null;
+  tops.forEach((top, i) => { if (top <= line) found = i; });
+  return found;
+}
+
+/**
+ * Scroll-spy: the id of the section being read, measured from the sections' positions on every scroll and resize
+ * (#1275: an observer band only updated when a section edge crossed it, so a page opened at a link, or a jump that
+ * landed between sections, kept an earlier section or none). Back at the top nothing is highlighted. A click marks its
  * section active right away and holds it until the scroll it started finishes.
  */
 function useActiveSection(ids: readonly string[]): [string | null, (id: string) => void] {
@@ -22,50 +37,34 @@ function useActiveSection(ids: readonly string[]): [string | null, (id: string) 
   const lockedUntil = useRef(0);
   const key = ids.join('\n');
   useEffect(() => {
-    if (ids.length === 0 || typeof IntersectionObserver === 'undefined') return;
-    const inBand = new Set<string>();
+    if (ids.length === 0) return;
     const update = () => {
       if (Date.now() < lockedUntil.current) return;
       const root = document.documentElement;
-      // Back at the top (page title in view, no section reached yet): nothing is highlighted, as on first load.
+      // Back at the top (page title in view): nothing is highlighted, as on first load.
       if (root.scrollTop <= 0) {
         setActive(null);
         return;
       }
-      if (window.innerHeight + root.scrollTop >= root.scrollHeight - BOTTOM_SLACK) {
-        setActive(ids[ids.length - 1]);
-        return;
-      }
-      const current = ids.find(id => inBand.has(id));
-      if (current) setActive(current);
+      const sections = ids.map(id => document.getElementById(id));
+      const tops = sections.map(el => (el ? el.getBoundingClientRect().top : Infinity));
+      const i = activeSectionIndex(tops, window.innerHeight, root.scrollHeight - window.innerHeight - root.scrollTop);
+      setActive(i == null ? null : ids[i]);
     };
-    let observer: IntersectionObserver | null = null;
-    const observe = () => {
-      observer?.disconnect();
-      inBand.clear();
-      const bottom = Math.max(0, window.innerHeight - HEADER_OFFSET - 1);
-      observer = new IntersectionObserver(entries => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) inBand.add(entry.target.id);
-          else inBand.delete(entry.target.id);
-        }
-        update();
-      }, { rootMargin: `-${HEADER_OFFSET}px 0px -${bottom}px 0px` });
-      for (const id of ids) {
-        const el = document.getElementById(id);
-        if (el) observer.observe(el);
-      }
+    let frame = 0;
+    const schedule = () => {
+      if (frame) return;
+      frame = window.requestAnimationFrame(() => { frame = 0; update(); });
     };
-    observe();
-    const onScroll = () => update();
-    window.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('resize', observe);
+    update();
+    window.addEventListener('scroll', schedule, { passive: true });
+    window.addEventListener('resize', schedule);
     return () => {
-      observer?.disconnect();
-      window.removeEventListener('scroll', onScroll);
-      window.removeEventListener('resize', observe);
+      if (frame) window.cancelAnimationFrame(frame);
+      window.removeEventListener('scroll', schedule);
+      window.removeEventListener('resize', schedule);
     };
-    // `key` stands in for `ids`, so a new array with the same ids does not reconnect the observer.
+    // `key` stands in for `ids`, so a new array with the same ids does not re-subscribe.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [key]);
   const select = (id: string) => {
