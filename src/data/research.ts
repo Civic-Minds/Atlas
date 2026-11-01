@@ -14,10 +14,12 @@ export interface ResearchEntry {
   /** When it was published (YYYY-MM-DD), for "newest first". */
   published: string;
   /**
-   * Its share picture, as `${picture}-light.svg` and `${picture}-dark.svg` (CIV-1167): the About page's story tiles show it (CIV-1206).
-   * Overnight is Ryan's pick 1; Frequent and Free child fares are stand-ins until he picks theirs.
+   * Its share picture, as `${picture}-light.${pictureExt}` and `${picture}-dark.${pictureExt}` (CIV-1167): the About page's story tiles
+   * show it (CIV-1206). Overnight is Ryan's pick 1 and Frequent his pick B4; Free child fares is a stand-in until he picks its own.
    */
   picture: string;
+  /** The picture's file type: 'svg' unless it is a photo ('png'). */
+  pictureExt?: 'svg' | 'png';
 }
 
 /** Every research page, in the /research index's order. A new page is added here and shows up on both pages. */
@@ -42,6 +44,7 @@ export const RESEARCH: readonly ResearchEntry[] = [
     linkText: 'Compare agency definitions',
     published: '2026-09-17',
     picture: '/assets/research/share/frequent',
+    pictureExt: 'png',
   },
   {
     href: FEATURE_ROUTES.freeChildFares,
