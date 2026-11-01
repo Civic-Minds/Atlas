@@ -34,11 +34,12 @@ function stretchSlot(d: ShapeProperties) {
 export const ROW_GAP_WORDS_RATIO = 1.5;
 
 /**
- * #1239 (Ryan, 2026-10-31): a main stretch's row reads the number the filter reads, at the same stop: the stretch's steady
- * spacing there (AC Transit 281 AM to NewPark Mall: every 63, where the row read 60 from its own trips). When one gap
- * between buses is what sets the filter value (a wait over PERIOD_COVERAGE_MAX_HEADWAY, #524) and it is at least
- * ROW_GAP_WORDS_RATIO times the spacing, the gap goes into the words too. Only a steady period on a direction with no tail
- * of its own in it, where the stretch's value is the main stretch's. null otherwise.
+ * #1239 (Ryan, 2026-10-31): a main stretch's row reads the number the filter decides on: its direction's filter value
+ * (directionFilterHeadwayByPeriod), one value for the row and the filter (AC Transit 281 AM to NewPark Mall: every 66,
+ * where the row read 60 from its own trips). When one gap between buses is what sets that value
+ * (a wait over PERIOD_COVERAGE_MAX_HEADWAY, #524) and it is at least ROW_GAP_WORDS_RATIO times the stretch's steady spacing,
+ * the row says both: the spacing and the gap ("every 42 min, with a 65 min gap"). Only a steady period on a direction with
+ * no tail of its own in it, where the stretch's value is the main stretch's. null otherwise.
  */
 function mainFilterReading(d: ShapeProperties, key: PeriodKey): { every: number; gap?: number } | null {
   if (d.stretchRole !== 'main' || d.stretchPeriodSustained?.[key] !== true || d.stretchPeriodOneGap?.[key] === true) return null;
@@ -51,10 +52,11 @@ function mainFilterReading(d: ShapeProperties, key: PeriodKey): { every: number;
   // early end keeps its own reading (A2).
   const ownTrips = Object.values(d.departuresByHour ?? {}).reduce((sum, n) => sum + n, 0);
   if (ownTrips !== d.stretchMeta?.main?.trips || d.stretchPeriodEdge?.[key] != null) return null;
-  const filter = d.stretchMeta?.main?.period?.[key];
+  const filter = d.directionFilterHeadwayByPeriod?.[key];
   const gap = d.stretchMeta?.main?.maxGap?.[key];
-  const gapSetsFilter = typeof filter === 'number' && filter > PERIOD_COVERAGE_MAX_HEADWAY && filter > every && gap === filter;
-  return gapSetsFilter && gap >= every * ROW_GAP_WORDS_RATIO ? { every, gap } : { every };
+  if (typeof filter !== 'number') return null;
+  const gapSetsFilter = filter > PERIOD_COVERAGE_MAX_HEADWAY && filter > every && gap === filter;
+  return gapSetsFilter && gap >= every * ROW_GAP_WORDS_RATIO ? { every, gap } : { every: filter };
 }
 
 /**

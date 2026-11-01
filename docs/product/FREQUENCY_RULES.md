@@ -63,7 +63,7 @@ The first three live in `pipeline/headway-utils.ts`, the last in `shared/periodE
 
 | What | Value | Decided in |
 |---|---|---|
-| A main stretch's row shows the number at the filter's stop (AC Transit 281 AM: every 63, not its own trips' 60) | the stretch's steady spacing, when the row's trips are all of the stretch's (one destination) | Ryan, 2026-10-31, #1239 |
+| A main stretch's row shows the number at the filter's stop (AC Transit 281 AM: every 66, not its own trips' 60) | its direction's filter value, the one the filter decides on, when the row's trips are all of the stretch's (one destination) | Ryan, 2026-10-31, #1239 |
 | Gap words ("every 42 min, with a 65 min gap") | only when the gap that sets the filter value is at least `ROW_GAP_WORDS_RATIO` (1.5) times the row's spacing; "every 63 min, with a 66 min gap" isn't worth mentioning | Ryan, 2026-10-31, #1239 |
 | Waits over 60 minutes | printed in exact minutes ("every 63 min", "every 75–105 min"), never rounded to the half hour, so the row never reads 60 where the filter reads 63 | Ryan, 2026-10-31, #1239 |
 

@@ -94,19 +94,33 @@ describe('rowTrips (CIV-1069): a row reads its value, gap and part-period words 
     const main = (over: Partial<ShapeProperties> = {}) => row({
       stretchRole: 'main', stretchIndex: 0, headwayByPeriod: { amPeak: 60 }, maxGapByPeriod: { amPeak: 66 },
       departuresByHour: { 6: 1, 7: 1, 8: 1, 9: 1 }, stretchPeriodHeadway: { amPeak: 63 }, stretchPeriodSustained: { amPeak: true },
+      directionFilterHeadwayByPeriod: { amPeak: 66 },
       stretchMeta: { main: { stops: 30, refStop: 's', trips: 4, period: { amPeak: 66 }, maxGap: { amPeak: 66 } }, tails: [] },
       ...over,
     });
 
-    it('the stretch\'s spacing, with no gap words under 1.5 times it (281: every 63, not "with a 66 min gap")', () => {
-      expect(rowTrips(main(), 'amPeak')).toMatchObject({ value: 63, partPeriod: undefined });
+    it('the filter\'s own value, with no gap words under 1.5 times the spacing (281: every 66, the number the filter reads)', () => {
+      expect(rowTrips(main(), 'amPeak')).toMatchObject({ value: 66, partPeriod: undefined });
+    });
+
+    it('a gap at exactly 1.5 times the spacing goes into the words; just under it, the row reads the filter\'s value', () => {
+      const at = (gap: number) => main({ stretchPeriodHeadway: { amPeak: 44 }, directionFilterHeadwayByPeriod: { amPeak: gap }, stretchMeta: { main: { stops: 30, refStop: 's', trips: 4, period: { amPeak: gap }, maxGap: { amPeak: gap } }, tails: [] } });
+      const exact = rowTrips(at(66), 'amPeak');
+      expect(exact.value).toBe(44);
+      expect(exact.partPeriod).toContain('66 min gap');
+      expect(rowTrips(at(65), 'amPeak')).toMatchObject({ value: 65, partPeriod: undefined });
     });
 
     it('a gap at least 1.5 times the spacing goes into the words', () => {
-      const r = main({ stretchPeriodHeadway: { amPeak: 42 }, stretchMeta: { main: { stops: 30, refStop: 's', trips: 4, period: { amPeak: 65 }, maxGap: { amPeak: 65 } }, tails: [] } });
+      const r = main({ stretchPeriodHeadway: { amPeak: 42 }, directionFilterHeadwayByPeriod: { amPeak: 65 }, stretchMeta: { main: { stops: 30, refStop: 's', trips: 4, period: { amPeak: 65 }, maxGap: { amPeak: 65 } }, tails: [] } });
       const trips = rowTrips(r, 'amPeak');
       expect(trips.value).toBe(42);
       expect(trips.partPeriod).toContain('65 min gap');
+    });
+
+    it('the direction\'s filter value, not the stretch\'s pooled one (AC Transit 40 AM: 20 at the filter, the stretch 11)', () => {
+      const r = main({ stretchPeriodHeadway: { amPeak: 20 }, directionFilterHeadwayByPeriod: { amPeak: 20 }, stretchMeta: { main: { stops: 30, refStop: 's', trips: 4, period: { amPeak: 11 }, maxGap: { amPeak: 14 } }, tails: [] } });
+      expect(rowTrips(r, 'amPeak').value).toBe(20);
     });
 
     it('a row whose trips are only some of the stretch\'s keeps its own (SEPTA 19 Saturday midday: 120 on a stretch every 63)', () => {
