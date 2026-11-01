@@ -12,7 +12,7 @@ import { areaRegionName, areaRegionTitle } from './areaRegions';
 import { BETA_BUILD } from './config';
 import { DESCRIPTION_MAX, DESCRIPTION_MIN, TITLE_MAX, firstThatFits, truncateAtWord } from './seoText';
 import { SITE_URL, seoTitlePrefix, type SeoMode } from './seo';
-import { AGENCY_PATH_PREFIX, agencyPagePath, areaPagePath } from './pagePaths';
+import { AGENCY_PATH_PREFIX, agencyPagePath, areaPagePath, regionPagePath } from './pagePaths';
 import { zoomForSpan } from './mapZoom';
 import { haversineM } from './shapeProjection';
 import { andOthers, joinList, plural } from './overflowText';
@@ -115,6 +115,8 @@ export interface AgencyPageData {
   releaseDate: string | null;
   /** The metro area page this agency belongs to, when it has one. */
   area?: { slug: string; name: string };
+  /** Its state's or province's page (CIV-976), when there is one: the place link when the agency has no area page. */
+  regionPage?: string;
   /** The one-sentence introduction, also the opening of the meta description. */
   intro: string;
   /** The search-result description: the intro, cut as the registry-named intro would be (#1245). */
@@ -258,7 +260,8 @@ export function agencyPageData(
   // The same sentence with registry names sizes the search description, so it keeps what it kept before (#1245).
   const registryName = new Map(all.map(o => [o.slug, o.name]));
   const sizedBy = agencyIntroSentence(a, place, connections.map(c => ({ ...c, name: registryName.get(c.slug) ?? c.name })), modes, sizingName(a.name, place));
-  return { agency, title, releaseDate, ...(areaRef ? { area: areaRef } : {}), nearby: others.map(o => ({ slug: o.slug, name: titleOf.get(o.slug) ?? agencyTitle(o) })), intro, description: agencyPageDescription(a, intro, sizedBy), place, introLead: introLead(a, place, modes, title), connections };
+  const regionPage = regionPageHref(a, all);
+  return { agency, title, releaseDate, ...(areaRef ? { area: areaRef } : {}), ...(regionPage ? { regionPage } : {}), nearby: others.map(o => ({ slug: o.slug, name: titleOf.get(o.slug) ?? agencyTitle(o) })), intro, description: agencyPageDescription(a, intro, sizedBy), place, introLead: introLead(a, place, modes, title), connections };
 }
 
 const MAX_AREA_LIST = 12;
@@ -301,6 +304,20 @@ export const NO_MIDDAY_SHORT = 'no midday';
  */
 export function hasMiddayService(a: { routes: ReadonlyArray<{ midday: number | null }> }): boolean {
   return a.routes.some(r => r.midday != null);
+}
+
+/**
+ * The agencies a state or province page lists (CIV-976): those whose home state or province it is, with the area
+ * pages' rule (hasMiddayService). An agency counts whole in its home state, as on the all-agencies list.
+ * The one place this rule is written; a state or province with none has no page.
+ */
+export function regionMembers<T extends Pick<AgencyPageSummary, 'country' | 'region' | 'routes'>>(country: string, region: string, all: readonly T[]): T[] {
+  return all.filter(a => a.country === country && a.region === region && hasMiddayService(a));
+}
+
+/** The agency's state or province page, or undefined when it has no country and region or the place has no page. */
+export function regionPageHref(a: Pick<AgencyPageSummary, 'country' | 'region'>, all: readonly AgencyPageSummary[]): string | undefined {
+  return a.country && a.region && regionMembers(a.country, a.region, all).length > 0 ? regionPagePath(a.region) : undefined;
 }
 
 /** Route counts per band (same order as FREQUENCY_BANDS), then routes with no midday cadence last. */
@@ -477,15 +494,15 @@ export function formatIso(value: string | null | undefined): string | null {
 
 export interface Crumb {
   name: string;
-  /** Only crumbs that have a real page link; geography levels have no hub page yet. */
+  /** Only crumbs that have a real page link; the country has no hub page yet. */
   href?: string;
 }
 
 /** Transit Atlas > Country > State or province > primary city > Agency. The city is the config's displayArea, else its first listed city. */
-export function agencyBreadcrumbs(a: AgencyPageSummary, area?: { slug: string; name: string }): Crumb[] {
+export function agencyBreadcrumbs(a: AgencyPageSummary, area?: { slug: string; name: string }, regionPage?: string): Crumb[] {
   const crumbs: Crumb[] = [{ name: 'Transit Atlas', href: '/' }];
   if (a.country) crumbs.push({ name: a.country });
-  if (a.region) crumbs.push({ name: a.region });
+  if (a.region) crumbs.push({ name: a.region, ...(regionPage ? { href: regionPage } : {}) });
   if (area) crumbs.push({ name: areaRegionTitle(area), href: areaPagePath(area.slug) });
   else if (a.city && a.city !== a.region && a.city !== a.displayName) crumbs.push({ name: a.city });
   crumbs.push({ name: a.displayName });
@@ -524,8 +541,8 @@ export function resolveAgencySeo(
 }
 
 /** Organization (the agency), BreadcrumbList and Dataset. No FAQ markup. */
-export function agencyPageJsonLd(a: AgencyPageSummary, canonicalUrl: string, origin: string, area?: { slug: string; name: string }, intro?: string): object {
-  const crumbs = agencyBreadcrumbs(a, area);
+export function agencyPageJsonLd(a: AgencyPageSummary, canonicalUrl: string, origin: string, area?: { slug: string; name: string }, intro?: string, regionPage?: string): object {
+  const crumbs = agencyBreadcrumbs(a, area, regionPage);
   const modified = formatIso(a.lastRefreshedAt);
   // A city that is the state itself ("Colorado" for a statewide service) is named once, not "Colorado, Colorado" (#1130).
   const place = [a.city, a.region, a.country].filter((p, i, all): p is string => !!p && p !== all[i + 1]).join(', ');

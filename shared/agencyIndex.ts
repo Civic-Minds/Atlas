@@ -2,7 +2,7 @@
  * The /agencies index: every area and agency page in one place. Built from the same summaries as the pages
  * themselves; nothing new is measured.
  */
-import { agencyMention, agencyPagePath, agencyTitle, sharedOfficialNames, type AgencyPageSummary } from './agencyPages';
+import { agencyMention, agencyPagePath, agencyTitle, regionPageHref, sharedOfficialNames, type AgencyPageSummary } from './agencyPages';
 import { areaAgencySummaries } from './areaPages';
 import { areaRegionTitle, areaShortName } from './areaRegions';
 import { areaPagePath, areaSlug, type AreaConfig } from './areas';
@@ -38,7 +38,7 @@ export interface AgencyIndexAgency {
 export interface AgencyIndexData {
   areas: Array<{ slug: string; title: string; shortName: string }>;
   /** Country, then state or province, each sorted by name; agencies with no known place go last under "Other". */
-  groups: Array<{ country: string; regions: Array<{ region: string; agencies: AgencyIndexAgency[] }> }>;
+  groups: Array<{ country: string; regions: Array<{ region: string; agencies: AgencyIndexAgency[]; /** Its state or province page (CIV-976), when it has one. */ href?: string }> }>;
   agencyCount: number;
   releaseDate: string | null;
 }
@@ -67,10 +67,10 @@ export function buildAgencyIndexData(
   const last = (x: string, y: string) => (x === OTHER ? 1 : 0) - (y === OTHER ? 1 : 0) || compareText(x, y);
   const groups = [...tree.entries()].sort(([x], [y]) => last(x, y)).map(([country, regions]) => ({
     country,
-    regions: [...regions.entries()].sort(([x], [y]) => last(x, y)).map(([region, list]) => ({
-      region,
-      agencies: list.sort((x, y) => compareAgencyName(x.name, y.name)),
-    })),
+    regions: [...regions.entries()].sort(([x], [y]) => last(x, y)).map(([region, list]) => {
+      const href = regionPageHref({ country, region }, agencies);
+      return { region, agencies: list.sort((x, y) => compareAgencyName(x.name, y.name)), ...(href ? { href } : {}) };
+    }),
   }));
   return { areas: areaList, groups, agencyCount: agencies.length, releaseDate };
 }

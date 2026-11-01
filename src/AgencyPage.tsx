@@ -43,8 +43,8 @@ function readEmbeddedData(slug: string | undefined): AgencyPageData | null {
 }
 
 /**
- * The intro sentence, once, under the title. The place links to its area page when the agency has one, and otherwise
- * to its state or province in the all-agencies list (CIV-966); connecting agencies named in it are links when they have
+ * The intro sentence, once, under the title. The place links to its area page when the agency has one, otherwise to its
+ * state or province page (CIV-976), and failing that to its state or province in the all-agencies list (CIV-966); connecting agencies named in it are links when they have
  * a page. An agency with no regular midday service says so after it (CIV-965).
  */
 function Intro({ data }: { data: AgencyPageData }) {
@@ -54,7 +54,7 @@ function Intro({ data }: { data: AgencyPageData }) {
   const noMidday = data.agency.routes.length > 0 && data.agency.routes.every(r => r.midday == null)
     ? ` ${data.agency.routes.length === 1 ? 'Its route has' : 'Its routes have'} ${NO_MIDDAY_PHRASE.replace(/^with /, '')}.`
     : '';
-  const placeHref = area ? areaPagePath(area.slug) : agencyIndexRegionHref(data.agency);
+  const placeHref = area ? areaPagePath(area.slug) : data.regionPage ?? agencyIndexRegionHref(data.agency);
   if (!intro.startsWith(introLead) || !intro.startsWith(place, placeAt)) return <p className={sentence}>{intro}{noMidday}</p>;
   const at = intro.indexOf(CONNECTS_WITH, placeAt);
   const { named, others } = connectionNames(connections);

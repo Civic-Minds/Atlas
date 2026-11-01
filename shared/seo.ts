@@ -304,6 +304,8 @@ export function buildSitemapXml(extraUrls: readonly string[] = []): string {
 export const AGENCY_ROUTE_SOURCES: readonly string[] = ['/agency/:slug', '/agency/:slug/'];
 /** Same for metro area pages (/area/<slug>). */
 export const AREA_ROUTE_SOURCES: readonly string[] = ['/area/:slug', '/area/:slug/'];
+/** Same for state and province pages (/region/<slug>, CIV-976). */
+export const REGION_ROUTE_SOURCES: readonly string[] = ['/region/:slug', '/region/:slug/'];
 
 export function knownRouteSources(): string[] {
   const paths = [...SEO_ROUTES.map(r => r.path), ...UNREACHABLE_APP_PATHS].filter(p => p !== '/');

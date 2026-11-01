@@ -17,9 +17,11 @@ import FreeChildFaresPage from './apps/FreeChildFaresPage';
 import AgencyPage from './AgencyPage';
 import AreaPage from './AreaPage';
 import type { AreaPageData } from '../shared/areaPages';
+import RegionPage from './RegionPage';
+import type { RegionPageData } from '../shared/regionPages';
 import AgenciesIndexPage from './AgenciesIndexPage';
 import type { AgencyIndexData } from '../shared/agencyIndex';
-import { AGENCY_INDEX_PATH, agencyPagePath, areaPagePath } from '../shared/pagePaths';
+import { AGENCY_INDEX_PATH, agencyPagePath, areaPagePath, regionPagePath } from '../shared/pagePaths';
 
 const PAGES: Record<string, () => ReactElement> = {
   '/about': () => <AboutPage />,
@@ -51,6 +53,10 @@ export function renderAgencyPage(data: AgencyPageData): string {
 
 export function renderAreaPage(data: AreaPageData): string {
   return renderToString(<StaticRouter location={areaPagePath(data.area.slug)}><AreaPage data={data} /></StaticRouter>);
+}
+
+export function renderRegionPage(data: RegionPageData): string {
+  return renderToString(<StaticRouter location={regionPagePath(data.region.name)}><RegionPage data={data} /></StaticRouter>);
 }
 
 export function renderAgencyIndex(data: AgencyIndexData): string {
