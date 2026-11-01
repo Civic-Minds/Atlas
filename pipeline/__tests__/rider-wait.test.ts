@@ -95,6 +95,16 @@ describe('gatedRiderWait (CIV-1204 run-shape gate)', () => {
     const t = { a: [hm('06:53'), hm('08:53'), hm('15:53'), hm('19:53'), hm('22:00')] };
     expect(gatedRiderWait(['a'], at(t), new Set(), runs)?.passes).toBe(true);
   });
+  it('blocks the all-day fallback with under three departures inside the grading window (#1257: NJT 194 Sunday read 478)', () => {
+    const t = { a: [hm('06:47'), hm('08:35'), hm('10:36'), hm('18:34'), hm('22:36')] };
+    const sunday = { middayRuns: false, limited: false, gradingWindow: { start: 540, end: 1260 } };
+    expect(gatedRiderWait(['a'], at(t), new Set(), sunday)).toEqual({ wait: 478, stops: 1, allDayStops: 1, passes: false });
+  });
+  it('keeps the all-day fallback with exactly three departures across the grading window', () => {
+    const t = { a: [hm('06:47'), hm('10:36'), hm('14:30'), hm('18:34'), hm('22:36')] };
+    const sunday = { middayRuns: false, limited: false, gradingWindow: { start: 540, end: 1260 } };
+    expect(gatedRiderWait(['a'], at(t), new Set(), sunday)?.passes).toBe(true);
+  });
   it('reads the PM peak where it runs through it', () => {
     const t = { a: every('15:00', '18:40', 20) };
     expect(gatedRiderWait(['a'], at(t), new Set(), { middayRuns: false, limited: true, gradingWindow: { start: 420, end: 1320 } })).toEqual({ wait: 20, stops: 1, allDayStops: 0, passes: true });

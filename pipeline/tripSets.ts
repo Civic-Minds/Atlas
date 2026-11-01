@@ -32,6 +32,7 @@ import {
   isUnevenPeriod,
   medianHeadwayInWindow,
   hasSustainedServiceInWindow,
+  headlineDeparturesInWindow,
   nightServiceDepartureTimes,
 } from './headway-utils.js';
 import { SHARED_STRETCH_MIN_KM, SHARED_STRETCH_MIN_STOPS } from './sharedStretch.js';
@@ -670,10 +671,12 @@ export function gatedRiderWait(
     if (!reading) return true;
     if (reading.window === 'allDay') {
       // #720's all-day coverage test, as a branch takes part in the all-day value (spansWindow in rollupDirection): the
-      // stop's departures span at least ALL_DAY_MIN_COVERAGE of the day's grading window.
+      // stop's departures span at least ALL_DAY_MIN_COVERAGE of the day's grading window. #1257 (Ryan, 2026-10-31): and
+      // at least HEADLINE_MIN_DEPARTURES of them fall inside it, the minimum midday and the PM peak read (NJT 194 Sunday:
+      // 10:36 and 18:34 inside 9-21 read 478).
       const { start, end } = direction.gradingWindow;
-      const t = times.filter(x => x >= start && x <= end);
-      return !direction.limited && t.length >= 2 && (Math.max(...t) - Math.min(...t)) / (end - start) >= ALL_DAY_MIN_COVERAGE;
+      const t = headlineDeparturesInWindow(times, start, end);
+      return !direction.limited && t != null && (t[t.length - 1] - t[0]) / (end - start) >= ALL_DAY_MIN_COVERAGE;
     }
     const { start, end } = PERIOD_MINUTES[reading.window];
     const runs = runsThroughPeriod(times, start, end, computePeriodSustained([...times])[reading.window]);

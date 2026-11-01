@@ -24,7 +24,7 @@
  *                        reading and companions it then takes (#771)
  */
 import { SURFACE_TIER_MAXES } from '../shared/config.js';
-import { HEADLINE_MIN_DEPARTURES, HEADLINE_WINDOWS, headlineWindowValue, headwayToTier, headwayToTierOn, medianHeadwayInWindow, resolveTerminalHeadline, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
+import { HEADLINE_MIN_DEPARTURES, HEADLINE_WINDOWS, headlineDeparturesInWindow, headlineWindowValue, headwayToTier, headwayToTierOn, medianHeadwayInWindow, resolveTerminalHeadline, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
 
 const { midday: MIDDAY, pmPeak: PM_PEAK, allDay: ALL_DAY } = HEADLINE_WINDOWS;
 import { pooledHeadwayInWindow } from './stopPools.js';
@@ -312,8 +312,8 @@ function decideSourcedPeriod(i: PeriodInputs): PeriodValue {
 export function riderWait(times: readonly number[]): { wait: number; window: keyof typeof HEADLINE_WINDOWS } | null {
   for (const window of ['midday', 'pmPeak', 'allDay'] as const) {
     const { start, end } = HEADLINE_WINDOWS[window];
-    const t = [...new Set(times)].filter(x => x >= start && x <= end).sort((a, b) => a - b);
-    if (t.length < HEADLINE_MIN_DEPARTURES) continue;
+    const t = headlineDeparturesInWindow(times, start, end);
+    if (!t) continue;
     // Try 3: on the all-day fallback (no midday or PM-peak reading), a gap that spans a whole headline period is a
     // hole in service, not a wait (Whistler 30: 6:07 and 6:37, then every 30 from 19:51, read 794).
     const hole = (from: number, to: number) => window === 'allDay'
