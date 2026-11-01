@@ -150,16 +150,16 @@ export default function AboutDocsPage() {
           <Section id="what-atlas-does" title="Capabilities">
             <p>Atlas is more than a map renderer. It is a shared transit-data platform with several layers of work:</p>
             <ul className="list-disc pl-5 space-y-1">
-              <li><strong className="text-[var(--text-primary)]">Network exploration:</strong> search agencies, routes, stops, and nearby service across a large catalogue.</li>
-              <li><strong className="text-[var(--text-primary)]">Frequency analysis:</strong> compare service by day type, time period, route branch, direction, and stop.</li>
+              <li><strong className="text-[var(--text-primary)]">Explore:</strong> search agencies, routes, stops, and nearby service across a large catalogue.</li>
+              <li><strong className="text-[var(--text-primary)]">Frequency:</strong> compare service by day type, time period, route branch, direction, and stop.</li>
               {showCompare && <li><strong className="text-[var(--text-primary)]">Compare:</strong> two maps side by side, each with its own frequency, day and time (desktop and tablet).</li>}
               <li><strong className="text-[var(--text-primary)]">On phones:</strong> a Filters button in the header holds frequency, day, time and modes.</li>
-              <li><strong className="text-[var(--text-primary)]">Map image export:</strong> save the map as an image with a poster layout and a source line.</li>
-              <li><strong className="text-[var(--text-primary)]">Hourly schedule chart{showBetaFeatures ? ' and trip time' : ''}:</strong> each hour shows the slower direction{showBetaFeatures ? '; the full-day view also shows how long the trip takes by hour' : ''}.</li>
+              <li><strong className="text-[var(--text-primary)]">Export:</strong> save the map as an image with a poster layout and a source line.</li>
+              <li><strong className="text-[var(--text-primary)]">Hourly chart:</strong> each hour shows the slower direction{showBetaFeatures ? '; the full-day view also shows how long the trip takes by hour' : ''}.</li>
               <li><strong className="text-[var(--text-primary)]">Data quality:</strong> expose source dates, stale schedules, review states, corrections, geometry repairs, and known limitations.</li>
-              <li><strong className="text-[var(--text-primary)]">Specialized service:</strong> represent on-demand and GTFS-Flex service as zones or virtual stops where a fixed route is the wrong model.</li>
+              <li><strong className="text-[var(--text-primary)]">On-demand:</strong> represent on-demand and GTFS-Flex service as zones or virtual stops where a fixed route is the wrong model.</li>
               <li><strong className="text-[var(--text-primary)]">Research:</strong> {showResearch ? 'an overnight-service view and a frequent-service story, which sit under Research. Beta also adds history comparisons.' : 'research and validation surfaces are documented in the Beta version of this page.'}</li>
-              <li><strong className="text-[var(--text-primary)]">Reusable data infrastructure:</strong> publish stable route, stop, tile, and freshness contracts that other transit tools can consume.</li>
+              <li><strong className="text-[var(--text-primary)]">Open data:</strong> publish stable route, stop, tile, and freshness contracts that other transit tools can consume.</li>
             </ul>
             <p>Some surfaces are public, some are in beta, and some remain research or validation tools. The same processed data model supports all of them without making every experimental feature part of the main map.</p>
             {showLive && <p>Live is a separate GTFS-Realtime path: it polls configured agency feeds for vehicle positions, trip updates, and selected observed headways. Coverage is route-specific, may be partial, and is never treated as proof that the scheduled frequency calculation is current.</p>}
