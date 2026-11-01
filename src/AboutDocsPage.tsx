@@ -143,9 +143,9 @@ export default function AboutDocsPage() {
             <p>It turns published transit schedules into map layers, route summaries, stop-level frequency estimates, and network comparisons.</p>
             <h3 className="font-black text-[var(--text-primary)]">Design principles</h3>
             <ul className="list-disc pl-5 space-y-1">
-              <li><strong className="text-[var(--text-primary)]">One shared data platform:</strong> every Atlas tool works from the same route, stop and freshness data. History and real-time data show up only where those features are turned on.</li>
-              <li><strong className="text-[var(--text-primary)]">Honest measurements:</strong> when a period does not contain enough sustained service to support a meaningful frequency claim, Atlas flags that limitation instead of tuning the calculation until it produces a plausible-looking number.</li>
-              {showHistory && <li><strong className="text-[var(--text-primary)]">Preserved history:</strong> historical feeds are treated as dated snapshots. Missing or unusable periods remain unavailable rather than being duplicated or inferred.</li>}
+              <li><strong className="text-[var(--text-primary)]">Shared data:</strong> every Atlas tool works from the same route, stop and freshness data. History and real-time data show up only where those features are turned on.</li>
+              <li><strong className="text-[var(--text-primary)]">Honest numbers:</strong> when a period does not have enough consistent service to give a real frequency, Atlas says so instead of adjusting the calculation until it shows a believable number.</li>
+              {showHistory && <li><strong className="text-[var(--text-primary)]">Kept history:</strong> each past schedule is kept as a dated snapshot. A period that is missing or unusable stays empty. Atlas never copies or guesses it from another period.</li>}
               <li><strong className="text-[var(--text-primary)]">Stable data:</strong> new information is added alongside existing fields, never in place of them, so anything built on published data keeps its meaning.</li>
             </ul>
           </Section>
@@ -162,7 +162,7 @@ export default function AboutDocsPage() {
               <li><strong className="text-[var(--text-primary)]">Data quality:</strong> expose source dates, stale schedules, review states, corrections, geometry repairs, and known limitations.</li>
               {FEATURES.onDemand && <li><strong className="text-[var(--text-primary)]">On-demand:</strong> represent on-demand and GTFS-Flex service as zones or virtual stops where a fixed route is the wrong model.</li>}
               <li><strong className="text-[var(--text-primary)]">Research:</strong> {showResearch ? `an overnight-service view and a frequent-service story, which sit under Research.${showHistory ? ' Beta also adds history comparisons.' : ''}` : 'research and validation surfaces are documented in the Beta version of this page.'}</li>
-              <li><strong className="text-[var(--text-primary)]">Open data:</strong> publish stable route, stop, tile, and freshness contracts that other transit tools can consume.</li>
+              <li><strong className="text-[var(--text-primary)]">Open data:</strong> publish route, stop, map and freshness data that other transit tools can build on.</li>
             </ul>
             <p>Some surfaces are public, some are in beta, and some remain research or validation tools. The same processed data model supports all of them without making every experimental feature part of the main map.</p>
             {showLive && <p>Live is a separate GTFS-Realtime path: it polls configured agency feeds for vehicle positions, trip updates, and selected observed headways. Coverage is route-specific, may be partial, and is never treated as proof that the scheduled frequency calculation is current.</p>}
@@ -173,7 +173,7 @@ export default function AboutDocsPage() {
             <ul className="list-disc pl-5 space-y-1">
               <li><strong className="text-[var(--text-primary)]">Schedule data</strong> describes what an agency publishes for planned service.</li>
               <li><strong className="text-[var(--text-primary)]">Processed metrics</strong> describe what Atlas derives from that schedule, such as headways, tiers, coverage, and route branches.</li>
-              <li><strong className="text-[var(--text-primary)]">Provenance and quality</strong> describe the source, freshness, review state, and corrections attached to a result.</li>
+              <li><strong className="text-[var(--text-primary)]">Sources and quality</strong> describe where a result comes from, how current it is, whether it is under review, and any corrections made to it.</li>
               {showHistory && <li><strong className="text-[var(--text-primary)]">Historical data</strong> describes documented past schedule periods rather than pretending current data is historical.</li>}
               {showLive && <li><strong className="text-[var(--text-primary)]">Real-time data</strong> describes observed vehicle or adherence information and is never silently mixed with schedule frequency.</li>}
             </ul>

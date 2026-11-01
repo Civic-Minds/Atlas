@@ -39,6 +39,31 @@ describe('routeCardRowValue (CIV-992)', () => {
     expect(routeCardRowValue(uneven('main', 5), { ...overnight, hoveredHour: 2 }).headwayLabel).toBeUndefined();
   });
 
+  // #1267: Overnight reads the Night Service verdict. TTC 301 weekday: Night Service 30, while the row's own 2-6 AM trips
+  // read every 71 across the lull before day service and an uneven 5-71.
+  const ttc301 = (direction: number | null, lit = true) => ({
+    ...uneven('main', 5), routeId: '301', routeShortName: '301', headsign: 'Long Branch', headwayByPeriod: { overnight: 71 },
+    stretchPeriodHeadway: { overnight: 71 }, directionFilterHeadwayByPeriod: { overnight: direction }, nightService60: lit,
+  }) as unknown as ShapeProperties;
+  const contract = (filterValue: number | null) => ({ filterValue, runs: true, range: null });
+  it('shows the route night value on an Overnight row, never its own 2-6 AM number, a range or part-period words', () => {
+    const row = routeCardRowValue(ttc301(28), { ...overnight, contract: contract(30) });
+    expect(row.headway).toBe(30);
+    expect(row.headwayLabel).toBeUndefined();
+    expect(row.edgeText).toBeUndefined();
+    expect(row.rowNoRegular).toBe(false);
+  });
+  it('gives a row the Night view does not light no Overnight value (NYC subway S: the 42 St shuttle stops at night)', () => {
+    const row = routeCardRowValue(ttc301(20, false), { ...overnight, contract: contract(20) });
+    expect(row.headway).toBeUndefined();
+    expect(row.rowNoRegular).toBe(true);
+  });
+  it('gives a direction that passes only on its night path no Overnight value, while the route keeps one (NYC subway 3)', () => {
+    const row = routeCardRowValue(ttc301(null), { ...overnight, contract: contract(20) });
+    expect(row.headway).toBeUndefined();
+    expect(row.rowNoRegular).toBe(true);
+  });
+
   // CIV-1143 (option B): OC Transpo 84 to Centrepointe, weekday PM: the last trip is at 5:05 PM. The row keeps its own words;
   // the shared-stretch range ("every 60–120 min") never replaces them.
   const oc84 = (edge: boolean) => ({
