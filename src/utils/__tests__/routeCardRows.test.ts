@@ -114,3 +114,21 @@ describe('CIV-1251 row 8: branches that take turns on a shared stretch that star
     expect(m.groups[0].rows.map(r => [r.label, r.display(null).value.headwayLabel])).toEqual([['to Kipling and Lake Shore', 'every 30 min from 7:29 AM']]);
   });
 });
+
+describe('CIV-1251 review: one word for a row with no number', () => {
+  const build = (nightView: boolean, period: 'midday' | 'all', extra: Record<string, unknown> = {}) => {
+    const d = { ...row(0, 'Pearson Airport', 17), ...extra } as unknown as ShapeProperties;
+    return buildRouteCardModel({
+      directions: [d], routeShortName: '52', routeLongName: '', period, maxHeadway: Infinity, nightView, stableColors: false, hideSpan: false,
+      directionGroups: [{ dirId: 0, realTier: [d], span: [] }],
+    });
+  };
+  it('the Night card reads "Runs irregularly overnight" for every row with no number, from one function', () => {
+    const m = build(true, 'midday');
+    expect([m.noRegularLabel, m.limitedWord]).toEqual(['Runs irregularly overnight', 'Runs irregularly overnight']);
+  });
+  it('All day: a part-time route reads Part-time for both checks', () => {
+    const m = build(false, 'all', { routeAllDayHeadway: 999999, routeHasLimitedDirection: true });
+    expect([m.noRegularLabel, m.limitedWord]).toEqual(['Part-time', 'Part-time']);
+  });
+});

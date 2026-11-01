@@ -2,7 +2,8 @@ import type { GeoJSON } from 'geojson';
 import type { ShapeProperties, TimePeriod } from '../hooks/useIntervalStats';
 import { branchDisplayPeriodHeadway, buildRouteFacts, buildRouteStopMetric, metricValueForPeriod, type HeadwayMetric, type RouteLabel } from './routeFacts';
 import { buildSharedStopIndex } from '../../shared/sharedStops';
-import { mainStretchEdge, partPeriodText, periodEdgeText } from './effectiveHeadway';
+import { partPeriodText, periodEdgeText } from './effectiveHeadway';
+import { routeCardSharedStretchEdge } from './routeCardRows';
 import { hasRegularServiceInPeriod } from './stretchCard';
 import { agencyNames } from './agencyName';
 import { rowTrips } from './rowTrips';
@@ -117,7 +118,8 @@ export function buildStopRoutes({ siblingIdsByAgency, routesByAgency, routePerio
   const sharedIndexBySlug = new Map(Object.entries(layers).map(([slug, fc]) => [slug, buildSharedStopIndex(fc.features)]));
   // Every destination each route's direction has at the stop in the day, whatever the period (CIV-1080).
   const headsignsAtStop = new Map<string, Set<string>>();
-  const mainEdgeByDir = new Map<string, { from?: number; until?: number; every: number }>();
+  // CIV-1251 row 8: each route-direction's features for the day, for the route card's own Shared stretch decision.
+  const directionFeaturesByKey = new Map<string, ShapeProperties[]>();
 
 
   for (const [slug, fc] of Object.entries(layers)) {
@@ -132,10 +134,9 @@ export function buildStopRoutes({ siblingIdsByAgency, routesByAgency, routePerio
       if (!p.routeId || !routeIds.has(p.routeId)) continue;
       if (p.day !== undefined && p.day !== day) continue;
       const dirKey = `${slug}::${p.routeId}::${(p as any).directionId ?? 0}`;
+      if ((p as any).stopId == null) (directionFeaturesByKey.get(dirKey) ?? directionFeaturesByKey.set(dirKey, []).get(dirKey)!).push(p);
       if ([...siblingIds].some(sId => p.stopHeadways?.[sId] != null)) {
         (headsignsAtStop.get(dirKey) ?? headsignsAtStop.set(dirKey, new Set()).get(dirKey)!).add(p.headsign ?? '');
-        const mainEdge = p.stretchRole === 'tail' ? mainStretchEdge(p, period) : undefined;
-        if (mainEdge) mainEdgeByDir.set(dirKey, mainEdge);
       }
       // #934: a direction the route only runs on one side of the period shows the route card's
       // words ("every 12 min until 9:37 AM") instead of a cadence, at a stop its shape serves.
@@ -203,11 +204,18 @@ export function buildStopRoutes({ siblingIdsByAgency, routesByAgency, routePerio
       }
     }
   }
-  // CIV-1251 row 8: the shared stretch's own edge, at a stop two or more of the direction's destinations serve.
+  // CIV-1251 row 8: the Shared stretch row's time where the route card shows it (routeCardSharedStretchEdge, the card's own
+  // decision), at a stop on the shared stretch (two or more of the direction's destinations serve it), so the same time is
+  // never on two lines.
+  const sharedEdgeByKey = new Map<string, ReturnType<typeof routeCardSharedStretchEdge>>();
   for (const entry of routeMap.values()) {
     for (const b of entry.branches.values()) {
-      const edge = mainEdgeByDir.get(b.dirKey);
-      if (edge && (headsignsAtStop.get(b.dirKey)?.size ?? 0) >= 2) b.sharedEdge = { text: periodEdgeText(edge), every: edge.every };
+      if (!sharedEdgeByKey.has(b.dirKey)) {
+        const features = directionFeaturesByKey.get(b.dirKey) ?? [];
+        sharedEdgeByKey.set(b.dirKey, (headsignsAtStop.get(b.dirKey)?.size ?? 0) >= 2 ? routeCardSharedStretchEdge(features, b.directionId, period) : undefined);
+      }
+      const edge = sharedEdgeByKey.get(b.dirKey);
+      if (edge) b.sharedEdge = { text: periodEdgeText(edge), every: edge.every };
     }
   }
   // Two patterns to one destination (TTC 29's two northbound trips to Wilson, from either loop) are one row, and

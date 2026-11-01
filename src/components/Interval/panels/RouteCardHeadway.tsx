@@ -32,7 +32,7 @@ import { routeCardNotices, type CardFooterNotice } from '../../../utils/routeCar
 import { dirIdNum } from '../../../utils/routeCardTrunk';
 import type { VariantFamily } from '../../../utils/routeVariants';
 import { reportDetails } from '../../../utils/reportIssue';
-import { explainerFor, IRREGULAR_OVERNIGHT_LABEL, listingEndHasPassed } from '../../../content/noticeCopy';
+import { explainerFor, listingEndHasPassed } from '../../../content/noticeCopy';
 import { agencyTodayYmd, effectiveFeedExpiry } from '../../../../shared/feedAvailability';
 import type { RouteLabel } from '../../../utils/routeFacts';
 
@@ -492,7 +492,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                             label={row.label}
                             headway={grade ?? undefined}
                             limited={grade == null}
-                            limitedLabel={grade == null ? IRREGULAR_OVERNIGHT_LABEL : undefined}
+                            limitedLabel={grade == null ? model.noRegularLabel : undefined}
                             subLabel={grade != null && row.night.partOfRoute ? 'Overnight service on part of the route' : undefined}
                             {...hoverProps(group.dirId, d, row.hover)}
                           />

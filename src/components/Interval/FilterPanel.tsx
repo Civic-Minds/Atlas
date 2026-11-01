@@ -20,7 +20,7 @@ import { useColorMode } from '../../hooks/useColorMode';
 import ArrowLink from '../ui/ArrowLink';
 import PanelEmpty from '../ui/PanelEmpty';
 import AgencyName from '../ui/AgencyName';
-import { COMPARE_B_PICKER_NOTE, FREQUENCY_LABEL, HIDE_DEGRADED_FEEDS_SETTING, HIDE_ONE_OFF_SETTING, HIDE_PART_TIME_SETTING, HIDDEN_ROUTES_UNAVAILABLE, loadingText, NO_DEGRADED_FEEDS, NO_FEED_MATCHES, NO_LIMITED_ROUTES_IN_VIEW, noSearchMatchText, OTHER_REGION_LABEL, SETTINGS_APPLY_TO_FREQUENCY_MAP } from '../../content/noticeCopy';
+import { COMPARE_B_PICKER_NOTE, FREQUENCY_LABEL, HIDE_DEGRADED_FEEDS_SETTING, HIDE_ONE_OFF_SETTING, HIDE_PART_TIME_SETTING, HIDDEN_ROUTES_UNAVAILABLE, loadingText, NO_DEGRADED_FEEDS, NO_FEED_MATCHES, NO_LIMITED_ROUTES_IN_VIEW, noSearchMatchText, OTHER_REGION_LABEL, PART_TIME_ROUTES_NOUN, PART_TIME_ROUTES_SEARCH, PART_TIME_ROUTES_TITLE, SETTINGS_APPLY_TO_FREQUENCY_MAP } from '../../content/noticeCopy';
 import { compareAgencyName, compareRegion, compareRouteNumber } from '../../utils/sortCompare';
 import PanelHeader from '../ui/PanelHeader';
 
@@ -372,7 +372,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
               title={view === 'hidden-routes'
                 ? 'Hidden routes'
                 : view === 'limited-routes'
-                  ? 'Part-time routes'
+                  ? PART_TIME_ROUTES_TITLE
                 : view === 'degraded-feeds'
                   ? (hideLowQuality ? 'Hidden feeds' : 'Degraded feeds')
                   : isFilters ? 'Filters' : 'Settings'}
@@ -391,7 +391,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                       <input
                         value={hiddenRoutesQuery}
                         onChange={event => setHiddenRoutesQuery(event.target.value)}
-                        placeholder={limitedView ? 'Search part-time routes…' : 'Search hidden routes…'}
+                        placeholder={limitedView ? PART_TIME_ROUTES_SEARCH : 'Search hidden routes…'}
                         className={SEARCH_FIELD}
                         autoFocus
                       />
@@ -419,7 +419,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                     <PanelEmpty>
                       {listRoutes.length === 0
                         ? (limitedView ? NO_LIMITED_ROUTES_IN_VIEW : HIDDEN_ROUTES_UNAVAILABLE)
-                        : noSearchMatchText(limitedView ? 'part-time routes' : 'hidden routes')}
+                        : noSearchMatchText(limitedView ? PART_TIME_ROUTES_NOUN : 'hidden routes')}
                     </PanelEmpty>
                   ) : (
                     <div className="px-5 pb-4">

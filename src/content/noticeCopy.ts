@@ -153,6 +153,10 @@ export const noSearchMatchText = (things: string) => `No ${things} match your se
 export const NO_AGENCIES_MATCH_SEARCH = noSearchMatchText('agencies');
 // N113 settings-no-limited-routes
 export const NO_LIMITED_ROUTES_IN_VIEW = 'No part-time routes in view.';
+// CIV-1251: the list "See all part-time routes" opens, as the setting names them.
+export const PART_TIME_ROUTES_TITLE = 'Part-time routes';
+export const PART_TIME_ROUTES_SEARCH = 'Search part-time routes…';
+export const PART_TIME_ROUTES_NOUN = 'part-time routes';
 // N114 settings-hidden-routes-unavailable
 export const HIDDEN_ROUTES_UNAVAILABLE = 'The hidden-route list is unavailable right now.';
 // N117 settings-no-degraded-feeds
@@ -171,9 +175,16 @@ export const LIMITED_SERVICE_LABEL = 'limited';
 // CIV-1251 (Ryan, 2026-11-01): an All day row of a route that doesn't run all day. The same check as "Hide part-time routes"
 // (routeHasLimitedDirection, isLimitedService).
 export const PART_TIME_LABEL = 'Part-time';
-/** CIV-1251: the word a card row with no number reads: in a time period always D2; on All day Part-time or, else, D1. */
-export function noNumberRowLabel(period: string, partTime: boolean): string {
-  return period !== 'all' ? IRREGULAR_PERIOD_LABEL : partTime ? PART_TIME_LABEL : LIMITED_SERVICE_LABEL;
+/**
+ * CIV-1251: the one word a card row with no number reads, whichever check found it. The Night card: "Runs irregularly
+ * overnight"; a time period: D2; All day: Part-time for a route that doesn't run all day, else today's words (D2 for a row
+ * the filter finds no cadence in, D1 for one the card can't rate) until Ryan words that case.
+ */
+export function noNumberRowLabel(options: { period: string; partTime: boolean; nightView?: boolean; noRegular?: boolean }): string {
+  if (options.nightView) return IRREGULAR_OVERNIGHT_LABEL;
+  if (options.period !== 'all') return IRREGULAR_PERIOD_LABEL;
+  if (options.partTime) return PART_TIME_LABEL;
+  return options.noRegular ? IRREGULAR_PERIOD_LABEL : LIMITED_SERVICE_LABEL;
 }
 // D2 irregular-period (Ryan's words, CIV-1238): the route runs in the period, but the filter finds no regular cadence. On cards.
 export const IRREGULAR_PERIOD_LABEL = 'Runs irregularly in this period';

@@ -11,8 +11,8 @@ import { rowLabelWithOrigin } from './rowOriginLabel';
 import { hasStretchRoles, routeFilterAllDayContract, routeFilterContract, type RouteContract } from './stretchCard';
 import { featurePassesHeadwayFilter } from '../../shared/routeHeadwayFilter';
 import { headwayAbout, headwayAboutRange } from './headwayText';
-import { LIMITED_SERVICE_LABEL, IRREGULAR_OVERNIGHT_LABEL, IRREGULAR_PERIOD_LABEL, noNumberRowLabel, PART_TIME_LABEL, SHARED_STRETCH_LABEL } from '../content/noticeCopy';
-import type { RouteCardDirectionGroup } from './routeCardDirectionGroups';
+import { LIMITED_SERVICE_LABEL, noNumberRowLabel, SHARED_STRETCH_LABEL } from '../content/noticeCopy';
+import { buildDirectionGroups, type RouteCardDirectionGroup } from './routeCardDirectionGroups';
 
 /**
  * The route card's rows, built once (CIV-987). Every part of the card (rows, Shared stretch / Combined row, hover and the
@@ -145,7 +145,7 @@ function rowHover(dirId: number, headsign: string | null | undefined, routeVaria
  * words or its number. Null data reads "no data for this period", never a claim that nothing runs (#297).
  */
 export function reportRowValueText(row: CardRow): string {
-  if (row.night) return row.night.grade != null ? headwayAbout(row.night.grade) : IRREGULAR_OVERNIGHT_LABEL;
+  if (row.night) return row.night.grade != null ? headwayAbout(row.night.grade) : noNumberRowLabel({ period: 'overnight', partTime: false, nightView: true });
   const { value, limitedLabel } = row.display(null);
   if (value.isLimited) return limitedLabel ?? LIMITED_SERVICE_LABEL;
   if (value.headway == null) return 'no data for this period';
@@ -164,8 +164,8 @@ export function buildRouteCardModel(input: RouteCardModelInput): RouteCardModel 
   const allDay = period === 'all' ? routeFilterAllDayContract(directions) : undefined;
   const noRegularService = (contract != null && contract.filterValue == null && contract.runs)
     || (allDay != null && allDay.filterValue == null);
-  const noRegularLabel = nightView ? IRREGULAR_OVERNIGHT_LABEL : allDay?.limited ? PART_TIME_LABEL : IRREGULAR_PERIOD_LABEL;
-  const limitedWord = noNumberRowLabel(period, allDay?.limited === true);
+  const noRegularLabel = noNumberRowLabel({ period, partTime: allDay?.limited === true, nightView, noRegular: true });
+  const limitedWord = noNumberRowLabel({ period, partTime: allDay?.limited === true, nightView });
   const hasPeriodService = period === 'all' || directionGroups.some(group =>
     group.realTier.some(direction => rowTrips(direction, period).value != null) ||
     group.span.length > 0,
@@ -289,7 +289,7 @@ export function buildRouteCardModel(input: RouteCardModelInput): RouteCardModel 
     // Span-only branches use the same limited row whether or not the irregular-service
     // filter is on: the filter hides them from the map, not from the route's own card.
     const spanRows: CardSpanRow[] = exclusiveSpans.length === 1
-      ? [{ label: branchLabel(group, exclusiveSpans[0], gi) || (period === 'all' ? 'limited service' : ''), feature: exclusiveSpans[0], hover: rowHover(group.dirId, exclusiveSpans[0].headsign, exclusiveSpans[0].routeVariant) }]
+      ? [{ label: branchLabel(group, exclusiveSpans[0], gi) || (limitedWord === LIMITED_SERVICE_LABEL ? 'limited service' : ''), feature: exclusiveSpans[0], hover: rowHover(group.dirId, exclusiveSpans[0].headsign, exclusiveSpans[0].routeVariant) }]
       : exclusiveSpans.length > 1
         ? [{ label: exclusiveSpans.map(d => branchLabel(group, d, gi)).filter(Boolean).join(' · '), hover: null }]
         : [];
@@ -350,4 +350,11 @@ function sharedStretchEdge(group: RouteCardDirectionGroup, period: TimePeriod, s
     if (edge) return edge;
   }
   return undefined;
+}
+
+/** CIV-1251 row 8: the route card's Shared stretch time for one direction, from the route's features for the day, for the stop card. */
+export function routeCardSharedStretchEdge(features: readonly ShapeProperties[], directionId: number, period: TimePeriod) {
+  if (period === 'all' || !hasStretchRoles(features)) return undefined;
+  const group = buildDirectionGroups({ directions: [...features] }, period).find(g => g.dirId === directionId);
+  return group ? sharedStretchEdge(group, period, true) : undefined;
 }

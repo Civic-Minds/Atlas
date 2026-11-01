@@ -118,6 +118,20 @@ describe('buildStopRoutes: one destination served by two patterns (CIV-1080)', (
     shared?.forEach(edge => expect(edge).toEqual({ text: 'every 8 min from 12:34 PM', every: 8 }));
   });
 
+  it('CIV-1251 review: the stop card shows the shared stretch time only where the route card does (not beside a main row)', () => {
+    const fc = structuredClone(ttc29);
+    const north = fc.features.filter(x => x.properties?.directionId === 1);
+    north.forEach((f, i) => Object.assign(f.properties!, {
+      headsign: i === 0 ? 'Wilson' : 'Downsview', stretchRole: i === 0 ? 'main' : 'tail', stretchIndex: i === 0 ? 0 : 0, stretchCovers: i === 0 ? ['main'] : ['main', 0],
+      stretchMeta: { main: { stops: 10, refStop: 'm', trips: 50, edge: { midday: { from: 754, every: 8 } } }, tails: [{ refStop: 'a', stops: 3, km: 1, trips: 20 }] },
+    }));
+    const routes = buildStopRoutes({
+      siblingIdsByAgency: { ttc: new Set(['2108']) }, routesByAgency: { ttc: new Set(['29']) }, layers: { ttc: fc }, day: 'Weekday', period: 'midday',
+    });
+    // A main row carries the shared stretch's time on the route card, so the stop card has no Shared stretch time.
+    expect(routes[0]?.branches.filter(b => b.directionId === 1).some(b => b.sharedEdge)).toBe(false);
+  });
+
   it('#1277: a branch that does not run through the period never reads the shared stretch\'s time (TTC 131 Sunday late, Old Finch)', () => {
     const fc = structuredClone(ttc29);
     for (const f of fc.features.filter(x => x.properties?.directionId === 1)) {
