@@ -10,7 +10,7 @@ export default function ResearchPage() {
     <DocsPageLayout articleClassName="text-sm leading-relaxed text-[var(--text-dim)]">
             <header>
               <PageTitle className="text-[var(--text-primary)]">Research</PageTitle>
-              <p className="mt-3">Views of transit service that the main map does not show.</p>
+              <p className="mt-3">Maps, stories and data that look closer at transit service in Canada and the United States.</p>
             </header>
             <div className="grid gap-4 sm:grid-cols-2">
               {RESEARCH.map(({ href, Icon, kind, title, body, linkText }) => (

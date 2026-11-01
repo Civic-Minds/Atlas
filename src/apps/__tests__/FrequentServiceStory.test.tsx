@@ -1,7 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import FrequentServiceStory from '../FrequentServiceStory';
-import { frequentServiceStoryStats } from '../../data/frequentServiceStory';
+import { frequentServiceDefinitionSample, frequentServiceStoryResearchRecord, frequentServiceStoryStats } from '../../data/frequentServiceStory';
 import audit from '../../../docs/research/system-map-audit-2026-09/data.json';
 import recheck from '../../data/definition-recheck-2026-10-30.json';
 
@@ -74,21 +74,12 @@ describe('FrequentServiceStory', () => {
     expect(screen.getByRole('columnheader', { name: /^Agencies, Oct\s30$/ })).toBeInTheDocument();
   });
 
-  it('does not mistake unavailable or unnamed maps for numeric definitions', () => {
-    expect(audit.records).toHaveLength(317);
-    expect(audit.records.filter(record => record.status === 'pending_map_review')).toHaveLength(0);
-    expect(frequentServiceStoryStats.agenciesReviewed).toBe(184);
-    expect(frequentServiceStoryStats.fullAuditAgencies).toBe(317);
-    expect(frequentServiceStoryStats.countryCounts).toEqual([
-      { country: 'Canada', agencies: 74 },
-      { country: 'United States', agencies: 110 },
-    ]);
-    expect(frequentServiceStoryStats.categoryCounts).toMatchObject({
-      numericDefinition: 47,
-      qualitativeDefinition: 12,
-      noDefinitionFound: 120,
-      mapUnavailable: 5,
-    });
+  it('reads the intro count and the story agency from the definitions file (CIV-87)', () => {
+    expect(frequentServiceDefinitionSample).toMatchObject({ agencies: 419, blocked: 12, canada: 83, unitedStates: 336, namedNetwork: 78, withWait: 67 });
+    expect(frequentServiceStoryResearchRecord).toEqual({ agencyId: 'ttc', agencyName: 'Toronto Transit Commission' });
+    render(<FrequentServiceStory agencies={agencies} onExploreMap={() => {}} />);
+    expect(screen.getByText(/We checked how 419 agencies define frequent service on their own websites/)).toBeInTheDocument();
+    expect(screen.getByText(/at 419 agencies Atlas covers in Canada \(83\) and the United States \(336\)\. We couldn't check 12 others because their websites block automated visits\./)).toBeInTheDocument();
   });
 
   it('keeps the audit canonical and unique after alias merging', () => {

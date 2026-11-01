@@ -57,7 +57,7 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
     <ResearchMethod parts={{
       dateConducted: <>October 11, 2026.</>,
       dateUpdated: <>October 30, 2026.</>,
-      sample: <>We looked for an official definition of frequent service at all {frequentServiceDefinitionSample.agencies} agencies Atlas covers in Canada ({frequentServiceDefinitionSample.canada}) and the United States ({frequentServiceDefinitionSample.unitedStates}). {frequentServiceDefinitionSample.namedNetwork} have a named frequent network, such as a “Frequent Network”. {frequentServiceDefinitionSample.withWait} of those say how often the bus comes, such as “every 15 minutes or better”. The chart shows {frequentServiceStoryStats.chartedAgencies} of those {frequentServiceDefinitionSample.withWait} agencies, checked again on October 30.</>,
+      sample: <>We looked for an official definition of frequent service at {frequentServiceDefinitionSample.agencies} agencies Atlas covers in Canada ({frequentServiceDefinitionSample.canada}) and the United States ({frequentServiceDefinitionSample.unitedStates}). We couldn't check {frequentServiceDefinitionSample.blocked} others because their websites block automated visits. {frequentServiceDefinitionSample.namedNetwork} have a named frequent network, such as a “Frequent Network”. {frequentServiceDefinitionSample.withWait} of those say how often the bus comes, such as “every 15 minutes or better”. The chart shows {frequentServiceStoryStats.chartedAgencies} of those {frequentServiceDefinitionSample.withWait} agencies, checked again on October 30.</>,
       sources: <>The agency’s own current system map, rider guide, frequent network page, service standards, or a plan for the network running today.</>,
       whatCounted: <>Each quote was checked by script against the saved page. When an agency’s pages disagreed, we used the narrower definition. Not finding a definition does not mean an agency has no frequent service.</>,
       numbers: <>When an agency has more than one frequent tier, we used the fastest one that covers more than one route. When it gives a range, such as {headwayEveryRange(15, 20)}, we used the slower number, for weekday daytime.</>,
@@ -75,7 +75,7 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
           intro={<>
             <p>Miss one when the next vehicle comes in 10 minutes? Annoying, but manageable. Miss one when the next one takes 30? That can change your whole trip.</p>
             <p>Transit maps show where routes go. Transit planning asks the harder questions: how often does service come, how long does it run, and who is it designed to reach?</p>
-            <p>We reviewed official transit maps and approved rider guides from {frequentServiceStoryStats.agenciesWithUsableEvidence} agencies to show how those decisions turn a network of lines into service people can actually rely on.</p>
+            <p>We checked how {frequentServiceDefinitionSample.agencies} agencies define frequent service on their own websites, to show how those decisions turn a network of lines into service people can actually rely on.</p>
           </>}
         >
           <div className="w-full max-w-5xl text-left">
@@ -86,7 +86,15 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
           </a>
         </ResearchHeader>
 
-        <section id="story" aria-labelledby="network-story-heading" className="scroll-mt-16 relative left-1/2 mt-24 w-screen -translate-x-1/2 px-2 sm:mt-32 sm:px-3">
+        {/* CIV-1169 (Ryan's pick 6): a text break between the montage and the first map. */}
+        <section id="story" aria-labelledby="story-break-heading" className="scroll-mt-16 mx-auto mt-24 w-full max-w-[48rem] sm:mt-32">
+          <h2 id="story-break-heading" className="text-3xl sm:text-4xl font-black tracking-tight">Every map tells it differently.</h2>
+          <p className="mt-5 text-base leading-8 text-[var(--text-muted)]">
+            Each agency decides what its map shows, so one map is hard to compare with the next. Atlas starts from the schedules instead. Here is Toronto's network, built from the TTC's own schedule data, one step at a time.
+          </p>
+        </section>
+
+        <section aria-labelledby="network-story-heading" className="relative left-1/2 mt-24 w-screen -translate-x-1/2 px-2 sm:mt-32 sm:px-3">
           <div className="relative min-w-0 pb-[12vh]">
             <div className="min-w-0 lg:sticky lg:top-24">
               <FrequentServiceStoryMap agencies={agencies} stage={storyStage} frequencyMinutes={frequencyMinutes} researchRecord={frequentServiceStoryResearchRecord} />
