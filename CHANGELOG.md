@@ -135,6 +135,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Agency, area and research pages
 
+- **A shared research link previews its own page (beta)**: each research page has its own title and description in link previews, and Overnight service shows its own picture (CIV-1167)
 - **The About page shows the map and the research up front**: a picture of Toronto's routes in their frequency colours sits beside the headline, the newest research follows as picture tiles you can swipe through on a phone, and Where / When / How often each get a card in a frequency colour
 - **Agency and area pages [name each agency without its bracket](https://github.com/Civic-Minds/Atlas/issues/1245)**: headings and sentences read "Montgomery Transit", not "Montgomery Transit (The M)", agencies that share a name keep their place ("BC Transit · Kelowna"), and the map's load-error hint names the agency, never a city
 - **Area links fit on the agency card**: a name too long for the line drops "Area" ("Greater Toronto and Hamilton →") instead of being cut off

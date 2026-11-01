@@ -67,6 +67,12 @@ describe('vercel.json routing', () => {
     }
   });
 
+  it('serves each research page from its own file, which every build writes (CIV-1167 link previews)', () => {
+    for (const r of SEO_ROUTES.filter(r => r.path === '/research' || r.path.startsWith('/research/'))) {
+      for (const source of [r.path, `${r.path}/`]) expect(vercel.rewrites.find(x => x.source === source)?.destination, source).toBe(`${r.path}/index.html`);
+    }
+  });
+
   it('has a 404 page and keeps robots.txt and sitemap.xml out of the rewrites', () => {
     expect(existsSync('public/404.html')).toBe(true);
     expect(sources).not.toContain('/robots.txt');

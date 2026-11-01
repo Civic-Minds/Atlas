@@ -6,7 +6,7 @@
 import { mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { SITE_URL, applySeoToHtml, buildSitemapXml, injectRootHtml, prerenderRoutes, resolveSeo } from '../shared/seo';
+import { SITE_URL, applySeoToHtml, buildSitemapXml, injectRootHtml, prerenderRoutes, researchPreviewRoutes, resolveSeo } from '../shared/seo';
 import { AGENCY_DATA_SCRIPT_ID, agencyPageData, agencyPageJsonLd, agencyPagePath, resolveAgencySeo } from '../shared/agencyPages';
 import { AGENCY_INDEX_DATA_SCRIPT_ID, AGENCY_INDEX_PATH, buildAgencyIndexData, resolveAgencyIndexSeo } from '../shared/agencyIndex';
 import { AREA_DATA_SCRIPT_ID, areaPageJsonLd, buildAreaPageData, resolveAreaSeo } from '../shared/areaPages';
@@ -43,6 +43,17 @@ for (const route of prerenderRoutes(mod.BUILD_FLAGS)) {
   mkdirSync(dirname(file), { recursive: true });
   writeFileSync(file, html);
   console.log(`Prerendered ${route.path}`);
+}
+
+// Research pages without prerendered text (CIV-1167): the shell with the page's own title, description and share image,
+// so a pasted link previews that page. Crawlers do not run JS; the app mounts over it. Where the research apps are off,
+// the route resolves to the map's tags, as the app shows the map there. vercel.json serves each from its own file.
+for (const route of researchPreviewRoutes(mod.BUILD_FLAGS)) {
+  const seo = resolveSeo(route.path, { mode: mod.BUILD_MODE, flags: mod.BUILD_FLAGS, origin });
+  const file = join(dist, route.path, 'index.html');
+  mkdirSync(dirname(file), { recursive: true });
+  writeFileSync(file, applySeoToHtml(shell, seo));
+  console.log(`Link preview ${route.path}`);
 }
 
 // Agency pages: beta and dev builds only. They read the committed summary file, never R2, so an
