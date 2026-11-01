@@ -102,6 +102,25 @@ describe('buildStopRoutes: one destination served by two patterns (CIV-1080)', (
     expect(words().filter(Boolean)).toEqual([]);
   });
 
+  it('#1277: a branch that does not run through the period never reads the shared stretch\'s time (TTC 131 Sunday late, Old Finch)', () => {
+    const fc = structuredClone(ttc29);
+    for (const f of fc.features.filter(x => x.properties?.directionId === 1)) {
+      Object.assign(f.properties!, {
+        stretchRole: 'tail', stretchIndex: 0, stretchCovers: ['main', 0], departuresByHour: { 12: 4 },
+        stretchMeta: { main: { stops: 10, refStop: 'm', trips: 50 }, tails: [{ refStop: 't', stops: 5, km: 2, trips: 20, notThrough: ['midday'] }] },
+        stretchPeriodEdge: { midday: { from: 754, every: 8, stretch: 'main' } },
+      });
+      delete (f.properties!.directionFilterHeadwayByPeriod as Record<string, unknown> | undefined)?.midday;
+    }
+    const words = () => buildStopRoutes({
+      siblingIdsByAgency: { ttc: new Set(['2108']) }, routesByAgency: { ttc: new Set(['29']) }, layers: { ttc: fc }, day: 'Weekday', period: 'midday',
+    })[0]?.branches.filter(b => b.directionId === 1).map(b => b.periodText) ?? [];
+    expect(words().filter(Boolean)).toEqual([]);
+    // Its own branch's edge, with its own trips in the period: the words are its own.
+    for (const f of fc.features.filter(x => x.properties?.directionId === 1)) f.properties!.stretchPeriodEdge = { midday: { from: 754, every: 8, stretch: 0 } };
+    expect(words()).toEqual(['every 8 min from 12:34 PM']);
+  });
+
   it('keeps each destination\'s own value when another destination shares the stop (never overstates)', () => {
     const fc = structuredClone(ttc29);
     const north = fc.features.filter(f => f.properties?.directionId === 1);

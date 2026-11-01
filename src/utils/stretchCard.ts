@@ -7,7 +7,6 @@
 import type { ShapeProperties, TimePeriod } from '../hooks/useIntervalStats';
 import { NO_PERIOD_SERVICE_TILE_VALUE } from '../../shared/pmtilesProps';
 import { routeFilterHeadway } from '../../shared/routeHeadwayFilter';
-import { PERIOD_MINUTES } from '../../shared/config';
 import { rowReadsPeriodEdge } from './effectiveHeadway';
 
 type PeriodKey = Exclude<TimePeriod, 'all'>;
@@ -98,14 +97,7 @@ export function tailNotThroughPeriod(f: ShapeProperties, period: TimePeriod): bo
  * Blair, not Carson's; TTC 130 late: no trip runs via Maybrook), so such a row stays hidden, as #1115 has it.
  */
 export function notThroughRowSaysWhen(f: ShapeProperties, period: TimePeriod): boolean {
-  if (period === 'all' || f.stretchRole !== 'tail') return false;
-  const edge = f.stretchPeriodEdge?.[period as PeriodKey];
-  if (edge?.stretch === undefined || edge.stretch !== (f.stretchIndex ?? 0) || !rowReadsPeriodEdge(f, period)) return false;
-  const { start, end } = PERIOD_MINUTES[period as PeriodKey];
-  return Object.entries(f.departuresByHour ?? {}).some(([hour, n]) => {
-    const h = Number(hour) * 60;
-    return n > 0 && ((h >= start && h < end) || (h + 1440 >= start && h + 1440 < end));
-  });
+  return f.stretchPeriodEdge?.[period as PeriodKey]?.stretch !== undefined && rowReadsPeriodEdge(f, period);
 }
 
 export interface RouteContract {
