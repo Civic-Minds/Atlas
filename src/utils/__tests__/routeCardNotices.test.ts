@@ -83,6 +83,22 @@ describe('routeCardNotices (CIV-1200)', () => {
     const none = { ...m, hasPartialPeriodService: false, activeRangeDirections: [daytime] } as unknown as RouteCardNoticeInput['model'];
     expect(routeCardNotices({ ...base, directions: [daytime], model: none, period: 'overnight', maxHeadway: Infinity, selectedRouteOutOfFilter: true }).filter?.code).toBe('N11');
   });
+
+  it('#1277: a route with no rows but trips in the period says when, not "no scheduled trips" (TTC 110 Sunday AM)', () => {
+    // First trip 7:52: a direction carries an AM value, so the period check passes, but the route reads as not running.
+    const islington = { headsign: 'Islington', departuresByHour: { 7: 1, 8: 2, 9: 2 }, headwayByHour: { 7: 15, 8: 30, 9: 30 }, maxGapByHour: { 7: 30, 8: 30, 9: 30 } } as any;
+    const m = { ...model, doesNotRun: true, hasPeriodService: true, hasPartialPeriodService: false, activeRangeDirections: [islington] } as unknown as RouteCardNoticeInput['model'];
+    const n = routeCardNotices({ ...base, directions: [islington], model: m, period: 'amPeak', maxHeadway: Infinity, selectedRouteOutOfFilter: true });
+    const plain = (text: string | undefined) => text?.replaceAll('⁠', '').replace(/[  ]/g, ' ');
+    expect(n.filter).toBeNull();
+    expect(n.period?.code).toBe('N9');
+    expect(plain(n.period?.text)).toContain(formatPeriodRangeLong(7, 9));
+    expect(plain(n.period?.text)).not.toContain('no scheduled trips');
+    // With no trips inside 6-9 AM the line stays.
+    const later = { headsign: 'Islington', departuresByHour: { 10: 2 }, headwayByHour: { 10: 30 }, maxGapByHour: { 10: 30 } } as any;
+    const none = { ...m, activeRangeDirections: [later] } as unknown as RouteCardNoticeInput['model'];
+    expect(routeCardNotices({ ...base, directions: [later], model: none, period: 'amPeak', maxHeadway: Infinity, selectedRouteOutOfFilter: true }).filter?.code).toBe('N11');
+  });
 });
 
 // A card whose rows read `rows` (headway, and the words beside it), for the "each fact once" rules (CIV-1202).
