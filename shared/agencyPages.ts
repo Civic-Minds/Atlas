@@ -296,7 +296,9 @@ export const FREQUENCY_BANDS = [
   { key: 'b60plus', phrase: `less often than ${headwayEvery(60)}`, short: '60+', test: () => true },
 ] as const;
 export const NO_MIDDAY_PHRASE = 'with no regular midday service';
-export const NO_MIDDAY_SHORT = 'no midday';
+/** CIV-1251 (Ryan, 2026-11-01): the bar's last group counts routes with no midday number, which includes routes with no midday trips. */
+export const noMiddayBarSentence = (n: number) => `${n} ${n === 1 ? 'route runs' : 'routes run'} irregularly or not at all at midday`;
+export const NO_MIDDAY_SHORT = 'Irregular or none';
 
 /**
  * At least one route with a regular weekday midday cadence. Area pages and their area files list only these agencies;

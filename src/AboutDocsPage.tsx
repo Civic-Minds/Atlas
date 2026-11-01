@@ -87,7 +87,7 @@ const NOTICE_GROUPS: { title: string; text: string; examples: string[]; onDemand
   {
     title: 'Filters',
     text: "The route, or part of it, doesn't meet the frequency filter you picked, or is hidden by your filters.",
-    examples: [selectedRouteOutsideFilterNotice(15, '6–9 AM'), selectedRoutePartMeetsFilterNotice(15)],
+    examples: [selectedRouteOutsideFilterNotice(15, '6–9 AM'), selectedRoutePartMeetsFilterNotice(15, '3–7 PM')],
   },
   {
     title: 'Beta and on-demand service',
@@ -274,11 +274,11 @@ export default function AboutDocsPage() {
             <p>Frequency and regularity are separate properties. A route can run {headwayEvery(30)} and still be occasional if it only operates for a short burst or has too few repeated departures to establish a sustained pattern.</p>
             <dl className="space-y-2">
               <div><dt className="font-bold text-[var(--text-primary)]">Regular</dt><dd>Service covers the normal analysis window. It may be frequent or infrequent.</dd></div>
-              <div><dt className="font-bold text-[var(--text-primary)]">Part-time</dt><dd>Predictable service operates during part of the day and has enough repeated departures for a meaningful frequency estimate.</dd></div>
-              <div><dt className="font-bold text-[var(--text-primary)]">Occasional</dt><dd>Exceptional, very short, one-sided, irregular peak-only, or otherwise unsustained service that should not be presented as a normal route cadence.</dd></div>
+              <div><dt className="font-bold text-[var(--text-primary)]">Part-time</dt><dd>Runs only part of the day, such as rush hour or evenings, with enough trips to give a frequency when it runs.</dd></div>
+              <div><dt className="font-bold text-[var(--text-primary)]">Occasional</dt><dd>A route that runs only now and then, such as school runs, routes with a few trips a day, or rush-hour-only service with no consistent gap.</dd></div>
             </dl>
             <p>Two filters, both on by default, decide which of these routes the map shows. Hide occasional routes hides occasional service: school runs, routes with only a few trips a day, and on-demand shuttles. Hide part-time routes hides part-time service: routes that only run at rush hour, in the evening, or on some days. A part-time route you choose to show is still judged by the frequency filter, on the selected period’s frequency. Periods outside its operation remain empty rather than inheriting an all-day value.</p>
-            <p>Routes with only a few trips a day are labelled “limited” instead of given a frequency, and route cards name each pattern, such as “Rush hour only”. Each filter links to a list of the routes it hides.</p>
+            <p>Routes with only a few trips in a period read “Irregular” instead of a frequency, and route cards name each pattern, such as “Rush hour only”. Each filter links to a list of the routes it hides.</p>
           </Section>
 
           <Section id="map-architecture" title="Mapping">
@@ -430,18 +430,17 @@ export default function AboutDocsPage() {
             <p><strong className="text-[var(--text-primary)]">GTFS-Flex:</strong> GTFS extensions for demand-responsive service, including service areas, location groups, virtual stops, and booking rules.</p>
             <p><strong className="text-[var(--text-primary)]">Headway:</strong> The time between one scheduled departure and the next. For a rider who just missed a bus, it is roughly the wait for the next one.</p>
             <p><strong className="text-[var(--text-primary)]">Frequency:</strong> How often a route runs. Atlas shows what the schedule promises, not what happened on the street.</p>
-            <p><strong className="text-[var(--text-primary)]">“Every N min”:</strong> The time between trips in the selected period. A range such as “every 8–25 min” runs from the part of the route its regular trips all share to its least frequent branch.</p>
+            <p><strong className="text-[var(--text-primary)]">“Every N min”:</strong> The time between trips in the selected period. A range such as “every 8–25 min” means your wait is between the two: on a card it’s one row’s waits, and in a list it runs from the shared stretch to the least frequent branch.</p>
             <p><strong className="text-[var(--text-primary)]">Frequency tier:</strong> A broad band, such as ≤10, ≤15, ≤20, ≤30 or ≤60 min, used to colour and filter routes on the map. The filter and the legend show it as “≤10 min”.</p>
             <p><strong className="text-[var(--text-primary)]">Route rating:</strong> A route’s line colour and filter result come from its slowest direction. Within each direction, the part its regular trips all share and each branch are checked on their own, and the slowest one counts.</p>
             <p><strong className="text-[var(--text-primary)]">Service period:</strong> A named time window: {PERIOD_LABELS.amPeak} (6–9 AM), {PERIOD_LABELS.midday} (9 AM–3 PM), {PERIOD_LABELS.pmPeak} (3–7 PM), {PERIOD_LABELS.evening} (7–11 PM), {PERIOD_LABELS.late} (11 PM–2 AM), or {PERIOD_LABELS.overnight} (2–6 AM). Each period is measured on its own. A quiet evening is not hidden by a busy midday.</p>
             <p><strong className="text-[var(--text-primary)]">Branch:</strong> One of several paths under one route number, such as trips that split to different destinations or turn back early. The route card lists each one with its own frequency.</p>
-            <p><strong className="text-[var(--text-primary)]">Shared stretch:</strong> The part of a route where its branches run together, and riders there get every branch’s trips. The card shows it as “Shared stretch”, or “Combined” when the value is worked out from the branches’ own schedules. It never makes the whole route pass the filter.</p>
-            <p><strong className="text-[var(--text-primary)]">Limited:</strong> Shown when a route runs during the chosen time but not often or regularly enough to give a frequency.</p>
-            <p><strong className="text-[var(--text-primary)]">Irregular:</strong> Shown for a time period when a route runs but its trips don’t come at a regular gap, so there is no frequency to give. Route cards say “Runs irregularly in this period”; tables and lists say “Irregular”.</p>
-            <p><strong className="text-[var(--text-primary)]">Service class:</strong> The operating pattern assigned to a route or pattern: regular, part-time, or occasional.</p>
-            <p><strong className="text-[var(--text-primary)]">Occasional:</strong> A route that runs only now and then, such as school runs, routes with a few trips a day, or rush-hour-only service with no regular gap. “Hide occasional routes” hides them.</p>
-            <p><strong className="text-[var(--text-primary)]">Sustained service:</strong> Service whose gaps stay within a small allowance across the whole time measured, rather than only looking frequent in a short burst.</p>
-            <p><strong className="text-[var(--text-primary)]">Uneven service:</strong> Service that runs all through the selected period, but with gaps that vary. The card names the longest gap.</p>
+            <p><strong className="text-[var(--text-primary)]">Shared stretch:</strong> The part of a route where its branches run together, and riders there get every branch’s trips. The card shows it as “Shared stretch”. It never makes the whole route pass the filter.</p>
+            <p><strong className="text-[var(--text-primary)]">Irregular:</strong> Shown for a time period when a route runs but its trips don’t come at a consistent gap, so there is no frequency to give. Route cards say “Runs irregularly in this period”; tables and lists say “Irregular”.</p>
+            <p><strong className="text-[var(--text-primary)]">Service class:</strong> The kind of service a route runs: regular, part-time or occasional.</p>
+            <p><strong className="text-[var(--text-primary)]">Occasional:</strong> A route that runs only now and then, such as school runs, routes with a few trips a day, or rush-hour-only service with no consistent gap. “Hide occasional routes” hides them.</p>
+            <p><strong className="text-[var(--text-primary)]">Consistent service:</strong> Service whose gaps stay within a small allowance across the whole time period, not only in a short burst.</p>
+            <p><strong className="text-[var(--text-primary)]">Uneven service:</strong> Service that runs through the whole time period, but with gaps that vary. The card names the longest gap.</p>
             {FEATURES.onDemand && <p><strong className="text-[var(--text-primary)]">On-demand zone:</strong> An area served by booked rides instead of a fixed route. It is shown as an area on the map and never given a frequency.</p>}
             <p><strong className="text-[var(--text-primary)]">Provenance:</strong> The source, schedule period, freshness state, review status, and correction history attached to an Atlas result.</p>
             <p><strong className="text-[var(--text-primary)]">PMTiles:</strong> A single archive format that lets the map request only the vector-tile regions it needs.</p>

@@ -103,6 +103,35 @@ describe('buildStopRoutes: one destination served by two patterns (CIV-1080)', (
     expect(words().filter(Boolean)).toEqual([]);
   });
 
+  it('CIV-1251 row 8: a stop on the shared stretch carries the shared stretch\'s own time for its Shared stretch row', () => {
+    const fc = structuredClone(ttc29);
+    const north = fc.features.filter(x => x.properties?.directionId === 1);
+    north.forEach((f, i) => Object.assign(f.properties!, {
+      headsign: i === 0 ? 'Wilson' : 'Downsview', stretchRole: 'tail', stretchIndex: i, stretchCovers: ['main', i],
+      stretchMeta: { main: { stops: 10, refStop: 'm', trips: 50, edge: { midday: { from: 754, every: 8 } } }, tails: [{ refStop: 'a', stops: 3, km: 1, trips: 20 }, { refStop: 'b', stops: 3, km: 1, trips: 20 }] },
+    }));
+    const routes = buildStopRoutes({
+      siblingIdsByAgency: { ttc: new Set(['2108']) }, routesByAgency: { ttc: new Set(['29']) }, layers: { ttc: fc }, day: 'Weekday', period: 'midday',
+    });
+    const shared = routes[0]?.branches.filter(b => b.directionId === 1).map(b => b.sharedEdge);
+    expect(shared?.length).toBeGreaterThan(0);
+    shared?.forEach(edge => expect(edge).toEqual({ text: 'every 8 min from 12:34 PM', every: 8 }));
+  });
+
+  it('CIV-1251 review: the stop card shows the shared stretch time only where the route card does (not beside a main row)', () => {
+    const fc = structuredClone(ttc29);
+    const north = fc.features.filter(x => x.properties?.directionId === 1);
+    north.forEach((f, i) => Object.assign(f.properties!, {
+      headsign: i === 0 ? 'Wilson' : 'Downsview', stretchRole: i === 0 ? 'main' : 'tail', stretchIndex: i === 0 ? 0 : 0, stretchCovers: i === 0 ? ['main'] : ['main', 0],
+      stretchMeta: { main: { stops: 10, refStop: 'm', trips: 50, edge: { midday: { from: 754, every: 8 } } }, tails: [{ refStop: 'a', stops: 3, km: 1, trips: 20 }] },
+    }));
+    const routes = buildStopRoutes({
+      siblingIdsByAgency: { ttc: new Set(['2108']) }, routesByAgency: { ttc: new Set(['29']) }, layers: { ttc: fc }, day: 'Weekday', period: 'midday',
+    });
+    // A main row carries the shared stretch's time on the route card, so the stop card has no Shared stretch time.
+    expect(routes[0]?.branches.filter(b => b.directionId === 1).some(b => b.sharedEdge)).toBe(false);
+  });
+
   it('#1277: a branch that does not run through the period never reads the shared stretch\'s time (TTC 131 Sunday late, Old Finch)', () => {
     const fc = structuredClone(ttc29);
     for (const f of fc.features.filter(x => x.properties?.directionId === 1)) {
@@ -188,7 +217,7 @@ describe('buildStopRoutes: a stop\'s own route with trips here but no number in 
   it('lists the route with the route card\'s own words for the period', () => {
     const rows = build([sundayAm]);
     expect(rows.map(r => [r.shortName, r.branches.length, r.noTrips])).toEqual([['110', 0, undefined]]);
-    expect(plain(rows[0].noNumber?.text)).toBe('This route runs only from 7–9 AM in this period. No frequency is shown.');
+    expect(plain(rows[0].noNumber?.text)).toBe('Runs only from 7–9 AM');
   });
 
   it('leaves it out where the stop has no trip in the period, or the data has no field', () => {

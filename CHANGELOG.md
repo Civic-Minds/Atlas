@@ -8,6 +8,13 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Map and route behavior
 
+- **Route card rows show the frequency the filter reads**: [AC Transit 281](https://github.com/Civic-Minds/Atlas/issues/1239) read every 60 where the filter reads 66 at the same stop, and waits over an hour now print their exact minutes instead of rounding to the half hour; a long gap is named only when it is at least 1.5 times the usual wait, and a [branch that stops partway](https://github.com/Civic-Minds/Atlas/issues/1276) says when, on the rows that run there (TTC 110 via 30th Street: every 30 until 5:55 PM), with no second line saying only part of the route qualifies
+- **Routes that run only part of a period say when instead of showing nothing**: [TTC 110](https://github.com/Civic-Minds/Atlas/issues/1277) Sunday mornings read "every 15 min from 8:07 AM" where the card had no rows
+- **The info panel no longer gives a last-checked or last-refreshed date**: it says how many times Atlas has checked since a schedule ended, and when it checks next
+- **The route chooser's dots match the line colours**: [LA Metro E Line](https://github.com/Civic-Minds/Atlas/issues/1246) showed an every-30 dot beside a line drawn every 10 or better; dots now follow the day and time on screen
+- **Rows with only a few trips in a period read "Irregular", not "no regular service"**: the old words read as if nothing ran; cards say "Runs irregularly in this period", and the route class hidden by default is now "Occasional" ("Hide occasional routes"), since "one-off" read as once a day
+- **Agency pages say "Irregular" where the map list does**: [CTA 1](https://github.com/Civic-Minds/Atlas/issues/1249) and other routes that run without a regular frequency were left blank, as if they had no service
+- **Route card notices say each fact once, in one place**: lines that repeated a row are gone, ["no scheduled trips"](https://github.com/Civic-Minds/Atlas/issues/1225) shows once, ["No frequency is shown"](https://github.com/Civic-Minds/Atlas/issues/1226) no longer sits beside a frequency, ["doesn't meet the filter"](https://github.com/Civic-Minds/Atlas/issues/1227) no longer shows where the rows already say why, and uneven gaps read "Gaps between trips can be up to N min"
 - **Route card rows show the frequency the filter reads**: [AC Transit 281](https://github.com/Civic-Minds/Atlas/issues/1239) read every 60 where the filter reads 66, waits over an hour print their exact minutes, and a [branch that stops partway](https://github.com/Civic-Minds/Atlas/issues/1276) says when on its own rows (TTC 110 via 30th Street: every 30 min until 5:55 PM)
 - **Rows put the frequency first**: route and stop cards read "every 12 min until 9:40 PM", the wait riders scan for, then its limit
 - **Routes that run for only part of a period say when, never "no scheduled trips"**: [TTC 110](https://github.com/Civic-Minds/Atlas/issues/1277) Sunday mornings had no rows though buses run from 7:52 AM, the [stop card](https://github.com/Civic-Minds/Atlas/issues/1278) left it off, [TTC 100](https://github.com/Civic-Minds/Atlas/issues/1236) read "no scheduled trips from 2–6 AM" with buses from 5:22 AM, and [TTC 31](https://github.com/Civic-Minds/Atlas/issues/1186) named hours outside the period
@@ -45,7 +52,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Route cards and frequency
 
-<!-- CIV-1251 (card wording) adds its entry here. -->
+- **Route cards use one set of words for each situation**: "Shared stretch" names a route's shared part, "Irregular" replaces "limited" in a time period and "Part-time" on All day, a route that doesn't run reads "no trips", and branches that take turns on a shared stretch each say when they run (TTC 110)
 - **Route lists show the route card's number**: the [slower direction](https://github.com/Civic-Minds/Atlas/issues/821) (GO 47 no longer reads every 3), a [range](https://github.com/Civic-Minds/Atlas/issues/1231) that starts where the card does, and no number for a route the [filter reads as irregular](https://github.com/Civic-Minds/Atlas/issues/1247)
 - **A card shows one shared value per direction**: a destination under the Shared stretch row reads its own frequency, not a [second shared range](https://github.com/Civic-Minds/Atlas/issues/1232)
 - **Branch rows show only the time a branch runs**: a [rush-hour branch](https://github.com/Civic-Minds/Atlas/issues/1115) no longer borrows the main line's midday frequency (TTC 84)

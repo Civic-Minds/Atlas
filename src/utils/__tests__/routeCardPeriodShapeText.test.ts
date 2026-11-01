@@ -18,7 +18,7 @@ describe('routeCardPeriodShapeText (#934, D6)', () => {
     expect(routeCardPeriodShapeText(row(edge), 'pmPeak')).toBeUndefined();
   });
   it('one gap inside steady service reads the median and the gap', () => {
-    expect(routeCardPeriodShapeText(row(undefined, { overnight: { every: 5, gap: 169 } }), 'overnight')).toBe('every 5 min, with a 169 min gap');
+    expect(routeCardPeriodShapeText(row(undefined, { overnight: { every: 5, gap: 169 } }), 'overnight')).toBe('every 5 min, with one 169 min gap');
   });
   it('nothing for other periods, all day, or a feature without the field', () => {
     expect(routeCardPeriodShapeText(row({ amPeak: { from: 437, every: 9 } }), 'midday')).toBeUndefined();

@@ -1,6 +1,6 @@
 import type { HoveredBranch, ShapeProperties, TimePeriod } from '../hooks/useIntervalStats';
 import { resolveBranchLabel } from './format';
-import { hasDirectionPeriodService } from './effectiveHeadway';
+import { hasDirectionPeriodService, mainStretchEdge, periodEdgeText } from './effectiveHeadway';
 import { buildRouteServiceSummary } from './routeFacts';
 import { unevenPeriodMaxGap } from './routeCardUneven';
 import { rowTrips } from './rowTrips';
@@ -11,8 +11,8 @@ import { rowLabelWithOrigin } from './rowOriginLabel';
 import { hasStretchRoles, routeFilterAllDayContract, routeFilterContract, type RouteContract } from './stretchCard';
 import { featurePassesHeadwayFilter } from '../../shared/routeHeadwayFilter';
 import { headwayAbout, headwayAboutRange } from './headwayText';
-import { LIMITED_SERVICE_LABEL, IRREGULAR_PERIOD_LABEL, SHARED_STRETCH_LABEL } from '../content/noticeCopy';
-import type { RouteCardDirectionGroup } from './routeCardDirectionGroups';
+import { LIMITED_SERVICE_LABEL, noNumberRowLabel, SHARED_STRETCH_LABEL } from '../content/noticeCopy';
+import { buildDirectionGroups, type RouteCardDirectionGroup } from './routeCardDirectionGroups';
 
 /**
  * The route card's rows, built once (CIV-987). Every part of the card (rows, Shared stretch / Combined row, hover and the
@@ -58,6 +58,8 @@ export interface CardSpanRow {
 export interface CardSharedRow {
   label: string;
   headway: number;
+  /** CIV-1251 row 8: the shared stretch's own late start or early end ("every 15 min from 8:07 AM"), in place of the number. */
+  edgeText?: string;
   hover: HoveredBranch;
 }
 
@@ -96,6 +98,8 @@ export interface RouteCardModel {
   allDay: { filterValue: number | null; limited: boolean } | undefined;
   noRegularService: boolean;
   noRegularLabel: string;
+  /** CIV-1251: what a row the card can't give a number reads (noNumberRowLabel): Irregular in a period, Part-time or limited on All day. */
+  limitedWord: string;
   hasPeriodService: boolean;
   hasPartialPeriodService: boolean;
   /** The longest rider-meaningful gap for the uneven notice (0: none). Read only when the beta flag is on. */
@@ -141,7 +145,7 @@ function rowHover(dirId: number, headsign: string | null | undefined, routeVaria
  * words or its number. Null data reads "no data for this period", never a claim that nothing runs (#297).
  */
 export function reportRowValueText(row: CardRow): string {
-  if (row.night) return row.night.grade != null ? headwayAbout(row.night.grade) : IRREGULAR_PERIOD_LABEL;
+  if (row.night) return row.night.grade != null ? headwayAbout(row.night.grade) : noNumberRowLabel({ period: 'overnight', partTime: false, nightView: true });
   const { value, limitedLabel } = row.display(null);
   if (value.isLimited) return limitedLabel ?? LIMITED_SERVICE_LABEL;
   if (value.headway == null) return 'no data for this period';
@@ -160,7 +164,8 @@ export function buildRouteCardModel(input: RouteCardModelInput): RouteCardModel 
   const allDay = period === 'all' ? routeFilterAllDayContract(directions) : undefined;
   const noRegularService = (contract != null && contract.filterValue == null && contract.runs)
     || (allDay != null && allDay.filterValue == null);
-  const noRegularLabel = allDay?.limited ? LIMITED_SERVICE_LABEL : IRREGULAR_PERIOD_LABEL;
+  const noRegularLabel = noNumberRowLabel({ period, partTime: allDay?.limited === true, nightView, noRegular: true });
+  const limitedWord = noNumberRowLabel({ period, partTime: allDay?.limited === true, nightView });
   const hasPeriodService = period === 'all' || directionGroups.some(group =>
     group.realTier.some(direction => rowTrips(direction, period).value != null) ||
     group.span.length > 0,
@@ -188,7 +193,7 @@ export function buildRouteCardModel(input: RouteCardModelInput): RouteCardModel 
   const partPeriodGroups = noFilterValue && period !== 'all'
     ? directionGroups
       .map(group => ({ ...group, realTier: group.realTier.filter(direction => rowTrips(direction, period).partPeriod != null), span: [] }))
-      .filter(group => group.realTier.length > 0)
+      .filter(group => group.realTier.length > 0 || sharedStretchEdge(group, period, stretchMode) != null)
     : [];
   const doesNotRun = noFilterValue && partPeriodGroups.length === 0;
   const displayGroups = doesNotRun ? [] : partPeriodGroups.length > 0 ? partPeriodGroups : collapseGroups ? [directionGroups[0]] : directionGroups;
@@ -210,7 +215,9 @@ export function buildRouteCardModel(input: RouteCardModelInput): RouteCardModel 
     const value = routeCardRowValue(d, { ...rowContext, hoveredHour, pooledMainH, sharedRowShown });
     return {
       value,
-      limitedLabel: value.isLimited && value.edgeText ? value.edgeText : value.rowNoRegular ? (stableColors ? keepLastWordsTogether(noRegularLabel) : noRegularLabel) : undefined,
+      limitedLabel: value.isLimited && value.edgeText ? value.edgeText : value.rowNoRegular || value.isLimited
+        ? (word => (stableColors ? keepLastWordsTogether(word) : word))(value.rowNoRegular ? noRegularLabel : limitedWord)
+        : undefined,
       // Compare (CIV-844): a row that reads "Runs irregularly in this period" puts the whole
       // destination name on its line and the value under it (the row's own wrap layout), never "to Roncesval…".
       singleLine: !(stableColors && value.rowNoRegular),
@@ -226,9 +233,13 @@ export function buildRouteCardModel(input: RouteCardModelInput): RouteCardModel 
       && group.realTier.some(d => !featurePassesHeadwayFilter(d, period, maxHeadway));
     // CIV-937: with stretch data, the shared main stretch's own value ("Shared stretch every 15") above the branch rows.
     const stretchShared = stretchMode && !nightView ? stretchSharedHeadway(group, period) : null;
+    // CIV-1251 row 8 (Ryan, 2026-11-01): branches that take turns on a shared stretch that starts late or ends early. The
+    // Shared stretch row carries the stretch's own edge ("Shared stretch every 15 min from 8:07 AM", TTC 110 Sunday AM) and
+    // each branch row its own; the branches never read the shared one (rowReadsPeriodEdge).
+    const sharedEdge = sharedStretchEdge(group, period, stretchMode && !nightView);
     // A shared or combined value is a daytime reading: none on the Night card (CIV-934).
-    const groupHasCoreSummary = !nightView && (stretchMode ? stretchShared != null : groupShared != null || shouldShowTrunkSummary(group.realTier, period));
-    const groupCoreHeadway = groupShared?.headway ?? stretchShared ?? (groupHasCoreSummary
+    const groupHasCoreSummary = !nightView && (stretchMode ? stretchShared != null || sharedEdge != null : groupShared != null || shouldShowTrunkSummary(group.realTier, period));
+    const groupCoreHeadway = sharedEdge?.every ?? groupShared?.headway ?? stretchShared ?? (groupHasCoreSummary
       ? groupTrunkHeadway(group.realTier, period === 'all' ? 'midday' : period)
       : null);
     const groupSharedStopIds = groupShared?.stopIds ?? (groupHasCoreSummary ? sharedStopIdsForBranches(group.realTier) : []);
@@ -238,8 +249,10 @@ export function buildRouteCardModel(input: RouteCardModelInput): RouteCardModel 
       .filter((headsign): headsign is string => !!headsign);
     const shared: CardSharedRow | null = groupHasCoreSummary && groupCoreHeadway != null
       ? {
-        label: groupShared || stretchShared != null ? SHARED_STRETCH_LABEL : 'Combined',
+        // CIV-1251: one name for the shared part of a route; how its number was worked out belongs in the glossary.
+        label: SHARED_STRETCH_LABEL,
         headway: groupCoreHeadway,
+        ...(sharedEdge ? { edgeText: periodEdgeText(sharedEdge) } : {}),
         hover: { directionId: group.dirId, headsigns: coreHeadsigns, sharedStopIds: groupSharedStopIds, sharedHeadway: groupCoreHeadway, isCore: true },
       }
       : null;
@@ -276,7 +289,7 @@ export function buildRouteCardModel(input: RouteCardModelInput): RouteCardModel 
     // Span-only branches use the same limited row whether or not the irregular-service
     // filter is on: the filter hides them from the map, not from the route's own card.
     const spanRows: CardSpanRow[] = exclusiveSpans.length === 1
-      ? [{ label: branchLabel(group, exclusiveSpans[0], gi) || 'limited service', feature: exclusiveSpans[0], hover: rowHover(group.dirId, exclusiveSpans[0].headsign, exclusiveSpans[0].routeVariant) }]
+      ? [{ label: branchLabel(group, exclusiveSpans[0], gi) || (limitedWord === LIMITED_SERVICE_LABEL ? 'limited service' : ''), feature: exclusiveSpans[0], hover: rowHover(group.dirId, exclusiveSpans[0].headsign, exclusiveSpans[0].routeVariant) }]
       : exclusiveSpans.length > 1
         ? [{ label: exclusiveSpans.map(d => branchLabel(group, d, gi)).filter(Boolean).join(' · '), hover: null }]
         : [];
@@ -302,7 +315,7 @@ export function buildRouteCardModel(input: RouteCardModelInput): RouteCardModel 
       .map(({ value }) => (value && !value.isLimited ? value.headway : undefined))
       .filter((h): h is number => h != null))].sort((a, b) => a - b);
     const sharedLines = group.shared
-      ? [`- ${group.shared.label} ${headwayAbout(group.shared.headway)}${branchHeadways.length === 0 ? ''
+      ? [`- ${group.shared.label} ${group.shared.edgeText ?? headwayAbout(group.shared.headway)}${branchHeadways.length === 0 ? ''
         : `; each branch ${branchHeadways.length === 1 ? headwayAbout(branchHeadways[0]) : headwayAboutRange(branchHeadways[0], branchHeadways[branchHeadways.length - 1])}`}`]
       : [];
     const branchLines = shown.map(({ row }) => {
@@ -311,7 +324,7 @@ export function buildRouteCardModel(input: RouteCardModelInput): RouteCardModel 
       const reportLabel = row.label || row.feature.headsign?.trim() || `Direction ${row.feature.directionId ?? gi}`;
       return `- ${reportLabel}: ${reportRowValueText(row)}`;
     });
-    const spanLines = group.spanRows.filter(span => span.label).map(span => `- ${span.label}: ${LIMITED_SERVICE_LABEL}`);
+    const spanLines = group.spanRows.filter(span => span.label).map(span => `- ${span.label}: ${limitedWord}`);
     return [...section, ...sharedLines, ...branchLines, ...spanLines];
   });
 
@@ -319,8 +332,29 @@ export function buildRouteCardModel(input: RouteCardModelInput): RouteCardModel 
     .filter((h): h is number => typeof h === 'number');
 
   return {
-    stretchMode, contract, allDay, noRegularService, noRegularLabel, hasPeriodService, hasPartialPeriodService,
+    stretchMode, contract, allDay, noRegularService, noRegularLabel, limitedWord, hasPeriodService, hasPartialPeriodService,
     unevenGap: () => unevenPeriodMaxGap(directionGroups, period),
     primaryMultiBranch, activeRangeDirections, doesNotRun, collapseGroups, displayGroups, showDirectionSections, groups, rowHeadways, reportServiceLines,
   };
+}
+
+/**
+ * CIV-1251 row 8: the shared main stretch's own edge for a direction whose rows are branches (no main row reads it), or
+ * undefined. A direction with a main row keeps the edge on that row.
+ */
+function sharedStretchEdge(group: RouteCardDirectionGroup, period: TimePeriod, stretchMode: boolean) {
+  if (!stretchMode || period === 'all' || group.realTier.some(d => d.stretchRole === 'main')) return undefined;
+  if (!(group.directionFeatures ?? []).some(d => d.stretchRole === 'tail')) return undefined;
+  for (const d of group.directionFeatures ?? []) {
+    const edge = mainStretchEdge(d, period);
+    if (edge) return edge;
+  }
+  return undefined;
+}
+
+/** CIV-1251 row 8: the route card's Shared stretch time for one direction, from the route's features for the day, for the stop card. */
+export function routeCardSharedStretchEdge(features: readonly ShapeProperties[], directionId: number, period: TimePeriod) {
+  if (period === 'all' || !hasStretchRoles(features)) return undefined;
+  const group = buildDirectionGroups({ directions: [...features] }, period).find(g => g.dirId === directionId);
+  return group ? sharedStretchEdge(group, period, true) : undefined;
 }

@@ -14,7 +14,7 @@ describe('Docs page Notices section (CIV-1236)', () => {
     expect(examples).toHaveLength(14);
     expect(examples).toContain("“[Agency]'s schedule ended on [date]. Times shown may be out of date.”");
     expect(examples).toContain('“Gaps between trips can be up to [N] min.”');
-    expect(examples).toContain('“This route runs only from 7–9 AM in this period. No frequency is shown.”');
+    expect(examples).toContain('“This route runs only from 7–9 AM.”');
     expect(examples).toContain("“This route couldn't load.”");
     expect(screen.getByRole('link', { name: 'Notices' })).toHaveAttribute('href', '#notices');
   });
@@ -29,7 +29,7 @@ describe('Docs page Notices section (CIV-1236)', () => {
   it('defines Irregular and Occasional', () => {
     const { container } = render(<AboutDocsPage />);
     const glossary = container.querySelector('#glossary')!.textContent!;
-    expect(glossary).toContain('Irregular: Shown for a time period when a route runs but its trips don’t come at a regular gap, so there is no frequency to give. Route cards say “Runs irregularly in this period”; tables and lists say “Irregular”.');
-    expect(glossary).toContain('Occasional: A route that runs only now and then, such as school runs, routes with a few trips a day, or rush-hour-only service with no regular gap. “Hide occasional routes” hides them.');
+    expect(glossary).toContain('Irregular: Shown for a time period when a route runs but its trips don’t come at a consistent gap, so there is no frequency to give. Route cards say “Runs irregularly in this period”; tables and lists say “Irregular”.');
+    expect(glossary).toContain('Occasional: A route that runs only now and then, such as school runs, routes with a few trips a day, or rush-hour-only service with no consistent gap. “Hide occasional routes” hides them.');
   });
 });

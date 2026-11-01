@@ -42,26 +42,27 @@ describe('card notice styling', () => {
 
 describe('approved notice wording (CIV-1045)', () => {
   it('N12: the frequency filter', () => {
-    expect(selectedRouteOutsideFilterNotice(15, '6–9 AM').replace(/\u2060/g, '').replace(/\u00a0/g, ' ')).toBe("This route doesn't meet the 15\u2011minute filter for all of 6–9 AM.");
+    expect(selectedRouteOutsideFilterNotice(15, '6–9 AM').replace(/\u2060/g, '').replace(/\u00a0/g, ' ')).toBe("This route doesn't run every 15 min or better for all of 6–9 AM.");
     // N11: the same times as N8.
-    expect(selectedRouteOutsideFilterNotice(Infinity, '6–9 AM').replace(/\u2060/g, '').replace(/\u00a0/g, ' ')).toBe('This route has no scheduled trips from 6–9 AM.');
+    expect(selectedRouteOutsideFilterNotice(Infinity, '6–9 AM').replace(/\u2060/g, '').replace(/\u00a0/g, ' ')).toBe('This route has no trips from 6–9 AM.');
   });
 
   it('N13: names what the rest of the period has', () => {
     const base = { headway: 12, activeRange: '7–9 AM', periodRange: '6–9 AM' };
     const plain = (s: string) => s.replace(/\u2060/g, '').replace(/\u00a0/g, ' ');
     expect(plain(selectedRouteFilterNotice({ ...base, outside: [{ service: 'none', range: '6–7 AM' }] })))
-      .toBe('This route runs every 12 min from 7–9 AM, with no service from 6–7 AM.');
+      .toBe('This route runs every 12 min, only from 7–9 AM. It has no trips from 6–7 AM.');
     expect(plain(selectedRouteFilterNotice({ ...base, outside: [{ service: 'less', range: '6–7 AM' }] })))
-      .toBe('This route runs every 12 min from 7–9 AM, and less often from 6–7 AM.');
+      .toBe('This route runs every 12 min, only from 7–9 AM. It runs less often from 6–7 AM.');
     expect(plain(selectedRouteFilterNotice({ ...base, activeRange: '7–8 AM', outside: [{ service: 'none', range: '6–7 AM' }, { service: 'none', after: '8 AM' }] })))
-      .toBe('This route runs every 12 min from 7–8 AM, with no service from 6–7 AM or after 8 AM.');
+      .toBe('This route runs every 12 min, only from 7–8 AM. It has no trips from 6–7 AM or after 8 AM.');
     expect(plain(selectedRouteFilterNotice({ ...base, activeRange: '7–8 AM', outside: [{ service: 'none', range: '6–7 AM' }, { service: 'less', after: '8 AM' }] })))
-      .toBe('This route runs every 12 min from 7–8 AM, with no service from 6–7 AM, and less often after 8 AM.');
+      .toBe('This route runs every 12 min, only from 7–8 AM. It has no trips from 6–7 AM. It runs less often after 8 AM.');
     expect(plain(selectedRouteFilterNotice({ ...base, outside: [{ service: 'unknown', range: '6–7 AM' }] })))
-      .toBe('This route runs every 12 min from 7–9 AM, and not from 6–7 AM.');
+      .toBe('This route runs every 12 min, only from 7–9 AM.');
     // More than one run in the period: the general wording.
-    expect(plain(selectedRouteFilterNotice(base))).toBe('This route runs every 12 min from 7–9 AM, but not throughout the selected 6–9 AM period.');
+    expect(plain(selectedRouteFilterNotice(base))).toBe('This route runs every 12 min, only from 7–9 AM.');
+    expect(plain(selectedRouteFilterNotice({ ...base, headway: null }))).toBe('This route runs only from 7–9 AM.');
   });
 
   it('N35: a stop with no routes in the chosen time', () => {
@@ -72,9 +73,9 @@ describe('approved notice wording (CIV-1045)', () => {
     expect(nightNoRoutesNotice(30)).toBe('No routes here run every 30 min or better from 2–5 AM.');
   });
 
-  it('N17 and N26: no scheduled trips on the day (CIV-1077)', () => {
-    expect(noServiceOnDayNotice('route', 'Sunday')).toBe('This route has no scheduled trips on Sundays.');
-    expect(noServiceOnDayNotice('agency', 'Weekday')).toBe('This agency has no scheduled trips on weekdays.');
+  it('N17 and N26: no trips on the day (CIV-1077, CIV-1251)', () => {
+    expect(noServiceOnDayNotice('route', 'Sunday')).toBe('This route has no trips on Sundays.');
+    expect(noServiceOnDayNotice('agency', 'Weekday')).toBe('This agency has no trips on weekdays.');
   });
 });
 
@@ -91,7 +92,7 @@ describe('empty and loading states (CIV-957)', () => {
     expect(NO_MATCHING_AGENCIES).toBe('No agencies match.');
     expect(noSearchMatchText('hidden routes')).toBe('No hidden routes match your search.');
     expect(noSearchMatchText('limited-service routes')).toBe('No limited-service routes match your search.');
-    expect(NO_LIMITED_ROUTES_IN_VIEW).toBe('No limited-service routes in view.');
+    expect(NO_LIMITED_ROUTES_IN_VIEW).toBe('No part-time routes in view.');
     expect(HIDDEN_ROUTES_UNAVAILABLE).toBe('The hidden-route list is unavailable right now.');
     expect(NO_DEGRADED_FEEDS).toBe('No degraded or unusable feeds are currently recorded.');
     expect(NO_FEED_MATCHES).toBe('No feeds match your search or filter.');
