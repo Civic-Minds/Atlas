@@ -1054,9 +1054,23 @@ export function rollupDirection(d: DirectionStretches): DirectionRollup | null {
     // branch that runs steadily and then stops (settled rule 3 keeps its full-window wait: AC
     // Transit 22 Sunday midday, every 30 until 12:12, 168) reads "every 30 until 12:12" from the
     // same reading as a main stretch's early end.
-    const edge = uneven ? null : runs ? periodEdge((setterAt?.st ?? d.main).times, start, end, period[key].filterValue) : periodPartialEdge(d.main.times, start, end);
+    // CIV-1248 (Ryan, 2026-11-01): a period the main stretch covers only part of reads the partial
+    // edge of every stretch that starts or ends in it, and the slowest decides (D1), as the filter
+    // value's setter does: TTC 110 Sunday AM's trunk runs every 15 from 7:52, its branches every 30.
+    // The filter value stays null there (D8).
+    const partial = () => [d.main, ...d.tails]
+      .map((st, i) => ({ edge: periodPartialEdge(st.times, start, end), stretch: (i === 0 ? 'main' : i - 1) as 'main' | number }))
+      .filter((c): c is { edge: StretchPeriodEdge; stretch: 'main' | number } => c.edge != null)
+      .reduce<{ edge: StretchPeriodEdge; stretch: 'main' | number } | null>((worst, c) => (worst == null || c.edge.every > worst.edge.every ? c : worst), null);
     // #1276: name the stretch, so the card puts the words on that stretch's row.
-    period[key].edge = edge && { ...edge, stretch: runs ? setterAt?.stretch ?? 'main' : 'main' };
+    if (uneven) period[key].edge = null;
+    else if (runs) {
+      const edge = periodEdge((setterAt?.st ?? d.main).times, start, end, period[key].filterValue);
+      period[key].edge = edge && { ...edge, stretch: setterAt?.stretch ?? 'main' };
+    } else {
+      const slowest = partial();
+      period[key].edge = slowest && { ...slowest.edge, stretch: slowest.stretch };
+    }
     // Only where the settled checks count the period as running: a big-gap period that does not
     // run (TTC 504 overnight, 169 minutes against a typical 5) keeps "no regular service".
     period[key].gap = runs && !uneven && !period[key].edge ? periodOneGap(d.main.times, start, end) : null;
