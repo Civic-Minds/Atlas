@@ -1000,6 +1000,8 @@ export function periodOneGap(stretchTimes: readonly number[], start: number, end
 /** D1 and D3: the direction value is the worst counting stretch; night needs the main stretch and every tail that runs at night. */
 export function rollupDirection(d: DirectionStretches): DirectionRollup | null {
   if (!d.main) return null;
+  // The guard's narrowing does not reach the closures below.
+  const mainStretch = d.main;
   const main = stretchPeriods(d.main);
   const tails = d.tails.map(stretchPeriods);
   // #1072, rule 3: a tail that runs only part of a period because a sibling branch takes over the
@@ -1082,7 +1084,7 @@ export function rollupDirection(d: DirectionStretches): DirectionRollup | null {
     // edge of every stretch that starts or ends in it, and the slowest decides (D1), as the filter
     // value's setter does: TTC 110 Sunday AM's trunk runs every 15 from 7:52, its branches every 30.
     // The filter value stays null there (D8).
-    const partial = () => [d.main, ...d.tails]
+    const partial = () => [mainStretch, ...d.tails]
       .map((st, i) => ({ edge: periodPartialEdge(st.times, start, end), stretch: (i === 0 ? 'main' : i - 1) as 'main' | number }))
       .filter((c): c is { edge: StretchPeriodEdge; stretch: 'main' | number } => c.edge != null)
       .reduce<{ edge: StretchPeriodEdge; stretch: 'main' | number } | null>((worst, c) => (worst == null || c.edge.every > worst.edge.every ? c : worst), null);
