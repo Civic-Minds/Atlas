@@ -105,18 +105,10 @@ export function selectedRoutePartMeetsFilterNotice(maxHeadway: number): string {
 export const EXPIRED_FEED_EXPLANATION =
   'This is the latest schedule the agency has published that we could verify.';
 
-// N77 check-history, N78 last-refreshed / E1 line 2
-export function expiredFeedCheckHistory(options: {
-  count?: number;
-  since?: string;
-  lastChecked?: string;
-  lastRefreshed?: string;
-}): string {
-  if (options.count != null && options.since && options.lastChecked && formatStoredDate(options.lastChecked)) {
-    return `We've checked for a new schedule ${options.count} ${plural(options.count, 'time')} since ${formatStoredDate(options.since)}, with our most recent check on ${formatStoredDate(options.lastChecked)}.`;
-  }
-  if (options.lastRefreshed && formatStoredDate(options.lastRefreshed)) {
-    return `The feed was last refreshed on ${formatStoredDate(options.lastRefreshed)}.`;
+// N77 check-history / E1 line 2. No last-checked or last-refreshed date (Ryan, CIV-1242), so N78 is gone.
+export function expiredFeedCheckHistory(options: { count?: number; since?: string }): string {
+  if (options.count != null && options.since && formatStoredDate(options.since)) {
+    return `We've checked for a new schedule ${options.count} ${plural(options.count, 'time')} since ${formatStoredDate(options.since)}.`;
   }
   return '';
 }

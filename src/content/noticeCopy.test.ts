@@ -22,9 +22,13 @@ describe('expiredFeedNotice', () => {
 
 describe('expiredFeedCheckHistory', () => {
   it('reads as its own sentence', () => {
-    expect(expiredFeedCheckHistory({ count: 5, since: '2026-06-22', lastChecked: '2026-10-12' })).toBe(
-      "We've checked for a new schedule 5 times since Jun 22, 2026, with our most recent check on Oct 12, 2026.",
+    expect(expiredFeedCheckHistory({ count: 5, since: '2026-06-22' })).toBe(
+      "We've checked for a new schedule 5 times since Jun 22, 2026.",
     );
+  });
+
+  it('gives no last-checked date (CIV-1242)', () => {
+    expect(expiredFeedCheckHistory({})).toBe('');
   });
 });
 

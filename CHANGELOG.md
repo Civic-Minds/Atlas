@@ -8,6 +8,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Map and route behavior
 
+- **The info panel no longer gives a last-checked or last-refreshed date**: it says how many times Atlas has checked since a schedule ended, and when it checks next
 - **The route chooser's dots match the line colours**: [LA Metro E Line](https://github.com/Civic-Minds/Atlas/issues/1246) showed an every-30 dot beside a line drawn every 10 or better; dots now follow the day and time on screen
 - **Rows with only a few trips in a period read "Irregular", not "no regular service"**: the old words read as if nothing ran; cards say "Runs irregularly in this period", and the route class hidden by default is now "Occasional" ("Hide occasional routes"), since "one-off" read as once a day
 - **Agency pages say "Irregular" where the map list does**: [CTA 1](https://github.com/Civic-Minds/Atlas/issues/1249) and other routes that run without a regular frequency were left blank, as if they had no service
