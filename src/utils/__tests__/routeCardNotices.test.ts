@@ -193,3 +193,14 @@ describe('CIV-1241: the part-route line and a row\'s until or from time say the 
     expect(partMeets([{ headway: 15, dimmed: true, edge: 'every 15 min, with a 30 min gap' }]).filter?.code).toBe('N123');
   });
 });
+
+describe('CIV-1251: the runs-only line shows once', () => {
+  it('N9 beside N13, which opens with the same sentence, is left out (TTC 31 weekday overnight)', () => {
+    const night = { headsign: 'A', headwayByHour: { 29: 20 }, departuresByHour: { 29: 3 } } as any;
+    const partial = { ...model, hasPeriodService: false, hasPartialPeriodService: true, activeRangeDirections: [night], contract: { filterValue: 60 } } as unknown as RouteCardNoticeInput['model'];
+    const n = routeCardNotices({ ...base, directions: [night], model: partial, period: 'overnight', maxHeadway: 15, selectedRouteOutOfFilter: true });
+    if (n.filter?.code === 'N13') expect(n.period).toBeNull();
+    expect([n.filter?.text, n.period?.text].filter(Boolean).filter(t => /runs only from/.test(t!))).toHaveLength(1);
+  });
+});
+

@@ -243,7 +243,8 @@ export function routeCardNotices(input: RouteCardNoticeInput): RouteCardNotices 
     else if (rowGivesHours) periodNotice = drop(periodNotice, 'a row gives its hours, so the route does not run all period');
   }
   // #1225: the period line and the filter line can be the same sentence ("no scheduled trips from 6–9 AM").
-  if (periodNotice && filter && periodNotice.text === filter.text) periodNotice = drop(periodNotice, 'the filter line says the same');
+  // CIV-1251: N13 opens with N9's sentence and adds the rest of the period, so N9 beside it says the same thing again.
+  if (periodNotice && filter && (periodNotice.text === filter.text || (periodNotice.code === 'N9' && filter.code === 'N13' && filter.text.startsWith(periodNotice.text)))) periodNotice = drop(periodNotice, 'the filter line says the same');
   // #1226: every row giving its hours already says what the line says (CIV-1251 row 8: nothing below the rows).
   if (periodNotice?.code === 'N9' && rowsGiveHours) periodNotice = drop(periodNotice, 'every row gives its hours');
   if (filter?.code === 'N13' && rowsGiveHours) filter = drop(filter, 'every row gives its hours');
