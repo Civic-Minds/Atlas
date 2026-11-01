@@ -1287,14 +1287,16 @@ export function stampStretchShadow(
     p.stretchPeriodCoverage = byPeriod(k => dir.period[k].coverage);
     p.stretchPeriodSustained = byPeriod(k => dir.period[k].sustained);
     p.stretchPeriodSustainedMid = byPeriod(k => dir.period[k].sustainedMid);
-    p.stretchPeriodOneGap = byPeriod(k => dir.period[k].oneGap);
-    p.stretchPeriodTypical = byPeriod(k => dir.period[k].typical);
+    // #1267: Overnight is one number from the night verdict, so its old 2-6 AM wording inputs (one gap, typical-worst
+    // range, late start or early end, one gap inside) are not stamped.
+    p.stretchPeriodOneGap = byPeriod(k => k === 'overnight' ? false : dir.period[k].oneGap);
+    p.stretchPeriodTypical = byPeriod(k => k === 'overnight' ? null : dir.period[k].typical);
     // #934: only periods with an edge reading, so most features carry an empty object at most.
     {
-      const edges = Object.fromEntries(PERIOD_WINDOWS.flatMap(({ key }) => (dir.period[key].edge ? [[key, dir.period[key].edge]] : [])));
+      const edges = Object.fromEntries(PERIOD_WINDOWS.flatMap(({ key }) => (key !== 'overnight' && dir.period[key].edge ? [[key, dir.period[key].edge]] : [])));
       if (Object.keys(edges).length > 0) p.stretchPeriodEdge = edges;
       else delete p.stretchPeriodEdge;
-      const gaps = Object.fromEntries(PERIOD_WINDOWS.flatMap(({ key }) => (dir.period[key].gap ? [[key, dir.period[key].gap]] : [])));
+      const gaps = Object.fromEntries(PERIOD_WINDOWS.flatMap(({ key }) => (key !== 'overnight' && dir.period[key].gap ? [[key, dir.period[key].gap]] : [])));
       if (Object.keys(gaps).length > 0) p.stretchPeriodGap = gaps;
       else delete p.stretchPeriodGap;
     }

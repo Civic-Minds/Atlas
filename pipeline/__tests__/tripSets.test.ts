@@ -351,6 +351,27 @@ describe('Overnight reads the night verdict (#1267, Ryan 2026-10-31)', () => {
     expect(directionNightValue(dir(every(hm(26, 0), hm(29, 0), 75)))).toBeNull();
     expect(directionNightValue(dir(every(hm(26, 0), hm(29, 0), 60)))).toBe(60);
   });
+  it('Overnight is one number: no branch range and no 2-6 AM wording inputs (TTC 300, its branches every 8-15)', async () => {
+    const r = await run('ttc-300-weekday-night');
+    const rows = r.rows.filter(p => p.stretchPeriodRange !== undefined);
+    expect(rows.length).toBeGreaterThan(0);
+    for (const p of rows as Record<string, any>[]) {
+      expect(p.stretchPeriodRange.overnight).toBeNull();
+      expect(p.stretchPeriodTypical.overnight).toBeNull();
+      expect(p.stretchPeriodOneGap.overnight).toBe(false);
+      expect(p.stretchPeriodEdge?.overnight).toBeUndefined();
+      expect(p.stretchPeriodGap?.overnight).toBeUndefined();
+    }
+  });
+  it('NYC subway 3 to New Lots Av runs at night only on its night path: the route has an Overnight value, the direction none', async () => {
+    const r = await run('nyct-subway-night-weekday', 'nyct');
+    const rows = (r.rows as Record<string, any>[]).filter(p => p.routeShortName === '3' && p.day === 'Weekday' && p.headsign === 'New Lots Av' && p.directionFilterHeadwayByPeriod);
+    expect(rows.length).toBeGreaterThan(0);
+    for (const p of rows) {
+      expect(p.routeFilterHeadwayByPeriod.overnight).toEqual(expect.any(Number));
+      expect(p.directionFilterHeadwayByPeriod.overnight).toBeNull();
+    }
+  });
   it('day service that only starts after 3:30 has no Overnight value (TTC 102)', () => {
     expect(directionNightValue(dir(every(hm(28, 48), hm(30, 0), 12)))).toBeNull();
   });
