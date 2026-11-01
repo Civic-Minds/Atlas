@@ -1003,3 +1003,30 @@ describe('a tail that does not run through a period, by the main stretch\'s rule
     expect(notThrough.filter(p => ['amPeak', 'midday', 'pmPeak', 'evening'].includes(p))).toEqual([]);
   });
 });
+
+describe('CIV-1248: a period the route covers only part of reads its slowest stretch (D1)', () => {
+  const am = (r: Run, route: string, dir: number) => r.rows.filter(p => p.routeShortName === route && p.day === 'Sunday' && p.directionId === dir) as Record<string, any>[];
+  it('TTC 110 Sunday AM to Islington: the branches run every 30 from about 7:53, not the trunk\'s every 15; no filter value (D8)', async () => {
+    const rows = am(await run('ttc-110-79-sunday'), '110', 1);
+    expect(rows.length).toBeGreaterThan(0);
+    for (const p of rows) {
+      expect(p.stretchPeriodEdge.amPeak).toEqual({ from: 473, every: 30, stretch: 0 });
+      expect(p.directionFilterHeadwayByPeriod.amPeak).toBeNull();
+      expect(p.routeFilterHeadwayByPeriod.amPeak).toBeNull();
+    }
+    // A row that covers that branch carries it, so the card can place the words (#1276).
+    expect(rows.some(p => p.stretchCovers?.includes(0))).toBe(true);
+  });
+  it('legitimate: TTC 110 Sunday AM to Long Branch keeps the trunk reading; its branches run under three times before 9 and do not count', async () => {
+    for (const p of am(await run('ttc-110-79-sunday'), '110', 0)) expect(p.stretchPeriodEdge.amPeak).toMatchObject({ from: 487, every: 15, stretch: 'main' });
+  });
+  it('TTC 79 Sunday AM: every 30 on the slower branch (was the trunk\'s every 15)', async () => {
+    const rows = am(await run('ttc-110-79-sunday'), '79', 0);
+    expect(rows.length).toBeGreaterThan(0);
+    for (const p of rows) {
+      expect(p.stretchPeriodEdge.amPeak.every).toBe(30);
+      expect(p.stretchPeriodEdge.amPeak.stretch).not.toBe('main');
+      expect(p.directionFilterHeadwayByPeriod.amPeak).toBeNull();
+    }
+  });
+});

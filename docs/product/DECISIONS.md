@@ -233,6 +233,11 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 
 Dated, newest first. The rules above are the short form; this is the reasoning.
 
+### 2026-11-01 — A route that starts late or ends early in a period shows its frequency with the time
+Ryan, 2026-11-01 (#1277, Linear CIV-1248): a period the route covers only part of reads "every 30 from 7:52 AM" (TTC 110 Sunday AM) instead of "No frequency is shown".
+- The time and frequency are read on every stretch that starts or ends in the period, and the slowest decides (D1), as for the filter value: TTC 110's trunk runs every 15 from 7:52, its branches every 30, so it reads every 30. A branch with under three trips in the period does not count.
+- The filter is unchanged: a period the route covers only part of is still not regular service (D8), so it has no filter value.
+
 ### 2026-11-01 — A branch that stops partway through a period says when it stops
 Ryan, 2026-11-01 (#1268, Linear CIV-1241), picked option 1: a branch row that runs part of the period and then stops reads "every 30 until 12:12 PM" (AC Transit 22 Sunday midday), not the full-period wait it filters at (168, settled rule 3).
 - The edge (the start or stop time) is read on the row that sets the direction's value (D1). So a main row whose number comes from a slower branch no longer carries an edge (TTC 40 Saturday late).
