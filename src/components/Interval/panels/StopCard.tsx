@@ -170,6 +170,14 @@ export const StopCard: React.FC<StopCardProps> = ({
             onClick={() => openRoute(route.noTrips!.rKey)}
             below={<p className={CARD_SUMMARY}>{stopRouteNoTripsNotice(periodRange(period))}</p>}
           />
+        ) : route.noNumber ? (
+          // #1278: the stop's own route with trips here but no number in the period: the route card's own words.
+          <CardSummaryRow
+            key={route.shortName}
+            label={<RouteRowName shortName={route.label.primary} name={route.label.secondary} />}
+            onClick={() => openRoute(route.noNumber!.rKey)}
+            below={<p className={CARD_SUMMARY}>{route.noNumber.text}</p>}
+          />
         ) : (
           <StopRouteGroup
             key={route.shortName}
