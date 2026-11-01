@@ -108,6 +108,14 @@
       "destination": "/area/:slug/index.html"
     },
     {
+      "source": "/region/:slug",
+      "destination": "/region/:slug/index.html"
+    },
+    {
+      "source": "/region/:slug/",
+      "destination": "/region/:slug/index.html"
+    },
+    {
       "source": "/",
       "destination": "/index.html"
     },

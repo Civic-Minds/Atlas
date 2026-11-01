@@ -42,8 +42,8 @@ export interface AreaAgencyRow {
   modes: Record<string, number>;
 }
 
-export interface AreaPageData {
-  area: Pick<AreaConfig, 'slug' | 'name' | 'type' | 'officialName' | 'country' | 'cities' | 'bbox' | 'center' | 'note'>;
+/** The numbers an area or a state or province page (CIV-976) shows for its agencies, counted the same way on both. */
+export interface AgencyGroupData {
   totalRoutes: number;
   /** Route counts per weekday-midday frequency band (see FREQUENCY_BANDS), no-midday last. */
   bands: number[];
@@ -51,13 +51,17 @@ export interface AreaPageData {
   best: { name: string; headway: number; agency: string } | null;
   byMode: Array<{ label: string; routes: number }>;
   agencies: AreaAgencyRow[];
-  /** States or provinces of the area's own listed agencies, most routes first (CIV-968: the subtitle when the cities only repeat the title). */
-  regions?: string[];
   /** Mode columns for the agency table: the same fixed set on every area page (AREA_TABLE_MODES), then "Other" when an agency has a rarer mode. */
   modeColumns: string[];
   /** Newest schedule refresh among the area's agencies, and the data release the numbers come from. */
   newestRefresh: string | null;
   releaseDate: string | null;
+}
+
+export interface AreaPageData extends AgencyGroupData {
+  area: Pick<AreaConfig, 'slug' | 'name' | 'type' | 'officialName' | 'country' | 'cities' | 'bbox' | 'center' | 'note'>;
+  /** States or provinces of the area's own listed agencies, most routes first (CIV-968: the subtitle when the cities only repeat the title). */
+  regions?: string[];
 }
 
 /**
@@ -124,8 +128,8 @@ function tableModes(byMode: ReadonlyArray<{ label: string; routes: readonly unkn
   return out;
 }
 
-export function buildAreaPageData(area: AreaConfig, all: ReadonlyMap<string, AgencyPageSummary>, releaseDate: string | null): AreaPageData {
-  const members = areaAgencySummaries(area, all);
+/** The page numbers for a set of agencies, each with only the routes the page counts: the rows, bar, mode counts and dates. */
+export function agencyGroupData(members: readonly AgencyPageSummary[], all: ReadonlyMap<string, AgencyPageSummary>, releaseDate: string | null): AgencyGroupData {
   const shared = sharedOfficialNames([...all.values()]);
   const allRoutes = members.flatMap(a => a.routes);
   const modeCounts = new Map<string, number>();
@@ -146,30 +150,50 @@ export function buildAreaPageData(area: AreaConfig, all: ReadonlyMap<string, Age
   }
   rows.sort((x, y) => y.totalRoutes - x.totalRoutes || compareAgencyName(x.name, y.name) || x.slug.localeCompare(y.slug));
   const best = bestRoute(members.flatMap(a => a.routes.map(r => ({ ...r, agency: a.displayName }))));
-  const { slug, name, type, officialName, country, cities, bbox, center, note } = area;
-  const regionRoutes = new Map<string, number>();
-  for (const a of members) {
-    if (a.region && area.agencies.includes(a.slug)) regionRoutes.set(a.region, (regionRoutes.get(a.region) ?? 0) + a.routes.length);
-  }
-  const regions = [...regionRoutes.entries()].sort((x, y) => y[1] - x[1] || x[0].localeCompare(y[0])).map(([r]) => r);
   const byMode = [...modeCounts.entries()].map(([label, routes]) => ({ label, routes }))
     .sort((x, y) => modeLabelSortIndex(x.label) - modeLabelSortIndex(y.label));
   return {
-    area: { slug, name, type, officialName, country, cities, bbox, center, ...(note ? { note } : {}) },
     totalRoutes: allRoutes.length,
     bands: bandCounts(allRoutes),
     best: best ? { name: best.route.name, headway: best.headway, agency: best.route.agency } : null,
     byMode,
     agencies: rows,
-    regions,
     modeColumns: [...AREA_TABLE_MODES, ...(rows.some(r => r.modes[AREA_TABLE_OTHER]) ? [AREA_TABLE_OTHER] : [])],
     newestRefresh: newest,
     releaseDate,
   };
 }
 
+export function buildAreaPageData(area: AreaConfig, all: ReadonlyMap<string, AgencyPageSummary>, releaseDate: string | null): AreaPageData {
+  const members = areaAgencySummaries(area, all);
+  const { slug, name, type, officialName, country, cities, bbox, center, note } = area;
+  const regionRoutes = new Map<string, number>();
+  for (const a of members) {
+    if (a.region && area.agencies.includes(a.slug)) regionRoutes.set(a.region, (regionRoutes.get(a.region) ?? 0) + a.routes.length);
+  }
+  const regions = [...regionRoutes.entries()].sort((x, y) => y[1] - x[1] || x[0].localeCompare(y[0])).map(([r]) => r);
+  const group = agencyGroupData(members, all, releaseDate);
+  const { totalRoutes, bands, best, byMode, agencies, modeColumns, newestRefresh } = group;
+  return {
+    area: { slug, name, type, officialName, country, cities, bbox, center, ...(note ? { note } : {}) },
+    totalRoutes,
+    bands,
+    best,
+    byMode,
+    agencies,
+    regions,
+    modeColumns,
+    newestRefresh,
+    releaseDate,
+  };
+}
+
 export function areaPageTitle(d: Pick<AreaPageData, 'area' | 'agencies'>): string {
-  const region = areaRegionTitle(d.area);
+  return groupPageTitle(areaRegionTitle(d.area), d);
+}
+
+/** A page title for agencies in one place (an area's title, a state's or province's name). */
+export function groupPageTitle(region: string, d: Pick<AgencyGroupData, 'agencies'>): string {
   const across = `how often transit runs across ${countOf(d.agencies.length, 'agency', 'agencies')}`;
   return firstThatFits([
     `${region}: ${across} | Transit Atlas`,
@@ -198,17 +222,26 @@ export function areaSubtitle(d: Pick<AreaPageData, 'area' | 'regions'>): string 
 
 /** One sentence that stands alone, used as the meta description's opening. */
 export function areaLeadSentence(d: AreaPageData): string {
-  return `${countOf(d.totalRoutes, 'weekday route', 'weekday routes')} across ${countOf(d.agencies.length, 'transit agency', 'transit agencies')} in ${areaRegionName(d.area)}.`;
+  return groupLeadSentence(areaRegionName(d.area), d);
+}
+
+/** The lead sentence for agencies in one place, named as inside a sentence ("the Calgary area", "Colorado"). */
+export function groupLeadSentence(where: string, d: Pick<AgencyGroupData, 'totalRoutes' | 'agencies'>): string {
+  return `${countOf(d.totalRoutes, 'weekday route', 'weekday routes')} across ${countOf(d.agencies.length, 'transit agency', 'transit agencies')} in ${where}.`;
 }
 
 export function areaPageDescription(d: AreaPageData): string {
+  return groupPageDescription(areaRegionName(d.area), d);
+}
+
+/** The meta description for agencies in one place, named as inside a sentence. */
+export function groupPageDescription(where: string, d: Pick<AgencyGroupData, 'totalRoutes' | 'agencies'>): string {
   const n = d.agencies.length;
-  const where = areaRegionName(d.area);
   return firstThatFits([
     `Compare ${countOf(n, 'transit agency', 'transit agencies')} in ${where} side by side: routes and weekday waits by time of day, from published schedules.`,
     `Compare ${countOf(n, 'transit agency', 'transit agencies')} in ${where}: routes and weekday waits by time of day.`,
-    `${areaLeadSentence(d)} Compare each agency's routes and frequency.`,
-    areaLeadSentence(d),
+    `${groupLeadSentence(where, d)} Compare each agency's routes and frequency.`,
+    groupLeadSentence(where, d),
   ], DESCRIPTION_MAX);
 }
 
@@ -222,8 +255,13 @@ const AREA_INTRO_NAMED = 2;
  * the names start.
  */
 export function areaIntroParts(d: AreaPageData): { lead: string; named: AreaAgencyRow[]; others: number } {
+  return groupIntroParts(areaRegionSentenceStart(d.area), d);
+}
+
+/** The same intro for agencies in one place, named as at the start of a sentence ("The Calgary area", "Colorado"). */
+export function groupIntroParts(placeStart: string, d: Pick<AgencyGroupData, 'agencies' | 'totalRoutes' | 'byMode'>): { lead: string; named: AreaAgencyRow[]; others: number } {
   const n = d.agencies.length;
-  const lead = `${areaRegionSentenceStart(d.area)} has ${countOf(n, 'transit agency', 'transit agencies')} running ${countOf(d.totalRoutes, 'route', 'routes')}${d.byMode.length > 1 ? ` (${modesText(d.byMode, ', ')})` : ''}`;
+  const lead = `${placeStart} has ${countOf(n, 'transit agency', 'transit agencies')} running ${countOf(d.totalRoutes, 'route', 'routes')}${d.byMode.length > 1 ? ` (${modesText(d.byMode, ', ')})` : ''}`;
   if (n <= AREA_INTRO_NAME_NONE_MAX) return { lead, named: [], others: 0 };
   const named = d.agencies.slice(0, AREA_INTRO_NAMED);
   return { lead, named, others: n - named.length };
@@ -251,6 +289,9 @@ export function areaAboutParagraph(d: AreaPageData): string {
   const j = areaIntroJoiners(parts);
   return `${parts.lead}${j.opener}${parts.named.map((a, i) => areaIntroName(d, a) + j.separators[i]).join('')}${j.tail}`;
 }
+
+/** The line under an area page's frequency bar. */
+export const AREA_BAR_NOTE = "The bar splits this area's routes by how often they run on a weekday midday. Each route is judged by its slower direction.";
 
 export function areaDatesText(d: Pick<AreaPageData, 'newestRefresh' | 'releaseDate'>): string {
   const refreshed = formatDataDate(d.newestRefresh);

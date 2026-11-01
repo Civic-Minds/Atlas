@@ -29,6 +29,7 @@ const ResearchPage = React.lazy(() => import('./apps/ResearchPage'));
 const FreeChildFaresPage = React.lazy(() => import('./apps/FreeChildFaresPage'));
 const FrequentServiceStoryPage = React.lazy(() => import('./apps/FrequentServiceStoryPage'));
 const AreaPage = React.lazy(() => import('./AreaPage'));
+const RegionPage = React.lazy(() => import('./RegionPage'));
 const AgenciesIndexPage = React.lazy(() => import('./AgenciesIndexPage'));
 const DiagnosticsUnevenPage = React.lazy(() => import('./DiagnosticsUnevenPage'));
 const DiagnosticsPerformancePage = React.lazy(() => import('./DiagnosticsPerformancePage'));
@@ -101,6 +102,7 @@ ReactDOM.createRoot(rootElement).render(
           {FEATURES.researchApps && <Route path="/research/free-child-fares" element={<FreeChildFaresPage />} />}
           {FEATURES.frequentService && <Route path={FEATURE_ROUTES.frequentService.story} element={<FrequentServiceStoryPage />} />}
           {FEATURES.agencyPages && <Route path="/area/:slug" element={<AreaPage />} />}
+          {FEATURES.agencyPages && <Route path="/region/:slug" element={<RegionPage />} />}
           {FEATURES.agencyPages && <Route path="/agencies" element={<AgenciesIndexPage />} />}
           <Route path="/*" element={<MapOrNotFound />} />
           </Routes>

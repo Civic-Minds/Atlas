@@ -4,6 +4,8 @@ import type { ReactElement } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import AgencyPage from '../AgencyPage';
 import AreaPage from '../AreaPage';
+import RegionPage from '../RegionPage';
+import { buildRegionPageData } from '../../shared/regionPages';
 import { agencyPageData, type AgencyPageRoute, type AgencyPageSummary } from '../../shared/agencyPages';
 import { buildAreaPageData, AREA_TABLE_OTHER } from '../../shared/areaPages';
 import type { AreaConfig } from '../../shared/areas';
@@ -100,8 +102,8 @@ describe('AgencyPage intro', () => {
     view(<AgencyPage data={d} />);
     const p = screen.getByText((_, el) => el?.tagName === 'P' && /operates 5 routes \(2 subway\/metro, 3 bus\) in Toronto with 7,566 stops/.test(el.textContent ?? ''));
     expect(p.textContent).toBe(d.intro);
-    // No area page: the place links to its province in the all-agencies list (CIV-966).
-    expect(screen.getByRole('link', { name: 'Toronto' }).getAttribute('href')).toBe('/agencies#index-canada-ontario');
+    // No area page: the place links to its province page (CIV-976).
+    expect(screen.getByRole('link', { name: 'Toronto' }).getAttribute('href')).toBe('/region/ontario');
     expect(document.body.textContent!.split('operates 5 routes (').length - 1).toBe(1);
     expect(screen.getAllByRole('link', { name: 'Hamilton Street Railway' })[0].getAttribute('href')).toBe('/agency/hsr');
     expect(screen.queryByRole('link', { name: 'Tiny Transit' })).toBeNull();
@@ -285,5 +287,26 @@ describe('AgencyPage "See all agencies"', () => {
     view(<AgencyPage data={agencyPageData(TTC, [TTC], '2026-10-13T00:00:00Z')} />);
     expect(screen.queryByRole('heading', { name: /Nearby agencies/ })).toBeNull();
     expect(screen.getAllByRole('link', { name: 'See all agencies' })).toHaveLength(1);
+  });
+});
+
+describe('RegionPage (CIV-976)', () => {
+  const data = buildRegionPageData({ slug: 'ontario', name: 'Ontario', country: 'Canada' }, [TTC, HSR], '2026-10-13T00:00:00Z');
+
+  it('lays out a province like an area page: heading, intro, map link, bar note and agency table', () => {
+    view(<RegionPage data={data} />);
+    expect(screen.getByRole('heading', { level: 1 }).textContent).toBe('Ontario');
+    expect(screen.getByText(/transit agencies running/).textContent).toMatch(/^Ontario has 2 transit agencies running 7 routes/);
+    expect(screen.getByRole('link', { name: 'View on map' }).getAttribute('href')).toMatch(/^\/\?agencies=ttc%2Chsr/);
+    expect(screen.getByText(/The bar splits this province's routes/)).toBeTruthy();
+    expect(within(screen.getByRole('table')).getByRole('link', { name: 'Hamilton Street Railway' }).getAttribute('href')).toBe('/agency/hsr');
+    expect(screen.queryByText(/^Area:/)).toBeNull();
+  });
+
+  it('links an agency\'s place to its province in the all-agencies list when the province has no page (CIV-966)', () => {
+    const night = { ...HSR, routes: [r('N', 3, null)] };
+    const d = agencyPageData(night, [night], null);
+    view(<AgencyPage data={d} />);
+    expect(screen.getByRole('link', { name: d.place }).getAttribute('href')).toBe('/agencies#index-canada-ontario');
   });
 });

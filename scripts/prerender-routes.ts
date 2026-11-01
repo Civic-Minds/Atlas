@@ -11,6 +11,8 @@ import { AGENCY_DATA_SCRIPT_ID, agencyPageData, agencyPageJsonLd, agencyPagePath
 import { AGENCY_INDEX_DATA_SCRIPT_ID, AGENCY_INDEX_PATH, buildAgencyIndexData, resolveAgencyIndexSeo } from '../shared/agencyIndex';
 import { AREA_DATA_SCRIPT_ID, areaPageJsonLd, buildAreaPageData, resolveAreaSeo } from '../shared/areaPages';
 import { areaPagePath, type AreaConfig } from '../shared/areas';
+import { REGION_DATA_SCRIPT_ID, buildRegionPageData, regionPageJsonLd, regionPages, resolveRegionSeo } from '../shared/regionPages';
+import { regionPagePath } from '../shared/pagePaths';
 import { AGENCY_PAGE_DATA, agencyPageSummaries } from '../shared/agencyPagesData';
 import { liveReportPaths } from '../shared/liveReportPaths';
 import { liveLinkPreview } from '../shared/liveLinkPreview';
@@ -78,7 +80,7 @@ if (mod.BUILD_FLAGS.agencyPages) {
     for (const a of agencies) {
       const data = agencyPageData(a, agencies, AGENCY_PAGE_DATA.generatedAt, areaOf.get(a.slug), areaMembers.get(a.slug));
       const seo = resolveAgencySeo(a, { mode: mod.BUILD_MODE, origin, intro: data.intro, description: data.description });
-      writePage(agencyPagePath(a.slug), seo, mod.renderAgencyPage(data), { id: AGENCY_DATA_SCRIPT_ID, value: data }, agencyPageJsonLd(a, seo.canonicalUrl, origin, data.area, data.intro));
+      writePage(agencyPagePath(a.slug), seo, mod.renderAgencyPage(data), { id: AGENCY_DATA_SCRIPT_ID, value: data }, agencyPageJsonLd(a, seo.canonicalUrl, origin, data.area, data.intro, data.regionPage));
       urls.push(seo.canonicalUrl);
     }
     for (const area of areas) {
@@ -86,6 +88,14 @@ if (mod.BUILD_FLAGS.agencyPages) {
       if (data.agencies.length === 0) continue;
       const seo = resolveAreaSeo(data, { mode: mod.BUILD_MODE, origin });
       writePage(areaPagePath(area.slug), seo, mod.renderAreaPage(data), { id: AREA_DATA_SCRIPT_ID, value: data }, areaPageJsonLd(data, seo.canonicalUrl, origin));
+      urls.push(seo.canonicalUrl);
+    }
+    // State and province pages (CIV-976): one per place with a listed agency, the same as the agency intros' place links.
+    const regions = regionPages(agencies);
+    for (const region of regions) {
+      const data = buildRegionPageData(region, agencies, AGENCY_PAGE_DATA.generatedAt);
+      const seo = resolveRegionSeo(data, { mode: mod.BUILD_MODE, origin });
+      writePage(regionPagePath(region.name), seo, mod.renderRegionPage(data), { id: REGION_DATA_SCRIPT_ID, value: data }, regionPageJsonLd(data, seo.canonicalUrl, origin));
       urls.push(seo.canonicalUrl);
     }
     // The index of every agency and area page, built from the same data (so new agencies and areas appear on their own).
@@ -97,7 +107,7 @@ if (mod.BUILD_FLAGS.agencyPages) {
     }
     // The committed public/sitemap.xml stays public-only; this build's copy also lists agency and area pages.
     writeFileSync(join(dist, 'sitemap.xml'), buildSitemapXml(urls));
-    console.log(`Prerendered ${agencies.length} agency pages and ${areas.length} area pages (data release ${AGENCY_PAGE_DATA.releaseId}); sitemap.xml updated`);
+    console.log(`Prerendered ${agencies.length} agency pages, ${areas.length} area pages and ${regions.length} state and province pages (data release ${AGENCY_PAGE_DATA.releaseId}); sitemap.xml updated`);
   }
 }
 
