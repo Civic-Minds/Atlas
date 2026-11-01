@@ -64,6 +64,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Route cards and frequency
 
+- **A period with trips never reads "no scheduled trips"**: [TTC 110](https://github.com/Civic-Minds/Atlas/issues/1277) on Sunday mornings said so though its first bus leaves at 7:52 AM; the card now says it runs only from 7–9 AM
 - **Route lists start their frequency range where the route card does**: a [range's low end](https://github.com/Civic-Minds/Atlas/issues/1231) named a stretch the card doesn't show (TTC 102 midday read every 5–30 beside the card's 20 and 30)
 - **Route lists no longer show a number for a route the filter reads as having no regular service**: a [stored value on peak-only or span patterns](https://github.com/Civic-Minds/Atlas/issues/1247) showed while the route failed every filter (AC Transit E weekday AM read every 53)
 - **A card shows one shared value per direction**: a destination under the Shared stretch row reads its own frequency, not a [second shared range](https://github.com/Civic-Minds/Atlas/issues/1232) (TTC 102 PM read "Shared stretch every 7" above "to Warden every 15–30")

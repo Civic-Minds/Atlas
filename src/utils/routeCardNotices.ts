@@ -91,7 +91,9 @@ export function routeCardNotices(input: RouteCardNoticeInput): RouteCardNotices 
   const allDirectionRanges = tripRangesOf(directions);
   const chartRanges = tripRangesOf(model.activeRangeDirections);
   const periodRanges = chartRanges.length > 0 ? chartRanges : allDirectionRanges;
-  const runsInPeriod = hasPartialPeriodService && allDirectionRanges.length > 0;
+  // #1277: a route the filter says doesn't run (no rows) can still have trips inside the period: TTC 110 Sunday AM, first
+  // trip 7:52: its directions carry AM values, but the route reads as not running. It has trips there, so it never reads "no scheduled trips".
+  const runsInPeriod = (hasPartialPeriodService || (selectedPeriod != null && model.doesNotRun)) && allDirectionRanges.length > 0;
 
   // The filter line. #1186: a route with trips inside the period never also reads "no scheduled trips" there; the
   // period notice says when it runs.
@@ -140,7 +142,8 @@ export function routeCardNotices(input: RouteCardNoticeInput): RouteCardNotices 
   // When the route has no trips in the period, the out-of-filter line already says so: the period line would repeat it.
   const noTripsLineShown = input.selectedRouteOutOfFilter && model.doesNotRun && !runsInPeriod;
   let periodNotice: CardNotice | null = null;
-  if (!input.hideFilterNotices && selectedPeriod && !model.hasPeriodService && !noTripsLineShown) {
+  // #1277: a route with no rows (doesNotRun) but trips in the period gets the period line, even when a direction has a period value.
+  if (!input.hideFilterNotices && selectedPeriod && (!model.hasPeriodService || (model.doesNotRun && runsInPeriod)) && !noTripsLineShown) {
     periodNotice = {
       code: runsInPeriod ? 'N9' : 'N8',
       place: 3,
