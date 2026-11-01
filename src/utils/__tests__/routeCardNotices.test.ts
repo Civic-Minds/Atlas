@@ -204,3 +204,12 @@ describe('CIV-1251: the runs-only line shows once', () => {
   });
 });
 
+describe('CIV-1251: never "only from" the whole period', () => {
+  it('a route running all of 3–7 PM in one direction, none in the other (OC Transpo 226), reads the filter line, not N13', () => {
+    const east = { headsign: 'Chapel Hill', directionId: 0, headwayByHour: { 15: 27, 16: 27, 17: 27, 18: 27 }, departuresByHour: { 15: 2, 16: 2, 17: 2, 18: 2 } } as any;
+    const m = { ...model, activeRangeDirections: [east], rowHeadways: [27], contract: { filterValue: null } } as unknown as RouteCardNoticeInput['model'];
+    const n = routeCardNotices({ ...base, directions: [east], model: m, period: 'pmPeak', maxHeadway: Infinity, selectedRouteOutOfFilter: true });
+    expect(n.filter?.code).not.toBe('N13');
+  });
+});
+

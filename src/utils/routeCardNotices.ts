@@ -111,7 +111,9 @@ export function routeCardNotices(input: RouteCardNoticeInput): RouteCardNotices 
       && partPeriodNoticeApplies(model.activeRangeDirections, selectedPeriod.startHour, selectedPeriod.endHour, maxHeadway, model.contract?.filterValue);
     if (model.doesNotRun) {
       filter = { code: 'N11', text: selectedRouteOutsideFilterNotice(Infinity, periodRange), place: 3 };
-    } else if (selectedPeriod && activePeriodRangeText && showPartPeriodNotice) {
+    } else if (selectedPeriod && activePeriodRangeText && activePeriodRangeText !== periodRange && showPartPeriodNotice) {
+      // CIV-1251: "only from 3–7 PM" would name the whole period (OC Transpo 226 PM: one direction has no trips); the
+      // direction's own "No trips from 3–7 PM" says why the route misses the filter.
       // N13 (Ryan): name what the rest of the period has, from the card's own hourly data. CIV-1069: the notice names
       // the rows' own value (the slowest row), not the route's filter value; CIV-975's rule still checks it against every row.
       const split = partPeriodOutside(model.activeRangeDirections, selectedPeriod.startHour, selectedPeriod.endHour);
