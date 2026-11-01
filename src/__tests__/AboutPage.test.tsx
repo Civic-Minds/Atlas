@@ -25,7 +25,7 @@ describe('About page (CIV-1206 D)', () => {
     for (const entry of newestResearch(3)) {
       const tile = links.find(a => a.getAttribute('href') === entry.href)!;
       expect(within(tile).getByText(entry.linkText)).toBeInTheDocument();
-      expect([...tile.querySelectorAll('img')].map(img => img.getAttribute('src'))).toEqual([`${entry.picture}-light.svg`, `${entry.picture}-dark.svg`]);
+      expect([...tile.querySelectorAll('img')].map(img => img.getAttribute('src'))).toEqual([`${entry.picture}-light.${entry.pictureExt ?? 'svg'}`, `${entry.picture}-dark.${entry.pictureExt ?? 'svg'}`]);
     }
   });
 

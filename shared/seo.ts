@@ -144,6 +144,8 @@ export const SEO_ROUTES: readonly SeoRoute[] = [
     description: 'A source-backed look at what frequent service means across transit networks.',
     indexable: false,
     gate: 'researchApps',
+    // Ryan's pick B4 (CIV-1167): bus 1303 at a real TTC shelter. Photo credits: public/assets/research/share/CREDITS.md.
+    shareImage: { path: '/assets/research/share/frequent-light.png', alt: 'Frequent service' },
   },
   {
     path: '/changelog',

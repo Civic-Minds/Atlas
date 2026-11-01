@@ -39,7 +39,7 @@ function ThemedPicture({ base, ext, className }: { base: string; ext: string; cl
 function StoryTile({ entry, tilt }: { entry: ResearchEntry; tilt: number }) {
   return (
     <a href={entry.href} className={`${SURFACE} group flex w-full flex-col overflow-hidden rounded-2xl transition-[rotate] [rotate:var(--tilt)] hover:rotate-0 focus-visible:rotate-0`} style={{ '--tilt': `${tilt}deg` } as CSSProperties}>
-      <ThemedPicture base={entry.picture} ext="svg" className="block aspect-[1200/630] w-full object-cover" />
+      <ThemedPicture base={entry.picture} ext={entry.pictureExt ?? 'svg'} className="block aspect-[1200/630] w-full object-cover" />
       <div className="flex flex-1 flex-col p-5">
         <Tag className="self-start">{entry.kind}</Tag>
         <SectionTitle level="item" className="mt-3">{entry.title}</SectionTitle>

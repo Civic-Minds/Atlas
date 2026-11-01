@@ -136,8 +136,14 @@ describe('head tag rewriting', () => {
     expect(out.match(/name="twitter:image"/g)).toHaveLength(1);
   });
 
+  it('gives the Frequent service story its own picture (CIV-1167, pick B4)', () => {
+    const out = applySeoToHtml(html, resolveSeo('/research/frequent-service/story', BETA));
+    expect(out).toContain(`<meta property="og:image" content="${SITE_URL}/assets/research/share/frequent-light.png" />`);
+    expect(out).not.toContain('atlas-social-preview.jpg');
+  });
+
   it('keeps the site image on a research page with no pick yet, and on the map a public build shows there', () => {
-    for (const out of [applySeoToHtml(html, resolveSeo('/research/frequent-service/story', BETA)), applySeoToHtml(html, resolveSeo('/research/night', PUBLIC))]) {
+    for (const out of [applySeoToHtml(html, resolveSeo('/research/frequent-service', BETA)), applySeoToHtml(html, resolveSeo('/research/night', PUBLIC))]) {
       expect(out).toContain('atlas-social-preview.jpg');
       expect(out.match(/property="og:image"/g)).toHaveLength(1);
     }
