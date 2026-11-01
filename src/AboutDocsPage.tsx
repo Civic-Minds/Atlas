@@ -143,7 +143,7 @@ export default function AboutDocsPage() {
               <li><strong className="text-[var(--text-primary)]">One shared data platform:</strong> every Atlas tool works from the same route, stop and freshness data. History and real-time data show up only where those features are turned on.</li>
               <li><strong className="text-[var(--text-primary)]">Honest measurements:</strong> when a period does not contain enough sustained service to support a meaningful frequency claim, Atlas flags that limitation instead of tuning the calculation until it produces a plausible-looking number.</li>
               {showHistory && <li><strong className="text-[var(--text-primary)]">Preserved history:</strong> historical feeds are treated as dated snapshots. Missing or unusable periods remain unavailable rather than being duplicated or inferred.</li>}
-              <li><strong className="text-[var(--text-primary)]">Stable data:</strong> New information is added alongside existing fields, never in place of them, so anything built on published data keeps its meaning.</li>
+              <li><strong className="text-[var(--text-primary)]">Stable data:</strong> new information is added alongside existing fields, never in place of them, so anything built on published data keeps its meaning.</li>
             </ul>
           </Section>
 
