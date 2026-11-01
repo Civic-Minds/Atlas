@@ -8,7 +8,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Map and route behavior
 
-- **Route card rows show the frequency the filter reads**: [AC Transit 281](https://github.com/Civic-Minds/Atlas/issues/1239) read every 60 where the filter reads 66 at the same stop, and waits over an hour now print their exact minutes instead of rounding to the half hour; a long gap is named only when it is at least 1.5 times the usual wait
+- **Route card rows show the frequency the filter reads**: [AC Transit 281](https://github.com/Civic-Minds/Atlas/issues/1239) read every 60 where the filter reads 66 at the same stop, and waits over an hour now print their exact minutes instead of rounding to the half hour; a long gap is named only when it is at least 1.5 times the usual wait, and a branch that stops partway says when (AC Transit 22: every 30 until 12:12 PM)
 - **The info panel no longer gives a last-checked or last-refreshed date**: it says how many times Atlas has checked since a schedule ended, and when it checks next
 - **The route chooser's dots match the line colours**: [LA Metro E Line](https://github.com/Civic-Minds/Atlas/issues/1246) showed an every-30 dot beside a line drawn every 10 or better; dots now follow the day and time on screen
 - **Rows with only a few trips in a period read "Irregular", not "no regular service"**: the old words read as if nothing ran; cards say "Runs irregularly in this period", and the route class hidden by default is now "Occasional" ("Hide occasional routes"), since "one-off" read as once a day

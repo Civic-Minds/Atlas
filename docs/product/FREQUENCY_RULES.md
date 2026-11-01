@@ -63,7 +63,7 @@ The first three live in `pipeline/headway-utils.ts`, the last in `shared/periodE
 
 | What | Value | Decided in |
 |---|---|---|
-| A main stretch's row shows the number at the filter's stop (AC Transit 281 AM: every 66, not its own trips' 60) | its direction's filter value, the one the filter decides on, when the row's trips are all of the stretch's (one destination); a full-period wait over 60 that no gap between buses explains (service that starts late or stops early, settled rule 3) keeps the stretch's spacing (AC Transit 22 Sunday midday: every 30, not 168, #1268) | Ryan, 2026-10-31, #1239 |
+| A main stretch's row shows the number at the filter's stop (AC Transit 281 AM: every 66, not its own trips' 60) | its direction's filter value, the one the filter decides on, when the row's trips are all of the stretch's (one destination); a full-period wait over 60 that no gap between buses explains (service that starts late or stops early, settled rule 3) reads the branch's edge (AC Transit 22 Sunday midday: every 30 until 12:12 PM, not 168, CIV-1241), or the stretch's spacing on data without it (#1268) | Ryan, 2026-10-31, #1239; 2026-11-01, CIV-1241 |
 | Gap words ("every 42 min, with a 65 min gap") | only when the gap that sets the filter value is at least `ROW_GAP_WORDS_RATIO` (1.5) times the row's spacing; "every 63 min, with a 66 min gap" isn't worth mentioning | Ryan, 2026-10-31, #1239 |
 | Waits over 60 minutes | printed in exact minutes ("every 63 min", "every 75–105 min"), never rounded to the half hour, so the row never reads 60 where the filter reads 63 | Ryan, 2026-10-31, #1239 |
 

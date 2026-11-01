@@ -57,8 +57,9 @@ function mainFilterReading(d: ShapeProperties, key: PeriodKey): { every: number;
   if (typeof filter !== 'number') return null;
   const gapSetsFilter = filter > PERIOD_COVERAGE_MAX_HEADWAY && filter > every && gap === filter;
   // A filter value over the limit that no gap between buses explains is the full-period wait of service that starts late or
-  // stops early (settled rule 3, #1268: AC Transit 22 Sunday midday, every 30 then nothing, 168). Without edge words to say
-  // so, the row reads the stretch's steady spacing there ("every 30"), never a bare "every 168", and never its own faster trips.
+  // stops early (settled rule 3, #1268: AC Transit 22 Sunday midday, every 30 then nothing, 168). Data with the branch's edge
+  // (CIV-1241) words it before this ("every 30 until 12:12 PM"); without it, the row reads the stretch's steady spacing there
+  // ("every 30"), never a bare "every 168", and never its own faster trips.
   if (filter > PERIOD_COVERAGE_MAX_HEADWAY && filter > every && !gapSetsFilter) return { every };
   return gapSetsFilter && gap >= every * ROW_GAP_WORDS_RATIO ? { every, gap } : { every: filter };
 }
