@@ -128,7 +128,7 @@ describe('rowTrips (CIV-1069): a row reads its value, gap and part-period words 
       expect(rowTrips(r, 'amPeak')).toMatchObject({ value: 30, partPeriod: undefined });
     });
 
-    it('the same row reads the branch\'s edge where the data has it (CIV-1241: OC Transpo 11 weekday evening, every 30 until 9:18 PM)', () => {
+    it('the same row reads the branch\'s edge where the data has it (CIV-1241: every 30 until 9:18 PM, on data without the edge\'s stretch)', () => {
       const r = main({ stretchPeriodHeadway: { amPeak: 30 }, directionFilterHeadwayByPeriod: { amPeak: 168 }, stretchPeriodEdge: { amPeak: { until: 1278, every: 30 } }, stretchMeta: { main: { stops: 30, refStop: 's', trips: 4, period: { amPeak: 30 }, maxGap: { amPeak: 32 } }, tails: [] } });
       expect(rowTrips(r, 'amPeak').partPeriod).toBe('every 30 min until 9:18 PM');
     });
