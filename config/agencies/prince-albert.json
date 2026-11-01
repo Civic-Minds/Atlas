@@ -8,7 +8,7 @@
     -105.753
   ],
   "feedUrl": "https://www.citypa.ca/media/gnsfaref/2025-01-20-google-transit-gtfs.zip",
-  "lastFeedExpiry": "20281031",
+  "lastFeedExpiry": "20281101",
   "lastFeedVersion": null,
   "lastRefreshedAt": "2026-08-10",
   "lastFeedCheckAt": "20261019",
@@ -29,13 +29,13 @@
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
       "featureCount": 15,
-      "feedExpiry": "20281031",
+      "feedExpiry": "20281101",
       "routeCount": 7,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-10-31"
+    "checkedAt": "2026-11-01"
   }
 }
