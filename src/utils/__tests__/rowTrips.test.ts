@@ -128,9 +128,23 @@ describe('rowTrips (CIV-1069): a row reads its value, gap and part-period words 
       expect(rowTrips(r, 'amPeak')).toMatchObject({ value: 30, partPeriod: undefined });
     });
 
-    it('the same row reads the branch\'s edge where the data has it (CIV-1241: AC Transit 22 Sunday midday, every 30 until 12:12 PM)', () => {
-      const r = main({ stretchPeriodHeadway: { amPeak: 30 }, directionFilterHeadwayByPeriod: { amPeak: 168 }, stretchPeriodEdge: { amPeak: { until: 732, every: 30 } }, stretchMeta: { main: { stops: 30, refStop: 's', trips: 4, period: { amPeak: 30 }, maxGap: { amPeak: 32 } }, tails: [] } });
-      expect(rowTrips(r, 'amPeak').partPeriod).toBe('every 30 min until 12:12 PM');
+    it('the same row reads the branch\'s edge where the data has it (CIV-1241: OC Transpo 11 weekday evening, every 30 until 9:18 PM)', () => {
+      const r = main({ stretchPeriodHeadway: { amPeak: 30 }, directionFilterHeadwayByPeriod: { amPeak: 168 }, stretchPeriodEdge: { amPeak: { until: 1278, every: 30 } }, stretchMeta: { main: { stops: 30, refStop: 's', trips: 4, period: { amPeak: 30 }, maxGap: { amPeak: 32 } }, tails: [] } });
+      expect(rowTrips(r, 'amPeak').partPeriod).toBe('every 30 min until 9:18 PM');
+    });
+
+    it('an edge goes only on the rows that cover its stretch (#1276)', () => {
+      const edge = { amPeak: { until: 1075, every: 30, stretch: 3 as const } };
+      // TTC 110 weekday PM: the branch via 30th Street covers tail 3; the other branch rows and the main row do not.
+      const via30th = row({ stretchRole: 'tail', stretchIndex: 1, stretchCovers: ['main', 1, 3], stretchPeriodEdge: edge, headwayByPeriod: { amPeak: 30 } });
+      const islington = row({ stretchRole: 'tail', stretchIndex: 2, stretchCovers: ['main', 2], stretchPeriodEdge: edge, headwayByPeriod: { amPeak: 15 } });
+      expect(rowTrips(via30th, 'amPeak').partPeriod).toBe('every 30 min until 5:55 PM');
+      expect(rowTrips(islington, 'amPeak').partPeriod).toBeUndefined();
+      // AC Transit 22 Sunday midday: the edge is a branch no drawn row covers, so the main row keeps "every 30" with no end time.
+      const ac22 = main({ stretchPeriodHeadway: { amPeak: 30 }, directionFilterHeadwayByPeriod: { amPeak: 168 }, stretchCovers: ['main'], stretchPeriodEdge: { amPeak: { until: 732, every: 30, stretch: 0 } }, stretchMeta: { main: { stops: 30, refStop: 's', trips: 4, period: { amPeak: 30 }, maxGap: { amPeak: 32 } }, tails: [] } });
+      expect(rowTrips(ac22, 'amPeak')).toMatchObject({ value: 30, partPeriod: undefined });
+      // A variant covers nothing.
+      expect(rowTrips(row({ stretchRole: 'variant', stretchPeriodEdge: { amPeak: { until: 732, every: 30, stretch: 'main' } } }), 'amPeak').partPeriod).toBeUndefined();
     });
 
     it('a row whose trips are only some of the stretch\'s keeps its own (SEPTA 19 Saturday midday: 120 on a stretch every 63)', () => {

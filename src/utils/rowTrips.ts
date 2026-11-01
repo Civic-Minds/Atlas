@@ -1,6 +1,6 @@
 import type { ShapeProperties, TimePeriod } from '../hooks/useIntervalStats';
 import { PERIOD_COVERAGE_MAX_HEADWAY } from '../../shared/periodEligibility';
-import { routeCardDisplayHeadway, routeCardPeriodShapeText } from './effectiveHeadway';
+import { routeCardDisplayHeadway, routeCardPeriodShapeText, rowReadsPeriodEdge } from './effectiveHeadway';
 import { headwayPeriodShape } from './headwayText';
 import { isOneGapRow, SHARED_STRETCH_RATIO } from './stretchCard';
 
@@ -51,14 +51,14 @@ function mainFilterReading(d: ShapeProperties, key: PeriodKey): { every: number;
   // Saturday midday: two destinations every 120 on a stretch every 63 keep their own), and a period with a late start or
   // early end keeps its own reading (A2).
   const ownTrips = Object.values(d.departuresByHour ?? {}).reduce((sum, n) => sum + n, 0);
-  if (ownTrips !== d.stretchMeta?.main?.trips || d.stretchPeriodEdge?.[key] != null) return null;
+  if (ownTrips !== d.stretchMeta?.main?.trips || rowReadsPeriodEdge(d, key)) return null;
   const filter = d.directionFilterHeadwayByPeriod?.[key];
   const gap = d.stretchMeta?.main?.maxGap?.[key];
   if (typeof filter !== 'number') return null;
   const gapSetsFilter = filter > PERIOD_COVERAGE_MAX_HEADWAY && filter > every && gap === filter;
   // A filter value over the limit that no gap between buses explains is the full-period wait of service that starts late or
   // stops early (settled rule 3, #1268: AC Transit 22 Sunday midday, every 30 then nothing, 168). Data with the branch's edge
-  // (CIV-1241) words it before this ("every 30 until 12:12 PM"); without it, the row reads the stretch's steady spacing there
+  // (CIV-1241) on a row that covers it (#1276) words it before this (OC Transpo 11 evening: "every 30 until 9:18 PM"); without it, the row reads the stretch's steady spacing there
   // ("every 30"), never a bare "every 168", and never its own faster trips.
   if (filter > PERIOD_COVERAGE_MAX_HEADWAY && filter > every && !gapSetsFilter) return { every };
   return gapSetsFilter && gap >= every * ROW_GAP_WORDS_RATIO ? { every, gap } : { every: filter };
@@ -79,7 +79,7 @@ export function rowTrips(d: ShapeProperties, period: TimePeriod, opts: { ownTrip
   if (period === 'all') return { ...NONE, value: routeCardDisplayHeadway(d, period) };
   const key = period as PeriodKey;
   if (d.noOwnServiceByPeriod?.includes(key)) return { ...NONE, noOwnService: true };
-  let partPeriod = d.stretchRole === 'main' && !isOneGapRow(d, period) ? routeCardPeriodShapeText(d, period) : undefined;
+  let partPeriod = (d.stretchRole === 'main' || rowReadsPeriodEdge(d, period)) && !isOneGapRow(d, period) ? routeCardPeriodShapeText(d, period) : undefined;
   let value = routeCardDisplayHeadway(d, period);
   // ownTrips: the card's shared and pooled rows compare the rows' own trips with the stretch's, so they stay as they are
   // (SEPTA 19 Saturday midday keeps "Shared stretch every 63" over its two destinations every 120).

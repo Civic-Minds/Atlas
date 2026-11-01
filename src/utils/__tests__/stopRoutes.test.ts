@@ -85,6 +85,23 @@ describe('buildStopRoutes: one destination served by two patterns (CIV-1080)', (
     expect(words()).toEqual([]);
   });
 
+  it('#1276: a tail covering the edge\'s stretch shows its words; a row that does not cover it shows none, as on the route card', () => {
+    const fc = structuredClone(ttc29);
+    const setCovers = (covers: ('main' | number)[]) => {
+      for (const f of fc.features.filter(x => x.properties?.directionId === 1)) {
+        Object.assign(f.properties!, { stretchRole: 'tail', stretchIndex: 0, stretchCovers: covers, stretchPeriodEdge: { midday: { from: 754, every: 8, stretch: 0 } } });
+        delete (f.properties!.directionFilterHeadwayByPeriod as Record<string, unknown> | undefined)?.midday;
+      }
+    };
+    const words = () => buildStopRoutes({
+      siblingIdsByAgency: { ttc: new Set(['2108']) }, routesByAgency: { ttc: new Set(['29']) }, layers: { ttc: fc }, day: 'Weekday', period: 'midday',
+    })[0]?.branches.filter(b => b.directionId === 1).map(b => b.periodText) ?? [];
+    setCovers(['main', 0]);
+    expect(words()).toEqual(['every 8 min from 12:34 PM']);
+    setCovers(['main']);
+    expect(words().filter(Boolean)).toEqual([]);
+  });
+
   it('keeps each destination\'s own value when another destination shares the stop (never overstates)', () => {
     const fc = structuredClone(ttc29);
     const north = fc.features.filter(f => f.properties?.directionId === 1);
