@@ -57,7 +57,7 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
     <ResearchMethod parts={{
       dateConducted: <>October 11, 2026.</>,
       dateUpdated: <>October 30, 2026.</>,
-      sample: <>We looked for an official definition of frequent service at all {frequentServiceDefinitionSample.agencies} agencies Atlas covers in Canada ({frequentServiceDefinitionSample.canada}) and the United States ({frequentServiceDefinitionSample.unitedStates}). {frequentServiceDefinitionSample.namedNetwork} have a named frequent network, such as a “Frequent Network”. {frequentServiceDefinitionSample.withWait} of those say how often the bus comes, such as “every 15 minutes or better”. The chart shows {frequentServiceStoryStats.chartedAgencies} of those {frequentServiceDefinitionSample.withWait} agencies, checked again on October 30.</>,
+      sample: <>We looked for an official definition of frequent service at {frequentServiceDefinitionSample.agencies} agencies Atlas covers in Canada ({frequentServiceDefinitionSample.canada}) and the United States ({frequentServiceDefinitionSample.unitedStates}). We couldn't check {frequentServiceDefinitionSample.blocked} others because their websites block automated visits. {frequentServiceDefinitionSample.namedNetwork} have a named frequent network, such as a “Frequent Network”. {frequentServiceDefinitionSample.withWait} of those say how often the bus comes, such as “every 15 minutes or better”. The chart shows {frequentServiceStoryStats.chartedAgencies} of those {frequentServiceDefinitionSample.withWait} agencies, checked again on October 30.</>,
       sources: <>The agency’s own current system map, rider guide, frequent network page, service standards, or a plan for the network running today.</>,
       whatCounted: <>Each quote was checked by script against the saved page. When an agency’s pages disagreed, we used the narrower definition. Not finding a definition does not mean an agency has no frequent service.</>,
       numbers: <>When an agency has more than one frequent tier, we used the fastest one that covers more than one route. When it gives a range, such as {headwayEveryRange(15, 20)}, we used the slower number, for weekday daytime.</>,
@@ -75,7 +75,7 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
           intro={<>
             <p>Miss one when the next vehicle comes in 10 minutes? Annoying, but manageable. Miss one when the next one takes 30? That can change your whole trip.</p>
             <p>Transit maps show where routes go. Transit planning asks the harder questions: how often does service come, how long does it run, and who is it designed to reach?</p>
-            <p>We reviewed official transit maps and approved rider guides from {frequentServiceStoryStats.agenciesWithUsableEvidence} agencies to show how those decisions turn a network of lines into service people can actually rely on.</p>
+            <p>We checked how {frequentServiceDefinitionSample.agencies} agencies define frequent service on their own websites, to show how those decisions turn a network of lines into service people can actually rely on.</p>
           </>}
         >
           <div className="w-full max-w-5xl text-left">
