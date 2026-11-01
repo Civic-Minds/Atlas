@@ -3552,6 +3552,7 @@ export async function processGtfsBuffer(
       if (p.stopId != null || !(feature.properties as { routeId?: unknown }).routeId) continue;
       const periods = noOwnServicePeriods(p);
       if (periods.length > 0) (feature.properties as Record<string, unknown>).noOwnServiceByPeriod = periods;
+      else delete (feature.properties as Record<string, unknown>).noOwnServiceByPeriod;
     }
     // A partial-weekday route-day (#710) keeps today's filter: its stretch reads one weekday, while
     // its service runs on others and continues on the next day's service after midnight.

@@ -1017,6 +1017,11 @@ describe('CIV-1248: a period the route covers only part of reads its slowest str
     // A row that covers that branch carries it, so the card can place the words (#1276).
     expect(rows.some(p => p.stretchCovers?.includes(0))).toBe(true);
   });
+  it('TTC 110 Sunday AM to Islington via Browns Line: the row carrying the edge is not marked as running under three trips (#1277)', async () => {
+    const rows = am(await run('ttc-110-79-sunday'), '110', 1).filter(p => p.stretchCovers?.includes(p.stretchPeriodEdge.amPeak.stretch));
+    expect(rows.map(p => p.headsign)).toContain('Islington via Browns Line and Horner');
+    for (const p of rows) expect(p.noOwnServiceByPeriod ?? []).not.toContain('amPeak');
+  });
   it('legitimate: TTC 110 Sunday AM to Long Branch keeps the trunk reading; its branches run under three times before 9 and do not count', async () => {
     for (const p of am(await run('ttc-110-79-sunday'), '110', 0)) expect(p.stretchPeriodEdge.amPeak).toMatchObject({ from: 487, every: 15, stretch: 'main' });
   });
