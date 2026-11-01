@@ -1241,6 +1241,7 @@ export const STRETCH_SHADOW_KEYS = [
   'stretchMeta',
   'stretchRole',
   'stretchIndex',
+  'stretchCovers',
   'headwayByPeriodSustainedMid',
 ] as const;
 
@@ -1354,6 +1355,14 @@ export function stampStretchShadow(
       if (tailIdx != null) { p.stretchRole = 'tail'; p.stretchIndex = tailIdx; }
       else if (stretches.main && covers(stretches.main.stops)) { p.stretchRole = 'main'; p.stretchIndex = 0; }
       else { p.stretchRole = 'variant'; delete p.stretchIndex; }
+      // #1276: every stretch the row's stops cover, so a period edge (stretchPeriodEdge[k].stretch)
+      // finds its rows where no row stands for that stretch (TTC 110 Weekday PM: tail 3).
+      const coversAll: ('main' | number)[] = [
+        ...(stretches.main && covers(stretches.main.stops) ? ['main' as const] : []),
+        ...stretches.tails.flatMap((t, i) => (covers(t.stops) ? [i] : [])),
+      ];
+      if (coversAll.length > 0) p.stretchCovers = coversAll;
+      else delete p.stretchCovers;
     }
     p.stretchMeta = {
       main: stretches.main ? { stops: stretches.main.stops.length, refStop: stretches.main.refStop, trips: stretches.main.tripCount, ...stretchMetaPeriods(stretches.main) } : null,

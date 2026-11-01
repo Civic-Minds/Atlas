@@ -642,6 +642,17 @@ describe('step 6: the all-day filter, the midday cap and Frequent Service read t
     const tails = r507.rows.filter(p => p.day === 'Weekday' && p.directionId === 1 && p.stretchRole === 'tail').map(p => p.headsign).sort();
     expect(tails).toEqual(['Long Branch', 'Marine Parade']);
   });
+  it('#1276: stretchCovers lists every stretch a row covers, its own stretch among them; a variant covers none of its own', async () => {
+    const r = await run('ttc-507-weekday');
+    const rows = r.rows.filter(p => p.day === 'Weekday') as Record<string, any>[];
+    for (const p of rows) {
+      if (p.stretchRole === 'tail') expect(p.stretchCovers).toContain(p.stretchIndex);
+      if (p.stretchRole === 'main') expect(p.stretchCovers).toContain('main');
+      if (p.stretchRole === 'variant') expect(p.stretchCovers ?? []).not.toContain('main');
+    }
+    // A tail row also runs the shared trunk, so it covers the main stretch too.
+    expect(rows.some(p => p.stretchRole === 'tail' && p.stretchCovers.includes('main'))).toBe(true);
+  });
 });
 
 describe('step 6: a night route keeps an all-day value (phase 2 overnight fallback)', () => {
