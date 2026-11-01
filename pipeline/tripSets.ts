@@ -614,7 +614,7 @@ export function stopPeriodValues(stops: readonly string[], throughTimesAlong: No
  * section needs the usual three departures for a value, then the same filter and limited-service
  * handling; no thresholds of its own).
  */
-export function stretchMetaPeriods(s: Stretch): { period: Record<PeriodKey, number | null>; noRegular: PeriodKey[]; maxGap: Record<PeriodKey, number | null> } {
+export function stretchMetaPeriods(s: Stretch): { period: Record<PeriodKey, number | null>; noRegular: PeriodKey[]; maxGap: Record<PeriodKey, number | null>; edge?: Partial<Record<PeriodKey, StretchPeriodEdge>> } {
   const own = stretchPeriods(s);
   // CIV-1069: the longest gap between the same departures the value reads, so a card row never pairs
   // the stretch's value with a gap measured over one headsign's trips.
@@ -623,10 +623,23 @@ export function stretchMetaPeriods(s: Stretch): { period: Record<PeriodKey, numb
   // cadence to read, only the full-window wait), reads "no regular service" on a row; the map keeps
   // the filter value.
   const departures = (start: number, end: number) => new Set(forCrossMidnightWindow([...s.times], end).filter(t => t >= start && t <= end)).size;
+  // CIV-1251 (Ryan): the stretch's own late start or early end, read as the direction's edge is
+  // (#934, CIV-1248), so a branch row can say when its own service starts or stops (TTC 110 Sunday
+  // AM: the shared stretch every 15 from 8:07, each branch every 30 from its own first trip).
+  // Overnight reads the night verdict (#1267) and has none; an uneven period reads its range.
+  const edges: Partial<Record<PeriodKey, StretchPeriodEdge>> = {};
+  for (const { key, start, end } of PERIOD_WINDOWS) {
+    if (key === 'overnight' || own[key].uneven) continue;
+    const edge = runsThroughPeriod(s.times, start, end, own[key].sustained)
+      ? periodEdge(s.times, start, end, stretchFilterValue(own[key]))
+      : periodPartialEdge(s.times, start, end);
+    if (edge) edges[key] = edge;
+  }
   return {
     period: Object.fromEntries(PERIOD_WINDOWS.map(({ key }) => [key, stretchFilterValue(own[key])])) as Record<PeriodKey, number | null>,
     noRegular: PERIOD_WINDOWS.filter(({ key, start, end }) => own[key].coverage != null && (own[key].oneGap || departures(start, end) < 3)).map(w => w.key),
     maxGap: Object.fromEntries(PERIOD_WINDOWS.map(({ key }) => [key, own[key].value == null ? null : gaps[key] ?? null])) as Record<PeriodKey, number | null>,
+    ...(Object.keys(edges).length > 0 ? { edge: edges } : {}),
   };
 }
 
