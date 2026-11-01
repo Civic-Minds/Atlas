@@ -1035,3 +1035,21 @@ describe('CIV-1248: a period the route covers only part of reads its slowest str
     }
   });
 });
+
+describe('CIV-1251: each stretch carries its own late start or early end', () => {
+  const rows = async (dir: number) => (await run('ttc-110-79-sunday')).rows.filter(p => p.routeShortName === '110' && p.day === 'Sunday' && p.directionId === dir) as Record<string, any>[];
+  it('TTC 110 Sunday AM southbound: the shared stretch every 15 from 8:07, Kipling every 30 from its first trip at 7:29', async () => {
+    const [p] = await rows(0);
+    expect(p.stretchMeta.main.edge.amPeak).toEqual({ from: 487, every: 15 });
+    const kipling = (await rows(0)).find(r => r.headsign === 'Kipling and Lake Shore')!;
+    expect(p.stretchMeta.tails[kipling.stretchIndex].edge.amPeak).toEqual({ from: 449, every: 30 });
+  });
+  it('legitimate: Long Branch has two trips before 9 (8:05, 8:35), under the three a reading needs, so no AM edge of its own', async () => {
+    const all = await rows(0);
+    const longBranch = all.find(r => r.headsign === 'Long Branch via Horner and Browns Line')!;
+    expect(all[0].stretchMeta.tails[longBranch.stretchIndex].edge?.amPeak).toBeUndefined();
+  });
+  it('overnight never carries a stretch edge (#1267)', async () => {
+    for (const p of await rows(0)) for (const st of [p.stretchMeta.main, ...p.stretchMeta.tails]) expect(st.edge?.overnight).toBeUndefined();
+  });
+});
