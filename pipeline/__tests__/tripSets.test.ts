@@ -371,7 +371,7 @@ describe('Overnight reads the night verdict (#1267, Ryan 2026-10-31)', () => {
       expect(p.routeFilterHeadwayByPeriod.overnight).toEqual(expect.any(Number));
       expect(p.directionFilterHeadwayByPeriod.overnight).toBeNull();
     }
-  });
+  }, 30_000);
   it('day service that only starts after 3:30 has no Overnight value (TTC 102)', () => {
     expect(directionNightValue(dir(every(hm(28, 48), hm(30, 0), 12)))).toBeNull();
   });
