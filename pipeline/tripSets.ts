@@ -597,15 +597,26 @@ export function encodeStopRuns(values: ReadonlyArray<number | null>): string {
  * stretchFilterValue). One run-length-encoded string per period aligned to the feature's stopOrder
  * (encodeStopRuns), empty where no trip passes. Where every trip stops, it equals the stretch value at
  * that stretch's reference stop. Read by the section colours (S3, beta only).
+ *
+ * #1094: Overnight reads each stop through the night verdict (directionNightValue over the stop alone), the
+ * function the line's own Overnight value reads (#1267), so a stop never turns grey on a line that passes
+ * Overnight by the same rule. A stop the verdict does not pass at 60 keeps its full-window wait, never
+ * a better one.
  */
 export function stopPeriodValues(stops: readonly string[], throughTimesAlong: NonNullable<DirectionStretches['throughTimesAlong']>): Record<PeriodKey, string> {
   const reads = throughTimesAlong(stops);
   const perStop = stops.map((stop, i) => {
     const read = reads[i];
     if (read.times.length === 0) return null;
-    return stretchPeriods({ kind: 'main', stops: [stop], refStop: stop, lengthKm: 0, ...read });
+    const stretch: Stretch = { kind: 'main', stops: [stop], refStop: stop, lengthKm: 0, ...read };
+    const night = directionNightValue({ key: stop, main: stretch, tails: [], regularPatternCount: 1, variantTripCount: 0 }, true);
+    return { periods: stretchPeriods(stretch), night };
   });
-  return Object.fromEntries(PERIOD_WINDOWS.map(({ key }) => [key, encodeStopRuns(perStop.map(p => (p ? stretchFilterValue(p[key]) : null)))])) as Record<PeriodKey, string>;
+  const value = (p: (typeof perStop)[number], key: PeriodKey) => {
+    if (!p) return null;
+    return key === 'overnight' && p.night != null ? p.night : stretchFilterValue(p.periods[key]);
+  };
+  return Object.fromEntries(PERIOD_WINDOWS.map(({ key }) => [key, encodeStopRuns(perStop.map(p => value(p, key)))])) as Record<PeriodKey, string>;
 }
 
 /**

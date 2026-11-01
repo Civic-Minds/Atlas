@@ -855,6 +855,36 @@ describe('section values count trips running through a skipped stop (CIV-321)', 
   });
 });
 
+describe('Overnight section values read each stop through the night verdict (#1094)', () => {
+  // Night buses every 30 from 2:00 to 4:50, then day service from 5:50: over the 2-6am window each stop
+  // waits 60+ minutes between its last night bus and its first day bus, while the night verdict passes 30.
+  const coords = new Map<string, [number, number]>();
+  const stops = ['s0', 's1', 's2', 's3'];
+  stops.forEach((id, i) => coords.set(id, [43.6 + i * 0.01, -79.4]));
+  const build = (nightStep: number) => {
+    const trips: DirectionTrip[] = [];
+    for (const [a, b, step] of [[1560, 1730, nightStep], [350, 1380, 15]] as const)
+      for (let m = a; m <= b; m += step) trips.push({ tripId: `t${m}`, visits: stops.map((stopId, i) => ({ stopId, minutes: m + 3 * i })) });
+    return directionStretches('k', trips, id => coords.get(id));
+  };
+  it('a stop on a line that passes Overnight takes the line value, not its full-window wait', () => {
+    const d = build(30);
+    expect(stretchFilterValue(stretchPeriods(d.main!).overnight)).toBeGreaterThan(60);
+    expect(directionNightValue(d, true)).toBe(30);
+    expect(decodeStopRuns(stopPeriodValues(stops, d.throughTimesAlong!).overnight)).toEqual([30, 30, 30, 30]);
+  });
+  it('a stop the verdict does not pass keeps its full-window wait (night buses every 75)', () => {
+    const d = build(75);
+    expect(directionNightValue(d, true)).toBeNull();
+    const values = decodeStopRuns(stopPeriodValues(stops, d.throughTimesAlong!).overnight);
+    expect(values.every(v => v != null && v > 60)).toBe(true);
+  });
+  it('Late keeps the settled rule (#524): the wait after the last bus still counts', () => {
+    const d = build(30);
+    expect(stopPeriodValues(stops, d.throughTimesAlong!).late).toBe(encodeStopRuns(stops.map(() => stretchFilterValue(stretchPeriods(d.main!).late))));
+  });
+});
+
 describe('rule 3: sibling branches that take turns through a period (#1072, HSR 16 Ancaster)', () => {
   // A trunk t0-t9 and two branches off its end, w (Wilson) and f (Fiddler's Green), 6 stops and
   // about 2 km each, that end at the same terminal. HSR 16 weekday: every 30 via Wilson until about 12:10, then every 30 via
