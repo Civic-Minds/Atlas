@@ -84,13 +84,24 @@ describe('a branch that does not run through a period has no row for it (#1115, 
   });
 });
 
-describe('#1277: a branch that does not run through a period keeps its row when the row says when it runs', () => {
-  it('Pioneer Village midday with an edge on the stretch it covers reads its until time', () => {
-    const withEdge = features(['midday', 'evening', 'late', 'overnight']).map(f => (f.headsign === 'Pioneer Village via Oakdale'
-      ? { ...f, stretchCovers: ['main', 2], stretchPeriodEdge: { midday: { until: 600, every: 21, stretch: 2 } } }
-      : f)) as ShapeProperties[];
-    renderCard(withEdge, 'midday');
-    expect(screen.getByText(/Pioneer Village/)).toBeTruthy();
-    expect(document.body.textContent?.replace(/[\u00a0\u202f\u2060]/g, ' ')).toContain('every 21 min until 10 AM');
+describe('#1277: a branch that does not run through a period keeps its row when its own trips say when', () => {
+  const pioneer = (edgeStretch: 'main' | number, departuresByHour?: Record<string, number>) => features(['midday', 'evening', 'late', 'overnight']).map(f => (f.headsign === 'Pioneer Village via Oakdale'
+    ? { ...f, stretchCovers: ['main', 2], departuresByHour, stretchPeriodEdge: { midday: { until: 600, every: 21, stretch: edgeStretch } } }
+    : f)) as ShapeProperties[];
+  const text = () => document.body.textContent?.replace(/[\u00a0\u202f\u2060]/g, ' ') ?? '';
+
+  it('the edge read on its own branch, with its own trips in the period: the row reads its until time', () => {
+    renderCard(pioneer(2, { 9: 2 }), 'midday');
+    expect(text()).toContain('to Pioneer Village via Oakdaleevery 21 min until 10 AM');
+  });
+
+  it('an edge read on the shared main stretch can be another branch\'s trips (OC Transpo 25 Sunday AM): no row', () => {
+    renderCard(pioneer('main', { 9: 2 }), 'midday');
+    expect(screen.queryByText(/Pioneer Village/)).toBeNull();
+  });
+
+  it('no trips of its own in the period (TTC 130 late, via Maybrook): no row', () => {
+    renderCard(pioneer(2, { 16: 2 }), 'midday');
+    expect(screen.queryByText(/Pioneer Village/)).toBeNull();
   });
 });
