@@ -896,6 +896,8 @@ export interface StretchPeriodEdge {
   from?: number;
   until?: number;
   every: number;
+  /** #1276: the stretch the edge is read on: 'main', or a tail's index (a row's stretchIndex when its stretchRole is 'tail'). */
+  stretch?: 'main' | number;
 }
 
 /**
@@ -1035,17 +1037,26 @@ export function rollupDirection(d: DirectionStretches): DirectionRollup | null {
     // window wait as "every N" (MBTA 23 Sunday overnight to Ashmont: every 196). A sparse main
     // stretch leaves the direction without a value, a sparse tail drops out.
     const sparse = (s: Stretch | null | undefined) => s != null && key === 'overnight' && isSparseOvernightWindow(s.times);
-    const counting = [main[key], ...tails.map((t, i) => (handover[key][i] ? turnTaking(t[key]) : t[key]))]
-      .filter((p, i) => p.counts && (i === 0 ? runs && !sparse(d.main) : !sparse(d.tails[i - 1])));
+    const countingStretches = [d.main, ...d.tails]
+      .map((st, i) => ({ st, stretch: (i === 0 ? 'main' : i - 1) as 'main' | number, p: i === 0 ? main[key] : handover[key][i - 1] ? turnTaking(tails[i - 1][key]) : tails[i - 1][key] }))
+      .filter(({ st, p }, i) => p.counts && (i === 0 ? runs && !sparse(d.main) : !sparse(st)));
+    const counting = countingStretches.map(c => c.p);
     const values = counting.map(filterOf).filter((v): v is number => v != null);
     period[key].runs = runs;
     period[key].hasService = forCrossMidnightWindow([...d.main.times], end).some(t => t >= start && t <= end);
     period[key].filterValue = runs && !sparse(d.main) && values.length > 0 ? Math.max(...values) : null;
-    const setter = period[key].filterValue == null ? undefined : counting.find(p => filterOf(p) === period[key].filterValue);
+    const setterAt = period[key].filterValue == null ? undefined : countingStretches.find(c => filterOf(c.p) === period[key].filterValue);
+    const setter = setterAt?.p;
     period[key].typical = setter?.uneven && setter.headway != null && setter.headway < period[key].filterValue! ? setter.headway : null;
     // An uneven period's card reads its range, not an edge or one-gap wording.
     const uneven = period[key].typical != null;
-    period[key].edge = uneven ? null : runs ? periodEdge(d.main.times, start, end, period[key].filterValue) : periodPartialEdge(d.main.times, start, end);
+    // CIV-1241 (Ryan, 2026-11-01): the edge is read on the stretch that sets the filter value, so a
+    // branch that runs steadily and then stops (settled rule 3 keeps its full-window wait: AC
+    // Transit 22 Sunday midday, every 30 until 12:12, 168) reads "every 30 until 12:12" from the
+    // same reading as a main stretch's early end.
+    const edge = uneven ? null : runs ? periodEdge((setterAt?.st ?? d.main).times, start, end, period[key].filterValue) : periodPartialEdge(d.main.times, start, end);
+    // #1276: name the stretch, so the card puts the words on that stretch's row.
+    period[key].edge = edge && { ...edge, stretch: runs ? setterAt?.stretch ?? 'main' : 'main' };
     // Only where the settled checks count the period as running: a big-gap period that does not
     // run (TTC 504 overnight, 169 minutes against a typical 5) keeps "no regular service".
     period[key].gap = runs && !uneven && !period[key].edge ? periodOneGap(d.main.times, start, end) : null;
@@ -1230,6 +1241,7 @@ export const STRETCH_SHADOW_KEYS = [
   'stretchMeta',
   'stretchRole',
   'stretchIndex',
+  'stretchCovers',
   'headwayByPeriodSustainedMid',
 ] as const;
 
@@ -1343,6 +1355,14 @@ export function stampStretchShadow(
       if (tailIdx != null) { p.stretchRole = 'tail'; p.stretchIndex = tailIdx; }
       else if (stretches.main && covers(stretches.main.stops)) { p.stretchRole = 'main'; p.stretchIndex = 0; }
       else { p.stretchRole = 'variant'; delete p.stretchIndex; }
+      // #1276: every stretch the row's stops cover, so a period edge (stretchPeriodEdge[k].stretch)
+      // finds its rows where no row stands for that stretch (TTC 110 Weekday PM: tail 3).
+      const coversAll: ('main' | number)[] = [
+        ...(stretches.main && covers(stretches.main.stops) ? ['main' as const] : []),
+        ...stretches.tails.flatMap((t, i) => (covers(t.stops) ? [i] : [])),
+      ];
+      if (coversAll.length > 0) p.stretchCovers = coversAll;
+      else delete p.stretchCovers;
     }
     p.stretchMeta = {
       main: stretches.main ? { stops: stretches.main.stops.length, refStop: stretches.main.refStop, trips: stretches.main.tripCount, ...stretchMetaPeriods(stretches.main) } : null,

@@ -233,12 +233,16 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 
 Dated, newest first. The rules above are the short form; this is the reasoning.
 
+### 2026-11-01 — A branch that stops partway through a period says when it stops
+Ryan, 2026-11-01 (#1268, Linear CIV-1241), picked option 1: a branch row that runs part of the period and then stops reads "every 30 until 12:12 PM" (AC Transit 22 Sunday midday), not the full-period wait it filters at (168, settled rule 3).
+- The edge (the start or stop time) is read on the row that sets the direction's value (D1). So a main row whose number comes from a slower branch no longer carries an edge (TTC 40 Saturday late).
+
 ### 2026-10-31 — The Overnight period reads the Night Service verdict
 
 Ryan, 2026-10-31 (#1267, Linear CIV-1239): the map's Overnight value reads the night verdict's stretch value (rule 10), so Overnight and Night Service never disagree. They were calculated separately (2-6 AM by rules 4-5, 2-5 AM by rule 10) and disagreed on 135 of 646 route-days in 12 agencies: TTC 301 was Night Service every 30 but Overnight "every 71", because the 2-6 AM window took in the gap before day service.
 - A direction's Overnight value is the smallest gap at which it passes rule 10, so it is 30 or less exactly when Night Service 30, and 60 or less exactly when Night Service 60. The route takes the worst direction.
 
-Implementation choices, pending Ryan's OK through the manager (not part of his decision):
+Implementation choices, confirmed by Ryan on 2026-11-01:
 - A direction where nothing runs at night (departures on both sides of 3:30) has no Overnight value: day service starting at 4:48 is not overnight service (TTC 102).
 - A route card's Overnight row shows the route's Overnight number only on a row the Night view lights, of a direction that passes as a whole; every other row has no value (the card shows the shared irregular label). So a direction that passes only on its night path (NYC subway 3 to New Lots Av: every 20 on the night path, 220 minutes apart at the row's own stops) and a piece that stops at night (NYC subway S's 42 St shuttle) show none. The row never reads its own 2-6 AM trips.
 - Overnight shows one number: no branch range, no typical-to-worst range, and no late-start, early-end or gap wording (those read 2-6 AM: CTA 35 read "every 20 min from 3:54 AM" with no Night Service).

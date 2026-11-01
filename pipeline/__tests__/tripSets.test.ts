@@ -642,6 +642,17 @@ describe('step 6: the all-day filter, the midday cap and Frequent Service read t
     const tails = r507.rows.filter(p => p.day === 'Weekday' && p.directionId === 1 && p.stretchRole === 'tail').map(p => p.headsign).sort();
     expect(tails).toEqual(['Long Branch', 'Marine Parade']);
   });
+  it('#1276: stretchCovers lists every stretch a row covers, its own stretch among them; a variant covers none of its own', async () => {
+    const r = await run('ttc-507-weekday');
+    const rows = r.rows.filter(p => p.day === 'Weekday') as Record<string, any>[];
+    for (const p of rows) {
+      if (p.stretchRole === 'tail') expect(p.stretchCovers).toContain(p.stretchIndex);
+      if (p.stretchRole === 'main') expect(p.stretchCovers).toContain('main');
+      if (p.stretchRole === 'variant') expect(p.stretchCovers ?? []).not.toContain('main');
+    }
+    // A tail row also runs the shared trunk, so it covers the main stretch too.
+    expect(rows.some(p => p.stretchRole === 'tail' && p.stretchCovers.includes('main'))).toBe(true);
+  });
 });
 
 describe('step 6: a night route keeps an all-day value (phase 2 overnight fallback)', () => {
@@ -903,6 +914,42 @@ describe('rule 3: sibling branches that take turns through a period (#1072, HSR 
     expect(d.tails).toHaveLength(1);
     expect(rollupDirection(d)).toEqual(without(d));
     expect(rollupDirection(d)!.period.midday.filterValue).toBeGreaterThan(60);
+  });
+
+  it('CIV-1241: a branch that runs every 30 and stops at 12:00 reads its stop time as the period edge, and keeps its wait', () => {
+    const d = build(every(360, 720, 30), every(750, 1380, 30), []);
+    const r = rollupDirection(d)!;
+    const edge = r.period.midday.edge!;
+    expect(edge.every).toBe(30);
+    expect(edge.from).toBeUndefined();
+    expect(edge.until).toBeGreaterThanOrEqual(720);
+    expect(edge.until).toBeLessThan(750);
+    // The edge explains the filter value: the wait from the branch's last trip to the window's end.
+    expect(r.period.midday.filterValue).toBe(Math.ceil(900 - edge.until!));
+    expect(r.period.midday.gap).toBeNull();
+    // #1276: the edge names the branch that set it, the index a row standing for it carries.
+    expect(d.tails).toHaveLength(1);
+    expect(edge.stretch).toBe(0);
+  });
+
+  it('#1276: an edge read on the main stretch names the main stretch', () => {
+    const coordsM = new Map<string, [number, number]>(trunk.map((id, i) => [id, [43.6 + i * 0.01, -79.4]]));
+    // Every 30 from 6:00, stopping at 12:00: the main stretch's own early end sets the midday value.
+    const d = directionStretches('m::0::Weekday', every(360, 720, 30).map(m => trip(`m${m}`, m, [])), id => coordsM.get(id));
+    const edge = rollupDirection(d)!.period.midday.edge;
+    expect(edge).toMatchObject({ every: 30, stretch: 'main' });
+  });
+
+  it('CIV-1241 legitimate: branches taking turns read their spacing, with no edge', () => {
+    const r = rollupDirection(build(every(360, 720, 30), every(750, 1380, 30), f))!;
+    expect(r.period.midday.filterValue).toBe(30);
+    expect(r.period.midday.edge).toBeNull();
+  });
+
+  it('CIV-1241 legitimate: a branch that runs all day has no edge', () => {
+    const d = build(every(360, 1380, 30), every(375, 1365, 30), []);
+    expect(d.tails).toHaveLength(1);
+    expect(rollupDirection(d)!.period.midday.edge).toBeNull();
   });
 
   it('legitimate: a few variant trips to another terminal are not a sibling branch (AC Transit 22\'s late Grand Lake runs)', () => {
