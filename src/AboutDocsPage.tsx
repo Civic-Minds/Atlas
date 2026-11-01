@@ -140,7 +140,7 @@ export default function AboutDocsPage() {
             <p>It turns published transit schedules into map layers, route summaries, stop-level frequency estimates, and network comparisons.</p>
             <h3 className="font-black text-[var(--text-primary)]">Design principles</h3>
             <ul className="list-disc pl-5 space-y-1">
-              <li><strong className="text-[var(--text-primary)]">One shared data platform:</strong> route, stop, and freshness data are processed into stable outputs for the tools that use them. Additional history and real-time outputs appear only where those features are enabled.</li>
+              <li><strong className="text-[var(--text-primary)]">One shared data platform:</strong> every Atlas tool works from the same route, stop and freshness data. History and real-time data show up only where those features are turned on.</li>
               <li><strong className="text-[var(--text-primary)]">Honest measurements:</strong> when a period does not contain enough sustained service to support a meaningful frequency claim, Atlas flags that limitation instead of tuning the calculation until it produces a plausible-looking number.</li>
               {showHistory && <li><strong className="text-[var(--text-primary)]">Preserved history:</strong> historical feeds are treated as dated snapshots. Missing or unusable periods remain unavailable rather than being duplicated or inferred.</li>}
               <li><strong className="text-[var(--text-primary)]">Stable contracts:</strong> New information is added alongside existing fields, never in place of them, so anything built on published data keeps its meaning.</li>
