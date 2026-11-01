@@ -743,7 +743,7 @@ export const NIGHT_EDGE_MAX_WAIT_MIN = 60;
  * bus at 2:39). Any other stretch keeps both edges at maxGap, so day service starting at 4:30 never
  * passes. null: no departure in the window.
  */
-export function stretchNight(s: Stretch, maxGap: 30 | 60): boolean | null {
+export function stretchNight(s: Stretch, maxGap: number): boolean | null {
   if (!s.nightTimes.some(t => t >= STRETCH_NIGHT_START_MIN && t <= STRETCH_NIGHT_END_MIN)) return null;
   if (!runsAcrossNightMidpoint(s.nightTimes)) return hasSustainedServiceInWindow([...s.nightTimes], STRETCH_NIGHT_START_MIN, STRETCH_NIGHT_END_MIN, maxGap);
   const times = [...new Set(s.nightTimes)].filter(t => t >= STRETCH_NIGHT_START_MIN && t <= STRETCH_NIGHT_END_MIN).sort((a, b) => a - b);
@@ -773,7 +773,7 @@ export function runsAcrossNightMidpoint(nightTimes: readonly number[]): boolean 
  * - 'fail': neither.
  */
 export type NightVerdict = 'pass' | 'partial' | 'fail';
-function fullNightVerdict(d: DirectionStretches, gap: 30 | 60): boolean {
+function fullNightVerdict(d: DirectionStretches, gap: number): boolean {
   if (!d.main) return false;
   const runsAtNight = (t: Stretch) => runsAcrossNightMidpoint(t.nightTimes);
   const passes = (t: Stretch) => stretchNight(t, gap) === true;
@@ -785,7 +785,7 @@ function fullNightVerdict(d: DirectionStretches, gap: 30 | 60): boolean {
   }
   return passes(d.main) && d.tails.filter(runsAtNight).every(passes);
 }
-export function directionNightVerdict(d: DirectionStretches, gap: 30 | 60): NightVerdict {
+export function directionNightVerdict(d: DirectionStretches, gap: number): NightVerdict {
   if (fullNightVerdict(d, gap)) return 'pass';
   // Partial only when night service does not reach the daytime main stretch's middle stop (no
   // departures on both sides of 3:30 there): the night route runs elsewhere or on part of the
@@ -794,6 +794,36 @@ export function directionNightVerdict(d: DirectionStretches, gap: 30 | 60): Nigh
   if (d.main && !d.disconnected && runsAcrossNightMidpoint(d.main.nightTimes)) return 'fail';
   if (d.night && fullNightVerdict(d.night, gap)) return 'partial';
   return 'fail';
+}
+
+/**
+ * #1267 (Ryan, 2026-10-31): the Overnight period reads the night verdict, so its value and Night
+ * Service never disagree. A direction's night value is the smallest gap at which its verdict passes
+ * (pass or partial), up to the window's length: at most 30 exactly when it is Night Service 30, at
+ * most 60 exactly when it is Night Service 60. TTC 301 reads 30, not the 71 a 2-6am window gave it
+ * across the 5-6am lull before day service. null: nothing in the direction runs at night (D3: no
+ * stretch with departures on both sides of 3:30), as for day service that starts at 4:48 (TTC 102),
+ * or no gap of 60 or less passes: Night Service's longest grade, so a wait like TTC 504's 172 minutes
+ * is not overnight service (#1267, pending Ryan's OK). `wholeDirection`: only a full pass counts, not one on the night version alone
+ * (the direction's card row, which stands for the whole direction: NYC subway 3 to New Lots Av
+ * runs every 20 at night on its night path, but 220 minutes apart at the row's own stops).
+ */
+/** #1267: the longest Overnight value; a direction that passes only above it has none (Night Service's 60 grade). */
+export const NIGHT_OVERNIGHT_MAX_VALUE = 60;
+
+export function directionNightValue(d: DirectionStretches, wholeDirection = false): number | null {
+  const stretches = [d.main, ...d.tails, ...(wholeDirection ? [] : [d.night?.main, ...(d.night?.tails ?? [])])];
+  if (!stretches.some(st => st != null && runsAcrossNightMidpoint(st.nightTimes))) return null;
+  const max = NIGHT_OVERNIGHT_MAX_VALUE;
+  const passes = (gap: number) => (wholeDirection ? directionNightVerdict(d, gap) === 'pass' : directionNightVerdict(d, gap) !== 'fail');
+  if (!passes(max)) return null;
+  // The verdict only gets easier as the gap grows (the edge allowance stays 60 up to here).
+  let lo = 1, hi = max;
+  while (lo < hi) {
+    const mid = Math.floor((lo + hi) / 2);
+    if (passes(mid)) hi = mid; else lo = mid + 1;
+  }
+  return lo;
 }
 
 /**
@@ -838,6 +868,10 @@ export interface DirectionRollup {
   }>;
   night30: boolean;
   night60: boolean;
+  /** #1267: the Overnight value, directionNightValue. */
+  nightValue: number | null;
+  /** #1267: the direction's own Overnight value (card rows): a full pass only, not on the night version alone. */
+  nightDirectionValue: number | null;
   /** Passes only on the night version of the direction (part of the route, or a night path). */
   nightPartial30: boolean;
   nightPartial60: boolean;
@@ -1071,7 +1105,7 @@ export function rollupDirection(d: DirectionStretches): DirectionRollup | null {
   const frequentStretches = [d.main, ...allDayTails];
   const researchOf = frequentStretches.map(st => computeResearchFrequentService([...st.times]));
   return {
-    period, night30: v30 !== 'fail', night60: v60 !== 'fail', nightPartial30: v30 === 'partial', nightPartial60: v60 === 'partial',
+    period, night30: v30 !== 'fail', night60: v60 !== 'fail', nightValue: directionNightValue(d), nightDirectionValue: directionNightValue(d, true), nightPartial30: v30 === 'partial', nightPartial60: v60 === 'partial',
     allDay: !limitedOnly && allDays.every(v => v != null) ? Math.max(...(allDays as number[])) : null,
     limitedOnly,
     middayWait,
@@ -1094,6 +1128,8 @@ export interface RouteRollup {
   }>;
   night30: boolean;
   night60: boolean;
+  /** #1267: the Overnight value, the worst direction's night value; null when any has none. */
+  nightValue: number | null;
   /** The route qualifies only on the night version of some direction: drawn on the part it runs. */
   nightPartial30: boolean;
   nightPartial60: boolean;
@@ -1143,6 +1179,7 @@ export function rollupRoute(dirs: readonly (DirectionRollup | null)[]): RouteRol
     period,
     night30: complete && known.every(d => d.night30),
     night60: complete && known.every(d => d.night60),
+    nightValue: complete && known.every(d => d.nightValue != null) ? Math.max(...known.map(d => d.nightValue!)) : null,
     nightPartial30: complete && known.every(d => d.night30) && known.some(d => d.nightPartial30),
     nightPartial60: complete && known.every(d => d.night60) && known.some(d => d.nightPartial60),
     // A limited direction (#720) has no all-day value, so neither has its route: every direction
@@ -1253,19 +1290,21 @@ export function stampStretchShadow(
     p.stretchPeriodCoverage = byPeriod(k => dir.period[k].coverage);
     p.stretchPeriodSustained = byPeriod(k => dir.period[k].sustained);
     p.stretchPeriodSustainedMid = byPeriod(k => dir.period[k].sustainedMid);
-    p.stretchPeriodOneGap = byPeriod(k => dir.period[k].oneGap);
-    p.stretchPeriodTypical = byPeriod(k => dir.period[k].typical);
+    // #1267: Overnight is one number from the night verdict, so its old 2-6 AM wording inputs (one gap, typical-worst
+    // range, late start or early end, one gap inside) are not stamped.
+    p.stretchPeriodOneGap = byPeriod(k => k === 'overnight' ? false : dir.period[k].oneGap);
+    p.stretchPeriodTypical = byPeriod(k => k === 'overnight' ? null : dir.period[k].typical);
     // #934: only periods with an edge reading, so most features carry an empty object at most.
     {
-      const edges = Object.fromEntries(PERIOD_WINDOWS.flatMap(({ key }) => (dir.period[key].edge ? [[key, dir.period[key].edge]] : [])));
+      const edges = Object.fromEntries(PERIOD_WINDOWS.flatMap(({ key }) => (key !== 'overnight' && dir.period[key].edge ? [[key, dir.period[key].edge]] : [])));
       if (Object.keys(edges).length > 0) p.stretchPeriodEdge = edges;
       else delete p.stretchPeriodEdge;
-      const gaps = Object.fromEntries(PERIOD_WINDOWS.flatMap(({ key }) => (dir.period[key].gap ? [[key, dir.period[key].gap]] : [])));
+      const gaps = Object.fromEntries(PERIOD_WINDOWS.flatMap(({ key }) => (key !== 'overnight' && dir.period[key].gap ? [[key, dir.period[key].gap]] : [])));
       if (Object.keys(gaps).length > 0) p.stretchPeriodGap = gaps;
       else delete p.stretchPeriodGap;
     }
     p.stretchRoutePeriodHeadway = byPeriod(k => route.period[k].value);
-    p.stretchPeriodRange = byPeriod(k => route.period[k].range);
+    p.stretchPeriodRange = byPeriod(k => k === 'overnight' ? null : route.period[k].range);
     p.stretchNight30 = route.night30;
     p.stretchNight60 = route.night60;
     p.stretchNightPartial30 = route.nightPartial30;
@@ -1281,8 +1320,9 @@ export function stampStretchShadow(
     p.stretchMiddayWait = route.middayWait;
     p.stretchFrequentService = slot.day === 'Weekday' ? route.frequent : false;
     p.stretchResearchFrequentService = route.research;
-    p.routeFilterHeadwayByPeriod = byPeriod(k => route.period[k].filterValue);
-    p.directionFilterHeadwayByPeriod = byPeriod(k => dir.period[k].filterValue);
+    // #1267: Overnight reads the night verdict's value (directionNightValue), as Night Service does.
+    p.routeFilterHeadwayByPeriod = byPeriod(k => k === 'overnight' ? route.nightValue : route.period[k].filterValue);
+    p.directionFilterHeadwayByPeriod = byPeriod(k => k === 'overnight' ? dir.nightDirectionValue : dir.period[k].filterValue);
     // CIV-321: per drawn stop and period, every trip of the direction running through the stop, along
     // the display-only full line where the row has one (S4), else the row's own stops.
     const stopOrder = (p.fullStopOrder ?? p.stopOrder) as readonly string[] | undefined;

@@ -6,7 +6,7 @@ import { processGtfsBuffer } from '../process-core';
 import { normalizeRouteFilterFeatures, routePassesHeadwayFilter } from '../../shared/routeHeadwayFilter';
 import { isLimitedService } from '../../shared/irregularRoutes';
 import { decodeStopRuns } from '../../shared/stopRuns';
-import { directionStretches, encodeStopRuns, rollupDirection, rollupRoute, stopPeriodValues, stretchMetaPeriods, stretchFilterValue, stretchNight, stretchPeriods, tailNotThrough, type DirectionStretches, type DirectionTrip, type Stretch } from '../tripSets';
+import { directionNightValue, directionNightVerdict, directionStretches, encodeStopRuns, rollupDirection, rollupRoute, stopPeriodValues, stretchMetaPeriods, stretchFilterValue, stretchNight, stretchPeriods, tailNotThrough, type DirectionStretches, type DirectionTrip, type Stretch } from '../tripSets';
 
 // Frequency focus step 3 (`_reports/step3-tripsets-spec.md`): the direction trip-set selector, in
 // shadow. Expected values are the GTFS oracle's (scripts/handcheck/stretch-departures.py --at mid
@@ -323,6 +323,60 @@ describe('night edges: the wait for the first and after the last night bus (CIV-
   });
 });
 
+describe('Overnight reads the night verdict (#1267, Ryan 2026-10-31)', () => {
+  const hm = (h: number, m: number) => h * 60 + m;
+  const every = (from: number, to: number, step: number) => Array.from({ length: Math.floor((to - from) / step) + 1 }, (_, i) => from + i * step);
+  const dir = (nightTimes: number[]) => ({ main: { kind: 'main', stops: ['a'], refStop: 'a', lengthKm: 6, times: nightTimes, nightTimes, tripCount: nightTimes.length }, tails: [] }) as unknown as DirectionStretches;
+  it('TTC 301 Weekday: Overnight reads 30 or better, as Night Service 30 does (not the 71 across the 5-6am lull)', async () => {
+    const r = await run('ttc-301-weekday-night');
+    const p = row(r, '301', 'Weekday');
+    expect(p.stretchNight30).toBe(true);
+    expect((p.routeFilterHeadwayByPeriod as Record<string, number | null>).overnight).toBeLessThanOrEqual(30);
+  });
+  it('the value passes 30 and 60 exactly when the verdict does', () => {
+    const cases = [
+      every(hm(26, 0), hm(29, 0), 30),
+      [...every(hm(26, 9), hm(27, 39), 30), hm(28, 17), hm(28, 47)],
+      every(hm(26, 10), hm(29, 0), 45),
+      every(hm(26, 0), hm(29, 0), 75),
+      every(hm(26, 39), hm(29, 24), 15),
+    ];
+    for (const t of cases) {
+      const d = dir(t);
+      const v = directionNightValue(d);
+      for (const gap of [30, 60]) expect(v != null && v <= gap, `${t} @${gap}`).toBe(directionNightVerdict(d, gap) !== 'fail');
+    }
+  });
+  it('night service every 75 has no Overnight value: over 60 is not overnight service', () => {
+    expect(directionNightValue(dir(every(hm(26, 0), hm(29, 0), 75)))).toBeNull();
+    expect(directionNightValue(dir(every(hm(26, 0), hm(29, 0), 60)))).toBe(60);
+  });
+  it('Overnight is one number: no branch range and no 2-6 AM wording inputs (TTC 300, its branches every 8-15)', async () => {
+    const r = await run('ttc-300-weekday-night');
+    const rows = r.rows.filter(p => p.stretchPeriodRange !== undefined);
+    expect(rows.length).toBeGreaterThan(0);
+    for (const p of rows as Record<string, any>[]) {
+      expect(p.stretchPeriodRange.overnight).toBeNull();
+      expect(p.stretchPeriodTypical.overnight).toBeNull();
+      expect(p.stretchPeriodOneGap.overnight).toBe(false);
+      expect(p.stretchPeriodEdge?.overnight).toBeUndefined();
+      expect(p.stretchPeriodGap?.overnight).toBeUndefined();
+    }
+  });
+  it('NYC subway 3 to New Lots Av runs at night only on its night path: the route has an Overnight value, the direction none', async () => {
+    const r = await run('nyct-subway-night-weekday', 'nyct');
+    const rows = (r.rows as Record<string, any>[]).filter(p => p.routeShortName === '3' && p.day === 'Weekday' && p.headsign === 'New Lots Av' && p.directionFilterHeadwayByPeriod);
+    expect(rows.length).toBeGreaterThan(0);
+    for (const p of rows) {
+      expect(p.routeFilterHeadwayByPeriod.overnight).toEqual(expect.any(Number));
+      expect(p.directionFilterHeadwayByPeriod.overnight).toBeNull();
+    }
+  });
+  it('day service that only starts after 3:30 has no Overnight value (TTC 102)', () => {
+    expect(directionNightValue(dir(every(hm(28, 48), hm(30, 0), 12)))).toBeNull();
+  });
+});
+
 describe('night on disconnected pieces (NYC subway S)', () => {
   it('S keeps passing: the 42 St shuttle stops overnight, Franklin Av and Rockaway Park run all night', async () => {
     const r = await run('nyct-subway-s-weekday', 'nyct');
@@ -533,12 +587,12 @@ describe('runs through the period: the settled checks catch a straggler before t
 });
 
 describe('review fixes: partial night only where night service misses the main stretch; holes are internal gaps', () => {
-  it('TTC 353 and 395 run at night on their corridor with a 66-67 minute opening gap: they fail Night, as their overnight value says', async () => {
+  it('TTC 353 and 395 run at night on their corridor with a 66-67 minute opening gap: they fail Night, and have no Overnight value (over 60, #1267)', async () => {
     const r = await run('ttc-353-395-weekday');
-    for (const [route, wait] of [['353', 66], ['395', 67]] as const) {
+    for (const route of ['353', '395']) {
       const p = row(r, route, 'Weekday');
       expect([p.stretchNight30, p.stretchNight60, p.stretchNightPartial60], route).toEqual([false, false, false]);
-      expect(p.routeFilterHeadwayByPeriod.overnight, route).toBe(wait);
+      expect(p.routeFilterHeadwayByPeriod.overnight, route).toBeNull();
     }
   });
   it('LA Metro 105: the Vernon owl stays a real part-of-route night service', async () => {

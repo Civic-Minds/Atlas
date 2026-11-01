@@ -11,10 +11,6 @@ exports[`card rows read their value, gap and words from the same trips, across e
     "ttc-191-weekday 191 Sunday d1 "York Mills" evening: every 20 from 0 own",
     "ttc-191-weekday 191 Sunday d1 "York Mills" late: every 20 from 0 own",
     "ttc-320-sunday-night 320 Sunday d0 "Queens Quay" amPeak: every 56 from 0 own",
-    "ttc-337-373-night 337 Saturday d1 "Steeles" overnight: every 30 from 2 own",
-    "ttc-337-373-night 373 Saturday d1 "Steeles and Kipling" overnight: every 78 from 1 own",
-    "ttc-337-373-night 373 Sunday d1 "Steeles and Kipling" overnight: every 30 from 2 own",
-    "ttc-340-night 340 Weekday d1 "St Clair and Oakwood" overnight: every 30 from 1 own",
   ],
   "holes": [
     "cta-9-weekday 9 Weekday d0 "Ashland & 95th Street" pmPeak: every 14 beside 158",
