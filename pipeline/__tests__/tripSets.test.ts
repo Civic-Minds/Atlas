@@ -905,6 +905,31 @@ describe('rule 3: sibling branches that take turns through a period (#1072, HSR 
     expect(rollupDirection(d)!.period.midday.filterValue).toBeGreaterThan(60);
   });
 
+  it('CIV-1241: a branch that runs every 30 and stops at 12:00 reads its stop time as the period edge, and keeps its wait', () => {
+    const d = build(every(360, 720, 30), every(750, 1380, 30), []);
+    const r = rollupDirection(d)!;
+    const edge = r.period.midday.edge!;
+    expect(edge.every).toBe(30);
+    expect(edge.from).toBeUndefined();
+    expect(edge.until).toBeGreaterThanOrEqual(720);
+    expect(edge.until).toBeLessThan(750);
+    // The edge explains the filter value: the wait from the branch's last trip to the window's end.
+    expect(r.period.midday.filterValue).toBe(Math.ceil(900 - edge.until!));
+    expect(r.period.midday.gap).toBeNull();
+  });
+
+  it('CIV-1241 legitimate: branches taking turns read their spacing, with no edge', () => {
+    const r = rollupDirection(build(every(360, 720, 30), every(750, 1380, 30), f))!;
+    expect(r.period.midday.filterValue).toBe(30);
+    expect(r.period.midday.edge).toBeNull();
+  });
+
+  it('CIV-1241 legitimate: a branch that runs all day has no edge', () => {
+    const d = build(every(360, 1380, 30), every(375, 1365, 30), []);
+    expect(d.tails).toHaveLength(1);
+    expect(rollupDirection(d)!.period.midday.edge).toBeNull();
+  });
+
   it('legitimate: a few variant trips to another terminal are not a sibling branch (AC Transit 22\'s late Grand Lake runs)', () => {
     const after = every(750, 1380, 30);
     const odd = new Set([750, 780, 810]);
