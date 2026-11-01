@@ -181,8 +181,17 @@ export function buildRouteCardModel(input: RouteCardModelInput): RouteCardModel 
   const collapseGroups = allLackHeadsigns && directionGroups.length > 1 &&
     directionGroups.every(g => groupHeadway(g) === groupHeadway(directionGroups[0]));
   // The filter has no value and the route does not run in this period: no rows, no numbers, no "limited" (the map draws nothing).
-  const doesNotRun = contract != null && contract.filterValue == null && !contract.runs;
-  const displayGroups = doesNotRun ? [] : collapseGroups ? [directionGroups[0]] : directionGroups;
+  // #1277: a period the route only runs part of (TTC 110 Sunday AM, from 7:52 AM) still runs where a row reads its start or
+  // end ("every 30 min from 7:53 AM", rowReadsPeriodEdge): the card shows those rows, and only those (no "limited" beside
+  // them), not "no scheduled trips".
+  const noFilterValue = contract != null && contract.filterValue == null && !contract.runs;
+  const partPeriodGroups = noFilterValue && period !== 'all'
+    ? directionGroups
+      .map(group => ({ ...group, realTier: group.realTier.filter(direction => rowTrips(direction, period).partPeriod != null), span: [] }))
+      .filter(group => group.realTier.length > 0)
+    : [];
+  const doesNotRun = noFilterValue && partPeriodGroups.length === 0;
+  const displayGroups = doesNotRun ? [] : partPeriodGroups.length > 0 ? partPeriodGroups : collapseGroups ? [directionGroups[0]] : directionGroups;
   const needsNumbered = allLackHeadsigns && !collapseGroups && directionGroups.length > 1;
   const showDirectionSections = shouldShowDirectionSections(displayGroups);
   // A destination's name under its direction, the same in the rows and the issue report.

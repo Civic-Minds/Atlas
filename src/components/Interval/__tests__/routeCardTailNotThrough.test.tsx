@@ -83,3 +83,14 @@ describe('a branch that does not run through a period has no row for it (#1115, 
     expect(screen.queryByText(/every 30 min/)).toBeNull();
   });
 });
+
+describe('#1277: a branch that does not run through a period keeps its row when the row says when it runs', () => {
+  it('Pioneer Village midday with an edge on the stretch it covers reads its until time', () => {
+    const withEdge = features(['midday', 'evening', 'late', 'overnight']).map(f => (f.headsign === 'Pioneer Village via Oakdale'
+      ? { ...f, stretchCovers: ['main', 2], stretchPeriodEdge: { midday: { until: 600, every: 21, stretch: 2 } } }
+      : f)) as ShapeProperties[];
+    renderCard(withEdge, 'midday');
+    expect(screen.getByText(/Pioneer Village/)).toBeTruthy();
+    expect(document.body.textContent?.replace(/[\u00a0\u202f\u2060]/g, ' ')).toContain('every 21 min until 10 AM');
+  });
+});
