@@ -93,3 +93,24 @@ describe('#1277: a period the route runs only part of shows the rows that say wh
     expect([m.doesNotRun, m.groups.length]).toEqual([true, 0]);
   });
 });
+
+describe('CIV-1251 row 8: branches that take turns on a shared stretch that starts late', () => {
+  // TTC 110 Sunday AM southbound: no filter value; the shared stretch every 15 from 8:07, Kipling's own trips every 30 from 7:29.
+  const meta = { main: { stops: 10, refStop: 'm', trips: 60, edge: { amPeak: { from: 487, every: 15 } } }, tails: [{ refStop: 'a', stops: 5, km: 2, trips: 30 }, { refStop: 'b', stops: 5, km: 2, trips: 30, edge: { amPeak: { from: 449, every: 30 } } }] };
+  const tail = (headsign: string, stretchIndex: number) => ({
+    routeId: '110', routeShortName: '110', directionId: 0, headsign, tier: '30', headway: 30, stretchRole: 'tail', stretchIndex,
+    stretchCovers: ['main', stretchIndex], stretchMeta: meta, headwayByPeriod: { amPeak: 30 }, departuresByHour: { 7: 1, 8: 2 },
+    routeFilterHeadwayByPeriod: { amPeak: null }, routeRunsByPeriod: { amPeak: false }, directionFilterHeadwayByPeriod: { amPeak: null },
+    stretchPeriodEdge: { amPeak: { from: 487, every: 15, stretch: 'main' } },
+  }) as unknown as ShapeProperties;
+  const directions = [tail('Long Branch', 0), tail('Kipling and Lake Shore', 1)];
+  const m = buildRouteCardModel({
+    directions, routeShortName: '110', routeLongName: '', period: 'amPeak', maxHeadway: Infinity, nightView: false, stableColors: false, hideSpan: false,
+    directionGroups: [{ dirId: 0, realTier: directions, span: [], directionFeatures: directions }],
+  });
+
+  it('the Shared stretch row says when the shared stretch runs; each branch row only its own trips', () => {
+    expect(m.groups[0].shared).toMatchObject({ label: 'Shared stretch', headway: 15, edgeText: 'every 15 min from 8:07 AM' });
+    expect(m.groups[0].rows.map(r => [r.label, r.display(null).value.headwayLabel])).toEqual([['to Kipling and Lake Shore', 'every 30 min from 7:29 AM']]);
+  });
+});

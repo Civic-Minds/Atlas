@@ -471,6 +471,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                     <CardDirectionRow
                       label={group.shared.label}
                       headway={group.shared.headway}
+                      headwayLabel={group.shared.edgeText}
                       branchHovered={coreHovered}
                       branchDimmed={!!hoveredBranch && !coreHovered}
                       onHoverStart={() => setHoveredBranch(group.shared!.hover)}

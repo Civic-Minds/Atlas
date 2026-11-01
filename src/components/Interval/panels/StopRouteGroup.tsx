@@ -64,6 +64,8 @@ export default function StopRouteGroup({
     const rows = items.filter(item => item.directionId === dirId);
     return [dirId, rows.length > 1 ? stopRouteLineHeadway(rows, period) : null];
   }));
+  // CIV-1251 row 8: a shared stretch that starts late or ends early gives its own words ("every 15 min from 8:07 AM").
+  const sharedEdgeByDirection = new Map(directionIds.map(dirId => [dirId, items.find(item => item.directionId === dirId)?.sharedEdge]));
 
   if (items.length === 0) return null;
 
@@ -89,7 +91,8 @@ export default function StopRouteGroup({
       />
       <SidebarCardListRows className="space-y-1 mt-0.5">
         {items.flatMap((item, i) => {
-          const sharedHeadway = sharedByDirection.get(item.directionId);
+          const sharedEdge = sharedEdgeByDirection.get(item.directionId);
+          const sharedHeadway = sharedEdge?.every ?? sharedByDirection.get(item.directionId);
           const sharedHovered = !!hoveredBranch && hoveredBranch.routeKey === rKey
             && hoveredBranch.directionId === item.directionId && hoveredBranch.headsign == null;
           // The direction's first row: the shared row goes above it, as on the route card (CIV-937).
@@ -98,6 +101,7 @@ export default function StopRouteGroup({
               key={`${rKey}::${item.directionId}::shared`}
               label={SHARED_STRETCH_LABEL}
               headway={sharedHeadway}
+              headwayLabel={sharedEdge?.text}
               onClick={() => onOpenRoute(rKey)}
               {...(setHoveredBranch ? {
                 onHoverStart: () => setHoveredBranch({ routeKey: rKey, directionId: item.directionId }),

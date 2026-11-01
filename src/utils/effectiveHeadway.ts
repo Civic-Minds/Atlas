@@ -132,14 +132,12 @@ export function hasDirectionPeriodService(p: ShapeProperties, period: TimePeriod
  */
 export function routeCardPeriodShapeText(p: ShapeProperties, period: TimePeriod): string | undefined {
   if (period === 'all') return undefined;
+  const own = tailOwnEdge(p, period);
+  if (own) return periodEdgeText(own);
   const edge = p.stretchPeriodEdge?.[period];
   if (edge && (edge.from != null || edge.until != null)) {
     if (edge.stretch !== undefined && !rowReadsPeriodEdge(p, period)) return undefined;
-    return headwayPeriodShape({
-      from: edge.from != null ? clockTime(edge.from) : undefined,
-      until: edge.until != null ? clockTime(edge.until) : undefined,
-      every: edge.every,
-    });
+    return periodEdgeText(edge);
   }
   const gap = p.stretchPeriodGap?.[period];
   return gap ? headwayPeriodShape({ every: gap.every, gap: gap.gap }) : undefined;
@@ -152,10 +150,15 @@ export function routeCardPeriodShapeText(p: ShapeProperties, period: TimePeriod)
  */
 export function rowReadsPeriodEdge(p: ShapeProperties, period: TimePeriod): boolean {
   if (period === 'all') return false;
+  if (tailOwnEdge(p, period)) return true;
   const edge = p.stretchPeriodEdge?.[period];
   if (!edge) return false;
   if (edge.stretch === undefined) return p.stretchRole === 'main';
   if (!(p.stretchCovers?.includes(edge.stretch) ?? false)) return false;
+  // CIV-1251 (Ryan, row 8): with each stretch's own edge in the data, the shared main stretch's edge goes on the Shared
+  // stretch row, and a branch row reads only its own (TTC 110 Sunday AM: Shared stretch every 15 min from 8:07 AM, Kipling
+  // every 30 min from 7:29 AM). Data without stretch edges keeps #1276.
+  if (edge.stretch === 'main' && p.stretchRole === 'tail' && hasStretchEdges(p)) return false;
   // #1277: a branch that does not run through the period (#1115) carries the words only when they are its own trips: the
   // edge was read on its own stretch and it has departures of its own there (TTC 131 Sunday late: the Old Finch branch,
   // which stops by 3 PM, never reads the shared stretch's "until 12:37 AM"), on the route card and the stop card alike.
@@ -166,6 +169,36 @@ export function rowReadsPeriodEdge(p: ShapeProperties, period: TimePeriod): bool
     const h = Number(hour) * 60;
     return n > 0 && ((h >= start && h < end) || (h + MINUTES_PER_DAY >= start && h + MINUTES_PER_DAY < end));
   });
+}
+
+type PeriodEdge = { from?: number; until?: number; every: number };
+
+/** "every 30 min until 5:55 PM" / "every 9 min from 7:17 AM" for one edge. */
+export function periodEdgeText(edge: PeriodEdge): string {
+  return headwayPeriodShape({
+    from: edge.from != null ? clockTime(edge.from) : undefined,
+    until: edge.until != null ? clockTime(edge.until) : undefined,
+    every: edge.every,
+  });
+}
+
+/** CIV-1251: the data carries each stretch's own edge (stretchMeta main.edge, tails[i].edge). */
+function hasStretchEdges(p: ShapeProperties): boolean {
+  return p.stretchMeta?.main?.edge != null || (p.stretchMeta?.tails ?? []).some(t => t.edge != null);
+}
+
+/** CIV-1251: a branch row's own late start or early end, read from its own trips (stretchMeta.tails[i].edge). */
+export function tailOwnEdge(p: ShapeProperties, period: TimePeriod): PeriodEdge | undefined {
+  if (period === 'all' || p.stretchRole !== 'tail') return undefined;
+  const edge = p.stretchMeta?.tails?.[p.stretchIndex ?? 0]?.edge?.[period as PeriodKey];
+  return edge && (edge.from != null || edge.until != null) ? edge : undefined;
+}
+
+/** CIV-1251: the shared main stretch's own edge, for the Shared stretch row above branch rows. */
+export function mainStretchEdge(p: ShapeProperties, period: TimePeriod): PeriodEdge | undefined {
+  if (period === 'all') return undefined;
+  const edge = p.stretchMeta?.main?.edge?.[period as PeriodKey];
+  return edge && (edge.from != null || edge.until != null) ? edge : undefined;
 }
 
 /**

@@ -200,7 +200,12 @@ export function routeCardNotices(input: RouteCardNoticeInput): RouteCardNotices 
   let shortRows = 0;
   let everyShortRowGivesEdge = true;
   for (const group of model.groups) {
-    if (group.shared) { rowNumbers.push(group.shared.headway); everyRowGivesHours = false; }
+    // CIV-1251 row 8: a Shared stretch row that gives its hours says when the shared stretch runs.
+    if (group.shared) {
+      rowNumbers.push(group.shared.headway);
+      if (group.shared.edgeText) rowWords.push(group.shared.edgeText);
+      else everyRowGivesHours = false;
+    }
     for (const row of group.rows) {
       if (row.night) continue;
       const shown = row.display(null);
@@ -239,8 +244,8 @@ export function routeCardNotices(input: RouteCardNoticeInput): RouteCardNotices 
   }
   // #1225: the period line and the filter line can be the same sentence ("no scheduled trips from 6–9 AM").
   if (periodNotice && filter && periodNotice.text === filter.text) periodNotice = drop(periodNotice, 'the filter line says the same');
-  // #1226: with no number on the rows, a row that gives the hours already says what the line says.
-  if (periodNotice?.code === 'N9' && rowNumbers.length === 0 && rowsGiveHours) periodNotice = drop(periodNotice, 'every row gives its hours');
+  // #1226: every row giving its hours already says what the line says (CIV-1251 row 8: nothing below the rows).
+  if (periodNotice?.code === 'N9' && rowsGiveHours) periodNotice = drop(periodNotice, 'every row gives its hours');
   if (filter?.code === 'N13' && rowsGiveHours) filter = drop(filter, 'every row gives its hours');
   // CIV-1241 (Ryan, 2026-11-01): "Only part of this route runs every 60 minutes or better" says what a falling-short row's
   // "every 30 min until 9:18 PM" already does (OC Transpo 11 evening, CIV-1241 crops). It stays while any falling-short row has no such time.

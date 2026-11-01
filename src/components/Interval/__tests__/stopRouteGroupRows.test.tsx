@@ -157,4 +157,19 @@ describe('keyboardFocusHover (CIV-1053)', () => {
   it('a row with no hover gets no handlers', () => {
     expect(keyboardFocusHover(undefined, undefined)).toEqual({});
   });
+
+  it('CIV-1251 row 8: the Shared stretch row reads the shared stretch\'s own time where it starts late', () => {
+    const edge = { text: 'every 15 min from 8:07 AM', every: 15 };
+    const timed = (headsign: string, text?: string) => ({ ...branch(headsign, 0, 30), rowHeadway: null, sharedEdge: edge, ...(text ? { periodText: text } : {}) });
+    render(
+      <StopRouteGroup
+        shortName="110" label={routeLabels({ shortName: '110', longName: 'Islington South' })} longName="Islington South"
+        branches={[timed('Kipling and Lake Shore', 'every 30 min from 7:29 AM')]}
+        period="amPeak" onOpenRoute={() => {}}
+      />,
+    );
+    const text = document.body.textContent?.replace(/[\u00a0\u202f\u2060]/g, ' ') ?? '';
+    expect(text).toContain('Shared stretchevery 15 min from 8:07 AM');
+  });
 });
+

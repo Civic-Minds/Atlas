@@ -103,6 +103,21 @@ describe('buildStopRoutes: one destination served by two patterns (CIV-1080)', (
     expect(words().filter(Boolean)).toEqual([]);
   });
 
+  it('CIV-1251 row 8: a stop on the shared stretch carries the shared stretch\'s own time for its Shared stretch row', () => {
+    const fc = structuredClone(ttc29);
+    const north = fc.features.filter(x => x.properties?.directionId === 1);
+    north.forEach((f, i) => Object.assign(f.properties!, {
+      headsign: i === 0 ? 'Wilson' : 'Downsview', stretchRole: 'tail', stretchIndex: i, stretchCovers: ['main', i],
+      stretchMeta: { main: { stops: 10, refStop: 'm', trips: 50, edge: { midday: { from: 754, every: 8 } } }, tails: [{ refStop: 'a', stops: 3, km: 1, trips: 20 }, { refStop: 'b', stops: 3, km: 1, trips: 20 }] },
+    }));
+    const routes = buildStopRoutes({
+      siblingIdsByAgency: { ttc: new Set(['2108']) }, routesByAgency: { ttc: new Set(['29']) }, layers: { ttc: fc }, day: 'Weekday', period: 'midday',
+    });
+    const shared = routes[0]?.branches.filter(b => b.directionId === 1).map(b => b.sharedEdge);
+    expect(shared?.length).toBeGreaterThan(0);
+    shared?.forEach(edge => expect(edge).toEqual({ text: 'every 8 min from 12:34 PM', every: 8 }));
+  });
+
   it('#1277: a branch that does not run through the period never reads the shared stretch\'s time (TTC 131 Sunday late, Old Finch)', () => {
     const fc = structuredClone(ttc29);
     for (const f of fc.features.filter(x => x.properties?.directionId === 1)) {

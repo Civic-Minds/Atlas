@@ -1,6 +1,6 @@
 import type { HoveredBranch, ShapeProperties, TimePeriod } from '../hooks/useIntervalStats';
 import { resolveBranchLabel } from './format';
-import { hasDirectionPeriodService } from './effectiveHeadway';
+import { hasDirectionPeriodService, mainStretchEdge, periodEdgeText } from './effectiveHeadway';
 import { buildRouteServiceSummary } from './routeFacts';
 import { unevenPeriodMaxGap } from './routeCardUneven';
 import { rowTrips } from './rowTrips';
@@ -58,6 +58,8 @@ export interface CardSpanRow {
 export interface CardSharedRow {
   label: string;
   headway: number;
+  /** CIV-1251 row 8: the shared stretch's own late start or early end ("every 15 min from 8:07 AM"), in place of the number. */
+  edgeText?: string;
   hover: HoveredBranch;
 }
 
@@ -191,7 +193,7 @@ export function buildRouteCardModel(input: RouteCardModelInput): RouteCardModel 
   const partPeriodGroups = noFilterValue && period !== 'all'
     ? directionGroups
       .map(group => ({ ...group, realTier: group.realTier.filter(direction => rowTrips(direction, period).partPeriod != null), span: [] }))
-      .filter(group => group.realTier.length > 0)
+      .filter(group => group.realTier.length > 0 || sharedStretchEdge(group, period, stretchMode) != null)
     : [];
   const doesNotRun = noFilterValue && partPeriodGroups.length === 0;
   const displayGroups = doesNotRun ? [] : partPeriodGroups.length > 0 ? partPeriodGroups : collapseGroups ? [directionGroups[0]] : directionGroups;
@@ -231,9 +233,13 @@ export function buildRouteCardModel(input: RouteCardModelInput): RouteCardModel 
       && group.realTier.some(d => !featurePassesHeadwayFilter(d, period, maxHeadway));
     // CIV-937: with stretch data, the shared main stretch's own value ("Shared stretch every 15") above the branch rows.
     const stretchShared = stretchMode && !nightView ? stretchSharedHeadway(group, period) : null;
+    // CIV-1251 row 8 (Ryan, 2026-11-01): branches that take turns on a shared stretch that starts late or ends early. The
+    // Shared stretch row carries the stretch's own edge ("Shared stretch every 15 min from 8:07 AM", TTC 110 Sunday AM) and
+    // each branch row its own; the branches never read the shared one (rowReadsPeriodEdge).
+    const sharedEdge = sharedStretchEdge(group, period, stretchMode && !nightView);
     // A shared or combined value is a daytime reading: none on the Night card (CIV-934).
-    const groupHasCoreSummary = !nightView && (stretchMode ? stretchShared != null : groupShared != null || shouldShowTrunkSummary(group.realTier, period));
-    const groupCoreHeadway = groupShared?.headway ?? stretchShared ?? (groupHasCoreSummary
+    const groupHasCoreSummary = !nightView && (stretchMode ? stretchShared != null || sharedEdge != null : groupShared != null || shouldShowTrunkSummary(group.realTier, period));
+    const groupCoreHeadway = sharedEdge?.every ?? groupShared?.headway ?? stretchShared ?? (groupHasCoreSummary
       ? groupTrunkHeadway(group.realTier, period === 'all' ? 'midday' : period)
       : null);
     const groupSharedStopIds = groupShared?.stopIds ?? (groupHasCoreSummary ? sharedStopIdsForBranches(group.realTier) : []);
@@ -246,6 +252,7 @@ export function buildRouteCardModel(input: RouteCardModelInput): RouteCardModel 
         // CIV-1251: one name for the shared part of a route; how its number was worked out belongs in the glossary.
         label: SHARED_STRETCH_LABEL,
         headway: groupCoreHeadway,
+        ...(sharedEdge ? { edgeText: periodEdgeText(sharedEdge) } : {}),
         hover: { directionId: group.dirId, headsigns: coreHeadsigns, sharedStopIds: groupSharedStopIds, sharedHeadway: groupCoreHeadway, isCore: true },
       }
       : null;
@@ -308,7 +315,7 @@ export function buildRouteCardModel(input: RouteCardModelInput): RouteCardModel 
       .map(({ value }) => (value && !value.isLimited ? value.headway : undefined))
       .filter((h): h is number => h != null))].sort((a, b) => a - b);
     const sharedLines = group.shared
-      ? [`- ${group.shared.label} ${headwayAbout(group.shared.headway)}${branchHeadways.length === 0 ? ''
+      ? [`- ${group.shared.label} ${group.shared.edgeText ?? headwayAbout(group.shared.headway)}${branchHeadways.length === 0 ? ''
         : `; each branch ${branchHeadways.length === 1 ? headwayAbout(branchHeadways[0]) : headwayAboutRange(branchHeadways[0], branchHeadways[branchHeadways.length - 1])}`}`]
       : [];
     const branchLines = shown.map(({ row }) => {
@@ -329,4 +336,18 @@ export function buildRouteCardModel(input: RouteCardModelInput): RouteCardModel 
     unevenGap: () => unevenPeriodMaxGap(directionGroups, period),
     primaryMultiBranch, activeRangeDirections, doesNotRun, collapseGroups, displayGroups, showDirectionSections, groups, rowHeadways, reportServiceLines,
   };
+}
+
+/**
+ * CIV-1251 row 8: the shared main stretch's own edge for a direction whose rows are branches (no main row reads it), or
+ * undefined. A direction with a main row keeps the edge on that row.
+ */
+function sharedStretchEdge(group: RouteCardDirectionGroup, period: TimePeriod, stretchMode: boolean) {
+  if (!stretchMode || period === 'all' || group.realTier.some(d => d.stretchRole === 'main')) return undefined;
+  if (!(group.directionFeatures ?? []).some(d => d.stretchRole === 'tail')) return undefined;
+  for (const d of group.directionFeatures ?? []) {
+    const edge = mainStretchEdge(d, period);
+    if (edge) return edge;
+  }
+  return undefined;
 }

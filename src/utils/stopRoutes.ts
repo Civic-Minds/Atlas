@@ -2,7 +2,7 @@ import type { GeoJSON } from 'geojson';
 import type { ShapeProperties, TimePeriod } from '../hooks/useIntervalStats';
 import { branchDisplayPeriodHeadway, buildRouteFacts, buildRouteStopMetric, metricValueForPeriod, type HeadwayMetric, type RouteLabel } from './routeFacts';
 import { buildSharedStopIndex } from '../../shared/sharedStops';
-import { partPeriodText } from './effectiveHeadway';
+import { mainStretchEdge, partPeriodText, periodEdgeText } from './effectiveHeadway';
 import { hasRegularServiceInPeriod } from './stretchCard';
 import { agencyNames } from './agencyName';
 import { rowTrips } from './rowTrips';
@@ -27,6 +27,11 @@ export interface StopBranch {
   directionId: number;
   /** #934: part-period wording shown in place of a number, as on the route card's row. */
   periodText?: string;
+  /**
+   * CIV-1251 row 8: where the stop is on the direction's shared stretch (two or more of its destinations serve it) and that
+   * stretch starts late or ends early, its own words and spacing for the stop card's Shared stretch row, as the route card.
+   */
+  sharedEdge?: { text: string; every: number };
 }
 
 export interface StopRoute {
@@ -105,13 +110,14 @@ export function buildStopRoutes({ siblingIdsByAgency, routesByAgency, routePerio
   day: string;
   period: TimePeriod;
 }): StopRoute[] {
-  type Branch = { rKey: string; headsign: string | null; service: ReturnType<typeof buildRouteStopMetric>; rowHeadway: number | null; directionId: number; periodText?: string; dirKey: string; patterns: number };
+  type Branch = { rKey: string; headsign: string | null; service: ReturnType<typeof buildRouteStopMetric>; rowHeadway: number | null; directionId: number; periodText?: string; sharedEdge?: { text: string; every: number }; dirKey: string; patterns: number };
 
   const routeMap = new Map<string, { shortName: string; label: RouteLabel; longName: string; agencyName: string; agencySlug: string; routeType?: number; branches: Map<string, Branch> }>();
   // Pooled values at shared stops (CIV-82), so the stop card agrees with the map and route card.
   const sharedIndexBySlug = new Map(Object.entries(layers).map(([slug, fc]) => [slug, buildSharedStopIndex(fc.features)]));
   // Every destination each route's direction has at the stop in the day, whatever the period (CIV-1080).
   const headsignsAtStop = new Map<string, Set<string>>();
+  const mainEdgeByDir = new Map<string, { from?: number; until?: number; every: number }>();
 
 
   for (const [slug, fc] of Object.entries(layers)) {
@@ -128,6 +134,8 @@ export function buildStopRoutes({ siblingIdsByAgency, routesByAgency, routePerio
       const dirKey = `${slug}::${p.routeId}::${(p as any).directionId ?? 0}`;
       if ([...siblingIds].some(sId => p.stopHeadways?.[sId] != null)) {
         (headsignsAtStop.get(dirKey) ?? headsignsAtStop.set(dirKey, new Set()).get(dirKey)!).add(p.headsign ?? '');
+        const mainEdge = p.stretchRole === 'tail' ? mainStretchEdge(p, period) : undefined;
+        if (mainEdge) mainEdgeByDir.set(dirKey, mainEdge);
       }
       // #934: a direction the route only runs on one side of the period shows the route card's
       // words ("every 12 min until 9:37 AM") instead of a cadence, at a stop its shape serves.
@@ -193,6 +201,13 @@ export function buildStopRoutes({ siblingIdsByAgency, routesByAgency, routePerio
           patterns,
         });
       }
+    }
+  }
+  // CIV-1251 row 8: the shared stretch's own edge, at a stop two or more of the direction's destinations serve.
+  for (const entry of routeMap.values()) {
+    for (const b of entry.branches.values()) {
+      const edge = mainEdgeByDir.get(b.dirKey);
+      if (edge && (headsignsAtStop.get(b.dirKey)?.size ?? 0) >= 2) b.sharedEdge = { text: periodEdgeText(edge), every: edge.every };
     }
   }
   // Two patterns to one destination (TTC 29's two northbound trips to Wilson, from either loop) are one row, and
@@ -276,6 +291,6 @@ export function buildStopRoutes({ siblingIdsByAgency, routesByAgency, routePerio
       routeType: v.routeType,
       branches: Array.from(v.branches.values())
         .sort((a, b) => a.directionId - b.directionId || (a.service.value ?? Infinity) - (b.service.value ?? Infinity))
-        .map(b => ({ rKey: b.rKey, headsign: b.headsign, service: b.service, rowHeadway: b.rowHeadway, directionId: b.directionId, ...(b.periodText ? { periodText: b.periodText } : {}) })),
+        .map(b => ({ rKey: b.rKey, headsign: b.headsign, service: b.service, rowHeadway: b.rowHeadway, directionId: b.directionId, ...(b.periodText ? { periodText: b.periodText } : {}), ...(b.sharedEdge ? { sharedEdge: b.sharedEdge } : {}) })),
     })), ...[...noNumber.values(), ...idle.values()].sort((a, b) => compareRouteNumber(a.shortName, b.shortName))];
 }
