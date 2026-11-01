@@ -1638,10 +1638,10 @@
         -78.88
       ],
       "feedUrl": "https://ckan0.cf.opendata.inter.prod-toronto.ca/dataset/b811ead4-6eaf-4adb-8408-d389fb5a069c/resource/c920e221-7a1c-488b-8c5b-6d8cd4e85eaf/download/completegtfs.zip",
-      "lastFeedExpiry": "20261031",
-      "lastFeedVersion": null,
+      "lastFeedExpiry": "20261221",
+      "lastFeedVersion": "S1000544",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2253/latest.zip",
-      "lastRefreshedAt": "2026-08-27",
+      "lastRefreshedAt": "2026-11-01",
       "cities": [
         "Toronto, Ontario",
         "Etobicoke, Ontario",
@@ -1655,34 +1655,37 @@
       "timezone": "America/Toronto",
       "lastRawArchiveKey": "unknown-6a2597e02c81c1c5",
       "feedQuality": {
-        "status": "review",
+        "status": "healthy",
         "score": 100,
-        "reasons": [
-          "1 route has stops whose frequency differs from the overall route schedule."
-        ],
+        "reasons": [],
         "metrics": {
           "validationErrors": 0,
           "validationWarnings": 0,
-          "shapeAnomalies": 4,
-          "routeHeadwayMismatches": 5,
-          "featureCount": 1920,
-          "feedExpiry": "20261031",
-          "routeCount": 235,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 4,
+          "featureCount": 1877,
+          "feedExpiry": "20261221",
+          "routeCount": 230,
           "problemShapes": 0,
           "problemShapeRoutes": 0,
-          "mismatchRoutes": 1,
+          "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-10-31"
+        "checkedAt": "2026-11-01"
       },
-      "lastFeedCheckAt": "20261031",
+      "lastFeedCheckAt": "20261101",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
       "expiredFeedCheckExpiry": "20261221",
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://ckan0.cf.opendata.inter.prod-toronto.ca/dataset/b811ead4-6eaf-4adb-8408-d389fb5a069c/resource/c920e221-7a1c-488b-8c5b-6d8cd4e85eaf/download/completegtfs.zip",
-      "lastPeekedExpiry": "20261031",
-      "heldFeedStart": "20261101"
+      "lastPeekedExpiry": "20261221",
+      "feedRefreshStatus": "current",
+      "feedRefreshError": null,
+      "feedRefreshErrorAt": null,
+      "feedRefreshRetryCount": 0,
+      "lastServiceWeek": "c5d251493ebf8760",
+      "feedObtainedAt": "20261101"
     },
     {
       "slug": "windsor",
