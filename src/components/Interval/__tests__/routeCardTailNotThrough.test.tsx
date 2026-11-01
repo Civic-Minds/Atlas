@@ -68,9 +68,9 @@ describe('a branch that does not run through a period has no row for it (#1115, 
     expect(screen.getByText(/every 20 min/)).toBeTruthy();
   });
 
-  it('data without the field keeps the row, as before the rebuild, at its full-window wait, 313 shown as about 300 (the period is not steady, CIV-1074)', () => {
+  it('data without the field keeps the row, as before the rebuild, at its full-window wait, 313 shown as is (#1239; the period is not steady, CIV-1074)', () => {
     renderCard(features(), 'midday');
-    expect(screen.getAllByText(/every 300 min/).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/every 313 min/).length).toBeGreaterThan(0);
     expect(screen.queryByText(/every 21 min/)).toBeNull();
   });
 
@@ -81,5 +81,27 @@ describe('a branch that does not run through a period has no row for it (#1115, 
     renderCard([{ ...weston, directionFilterHeadwayByPeriod: { midday: 30 } } as ShapeProperties, { ...noCadence, directionFilterHeadwayByPeriod: { midday: 30 } } as ShapeProperties], 'midday');
     expect(screen.getAllByText(/every 7 min/).length).toBe(1);
     expect(screen.queryByText(/every 30 min/)).toBeNull();
+  });
+});
+
+describe('#1277: a branch that does not run through a period keeps its row when its own trips say when', () => {
+  const pioneer = (edgeStretch: 'main' | number, departuresByHour?: Record<string, number>) => features(['midday', 'evening', 'late', 'overnight']).map(f => (f.headsign === 'Pioneer Village via Oakdale'
+    ? { ...f, stretchCovers: ['main', 2], departuresByHour, stretchPeriodEdge: { midday: { until: 600, every: 21, stretch: edgeStretch } } }
+    : f)) as ShapeProperties[];
+  const text = () => document.body.textContent?.replace(/[\u00a0\u202f\u2060]/g, ' ') ?? '';
+
+  it('the edge read on its own branch, with its own trips in the period: the row reads its until time', () => {
+    renderCard(pioneer(2, { 9: 2 }), 'midday');
+    expect(text()).toContain('to Pioneer Village via Oakdaleevery 21 min until 10 AM');
+  });
+
+  it('an edge read on the shared main stretch can be another branch\'s trips (OC Transpo 25 Sunday AM): no row', () => {
+    renderCard(pioneer('main', { 9: 2 }), 'midday');
+    expect(screen.queryByText(/Pioneer Village/)).toBeNull();
+  });
+
+  it('no trips of its own in the period (TTC 130 late, via Maybrook): no row', () => {
+    renderCard(pioneer(2, { 16: 2 }), 'midday');
+    expect(screen.queryByText(/Pioneer Village/)).toBeNull();
   });
 });

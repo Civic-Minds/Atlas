@@ -67,3 +67,28 @@ describe('route card rows, built once (CIV-987)', () => {
     expect(reportRowValueText(first)).toBe('limited');
   });
 });
+
+describe('#1277: a period the route runs only part of shows the rows that say when', () => {
+  // AC Transit 14 weekday late: no filter value, the route does not run through the period; each direction runs until 12:22 AM.
+  const late = (directionId: number, headsign: string, edge?: { until: number; every: number }) => ({
+    routeId: '14', routeShortName: '14', directionId, headsign, tier: '30', headway: 30, stretchRole: 'main', stretchIndex: 0,
+    headwayByPeriod: { late: 30 }, periodCoverageHeadway: { late: 120 },
+    routeFilterHeadwayByPeriod: { late: null }, routeRunsByPeriod: { late: false }, directionFilterHeadwayByPeriod: { late: null },
+    ...(edge ? { stretchPeriodEdge: { late: edge } } : {}),
+  }) as unknown as ShapeProperties;
+  const build = (directions: ShapeProperties[]) => buildRouteCardModel({
+    directions, routeShortName: '14', routeLongName: '', period: 'late', maxHeadway: Infinity, nightView: false, stableColors: false, hideSpan: false,
+    directionGroups: [0, 1].map(dirId => ({ dirId, realTier: directions.filter(d => d.directionId === dirId), span: [] })),
+  });
+
+  it('shows the rows with an until or from time, and no others', () => {
+    const m = build([late(0, 'West Oakland BART', { until: 1462, every: 30 }), late(1, 'Fruitvale BART')]);
+    expect(m.doesNotRun).toBe(false);
+    expect(m.groups.flatMap(g => g.rows.map(r => r.display(null).value.headwayLabel))).toEqual(['every 30 min until 12:22 AM']);
+  });
+
+  it('with no row saying when, the route still does not run', () => {
+    const m = build([late(0, 'West Oakland BART'), late(1, 'Fruitvale BART')]);
+    expect([m.doesNotRun, m.groups.length]).toEqual([true, 0]);
+  });
+});

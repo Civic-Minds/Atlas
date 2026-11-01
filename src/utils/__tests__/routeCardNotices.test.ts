@@ -1,6 +1,12 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { routeCardNotices, type RouteCardNoticeInput } from '../routeCardNotices';
 import { formatPeriodRangeLong } from '../../../shared/config';
+
+// N123 reads the map's shared-stretch ranges from the agency's features: a test that passes any says part of the route qualifies.
+vi.mock('../routeCardTrunk', async importOriginal => ({
+  ...(await importOriginal<typeof import('../routeCardTrunk')>()),
+  routePartMeetsFilter: (agencyFeatures: unknown) => agencyFeatures != null,
+}));
 
 // A card with service all period and no rows of note: only the inputs a test sets decide what shows.
 const model = {
@@ -102,9 +108,10 @@ describe('routeCardNotices (CIV-1200)', () => {
 });
 
 // A card whose rows read `rows` (headway, and the words beside it), for the "each fact once" rules (CIV-1202).
-function withRows(rows: Array<{ headway: number | null; label?: string; limited?: boolean }>, extra: Record<string, unknown> = {}) {
+function withRows(rows: Array<{ headway: number | null; label?: string; limited?: boolean; dimmed?: boolean; edge?: string; directionValue?: number }>, extra: Record<string, unknown> = {}) {
   const cardRows = rows.map(r => ({
-    display: () => ({ value: { headway: r.headway, headwayLabel: r.label, rowNoRegular: false, isLimited: !!r.limited }, limitedLabel: undefined }),
+    feature: r.directionValue != null ? { directionFilterHeadwayByPeriod: { evening: r.directionValue } } : undefined,
+    display: () => ({ value: { headway: r.headway, headwayLabel: r.label ?? r.edge, edgeText: r.edge, dimmed: !!r.dimmed, rowNoRegular: false, isLimited: !!r.limited }, limitedLabel: undefined }),
   }));
   return { ...model, groups: [{ dirId: 0, shared: null, rows: cardRows, hasVisibleRows: true, onlySharedPasses: false }], ...extra } as unknown as RouteCardNoticeInput['model'];
 }
@@ -162,5 +169,24 @@ describe('each fact once (CIV-1202)', () => {
     // Rows every 15 and nothing on the card saying why: the line stays.
     const unexplained = routeCardNotices({ ...base, model: withRows([{ headway: 15 }]), selectedRouteOutOfFilter: true, maxHeadway: 15 });
     expect(unexplained.filter?.code).toBe('N12');
+  });
+});
+
+describe('CIV-1241: the part-route line and a row\'s until or from time say the same thing', () => {
+  const partMeets = (rows: Parameters<typeof withRows>[0]) =>
+    routeCardNotices({ ...base, model: withRows(rows), selectedRouteOutOfFilter: true, maxHeadway: 60, period: 'evening', agencyFeatures: [] });
+
+  it('hides "Only part of this route runs …" when every row that falls short names its time (OC Transpo 11 evening)', () => {
+    // The route's value dims both rows; only the direction every 102 falls short.
+    const n = partMeets([{ headway: 26, dimmed: true, directionValue: 26 }, { headway: 30, dimmed: true, directionValue: 102, edge: 'every 30 min until 9:18 PM' }]);
+    expect(n.filter).toBeNull();
+    expect(n.dropped).toEqual([{ code: 'N123', why: 'every row that falls short gives its until or from time' }]);
+  });
+
+  it('keeps it while a row that falls short has no time of its own (AC Transit 22 Sunday midday)', () => {
+    expect(partMeets([{ headway: 30, dimmed: true, directionValue: 30 }, { headway: 30, dimmed: true, directionValue: 168 }]).filter?.code).toBe('N123');
+    expect(partMeets([{ headway: 30, dimmed: true, edge: 'every 30 min until 9:18 PM' }, { headway: 104, dimmed: true }]).filter?.code).toBe('N123');
+    // A gap is not a time: the line stays.
+    expect(partMeets([{ headway: 15, dimmed: true, edge: 'every 15 min, with a 30 min gap' }]).filter?.code).toBe('N123');
   });
 });

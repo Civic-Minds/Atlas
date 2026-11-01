@@ -1,11 +1,11 @@
 import type { ShapeProperties, TimePeriod } from '../hooks/useIntervalStats';
-import { isHourInPeriod, PERIOD_KEYS, TIME_PERIODS } from '../../shared/config';
+import { isHourInPeriod, MINUTES_PER_DAY, PERIOD_KEYS, PERIOD_MINUTES, TIME_PERIODS, type PeriodKey } from '../../shared/config';
 import { hasNoPeriodService } from '../../shared/periodEligibility';
 import { routeFilterHeadway } from '../../shared/routeHeadwayFilter';
 import { buildRouteServiceSummary, metricValueForPeriod } from './routeFacts';
 import { pairedTripPeriodFloor, pairedTripSafeHeadway } from './pairedTripFloor';
 import { delayAmount, headwayAboutRange, headwayEvery, headwayEveryRange, headwayPeriodShape } from './headwayText';
-import { routeFilterAllDayContract, routeFilterContract, routeValueIsOneGap } from './stretchCard';
+import { routeFilterAllDayContract, routeFilterContract, routeValueIsOneGap, tailNotThroughPeriod } from './stretchCard';
 import { clockTime } from '../../shared/timeText';
 import { LIMITED_SERVICE_LABEL, IRREGULAR_PERIOD_LABEL, IRREGULAR_PERIOD_SHORT_LABEL } from '../content/noticeCopy';
 import { routeCardLowestHeadway } from './routeListRange';
@@ -128,12 +128,13 @@ export function hasDirectionPeriodService(p: ShapeProperties, period: TimePeriod
 /**
  * #934 and D6: the main stretch's row names a late start or early end ("every 9 min from 7:17 AM")
  * or one gap inside steady service ("every 5 min, with a 169 min gap") instead of a long wait or
- * "limited". Wording: headwayPeriodShape.
+ * "limited". Wording: headwayPeriodShape. An edge goes on the rows that cover its stretch (#1276).
  */
 export function routeCardPeriodShapeText(p: ShapeProperties, period: TimePeriod): string | undefined {
   if (period === 'all') return undefined;
   const edge = p.stretchPeriodEdge?.[period];
   if (edge && (edge.from != null || edge.until != null)) {
+    if (edge.stretch !== undefined && !rowReadsPeriodEdge(p, period)) return undefined;
     return headwayPeriodShape({
       from: edge.from != null ? clockTime(edge.from) : undefined,
       until: edge.until != null ? clockTime(edge.until) : undefined,
@@ -145,13 +146,36 @@ export function routeCardPeriodShapeText(p: ShapeProperties, period: TimePeriod)
 }
 
 /**
+ * #1276: the rows that carry a period edge's words: those whose stops cover the stretch the edge was read on (TTC 110 weekday
+ * PM: only the branch via 30th Street, which runs to 5:55 PM). No row covers it where the branch has no row of its own (AC
+ * Transit 22 Sunday midday): no row says another branch's end time. Data without the stretch keeps the main stretch's row.
+ */
+export function rowReadsPeriodEdge(p: ShapeProperties, period: TimePeriod): boolean {
+  if (period === 'all') return false;
+  const edge = p.stretchPeriodEdge?.[period];
+  if (!edge) return false;
+  if (edge.stretch === undefined) return p.stretchRole === 'main';
+  if (!(p.stretchCovers?.includes(edge.stretch) ?? false)) return false;
+  // #1277: a branch that does not run through the period (#1115) carries the words only when they are its own trips: the
+  // edge was read on its own stretch and it has departures of its own there (TTC 131 Sunday late: the Old Finch branch,
+  // which stops by 3 PM, never reads the shared stretch's "until 12:37 AM"), on the route card and the stop card alike.
+  if (!tailNotThroughPeriod(p, period)) return true;
+  if (edge.stretch !== (p.stretchIndex ?? 0)) return false;
+  const { start, end } = PERIOD_MINUTES[period as PeriodKey];
+  return Object.entries(p.departuresByHour ?? {}).some(([hour, n]) => {
+    const h = Number(hour) * 60;
+    return n > 0 && ((h >= start && h < end) || (h + MINUTES_PER_DAY >= start && h + MINUTES_PER_DAY < end));
+  });
+}
+
+/**
  * #934: the part-period wording for a direction with no value in the period ("every 12 min until
  * 9:37 AM"): the route card's main-stretch row shows it, and the stop card the same, so both agree.
  */
 export function partPeriodText(p: ShapeProperties, period: TimePeriod): string | undefined {
-  if (period === 'all' || p.stretchRole !== 'main') return undefined;
+  if (period === 'all' || !rowReadsPeriodEdge(p, period)) return undefined;
   if (typeof p.directionFilterHeadwayByPeriod?.[period] === 'number') return undefined;
-  return p.stretchPeriodEdge?.[period] ? routeCardPeriodShapeText(p, period) : undefined;
+  return routeCardPeriodShapeText(p, period);
 }
 
 /** Rider-facing range for an irregular period, scoped to this destination/branch. */

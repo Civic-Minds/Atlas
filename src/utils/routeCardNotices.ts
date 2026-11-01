@@ -191,6 +191,10 @@ export function routeCardNotices(input: RouteCardNoticeInput): RouteCardNotices 
   // "from 7:14 AM" and one "every 30 min" don't say the route has no trips from 6–7 AM).
   let everyRowGivesHours = true;
   let rowCount = 0;
+  // CIV-1241 (Ryan, 2026-11-01): the rows that fall short of the filter, and whether each names its until or from time
+  // from its period edge, the words the row prints (rowReadsPeriodEdge, as the stop card reads them).
+  let shortRows = 0;
+  let everyShortRowGivesEdge = true;
   for (const group of model.groups) {
     if (group.shared) { rowNumbers.push(group.shared.headway); everyRowGivesHours = false; }
     for (const row of group.rows) {
@@ -201,6 +205,12 @@ export function routeCardNotices(input: RouteCardNoticeInput): RouteCardNotices 
       if (shown.limitedLabel) rowWords.push(shown.limitedLabel);
       rowCount++;
       if (!hoursText.test(`${v.headwayLabel ?? ''} ${shown.limitedLabel ?? ''}`)) everyRowGivesHours = false;
+      // A row falls short when its own direction's filter value misses the filter (the route's dims every row).
+      const own = period !== 'all' ? row.feature?.directionFilterHeadwayByPeriod?.[period] : undefined;
+      if (typeof own === 'number' ? own > maxHeadway : v.dimmed) {
+        shortRows++;
+        if (!hoursText.test(v.edgeText ?? '')) everyShortRowGivesEdge = false;
+      }
       if (v.rowNoRegular || v.isLimited) continue;
       if (v.headway != null) rowNumbers.push(v.headway);
     }
@@ -232,6 +242,9 @@ export function routeCardNotices(input: RouteCardNoticeInput): RouteCardNotices 
     else if (rowsGiveHours) periodNotice = drop(periodNotice, 'every row gives its hours');
   }
   if (filter?.code === 'N13' && rowsGiveHours) filter = drop(filter, 'every row gives its hours');
+  // CIV-1241 (Ryan, 2026-11-01): "Only part of this route runs every 60 minutes or better" says what a falling-short row's
+  // "every 30 min until 9:18 PM" already does (OC Transpo 11 evening, CIV-1241 crops). It stays while any falling-short row has no such time.
+  if (filter?.code === 'N123' && shortRows > 0 && everyShortRowGivesEdge) filter = drop(filter, 'every row that falls short gives its until or from time');
   if (filter?.code === 'N12') {
     // The rows or the period line already say why the route misses the filter.
     if (periodNotice && (periodNotice.code === 'N8' || periodNotice.code === 'N9')) filter = drop(filter, 'the period line says when it runs');
