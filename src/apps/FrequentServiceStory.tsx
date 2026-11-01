@@ -86,7 +86,15 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
           </a>
         </ResearchHeader>
 
-        <section id="story" aria-labelledby="network-story-heading" className="scroll-mt-16 relative left-1/2 mt-24 w-screen -translate-x-1/2 px-2 sm:mt-32 sm:px-3">
+        {/* CIV-1169 (Ryan's pick 6): a text break between the montage and the first map. */}
+        <section id="story" aria-labelledby="story-break-heading" className="scroll-mt-16 mx-auto mt-24 w-full max-w-[48rem] sm:mt-32">
+          <h2 id="story-break-heading" className="text-3xl sm:text-4xl font-black tracking-tight">Every map tells it differently.</h2>
+          <p className="mt-5 text-base leading-8 text-[var(--text-muted)]">
+            Each agency decides what its map shows, so one map is hard to compare with the next. Atlas starts from the schedules instead. Here is Toronto's network, built from the TTC's own schedule data, one step at a time.
+          </p>
+        </section>
+
+        <section aria-labelledby="network-story-heading" className="relative left-1/2 mt-24 w-screen -translate-x-1/2 px-2 sm:mt-32 sm:px-3">
           <div className="relative min-w-0 pb-[12vh]">
             <div className="min-w-0 lg:sticky lg:top-24">
               <FrequentServiceStoryMap agencies={agencies} stage={storyStage} frequencyMinutes={frequencyMinutes} researchRecord={frequentServiceStoryResearchRecord} />
