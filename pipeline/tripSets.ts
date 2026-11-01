@@ -896,6 +896,8 @@ export interface StretchPeriodEdge {
   from?: number;
   until?: number;
   every: number;
+  /** #1276: the stretch the edge is read on: 'main', or a tail's index (a row's stretchIndex when its stretchRole is 'tail'). */
+  stretch?: 'main' | number;
 }
 
 /**
@@ -1036,7 +1038,7 @@ export function rollupDirection(d: DirectionStretches): DirectionRollup | null {
     // stretch leaves the direction without a value, a sparse tail drops out.
     const sparse = (s: Stretch | null | undefined) => s != null && key === 'overnight' && isSparseOvernightWindow(s.times);
     const countingStretches = [d.main, ...d.tails]
-      .map((st, i) => ({ st, p: i === 0 ? main[key] : handover[key][i - 1] ? turnTaking(tails[i - 1][key]) : tails[i - 1][key] }))
+      .map((st, i) => ({ st, stretch: (i === 0 ? 'main' : i - 1) as 'main' | number, p: i === 0 ? main[key] : handover[key][i - 1] ? turnTaking(tails[i - 1][key]) : tails[i - 1][key] }))
       .filter(({ st, p }, i) => p.counts && (i === 0 ? runs && !sparse(d.main) : !sparse(st)));
     const counting = countingStretches.map(c => c.p);
     const values = counting.map(filterOf).filter((v): v is number => v != null);
@@ -1052,7 +1054,9 @@ export function rollupDirection(d: DirectionStretches): DirectionRollup | null {
     // branch that runs steadily and then stops (settled rule 3 keeps its full-window wait: AC
     // Transit 22 Sunday midday, every 30 until 12:12, 168) reads "every 30 until 12:12" from the
     // same reading as a main stretch's early end.
-    period[key].edge = uneven ? null : runs ? periodEdge((setterAt?.st ?? d.main).times, start, end, period[key].filterValue) : periodPartialEdge(d.main.times, start, end);
+    const edge = uneven ? null : runs ? periodEdge((setterAt?.st ?? d.main).times, start, end, period[key].filterValue) : periodPartialEdge(d.main.times, start, end);
+    // #1276: name the stretch, so the card puts the words on that stretch's row.
+    period[key].edge = edge && { ...edge, stretch: runs ? setterAt?.stretch ?? 'main' : 'main' };
     // Only where the settled checks count the period as running: a big-gap period that does not
     // run (TTC 504 overnight, 169 minutes against a typical 5) keeps "no regular service".
     period[key].gap = runs && !uneven && !period[key].edge ? periodOneGap(d.main.times, start, end) : null;

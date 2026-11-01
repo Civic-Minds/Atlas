@@ -916,6 +916,17 @@ describe('rule 3: sibling branches that take turns through a period (#1072, HSR 
     // The edge explains the filter value: the wait from the branch's last trip to the window's end.
     expect(r.period.midday.filterValue).toBe(Math.ceil(900 - edge.until!));
     expect(r.period.midday.gap).toBeNull();
+    // #1276: the edge names the branch that set it, the index a row standing for it carries.
+    expect(d.tails).toHaveLength(1);
+    expect(edge.stretch).toBe(0);
+  });
+
+  it('#1276: an edge read on the main stretch names the main stretch', () => {
+    const coordsM = new Map<string, [number, number]>(trunk.map((id, i) => [id, [43.6 + i * 0.01, -79.4]]));
+    // Every 30 from 6:00, stopping at 12:00: the main stretch's own early end sets the midday value.
+    const d = directionStretches('m::0::Weekday', every(360, 720, 30).map(m => trip(`m${m}`, m, [])), id => coordsM.get(id));
+    const edge = rollupDirection(d)!.period.midday.edge;
+    expect(edge).toMatchObject({ every: 30, stretch: 'main' });
   });
 
   it('CIV-1241 legitimate: branches taking turns read their spacing, with no edge', () => {
