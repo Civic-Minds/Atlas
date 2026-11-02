@@ -7,6 +7,43 @@
     -104.9
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-2330/latest.zip",
+  "sameNameRoutes": [
+    {
+      "shortName": "CDOT Outrider",
+      "longName": "Crested Butte - Denver",
+      "name": "Crested Butte–Denver"
+    },
+    {
+      "shortName": "CDOT Outrider",
+      "longName": "Alamosa - Pueblo",
+      "name": "Alamosa–Pueblo"
+    },
+    {
+      "shortName": "CDOT Outrider",
+      "longName": "Lamar - Colorado Springs",
+      "name": "Lamar–Colorado Springs"
+    },
+    {
+      "shortName": "CDOT Outrider",
+      "longName": "Durango - Grand Junction",
+      "name": "Durango–Grand Junction"
+    },
+    {
+      "shortName": "CDOT Outrider",
+      "longName": "Craig - Denver",
+      "name": "Craig–Denver"
+    },
+    {
+      "shortName": "CDOT Outrider",
+      "longName": "Trinidad - Pueblo",
+      "name": "Trinidad–Pueblo"
+    },
+    {
+      "shortName": "CDOT Outrider",
+      "longName": "Sterling - Denver",
+      "name": "Sterling–Denver"
+    }
+  ],
   "region": "Colorado",
   "parentAgency": "bustang",
   "bbox": [

@@ -17,6 +17,23 @@
     -76.0733
   ],
   "feedUrl": "https://feeds.mta.maryland.gov/gtfs/marc",
+  "sameNameRoutes": [
+    {
+      "shortName": "MARC",
+      "longName": "BRUNSWICK - WASHINGTON",
+      "name": "Brunswick Line"
+    },
+    {
+      "shortName": "MARC",
+      "longName": "PENN - WASHINGTON",
+      "name": "Penn Line"
+    },
+    {
+      "shortName": "MARC",
+      "longName": "CAMDEN - WASHINGTON",
+      "name": "Camden Line"
+    }
+  ],
   "lastFeedExpiry": "20261231",
   "lastFeedVersion": null,
   "lastRefreshedAt": "2026-08-10",

@@ -171,7 +171,7 @@ export function rowReadsPeriodEdge(p: ShapeProperties, period: TimePeriod): bool
   });
 }
 
-type PeriodEdge = { from?: number; until?: number; every: number };
+export type PeriodEdge = { from?: number; until?: number; every: number };
 
 /** "every 30 min until 5:55 PM" / "every 9 min from 7:17 AM" for one edge. */
 export function periodEdgeText(edge: PeriodEdge): string {
@@ -402,6 +402,13 @@ export interface RouteListDisplay {
   sharedHeadway?: number;
   /** Compare (CIV-844): each map's own reading of the route, for "A every 3 · B every 4". */
   compare?: { A: RouteListDisplay; B: RouteListDisplay };
+  /**
+   * #1292: the late start or early end that sets the route's value, in the route card's words ("every 9 min from 7:12 AM"),
+   * so a list never shows the full-period wait ("every 72") the card already explains. The number stays the filter's.
+   */
+  edgeText?: string;
+  /** The edge behind edgeText, for data that is rendered later (agency pages). */
+  edge?: PeriodEdge;
 }
 
 /**
@@ -424,6 +431,11 @@ export function routeListDisplay(features: readonly ShapeProperties[], period: T
   // CIV-1227: a range only where the one range rule shows it, as the cards and History do.
   const low = lowEndBelow(features, period, headway, shared);
   if (low != null && headwayRangeShown(low, headway)) display.sharedHeadway = low;
+  const edge = headway != null ? routeValueEdge(features, period, headway) : undefined;
+  if (edge) {
+    display.edge = { ...(edge.from != null ? { from: edge.from } : {}), ...(edge.until != null ? { until: edge.until } : {}), every: edge.every };
+    display.edgeText = periodEdgeText(edge);
+  }
   return display;
 }
 
@@ -443,6 +455,23 @@ function lowEndBelow(features: readonly ShapeProperties[], period: TimePeriod, h
   const lowest = routeCardLowestHeadway(features, period);
   const low = lowest === undefined ? shared : lowest;
   return low < headway ? low : null;
+}
+
+/**
+ * #1292: the period edge that explains the route's value: the edge (CIV-1248, #934) of a direction whose filter value is
+ * the route's, read as a late start or early end at a faster spacing (NYC B AM peak: every 72 at the Bedford Park end, which
+ * starts at 7:12 and then runs every 9). Undefined when no such direction has one, or the directions disagree.
+ */
+function routeValueEdge(features: readonly ShapeProperties[], period: TimePeriod, value: number): PeriodEdge | undefined {
+  if (period === 'all') return undefined;
+  const edges = new Map<string, PeriodEdge>();
+  for (const p of features) {
+    if (p.directionFilterHeadwayByPeriod?.[period] !== value) continue;
+    const edge = p.stretchPeriodEdge?.[period];
+    if (!edge || (edge.from == null && edge.until == null) || edge.every >= value) continue;
+    edges.set(JSON.stringify([edge.from ?? null, edge.until ?? null, edge.every]), edge);
+  }
+  return edges.size === 1 ? [...edges.values()][0] : undefined;
 }
 
 /**

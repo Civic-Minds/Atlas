@@ -3304,6 +3304,18 @@
         -113.15
       ],
       "feedUrl": "https://gtfs.edmonton.ca/TMGTFSRealTimeWebService/GTFS/GTFS.zip",
+      "sameNameRoutes": [
+        {
+          "shortName": "610",
+          "longName": "Westpark",
+          "name": "610 Westpark"
+        },
+        {
+          "shortName": "611",
+          "longName": "Downtown",
+          "name": "611 Downtown"
+        }
+      ],
       "lastFeedExpiry": "20261128",
       "lastFeedVersion": "261002_1029",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-714/latest.zip",
@@ -5100,6 +5112,18 @@
         -71.057
       ],
       "feedUrl": "https://cdn.mbta.com/MBTA_GTFS.zip",
+      "sameNameRoutes": [
+        {
+          "shortName": "Shuttle",
+          "longName": "Boston College - Kenmore (Shuttle)",
+          "name": "Boston College–Kenmore Shuttle"
+        },
+        {
+          "shortName": "Shuttle",
+          "longName": "Cleveland Circle - Kenmore (Shuttle)",
+          "name": "Cleveland Circle–Kenmore Shuttle"
+        }
+      ],
       "lastFeedExpiry": "20261212",
       "lastFeedVersion": "Fall 2026, 2026-10-16T20:25:58+00:00, version D",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-437/latest.zip",
@@ -5196,6 +5220,18 @@
         -72.59
       ],
       "feedUrl": "https://www.pvta.com/g_trans/google_transit.zip",
+      "sameNameRoutes": [
+        {
+          "shortName": "G1",
+          "longName": "Five Town Plaza-Sumner-Union Station",
+          "name": "G1 Springfield"
+        },
+        {
+          "shortName": "G1",
+          "longName": "Chicopee Big Y-Chicopee Ctr-Union Station",
+          "name": "G1 Chicopee"
+        }
+      ],
       "lastFeedExpiry": "20261219",
       "lastFeedVersion": null,
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2416/latest.zip",
@@ -6039,6 +6075,18 @@
         -121.7
       ],
       "feedUrl": "https://gtfs.sound.obaweb.org/prod/40_gtfs.zip",
+      "sameNameRoutes": [
+        {
+          "shortName": "Shuttle",
+          "longName": "1 Line Shuttle Bus",
+          "name": "1 Line Shuttle"
+        },
+        {
+          "shortName": "Shuttle",
+          "longName": "2 Line Shuttle Bus",
+          "name": "2 Line Shuttle"
+        }
+      ],
       "nextServiceDatesFeedUrls": [
         "https://gtfs.sound.obaweb.org/prod/40_gtfs.zip"
       ],
@@ -7724,6 +7772,13 @@
         -122.65
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-246/latest.zip",
+      "sameNameRoutes": [
+        {
+          "shortName": "1",
+          "longName": "Downtown Portland",
+          "name": "1 Downtown Portland"
+        }
+      ],
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-246/latest.zip",
       "timezone": "America/Los_Angeles",
       "lastFeedExpiry": "20270531",
@@ -13230,6 +13285,78 @@
         -90.2899
       ],
       "feedUrl": "https://www.metrostlouis.org/Transit/google_transit.zip",
+      "sameNameRoutes": [
+        {
+          "shortName": "1",
+          "longName": "Gold",
+          "name": "1 Gold"
+        },
+        {
+          "shortName": "1",
+          "longName": "Main Street - State Street",
+          "name": "1 Main Street - State Street"
+        },
+        {
+          "shortName": "2",
+          "longName": "Red",
+          "name": "2 Red"
+        },
+        {
+          "shortName": "2",
+          "longName": "Cahokia Heights",
+          "name": "2 Cahokia Heights"
+        },
+        {
+          "shortName": "4",
+          "longName": "Natural Bridge",
+          "name": "4 Natural Bridge"
+        },
+        {
+          "shortName": "4",
+          "longName": "19th & Central",
+          "name": "4 19th & Central"
+        },
+        {
+          "shortName": "8",
+          "longName": "Shaw-Cherokee",
+          "name": "8 Shaw-Cherokee"
+        },
+        {
+          "shortName": "8",
+          "longName": "Alta Sita",
+          "name": "8 Alta Sita"
+        },
+        {
+          "shortName": "9",
+          "longName": "Oakville",
+          "name": "9 Oakville"
+        },
+        {
+          "shortName": "9",
+          "longName": "Washington Park",
+          "name": "9 Washington Park"
+        },
+        {
+          "shortName": "13",
+          "longName": "Union",
+          "name": "13 Union"
+        },
+        {
+          "shortName": "13",
+          "longName": "Caseyville",
+          "name": "13 Caseyville"
+        },
+        {
+          "shortName": "16",
+          "longName": "City Limits",
+          "name": "16 City Limits"
+        },
+        {
+          "shortName": "16",
+          "longName": "St. Clair Square",
+          "name": "16 St. Clair Square"
+        }
+      ],
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-190/latest.zip",
       "lastFeedExpiry": "20261129",
       "lastFeedVersion": null,
@@ -14428,6 +14555,25 @@
         -80.1918
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-331/latest.zip",
+      "routeSplits": [
+        {
+          "routeShortName": "2600",
+          "parts": [
+            {
+              "shortName": "Green",
+              "longName": "Palmetto ↔ Dadeland South",
+              "color": "A2CF5F",
+              "servesStop": "PALMETTO"
+            },
+            {
+              "shortName": "Orange",
+              "longName": "Miami International Airport ↔ Dadeland South",
+              "color": "F04E23",
+              "servesStop": "MIAMI INTERNATIONAL AIRPORT"
+            }
+          ]
+        }
+      ],
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-331/latest.zip",
       "lastFeedExpiry": "20271231",
       "lastFeedVersion": null,
@@ -14894,6 +15040,23 @@
         -76.0733
       ],
       "feedUrl": "https://feeds.mta.maryland.gov/gtfs/marc",
+      "sameNameRoutes": [
+        {
+          "shortName": "MARC",
+          "longName": "BRUNSWICK - WASHINGTON",
+          "name": "Brunswick Line"
+        },
+        {
+          "shortName": "MARC",
+          "longName": "PENN - WASHINGTON",
+          "name": "Penn Line"
+        },
+        {
+          "shortName": "MARC",
+          "longName": "CAMDEN - WASHINGTON",
+          "name": "Camden Line"
+        }
+      ],
       "lastFeedExpiry": "20261231",
       "lastFeedVersion": null,
       "lastRefreshedAt": "2026-08-10",
@@ -15193,6 +15356,32 @@
         -73.7554
       ],
       "feedUrl": "https://rrgtfsfeeds.s3.amazonaws.com/gtfs_subway.zip",
+      "sameNameRoutes": [
+        {
+          "shortName": "S",
+          "longName": "42 St Shuttle",
+          "name": "42 St Shuttle"
+        },
+        {
+          "shortName": "S",
+          "longName": "Franklin Avenue Shuttle",
+          "name": "Franklin Shuttle"
+        },
+        {
+          "shortName": "S",
+          "longName": "Rockaway Park Shuttle",
+          "name": "Rockaway Shuttle"
+        }
+      ],
+      "refStopOverrides": [
+        {
+          "routeShortName": "J",
+          "directionId": 1,
+          "stopId": "J27S",
+          "issue": "https://github.com/Civic-Minds/Atlas/issues/1292",
+          "reason": "The J's AM skip-stop pattern runs past Chauncey St (J28S), the middle stop; read at Broadway Junction, which every J serves."
+        }
+      ],
       "lastFeedExpiry": "20270515",
       "lastFeedVersion": "20261028-fall-2026-pick-with-long-term-supplements",
       "lastRefreshedAt": "2026-11-02",
@@ -15934,6 +16123,69 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastPeekedExpiry": "20270417"
+    },
+    {
+      "slug": "njt",
+      "name": "NJ Transit",
+      "officialName": "NJ Transit",
+      "betaOnly": true,
+      "displayArea": "New Jersey",
+      "websiteUrl": "http://www.njtransit.com/",
+      "region": "New Jersey",
+      "center": [
+        40.3698,
+        -74.4005
+      ],
+      "bbox": [
+        38.9331,
+        -75.5212,
+        41.4887,
+        -73.9391
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-508/latest.zip",
+      "supplementalFeedUrls": [
+        "https://files.mobilitydatabase.org/mdb-509/latest.zip"
+      ],
+      "supplementalIdPrefixes": {
+        "https://files.mobilitydatabase.org/mdb-509/latest.zip": "rail:"
+      },
+      "mergeEquivalentShapeVariantsRouteTypes": [
+        "0",
+        "2"
+      ],
+      "cities": [
+        "Trenton, New Jersey",
+        "Passaic, New Jersey",
+        "Cherry Hill, New Jersey",
+        "Camden, New Jersey",
+        "East Orange, New Jersey",
+        "Paterson, New Jersey",
+        "Newark, New Jersey",
+        "Plainfield, New Jersey",
+        "Elizabeth, New Jersey",
+        "Irvington, New Jersey"
+      ],
+      "timezone": "America/New_York",
+      "modeOverrides": [
+        {
+          "routeType": 0,
+          "routeShortName": "HBLR",
+          "mode": 100,
+          "reason": "Hudson-Bergen, Newark and River LINE are light rail, published as route_type 0 (tram)"
+        },
+        {
+          "routeType": 0,
+          "routeShortName": "NLR",
+          "mode": 100,
+          "reason": "Hudson-Bergen, Newark and River LINE are light rail, published as route_type 0 (tram)"
+        },
+        {
+          "routeType": 0,
+          "routeShortName": "RVLN",
+          "mode": 100,
+          "reason": "Hudson-Bergen, Newark and River LINE are light rail, published as route_type 0 (tram)"
+        }
+      ]
     },
     {
       "slug": "path",
@@ -18121,6 +18373,28 @@
         -81.65
       ],
       "feedUrl": "https://files.mobilitydatabase.org/tld-764/latest.zip",
+      "sameNameRoutes": [
+        {
+          "shortName": "FCF",
+          "longName": "Green Line",
+          "name": "Green Line"
+        },
+        {
+          "shortName": "FCF",
+          "longName": "Orange Line",
+          "name": "Orange Line"
+        },
+        {
+          "shortName": "FCF",
+          "longName": "Blue Line",
+          "name": "Blue Line"
+        },
+        {
+          "shortName": "FCF",
+          "longName": "Red Line",
+          "name": "Red Line"
+        }
+      ],
       "lastFeedExpiry": "20261031",
       "lastFeedVersion": null,
       "region": "Florida",
@@ -21556,6 +21830,43 @@
         -104.9
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-2330/latest.zip",
+      "sameNameRoutes": [
+        {
+          "shortName": "CDOT Outrider",
+          "longName": "Crested Butte - Denver",
+          "name": "Crested Butte–Denver"
+        },
+        {
+          "shortName": "CDOT Outrider",
+          "longName": "Alamosa - Pueblo",
+          "name": "Alamosa–Pueblo"
+        },
+        {
+          "shortName": "CDOT Outrider",
+          "longName": "Lamar - Colorado Springs",
+          "name": "Lamar–Colorado Springs"
+        },
+        {
+          "shortName": "CDOT Outrider",
+          "longName": "Durango - Grand Junction",
+          "name": "Durango–Grand Junction"
+        },
+        {
+          "shortName": "CDOT Outrider",
+          "longName": "Craig - Denver",
+          "name": "Craig–Denver"
+        },
+        {
+          "shortName": "CDOT Outrider",
+          "longName": "Trinidad - Pueblo",
+          "name": "Trinidad–Pueblo"
+        },
+        {
+          "shortName": "CDOT Outrider",
+          "longName": "Sterling - Denver",
+          "name": "Sterling–Denver"
+        }
+      ],
       "region": "Colorado",
       "parentAgency": "bustang",
       "bbox": [
@@ -25893,6 +26204,18 @@
         -76.49
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-2285/latest.zip",
+      "sameNameRoutes": [
+        {
+          "shortName": "Purple",
+          "longName": "Purple-N1 Call-in 4102637964",
+          "name": "Purple North"
+        },
+        {
+          "shortName": "Purple",
+          "longName": "Purple-S2 Call-in 4102637964",
+          "name": "Purple South"
+        }
+      ],
       "lastFeedExpiry": "20260930",
       "lastFeedVersion": "20250923",
       "lastRefreshedAt": "2026-08-07",
@@ -26599,12 +26922,12 @@
         34.23,
         -77.94
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-1110/latest.zip",
+      "feedUrl": "https://wave.connexionz.net/rtt/public/resource/gtfs.zip",
       "lastFeedExpiry": "20261231",
       "lastFeedVersion": "20250617",
       "lastRefreshedAt": "2026-08-07",
       "region": "North Carolina",
-      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-1110/latest.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-3536/latest.zip",
       "bbox": [
         34.1216,
         -77.9695,

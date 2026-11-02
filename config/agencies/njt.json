@@ -1,0 +1,62 @@
+{
+  "slug": "njt",
+  "officialName": "NJ Transit",
+  "betaOnly": true,
+  "displayArea": "New Jersey",
+  "websiteUrl": "http://www.njtransit.com/",
+  "region": "New Jersey",
+  "center": [
+    40.3698,
+    -74.4005
+  ],
+  "bbox": [
+    38.9331,
+    -75.5212,
+    41.4887,
+    -73.9391
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-508/latest.zip",
+  "supplementalFeedUrls": [
+    "https://files.mobilitydatabase.org/mdb-509/latest.zip"
+  ],
+  "supplementalIdPrefixes": {
+    "https://files.mobilitydatabase.org/mdb-509/latest.zip": "rail:"
+  },
+  "mergeEquivalentShapeVariantsRouteTypes": [
+    "0",
+    "2"
+  ],
+  "cities": [
+    "Trenton, New Jersey",
+    "Passaic, New Jersey",
+    "Cherry Hill, New Jersey",
+    "Camden, New Jersey",
+    "East Orange, New Jersey",
+    "Paterson, New Jersey",
+    "Newark, New Jersey",
+    "Plainfield, New Jersey",
+    "Elizabeth, New Jersey",
+    "Irvington, New Jersey"
+  ],
+  "timezone": "America/New_York",
+  "modeOverrides": [
+    {
+      "routeType": 0,
+      "routeShortName": "HBLR",
+      "mode": 100,
+      "reason": "Hudson-Bergen, Newark and River LINE are light rail, published as route_type 0 (tram)"
+    },
+    {
+      "routeType": 0,
+      "routeShortName": "NLR",
+      "mode": 100,
+      "reason": "Hudson-Bergen, Newark and River LINE are light rail, published as route_type 0 (tram)"
+    },
+    {
+      "routeType": 0,
+      "routeShortName": "RVLN",
+      "mode": 100,
+      "reason": "Hudson-Bergen, Newark and River LINE are light rail, published as route_type 0 (tram)"
+    }
+  ]
+}

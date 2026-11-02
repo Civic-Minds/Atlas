@@ -25,5 +25,16 @@
   "caltrain": {
     "Local Weekday": [{ "key": "Local", "days": "weekday" }],
     "Local Weekend": [{ "key": "Local", "days": "weekend" }]
+  },
+  "bart": {
+    "Yellow": [{ "key": "Yellow-N", "direction": true }, { "key": "Yellow-S", "direction": true }],
+    "Orange": [{ "key": "Orange-N", "direction": true }, { "key": "Orange-S", "direction": true }],
+    "Green": [{ "key": "Green-N", "direction": true }, { "key": "Green-S", "direction": true }],
+    "Red": [{ "key": "Red-N", "direction": true }, { "key": "Red-S", "direction": true }],
+    "Blue": [{ "key": "Blue-N", "direction": true }, { "key": "Blue-S", "direction": true }],
+    "Grey": [{ "key": "Grey-N", "direction": true }, { "key": "Grey-S", "direction": true }]
+  },
+  "slorta": {
+    "12": [{ "key": "12N", "direction": true }, { "key": "12S", "direction": true }]
   }
 }

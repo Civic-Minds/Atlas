@@ -13,6 +13,8 @@ import { addSantaFePickUpWeekendFrequency } from '../transforms/santafe-pickup-s
 import { interpolateUntimedStops } from '../transforms/interpolate-untimed-stops.js';
 import { dropMnrExpressBusPairs } from '../transforms/mnr-bus-pairs.js';
 import { mergeEquivalentShapeVariants } from './merge-equivalent-shapes.js';
+import { splitRoutes, type RouteSplit } from './split-routes.js';
+import { separateSameNameRoutes, type SameNameRoute } from './same-name-routes.js';
 import { mergeTerminalBays } from './merge-terminal-bays.js';
 import { poolSingleTripShapes } from './pool-single-trip-shapes.js';
 
@@ -33,6 +35,10 @@ export interface GtfsTransformOptions {
   mergeEquivalentShapeVariantsAllModes?: boolean;
   /** Merge equivalent shape variants on these route types only (CapMetro buses, CIV-1083). */
   mergeEquivalentShapeVariantsRouteTypes?: string[];
+  /** #1287: routes the feed publishes as one that are several lines (Miami-Dade Metrorail Green and Orange). */
+  routeSplits?: RouteSplit[];
+  /** #1289: names for separate lines that share a short name (MARC Brunswick, Penn and Camden lines). */
+  sameNameRoutes?: SameNameRoute[];
   /** Keep shapes whole across long point-to-point steps (rural highways, #776). Read at parse time. */
   keepLongShapeJumps?: boolean;
   /** Leave shapes flagged for clustered jumps unrepaired (Streamline Goldline, #433). Read at parse time. */
@@ -80,6 +86,17 @@ export function normalizeGtfs(
     gtfs = filterGtfsByExcludedTripHeadsigns(gtfs, options.excludeTripHeadsigns);
     const removed = before - (gtfs.trips?.length ?? 0);
     if (removed > 0) onStatus?.(`Headsign filter: removed ${removed} non-passenger trip(s)`);
+  }
+  if (options?.routeSplits?.length) {
+    const split = splitRoutes(gtfs, options.routeSplits);
+    gtfs = split.gtfs;
+    onStatus?.(`Route split: ${Object.entries(split.trips).map(([id, n]) => `${id} ${n} trips`).join(', ')}`);
+  }
+  {
+    // #1289: separate lines sharing one short name get their own (see same-name-routes.ts).
+    const sameName = separateSameNameRoutes(gtfs, options?.sameNameRoutes);
+    gtfs = sameName.gtfs;
+    for (const s of sameName.splits) onStatus?.(`Same-name lines: "${s.shortName}" -> ${s.routes.map(r => `"${r.newShortName}"`).join(', ')}`);
   }
   if (!options?.skipLetterSuffixMerge) {
     const { gtfs: merged, result } = mergeLetterSuffixBranches(gtfs);

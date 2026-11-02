@@ -16,6 +16,18 @@
     -113.15
   ],
   "feedUrl": "https://gtfs.edmonton.ca/TMGTFSRealTimeWebService/GTFS/GTFS.zip",
+  "sameNameRoutes": [
+    {
+      "shortName": "610",
+      "longName": "Westpark",
+      "name": "610 Westpark"
+    },
+    {
+      "shortName": "611",
+      "longName": "Downtown",
+      "name": "611 Downtown"
+    }
+  ],
   "lastFeedExpiry": "20261128",
   "lastFeedVersion": "261002_1029",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-714/latest.zip",

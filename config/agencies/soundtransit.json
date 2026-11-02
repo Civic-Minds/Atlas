@@ -15,6 +15,18 @@
     -121.7
   ],
   "feedUrl": "https://gtfs.sound.obaweb.org/prod/40_gtfs.zip",
+  "sameNameRoutes": [
+    {
+      "shortName": "Shuttle",
+      "longName": "1 Line Shuttle Bus",
+      "name": "1 Line Shuttle"
+    },
+    {
+      "shortName": "Shuttle",
+      "longName": "2 Line Shuttle Bus",
+      "name": "2 Line Shuttle"
+    }
+  ],
   "nextServiceDatesFeedUrls": [
     "https://gtfs.sound.obaweb.org/prod/40_gtfs.zip"
   ],

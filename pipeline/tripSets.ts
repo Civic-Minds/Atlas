@@ -33,6 +33,7 @@ import {
   medianHeadwayInWindow,
   hasSustainedServiceInWindow,
   headlineDeparturesInWindow,
+  HEADLINE_MIN_DEPARTURES,
   nightServiceDepartureTimes,
 } from './headway-utils.js';
 import { SHARED_STRETCH_MIN_KM, SHARED_STRETCH_MIN_STOPS } from './sharedStretch.js';
@@ -196,6 +197,8 @@ export function directionStretches(
    * hop with many trips (TTC 353's 3-stop Tapscott hop) cannot become the night route.
    */
   mainBy: 'shared' | 'mostVisits' = 'shared',
+  /** #1292: the main stretch's reference stop from the agency config (refStopOverrides), when it is on the main stretch. */
+  mainRefStop?: string,
 ): DirectionStretches {
   const withVisits = trips.filter(trip => trip.visits.length > 0);
   const patterns = new Map<string, { stops: string[]; trips: DirectionTrip[] }>();
@@ -363,7 +366,7 @@ export function directionStretches(
     return { times: sorted, nightTimes: nightServiceDepartureTimes(sorted, overnight), tripCount: count };
   };
   const stretch = (kind: Stretch['kind'], stops: readonly string[], lengthKm: number): Stretch => {
-    const refStop = middleStop(stops, tripStops);
+    const refStop = kind === 'main' && mainRefStop != null && stops.includes(mainRefStop) ? mainRefStop : middleStop(stops, tripStops);
     return { kind, stops, refStop, lengthKm, ...timesAt(refStop) };
   };
 
@@ -935,13 +938,13 @@ export interface StretchPeriodEdge {
 export function periodEdge(stretchTimes: readonly number[], start: number, end: number, value: number | null): StretchPeriodEdge | null {
   if (value == null) return null;
   const t = [...new Set(forCrossMidnightWindow([...stretchTimes], end))].filter(x => x >= start && x < end).sort((a, b) => a - b);
-  if (t.length < 3) return null;
+  if (t.length < HEADLINE_MIN_DEPARTURES) return null;
   const gaps = t.slice(1).map((x, i) => x - t[i]);
   const lead = t[0] - start;
   const trail = end - t[t.length - 1];
   const inner = Math.max(...gaps);
   if (Math.ceil(Math.max(lead, trail, inner)) !== value || inner >= value) return null;
-  const every = medianHeadwayInWindow(t, start, end, 3, true);
+  const every = medianHeadwayInWindow(t, start, end, HEADLINE_MIN_DEPARTURES, true);
   if (every == null || every <= 0 || !isSustainedHeadway(gaps, every)) return null;
   // The wait is rounded up to whole minutes; frequencies.txt spacing can leave fractional times.
   const fromEdge = Math.ceil(lead) === value, untilEdge = Math.ceil(trail) === value;
@@ -956,13 +959,13 @@ export function periodEdge(stretchTimes: readonly number[], start: number, end: 
  */
 export function periodPartialEdge(stretchTimes: readonly number[], start: number, end: number): StretchPeriodEdge | null {
   const t = [...new Set(forCrossMidnightWindow([...stretchTimes], end))].filter(x => x >= start && x < end).sort((a, b) => a - b);
-  if (t.length < 3) return null;
+  if (t.length < HEADLINE_MIN_DEPARTURES) return null;
   const mid = (start + end) / 2;
   const after = t[0] >= mid;
   const before = t[t.length - 1] < mid;
   if (!after && !before) return null;
   const gaps = t.slice(1).map((x, i) => x - t[i]);
-  const every = medianHeadwayInWindow(t, start, end, 3, true);
+  const every = medianHeadwayInWindow(t, start, end, HEADLINE_MIN_DEPARTURES, true);
   if (every == null || every <= 0 || !isSustainedHeadway(gaps, every)) return null;
   return after ? { from: t[0], every } : { until: t[t.length - 1], every };
 }
@@ -1095,7 +1098,18 @@ export function rollupDirection(d: DirectionStretches): DirectionRollup | null {
       period[key].edge = edge && { ...edge, stretch: setterAt?.stretch ?? 'main' };
     } else {
       const slowest = partial();
-      period[key].edge = slowest && { ...slowest.edge, stretch: slowest.stretch };
+      // CIV-1248 follow-up (Ryan, 2026-11-01): a branch that runs the whole period counts too, so
+      // the direction never reads a faster spacing than one of its branches (TTC 110 Sunday AM
+      // southbound: the trunk every 15 from 8:07, Kipling every 30 through the period). The branch's
+      // own late start or early end is read as its row's is (CIV-1251); with none, there is no edge.
+      const slowerThrough = slowest && [mainStretch, ...d.tails]
+        .map((st, i) => ({ st, own: i === 0 ? main[key] : tails[i - 1][key], stretch: (i === 0 ? 'main' : i - 1) as 'main' | number }))
+        .filter(c => c.own.counts && c.own.headway != null && c.own.headway > slowest.edge.every && runsThroughPeriod(c.st.times, start, end, c.own.sustained))
+        .reduce<{ own: StretchPeriod; st: Stretch; stretch: 'main' | number } | null>((worst, c) => (worst == null || c.own.headway! > worst.own.headway! ? c : worst), null);
+      if (slowerThrough) {
+        const edge = slowerThrough.own.uneven ? null : periodEdge(slowerThrough.st.times, start, end, stretchFilterValue(slowerThrough.own));
+        period[key].edge = edge && { ...edge, stretch: slowerThrough.stretch };
+      } else period[key].edge = slowest && { ...slowest.edge, stretch: slowest.stretch };
     }
     // Only where the settled checks count the period as running: a big-gap period that does not
     // run (TTC 504 overnight, 169 minutes against a typical 5) keeps "Irregular".
