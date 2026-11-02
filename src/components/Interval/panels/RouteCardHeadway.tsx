@@ -306,13 +306,12 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
   const routeLabel = currentRoute.label ?? routeLabels({ shortName: currentRoute.routeShortName, longName: currentRoute.routeLongName, routeType: currentRoute.routeType ?? currentRoute.directions[0]?.routeType, agencySlug: currentRoute.agencySlug ?? routeSlug, agencyName: agencyDisplayName });
   // Plain text keeps the dash (report details, the chart window's screen-reader name); on screen the title is RouteTitleName (CIV-1128).
   const routeTitle = routeLabel.text;
-  const reportPeriod = selectedPeriod
-    ? `${selectedPeriod.label} (${formatPeriodRangeLong(selectedPeriod.startHour, selectedPeriod.endHour)})`
-    : 'All day';
+  // CIV-1279: the map has no All day, so a report names a period only when one is chosen.
+  const reportPeriod = selectedPeriod && `${selectedPeriod.label} (${formatPeriodRangeLong(selectedPeriod.startHour, selectedPeriod.endHour)})`;
   const details = reportDetails([
     ['Agency', routeAgency?.name ?? routeSlug ?? 'Unknown'],
     ['Route', `${routeTitle || 'Unknown'} (feed short name: ${currentRoute.routeShortName ?? 'none'}; long name: ${currentRoute.routeLongName ?? 'none'})`],
-    ['Period', reportPeriod],
+    ...(reportPeriod ? [['Period', reportPeriod] as const] : []),
     ['Agency data refreshed', routeAgency?.lastRefreshedAt ?? 'unknown'],
     ['Feed expiry', (routeAgency && effectiveFeedExpiry(routeAgency)) ?? 'unknown'],
     '**Displayed service:**',

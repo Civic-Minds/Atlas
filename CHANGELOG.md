@@ -99,7 +99,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Route cards and frequency
 
-- **Route cards use one set of words for each situation**: "Shared stretch" names a route's shared part, "Irregular" replaces "limited" in a time period and "Part-time" on All day, a route that doesn't run reads "no trips", and branches that take turns on a shared stretch each say when they run (TTC 110)
+- **Route cards use one set of words for each situation**: "Shared stretch" names a route's shared part, "Irregular" replaces "limited" in a time period, a route that doesn't run reads "no trips", and branches that take turns on a shared stretch each say when they run (TTC 110)
 - **Route lists show the route card's number**: the [slower direction](https://github.com/Civic-Minds/Atlas/issues/821) (GO 47 no longer reads every 3), a [range](https://github.com/Civic-Minds/Atlas/issues/1231) that starts where the card does, and no number for a route the [filter reads as irregular](https://github.com/Civic-Minds/Atlas/issues/1247)
 - **A card shows one shared value per direction**: a destination under the Shared stretch row reads its own frequency, not a [second shared range](https://github.com/Civic-Minds/Atlas/issues/1232)
 - **Branch rows show only the time a branch runs**: a [rush-hour branch](https://github.com/Civic-Minds/Atlas/issues/1115) no longer borrows the main line's midday frequency (TTC 84)

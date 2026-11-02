@@ -1,6 +1,7 @@
+import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import {
-  IRREGULAR_OVERNIGHT_LABEL, IRREGULAR_PERIOD_LABEL, IRREGULAR_PERIOD_SHORT_LABEL, NO_LIMITED_ROUTES_IN_VIEW, PART_TIME_LABEL,
+  IRREGULAR_OVERNIGHT_LABEL, IRREGULAR_PERIOD_LABEL, IRREGULAR_PERIOD_SHORT_LABEL, NO_LIMITED_ROUTES_IN_VIEW,
   PART_TIME_ROUTES_NOUN, PART_TIME_ROUTES_SEARCH, PART_TIME_ROUTES_TITLE, noSearchMatchText,
   noNumberRowLabel, noServiceInPeriodText, noServiceOnDayNotice, periodServiceNotice, selectedRouteFilterNotice,
   selectedRouteOutsideFilterNotice, selectedRoutePartMeetsFilterNotice, stopRunsOnlyText,
@@ -21,18 +22,14 @@ describe('card wording (CIV-1251), word for word', () => {
     ['row 3: no trips before', selectedRouteFilterNotice({ activeRange: '7–9 AM', periodRange: '6–9 AM', outside: [{ service: 'none', range: '6–7 AM' }] }), 'This route runs only from 7–9 AM. It has no trips from 6–7 AM.'],
     ['row 3: less often after', selectedRouteFilterNotice({ activeRange: '7–9 AM', periodRange: '6–9 AM', outside: [{ service: 'less', after: '9 AM' }] }), 'This route runs only from 7–9 AM. It runs less often after 9 AM.'],
     ['row 3: stop card', stopRunsOnlyText('7–9 AM'), 'Runs only from 7–9 AM'],
-    ['row 4: cards', noNumberRowLabel({ period: 'midday', partTime: false }), IRREGULAR_PERIOD_LABEL],
-    ['row 4: cards, either check', noNumberRowLabel({ period: 'midday', partTime: false, noRegular: true }), IRREGULAR_PERIOD_LABEL],
+    ['row 4: cards', noNumberRowLabel({}), IRREGULAR_PERIOD_LABEL],
     ['row 4: tight spots', IRREGULAR_PERIOD_SHORT_LABEL, 'Irregular'],
     ['row 4: agency bar', noMiddayBarSentence(3), '3 routes run irregularly or not at all at midday'],
     ['row 4: agency bar, one', noMiddayBarSentence(1), '1 route runs irregularly or not at all at midday'],
     ['row 4: legend', NO_MIDDAY_SHORT, 'Irregular or none'],
-    ['row 5: All day', noNumberRowLabel({ period: 'all', partTime: true }), 'Part-time'],
-    ['row 5: All day, either check', noNumberRowLabel({ period: 'all', partTime: true, noRegular: true }), 'Part-time'],
     ['row 5: list title', PART_TIME_ROUTES_TITLE, 'Part-time routes'],
     ['row 5: list search', PART_TIME_ROUTES_SEARCH, 'Search part-time routes…'],
     ['row 5: list no match', noSearchMatchText(PART_TIME_ROUTES_NOUN), 'No part-time routes match your search.'],
-    ['row 5: label', PART_TIME_LABEL, 'Part-time'],
     ['row 5: empty list', NO_LIMITED_ROUTES_IN_VIEW, 'No part-time routes in view.'],
     ['row 7: period', selectedRouteOutsideFilterNotice(Infinity, '6–9 AM'), 'This route has no trips from 6–9 AM.'],
     ['row 7: all day', selectedRouteOutsideFilterNotice(Infinity, null), 'This route has no trips all day.'],
@@ -45,9 +42,22 @@ describe('card wording (CIV-1251), word for word', () => {
     ['row 10: all day', selectedRouteOutsideFilterNotice(15, null), "This route doesn't run every 15 min or better all day."],
     ['row 8: shared stretch time', periodEdgeText({ from: 487, every: 15 }), 'every 15 min from 8:07 AM'],
     ['row 11', IRREGULAR_OVERNIGHT_LABEL, 'Runs irregularly overnight'],
-    ['row 11: one function', noNumberRowLabel({ period: 'overnight', partTime: false, nightView: true }), 'Runs irregularly overnight'],
-    ['row 11: Night, whatever the period', noNumberRowLabel({ period: 'midday', partTime: false, nightView: true, noRegular: true }), 'Runs irregularly overnight'],
+    ['row 11: one function', noNumberRowLabel({ nightView: true }), 'Runs irregularly overnight'],
   ])('%s', (_name, built, approved) => {
     expect(plain(built)).toBe(approved);
+  });
+});
+
+describe('no All day row on the route card (CIV-1279)', () => {
+  it('has no All day words: the map has no All day, so a row with no number always reads Irregular, or overnight on Night', async () => {
+    const copy = await import('../noticeCopy');
+    expect('PART_TIME_LABEL' in copy).toBe(false);
+    expect(noNumberRowLabel({})).toBe(IRREGULAR_PERIOD_LABEL);
+    expect(noNumberRowLabel({ nightView: false })).toBe(IRREGULAR_PERIOD_LABEL);
+  });
+  it("the card's issue report has no All day fallback: it names a period only when one is chosen", () => {
+    const card = readFileSync('src/components/Interval/panels/RouteCardHeadway.tsx', 'utf8');
+    expect(card).not.toMatch(/['"]All day['"]/);
+    expect(card).toContain("...(reportPeriod ? [['Period', reportPeriod] as const] : [])");
   });
 });

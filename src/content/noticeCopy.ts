@@ -169,22 +169,14 @@ export const storyMapFailedText = (agencyName: string) => `The ${agencyName} net
 export const NO_FEED_MATCHES = 'No feeds match your search or filter.';
 
 // ---- Route labels and setting definitions (CIV-957 item 2): each written once, used by every card, list and setting ----
-// D1 route-limited: a row with no steady frequency ("limited" in place of a number). CIV-1251: only on All day for a route
-// that isn't part-time, until Ryan words that case; in a time period every such row reads Irregular (D2, D3).
+// D1 route-limited: a list value with no steady frequency ("limited" in place of a number).
 export const LIMITED_SERVICE_LABEL = 'limited';
-// CIV-1251 (Ryan, 2026-11-01): an All day row of a route that doesn't run all day. The same check as "Hide part-time routes"
-// (routeHasLimitedDirection, isLimitedService).
-export const PART_TIME_LABEL = 'Part-time';
 /**
  * CIV-1251: the one word a card row with no number reads, whichever check found it. The Night card: "Runs irregularly
- * overnight"; a time period: D2; All day: Part-time for a route that doesn't run all day, else today's words (D2 for a row
- * the filter finds no cadence in, D1 for one the card can't rate) until Ryan words that case.
+ * overnight"; a time period: D2. The card has no All day row (CIV-1279: the map has no All day, so no rider reaches one).
  */
-export function noNumberRowLabel(options: { period: string; partTime: boolean; nightView?: boolean; noRegular?: boolean }): string {
-  if (options.nightView) return IRREGULAR_OVERNIGHT_LABEL;
-  if (options.period !== 'all') return IRREGULAR_PERIOD_LABEL;
-  if (options.partTime) return PART_TIME_LABEL;
-  return options.noRegular ? IRREGULAR_PERIOD_LABEL : LIMITED_SERVICE_LABEL;
+export function noNumberRowLabel(options: { nightView?: boolean }): string {
+  return options.nightView ? IRREGULAR_OVERNIGHT_LABEL : IRREGULAR_PERIOD_LABEL;
 }
 // D2 irregular-period (Ryan's words, CIV-1238): the route runs in the period, but the filter finds no regular cadence. On cards.
 export const IRREGULAR_PERIOD_LABEL = 'Runs irregularly in this period';
