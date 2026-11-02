@@ -477,6 +477,8 @@ export function hasNightServiceAtShapeEndpoints(
 
 export interface ProcessOptions extends GtfsTransformOptions {
   slug?: string;
+  /** #1292: per route and direction, the main stretch's reference stop where the middle stop is skipped by the route's own trips. */
+  refStopOverrides?: Array<{ routeShortName: string; directionId: number; stopId: string }>;
   /** CIV-1006: force a route's booking-required status by short name, over the pickup_type share rule. */
   bookingRequiredRoutes?: Record<string, boolean>;
   manualBaseFare?: number;
@@ -3489,7 +3491,10 @@ export async function processGtfsBuffer(
         const stop = stopsById.get(stopId);
         return stop ? [stop.lat, stop.lon] : undefined;
       };
-      const stretches = directionStretches(gKey, directionTrips, coord);
+      // #1292: a configured reference stop (NYC J: the AM skip-stop pattern runs past Chauncey St).
+      const [ovRoute, ovDir] = gKey.split('::');
+      const mainRefStop = options?.refStopOverrides?.find(o => o.routeShortName === ovRoute && String(o.directionId) === ovDir)?.stopId;
+      const stretches = directionStretches(gKey, directionTrips, coord, directionTrips, 'shared', mainRefStop);
       // The night version (Ryan, 2026-10-15): the same direction from its 2-5am trips only.
       const nightTrips = nightOnlyTrips(directionTrips);
       if (nightTrips.length > 0) stretches.night = directionStretches(gKey, nightTrips, coord, directionTrips, 'mostVisits');

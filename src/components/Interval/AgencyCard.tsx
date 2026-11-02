@@ -54,6 +54,8 @@ interface RouteRow {
   noRegular?: boolean;
   /** Lower end of a shared-stretch range (display only). */
   sharedHeadway?: number;
+  /** #1292: the card's late-start or early-end words when they explain the value. */
+  edgeText?: string;
   tier: string | null;
   routeType: number;
   bookingRequired?: boolean;
@@ -352,7 +354,7 @@ function RouteListSection({
     key: `${r.agencySlug}::${r.routeId}`,
     route: r.label,
     headway: r.headway ?? undefined,
-    headwayLabel: r.headway != null && r.sharedHeadway != null ? headwayEveryRange(r.sharedHeadway, r.headway) : undefined,
+    headwayLabel: r.headway != null ? r.edgeText ?? (r.sharedHeadway != null ? headwayEveryRange(r.sharedHeadway, r.headway) : undefined) : undefined,
     limited: r.limited || r.noRegular === true,
     limitedLabel: r.noRegular ? IRREGULAR_PERIOD_SHORT_LABEL : undefined,
     subLabel: isRailReplacementBus({ routeType: r.routeType, routeLongName: r.longName }) ? 'Rail replacement bus' : undefined,

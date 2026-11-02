@@ -41,6 +41,7 @@ export interface SuggestedRoute {
   noRegular?: boolean;
   /** Lower end of a shared-stretch range (display only). */
   sharedHeadway?: number;
+  edgeText?: string;
 }
 
 interface SearchSuggestionsPanelProps {
@@ -73,7 +74,7 @@ export function routeRowLabels(route: Parameters<typeof routeLabels>[0]) {
 /** The dot between an agency and its frequency in a suggestion's second line. */
 const SEP = <span className="text-[var(--text-dim)] font-normal"> · </span>;
 
-export function routeRowRight(agencyName: string, headway?: number | null, stacked = false, limited = false, sharedHeadway?: number | null, noRegular = false, compare?: RouteListDisplay['compare']) {
+export function routeRowRight(agencyName: string, headway?: number | null, stacked = false, limited = false, sharedHeadway?: number | null, noRegular = false, compare?: RouteListDisplay['compare'], edgeText?: string) {
   const agency = agencyNames(agencyName).name;
   const layout = stacked
     ? 'block max-w-full truncate mt-1 ml-0 text-left'
@@ -102,7 +103,7 @@ export function routeRowRight(agencyName: string, headway?: number | null, stack
       <span className={`${LIST_ROW_DIM} ${layout} whitespace-nowrap`}>
         {agency}
         {SEP}
-        <HeadwayBadge secondLine headway={headway} label={routeListHeadwayText(headway, sharedHeadway)} />
+        <HeadwayBadge secondLine headway={headway} label={edgeText ?? routeListHeadwayText(headway, sharedHeadway)} />
       </span>
     );
   }
@@ -177,7 +178,7 @@ export const SearchSuggestionsPanel: React.FC<SearchSuggestionsPanelProps> = ({
                       name={labels.name}
                       right={(() => {
                         const display = displayForRouteKey(r.key);
-                        return routeRowRight(r.agencyName, display.headway, true, display.limited, display.sharedHeadway, display.noRegular, display.compare);
+                        return routeRowRight(r.agencyName, display.headway, true, display.limited, display.sharedHeadway, display.noRegular, display.compare, display.edgeText);
                       })()}
                       stacked
                       onClick={() => pickRoute(r.key)}
@@ -201,7 +202,7 @@ export const SearchSuggestionsPanel: React.FC<SearchSuggestionsPanelProps> = ({
                       key={r.key}
                       shortName={labels.shortName}
                       name={labels.name}
-                      right={routeRowRight(r.agencyName, r.headway, true, r.limited, r.sharedHeadway, r.noRegular, displayForRouteKey(r.key).compare)}
+                      right={routeRowRight(r.agencyName, r.headway, true, r.limited, r.sharedHeadway, r.noRegular, displayForRouteKey(r.key).compare, r.edgeText)}
                       stacked
                       onClick={() => pickRoute(r.key)}
                     />

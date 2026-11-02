@@ -45,6 +45,8 @@ export interface AgencyPageRoute {
   noRegular?: Array<'am' | 'midday' | 'pm' | 'evening' | 'overnight'>;
   /** Lower end of a shared-stretch range per period, where alternating branches combine (display only). */
   shared?: Partial<Record<'am' | 'midday' | 'pm' | 'evening' | 'overnight', number>>;
+  /** #1292: a period whose value is a late start or early end: the card's reading of it ("every 9 min from 7:12 AM"). */
+  edge?: Partial<Record<'am' | 'midday' | 'pm' | 'evening' | 'overnight', { from?: number; until?: number; every: number }>>;
   /** CIV-274: paged areas (config/areas slugs) where this route stops at two places inside (shared/areaBoundaries.ts). */
   areas?: string[];
 }

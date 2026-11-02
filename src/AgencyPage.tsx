@@ -21,7 +21,7 @@ import { areaRegionName, areaRegionTitle } from '../shared/areaRegions';
 import { AGENCY_INDEX_PATH, agencyIndexRegionHref } from '../shared/agencyIndex';
 import { areaPagePath } from '../shared/areas';
 import { andOthers } from '../shared/overflowText';
-import { routeListHeadwayText } from './utils/effectiveHeadway';
+import { periodEdgeText, routeListHeadwayText } from './utils/effectiveHeadway';
 import { ATLAS_MODE, PERIOD_LABELS } from '../shared/config';
 import DocsPageLayout from './components/ui/DocsPageLayout';
 import ArrowLink from './components/ui/ArrowLink';
@@ -88,6 +88,8 @@ function Intro({ data }: { data: AgencyPageData }) {
  */
 function cell(col: 'am' | 'midday' | 'pm' | 'evening' | 'overnight', r: AgencyPageRoute): string {
   const v = r[col];
+  const edge = r.edge?.[col];
+  if (v != null && edge) return periodEdgeText(edge);
   if (v != null) return routeListHeadwayText(v, r.shared?.[col], true);
   if (Array.isArray(r.noRegular) && r.noRegular.includes(col)) return IRREGULAR_PERIOD_SHORT_LABEL;
   // CIV-1251: a period column with service but no number reads Irregular, whichever check found it.

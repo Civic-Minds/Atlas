@@ -8,6 +8,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Map and route behavior
 
+- **Route lists and agency pages say when a route starts or stops instead of a long wait**: [NYC B and W](https://github.com/Civic-Minds/Atlas/issues/1292) AM peak read "every 72" and "every 88" where the card already said "every 9 min from 7:12 AM", and the J read every 75 at a station it skips at rush hour
 - **[Miami Metrorail](https://github.com/Civic-Minds/Atlas/issues/1287) shows its Green and Orange lines**: the feed lists all of Metrorail as one route, "2600"
 - **[BART lines](https://github.com/Civic-Minds/Atlas/issues/1285) are one route each, not one per direction**: the feed lists Yellow-N and Yellow-S separately, so BART read as 12 routes for its 6 lines
 - **Route card rows show the frequency the filter reads**: [AC Transit 281](https://github.com/Civic-Minds/Atlas/issues/1239) read every 60 where the filter reads 66 at the same stop, and waits over an hour now print their exact minutes instead of rounding to the half hour; a long gap is named only when it is at least 1.5 times the usual wait, and a [branch that stops partway](https://github.com/Civic-Minds/Atlas/issues/1276) says when, on the rows that run there (TTC 110 via 30th Street: every 30 until 5:55 PM), with no second line saying only part of the route qualifies
