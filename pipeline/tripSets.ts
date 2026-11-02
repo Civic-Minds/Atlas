@@ -197,6 +197,8 @@ export function directionStretches(
    * hop with many trips (TTC 353's 3-stop Tapscott hop) cannot become the night route.
    */
   mainBy: 'shared' | 'mostVisits' = 'shared',
+  /** #1292: the main stretch's reference stop from the agency config (refStopOverrides), when it is on the main stretch. */
+  mainRefStop?: string,
 ): DirectionStretches {
   const withVisits = trips.filter(trip => trip.visits.length > 0);
   const patterns = new Map<string, { stops: string[]; trips: DirectionTrip[] }>();
@@ -364,7 +366,7 @@ export function directionStretches(
     return { times: sorted, nightTimes: nightServiceDepartureTimes(sorted, overnight), tripCount: count };
   };
   const stretch = (kind: Stretch['kind'], stops: readonly string[], lengthKm: number): Stretch => {
-    const refStop = middleStop(stops, tripStops);
+    const refStop = kind === 'main' && mainRefStop != null && stops.includes(mainRefStop) ? mainRefStop : middleStop(stops, tripStops);
     return { kind, stops, refStop, lengthKm, ...timesAt(refStop) };
   };
 

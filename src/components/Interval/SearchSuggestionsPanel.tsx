@@ -41,6 +41,7 @@ export interface SuggestedRoute {
   noRegular?: boolean;
   /** Lower end of a shared-stretch range (display only). */
   sharedHeadway?: number;
+  edgeText?: string;
 }
 
 interface SearchSuggestionsPanelProps {
@@ -73,11 +74,13 @@ export function routeRowLabels(route: Parameters<typeof routeLabels>[0]) {
 /** The dot between an agency and its frequency in a suggestion's second line. */
 const SEP = <span className="text-[var(--text-dim)] font-normal"> · </span>;
 
-export function routeRowRight(agencyName: string, headway?: number | null, stacked = false, limited = false, sharedHeadway?: number | null, noRegular = false, compare?: RouteListDisplay['compare']) {
+export function routeRowRight(agencyName: string, headway?: number | null, stacked = false, limited = false, sharedHeadway?: number | null, noRegular = false, compare?: RouteListDisplay['compare'], edgeText?: string) {
   const agency = agencyNames(agencyName).name;
+  // #1292: on its own line (stacked) a long value wraps to a second line instead of being cut off: "every 9 min from…"
+  // hid the time that explains it. Beside the name (not stacked) the row keeps its one-line truncation.
   const layout = stacked
-    ? 'block max-w-full truncate mt-1 ml-0 text-left'
-    : 'min-w-0 max-w-[34%] truncate shrink-0 ml-2 text-right';
+    ? 'block max-w-full mt-1 ml-0 text-left'
+    : 'min-w-0 max-w-[34%] truncate shrink-0 ml-2 text-right whitespace-nowrap';
   // Compare (CIV-844): both maps' readings, "A every 3 · B every 4", each with its own tier dot.
   if (compare) {
     const sides = (['A', 'B'] as const)
@@ -85,7 +88,7 @@ export function routeRowRight(agencyName: string, headway?: number | null, stack
       .filter((s): s is { side: 'A' | 'B'; text: string; headway: number | null } => s.text != null);
     if (sides.length > 0) {
       return (
-        <span className={`${LIST_ROW_DIM} ${layout} whitespace-nowrap`}>
+        <span className={`${LIST_ROW_DIM} ${layout}`}>
           {agency}
           {sides.map(({ side, text, headway: h }) => (
             <React.Fragment key={side}>
@@ -99,16 +102,16 @@ export function routeRowRight(agencyName: string, headway?: number | null, stack
   }
   if (headway != null && headway < 999) {
     return (
-      <span className={`${LIST_ROW_DIM} ${layout} whitespace-nowrap`}>
+      <span className={`${LIST_ROW_DIM} ${layout}`}>
         {agency}
         {SEP}
-        <HeadwayBadge secondLine headway={headway} label={routeListHeadwayText(headway, sharedHeadway)} />
+        <HeadwayBadge secondLine headway={headway} label={edgeText ?? routeListHeadwayText(headway, sharedHeadway)} />
       </span>
     );
   }
   if (limited || noRegular) {
     return (
-      <span className={`${LIST_ROW_DIM} ${layout} whitespace-nowrap`}>
+      <span className={`${LIST_ROW_DIM} ${layout}`}>
         {agency}
         {SEP}
         <LimitedBadge secondLine label={noRegular ? IRREGULAR_PERIOD_SHORT_LABEL : LIMITED_SERVICE_LABEL} />
@@ -177,7 +180,7 @@ export const SearchSuggestionsPanel: React.FC<SearchSuggestionsPanelProps> = ({
                       name={labels.name}
                       right={(() => {
                         const display = displayForRouteKey(r.key);
-                        return routeRowRight(r.agencyName, display.headway, true, display.limited, display.sharedHeadway, display.noRegular, display.compare);
+                        return routeRowRight(r.agencyName, display.headway, true, display.limited, display.sharedHeadway, display.noRegular, display.compare, display.edgeText);
                       })()}
                       stacked
                       onClick={() => pickRoute(r.key)}
@@ -201,7 +204,7 @@ export const SearchSuggestionsPanel: React.FC<SearchSuggestionsPanelProps> = ({
                       key={r.key}
                       shortName={labels.shortName}
                       name={labels.name}
-                      right={routeRowRight(r.agencyName, r.headway, true, r.limited, r.sharedHeadway, r.noRegular, displayForRouteKey(r.key).compare)}
+                      right={routeRowRight(r.agencyName, r.headway, true, r.limited, r.sharedHeadway, r.noRegular, displayForRouteKey(r.key).compare, r.edgeText)}
                       stacked
                       onClick={() => pickRoute(r.key)}
                     />

@@ -170,16 +170,19 @@ export function summarize(
     const limited: NonNullable<AgencyPageRoute['limited']> = [];
     const noRegular: NonNullable<AgencyPageRoute['noRegular']> = [];
     const shared: NonNullable<AgencyPageRoute['shared']> = {};
+    const edge: NonNullable<AgencyPageRoute['edge']> = {};
     for (const [col, period] of cols) {
       const d = routeListDisplay(ps, period);
       r[col] = d.headway;
       if (d.limited) limited.push(col);
       if (d.noRegular) noRegular.push(col);
       if (d.sharedHeadway != null) shared[col] = d.sharedHeadway;
+      if (d.edge) edge[col] = d.edge;
     }
     if (limited.length) r.limited = limited;
     if (noRegular.length) r.noRegular = noRegular;
     if (Object.keys(shared).length) r.shared = shared;
+    if (Object.keys(edge).length) r.edge = edge;
   }
   if (boundaries || regionBoundaries) {
     // A route's stops: the stop points that list it, over every direction and branch it runs on weekdays.

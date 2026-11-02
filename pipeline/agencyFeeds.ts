@@ -38,6 +38,8 @@ export interface AgencyFeedConfig {
   mergeEquivalentShapeVariantsRouteTypes?: string[];
   /** #1287: one feed route that is several lines, split by the station each trip serves (preprocess/split-routes.ts). */
   routeSplits?: RouteSplit[];
+  /** #1292: the main stretch's reference stop for a route and direction (NYC J, skip-stop). */
+  refStopOverrides?: Array<{ routeShortName: string; directionId: number; stopId: string }>;
   /** #1289: names for separate lines that share a short name (preprocess/same-name-routes.ts). */
   sameNameRoutes?: SameNameRoute[];
   keepLongShapeJumps?: boolean;
@@ -112,6 +114,7 @@ export function agencyProcessOptions(agency: AgencyFeedConfig, overrides: Agency
     mergeEquivalentShapeVariantsAllModes: agency.mergeEquivalentShapeVariantsAllModes,
     mergeEquivalentShapeVariantsRouteTypes: agency.mergeEquivalentShapeVariantsRouteTypes,
     routeSplits: agency.routeSplits,
+    refStopOverrides: agency.refStopOverrides,
     sameNameRoutes: agency.sameNameRoutes,
     keepLongShapeJumps: agency.keepLongShapeJumps,
     skipClusteredJumpRepair: agency.skipClusteredJumpRepair,

@@ -8,6 +8,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Map and route behavior
 
+- **Route lists and agency pages say when a route starts or stops instead of a long wait**: [NYC B and W](https://github.com/Civic-Minds/Atlas/issues/1292) AM peak read "every 72" and "every 88" where the card already said "every 9 min from 7:12 AM", and the J read every 75 at a station it skips at rush hour
 - **[Lines that share one name](https://github.com/Civic-Minds/Atlas/issues/1289) show as separate routes**: MARC's Brunswick, Penn and Camden lines, the three NYC S shuttles, Metro St Louis's Missouri and Illinois routes and JTA's First Coast Flyer lines each read as one route before
 - **[Miami Metrorail](https://github.com/Civic-Minds/Atlas/issues/1287) shows its Green and Orange lines**: the feed lists all of Metrorail as one route, "2600"
 - **[BART lines](https://github.com/Civic-Minds/Atlas/issues/1285) are one route each, not one per direction**: the feed lists Yellow-N and Yellow-S separately, so BART read as 12 routes for its 6 lines
