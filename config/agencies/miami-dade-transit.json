@@ -8,6 +8,25 @@
     -80.1918
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-331/latest.zip",
+  "routeSplits": [
+    {
+      "routeId": "31009",
+      "parts": [
+        {
+          "shortName": "Green",
+          "longName": "Palmetto ↔ Dadeland South",
+          "color": "A2CF5F",
+          "servesStop": "PALMETTO"
+        },
+        {
+          "shortName": "Orange",
+          "longName": "Miami International Airport ↔ Dadeland South",
+          "color": "F04E23",
+          "servesStop": "MIAMI INTERNATIONAL AIRPORT"
+        }
+      ]
+    }
+  ],
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-331/latest.zip",
   "lastFeedExpiry": "20271231",
   "lastFeedVersion": null,
