@@ -138,13 +138,23 @@ describe('a number that is one gap between a few departures (#955)', () => {
     expect(screen.queryByText(/gap|from /)).toBeNull();
   });
 
-  it('keeps a slow cadence the pipeline does not flag (MBTA 18 AM every 84)', () => {
+  it('keeps a steady slow cadence the pipeline does not flag (every 84)', () => {
     const mbta18 = { ...vicPark, routeId: '18', routeShortName: '18', headsign: 'Ashmont', headway: 84, headwayByPeriod: { midday: null },
       routeFilterHeadwayByPeriod: { midday: 84 }, directionFilterHeadwayByPeriod: { midday: 84 }, stretchPeriodHeadway: { midday: 84 },
-      periodCoverageHeadway: { midday: 84 }, stretchPeriodOneGap: { midday: false } } as unknown as ShapeProperties;
+      periodCoverageHeadway: { midday: 84 }, stretchPeriodOneGap: { midday: false }, stretchPeriodSustained: { midday: true } } as unknown as ShapeProperties;
     renderRows([mbta18], 'midday');
     expect(screen.queryByText(LONG)).toBeNull();
     expect(screen.getByText(/every \d+ min/)).toBeTruthy();
+    expect(routeListDisplay([mbta18], 'midday').headway).toBe(84);
+  });
+
+  it('#962: an unsteady stretch\'s worst wait reads irregular on the card, while lists keep the filter value (MBTA 18 AM, 84)', () => {
+    const mbta18 = { ...vicPark, routeId: '18', routeShortName: '18', headsign: 'Ashmont', headway: 84, headwayByPeriod: { midday: null },
+      routeFilterHeadwayByPeriod: { midday: 84 }, directionFilterHeadwayByPeriod: { midday: 84 }, stretchPeriodHeadway: { midday: 84 },
+      periodCoverageHeadway: { midday: 84 }, stretchPeriodOneGap: { midday: false }, stretchPeriodSustained: { midday: false } } as unknown as ShapeProperties;
+    renderRows([mbta18], 'midday');
+    expect(screen.getByText(LONG)).toBeTruthy();
+    expect(screen.queryByText(/every \d+ min/)).toBeNull();
     expect(routeListDisplay([mbta18], 'midday').headway).toBe(84);
   });
 });

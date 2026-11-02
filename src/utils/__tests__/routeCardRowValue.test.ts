@@ -82,3 +82,32 @@ describe('routeCardRowValue (CIV-992)', () => {
     expect(routeCardRowValue(oc84(false), pm).trunkHeadway).toBeUndefined();
   });
 });
+
+// #962 (Ryan picked option 1): a main row with no value of its own falls back to its direction's filter value. exo MA weekday
+// midday (09:05, then 14:06, then 18:18) is not steady, so that value is the worst wait, 301: the row reads no regular service.
+// Steady slow service keeps its number.
+describe('the direction fallback of an unsteady stretch (#962)', () => {
+  const row = (filter: number, steady: boolean) => ({
+    routeId: 'MA', routeShortName: 'MA', routeLongName: 'Mascouche', directionId: 0, headsign: 'Côte-de-Liesse', tier: 'limited',
+    headwayByPeriod: { midday: null }, stretchRole: 'main', stretchIndex: 0,
+    directionFilterHeadwayByPeriod: { midday: filter }, stretchPeriodHeadway: { midday: filter }, stretchPeriodSustained: { midday: steady },
+  }) as unknown as ShapeProperties;
+  const midday = { ...ctx, stretchMode: true };
+  it('reads no regular service where the stretch is not steady (exo MA midday: never "every 301")', () => {
+    const value = routeCardRowValue(row(301, false), midday);
+    expect(value.headway).toBeUndefined();
+    expect(value.rowNoRegular).toBe(true);
+  });
+  it('keeps a wait of an hour or less, uneven but frequent service (Lexington 5 to Wal Mart midday, "every 37")', () => {
+    const value = routeCardRowValue(row(37, false), midday);
+    expect(value.headway).toBe(37);
+    expect(value.rowNoRegular).toBe(false);
+    expect(routeCardRowValue(row(60, false), midday).headway).toBe(60);
+    expect(routeCardRowValue(row(61, false), midday).rowNoRegular).toBe(true);
+  });
+  it('keeps a steady stretch its number (slow service every 120)', () => {
+    const value = routeCardRowValue(row(120, true), midday);
+    expect(value.headway).toBe(120);
+    expect(value.rowNoRegular).toBe(false);
+  });
+});

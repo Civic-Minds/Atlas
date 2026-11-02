@@ -3,7 +3,7 @@ import { featurePassesHeadwayFilter, routeFilterHeadway } from '../../shared/rou
 import { routeCardDisplayLimited } from './effectiveHeadway';
 import { headwayAboutRange } from './headwayText';
 import { branchDisplayHourHeadway } from './routeFacts';
-import { rowTrips } from './rowTrips';
+import { rowTrips, unsteadyDirectionFallback } from './rowTrips';
 import { hasRegularServiceInPeriod, isOneGapRow, variantRowHeadway, type RouteContract } from './stretchCard';
 
 /** The card-level facts every row of the route card reads (CIV-992). */
@@ -89,6 +89,9 @@ export function routeCardRowValue(d: ShapeProperties, ctx: RouteCardRowContext):
   // steady service, in place of a long wait or "limited"; the dot keeps the filter's colour.
   // A period that is one gap between a few departures (#955) has no cadence to word.
   const edgeText = !nightRow && hoveredHour == null && variantH === undefined && allDayH == null ? trips.partPeriod : undefined;
+  // #962: a row whose number would be its unsteady direction's worst wait reads no regular service.
+  const fallbackUnsteady = !nightRow && displayH === directionH && pooledH === undefined && !uneven && allDayH == null
+    && variantH === undefined && unsteadyDirectionFallback(d, period, trips);
   // CIV-1251 (Ryan, 2026-11-01): a branch row shows only its own number. The shared-stretch-to-branch range ("every 6–12")
   // never shows on a card: the Shared stretch row gives the shared number. Lists keep their range.
   const trunkHeadway = undefined;
@@ -102,6 +105,7 @@ export function routeCardRowValue(d: ShapeProperties, ctx: RouteCardRowContext):
   const rowNoRegular = nightRow ? nightH == null || trips.noOwnService : hoveredHour == null && (
     (noRegularService && (period === 'all' || d.stretchPeriodOneGap === undefined || !hasRegularServiceInPeriod(d, period) || displayH == null))
     || isOneGapRow(d, period)
+    || fallbackUnsteady
     || (trips.noOwnService && variantH === undefined && allDayH == null));
   const isLimited = rowNoRegular
     ? true
