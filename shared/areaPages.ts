@@ -19,6 +19,7 @@ import { MODE_DEFINITIONS, ON_DEMAND_MODE, VIRTUAL_LRT_MODE, modeLabel, modeLabe
 import { BETA_BUILD } from './config';
 import { AREA_INDEX, AREA_PARAM } from './areaIndex';
 import { AREA_PATH_PREFIX, areaPagePath, type AreaConfig } from './areas';
+import { agencyPagePath, parentAgencyPagePath } from './pagePaths';
 import { areaRegionName, areaRegionSentenceStart, areaRegionTitle } from './areaRegions';
 import { SITE_URL, seoTitlePrefix, type SeoMode } from './seo';
 import { countOf } from './overflowText';
@@ -41,6 +42,10 @@ export interface AreaAgencyRow {
   totalRoutes: number;
   /** Route counts by table column (AREA_TABLE_MODES, rarer modes added into "Other"), only the columns the agency has. */
   modes: Record<string, number>;
+  /** Its page: the agency's (agencyPagePath), or a parent agency's (Ryan, 2026-11-02). */
+  href: string;
+  /** The agencies it stands for on the map: itself, or a parent's members counted here. */
+  slugs: string[];
 }
 
 /** The numbers an area or a state or province page (CIV-976) shows for its agencies, counted the same way on both. */
@@ -127,6 +132,8 @@ export function agencyGroupData(members: readonly AgencyPageSummary[], all: Read
       displayName: a.displayName,
       totalRoutes: s.totalRoutes,
       modes: tableModes(s.byMode),
+      href: a.members ? parentAgencyPagePath(a.slug) : agencyPagePath(a.slug),
+      slugs: a.members ?? [a.slug],
     });
   }
   rows.sort((x, y) => y.totalRoutes - x.totalRoutes || compareAgencyName(x.name, y.name) || x.slug.localeCompare(y.slug));
@@ -150,7 +157,7 @@ export function buildAreaPageData(area: AreaConfig, all: ReadonlyMap<string, Age
   const { slug, name, type, officialName, country, cities, bbox, center, note } = area;
   const regionRoutes = new Map<string, number>();
   for (const a of members) {
-    if (a.region && area.agencies.includes(a.slug)) regionRoutes.set(a.region, (regionRoutes.get(a.region) ?? 0) + a.routes.length);
+    if (a.region && (a.members ?? [a.slug]).some(s => area.agencies.includes(s))) regionRoutes.set(a.region, (regionRoutes.get(a.region) ?? 0) + a.routes.length);
   }
   const regions = [...regionRoutes.entries()].sort((x, y) => y[1] - x[1] || x[0].localeCompare(y[0])).map(([r]) => r);
   const group = agencyGroupData(members, all, releaseDate);
@@ -288,7 +295,7 @@ export function areaDatesText(d: Pick<AreaPageData, 'newestRefresh' | 'releaseDa
 export function areaMapHref(d: Pick<AreaPageData, 'area'> & Partial<Pick<AreaPageData, 'agencies'>>, areas = AREA_INDEX): string {
   const params = new URLSearchParams({ [AREA_PARAM]: d.area.slug });
   const listed = areas[d.area.slug]?.agencies ?? [];
-  const extra = (d.agencies ?? []).map(a => a.slug).filter(s => !listed.includes(s));
+  const extra = (d.agencies ?? []).flatMap(a => a.slugs).filter(s => !listed.includes(s));
   if (extra.length > 0) params.set('agencies', [...listed, ...extra].join(','));
   return `/?${params.toString()}`;
 }

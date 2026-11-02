@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
-import { agencyPagePath } from '../shared/agencyPages';
 import { areaDatesText, areaIntroJoiners } from '../shared/areaPages';
 import {
   REGION_DATA_SCRIPT_ID,
@@ -66,7 +65,7 @@ export default function RegionPage({ data: dataProp }: { data?: RegionPageData }
           </div>
           <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--text-muted)]">
             {intro.lead}{joiners.opener}
-            {intro.named.map((a, i) => <span key={a.slug}><a className={UNDERLINED_LINK} href={agencyPagePath(a.slug)}>{a.title}</a>{joiners.separators[i]}</span>)}
+            {intro.named.map((a, i) => <span key={a.slug}><a className={UNDERLINED_LINK} href={a.href}>{a.title}</a>{joiners.separators[i]}</span>)}
             {joiners.tail}
           </p>
 

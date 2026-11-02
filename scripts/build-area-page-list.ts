@@ -9,7 +9,7 @@
  *   npx tsx scripts/build-area-page-list.ts
  */
 import { readFileSync, writeFileSync } from 'node:fs';
-import { agencyPagePath, areaPageStatus, type AgencyPageSummaries } from '../shared/agencyPages';
+import { areaPageStatus, type AgencyPageSummaries } from '../shared/agencyPages';
 import { AREA_PATH_PREFIX } from '../shared/pagePaths';
 
 export const AREA_PAGE_SLUGS = 'shared/data/area-page-slugs.json';
@@ -19,9 +19,9 @@ type Redirect = { source: string; destination: string; permanent: boolean };
 
 /** The redirects for one-agency areas, with and without the trailing slash, as vercel.json holds them. */
 export function areaRedirects(summaries: AgencyPageSummaries): Redirect[] {
-  return [...areaPageStatus(summaries.agencies).redirects].flatMap(([area, agency]) => [
-    { source: `${AREA_PATH_PREFIX}${area}`, destination: agencyPagePath(agency), permanent: true },
-    { source: `${AREA_PATH_PREFIX}${area}/`, destination: agencyPagePath(agency), permanent: true },
+  return [...areaPageStatus(summaries.agencies).redirects].flatMap(([area, page]) => [
+    { source: `${AREA_PATH_PREFIX}${area}`, destination: page, permanent: true },
+    { source: `${AREA_PATH_PREFIX}${area}/`, destination: page, permanent: true },
   ]);
 }
 

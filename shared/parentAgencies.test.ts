@@ -1,8 +1,11 @@
 import { readFileSync, readdirSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { agencyPageData, agencyPagePath, resolveAgencySeo, type AgencyPageRoute } from './agencyPages';
+import { agencyPageData, agencyPagePath, agencyPlaces, resolveAgencySeo, type AgencyPageRoute } from './agencyPages';
 import { agencyPageSummaries } from './agencyPagesData';
 import { buildAgencyIndexData } from './agencyIndex';
+import { AREA_INDEX } from './areaIndex';
+import { areaMapHref, buildAreaPageData } from './areaPages';
+import { buildRegionPageData, regionPages } from './regionPages';
 import type { AreaConfig } from './areas';
 import { parentAgencyPagePath } from './pagePaths';
 import { PARENT_AGENCIES, parentAgency, parentAgencyPageData, parentMembers, parentRoutes } from './parentAgencies';
@@ -81,5 +84,45 @@ describe('parent agency search titles (CIV-1277)', () => {
       const parentTitle = resolveAgencySeo(parentPage(p.slug).agency, { mode: 'public', path: parentAgencyPagePath(p.slug) }).title;
       for (const m of parentMembers(p, all)) expect(resolveAgencySeo(m, { mode: 'public' }).title, m.slug).not.toBe(parentTitle);
     }
+  });
+});
+
+describe('area and state pages show a parent once (Ryan, 2026-11-02)', () => {
+  const bySlug = new Map(all.map(a => [a.slug, a]));
+  const area = (slug: string) => buildAreaPageData(areas.find(a => a.slug === slug)!, bySlug, null);
+  const state = (name: string) => buildRegionPageData(regionPages(all).find(r => r.name === name)!, all, null);
+
+  it('lists MTA New York once on New York\'s page and in the New York area, linking its own page', () => {
+    for (const d of [state('New York'), area('new-york')]) {
+      const rows = d.agencies.filter(a => a.title === 'MTA New York');
+      expect(rows).toHaveLength(1);
+      expect(rows[0].href).toBe('/agency/mta-new-york');
+      expect(d.agencies.map(a => a.slug)).not.toContain('nyct-subway');
+    }
+    expect(state('New York').agencies.find(a => a.slug === 'mta-new-york')!.slugs).toHaveLength(9);
+  });
+
+  it('counts the parent once and its routes once, with the same route total as before', () => {
+    const d = state('New York');
+    const members = parentMembers(parentAgency('mta-new-york')!, all);
+    // Its routes that stop in New York (a Metro-North line wholly in Connecticut counts there instead), each once.
+    const inNewYork = members.map(m => ({ routes: agencyPlaces(m).regions.find(r => r.name === 'New York')?.routes ?? [] }));
+    expect(d.agencies.find(a => a.slug === 'mta-new-york')!.totalRoutes).toBe(parentRoutes(inNewYork).length);
+    expect(d.totalRoutes).toBe(d.agencies.reduce((n, a) => n + a.totalRoutes, 0));
+  });
+
+  it('links exo\'s parent row to /agency/exo, not the trains page, and keeps every member on the map link', () => {
+    const exo = area('montreal').agencies.find(a => a.title === 'exo')!;
+    expect(exo.href).toBe('/agency/exo');
+    // The map link opens the area's listed agencies plus every counted one: all of exo's counted services are on it.
+    const params = new URL(areaMapHref(area('montreal')), 'http://x').searchParams;
+    const onMap = new Set([...AREA_INDEX.montreal.agencies, ...(params.get('agencies')?.split(',') ?? [])]);
+    expect(exo.slugs.filter(m => !onMap.has(m))).toEqual([]);
+    expect(exo.slugs.length).toBeGreaterThan(1);
+  });
+
+  it('shows Maryland Transit Administration once on Maryland\'s page, with MARC under it', () => {
+    const rows = state('Maryland').agencies.filter(a => a.slugs.includes('marc') || a.slugs.includes('mta-maryland'));
+    expect(rows).toEqual([expect.objectContaining({ title: 'Maryland Transit Administration', href: '/agency/mta-maryland', slugs: expect.arrayContaining(['marc', 'mta-maryland']) })]);
   });
 });

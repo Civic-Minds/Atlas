@@ -47,8 +47,10 @@ describe('the places an agency serves (#1283)', () => {
 
   it('names the New York area for Staten Island buses, whose S89 stops in Bayonne, and lists them in New Jersey with that route only', () => {
     expect(pageOf('nyct-bus-si').place).toBe('the New York metropolitan area');
-    const nj = buildRegionPageData(regionPages(all).find(r => r.name === 'New Jersey')!, all, null).agencies.find(a => a.slug === 'nyct-bus-si');
+    // Under their parent, MTA New York, since 2026-11-02 (Ryan).
+    const nj = buildRegionPageData(regionPages(all).find(r => r.name === 'New Jersey')!, all, null).agencies.find(a => a.slug === 'mta-new-york');
     expect(nj?.totalRoutes).toBe(1);
+    expect(nj?.slugs).toEqual(['nyct-bus-si']);
     expect(agencyPlaces(agency('nyct-bus-si')).regions.find(r => r.name === 'New Jersey')?.routes.map(r => r.name)).toEqual(['S89']);
   });
 
@@ -113,7 +115,7 @@ describe('areas need two agencies for a page (Ryan, 2026-11-01)', () => {
 
   it('sends the Austin area, with only CapMetro, to CapMetro\'s page, permanently', () => {
     expect(status.pages.has('austin')).toBe(false);
-    expect(status.redirects.get('austin')).toBe('capmetro');
+    expect(status.redirects.get('austin')).toBe('/agency/capmetro');
     const vercel = JSON.parse(readFileSync('vercel.json', 'utf8')) as { redirects: Array<{ source: string; destination: string; permanent: boolean }> };
     expect(vercel.redirects).toContainEqual({ source: '/area/austin', destination: '/agency/capmetro', permanent: true });
   });
