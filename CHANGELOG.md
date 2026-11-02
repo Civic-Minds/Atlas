@@ -160,6 +160,9 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ### Agency, area and research pages
 
 - **Every state and province has its own page**: it compares its agencies with the area pages' table and frequency bar
+- **Agency pages [name every area an agency serves](https://github.com/Civic-Minds/Atlas/issues/1283)**: BART read "in Oakland", it now reads "in the Bay Area and the San Jose area", each area links to its own page, a city is never a link, and state and province pages list every agency that stops in them
+- **An area page needs at least [two agencies](https://github.com/Civic-Minds/Atlas/issues/1283)**: a one-agency area such as Austin sends its link to the agency's own page, since its page repeated the agency page, and the agency page names the area without a link
+- **Area and state page intros say agencies are "operating" their routes**: "The Bay Area has 17 transit agencies operating 432 routes" reads as the agencies' service
 - **The Docs page's "On this page" list [highlights the section being read](https://github.com/Civic-Minds/Atlas/issues/1275)**: it could stay on an earlier section
 - **A shared research link previews its own page (beta)**: each research page has its own title and description, and Overnight service and the Frequent service story show their own pictures
 - **The About page shows the map and the research up front**: a picture of Toronto's routes beside the headline, the newest research as picture tiles, and Where / When / How often cards

@@ -26,12 +26,11 @@ export interface AreaConfig {
 }
 
 /** Official areas folded into the region people mean. The first member names the merged area's anchor. */
-export const MERGED_AREAS: ReadonlyArray<{ name: string; country: 'United States' | 'Canada'; members: string[]; note: string }> = [
+export const MERGED_AREAS: ReadonlyArray<{ name: string; country: 'United States' | 'Canada'; members: string[]; note?: string }> = [
   {
     name: 'Toronto',
     country: 'Canada',
     members: ['Toronto', 'Hamilton', 'Oshawa'],
-    note: 'This area combines the Toronto, Hamilton and Oshawa metro areas so it matches the Greater Toronto and Hamilton Area (GTHA).',
   },
 ];
 
