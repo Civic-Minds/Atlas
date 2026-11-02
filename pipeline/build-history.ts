@@ -20,7 +20,7 @@ import { dirname, resolve } from 'path';
 import { config } from 'dotenv';
 import { r2ListArchive, r2GetArchive, r2Get, r2Put } from './r2.js';
 import { runWithConcurrency } from './utils.js';
-import { resolveCurrentHistoryRoute, mergeAliasedRoutes, currentRouteShortNamesFor, aliasesFor, weekendOnlyKeysFor, projectArchiveByDay, projectSidecarByDay, type HistoryRouteAliases } from './historyIdentity.js';
+import { resolveCurrentHistoryRoute, mergeAliasedRoutes, currentRouteShortNamesFor, aliasesFor, weekendOnlyKeysFor, projectArchiveByDay, projectSidecarByDay, worseArchiveChange, worseSidecarEntry, type HistoryRouteAliases } from './historyIdentity.js';
 import { representativeRep, routeTrunkHeadway, routeTrunkHeadwayByPeriod } from './historyV2.js';
 import { buildRouteSnapshots, filterSnapshotsForPublish, isFlatRouteToSkip, joinCandidates, newBuildReport, visibilityCheck, type Candidate } from './historyV2Build.js';
 import type { HistoryV2Sidecar } from '../shared/historyV2.js';
@@ -459,9 +459,9 @@ async function main() {
   let aliasMerged = 0;
   if (v2) for (const slug of Object.keys(archiveRoutes)) {
     const slugAliases = routeAliases[slug];
-    const a = mergeAliasedRoutes(archiveRoutes[slug], slugAliases, projectArchiveByDay);
+    const a = mergeAliasedRoutes(archiveRoutes[slug], slugAliases, projectArchiveByDay, { periodKey: c => c.periodKey, combine: worseArchiveChange });
     archiveRoutes[slug] = a.routes;
-    if (sidecarRoutes[slug]) sidecarRoutes[slug] = mergeAliasedRoutes(sidecarRoutes[slug], slugAliases, projectSidecarByDay).routes;
+    if (sidecarRoutes[slug]) sidecarRoutes[slug] = mergeAliasedRoutes(sidecarRoutes[slug], slugAliases, projectSidecarByDay, { periodKey: e => e.periodKey, combine: worseSidecarEntry }).routes;
     aliasMerged += a.merged;
   }
   if (aliasMerged > 0) console.log(`Merged ${aliasMerged} aliased route keys.`);
