@@ -23,12 +23,14 @@ describe('FrequentServiceStory', () => {
     expect(onExploreMap).toHaveBeenCalledOnce();
   });
 
-  it('changes the selected threshold without rendering agency tabs', () => {
+  it('picks a threshold bar the split bar\'s way: it fades the other bars and highlights its name, without agency tabs', () => {
     render(<FrequentServiceStory agencies={agencies} onExploreMap={() => {}} />);
     const tenMinuteButton = screen.getByRole('button', { name: /Show examples for 10-minute service/ });
     fireEvent.click(tenMinuteButton);
     expect(screen.queryByRole('tab')).not.toBeInTheDocument();
-    expect(tenMinuteButton).toHaveAttribute('aria-pressed', 'true');
+    expect(tenMinuteButton.querySelector('[data-active="true"]')).not.toBeNull();
+    const fifteen = screen.getByRole('button', { name: /Show examples for 15-minute service/ });
+    expect((fifteen.querySelector('[style*="width"]') as HTMLElement).style.opacity).toBe('0.35');
   });
 
   it('counts the Canada and US definitions that still held on the October 30 recheck (CIV-1149)', () => {
@@ -55,14 +57,14 @@ describe('FrequentServiceStory', () => {
     expect(frequentServiceStoryStats.headwayBars.reduce((sum, bar) => sum + bar.agencies, 0)).toBe(59);
   });
 
-  it('says in How we did this that the chart was checked again (CIV-1149)', () => {
+  it('says in Method that the chart was checked again (CIV-1149)', () => {
     render(<FrequentServiceStory agencies={agencies} onExploreMap={vi.fn()} />);
     expect(screen.getByText(/On October 30, 2026, we opened the source again for each of the 67 agencies the chart counted\. 61 still matched and stay in the chart\. 6 are left out:/)).toBeInTheDocument();
   });
 
   it('uses the shared method template: Date updated, and Sources in place of Review boundary (CIV-1167)', () => {
     const { container } = render(<FrequentServiceStory agencies={agencies} onExploreMap={vi.fn()} />);
-    const method = screen.getByRole('heading', { name: 'How we did this' }).closest('section')!;
+    const method = screen.getByRole('heading', { name: 'Method' }).closest('section')!;
     expect([...method.querySelectorAll('strong')].map(el => el.textContent)).toEqual(['Date conducted:', 'Date updated:', 'Sample:', 'Sources:', 'What counted:', 'How we handled numbers:', 'Rechecked:', 'Limitations:']);
     expect(method).toHaveTextContent('Date updated: October 30, 2026.');
     expect(container).not.toHaveTextContent('Review boundary');
@@ -70,7 +72,7 @@ describe('FrequentServiceStory', () => {
 
   it('credits the share picture shelter photo in Sources (CIV-1259)', () => {
     render(<FrequentServiceStory agencies={agencies} onExploreMap={vi.fn()} />);
-    const method = screen.getByRole('heading', { name: 'How we did this' }).closest('section')!;
+    const method = screen.getByRole('heading', { name: 'Method' }).closest('section')!;
     expect(method).toHaveTextContent('Shelter photo: Dillan Payne, CC BY-SA 4.0, cut out and adapted.');
     expect(screen.getByRole('link', { name: 'Dillan Payne' })).toHaveAttribute('href', 'https://commons.wikimedia.org/wiki/File:TTC_Bus_Stop_on_Port_Union_Road,_April_30_2026.jpg');
     expect(screen.getByRole('link', { name: 'CC BY-SA 4.0' })).toHaveAttribute('href', 'https://creativecommons.org/licenses/by-sa/4.0/');

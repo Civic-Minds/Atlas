@@ -33,7 +33,7 @@ export const FREE_CHILD_OTHER_POLICIES: ReadonlyArray<{ policyType: string; labe
 export const freeChildAgeBars: FreeChildFareBar[] = FREE_CHILD_AGE_COUNTS.map(([age, agencies]) => ({ label: `Up to ${age}`, agencies }));
 export const freeChildOtherBars: FreeChildFareBar[] = FREE_CHILD_OTHER_POLICIES.map(({ label, agencies, unknown }) => ({ label, agencies, unknown }));
 
-/** Agencies in the chart by country (the Sample line in "How we did this"). */
+/** Agencies in the chart by country (the Sample line in "Method"). */
 export const FREE_CHILD_AGENCIES_BY_COUNTRY = { 'United States': 465, Canada: 88 } as const;
 
 const sum = (bars: FreeChildFareBar[]) => bars.reduce((total, bar) => total + bar.agencies, 0);
