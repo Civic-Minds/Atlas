@@ -2,8 +2,6 @@ import recheck from './definition-recheck-2026-10-30.json';
 import definitions from './frequent-definitions-by-agency.json';
 import { headwayEvery, headwayEveryRange } from '../../shared/headwayText';
 
-/** The chart's fixed steps; any other wait in the data (Fort McMurray's 25, CIV-1178) gets its own bar too. */
-const storyScaleSteps = [10, 12, 15, 20, 30, 60];
 const storyCountries = new Set(['Canada', 'United States']);
 /**
  * CIV-87 (Ryan, 2026-11-01): the story counts only the agencies whose pages we could read. The ones whose websites blocked
@@ -42,7 +40,8 @@ function ruleMinutes(row: RecheckRow): number | null {
 }
 const chartedRows = heldNumericRows.filter(row => ruleMinutes(row) !== null);
 const chartedRowsOct11 = recheckedNumericRows.filter(row => ruleMinutes(row) !== null);
-const storyThresholds = [...new Set([...storyScaleSteps, ...[...chartedRows, ...chartedRowsOct11].map(row => ruleMinutes(row) as number)])].sort((a, b) => a - b);
+// Only the waits some agency uses (Fort McMurray's 25, CIV-1178, gets its own bar); no fixed steps, so no empty bar or table row.
+const storyThresholds = [...new Set([...chartedRows, ...chartedRowsOct11].map(row => ruleMinutes(row) as number))].sort((a, b) => a - b);
 
 // The method's sample (CIV-1174): the October 11 check of each Canada and US agency's official definition we could read,
 // the same file the recheck above starts from.

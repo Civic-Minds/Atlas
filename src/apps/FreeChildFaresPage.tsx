@@ -100,7 +100,8 @@ export default function FreeChildFaresPage() {
             </dl>
             <div className="mt-8 rounded-[2rem] border border-[var(--border-primary)] bg-[var(--bg-panel)] p-5 sm:p-8">
               <h2 id="free-child-age-chart" className="text-xs font-black text-[var(--text-primary)]">Free up to a set age</h2>
-              <CategorySpark columns={ageColumns} label={AGE_CHART_ARIA} ticks={chartTicks} defaultKey={peakAge[0]} details={tableId} />
+              {/* keepEmpty: the ages run as a continuous scale, so an age no agency uses (15, 16) keeps its place and the gap shows. */}
+              <CategorySpark columns={ageColumns} keepEmpty label={AGE_CHART_ARIA} ticks={chartTicks} defaultKey={peakAge[0]} details={tableId} />
               <ChartTableDetails id={tableId} caption="Free up to a set age" columns={TABLE_COLUMNS} rows={freeChildAgeBars} rowKey={bar => bar.label} />
             </div>
           </section>

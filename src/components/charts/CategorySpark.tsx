@@ -1,4 +1,5 @@
 import type { Key } from 'react';
+import { withCount } from './chartCategories';
 import { AXIS_W, SPARK_BAR, SparkTicks } from './sparkParts';
 import { ACTIVE_BG, CHART_COUNT, CHART_TEXT, FADED_OPACITY, useActivePart } from './useActivePart';
 
@@ -15,9 +16,9 @@ export interface SparkColumn {
 /**
  * A column per group in the sparkline charts' shape (HourSpark's bars, ticks and axis), with the split bar's way of picking a
  * part: hovering, focusing or tapping a column fades the others and highlights its name. Each count sits above its bar and
- * its name below, in the split bar legend's text (#1290). Columns with no count keep their place on the axis without a bar.
+ * its name below, in the split bar legend's text (#1290). Columns with no count are dropped (chartCategories) unless the chart passes keepEmpty, which keeps their place on the axis without a bar.
  */
-export default function CategorySpark({ columns, label, ticks, height = 120, defaultKey = null, details }: {
+export default function CategorySpark({ columns: allColumns, keepEmpty = false, label, ticks, height = 120, defaultKey = null, details }: {
   columns: readonly SparkColumn[];
   /** The chart's accessible name. */
   label: string;
@@ -28,7 +29,10 @@ export default function CategorySpark({ columns, label, ticks, height = 120, def
   defaultKey?: Key | null;
   /** The id of the chart's table for screen readers (ChartTableDetails), linked with aria-details. */
   details?: string;
+  /** Keep columns with no count in their place on the axis (chartCategories: only where the empty column is the point). */
+  keepEmpty?: boolean;
 }) {
+  const columns = withCount(allColumns, keepEmpty);
   const { active, clear, faded, partEvents } = useActivePart(defaultKey);
   const lo = ticks[0], hi = ticks[ticks.length - 1];
   const pos = (v: number) => Math.max(0, Math.min(height, ((v - lo) / (hi - lo || 1)) * height));
