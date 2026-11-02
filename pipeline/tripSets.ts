@@ -597,15 +597,26 @@ export function encodeStopRuns(values: ReadonlyArray<number | null>): string {
  * stretchFilterValue). One run-length-encoded string per period aligned to the feature's stopOrder
  * (encodeStopRuns), empty where no trip passes. Where every trip stops, it equals the stretch value at
  * that stretch's reference stop. Read by the section colours (S3, beta only).
+ *
+ * #1094: Overnight reads each stop through the night verdict (directionNightValue over the stop alone), the
+ * function the line's own Overnight value reads (#1267), so a stop never turns grey on a line that passes
+ * Overnight by the same rule. A stop the verdict does not pass at 60 keeps its full-window wait, never
+ * a better one.
  */
 export function stopPeriodValues(stops: readonly string[], throughTimesAlong: NonNullable<DirectionStretches['throughTimesAlong']>): Record<PeriodKey, string> {
   const reads = throughTimesAlong(stops);
   const perStop = stops.map((stop, i) => {
     const read = reads[i];
     if (read.times.length === 0) return null;
-    return stretchPeriods({ kind: 'main', stops: [stop], refStop: stop, lengthKm: 0, ...read });
+    const stretch: Stretch = { kind: 'main', stops: [stop], refStop: stop, lengthKm: 0, ...read };
+    const night = directionNightValue({ key: stop, main: stretch, tails: [], regularPatternCount: 1, variantTripCount: 0 }, true);
+    return { periods: stretchPeriods(stretch), night };
   });
-  return Object.fromEntries(PERIOD_WINDOWS.map(({ key }) => [key, encodeStopRuns(perStop.map(p => (p ? stretchFilterValue(p[key]) : null)))])) as Record<PeriodKey, string>;
+  const value = (p: (typeof perStop)[number], key: PeriodKey) => {
+    if (!p) return null;
+    return key === 'overnight' && p.night != null ? p.night : stretchFilterValue(p.periods[key]);
+  };
+  return Object.fromEntries(PERIOD_WINDOWS.map(({ key }) => [key, encodeStopRuns(perStop.map(p => value(p, key)))])) as Record<PeriodKey, string>;
 }
 
 /**
@@ -614,19 +625,32 @@ export function stopPeriodValues(stops: readonly string[], throughTimesAlong: No
  * section needs the usual three departures for a value, then the same filter and limited-service
  * handling; no thresholds of its own).
  */
-export function stretchMetaPeriods(s: Stretch): { period: Record<PeriodKey, number | null>; noRegular: PeriodKey[]; maxGap: Record<PeriodKey, number | null> } {
+export function stretchMetaPeriods(s: Stretch): { period: Record<PeriodKey, number | null>; noRegular: PeriodKey[]; maxGap: Record<PeriodKey, number | null>; edge?: Partial<Record<PeriodKey, StretchPeriodEdge>> } {
   const own = stretchPeriods(s);
   // CIV-1069: the longest gap between the same departures the value reads, so a card row never pairs
   // the stretch's value with a gap measured over one headsign's trips.
   const gaps = computePeriodMaxGaps([...s.times]);
   // The card's guard (#955): a period whose value is one gap, or that has under three departures (no
-  // cadence to read, only the full-window wait), reads "no regular service" on a row; the map keeps
+  // cadence to read, only the full-window wait), reads "Irregular" on a row; the map keeps
   // the filter value.
   const departures = (start: number, end: number) => new Set(forCrossMidnightWindow([...s.times], end).filter(t => t >= start && t <= end)).size;
+  // CIV-1251 (Ryan): the stretch's own late start or early end, read as the direction's edge is
+  // (#934, CIV-1248), so a branch row can say when its own service starts or stops (TTC 110 Sunday
+  // AM: the shared stretch every 15 from 8:07, each branch every 30 from its own first trip).
+  // Overnight reads the night verdict (#1267) and has none; an uneven period reads its range.
+  const edges: Partial<Record<PeriodKey, StretchPeriodEdge>> = {};
+  for (const { key, start, end } of PERIOD_WINDOWS) {
+    if (key === 'overnight' || own[key].uneven) continue;
+    const edge = runsThroughPeriod(s.times, start, end, own[key].sustained)
+      ? periodEdge(s.times, start, end, stretchFilterValue(own[key]))
+      : periodPartialEdge(s.times, start, end);
+    if (edge) edges[key] = edge;
+  }
   return {
     period: Object.fromEntries(PERIOD_WINDOWS.map(({ key }) => [key, stretchFilterValue(own[key])])) as Record<PeriodKey, number | null>,
     noRegular: PERIOD_WINDOWS.filter(({ key, start, end }) => own[key].coverage != null && (own[key].oneGap || departures(start, end) < 3)).map(w => w.key),
     maxGap: Object.fromEntries(PERIOD_WINDOWS.map(({ key }) => [key, own[key].value == null ? null : gaps[key] ?? null])) as Record<PeriodKey, number | null>,
+    ...(Object.keys(edges).length > 0 ? { edge: edges } : {}),
   };
 }
 
@@ -849,7 +873,7 @@ export interface DirectionRollup {
      * Step 5a filter value: the worst counting stretch, each read as the tile rule reads a row
      * (steady with a full-window wait of PERIOD_COVERAGE_MAX_HEADWAY or less: its headway; else its
      * wait). null: the main stretch runs only stray or part-day trips in the period (no departure on
-     * one side of its midpoint), so the direction has no regular service there.
+     * one side of its midpoint), so the direction has no regular cadence there.
      */
     filterValue: number | null;
     /** The main stretch runs through the period (departures on both sides of its midpoint). */
@@ -896,6 +920,8 @@ export interface StretchPeriodEdge {
   from?: number;
   until?: number;
   every: number;
+  /** #1276: the stretch the edge is read on: 'main', or a tail's index (a row's stretchIndex when its stretchRole is 'tail'). */
+  stretch?: 'main' | number;
 }
 
 /**
@@ -974,6 +1000,8 @@ export function periodOneGap(stretchTimes: readonly number[], start: number, end
 /** D1 and D3: the direction value is the worst counting stretch; night needs the main stretch and every tail that runs at night. */
 export function rollupDirection(d: DirectionStretches): DirectionRollup | null {
   if (!d.main) return null;
+  // The guard's narrowing does not reach the closures below.
+  const mainStretch = d.main;
   const main = stretchPeriods(d.main);
   const tails = d.tails.map(stretchPeriods);
   // #1072, rule 3: a tail that runs only part of a period because a sibling branch takes over the
@@ -1035,19 +1063,42 @@ export function rollupDirection(d: DirectionStretches): DirectionRollup | null {
     // window wait as "every N" (MBTA 23 Sunday overnight to Ashmont: every 196). A sparse main
     // stretch leaves the direction without a value, a sparse tail drops out.
     const sparse = (s: Stretch | null | undefined) => s != null && key === 'overnight' && isSparseOvernightWindow(s.times);
-    const counting = [main[key], ...tails.map((t, i) => (handover[key][i] ? turnTaking(t[key]) : t[key]))]
-      .filter((p, i) => p.counts && (i === 0 ? runs && !sparse(d.main) : !sparse(d.tails[i - 1])));
+    const countingStretches = [d.main, ...d.tails]
+      .map((st, i) => ({ st, stretch: (i === 0 ? 'main' : i - 1) as 'main' | number, p: i === 0 ? main[key] : handover[key][i - 1] ? turnTaking(tails[i - 1][key]) : tails[i - 1][key] }))
+      .filter(({ st, p }, i) => p.counts && (i === 0 ? runs && !sparse(d.main) : !sparse(st)));
+    const counting = countingStretches.map(c => c.p);
     const values = counting.map(filterOf).filter((v): v is number => v != null);
     period[key].runs = runs;
     period[key].hasService = forCrossMidnightWindow([...d.main.times], end).some(t => t >= start && t <= end);
     period[key].filterValue = runs && !sparse(d.main) && values.length > 0 ? Math.max(...values) : null;
-    const setter = period[key].filterValue == null ? undefined : counting.find(p => filterOf(p) === period[key].filterValue);
+    const setterAt = period[key].filterValue == null ? undefined : countingStretches.find(c => filterOf(c.p) === period[key].filterValue);
+    const setter = setterAt?.p;
     period[key].typical = setter?.uneven && setter.headway != null && setter.headway < period[key].filterValue! ? setter.headway : null;
     // An uneven period's card reads its range, not an edge or one-gap wording.
     const uneven = period[key].typical != null;
-    period[key].edge = uneven ? null : runs ? periodEdge(d.main.times, start, end, period[key].filterValue) : periodPartialEdge(d.main.times, start, end);
+    // CIV-1241 (Ryan, 2026-11-01): the edge is read on the stretch that sets the filter value, so a
+    // branch that runs steadily and then stops (settled rule 3 keeps its full-window wait: AC
+    // Transit 22 Sunday midday, every 30 until 12:12, 168) reads "every 30 until 12:12" from the
+    // same reading as a main stretch's early end.
+    // CIV-1248 (Ryan, 2026-11-01): a period the main stretch covers only part of reads the partial
+    // edge of every stretch that starts or ends in it, and the slowest decides (D1), as the filter
+    // value's setter does: TTC 110 Sunday AM's trunk runs every 15 from 7:52, its branches every 30.
+    // The filter value stays null there (D8).
+    const partial = () => [mainStretch, ...d.tails]
+      .map((st, i) => ({ edge: periodPartialEdge(st.times, start, end), stretch: (i === 0 ? 'main' : i - 1) as 'main' | number }))
+      .filter((c): c is { edge: StretchPeriodEdge; stretch: 'main' | number } => c.edge != null)
+      .reduce<{ edge: StretchPeriodEdge; stretch: 'main' | number } | null>((worst, c) => (worst == null || c.edge.every > worst.edge.every ? c : worst), null);
+    // #1276: name the stretch, so the card puts the words on that stretch's row.
+    if (uneven) period[key].edge = null;
+    else if (runs) {
+      const edge = periodEdge((setterAt?.st ?? d.main).times, start, end, period[key].filterValue);
+      period[key].edge = edge && { ...edge, stretch: setterAt?.stretch ?? 'main' };
+    } else {
+      const slowest = partial();
+      period[key].edge = slowest && { ...slowest.edge, stretch: slowest.stretch };
+    }
     // Only where the settled checks count the period as running: a big-gap period that does not
-    // run (TTC 504 overnight, 169 minutes against a typical 5) keeps "no regular service".
+    // run (TTC 504 overnight, 169 minutes against a typical 5) keeps "Irregular".
     period[key].gap = runs && !uneven && !period[key].edge ? periodOneGap(d.main.times, start, end) : null;
   }
   // D3 with the D8 midpoint test: a tail runs at night only when it has departures on both sides
@@ -1147,7 +1198,7 @@ export interface RouteRollup {
 
 /**
  * Rule 1: the route value is the worst direction, and a direction with no value (no stretch data,
- * or no regular service in the period) leaves the route with none: never one direction alone.
+ * or no regular cadence in the period) leaves the route with none: never one direction alone.
  * The range (D1, display only) runs from the worst direction's main stretch to the route value,
  * null when they agree. Night: every direction the route runs by day must pass. `dirs` holds one
  * entry per direction the route runs by day, null where it has no stretch data.
@@ -1230,6 +1281,7 @@ export const STRETCH_SHADOW_KEYS = [
   'stretchMeta',
   'stretchRole',
   'stretchIndex',
+  'stretchCovers',
   'headwayByPeriodSustainedMid',
 ] as const;
 
@@ -1343,6 +1395,14 @@ export function stampStretchShadow(
       if (tailIdx != null) { p.stretchRole = 'tail'; p.stretchIndex = tailIdx; }
       else if (stretches.main && covers(stretches.main.stops)) { p.stretchRole = 'main'; p.stretchIndex = 0; }
       else { p.stretchRole = 'variant'; delete p.stretchIndex; }
+      // #1276: every stretch the row's stops cover, so a period edge (stretchPeriodEdge[k].stretch)
+      // finds its rows where no row stands for that stretch (TTC 110 Weekday PM: tail 3).
+      const coversAll: ('main' | number)[] = [
+        ...(stretches.main && covers(stretches.main.stops) ? ['main' as const] : []),
+        ...stretches.tails.flatMap((t, i) => (covers(t.stops) ? [i] : [])),
+      ];
+      if (coversAll.length > 0) p.stretchCovers = coversAll;
+      else delete p.stretchCovers;
     }
     p.stretchMeta = {
       main: stretches.main ? { stops: stretches.main.stops.length, refStop: stretches.main.refStop, trips: stretches.main.tripCount, ...stretchMetaPeriods(stretches.main) } : null,

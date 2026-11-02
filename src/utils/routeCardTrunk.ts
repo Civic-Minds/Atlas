@@ -172,7 +172,7 @@ export function pooledMainStretch(
   const shared = stretchRowsFromMeta(mains[0], period).find(r => r.role === 'main');
   if (shared?.value == null || shared.noRegular) return null;
   // A pattern that runs but has no wait of its own to show keeps today's card (GO LW to Confederation).
-  const own = mains.map(d => rowTrips(d, period).value);
+  const own = mains.map(d => rowTrips(d, period, { ownTrips: true }).value);
   if (own.some(v => v == null)) return null;
   if (shared.value > medianHeadway(own as number[]) * SHARED_STRETCH_RATIO) return null;
   // One row per destination: the pattern that draws the most stops stands for it.
@@ -190,7 +190,7 @@ export function pooledMainStretch(
  * value (stretchMeta.main) above its branch rows, each branch keeping its own wait. Only when the direction shows two
  * or more rows with a tail among them (the main stretch's own row is the branch that runs on past it), and the shared
  * value is materially better than the rows' (the Combined rule).
- * Null on data without the value, for All day, and for a period the main stretch has no regular service in.
+ * Null on data without the value, for All day, and for a period the main stretch has no regular cadence in.
  */
 export function stretchSharedHeadway(
   group: { realTier: ShapeProperties[]; directionFeatures?: ShapeProperties[] },
@@ -204,7 +204,7 @@ export function stretchSharedHeadway(
   const meta = group.directionFeatures.find(d => d.stretchRole === 'main') ?? group.directionFeatures.find(d => d.stretchMeta?.main);
   const shared = meta ? stretchRowsFromMeta(meta, period).find(r => r.role === 'main') : undefined;
   if (shared?.value == null || shared.noRegular) return null;
-  const rowValues = rows.map(d => rowTrips(d, period).value);
+  const rowValues = rows.map(d => rowTrips(d, period, { ownTrips: true }).value);
   if (rowValues.some(v => v == null)) return null;
   // CIV-1143: no 4x limit here. This row names the shared stretch itself and the rows keep their own waits, so a slow
   // branch never makes it read faster than it is (TTC 52, SEPTA 63).
@@ -290,16 +290,18 @@ export function sharedStretchHeadway(
 /**
  * CIV-514: whether part of a route that misses the filter still qualifies, by the same per-stop pass that draws the
  * map's shared-stretch overlay for failing routes (failingRouteSharedRanges), so the card's note and the map agree.
- * `directions` are the card's copies of the route's features; their stopOrder arrays identify the features.
+ * `directions` are the card's copies of the route's features; their stopOrder arrays identify the features. CIV-1251: the
+ * directions whose shared stretch qualifies, from the same pass, so the card's one line can name a single direction.
  */
 export function routePartMeetsFilter(
   agencyFeatures: readonly GeoJSON.Feature[] | undefined,
   directions: ShapeProperties[],
   period: TimePeriod,
   maxHeadway: number,
-): boolean {
-  if (!agencyFeatures || directions.length === 0) return false;
+): number[] {
+  if (!agencyFeatures || directions.length === 0) return [];
   const wanted = new Set<unknown>(directions.map(d => d.stopOrder).filter(Boolean));
   const routeFeatures = agencyFeatures.filter(f => wanted.has((f.properties as any)?.stopOrder));
-  return failingRouteSharedRanges(routeFeatures, agencyFeatures, period, maxHeadway).some(r => r.ranges.length > 0);
+  const passing = failingRouteSharedRanges(routeFeatures, agencyFeatures, period, maxHeadway).filter(r => r.ranges.length > 0);
+  return [...new Set(passing.map(r => (r.feature.properties as { directionId?: number } | null)?.directionId ?? 0))].sort();
 }

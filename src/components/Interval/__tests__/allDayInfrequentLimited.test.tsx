@@ -105,7 +105,7 @@ describe('Infrequent routes show "limited" on All day and in specific periods (#
       expect(routeCardDisplayHeadway(frequentSaturday, 'midday')).toBe(12);
       expect(routeListDisplayHeadway([frequentSaturday], 'midday')).toBe(12);
       // List rows use the same rule as the route card.
-      expect(routeListDisplay([tl42Saturday], 'midday')).toEqual({ headway: null, limited: true });
+      expect(routeListDisplay([tl42Saturday], 'midday')).toEqual({ headway: null, limited: true, noRegular: true });
       expect(routeListDisplay([tl42Saturday], 'amPeak')).toEqual({ headway: null, limited: false });
       expect(routeListDisplay([frequentSaturday], 'midday')).toEqual({ headway: 12, limited: false });
       expect(routeListDisplay([frequentSaturday, infrequentShortTurn], 'midday')).toEqual({ headway: 12, limited: false });
@@ -139,9 +139,9 @@ describe('Infrequent routes show "limited" on All day and in specific periods (#
       expect(screen.queryByText(/every 56 min/)).toBeNull();
     });
 
-    it('shows "limited" for TL-42 in Saturday midday', () => {
+    it('CIV-1251: TL-42 in Saturday midday reads Irregular, not "limited"', () => {
       renderCard([tl42Saturday], 'midday');
-      expect(screen.getAllByText('limited').length).toBeGreaterThan(0);
+      expect(screen.getAllByText('Runs irregularly in this period').length).toBeGreaterThan(0);
       expect(screen.queryByText(/every 56 min/)).toBeNull();
     });
 
@@ -151,11 +151,11 @@ describe('Infrequent routes show "limited" on All day and in specific periods (#
       expect(screen.queryByText('limited')).toBeNull();
     });
 
-    it('OC 226 style: All day with no all-day value reads "limited", whatever the pattern numbers say', () => {
+    it('OC 226 style: All day with no all-day value reads "Part-time" (CIV-1251), whatever the pattern numbers say', () => {
       // routeAllDayHeadway 999999 = none; a direction does not run at midday. The pattern's own 20 must not show.
       const oc226 = { ...frequentSaturday, headway: 20, routeAllDayHeadway: 999999, routeHasLimitedDirection: true } as unknown as ShapeProperties;
       renderCard([oc226], 'all');
-      expect(screen.getAllByText('limited').length).toBeGreaterThan(0);
+      expect(screen.getAllByText('Part-time').length).toBeGreaterThan(0);
       expect(screen.queryByText(/every 20 min/)).toBeNull();
     });
 
@@ -192,7 +192,7 @@ describe('Infrequent routes show "limited" on All day and in specific periods (#
       }
     });
 
-    it('renders "limited" in the agency card for a specific period', () => {
+    it('renders "Irregular" in the agency card for a specific period (CIV-1251)', () => {
       const agency = { slug: SLUG, name: 'The Lift', region: 'Colorado', center: [40.08, -105.93], url: '' } as any;
       render(
         <AgencyCard
@@ -207,7 +207,7 @@ describe('Infrequent routes show "limited" on All day and in specific periods (#
           onRouteSelect={() => {}} onClose={() => {}}
         />,
       );
-      expect(screen.getByText('limited')).toBeTruthy();
+      expect(screen.getByText('Irregular')).toBeTruthy();
       expect(screen.getByText('every 12 min')).toBeTruthy();
     });
   });
@@ -227,10 +227,11 @@ describe('Infrequent routes show "limited" on All day and in specific periods (#
 
     it('shows "limited" for TL-42 in a specific period and keeps the frequent number', () => {
       const { result } = renderHook(() => useNearbyRoutes({ lat: STOP_COORDS[1], lon: STOP_COORDS[0] }, layersFor('Saturday'), 'Saturday', 'midday'));
-      expect(result.current.find(r => r.rKey.includes('TL-42'))).toMatchObject({ headway: null, limited: true });
+      expect(result.current.find(r => r.rKey.includes('TL-42'))).toMatchObject({ headway: null, limited: true, noRegular: true });
       expect(result.current.find(r => r.rKey.includes('F-1'))).toMatchObject({ headway: 12, limited: false });
       render(<NearbyRoutesPanel routes={result.current} setSelectedRoute={() => {}} />);
-      expect(screen.getByText('limited')).toBeTruthy();
+      // CIV-1251: in a time period, Irregular.
+      expect(screen.getByText('Irregular')).toBeTruthy();
       expect(screen.getByText('every 12 min')).toBeTruthy();
     });
   });
@@ -239,8 +240,9 @@ describe('Infrequent routes show "limited" on All day and in specific periods (#
     it.each(['all', 'midday'] as const)('renders "limited" for TL-42 and the number for the frequent route (%s)', period => {
       const tl42 = routeListDisplay([tl42Saturday], period);
       const frequent = routeListDisplay([frequentSaturday], period);
-      const { container: limitedRow } = render(<>{routeRowRight('Winter Park', tl42.headway, true, tl42.limited)}</>);
-      expect(limitedRow.textContent).toContain('limited');
+      const { container: limitedRow } = render(<>{routeRowRight('Winter Park', tl42.headway, true, tl42.limited, undefined, tl42.noRegular)}</>);
+      // CIV-1251: "limited" stays on All day; a time period reads Irregular.
+      expect(limitedRow.textContent).toContain(period === 'all' ? 'limited' : 'Irregular');
       expect(limitedRow.textContent).not.toContain('every');
       const { container: frequentRow } = render(<>{routeRowRight('Winter Park', frequent.headway, true, frequent.limited)}</>);
       expect(frequentRow.textContent).toContain('every 12 min');

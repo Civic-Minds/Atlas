@@ -1,11 +1,11 @@
-import { FREQUENCY_BANDS, NO_MIDDAY_PHRASE, NO_MIDDAY_SHORT, allRoutesMapHref } from '../shared/agencyPages';
+import { FREQUENCY_BANDS, NO_MIDDAY_SHORT, allRoutesMapHref, noMiddayBarSentence } from '../shared/agencyPages';
 import ArrowLink from './components/ui/ArrowLink';
 import { useHeadwayTiers } from './hooks/useHeadwayTiers';
 import SplitBar from './components/charts/SplitBar';
 import { plural } from '../shared/overflowText';
 import { routeLabels } from './utils/format';
 
-const BAND_PHRASES = [...FREQUENCY_BANDS.map(b => b.phrase), NO_MIDDAY_PHRASE];
+const BAND_PHRASES = FREQUENCY_BANDS.map(b => b.phrase);
 const BAND_SHORT = [...FREQUENCY_BANDS.map(b => b.short), NO_MIDDAY_SHORT];
 /** The map's own frequency colours (same bands and edges as the filters, in the colour-vision palette), then the neutral no-service grey. */
 const NO_SERVICE_FILL = 'var(--control-inactive-bg)';
@@ -29,7 +29,7 @@ export function FrequencyBar({ counts, mapHref }: { counts: number[]; /** The pa
         key: i,
         value: n,
         fill: BAND_FILLS[i],
-        sentence: `${n} ${plural(n, 'route')} ${BAND_PHRASES[i]}`,
+        sentence: i < BAND_PHRASES.length ? `${n} ${plural(n, 'route')} ${BAND_PHRASES[i]}` : noMiddayBarSentence(n),
         legend: <span><span className="font-black">{n}</span> {BAND_SHORT[i]}{i === unitBand ? ' min' : ''}</span>,
       }))}
       trailing={mapHref && <ArrowLink href={allRoutesMapHref(mapHref)} className="sm:ml-auto">See these routes on the map</ArrowLink>}

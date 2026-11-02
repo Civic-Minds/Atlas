@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { buildStopRoutes, headlineStandIn, stopRouteBestHeadway, stopRouteLineHeadway, stopRowHeadway, type StopBranch } from '../stopRoutes';
 import ttc29json from './fixtures/ttc-29-weekday.json';
+import { stopRoutePeriodBit } from '../../../shared/stopRoutePeriods';
 
 // Properties only (no geometry): the stop card reads none.
 const ttc29 = ttc29json as unknown as GeoJSON.FeatureCollection;
@@ -35,7 +36,7 @@ describe('stopRowHeadway: never overstate', () => {
 });
 
 describe('headlineStandIn (CIV-1204)', () => {
-  it("never stands a headline in where its window has no regular service (CAT 14 to Transfer Center: 315)", () => {
+  it("never stands a headline in where its window has no regular cadence (CAT 14 to Transfer Center: 315)", () => {
     expect(headlineStandIn({ headway: 315, headlineNoRegular: true })).toBeNull();
   });
   it('keeps the headline as the stand-in otherwise', () => {
@@ -85,6 +86,71 @@ describe('buildStopRoutes: one destination served by two patterns (CIV-1080)', (
     expect(words()).toEqual([]);
   });
 
+  it('#1276: a tail covering the edge\'s stretch shows its words; a row that does not cover it shows none, as on the route card', () => {
+    const fc = structuredClone(ttc29);
+    const setCovers = (covers: ('main' | number)[]) => {
+      for (const f of fc.features.filter(x => x.properties?.directionId === 1)) {
+        Object.assign(f.properties!, { stretchRole: 'tail', stretchIndex: 0, stretchCovers: covers, stretchPeriodEdge: { midday: { from: 754, every: 8, stretch: 0 } } });
+        delete (f.properties!.directionFilterHeadwayByPeriod as Record<string, unknown> | undefined)?.midday;
+      }
+    };
+    const words = () => buildStopRoutes({
+      siblingIdsByAgency: { ttc: new Set(['2108']) }, routesByAgency: { ttc: new Set(['29']) }, layers: { ttc: fc }, day: 'Weekday', period: 'midday',
+    })[0]?.branches.filter(b => b.directionId === 1).map(b => b.periodText) ?? [];
+    setCovers(['main', 0]);
+    expect(words()).toEqual(['every 8 min from 12:34 PM']);
+    setCovers(['main']);
+    expect(words().filter(Boolean)).toEqual([]);
+  });
+
+  it('CIV-1251 row 8: a stop on the shared stretch carries the shared stretch\'s own time for its Shared stretch row', () => {
+    const fc = structuredClone(ttc29);
+    const north = fc.features.filter(x => x.properties?.directionId === 1);
+    north.forEach((f, i) => Object.assign(f.properties!, {
+      headsign: i === 0 ? 'Wilson' : 'Downsview', stretchRole: 'tail', stretchIndex: i, stretchCovers: ['main', i],
+      stretchMeta: { main: { stops: 10, refStop: 'm', trips: 50, edge: { midday: { from: 754, every: 8 } } }, tails: [{ refStop: 'a', stops: 3, km: 1, trips: 20 }, { refStop: 'b', stops: 3, km: 1, trips: 20 }] },
+    }));
+    const routes = buildStopRoutes({
+      siblingIdsByAgency: { ttc: new Set(['2108']) }, routesByAgency: { ttc: new Set(['29']) }, layers: { ttc: fc }, day: 'Weekday', period: 'midday',
+    });
+    const shared = routes[0]?.branches.filter(b => b.directionId === 1).map(b => b.sharedEdge);
+    expect(shared?.length).toBeGreaterThan(0);
+    shared?.forEach(edge => expect(edge).toEqual({ text: 'every 8 min from 12:34 PM', every: 8 }));
+  });
+
+  it('CIV-1251 review: the stop card shows the shared stretch time only where the route card does (not beside a main row)', () => {
+    const fc = structuredClone(ttc29);
+    const north = fc.features.filter(x => x.properties?.directionId === 1);
+    north.forEach((f, i) => Object.assign(f.properties!, {
+      headsign: i === 0 ? 'Wilson' : 'Downsview', stretchRole: i === 0 ? 'main' : 'tail', stretchIndex: i === 0 ? 0 : 0, stretchCovers: i === 0 ? ['main'] : ['main', 0],
+      stretchMeta: { main: { stops: 10, refStop: 'm', trips: 50, edge: { midday: { from: 754, every: 8 } } }, tails: [{ refStop: 'a', stops: 3, km: 1, trips: 20 }] },
+    }));
+    const routes = buildStopRoutes({
+      siblingIdsByAgency: { ttc: new Set(['2108']) }, routesByAgency: { ttc: new Set(['29']) }, layers: { ttc: fc }, day: 'Weekday', period: 'midday',
+    });
+    // A main row carries the shared stretch's time on the route card, so the stop card has no Shared stretch time.
+    expect(routes[0]?.branches.filter(b => b.directionId === 1).some(b => b.sharedEdge)).toBe(false);
+  });
+
+  it('#1277: a branch that does not run through the period never reads the shared stretch\'s time (TTC 131 Sunday late, Old Finch)', () => {
+    const fc = structuredClone(ttc29);
+    for (const f of fc.features.filter(x => x.properties?.directionId === 1)) {
+      Object.assign(f.properties!, {
+        stretchRole: 'tail', stretchIndex: 0, stretchCovers: ['main', 0], departuresByHour: { 12: 4 },
+        stretchMeta: { main: { stops: 10, refStop: 'm', trips: 50 }, tails: [{ refStop: 't', stops: 5, km: 2, trips: 20, notThrough: ['midday'] }] },
+        stretchPeriodEdge: { midday: { from: 754, every: 8, stretch: 'main' } },
+      });
+      delete (f.properties!.directionFilterHeadwayByPeriod as Record<string, unknown> | undefined)?.midday;
+    }
+    const words = () => buildStopRoutes({
+      siblingIdsByAgency: { ttc: new Set(['2108']) }, routesByAgency: { ttc: new Set(['29']) }, layers: { ttc: fc }, day: 'Weekday', period: 'midday',
+    })[0]?.branches.filter(b => b.directionId === 1).map(b => b.periodText) ?? [];
+    expect(words().filter(Boolean)).toEqual([]);
+    // Its own branch's edge, with its own trips in the period: the words are its own.
+    for (const f of fc.features.filter(x => x.properties?.directionId === 1)) f.properties!.stretchPeriodEdge = { midday: { from: 754, every: 8, stretch: 0 } };
+    expect(words()).toEqual(['every 8 min from 12:34 PM']);
+  });
+
   it('keeps each destination\'s own value when another destination shares the stop (never overstates)', () => {
     const fc = structuredClone(ttc29);
     const north = fc.features.filter(f => f.properties?.directionId === 1);
@@ -123,5 +189,39 @@ describe('buildStopRoutes: a stop\'s own route with no trips in the period (CIV-
   it('never lists a route that runs here as idle', () => {
     const rows = build('midday', [0], ['29']);
     expect(rows.map(r => [r.shortName, r.noTrips])).toEqual([['29', undefined]]);
+  });
+});
+
+describe('buildStopRoutes: a stop\'s own route with trips here but no number in the period (#1278)', () => {
+  // TTC 110 on Sunday, AM peak (published 2026-11-01): first trip 7:52, a direction value in the period, but the route
+  // reads as not running (no filter value), so it had no stop row and the stop card left it out.
+  const ttc110 = (directionId: number, headsign: string) => ({
+    type: 'Feature', geometry: null,
+    properties: {
+      routeId: '110', routeShortName: '110', routeLongName: 'Islington South', day: 'Sunday', directionId, headsign, tier: '30',
+      headwayByPeriod: { amPeak: 15, midday: 30 },
+      routeFilterHeadwayByPeriod: { amPeak: null, midday: 30 }, routeRunsByPeriod: { amPeak: false, midday: true },
+      departuresByHour: { 7: 1, 8: 2, 9: 2, 10: 2 }, headwayByHour: { 7: 15, 8: 30, 9: 30, 10: 30 }, maxGapByHour: { 7: 30, 8: 30, 9: 30, 10: 30 },
+    },
+  });
+  const layer = { type: 'FeatureCollection', features: [ttc110(0, 'Kipling and Lake Shore'), ttc110(1, 'Islington')] } as unknown as GeoJSON.FeatureCollection;
+  const sundayAm = stopRoutePeriodBit('Sunday', 'amPeak');
+  const build = (bits: Array<number | undefined>) => buildStopRoutes({
+    siblingIdsByAgency: { ttc: new Set(['2713']) },
+    routesByAgency: { ttc: new Set(['110']) },
+    routePeriodBitsByAgency: { ttc: new Map([['110', bits]]) },
+    layers: { ttc: layer }, day: 'Sunday', period: 'amPeak',
+  });
+  const plain = (text: string | undefined) => text?.replaceAll('\u2060', '').replace(/[\u00a0\u202f]/g, ' ');
+
+  it('lists the route with the route card\'s own words for the period', () => {
+    const rows = build([sundayAm]);
+    expect(rows.map(r => [r.shortName, r.branches.length, r.noTrips])).toEqual([['110', 0, undefined]]);
+    expect(plain(rows[0].noNumber?.text)).toBe('Runs only from 7–9 AM');
+  });
+
+  it('leaves it out where the stop has no trip in the period, or the data has no field', () => {
+    expect(build([undefined])).toEqual([]);
+    expect(build([0]).map(r => [r.shortName, r.noNumber, r.noTrips != null])).toEqual([['110', undefined, true]]);
   });
 });

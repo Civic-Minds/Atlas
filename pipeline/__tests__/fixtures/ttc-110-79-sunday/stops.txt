@@ -1,0 +1,168 @@
+stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,zone_id,stop_url,location_type,parent_station,stop_timezone,wheelchair_boarding
+5415,5415,Lawrence Ave West at Weston Rd - Weston GO Station,,43.700276,-79.516006,,,,,,1
+4435,4435,Long Branch Loop - Long Branch GO Station,,43.592111,-79.5437,,,,,,1
+9901,9901,Islington Ave at Bloor St West North Side,,43.64541,-79.523592,,,,,,1
+13313,13313,Scarlett Rd at Foxwell St,,43.669109,-79.501269,,,,,,2
+6418,6418,Henrietta St at Runnymede Rd,,43.67061,-79.484457,,,,,,1
+2725,2725,Islington Ave at Nordin Ave,,43.626838,-79.516246,,,,,,1
+13311,13311,Scarlett Rd at Bernice Cres,,43.666777,-79.499347,,,,,,1
+13307,13307,St Clair Ave West at Mariposa Ave,,43.667688,-79.489614,,,,,,1
+7075,7075,Scarlett Rd at Alma Dr,,43.692744,-79.517763,,,,,,2
+3950,3950,Judson St at Magnificent Rd,,43.612785,-79.512331,,,,,,1
+5151,5151,Lake Shore Blvd West at Tenth St,,43.600155,-79.508496,,,,,,1
+3712,3712,Horner Ave at Beta St,,43.603337,-79.538381,,,,,,1
+7088,7088,Scarlett Rd at Eglinton Ave West,,43.683715,-79.51102,,,,,,1
+6798,6798,Pritchard Ave at Jane St East Side,,43.66956,-79.492402,,,,,,2
+7061,7061,Runnymede Rd at Glenwood Ave,,43.65703,-79.478841,,,,,,1
+3722,3722,Horner Ave at Judson St,,43.611721,-79.51549,,,,,,1
+13316,13316,Opposite 2650 St Clair Ave West,,43.666472,-79.496591,,,,,,2
+13318,13318,St Clair Ave West at Jane St,,43.667011,-79.492085,,,,,,2
+7054,7054,Runnymede Rd at Colbeck St,,43.655017,-79.477995,,,,,,1
+7059,7059,Runnymede Rd at Dundas St West,,43.665816,-79.482314,,,,,,1
+7096,7096,Scarlett Rd at Lawrence Ave West,,43.697994,-79.522914,,,,,,1
+3728,3728,Horner Ave at Tupper Ave West Side,,43.606975,-79.522193,,,,,,1
+3710,3710,Horner Ave at Belvia Rd,,43.605324,-79.528711,,,,,,1
+3709,3709,Toronto South Detention Centre,,43.609555,-79.514632,,,,,,2
+5413,5413,Lawrence Ave West at Weston Rd West Side,,43.700019,-79.517036,,,,,,1
+7083,7083,Scarlett Rd at East Dr,,43.676906,-79.506183,,,,,,1
+3705,3705,Horner Ave at Thirtieth St,,43.604156,-79.533871,,,,,,1
+7071,7071,Runnymede Rd at St John's Rd,,43.663878,-79.481514,,,,,,1
+3787,3787,Islington Ave at Evans Ave,,43.618201,-79.510979,,,,,,1
+2734,2734,Islington Ave at Van Dusen Blvd,,43.641604,-79.522221,,,,,,1
+3386,3386,Brown's Line at Lake Shore Blvd West North Side,,43.593263,-79.539318,,,,,,1
+6796,6796,Pritchard Ave at Batavia Ave,,43.670208,-79.489483,,,,,,2
+7099,7099,Scarlett Rd at Richview Rd North Side,,43.685771,-79.51242,,,,,,1
+7102,7102,Scarlett Rd at Scarlettwood Crt North Side,,43.692838,-79.517514,,,,,,1
+13312,13312,Scarlett Rd at Eileen Ave,,43.667889,-79.500203,,,,,,1
+3384,3384,Brown's Line at Jellicoe Ave,,43.5964,-79.542659,,,,,,1
+3021,3021,Pine St at Lawrence Ave West,,43.701353,-79.507916,,,,,,1
+7080,7080,Scarlett Rd at Crane Ave,,43.69422,-79.519078,,,,,,2
+6417,6417,Henrietta St at Castleton Ave,,43.670324,-79.486237,,,,,,1
+3719,3719,215 Horner Ave,,43.60771,-79.517705,,,,,,2
+3704,3704,160 Horner Ave - Toronto South Detention Centre,,43.609901,-79.515026,,,,,,1
+7095,7095,Scarlett Rd at Lawrence Ave West South Side,,43.697749,-79.522901,,,,,,2
+7060,7060,Runnymede Rd at Glenwood Ave North Side,,43.657137,-79.47866,,,,,,1
+7103,7103,Scarlett Rd at Tilden Cres,,43.694185,-79.518704,,,,,,2
+6394,6394,Foxwell St at Duern St,,43.671065,-79.495697,,,,,,1
+3720,3720,Horner Ave at Fima Cres,,43.605951,-79.526696,,,,,,1
+3716,3716,Horner Ave at Edilou Dr,,43.604679,-79.531509,,,,,,1
+7092,7092,Scarlett Rd at Fontenay Crt South Side,,43.682816,-79.510612,,,,,,1
+7068,7068,Runnymede Rd at St Clair Ave West,,43.668822,-79.483369,,,,,,1
+13320,13320,St Clair Ave West at Mould Ave,,43.668068,-79.487241,,,,,,1
+7086,7086,Scarlett Rd at Edinborough Crt North Side,,43.672596,-79.503958,,,,,,2
+3717,3717,Horner Ave at Edilou Dr,,43.604931,-79.531199,,,,,,1
+6397,6397,Foxwell St at Scarlett Rd East Side,,43.669452,-79.501108,,,,,,2
+3812,3812,Islington Ave at Lake Shore Blvd West,,43.600902,-79.505422,,,,,,1
+11737,11737,Garnett Janes Rd at Twelfth St East Side,,43.601037,-79.510878,,,,,,1
+13308,13308,St Clair Ave West at Jane St,,43.667281,-79.491534,,,,,,2
+4289,4289,Kipling Ave at Birmingham St,,43.600574,-79.517845,,,,,,1
+3714,3714,Horner Ave at Delta St East Side,,43.603745,-79.53581,,,,,,1
+3205,3205,Wright Ave at Gibson Ave West Side,,43.700147,-79.5065,,,,,,2
+7100,7100,Scarlett Rd at Richview Rd,,43.685593,-79.512675,,,,,,1
+3721,3721,Horner Ave at Fima Cres,,43.60575,-79.526827,,,,,,1
+2718,2718,Islington Ave at Bering Ave North Side,,43.639611,-79.521176,,,,,,1
+3383,3383,Brown's Line at Horner Ave,,43.601526,-79.545017,,,,,,1
+13309,13309,St Clair Ave West at Florence Cres,,43.666983,-79.494262,,,,,,2
+5397,5397,Lawrence Ave West at Ralph St - Weston GO Station,,43.701092,-79.511712,,,,,,1
+6799,6799,Pritchard Ave at Mould Ave,,43.670503,-79.488168,,,,,,2
+7053,7053,Runnymede Rd at Colbeck St North Side,,43.655055,-79.477786,,,,,,1
+7093,7093,Scarlett Rd at La Rose Ave North Side,,43.687137,-79.513122,,,,,,1
+3769,3769,Islington Ave at Birmingham St North Side,,43.603813,-79.506396,,,,,,1
+5377,5377,Lawrence Ave West at Hickory Tree Rd,,43.699064,-79.520142,,,,,,1
+2727,2727,Islington Ave at Norseman St,,43.63431,-79.519306,,,,,,1
+7077,7077,Scarlett Rd at Chapman Rd,,43.689097,-79.514516,,,,,,1
+13451,13451,Scarlett Rd at Saxony Cres,,43.690849,-79.515696,,,,,,2
+3758,3758,800 Islington Ave,,43.616817,-79.510532,,,,,,1
+13317,13317,St Clair Ave West at Florence Cres East Side,,43.666846,-79.49421,,,,,,2
+7058,7058,Runnymede Rd at Dundas St West North Side,,43.666091,-79.482223,,,,,,1
+6398,6398,Foxwell St at Scarlett Rd,,43.669481,-79.501455,,,,,,1
+3715,3715,Horner Ave at Delta St West Side,,43.603778,-79.536421,,,,,,1
+3707,3707,Horner Ave at Alderbrae Ave,,43.602597,-79.540853,,,,,,1
+3706,3706,Horner Ave at Thirtieth St,,43.604404,-79.5336,,,,,,2
+7076,7076,Scarlett Rd at Chapman Rd North Side,,43.689295,-79.514336,,,,,,1
+7065,7065,Runnymede Rd at Mac Gregor Ave,,43.658484,-79.479458,,,,,,2
+7047,7047,Runnymede Rd at Annette St,,43.659951,-79.47988,,,,,,1
+7101,7101,Scarlett Rd at Saxony Cres,,43.690884,-79.516097,,,,,,2
+2713,2713,Islington Ave at Ambleside Ave,,43.629214,-79.51696,,,,,,1
+3820,3820,Islington Ave at New Toronto St South Side,,43.606413,-79.506705,,,,,,1
+3786,3786,Islington Ave at Evans Ave South Side,,43.617871,-79.511116,,,,,,1
+11738,11738,Garnett Janes Rd at Coin St,,43.601428,-79.50908,,,,,,1
+527,527,Bloor St West at Islington Ave,,43.64447,-79.523669,,,,,,1
+3726,3726,Horner Ave at Sheldon Ave,,43.602052,-79.543193,,,,,,1
+2824,2824,Lawrence Ave West at Jane St,,43.702738,-79.504198,,,,,,1
+2714,2714,Islington Ave at Athol Ave,,43.626717,-79.51594,,,,,,1
+2730,2730,Islington Ave at Saybrook Ave,,43.636325,-79.519856,,,,,,1
+3821,3821,Islington Ave at New Toronto St,,43.60655,-79.506452,,,,,,1
+3770,3770,Islington Ave at Birmingham St,,43.603386,-79.506463,,,,,,1
+7062,7062,Runnymede Rd at Henrietta St,,43.670564,-79.484123,,,,,,2
+3725,3725,289 Horner Ave,,43.606541,-79.523286,,,,,,1
+3711,3711,Horner Ave at Beta St,,43.603044,-79.538963,,,,,,1
+3718,3718,Opposite 215 Horner Ave,,43.607917,-79.517485,,,,,,1
+7094,7094,Scarlett Rd at La Rose Ave,,43.686968,-79.513366,,,,,,2
+3727,3727,Horner Ave at Sheldon Ave,,43.602326,-79.542849,,,,,,1
+5414,5414,Lawrence Ave West at Weston Rd,,43.699921,-79.516784,,,,,,1
+7087,7087,Scarlett Rd at Edinborough Crt South Side,,43.672063,-79.503981,,,,,,1
+3388,3388,Brown's Line at Woodbury Rd,,43.59937,-79.54429,,,,,,1
+2726,2726,Islington Ave at Norseman St,,43.634118,-79.51889,,,,,,1
+7063,7063,Runnymede Rd at Maher Ave South Side,,43.662007,-79.480732,,,,,,1
+3708,3708,Horner Ave at Alderbrae Ave,,43.602828,-79.540636,,,,,,1
+6391,6391,Foxwell St at Bruton Rd East Side,,43.670048,-79.498441,,,,,,2
+13305,13305,St Clair Ave West at Runnymede Rd West Side,,43.66887,-79.484326,,,,,,1
+3724,3724,Horner Ave at Kipling Ave,,43.607357,-79.520485,,,,,,1
+3713,3713,Horner Ave at Connorvale Ave,,43.605477,-79.528801,,,,,,1
+13314,13314,Scarlett Rd at Foxwell St South Side,,43.66854,-79.501042,,,,,,1
+2728,2728,Islington Ave at The Queensway North Side,,43.624047,-79.514742,,,,,,1
+2722,2722,Islington Ave at Jutland Rd,,43.629036,-79.517124,,,,,,1
+3948,3948,Judson St at Horner Ave,,43.612349,-79.515013,,,,,,1
+6396,6396,Foxwell St at Jane St,,43.671507,-79.493975,,,,,,1
+2733,2733,Islington Ave at Van Dusen Blvd,,43.641412,-79.521938,,,,,,1
+7064,7064,Runnymede Rd at Maher Ave,,43.662105,-79.480571,,,,,,1
+7073,7073,Runnymede Rd at Webb Ave,,43.658554,-79.479255,,,,,,2
+7070,7070,Runnymede Rd at St John's Rd,,43.663697,-79.48124,,,,,,1
+11740,11740,Birmingham St at Eighth St,,43.602865,-79.507664,,,,,,1
+13306,13306,St Clair Ave West at Mould Ave,,43.66831,-79.486848,,,,,,1
+7069,7069,Runnymede Rd at St Clair Ave West South Side,,43.668539,-79.483462,,,,,,1
+3849,3849,Islington Ave at Titan Rd,,43.630726,-79.51757,,,,,,1
+3206,3206,Wright Ave at Jane St West Side,,43.700766,-79.503809,,,,,,1
+3805,3805,Islington Ave at Judson St,,43.613907,-79.508663,,,,,,1
+13446,13446,Islington Ave at Bering Ave,,43.639459,-79.521343,,,,,,1
+6395,6395,Foxwell St at Jane St West Side,,43.671537,-79.494259,,,,,,2
+7084,7084,Scarlett Rd at Edenbridge Dr North Side,,43.681165,-79.508941,,,,,,2
+6797,6797,Pritchard Ave at Jane St,,43.669628,-79.492607,,,,,,2
+3804,3804,Islington Ave at Judson St North Side,,43.614039,-79.508392,,,,,,2
+6393,6393,Foxwell St at Duern St,,43.670893,-79.495862,,,,,,1
+3385,3385,Brown's Line at Jellicoe Ave South Side,,43.596288,-79.542878,,,,,,1
+5153,5153,Lake Shore Blvd West at Thirteenth St,,43.599445,-79.511706,,,,,,1
+11739,11739,Ninth St at Birmingham St,,43.602332,-79.508392,,,,,,2
+7048,7048,Runnymede Rd at Annette St,,43.66018,-79.48013,,,,,,1
+7081,7081,Scarlett Rd at Delemere Ave,,43.6703,-79.502543,,,,,,2
+5181,5181,Lake Shore Blvd West at Kipling Ave,,43.598331,-79.516749,,,,,,1
+7085,7085,Scarlett Rd at Edenbridge Dr South Side,,43.680395,-79.508761,,,,,,2
+5398,5398,Lawrence Ave West at Ralph St West Side,,43.70106,-79.512602,,,,,,1
+7057,7057,Runnymede Rd at Dundas St West,,43.665365,-79.481933,,,,,,1
+6392,6392,Foxwell St at Bruton Rd,,43.670129,-79.498562,,,,,,1
+13315,13315,Scarlett Rd at Bernice Cres,,43.667169,-79.499833,,,,,,1
+6795,6795,Pritchard Ave at Batavia Ave West Side,,43.670196,-79.490056,,,,,,2
+3949,3949,Judson St at Magnificent Rd,,43.612947,-79.51211,,,,,,1
+7090,7090,Scarlett Rd at Ellins Ave,,43.670712,-79.502634,,,,,,1
+6800,6800,Pritchard Ave at Mould Ave,,43.670686,-79.487855,,,,,,2
+3723,3723,Horner Ave at Kipling Ave,,43.607076,-79.520873,,,,,,1
+2729,2729,Islington Ave at The Queensway,,43.623813,-79.515022,,,,,,1
+2731,2731,Islington Ave at Titan Rd,,43.630969,-79.517919,,,,,,1
+3382,3382,Brown's Line at Horner Ave South Side,,43.601337,-79.545187,,,,,,1
+7082,7082,Scarlett Rd at East Dr,,43.676759,-79.505786,,,,,,2
+5387,5387,Lawrence Ave West at Little Ave,,43.699382,-79.519719,,,,,,2
+6296,6296,Castleton Ave at Henrietta St,,43.670487,-79.486567,,,,,,1
+2710,2710,Islington Ave at Advance Rd,,43.636079,-79.519985,,,,,,1
+5395,5395,Lawrence Ave West at Pine St,,43.701855,-79.508389,,,,,,1
+13922,13922,791 Islington Ave,,43.616802,-79.510286,,,,,,1
+14756,14756,Runnymede Station,,43.651787,-79.475714,,,,,,1
+14895,14895,St Clair Ave West at Mariposa Ave East Side,,43.667591,-79.489328,,,,,,1
+15428,15428,Lake Shore Blvd West at Fortieth St,,43.592468,-79.541863,,,,,,1
+15675,15675,Scarlett Rd at Hill Garden Rd,,43.696108,-79.520729,,,,,,2
+15676,15676,Scarlett Rd at Hill Garden Rd,,43.696197,-79.521127,,,,,,1
+15805,15805,Brown's Line at Woodbury Rd,,43.599214,-79.543953,,,,,,1
+15992,15992,2672 St Clair Ave West,,43.666512,-79.49723,,,,,,1
+16045,16045,Islington Station,,43.644815,-79.524752,,,,,,2
+16627,16627,327 Kipling Avenue,,43.59965,-79.517464,,,,,,1
+16628,16628,Birmingham St at Fourteenth St,,43.601625,-79.513487,,,,,,1

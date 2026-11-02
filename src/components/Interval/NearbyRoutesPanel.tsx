@@ -3,7 +3,7 @@ import { nameCase } from '../../utils/format';
 import { CardReportButton, HeadwayBadge, LimitedBadge } from './cardUi';
 import { reportDetails } from '../../utils/reportIssue';
 import { headwayEvery, headwayEveryRange } from '../../utils/headwayText';
-import { NO_REGULAR_SERVICE_SHORT_LABEL } from '../../utils/effectiveHeadway';
+import { IRREGULAR_PERIOD_SHORT_LABEL } from '../../utils/effectiveHeadway';
 import { LIMITED_SERVICE_LABEL } from '../../content/noticeCopy';
 import type { NearbyRoute } from '../../hooks/useNearbyRoutes';
 import { sidebarFrameStyle } from '../../styles';
@@ -34,7 +34,7 @@ export function nearYouReportDetails(routes: readonly NearbyRoute[], point: { la
     ['Period', period ?? 'unknown'],
     '**Listed:**',
     ...(routes.length > 0
-      ? routes.map(r => `- ${r.agencyName} ${r.displayShortName ?? r.routeShortName}${r.routeLongName ? ` ${r.routeLongName}` : ''} (${r.rKey}): ${r.limited ? 'limited' : r.noRegular ? 'no regular service' : r.headway != null ? headwayEvery(r.headway) : 'no value'}, nearest stop ${r.nearestStopName}, ${fmtDist(r.distanceMeters)}`)
+      ? routes.map(r => `- ${r.agencyName} ${r.displayShortName ?? r.routeShortName}${r.routeLongName ? ` ${r.routeLongName}` : ''} (${r.rKey}): ${r.noRegular ? IRREGULAR_PERIOD_SHORT_LABEL : r.limited ? LIMITED_SERVICE_LABEL : r.headway != null ? headwayEvery(r.headway) : 'no value'}, nearest stop ${r.nearestStopName}, ${fmtDist(r.distanceMeters)}`)
       : ['- Nothing listed']),
   ]);
 }
@@ -108,7 +108,7 @@ export const NearbyRoutesPanel = forwardRef<HTMLDivElement, NearbyRoutesPanelPro
                       className="ml-auto"
                     />
                   ) : (r.limited || r.noRegular) ? (
-                    <LimitedBadge label={r.noRegular ? NO_REGULAR_SERVICE_SHORT_LABEL : LIMITED_SERVICE_LABEL} className="ml-auto" />
+                    <LimitedBadge label={r.noRegular ? IRREGULAR_PERIOD_SHORT_LABEL : LIMITED_SERVICE_LABEL} className="ml-auto" />
                   ) : (
                     // No frequency and no words: the grey dot alone, as the row showed before the shared badge.
                     <LimitedBadge className="ml-auto" />

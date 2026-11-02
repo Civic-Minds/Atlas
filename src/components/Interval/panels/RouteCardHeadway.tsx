@@ -26,7 +26,7 @@ import {
 } from '../cardUi';
 import { CARD_NOTE, CARD_NOTICE, CARD_NOTICE_FOOTER } from '../../../styles';
 import { FEATURES, SPARKLINE_HOURS, TIME_PERIODS, formatPeriodRangeLong } from '../../../../shared/config';
-import { NO_REGULAR_SERVICE_SHORT_LABEL, routeCardDisplayHeadway } from '../../../utils/effectiveHeadway';
+import { routeCardDisplayHeadway } from '../../../utils/effectiveHeadway';
 import { buildRouteCardModel, matchesHoveredBranch, rowIsHovered, sharedIsHovered } from '../../../utils/routeCardRows';
 import { routeCardNotices, type CardFooterNotice } from '../../../utils/routeCardNotices';
 import { dirIdNum } from '../../../utils/routeCardTrunk';
@@ -461,19 +461,17 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                   <>
                     <CardSectionLabel className="mb-0">{group.boundLabel}</CardSectionLabel>
                     {notices.directions.filter(n => n.dirId === group.dirId && n.kind === 'no-service').map(n => (
-                      // A direction with no service reads as a row saying so (D2), not a note.
-                      <div key={n.kind} className="mt-1"><CardDirectionRow labelWeight="regular" label="" limited limitedLabel={model.noRegularLabel} /></div>
+                      // A direction with no service reads as a row saying so, not a note: "No trips from 9 AM–3 PM" (CIV-1251).
+                      <div key={n.kind} className="mt-1"><CardDirectionRow labelWeight="regular" label="" limited limitedLabel={n.text} /></div>
                     ))}
                   </>
                 )}
-                {notices.directions.filter(n => n.dirId === group.dirId && n.kind === 'only-shared').map(n => (
-                  <p key={n.kind} className={`${CARD_NOTE} mt-2 mb-2`}>{n.text}</p>
-                ))}
                 {group.shared && (
                   <>
                     <CardDirectionRow
                       label={group.shared.label}
                       headway={group.shared.headway}
+                      headwayLabel={group.shared.edgeText}
                       branchHovered={coreHovered}
                       branchDimmed={!!hoveredBranch && !coreHovered}
                       onHoverStart={() => setHoveredBranch(group.shared!.hover)}
@@ -494,7 +492,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                             label={row.label}
                             headway={grade ?? undefined}
                             limited={grade == null}
-                            limitedLabel={grade == null ? NO_REGULAR_SERVICE_SHORT_LABEL : undefined}
+                            limitedLabel={grade == null ? model.noRegularLabel : undefined}
                             subLabel={grade != null && row.night.partOfRoute ? 'Overnight service on part of the route' : undefined}
                             {...hoverProps(group.dirId, d, row.hover)}
                           />
@@ -535,6 +533,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                       key={span.feature ? `s${si}` : 'smulti'}
                       label={span.label}
                       limited
+                      limitedLabel={model.limitedWord}
                       {...hoverProps(group.dirId, span.feature, span.hover)}
                     />
                   ))}

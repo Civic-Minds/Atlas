@@ -10,7 +10,7 @@ import { agencyNames } from '../../utils/agencyName';
 import { splitRouteKey } from '../../utils/routeKey';
 import type { RouteLabel } from '../../utils/routeFacts';
 import RouteListRow from '../RouteListRow';
-import { compareSideListText, NO_REGULAR_SERVICE_SHORT_LABEL, routeListHeadwayText, type RouteListDisplay } from '../../utils/effectiveHeadway';
+import { compareSideListText, IRREGULAR_PERIOD_SHORT_LABEL, routeListHeadwayText, type RouteListDisplay } from '../../utils/effectiveHeadway';
 import ListRow from '../ui/ListRow';
 import PanelEmpty from '../ui/PanelEmpty';
 import { CardDivider, HeadwayBadge, LimitedBadge } from './cardUi';
@@ -111,7 +111,7 @@ export function routeRowRight(agencyName: string, headway?: number | null, stack
       <span className={`${LIST_ROW_DIM} ${layout} whitespace-nowrap`}>
         {agency}
         {SEP}
-        <LimitedBadge secondLine label={noRegular ? NO_REGULAR_SERVICE_SHORT_LABEL : LIMITED_SERVICE_LABEL} />
+        <LimitedBadge secondLine label={noRegular ? IRREGULAR_PERIOD_SHORT_LABEL : LIMITED_SERVICE_LABEL} />
       </span>
     );
   }

@@ -18,12 +18,12 @@ describe('FrequencyBar legend', () => {
 
   it('never puts the unit on "no midday" alone', () => {
     const { container } = render(<FrequencyBar counts={[0, 0, 0, 0, 0, 0, 2]} />);
-    expect(legendItems(container)).toEqual(['2 no midday']);
+    expect(legendItems(container)).toEqual(['2 Irregular or none']);
   });
 
   it('puts the unit on the first frequency band, not on the no-midday item', () => {
     const { container } = render(<FrequencyBar counts={[0, 1, 0, 0, 0, 2, 1]} />);
-    expect(legendItems(container)).toEqual(['1 11–15 min', '2 60+', '1 no midday']);
+    expect(legendItems(container)).toEqual(['1 11–15 min', '2 60+', '1 Irregular or none']);
   });
 
   it('renders the bar group label', () => {

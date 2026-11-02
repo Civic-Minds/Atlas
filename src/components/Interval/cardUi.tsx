@@ -610,7 +610,7 @@ export function HeadwayBadge({
 }
 
 /**
- * A route with no regular frequency to show: the grey dot and a word ("limited", "no regular service"), styled like HeadwayBadge.
+ * A route with no regular frequency to show: the grey dot and a word ("limited", "Irregular"), styled like HeadwayBadge.
  * With no label it is the grey dot alone, kept one text line tall so it sits beside the row's first line.
  */
 /** The tier dot and words inside a line of text that sets its own weight and colour (HeadwayBadge / LimitedBadge `secondLine`). */
@@ -623,7 +623,7 @@ export function LimitedBadge({ label, className = '', secondLine = false }: { la
   if (secondLine) return <SecondLineBadge color={getTierColor(null, colorMode)} words={label ?? ''} />;
   const dot = <span className="w-2 h-2 rounded-full shrink-0" style={{ background: getTierColor(null, colorMode) }} />;
   if (label && twoPart(label)) return <TwoPartBadge dot={dot} text={label} className={`text-xs font-black text-[var(--text-primary)] leading-snug ${className}`} />;
-  // A several-word label ("no regular service during this period") breaks between words, right-aligned, where the row is
+  // A several-word label ("Runs irregularly in this period") breaks between words, right-aligned, where the row is
   // too narrow, instead of running over the destination (TTC 25 northbound AM; the #1128 rule). It stays one line where it fits.
   if (label?.includes(' ')) {
     return (

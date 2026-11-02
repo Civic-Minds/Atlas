@@ -33,7 +33,7 @@ import { applySeoToDocument, seoOrigin } from './lib/seoDom';
 import { readEmbeddedJson } from './lib/embeddedData';
 import { LINK, UNDERLINED_LINK } from './pageStyles';
 import { FrequencyBar, RouteNameCell } from './pageParts';
-import { AGENCY_PAGE_NOT_FOUND_TITLE, LIMITED_SERVICE_LABEL, NO_FREQUENCY_PAGE_BODY } from './content/noticeCopy';
+import { AGENCY_PAGE_NOT_FOUND_TITLE, LIMITED_SERVICE_LABEL, NO_FREQUENCY_PAGE_BODY, IRREGULAR_PERIOD_SHORT_LABEL } from './content/noticeCopy';
 import { capitalizeFirst } from './utils/headwayText';
 
 /** Read this page's numbers from the JSON the prerender embedded next to the app root. */
@@ -43,8 +43,8 @@ function readEmbeddedData(slug: string | undefined): AgencyPageData | null {
 }
 
 /**
- * The intro sentence, once, under the title. The place links to its area page when the agency has one, and otherwise
- * to its state or province in the all-agencies list (CIV-966); connecting agencies named in it are links when they have
+ * The intro sentence, once, under the title. The place links to its area page when the agency has one, otherwise to its
+ * state or province page (CIV-976), and failing that to its state or province in the all-agencies list (CIV-966); connecting agencies named in it are links when they have
  * a page. An agency with no regular midday service says so after it (CIV-965).
  */
 function Intro({ data }: { data: AgencyPageData }) {
@@ -54,7 +54,7 @@ function Intro({ data }: { data: AgencyPageData }) {
   const noMidday = data.agency.routes.length > 0 && data.agency.routes.every(r => r.midday == null)
     ? ` ${data.agency.routes.length === 1 ? 'Its route has' : 'Its routes have'} ${NO_MIDDAY_PHRASE.replace(/^with /, '')}.`
     : '';
-  const placeHref = area ? areaPagePath(area.slug) : agencyIndexRegionHref(data.agency);
+  const placeHref = area ? areaPagePath(area.slug) : data.regionPage ?? agencyIndexRegionHref(data.agency);
   if (!intro.startsWith(introLead) || !intro.startsWith(place, placeAt)) return <p className={sentence}>{intro}{noMidday}</p>;
   const at = intro.indexOf(CONNECTS_WITH, placeAt);
   const { named, others } = connectionNames(connections);
@@ -83,12 +83,15 @@ function Intro({ data }: { data: AgencyPageData }) {
 
 /**
  * A period cell: the card's cadence (a range where alternating branches combine on a shared
- * stretch), "Limited" when the route runs but has no trustworthy cadence, else a dash.
+ * stretch), "Limited" when the route runs but has no trustworthy cadence, "Irregular" where the
+ * map list says so (#1249, CIV-1238), else a dash.
  */
 function cell(col: 'am' | 'midday' | 'pm' | 'evening' | 'overnight', r: AgencyPageRoute): string {
   const v = r[col];
   if (v != null) return routeListHeadwayText(v, r.shared?.[col], true);
-  return Array.isArray(r.limited) && r.limited.includes(col) ? capitalizeFirst(LIMITED_SERVICE_LABEL) : headwayEvery(null);
+  if (Array.isArray(r.noRegular) && r.noRegular.includes(col)) return IRREGULAR_PERIOD_SHORT_LABEL;
+  // CIV-1251: a period column with service but no number reads Irregular, whichever check found it.
+  return Array.isArray(r.limited) && r.limited.includes(col) ? IRREGULAR_PERIOD_SHORT_LABEL : headwayEvery(null);
 }
 
 /**

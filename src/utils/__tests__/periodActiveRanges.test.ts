@@ -174,14 +174,15 @@ describe('part-period notice frequency (#1123)', () => {
     expect(partPeriodNoticeHeadway(45, [45, 30])).toBe(45);
     // An hourly route keeps "every 60 min" over hourly rows.
     expect(partPeriodNoticeHeadway(60, [60, 60])).toBe(60);
-    // Compared as printed: 62 reads "every 60 min", the same as a row of 60.
-    expect(partPeriodNoticeHeadway(62, [60, 39])).toBe(62);
+    // Compared as printed, and 62 prints as 62 (#1239): slower than both rows, so no number.
+    expect(partPeriodNoticeHeadway(62, [60, 39])).toBeNull();
+    expect(partPeriodNoticeHeadway(62, [62, 39])).toBe(62);
     // One row slower than the number is enough.
     expect(partPeriodNoticeHeadway(60, [30, 90])).toBe(60);
   });
 
   it('names no number when no row shows one, and none without a filter value', () => {
-    // TTC 10 Van Horne weekday Midday (#1043): rush-hour-only, rows read "no regular service"; the filter
+    // TTC 10 Van Horne weekday Midday (#1043): rush-hour-only, rows read "Irregular"; the filter
     // value is the 330-minute wait between the morning and afternoon trips, not a frequency.
     expect(partPeriodNoticeHeadway(330, [null, null])).toBeNull();
     expect(partPeriodNoticeHeadway(72, [null, undefined])).toBeNull();

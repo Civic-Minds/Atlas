@@ -5,6 +5,7 @@ import { agencyPageSummaries } from './agencyPagesData';
 import { buildAgencyIndexData, resolveAgencyIndexSeo } from './agencyIndex';
 import { buildAreaPageData, resolveAreaSeo } from './areaPages';
 import type { AreaConfig } from './areas';
+import { buildRegionPageData, regionPages, resolveRegionSeo } from './regionPages';
 import { DESCRIPTION_MAX, truncateAtWord } from './seoText';
 
 const agencies = agencyPageSummaries();
@@ -35,6 +36,16 @@ describe('search result copy fits', () => {
       checked++;
     }
     expect(checked).toBeGreaterThan(20);
+  });
+
+  it('every state and province page title is 60 characters or fewer and every description 160 or fewer (CIV-976)', () => {
+    const regions = regionPages(agencies);
+    expect(regions.length).toBeGreaterThan(40);
+    for (const region of regions) {
+      const seo = resolveRegionSeo(buildRegionPageData(region, agencies, null), { mode: 'public' });
+      expect(seo.title.length, `${region.slug} title: ${seo.title}`).toBeLessThanOrEqual(60);
+      expect(seo.description.length, `${region.slug} description: ${seo.description}`).toBeLessThanOrEqual(160);
+    }
   });
 
   it('the agency index title and description fit', () => {

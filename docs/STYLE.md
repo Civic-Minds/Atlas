@@ -58,6 +58,7 @@ Frequencies
   - "10 min" with no "every" in tables and chart cells (`headwayAmount`); "3 min" for a delay or gap that is not a headway (`delayAmount`)
 - The frequency comes first, then its limit: "every 12 min until 9:40 PM", not "until 9:40 PM, every 12 min" (Ryan, 2026-10-30). #962.
 - Frequencies are always in minutes, never hours ("every 90 min", "every 120 min"), so a column never mixes units. #938.
+- Waits over 60 minutes print their exact minutes ("every 63 min"), never rounded to the half hour, so the words match the number the filter reads (Ryan, 2026-10-31). #1239.
 - Don't summarise agencies or areas by a fixed cutoff such as "every 15 min or better" (or 10, 30 or any other). Many agencies have no routes that frequent. Show the real waits for each period instead.
 - Frequency filter work: read `docs/product/FREQUENCY_RULES.md` first.
 
@@ -65,6 +66,8 @@ Words
 
 - Plain words a non-expert understands at once. No transit or technical jargon in labels, buttons or statuses.
 - "Part-time", not "Time-limited", for service that runs part of the day. CIV-211, #933.
+- "Irregular" for a period with no regular cadence where the route still runs: "Runs irregularly in this period" on cards, "Irregular" in table cells and list values. Never "no regular service", which reads as if nothing runs. CIV-1238.
+- "Occasional", not "one-off" or "irregular", for the route class hidden by default (school runs, a few trips a day, on-demand). CIV-1238.
 - "Schedule", not "timetable", in all UI text, on the map and in Live, including approved texts (Ryan, CIV-1079). Code names (`noTimetableTrip` and the like) stay.
 - "Consistent", not "steady" (Ryan, 2026-10-27: "\"steady\" should not be used - consistent is better"). CIV-1059.
 - Times: "2–5 AM", "11 AM–3 PM", "6:30–9 AM". Uppercase AM/PM after a space, an en dash between times (not "to"), no ":00" on the hour, AM/PM once when both times share it (Ryan, 2026-10-28). CIV-1095.
@@ -82,9 +85,10 @@ Card notices
 - No "so" joining two clauses in a notice or error (Ryan, 2026-10-26). State what happened, then what it means, as two short sentences if needed.
 - One kind of notice, one place (Ryan, CIV-1202). A route card has three:
   1. Under the title: what the card is. "Includes variants …", and data warnings about the schedule (expired or outdated, under review, corrected, map line missing or incomplete). Small, regular weight, grey; the data warnings end with "Learn more".
-  2. On the rows: anything about one direction or row. A direction with no service in the period is a row saying so ("no regular service during this period"), not a note. Row style: small, extra-bold, dark, fading with its row.
-  3. Below the rows: the whole route in the period. The filter line, "runs only from …", "no scheduled trips", uneven gaps, booking ahead and weekday variation, in that order. Small, regular weight, grey.
+  2. On the rows: anything about one direction or row. A direction with no service in the period is a row saying so ("Runs irregularly in this period"), not a note. Row style: small, extra-bold, dark, fading with its row.
+  3. Below the rows: the whole route in the period. The filter line, "This route runs only from …", "no trips", uneven gaps, booking ahead and weekday variation, in that order. Small, regular weight, grey.
 - Each fact once: a notice shows only when it says something the rows don't. When a row already names the gap, the hours or a longer wait, the notice that repeats it is left out. `routeCardNotices` (src/utils/routeCardNotices.ts) decides every notice and its place; the card decides nothing.
+- One set of words per situation (Ryan, CIV-1251, 2026-11-01): "Shared stretch" is the only name for the shared part (never "Combined" or "the shared section"), and a branch row shows only its own number; a period with no number reads "Runs irregularly in this period" on cards and "Irregular" in tight spots (never "limited"); All day reads "Part-time" for a route that doesn't run all day; a route that doesn't run reads "no trips"; part of a period reads "This route runs only from 7–9 AM." with the rest as a second sentence. `_review/card-wording` holds the approved table.
 
 New wording needs a yes
 

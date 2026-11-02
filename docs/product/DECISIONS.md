@@ -35,10 +35,10 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
   - What: 10% near misses for the 5 to 15 minute tiers, 5% for 20 to 60, cap of 3 gaps, one 10-minute allowance per true service edge.
   - Why: chosen from a census of 1,160 feeds and a review of example routes. Check these before asking.
   - Source: [FREQUENCY_RULES.md](FREQUENCY_RULES.md) (Thresholds), [#567](https://github.com/Civic-Minds/Atlas/issues/567), [#568](https://github.com/Civic-Minds/Atlas/issues/568), [#570](https://github.com/Civic-Minds/Atlas/issues/570), [#571](https://github.com/Civic-Minds/Atlas/issues/571), PR [#584](https://github.com/Civic-Minds/Atlas/pull/584)
-- **One gap reads "no regular service during this period"**
-  - What: when a number is only one gap between a few departures, the row says this instead of the number, everywhere.
-  - Why: the old short wording read as if the route never has regular service.
-  - Source: Linear CIV-296, comments of 2026-10-17; [#954](https://github.com/Civic-Minds/Atlas/issues/954), [#955](https://github.com/Civic-Minds/Atlas/issues/955)
+- **A period with no regular cadence reads "Irregular"**
+  - What: when a number is only one gap between a few departures, or the filter finds no regular cadence though the route runs, the row says so instead of the number, everywhere: "Runs irregularly in this period" on cards, "Irregular" in tight spots (table cells, list values). Both come from src/content/noticeCopy.ts.
+  - Why: the earlier "no regular service during this period" read as if nothing runs in the period.
+  - Source: Ryan, 2026-10-31 (Linear CIV-1238), superseding the 2026-10-17 wording; [#954](https://github.com/Civic-Minds/Atlas/issues/954), [#955](https://github.com/Civic-Minds/Atlas/issues/955)
 - **A route with no all-day value stays without one**
   - What: a direction that does not run at midday is "limited" and gets no all-day value; a busy stretch alone never passes a route.
   - Why: a peak-only route is not all-day service.
@@ -191,6 +191,10 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
   - What: a running localhost URL plus one line on what to check; a reviewer's approval is not design approval.
   - Why: Ryan signs off on how Atlas looks.
   - Source: [STYLE.md](../STYLE.md) (top)
+- **The hidden route class is "Occasional"**
+  - What: school runs, routes with a few trips a day and on-demand service (code class `irregular`) are "Occasional" to riders, and the setting reads "Hide occasional routes". "Irregular" means only a period with no regular cadence.
+  - Why: "one-off" read as once a day, and "irregular" is the period wording.
+  - Source: Ryan, 2026-10-31 (Linear CIV-1238), replacing #720's "one-off"
 - **Plain words, no all-caps, no dark fills**
   - What: labels a non-expert understands at once ("Part-time", not "Time-limited"); selected states are pale, never solid dark.
   - Why: settled look and voice; the glossary lists the UI word for each internal term.
@@ -233,12 +237,25 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 
 Dated, newest first. The rules above are the short form; this is the reasoning.
 
+### 2026-11-01 — A route that starts late or ends early in a period shows its frequency with the time
+Ryan, 2026-11-01 (#1277, Linear CIV-1248): a period the route covers only part of reads "every 30 from 7:52 AM" (TTC 110 Sunday AM) instead of "No frequency is shown".
+- The time and frequency are read on every stretch that starts or ends in the period, and the slowest decides (D1), as for the filter value: TTC 110's trunk runs every 15 from 7:52, its branches every 30, so it reads every 30. A branch with under three trips in the period does not count.
+- The filter is unchanged: a period the route covers only part of is still not regular service (D8), so it has no filter value.
+
+### 2026-11-01 — A branch that stops partway through a period says when it stops
+Ryan, 2026-11-01 (#1268, Linear CIV-1241), picked option 1: a branch row that runs part of the period and then stops reads "every 30 until 12:12 PM" (AC Transit 22 Sunday midday), not the full-period wait it filters at (168, settled rule 3).
+- The edge (the start or stop time) is read on the row that sets the direction's value (D1). So a main row whose number comes from a slower branch no longer carries an edge (TTC 40 Saturday late).
+
+### 2026-10-31 — "Irregular" for a period, "Occasional" for the hidden class
+
+Ryan, 2026-10-31 (Linear CIV-1238): "'no regular service' is still deceptive and misleading bc it makes it sound like there is no service during that period not that there is little service during that period." His words: "Irregular" in tight spots (table cells, list values) and "Runs irregularly in this period" on cards. This supersedes the 2026-10-17 wording. The class hidden by default, which #720 named "one-off" and the Docs page called "Irregular", is now "Occasional" ("one-off sounds like it only runs once per day"); the setting reads "Hide occasional routes" with the same description. Code names (`serviceClass: 'irregular'`, `noRegular`) are unchanged.
+
 ### 2026-10-31 — The Overnight period reads the Night Service verdict
 
 Ryan, 2026-10-31 (#1267, Linear CIV-1239): the map's Overnight value reads the night verdict's stretch value (rule 10), so Overnight and Night Service never disagree. They were calculated separately (2-6 AM by rules 4-5, 2-5 AM by rule 10) and disagreed on 135 of 646 route-days in 12 agencies: TTC 301 was Night Service every 30 but Overnight "every 71", because the 2-6 AM window took in the gap before day service.
 - A direction's Overnight value is the smallest gap at which it passes rule 10, so it is 30 or less exactly when Night Service 30, and 60 or less exactly when Night Service 60. The route takes the worst direction.
 
-Implementation choices, pending Ryan's OK through the manager (not part of his decision):
+Implementation choices, confirmed by Ryan on 2026-11-01:
 - A direction where nothing runs at night (departures on both sides of 3:30) has no Overnight value: day service starting at 4:48 is not overnight service (TTC 102).
 - A route card's Overnight row shows the route's Overnight number only on a row the Night view lights, of a direction that passes as a whole; every other row has no value (the card shows the shared irregular label). So a direction that passes only on its night path (NYC subway 3 to New Lots Av: every 20 on the night path, 220 minutes apart at the row's own stops) and a piece that stops at night (NYC subway S's 42 St shuttle) show none. The row never reads its own 2-6 AM trips.
 - Overnight shows one number: no branch range, no typical-to-worst range, and no late-start, early-end or gap wording (those read 2-6 AM: CTA 35 read "every 20 min from 3:54 AM" with no Night Service).
@@ -252,7 +269,7 @@ Ryan, 2026-10-31 (Linear CIV-1204 and CIV-1161): approved the run-shape gate, re
 - All day: the direction is not limited (rule 7).
 
 Why: a peak route's last morning and first afternoon trips reaching into midday are not a five-hour wait. Examples are TTC 945 (every 10 to 9:28, then 14:40) and CAT Harrisburg 14 (five trips a day).
-- A blocked row keeps its headline and tier. It is marked as having no regular service in the headline's window, so no fallback prints the headline as "every N". Route cards already read "no regular service during this period" there.
+- A blocked row keeps its headline and tier. It is marked as having no regular cadence in the headline's window, so no fallback prints the headline as "every N". Route cards already read "Runs irregularly in this period" there (wording from CIV-1238).
 - The tier can only get worse, never `span`. The filter values, map colour and feed-quality check are unchanged.
 - Three-departure middays every 2-3 hours stay as they are (Collier 25 Saturday reads 183).
 - The 8x hole test is unchanged, so clustered timetables (TransLink 620 Saturday) lose their replacement.
@@ -275,7 +292,7 @@ Ryan (Linear CIV-293, 2026-10-17): late means more than 5½ minutes behind the t
 
 ### 2026-10-17 — One-gap rows, no fixed cut-offs, lettered variants
 
-Ryan (Linear CIV-296 and CIV-115, 2026-10-17): a number that is only one gap between a few departures reads "no regular service during this period" ([#954](https://github.com/Civic-Minds/Atlas/issues/954), [#955](https://github.com/Civic-Minds/Atlas/issues/955)); never summarize an agency by a fixed frequency cut-off; lettered variants with no shared street stay separate ([#303](https://github.com/Civic-Minds/Atlas/issues/303)).
+Ryan (Linear CIV-296 and CIV-115, 2026-10-17): a number that is only one gap between a few departures reads "no regular service during this period" (wording superseded 2026-10-31, CIV-1238: "Runs irregularly in this period") ([#954](https://github.com/Civic-Minds/Atlas/issues/954), [#955](https://github.com/Civic-Minds/Atlas/issues/955)); never summarize an agency by a fixed frequency cut-off; lettered variants with no shared street stay separate ([#303](https://github.com/Civic-Minds/Atlas/issues/303)).
 
 ### 2026-10-15 — Frequency tolerances are settled
 

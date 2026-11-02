@@ -110,7 +110,7 @@ export function tileEffectiveHeadwayExpr(period?: PeriodFilter): unknown[] {
     ];
     // Frequency focus step 5a: a route stamped with the stretch selector's filter value (rv_) is
     // judged on it, every direction's worst counting stretch, for each row that is not span and
-    // runs in the period itself; a null value (no regular service) arrives as the sentinel. Routes
+    // runs in the period itself; a null value (no regular cadence) arrives as the sentinel. Routes
     // without rv_ (older releases, routes with no stretch data) keep the rule below.
     const rowRuns = ['any',
       ...[hph, `pch_${period}`].map(key => ['all', ['has', key], ['<', ['get', key], NO_PERIOD_SERVICE_TILE_VALUE]]),

@@ -62,7 +62,8 @@ function Subsection({ title, children }: { title: string; children: ReactNode })
  * The Notices section (CIV-1236, Ryan's approved groups): each group's examples are the app's own notices, read from
  * noticeCopy.ts, with [brackets] where the app fills in a name, date or number.
  */
-const NOTICE_GROUPS: { title: string; text: string; examples: string[] }[] = [
+// onDemand: shown only where on-demand is on (FEATURES.onDemand).
+const NOTICE_GROUPS: { title: string; text: string; examples: string[]; onDemand?: true }[] = [
   {
     title: 'Old and new schedules',
     text: "The agency's schedule has ended, is new and still being checked, or had an error we corrected.",
@@ -86,12 +87,13 @@ const NOTICE_GROUPS: { title: string; text: string; examples: string[] }[] = [
   {
     title: 'Filters',
     text: "The route, or part of it, doesn't meet the frequency filter you picked, or is hidden by your filters.",
-    examples: [selectedRouteOutsideFilterNotice(15, '6–9 AM'), selectedRoutePartMeetsFilterNotice(15)],
+    examples: [selectedRouteOutsideFilterNotice(15, '6–9 AM'), selectedRoutePartMeetsFilterNotice(15, '3–7 PM')],
   },
   {
     title: 'Beta and on-demand service',
     text: 'Agencies still being tested on Atlas beta, and service riders book ahead or that runs by request in a zone.',
     examples: [BETA_ROLLOUT_NOTICE, BOOKING_REQUIRED_NOTICE],
+    onDemand: true,
   },
   {
     title: 'Loading, errors and empty lists',
@@ -116,12 +118,13 @@ const NEAR_MISS_COLUMNS: DataTableColumn<[string, string, string]>[] = [
 export default function AboutDocsPage() {
   // A link into a section (such as the Live pages' "What these terms mean") lands on it: the sections render after the browser's own jump.
   useEffect(() => { const id = window.location.hash.slice(1); if (id) document.getElementById(id)?.scrollIntoView(); }, []);
-  const showBetaFeatures = FEATURES.beta;
   const showLive = FEATURES.live;
   const showHistory = FEATURES.history;
   const showResearch = FEATURES.researchApps;
   const showAgencyPages = FEATURES.agencyPages;
   const showCompare = FEATURES.compareMode;
+  // The checks list skips step 5 (on-demand) where on-demand is off, so later steps renumber.
+  const flexStep = FEATURES.onDemand ? 1 : 0;
 
   return (
     <DocsPageLayout contents={{ title: 'Documentation', items: DOCS_CONTENTS.map(([id, label]) => ({ id, label })) }}>
@@ -140,26 +143,26 @@ export default function AboutDocsPage() {
             <p>It turns published transit schedules into map layers, route summaries, stop-level frequency estimates, and network comparisons.</p>
             <h3 className="font-black text-[var(--text-primary)]">Design principles</h3>
             <ul className="list-disc pl-5 space-y-1">
-              <li><strong className="text-[var(--text-primary)]">One shared data platform:</strong> route, stop, and freshness data are processed into stable outputs for the tools that use them. Additional history and real-time outputs appear only where those features are enabled.</li>
-              <li><strong className="text-[var(--text-primary)]">Honest measurements:</strong> when a period does not contain enough sustained service to support a meaningful frequency claim, Atlas flags that limitation instead of tuning the calculation until it produces a plausible-looking number.</li>
-              {showHistory && <li><strong className="text-[var(--text-primary)]">Preserved history:</strong> historical feeds are treated as dated snapshots. Missing or unusable periods remain unavailable rather than being duplicated or inferred.</li>}
-              <li><strong className="text-[var(--text-primary)]">Stable contracts:</strong> new information is added alongside existing outputs when possible, so a downstream tool does not silently reinterpret previously published data.</li>
+              <li><strong className="text-[var(--text-primary)]">Shared data:</strong> every Atlas tool works from the same route, stop and freshness data. History and real-time data show up only where those features are turned on.</li>
+              <li><strong className="text-[var(--text-primary)]">Honest numbers:</strong> when a period does not have enough consistent service to give a real frequency, Atlas says so instead of adjusting the calculation until it shows a believable number.</li>
+              {showHistory && <li><strong className="text-[var(--text-primary)]">Kept history:</strong> each past schedule is kept as a dated snapshot. A period that is missing or unusable stays empty. Atlas never copies or guesses it from another period.</li>}
+              <li><strong className="text-[var(--text-primary)]">Stable data:</strong> new information is added alongside existing fields, never in place of them, so anything built on published data keeps its meaning.</li>
             </ul>
           </Section>
 
           <Section id="what-atlas-does" title="Capabilities">
             <p>Atlas is more than a map renderer. It is a shared transit-data platform with several layers of work:</p>
             <ul className="list-disc pl-5 space-y-1">
-              <li><strong className="text-[var(--text-primary)]">Network exploration:</strong> search agencies, routes, stops, and nearby service across a large catalogue.</li>
-              <li><strong className="text-[var(--text-primary)]">Frequency analysis:</strong> compare service by day type, time period, route branch, direction, and stop.</li>
+              <li><strong className="text-[var(--text-primary)]">Explore:</strong> search agencies, routes, stops, and nearby service across a large catalogue.</li>
+              <li><strong className="text-[var(--text-primary)]">Frequency:</strong> compare service by day type, time period, route branch, direction, and stop.</li>
               {showCompare && <li><strong className="text-[var(--text-primary)]">Compare:</strong> two maps side by side, each with its own frequency, day and time (desktop and tablet).</li>}
               <li><strong className="text-[var(--text-primary)]">On phones:</strong> a Filters button in the header holds frequency, day, time and modes.</li>
-              <li><strong className="text-[var(--text-primary)]">Map image export:</strong> save the map as an image with a poster layout and a source line.</li>
-              <li><strong className="text-[var(--text-primary)]">Hourly schedule chart{showBetaFeatures ? ' and trip time' : ''}:</strong> each hour shows the slower direction{showBetaFeatures ? '; the full-day view also shows how long the trip takes by hour' : ''}.</li>
+              <li><strong className="text-[var(--text-primary)]">Export:</strong> save the map as an image with a poster layout and a source line.</li>
+              <li><strong className="text-[var(--text-primary)]">Hourly chart:</strong> each hour shows the slower direction{FEATURES.runningTimes ? '; the full-day view also shows how long the trip takes by hour' : ''}.</li>
               <li><strong className="text-[var(--text-primary)]">Data quality:</strong> expose source dates, stale schedules, review states, corrections, geometry repairs, and known limitations.</li>
-              <li><strong className="text-[var(--text-primary)]">Specialized service:</strong> represent on-demand and GTFS-Flex service as zones or virtual stops where a fixed route is the wrong model.</li>
-              <li><strong className="text-[var(--text-primary)]">Research:</strong> {showResearch ? 'an overnight-service view and a frequent-service story, which sit under Research. Beta also adds history comparisons.' : 'research and validation surfaces are documented in the Beta version of this page.'}</li>
-              <li><strong className="text-[var(--text-primary)]">Reusable data infrastructure:</strong> publish stable route, stop, tile, and freshness contracts that other transit tools can consume.</li>
+              {FEATURES.onDemand && <li><strong className="text-[var(--text-primary)]">On-demand:</strong> represent on-demand and GTFS-Flex service as zones or virtual stops where a fixed route is the wrong model.</li>}
+              <li><strong className="text-[var(--text-primary)]">Research:</strong> {showResearch ? `an overnight-service view and a frequent-service story, which sit under Research.${showHistory ? ' Beta also adds history comparisons.' : ''}` : 'research and validation surfaces are documented in the Beta version of this page.'}</li>
+              <li><strong className="text-[var(--text-primary)]">Open data:</strong> publish route, stop, map and freshness data that other transit tools can build on.</li>
             </ul>
             <p>Some surfaces are public, some are in beta, and some remain research or validation tools. The same processed data model supports all of them without making every experimental feature part of the main map.</p>
             {showLive && <p>Live is a separate GTFS-Realtime path: it polls configured agency feeds for vehicle positions, trip updates, and selected observed headways. Coverage is route-specific, may be partial, and is never treated as proof that the scheduled frequency calculation is current.</p>}
@@ -170,7 +173,7 @@ export default function AboutDocsPage() {
             <ul className="list-disc pl-5 space-y-1">
               <li><strong className="text-[var(--text-primary)]">Schedule data</strong> describes what an agency publishes for planned service.</li>
               <li><strong className="text-[var(--text-primary)]">Processed metrics</strong> describe what Atlas derives from that schedule, such as headways, tiers, coverage, and route branches.</li>
-              <li><strong className="text-[var(--text-primary)]">Provenance and quality</strong> describe the source, freshness, review state, and corrections attached to a result.</li>
+              <li><strong className="text-[var(--text-primary)]">Sources and quality</strong> describe where a result comes from, how current it is, whether it is under review, and any corrections made to it.</li>
               {showHistory && <li><strong className="text-[var(--text-primary)]">Historical data</strong> describes documented past schedule periods rather than pretending current data is historical.</li>}
               {showLive && <li><strong className="text-[var(--text-primary)]">Real-time data</strong> describes observed vehicle or adherence information and is never silently mixed with schedule frequency.</li>}
             </ul>
@@ -183,7 +186,7 @@ export default function AboutDocsPage() {
               <li><strong className="text-[var(--text-primary)]">Frequency:</strong> current scheduled cadence, period filters, route variants, stop-level metrics, and map colouring.</li>
               {showHistory && <li><strong className="text-[var(--text-primary)]">History:</strong> selected agencies with usable archived GTFS periods, showing documented service changes without fabricating missing years.</li>}
               {showAgencyPages && <li><strong className="text-[var(--text-primary)]">Agency and area pages:</strong> each agency has a page with a bar showing how many of its routes fall in each weekday-midday frequency band, a route table by mode with AM peak, Midday, PM peak, Evening and Overnight waits, and nearby agencies. The first sentence names the agencies it connects with, meaning agencies with a stop within 150 m of one of its stops, and counts its stops as unique places (stops with the same name within 150 m count once). Area pages do the same for every agency in a city region, such as the Greater Toronto and Hamilton Area.</li>}
-              <li><strong className="text-[var(--text-primary)]">On-demand service:</strong> GTFS-Flex and source-backed service areas represented separately from fixed-route frequency so booking-based service is not misread as a normal route.</li>
+              {FEATURES.onDemand && <li><strong className="text-[var(--text-primary)]">On-demand service:</strong> GTFS-Flex and source-backed service areas represented separately from fixed-route frequency so booking-based service is not misread as a normal route.</li>}
               {showResearch && <li><strong className="text-[var(--text-primary)]">Research:</strong> two focused views, overnight service and frequent service, built on source-reviewed data before anything becomes a general map feature.</li>}
             </ul>
             {showHistory && <p>The History eligibility rule requires at least 10 distinct snapshot years. Historical route identity is matched by exact route short name by default, with explicit aliases for documented redesigns.</p>}
@@ -217,7 +220,7 @@ export default function AboutDocsPage() {
             <Subsection title="Schedule selection">
               <p>Feeds commonly contain past, current, and future service at the same time. Atlas evaluates the feed’s calendar dates around the refresh date and selects the schedule period that is active for the map.</p>
               <p>It then separates departures by day type—weekday, Saturday, and Sunday—and by named time period. This prevents an expired schedule or a future seasonal schedule from being treated as today’s service. For some agencies, trains that run only on a few special dates, such as game-day trains, are left out of the typical day.</p>
-              <p>After publication, the agency’s source date and freshness state remain visible in Atlas so users can see when the underlying schedule was last checked.</p>
+              <p>After publication, the agency’s source date and freshness state remain visible in Atlas.</p>
             </Subsection>
             <Subsection title="Routes, branches, and shapes">
               <p>A public route name can represent several patterns: branches, short turns, directions, destinations, or trips that only operate during part of the day. Atlas keeps those patterns distinct long enough to calculate meaningful service, then presents them through route and branch summaries.</p>
@@ -228,7 +231,7 @@ export default function AboutDocsPage() {
 
           <Section id="frequency" title="Frequency">
             <p>Atlas calculates scheduled headways: the time between consecutive departures. It reads departure times from <code className="text-[var(--text-primary)]">stop_times.txt</code> and expands valid frequency-based trips from <code className="text-[var(--text-primary)]">frequencies.txt</code>; it does not treat that optional table as a single route-level answer.</p>
-            <p>Departures are grouped by route, direction, headsign, physical shape, route variant, day, and service period, using each trip’s departure from its first stop. Stop-level cadence is calculated separately. For a group of departures, Atlas sorts the consecutive gaps and uses the median gap as the typical wait.</p>
+            <p>Departures are grouped by route, direction, day and service period. A route’s frequency is read at the middle stop of the stretch its regular trips all share, counting every trip that stops there. Stop-level cadence is calculated separately. For a group of departures, Atlas sorts the consecutive gaps and uses the median gap as the typical wait. On route cards, when a rider arriving at a random time would wait at least 10 min longer than the median, the card shows that wait instead. It is read at midday, or else the PM peak, or else all day, and only where the route runs through that time. The frequency filter and map colours still use the median.</p>
             <p>One odd gap does not change the median, so one unusually long gap does not make otherwise regular service {headwayEvery(10)} look like service {headwayEvery(30)}. The exception is service where short and long gaps alternate (for example gaps of 60, 120, 60 min): the median would show only the short gap and halve the real wait, so Atlas reads the longer wait instead.</p>
             <p>Period calculations are kept inside their own time windows. Atlas does not silently borrow an all-day average to fill a period with sparse or missing service.</p>
             <p>Atlas keeps separate projections for display cadence, filter cadence, branch cadence, shared-section cadence, and stop-specific cadence. A stop or shared section can have a different value from the whole route because it may combine branches or cover only part of the route.</p>
@@ -240,11 +243,11 @@ export default function AboutDocsPage() {
             </Subsection>
             <Subsection title="Directions, branches, and route qualification">
               <p>Atlas calculates each scheduled direction separately before deciding whether a route qualifies. It uses the feed’s <code className="text-xs text-[var(--text-primary)]">direction_id</code> when present. If that field is missing, trips fall into the default direction group, Atlas records a warning, and the resulting headway may be understated because opposite directions may have been merged.</p>
-              <p>Within a direction, Atlas also separates different headsigns and physical shapes so branches and short turns do not get mixed into one artificially frequent series. Surface routes keep the longest meaningful shape groups for analysis, with a trip-volume fallback when length alone would discard most of the service; rail-like routes use their longest available shape. These are analysis choices, not claims that the feed’s direction labels are always correct.</p>
-              <p>The frequency filter and the map colours are direction-aware. For a period or all-day threshold, every direction must meet the threshold, and the worst direction decides, so a route does not pass solely because one direction is frequent while the other is materially slower. The all-day value is each direction’s midday cadence, or its whole-day cadence when it has no midday service. A route with a direction that has no midday service at all, such as a rush-hour-only or few-trips direction, does not pass any all-day threshold; it still appears for the time periods in which every direction runs. Occasional extra trips, such as a short turn or an extension with only a few runs, are set aside when the same direction has a consistent main pattern, and a direction is never dropped from the check. For example, a direction {headwayEvery(10)} paired with one {headwayEvery(30)} does not pass ≤10 min; it can pass ≤30 min if the other route-level checks also pass. The separate “All” service view is broader by design: it can show service in only one direction or service that has not qualified for a numeric tier. A route/day with a direction that has no sustained, real-tier pattern can also be marked irregular as a whole and hidden by the default irregular-service filter.</p>
+              <p>Within a direction, Atlas also separates different headsigns and physical shapes so branches and short turns do not get mixed into one artificially frequent series. One exception: when two patterns take turns running trips to the same end of the line, and neither runs consistently on its own but together they do, Atlas reads them as one service on the stops they share. Surface routes keep the longest meaningful shape groups for analysis, with a trip-volume fallback when length alone would discard most of the service; rail-like routes use their longest available shape. These are analysis choices, not claims that the feed’s direction labels are always correct.</p>
+              <p>The frequency filter and the map colours are direction-aware. For a period or all-day threshold, every direction must meet the threshold, and the worst direction decides, so a route does not pass solely because one direction is frequent while the other is materially slower. The all-day value is each direction’s midday cadence, or its whole-day cadence when it has no midday service. A route with a direction that has no midday service at all, such as a rush-hour-only or few-trips direction, does not pass any all-day threshold; it still appears for the time periods in which every direction runs. A rush-hour-only route with consistent trips is rated by its own spacing, so it can pass the filter during its rush hour. Occasional extra trips, such as a short turn or an extension with only a few runs, are set aside when the same direction has a consistent main pattern, and a direction is never dropped from the check. For example, a direction {headwayEvery(10)} paired with one {headwayEvery(30)} does not pass ≤10 min; it can pass ≤30 min if the other route-level checks also pass. The separate “All” service view is broader by design: it can show service in only one direction or service that has not qualified for a numeric tier. A route/day with a direction that has no sustained, real-tier pattern can also be marked occasional as a whole and hidden by the default occasional-service filter.</p>
             </Subsection>
             <h3 className="font-black text-[var(--text-primary)]">Band qualification and tolerance</h3>
-            <p>This band test decides whether a pattern counts as consistent service, as opposed to infrequent or irregular service. Atlas tests the tightest band first and requires enough departures to cover the analyzed span at that band. For a target of <code className="text-xs text-[var(--text-primary)]">T</code> minutes, the minimum trip count is based on <code className="text-xs text-[var(--text-primary)]">ceil(span ÷ T)</code>.</p>
+            <p>This band test decides whether a pattern counts as consistent service, as opposed to infrequent or occasional service. Atlas tests the tightest band first and requires enough departures to cover the analyzed span at that band. For a target of <code className="text-xs text-[var(--text-primary)]">T</code> minutes, the minimum trip count is based on <code className="text-xs text-[var(--text-primary)]">ceil(span ÷ T)</code>.</p>
             <p>A gap at or below <code className="text-xs text-[var(--text-primary)]">T</code> passes directly. A slightly longer internal gap can count as a near miss when it is no more than <code className="text-xs text-[var(--text-primary)]">T + max(5 minutes, 15% of T)</code>. The number of allowed near misses is tier-specific and capped at three:</p>
             <div className="overflow-x-auto">
               <DataTable
@@ -258,7 +261,7 @@ export default function AboutDocsPage() {
             <p>These allowances handle ordinary schedule rounding and small deviations without turning a genuinely uneven route into a frequent one. A large gap is still a failure even if the median looks good, and the final tier is the fastest band that survives the full check. Rail uses the same tolerance logic with 5, 8, 10, 15, 30 and 60 min bands, and is tested on midday service from 9:30 AM–2:30 PM; the 5 and 8 min bands are not separate options in the main map filter.</p>
             <div className="rounded-xl border border-[var(--border-primary)] bg-[var(--bg-btn)] p-3">
               <p className="font-bold text-[var(--text-primary)]">Frequency bands</p>
-              <p className="mt-1">The main Frequency control currently exposes service at ≤10, ≤15, ≤20, ≤30 and ≤60 min. The filter and the line colour use the route’s worst-direction cadence, so a route whose slowest direction runs less often than {headwayEvery(60)} appears as infrequent. Irregular service is hidden by default.</p>
+              <p className="mt-1">The main Frequency control currently exposes service at ≤10, ≤15, ≤20, ≤30 and ≤60 min. The filter and the line colour use the route’s worst-direction cadence, so a route whose slowest direction runs less often than {headwayEvery(60)} appears as infrequent. Occasional service is hidden by default.</p>
             </div>
             <Subsection title="Sustained service and long gaps">
               <p>A median alone can hide an important gap. For example, departures might be {headwayEvery(30)} during a period except for one 180-min gap. Atlas keeps additional coverage and longest-gap signals so a route can be marked as uneven instead of presenting the median as the whole story.</p>
@@ -268,14 +271,14 @@ export default function AboutDocsPage() {
           </Section>
 
           <Section id="service-classification" title="Service">
-            <p>Frequency and regularity are separate properties. A route can run {headwayEvery(30)} and still be irregular if it only operates for a short burst or has too few repeated departures to establish a sustained pattern.</p>
+            <p>Frequency and regularity are separate properties. A route can run {headwayEvery(30)} and still be occasional if it only operates for a short burst or has too few repeated departures to establish a sustained pattern.</p>
             <dl className="space-y-2">
               <div><dt className="font-bold text-[var(--text-primary)]">Regular</dt><dd>Service covers the normal analysis window. It may be frequent or infrequent.</dd></div>
-              <div><dt className="font-bold text-[var(--text-primary)]">Part-time</dt><dd>Predictable service operates during part of the day and has enough repeated departures for a meaningful frequency estimate.</dd></div>
-              <div><dt className="font-bold text-[var(--text-primary)]">Irregular</dt><dd>Exceptional, very short, one-sided, peak-only, or otherwise unsustained service that should not be presented as a normal route cadence.</dd></div>
+              <div><dt className="font-bold text-[var(--text-primary)]">Part-time</dt><dd>Runs only part of the day, such as rush hour or evenings, with enough trips to give a frequency when it runs.</dd></div>
+              <div><dt className="font-bold text-[var(--text-primary)]">Occasional</dt><dd>A route that runs only now and then, such as school runs, routes with a few trips a day, or rush-hour-only service with no consistent gap.</dd></div>
             </dl>
-            <p>Two filters, both on by default, decide which of these routes the map shows. Hide one-off routes hides irregular service: school runs, routes with only a few trips a day, and on-demand shuttles. Hide part-time routes hides part-time service: routes that only run at rush hour, in the evening, or on some days. A part-time route you choose to show is still judged by the frequency filter, on the selected period’s frequency. Periods outside its operation remain empty rather than inheriting an all-day value.</p>
-            <p>Routes with only a few trips a day are labelled “limited” instead of given a frequency, and route cards name each pattern, such as “Rush hour only”. Each filter links to a list of the routes it hides.</p>
+            <p>Two filters, both on by default, decide which of these routes the map shows. Hide occasional routes hides occasional service: school runs, routes with only a few trips a day, and on-demand shuttles. Hide part-time routes hides part-time service: routes that only run at rush hour, in the evening, or on some days. A part-time route you choose to show is still judged by the frequency filter, on the selected period’s frequency. Periods outside its operation remain empty rather than inheriting an all-day value.</p>
+            <p>Routes with only a few trips in a period read “Irregular” instead of a frequency, and route cards name each pattern, such as “Rush hour only”. Each filter links to a list of the routes it hides.</p>
           </Section>
 
           <Section id="map-architecture" title="Mapping">
@@ -291,7 +294,7 @@ export default function AboutDocsPage() {
               <p>Atlas exposes several legitimate views of service:</p>
               <ul className="list-disc pl-5 space-y-1">
                 <li><strong className="text-[var(--text-primary)]">Display cadence</strong> describes the route or destination a person is looking at.</li>
-                <li><strong className="text-[var(--text-primary)]">Filter cadence</strong> is the worst direction’s cadence. It decides whether a route qualifies for a selected frequency threshold and sets the line colour.</li>
+                <li><strong className="text-[var(--text-primary)]">Filter cadence</strong> is the worst direction’s cadence. It decides whether a route qualifies for a selected frequency threshold and sets the line colour and the dot colour in the route chooser. Route lists, agency and area pages, Compare and search show the filter’s value, so a number in a list always passes the filter at that number. Where a route doesn’t pass the filter’s check in a period, they show “Irregular” instead of a number.</li>
                 <li><strong className="text-[var(--text-primary)]">Stop cadence</strong> describes service at a specific boarding stop.</li>
                 <li><strong className="text-[var(--text-primary)]">Shared-section cadence</strong> describes the combined service where branches overlap.</li>
               </ul>
@@ -351,17 +354,17 @@ export default function AboutDocsPage() {
             <p>Quality decisions are not meant to disappear behind a clean-looking map. Atlas surfaces user-relevant changes in the interface:</p>
             <ul className="list-disc pl-5 space-y-1">
               <li><strong className="text-[var(--text-primary)]">Corrected data:</strong> agency and route cards can say “We corrected this data,” with an explanation of the known feed problem and technical issue links when available.</li>
-              <li><strong className="text-[var(--text-primary)]">Outdated schedules:</strong> route cards say when the latest schedule has ended (with the date) and that Atlas hasn’t found a newer feed it can verify. For manually maintained agencies, the card says it is updated when a new file is supplied. The detail panel shows the feed’s check history, or the last successful refresh when no check history is available.</li>
+              <li><strong className="text-[var(--text-primary)]">Outdated schedules:</strong> route cards say when the latest schedule has ended (with the date) and that Atlas hasn’t found a newer feed it can verify. For manually maintained agencies, the card says it is updated when a new file is supplied. The detail panel shows the feed’s check history.</li>
               <li><strong className="text-[var(--text-primary)]">New schedule data:</strong> for agencies whose past feeds have repeatedly had problems, a newly published feed is marked “New schedule data is being verified” until Atlas checks it for missing service and quality problems.</li>
-              {showBetaFeatures && <li><strong className="text-[var(--text-primary)]">Feed quality:</strong> beta quality controls distinguish Healthy, Review, Degraded, and Unusable feeds. The reasons can include errors reading the feed, validation warnings, adjusted shapes, route-versus-stop frequency differences, expired schedules, or no usable route output, along with the date checked.</li>}
+              {FEATURES.feedQuality && <li><strong className="text-[var(--text-primary)]">Feed quality:</strong> beta quality controls distinguish Healthy, Review, Degraded, and Unusable feeds. The reasons can include errors reading the feed, validation warnings, adjusted shapes, route-versus-stop frequency differences, expired schedules, or no usable route output.</li>}
               <li><strong className="text-[var(--text-primary)]">Route-level warnings:</strong> a route can carry a separate warning when its displayed geometry needed adjustment or its service data needs interpretation.</li>
             </ul>
             <p>Not every internal exclusion becomes a separate banner. Clearly unusable rows can be removed during processing without overwhelming the map with implementation details, while known user-facing corrections, stale schedules, review states, and material quality problems remain labelled where they affect interpretation.</p>
             <h3 className="font-black text-[var(--text-primary)]">How outdated data is flagged</h3>
-            <p>Atlas determines schedule freshness from the service dates inside the feed, not only from the date the file was downloaded. It compares the latest usable date in <code className="text-xs text-[var(--text-primary)]">feed_info.txt</code>, <code className="text-xs text-[var(--text-primary)]">calendar.txt</code>, and non-removal entries in <code className="text-xs text-[var(--text-primary)]">calendar_dates.txt</code> with the current date.</p>
-            <p>During each refresh, Atlas records the feed’s expiry or version, the date it was last successfully processed, and the date it was most recently checked. If every available feed has expired, a download fails, or validation fails, Atlas marks the agency as stale and retains the last good published artifact instead of replacing it with broken or empty output.</p>
-            <p>This also applies when a source publishes a newer GTFS file that is malformed or fails Atlas’s processing checks: the newer file is not promoted simply because it is newer. The active feed identity and last successful refresh remain unchanged; Atlas records the reason for the failure and tries again at the next refresh.</p>
-            <p>The interface then identifies that schedule as potentially outdated and shows the known end date, last successful refresh, and subsequent check history when available. For agencies whose past feeds have repeatedly had problems, a newer feed is marked as under review while it is checked for missing service and other quality problems. A feed can therefore be visible, stale, under review, degraded, or unusable as separate states rather than being silently treated as current.</p>
+            <p>Atlas determines schedule freshness from the service dates inside the feed, not only from the date the file was downloaded. It compares the latest usable date in <code className="text-xs text-[var(--text-primary)]">feed_info.txt</code>, <code className="text-xs text-[var(--text-primary)]">calendar.txt</code>, and non-removal entries in <code className="text-xs text-[var(--text-primary)]">calendar_dates.txt</code> with the current date, and an agency with several feeds uses the earliest of its feeds’ dates. A schedule also counts as ended when the calendars that carry most of its service have ended, even if a few rows run on.</p>
+            <p>During each refresh, Atlas records the feed’s expiry or version. If every available feed has expired, a download fails, or validation fails, Atlas marks the agency as stale and retains the last good published artifact instead of replacing it with broken or empty output.</p>
+            <p>This also applies when a source publishes a newer GTFS file that is malformed or fails Atlas’s processing checks: the newer file is not promoted simply because it is newer. The active feed identity and last successful refresh remain unchanged; Atlas records the reason for the failure and tries again at the next refresh. If a source’s file is empty or unreadable, Atlas tries the agency’s next source for that feed.</p>
+            <p>The interface then identifies that schedule as potentially outdated and shows the known end date and the check history when available. For agencies whose past feeds have repeatedly had problems, a newer feed is marked as under review while it is checked for missing service and other quality problems. A feed can therefore be visible, stale, under review, degraded, or unusable as separate states rather than being silently treated as current.</p>
             <p>Atlas is schedule analysis, not real-time observation. It does not know whether a vehicle is delayed, cancelled, short-turned, crowded, or accessible unless an explicitly labelled feature provides that information.</p>
             <p>Source feeds can be delayed, incomplete, discontinued, or incorrect. For live alerts, accessibility information, trip planning, and emergency instructions, use the relevant transit agency’s official resources.</p>
           </Section>
@@ -383,16 +386,18 @@ export default function AboutDocsPage() {
             <h3 className="font-black text-[var(--text-primary)]">4. Corrections and exception audits</h3>
             <p>Known feed problems are corrected only with a narrow, documented rule. Separate audits review agency-specific overrides, hidden routes, geometry repairs, removed non-revenue patterns, placeholder destinations, and other exceptions so a local fix does not become an undocumented global assumption.</p>
             <p>Overrides are rechecked when the upstream feed changes. If a new feed no longer contains a route that was excluded, Atlas flags that exclusion as potentially resolved, and correction notes tied to the old feed are cleared. If the issue remains, the maintainer must re-verify it against the new source rather than assuming that yesterday’s correction still applies.</p>
+            {FEATURES.onDemand && <>
             <h3 className="font-black text-[var(--text-primary)]">5. GTFS-Flex and on-demand checks</h3>
             <p>Flex service is validated separately because its data model is different from fixed-route service. Atlas checks the required Flex files, location groups, group-to-stop links, service areas, virtual stops, booking rules, and Flex stop-time rows. An unlinked location group or a feed with no usable Flex trips fails review rather than becoming an empty-looking service zone.</p>
             <p>Atlas keeps the result in a separate on-demand view rather than calculating ordinary route frequency from it. Where a feed is incomplete or unavailable, Atlas uses an official geometry source only when the relationship is documented and visible. A missing polygon is not silently replaced with an invented boundary.</p>
-            <h3 className="font-black text-[var(--text-primary)]">6. Independent source review</h3>
+            </>}
+            <h3 className="font-black text-[var(--text-primary)]">{5 + flexStep}. Independent source review</h3>
             <p>Some facts cannot be established from GTFS alone. Atlas separately reviews official agency pages, service-area maps, system maps, and agency guides. Each review records what source was checked, what claim it supports, and whether the source is current enough to use.</p>
-            <p>This is especially important for on-demand coverage and system maps. A feed can prove that a route exists, but it may not prove that a service area is still active or that a map is the official current one. Those claims stay provisional or are excluded when the evidence is not strong enough.</p>
-            <h3 className="font-black text-[var(--text-primary)]">7. Artifact and interface checks</h3>
+            <p>This is especially important for {FEATURES.onDemand ? 'on-demand coverage and ' : ''}system maps. A feed can prove that a route exists, but it may not prove that a service area is still active or that a map is the official current one. Those claims stay provisional or are excluded when the evidence is not strong enough.</p>
+            <h3 className="font-black text-[var(--text-primary)]">{6 + flexStep}. Artifact and interface checks</h3>
             <p>Finally, Atlas checks the published output: route artifacts, stop indexes, vector tiles, metadata, map filters, route cards, links, and deployment modes. The goal is to catch disagreements between the processed data and what a person can actually see or select in the application.</p>
             <p>Published artifacts are checked for coverage and shape integrity, not just whether they uploaded successfully. The browser is checked against those artifacts because a correct pipeline result can still be presented incorrectly by a stale index, a missing tile, a mismatched route key, or a filter that uses a different definition than the route card.</p>
-            <h3 className="font-black text-[var(--text-primary)]">8. Manual review and feedback</h3>
+            <h3 className="font-black text-[var(--text-primary)]">{7 + flexStep}. Manual review and feedback</h3>
             <p>Automated checks are supplemented by manual spot checks. When someone familiar with a city’s network notices a route, branch, shape, schedule, or frequency that looks wrong, Atlas compares the result against the source feed and the agency’s published information rather than assuming the automated output is correct.</p>
             <p>Atlas also includes a Feedback link and a “Report a problem” form on route, stop, and agency cards, which opens a pre-filled email. Reports can identify problems with routes, branches, names, frequencies, schedules, shapes, stops, filters, live information, or stale data, and the route report can include the loaded metric context needed to reproduce the result.</p>
             <p>A report is evidence for review, not an automatic correction. The issue is reproduced against the relevant feed and processing stage, then the response may be a code fix, a feed-specific transform, a quality notice, a source update, or a decision to leave the result unchanged when the source supports it.</p>
@@ -410,7 +415,7 @@ export default function AboutDocsPage() {
 
           <Section id="notices" title="Notices">
             <p>Notices appear on route, stop and agency cards when something about the schedule needs a word of explanation. They fall into these groups.</p>
-            {NOTICE_GROUPS.map(group => (
+            {NOTICE_GROUPS.filter(group => FEATURES.onDemand || !group.onDemand).map(group => (
               <Subsection key={group.title} title={group.title}>
                 <p>{group.text}</p>
                 <ul className="list-disc pl-5 space-y-1">
@@ -425,16 +430,17 @@ export default function AboutDocsPage() {
             <p><strong className="text-[var(--text-primary)]">GTFS-Flex:</strong> GTFS extensions for demand-responsive service, including service areas, location groups, virtual stops, and booking rules.</p>
             <p><strong className="text-[var(--text-primary)]">Headway:</strong> The time between one scheduled departure and the next. For a rider who just missed a bus, it is roughly the wait for the next one.</p>
             <p><strong className="text-[var(--text-primary)]">Frequency:</strong> How often a route runs. Atlas shows what the schedule promises, not what happened on the street.</p>
-            <p><strong className="text-[var(--text-primary)]">“Every N min”:</strong> The time between trips in the selected period. A range such as “every 8–25 min” runs from the part of the route its regular trips all share to its least frequent branch.</p>
+            <p><strong className="text-[var(--text-primary)]">“Every N min”:</strong> The time between trips in the selected period. A range such as “every 8–25 min” means your wait is between the two: on a card it’s one row’s waits, and in a list it runs from the shared stretch to the least frequent branch.</p>
             <p><strong className="text-[var(--text-primary)]">Frequency tier:</strong> A broad band, such as ≤10, ≤15, ≤20, ≤30 or ≤60 min, used to colour and filter routes on the map. The filter and the legend show it as “≤10 min”.</p>
             <p><strong className="text-[var(--text-primary)]">Route rating:</strong> A route’s line colour and filter result come from its slowest direction. Within each direction, the part its regular trips all share and each branch are checked on their own, and the slowest one counts.</p>
             <p><strong className="text-[var(--text-primary)]">Service period:</strong> A named time window: {PERIOD_LABELS.amPeak} (6–9 AM), {PERIOD_LABELS.midday} (9 AM–3 PM), {PERIOD_LABELS.pmPeak} (3–7 PM), {PERIOD_LABELS.evening} (7–11 PM), {PERIOD_LABELS.late} (11 PM–2 AM), or {PERIOD_LABELS.overnight} (2–6 AM). Each period is measured on its own. A quiet evening is not hidden by a busy midday.</p>
             <p><strong className="text-[var(--text-primary)]">Branch:</strong> One of several paths under one route number, such as trips that split to different destinations or turn back early. The route card lists each one with its own frequency.</p>
-            <p><strong className="text-[var(--text-primary)]">Shared stretch:</strong> The part of a route where its branches run together, and riders there get every branch’s trips. The card shows it as “Shared stretch”, or “Combined” when the value is worked out from the branches’ own schedules. It never makes the whole route pass the filter.</p>
-            <p><strong className="text-[var(--text-primary)]">Limited:</strong> Shown when a route runs during the chosen time but not often or regularly enough to give a frequency.</p>
-            <p><strong className="text-[var(--text-primary)]">Service class:</strong> The operating pattern assigned to a route or pattern: regular, part-time, or irregular.</p>
-            <p><strong className="text-[var(--text-primary)]">Sustained service:</strong> Service whose gaps stay within a small allowance across the whole time measured, rather than only looking frequent in a short burst.</p>
-            <p><strong className="text-[var(--text-primary)]">Uneven service:</strong> Service that runs all through the selected period, but with gaps that vary. The card names the longest gap.</p>
+            <p><strong className="text-[var(--text-primary)]">Shared stretch:</strong> The part of a route where its branches run together, and riders there get every branch’s trips. The card shows it as “Shared stretch”. It never makes the whole route pass the filter.</p>
+            <p><strong className="text-[var(--text-primary)]">Irregular:</strong> Shown for a time period when a route runs but its trips don’t come at a consistent gap, so there is no frequency to give. Route cards say “Runs irregularly in this period”; tables and lists say “Irregular”.</p>
+            <p><strong className="text-[var(--text-primary)]">Service class:</strong> The kind of service a route runs: regular, part-time or occasional.</p>
+            <p><strong className="text-[var(--text-primary)]">Occasional:</strong> A route that runs only now and then, such as school runs, routes with a few trips a day, or rush-hour-only service with no consistent gap. “Hide occasional routes” hides them.</p>
+            <p><strong className="text-[var(--text-primary)]">Consistent service:</strong> Service whose gaps stay within a small allowance across the whole time period, not only in a short burst.</p>
+            <p><strong className="text-[var(--text-primary)]">Uneven service:</strong> Service that runs through the whole time period, but with gaps that vary. The card names the longest gap.</p>
             {FEATURES.onDemand && <p><strong className="text-[var(--text-primary)]">On-demand zone:</strong> An area served by booked rides instead of a fixed route. It is shown as an area on the map and never given a frequency.</p>}
             <p><strong className="text-[var(--text-primary)]">Provenance:</strong> The source, schedule period, freshness state, review status, and correction history attached to an Atlas result.</p>
             <p><strong className="text-[var(--text-primary)]">PMTiles:</strong> A single archive format that lets the map request only the vector-tile regions it needs.</p>

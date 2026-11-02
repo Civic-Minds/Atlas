@@ -1,6 +1,13 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { routeCardNotices, type RouteCardNoticeInput } from '../routeCardNotices';
 import { formatPeriodRangeLong } from '../../../shared/config';
+import { noServiceInPeriodText } from '../../content/noticeCopy';
+
+// N123 reads the map's shared-stretch ranges from the agency's features: a test that passes any says part of the route qualifies.
+vi.mock('../routeCardTrunk', async importOriginal => ({
+  ...(await importOriginal<typeof import('../routeCardTrunk')>()),
+  routePartMeetsFilter: (agencyFeatures: unknown) => (agencyFeatures != null ? [0] : []),
+}));
 
 // A card with service all period and no rows of note: only the inputs a test sets decide what shows.
 const model = {
@@ -40,7 +47,7 @@ describe('routeCardNotices (CIV-1200)', () => {
   it('notes a direction with no rows in the period on the rows (place 2), not on the Night card', () => {
     const groups = [{ dirId: 1, boundLabel: 'Northbound', hasVisibleRows: false, onlySharedPasses: false, rows: [] }];
     const withSections = { ...model, groups, showDirectionSections: true } as unknown as RouteCardNoticeInput['model'];
-    expect(routeCardNotices({ ...base, model: withSections }).directions).toEqual([{ dirId: 1, kind: 'no-service', text: 'No midday service.', place: 2 }]);
+    expect(routeCardNotices({ ...base, model: withSections }).directions).toEqual([{ dirId: 1, kind: 'no-service', text: noServiceInPeriodText(formatPeriodRangeLong(9, 15)), place: 2 }]);
     expect(routeCardNotices({ ...base, model: withSections, nightView: true }).directions).toEqual([]);
   });
 
@@ -55,7 +62,9 @@ describe('routeCardNotices (CIV-1200)', () => {
     const plain = (text: string | undefined) => text?.replaceAll('\u2060', '').replace(/[\u00a0\u202f]/g, ' ');
     expect(plain(n.filter?.text)).toContain(named);
     expect(plain(n.filter?.text)).not.toContain(formatPeriodRangeLong(25, 26));
-    expect(plain(n.period?.text)).toContain(named);
+    // CIV-1251: the period line is now the same sentence, so it shows once.
+    expect(n.period).toBeNull();
+    expect(n.dropped).toContainEqual({ code: 'N9', why: 'the filter line says the same' });
   });
 
   it('#1186: never names another direction\'s hours; with none on the chart in the period the filter line stays (MiWay 49 midday)', () => {
@@ -83,12 +92,29 @@ describe('routeCardNotices (CIV-1200)', () => {
     const none = { ...m, hasPartialPeriodService: false, activeRangeDirections: [daytime] } as unknown as RouteCardNoticeInput['model'];
     expect(routeCardNotices({ ...base, directions: [daytime], model: none, period: 'overnight', maxHeadway: Infinity, selectedRouteOutOfFilter: true }).filter?.code).toBe('N11');
   });
+
+  it('#1277: a route with no rows but trips in the period says when, not "no scheduled trips" (TTC 110 Sunday AM)', () => {
+    // First trip 7:52: a direction carries an AM value, so the period check passes, but the route reads as not running.
+    const islington = { headsign: 'Islington', departuresByHour: { 7: 1, 8: 2, 9: 2 }, headwayByHour: { 7: 15, 8: 30, 9: 30 }, maxGapByHour: { 7: 30, 8: 30, 9: 30 } } as any;
+    const m = { ...model, doesNotRun: true, hasPeriodService: true, hasPartialPeriodService: false, activeRangeDirections: [islington] } as unknown as RouteCardNoticeInput['model'];
+    const n = routeCardNotices({ ...base, directions: [islington], model: m, period: 'amPeak', maxHeadway: Infinity, selectedRouteOutOfFilter: true });
+    const plain = (text: string | undefined) => text?.replaceAll('⁠', '').replace(/[  ]/g, ' ');
+    expect(n.filter).toBeNull();
+    expect(n.period?.code).toBe('N9');
+    expect(plain(n.period?.text)).toContain(formatPeriodRangeLong(7, 9));
+    expect(plain(n.period?.text)).not.toContain('no scheduled trips');
+    // With no trips inside 6-9 AM the line stays.
+    const later = { headsign: 'Islington', departuresByHour: { 10: 2 }, headwayByHour: { 10: 30 }, maxGapByHour: { 10: 30 } } as any;
+    const none = { ...m, activeRangeDirections: [later] } as unknown as RouteCardNoticeInput['model'];
+    expect(routeCardNotices({ ...base, directions: [later], model: none, period: 'amPeak', maxHeadway: Infinity, selectedRouteOutOfFilter: true }).filter?.code).toBe('N11');
+  });
 });
 
 // A card whose rows read `rows` (headway, and the words beside it), for the "each fact once" rules (CIV-1202).
-function withRows(rows: Array<{ headway: number | null; label?: string; limited?: boolean }>, extra: Record<string, unknown> = {}) {
+function withRows(rows: Array<{ headway: number | null; label?: string; limited?: boolean; dimmed?: boolean; edge?: string; directionValue?: number }>, extra: Record<string, unknown> = {}) {
   const cardRows = rows.map(r => ({
-    display: () => ({ value: { headway: r.headway, headwayLabel: r.label, rowNoRegular: false, isLimited: !!r.limited }, limitedLabel: undefined }),
+    feature: r.directionValue != null ? { directionFilterHeadwayByPeriod: { evening: r.directionValue } } : undefined,
+    display: () => ({ value: { headway: r.headway, headwayLabel: r.label ?? r.edge, edgeText: r.edge, dimmed: !!r.dimmed, rowNoRegular: false, isLimited: !!r.limited }, limitedLabel: undefined }),
   }));
   return { ...model, groups: [{ dirId: 0, shared: null, rows: cardRows, hasVisibleRows: true, onlySharedPasses: false }], ...extra } as unknown as RouteCardNoticeInput['model'];
 }
@@ -116,14 +142,14 @@ describe('each fact once (CIV-1202)', () => {
     expect(n.dropped).toEqual([{ code: 'N8', why: 'the filter line says the same' }]);
   });
 
-  it('#1226: never says "No frequency is shown" beside a row that shows one', () => {
+  it('#1226, CIV-1251: the line says only when the route runs, with or without a number on the rows', () => {
     // Trips from 10 AM to noon only, inside midday (9 AM–3 PM).
     const directions = [{ headsign: 'A', departuresByHour: { 10: 3, 11: 3 } } as any];
     const partial = (rows: Parameters<typeof withRows>[0]) => withRows(rows, { hasPeriodService: false, hasPartialPeriodService: true });
     const plain = routeCardNotices({ ...base, directions, model: partial([]) });
-    expect(plain.period?.text).toMatch(/^This route runs only from .* in this period\. No frequency is shown\.$/);
+    expect(plain.period?.text).toMatch(/^This route runs only from [^.]*\.$/);
     const shown = routeCardNotices({ ...base, directions, model: partial([{ headway: 12 }]) });
-    expect(shown.period?.text).toMatch(/^This route runs only from .* in this period\.$/);
+    expect(shown.period?.text).toBe(plain.period?.text);
     // No number on the rows, but a row gives the hours: the line would repeat it.
     const hours = routeCardNotices({ ...base, directions, model: partial([{ headway: null, limited: true, label: 'from 10:04 AM' }]) });
     expect([hours.period, hours.dropped]).toEqual([null, [{ code: 'N9', why: 'every row gives its hours' }]]);
@@ -148,3 +174,42 @@ describe('each fact once (CIV-1202)', () => {
     expect(unexplained.filter?.code).toBe('N12');
   });
 });
+
+describe('CIV-1241: the part-route line and a row\'s until or from time say the same thing', () => {
+  const partMeets = (rows: Parameters<typeof withRows>[0]) =>
+    routeCardNotices({ ...base, model: withRows(rows), selectedRouteOutOfFilter: true, maxHeadway: 60, period: 'evening', agencyFeatures: [] });
+
+  it('hides "Only part of this route runs …" when every row that falls short names its time (OC Transpo 11 evening)', () => {
+    // The route's value dims both rows; only the direction every 102 falls short.
+    const n = partMeets([{ headway: 26, dimmed: true, directionValue: 26 }, { headway: 30, dimmed: true, directionValue: 102, edge: 'every 30 min until 9:18 PM' }]);
+    expect(n.filter).toBeNull();
+    expect(n.dropped).toEqual([{ code: 'N123', why: 'every row that falls short gives its until or from time' }]);
+  });
+
+  it('keeps it while a row that falls short has no time of its own (AC Transit 22 Sunday midday)', () => {
+    expect(partMeets([{ headway: 30, dimmed: true, directionValue: 30 }, { headway: 30, dimmed: true, directionValue: 168 }]).filter?.code).toBe('N123');
+    expect(partMeets([{ headway: 30, dimmed: true, edge: 'every 30 min until 9:18 PM' }, { headway: 104, dimmed: true }]).filter?.code).toBe('N123');
+    // A gap is not a time: the line stays.
+    expect(partMeets([{ headway: 15, dimmed: true, edge: 'every 15 min, with a 30 min gap' }]).filter?.code).toBe('N123');
+  });
+});
+
+describe('CIV-1251: the runs-only line shows once', () => {
+  it('N9 beside N13, which opens with the same sentence, is left out (TTC 31 weekday overnight)', () => {
+    const night = { headsign: 'A', headwayByHour: { 29: 20 }, departuresByHour: { 29: 3 } } as any;
+    const partial = { ...model, hasPeriodService: false, hasPartialPeriodService: true, activeRangeDirections: [night], contract: { filterValue: 60 } } as unknown as RouteCardNoticeInput['model'];
+    const n = routeCardNotices({ ...base, directions: [night], model: partial, period: 'overnight', maxHeadway: 15, selectedRouteOutOfFilter: true });
+    if (n.filter?.code === 'N13') expect(n.period).toBeNull();
+    expect([n.filter?.text, n.period?.text].filter(Boolean).filter(t => /runs only from/.test(t!))).toHaveLength(1);
+  });
+});
+
+describe('CIV-1251: never "only from" the whole period', () => {
+  it('a route running all of 3–7 PM in one direction, none in the other (OC Transpo 226), reads the filter line, not N13', () => {
+    const east = { headsign: 'Chapel Hill', directionId: 0, headwayByHour: { 15: 27, 16: 27, 17: 27, 18: 27 }, departuresByHour: { 15: 2, 16: 2, 17: 2, 18: 2 } } as any;
+    const m = { ...model, activeRangeDirections: [east], rowHeadways: [27], contract: { filterValue: null } } as unknown as RouteCardNoticeInput['model'];
+    const n = routeCardNotices({ ...base, directions: [east], model: m, period: 'pmPeak', maxHeadway: Infinity, selectedRouteOutOfFilter: true });
+    expect(n.filter?.code).not.toBe('N13');
+  });
+});
+

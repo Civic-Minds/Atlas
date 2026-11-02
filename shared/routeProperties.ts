@@ -53,9 +53,9 @@ export interface RouteProperties {
   worstDirectionMiddayCap?: number;
   minStopHeadway?: number;
   minStopHeadwayByPeriod?: Partial<Record<string, number>>;
-  /** CIV-1069: periods whose value is read from other headsigns' trips at the stop (this headsign runs under three times); a card row reads no regular service there. */
+  /** CIV-1069: periods whose value is read from other headsigns' trips at the stop (this headsign runs under three times); a card row reads Irregular there. */
   noOwnServiceByPeriod?: string[];
-  /** CIV-1204: the rider wait failed the run-shape gate, so the headline's window has no regular service; no fallback shows the headline as "every N". */
+  /** CIV-1204: the rider wait failed the run-shape gate, so the headline's window has no regular cadence; no fallback shows the headline as "every N". */
   headlineNoRegular?: boolean;
   headsignMinStopHeadwayByPeriod?: Partial<Record<string, number>>;
   stopHeadways?: Record<string, number | null>;
@@ -76,10 +76,10 @@ export interface RouteProperties {
   /**
    * Frequency focus (pipeline/tripSets.ts), agency JSON only. Filter-agreeing fields: stamped on every feature of a route-day
    * or on none; cards and lists show these so they never disagree with the map's filter. A period's null means no regular
-   * service there ("no regular service", never a number).
+   * service there ("Irregular", never a number).
    */
   routeFilterHeadwayByPeriod?: Partial<Record<PeriodKey, number | null>>;
-  /** The route's all-day filter value (step 6); NO_PERIOD_SERVICE_TILE_VALUE when it has none (limited, or no regular service). */
+  /** The route's all-day filter value (step 6); NO_PERIOD_SERVICE_TILE_VALUE when it has none (limited, or no regular cadence). */
   routeAllDayHeadway?: number;
   /** Whether the route runs in the period at all (the "All" level). */
   routeRunsByPeriod?: Partial<Record<PeriodKey, boolean>>;
@@ -89,12 +89,15 @@ export interface RouteProperties {
   stretchPeriodOneGap?: Partial<Record<PeriodKey, boolean>>;
   /** The direction's own value per period (pipeline stampStretchShadow): for an uneven period, its longest wait. Display only. */
   stretchPeriodHeadway?: Partial<Record<PeriodKey, number | null>>;
+  /** The direction's period is steady at its stretches' reference stops (pipeline stampStretchShadow). Display only. */
+  stretchPeriodSustained?: Partial<Record<PeriodKey, boolean | null>>;
   /** #1142: the typical gap of a period whose value is an uneven stretch's longest wait (card range "every typical–worst"); null: steady. Display only. */
   stretchPeriodTypical?: Partial<Record<PeriodKey, number | null>>;
   /** The route's range, [best stretch, worst] ("every 8–25"); null: one number. Display only. */
   stretchPeriodRange?: Partial<Record<PeriodKey, [number, number] | null>>;
   /** #934: periods whose value is a late start or early end around steady service: the first or last departure (GTFS minutes) and the steady spacing. Card wording only. */
-  stretchPeriodEdge?: Partial<Record<PeriodKey, { from?: number; until?: number; every: number }>>;
+  /** #1276: stretch is the stretch the edge was read on ('main' or a tail index); rows whose stretchCovers include it carry the words. */
+  stretchPeriodEdge?: Partial<Record<PeriodKey, { from?: number; until?: number; every: number; stretch?: 'main' | number }>>;
   /** Narrow D6: periods the main stretch runs through, steady but for one gap inside: the median gap and the longest. Card wording only. */
   stretchPeriodGap?: Partial<Record<PeriodKey, { every: number; gap: number }>>;
   /** CIV-321 S4: display-only full-length line of the row's slot (a longer rated pattern serving every stop the row draws), with its stops and positions; read only by the beta section colours. */
@@ -107,10 +110,12 @@ export interface RouteProperties {
   stretchRole?: 'main' | 'tail' | 'variant';
   /** 0 for the main stretch; a tail's index into stretchMeta.tails. Absent for variants. */
   stretchIndex?: number;
-  /** CIV-321 S2: period = each stretch's own filter value per period (same rules as a whole route); maxGap = the longest gap of the same departures (CIV-1069); noRegular = periods its card row reads "no regular service" (one gap, or under three departures). */
+  /** #1276: every stretch the row's stops cover ('main' or a tail index), matched against stretchPeriodEdge[period].stretch. */
+  stretchCovers?: ('main' | number)[];
+  /** CIV-321 S2: period = each stretch's own filter value per period (same rules as a whole route); maxGap = the longest gap of the same departures (CIV-1069); noRegular = periods its card row reads "Irregular" (one gap, or under three departures). */
   stretchMeta?: {
-    main: { stops: number; refStop: string; trips: number; period?: Partial<Record<PeriodKey, number | null>>; maxGap?: Partial<Record<PeriodKey, number | null>>; noRegular?: PeriodKey[] } | null;
-    tails: Array<{ refStop: string; stops: number; km: number; trips: number; period?: Partial<Record<PeriodKey, number | null>>; maxGap?: Partial<Record<PeriodKey, number | null>>; noRegular?: PeriodKey[]; notThrough?: PeriodKey[] }>;
+    main: { stops: number; refStop: string; trips: number; period?: Partial<Record<PeriodKey, number | null>>; maxGap?: Partial<Record<PeriodKey, number | null>>; noRegular?: PeriodKey[]; /** CIV-1251: this stretch's own late start or early end per period ({from|until, every}). */ edge?: Partial<Record<PeriodKey, { from?: number; until?: number; every: number }>> } | null;
+    tails: Array<{ refStop: string; stops: number; km: number; trips: number; period?: Partial<Record<PeriodKey, number | null>>; maxGap?: Partial<Record<PeriodKey, number | null>>; noRegular?: PeriodKey[]; /** CIV-1251: this stretch's own late start or early end per period ({from|until, every}). */ edge?: Partial<Record<PeriodKey, { from?: number; until?: number; every: number }>>; notThrough?: PeriodKey[] }>;
   };
   /** The row's night grade (pipeline/process-core.ts): it passes the 2am to 5am check at 30 or 60 minutes; nightService is the older 60. */
   nightService30?: boolean;

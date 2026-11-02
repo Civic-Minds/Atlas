@@ -30,7 +30,15 @@ export interface SeoRoute {
   prerender?: boolean;
   /** Listed in sitemap.xml (public, canonical pages only). */
   includeInSitemap?: boolean;
+  /**
+   * The page's own link-preview image (1200×630 PNG under public/), in place of the site's. Pages without one keep the
+   * site image from index.html. Research pages get theirs as Ryan picks them (CIV-1167).
+   */
+  shareImage?: { path: string; alt: string };
 }
+
+/** Every research page gets its own static file at build time, so a shared link shows its own preview (CIV-1167). */
+export const RESEARCH_PATH_PREFIX = '/research';
 
 const HOME_DESCRIPTION =
   'See how often transit routes actually run. Atlas maps scheduled frequency by agency, day and time of day, using published agency schedules.';
@@ -104,6 +112,8 @@ export const SEO_ROUTES: readonly SeoRoute[] = [
     description: 'Find routes with sustained scheduled service from 2–5 AM.',
     indexable: false,
     gate: 'researchApps',
+    // Ryan's pick 1 (CIV-1167), rendered from public/assets/research/share/night-light.svg.
+    shareImage: { path: '/assets/research/share/night.png', alt: 'Overnight service' },
   },
   {
     path: '/research',
@@ -134,6 +144,8 @@ export const SEO_ROUTES: readonly SeoRoute[] = [
     description: 'A source-backed look at what frequent service means across transit networks.',
     indexable: false,
     gate: 'researchApps',
+    // Ryan's pick B4 (CIV-1167): bus 1303 at a real TTC shelter. Photo credits: public/assets/research/share/CREDITS.md.
+    shareImage: { path: '/assets/research/share/frequent-light.png', alt: 'Frequent service' },
   },
   {
     path: '/changelog',
@@ -166,6 +178,8 @@ export interface ResolvedSeo {
   noindex: boolean;
   /** The route that actually answered; '/' when the path is unknown or not in this build. */
   matchedPath: string;
+  /** The route's own link-preview image, as an absolute URL; absent keeps the site image. */
+  image?: { url: string; alt: string };
 }
 
 export function normalizePath(pathname: string): string {
@@ -197,6 +211,8 @@ export function resolveSeo(pathname: string, ctx: SeoContext): ResolvedSeo {
     // Beta, preview and dev builds are staging copies: never indexed, on any route.
     noindex: !publicBuild || !route.indexable,
     matchedPath: route.path,
+    // Always the production host: a preview bot must be able to fetch it, and deployment URLs can be protected.
+    ...(route.shareImage ? { image: { url: `${SITE_URL}${route.shareImage.path}`, alt: route.shareImage.alt } } : {}),
   };
 }
 
@@ -219,6 +235,17 @@ export function renderSeoTags(seo: ResolvedSeo): string {
     `<meta name="twitter:title" content="${t}" />`,
     `<meta name="twitter:description" content="${d}" />`,
   ];
+  if (seo.image) {
+    const img = escapeAttr(seo.image.url);
+    lines.push(
+      `<meta property="og:image" content="${img}" />`,
+      '<meta property="og:image:width" content="1200" />',
+      '<meta property="og:image:height" content="630" />',
+      '<meta property="og:image:type" content="image/png" />',
+      `<meta property="og:image:alt" content="${escapeAttr(seo.image.alt)}" />`,
+      `<meta name="twitter:image" content="${img}" />`,
+    );
+  }
   if (seo.noindex) lines.push('<meta name="robots" content="noindex" />');
   return lines.map(l => `  ${l}`).join('\n');
 }
@@ -232,10 +259,16 @@ const OWNED_TAG_PATTERNS: RegExp[] = [
   /[ \t]*<meta\s+name="robots"[\s\S]*?\/>[ \t]*\n?/gi,
 ];
 
+/** The site image's tags, swapped out only when a route has its own image. */
+const IMAGE_TAG_PATTERNS: RegExp[] = [
+  /[ \t]*<meta\s+property="og:image(?::[a-z]+)?"[\s\S]*?\/>[ \t]*\n?/gi,
+  /[ \t]*<meta\s+name="twitter:image"[\s\S]*?\/>[ \t]*\n?/gi,
+];
+
 /** Swap a page's own head tags for a route's, leaving everything else in index.html alone. */
 export function applySeoToHtml(html: string, seo: ResolvedSeo): string {
   let out = html;
-  for (const pattern of OWNED_TAG_PATTERNS) out = out.replace(pattern, '');
+  for (const pattern of seo.image ? [...OWNED_TAG_PATTERNS, ...IMAGE_TAG_PATTERNS] : OWNED_TAG_PATTERNS) out = out.replace(pattern, '');
   return out.replace('</head>', `${renderSeoTags(seo)}\n</head>`);
 }
 
@@ -243,6 +276,12 @@ export function applySeoToHtml(html: string, seo: ResolvedSeo): string {
 export function injectRootHtml(html: string, markup: string): string {
   if (!html.includes('<div id="root"></div>')) throw new Error('index.html has no empty #root to fill');
   return html.replace('<div id="root"></div>', () => `<div id="root">${markup}</div>`);
+}
+
+/** Research pages with no prerendered text in this build: each still gets its own file, for its link preview (CIV-1167). */
+export function researchPreviewRoutes(flags: SeoFlags): SeoRoute[] {
+  const prerendered = new Set(prerenderRoutes(flags).map(r => r.path));
+  return SEO_ROUTES.filter(r => (r.path === RESEARCH_PATH_PREFIX || r.path.startsWith(`${RESEARCH_PATH_PREFIX}/`)) && !prerendered.has(r.path));
 }
 
 /** Pages whose text is rendered into static HTML in this build. */
@@ -267,6 +306,8 @@ export function buildSitemapXml(extraUrls: readonly string[] = []): string {
 export const AGENCY_ROUTE_SOURCES: readonly string[] = ['/agency/:slug', '/agency/:slug/'];
 /** Same for metro area pages (/area/<slug>). */
 export const AREA_ROUTE_SOURCES: readonly string[] = ['/area/:slug', '/area/:slug/'];
+/** Same for state and province pages (/region/<slug>, CIV-976). */
+export const REGION_ROUTE_SOURCES: readonly string[] = ['/region/:slug', '/region/:slug/'];
 
 export function knownRouteSources(): string[] {
   const paths = [...SEO_ROUTES.map(r => r.path), ...UNREACHABLE_APP_PATHS].filter(p => p !== '/');

@@ -108,6 +108,14 @@
       "destination": "/area/:slug/index.html"
     },
     {
+      "source": "/region/:slug",
+      "destination": "/region/:slug/index.html"
+    },
+    {
+      "source": "/region/:slug/",
+      "destination": "/region/:slug/index.html"
+    },
+    {
       "source": "/",
       "destination": "/index.html"
     },
@@ -241,43 +249,43 @@
     },
     {
       "source": "/research",
-      "destination": "/index.html"
+      "destination": "/research/index.html"
     },
     {
       "source": "/research/",
-      "destination": "/index.html"
+      "destination": "/research/index.html"
     },
     {
       "source": "/research/night",
-      "destination": "/index.html"
+      "destination": "/research/night/index.html"
     },
     {
       "source": "/research/night/",
-      "destination": "/index.html"
+      "destination": "/research/night/index.html"
     },
     {
       "source": "/research/free-child-fares",
-      "destination": "/index.html"
+      "destination": "/research/free-child-fares/index.html"
     },
     {
       "source": "/research/free-child-fares/",
-      "destination": "/index.html"
+      "destination": "/research/free-child-fares/index.html"
     },
     {
       "source": "/research/frequent-service",
-      "destination": "/index.html"
+      "destination": "/research/frequent-service/index.html"
     },
     {
       "source": "/research/frequent-service/",
-      "destination": "/index.html"
+      "destination": "/research/frequent-service/index.html"
     },
     {
       "source": "/research/frequent-service/story",
-      "destination": "/index.html"
+      "destination": "/research/frequent-service/story/index.html"
     },
     {
       "source": "/research/frequent-service/story/",
-      "destination": "/index.html"
+      "destination": "/research/frequent-service/story/index.html"
     },
     {
       "source": "/changelog",

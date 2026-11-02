@@ -11,8 +11,14 @@ describe('routeCardPeriodShapeText (#934, D6)', () => {
   it('an early end reads until the last departure', () => {
     expect(routeCardPeriodShapeText(row({ pmPeak: { until: 1060, every: 10 } }), 'pmPeak')).toBe('every 10 min until 5:40 PM');
   });
+  it('an edge read on a named stretch goes only on a row that covers it (#1276)', () => {
+    const edge = { pmPeak: { until: 1075, every: 30, stretch: 3 as const } };
+    expect(routeCardPeriodShapeText({ ...row(edge), stretchCovers: ['main', 1, 3] } as ShapeProperties, 'pmPeak')).toBe('every 30 min until 5:55 PM');
+    expect(routeCardPeriodShapeText({ ...row(edge), stretchCovers: ['main', 2] } as ShapeProperties, 'pmPeak')).toBeUndefined();
+    expect(routeCardPeriodShapeText(row(edge), 'pmPeak')).toBeUndefined();
+  });
   it('one gap inside steady service reads the median and the gap', () => {
-    expect(routeCardPeriodShapeText(row(undefined, { overnight: { every: 5, gap: 169 } }), 'overnight')).toBe('every 5 min, with a 169 min gap');
+    expect(routeCardPeriodShapeText(row(undefined, { overnight: { every: 5, gap: 169 } }), 'overnight')).toBe('every 5 min, with one 169 min gap');
   });
   it('nothing for other periods, all day, or a feature without the field', () => {
     expect(routeCardPeriodShapeText(row({ amPeak: { from: 437, every: 9 } }), 'midday')).toBeUndefined();

@@ -308,7 +308,7 @@ describe('compareSideListText (CIV-844)', () => {
     expect(compareSideListText('B', { headway: 4, limited: false, sharedHeadway: 2 })).toBe('B every 4');
   });
   it('uses the existing words for a side without a number, and nothing for a side without the route', () => {
-    expect(compareSideListText('A', { headway: null, limited: false, noRegular: true })).toBe('A no regular service');
+    expect(compareSideListText('A', { headway: null, limited: false, noRegular: true })).toBe('A Irregular');
     expect(compareSideListText('B', { headway: 999, limited: true })).toBe('B limited');
     expect(compareSideListText('B', { headway: null, limited: false })).toBeNull();
   });

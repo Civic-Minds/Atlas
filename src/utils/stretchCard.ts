@@ -7,6 +7,7 @@
 import type { ShapeProperties, TimePeriod } from '../hooks/useIntervalStats';
 import { NO_PERIOD_SERVICE_TILE_VALUE } from '../../shared/pmtilesProps';
 import { routeFilterHeadway } from '../../shared/routeHeadwayFilter';
+import { rowReadsPeriodEdge } from './effectiveHeadway';
 
 type PeriodKey = Exclude<TimePeriod, 'all'>;
 
@@ -22,7 +23,7 @@ export interface StretchRow {
   refStop: string;
   /** The stretch's own value in the period (same rules as a whole route): a number, null for no value, undefined on older data. */
   value: number | null | undefined;
-  /** The row reads "no regular service during this period" (#955: one gap, or under three departures), never its wait as "every N". */
+  /** The row reads "Runs irregularly in this period" (#955: one gap, or under three departures), never its wait as "every N". */
   noRegular: boolean;
 }
 
@@ -73,7 +74,7 @@ export function variantOnlyRow(features: readonly ShapeProperties[]): ShapePrope
   return [...features].sort((a, b) => (b.stopOrder?.length ?? 0) - (a.stopOrder?.length ?? 0))[0];
 }
 
-/** The direction's filter value for a variant-only row: a number, or null for no regular service. Undefined when absent. */
+/** The direction's filter value for a variant-only row: a number, or null for no regular cadence. Undefined when absent. */
 export function variantRowHeadway(f: ShapeProperties, period: TimePeriod): number | null | undefined {
   if (f.stretchRole !== 'variant' || period === 'all') return undefined;
   return f.directionFilterHeadwayByPeriod?.[period as PeriodKey];
@@ -89,8 +90,18 @@ export function tailNotThroughPeriod(f: ShapeProperties, period: TimePeriod): bo
   return f.stretchMeta?.tails?.[f.stretchIndex ?? 0]?.notThrough?.includes(period as PeriodKey) ?? false;
 }
 
+/**
+ * #1277: a branch that does not run through the period keeps its row when the row's until or from words are true of its own
+ * trips: the edge was read on the branch's own stretch, and the branch has departures of its own in the period. An edge read
+ * on a stretch other rows share can be another branch's trips (OC Transpo 25 Sunday AM: the first two trips from 7:25 go to
+ * Blair, not Carson's; TTC 130 late: no trip runs via Maybrook), so such a row stays hidden, as #1115 has it.
+ */
+export function notThroughRowSaysWhen(f: ShapeProperties, period: TimePeriod): boolean {
+  return f.stretchPeriodEdge?.[period as PeriodKey]?.stretch !== undefined && rowReadsPeriodEdge(f, period);
+}
+
 export interface RouteContract {
-  /** The route's filter value in the period: a number, or null for no regular service. */
+  /** The route's filter value in the period: a number, or null for no regular cadence. */
   filterValue: number | null;
   /** The route runs in the period at all (the "All" level). */
   runs: boolean;
@@ -191,7 +202,7 @@ export function isOneGapRow(f: ShapeProperties, period: TimePeriod): boolean {
 
 /**
  * #955: the route's period value is one gap between a few departures: the direction that sets it (its value is the
- * route's) is flagged. Lists, compare and the card's scheduled line then say no regular service, as the card's rows do.
+ * route's) is flagged. Lists, compare and the card's scheduled line then say Irregular, as the card's rows do.
  */
 export function routeValueIsOneGap(features: readonly ShapeProperties[], period: TimePeriod): boolean {
   const contract = routeContract(features, period);

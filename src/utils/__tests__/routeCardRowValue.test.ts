@@ -12,7 +12,7 @@ describe('routeCardRowValue (CIV-992)', () => {
     expect(row.isLimited).toBe(false);
     expect(row.dimmed).toBe(false);
   });
-  it('reads as the route does when the route has no regular service on All day', () => {
+  it('reads as the route does when the route has no regular cadence on All day', () => {
     const d = { routeId: 'r', routeShortName: '1', routeLongName: '', directionId: 0, headsign: 'A', tier: '10', headway: 10 } as unknown as ShapeProperties;
     const row = routeCardRowValue(d, { ...ctx, period: 'all', noRegularService: true });
     expect(row.rowNoRegular).toBe(true);
@@ -78,7 +78,7 @@ describe('routeCardRowValue (CIV-992)', () => {
     expect(row.edgeText).toBe('every 60 min until 5:05 PM');
     expect(row.trunkHeadway).toBeUndefined();
   });
-  it('keeps the range on a row without such words', () => {
-    expect(routeCardRowValue(oc84(false), pm).trunkHeadway).toBe(20);
+  it('CIV-1251: no row reads the shared-stretch range, with or without such words', () => {
+    expect(routeCardRowValue(oc84(false), pm).trunkHeadway).toBeUndefined();
   });
 });

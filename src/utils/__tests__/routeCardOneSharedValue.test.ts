@@ -31,7 +31,8 @@ describe('one shared value per card group (#1232)', () => {
       headwayByPeriod: { pmPeak: 60 }, headsignMinStopHeadwayByPeriod: { pmPeak: 20 }, stretchRole: 'main', stretchIndex: 0,
     } as unknown as ShapeProperties;
     const ctx = { period: 'pmPeak' as const, hoveredHour: null, stretchMode: true, noRegularService: false, maxHeadway: Infinity };
-    expect(routeCardRowValue(d, ctx).trunkHeadway).toBe(20);
+    // CIV-1251: a branch row shows only its own number; no card row reads the shared-stretch range.
+    expect(routeCardRowValue(d, ctx).trunkHeadway).toBeUndefined();
     expect(routeCardRowValue(d, { ...ctx, sharedRowShown: true }).trunkHeadway).toBeUndefined();
   });
 });

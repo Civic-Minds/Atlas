@@ -3312,7 +3312,7 @@ export async function processGtfsBuffer(
       // CIV-1069: a headsign with its own terminal list but under three of its own departures in the period
       // shows a value read from other headsigns' trips at the stop (CTA 77 Belmont & Octavia: "every 10" at
       // AM peak with no trip of its own). The value stays (the route filter reads it: a short variant's far
-      // end may really be served that rarely); the card row reads no regular service for these periods.
+      // end may really be served that rarely); the card row reads Irregular for these periods.
       if (headsignTerminalPeriodHw && period.headway != null && hsSparseH == null) {
         const { start, end } = PERIODS[pk];
         const own = new Set(forCrossMidnightWindow(terminalScopedTimes ?? [], end).filter(t => t >= start && t <= end)).size;
@@ -3495,7 +3495,7 @@ export async function processGtfsBuffer(
     // CIV-1161 step 1 with the CIV-1204 gate (Ryan, 2026-10-31): a headline that riders wait 10+ minutes longer than, at
     // the main stretch's reference stop (#1255), reads their wait instead (riderWait, never faster), and its tier can only
     // get worse, where the direction runs through the window that wait reads there (gatedRiderWait). Where it does not, the
-    // headline and tier stay, and the row says the headline window has no regular service (headlineNoRegular), the
+    // headline and tier stay, and the row says the headline window has no regular cadence (headlineNoRegular), the
     // route card's verdict, so no fallback prints the headline as "every N". The filter values are untouched.
     {
       const rollups = new Map<string, ReturnType<typeof rollupDirection>>();
@@ -3552,6 +3552,7 @@ export async function processGtfsBuffer(
       if (p.stopId != null || !(feature.properties as { routeId?: unknown }).routeId) continue;
       const periods = noOwnServicePeriods(p);
       if (periods.length > 0) (feature.properties as Record<string, unknown>).noOwnServiceByPeriod = periods;
+      else delete (feature.properties as Record<string, unknown>).noOwnServiceByPeriod;
     }
     // A partial-weekday route-day (#710) keeps today's filter: its stretch reads one weekday, while
     // its service runs on others and continues on the next day's service after midnight.

@@ -2,7 +2,8 @@ import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, relative, resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
-// CIV-1237: the "How Atlas talks" rules in docs/STYLE.md that a slip in src/ or shared/ can break. Times read "2–5 AM", "11 AM–3 PM"
+// CIV-1237: the "How Atlas talks" rules in docs/STYLE.md that a slip in src/ or shared/ can break (CIV-1238 adds the
+// retired "no regular service" and "one-off routes"). Times read "2–5 AM", "11 AM–3 PM"
 // (shared/timeText.ts), frequencies come from shared/headwayText.ts, "schedule" not "timetable", "consistent" not
 // "steady", and nothing is set in capitals. Comments may quote the old forms; only code counts.
 const ROOT = resolve(__dirname, '../../..');
@@ -28,6 +29,10 @@ const RULES: Array<{ name: string; pattern: RegExp }> = [
   // A frequency is in "min" (STYLE.md); "minutes" only in the exact approved texts in APPROVED_TEXT.
   { name: '"every N minutes" as a frequency (write "every N min", from shared/headwayText.ts)', pattern: /every (\$\{[^}]*\}|\d+|\d+[–-]\d+)(\\u00A0|\u00A0| )?minutes\b/ },
   { name: 'text set in capitals (uppercase class or textTransform)', pattern: /\buppercase\b|textTransform/ },
+  // CIV-1238 (Ryan): it read as if nothing runs. The words are IRREGULAR_PERIOD_LABEL / _SHORT_LABEL in noticeCopy.ts.
+  { name: '"no regular service" (say "Irregular" or "Runs irregularly in this period")', pattern: /\b[Nn]o regular service\b/ },
+  // CIV-1238 (Ryan): "one-off sounds like it only runs once per day". The hidden class is "Occasional".
+  { name: '"one-off" for the hidden route class (say "occasional")', pattern: /\b[Oo]ne-off (routes?|service)\b/ },
 ];
 
 // Files with a slip still waiting on Ryan's word-for-word OK, by rule; remove each entry when its new wording lands.
@@ -43,8 +48,6 @@ const CODE_NAMES: Record<string, string[]> = {
 // Exact texts Ryan approved word for word, or quotes of an agency's own words, that keep "minutes". Each is removed
 // from its file before the rules run, so only that exact text passes.
 const APPROVED_TEXT: Record<string, string[]> = {
-  // N123 part-of-route-meets-filter (Ryan's exact wording, CIV-514).
-  'src/content/noticeCopy.ts': ['Only part of this route runs every ${maxHeadway}\\u00A0minutes or better during the selected period.'],
   // The frequent-service story quoting agencies' definitions.
   'src/apps/FrequentServiceStory.tsx': ['“every 15 minutes or better”', '“every 15–20 minutes”'],
 };
@@ -93,9 +96,11 @@ describe('UI text follows docs/STYLE.md "How Atlas talks"', () => {
       '`every ${headway} min`',
       "'Buses come every 15 minutes or better.'",
       '<span className="uppercase tracking-wide">',
+      "const label = 'no regular service';",
+      "'Hide one-off routes'",
     ];
     RULES.forEach((rule, i) => expect([rule.name, rule.pattern.test(slips[i])]).toEqual([rule.name, true]));
-    const fine = "lo.noTimetableTrip; isSteadyInAnyPeriod; '6–9 AM'; '11 AM–3 PM'; headwayEvery(10); '15 minutes'; 'Mon–Fri 5:30 AM–8 PM'";
+    const fine = "lo.noTimetableTrip; isSteadyInAnyPeriod; '6–9 AM'; '11 AM–3 PM'; headwayEvery(10); '15 minutes'; 'Mon–Fri 5:30 AM–8 PM'; 'Irregular'; 'Hide occasional routes'; isOneOffTrip";
     for (const rule of RULES) expect([rule.name, rule.pattern.test(fine)]).toEqual([rule.name, false]);
   });
 });

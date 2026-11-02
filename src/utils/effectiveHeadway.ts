@@ -1,13 +1,13 @@
 import type { ShapeProperties, TimePeriod } from '../hooks/useIntervalStats';
-import { isHourInPeriod, PERIOD_KEYS, TIME_PERIODS } from '../../shared/config';
+import { isHourInPeriod, MINUTES_PER_DAY, PERIOD_KEYS, PERIOD_MINUTES, TIME_PERIODS, type PeriodKey } from '../../shared/config';
 import { hasNoPeriodService } from '../../shared/periodEligibility';
 import { routeFilterHeadway } from '../../shared/routeHeadwayFilter';
 import { buildRouteServiceSummary, metricValueForPeriod } from './routeFacts';
 import { pairedTripPeriodFloor, pairedTripSafeHeadway } from './pairedTripFloor';
 import { delayAmount, headwayAboutRange, headwayEvery, headwayEveryRange, headwayPeriodShape } from './headwayText';
-import { routeFilterAllDayContract, routeFilterContract, routeValueIsOneGap } from './stretchCard';
+import { routeFilterAllDayContract, routeFilterContract, routeValueIsOneGap, tailNotThroughPeriod } from './stretchCard';
 import { clockTime } from '../../shared/timeText';
-import { LIMITED_SERVICE_LABEL, NO_REGULAR_SERVICE_LABEL, NO_REGULAR_SERVICE_SHORT_LABEL } from '../content/noticeCopy';
+import { LIMITED_SERVICE_LABEL, IRREGULAR_PERIOD_LABEL, IRREGULAR_PERIOD_SHORT_LABEL } from '../content/noticeCopy';
 import { routeCardLowestHeadway } from './routeListRange';
 
 export { pairedTripPeriodFloor, pairedTripSafeHeadway } from './pairedTripFloor';
@@ -128,20 +128,77 @@ export function hasDirectionPeriodService(p: ShapeProperties, period: TimePeriod
 /**
  * #934 and D6: the main stretch's row names a late start or early end ("every 9 min from 7:17 AM")
  * or one gap inside steady service ("every 5 min, with a 169 min gap") instead of a long wait or
- * "limited". Wording: headwayPeriodShape.
+ * "limited". Wording: headwayPeriodShape. An edge goes on the rows that cover its stretch (#1276).
  */
 export function routeCardPeriodShapeText(p: ShapeProperties, period: TimePeriod): string | undefined {
   if (period === 'all') return undefined;
+  const own = tailOwnEdge(p, period);
+  if (own) return periodEdgeText(own);
   const edge = p.stretchPeriodEdge?.[period];
   if (edge && (edge.from != null || edge.until != null)) {
-    return headwayPeriodShape({
-      from: edge.from != null ? clockTime(edge.from) : undefined,
-      until: edge.until != null ? clockTime(edge.until) : undefined,
-      every: edge.every,
-    });
+    if (edge.stretch !== undefined && !rowReadsPeriodEdge(p, period)) return undefined;
+    return periodEdgeText(edge);
   }
   const gap = p.stretchPeriodGap?.[period];
   return gap ? headwayPeriodShape({ every: gap.every, gap: gap.gap }) : undefined;
+}
+
+/**
+ * #1276: the rows that carry a period edge's words: those whose stops cover the stretch the edge was read on (TTC 110 weekday
+ * PM: only the branch via 30th Street, which runs to 5:55 PM). No row covers it where the branch has no row of its own (AC
+ * Transit 22 Sunday midday): no row says another branch's end time. Data without the stretch keeps the main stretch's row.
+ */
+export function rowReadsPeriodEdge(p: ShapeProperties, period: TimePeriod): boolean {
+  if (period === 'all') return false;
+  if (tailOwnEdge(p, period)) return true;
+  const edge = p.stretchPeriodEdge?.[period];
+  if (!edge) return false;
+  if (edge.stretch === undefined) return p.stretchRole === 'main';
+  if (!(p.stretchCovers?.includes(edge.stretch) ?? false)) return false;
+  // CIV-1251 (Ryan, row 8): with each stretch's own edge in the data, the shared main stretch's edge goes on the Shared
+  // stretch row, and a branch row reads only its own (TTC 110 Sunday AM: Shared stretch every 15 min from 8:07 AM, Kipling
+  // every 30 min from 7:29 AM). Data without stretch edges keeps #1276.
+  if (edge.stretch === 'main' && p.stretchRole === 'tail' && hasStretchEdges(p)) return false;
+  // #1277: a branch that does not run through the period (#1115) carries the words only when they are its own trips: the
+  // edge was read on its own stretch and it has departures of its own there (TTC 131 Sunday late: the Old Finch branch,
+  // which stops by 3 PM, never reads the shared stretch's "until 12:37 AM"), on the route card and the stop card alike.
+  if (!tailNotThroughPeriod(p, period)) return true;
+  if (edge.stretch !== (p.stretchIndex ?? 0)) return false;
+  const { start, end } = PERIOD_MINUTES[period as PeriodKey];
+  return Object.entries(p.departuresByHour ?? {}).some(([hour, n]) => {
+    const h = Number(hour) * 60;
+    return n > 0 && ((h >= start && h < end) || (h + MINUTES_PER_DAY >= start && h + MINUTES_PER_DAY < end));
+  });
+}
+
+type PeriodEdge = { from?: number; until?: number; every: number };
+
+/** "every 30 min until 5:55 PM" / "every 9 min from 7:17 AM" for one edge. */
+export function periodEdgeText(edge: PeriodEdge): string {
+  return headwayPeriodShape({
+    from: edge.from != null ? clockTime(edge.from) : undefined,
+    until: edge.until != null ? clockTime(edge.until) : undefined,
+    every: edge.every,
+  });
+}
+
+/** CIV-1251: the data carries each stretch's own edge (stretchMeta main.edge, tails[i].edge). */
+function hasStretchEdges(p: ShapeProperties): boolean {
+  return p.stretchMeta?.main?.edge != null || (p.stretchMeta?.tails ?? []).some(t => t.edge != null);
+}
+
+/** CIV-1251: a branch row's own late start or early end, read from its own trips (stretchMeta.tails[i].edge). */
+export function tailOwnEdge(p: ShapeProperties, period: TimePeriod): PeriodEdge | undefined {
+  if (period === 'all' || p.stretchRole !== 'tail') return undefined;
+  const edge = p.stretchMeta?.tails?.[p.stretchIndex ?? 0]?.edge?.[period as PeriodKey];
+  return edge && (edge.from != null || edge.until != null) ? edge : undefined;
+}
+
+/** CIV-1251: the shared main stretch's own edge, for the Shared stretch row above branch rows. */
+export function mainStretchEdge(p: ShapeProperties, period: TimePeriod): PeriodEdge | undefined {
+  if (period === 'all') return undefined;
+  const edge = p.stretchMeta?.main?.edge?.[period as PeriodKey];
+  return edge && (edge.from != null || edge.until != null) ? edge : undefined;
 }
 
 /**
@@ -149,9 +206,9 @@ export function routeCardPeriodShapeText(p: ShapeProperties, period: TimePeriod)
  * 9:37 AM"): the route card's main-stretch row shows it, and the stop card the same, so both agree.
  */
 export function partPeriodText(p: ShapeProperties, period: TimePeriod): string | undefined {
-  if (period === 'all' || p.stretchRole !== 'main') return undefined;
+  if (period === 'all' || !rowReadsPeriodEdge(p, period)) return undefined;
   if (typeof p.directionFilterHeadwayByPeriod?.[period] === 'number') return undefined;
-  return p.stretchPeriodEdge?.[period] ? routeCardPeriodShapeText(p, period) : undefined;
+  return routeCardPeriodShapeText(p, period);
 }
 
 /** Rider-facing range for an irregular period, scoped to this destination/branch. */
@@ -315,7 +372,7 @@ export function routeListDisplayHeadway(features: readonly ShapeProperties[], pe
  * number (#708); a direction that runs with no cadence makes the route limited (#821).
  */
 export function routeListDisplayLimited(features: readonly ShapeProperties[], period: TimePeriod): boolean {
-  // No regular service (the filter's null) is its own wording, not "limited".
+  // No regular cadence (the filter's null) is its own wording, not "limited".
   // The filter's null (runs or not) means no number and no "limited" either.
   const contract = routeFilterContract(features, period);
   if (contract != null && contract.filterValue == null) return false;
@@ -327,10 +384,10 @@ export function routeListDisplayLimited(features: readonly ShapeProperties[], pe
     && features.some(feature => routeCardDisplayLimited(feature, period));
 }
 
-/** The words every card and list shows where the filter says a route has no regular service in the period (D2, D3 in noticeCopy). */
-export { NO_REGULAR_SERVICE_LABEL, NO_REGULAR_SERVICE_SHORT_LABEL };
+/** The words every card and list shows where the filter says a route has no regular cadence in the period (D2, D3 in noticeCopy). */
+export { IRREGULAR_PERIOD_LABEL, IRREGULAR_PERIOD_SHORT_LABEL };
 
-/** The filter says the route has no regular service in this period: lists say NO_REGULAR_SERVICE_LABEL, never a number. */
+/** The filter says the route has no regular cadence in this period: lists say IRREGULAR_PERIOD_LABEL, never a number. */
 export function routeListNoRegularService(features: readonly ShapeProperties[], period: TimePeriod): boolean {
   const contract = routeFilterContract(features, period);
   return (contract != null && contract.filterValue == null && contract.runs) || routeValueIsOneGap(features, period);
@@ -339,7 +396,7 @@ export function routeListNoRegularService(features: readonly ShapeProperties[], 
 export interface RouteListDisplay {
   headway: number | null;
   limited: boolean;
-  /** The filter's null for a route that does run in the period: show "no regular service". */
+  /** The filter's null for a route that does run in the period: show "Irregular". */
   noRegular?: boolean;
   /** Lower end of a display-only range on the shared stretch; absent when there is none. */
   sharedHeadway?: number;
@@ -349,11 +406,11 @@ export interface RouteListDisplay {
 
 /**
  * One compare side in a list row (CIV-844, Ryan's format "A every 3 · B every 4"): the side's letter and its number,
- * or its existing limited / no-regular-service word. Null when the route has nothing on that side.
+ * or its existing limited / irregular-period word. Null when the route has nothing on that side.
  */
 export function compareSideListText(label: 'A' | 'B', display: RouteListDisplay): string | null {
   if (display.headway != null && display.headway < 999) return `${label} every ${display.headway}`;
-  if (display.noRegular) return `${label} ${NO_REGULAR_SERVICE_SHORT_LABEL}`;
+  if (display.noRegular) return `${label} ${IRREGULAR_PERIOD_SHORT_LABEL}`;
   if (display.limited) return `${label} ${LIMITED_SERVICE_LABEL}`;
   return null;
 }
@@ -362,7 +419,8 @@ export function compareSideListText(label: 'A' | 'B', display: RouteListDisplay)
 export function routeListDisplay(features: readonly ShapeProperties[], period: TimePeriod): RouteListDisplay {
   const { headway, shared } = routeListCadence(features, period);
   const display: RouteListDisplay = { headway, limited: routeListDisplayLimited(features, period) };
-  if (routeListNoRegularService(features, period)) display.noRegular = true;
+  // CIV-1251: in a time period a row with no number reads Irregular, whichever check found it (one word, row 4).
+  if (routeListNoRegularService(features, period) || (period !== 'all' && display.limited)) display.noRegular = true;
   if (shared != null && headway != null) {
     // #1231: the range's low end is the lowest number the route card shows, so the list never names a shared value the card
     // does not (TTC 504 midday read 8–10 beside the card's Shared stretch every 5). A card showing no number keeps the range.

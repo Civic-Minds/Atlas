@@ -3,7 +3,7 @@ import { labelDirectionGroups, sortDirectionGroupIds } from './directionLabel';
 import { hasDirectionPeriodService, routeCardDisplayHeadway } from './effectiveHeadway';
 import { dedupeCrossDirectionHeadsigns } from './crossDirectionDedup';
 import { branchDisplayPeriodHeadway, buildRouteServiceSummary, metricValueForPeriod } from './routeFacts';
-import { hasStretchRoles, stretchRowFeatures, tailNotThroughPeriod, variantOnlyRow } from './stretchCard';
+import { hasStretchRoles, notThroughRowSaysWhen, stretchRowFeatures, tailNotThroughPeriod, variantOnlyRow } from './stretchCard';
 import { pooledMainStretch } from './routeCardTrunk';
 
 export interface RouteCardDirectionGroup {
@@ -78,8 +78,9 @@ export function buildDirectionGroups(
   for (const g of map.values()) {
     const directionFeatures = currentRoute.directions.filter(d => (d.directionId ?? 0) === g.dirId);
     if (!hasStretchRoles(directionFeatures)) continue;
-    // #1115: a branch that does not run through the period has no row for it.
-    const notThrough = stretchRowFeatures(directionFeatures, period).filter(d => tailNotThroughPeriod(d, period));
+    // #1115: a branch that does not run through the period has no row for it, unless the row says when it runs there from
+    // its own trips (#1277, notThroughRowSaysWhen).
+    const notThrough = stretchRowFeatures(directionFeatures, period).filter(d => tailNotThroughPeriod(d, period) && !notThroughRowSaysWhen(d, period));
     let rows = stretchRowFeatures(directionFeatures, period).filter(d => !notThrough.includes(d) && (
       metricValueForPeriod(buildRouteServiceSummary(d).branch, period) != null || hasDirectionPeriodService(d, period)));
     // With tails, the shared main stretch is the trunk they hang off: it gets a row only when it has a cadence of its own to show.
