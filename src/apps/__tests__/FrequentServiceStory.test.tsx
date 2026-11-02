@@ -62,6 +62,17 @@ describe('FrequentServiceStory', () => {
     ]);
   });
 
+  it('pins the story map below the sticky header at every width, through the last stage (#1310)', () => {
+    const { container } = render(<FrequentServiceStory agencies={agencies} onExploreMap={() => {}} />);
+    const section = container.querySelector('section[aria-labelledby="network-story-heading"]')!;
+    const pinned = section.querySelector('[data-story-stage="0"]')!.parentElement!.previousElementSibling!;
+    // top-14 (56px) clears the page header (42px on phones, 53px wide); no lg: prefix, so phones pin too.
+    expect(pinned.className.split(' ')).toEqual(expect.arrayContaining(['sticky', 'top-14', 'lg:top-24']));
+    expect(pinned.className).not.toContain('lg:sticky');
+    // The space after the last step keeps the map pinned while the last stage is read.
+    expect(section.querySelector('[data-story-stage="3"]')!.parentElement!.className).toContain('pb-[60vh]');
+  });
+
   it('counts the Canada and US definitions that still held on the October 30 recheck (CIV-1149)', () => {
     const rows = recheck.rows.filter(row => ['Canada', 'United States'].includes(row.country) && Number.isInteger(row.threshold));
     expect(rows).toHaveLength(67);
