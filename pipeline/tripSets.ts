@@ -1096,7 +1096,18 @@ export function rollupDirection(d: DirectionStretches): DirectionRollup | null {
       period[key].edge = edge && { ...edge, stretch: setterAt?.stretch ?? 'main' };
     } else {
       const slowest = partial();
-      period[key].edge = slowest && { ...slowest.edge, stretch: slowest.stretch };
+      // CIV-1248 follow-up (Ryan, 2026-11-01): a branch that runs the whole period counts too, so
+      // the direction never reads a faster spacing than one of its branches (TTC 110 Sunday AM
+      // southbound: the trunk every 15 from 8:07, Kipling every 30 through the period). The branch's
+      // own late start or early end is read as its row's is (CIV-1251); with none, there is no edge.
+      const slowerThrough = slowest && [mainStretch, ...d.tails]
+        .map((st, i) => ({ st, own: i === 0 ? main[key] : tails[i - 1][key], stretch: (i === 0 ? 'main' : i - 1) as 'main' | number }))
+        .filter(c => c.own.counts && c.own.headway != null && c.own.headway > slowest.edge.every && runsThroughPeriod(c.st.times, start, end, c.own.sustained))
+        .reduce<{ own: StretchPeriod; st: Stretch; stretch: 'main' | number } | null>((worst, c) => (worst == null || c.own.headway! > worst.own.headway! ? c : worst), null);
+      if (slowerThrough) {
+        const edge = slowerThrough.own.uneven ? null : periodEdge(slowerThrough.st.times, start, end, stretchFilterValue(slowerThrough.own));
+        period[key].edge = edge && { ...edge, stretch: slowerThrough.stretch };
+      } else period[key].edge = slowest && { ...slowest.edge, stretch: slowest.stretch };
     }
     // Only where the settled checks count the period as running: a big-gap period that does not
     // run (TTC 504 overnight, 169 minutes against a typical 5) keeps "Irregular".
