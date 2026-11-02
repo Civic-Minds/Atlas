@@ -6,6 +6,8 @@
  * US Census TIGERweb states and Statistics Canada 2021 provinces (the digital boundary file), both of which
  * take in coastal and boundary water, so a ferry terminal on the shore is inside its state. Keys are the
  * region names agency configs use ("Washington DC", "Newfoundland"), never the official spelling.
+ * Licences: US state boundaries (US Census TIGERweb) are public domain; Canadian province boundaries (Statistics
+ * Canada 2021) are under the Statistics Canada Open Licence.
  * READ ONLY: public boundary services only; nothing here touches R2. Run by hand, review, commit:
  *
  *   npx tsx scripts/build-region-boundaries.ts
