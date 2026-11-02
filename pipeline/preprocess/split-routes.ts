@@ -5,7 +5,8 @@
  * whose station it serves (Orange: Miami International Airport; Green: Palmetto), matched on the
  * stop name (or its parent station's), ignoring case. A trip that serves no part's station, or more
  * than one, fails the build, and so does a configured route the feed no longer has: the split is
- * only as good as the stations that tell the lines apart. Each trip keeps its direction.
+ * only as good as the stations that tell the lines apart. Each trip keeps its direction. The route is
+ * named by its short name: Miami-Dade's route_id changes between feed versions (30979, 31009).
  */
 import type { GtfsData, GtfsRoute } from '../../types/gtfs.js';
 
@@ -19,7 +20,7 @@ export interface RouteSplitPart {
 }
 
 export interface RouteSplit {
-  routeId: string;
+  routeShortName: string;
   parts: RouteSplitPart[];
 }
 
@@ -31,14 +32,16 @@ export function splitRoutes(gtfs: GtfsData, splits: readonly RouteSplit[]): { gt
   if (splits.length === 0) return { gtfs, trips: counts };
   const stopName = new Map(gtfs.stops.map(s => [s.stop_id, (s.stop_name ?? '').toUpperCase()]));
   const parentName = new Map(gtfs.stops.map(s => [s.stop_id, s.parent_station ? stopName.get(s.parent_station) ?? '' : '']));
-  const bySplit = new Map(splits.map(s => [s.routeId, s]));
+  const byName = new Map(splits.map(s => [s.routeShortName, s]));
+  const bySplit = new Map(gtfs.routes.filter(r => byName.has((r.route_short_name ?? '').trim())).map(r => [r.route_id, byName.get((r.route_short_name ?? '').trim())!]));
+  const routeOfTrip = new Map(gtfs.trips.map(t => [t.trip_id, t.route_id]));
   const tripSplit = new Map<string, RouteSplit>();
   for (const t of gtfs.trips) {
     const split = bySplit.get(t.route_id);
     if (split) tripSplit.set(t.trip_id, split);
   }
   for (const split of splits) {
-    if (!gtfs.routes.some(r => r.route_id === split.routeId)) throw new Error(`routeSplits: route ${split.routeId} is not in the feed`);
+    if (![...bySplit.values()].includes(split)) throw new Error(`routeSplits: route ${split.routeShortName} is not in the feed`);
   }
   const served = new Map<string, Set<number>>();
   for (const st of gtfs.stopTimes) {
@@ -58,7 +61,7 @@ export function splitRoutes(gtfs: GtfsData, splits: readonly RouteSplit[]): { gt
   for (const [tripId, split] of tripSplit) {
     const parts = [...(served.get(tripId) ?? [])];
     if (parts.length !== 1) { bad.push(`${tripId} (${parts.length ? parts.map(i => split.parts[i].shortName).join(' and ') : 'no part'})`); continue; }
-    const id = splitRouteId(split.routeId, split.parts[parts[0]]);
+    const id = splitRouteId(routeOfTrip.get(tripId)!, split.parts[parts[0]]);
     partOf.set(tripId, id);
     counts[id] = (counts[id] ?? 0) + 1;
   }
@@ -82,7 +85,7 @@ export function splitRoutes(gtfs: GtfsData, splits: readonly RouteSplit[]): { gt
       trips: gtfs.trips.map(t => (partOf.has(t.trip_id) ? { ...t, route_id: partOf.get(t.trip_id)! } : t)),
       ...(gtfs.fareRules ? { fareRules: gtfs.fareRules.flatMap(f => {
         const split = f.route_id ? bySplit.get(f.route_id) : undefined;
-        return split ? split.parts.map(part => ({ ...f, route_id: splitRouteId(split.routeId, part) })) : [f];
+        return split ? split.parts.map(part => ({ ...f, route_id: splitRouteId(f.route_id!, part) })) : [f];
       }) } : {}),
     },
     trips: counts,
