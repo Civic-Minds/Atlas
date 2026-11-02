@@ -111,7 +111,7 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
           <div className="relative min-w-0 pb-[12vh]">
             {/* #1310: pinned below the page's sticky header at every width, and held through the last stage (the bottom padding),
                 so a stage heading never scrolls under the Atlas logo while it is the one being read. */}
-            <div className="sticky top-14 min-w-0 lg:top-24">
+            <div className="sticky top-16 min-w-0 lg:top-24">
               <FrequentServiceStoryMap agencies={agencies} stage={storyStage} frequencyMinutes={frequencyMinutes} researchRecord={frequentServiceStoryResearchRecord} />
             </div>
             <div className="relative z-10 space-y-[55vh] pb-[60vh] pt-8" aria-hidden="true">
