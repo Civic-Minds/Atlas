@@ -13,7 +13,8 @@ import FrequentServiceStoryMap from '../components/FrequentServiceStoryMap';
 import PageShell from '../components/ui/PageShell';
 import { UNDERLINED_LINK } from '../pageStyles';
 import type { Agency } from '../App';
-import { headwayAmount } from '../../shared/headwayText';
+import { headwayAmount, headwayOrBetter } from '../../shared/headwayText';
+import { hourTime } from '../../shared/timeText';
 
 interface Props {
   onExploreMap: () => void;
@@ -92,8 +93,17 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
         {/* CIV-1169 (Ryan's pick 6): a text break between the montage and the first map. */}
         <section id="story" aria-labelledby="story-break-heading" className="scroll-mt-16 mx-auto mt-24 w-full max-w-[48rem] sm:mt-32">
           <h2 id="story-break-heading" className="text-3xl sm:text-4xl font-black tracking-tight">Every map tells it differently.</h2>
+          {/* CIV-1168 bridge, Ryan approved version A word for word on 2026-11-02 (_review/frequent-bridge),
+              with its times and wait in Atlas's style ("6 AM", "every 10 min") from the shared helpers. Every claim is from the montage's own
+              maps, linked under each frame; Toronto's hours are its Ten-Minute Network definition (definition-quotes-2026-10-11.json, ttc). */}
           <p className="mt-5 text-base leading-8 text-[var(--text-muted)]">
-            Each agency decides what its map shows, so one map is hard to compare with the next. Atlas starts from the schedules instead. Here is Toronto's network, built from the TTC's own schedule data, one step at a time.
+            Each agency decides what its map shows, so one map is hard to compare with the next. Toronto's Ten-Minute Network means a bus or streetcar {headwayOrBetter(10)}, from {hourTime(6)} to {hourTime(25)}. Vancouver and Los Angeles both draw the line at 15 minutes, but Vancouver checks it until {hourTime(21)} every day of the week, and Los Angeles only on weekdays until {hourTime(18)}. Washington, DC has two levels, one at 12 minutes and one at 20. Miami-Dade's map doesn't use the word frequent at all. It colours every route by how often the bus comes at weekday midday.
+          </p>
+          <p className="mt-5 text-base leading-8 text-[var(--text-muted)]">
+            The maps also differ in what they draw. Vancouver's and Portland's show only the frequent network, so a slower route isn't on the map. Toronto's, Ottawa's and Seattle's draw every route and mark the frequent ones. Seattle also counts two routes that share a street as frequent together, which none of the other maps here do.
+          </p>
+          <p className="mt-5 text-base leading-8 text-[var(--text-muted)]">
+            Atlas starts from the schedules instead. Here is Toronto's network, built from the TTC's own schedule data, one step at a time.
           </p>
         </section>
 
