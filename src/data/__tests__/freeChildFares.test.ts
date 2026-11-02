@@ -3,7 +3,7 @@ import Papa from 'papaparse';
 import { describe, expect, it } from 'vitest';
 import { countryForRegion } from '../../../shared/regionCountry';
 import { FREE_CHILD_AGE_COUNTS, FREE_CHILD_AGENCIES_BY_COUNTRY, FREE_CHILD_OTHER_POLICIES, FREE_CHILD_REGIONS, freeChildFareStats } from '../freeChildFares';
-import { REGION_HEXES } from '../regionHexGrid';
+import { REGION_TILES } from '../regionTileGrid';
 
 // Canada and US agencies only. A ledger row with no region takes its agency config's region.
 const country = (row: Record<string, string>) => countryForRegion(row.region || JSON.parse(readFileSync(`config/agencies/${row.slug}.json`, 'utf8')).region);
@@ -33,7 +33,7 @@ describe('free child fares chart counts (CIV-1149)', () => {
     expect(freeChildFareStats).toMatchObject({ agencies: 553, freeUpToAge: 374, notFound: 34 });
   });
 
-  it('counts every state and province from the ledger, each with one hex of its own (CIV-1282)', () => {
+  it('counts every state and province from the ledger, each with one tile of its own (CIV-1282)', () => {
     const region = (row: Record<string, string>) => row.region || JSON.parse(readFileSync(`config/agencies/${row.slug}.json`, 'utf8')).region;
     const byRegion = new Map<string, { agencies: number; ages: Map<number, number> }>();
     for (const row of ledger) {
@@ -45,7 +45,7 @@ describe('free child fares chart counts (CIV-1149)', () => {
     expect(FREE_CHILD_REGIONS.map(([name, agencies, ages]) => [name, agencies, ages])).toEqual(
       [...byRegion].sort((a, b) => a[0].localeCompare(b[0])).map(([name, r]) => [name, r.agencies, [...r.ages].sort((x, y) => x[0] - y[0])]),
     );
-    const cells = FREE_CHILD_REGIONS.map(([name]) => REGION_HEXES[name]);
+    const cells = FREE_CHILD_REGIONS.map(([name]) => REGION_TILES[name]);
     expect(cells.every(Boolean)).toBe(true);
     expect(new Set(cells.map(c => `${c.col},${c.row}`)).size).toBe(cells.length);
     expect(new Set(cells.map(c => c.abbr)).size).toBe(cells.length);
