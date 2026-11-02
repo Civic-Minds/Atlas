@@ -1,4 +1,5 @@
 import type { Key, ReactNode } from 'react';
+import { ACTIVE_BG, CHART_COUNT, CHART_TEXT, FADED_OPACITY, useActivePart } from './useActivePart';
 
 /** One bar of a research bar chart: its name, its count and its fill. */
 export interface RankedBar {
@@ -7,76 +8,42 @@ export interface RankedBar {
   value: number;
   /** The bar's fill (a colour, or a pattern such as stripes for "not found"). */
   fill: string;
+  /** What the bar is, as one sentence (its accessible name). */
+  sentence: string;
 }
 
-type Props = {
+/**
+ * The Frequent service story's bar chart: a name, a rounded bar on a shared track and the count, one row per bar. It picks a
+ * bar the split bar's way (useActivePart): hovering, focusing or tapping a row fades the other bars and highlights its name,
+ * and the names and counts use the split bar legend's text (CategorySpark, SplitBar).
+ */
+export default function RankedBars({ bars, max, label }: {
   bars: readonly RankedBar[];
   /** The value a full-width bar stands for (shared when two charts sit on one scale). */
   max: number;
-  /** The bars' list spacing. */
-  listClassName: string;
-  /** Each row's grid: name, bar and count columns. */
-  rowClassName: string;
-  labelClassName: string;
-  /** Extra classes on the fill (a transition, for bars that change). */
-  fillClassName?: string;
-} & (
-  | {
-      /** A read-only chart: a list whose rows name their count on hover. */
-      as: 'list';
-      title: (bar: RankedBar) => string;
-    }
-  | {
-      /** A chart whose bars are picked one at a time. */
-      as: 'buttons';
-      selectedKey: Key;
-      onSelect: (key: Key) => void;
-      /** The button's accessible name and hover text. */
-      describe: (bar: RankedBar) => string;
-    }
-);
-
-/**
- * The Frequent service story's bar chart: a name, a rounded bar on a shared track and the count, one row per bar.
- */
-export default function RankedBars(props: Props) {
-  const { bars, max, listClassName, rowClassName, labelClassName, fillClassName } = props;
-  const cells = (bar: RankedBar) => (
-    <>
-      <span className={labelClassName}>{bar.label}</span>
-      <div className="h-3 overflow-hidden rounded-full bg-[var(--bg-stat)]">
-        <div
-          className={`h-full rounded-full${fillClassName ? ` ${fillClassName}` : ''}`}
-          style={props.as === 'buttons'
-            ? { width: `${(bar.value / max) * 100}%`, backgroundColor: bar.fill }
-            : { width: `${(bar.value / max) * 100}%`, background: bar.fill }}
-        />
-      </div>
-      <span className="text-right tabular-nums text-[var(--text-muted)]">{bar.value}</span>
-    </>
-  );
-  if (props.as === 'list') {
-    return (
-      <ul className={listClassName}>
-        {bars.map(bar => (
-          <li key={bar.key} title={props.title(bar)} className={rowClassName}>{cells(bar)}</li>
-        ))}
-      </ul>
-    );
-  }
+  /** The chart's accessible name. */
+  label: string;
+}) {
+  const { active, clear, faded, partEvents } = useActivePart();
   return (
-    <div className={listClassName}>
+    <div role="group" aria-label={label} className="space-y-3 select-none" onMouseLeave={clear}>
       {bars.map(bar => (
         <button
           key={bar.key}
           type="button"
-          aria-pressed={props.selectedKey === bar.key}
-          aria-label={props.describe(bar)}
-          onClick={() => props.onSelect(bar.key)}
-          title={props.describe(bar)}
-          className={rowClassName}
+          aria-label={bar.sentence}
+          {...partEvents(bar.key)}
+          className={`grid w-full cursor-pointer grid-cols-[4.5rem_1fr_3rem] items-center gap-3 rounded-sm border-0 bg-transparent p-0 text-left outline-offset-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--accent)] ${CHART_TEXT}`}
         >
-          {cells(bar)}
+          <span>
+            <span data-active={active === bar.key ? 'true' : undefined} className="-mx-1.5 inline-block rounded-md px-1.5 py-0.5 leading-4 transition-colors"
+              style={active === bar.key ? { background: ACTIVE_BG } : undefined}>{bar.label}</span>
+          </span>
+          <span className="block h-3 overflow-hidden rounded-full bg-[var(--bg-stat)]" aria-hidden="true">
+            <span className="block h-full rounded-full opacity-90 transition-opacity"
+              style={{ width: `${(bar.value / max) * 100}%`, background: bar.fill, opacity: faded(bar.key) ? FADED_OPACITY : undefined }} />
+          </span>
+          <span className={`text-right tabular-nums ${CHART_COUNT}`}>{bar.value}</span>
         </button>
       ))}
     </div>

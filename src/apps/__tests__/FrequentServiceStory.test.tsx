@@ -23,12 +23,14 @@ describe('FrequentServiceStory', () => {
     expect(onExploreMap).toHaveBeenCalledOnce();
   });
 
-  it('changes the selected threshold without rendering agency tabs', () => {
+  it('picks a threshold bar the split bar\'s way: it fades the other bars and highlights its name, without agency tabs', () => {
     render(<FrequentServiceStory agencies={agencies} onExploreMap={() => {}} />);
     const tenMinuteButton = screen.getByRole('button', { name: /Show examples for 10-minute service/ });
     fireEvent.click(tenMinuteButton);
     expect(screen.queryByRole('tab')).not.toBeInTheDocument();
-    expect(tenMinuteButton).toHaveAttribute('aria-pressed', 'true');
+    expect(tenMinuteButton.querySelector('[data-active="true"]')).not.toBeNull();
+    const fifteen = screen.getByRole('button', { name: /Show examples for 15-minute service/ });
+    expect((fifteen.querySelector('[style*="width"]') as HTMLElement).style.opacity).toBe('0.35');
   });
 
   it('counts the Canada and US definitions that still held on the October 30 recheck (CIV-1149)', () => {

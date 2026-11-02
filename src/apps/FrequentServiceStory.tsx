@@ -28,7 +28,6 @@ const HEADWAY_COLUMNS: DataTableColumn<HeadwayBar>[] = [
 ];
 
 export default function FrequentServiceStory({ onExploreMap, agencies }: Props) {
-  const [selectedMinutes, setSelectedMinutes] = useState(15);
   const [storyStage, setStoryStage] = useState(0);
   const frequencyMinutes = 15 as const;
   const storyStepRefs = useRef<Array<HTMLDivElement | null>>([]);
@@ -129,18 +128,11 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
                 Pick a representative threshold to see how agencies turn that number into a service promise. This chart covers {frequentServiceStoryStats.chartedAgencies} agencies with a verified numeric definition; secondary tiers remain in the research instead of being flattened.
               </p>
             </div>
-            <div className="mt-10" aria-label="Interactive chart showing the number of agencies by the selected published frequent-service threshold">
+            <div className="mt-10">
               <RankedBars
-                as="buttons"
-                bars={frequentServiceStoryStats.headwayBars.map(bar => ({ key: bar.minutes, label: headwayAmount(bar.minutes), value: bar.agencies, fill: selectedMinutes === bar.minutes ? 'var(--accent)' : 'var(--text-muted)' }))}
+                label="Interactive chart showing the number of agencies by the selected published frequent-service threshold"
+                bars={frequentServiceStoryStats.headwayBars.map(bar => ({ key: bar.minutes, label: headwayAmount(bar.minutes), value: bar.agencies, fill: 'var(--text-muted)', sentence: `Show examples for ${bar.minutes}-minute service (${bar.agencies} agencies)` }))}
                 max={maxBar}
-                listClassName="space-y-4"
-                rowClassName="grid w-full grid-cols-[4.5rem_1fr_3rem] items-center gap-3 rounded-lg text-left text-sm outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)]"
-                labelClassName="font-black text-[var(--text-primary)]"
-                fillClassName="transition-[width,background-color]"
-                selectedKey={selectedMinutes}
-                onSelect={key => setSelectedMinutes(key as number)}
-                describe={bar => `Show examples for ${bar.key}-minute service (${bar.value} agencies)`}
               />
               <p className="mt-5 text-xs leading-5 text-[var(--text-dim)]">Each agency appears once, at the slowest wait its source gives for weekday daytime service: “every 15–20 minutes” counts as 20. Other times of day and secondary tiers remain in the research. Checked again on October 30, 2026. {frequentServiceStoryStats.recheckLeftOut} agencies are left out because their page is gone or couldn't be checked again.</p>
               <ChartTableDetails caption="There is no single “frequent.”" columns={HEADWAY_COLUMNS} rows={frequentServiceStoryStats.headwayBars} rowKey={bar => bar.minutes} />
