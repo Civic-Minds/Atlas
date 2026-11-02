@@ -22,7 +22,7 @@ const OUT = 'shared/data/area-boundaries.json';
 /** Douglas-Peucker tolerance in degrees (about 100 m): small next to a metro area, and keeps the file small. */
 const SIMPLIFY_DEG = 0.001;
 
-async function getJson(url: string): Promise<any> {
+export async function getJson(url: string): Promise<any> {
   for (let attempt = 1; attempt <= 6; attempt++) {
     try {
       const res = await fetch(url);
@@ -37,9 +37,9 @@ async function getJson(url: string): Promise<any> {
   }
 }
 
-const qs = (base: string, params: Record<string, string>) => `${base}?${new URLSearchParams({ outFields: '*', ...params })}`;
+export const qs = (base: string, params: Record<string, string>) => `${base}?${new URLSearchParams({ outFields: '*', ...params })}`;
 
-function simplify(ring: Array<[number, number]>): Array<[number, number]> {
+export function simplify(ring: Array<[number, number]>): Array<[number, number]> {
   if (ring.length <= 4) return ring;
   const keep = new Uint8Array(ring.length);
   keep[0] = keep[ring.length - 1] = 1;

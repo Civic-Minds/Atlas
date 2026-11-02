@@ -7,7 +7,7 @@ import { mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { SITE_URL, applySeoToHtml, buildSitemapXml, injectRootHtml, prerenderRoutes, researchPreviewRoutes, resolveSeo } from '../shared/seo';
-import { AGENCY_DATA_SCRIPT_ID, agencyPageData, agencyPageJsonLd, agencyPagePath, resolveAgencySeo } from '../shared/agencyPages';
+import { AGENCY_DATA_SCRIPT_ID, agencyPageData, agencyPageJsonLd, agencyPagePath, areaPageStatus, resolveAgencySeo } from '../shared/agencyPages';
 import { AGENCY_INDEX_DATA_SCRIPT_ID, AGENCY_INDEX_PATH, buildAgencyIndexData, resolveAgencyIndexSeo } from '../shared/agencyIndex';
 import { AREA_DATA_SCRIPT_ID, areaPageJsonLd, buildAreaPageData, resolveAreaSeo } from '../shared/areaPages';
 import { areaPagePath, type AreaConfig } from '../shared/areas';
@@ -83,9 +83,11 @@ if (mod.BUILD_FLAGS.agencyPages) {
       writePage(agencyPagePath(a.slug), seo, mod.renderAgencyPage(data), { id: AGENCY_DATA_SCRIPT_ID, value: data }, agencyPageJsonLd(a, seo.canonicalUrl, origin, data.area, data.intro, data.regionPage));
       urls.push(seo.canonicalUrl);
     }
+    // An area needs two agencies for a page (areaPageStatus); vercel.json redirects a one-agency area to that agency.
+    const { pages: areaPages } = areaPageStatus(agencies, areas);
     for (const area of areas) {
+      if (!areaPages.has(area.slug)) continue;
       const data = buildAreaPageData(area, bySlug, AGENCY_PAGE_DATA.generatedAt);
-      if (data.agencies.length === 0) continue;
       const seo = resolveAreaSeo(data, { mode: mod.BUILD_MODE, origin });
       writePage(areaPagePath(area.slug), seo, mod.renderAreaPage(data), { id: AREA_DATA_SCRIPT_ID, value: data }, areaPageJsonLd(data, seo.canonicalUrl, origin));
       urls.push(seo.canonicalUrl);
@@ -107,7 +109,7 @@ if (mod.BUILD_FLAGS.agencyPages) {
     }
     // The committed public/sitemap.xml stays public-only; this build's copy also lists agency and area pages.
     writeFileSync(join(dist, 'sitemap.xml'), buildSitemapXml(urls));
-    console.log(`Prerendered ${agencies.length} agency pages, ${areas.length} area pages and ${regions.length} state and province pages (data release ${AGENCY_PAGE_DATA.releaseId}); sitemap.xml updated`);
+    console.log(`Prerendered ${agencies.length} agency pages, ${areaPages.size} area pages and ${regions.length} state and province pages (data release ${AGENCY_PAGE_DATA.releaseId}); sitemap.xml updated`);
   }
 }
 
