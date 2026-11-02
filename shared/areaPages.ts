@@ -42,8 +42,10 @@ export interface AreaAgencyRow {
   totalRoutes: number;
   /** Route counts by table column (AREA_TABLE_MODES, rarer modes added into "Other"), only the columns the agency has. */
   modes: Record<string, number>;
-  /** Its page: the agency's (agencyPagePath), or a parent agency's (Ryan, 2026-11-02). */
+  /** Its page: the agency's (agencyPagePath), or a parent agency's (Ryan, 2026-11-02). The page links areaAgencyRowHref, never this. */
   href: string;
+  /** A parent agency's row, standing for its members counted here. */
+  parent?: true;
   /** The agencies it stands for on the map: itself, or a parent's members counted here. */
   slugs: string[];
 }
@@ -114,6 +116,14 @@ function tableModes(byMode: ReadonlyArray<{ label: string; routes: readonly unkn
   return out;
 }
 
+/**
+ * An agency row's link, built from its slug: the page reads its rows back from the embedded JSON, so it never puts a
+ * URL from that text in an href (CodeQL js/xss-through-dom).
+ */
+export function areaAgencyRowHref(row: { slug: string; parent?: true }): string {
+  return row.parent ? parentAgencyPagePath(row.slug) : agencyPagePath(row.slug);
+}
+
 /** The page numbers for a set of agencies, each with only the routes the page counts: the rows, bar, mode counts and dates. */
 export function agencyGroupData(members: readonly AgencyPageSummary[], all: ReadonlyMap<string, AgencyPageSummary>, releaseDate: string | null): AgencyGroupData {
   const shared = sharedOfficialNames([...all.values()]);
@@ -132,8 +142,9 @@ export function agencyGroupData(members: readonly AgencyPageSummary[], all: Read
       displayName: a.displayName,
       totalRoutes: s.totalRoutes,
       modes: tableModes(s.byMode),
-      href: a.members ? parentAgencyPagePath(a.slug) : agencyPagePath(a.slug),
+      href: areaAgencyRowHref({ slug: a.slug, parent: a.members ? true : undefined }),
       slugs: a.members ?? [a.slug],
+      ...(a.members ? { parent: true as const } : {}),
     });
   }
   rows.sort((x, y) => y.totalRoutes - x.totalRoutes || compareAgencyName(x.name, y.name) || x.slug.localeCompare(y.slug));
