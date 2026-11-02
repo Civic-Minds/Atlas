@@ -5,12 +5,12 @@ import { buildRouteServiceSummary } from './routeFacts';
 import { unevenPeriodMaxGap } from './routeCardUneven';
 import { rowTrips } from './rowTrips';
 import { routeCardRowValue, type RouteCardRowValue } from './routeCardRowValue';
-import { dirIdNum, groupTrunkHeadway, sharedStopIdsForBranches, sharedStretchHeadway, shouldShowBranchHeadwayRange, shouldShowTrunkSummary, sparklineSourceDirections, stretchSharedHeadway } from './routeCardTrunk';
+import { dirIdNum, groupTrunkHeadway, sharedStopIdsForBranches, sharedStretchHeadway, shouldShowTrunkSummary, sparklineSourceDirections, stretchSharedHeadway } from './routeCardTrunk';
 import { shouldShowDirectionSections } from './routeCardDirectionLayout';
 import { rowLabelWithOrigin } from './rowOriginLabel';
 import { hasStretchRoles, routeFilterAllDayContract, routeFilterContract, type RouteContract } from './stretchCard';
 import { featurePassesHeadwayFilter } from '../../shared/routeHeadwayFilter';
-import { headwayAbout, headwayAboutRange } from './headwayText';
+import { headwayAbout, headwayAboutRange, headwayRangeShown } from './headwayText';
 import { LIMITED_SERVICE_LABEL, noNumberRowLabel, SHARED_STRETCH_LABEL } from '../content/noticeCopy';
 import { buildDirectionGroups, type RouteCardDirectionGroup } from './routeCardDirectionGroups';
 
@@ -149,7 +149,7 @@ export function reportRowValueText(row: CardRow): string {
   const { value, limitedLabel } = row.display(null);
   if (value.isLimited) return limitedLabel ?? LIMITED_SERVICE_LABEL;
   if (value.headway == null) return 'no data for this period';
-  if (value.trunkHeadway != null && shouldShowBranchHeadwayRange(value.trunkHeadway, value.headway)) {
+  if (value.trunkHeadway != null && headwayRangeShown(value.trunkHeadway, value.headway)) {
     return headwayAboutRange(value.trunkHeadway, value.headway);
   }
   return value.headwayLabel ?? headwayAbout(value.headway);

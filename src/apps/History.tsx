@@ -36,8 +36,7 @@ import {
   agencyQualifiesForHistory,
   type HistoryTier,
 } from '../../shared/historyEligibility';
-import { capitalizeFirst, headwayEvery, headwayEveryRange, runTimeAmount } from '../utils/headwayText';
-import { shouldShowBranchHeadwayRange } from '../utils/routeCardTrunk';
+import { capitalizeFirst, headwayEvery, headwayEveryRange, headwayRangeShown, runTimeAmount } from '../utils/headwayText';
 import { historyChartPoints, historyDotPriority, historyYearTicks, placeHistoryDots, snapshotMonth } from '../utils/historyChart';
 import ExpandDialog, { ExpandButton } from '../components/ui/ExpandDialog';
 import Panel, { PanelBody, PanelTitleBar } from '../components/ui/Panel';
@@ -137,12 +136,12 @@ export const MIN_CHART_VALUES = 3;
 
 /**
  * A row's words (CIV-555): "every 15–52 min" where a slow branch sets the period's value and the shared stretch runs
- * more often, by the live route card's rule (shouldShowBranchHeadwayRange, headwayEveryRange); else "every 52 min".
+ * more often, by the one range rule (headwayRangeShown, headwayEveryRange); else "every 52 min".
  * The number that colours and filters stays the period's value.
  */
 function snapshotHeadwayLabel(snapshot: RouteSnapshot, period: TimePeriod, minutes: number): string {
   const trunk = period === 'all' ? snapshot.trunkHeadwayMin : snapshot.trunkHeadwayByPeriod?.[period] ?? undefined;
-  return trunk != null && shouldShowBranchHeadwayRange(trunk, minutes)
+  return trunk != null && headwayRangeShown(trunk, minutes)
     ? headwayEveryRange(trunk, shownMinutes(minutes))
     : headwayEvery(shownMinutes(minutes));
 }
