@@ -1,4 +1,3 @@
-import { agencyPagePath } from '../shared/agencyPages';
 import { fitAgencyName } from './utils/agencyName';
 import { AREA_TABLE_OTHER, areaTableColumnTitle, type AgencyGroupData, type AreaAgencyRow } from '../shared/areaPages';
 import { AGENCY_INDEX_PATH } from '../shared/agencyIndex';
@@ -37,7 +36,7 @@ function modeHeader(label: string) {
 /** The agency's link in the table: its card title, or in a narrow names column a short one with the title on hover (#1245). */
 function agencyNameLink(a: AreaAgencyRow, narrow: boolean) {
   const { text, title } = narrow ? fitAgencyName(a.title, a.displayName, NARROW_NAME_MAX_CHARS) : { text: a.title, title: undefined };
-  return <a className={LINK} href={agencyPagePath(a.slug)} title={title}>{text}</a>;
+  return <a className={LINK} href={a.href} title={title}>{text}</a>;
 }
 
 /**
@@ -66,7 +65,7 @@ export function AgencyModeTable({ data }: { data: Pick<AgencyGroupData, 'agencie
           <DataTable
             caption="Agencies and route counts by mode"
             layout="page"
-            rowHref={a => agencyPagePath(a.slug)}
+            rowHref={a => a.href}
             rows={data.agencies}
             rowKey={a => a.slug}
             columns={[

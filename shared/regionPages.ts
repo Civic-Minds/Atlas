@@ -92,7 +92,7 @@ export function regionBarNote(d: Pick<RegionPageData, 'region'>): string {
 
 /** The map with every listed agency, framed on them all. */
 export function regionMapHref(d: Pick<RegionPageData, 'agencies' | 'bbox'>): string {
-  const params = new URLSearchParams({ agencies: d.agencies.map(a => a.slug).join(',') });
+  const params = new URLSearchParams({ agencies: d.agencies.flatMap(a => a.slugs).join(',') });
   if (d.bbox) {
     const [s, w, n, e] = d.bbox;
     const lat = (s + n) / 2;

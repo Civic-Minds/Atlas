@@ -16,6 +16,7 @@ import { DESCRIPTION_MAX, DESCRIPTION_MIN, TITLE_MAX, firstThatFits, truncateAtW
 import { SITE_URL, seoTitlePrefix, type SeoMode } from './seo';
 import { AGENCY_PATH_PREFIX, agencyPagePath, areaPagePath, parentAgencyPagePath, regionPagePath } from './pagePaths';
 import { parentAgency } from './parentAgencyList';
+import { parentMembers, parentRoutes, parentSummary } from './parentSummary';
 import { zoomForSpan } from './mapZoom';
 import { haversineM } from './shapeProjection';
 import { andOthers, joinList, plural } from './overflowText';
@@ -70,6 +71,8 @@ export interface AgencyPageIdentity {
   pageSlug?: string;
   /** CIV-1277: what tells it apart from a parent of the same name on its page ("Bustang · Interregional"). */
   pageTitleQualifier?: string;
+  /** Only on a parent agency's summary (withParents): the slugs of its members counted there. */
+  members?: string[];
 }
 
 /** Another agency whose stops are within walking distance of this one's, with the routes that serve them. */
@@ -421,6 +424,28 @@ export function regionMembers<T extends Pick<AgencyPageSummary, 'region' | 'rout
     const here = agencyPlaces(a).regions.find(r => r.name === region);
     if (here) out.push(here.routes.length === a.routes.length ? a : { ...a, routes: here.routes, routeCount: here.routes.length });
   }
+  return withParents(out as unknown as AgencyPageSummary[], all as unknown as AgencyPageSummary[]) as unknown as T[];
+}
+
+/**
+ * Ryan (2026-11-02): area and state pages show a parent agency once in place of its members, as the agency list does,
+ * with the routes its members have there counted once (parentRoutes). Its members stay on its page's Services list.
+ * Members come first in the order given; the parent takes the place of its first member.
+ */
+export function withParents(members: readonly AgencyPageSummary[], all: Iterable<AgencyPageSummary>): AgencyPageSummary[] {
+  if (!members.some(m => parentAgency(m.parentAgency))) return [...members];
+  const everyone = [...all];
+  const out: AgencyPageSummary[] = [];
+  const done = new Set<string>();
+  for (const m of members) {
+    const parent = parentAgency(m.parentAgency);
+    if (!parent) { out.push(m); continue; }
+    if (done.has(parent.slug)) continue;
+    done.add(parent.slug);
+    const here = parentMembers(parent, members);
+    const routes = parentRoutes(here);
+    out.push({ ...parentSummary(parent, parentMembers(parent, everyone)), routes, routeCount: routes.length, members: here.map(x => x.slug) });
+  }
   return out;
 }
 
@@ -439,21 +464,21 @@ export function regionPageHref(a: Pick<AgencyPageSummary, 'country' | 'region'>,
 export function areaAgencySummaries(area: { slug: string; agencies: readonly string[] }, all: ReadonlyMap<string, AgencyPageSummary>, betaBuild: boolean = BETA_BUILD): AgencyPageSummary[] {
   const hasPage = hasMiddayService;
   const tagged = [...all.values()].some(a => a.routes.some(r => r.areas !== undefined));
-  if (!tagged) return area.agencies.map(s => all.get(s)).filter((a): a is AgencyPageSummary => !!a && hasPage(a));
+  if (!tagged) return withParents(area.agencies.map(s => all.get(s)).filter((a): a is AgencyPageSummary => !!a && hasPage(a)), all.values());
   const out: AgencyPageSummary[] = [];
   for (const a of all.values()) {
     if ((a.betaOnly && !betaBuild) || !hasPage(a)) continue;
     const routes = agencyPlaces(a).areas.find(x => x.slug === area.slug)?.routes ?? [];
     if (routes.length > 0) out.push({ ...a, routes, routeCount: routes.length });
   }
-  return out;
+  return withParents(out, all.values());
 }
 
 /** Ryan (2026-11-01): an area page needs at least two agencies; with one, its URL redirects to that agency's page. */
 export const AREA_PAGE_MIN_AGENCIES = 2;
 
 /**
- * Which areas get a page, and where a paged area with one agency sends its URL: counted with areaAgencySummaries on the
+ * Which areas get a page, and the page a paged area with one agency sends its URL to: counted with areaAgencySummaries on the
  * public catalog, so every build and vercel.json agree. The one place this rule is written.
  */
 export function areaPageStatus(
@@ -470,7 +495,8 @@ export function areaPageStatus(
     if (!area.page) continue;
     const members = areaAgencySummaries(area, bySlug, false);
     if (members.length >= AREA_PAGE_MIN_AGENCIES) status.pages.add(area.slug);
-    else if (members.length === 1) status.redirects.set(area.slug, members[0].slug);
+    // The one agency's page: a parent agency's own page when the area's only agency is a parent (withParents).
+    else if (members.length === 1) status.redirects.set(area.slug, members[0].members ? parentAgencyPagePath(members[0].slug) : agencyPagePath(members[0].slug));
   }
   if (!areas) AREA_STATUS.set(all, status);
   return status;

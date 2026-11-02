@@ -158,6 +158,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ### Agency, area and research pages
 
 - **MTA New York, exo, MTA Maryland and Bustang each have one page across their feeds**: the parent page adds up its services' routes, counting a route shared by two feeds once, and lists them under "Services"; each service's page links up to it, and the map's agency picker and the agency list show it once
+- **Area and state pages show a parent agency once**: MTA New York is one row on New York's page and in the New York area, with its routes counted once, and its services are on its own page
 - **Every state and province has its own page**: it compares its agencies with the area pages' table and frequency bar
 - **Agency pages [name every area an agency serves](https://github.com/Civic-Minds/Atlas/issues/1283)**: BART read "in Oakland", it now reads "in the Bay Area and the San Jose area", each area links to its own page, a city is never a link, and state and province pages list every agency that stops in them
 - **An area page needs at least [two agencies](https://github.com/Civic-Minds/Atlas/issues/1283)**: a one-agency area such as Austin sends its link to the agency's own page, since its page repeated the agency page, and the agency page names the area without a link
