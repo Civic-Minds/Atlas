@@ -56,8 +56,8 @@ const chartTicks = niceAxis(0, Math.max(...ageColumns.map(c => c.value))).ticks;
 // limit draws the hex with a dashed outline, since its "most common" rests on one or two agencies.
 const MIN_AGE_RULES = 3;
 const AGE_BANDS: ReadonlyArray<{ upTo: number; label: string; mix: number }> = [
-  { upTo: 5, label: 'Up to 5', mix: 34 }, { upTo: 9, label: '6–9', mix: 50 }, { upTo: 11, label: '10–11', mix: 66 },
-  { upTo: 13, label: '12–13', mix: 82 }, { upTo: 18, label: '14–18', mix: 100 },
+  { upTo: 5, label: 'Up to 5', mix: 28 }, { upTo: 9, label: '6–9', mix: 56 }, { upTo: 11, label: '10–11', mix: 70 },
+  { upTo: 13, label: '12–13', mix: 85 }, { upTo: 18, label: '14–18', mix: 100 },
 ];
 const bandFill = (mix: number) => `color-mix(in srgb, var(--text-muted) ${mix}%, transparent)`;
 const regionRows = FREE_CHILD_REGIONS.map(([region, total, regionAges]) => {
@@ -74,7 +74,7 @@ const regionTiles: HexTile[] = regionRows.map(r => {
   return {
     key: r.region, abbr, col, row, count: r.total,
     value: r.age != null ? String(r.age) : r.tie ? 'Mix' : '–',
-    fill: band ? bandFill(band.mix) : 'none', darkFill: !!band && band.mix >= 82, thin: r.withAge > 0 && r.withAge < MIN_AGE_RULES,
+    fill: band ? bandFill(band.mix) : 'none', darkFill: !!band && band.mix >= 85, thin: r.withAge > 0 && r.withAge < MIN_AGE_RULES,
     sentence: `${r.region}: ${what}, ${agencies(r.total)}, ${r.withAge} with an age limit.`,
   };
 });
@@ -153,7 +153,7 @@ export default function FreeChildFaresPage() {
               <ul className="mt-4 flex flex-wrap gap-x-4 gap-y-1 text-xs text-[var(--text-primary)]">
                 {AGE_BANDS.map(b => <li key={b.label}><LegendItem color={bandFill(b.mix)}>{b.label}</LegendItem></li>)}
                 <li><LegendItem color="var(--bg-panel)" swatchClassName="ring-1 ring-[var(--border-primary)]">Mix: a tie · –: no age limit</LegendItem></li>
-                <li><LegendItem color="transparent" swatchClassName="border border-dashed border-[var(--text-muted)]">Dashed: fewer than {MIN_AGE_RULES} agencies with an age limit</LegendItem></li>
+                <li><LegendItem color="transparent" swatchClassName="border border-dashed border-[var(--text-muted)]">Dashed: only 1 or {MIN_AGE_RULES - 1} agencies with an age limit</LegendItem></li>
               </ul>
               <ChartTableDetails id={mapTableId} caption={MAP_TITLE} columns={REGION_COLUMNS} rows={regionRows} rowKey={r => r.region} />
             </div>
