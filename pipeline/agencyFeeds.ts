@@ -11,6 +11,7 @@
  *
  * Callers own downloading, skip/stale decisions, and where the output goes.
  */
+import type { RouteSplit } from './preprocess/split-routes.js';
 import { processGtfsBuffer, type GtfsPreprocess, type ProcessOptions, type ProcessResult } from './process-core.js';
 import { ROUTE_ARTIFACT_SCHEMA_VERSION } from '../shared/artifactSchema.js';
 import { extractAgencySections } from '../shared/agencySections.js';
@@ -33,6 +34,8 @@ export interface AgencyFeedConfig {
   mergeEquivalentShapeVariants?: boolean;
   mergeEquivalentShapeVariantsAllModes?: boolean;
   mergeEquivalentShapeVariantsRouteTypes?: string[];
+  /** #1287: one feed route that is several lines, split by the station each trip serves (preprocess/split-routes.ts). */
+  routeSplits?: RouteSplit[];
   keepLongShapeJumps?: boolean;
   skipClusteredJumpRepair?: boolean;
   poolSingleTripShapes?: boolean;
@@ -102,6 +105,7 @@ export function agencyProcessOptions(agency: AgencyFeedConfig, overrides: Agency
     mergeEquivalentShapeVariants: agency.mergeEquivalentShapeVariants,
     mergeEquivalentShapeVariantsAllModes: agency.mergeEquivalentShapeVariantsAllModes,
     mergeEquivalentShapeVariantsRouteTypes: agency.mergeEquivalentShapeVariantsRouteTypes,
+    routeSplits: agency.routeSplits,
     keepLongShapeJumps: agency.keepLongShapeJumps,
     skipClusteredJumpRepair: agency.skipClusteredJumpRepair,
     poolSingleTripShapes: agency.poolSingleTripShapes,
