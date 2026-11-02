@@ -14,11 +14,12 @@ import {
   CONNECTS_WITH,
   NO_MIDDAY_PHRASE,
   connectionNames,
+  PLACE_OTHERS,
   type AgencyPageData,
   type AgencyPageRoute,
 } from '../shared/agencyPages';
 import { areaRegionName, areaRegionTitle } from '../shared/areaRegions';
-import { AGENCY_INDEX_PATH, agencyIndexRegionHref } from '../shared/agencyIndex';
+import { AGENCY_INDEX_PATH } from '../shared/agencyIndex';
 import { areaPagePath } from '../shared/areas';
 import { andOthers } from '../shared/overflowText';
 import { routeListHeadwayText } from './utils/effectiveHeadway';
@@ -42,19 +43,33 @@ function readEmbeddedData(slug: string | undefined): AgencyPageData | null {
   return data && data.agency.slug === slug ? data : null;
 }
 
+/** "A, B and C" or "A, B, C and 4 other agencies" (namesList's wording), each name a link when it has a page. */
+function LinkedNames({ items, others, counted }: { items: ReadonlyArray<{ name: string; href?: string }>; others: number; counted: readonly [string, string] }) {
+  return (
+    <>
+      {items.map((p, i) => (
+        <span key={p.name}>
+          {i > 0 ? (i === items.length - 1 && others === 0 ? ' and ' : ', ') : ''}
+          {p.href ? <a className={UNDERLINED_LINK} href={p.href}>{p.name}</a> : p.name}
+        </span>
+      ))}
+      {others > 0 ? ` ${andOthers(others, ...counted)}` : ''}
+    </>
+  );
+}
+
 /**
- * The intro sentence, once, under the title. The place links to its area page when the agency has one, otherwise to its
- * state or province page (CIV-976), and failing that to its state or province in the all-agencies list (CIV-966); connecting agencies named in it are links when they have
- * a page. An agency with no regular midday service says so after it (CIV-965).
+ * The intro sentence, once, under the title. Each area it names links to that area's page; a city is plain text, since a
+ * link always names the page it opens (#1283). Connecting agencies named in it are links when they have a page.
+ * An agency with no regular midday service says so after it (CIV-965).
  */
 function Intro({ data }: { data: AgencyPageData }) {
-  const { intro, introLead, place, connections, area } = data;
+  const { intro, introLead, place, places, connections } = data;
   const sentence = 'mt-4 max-w-2xl text-base leading-7 text-[var(--text-muted)]';
   const placeAt = introLead.length;
   const noMidday = data.agency.routes.length > 0 && data.agency.routes.every(r => r.midday == null)
     ? ` ${data.agency.routes.length === 1 ? 'Its route has' : 'Its routes have'} ${NO_MIDDAY_PHRASE.replace(/^with /, '')}.`
     : '';
-  const placeHref = area ? areaPagePath(area.slug) : data.regionPage ?? agencyIndexRegionHref(data.agency);
   if (!intro.startsWith(introLead) || !intro.startsWith(place, placeAt)) return <p className={sentence}>{intro}{noMidday}</p>;
   const at = intro.indexOf(CONNECTS_WITH, placeAt);
   const { named, others } = connectionNames(connections);
@@ -62,18 +77,12 @@ function Intro({ data }: { data: AgencyPageData }) {
   return (
     <p className={sentence}>
       {introLead}
-      {placeHref ? <a className={UNDERLINED_LINK} href={placeHref}>{place}</a> : place}
+      <LinkedNames items={places.named} others={places.others} counted={PLACE_OTHERS} />
       {between}
       {at >= 0 && named.length > 0 && (
         <>
           {CONNECTS_WITH}
-          {named.map((c, i) => (
-            <span key={c.slug}>
-              {i > 0 ? (i === named.length - 1 && others === 0 ? ' and ' : ', ') : ''}
-              {c.page ? <a className={UNDERLINED_LINK} href={agencyPagePath(c.slug)}>{c.name}</a> : c.name}
-            </span>
-          ))}
-          {others > 0 ? ` ${andOthers(others, 'agency', 'agencies')}` : ''}
+          <LinkedNames items={named.map(c => ({ name: c.name, href: c.page ? agencyPagePath(c.slug) : undefined }))} others={others} counted={['agency', 'agencies']} />
         </>
       )}
       .{noMidday}

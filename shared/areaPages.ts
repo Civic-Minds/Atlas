@@ -3,6 +3,7 @@
  * number is added up from the per-agency summaries (shared/agencyPages.ts); nothing new is measured.
  */
 import {
+  agencyPlaces,
   agencyStats,
   bandCounts,
   bestRoute,
@@ -112,7 +113,7 @@ export function areaAgencySummaries(area: Pick<AreaConfig, 'agencies' | 'slug'>,
   const out: AgencyPageSummary[] = [];
   for (const a of all.values()) {
     if ((a.betaOnly && !BETA_BUILD) || !hasPage(a)) continue;
-    const routes = a.routes.filter(r => r.areas?.includes(area.slug));
+    const routes = agencyPlaces(a).areas.find(x => x.slug === area.slug)?.routes ?? [];
     if (routes.length > 0) out.push({ ...a, routes, routeCount: routes.length });
   }
   return out;

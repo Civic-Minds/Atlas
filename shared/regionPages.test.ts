@@ -56,7 +56,16 @@ describe('state and province pages (CIV-976)', () => {
     expect(us.regions.map(x => [x.region, x.href])).toEqual([['Colorado', '/region/colorado'], ['Wyoming', undefined]]);
   });
 
-  it('refuses two places with the same slug', () => {
-    expect(() => regionPages([RTD, ag('co2', 'Colorado', [r('X', 3, 10)], { country: 'Canada' })])).toThrow(/share the region slug/);
+  it('lists an agency on every state its routes stop in, with only the routes counted there (#1283)', () => {
+    const cross = ag('cross', 'Colorado', [{ ...r('1', 3, 10), regions: ['Colorado'] }, { ...r('2', 3, 15), regions: ['Colorado', 'Wyoming'] }, r('3', 3, 20)]);
+    const all = [cross, ONLY_NIGHT];
+    expect(regionPages(all).map(p => p.slug)).toEqual(['colorado', 'wyoming']);
+    const wy = buildRegionPageData({ slug: 'wyoming', name: 'Wyoming', country: 'United States' }, all, null);
+    expect(wy.agencies.map(a => [a.slug, a.totalRoutes])).toEqual([['cross', 1]]);
+    // A route with no state tag counts in the agency's home state.
+    const co = buildRegionPageData({ slug: 'colorado', name: 'Colorado', country: 'United States' }, all, null);
+    expect(co.agencies.map(a => [a.slug, a.totalRoutes])).toEqual([['cross', 3]]);
+    // The breadcrumb keeps the home state.
+    expect(agencyPageData(cross, all).regionPage).toBe('/region/colorado');
   });
 });
