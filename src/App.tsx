@@ -74,6 +74,8 @@ export interface Agency {
   region?: string;
   /** Optional service-area label for regional agencies; avoids presenting one stop-density city as the agency's home. */
   displayArea?: string;
+  /** CIV-1277: its parent agency (config/parent-agencies.json), one row in the agency picker. */
+  parentAgency?: string;
   lastFeedExpiry?: string | null;
   /** CIV-1011: the date most routes stopped being listed with nothing replacing them (YYYYMMDD); the agency shows Ryan's notice. Absent otherwise. */
   listingEndedOn?: string | null;

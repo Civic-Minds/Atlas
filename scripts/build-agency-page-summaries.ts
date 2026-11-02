@@ -46,6 +46,7 @@ import { writeAreaPageList } from './build-area-page-list';
 const OUT = 'shared/data/agency-pages.json';
 // Slugs with a page, small enough for the map bundle (the agency card links only to real pages).
 const SLUGS_OUT = 'shared/data/agency-page-slugs.json';
+const PAGE_RENAMES_OUT = 'shared/data/agency-page-renames.json';
 // CIV-274: official boundaries of the paged areas (scripts/build-area-boundaries.ts).
 const BOUNDARIES = 'shared/data/area-boundaries.json';
 // #1283: official boundaries of the states and provinces (scripts/build-region-boundaries.ts).
@@ -210,7 +211,7 @@ export function summarize(
 }
 
 /** The agency's own config file: the source for its short name, label place and primary area. */
-function readConfig(slug: string): { shortName?: string; labelPlace?: string; displayArea?: string } {
+function readConfig(slug: string): { shortName?: string; labelPlace?: string; displayArea?: string; parentAgency?: string; pageSlug?: string; pageTitleQualifier?: string } {
   try {
     return JSON.parse(readFileSync(`config/agencies/${slug}.json`, 'utf8'));
   } catch {
@@ -255,6 +256,10 @@ function identityFor(a: CatalogAgency) {
     bbox: a.bbox,
     websiteUrl: a.websiteUrl,
     ...(a.betaOnly ? { betaOnly: true as const } : {}),
+    // CIV-1277: its parent agency, and the page URL and title qualifier of a member whose slug the parent's page takes.
+    ...(cfg.parentAgency ? { parentAgency: cfg.parentAgency } : {}),
+    ...(cfg.pageSlug ? { pageSlug: cfg.pageSlug } : {}),
+    ...(cfg.pageTitleQualifier ? { pageTitleQualifier: cfg.pageTitleQualifier } : {}),
     // Every feed's end, as the map reads it (effectiveFeedExpiry): a supplemental rail feed that ends first ends the page's schedule too.
     validThrough: effectiveFeedExpiry(a),
     ...(a.timezone ? { timezone: a.timezone } : {}),
@@ -272,6 +277,8 @@ function writeOutputs(out: AgencyPageSummaries): void {
   writeAtomic(OUT, JSON.stringify(out) + '\n');
   // Every agency gets a page, including ones with no regular midday service (CIV-965).
   writeAtomic(SLUGS_OUT, JSON.stringify(out.agencies.map(a => a.slug)) + '\n');
+  // CIV-1277: members whose page moved off their slug, for every agency page link (shared/pagePaths.ts).
+  writeAtomic(PAGE_RENAMES_OUT, JSON.stringify(Object.fromEntries(out.agencies.filter(a => a.pageSlug).map(a => [a.slug, a.pageSlug]).sort(([x], [y]) => x!.localeCompare(y!)))) + '\n');
   // Which areas have a page follows from the agencies (two or more): the map card's list and the vercel.json redirects.
   writeAreaPageList(out);
 }

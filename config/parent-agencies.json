@@ -1,0 +1,6 @@
+[
+  { "slug": "mta-new-york", "name": "MTA New York", "websiteUrl": "https://new.mta.info" },
+  { "slug": "exo", "name": "exo", "websiteUrl": "https://exo.quebec" },
+  { "slug": "mta-maryland", "name": "Maryland Transit Administration", "websiteUrl": "https://mta.maryland.gov/" },
+  { "slug": "bustang", "name": "Bustang", "websiteUrl": "https://www.ridebustang.com/" }
+]

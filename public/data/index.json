@@ -2543,6 +2543,8 @@
       "displayArea": "Greater Montréal",
       "websiteUrl": "https://exo.quebec/fr/planifier-trajet/train",
       "region": "Quebec",
+      "parentAgency": "exo",
+      "pageSlug": "exo-trains",
       "center": [
         45.5,
         -73.57
@@ -2611,6 +2613,7 @@
       "displayArea": "La Presqu'île",
       "websiteUrl": "https://exo.quebec/fr/planifier-trajet/autobus/CITPI",
       "region": "Quebec",
+      "parentAgency": "exo",
       "center": [
         45.406,
         -74.0382
@@ -2670,6 +2673,7 @@
       "displayArea": "Sud-Ouest",
       "websiteUrl": "https://exo.quebec/fr/planifier-trajet/autobus/CITSO",
       "region": "Quebec",
+      "parentAgency": "exo",
       "center": [
         45.3549,
         -73.7643
@@ -2734,6 +2738,7 @@
       "displayArea": "Le Richelain–Roussillon",
       "websiteUrl": "https://exo.quebec/fr/planifier-trajet/autobus/LRRS",
       "region": "Quebec",
+      "parentAgency": "exo",
       "center": [
         45.4086,
         -73.5026
@@ -2799,6 +2804,7 @@
       "displayArea": "Laurentides",
       "websiteUrl": "https://exo.quebec/fr/planifier-trajet/autobus/CITLA",
       "region": "Quebec",
+      "parentAgency": "exo",
       "center": [
         45.6611,
         -73.9029
@@ -2865,6 +2871,7 @@
       "nameQualifier": "Terrebonne-Mascouche",
       "websiteUrl": "https://exo.quebec/fr/planifier-trajet/autobus/MRCLM",
       "region": "Quebec",
+      "parentAgency": "exo",
       "center": [
         45.7032,
         -73.6487
@@ -2932,6 +2939,7 @@
       "displayArea": "Vallée du Richelieu",
       "websiteUrl": "https://exo.quebec/fr/planifier-trajet/autobus/CITVR",
       "region": "Quebec",
+      "parentAgency": "exo",
       "center": [
         45.54,
         -73.24
@@ -12260,6 +12268,9 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-2280/latest.zip",
       "region": "Colorado",
+      "parentAgency": "bustang",
+      "pageSlug": "bustang-interregional",
+      "pageTitleQualifier": "Interregional",
       "displayArea": "Colorado",
       "bbox": [
         38.8,
@@ -14866,6 +14877,7 @@
       "displayArea": "Maryland",
       "websiteUrl": "https://mta.maryland.gov/",
       "region": "Maryland",
+      "parentAgency": "mta-maryland",
       "center": [
         39,
         -77
@@ -15164,6 +15176,7 @@
       "displayArea": "New York City",
       "websiteUrl": "http://www.mta.info",
       "region": "New York",
+      "parentAgency": "mta-new-york",
       "center": [
         40.71,
         -74.01
@@ -15243,6 +15256,7 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-513/latest.zip",
       "region": "New York",
+      "parentAgency": "mta-new-york",
       "lastFeedExpiry": "20270102",
       "lastFeedVersion": "20261009",
       "lastRefreshedAt": "2026-10-19",
@@ -15309,6 +15323,7 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-512/latest.zip",
       "region": "New York",
+      "parentAgency": "mta-new-york",
       "lastFeedExpiry": "20270102",
       "lastFeedVersion": "20261009",
       "lastRefreshedAt": "2026-10-19",
@@ -15376,6 +15391,7 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-520/latest.zip",
       "region": "New York",
+      "parentAgency": "mta-new-york",
       "lastFeedExpiry": "20270102",
       "lastFeedVersion": "20261009",
       "lastRefreshedAt": "2026-10-19",
@@ -15442,6 +15458,7 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-528/latest.zip",
       "region": "New York",
+      "parentAgency": "mta-new-york",
       "lastFeedExpiry": "20270102",
       "lastFeedVersion": "20261009",
       "lastRefreshedAt": "2026-10-19",
@@ -15507,6 +15524,7 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-514/latest.zip",
       "region": "New York",
+      "parentAgency": "mta-new-york",
       "lastFeedExpiry": "20270102",
       "lastFeedVersion": "20261009",
       "lastRefreshedAt": "2026-10-19",
@@ -15575,6 +15593,7 @@
       "feedUrl": "https://rrgtfsfeeds.s3.amazonaws.com/gtfs_busco.zip",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-510/latest.zip",
       "region": "New York",
+      "parentAgency": "mta-new-york",
       "cities": [
         "Jamaica, New York",
         "Flushing, New York",
@@ -15626,6 +15645,7 @@
       "displayArea": "Long Island",
       "websiteUrl": "https://new.mta.info/agency/long-island-rail-road",
       "region": "New York",
+      "parentAgency": "mta-new-york",
       "center": [
         40.75,
         -73.6
@@ -15692,6 +15712,7 @@
       "displayArea": "New York & Connecticut",
       "websiteUrl": "http://www.mta.info/mnr",
       "region": "New York",
+      "parentAgency": "mta-new-york",
       "center": [
         40.8,
         -73.9
@@ -18371,6 +18392,9 @@
       "lastFeedExpiry": "20270206",
       "lastFeedVersion": "20260821",
       "region": "Maryland",
+      "parentAgency": "mta-maryland",
+      "pageSlug": "mta-maryland-baltimore",
+      "pageTitleQualifier": "Bus, Metro and Light Rail",
       "lastRefreshedAt": "2026-10-19",
       "cities": [
         "Baltimore, Maryland",
@@ -21528,6 +21552,7 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-2330/latest.zip",
       "region": "Colorado",
+      "parentAgency": "bustang",
       "bbox": [
         37.1,
         -105,

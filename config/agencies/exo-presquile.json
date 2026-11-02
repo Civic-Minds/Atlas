@@ -5,6 +5,7 @@
   "displayArea": "La Presqu'île",
   "websiteUrl": "https://exo.quebec/fr/planifier-trajet/autobus/CITPI",
   "region": "Quebec",
+  "parentAgency": "exo",
   "center": [
     45.406,
     -74.0382

@@ -93,22 +93,24 @@ export default function AgenciesIndexPage({ data: dataProp }: { data?: AgencyInd
                   <ul className={`mt-2 text-sm ${INDEX_COLUMNS}`}>
                     {r.agencies.map(a => {
                       const routes = <span className="text-[var(--text-muted)]">{'\u00A0'}·{'\u00A0'}{a.routes.toLocaleString('en-US')}{'\u00A0'}{plural(a.routes, 'route')}</span>;
-                      const live = FEATURES.live && isLiveEligibleSlug(a.slug);
-                      const history = FEATURES.history && HISTORY_SLUGS.has(a.slug);
+                      // A parent agency's row (CIV-1277) links its own page and carries no member's tags.
+                      const href = a.parent?.href ?? agencyPagePath(a.slug);
+                      const live = !a.parent && FEATURES.live && isLiveEligibleSlug(a.slug);
+                      const history = !a.parent && FEATURES.history && HISTORY_SLUGS.has(a.slug);
                       if (live || history) {
                         // Tagged rows stay on one line: a name too long for the column shows its short name ("CDTA"), with
                         // the full name on hover (CIV-967); one still too long shortens with "…".
                         const { text, title } = fitAgencyName(a.name, a.shortName);
                         return (
                           <li key={a.slug} className="flex min-w-0 items-baseline break-inside-avoid py-[3px]">
-                            <a className={`${LINK} min-w-0 truncate underline underline-offset-2`} href={agencyPagePath(a.slug)} title={title ?? a.name}>{text}</a>
+                            <a className={`${LINK} min-w-0 truncate underline underline-offset-2`} href={href} title={title ?? a.name}>{text}</a>
                             <span className="shrink-0 whitespace-nowrap">{routes}<AgencyTags live={live} history={history} /></span>
                           </li>
                         );
                       }
                       return (
                         <li key={a.slug} className="break-inside-avoid py-[3px]">
-                          <a className={UNDERLINED_LINK} href={agencyPagePath(a.slug)}>{a.name}</a>
+                          <a className={UNDERLINED_LINK} href={href}>{a.name}</a>
                           {routes}
                         </li>
                       );
