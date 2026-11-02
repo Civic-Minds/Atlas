@@ -163,6 +163,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ### Agency, area and research pages
 
 - **The [all-agencies list](https://github.com/Civic-Minds/Atlas/issues/1306) shows an agency under every state it serves**: it listed each agency under its home state only, so Nebraska showed two agencies where its state page shows three
+- **State and province pages name their biggest regions**: a sentence after the intro links up to three of the region pages in that state or province, most routes first
 - **The docs page's "On this page" menu keeps its [page title in view](https://github.com/Civic-Minds/Atlas/issues/1279) on short windows**: a list taller than the window now scrolls inside its own box, following the section you're reading, instead of pushing the title under the site header near the end of the page
 - **Every agency page has its own search title**: agencies that share a short name, like the five MTA NYCT Bus boroughs or DART in Dallas and Des Moines, now add their borough, sector or place, and the build fails if two pages would ever share a title again
 - **Free child fares opens with its finding, and highlights age 5**: "Where kids ride free, age 5 is the most common cutoff" is an intro line under the title rather than a big heading, and the age chart highlights the most common age until another is picked

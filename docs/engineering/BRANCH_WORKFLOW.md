@@ -8,7 +8,7 @@ Atlas has one source branch and three deployments. The `main` branch is the sour
 - Start short-lived feature, fix, or data branches from the latest `origin/main`.
 - Open pull requests into `main`. Keep unrelated work in separate branches and worktrees.
 - Do not use a long-lived `beta` branch for feature flags, UI experiments, or agency visibility. The historical `beta` branch is legacy and must not receive new work.
-- `main` branch protection blocks force-pushes and deletion. It does not enforce a required review or status check, so opening a pull request and waiting for the `Type Check · Test · Build` CI check is the working rule rather than a GitHub setting.
+- `main` branch protection blocks force-pushes and deletion. It does not enforce a required review. The "Vercel – atlas" deploy is a required status check; waiting for the `Type Check · Test · Build` CI check is the working rule rather than a GitHub setting.
 
 Typical start:
 
@@ -36,6 +36,8 @@ Preview is not an independent project: the 2026-09-28 topology check in [`../FEA
 Keep differences between the deployments in project-scoped Vercel environment variables, not source branches. `VITE_ATLAS_MODE` is the source of truth; legacy `VITE_BETA_BUILD` and `VITE_PREVIEW_BUILD` values are compatibility fallbacks only.
 
 CI runs on every pull request into `main` and every push to `main`: the normal build plus a second build with the beta flags enabled. A green beta build proves that the same source can serve both deployments; it does not approve a feature for production.
+
+CI builds the full checkout, but Vercel builds only what `.vercelignore` lets through, so a build-time import of an ignored file passes CI and fails every deploy (#1301). Before pushing to `main`, commit and run `npm run check:vercel`: it copies HEAD minus the ignored files to a temp folder and runs `npm ci` plus the public and beta builds there.
 
 ## Feature work
 
