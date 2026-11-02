@@ -2,7 +2,7 @@ import { readFileSync, readdirSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { agencyPageData, agencyPageJsonLd, agencyPlaces, areaPageStatus, type AgencyPageSummaries, type AgencyPageSummary } from './agencyPages';
 import { buildAgencyIndexData } from './agencyIndex';
-import { areaRedirects } from '../scripts/build-area-page-list';
+import { agencyRedirects, areaRedirects, readFormerSlugs } from '../scripts/build-area-page-list';
 import { agencyPageSummaries } from './agencyPagesData';
 import type { AreaConfig } from './areas';
 import { AREA_INDEX } from './areaIndex';
@@ -129,6 +129,15 @@ describe('areas need two agencies for a page (Ryan, 2026-11-01)', () => {
     const vercel = JSON.parse(readFileSync('vercel.json', 'utf8')) as { redirects: Array<{ source: string }> };
     expect(vercel.redirects.filter(r => r.source.startsWith('/area/'))).toEqual(areaRedirects(summaries));
     expect(JSON.parse(readFileSync('shared/data/area-page-slugs.json', 'utf8'))).toEqual([...status.pages].sort());
+  });
+
+  it('vercel.json and former-slugs.json carry every agency config\'s formerSlugs (run scripts/build-area-page-list.ts after a change)', () => {
+    const vercel = JSON.parse(readFileSync('vercel.json', 'utf8')) as { redirects: Array<{ source: string }> };
+    const former = readFormerSlugs();
+    expect(vercel.redirects.filter(r => r.source.startsWith('/agency/'))).toEqual(agencyRedirects(former));
+    expect(JSON.parse(readFileSync('shared/data/former-slugs.json', 'utf8'))).toEqual(former);
+    // NJ Transit: the two old agencies are one (Ryan, 2026-11-02), rail's route ids prefixed.
+    expect(former).toMatchObject({ 'njt-bus': { slug: 'njt' }, 'njt-rail': { slug: 'njt', idPrefix: 'rail:' } });
   });
 
   it('drops a one-agency area from the all-agencies regions list', () => {

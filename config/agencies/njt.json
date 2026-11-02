@@ -1,9 +1,13 @@
 {
   "slug": "njt",
+  "formerSlugs": [
+    "njt-bus",
+    {
+      "slug": "njt-rail",
+      "idPrefix": "rail:"
+    }
+  ],
   "officialName": "NJ Transit",
-  "betaOnly": true,
-  "hiddenInProduction": true,
-  "issueUrl": "https://github.com/Civic-Minds/Atlas/issues/1303",
   "displayArea": "New Jersey",
   "websiteUrl": "http://www.njtransit.com/",
   "region": "New Jersey",

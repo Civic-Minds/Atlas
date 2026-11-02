@@ -1,0 +1,9 @@
+{
+  "njt-bus": {
+    "slug": "njt"
+  },
+  "njt-rail": {
+    "slug": "njt",
+    "idPrefix": "rail:"
+  }
+}

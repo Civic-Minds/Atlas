@@ -22,10 +22,10 @@
     "conflicts": "When official sources disagree, the narrower definition is used and the row is marked conflictingSources."
   },
   "summary": {
-    "agencies": 532,
+    "agencies": 531,
     "byDefinitionStatus": {
       "planned-or-proposed": 22,
-      "no-definition-found": 274,
+      "no-definition-found": 273,
       "not-found-on-recheck": 101,
       "verified": 105,
       "fetch-blocked": 16,
@@ -5635,7 +5635,7 @@
     },
     {
       "slug": "dart-first-state",
-      "name": "DART First State (Wilmington, DE)",
+      "name": "DART First State",
       "country": "United States",
       "region": "Delaware",
       "definitionStatus": "not-found-on-recheck",
@@ -7470,7 +7470,7 @@
     },
     {
       "slug": "fred-transit",
-      "name": "Fredericksburg Regional Transit",
+      "name": "FXBGO! (Fredericksburg)",
       "country": "United States",
       "region": "Virginia",
       "definitionStatus": "fetch-blocked",
@@ -12060,8 +12060,8 @@
       "audit": []
     },
     {
-      "slug": "njt-bus",
-      "name": "NJ Transit Bus",
+      "slug": "njt",
+      "name": "NJ Transit",
       "country": "United States",
       "region": "New Jersey",
       "definitionStatus": "no-definition-found",
@@ -12075,27 +12075,7 @@
           "agencyId": "nj-transit",
           "status": "no_definition_on_map",
           "representativeThresholdMinutes": null,
-          "relation": "one-to-many"
-        }
-      ]
-    },
-    {
-      "slug": "njt-rail",
-      "name": "NJ Transit Rail",
-      "country": "United States",
-      "region": "New Jersey",
-      "definitionStatus": "no-definition-found",
-      "definition": null,
-      "recheckNotes": null,
-      "conflictingSources": false,
-      "conflicts": [],
-      "catalog": [],
-      "audit": [
-        {
-          "agencyId": "nj-transit",
-          "status": "no_definition_on_map",
-          "representativeThresholdMinutes": null,
-          "relation": "one-to-many"
+          "relation": "one-to-one"
         }
       ]
     },
