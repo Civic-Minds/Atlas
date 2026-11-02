@@ -127,4 +127,24 @@ describe('Free child fares (CIV-1149)', () => {
     expect(card(/Free child fares/)).toHaveAttribute('href', '/research/free-child-fares');
     expect(card(/Free child fares/)).toHaveTextContent('Up to what age children ride free on transit in Canada and the US, and which systems are free for everyone.');
   });
+
+  it('maps each state and province as a hex: its most common free age, a tie as Mix, few agencies dashed (CIV-1282)', () => {
+    render(<FreeChildFaresPage />);
+    const map = screen.getByRole('group', { name: 'Most common free age, by state and province, for 63 states and provinces.' });
+    const hexes = [...map.querySelectorAll('button')];
+    expect(hexes).toHaveLength(63);
+    expect(screen.getByRole('button', { name: 'Washington: most common free age 18, 24 agencies, 20 with an age limit.' })).toHaveTextContent('WA1824');
+    expect(screen.getByRole('button', { name: 'Ontario: most common free age 12, 35 agencies, 33 with an age limit.' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Alberta: a tie between ages 5, 12, 6 agencies, 5 with an age limit.' })).toHaveTextContent('Mix');
+    expect(screen.getByRole('button', { name: 'Delaware: no age limit found, 1 agency, 0 with an age limit.' })).toHaveTextContent('–');
+    // One or two agencies with an age limit: dashed.
+    expect(screen.getByRole('button', { name: /^Oklahoma:/ }).querySelector('polygon[stroke-dasharray]')).not.toBeNull();
+    expect(screen.getByRole('button', { name: /^California:/ }).querySelector('polygon[stroke-dasharray]')).toBeNull();
+    // Picked the split bar's way: the others fade.
+    const wa = screen.getByRole('button', { name: /^Washington:/ });
+    fireEvent.mouseEnter(wa);
+    expect(wa.style.opacity).toBe('');
+    expect(screen.getByRole('button', { name: /^Oregon:/ }).style.opacity).toBe('0.35');
+    expect(map).toHaveAttribute('aria-details', screen.getByRole('table', { name: 'Most common free age, by state and province' }).parentElement!.id);
+  });
 });

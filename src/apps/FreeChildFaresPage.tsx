@@ -2,13 +2,16 @@ import { useId } from 'react';
 import PageShell from '../components/ui/PageShell';
 import { niceAxis } from '../components/charts/ProfileBars';
 import ChartTableDetails from '../components/charts/ChartTableDetails';
+import HexTileMap, { type HexTile } from '../components/charts/HexTileMap';
+import LegendItem from '../components/ui/LegendItem';
+import { REGION_HEXES } from '../data/regionHexGrid';
 import CategorySpark, { type SparkColumn } from '../components/charts/CategorySpark';
 import SplitBar, { type SplitBarSegment } from '../components/charts/SplitBar';
 import { CHART_COUNT } from '../components/charts/useActivePart';
 import ResearchMethod from '../components/research/ResearchMethod';
 import ResearchHeader from '../components/research/ResearchHeader';
 import type { DataTableColumn } from '../components/ui/DataTable';
-import { FREE_CHILD_AGE_COUNTS, FREE_CHILD_AGE_LABEL, FREE_CHILD_AGENCIES_BY_COUNTRY, FREE_CHILD_OTHER_POLICIES, freeChildAgeBars, freeChildFareStats, type FreeChildFareBar } from '../data/freeChildFares';
+import { FREE_CHILD_AGE_COUNTS, FREE_CHILD_AGE_LABEL, FREE_CHILD_AGENCIES_BY_COUNTRY, FREE_CHILD_OTHER_POLICIES, FREE_CHILD_REGIONS, freeChildAgeBars, freeChildFareStats, type FreeChildFareBar } from '../data/freeChildFares';
 
 const TABLE_COLUMNS: DataTableColumn<FreeChildFareBar>[] = [
   { key: 'group', header: 'Group', cell: bar => bar.label, rowHeader: true, className: 'font-normal', width: 12 },
@@ -48,6 +51,41 @@ const SPLIT_LABEL = `How many agencies have each kind of free child fare policy,
 // #1290 (Ryan): the age chart in the sparkline charts' shape, picked like the split bar. The other policies are in the split bar alone.
 const chartTicks = niceAxis(0, Math.max(...ageColumns.map(c => c.value))).ticks;
 
+// CIV-1282 (Ryan picked the tile map, in hexes): each state's or province's most common free age, from the same ledger counts.
+// A tie names no single age ("Mix"); a place with no age limit shows a dash; fewer than MIN_AGE_RULES agencies with an age
+// limit draws the hex with a dashed outline, since its "most common" rests on one or two agencies.
+const MIN_AGE_RULES = 3;
+const AGE_BANDS: ReadonlyArray<{ upTo: number; label: string; mix: number }> = [
+  { upTo: 5, label: 'Up to 5', mix: 28 }, { upTo: 9, label: '6–9', mix: 56 }, { upTo: 11, label: '10–11', mix: 70 },
+  { upTo: 13, label: '12–13', mix: 85 }, { upTo: 18, label: '14–18', mix: 100 },
+];
+const bandFill = (mix: number) => `color-mix(in srgb, var(--text-muted) ${mix}%, transparent)`;
+const regionRows = FREE_CHILD_REGIONS.map(([region, total, regionAges]) => {
+  const withAge = regionAges.reduce((n, [, c]) => n + c, 0);
+  const top = Math.max(0, ...regionAges.map(([, c]) => c));
+  const leaders = regionAges.filter(([, c]) => c === top).map(([age]) => age);
+  const age = withAge > 0 && leaders.length === 1 ? leaders[0] : null;
+  return { region, total, withAge, age, tie: leaders.length > 1 ? leaders : null };
+});
+const regionTiles: HexTile[] = regionRows.map(r => {
+  const { abbr, col, row } = REGION_HEXES[r.region];
+  const band = r.age != null ? AGE_BANDS.find(b => r.age! <= b.upTo)! : null;
+  const what = r.age != null ? `most common free age ${r.age}` : r.tie ? `a tie between ages ${r.tie.join(', ')}` : 'no age limit found';
+  return {
+    key: r.region, abbr, col, row, count: r.total,
+    value: r.age != null ? String(r.age) : r.tie ? 'Mix' : '–',
+    fill: band ? bandFill(band.mix) : 'none', darkFill: !!band && band.mix >= 85, thin: r.withAge > 0 && r.withAge < MIN_AGE_RULES,
+    sentence: `${r.region}: ${what}, ${agencies(r.total)}, ${r.withAge} with an age limit.`,
+  };
+});
+const REGION_COLUMNS: DataTableColumn<(typeof regionRows)[number]>[] = [
+  { key: 'region', header: 'State or province', cell: r => r.region, rowHeader: true, className: 'font-normal', width: 12 },
+  { key: 'age', header: 'Most common free age', cell: r => (r.age != null ? r.age : r.tie ? `Tie: ${r.tie.join(', ')}` : 'None'), width: 8 },
+  { key: 'withAge', header: 'With an age limit', cell: r => r.withAge, className: 'tabular-nums', width: 6 },
+  { key: 'total', header: 'Agencies', cell: r => r.total, className: 'tabular-nums', width: 6 },
+];
+const MAP_TITLE = 'Most common free age, by state and province';
+
 const peakAge = [...FREE_CHILD_AGE_COUNTS].sort((a, b) => b[1] - a[1])[0];
 const AGE_CHART_ARIA = `How many agencies let children ride free up to each age, from ${Math.min(...ages)} to ${Math.max(...ages)}. Age ${peakAge[0]} is the most common, at ${peakAge[1]} agencies.`;
 const keyFigures = [
@@ -58,6 +96,7 @@ const keyFigures = [
 
 export default function FreeChildFaresPage() {
   const tableId = useId();
+  const mapTableId = useId();
   const method = (
     <ResearchMethod parts={{
       dateConducted: <>October 11, 2026.</>,
@@ -103,6 +142,20 @@ export default function FreeChildFaresPage() {
               {/* keepEmpty: the ages run as a continuous scale, so an age no agency uses (15, 16) keeps its place and the gap shows. */}
               <CategorySpark columns={ageColumns} keepEmpty label={AGE_CHART_ARIA} ticks={chartTicks} defaultKey={peakAge[0]} details={tableId} />
               <ChartTableDetails id={tableId} caption="Free up to a set age" columns={TABLE_COLUMNS} rows={freeChildAgeBars} rowKey={bar => bar.label} />
+            </div>
+          </section>
+
+          <section aria-labelledby="free-child-age-map">
+            <div className="rounded-[2rem] border border-[var(--border-primary)] bg-[var(--bg-panel)] p-5 sm:p-8">
+              <h2 id="free-child-age-map" className="text-xs font-black text-[var(--text-primary)]">{MAP_TITLE}</h2>
+              <p className="mt-1 text-xs text-[var(--text-muted)]">Each hex is one state or province: its most common free age, and its number of agencies.</p>
+              <HexTileMap tiles={regionTiles} label={`${MAP_TITLE}, for ${regionTiles.length} states and provinces.`} details={mapTableId} />
+              <ul className="mt-4 flex flex-wrap gap-x-4 gap-y-1 text-xs text-[var(--text-primary)]">
+                {AGE_BANDS.map(b => <li key={b.label}><LegendItem color={bandFill(b.mix)}>{b.label}</LegendItem></li>)}
+                <li><LegendItem color="var(--bg-panel)" swatchClassName="ring-1 ring-[var(--border-primary)]">Mix: a tie · –: no age limit</LegendItem></li>
+                <li><LegendItem color="transparent" swatchClassName="border border-dashed border-[var(--text-muted)]">Dashed: only 1 or {MIN_AGE_RULES - 1} agencies with an age limit</LegendItem></li>
+              </ul>
+              <ChartTableDetails id={mapTableId} caption={MAP_TITLE} columns={REGION_COLUMNS} rows={regionRows} rowKey={r => r.region} />
             </div>
           </section>
         </div>
