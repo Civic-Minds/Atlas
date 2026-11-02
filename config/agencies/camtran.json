@@ -32,13 +32,19 @@
   },
   "lastFeedExpiry": "20290131",
   "lastFeedVersion": "20260716",
-  "lastRefreshedAt": "2026-08-21",
-  "lastFeedCheckAt": "20261019",
+  "lastRefreshedAt": "2026-11-02",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20290131",
   "timezone": "America/New_York",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://live.camtranbus.com/InfoPoint/gtfs-zip.ashx",
-  "lastPeekedExpiry": "20290131"
+  "lastPeekedExpiry": "20290131",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "83cac6e15717a52e",
+  "feedObtainedAt": "20260716"
 }

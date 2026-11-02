@@ -10,9 +10,9 @@
   "feedUrl": "http://srv.mvta.com/InfoPoint/GTFS-Zip.ashx",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-206/latest.zip",
   "lastFeedExpiry": "20261206",
-  "lastFeedVersion": "20260909",
+  "lastFeedVersion": "20261019",
   "region": "Minnesota",
-  "lastRefreshedAt": "2026-10-03",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Eagan, Minnesota",
     "Burnsville, Minnesota",
@@ -23,10 +23,10 @@
     "Bloomington, Minnesota",
     "Lakeville, Minnesota"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261101",
+  "expiredFeedCheckExpiry": "20261206",
   "feedQuality": {
     "status": "healthy",
     "score": 100,
@@ -53,5 +53,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "http://srv.mvta.com/InfoPoint/GTFS-Zip.ashx",
-  "lastPeekedExpiry": "20261206"
+  "lastPeekedExpiry": "20261206",
+  "lastServiceWeek": "914331f323fced5f",
+  "feedObtainedAt": "20261102"
 }

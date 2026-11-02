@@ -37,9 +37,9 @@
     "checkedAt": "2026-11-02"
   },
   "lastFeedExpiry": "20281102",
-  "lastFeedVersion": "10/6/2026",
-  "lastRefreshedAt": "2026-10-12",
-  "lastFeedCheckAt": "20261019",
+  "lastFeedVersion": "10/23/2026",
+  "lastRefreshedAt": "2026-11-02",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20991231",
@@ -50,5 +50,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://lts.syncromatics.com/gtfs",
-  "lastPeekedExpiry": "20991231"
+  "lastPeekedExpiry": "20991231",
+  "lastServiceWeek": "a0dee429c4c6eb1f",
+  "feedObtainedAt": "20261102"
 }

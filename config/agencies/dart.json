@@ -11,9 +11,9 @@
   "feedUrl": "http://www.dart.org/transitdata/latest/google_transit.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-152/latest.zip",
   "lastFeedExpiry": "20261206",
-  "lastFeedVersion": "V750-218-220-20261019",
+  "lastFeedVersion": "V755-218-220-20261029",
   "region": "Texas",
-  "lastRefreshedAt": "2026-10-19",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Dallas, Texas",
     "Richardson, Texas",
@@ -27,7 +27,7 @@
     "Frisco, Texas"
   ],
   "timezone": "America/Chicago",
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261206",
@@ -96,5 +96,7 @@
       "reason": "Heritage streetcars published as route_type 5 (cable tram)"
     }
   ],
-  "lastPeekedExpiry": "20261206"
+  "lastPeekedExpiry": "20261206",
+  "lastServiceWeek": "efd1f9648d10c6a9",
+  "feedObtainedAt": "20261102"
 }

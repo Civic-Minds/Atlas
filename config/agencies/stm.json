@@ -25,7 +25,7 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2126/latest.zip",
   "gtfsFares": true,
   "fareUrl": "https://www.stm.info/en/info/fares",
-  "lastRefreshedAt": "2026-10-19",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Saint-Laurent, Quebec",
     "Notre-Dame-de-Grâce, Quebec",
@@ -38,7 +38,7 @@
     "Rosemont–La Petite-Patrie, Quebec",
     "Ville-Marie, Quebec"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270103",
@@ -70,5 +70,7 @@
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
-  "feedRefreshRetryCount": 0
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "1d5d325683015269",
+  "feedObtainedAt": "20261015"
 }

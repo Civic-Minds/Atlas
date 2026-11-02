@@ -27,7 +27,7 @@
   "timezone": "America/New_York",
   "lastFeedExpiry": "20270228",
   "lastFeedVersion": "20260908",
-  "lastRefreshedAt": "2026-10-03",
+  "lastRefreshedAt": "2026-11-02",
   "feedQuality": {
     "status": "healthy",
     "score": 100,
@@ -47,7 +47,7 @@
     },
     "checkedAt": "2026-11-02"
   },
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270228",
@@ -57,5 +57,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://rideata.rideralerts.com/InfoPoint/gtfs-zip.ashx",
-  "lastPeekedExpiry": "20270228"
+  "lastPeekedExpiry": "20270228",
+  "lastServiceWeek": "82665449ddf098d6",
+  "feedObtainedAt": "20260908"
 }

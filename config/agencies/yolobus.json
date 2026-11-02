@@ -18,7 +18,7 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-1295/latest.zip",
   "lastFeedExpiry": "20270630",
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-10-03",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "West Sacramento, California",
     "Woodland, California",
@@ -27,7 +27,7 @@
   ],
   "timezone": "America/Los_Angeles",
   "lastRawArchiveKey": "20260201-a6cccff8306719af",
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270630",
@@ -58,5 +58,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://avl.yctd.org/RealTime/google_transit.zip",
-  "lastPeekedExpiry": "20270630"
+  "lastPeekedExpiry": "20270630",
+  "lastServiceWeek": "e5ad0d31cc65b819",
+  "feedObtainedAt": "20261001"
 }

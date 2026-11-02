@@ -18,22 +18,22 @@
   "feedUrl": "https://api.511.org/transit/datafeeds?operator_id=SF",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2886/latest.zip",
   "lastFeedExpiry": "20270115",
-  "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-08-10",
+  "lastFeedVersion": "20260829",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "San Francisco, California",
     "Daly City, California",
     "Chinatown, California"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270115",
   "timezone": "America/Los_Angeles",
-  "feedRefreshStatus": "stale",
-  "feedRefreshError": "all available feeds expired (latest 20260828)",
-  "feedRefreshErrorAt": "20261012",
-  "feedRefreshRetryCount": 3,
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://api.511.org/transit/datafeeds?operator_id=SF",
   "feedApiKeyEnvVar": "MUNI_511_API_KEY",
@@ -94,5 +94,7 @@
       "resumesOn": null
     },
     "checkedAt": "2026-11-02"
-  }
+  },
+  "lastServiceWeek": "2b20c11478c25cee",
+  "feedObtainedAt": "20261102"
 }

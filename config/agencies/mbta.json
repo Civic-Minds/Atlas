@@ -23,10 +23,10 @@
     }
   ],
   "lastFeedExpiry": "20261212",
-  "lastFeedVersion": "Fall 2026, 2026-10-16T20:25:58+00:00, version D",
+  "lastFeedVersion": "Fall 2026, 2026-10-30T17:51:33+00:00, version D",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-437/latest.zip",
   "gtfsFares": true,
-  "lastRefreshedAt": "2026-10-19",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Dorchester, Massachusetts",
     "Brookline, Massachusetts",
@@ -39,7 +39,7 @@
     "Newton, Massachusetts",
     "Cambridge, Massachusetts"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261212",
@@ -55,9 +55,9 @@
       "validationWarnings": 0,
       "shapeAnomalies": 5,
       "routeHeadwayMismatches": 12,
-      "featureCount": 1098,
+      "featureCount": 1114,
       "feedExpiry": "20261212",
-      "routeCount": 181,
+      "routeCount": 184,
       "problemShapes": 4,
       "problemShapeRoutes": 1,
       "mismatchRoutes": 6,
@@ -104,5 +104,7 @@
       "reason": "Mattapan Line is light rail (the MBTA groups it with the Green Line), published as route_type 0 (tram)"
     }
   ],
-  "lastPeekedExpiry": "20261212"
+  "lastPeekedExpiry": "20261212",
+  "lastServiceWeek": "4e17e0d4afcc9ce5",
+  "feedObtainedAt": "20261102"
 }

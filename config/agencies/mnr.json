@@ -20,7 +20,7 @@
   "preprocess": "mnr-bus-pairs",
   "lastFeedExpiry": "20270523",
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-10-12",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Greenburgh, New York",
     "Danbury, Connecticut",
@@ -33,7 +33,7 @@
     "East Norwalk, Connecticut",
     "Kings Bridge, New York"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270523",
@@ -50,8 +50,8 @@
       "validationErrors": 0,
       "validationWarnings": 0,
       "shapeAnomalies": 0,
-      "routeHeadwayMismatches": 9,
-      "featureCount": 71,
+      "routeHeadwayMismatches": 7,
+      "featureCount": 69,
       "feedExpiry": "20270523",
       "routeCount": 6,
       "problemShapes": 0,
@@ -65,5 +65,7 @@
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
-  "lastPeekedExpiry": "20270523"
+  "lastPeekedExpiry": "20270523",
+  "lastServiceWeek": "81b15e83831935ea",
+  "feedObtainedAt": "20261101"
 }

@@ -19,7 +19,7 @@
   "parentAgency": "mta-new-york",
   "lastFeedExpiry": "20270102",
   "lastFeedVersion": "20261009",
-  "lastRefreshedAt": "2026-10-19",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Bushwick, New York",
     "Park Slope, New York",
@@ -32,7 +32,7 @@
     "Ridgewood, New York",
     "East New York, New York"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270102",
@@ -64,5 +64,6 @@
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
-  "feedRefreshRetryCount": 0
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "a30a504b1fcd3c70"
 }

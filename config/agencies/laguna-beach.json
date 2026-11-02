@@ -17,12 +17,12 @@
   "feedUrl": "https://data.trilliumtransit.com/gtfs/lagunabeach-ca-us/lagunabeach-ca-us.zip",
   "lastFeedExpiry": "20261223",
   "lastFeedVersion": "UTC: 25-Jun-2026 14:36",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Aliso Viejo, California",
     "Laguna Niguel, California"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261223",
@@ -50,5 +50,11 @@
       "resumesOn": null
     },
     "checkedAt": "2026-11-02"
-  }
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "949d9a8053a4cdd5",
+  "feedObtainedAt": "20260625"
 }

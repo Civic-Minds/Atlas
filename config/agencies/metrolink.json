@@ -9,10 +9,10 @@
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-96/latest.zip",
   "preprocess": "metrolink-shapes",
-  "lastFeedExpiry": "20360501",
+  "lastFeedExpiry": "20271231",
   "lastFeedVersion": "20260505",
   "region": "California",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Pomona, California",
     "San Bernardino, California",
@@ -25,12 +25,39 @@
     "Laguna Niguel, California",
     "Corona, California"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20360501",
   "timezone": "America/Los_Angeles",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-96/latest.zip",
-  "lastPeekedExpiry": "20360501"
+  "lastPeekedExpiry": "20360501",
+  "feedQuality": {
+    "status": "review",
+    "score": 86,
+    "reasons": [
+      "1 route has stops whose frequency differs from the overall route schedule."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 2,
+      "featureCount": 52,
+      "feedExpiry": "20271231",
+      "routeCount": 7,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 1,
+      "resumesOn": null
+    },
+    "checkedAt": "2026-11-02"
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "22052ba2d23e4834",
+  "feedObtainedAt": "20260521"
 }

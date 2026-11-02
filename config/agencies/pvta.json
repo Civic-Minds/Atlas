@@ -25,14 +25,14 @@
   "lastFeedVersion": null,
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2416/latest.zip",
   "gtfsFares": true,
-  "lastRefreshedAt": "2026-08-27",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Springfield, Massachusetts",
     "North Chicopee, Massachusetts",
     "Chicopee, Massachusetts",
     "Worcester, Massachusetts"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261219",
@@ -45,9 +45,9 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 338,
+      "featureCount": 405,
       "feedExpiry": "20261219",
-      "routeCount": 51,
+      "routeCount": 61,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
       "mismatchRoutes": 0,
@@ -58,5 +58,11 @@
   "timezone": "America/New_York",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://www.pvta.com/g_trans/google_transit.zip",
-  "lastPeekedExpiry": "20261219"
+  "lastPeekedExpiry": "20261219",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "cbde892bbc440f35",
+  "feedObtainedAt": "20261028"
 }

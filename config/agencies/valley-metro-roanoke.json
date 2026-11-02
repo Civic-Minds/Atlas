@@ -16,12 +16,12 @@
   "feedUrl": "https://files.mobilitydatabase.org/mdb-2274/latest.zip",
   "region": "Virginia",
   "lastFeedExpiry": "20281102",
-  "lastFeedVersion": "10/17/2026",
-  "lastRefreshedAt": "2026-10-19",
+  "lastFeedVersion": "11/1/2026",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Roanoke, Virginia"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20991231",
@@ -37,9 +37,9 @@
       "validationWarnings": 1,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 2,
-      "featureCount": 63,
+      "featureCount": 59,
       "feedExpiry": "20281102",
-      "routeCount": 33,
+      "routeCount": 31,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
       "mismatchRoutes": 1,
@@ -54,5 +54,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2274/latest.zip",
-  "lastPeekedExpiry": "20991231"
+  "lastPeekedExpiry": "20991231",
+  "lastServiceWeek": "2fd16f736518ff1a",
+  "feedObtainedAt": "20261102"
 }

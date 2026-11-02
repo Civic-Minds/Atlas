@@ -54,8 +54,8 @@
   ],
   "lastFeedExpiry": "20270201",
   "lastFeedVersion": "UTC: 28-Aug-2026 14:56",
-  "lastRefreshedAt": "2026-09-07",
-  "lastFeedCheckAt": "20261019",
+  "lastRefreshedAt": "2026-11-02",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270201",
@@ -83,5 +83,11 @@
   },
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2330/latest.zip",
-  "lastPeekedExpiry": "20270201"
+  "lastPeekedExpiry": "20270201",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "f0a7d28c6fd22d9d",
+  "feedObtainedAt": "20260828"
 }

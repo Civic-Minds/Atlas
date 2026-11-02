@@ -17,7 +17,7 @@
   "feedUrl": "https://files.mobilitydatabase.org/mdb-508/latest.zip",
   "lastFeedExpiry": "20270417",
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-10-12",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Trenton, New Jersey",
     "Passaic, New Jersey",
@@ -32,10 +32,10 @@
   ],
   "timezone": "America/New_York",
   "lastRawArchiveKey": "20261225-dafb95e8c171680d",
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20270313",
+  "expiredFeedCheckExpiry": "20270417",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-508/latest.zip",
   "feedQuality": {
@@ -63,5 +63,7 @@
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
-  "lastPeekedExpiry": "20270417"
+  "lastPeekedExpiry": "20270417",
+  "lastServiceWeek": "0294aeca5ca9ccd1",
+  "feedObtainedAt": "20261021"
 }

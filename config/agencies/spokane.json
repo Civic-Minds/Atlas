@@ -16,13 +16,13 @@
   "feedUrl": "https://www.spokanetransit.com/gtfs",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-290/latest.zip",
   "lastFeedExpiry": "20270116",
-  "lastFeedVersion": "SEPT 2026v3_20260914",
-  "lastRefreshedAt": "2026-10-03",
+  "lastFeedVersion": "SEPT 2026v4_20261020",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Spokane, Washington",
     "Spokane Valley, Washington"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270116",
@@ -53,5 +53,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://www.spokanetransit.com/gtfs",
-  "lastPeekedExpiry": "20270116"
+  "lastPeekedExpiry": "20270116",
+  "lastServiceWeek": "4b9cd9a1bdc798a1",
+  "feedObtainedAt": "20261102"
 }

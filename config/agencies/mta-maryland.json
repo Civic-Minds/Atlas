@@ -18,7 +18,7 @@
   "parentAgency": "mta-maryland",
   "pageSlug": "mta-maryland-baltimore",
   "pageTitleQualifier": "Bus, Metro and Light Rail",
-  "lastRefreshedAt": "2026-10-19",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Baltimore, Maryland",
     "Towson, Maryland",
@@ -28,7 +28,7 @@
     "Bowie, Maryland",
     "Columbia, Maryland"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270206",
@@ -78,5 +78,7 @@
       "reason": "Baltimore Light RailLink is light rail, published as route_type 0 (tram)"
     }
   ],
-  "lastPeekedExpiry": "20270206"
+  "lastPeekedExpiry": "20270206",
+  "lastServiceWeek": "8153f17217cdbad4",
+  "feedObtainedAt": "20260903"
 }

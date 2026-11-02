@@ -12,7 +12,7 @@
   "region": "Indiana",
   "lastFeedExpiry": "20280504",
   "lastFeedVersion": "20260610",
-  "lastRefreshedAt": "2026-10-12",
+  "lastRefreshedAt": "2026-11-02",
   "feedQuality": {
     "status": "healthy",
     "score": 100,
@@ -34,7 +34,7 @@
   },
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/11767/CityofKokomo_Transit.zip",
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20280504",
@@ -42,5 +42,7 @@
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
-  "lastPeekedExpiry": "20280504"
+  "lastPeekedExpiry": "20280504",
+  "lastServiceWeek": "8afca8f344b9bdc0",
+  "feedObtainedAt": "20260610"
 }

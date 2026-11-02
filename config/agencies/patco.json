@@ -12,14 +12,14 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-3035/latest.zip",
   "lastFeedExpiry": "20261231",
   "lastFeedVersion": "20",
-  "lastRefreshedAt": "2026-10-03",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Cherry Hill, New Jersey",
     "Center City, Pennsylvania",
     "Camden, New Jersey",
     "Philadelphia, Pennsylvania"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261231",
@@ -49,5 +49,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/13562/PATCO_GTFS.zip",
-  "lastPeekedExpiry": "20261231"
+  "lastPeekedExpiry": "20261231",
+  "lastServiceWeek": "8bc780e295bd0d61",
+  "feedObtainedAt": "20260924"
 }

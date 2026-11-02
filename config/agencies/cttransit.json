@@ -10,7 +10,7 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-553/latest.zip",
   "lastFeedExpiry": "20270109",
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-08-10",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Waterbury, Connecticut",
     "Meriden, Connecticut",
@@ -19,7 +19,7 @@
     "Hamden, Connecticut",
     "Hartford, Connecticut"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270109",
@@ -36,9 +36,9 @@
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
-      "shapeAnomalies": 2,
+      "shapeAnomalies": 1,
       "routeHeadwayMismatches": 3,
-      "featureCount": 1007,
+      "featureCount": 1015,
       "feedExpiry": "20270109",
       "routeCount": 184,
       "problemShapes": 0,
@@ -47,5 +47,11 @@
       "resumesOn": null
     },
     "checkedAt": "2026-11-02"
-  }
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "05de0a124a86b050",
+  "feedObtainedAt": "20261019"
 }

@@ -32,9 +32,9 @@
     "checkedAt": "2026-11-02"
   },
   "lastFeedExpiry": "20270731",
-  "lastFeedVersion": "20261007",
-  "lastRefreshedAt": "2026-10-12",
-  "lastFeedCheckAt": "20261019",
+  "lastFeedVersion": "20261023",
+  "lastRefreshedAt": "2026-11-02",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270731",
@@ -45,5 +45,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://mmvta.rideralerts.com/InfoPoint/gtfs-zip.ashx",
-  "lastPeekedExpiry": "20270731"
+  "lastPeekedExpiry": "20270731",
+  "lastServiceWeek": "6faaae165ec5286b",
+  "feedObtainedAt": "20261102"
 }

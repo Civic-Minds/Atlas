@@ -22,7 +22,7 @@
   "cities": [
     "Wilmington, North Carolina"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261231",
@@ -48,6 +48,8 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-10-31"
-  }
+    "checkedAt": "2026-10-31",
+    "scoredAt": "2026-11-02"
+  },
+  "refusedFeedSha256": "62596e82972bae087be41257c317ec7cadd5e8c914f4231b2e032cc9035e97cc"
 }

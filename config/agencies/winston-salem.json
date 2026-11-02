@@ -12,11 +12,11 @@
   "mdbFeedUrl": "https://ridewsta.com/gtfs",
   "lastFeedExpiry": "20281102",
   "lastFeedVersion": "Aug 30 start - Rev 1",
-  "lastRefreshedAt": "2026-10-12",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Winston-Salem, North Carolina"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20991231",
@@ -46,5 +46,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://ridewsta.com/gtfs",
-  "lastPeekedExpiry": "20991231"
+  "lastPeekedExpiry": "20991231",
+  "lastServiceWeek": "c31f2101a0b0fe6b",
+  "feedObtainedAt": "20261101"
 }

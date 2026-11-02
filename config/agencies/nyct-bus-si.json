@@ -18,7 +18,7 @@
   "parentAgency": "mta-new-york",
   "lastFeedExpiry": "20270102",
   "lastFeedVersion": "20261009",
-  "lastRefreshedAt": "2026-10-19",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Staten Island, New York",
     "Bayonne, New Jersey",
@@ -31,7 +31,7 @@
     "New York City, New York",
     "Manhattan, New York"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270102",
@@ -63,5 +63,6 @@
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
-  "feedRefreshRetryCount": 0
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "82190a31965e331b"
 }

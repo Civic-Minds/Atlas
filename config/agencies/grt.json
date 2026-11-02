@@ -25,7 +25,7 @@
   ],
   "lastFeedExpiry": "20261220",
   "lastFeedVersion": null,
-  "lastRefreshedAt": "20260811",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Waterloo, Ontario",
     "Kitchener, Ontario",
@@ -33,16 +33,16 @@
   ],
   "timezone": "America/Toronto",
   "lastRawArchiveKey": "20260426-071369b92e6aeb7d",
-  "lastFeedCheckAt": "20261019",
-  "expiredFeedCheckCount": 5,
-  "expiredFeedCheckSince": "20260622",
-  "expiredFeedCheckExpiry": "20260426",
-  "feedRefreshStatus": "stale",
-  "feedRefreshError": "fetch failed",
-  "feedRefreshErrorAt": "20261019",
-  "feedRefreshRetryCount": 4,
+  "lastFeedCheckAt": "20261102",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20261220",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-grand-river-transit-gtfs-721.zip?alt=media",
+  "lastFeedSourceUrl": "https://webapps.regionofwaterloo.ca/api/grt-routes/api/staticfeeds/1",
   "modeOverrides": [
     {
       "routeType": 0,
@@ -77,5 +77,7 @@
       "resumesOn": null
     },
     "checkedAt": "2026-11-02"
-  }
+  },
+  "lastServiceWeek": "aac7fa750c740834",
+  "feedObtainedAt": "20261023"
 }

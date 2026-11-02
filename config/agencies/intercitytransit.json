@@ -18,12 +18,12 @@
   "mergeEquivalentShapeVariantsAllModes": true,
   "lastFeedExpiry": "20270102",
   "lastFeedVersion": "20260927",
-  "lastRefreshedAt": "2026-10-07",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Olympia, Washington",
     "Lakewood, Washington"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270102",
@@ -55,5 +55,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://gtfs.sound.obaweb.org/prod/19_gtfs.zip",
-  "lastPeekedExpiry": "20270102"
+  "lastPeekedExpiry": "20270102",
+  "lastServiceWeek": "c0e8f93b9486f234",
+  "feedObtainedAt": "20261016"
 }

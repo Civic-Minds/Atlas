@@ -10,7 +10,7 @@
   "lastFeedExpiry": "20280930",
   "lastFeedVersion": "20251211",
   "region": "Florida",
-  "lastRefreshedAt": "2026-10-08",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Pompano Beach, Florida",
     "Hollywood, Florida",
@@ -23,7 +23,7 @@
     "Coconut Creek, Florida",
     "Miramar, Florida"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20280930",
@@ -53,5 +53,7 @@
     },
     "checkedAt": "2026-11-02"
   },
-  "lastPeekedExpiry": "20280930"
+  "lastPeekedExpiry": "20280930",
+  "lastServiceWeek": "eb51abf65c72524e",
+  "feedObtainedAt": "20251211"
 }

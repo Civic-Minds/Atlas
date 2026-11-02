@@ -41,13 +41,19 @@
   },
   "lastFeedExpiry": "20301031",
   "lastFeedVersion": "20240118",
-  "lastRefreshedAt": "2026-08-21",
-  "lastFeedCheckAt": "20261019",
+  "lastRefreshedAt": "2026-11-02",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20301031",
   "timezone": "America/New_York",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://www.ftis.org/PostFileDownload.aspx?id=1011A0",
-  "lastPeekedExpiry": "20301031"
+  "lastPeekedExpiry": "20301031",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "4a8b87a8adaaac94",
+  "feedObtainedAt": "20260319"
 }

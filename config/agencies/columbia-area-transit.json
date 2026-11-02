@@ -18,7 +18,7 @@
   "timezone": "America/Los_Angeles",
   "lastFeedExpiry": "20270101",
   "lastFeedVersion": "UTC: 08-Oct-2026 00:58",
-  "lastRefreshedAt": "2026-10-12",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Hood River, Oregon",
     "Cascade Locks, Oregon",
@@ -43,7 +43,7 @@
     },
     "checkedAt": "2026-11-02"
   },
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270101",
@@ -53,5 +53,7 @@
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
-  "lastPeekedExpiry": "20270101"
+  "lastPeekedExpiry": "20270101",
+  "lastServiceWeek": "560a29caf94d0d2d",
+  "feedObtainedAt": "20261008"
 }

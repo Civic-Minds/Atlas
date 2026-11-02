@@ -11,12 +11,12 @@
   "lastFeedExpiry": "20270103",
   "lastFeedVersion": "JunSept26_Merged",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-533/latest.zip",
-  "lastRefreshedAt": "2026-09-07",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Rochester, New York",
     "Irondequoit, New York"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270103",
@@ -42,5 +42,11 @@
   },
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "http://scheduledata.rgrta.com/google_transit.zip",
-  "lastPeekedExpiry": "20270103"
+  "lastPeekedExpiry": "20270103",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "ebc478c3104278cb",
+  "feedObtainedAt": "20260827"
 }

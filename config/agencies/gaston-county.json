@@ -38,8 +38,8 @@
   },
   "lastFeedExpiry": "20301001",
   "lastFeedVersion": "1",
-  "lastRefreshedAt": "2026-10-12",
-  "lastFeedCheckAt": "20261019",
+  "lastRefreshedAt": "2026-11-02",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20301031",
@@ -50,5 +50,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://gtfs.transitportal.org/CurrentGTFS/Gaston%20County_71/Gaston.zip",
-  "lastPeekedExpiry": "20301031"
+  "lastPeekedExpiry": "20301031",
+  "lastServiceWeek": "a80cb0b9b440f04a",
+  "feedObtainedAt": "20251009"
 }

@@ -12,7 +12,7 @@
   "lastFeedExpiry": "20281102",
   "skipBlockTripHeadways": true,
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-10-03",
+  "lastRefreshedAt": "2026-11-02",
   "region": "South Carolina",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-798/latest.zip",
   "bbox": [
@@ -26,7 +26,7 @@
   ],
   "timezone": "America/New_York",
   "lastRawArchiveKey": "20200101-974da843f871ba68",
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20501230",
@@ -57,5 +57,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://catbus.ridesystems.net/Secure/Admin/Reports/GTFSDownload.aspx",
-  "lastPeekedExpiry": "20501230"
+  "lastPeekedExpiry": "20501230",
+  "lastServiceWeek": "d2c7fd54ee9d1b4c",
+  "feedObtainedAt": "20261102"
 }

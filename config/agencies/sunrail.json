@@ -11,14 +11,14 @@
   "lastFeedExpiry": "20261231",
   "lastFeedVersion": null,
   "region": "Florida",
-  "lastRefreshedAt": "2026-08-10",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Orlando, Florida",
     "Kissimmee, Florida",
     "Sanford, Florida",
     "Deltona, Florida"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261231",
@@ -44,5 +44,11 @@
       "resumesOn": null
     },
     "checkedAt": "2026-11-02"
-  }
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "a0d8c3300bb649f7",
+  "feedObtainedAt": "20260928"
 }

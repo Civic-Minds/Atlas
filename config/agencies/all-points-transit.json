@@ -11,8 +11,8 @@
   "region": "Colorado",
   "lastFeedExpiry": "20270201",
   "lastFeedVersion": "UTC: 19-Aug-2026 23:19",
-  "lastRefreshedAt": "2026-08-27",
-  "lastFeedCheckAt": "20261019",
+  "lastRefreshedAt": "2026-11-02",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270201",
@@ -40,5 +40,11 @@
   "timezone": "America/Denver",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-212/latest.zip",
-  "lastPeekedExpiry": "20270201"
+  "lastPeekedExpiry": "20270201",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "5a73fbf753bbc1ba",
+  "feedObtainedAt": "20260819"
 }

@@ -37,17 +37,19 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-02"
+    "checkedAt": "2026-11-02",
+    "scoredAt": "2026-11-02"
   },
   "lastFeedExpiry": "20261106",
   "lastFeedVersion": "20260713",
   "lastRefreshedAt": "2026-08-21",
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261106",
+  "expiredFeedCheckExpiry": "20270319",
   "timezone": "America/New_York",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://tank.rideralerts.com/InfoPoint/GTFS-Zip.ashx",
-  "lastPeekedExpiry": "20261106"
+  "lastPeekedExpiry": "20261106",
+  "heldFeedStart": "20261107"
 }

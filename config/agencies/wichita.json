@@ -11,11 +11,11 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-395/latest.zip",
   "lastFeedExpiry": "20261218",
   "lastFeedVersion": "20261008",
-  "lastRefreshedAt": "2026-10-12",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Wichita, Kansas"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261218",
@@ -45,5 +45,7 @@
     },
     "checkedAt": "2026-11-02"
   },
-  "lastPeekedExpiry": "20261218"
+  "lastPeekedExpiry": "20261218",
+  "lastServiceWeek": "c3ae93e734bd1912",
+  "feedObtainedAt": "20261008"
 }

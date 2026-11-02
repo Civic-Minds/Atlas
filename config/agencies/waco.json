@@ -41,13 +41,19 @@
   },
   "lastFeedExpiry": "20281102",
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-08-21",
-  "lastFeedCheckAt": "20261019",
+  "lastRefreshedAt": "2026-11-02",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20501231",
   "timezone": "America/Chicago",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://wacotransit.ridesystems.net/Secure/Admin/Reports/GTFSDownload.aspx",
-  "lastPeekedExpiry": "20501231"
+  "lastPeekedExpiry": "20501231",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "d3c49a97eda7edd9",
+  "feedObtainedAt": "20261102"
 }

@@ -15,17 +15,17 @@
   ],
   "feedUrl": "https://gtfs.remix.com/redding_area_bus_authority.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-3031/latest.zip",
-  "lastFeedExpiry": "20261231",
-  "lastFeedVersion": "Updated: Oct 16, 2026, 11:23 PM",
-  "lastRefreshedAt": "2026-10-19",
+  "lastFeedExpiry": "20270430",
+  "lastFeedVersion": "Updated: Oct 27, 2026, 10:10 PM",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Redding, California",
     "Chico, California"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261231",
+  "expiredFeedCheckExpiry": "20270430",
   "feedQuality": {
     "status": "healthy",
     "score": 100,
@@ -36,7 +36,7 @@
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
       "featureCount": 34,
-      "feedExpiry": "20261231",
+      "feedExpiry": "20270430",
       "routeCount": 10,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
@@ -52,5 +52,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://gtfs.remix.com/redding_area_bus_authority.zip",
-  "lastPeekedExpiry": "20261231"
+  "lastPeekedExpiry": "20270430",
+  "lastServiceWeek": "dda35af6c67a3e1b",
+  "feedObtainedAt": "20261102"
 }

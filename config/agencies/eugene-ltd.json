@@ -16,7 +16,7 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-131/latest.zip",
   "lastFeedExpiry": "20270130",
   "lastFeedVersion": "2609a",
-  "lastRefreshedAt": "2026-10-03",
+  "lastRefreshedAt": "2026-11-02",
   "websiteUrl": "http://www.ltd.org",
   "cities": [
     "Eugene, Oregon",
@@ -24,7 +24,7 @@
   ],
   "timezone": "America/Los_Angeles",
   "lastRawArchiveKey": "20260131-84ccd5ec5befb0c2",
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270130",
@@ -56,5 +56,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://feed.ltd.org/TMGTFSRealTimeWebService/GTFS/google_transit.zip",
-  "lastPeekedExpiry": "20270130"
+  "lastPeekedExpiry": "20270130",
+  "lastServiceWeek": "4ba21d301c1b415e",
+  "feedObtainedAt": "20260903"
 }

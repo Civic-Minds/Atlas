@@ -17,11 +17,11 @@
   "feedUrl": "https://s3.amazonaws.com/datatools-511ny/public/Dutchess_County_Transit.zip",
   "lastFeedExpiry": "20510930",
   "lastFeedVersion": "124",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Danbury, Connecticut"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20510930",
@@ -50,5 +50,11 @@
       "resumesOn": null
     },
     "checkedAt": "2026-11-02"
-  }
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "175ef7d4a05f5467",
+  "feedObtainedAt": "20251028"
 }

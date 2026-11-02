@@ -11,8 +11,8 @@
   "feedUrl": "https://s3.amazonaws.com/tcat-gtfs/tcat-ny-us.zip",
   "lastFeedExpiry": "20261219",
   "lastFeedVersion": "20260922",
-  "lastRefreshedAt": "2026-10-03",
-  "lastFeedCheckAt": "20261019",
+  "lastRefreshedAt": "2026-11-02",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261219",
@@ -42,5 +42,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://s3.amazonaws.com/tcat-gtfs/tcat-ny-us.zip",
-  "lastPeekedExpiry": "20261219"
+  "lastPeekedExpiry": "20261219",
+  "lastServiceWeek": "427230c58c823555",
+  "feedObtainedAt": "20260922"
 }

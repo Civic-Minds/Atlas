@@ -32,13 +32,19 @@
   },
   "lastFeedExpiry": "20270630",
   "lastFeedVersion": "20260903",
-  "lastRefreshedAt": "2026-09-07",
-  "lastFeedCheckAt": "20261019",
+  "lastRefreshedAt": "2026-11-02",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270630",
   "timezone": "America/New_York",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://indigobus.availtec.com/InfoPoint/gtfs-zip.ashx",
-  "lastPeekedExpiry": "20270630"
+  "lastPeekedExpiry": "20270630",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "15f5f8a591674155",
+  "feedObtainedAt": "20260903"
 }

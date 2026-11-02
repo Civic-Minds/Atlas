@@ -22,7 +22,7 @@
   "lastFeedVersion": null,
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-748/latest.zip",
   "gtfsFares": true,
-  "lastRefreshedAt": "2026-10-12",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Pierrefonds, Quebec",
     "Notre-Dame-de-Grâce, Quebec",
@@ -35,7 +35,7 @@
     "Verdun, Quebec",
     "Rivière-des-Prairies–Pointe-aux-Trembles, Quebec"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270103",
@@ -65,5 +65,7 @@
     },
     "checkedAt": "2026-11-02"
   },
-  "lastPeekedExpiry": "20270103"
+  "lastPeekedExpiry": "20270103",
+  "lastServiceWeek": "41a2fb33edd6b074",
+  "feedObtainedAt": "20261028"
 }

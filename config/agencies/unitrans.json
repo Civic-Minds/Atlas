@@ -17,15 +17,15 @@
   "feedUrl": "https://unitrans.ucdavis.edu/media/gtfs/Unitrans_GTFS.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-82/latest.zip",
   "lastFeedExpiry": "20270103",
-  "lastFeedVersion": "Fall2026_V5",
-  "lastRefreshedAt": "2026-10-07",
+  "lastFeedVersion": "Fall-WinterBrk2026_V1",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Davis, California"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261213",
+  "expiredFeedCheckExpiry": "20270103",
   "timezone": "America/Los_Angeles",
   "feedQuality": {
     "status": "review",
@@ -54,5 +54,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://unitrans.ucdavis.edu/media/gtfs/Unitrans_GTFS.zip",
-  "lastPeekedExpiry": "20270103"
+  "lastPeekedExpiry": "20270103",
+  "lastServiceWeek": "f69873af17b2d22a",
+  "feedObtainedAt": "20261102"
 }

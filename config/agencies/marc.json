@@ -36,7 +36,7 @@
   ],
   "lastFeedExpiry": "20261231",
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-08-10",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Silver Spring, Maryland",
     "Baltimore, Maryland",
@@ -49,7 +49,7 @@
     "Bethesda, Maryland",
     "Rockville, Maryland"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261231",
@@ -77,5 +77,11 @@
       "resumesOn": null
     },
     "checkedAt": "2026-11-02"
-  }
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "e7fd190abb190b29",
+  "feedObtainedAt": "20261011"
 }

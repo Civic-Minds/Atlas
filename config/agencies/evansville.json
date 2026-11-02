@@ -24,7 +24,7 @@
   ],
   "timezone": "America/Chicago",
   "lastRawArchiveKey": "20250115-762408ee68963c10",
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271231",
@@ -33,5 +33,6 @@
   "feedRefreshErrorAt": "20261012",
   "feedRefreshRetryCount": 3,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://metsmyride.evansville.in.gov/GTFS/Static/google_transit.zip"
+  "lastFeedSourceUrl": "https://metsmyride.evansville.in.gov/GTFS/Static/google_transit.zip",
+  "refusedFeedSha256": "2a08e446d2d7313e8b08eb793d67200e89fb45018f75a28cc7c9f5eb7dc5c314"
 }

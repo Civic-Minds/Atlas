@@ -18,13 +18,13 @@
   "feedUrl": "https://files.mobilitydatabase.org/mdb-280/latest.zip",
   "lastFeedExpiry": "20270401",
   "lastFeedVersion": "UTC: 29-Sep-2026 22:45",
-  "lastRefreshedAt": "2026-10-12",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Marysville, Washington",
     "Everett, Washington",
     "Bellingham, Washington"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270401",
@@ -54,5 +54,7 @@
     },
     "checkedAt": "2026-11-02"
   },
-  "lastPeekedExpiry": "20270401"
+  "lastPeekedExpiry": "20270401",
+  "lastServiceWeek": "d9c4a9cea0298518",
+  "feedObtainedAt": "20260929"
 }

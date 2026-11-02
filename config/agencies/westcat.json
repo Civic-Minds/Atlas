@@ -19,14 +19,14 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-78/latest.zip",
   "lastFeedExpiry": "20270611",
   "lastFeedVersion": "UTC: 03-Sep-2026 17:27",
-  "lastRefreshedAt": "2026-09-07",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Richmond, California",
     "Vallejo, California",
     "Concord, California",
     "Chinatown, California"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270611",
@@ -54,5 +54,11 @@
   "timezone": "America/Los_Angeles",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "http://data.trilliumtransit.com/gtfs/westcat-ca-us/westcat-ca-us.zip",
-  "lastPeekedExpiry": "20270611"
+  "lastPeekedExpiry": "20270611",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "90c956bf8b6cec00",
+  "feedObtainedAt": "20260903"
 }

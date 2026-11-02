@@ -33,7 +33,7 @@
   "nextServiceDatesSkipWeekendEvents": true,
   "lastFeedExpiry": "20270328",
   "lastFeedVersion": "SC-Fall-2026.5",
-  "lastRefreshedAt": "2026-10-19",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Seattle, Washington",
     "Tacoma, Washington",
@@ -46,7 +46,7 @@
     "Kent, Washington",
     "Federal Way, Washington"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270328",
@@ -98,5 +98,7 @@
       "reason": "Link (1 Line, 2 Line, T Line) is light rail, published as route_type 0 (tram)"
     }
   ],
-  "lastPeekedExpiry": "20270328"
+  "lastPeekedExpiry": "20270328",
+  "lastServiceWeek": "4b895ab9dae86f7f",
+  "feedObtainedAt": "20261016"
 }

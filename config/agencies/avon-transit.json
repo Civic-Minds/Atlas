@@ -10,7 +10,7 @@
   "feedUrl": "https://www.avon.org/DocumentCenter/View/25051/TownOfAvon_gtfs",
   "lastFeedExpiry": "20261125",
   "lastFeedVersion": "1",
-  "lastRefreshedAt": "2026-10-12",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Avon, Colorado",
     "Beaver Creek, Colorado"
@@ -35,7 +35,7 @@
     },
     "checkedAt": "2026-11-02"
   },
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261125",
@@ -45,5 +45,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://www.avon.org/DocumentCenter/View/25051/TownOfAvon_gtfs",
-  "lastPeekedExpiry": "20261125"
+  "lastPeekedExpiry": "20261125",
+  "lastServiceWeek": "6217a724b65a9523",
+  "feedObtainedAt": "20260513"
 }

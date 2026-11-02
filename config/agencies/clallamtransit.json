@@ -17,13 +17,13 @@
   "feedUrl": "https://files.mobilitydatabase.org/mdb-279/latest.zip",
   "lastFeedExpiry": "20271231",
   "lastFeedVersion": "Updated: Sep 4, 2026, 10:08 AM",
-  "lastRefreshedAt": "2026-10-12",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Victoria, British Columbia",
     "Shoreline, Washington",
     "Seattle, Washington"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271231",
@@ -53,5 +53,7 @@
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
-  "lastPeekedExpiry": "20271231"
+  "lastPeekedExpiry": "20271231",
+  "lastServiceWeek": "1566e5cdba8ad6df",
+  "feedObtainedAt": "20260904"
 }

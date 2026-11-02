@@ -18,7 +18,7 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-50029/latest.zip",
   "lastFeedExpiry": "20270227",
   "lastFeedVersion": "20240313",
-  "lastRefreshedAt": "2026-08-18",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Bay City, Michigan",
     "Essexville, Michigan",
@@ -46,12 +46,18 @@
     },
     "checkedAt": "2026-11-02"
   },
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270227",
   "timezone": "America/New_York",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/11684/BMTA_GTFS.zip",
-  "lastPeekedExpiry": "20270227"
+  "lastPeekedExpiry": "20270227",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "3fb34bdf94c919e7",
+  "feedObtainedAt": "20240329"
 }

@@ -8,9 +8,9 @@
   ],
   "feedUrl": "https://www.glendaleca.gov/home/showdocument?id=29549",
   "lastFeedExpiry": "20271001",
-  "lastFeedVersion": null,
+  "lastFeedVersion": "1",
   "region": "California",
-  "lastRefreshedAt": "20260811",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Glendale, California",
     "Burbank, California",
@@ -18,14 +18,14 @@
   ],
   "timezone": "America/Los_Angeles",
   "lastRawArchiveKey": "20220831-fd08ce68f5a5f345",
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271001",
-  "feedRefreshStatus": "stale",
-  "feedRefreshError": "all available feeds expired (latest 20220831)",
-  "feedRefreshErrorAt": "20261012",
-  "feedRefreshRetryCount": 3,
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://www.glendaleca.gov/home/showdocument?id=29549",
   "lastPeekedExpiry": "20271001",
@@ -50,5 +50,7 @@
       "resumesOn": null
     },
     "checkedAt": "2026-11-02"
-  }
+  },
+  "lastServiceWeek": "1cecad4ccfb7b7c0",
+  "feedObtainedAt": "20261102"
 }

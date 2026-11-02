@@ -17,11 +17,11 @@
   "region": "Delaware",
   "lastFeedExpiry": "20261114",
   "lastFeedVersion": "May 2026_20260429",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Wilmington, Delaware"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261114",
@@ -47,5 +47,11 @@
       "resumesOn": null
     },
     "checkedAt": "2026-11-02"
-  }
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "b06fdcc683e8009b",
+  "feedObtainedAt": "20260520"
 }

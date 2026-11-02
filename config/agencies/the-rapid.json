@@ -11,13 +11,13 @@
   "feedUrl": "http://connect.ridetherapid.org/InfoPoint/gtfs-zip.ashx",
   "lastFeedExpiry": "20270110",
   "lastFeedVersion": "20261015",
-  "lastRefreshedAt": "2026-10-19",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Grand Rapids, Michigan",
     "Wyoming, Michigan",
     "Kentwood, Michigan"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270110",
@@ -49,5 +49,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "http://connect.ridetherapid.org/InfoPoint/gtfs-zip.ashx",
-  "lastPeekedExpiry": "20270110"
+  "lastPeekedExpiry": "20270110",
+  "lastServiceWeek": "778c515d658a4dee",
+  "feedObtainedAt": "20261015"
 }

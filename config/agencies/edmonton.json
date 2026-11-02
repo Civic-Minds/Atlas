@@ -29,15 +29,15 @@
     }
   ],
   "lastFeedExpiry": "20261128",
-  "lastFeedVersion": "261002_1029",
+  "lastFeedVersion": "261013_1337",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-714/latest.zip",
-  "lastRefreshedAt": "2026-10-07",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Edmonton, Alberta",
     "St. Albert, Alberta",
     "Sherwood Park, Alberta"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261128",
@@ -69,5 +69,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://gtfs.edmonton.ca/TMGTFSRealTimeWebService/GTFS/GTFS.zip",
-  "lastPeekedExpiry": "20261128"
+  "lastPeekedExpiry": "20261128",
+  "lastServiceWeek": "2a37b2c0f3615998",
+  "feedObtainedAt": "20261102"
 }

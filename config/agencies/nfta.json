@@ -21,14 +21,14 @@
     "https://metro.nfta.com/__googletransit/rail/google_transit.zip"
   ],
   "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-401/latest.zip",
-  "lastRefreshedAt": "2026-10-19",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Buffalo, New York",
     "Amherst, New York",
     "Cheektowaga, New York",
     "Niagara Falls, Ontario"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261205",
@@ -75,5 +75,7 @@
       "reason": "Buffalo Metro Rail is light rail, published as route_type 0 (tram); replaces the former agency-name rule (#811)"
     }
   ],
-  "lastPeekedExpiry": "20261205"
+  "lastPeekedExpiry": "20261205",
+  "lastServiceWeek": "1dfe02a8393be636",
+  "feedObtainedAt": "20260827"
 }

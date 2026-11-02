@@ -10,16 +10,16 @@
   "feedUrl": "https://s3.amazonaws.com/etatransit.gtfs/tarta.etaspot.net/gtfs.zip",
   "region": "Ohio",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-1716_1/latest.zip",
-  "lastFeedExpiry": "20271023",
-  "lastFeedVersion": "462",
-  "lastRefreshedAt": "2026-10-19",
+  "lastFeedExpiry": "20271026",
+  "lastFeedVersion": "465",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Toledo, Ohio"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20271015",
+  "expiredFeedCheckExpiry": "20271026",
   "feedQuality": {
     "status": "healthy",
     "score": 100,
@@ -30,7 +30,7 @@
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
       "featureCount": 106,
-      "feedExpiry": "20271023",
+      "feedExpiry": "20271026",
       "routeCount": 18,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
@@ -46,5 +46,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://s3.amazonaws.com/etatransit.gtfs/tarta.etaspot.net/gtfs.zip",
-  "lastPeekedExpiry": "20271023"
+  "lastPeekedExpiry": "20271026",
+  "lastServiceWeek": "9b182034be9d0acb",
+  "feedObtainedAt": "20261102"
 }

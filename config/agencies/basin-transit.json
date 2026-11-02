@@ -17,11 +17,11 @@
   "feedUrl": "https://data.trilliumtransit.com/gtfs/morongobasin-ca-us/morongobasin-ca-us.zip",
   "lastFeedExpiry": "20270101",
   "lastFeedVersion": "UTC: 11-Jul-2026 00:25",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Cathedral City, California"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270101",
@@ -49,5 +49,11 @@
       "resumesOn": null
     },
     "checkedAt": "2026-11-02"
-  }
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "c266f6ed23d91ffe",
+  "feedObtainedAt": "20260711"
 }

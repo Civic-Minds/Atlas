@@ -11,12 +11,12 @@
   "feedUrl": "https://www.theride.org/sites/default/files/google/google_transit.zip",
   "lastFeedExpiry": "20270130",
   "lastFeedVersion": "S1000302",
-  "lastRefreshedAt": "2026-10-14",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Ann Arbor, Michigan",
     "Canton, Michigan"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270130",
@@ -46,5 +46,7 @@
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
-  "feedRefreshRetryCount": 0
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "ae556bd31a360bd2",
+  "feedObtainedAt": "20260910"
 }
