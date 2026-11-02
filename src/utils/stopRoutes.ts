@@ -6,7 +6,7 @@ import { partPeriodText, periodEdgeText } from './effectiveHeadway';
 import { routeCardSharedStretchEdge } from './routeCardRows';
 import { hasRegularServiceInPeriod } from './stretchCard';
 import { agencyNames } from './agencyName';
-import { rowTrips } from './rowTrips';
+import { rowTrips, unsteadyDirectionFallback } from './rowTrips';
 import { compareRouteNumber } from './sortCompare';
 import { noTripsInPeriod } from '../../shared/stopRoutePeriods';
 import { routeCardNoNumberWords } from './routeCardNotices';
@@ -144,9 +144,10 @@ export function buildStopRoutes({ siblingIdsByAgency, routesByAgency, routePerio
       // in the period never reads its stretch's "from 5:34 AM" (TTC 100 to Pape, weekday overnight).
       const trips = rowTrips(p, period);
       const periodText = trips.partPeriod != null ? partPeriodText(p, period) : undefined;
-      // No cadence at the stop for a period the route card says has no regular cadence (#750), or where the
-      // destination has no service of its own and its value is other headsigns' trips (CIV-1069, rowTrips).
-      if (!periodText && (!hasRegularServiceInPeriod(p, period) || trips.noOwnService)) continue;
+      // No cadence at the stop for a period the route card says has no regular cadence (#750), where the
+      // destination has no service of its own and its value is other headsigns' trips (CIV-1069, rowTrips), or where the
+      // card's row reads its unsteady direction's worst wait as no regular service (#962).
+      if (!periodText && (!hasRegularServiceInPeriod(p, period) || trips.noOwnService || unsteadyDirectionFallback(p, period, trips))) continue;
 
       // Only include features whose shape actually covers any of the sibling stops.
       let stopHw: number | undefined = undefined;
