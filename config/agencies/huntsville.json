@@ -16,11 +16,11 @@
   "region": "Alabama",
   "lastFeedExpiry": "20261231",
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-08-10",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Huntsville, Alabama"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261231",
@@ -48,5 +48,11 @@
       "resumesOn": null
     },
     "checkedAt": "2026-11-02"
-  }
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "1f04725f1905ccac",
+  "feedObtainedAt": "20260325"
 }

@@ -16,13 +16,13 @@
   "region": "Ohio",
   "lastFeedExpiry": "20261128",
   "lastFeedVersion": "20260908",
-  "lastRefreshedAt": "2026-10-03",
+  "lastRefreshedAt": "2026-11-02",
   "websiteUrl": "http://www.wrtaonline.com/",
   "cities": [
     "Youngstown, Ohio"
   ],
   "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-1717/latest.zip",
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261128",
@@ -55,5 +55,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://myvalleystops.wrtaonline.com/InfoPoint/gtfs-zip.ashx",
-  "lastPeekedExpiry": "20261128"
+  "lastPeekedExpiry": "20261128",
+  "lastServiceWeek": "fb14b2e1d4c5e904",
+  "feedObtainedAt": "20260908"
 }

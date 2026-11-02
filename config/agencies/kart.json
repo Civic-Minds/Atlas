@@ -10,11 +10,11 @@
   "region": "California",
   "lastFeedExpiry": "20271231",
   "lastFeedVersion": "20260901",
-  "lastRefreshedAt": "2026-09-07",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Hanford, California"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271231",
@@ -40,5 +40,11 @@
   "timezone": "America/Los_Angeles",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2204/latest.zip",
-  "lastPeekedExpiry": "20271231"
+  "lastPeekedExpiry": "20271231",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "b02e76e4f1c28cd6",
+  "feedObtainedAt": "20260901"
 }

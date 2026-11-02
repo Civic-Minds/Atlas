@@ -16,12 +16,12 @@
   "region": "Ohio",
   "lastFeedExpiry": "20270102",
   "lastFeedVersion": "S1000327",
-  "lastRefreshedAt": "2026-09-07",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Dayton, Ohio",
     "Kettering, Ohio"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270102",
@@ -49,5 +49,11 @@
   },
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-403/latest.zip",
-  "lastPeekedExpiry": "20270102"
+  "lastPeekedExpiry": "20270102",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "184a1d31f1467ac9",
+  "feedObtainedAt": "20260906"
 }

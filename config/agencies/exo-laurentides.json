@@ -20,7 +20,7 @@
   "lastFeedVersion": null,
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-744/latest.zip",
   "gtfsFares": true,
-  "lastRefreshedAt": "2026-10-12",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Saint-Louis-de-Terrebonne, Quebec",
     "Saint-Jérôme, Quebec",
@@ -30,7 +30,7 @@
     "Terrebonne, Quebec",
     "Laval, Quebec"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270103",
@@ -62,5 +62,7 @@
     },
     "checkedAt": "2026-11-02"
   },
-  "lastPeekedExpiry": "20270103"
+  "lastPeekedExpiry": "20270103",
+  "lastServiceWeek": "1baa51f8550c5d03",
+  "feedObtainedAt": "20261026"
 }

@@ -21,7 +21,7 @@
   "timezone": "America/Chicago",
   "lastFeedExpiry": "20261231",
   "lastFeedVersion": "Updated: Jun 18, 2026, 3:44 PM",
-  "lastRefreshedAt": "2026-09-08",
+  "lastRefreshedAt": "2026-11-02",
   "feedQuality": {
     "status": "healthy",
     "score": 100,
@@ -41,11 +41,17 @@
     },
     "checkedAt": "2026-11-02"
   },
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261231",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://gtfs.remix.com/dpts_decatur_il_us.zip",
-  "lastPeekedExpiry": "20261231"
+  "lastPeekedExpiry": "20261231",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "5520d3e6f99f561a",
+  "feedObtainedAt": "20260618"
 }

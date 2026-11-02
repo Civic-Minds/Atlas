@@ -16,8 +16,8 @@
   "feedUrl": "https://files.mobilitydatabase.org/mdb-473/latest.zip",
   "region": "Virginia",
   "lastFeedExpiry": "20270522",
-  "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-10-19",
+  "lastFeedVersion": "1",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Norfolk, Virginia",
     "Newport News, Virginia",
@@ -28,7 +28,7 @@
     "East Hampton, Virginia",
     "Portsmouth, Virginia"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270522",
@@ -66,5 +66,7 @@
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
-  "feedRefreshRetryCount": 0
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "9146d4d6eee0f23e",
+  "feedObtainedAt": "20261102"
 }

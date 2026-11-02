@@ -11,12 +11,12 @@
   "region": "Nebraska",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2269/latest.zip",
   "lastFeedExpiry": "20271231",
-  "lastFeedVersion": "20261014",
-  "lastRefreshedAt": "2026-10-19",
+  "lastFeedVersion": "20261028",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Lincoln, Nebraska"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271231",
@@ -48,5 +48,7 @@
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
-  "lastPeekedExpiry": "20271231"
+  "lastPeekedExpiry": "20271231",
+  "lastServiceWeek": "0d680d8bac3603de",
+  "feedObtainedAt": "20261102"
 }

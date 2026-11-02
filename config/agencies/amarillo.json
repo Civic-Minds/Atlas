@@ -15,7 +15,7 @@
   "region": "Texas",
   "lastFeedExpiry": "20261230",
   "lastFeedVersion": "20260701",
-  "lastRefreshedAt": "2026-10-12",
+  "lastRefreshedAt": "2026-11-02",
   "websiteUrl": "https://amarillo.gov/departments/community-services/transit",
   "preprocess": "interpolate-untimed-stops",
   "cities": [
@@ -23,7 +23,7 @@
   ],
   "timezone": "America/Chicago",
   "lastRawArchiveKey": "20211231-c26aa6cd3c0c0489",
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261230",
@@ -52,5 +52,7 @@
     },
     "checkedAt": "2026-11-02"
   },
-  "lastPeekedExpiry": "20261230"
+  "lastPeekedExpiry": "20261230",
+  "lastServiceWeek": "b6d0a81e3efe7c1e",
+  "feedObtainedAt": "20260625"
 }

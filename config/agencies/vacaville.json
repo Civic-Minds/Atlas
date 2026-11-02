@@ -17,14 +17,14 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-599/latest.zip",
   "lastFeedExpiry": "20261231",
   "lastFeedVersion": "6.18.26",
-  "lastRefreshedAt": "2026-10-08",
+  "lastRefreshedAt": "2026-11-02",
   "websiteUrl": "https://citycoach.com/",
   "cities": [
     "Vacaville, California"
   ],
   "timezone": "America/Los_Angeles",
   "lastRawArchiveKey": "20260630-9771867b4141da3d",
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261231",
@@ -53,5 +53,7 @@
     },
     "checkedAt": "2026-11-02"
   },
-  "lastPeekedExpiry": "20261231"
+  "lastPeekedExpiry": "20261231",
+  "lastServiceWeek": "67c1384acee4f4cf",
+  "feedObtainedAt": "20260924"
 }

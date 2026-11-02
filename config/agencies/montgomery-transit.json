@@ -17,11 +17,11 @@
   "region": "Alabama",
   "lastFeedExpiry": "20261231",
   "lastFeedVersion": "UTC: 08-Jan-2026 10:11",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Montgomery, Alabama"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261231",
@@ -49,5 +49,11 @@
       "resumesOn": null
     },
     "checkedAt": "2026-11-02"
-  }
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "4fde9db37c18cf72",
+  "feedObtainedAt": "20260108"
 }

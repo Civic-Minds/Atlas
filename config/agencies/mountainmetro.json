@@ -17,28 +17,32 @@
   ],
   "timezone": "America/Denver",
   "lastRawArchiveKey": "20250927-1abb7aaac18b1cfe",
-  "lastFeedCheckAt": "20261019",
-  "expiredFeedCheckCount": 0,
-  "expiredFeedCheckSince": null,
+  "lastFeedCheckAt": "20261102",
+  "expiredFeedCheckCount": 1,
+  "expiredFeedCheckSince": "20260622",
   "expiredFeedCheckExpiry": "20261024",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://coloradosprings.gov/document/googletransit.zip",
   "feedQuality": {
-    "status": "healthy",
-    "score": 100,
-    "reasons": [],
+    "status": "degraded",
+    "score": 65,
+    "reasons": [
+      "The schedule dates in this feed have passed."
+    ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 193
+      "featureCount": 193,
+      "feedExpiry": "20261024"
     },
-    "checkedAt": "2026-10-14"
+    "checkedAt": "2026-10-14",
+    "scoredAt": "2026-11-02"
   },
   "lastPeekedExpiry": "20261024",
-  "feedRefreshStatus": "current",
-  "feedRefreshError": null,
-  "feedRefreshErrorAt": null,
-  "feedRefreshRetryCount": 0
+  "feedRefreshStatus": "stale",
+  "feedRefreshError": "all available feeds expired (latest 20261024)",
+  "feedRefreshErrorAt": "20261102",
+  "feedRefreshRetryCount": 1
 }

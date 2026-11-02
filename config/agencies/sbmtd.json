@@ -11,11 +11,11 @@
   "lastFeedExpiry": "20261129",
   "lastFeedVersion": "S1000262",
   "region": "California",
-  "lastRefreshedAt": "2026-08-24",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Santa Barbara, California"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261129",
@@ -41,5 +41,11 @@
   "timezone": "America/Los_Angeles",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-1246/latest.zip",
-  "lastPeekedExpiry": "20261129"
+  "lastPeekedExpiry": "20261129",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "3e94d3b15666d7da",
+  "feedObtainedAt": "20260722"
 }

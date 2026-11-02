@@ -17,11 +17,11 @@
   "region": "Indiana",
   "lastFeedExpiry": "20261231",
   "lastFeedVersion": "Updated: Sep 1, 2026, 7:20 PM",
-  "lastRefreshedAt": "2026-09-07",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Fort Wayne, Indiana"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261231",
@@ -47,5 +47,11 @@
   },
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2266/latest.zip",
-  "lastPeekedExpiry": "20261231"
+  "lastPeekedExpiry": "20261231",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "9b13dc6ed710dea0",
+  "feedObtainedAt": "20260901"
 }

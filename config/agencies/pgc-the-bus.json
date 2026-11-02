@@ -12,7 +12,7 @@
   "lastFeedExpiry": "20270301",
   "lastFeedVersion": "UTC: 26-Aug-2026 18:42",
   "region": "Maryland",
-  "lastRefreshedAt": "2026-10-03",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Downtown DC, District of Columbia",
     "Bowie, Maryland",
@@ -21,7 +21,7 @@
     "Waldorf, Maryland",
     "Columbia, Maryland"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270301",
@@ -53,5 +53,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-477/latest.zip",
-  "lastPeekedExpiry": "20270301"
+  "lastPeekedExpiry": "20270301",
+  "lastServiceWeek": "5d85288193be04cc",
+  "feedObtainedAt": "20260826"
 }

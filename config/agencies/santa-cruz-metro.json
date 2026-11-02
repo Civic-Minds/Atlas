@@ -15,14 +15,14 @@
   "feedUrl": "https://developer.scmetro.org/gtfs.zip",
   "lastFeedExpiry": "20261216",
   "lastFeedVersion": "S1000117",
-  "lastRefreshedAt": "2026-10-03",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Santa Cruz, California",
     "Watsonville, California",
     "San Jose, California",
     "Cupertino, California"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261216",
@@ -52,5 +52,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://developer.scmetro.org/gtfs.zip",
-  "lastPeekedExpiry": "20261216"
+  "lastPeekedExpiry": "20261216",
+  "lastServiceWeek": "0fc9980725b8e0e9",
+  "feedObtainedAt": "20261001"
 }

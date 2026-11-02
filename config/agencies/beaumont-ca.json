@@ -17,12 +17,12 @@
   "feedUrl": "https://data.trilliumtransit.com/gtfs/beaumont-ca-us/beaumont-ca-us.zip",
   "lastFeedExpiry": "20270101",
   "lastFeedVersion": "UTC: 25-Feb-2026 12:23",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Yucaipa, California",
     "San Bernardino, California"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270101",
@@ -48,5 +48,11 @@
       "resumesOn": null
     },
     "checkedAt": "2026-11-02"
-  }
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "2ad2f3be9276215d",
+  "feedObtainedAt": "20260225"
 }

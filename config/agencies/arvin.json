@@ -17,13 +17,13 @@
   "feedUrl": "https://gtfs.remix.com/arvin.zip",
   "lastFeedExpiry": "20270228",
   "lastFeedVersion": "Updated: Jan 16, 2026, 8:35 AM",
-  "lastRefreshedAt": "20260811",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Bakersfield, California"
   ],
   "timezone": "America/Los_Angeles",
   "lastRawArchiveKey": "20211231-986a2da2e4435109",
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270228",
@@ -48,5 +48,11 @@
       "resumesOn": null
     },
     "checkedAt": "2026-11-02"
-  }
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "3c0cbdf6cb6f0aa7",
+  "feedObtainedAt": "20260116"
 }

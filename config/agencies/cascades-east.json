@@ -17,12 +17,12 @@
   "feedUrl": "https://passio3.com/cet/passioTransit/gtfs/google_transit.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-170/latest.zip",
   "lastFeedExpiry": "20271231",
-  "lastFeedVersion": "20250228",
-  "lastRefreshedAt": "2026-08-10",
+  "lastFeedVersion": "20260917",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Bend, Oregon"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271231",
@@ -32,24 +32,30 @@
   "lastPeekedExpiry": "20271231",
   "feedQuality": {
     "status": "review",
-    "score": 64,
+    "score": 85,
     "reasons": [
-      "3 minor schedule issues found while reading the feed.",
+      "1 minor schedule issue found while reading the feed.",
       "1 route has stops whose frequency differs from the overall route schedule."
     ],
     "metrics": {
       "validationErrors": 0,
-      "validationWarnings": 3,
+      "validationWarnings": 1,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 1,
-      "featureCount": 38,
+      "featureCount": 40,
       "feedExpiry": "20271231",
-      "routeCount": 18,
+      "routeCount": 20,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
       "mismatchRoutes": 1,
       "resumesOn": null
     },
     "checkedAt": "2026-11-02"
-  }
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "767d753088439448",
+  "feedObtainedAt": "20261102"
 }

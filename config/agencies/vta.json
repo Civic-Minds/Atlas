@@ -19,7 +19,7 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-57/latest.zip",
   "lastFeedExpiry": "20270110",
   "lastFeedVersion": "2026-10-09_14:57",
-  "lastRefreshedAt": "2026-10-19",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "San Jose, California",
     "Santa Clara, California",
@@ -30,7 +30,7 @@
     "Gilroy, California",
     "Palo Alto, California"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270110",
@@ -80,5 +80,7 @@
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
-  "feedRefreshRetryCount": 0
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "5c07d34969153187",
+  "feedObtainedAt": "20261027"
 }

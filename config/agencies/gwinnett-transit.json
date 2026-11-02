@@ -11,13 +11,13 @@
   "lastFeedExpiry": "20261226",
   "lastFeedVersion": "20260702",
   "region": "Georgia",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Johns Creek, Georgia",
     "Brookhaven, Georgia",
     "Stonecrest, Georgia"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261226",
@@ -43,5 +43,11 @@
       "resumesOn": null
     },
     "checkedAt": "2026-11-02"
-  }
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "9a6846703f809a31",
+  "feedObtainedAt": "20260702"
 }

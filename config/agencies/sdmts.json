@@ -9,9 +9,9 @@
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-13/latest.zip",
   "lastFeedExpiry": "20270130",
-  "lastFeedVersion": "Generated on 20261006",
+  "lastFeedVersion": "Generated on 20261027",
   "region": "California",
-  "lastRefreshedAt": "2026-10-12",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "San Diego, California",
     "Chula Vista, California",
@@ -24,7 +24,7 @@
     "Rancho Penasquitos, California",
     "Escondido, California"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270130",
@@ -82,5 +82,7 @@
       "reason": "San Diego Trolley lines are light rail, published as route_type 0 (tram); replaces the former agency-name rule"
     }
   ],
-  "lastPeekedExpiry": "20270130"
+  "lastPeekedExpiry": "20270130",
+  "lastServiceWeek": "8162c48f76c62f27",
+  "feedObtainedAt": "20261102"
 }

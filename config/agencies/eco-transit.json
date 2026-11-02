@@ -10,8 +10,8 @@
   "region": "Colorado",
   "lastFeedExpiry": "20261121",
   "lastFeedVersion": "S1000093",
-  "lastRefreshedAt": "2026-08-07",
-  "lastFeedCheckAt": "20261019",
+  "lastRefreshedAt": "2026-11-02",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261121",
@@ -37,5 +37,11 @@
       "resumesOn": null
     },
     "checkedAt": "2026-11-02"
-  }
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "f84c82af76e2c786",
+  "feedObtainedAt": "20260416"
 }

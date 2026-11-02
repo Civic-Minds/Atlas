@@ -17,13 +17,13 @@
   "feedUrl": "https://www.dashbus.com/wp-content/gtfs/google_transit.zip",
   "lastFeedExpiry": "20270731",
   "lastFeedVersion": "S1000236",
-  "lastRefreshedAt": "2026-08-10",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Alexandria, Virginia",
     "Arlington, Virginia",
     "Washington, District of Columbia"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270731",
@@ -51,5 +51,11 @@
       "resumesOn": null
     },
     "checkedAt": "2026-11-02"
-  }
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "60188c5858475c08",
+  "feedObtainedAt": "20260709"
 }

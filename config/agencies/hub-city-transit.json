@@ -38,13 +38,19 @@
   },
   "lastFeedExpiry": "20270923",
   "lastFeedVersion": "",
-  "lastRefreshedAt": "2026-08-21",
-  "lastFeedCheckAt": "20261019",
+  "lastRefreshedAt": "2026-11-02",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270923",
   "timezone": "US/Central",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://api.transloc.com/gtfs/hct.zip",
-  "lastPeekedExpiry": "20270923"
+  "lastPeekedExpiry": "20270923",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "48f6b2a1fed7efae",
+  "feedObtainedAt": "20261102"
 }

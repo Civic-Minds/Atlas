@@ -11,7 +11,7 @@
   "feedUrl": "https://data.trilliumtransit.com/gtfs/clearcreek-co-us/clearcreek-co-us.zip",
   "lastFeedExpiry": "20261130",
   "lastFeedVersion": "UTC: 20-May-2026 16:35",
-  "lastRefreshedAt": "2026-08-18",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Idaho Springs, Colorado",
     "Georgetown, Colorado",
@@ -40,11 +40,17 @@
     },
     "checkedAt": "2026-11-02"
   },
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261130",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://data.trilliumtransit.com/gtfs/clearcreek-co-us/clearcreek-co-us.zip",
-  "lastPeekedExpiry": "20261130"
+  "lastPeekedExpiry": "20261130",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "34fff7b1030052c4",
+  "feedObtainedAt": "20260520"
 }

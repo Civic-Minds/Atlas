@@ -17,11 +17,11 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-191/latest.zip",
   "lastFeedExpiry": "20270101",
   "lastFeedVersion": "UTC: 09-Jun-2026 21:02",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Sioux City, Iowa"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270101",
@@ -49,5 +49,11 @@
       "resumesOn": null
     },
     "checkedAt": "2026-11-02"
-  }
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "42c4350760707762",
+  "feedObtainedAt": "20260609"
 }

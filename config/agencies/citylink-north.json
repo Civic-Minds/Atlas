@@ -40,9 +40,9 @@
     "checkedAt": "2026-11-02"
   },
   "lastFeedExpiry": "20271231",
-  "lastFeedVersion": "20250228",
-  "lastRefreshedAt": "2026-10-12",
-  "lastFeedCheckAt": "20261019",
+  "lastFeedVersion": "20260917",
+  "lastRefreshedAt": "2026-11-02",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271231",
@@ -53,5 +53,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://passio3.com/kootenai/passioTransit/gtfs/google_transit.zip",
-  "lastPeekedExpiry": "20271231"
+  "lastPeekedExpiry": "20271231",
+  "lastServiceWeek": "4ef348f9ed0cb650",
+  "feedObtainedAt": "20261102"
 }

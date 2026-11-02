@@ -17,8 +17,8 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-60190/latest.zip",
   "lastFeedExpiry": "20270331",
   "lastFeedVersion": "20230901",
-  "lastRefreshedAt": "2026-08-07",
-  "lastFeedCheckAt": "20261019",
+  "lastRefreshedAt": "2026-11-02",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270331",
@@ -44,5 +44,11 @@
       "resumesOn": null
     },
     "checkedAt": "2026-11-02"
-  }
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "b14fb0d99183dec3",
+  "feedObtainedAt": "20260123"
 }

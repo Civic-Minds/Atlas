@@ -38,13 +38,19 @@
   },
   "lastFeedExpiry": "20281102",
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-08-21",
-  "lastFeedCheckAt": "20261019",
+  "lastRefreshedAt": "2026-11-02",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20501230",
   "timezone": "America/New_York",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://fast.transloc.com/Secure/Admin/Reports/GTFSDownload.aspx",
-  "lastPeekedExpiry": "20501230"
+  "lastPeekedExpiry": "20501230",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "a2fc8e7f3371b825",
+  "feedObtainedAt": "20261102"
 }

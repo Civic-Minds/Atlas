@@ -10,7 +10,7 @@
   "feedUrl": "http://data.trilliumtransit.com/gtfs/streamlinetransit-mt-us/streamlinetransit-mt-us.zip",
   "lastFeedExpiry": "20281231",
   "lastFeedVersion": "UTC: 23-Jan-2025 11:14",
-  "lastRefreshedAt": "2026-10-14",
+  "lastRefreshedAt": "2026-11-02",
   "region": "Montana",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-295/latest.zip",
   "bbox": [
@@ -19,7 +19,7 @@
     45.8027,
     -110.5413
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20281231",
@@ -49,5 +49,11 @@
       "resumesOn": null
     },
     "checkedAt": "2026-11-02"
-  }
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "1a5ca6198f0eb887",
+  "feedObtainedAt": "20250123"
 }

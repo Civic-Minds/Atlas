@@ -18,12 +18,12 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-3364/latest.zip",
   "lastFeedExpiry": "20270201",
   "lastFeedVersion": "UTC: 22-Jul-2026 20:17",
-  "lastRefreshedAt": "2026-10-14",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Astoria, New York",
     "Manhattan, New York"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270201",
@@ -61,5 +61,7 @@
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
-  "feedRefreshRetryCount": 0
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "94e3d7cf583ffb0c",
+  "feedObtainedAt": "20260722"
 }

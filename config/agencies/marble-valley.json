@@ -10,7 +10,7 @@
   "feedUrl": "https://files.mobilitydatabase.org/mdb-430/latest.zip",
   "lastFeedExpiry": "20270327",
   "lastFeedVersion": "UTC: 21-Sep-2026 22:33",
-  "lastRefreshedAt": "2026-10-12",
+  "lastRefreshedAt": "2026-11-02",
   "region": "Vermont",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-430/latest.zip",
   "bbox": [
@@ -19,7 +19,7 @@
     44.0308,
     -72.6852
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270327",
@@ -49,5 +49,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-430/latest.zip",
-  "lastPeekedExpiry": "20270327"
+  "lastPeekedExpiry": "20270327",
+  "lastServiceWeek": "ea2b8a101d11aab0",
+  "feedObtainedAt": "20260921"
 }

@@ -12,13 +12,13 @@
   "region": "California",
   "lastFeedExpiry": "20270630",
   "lastFeedVersion": "20260602",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Modesto, California",
     "Turlock, California",
     "Manteca, California"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270630",
@@ -44,5 +44,11 @@
       "resumesOn": null
     },
     "checkedAt": "2026-11-02"
-  }
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "c9dc79157f512cba",
+  "feedObtainedAt": "20260602"
 }

@@ -17,8 +17,8 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2709/latest.zip",
   "lastFeedExpiry": "20261231",
   "lastFeedVersion": "Updated: Oct 7, 2026, 6:28 PM",
-  "lastRefreshedAt": "2026-10-12",
-  "lastFeedCheckAt": "20261019",
+  "lastRefreshedAt": "2026-11-02",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261231",
@@ -48,5 +48,7 @@
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
-  "lastPeekedExpiry": "20261231"
+  "lastPeekedExpiry": "20261231",
+  "lastServiceWeek": "78727d6071d5c4c7",
+  "feedObtainedAt": "20261007"
 }

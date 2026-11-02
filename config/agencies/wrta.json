@@ -8,17 +8,17 @@
     -71.802
   ],
   "feedUrl": "https://gtfs.wrta.cadavl.com/WRTA/GTFS/GTFS_WRTA.zip",
-  "lastFeedExpiry": "20270124",
+  "lastFeedExpiry": "20270131",
   "lastFeedVersion": null,
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-432/latest.zip",
-  "lastRefreshedAt": "2026-10-19",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Worcester, Massachusetts"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20270116",
+  "expiredFeedCheckExpiry": "20270131",
   "timezone": "America/New_York",
   "feedQuality": {
     "status": "review",
@@ -32,7 +32,7 @@
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 2,
       "featureCount": 124,
-      "feedExpiry": "20270124",
+      "feedExpiry": "20270131",
       "routeCount": 24,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
@@ -47,5 +47,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://gtfs.wrta.cadavl.com/WRTA/GTFS/GTFS_WRTA.zip",
-  "lastPeekedExpiry": "20270124"
+  "lastPeekedExpiry": "20270131",
+  "lastServiceWeek": "33e75c12d2d9fd85",
+  "feedObtainedAt": "20261102"
 }

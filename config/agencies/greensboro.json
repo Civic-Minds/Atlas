@@ -10,7 +10,7 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-615/latest.zip",
   "lastFeedExpiry": "20281102",
   "lastFeedVersion": "7/4/2024",
-  "lastRefreshedAt": "2026-10-12",
+  "lastRefreshedAt": "2026-11-02",
   "websiteUrl": "http://www.greensboro-nc.gov/index.aspx?page=2180",
   "cities": [
     "Greensboro, North Carolina",
@@ -18,7 +18,7 @@
   ],
   "timezone": "America/New_York",
   "lastRawArchiveKey": "20250228-1828d0c249445f06",
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20991231",
@@ -47,5 +47,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://trackmygta.com/gtfs",
-  "lastPeekedExpiry": "20991231"
+  "lastPeekedExpiry": "20991231",
+  "lastServiceWeek": "460b540c7894bdf5",
+  "feedObtainedAt": "20261101"
 }

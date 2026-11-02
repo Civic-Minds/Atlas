@@ -23,7 +23,7 @@
     "Charleston, South Carolina",
     "Mount Pleasant, South Carolina"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270527",
@@ -49,6 +49,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-02"
+    "checkedAt": "2026-11-02",
+    "scoredAt": "2026-11-02"
   }
 }

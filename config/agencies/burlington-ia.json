@@ -18,7 +18,7 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-199/latest.zip",
   "lastFeedExpiry": "20270401",
   "lastFeedVersion": "UTC: 24-Sep-2026 19:04",
-  "lastRefreshedAt": "2026-10-03",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Burlington, Iowa",
     "West Burlington, Iowa"
@@ -44,7 +44,7 @@
     },
     "checkedAt": "2026-11-02"
   },
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270401",
@@ -55,5 +55,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://data.trilliumtransit.com/gtfs/burlington-ia-us/burlington-ia-us.zip",
-  "lastPeekedExpiry": "20270401"
+  "lastPeekedExpiry": "20270401",
+  "lastServiceWeek": "8833677f8c69d9d4",
+  "feedObtainedAt": "20260924"
 }

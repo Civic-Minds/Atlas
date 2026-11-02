@@ -12,7 +12,7 @@
   "lastFeedExpiry": "20271231",
   "lastFeedVersion": null,
   "region": "Florida",
-  "lastRefreshedAt": "2026-09-17",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "North Miami, Florida",
     "Allapattah, Florida",
@@ -25,25 +25,29 @@
     "Flagami, Florida",
     "Coral Gables, Florida"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271231",
   "timezone": "America/New_York",
   "feedQuality": {
-    "status": "review",
-    "score": 90,
-    "reasons": [
-      "1 route frequency needs checking — some stops appear to have more frequent service than the route's overall schedule suggests."
-    ],
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
       "shapeAnomalies": 0,
-      "routeHeadwayMismatches": 1,
-      "featureCount": 579
+      "routeHeadwayMismatches": 0,
+      "featureCount": 582,
+      "feedExpiry": "20271231",
+      "routeCount": 122,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-09-17"
+    "checkedAt": "2026-11-02"
   },
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-331/latest.zip",
@@ -73,5 +77,11 @@
       "reason": "Metromover MIA is an automated people mover, published as route_type 0 (streetcar)"
     }
   ],
-  "lastPeekedExpiry": "20271231"
+  "lastPeekedExpiry": "20271231",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "6ec3ac3915f250c5",
+  "feedObtainedAt": "20260731"
 }

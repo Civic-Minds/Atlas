@@ -18,13 +18,13 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-250/latest.zip",
   "lastFeedExpiry": "20271231",
   "lastFeedVersion": "20260823",
-  "lastRefreshedAt": "2026-08-27",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Salem, Oregon",
     "Tigard, Oregon",
     "Hillsboro, Oregon"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271231",
@@ -50,5 +50,11 @@
   "timezone": "America/Los_Angeles",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "http://ycta.connexionz.net/rtt/public/resource/gtfs.zip",
-  "lastPeekedExpiry": "20271231"
+  "lastPeekedExpiry": "20271231",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "dcbfcaff94d8819b",
+  "feedObtainedAt": "20260823"
 }

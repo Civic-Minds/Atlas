@@ -16,8 +16,8 @@
   ],
   "feedUrl": "https://assets.metrolinx.com/raw/upload/Documents/Metrolinx/Open%20Data/GO-GTFS.zip",
   "lastFeedExpiry": "20261127",
-  "lastFeedVersion": "20261005110625",
-  "lastRefreshedAt": "2026-10-07",
+  "lastFeedVersion": "20261028133417",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Mississauga, Ontario",
     "Brampton, Ontario",
@@ -37,7 +37,7 @@
       "1": "Westbound"
     }
   },
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261127",
@@ -52,9 +52,9 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 15,
-      "featureCount": 412,
+      "featureCount": 418,
       "feedExpiry": "20261127",
-      "routeCount": 44,
+      "routeCount": 45,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
       "mismatchRoutes": 8,
@@ -68,5 +68,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://assets.metrolinx.com/raw/upload/Documents/Metrolinx/Open%20Data/GO-GTFS.zip",
-  "lastPeekedExpiry": "20261127"
+  "lastPeekedExpiry": "20261127",
+  "lastServiceWeek": "1d00efb929df1b99",
+  "feedObtainedAt": "20261102"
 }

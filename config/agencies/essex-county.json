@@ -24,7 +24,7 @@
   "timezone": "America/New_York",
   "lastFeedExpiry": "20270301",
   "lastFeedVersion": "UTC: 13-Aug-2026 20:25",
-  "lastRefreshedAt": "2026-09-08",
+  "lastRefreshedAt": "2026-11-02",
   "feedQuality": {
     "status": "review",
     "score": 90,
@@ -46,11 +46,17 @@
     },
     "checkedAt": "2026-11-02"
   },
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270301",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "http://data.trilliumtransit.com/gtfs/capeann-ma-us/capeann-ma-us.zip",
-  "lastPeekedExpiry": "20270301"
+  "lastPeekedExpiry": "20270301",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "b9134e7affc0caa9",
+  "feedObtainedAt": "20260813"
 }

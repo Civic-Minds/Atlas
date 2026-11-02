@@ -10,7 +10,7 @@
   "lastFeedExpiry": "20270213",
   "lastFeedVersion": "August2026IVOMS_20261008",
   "region": "Texas",
-  "lastRefreshedAt": "2026-10-12",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Houston, Texas",
     "Alief, Texas",
@@ -24,7 +24,7 @@
     "Baytown, Texas"
   ],
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2060/latest.zip",
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270213",
@@ -74,5 +74,7 @@
       "reason": "METRORail is light rail, published as route_type 0 (tram)"
     }
   ],
-  "lastPeekedExpiry": "20270213"
+  "lastPeekedExpiry": "20270213",
+  "lastServiceWeek": "20b6c44a0ac771e7",
+  "feedObtainedAt": "20261008"
 }

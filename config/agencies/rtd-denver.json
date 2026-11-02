@@ -11,8 +11,8 @@
   "feedUrl": "https://files.mobilitydatabase.org/mdb-178/latest.zip",
   "region": "Colorado",
   "lastFeedExpiry": "20270102",
-  "lastFeedVersion": "Sep26-37271-14-15-20261016-162901",
-  "lastRefreshedAt": "2026-10-19",
+  "lastFeedVersion": "Sep26-37329-18-19-20261030-143459",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Denver, Colorado",
     "Aurora, Colorado",
@@ -25,7 +25,7 @@
     "Broomfield, Colorado",
     "Westminster, Colorado"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270102",
@@ -93,5 +93,7 @@
       "reason": "RTD light rail lines are published as route_type 0 (tram); A, B, G and N are commuter rail and stay as published"
     }
   ],
-  "lastPeekedExpiry": "20270102"
+  "lastPeekedExpiry": "20270102",
+  "lastServiceWeek": "215d0dd64e9d7698",
+  "feedObtainedAt": "20261102"
 }

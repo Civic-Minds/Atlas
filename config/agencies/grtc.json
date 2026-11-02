@@ -16,12 +16,12 @@
   "region": "Virginia",
   "lastFeedExpiry": "20270123",
   "lastFeedVersion": "S1000183",
-  "lastRefreshedAt": "2026-10-12",
+  "lastRefreshedAt": "2026-11-02",
   "websiteUrl": "http://www.ridegrtc.com",
   "cities": [
     "Richmond, Virginia"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270123",
@@ -51,5 +51,7 @@
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
-  "lastPeekedExpiry": "20270123"
+  "lastPeekedExpiry": "20270123",
+  "lastServiceWeek": "c23efad67917e0b4",
+  "feedObtainedAt": "20261026"
 }

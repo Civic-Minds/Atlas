@@ -18,15 +18,15 @@
   "feedUrl": "https://mysmartbus.com/gtfs",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2706/latest.zip",
   "lastFeedExpiry": "20281102",
-  "lastFeedVersion": "FY27 Q1",
-  "lastRefreshedAt": "2026-10-12",
+  "lastFeedVersion": "FY27 Q2",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Tigard, Oregon",
     "Salem, Oregon",
     "Gresham, Oregon",
     "Portland, Oregon"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20991231",
@@ -56,5 +56,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://mysmartbus.com/gtfs",
-  "lastPeekedExpiry": "20991231"
+  "lastPeekedExpiry": "20991231",
+  "lastServiceWeek": "1f7012aa3c4238b1",
+  "feedObtainedAt": "20261102"
 }

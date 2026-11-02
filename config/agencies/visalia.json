@@ -11,11 +11,11 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-90091/latest.zip",
   "lastFeedExpiry": "20270106",
   "lastFeedVersion": "20250102",
-  "lastRefreshedAt": "2026-08-10",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Visalia, California"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270106",
@@ -43,5 +43,11 @@
       "resumesOn": null
     },
     "checkedAt": "2026-11-02"
-  }
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "ec96f40743e3a300",
+  "feedObtainedAt": "20250102"
 }
