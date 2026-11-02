@@ -13,6 +13,8 @@ scripts/*
 !scripts/agencyIndexGeneration.ts
 !scripts/build-sitemap.ts
 !scripts/prerender-routes.ts
+# Imported by shared/agencyPlaces.test.ts, which the build's `tsc` type-checks.
+!scripts/build-area-page-list.ts
 types/
 # Research data (~100 MB) isn't needed at build time, except one file
 # imported by src/data/frequentServiceStory.ts.
