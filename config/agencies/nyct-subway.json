@@ -15,9 +15,9 @@
     -73.7554
   ],
   "feedUrl": "https://rrgtfsfeeds.s3.amazonaws.com/gtfs_subway.zip",
-  "lastFeedExpiry": "20261031",
-  "lastFeedVersion": "20260826-X-long-term-supplement-trip-ids",
-  "lastRefreshedAt": "2026-08-27",
+  "lastFeedExpiry": "20270515",
+  "lastFeedVersion": "20261028-fall-2026-pick-with-long-term-supplements",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "East Village, New York",
     "Park Slope, New York",
@@ -30,10 +30,10 @@
     "Chinatown, New York",
     "Cypress Hills, New York"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261031",
+  "expiredFeedCheckExpiry": "20270515",
   "feedQuality": {
     "status": "healthy",
     "score": 100,
@@ -43,18 +43,24 @@
       "validationWarnings": 0,
       "shapeAnomalies": 2,
       "routeHeadwayMismatches": 0,
-      "featureCount": 203,
-      "feedExpiry": "20261031",
+      "featureCount": 202,
+      "feedExpiry": "20270515",
       "routeCount": 29,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-10-31"
+    "checkedAt": "2026-11-02"
   },
   "timezone": "America/New_York",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://rrgtfsfeeds.s3.amazonaws.com/gtfs_subway.zip",
-  "lastPeekedExpiry": "20261031"
+  "lastPeekedExpiry": "20270515",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "6bed3cf1cf9081b4",
+  "feedObtainedAt": "20261101"
 }

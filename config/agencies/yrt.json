@@ -16,10 +16,10 @@
     -78.94
   ],
   "feedUrl": "https://www.yrt.ca/google/google_transit.zip",
-  "lastFeedExpiry": "20261031",
-  "lastFeedVersion": "2026.09.06_September_20260810",
+  "lastFeedExpiry": "20261219",
+  "lastFeedVersion": "2026.11.01_November_20261006",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-728/latest.zip",
-  "lastRefreshedAt": "2026-09-07",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Vaughan, Ontario",
     "Richmond Hill, Ontario",
@@ -32,10 +32,10 @@
     "Etobicoke, Ontario",
     "Pickering, Ontario"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261031",
+  "expiredFeedCheckExpiry": "20261219",
   "timezone": "America/Toronto",
   "feedQuality": {
     "status": "review",
@@ -48,17 +48,23 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 6,
-      "featureCount": 427,
-      "feedExpiry": "20261031",
+      "featureCount": 425,
+      "feedExpiry": "20261219",
       "routeCount": 123,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
       "mismatchRoutes": 5,
       "resumesOn": null
     },
-    "checkedAt": "2026-10-31"
+    "checkedAt": "2026-11-02"
   },
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://www.yrt.ca/google/google_transit.zip",
-  "lastPeekedExpiry": "20261031"
+  "lastPeekedExpiry": "20261219",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "e8a2deb3cea81d16",
+  "feedObtainedAt": "20261101"
 }

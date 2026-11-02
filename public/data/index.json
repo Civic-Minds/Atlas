@@ -1830,10 +1830,10 @@
         -78.94
       ],
       "feedUrl": "https://www.yrt.ca/google/google_transit.zip",
-      "lastFeedExpiry": "20261031",
-      "lastFeedVersion": "2026.09.06_September_20260810",
+      "lastFeedExpiry": "20261219",
+      "lastFeedVersion": "2026.11.01_November_20261006",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-728/latest.zip",
-      "lastRefreshedAt": "2026-09-07",
+      "lastRefreshedAt": "2026-11-02",
       "cities": [
         "Vaughan, Ontario",
         "Richmond Hill, Ontario",
@@ -1846,10 +1846,10 @@
         "Etobicoke, Ontario",
         "Pickering, Ontario"
       ],
-      "lastFeedCheckAt": "20261019",
+      "lastFeedCheckAt": "20261102",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20261031",
+      "expiredFeedCheckExpiry": "20261219",
       "timezone": "America/Toronto",
       "feedQuality": {
         "status": "review",
@@ -1862,19 +1862,25 @@
           "validationWarnings": 0,
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 6,
-          "featureCount": 427,
-          "feedExpiry": "20261031",
+          "featureCount": 425,
+          "feedExpiry": "20261219",
           "routeCount": 123,
           "problemShapes": 0,
           "problemShapeRoutes": 0,
           "mismatchRoutes": 5,
           "resumesOn": null
         },
-        "checkedAt": "2026-10-31"
+        "checkedAt": "2026-11-02"
       },
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://www.yrt.ca/google/google_transit.zip",
-      "lastPeekedExpiry": "20261031"
+      "lastPeekedExpiry": "20261219",
+      "feedRefreshStatus": "current",
+      "feedRefreshError": null,
+      "feedRefreshErrorAt": null,
+      "feedRefreshRetryCount": 0,
+      "lastServiceWeek": "e8a2deb3cea81d16",
+      "feedObtainedAt": "20261101"
     },
     {
       "slug": "linter",
@@ -10989,10 +10995,10 @@
         -117.75
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-101/latest.zip",
-      "lastFeedExpiry": "20261031",
-      "lastFeedVersion": "20260717",
+      "lastFeedExpiry": "20270710",
+      "lastFeedVersion": "20261030",
       "region": "California",
-      "lastRefreshedAt": "2026-10-12",
+      "lastRefreshedAt": "2026-11-02",
       "cities": [
         "West Covina, California",
         "Pomona, California",
@@ -11005,10 +11011,10 @@
         "Los Angeles, California",
         "Upland, California"
       ],
-      "lastFeedCheckAt": "20261019",
+      "lastFeedCheckAt": "20261102",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20261031",
+      "expiredFeedCheckExpiry": "20270710",
       "timezone": "America/Los_Angeles",
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-101/latest.zip",
@@ -11024,20 +11030,22 @@
           "shapeAnomalies": 1,
           "routeHeadwayMismatches": 2,
           "featureCount": 186,
-          "feedExpiry": "20261031",
+          "feedExpiry": "20270710",
           "routeCount": 36,
           "problemShapes": 0,
           "problemShapeRoutes": 0,
           "mismatchRoutes": 1,
           "resumesOn": null
         },
-        "checkedAt": "2026-10-31"
+        "checkedAt": "2026-11-02"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
-      "lastPeekedExpiry": "20261031"
+      "lastPeekedExpiry": "20270710",
+      "lastServiceWeek": "3263690b9d3cc1a5",
+      "feedObtainedAt": "20261101"
     },
     {
       "slug": "avta",
@@ -15167,9 +15175,9 @@
         -73.7554
       ],
       "feedUrl": "https://rrgtfsfeeds.s3.amazonaws.com/gtfs_subway.zip",
-      "lastFeedExpiry": "20261031",
-      "lastFeedVersion": "20260826-X-long-term-supplement-trip-ids",
-      "lastRefreshedAt": "2026-08-27",
+      "lastFeedExpiry": "20270515",
+      "lastFeedVersion": "20261028-fall-2026-pick-with-long-term-supplements",
+      "lastRefreshedAt": "2026-11-02",
       "cities": [
         "East Village, New York",
         "Park Slope, New York",
@@ -15182,10 +15190,10 @@
         "Chinatown, New York",
         "Cypress Hills, New York"
       ],
-      "lastFeedCheckAt": "20261019",
+      "lastFeedCheckAt": "20261102",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20261031",
+      "expiredFeedCheckExpiry": "20270515",
       "feedQuality": {
         "status": "healthy",
         "score": 100,
@@ -15195,20 +15203,26 @@
           "validationWarnings": 0,
           "shapeAnomalies": 2,
           "routeHeadwayMismatches": 0,
-          "featureCount": 203,
-          "feedExpiry": "20261031",
+          "featureCount": 202,
+          "feedExpiry": "20270515",
           "routeCount": 29,
           "problemShapes": 0,
           "problemShapeRoutes": 0,
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-10-31"
+        "checkedAt": "2026-11-02"
       },
       "timezone": "America/New_York",
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://rrgtfsfeeds.s3.amazonaws.com/gtfs_subway.zip",
-      "lastPeekedExpiry": "20261031"
+      "lastPeekedExpiry": "20270515",
+      "feedRefreshStatus": "current",
+      "feedRefreshError": null,
+      "feedRefreshErrorAt": null,
+      "feedRefreshRetryCount": 0,
+      "lastServiceWeek": "6bed3cf1cf9081b4",
+      "feedObtainedAt": "20261101"
     },
     {
       "slug": "nyct-bus-manhattan",
@@ -16393,23 +16407,23 @@
         -79.99
       ],
       "feedUrl": "https://www.portauthority.org/developerresources/GTFS.zip",
-      "lastFeedExpiry": "20261024",
-      "lastFeedVersion": "Merged_Clever_2606_2",
+      "lastFeedExpiry": "20270220",
+      "lastFeedVersion": "S1000171",
       "region": "Pennsylvania",
-      "lastRefreshedAt": "2026-10-12",
+      "lastRefreshedAt": "2026-11-02",
       "cities": [
         "Pittsburgh, Pennsylvania"
       ],
-      "lastFeedCheckAt": "20261019",
+      "lastFeedCheckAt": "20261102",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20261024",
+      "expiredFeedCheckExpiry": "20270220",
       "timezone": "America/New_York",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-409/latest.zip",
+      "lastFeedSourceUrl": "https://www.portauthority.org/developerresources/GTFS.zip",
       "feedQuality": {
         "status": "review",
-        "score": 90,
+        "score": 99,
         "reasons": [
           "1 route has stops whose frequency differs from the overall route schedule."
         ],
@@ -16418,9 +16432,15 @@
           "validationWarnings": 0,
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 1,
-          "featureCount": 496
+          "featureCount": 513,
+          "feedExpiry": "20270220",
+          "routeCount": 100,
+          "problemShapes": 0,
+          "problemShapeRoutes": 0,
+          "mismatchRoutes": 1,
+          "resumesOn": null
         },
-        "checkedAt": "2026-10-12"
+        "checkedAt": "2026-11-02"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -16464,7 +16484,9 @@
           "reason": "The T (Blue, Red, Silver) is light rail, published as route_type 2 (commuter rail) in the MobilityDatabase copy; kept until the live data comes from the official feed"
         }
       ],
-      "lastPeekedExpiry": "20261024"
+      "lastPeekedExpiry": "20270220",
+      "lastServiceWeek": "f3b68582fe16ff54",
+      "feedObtainedAt": "20261101"
     },
     {
       "slug": "ata",
@@ -19900,7 +19922,7 @@
         "Broken Arrow, Oklahoma"
       ],
       "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-235/latest.zip",
-      "lastFeedCheckAt": "20261019",
+      "lastFeedCheckAt": "20261102",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
       "expiredFeedCheckExpiry": "20261205",
@@ -24377,17 +24399,17 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-2259/latest.zip",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2259/latest.zip",
-      "lastFeedExpiry": "20261031",
+      "lastFeedExpiry": "20261116",
       "lastFeedVersion": null,
-      "lastRefreshedAt": "2026-10-19",
+      "lastRefreshedAt": "2026-11-02",
       "cities": [
         "Bonita Springs, Florida",
         "Lehigh Acres, Florida"
       ],
-      "lastFeedCheckAt": "20261019",
+      "lastFeedCheckAt": "20261102",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20261031",
+      "expiredFeedCheckExpiry": "20261116",
       "feedQuality": {
         "status": "healthy",
         "score": 100,
@@ -24397,15 +24419,15 @@
           "validationWarnings": 0,
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 0,
-          "featureCount": 90,
-          "feedExpiry": "20261031",
+          "featureCount": 92,
+          "feedExpiry": "20261116",
           "routeCount": 16,
           "problemShapes": 0,
           "problemShapeRoutes": 0,
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-10-31"
+        "checkedAt": "2026-11-02"
       },
       "timezone": "America/New_York",
       "feedRefreshStatus": "current",
@@ -24414,7 +24436,9 @@
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2259/latest.zip",
-      "lastPeekedExpiry": "20261031"
+      "lastPeekedExpiry": "20261116",
+      "lastServiceWeek": "c95d2f9a107ca466",
+      "feedObtainedAt": "20261101"
     },
     {
       "slug": "springfield-mo",
@@ -28015,14 +28039,15 @@
         "Canoga Park, California"
       ],
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-40/latest.zip",
-      "lastFeedCheckAt": "20261019",
+      "lastFeedCheckAt": "20261102",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
       "expiredFeedCheckExpiry": "20301231",
       "timezone": "America/Los_Angeles",
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "http://data.trilliumtransit.com/gtfs/simivalley-ca-us/simivalley-ca-us.zip",
-      "lastPeekedExpiry": "20301231"
+      "lastPeekedExpiry": "20301231",
+      "refusedFeedSha256": "de9acc2868c1345f000a4cbc71ffe7e0fc8228fbcdae0e9a42817268f2265dfa"
     },
     {
       "slug": "camarillo",
@@ -32807,29 +32832,34 @@
         "Snowmass Village, Colorado"
       ],
       "feedQuality": {
-        "status": "healthy",
-        "score": 100,
-        "reasons": [],
+        "status": "degraded",
+        "score": 65,
+        "reasons": [
+          "The schedule dates in this feed have passed."
+        ],
         "metrics": {
           "validationErrors": 0,
           "validationWarnings": 0,
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 0,
-          "featureCount": 6
+          "featureCount": 6,
+          "feedExpiry": "20260920"
         },
-        "checkedAt": "2026-08-27"
+        "checkedAt": "2026-08-27",
+        "scoredAt": "2026-11-02"
       },
-      "lastFeedCheckAt": "20261019",
+      "lastFeedCheckAt": "20261102",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20261125",
+      "expiredFeedCheckExpiry": "20270129",
       "timezone": "America/Denver",
       "feedRefreshStatus": "stale",
       "feedRefreshError": "GTFS validation failed (4 error(s))",
       "feedRefreshErrorAt": "20261019",
       "feedRefreshRetryCount": 5,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://data.trilliumtransit.com/gtfs/snowmassvillagetransportation-co-us/snowmassvillagetransportation-co-us.zip"
+      "lastFeedSourceUrl": "https://data.trilliumtransit.com/gtfs/snowmassvillagetransportation-co-us/snowmassvillagetransportation-co-us.zip",
+      "refusedFeedSha256": "ee761c854d335a47240bdf8249ada3146987b9106bda2020cbfa50949c638fc8"
     },
     {
       "slug": "winter-park",
