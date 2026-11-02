@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import FreeChildFaresPage from '../FreeChildFaresPage';
 import ResearchPage from '../ResearchPage';
@@ -12,9 +12,11 @@ describe('Free child fares (CIV-1149)', () => {
     expect(screen.getByRole('heading', { name: 'Free up to a set age' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Other policies' })).toBeInTheDocument();
     expect(screen.getAllByText('Up to 5').length).toBeGreaterThan(0);
-    expect(screen.getAllByText('Not found yet').length).toBeGreaterThan(0);
-    // Once in the note under the charts, once in How we did this.
-    expect(screen.getAllByText(/We couldn't find a current official rule for 34 agencies\./)).toHaveLength(2);
+    expect(screen.getAllByText('Not found').length).toBeGreaterThan(0);
+    // #1290: the note under the charts moved into How we did this, so this sentence is there once.
+    expect(screen.getAllByText(/We couldn't find a current official rule for 34 agencies\./)).toHaveLength(1);
+    expect(screen.getByText(/Free fares up to 17 or 18 are usually youth programs\./).closest('[data-research-method]')).not.toBeNull();
+    expect(screen.queryByText(/Each agency appears once/)).toBeNull();
     expect(screen.getAllByText('Show as a table')).toHaveLength(2);
   });
 
@@ -34,25 +36,46 @@ describe('Free child fares (CIV-1149)', () => {
     const ages = screen.getByRole('img', { name: 'How many agencies let children ride free up to each age, from 1 to 18. Age 5 is the most common, at 129 agencies.' });
     expect(ages).toBeInTheDocument();
     const other = screen.getAllByRole('table', { hidden: true }).find(t => t.querySelector('caption')?.textContent === 'Other policies')!;
-    expect(other.textContent).toContain('Not found yet');
+    expect(other.textContent).toContain('Not found');
     expect(other.textContent).not.toContain('Up to 5');
   });
 
-  it('gives every age from 1 to 18 a column, ages no agency uses at zero', () => {
+  it('gives every age from 1 to 18 a column, ages no agency uses at zero, named in the hover line (#1290)', () => {
     const { container } = render(<FreeChildFaresPage />);
-    const columns = [...container.querySelectorAll('[role="img"] [title]')].map(el => el.getAttribute('title'));
+    const chart = screen.getByRole('img', { name: /How many agencies let children ride free up to each age/ });
+    const columns = [...chart.querySelectorAll('.flex-1.h-full')];
     expect(columns).toHaveLength(18);
-    expect(columns).toContain('Up to 5: 129');
-    expect(columns).toContain('Up to 15: 0');
-    expect(columns).toContain('Up to 18: 47');
+    expect(chart.querySelector('[title]')).toBeNull();
+    const readout = chart.querySelector('[data-readout]')!;
+    expect(readout.textContent).toBe('');
+    fireEvent.pointerEnter(columns[4]);
+    expect(readout.textContent).toBe('Up to 5: 129 agencies');
+    expect(columns[4]).toHaveAttribute('data-lit');
+    expect(chart.querySelector('[data-peak]')).toBeNull();
+    fireEvent.pointerEnter(columns[14]);
+    expect(readout.textContent).toBe('Up to 15: 0 agencies');
+    fireEvent.pointerEnter(columns[0]);
+    expect(readout.textContent).toBe('Up to 1: 1 agency');
+    fireEvent.pointerEnter(columns[17]);
+    expect(readout.textContent).toBe('Up to 18: 47 agencies');
+    expect(container.querySelectorAll('[data-lit]')).toHaveLength(1);
   });
 
-  it('other policies rows show the normal arrow, not the text cursor, and the stripes for not found', () => {
+  it('other policies rows show the normal arrow, not the text cursor, the stripes for not found, and a hover line (#1290)', () => {
     const { container } = render(<FreeChildFaresPage />);
-    const rows = [...container.querySelectorAll('li[title]')];
-    expect(rows.map(row => row.textContent?.replace(/\d+$/, ''))).toEqual(['Free for everyone', 'Free below a height', 'Through a student program', 'Only under a program', 'No free child fare', 'Not found yet']);
+    const list = screen.getByRole('heading', { name: 'Other policies' }).parentElement!;
+    const rows = [...list.querySelectorAll('li')];
+    expect(rows.map(row => row.textContent?.replace(/\d+$/, ''))).toEqual(['Fare-free', 'Height limit', 'Student program', 'Program only', 'None', 'Not found']);
     for (const row of rows) expect(row).toHaveClass('cursor-default');
+    expect(list.querySelector('li[title]')).toBeNull();
     expect((rows[5].querySelector('div > div') as HTMLElement).style.background).toContain('repeating-linear-gradient');
+    const readout = list.querySelector('[data-readout]')!;
+    fireEvent.pointerEnter(rows[0]);
+    expect(readout.textContent).toBe('Fare-free: 63 agencies');
+    expect(rows[0]).toHaveAttribute('data-lit');
+    fireEvent.pointerLeave(readout.parentElement!);
+    expect(readout.textContent).toBe('');
+    expect(container.querySelectorAll('[data-lit]')).toHaveLength(0);
   });
 
   it('splits all 553 agencies into one bar by policy, counts in the legend (CIV-1176)', () => {
@@ -60,8 +83,8 @@ describe('Free child fares (CIV-1149)', () => {
     const bar = screen.getByRole('group', { name: 'How many agencies have each kind of free child fare policy, out of 553.' });
     const parts = [...bar.querySelectorAll('button')].map(b => b.getAttribute('aria-label'));
     expect(parts).toEqual([
-      '374 agencies: Free up to a set age', '63 agencies: Free for everyone', '39 agencies: Free below a height',
-      '24 agencies: Through a student program', '4 agencies: Only under a program', '15 agencies: No free child fare', '34 agencies: Not found yet',
+      '374 agencies: Age limit', '63 agencies: Fare-free', '39 agencies: Height limit',
+      '24 agencies: Student program', '4 agencies: Program only', '15 agencies: None', '34 agencies: Not found',
     ]);
     expect(parts.reduce((sum, p) => sum + Number(p!.split(' ')[0]), 0)).toBe(553);
   });
