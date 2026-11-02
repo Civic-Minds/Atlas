@@ -27,6 +27,14 @@ function resolveImport(fromFile: string, spec: string): string | null {
   return candidates.find(c => existsSync(c) && !c.endsWith('/')) ?? null;
 }
 
+/** Every .ts/.tsx file under the dirs `tsc` (tsconfig.json "include") type-checks, test files included. */
+function tscFiles(): string[] {
+  const { include } = JSON.parse(readFileSync(resolve(ROOT, 'tsconfig.json'), 'utf8')) as { include: string[] };
+  return include.flatMap(dir => (readdirSync(resolve(ROOT, dir), { recursive: true }) as string[])
+    .filter(f => /\.tsx?$/.test(f))
+    .map(f => `${dir}/${f}`));
+}
+
 function importGraph(entries: string[]): string[] {
   const seen = new Set<string>();
   const stack = entries.map(e => resolve(ROOT, e));
@@ -52,6 +60,8 @@ describe('.vercelignore', () => {
       ...npmScriptFiles('build', pkg.scripts),
       ...npmScriptFiles('postbuild', pkg.scripts),
       'vite.config.ts',
+      // `npm run build` starts with `tsc`, which type-checks tests too (#1301 broke deploys this way).
+      ...tscFiles(),
       ...readdirSync(resolve(ROOT, 'api')).filter(f => /\.ts$/.test(f) && !f.endsWith('.test.ts')).map(f => `api/${f}`),
     ];
     expect(entries).toContain('scripts/build-agency-catalog.ts');

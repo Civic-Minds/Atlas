@@ -1,9 +1,15 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, within } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import FreeChildFaresPage from '../FreeChildFaresPage';
 import ResearchPage from '../ResearchPage';
 
 describe('Free child fares (CIV-1149)', () => {
+  it('keeps the ages no agency uses (15, 16) on the age axis, so the gap before 17 shows', () => {
+    render(<FreeChildFaresPage />);
+    const ages = within(screen.getByRole('group', { name: /How many agencies let children ride free up to each age/ }));
+    expect(['14', '15', '16', '17'].map(age => ages.getAllByText(age).length > 0)).toEqual([true, true, true, true]);
+  });
+
   it('shows the approved heading, both groups, the note and the table link', () => {
     render(<FreeChildFaresPage />);
     expect(screen.getByRole('heading', { level: 1, name: 'Free child fares' })).toBeInTheDocument();

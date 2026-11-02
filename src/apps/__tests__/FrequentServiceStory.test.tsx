@@ -45,6 +45,11 @@ describe('FrequentServiceStory', () => {
     expect(bar(15).querySelector('[data-active="true"]')).not.toBeNull();
   });
 
+  it("says how many agencies the chart shows, from the data (Ryan's caption, 2026-11-02)", () => {
+    render(<FrequentServiceStory agencies={agencies} onExploreMap={() => {}} />);
+    expect(screen.getByText(`This chart shows the ${frequentServiceStoryStats.chartedAgencies} agencies that publish a specific number of minutes.`, { exact: false })).toBeInTheDocument();
+  });
+
   it('counts the Canada and US definitions that still held on the October 30 recheck (CIV-1149)', () => {
     const rows = recheck.rows.filter(row => ['Canada', 'United States'].includes(row.country) && Number.isInteger(row.threshold));
     expect(rows).toHaveLength(67);
@@ -64,7 +69,6 @@ describe('FrequentServiceStory', () => {
       { minutes: 20, agencies: 5, agenciesOct11: 8 },
       { minutes: 25, agencies: 1, agenciesOct11: 1 },
       { minutes: 30, agencies: 9, agenciesOct11: 9 },
-      { minutes: 60, agencies: 0, agenciesOct11: 0 },
     ]);
     expect(frequentServiceStoryStats.headwayBars.reduce((sum, bar) => sum + bar.agencies, 0)).toBe(59);
   });
