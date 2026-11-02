@@ -213,8 +213,10 @@ describe('default behaviour is unchanged', () => {
     const main = await rollingZip();
     const supp = await rollingZip({ 'B-wk': 15 });
     const url = 'https://example.test/rail.zip';
-    const plain = await processAgencyFeeds(main, [{ url, buf: supp }], { slug: 'rail', supplementalFeedUrls: [url] });
-    const other = await processAgencyFeeds(main, [{ url, buf: supp }], { slug: 'rail', supplementalFeedUrls: [url], nextServiceDatesFeedUrls: ['https://example.test/other.zip'] });
+    // Both zips number their routes and trips alike, so the supplemental's ids take a prefix (supplementalIds.ts).
+    const ids = { supplementalIdPrefixes: { [url]: 's:' } };
+    const plain = await processAgencyFeeds(main, [{ url, buf: supp }], { slug: 'rail', supplementalFeedUrls: [url], ...ids });
+    const other = await processAgencyFeeds(main, [{ url, buf: supp }], { slug: 'rail', supplementalFeedUrls: [url], ...ids, nextServiceDatesFeedUrls: ['https://example.test/other.zip'] });
     expect(other.geojson).toBe(plain.geojson);
     expect(other.stopsJson).toBe(plain.stopsJson);
     expect(other.tripsJson).toBe(plain.tripsJson);
@@ -225,11 +227,11 @@ describe('default behaviour is unchanged', () => {
     const main = await rollingZip();
     const supp = await rollingZip();
     const url = 'https://example.test/rail.zip';
-    const optedIn = await processAgencyFeeds(main, [{ url, buf: supp }], { slug: 'rail', supplementalFeedUrls: [url], nextServiceDatesFeedUrls: [url] });
+    const optedIn = await processAgencyFeeds(main, [{ url, buf: supp }], { slug: 'rail', supplementalFeedUrls: [url], supplementalIdPrefixes: { [url]: 's:' }, nextServiceDatesFeedUrls: [url] });
     const mainOnly = await processAgencyFeeds(main, [], { slug: 'rail' });
     const mainCount = lineFeatures(mainOnly.geojson).length;
     expect(lineFeatures(optedIn.geojson).slice(0, mainCount)).toEqual(lineFeatures(mainOnly.geojson));
     // The opted-in supplemental part has all three day types on both lines.
-    expect(daysByRoute(lineFeatures(optedIn.geojson).slice(mainCount))).toEqual({ A: ['Saturday', 'Sunday', 'Weekday'], B: ['Saturday', 'Sunday', 'Weekday'] });
+    expect(daysByRoute(lineFeatures(optedIn.geojson).slice(mainCount))).toEqual({ 's:A': ['Saturday', 'Sunday', 'Weekday'], 's:B': ['Saturday', 'Sunday', 'Weekday'] });
   });
 });

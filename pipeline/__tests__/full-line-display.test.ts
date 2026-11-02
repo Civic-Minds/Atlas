@@ -65,13 +65,18 @@ describe('the section fields move to the agency sections file', () => {
     expect(applyAgencySections(routes, JSON.parse(result.sectionsJson) as AgencySections)).toEqual(full);
   });
 
-  it('a supplemental feed repeating the main feed\'s routes numbers on, so each row gets its own entry', async () => {
+  it('a supplemental feed repeating the main feed\'s routes gets its own entries', async () => {
     const buf = await goKiZip();
     const full = JSON.parse((await processGtfsBuffer(buf, undefined, { slug: 'go' })).geojson).features;
-    const result = await processAgencyFeeds(buf, [{ url: 'supp', buf }], { slug: 'go', supplementalFeedUrls: ['supp'] } as any);
+    // The same zip twice: its ids take a prefix, as a real supplemental's would (supplementalIds.ts).
+    const result = await processAgencyFeeds(buf, [{ url: 'supp', buf }], { slug: 'go', supplementalFeedUrls: ['supp'], supplementalIdPrefixes: { supp: 's:' } } as any);
     const file = JSON.parse(result.sectionsJson) as AgencySections;
-    expect(Object.keys(file.sections).some(k => k.endsWith('#1'))).toBe(true);
-    expect(applyAgencySections(JSON.parse(result.geojson).features, file)).toEqual([...full, ...full]);
+    const mainOnly = JSON.parse((await processAgencyFeeds(buf, [], { slug: 'go' } as any)).sectionsJson) as AgencySections;
+    expect(Object.keys(file.sections)).toHaveLength(Object.keys(mainOnly.sections).length * 2);
+    const applied = applyAgencySections(JSON.parse(result.geojson).features, file);
+    expect(applied.slice(0, full.length)).toEqual(full);
+    expect(applied).toHaveLength(full.length * 2);
+    expect(applied.slice(full.length).map((f: any) => f.properties.sectionKey ?? null)).toEqual(full.map((f: any) => f.properties.sectionKey ?? null));
   });
 
   it('a sections file from another run is ignored', async () => {

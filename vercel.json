@@ -252,6 +252,26 @@
       "source": "/area/winnipeg/",
       "destination": "/agency/winnipeg",
       "permanent": true
+    },
+    {
+      "source": "/agency/njt-bus",
+      "destination": "/agency/njt",
+      "permanent": true
+    },
+    {
+      "source": "/agency/njt-bus/",
+      "destination": "/agency/njt",
+      "permanent": true
+    },
+    {
+      "source": "/agency/njt-rail",
+      "destination": "/agency/njt",
+      "permanent": true
+    },
+    {
+      "source": "/agency/njt-rail/",
+      "destination": "/agency/njt",
+      "permanent": true
     }
   ],
   "rewrites": [

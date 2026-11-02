@@ -15754,97 +15754,13 @@
       "lastPeekedExpiry": "20270523"
     },
     {
-      "slug": "njt-rail",
-      "name": "NJ Transit Rail",
-      "officialName": "NJ Transit Rail",
-      "displayArea": "New Jersey",
-      "websiteUrl": "http://www.njtransit.com/",
-      "region": "New Jersey",
-      "center": [
-        40.7,
-        -74.2
+      "slug": "njt",
+      "formerSlugs": [
+        "njt-bus",
+        "njt-rail"
       ],
-      "bbox": [
-        39.3633,
-        -75.198,
-        41.4887,
-        -73.9883
-      ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-509/latest.zip",
-      "lastFeedExpiry": "20270313",
-      "lastFeedVersion": null,
-      "mergeEquivalentShapeVariantsAllModes": true,
-      "lastRefreshedAt": "2026-10-12",
-      "cities": [
-        "Plainfield, New Jersey",
-        "Paterson, New Jersey",
-        "East Orange, New Jersey",
-        "Newark, New Jersey",
-        "Passaic, New Jersey",
-        "Parsippany, New Jersey",
-        "Cherry Hill, New Jersey",
-        "Middletown, New Jersey",
-        "New Brunswick, New Jersey",
-        "Union, New Jersey"
-      ],
-      "lastFeedCheckAt": "20261019",
-      "expiredFeedCheckCount": 0,
-      "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20270313",
-      "timezone": "America/New_York",
-      "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-509/latest.zip",
-      "feedQuality": {
-        "status": "review",
-        "score": 87,
-        "reasons": [
-          "2 route have stops whose frequency differs from the overall route schedule."
-        ],
-        "metrics": {
-          "validationErrors": 0,
-          "validationWarnings": 0,
-          "shapeAnomalies": 18,
-          "routeHeadwayMismatches": 7,
-          "featureCount": 129,
-          "feedExpiry": "20270313",
-          "routeCount": 16,
-          "problemShapes": 0,
-          "problemShapeRoutes": 0,
-          "mismatchRoutes": 2,
-          "resumesOn": null
-        },
-        "checkedAt": "2026-11-01"
-      },
-      "feedRefreshStatus": "current",
-      "feedRefreshError": null,
-      "feedRefreshErrorAt": null,
-      "feedRefreshRetryCount": 0,
-      "modeOverrides": [
-        {
-          "routeType": 0,
-          "routeShortName": "HBLR",
-          "mode": 100,
-          "reason": "Hudson-Bergen, Newark and River LINE are light rail, published as route_type 0 (tram)"
-        },
-        {
-          "routeType": 0,
-          "routeShortName": "NLR",
-          "mode": 100,
-          "reason": "Hudson-Bergen, Newark and River LINE are light rail, published as route_type 0 (tram)"
-        },
-        {
-          "routeType": 0,
-          "routeShortName": "RVLN",
-          "mode": 100,
-          "reason": "Hudson-Bergen, Newark and River LINE are light rail, published as route_type 0 (tram)"
-        }
-      ],
-      "lastPeekedExpiry": "20270313"
-    },
-    {
-      "slug": "njt-bus",
-      "name": "NJ Transit Bus",
-      "officialName": "NJ Transit Bus",
+      "name": "NJ Transit",
+      "officialName": "NJ Transit",
       "displayArea": "New Jersey",
       "websiteUrl": "http://www.njtransit.com/",
       "region": "New Jersey",
@@ -15855,10 +15771,20 @@
       "bbox": [
         38.9331,
         -75.5212,
-        41.2563,
+        41.4887,
         -73.9391
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-508/latest.zip",
+      "supplementalFeedUrls": [
+        "https://files.mobilitydatabase.org/mdb-509/latest.zip"
+      ],
+      "supplementalIdPrefixes": {
+        "https://files.mobilitydatabase.org/mdb-509/latest.zip": "rail:"
+      },
+      "mergeEquivalentShapeVariantsRouteTypes": [
+        "0",
+        "2"
+      ],
       "lastFeedExpiry": "20270417",
       "lastFeedVersion": null,
       "lastRefreshedAt": "2026-10-12",
@@ -15907,7 +15833,27 @@
       "feedRefreshError": null,
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
-      "lastPeekedExpiry": "20270417"
+      "lastPeekedExpiry": "20270417",
+      "modeOverrides": [
+        {
+          "routeType": 0,
+          "routeShortName": "HBLR",
+          "mode": 100,
+          "reason": "Hudson-Bergen, Newark and River LINE are light rail, published as route_type 0 (tram)"
+        },
+        {
+          "routeType": 0,
+          "routeShortName": "NLR",
+          "mode": 100,
+          "reason": "Hudson-Bergen, Newark and River LINE are light rail, published as route_type 0 (tram)"
+        },
+        {
+          "routeType": 0,
+          "routeShortName": "RVLN",
+          "mode": 100,
+          "reason": "Hudson-Bergen, Newark and River LINE are light rail, published as route_type 0 (tram)"
+        }
+      ]
     },
     {
       "slug": "path",
