@@ -7,12 +7,12 @@
     34.23,
     -77.94
   ],
-  "feedUrl": "https://files.mobilitydatabase.org/mdb-1110/latest.zip",
+  "feedUrl": "https://wave.connexionz.net/rtt/public/resource/gtfs.zip",
   "lastFeedExpiry": "20261231",
   "lastFeedVersion": "20250617",
   "lastRefreshedAt": "2026-08-07",
   "region": "North Carolina",
-  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-1110/latest.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-3536/latest.zip",
   "bbox": [
     34.1216,
     -77.9695,
