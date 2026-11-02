@@ -119,13 +119,16 @@ export function rowTrips(d: ShapeProperties, period: TimePeriod, opts: { ownTrip
 
 /**
  * #962 (Ryan picked option 1): a main-stretch row with no value of its own falls back to its direction's filter value. Where
- * the direction's stretch is not steady in the period, that value is the full-window worst wait, an eligibility bound for the
- * filter, not a cadence (exo MA weekday midday: "every 301"), so the row reads no regular service. A steady stretch keeps its
- * value, as does a row with part-period words. Overnight reads the Night Service verdict instead (#1267).
+ * the direction's stretch is not steady in the period and that value is over PERIOD_COVERAGE_MAX_HEADWAY, it is the
+ * full-window worst wait, an eligibility bound for the filter, not a cadence (exo MA weekday midday: "every 301"), so the row
+ * reads no regular service. A wait of an hour or less keeps its number: the pipeline also calls uneven but frequent service
+ * unsteady (Lexington 5 to Wal Mart midday, about 3 buses an hour, "every 37"), and a short worst wait only understates it.
+ * A steady stretch keeps its value, as does a row with part-period words. Overnight reads the Night Service verdict (#1267).
  */
 export function unsteadyDirectionFallback(d: ShapeProperties, period: TimePeriod, trips: RowTrips = rowTrips(d, period)): boolean {
   if (period === 'all' || period === 'overnight' || d.stretchRole !== 'main') return false;
   if (trips.value != null || trips.partPeriod != null || trips.noOwnService) return false;
   const key = period as PeriodKey;
-  return typeof d.directionFilterHeadwayByPeriod?.[key] === 'number' && d.stretchPeriodSustained?.[key] === false;
+  const value = d.directionFilterHeadwayByPeriod?.[key];
+  return typeof value === 'number' && value > PERIOD_COVERAGE_MAX_HEADWAY && d.stretchPeriodSustained?.[key] === false;
 }

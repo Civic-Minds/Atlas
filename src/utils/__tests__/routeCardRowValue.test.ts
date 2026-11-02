@@ -98,6 +98,13 @@ describe('the direction fallback of an unsteady stretch (#962)', () => {
     expect(value.headway).toBeUndefined();
     expect(value.rowNoRegular).toBe(true);
   });
+  it('keeps a wait of an hour or less, uneven but frequent service (Lexington 5 to Wal Mart midday, "every 37")', () => {
+    const value = routeCardRowValue(row(37, false), midday);
+    expect(value.headway).toBe(37);
+    expect(value.rowNoRegular).toBe(false);
+    expect(routeCardRowValue(row(60, false), midday).headway).toBe(60);
+    expect(routeCardRowValue(row(61, false), midday).rowNoRegular).toBe(true);
+  });
   it('keeps a steady stretch its number (slow service every 120)', () => {
     const value = routeCardRowValue(row(120, true), midday);
     expect(value.headway).toBe(120);
