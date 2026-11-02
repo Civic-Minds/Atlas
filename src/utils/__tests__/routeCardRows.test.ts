@@ -127,8 +127,12 @@ describe('CIV-1251 review: one word for a row with no number', () => {
     const m = build(true, 'midday');
     expect([m.noRegularLabel, m.limitedWord]).toEqual(['Runs irregularly overnight', 'Runs irregularly overnight']);
   });
-  it('All day: a part-time route reads Part-time for both checks', () => {
+  it('a time period reads "Runs irregularly in this period" for both checks', () => {
+    const m = build(false, 'midday');
+    expect([m.noRegularLabel, m.limitedWord]).toEqual(['Runs irregularly in this period', 'Runs irregularly in this period']);
+  });
+  it('has no All day words (CIV-1279): no Part-time or "limited" row, even if a caller passes All day', () => {
     const m = build(false, 'all', { routeAllDayHeadway: 999999, routeHasLimitedDirection: true });
-    expect([m.noRegularLabel, m.limitedWord]).toEqual(['Part-time', 'Part-time']);
+    expect([m.noRegularLabel, m.limitedWord]).toEqual(['Runs irregularly in this period', 'Runs irregularly in this period']);
   });
 });
