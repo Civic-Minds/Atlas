@@ -33,6 +33,8 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
   const frequencyMinutes = 15 as const;
   const storyStepRefs = useRef<Array<HTMLDivElement | null>>([]);
   const maxBar = Math.max(...frequentServiceStoryStats.headwayBars.map(bar => bar.agencies));
+  // The most common threshold is highlighted while nothing else is, like the age chart's most common age (CIV-1286).
+  const commonBar = frequentServiceStoryStats.headwayBars.reduce((top, bar) => (bar.agencies > top.agencies ? bar : top));
 
   useEffect(() => {
     if (typeof IntersectionObserver === 'undefined') return;
@@ -134,6 +136,7 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
                 label="Interactive chart showing the number of agencies by the selected published frequent-service threshold"
                 bars={frequentServiceStoryStats.headwayBars.map(bar => ({ key: bar.minutes, label: headwayAmount(bar.minutes), value: bar.agencies, fill: 'var(--text-muted)', sentence: `Show examples for ${bar.minutes}-minute service (${bar.agencies} agencies)` }))}
                 max={maxBar}
+                defaultKey={commonBar.minutes}
                 details={tableId}
               />
               <p className="mt-5 text-xs leading-5 text-[var(--text-dim)]">Each agency appears once, at the slowest wait its source gives for weekday daytime service: “every 15–20 minutes” counts as 20. Other times of day and secondary tiers remain in the research. Checked again on October 30, 2026. {frequentServiceStoryStats.recheckLeftOut} agencies are left out because their page is gone or couldn't be checked again.</p>
