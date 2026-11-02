@@ -8,7 +8,7 @@ import { delayAmount, headwayAboutRange, headwayEvery, headwayEveryRange, headwa
 import { routeFilterAllDayContract, routeFilterContract, routeValueIsOneGap, tailNotThroughPeriod } from './stretchCard';
 import { clockTime } from '../../shared/timeText';
 import { LIMITED_SERVICE_LABEL, IRREGULAR_PERIOD_LABEL, IRREGULAR_PERIOD_SHORT_LABEL } from '../content/noticeCopy';
-import { routeCardLowestHeadway } from './routeListRange';
+import { routeCardGapWords, routeCardLowestHeadway, routeCardShowsNoNumber } from './routeListRange';
 
 export { pairedTripPeriodFloor, pairedTripSafeHeadway } from './pairedTripFloor';
 
@@ -409,6 +409,19 @@ export interface RouteListDisplay {
   edgeText?: string;
   /** The edge behind edgeText, for data that is rendered later (agency pages). */
   edge?: PeriodEdge;
+  /**
+   * #1311: the route's value is one gap inside steady service, as the route card words it ("every 15 min, with one 32 min
+   * gap", OC Transpo 6 weekday midday); edgeText then carries the list's words for it. The number stays the filter's.
+   */
+  gap?: { every: number; gap: number };
+  /** #1311: the route card shows no number for the period (every row reads irregular): the list says so too. */
+  cardNoNumber?: boolean;
+}
+
+/** #1311: the list's words for a one-gap value (the card's own phrase). */
+export function listGapText(gap: { every: number; gap: number }, compact = false): string {
+  void compact;
+  return headwayPeriodShape(gap);
 }
 
 /**
@@ -435,6 +448,14 @@ export function routeListDisplay(features: readonly ShapeProperties[], period: T
   if (edge) {
     display.edge = { ...(edge.from != null ? { from: edge.from } : {}), ...(edge.until != null ? { until: edge.until } : {}), every: edge.every };
     display.edgeText = periodEdgeText(edge);
+  } else if (headway != null && period !== 'all' && period !== 'overnight') {
+    const gap = routeCardGapWords(features, period, headway);
+    if (gap) {
+      display.gap = gap;
+      display.edgeText = listGapText(gap);
+    } else if (routeCardShowsNoNumber(features, period)) {
+      display.cardNoNumber = true;
+    }
   }
   return display;
 }

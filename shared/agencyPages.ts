@@ -51,6 +51,10 @@ export interface AgencyPageRoute {
   shared?: Partial<Record<'am' | 'midday' | 'pm' | 'evening' | 'overnight', number>>;
   /** #1292: a period whose value is a late start or early end: the card's reading of it ("every 9 min from 7:12 AM"). */
   edge?: Partial<Record<'am' | 'midday' | 'pm' | 'evening' | 'overnight', { from?: number; until?: number; every: number }>>;
+  /** #1311: a period whose value is one gap inside steady service: the card's reading of it ("every 15 min, with one 32 min gap"). */
+  gap?: Partial<Record<'am' | 'midday' | 'pm' | 'evening' | 'overnight', { every: number; gap: number }>>;
+  /** #1311: periods where the route card shows no number (every row reads irregular). */
+  cardNoNumber?: Array<'am' | 'midday' | 'pm' | 'evening' | 'overnight'>;
   /** CIV-274: paged areas (config/areas slugs) where this route stops at two places inside (shared/areaBoundaries.ts). */
   areas?: string[];
   /** #1283: states and provinces (their config region names) where this route stops at two places inside, by the same rule. */

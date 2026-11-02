@@ -42,6 +42,7 @@ export interface SuggestedRoute {
   /** Lower end of a shared-stretch range (display only). */
   sharedHeadway?: number;
   edgeText?: string;
+  cardNoNumber?: boolean;
 }
 
 interface SearchSuggestionsPanelProps {
@@ -74,7 +75,7 @@ export function routeRowLabels(route: Parameters<typeof routeLabels>[0]) {
 /** The dot between an agency and its frequency in a suggestion's second line. */
 const SEP = <span className="text-[var(--text-dim)] font-normal"> · </span>;
 
-export function routeRowRight(agencyName: string, headway?: number | null, stacked = false, limited = false, sharedHeadway?: number | null, noRegular = false, compare?: RouteListDisplay['compare'], edgeText?: string) {
+export function routeRowRight(agencyName: string, headway?: number | null, stacked = false, limited = false, sharedHeadway?: number | null, noRegular = false, compare?: RouteListDisplay['compare'], edgeText?: string, cardNoNumber = false) {
   const agency = agencyNames(agencyName).name;
   // #1292: on its own line (stacked) a long value wraps to a second line instead of being cut off: "every 9 min from…"
   // hid the time that explains it. Beside the name (not stacked) the row keeps its one-line truncation.
@@ -100,7 +101,8 @@ export function routeRowRight(agencyName: string, headway?: number | null, stack
       );
     }
   }
-  if (headway != null && headway < 999) {
+  // #1311: the route card shows no number for the period, so neither does the list (its number stays the filter's).
+  if (headway != null && headway < 999 && !cardNoNumber) {
     return (
       <span className={`${LIST_ROW_DIM} ${layout}`}>
         {agency}
@@ -109,12 +111,12 @@ export function routeRowRight(agencyName: string, headway?: number | null, stack
       </span>
     );
   }
-  if (limited || noRegular) {
+  if (limited || noRegular || cardNoNumber) {
     return (
       <span className={`${LIST_ROW_DIM} ${layout}`}>
         {agency}
         {SEP}
-        <LimitedBadge secondLine label={noRegular ? IRREGULAR_PERIOD_SHORT_LABEL : LIMITED_SERVICE_LABEL} />
+        <LimitedBadge secondLine label={noRegular || cardNoNumber ? IRREGULAR_PERIOD_SHORT_LABEL : LIMITED_SERVICE_LABEL} />
       </span>
     );
   }
@@ -180,7 +182,7 @@ export const SearchSuggestionsPanel: React.FC<SearchSuggestionsPanelProps> = ({
                       name={labels.name}
                       right={(() => {
                         const display = displayForRouteKey(r.key);
-                        return routeRowRight(r.agencyName, display.headway, true, display.limited, display.sharedHeadway, display.noRegular, display.compare, display.edgeText);
+                        return routeRowRight(r.agencyName, display.headway, true, display.limited, display.sharedHeadway, display.noRegular, display.compare, display.edgeText, display.cardNoNumber);
                       })()}
                       stacked
                       onClick={() => pickRoute(r.key)}
@@ -204,7 +206,7 @@ export const SearchSuggestionsPanel: React.FC<SearchSuggestionsPanelProps> = ({
                       key={r.key}
                       shortName={labels.shortName}
                       name={labels.name}
-                      right={routeRowRight(r.agencyName, r.headway, true, r.limited, r.sharedHeadway, r.noRegular, displayForRouteKey(r.key).compare, r.edgeText)}
+                      right={routeRowRight(r.agencyName, r.headway, true, r.limited, r.sharedHeadway, r.noRegular, displayForRouteKey(r.key).compare, r.edgeText, r.cardNoNumber)}
                       stacked
                       onClick={() => pickRoute(r.key)}
                     />
