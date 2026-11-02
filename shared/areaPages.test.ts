@@ -191,11 +191,11 @@ describe('committed areas (config/areas)', () => {
     }
   });
 
-  it('merges Hamilton into Toronto, with a note', () => {
+  it('merges Hamilton into Toronto, with no note that repeats its GTHA name', () => {
     const toronto = areas.find(a => a.slug === 'toronto')!;
     expect(MERGED_AREAS[0].members).toContain('Hamilton');
     expect(toronto.agencies).toEqual(expect.arrayContaining(['ttc', 'hamilton', 'go']));
-    expect(toronto.note).toContain('GTHA');
+    expect(toronto.note).toBeUndefined();
     expect(areas.find(a => a.slug === 'hamilton')).toBeUndefined();
   });
 });
