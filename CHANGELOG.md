@@ -162,6 +162,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Agency, area and research pages
 
+- **The docs page's "On this page" menu keeps its [page title in view](https://github.com/Civic-Minds/Atlas/issues/1279) on short windows**: a list taller than the window now scrolls inside its own box, following the section you're reading, instead of pushing the title under the site header near the end of the page
 - **Every agency page has its own search title**: agencies that share a short name, like the five MTA NYCT Bus boroughs or DART in Dallas and Des Moines, now add their borough, sector or place, and the build fails if two pages would ever share a title again
 - **[Free child fares](https://github.com/Civic-Minds/Atlas/issues/1290) age chart looks and responds like the split bar above it**: a column chart in the sparkline shape with the split bar's text, where hovering or tapping a column fades the others as the split bar does; the Other policies chart is gone, since the split bar already shows those numbers; the legend uses shorter labels and the note under the charts moved into How we did this
 - **Free child fares opens with its finding, and highlights age 5**: "Where kids ride free, age 5 is the most common cutoff" is an intro line under the title rather than a big heading, and the age chart highlights the most common age until another is picked
