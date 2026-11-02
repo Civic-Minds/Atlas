@@ -156,7 +156,8 @@ export default function FrequentServiceStoryMap({ agencies, stage, frequencyMinu
   }, [stage, mapReady]);
 
   return (
-    <figure className="flex h-[calc(100dvh-8rem)] min-h-0 flex-col overflow-hidden border-y border-[var(--border-primary)] bg-[var(--bg-panel)] sm:rounded-[2rem] sm:border">
+    // #1310: below lg the map is pinned at top-16 (4rem), so it fills the rest of the screen; from lg it sits at top-24 with 2rem below.
+    <figure className="flex h-[calc(100dvh-4rem)] lg:h-[calc(100dvh-8rem)] min-h-0 flex-col overflow-hidden border-y border-[var(--border-primary)] bg-[var(--bg-panel)] sm:rounded-[2rem] sm:border">
       <div className="relative min-h-0 flex-1 bg-[var(--bg-app)]">
         {ready ? (
           <div ref={box} className="h-full w-full" role="img" aria-label={stage === 3 ? `Toronto routes with weekday daytime service ${headwayOrBetter(frequencyMinutes)}` : 'Toronto routes remaining in the story'} />

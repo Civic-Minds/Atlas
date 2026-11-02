@@ -66,11 +66,18 @@ describe('FrequentServiceStory', () => {
     const { container } = render(<FrequentServiceStory agencies={agencies} onExploreMap={() => {}} />);
     const section = container.querySelector('section[aria-labelledby="network-story-heading"]')!;
     const pinned = section.querySelector('[data-story-stage="0"]')!.parentElement!.previousElementSibling!;
-    // top-14 (56px) clears the page header (42px on phones, 53px wide); no lg: prefix, so phones pin too.
-    expect(pinned.className.split(' ')).toEqual(expect.arrayContaining(['sticky', 'top-14', 'lg:top-24']));
+    // top-16 (4rem, 56px at the site's 14px root) clears the page header (42px on phones, 53px from sm); no lg: prefix, so phones pin too.
+    expect(pinned.className.split(' ')).toEqual(expect.arrayContaining(['sticky', 'top-16', 'lg:top-24']));
     expect(pinned.className).not.toContain('lg:sticky');
     // The space after the last step keeps the map pinned while the last stage is read.
     expect(section.querySelector('[data-story-stage="3"]')!.parentElement!.className).toContain('pb-[60vh]');
+  });
+
+  it('fills the phone screen under the header with the pinned map, leaving no empty band (#1310)', async () => {
+    const { readFileSync } = await import('node:fs');
+    const map = readFileSync('src/components/FrequentServiceStoryMap.tsx', 'utf8');
+    // top-16 is 4rem: the figure below lg is the rest of the screen; from lg, top-24 with 2rem below.
+    expect(map).toContain('h-[calc(100dvh-4rem)] lg:h-[calc(100dvh-8rem)]');
   });
 
   it('counts the Canada and US definitions that still held on the October 30 recheck (CIV-1149)', () => {
