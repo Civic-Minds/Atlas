@@ -65,7 +65,7 @@ export function aliasesFor(aliases: HistoryRouteAliases, slug: string, canonical
 /** Canonical keys in this agency that take only the weekend part of an old route (they may hold weekend-only snapshots). */
 export function weekendOnlyKeysFor(slugAliases: Record<string, HistoryAliasEntry[]> | undefined): Set<string> {
   return new Set(Object.entries(slugAliases ?? {})
-    .filter(([, olds]) => olds.some(e => typeof e !== 'string' && e.days === 'weekend'))
+    .filter(([, olds]) => olds.some(e => typeof e !== 'string' && 'days' in e && e.days === 'weekend'))
     .map(([canonical]) => canonical));
 }
 

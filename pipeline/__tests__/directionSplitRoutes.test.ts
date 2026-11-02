@@ -73,4 +73,36 @@ describe('direction-split routes (#1285)', () => {
     const colors = feed([route('A', 'Red-N', 'x'), route('B', 'Red-S', 'y', '1', '00FF00')], [trips('A', '0', 4, '1'), trips('B', '1', 4, '2')]);
     expect(mergeDirectionSplitRoutes(colors).merged).toEqual([]);
   });
+
+  it('LADOT DASH Hollywood: the clockwise and counterclockwise loops become one route "Hollywood", clockwise direction 0', () => {
+    const loop = (id: string, dir: string, n: number, at: string[]) => trips(id, dir, n, '1', at);
+    const gtfs = feed(
+      [route('564', 'Hollywood Clockwise', 'DASH Hollywood Clockwise', '3', '00ADC5'), route('565', 'Hollywood Counterclockwise', 'DASH Hollywood Counterclockwise', '3', '7DD0DE')],
+      // Both loops are direction 0 and mostly serve different curbs.
+      [loop('564', '0', 4, ['ANTC', 'PITT', 'MONT']), loop('565', '0', 4, ['MONT', 'SFIA', 'MLBR'])],
+    );
+    const { gtfs: out, merged } = mergeDirectionSplitRoutes(gtfs) as { gtfs: any; merged: any[] };
+    expect(merged.map(m => [m.base, m.keptRouteId, m.mergedRouteId])).toEqual([['Hollywood', '564', '565']]);
+    expect(out.routes).toEqual([expect.objectContaining({ route_id: '564', route_short_name: 'Hollywood', route_long_name: 'DASH Hollywood' })]);
+    expect(out.trips.filter((t: any) => t.direction_id === '0').map((t: any) => t.trip_id)).toEqual(Array.from({ length: 4 }, (_, i) => `564-0-${i}`));
+    expect(out.trips.filter((t: any) => t.direction_id === '1').map((t: any) => t.trip_id)).toEqual(Array.from({ length: 4 }, (_, i) => `565-0-${i}`));
+  });
+
+  it('a "Counter-Clockwise" spelling pairs too (LADOT Pacoima)', () => {
+    const gtfs = feed([route('a', 'Pacoima Clockwise', 'x', '3', 'EB6559'), route('b', 'Pacoima Counter-Clockwise', 'y', '3', 'F7AB9C')], [trips('a', '0', 2, '1'), trips('b', '0', 2, '2')]);
+    expect(mergeDirectionSplitRoutes(gtfs).merged.map(m => m.base)).toEqual(['Pacoima']);
+  });
+
+  it('legitimate: a lone "Clockwise" route with no partner stays as it is', () => {
+    const gtfs = feed([route('a', 'Midtown Clockwise', 'DASH Midtown Clockwise', '3', 'BFAD00')], [trips('a', '0', 4, '1')]);
+    expect(mergeDirectionSplitRoutes(gtfs).merged).toEqual([]);
+  });
+
+  it('legitimate: loops named clockwise only in the long name keep their route numbers (SD MTS 201 and 202 Super Loop)', () => {
+    const gtfs = feed(
+      [route('201', '201', 'Super Loop - Counterclockwise', '3', 'CC0000'), route('202', '202', 'Super Loop - Clockwise', '3', 'CC0000')],
+      [trips('201', '1', 4, '1'), trips('202', '0', 4, '2')],
+    );
+    expect(mergeDirectionSplitRoutes(gtfs).merged).toEqual([]);
+  });
 });

@@ -16,8 +16,16 @@
  *   both are the same line in opposite directions.
  * Near misses stay apart: SEPTA CHE/CHW (Chestnut Hill East and West, two lines, both directions
  * each), Valley Metro I10E/I10W (two corridors), Sudbury 1S/1N (two ends of a line).
- * Feeds whose direction_id was synthesized are left alone. Returns the GTFS unchanged when nothing
- * qualifies.
+ * Feeds whose direction_id was synthesized are left alone.
+ *
+ * A second pattern, for loops (LADOT DASH: "Hollywood Clockwise" and "Hollywood Counterclockwise"):
+ * two routes of the same agency whose short names are one base plus "Clockwise" and
+ * "Counterclockwise" (or "Counter-Clockwise") merge into "Hollywood", clockwise as direction 0 and
+ * counterclockwise as 1. The two loops serve opposite curbs (station overlap 0.0-0.67), are both
+ * direction 0 and are drawn in two shades, so none of the tests above apply; the short-name pair is
+ * the evidence. A pair named only in the long name keeps its own route numbers (SD MTS 201/202
+ * "Super Loop - Clockwise/Counterclockwise", Fairfax Connector 161/162, SolTrans 1A/1B, Juneau 3/4).
+ * Returns the GTFS unchanged when nothing qualifies.
  */
 import type { GtfsData, GtfsRoute } from '../types/gtfs.js';
 
@@ -26,6 +34,7 @@ export const MIN_STATION_OVERLAP = 0.8;
 
 const SUFFIX = /^(.*?[^\s_-])[\s_-]?([NSEW])$/i;
 const COMPLEMENT: Record<string, string> = { n: 's', s: 'n', e: 'w', w: 'e' };
+const LOOP = /^(.*\S)\s+(clockwise|counter-?clockwise)$/i;
 
 export interface DirectionSplitMerge {
   base: string;
@@ -53,7 +62,18 @@ export function mergeDirectionSplitRoutes(gtfs: GtfsData): { gtfs: GtfsData; mer
     groups.set(key, list);
   }
   const pairs = [...groups.values()].filter(g => g.length === 2 && COMPLEMENT[g[0].suffix] === g[1].suffix);
-  if (pairs.length === 0) return { gtfs, merged: [] };
+  const loops = new Map<string, Array<{ route: GtfsRoute; base: string; clockwise: boolean }>>();
+  for (const route of routes) {
+    const m = (route.route_short_name ?? '').trim().match(LOOP);
+    if (!m) continue;
+    const key = [route.agency_id ?? '', route.route_type, m[1].toLowerCase()].join('\u0000');
+    const list = loops.get(key) ?? [];
+    list.push({ route, base: m[1], clockwise: m[2].toLowerCase() === 'clockwise' });
+    loops.set(key, list);
+  }
+  const loopPairs = [...loops.values()].filter(g => g.length === 2 && g[0].clockwise !== g[1].clockwise)
+    .map(g => (g[0].clockwise ? g : [g[1], g[0]]) as [typeof g[0], typeof g[0]]);
+  if (pairs.length === 0 && loopPairs.length === 0) return { gtfs, merged: [] };
   // A short name shared with any other route (the base itself, or a third route) is left alone.
   const shortNames = new Map<string, number>();
   for (const r of routes) shortNames.set((r.route_short_name ?? '').trim().toLowerCase(), (shortNames.get((r.route_short_name ?? '').trim().toLowerCase()) ?? 0) + 1);
@@ -108,6 +128,16 @@ export function mergeDirectionSplitRoutes(gtfs: GtfsData): { gtfs: GtfsData; mer
     direction.set(b.route.route_id, db);
     rename.set(kept.route.route_id, { short: kept.base, long: bothWays(kept.route.route_long_name) });
     merged.push({ base: kept.base, keptRouteId: kept.route.route_id, mergedRouteId: gone.route.route_id, overlap });
+  }
+  for (const [cw, ccw] of loopPairs) {
+    if (shortNames.has(cw.base.toLowerCase())) continue;
+    if (synthesized?.has(cw.route.route_id) || synthesized?.has(ccw.route.route_id)) continue;
+    fold.set(ccw.route.route_id, cw.route.route_id);
+    direction.set(cw.route.route_id, '0');
+    direction.set(ccw.route.route_id, '1');
+    // "DASH Hollywood Clockwise" -> "DASH Hollywood".
+    rename.set(cw.route.route_id, { short: cw.base, long: cw.route.route_long_name?.trim().replace(/\s*[-–]?\s*clockwise$/i, '') });
+    merged.push({ base: cw.base, keptRouteId: cw.route.route_id, mergedRouteId: ccw.route.route_id, overlap: NaN });
   }
   if (merged.length === 0) return { gtfs, merged };
 
