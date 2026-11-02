@@ -14,7 +14,7 @@
     "51D"
   ],
   "region": "Tennessee",
-  "lastFeedExpiry": "20281101",
+  "lastFeedExpiry": "20281102",
   "lastFeedVersion": "August 2026 Shake-Up",
   "lastRefreshedAt": "2026-10-12",
   "cities": [
@@ -37,14 +37,14 @@
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
       "featureCount": 118,
-      "feedExpiry": "20281101",
+      "feedExpiry": "20281102",
       "routeCount": 20,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-01"
+    "checkedAt": "2026-11-02"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
