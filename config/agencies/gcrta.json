@@ -11,7 +11,7 @@
   "feedUrl": "https://www.riderta.com/sites/default/files/gtfs/latest/google_transit.zip",
   "lastFeedExpiry": "20261205",
   "lastFeedVersion": "2609b",
-  "lastRefreshedAt": "2026-10-03",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Cleveland, Ohio",
     "Parma, Ohio",
@@ -19,7 +19,7 @@
     "Elyria, Ohio"
   ],
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-406/latest.zip",
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261205",
@@ -49,5 +49,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://www.riderta.com/sites/default/files/gtfs/latest/google_transit.zip",
-  "lastPeekedExpiry": "20261205"
+  "lastPeekedExpiry": "20261205",
+  "lastServiceWeek": "ae2d48769beb5e36",
+  "feedObtainedAt": "20260914"
 }

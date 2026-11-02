@@ -24,14 +24,14 @@
     }
   ],
   "region": "Louisiana",
-  "lastRefreshedAt": "2026-10-12",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "New Orleans, Louisiana",
     "Metairie, Louisiana",
     "Metairie Terrace, Louisiana",
     "Kenner, Louisiana"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270926",
@@ -61,5 +61,7 @@
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
-  "lastPeekedExpiry": "20270926"
+  "lastPeekedExpiry": "20270926",
+  "lastServiceWeek": "7ef109be6e2d739a",
+  "feedObtainedAt": "20260915"
 }

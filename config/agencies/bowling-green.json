@@ -11,7 +11,7 @@
   "region": "Kentucky",
   "lastFeedExpiry": "20281102",
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-10-12",
+  "lastRefreshedAt": "2026-11-02",
   "feedQuality": {
     "status": "review",
     "score": 90,
@@ -35,7 +35,7 @@
   },
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://gobg.ridesystems.net/Secure/Admin/Reports/GTFSDownload.aspx",
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20501230",
@@ -43,5 +43,7 @@
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
-  "lastPeekedExpiry": "20501230"
+  "lastPeekedExpiry": "20501230",
+  "lastServiceWeek": "e0cc370be7b1d79e",
+  "feedObtainedAt": "20261102"
 }

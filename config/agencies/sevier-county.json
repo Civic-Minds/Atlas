@@ -12,7 +12,7 @@
   "region": "Tennessee",
   "lastFeedExpiry": "20271231",
   "lastFeedVersion": "20260515",
-  "lastRefreshedAt": "2026-10-12",
+  "lastRefreshedAt": "2026-11-02",
   "feedQuality": {
     "status": "healthy",
     "score": 100,
@@ -34,7 +34,7 @@
   },
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "http://gatlinburg.connexionz.net/rtt/public/utility/gtfs.aspx",
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271231",
@@ -42,5 +42,7 @@
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
-  "lastPeekedExpiry": "20271231"
+  "lastPeekedExpiry": "20271231",
+  "lastServiceWeek": "9448d3e9d1a8a5f7",
+  "feedObtainedAt": "20260515"
 }

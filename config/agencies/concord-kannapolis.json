@@ -39,8 +39,8 @@
   },
   "lastFeedExpiry": "20281102",
   "lastFeedVersion": "Yellow Route Fixed",
-  "lastRefreshedAt": "2026-10-12",
-  "lastFeedCheckAt": "20261019",
+  "lastRefreshedAt": "2026-11-02",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20991231",
@@ -51,5 +51,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://gtfs.transitportal.org/CurrentGTFS/Concord%20Kannapolis_209/CKRider.zip",
-  "lastPeekedExpiry": "20991231"
+  "lastPeekedExpiry": "20991231",
+  "lastServiceWeek": "eb24c035ee6eb129",
+  "feedObtainedAt": "20250505"
 }

@@ -18,7 +18,7 @@
   "lastFeedExpiry": "20261220",
   "lastFeedVersion": "2",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-730/latest.zip",
-  "lastRefreshedAt": "2026-10-12",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Mississauga, Ontario",
     "Etobicoke, Ontario",
@@ -26,7 +26,7 @@
     "Oakville, Ontario",
     "Milton, Ontario"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261220",
@@ -58,5 +58,7 @@
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
-  "lastPeekedExpiry": "20261220"
+  "lastPeekedExpiry": "20261220",
+  "lastServiceWeek": "699867ba51d02ace",
+  "feedObtainedAt": "20260922"
 }

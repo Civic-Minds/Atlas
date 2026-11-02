@@ -18,7 +18,7 @@
   "lastFeedExpiry": "20270313",
   "lastFeedVersion": null,
   "mergeEquivalentShapeVariantsAllModes": true,
-  "lastRefreshedAt": "2026-10-12",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Plainfield, New Jersey",
     "Paterson, New Jersey",
@@ -31,7 +31,7 @@
     "New Brunswick, New Jersey",
     "Union, New Jersey"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270313",
@@ -83,5 +83,7 @@
       "reason": "Hudson-Bergen, Newark and River LINE are light rail, published as route_type 0 (tram)"
     }
   ],
-  "lastPeekedExpiry": "20270313"
+  "lastPeekedExpiry": "20270313",
+  "lastServiceWeek": "506f7a7aa88f8ef4",
+  "feedObtainedAt": "20260916"
 }

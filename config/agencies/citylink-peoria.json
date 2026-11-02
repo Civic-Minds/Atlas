@@ -17,12 +17,12 @@
   "region": "Illinois",
   "lastFeedExpiry": "20261205",
   "lastFeedVersion": "20260806",
-  "lastRefreshedAt": "2026-08-10",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "North Peoria, Illinois",
     "Peoria, Illinois"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261205",
@@ -50,5 +50,11 @@
       "resumesOn": null
     },
     "checkedAt": "2026-11-02"
-  }
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "1d5dbeb3d07247ad",
+  "feedObtainedAt": "20260806"
 }

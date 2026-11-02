@@ -19,7 +19,7 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2050/latest.zip",
   "lastFeedExpiry": "20280503",
   "lastFeedVersion": "UTC: 16-Oct-2026 21:24",
-  "lastRefreshedAt": "2026-10-19",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Telluride, Colorado",
     "Mountain Village, Colorado",
@@ -49,7 +49,7 @@
     },
     "checkedAt": "2026-11-02"
   },
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20280503",
@@ -60,5 +60,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://data.trilliumtransit.com/gtfs/sanmiguelcounty-co-us/sanmiguelcounty-co-us--flex-v2.zip",
-  "lastPeekedExpiry": "20280503"
+  "lastPeekedExpiry": "20280503",
+  "lastServiceWeek": "02fa7d12a003b761",
+  "feedObtainedAt": "20261016"
 }

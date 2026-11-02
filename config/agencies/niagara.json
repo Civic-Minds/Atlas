@@ -31,7 +31,7 @@
   ],
   "lastFeedExpiry": "20261128",
   "lastFeedVersion": "S1000288",
-  "lastRefreshedAt": "2026-10-07",
+  "lastRefreshedAt": "2026-11-02",
   "websiteUrl": "https://nrtransit.ca/",
   "cities": [
     "St. Catharines, Ontario",
@@ -59,15 +59,17 @@
     },
     "checkedAt": "2026-11-02"
   },
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261128",
-  "feedRefreshStatus": "stale",
-  "feedRefreshError": "HTTP 404",
-  "feedRefreshErrorAt": "20261019",
-  "feedRefreshRetryCount": 1,
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "http://68.71.24.110/gtfs/GTFSExport.zip",
-  "lastPeekedExpiry": "20261128"
+  "lastPeekedExpiry": "20261128",
+  "lastServiceWeek": "e33f8e7e7040af64",
+  "feedObtainedAt": "20260930"
 }

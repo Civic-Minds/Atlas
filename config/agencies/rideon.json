@@ -17,7 +17,7 @@
   "feedUrl": "https://mcg.montgomerycountymd.gov/DOT-Transit/Resources/Files/GTFS/RideOnGTFS.zip",
   "lastFeedExpiry": "20270109",
   "lastFeedVersion": "13-September 6, 2026_20260901",
-  "lastRefreshedAt": "2026-09-07",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Rockville, Maryland",
     "Silver Spring, Maryland",
@@ -28,7 +28,7 @@
     "Reston, Virginia"
   ],
   "timezone": "America/New_York",
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270109",
@@ -53,5 +53,11 @@
   },
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://mcg.montgomerycountymd.gov/DOT-Transit/Resources/Files/GTFS/RideOnGTFS.zip",
-  "lastPeekedExpiry": "20270109"
+  "lastPeekedExpiry": "20270109",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "cc4ce406879a6abd",
+  "feedObtainedAt": "20260902"
 }

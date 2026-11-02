@@ -10,12 +10,12 @@
   "region": "Michigan",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-674/latest.zip",
   "lastFeedExpiry": "20261228",
-  "lastFeedVersion": "20261014",
-  "lastRefreshedAt": "2026-10-19",
+  "lastFeedVersion": "20261030",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Kalamazoo, Michigan"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261228",
@@ -23,18 +23,18 @@
     "status": "review",
     "score": 90,
     "reasons": [
-      "2 route shapes needed adjustment before display.",
+      "3 route shapes needed adjustment before display.",
       "1 route has stops whose frequency differs from the overall route schedule."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
-      "shapeAnomalies": 12,
+      "shapeAnomalies": 16,
       "routeHeadwayMismatches": 1,
       "featureCount": 121,
       "feedExpiry": "20261228",
       "routeCount": 21,
-      "problemShapes": 2,
+      "problemShapes": 3,
       "problemShapeRoutes": 1,
       "mismatchRoutes": 1,
       "resumesOn": null
@@ -48,5 +48,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://trackmybus.kmetro.org/InfoPoint/GTFS-Zip.ashx",
-  "lastPeekedExpiry": "20261228"
+  "lastPeekedExpiry": "20261228",
+  "lastServiceWeek": "9dc1aa17c6d5cc88",
+  "feedObtainedAt": "20261102"
 }

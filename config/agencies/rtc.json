@@ -18,7 +18,7 @@
   "feedUrl": "https://cdn.rtcquebec.ca/Site_Internet/DonneesOuvertes/googletransit.zip",
   "lastFeedExpiry": "20261218",
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-10-03",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Sainte-Foy, Quebec",
     "Les Rivières, Quebec",
@@ -28,7 +28,7 @@
     "La Cité-Limoilou, Quebec",
     "Québec, Quebec"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261218",
@@ -60,5 +60,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://cdn.rtcquebec.ca/Site_Internet/DonneesOuvertes/googletransit.zip",
-  "lastPeekedExpiry": "20261218"
+  "lastPeekedExpiry": "20261218",
+  "lastServiceWeek": "398b432d3a9789ba",
+  "feedObtainedAt": "20261101"
 }

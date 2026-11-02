@@ -12,11 +12,11 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-4555/latest.zip",
   "lastFeedExpiry": "20301214",
   "lastFeedVersion": "20260828",
-  "lastRefreshedAt": "2026-09-07",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Scranton, Pennsylvania"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20301214",
@@ -44,5 +44,11 @@
   },
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://realtimelctabus.availtec.com/InfoPoint/gtfs-zip.ashx",
-  "lastPeekedExpiry": "20301214"
+  "lastPeekedExpiry": "20301214",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "62237f3469318790",
+  "feedObtainedAt": "20260828"
 }

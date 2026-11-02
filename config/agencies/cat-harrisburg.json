@@ -12,11 +12,11 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-4298/latest.zip",
   "lastFeedExpiry": "20261231",
   "lastFeedVersion": "20260918",
-  "lastRefreshedAt": "2026-10-03",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Harrisburg, Pennsylvania"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261231",
@@ -48,5 +48,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://cat.rideralerts.com/InfoPoint/gtfs-zip.ashx",
-  "lastPeekedExpiry": "20261231"
+  "lastPeekedExpiry": "20261231",
+  "lastServiceWeek": "ee50a252d30df314",
+  "feedObtainedAt": "20260918"
 }

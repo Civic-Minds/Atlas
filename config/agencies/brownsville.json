@@ -15,7 +15,7 @@
   ],
   "feedUrl": "https://files.mobilitydatabase.org/tld-7927/latest.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-7927/latest.zip",
-  "lastFeedExpiry": "20501230",
+  "lastFeedExpiry": "20281102",
   "lastFeedVersion": null,
   "correctionNotices": [
     {
@@ -25,15 +25,43 @@
       ]
     }
   ],
-  "lastRefreshedAt": "2026-08-10",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Brownsville, Texas"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20501230",
   "timezone": "America/Chicago",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://files.mobilitydatabase.org/tld-7927/latest.zip"
+  "lastFeedSourceUrl": "https://files.mobilitydatabase.org/tld-7927/latest.zip",
+  "feedQuality": {
+    "status": "review",
+    "score": 80,
+    "reasons": [
+      "2 minor schedule issues found while reading the feed."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 2,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 3,
+      "featureCount": 28,
+      "feedExpiry": "20281102",
+      "routeCount": 11,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
+    },
+    "checkedAt": "2026-11-02"
+  },
+  "lastPeekedExpiry": "20501230",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "9bf4fcebd7ec44e0",
+  "feedObtainedAt": "20261101"
 }

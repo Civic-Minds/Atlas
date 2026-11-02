@@ -19,13 +19,13 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-107/latest.zip",
   "lastFeedExpiry": "20270101",
   "lastFeedVersion": "UTC: 29-Jun-2026 16:59",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Yucaipa, California",
     "Highland, California",
     "San Bernardino, California"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270101",
@@ -53,5 +53,11 @@
       "resumesOn": null
     },
     "checkedAt": "2026-11-02"
-  }
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "3b44550e3bbf843c",
+  "feedObtainedAt": "20260629"
 }

@@ -18,7 +18,7 @@
   "timezone": "America/Los_Angeles",
   "lastFeedExpiry": "20270531",
   "lastFeedVersion": "UTC: 30-Sep-2026 20:12",
-  "lastRefreshedAt": "2026-10-12",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Tillamook, Oregon",
     "Lincoln City, Oregon",
@@ -44,7 +44,7 @@
     },
     "checkedAt": "2026-11-02"
   },
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270531",
@@ -54,5 +54,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-246/latest.zip",
-  "lastPeekedExpiry": "20270531"
+  "lastPeekedExpiry": "20270531",
+  "lastServiceWeek": "565f7b86a142bb6d",
+  "feedObtainedAt": "20260930"
 }

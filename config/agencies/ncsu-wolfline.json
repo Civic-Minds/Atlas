@@ -9,13 +9,13 @@
   ],
   "feedUrl": "https://passio3.com/ncstateuni/passioTransit/gtfs/google_transit.zip",
   "lastFeedExpiry": "20271231",
-  "lastFeedVersion": "20250228",
+  "lastFeedVersion": "20260917",
   "referenceDateFromRunDate": true,
   "excludeRouteShortNames": [
     "FTB",
     "GRK"
   ],
-  "lastRefreshedAt": "2026-10-19",
+  "lastRefreshedAt": "2026-11-02",
   "region": "North Carolina",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2245/latest.zip",
   "bbox": [
@@ -27,7 +27,7 @@
   "cities": [
     "West Raleigh, North Carolina"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271231",
@@ -36,12 +36,14 @@
   "lastFeedSourceUrl": "https://passio3.com/ncstateuni/passioTransit/gtfs/google_transit.zip",
   "lastPeekedExpiry": "20271231",
   "feedQuality": {
-    "status": "healthy",
-    "score": 100,
-    "reasons": [],
+    "status": "review",
+    "score": 90,
+    "reasons": [
+      "1 minor schedule issue found while reading the feed."
+    ],
     "metrics": {
       "validationErrors": 0,
-      "validationWarnings": 0,
+      "validationWarnings": 1,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
       "featureCount": 20,
@@ -57,5 +59,7 @@
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
-  "feedRefreshRetryCount": 0
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "b387a2cd8e18b7e0",
+  "feedObtainedAt": "20261102"
 }

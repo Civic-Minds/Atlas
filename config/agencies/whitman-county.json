@@ -21,8 +21,8 @@
   ],
   "timezone": "America/Los_Angeles",
   "lastFeedExpiry": "20281102",
-  "lastFeedVersion": "back to regular service, removed football and Wheat-Lentil detours,football + Greyhound open,Greyhound closed,removed football routes",
-  "lastRefreshedAt": "2026-10-19",
+  "lastFeedVersion": "back to regular service, removed football and Wheat-Lentil detours",
+  "lastRefreshedAt": "2026-11-02",
   "feedQuality": {
     "status": "healthy",
     "score": 100,
@@ -42,7 +42,7 @@
     },
     "checkedAt": "2026-11-02"
   },
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20991231",
@@ -52,5 +52,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://pullmanbusbeacon.com/gtfs",
-  "lastPeekedExpiry": "20991231"
+  "lastPeekedExpiry": "20991231",
+  "lastServiceWeek": "b3d01ed77487cad9",
+  "feedObtainedAt": "20261102"
 }

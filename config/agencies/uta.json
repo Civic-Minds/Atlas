@@ -11,7 +11,7 @@
   "lastFeedExpiry": "20261205",
   "lastFeedVersion": "2026 AUG_20261008",
   "region": "Utah",
-  "lastRefreshedAt": "2026-10-19",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Salt Lake City, Utah",
     "Ogden, Utah",
@@ -24,7 +24,7 @@
     "Sandy, Utah",
     "Orem, Utah"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261205",
@@ -74,5 +74,7 @@
       "reason": "TRAX is light rail, published as route_type 0 (tram); the S-Line stays a streetcar"
     }
   ],
-  "lastPeekedExpiry": "20261205"
+  "lastPeekedExpiry": "20261205",
+  "lastServiceWeek": "e9bfd6b4f2b3fc34",
+  "feedObtainedAt": "20261008"
 }

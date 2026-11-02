@@ -15,7 +15,7 @@
     "3"
   ],
   "region": "Texas",
-  "lastRefreshedAt": "2026-10-12",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "University of Texas, Texas",
     "Austin, Texas",
@@ -24,7 +24,7 @@
     "Round Rock, Texas",
     "Leander, Texas"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270109",
@@ -62,5 +62,7 @@
       "reason": "CapMetro Rail Red Line (550) is commuter rail, published as route_type 0 (tram)"
     }
   ],
-  "lastPeekedExpiry": "20270109"
+  "lastPeekedExpiry": "20270109",
+  "lastServiceWeek": "2b476d94a394dfa1",
+  "feedObtainedAt": "20261007"
 }

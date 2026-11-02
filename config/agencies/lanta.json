@@ -12,12 +12,12 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-30010/latest.zip",
   "lastFeedExpiry": "20270124",
   "lastFeedVersion": "20261014",
-  "lastRefreshedAt": "2026-10-19",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Allentown, Pennsylvania",
     "Bethlehem, Pennsylvania"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270124",
@@ -49,5 +49,7 @@
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
-  "feedRefreshRetryCount": 0
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "316ed945400c1431",
+  "feedObtainedAt": "20261014"
 }

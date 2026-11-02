@@ -15,9 +15,9 @@
   "feedUrl": "https://zenbus.net/gtfs/static/download.zip?dataset=tcmt6w8qbuxm",
   "lastFeedExpiry": "20261220",
   "lastFeedVersion": "1788765058143",
-  "lastRefreshedAt": "2026-10-03",
+  "lastRefreshedAt": "2026-11-02",
   "websiteUrl": "https://www.villedemont-tremblant.qc.ca",
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261220",
@@ -47,5 +47,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://zenbus.net/gtfs/static/download.zip?dataset=tcmt6w8qbuxm",
-  "lastPeekedExpiry": "20261220"
+  "lastPeekedExpiry": "20261220",
+  "lastServiceWeek": "19c07ce761241f6a",
+  "feedObtainedAt": "20261101"
 }

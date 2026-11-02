@@ -16,14 +16,14 @@
   "region": "Georgia",
   "lastFeedExpiry": "20261122",
   "lastFeedVersion": "S1000070",
-  "lastRefreshedAt": "2026-10-08",
+  "lastRefreshedAt": "2026-11-02",
   "websiteUrl": "http://www.catchacat.org",
   "cities": [
     "Savannah, Georgia"
   ],
   "timezone": "America/New_York",
   "lastRawArchiveKey": "20250727-6723aa5560da6d1c",
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261122",
@@ -62,5 +62,7 @@
       "reason": "Savannah Belles Ferry is a ferry, published as route_type 3 (bus)"
     }
   ],
-  "lastPeekedExpiry": "20261122"
+  "lastPeekedExpiry": "20261122",
+  "lastServiceWeek": "e635e906ca81879a",
+  "feedObtainedAt": "20260825"
 }

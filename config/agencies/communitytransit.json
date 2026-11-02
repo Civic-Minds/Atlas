@@ -18,7 +18,7 @@
   "feedUrl": "https://www.communitytransit.org/docs/default-source/open-data/gtfs/current.zip",
   "lastFeedExpiry": "20261211",
   "lastFeedVersion": "20261002-20261211",
-  "lastRefreshedAt": "2026-10-07",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Shoreline, Washington",
     "Marysville, Washington",
@@ -29,7 +29,7 @@
     "Bellevue, Washington",
     "Sammamish, Washington"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261211",
@@ -61,5 +61,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://www.communitytransit.org/docs/default-source/open-data/gtfs/current.zip",
-  "lastPeekedExpiry": "20261211"
+  "lastPeekedExpiry": "20261211",
+  "lastServiceWeek": "6df1504ea7f4a7ed",
+  "feedObtainedAt": "20261002"
 }

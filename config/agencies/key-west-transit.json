@@ -40,8 +40,8 @@
   },
   "lastFeedExpiry": "20261231",
   "lastFeedVersion": "20250228",
-  "lastRefreshedAt": "2026-10-12",
-  "lastFeedCheckAt": "20261019",
+  "lastRefreshedAt": "2026-11-02",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261231",
@@ -52,5 +52,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://www.ftis.org/PostFileDownload.aspx?id=962A0",
-  "lastPeekedExpiry": "20261231"
+  "lastPeekedExpiry": "20261231",
+  "lastServiceWeek": "8c69d39b8c21e620",
+  "feedObtainedAt": "20251029"
 }

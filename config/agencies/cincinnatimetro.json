@@ -11,12 +11,12 @@
   "lastFeedExpiry": "20261205",
   "lastFeedVersion": "gtfs_20261004-20261205_20260929",
   "region": "Ohio",
-  "lastRefreshedAt": "2026-10-03",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Cincinnati, Ohio",
     "Hamilton, Ohio"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261205",
@@ -46,5 +46,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-307/latest.zip",
-  "lastPeekedExpiry": "20261205"
+  "lastPeekedExpiry": "20261205",
+  "lastServiceWeek": "73c25d3c0d185464",
+  "feedObtainedAt": "20260929"
 }

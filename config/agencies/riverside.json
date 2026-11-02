@@ -10,7 +10,7 @@
   "lastFeedExpiry": "20270109",
   "lastFeedVersion": "S1000249",
   "region": "California",
-  "lastRefreshedAt": "2026-10-03",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Riverside, California",
     "Moreno Valley, California",
@@ -23,7 +23,7 @@
     "Corona, California",
     "Menifee, California"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270109",
@@ -53,5 +53,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-98/latest.zip",
-  "lastPeekedExpiry": "20270109"
+  "lastPeekedExpiry": "20270109",
+  "lastServiceWeek": "5dfc2a2ece588370",
+  "feedObtainedAt": "20260909"
 }

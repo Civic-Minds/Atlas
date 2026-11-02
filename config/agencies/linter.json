@@ -16,11 +16,11 @@
   "feedUrl": "https://zenbus.net/gtfs/static/download.zip?dataset=linter",
   "lastFeedExpiry": "20270807",
   "lastFeedVersion": "1785921774107",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Saint-Jérôme, Quebec"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270807",
@@ -46,5 +46,11 @@
       "resumesOn": null
     },
     "checkedAt": "2026-11-02"
-  }
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "10710b5a0d5ca9d1",
+  "feedObtainedAt": "20261102"
 }

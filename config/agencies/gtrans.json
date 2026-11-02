@@ -12,7 +12,7 @@
   "lastFeedExpiry": "20270102",
   "lastFeedVersion": "S1000135",
   "region": "California",
-  "lastRefreshedAt": "2026-10-19",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Gardena, California",
     "Carson, California",
@@ -24,7 +24,7 @@
     "Redondo Beach, California",
     "Inglewood, California"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270102",
@@ -54,5 +54,7 @@
       "resumesOn": null
     },
     "checkedAt": "2026-11-02"
-  }
+  },
+  "lastServiceWeek": "7254c05ceaac9a27",
+  "feedObtainedAt": "20261002"
 }

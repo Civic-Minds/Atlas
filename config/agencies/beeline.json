@@ -17,7 +17,7 @@
   "mdbFeedUrl": "https://s3.amazonaws.com/datatools-511ny/public/Westchester_County_Bee-Line_System.zip",
   "lastFeedExpiry": "20270209",
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-10-19",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "White Plains, New York",
     "Greenburgh, New York",
@@ -31,7 +31,7 @@
     "Kings Bridge, New York"
   ],
   "timezone": "America/New_York",
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270209",
@@ -62,5 +62,7 @@
       "resumesOn": null
     },
     "checkedAt": "2026-11-02"
-  }
+  },
+  "lastServiceWeek": "96e3029320158a8e",
+  "feedObtainedAt": "20261013"
 }

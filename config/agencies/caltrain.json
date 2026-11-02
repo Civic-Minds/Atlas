@@ -18,7 +18,7 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-54/latest.zip",
   "lastFeedExpiry": "20270131",
   "lastFeedVersion": "UTC: 10-Jun-2026 22:25",
-  "lastRefreshedAt": "2026-08-13",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "San Mateo, California",
     "San Jose, California",
@@ -32,7 +32,7 @@
     "Daly City, California"
   ],
   "lastRawArchiveKey": "20270131-786de3fea43ef033",
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270131",
@@ -58,5 +58,11 @@
       "resumesOn": null
     },
     "checkedAt": "2026-11-02"
-  }
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "cb56639392cc28ef",
+  "feedObtainedAt": "20260828"
 }

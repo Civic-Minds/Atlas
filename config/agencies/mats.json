@@ -18,7 +18,7 @@
   "timezone": "America/Los_Angeles",
   "lastFeedExpiry": "20270101",
   "lastFeedVersion": "UTC: 30-Jun-2026 05:12",
-  "lastRefreshedAt": "2026-08-18",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "White Salmon, Washington",
     "Goldendale, Washington",
@@ -44,11 +44,17 @@
     },
     "checkedAt": "2026-11-02"
   },
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270101",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-580/latest.zip",
-  "lastPeekedExpiry": "20270101"
+  "lastPeekedExpiry": "20270101",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "e505acbb0231cb0b",
+  "feedObtainedAt": "20260630"
 }

@@ -10,7 +10,7 @@
   "lastFeedExpiry": "20270102",
   "lastFeedVersion": null,
   "region": "Tennessee",
-  "lastRefreshedAt": "2026-08-10",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Nashville, Tennessee",
     "Hendersonville, Tennessee",
@@ -18,7 +18,7 @@
     "Franklin, Tennessee",
     "Clarksville, Tennessee"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270102",
@@ -44,5 +44,11 @@
       "resumesOn": null
     },
     "checkedAt": "2026-11-02"
-  }
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "8c7c58ee0fff0843",
+  "feedObtainedAt": "20260930"
 }

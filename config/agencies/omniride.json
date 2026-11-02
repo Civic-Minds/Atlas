@@ -11,7 +11,7 @@
   "lastFeedExpiry": "20270130",
   "lastFeedVersion": "2026 July_20260724",
   "region": "Virginia",
-  "lastRefreshedAt": "2026-10-14",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Dale City, Virginia",
     "Centreville, Virginia",
@@ -21,7 +21,7 @@
     "Alexandria, Virginia"
   ],
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-1156/latest.zip",
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270130",
@@ -51,5 +51,7 @@
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
-  "feedRefreshRetryCount": 0
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "312507c3b09789d2",
+  "feedObtainedAt": "20260724"
 }

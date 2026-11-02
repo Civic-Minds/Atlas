@@ -11,7 +11,7 @@
   "lastFeedExpiry": "20270130",
   "lastFeedVersion": "SEPTEMBER 2026_20261013",
   "region": "Texas",
-  "lastRefreshedAt": "2026-10-19",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Fort Worth, Texas",
     "North Richland Hills, Texas",
@@ -21,7 +21,7 @@
     "Mansfield, Texas",
     "Flower Mound, Texas"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270130",
@@ -59,5 +59,7 @@
       "reason": "TEXRail is commuter rail, published as route_type 0 (tram)"
     }
   ],
-  "lastPeekedExpiry": "20270130"
+  "lastPeekedExpiry": "20270130",
+  "lastServiceWeek": "b02ede6daed0ea22",
+  "feedObtainedAt": "20261014"
 }

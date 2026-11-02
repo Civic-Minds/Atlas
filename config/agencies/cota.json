@@ -12,11 +12,11 @@
   "mdbFeedUrl": "https://www.cota.com/data/cota.gtfs.zip",
   "lastFeedExpiry": "20270103",
   "lastFeedVersion": "2026-SEP-07-BB_20260924",
-  "lastRefreshedAt": "2026-10-03",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Columbus, Ohio"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270103",
@@ -46,5 +46,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://www.cota.com/data/cota.gtfs.zip",
-  "lastPeekedExpiry": "20270103"
+  "lastPeekedExpiry": "20270103",
+  "lastServiceWeek": "3bb4a1abacbbc038",
+  "feedObtainedAt": "20260924"
 }

@@ -10,7 +10,7 @@
   "lastFeedExpiry": "20270327",
   "lastFeedVersion": "S1000085",
   "region": "Virginia",
-  "lastRefreshedAt": "2026-10-08",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Leesburg, Virginia",
     "Reston, Virginia",
@@ -18,7 +18,7 @@
     "Washington, District of Columbia",
     "Downtown DC, District of Columbia"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270327",
@@ -50,5 +50,7 @@
   },
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://www.loudoun.gov/loudountransitgtfs",
-  "lastPeekedExpiry": "20270327"
+  "lastPeekedExpiry": "20270327",
+  "lastServiceWeek": "86d1b7f649433587",
+  "feedObtainedAt": "20260923"
 }

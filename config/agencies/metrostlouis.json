@@ -11,7 +11,7 @@
   "lastFeedExpiry": "20261129",
   "lastFeedVersion": null,
   "region": "Missouri",
-  "lastRefreshedAt": "2026-10-12",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "St. Louis, Missouri",
     "Florissant, Missouri",
@@ -20,7 +20,7 @@
   ],
   "timezone": "America/Chicago",
   "lastRawArchiveKey": "20261025-4c0fd0987c705d50",
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261129",
@@ -63,5 +63,7 @@
       "reason": "MetroLink is light rail, published as route_type 2 (commuter rail)"
     }
   ],
-  "lastPeekedExpiry": "20261129"
+  "lastPeekedExpiry": "20261129",
+  "lastServiceWeek": "7bc6830cab726c26",
+  "feedObtainedAt": "20261102"
 }

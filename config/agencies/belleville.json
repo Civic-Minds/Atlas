@@ -15,13 +15,13 @@
   ],
   "feedUrl": "https://metrolinx.tmix.se/gtfs/gtfs-belleville.zip",
   "lastFeedExpiry": "20261231",
-  "lastFeedVersion": "1/20261015 22:00:01/20261016 00:00:00",
+  "lastFeedVersion": "1/20261101 22:00:00/20261102 00:00:00",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-1858/latest.zip",
-  "lastRefreshedAt": "2026-10-19",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Belleville, Ontario"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261231",
@@ -51,5 +51,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://metrolinx.tmix.se/gtfs/gtfs-belleville.zip",
-  "lastPeekedExpiry": "20261231"
+  "lastPeekedExpiry": "20261231",
+  "lastServiceWeek": "ab3c5ee903902fb2",
+  "feedObtainedAt": "20261102"
 }

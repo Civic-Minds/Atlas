@@ -8,9 +8,9 @@
   ],
   "feedUrl": "https://api.transloc.com/gtfs/vvta.zip",
   "lastFeedExpiry": "20261128",
-  "lastFeedVersion": "2026.08",
+  "lastFeedVersion": "2026.09",
   "region": "California",
-  "lastRefreshedAt": "2026-10-03",
+  "lastRefreshedAt": "2026-11-02",
   "websiteUrl": "http://vvta.org/",
   "cities": [
     "Victorville, California",
@@ -23,7 +23,7 @@
   ],
   "timezone": "America/Los_Angeles",
   "lastRawArchiveKey": "20250329-3f568bd33b3ddb28",
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261128",
@@ -54,5 +54,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://api.transloc.com/gtfs/vvta.zip",
-  "lastPeekedExpiry": "20261128"
+  "lastPeekedExpiry": "20261128",
+  "lastServiceWeek": "faad8a4c315f5c09",
+  "feedObtainedAt": "20261102"
 }

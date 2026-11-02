@@ -10,7 +10,7 @@
   "lastFeedExpiry": "20270206",
   "lastFeedVersion": null,
   "region": "California",
-  "lastRefreshedAt": "2026-08-24",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Long Beach, California",
     "Lakewood, California",
@@ -23,7 +23,7 @@
     "Downey, California",
     "Santa Monica, California"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270206",
@@ -49,5 +49,11 @@
   "timezone": "America/Los_Angeles",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-1198/latest.zip",
-  "lastPeekedExpiry": "20270206"
+  "lastPeekedExpiry": "20270206",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "6841bb709b049a63",
+  "feedObtainedAt": "20260824"
 }

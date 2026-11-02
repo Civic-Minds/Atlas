@@ -10,15 +10,15 @@
   ],
   "feedUrl": "https://www.centro.org/CentroGTFS/CentroGTFS.zip",
   "lastFeedExpiry": "20270228",
-  "lastFeedVersion": null,
+  "lastFeedVersion": "2026-09 Centro_20260813",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-534/latest.zip",
-  "lastRefreshedAt": "2026-08-27",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Syracuse, New York",
     "Utica, New York",
     "Clay, New York"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270228",
@@ -46,5 +46,11 @@
   "timezone": "America/New_York",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://www.centro.org/CentroGTFS/CentroGTFS.zip",
-  "lastPeekedExpiry": "20270228"
+  "lastPeekedExpiry": "20270228",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "e8b923e5e514e457",
+  "feedObtainedAt": "20261102"
 }

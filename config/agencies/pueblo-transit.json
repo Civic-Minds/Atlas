@@ -10,11 +10,11 @@
   "region": "Colorado",
   "lastFeedExpiry": "20270301",
   "lastFeedVersion": "UTC: 24-Apr-2026 17:32",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Pueblo, Colorado"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270301",
@@ -40,5 +40,11 @@
       "resumesOn": null
     },
     "checkedAt": "2026-11-02"
-  }
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "e659fcb8b0b463e4",
+  "feedObtainedAt": "20260424"
 }

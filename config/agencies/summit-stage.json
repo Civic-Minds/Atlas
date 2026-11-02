@@ -9,9 +9,9 @@
     -106.0975
   ],
   "feedUrl": "https://data.trilliumtransit.com/gtfs/summitstage-co-us/summitstage-co-us.zip",
-  "lastFeedExpiry": "20261114",
-  "lastFeedVersion": "UTC: 29-Jul-2026 17:51",
-  "lastRefreshedAt": "2026-08-18",
+  "lastFeedExpiry": "20270417",
+  "lastFeedVersion": "UTC: 30-Oct-2026 20:14",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Breckenridge, Colorado",
     "Frisco, Colorado",
@@ -35,7 +35,7 @@
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
       "featureCount": 75,
-      "feedExpiry": "20261114",
+      "feedExpiry": "20270417",
       "routeCount": 13,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
@@ -44,11 +44,17 @@
     },
     "checkedAt": "2026-11-02"
   },
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261114",
+  "expiredFeedCheckExpiry": "20270417",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://data.trilliumtransit.com/gtfs/summitstage-co-us/summitstage-co-us.zip",
-  "lastPeekedExpiry": "20261114"
+  "lastPeekedExpiry": "20270417",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "e2929116f946ec14",
+  "feedObtainedAt": "20261102"
 }

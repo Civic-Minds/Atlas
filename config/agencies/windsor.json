@@ -17,12 +17,12 @@
   "lastFeedExpiry": "20270113",
   "lastFeedVersion": "d0704ff0-25ec-41c7-a326-9a0ea5be33f3",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-720/latest.zip",
-  "lastRefreshedAt": "2026-10-19",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Windsor, Ontario",
     "Detroit, Michigan"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270113",
@@ -54,5 +54,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://opendata.citywindsor.ca/Uploads/google_transit.zip",
-  "lastPeekedExpiry": "20270113"
+  "lastPeekedExpiry": "20270113",
+  "lastServiceWeek": "d8020d7997ab3e36",
+  "feedObtainedAt": "20261015"
 }

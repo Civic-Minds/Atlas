@@ -13,7 +13,7 @@
   "lastFeedVersion": "GTFS_v4.5_20260914",
   "mergeEquivalentShapeVariants": true,
   "region": "Arizona",
-  "lastRefreshedAt": "2026-10-12",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Deer Valley, Arizona",
     "Encanto, Arizona",
@@ -26,7 +26,7 @@
     "Mesa, Arizona",
     "Ahwatukee Foothills, Arizona"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270124",
@@ -42,7 +42,7 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 4,
-      "featureCount": 686,
+      "featureCount": 691,
       "feedExpiry": "20270124",
       "routeCount": 112,
       "problemShapes": 0,
@@ -56,5 +56,7 @@
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
-  "lastPeekedExpiry": "20270124"
+  "lastPeekedExpiry": "20270124",
+  "lastServiceWeek": "491962347dee0a81",
+  "feedObtainedAt": "20261020"
 }

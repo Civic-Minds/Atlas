@@ -19,11 +19,12 @@
     "Turlock, California",
     "Manteca, California"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270630",
   "timezone": "America/Los_Angeles",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2273/latest.zip"
+  "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2273/latest.zip",
+  "refusedFeedSha256": "6b76fdc40b52c96e63406aca5efe08b18d448ce686a513d5db7429b5f3373426"
 }

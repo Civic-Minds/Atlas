@@ -16,11 +16,11 @@
   "feedUrl": "https://opengis.regina.ca/reginagtfs/google_transit.zip",
   "lastFeedExpiry": "20270109",
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-10-03",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Regina, Saskatchewan"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270109",
@@ -52,5 +52,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://opengis.regina.ca/reginagtfs/google_transit.zip",
-  "lastPeekedExpiry": "20270109"
+  "lastPeekedExpiry": "20270109",
+  "lastServiceWeek": "0529314c433de5a5",
+  "feedObtainedAt": "20260831"
 }

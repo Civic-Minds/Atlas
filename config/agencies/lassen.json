@@ -18,8 +18,8 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-118/latest.zip",
   "lastFeedExpiry": "20270501",
   "lastFeedVersion": "UTC: 14-Sep-2026 21:59",
-  "lastRefreshedAt": "2026-10-03",
-  "lastFeedCheckAt": "20261019",
+  "lastRefreshedAt": "2026-11-02",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270501",
@@ -49,5 +49,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "http://data.trilliumtransit.com/gtfs/lassen-ca-us/lassen-ca-us.zip",
-  "lastPeekedExpiry": "20270501"
+  "lastPeekedExpiry": "20270501",
+  "lastServiceWeek": "91f010e9288663ee",
+  "feedObtainedAt": "20260914"
 }

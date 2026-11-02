@@ -15,13 +15,13 @@
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-2209/latest.zip",
   "region": "South Carolina",
-  "lastRefreshedAt": "2026-09-07",
+  "lastRefreshedAt": "2026-11-02",
   "lastFeedExpiry": "20270109",
   "lastFeedVersion": "4bccff39-106e-406b-a067-f97b4e4bbebd",
   "cities": [
     "Columbia, South Carolina"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270109",
@@ -47,5 +47,11 @@
   "timezone": "America/New_York",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2209/latest.zip",
-  "lastPeekedExpiry": "20270109"
+  "lastPeekedExpiry": "20270109",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "e99f23a09f3f0640",
+  "feedObtainedAt": "20260904"
 }

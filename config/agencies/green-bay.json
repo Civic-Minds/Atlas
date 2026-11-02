@@ -10,17 +10,17 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-917/latest.zip",
   "lastFeedExpiry": "20270424",
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-10-19",
+  "lastRefreshedAt": "2026-11-02",
   "websiteUrl": "https://greenbaywi.gov/231/Metro-Transit",
   "cities": [
     "Green Bay, Wisconsin"
   ],
   "timezone": "America/Chicago",
   "lastRawArchiveKey": "20201231-a3bd5150fb0630b1",
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20270410",
+  "expiredFeedCheckExpiry": "20270424",
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
@@ -46,5 +46,7 @@
     },
     "checkedAt": "2026-11-02"
   },
-  "lastPeekedExpiry": "20270424"
+  "lastPeekedExpiry": "20270424",
+  "lastServiceWeek": "a627c3c70fdb6d6f",
+  "feedObtainedAt": "20261026"
 }

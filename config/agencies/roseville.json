@@ -17,13 +17,13 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-1067/latest.zip",
   "lastFeedExpiry": "20261231",
   "lastFeedVersion": "Roseville_April_2025-26",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Roseville, California",
     "Citrus Heights, California",
     "Rocklin, California"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261231",
@@ -51,5 +51,11 @@
       "resumesOn": null
     },
     "checkedAt": "2026-11-02"
-  }
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "37b54e400c78eb7c",
+  "feedObtainedAt": "20250630"
 }

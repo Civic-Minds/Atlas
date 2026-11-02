@@ -16,12 +16,12 @@
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-838/latest.zip",
   "lastFeedExpiry": "20270926",
-  "lastFeedVersion": "20261014",
-  "lastRefreshedAt": "2026-10-19",
+  "lastFeedVersion": "20261023",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Shoreline, Washington"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270926",
@@ -53,5 +53,7 @@
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
-  "lastPeekedExpiry": "20270926"
+  "lastPeekedExpiry": "20270926",
+  "lastServiceWeek": "1514caf1df22f38e",
+  "feedObtainedAt": "20261102"
 }

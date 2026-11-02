@@ -22,7 +22,7 @@
   "lastFeedExpiry": "20300725",
   "lastFeedVersion": "UTC: 02-Jul-2026 18:56",
   "lastRefreshedAt": "2026-10-12",
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20300925",
@@ -33,19 +33,22 @@
     "status": "unusable",
     "score": 0,
     "reasons": [
-      "Atlas could not find any usable routes in this feed."
+      "This agency's schedule file has no routes we can show."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 1,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 0
+      "featureCount": 0,
+      "feedExpiry": "20300725"
     },
-    "checkedAt": "2026-10-12"
+    "checkedAt": "2026-10-12",
+    "scoredAt": "2026-11-02"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
-  "feedRefreshRetryCount": 0
+  "feedRefreshRetryCount": 0,
+  "refusedFeedSha256": "7233b0c9446319f4652d6f83187461f3330a2f5cd200ba7e6cc291a37f4fb337"
 }

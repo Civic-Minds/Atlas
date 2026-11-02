@@ -17,9 +17,9 @@
   ],
   "feedUrl": "https://gtfs.sanfranciscobayferry.com/gtfs.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-3143/latest.zip",
-  "lastFeedExpiry": "20261101",
-  "lastFeedVersion": "UTC: 18-Aug-2026 20:52",
-  "lastRefreshedAt": "2026-08-27",
+  "lastFeedExpiry": "20270228",
+  "lastFeedVersion": "2026-10-23",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Chinatown, California",
     "Oakland, California",
@@ -28,27 +28,27 @@
     "South San Francisco, California",
     "Richmond, California"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261101",
+  "expiredFeedCheckExpiry": "20270228",
   "feedQuality": {
-    "status": "degraded",
-    "score": 65,
+    "status": "review",
+    "score": 83,
     "reasons": [
-      "The schedule dates in this feed have passed."
+      "1 route has stops whose frequency differs from the overall route schedule."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
       "shapeAnomalies": 0,
-      "routeHeadwayMismatches": 0,
-      "featureCount": 41,
-      "feedExpiry": "20261101",
-      "routeCount": 7,
+      "routeHeadwayMismatches": 1,
+      "featureCount": 33,
+      "feedExpiry": "20270228",
+      "routeCount": 6,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
-      "mismatchRoutes": 0,
+      "mismatchRoutes": 1,
       "resumesOn": null
     },
     "checkedAt": "2026-11-02"
@@ -56,5 +56,11 @@
   "timezone": "America/Los_Angeles",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://gtfs.sanfranciscobayferry.com/gtfs.zip",
-  "lastPeekedExpiry": "20261101"
+  "lastPeekedExpiry": "20270228",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "d03477652c032401",
+  "feedObtainedAt": "20261102"
 }

@@ -17,7 +17,7 @@
   "region": "Missouri",
   "lastFeedExpiry": "20351004",
   "lastFeedVersion": "1.0",
-  "lastRefreshedAt": "2026-08-18",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Jefferson City, Missouri"
   ],
@@ -40,12 +40,18 @@
     },
     "checkedAt": "2026-11-02"
   },
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20351004",
   "timezone": "US/Central",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://jctgtfsdownload.itcurves.us/DownloadGtfs",
-  "lastPeekedExpiry": "20351004"
+  "lastPeekedExpiry": "20351004",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "cc98e285ac538b14",
+  "feedObtainedAt": "20261102"
 }

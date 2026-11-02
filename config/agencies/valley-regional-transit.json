@@ -11,14 +11,14 @@
   "lastFeedExpiry": "20271014",
   "lastFeedVersion": "491",
   "region": "Idaho",
-  "lastRefreshedAt": "2026-10-19",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Boise, Idaho",
     "Meridian, Idaho",
     "Nampa, Idaho",
     "Caldwell, Idaho"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271014",
@@ -48,5 +48,7 @@
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
-  "feedRefreshRetryCount": 0
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "8e5ca6bd6fa8f0f8",
+  "feedObtainedAt": "20261014"
 }

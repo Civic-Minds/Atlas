@@ -44,14 +44,20 @@
     "checkedAt": "2026-11-02"
   },
   "lastFeedExpiry": "20261231",
-  "lastFeedVersion": "Updated: Mar 25, 2026, 2:20 PM",
-  "lastRefreshedAt": "2026-08-21",
-  "lastFeedCheckAt": "20261019",
+  "lastFeedVersion": "Updated: Oct 28, 2025, 12:33 PM",
+  "lastRefreshedAt": "2026-11-02",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261231",
   "timezone": "America/Chicago",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://www.btd.org/2025btdgtfs/",
-  "lastPeekedExpiry": "20261231"
+  "lastPeekedExpiry": "20261231",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "5f09dd3b85e55194",
+  "feedObtainedAt": "20261102"
 }

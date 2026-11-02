@@ -7,9 +7,9 @@
     -120.51
   ],
   "feedUrl": "https://yakimatransit.org/gtfs/yakima_gtfs.zip",
-  "lastFeedExpiry": "20351231",
+  "lastFeedExpiry": "20281102",
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-08-10",
+  "lastRefreshedAt": "2026-11-02",
   "region": "Washington",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-276/latest.zip",
   "bbox": [
@@ -21,11 +21,39 @@
   "cities": [
     "Yakima, Washington"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20351231",
-  "timezone": "America/Los_Angeles",
+  "timezone": "US/Pacific",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://yakimatransit.org/gtfs/yakima_gtfs.zip"
+  "lastFeedSourceUrl": "https://yakimatransit.org/gtfs/yakima_gtfs.zip",
+  "feedQuality": {
+    "status": "review",
+    "score": 80,
+    "reasons": [
+      "2 minor schedule issues found while reading the feed."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 2,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 33,
+      "feedExpiry": "20281102",
+      "routeCount": 23,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
+    },
+    "checkedAt": "2026-11-02"
+  },
+  "lastPeekedExpiry": "20351231",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "56bb904b5d69bdd1",
+  "feedObtainedAt": "20220202"
 }

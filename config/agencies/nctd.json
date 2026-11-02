@@ -9,10 +9,10 @@
   ],
   "feedUrl": "https://lfportal.nctd.org/staticGTFS/google_transit.zip",
   "mdbFeedUrl": "https://lfportal.nctd.org/staticGTFS/google_transit.zip",
-  "lastFeedExpiry": "20261102",
-  "lastFeedVersion": "2607-GTFS-Sept2026TripAdjustment (2026-09-01)",
+  "lastFeedExpiry": "20270131",
+  "lastFeedVersion": "Version_20260926",
   "region": "California",
-  "lastRefreshedAt": "2026-10-14",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Vista, California",
     "Escondido, California",
@@ -26,10 +26,10 @@
   ],
   "timezone": "America/Los_Angeles",
   "lastRawArchiveKey": "20250517-3b39f629f5e0d959",
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261102",
+  "expiredFeedCheckExpiry": "20270131",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://lfportal.nctd.org/staticGTFS/google_transit.zip",
   "modeOverrides": [
@@ -52,7 +52,7 @@
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 1,
       "featureCount": 158,
-      "feedExpiry": "20261102",
+      "feedExpiry": "20270131",
       "routeCount": 40,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
@@ -61,9 +61,11 @@
     },
     "checkedAt": "2026-11-02"
   },
-  "lastPeekedExpiry": "20261102",
+  "lastPeekedExpiry": "20270131",
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
-  "feedRefreshRetryCount": 0
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "3fe7f3f09bf5df47",
+  "feedObtainedAt": "20261102"
 }

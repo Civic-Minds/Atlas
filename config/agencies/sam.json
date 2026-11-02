@@ -18,8 +18,8 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-261/latest.zip",
   "lastFeedExpiry": "20270331",
   "lastFeedVersion": "UTC: 04-Sep-2026 18:59",
-  "lastRefreshedAt": "2026-10-12",
-  "lastFeedCheckAt": "20261019",
+  "lastRefreshedAt": "2026-11-02",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270331",
@@ -49,5 +49,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://oregon-gtfs.trilliumtransit.com/gtfs_data/sandy-or-us/sandy-or-us.zip",
-  "lastPeekedExpiry": "20270331"
+  "lastPeekedExpiry": "20270331",
+  "lastServiceWeek": "91b9097c9fcff81a",
+  "feedObtainedAt": "20260904"
 }

@@ -18,12 +18,12 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-47/latest.zip",
   "lastFeedExpiry": "20270130",
   "lastFeedVersion": "UTC: 03-Sep-2026 23:07",
-  "lastRefreshedAt": "2026-10-12",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Lancaster, California",
     "Bakersfield, California"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270130",
@@ -56,5 +56,7 @@
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
-  "lastPeekedExpiry": "20270130"
+  "lastPeekedExpiry": "20270130",
+  "lastServiceWeek": "1c04c1f0ecccd192",
+  "feedObtainedAt": "20260903"
 }

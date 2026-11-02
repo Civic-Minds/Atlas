@@ -25,10 +25,10 @@
     "Tinley Park, Illinois",
     "Wheaton, Illinois"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261226",
+  "expiredFeedCheckExpiry": "20261219",
   "timezone": "America/Chicago",
   "feedQuality": {
     "status": "review",
@@ -49,7 +49,8 @@
       "mismatchRoutes": 1,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-02"
+    "checkedAt": "2026-11-02",
+    "scoredAt": "2026-11-02"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,

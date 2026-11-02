@@ -9,8 +9,8 @@
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-631/latest.zip",
   "lastFeedExpiry": "20270101",
-  "lastFeedVersion": "UTC: 13-Oct-2026 03:23",
-  "lastRefreshedAt": "2026-10-19",
+  "lastFeedVersion": "UTC: 26-Oct-2026 13:11",
+  "lastRefreshedAt": "2026-11-02",
   "region": "New Hampshire",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-631/latest.zip",
   "bbox": [
@@ -19,7 +19,7 @@
     43.7492,
     -71.9942
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270101",
@@ -49,5 +49,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-631/latest.zip",
-  "lastPeekedExpiry": "20270101"
+  "lastPeekedExpiry": "20270101",
+  "lastServiceWeek": "c1e663f1b3d52024",
+  "feedObtainedAt": "20261102"
 }

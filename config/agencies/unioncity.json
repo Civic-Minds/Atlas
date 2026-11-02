@@ -16,14 +16,14 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-628/latest.zip",
   "lastFeedExpiry": "20270816",
   "lastFeedVersion": "",
-  "lastRefreshedAt": "2026-10-12",
+  "lastRefreshedAt": "2026-11-02",
   "websiteUrl": "http://www.uctransit.org",
   "cities": [
     "Union City, California"
   ],
   "timezone": "America/Los_Angeles",
   "lastRawArchiveKey": "20230927-651281e25dba5ea3",
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270816",
@@ -52,5 +52,7 @@
     },
     "checkedAt": "2026-11-02"
   },
-  "lastPeekedExpiry": "20270816"
+  "lastPeekedExpiry": "20270816",
+  "lastServiceWeek": "a44094e5d44b3fc5",
+  "feedObtainedAt": "20261102"
 }
