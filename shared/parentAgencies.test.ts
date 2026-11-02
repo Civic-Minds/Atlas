@@ -63,13 +63,17 @@ describe('parent agencies (CIV-1277)', () => {
     expect(agencyPageData(all.find(a => a.slug === 'guelph')!, all).parent).toBeUndefined();
   });
 
-  it('lists a parent once on the all-agencies page, linking its own page', () => {
+  it('lists a parent once per state on the all-agencies page, linking its own page', () => {
     const index = buildAgencyIndexData(all, areas, null);
-    const rows = index.groups.flatMap(g => g.regions.flatMap(x => x.agencies));
-    expect(rows.filter(x => x.name === 'MTA New York')).toEqual([expect.objectContaining({ slug: 'mta-new-york', parent: { href: '/agency/mta-new-york' } })]);
+    const regions = index.groups.flatMap(g => g.regions);
+    const rows = regions.flatMap(x => x.agencies);
+    // Once in each state its members serve (#1306), never twice in one.
+    expect(regions.filter(r => r.agencies.some(x => x.slug === 'mta-new-york')).map(r => r.region).sort()).toEqual(['Connecticut', 'New Jersey', 'New York']);
+    for (const r of regions) expect(r.agencies.filter(x => x.name === 'MTA New York').length, r.region).toBeLessThanOrEqual(1);
+    expect(rows.filter(x => x.name === 'MTA New York')).toEqual(Array(3).fill(expect.objectContaining({ slug: 'mta-new-york', parent: { href: '/agency/mta-new-york' } })));
     expect(rows.map(x => x.slug)).not.toContain('nyct-subway');
     expect(rows.find(x => x.slug === 'exo')?.parent?.href).toBe('/agency/exo');
-    expect(index.agencyCount).toBe(rows.length);
+    expect(index.agencyCount).toBe(new Set(rows.map(x => x.slug)).size);
   });
 
   it('leaves map share links alone: ?agencies=exo still means the trains feed only', () => {
