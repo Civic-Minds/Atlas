@@ -7,7 +7,8 @@ import { mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { SITE_URL, applySeoToHtml, buildSitemapXml, injectRootHtml, prerenderRoutes, researchPreviewRoutes, resolveSeo } from '../shared/seo';
-import { AGENCY_DATA_SCRIPT_ID, agencyPageData, agencyPageJsonLd, agencyPagePath, areaPageStatus, resolveAgencySeo } from '../shared/agencyPages';
+import { AGENCY_DATA_SCRIPT_ID, agencyPageData, agencyPageJsonLd, areaPageStatus, resolveAgencySeo } from '../shared/agencyPages';
+import { parentAgencyPageData, parentHome, parentMembers, parentsWithMembers } from '../shared/parentAgencies';
 import { AGENCY_INDEX_DATA_SCRIPT_ID, AGENCY_INDEX_PATH, buildAgencyIndexData, resolveAgencyIndexSeo } from '../shared/agencyIndex';
 import { AREA_DATA_SCRIPT_ID, areaPageJsonLd, buildAreaPageData, resolveAreaSeo } from '../shared/areaPages';
 import { areaPagePath, type AreaConfig } from '../shared/areas';
@@ -79,8 +80,16 @@ if (mod.BUILD_FLAGS.agencyPages) {
     }
     for (const a of agencies) {
       const data = agencyPageData(a, agencies, AGENCY_PAGE_DATA.generatedAt, areaOf.get(a.slug), areaMembers.get(a.slug));
-      const seo = resolveAgencySeo(a, { mode: mod.BUILD_MODE, origin, intro: data.intro, description: data.description });
-      writePage(agencyPagePath(a.slug), seo, mod.renderAgencyPage(data), { id: AGENCY_DATA_SCRIPT_ID, value: data }, agencyPageJsonLd(a, seo.canonicalUrl, origin, data.area, data.intro, data.regionPage));
+      const seo = resolveAgencySeo(a, { mode: mod.BUILD_MODE, origin, intro: data.intro, description: data.description, path: data.path });
+      writePage(data.path, seo, mod.renderAgencyPage(data), { id: AGENCY_DATA_SCRIPT_ID, value: data }, agencyPageJsonLd(a, seo.canonicalUrl, origin, data.area, data.intro, data.regionPage));
+      urls.push(seo.canonicalUrl);
+    }
+    // CIV-1277: one page per parent agency, adding up its members, at its own slug.
+    for (const parent of parentsWithMembers(agencies)) {
+      const home = parentHome(parent, parentMembers(parent, agencies))!;
+      const data = parentAgencyPageData(parent, agencies, AGENCY_PAGE_DATA.generatedAt, areaOf.get(home.slug), areaMembers.get(home.slug))!;
+      const seo = resolveAgencySeo(data.agency, { mode: mod.BUILD_MODE, origin, intro: data.intro, description: data.description, path: data.path });
+      writePage(data.path, seo, mod.renderAgencyPage(data), { id: AGENCY_DATA_SCRIPT_ID, value: data }, agencyPageJsonLd(data.agency, seo.canonicalUrl, origin, data.area, data.intro, data.regionPage));
       urls.push(seo.canonicalUrl);
     }
     // An area needs two agencies for a page (areaPageStatus); vercel.json redirects a one-agency area to that agency.
@@ -109,7 +118,7 @@ if (mod.BUILD_FLAGS.agencyPages) {
     }
     // The committed public/sitemap.xml stays public-only; this build's copy also lists agency and area pages.
     writeFileSync(join(dist, 'sitemap.xml'), buildSitemapXml(urls));
-    console.log(`Prerendered ${agencies.length} agency pages, ${areaPages.size} area pages and ${regions.length} state and province pages (data release ${AGENCY_PAGE_DATA.releaseId}); sitemap.xml updated`);
+    console.log(`Prerendered ${agencies.length} agency pages, ${parentsWithMembers(agencies).length} parent agency pages, ${areaPages.size} area pages and ${regions.length} state and province pages (data release ${AGENCY_PAGE_DATA.releaseId}); sitemap.xml updated`);
   }
 }
 

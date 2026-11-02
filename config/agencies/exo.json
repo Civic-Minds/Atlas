@@ -5,6 +5,8 @@
   "displayArea": "Greater Montréal",
   "websiteUrl": "https://exo.quebec/fr/planifier-trajet/train",
   "region": "Quebec",
+  "parentAgency": "exo",
+  "pageSlug": "exo-trains",
   "center": [
     45.5,
     -73.57

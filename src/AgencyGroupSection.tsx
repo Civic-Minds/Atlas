@@ -54,6 +54,14 @@ export default function AgencyGroupSection({ data, mapHref, barNote }: { data: A
       <p className="mt-3 text-base font-bold">Weekday midday frequency, by route</p>
       <FrequencyBar counts={data.bands} mapHref={mapHref} />
       <p className="mt-2 text-sm leading-6 text-[var(--text-muted)]">{barNote}</p>
+      <AgencyModeTable data={data} />
+    </section>
+  );
+}
+
+/** The agency table by mode: an area's or state's agencies, or a parent agency's services (CIV-1277). */
+export function AgencyModeTable({ data }: { data: Pick<AgencyGroupData, 'agencies' | 'modeColumns'> }) {
+  return (
       <ScrollX className="mt-6 -mx-2">
           <DataTable
             caption="Agencies and route counts by mode"
@@ -68,6 +76,5 @@ export default function AgencyGroupSection({ data, mapHref, barNote }: { data: A
             ]}
           />
       </ScrollX>
-    </section>
   );
 }

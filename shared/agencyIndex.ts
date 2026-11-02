@@ -8,7 +8,8 @@ import { areaPagePath, areaSlug, type AreaConfig } from './areas';
 import { SITE_URL, seoTitlePrefix, type SeoMode } from './seo';
 import { plural } from './overflowText';
 import { compareAgencyName, compareText } from './sortCompare';
-import { AGENCY_INDEX_PATH } from './pagePaths';
+import { AGENCY_INDEX_PATH, parentAgencyPagePath } from './pagePaths';
+import { parentHome, parentMembers, parentRoutes, parentsWithMembers } from './parentAgencies';
 
 export { AGENCY_INDEX_PATH };
 /** The prerendered HTML carries its data in <script type="application/json" id=...>. */
@@ -32,6 +33,8 @@ export interface AgencyIndexAgency {
   shortName: string;
 
   routes: number;
+  /** CIV-1277: a parent agency's row, listed once in place of its members, with its own page. */
+  parent?: { href: string };
 }
 
 export interface AgencyIndexData {
@@ -57,12 +60,21 @@ export function buildAgencyIndexData(
     .sort((x, y) => compareText(x.shortName, y.shortName));
   const tree = new Map<string, Map<string, AgencyIndexAgency[]>>();
   const shared = sharedOfficialNames(agencies);
-  for (const a of agencies) {
+  const add = (a: Pick<AgencyPageSummary, 'country' | 'region'>, row: AgencyIndexAgency) => {
     const country = a.country ?? OTHER;
     const region = a.country && a.region ? a.region : OTHER;
     const regions = tree.get(country) ?? tree.set(country, new Map()).get(country)!;
-    (regions.get(region) ?? regions.set(region, []).get(region)!).push({ slug: a.slug, name: agencyTitle(a, shared), shortName: agencyMention(a), routes: a.routeCount });
+    (regions.get(region) ?? regions.set(region, []).get(region)!).push(row);
+  };
+  // CIV-1277: a parent agency is one row, under its biggest member's state, in place of its members.
+  const parents = parentsWithMembers(agencies);
+  const grouped = new Set(parents.map(p => p.slug));
+  for (const a of agencies) if (!a.parentAgency || !grouped.has(a.parentAgency)) add(a, { slug: a.slug, name: agencyTitle(a, shared), shortName: agencyMention(a), routes: a.routeCount });
+  for (const p of parents) {
+    const members = parentMembers(p, agencies);
+    add(parentHome(p, members)!, { slug: p.slug, name: p.name, shortName: p.name, routes: parentRoutes(members).length, parent: { href: parentAgencyPagePath(p.slug) } });
   }
+  const rows = [...tree.values()].reduce((n, regions) => n + [...regions.values()].reduce((m, list) => m + list.length, 0), 0);
   const last = (x: string, y: string) => (x === OTHER ? 1 : 0) - (y === OTHER ? 1 : 0) || compareText(x, y);
   const groups = [...tree.entries()].sort(([x], [y]) => last(x, y)).map(([country, regions]) => ({
     country,
@@ -71,7 +83,8 @@ export function buildAgencyIndexData(
       return { region, agencies: list.sort((x, y) => compareAgencyName(x.name, y.name)), ...(href ? { href } : {}) };
     }),
   }));
-  return { areas: areaList, groups, agencyCount: agencies.length, releaseDate };
+  // The count says how many rows the list shows: a parent agency counts once (CIV-1277).
+  return { areas: areaList, groups, agencyCount: rows, releaseDate };
 }
 
 export function agencyIndexTitle(): string {

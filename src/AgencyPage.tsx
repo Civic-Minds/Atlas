@@ -25,6 +25,9 @@ import { andOthers } from '../shared/overflowText';
 import { routeListHeadwayText } from './utils/effectiveHeadway';
 import { ATLAS_MODE, PERIOD_LABELS } from '../shared/config';
 import DocsPageLayout from './components/ui/DocsPageLayout';
+import { AgencyModeTable } from './AgencyGroupSection';
+import { parentAgencyPagePath } from '../shared/pagePaths';
+import type { ParentAgencyPageData } from '../shared/parentAgencies';
 import ArrowLink from './components/ui/ArrowLink';
 import { PageTitle, SectionTitle } from './components/ui/PageTitle';
 import EmptyPage from './components/ui/EmptyPage';
@@ -40,7 +43,8 @@ import { capitalizeFirst } from './utils/headwayText';
 /** Read this page's numbers from the JSON the prerender embedded next to the app root. */
 function readEmbeddedData(slug: string | undefined): AgencyPageData | null {
   const data = readEmbeddedJson<AgencyPageData>(AGENCY_DATA_SCRIPT_ID);
-  return data && data.agency.slug === slug ? data : null;
+  // CIV-1277: matched on the page's own path, since a parent's page and a moved member's page differ from the agency's slug.
+  return data && slug && data.path === parentAgencyPagePath(slug) ? data : null;
 }
 
 /** "A, B and C" or "A, B, C and 4 other agencies" (namesList's wording), each name a link when it has a page. */
@@ -127,8 +131,9 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
       origin: seoOrigin(),
       intro: data?.intro,
       description: data?.description,
+      path: data?.path,
     }));
-  }, [agency, data?.intro, data?.description]);
+  }, [agency, data?.intro, data?.description, data?.path]);
 
   if (!agency && !lookedUp) return <main className="min-h-screen bg-[var(--bg-app)]" aria-busy="true" />;
 
@@ -151,15 +156,17 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
                 // An area with too few agencies for a page is named without a link (Ryan, 2026-11-01).
                 : data!.area ? <p className="mt-1 text-sm text-[var(--text-muted)]">{areaRegionTitle(data!.area)}</p>
                 : agency.city && <p className="mt-1 text-sm text-[var(--text-muted)]">{agency.city}</p>}
+              {/* CIV-1277 (Ryan, 2026-11-02): "Part of MTA New York →" on each member's page. */}
+              {data!.parent && <p className="mt-1"><ArrowLink tone="inline" href={data!.parent.path}>Part of {data!.parent.name}</ArrowLink></p>}
             </div>
-            <ArrowLink href={agencyMapHref(agency)}>View on map</ArrowLink>
+            <ArrowLink href={data!.mapHref ?? agencyMapHref(agency)}>View on map</ArrowLink>
           </div>
           <Intro data={data!} />
 
           <section className="mt-14" aria-labelledby="routes-heading">
             <SectionTitle id="routes-heading">Routes and weekday frequency</SectionTitle>
             <p className="mt-3 text-base font-bold">Weekday midday frequency, by route</p>
-            <FrequencyBar counts={bandCounts(agency.routes)} mapHref={agencyMapHref(agency)} />
+            <FrequencyBar counts={bandCounts(agency.routes)} mapHref={data!.mapHref ?? agencyMapHref(agency)} />
             <p className="mt-2 text-sm leading-6 text-[var(--text-muted)]">The bar splits this agency's routes by how often they run on a weekday midday. Each route is judged by its slower direction.</p>
             {stats.byMode.map(group => (
               <div key={group.mode} className="mt-4">
@@ -183,6 +190,14 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
               </div>
             ))}
           </section>
+
+          {'services' in data! && (
+            // CIV-1277 (Ryan, 2026-11-02): a parent agency lists its members under "Services".
+            <section className="mt-12" aria-labelledby="services-heading">
+              <SectionTitle id="services-heading">Services</SectionTitle>
+              <AgencyModeTable data={(data as ParentAgencyPageData).services} />
+            </section>
+          )}
 
           {nearby.length > 0 && (
             <section className="mt-12" aria-labelledby="nearby-heading">

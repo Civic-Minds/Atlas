@@ -14,7 +14,8 @@ import { countryForRegion } from './regionCountry';
 import { BETA_BUILD } from './config';
 import { DESCRIPTION_MAX, DESCRIPTION_MIN, TITLE_MAX, firstThatFits, truncateAtWord } from './seoText';
 import { SITE_URL, seoTitlePrefix, type SeoMode } from './seo';
-import { AGENCY_PATH_PREFIX, agencyPagePath, areaPagePath, regionPagePath } from './pagePaths';
+import { AGENCY_PATH_PREFIX, agencyPagePath, areaPagePath, parentAgencyPagePath, regionPagePath } from './pagePaths';
+import { parentAgency } from './parentAgencyList';
 import { zoomForSpan } from './mapZoom';
 import { haversineM } from './shapeProjection';
 import { andOthers, joinList, plural } from './overflowText';
@@ -63,6 +64,12 @@ export interface AgencyPageIdentity {
   websiteUrl?: string;
   /** Visible on beta, preview and dev builds only; the public build never lists it. */
   betaOnly?: true;
+  /** CIV-1277: the parent agency it belongs to (config/parent-agencies.json), shown once on the map and the agency list. */
+  parentAgency?: string;
+  /** CIV-1277: its page's URL slug when its parent's page has taken its own slug ("exo" → "exo-trains"). */
+  pageSlug?: string;
+  /** CIV-1277: what tells it apart from a parent of the same name on its page ("Bustang · Interregional"). */
+  pageTitleQualifier?: string;
 }
 
 /** Another agency whose stops are within walking distance of this one's, with the routes that serve them. */
@@ -112,6 +119,12 @@ export interface AgencyPageSummaries {
 /** A page's own numbers plus links to nearby agencies: all one page needs, embedded in its HTML. */
 export interface AgencyPageData {
   agency: AgencyPageSummary;
+  /** The page's own path: /agency/<page slug> for an agency (agencyPagePath), /agency/<parent slug> for a parent (CIV-1277). */
+  path: string;
+  /** CIV-1277: the parent agency a member belongs to, with its page. */
+  parent?: { name: string; path: string };
+  /** The map link for this page: the agency, or a parent's members all on (CIV-1277). */
+  mapHref: string;
   /** The page heading and the name its sentences use: agencyTitle, told apart from same-named agencies (#1245). */
   title: string;
   nearby: Array<{ slug: string; name: string }>;
@@ -254,8 +267,10 @@ function splitBracketedPlace(name: string): [string, string] | null {
  * list, the area intro and table, the agency index and the website link. Never the registry form with its bracket
  * ("Montgomery Transit", not "Montgomery Transit (The M)").
  */
-export function agencyTitle(a: Pick<AgencyPageIdentity, 'name'>, shared: ReadonlySet<string> = NO_SHARED_NAMES): string {
+export function agencyTitle(a: Pick<AgencyPageIdentity, 'name' | 'pageTitleQualifier'>, shared: ReadonlySet<string> = NO_SHARED_NAMES): string {
   const official = agencyNames(a.name).official;
+  // CIV-1277 (Ryan, 2026-11-02): a member named like its parent says what it runs ("Bustang · Interregional").
+  if (a.pageTitleQualifier) return `${official} · ${a.pageTitleQualifier}`;
   // Agencies that share an official name keep what tells them apart, as a list row shows a place ("BC Transit · Kelowna").
   const extra = shared.has(official) ? splitRegistryName(a.name)[1] : null;
   return extra ? `${official} · ${extra}` : official;
@@ -311,20 +326,23 @@ export function agencyPageData(
   releaseDate: string | null = null,
   area?: AreaRef,
   areaMembers?: readonly AgencyPageSummary[],
+  /** CIV-1277: a parent agency's page (parentAgencyPageData): its name, and its members, left out of its nearby list and connections. */
+  group?: { title: string; members: readonly AgencyPageSummary[] },
 ): AgencyPageData {
   const { pages } = areaPageStatus(all);
+  const inGroup = new Set(group?.members.map(m => m.slug) ?? [a.slug]);
   const areaPaged = !!area && pages.has(area.slug);
   // With an area page, the list is the area's other agencies (nearest first); otherwise same-region neighbours.
   const others = areaMembers && areaPaged
-    ? areaMembers.filter(o => o.slug !== a.slug)
+    ? areaMembers.filter(o => !inGroup.has(o.slug))
         .sort((x, y) => (a.center && x.center ? distanceKm(a.center, x.center) : 0) - (a.center && y.center ? distanceKm(a.center, y.center) : 0))
         .slice(0, MAX_AREA_LIST)
-    : nearbyAgencies(a, all);
+    : nearbyAgencies(a, all.filter(o => !inGroup.has(o.slug) || o.slug === a.slug));
   // Every agency in the list has a page (CIV-965), so a connection links whenever its agency is in it.
   const hasPage = new Set(all.map(o => o.slug));
   const titleOf = titlesOf(all);
-  const title = titleOf.get(a.slug) ?? agencyTitle(a);
-  const connections = (a.connections ?? []).filter(c => !c.betaOnly || BETA_BUILD).map(c => ({ ...c, name: titleOf.get(c.slug) ?? agencyTitle({ name: c.name }), page: hasPage.has(c.slug) }));
+  const title = group?.title ?? titleOf.get(a.slug) ?? agencyTitle(a);
+  const connections = (a.connections ?? []).filter(c => (!c.betaOnly || BETA_BUILD) && !(group && inGroup.has(c.slug))).map(c => ({ ...c, name: titleOf.get(c.slug) ?? agencyTitle({ name: c.name }), page: hasPage.has(c.slug) }));
   const introPlace = agencyIntroPlace(a, area, pages);
   const place = introPlace.text;
   const areaRef = area ? { slug: area.slug, name: area.name, page: areaPaged } : undefined;
@@ -335,7 +353,10 @@ export function agencyPageData(
   const registryName = new Map(all.map(o => [o.slug, o.name]));
   const sizedBy = agencyIntroSentence(a, place, connections.map(c => ({ ...c, name: registryName.get(c.slug) ?? c.name })), modes, sizingName(a.name, place));
   const regionPage = regionPageHref(a, all);
-  return { agency, title, releaseDate, ...(areaRef ? { area: areaRef } : {}), ...(regionPage ? { regionPage } : {}), nearby: others.map(o => ({ slug: o.slug, name: titleOf.get(o.slug) ?? agencyTitle(o) })), intro, description: agencyPageDescription(a, intro, sizedBy, { full: place, short: introPlace.short }), place, places: { named: introPlace.named, others: introPlace.others }, introLead: introLead(a, place, modes, title), connections };
+  const parent = group ? undefined : parentAgency(a.parentAgency);
+  const path = group ? parentAgencyPagePath(a.slug) : agencyPagePath(a.slug);
+  const mapHref = agencyMapHref(a, group ? group.members.map(m => m.slug) : [a.slug]);
+  return { agency, path, mapHref, ...(parent ? { parent: { name: parent.name, path: parentAgencyPagePath(parent.slug) } } : {}), title, releaseDate, ...(areaRef ? { area: areaRef } : {}), ...(regionPage ? { regionPage } : {}), nearby: others.map(o => ({ slug: o.slug, name: titleOf.get(o.slug) ?? agencyTitle(o) })), intro, description: agencyPageDescription(a, intro, sizedBy, { full: place, short: introPlace.short }), place, places: { named: introPlace.named, others: introPlace.others }, introLead: introLead(a, place, modes, title), connections };
 }
 
 const MAX_AREA_LIST = 12;
@@ -343,8 +364,13 @@ const MAX_AREA_LIST = 12;
 export { AGENCY_PATH_PREFIX, agencyPagePath };
 
 /** "TTC frequency: how often routes run | Transit Atlas", dropping the brand, then the phrase, for long names (60 characters at most). */
-export function agencyPageTitle(a: Pick<AgencyPageSummary, 'displayName'>): string {
-  const name = agencyShortLabel(a);
+export function agencyPageTitle(a: Pick<AgencyPageSummary, 'displayName'> & Partial<Pick<AgencyPageSummary, 'name' | 'parentAgency' | 'pageTitleQualifier'>>): string {
+  const short = agencyShortLabel(a);
+  // CIV-1277: a member whose short name is its parent's keeps what tells it apart, so its title is not the parent's
+  // ("Bustang · Interregional", "exo (Trains)").
+  const name = a.parentAgency && parentAgency(a.parentAgency)?.name === short
+    ? (a.pageTitleQualifier && a.name ? agencyTitle({ name: a.name, pageTitleQualifier: a.pageTitleQualifier }) : a.displayName)
+    : short;
   return firstThatFits([
     `${name} frequency: how often routes run | Transit Atlas`,
     `${name} frequency: how often routes run`,
@@ -560,8 +586,8 @@ export function agencyShortLabel(a: Pick<AgencyPageSummary, 'displayName'>): str
 }
 
 /** The map link for the big button: the agency's area, with only that agency on. */
-export function agencyMapHref(a: AgencyPageIdentity): string {
-  const params = new URLSearchParams({ agencies: a.slug });
+export function agencyMapHref(a: AgencyPageIdentity, /** CIV-1277: a parent's members, all on together. */ slugs: readonly string[] = [a.slug]): string {
+  const params = new URLSearchParams({ agencies: slugs.join(',') });
   if (a.center) {
     const [lat, lon] = a.center;
     params.set('lat', lat.toFixed(4));
@@ -662,16 +688,17 @@ export function nearbyAgencies(a: AgencyPageSummary, all: readonly AgencyPageSum
 /** Everything the head needs for an agency page, in the same shape as the other routes. */
 export function resolveAgencySeo(
   a: AgencyPageSummary,
-  ctx: { mode: SeoMode; origin?: string; intro?: string; description?: string },
+  ctx: { mode: SeoMode; origin?: string; intro?: string; description?: string; /** The page's path (AgencyPageData.path); a parent's differs from agencyPagePath. */ path?: string },
 ): { title: string; description: string; canonicalUrl: string; noindex: boolean; matchedPath: string } {
+  const path = ctx.path ?? agencyPagePath(a.slug);
   const origin = (ctx.origin ?? SITE_URL).replace(/\/$/, '');
   const prefix = seoTitlePrefix(ctx.mode);
   return {
     title: `${prefix}${agencyPageTitle(a)}`,
     description: ctx.description ?? agencyPageDescription(a, ctx.intro),
-    canonicalUrl: `${origin}${agencyPagePath(a.slug)}`,
+    canonicalUrl: `${origin}${path}`,
     noindex: ctx.mode !== 'public',
-    matchedPath: agencyPagePath(a.slug),
+    matchedPath: path,
   };
 }
 

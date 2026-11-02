@@ -23,6 +23,9 @@
         "nameQualifier": { "type": "string" },
         "shortName": { "type": "string" },
         "labelPlace": { "type": "string" },
+        "parentAgency": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+        "pageSlug": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+        "pageTitleQualifier": { "type": "string" },
         "region": { "type": "string" },
         "center": {
           "type": "array",

@@ -5,6 +5,7 @@
   "displayArea": "Le Richelain–Roussillon",
   "websiteUrl": "https://exo.quebec/fr/planifier-trajet/autobus/LRRS",
   "region": "Quebec",
+  "parentAgency": "exo",
   "center": [
     45.4086,
     -73.5026

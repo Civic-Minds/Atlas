@@ -4,6 +4,7 @@
   "displayArea": "Long Island",
   "websiteUrl": "https://new.mta.info/agency/long-island-rail-road",
   "region": "New York",
+  "parentAgency": "mta-new-york",
   "center": [
     40.75,
     -73.6

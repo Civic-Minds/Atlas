@@ -9,6 +9,8 @@ import { buildRegionPageData } from '../../shared/regionPages';
 import { agencyBreadcrumbs, agencyPageData, type AgencyPageRoute, type AgencyPageSummary } from '../../shared/agencyPages';
 import { buildAreaPageData, AREA_TABLE_OTHER } from '../../shared/areaPages';
 import type { AreaConfig } from '../../shared/areas';
+import { agencyPageSummaries } from '../../shared/agencyPagesData';
+import { parentAgency, parentAgencyPageData } from '../../shared/parentAgencies';
 
 const r = (name: string, mode: number, midday: number | null, extra: Partial<AgencyPageRoute> = {}): AgencyPageRoute =>
   ({ name, longName: null, mode, midday, am: midday, pm: midday, evening: midday, overnight: null, ...extra });
@@ -336,5 +338,24 @@ describe('RegionPage (CIV-976)', () => {
     expect(screen.getByRole('link', { name: 'the Inland Empire' }).getAttribute('href')).toBe('/area/riverside');
     expect(screen.queryByRole('link', { name: 'the Bakersfield area' })).toBeNull();
     expect(screen.getByText((_, el) => el?.tagName === 'P' && (el.textContent ?? '').includes('and 2 other regions')).textContent).toBe(d.intro);
+  });
+});
+
+describe('parent agency pages (CIV-1277)', () => {
+  const all = agencyPageSummaries();
+
+  it('lists the members under "Services", each linking its own page', () => {
+    view(<AgencyPage data={parentAgencyPageData(parentAgency('exo')!, all, null)!} />);
+    expect(screen.getByRole('heading', { level: 1 }).textContent).toBe('exo');
+    const services = screen.getByRole('heading', { name: 'Services' }).closest('section')!;
+    expect(within(services).getAllByRole('row').length).toBe(1 + 7);
+    const trains = within(services).getAllByRole('link').find(a => a.getAttribute('href') === '/agency/exo-trains');
+    expect(trains).toBeTruthy();
+  });
+
+  it('links a member up to its parent: "Part of MTA New York"', () => {
+    view(<AgencyPage data={agencyPageData(all.find(a => a.slug === 'lirr')!, all, null)} />);
+    expect(screen.getByRole('link', { name: /^Part of MTA New York/ }).getAttribute('href')).toBe('/agency/mta-new-york');
+    expect(screen.queryByRole('heading', { name: 'Services' })).toBeNull();
   });
 });

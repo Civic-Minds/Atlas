@@ -8,6 +8,7 @@
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-2330/latest.zip",
   "region": "Colorado",
+  "parentAgency": "bustang",
   "bbox": [
     37.1,
     -105,

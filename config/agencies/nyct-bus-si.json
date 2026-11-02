@@ -15,6 +15,7 @@
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-514/latest.zip",
   "region": "New York",
+  "parentAgency": "mta-new-york",
   "lastFeedExpiry": "20270102",
   "lastFeedVersion": "20261009",
   "lastRefreshedAt": "2026-10-19",

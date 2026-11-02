@@ -15,6 +15,9 @@
   "lastFeedExpiry": "20270206",
   "lastFeedVersion": "20260821",
   "region": "Maryland",
+  "parentAgency": "mta-maryland",
+  "pageSlug": "mta-maryland-baltimore",
+  "pageTitleQualifier": "Bus, Metro and Light Rail",
   "lastRefreshedAt": "2026-10-19",
   "cities": [
     "Baltimore, Maryland",
