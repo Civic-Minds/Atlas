@@ -3,5 +3,6 @@
   "compilerOptions": {
     "types": ["node"]
   },
-  "include": ["api", "local-api", "shared", "types"]
+  "include": ["api", "local-api", "shared", "types"],
+  "exclude": ["**/*.test.ts", "**/__tests__/**"]
 }
