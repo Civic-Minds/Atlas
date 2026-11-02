@@ -5,11 +5,11 @@ import {
   shouldShowTrunkSummary,
   trunkSparklineByHour,
   headsignTrunkHeadway,
-  shouldShowBranchHeadwayRange,
   sparklineSourceDirections,
   sharedStopIdsForBranches,
   stretchSharedHeadway,
 } from '../routeCardTrunk';
+import { headwayRangeShown } from '../headwayText';
 import type { ShapeProperties } from '../../hooks/useIntervalStats';
 
 const hsrWestBranches: ShapeProperties[] = [
@@ -152,21 +152,21 @@ describe('routeCardTrunk', () => {
     expect(groupTrunkHeadway([branch], 'pmPeak')).toBe(30);
   });
 
-  describe('shouldShowBranchHeadwayRange', () => {
+  describe('headwayRangeShown', () => {
     it('shows range for a materially better trunk vs destination gap', () => {
-      expect(shouldShowBranchHeadwayRange(8, 30)).toBe(true);
+      expect(headwayRangeShown(8, 30)).toBe(true);
     });
 
     it('shows range for a single branch too (#493) -- multi-branch is not required', () => {
       // TTC 94 eastbound: one "Castle Frank" branch, headsignMinStopHeadwayByPeriod already
       // pools the overlapping short-turn's departures regardless of branch count.
-      expect(shouldShowBranchHeadwayRange(9, 20)).toBe(true);
+      expect(headwayRangeShown(9, 20)).toBe(true);
     });
 
     it('hides range for a small gap or sub-5 trunk minutes', () => {
-      expect(shouldShowBranchHeadwayRange(8, 11)).toBe(false);
-      expect(shouldShowBranchHeadwayRange(3, 9)).toBe(false);
-      expect(shouldShowBranchHeadwayRange(5, 25)).toBe(false);
+      expect(headwayRangeShown(8, 11)).toBe(false);
+      expect(headwayRangeShown(3, 9)).toBe(false);
+      expect(headwayRangeShown(5, 25)).toBe(false);
     });
   });
 

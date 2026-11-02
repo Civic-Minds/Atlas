@@ -12,6 +12,9 @@ import {
   type HistoryV2Sidecar,
   type HistoryV2SidecarRoute,
 } from '../shared/historyV2.js';
+import { normalizeRouteFilterFeatures } from '../shared/routeHeadwayFilter.js';
+import type { ShapeProperties, TimePeriod } from '../src/hooks/useIntervalStats.js';
+import { routeListLowEnd } from '../src/utils/effectiveHeadway.js';
 import { historyRouteKey } from './historyRouteKey.js';
 import { positivelyNoService, weekendDay, type FeedEvidence } from './historyWeekend.js';
 
@@ -45,32 +48,32 @@ function periodsOf(features: Props[]): HeadwayByPeriod | undefined {
 }
 
 /**
- * CIV-555: a route's shared-stretch (trunk) value for History's "every 8–60" headline: each direction's best
- * minStopHeadway (the live card's trunk reading, headsignTrunkHeadway, reads the same field), then the worst
- * direction, as the frequency filter judges every direction. Null without the field.
+ * CIV-555, #1248: the low end of History's "every 20–30", read as the live route list reads it (routeListLowEnd, the
+ * lowest number the route card shows, #1231), so History and the list never give the route two low ends. Stored before the
+ * range rule (headwayRangeShown), which History applies when it shows a row, as the list does (CIV-1227). Read on copies made the way the app loads an agency (normalizeRouteFilterFeatures), never on the features being written.
  */
+function listLowEnd(features: Props[], period: TimePeriod): number | null {
+  if (features.length === 0) return null;
+  const copies = features.map(f => ({ properties: { ...f } }));
+  normalizeRouteFilterFeatures(copies);
+  const low = routeListLowEnd(copies.map(c => c.properties) as unknown as ShapeProperties[], period);
+  return low != null && Number.isFinite(low) ? low : null;
+}
+
+/** The route's all-day low end (the list's "All day" range, before the range rule). Null when the list has no lower number. */
 export function routeTrunkHeadway(features: Props[]): number | null {
-  const byDirection = new Map<string, number>();
-  for (const f of features) {
-    const v = finiteOrNull(f.minStopHeadway);
-    if (v == null) continue;
-    const direction = String(f.directionId ?? 0);
-    const best = byDirection.get(direction);
-    if (best == null || v < best) byDirection.set(direction, v);
-  }
-  return byDirection.size > 0 ? Math.max(...byDirection.values()) : null;
+  return listLowEnd(features, 'all');
 }
 
 /**
- * The same per period, from headsignMinStopHeadwayByPeriod (the field the live card's headsignTrunkHeadway reads for a
- * period), kept only where better than the route's own period value in `periods`. Undefined when none is.
+ * The same per period, kept only where better than the route's own period value in `periods`. Undefined when none is.
  */
 export function routeTrunkHeadwayByPeriod(features: Props[], periods: HeadwayByPeriod | undefined): HeadwayByPeriod | undefined {
   if (!periods) return undefined;
   const out: Partial<Record<PeriodKey, number | null>> = {};
   for (const [k, value] of Object.entries(periods) as Array<[PeriodKey, number | null | undefined]>) {
     if (value == null) continue;
-    const t = routeTrunkHeadway(features.map(f => ({ directionId: f.directionId, minStopHeadway: (f.headsignMinStopHeadwayByPeriod as Record<string, unknown> | undefined)?.[k] })));
+    const t = listLowEnd(features, k);
     if (t != null && t < value) out[k] = t;
   }
   return Object.keys(out).length > 0 ? out : undefined;

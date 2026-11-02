@@ -140,6 +140,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **History draws each year on its [own lines](https://github.com/Civic-Minds/Atlas/issues/1028) with the map's filters**: pick "≤15 min" and a time and slide through the years
 - **History opens on the [city](https://github.com/Civic-Minds/Atlas/issues/1012) you're looking at and behaves like the map**: [Escape](https://github.com/Civic-Minds/Atlas/issues/1031) closes the panel, and the [map](https://github.com/Civic-Minds/Atlas/issues/1016) stays put while the slider moves
 - **History's panels, [lists](https://github.com/Civic-Minds/Atlas/issues/1015) and cards match the regular ones**: including [mode pills](https://github.com/Civic-Minds/Atlas/issues/1014), the report flag and the loading panel
+- **History and the route list show the [same range](https://github.com/Civic-Minds/Atlas/issues/1248) or none**: History had read the busiest stop (TTC 102 midday 11–30 beside the list's 20–30), and the list now follows History's rule for when a range shows, so TTC 102 PM reads every 30 in both
 
 ### Live
 
