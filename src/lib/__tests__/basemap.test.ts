@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { BASEMAP_ATTRIBUTION, basemapStyle, cartoTiles } from '../basemap';
+import { BASEMAP_ATTRIBUTION, basemapStyle, cartoTiles, showBasemapTheme } from '../basemap';
 
 describe('basemap tiles (CIV-980)', () => {
   it('loads CARTO tiles straight from CARTO with the public key in builds, never through /api', () => {
@@ -19,4 +19,11 @@ describe('basemap tiles (CIV-980)', () => {
     expect(tiles(basemapStyle(false, { labels: false })).map(t => t.match(/rastertiles\/(\w+)\//)?.[1] ?? t.match(/style=(\w+)/)?.[1])).toEqual(['light_nolabels', 'dark_nolabels']);
     expect(basemapStyle(false).layers.map(l => [l.id, (l.layout as { visibility: string }).visibility])).toEqual([['basemap-light', 'none'], ['basemap-dark', 'visible']]);
   });
+  it('shows the theme\'s basemap layer and hides the other, skipping a layer not added yet', () => {
+    const calls: [string, string][] = [];
+    const map = { getLayer: (id: string) => (id === 'basemap-dark' ? {} : undefined), setLayoutProperty: (id: string, _: string, v: string) => { calls.push([id, v]); } };
+    showBasemapTheme(map as never, false);
+    expect(calls).toEqual([['basemap-dark', 'visible']]);
+  });
 });
+
