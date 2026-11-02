@@ -3,7 +3,8 @@
  * like the area pages (shared/areaPages.ts) with the place swapped. Every number is added up from the per-agency
  * summaries; nothing new is measured.
  */
-import { formatIso, regionMembers, type AgencyPageSummary } from './agencyPages';
+import { agencyPlaces, formatIso, regionMembers, type AgencyPageSummary } from './agencyPages';
+import { countryForRegion } from './regionCountry';
 import { agencyGroupData, groupIntroParts, groupPageDescription, groupPageTitle, type AgencyGroupData } from './areaPages';
 import { REGION_PATH_PREFIX, regionPagePath, regionSlug } from './pagePaths';
 import { zoomForSpan } from './mapZoom';
@@ -39,15 +40,18 @@ export interface RegionPageData extends AgencyGroupData {
   bbox: [number, number, number, number] | null;
 }
 
-/** Every state or province with at least one listed agency, country then name; a slug shared by two places throws. */
+/** Every state or province with at least one listed agency (agencyPlaces, #1283), country then name; a slug shared by two places throws. */
 export function regionPages(all: readonly AgencyPageSummary[]): RegionRef[] {
   const seen = new Map<string, RegionRef>();
   for (const a of all) {
-    if (!a.country || !a.region) continue;
-    const slug = regionSlug(a.region);
-    const had = seen.get(slug);
-    if (had && (had.name !== a.region || had.country !== a.country)) throw new Error(`Two places share the region slug ${slug}: ${had.name}, ${had.country} and ${a.region}, ${a.country}`);
-    if (!had && regionMembers(a.country, a.region, all).length > 0) seen.set(slug, { slug, name: a.region, country: a.country });
+    for (const { name } of agencyPlaces(a).regions) {
+      const country = countryForRegion(name);
+      if (!country) continue;
+      const slug = regionSlug(name);
+      const had = seen.get(slug);
+      if (had && (had.name !== name || had.country !== country)) throw new Error(`Two places share the region slug ${slug}: ${had.name}, ${had.country} and ${name}, ${country}`);
+      if (!had && regionMembers(country, name, all).length > 0) seen.set(slug, { slug, name, country });
+    }
   }
   return [...seen.values()].sort((x, y) => x.country.localeCompare(y.country) || x.name.localeCompare(y.name));
 }

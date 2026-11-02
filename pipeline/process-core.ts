@@ -15,6 +15,8 @@ import { detectReferenceDate, getActiveServiceIds } from './transit-calendar.js'
 import { calendarFromNextServiceDates } from './serviceDates.js';
 import { readWeekOf } from './readWeek.js';
 import { dropOneOffRailTrips } from './oneOffServices.js';
+import { prefixGtfsIds } from './supplementalIds.js';
+import { mergeDirectionSplitRoutes } from './directionSplitRoutes.js';
 import { bookingRequiredRouteIds } from './bookedRoutes.js';
 import { DEFAULT_CRITERIA, getTiersForCriteria } from './defaults.js';
 import { normalizeGtfs, type GtfsPreprocess, type GtfsTransformOptions } from './preprocess/run.js';
@@ -476,6 +478,8 @@ export function hasNightServiceAtShapeEndpoints(
 
 export interface ProcessOptions extends GtfsTransformOptions {
   slug?: string;
+  /** Prefix for this feed's route, trip and shape ids (a supplemental feed's `supplementalIdPrefixes` entry). */
+  idPrefix?: string;
   /** CIV-1006: force a route's booking-required status by short name, over the pickup_type share rule. */
   bookingRequiredRoutes?: Record<string, boolean>;
   manualBaseFare?: number;
@@ -735,6 +739,8 @@ export async function processGtfsBuffer(
   options?: ProcessOptions,
 ): Promise<ProcessResult> {
   let gtfs = await parseGtfsZip(buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength) as ArrayBuffer, onStatus, { keepLongShapeJumps: options?.keepLongShapeJumps, skipClusteredJumpRepair: options?.skipClusteredJumpRepair, agencySlug: options?.slug });
+  // A supplemental feed whose ids would collide with the main feed's (NJ Transit rail): see supplementalIds.ts.
+  if (options?.idPrefix) gtfs = prefixGtfsIds(gtfs, options.idPrefix);
   gtfs = normalizeGtfs(gtfs, options, onStatus);
 
   const validation = validateGtfs(gtfs, options?.slug ?? 'feed');
@@ -750,6 +756,14 @@ export async function processGtfsBuffer(
     onStatus?.('  continuing despite validation errors (--force)');
   } else if (validation.warnings > 0) {
     onStatus?.(`Validation: ${validation.warnings} warning(s)`);
+  }
+
+  // #1285: a line the feed splits into one route per direction (BART "Yellow-S" and "Yellow-N") is
+  // one route with two directions. See directionSplitRoutes.ts.
+  const directionSplit = mergeDirectionSplitRoutes(gtfs);
+  if (directionSplit.merged.length > 0) {
+    gtfs = directionSplit.gtfs;
+    onStatus?.(`Direction-split routes merged: ${directionSplit.merged.map(m => `${m.base} (${m.keptRouteId} + ${m.mergedRouteId})`).join(', ')}`);
   }
 
   const routeBaseFares = computeRouteBaseFares(gtfs, options?.manualBaseFare);

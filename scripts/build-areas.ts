@@ -8,8 +8,8 @@
  *
  *   npx tsx scripts/build-areas.ts
  *
- * Merges (MERGED_AREAS) fold neighbouring official areas into the region people mean, with a
- * note shown on the page. A one-agency area earns a page only if it is in large-metros.json.
+ * Merges (MERGED_AREAS) fold neighbouring official areas into the region people mean, with an
+ * optional note shown on the page. A one-agency area earns a page only if it is in large-metros.json.
  */
 import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { countryForRegion } from '../shared/regionCountry';
@@ -173,7 +173,7 @@ async function main() {
       largeMetro: false,
       agencies: g.agencies.sort(),
       page: false,
-      ...(merge ? { note: merge.note } : {}),
+      ...(merge?.note ? { note: merge.note } : {}),
     });
   }
 

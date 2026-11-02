@@ -68,6 +68,14 @@ describe('FrequentServiceStory', () => {
     expect(container).not.toHaveTextContent('Review boundary');
   });
 
+  it('credits the share picture shelter photo in Sources (CIV-1259)', () => {
+    render(<FrequentServiceStory agencies={agencies} onExploreMap={vi.fn()} />);
+    const method = screen.getByRole('heading', { name: 'How we did this' }).closest('section')!;
+    expect(method).toHaveTextContent('Shelter photo: Dillan Payne, CC BY-SA 4.0');
+    expect(screen.getByRole('link', { name: 'Dillan Payne' })).toHaveAttribute('href', 'https://commons.wikimedia.org/wiki/File:TTC_Bus_Stop_on_Port_Union_Road,_April_30_2026.jpg');
+    expect(screen.getByRole('link', { name: 'CC BY-SA 4.0' })).toHaveAttribute('href', 'https://creativecommons.org/licenses/by-sa/4.0/');
+  });
+
   it('offers the chart as a table', () => {
     render(<FrequentServiceStory agencies={agencies} onExploreMap={() => {}} />);
     expect(screen.getByText('Show as a table')).toBeInTheDocument();

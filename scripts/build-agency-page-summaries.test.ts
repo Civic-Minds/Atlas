@@ -155,6 +155,14 @@ describe('summarize: areas per route (CIV-274)', () => {
   it('leaves areas out without boundaries', () => {
     expect(summarize([line('66', 0, 30)] as any, 'x', null).routes[0].areas).toBeUndefined();
   });
+  it('tags states and provinces by the same rule (#1283)', () => {
+    const states = { Ohio: boundaries.metro, Indiana: { bbox: [0, 10, 10, 20] as [number, number, number, number], polygons: [[[[10, 0], [20, 0], [20, 10], [10, 10], [10, 0]] as Array<[number, number]>]] } };
+    const s = summarize([
+      line('66', 0, 30), stop('a', 1, 1, ['66']), stop('b', 2, 2, ['66']), stop('c', 12, 5, ['66']), stop('d', 15, 5, ['66']),
+    ] as any, 'x', null, undefined, states);
+    expect(s.routes[0].regions).toEqual(['Indiana', 'Ohio']);
+    expect(s.routes[0].areas).toBeUndefined();
+  });
 });
 
 describe('release cache (CIV-315)', () => {

@@ -2,8 +2,7 @@
  * The /agencies index: every area and agency page in one place. Built from the same summaries as the pages
  * themselves; nothing new is measured.
  */
-import { agencyMention, agencyPagePath, agencyTitle, regionPageHref, sharedOfficialNames, type AgencyPageSummary } from './agencyPages';
-import { areaAgencySummaries } from './areaPages';
+import { agencyMention, agencyPagePath, agencyTitle, areaPageStatus, regionPageHref, sharedOfficialNames, type AgencyPageSummary } from './agencyPages';
 import { areaRegionTitle, areaShortName } from './areaRegions';
 import { areaPagePath, areaSlug, type AreaConfig } from './areas';
 import { SITE_URL, seoTitlePrefix, type SeoMode } from './seo';
@@ -45,15 +44,15 @@ export interface AgencyIndexData {
 
 const OTHER = 'Other';
 
-/** Areas with a page and at least one agency page, region names A to Z; agencies grouped by country, then region. */
+/** Areas with a page (areaPageStatus: at least two agencies), region names A to Z; agencies grouped by country, then region. */
 export function buildAgencyIndexData(
   agencies: readonly AgencyPageSummary[],
   areas: readonly Pick<AreaConfig, 'slug' | 'name' | 'agencies' | 'page'>[],
   releaseDate: string | null,
 ): AgencyIndexData {
-  const bySlug = new Map(agencies.map(a => [a.slug, a]));
+  const { pages } = areaPageStatus(agencies, areas);
   const areaList = areas
-    .filter(a => a.page && areaAgencySummaries(a, bySlug).length > 0)
+    .filter(a => pages.has(a.slug))
     .map(a => ({ slug: a.slug, title: areaRegionTitle(a), shortName: areaShortName(a) }))
     .sort((x, y) => compareText(x.shortName, y.shortName));
   const tree = new Map<string, Map<string, AgencyIndexAgency[]>>();
