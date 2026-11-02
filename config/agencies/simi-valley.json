@@ -22,12 +22,13 @@
     "Canoga Park, California"
   ],
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-40/latest.zip",
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20301231",
   "timezone": "America/Los_Angeles",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "http://data.trilliumtransit.com/gtfs/simivalley-ca-us/simivalley-ca-us.zip",
-  "lastPeekedExpiry": "20301231"
+  "lastPeekedExpiry": "20301231",
+  "refusedFeedSha256": "de9acc2868c1345f000a4cbc71ffe7e0fc8228fbcdae0e9a42817268f2265dfa"
 }

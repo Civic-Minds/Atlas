@@ -8,10 +8,10 @@
     -117.75
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-101/latest.zip",
-  "lastFeedExpiry": "20261031",
-  "lastFeedVersion": "20260717",
+  "lastFeedExpiry": "20270710",
+  "lastFeedVersion": "20261030",
   "region": "California",
-  "lastRefreshedAt": "2026-10-12",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "West Covina, California",
     "Pomona, California",
@@ -24,10 +24,10 @@
     "Los Angeles, California",
     "Upland, California"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261031",
+  "expiredFeedCheckExpiry": "20270710",
   "timezone": "America/Los_Angeles",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-101/latest.zip",
@@ -43,18 +43,20 @@
       "shapeAnomalies": 1,
       "routeHeadwayMismatches": 2,
       "featureCount": 186,
-      "feedExpiry": "20261031",
+      "feedExpiry": "20270710",
       "routeCount": 36,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
       "mismatchRoutes": 1,
       "resumesOn": null
     },
-    "checkedAt": "2026-10-31"
+    "checkedAt": "2026-11-02"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
-  "lastPeekedExpiry": "20261031"
+  "lastPeekedExpiry": "20270710",
+  "lastServiceWeek": "3263690b9d3cc1a5",
+  "feedObtainedAt": "20261101"
 }
