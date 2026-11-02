@@ -4,7 +4,7 @@ import { agencyPageData, agencyPagePath, agencyPlaces, resolveAgencySeo, type Ag
 import { agencyPageSummaries } from './agencyPagesData';
 import { buildAgencyIndexData } from './agencyIndex';
 import { AREA_INDEX } from './areaIndex';
-import { areaMapHref, buildAreaPageData } from './areaPages';
+import { areaAgencyRowHref, areaMapHref, buildAreaPageData } from './areaPages';
 import { buildRegionPageData, regionPages } from './regionPages';
 import type { AreaConfig } from './areas';
 import { parentAgencyPagePath } from './pagePaths';
@@ -114,6 +114,9 @@ describe('area and state pages show a parent once (Ryan, 2026-11-02)', () => {
   it('links exo\'s parent row to /agency/exo, not the trains page, and keeps every member on the map link', () => {
     const exo = area('montreal').agencies.find(a => a.title === 'exo')!;
     expect(exo.href).toBe('/agency/exo');
+    // The page builds its links from slugs, never from the embedded JSON's href text (CodeQL js/xss-through-dom).
+    expect(areaAgencyRowHref(exo)).toBe('/agency/exo');
+    expect(areaAgencyRowHref({ slug: 'exo' })).toBe('/agency/exo-trains');
     // The map link opens the area's listed agencies plus every counted one: all of exo's counted services are on it.
     const params = new URL(areaMapHref(area('montreal')), 'http://x').searchParams;
     const onMap = new Set([...AREA_INDEX.montreal.agencies, ...(params.get('agencies')?.split(',') ?? [])]);

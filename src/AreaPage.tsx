@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import {
+  areaAgencyRowHref,
   AREA_BAR_NOTE,
   AREA_DATA_SCRIPT_ID,
   areaDatesText,
@@ -72,7 +73,7 @@ export default function AreaPage({ data: dataProp }: { data?: AreaPageData }) {
           </div>
           <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--text-muted)]">
             {intro.lead}{joiners.opener}
-            {intro.named.map((a, i) => <span key={a.slug}><a className={UNDERLINED_LINK} href={a.href}>{areaIntroName(data, a)}</a>{joiners.separators[i]}</span>)}
+            {intro.named.map((a, i) => <span key={a.slug}><a className={UNDERLINED_LINK} href={areaAgencyRowHref(a)}>{areaIntroName(data, a)}</a>{joiners.separators[i]}</span>)}
             {joiners.tail}
           </p>
           {data.area.note && <p className="mt-3 max-w-2xl text-sm text-[var(--text-muted)]">{data.area.note}</p>}
