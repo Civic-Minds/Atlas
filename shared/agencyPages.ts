@@ -166,6 +166,8 @@ export function connectionNames<T>(connections: readonly T[], named = 3): { name
 
 /** The literal the intro sentence puts before the connecting agencies (the page splits on it to link the names). */
 export const CONNECTS_WITH = ' and connects with ';
+/** The literal before a member's parent agency in its intro (CIV-1277); the page splits on it to link the parent. */
+export const PART_OF = ', part of ';
 
 /** "A", "A and B", "A, B and C", "A, B, C and 4 other agencies": the first three named, the rest counted (#1283: places count "other regions"). */
 export function namesList(names: readonly string[], named = 3, singular = 'agency', pluralForm = 'agencies'): string {
@@ -250,10 +252,12 @@ export function agencyIntroSentence(
   connections: ReadonlyArray<{ name: string }> = [],
   modes: ReadonlyArray<{ label: string; routes: number }> = [],
   title: string = agencyTitle(a),
+  /** CIV-1277: the member's parent agency, named after it ("MTA NYCT Subway, part of MTA New York, operates …"). */
+  parentName?: string,
 ): string {
   const n = a.routes.length;
   if (n === 0) return `${title} has no weekday routes in the data.`;
-  let s = `${introLead(a, place, modes, title)}${place}`;
+  let s = `${introLead(a, place, modes, title, parentName)}${place}`;
   if (a.stops) s += ` with ${a.stops.toLocaleString('en-US')} ${plural(a.stops, 'stop')}`;
   if (connections.length) s += `${CONNECTS_WITH}${namesList(connections.map(c => c.name))}`;
   return `${s}.`;
@@ -315,9 +319,11 @@ export function introLead(
   place: string,
   modes: ReadonlyArray<{ label: string; routes: number }> = [],
   title: string = agencyTitle(a),
+  parentName?: string,
 ): string {
   const n = a.routes.length;
-  return `${title} operates ${n.toLocaleString('en-US')} ${plural(n, 'route')}${modes.length > 1 ? ` (${modesText(modes, ', ')})` : ''} in `;
+  // Ryan (2026-11-02): "{Member name}, part of {Parent name}, operates N routes in …".
+  return `${title}${parentName ? `${PART_OF}${parentName},` : ''} operates ${n.toLocaleString('en-US')} ${plural(n, 'route')}${modes.length > 1 ? ` (${modesText(modes, ', ')})` : ''} in `;
 }
 
 /** The prerendered HTML carries its data in <script type="application/json" id=...>. */
@@ -351,15 +357,15 @@ export function agencyPageData(
   const areaRef = area ? { slug: area.slug, name: area.name, page: areaPaged } : undefined;
   const { connections: _drop, ...agency } = a;
   const modes = agencyStats(a).byMode.map(m => ({ label: m.label, routes: m.routes.length }));
-  const intro = agencyIntroSentence(a, place, connections, modes, title);
+  const parent = group ? undefined : parentAgency(a.parentAgency);
+  const intro = agencyIntroSentence(a, place, connections, modes, title, parent?.name);
   // The same sentence with registry names sizes the search description, so it keeps what it kept before (#1245).
   const registryName = new Map(all.map(o => [o.slug, o.name]));
-  const sizedBy = agencyIntroSentence(a, place, connections.map(c => ({ ...c, name: registryName.get(c.slug) ?? c.name })), modes, sizingName(a.name, place));
+  const sizedBy = agencyIntroSentence(a, place, connections.map(c => ({ ...c, name: registryName.get(c.slug) ?? c.name })), modes, sizingName(a.name, place), parent?.name);
   const regionPage = regionPageHref(a, all);
-  const parent = group ? undefined : parentAgency(a.parentAgency);
   const path = group ? parentAgencyPagePath(a.slug) : agencyPagePath(a.slug);
   const mapHref = agencyMapHref(a, group ? group.members.map(m => m.slug) : [a.slug]);
-  return { agency, path, mapHref, ...(parent ? { parent: { name: parent.name, path: parentAgencyPagePath(parent.slug) } } : {}), title, releaseDate, ...(areaRef ? { area: areaRef } : {}), ...(regionPage ? { regionPage } : {}), nearby: others.map(o => ({ slug: o.slug, name: titleOf.get(o.slug) ?? agencyTitle(o) })), intro, description: agencyPageDescription(a, intro, sizedBy, { full: place, short: introPlace.short }), place, places: { named: introPlace.named, others: introPlace.others }, introLead: introLead(a, place, modes, title), connections };
+  return { agency, path, mapHref, ...(parent ? { parent: { name: parent.name, path: parentAgencyPagePath(parent.slug) } } : {}), title, releaseDate, ...(areaRef ? { area: areaRef } : {}), ...(regionPage ? { regionPage } : {}), nearby: others.map(o => ({ slug: o.slug, name: titleOf.get(o.slug) ?? agencyTitle(o) })), intro, description: agencyPageDescription(a, intro, sizedBy, { full: place, short: introPlace.short }), place, places: { named: introPlace.named, others: introPlace.others }, introLead: introLead(a, place, modes, title, parent?.name), connections };
 }
 
 const MAX_AREA_LIST = 12;

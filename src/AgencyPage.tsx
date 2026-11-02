@@ -14,6 +14,7 @@ import {
   CONNECTS_WITH,
   NO_MIDDAY_PHRASE,
   connectionNames,
+  PART_OF,
   PLACE_OTHERS,
   type AgencyPageData,
   type AgencyPageRoute,
@@ -78,9 +79,14 @@ function Intro({ data }: { data: AgencyPageData }) {
   const at = intro.indexOf(CONNECTS_WITH, placeAt);
   const { named, others } = connectionNames(connections);
   const between = intro.slice(placeAt + place.length, at < 0 ? intro.length - 1 : at);
+  // CIV-1277 (Ryan, 2026-11-02): a member's parent sits in the sentence, linked: "MTA NYCT Subway, part of MTA New York, operates …".
+  const parentAt = data.parent ? introLead.indexOf(`${PART_OF}${data.parent.name},`) : -1;
+  const lead = data.parent && parentAt >= 0
+    ? <>{introLead.slice(0, parentAt)}{PART_OF}<a className={UNDERLINED_LINK} href={data.parent.path}>{data.parent.name}</a>{introLead.slice(parentAt + PART_OF.length + data.parent.name.length)}</>
+    : introLead;
   return (
     <p className={sentence}>
-      {introLead}
+      {lead}
       <LinkedNames items={places.named} others={places.others} counted={PLACE_OTHERS} />
       {between}
       {at >= 0 && named.length > 0 && (
@@ -156,8 +162,6 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
                 // An area with too few agencies for a page is named without a link (Ryan, 2026-11-01).
                 : data!.area ? <p className="mt-1 text-sm text-[var(--text-muted)]">{areaRegionTitle(data!.area)}</p>
                 : agency.city && <p className="mt-1 text-sm text-[var(--text-muted)]">{agency.city}</p>}
-              {/* CIV-1277 (Ryan, 2026-11-02): "Part of MTA New York →" on each member's page. */}
-              {data!.parent && <p className="mt-1"><ArrowLink tone="inline" href={data!.parent.path}>Part of {data!.parent.name}</ArrowLink></p>}
             </div>
             <ArrowLink href={data!.mapHref ?? agencyMapHref(agency)}>View on map</ArrowLink>
           </div>

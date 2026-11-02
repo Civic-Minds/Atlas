@@ -353,9 +353,19 @@ describe('parent agency pages (CIV-1277)', () => {
     expect(trains).toBeTruthy();
   });
 
-  it('links a member up to its parent: "Part of MTA New York"', () => {
-    view(<AgencyPage data={agencyPageData(all.find(a => a.slug === 'lirr')!, all, null)} />);
-    expect(screen.getByRole('link', { name: /^Part of MTA New York/ }).getAttribute('href')).toBe('/agency/mta-new-york');
+  it('names a member\'s parent in its intro, linked (Ryan, 2026-11-02): "MTA NYCT Subway, part of MTA New York, operates …"', () => {
+    const d = agencyPageData(all.find(a => a.slug === 'nyct-subway')!, all, null);
+    expect(d.intro).toMatch(/^MTA NYCT Subway, part of MTA New York, operates \d+ routes /);
+    expect(d.description).toMatch(/^MTA NYCT Subway, part of MTA New York, operates /);
+    view(<AgencyPage data={d} />);
+    const p = screen.getByText((_, el) => el?.tagName === 'P' && (el.textContent ?? '').startsWith('MTA NYCT Subway, part of'));
+    expect(p.textContent).toBe(d.intro);
+    expect(within(p).getByRole('link', { name: 'MTA New York' }).getAttribute('href')).toBe('/agency/mta-new-york');
+    expect(screen.queryByText(/^Part of /)).toBeNull();
     expect(screen.queryByRole('heading', { name: 'Services' })).toBeNull();
+  });
+
+  it('leaves the intro of an agency with no parent as it was', () => {
+    expect(agencyPageData(all.find(a => a.slug === 'guelph')!, all, null).intro).toMatch(/^Guelph Transit operates /);
   });
 });
