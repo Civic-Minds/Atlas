@@ -1068,6 +1068,15 @@ describe('CIV-1248: a period the route covers only part of reads its slowest str
       expect(p.directionFilterHeadwayByPeriod.amPeak).toBeNull();
     }
   });
+  it('TTC 952 weekday midday to Pearson: only the branch runs into midday, until 9:42 every 12; no filter value (D8)', async () => {
+    const rows = (await run('ttc-952-weekday')).rows.filter(p => p.routeShortName === '952' && p.day === 'Weekday' && p.directionId === 1) as Record<string, any>[];
+    expect(rows.length).toBeGreaterThan(0);
+    for (const p of rows) {
+      expect(p.stretchPeriodEdge.midday).toEqual({ until: 582, every: 12, stretch: 0 });
+      expect(p.directionFilterHeadwayByPeriod.midday).toBeNull();
+      expect(p.routeFilterHeadwayByPeriod.midday).toBeNull();
+    }
+  });
 });
 
 describe('CIV-1251: each stretch carries its own late start or early end', () => {

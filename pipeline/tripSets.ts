@@ -33,6 +33,7 @@ import {
   medianHeadwayInWindow,
   hasSustainedServiceInWindow,
   headlineDeparturesInWindow,
+  HEADLINE_MIN_DEPARTURES,
   nightServiceDepartureTimes,
 } from './headway-utils.js';
 import { SHARED_STRETCH_MIN_KM, SHARED_STRETCH_MIN_STOPS } from './sharedStretch.js';
@@ -935,13 +936,13 @@ export interface StretchPeriodEdge {
 export function periodEdge(stretchTimes: readonly number[], start: number, end: number, value: number | null): StretchPeriodEdge | null {
   if (value == null) return null;
   const t = [...new Set(forCrossMidnightWindow([...stretchTimes], end))].filter(x => x >= start && x < end).sort((a, b) => a - b);
-  if (t.length < 3) return null;
+  if (t.length < HEADLINE_MIN_DEPARTURES) return null;
   const gaps = t.slice(1).map((x, i) => x - t[i]);
   const lead = t[0] - start;
   const trail = end - t[t.length - 1];
   const inner = Math.max(...gaps);
   if (Math.ceil(Math.max(lead, trail, inner)) !== value || inner >= value) return null;
-  const every = medianHeadwayInWindow(t, start, end, 3, true);
+  const every = medianHeadwayInWindow(t, start, end, HEADLINE_MIN_DEPARTURES, true);
   if (every == null || every <= 0 || !isSustainedHeadway(gaps, every)) return null;
   // The wait is rounded up to whole minutes; frequencies.txt spacing can leave fractional times.
   const fromEdge = Math.ceil(lead) === value, untilEdge = Math.ceil(trail) === value;
@@ -956,13 +957,13 @@ export function periodEdge(stretchTimes: readonly number[], start: number, end: 
  */
 export function periodPartialEdge(stretchTimes: readonly number[], start: number, end: number): StretchPeriodEdge | null {
   const t = [...new Set(forCrossMidnightWindow([...stretchTimes], end))].filter(x => x >= start && x < end).sort((a, b) => a - b);
-  if (t.length < 3) return null;
+  if (t.length < HEADLINE_MIN_DEPARTURES) return null;
   const mid = (start + end) / 2;
   const after = t[0] >= mid;
   const before = t[t.length - 1] < mid;
   if (!after && !before) return null;
   const gaps = t.slice(1).map((x, i) => x - t[i]);
-  const every = medianHeadwayInWindow(t, start, end, 3, true);
+  const every = medianHeadwayInWindow(t, start, end, HEADLINE_MIN_DEPARTURES, true);
   if (every == null || every <= 0 || !isSustainedHeadway(gaps, every)) return null;
   return after ? { from: t[0], every } : { until: t[t.length - 1], every };
 }
