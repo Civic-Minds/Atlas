@@ -64,7 +64,6 @@ describe('FrequentServiceStory', () => {
       { minutes: 20, agencies: 5, agenciesOct11: 8 },
       { minutes: 25, agencies: 1, agenciesOct11: 1 },
       { minutes: 30, agencies: 9, agenciesOct11: 9 },
-      { minutes: 60, agencies: 0, agenciesOct11: 0 },
     ]);
     expect(frequentServiceStoryStats.headwayBars.reduce((sum, bar) => sum + bar.agencies, 0)).toBe(59);
   });

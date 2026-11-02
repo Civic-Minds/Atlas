@@ -1,4 +1,5 @@
 import type { Key, ReactNode } from 'react';
+import { withCount } from './chartCategories';
 import { ACTIVE_BG, CHART_COUNT, CHART_TEXT, FADED_OPACITY, useActivePart } from './useActivePart';
 
 /** One bar of a research bar chart: its name, its count and its fill. */
@@ -17,7 +18,7 @@ export interface RankedBar {
  * bar the split bar's way (useActivePart): hovering, focusing or tapping a row fades the other bars and highlights its name,
  * and the names and counts use the split bar legend's text (CategorySpark, SplitBar).
  */
-export default function RankedBars({ bars, max, label, details, defaultKey = null }: {
+export default function RankedBars({ bars: allBars, max, label, details, defaultKey = null, keepEmpty = false }: {
   bars: readonly RankedBar[];
   /** The value a full-width bar stands for (shared when two charts sit on one scale). */
   max: number;
@@ -27,7 +28,10 @@ export default function RankedBars({ bars, max, label, details, defaultKey = nul
   details?: string;
   /** The bar highlighted while nothing is hovered, focused or tapped. */
   defaultKey?: Key | null;
+  /** Keep bars with no count (chartCategories: only where the empty bar is the point). */
+  keepEmpty?: boolean;
 }) {
+  const bars = withCount(allBars, keepEmpty);
   const { active, clear, faded, partEvents } = useActivePart(defaultKey);
   return (
     <div role="group" aria-label={label} aria-details={details} className="space-y-3 select-none" onMouseLeave={clear}>

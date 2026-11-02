@@ -1,5 +1,6 @@
 import type { Key, ReactNode } from 'react';
 import LegendItem from '../ui/LegendItem';
+import { withCount } from './chartCategories';
 import { ACTIVE_BG, CHART_TEXT, FADED_OPACITY, useActivePart } from './useActivePart';
 
 /** One part of a split bar: its count, fill, a sentence for screen readers and its legend words. */
@@ -27,7 +28,7 @@ export default function SplitBar({ segments, label, trailing }: {
   trailing?: ReactNode;
 }) {
   const { active, clear, faded, partEvents } = useActivePart();
-  const shown = segments.filter(s => s.value > 0);
+  const shown = withCount(segments);
   if (shown.length === 0) return null;
   return (
     <div className="mt-5">
