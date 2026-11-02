@@ -156,8 +156,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-02",
-        "scoredAt": "2026-11-02"
+        "checkedAt": "2026-11-02"
       },
       "lastPeekedExpiry": "20261230"
     },
@@ -396,8 +395,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-02",
-        "scoredAt": "2026-11-02"
+        "checkedAt": "2026-11-02"
       },
       "lastPeekedExpiry": "20261230"
     },
@@ -1740,8 +1738,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-02",
-        "scoredAt": "2026-11-02"
+        "checkedAt": "2026-11-02"
       },
       "lastFeedCheckAt": "20261102",
       "expiredFeedCheckCount": 0,
@@ -1938,8 +1935,7 @@
           "mismatchRoutes": 5,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-02",
-        "scoredAt": "2026-11-02"
+        "checkedAt": "2026-11-02"
       },
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://www.yrt.ca/google/google_transit.zip",
@@ -2326,8 +2322,7 @@
           "mismatchRoutes": 2,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-02",
-        "scoredAt": "2026-11-02"
+        "checkedAt": "2026-11-02"
       },
       "timezone": "America/Montreal",
       "feedRefreshStatus": "current",
@@ -4318,8 +4313,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-02",
-        "scoredAt": "2026-11-02"
+        "checkedAt": "2026-11-02"
       },
       "modeOverrides": [
         {
@@ -5868,8 +5862,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-02",
-        "scoredAt": "2026-11-02"
+        "checkedAt": "2026-11-02"
       },
       "timezone": "America/Vancouver",
       "lastFeedSourceKind": "configured",
@@ -6343,7 +6336,7 @@
           "validationWarnings": 0,
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 0,
-          "featureCount": 799,
+          "featureCount": 803,
           "feedExpiry": "20271231",
           "routeCount": 142,
           "problemShapes": 0,
@@ -7945,8 +7938,7 @@
           "mismatchRoutes": 1,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-02",
-        "scoredAt": "2026-11-02"
+        "checkedAt": "2026-11-02"
       },
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://cherriots.rideralerts.com/InfoPoint/gtfs-zip.ashx",
@@ -8536,9 +8528,9 @@
           "validationWarnings": 0,
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 0,
-          "featureCount": 44,
+          "featureCount": 41,
           "feedExpiry": "20270110",
-          "routeCount": 12,
+          "routeCount": 6,
           "problemShapes": 0,
           "problemShapeRoutes": 0,
           "mismatchRoutes": 0,
@@ -9390,8 +9382,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-02",
-        "scoredAt": "2026-11-02"
+        "checkedAt": "2026-11-02"
       },
       "timezone": "America/Los_Angeles",
       "feedRefreshStatus": "current",
@@ -9843,8 +9834,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-02",
-        "scoredAt": "2026-11-02"
+        "checkedAt": "2026-11-02"
       }
     },
     {
@@ -10176,8 +10166,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-02",
-        "scoredAt": "2026-11-02"
+        "checkedAt": "2026-11-02"
       },
       "timezone": "America/Los_Angeles",
       "lastFeedSourceKind": "configured",
@@ -11678,8 +11667,7 @@
           "mismatchRoutes": 1,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-02",
-        "scoredAt": "2026-11-02"
+        "checkedAt": "2026-11-02"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -12476,7 +12464,7 @@
           "routeHeadwayMismatches": 0,
           "featureCount": 48,
           "feedExpiry": "20271231",
-          "routeCount": 18,
+          "routeCount": 17,
           "problemShapes": 0,
           "problemShapeRoutes": 0,
           "mismatchRoutes": 0,
@@ -12824,8 +12812,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-02",
-        "scoredAt": "2026-11-02"
+        "checkedAt": "2026-11-02"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -13040,8 +13027,7 @@
           "mismatchRoutes": 2,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-02",
-        "scoredAt": "2026-11-02"
+        "checkedAt": "2026-11-02"
       },
       "timezone": "America/Denver",
       "feedRefreshStatus": "current",
@@ -13634,8 +13620,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-02",
-        "scoredAt": "2026-11-02"
+        "checkedAt": "2026-11-02"
       },
       "lastPeekedExpiry": "20261231"
     },
@@ -14276,7 +14261,7 @@
           "routeHeadwayMismatches": 0,
           "featureCount": 225,
           "feedExpiry": "20271231",
-          "routeCount": 65,
+          "routeCount": 51,
           "problemShapes": 0,
           "problemShapeRoutes": 0,
           "mismatchRoutes": 0,
@@ -15148,8 +15133,7 @@
           "mismatchRoutes": 1,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-02",
-        "scoredAt": "2026-11-02"
+        "checkedAt": "2026-11-02"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -15898,7 +15882,7 @@
           "validationWarnings": 1,
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 0,
-          "featureCount": 13,
+          "featureCount": 14,
           "feedExpiry": "20261231",
           "routeCount": 3,
           "problemShapes": 0,
@@ -16251,8 +16235,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-02",
-        "scoredAt": "2026-11-02"
+        "checkedAt": "2026-11-02"
       },
       "timezone": "America/New_York",
       "lastFeedSourceKind": "configured",
@@ -17598,8 +17581,7 @@
           "mismatchRoutes": 1,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-02",
-        "scoredAt": "2026-11-02"
+        "checkedAt": "2026-11-02"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -20802,8 +20784,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-02",
-        "scoredAt": "2026-11-02"
+        "checkedAt": "2026-11-02"
       },
       "lastPeekedExpiry": "20261231"
     },
@@ -21283,8 +21264,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-02",
-        "scoredAt": "2026-11-02"
+        "checkedAt": "2026-11-02"
       }
     },
     {
@@ -22482,8 +22462,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-02",
-        "scoredAt": "2026-11-02"
+        "checkedAt": "2026-11-02"
       }
     },
     {
@@ -22765,7 +22744,7 @@
           "validationWarnings": 0,
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 0,
-          "featureCount": 32,
+          "featureCount": 33,
           "feedExpiry": "20271231",
           "routeCount": 13,
           "problemShapes": 0,
@@ -25200,8 +25179,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-02",
-        "scoredAt": "2026-11-02"
+        "checkedAt": "2026-11-02"
       },
       "timezone": "America/New_York",
       "lastFeedSourceKind": "configured",
@@ -25407,19 +25385,19 @@
       "lastPeekedExpiry": "20271231",
       "feedQuality": {
         "status": "review",
-        "score": 85,
+        "score": 64,
         "reasons": [
-          "1 minor schedule issue found while reading the feed.",
+          "3 minor schedule issues found while reading the feed.",
           "1 route has stops whose frequency differs from the overall route schedule."
         ],
         "metrics": {
           "validationErrors": 0,
-          "validationWarnings": 1,
+          "validationWarnings": 3,
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 1,
-          "featureCount": 40,
+          "featureCount": 38,
           "feedExpiry": "20271231",
-          "routeCount": 20,
+          "routeCount": 18,
           "problemShapes": 0,
           "problemShapeRoutes": 0,
           "mismatchRoutes": 1,
@@ -26050,8 +26028,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-02",
-        "scoredAt": "2026-11-02"
+        "checkedAt": "2026-11-02"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -26409,8 +26386,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-02",
-        "scoredAt": "2026-11-02"
+        "checkedAt": "2026-11-02"
       },
       "timezone": "America/New_York",
       "feedRefreshStatus": "current",
@@ -26942,7 +26918,8 @@
       "lastFeedSourceUrl": "https://www.bt4uclassic.org/gtfs/google_transit.zip",
       "lastPeekedExpiry": "20261230",
       "lastServiceWeek": "bead9e6a3c66adc7",
-      "feedObtainedAt": "20261102"
+      "feedObtainedAt": "20261102",
+      "listingEndedOn": "20261030"
     },
     {
       "slug": "cata-state-college",
@@ -27165,8 +27142,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-02",
-        "scoredAt": "2026-11-02"
+        "checkedAt": "2026-11-02"
       },
       "timezone": "America/Chicago",
       "feedRefreshStatus": "current",
@@ -27531,8 +27507,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-02",
-        "scoredAt": "2026-11-02"
+        "checkedAt": "2026-11-02"
       },
       "refusedFeedSha256": "5ac914e2c947cbc1b5a331666352295fc54d1d193454d7f0d6d610eca53a6d6e"
     },
@@ -27803,7 +27778,7 @@
           "validationWarnings": 1,
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 0,
-          "featureCount": 24,
+          "featureCount": 23,
           "feedExpiry": "20271231",
           "routeCount": 11,
           "problemShapes": 0,
@@ -28352,8 +28327,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-02",
-        "scoredAt": "2026-11-02"
+        "checkedAt": "2026-11-02"
       },
       "timezone": "America/Denver",
       "lastFeedSourceKind": "configured",
@@ -29401,8 +29375,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-02",
-        "scoredAt": "2026-11-02"
+        "checkedAt": "2026-11-02"
       }
     },
     {
@@ -30268,8 +30241,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-02",
-        "scoredAt": "2026-11-02"
+        "checkedAt": "2026-11-02"
       },
       "timezone": "America/Los_Angeles",
       "feedRefreshStatus": "current",
@@ -30892,7 +30864,7 @@
       ],
       "feedUrl": "https://metro.kingcounty.gov/GTFS/google_transit.zip",
       "agencyId": "23",
-      "lastFeedExpiry": "20271231",
+      "lastFeedExpiry": "20270326",
       "lastFeedVersion": "FAL26-161.5",
       "lastRefreshedAt": "2026-11-02",
       "lastFeedCheckAt": "20261102",
@@ -30925,7 +30897,7 @@
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://metro.kingcounty.gov/GTFS/google_transit.zip",
-      "lastPeekedExpiry": "20271231",
+      "lastPeekedExpiry": "20270326",
       "lastServiceWeek": "519eb4a14554b073",
       "feedObtainedAt": "20261102"
     },
@@ -34730,8 +34702,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-02",
-        "scoredAt": "2026-11-02"
+        "checkedAt": "2026-11-02"
       },
       "lastFeedExpiry": "20261106",
       "lastFeedVersion": "20260713",
@@ -35090,8 +35061,7 @@
           "mismatchRoutes": 0,
           "resumesOn": "20261123"
         },
-        "checkedAt": "2026-11-02",
-        "scoredAt": "2026-11-02"
+        "checkedAt": "2026-11-02"
       },
       "lastFeedCheckAt": "20261102",
       "expiredFeedCheckCount": 0,
@@ -35149,8 +35119,7 @@
           "mismatchRoutes": 0,
           "resumesOn": "20261120"
         },
-        "checkedAt": "2026-11-02",
-        "scoredAt": "2026-11-02"
+        "checkedAt": "2026-11-02"
       },
       "lastFeedCheckAt": "20261102",
       "expiredFeedCheckCount": 0,
@@ -35414,7 +35383,7 @@
         -106.0384
       ],
       "feedUrl": "https://mybreckfreeride.com/gtfs",
-      "lastFeedExpiry": "20281102",
+      "lastFeedExpiry": "20261113",
       "lastFeedVersion": "111-Resort.Winter25/26.1,103-Summer 2026.8,124-UWM Summer 26",
       "lastRefreshedAt": "2026-11-02",
       "cities": [
@@ -35450,7 +35419,7 @@
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://mybreckfreeride.com/gtfs",
-      "lastPeekedExpiry": "20991231",
+      "lastPeekedExpiry": "20261113",
       "lastServiceWeek": "cd7d5ba8b00cfe66",
       "feedObtainedAt": "20261102"
     },
