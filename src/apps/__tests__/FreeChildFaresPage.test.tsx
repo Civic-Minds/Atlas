@@ -14,17 +14,17 @@ describe('Free child fares (CIV-1149)', () => {
     expect(screen.queryByRole('heading', { name: 'Other policies' })).toBeNull();
     expect(screen.getAllByText('Up to 5').length).toBeGreaterThan(0);
     expect(screen.getAllByText('Not found').length).toBeGreaterThan(0);
-    // #1290: the note under the charts moved into How we did this, so this sentence is there once.
+    // #1290: the note under the charts moved into Method, so this sentence is there once.
     expect(screen.getAllByText(/We couldn't find a current official rule for 34 agencies\./)).toHaveLength(1);
     expect(screen.getByText(/Free fares up to 17 or 18 are usually youth programs\./).closest('[data-research-method]')).not.toBeNull();
     expect(screen.queryByText(/Each agency appears once/)).toBeNull();
     expect(screen.getAllByText('Show as a table')).toHaveLength(1);
   });
 
-  it('opens with the approved blurb and ends with How we did this, Canada and US numbers', () => {
+  it('opens with the approved blurb and ends with Method, Canada and US numbers', () => {
     const { container } = render(<FreeChildFaresPage />);
     expect(screen.getByText('We read the official fare rules of 553 transit agencies in Canada and the United States to find up to what age children ride free, and under what conditions.')).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'How we did this' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Method' })).toBeInTheDocument();
     expect([...container.querySelectorAll('[data-research-method] strong')].map(el => el.textContent)).toEqual(['Date conducted:', 'Sample:', 'Sources:', 'What counted:', 'Not found yet:', 'Limitations:']);
     expect(screen.getByText(/All 553 agencies Atlas covered on that date: 465 in the United States and 88 in Canada\./)).toBeInTheDocument();
     expect(screen.getByText(/^Only an agency's own fare page, or its city or county fare bylaw, counted\.$/)).toBeInTheDocument();
