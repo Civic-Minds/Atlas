@@ -10,6 +10,18 @@
     -71.057
   ],
   "feedUrl": "https://cdn.mbta.com/MBTA_GTFS.zip",
+  "sameNameRoutes": [
+    {
+      "shortName": "Shuttle",
+      "longName": "Boston College - Kenmore (Shuttle)",
+      "name": "Boston College–Kenmore Shuttle"
+    },
+    {
+      "shortName": "Shuttle",
+      "longName": "Cleveland Circle - Kenmore (Shuttle)",
+      "name": "Cleveland Circle–Kenmore Shuttle"
+    }
+  ],
   "lastFeedExpiry": "20261212",
   "lastFeedVersion": "Fall 2026, 2026-10-16T20:25:58+00:00, version D",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-437/latest.zip",

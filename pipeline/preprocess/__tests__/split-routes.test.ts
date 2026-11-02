@@ -4,7 +4,7 @@ import { splitRoutes, type RouteSplit } from '../split-routes';
 
 // #1287: Miami-Dade publishes all of Metrorail as route 31009; Orange trips serve the airport, Green trips Palmetto.
 const SPLIT: RouteSplit = {
-  routeId: '31009',
+  routeShortName: '2600',
   parts: [
     { shortName: 'Green', longName: 'Palmetto ↔ Dadeland South', color: 'A2CF5F', servesStop: 'PALMETTO' },
     { shortName: 'Orange', longName: 'Miami International Airport ↔ Dadeland South', color: 'F04E23', servesStop: 'MIAMI INTERNATIONAL AIRPORT' },
@@ -49,8 +49,15 @@ describe('routeSplits (#1287 Miami-Dade Metrorail)', () => {
     expect(() => splitRoutes(feed([['y', '0', ['pal', 'mia']]]), [SPLIT])).toThrow(/y \(Green and Orange\)/);
   });
 
+  it('the route is found by its short name, whatever its id in this feed version (30979 in the live feed)', () => {
+    const gtfs = feed([['g1', '0', ['pal', 'dad']], ['o1', '0', ['mia', 'dad']]]) as any;
+    gtfs.routes[0].route_id = '30979';
+    for (const t of gtfs.trips) t.route_id = '30979';
+    expect(splitRoutes(gtfs, [SPLIT]).trips).toEqual({ '30979-Green': 1, '30979-Orange': 1 });
+  });
+
   it('a configured route the feed no longer has fails the build', () => {
-    expect(() => splitRoutes(feed([]), [{ ...SPLIT, routeId: '99999' }])).toThrow(/route 99999 is not in the feed/);
+    expect(() => splitRoutes(feed([]), [{ ...SPLIT, routeShortName: '9999' }])).toThrow(/route 9999 is not in the feed/);
   });
 
   it('legitimate: no splits configured leaves the feed as it is', () => {

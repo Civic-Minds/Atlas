@@ -64,7 +64,7 @@ exports[`processed fixture output is pinned > matches the recorded hash for ever
   "niagara-301-401": "50 features 4c9aa22ce8dc",
   "nyct-b-subway": "115 features 6a5edc6ac90a",
   "nyct-subway-night-weekday": "526 features 56c00d13b656",
-  "nyct-subway-s-weekday": "39 features d360131df6b1",
+  "nyct-subway-s-weekday": "39 features 6feb8960f160",
   "octranspo-226-weekday": "75 features 5886cd6af395",
   "pace-533-molitor": "116 features 15c5ab4e80b8",
   "pace-542": "50 features 2ed22ddb9442",
