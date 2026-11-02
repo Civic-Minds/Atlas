@@ -1,4 +1,9 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import * as maplibregl from 'maplibre-gl';
+import 'maplibre-gl/dist/maplibre-gl.css';
+import '../lib/maplibreWorker';
+import { basemapStyle } from '../lib/basemap';
+import { BasemapCredit } from './BasemapCredit';
 import { storyMapFailedText, storyMapLoadingText } from '../content/noticeCopy';
 import { fetchAgencyGeo } from '../lib/agencyGeo';
 import type { Agency } from '../App';
@@ -23,25 +28,12 @@ function coordinatesFor(feature: StoryFeature): number[][][] {
   return feature.geometry.coordinates;
 }
 
-function projectFeatures(allFeatures: StoryFeature[], features: StoryFeature[]) {
-  const points = allFeatures.flatMap(feature => coordinatesFor(feature).flat());
-  if (points.length === 0) return '';
+function boundsOf(features: StoryFeature[]): maplibregl.LngLatBoundsLike | null {
+  const points = features.flatMap(feature => coordinatesFor(feature).flat());
+  if (points.length === 0) return null;
   const lons = points.map(([lon]) => lon);
   const lats = points.map(([, lat]) => lat);
-  const minLon = Math.min(...lons);
-  const maxLon = Math.max(...lons);
-  const minLat = Math.min(...lats);
-  const maxLat = Math.max(...lats);
-  const width = 1000;
-  const height = 620;
-  const pad = 28;
-  const scale = Math.min((width - pad * 2) / (maxLon - minLon), (height - pad * 2) / (maxLat - minLat));
-  const x = (lon: number) => pad + (lon - minLon) * scale;
-  const y = (lat: number) => height - pad - (lat - minLat) * scale;
-
-  return features.map(feature => coordinatesFor(feature)
-    .map(line => line.map(([lon, lat], index) => `${index === 0 ? 'M' : 'L'}${x(lon).toFixed(1)},${y(lat).toFixed(1)}`).join(' '))
-    .join(' ')).join(' ');
+  return [[Math.min(...lons), Math.min(...lats)], [Math.max(...lons), Math.max(...lats)]];
 }
 
 function isNotRushHourOnly(feature: StoryFeature): boolean {
@@ -69,6 +61,27 @@ export function featuresForStage(features: StoryFeature[], stage: number, freque
   });
 }
 
+/**
+ * Every route once, with `keep`: the last stage it is still shown at (each stage keeps a subset of the one before), so one
+ * layer per stage can filter on it and the stages cross-fade as the SVG's paths did.
+ */
+export function stageCollection(features: StoryFeature[], frequencyMinutes: 15 | 30): GeoJSON.FeatureCollection {
+  const kept = [1, 2, 3].map(stage => new Set(featuresForStage(features, stage, frequencyMinutes)));
+  return {
+    type: 'FeatureCollection',
+    features: features.map(feature => ({
+      type: 'Feature',
+      geometry: feature.geometry,
+      properties: { keep: kept.filter(set => set.has(feature)).length },
+    })),
+  };
+}
+
+const STAGES = [0, 1, 2, 3] as const;
+const FADE = { duration: 700, delay: 0 };
+const isLight = () => document.documentElement.getAttribute('data-theme') !== 'dark';
+const cssColor = (name: string) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+
 export default function FrequentServiceStoryMap({ agencies, stage, frequencyMinutes, researchRecord }: Props) {
   const [features, setFeatures] = useState<StoryFeature[]>([]);
   const [loadState, setLoadState] = useState<'loading' | 'ready' | 'error'>('loading');
@@ -91,19 +104,63 @@ export default function FrequentServiceStoryMap({ agencies, stage, frequencyMinu
     return () => { cancelled = true; };
   }, [storyAgency]);
 
-  const stagePaths = useMemo(() => [0, 1, 2, 3].map(currentStage => projectFeatures(features, featuresForStage(features, currentStage, frequencyMinutes))), [features, frequencyMinutes]);
+  const collection = useMemo(() => stageCollection(features, frequencyMinutes), [features, frequencyMinutes]);
+  const bounds = useMemo(() => boundsOf(features), [features]);
+  const box = useRef<HTMLDivElement>(null);
+  const mapRef = useRef<maplibregl.Map | null>(null);
+  const [mapReady, setMapReady] = useState(false);
+  const ready = loadState === 'ready' && bounds != null;
+
+  // CIV-1168 (Ryan's pick B): the routes on Atlas's light or dark basemap without place names. Not interactive: the page scrolls past it.
+  useEffect(() => {
+    if (!ready || !box.current) return;
+    const map = new maplibregl.Map({ container: box.current, style: basemapStyle(isLight(), { labels: false }), bounds: bounds!, fitBoundsOptions: { padding: 28 }, interactive: false, attributionControl: false, fadeDuration: 0 });
+    mapRef.current = map;
+    if (import.meta.env.DEV) (window as unknown as { __storyMap?: maplibregl.Map }).__storyMap = map;
+    const paint = () => {
+      if (!map.isStyleLoaded()) return;
+      const light = isLight();
+      map.setLayoutProperty('basemap-light', 'visibility', light ? 'visible' : 'none');
+      map.setLayoutProperty('basemap-dark', 'visibility', light ? 'none' : 'visible');
+      if (!map.getLayer('routes')) return;
+      map.setPaintProperty('routes', 'line-color', cssColor('--text-dim'));
+      for (const s of STAGES) map.setPaintProperty(`stage-${s}`, 'line-color', cssColor('--accent'));
+    };
+    map.on('load', () => {
+      map.addSource('story', { type: 'geojson', data: collection });
+      const line = { 'line-cap': 'round', 'line-join': 'round' } as const;
+      map.addLayer({ id: 'routes', type: 'line', source: 'story', layout: line, paint: { 'line-color': cssColor('--text-dim'), 'line-width': 1.1, 'line-opacity': 0.34, 'line-opacity-transition': FADE } });
+      for (const s of STAGES) {
+        map.addLayer({ id: `stage-${s}`, type: 'line', source: 'story', filter: ['>=', ['get', 'keep'], s], layout: line, paint: { 'line-color': cssColor('--accent'), 'line-width': 2.1, 'line-opacity': 0, 'line-opacity-transition': FADE } });
+      }
+      // A theme switch while the style was loading was skipped: draw the theme the page has now.
+      paint();
+      setMapReady(true);
+    });
+    const theme = new MutationObserver(paint);
+    theme.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    const resize = new ResizeObserver(() => { map.resize(); map.fitBounds(bounds!, { padding: 28, animate: false }); });
+    resize.observe(box.current);
+    return () => { theme.disconnect(); resize.disconnect(); setMapReady(false); map.remove(); mapRef.current = null; };
+  }, [ready, bounds]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    const source = mapRef.current?.getSource('story') as maplibregl.GeoJSONSource | undefined;
+    source?.setData(collection);
+  }, [collection, mapReady]);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !mapReady) return;
+    map.setPaintProperty('routes', 'line-opacity', stage === 0 ? 0.34 : 0.16);
+    for (const s of STAGES) map.setPaintProperty(`stage-${s}`, 'line-opacity', stage === s ? 0.88 : 0);
+  }, [stage, mapReady]);
 
   return (
     <figure className="flex h-[calc(100dvh-8rem)] min-h-0 flex-col overflow-hidden border-y border-[var(--border-primary)] bg-[var(--bg-panel)] sm:rounded-[2rem] sm:border">
       <div className="relative min-h-0 flex-1 bg-[var(--bg-app)]">
-        {loadState === 'ready' && stagePaths[0] ? (
-          <svg viewBox="0 0 1000 620" className="h-full w-full" role="img" aria-label={stage === 3 ? `Toronto routes with weekday daytime service ${headwayOrBetter(frequencyMinutes)}` : 'Toronto routes remaining in the story'}>
-            <rect width="1000" height="620" fill="var(--bg-app)" />
-            <path d={stagePaths[0]} fill="none" stroke="var(--text-dim)" strokeWidth="1.1" vectorEffect="non-scaling-stroke" strokeLinecap="round" strokeLinejoin="round" opacity={stage === 0 ? 0.34 : 0.16} className="transition-opacity duration-700 ease-out" />
-            {stagePaths.map((path, index) => path && (
-              <path key={index} d={path} fill="none" stroke="var(--accent)" strokeWidth="2.1" vectorEffect="non-scaling-stroke" strokeLinecap="round" strokeLinejoin="round" opacity={stage === index ? 0.88 : 0} className="transition-opacity duration-700 ease-out" />
-            ))}
-          </svg>
+        {ready ? (
+          <div ref={box} className="h-full w-full" role="img" aria-label={stage === 3 ? `Toronto routes with weekday daytime service ${headwayOrBetter(frequencyMinutes)}` : 'Toronto routes remaining in the story'} />
         ) : (
           <div className="flex h-full items-center justify-center text-sm text-[var(--text-muted)]">
             {loadState === 'error' ? storyMapFailedText(researchRecord.agencyName) : storyMapLoadingText(researchRecord.agencyName)}
@@ -129,7 +186,7 @@ export default function FrequentServiceStoryMap({ agencies, stage, frequencyMinu
         </div>
       </div>
       <figcaption className="flex flex-wrap items-center justify-between gap-2 px-5 pb-6 pt-4 text-xs text-[var(--text-muted)]">
-        <span>{researchRecord.agencyName}</span>
+        <span className="flex flex-wrap items-center gap-x-3 gap-y-1">{researchRecord.agencyName}{ready && <BasemapCredit />}</span>
         <span>{stage === 0 ? 'All route patterns' : stage === 1 ? 'Rush-hour-only patterns removed' : stage === 2 ? 'Routes with sustained daytime service' : `Weekday daytime · ${headwayOrBetter(frequencyMinutes)}`}</span>
       </figcaption>
     </figure>

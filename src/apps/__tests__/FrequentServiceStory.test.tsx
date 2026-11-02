@@ -1,5 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
+// The story map's MapLibre worker URL is a Vite build import (?worker&url) the test runner can't load; no map is drawn here.
+vi.mock('../../lib/maplibreWorker', () => ({}));
 import FrequentServiceStory from '../FrequentServiceStory';
 import { frequentServiceDefinitionSample, frequentServiceStoryResearchRecord, frequentServiceStoryStats } from '../../data/frequentServiceStory';
 import audit from '../../../docs/research/system-map-audit-2026-09/data.json';

@@ -4,7 +4,7 @@
  * straight from CARTO (src/lib/basemap.ts), as CARTO's terms require.
  */
 const CARTO_HOSTS = ['a', 'b', 'c', 'd'] as const;
-const CARTO_STYLES = new Set(['light_all', 'dark_all']);
+const CARTO_STYLES = new Set(['light_all', 'dark_all', 'light_nolabels', 'dark_nolabels']);
 // Browsers keep a good tile for 7 days (short enough to recover if CARTO relabels its watermark tile);
 // Vercel's edge keeps it a year
 // and serves stale for another 30 days while revalidating, so few requests reach this function.

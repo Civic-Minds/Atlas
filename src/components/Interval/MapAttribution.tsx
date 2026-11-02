@@ -5,13 +5,10 @@ import { version as appVersion } from '../../../package.json';
 import { shortVersion } from '../../data/whatsNew';
 import { WhatsNewPanel } from '../WhatsNewPanel';
 import { trackEvent } from '../../lib/analytics';
-import { OutboundLink } from '../OutboundLink';
 import { ConsentPill } from '../AnalyticsConsent';
 import { registerConsentRow, useConsentPrompt } from '../../lib/consentPrompt';
 import { BASEMAP_ATTRIBUTION } from '../../lib/basemap';
-
-const ATTRIB_LINK =
-  `${MAP_BADGE_LABEL} text-[var(--text-dim)] no-underline hover:text-[var(--text-primary)]`;
+import { BasemapCredit } from '../BasemapCredit';
 
 
 /** Basemap credit — linked names satisfy OSM + CARTO attribution requirements. */
@@ -107,23 +104,7 @@ export function MapAttribution({ whatsNewEnabled = FEATURES.whatsNew }: { whatsN
         Feedback
       </a>
       <div className={`${MAP_BADGE} h-8 max-sm:h-[32px]`}>
-        <p className={`${MAP_BADGE_LABEL} whitespace-nowrap`}>
-          <OutboundLink
-            href="https://www.openstreetmap.org/copyright"
-            kind="attribution"
-            className={ATTRIB_LINK}
-          >
-            OpenStreetMap
-          </OutboundLink>
-          <span className={MAP_BADGE_LABEL}> · </span>
-          <OutboundLink
-            href="https://carto.com/attributions"
-            kind="attribution"
-            className={ATTRIB_LINK}
-          >
-            CARTO
-          </OutboundLink>
-        </p>
+        <BasemapCredit />
       </div>
       {consent.open && <ConsentPill className="max-sm:hidden" choose={consent.choose} />}
     </div>

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { featuresForStage } from '../FrequentServiceStoryMap';
+import { featuresForStage, stageCollection } from '../FrequentServiceStoryMap';
 
 const feature = (serviceClass: string, midday: number | null, daytime30: boolean, daytime15: boolean, rowMidday: number | null = midday) => ({
   type: 'Feature',
@@ -34,5 +34,14 @@ describe('Frequent Service story stages', () => {
     const frequent = feature('regular', 10, true, true);
 
     expect(featuresForStage([daytimeOnly, frequent], 3, 15)).toEqual([frequent]);
+  });
+
+  it('marks each route with the last stage it is shown at, so each stage layer filters on it (CIV-1168)', () => {
+    const rushOnly = feature('time-limited', 20, true, true);
+    const nightOnly = feature('regular', null, false, false);
+    const every30 = feature('regular', 30, true, false);
+    const every15 = feature('regular', 10, true, true);
+    const keep = stageCollection([rushOnly, nightOnly, every30, every15], 15).features.map(f => f.properties?.keep);
+    expect(keep).toEqual([0, 1, 2, 3]);
   });
 });
