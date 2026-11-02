@@ -2,9 +2,9 @@ import { useId } from 'react';
 import PageShell from '../components/ui/PageShell';
 import { niceAxis } from '../components/charts/ProfileBars';
 import ChartTableDetails from '../components/charts/ChartTableDetails';
-import HexTileMap, { type HexTile } from '../components/charts/HexTileMap';
+import TileMap, { type MapTile } from '../components/charts/TileMap';
 import LegendItem from '../components/ui/LegendItem';
-import { REGION_HEXES } from '../data/regionHexGrid';
+import { REGION_TILES } from '../data/regionTileGrid';
 import CategorySpark, { type SparkColumn } from '../components/charts/CategorySpark';
 import SplitBar, { type SplitBarSegment } from '../components/charts/SplitBar';
 import { CHART_COUNT } from '../components/charts/useActivePart';
@@ -51,9 +51,9 @@ const SPLIT_LABEL = `How many agencies have each kind of free child fare policy,
 // #1290 (Ryan): the age chart in the sparkline charts' shape, picked like the split bar. The other policies are in the split bar alone.
 const chartTicks = niceAxis(0, Math.max(...ageColumns.map(c => c.value))).ticks;
 
-// CIV-1282 (Ryan picked the tile map, in hexes): each state's or province's most common free age, from the same ledger counts.
+// CIV-1282 (Ryan picked the tile map, in squares): each state's or province's most common free age, from the same ledger counts.
 // A tie names no single age ("Mix"); a place with no age limit shows a dash; fewer than MIN_AGE_RULES agencies with an age
-// limit draws the hex with a dashed outline, since its "most common" rests on one or two agencies.
+// limit draws the tile with a dashed outline, since its "most common" rests on one or two agencies.
 const MIN_AGE_RULES = 3;
 const AGE_BANDS: ReadonlyArray<{ upTo: number; label: string; mix: number }> = [
   { upTo: 5, label: 'Up to 5', mix: 28 }, { upTo: 9, label: '6–9', mix: 56 }, { upTo: 11, label: '10–11', mix: 70 },
@@ -67,8 +67,8 @@ const regionRows = FREE_CHILD_REGIONS.map(([region, total, regionAges]) => {
   const age = withAge > 0 && leaders.length === 1 ? leaders[0] : null;
   return { region, total, withAge, age, tie: leaders.length > 1 ? leaders : null };
 });
-const regionTiles: HexTile[] = regionRows.map(r => {
-  const { abbr, col, row } = REGION_HEXES[r.region];
+const regionTiles: MapTile[] = regionRows.map(r => {
+  const { abbr, col, row } = REGION_TILES[r.region];
   const band = r.age != null ? AGE_BANDS.find(b => r.age! <= b.upTo)! : null;
   const what = r.age != null ? `most common free age ${r.age}` : r.tie ? `a tie between ages ${r.tie.join(', ')}` : 'no age limit found';
   return {
@@ -148,8 +148,8 @@ export default function FreeChildFaresPage() {
           <section aria-labelledby="free-child-age-map">
             <div className="rounded-[2rem] border border-[var(--border-primary)] bg-[var(--bg-panel)] p-5 sm:p-8">
               <h2 id="free-child-age-map" className="text-xs font-black text-[var(--text-primary)]">{MAP_TITLE}</h2>
-              <p className="mt-1 text-xs text-[var(--text-muted)]">Each hex is one state or province: its most common free age, and its number of agencies.</p>
-              <HexTileMap tiles={regionTiles} label={`${MAP_TITLE}, for ${regionTiles.length} states and provinces.`} details={mapTableId} />
+              <p className="mt-1 text-xs text-[var(--text-muted)]">Each square is one state or province: its most common free age, and its number of agencies.</p>
+              <TileMap tiles={regionTiles} label={`${MAP_TITLE}, for ${regionTiles.length} states and provinces.`} details={mapTableId} />
               <ul className="mt-4 flex flex-wrap gap-x-4 gap-y-1 text-xs text-[var(--text-primary)]">
                 {AGE_BANDS.map(b => <li key={b.label}><LegendItem color={bandFill(b.mix)}>{b.label}</LegendItem></li>)}
                 <li><LegendItem color="var(--bg-panel)" swatchClassName="ring-1 ring-[var(--border-primary)]">Mix: a tie · –: no age limit</LegendItem></li>
