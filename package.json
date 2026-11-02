@@ -22,6 +22,7 @@
     "prerender": "vite build --ssr src/prerender.tsx --outDir .prerender && npx tsx scripts/prerender-routes.ts",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.api.json && node scripts/typecheck-pipeline.mjs",
+    "check:vercel": "bash scripts/check-vercel.sh",
     "typecheck:workers": "tsc --noEmit -p tsconfig.workers.json",
     "test": "vitest run",
     "benchmark": "node scripts/benchmark-atlas.mjs",

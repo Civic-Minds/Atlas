@@ -128,7 +128,7 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
             <div className="max-w-2xl">
               <h2 id="chart-heading" className="text-3xl sm:text-4xl font-black tracking-tight">There is no single “frequent.”</h2>
               <p className="mt-5 text-base leading-8 text-[var(--text-muted)]">
-                Pick a representative threshold to see how agencies turn that number into a service promise. This chart covers {frequentServiceStoryStats.chartedAgencies} agencies with a verified numeric definition; secondary tiers remain in the research instead of being flattened.
+                Pick a representative threshold to see how agencies turn that number into a service promise. This chart shows the {frequentServiceStoryStats.chartedAgencies} agencies that publish a specific number of minutes.
               </p>
             </div>
             <div className="mt-10">

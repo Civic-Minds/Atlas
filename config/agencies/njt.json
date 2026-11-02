@@ -60,5 +60,12 @@
       "mode": 100,
       "reason": "Hudson-Bergen, Newark and River LINE are light rail, published as route_type 0 (tram)"
     }
-  ]
+  ],
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-508/latest.zip",
+  "lastFeedCheckAt": "20261102",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20270417",
+  "refusedFeedSha256": "0e09c82fcfe3d1722195a63036745883d3add28a6bde35f127e99b147d0e6cb9"
 }

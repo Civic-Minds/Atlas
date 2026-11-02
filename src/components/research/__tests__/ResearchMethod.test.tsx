@@ -9,6 +9,9 @@ describe('ResearchMethod (CIV-1167)', () => {
     const { container } = render(<ResearchMethod parts={{ limitations: 'L', sources: 'S', whatCounted: 'W', sample: 'Sa', dateConducted: 'D', rechecked: 'R', dateUpdated: 'U', notFound: 'N', numbers: 'H' }} />);
     // Ryan, CIV-1167: "Method", at the size of a section heading, not a page title.
     expect(screen.getByRole('heading', { name: 'Method' }).className).toMatch(/^text-xl\b/);
+    // Ryan, 2026-11-02: the parts read one step smaller than the article's text-base body, at the same 2:1 line height.
+    expect(container.querySelector('p')!.parentElement!.className).toContain('text-sm leading-7');
+    expect(container.querySelector('p')!.parentElement!.className).not.toMatch(/sm:text-base/);
     expect(labels(container)).toEqual(['Date conducted:', 'Date updated:', 'Sample:', 'Sources:', 'What counted:', 'How we handled numbers:', 'Not found yet:', 'Rechecked:', 'Limitations:']);
   });
 

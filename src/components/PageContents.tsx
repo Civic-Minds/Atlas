@@ -11,6 +11,10 @@ type PageContentsItem = { id: string; label: string };
 const READING_LINE = 120;
 /** Fallback for browsers without `scrollend`: how long a click keeps its section active while the page scrolls there. */
 const CLICK_LOCK_MS = 1000;
+/** Space kept above or below the active item when the list scrolls it into view. */
+const LIST_SCROLL_MARGIN = 16;
+/** How far the list fades out at an edge with more entries past it. */
+const LIST_FADE_PX = 24;
 
 /**
  * The index of the section being read, or null before the first one starts. `tops` are the sections' tops relative to
@@ -92,6 +96,39 @@ export default function PageContents({ items, title }: { items: readonly PageCon
   // page title and text are not pushed below the first screen.
   const isDesktop = useMediaQuery('(min-width: 1024px)');
   const [active, select] = useActiveSection(items.map(item => item.id));
+  // A list taller than the window scrolls inside its box (#1279); keep the section being read in view there.
+  const listRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const list = listRef.current;
+    if (!list || !active || list.scrollHeight <= list.clientHeight) return;
+    const item = Array.from(list.children).find(el => el.getAttribute('href') === `#${active}`);
+    if (!item) return;
+    const box = list.getBoundingClientRect();
+    const at = item.getBoundingClientRect();
+    if (at.top < box.top) list.scrollTop -= box.top - at.top + LIST_SCROLL_MARGIN;
+    else if (at.bottom > box.bottom) list.scrollTop += at.bottom - box.bottom + LIST_SCROLL_MARGIN;
+  }, [active]);
+  // A scrolled list fades out at the edge with more entries past it, so a cut-off entry reads as "more" (#1279).
+  const [more, setMore] = useState({ above: false, below: false });
+  useEffect(() => {
+    const list = listRef.current;
+    if (!list) return;
+    const update = () => {
+      const above = list.scrollTop > 1;
+      const below = list.scrollTop + list.clientHeight < list.scrollHeight - 1;
+      setMore(m => (m.above === above && m.below === below ? m : { above, below }));
+    };
+    update();
+    list.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update);
+    return () => {
+      list.removeEventListener('scroll', update);
+      window.removeEventListener('resize', update);
+    };
+  }, [isDesktop]);
+  const fade = more.above || more.below
+    ? `linear-gradient(to bottom, ${more.above ? 'transparent' : '#000'}, #000 ${LIST_FADE_PX}px, #000 calc(100% - ${LIST_FADE_PX}px), ${more.below ? 'transparent' : '#000'})`
+    : undefined;
   // Smooth-scroll to the section (jump if the system asks for reduced motion) and keep the URL hash in sync.
   const goTo = (event: MouseEvent<HTMLAnchorElement>, id: string) => {
     const target = document.getElementById(id);
@@ -117,7 +154,14 @@ export default function PageContents({ items, title }: { items: readonly PageCon
           On this page
           <ChevronDown className="h-4 w-4 transition-transform group-open:rotate-180 lg:hidden" aria-hidden="true" />
         </summary>
-        <div className="mt-2 grid gap-1.5 text-sm lg:mt-0 lg:block lg:space-y-2">
+        {/*
+          On wide screens the list scrolls inside its own box once it is taller than the window allows (#1279), so the
+          sticky box never outgrows the text column and the page title above it stays pinned below the site header. The
+          height leaves room for the box's offset and title space, "On this page", and the footer below the column at the
+          end of the page, measured with the footer as it is now: if the footer or the box's offset changes, measure again. The
+          padding, taken back by negative margins, keeps the active item's left line and the focus outlines inside the box.
+        */}
+        <div ref={listRef} style={fade ? { maskImage: fade, WebkitMaskImage: fade } : undefined} className="mt-2 grid gap-1.5 text-sm lg:-my-1 lg:-ml-[14px] lg:-mr-1 lg:block lg:max-h-[calc(100vh-320px)] lg:space-y-2 lg:overflow-y-auto lg:overscroll-contain lg:py-1 lg:pl-[14px] lg:pr-1">
           {items.map((item) => (
             <a
               key={item.id}

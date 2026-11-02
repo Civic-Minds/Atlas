@@ -43,7 +43,7 @@ export default function ResearchMethod({ parts }: { parts: ResearchMethodParts }
   return (
     <section aria-labelledby="research-method-heading">
       <SectionTitle id="research-method-heading" className="text-[var(--text-primary)]">Method</SectionTitle>
-      <div className="mt-5 space-y-5 text-sm sm:text-base leading-7 sm:leading-8 text-[var(--text-muted)]">
+      <div className="mt-5 space-y-5 text-sm leading-7 text-[var(--text-muted)]">
         {PARTS.filter(([key]) => parts[key] != null).map(([key, label]) => (
           <p key={key}><strong className="text-[var(--text-primary)]">{label}</strong> {parts[key]}</p>
         ))}
