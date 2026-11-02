@@ -7,7 +7,7 @@ import SiteFooter from '../SiteFooter';
  * centred max-w-5xl column, site header on top.
  * `stickyHeader` pins the site header to the top while the page scrolls (long doc pages with an "On this page" list).
  * `footer` adds the site footer, pinned to the bottom of the viewport on short pages.
- * `method` is a research page's "How we did this" section (CIV-1167), set off above the footer.
+ * `method` is a research page's "Method" section (CIV-1167), set off above the footer.
  * `docs` is the narrower gutter used by reading pages; `wide` is the roomier landing-page gutter.
  */
 const GUTTER = {

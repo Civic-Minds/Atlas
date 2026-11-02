@@ -7,7 +7,8 @@ const labels = (container: HTMLElement) => [...container.querySelectorAll('stron
 describe('ResearchMethod (CIV-1167)', () => {
   it('puts the parts in the template order, whatever order the page passes them in', () => {
     const { container } = render(<ResearchMethod parts={{ limitations: 'L', sources: 'S', whatCounted: 'W', sample: 'Sa', dateConducted: 'D', rechecked: 'R', dateUpdated: 'U', notFound: 'N', numbers: 'H' }} />);
-    expect(screen.getByRole('heading', { name: 'How we did this' })).toBeInTheDocument();
+    // Ryan, CIV-1167: "Method", at the size of a section heading, not a page title.
+    expect(screen.getByRole('heading', { name: 'Method' }).className).toMatch(/^text-xl\b/);
     expect(labels(container)).toEqual(['Date conducted:', 'Date updated:', 'Sample:', 'Sources:', 'What counted:', 'How we handled numbers:', 'Not found yet:', 'Rechecked:', 'Limitations:']);
   });
 
