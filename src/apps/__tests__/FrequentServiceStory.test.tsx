@@ -33,6 +33,18 @@ describe('FrequentServiceStory', () => {
     expect((fifteen.querySelector('[style*="width"]') as HTMLElement).style.opacity).toBe('0.35');
   });
 
+  it('highlights the most common threshold, 15 min, until another bar is picked (CIV-1286)', () => {
+    render(<FrequentServiceStory agencies={agencies} onExploreMap={() => {}} />);
+    const bar = (min: number) => screen.getByRole('button', { name: new RegExp(`Show examples for ${min}-minute service`) });
+    const fill = (min: number) => (bar(min).querySelector('[style*="width"]') as HTMLElement).style.opacity;
+    expect(bar(15).querySelector('[data-active="true"]')).not.toBeNull();
+    expect([fill(15), fill(10)]).toEqual(['', '0.35']);
+    fireEvent.mouseEnter(bar(10));
+    expect([fill(10), fill(15)]).toEqual(['', '0.35']);
+    fireEvent.mouseLeave(bar(10).parentElement!);
+    expect(bar(15).querySelector('[data-active="true"]')).not.toBeNull();
+  });
+
   it('counts the Canada and US definitions that still held on the October 30 recheck (CIV-1149)', () => {
     const rows = recheck.rows.filter(row => ['Canada', 'United States'].includes(row.country) && Number.isInteger(row.threshold));
     expect(rows).toHaveLength(67);
