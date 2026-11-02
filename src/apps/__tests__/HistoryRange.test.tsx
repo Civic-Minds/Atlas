@@ -29,10 +29,10 @@ describe('History rows with a shared stretch (CIV-555)', () => {
     await waitFor(() => expect(container.textContent).toContain('Jun 2015'));
     const text = container.textContent ?? '';
     expect(text).toContain('every 15–52 min');
-    // 8 against 60 is more than 4 times apart: the live card's rule (shouldShowBranchHeadwayRange) shows no range.
+    // 8 against 60 is more than 4 times apart: the live card's rule (headwayRangeShown) shows no range.
     expect(text).toContain('every 60 min');
     expect(text).not.toContain('every 8–60 min');
-    // 10 against 12 is too close for a range (shouldShowBranchHeadwayRange): the row keeps "every 12 min".
+    // 10 against 12 is too close for a range (headwayRangeShown): the row keeps "every 12 min".
     expect(text).toContain('every 12 min');
     expect(text).not.toContain('every 10–12 min');
   });

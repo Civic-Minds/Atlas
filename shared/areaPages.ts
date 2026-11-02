@@ -4,6 +4,7 @@
  */
 import {
   agencyStats,
+  areaAgencySummaries,
   bandCounts,
   bestRoute,
   formatDataDate,
@@ -18,6 +19,7 @@ import { MODE_DEFINITIONS, ON_DEMAND_MODE, VIRTUAL_LRT_MODE, modeLabel, modeLabe
 import { BETA_BUILD } from './config';
 import { AREA_INDEX, AREA_PARAM } from './areaIndex';
 import { AREA_PATH_PREFIX, areaPagePath, type AreaConfig } from './areas';
+import { agencyPagePath, parentAgencyPagePath } from './pagePaths';
 import { areaRegionName, areaRegionSentenceStart, areaRegionTitle } from './areaRegions';
 import { SITE_URL, seoTitlePrefix, type SeoMode } from './seo';
 import { countOf } from './overflowText';
@@ -25,7 +27,7 @@ import { capitalizeFirst } from './headwayText';
 import { compareAgencyName } from './sortCompare';
 import { DESCRIPTION_MAX, TITLE_MAX, firstThatFits, truncateAtWord } from './seoText';
 
-export { AREA_PATH_PREFIX, areaPagePath };
+export { AREA_PATH_PREFIX, areaPagePath, areaAgencySummaries };
 
 /** The prerendered HTML carries its data in <script type="application/json" id=...>. */
 export const AREA_DATA_SCRIPT_ID = 'area-page-data';
@@ -40,6 +42,12 @@ export interface AreaAgencyRow {
   totalRoutes: number;
   /** Route counts by table column (AREA_TABLE_MODES, rarer modes added into "Other"), only the columns the agency has. */
   modes: Record<string, number>;
+  /** Its page: the agency's (agencyPagePath), or a parent agency's (Ryan, 2026-11-02). The page links areaAgencyRowHref, never this. */
+  href: string;
+  /** A parent agency's row, standing for its members counted here. */
+  parent?: true;
+  /** The agencies it stands for on the map: itself, or a parent's members counted here. */
+  slugs: string[];
 }
 
 /** The numbers an area or a state or province page (CIV-976) shows for its agencies, counted the same way on both. */
@@ -98,26 +106,6 @@ export function areaTableColumnTitle(column: string): string | undefined {
   return extra.length > 0 ? sentence([column], extra.join(' and ')) : undefined;
 }
 
-/**
- * The agencies counted on an area page (they have a page: weekday midday service), each with only the
- * routes counted there. CIV-274: a route counts in every area where it stops at two places (more than
- * AREA_SAME_PLACE_METERS apart) inside the official boundary (`areas`, from build-agency-page-summaries), whichever
- * agency runs it; an agency is listed when one of its routes counts. Summaries without area tags
- * (older files) fall back to the area's own agency list.
- */
-export function areaAgencySummaries(area: Pick<AreaConfig, 'agencies' | 'slug'>, all: ReadonlyMap<string, AgencyPageSummary>): AgencyPageSummary[] {
-  const hasPage = hasMiddayService;
-  const tagged = [...all.values()].some(a => a.routes.some(r => r.areas !== undefined));
-  if (!tagged) return area.agencies.map(s => all.get(s)).filter((a): a is AgencyPageSummary => !!a && hasPage(a));
-  const out: AgencyPageSummary[] = [];
-  for (const a of all.values()) {
-    if ((a.betaOnly && !BETA_BUILD) || !hasPage(a)) continue;
-    const routes = a.routes.filter(r => r.areas?.includes(area.slug));
-    if (routes.length > 0) out.push({ ...a, routes, routeCount: routes.length });
-  }
-  return out;
-}
-
 /** An agency's route counts by table column (areaTableColumn): the fixed modes, the grouped ones added in, the rest in "Other". */
 function tableModes(byMode: ReadonlyArray<{ label: string; routes: readonly unknown[] }>): Record<string, number> {
   const out: Record<string, number> = {};
@@ -126,6 +114,14 @@ function tableModes(byMode: ReadonlyArray<{ label: string; routes: readonly unkn
     out[key] = (out[key] ?? 0) + m.routes.length;
   }
   return out;
+}
+
+/**
+ * An agency row's link, built from its slug: the page reads its rows back from the embedded JSON, so it never puts a
+ * URL from that text in an href (CodeQL js/xss-through-dom).
+ */
+export function areaAgencyRowHref(row: { slug: string; parent?: true }): string {
+  return row.parent ? parentAgencyPagePath(row.slug) : agencyPagePath(row.slug);
 }
 
 /** The page numbers for a set of agencies, each with only the routes the page counts: the rows, bar, mode counts and dates. */
@@ -146,6 +142,9 @@ export function agencyGroupData(members: readonly AgencyPageSummary[], all: Read
       displayName: a.displayName,
       totalRoutes: s.totalRoutes,
       modes: tableModes(s.byMode),
+      href: areaAgencyRowHref({ slug: a.slug, parent: a.members ? true : undefined }),
+      slugs: a.members ?? [a.slug],
+      ...(a.members ? { parent: true as const } : {}),
     });
   }
   rows.sort((x, y) => y.totalRoutes - x.totalRoutes || compareAgencyName(x.name, y.name) || x.slug.localeCompare(y.slug));
@@ -169,7 +168,7 @@ export function buildAreaPageData(area: AreaConfig, all: ReadonlyMap<string, Age
   const { slug, name, type, officialName, country, cities, bbox, center, note } = area;
   const regionRoutes = new Map<string, number>();
   for (const a of members) {
-    if (a.region && area.agencies.includes(a.slug)) regionRoutes.set(a.region, (regionRoutes.get(a.region) ?? 0) + a.routes.length);
+    if (a.region && (a.members ?? [a.slug]).some(s => area.agencies.includes(s))) regionRoutes.set(a.region, (regionRoutes.get(a.region) ?? 0) + a.routes.length);
   }
   const regions = [...regionRoutes.entries()].sort((x, y) => y[1] - x[1] || x[0].localeCompare(y[0])).map(([r]) => r);
   const group = agencyGroupData(members, all, releaseDate);
@@ -261,7 +260,7 @@ export function areaIntroParts(d: AreaPageData): { lead: string; named: AreaAgen
 /** The same intro for agencies in one place, named as at the start of a sentence ("The Calgary area", "Colorado"). */
 export function groupIntroParts(placeStart: string, d: Pick<AgencyGroupData, 'agencies' | 'totalRoutes' | 'byMode'>): { lead: string; named: AreaAgencyRow[]; others: number } {
   const n = d.agencies.length;
-  const lead = `${placeStart} has ${countOf(n, 'transit agency', 'transit agencies')} running ${countOf(d.totalRoutes, 'route', 'routes')}${d.byMode.length > 1 ? ` (${modesText(d.byMode, ', ')})` : ''}`;
+  const lead = `${placeStart} has ${countOf(n, 'transit agency', 'transit agencies')} operating ${countOf(d.totalRoutes, 'route', 'routes')}${d.byMode.length > 1 ? ` (${modesText(d.byMode, ', ')})` : ''}`;
   if (n <= AREA_INTRO_NAME_NONE_MAX) return { lead, named: [], others: 0 };
   const named = d.agencies.slice(0, AREA_INTRO_NAMED);
   return { lead, named, others: n - named.length };
@@ -307,7 +306,7 @@ export function areaDatesText(d: Pick<AreaPageData, 'newestRefresh' | 'releaseDa
 export function areaMapHref(d: Pick<AreaPageData, 'area'> & Partial<Pick<AreaPageData, 'agencies'>>, areas = AREA_INDEX): string {
   const params = new URLSearchParams({ [AREA_PARAM]: d.area.slug });
   const listed = areas[d.area.slug]?.agencies ?? [];
-  const extra = (d.agencies ?? []).map(a => a.slug).filter(s => !listed.includes(s));
+  const extra = (d.agencies ?? []).flatMap(a => a.slugs).filter(s => !listed.includes(s));
   if (extra.length > 0) params.set('agencies', [...listed, ...extra].join(','));
   return `/?${params.toString()}`;
 }

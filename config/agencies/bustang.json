@@ -9,6 +9,9 @@
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-2280/latest.zip",
   "region": "Colorado",
+  "parentAgency": "bustang",
+  "pageSlug": "bustang-interregional",
+  "pageTitleQualifier": "Interregional",
   "displayArea": "Colorado",
   "bbox": [
     38.8,

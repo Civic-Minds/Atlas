@@ -11,6 +11,9 @@
  *
  * Callers own downloading, skip/stale decisions, and where the output goes.
  */
+import { addIds, gtfsIdSets, idCollisions } from './supplementalIds.js';
+import type { RouteSplit } from './preprocess/split-routes.js';
+import type { SameNameRoute } from './preprocess/same-name-routes.js';
 import { processGtfsBuffer, type GtfsPreprocess, type ProcessOptions, type ProcessResult } from './process-core.js';
 import { ROUTE_ARTIFACT_SCHEMA_VERSION } from '../shared/artifactSchema.js';
 import { extractAgencySections } from '../shared/agencySections.js';
@@ -33,6 +36,12 @@ export interface AgencyFeedConfig {
   mergeEquivalentShapeVariants?: boolean;
   mergeEquivalentShapeVariantsAllModes?: boolean;
   mergeEquivalentShapeVariantsRouteTypes?: string[];
+  /** #1287: one feed route that is several lines, split by the station each trip serves (preprocess/split-routes.ts). */
+  routeSplits?: RouteSplit[];
+  /** #1292: the main stretch's reference stop for a route and direction (NYC J, skip-stop). */
+  refStopOverrides?: Array<{ routeShortName: string; directionId: number; stopId: string }>;
+  /** #1289: names for separate lines that share a short name (preprocess/same-name-routes.ts). */
+  sameNameRoutes?: SameNameRoute[];
   keepLongShapeJumps?: boolean;
   skipClusteredJumpRepair?: boolean;
   poolSingleTripShapes?: boolean;
@@ -41,6 +50,8 @@ export interface AgencyFeedConfig {
   skipBlockTripHeadways?: boolean;
   fare?: number;
   supplementalFeedUrls?: string[];
+  /** Per supplemental feed URL, a prefix for its route, trip and shape ids where they collide with the main feed's (see supplementalIds.ts). */
+  supplementalIdPrefixes?: Record<string, string>;
   /** The main feed's configured URL; matched against nextServiceDatesFeedUrls. */
   feedUrl?: string | null;
   /**
@@ -102,6 +113,9 @@ export function agencyProcessOptions(agency: AgencyFeedConfig, overrides: Agency
     mergeEquivalentShapeVariants: agency.mergeEquivalentShapeVariants,
     mergeEquivalentShapeVariantsAllModes: agency.mergeEquivalentShapeVariantsAllModes,
     mergeEquivalentShapeVariantsRouteTypes: agency.mergeEquivalentShapeVariantsRouteTypes,
+    routeSplits: agency.routeSplits,
+    refStopOverrides: agency.refStopOverrides,
+    sameNameRoutes: agency.sameNameRoutes,
     keepLongShapeJumps: agency.keepLongShapeJumps,
     skipClusteredJumpRepair: agency.skipClusteredJumpRepair,
     poolSingleTripShapes: agency.poolSingleTripShapes,
@@ -221,8 +235,21 @@ export async function processAgencyFeeds(
   const supplementalFeatureCounts: AgencyFeedResult['supplementalFeatureCounts'] = [];
   let featureCount = primary.featureCount;
 
+  // Every feed's ids must be its own in the merged agency: a collision without a configured prefix fails here.
+  const seenIds = supplementalFeeds.length > 0 ? await gtfsIdSets(primaryBuf) : null;
   for (const { url, buf } of supplementalFeeds) {
-    const supp = await processGtfsBuffer(buf, onProgress, withNextServiceDates(url));
+    const idPrefix = agency.supplementalIdPrefixes?.[url] ?? '';
+    const ids = await gtfsIdSets(buf, idPrefix);
+    // Stop ids may be shared on purpose (one stop in both feeds); they are reported, not refused.
+    const all = idCollisions(seenIds!, ids);
+    const sharedStops = all.find(c => c.kind === 'stop');
+    if (sharedStops) onProgress?.(`${url}: ${sharedStops.count} stop ids also in an earlier feed (e.g. ${sharedStops.examples.join(', ')}); their stop index entries are this feed's`);
+    const collisions = all.filter(c => c.kind !== 'stop');
+    if (collisions.length > 0) {
+      throw new Error(`${agency.slug}: supplemental feed ${url} reuses ids of an earlier feed (${collisions.map(c => `${c.count} ${c.kind} ids, e.g. ${c.examples.join(', ')}`).join('; ')}); set supplementalIdPrefixes for it in config/agencies/${agency.slug}.json`);
+    }
+    addIds(seenIds!, ids);
+    const supp = await processGtfsBuffer(buf, onProgress, { ...withNextServiceDates(url), ...(idPrefix ? { idPrefix } : {}) });
     const suppCollection = JSON.parse(supp.geojson) as FeatureCollection;
     features.push(...suppCollection.features);
     featureSources.push({ url, count: suppCollection.features.length });

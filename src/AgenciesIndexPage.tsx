@@ -6,7 +6,7 @@ import {
   resolveAgencyIndexSeo,
   type AgencyIndexData,
 } from '../shared/agencyIndex';
-import { agencyPagePath } from '../shared/agencyPages';
+import { agencyPagePath, parentAgencyPagePath, regionPagePath } from '../shared/pagePaths';
 import { fitAgencyName } from './utils/agencyName';
 import { areaPagePath } from '../shared/areas';
 import { ATLAS_MODE, FEATURES } from '../shared/config';
@@ -89,26 +89,29 @@ export default function AgenciesIndexPage({ data: dataProp }: { data?: AgencyInd
               <SectionTitle id={`index-${g.country}`}>{g.country}</SectionTitle>
               {g.regions.map(r => (
                 <div key={r.region} className="mt-5">
-                  {r.region !== g.country && <h3 id={agencyIndexRegionId(g.country, r.region)} className="scroll-mt-24 text-base font-black">{r.href ? <a className={UNDERLINED_LINK} href={r.href}>{r.region}</a> : r.region}</h3>}
+                  {r.region !== g.country && <h3 id={agencyIndexRegionId(g.country, r.region)} className="scroll-mt-24 text-base font-black">{r.href ? <a className={UNDERLINED_LINK} href={regionPagePath(r.region)}>{r.region}</a> : r.region}</h3>}
                   <ul className={`mt-2 text-sm ${INDEX_COLUMNS}`}>
                     {r.agencies.map(a => {
                       const routes = <span className="text-[var(--text-muted)]">{'\u00A0'}·{'\u00A0'}{a.routes.toLocaleString('en-US')}{'\u00A0'}{plural(a.routes, 'route')}</span>;
-                      const live = FEATURES.live && isLiveEligibleSlug(a.slug);
-                      const history = FEATURES.history && HISTORY_SLUGS.has(a.slug);
+                      // A parent agency's row (CIV-1277) links its own page and carries no member's tags. Links are built from
+                      // slugs, never read from the embedded JSON's text (CodeQL js/xss-through-dom).
+                      const href = a.parent ? parentAgencyPagePath(a.slug) : agencyPagePath(a.slug);
+                      const live = !a.parent && FEATURES.live && isLiveEligibleSlug(a.slug);
+                      const history = !a.parent && FEATURES.history && HISTORY_SLUGS.has(a.slug);
                       if (live || history) {
                         // Tagged rows stay on one line: a name too long for the column shows its short name ("CDTA"), with
                         // the full name on hover (CIV-967); one still too long shortens with "…".
                         const { text, title } = fitAgencyName(a.name, a.shortName);
                         return (
                           <li key={a.slug} className="flex min-w-0 items-baseline break-inside-avoid py-[3px]">
-                            <a className={`${LINK} min-w-0 truncate underline underline-offset-2`} href={agencyPagePath(a.slug)} title={title ?? a.name}>{text}</a>
+                            <a className={`${LINK} min-w-0 truncate underline underline-offset-2`} href={href} title={title ?? a.name}>{text}</a>
                             <span className="shrink-0 whitespace-nowrap">{routes}<AgencyTags live={live} history={history} /></span>
                           </li>
                         );
                       }
                       return (
                         <li key={a.slug} className="break-inside-avoid py-[3px]">
-                          <a className={UNDERLINED_LINK} href={agencyPagePath(a.slug)}>{a.name}</a>
+                          <a className={UNDERLINED_LINK} href={href}>{a.name}</a>
                           {routes}
                         </li>
                       );

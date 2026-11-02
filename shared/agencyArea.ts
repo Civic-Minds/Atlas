@@ -1,9 +1,14 @@
 import agencyAreas from './data/agency-area-slugs.json';
+import areaPageSlugs from './data/area-page-slugs.json';
 import { areaPagePath } from './areas';
 import { areaRegionTitle } from './areaRegions';
 
-/** agency slug -> [area slug, area name], for agencies in an area that has a page (config/areas). */
-const AGENCY_AREAS = agencyAreas as unknown as Record<string, [string, string]>;
+/**
+ * agency slug -> [area slug, area name], for agencies in an area that has a page: a paged area config with two or
+ * more agencies (areaPageStatus, written to area-page-slugs.json).
+ */
+const PAGED = new Set(areaPageSlugs as string[]);
+const AGENCY_AREAS = Object.fromEntries(Object.entries(agencyAreas as unknown as Record<string, [string, string]>).filter(([, [area]]) => PAGED.has(area)));
 
 /** The agency's region as a title ("Greater Toronto and Hamilton Area", "Metro Vancouver"), or null when it is in no area. */
 export function agencyRegionTitle(agencySlug: string, map: Record<string, [string, string]> = AGENCY_AREAS): string | null {

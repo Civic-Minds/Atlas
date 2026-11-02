@@ -17,7 +17,6 @@ Read first: [Decisions](product/DECISIONS.md) for what is settled, then the [Glo
 | [Security policy](../SECURITY.md) | Open when someone reports a security problem. |
 | [Terms of service](legal/TERMS.md) | Open when a question touches the public site's legal terms; the /terms page is built from this file, so edit it here. |
 | [Privacy policy](legal/PRIVACY.md) | Open when a question touches privacy, analytics or stored data; the /privacy page is built from this file, so edit it here. |
-| [Terms of service (root pointer)](../TERMS.md) | Open only if you landed here from the repo root; it points to the legal docs. |
 
 ## Frequency numbers and filter questions
 
@@ -94,7 +93,6 @@ Read first: [Decisions](product/DECISIONS.md) to check the behavior is not inten
 | [Fixing issues (runbook index)](engineering/FIXING_ISSUES.md) | Open when you start any fix, to pick the scope and the right validation runbook. |
 | [Issue filing](engineering/ISSUES.md) | Open when you file, triage or close a GitHub issue. |
 | [Branch and deployment workflow](engineering/BRANCH_WORKFLOW.md) | Open before you start a branch or worktree, or when a deployment looks stale. |
-| [Fixing issues (root pointer)](../FIXING_ISSUES.md) | Open only if you landed here from the repo root; it points to the runbook index. |
 | [Pipeline studies index](engineering/pipeline-studies/INDEX.md) | Open before you start an internal pipeline study. |
 | [Pipeline study template](engineering/pipeline-studies/EXPERIMENT_TEMPLATE.md) | Open when you start a new pipeline experiment and need the blank template. |
 

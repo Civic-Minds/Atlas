@@ -78,7 +78,7 @@ describe('buildAreaPageData', () => {
   it('adds every counted agency to the map link when the page counts one the area does not list (CIV-274)', () => {
     const index = { vancouver: { name: 'Vancouver', cities: [], page: true, agencies: ['translink'], bbox: [0, 0, 1, 1] } } as any;
     const area = { slug: 'vancouver' } as any;
-    const row = (slug: string) => ({ slug, name: slug, title: slug, displayName: slug, totalRoutes: 1, modes: {} });
+    const row = (slug: string) => ({ slug, name: slug, title: slug, displayName: slug, totalRoutes: 1, modes: {}, href: `/agency/${slug}`, slugs: [slug] });
     expect(areaMapHref({ area, agencies: [row('translink'), row('bc-fraser-valley')] }, index)).toBe('/?area=vancouver&agencies=translink%2Cbc-fraser-valley');
     expect(areaMapHref({ area, agencies: [row('translink')] }, index)).toBe('/?area=vancouver');
   });
@@ -111,20 +111,20 @@ describe('areaAboutParagraph', () => {
     ...buildAreaPageData(AREA, ALL, null), ...over,
   });
 
-  const row = (slug: string, name: string, totalRoutes: number) => ({ slug, name, title: name, displayName: name, totalRoutes, modes: { Bus: totalRoutes } });
+  const row = (slug: string, name: string, totalRoutes: number) => ({ slug, name, title: name, displayName: name, totalRoutes, modes: { Bus: totalRoutes }, href: `/agency/${slug}`, slugs: [slug] });
 
   it('names no agencies when there are three or fewer: the sentence ends after the route breakdown (CIV-968, Ryan)', () => {
-    expect(areaAboutParagraph(base({}))).toBe('The Greater Toronto and Hamilton Area has 2 transit agencies running 6 routes (2 subway/metro, 4 bus).');
+    expect(areaAboutParagraph(base({}))).toBe('The Greater Toronto and Hamilton Area has 2 transit agencies operating 6 routes (2 subway/metro, 4 bus).');
     const one = base({ agencies: [row('a', 'A', 1)], totalRoutes: 1, byMode: [{ label: 'Bus', routes: 1 }] });
-    expect(areaAboutParagraph(one)).toBe('The Greater Toronto and Hamilton Area has 1 transit agency running 1 route.');
+    expect(areaAboutParagraph(one)).toBe('The Greater Toronto and Hamilton Area has 1 transit agency operating 1 route.');
     const three = base({ agencies: [row('a', 'A', 3), row('b', 'B', 2), row('c', 'C', 1)], totalRoutes: 6, byMode: [{ label: 'Bus', routes: 6 }] });
-    expect(areaAboutParagraph(three)).toBe('The Greater Toronto and Hamilton Area has 3 transit agencies running 6 routes.');
+    expect(areaAboutParagraph(three)).toBe('The Greater Toronto and Hamilton Area has 3 transit agencies operating 6 routes.');
     expect(areaIntroParts(three)).toMatchObject({ named: [], others: 0 });
   });
 
   it('names the two biggest and counts the rest past three agencies (CIV-968)', () => {
     const four = base({ agencies: [row('a', 'A', 4), row('b', 'B', 3), row('c', 'C', 2), row('d', 'D', 1)], totalRoutes: 10, byMode: [{ label: 'Bus', routes: 10 }] });
-    expect(areaAboutParagraph(four)).toBe('The Greater Toronto and Hamilton Area has 4 transit agencies running 10 routes, including A, B and 2 others.');
+    expect(areaAboutParagraph(four)).toBe('The Greater Toronto and Hamilton Area has 4 transit agencies operating 10 routes, including A, B and 2 others.');
     const parts = areaIntroParts(four);
     expect(parts.named.map(a => a.slug)).toEqual(['a', 'b']);
     expect(areaIntroJoiners({ named: parts.named, others: 1 }).tail).toBe('1 other.');
@@ -191,11 +191,11 @@ describe('committed areas (config/areas)', () => {
     }
   });
 
-  it('merges Hamilton into Toronto, with a note', () => {
+  it('merges Hamilton into Toronto, with no note that repeats its GTHA name', () => {
     const toronto = areas.find(a => a.slug === 'toronto')!;
     expect(MERGED_AREAS[0].members).toContain('Hamilton');
     expect(toronto.agencies).toEqual(expect.arrayContaining(['ttc', 'hamilton', 'go']));
-    expect(toronto.note).toContain('GTHA');
+    expect(toronto.note).toBeUndefined();
     expect(areas.find(a => a.slug === 'hamilton')).toBeUndefined();
   });
 });

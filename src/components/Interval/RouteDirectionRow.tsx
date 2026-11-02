@@ -2,7 +2,7 @@ import React from 'react';
 import { heldRowStyles, type HeldSize } from '../../utils/heldLayout';
 import { Info } from 'lucide-react';
 import { fmtHeadwayRange } from '../../utils/format';
-import { shouldShowBranchHeadwayRange } from '../../utils/routeCardTrunk';
+import { headwayRangeShown } from '../../utils/headwayText';
 import { HeadwayBadge, LimitedBadge } from './cardUi';
 import RouteRowName from '../RouteRowName';
 import { LIMITED_SERVICE_LABEL, FIRST_LAST_TRIP_ALLOWANCE_HINT } from '../../content/noticeCopy';
@@ -84,7 +84,7 @@ export default function RouteDirectionRow({ label, routeName, labelWeight = 'bol
   const interactive = !!(onHoverStart && onHoverEnd);
   const clickable = !!onClick;
   const faded = dimmed || branchDimmed;
-  const showRange = shouldShowBranchHeadwayRange(trunkHeadway, headway);
+  const showRange = headwayRangeShown(trunkHeadway, headway);
   const rangeText = showRange && headway != null && trunkHeadway != null
     ? fmtHeadwayRange(trunkHeadway, headway)
     : null;

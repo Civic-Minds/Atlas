@@ -133,12 +133,6 @@ describe('Infrequent routes show "limited" on All day and in specific periods (#
       />,
     );
 
-    it('shows "limited" instead of "every 56 min" for TL-42 on Saturday All day', () => {
-      renderCard([tl42Saturday], 'all');
-      expect(screen.getAllByText('limited').length).toBeGreaterThan(0);
-      expect(screen.queryByText(/every 56 min/)).toBeNull();
-    });
-
     it('CIV-1251: TL-42 in Saturday midday reads Irregular, not "limited"', () => {
       renderCard([tl42Saturday], 'midday');
       expect(screen.getAllByText('Runs irregularly in this period').length).toBeGreaterThan(0);
@@ -151,12 +145,16 @@ describe('Infrequent routes show "limited" on All day and in specific periods (#
       expect(screen.queryByText('limited')).toBeNull();
     });
 
-    it('OC 226 style: All day with no all-day value reads "Part-time" (CIV-1251), whatever the pattern numbers say', () => {
+    it('CIV-1279: the card has no All day row words ("limited", "Part-time"), even if a caller passes All day', () => {
       // routeAllDayHeadway 999999 = none; a direction does not run at midday. The pattern's own 20 must not show.
       const oc226 = { ...frequentSaturday, headway: 20, routeAllDayHeadway: 999999, routeHasLimitedDirection: true } as unknown as ShapeProperties;
-      renderCard([oc226], 'all');
-      expect(screen.getAllByText('Part-time').length).toBeGreaterThan(0);
-      expect(screen.queryByText(/every 20 min/)).toBeNull();
+      for (const route of [tl42Saturday, oc226]) {
+        const { unmount } = renderCard([route], 'all');
+        expect(screen.queryByText('limited')).toBeNull();
+        expect(screen.queryByText('Part-time')).toBeNull();
+        expect(screen.queryByText(/every (20|56) min/)).toBeNull();
+        unmount();
+      }
     });
 
     it('a normal all-day route keeps its number when the all-day value agrees', () => {

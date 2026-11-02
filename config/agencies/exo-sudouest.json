@@ -5,6 +5,7 @@
   "displayArea": "Sud-Ouest",
   "websiteUrl": "https://exo.quebec/fr/planifier-trajet/autobus/CITSO",
   "region": "Quebec",
+  "parentAgency": "exo",
   "center": [
     45.3549,
     -73.7643

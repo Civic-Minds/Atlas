@@ -5,6 +5,7 @@
   "displayArea": "Vallée du Richelieu",
   "websiteUrl": "https://exo.quebec/fr/planifier-trajet/autobus/CITVR",
   "region": "Quebec",
+  "parentAgency": "exo",
   "center": [
     45.54,
     -73.24

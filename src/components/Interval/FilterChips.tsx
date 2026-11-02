@@ -13,6 +13,7 @@ import { FEATURES, formatPeriodRange, periodKeyForHour } from '../../../shared/c
 import { COMPACT_TOP_BAR_QUERY } from '../ModeTabLabel';
 import { useMediaQuery } from '../../hooks/useMediaQuery';
 import { agencyNames } from '../../utils/agencyName';
+import { parentAgency } from '../../../shared/parentAgencyList';
 import { bboxInViewport } from '../../utils/agencySearch';
 import { filterModeOptions } from '../../../shared/modes';
 import { modesForView } from '../../../shared/viewLayers';
@@ -126,9 +127,11 @@ function AgenciesPanel({ agencies, selectedAgencies, setSelectedAgencies, bounds
     for (const a of agencies) {
       const region = a.region ?? OTHER_REGION_LABEL;
       const inView = bboxInViewport(a, bounds);
-      const g = groups.find(x => x.name === a.name && x.region === region);
+      // CIV-1277: an agency split across feeds (MTA New York, exo) is one row under its parent's name.
+      const name = parentAgency(a.parentAgency)?.name ?? a.name;
+      const g = groups.find(x => x.name === name && x.region === region);
       if (g) { g.slugs.push(a.slug); if (inView) g.loaded = true; }
-      else groups.push({ name: a.name, slugs: [a.slug], region, loaded: inView, cities: a.cities, displayArea: a.displayArea });
+      else groups.push({ name, slugs: [a.slug], region, loaded: inView, cities: a.cities, displayArea: a.displayArea });
     }
     return groups;
   }, [agencies, bounds]);

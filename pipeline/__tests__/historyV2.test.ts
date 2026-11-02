@@ -1,4 +1,4 @@
-import { mkdtempSync } from 'node:fs';
+import { mkdtempSync, readFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
@@ -10,6 +10,10 @@ import {
 import { buildRouteSnapshots, joinCandidates, newBuildReport, visibilityCheck } from '../historyV2Build.js';
 import { mergeAliasedRoutes, currentRouteShortNamesFor } from '../historyIdentity.js';
 import { historyFlagFor } from '../../shared/historyV2.js';
+import type { PeriodKey } from '../../shared/config.js';
+import { normalizeRouteFilterFeatures } from '../../shared/routeHeadwayFilter.js';
+import type { ShapeProperties, TimePeriod } from '../../src/hooks/useIntervalStats.js';
+import { routeListLowEnd } from '../../src/utils/effectiveHeadway.js';
 
 const REF = '20240612'; // Wednesday; reference week 10-16 Jun, Saturday the 15th, Sunday the 16th
 const cal = (id: string, days: string, start = '20240101', end = '20241231') => {
@@ -102,24 +106,42 @@ describe('representative value', () => {
     expect(representativeRep([{ routeAllDayHeadway: 999999 }]).rep).toEqual({ lim: true });
     expect(representativeRep([{ routeAllDayHeadway: 30, tier: 'span' }]).rep).toEqual({ lim: true });
   });
-  // CIV-555: a slow branch sets the all-day value (60) while the shared stretch runs every 8: History keeps both.
-  it('keeps the shared-stretch value beside a slower headline, from the worst direction', () => {
-    const { rep } = representativeRep([
-      { routeAllDayHeadway: 60, directionId: 0, minStopHeadway: 8 },
-      { routeAllDayHeadway: 60, directionId: 0, minStopHeadway: 30 },
-      { routeAllDayHeadway: 60, directionId: 1, minStopHeadway: 9 },
-    ]);
-    expect(rep).toEqual({ h: 60, t: 9 });
-    // Per period from headsignMinStopHeadwayByPeriod, kept only where better than the period's own value.
-    const byPeriod = representativeRep([
-      { routeAllDayHeadway: 60, directionId: 0, routeFilterHeadwayByPeriod: { amPeak: 30, midday: 60 }, headsignMinStopHeadwayByPeriod: { amPeak: 8, midday: 60 } },
-      { routeAllDayHeadway: 60, directionId: 1, routeFilterHeadwayByPeriod: { amPeak: 30, midday: 60 }, headsignMinStopHeadwayByPeriod: { amPeak: 10, midday: 70 } },
-    ]).rep;
-    expect(byPeriod.tp).toEqual({ amPeak: 10 });
-    // No better trunk, or no field: no t, so old sidecars and plain routes read as before.
-    expect(representativeRep([{ routeAllDayHeadway: 20, minStopHeadway: 20 }]).rep).toEqual({ h: 20 });
-    expect(representativeRep([{ routeAllDayHeadway: 20 }]).rep).toEqual({ h: 20 });
-    expect(routeTrunkHeadway([{ minStopHeadway: 999999 }])).toBeNull();
+  // #1248: History's low end is the live route list's (routeListLowEnd), never the busiest stop's own gap. Real weekday
+  // features from release-mvw2q0ig.
+  const fixture = (name: string): Array<Record<string, unknown>> =>
+    JSON.parse(readFileSync(new URL(`./fixtures/history-list-low-end/${name}-weekday.json`, import.meta.url), 'utf8'));
+  const listLow = (features: Array<Record<string, unknown>>, period: TimePeriod) => {
+    const copies = features.map(f => ({ properties: { ...f } }));
+    normalizeRouteFilterFeatures(copies);
+    return routeListLowEnd(copies.map(c => c.properties) as unknown as ShapeProperties[], period) ?? undefined;
+  };
+  it('TTC 102: the low end is the list\'s in every period (midday 20–30, not 11–30; AM 6, not 9)', () => {
+    const features = fixture('ttc-102');
+    const { rep } = representativeRep(features);
+    expect(rep.h).toBe(30);
+    expect(rep.tp).toEqual({ amPeak: 6, midday: 20, pmPeak: 7, evening: 20 });
+    for (const k of Object.keys(rep.p ?? {}) as PeriodKey[]) expect(rep.tp?.[k]).toBe(listLow(features, k));
+    // The list shows no all-day range for 102, so neither does History.
+    expect(rep.t).toBeUndefined();
+  });
+  it('GRT 10: a range the list shows that the busiest stop missed is kept (midday 13–30, PM 15–30)', () => {
+    expect(representativeRep(fixture('grt-10')).rep.tp).toEqual({ midday: 13, pmPeak: 15 });
+  });
+  it('STM 1: no range where the list shows none (late read 8–68 before; the list shows every 68)', () => {
+    const { rep } = representativeRep(fixture('stm-1'));
+    expect(rep.p?.late).toBe(68);
+    expect(rep.t).toBeUndefined();
+    expect(rep.tp).toBeUndefined();
+  });
+  it('reads copies: the features being written are not changed', () => {
+    const features = fixture('ttc-102');
+    const before = JSON.stringify(features);
+    representativeRep(features);
+    expect(JSON.stringify(features)).toBe(before);
+  });
+  it('no range for plain routes or without features', () => {
+    expect(representativeRep([{ routeAllDayHeadway: 20, minStopHeadway: 8 }]).rep).toEqual({ h: 20 });
+    expect(routeTrunkHeadway([])).toBeNull();
   });
   it('no stamp is blank, never a minimum', () => {
     expect(representativeRep([{ headway: 10 }, { headway: 5 }]).rep).toEqual({});

@@ -8,6 +8,28 @@
     -81.65
   ],
   "feedUrl": "https://files.mobilitydatabase.org/tld-764/latest.zip",
+  "sameNameRoutes": [
+    {
+      "shortName": "FCF",
+      "longName": "Green Line",
+      "name": "Green Line"
+    },
+    {
+      "shortName": "FCF",
+      "longName": "Orange Line",
+      "name": "Orange Line"
+    },
+    {
+      "shortName": "FCF",
+      "longName": "Blue Line",
+      "name": "Blue Line"
+    },
+    {
+      "shortName": "FCF",
+      "longName": "Red Line",
+      "name": "Red Line"
+    }
+  ],
   "lastFeedExpiry": "20261031",
   "lastFeedVersion": null,
   "region": "Florida",

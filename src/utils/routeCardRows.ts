@@ -5,12 +5,12 @@ import { buildRouteServiceSummary } from './routeFacts';
 import { unevenPeriodMaxGap } from './routeCardUneven';
 import { rowTrips } from './rowTrips';
 import { routeCardRowValue, type RouteCardRowValue } from './routeCardRowValue';
-import { dirIdNum, groupTrunkHeadway, sharedStopIdsForBranches, sharedStretchHeadway, shouldShowBranchHeadwayRange, shouldShowTrunkSummary, sparklineSourceDirections, stretchSharedHeadway } from './routeCardTrunk';
+import { dirIdNum, groupTrunkHeadway, sharedStopIdsForBranches, sharedStretchHeadway, shouldShowTrunkSummary, sparklineSourceDirections, stretchSharedHeadway } from './routeCardTrunk';
 import { shouldShowDirectionSections } from './routeCardDirectionLayout';
 import { rowLabelWithOrigin } from './rowOriginLabel';
 import { hasStretchRoles, routeFilterAllDayContract, routeFilterContract, type RouteContract } from './stretchCard';
 import { featurePassesHeadwayFilter } from '../../shared/routeHeadwayFilter';
-import { headwayAbout, headwayAboutRange } from './headwayText';
+import { headwayAbout, headwayAboutRange, headwayRangeShown } from './headwayText';
 import { LIMITED_SERVICE_LABEL, noNumberRowLabel, SHARED_STRETCH_LABEL } from '../content/noticeCopy';
 import { buildDirectionGroups, type RouteCardDirectionGroup } from './routeCardDirectionGroups';
 
@@ -98,7 +98,7 @@ export interface RouteCardModel {
   allDay: { filterValue: number | null; limited: boolean } | undefined;
   noRegularService: boolean;
   noRegularLabel: string;
-  /** CIV-1251: what a row the card can't give a number reads (noNumberRowLabel): Irregular in a period, Part-time or limited on All day. */
+  /** CIV-1251: what a row the card can't give a number reads (noNumberRowLabel): Irregular in a period, or overnight on the Night card. */
   limitedWord: string;
   hasPeriodService: boolean;
   hasPartialPeriodService: boolean;
@@ -145,11 +145,11 @@ function rowHover(dirId: number, headsign: string | null | undefined, routeVaria
  * words or its number. Null data reads "no data for this period", never a claim that nothing runs (#297).
  */
 export function reportRowValueText(row: CardRow): string {
-  if (row.night) return row.night.grade != null ? headwayAbout(row.night.grade) : noNumberRowLabel({ period: 'overnight', partTime: false, nightView: true });
+  if (row.night) return row.night.grade != null ? headwayAbout(row.night.grade) : noNumberRowLabel({ nightView: true });
   const { value, limitedLabel } = row.display(null);
   if (value.isLimited) return limitedLabel ?? LIMITED_SERVICE_LABEL;
   if (value.headway == null) return 'no data for this period';
-  if (value.trunkHeadway != null && shouldShowBranchHeadwayRange(value.trunkHeadway, value.headway)) {
+  if (value.trunkHeadway != null && headwayRangeShown(value.trunkHeadway, value.headway)) {
     return headwayAboutRange(value.trunkHeadway, value.headway);
   }
   return value.headwayLabel ?? headwayAbout(value.headway);
@@ -164,8 +164,8 @@ export function buildRouteCardModel(input: RouteCardModelInput): RouteCardModel 
   const allDay = period === 'all' ? routeFilterAllDayContract(directions) : undefined;
   const noRegularService = (contract != null && contract.filterValue == null && contract.runs)
     || (allDay != null && allDay.filterValue == null);
-  const noRegularLabel = noNumberRowLabel({ period, partTime: allDay?.limited === true, nightView, noRegular: true });
-  const limitedWord = noNumberRowLabel({ period, partTime: allDay?.limited === true, nightView });
+  const noRegularLabel = noNumberRowLabel({ nightView });
+  const limitedWord = noRegularLabel;
   const hasPeriodService = period === 'all' || directionGroups.some(group =>
     group.realTier.some(direction => rowTrips(direction, period).value != null) ||
     group.span.length > 0,
@@ -289,7 +289,7 @@ export function buildRouteCardModel(input: RouteCardModelInput): RouteCardModel 
     // Span-only branches use the same limited row whether or not the irregular-service
     // filter is on: the filter hides them from the map, not from the route's own card.
     const spanRows: CardSpanRow[] = exclusiveSpans.length === 1
-      ? [{ label: branchLabel(group, exclusiveSpans[0], gi) || (limitedWord === LIMITED_SERVICE_LABEL ? 'limited service' : ''), feature: exclusiveSpans[0], hover: rowHover(group.dirId, exclusiveSpans[0].headsign, exclusiveSpans[0].routeVariant) }]
+      ? [{ label: branchLabel(group, exclusiveSpans[0], gi), feature: exclusiveSpans[0], hover: rowHover(group.dirId, exclusiveSpans[0].headsign, exclusiveSpans[0].routeVariant) }]
       : exclusiveSpans.length > 1
         ? [{ label: exclusiveSpans.map(d => branchLabel(group, d, gi)).filter(Boolean).join(' · '), hover: null }]
         : [];

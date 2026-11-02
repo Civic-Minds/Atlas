@@ -25,9 +25,10 @@ describe('route lists show a range where alternating branches share a stretch', 
 
   it('Expo Line Saturday: every 3 on the trunk, 6 on each branch', () => {
     const expo = rows('expoSaturday');
-    // The map's number is 12 (the branches); the card keeps 3 on the trunk and 6 per branch.
+    // The map's number is 12 (the branches); the card keeps 3 on the trunk and 6 per branch. The list shows no range: the range
+    // rule needs a low end of at least 5 (CIV-1227, as the cards and History).
     expect(routeListDisplayHeadway(expo, 'midday')).toBe(12);
-    expect(routeListDisplay(expo, 'midday').sharedHeadway).toBe(3);
+    expect(routeListDisplay(expo, 'midday').sharedHeadway).toBeUndefined();
   });
 
   it('a short shared stretch never makes a range (Miami 37)', () => {

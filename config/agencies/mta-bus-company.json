@@ -16,6 +16,7 @@
   "feedUrl": "https://rrgtfsfeeds.s3.amazonaws.com/gtfs_busco.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-510/latest.zip",
   "region": "New York",
+  "parentAgency": "mta-new-york",
   "cities": [
     "Jamaica, New York",
     "Flushing, New York",

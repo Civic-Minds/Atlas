@@ -41,12 +41,16 @@ import { countryForRegion } from '../shared/regionCountry';
 import { agencyNames } from '../src/utils/agencyName';
 import { compareRouteNumber } from '../shared/sortCompare';
 import { areasForStops, type AreaBoundaries } from '../shared/areaBoundaries';
+import { writeAreaPageList } from './build-area-page-list';
 
 const OUT = 'shared/data/agency-pages.json';
 // Slugs with a page, small enough for the map bundle (the agency card links only to real pages).
 const SLUGS_OUT = 'shared/data/agency-page-slugs.json';
+const PAGE_RENAMES_OUT = 'shared/data/agency-page-renames.json';
 // CIV-274: official boundaries of the paged areas (scripts/build-area-boundaries.ts).
 const BOUNDARIES = 'shared/data/area-boundaries.json';
+// #1283: official boundaries of the states and provinces (scripts/build-region-boundaries.ts).
+const REGION_BOUNDARIES = 'shared/data/region-boundaries.json';
 const base = (process.env.R2_PUBLIC_URL || DEFAULT_R2_PUBLIC_URL).replace(/\/$/, '');
 const only = new Set(process.argv.slice(2).filter(arg => !arg.startsWith('--')));
 
@@ -127,6 +131,8 @@ export function summarize(
   lastRefreshedAt: string | null,
   /** CIV-274: each route is tagged with the paged areas where enough of its stops are. */
   boundaries?: AreaBoundaries,
+  /** #1283: and with the states and provinces, by the same rule. */
+  regionBoundaries?: AreaBoundaries,
 ): Pick<AgencyPageSummary, 'routeCount' | 'routes' | 'span' | 'lastRefreshedAt' | 'sat' | 'sun'> {
   const lines = features.filter(f => f.geometry?.type === 'LineString' && f.properties.day === 'Weekday');
   normalizeRouteFilterFeatures(lines);
@@ -165,18 +171,21 @@ export function summarize(
     const limited: NonNullable<AgencyPageRoute['limited']> = [];
     const noRegular: NonNullable<AgencyPageRoute['noRegular']> = [];
     const shared: NonNullable<AgencyPageRoute['shared']> = {};
+    const edge: NonNullable<AgencyPageRoute['edge']> = {};
     for (const [col, period] of cols) {
       const d = routeListDisplay(ps, period);
       r[col] = d.headway;
       if (d.limited) limited.push(col);
       if (d.noRegular) noRegular.push(col);
       if (d.sharedHeadway != null) shared[col] = d.sharedHeadway;
+      if (d.edge) edge[col] = d.edge;
     }
     if (limited.length) r.limited = limited;
     if (noRegular.length) r.noRegular = noRegular;
     if (Object.keys(shared).length) r.shared = shared;
+    if (Object.keys(edge).length) r.edge = edge;
   }
-  if (boundaries) {
+  if (boundaries || regionBoundaries) {
     // A route's stops: the stop points that list it, over every direction and branch it runs on weekdays.
     const stopsOf = new Map<string, Array<[number, number]>>();
     for (const f of features) {
@@ -187,8 +196,8 @@ export function summarize(
       for (const k of keys) (stopsOf.get(k) ?? stopsOf.set(k, []).get(k)!).push([c[0], c[1]]);
     }
     for (const [key, r] of routes) {
-      const areas = areasForStops(stopsOf.get(key) ?? [], boundaries);
-      r.areas = areas;
+      if (boundaries) r.areas = areasForStops(stopsOf.get(key) ?? [], boundaries);
+      if (regionBoundaries) r.regions = areasForStops(stopsOf.get(key) ?? [], regionBoundaries);
     }
   }
   const hasDay = (day: string) => features.some(f => f.geometry?.type === 'LineString' && f.properties.day === day
@@ -205,7 +214,7 @@ export function summarize(
 }
 
 /** The agency's own config file: the source for its short name, label place and primary area. */
-function readConfig(slug: string): { shortName?: string; labelPlace?: string; displayArea?: string } {
+function readConfig(slug: string): { shortName?: string; labelPlace?: string; displayArea?: string; parentAgency?: string; pageSlug?: string; pageTitleQualifier?: string } {
   try {
     return JSON.parse(readFileSync(`config/agencies/${slug}.json`, 'utf8'));
   } catch {
@@ -250,6 +259,10 @@ function identityFor(a: CatalogAgency) {
     bbox: a.bbox,
     websiteUrl: a.websiteUrl,
     ...(a.betaOnly ? { betaOnly: true as const } : {}),
+    // CIV-1277: its parent agency, and the page URL and title qualifier of a member whose slug the parent's page takes.
+    ...(cfg.parentAgency ? { parentAgency: cfg.parentAgency } : {}),
+    ...(cfg.pageSlug ? { pageSlug: cfg.pageSlug } : {}),
+    ...(cfg.pageTitleQualifier ? { pageTitleQualifier: cfg.pageTitleQualifier } : {}),
     // Every feed's end, as the map reads it (effectiveFeedExpiry): a supplemental rail feed that ends first ends the page's schedule too.
     validThrough: effectiveFeedExpiry(a),
     ...(a.timezone ? { timezone: a.timezone } : {}),
@@ -267,6 +280,10 @@ function writeOutputs(out: AgencyPageSummaries): void {
   writeAtomic(OUT, JSON.stringify(out) + '\n');
   // Every agency gets a page, including ones with no regular midday service (CIV-965).
   writeAtomic(SLUGS_OUT, JSON.stringify(out.agencies.map(a => a.slug)) + '\n');
+  // CIV-1277: members whose page moved off their slug, for every agency page link (shared/pagePaths.ts).
+  writeAtomic(PAGE_RENAMES_OUT, JSON.stringify(Object.fromEntries(out.agencies.filter(a => a.pageSlug).map(a => [a.slug, a.pageSlug]).sort(([x], [y]) => x!.localeCompare(y!)))) + '\n');
+  // Which areas have a page follows from the agencies (two or more): the map card's list and the vercel.json redirects.
+  writeAreaPageList(out);
 }
 
 async function main() {
@@ -276,6 +293,7 @@ async function main() {
   for (const a of catalog.agencies) a.betaOnly = publicSlugs.has(a.slug) ? undefined : true;
   const previous: AgencyPageSummaries | null = existsSync(OUT) ? JSON.parse(readFileSync(OUT, 'utf8')) : null;
   const boundaries: AreaBoundaries | undefined = existsSync(BOUNDARIES) ? JSON.parse(readFileSync(BOUNDARIES, 'utf8')) : undefined;
+  const regionBoundaries: AreaBoundaries | undefined = existsSync(REGION_BOUNDARIES) ? JSON.parse(readFileSync(REGION_BOUNDARIES, 'utf8')) : undefined;
 
   // --identity-only: refresh names, cities and short names from config with no network.
   if (process.argv.includes('--identity-only')) {
@@ -302,7 +320,7 @@ async function main() {
         const data = await getReleaseAgency(release, a.slug);
         const { stopCount, stops } = extractStops(data.features);
         stopsCache.set(a.slug, stops);
-        results.set(a.slug, { ...identityFor(a), ...summarize(data.features, a.slug, a.lastRefreshedAt ?? null, boundaries), stops: stopCount });
+        results.set(a.slug, { ...identityFor(a), ...summarize(data.features, a.slug, a.lastRefreshedAt ?? null, boundaries, regionBoundaries), stops: stopCount });
       } catch (err) {
         // Keep the previous numbers for an agency that failed, rather than dropping its page.
         failed.push(a.slug);

@@ -32,7 +32,7 @@ import { routeCardNotices, type CardFooterNotice } from '../../../utils/routeCar
 import { dirIdNum } from '../../../utils/routeCardTrunk';
 import type { VariantFamily } from '../../../utils/routeVariants';
 import { reportDetails } from '../../../utils/reportIssue';
-import { explainerFor, listingEndHasPassed } from '../../../content/noticeCopy';
+import { explainerFor, listingEndHasPassed, MAP_KEY_NIGHT } from '../../../content/noticeCopy';
 import { agencyTodayYmd, effectiveFeedExpiry } from '../../../../shared/feedAvailability';
 import type { RouteLabel } from '../../../utils/routeFacts';
 
@@ -306,13 +306,14 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
   const routeLabel = currentRoute.label ?? routeLabels({ shortName: currentRoute.routeShortName, longName: currentRoute.routeLongName, routeType: currentRoute.routeType ?? currentRoute.directions[0]?.routeType, agencySlug: currentRoute.agencySlug ?? routeSlug, agencyName: agencyDisplayName });
   // Plain text keeps the dash (report details, the chart window's screen-reader name); on screen the title is RouteTitleName (CIV-1128).
   const routeTitle = routeLabel.text;
-  const reportPeriod = selectedPeriod
-    ? `${selectedPeriod.label} (${formatPeriodRangeLong(selectedPeriod.startHour, selectedPeriod.endHour)})`
-    : 'All day';
+  // CIV-1279: the map has no All day. The Night view reads the card on 'all', so its report names the Night view instead.
+  const reportPeriod = nightView
+    ? MAP_KEY_NIGHT
+    : selectedPeriod && `${selectedPeriod.label} (${formatPeriodRangeLong(selectedPeriod.startHour, selectedPeriod.endHour)})`;
   const details = reportDetails([
     ['Agency', routeAgency?.name ?? routeSlug ?? 'Unknown'],
     ['Route', `${routeTitle || 'Unknown'} (feed short name: ${currentRoute.routeShortName ?? 'none'}; long name: ${currentRoute.routeLongName ?? 'none'})`],
-    ['Period', reportPeriod],
+    ...(reportPeriod ? [['Period', reportPeriod] as const] : []),
     ['Agency data refreshed', routeAgency?.lastRefreshedAt ?? 'unknown'],
     ['Feed expiry', (routeAgency && effectiveFeedExpiry(routeAgency)) ?? 'unknown'],
     '**Displayed service:**',

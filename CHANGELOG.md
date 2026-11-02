@@ -8,6 +8,10 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Map and route behavior
 
+- **Route lists and agency pages say when a route starts or stops instead of a long wait**: [NYC B and W](https://github.com/Civic-Minds/Atlas/issues/1292) AM peak read "every 72" and "every 88" where the card already said "every 9 min from 7:12 AM", and the J read every 75 at a station it skips at rush hour
+- **[Lines that share one name](https://github.com/Civic-Minds/Atlas/issues/1289) show as separate routes**: MARC's Brunswick, Penn and Camden lines, the three NYC S shuttles, Metro St Louis's Missouri and Illinois routes and JTA's First Coast Flyer lines each read as one route before
+- **[Miami Metrorail](https://github.com/Civic-Minds/Atlas/issues/1287) shows its Green and Orange lines**: the feed lists all of Metrorail as one route, "2600"
+- **[BART lines](https://github.com/Civic-Minds/Atlas/issues/1285) are one route each, not one per direction**: the feed lists Yellow-N and Yellow-S separately, so BART read as 12 routes for its 6 lines
 - **Route card rows show the frequency the filter reads**: [AC Transit 281](https://github.com/Civic-Minds/Atlas/issues/1239) read every 60 where the filter reads 66 at the same stop, and waits over an hour now print their exact minutes instead of rounding to the half hour; a long gap is named only when it is at least 1.5 times the usual wait, and a [branch that stops partway](https://github.com/Civic-Minds/Atlas/issues/1276) says when, on the rows that run there (TTC 110 via 30th Street: every 30 until 5:55 PM), with no second line saying only part of the route qualifies
 - **Routes that run only part of a period say when instead of showing nothing**: [TTC 110](https://github.com/Civic-Minds/Atlas/issues/1277) Sunday mornings read "every 15 min from 8:07 AM" where the card had no rows
 - **The info panel no longer gives a last-checked or last-refreshed date**: it says how many times Atlas has checked since a schedule ended, and when it checks next
@@ -99,7 +103,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Route cards and frequency
 
-- **Route cards use one set of words for each situation**: "Shared stretch" names a route's shared part, "Irregular" replaces "limited" in a time period and "Part-time" on All day, a route that doesn't run reads "no trips", and branches that take turns on a shared stretch each say when they run (TTC 110)
+- **Route cards use one set of words for each situation**: "Shared stretch" names a route's shared part, "Irregular" replaces "limited" in a time period, a route that doesn't run reads "no trips", and branches that take turns on a shared stretch each say when they run (TTC 110)
 - **Route lists show the route card's number**: the [slower direction](https://github.com/Civic-Minds/Atlas/issues/821) (GO 47 no longer reads every 3), a [range](https://github.com/Civic-Minds/Atlas/issues/1231) that starts where the card does, and no number for a route the [filter reads as irregular](https://github.com/Civic-Minds/Atlas/issues/1247)
 - **A card shows one shared value per direction**: a destination under the Shared stretch row reads its own frequency, not a [second shared range](https://github.com/Civic-Minds/Atlas/issues/1232)
 - **Branch rows show only the time a branch runs**: a [rush-hour branch](https://github.com/Civic-Minds/Atlas/issues/1115) no longer borrows the main line's midday frequency (TTC 84)
@@ -140,6 +144,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **History draws each year on its [own lines](https://github.com/Civic-Minds/Atlas/issues/1028) with the map's filters**: pick "≤15 min" and a time and slide through the years
 - **History opens on the [city](https://github.com/Civic-Minds/Atlas/issues/1012) you're looking at and behaves like the map**: [Escape](https://github.com/Civic-Minds/Atlas/issues/1031) closes the panel, and the [map](https://github.com/Civic-Minds/Atlas/issues/1016) stays put while the slider moves
 - **History's panels, [lists](https://github.com/Civic-Minds/Atlas/issues/1015) and cards match the regular ones**: including [mode pills](https://github.com/Civic-Minds/Atlas/issues/1014), the report flag and the loading panel
+- **History and the route list show the [same range](https://github.com/Civic-Minds/Atlas/issues/1248) or none**: History had read the busiest stop (TTC 102 midday 11–30 beside the list's 20–30), and the list now follows History's rule for when a range shows, so TTC 102 PM reads every 30 in both
 
 ### Live
 
@@ -157,7 +162,19 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Agency, area and research pages
 
+- **Every agency page has its own search title**: agencies that share a short name, like the five MTA NYCT Bus boroughs or DART in Dallas and Des Moines, now add their borough, sector or place, and the build fails if two pages would ever share a title again
+- **[Free child fares](https://github.com/Civic-Minds/Atlas/issues/1290) age chart looks and responds like the split bar above it**: a column chart in the sparkline shape with the split bar's text, where hovering or tapping a column fades the others as the split bar does; the Other policies chart is gone, since the split bar already shows those numbers; the legend uses shorter labels and the note under the charts moved into How we did this
+- **Free child fares opens with its finding, and highlights age 5**: "Where kids ride free, age 5 is the most common cutoff" is an intro line under the title rather than a big heading, and the age chart highlights the most common age until another is picked
+- **Research charts drop the "Show as a table" toggle**: the table stays for screen readers, linked to its chart
+- **[Free child fares](https://github.com/Civic-Minds/Atlas/issues/1290) age chart looks and responds like the split bar above it**: a column chart in the sparkline shape with the split bar's text, where hovering or tapping a column fades the others as the split bar does; the Other policies chart is gone, since the split bar already shows those numbers; the legend uses shorter labels and the note under the charts moved into Method
+- **Research pages end with a "Method" section at section-heading size**: it read "How we did this" in a heading as large as a page title
+- **The Frequent service story's threshold chart responds like the other research charts**: hovering or tapping a bar fades the others and highlights its name, in the same text as the Free child fares charts, and the most common threshold, 15 min, is highlighted until another bar is picked
+- **MTA New York, exo, MTA Maryland and Bustang each have one page across their feeds**: the parent page adds up its services' routes, counting a route shared by two feeds once, and lists them under "Services"; each service's page links up to it, and the map's agency picker and the agency list show it once
+- **Area and state pages show a parent agency once**: MTA New York is one row on New York's page and in the New York area, with its routes counted once, and its services are on its own page
 - **Every state and province has its own page**: it compares its agencies with the area pages' table and frequency bar
+- **Agency pages [name every area an agency serves](https://github.com/Civic-Minds/Atlas/issues/1283)**: BART read "in Oakland", it now reads "in the Bay Area and the San Jose area", each area links to its own page, a city is never a link, and state and province pages list every agency that stops in them
+- **An area page needs at least [two agencies](https://github.com/Civic-Minds/Atlas/issues/1283)**: a one-agency area such as Austin sends its link to the agency's own page, since its page repeated the agency page, and the agency page names the area without a link
+- **Area and state page intros say agencies are "operating" their routes**: "The Bay Area has 17 transit agencies operating 432 routes" reads as the agencies' service
 - **The Docs page's "On this page" list [highlights the section being read](https://github.com/Civic-Minds/Atlas/issues/1275)**: it could stay on an earlier section
 - **A shared research link previews its own page (beta)**: each research page has its own title and description, and Overnight service and the Frequent service story show their own pictures
 - **The About page shows the map and the research up front**: a picture of Toronto's routes beside the headline, the newest research as picture tiles, and Where / When / How often cards

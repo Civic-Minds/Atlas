@@ -14,6 +14,13 @@
     -122.65
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-246/latest.zip",
+  "sameNameRoutes": [
+    {
+      "shortName": "1",
+      "longName": "Downtown Portland",
+      "name": "1 Downtown Portland"
+    }
+  ],
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-246/latest.zip",
   "timezone": "America/Los_Angeles",
   "lastFeedExpiry": "20270531",

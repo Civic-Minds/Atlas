@@ -5,6 +5,7 @@
   "displayArea": "Laurentides",
   "websiteUrl": "https://exo.quebec/fr/planifier-trajet/autobus/CITLA",
   "region": "Quebec",
+  "parentAgency": "exo",
   "center": [
     45.6611,
     -73.9029

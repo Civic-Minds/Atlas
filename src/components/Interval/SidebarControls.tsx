@@ -273,7 +273,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   // quadratic in route features and reran on every layer update (froze Live zooming, CIV-218).
   const notableRoutes = useMemo(() => {
     if (!searchFocused) return [];
-    const routes = new Map<string, { key: string; shortName: string; labelShortName: string; agencySlug: string; longNames: string[]; agencyName: string; routeType?: number; headway: number; limited: boolean; noRegular?: boolean; sharedHeadway?: number }>();
+    const routes = new Map<string, { key: string; shortName: string; labelShortName: string; agencySlug: string; longNames: string[]; agencyName: string; routeType?: number; headway: number; limited: boolean; noRegular?: boolean; sharedHeadway?: number; edgeText?: string }>();
     for (const [slug, fc] of Object.entries(nonCorridorLayers)) {
       if (!fc?.features) continue;
       for (const f of fc.features) {
@@ -294,17 +294,19 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         const limited = display.limited;
         const noRegular = display.noRegular === true;
         const sharedHeadway = display.sharedHeadway;
+        const edgeText = display.edgeText;
         const shortName = facts.shortName;
         const longName = facts.longName || '';
         const agencyName = agencyNames(facts.agencyName).name;
         const existing = routes.get(groupKey);
         if (!existing) {
-          routes.set(groupKey, { key: facts.key, shortName: slug === 'bart' ? suggestedRouteGroupKey(slug, shortName) : shortName, labelShortName: slug === 'bart' ? suggestedRouteGroupKey(slug, shortName) : labelShortNameOf(p), agencySlug: slug, longNames: longName ? [longName] : [], agencyName, routeType: facts.routeType, headway, limited, noRegular, sharedHeadway });
+          routes.set(groupKey, { key: facts.key, shortName: slug === 'bart' ? suggestedRouteGroupKey(slug, shortName) : shortName, labelShortName: slug === 'bart' ? suggestedRouteGroupKey(slug, shortName) : labelShortNameOf(p), agencySlug: slug, longNames: longName ? [longName] : [], agencyName, routeType: facts.routeType, headway, limited, noRegular, sharedHeadway, edgeText });
         } else {
           if (longName && !existing.longNames.includes(longName)) existing.longNames.push(longName);
           if (headway < existing.headway) {
             existing.headway = headway;
             existing.sharedHeadway = sharedHeadway;
+            existing.edgeText = edgeText;
           }
           existing.limited = existing.headway >= 999 && (existing.limited || limited);
           existing.noRegular = existing.headway >= 999 && (existing.noRegular === true || noRegular);

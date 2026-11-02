@@ -1,0 +1,127 @@
+route_id,service_id,trip_id,trip_headsign,trip_short_name,direction_id,block_id,shape_id,wheelchair_accessible,bikes_allowed
+952,1,50826527,East - 952 Lawrence West Express towards Lawrence Station,,0,2235156,1123458,1,1
+952,1,50826528,East - 952 Lawrence West Express towards Lawrence Station,,0,2235157,1123458,1,1
+952,1,50826529,East - 952 Lawrence West Express towards Lawrence Station,,0,2235158,1123458,1,1
+952,1,50826530,East - 952 Lawrence West Express towards Lawrence Station,,0,2235159,1123458,1,1
+952,1,50826531,East - 952 Lawrence West Express towards Lawrence Station,,0,2235155,1123458,1,1
+952,1,50826532,East - 952 Lawrence West Express towards Lawrence Station,,0,2235160,1123458,1,1
+952,1,50826533,East - 952 Lawrence West Express towards Lawrence Station,,0,2235161,1123458,1,1
+952,1,50826534,East - 952 Lawrence West Express towards Lawrence Station,,0,2235162,1123458,1,1
+952,1,50826535,East - 952 Lawrence West Express towards Lawrence Station,,0,2235163,1123458,1,1
+952,1,50826536,East - 952 Lawrence West Express towards Lawrence Station,,0,2235164,1123458,1,1
+952,1,50826537,East - 952 Lawrence West Express towards Lawrence Station,,0,2235165,1123458,1,1
+952,1,50826539,East - 952 Lawrence West Express towards Lawrence Station,,0,2235167,1123458,1,1
+952,1,50826540,East - 952 Lawrence West Express towards Lawrence Station,,0,2235156,1123458,1,1
+952,1,50826541,East - 952 Lawrence West Express towards Lawrence Station,,0,2235157,1123458,1,1
+952,1,50826542,East - 952 Lawrence West Express towards Lawrence Station,,0,2235158,1123458,1,1
+952,1,50826543,East - 952 Lawrence West Express towards Lawrence Station,,0,2235159,1123458,1,1
+952,1,50826525,East - 952 Lawrence West Express towards Lawrence Station,,0,2235155,1123458,1,1
+952,1,50826526,East - 952 Lawrence West Express towards Lawrence Station,,0,2235146,1123458,1,1
+952,1,50826544,East - 952 Lawrence West Express towards Lawrence Station,,0,2235147,1123458,1,1
+952,1,50826545,East - 952 Lawrence West Express towards Lawrence Station,,0,2235166,1123458,1,1
+952,1,50826546,East - 952 Lawrence West Express towards Lawrence Station,,0,2235153,1123458,1,1
+952,1,50826547,East - 952 Lawrence West Express towards Lawrence Station,,0,2235154,1123458,1,1
+952,1,50826518,East - 952 Lawrence West Express towards Lawrence Station,,0,2235142,1123458,1,1
+952,1,50826519,East - 952 Lawrence West Express towards Lawrence Station,,0,2235149,1123458,1,1
+952,1,50826520,East - 952 Lawrence West Express towards Lawrence Station,,0,2235150,1123458,1,1
+952,1,50826521,East - 952 Lawrence West Express towards Lawrence Station,,0,2235151,1123458,1,1
+952,1,50826522,East - 952 Lawrence West Express towards Lawrence Station,,0,2235152,1123458,1,1
+952,1,50826517,East - 952 Lawrence West Express towards Lawrence Station,,0,2235148,1123458,1,1
+952,1,50826548,East - 952 Lawrence West Express towards Lawrence Station,,0,2235168,1123458,1,1
+952,1,50826514,East - 952 Lawrence West Express towards Lawrence Station,,0,2235135,1123458,1,1
+952,1,50826515,East - 952 Lawrence West Express towards Lawrence Station,,0,2235146,1123458,1,1
+952,1,50826516,East - 952 Lawrence West Express towards Lawrence Station,,0,2235147,1123458,1,1
+952,1,50826538,East - 952 Lawrence West Express towards Lawrence Station,,0,2235166,1123458,1,1
+952,1,50826523,East - 952 Lawrence West Express towards Lawrence Station,,0,2235153,1123458,1,1
+952,1,50826524,East - 952 Lawrence West Express towards Lawrence Station,,0,2235154,1123458,1,1
+952,1,50826549,East - 952 Lawrence West Express towards Lawrence Station,,0,2235142,1123458,1,1
+952,1,50826550,East - 952 Lawrence West Express towards Lawrence Station,,0,2235149,1123458,1,1
+952,1,50826551,East - 952 Lawrence West Express towards Lawrence Station,,0,2235150,1123458,1,1
+952,1,50826584,West - 952 Lawrence West Express towards Pearson Airport,,1,2235155,1123461,1,1
+952,1,50826616,East - 952 Lawrence West Express towards Lawrence Station,,1,2235156,1123460,1,1
+952,1,50826582,West - 952 Lawrence West Express towards Pearson Airport,,1,2235160,1123461,1,1
+952,1,50826617,East - 952 Lawrence West Express towards Lawrence Station,,1,2235157,1123460,1,1
+952,1,50826587,West - 952 Lawrence West Express towards Pearson Airport,,1,2235161,1123461,1,1
+952,1,50826618,East - 952 Lawrence West Express towards Lawrence Station,,1,2235158,1123460,1,1
+952,1,50826553,West - 952 Lawrence West Express towards Pearson Airport,,1,2235163,1123463,1,1
+952,1,50826596,West - 952 Lawrence West Express towards Pearson Airport,,1,2235162,1123461,1,1
+952,1,50826619,East - 952 Lawrence West Express towards Lawrence Station,,1,2235159,1123460,1,1
+952,1,50826633,East - 952 Lawrence West Express towards Lawrence Station,,1,2235155,1123460,1,1
+952,1,50826554,West - 952 Lawrence West Express towards Pearson Airport,,1,2235164,1123463,1,1
+952,1,50826634,East - 952 Lawrence West Express towards Lawrence Station,,1,2235160,1123460,1,1
+952,1,50826555,West - 952 Lawrence West Express towards Pearson Airport,,1,2235165,1123463,1,1
+952,1,50826556,West - 952 Lawrence West Express towards Pearson Airport,,1,2235167,1123463,1,1
+952,1,50826635,East - 952 Lawrence West Express towards Lawrence Station,,1,2235161,1123460,1,1
+952,1,50826557,West - 952 Lawrence West Express towards Pearson Airport,,1,2235156,1123463,1,1
+952,1,50826636,East - 952 Lawrence West Express towards Lawrence Station,,1,2235162,1123460,1,1
+952,1,50826558,West - 952 Lawrence West Express towards Pearson Airport,,1,2235157,1123463,1,1
+952,1,50826637,East - 952 Lawrence West Express towards Lawrence Station,,1,2235163,1123460,1,1
+952,1,50826559,West - 952 Lawrence West Express towards Pearson Airport,,1,2235158,1123463,1,1
+952,1,50826638,East - 952 Lawrence West Express towards Lawrence Station,,1,2235164,1123460,1,1
+952,1,50826560,West - 952 Lawrence West Express towards Pearson Airport,,1,2235159,1123463,1,1
+952,1,50826639,East - 952 Lawrence West Express towards Lawrence Station,,1,2235165,1123460,1,1
+952,1,50826561,West - 952 Lawrence West Express towards Pearson Airport,,1,2235155,1123463,1,1
+952,1,50826604,East - 952 Lawrence West Express towards Lawrence Station,,1,2235167,1123460,1,1
+952,1,50826562,West - 952 Lawrence West Express towards Pearson Airport,,1,2235160,1123463,1,1
+952,1,50826605,East - 952 Lawrence West Express towards Lawrence Station,,1,2235156,1123460,1,1
+952,1,50826563,West - 952 Lawrence West Express towards Pearson Airport,,1,2235161,1123463,1,1
+952,1,50826607,East - 952 Lawrence West Express towards Lawrence Station,,1,2235157,1123460,1,1
+952,1,50826564,West - 952 Lawrence West Express towards Pearson Airport,,1,2235162,1123463,1,1
+952,1,50826608,East - 952 Lawrence West Express towards Lawrence Station,,1,2235158,1123460,1,1
+952,1,50826565,West - 952 Lawrence West Express towards Pearson Airport,,1,2235163,1123463,1,1
+952,1,50826609,East - 952 Lawrence West Express towards Lawrence Station,,1,2235159,1123460,1,1
+952,1,50826586,West - 952 Lawrence West Express towards Pearson Airport,,1,2235164,1123463,1,1
+952,1,50826610,East - 952 Lawrence West Express towards Lawrence Station,,1,2235155,1123460,1,1
+952,1,50826611,Terminal 3 Only,S,1,2235160,1123462,1,1
+952,1,50826612,Terminal 3 Only,S,1,2235161,1123462,1,1
+952,1,50826613,Terminal 3 Only,S,1,2235162,1123462,1,1
+952,1,50826614,Terminal 3 Only,S,1,2235163,1123462,1,1
+952,1,50826615,Terminal 3 Only,S,1,2235164,1123462,1,1
+952,1,50826583,West - 952 Lawrence West Express towards Pearson Airport,,1,2235149,1123463,1,1
+952,1,50826575,East - 952 Lawrence West Express towards Lawrence Station,,1,2235146,1123460,1,1
+952,1,50826591,West - 952 Lawrence West Express towards Pearson Airport,,1,2235150,1123463,1,1
+952,1,50826576,East - 952 Lawrence West Express towards Lawrence Station,,1,2235147,1123460,1,1
+952,1,50826592,West - 952 Lawrence West Express towards Pearson Airport,,1,2235151,1123463,1,1
+952,1,50826606,East - 952 Lawrence West Express towards Lawrence Station,,1,2235166,1123460,1,1
+952,1,50826593,West - 952 Lawrence West Express towards Pearson Airport,,1,2235152,1123463,1,1
+952,1,50826577,East - 952 Lawrence West Express towards Lawrence Station,,1,2235153,1123460,1,1
+952,1,50826594,West - 952 Lawrence West Express towards Pearson Airport,,1,2235148,1123463,1,1
+952,1,50826578,East - 952 Lawrence West Express towards Lawrence Station,,1,2235154,1123460,1,1
+952,1,50826595,West - 952 Lawrence West Express towards Pearson Airport,,1,2235168,1123463,1,1
+952,1,50826579,East - 952 Lawrence West Express towards Lawrence Station,,1,2235142,1123460,1,1
+952,1,50826552,West - 952 Lawrence West Express towards Pearson Airport,,1,2235135,1123463,1,1
+952,1,50826620,East - 952 Lawrence West Express towards Lawrence Station,,1,2235149,1123460,1,1
+952,1,50826581,West - 952 Lawrence West Express towards Pearson Airport,,1,2235146,1123463,1,1
+952,1,50826621,East - 952 Lawrence West Express towards Lawrence Station,,1,2235150,1123460,1,1
+952,1,50826597,West - 952 Lawrence West Express towards Pearson Airport,,1,2235147,1123463,1,1
+952,1,50826622,East - 952 Lawrence West Express towards Lawrence Station,,1,2235151,1123460,1,1
+952,1,50826598,West - 952 Lawrence West Express towards Pearson Airport,,1,2235166,1123463,1,1
+952,1,50826623,East - 952 Lawrence West Express towards Lawrence Station,,1,2235152,1123460,1,1
+952,1,50826599,West - 952 Lawrence West Express towards Pearson Airport,,1,2235153,1123463,1,1
+952,1,50826624,East - 952 Lawrence West Express towards Lawrence Station,,1,2235148,1123460,1,1
+952,1,50826600,West - 952 Lawrence West Express towards Pearson Airport,,1,2235154,1123463,1,1
+952,1,50826625,East - 952 Lawrence West Express towards Lawrence Station,,1,2235168,1123460,1,1
+952,1,50826601,West - 952 Lawrence West Express towards Pearson Airport,,1,2235142,1123463,1,1
+952,1,50826626,East - 952 Lawrence West Express towards Lawrence Station,,1,2235135,1123460,1,1
+952,1,50826602,West - 952 Lawrence West Express towards Pearson Airport,,1,2235149,1123463,1,1
+952,1,50826627,East - 952 Lawrence West Express towards Lawrence Station,,1,2235146,1123460,1,1
+952,1,50826603,West - 952 Lawrence West Express towards Pearson Airport,,1,2235150,1123463,1,1
+952,1,50826588,East - 952 Lawrence West Express towards Lawrence Station,,1,2235147,1123460,1,1
+952,1,50826628,West - 952 Lawrence West Express towards Pearson Airport,,1,2235151,1123463,1,1
+952,1,50826589,East - 952 Lawrence West Express towards Lawrence Station,,1,2235166,1123460,1,1
+952,1,50826629,West - 952 Lawrence West Express towards Pearson Airport,,1,2235152,1123463,1,1
+952,1,50826590,East - 952 Lawrence West Express towards Lawrence Station,,1,2235153,1123460,1,1
+952,1,50826566,East - 952 Lawrence West Express towards Lawrence Station,,1,2235154,1123460,1,1
+952,1,50826630,West - 952 Lawrence West Express towards Pearson Airport,,1,2235168,1123463,1,1
+952,1,50826567,East - 952 Lawrence West Express towards Lawrence Station,,1,2235142,1123460,1,1
+952,1,50826631,West - 952 Lawrence West Express towards Pearson Airport,,1,2235135,1123463,1,1
+952,1,50826568,East - 952 Lawrence West Express towards Lawrence Station,,1,2235149,1123460,1,1
+952,1,50826632,West - 952 Lawrence West Express towards Pearson Airport,,1,2235146,1123463,1,1
+952,1,50826569,East - 952 Lawrence West Express towards Lawrence Station,,1,2235150,1123460,1,1
+952,1,50826585,West - 952 Lawrence West Express towards Pearson Airport,,1,2235147,1123463,1,1
+952,1,50826570,Terminal 3 Only,S,1,2235151,1123462,1,1
+952,1,50826571,Terminal 3 Only,S,1,2235152,1123462,1,1
+952,1,50826572,Terminal 3 Only,S,1,2235168,1123462,1,1
+952,1,50826573,Terminal 3 Only,S,1,2235135,1123462,1,1
+952,1,50826574,Terminal 3 Only,S,1,2235146,1123462,1,1
+952,1,50826580,Terminal 3 Only,S,1,2235147,1123462,1,1

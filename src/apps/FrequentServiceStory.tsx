@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import { ArrowDown, ArrowRight, MapPinned } from 'lucide-react';
 import { trackEvent } from '../lib/analytics';
 import { headwayEveryRange } from '../utils/headwayText';
@@ -11,6 +11,7 @@ import { frequentServiceDefinitionSample, frequentServiceStoryResearchRecord, fr
 import FrequentServicePublishedMapMontage from '../components/FrequentServicePublishedMapMontage';
 import FrequentServiceStoryMap from '../components/FrequentServiceStoryMap';
 import PageShell from '../components/ui/PageShell';
+import { UNDERLINED_LINK } from '../pageStyles';
 import type { Agency } from '../App';
 import { headwayAmount } from '../../shared/headwayText';
 
@@ -27,11 +28,13 @@ const HEADWAY_COLUMNS: DataTableColumn<HeadwayBar>[] = [
 ];
 
 export default function FrequentServiceStory({ onExploreMap, agencies }: Props) {
-  const [selectedMinutes, setSelectedMinutes] = useState(15);
+  const tableId = useId();
   const [storyStage, setStoryStage] = useState(0);
   const frequencyMinutes = 15 as const;
   const storyStepRefs = useRef<Array<HTMLDivElement | null>>([]);
   const maxBar = Math.max(...frequentServiceStoryStats.headwayBars.map(bar => bar.agencies));
+  // The most common threshold is highlighted while nothing else is, like the age chart's most common age (CIV-1286).
+  const commonBar = frequentServiceStoryStats.headwayBars.reduce((top, bar) => (bar.agencies > top.agencies ? bar : top));
 
   useEffect(() => {
     if (typeof IntersectionObserver === 'undefined') return;
@@ -58,7 +61,7 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
       dateConducted: <>October 11, 2026.</>,
       dateUpdated: <>October 30, 2026.</>,
       sample: <>We looked for an official definition of frequent service at {frequentServiceDefinitionSample.agencies} agencies Atlas covers in Canada ({frequentServiceDefinitionSample.canada}) and the United States ({frequentServiceDefinitionSample.unitedStates}). We couldn't check {frequentServiceDefinitionSample.blocked} others because their websites block automated visits. {frequentServiceDefinitionSample.namedNetwork} have a named frequent network, such as a “Frequent Network”. {frequentServiceDefinitionSample.withWait} of those say how often the bus comes, such as “every 15 minutes or better”. The chart shows {frequentServiceStoryStats.chartedAgencies} of those {frequentServiceDefinitionSample.withWait} agencies, checked again on October 30.</>,
-      sources: <>The agency’s own current system map, rider guide, frequent network page, service standards, or a plan for the network running today.</>,
+      sources: <>The agency’s own current system map, rider guide, frequent network page, service standards, or a plan for the network running today. Shelter photo: <a className={UNDERLINED_LINK} href="https://commons.wikimedia.org/wiki/File:TTC_Bus_Stop_on_Port_Union_Road,_April_30_2026.jpg" rel="noopener noreferrer">Dillan Payne</a>, <a className={UNDERLINED_LINK} href="https://creativecommons.org/licenses/by-sa/4.0/" rel="noopener noreferrer">CC BY-SA 4.0</a>, cut out and adapted.</>,
       whatCounted: <>Each quote was checked by script against the saved page. When an agency’s pages disagreed, we used the narrower definition. Not finding a definition does not mean an agency has no frequent service.</>,
       numbers: <>When an agency has more than one frequent tier, we used the fastest one that covers more than one route. When it gives a range, such as {headwayEveryRange(15, 20)}, we used the slower number, for weekday daytime.</>,
       rechecked: <>On October 30, 2026, we opened the source again for each of the {frequentServiceStoryStats.recheckedAgencies} agencies the chart counted. {frequentServiceStoryStats.namedNumericAgencies} still matched and stay in the chart. {frequentServiceStoryStats.recheckLeftOut} are left out: Anchorage's and VIA's maps are gone, DART's site returned an error, Foothill's and Sun Tran's sites block automated visits, and STM's page doesn't show the times to one.</>,
@@ -128,21 +131,16 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
                 Pick a representative threshold to see how agencies turn that number into a service promise. This chart covers {frequentServiceStoryStats.chartedAgencies} agencies with a verified numeric definition; secondary tiers remain in the research instead of being flattened.
               </p>
             </div>
-            <div className="mt-10" aria-label="Interactive chart showing the number of agencies by the selected published frequent-service threshold">
+            <div className="mt-10">
               <RankedBars
-                as="buttons"
-                bars={frequentServiceStoryStats.headwayBars.map(bar => ({ key: bar.minutes, label: headwayAmount(bar.minutes), value: bar.agencies, fill: selectedMinutes === bar.minutes ? 'var(--accent)' : 'var(--text-muted)' }))}
+                label="Interactive chart showing the number of agencies by the selected published frequent-service threshold"
+                bars={frequentServiceStoryStats.headwayBars.map(bar => ({ key: bar.minutes, label: headwayAmount(bar.minutes), value: bar.agencies, fill: 'var(--text-muted)', sentence: `Show examples for ${bar.minutes}-minute service (${bar.agencies} agencies)` }))}
                 max={maxBar}
-                listClassName="space-y-4"
-                rowClassName="grid w-full grid-cols-[4.5rem_1fr_3rem] items-center gap-3 rounded-lg text-left text-sm outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)]"
-                labelClassName="font-black text-[var(--text-primary)]"
-                fillClassName="transition-[width,background-color]"
-                selectedKey={selectedMinutes}
-                onSelect={key => setSelectedMinutes(key as number)}
-                describe={bar => `Show examples for ${bar.key}-minute service (${bar.value} agencies)`}
+                defaultKey={commonBar.minutes}
+                details={tableId}
               />
               <p className="mt-5 text-xs leading-5 text-[var(--text-dim)]">Each agency appears once, at the slowest wait its source gives for weekday daytime service: “every 15–20 minutes” counts as 20. Other times of day and secondary tiers remain in the research. Checked again on October 30, 2026. {frequentServiceStoryStats.recheckLeftOut} agencies are left out because their page is gone or couldn't be checked again.</p>
-              <ChartTableDetails caption="There is no single “frequent.”" columns={HEADWAY_COLUMNS} rows={frequentServiceStoryStats.headwayBars} rowKey={bar => bar.minutes} />
+              <ChartTableDetails id={tableId} caption="There is no single “frequent.”" columns={HEADWAY_COLUMNS} rows={frequentServiceStoryStats.headwayBars} rowKey={bar => bar.minutes} />
             </div>
           </section>
 

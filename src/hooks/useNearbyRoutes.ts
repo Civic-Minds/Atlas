@@ -34,6 +34,8 @@ export interface NearbyRoute {
   noRegular?: boolean;
   /** Lower end of a shared-stretch range (display only). */
   sharedHeadway?: number;
+  /** #1292: the card's late-start or early-end words when they explain the value (routeListDisplay). */
+  edgeText?: string;
   tier: string | null;
   nearestStopName: string;
   distanceMeters: number;
@@ -106,7 +108,7 @@ export function useNearbyRoutes(
               (candidateProps.day === undefined || candidateProps.day === currentDay);
           })
           .map(candidate => candidate.properties as unknown as ShapeProperties);
-        const { headway, limited, sharedHeadway, noRegular } = routeListDisplay(routeFeatures, period);
+        const { headway, limited, sharedHeadway, noRegular, edgeText } = routeListDisplay(routeFeatures, period);
 
         if (!routeMap.has(mapKey)) {
           const label = routeLabels({ shortName: p.routeShortName, longName: p.routeLongName as string | null, routeType: p.routeType, agencySlug: slug, agencyName: p.agencyName });
@@ -122,6 +124,7 @@ export function useNearbyRoutes(
             limited,
             noRegular,
             sharedHeadway,
+            edgeText,
             tier: (p.tier as string | null) ?? null,
             nearestStopName: stop.stopName,
             distanceMeters: stop.distanceMeters,
@@ -131,6 +134,7 @@ export function useNearbyRoutes(
           if (headway != null && (existing.headway === null || headway < existing.headway)) {
             existing.headway = headway;
             existing.sharedHeadway = sharedHeadway;
+            existing.edgeText = edgeText;
           }
           existing.limited = existing.headway == null && (existing.limited || limited);
           existing.noRegular = existing.headway == null && (existing.noRegular === true || noRegular === true);

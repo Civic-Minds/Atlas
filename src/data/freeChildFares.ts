@@ -17,20 +17,23 @@ export const FREE_CHILD_AGE_COUNTS: ReadonlyArray<readonly [age: number, agencie
   [1, 1], [2, 1], [3, 2], [4, 80], [5, 129], [6, 20], [7, 2], [8, 3], [9, 3], [10, 8], [11, 28], [12, 45], [13, 1], [14, 1], [17, 3], [18, 47],
 ];
 
-/** Every other policy_type, in chart order. */
+/** policy_type "age" as one group, in the legend and hover readouts (Ryan's short labels, 2026-11-02). */
+export const FREE_CHILD_AGE_LABEL = 'Age limit';
+
+/** Every other policy_type, in chart order, with Ryan's short labels (2026-11-02). */
 export const FREE_CHILD_OTHER_POLICIES: ReadonlyArray<{ policyType: string; label: string; agencies: number; unknown?: boolean }> = [
-  { policyType: 'all-fare-free', label: 'Free for everyone', agencies: 63 },
-  { policyType: 'height', label: 'Free below a height', agencies: 39 },
-  { policyType: 'student-program', label: 'Through a student program', agencies: 24 },
-  { policyType: 'age-conditional', label: 'Only under a program', agencies: 4 },
-  { policyType: 'no-free-child-fare', label: 'No free child fare', agencies: 15 },
-  { policyType: 'unresolved', label: 'Not found yet', agencies: 34, unknown: true },
+  { policyType: 'all-fare-free', label: 'Fare-free', agencies: 63 },
+  { policyType: 'height', label: 'Height limit', agencies: 39 },
+  { policyType: 'student-program', label: 'Student program', agencies: 24 },
+  { policyType: 'age-conditional', label: 'Program only', agencies: 4 },
+  { policyType: 'no-free-child-fare', label: 'None', agencies: 15 },
+  { policyType: 'unresolved', label: 'Not found', agencies: 34, unknown: true },
 ];
 
 export const freeChildAgeBars: FreeChildFareBar[] = FREE_CHILD_AGE_COUNTS.map(([age, agencies]) => ({ label: `Up to ${age}`, agencies }));
 export const freeChildOtherBars: FreeChildFareBar[] = FREE_CHILD_OTHER_POLICIES.map(({ label, agencies, unknown }) => ({ label, agencies, unknown }));
 
-/** Agencies in the chart by country (the Sample line in "How we did this"). */
+/** Agencies in the chart by country (the Sample line in "Method"). */
 export const FREE_CHILD_AGENCIES_BY_COUNTRY = { 'United States': 465, Canada: 88 } as const;
 
 const sum = (bars: FreeChildFareBar[]) => bars.reduce((total, bar) => total + bar.agencies, 0);
@@ -39,6 +42,4 @@ export const freeChildFareStats = {
   agencies: sum(freeChildAgeBars) + sum(freeChildOtherBars),
   freeUpToAge: sum(freeChildAgeBars),
   notFound: FREE_CHILD_OTHER_POLICIES.find(p => p.policyType === 'unresolved')!.agencies,
-  /** Both charts share one scale, so a bar's length means the same count in either. */
-  maxBar: Math.max(...freeChildAgeBars.map(b => b.agencies), ...freeChildOtherBars.map(b => b.agencies)),
 };

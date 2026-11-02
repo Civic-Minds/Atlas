@@ -8,6 +8,18 @@
     -76.49
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-2285/latest.zip",
+  "sameNameRoutes": [
+    {
+      "shortName": "Purple",
+      "longName": "Purple-N1 Call-in 4102637964",
+      "name": "Purple North"
+    },
+    {
+      "shortName": "Purple",
+      "longName": "Purple-S2 Call-in 4102637964",
+      "name": "Purple South"
+    }
+  ],
   "lastFeedExpiry": "20260930",
   "lastFeedVersion": "20250923",
   "lastRefreshedAt": "2026-08-07",
