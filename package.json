@@ -114,7 +114,7 @@
     "gtfs-realtime-bindings": "^2.2.0",
     "jszip": "^3.10.2",
     "lucide-react": "^1.63.0",
-    "maplibre-gl": "^6.15.0",
+    "maplibre-gl": "^6.16.0",
     "papaparse": "^5.7.0",
     "pbf": "^5.1.2",
     "pmtiles": "^4.5.0",
