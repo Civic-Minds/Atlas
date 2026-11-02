@@ -1,6 +1,8 @@
 import { readFileSync, readdirSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { agencyPageData, agencyPageJsonLd, agencyPlaces, type AgencyPageSummary } from './agencyPages';
+import { agencyPageData, agencyPageJsonLd, agencyPlaces, areaPageStatus, type AgencyPageSummaries, type AgencyPageSummary } from './agencyPages';
+import { buildAgencyIndexData } from './agencyIndex';
+import { areaRedirects } from '../scripts/build-area-page-list';
 import { agencyPageSummaries } from './agencyPagesData';
 import type { AreaConfig } from './areas';
 import { AREA_INDEX } from './areaIndex';
@@ -68,11 +70,13 @@ describe('the places an agency serves (#1283)', () => {
       const d = agencyPageData(a, all, null, homeArea.get(a.slug));
       for (const p of d.places.named) {
         if (!p.href) {
-          expect(p.name, a.slug).toBe(a.city);
+          // Unlinked: the city, or an area with too few agencies for a page.
+          const pageless = [...areaPageStatus(all).redirects.keys()].map(slug => areaRegionName({ slug, name: AREA_INDEX[slug].name ?? slug }));
+          expect([a.city, ...pageless], a.slug).toContain(p.name);
           continue;
         }
         const slug = p.href.replace(/^\/area\//, '');
-        expect(AREA_INDEX[slug]?.page, `${a.slug} ${p.href}`).toBe(true);
+        expect(areaPageStatus(all).pages.has(slug), `${a.slug} ${p.href}`).toBe(true);
         expect(p.name, `${a.slug} ${p.href}`).toBe(areaRegionName({ slug, name: AREA_INDEX[slug].name ?? slug }));
         linked++;
       }
@@ -100,5 +104,34 @@ describe('state and province boundaries (#1283)', () => {
       const counted = new Set(agencyPlaces(a).regions.flatMap(r => r.routes));
       expect(counted.size, a.slug).toBe(a.routes.length);
     }
+  });
+});
+
+describe('areas need two agencies for a page (Ryan, 2026-11-01)', () => {
+  const summaries = JSON.parse(readFileSync('shared/data/agency-pages.json', 'utf8')) as AgencyPageSummaries;
+  const status = areaPageStatus(summaries.agencies);
+
+  it('sends the Austin area, with only CapMetro, to CapMetro\'s page, permanently', () => {
+    expect(status.pages.has('austin')).toBe(false);
+    expect(status.redirects.get('austin')).toBe('capmetro');
+    const vercel = JSON.parse(readFileSync('vercel.json', 'utf8')) as { redirects: Array<{ source: string; destination: string; permanent: boolean }> };
+    expect(vercel.redirects).toContainEqual({ source: '/area/austin', destination: '/agency/capmetro', permanent: true });
+  });
+
+  it('keeps a page for an area with two or more agencies', () => {
+    expect(status.pages.has('san-jose')).toBe(true);
+    expect(status.redirects.has('san-jose')).toBe(false);
+  });
+
+  it('vercel.json and the map card list match the rule (run scripts/build-area-page-list.ts after a change)', () => {
+    const vercel = JSON.parse(readFileSync('vercel.json', 'utf8')) as { redirects: Array<{ source: string }> };
+    expect(vercel.redirects.filter(r => r.source.startsWith('/area/'))).toEqual(areaRedirects(summaries));
+    expect(JSON.parse(readFileSync('shared/data/area-page-slugs.json', 'utf8'))).toEqual([...status.pages].sort());
+  });
+
+  it('drops a one-agency area from the all-agencies regions list', () => {
+    const index = buildAgencyIndexData(all, areas, null);
+    expect(index.areas.map(a => a.slug)).not.toContain('austin');
+    expect(index.areas.map(a => a.slug)).toContain('san-jose');
   });
 });

@@ -3,8 +3,8 @@
  * number is added up from the per-agency summaries (shared/agencyPages.ts); nothing new is measured.
  */
 import {
-  agencyPlaces,
   agencyStats,
+  areaAgencySummaries,
   bandCounts,
   bestRoute,
   formatDataDate,
@@ -26,7 +26,7 @@ import { capitalizeFirst } from './headwayText';
 import { compareAgencyName } from './sortCompare';
 import { DESCRIPTION_MAX, TITLE_MAX, firstThatFits, truncateAtWord } from './seoText';
 
-export { AREA_PATH_PREFIX, areaPagePath };
+export { AREA_PATH_PREFIX, areaPagePath, areaAgencySummaries };
 
 /** The prerendered HTML carries its data in <script type="application/json" id=...>. */
 export const AREA_DATA_SCRIPT_ID = 'area-page-data';
@@ -97,26 +97,6 @@ export function areaTableColumnTitle(column: string): string | undefined {
   }
   const extra = Object.entries(AREA_TABLE_GROUPED).filter(([, to]) => to === column).map(([from]) => from.toLowerCase());
   return extra.length > 0 ? sentence([column], extra.join(' and ')) : undefined;
-}
-
-/**
- * The agencies counted on an area page (they have a page: weekday midday service), each with only the
- * routes counted there. CIV-274: a route counts in every area where it stops at two places (more than
- * AREA_SAME_PLACE_METERS apart) inside the official boundary (`areas`, from build-agency-page-summaries), whichever
- * agency runs it; an agency is listed when one of its routes counts. Summaries without area tags
- * (older files) fall back to the area's own agency list.
- */
-export function areaAgencySummaries(area: Pick<AreaConfig, 'agencies' | 'slug'>, all: ReadonlyMap<string, AgencyPageSummary>): AgencyPageSummary[] {
-  const hasPage = hasMiddayService;
-  const tagged = [...all.values()].some(a => a.routes.some(r => r.areas !== undefined));
-  if (!tagged) return area.agencies.map(s => all.get(s)).filter((a): a is AgencyPageSummary => !!a && hasPage(a));
-  const out: AgencyPageSummary[] = [];
-  for (const a of all.values()) {
-    if ((a.betaOnly && !BETA_BUILD) || !hasPage(a)) continue;
-    const routes = agencyPlaces(a).areas.find(x => x.slug === area.slug)?.routes ?? [];
-    if (routes.length > 0) out.push({ ...a, routes, routeCount: routes.length });
-  }
-  return out;
 }
 
 /** An agency's route counts by table column (areaTableColumn): the fixed modes, the grouped ones added in, the rest in "Other". */

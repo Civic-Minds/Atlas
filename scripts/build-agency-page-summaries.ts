@@ -41,6 +41,7 @@ import { countryForRegion } from '../shared/regionCountry';
 import { agencyNames } from '../src/utils/agencyName';
 import { compareRouteNumber } from '../shared/sortCompare';
 import { areasForStops, type AreaBoundaries } from '../shared/areaBoundaries';
+import { writeAreaPageList } from './build-area-page-list';
 
 const OUT = 'shared/data/agency-pages.json';
 // Slugs with a page, small enough for the map bundle (the agency card links only to real pages).
@@ -271,6 +272,8 @@ function writeOutputs(out: AgencyPageSummaries): void {
   writeAtomic(OUT, JSON.stringify(out) + '\n');
   // Every agency gets a page, including ones with no regular midday service (CIV-965).
   writeAtomic(SLUGS_OUT, JSON.stringify(out.agencies.map(a => a.slug)) + '\n');
+  // Which areas have a page follows from the agencies (two or more): the map card's list and the vercel.json redirects.
+  writeAreaPageList(out);
 }
 
 async function main() {

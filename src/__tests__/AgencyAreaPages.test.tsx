@@ -6,7 +6,7 @@ import AgencyPage from '../AgencyPage';
 import AreaPage from '../AreaPage';
 import RegionPage from '../RegionPage';
 import { buildRegionPageData } from '../../shared/regionPages';
-import { agencyPageData, type AgencyPageRoute, type AgencyPageSummary } from '../../shared/agencyPages';
+import { agencyBreadcrumbs, agencyPageData, type AgencyPageRoute, type AgencyPageSummary } from '../../shared/agencyPages';
 import { buildAreaPageData, AREA_TABLE_OTHER } from '../../shared/areaPages';
 import type { AreaConfig } from '../../shared/areas';
 
@@ -18,6 +18,8 @@ const TTC: AgencyPageSummary = {
   routes: [r('1', 1, 4), r('2', 1, 20), r('5', 3, 12), r('6', 3, 30), r('301', 3, null, { am: null, pm: null, evening: null, overnight: 30 })],
 };
 const HSR: AgencyPageSummary = { ...TTC, slug: 'hsr', name: 'Hamilton Street Railway', displayName: 'HSR (Hamilton)', city: 'Hamilton', routes: [r('A', 3, 10), r('B', 3, 25)], routeCount: 2, sat: true, sun: false };
+// A second Toronto-area agency, so the Toronto area has the two agencies a page needs (areaPageStatus).
+const GO: AgencyPageSummary = { ...HSR, slug: 'go', name: 'GO Transit', displayName: 'GO Transit', city: 'Toronto' };
 const AREA: AreaConfig = {
   slug: 'toronto', name: 'Toronto', type: 'CMA', officialName: 'Toronto', country: 'Canada', cities: ['Toronto'], bbox: [43, -80, 44, -79], center: [43.5, -79.5],
   largeMetro: true, page: true, agencies: ['ttc', 'hsr'],
@@ -28,7 +30,19 @@ function view(ui: React.ReactElement) {
 }
 
 describe('AgencyPage', () => {
-  const data = agencyPageData(TTC, [TTC, HSR], '2026-10-13T00:00:00Z', { slug: 'toronto', name: 'Toronto' });
+  const data = agencyPageData(TTC, [TTC, HSR, GO], '2026-10-13T00:00:00Z', { slug: 'toronto', name: 'Toronto' });
+
+  it('names an area with one agency without a link, keeping the state link in the breadcrumb (Ryan, 2026-11-01)', () => {
+    const alone = agencyPageData(TTC, [TTC, HSR], null, { slug: 'toronto', name: 'Toronto' });
+    expect(alone.area).toEqual({ slug: 'toronto', name: 'Toronto', page: false });
+    view(<AgencyPage data={alone} />);
+    expect(screen.getByText('Greater Toronto and Hamilton Area').tagName).toBe('P');
+    expect(screen.queryByRole('link', { name: 'Greater Toronto and Hamilton Area' })).toBeNull();
+    expect(screen.queryByRole('heading', { name: /Nearby agencies in/ })).toBeNull();
+    const crumbs = agencyBreadcrumbs(TTC, alone.area, '/region/ontario');
+    expect(crumbs.find(c => c.name === 'Greater Toronto and Hamilton Area')?.href).toBeUndefined();
+    expect(crumbs.find(c => c.name === 'Ontario')?.href).toBe('/region/ontario');
+  });
 
   it('shows the full agency name in the heading, the area link, plain stats and the five period columns', () => {
     view(<AgencyPage data={data} />);
@@ -159,7 +173,7 @@ describe('AgencyPage intro place, notes and headings', () => {
 
 describe('AgencyPage other agencies list', () => {
   it('is titled by the area, links the area, and links every agency', () => {
-    const withArea = agencyPageData(TTC, [TTC, HSR], null, { slug: 'toronto', name: 'Toronto' }, [TTC, HSR]);
+    const withArea = agencyPageData(TTC, [TTC, HSR, GO], null, { slug: 'toronto', name: 'Toronto' }, [TTC, HSR]);
     expect(withArea.nearby.map(n => n.slug)).toEqual(['hsr']);
     view(<AgencyPage data={withArea} />);
     const heading = screen.getByRole('heading', { name: 'Nearby agencies in the Greater Toronto and Hamilton Area' });
@@ -313,11 +327,14 @@ describe('RegionPage (CIV-976)', () => {
   it('links each area the intro names to that area\'s page, counting past three (#1283)', () => {
     const tagged = (name: string, areas: string[]) => r(name, 3, 10, { areas });
     const wide = { ...HSR, routes: [tagged('1', ['los-angeles', 'riverside']), tagged('2', ['los-angeles', 'oxnard']), tagged('3', ['los-angeles', 'san-diego']), tagged('4', ['riverside', 'bakersfield'])] };
-    const d = agencyPageData(wide, [wide], null);
+    // A second agency in Los Angeles and the Inland Empire only, so just those two areas have pages.
+    const other = { ...HSR, slug: 'other', routes: [tagged('9', ['los-angeles', 'riverside'])] };
+    const d = agencyPageData(wide, [wide, other], null);
     expect(d.place).toBe('Greater Los Angeles, the Inland Empire, the Bakersfield area and 2 other regions');
     view(<AgencyPage data={d} />);
     expect(screen.getByRole('link', { name: 'Greater Los Angeles' }).getAttribute('href')).toBe('/area/los-angeles');
     expect(screen.getByRole('link', { name: 'the Inland Empire' }).getAttribute('href')).toBe('/area/riverside');
+    expect(screen.queryByRole('link', { name: 'the Bakersfield area' })).toBeNull();
     expect(screen.getByText((_, el) => el?.tagName === 'P' && (el.textContent ?? '').includes('and 2 other regions')).textContent).toBe(d.intro);
   });
 });

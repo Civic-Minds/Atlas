@@ -117,8 +117,8 @@ export interface AgencyPageData {
   nearby: Array<{ slug: string; name: string }>;
   /** generatedAt of the data release the numbers come from. */
   releaseDate: string | null;
-  /** The metro area page this agency belongs to, when it has one. */
-  area?: { slug: string; name: string };
+  /** The metro area this agency belongs to, when it has one; `page` is false when the area has too few agencies for a page. */
+  area?: { slug: string; name: string; page: boolean };
   /** Its state's or province's page (CIV-976), when there is one: the place link when the agency has no area page. */
   regionPage?: string;
   /** The one-sentence introduction, also the opening of the meta description. */
@@ -203,6 +203,8 @@ export interface IntroPlace {
 export function agencyIntroPlace(
   a: Pick<AgencyPageSummary, 'city' | 'region' | 'routes' | 'bbox'>,
   homeArea?: AreaRef,
+  /** Areas that have a page (areaPageStatus); the others are named without a link. Default: every paged area config. */
+  pages?: ReadonlySet<string>,
 ): { all: IntroPlace[]; named: IntroPlace[]; others: number; text: string; short: string } {
   const places = agencyPlaces(a);
   const tagged = places.areas.flatMap(({ slug }) => {
@@ -215,7 +217,7 @@ export function agencyIntroPlace(
   const spansHome = !!home && agencySpansArea(a.bbox, home.bbox);
   const areas: AreaRef[] = spansHome && !tagged.some(x => x.slug === home!.slug) ? [...tagged, home!] : tagged;
   const useAreas = areas.length >= 2 || (areas.length === 1 && ((spansHome && areas[0].slug === home!.slug) || places.regions.length >= 2));
-  const all: IntroPlace[] = useAreas ? areas.map(x => ({ name: areaRegionName(x), href: areaPagePath(x.slug), title: areaRegionTitle(x) })) : [{ name: a.city }];
+  const all: IntroPlace[] = useAreas ? areas.map(x => ({ name: areaRegionName(x), ...(!pages || pages.has(x.slug) ? { href: areaPagePath(x.slug) } : {}), title: areaRegionTitle(x) })) : [{ name: a.city }];
   const names = all.map(p => p.name);
   const named = all.slice(0, 3);
   return { all, named, others: all.length - named.length, text: namesList(names, 3, ...PLACE_OTHERS), short: namesList(names, 1, ...PLACE_OTHERS) };
@@ -310,8 +312,10 @@ export function agencyPageData(
   area?: AreaRef,
   areaMembers?: readonly AgencyPageSummary[],
 ): AgencyPageData {
+  const { pages } = areaPageStatus(all);
+  const areaPaged = !!area && pages.has(area.slug);
   // With an area page, the list is the area's other agencies (nearest first); otherwise same-region neighbours.
-  const others = areaMembers
+  const others = areaMembers && areaPaged
     ? areaMembers.filter(o => o.slug !== a.slug)
         .sort((x, y) => (a.center && x.center ? distanceKm(a.center, x.center) : 0) - (a.center && y.center ? distanceKm(a.center, y.center) : 0))
         .slice(0, MAX_AREA_LIST)
@@ -321,9 +325,9 @@ export function agencyPageData(
   const titleOf = titlesOf(all);
   const title = titleOf.get(a.slug) ?? agencyTitle(a);
   const connections = (a.connections ?? []).filter(c => !c.betaOnly || BETA_BUILD).map(c => ({ ...c, name: titleOf.get(c.slug) ?? agencyTitle({ name: c.name }), page: hasPage.has(c.slug) }));
-  const introPlace = agencyIntroPlace(a, area);
+  const introPlace = agencyIntroPlace(a, area, pages);
   const place = introPlace.text;
-  const areaRef = area ? { slug: area.slug, name: area.name } : undefined;
+  const areaRef = area ? { slug: area.slug, name: area.name, page: areaPaged } : undefined;
   const { connections: _drop, ...agency } = a;
   const modes = agencyStats(a).byMode.map(m => ({ label: m.label, routes: m.routes.length }));
   const intro = agencyIntroSentence(a, place, connections, modes, title);
@@ -398,6 +402,54 @@ export function regionMembers<T extends Pick<AgencyPageSummary, 'region' | 'rout
 export function regionPageHref(a: Pick<AgencyPageSummary, 'country' | 'region'>, all: readonly Pick<AgencyPageSummary, 'region' | 'routes' | 'routeCount'>[]): string | undefined {
   return a.country && a.region && regionMembers(a.country, a.region, all).length > 0 ? regionPagePath(a.region) : undefined;
 }
+
+/**
+ * The agencies counted on an area page (they have a page: weekday midday service), each with only the
+ * routes counted there. CIV-274: a route counts in every area where it stops at two places (more than
+ * AREA_SAME_PLACE_METERS apart) inside the official boundary (`areas`, from build-agency-page-summaries), whichever
+ * agency runs it; an agency is listed when one of its routes counts. Summaries without area tags
+ * (older files) fall back to the area's own agency list.
+ */
+export function areaAgencySummaries(area: { slug: string; agencies: readonly string[] }, all: ReadonlyMap<string, AgencyPageSummary>, betaBuild: boolean = BETA_BUILD): AgencyPageSummary[] {
+  const hasPage = hasMiddayService;
+  const tagged = [...all.values()].some(a => a.routes.some(r => r.areas !== undefined));
+  if (!tagged) return area.agencies.map(s => all.get(s)).filter((a): a is AgencyPageSummary => !!a && hasPage(a));
+  const out: AgencyPageSummary[] = [];
+  for (const a of all.values()) {
+    if ((a.betaOnly && !betaBuild) || !hasPage(a)) continue;
+    const routes = agencyPlaces(a).areas.find(x => x.slug === area.slug)?.routes ?? [];
+    if (routes.length > 0) out.push({ ...a, routes, routeCount: routes.length });
+  }
+  return out;
+}
+
+/** Ryan (2026-11-01): an area page needs at least two agencies; with one, its URL redirects to that agency's page. */
+export const AREA_PAGE_MIN_AGENCIES = 2;
+
+/**
+ * Which areas get a page, and where a paged area with one agency sends its URL: counted with areaAgencySummaries on the
+ * public catalog, so every build and vercel.json agree. The one place this rule is written.
+ */
+export function areaPageStatus(
+  all: readonly AgencyPageSummary[],
+  /** The area configs; default the committed area index (memoized per list). */
+  areas?: ReadonlyArray<{ slug: string; agencies: readonly string[]; page?: boolean }>,
+): { pages: Set<string>; redirects: Map<string, string> } {
+  const cached = areas ? undefined : AREA_STATUS.get(all);
+  if (cached) return cached;
+  const bySlug = new Map(all.map(a => [a.slug, a]));
+  const status = { pages: new Set<string>(), redirects: new Map<string, string>() };
+  const list = areas ?? Object.entries(AREA_INDEX).map(([slug, e]) => ({ slug, agencies: e.agencies, page: e.page }));
+  for (const area of [...list].sort((x, y) => x.slug.localeCompare(y.slug))) {
+    if (!area.page) continue;
+    const members = areaAgencySummaries(area, bySlug, false);
+    if (members.length >= AREA_PAGE_MIN_AGENCIES) status.pages.add(area.slug);
+    else if (members.length === 1) status.redirects.set(area.slug, members[0].slug);
+  }
+  if (!areas) AREA_STATUS.set(all, status);
+  return status;
+}
+const AREA_STATUS = new WeakMap<object, { pages: Set<string>; redirects: Map<string, string> }>();
 
 /** Route counts per band (same order as FREQUENCY_BANDS), then routes with no midday cadence last. */
 export function bandCounts(routes: ReadonlyArray<Pick<AgencyPageRoute, 'midday'>>): number[] {
@@ -582,11 +634,11 @@ export interface Crumb {
 }
 
 /** Transit Atlas > Country > State or province > primary city > Agency. The city is the config's displayArea, else its first listed city. */
-export function agencyBreadcrumbs(a: AgencyPageSummary, area?: { slug: string; name: string }, regionPage?: string): Crumb[] {
+export function agencyBreadcrumbs(a: AgencyPageSummary, area?: { slug: string; name: string; page?: boolean }, regionPage?: string): Crumb[] {
   const crumbs: Crumb[] = [{ name: 'Transit Atlas', href: '/' }];
   if (a.country) crumbs.push({ name: a.country });
   if (a.region) crumbs.push({ name: a.region, ...(regionPage ? { href: regionPage } : {}) });
-  if (area) crumbs.push({ name: areaRegionTitle(area), href: areaPagePath(area.slug) });
+  if (area) crumbs.push({ name: areaRegionTitle(area), ...(area.page !== false ? { href: areaPagePath(area.slug) } : {}) });
   else if (a.city && a.city !== a.region && a.city !== a.displayName) crumbs.push({ name: a.city });
   crumbs.push({ name: a.displayName });
   return crumbs;
@@ -624,7 +676,7 @@ export function resolveAgencySeo(
 }
 
 /** Organization (the agency), BreadcrumbList and Dataset. No FAQ markup. */
-export function agencyPageJsonLd(a: AgencyPageSummary, canonicalUrl: string, origin: string, area?: { slug: string; name: string }, intro?: string, regionPage?: string): object {
+export function agencyPageJsonLd(a: AgencyPageSummary, canonicalUrl: string, origin: string, area?: { slug: string; name: string; page?: boolean }, intro?: string, regionPage?: string): object {
   const crumbs = agencyBreadcrumbs(a, area, regionPage);
   const modified = formatIso(a.lastRefreshedAt);
   // A city that is the state itself ("Colorado" for a statewide service) is named once, not "Colorado, Colorado" (#1130).

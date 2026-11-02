@@ -146,8 +146,10 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="min-w-0">
               <PageTitle>{data!.title ?? agencyPageH1(agency)}</PageTitle>
-              {data!.area
+              {data!.area?.page !== false && data!.area
                 ? <ArrowLink tone="inline" className="mt-1" href={areaPagePath(data!.area.slug)}>{areaRegionTitle(data!.area)}</ArrowLink>
+                // An area with too few agencies for a page is named without a link (Ryan, 2026-11-01).
+                : data!.area ? <p className="mt-1 text-sm text-[var(--text-muted)]">{areaRegionTitle(data!.area)}</p>
                 : agency.city && <p className="mt-1 text-sm text-[var(--text-muted)]">{agency.city}</p>}
             </div>
             <ArrowLink href={agencyMapHref(agency)}>View on map</ArrowLink>
@@ -186,7 +188,7 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
             <section className="mt-12" aria-labelledby="nearby-heading">
               <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
                 <SectionTitle id="nearby-heading">
-                  {data!.area ? <>Nearby agencies in <a className="underline underline-offset-2" href={areaPagePath(data!.area.slug)}>{areaRegionName(data!.area)}</a></> : 'Nearby agencies'}
+                  {data!.area?.page !== false && data!.area ? <>Nearby agencies in <a className="underline underline-offset-2" href={areaPagePath(data!.area.slug)}>{areaRegionName(data!.area)}</a></> : 'Nearby agencies'}
                 </SectionTitle>
                 <ArrowLink href={AGENCY_INDEX_PATH}>See all agencies</ArrowLink>
               </div>
