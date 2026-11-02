@@ -1,3 +1,4 @@
+import { useId } from 'react';
 import PageShell from '../components/ui/PageShell';
 import { niceAxis } from '../components/charts/ProfileBars';
 import ChartTableDetails from '../components/charts/ChartTableDetails';
@@ -56,6 +57,7 @@ const keyFigures = [
 ];
 
 export default function FreeChildFaresPage() {
+  const tableId = useId();
   const method = (
     <ResearchMethod parts={{
       dateConducted: <>October 11, 2026.</>,
@@ -72,6 +74,8 @@ export default function FreeChildFaresPage() {
         <ResearchHeader
           title="Free child fares"
           intro={<>
+            {/* CIV-1281 (Ryan): the finding opens the page as an intro line, as the other research pages open, not a big heading. */}
+            <p>Where kids ride free, age {peakAge[0]} is the most common cutoff.</p>
             <p>Most transit agencies let young children ride free. Where that free fare ends changes from one agency to the next.</p>
             <p>We read the official fare rules of {freeChildFareStats.agencies} transit agencies in Canada and the United States to find up to what age children ride free, and under what conditions.</p>
           </>}
@@ -81,10 +85,9 @@ export default function FreeChildFaresPage() {
           </div>
         </ResearchHeader>
 
-        <div className="mx-auto mt-14 max-w-3xl space-y-10 sm:mt-20 sm:space-y-14">
-          <section aria-labelledby="free-child-fares-heading">
-            <h2 id="free-child-fares-heading" className="text-3xl sm:text-4xl font-black tracking-tight">Where kids ride free, age 5 is the most common cutoff.</h2>
-            <p className="mt-5 text-base leading-8 text-[var(--text-muted)]">
+        <div className="mx-auto mt-10 max-w-3xl space-y-10 sm:mt-12 sm:space-y-14">
+          <section aria-labelledby="free-child-age-chart">
+            <p className="text-base leading-8 text-[var(--text-muted)]">
               {freeChildFareStats.freeUpToAge} of {freeChildFareStats.agencies} agencies let children ride free up to a set age. Each bar counts the agencies whose free fare ends at that age.
             </p>
             <dl className="mt-8 grid grid-cols-3 gap-3">
@@ -96,9 +99,9 @@ export default function FreeChildFaresPage() {
               ))}
             </dl>
             <div className="mt-8 rounded-[2rem] border border-[var(--border-primary)] bg-[var(--bg-panel)] p-5 sm:p-8">
-              <h3 className="text-xs font-black text-[var(--text-primary)]">Free up to a set age</h3>
-              <CategorySpark columns={ageColumns} label={AGE_CHART_ARIA} ticks={chartTicks} />
-              <ChartTableDetails caption="Free up to a set age" columns={TABLE_COLUMNS} rows={freeChildAgeBars} rowKey={bar => bar.label} />
+              <h2 id="free-child-age-chart" className="text-xs font-black text-[var(--text-primary)]">Free up to a set age</h2>
+              <CategorySpark columns={ageColumns} label={AGE_CHART_ARIA} ticks={chartTicks} defaultKey={peakAge[0]} details={tableId} />
+              <ChartTableDetails id={tableId} caption="Free up to a set age" columns={TABLE_COLUMNS} rows={freeChildAgeBars} rowKey={bar => bar.label} />
             </div>
           </section>
         </div>

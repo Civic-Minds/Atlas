@@ -17,15 +17,19 @@ export interface SparkColumn {
  * part: hovering, focusing or tapping a column fades the others and highlights its name. Each count sits above its bar and
  * its name below, in the split bar legend's text (#1290). Columns with no count keep their place on the axis without a bar.
  */
-export default function CategorySpark({ columns, label, ticks, height = 120 }: {
+export default function CategorySpark({ columns, label, ticks, height = 120, defaultKey = null, details }: {
   columns: readonly SparkColumn[];
   /** The chart's accessible name. */
   label: string;
   /** The value axis, lowest to highest (pass the same to charts that compare). */
   ticks: readonly number[];
   height?: number;
+  /** The column highlighted while nothing is hovered, focused or tapped. */
+  defaultKey?: Key | null;
+  /** The id of the chart's table for screen readers (ChartTableDetails), linked with aria-details. */
+  details?: string;
 }) {
-  const { active, clear, faded, partEvents } = useActivePart();
+  const { active, clear, faded, partEvents } = useActivePart(defaultKey);
   const lo = ticks[0], hi = ticks[ticks.length - 1];
   const pos = (v: number) => Math.max(0, Math.min(height, ((v - lo) / (hi - lo || 1)) * height));
   return (
@@ -35,7 +39,7 @@ export default function CategorySpark({ columns, label, ticks, height = 120 }: {
         <div className="absolute inset-x-0 top-4" style={{ height }} aria-hidden="true">
           <SparkTicks ticks={ticks} y={t => height - pos(t)} format={t => t.toLocaleString()} textClassName="text-[var(--text-primary)]" />
         </div>
-        <div role="group" aria-label={label} className="relative flex gap-1">
+        <div role="group" aria-label={label} aria-details={details} className="relative flex gap-1">
           {columns.map(c => {
             const inner = (
               <>

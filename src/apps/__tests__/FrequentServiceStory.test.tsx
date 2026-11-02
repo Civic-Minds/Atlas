@@ -76,9 +76,11 @@ describe('FrequentServiceStory', () => {
     expect(screen.getByRole('link', { name: 'CC BY-SA 4.0' })).toHaveAttribute('href', 'https://creativecommons.org/licenses/by-sa/4.0/');
   });
 
-  it('offers the chart as a table', () => {
+  it('gives screen readers the chart as a table, with no visible toggle (CIV-1281)', () => {
     render(<FrequentServiceStory agencies={agencies} onExploreMap={() => {}} />);
-    expect(screen.getByText('Show as a table')).toBeInTheDocument();
+    expect(screen.queryByText('Show as a table')).toBeNull();
+    const chart = screen.getByRole('group', { name: /Interactive chart showing the number of agencies/ });
+    expect(chart).toHaveAttribute('aria-details', screen.getByRole('table', { name: 'There is no single “frequent.”' }).parentElement!.id);
     expect(screen.getByRole('columnheader', { name: /^Agencies, Oct\s30$/ })).toBeInTheDocument();
   });
 

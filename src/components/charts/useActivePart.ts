@@ -12,9 +12,11 @@ export const CHART_COUNT = 'font-black';
  * The split bar's way of picking a part (SplitBar, CategorySpark): hovering, focusing or tapping a part makes it the
  * active one and fades the others; tapping it again, leaving the chart or moving focus away clears it. A tap, a click after
  * hovering or Enter after tabbing to a part first makes it active rather than undoing the hover or focus just before it.
+ * With `defaultKey`, that part is active whenever nothing else is (the age chart's most common age, CIV-1281).
  */
-export function useActivePart() {
-  const [active, setActive] = useState<Key | null>(null);
+export function useActivePart(defaultKey: Key | null = null) {
+  const [picked, setActive] = useState<Key | null>(null);
+  const active = picked ?? defaultKey;
   const entered = useRef<Key | null>(null);
   const clear = () => setActive(null);
   return {
