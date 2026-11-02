@@ -78,18 +78,27 @@ if (mod.BUILD_FLAGS.agencyPages) {
       const members = area.agencies.map(s => bySlug.get(s)).filter((x): x is (typeof agencies)[number] => !!x);
       for (const m of members) areaMembers.set(m.slug, members);
     }
+    // #1291: no two agency pages share a search title; the build fails if a new agency would.
+    const titlePaths = new Map<string, string>();
+    const claimTitle = (title: string, path: string) => {
+      const other = titlePaths.get(title);
+      if (other) throw new Error(`Agency pages ${other} and ${path} share the title "${title}" (#1291): give one a name qualifier in its config.`);
+      titlePaths.set(title, path);
+    };
     for (const a of agencies) {
       const data = agencyPageData(a, agencies, AGENCY_PAGE_DATA.generatedAt, areaOf.get(a.slug), areaMembers.get(a.slug));
-      const seo = resolveAgencySeo(a, { mode: mod.BUILD_MODE, origin, intro: data.intro, description: data.description, path: data.path });
+      const seo = resolveAgencySeo(a, { mode: mod.BUILD_MODE, origin, intro: data.intro, description: data.description, path: data.path, pageTitle: data.pageTitle });
       writePage(data.path, seo, mod.renderAgencyPage(data), { id: AGENCY_DATA_SCRIPT_ID, value: data }, agencyPageJsonLd(a, seo.canonicalUrl, origin, data.area, data.intro, data.regionPage));
+      claimTitle(seo.title, data.path);
       urls.push(seo.canonicalUrl);
     }
     // CIV-1277: one page per parent agency, adding up its members, at its own slug.
     for (const parent of parentsWithMembers(agencies)) {
       const home = parentHome(parent, parentMembers(parent, agencies))!;
       const data = parentAgencyPageData(parent, agencies, AGENCY_PAGE_DATA.generatedAt, areaOf.get(home.slug), areaMembers.get(home.slug))!;
-      const seo = resolveAgencySeo(data.agency, { mode: mod.BUILD_MODE, origin, intro: data.intro, description: data.description, path: data.path });
+      const seo = resolveAgencySeo(data.agency, { mode: mod.BUILD_MODE, origin, intro: data.intro, description: data.description, path: data.path, pageTitle: data.pageTitle });
       writePage(data.path, seo, mod.renderAgencyPage(data), { id: AGENCY_DATA_SCRIPT_ID, value: data }, agencyPageJsonLd(data.agency, seo.canonicalUrl, origin, data.area, data.intro, data.regionPage));
+      claimTitle(seo.title, data.path);
       urls.push(seo.canonicalUrl);
     }
     // An area needs two agencies for a page (areaPageStatus); vercel.json redirects a one-agency area to that agency.

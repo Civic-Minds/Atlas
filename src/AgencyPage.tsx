@@ -138,8 +138,9 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
       intro: data?.intro,
       description: data?.description,
       path: data?.path,
+      pageTitle: data?.pageTitle,
     }));
-  }, [agency, data?.intro, data?.description, data?.path]);
+  }, [agency, data?.intro, data?.description, data?.path, data?.pageTitle]);
 
   if (!agency && !lookedUp) return <main className="min-h-screen bg-[var(--bg-app)]" aria-busy="true" />;
 

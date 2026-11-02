@@ -6,6 +6,7 @@ import {
 } from './agencyPages';
 import { agencyTodayYmd } from './feedAvailability';
 import { agencyPageSummaries, getAgencyPageSummary } from './agencyPagesData';
+import { PARENT_AGENCIES, parentAgencyPageData } from './parentAgencies';
 
 const r = (name: string, mode: number, midday: number | null, am = midday, pm = midday): AgencyPageRoute => ({ name, longName: `${name} St`, mode, midday, am, pm, evening: null, overnight: null });
 
@@ -263,3 +264,33 @@ describe('hasMiddayService', () => {
   });
 });
 
+describe('agency page search titles (#1291)', () => {
+  const all = agencyPageSummaries();
+  const pages = [
+    ...all.map(a => agencyPageData(a, all)),
+    ...PARENT_AGENCIES.map(p => parentAgencyPageData(p, all, null)!),
+  ];
+  const titleOf = (path: string) => {
+    const d = pages.find(x => x.path === path)!;
+    return resolveAgencySeo(d.agency, { mode: 'public', path: d.path, pageTitle: d.pageTitle }).title;
+  };
+
+  it('no two agency pages share a search title', () => {
+    const titles = pages.map(d => resolveAgencySeo(d.agency, { mode: 'public', path: d.path, pageTitle: d.pageTitle }).title);
+    expect(titles.filter((t, i) => titles.indexOf(t) !== i)).toEqual([]);
+  });
+
+  it('adds what tells same-named agencies apart, and leaves a one-of-a-kind name alone', () => {
+    expect(titleOf('/agency/nyct-bus-bronx')).toBe('MTA NYCT Bus (Bronx) frequency: how often routes run');
+    // The registry bracket is only the short name again, so the place tells them apart.
+    expect(titleOf('/agency/dart')).toBe('DART (Dallas) frequency: how often routes run');
+    expect(titleOf('/agency/des-moines')).toBe('DART (Des Moines) frequency: how often routes run');
+    expect(titleOf('/agency/exo-trains')).toBe('exo (Trains) frequency: how often routes run | Transit Atlas');
+    expect(titleOf('/agency/ttc')).toBe('TTC frequency: how often routes run | Transit Atlas');
+  });
+
+  it('a parent keeps its own name; a member named like it says what it runs', () => {
+    expect(titleOf('/agency/exo')).toBe('exo frequency: how often routes run | Transit Atlas');
+    expect(titleOf('/agency/bustang-interregional')).toBe('Bustang · Interregional frequency: how often routes run');
+  });
+});

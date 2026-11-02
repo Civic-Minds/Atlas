@@ -15,7 +15,7 @@ import { BETA_BUILD } from './config';
 import { DESCRIPTION_MAX, DESCRIPTION_MIN, TITLE_MAX, firstThatFits, truncateAtWord } from './seoText';
 import { SITE_URL, seoTitlePrefix, type SeoMode } from './seo';
 import { AGENCY_PATH_PREFIX, agencyPagePath, areaPagePath, parentAgencyPagePath, regionPagePath } from './pagePaths';
-import { parentAgency } from './parentAgencyList';
+import { PARENT_AGENCIES, parentAgency } from './parentAgencyList';
 import { parentMembers, parentRoutes, parentSummary } from './parentSummary';
 import { zoomForSpan } from './mapZoom';
 import { haversineM } from './shapeProjection';
@@ -130,6 +130,8 @@ export interface AgencyPageData {
   mapHref: string;
   /** The page heading and the name its sentences use: agencyTitle, told apart from same-named agencies (#1245). */
   title: string;
+  /** The search title without the beta prefix (agencyPageTitle), told apart from every other agency page's (#1291). */
+  pageTitle: string;
   nearby: Array<{ slug: string; name: string }>;
   /** generatedAt of the data release the numbers come from. */
   releaseDate: string | null;
@@ -365,7 +367,9 @@ export function agencyPageData(
   const regionPage = regionPageHref(a, all);
   const path = group ? parentAgencyPagePath(a.slug) : agencyPagePath(a.slug);
   const mapHref = agencyMapHref(a, group ? group.members.map(m => m.slug) : [a.slug]);
-  return { agency, path, mapHref, ...(parent ? { parent: { name: parent.name, path: parentAgencyPagePath(parent.slug) } } : {}), title, releaseDate, ...(areaRef ? { area: areaRef } : {}), ...(regionPage ? { regionPage } : {}), nearby: others.map(o => ({ slug: o.slug, name: titleOf.get(o.slug) ?? agencyTitle(o) })), intro, description: agencyPageDescription(a, intro, sizedBy, { full: place, short: introPlace.short }), place, places: { named: introPlace.named, others: introPlace.others }, introLead: introLead(a, place, modes, title, parent?.name), connections };
+  // A parent keeps its own name in search; its members say what tells them apart (#1291).
+  const pageTitle = agencyPageTitle(a, group ? NO_SHARED_NAMES : sharedShortLabels(all));
+  return { agency, path, mapHref, ...(parent ? { parent: { name: parent.name, path: parentAgencyPagePath(parent.slug) } } : {}), title, pageTitle, releaseDate, ...(areaRef ? { area: areaRef } : {}), ...(regionPage ? { regionPage } : {}), nearby: others.map(o => ({ slug: o.slug, name: titleOf.get(o.slug) ?? agencyTitle(o) })), intro, description: agencyPageDescription(a, intro, sizedBy, { full: place, short: introPlace.short }), place, places: { named: introPlace.named, others: introPlace.others }, introLead: introLead(a, place, modes, title, parent?.name), connections };
 }
 
 const MAX_AREA_LIST = 12;
@@ -373,13 +377,18 @@ const MAX_AREA_LIST = 12;
 export { AGENCY_PATH_PREFIX, agencyPagePath };
 
 /** "TTC frequency: how often routes run | Transit Atlas", dropping the brand, then the phrase, for long names (60 characters at most). */
-export function agencyPageTitle(a: Pick<AgencyPageSummary, 'displayName'> & Partial<Pick<AgencyPageSummary, 'name' | 'parentAgency' | 'pageTitleQualifier'>>): string {
+export function agencyPageTitle(
+  a: Pick<AgencyPageSummary, 'displayName'> & Partial<Pick<AgencyPageSummary, 'name' | 'city' | 'region' | 'parentAgency' | 'pageTitleQualifier'>>,
+  /** sharedShortLabels: the short names more than one agency page would use. */
+  shared: ReadonlySet<string> = NO_SHARED_NAMES,
+): string {
   const short = agencyShortLabel(a);
-  // CIV-1277: a member whose short name is its parent's keeps what tells it apart, so its title is not the parent's
-  // ("Bustang · Interregional", "exo (Trains)").
-  const name = a.parentAgency && parentAgency(a.parentAgency)?.name === short
-    ? (a.pageTitleQualifier && a.name ? agencyTitle({ name: a.name, pageTitleQualifier: a.pageTitleQualifier }) : a.displayName)
-    : short;
+  // #1291: a page whose short name another page also has keeps what tells it apart: "Bustang · Interregional" for a
+  // member named like its parent (CIV-1277), else its place or sector, "DART (Dallas)", "MTA NYCT Bus (Bronx)".
+  const tellApart = shared.has(short) || parentAgency(a.parentAgency)?.name === short;
+  const name = !tellApart ? short
+    : a.pageTitleQualifier && a.name ? agencyTitle({ name: a.name, pageTitleQualifier: a.pageTitleQualifier })
+    : `${short} (${titlePlace(a, short)})`;
   return firstThatFits([
     `${name} frequency: how often routes run | Transit Atlas`,
     `${name} frequency: how often routes run`,
@@ -387,6 +396,32 @@ export function agencyPageTitle(a: Pick<AgencyPageSummary, 'displayName'> & Part
     `${name} frequency`,
     `${truncateAtWord(name, TITLE_MAX - ' frequency'.length)} frequency`,
   ], TITLE_MAX);
+}
+
+/**
+ * What tells a page apart from another with its short name: the registry name's bracket ("BC Transit (Kelowna)",
+ * "exo (Trains)"), unless that is only the short name again ("Dallas Area Rapid Transit (DART)"); then the place.
+ */
+function titlePlace(a: Pick<AgencyPageSummary, 'displayName'> & Partial<Pick<AgencyPageSummary, 'name' | 'city' | 'region'>>, short: string): string {
+  const qualifier = a.name ? splitRegistryName(a.name)[1] : null;
+  if (qualifier && qualifier !== short) return qualifier;
+  return splitBracketedPlace(a.displayName)?.[1] ?? a.city ?? a.region ?? a.displayName;
+}
+
+/** The short names (agencyShortLabel) more than one agency page has, parents' names included, worked out once per list. */
+const SHARED_SHORT = new WeakMap<object, Set<string>>();
+export function sharedShortLabels(all: readonly Pick<AgencyPageSummary, 'displayName'>[]): Set<string> {
+  let shared = SHARED_SHORT.get(all);
+  if (!shared) {
+    const seen = new Set<string>(PARENT_AGENCIES.map(p => p.name));
+    shared = new Set();
+    for (const a of all) {
+      const short = agencyShortLabel(a);
+      (seen.has(short) ? shared : seen).add(short);
+    }
+    SHARED_SHORT.set(all, shared);
+  }
+  return shared;
 }
 
 /** Visible heading: the agency's official name ("GO Transit", "Montgomery Transit"); agencyPageData's `title` also tells same-named agencies apart. The short form lives in <title>. */
@@ -720,13 +755,13 @@ export function nearbyAgencies(a: AgencyPageSummary, all: readonly AgencyPageSum
 /** Everything the head needs for an agency page, in the same shape as the other routes. */
 export function resolveAgencySeo(
   a: AgencyPageSummary,
-  ctx: { mode: SeoMode; origin?: string; intro?: string; description?: string; /** The page's path (AgencyPageData.path); a parent's differs from agencyPagePath. */ path?: string },
+  ctx: { mode: SeoMode; origin?: string; intro?: string; description?: string; /** The page's path (AgencyPageData.path); a parent's differs from agencyPagePath. */ path?: string; /** AgencyPageData.pageTitle, told apart from the other pages' (#1291). */ pageTitle?: string },
 ): { title: string; description: string; canonicalUrl: string; noindex: boolean; matchedPath: string } {
   const path = ctx.path ?? agencyPagePath(a.slug);
   const origin = (ctx.origin ?? SITE_URL).replace(/\/$/, '');
   const prefix = seoTitlePrefix(ctx.mode);
   return {
-    title: `${prefix}${agencyPageTitle(a)}`,
+    title: `${prefix}${ctx.pageTitle ?? agencyPageTitle(a)}`,
     description: ctx.description ?? agencyPageDescription(a, ctx.intro),
     canonicalUrl: `${origin}${path}`,
     noindex: ctx.mode !== 'public',
