@@ -1056,8 +1056,13 @@ describe('CIV-1248: a period the route covers only part of reads its slowest str
     expect(rows.map(p => p.headsign)).toContain('Islington via Browns Line and Horner');
     for (const p of rows) expect(p.noOwnServiceByPeriod ?? []).not.toContain('amPeak');
   });
-  it('legitimate: TTC 110 Sunday AM to Long Branch keeps the trunk reading; its branches run under three times before 9 and do not count', async () => {
-    for (const p of am(await run('ttc-110-79-sunday'), '110', 0)) expect(p.stretchPeriodEdge.amPeak).toMatchObject({ from: 487, every: 15, stretch: 'main' });
+  it('TTC 110 Sunday AM southbound: Kipling runs the whole period every 30, so the direction reads its 30 from 7:29, not the trunk\'s every 15 from 8:07', async () => {
+    const all = am(await run('ttc-110-79-sunday'), '110', 0);
+    const kipling = all.find(r => r.headsign === 'Kipling and Lake Shore')!;
+    for (const p of all) {
+      expect(p.stretchPeriodEdge.amPeak).toEqual({ from: 449, every: 30, stretch: kipling.stretchIndex });
+      expect(p.directionFilterHeadwayByPeriod.amPeak).toBeNull();
+    }
   });
   it('TTC 79 Sunday AM: every 30 on the slower branch (was the trunk\'s every 15)', async () => {
     const rows = am(await run('ttc-110-79-sunday'), '79', 0);
@@ -1066,6 +1071,15 @@ describe('CIV-1248: a period the route covers only part of reads its slowest str
       expect(p.stretchPeriodEdge.amPeak.every).toBe(30);
       expect(p.stretchPeriodEdge.amPeak.stretch).not.toBe('main');
       expect(p.directionFilterHeadwayByPeriod.amPeak).toBeNull();
+    }
+  });
+  it('TTC 952 weekday midday to Pearson: only the branch runs into midday, until 9:42 every 12; no filter value (D8)', async () => {
+    const rows = (await run('ttc-952-weekday')).rows.filter(p => p.routeShortName === '952' && p.day === 'Weekday' && p.directionId === 1) as Record<string, any>[];
+    expect(rows.length).toBeGreaterThan(0);
+    for (const p of rows) {
+      expect(p.stretchPeriodEdge.midday).toEqual({ until: 582, every: 12, stretch: 0 });
+      expect(p.directionFilterHeadwayByPeriod.midday).toBeNull();
+      expect(p.routeFilterHeadwayByPeriod.midday).toBeNull();
     }
   });
 });
