@@ -7,7 +7,9 @@ describe('Free child fares (CIV-1149)', () => {
   it('shows the approved heading, both groups, the note and the table link', () => {
     render(<FreeChildFaresPage />);
     expect(screen.getByRole('heading', { level: 1, name: 'Free child fares' })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'Where kids ride free, age 5 is the most common cutoff.' })).toBeInTheDocument();
+    // CIV-1281: the finding is the page's first intro line, not a heading.
+    expect(screen.queryByRole('heading', { name: 'Where kids ride free, age 5 is the most common cutoff.' })).toBeNull();
+    expect(screen.getByText('Where kids ride free, age 5 is the most common cutoff.').closest('header')).not.toBeNull();
     expect(screen.getByText('374 of 553 agencies let children ride free up to a set age. Each bar counts the agencies whose free fare ends at that age.')).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Free up to a set age' })).toBeInTheDocument();
     // #1290: the Other policies chart repeated the split bar's numbers, so only the split bar shows them.
@@ -18,7 +20,9 @@ describe('Free child fares (CIV-1149)', () => {
     expect(screen.getAllByText(/We couldn't find a current official rule for 34 agencies\./)).toHaveLength(1);
     expect(screen.getByText(/Free fares up to 17 or 18 are usually youth programs\./).closest('[data-research-method]')).not.toBeNull();
     expect(screen.queryByText(/Each agency appears once/)).toBeNull();
-    expect(screen.getAllByText('Show as a table')).toHaveLength(1);
+    expect(screen.queryByText('Show as a table')).toBeNull();
+    expect(screen.getByRole('group', { name: /How many agencies let children ride free up to each age/ })).toHaveAttribute('aria-details', screen.getByRole('table', { name: 'Free up to a set age' }).parentElement!.id);
+    expect(screen.getByRole('heading', { level: 2, name: 'Free up to a set age' })).toBeInTheDocument();
   });
 
   it('opens with the approved blurb and ends with Method, Canada and US numbers', () => {
@@ -62,22 +66,26 @@ describe('Free child fares (CIV-1149)', () => {
     const columns = [...chart.querySelectorAll('button')];
     const bar = (b: HTMLElement) => b.querySelector('[data-bar]') as HTMLElement;
     const picked = () => chart.querySelector('[data-active]');
-    fireEvent.mouseEnter(columns[4]);
+    // CIV-1281: the most common age (5) is highlighted while nothing else is.
+    expect(picked()).toHaveTextContent('5');
     expect(bar(columns[4]).style.opacity).toBe('');
     expect(bar(columns[3]).style.opacity).toBe('0.35');
-    expect(picked()).toHaveTextContent('5');
-    fireEvent.mouseLeave(chart.parentElement!);
+    fireEvent.mouseEnter(columns[3]);
+    expect(picked()).toHaveTextContent('4');
     expect(bar(columns[3]).style.opacity).toBe('');
+    expect(bar(columns[4]).style.opacity).toBe('0.35');
+    fireEvent.mouseLeave(chart.parentElement!);
+    expect(picked()).toHaveTextContent('5');
     fireEvent.click(columns[5]);
     expect(picked()).toHaveTextContent('6');
     fireEvent.click(columns[5]);
-    expect(picked()).toBeNull();
+    expect(picked()).toHaveTextContent('5');
     // A tap fires the hover first: it picks the column rather than undoing that hover.
     fireEvent.mouseEnter(columns[6]);
     fireEvent.click(columns[6]);
     expect(picked()).toHaveTextContent('7');
     fireEvent.mouseLeave(chart.parentElement!);
-    expect(picked()).toBeNull();
+    expect(picked()).toHaveTextContent('5');
     // Tabbing to a column picks it, and Enter (a click) keeps it picked.
     fireEvent.focus(columns[7]);
     fireEvent.click(columns[7]);

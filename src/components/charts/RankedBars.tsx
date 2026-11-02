@@ -17,16 +17,18 @@ export interface RankedBar {
  * bar the split bar's way (useActivePart): hovering, focusing or tapping a row fades the other bars and highlights its name,
  * and the names and counts use the split bar legend's text (CategorySpark, SplitBar).
  */
-export default function RankedBars({ bars, max, label }: {
+export default function RankedBars({ bars, max, label, details }: {
   bars: readonly RankedBar[];
   /** The value a full-width bar stands for (shared when two charts sit on one scale). */
   max: number;
   /** The chart's accessible name. */
   label: string;
+  /** The id of the chart's table for screen readers (ChartTableDetails), linked with aria-details. */
+  details?: string;
 }) {
   const { active, clear, faded, partEvents } = useActivePart();
   return (
-    <div role="group" aria-label={label} className="space-y-3 select-none" onMouseLeave={clear}>
+    <div role="group" aria-label={label} aria-details={details} className="space-y-3 select-none" onMouseLeave={clear}>
       {bars.map(bar => (
         <button
           key={bar.key}

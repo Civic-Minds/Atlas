@@ -159,6 +159,9 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ### Agency, area and research pages
 
 - **Every agency page has its own search title**: agencies that share a short name, like the five MTA NYCT Bus boroughs or DART in Dallas and Des Moines, now add their borough, sector or place, and the build fails if two pages would ever share a title again
+- **[Free child fares](https://github.com/Civic-Minds/Atlas/issues/1290) age chart looks and responds like the split bar above it**: a column chart in the sparkline shape with the split bar's text, where hovering or tapping a column fades the others as the split bar does; the Other policies chart is gone, since the split bar already shows those numbers; the legend uses shorter labels and the note under the charts moved into How we did this
+- **Free child fares opens with its finding, and highlights age 5**: "Where kids ride free, age 5 is the most common cutoff" is an intro line under the title rather than a big heading, and the age chart highlights the most common age until another is picked
+- **Research charts drop the "Show as a table" toggle**: the table stays for screen readers, linked to its chart
 - **[Free child fares](https://github.com/Civic-Minds/Atlas/issues/1290) age chart looks and responds like the split bar above it**: a column chart in the sparkline shape with the split bar's text, where hovering or tapping a column fades the others as the split bar does; the Other policies chart is gone, since the split bar already shows those numbers; the legend uses shorter labels and the note under the charts moved into Method
 - **Research pages end with a "Method" section at section-heading size**: it read "How we did this" in a heading as large as a page title
 - **The Frequent service story's threshold chart responds like the other research charts**: hovering or tapping a bar fades the others and highlights its name, in the same text as the Free child fares charts
