@@ -142,6 +142,16 @@ function laterOfFeedInfoAndCappedCalendar(feedExpiry: string | null, peekedExpir
 }
 
 /**
+ * The expiry a refresh records for the feed it just processed (stampFeedMeta), and the service end
+ * its release gate checks, so the two never disagree (#1304). The gate read feed_info's 20350201
+ * for MAX while 20250531 was recorded: the refresh wrote a changed file for an expired feed, and the
+ * publish gate, reading the recorded end, refused the whole weekly release.
+ */
+export function refreshedFeedExpiry(opts: { feedExpiry: string | null; peekedExpiry: string | null; todayYmd: string; calendarExpiry?: string | null; calendarOnlyEnd?: string | null }): string | null {
+  return recordedFeedExpiry(opts.feedExpiry, opts.calendarExpiry !== undefined ? opts.calendarExpiry : opts.peekedExpiry, opts.todayYmd, opts.calendarOnlyEnd);
+}
+
+/**
  * A refresh that skips an unchanged feed records nothing new, so an expiry stored before a rule
  * change stayed as it was: MAX kept feed_info's 20350201 after #1039 taught recordedFeedExpiry to
  * use the calendar's last service date (20250531), and no expired notice showed (CIV-443). The
@@ -182,7 +192,7 @@ export function stampFeedMeta(
     feedObtainedAt?: string | null;
   },
 ): void {
-  agency.lastFeedExpiry = recordedFeedExpiry(opts.feedExpiry, opts.calendarExpiry !== undefined ? opts.calendarExpiry : opts.peekedExpiry, opts.todayYmd, opts.calendarOnlyEnd);
+  agency.lastFeedExpiry = refreshedFeedExpiry(opts);
   agency.lastPeekedExpiry = opts.peekedExpiry;
   agency.lastFeedVersion = opts.feedVersion ?? opts.peekedVersion ?? null;
   agency.lastRefreshedAt = opts.todayYmd;

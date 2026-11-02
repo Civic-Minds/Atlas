@@ -189,6 +189,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Data pipeline
 
+- **[An expired feed no longer stops the weekly refresh from publishing](https://github.com/Civic-Minds/Atlas/issues/1304)**: MAX Transit's timetable ended in May 2025 while its feed claimed 2035; the refresh now keeps its live data with the expired notice instead of rebuilding it, so the release gate no longer refuses the whole release
 - **A route whose patterns [take alternate trips](https://github.com/Civic-Minds/Atlas/issues/1256) is read as one service where they meet**: Pace 542 and MATA 30 read their real frequency
 - **Consistent rush-hour-only trips show on the map in their peak**: [express routes](https://github.com/Civic-Minds/Atlas/issues/1254) like OC Transpo 187 were hidden as one-off trips
 - **Route headlines read the wait riders face**: a midday that thins reads its real gap (BxM7 every 30, not 15), and a peak-only route's stray trips, or [fewer than three trips](https://github.com/Civic-Minds/Atlas/issues/1257), never count as a wait
