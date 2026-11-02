@@ -48,7 +48,7 @@ import {
 } from './overrideAudit.js';
 import { readFeedReviewHistory, shouldReviewNextFeed } from './feedReview.js';
 import { compareStopSnapshots, formatStopAuditLog, type AuditedStop } from './stopAudit.js';
-import { feedFileDate, lowerStoredFeedExpiry, candidateIsOlderThanActive, shouldClearStaged, decideRefreshSkipUnchanged, isFeedExpired, markFeedStale, shouldSkipAllExpiredFeeds, shouldStampFeedMeta, stampFeedMeta, routeLineCount, stampSupplementalFeedMeta } from './refreshMeta.js';
+import { feedFileDate, lowerStoredFeedExpiry, candidateIsOlderThanActive, shouldClearStaged, decideRefreshSkipUnchanged, isFeedExpired, markFeedStale, shouldSkipAllExpiredFeeds, shouldStampFeedMeta, stampFeedMeta, refreshedFeedExpiry, routeLineCount, stampSupplementalFeedMeta } from './refreshMeta.js';
 import {
   COUNTRY_LAUNCH_FLAG,
   isCountryLaunchBlocked,
@@ -573,8 +573,10 @@ async function refreshAgency(
   // Dates of the routes Atlas keeps (excluded routes' services left out, #1140), for the gate and the
   // recorded expiry. lastPeekedExpiry stays the raw zip's, which the next refresh compares against.
   const { feedStart, feedExpiry: keptCalendarExpiry, calendarOnlyEnd } = await peekFeedDates(buf, agency.excludeRouteShortNames);
+  // The end this refresh records (#1304): an expired feed is refused here and keeps its live file.
+  const serviceEnd = refreshedFeedExpiry({ feedExpiry, peekedExpiry, todayYmd: todayUtcYmd(), calendarExpiry: keptCalendarExpiry, calendarOnlyEnd });
   const agencyFlags = await evaluateRun({
-    candidates: [{ slug: agency.slug, next, service: { start: feedStart, end: feedExpiry ?? keptCalendarExpiry, calendarEnd: keptCalendarExpiry, liveFeedExpiry: agencyBeforeRebuild.lastFeedExpiry } }],
+    candidates: [{ slug: agency.slug, next, service: { start: feedStart, end: serviceEnd, calendarEnd: keptCalendarExpiry, liveFeedExpiry: agencyBeforeRebuild.lastFeedExpiry } }],
     getLive: readRefreshLive,
     registry: gateRegistry,
     todayYmd: expiryToday,
