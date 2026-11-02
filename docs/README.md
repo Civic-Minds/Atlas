@@ -17,7 +17,6 @@ Read first: [Decisions](product/DECISIONS.md) for what is settled, then the [Glo
 | [Security policy](../SECURITY.md) | Open when someone reports a security problem. |
 | [Terms of service](legal/TERMS.md) | Open when a question touches the public site's legal terms; the /terms page is built from this file, so edit it here. |
 | [Privacy policy](legal/PRIVACY.md) | Open when a question touches privacy, analytics or stored data; the /privacy page is built from this file, so edit it here. |
-| [Terms of service (root pointer)](../TERMS.md) | Open only if you landed here from the repo root; it points to the legal docs. |
 
 ## Frequency numbers and filter questions
 
