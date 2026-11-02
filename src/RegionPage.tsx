@@ -72,7 +72,7 @@ export default function RegionPage({ data: dataProp }: { data?: RegionPageData }
             {areas && <>{' '}{areas.lead}{areas.named.map((a, i) => <span key={a.slug}><a className={UNDERLINED_LINK} href={a.href}>{a.name}</a>{areas.separators[i]}</span>)}{areas.tail}</>}
           </p>
 
-          <AgencyGroupSection data={data} mapHref={mapHref} barNote={regionBarNote(data)} />
+          <AgencyGroupSection data={data} barNote={regionBarNote(data)} />
 
           <p className="mt-12 text-sm leading-6 text-[var(--text-dim)]">{areaDatesText(data)}</p>
     </DocsPageLayout>

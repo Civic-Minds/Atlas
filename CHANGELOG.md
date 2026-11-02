@@ -163,6 +163,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Agency, area and research pages
 
+- **Area, state and agency pages have one map link, at the top**: the second map link under the frequency bar is gone, and "See all agencies" now follows the agency table, so the links no longer stack down the right edge
 - **The [all-agencies list](https://github.com/Civic-Minds/Atlas/issues/1306) shows an agency under every state it serves**: it listed each agency under its home state only, so Nebraska showed two agencies where its state page shows three
 - **State and province pages name their biggest regions**: a sentence after the intro links up to three of the region pages in that state or province, most routes first
 - **The docs page's "On this page" menu keeps its [page title in view](https://github.com/Civic-Minds/Atlas/issues/1279) on short windows**: a list taller than the window now scrolls inside its own box, following the section you're reading, instead of pushing the title under the site header near the end of the page

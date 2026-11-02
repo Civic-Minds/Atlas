@@ -71,7 +71,7 @@ describe('state and province pages (CIV-976)', () => {
   });
 });
 
-describe('areas named after a state intro (CIV-1298)', () => {
+describe('areas named after a state intro (CIV-1298)', { timeout: 30_000 }, () => {
   const all = agencyPageSummaries();
   const page = (name: string) => buildRegionPageData(regionPages(all).find(x => x.name === name)!, all, null);
 

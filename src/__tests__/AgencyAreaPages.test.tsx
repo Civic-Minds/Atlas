@@ -87,12 +87,12 @@ describe('AgencyPage', () => {
     expect(screen.queryByText(/pick a standard/i)).toBeNull();
   });
 
-  it('has one map link under the bar (Weekday midday, every route); the bar and its legend are not links', () => {
+  it('has one map link, at the top (CIV-1297); the bar and its legend are not links', () => {
     view(<AgencyPage data={data} />);
     expect(screen.queryByRole('link', { name: /route every/ })).toBeNull();
-    const link = screen.getByRole('link', { name: 'See these routes on the map' });
-    const url = new URL(link.getAttribute('href')!, 'http://x');
-    expect([url.pathname, url.searchParams.get('agencies'), url.searchParams.get('h'), url.searchParams.get('p'), url.searchParams.get('day')]).toEqual(['/', 'ttc', 'all', 'midday', 'Weekday']);
+    expect(screen.queryByRole('link', { name: 'See these routes on the map' })).toBeNull();
+    const link = screen.getByRole('link', { name: 'View on map' });
+    expect(new URL(link.getAttribute('href')!, 'http://x').searchParams.get('agencies')).toBe('ttc');
     expect(link.querySelector('svg')).toBeTruthy(); // the shared page-link arrow
   });
 
@@ -254,13 +254,13 @@ describe('AreaPage', () => {
     expect(screen.getAllByRole('button', { name: /every 10 min or better/ }).length).toBeGreaterThan(0);
   });
 
-  it('has one map link under the bar framed on the area, and "See all agencies" in the section heading row', () => {
+  it('has one map link, at the top, and "See all agencies" after the agency table (CIV-1297)', () => {
     view(<AreaPage data={data} />);
     expect(screen.queryByRole('link', { name: /route every/ })).toBeNull();
-    const url = new URL(screen.getByRole('link', { name: 'See these routes on the map' }).getAttribute('href')!, 'http://x');
-    expect([url.searchParams.get('area'), url.searchParams.get('h'), url.searchParams.get('p'), url.searchParams.get('day')]).toEqual(['toronto', 'all', 'midday', 'Weekday']);
+    expect(screen.queryByRole('link', { name: 'See these routes on the map' })).toBeNull();
+    expect(new URL(screen.getByRole('link', { name: 'View on map' }).getAttribute('href')!, 'http://x').searchParams.get('area')).toBe('toronto');
     const seeAll = screen.getByRole('link', { name: 'See all agencies' });
-    expect(seeAll.parentElement).toBe(screen.getByRole('heading', { name: 'Agencies and weekday frequency' }).parentElement);
+    expect(screen.getByRole('table').compareDocumentPosition(seeAll) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     expect(screen.queryByText(/A dash means none/)).toBeNull();
   });
 });
