@@ -261,7 +261,7 @@ export function areaIntroParts(d: AreaPageData): { lead: string; named: AreaAgen
 /** The same intro for agencies in one place, named as at the start of a sentence ("The Calgary area", "Colorado"). */
 export function groupIntroParts(placeStart: string, d: Pick<AgencyGroupData, 'agencies' | 'totalRoutes' | 'byMode'>): { lead: string; named: AreaAgencyRow[]; others: number } {
   const n = d.agencies.length;
-  const lead = `${placeStart} has ${countOf(n, 'transit agency', 'transit agencies')} running ${countOf(d.totalRoutes, 'route', 'routes')}${d.byMode.length > 1 ? ` (${modesText(d.byMode, ', ')})` : ''}`;
+  const lead = `${placeStart} has ${countOf(n, 'transit agency', 'transit agencies')} operating ${countOf(d.totalRoutes, 'route', 'routes')}${d.byMode.length > 1 ? ` (${modesText(d.byMode, ', ')})` : ''}`;
   if (n <= AREA_INTRO_NAME_NONE_MAX) return { lead, named: [], others: 0 };
   const named = d.agencies.slice(0, AREA_INTRO_NAMED);
   return { lead, named, others: n - named.length };

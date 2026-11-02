@@ -219,7 +219,7 @@ describe('AreaPage', () => {
     const extra = (slug: string, n: number): AgencyPageSummary => ({ ...HSR, slug, name: `Agency ${slug}`, displayName: `Agency ${slug}`, routes: Array.from({ length: n }, (_, i) => r(`${slug}${i}`, 3, 30)), routeCount: n });
     const four = new Map([[TTC.slug, TTC], [HSR.slug, HSR], ['x', extra('x', 1)], ['y', extra('y', 1)]]);
     view(<AreaPage data={buildAreaPageData({ ...AREA, agencies: ['ttc', 'hsr', 'x', 'y'] }, four, null)} />);
-    const intro = screen.getByText(/transit agencies running/);
+    const intro = screen.getByText(/transit agencies operating/);
     expect(intro.textContent).toMatch(/, including Toronto Transit Commission, Hamilton Street Railway and 2 others\.$/);
     expect(within(intro).getByRole('link', { name: 'Toronto Transit Commission' }).getAttribute('href')).toBe('/agency/ttc');
     expect(within(intro).getByRole('link', { name: 'Hamilton Street Railway' }).getAttribute('href')).toBe('/agency/hsr');
@@ -227,7 +227,7 @@ describe('AreaPage', () => {
 
   it('ends the intro after the route breakdown with three agencies or fewer (CIV-968)', () => {
     view(<AreaPage data={data} />);
-    const intro = screen.getByText(/transit agencies running/);
+    const intro = screen.getByText(/transit agencies operating/);
     expect(intro.textContent).not.toMatch(/including/);
     expect(within(intro).queryAllByRole('link')).toHaveLength(0);
   });
@@ -296,7 +296,7 @@ describe('RegionPage (CIV-976)', () => {
   it('lays out a province like an area page: heading, intro, map link, bar note and agency table', () => {
     view(<RegionPage data={data} />);
     expect(screen.getByRole('heading', { level: 1 }).textContent).toBe('Ontario');
-    expect(screen.getByText(/transit agencies running/).textContent).toMatch(/^Ontario has 2 transit agencies running 7 routes/);
+    expect(screen.getByText(/transit agencies operating/).textContent).toMatch(/^Ontario has 2 transit agencies operating 7 routes/);
     expect(screen.getByRole('link', { name: 'View on map' }).getAttribute('href')).toMatch(/^\/\?agencies=ttc%2Chsr/);
     expect(screen.getByText(/The bar splits this province's routes/)).toBeTruthy();
     expect(within(screen.getByRole('table')).getByRole('link', { name: 'Hamilton Street Railway' }).getAttribute('href')).toBe('/agency/hsr');
