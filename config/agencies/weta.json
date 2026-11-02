@@ -33,9 +33,11 @@
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261101",
   "feedQuality": {
-    "status": "healthy",
-    "score": 100,
-    "reasons": [],
+    "status": "degraded",
+    "score": 65,
+    "reasons": [
+      "The schedule dates in this feed have passed."
+    ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
@@ -49,7 +51,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-01"
+    "checkedAt": "2026-11-02"
   },
   "timezone": "America/Los_Angeles",
   "lastFeedSourceKind": "configured",
