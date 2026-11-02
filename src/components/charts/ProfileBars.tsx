@@ -79,8 +79,6 @@ interface ProfileBarsProps {
   refHeader?: string;
   /** What the data table's first column holds (default Stop). */
   rowHeader?: string;
-  /** Name the hovered bar's figures in one line above the bars, as the hour charts do, instead of a browser tooltip (#1290): the word after the value. */
-  readoutUnit?: (value: number) => string;
 }
 
 /** The scale two charts should share: the bars' own range (not the thin lines), always including zero. */
@@ -126,10 +124,8 @@ function usePlotWidth() {
  * stop names that never overlap (the ends, the marked stretch, major stops), and a shaded, striped look for points that
  * are measured less exactly. The values are also in a table for screen readers.
  */
-export default function ProfileBars({ points, ariaLabel, formatY, unit, minN = 30, caption, fadedNote = true, peakLabel = false, takeaway, axisTitle, marks = [], zero = false, zeroLabel, scale, whiskers = true, maxLabels = 6, labelSpacing = 90, lessExactNote, series, valueHeader, refHeader, rowHeader = 'Stop', readoutUnit }: ProfileBarsProps) {
-  const readout = !!readoutUnit;
+export default function ProfileBars({ points, ariaLabel, formatY, unit, minN = 30, caption, fadedNote = true, peakLabel = false, takeaway, axisTitle, marks = [], zero = false, zeroLabel, scale, whiskers = true, maxLabels = 6, labelSpacing = 90, lessExactNote, series, valueHeader, refHeader, rowHeader = 'Stop' }: ProfileBarsProps) {
   const [plotRef, plotWidth] = usePlotWidth();
-  const [hover, setHover] = useState<number | null>(null);
   const tableId = useId();
   if (points.length < 2) return null;
   const own = scale ?? sharedScale([points]);
@@ -162,12 +158,7 @@ export default function ProfileBars({ points, ariaLabel, formatY, unit, minN = 3
       {takeaway && <p className="mt-2 text-sm font-bold leading-6">{takeaway}</p>}
       <div role="img" aria-label={ariaLabel} tabIndex={0} aria-describedby={tableId} className="mt-2">
         {axisTitle && <div className="mb-1 pl-16 text-xs text-[var(--text-dim)]" aria-hidden="true">{axisTitle}</div>}
-        {readout && (
-          <div data-readout className="h-5 truncate pl-16 text-xs text-[var(--text-secondary)]" aria-hidden="true">
-            {hover != null && points[hover] ? <><span className="font-bold">{points[hover].label}:</span> {formatY(points[hover].y + (points[hover].y2 ?? 0))} {readoutUnit!(points[hover].y + (points[hover].y2 ?? 0))}</> : null}
-          </div>
-        )}
-        <div className={`flex gap-2 ${marks.length || peakLabel ? 'pt-5' : ''}`} aria-hidden="true" onPointerLeave={readout ? () => setHover(null) : undefined}>
+        <div className={`flex gap-2 ${marks.length || peakLabel ? 'pt-5' : ''}`} aria-hidden="true">
           <div className="relative w-14 shrink-0 text-right text-xs text-[var(--text-dim)]" style={{ height: H }}>
             {axis.ticks.map(t => (
               <span key={t} className="absolute right-0 translate-y-1/2 whitespace-nowrap leading-none" style={{ bottom: pos(t) }}>{t === 0 && zeroLabel ? zeroLabel : formatY(t)}</span>
@@ -190,8 +181,7 @@ export default function ProfileBars({ points, ariaLabel, formatY, unit, minN = 3
                 const h1 = Math.max(p.y2 == null ? 2 : 0, top - bottom);
                 const h2 = p.y2 ? pos(p.y2) - pos(0) : 0;
                 return (
-                  <div key={`${p.label}-${i}`} data-lit={readout && hover === i ? '' : undefined} className={`relative h-full min-w-0 flex-1 rounded-sm ${readout && hover === i ? 'bg-[var(--bg-btn-hover)]' : ''}`} title={readout ? undefined : text(p)}
-                    onPointerEnter={readout ? () => setHover(i) : undefined} onPointerDown={readout ? () => setHover(i) : undefined}>
+                  <div key={`${p.label}-${i}`} className="relative h-full min-w-0 flex-1" title={text(p)}>
                     {marked && <div className="pointer-events-none absolute inset-0 rounded-sm bg-[var(--status-caution)] opacity-20" />}
                     {!p.empty && <div className={`absolute left-1/2 flex w-[60%] max-w-[14px] min-w-[3px] -translate-x-1/2 flex-col-reverse overflow-hidden rounded-sm ${faded || p.lessExact ? 'opacity-50' : 'opacity-90'}`} style={{ bottom, height: h1 + h2 }}>
                       <div style={{ height: h1, background: p.lessExact ? stripe(color0) : color0 }} />
@@ -203,7 +193,7 @@ export default function ProfileBars({ points, ariaLabel, formatY, unit, minN = 3
                     {whiskers && p.lo != null && p.hi != null && (
                       <div className="absolute left-1/2 w-px -translate-x-1/2 bg-[var(--text-muted)] opacity-30" style={{ bottom: pos(p.lo), height: Math.max(1, pos(p.hi) - pos(p.lo)) }} />
                     )}
-                    {peak === i && hover == null && (
+                    {peak === i && (
                       <span data-peak className={`pointer-events-none absolute whitespace-nowrap text-xs font-bold leading-3 text-[var(--text-secondary)] ${i < 2 ? 'left-0' : i > count - 3 ? 'right-0' : 'left-1/2 -translate-x-1/2'}`} style={{ bottom: top + (p.y2 ? pos(p.y2) - pos(0) : 0) + 2 }}>{formatY(p.y + (p.y2 ?? 0))}</span>
                     )}
                     {marked && (
