@@ -8,6 +8,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Map and route behavior
 
+- **[Lines that share one name](https://github.com/Civic-Minds/Atlas/issues/1289) show as separate routes**: MARC's Brunswick, Penn and Camden lines, the three NYC S shuttles, Metro St Louis's Missouri and Illinois routes and JTA's First Coast Flyer lines each read as one route before
 - **[Miami Metrorail](https://github.com/Civic-Minds/Atlas/issues/1287) shows its Green and Orange lines**: the feed lists all of Metrorail as one route, "2600"
 - **Route card rows show the frequency the filter reads**: [AC Transit 281](https://github.com/Civic-Minds/Atlas/issues/1239) read every 60 where the filter reads 66 at the same stop, and waits over an hour now print their exact minutes instead of rounding to the half hour; a long gap is named only when it is at least 1.5 times the usual wait, and a [branch that stops partway](https://github.com/Civic-Minds/Atlas/issues/1276) says when, on the rows that run there (TTC 110 via 30th Street: every 30 until 5:55 PM), with no second line saying only part of the route qualifies
 - **Routes that run only part of a period say when instead of showing nothing**: [TTC 110](https://github.com/Civic-Minds/Atlas/issues/1277) Sunday mornings read "every 15 min from 8:07 AM" where the card had no rows

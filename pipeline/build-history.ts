@@ -422,6 +422,10 @@ async function main() {
     }
   }), 8);
   const routeAliases: HistoryRouteAliases = v2 ? JSON.parse(readFileSync(resolve('config/history-route-aliases.json'), 'utf8')) : {};
+  // #1289: keys whose archived values mixed separate lines (Metro St Louis's Missouri and Illinois
+  // routes shared numbers) are kept in the archive but not published; the lines start fresh under
+  // their own names (Ryan, 2026-11-02).
+  const retiredRoutes = JSON.parse(readFileSync(resolve('config/history-retired-routes.json'), 'utf8')) as Record<string, string[]>;
   const buildReport = newBuildReport();
   buildReport.droppedHolidayPeriods = holidayDrops.sort((a, b) => a.slug.localeCompare(b.slug) || a.periodKey.localeCompare(b.periodKey));
   buildReport.repickedPeriods = repickedPeriods.sort((a, b) => a.slug.localeCompare(b.slug) || a.periodKey.localeCompare(b.periodKey));
@@ -536,7 +540,9 @@ async function main() {
     const weekendOnlyKeys = weekendOnlyKeysFor(routeAliases[slug]);
     const keptByRoute: Record<string, Array<{ label: string; year: number; weekdayHeadwayMin: number | null }>> = {};
 
+    const retired = new Set(retiredRoutes[slug] ?? []);
     for (const [routeShortName, changes] of Object.entries(routeMap)) {
+      if (retired.has(routeShortName)) continue;
       let snapshots: Array<{ label: string; year: number; weekdayHeadwayMin: number | null; headwayByPeriod?: HeadwayByPeriod; geometry?: number[][] }>;
       if (v2) {
         // v2: join change files with sidecar entries by period key, drop invalid snapshots,

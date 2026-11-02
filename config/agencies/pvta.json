@@ -9,6 +9,18 @@
     -72.59
   ],
   "feedUrl": "https://www.pvta.com/g_trans/google_transit.zip",
+  "sameNameRoutes": [
+    {
+      "shortName": "G1",
+      "longName": "Five Town Plaza-Sumner-Union Station",
+      "name": "G1 Springfield"
+    },
+    {
+      "shortName": "G1",
+      "longName": "Chicopee Big Y-Chicopee Ctr-Union Station",
+      "name": "G1 Chicopee"
+    }
+  ],
   "lastFeedExpiry": "20261219",
   "lastFeedVersion": null,
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2416/latest.zip",
