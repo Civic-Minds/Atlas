@@ -1,4 +1,4 @@
-import { useState, type Key, type ReactNode } from 'react';
+import type { Key, ReactNode } from 'react';
 
 /** One bar of a research bar chart: its name, its count and its fill. */
 export interface RankedBar {
@@ -25,8 +25,6 @@ type Props = {
       /** A read-only chart: a list whose rows name their count on hover. */
       as: 'list';
       title: (bar: RankedBar) => string;
-      /** Name the hovered row's figures in one line above the list, as the hour charts do, instead of a browser tooltip (#1290): the word after the count. */
-      readoutUnit?: (value: number) => string;
     }
   | {
       /** A chart whose bars are picked one at a time. */
@@ -39,12 +37,10 @@ type Props = {
 );
 
 /**
- * The research pages' bar chart (Free child fares, the Frequent service story): a name, a rounded bar on a shared track
- * and the count, one row per bar. One component for both charts, so their bars look and read the same.
+ * The Frequent service story's bar chart: a name, a rounded bar on a shared track and the count, one row per bar.
  */
 export default function RankedBars(props: Props) {
   const { bars, max, listClassName, rowClassName, labelClassName, fillClassName } = props;
-  const [hover, setHover] = useState<Key | null>(null);
   const cells = (bar: RankedBar) => (
     <>
       <span className={labelClassName}>{bar.label}</span>
@@ -60,30 +56,12 @@ export default function RankedBars(props: Props) {
     </>
   );
   if (props.as === 'list') {
-    const { readoutUnit } = props;
-    if (!readoutUnit) {
-      return (
-        <ul className={listClassName}>
-          {bars.map(bar => (
-            <li key={bar.key} title={props.title(bar)} className={rowClassName}>{cells(bar)}</li>
-          ))}
-        </ul>
-      );
-    }
-    const hovered = bars.find(bar => bar.key === hover);
     return (
-      <div onPointerLeave={() => setHover(null)}>
-        <div data-readout className="mt-2 h-5 truncate text-xs text-[var(--text-secondary)]" aria-hidden="true">
-          {hovered ? <><span className="font-bold">{hovered.label}:</span> {hovered.value} {readoutUnit(hovered.value)}</> : null}
-        </div>
-        <ul className={listClassName}>
-          {bars.map(bar => (
-            <li key={bar.key} aria-label={props.title(bar)} data-lit={hover === bar.key ? '' : undefined}
-              className={`${rowClassName}${hover === bar.key ? ' bg-[var(--bg-btn-hover)]' : ''}`}
-              onPointerEnter={() => setHover(bar.key)} onPointerDown={() => setHover(bar.key)}>{cells(bar)}</li>
-          ))}
-        </ul>
-      </div>
+      <ul className={listClassName}>
+        {bars.map(bar => (
+          <li key={bar.key} title={props.title(bar)} className={rowClassName}>{cells(bar)}</li>
+        ))}
+      </ul>
     );
   }
   return (

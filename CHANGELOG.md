@@ -163,7 +163,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ### Agency, area and research pages
 
 - **Every agency page has its own search title**: agencies that share a short name, like the five MTA NYCT Bus boroughs or DART in Dallas and Des Moines, now add their borough, sector or place, and the build fails if two pages would ever share a title again
-- **[Free child fares](https://github.com/Civic-Minds/Atlas/issues/1290) charts name the bar under the pointer, like the other charts**: hovering showed only a small browser tooltip; the legend uses shorter labels and the note under the charts moved into How we did this
+- **[Free child fares](https://github.com/Civic-Minds/Atlas/issues/1290) charts look and respond like the split bar above them**: both are now column charts in the sparkline shape, with the split bar's text, and hovering or tapping a column fades the others as the split bar does; the legend uses shorter labels and the note under the charts moved into How we did this
 - **MTA New York, exo, MTA Maryland and Bustang each have one page across their feeds**: the parent page adds up its services' routes, counting a route shared by two feeds once, and lists them under "Services"; each service's page links up to it, and the map's agency picker and the agency list show it once
 - **Area and state pages show a parent agency once**: MTA New York is one row on New York's page and in the New York area, with its routes counted once, and its services are on its own page
 - **Every state and province has its own page**: it compares its agencies with the area pages' table and frequency bar
