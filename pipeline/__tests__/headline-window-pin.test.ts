@@ -11,6 +11,7 @@ import { join } from 'node:path';
 import JSZip from 'jszip';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 import { processAgencyFeeds } from '../agencyFeeds.js';
+import { fixtureSameNameRoutes } from './fixtureAgencyNames.js';
 
 const FIXTURES = join(import.meta.dirname, 'fixtures');
 
@@ -58,7 +59,7 @@ describe('processed fixture output is pinned', () => {
       const dir = join(FIXTURES, name);
       vi.setSystemTime(referenceDate(dir));
       try {
-        const result = await processAgencyFeeds(await zipDir(dir), [], { slug: name });
+        const result = await processAgencyFeeds(await zipDir(dir), [], { slug: name, sameNameRoutes: fixtureSameNameRoutes(name) });
         const hash = createHash('sha1');
         for (const part of [result.geojson, result.corridorsGeojson, result.stopsJson, result.tripsJson, result.stopsMetaJson, result.sectionsJson]) hash.update(part).update('\u0000');
         out[name] = `${result.featureCount} features ${hash.digest('hex').slice(0, 12)}`;

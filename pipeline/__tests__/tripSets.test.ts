@@ -1,4 +1,5 @@
 import { readdirSync, readFileSync } from 'node:fs';
+import { fixtureSameNameRoutes } from './fixtureAgencyNames';
 import { resolve } from 'node:path';
 import JSZip from 'jszip';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
@@ -26,7 +27,7 @@ function run(name: string, slug = name.split('-')[0]): Promise<Run> {
   if (!runs.has(name)) {
     runs.set(name, (async () => {
       let captured: Omit<Run, 'rows'> | null = null;
-      const result = await processGtfsBuffer(await fixtureZip(name), undefined, { slug, onStretches: input => { captured = input; } });
+      const result = await processGtfsBuffer(await fixtureZip(name), undefined, { slug, sameNameRoutes: fixtureSameNameRoutes(name), onStretches: input => { captured = input; } });
       const rows = JSON.parse(result.geojson).features.map((f: any) => f.properties).filter((p: any) => p.stopId == null);
       return { rows, ...captured! };
     })());
@@ -381,12 +382,13 @@ describe('Overnight reads the night verdict (#1267, Ryan 2026-10-31)', () => {
   });
 });
 
-describe('night on disconnected pieces (NYC subway S)', () => {
-  it('S keeps passing: the 42 St shuttle stops overnight, Franklin Av and Rockaway Park run all night', async () => {
+describe('NYC subway S is three shuttles (#1289)', () => {
+  it('each shuttle is its own route: the 42 St shuttle stops overnight, Franklin and Rockaway run all night', async () => {
     const r = await run('nyct-subway-s-weekday', 'nyct');
-    const p = row(r, 'S', 'Weekday');
-    expect(r.stretches.get('S::0::Weekday')!.disconnected).toBe(true);
-    expect([p.stretchNight30, p.stretchNight60]).toEqual([true, true]);
+    expect(r.rows.some(p => p.routeShortName === 'S')).toBe(false);
+    for (const name of ['42 St Shuttle', 'Franklin Shuttle', 'Rockaway Shuttle']) expect(r.stretches.get(`${name}::0::Weekday`)!.disconnected).toBeFalsy();
+    expect(row(r, '42 St Shuttle', 'Weekday').stretchNight60).toBe(false);
+    for (const name of ['Franklin Shuttle', 'Rockaway Shuttle']) expect(row(r, name, 'Weekday').stretchNight60).toBe(true);
   });
 });
 

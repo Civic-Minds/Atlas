@@ -13,6 +13,7 @@
  */
 import { addIds, gtfsIdSets, idCollisions } from './supplementalIds.js';
 import type { RouteSplit } from './preprocess/split-routes.js';
+import type { SameNameRoute } from './preprocess/same-name-routes.js';
 import { processGtfsBuffer, type GtfsPreprocess, type ProcessOptions, type ProcessResult } from './process-core.js';
 import { ROUTE_ARTIFACT_SCHEMA_VERSION } from '../shared/artifactSchema.js';
 import { extractAgencySections } from '../shared/agencySections.js';
@@ -37,6 +38,8 @@ export interface AgencyFeedConfig {
   mergeEquivalentShapeVariantsRouteTypes?: string[];
   /** #1287: one feed route that is several lines, split by the station each trip serves (preprocess/split-routes.ts). */
   routeSplits?: RouteSplit[];
+  /** #1289: names for separate lines that share a short name (preprocess/same-name-routes.ts). */
+  sameNameRoutes?: SameNameRoute[];
   keepLongShapeJumps?: boolean;
   skipClusteredJumpRepair?: boolean;
   poolSingleTripShapes?: boolean;
@@ -109,6 +112,7 @@ export function agencyProcessOptions(agency: AgencyFeedConfig, overrides: Agency
     mergeEquivalentShapeVariantsAllModes: agency.mergeEquivalentShapeVariantsAllModes,
     mergeEquivalentShapeVariantsRouteTypes: agency.mergeEquivalentShapeVariantsRouteTypes,
     routeSplits: agency.routeSplits,
+    sameNameRoutes: agency.sameNameRoutes,
     keepLongShapeJumps: agency.keepLongShapeJumps,
     skipClusteredJumpRepair: agency.skipClusteredJumpRepair,
     poolSingleTripShapes: agency.poolSingleTripShapes,

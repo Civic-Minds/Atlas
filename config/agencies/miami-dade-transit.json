@@ -10,7 +10,7 @@
   "feedUrl": "https://files.mobilitydatabase.org/mdb-331/latest.zip",
   "routeSplits": [
     {
-      "routeId": "31009",
+      "routeShortName": "2600",
       "parts": [
         {
           "shortName": "Green",
