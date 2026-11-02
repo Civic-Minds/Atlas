@@ -10,14 +10,15 @@ describe('Free child fares (CIV-1149)', () => {
     expect(screen.getByRole('heading', { name: 'Where kids ride free, age 5 is the most common cutoff.' })).toBeInTheDocument();
     expect(screen.getByText('374 of 553 agencies let children ride free up to a set age. Each bar counts the agencies whose free fare ends at that age.')).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Free up to a set age' })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'Other policies' })).toBeInTheDocument();
+    // #1290: the Other policies chart repeated the split bar's numbers, so only the split bar shows them.
+    expect(screen.queryByRole('heading', { name: 'Other policies' })).toBeNull();
     expect(screen.getAllByText('Up to 5').length).toBeGreaterThan(0);
     expect(screen.getAllByText('Not found').length).toBeGreaterThan(0);
     // #1290: the note under the charts moved into How we did this, so this sentence is there once.
     expect(screen.getAllByText(/We couldn't find a current official rule for 34 agencies\./)).toHaveLength(1);
     expect(screen.getByText(/Free fares up to 17 or 18 are usually youth programs\./).closest('[data-research-method]')).not.toBeNull();
     expect(screen.queryByText(/Each agency appears once/)).toBeNull();
-    expect(screen.getAllByText('Show as a table')).toHaveLength(2);
+    expect(screen.getAllByText('Show as a table')).toHaveLength(1);
   });
 
   it('opens with the approved blurb and ends with How we did this, Canada and US numbers', () => {
@@ -29,16 +30,12 @@ describe('Free child fares (CIV-1149)', () => {
     expect(screen.getByText(/^Only an agency's own fare page, or its city or county fare bylaw, counted\.$/)).toBeInTheDocument();
   });
 
-  it('draws the ages and the other policies as two separate charts, each with its own table (CIV-1176)', () => {
+  it('draws the ages as the one chart, with its own table (CIV-1176, #1290)', () => {
     render(<FreeChildFaresPage />);
     const captions = screen.getAllByRole('table', { hidden: true }).map(t => t.querySelector('caption')?.textContent);
     expect(captions).toContain('Free up to a set age');
-    expect(captions).toContain('Other policies');
-    const ages = screen.getByRole('group', { name: 'How many agencies let children ride free up to each age, from 1 to 18. Age 5 is the most common, at 129 agencies.' });
-    expect(ages).toBeInTheDocument();
-    const other = screen.getAllByRole('table', { hidden: true }).find(t => t.querySelector('caption')?.textContent === 'Other policies')!;
-    expect(other.textContent).toContain('Not found');
-    expect(other.textContent).not.toContain('Up to 5');
+    expect(captions).not.toContain('Other policies');
+    expect(screen.getByRole('group', { name: 'How many agencies let children ride free up to each age, from 1 to 18. Age 5 is the most common, at 129 agencies.' })).toBeInTheDocument();
   });
 
   it('gives every age from 1 to 18 a column, with no bar where no agency uses it, and counts above the bars (#1290)', () => {
@@ -52,36 +49,39 @@ describe('Free child fares (CIV-1149)', () => {
     expect(screen.getByRole('button', { name: 'Up to 1: 1 agency' })).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /Up to 15:/ })).toBeNull();
     expect(container.querySelector('[data-readout]')).toBeNull();
+    // Count, bar and name are one target, with the pointer cursor, and the text can't be selected.
+    const five = screen.getByRole('button', { name: 'Up to 5: 129 agencies' });
+    expect(five).toHaveTextContent('129');
+    expect(five).toHaveTextContent('5');
+    expect(five).toHaveClass('cursor-pointer', 'select-none');
   });
 
   it('picks a column the way the split bar picks a part: the others fade and its name is highlighted (#1290)', () => {
     render(<FreeChildFaresPage />);
-    const chart = screen.getByRole('group', { name: 'How many agencies have each other free child fare policy.' });
+    const chart = screen.getByRole('group', { name: /How many agencies let children ride free up to each age/ });
     const columns = [...chart.querySelectorAll('button')];
-    expect(columns.map(b => b.getAttribute('aria-label'))).toEqual(['Fare-free: 63 agencies', 'Height limit: 39 agencies', 'Student program: 24 agencies', 'Program only: 4 agencies', 'None: 15 agencies', 'Not found: 34 agencies']);
-    const bar = (b: HTMLElement) => b.firstElementChild as HTMLElement;
-    expect(bar(columns[5]).style.background).toContain('repeating-linear-gradient');
-    const names = chart.parentElement!.nextElementSibling!;
-    fireEvent.mouseEnter(columns[1]);
-    expect(bar(columns[1]).style.opacity).toBe('');
-    expect(bar(columns[0]).style.opacity).toBe('0.35');
-    expect(names.querySelector('[data-active]')).toHaveTextContent('Height limit');
-    fireEvent.mouseLeave(chart.closest('figure')!.firstElementChild!);
-    expect(bar(columns[0]).style.opacity).toBe('');
-    fireEvent.click(columns[2]);
-    expect(names.querySelector('[data-active]')).toHaveTextContent('Student program');
-    fireEvent.click(columns[2]);
-    expect(names.querySelector('[data-active]')).toBeNull();
+    const bar = (b: HTMLElement) => b.querySelector('[data-bar]') as HTMLElement;
+    const picked = () => chart.querySelector('[data-active]');
+    fireEvent.mouseEnter(columns[4]);
+    expect(bar(columns[4]).style.opacity).toBe('');
+    expect(bar(columns[3]).style.opacity).toBe('0.35');
+    expect(picked()).toHaveTextContent('5');
+    fireEvent.mouseLeave(chart.parentElement!);
+    expect(bar(columns[3]).style.opacity).toBe('');
+    fireEvent.click(columns[5]);
+    expect(picked()).toHaveTextContent('6');
+    fireEvent.click(columns[5]);
+    expect(picked()).toBeNull();
     // A tap fires the hover first: it picks the column rather than undoing that hover.
-    fireEvent.mouseEnter(columns[3]);
-    fireEvent.click(columns[3]);
-    expect(names.querySelector('[data-active]')).toHaveTextContent('Program only');
-    fireEvent.mouseLeave(names.querySelector('[data-active]')!);
-    expect(names.querySelector('[data-active]')).toBeNull();
+    fireEvent.mouseEnter(columns[6]);
+    fireEvent.click(columns[6]);
+    expect(picked()).toHaveTextContent('7');
+    fireEvent.mouseLeave(chart.parentElement!);
+    expect(picked()).toBeNull();
     // Tabbing to a column picks it, and Enter (a click) keeps it picked.
-    fireEvent.focus(columns[4]);
-    fireEvent.click(columns[4]);
-    expect(names.querySelector('[data-active]')).toHaveTextContent('None');
+    fireEvent.focus(columns[7]);
+    fireEvent.click(columns[7]);
+    expect(picked()).toHaveTextContent('8');
   });
 
   it('splits all 553 agencies into one bar by policy, counts in the legend (CIV-1176)', () => {

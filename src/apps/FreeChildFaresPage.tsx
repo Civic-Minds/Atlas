@@ -7,7 +7,7 @@ import { CHART_COUNT } from '../components/charts/useActivePart';
 import ResearchMethod from '../components/research/ResearchMethod';
 import ResearchHeader from '../components/research/ResearchHeader';
 import type { DataTableColumn } from '../components/ui/DataTable';
-import { FREE_CHILD_AGE_COUNTS, FREE_CHILD_AGE_LABEL, FREE_CHILD_AGENCIES_BY_COUNTRY, FREE_CHILD_OTHER_POLICIES, freeChildAgeBars, freeChildFareStats, freeChildOtherBars, type FreeChildFareBar } from '../data/freeChildFares';
+import { FREE_CHILD_AGE_COUNTS, FREE_CHILD_AGE_LABEL, FREE_CHILD_AGENCIES_BY_COUNTRY, FREE_CHILD_OTHER_POLICIES, freeChildAgeBars, freeChildFareStats, type FreeChildFareBar } from '../data/freeChildFares';
 
 const TABLE_COLUMNS: DataTableColumn<FreeChildFareBar>[] = [
   { key: 'group', header: 'Group', cell: bar => bar.label, rowHeader: true, className: 'font-normal', width: 12 },
@@ -44,9 +44,8 @@ const splitSegments: SplitBarSegment[] = [
 // Ryan's words (2026-10-30), with the numbers read from the data.
 const SPLIT_LABEL = `How many agencies have each kind of free child fare policy, out of ${freeChildFareStats.agencies}.`;
 
-// #1290 (Ryan): both charts in the sparkline charts' shape, picked like the split bar, on one scale so they compare.
-const otherColumns: SparkColumn[] = freeChildOtherBars.map(bar => ({ key: bar.label, label: bar.label, value: bar.agencies, fill: bar.unknown ? HATCHED : 'var(--text-muted)', sentence: `${bar.label}: ${agencies(bar.agencies)}` }));
-const chartTicks = niceAxis(0, freeChildFareStats.maxBar).ticks;
+// #1290 (Ryan): the age chart in the sparkline charts' shape, picked like the split bar. The other policies are in the split bar alone.
+const chartTicks = niceAxis(0, Math.max(...ageColumns.map(c => c.value))).ticks;
 
 const peakAge = [...FREE_CHILD_AGE_COUNTS].sort((a, b) => b[1] - a[1])[0];
 const AGE_CHART_ARIA = `How many agencies let children ride free up to each age, from ${Math.min(...ages)} to ${Math.max(...ages)}. Age ${peakAge[0]} is the most common, at ${peakAge[1]} agencies.`;
@@ -100,14 +99,6 @@ export default function FreeChildFaresPage() {
               <h3 className="text-xs font-black text-[var(--text-primary)]">Free up to a set age</h3>
               <CategorySpark columns={ageColumns} label={AGE_CHART_ARIA} ticks={chartTicks} />
               <ChartTableDetails caption="Free up to a set age" columns={TABLE_COLUMNS} rows={freeChildAgeBars} rowKey={bar => bar.label} />
-            </div>
-          </section>
-
-          <section aria-labelledby="other-policies-heading">
-            <div className="rounded-[2rem] border border-[var(--border-primary)] bg-[var(--bg-panel)] p-5 sm:p-8">
-              <h3 id="other-policies-heading" className="text-xs font-black text-[var(--text-primary)]">Other policies</h3>
-              <CategorySpark columns={otherColumns} label="How many agencies have each other free child fare policy." ticks={chartTicks} />
-              <ChartTableDetails caption="Other policies" columns={TABLE_COLUMNS} rows={freeChildOtherBars} rowKey={bar => bar.label} />
             </div>
           </section>
         </div>

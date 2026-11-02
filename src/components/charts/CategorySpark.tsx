@@ -30,35 +30,35 @@ export default function CategorySpark({ columns, label, ticks, height = 120 }: {
   const pos = (v: number) => Math.max(0, Math.min(height, ((v - lo) / (hi - lo || 1)) * height));
   return (
     <figure className="m-0">
-      <div onMouseLeave={clear}>
-        <div className="relative mt-2.5 pt-4" style={{ paddingLeft: AXIS_W }}>
-          <div className="absolute inset-x-0 bottom-0" style={{ height }} aria-hidden="true">
-            <SparkTicks ticks={ticks} y={t => height - pos(t)} format={t => t.toLocaleString()} textClassName="text-[var(--text-primary)]" />
-          </div>
-          <div role="group" aria-label={label} className="relative flex gap-1" style={{ height }}>
-            {columns.map(c => c.value > 0 ? (
-              <button key={c.key} type="button" aria-label={c.sentence} className="relative h-full min-w-0 flex-1 cursor-pointer rounded-sm border-0 bg-transparent p-0 outline-offset-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--accent)]" {...partEvents(c.key)}>
-                <span className={`${SPARK_BAR} opacity-90 transition-opacity`} style={{ bottom: 0, height: Math.max(2, pos(c.value)), background: c.fill, opacity: faded(c.key) ? FADED_OPACITY : undefined }} />
-                <span aria-hidden="true" className={`pointer-events-none absolute left-1/2 -translate-x-1/2 whitespace-nowrap leading-3 ${CHART_TEXT} ${CHART_COUNT}`} style={{ bottom: Math.max(2, pos(c.value)) + 2 }}>{c.value.toLocaleString()}</span>
-              </button>
-            ) : <div key={c.key} className="min-w-0 flex-1" />)}
-          </div>
+      {/* Each column, its count, bar and name, is one target for the pointer, tap and keyboard, with the pointer cursor throughout (#1290). */}
+      <div className="relative mt-2.5 select-none pt-4" style={{ paddingLeft: AXIS_W }} onMouseLeave={clear}>
+        <div className="absolute inset-x-0 top-4" style={{ height }} aria-hidden="true">
+          <SparkTicks ticks={ticks} y={t => height - pos(t)} format={t => t.toLocaleString()} textClassName="text-[var(--text-primary)]" />
         </div>
-        {/* The names light up and answer the pointer as the split bar's legend items do; the bars above are the one tab stop per group. */}
-        <ul className="m-0 mt-1 flex list-none gap-1 p-0" style={{ marginLeft: AXIS_W }} aria-hidden="true">
-          {columns.map(c => (
-            <li key={c.key} className="min-w-0 flex-1 break-words text-center">
-              {c.value > 0 ? (
-                <span data-active={active === c.key ? 'true' : undefined}
-                  className={`inline-block cursor-pointer select-none rounded-md px-0 py-0.5 leading-4 transition-colors sm:px-1.5 ${CHART_TEXT}`}
-                  style={active === c.key ? { background: ACTIVE_BG } : undefined}
-                  onMouseEnter={partEvents(c.key).onMouseEnter} onClick={partEvents(c.key).onClick} onMouseLeave={clear}>
-                  {c.label}
+        <div role="group" aria-label={label} className="relative flex gap-1">
+          {columns.map(c => {
+            const inner = (
+              <>
+                <span className="relative block w-full" style={{ height }} aria-hidden="true">
+                  {c.value > 0 && <>
+                    <span data-bar className={`${SPARK_BAR} opacity-90 transition-opacity`} style={{ bottom: 0, height: Math.max(2, pos(c.value)), background: c.fill, opacity: faded(c.key) ? FADED_OPACITY : undefined }} />
+                    <span className={`absolute left-1/2 -translate-x-1/2 whitespace-nowrap leading-3 ${CHART_TEXT} ${CHART_COUNT}`} style={{ bottom: Math.max(2, pos(c.value)) + 2 }}>{c.value.toLocaleString()}</span>
+                  </>}
                 </span>
-              ) : <span className={`inline-block px-0 py-0.5 leading-4 sm:px-1.5 ${CHART_TEXT}`}>{c.label}</span>}
-            </li>
-          ))}
-        </ul>
+                <span className="mt-1 block break-words text-center" aria-hidden="true">
+                  <span data-active={active === c.key ? 'true' : undefined} className={`inline-block rounded-md px-0 py-0.5 leading-4 transition-colors sm:px-1.5 ${CHART_TEXT}`}
+                    style={active === c.key ? { background: ACTIVE_BG } : undefined}>{c.label}</span>
+                </span>
+              </>
+            );
+            return c.value > 0 ? (
+              <button key={c.key} type="button" aria-label={c.sentence} {...partEvents(c.key)}
+                className="flex min-w-0 flex-1 cursor-pointer select-none flex-col rounded-sm border-0 bg-transparent p-0 outline-offset-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--accent)]">
+                {inner}
+              </button>
+            ) : <div key={c.key} className="flex min-w-0 flex-1 cursor-default flex-col">{inner}</div>;
+          })}
+        </div>
       </div>
     </figure>
   );
