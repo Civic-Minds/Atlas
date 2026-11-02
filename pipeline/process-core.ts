@@ -15,6 +15,7 @@ import { detectReferenceDate, getActiveServiceIds } from './transit-calendar.js'
 import { calendarFromNextServiceDates } from './serviceDates.js';
 import { readWeekOf } from './readWeek.js';
 import { dropOneOffRailTrips } from './oneOffServices.js';
+import { mergeDirectionSplitRoutes } from './directionSplitRoutes.js';
 import { bookingRequiredRouteIds } from './bookedRoutes.js';
 import { DEFAULT_CRITERIA, getTiersForCriteria } from './defaults.js';
 import { normalizeGtfs, type GtfsPreprocess, type GtfsTransformOptions } from './preprocess/run.js';
@@ -750,6 +751,14 @@ export async function processGtfsBuffer(
     onStatus?.('  continuing despite validation errors (--force)');
   } else if (validation.warnings > 0) {
     onStatus?.(`Validation: ${validation.warnings} warning(s)`);
+  }
+
+  // #1285: a line the feed splits into one route per direction (BART "Yellow-S" and "Yellow-N") is
+  // one route with two directions. See directionSplitRoutes.ts.
+  const directionSplit = mergeDirectionSplitRoutes(gtfs);
+  if (directionSplit.merged.length > 0) {
+    gtfs = directionSplit.gtfs;
+    onStatus?.(`Direction-split routes merged: ${directionSplit.merged.map(m => `${m.base} (${m.keptRouteId} + ${m.mergedRouteId})`).join(', ')}`);
   }
 
   const routeBaseFares = computeRouteBaseFares(gtfs, options?.manualBaseFare);
