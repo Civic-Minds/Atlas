@@ -7,7 +7,7 @@ type ContentsItem = { id: string; label: string };
 type Props = {
   /** Extra classes for the content column (text size and colour differ between pages). */
   articleClassName?: string;
-  /** A research page's "How we did this" section: at the end of the text column on reading pages, PageShell's slot on wide ones. */
+  /** A research page's "Method" section: at the end of the text column on reading pages, PageShell's slot on wide ones. */
   method?: ReactNode;
   children: ReactNode;
 } & (
