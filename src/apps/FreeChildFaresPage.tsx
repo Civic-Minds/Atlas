@@ -6,14 +6,14 @@ import SplitBar, { type SplitBarSegment } from '../components/charts/SplitBar';
 import ResearchMethod from '../components/research/ResearchMethod';
 import ResearchHeader from '../components/research/ResearchHeader';
 import type { DataTableColumn } from '../components/ui/DataTable';
-import { FREE_CHILD_AGE_COUNTS, FREE_CHILD_AGENCIES_BY_COUNTRY, FREE_CHILD_OTHER_POLICIES, freeChildAgeBars, freeChildFareStats, freeChildOtherBars, type FreeChildFareBar } from '../data/freeChildFares';
+import { FREE_CHILD_AGE_COUNTS, FREE_CHILD_AGE_LABEL, FREE_CHILD_AGENCIES_BY_COUNTRY, FREE_CHILD_OTHER_POLICIES, freeChildAgeBars, freeChildFareStats, freeChildOtherBars, type FreeChildFareBar } from '../data/freeChildFares';
 
 const TABLE_COLUMNS: DataTableColumn<FreeChildFareBar>[] = [
   { key: 'group', header: 'Group', cell: bar => bar.label, rowHeader: true, className: 'font-normal', width: 12 },
   { key: 'agencies', header: 'Agencies', cell: bar => bar.agencies, className: 'tabular-nums', width: 6 },
 ];
 
-// "Not found yet" is drawn hatched: no current official rule, not a policy.
+// "Not found" is drawn hatched: no current official rule, not a policy.
 const HATCHED = 'repeating-linear-gradient(135deg, var(--text-muted) 0 3px, transparent 3px 6px)';
 
 // CIV-1176, approved by Ryan (2026-10-30): the age chart's axis and
@@ -33,10 +33,10 @@ const agePoints: ProfilePoint[] = Array.from({ length: Math.max(...ages) - Math.
 });
 
 // CIV-1176 (Ryan: the agency page's split bar here too): every agency once, by policy group, in the chart's order.
-// Greys from the research charts, a step lighter each; "Not found yet" striped as in its bar.
+// Greys from the research charts, a step lighter each; "Not found" striped as in its bar.
 const SPLIT_GREYS = [100, 78, 60, 46, 34, 24];
 const splitSegments: SplitBarSegment[] = [
-  { key: 'age', label: 'Free up to a set age', value: freeChildFareStats.freeUpToAge },
+  { key: 'age', label: FREE_CHILD_AGE_LABEL, value: freeChildFareStats.freeUpToAge },
   ...FREE_CHILD_OTHER_POLICIES.map(p => ({ key: p.policyType, label: p.label, value: p.agencies, unknown: p.unknown })),
 ].map((s, i) => ({
   key: s.key,
@@ -62,7 +62,7 @@ export default function FreeChildFaresPage() {
       dateConducted: <>October 11, 2026.</>,
       sample: <>Canada and the United States only: every agency Atlas had there on that date, {freeChildFareStats.agencies} in all, {FREE_CHILD_AGENCIES_BY_COUNTRY['United States']} in the United States and {FREE_CHILD_AGENCIES_BY_COUNTRY.Canada} in Canada.</>,
       sources: <>Only an agency's own fare page, or its city or county fare bylaw, counted. Other agencies' pages, fare values in schedule data, search results and sites such as Wikipedia or Moovit did not.</>,
-      whatCounted: <>Each bar uses the oldest age that rides free: "under 6 ride free" counts as 5. When two official pages disagreed, we used the narrower rule. "Free for everyone" means the whole system is free for every rider. Free fares that apply only in some seasons, with a pass or for residents are counted under "Only under a program", not as a free child fare.</>,
+      whatCounted: <>Each bar uses the oldest age that rides free: "under 6 ride free" counts as 5. When two official pages disagreed, we used the narrower rule. "Fare-free" means the whole system is free for every rider. Free fares that apply only in some seasons, with a pass or for residents are counted under "Program only", not as a free child fare. Free fares up to 17 or 18 are usually youth programs.</>,
       notFound: <>We couldn't find a current official rule for {freeChildFareStats.notFound} agencies. Some sites block automated visits, some fare pages have no child rule, and some describe children without an age, such as "preschoolers". These are drawn with stripes.</>,
       limitations: <>This is a snapshot of October 11, 2026, not a live list. Fares change, and seasonal programs and short free-fare periods will go out of date.</>,
     }} />
@@ -112,6 +112,7 @@ export default function FreeChildFaresPage() {
                 scale={ageScale}
                 maxLabels={18}
                 labelSpacing={24}
+                readoutUnit={n => (n === 1 ? 'agency' : 'agencies')}
                 valueHeader="Agencies"
                 rowHeader="Group"
               />
@@ -130,12 +131,10 @@ export default function FreeChildFaresPage() {
                 rowClassName="grid cursor-default grid-cols-[7.5rem_1fr_2.25rem] items-center gap-2 rounded-lg py-0.5 text-sm hover:bg-[var(--bg-btn-hover)] sm:grid-cols-[9.5rem_1fr_2.5rem] sm:gap-3"
                 labelClassName="font-semibold text-[var(--text-primary)]"
                 title={bar => `${bar.label}: ${bar.value} ${bar.value === 1 ? 'agency' : 'agencies'}`}
+                readoutUnit={n => (n === 1 ? 'agency' : 'agencies')}
               />
               <ChartTableDetails caption="Other policies" columns={TABLE_COLUMNS} rows={freeChildOtherBars} rowKey={bar => bar.label} />
             </div>
-            <p className="mt-6 text-xs leading-5 text-[var(--text-dim)]">
-              Each agency appears once, taken from its own fare page or fare bylaw and checked on October 11, 2026. Free fares up to 17 or 18 are usually youth programs. We couldn't find a current official rule for {freeChildFareStats.notFound} agencies.
-            </p>
           </section>
         </div>
       </article>
