@@ -20,6 +20,7 @@ function footerGroups(): { title: string; links: FooterLink[] }[] {
       links: [
         { href: '/about/docs', label: 'Docs' },
         ...(FEATURES.researchApps ? [{ href: '/research', label: 'Research' }] : []),
+        { href: '/terms', label: 'Terms' },
       ],
     },
     {
@@ -27,22 +28,22 @@ function footerGroups(): { title: string; links: FooterLink[] }[] {
       links: [
         { href: '/about', label: 'About Atlas' },
         ...(FEATURES.whatsNew ? [{ href: '/changelog', label: 'Changelog' }] : []),
+        { href: '/privacy', label: 'Privacy' },
       ],
     },
   ];
 }
 
 export default function SiteFooter() {
-  // One grid for both rows, so Terms and Privacy line up under the link columns above them; the columns span the
-  // nav rows through subgrid. Phones: the three columns under the tagline, then the year, then the legal links.
   return (
     <footer className="mt-8 pt-5 sm:[html[data-consent-prompt]_&]:pb-16 text-sm text-[var(--text-dim)]" aria-label="Site footer">
-      <div className="grid grid-cols-3 gap-x-4 gap-y-6 sm:grid-cols-[1fr_auto_auto_auto] sm:gap-x-20">
-        <div className="col-span-3 sm:col-span-1">
+      <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
+        <div>
           <AtlasLogo href="/" ariaLabel="Atlas by Civic Minds" showMark={false} size="page" />
+          {/* Wraps below 1024px so the three link columns fit beside it from 640px up. */}
           <p className="mt-2 lg:whitespace-nowrap">Transit service, from schedule to street.</p>
         </div>
-        <nav className="col-span-3 grid grid-cols-subgrid gap-y-5" aria-label="Footer links">
+        <nav className="grid shrink-0 grid-cols-3 gap-x-4 gap-y-5 sm:flex sm:gap-x-20" aria-label="Footer links">
           {footerGroups().map(group => (
             <div key={group.title}>
               <div className="mb-2 text-xs font-black text-[var(--text-muted)]">{group.title}</div>
@@ -54,12 +55,8 @@ export default function SiteFooter() {
             </div>
           ))}
         </nav>
-        <span className="col-span-3 sm:col-span-1">© {new Date().getFullYear()} Civic Minds.</span>
-        <nav className="col-span-3 -mt-4 grid grid-cols-subgrid sm:mt-0" aria-label="Legal links">
-          <a className={`justify-self-start whitespace-nowrap ${LINK}`} href="/terms">Terms</a>
-          <a className={`justify-self-start whitespace-nowrap ${LINK}`} href="/privacy">Privacy</a>
-        </nav>
       </div>
+      <p className="mt-6">© {new Date().getFullYear()} Civic Minds.</p>
     </footer>
   );
 }
