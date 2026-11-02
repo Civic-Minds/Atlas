@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import * as maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import '../lib/maplibreWorker';
-import { basemapStyle } from '../lib/basemap';
+import { basemapStyle, showBasemapTheme } from '../lib/basemap';
 import { BasemapCredit } from './BasemapCredit';
 import { storyMapFailedText, storyMapLoadingText } from '../content/noticeCopy';
 import { fetchAgencyGeo } from '../lib/agencyGeo';
@@ -120,8 +120,7 @@ export default function FrequentServiceStoryMap({ agencies, stage, frequencyMinu
     const paint = () => {
       if (!map.isStyleLoaded()) return;
       const light = isLight();
-      map.setLayoutProperty('basemap-light', 'visibility', light ? 'visible' : 'none');
-      map.setLayoutProperty('basemap-dark', 'visibility', light ? 'none' : 'visible');
+      showBasemapTheme(map, light);
       if (!map.getLayer('routes')) return;
       map.setPaintProperty('routes', 'line-color', cssColor('--text-dim'));
       for (const s of STAGES) map.setPaintProperty(`stage-${s}`, 'line-color', cssColor('--accent'));

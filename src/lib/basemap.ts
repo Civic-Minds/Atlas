@@ -1,4 +1,4 @@
-import type { StyleSpecification } from 'maplibre-gl';
+import type { Map as MapLibreMap, StyleSpecification } from 'maplibre-gl';
 
 /**
  * The CARTO basemap. CARTO's terms allow its tiles only straight from CARTO to the browser, never proxied or cached on a
@@ -37,4 +37,14 @@ export function basemapStyle(lightMode: boolean, { labels = true }: { labels?: b
       { id: 'basemap-dark', type: 'raster', source: 'cartodb-dark', layout: { visibility: lightMode ? 'none' : 'visible' } },
     ],
   };
+}
+
+/**
+ * Show the light or dark basemap layer for the theme, on a map built from basemapStyle. Toggles visibility rather than
+ * calling setStyle, which would drop the layers a map adds itself (routes, stops). A layer not there yet is skipped.
+ */
+export function showBasemapTheme(map: Pick<MapLibreMap, 'getLayer' | 'setLayoutProperty'>, lightMode: boolean): void {
+  for (const [id, visible] of [['basemap-light', lightMode], ['basemap-dark', !lightMode]] as const) {
+    if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', visible ? 'visible' : 'none');
+  }
 }
