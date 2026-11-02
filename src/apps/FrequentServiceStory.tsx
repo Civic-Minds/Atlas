@@ -109,10 +109,12 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
 
         <section aria-labelledby="network-story-heading" className="relative left-1/2 mt-24 w-screen -translate-x-1/2 px-2 sm:mt-32 sm:px-3">
           <div className="relative min-w-0 pb-[12vh]">
-            <div className="min-w-0 lg:sticky lg:top-24">
+            {/* #1310: pinned below the page's sticky header at every width, and held through the last stage (the bottom padding),
+                so a stage heading never scrolls under the Atlas logo while it is the one being read. */}
+            <div className="sticky top-14 min-w-0 lg:top-24">
               <FrequentServiceStoryMap agencies={agencies} stage={storyStage} frequencyMinutes={frequencyMinutes} researchRecord={frequentServiceStoryResearchRecord} />
             </div>
-            <div className="relative z-10 space-y-[55vh] pb-8 pt-8 lg:pb-16" aria-hidden="true">
+            <div className="relative z-10 space-y-[55vh] pb-[60vh] pt-8" aria-hidden="true">
                 {[0, 1, 2, 3].map(stage => <div key={stage} ref={step => { storyStepRefs.current[stage] = step; }} data-story-stage={stage} className="h-[20vh]" />)}
             </div>
           </div>
