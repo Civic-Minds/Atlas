@@ -30,7 +30,7 @@ describe('state and province pages (CIV-976)', () => {
     expect(regionPageH1(d)).toBe('Colorado');
     expect(regionPageTitle(d)).toBe('Colorado: how often transit runs across 2 agencies');
     expect(regionPageDescription(d)).toBe('Compare 2 transit agencies in Colorado side by side: routes and weekday waits by time of day, from published schedules.');
-    expect(regionIntroParts(d).lead).toBe('Colorado has 2 transit agencies running 4 routes (1 commuter rail, 3 bus)');
+    expect(regionIntroParts(d).lead).toBe('Colorado has 2 transit agencies operating 4 routes (1 commuter rail, 3 bus)');
     expect(regionBarNote(d)).toBe("The bar splits this state's routes by how often they run on a weekday midday. Each route is judged by its slower direction.");
     expect(regionMapHref(d)).toMatch(/^\/\?agencies=rtd%2Crfta&lat=39\.5000&lon=-105\.9000&z=\d+$/);
     expect(resolveRegionSeo(d, { mode: 'public' })).toMatchObject({ canonicalUrl: 'https://www.transitatlas.fyi/region/colorado', noindex: false, matchedPath: '/region/colorado' });
@@ -56,7 +56,16 @@ describe('state and province pages (CIV-976)', () => {
     expect(us.regions.map(x => [x.region, x.href])).toEqual([['Colorado', '/region/colorado'], ['Wyoming', undefined]]);
   });
 
-  it('refuses two places with the same slug', () => {
-    expect(() => regionPages([RTD, ag('co2', 'Colorado', [r('X', 3, 10)], { country: 'Canada' })])).toThrow(/share the region slug/);
+  it('lists an agency on every state its routes stop in, with only the routes counted there (#1283)', () => {
+    const cross = ag('cross', 'Colorado', [{ ...r('1', 3, 10), regions: ['Colorado'] }, { ...r('2', 3, 15), regions: ['Colorado', 'Wyoming'] }, r('3', 3, 20)]);
+    const all = [cross, ONLY_NIGHT];
+    expect(regionPages(all).map(p => p.slug)).toEqual(['colorado', 'wyoming']);
+    const wy = buildRegionPageData({ slug: 'wyoming', name: 'Wyoming', country: 'United States' }, all, null);
+    expect(wy.agencies.map(a => [a.slug, a.totalRoutes])).toEqual([['cross', 1]]);
+    // A route with no state tag counts in the agency's home state.
+    const co = buildRegionPageData({ slug: 'colorado', name: 'Colorado', country: 'United States' }, all, null);
+    expect(co.agencies.map(a => [a.slug, a.totalRoutes])).toEqual([['cross', 3]]);
+    // The breadcrumb keeps the home state.
+    expect(agencyPageData(cross, all).regionPage).toBe('/region/colorado');
   });
 });

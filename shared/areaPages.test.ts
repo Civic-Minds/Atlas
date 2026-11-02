@@ -114,17 +114,17 @@ describe('areaAboutParagraph', () => {
   const row = (slug: string, name: string, totalRoutes: number) => ({ slug, name, title: name, displayName: name, totalRoutes, modes: { Bus: totalRoutes } });
 
   it('names no agencies when there are three or fewer: the sentence ends after the route breakdown (CIV-968, Ryan)', () => {
-    expect(areaAboutParagraph(base({}))).toBe('The Greater Toronto and Hamilton Area has 2 transit agencies running 6 routes (2 subway/metro, 4 bus).');
+    expect(areaAboutParagraph(base({}))).toBe('The Greater Toronto and Hamilton Area has 2 transit agencies operating 6 routes (2 subway/metro, 4 bus).');
     const one = base({ agencies: [row('a', 'A', 1)], totalRoutes: 1, byMode: [{ label: 'Bus', routes: 1 }] });
-    expect(areaAboutParagraph(one)).toBe('The Greater Toronto and Hamilton Area has 1 transit agency running 1 route.');
+    expect(areaAboutParagraph(one)).toBe('The Greater Toronto and Hamilton Area has 1 transit agency operating 1 route.');
     const three = base({ agencies: [row('a', 'A', 3), row('b', 'B', 2), row('c', 'C', 1)], totalRoutes: 6, byMode: [{ label: 'Bus', routes: 6 }] });
-    expect(areaAboutParagraph(three)).toBe('The Greater Toronto and Hamilton Area has 3 transit agencies running 6 routes.');
+    expect(areaAboutParagraph(three)).toBe('The Greater Toronto and Hamilton Area has 3 transit agencies operating 6 routes.');
     expect(areaIntroParts(three)).toMatchObject({ named: [], others: 0 });
   });
 
   it('names the two biggest and counts the rest past three agencies (CIV-968)', () => {
     const four = base({ agencies: [row('a', 'A', 4), row('b', 'B', 3), row('c', 'C', 2), row('d', 'D', 1)], totalRoutes: 10, byMode: [{ label: 'Bus', routes: 10 }] });
-    expect(areaAboutParagraph(four)).toBe('The Greater Toronto and Hamilton Area has 4 transit agencies running 10 routes, including A, B and 2 others.');
+    expect(areaAboutParagraph(four)).toBe('The Greater Toronto and Hamilton Area has 4 transit agencies operating 10 routes, including A, B and 2 others.');
     const parts = areaIntroParts(four);
     expect(parts.named.map(a => a.slug)).toEqual(['a', 'b']);
     expect(areaIntroJoiners({ named: parts.named, others: 1 }).tail).toBe('1 other.');
