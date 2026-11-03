@@ -28,9 +28,9 @@
       "no-definition-found": 274,
       "not-found-on-recheck": 101,
       "verified": 105,
-      "fetch-blocked": 16,
+      "fetch-blocked": 15,
       "narrow-scope": 9,
-      "unnamed-frequency-bands": 2,
+      "unnamed-frequency-bands": 3,
       "image-only": 3
     },
     "verifiedByQuoteCheck": {
@@ -5635,7 +5635,7 @@
     },
     {
       "slug": "dart-first-state",
-      "name": "DART First State (Wilmington, DE)",
+      "name": "DART First State",
       "country": "United States",
       "region": "Delaware",
       "definitionStatus": "not-found-on-recheck",
@@ -7470,7 +7470,7 @@
     },
     {
       "slug": "fred-transit",
-      "name": "Fredericksburg Regional Transit",
+      "name": "FXBGO! (Fredericksburg)",
       "country": "United States",
       "region": "Virginia",
       "definitionStatus": "fetch-blocked",
@@ -16681,9 +16681,19 @@
       "name": "Unitrans (Davis)",
       "country": "United States",
       "region": "California",
-      "definitionStatus": "fetch-blocked",
-      "definition": null,
-      "recheckNotes": "Whole unitrans.ucdavis.edu site returns 403 to curl and WebFetch. Earlier tiers (15/30/60-minute service) look like frequency groupings from news posts, not a named frequent tier; unverified.",
+      "definitionStatus": "unnamed-frequency-bands",
+      "definition": {
+        "label": null,
+        "thresholdMinutes": 15,
+        "span": "daytime",
+        "days": "weekdays when UC Davis is in session",
+        "sourceUrl": "https://unitrans.ucdavis.edu/sites/g/files/dgvnsk13431/files/inline-files/_2023_Davis-Unitrans-TitleVI-Program_FINAL.pdf",
+        "sourceType": "service_guidelines",
+        "quote": "Peak hour service frequencies for routes with >60 pass/hour ... Standard: 15-minute service ... On bus lines with more than 60 passengers per hour, the daytime headway is halved to every 15 minutes on days with UC Davis in session and every 30 minutes on weekdays when classes are not in session.",
+        "quoteMethod": "pdfkit",
+        "quoteCheck": "verbatim"
+      },
+      "recheckNotes": "A Title VI service standard (every 15 min on weekday daytimes, only for lines over 60 riders an hour, while UC Davis is in session) and 15/30/60-minute service classes; no named frequent tier. Rechecked 2026-11-03 (CIV-1258): the 2023 City of Davis and Unitrans Title VI Program sets a 15-minute standard only for lines over 60 riders an hour, on weekday daytimes while UC Davis is in session; the same page says pandemic staffing has kept it from being fully restored. A service standard with frequency classes (15/30/60-minute service in the Fall 2026 notice), not a named frequent tier.",
       "conflictingSources": false,
       "conflicts": [],
       "catalog": [

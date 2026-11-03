@@ -67,6 +67,7 @@ const PLANNED = {
 const UNNAMED_BANDS = {
   indygo: 'System map key has three classes (15-, 30- and 60-Minute Frequency Route) with no frequent wording.',
   fax: 'Route badge and map legend "15 Minute Frequency" are frequency classes with no frequent wording.',
+  unitrans: 'A Title VI service standard (every 15 min on weekday daytimes, only for lines over 60 riders an hour, while UC Davis is in session) and 15/30/60-minute service classes; no named frequent tier.',
 };
 
 const rows = new Map();

@@ -4621,23 +4621,24 @@
     },
     {
       "slug": "unitrans",
-      "status": "fetch-blocked",
+      "status": "found",
       "label": null,
-      "thresholdMinutes": null,
-      "span": null,
-      "days": null,
-      "sourceUrl": "https://unitrans.ucdavis.edu/news/regular-service-resumes-wednesday-sept-23",
-      "sourceType": null,
-      "quote": null,
-      "quoteMethod": null,
-      "quoteCheck": "fetch-blocked",
+      "thresholdMinutes": 15,
+      "span": "daytime",
+      "days": "weekdays when UC Davis is in session",
+      "sourceUrl": "https://unitrans.ucdavis.edu/sites/g/files/dgvnsk13431/files/inline-files/_2023_Davis-Unitrans-TitleVI-Program_FINAL.pdf",
+      "sourceType": "service_guidelines",
+      "quote": "Peak hour service frequencies for routes with >60 pass/hour ... Standard: 15-minute service ... On bus lines with more than 60 passengers per hour, the daytime headway is halved to every 15 minutes on days with UC Davis in session and every 30 minutes on weekdays when classes are not in session.",
+      "quoteMethod": "pdfkit",
+      "quoteCheck": "verbatim",
       "pagesSearched": [
         "https://unitrans.ucdavis.edu/news/regular-service-resumes-wednesday-sept-23",
         "https://unitrans.ucdavis.edu/",
-        "https://unitrans.ucdavis.edu/routes/"
+        "https://unitrans.ucdavis.edu/routes/",
+        "https://unitrans.ucdavis.edu/sites/g/files/dgvnsk13431/files/inline-files/_2023_Davis-Unitrans-TitleVI-Program_FINAL.pdf"
       ],
       "conflict": null,
-      "notes": "Whole unitrans.ucdavis.edu site returns 403 to curl and WebFetch. Earlier tiers (15/30/60-minute service) look like frequency groupings from news posts, not a named frequent tier; unverified."
+      "notes": "Rechecked 2026-11-03 (CIV-1258): the 2023 City of Davis and Unitrans Title VI Program sets a 15-minute standard only for lines over 60 riders an hour, on weekday daytimes while UC Davis is in session; the same page says pandemic staffing has kept it from being fully restored. A service standard with frequency classes (15/30/60-minute service in the Fall 2026 notice), not a named frequent tier."
     },
     {
       "slug": "upexpress",
