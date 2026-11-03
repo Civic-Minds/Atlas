@@ -89,6 +89,8 @@ interface SidebarControlsProps {
   /** Compare: map B's day, time and frequency, for the route card on map B (CIV-844); its period menu sets B's time. */
   compareSideB?: CompareSide | null;
   setCompareSideB?: (side: CompareSide) => void;
+  /** CIV-1252 (beta): map B's layers when it shows an upcoming network; map B's card and list rows read these. */
+  compareLayersB?: Record<string, GeoJSON.FeatureCollection>;
   onInfoOpen?: OpenInfoFn;
   searchEnterRef?: React.MutableRefObject<(() => void) | null>;
   /** The stop card's back link: where it goes and its words (CIV-832). */
@@ -146,6 +148,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   routeBack,
   onSearchRouteHover,
   analyticsApp = 'frequency',
+  compareLayersB,
 }) => {
   const colorMode = useColorMode();
   const nonCorridorLayers = useMemo(() => {
@@ -157,6 +160,11 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     }
     return result;
   }, [layers]);
+  // CIV-1252: map B's routes, the upcoming network's where map B shows one, otherwise the same as map A's.
+  const nonCorridorLayersB = useMemo(() => {
+    if (!compareLayersB) return nonCorridorLayers;
+    return Object.fromEntries(Object.entries(compareLayersB).filter(([slug]) => !slug.endsWith('-corridors')));
+  }, [compareLayersB, nonCorridorLayers]);
 
   const scrollRef = useRef<HTMLDivElement | null>(null);
   // The card body as state too, so the fade's observers follow it when it remounts (#1187).
@@ -337,7 +345,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       return p.routeId === routeId && !(p as { stopId?: string }).stopId;
     });
     if (!feat) return { headway: null, limited: false };
-    const displayOn = (day: DayType, onPeriod: TimePeriod) => routeListDisplay(fc?.features
+    const displayOn = (day: DayType, onPeriod: TimePeriod, from = fc) => routeListDisplay(from?.features
       .filter(candidate => {
         const p = candidate.properties as ShapeProperties;
         return !p.stopId && p.routeId === routeId && (p.day === undefined || p.day === day);
@@ -345,8 +353,10 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       .map(candidate => candidate.properties as ShapeProperties) ?? [], onPeriod);
     const display = displayOn(currentDay, period);
     // Compare (CIV-844): the row reads both maps, each on its own day and time.
-    return compareListSideB ? { ...display, compare: { A: display, B: displayOn(compareListSideB.day, compareListSideB.period) } } : display;
-  }, [nonCorridorLayers, period, currentDay, compareListSideB]);
+    return compareListSideB
+      ? { ...display, compare: { A: display, B: displayOn(compareListSideB.day, compareListSideB.period, nonCorridorLayersB[slug]) } }
+      : display;
+  }, [nonCorridorLayers, nonCorridorLayersB, period, currentDay, compareListSideB]);
 
   const checkScroll = useCallback(() => {
     const el = scrollRef.current;
@@ -382,12 +392,12 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   // Compare (CIV-844): map B's own card, from the same route on B's day and time.
   const sideB = compareActive ? compareSideB : null;
   const currentRouteB = useMemo(
-    () => (sideB ? buildCurrentRoute(selectedRoute, nonCorridorLayers, sideB.day, sideB.period) : null),
-    [sideB, selectedRoute, nonCorridorLayers],
+    () => (sideB ? buildCurrentRoute(selectedRoute, nonCorridorLayersB, sideB.day, sideB.period) : null),
+    [sideB, selectedRoute, nonCorridorLayersB],
   );
   const variantFamilyB = useMemo(
-    () => (sideB ? routeVariantFamily(currentRouteB, nonCorridorLayers, sideB.day, sideB.period) : null),
-    [sideB, currentRouteB, nonCorridorLayers],
+    () => (sideB ? routeVariantFamily(currentRouteB, nonCorridorLayersB, sideB.day, sideB.period) : null),
+    [sideB, currentRouteB, nonCorridorLayersB],
   );
 
   // Group directions by directionId so outbound/inbound are visually separated,

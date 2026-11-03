@@ -1679,6 +1679,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
         selectedRouteOutOfFilter={selectedRouteOutOfFilter && !compareActive}
         compareActive={compareActive}
         compareSideB={compareActive ? compareSide : null}
+        compareLayersB={compareActive && compareBDataset === 'upcoming' ? compareLayers : undefined}
         setCompareSideB={setCompareSide}
         onInfoOpen={onInfoOpen}
         searchEnterRef={searchEnterRef}
