@@ -61,3 +61,7 @@ Where the middle-stop number differs from the spec's dispatch-end or hand value:
 - TTC 63: the oracle counts both the arriving and the departing trip at Ossington (113 departures,
   median 2); the selector, like stopDepsByGroup, counts a chained trip's end once, as the next
   trip's departure.
+
+- soundtransit-1-line-weekday (CIV-226): Sound Transit 1 Line, cut 2026-11-04 from the 2027-03-28 archive zip;
+  its calendar_dates removals are dropped so the pinned read week (from 2026-11-09) has service. Trips alternate
+  between the two Federal Way Downtown platforms S07-T1 and S07-T2 (children of S07), 60 each per direction.
