@@ -8,6 +8,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Map and route behavior
 
+- **Station platforms read as their station**: Sound Transit's Link stations list two platforms and trains alternate between them, so each platform read every 20 and graded 60 on a line every 10 (Federal Way Downtown, Downtown Redmond); the platforms and the 2 Line toward Redmond now read the station's every 10
 - **Route lists and agency pages say when a route starts or stops instead of a long wait**: [NYC B and W](https://github.com/Civic-Minds/Atlas/issues/1292) AM peak read "every 72" and "every 88" where the card already said "every 9 min from 7:12 AM", and the J read every 75 at a station it skips at rush hour
 - **[Lines that share one name](https://github.com/Civic-Minds/Atlas/issues/1289) show as separate routes**: MARC's Brunswick, Penn and Camden lines, the three NYC S shuttles, Metro St Louis's Missouri and Illinois routes and JTA's First Coast Flyer lines each read as one route before
 - **[Miami Metrorail](https://github.com/Civic-Minds/Atlas/issues/1287) shows its Green and Orange lines**: the feed lists all of Metrorail as one route, "2600"

@@ -80,6 +80,7 @@ exports[`processed fixture output is pinned > matches the recorded hash for ever
   "septa-98": "82 features e003ff32495f",
   "septa-t3-saturday": "97 features df0cf4fa85f0",
   "slu-streetcar-calendar-dates-weekdays": "10 features c204112a1ffe",
+  "soundtransit-1-line-weekday": "83 features 1dea22e9fdd2",
   "stl-aout2626e": "63 features 436bf752f1e3",
   "synthetic-skip-stop-express": "22 features 88d593308c63",
   "translink-044-weekday": "64 features cc10b29a9bf6",
