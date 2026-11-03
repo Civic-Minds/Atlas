@@ -82,37 +82,37 @@ describe('FrequentServiceStory', () => {
 
   it('counts the Canada and US definitions that still held on the October 30 recheck (CIV-1149)', () => {
     const rows = recheck.rows.filter(row => ['Canada', 'United States'].includes(row.country) && Number.isInteger(row.threshold));
-    expect(rows).toHaveLength(67);
-    expect(frequentServiceStoryStats.namedNumericAgencies).toBe(61);
+    expect(rows).toHaveLength(69);
+    expect(frequentServiceStoryStats.namedNumericAgencies).toBe(63);
     expect(frequentServiceStoryStats.recheckLeftOut).toBe(6);
-    expect(frequentServiceStoryStats.recheckedAgencies).toBe(67);
+    expect(frequentServiceStoryStats.recheckedAgencies).toBe(69);
   });
 
   it('applies the tier rule: fastest multi-route frequent tier, slowest weekday daytime wait (CIV-1178)', () => {
     // CTtransit and Intercity Transit leave (one-corridor and one-route tiers); ART 10→12, CapMetro 20→15,
-    // RTC 20→15, DRT 15→20, Fort McMurray 15→25 (its own 25 bar).
-    expect(frequentServiceStoryStats.chartedAgencies).toBe(59);
+    // RTC 20→15, DRT 15→20, Fort McMurray 15→25 (its own 25 bar). CATS (15) and LADOT (20) join from the CIV-1258 recheck.
+    expect(frequentServiceStoryStats.chartedAgencies).toBe(61);
     expect(frequentServiceStoryStats.headwayBars).toEqual([
       { minutes: 10, agencies: 3, agenciesOct11: 3 },
       { minutes: 12, agencies: 2, agenciesOct11: 3 },
-      { minutes: 15, agencies: 39, agenciesOct11: 41 },
-      { minutes: 20, agencies: 5, agenciesOct11: 8 },
+      { minutes: 15, agencies: 40, agenciesOct11: 41 },
+      { minutes: 20, agencies: 6, agenciesOct11: 8 },
       { minutes: 25, agencies: 1, agenciesOct11: 1 },
       { minutes: 30, agencies: 9, agenciesOct11: 9 },
     ]);
-    expect(frequentServiceStoryStats.headwayBars.reduce((sum, bar) => sum + bar.agencies, 0)).toBe(59);
+    expect(frequentServiceStoryStats.headwayBars.reduce((sum, bar) => sum + bar.agencies, 0)).toBe(61);
   });
 
   it('says in Method that the chart was checked again (CIV-1149)', () => {
     render(<FrequentServiceStory agencies={agencies} onExploreMap={vi.fn()} />);
-    expect(screen.getByText(/On October 30, 2026, we opened the source again for each of the 67 agencies the chart counted\. 61 still matched and stay in the chart\. 6 are left out:/)).toBeInTheDocument();
+    expect(screen.getByText(/Between October 30 and November 3, we opened the source again for each of the 69 agencies the chart counted\. 63 still matched and stay in the chart\. 6 are left out:/)).toBeInTheDocument();
   });
 
   it('uses the shared method template: Date updated, and Sources in place of Review boundary (CIV-1167)', () => {
     const { container } = render(<FrequentServiceStory agencies={agencies} onExploreMap={vi.fn()} />);
     const method = screen.getByRole('heading', { name: 'Method' }).closest('section')!;
     expect([...method.querySelectorAll('strong')].map(el => el.textContent)).toEqual(['Date conducted:', 'Date updated:', 'Sample:', 'Sources:', 'What counted:', 'How we handled numbers:', 'Rechecked:', 'Limitations:']);
-    expect(method).toHaveTextContent('Date updated: October 30, 2026.');
+    expect(method).toHaveTextContent('Date updated: November 3, 2026.');
     expect(container).not.toHaveTextContent('Review boundary');
   });
 
@@ -133,11 +133,11 @@ describe('FrequentServiceStory', () => {
   });
 
   it('reads the intro count and the story agency from the definitions file (CIV-87)', () => {
-    expect(frequentServiceDefinitionSample).toMatchObject({ agencies: 419, blocked: 12, canada: 83, unitedStates: 336, namedNetwork: 78, withWait: 67 });
+    expect(frequentServiceDefinitionSample).toMatchObject({ agencies: 429, blocked: 2, canada: 85, unitedStates: 344, namedNetwork: 80, withWait: 69 });
     expect(frequentServiceStoryResearchRecord).toEqual({ agencyId: 'ttc', agencyName: 'Toronto Transit Commission' });
     render(<FrequentServiceStory agencies={agencies} onExploreMap={() => {}} />);
-    expect(screen.getByText(/We checked how 419 agencies define frequent service on their own websites/)).toBeInTheDocument();
-    expect(screen.getByText(/at 419 agencies Atlas covers in Canada \(83\) and the United States \(336\)\. We couldn't check 12 others because their websites block automated visits\./)).toBeInTheDocument();
+    expect(screen.getByText(/We checked how 429 agencies define frequent service on their own websites/)).toBeInTheDocument();
+    expect(screen.getByText(/at 429 agencies Atlas covers in Canada \(85\) and the United States \(344\)\. We couldn't check 2 others because their websites block automated visits\./)).toBeInTheDocument();
   });
 
   it('keeps the audit canonical and unique after alias merging', () => {
