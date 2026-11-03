@@ -79,7 +79,21 @@ export interface Stretch {
   nightTimes: readonly number[];
   /** Trips serving refStop. */
   tripCount: number;
+  /** CIV-1332: whether other service picks up riders at refStop (or within 400 m) soon after a night-only route's last bus (nightHandover). */
+  handover?: NightHandover;
 }
+
+/**
+ * CIV-1332: given a night-only route's last night departure (GTFS minutes, as nightTimes), whether daytime service
+ * starts at the stop or within NIGHT_HANDOVER_RADIUS_M of it within NIGHT_HANDOVER_MAX_WAIT_MIN after it. Built by
+ * the caller (process-core nightHandoverAt) from every route's departures that day.
+ */
+export type NightHandover = (lastNightBus: number) => boolean;
+
+/** CIV-1332 (Ryan, 2026-11-03): daytime buses must start within 90 minutes of a night-only route's last trip. */
+export const NIGHT_HANDOVER_MAX_WAIT_MIN = 90;
+/** CIV-1332: "at the route's own stops (or within 400 m)". */
+export const NIGHT_HANDOVER_RADIUS_M = 400;
 
 export interface DirectionStretches {
   key: string;
@@ -107,6 +121,8 @@ export interface DirectionStretches {
    * (Ryan, 2026-10-15: night service on part of the route counts, on the part it runs).
    */
   night?: DirectionStretches;
+  /** CIV-1332: the handover check at a stop (nightHandover), set by the caller; each stretch's own is on Stretch.handover. */
+  handoverAt?: (stopId: string) => NightHandover | undefined;
   /**
    * CIV-321 S1: departures at any stop of the direction, every trip that serves it (the same read
    * a stretch's reference stop gets). Not serialized.
@@ -606,12 +622,12 @@ export function encodeStopRuns(values: ReadonlyArray<number | null>): string {
  * Overnight by the same rule. A stop the verdict does not pass at 60 keeps its full-window wait, never
  * a better one.
  */
-export function stopPeriodValues(stops: readonly string[], throughTimesAlong: NonNullable<DirectionStretches['throughTimesAlong']>): Record<PeriodKey, string> {
+export function stopPeriodValues(stops: readonly string[], throughTimesAlong: NonNullable<DirectionStretches['throughTimesAlong']>, handoverAt?: (stopId: string) => NightHandover | undefined): Record<PeriodKey, string> {
   const reads = throughTimesAlong(stops);
   const perStop = stops.map((stop, i) => {
     const read = reads[i];
     if (read.times.length === 0) return null;
-    const stretch: Stretch = { kind: 'main', stops: [stop], refStop: stop, lengthKm: 0, ...read };
+    const stretch: Stretch = { kind: 'main', stops: [stop], refStop: stop, lengthKm: 0, ...read, handover: handoverAt?.(stop) };
     const night = directionNightValue({ key: stop, main: stretch, tails: [], regularPatternCount: 1, variantTripCount: 0 }, true);
     return { periods: stretchPeriods(stretch), night };
   });
@@ -771,7 +787,7 @@ export const NIGHT_EDGE_MAX_WAIT_MIN = 60;
  * starting at 4:30 never passes. null: no departure in the window.
  */
 export function stretchNight(s: Stretch, maxGap: number): boolean | null {
-  return nightServicePasses(s.times, s.nightTimes, maxGap);
+  return nightServicePasses(s.times, s.nightTimes, maxGap, s.handover);
 }
 
 /**
@@ -784,17 +800,21 @@ export function stretchNight(s: Stretch, maxGap: number): boolean | null {
  *   every grade, so the 90 grade never passes day service after a long hole (RTD 45 from 3:05);
  * - #1322: a night-only stretch (nightOnlyStretch) has no service before its first night bus, so the wait
  *   from 2:00 to it is the start of its service and does not count (TTC 339 at Malvern from 3:03). The
- *   wait after its last bus still counts: a night route that stops at 3:45 does not run through the night.
+ *   wait after its last bus still counts: a night route that stops at 3:45 does not run through the night,
+ * - CIV-1332 (Ryan, 2026-11-03): unless daytime buses start within 90 minutes of its last trip at its stop or
+ *   within 400 m ("Riders are covered all night, just by a different route after 4 AM": STM 376, TransLink N24).
+ *   `handover` answers that; without it the wait counts.
  */
-export function nightServicePasses(times: readonly number[], nightTimes: readonly number[], maxGap: number): boolean | null {
+export function nightServicePasses(times: readonly number[], nightTimes: readonly number[], maxGap: number, handover?: NightHandover): boolean | null {
   if (!nightTimes.some(t => t >= STRETCH_NIGHT_START_MIN && t <= STRETCH_NIGHT_END_MIN)) return null;
   const edge = Math.min(maxGap, NIGHT_EDGE_MAX_WAIT_MIN);
   if (!runsAcrossNightMidpoint(nightTimes)) return hasSustainedServiceInWindow([...nightTimes], STRETCH_NIGHT_START_MIN, STRETCH_NIGHT_END_MIN, maxGap, edge);
   const inWindow = [...new Set(nightTimes)].filter(t => t >= STRETCH_NIGHT_START_MIN && t <= STRETCH_NIGHT_END_MIN).sort((a, b) => a - b);
   const startWait = inWindow[0] - STRETCH_NIGHT_START_MIN;
   const endWait = STRETCH_NIGHT_END_MIN - inWindow[inWindow.length - 1];
-  if (endWait > NIGHT_EDGE_MAX_WAIT_MIN) return false;
-  if (!nightOnlyStretch({ times }) && startWait > NIGHT_EDGE_MAX_WAIT_MIN) return false;
+  const nightOnly = nightOnlyStretch({ times });
+  if (endWait > NIGHT_EDGE_MAX_WAIT_MIN && !(nightOnly && handover?.(inWindow[inWindow.length - 1]) === true)) return false;
+  if (!nightOnly && startWait > NIGHT_EDGE_MAX_WAIT_MIN) return false;
   return inWindow.every((t, i) => i === 0 || t - inWindow[i - 1] <= maxGap);
 }
 
@@ -1436,7 +1456,7 @@ export function stampStretchShadow(
     // CIV-321: per drawn stop and period, every trip of the direction running through the stop, along
     // the display-only full line where the row has one (S4), else the row's own stops.
     const stopOrder = (p.fullStopOrder ?? p.stopOrder) as readonly string[] | undefined;
-    if (stretches.throughTimesAlong && Array.isArray(stopOrder) && stopOrder.length > 0) p.stretchStopPeriodValues = stopPeriodValues(stopOrder, stretches.throughTimesAlong);
+    if (stretches.throughTimesAlong && Array.isArray(stopOrder) && stopOrder.length > 0) p.stretchStopPeriodValues = stopPeriodValues(stopOrder, stretches.throughTimesAlong, stretches.handoverAt);
     else delete p.stretchStopPeriodValues;
     // #1322: Overnight runs where the night verdict passes at 90, the cutoff for running through the night (Ryan,
     // 2026-11-03), not by the 2-6 AM midpoint test, which a first trip at 3 AM passes (RTD A Line).

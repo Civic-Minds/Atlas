@@ -1,0 +1,4 @@
+service_id,monday,tuesday,wednesday,thursday,friday,saturday,sunday,start_date,end_date
+26S-H50S000S-82-S,1,1,1,1,1,0,0,20260824,20261023
+26S-H58S000S-83-S,1,1,1,1,1,0,0,20260824,20261023
+26S-H60S000S-83-S,1,1,1,1,1,0,0,20260824,20261023

@@ -57,7 +57,7 @@ import { nearDuplicateTripIds } from './nearDuplicateTrips.js';
 import { decideDedupe, runsInDay, type DedupePattern } from './featureDedupe.js';
 import { decideHeadline, decidePeriod, liftTierOnDestinationPool, OVERSTATED_HEADLINE_MARGIN, ownStepOneHeadway, pooledStepOneHeadway, settleTier, terminalReading, type PeriodValue } from './routeGrading.js';
 import type { SharedStretchPattern } from './sharedStretch.js';
-import { directionStretches, gatedRiderWait, nightOnlyTrips, nightServicePasses, periodSustainedMid, rollupDirection, runsAcrossNightMidpoint, stampStretchShadow, type DirectionStretches, type TripVisit } from './tripSets.js';
+import { directionStretches, gatedRiderWait, nightOnlyTrips, nightServicePasses, periodSustainedMid, NIGHT_HANDOVER_MAX_WAIT_MIN, NIGHT_HANDOVER_RADIUS_M, type NightHandover, rollupDirection, runsAcrossNightMidpoint, stampStretchShadow, type DirectionStretches, type TripVisit } from './tripSets.js';
 import { buildPooledStopMap, computeStopSharers, pooledHeadwayInWindow, type StopSharers } from './stopPools.js';
 
 export type { GtfsPreprocess };
@@ -466,11 +466,13 @@ export function hasNightServiceAtShapeEndpoints(
   routeDepartures: ReadonlyMap<string, number[]>,
   overnightOnlyDepartures: ReadonlyMap<string, number[]> = new Map(),
   maxGapMinutes: number = 60,
+  /** CIV-1332: the handover check at a stop (tripSets NightHandover); without it a night-only route's end wait counts. */
+  handoverAt?: (stopId: string) => NightHandover | undefined,
 ): boolean {
   return [...new Set(endpointStopIds.filter((id): id is string => id != null))].some(stopId => {
     const departures = routeDepartures.get(stopId);
     if (!departures) return false;
-    return nightServicePasses(departures, nightServiceDepartureTimes(departures, overnightOnlyDepartures.get(stopId) ?? []), maxGapMinutes) === true;
+    return nightServicePasses(departures, nightServiceDepartureTimes(departures, overnightOnlyDepartures.get(stopId) ?? []), maxGapMinutes, handoverAt?.(stopId)) === true;
   });
 }
 
@@ -2155,6 +2157,63 @@ export async function processGtfsBuffer(
     return { wait, hasReading };
   };
 
+  // CIV-1332 (Ryan, 2026-11-03): a night-only route that ends around 4 AM still runs through the night "if daytime
+  // buses start within 90 minutes of their last trip. Riders are covered all night, just by a different route after
+  // 4 AM." nightHandoverAt(day, stop, route) answers that for one stop: every other route's departures that day at the stop or within
+  // NIGHT_HANDOVER_RADIUS_M of it, in the night window's notation (nightServiceDepartureTimes), any in
+  // (last, last + NIGHT_HANDOVER_MAX_WAIT_MIN]. tripSets nightServicePasses asks it only for a night-only stretch.
+  const handoverTimesByDay = new Map<string, Map<string, Map<string, number[]>>>();
+  /** day → stop → route → its departures there, in the night window's notation. */
+  const handoverTimes = (day: string): Map<string, Map<string, number[]>> => {
+    let byStop = handoverTimesByDay.get(day);
+    if (byStop) return byStop;
+    const raw = new Map<string, Map<string, { times: number[]; overnight: number[] }>>();
+    const add = (groups: Map<string, Map<string, number[]>>, overnight: boolean) => {
+      for (const [key, stops] of groups) {
+        if (key.slice(key.lastIndexOf('::') + 2) !== day) continue;
+        const route = key.slice(0, key.indexOf('::'));
+        for (const [stopId, times] of stops) {
+          let byRoute = raw.get(stopId);
+          if (!byRoute) { byRoute = new Map(); raw.set(stopId, byRoute); }
+          let entry = byRoute.get(route);
+          if (!entry) { entry = { times: [], overnight: [] }; byRoute.set(route, entry); }
+          (overnight ? entry.overnight : entry.times).push(...times);
+        }
+      }
+    };
+    add(stopDepsByGroup, false);
+    add(stopDepsByGroupNight, true);
+    byStop = new Map([...raw].map(([stopId, byRoute]) => [stopId, new Map([...byRoute].map(([route, { times, overnight }]) => [route, nightServiceDepartureTimes(times, overnight)]))]));
+    handoverTimesByDay.set(day, byStop);
+    return byStop;
+  };
+  const handoverCache = new Map<string, NightHandover | undefined>();
+  /** `route`: the night route itself, left out, so its own bus a few stops on is never the handover. */
+  const nightHandoverAt = (day: string, stopId: string, route: string): NightHandover | undefined => {
+    const cacheKey = `${day}::${route}::${stopId}`;
+    if (handoverCache.has(cacheKey)) return handoverCache.get(cacheKey);
+    const here = stopsById.get(stopId);
+    let result: NightHandover | undefined;
+    if (here) {
+      // Gathered on first use only: the check runs just for a night-only stretch whose last bus is early.
+      let nearby: number[] | null = null;
+      result = last => {
+        if (!nearby) {
+          const found: number[] = [];
+          for (const [otherId, byRoute] of handoverTimes(day)) {
+            const there = otherId === stopId ? here : stopsById.get(otherId);
+            if (!there || (otherId !== stopId && haversineDistance(here.lat, here.lon, there.lat, there.lon) > NIGHT_HANDOVER_RADIUS_M)) continue;
+            for (const [other, times] of byRoute) if (other !== route) found.push(...times);
+          }
+          nearby = found;
+        }
+        return nearby.some(t => t > last && t <= last + NIGHT_HANDOVER_MAX_WAIT_MIN);
+      };
+    }
+    handoverCache.set(cacheKey, result);
+    return result;
+  };
+
   const rowRunsAtNight = new Map<GeoJsonFeature, boolean>();
   const rowNightStops = new Map<GeoJsonFeature, string[]>();
   for (const [feature, { shortName, dirId, day }] of featureStopHeadwaySlots) {
@@ -2320,17 +2379,20 @@ export async function processGtfsBuffer(
       nightShapeStops[0]?.stopId,
       nightShapeStops.at(-1)?.stopId,
     ].filter((id): id is string => id != null))];
+    const handoverAt = (stopId: string) => nightHandoverAt(day, stopId, shortName);
     feature.properties.nightService30 = hasNightServiceAtShapeEndpoints(
       nightEndpointStopIds,
       metricStopMap,
       stopDepsByGroupNight.get(gKey),
       30,
+      handoverAt,
     );
     feature.properties.nightService60 = hasNightServiceAtShapeEndpoints(
       nightEndpointStopIds,
       metricStopMap,
       stopDepsByGroupNight.get(gKey),
       60,
+      handoverAt,
     );
     // CIV-1329: the 90 tier from the same call as 30 and 60, never a separate count.
     feature.properties.nightService90 = hasNightServiceAtShapeEndpoints(
@@ -2338,6 +2400,7 @@ export async function processGtfsBuffer(
       metricStopMap,
       stopDepsByGroupNight.get(gKey),
       90,
+      handoverAt,
     );
     feature.properties.nightService = feature.properties.nightService60;
     // Frequency focus step 4: whether this row itself runs at night: more than half of its own
@@ -3492,6 +3555,8 @@ export async function processGtfsBuffer(
     }
     const stretchesByKey = new Map<string, DirectionStretches>();
     for (const [gKey, trips] of stretchVisitsByGroup) {
+      const day = gKey.slice(gKey.lastIndexOf('::') + 2);
+      const groupRoute = gKey.slice(0, gKey.indexOf('::'));
       if (synthesizedGroups.has(gKey.slice(0, gKey.indexOf('::')))) continue;
       const directionTrips = [...trips].map(([tripId, visits]) => ({
         tripId,
@@ -3509,6 +3574,11 @@ export async function processGtfsBuffer(
       const nightTrips = nightOnlyTrips(directionTrips);
       if (nightTrips.length > 0) stretches.night = directionStretches(gKey, nightTrips, coord, directionTrips, 'mostVisits');
       stretches.midday899 = directionMidday899(gKey);
+      // CIV-1332: whether other service picks riders up soon after a night-only route's last bus, at each stretch's stop.
+      stretches.handoverAt = stopId => nightHandoverAt(day, stopId, groupRoute);
+      for (const st of [stretches.main, ...stretches.tails, stretches.night?.main, ...(stretches.night?.tails ?? [])]) {
+        if (st) (st as { handover?: NightHandover }).handover = nightHandoverAt(day, st.refStop, groupRoute);
+      }
       stretchesByKey.set(gKey, stretches);
     }
     options?.onStretches?.({ stretches: stretchesByKey, stopDepsByGroup });

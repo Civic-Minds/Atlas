@@ -8,7 +8,7 @@ import { nightServiceDepartureTimes } from '../headway-utils';
 import { normalizeRouteFilterFeatures, routePassesHeadwayFilter } from '../../shared/routeHeadwayFilter';
 import { isLimitedService } from '../../shared/irregularRoutes';
 import { decodeStopRuns } from '../../shared/stopRuns';
-import { directionNightValue, directionNightVerdict, directionStretches, encodeStopRuns, rollupDirection, rollupRoute, stopPeriodValues, stretchMetaPeriods, stretchFilterValue, stretchNight, stretchPeriods, tailNotThrough, type DirectionStretches, type DirectionTrip, type Stretch } from '../tripSets';
+import { directionNightValue, directionNightVerdict, directionStretches, nightServicePasses, encodeStopRuns, rollupDirection, rollupRoute, stopPeriodValues, stretchMetaPeriods, stretchFilterValue, stretchNight, stretchPeriods, tailNotThrough, type DirectionStretches, type DirectionTrip, type Stretch } from '../tripSets';
 
 // Frequency focus step 3 (`_reports/step3-tripsets-spec.md`): the direction trip-set selector, in
 // shadow. Expected values are the GTFS oracle's (scripts/handcheck/stretch-departures.py --at mid
@@ -342,6 +342,19 @@ describe('night edges: the wait for the first and after the last night bus (CIV-
     expect(stretchNight(stretch(every(hm(27, 3), hm(27, 53), 10)), 90)).toBe(false);
     expect(stretchNight(stretch(every(hm(27, 3), hm(29, 3), 20)), 30)).toBe(true);
   });
+  it('CIV-1332 (Ryan, 2026-11-03): a night-only route that ends around 4 AM counts when daytime buses start within 90 minutes of its last trip', () => {
+    const ends357 = every(hm(26, 7), hm(27, 57), 20);
+    const startsAt = (first: number) => (last: number) => first > last && first <= last + 90;
+    // Day service from 4:30 nearby: covered all night.
+    expect(nightServicePasses(ends357, ends357, 90, startsAt(hm(28, 30)))).toBe(true);
+    // Nothing until 6:00, 123 minutes after its last bus: a long gap still fails.
+    expect(nightServicePasses(ends357, ends357, 90, startsAt(hm(30, 0)))).toBe(false);
+    // No handover information: the wait counts.
+    expect(nightServicePasses(ends357, ends357, 90)).toBe(false);
+    // Day service is never helped by it: RTD 45 (last bus 0:34, then 3:05) still fails.
+    const day = [...every(hm(6, 0), hm(22, 0), 30), hm(24, 34), hm(27, 5), ...every(hm(28, 5), hm(30, 35), 30)];
+    expect(nightServicePasses(day, day, 90, () => true)).toBe(false);
+  });
   it('CIV-1329: the 90 grade loosens the gaps between buses, never the edges', () => {
     const day = (night: number[]) => ({ ...stretch(night), times: [...night, ...every(hm(6, 0), hm(22, 0), 30)] }) as Stretch;
     // An owl every 75 passes at 90 only.
@@ -630,6 +643,7 @@ describe('#1322: Overnight counts only service that runs through the night, by t
 });
 
 describe('CIV-1331: one night decider, 90-minute cutoff, real feeds', () => {
+  const hm = (h: number, m: number) => h * 60 + m;
   const filterable = (r: Run, route: string) => {
     const features = r.rows.filter(p => p.routeShortName === route).map(p => ({ properties: JSON.parse(JSON.stringify(p)) }));
     normalizeRouteFilterFeatures(features);
@@ -654,8 +668,24 @@ describe('CIV-1331: one night decider, 90-minute cutoff, real feeds', () => {
     expect(value).toBeLessThanOrEqual(90);
     expect([passes(r, '240', Infinity), passes(r, '240', 60)]).toEqual([true, false]);
   });
+  it('CIV-1332: STM 376 to Côte-Vertu ends at 3:58 at its middle stop, and no other bus stops within 400 m until after 5:28: it does not run through the night', async () => {
+    const r = await run('stm-376-handover-weekday', 'stm');
+    const d = r.stretches.get('376::0::Weekday')!;
+    expect(d.main!.nightTimes.filter(t => t <= hm(29, 0)).at(-1)).toBe(hm(27, 58));
+    expect(d.main!.handover!(hm(27, 58))).toBe(false);
+    expect(directionNightVerdict(d, 90)).toBe('fail');
+    expect(passes(r, '376', Infinity)).toBe(false);
+  });
+  it('CIV-1332: TransLink N24 to Lynn Valley (last bus 3:57 at its middle stop) passes with the North Vancouver day routes nearby, and fails alone (no bus for hours after)', async () => {
+    // This one-date cut also keeps two Downtown trips (2:09 and 3:12) that never cross 3:30, so the route as a whole
+    // fails here on that direction; the Lynn Valley direction is the one the handover decides.
+    const withDay = await run('translink-n24-handover-weekday', 'translink');
+    const alone = await run('translink-n24-alone-weekday', 'translink');
+    const lynnValley = (r: Run) => r.stretches.get('N24::0::Weekday')!;
+    expect(lynnValley(withDay).main!.nightTimes.filter(t => t <= hm(29, 0)).at(-1)).toBe(hm(27, 57));
+    expect([directionNightVerdict(lynnValley(withDay), 90), directionNightVerdict(lynnValley(alone), 90)]).toEqual(['pass', 'fail']);
+  });
   it('rows without stretch data and stretch rows agree: both read nightServicePasses', () => {
-    const hm = (h: number, m: number) => h * 60 + m;
     const every = (from: number, to: number, step: number) => Array.from({ length: Math.floor((to - from) / step) + 1 }, (_, i) => from + i * step);
     const day = every(hm(6, 0), hm(23, 0), 20);
     const cases: number[][] = [
