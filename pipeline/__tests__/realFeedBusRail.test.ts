@@ -64,7 +64,7 @@ describe('real bus + rail supplemental feed (MDOT MTA)', () => {
     expect(subway.map(f => f.properties.headsign).sort()).toEqual(['JOHNS HOPKINS STATION (METRO)', 'OWINGS MILLS STATION (METRO)']);
     expect(bus.every(f => f.properties.routeType === 3)).toBe(true);
     expect(subway.every(f => f.properties.routeType === 1)).toBe(true);
-    expect(merged.supplementalFeatureCounts).toEqual([{ url: SUBWAY_URL, featureCount: expect.any(Number) }]);
+    expect(merged.supplementalFeatureCounts).toEqual([{ url: SUBWAY_URL, featureCount: expect.any(Number), referenceDate: expect.stringMatching(/^\d{8}$/), serviceWeekStart: expect.anything() }]);
     expect(merged.supplementalFeatureCounts[0].featureCount).toBeGreaterThan(0);
     expect(routeArtifactSchemaError(JSON.parse(merged.geojson))).toBeNull();
   });

@@ -140,6 +140,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### History (beta)
 
+- **New History snapshots read the same week as the map**: holidays drop out because they lose the feed's own weekly vote, with no fixed holiday list, and run-date agencies (LA Metro, Sound Transit) no longer get a different History week; published years are unchanged
 - **The History chart covers a route's whole history and reads in order**: it shows dots only where they fit, labels the latest value, puts same-year schedules in [date order](https://github.com/Civic-Minds/Atlas/issues/1030), and shows one label where [snapshots](https://github.com/Civic-Minds/Atlas/issues/1037) are close
 - **History shows exact minutes**: rows match the chart ([NFTA 76](https://github.com/Civic-Minds/Atlas/issues/1085) reads 349, not 360)
 - **History no longer lists years that haven't happened**: a feed starting next year no longer adds a point, so an agency needs ten real years to appear

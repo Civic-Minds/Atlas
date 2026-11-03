@@ -555,6 +555,13 @@ export interface ProcessResult {
    * (findListingEnd); the map then reads the last full listed week. null otherwise, or on the old picker.
    */
   listingEnd: string | null;
+  /**
+   * CIV-1101 Part B: the reference date this run read (the picked week's, or the old picker's), so
+   * History's sidecar records the same week the map was built from instead of picking again.
+   */
+  referenceDate: string;
+  /** Monday of the week the new picker read; null on the old picker. */
+  serviceWeekStart: string | null;
   feedVersion: string | null;  // feed_version from feed_info.txt, or null if absent
   livePollingSidecar?: Record<string, any>;
   shapeAnomalies?: import('../types/gtfs.js').ShapeAnomaly[];
@@ -3899,6 +3906,8 @@ export async function processGtfsBuffer(
     calendarExpiry,
     calendarOnlyEnd,
     listingEnd: riderWeek?.listingEnd?.date ?? null,
+    referenceDate: refDate,
+    serviceWeekStart: riderWeek ? riderWeek.week.weekStart ?? riderWeek.week.dates.Monday ?? null : null,
     feedVersion: feedInfo?.feed_version ?? null,
     livePollingSidecar,
     shapeAnomalies: gtfs.shapeAnomalies,
