@@ -1,5 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
+import { readdirSync } from 'node:fs';
+import { findModeOverride } from '../../../shared/modes';
 import { splitRoutes, type RouteSplit } from '../split-routes';
 
 // #1287: Miami-Dade publishes all of Metrorail as route 31009; Orange trips serve the airport, Green trips Palmetto.
@@ -68,5 +70,20 @@ describe('routeSplits (#1287 Miami-Dade Metrorail)', () => {
   it('the Miami-Dade config names the two lines with the official map colours', () => {
     const cfg = JSON.parse(readFileSync('config/agencies/miami-dade-transit.json', 'utf8'));
     expect(cfg.routeSplits).toEqual([SPLIT]);
+  });
+
+  it('Metrorail keeps its heavy-rail mode after the split renames 2600 to Green and Orange (#1312)', () => {
+    for (const name of ['Green', 'Orange']) {
+      expect(findModeOverride({ agencySlug: 'miami-dade-transit', routeType: 2, routeShortName: name })?.mode).toBe(1);
+    }
+  });
+
+  it('no mode override names a route that routeSplits renames away (#1312)', () => {
+    for (const file of readdirSync('config/agencies').filter(f => f.endsWith('.json') && f !== 'order.json')) {
+      const cfg = JSON.parse(readFileSync(`config/agencies/${file}`, 'utf8'));
+      const splitAway = new Set<string>((cfg.routeSplits ?? []).map((s: RouteSplit) => s.routeShortName));
+      const stale = (cfg.modeOverrides ?? []).filter((o: { routeShortName?: string }) => o.routeShortName != null && splitAway.has(o.routeShortName));
+      expect(stale, file).toEqual([]);
+    }
   });
 });
