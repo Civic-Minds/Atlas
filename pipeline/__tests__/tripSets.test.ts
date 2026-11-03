@@ -896,6 +896,49 @@ describe('pass-through visits are not departures (#1089)', () => {
   });
 });
 
+describe('a reading stop every trip passes through steps to the nearest served stop (#1089)', () => {
+  // The same trunk as the tails test: 10 stops, two patterns every 10 through midday.
+  const trunk = Array.from({ length: 10 }, (_, i) => `t${i}`);
+  const coords = new Map<string, [number, number]>(trunk.map((id, i) => [id, [43.6 + i * 0.01, -79.4]]));
+  const coord = (id: string) => coords.get(id);
+  const build = (passThrough: (tripId: string) => boolean): DirectionTrip[] => {
+    const out: DirectionTrip[] = [];
+    for (let n = 0; n < 36; n++) {
+      for (const [prefix, offset] of [['a', 540], ['b', 545]] as const) {
+        const tripId = `${prefix}${n}`;
+        out.push({ tripId, visits: trunk.map((stopId, i) => ({ stopId, minutes: offset + n * 10 + i, ...(stopId === 't5' && passThrough(tripId) ? { counted: false } : {}) })) });
+      }
+    }
+    return out;
+  };
+  it('all trips pass through the middle stop: the main stretch reads the stop before it, with every trip', () => {
+    const d = directionStretches('k', build(() => true), coord);
+    expect(d.main!.refStop).toBe('t4');
+    expect(d.main!.tripCount).toBe(72);
+  });
+  it('some trips serve the middle stop: it stays the reading stop and counts only those trips', () => {
+    const d = directionStretches('k', build(id => id.startsWith('a')), coord);
+    expect(d.main!.refStop).toBe('t5');
+    expect(d.main!.tripCount).toBe(36);
+  });
+  it('no pass-through: the reading stop is the middle stop as before', () => {
+    const d = directionStretches('k', build(() => false), coord);
+    expect(d.main!.refStop).toBe('t5');
+    expect(d.main!.tripCount).toBe(72);
+  });
+  it('TTC 86 Saturday: the Meadowvale tail keeps its 127 trips, read next to the bay its trips pass through', async () => {
+    // The tail's middle stop (6625) is a bay every 86 trip lists as pickup 1 / drop-off 1; marking those
+    // visits alone left the tail with 0 trips (attempt 1). The reading steps one stop over instead.
+    const r = await run('ttc-86-saturday');
+    const d = r.stretches.get('86::1::Saturday')!;
+    const tail = d.tails.find(t => t.stops.includes('6625'))!;
+    expect(tail).toBeDefined();
+    expect(tail.refStop).not.toBe('6625');
+    expect(Math.abs(tail.stops.indexOf(tail.refStop) - tail.stops.indexOf('6625'))).toBeLessThanOrEqual(2);
+    expect(tail.tripCount).toBe(127);
+  });
+});
+
 describe('Overnight section values read each stop through the night verdict (#1094)', () => {
   // Night buses every 30 from 2:00 to 4:50, then day service from 5:50: over the 2-6am window each stop
   // waits 60+ minutes between its last night bus and its first day bus, while the night verdict passes 30.

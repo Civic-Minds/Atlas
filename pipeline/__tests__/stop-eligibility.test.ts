@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { boardsAt, isThinPool, otherPatternDepartures } from '../stopEligibility.js';
+import { boardsAt, isThinPool, otherPatternDepartures, passesThrough } from '../stopEligibility.js';
 
 // CIV-1011 #6: one rule for "is this stop time a departure a rider can take".
 describe('boardsAt', () => {
@@ -10,6 +10,16 @@ describe('boardsAt', () => {
 
   it('regular, phone-ahead and coordinate-with-driver pickups board, as does a missing value', () => {
     for (const pickup_type of ['0', '2', '3', '', undefined, null]) expect(boardsAt({ pickup_type })).toBe(true);
+  });
+});
+
+describe('passesThrough (#1089)', () => {
+  it('pickup 1 and drop-off 1 is a pass-through; a terminal (pickup 1, drop-off 0) and a plain stop are not', () => {
+    expect(passesThrough({ pickup_type: '1', drop_off_type: '1' })).toBe(true);
+    expect(passesThrough({ pickup_type: '1', drop_off_type: '0' })).toBe(false);
+    expect(passesThrough({ pickup_type: '0', drop_off_type: '1' })).toBe(false);
+    expect(passesThrough({ pickup_type: '1' })).toBe(false);
+    expect(passesThrough({})).toBe(false);
   });
 });
 
