@@ -159,7 +159,7 @@ describe('buildStopRoutes: one destination served by two patterns (CIV-1080)', (
   });
 });
 
-describe('buildStopRoutes: a stop\'s own route with no trips in the period (CIV-1052)', () => {
+describe('buildStopRoutes: a stop\'s own route with no trips in the period is left off (Ryan, 2026-11-03; was CIV-1052)', () => {
   // MiWay 314 at stop 0814 (#1169): one 08:20 school trip on weekdays, none at midday.
   const miway314 = {
     type: 'Feature', geometry: null,
@@ -174,12 +174,11 @@ describe('buildStopRoutes: a stop\'s own route with no trips in the period (CIV-
     layers: { ttc: layer }, day: 'Weekday', period,
   });
 
-  it('lists the route with no rows where every stop point proves no trip in the period', () => {
-    const idle = build('midday', [amPeakWeekday]);
-    expect(idle.map(r => [r.shortName, r.branches.length, r.noTrips?.rKey != null])).toEqual([['314', 0, true]]);
+  it('leaves it out where every stop point proves no trip in the period', () => {
+    expect(build('midday', [amPeakWeekday])).toEqual([]);
   });
 
-  it('leaves it out (as before) where it has a trip in the period, the data has no field, or the period is All day', () => {
+  it('leaves it out too where it has a trip in the period but no row, the data has no field, or the period is All day', () => {
     expect(build('amPeak', [amPeakWeekday])).toEqual([]);
     expect(build('midday', [undefined])).toEqual([]);
     expect(build('midday', [0, undefined])).toEqual([]);
@@ -188,7 +187,7 @@ describe('buildStopRoutes: a stop\'s own route with no trips in the period (CIV-
 
   it('never lists a route that runs here as idle', () => {
     const rows = build('midday', [0], ['29']);
-    expect(rows.map(r => [r.shortName, r.noTrips])).toEqual([['29', undefined]]);
+    expect(rows.map(r => r.shortName)).toEqual(['29']);
   });
 });
 
@@ -216,13 +215,13 @@ describe('buildStopRoutes: a stop\'s own route with trips here but no number in 
 
   it('lists the route with the route card\'s own words for the period', () => {
     const rows = build([sundayAm]);
-    expect(rows.map(r => [r.shortName, r.branches.length, r.noTrips])).toEqual([['110', 0, undefined]]);
+    expect(rows.map(r => [r.shortName, r.branches.length])).toEqual([['110', 0]]);
     expect(plain(rows[0].noNumber?.text)).toBe('Runs only from 7–9 AM');
   });
 
   it('leaves it out where the stop has no trip in the period, or the data has no field', () => {
     expect(build([undefined])).toEqual([]);
-    expect(build([0]).map(r => [r.shortName, r.noNumber, r.noTrips != null])).toEqual([['110', undefined, true]]);
+    expect(build([0])).toEqual([]);
   });
 });
 

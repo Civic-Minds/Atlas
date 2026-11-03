@@ -45,11 +45,6 @@ export interface StopRoute {
   routeType?: number;
   branches: StopBranch[];
   /**
-   * CIV-1052: the route serves this stop but the schedule proves it has no trips here in the whole period
-   * (its stop points' routePeriodBits). It has no branches; the card lists it with "No trips from {range}".
-   */
-  noTrips?: { rKey: string };
-  /**
    * #1278: the route has trips at this stop in the period (its routePeriodBits) but no stop row, since it has no number
    * there (#750). It has no branches; the card lists it with the route card's own words (routeCardNoNumberWords).
    */
@@ -228,37 +223,8 @@ export function buildStopRoutes({ siblingIdsByAgency, routesByAgency, routePerio
       if (b.patterns > 1 && !b.periodText && only?.size === 1 && only.has(b.headsign ?? '')) b.rowHeadway = null;
     }
   }
-  // CIV-1052: a route that serves the stop but has no trips here in the whole period is listed with no rows,
-  // only where every stop point proves it (a route running part of the period keeps its row and notice).
-  const idle = new Map<string, StopRoute>();
-  const namedOnDay = new Set<string>();
-  if (period !== 'all') {
-    for (const [slug, fc] of Object.entries(layers)) {
-      const bitsByRoute = routePeriodBitsByAgency?.[slug];
-      if (!bitsByRoute) continue;
-      const idleIds = new Set([...(routesByAgency[slug] ?? [])]
-        .filter(rid => noTripsInPeriod(bitsByRoute.get(rid) ?? [], day as DayType, period as PeriodKey) === true));
-      if (idleIds.size === 0) continue;
-      for (const f of fc.features) {
-        const p = f.properties as unknown as ShapeProperties;
-        if ((p as any).stopId != null || !p.routeId || !idleIds.has(p.routeId)) continue;
-        const facts = buildRouteFacts(p, slug);
-        // The chosen day's feature names the route; another day's stands in when it has none that day.
-        if (routeMap.has(facts.shortName) || namedOnDay.has(facts.shortName) || (idle.has(facts.shortName) && p.day !== day)) continue;
-        if (p.day === day) namedOnDay.add(facts.shortName);
-        idle.set(facts.shortName, {
-          shortName: facts.shortName,
-          label: facts.label,
-          longName: facts.longName || '',
-          agencyName: agencyNames(facts.agencyName).name,
-          agencySlug: slug,
-          routeType: facts.routeType,
-          branches: [],
-          noTrips: { rKey: facts.key },
-        });
-      }
-    }
-  }
+  // A route that serves the stop but has no trips here in the whole period is left off the card (Ryan, 2026-11-03,
+  // reversing CIV-1052's "No trips from" row); if none of the stop's routes run, the card shows N35.
   // #1278: the stop's own route with trips here in the period that got no row (#750: no number in the period) is listed
   // with the route card's words for the period, where every stop point proves the trips (TTC 110 Sunday AM, 7:52 first trip).
   const noNumber = new Map<string, StopRoute>();
@@ -273,7 +239,7 @@ export function buildStopRoutes({ siblingIdsByAgency, routesByAgency, routePerio
           .filter(p => (p as any).stopId == null && p.routeId === rid && p.day === day);
         if (features.length === 0) continue;
         const facts = buildRouteFacts(features[0], slug);
-        if (routeMap.has(facts.shortName) || idle.has(facts.shortName) || noNumber.has(facts.shortName)) continue;
+        if (routeMap.has(facts.shortName) || noNumber.has(facts.shortName)) continue;
         const text = routeCardNoNumberWords(features, period);
         if (!text) continue;
         noNumber.set(facts.shortName, {
@@ -301,5 +267,5 @@ export function buildStopRoutes({ siblingIdsByAgency, routesByAgency, routePerio
       branches: Array.from(v.branches.values())
         .sort((a, b) => a.directionId - b.directionId || (a.service.value ?? Infinity) - (b.service.value ?? Infinity))
         .map(b => ({ rKey: b.rKey, headsign: b.headsign, service: b.service, rowHeadway: b.rowHeadway, directionId: b.directionId, ...(b.periodText ? { periodText: b.periodText } : {}), ...(b.sharedEdge ? { sharedEdge: b.sharedEdge } : {}) })),
-    })), ...[...noNumber.values(), ...idle.values()].sort((a, b) => compareRouteNumber(a.shortName, b.shortName))];
+    })), ...[...noNumber.values()].sort((a, b) => compareRouteNumber(a.shortName, b.shortName))];
 }
