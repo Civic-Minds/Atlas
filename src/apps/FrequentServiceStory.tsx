@@ -13,7 +13,8 @@ import FrequentServiceStoryMap from '../components/FrequentServiceStoryMap';
 import PageShell from '../components/ui/PageShell';
 import { UNDERLINED_LINK } from '../pageStyles';
 import type { Agency } from '../App';
-import { headwayAmount } from '../../shared/headwayText';
+import { headwayAmount, headwayOrBetter } from '../../shared/headwayText';
+import { hourTime } from '../../shared/timeText';
 
 interface Props {
   onExploreMap: () => void;
@@ -92,17 +93,28 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
         {/* CIV-1169 (Ryan's pick 6): a text break between the montage and the first map. */}
         <section id="story" aria-labelledby="story-break-heading" className="scroll-mt-16 mx-auto mt-24 w-full max-w-[48rem] sm:mt-32">
           <h2 id="story-break-heading" className="text-3xl sm:text-4xl font-black tracking-tight">Every map tells it differently.</h2>
+          {/* CIV-1168 bridge, Ryan approved version A word for word on 2026-11-02 (_review/frequent-bridge),
+              with its times and wait in Atlas's style ("6 AM", "every 10 min") from the shared helpers. Every claim is from the montage's own
+              maps, linked under each frame; Toronto's hours are its Ten-Minute Network definition (definition-quotes-2026-10-11.json, ttc). */}
           <p className="mt-5 text-base leading-8 text-[var(--text-muted)]">
-            Each agency decides what its map shows, so one map is hard to compare with the next. Atlas starts from the schedules instead. Here is Toronto's network, built from the TTC's own schedule data, one step at a time.
+            Each agency decides what its map shows, so one map is hard to compare with the next. Toronto's Ten-Minute Network means a bus or streetcar {headwayOrBetter(10)}, from {hourTime(6)} to {hourTime(25)}. Vancouver and Los Angeles both draw the line at 15 minutes, but Vancouver checks it until {hourTime(21)} every day of the week, and Los Angeles only on weekdays until {hourTime(18)}. Washington, DC has two levels, one at 12 minutes and one at 20. Miami-Dade's map doesn't use the word frequent at all. It colours every route by how often the bus comes at weekday midday.
+          </p>
+          <p className="mt-5 text-base leading-8 text-[var(--text-muted)]">
+            The maps also differ in what they draw. Vancouver's and Portland's show only the frequent network, so a slower route isn't on the map. Toronto's, Ottawa's and Seattle's draw every route and mark the frequent ones. Seattle also counts two routes that share a street as frequent together, which none of the other maps here do.
+          </p>
+          <p className="mt-5 text-base leading-8 text-[var(--text-muted)]">
+            Atlas starts from the schedules instead. Here is Toronto's network, built from the TTC's own schedule data, one step at a time.
           </p>
         </section>
 
         <section aria-labelledby="network-story-heading" className="relative left-1/2 mt-24 w-screen -translate-x-1/2 px-2 sm:mt-32 sm:px-3">
           <div className="relative min-w-0 pb-[12vh]">
-            <div className="min-w-0 lg:sticky lg:top-24">
+            {/* #1310: pinned below the page's sticky header at every width, and held through the last stage (the bottom padding),
+                so a stage heading never scrolls under the Atlas logo while it is the one being read. */}
+            <div className="sticky top-16 min-w-0 lg:top-24">
               <FrequentServiceStoryMap agencies={agencies} stage={storyStage} frequencyMinutes={frequencyMinutes} researchRecord={frequentServiceStoryResearchRecord} />
             </div>
-            <div className="relative z-10 space-y-[55vh] pb-8 pt-8 lg:pb-16" aria-hidden="true">
+            <div className="relative z-10 space-y-[55vh] pb-[60vh] pt-8" aria-hidden="true">
                 {[0, 1, 2, 3].map(stage => <div key={stage} ref={step => { storyStepRefs.current[stage] = step; }} data-story-stage={stage} className="h-[20vh]" />)}
             </div>
           </div>

@@ -104,6 +104,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Route cards and frequency
 
+- **Rows with uneven service read "Irregular", not their longest wait**: [exo MA](https://github.com/Civic-Minds/Atlas/issues/962) weekday midday read "every 301"; stop cards follow the route card, and steady service and waits of an hour or less keep their number
 - **Route cards use one set of words for each situation**: "Shared stretch" names a route's shared part, "Irregular" replaces "limited" in a time period, a route that doesn't run reads "no trips", and branches that take turns on a shared stretch each say when they run (TTC 110)
 - **Route lists show the route card's number**: the [slower direction](https://github.com/Civic-Minds/Atlas/issues/821) (GO 47 no longer reads every 3), a [range](https://github.com/Civic-Minds/Atlas/issues/1231) that starts where the card does, and no number for a route the [filter reads as irregular](https://github.com/Civic-Minds/Atlas/issues/1247)
 - **A card shows one shared value per direction**: a destination under the Shared stretch row reads its own frequency, not a [second shared range](https://github.com/Civic-Minds/Atlas/issues/1232)
@@ -163,13 +164,19 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Agency, area and research pages
 
+- **The site header fits on one line on phones**: small screens leave Docs to the footer, so Agencies, Research and Go to Atlas no longer wrap to a second line
+- **Area, state and agency pages have one map link, at the top**: the second map link under the frequency bar is gone, and "See all agencies" now follows the agency table, so the links no longer stack down the right edge
+- **The [all-agencies list](https://github.com/Civic-Minds/Atlas/issues/1306) shows an agency under every state it serves**: it listed each agency under its home state only, so Nebraska showed two agencies where its state page shows three
+- **State and province pages name their biggest regions**: a sentence after the intro links up to three of the region pages in that state or province, most routes first
 - **The docs page's "On this page" menu keeps its [page title in view](https://github.com/Civic-Minds/Atlas/issues/1279) on short windows**: a list taller than the window now scrolls inside its own box, following the section you're reading, instead of pushing the title under the site header near the end of the page
 - **Every agency page has its own search title**: agencies that share a short name, like the five MTA NYCT Bus boroughs or DART in Dallas and Des Moines, now add their borough, sector or place, and the build fails if two pages would ever share a title again
-- **[Free child fares](https://github.com/Civic-Minds/Atlas/issues/1290) age chart looks and responds like the split bar above it**: a column chart in the sparkline shape with the split bar's text, where hovering or tapping a column fades the others as the split bar does; the Other policies chart is gone, since the split bar already shows those numbers; the legend uses shorter labels and the note under the charts moved into How we did this
 - **Free child fares opens with its finding, and highlights age 5**: "Where kids ride free, age 5 is the most common cutoff" is an intro line under the title rather than a big heading, and the age chart highlights the most common age until another is picked
 - **Research charts drop the "Show as a table" toggle**: the table stays for screen readers, linked to its chart
+- **Free child fares maps the most common free age by state and province**: one square per place, shaded by age, with ties and places with very few agencies marked rather than given a misleading single age
 - **[Free child fares](https://github.com/Civic-Minds/Atlas/issues/1290) age chart looks and responds like the split bar above it**: a column chart in the sparkline shape with the split bar's text, where hovering or tapping a column fades the others as the split bar does; the Other policies chart is gone, since the split bar already shows those numbers; the legend uses shorter labels and the note under the charts moved into Method
 - **Research pages end with a "Method" section at section-heading size, its text a step smaller than the article**: it read "How we did this" in a heading as large as a page title
+- **The Frequent service story's Toronto map sits on a real basemap**: the routes now show over Atlas's light or dark streets and lake shore, without place names, where they were drawn on a blank background ([#1202](https://github.com/Civic-Minds/Atlas/issues/1202))
+- **The Frequent service story's map stays below the page header at every step**: the last step's heading slid under the Atlas logo, and on phones the map scrolled away before the steps changed it ([#1310](https://github.com/Civic-Minds/Atlas/issues/1310))
 - **The Frequent service story's threshold chart responds like the other research charts**: hovering or tapping a bar fades the others and highlights its name, in the same text as the Free child fares charts, and the most common threshold, 15 min, is highlighted until another bar is picked
 - **Research charts leave out empty categories**: the Frequent service story no longer draws a 60 min bar no agency uses; the Free child fares age chart keeps its empty ages so the age scale stays continuous
 - **MTA New York, exo, MTA Maryland and Bustang each have one page across their feeds**: the parent page adds up its services' routes, counting a route shared by two feeds once, and lists them under "Services"; each service's page links up to it, and the map's agency picker and the agency list show it once

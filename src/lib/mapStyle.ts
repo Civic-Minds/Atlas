@@ -3,15 +3,9 @@ import { Protocol, PMTiles } from 'pmtiles';
 import { R2_PUBLIC_URL } from '../../shared/config';
 import { currentAgencyDataVersion, resolveAgencyDataVersion } from './agencyGeo';
 import { RetryingFetchSource } from './pmtilesRetrySource';
-import { BASEMAP_ATTRIBUTION, cartoTiles } from './basemap';
+import { basemapStyle } from './basemap';
 import { dataReleasePmtilesUrl, resolveDataRelease, verifiedReleaseRequired, type DataRelease } from './dataRelease';
-import maplibreWorkerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url';
-
-// MapLibre 6 locates its worker at runtime via `new URL('./maplibre-gl-worker.mjs',
-// import.meta.url)`, which bundlers can't see — production builds never emit the
-// file, the SPA rewrite serves index.html instead, and no vector tiles render
-// (same failure as #426). Hand it a Vite-bundled worker URL explicitly.
-maplibregl.setWorkerUrl(maplibreWorkerUrl);
+import './maplibreWorker';
 
 let activeRelease: DataRelease | null = null;
 
@@ -50,31 +44,5 @@ export async function registerProtocol() {
   protocol.add(new PMTiles(new RetryingFetchSource(getAtlasOverviewPmtilesUrl())));
 }
 
-export const getMapStyle = (lightMode: boolean): maplibregl.StyleSpecification => {
-  const lightTiles = cartoTiles('light_all');
-  const darkTiles = cartoTiles('dark_all');
-  const lightVis = lightMode ? 'visible' : 'none';
-  const darkVis = lightMode ? 'none' : 'visible';
-
-  return {
-    version: 8,
-    sources: {
-      'cartodb-light': {
-        type: 'raster',
-        tiles: lightTiles,
-        tileSize: 256,
-        attribution: BASEMAP_ATTRIBUTION,
-      },
-      'cartodb-dark': {
-        type: 'raster',
-        tiles: darkTiles,
-        tileSize: 256,
-        attribution: BASEMAP_ATTRIBUTION,
-      },
-    },
-    layers: [
-      { id: 'basemap-light', type: 'raster', source: 'cartodb-light', layout: { visibility: lightVis } },
-      { id: 'basemap-dark', type: 'raster', source: 'cartodb-dark', layout: { visibility: darkVis } },
-    ],
-  };
-};
+/** The main map's style: the shared basemap with place names. */
+export const getMapStyle = (lightMode: boolean): maplibregl.StyleSpecification => basemapStyle(lightMode);
