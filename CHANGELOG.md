@@ -8,6 +8,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Map and route behavior
 
+- **"Couldn't be found" and "couldn't load" notes close like every map card**: "← Map" above the note replaces a "Close →" link that looked out of place
 - **Links to a [route, stop or on-demand service](https://github.com/Civic-Minds/Atlas/issues/1191) Atlas doesn't have say so and drop the bad part**: a garbled value or unknown agency used to open the plain map with no message and stay in the address bar
 - **Route lists and agency pages say when a route starts or stops instead of a long wait**: [NYC B and W](https://github.com/Civic-Minds/Atlas/issues/1292) AM peak read "every 72" and "every 88" where the card already said "every 9 min from 7:12 AM", and the J read every 75 at a station it skips at rush hour
 - **[Lines that share one name](https://github.com/Civic-Minds/Atlas/issues/1289) show as separate routes**: MARC's Brunswick, Penn and Camden lines, the three NYC S shuttles, Metro St Louis's Missouri and Illinois routes and JTA's First Coast Flyer lines each read as one route before
