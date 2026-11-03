@@ -171,6 +171,20 @@
    "fragmentsFound": "2/2"
   },
   {
+   "slug": "cats",
+   "name": "Charlotte Area Transit System (CATS)",
+   "country": "United States",
+   "threshold": 15,
+   "label": "High Frequency Bus Routes",
+   "sourceUrl": "https://www.charlottenc.gov/files/sharedassets/cats/v/1/mtc-policies/mtc-06_transit_service_guidelines[1].pdf",
+   "httpStatus": "wayback",
+   "quoteCheck2026_10_11": "fetch-blocked",
+   "result": "holds",
+   "fragmentsFound": "1/1",
+   "checkedAt": "2026-11-01",
+   "note": "Added from the CIV-1258 recheck (2026-11-01 to 11-03): the site blocks automated visits, so the source was read from a Wayback copy and the quote matched verbatim."
+  },
+  {
    "slug": "ccta",
    "name": "CCTA / Green Mountain Transit (Burlington, VT)",
    "country": "United States",
@@ -577,6 +591,20 @@
    "quoteCheck2026_10_11": "verbatim",
    "result": "holds",
    "fragmentsFound": "3/3"
+  },
+  {
+   "slug": "ladot",
+   "name": "Los Angeles Department of Transportation (LADOT/DASH)",
+   "country": "United States",
+   "threshold": 20,
+   "label": "Frequent service",
+   "sourceUrl": "https://cdn.ladottransit.com/pdf/titlevi/LADOT-Transit-2025-Title-VI-Report.pdf",
+   "httpStatus": "wayback",
+   "quoteCheck2026_10_11": "fetch-blocked",
+   "result": "holds",
+   "fragmentsFound": "1/1",
+   "checkedAt": "2026-11-01",
+   "note": "Added from the CIV-1258 recheck (2026-11-01 to 11-03): the site blocks automated visits, so the source was read from a Wayback copy and the quote matched verbatim."
   },
   {
    "slug": "lens",

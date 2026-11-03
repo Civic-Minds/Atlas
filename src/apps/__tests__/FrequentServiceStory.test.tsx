@@ -82,30 +82,30 @@ describe('FrequentServiceStory', () => {
 
   it('counts the Canada and US definitions that still held on the October 30 recheck (CIV-1149)', () => {
     const rows = recheck.rows.filter(row => ['Canada', 'United States'].includes(row.country) && Number.isInteger(row.threshold));
-    expect(rows).toHaveLength(67);
-    expect(frequentServiceStoryStats.namedNumericAgencies).toBe(61);
+    expect(rows).toHaveLength(69);
+    expect(frequentServiceStoryStats.namedNumericAgencies).toBe(63);
     expect(frequentServiceStoryStats.recheckLeftOut).toBe(6);
-    expect(frequentServiceStoryStats.recheckedAgencies).toBe(67);
+    expect(frequentServiceStoryStats.recheckedAgencies).toBe(69);
   });
 
   it('applies the tier rule: fastest multi-route frequent tier, slowest weekday daytime wait (CIV-1178)', () => {
     // CTtransit and Intercity Transit leave (one-corridor and one-route tiers); ART 10→12, CapMetro 20→15,
-    // RTC 20→15, DRT 15→20, Fort McMurray 15→25 (its own 25 bar).
-    expect(frequentServiceStoryStats.chartedAgencies).toBe(59);
+    // RTC 20→15, DRT 15→20, Fort McMurray 15→25 (its own 25 bar). CATS (15) and LADOT (20) join from the CIV-1258 recheck.
+    expect(frequentServiceStoryStats.chartedAgencies).toBe(61);
     expect(frequentServiceStoryStats.headwayBars).toEqual([
       { minutes: 10, agencies: 3, agenciesOct11: 3 },
       { minutes: 12, agencies: 2, agenciesOct11: 3 },
-      { minutes: 15, agencies: 39, agenciesOct11: 41 },
-      { minutes: 20, agencies: 5, agenciesOct11: 8 },
+      { minutes: 15, agencies: 40, agenciesOct11: 41 },
+      { minutes: 20, agencies: 6, agenciesOct11: 8 },
       { minutes: 25, agencies: 1, agenciesOct11: 1 },
       { minutes: 30, agencies: 9, agenciesOct11: 9 },
     ]);
-    expect(frequentServiceStoryStats.headwayBars.reduce((sum, bar) => sum + bar.agencies, 0)).toBe(59);
+    expect(frequentServiceStoryStats.headwayBars.reduce((sum, bar) => sum + bar.agencies, 0)).toBe(61);
   });
 
   it('says in Method that the chart was checked again (CIV-1149)', () => {
     render(<FrequentServiceStory agencies={agencies} onExploreMap={vi.fn()} />);
-    expect(screen.getByText(/On October 30, 2026, we opened the source again for each of the 67 agencies the chart counted\. 61 still matched and stay in the chart\. 6 are left out:/)).toBeInTheDocument();
+    expect(screen.getByText(/On October 30, 2026, we opened the source again for each of the 69 agencies the chart counted\. 63 still matched and stay in the chart\. 6 are left out:/)).toBeInTheDocument();
   });
 
   it('uses the shared method template: Date updated, and Sources in place of Review boundary (CIV-1167)', () => {
