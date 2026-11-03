@@ -8,6 +8,7 @@ Each folder is one route's trips on the services active on one date, cut from th
 | Fixture | Source zip | Date | Route |
 |---|---|---|---|
 | ttc-507-weekday | `_feeds/_live-data/ttc.zip` (2026-10-14) | 2026-10-21 | 507 |
+| ttc-52-weekday | `_feeds/archive-cache/ttc/20261221-3bd40192f403dc8d.zip` | 2026-11-04 | 52 (#1089: pass-through visits at Lawrence West Station) |
 | ttc-134-weekday | same | 2026-10-21 | 134 |
 | ttc-123-weekday | same | 2026-10-21 | 123 |
 | ttc-102-weekday | same | 2026-10-21 | 102 |

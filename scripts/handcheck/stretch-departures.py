@@ -320,7 +320,9 @@ def main():
     with z.open('stop_times.txt') as f:
         for r in csv.DictReader(io.TextIOWrapper(f, encoding='utf-8-sig')):
             if r['trip_id'] in mine:
-                seqs[r['trip_id']].append((int(r['stop_sequence']), r['stop_id'], r.get('departure_time') or r.get('arrival_time') or ''))
+                # #1089: a pass-through (pickup_type 1 and drop_off_type 1) shapes the pattern but is no departure.
+                passthru = (r.get('pickup_type') or '0').strip() == '1' and (r.get('drop_off_type') or '0').strip() == '1'
+                seqs[r['trip_id']].append((int(r['stop_sequence']), r['stop_id'], '' if passthru else (r.get('departure_time') or r.get('arrival_time') or '')))
     result = {'slug': a.slug, 'route': a.route, 'day': a.day, 'date': str(date), 'window': [start, end], 'feed': os.path.basename(zpath), 'at': a.at, 'trips': len(mine), 'directions': []}
     say = (lambda *x: None) if a.json else print
     say(f'{a.slug} route {a.route} {a.day} {date} window {fmt(start)}-{fmt(end)}  feed {os.path.basename(zpath)}  ({len(mine)} trips)  measured at: {a.at}')

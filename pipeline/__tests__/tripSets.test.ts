@@ -872,6 +872,30 @@ describe('section values count trips running through a skipped stop (CIV-321)', 
   });
 });
 
+describe('pass-through visits are not departures (#1089)', () => {
+  // TTC 52 westbound on weekdays: 52A, 52B and 52F list Lawrence West Station (14735) with pickup_type 1
+  // and drop_off_type 1 and board at another bay; only the 52G boards there, where its trips start
+  // (12 evening pickups, gaps 18 to 26). The section value read every bus through the bay, every 7.
+  it('TTC 52 Weekday evening: Lawrence West Station on the 52G line reads the 52G pickups, every 20', async () => {
+    const r = await run('ttc-52-weekday');
+    const d = r.stretches.get('52::1::Weekday')!;
+    const g = r.rows.find(p => p.routeShortName === '52' && p.day === 'Weekday' && p.directionId === 1 && /Martin Grove/.test(p.headsign ?? ''));
+    const gStops = g.stopOrder as string[];
+    expect(gStops[0]).toBe('14735');
+    expect(decodeStopRuns(stopPeriodValues(gStops, d.throughTimesAlong!).evening)[0]).toBe(20);
+    expect(d.timesAtStop!('14735').times.filter(t => t >= 19 * 60 && t < 23 * 60).length).toBe(12);
+    // On the 52A line the station sits between served stops, so the track through it keeps the corridor's
+    // value (CIV-321: a skipped stop is coloured by every bus through it).
+    const a = r.rows.find(p => p.routeShortName === '52' && p.day === 'Weekday' && p.directionId === 1 && /Pearson Airport/.test(p.headsign ?? ''));
+    const aStops = a.stopOrder as string[];
+    const i = aStops.indexOf('14735');
+    expect(i).toBeGreaterThan(0);
+    const aValues = decodeStopRuns(stopPeriodValues(aStops, d.throughTimesAlong!).evening);
+    expect(aValues[i]).toBe(aValues[i + 1]);
+    expect(aValues[i]).toBeLessThan(20);
+  });
+});
+
 describe('Overnight section values read each stop through the night verdict (#1094)', () => {
   // Night buses every 30 from 2:00 to 4:50, then day service from 5:50: over the 2-6am window each stop
   // waits 60+ minutes between its last night bus and its first day bus, while the night verdict passes 30.

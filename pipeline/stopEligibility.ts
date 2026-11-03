@@ -9,6 +9,17 @@ export function boardsAt(stopTime: { pickup_type?: string | null }): boolean {
   return stopTime.pickup_type?.trim() !== '1';
 }
 
+/**
+ * #1089: a stop time that neither picks up nor drops off (pickup_type 1 and drop_off_type 1) is a
+ * pass-through: the trip is listed at the stop but does not serve it (TTC 52A, 52B and 52F at
+ * Lawrence West Station, where only the 52G boards). Its stretch visit still shapes the trip's
+ * pattern, but no stretch reading counts it as a departure. Not pickup_type 1 alone: almost every
+ * terminal is pickup 1 / drop-off 0, and that is a real arrival.
+ */
+export function passesThrough(stopTime: { pickup_type?: string | null; drop_off_type?: string | null }): boolean {
+  return stopTime.pickup_type?.trim() === '1' && stopTime.drop_off_type?.trim() === '1';
+}
+
 /** A pool whose other patterns add fewer departures than this in a period says nothing the own pattern does not. */
 export const MIN_POOL_OTHER_DEPARTURES = 3;
 

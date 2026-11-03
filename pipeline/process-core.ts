@@ -50,7 +50,7 @@ import { computePeriodCoverageHeadways } from './headway-utils.js';
 import { isNightRouteDirection, nextServiceDay, nightStartsBeforeWindow, overnightPeriodValues, overnightWindowTimes } from './overnightTerminal.js';
 import { makeShapeCoverChecker } from './shapeCoverage.js';
 import { annotateSharedStretches, contiguousSharedRuns, isPoolablePattern } from './sharedStretch.js';
-import { boardsAt, isThinPool } from './stopEligibility.js';
+import { boardsAt, isThinPool, passesThrough } from './stopEligibility.js';
 import { noOwnServicePeriods } from './noOwnService.js';
 import { laterServiceByRoute } from './seasonalPause.js';
 import { nearDuplicateTripIds } from './nearDuplicateTrips.js';
@@ -1631,9 +1631,12 @@ export async function processGtfsBuffer(
             pushAll(st.stop_id);
             // Every visit shapes the pattern; a chained trip's end is not a departure the
             // direction map counts (TTC 63 runs as two trips joined at Ossington, so dropping
-            // that stop from the pattern left the two halves sharing no stop).
+            // that stop from the pattern left the two halves sharing no stop), and neither is a
+            // pass-through the trip neither picks up nor drops off at (#1089: TTC 52A, 52B and
+            // 52F at Lawrence West Station, where only the 52G boards).
             if (grp.inGroup) {
-              addStretchVisit(gKey, st.trip_id, { stopId: st.stop_id, minutes: mins, seq: Number(st.stop_sequence), overnightOnly: night || undefined, counted: chainedEnd === undefined ? undefined : false });
+              const counted = chainedEnd === undefined && !passesThrough(st) ? undefined : false;
+              addStretchVisit(gKey, st.trip_id, { stopId: st.stop_id, minutes: mins, seq: Number(st.stop_sequence), overnightOnly: night || undefined, counted });
             }
             // Propagate to parent station so it also gets headways (only count first visit to parent per trip)
             const parentVisitKey = parentId ? `${grp.dayType}:${parentId}` : null;
@@ -1915,7 +1918,8 @@ export async function processGtfsBuffer(
             addFrequencyDeparture(grp, st.stop_id, mins, pickupAllowed);
             if (grp.inGroup) {
               const night = mins < NIGHT_SHIFT_EARLY_CUTOFF && (serviceIdMaxMinute.get(grp.serviceId) ?? Infinity) < NIGHT_SHIFT_EARLY_CUTOFF;
-              addStretchVisit(`${grp.shortName}::${grp.dirId}::${grp.dayType}`, `${tripId}@${offset}`, { stopId: st.stop_id, minutes: mins, seq: Number(st.stop_sequence), overnightOnly: night || undefined });
+              // #1089: a pass-through visit shapes the pattern but is not a departure (as above).
+              addStretchVisit(`${grp.shortName}::${grp.dirId}::${grp.dayType}`, `${tripId}@${offset}`, { stopId: st.stop_id, minutes: mins, seq: Number(st.stop_sequence), overnightOnly: night || undefined, counted: passesThrough(st) ? false : undefined });
             }
             if (countParent) addFrequencyDeparture(grp, parentId!, mins, pickupAllowed);
             else if (parentId && pickupAllowed && grp.shapeId && grp.inShape) markBoardable(`${grp.shapeId}::${grp.dayType}`, parentId);

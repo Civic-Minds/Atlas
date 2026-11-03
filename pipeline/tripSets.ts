@@ -238,7 +238,21 @@ export function directionStretches(
     const p = stopCoord(a), q = stopCoord(b);
     return p != null && q != null && km(p, q) * 1000 <= SAME_TERMINAL_METERS;
   };
-  const steadyIn = (periods: readonly PeriodKey[]) => eligible.filter(p => runsSteadily(p.trips, p.stops[Math.floor(p.stops.length / 2)], periods));
+  // #1089: a stop no trip of the pattern counts a departure at (a pass-through it neither picks up
+  // nor drops off at, or a chained trip's end) is never a pattern's reading stop: TTC 98 southbound's
+  // middle stop is a Sheppard-Yonge bay the 98 passes without stopping, and read there the whole
+  // direction had no value. The pattern's middle counted stop reads it instead.
+  const countedStops = (trips: readonly DirectionTrip[]): Set<string> => {
+    const out = new Set<string>();
+    for (const trip of trips) for (const v of trip.visits) if (v.counted !== false) out.add(v.stopId);
+    return out;
+  };
+  const middleCounted = (stops: readonly string[], trips: readonly DirectionTrip[]): string => {
+    const counted = countedStops(trips);
+    const pool = stops.filter(stop => counted.has(stop));
+    return (pool.length > 0 ? pool : stops)[Math.floor((pool.length > 0 ? pool : stops).length / 2)];
+  };
+  const steadyIn = (periods: readonly PeriodKey[]) => eligible.filter(p => runsSteadily(p.trips, middleCounted(p.stops, p.trips), periods));
   let regular = steadyIn(DAYTIME_PERIODS);
   if (regular.length === 0) regular = steadyIn(ALL_PERIODS);
   // CIV-786: a pattern that takes the same trip in turn with a regular sibling is regular too. HSR 16 on
@@ -261,7 +275,7 @@ export function directionStretches(
       const pStops = new Set(p.stops);
       const shared = q.stops.filter(stop => pStops.has(stop));
       if (shared.length === 0) return false;
-      const ref = shared[Math.floor(shared.length / 2)];
+      const ref = middleCounted(shared, [...p.trips, ...q.trips]);
       const a = departuresAt(p.trips, ref), b = departuresAt(q.trips, ref);
       if (a.length < MIN_SCHEDULE_DEPARTURES || b.length < MIN_SCHEDULE_DEPARTURES) return false;
       const [first, second] = a[a.length - 1] < b[0] ? [a, b] : b[b.length - 1] < a[0] ? [b, a] : [null, null];
@@ -297,7 +311,7 @@ export function directionStretches(
       if (shared.length < 2) return false;
       const meet = sameTerminal(top.stops[top.stops.length - 1], q.stops[q.stops.length - 1]) || sameTerminal(top.stops[0], q.stops[0]);
       if (!meet) return false;
-      const ref = shared[Math.floor(shared.length / 2)];
+      const ref = middleCounted(shared, [...top.trips, ...q.trips]);
       const a = departuresAt(top.trips, ref), b = departuresAt(q.trips, ref);
       if (a.length < MIN_SCHEDULE_DEPARTURES || !b.some(t => t > a[0] && t < a[a.length - 1])) return false;
       const alone = periodSustainedMid(a), other = periodSustainedMid(b);
@@ -335,7 +349,9 @@ export function directionStretches(
   if (regular.length === 0) regular = [busiest(all)];
   const variantTripCount = withVisits.length - regular.reduce((n, p) => n + p.trips.length, 0);
 
-  const tripStops = withVisits.map(trip => new Set(trip.visits.map(v => v.stopId)));
+  // #1089: the D2 majority counts the stops a trip departs from, so a pass-through is never a stretch's
+  // reference stop while another stop of the stretch is served.
+  const tripStops = withVisits.map(trip => new Set(trip.visits.filter(v => v.counted !== false).map(v => v.stopId)));
   // Main stretch: the stops every regular pattern serves, in the longest regular pattern's order.
   const longestRegular = regular.reduce((x, y) => (y.stops.length > x.stops.length ? y : x));
   let mainStops = mainBy === 'shared' ? longestRegular.stops.filter(stop => regular.every(p => p.stops.includes(stop))) : [];

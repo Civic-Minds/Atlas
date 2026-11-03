@@ -1,0 +1,608 @@
+route_id,service_id,trip_id,trip_headsign,trip_short_name,direction_id,block_id,shape_id,wheelchair_accessible,bikes_allowed
+52,1,50963549,East - 52F Lawrence West towards Sunnybrook Hospital via Lawrence Station,F,0,2241891,1127112,1,1
+52,1,50963547,East - 52F Lawrence West towards Sunnybrook Hospital via Lawrence Station,F,0,2241945,1127112,1,1
+52,1,50963535,East - 52 Lawrence West towards Lawrence Station,,0,2241881,1127107,1,1
+52,1,50963545,East - 52 Lawrence West towards Lawrence Station,,0,2241889,1127104,1,1
+52,1,50963548,East - 52F Lawrence West towards Sunnybrook Hospital via Lawrence Station,F,0,2241946,1127112,1,1
+52,1,50963539,East - 52 Lawrence West towards Lawrence Station,,0,2241883,1127107,1,1
+52,1,50963540,East - 52 Lawrence West towards Lawrence Station,,0,2241936,1127107,1,1
+52,1,50963546,East - 52F Lawrence West towards Sunnybrook Hospital via Lawrence Station,F,0,2241943,1127112,1,1
+52,1,50963544,East - 52 Lawrence West towards Lawrence Station,,0,2241890,1127113,1,1
+52,1,50963536,East - 52G Lawrence West towards Lawrence West Station,G,0,2241934,1127109,1,1
+52,1,50963541,East - 52 Lawrence West towards Lawrence Station,,0,2241880,1127107,1,1
+52,1,50963553,East - 52F Lawrence West towards Sunnybrook Hospital via Lawrence Station,F,0,2241947,1127112,1,1
+52,1,50963550,East - 52F Lawrence West towards Sunnybrook Hospital via Lawrence Station,F,0,2241953,1127112,1,1
+52,1,50963542,East - 52 Lawrence West towards Lawrence Station,,0,2241886,1127107,1,1
+52,1,50963537,East - 52G Lawrence West towards Lawrence West Station,G,0,2241932,1127109,1,1
+52,1,50963592,East - 52 Lawrence West towards Lawrence Station,,0,2241885,1127113,1,1
+52,1,50963543,East - 52 Lawrence West towards Lawrence Station,,0,2241887,1127107,1,1
+52,1,50963551,East - 52F Lawrence West towards Sunnybrook Hospital via Lawrence Station,F,0,2241944,1127112,1,1
+52,1,50963538,East - 52G Lawrence West towards Lawrence West Station,G,0,2241933,1127109,1,1
+52,1,50963593,East - 52 Lawrence West towards Lawrence Station,,0,2241882,1127107,1,1
+52,1,50963595,East - 52 Lawrence West towards Lawrence Station,,0,2241884,1127113,1,1
+52,1,50963552,East - 52F Lawrence West towards Sunnybrook Hospital via Lawrence Station,F,0,2241891,1127112,1,1
+52,1,50963558,East - 52G Lawrence West towards Lawrence West Station,G,0,2241929,1127109,1,1
+52,1,50963594,East - 52 Lawrence West towards Lawrence Station,,0,2241888,1127107,1,1
+52,1,50963629,East - 52 Lawrence West towards Lawrence Station,,0,2241938,1127113,1,1
+52,1,50963559,East - 52G Lawrence West towards Lawrence West Station,G,0,2241926,1127109,1,1
+52,1,50963596,East - 52 Lawrence West towards Lawrence Station,,0,2241940,1127107,1,1
+52,1,50963660,East - 52F Lawrence West towards Sunnybrook Hospital via Lawrence Station,F,0,2241945,1127112,1,1
+52,1,50963561,East - 52 Lawrence West towards Lawrence Station,,0,2241931,1127113,1,1
+52,1,50963560,East - 52 Lawrence West towards Lawrence Station,,0,2241930,1127107,1,1
+52,1,50963671,East - 52F Lawrence West towards Sunnybrook Hospital via Lawrence Station,F,0,2241946,1127112,1,1
+52,1,50963583,East - 52G Lawrence West towards Lawrence West Station,G,0,2241934,1127109,1,1
+52,1,50963661,East - 52F Lawrence West towards Sunnybrook Hospital via Lawrence Station,F,0,2241948,1127112,1,1
+52,1,50963599,East - 52 Lawrence West towards Lawrence Station,,0,2241881,1127107,1,1
+52,1,50963584,East - 52G Lawrence West towards Lawrence West Station,G,0,2241932,1127109,1,1
+52,1,50963601,East - 52 Lawrence West towards Lawrence Station,,0,2241927,1127113,1,1
+52,1,50963662,East - 52F Lawrence West towards Sunnybrook Hospital via Lawrence Station,F,0,2241943,1127112,1,1
+52,1,50963600,East - 52 Lawrence West towards Lawrence Station,,0,2241889,1127107,1,1
+52,1,50963585,East - 52G Lawrence West towards Lawrence West Station,G,0,2241933,1127109,1,1
+52,1,50963663,East - 52F Lawrence West towards Sunnybrook Hospital via Lawrence Station,F,0,2241947,1127112,1,1
+52,1,50963602,East - 52 Lawrence West towards Lawrence Station,,0,2241936,1127107,1,1
+52,1,50963604,East - 52 Lawrence West towards Lawrence Station,,0,2241883,1127113,1,1
+52,1,50963603,East - 52 Lawrence West towards Lawrence Station,,0,2241880,1127107,1,1
+52,1,50963586,East - 52G Lawrence West towards Lawrence West Station,G,0,2241929,1127109,1,1
+52,1,50963664,East - 52F Lawrence West towards Sunnybrook Hospital via Lawrence Station,F,0,2241949,1127112,1,1
+52,1,50963605,East - 52 Lawrence West towards Lawrence Station,,0,2241928,1127107,1,1
+52,1,50963607,East - 52 Lawrence West towards Lawrence Station,,0,2241890,1127113,1,1
+52,1,50963587,East - 52G Lawrence West towards Lawrence West Station,G,0,2241926,1127109,1,1
+52,1,50963606,East - 52 Lawrence West towards Lawrence Station,,0,2241886,1127107,1,1
+52,1,50963642,East - 52F Lawrence West towards Sunnybrook Hospital via Lawrence Station,F,0,2241944,1127112,1,1
+52,1,50963588,East - 52G Lawrence West towards Lawrence West Station,G,0,2241934,1127109,1,1
+52,1,50963643,East - 52F Lawrence West towards Sunnybrook Hospital via Lawrence Station,F,0,2241891,1127112,1,1
+52,1,50963608,East - 52 Lawrence West towards Lawrence Station,,0,2241885,1127107,1,1
+52,1,50963632,East - 52 Lawrence West towards Lawrence Station,,0,2241887,1127113,1,1
+52,1,50963609,East - 52 Lawrence West towards Lawrence Station,,0,2241882,1127107,1,1
+52,1,50963616,East - 52G Lawrence West towards Lawrence West Station,G,0,2241932,1127109,1,1
+52,1,50963670,East - 52F Lawrence West towards Sunnybrook Hospital via Lawrence Station,F,0,2241945,1127112,1,1
+52,1,50963633,East - 52 Lawrence West towards Lawrence Station,,0,2241888,1127113,1,1
+52,1,50963565,East - 52 Lawrence West towards Lawrence Station,,0,2241884,1127107,1,1
+52,1,50963659,East - 52F Lawrence West towards Sunnybrook Hospital via Lawrence Station,F,0,2241948,1127112,1,1
+52,1,50963617,East - 52G Lawrence West towards Lawrence West Station,G,0,2241933,1127109,1,1
+52,1,50963634,East - 52 Lawrence West towards Lawrence Station,,0,2241938,1127113,1,1
+52,1,50963597,East - 52 Lawrence West towards Lawrence Station,,0,2241930,1127107,1,1
+52,1,50963644,East - 52F Lawrence West towards Sunnybrook Hospital via Lawrence Station,F,0,2241943,1127112,1,1
+52,1,50963618,East - 52G Lawrence West towards Lawrence West Station,G,0,2241929,1127109,1,1
+52,1,50963635,East - 52 Lawrence West towards Lawrence Station,,0,2241931,1127113,1,1
+52,1,50963598,East - 52 Lawrence West towards Lawrence Station,,0,2241881,1127107,1,1
+52,1,50963645,East - 52F Lawrence West towards Sunnybrook Hospital via Lawrence Station,F,0,2241947,1127112,1,1
+52,1,50963554,East - 52G Lawrence West towards Lawrence West Station,G,0,2241926,1127109,1,1
+52,1,50963636,East - 52 Lawrence West towards Lawrence Station,,0,2241889,1127113,1,1
+52,1,50963555,East - 52 Lawrence West towards Lawrence Station,,0,2241927,1127107,1,1
+52,1,50963658,East - 52F Lawrence West towards Sunnybrook Hospital via Lawrence Station,F,0,2241949,1127112,1,1
+52,1,50963566,East - 52G Lawrence West towards Lawrence West Station,G,0,2241934,1127109,1,1
+52,1,50963637,East - 52 Lawrence West towards Lawrence Station,,0,2241936,1127113,1,1
+52,1,50963556,East - 52 Lawrence West towards Lawrence Station,,0,2241880,1127107,1,1
+52,1,50963646,East - 52F Lawrence West towards Sunnybrook Hospital via Lawrence Station,F,0,2241944,1127112,1,1
+52,1,50963567,East - 52G Lawrence West towards Lawrence West Station,G,0,2241932,1127109,1,1
+52,1,50963638,East - 52 Lawrence West towards Lawrence Station,,0,2241883,1127113,1,1
+52,1,50963557,East - 52 Lawrence West towards Lawrence Station,,0,2241928,1127107,1,1
+52,1,50963647,East - 52F Lawrence West towards Sunnybrook Hospital via Lawrence Station,F,0,2241891,1127112,1,1
+52,1,50963568,East - 52G Lawrence West towards Lawrence West Station,G,0,2241933,1127109,1,1
+52,1,50963610,East - 52 Lawrence West towards Lawrence Station,,0,2241886,1127113,1,1
+52,1,50963619,East - 52 Lawrence West towards Lawrence Station,,0,2241890,1127107,1,1
+52,1,50963648,East - 52F Lawrence West towards Sunnybrook Hospital via Lawrence Station,F,0,2241948,1127112,1,1
+52,1,50963569,East - 52G Lawrence West towards Lawrence West Station,G,0,2241929,1127109,1,1
+52,1,50963580,East - 52 Lawrence West towards Lawrence Station,,0,2241885,1127113,1,1
+52,1,50963620,East - 52 Lawrence West towards Lawrence Station,,0,2241882,1127107,1,1
+52,1,50963649,East - 52F Lawrence West towards Sunnybrook Hospital via Lawrence Station,F,0,2241943,1127112,1,1
+52,1,50963570,East - 52G Lawrence West towards Lawrence West Station,G,0,2241926,1127109,1,1
+52,1,50963630,East - 52 Lawrence West towards Lawrence Station,,0,2241887,1127113,1,1
+52,1,50963621,East - 52 Lawrence West towards Lawrence Station,,0,2241884,1127107,1,1
+52,1,50963650,East - 52F Lawrence West towards Sunnybrook Hospital via Lawrence Station,F,0,2241947,1127112,1,1
+52,1,50963571,East - 52G Lawrence West towards Lawrence West Station,G,0,2241934,1127109,1,1
+52,1,50963581,East - 52 Lawrence West towards Lawrence Station,,0,2241888,1127113,1,1
+52,1,50963622,East - 52 Lawrence West towards Lawrence Station,,0,2241930,1127107,1,1
+52,1,50963651,East - 52F Lawrence West towards Sunnybrook Hospital via Lawrence Station,F,0,2241949,1127112,1,1
+52,1,50963572,East - 52G Lawrence West towards Lawrence West Station,G,0,2241932,1127109,1,1
+52,1,50963582,East - 52 Lawrence West towards Lawrence Station,,0,2241938,1127113,1,1
+52,1,50963623,East - 52 Lawrence West towards Lawrence Station,,0,2241881,1127107,1,1
+52,1,50963652,East - 52F Lawrence West towards Sunnybrook Hospital via Lawrence Station,F,0,2241944,1127112,1,1
+52,1,50963573,East - 52G Lawrence West towards Lawrence West Station,G,0,2241933,1127109,1,1
+52,1,50963562,East - 52 Lawrence West towards Lawrence Station,,0,2241931,1127113,1,1
+52,1,50963624,East - 52 Lawrence West towards Lawrence Station,,0,2241927,1127107,1,1
+52,1,50963653,East - 52F Lawrence West towards Sunnybrook Hospital via Lawrence Station,F,0,2241891,1127112,1,1
+52,1,50963574,East - 52G Lawrence West towards Lawrence West Station,G,0,2241929,1127109,1,1
+52,1,50963611,East - 52 Lawrence West towards Lawrence Station,,0,2241889,1127113,1,1
+52,1,50963625,East - 52 Lawrence West towards Lawrence Station,,0,2241880,1127107,1,1
+52,1,50963654,East - 52F Lawrence West towards Sunnybrook Hospital via Lawrence Station,F,0,2241948,1127112,1,1
+52,1,50963575,East - 52G Lawrence West towards Lawrence West Station,G,0,2241926,1127109,1,1
+52,1,50963612,East - 52 Lawrence West towards Lawrence Station,,0,2241936,1127113,1,1
+52,1,50963626,East - 52 Lawrence West towards Lawrence Station,,0,2241928,1127107,1,1
+52,1,50963655,East - 52F Lawrence West towards Sunnybrook Hospital via Lawrence Station,F,0,2241943,1127112,1,1
+52,1,50963576,East - 52G Lawrence West towards Lawrence West Station,G,0,2241934,1127109,1,1
+52,1,50963563,East - 52 Lawrence West towards Lawrence Station,,0,2241883,1127113,1,1
+52,1,50963627,East - 52 Lawrence West towards Lawrence Station,,0,2241890,1127107,1,1
+52,1,50963656,East - 52F Lawrence West towards Sunnybrook Hospital via Lawrence Station,F,0,2241950,1127112,1,1
+52,1,50963577,East - 52G Lawrence West towards Lawrence West Station,G,0,2241935,1127109,1,1
+52,1,50963628,East - 52 Lawrence West towards Lawrence Station,,0,2241882,1127107,1,1
+52,1,50963589,East - 52 Lawrence West towards Lawrence Station,,0,2241886,1127113,1,1
+52,1,50963564,East - 52 Lawrence West towards Lawrence Station,,0,2241939,1127107,1,1
+52,1,50963578,East - 52G Lawrence West towards Lawrence West Station,G,0,2241932,1127109,1,1
+52,1,50963665,East - 52F Lawrence West towards Sunnybrook Hospital via Lawrence Station,F,0,2241947,1127112,1,1
+52,1,50963591,East - 52 Lawrence West towards Lawrence Station,,0,2241885,1127113,1,1
+52,1,50963590,East - 52 Lawrence West towards Lawrence Station,,0,2241884,1127107,1,1
+52,1,50963579,East - 52G Lawrence West towards Lawrence West Station,G,0,2241933,1127109,1,1
+52,1,50963666,East - 52F Lawrence West towards Sunnybrook Hospital via Lawrence Station,F,0,2241949,1127112,1,1
+52,1,50963639,East - 52 Lawrence West towards Lawrence Station,,0,2241930,1127107,1,1
+52,1,50963631,East - 52G Lawrence West towards Lawrence West Station,G,0,2241929,1127109,1,1
+52,1,50963641,East - 52 Lawrence West towards Lawrence Station,,0,2241887,1127113,1,1
+52,1,50963667,East - 52F Lawrence West towards Sunnybrook Hospital via Lawrence Station,F,0,2241952,1127112,1,1
+52,1,50963640,East - 52 Lawrence West towards Lawrence Station,,0,2241937,1127107,1,1
+52,1,50963613,East - 52G Lawrence West towards Lawrence West Station,G,0,2241926,1127109,1,1
+52,1,50963668,East - 52F Lawrence West towards Sunnybrook Hospital via Lawrence Station,F,0,2241944,1127112,1,1
+52,1,50963615,East - 52 Lawrence West towards Lawrence Station,,0,2241881,1127107,1,1
+52,1,50963727,East - 52 Lawrence West towards Lawrence Station,,0,2241888,1127113,1,1
+52,1,50963729,East - 52 Lawrence West towards Lawrence Station,,0,2241942,1127107,1,1
+52,1,50963614,East - 52G Lawrence West towards Lawrence West Station,G,0,2241934,1127109,1,1
+52,1,50963669,East - 52F Lawrence West towards Sunnybrook Hospital via Lawrence Station,F,0,2241891,1127112,1,1
+52,1,50963728,East - 52 Lawrence West towards Lawrence Station,,0,2241927,1127107,1,1
+52,1,50963724,East - 52G Lawrence West towards Lawrence West Station,G,0,2241935,1127109,1,1
+52,1,50963742,East - 52 Lawrence West towards Lawrence Station,,0,2241938,1127113,1,1
+52,1,50963657,East - 52F Lawrence West towards Sunnybrook Hospital via Lawrence Station,F,0,2241948,1127112,1,1
+52,1,50963738,East - 52 Lawrence West towards Lawrence Station,,0,2241931,1127107,1,1
+52,1,50963725,East - 52G Lawrence West towards Lawrence West Station,G,0,2241932,1127109,1,1
+52,1,50963761,East - 52F Lawrence West towards Sunnybrook Hospital via Lawrence Station,F,0,2241951,1127112,1,1
+52,1,50963743,East - 52 Lawrence West towards Lawrence Station,,0,2241889,1127107,1,1
+52,1,50963745,East - 52 Lawrence West towards Lawrence Station,,0,2241880,1127113,1,1
+52,1,50963744,East - 52 Lawrence West towards Lawrence Station,,0,2241928,1127107,1,1
+52,1,50963718,East - 52G Lawrence West towards Lawrence West Station,G,0,2241933,1127109,1,1
+52,1,50963762,East - 52F Lawrence West towards Sunnybrook Hospital via Lawrence Station,F,0,2241943,1127112,1,1
+52,1,50963746,East - 52 Lawrence West towards Lawrence Station,,0,2241936,1127107,1,1
+52,1,50963719,East - 52G Lawrence West towards Lawrence West Station,G,0,2241929,1127109,1,1
+52,1,50963748,East - 52 Lawrence West towards Lawrence Station,,0,2241941,1127113,1,1
+52,1,50963763,East - 52F Lawrence West towards Sunnybrook Hospital via Lawrence Station,F,0,2241950,1127112,1,1
+52,1,50963747,East - 52 Lawrence West towards Lawrence Station,,0,2241890,1127107,1,1
+52,1,50963720,East - 52G Lawrence West towards Lawrence West Station,G,0,2241926,1127109,1,1
+52,1,50963766,East - 52F Lawrence West towards Sunnybrook Hospital via Lawrence Station,F,0,2241947,1127112,1,1
+52,1,50963749,East - 52 Lawrence West towards Lawrence Station,,0,2241882,1127107,1,1
+52,1,50963691,East - 52 Lawrence West towards Lawrence Station,,0,2241883,1127113,1,1
+52,1,50963750,East - 52 Lawrence West towards Lawrence Station,,0,2241939,1127107,1,1
+52,1,50963721,East - 52G Lawrence West towards Lawrence West Station,G,0,2241934,1127109,1,1
+52,1,50963767,East - 52F Lawrence West towards Sunnybrook Hospital via Lawrence Station,F,0,2241949,1127112,1,1
+52,1,50963692,East - 52 Lawrence West towards Lawrence Station,,0,2241884,1127107,1,1
+52,1,50963722,East - 52G Lawrence West towards Lawrence West Station,G,0,2241935,1127109,1,1
+52,1,50963764,East - 52F Lawrence West towards Sunnybrook Hospital via Lawrence Station,F,0,2241952,1127112,1,1
+52,1,50963694,East - 52 Lawrence West towards Lawrence Station,,0,2241886,1127113,1,1
+52,1,50963693,East - 52 Lawrence West towards Lawrence Station,,0,2241885,1127107,1,1
+52,1,50963674,East - 52G Lawrence West towards Lawrence West Station,G,0,2241932,1127109,1,1
+52,1,50963765,East - 52F Lawrence West towards Sunnybrook Hospital via Lawrence Station,F,0,2241944,1127112,1,1
+52,1,50963695,East - 52 Lawrence West towards Lawrence Station,,0,2241937,1127107,1,1
+52,1,50963697,East - 52 Lawrence West towards Lawrence Station,,0,2241930,1127113,1,1
+52,1,50963696,East - 52 Lawrence West towards Lawrence Station,,0,2241887,1127107,1,1
+52,1,50963675,East - 52G Lawrence West towards Lawrence West Station,G,0,2241933,1127109,1,1
+52,1,50963768,East - 52F Lawrence West towards Sunnybrook Hospital via Lawrence Station,F,0,2241891,1127112,1,1
+52,1,50963769,East - 52F Lawrence West towards Sunnybrook Hospital via Lawrence Station,F,0,2241948,1127112,1,1
+52,1,50963698,East - 52 Lawrence West towards Lawrence Station,,0,2241888,1127107,1,1
+52,1,50963676,East - 52G Lawrence West towards Lawrence West Station,G,0,2241929,1127109,1,1
+52,1,50963700,East - 52 Lawrence West towards Lawrence Station,,0,2241881,1127113,1,1
+52,1,50963699,East - 52 Lawrence West towards Lawrence Station,,0,2241931,1127107,1,1
+52,1,50963770,East - 52F Lawrence West towards Sunnybrook Hospital via Lawrence Station,F,0,2241951,1127112,1,1
+52,1,50963677,East - 52G Lawrence West towards Lawrence West Station,G,0,2241934,1127109,1,1
+52,1,50963701,East - 52 Lawrence West towards Lawrence Station,,0,2241889,1127107,1,1
+52,1,50963703,East - 52 Lawrence West towards Lawrence Station,,0,2241938,1127113,1,1
+52,1,50963702,East - 52 Lawrence West towards Lawrence Station,,0,2241928,1127107,1,1
+52,1,50963678,East - 52G Lawrence West towards Lawrence West Station,G,0,2241935,1127109,1,1
+52,1,50963771,East - 52F Lawrence West towards Sunnybrook Hospital via Lawrence Station,F,0,2241943,1127112,1,1
+52,1,50963772,East - 52F Lawrence West towards Sunnybrook Hospital via Lawrence Station,F,0,2241950,1127112,1,1
+52,1,50963680,East - 52 Lawrence West towards Lawrence Station,,0,2241936,1127107,1,1
+52,1,50963681,East - 52G Lawrence West towards Lawrence West Station,G,0,2241932,1127109,1,1
+52,1,50963707,East - 52 Lawrence West towards Lawrence Station,,0,2241880,1127113,1,1
+52,1,50963723,East - 52 Lawrence West towards Lawrence Station,,0,2241941,1127107,1,1
+52,1,50963773,East - 52F Lawrence West towards Sunnybrook Hospital via Lawrence Station,F,0,2241947,1127112,1,1
+52,1,50963682,East - 52G Lawrence West towards Lawrence West Station,G,0,2241933,1127109,1,1
+52,1,50963739,East - 52 Lawrence West towards Lawrence Station,,0,2241890,1127113,1,1
+52,1,50963679,East - 52 Lawrence West towards Lawrence Station,,0,2241883,1127107,1,1
+52,1,50963683,East - 52G Lawrence West towards Lawrence West Station,G,0,2241929,1127109,1,1
+52,1,50963774,East - 52F Lawrence West towards Sunnybrook Hospital via Lawrence Station,F,0,2241952,1127112,1,1
+52,1,50963740,East - 52 Lawrence West towards Lawrence Station,,0,2241939,1127113,1,1
+52,1,50963709,East - 52 Lawrence West towards Lawrence Station,,0,2241885,1127107,1,1
+52,1,50963787,East - 52 Lawrence West towards Lawrence Station,,0,2241891,1127115,1,1
+52,1,50963741,East - 52 Lawrence West towards Lawrence Station,,0,2241884,1127113,1,1
+52,1,50963684,East - 52G Lawrence West towards Lawrence West Station,G,0,2241935,1127109,1,1
+52,1,50963710,East - 52 Lawrence West towards Lawrence Station,,0,2241887,1127107,1,1
+52,1,50963775,East - 52F Lawrence West towards Sunnybrook Hospital via Lawrence Station,F,0,2241948,1127112,1,1
+52,1,50963751,East - 52 Lawrence West towards Lawrence Station,,0,2241930,1127113,1,1
+52,1,50963685,East - 52G Lawrence West towards Lawrence West Station,G,0,2241932,1127109,1,1
+52,1,50963708,East - 52 Lawrence West towards Lawrence Station,,0,2241888,1127107,1,1
+52,1,50963776,East - 52F Lawrence West towards Sunnybrook Hospital via Lawrence Station,F,0,2241951,1127112,1,1
+52,1,50963752,East - 52 Lawrence West towards Lawrence Station,,0,2241931,1127113,1,1
+52,1,50963733,East - 52 Lawrence West towards Lawrence Station,,0,2241881,1127107,1,1
+52,1,50963686,East - 52G Lawrence West towards Lawrence West Station,G,0,2241933,1127109,1,1
+52,1,50963777,East - 52F Lawrence West towards Sunnybrook Hospital via Lawrence Station,F,0,2241943,1127112,1,1
+52,1,50963730,East - 52 Lawrence West towards Lawrence Station,,0,2241889,1127113,1,1
+52,1,50963734,East - 52 Lawrence West towards Lawrence Station,,0,2241928,1127107,1,1
+52,1,50963687,East - 52G Lawrence West towards Lawrence West Station,G,0,2241929,1127109,1,1
+52,1,50963788,East - 52F Lawrence West towards Sunnybrook Hospital via Lawrence Station,F,0,2241950,1127112,1,1
+52,1,50963731,East - 52 Lawrence West towards Lawrence Station,,0,2241924,1127113,1,1
+52,1,50963704,East - 52 Lawrence West towards Lawrence Station,,0,2241925,1127107,1,1
+52,1,50963688,East - 52G Lawrence West towards Lawrence West Station,G,0,2241935,1127109,1,1
+52,1,50963778,East - 52F Lawrence West towards Sunnybrook Hospital via Lawrence Station,F,0,2241891,1127112,1,1
+52,1,50963705,East - 52G Lawrence West towards Lawrence West Station,G,0,2241892,1127109,1,1
+52,1,50963672,East - 52 Lawrence West towards Lawrence Station,,0,2241880,1127113,1,1
+52,1,50963732,East - 52 Lawrence West towards Lawrence Station,,0,2241883,1127107,1,1
+52,1,50963779,East - 52F Lawrence West towards Sunnybrook Hospital via Lawrence Station,F,0,2241952,1127112,1,1
+52,1,50963706,East - 52G Lawrence West towards Lawrence West Station,G,0,2241933,1127109,1,1
+52,1,50963711,East - 52 Lawrence West towards Lawrence Station,,0,2241939,1127113,1,1
+52,1,50963726,East - 52 Lawrence West towards Lawrence Station,,0,2241885,1127107,1,1
+52,1,50963780,East - 52F Lawrence West towards Sunnybrook Hospital via Lawrence Station,F,0,2241948,1127112,1,1
+52,1,50963753,East - 52G Lawrence West towards Lawrence West Station,G,0,2241929,1127109,1,1
+52,1,50963712,East - 52 Lawrence West towards Lawrence Station,,0,2241884,1127113,1,1
+52,1,50963673,East - 52 Lawrence West towards Lawrence Station,,0,2241930,1127107,1,1
+52,1,50963754,East - 52G Lawrence West towards Lawrence West Station,G,0,2241935,1127109,1,1
+52,1,50963781,East - 52F Lawrence West towards Sunnybrook Hospital via Lawrence Station,F,0,2241951,1127112,1,1
+52,1,50963713,East - 52 Lawrence West towards Lawrence Station,,0,2241881,1127113,1,1
+52,1,50963689,East - 52 Lawrence West towards Lawrence Station,,0,2241931,1127107,1,1
+52,1,50963782,East - 52F Lawrence West towards Sunnybrook Hospital via Lawrence Station,F,0,2241943,1127112,1,1
+52,1,50963755,East - 52G Lawrence West towards Lawrence West Station,G,0,2241892,1127109,1,1
+52,1,50963756,East - 52G Lawrence West towards Lawrence West Station,G,0,2241933,1127109,1,1
+52,1,50963690,East - 52 Lawrence West towards Lawrence Station,,0,2241925,1127107,1,1
+52,1,50963714,East - 52 Lawrence West towards Lawrence Station,,0,2241889,1127113,1,1
+52,1,50963783,East - 52F Lawrence West towards Sunnybrook Hospital via Lawrence Station,F,0,2241891,1127112,1,1
+52,1,50963757,East - 52G Lawrence West towards Lawrence West Station,G,0,2241929,1127109,1,1
+52,1,50963784,East - 52F Lawrence West towards Sunnybrook Hospital via Lawrence Station,F,0,2241952,1127112,1,1
+52,1,50963715,East - 52 Lawrence West towards Lawrence Station,,0,2241924,1127113,1,1
+52,1,50963735,East - 52 Lawrence West towards Lawrence Station,,0,2241883,1127107,1,1
+52,1,50963758,East - 52G Lawrence West towards Lawrence West Station,G,0,2241935,1127109,1,1
+52,1,50963736,East - 52 Lawrence West towards Lawrence Station,,0,2241885,1127107,1,1
+52,1,50963716,East - 52 Lawrence West towards Lawrence Station,,0,2241880,1127113,1,1
+52,1,50963785,East - 52F Lawrence West towards Sunnybrook Hospital via Lawrence Station,F,0,2241948,1127112,1,1
+52,1,50963759,East - 52G Lawrence West towards Lawrence West Station,G,0,2241892,1127109,1,1
+52,1,50963717,East - 52 Lawrence West towards Lawrence Station,,0,2241939,1127113,1,1
+52,1,50963737,East - 52 Lawrence West towards Lawrence Station,,0,2241930,1127107,1,1
+52,1,50963786,East - 52F Lawrence West towards Sunnybrook Hospital via Lawrence Station,F,0,2241951,1127112,1,1
+52,1,50963760,East - 52G Lawrence West towards Lawrence West Station,G,0,2241933,1127109,1,1
+52,1,50963792,East - 52 Lawrence West towards Lawrence Station,,0,2241884,1127103,1,1
+52,1,50963796,East - 52 Lawrence West towards Lawrence Station,,0,2241931,1127107,1,1
+52,1,50963789,East - 52F Lawrence West towards Sunnybrook Hospital via Lawrence Station,F,0,2241943,1127112,1,1
+52,1,50963790,East - 52F Lawrence West towards Sunnybrook Hospital via Lawrence Station,F,0,2241891,1127112,1,1
+52,1,50963793,East - 52G Lawrence West towards Lawrence West Station,G,0,2241935,1127109,1,1
+52,1,50963794,East - 52 Lawrence West towards Lawrence Station,,0,2241881,1127111,1,1
+52,1,50963795,East - 52 Lawrence West towards Lawrence Station,,0,2241881,1127105,1,1
+52,1,50963896,West - 52A Lawrence West towards Pearson Airport via Dixon Rd,A,1,2241883,1127133,1,1
+52,1,50963903,West - 52B Lawrence West towards Westwood via Dixon Rd,B,1,2241890,1127132,1,1
+52,1,50963847,West - 52B Lawrence West towards Westwood via Dixon Rd,B,1,2241885,1127134,1,1
+52,1,50963834,West - 52A Lawrence West towards Pearson Airport via Dixon Rd,A,1,2241886,1127135,1,1
+52,1,50963897,East - 52 Lawrence West towards Lawrence Station,,1,2241881,1127123,1,1
+52,1,50963835,West - 52B Lawrence West towards Westwood via Dixon Rd,B,1,2241884,1127128,1,1
+52,1,50963895,West - 52A Lawrence West towards Pearson Airport via Dixon Rd,A,1,2241887,1127135,1,1
+52,1,50963878,West - 52G Lawrence West towards Martin Grove via The Westway,G,1,2241889,1127127,1,1
+52,1,50963838,East - 52 Lawrence West towards Lawrence Station,,1,2241883,1127123,1,1
+52,1,50963887,West - 52A Lawrence West towards Pearson Airport via Dixon Rd,A,1,2241888,1127120,1,1
+52,1,50963809,East - 52 Lawrence West towards Lawrence Station,,1,2241936,1127123,1,1
+52,1,50963904,West - 52G Lawrence West towards Martin Grove via The Westway,G,1,2241933,1127136,1,1
+52,1,50963894,West - 52G Lawrence West towards Martin Grove via The Westway,G,1,2241934,1127127,1,1
+52,1,50963879,West - 52B Lawrence West towards Westwood via Dixon Rd,B,1,2241931,1127119,1,1
+52,1,50963923,West - 52F Lawrence West towards Royal York,F,1,2241891,1127117,1,1
+52,1,50963898,East - 52 Lawrence West towards Lawrence Station,,1,2241880,1127123,1,1
+52,1,50963877,West - 52A Lawrence West towards Pearson Airport via Dixon Rd,A,1,2241940,1127120,1,1
+52,1,50963893,West - 52G Lawrence West towards Martin Grove via The Westway,G,1,2241932,1127127,1,1
+52,1,50963888,West - 52G Lawrence West towards Martin Grove via The Westway,G,1,2241929,1127136,1,1
+52,1,50963889,West - 52A Lawrence West towards Pearson Airport via Dixon Rd,A,1,2241930,1127120,1,1
+52,1,50963875,East - 52 Lawrence West towards Lawrence Station,,1,2241886,1127123,1,1
+52,1,50963919,West - 52F Lawrence West towards Royal York,F,1,2241945,1127117,1,1
+52,1,50963890,West - 52B Lawrence West towards Westwood via Dixon Rd,B,1,2241927,1127119,1,1
+52,1,50963856,East - 52 Lawrence West towards Lawrence Station,,1,2241887,1127123,1,1
+52,1,50963800,West - 52G Lawrence West towards Martin Grove via The Westway,G,1,2241926,1127136,1,1
+52,1,50963853,West - 52A Lawrence West towards Pearson Airport via Dixon Rd,A,1,2241881,1127120,1,1
+52,1,50963920,West - 52F Lawrence West towards Royal York,F,1,2241946,1127117,1,1
+52,1,50963854,West - 52A Lawrence West towards Pearson Airport via Dixon Rd,A,1,2241889,1127120,1,1
+52,1,50963874,East - 52 Lawrence West towards Lawrence Station,,1,2241882,1127123,1,1
+52,1,50963855,West - 52B Lawrence West towards Westwood via Dixon Rd,B,1,2241883,1127119,1,1
+52,1,50963921,West - 52F Lawrence West towards Royal York,F,1,2241943,1127117,1,1
+52,1,50963801,West - 52G Lawrence West towards Martin Grove via The Westway,G,1,2241934,1127136,1,1
+52,1,50963876,East - 52 Lawrence West towards Lawrence Station,,1,2241888,1127123,1,1
+52,1,50963839,West - 52A Lawrence West towards Pearson Airport via Dixon Rd,A,1,2241936,1127120,1,1
+52,1,50963922,West - 52F Lawrence West towards Royal York,F,1,2241947,1127117,1,1
+52,1,50963840,West - 52A Lawrence West towards Pearson Airport via Dixon Rd,A,1,2241880,1127120,1,1
+52,1,50963905,East - 52 Lawrence West towards Lawrence Station,,1,2241940,1127123,1,1
+52,1,50963802,West - 52G Lawrence West towards Martin Grove via The Westway,G,1,2241932,1127136,1,1
+52,1,50963841,West - 52B Lawrence West towards Westwood via Dixon Rd,B,1,2241890,1127119,1,1
+52,1,50963943,West - 52F Lawrence West towards Royal York,F,1,2241949,1127117,1,1
+52,1,50963859,East - 52 Lawrence West towards Lawrence Station,,1,2241930,1127123,1,1
+52,1,50963842,West - 52A Lawrence West towards Pearson Airport via Dixon Rd,A,1,2241928,1127120,1,1
+52,1,50963803,West - 52G Lawrence West towards Martin Grove via The Westway,G,1,2241933,1127136,1,1
+52,1,50963933,West - 52F Lawrence West towards Royal York,F,1,2241953,1127117,1,1
+52,1,50963843,West - 52A Lawrence West towards Pearson Airport via Dixon Rd,A,1,2241886,1127120,1,1
+52,1,50963860,East - 52 Lawrence West towards Lawrence Station,,1,2241881,1127123,1,1
+52,1,50963844,West - 52B Lawrence West towards Westwood via Dixon Rd,B,1,2241887,1127119,1,1
+52,1,50963861,East - 52 Lawrence West towards Lawrence Station,,1,2241889,1127123,1,1
+52,1,50963804,West - 52G Lawrence West towards Martin Grove via The Westway,G,1,2241929,1127136,1,1
+52,1,50963934,West - 52F Lawrence West towards Royal York,F,1,2241944,1127117,1,1
+52,1,50963845,West - 52A Lawrence West towards Pearson Airport via Dixon Rd,A,1,2241885,1127120,1,1
+52,1,50963846,West - 52A Lawrence West towards Pearson Airport via Dixon Rd,A,1,2241882,1127120,1,1
+52,1,50963881,East - 52 Lawrence West towards Lawrence Station,,1,2241936,1127123,1,1
+52,1,50963805,West - 52G Lawrence West towards Martin Grove via The Westway,G,1,2241926,1127136,1,1
+52,1,50963820,West - 52B Lawrence West towards Westwood via Dixon Rd,B,1,2241888,1127119,1,1
+52,1,50963935,West - 52F Lawrence West towards Royal York,F,1,2241891,1127117,1,1
+52,1,50963880,East - 52 Lawrence West towards Lawrence Station,,1,2241880,1127123,1,1
+52,1,50963797,West - 52A Lawrence West towards Pearson Airport via Dixon Rd,A,1,2241884,1127120,1,1
+52,1,50963806,West - 52G Lawrence West towards Martin Grove via The Westway,G,1,2241934,1127136,1,1
+52,1,50963798,West - 52B Lawrence West towards Westwood via Dixon Rd,B,1,2241938,1127119,1,1
+52,1,50963936,West - 52F Lawrence West towards Royal York,F,1,2241945,1127117,1,1
+52,1,50963862,East - 52 Lawrence West towards Lawrence Station,,1,2241928,1127123,1,1
+52,1,50963799,West - 52A Lawrence West towards Pearson Airport via Dixon Rd,A,1,2241930,1127120,1,1
+52,1,50963863,East - 52 Lawrence West towards Lawrence Station,,1,2241886,1127123,1,1
+52,1,50963891,West - 52B Lawrence West towards Westwood via Dixon Rd,B,1,2241931,1127119,1,1
+52,1,50963807,West - 52G Lawrence West towards Martin Grove via The Westway,G,1,2241932,1127136,1,1
+52,1,50963942,West - 52F Lawrence West towards Royal York,F,1,2241948,1127117,1,1
+52,1,50963892,West - 52A Lawrence West towards Pearson Airport via Dixon Rd,A,1,2241881,1127120,1,1
+52,1,50963864,East - 52 Lawrence West towards Lawrence Station,,1,2241885,1127123,1,1
+52,1,50963882,West - 52B Lawrence West towards Westwood via Dixon Rd,B,1,2241889,1127119,1,1
+52,1,50963925,West - 52F Lawrence West towards Royal York,F,1,2241943,1127117,1,1
+52,1,50963865,East - 52 Lawrence West towards Lawrence Station,,1,2241882,1127123,1,1
+52,1,50963808,West - 52G Lawrence West towards Martin Grove via The Westway,G,1,2241933,1127136,1,1
+52,1,50963883,West - 52A Lawrence West towards Pearson Airport via Dixon Rd,A,1,2241927,1127120,1,1
+52,1,50963906,West - 52B Lawrence West towards Westwood via Dixon Rd,B,1,2241936,1127119,1,1
+52,1,50963857,West - 52G Lawrence West towards Martin Grove via The Westway,G,1,2241929,1127136,1,1
+52,1,50963930,West - 52F Lawrence West towards Royal York,F,1,2241947,1127117,1,1
+52,1,50963866,East - 52 Lawrence West towards Lawrence Station,,1,2241884,1127123,1,1
+52,1,50963884,West - 52A Lawrence West towards Pearson Airport via Dixon Rd,A,1,2241880,1127120,1,1
+52,1,50963907,West - 52B Lawrence West towards Westwood via Dixon Rd,B,1,2241883,1127119,1,1
+52,1,50963858,West - 52G Lawrence West towards Martin Grove via The Westway,G,1,2241926,1127136,1,1
+52,1,50963867,East - 52 Lawrence West towards Lawrence Station,,1,2241930,1127123,1,1
+52,1,50963931,West - 52F Lawrence West towards Royal York,F,1,2241949,1127117,1,1
+52,1,50963885,West - 52A Lawrence West towards Pearson Airport via Dixon Rd,A,1,2241928,1127120,1,1
+52,1,50963908,West - 52B Lawrence West towards Westwood via Dixon Rd,B,1,2241886,1127119,1,1
+52,1,50963814,West - 52G Lawrence West towards Martin Grove via The Westway,G,1,2241934,1127136,1,1
+52,1,50963868,East - 52 Lawrence West towards Lawrence Station,,1,2241881,1127123,1,1
+52,1,50963932,West - 52F Lawrence West towards Royal York,F,1,2241944,1127117,1,1
+52,1,50963886,West - 52A Lawrence West towards Pearson Airport via Dixon Rd,A,1,2241890,1127120,1,1
+52,1,50963869,East - 52 Lawrence West towards Lawrence Station,,1,2241927,1127123,1,1
+52,1,50963909,West - 52B Lawrence West towards Westwood via Dixon Rd,B,1,2241885,1127119,1,1
+52,1,50963815,West - 52G Lawrence West towards Martin Grove via The Westway,G,1,2241932,1127136,1,1
+52,1,50963924,West - 52F Lawrence West towards Royal York,F,1,2241891,1127117,1,1
+52,1,50963821,West - 52A Lawrence West towards Pearson Airport via Dixon Rd,A,1,2241882,1127120,1,1
+52,1,50963870,East - 52 Lawrence West towards Lawrence Station,,1,2241880,1127123,1,1
+52,1,50963910,West - 52B Lawrence West towards Westwood via Dixon Rd,B,1,2241887,1127119,1,1
+52,1,50963849,West - 52G Lawrence West towards Martin Grove via The Westway,G,1,2241933,1127136,1,1
+52,1,50963926,West - 52F Lawrence West towards Royal York,F,1,2241948,1127117,1,1
+52,1,50963822,West - 52A Lawrence West towards Pearson Airport via Dixon Rd,A,1,2241884,1127120,1,1
+52,1,50963871,East - 52 Lawrence West towards Lawrence Station,,1,2241928,1127123,1,1
+52,1,50963911,West - 52B Lawrence West towards Westwood via Dixon Rd,B,1,2241888,1127119,1,1
+52,1,50963850,West - 52G Lawrence West towards Martin Grove via The Westway,G,1,2241929,1127136,1,1
+52,1,50963927,West - 52F Lawrence West towards Royal York,F,1,2241943,1127117,1,1
+52,1,50963823,West - 52A Lawrence West towards Pearson Airport via Dixon Rd,A,1,2241930,1127120,1,1
+52,1,50963872,East - 52 Lawrence West towards Lawrence Station,,1,2241890,1127123,1,1
+52,1,50963912,West - 52B Lawrence West towards Westwood via Dixon Rd,B,1,2241938,1127119,1,1
+52,1,50963851,West - 52G Lawrence West towards Martin Grove via The Westway,G,1,2241926,1127136,1,1
+52,1,50963928,West - 52F Lawrence West towards Royal York,F,1,2241947,1127117,1,1
+52,1,50963824,West - 52A Lawrence West towards Pearson Airport via Dixon Rd,A,1,2241881,1127120,1,1
+52,1,50963873,East - 52 Lawrence West towards Lawrence Station,,1,2241882,1127123,1,1
+52,1,50963913,West - 52B Lawrence West towards Westwood via Dixon Rd,B,1,2241931,1127119,1,1
+52,1,50963852,West - 52G Lawrence West towards Martin Grove via The Westway,G,1,2241934,1127136,1,1
+52,1,50963929,West - 52F Lawrence West towards Royal York,F,1,2241949,1127117,1,1
+52,1,50963900,West - 52A Lawrence West towards Pearson Airport via Dixon Rd,A,1,2241927,1127120,1,1
+52,1,50963825,East - 52 Lawrence West towards Lawrence Station,,1,2241884,1127123,1,1
+52,1,50963914,West - 52B Lawrence West towards Westwood via Dixon Rd,B,1,2241889,1127119,1,1
+52,1,50963816,West - 52G Lawrence West towards Martin Grove via The Westway,G,1,2241932,1127136,1,1
+52,1,50963937,West - 52F Lawrence West towards Royal York,F,1,2241944,1127117,1,1
+52,1,50963901,West - 52A Lawrence West towards Pearson Airport via Dixon Rd,A,1,2241880,1127120,1,1
+52,1,50963826,East - 52 Lawrence West towards Lawrence Station,,1,2241930,1127123,1,1
+52,1,50963915,West - 52B Lawrence West towards Westwood via Dixon Rd,B,1,2241936,1127119,1,1
+52,1,50963817,West - 52G Lawrence West towards Martin Grove via The Westway,G,1,2241933,1127136,1,1
+52,1,50963938,West - 52F Lawrence West towards Royal York,F,1,2241891,1127117,1,1
+52,1,50963902,West - 52A Lawrence West towards Pearson Airport via Dixon Rd,A,1,2241928,1127120,1,1
+52,1,50963827,East - 52 Lawrence West towards Lawrence Station,,1,2241881,1127123,1,1
+52,1,50963916,West - 52B Lawrence West towards Westwood via Dixon Rd,B,1,2241883,1127119,1,1
+52,1,50963818,West - 52G Lawrence West towards Martin Grove via The Westway,G,1,2241929,1127136,1,1
+52,1,50963939,West - 52F Lawrence West towards Royal York,F,1,2241948,1127117,1,1
+52,1,50963811,West - 52A Lawrence West towards Pearson Airport via Dixon Rd,A,1,2241890,1127120,1,1
+52,1,50963828,East - 52 Lawrence West towards Lawrence Station,,1,2241927,1127123,1,1
+52,1,50963917,West - 52B Lawrence West towards Westwood via Dixon Rd,B,1,2241886,1127119,1,1
+52,1,50963819,West - 52G Lawrence West towards Martin Grove via The Westway,G,1,2241926,1127136,1,1
+52,1,50963940,West - 52F Lawrence West towards Royal York,F,1,2241943,1127117,1,1
+52,1,50963812,West - 52A Lawrence West towards Pearson Airport via Dixon Rd,A,1,2241882,1127120,1,1
+52,1,50963829,East - 52 Lawrence West towards Lawrence Station,,1,2241880,1127123,1,1
+52,1,50963918,West - 52B Lawrence West towards Westwood via Dixon Rd,B,1,2241885,1127119,1,1
+52,1,50963899,West - 52G Lawrence West towards Martin Grove via The Westway,G,1,2241934,1127136,1,1
+52,1,50963941,West - 52F Lawrence West towards Royal York,F,1,2241947,1127117,1,1
+52,1,50963813,West - 52A Lawrence West towards Pearson Airport via Dixon Rd,A,1,2241884,1127120,1,1
+52,1,50963830,East - 52 Lawrence West towards Lawrence Station,,1,2241928,1127123,1,1
+52,1,50963848,West - 52B Lawrence West towards Westwood via Dixon Rd,B,1,2241887,1127119,1,1
+52,1,50963836,West - 52G Lawrence West towards Martin Grove via The Westway,G,1,2241932,1127136,1,1
+52,1,50964070,West - 52F Lawrence West towards Royal York,F,1,2241949,1127117,1,1
+52,1,50963960,West - 52A Lawrence West towards Pearson Airport via Dixon Rd,A,1,2241930,1127120,1,1
+52,1,50964080,West - 52F Lawrence West towards Royal York,F,1,2241952,1127117,1,1
+52,1,50963993,West - 52B Lawrence West towards Westwood via Dixon Rd,B,1,2241888,1127119,1,1
+52,1,50963831,East - 52 Lawrence West towards Lawrence Station,,1,2241890,1127123,1,1
+52,1,50963837,West - 52G Lawrence West towards Martin Grove via The Westway,G,1,2241933,1127136,1,1
+52,1,50964038,West - 52A Lawrence West towards Pearson Airport via Dixon Rd,A,1,2241881,1127120,1,1
+52,1,50964071,West - 52F Lawrence West towards Royal York,F,1,2241944,1127117,1,1
+52,1,50964054,West - 52A Lawrence West towards Pearson Airport via Dixon Rd,A,1,2241942,1127120,1,1
+52,1,50964021,West - 52G Lawrence West towards Martin Grove via The Westway,G,1,2241935,1127127,1,1
+52,1,50963976,West - 52G Lawrence West towards Martin Grove via The Westway,G,1,2241929,1127136,1,1
+52,1,50963832,East - 52 Lawrence West towards Lawrence Station,,1,2241882,1127123,1,1
+52,1,50964010,West - 52B Lawrence West towards Westwood via Dixon Rd,B,1,2241938,1127119,1,1
+52,1,50964065,West - 52F Lawrence West towards Royal York,F,1,2241891,1127117,1,1
+52,1,50964063,West - 52A Lawrence West towards Pearson Airport via Dixon Rd,A,1,2241927,1127120,1,1
+52,1,50964016,West - 52G Lawrence West towards Martin Grove via The Westway,G,1,2241926,1127136,1,1
+52,1,50963810,East - 52 Lawrence West towards Lawrence Station,,1,2241939,1127123,1,1
+52,1,50964055,West - 52A Lawrence West towards Pearson Airport via Dixon Rd,A,1,2241931,1127120,1,1
+52,1,50963833,East - 52 Lawrence West towards Lawrence Station,,1,2241884,1127123,1,1
+52,1,50964066,West - 52F Lawrence West towards Royal York,F,1,2241948,1127117,1,1
+52,1,50964056,West - 52B Lawrence West towards Westwood via Dixon Rd,B,1,2241880,1127119,1,1
+52,1,50964018,West - 52G Lawrence West towards Martin Grove via The Westway,G,1,2241934,1127136,1,1
+52,1,50964057,West - 52A Lawrence West towards Pearson Airport via Dixon Rd,A,1,2241889,1127120,1,1
+52,1,50963962,East - 52 Lawrence West towards Lawrence Station,,1,2241930,1127123,1,1
+52,1,50964079,West - 52F Lawrence West towards Royal York,F,1,2241951,1127140,1,1
+52,1,50964044,West - 52A Lawrence West towards Pearson Airport via Dixon Rd,A,1,2241928,1127120,1,1
+52,1,50964019,West - 52G Lawrence West towards Martin Grove via The Westway,G,1,2241935,1127136,1,1
+52,1,50964020,East - 52 Lawrence West towards Lawrence Station,,1,2241937,1127123,1,1
+52,1,50964039,West - 52B Lawrence West towards Westwood via Dixon Rd,B,1,2241941,1127119,1,1
+52,1,50963963,East - 52 Lawrence West towards Lawrence Station,,1,2241881,1127123,1,1
+52,1,50964067,West - 52F Lawrence West towards Royal York,F,1,2241943,1127140,1,1
+52,1,50964040,West - 52A Lawrence West towards Pearson Airport via Dixon Rd,A,1,2241936,1127120,1,1
+52,1,50963964,East - 52 Lawrence West towards Lawrence Station,,1,2241942,1127123,1,1
+52,1,50964002,West - 52G Lawrence West towards Martin Grove via The Westway,G,1,2241932,1127136,1,1
+52,1,50964041,West - 52A Lawrence West towards Pearson Airport via Dixon Rd,A,1,2241890,1127120,1,1
+52,1,50964068,West - 52F Lawrence West towards Royal York,F,1,2241950,1127140,1,1
+52,1,50964042,West - 52B Lawrence West towards Westwood via Dixon Rd,B,1,2241883,1127119,1,1
+52,1,50964003,West - 52G Lawrence West towards Martin Grove via The Westway,G,1,2241933,1127136,1,1
+52,1,50964027,East - 52 Lawrence West towards Lawrence Station,,1,2241927,1127123,1,1
+52,1,50963944,West - 52A Lawrence West towards Pearson Airport via Dixon Rd,A,1,2241882,1127120,1,1
+52,1,50964069,West - 52F Lawrence West towards Royal York,F,1,2241947,1127140,1,1
+52,1,50964028,East - 52 Lawrence West towards Lawrence Station,,1,2241931,1127123,1,1
+52,1,50963945,West - 52A Lawrence West towards Pearson Airport via Dixon Rd,A,1,2241939,1127120,1,1
+52,1,50964004,West - 52G Lawrence West towards Martin Grove via The Westway,G,1,2241929,1127136,1,1
+52,1,50963946,West - 52B Lawrence West towards Westwood via Dixon Rd,B,1,2241886,1127119,1,1
+52,1,50964075,West - 52F Lawrence West towards Royal York,F,1,2241949,1127140,1,1
+52,1,50963947,West - 52A Lawrence West towards Pearson Airport via Dixon Rd,A,1,2241884,1127120,1,1
+52,1,50964029,East - 52 Lawrence West towards Lawrence Station,,1,2241889,1127123,1,1
+52,1,50964005,West - 52G Lawrence West towards Martin Grove via The Westway,G,1,2241926,1127136,1,1
+52,1,50963948,West - 52A Lawrence West towards Pearson Airport via Dixon Rd,A,1,2241885,1127120,1,1
+52,1,50964030,East - 52 Lawrence West towards Lawrence Station,,1,2241928,1127123,1,1
+52,1,50964076,West - 52F Lawrence West towards Royal York,F,1,2241952,1127140,1,1
+52,1,50963949,West - 52B Lawrence West towards Westwood via Dixon Rd,B,1,2241930,1127119,1,1
+52,1,50964017,West - 52G Lawrence West towards Martin Grove via The Westway,G,1,2241934,1127136,1,1
+52,1,50963950,West - 52A Lawrence West towards Pearson Airport via Dixon Rd,A,1,2241937,1127120,1,1
+52,1,50964022,East - 52 Lawrence West towards Lawrence Station,,1,2241936,1127123,1,1
+52,1,50964077,West - 52F Lawrence West towards Royal York,F,1,2241944,1127140,1,1
+52,1,50963951,West - 52A Lawrence West towards Pearson Airport via Dixon Rd,A,1,2241887,1127120,1,1
+52,1,50963987,East - 52 Lawrence West towards Lawrence Station,,1,2241890,1127123,1,1
+52,1,50964006,West - 52G Lawrence West towards Martin Grove via The Westway,G,1,2241935,1127136,1,1
+52,1,50963952,West - 52B Lawrence West towards Westwood via Dixon Rd,B,1,2241881,1127119,1,1
+52,1,50964078,West - 52F Lawrence West towards Royal York,F,1,2241891,1127140,1,1
+52,1,50963953,West - 52A Lawrence West towards Pearson Airport via Dixon Rd,A,1,2241942,1127120,1,1
+52,1,50963988,East - 52 Lawrence West towards Lawrence Station,,1,2241882,1127123,1,1
+52,1,50964007,West - 52G Lawrence West towards Martin Grove via The Westway,G,1,2241932,1127136,1,1
+52,1,50963954,West - 52A Lawrence West towards Pearson Airport via Dixon Rd,A,1,2241888,1127120,1,1
+52,1,50963989,East - 52 Lawrence West towards Lawrence Station,,1,2241939,1127123,1,1
+52,1,50964072,West - 52F Lawrence West towards Royal York,F,1,2241948,1127140,1,1
+52,1,50963955,West - 52B Lawrence West towards Westwood via Dixon Rd,B,1,2241927,1127119,1,1
+52,1,50964011,West - 52G Lawrence West towards Martin Grove via The Westway,G,1,2241933,1127136,1,1
+52,1,50963956,West - 52A Lawrence West towards Pearson Airport via Dixon Rd,A,1,2241931,1127120,1,1
+52,1,50963990,East - 52 Lawrence West towards Lawrence Station,,1,2241884,1127123,1,1
+52,1,50964073,West - 52F Lawrence West towards Royal York,F,1,2241951,1127140,1,1
+52,1,50963957,West - 52B Lawrence West towards Westwood via Dixon Rd,B,1,2241938,1127119,1,1
+52,1,50963991,East - 52 Lawrence West towards Lawrence Station,,1,2241885,1127123,1,1
+52,1,50964012,West - 52G Lawrence West towards Martin Grove via The Westway,G,1,2241929,1127136,1,1
+52,1,50963958,West - 52A Lawrence West towards Pearson Airport via Dixon Rd,A,1,2241889,1127120,1,1
+52,1,50963959,West - 52A Lawrence West towards Pearson Airport via Dixon Rd,A,1,2241928,1127120,1,1
+52,1,50964074,West - 52F Lawrence West towards Royal York,F,1,2241943,1127117,1,1
+52,1,50963977,East - 52 Lawrence West towards Lawrence Station,,1,2241937,1127123,1,1
+52,1,50964031,West - 52G Lawrence West towards Martin Grove via The Westway,G,1,2241926,1127136,1,1
+52,1,50964008,West - 52B Lawrence West towards Westwood via Dixon Rd,B,1,2241880,1127119,1,1
+52,1,50963978,East - 52 Lawrence West towards Lawrence Station,,1,2241887,1127123,1,1
+52,1,50964081,West - 52F Lawrence West towards Royal York,F,1,2241950,1127117,1,1
+52,1,50963997,West - 52A Lawrence West towards Pearson Airport via Dixon Rd,A,1,2241936,1127120,1,1
+52,1,50964032,West - 52G Lawrence West towards Martin Grove via The Westway,G,1,2241934,1127136,1,1
+52,1,50963998,West - 52B Lawrence West towards Westwood via Dixon Rd,B,1,2241890,1127119,1,1
+52,1,50963994,Terminal 3 Only,S,1,2241942,1127126,1,1
+52,1,50964058,West - 52A Lawrence West towards Pearson Airport via Dixon Rd,A,1,2241941,1127120,1,1
+52,1,50964064,West - 52F Lawrence West towards Royal York,F,1,2241947,1127117,1,1
+52,1,50964045,East - 52 Lawrence West towards Lawrence Station,,1,2241888,1127123,1,1
+52,1,50964033,West - 52G Lawrence West towards Martin Grove via The Westway,G,1,2241935,1127136,1,1
+52,1,50964059,West - 52B Lawrence West towards Westwood via Dixon Rd,B,1,2241939,1127119,1,1
+52,1,50963967,East - 52 Lawrence West towards Lawrence Station,,1,2241931,1127123,1,1
+52,1,50964060,West - 52A Lawrence West towards Pearson Airport via Dixon Rd,A,1,2241883,1127120,1,1
+52,1,50964034,West - 52G Lawrence West towards Martin Grove via The Westway,G,1,2241932,1127136,1,1
+52,1,50964082,West - 52F Lawrence West towards Royal York,F,1,2241952,1127117,1,1
+52,1,50964061,West - 52B Lawrence West towards Westwood via Dixon Rd,B,1,2241884,1127119,1,1
+52,1,50963995,East - 52 Lawrence West towards Lawrence Station,,1,2241889,1127123,1,1
+52,1,50963979,East - 52 Lawrence West towards Lawrence Station,,1,2241928,1127123,1,1
+52,1,50964062,West - 52A Lawrence West towards Pearson Airport via Dixon Rd,A,1,2241885,1127120,1,1
+52,1,50964035,West - 52G Lawrence West towards Martin Grove via The Westway,G,1,2241933,1127136,1,1
+52,1,50964083,West - 52F Lawrence West towards Royal York,F,1,2241944,1127117,1,1
+52,1,50963961,West - 52B Lawrence West towards Westwood via Dixon Rd,B,1,2241886,1127119,1,1
+52,1,50963980,East - 52 Lawrence West towards Lawrence Station,,1,2241936,1127123,1,1
+52,1,50963999,West - 52A Lawrence West towards Pearson Airport via Dixon Rd,A,1,2241887,1127120,1,1
+52,1,50964084,West - 52F Lawrence West towards Royal York,F,1,2241891,1127117,1,1
+52,1,50964036,West - 52G Lawrence West towards Martin Grove via The Westway,G,1,2241929,1127136,1,1
+52,1,50963996,West - 52B Lawrence West towards Westwood via Dixon Rd,B,1,2241930,1127119,1,1
+52,1,50963981,East - 52 Lawrence West towards Lawrence Station,,1,2241941,1127123,1,1
+52,1,50964014,West - 52A Lawrence West towards Pearson Airport via Dixon Rd,A,1,2241888,1127120,1,1
+52,1,50964085,West - 52F Lawrence West towards Royal York,F,1,2241948,1127117,1,1
+52,1,50964037,West - 52G Lawrence West towards Martin Grove via The Westway,G,1,2241935,1127136,1,1
+52,1,50964009,West - 52B Lawrence West towards Westwood via Dixon Rd,B,1,2241931,1127119,1,1
+52,1,50964023,East - 52 Lawrence West towards Lawrence Station,,1,2241883,1127123,1,1
+52,1,50964000,West - 52A Lawrence West towards Pearson Airport via Dixon Rd,A,1,2241881,1127120,1,1
+52,1,50964086,West - 52F Lawrence West towards Royal York,F,1,2241951,1127117,1,1
+52,1,50963966,West - 52B Lawrence West towards Westwood via Dixon Rd,B,1,2241889,1127119,1,1
+52,1,50963972,East - 52 Lawrence West towards Lawrence Station,,1,2241885,1127123,1,1
+52,1,50964046,West - 52G Lawrence West towards Martin Grove via The Westway,G,1,2241932,1127136,1,1
+52,1,50964043,West - 52A Lawrence West towards Pearson Airport via Dixon Rd,A,1,2241928,1127120,1,1
+52,1,50964087,West - 52F Lawrence West towards Royal York,F,1,2241943,1127117,1,1
+52,1,50963982,West - 52B Lawrence West towards Westwood via Dixon Rd,B,1,2241938,1127119,1,1
+52,1,50963973,East - 52 Lawrence West towards Lawrence Station,,1,2241887,1127123,1,1
+52,1,50964047,West - 52G Lawrence West towards Martin Grove via The Westway,G,1,2241933,1127136,1,1
+52,1,50963983,West - 52A Lawrence West towards Pearson Airport via Dixon Rd,A,1,2241925,1127120,1,1
+52,1,50964088,West - 52F Lawrence West towards Royal York,F,1,2241950,1127117,1,1
+52,1,50963984,West - 52B Lawrence West towards Westwood via Dixon Rd,B,1,2241880,1127119,1,1
+52,1,50963974,East - 52 Lawrence West towards Lawrence Station,,1,2241888,1127123,1,1
+52,1,50964048,West - 52G Lawrence West towards Martin Grove via The Westway,G,1,2241929,1127136,1,1
+52,1,50963985,West - 52A Lawrence West towards Pearson Airport via Dixon Rd,A,1,2241883,1127120,1,1
+52,1,50963975,East - 52 Lawrence West towards Lawrence Station,,1,2241881,1127123,1,1
+52,1,50963965,West - 52B Lawrence West towards Westwood via Dixon Rd,B,1,2241890,1127119,1,1
+52,1,50964089,West - 52F Lawrence West towards Royal York,F,1,2241891,1127138,1,1
+52,1,50964049,West - 52G Lawrence West towards Martin Grove via The Westway,G,1,2241935,1127136,1,1
+52,1,50964001,West - 52A Lawrence West towards Pearson Airport via Dixon Rd,A,1,2241885,1127120,1,1
+52,1,50964090,West - 52F Lawrence West towards Royal York,F,1,2241952,1127117,1,1
+52,1,50963992,East - 52 Lawrence West towards Lawrence Station,,1,2241928,1127123,1,1
+52,1,50964024,West - 52B Lawrence West towards Westwood via Dixon Rd,B,1,2241939,1127119,1,1
+52,1,50964050,West - 52G Lawrence West towards Martin Grove via The Westway,G,1,2241892,1127136,1,1
+52,1,50964025,West - 52A Lawrence West towards Pearson Airport via Dixon Rd,A,1,2241887,1127120,1,1
+52,1,50963968,East - 52 Lawrence West towards Lawrence Station,,1,2241925,1127123,1,1
+52,1,50964091,West - 52F Lawrence West towards Royal York,F,1,2241948,1127117,1,1
+52,1,50964026,West - 52B Lawrence West towards Westwood via Dixon Rd,B,1,2241884,1127119,1,1
+52,1,50964051,West - 52G Lawrence West towards Martin Grove via The Westway,G,1,2241933,1127136,1,1
+52,1,50964015,West - 52A Lawrence West towards Pearson Airport via Dixon Rd,A,1,2241930,1127120,1,1
+52,1,50963969,East - 52 Lawrence West towards Lawrence Station,,1,2241883,1127123,1,1
+52,1,50964132,West - 52F Lawrence West towards Royal York,F,1,2241951,1127117,1,1
+52,1,50963986,West - 52B Lawrence West towards Westwood via Dixon Rd,B,1,2241881,1127119,1,1
+52,1,50964052,West - 52G Lawrence West towards Martin Grove via The Westway,G,1,2241929,1127136,1,1
+52,1,50963970,East - 52 Lawrence West towards Lawrence Station,,1,2241885,1127123,1,1
+52,1,50964112,West - 52A Lawrence West towards Pearson Airport via Dixon Rd,A,1,2241931,1127120,1,1
+52,1,50964133,West - 52F Lawrence West towards Royal York,F,1,2241943,1127117,1,1
+52,1,50964053,West - 52G Lawrence West towards Martin Grove via The Westway,G,1,2241935,1127136,1,1
+52,1,50964092,West - 52B Lawrence West towards Westwood via Dixon Rd,B,1,2241889,1127119,1,1
+52,1,50963971,Terminal 3 Only,S,1,2241887,1127126,1,1
+52,1,50964113,West - 52A Lawrence West towards Pearson Airport via Dixon Rd,A,1,2241925,1127120,1,1
+52,1,50964122,West - 52G Lawrence West towards Martin Grove via The Westway,G,1,2241892,1127136,1,1
+52,1,50964134,West - 52F Lawrence West towards Royal York,F,1,2241891,1127117,1,1
+52,1,50964013,East - 52 Lawrence West towards Lawrence Station,,1,2241930,1127123,1,1
+52,1,50964093,West - 52B Lawrence West towards Westwood via Dixon Rd,B,1,2241924,1127119,1,1
+52,1,50964123,West - 52G Lawrence West towards Martin Grove via The Westway,G,1,2241933,1127136,1,1
+52,1,50964114,West - 52A Lawrence West towards Pearson Airport via Dixon Rd,A,1,2241883,1127120,1,1
+52,1,50964135,West - 52F Lawrence West towards Royal York,F,1,2241952,1127117,1,1
+52,1,50964106,East - 52 Lawrence West towards Lawrence Station,,1,2241931,1127123,1,1
+52,1,50964094,West - 52B Lawrence West towards Westwood via Dixon Rd,B,1,2241880,1127119,1,1
+52,1,50964124,West - 52G Lawrence West towards Martin Grove via The Westway,G,1,2241929,1127136,1,1
+52,1,50964115,West - 52A Lawrence West towards Pearson Airport via Dixon Rd,A,1,2241885,1127120,1,1
+52,1,50964136,West - 52F Lawrence West towards Royal York,F,1,2241948,1127117,1,1
+52,1,50964127,East - 52 Lawrence West towards Lawrence Station,,1,2241925,1127123,1,1
+52,1,50964108,West - 52B Lawrence West towards Westwood via Dixon Rd,B,1,2241939,1127119,1,1
+52,1,50964125,West - 52G Lawrence West towards Martin Grove via The Westway,G,1,2241935,1127136,1,1
+52,1,50964116,West - 52A Lawrence West towards Pearson Airport via Dixon Rd,A,1,2241930,1127120,1,1
+52,1,50964137,West - 52F Lawrence West towards Royal York,F,1,2241951,1127117,1,1
+52,1,50964100,West - 52G Lawrence West towards Martin Grove via The Westway,G,1,2241892,1127136,1,1
+52,1,50964128,East - 52 Lawrence West towards Lawrence Station,,1,2241883,1127123,1,1
+52,1,50964109,West - 52B Lawrence West towards Westwood via Dixon Rd,B,1,2241884,1127119,1,1
+52,1,50964126,West - 52A Lawrence West towards Pearson Airport via Dixon Rd,A,1,2241931,1127120,1,1
+52,1,50964101,West - 52G Lawrence West towards Martin Grove via The Westway,G,1,2241933,1127136,1,1
+52,1,50964138,West - 52F Lawrence West towards Royal York,F,1,2241943,1127117,1,1
+52,1,50964129,East - 52 Lawrence West towards Lawrence Station,,1,2241885,1127123,1,1
+52,1,50964110,West - 52B Lawrence West towards Westwood via Dixon Rd,B,1,2241881,1127119,1,1
+52,1,50964102,West - 52G Lawrence West towards Martin Grove via The Westway,G,1,2241929,1127136,1,1
+52,1,50964117,West - 52A Lawrence West towards Pearson Airport via Dixon Rd,A,1,2241925,1127120,1,1
+52,1,50964139,West - 52F Lawrence West towards Royal York,F,1,2241891,1127117,1,1
+52,1,50964130,East - 52 Lawrence West towards Lawrence Station,,1,2241930,1127123,1,1
+52,1,50964111,West - 52A Lawrence West towards Pearson Airport via Dixon Rd,A,1,2241889,1127120,1,1
+52,1,50964103,West - 52G Lawrence West towards Martin Grove via The Westway,G,1,2241935,1127136,1,1
+52,1,50964119,West - 52B Lawrence West towards Westwood via Dixon Rd,B,1,2241883,1127119,1,1
+52,1,50964140,West - 52F Lawrence West towards Royal York,F,1,2241952,1127117,1,1
+52,1,50964118,West - 52A Lawrence West towards Pearson Airport via Dixon Rd,A,1,2241924,1127120,1,1
+52,1,50964131,East - 52 Lawrence West towards Lawrence Station,,1,2241931,1127123,1,1
+52,1,50964141,West - 52F Lawrence West towards Royal York,F,1,2241948,1127117,1,1
+52,1,50964104,West - 52G Lawrence West towards Martin Grove via The Westway,G,1,2241892,1127136,1,1
+52,1,50964105,West - 52A Lawrence West towards Pearson Airport via Dixon Rd,A,1,2241885,1127120,1,1
+52,1,50964142,West - 52F Lawrence West towards Royal York,F,1,2241951,1127117,1,1
+52,1,50964121,West - 52A Lawrence West towards Pearson Airport via Dixon Rd,A,1,2241880,1127120,1,1
+52,1,50964096,Terminal 3 Only,S,1,2241889,1127126,1,1
+52,1,50964107,East - 52 Lawrence West towards Lawrence Station,,1,2241881,1127123,1,1
+52,1,50964120,West - 52A Lawrence West towards Pearson Airport via Dixon Rd,A,1,2241930,1127120,1,1
+52,1,50964095,West - 52A Lawrence West towards Pearson Airport via Dixon Rd,A,1,2241931,1127120,1,1
+52,1,50964097,Terminal 3 Only,S,1,2241885,1127126,1,1
+52,1,50964098,Terminal 3 Only,S,1,2241930,1127126,1,1
+52,1,50964099,Terminal 3 Only,S,1,2241931,1127126,1,1

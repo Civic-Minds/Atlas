@@ -1,0 +1,218 @@
+stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,zone_id,stop_url,location_type,parent_station,stop_timezone,wheelchair_boarding
+4750,4750,Airport Rd at Beverley St,,43.707577,-79.647762,,,,,,2
+4752,4752,Airport Rd at Bresler Dr West Side,,43.685989,-79.609114,,,,,,2
+4753,4753,Airport Rd at Bresler Dr,,43.686085,-79.606403,,,,,,2
+4768,4768,Airport Rd at Victory Cres,,43.707589,-79.647215,,,,,,2
+9122,9122,Bayview Ave at Valleyanna Dr,,43.724229,-79.379437,,,,,,1
+5357,5357,Lawrence Ave West at Culford Rd,,43.706494,-79.487529,,,,,,1
+6046,6046,Lawrence Ave West at Scarlett Rd East Side,,43.698378,-79.522285,,,,,,2
+5410,5410,Lawrence Ave West at Varna Dr West Side,,43.717543,-79.437933,,,,,,1
+5415,5415,Lawrence Ave West at Weston Rd - Weston GO Station,,43.700276,-79.516006,,,,,,1
+14061,14061,Westwood Square Transit Terminal,,43.721726,-79.640711,,,,,,2
+5755,5755,Morning Star Dr at Catalpa Rd,,43.719752,-79.643204,,,,,,2
+5756,5756,Morning Star Dr at Catalpa Rd,,43.720149,-79.643031,,,,,,1
+5758,5758,Morning Star Dr at Airport Rd East Side,,43.709985,-79.649766,,,,,,2
+5759,5759,Morning Star Dr at Lancaster Ave,,43.712757,-79.647418,,,,,,2
+5760,5760,Morning Star Dr at Manion Rd,,43.71257,-79.647738,,,,,,2
+5763,5763,Morning Star Dr at Reindeer Dr West Side,,43.714132,-79.646964,,,,,,2
+5764,5764,Morning Star Dr at Reindeer Dr,,43.714642,-79.646501,,,,,,2
+4973,4973,950 Dixon Rd,,43.686752,-79.598885,,,,,,1
+6158,6158,Waterbury Dr at Martin Grove Rd,,43.687672,-79.569349,,,,,,1
+6202,6202,The Westway at Sun Row Dr East Side,,43.689215,-79.540494,,,,,,1
+4987,4987,Dixon Rd at Islington Ave East Side,,43.697104,-79.545978,,,,,,1
+11248,11248,Raab Blvd at Hospital Rd West Side - K & L Wings,,43.72264,-79.375956,,,,,,1
+11996,11996,Wellness Way at Hospital Rd - Odette Cancer Centre,,43.721379,-79.377773,,,,,,1
+1729,1729,Hospital Rd at Wellness Way East Side - Sunnybrook Main Entrance,,43.72178,-79.376853,,,,,,1
+12203,12203,Lawrence West Station,,43.716218,-79.444374,,,,,,1
+5402,5402,Lawrence Ave West at Royal York Rd East Side,,43.69618,-79.532182,,,,,,1
+5389,5389,Lawrence Ave West at Marlee Ave,,43.715432,-79.446757,,,,,,1
+5352,5352,Lawrence Ave West at Chatsworth Dr,,43.723084,-79.41138,,,,,,1
+5367,5367,Lawrence Ave West at Duval Dr,,43.709838,-79.474431,,,,,,1
+5373,5373,Lawrence Ave West at Good Shepherd Crt,,43.71314,-79.458605,,,,,,1
+10260,10260,Morning Star Dr at Collett Rd,,43.710376,-79.649557,,,,,,2
+5354,5354,Lawrence Ave West at Via Bagnato,,43.71448,-79.452245,,,,,,2
+5390,5390,Lawrence Ave West at Marlee Ave West Side,,43.715591,-79.447093,,,,,,1
+4971,4971,Dixon Rd at Chetta Pl,,43.696037,-79.551671,,,,,,1
+6195,6195,The Westway at Martin Grove Rd East Side,,43.683365,-79.566594,,,,,,1
+4756,4756,Airport Rd at Hull St,,43.70411,-79.642841,,,,,,2
+4748,4748,6355 Airport Rd,,43.691085,-79.62516,,,,,,2
+4994,4994,Dixon Rd at McManus Rd West Side,,43.699229,-79.537414,,,,,,1
+2819,2819,Lawrence Ave East at Mt Pleasant Rd,,43.726022,-79.397414,,,,,,1
+13699,13699,Opposite 327 Dixon Rd,,43.695236,-79.555207,,,,,,1
+2817,2817,Lawrence Ave East at Mildenhall Rd,,43.728507,-79.386361,,,,,,1
+4988,4988,Dixon Rd at Islington Ave,,43.697362,-79.54593,,,,,,1
+5413,5413,Lawrence Ave West at Weston Rd West Side,,43.700019,-79.517036,,,,,,1
+9320,9320,6900 Airport Rd - International Centre - North Entrance,,43.701831,-79.640204,,,,,,2
+1232,1232,Lawrence Ave East at Wanless Cres (West),,43.727365,-79.391895,,,,,,2
+4980,4980,Dixon Rd at Dixington Cres East Side,,43.697806,-79.542843,,,,,,1
+4974,4974,Opposite 950 Dixon Rd,,43.686507,-79.598336,,,,,,1
+6194,6194,The Westway at Kipling Ave East Side,,43.68565,-79.554169,,,,,,1
+6191,6191,The Westway at Islington Ave,,43.688783,-79.542619,,,,,,1
+4972,4972,Dixon Rd at Attwell Dr,,43.688146,-79.586563,,,,,,1
+1227,1227,Lawrence Ave East at Ronan Ave,,43.72674,-79.394017,,,,,,2
+4986,4986,Airport Rd at Highway 427 Overpass West Side,,43.686436,-79.602317,,,,,,2
+4983,4983,Dixon Rd at Havenridge Dr West Side,,43.697927,-79.543339,,,,,,1
+5393,5393,Lawrence Ave West at Pimlico Rd West Side,,43.707563,-79.482732,,,,,,1
+6183,6183,The Westway at Brougham Cres,,43.686484,-79.552452,,,,,,1
+5417,5417,Lawrence Ave West at Westona St West Side,,43.697258,-79.527859,,,,,,1
+9157,9157,Lawrence Ave East at Mildenhall Rd,,43.72831,-79.38669,,,,,,2
+4982,4982,Dixon Rd at Golfwood Heights,,43.698722,-79.539741,,,,,,1
+14278,14278,Pearson Airport Terminal 3 - Arrivals Level Columns C8-C12,,43.686811,-79.620932,,,,,,1
+6199,6199,The Westway at Sandwell Dr,,43.683967,-79.564694,,,,,,1
+6045,6045,Scarlett Rd at Lockheed Blvd,,43.699844,-79.525329,,,,,,2
+5004,5004,Dixon Rd at St Phillips Rd,,43.699997,-79.533962,,,,,,1
+5385,5385,Lawrence Ave West at Ledbury St,,43.720695,-79.422596,,,,,,1
+6181,6181,The Westway at Brampton Rd West Side,,43.684753,-79.561303,,,,,,1
+5403,5403,Lawrence Ave West at Sage Ave,,43.712092,-79.463282,,,,,,1
+5337,5337,Lawrence Ave West at Bathurst St,,43.719036,-79.430158,,,,,,1
+4757,4757,6900 Airport Rd - International Centre - North Entrance,,43.701955,-79.63977,,,,,,2
+4766,4766,Airport Rd at Orlando Dr,,43.694887,-79.63023,,,,,,2
+6187,6187,The Westway at Epping St,,43.688113,-79.545915,,,,,,1
+4761,4761,6900 Airport Rd - International Centre - South Entrance,,43.700595,-79.637921,,,,,,2
+4995,4995,Dixon Rd at McManus Rd,,43.699004,-79.537343,,,,,,1
+5350,5350,Lawrence Ave West at Caledonia Rd East Side,,43.711461,-79.466099,,,,,,1
+4998,4998,585 Dixon Rd,,43.690747,-79.574265,,,,,,1
+5404,5404,Lawrence Ave West at Sage Ave,,43.712379,-79.463057,,,,,,1
+5406,5406,Lawrence Ave West at Scarlett Rd,,43.698314,-79.523078,,,,,,2
+5339,5339,Lawrence Ave West at Bathurst St,,43.719461,-79.429301,,,,,,1
+6205,6205,The Westway at Wincott Dr East Side,,43.687381,-79.549398,,,,,,1
+6044,6044,Scarlett Rd at Lockheed Blvd North Side,,43.699987,-79.52517,,,,,,2
+4993,4993,Dixon Rd at Martin Grove Rd,,43.691791,-79.570592,,,,,,1
+4762,4762,Airport Rd at Morning Star Dr South Side,,43.709112,-79.649908,,,,,,2
+5397,5397,Lawrence Ave West at Ralph St - Weston GO Station,,43.701092,-79.511712,,,,,,1
+5379,5379,Lawrence Ave West at Jane St,,43.70302,-79.503444,,,,,,1
+13698,13698,327 Dixon Rd,,43.694908,-79.555404,,,,,,1
+5392,5392,Lawrence Ave West at Rosewell Ave East Side,,43.722684,-79.413216,,,,,,1
+1230,1230,Lawrence Ave East at Wanless Cres (East),,43.727662,-79.389692,,,,,,2
+5762,5762,Morning Star Dr at Netherwood Rd,,43.716309,-79.645894,,,,,,1
+5371,5371,Lawrence Ave West at Glenmount Ave,,43.718362,-79.433132,,,,,,1
+5343,5343,Lawrence Ave West at Bolingbroke Rd,,43.714836,-79.449526,,,,,,1
+6185,6185,The Westway at Celestine Dr East Side,,43.685282,-79.556491,,,,,,1
+5376,5376,Lawrence Ave West at Grey Rd,,43.721754,-79.418346,,,,,,1
+5377,5377,Lawrence Ave West at Hickory Tree Rd,,43.699064,-79.520142,,,,,,1
+5000,5000,Dixon Rd at Roxaline St,,43.700656,-79.530666,,,,,,1
+1226,1226,Lawrence Ave East at Mt Pleasant Rd,,43.726457,-79.396179,,,,,,2
+5342,5342,Lawrence Ave West at Blackstone St,,43.70375,-79.499989,,,,,,1
+4749,4749,6445 Airport Rd,,43.692968,-79.627686,,,,,,2
+5418,5418,Lawrence Ave West at Westona St East Side,,43.69728,-79.526961,,,,,,1
+5363,5363,Lawrence Ave West at Dufflaw Rd,,43.712617,-79.460944,,,,,,1
+5381,5381,Lawrence Ave West at Keele St East Side,,43.708821,-79.477376,,,,,,1
+4758,4758,Airport Rd at Flight Training Centre,,43.692952,-79.628239,,,,,,2
+6172,6172,The Westway at Trehorne Dr,,43.690998,-79.536223,,,,,,2
+4747,4747,Airport Rd at American Dr,,43.689113,-79.621705,,,,,,2
+5366,5366,Lawrence Ave West at Duval Dr,,43.709569,-79.474703,,,,,,1
+4976,4976,Dixon Rd at Carlingview Dr,,43.686894,-79.595256,,,,,,1
+5361,5361,Lawrence Ave West at Dufferin St,,43.714223,-79.454377,,,,,,1
+1234,1234,Lawrence Ave at Yonge St - Lawrence Station,,43.725251,-79.401896,,,,,,1
+6188,6188,The Westway at Fulford Pl,,43.686504,-79.552001,,,,,,1
+4746,4746,Airport Rd at American Dr North Side,,43.689551,-79.621901,,,,,,2
+4764,4764,Airport Rd at Northwest Dr,,43.698911,-79.636345,,,,,,2
+6047,6047,Dixon Rd at Riverview Heights West Side,,43.701228,-79.52797,,,,,,1
+5400,5400,Lawrence Ave West at Roxaline St,,43.696903,-79.529527,,,,,,2
+5386,5386,Lawrence Ave West at Ledbury St,,43.720924,-79.422336,,,,,,1
+5338,5338,Lawrence Ave West at Bathurst St West Side,,43.719198,-79.430504,,,,,,1
+1718,1718,Bayview Ave at Dawlish Ave South Side,,43.7243,-79.379746,,,,,,1
+5370,5370,Lawrence Ave West at Glen Rush Blvd,,43.719781,-79.426884,,,,,,1
+6196,6196,The Westway at Martin Grove Rd,,43.683505,-79.566887,,,,,,1
+5369,5369,Lawrence Ave West at Englemount Ave East Side,,43.717282,-79.438059,,,,,,1
+5394,5394,Lawrence Ave West at Pimlico Rd,,43.707392,-79.482544,,,,,,1
+5003,5003,Dixon Rd at Skyway Ave,,43.687734,-79.587111,,,,,,1
+2824,2824,Lawrence Ave West at Jane St,,43.702738,-79.504198,,,,,,1
+5346,5346,Lawrence Ave West at Brookhaven Dr,,43.704218,-79.496793,,,,,,1
+5374,5374,Lawrence Ave West at Greer Rd,,43.7236,-79.408916,,,,,,2
+4992,4992,Dixon Rd at Martin Grove Rd,,43.691368,-79.571115,,,,,,2
+1228,1228,Lawrence Ave East at Ronan Ave,,43.726952,-79.39381,,,,,,2
+5360,5360,Lawrence Ave West at Dufferin St,,43.713907,-79.454938,,,,,,1
+6182,6182,The Westway at Brampton Rd,,43.684642,-79.561103,,,,,,1
+6186,6186,The Westway at Celestine Dr West Side,,43.685449,-79.557262,,,,,,1
+6198,6198,The Westway at Royal York Rd,,43.696,-79.532921,,,,,,1
+5761,5761,Morning Star Dr at Netherwood Rd,,43.715993,-79.645872,,,,,,2
+1725,1725,Bayview Ave at Wood Ave,,43.727063,-79.382049,,,,,,1
+5365,5365,Lawrence Ave West at Duplex Ave,,43.724245,-79.405751,,,,,,2
+1222,1222,Lawrence Ave East at Dinnick Cres East Side,,43.726421,-79.39552,,,,,,2
+5001,5001,Dixon Rd at Royal York Rd East Side,,43.699818,-79.533639,,,,,,2
+12202,12202,Lawrence West Station,,43.715964,-79.444097,,,,,,2
+11559,11559,6655 Airport Rd,,43.696429,-79.632365,,,,,,2
+6193,6193,The Westway at Kipling Ave,,43.685799,-79.554456,,,,,,1
+5364,5364,Lawrence Ave West at Dufflaw Rd,,43.712892,-79.460753,,,,,,1
+5344,5344,Lawrence Ave West at Bolingbroke Rd,,43.715134,-79.449301,,,,,,1
+6206,6206,The Westway at Wincott Dr,,43.687522,-79.549582,,,,,,1
+5351,5351,Lawrence Ave West at Caledonia Rd West Side,,43.711463,-79.467181,,,,,,1
+4755,4755,Airport Rd at Ripon St South Side,,43.705848,-79.645322,,,,,,2
+14092,14092,Pearson Airport Terminal 1 - Ground Level Column R4,,43.681739,-79.611041,,,,,,1
+4979,4979,Dixon Rd at City View Dr,,43.690404,-79.576877,,,,,,1
+5414,5414,Lawrence Ave West at Weston Rd,,43.699921,-79.516784,,,,,,1
+6189,6189,The Westway at Hartsdale Dr,,43.688072,-79.544879,,,,,,1
+5359,5359,Lawrence Ave West at Duckworth St,,43.70346,-79.500152,,,,,,1
+1231,1231,Lawrence Ave East at Wanless Cres (West),,43.727149,-79.392116,,,,,,2
+5405,5405,Lawrence Ave West at Scarlett Rd,,43.698042,-79.523367,,,,,,2
+5340,5340,Lawrence Ave West at Benton Rd,,43.710145,-79.47202,,,,,,1
+5399,5399,Lawrence Ave West at Roxaline St,,43.696704,-79.529765,,,,,,2
+4763,4763,Airport Rd at Northwest Dr,,43.698901,-79.635642,,,,,,2
+5005,5005,Dixon Rd at Wincott Dr,,43.695627,-79.552328,,,,,,1
+5349,5349,Lawrence Ave West at Brucewood Cres,,43.71859,-79.432804,,,,,,1
+5396,5396,Lawrence Ave West at Pine St,,43.702096,-79.508129,,,,,,2
+1233,1233,Lawrence Ave East at Weybourne Cres East Side,,43.725694,-79.399003,,,,,,2
+4981,4981,Dixon Rd at Tamarack Cir,,43.698427,-79.539973,,,,,,1
+4991,4991,Dixon Rd at Kipling Ave,,43.694487,-79.558316,,,,,,1
+4990,4990,Dixon Rd at Kipling Ave,,43.694072,-79.558873,,,,,,1
+5401,5401,Lawrence Ave West at Royal York Rd,,43.696286,-79.532489,,,,,,2
+1726,1726,Bayview Ave at Lawrence Ave East - York University Glendon Campus,,43.727267,-79.381568,,,,,,1
+5341,5341,Lawrence Ave West at Benton Rd,,43.710536,-79.471373,,,,,,2
+5356,5356,Lawrence Ave West at Culford Rd East Side,,43.706314,-79.487335,,,,,,1
+5348,5348,Lawrence Ave West at Brookview Dr,,43.718172,-79.434957,,,,,,1
+1220,1220,Lawrence Ave East at Bayview Ave,,43.727666,-79.383231,,,,,,1
+1229,1229,Lawrence Ave East at Wanless Cres (East) West Side,,43.727816,-79.389722,,,,,,1
+5334,5334,Lawrence Ave West at Apex Rd,,43.713417,-79.458406,,,,,,1
+5347,5347,Lawrence Ave West at Brookview Dr,,43.717875,-79.43526,,,,,,1
+4978,4978,Dixon Rd at Celestine Dr,,43.69358,-79.562351,,,,,,1
+5650,5650,Martin Grove Rd at Tollington Rd,,43.686679,-79.568781,,,,,,1
+6190,6190,The Westway at Islington Ave,,43.688489,-79.543178,,,,,,1
+5384,5384,Lawrence Ave West at Kimbark Blvd,,43.721572,-79.41848,,,,,,1
+1221,1221,Lawrence Ave East at Cardinal Pl,,43.725917,-79.398686,,,,,,2
+5382,5382,Lawrence Ave West at Keele St,,43.709011,-79.477644,,,,,,1
+4984,4984,626 Dixon Rd,,43.690925,-79.574582,,,,,,1
+5388,5388,Lawrence Ave West at Lorindale Ave,,43.724924,-79.403462,,,,,,1
+6157,6157,Waterbury Dr at Clarion Rd,,43.685022,-79.571152,,,,,,1
+6159,6159,Waterbury Dr at Redgrave Dr North Side,,43.683214,-79.569859,,,,,,1
+5368,5368,Lawrence Ave West at Elm Rd West Side,,43.723052,-79.412392,,,,,,2
+5355,5355,Lawrence Ave West at Lorindale Ave East Side,,43.724699,-79.403671,,,,,,2
+5336,5336,Lawrence Ave West at Avenue Rd,,43.722424,-79.41525,,,,,,1
+5391,5391,Lawrence Ave West at Olympia Dr East Side,,43.705431,-79.491251,,,,,,1
+5411,5411,Lawrence Ave West at Welland Rd,,43.720066,-79.4263,,,,,,1
+5398,5398,Lawrence Ave West at Ralph St West Side,,43.70106,-79.512602,,,,,,1
+5358,5358,Lawrence Ave West at De Marco Blvd West Side,,43.705831,-79.490629,,,,,,1
+4999,4999,Dixon Rd at Roxaline St,,43.700443,-79.530724,,,,,,1
+4767,4767,Airport Rd at Silver Dart Dr,,43.695107,-79.631147,,,,,,2
+5345,5345,Lawrence Ave West at Brookhaven Dr West Side,,43.704339,-79.497169,,,,,,2
+6203,6203,The Westway at Sun Row Dr,,43.6893,-79.540694,,,,,,1
+4989,4989,Dixon Rd at Kelfield St,,43.690031,-79.577194,,,,,,1
+5380,5380,Lawrence Ave West at Jedburgh Rd,,43.724505,-79.4055,,,,,,1
+4760,4760,Airport Rd at Highway 427 (On Ramp),,43.686016,-79.603557,,,,,,1
+5002,5002,Scarlett Rd at Dixon Rd East Side,,43.701124,-79.527573,,,,,,1
+4977,4977,Dixon Rd at Celestine Dr,,43.693233,-79.562611,,,,,,1
+4751,4751,Airport Rd at Jetliner Rd East Side,,43.685805,-79.606252,,,,,,1
+5375,5375,Lawrence Ave West at Greer Rd,,43.723812,-79.408611,,,,,,2
+5387,5387,Lawrence Ave West at Little Ave,,43.699382,-79.519719,,,,,,2
+1235,1235,Lawrence Ave East at Yonge St East Side,,43.725036,-79.401814,,,,,,1
+5335,5335,Lawrence Ave West at Avenue Rd,,43.722072,-79.415812,,,,,,2
+4975,4975,Dixon Rd at Carlingview Dr,,43.686589,-79.595728,,,,,,1
+5395,5395,Lawrence Ave West at Pine St,,43.701855,-79.508389,,,,,,1
+14510,14510,Wellness Way at Armistice Dr - Wellspring Centre,,43.723603,-79.378616,,,,,,1
+14725,14725,Lawrence Station,,43.725556,-79.402351,,,,,,1
+14726,14726,Lawrence Station,,43.725383,-79.40231,,,,,,1
+14733,14733,Lawrence West Station,,43.715586,-79.444126,,,,,,1
+14734,14734,Lawrence West Station,,43.715545,-79.444333,,,,,,1
+14735,14735,Lawrence West Station,,43.7155,-79.444568,,,,,,1
+15014,15014,Airport Rd at Ripon St,,43.706254,-79.645349,,,,,,1
+15015,15015,Morning Star Dr at Cambrett Dr,,43.71728,-79.645238,,,,,,1
+15016,15016,Morning Star Dr at Cambrett Dr,,43.717684,-79.645283,,,,,,1
+15035,15035,The Westway at Trio Ave East Side,,43.694564,-79.534752,,,,,,1
+15144,15144,Jetliner Rd at Airport Rd South Side,,43.685321,-79.607296,,,,,,1
+15184,15184,Lawrence Station,,43.725245,-79.402249,,,,,,1
+15198,15198,Lawrence Ave West at Corona St,,43.714227,-79.452548,,,,,,2
+15546,15546,Royal York Rd at The Westway South Side,,43.695776,-79.532686,,,,,,2
+15735,15735,The Westway at Trio Ave,,43.694395,-79.534936,,,,,,1
+15736,15736,The Westway at Trehorne Dr,,43.691393,-79.536135,,,,,,2
+15737,15737,The Westway at Callowhill Dr East Side,,43.684002,-79.563816,,,,,,2
+16251,16251,Morning Star Dr at Goreway Dr,,43.720611,-79.642243,,,,,,1
