@@ -11,7 +11,7 @@ import { normalizeBrantfordRouteLabels } from '../transforms/brantford-route-lab
 import { fixMountainLineFrequencyWindow } from '../transforms/mountain-line-frequency-fix.js';
 import { addSantaFePickUpWeekendFrequency } from '../transforms/santafe-pickup-schedule.js';
 import { interpolateUntimedStops } from '../transforms/interpolate-untimed-stops.js';
-import { dropMnrExpressBusPairs } from '../transforms/mnr-bus-pairs.js';
+import { dropSameSlotSubsetTrips } from '../transforms/same-slot-subset-trips.js';
 import { mergeEquivalentShapeVariants } from './merge-equivalent-shapes.js';
 import { splitRoutes, type RouteSplit } from './split-routes.js';
 import { separateSameNameRoutes, type SameNameRoute } from './same-name-routes.js';
@@ -20,7 +20,7 @@ import { poolSingleTripShapes } from './pool-single-trip-shapes.js';
 
 // WVU PRT publishes route geometry separately from the schedule feed.
 // Keep this agency-specific transform opt-in rather than changing shared shape handling.
-export type GtfsPreprocess = 'nrt-day-night' | 'nrt-cleanup' | 'london-route-names' | 'metrolink-shapes' | 'wvu-prt-shapes' | 'wvu-prt-line' | 'brantford-route-labels' | 'interpolate-untimed-stops' | 'mountain-line-frequency-fix' | 'santafe-pickup-schedule' | 'mnr-bus-pairs';
+export type GtfsPreprocess = 'nrt-day-night' | 'nrt-cleanup' | 'london-route-names' | 'metrolink-shapes' | 'wvu-prt-shapes' | 'wvu-prt-line' | 'brantford-route-labels' | 'interpolate-untimed-stops' | 'mountain-line-frequency-fix' | 'santafe-pickup-schedule';
 
 export interface GtfsTransformOptions {
   agencyId?: string;
@@ -164,11 +164,6 @@ export function normalizeGtfs(
     gtfs = result.gtfs;
     if (result.added > 0) onStatus?.(`Santa Fe Pick-Up: added ${result.added} Saturday-Sunday trips for its published every-15 daytime service (#1076)`);
   }
-  if (options?.preprocess === 'mnr-bus-pairs') {
-    const result = dropMnrExpressBusPairs(gtfs);
-    gtfs = result.gtfs;
-    onStatus?.(`MNR buses: ${result.dropped} express trips left out beside the local that leaves with them (CIV-1086)`);
-  }
   if (options?.preprocess === 'interpolate-untimed-stops') {
     const result = interpolateUntimedStops(gtfs);
     gtfs = result.gtfs;
@@ -179,6 +174,13 @@ export function normalizeGtfs(
   gtfs = bays.gtfs;
   if (bays.mergedTrips > 0) onStatus?.(`Terminal bays: ${bays.mergedTrips} trips of ${bays.mergedPatterns} pattern(s) end at the other bay of their terminal (#754)`);
   gtfs = synthesizeTripHeadsigns(gtfs);
+  {
+    // CIV-1098: after the headsigns are filled, so a short turn leaving with a full-length trip is
+    // another name and stays (see same-slot-subset-trips.ts).
+    const pairs = dropSameSlotSubsetTrips(gtfs);
+    gtfs = pairs.gtfs;
+    if (pairs.dropped > 0) onStatus?.(`Paired departures: ${pairs.dropped} trip(s) left out that leave with a trip of the same name serving all their stops (${[...pairs.routes].join(', ')}) (CIV-1098)`);
+  }
   if (options?.mergeEquivalentShapeVariants || options?.mergeEquivalentShapeVariantsAllModes || options?.mergeEquivalentShapeVariantsRouteTypes) {
     const merged = mergeEquivalentShapeVariants(gtfs, {
       allModes: options.mergeEquivalentShapeVariantsAllModes === true,
