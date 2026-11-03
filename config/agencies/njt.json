@@ -63,9 +63,46 @@
   ],
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-508/latest.zip",
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261103",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270417",
-  "refusedFeedSha256": "0e09c82fcfe3d1722195a63036745883d3add28a6bde35f127e99b147d0e6cb9"
+  "feedQuality": {
+    "status": "review",
+    "score": 96,
+    "reasons": [
+      "10 route have stops whose frequency differs from the overall route schedule."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 10,
+      "routeHeadwayMismatches": 18,
+      "featureCount": 2039,
+      "feedExpiry": "20270417",
+      "routeCount": 261,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 10,
+      "resumesOn": null
+    },
+    "checkedAt": "2026-11-03"
+  },
+  "lastFeedExpiry": "20270417",
+  "lastPeekedExpiry": "20270417",
+  "lastFeedVersion": null,
+  "lastRefreshedAt": "2026-11-03",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "0294aeca5ca9ccd1",
+  "feedObtainedAt": "20261102",
+  "lastSupplementalFeeds": [
+    {
+      "feedExpiry": "20270313",
+      "feedVersion": null,
+      "rawArchiveKey": "20270313-0b0c31986a080e18"
+    }
+  ]
 }
