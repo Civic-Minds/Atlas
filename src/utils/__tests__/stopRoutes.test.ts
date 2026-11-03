@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { buildStopRoutes, headlineStandIn, stopRouteBestHeadway, stopRouteLineHeadway, stopRowHeadway, type StopBranch } from '../stopRoutes';
+import { buildStopRoutes, headlineStandIn, stopCardAgencies, stopRouteBestHeadway, stopRouteLineHeadway, stopRowHeadway, type StopBranch } from '../stopRoutes';
 import ttc29json from './fixtures/ttc-29-weekday.json';
 import { stopRoutePeriodBit } from '../../../shared/stopRoutePeriods';
 
@@ -242,4 +242,16 @@ describe('buildStopRoutes: the direction fallback of an unsteady stretch (#962)'
   };
   it('lists no row for an unsteady stretch', () => expect(rows(false)).toEqual([]));
   it('keeps the row for a steady one', () => expect(rows(true)).toEqual(['Wilson']));
+});
+
+describe('stopCardAgencies (CIV-1310)', () => {
+  const miway = { slug: 'miway', name: 'MiWay (Mississauga)', officialName: 'MiWay', nameQualifier: 'Mississauga' };
+  it("names the listed routes' agencies, once each", () => {
+    expect(stopCardAgencies([{ agencyName: 'TTC' }, { agencyName: 'GO' }, { agencyName: 'TTC' }], 'ttc::1', [])).toEqual(['TTC', 'GO']);
+  });
+  it("names the stop's own agency where no route runs in the period (MiWay 0814 at midday)", () => {
+    expect(stopCardAgencies([], 'miway::0814', [miway])).toHaveLength(1);
+    expect(stopCardAgencies([], 'nope::1', [miway])).toEqual([]);
+    expect(stopCardAgencies([], null, [miway])).toEqual([]);
+  });
 });

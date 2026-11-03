@@ -269,3 +269,18 @@ export function buildStopRoutes({ siblingIdsByAgency, routesByAgency, routePerio
         .map(b => ({ rKey: b.rKey, headsign: b.headsign, service: b.service, rowHeadway: b.rowHeadway, directionId: b.directionId, ...(b.periodText ? { periodText: b.periodText } : {}), ...(b.sharedEdge ? { sharedEdge: b.sharedEdge } : {}) })),
     })), ...[...noNumber.values()].sort((a, b) => compareRouteNumber(a.shortName, b.shortName))];
 }
+
+/**
+ * The agencies a stop card names: those of its listed routes, in order; where no route runs in the period (N35,
+ * CIV-1310), the clicked stop's own agency, so the card still says whose stop it is.
+ */
+export function stopCardAgencies(
+  routes: ReadonlyArray<Pick<StopRoute, 'agencyName'>>,
+  selectedStop: string | null,
+  agencies: ReadonlyArray<Parameters<typeof agencyNames>[0] & { slug: string }>,
+): string[] {
+  const names = [...new Set(routes.map(r => r.agencyName))];
+  if (names.length > 0 || !selectedStop) return names;
+  const own = agencies.find(a => a.slug === selectedStop.split('::')[0]);
+  return own ? [agencyNames(own).name] : [];
+}
