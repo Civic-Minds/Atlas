@@ -2,7 +2,8 @@ import type { GtfsData } from '../../types/gtfs.js';
 
 /**
  * Paired departures (CIV-1098): two trips of one route, direction, service and headsign that
- * leave the same first stop in the same minute are one departure to riders, not two. When one
+ * leave the same first stop with the same departure time text (not merely within the same
+ * minute) are one departure to riders, not two. When one
  * of them serves a strict subset of the other's stops, it is left out before anything is counted,
  * and the trip serving every stop stays. Metro-North publishes each substitute bus twice, an
  * express (EB) and a local (LB) leaving together, so the terminal clock read gaps of 28 and 92 for
