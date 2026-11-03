@@ -164,16 +164,6 @@
       "permanent": true
     },
     {
-      "source": "/area/morgantown",
-      "destination": "/agency/mountain-line",
-      "permanent": true
-    },
-    {
-      "source": "/area/morgantown/",
-      "destination": "/agency/mountain-line",
-      "permanent": true
-    },
-    {
       "source": "/area/nashville",
       "destination": "/agency/nashvillemta",
       "permanent": true
