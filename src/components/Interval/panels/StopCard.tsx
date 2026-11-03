@@ -24,7 +24,7 @@ import { stopRouteBestHeadway, type StopRoute } from '../../../utils/stopRoutes'
 import LiveStopArrivals from './LiveStopArrivals';
 import { compareHeadwayThenNumber } from '../../../utils/sortCompare';
 import type { RouteLabel } from '../../../utils/routeFacts';
-import { BACK_TO_MAP_LABEL, stopNoRoutesNotice, stopRouteNoTripsNotice } from '../../../content/noticeCopy';
+import { BACK_TO_MAP_LABEL, stopNoRoutesNotice } from '../../../content/noticeCopy';
 import { formatPeriodRangeLong, TIME_PERIODS } from '../../../../shared/config';
 
 // The stop card's route and branch shapes live with the code that builds them (CIV-997).
@@ -162,15 +162,7 @@ export const StopCard: React.FC<StopCardProps> = ({
       {liveStop && <LiveStopArrivals slug={liveStop.slug} stopId={liveStop.stopId} lat={liveStop.lat} lon={liveStop.lon} />}
 
       <SidebarCardList>
-        {sortedRoutes.map(route => route.noTrips ? (
-          // CIV-1052: the stop's own route with no trips here in the whole period: its name, then the approved line.
-          <CardSummaryRow
-            key={route.shortName}
-            label={<RouteRowName shortName={route.label.primary} name={route.label.secondary} />}
-            onClick={() => openRoute(route.noTrips!.rKey)}
-            below={<p className={CARD_SUMMARY}>{stopRouteNoTripsNotice(periodRange(period))}</p>}
-          />
-        ) : route.noNumber ? (
+        {sortedRoutes.map(route => route.noNumber ? (
           // #1278: the stop's own route with trips here but no number in the period: the route card's own words.
           <CardSummaryRow
             key={route.shortName}
