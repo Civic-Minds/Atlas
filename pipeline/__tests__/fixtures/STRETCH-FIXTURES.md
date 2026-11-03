@@ -28,6 +28,8 @@ Each folder is one route's trips on the services active on one date, cut from th
 | septa-113-44-weekday | `_feeds/septa/20270220-fresh.zip` | 2026-10-21 | 113, 44 |
 | miway-45-weekday | `_feeds/miway/20261220-fresh.zip` | 2026-10-21 | 45 |
 | translink-321-weekday | `_feeds/translink/20270103-fresh.zip` | 2026-10-21 | 321 |
+| rtd-denver-first-trips-weekday | `_feeds/rtd-denver/20270102-fresh.zip` | 2026-10-21 | A, 45, 15 |
+| lacmta-240-owl-weekday | `_feeds/lacmta/20270401-fresh.zip` | 2026-10-21 | 240 |
 | ttc-110-79-sunday | `_feeds/ttc/20261031-fresh.zip` | 2026-10-25 | 110, 79 |
 | ttc-952-weekday | `_feeds/ttc/20261031-fresh.zip` | 2026-10-21 | 952 |
 | go-88-saturday | `_feeds/go/20261127-fresh.zip` | 2026-10-24 | 88 |

@@ -528,6 +528,8 @@ export function nightServiceDepartureTimes(
  * maxGapMinutes across the whole [start, end] window, with no gap at either edge. See
  * hasSustainedServiceInWindow above for the shared boundary-gap logic.
  */
+// CIV-1331: no longer a Night Service decider. Every night flag comes from tripSets nightServicePasses (stretch rows
+// and rows without stretch data alike); this stays only as the 2-6 AM window helper its tests pin.
 export function hasSustainedNightService(
   departureTimes: number[],
   start: number = NIGHT_SERVICE_WINDOW_START_MIN,

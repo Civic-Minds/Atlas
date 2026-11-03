@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { routeNightGrade, rowNightGrade, rowPassesNightGrade, rowRunsThroughNight, tileNightServiceExpr } from '../nightService';
+import { routeNightGrade, routeRunsThroughNight, rowNightGrade, rowPassesNightGrade, rowRunsThroughNight, tileNightServiceExpr } from '../nightService';
 
 describe('routeNightGrade (CIV-931)', () => {
   it('is 30 only when every lit row has the 30 grade', () => {
@@ -34,5 +34,14 @@ describe('the 90 grade (CIV-1329, #1322: "Use 90 minutes as the cutoff everywher
     expect(rowRunsThroughNight({ nightService90: true })).toBe(true);
     expect(rowRunsThroughNight({ nightService30: false, nightService60: false, nightService90: false })).toBe(false);
     expect(JSON.stringify(tileNightServiceExpr())).toContain('nightService90');
+  });
+});
+
+describe('routeRunsThroughNight (CIV-1331): every direction must run through the night', () => {
+  it('one passing direction is not enough', () => {
+    expect(routeRunsThroughNight([{ directionId: 0, nightService90: true }, { directionId: 1, nightService90: false }])).toBe(false);
+    expect(routeRunsThroughNight([{ directionId: 0, nightService90: true }, { directionId: 1, nightService60: true }, { directionId: 1 }])).toBe(true);
+    expect(routeRunsThroughNight([{ nightService30: true }])).toBe(true);
+    expect(routeRunsThroughNight([])).toBe(false);
   });
 });

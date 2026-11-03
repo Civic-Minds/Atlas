@@ -58,3 +58,16 @@ export function tileNightServiceExpr(): unknown[] {
     ['==', ['get', 'nightService'], true],
   ];
 }
+
+/**
+ * CIV-1331: a route runs through the night only when every direction does (the settled rule: never one direction
+ * alone). Each direction (by directionId) needs a row that passes rowRunsThroughNight. Stretch rows already carry the
+ * route's every-direction verdict; rows without stretch data are graded one by one, so this is where their directions
+ * are combined.
+ */
+export function routeRunsThroughNight(rows: ReadonlyArray<NightFlags & { directionId?: unknown }>): boolean {
+  if (rows.length === 0) return false;
+  const byDirection = new Map<unknown, boolean>();
+  for (const row of rows) byDirection.set(row.directionId ?? null, (byDirection.get(row.directionId ?? null) ?? false) || rowRunsThroughNight(row));
+  return [...byDirection.values()].every(Boolean);
+}

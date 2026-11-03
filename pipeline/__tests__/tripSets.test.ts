@@ -3,7 +3,8 @@ import { fixtureSameNameRoutes } from './fixtureAgencyNames';
 import { resolve } from 'node:path';
 import JSZip from 'jszip';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
-import { processGtfsBuffer } from '../process-core';
+import { hasNightServiceAtShapeEndpoints, processGtfsBuffer } from '../process-core';
+import { nightServiceDepartureTimes } from '../headway-utils';
 import { normalizeRouteFilterFeatures, routePassesHeadwayFilter } from '../../shared/routeHeadwayFilter';
 import { isLimitedService } from '../../shared/irregularRoutes';
 import { decodeStopRuns } from '../../shared/stopRuns';
@@ -336,6 +337,11 @@ describe('night edges: the wait for the first and after the last night bus (CIV-
   it('a stretch that stops before 3:30 keeps both edges at the grade', () => {
     expect(stretchNight(stretch(every(hm(26, 0), hm(27, 20), 20)), 60)).toBe(false);
   });
+  it('CIV-1331: a night-only route that stops at 3:45 does not run through the night: only the wait before its first bus is exempt', () => {
+    expect([30, 60, 90].map(g => stretchNight(stretch(every(hm(26, 30), hm(27, 45), 15)), g))).toEqual([false, false, false]);
+    expect(stretchNight(stretch(every(hm(27, 3), hm(27, 53), 10)), 90)).toBe(false);
+    expect(stretchNight(stretch(every(hm(27, 3), hm(29, 3), 20)), 30)).toBe(true);
+  });
   it('CIV-1329: the 90 grade loosens the gaps between buses, never the edges', () => {
     const day = (night: number[]) => ({ ...stretch(night), times: [...night, ...every(hm(6, 0), hm(22, 0), 30)] }) as Stretch;
     // An owl every 75 passes at 90 only.
@@ -620,6 +626,51 @@ describe('#1322: Overnight counts only service that runs through the night, by t
     const r = await run('ttc-102-weekday');
     expect(row(r, '102', 'Weekday').routeRunsByPeriod.overnight).toBe(false);
     expect(passes(r, '102', 'Weekday')).toBe(false);
+  });
+});
+
+describe('CIV-1331: one night decider, 90-minute cutoff, real feeds', () => {
+  const filterable = (r: Run, route: string) => {
+    const features = r.rows.filter(p => p.routeShortName === route).map(p => ({ properties: JSON.parse(JSON.stringify(p)) }));
+    normalizeRouteFilterFeatures(features);
+    return features.map(f => f.properties);
+  };
+  const passes = (r: Run, route: string, max: number) => routePassesHeadwayFilter(filterable(r, route), 'overnight', 'Weekday', max);
+  it.each(['A', '45', '15'])('RTD %s: first trips of the morning are not overnight service, at any grade (#1322)', async route => {
+    const r = await run('rtd-denver-first-trips-weekday', 'rtd-denver');
+    const rows = r.rows.filter(p => p.routeShortName === route && p.day === 'Weekday');
+    expect(rows.length).toBeGreaterThan(0);
+    for (const p of rows) expect([p.nightService30, p.nightService60, p.nightService90, p.routeRunsByPeriod?.overnight], route).toEqual([false, false, false, false]);
+    expect(passes(r, route, Infinity)).toBe(false);
+  });
+  it('LA Metro 240 owl, gaps of 61-90 minutes: passes at 90, fails at 60, and is drawn under All', async () => {
+    const r = await run('lacmta-240-owl-weekday', 'lacmta');
+    const p = row(r, '240', 'Weekday');
+    expect([p.stretchNight60, p.stretchNight90]).toEqual([false, true]);
+    expect(r.rows.filter(x => x.routeShortName === '240' && x.day === 'Weekday').some(x => x.nightService90 && !x.nightService60)).toBe(true);
+    expect(p.routeRunsByPeriod.overnight).toBe(true);
+    const value = p.routeFilterHeadwayByPeriod.overnight;
+    expect(value).toBeGreaterThan(60);
+    expect(value).toBeLessThanOrEqual(90);
+    expect([passes(r, '240', Infinity), passes(r, '240', 60)]).toEqual([true, false]);
+  });
+  it('rows without stretch data and stretch rows agree: both read nightServicePasses', () => {
+    const hm = (h: number, m: number) => h * 60 + m;
+    const every = (from: number, to: number, step: number) => Array.from({ length: Math.floor((to - from) / step) + 1 }, (_, i) => from + i * step);
+    const day = every(hm(6, 0), hm(23, 0), 20);
+    const cases: number[][] = [
+      [...day, ...every(hm(0, 0), hm(4, 59), 30)], // all-night every 30, plain times
+      [...day, hm(0, 34), hm(3, 5), ...every(hm(4, 5), hm(6, 0), 30)], // RTD 45: a hole, then the first trips
+      [...day, ...every(hm(26, 10), hm(29, 0), 75)], // an owl every 75
+      every(hm(27, 3), hm(29, 23), 20), // night-only, first bus at 3:03 (TTC 339)
+      every(hm(26, 30), hm(27, 45), 15), // night-only, stops at 3:45
+      [...day, ...every(hm(27, 30), hm(30, 0), 20)], // day service from 3:30
+    ];
+    for (const times of cases) for (const gap of [30, 60, 90]) {
+      const nightTimes = nightServiceDepartureTimes(times);
+      const stretch = { kind: 'main', stops: ['a'], refStop: 'a', lengthKm: 1, times, nightTimes, tripCount: times.length } as Stretch;
+      expect(hasNightServiceAtShapeEndpoints(['a'], new Map([['a', times]]), new Map(), gap), `${times.slice(-3)} @${gap}`).toBe(stretchNight(stretch, gap) === true);
+    }
   });
 });
 
