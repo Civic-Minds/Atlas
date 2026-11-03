@@ -8,6 +8,8 @@
 import JSZip from 'jszip';
 import { parseCsv } from './parseGtfs.js';
 import { detectReferenceDate } from './transit-calendar.js';
+import { legacyReferenceDateEnabled } from './readWeek.js';
+import { pickRiderWeek, serviceAnchor } from './serviceDays.js';
 import { synthesizeCalendarFromDates } from './parseGtfs.js';
 import { historyRouteKey } from './historyRouteKey.js';
 import { addDaysYmd } from './serviceDates.js';
@@ -27,7 +29,10 @@ export interface FeedRows {
 }
 
 export interface FeedEvidence {
-  /** The reference date the processor reads (same detectReferenceDate call as the map). */
+  /**
+   * The reference date the processor read. Callers that processed the feed pass the processor's own
+   * (ProcessResult.referenceDate); otherwise the one service-day model's week at `anchor` (CIV-1101 Part B).
+   */
   refDate: string;
   /** Real calendar.txt rows with a trip and at least one weekday flag (never synthesized). */
   calendar: GtfsCalendar[];
@@ -55,15 +60,17 @@ function referenceWeek(refDate: string): string[] {
   return Array.from({ length: 7 }, (_, i) => addDaysYmd(monday, i));
 }
 
-export function computeFeedEvidence(rows: FeedRows, opts: { referenceDate?: string } = {}): FeedEvidence {
+export interface EvidenceOptions {
+  /** The date the processor read; when set, no week is picked here. */
+  referenceDate?: string;
+  /** The picker's anchor when no referenceDate is given; serviceAnchor() of the run date when unset. */
+  anchor?: string;
+}
+
+export function computeFeedEvidence(rows: FeedRows, opts: EvidenceOptions = {}): FeedEvidence {
   const realCalendar = rows.calendar ?? [];
   const calendarDates = rows.calendarDates ?? [];
-  // Mirrors parseGtfsZip: a feed with no calendar.txt gets one synthesized from calendar_dates
-  // for the reference date; the synthesized rows are never weekend evidence.
-  const forRef = realCalendar.length === 0 && calendarDates.length > 0
-    ? synthesizeCalendarFromDates(calendarDates)
-    : realCalendar;
-  const refDate = opts.referenceDate ?? detectReferenceDate(forRef, calendarDates, rows.trips);
+  const refDate = opts.referenceDate ?? pickedReferenceDate(rows, opts.anchor);
 
   const keyByRouteId = new Map<string, string>();
   for (const r of rows.routes) {
@@ -83,8 +90,20 @@ export function computeFeedEvidence(rows: FeedRows, opts: { referenceDate?: stri
   return { refDate, calendar, calendarDates, servicesByKey, allServices };
 }
 
+/** The week the one service-day model picks for these rows (the old picker under the kill switch). */
+function pickedReferenceDate(rows: FeedRows, anchor?: string): string {
+  const realCalendar = rows.calendar ?? [];
+  const calendarDates = rows.calendarDates ?? [];
+  if (legacyReferenceDateEnabled()) {
+    // Mirrors parseGtfsZip: a feed with no calendar.txt gets one synthesized from calendar_dates.
+    const forRef = realCalendar.length === 0 && calendarDates.length > 0 ? synthesizeCalendarFromDates(calendarDates) : realCalendar;
+    return detectReferenceDate(forRef, calendarDates, rows.trips);
+  }
+  return pickRiderWeek({ calendar: realCalendar, calendarDates, trips: rows.trips, routes: rows.routes, anchor: anchor ?? serviceAnchor() }).referenceDate;
+}
+
 /** Parse the calendar-relevant files from a GTFS zip (no shapes, no processing). */
-export async function readFeedEvidence(buf: Buffer, opts: { referenceDate?: string } = {}): Promise<FeedEvidence> {
+export async function readFeedEvidence(buf: Buffer, opts: EvidenceOptions = {}): Promise<FeedEvidence> {
   const zip = await JSZip.loadAsync(buf);
   const read = async <T,>(name: string): Promise<T[]> => {
     const entry = zip.file(name) ?? zip.file(Object.keys(zip.files).find(f => f.endsWith(`/${name}`) && !zip.files[f].dir) ?? '');
