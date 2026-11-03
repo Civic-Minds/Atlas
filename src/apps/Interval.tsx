@@ -54,6 +54,7 @@ import Spinner from '../components/ui/Spinner';
 import { onDemandSelectionZoneId, resolveSelectedOnDemandSlug } from '../utils/onDemandSelection';
 import { encodeStopBackTarget, parseStopBackTarget, resolveStopBack, STOP_BACK_PARAM, stopBackTarget, type StopBackRoute, type StopBackSnapshot, type StopBackTarget } from '../utils/stopBack';
 import { linkValueUnknown } from '../utils/linkSelection';
+import { useMissingLinkCard } from '../hooks/useMissingLinkCard';
 import { AGENCY_NOT_FOUND, loadingText, ON_DEMAND_AREAS_FAILED, ON_DEMAND_NOT_FOUND, networksFailedHint, networksFailedText, networksLoadingText, noRoutesMatchText, noServiceOnDayNotice, ROUTE_NOT_FOUND, STOP_NOT_FOUND } from '../content/noticeCopy';
 import { useIndexSearch } from '../hooks/useIndexSearch';
 import { mergeRouteResults, mergeStopResults } from '../utils/searchResults';
@@ -941,9 +942,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   const [missingRoute, setMissingRoute] = useState<{ key: string; found: boolean } | null>(null);
   // Links whose route, stop or on-demand value names no agency Atlas has, or isn't in the agency::id form (#1191).
   const linkCatalog = allAgencies ?? agencies;
-  // On-demand services have their own list (some aren't in the agency catalog); judged only once it has loaded.
   const onDemandSlugs = useOnDemandServiceSlugs();
-  const onDemandLinkCatalog = useMemo(() => (onDemandSlugs ? [...linkCatalog, ...[...onDemandSlugs].map(slug => ({ slug }))] : []), [linkCatalog, onDemandSlugs]);
   useEffect(() => {
     if (!selectedRoute) return;
     if (linkValueUnknown(selectedRoute, linkCatalog, 'route')) {
@@ -965,19 +964,17 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     }
   }, [selectedRoute, layers, day, clearMapSelection, linkCatalog]);
   // The same for a stop (N36) or an on-demand service: the note shows and the value leaves the address bar (#1191).
-  const [missingLinkCard, setMissingLinkCard] = useState<'stop' | 'onDemand' | null>(null);
-  useEffect(() => {
-    if (selectedStop && linkValueUnknown(selectedStop, linkCatalog, 'stop')) {
-      clearMapSelection();
-      setMissingLinkCard('stop');
-    } else if (FEATURES.onDemand && onDemandStopAgencySlug && linkValueUnknown(onDemandStopAgencySlug, onDemandLinkCatalog, 'onDemand')) {
-      setOnDemandStopAgencySlug(null);
-      setMissingLinkCard('onDemand');
-    }
-  }, [selectedStop, onDemandStopAgencySlug, linkCatalog, onDemandLinkCatalog, clearMapSelection]);
-  useEffect(() => {
-    if (missingLinkCard && (selectedRoute || selectedStop || selectedAgencySlug || onDemandStopAgencySlug || searchFocused)) setMissingLinkCard(null);
-  }, [missingLinkCard, selectedRoute, selectedStop, selectedAgencySlug, onDemandStopAgencySlug, searchFocused]);
+  const clearOnDemandLink = useCallback(() => setOnDemandStopAgencySlug(null), []);
+  const { missing: missingLinkCard, dismiss: dismissMissingLinkCard } = useMissingLinkCard({
+    selectedStop,
+    onDemandSelection: onDemandStopAgencySlug,
+    catalog: linkCatalog,
+    onDemandSlugs,
+    onDemandEnabled: FEATURES.onDemand,
+    clearSelection: clearMapSelection,
+    clearOnDemand: clearOnDemandLink,
+    otherSelectionOpen: !!(selectedRoute || selectedAgencySlug || searchFocused),
+  });
   useEffect(() => {
     if (!missingRoute) return;
     if (selectedRoute || selectedStop || selectedAgencySlug || searchFocused) { setMissingRoute(null); return; }
@@ -1434,7 +1431,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
       {(showUi || showSelectionUi) && missingLinkCard && !missingRoute && (
         <SelectionNoticePanel
           message={missingLinkCard === 'stop' ? STOP_NOT_FOUND : ON_DEMAND_NOT_FOUND}
-          onClose={() => setMissingLinkCard(null)}
+          onClose={dismissMissingLinkCard}
           sidebarLeft={sidebarLeft}
           searchBarWidth={searchBarWidth}
         />
