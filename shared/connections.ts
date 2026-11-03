@@ -10,14 +10,30 @@
  */
 import { haversineM } from './shapeProjection.js';
 
-/** "Nearby" (Ryan, 2026-11-03): within 400 m in a straight line. Labelled by distance, never "connects". */
+/** "Nearby" (Ryan, 2026-11-03): within 400 m in a straight line by default. Labelled by distance, never "connects". */
 export const NEARBY_METERS = 400;
+/** The distances a reader can pick (Ryan, 2026-11-03: 200, 400 and 800 m, starting at 400). Each is precomputed. */
+export const NEARBY_CHOICES = [200, 400, 800] as const;
+export type NearbyChoice = (typeof NEARBY_CHOICES)[number];
+/** The widest choice: the build reads every stop within it once, then each choice keeps the ones within its own distance. */
+export const MAX_NEARBY_METERS = Math.max(...NEARBY_CHOICES);
+
+/** A URL value as one of the choices, else the default. */
+export function parseNearbyChoice(value: string | null | undefined): NearbyChoice {
+  const n = Number(value);
+  return (NEARBY_CHOICES as readonly number[]).includes(n) ? (n as NearbyChoice) : NEARBY_METERS;
+}
+
+/** The departures from stops within `meters` (a stop exactly at the distance counts). */
+export function departuresWithin<T extends { distanceM: number }>(departures: readonly T[], meters: number): T[] {
+  return departures.filter(d => d.distanceM <= meters);
+}
 
 /** A hub bus a rider can get off: minutes after the service day's midnight (can pass 24:00). */
 export interface HubArrival {
   time: number;
   routeName: string;
-  headsign: string | null;
+  headsign?: string | null;
 }
 
 /** A local bus a rider can board at a nearby stop. */
@@ -25,7 +41,7 @@ export interface LocalDeparture {
   time: number;
   agencySlug: string;
   routeName: string;
-  headsign: string | null;
+  headsign?: string | null;
   stopName: string;
   distanceM: number;
 }
@@ -118,13 +134,4 @@ export function rankWorstFirst<T>(items: readonly T[], waitsOf: (item: T) => rea
     .map((item, i) => ({ item, summary: summarizeWaits(waitsOf(item)), i }))
     .sort((a, b) => compareStopsWorstFirst(a.summary, b.summary) || a.i - b.i)
     .map(({ item, summary }) => ({ item, summary }));
-}
-
-/** "4:10 PM" from minutes after midnight; past midnight reads as the next morning's clock time. */
-export function formatClock(minutes: number): string {
-  const total = Math.round(minutes) % (24 * 60);
-  const h = Math.floor(total / 60);
-  const m = total % 60;
-  const h12 = h % 12 === 0 ? 12 : h % 12;
-  return `${h12}:${String(m).padStart(2, '0')} ${h < 12 ? 'AM' : 'PM'}`;
 }
