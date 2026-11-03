@@ -166,7 +166,7 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
                 : data!.area ? <p className="mt-1 text-sm text-[var(--text-muted)]">{areaRegionTitle(data!.area)}</p>
                 : agency.city && <p className="mt-1 text-sm text-[var(--text-muted)]">{agency.city}</p>}
             </div>
-            <ArrowLink href={data!.mapHref ?? agencyMapHref(agency)}>View on map</ArrowLink>
+            <ArrowLink className="shrink-0 whitespace-nowrap" href={data!.mapHref ?? agencyMapHref(agency)}>View on map</ArrowLink>
           </div>
           <Intro data={data!} />
 

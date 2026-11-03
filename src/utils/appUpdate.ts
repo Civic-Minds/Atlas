@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-const UPDATE_CHECK_COOLDOWN_MS = 60 * 60 * 1000;
+/** At most one /api/version check per tab every 6 hours (CIV-977); load, focus and a tab coming back still check once it has passed. */
+export const UPDATE_CHECK_COOLDOWN_MS = 6 * 60 * 60 * 1000;
 
 export function isNewerBuild(currentBuildId: string, latestBuildId: string | null): boolean {
   return Boolean(currentBuildId && latestBuildId && currentBuildId !== latestBuildId);

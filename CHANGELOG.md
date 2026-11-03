@@ -103,6 +103,8 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Route cards and frequency
 
+- **A stop card leaves out routes with no trips there in the chosen time**: they were listed with a "No trips" line; a stop where nothing runs says so instead
+- **The expanded schedule chart counts trips per hour**: its side numbers were minutes that shrank going up and sat unevenly apart
 - **Rows with uneven service read "Irregular", not their longest wait**: [exo MA](https://github.com/Civic-Minds/Atlas/issues/962) weekday midday read "every 301"; stop cards follow the route card, and steady service and waits of an hour or less keep their number
 - **Route cards use one set of words for each situation**: "Shared stretch" names a route's shared part, "Irregular" replaces "limited" in a time period, a route that doesn't run reads "no trips", and branches that take turns on a shared stretch each say when they run (TTC 110)
 - **Route lists show the route card's number**: the [slower direction](https://github.com/Civic-Minds/Atlas/issues/821) (GO 47 no longer reads every 3), a [range](https://github.com/Civic-Minds/Atlas/issues/1231) that starts where the card does, and no number for a route the [filter reads as irregular](https://github.com/Civic-Minds/Atlas/issues/1247)
@@ -163,6 +165,9 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Agency, area and research pages
 
+- **On the About page, the Atlas logo stays on About**: it went to the map, so it couldn't bring you back to the top of the page
+- **[Unknown addresses](https://github.com/Civic-Minds/Atlas/issues/1193) show the same not-found page as unknown agencies and areas**: /research/nope had no footer and a different link
+- **"[View on map](https://github.com/Civic-Minds/Atlas/issues/1194)" stays on one line beside long agency names**: on WETA's page it was squeezed onto two lines
 - **The site header fits on one line on phones**: small screens leave Docs to the footer, so Agencies, Research and Go to Atlas no longer wrap to a second line
 - **Area, state and agency pages have one map link, at the top**: the second map link under the frequency bar is gone, and "See all agencies" now follows the agency table, so the links no longer stack down the right edge
 - **The [all-agencies list](https://github.com/Civic-Minds/Atlas/issues/1306) shows an agency under every state it serves**: it listed each agency under its home state only, so Nebraska showed two agencies where its state page shows three
