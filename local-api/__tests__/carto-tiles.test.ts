@@ -77,4 +77,16 @@ describe('carto-tiles proxy', () => {
       expect(response.status).toBe(200);
     }
   });
+
+  it('serves the four basemap styles Atlas uses, with and without place names (CIV-1168)', async () => {
+    vi.stubEnv('CARTO_BASEMAP_API_KEY', 'test-key');
+    const fetchMock = vi.fn().mockImplementation(async () => new Response('png', { status: 200 }));
+    vi.stubGlobal('fetch', fetchMock);
+    for (const style of ['light_all', 'dark_all', 'light_nolabels', 'dark_nolabels']) {
+      const response = await handler.fetch(new Request(`https://atlas.test/api/carto-tiles?style=${style}&z=10&x=286&y=373`));
+      expect(response.status).toBe(200);
+      expect(String(fetchMock.mock.calls.at(-1)?.[0])).toContain(`/${style}/10/286/373`);
+    }
+  });
 });
+

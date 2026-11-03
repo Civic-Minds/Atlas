@@ -78,7 +78,7 @@ export default function AreaPage({ data: dataProp }: { data?: AreaPageData }) {
           </p>
           {data.area.note && <p className="mt-3 max-w-2xl text-sm text-[var(--text-muted)]">{data.area.note}</p>}
 
-          <AgencyGroupSection data={data} mapHref={areaMapHref(data)} barNote={AREA_BAR_NOTE} />
+          <AgencyGroupSection data={data} barNote={AREA_BAR_NOTE} />
 
           <p className="mt-12 text-sm leading-6 text-[var(--text-dim)]">
             Area: {data.area.officialName} ({data.area.type === 'CMA' ? 'Statistics Canada census metropolitan area' : 'US Census metropolitan statistical area'}). {areaDatesText(data)}

@@ -2,14 +2,15 @@
  * The /agencies index: every area and agency page in one place. Built from the same summaries as the pages
  * themselves; nothing new is measured.
  */
-import { agencyMention, agencyPagePath, agencyTitle, areaPageStatus, regionPageHref, sharedOfficialNames, type AgencyPageSummary } from './agencyPages';
+import { agencyMention, agencyPagePath, agencyPlaces, agencyTitle, areaPageStatus, regionPageHref, sharedOfficialNames, type AgencyPageSummary } from './agencyPages';
+import { countryForRegion } from './regionCountry';
 import { areaRegionTitle, areaShortName } from './areaRegions';
 import { areaPagePath, areaSlug, type AreaConfig } from './areas';
 import { SITE_URL, seoTitlePrefix, type SeoMode } from './seo';
 import { plural } from './overflowText';
 import { compareAgencyName, compareText } from './sortCompare';
 import { AGENCY_INDEX_PATH, parentAgencyPagePath } from './pagePaths';
-import { parentHome, parentMembers, parentRoutes, parentsWithMembers } from './parentAgencies';
+import { parentMembers, parentRoutes, parentsWithMembers } from './parentAgencies';
 
 export { AGENCY_INDEX_PATH };
 /** The prerendered HTML carries its data in <script type="application/json" id=...>. */
@@ -60,21 +61,31 @@ export function buildAgencyIndexData(
     .sort((x, y) => compareText(x.shortName, y.shortName));
   const tree = new Map<string, Map<string, AgencyIndexAgency[]>>();
   const shared = sharedOfficialNames(agencies);
-  const add = (a: Pick<AgencyPageSummary, 'country' | 'region'>, row: AgencyIndexAgency) => {
-    const country = a.country ?? OTHER;
-    const region = a.country && a.region ? a.region : OTHER;
+  const put = (country: string, region: string, row: AgencyIndexAgency) => {
     const regions = tree.get(country) ?? tree.set(country, new Map()).get(country)!;
-    (regions.get(region) ?? regions.set(region, []).get(region)!).push(row);
+    const list = regions.get(region) ?? regions.set(region, []).get(region)!;
+    if (!list.some(x => x.slug === row.slug)) list.push(row);
   };
-  // CIV-1277: a parent agency is one row, under its biggest member's state, in place of its members.
+  /**
+   * #1306: an agency is listed under every state or province its routes serve (agencyPlaces), as the state pages count
+   * it, so Sioux City Transit is under Iowa and Nebraska. One with no route in a known state or province stays under its
+   * home one, or "Other". For a parent, a member with no known state adds none once another member has one.
+   */
+  const add = (places: readonly Pick<AgencyPageSummary, 'country' | 'region' | 'routes'>[], row: AgencyIndexAgency) => {
+    const served = places.flatMap(a => agencyPlaces(a).regions.map(r => r.name)).filter(name => countryForRegion(name));
+    if (served.length > 0) for (const name of served) put(countryForRegion(name)!, name, row);
+    else for (const a of places) put(a.country ?? OTHER, a.country && a.region ? a.region : OTHER, row);
+  };
+  // CIV-1277: a parent agency is one row in place of its members, under every state or province one of them serves.
   const parents = parentsWithMembers(agencies);
   const grouped = new Set(parents.map(p => p.slug));
-  for (const a of agencies) if (!a.parentAgency || !grouped.has(a.parentAgency)) add(a, { slug: a.slug, name: agencyTitle(a, shared), shortName: agencyMention(a), routes: a.routeCount });
+  for (const a of agencies) if (!a.parentAgency || !grouped.has(a.parentAgency)) add([a], { slug: a.slug, name: agencyTitle(a, shared), shortName: agencyMention(a), routes: a.routeCount });
   for (const p of parents) {
     const members = parentMembers(p, agencies);
-    add(parentHome(p, members)!, { slug: p.slug, name: p.name, shortName: p.name, routes: parentRoutes(members).length, parent: { href: parentAgencyPagePath(p.slug) } });
+    add(members, { slug: p.slug, name: p.name, shortName: p.name, routes: parentRoutes(members).length, parent: { href: parentAgencyPagePath(p.slug) } });
   }
-  const rows = [...tree.values()].reduce((n, regions) => n + [...regions.values()].reduce((m, list) => m + list.length, 0), 0);
+  // An agency listed under two states still counts once.
+  const rows = new Set([...tree.values()].flatMap(regions => [...regions.values()].flatMap(list => list.map(x => x.slug)))).size;
   const last = (x: string, y: string) => (x === OTHER ? 1 : 0) - (y === OTHER ? 1 : 0) || compareText(x, y);
   const groups = [...tree.entries()].sort(([x], [y]) => last(x, y)).map(([country, regions]) => ({
     country,
@@ -83,7 +94,7 @@ export function buildAgencyIndexData(
       return { region, agencies: list.sort((x, y) => compareAgencyName(x.name, y.name)), ...(href ? { href } : {}) };
     }),
   }));
-  // The count says how many rows the list shows: a parent agency counts once (CIV-1277).
+  // The count says how many agencies the list shows: a parent agency counts once (CIV-1277), as does one listed under two states (#1306).
   return { areas: areaList, groups, agencyCount: rows, releaseDate };
 }
 

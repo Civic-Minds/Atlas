@@ -3,7 +3,10 @@
  * like the area pages (shared/areaPages.ts) with the place swapped. Every number is added up from the per-agency
  * summaries; nothing new is measured.
  */
-import { agencyPlaces, formatIso, regionMembers, type AgencyPageSummary } from './agencyPages';
+import { agencyPlaces, areaAgencySummaries, areaPageStatus, formatIso, regionMembers, type AgencyPageSummary } from './agencyPages';
+import { AREA_INDEX } from './areaIndex';
+import { areaRegionName } from './areaRegions';
+import { areaPagePath } from './areas';
 import { countryForRegion } from './regionCountry';
 import { agencyGroupData, groupIntroParts, groupPageDescription, groupPageTitle, type AgencyGroupData } from './areaPages';
 import { REGION_PATH_PREFIX, regionPagePath, regionSlug } from './pagePaths';
@@ -34,8 +37,18 @@ export interface RegionRef {
   country: string;
 }
 
+/** An area page in a state or province (CIV-1298), with the routes it has there. */
+export interface RegionArea {
+  slug: string;
+  /** Its name inside a sentence: "the Greater Toronto and Hamilton Area", "Waterloo Region". */
+  name: string;
+  routes: number;
+}
+
 export interface RegionPageData extends AgencyGroupData {
   region: RegionRef & { kind: RegionKind };
+  /** The area pages whose home is this state or province, most routes here first (CIV-1298). */
+  areas: RegionArea[];
   /** The map view that shows every listed agency: south, west, north, east. */
   bbox: [number, number, number, number] | null;
 }
@@ -56,6 +69,69 @@ export function regionPages(all: readonly AgencyPageSummary[]): RegionRef[] {
   return [...seen.values()].sort((x, y) => x.country.localeCompare(y.country) || x.name.localeCompare(y.name));
 }
 
+type AreaRoutes = { total: number; byRegion: Map<string, number> };
+const AREA_ROUTES = new WeakMap<readonly AgencyPageSummary[], Map<string, AreaRoutes>>();
+
+/**
+ * Each area page's routes as the area page counts them (areaAgencySummaries), and how many of them stop in each state or
+ * province (agencyPlaces). A route over a state line counts in both states but once in the total. Memoized per list.
+ */
+function areaRoutesByRegion(all: readonly AgencyPageSummary[]): Map<string, AreaRoutes> {
+  const cached = AREA_ROUTES.get(all);
+  if (cached) return cached;
+  const { pages } = areaPageStatus(all);
+  const bySlug = new Map(all.map(a => [a.slug, a]));
+  const out = new Map<string, AreaRoutes>();
+  for (const slug of pages) {
+    const area = AREA_INDEX[slug];
+    if (!area) continue;
+    const members = areaAgencySummaries({ slug, agencies: area.agencies }, bySlug);
+    const byRegion = new Map<string, number>();
+    for (const a of members) for (const { name, routes } of agencyPlaces(a).regions) byRegion.set(name, (byRegion.get(name) ?? 0) + routes.length);
+    out.set(slug, { total: members.reduce((n, a) => n + a.routes.length, 0), byRegion });
+  }
+  AREA_ROUTES.set(all, out);
+  return out;
+}
+
+/** An area counts as in a state or province when at least this share of its routes stop there (CIV-1298). */
+export const REGION_AREA_MIN_SHARE = 0.2;
+
+/**
+ * The area pages a state or province contains (CIV-1298): those with at least a fifth of their routes there, so the
+ * Washington, D.C. area is named on Washington DC's, Maryland's and Virginia's pages and the Ottawa area on Ontario's and
+ * Quebec's, but Greater Boston is not on Maine's for two routes. Most routes here first.
+ */
+export function regionAreas(region: Pick<RegionRef, 'name'>, all: readonly AgencyPageSummary[]): RegionArea[] {
+  const out: RegionArea[] = [];
+  for (const [slug, { total, byRegion }] of areaRoutesByRegion(all)) {
+    const here = byRegion.get(region.name) ?? 0;
+    if (here === 0 || here < total * REGION_AREA_MIN_SHARE) continue;
+    out.push({ slug, name: areaRegionName({ slug, name: AREA_INDEX[slug]?.name ?? slug }), routes: here });
+  }
+  return out.sort((x, y) => y.routes - x.routes || x.name.localeCompare(y.name));
+}
+
+/** At most this many areas are named after a state's intro (CIV-1298). */
+const REGION_AREAS_NAMED = 3;
+
+/**
+ * The sentence after a state's intro naming its biggest area pages (CIV-1298), each linking to its page:
+ * "Regions include the Greater Toronto and Hamilton Area, the Ottawa area and Waterloo Region." None with no area page.
+ */
+export function regionAreasSentenceParts(d: Pick<RegionPageData, 'areas'>): { lead: string; named: Array<RegionArea & { href: string }>; separators: string[]; tail: string } | null {
+  if (d.areas.length === 0) return null;
+  const named = d.areas.slice(0, REGION_AREAS_NAMED).map(a => ({ ...a, href: areaPagePath(a.slug) }));
+  const separators = named.map((_, i) => (i === named.length - 2 ? ' and ' : i < named.length - 2 ? ', ' : ''));
+  return { lead: 'Regions include ', named, separators, tail: '.' };
+}
+
+/** The same sentence as plain text. */
+export function regionAreasSentence(d: Pick<RegionPageData, 'areas'>): string {
+  const p = regionAreasSentenceParts(d);
+  return p ? `${p.lead}${p.named.map((a, i) => a.name + p.separators[i]).join('')}${p.tail}` : '';
+}
+
 export function buildRegionPageData(region: RegionRef, all: readonly AgencyPageSummary[], releaseDate: string | null): RegionPageData {
   const members = regionMembers(region.country, region.name, all);
   const boxes = members.map(a => a.bbox).filter((b): b is [number, number, number, number] => !!b);
@@ -64,6 +140,7 @@ export function buildRegionPageData(region: RegionRef, all: readonly AgencyPageS
     : null;
   return {
     region: { ...region, kind: regionKind(region.country, region.name) },
+    areas: regionAreas(region, all),
     bbox,
     ...agencyGroupData(members, new Map(all.map(a => [a.slug, a])), releaseDate),
   };

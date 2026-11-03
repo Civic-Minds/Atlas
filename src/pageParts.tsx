@@ -1,5 +1,4 @@
-import { FREQUENCY_BANDS, NO_MIDDAY_SHORT, allRoutesMapHref, noMiddayBarSentence } from '../shared/agencyPages';
-import ArrowLink from './components/ui/ArrowLink';
+import { FREQUENCY_BANDS, NO_MIDDAY_SHORT, noMiddayBarSentence } from '../shared/agencyPages';
 import { useHeadwayTiers } from './hooks/useHeadwayTiers';
 import SplitBar from './components/charts/SplitBar';
 import { plural } from '../shared/overflowText';
@@ -14,8 +13,9 @@ const NO_SERVICE_FILL = 'var(--control-inactive-bg)';
  * One flat stacked bar of route counts per weekday-midday frequency band. The legend is one short wrapping line.
  * Hovering, focusing or tapping a segment highlights its legend item and fades the other segments; hovering,
  * focusing or tapping a legend item does the same in reverse (both use the pointer cursor). Each segment keeps its aria-label (count and band).
+ * The bar is not a link: the page's one map link is at its top (CIV-1297).
  */
-export function FrequencyBar({ counts, mapHref }: { counts: number[]; /** The page's map link: the one link under the bar opens the map with these routes (Weekday midday). The bar itself is not clickable. */ mapHref?: string }) {
+export function FrequencyBar({ counts }: { counts: number[] }) {
   const BAND_FILLS = [...useHeadwayTiers().map(t => t.color), NO_SERVICE_FILL];
   const total = counts.reduce((a, b) => a + b, 0);
   if (total === 0) return null;
@@ -32,7 +32,6 @@ export function FrequencyBar({ counts, mapHref }: { counts: number[]; /** The pa
         sentence: i < BAND_PHRASES.length ? `${n} ${plural(n, 'route')} ${BAND_PHRASES[i]}` : noMiddayBarSentence(n),
         legend: <span><span className="font-black">{n}</span> {BAND_SHORT[i]}{i === unitBand ? ' min' : ''}</span>,
       }))}
-      trailing={mapHref && <ArrowLink href={allRoutesMapHref(mapHref)} className="sm:ml-auto">See these routes on the map</ArrowLink>}
     />
   );
 }
