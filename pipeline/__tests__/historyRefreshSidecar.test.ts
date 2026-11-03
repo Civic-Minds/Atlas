@@ -80,4 +80,21 @@ describe('refresh History sidecar (writeRefreshSidecar)', () => {
     expect(out.note).toBe('; unchanged feed, sidecar kept (period 20260613 read 20260304; this run read 20260311)');
     expect(out.routes).toEqual(JSON.parse(before!).routes);
   }, 240_000);
+
+  it('a different zip with the same period key and week is a logged conflict, judged on this run\'s routes', async () => {
+    const { objects, store } = memoryStore();
+    const first = await runAt('20260302');
+    await writeRefreshSidecar('mta-maryland', '20260613', features(first), historyV2InputFor(first, bus, [{ url: SUBWAY_URL, buf: subway }]), store);
+    const before = objects.get('history-v2/mta-maryland/20260613.json')!;
+    // Same period and week; one route's weekday reading differs, from a re-zipped (different) file.
+    const other = await (await JSZip.loadAsync(bus)).generateAsync({ type: 'nodebuffer', compression: 'DEFLATE' });
+    expect(other.equals(bus)).toBe(false);
+    const fc = features(first);
+    const altered = fc.map((f: any) => (f.properties.routeShortName === '69' && f.properties.day === 'Weekday' ? { ...f, properties: { ...f.properties, routeAllDayHeadway: 5, headway: 5 } } : f));
+    const out = await writeRefreshSidecar('mta-maryland', '20260613', altered, historyV2InputFor(first, other, [{ url: SUBWAY_URL, buf: subway }]), store);
+    expect(objects.get('history-v2/mta-maryland/20260613.json')).toBe(before);
+    expect(out.note).toBe('; CONFLICT: History sidecar 20260613 already written from a different feed (read 20260304; this run read 20260304); sidecar kept, changes judged on this run\'s routes');
+    expect(out.routes).not.toEqual(JSON.parse(before).routes);
+    expect(out.routes).toEqual(out.sidecar.routes);
+  }, 240_000);
 });

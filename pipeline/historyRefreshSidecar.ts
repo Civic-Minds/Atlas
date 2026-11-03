@@ -4,12 +4,15 @@
  *
  * The sidecar reads the week the processor read for each feed (ProcessResult.referenceDate), never
  * a second pick. Sidecars are immutable per period, and the picked week moves with the run date, so
- * a feed reprocessed unchanged reads a later week of the same period: the first sidecar for the
- * period is kept (as main did, where the old picker gave the same zip the same date) and logged.
+ * a feed reprocessed unchanged reads a later week of the same period. When the kept sidecar's
+ * feedSha256 proves it is the same feed, its routes stand (as main did, where the old picker gave
+ * the same zip the same date); otherwise this run's routes feed the change check and the conflict
+ * is logged.
  */
 import { buildSidecar, buildV2RoutesMerged, sidecarKey, splitFeaturesBySource, writeSidecar, type HistoryV2Sink, type V2FeedPart } from './historyV2.js';
 import { readFeedEvidence } from './historyWeekend.js';
 import { readPickedWeekQuality } from './historyRefQuality.js';
+import { feedSetSha256 } from './feedPeek.js';
 import type { AgencyFeedResult } from './agencyFeeds.js';
 import type { HistoryV2Sidecar } from '../shared/historyV2.js';
 
@@ -73,14 +76,17 @@ export async function writeRefreshSidecar(
   const sidecar = buildSidecar(slug, periodKey, evidence.refDate, built.routes, built.supplementalRoutes);
   // The week was picked by vote (a holiday is a day that loses it), so no holiday flag is computed.
   sidecar.refDateQuality = await readPickedWeekQuality(v2Input.buf, evidence.refDate, v2Input.serviceWeekStart);
+  sidecar.feedSha256 = feedSetSha256([v2Input.buf, ...(v2Input.supplemental ?? []).map(f => f.buf)]);
   let routes = built.routes;
   if (await writeSidecar(store.sink, sidecar) === 'conflict') {
     const raw = await store.peek(sidecarKey(slug, periodKey));
     const kept = raw ? JSON.parse(raw) as HistoryV2Sidecar : null;
-    if (kept?.routes) routes = kept.routes;
-    note += kept && kept.refDate !== sidecar.refDate
-      ? `; unchanged feed, sidecar kept (period ${periodKey} read ${kept.refDate}; this run read ${sidecar.refDate})`
-      : `; History sidecar ${periodKey} differs from the one already written at the same week; sidecar kept`;
+    if (kept?.routes && kept.feedSha256 === sidecar.feedSha256) {
+      routes = kept.routes;
+      note += `; unchanged feed, sidecar kept (period ${periodKey} read ${kept.refDate}; this run read ${sidecar.refDate})`;
+    } else {
+      note += `; CONFLICT: History sidecar ${periodKey} already written from ${kept?.feedSha256 ? 'a different feed' : 'a feed with no recorded hash'} (read ${kept?.refDate ?? '?'}; this run read ${sidecar.refDate}); sidecar kept, changes judged on this run's routes`;
+    }
   }
   return { sidecar, routes, note };
 }

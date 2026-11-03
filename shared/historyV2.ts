@@ -97,6 +97,12 @@ export interface HistoryV2Sidecar {
   supplementalRoutes?: Record<string, string[]>;
   /** Optional and additive: absent on sidecars written before the holiday check. */
   refDateQuality?: RefDateQuality;
+  /**
+   * CIV-1101 Part B: sha256 over the feed zips this sidecar was built from (feedSetSha256: main,
+   * then supplementals). The weekly refresh keeps a period's first sidecar when the same feed reads
+   * a later week; this proves it is the same feed. Absent on older sidecars.
+   */
+  feedSha256?: string;
 }
 
 export function historyFlagFor(rep: HistoryRep): HistoryFlag | undefined {
