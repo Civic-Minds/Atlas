@@ -1200,6 +1200,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
                 agencies={agencies}
                 layers={compareLayers}
                 upcomingSlugs={upcomingSlugs}
+                frameSelection={!compareLinked}
                 filteredLayers={compareStats.filteredLayers}
                 mapFilteredLayers={compareStats.mapFilteredLayers}
                 maxHeadway={compareB.maxHeadway}

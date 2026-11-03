@@ -20,6 +20,33 @@ export interface SelectionFramingInput {
   areaFocus?: { bbox: [number, number, number, number]; nonce: number } | null;
   resetViewKey?: number;
   regionalView: ReturnType<typeof getRegionalView>;
+  /**
+   * Whether this map frames a selected route or stop itself. Compare's map B leaves it to map A while the two are
+   * linked: both starting their own fit, each one's moves cut the other's short.
+   */
+  frameSelection?: boolean;
+}
+
+/**
+ * A route fit that something other than the user cuts short ends where the route is framed. MapLibre's resize() stops
+ * any camera animation, and the map resizes while a page settles (Compare's two maps do, and each one's moves carry to
+ * the other), so a route opened from a link could stop part way, zoomed out with the line off to one side. When the
+ * animation ends early with no drag, scroll or tap on the map since it began, jump to the fit instead. Once only.
+ */
+export function finishIfCutShort(map: maplibregl.Map, bounds: maplibregl.LngLatBoundsLike, maxZoom = 14): void {
+  let userMoved = false;
+  const onMoveStart = (e: { originalEvent?: unknown }) => { if (e.originalEvent) userMoved = true; };
+  map.on('movestart', onMoveStart);
+  map.once('moveend', () => {
+    map.off('movestart', onMoveStart);
+    if (userMoved) return;
+    const padding = selectionFramePadding(map);
+    const camera = map.cameraForBounds(bounds, { padding, maxZoom });
+    if (!camera || camera.zoom == null || camera.center == null) return;
+    const off = Math.abs(map.getZoom() - camera.zoom) > 0.05
+      || map.project(map.getCenter()).dist(map.project(camera.center)) > 2;
+    if (off) map.fitBounds(bounds, { padding, maxZoom, duration: 0 });
+  });
 }
 
 /** Camera moves for a selection: agency, `?ondemand=` link, area, Reset View, route and stop. */
@@ -28,10 +55,13 @@ export function useSelectionFraming(
   mapLoaded: boolean,
   {
     agencies, layers, selectedAgencySlug, selectedRoute, selectedStop, initialOnDemandSlug,
-    initialMapCenter, areaFocus, resetViewKey, regionalView,
+    initialMapCenter, areaFocus, resetViewKey, regionalView, frameSelection = true,
   }: SelectionFramingInput,
 ) {
   const fittedRouteRef = useRef<string | null>(null);
+  // Read through a ref so unlinking Compare's maps doesn't count as a new selection and move map B.
+  const frameSelectionRef = useRef(frameSelection);
+  frameSelectionRef.current = frameSelection;
 
   // Fly to selected agency when chosen from lists/panels (e.g. Data list in InfoPanel)
   useEffect(() => {
@@ -102,6 +132,10 @@ export function useSelectionFraming(
     // Direction hover changes filtered layer data, but it is not a new route
     // selection. Do not refit the map on every hover-driven layer update.
     if (fittedRouteRef.current === selectedRoute) return;
+    if (!frameSelectionRef.current) {
+      fittedRouteRef.current = selectedRoute;
+      return;
+    }
 
     // Compute full-route bounds from GeoJSON layer data.
     // agencySlug is added to features only in build-pmtiles, not the raw R2 GeoJSON,
@@ -125,6 +159,7 @@ export function useSelectionFraming(
     const padding = selectionFramePadding(map);
     if (target?.kind === 'bounds') {
       map.fitBounds(target.bounds, { padding, maxZoom: 14 });
+      finishIfCutShort(map, target.bounds);
       fittedRouteRef.current = selectedRoute;
     } else if (target?.kind === 'point') {
       map.flyTo({
@@ -141,7 +176,7 @@ export function useSelectionFraming(
   // Fly to selected stop when chosen
   useEffect(() => {
     const map = mapRef.current;
-    if (!map || !mapLoaded || !selectedStop) return;
+    if (!map || !mapLoaded || !selectedStop || !frameSelectionRef.current) return;
 
     const [stopSlug, stopId] = selectedStop.split('::');
     const fc = layers?.[stopSlug];

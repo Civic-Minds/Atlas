@@ -216,6 +216,8 @@ interface MapCanvasProps {
    * `layers` through the local GeoJSON layer, and the release tiles skip them.
    */
   upcomingSlugs?: readonly string[];
+  /** Whether this map frames a selected route or stop (Compare's linked map B leaves it to map A). Defaults to on. */
+  frameSelection?: boolean;
   /**
    * Zoom, locate and export buttons. Defaults to on for the main map and off for the second map.
    * In compare mode the second (right / bottom) map shows them instead, so they sit at the
@@ -300,6 +302,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   areaFocus,
   secondary = false,
   upcomingSlugs,
+  frameSelection = true,
   showMapControls = !secondary,
   onMapReady,
   initialOnDemandSlug = null,
@@ -1226,7 +1229,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
 
   useSelectionFraming(mapRef, mapLoaded, {
     agencies, layers, selectedAgencySlug, selectedRoute, selectedStop, initialOnDemandSlug,
-    initialMapCenter, areaFocus, resetViewKey, regionalView,
+    initialMapCenter, areaFocus, resetViewKey, regionalView, frameSelection,
   });
 
   useRouteStyling(mapRef, mapLoaded, {
