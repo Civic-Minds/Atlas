@@ -105,14 +105,14 @@ describe('FrequentServiceStory', () => {
 
   it('says in Method that the chart was checked again (CIV-1149)', () => {
     render(<FrequentServiceStory agencies={agencies} onExploreMap={vi.fn()} />);
-    expect(screen.getByText(/On October 30, 2026, we opened the source again for each of the 69 agencies the chart counted\. 63 still matched and stay in the chart\. 6 are left out:/)).toBeInTheDocument();
+    expect(screen.getByText(/Between October 30 and November 3, we opened the source again for each of the 69 agencies the chart counted\. 63 still matched and stay in the chart\. 6 are left out:/)).toBeInTheDocument();
   });
 
   it('uses the shared method template: Date updated, and Sources in place of Review boundary (CIV-1167)', () => {
     const { container } = render(<FrequentServiceStory agencies={agencies} onExploreMap={vi.fn()} />);
     const method = screen.getByRole('heading', { name: 'Method' }).closest('section')!;
     expect([...method.querySelectorAll('strong')].map(el => el.textContent)).toEqual(['Date conducted:', 'Date updated:', 'Sample:', 'Sources:', 'What counted:', 'How we handled numbers:', 'Rechecked:', 'Limitations:']);
-    expect(method).toHaveTextContent('Date updated: October 30, 2026.');
+    expect(method).toHaveTextContent('Date updated: November 3, 2026.');
     expect(container).not.toHaveTextContent('Review boundary');
   });
 
