@@ -66,12 +66,6 @@ export type HeadwayByHour = Partial<Record<number, number | null>>;
 export type { GeoJsonFeature, StopEntry };
 
 /**
- * NRT publishes scheduled evening/night route variants separately from its daytime routes.
- * Those variants are valid scheduled service, but their shorter operating window previously
- * made phase 2 classify them as span/limited service. Keep their period-specific headways while
- * giving them the normal frequency tier used by the map and route cards.
- */
-/**
  * CIV-1305: a stop point's parent station, exactly as stops.txt gives it: parentStation (the
  * parent_station id) and parentStationName (that parent's stop_name, left out when the parent is not in
  * stops.txt). Nothing for a stop with no parent_station, or for a parent itself (location_type 1).
@@ -87,6 +81,12 @@ export function parentStationProps(
   return name ? { parentStation: parent, parentStationName: name } : { parentStation: parent };
 }
 
+/**
+ * NRT publishes scheduled evening/night route variants separately from its daytime routes.
+ * Those variants are valid scheduled service, but their shorter operating window previously
+ * made phase 2 classify them as span/limited service. Keep their period-specific headways while
+ * giving them the normal frequency tier used by the map and route cards.
+ */
 export function normalizeNrtAnalysisResult(result: AnalysisResult): AnalysisResult {
   if (result.tier !== 'span' || !Number.isFinite(result.medianHeadway) || result.medianHeadway <= 0) {
     return result;
