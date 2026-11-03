@@ -492,6 +492,9 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   }, [selectedStop, nonCorridorLayers]);
 
   // The stop card's routes and destination rows, built in one tested place (utils/stopRoutes.ts, CIV-997).
+  // MOCK ONLY (stop-card-hub decision page): ?hubmock=1 keeps only patterns that stop here; ?hubmock=2 also lists the rest under a label.
+  const hubMock = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('hubmock') : null;
+  const mockStop = selectedStop && selectedStop.includes('::') ? { slug: selectedStop.split('::')[0], stopId: selectedStop.split('::').slice(1).join('::') } : null;
   const stopRoutes = useMemo(() => (currentStop
     ? buildStopRoutes({
       siblingIdsByAgency: currentStop.siblingIdsByAgency || {},
@@ -500,8 +503,20 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       layers: nonCorridorLayers,
       day: currentDay,
       period,
+      ...(hubMock && mockStop ? { mockClicked: { ...mockStop, keep: 'serves' as const } } : {}),
     })
-    : []), [currentStop, nonCorridorLayers, currentDay, period]);
+    : []), [currentStop, nonCorridorLayers, currentDay, period, hubMock, selectedStop]);
+  const mockOtherSideRoutes = useMemo(() => (currentStop && hubMock === '2' && mockStop
+    ? buildStopRoutes({
+      siblingIdsByAgency: currentStop.siblingIdsByAgency || {},
+      routesByAgency: currentStop.routesByAgency || {},
+      routePeriodBitsByAgency: currentStop.routePeriodBitsByAgency,
+      layers: nonCorridorLayers,
+      day: currentDay,
+      period,
+      mockClicked: { ...mockStop, keep: 'others' },
+    })
+    : []), [currentStop, nonCorridorLayers, currentDay, period, hubMock, selectedStop]);
 
   const stopAgencies = useMemo(() => {
     const seen = new Set<string>();
@@ -867,6 +882,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
             stopAgencyFilter={stopAgencyFilter}
             setStopAgencyFilter={setStopAgencyFilter}
             filteredStopRoutes={filteredStopRoutes as StopRoute[]}
+            mockOtherSideRoutes={mockOtherSideRoutes as StopRoute[]}
             period={period}
             nearbyConnections={nearbyConnections as NearbyConnection[]}
             liveStop={FEATURES.live && currentStop.agencySlug && currentStop.stopId

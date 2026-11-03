@@ -67,6 +67,8 @@ export interface StopCardProps {
   stopAgencyFilter: string | null;
   setStopAgencyFilter: React.Dispatch<React.SetStateAction<string | null>>;
   filteredStopRoutes: StopRoute[];
+  /** MOCK ONLY (stop-card-hub decision page). */
+  mockOtherSideRoutes?: StopRoute[];
   period: TimePeriod;
   nearbyConnections: NearbyConnection[];
   /** Live arrivals lookup — set when the stop belongs to a live-capable agency. */
@@ -91,6 +93,7 @@ export const StopCard: React.FC<StopCardProps> = ({
   stopAgencyFilter,
   setStopAgencyFilter,
   filteredStopRoutes,
+  mockOtherSideRoutes = [],
   period,
   nearbyConnections,
   liveStop,
@@ -196,6 +199,24 @@ export const StopCard: React.FC<StopCardProps> = ({
           <div className="-mx-4"><PanelEmpty>{stopNoRoutesNotice(formatPeriodRangeLong(stopPeriod.startHour, stopPeriod.endHour))}</PanelEmpty></div>
         )}
       </SidebarCardList>
+
+      {mockOtherSideRoutes.length > 0 && (
+        <SidebarCardSection label="Other side of the street">
+          {mockOtherSideRoutes.map(route => (
+            <StopRouteGroup
+              key={route.shortName}
+              shortName={route.shortName}
+              label={route.label}
+              longName={route.longName}
+              branches={route.branches}
+              period={period}
+              onOpenRoute={openRoute}
+              hoveredBranch={hoveredBranch}
+              setHoveredBranch={setHoveredBranch}
+            />
+          ))}
+        </SidebarCardSection>
+      )}
 
       {nearbyConnections.length > 0 && (
         <SidebarCardSection label="Nearby routes">

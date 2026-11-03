@@ -102,7 +102,9 @@ export function stopRouteBestHeadway(branches: readonly StopBranch[], period: Ti
 }
 
 /** Every route that serves the stop (or its siblings) in the day and period, with one branch per direction and destination. */
-export function buildStopRoutes({ siblingIdsByAgency, routesByAgency, routePeriodBitsByAgency, layers, day, period }: {
+export function buildStopRoutes({ siblingIdsByAgency, routesByAgency, routePeriodBitsByAgency, layers, day, period, mockClicked }: {
+  /** MOCK ONLY (stop-card-hub decision page): keep only patterns that serve the clicked stop, or only those that don't. */
+  mockClicked?: { slug: string; stopId: string; keep: 'serves' | 'others' };
   siblingIdsByAgency: Record<string, Set<string>>;
   routesByAgency: Record<string, Set<string>>;
   /** CIV-1052: each route's routePeriodBits at the stop and its siblings (undefined where a stop has no field). */
@@ -133,6 +135,11 @@ export function buildStopRoutes({ siblingIdsByAgency, routesByAgency, routePerio
       const p = f.properties as unknown as ShapeProperties;
       if (!p.routeId || !routeIds.has(p.routeId)) continue;
       if (p.day !== undefined && p.day !== day) continue;
+      if (mockClicked) {
+        const serves = slug === mockClicked.slug && p.stopHeadways?.[mockClicked.stopId] != null;
+        if (mockClicked.keep === 'serves' && slug === mockClicked.slug && !serves) continue;
+        if (mockClicked.keep === 'others' && (slug !== mockClicked.slug || serves)) continue;
+      }
       const dirKey = `${slug}::${p.routeId}::${(p as any).directionId ?? 0}`;
       if ((p as any).stopId == null) (directionFeaturesByKey.get(dirKey) ?? directionFeaturesByKey.set(dirKey, []).get(dirKey)!).push(p);
       if ([...siblingIds].some(sId => p.stopHeadways?.[sId] != null)) {
