@@ -157,7 +157,7 @@ describe('head tag rewriting', () => {
       for (const path of research) expect(covered, path).toContain(path);
       expect(researchPreviewRoutes(flags).every(r => !prerenderRoutes(flags).includes(r))).toBe(true);
     }
-    expect(researchPreviewRoutes(BETA.flags).map(r => r.path)).toEqual(['/research/night', '/research/frequent-service', '/research/frequent-service/story']);
+    expect(researchPreviewRoutes(BETA.flags).map(r => r.path)).toEqual(['/research/night', '/research/bustang-connections', '/research/frequent-service', '/research/frequent-service/story']);
   });
 
   it('every share image is a file under public/', () => {

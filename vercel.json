@@ -476,6 +476,14 @@
       "destination": "/research/night/index.html"
     },
     {
+      "source": "/research/bustang-connections",
+      "destination": "/research/bustang-connections/index.html"
+    },
+    {
+      "source": "/research/bustang-connections/",
+      "destination": "/research/bustang-connections/index.html"
+    },
+    {
       "source": "/research/free-child-fares",
       "destination": "/research/free-child-fares/index.html"
     },

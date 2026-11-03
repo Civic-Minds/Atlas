@@ -170,6 +170,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Agency, area and research pages
 
+- **A beta research page shows how long riders wait for a local bus after each Bustang arrival**: CDOT asked to see whether local service lines up with Bustang; ranked by real wait, with Colorado Springs labelled as an outdated schedule
 - **On the About page, the Atlas logo stays on About**: it went to the map, so it couldn't bring you back to the top of the page
 - **[Unknown addresses](https://github.com/Civic-Minds/Atlas/issues/1193) show the same not-found page as unknown agencies and areas**: /research/nope had no footer and a different link
 - **"[View on map](https://github.com/Civic-Minds/Atlas/issues/1194)" stays on one line beside long agency names**: on WETA's page it was squeezed onto two lines

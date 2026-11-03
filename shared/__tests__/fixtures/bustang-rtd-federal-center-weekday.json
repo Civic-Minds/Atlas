@@ -1,0 +1,1406 @@
+{
+"note": "Real sample (CIV-101): Bustang arrivals at Federal Center Station and RTD departures within 400 m, Wednesday 2026-11-04. Bustang feed Sep26-37243-12-13-20261009-142048, RTD feed Sep26-37329-18-19-20261030-143459. Trimmed to four arrivals and the RTD departures from 8:40 AM to 12:00 PM.",
+"date": "20261104",
+"arrivals": [
+{
+"time": 525,
+"routeName": "West",
+"headsign": "Denver",
+"stopId": "33658",
+"tripId": "116053714"
+},
+{
+"time": 575,
+"routeName": "Pegasus",
+"headsign": "Denver Union Station",
+"stopId": "33658",
+"tripId": "116053073"
+},
+{
+"time": 695,
+"routeName": "Pegasus",
+"headsign": "Denver Union Station",
+"stopId": "33658",
+"tripId": "116053074"
+},
+{
+"time": 705,
+"routeName": "West",
+"headsign": "Denver",
+"stopId": "33658",
+"tripId": "116053716"
+}
+],
+"departures": [
+{
+"time": 520,
+"agencySlug": "rtd-denver",
+"routeName": "W",
+"headsign": "W-Line Jeffco",
+"stopName": "Federal Center Station",
+"distanceM": 49,
+"stopId": "33566",
+"tripId": "116034542"
+},
+{
+"time": 523,
+"agencySlug": "rtd-denver",
+"routeName": "17",
+"headsign": "10th & Wash",
+"stopName": "Federal Center Station Gate D",
+"distanceM": 55,
+"stopId": "33651",
+"tripId": "116040991"
+},
+{
+"time": 524,
+"agencySlug": "rtd-denver",
+"routeName": "17",
+"headsign": "10th & Wash",
+"stopName": "Union Blvd & W 2nd Pl",
+"distanceM": 279,
+"stopId": "16772",
+"tripId": "116040991"
+},
+{
+"time": 525,
+"agencySlug": "rtd-denver",
+"routeName": "17",
+"headsign": "10th & Wash",
+"stopName": "Union Blvd & W 4th Ave",
+"distanceM": 313,
+"stopId": "33665",
+"tripId": "116040991"
+},
+{
+"time": 527,
+"agencySlug": "rtd-denver",
+"routeName": "17",
+"headsign": "Federal Cntr Station",
+"stopName": "W 2nd Pl & Union Blvd",
+"distanceM": 288,
+"stopId": "34370",
+"tripId": "116040910"
+},
+{
+"time": 528,
+"agencySlug": "rtd-denver",
+"routeName": "99",
+"headsign": "Long/Bowles",
+"stopName": "Federal Center Station Gate E",
+"distanceM": 26,
+"stopId": "33652",
+"tripId": "116049203"
+},
+{
+"time": 529,
+"agencySlug": "rtd-denver",
+"routeName": "100",
+"headsign": "Arvada Ridge Station",
+"stopName": "Federal Center Station Gate M",
+"distanceM": 23,
+"stopId": "33659",
+"tripId": "116032258"
+},
+{
+"time": 529,
+"agencySlug": "rtd-denver",
+"routeName": "W",
+"headsign": "W-Line Union Station",
+"stopName": "Federal Center Station",
+"distanceM": 92,
+"stopId": "33955",
+"tripId": "116034477"
+},
+{
+"time": 531,
+"agencySlug": "rtd-denver",
+"routeName": "100",
+"headsign": "Arvada Ridge Station",
+"stopName": "Union Blvd & W 2nd Pl",
+"distanceM": 279,
+"stopId": "16772",
+"tripId": "116032258"
+},
+{
+"time": 532,
+"agencySlug": "rtd-denver",
+"routeName": "100",
+"headsign": "Arvada Ridge Station",
+"stopName": "Union Blvd & W 4th Ave",
+"distanceM": 313,
+"stopId": "33665",
+"tripId": "116032258"
+},
+{
+"time": 535,
+"agencySlug": "rtd-denver",
+"routeName": "W",
+"headsign": "W-Line Jeffco",
+"stopName": "Federal Center Station",
+"distanceM": 49,
+"stopId": "33566",
+"tripId": "116034541"
+},
+{
+"time": 537,
+"agencySlug": "rtd-denver",
+"routeName": "17",
+"headsign": "10th & Wash",
+"stopName": "Federal Center Station Gate D",
+"distanceM": 55,
+"stopId": "33651",
+"tripId": "116040990"
+},
+{
+"time": 537,
+"agencySlug": "rtd-denver",
+"routeName": "3",
+"headsign": "Aurora Metro Cntr via Alameda",
+"stopName": "Federal Center Station Gate N",
+"distanceM": 66,
+"stopId": "33660",
+"tripId": "116042748"
+},
+{
+"time": 538,
+"agencySlug": "rtd-denver",
+"routeName": "17",
+"headsign": "10th & Wash",
+"stopName": "Union Blvd & W 2nd Pl",
+"distanceM": 279,
+"stopId": "16772",
+"tripId": "116040990"
+},
+{
+"time": 539,
+"agencySlug": "rtd-denver",
+"routeName": "100",
+"headsign": "Federal Center Station",
+"stopName": "W 2nd Pl & Union Blvd",
+"distanceM": 288,
+"stopId": "34370",
+"tripId": "116032295"
+},
+{
+"time": 539,
+"agencySlug": "rtd-denver",
+"routeName": "17",
+"headsign": "10th & Wash",
+"stopName": "Union Blvd & W 4th Ave",
+"distanceM": 313,
+"stopId": "33665",
+"tripId": "116040990"
+},
+{
+"time": 540,
+"agencySlug": "rtd-denver",
+"routeName": "3",
+"headsign": "Aurora Metro Cntr via Alameda",
+"stopName": "Union Blvd & W 2nd Pl",
+"distanceM": 357,
+"stopId": "16773",
+"tripId": "116042748"
+},
+{
+"time": 542,
+"agencySlug": "rtd-denver",
+"routeName": "17",
+"headsign": "Federal Cntr Station",
+"stopName": "W 2nd Pl & Union Blvd",
+"distanceM": 288,
+"stopId": "34370",
+"tripId": "116040909"
+},
+{
+"time": 544,
+"agencySlug": "rtd-denver",
+"routeName": "W",
+"headsign": "W-Line Union Station",
+"stopName": "Federal Center Station",
+"distanceM": 92,
+"stopId": "33955",
+"tripId": "116034485"
+},
+{
+"time": 547,
+"agencySlug": "rtd-denver",
+"routeName": "3",
+"headsign": "Federal Center",
+"stopName": "W 2nd Pl & Union Blvd",
+"distanceM": 288,
+"stopId": "34370",
+"tripId": "116042778"
+},
+{
+"time": 550,
+"agencySlug": "rtd-denver",
+"routeName": "W",
+"headsign": "W-Line Jeffco",
+"stopName": "Federal Center Station",
+"distanceM": 49,
+"stopId": "33566",
+"tripId": "116034544"
+},
+{
+"time": 552,
+"agencySlug": "rtd-denver",
+"routeName": "17",
+"headsign": "10th & Wash",
+"stopName": "Federal Center Station Gate D",
+"distanceM": 55,
+"stopId": "33651",
+"tripId": "116040989"
+},
+{
+"time": 553,
+"agencySlug": "rtd-denver",
+"routeName": "17",
+"headsign": "10th & Wash",
+"stopName": "Union Blvd & W 2nd Pl",
+"distanceM": 279,
+"stopId": "16772",
+"tripId": "116040989"
+},
+{
+"time": 554,
+"agencySlug": "rtd-denver",
+"routeName": "17",
+"headsign": "10th & Wash",
+"stopName": "Union Blvd & W 4th Ave",
+"distanceM": 313,
+"stopId": "33665",
+"tripId": "116040989"
+},
+{
+"time": 556,
+"agencySlug": "rtd-denver",
+"routeName": "17",
+"headsign": "Federal Cntr Station",
+"stopName": "W 2nd Pl & Union Blvd",
+"distanceM": 288,
+"stopId": "34370",
+"tripId": "116040908"
+},
+{
+"time": 558,
+"agencySlug": "rtd-denver",
+"routeName": "99",
+"headsign": "Long/Bowles",
+"stopName": "Federal Center Station Gate E",
+"distanceM": 26,
+"stopId": "33652",
+"tripId": "116049186"
+},
+{
+"time": 559,
+"agencySlug": "rtd-denver",
+"routeName": "100",
+"headsign": "US 36 & Sheridan",
+"stopName": "Federal Center Station Gate M",
+"distanceM": 23,
+"stopId": "33659",
+"tripId": "116032265"
+},
+{
+"time": 559,
+"agencySlug": "rtd-denver",
+"routeName": "W",
+"headsign": "W-Line Union Station",
+"stopName": "Federal Center Station",
+"distanceM": 92,
+"stopId": "33955",
+"tripId": "116034441"
+},
+{
+"time": 561,
+"agencySlug": "rtd-denver",
+"routeName": "100",
+"headsign": "US 36 & Sheridan",
+"stopName": "Union Blvd & W 2nd Pl",
+"distanceM": 279,
+"stopId": "16772",
+"tripId": "116032265"
+},
+{
+"time": 562,
+"agencySlug": "rtd-denver",
+"routeName": "100",
+"headsign": "US 36 & Sheridan",
+"stopName": "Union Blvd & W 4th Ave",
+"distanceM": 313,
+"stopId": "33665",
+"tripId": "116032265"
+},
+{
+"time": 565,
+"agencySlug": "rtd-denver",
+"routeName": "W",
+"headsign": "W-Line Jeffco",
+"stopName": "Federal Center Station",
+"distanceM": 49,
+"stopId": "33566",
+"tripId": "116034543"
+},
+{
+"time": 567,
+"agencySlug": "rtd-denver",
+"routeName": "17",
+"headsign": "10th & Wash",
+"stopName": "Federal Center Station Gate D",
+"distanceM": 55,
+"stopId": "33651",
+"tripId": "116040988"
+},
+{
+"time": 567,
+"agencySlug": "rtd-denver",
+"routeName": "3",
+"headsign": "Alameda Stn",
+"stopName": "Federal Center Station Gate N",
+"distanceM": 66,
+"stopId": "33660",
+"tripId": "116042742"
+},
+{
+"time": 568,
+"agencySlug": "rtd-denver",
+"routeName": "17",
+"headsign": "10th & Wash",
+"stopName": "Union Blvd & W 2nd Pl",
+"distanceM": 279,
+"stopId": "16772",
+"tripId": "116040988"
+},
+{
+"time": 569,
+"agencySlug": "rtd-denver",
+"routeName": "100",
+"headsign": "Federal Center Station",
+"stopName": "W 2nd Pl & Union Blvd",
+"distanceM": 288,
+"stopId": "34370",
+"tripId": "116032286"
+},
+{
+"time": 569,
+"agencySlug": "rtd-denver",
+"routeName": "17",
+"headsign": "10th & Wash",
+"stopName": "Union Blvd & W 4th Ave",
+"distanceM": 313,
+"stopId": "33665",
+"tripId": "116040988"
+},
+{
+"time": 570,
+"agencySlug": "rtd-denver",
+"routeName": "3",
+"headsign": "Alameda Stn",
+"stopName": "Union Blvd & W 2nd Pl",
+"distanceM": 357,
+"stopId": "16773",
+"tripId": "116042742"
+},
+{
+"time": 571,
+"agencySlug": "rtd-denver",
+"routeName": "17",
+"headsign": "Federal Cntr Station",
+"stopName": "W 2nd Pl & Union Blvd",
+"distanceM": 288,
+"stopId": "34370",
+"tripId": "116040907"
+},
+{
+"time": 574,
+"agencySlug": "rtd-denver",
+"routeName": "W",
+"headsign": "W-Line Union Station",
+"stopName": "Federal Center Station",
+"distanceM": 92,
+"stopId": "33955",
+"tripId": "116034486"
+},
+{
+"time": 579,
+"agencySlug": "rtd-denver",
+"routeName": "3",
+"headsign": "Federal Center",
+"stopName": "W 2nd Pl & Union Blvd",
+"distanceM": 288,
+"stopId": "34370",
+"tripId": "116042780"
+},
+{
+"time": 580,
+"agencySlug": "rtd-denver",
+"routeName": "W",
+"headsign": "W-Line Jeffco",
+"stopName": "Federal Center Station",
+"distanceM": 49,
+"stopId": "33566",
+"tripId": "116034546"
+},
+{
+"time": 582,
+"agencySlug": "rtd-denver",
+"routeName": "17",
+"headsign": "10th & Wash",
+"stopName": "Federal Center Station Gate D",
+"distanceM": 55,
+"stopId": "33651",
+"tripId": "116040987"
+},
+{
+"time": 583,
+"agencySlug": "rtd-denver",
+"routeName": "17",
+"headsign": "10th & Wash",
+"stopName": "Union Blvd & W 2nd Pl",
+"distanceM": 279,
+"stopId": "16772",
+"tripId": "116040987"
+},
+{
+"time": 584,
+"agencySlug": "rtd-denver",
+"routeName": "17",
+"headsign": "10th & Wash",
+"stopName": "Union Blvd & W 4th Ave",
+"distanceM": 313,
+"stopId": "33665",
+"tripId": "116040987"
+},
+{
+"time": 586,
+"agencySlug": "rtd-denver",
+"routeName": "17",
+"headsign": "Federal Cntr Station",
+"stopName": "W 2nd Pl & Union Blvd",
+"distanceM": 288,
+"stopId": "34370",
+"tripId": "116040906"
+},
+{
+"time": 588,
+"agencySlug": "rtd-denver",
+"routeName": "99",
+"headsign": "Long/Bowles",
+"stopName": "Federal Center Station Gate E",
+"distanceM": 26,
+"stopId": "33652",
+"tripId": "116049202"
+},
+{
+"time": 589,
+"agencySlug": "rtd-denver",
+"routeName": "100",
+"headsign": "Arvada Ridge Station",
+"stopName": "Federal Center Station Gate M",
+"distanceM": 23,
+"stopId": "33659",
+"tripId": "116032257"
+},
+{
+"time": 589,
+"agencySlug": "rtd-denver",
+"routeName": "W",
+"headsign": "W-Line Union Station",
+"stopName": "Federal Center Station",
+"distanceM": 92,
+"stopId": "33955",
+"tripId": "116034443"
+},
+{
+"time": 591,
+"agencySlug": "rtd-denver",
+"routeName": "100",
+"headsign": "Arvada Ridge Station",
+"stopName": "Union Blvd & W 2nd Pl",
+"distanceM": 279,
+"stopId": "16772",
+"tripId": "116032257"
+},
+{
+"time": 592,
+"agencySlug": "rtd-denver",
+"routeName": "100",
+"headsign": "Arvada Ridge Station",
+"stopName": "Union Blvd & W 4th Ave",
+"distanceM": 313,
+"stopId": "33665",
+"tripId": "116032257"
+},
+{
+"time": 595,
+"agencySlug": "rtd-denver",
+"routeName": "W",
+"headsign": "W-Line Jeffco",
+"stopName": "Federal Center Station",
+"distanceM": 49,
+"stopId": "33566",
+"tripId": "116034545"
+},
+{
+"time": 597,
+"agencySlug": "rtd-denver",
+"routeName": "17",
+"headsign": "10th & Wash",
+"stopName": "Federal Center Station Gate D",
+"distanceM": 55,
+"stopId": "33651",
+"tripId": "116040986"
+},
+{
+"time": 597,
+"agencySlug": "rtd-denver",
+"routeName": "3",
+"headsign": "Aurora Metro Cntr via Alameda",
+"stopName": "Federal Center Station Gate N",
+"distanceM": 66,
+"stopId": "33660",
+"tripId": "116042743"
+},
+{
+"time": 598,
+"agencySlug": "rtd-denver",
+"routeName": "100",
+"headsign": "Federal Center Station",
+"stopName": "W 2nd Pl & Union Blvd",
+"distanceM": 288,
+"stopId": "34370",
+"tripId": "116032296"
+},
+{
+"time": 598,
+"agencySlug": "rtd-denver",
+"routeName": "17",
+"headsign": "10th & Wash",
+"stopName": "Union Blvd & W 2nd Pl",
+"distanceM": 279,
+"stopId": "16772",
+"tripId": "116040986"
+},
+{
+"time": 599,
+"agencySlug": "rtd-denver",
+"routeName": "17",
+"headsign": "10th & Wash",
+"stopName": "Union Blvd & W 4th Ave",
+"distanceM": 313,
+"stopId": "33665",
+"tripId": "116040986"
+},
+{
+"time": 600,
+"agencySlug": "rtd-denver",
+"routeName": "3",
+"headsign": "Aurora Metro Cntr via Alameda",
+"stopName": "Union Blvd & W 2nd Pl",
+"distanceM": 357,
+"stopId": "16773",
+"tripId": "116042743"
+},
+{
+"time": 601,
+"agencySlug": "rtd-denver",
+"routeName": "17",
+"headsign": "Federal Cntr Station",
+"stopName": "W 2nd Pl & Union Blvd",
+"distanceM": 288,
+"stopId": "34370",
+"tripId": "116040905"
+},
+{
+"time": 604,
+"agencySlug": "rtd-denver",
+"routeName": "W",
+"headsign": "W-Line Union Station",
+"stopName": "Federal Center Station",
+"distanceM": 92,
+"stopId": "33955",
+"tripId": "116034442"
+},
+{
+"time": 610,
+"agencySlug": "rtd-denver",
+"routeName": "W",
+"headsign": "W-Line Jeffco",
+"stopName": "Federal Center Station",
+"distanceM": 49,
+"stopId": "33566",
+"tripId": "116034548"
+},
+{
+"time": 612,
+"agencySlug": "rtd-denver",
+"routeName": "17",
+"headsign": "10th & Wash",
+"stopName": "Federal Center Station Gate D",
+"distanceM": 55,
+"stopId": "33651",
+"tripId": "116040985"
+},
+{
+"time": 612,
+"agencySlug": "rtd-denver",
+"routeName": "3",
+"headsign": "Federal Center",
+"stopName": "W 2nd Pl & Union Blvd",
+"distanceM": 288,
+"stopId": "34370",
+"tripId": "116042779"
+},
+{
+"time": 613,
+"agencySlug": "rtd-denver",
+"routeName": "17",
+"headsign": "10th & Wash",
+"stopName": "Union Blvd & W 2nd Pl",
+"distanceM": 279,
+"stopId": "16772",
+"tripId": "116040985"
+},
+{
+"time": 614,
+"agencySlug": "rtd-denver",
+"routeName": "17",
+"headsign": "10th & Wash",
+"stopName": "Union Blvd & W 4th Ave",
+"distanceM": 313,
+"stopId": "33665",
+"tripId": "116040985"
+},
+{
+"time": 616,
+"agencySlug": "rtd-denver",
+"routeName": "17",
+"headsign": "Federal Cntr Station",
+"stopName": "W 2nd Pl & Union Blvd",
+"distanceM": 288,
+"stopId": "34370",
+"tripId": "116040904"
+},
+{
+"time": 618,
+"agencySlug": "rtd-denver",
+"routeName": "99",
+"headsign": "Long/Bowles",
+"stopName": "Federal Center Station Gate E",
+"distanceM": 26,
+"stopId": "33652",
+"tripId": "116049185"
+},
+{
+"time": 619,
+"agencySlug": "rtd-denver",
+"routeName": "100",
+"headsign": "US 36 & Sheridan",
+"stopName": "Federal Center Station Gate M",
+"distanceM": 23,
+"stopId": "33659",
+"tripId": "116032266"
+},
+{
+"time": 619,
+"agencySlug": "rtd-denver",
+"routeName": "W",
+"headsign": "W-Line Union Station",
+"stopName": "Federal Center Station",
+"distanceM": 92,
+"stopId": "33955",
+"tripId": "116034445"
+},
+{
+"time": 621,
+"agencySlug": "rtd-denver",
+"routeName": "100",
+"headsign": "US 36 & Sheridan",
+"stopName": "Union Blvd & W 2nd Pl",
+"distanceM": 279,
+"stopId": "16772",
+"tripId": "116032266"
+},
+{
+"time": 622,
+"agencySlug": "rtd-denver",
+"routeName": "100",
+"headsign": "US 36 & Sheridan",
+"stopName": "Union Blvd & W 4th Ave",
+"distanceM": 313,
+"stopId": "33665",
+"tripId": "116032266"
+},
+{
+"time": 625,
+"agencySlug": "rtd-denver",
+"routeName": "W",
+"headsign": "W-Line Jeffco",
+"stopName": "Federal Center Station",
+"distanceM": 49,
+"stopId": "33566",
+"tripId": "116034547"
+},
+{
+"time": 627,
+"agencySlug": "rtd-denver",
+"routeName": "17",
+"headsign": "10th & Wash",
+"stopName": "Federal Center Station Gate D",
+"distanceM": 55,
+"stopId": "33651",
+"tripId": "116040984"
+},
+{
+"time": 627,
+"agencySlug": "rtd-denver",
+"routeName": "3",
+"headsign": "Alameda Stn",
+"stopName": "Federal Center Station Gate N",
+"distanceM": 66,
+"stopId": "33660",
+"tripId": "116042744"
+},
+{
+"time": 628,
+"agencySlug": "rtd-denver",
+"routeName": "17",
+"headsign": "10th & Wash",
+"stopName": "Union Blvd & W 2nd Pl",
+"distanceM": 279,
+"stopId": "16772",
+"tripId": "116040984"
+},
+{
+"time": 629,
+"agencySlug": "rtd-denver",
+"routeName": "100",
+"headsign": "Federal Center Station",
+"stopName": "W 2nd Pl & Union Blvd",
+"distanceM": 288,
+"stopId": "34370",
+"tripId": "116032285"
+},
+{
+"time": 629,
+"agencySlug": "rtd-denver",
+"routeName": "17",
+"headsign": "10th & Wash",
+"stopName": "Union Blvd & W 4th Ave",
+"distanceM": 313,
+"stopId": "33665",
+"tripId": "116040984"
+},
+{
+"time": 630,
+"agencySlug": "rtd-denver",
+"routeName": "3",
+"headsign": "Alameda Stn",
+"stopName": "Union Blvd & W 2nd Pl",
+"distanceM": 357,
+"stopId": "16773",
+"tripId": "116042744"
+},
+{
+"time": 631,
+"agencySlug": "rtd-denver",
+"routeName": "17",
+"headsign": "Federal Cntr Station",
+"stopName": "W 2nd Pl & Union Blvd",
+"distanceM": 288,
+"stopId": "34370",
+"tripId": "116040903"
+},
+{
+"time": 634,
+"agencySlug": "rtd-denver",
+"routeName": "W",
+"headsign": "W-Line Union Station",
+"stopName": "Federal Center Station",
+"distanceM": 92,
+"stopId": "33955",
+"tripId": "116034444"
+},
+{
+"time": 640,
+"agencySlug": "rtd-denver",
+"routeName": "W",
+"headsign": "W-Line Jeffco",
+"stopName": "Federal Center Station",
+"distanceM": 49,
+"stopId": "33566",
+"tripId": "116034550"
+},
+{
+"time": 642,
+"agencySlug": "rtd-denver",
+"routeName": "17",
+"headsign": "10th & Wash",
+"stopName": "Federal Center Station Gate D",
+"distanceM": 55,
+"stopId": "33651",
+"tripId": "116040983"
+},
+{
+"time": 643,
+"agencySlug": "rtd-denver",
+"routeName": "17",
+"headsign": "10th & Wash",
+"stopName": "Union Blvd & W 2nd Pl",
+"distanceM": 279,
+"stopId": "16772",
+"tripId": "116040983"
+},
+{
+"time": 644,
+"agencySlug": "rtd-denver",
+"routeName": "17",
+"headsign": "10th & Wash",
+"stopName": "Union Blvd & W 4th Ave",
+"distanceM": 313,
+"stopId": "33665",
+"tripId": "116040983"
+},
+{
+"time": 644,
+"agencySlug": "rtd-denver",
+"routeName": "3",
+"headsign": "Federal Center",
+"stopName": "W 2nd Pl & Union Blvd",
+"distanceM": 288,
+"stopId": "34370",
+"tripId": "116042791"
+},
+{
+"time": 646,
+"agencySlug": "rtd-denver",
+"routeName": "17",
+"headsign": "Federal Cntr Station",
+"stopName": "W 2nd Pl & Union Blvd",
+"distanceM": 288,
+"stopId": "34370",
+"tripId": "116040902"
+},
+{
+"time": 648,
+"agencySlug": "rtd-denver",
+"routeName": "99",
+"headsign": "Long/Bowles",
+"stopName": "Federal Center Station Gate E",
+"distanceM": 26,
+"stopId": "33652",
+"tripId": "116049201"
+},
+{
+"time": 649,
+"agencySlug": "rtd-denver",
+"routeName": "100",
+"headsign": "Arvada Ridge Station",
+"stopName": "Federal Center Station Gate M",
+"distanceM": 23,
+"stopId": "33659",
+"tripId": "116032256"
+},
+{
+"time": 649,
+"agencySlug": "rtd-denver",
+"routeName": "W",
+"headsign": "W-Line Union Station",
+"stopName": "Federal Center Station",
+"distanceM": 92,
+"stopId": "33955",
+"tripId": "116034452"
+},
+{
+"time": 651,
+"agencySlug": "rtd-denver",
+"routeName": "100",
+"headsign": "Arvada Ridge Station",
+"stopName": "Union Blvd & W 2nd Pl",
+"distanceM": 279,
+"stopId": "16772",
+"tripId": "116032256"
+},
+{
+"time": 652,
+"agencySlug": "rtd-denver",
+"routeName": "100",
+"headsign": "Arvada Ridge Station",
+"stopName": "Union Blvd & W 4th Ave",
+"distanceM": 313,
+"stopId": "33665",
+"tripId": "116032256"
+},
+{
+"time": 655,
+"agencySlug": "rtd-denver",
+"routeName": "W",
+"headsign": "W-Line Jeffco",
+"stopName": "Federal Center Station",
+"distanceM": 49,
+"stopId": "33566",
+"tripId": "116034549"
+},
+{
+"time": 657,
+"agencySlug": "rtd-denver",
+"routeName": "17",
+"headsign": "10th & Wash",
+"stopName": "Federal Center Station Gate D",
+"distanceM": 55,
+"stopId": "33651",
+"tripId": "116040982"
+},
+{
+"time": 657,
+"agencySlug": "rtd-denver",
+"routeName": "3",
+"headsign": "Aurora Metro Cntr via Alameda",
+"stopName": "Federal Center Station Gate N",
+"distanceM": 66,
+"stopId": "33660",
+"tripId": "116042745"
+},
+{
+"time": 658,
+"agencySlug": "rtd-denver",
+"routeName": "17",
+"headsign": "10th & Wash",
+"stopName": "Union Blvd & W 2nd Pl",
+"distanceM": 279,
+"stopId": "16772",
+"tripId": "116040982"
+},
+{
+"time": 659,
+"agencySlug": "rtd-denver",
+"routeName": "100",
+"headsign": "Federal Center Station",
+"stopName": "W 2nd Pl & Union Blvd",
+"distanceM": 288,
+"stopId": "34370",
+"tripId": "116032297"
+},
+{
+"time": 659,
+"agencySlug": "rtd-denver",
+"routeName": "17",
+"headsign": "10th & Wash",
+"stopName": "Union Blvd & W 4th Ave",
+"distanceM": 313,
+"stopId": "33665",
+"tripId": "116040982"
+},
+{
+"time": 660,
+"agencySlug": "rtd-denver",
+"routeName": "3",
+"headsign": "Aurora Metro Cntr via Alameda",
+"stopName": "Union Blvd & W 2nd Pl",
+"distanceM": 357,
+"stopId": "16773",
+"tripId": "116042745"
+},
+{
+"time": 661,
+"agencySlug": "rtd-denver",
+"routeName": "17",
+"headsign": "Federal Cntr Station",
+"stopName": "W 2nd Pl & Union Blvd",
+"distanceM": 288,
+"stopId": "34370",
+"tripId": "116040901"
+},
+{
+"time": 664,
+"agencySlug": "rtd-denver",
+"routeName": "W",
+"headsign": "W-Line Union Station",
+"stopName": "Federal Center Station",
+"distanceM": 92,
+"stopId": "33955",
+"tripId": "116034447"
+},
+{
+"time": 670,
+"agencySlug": "rtd-denver",
+"routeName": "W",
+"headsign": "W-Line Jeffco",
+"stopName": "Federal Center Station",
+"distanceM": 49,
+"stopId": "33566",
+"tripId": "116034552"
+},
+{
+"time": 672,
+"agencySlug": "rtd-denver",
+"routeName": "17",
+"headsign": "10th & Wash",
+"stopName": "Federal Center Station Gate D",
+"distanceM": 55,
+"stopId": "33651",
+"tripId": "116040981"
+},
+{
+"time": 673,
+"agencySlug": "rtd-denver",
+"routeName": "17",
+"headsign": "10th & Wash",
+"stopName": "Union Blvd & W 2nd Pl",
+"distanceM": 279,
+"stopId": "16772",
+"tripId": "116040981"
+},
+{
+"time": 673,
+"agencySlug": "rtd-denver",
+"routeName": "3",
+"headsign": "Federal Center",
+"stopName": "W 2nd Pl & Union Blvd",
+"distanceM": 288,
+"stopId": "34370",
+"tripId": "116042781"
+},
+{
+"time": 674,
+"agencySlug": "rtd-denver",
+"routeName": "17",
+"headsign": "10th & Wash",
+"stopName": "Union Blvd & W 4th Ave",
+"distanceM": 313,
+"stopId": "33665",
+"tripId": "116040981"
+},
+{
+"time": 676,
+"agencySlug": "rtd-denver",
+"routeName": "17",
+"headsign": "Federal Cntr Station",
+"stopName": "W 2nd Pl & Union Blvd",
+"distanceM": 288,
+"stopId": "34370",
+"tripId": "116040900"
+},
+{
+"time": 678,
+"agencySlug": "rtd-denver",
+"routeName": "99",
+"headsign": "Long/Bowles",
+"stopName": "Federal Center Station Gate E",
+"distanceM": 26,
+"stopId": "33652",
+"tripId": "116049184"
+},
+{
+"time": 679,
+"agencySlug": "rtd-denver",
+"routeName": "100",
+"headsign": "US 36 & Sheridan",
+"stopName": "Federal Center Station Gate M",
+"distanceM": 23,
+"stopId": "33659",
+"tripId": "116032273"
+},
+{
+"time": 679,
+"agencySlug": "rtd-denver",
+"routeName": "W",
+"headsign": "W-Line Union Station",
+"stopName": "Federal Center Station",
+"distanceM": 92,
+"stopId": "33955",
+"tripId": "116034454"
+},
+{
+"time": 681,
+"agencySlug": "rtd-denver",
+"routeName": "100",
+"headsign": "US 36 & Sheridan",
+"stopName": "Union Blvd & W 2nd Pl",
+"distanceM": 279,
+"stopId": "16772",
+"tripId": "116032273"
+},
+{
+"time": 682,
+"agencySlug": "rtd-denver",
+"routeName": "100",
+"headsign": "US 36 & Sheridan",
+"stopName": "Union Blvd & W 4th Ave",
+"distanceM": 313,
+"stopId": "33665",
+"tripId": "116032273"
+},
+{
+"time": 685,
+"agencySlug": "rtd-denver",
+"routeName": "W",
+"headsign": "W-Line Jeffco",
+"stopName": "Federal Center Station",
+"distanceM": 49,
+"stopId": "33566",
+"tripId": "116034551"
+},
+{
+"time": 686,
+"agencySlug": "rtd-denver",
+"routeName": "3",
+"headsign": "Alameda Stn",
+"stopName": "Federal Center Station Gate N",
+"distanceM": 66,
+"stopId": "33660",
+"tripId": "116042746"
+},
+{
+"time": 687,
+"agencySlug": "rtd-denver",
+"routeName": "17",
+"headsign": "10th & Wash",
+"stopName": "Federal Center Station Gate D",
+"distanceM": 55,
+"stopId": "33651",
+"tripId": "116040980"
+},
+{
+"time": 688,
+"agencySlug": "rtd-denver",
+"routeName": "17",
+"headsign": "10th & Wash",
+"stopName": "Union Blvd & W 2nd Pl",
+"distanceM": 279,
+"stopId": "16772",
+"tripId": "116040980"
+},
+{
+"time": 689,
+"agencySlug": "rtd-denver",
+"routeName": "100",
+"headsign": "Federal Center Station",
+"stopName": "W 2nd Pl & Union Blvd",
+"distanceM": 288,
+"stopId": "34370",
+"tripId": "116032284"
+},
+{
+"time": 689,
+"agencySlug": "rtd-denver",
+"routeName": "17",
+"headsign": "10th & Wash",
+"stopName": "Union Blvd & W 4th Ave",
+"distanceM": 313,
+"stopId": "33665",
+"tripId": "116040980"
+},
+{
+"time": 689,
+"agencySlug": "rtd-denver",
+"routeName": "3",
+"headsign": "Alameda Stn",
+"stopName": "Union Blvd & W 2nd Pl",
+"distanceM": 357,
+"stopId": "16773",
+"tripId": "116042746"
+},
+{
+"time": 691,
+"agencySlug": "rtd-denver",
+"routeName": "17",
+"headsign": "Federal Cntr Station",
+"stopName": "W 2nd Pl & Union Blvd",
+"distanceM": 288,
+"stopId": "34370",
+"tripId": "116040899"
+},
+{
+"time": 694,
+"agencySlug": "rtd-denver",
+"routeName": "W",
+"headsign": "W-Line Union Station",
+"stopName": "Federal Center Station",
+"distanceM": 92,
+"stopId": "33955",
+"tripId": "116034453"
+},
+{
+"time": 700,
+"agencySlug": "rtd-denver",
+"routeName": "W",
+"headsign": "W-Line Jeffco",
+"stopName": "Federal Center Station",
+"distanceM": 49,
+"stopId": "33566",
+"tripId": "116034554"
+},
+{
+"time": 702,
+"agencySlug": "rtd-denver",
+"routeName": "17",
+"headsign": "10th & Wash",
+"stopName": "Federal Center Station Gate D",
+"distanceM": 55,
+"stopId": "33651",
+"tripId": "116040977"
+},
+{
+"time": 703,
+"agencySlug": "rtd-denver",
+"routeName": "17",
+"headsign": "10th & Wash",
+"stopName": "Union Blvd & W 2nd Pl",
+"distanceM": 279,
+"stopId": "16772",
+"tripId": "116040977"
+},
+{
+"time": 704,
+"agencySlug": "rtd-denver",
+"routeName": "17",
+"headsign": "10th & Wash",
+"stopName": "Union Blvd & W 4th Ave",
+"distanceM": 313,
+"stopId": "33665",
+"tripId": "116040977"
+},
+{
+"time": 704,
+"agencySlug": "rtd-denver",
+"routeName": "3",
+"headsign": "Federal Center",
+"stopName": "W 2nd Pl & Union Blvd",
+"distanceM": 288,
+"stopId": "34370",
+"tripId": "116042782"
+},
+{
+"time": 706,
+"agencySlug": "rtd-denver",
+"routeName": "17",
+"headsign": "Federal Cntr Station",
+"stopName": "W 2nd Pl & Union Blvd",
+"distanceM": 288,
+"stopId": "34370",
+"tripId": "116040898"
+},
+{
+"time": 708,
+"agencySlug": "rtd-denver",
+"routeName": "99",
+"headsign": "Long/Bowles",
+"stopName": "Federal Center Station Gate E",
+"distanceM": 26,
+"stopId": "33652",
+"tripId": "116049190"
+},
+{
+"time": 709,
+"agencySlug": "rtd-denver",
+"routeName": "100",
+"headsign": "Arvada Ridge Station",
+"stopName": "Federal Center Station Gate M",
+"distanceM": 23,
+"stopId": "33659",
+"tripId": "116032255"
+},
+{
+"time": 709,
+"agencySlug": "rtd-denver",
+"routeName": "W",
+"headsign": "W-Line Union Station",
+"stopName": "Federal Center Station",
+"distanceM": 92,
+"stopId": "33955",
+"tripId": "116034456"
+},
+{
+"time": 711,
+"agencySlug": "rtd-denver",
+"routeName": "100",
+"headsign": "Arvada Ridge Station",
+"stopName": "Union Blvd & W 2nd Pl",
+"distanceM": 279,
+"stopId": "16772",
+"tripId": "116032255"
+},
+{
+"time": 712,
+"agencySlug": "rtd-denver",
+"routeName": "100",
+"headsign": "Arvada Ridge Station",
+"stopName": "Union Blvd & W 4th Ave",
+"distanceM": 313,
+"stopId": "33665",
+"tripId": "116032255"
+},
+{
+"time": 715,
+"agencySlug": "rtd-denver",
+"routeName": "W",
+"headsign": "W-Line Jeffco",
+"stopName": "Federal Center Station",
+"distanceM": 49,
+"stopId": "33566",
+"tripId": "116034553"
+},
+{
+"time": 716,
+"agencySlug": "rtd-denver",
+"routeName": "3",
+"headsign": "Aurora Metro Cntr via Alameda",
+"stopName": "Federal Center Station Gate N",
+"distanceM": 66,
+"stopId": "33660",
+"tripId": "116042747"
+},
+{
+"time": 717,
+"agencySlug": "rtd-denver",
+"routeName": "17",
+"headsign": "10th & Wash",
+"stopName": "Federal Center Station Gate D",
+"distanceM": 55,
+"stopId": "33651",
+"tripId": "116040979"
+},
+{
+"time": 718,
+"agencySlug": "rtd-denver",
+"routeName": "17",
+"headsign": "10th & Wash",
+"stopName": "Union Blvd & W 2nd Pl",
+"distanceM": 279,
+"stopId": "16772",
+"tripId": "116040979"
+},
+{
+"time": 719,
+"agencySlug": "rtd-denver",
+"routeName": "100",
+"headsign": "Federal Center Station",
+"stopName": "W 2nd Pl & Union Blvd",
+"distanceM": 288,
+"stopId": "34370",
+"tripId": "116032298"
+},
+{
+"time": 719,
+"agencySlug": "rtd-denver",
+"routeName": "17",
+"headsign": "10th & Wash",
+"stopName": "Union Blvd & W 4th Ave",
+"distanceM": 313,
+"stopId": "33665",
+"tripId": "116040979"
+},
+{
+"time": 719,
+"agencySlug": "rtd-denver",
+"routeName": "3",
+"headsign": "Aurora Metro Cntr via Alameda",
+"stopName": "Union Blvd & W 2nd Pl",
+"distanceM": 357,
+"stopId": "16773",
+"tripId": "116042747"
+}
+]
+}

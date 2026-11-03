@@ -124,6 +124,13 @@ export const SEO_ROUTES: readonly SeoRoute[] = [
     prerender: true,
   },
   {
+    path: '/research/bustang-connections',
+    title: 'Bustang connections: Transit Atlas',
+    description: 'How long riders wait for a local bus after each Bustang arrival.',
+    indexable: false,
+    gate: 'researchApps',
+  },
+  {
     path: '/research/free-child-fares',
     title: 'Free child fares: Transit Atlas',
     description: 'See up to what age children ride free at 697 transit agencies.',

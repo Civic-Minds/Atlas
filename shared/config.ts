@@ -194,6 +194,8 @@ export const FEATURE_ROUTES = {
   research: '/research',
   nightService: '/research/night',
   freeChildFares: '/research/free-child-fares',
+  /** CIV-101: beta-only, not listed on /research yet. */
+  bustangConnections: '/research/bustang-connections',
   frequentService: {
     map: '/research/frequent-service',
     story: '/research/frequent-service/story',
