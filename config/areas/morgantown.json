@@ -19,8 +19,7 @@
   ],
   "largeMetro": false,
   "agencies": [
-    "mountain-line",
-    "wvu-prt"
+    "mountain-line"
   ],
-  "page": true
+  "page": false
 }

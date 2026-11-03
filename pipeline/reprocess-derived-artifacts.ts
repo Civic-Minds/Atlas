@@ -292,7 +292,7 @@ async function processAgency(agency: Agency): Promise<ReportRow> {
     const { feedStart, feedExpiry: calendarEnd, feedInfoEnd, calendarOnlyEnd } = await peekFeedDates(body, agency.excludeRouteShortNames);
     const feedExpiry = recordedFeedExpiry(feedInfoEnd, calendarEnd, todayYmd, calendarOnlyEnd);
     row.feedExpiry = feedExpiry;
-    const dateRefusal = feedDateRefusal(feedExpiry, agency.lastFeedExpiry, agencyTodayYmd(agency), pinned ? agency.expiredFeedPin!.feedExpiry : null);
+    const dateRefusal = feedDateRefusal(feedExpiry, agency.lastFeedExpiry, agencyTodayYmd(agency), pinned ? agency.expiredFeedPin!.feedExpiry : null, todayYmd);
     if (dateRefusal) throw new Refusal(dateRefusal);
 
     const supplementalFeeds = await loadSupplementalFeeds(agency, url => readSupplementalFeed(agency, url));
