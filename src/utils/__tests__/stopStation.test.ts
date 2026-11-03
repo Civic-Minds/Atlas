@@ -61,6 +61,20 @@ describe('sameStationStopIds (CIV-1305)', () => {
     expect(same({ stopId: '9449', stopName: 'MACKENZIE KING A' }, [{ stopId: '3585', stopName: 'MACKENZIE KING B' }])).toEqual(['9449']);
   });
 
+  it('reads parent names the way the feeds write them: STM in capitals with the station word first, TTC short with none', () => {
+    // STM: "STATION ANGRIGNON", any case, station word anywhere.
+    const stm = { parentStation: 'ANG', parentStationName: 'STATION ANGRIGNON' };
+    expect(same({ stopId: '1', stopName: 'Angrignon', ...stm }, [{ stopId: '2', stopName: 'Angrignon - Terminus', ...stm }])).toEqual(['1', '2']);
+    // A street-corner child still counts when its parent names a station.
+    expect(same({ stopId: '3', stopName: 'Lamont / Bannantyne', ...stm }, [{ stopId: '4', stopName: 'Angrignon', ...stm }])).toEqual(['3', '4']);
+    // TTC: parent "Union", no station word. Its platforms aren't street corners, so the parent counts.
+    const ttc = { parentStation: '15772', parentStationName: 'Union' };
+    expect(same({ stopId: '13815', stopName: 'Union Station - Northbound Platform', ...ttc }, [
+      { stopId: '13816', stopName: 'Union Station - Southbound Platform', ...ttc },
+      { stopId: '10935', stopName: 'Union Station - Streetcar Platform', ...ttc },
+    ])).toEqual(['10935', '13815', '13816']);
+  });
+
   it("ignores a parent that isn't a station (MiWay's street-corner place_ parents)", () => {
     const corner = { parentStation: 'place_cormav', parentStationName: 'Mavis Rd At Courtneypark Dr' };
     expect(same({ stopId: '1', stopName: 'Mavis Rd At Courtneypark Dr', ...corner }, [
