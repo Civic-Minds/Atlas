@@ -1,4 +1,4 @@
-import { sameStationStopIds } from '../../utils/stopStation';
+import { stopCardSiblings } from '../../utils/stopStation';
 import { searchAreas, type AreaSearchResult } from '../../../shared/areaSearch';
 import React, { useMemo, useRef, useEffect, useCallback, useState } from 'react';
 import { useColorMode } from '../../hooks/useColorMode';
@@ -473,15 +473,10 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     const ownSiblings = allFeatures
       .filter(f => f.geometry.type === 'Point' && (f.properties as any).agencySlug === slug && siblingIdsByAgency[slug]?.has((f.properties as any).stopId))
       .map(f => f.properties as any);
-    const station = sameStationStopIds(
-      { stopId: props.stopId, stopName, parentStation: props.parentStation, parentStationName: props.parentStationName },
-      ownSiblings.map(p => ({ stopId: p.stopId, stopName: p.stopName, parentStation: p.parentStation, parentStationName: p.parentStationName })),
+    const toStation = (p: any) => ({ stopId: p.stopId, stopName: p.stopName, parentStation: p.parentStation, parentStationName: p.parentStationName, routeIds: Array.isArray(p.routeIds) ? p.routeIds : [] });
+    const { siblingIdsByAgency: cardSiblingIdsByAgency, routesByAgency: cardRoutesByAgency } = stopCardSiblings(
+      slug, toStation(props), ownSiblings.map(toStation), siblingIdsByAgency, routesByAgency,
     );
-    const cardSiblingIdsByAgency: Record<string, Set<string>> = { ...siblingIdsByAgency, [slug]: station };
-    const cardRoutesByAgency: Record<string, Set<string>> = {
-      ...routesByAgency,
-      [slug]: new Set(ownSiblings.filter(p => station.has(p.stopId)).flatMap(p => (Array.isArray(p.routeIds) ? p.routeIds : []) as string[])),
-    };
 
     // CIV-1052: each route's periods at the stop and its station, so the card can tell idle routes from running ones.
     const routePeriodBitsByAgency: Record<string, Map<string, Array<number | undefined>>> = {};

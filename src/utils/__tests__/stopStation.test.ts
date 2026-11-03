@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { sameStationStopIds, stationNameOf } from '../stopStation';
+import { sameStationStopIds, stationNameOf, stopCardSiblings } from '../stopStation';
 
 const same = (clicked: Parameters<typeof sameStationStopIds>[0], siblings: Parameters<typeof sameStationStopIds>[1]) =>
   [...sameStationStopIds(clicked, siblings)].sort();
@@ -22,6 +22,16 @@ describe('stationNameOf (CIV-1305)', () => {
     expect(stationNameOf('BUR OAK AV / MOUNT JOY GO STATION')).toBeNull();
     expect(stationNameOf('Bayly Eastbound @ Pickering Station')).toBeNull();
     expect(stationNameOf('Station Rd')).toBeNull();
+  });
+
+  it('gives no station where the station word names a road, or the stop is near, opposite or off a station', () => {
+    // MiWay 3039 and 3046 are street stops on Erindale Station Rd, 52 m apart, one each way.
+    expect(stationNameOf('Erindale Station Rd South Of Burnhamthorpe Rd')).toBeNull();
+    expect(stationNameOf('Erindale Station Rd North Of Central Pky')).toBeNull();
+    expect(stationNameOf('Central Pky West Of Erindale Station Rd')).toBeNull();
+    expect(stationNameOf('Main St Near Union Station')).toBeNull();
+    expect(stationNameOf('Dundas St Opp Kipling Station')).toBeNull();
+    expect(stationNameOf('Kennedy Station - Platform A')).toBe('kennedy station');
   });
 });
 
@@ -63,5 +73,54 @@ describe('sameStationStopIds (CIV-1305)', () => {
       { stopId: '2', stopName: 'Bay St at Bloor St West - Bay Station' },
       { stopId: '3', stopName: 'Bay Station - Westbound Platform' },
     ])).toEqual(['1', '3']);
+  });
+});
+
+describe('the decision-page stops and stations (CIV-1305)', () => {
+  const ids = (clicked: Parameters<typeof sameStationStopIds>[0], siblings: Parameters<typeof sameStationStopIds>[1]) =>
+    [...sameStationStopIds(clicked, siblings)].sort();
+
+  it('street pairs split: DRT Kingston WB @ Chapman, TTC Davisville at Cleveland, TriMet A Ave & Chandler, MiWay Erindale Station Rd', () => {
+    expect(ids({ stopId: '1596', stopName: 'Kingston Westbound @ Chapman' }, [{ stopId: '2238', stopName: 'Kingston Eastbound @ Ritchie' }])).toEqual(['1596']);
+    // Same name on both sides of the road: still two stops.
+    expect(ids({ stopId: '1871', stopName: 'Davisville Ave at Cleveland St' }, [{ stopId: '1872', stopName: 'Davisville Ave at Cleveland St' }])).toEqual(['1871']);
+    expect(ids({ stopId: '2', stopName: 'A Ave & Chandler' }, [{ stopId: '4', stopName: 'A Ave & 10th St' }])).toEqual(['2']);
+    expect(ids({ stopId: '3039', stopName: 'Erindale Station Rd South Of Burnhamthorpe Rd' }, [{ stopId: '3046', stopName: 'Erindale Station Rd North Of Central Pky' }])).toEqual(['3039']);
+  });
+
+  it('TTC Kennedy stays one station: bus platforms, the subway platform and the drop-off platform', () => {
+    expect(ids({ stopId: '14708', stopName: 'Kennedy Station - Platform A' }, [
+      { stopId: '14709', stopName: 'Kennedy Station - Platform A' },
+      { stopId: '14947', stopName: 'Kennedy Station - Subway Platform' },
+      { stopId: '16453', stopName: 'Kennedy Station Drop-off Platform' },
+      { stopId: '16392', stopName: 'Kennedy Station - Platform B' },
+      { stopId: '3539', stopName: 'Eglinton Ave East at Kennedy Station' },
+    ])).toEqual(['14708', '14709', '14947', '16392', '16453']);
+  });
+});
+
+describe('stopCardSiblings (CIV-1305)', () => {
+  const hubIds = { ttc: new Set(['14708', '14947', '3539']), go: new Set(['KE']) };
+  const hubRoutes = { ttc: new Set(['2', '43', '54']), go: new Set(['ST']) };
+  const own = [
+    { stopId: '14708', stopName: 'Kennedy Station - Platform A', routeIds: ['43'] },
+    { stopId: '14947', stopName: 'Kennedy Station - Subway Platform', routeIds: ['2'] },
+    { stopId: '3539', stopName: 'Eglinton Ave East at Kennedy Station', routeIds: ['54'] },
+  ];
+
+  it("narrows only the clicked agency to its station; another agency at the station keeps the hub's stops (GO at Kennedy)", () => {
+    const card = stopCardSiblings('ttc', own[0], own, hubIds, hubRoutes);
+    expect([...card.siblingIdsByAgency.ttc].sort()).toEqual(['14708', '14947']);
+    expect([...card.routesByAgency.ttc].sort()).toEqual(['2', '43']);
+    expect(card.siblingIdsByAgency.go).toBe(hubIds.go);
+    expect(card.routesByAgency.go).toBe(hubRoutes.go);
+  });
+
+  it("a street stop keeps only its own routes, even when the hub didn't list the clicked stop itself", () => {
+    const clicked = { stopId: '4220', stopName: 'Kingston Rd at Pine Ridge Dr', routeIds: ['102', '12'] };
+    const card = stopCardSiblings('ttc', clicked, [{ stopId: '4253', stopName: 'Kingston Rd at Pine Ridge Dr', routeIds: ['102', '86'] }],
+      { ttc: new Set(['4253']) }, { ttc: new Set(['102', '12', '86']) });
+    expect([...card.siblingIdsByAgency.ttc]).toEqual(['4220']);
+    expect([...card.routesByAgency.ttc].sort()).toEqual(['102', '12']);
   });
 });
