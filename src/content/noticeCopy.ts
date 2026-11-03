@@ -216,11 +216,11 @@ export const noServiceInPeriodText = (periodRange: string) => stopRouteNoTripsNo
 export const SETTINGS_APPLY_TO_FREQUENCY_MAP = 'These settings apply to the Frequency map.';
 // Filter panel: the Compare map B note beside the B badge.
 export const COMPARE_B_PICKER_NOTE = 'The frequency, day and time above are map A; pick map B here. Modes and agencies apply to both maps. Leave Compare from the More menu.';
-// CIV-1252 (beta, behind FEATURES.upcomingNetwork): Compare map B's network choice. Placeholders until Ryan OKs the
-// exact wording; they are not shown on any deployed site while the flag is off.
-export const COMPARE_DATASET_GROUP_LABEL = '[Placeholder: map B network choice]';
-export const COMPARE_DATASET_CURRENT_LABEL = '[Placeholder: current network]';
-export const COMPARE_DATASET_UPCOMING_LABEL = '[Placeholder: upcoming network]';
+// CIV-1252 (beta, behind FEATURES.upcomingNetwork): the network change preview, its own two-map mode (today's network
+// on map A, the upcoming one on map B). Placeholders until Ryan OKs the exact wording, and until he picks where the way
+// in lives; they are not shown on any deployed site while the flag is off.
+export const PREVIEW_ENTRY_LABEL = '[Placeholder: preview]';
+export const PREVIEW_ENTRY_ARIA_LABEL = '[Placeholder: preview the upcoming network]';
 export const COMPARE_UPCOMING_UNAVAILABLE_NOTE = '[Placeholder: no upcoming network to show, so map B shows the current one]';
 
 // ---- Map keys (CIV-957) ----

@@ -7,7 +7,7 @@ import {
 } from '../utils/upcomingNetwork';
 
 /**
- * CIV-1252: the upcoming networks for Compare's map B. Kept apart from useAgencyData on purpose: that loader's caches
+ * CIV-1252: the upcoming networks for Preview's map B. Kept apart from useAgencyData on purpose: that loader's caches
  * are keyed by slug alone, so an agency's upcoming routes there would overwrite its current ones.
  */
 const base = (): string => UPCOMING_URL_OVERRIDE ?? BETA_R2_PUBLIC_URL;
@@ -64,7 +64,7 @@ export interface UpcomingNetworkState {
 const EMPTY: UpcomingNetworkState = { indexLoaded: false, entries: [], layers: {}, failedSlugs: new Set() };
 
 /**
- * `enabled`: read the index (Compare is open and the flag is on). `active`: also load the route files (map B is on
+ * `enabled`: read the index (two-map modes are available and the flag is on). `active`: also load the route files (Preview is open, map B on
  * the upcoming network). `agencies`: the catalog, so an entry for an agency the build doesn't show is ignored.
  */
 export function useUpcomingNetwork(

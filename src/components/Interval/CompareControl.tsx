@@ -1,6 +1,6 @@
 import type { WheelEvent as ReactWheelEvent } from 'react';
 import ModeTab from '../ModeTab';
-import { Columns2, Lock, LockOpen } from 'lucide-react';
+import { CalendarClock, Columns2, Lock, LockOpen } from 'lucide-react';
 import { MAP_BADGE, MAP_BADGE_COUNT, MAP_BADGE_LABEL } from '../../styles';
 import Pill from '../ui/Pill';
 import RoundIconButton from '../ui/RoundIconButton';
@@ -9,10 +9,7 @@ import { SideBadge } from '../ui/SideBadge';
 import { DayPicker, FrequencyPicker, PeriodPicker, PickerSection } from './pickers';
 import { compareSideHeading, type CompareSide } from '../../utils/compareSides';
 import { plural } from '../../../shared/overflowText';
-import {
-  COMPARE_DATASET_CURRENT_LABEL, COMPARE_DATASET_GROUP_LABEL, COMPARE_DATASET_UPCOMING_LABEL, COMPARE_UPCOMING_UNAVAILABLE_NOTE, FREQUENCY_LABEL,
-} from '../../content/noticeCopy';
-import type { CompareDataset } from '../../utils/upcomingNetwork';
+import { COMPARE_UPCOMING_UNAVAILABLE_NOTE, FREQUENCY_LABEL, PREVIEW_ENTRY_ARIA_LABEL, PREVIEW_ENTRY_LABEL } from '../../content/noticeCopy';
 
 export { SideBadge } from '../ui/SideBadge';
 export { compareSideLabel, defaultCompareSide, type CompareSide } from '../../utils/compareSides';
@@ -55,6 +52,22 @@ export function CompareMenuItem({ active, onStart, onExit, onDone }: { active: b
   );
 }
 
+/**
+ * CIV-1252 (beta): the way into the network change preview, its own two-map mode. A placeholder entry beside Compare
+ * (top bar, or the More menu item) until Ryan picks where it lives; label and icon are placeholders too.
+ */
+export function PreviewEntry({ active, onStart, onExit, onDone, variant }: {
+  active: boolean; onStart: () => void; onExit: () => void; onDone?: () => void; variant?: 'menu';
+}) {
+  return (
+    <ModeTab
+      variant={variant} icon={<CalendarClock className="h-3.5 w-3.5" aria-hidden="true" />}
+      label={PREVIEW_ENTRY_LABEL} ariaLabel={PREVIEW_ENTRY_ARIA_LABEL} active={active}
+      onClick={() => { (active ? onExit : onStart)(); onDone?.(); }}
+    />
+  );
+}
+
 /** Text for the link button (title and screen-reader name); the pressed state says whether the maps are linked. */
 export const COMPARE_LINK_LABEL = 'Link map views';
 
@@ -92,17 +105,9 @@ interface CompareSideBarProps {
   onChange: (settings: CompareSide) => void;
   /** Routes this map draws in view. */
   counts: { total: number } | null;
-  /**
-   * CIV-1252 (beta): map B's network. `choosable` shows the current / upcoming choice (some agency has an upcoming
-   * network); `unavailable` shows the note that the upcoming network asked for isn't there.
-   */
-  dataset?: { value: CompareDataset; choosable: boolean; unavailable: boolean };
+  /** CIV-1252 (beta, Preview): the upcoming network asked for isn't there, so this map shows today's; says so. */
+  upcomingUnavailable?: boolean;
 }
-
-const DATASET_OPTIONS: ReadonlyArray<readonly [CompareDataset, string]> = [
-  ['current', COMPARE_DATASET_CURRENT_LABEL],
-  ['upcoming', COMPARE_DATASET_UPCOMING_LABEL],
-];
 
 /**
  * The label pill catches pointer and touch events so dragging on it does not pan the map beneath it.
@@ -119,7 +124,7 @@ function forwardWheelToMap(e: ReactWheelEvent<HTMLElement>) {
  * Frequency, Day and Time menus (the same chips and menus as the main filter bar), so it is
  * clear which map each control changes.
  */
-export function CompareSideBar({ side, settings, onChange, counts, dataset }: CompareSideBarProps) {
+export function CompareSideBar({ side, settings, onChange, counts, upcomingUnavailable }: CompareSideBarProps) {
   return (
     <div className="flex flex-col items-center sm:items-end gap-1.5 min-w-0 max-w-full" data-compare-side={side}>
       <div onWheel={forwardWheelToMap} className={`pointer-events-auto ${MAP_BADGE} min-h-8 max-sm:min-h-[32px] py-1 gap-x-1.5 gap-y-0 flex-wrap justify-center max-w-[calc(100vw-2rem)] sm:flex-nowrap sm:max-w-full sm:min-w-0`}>
@@ -149,17 +154,7 @@ export function CompareSideBar({ side, settings, onChange, counts, dataset }: Co
           bounds={null}
         />
       </div>
-      {dataset?.choosable && (
-        <div className="pointer-events-auto flex gap-1" role="group" aria-label={COMPARE_DATASET_GROUP_LABEL} data-testid={`compare-dataset-${side}`}>
-          {DATASET_OPTIONS.map(([key, label]) => (
-            <Pill key={key} tone="glass" size="segment" selected={dataset.value === key}
-              onClick={() => onChange({ ...settings, dataset: key === 'upcoming' ? 'upcoming' : undefined })}>
-              {label}
-            </Pill>
-          ))}
-        </div>
-      )}
-      {dataset?.unavailable && (
+      {upcomingUnavailable && (
         <p className={`pointer-events-auto ${MAP_BADGE} ${MAP_BADGE_LABEL} min-h-8 py-1 max-w-[calc(100vw-2rem)] sm:max-w-full`} role="status" data-testid={`compare-upcoming-unavailable-${side}`}>
           {COMPARE_UPCOMING_UNAVAILABLE_NOTE}
         </p>

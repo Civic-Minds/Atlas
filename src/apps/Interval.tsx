@@ -30,7 +30,7 @@ import { ON_DEMAND_MODE } from '../../shared/modes';
 import { ATLAS_MODE, FEATURES, VIEWPORT_BBOX_PAD } from '../../shared/config';
 import { countOf, plural } from '../../shared/overflowText';
 import type * as maplibregl from 'maplibre-gl';
-import { CompareSideBar, CompareLinkToggle, CompareTab, CompareMenuItem, defaultCompareSide, type CompareSide } from '../components/Interval/CompareControl';
+import { CompareSideBar, CompareLinkToggle, CompareTab, CompareMenuItem, PreviewEntry, defaultCompareSide, type CompareSide } from '../components/Interval/CompareControl';
 import { compareSideBView, linkCompareMaps } from '../utils/compareMapSync';
 import { DAY_TYPES, type DayType as DayTypeName } from '../../shared/dayTypes';
 import { splitRouteKey } from '../utils/routeKey';
@@ -686,25 +686,26 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   // no layers, so the extra pass costs nothing.
   const compareA: CompareSide = useMemo(() => ({ day, period, maxHeadway }), [day, period, maxHeadway]);
   const compareB = compareSide ?? compareA;
-  // CIV-1252 (beta, FEATURES.upcomingNetwork): map B can draw the agencies that have published their next network
-  // from that file instead of the release tiles; every other agency stays on its current network.
-  const upcoming = useUpcomingNetwork({
-    enabled: compareActive,
-    active: compareActive && compareSide?.dataset === 'upcoming',
-    agencies,
-  });
+  // CIV-1252 (beta, FEATURES.upcomingNetwork): Preview is its own two-map mode, today's network on map A and the
+  // upcoming one on map B. It shares Compare's layout; B's side carries dataset 'upcoming'. Compare itself never sets
+  // it, so Compare is unchanged. Map B draws the agencies that have published their next network from that file
+  // instead of the release tiles; every other agency stays on its current network.
+  const previewActive = compareActive && compareSide?.dataset === 'upcoming';
+  const upcoming = useUpcomingNetwork({ enabled: compareAvailable, active: previewActive, agencies });
   const upcomingAvailable = upcoming.entries.length > 0;
-  const compareBDataset = effectiveDataset(compareSide?.dataset, upcomingAvailable);
+  const compareBDataset = effectiveDataset(previewActive ? 'upcoming' : undefined, upcomingAvailable);
   const upcomingSlugKey = compareBDataset === 'upcoming' ? Object.keys(upcoming.layers).sort().join('|') : '';
   const upcomingSlugs = useMemo(() => (upcomingSlugKey ? upcomingSlugKey.split('|') : []), [upcomingSlugKey]);
   const compareLayers = useMemo(
     () => (compareBDataset === 'upcoming' ? layersWithUpcoming(layers, upcoming.layers) : layers),
     [compareBDataset, layers, upcoming.layers],
   );
-  // A link (or a choice) asked for the upcoming network but none is there to show: the index has no entry still to
-  // come, or every listed file failed to load. Map B then shows the current network with a note.
-  const upcomingUnavailable = compareActive && compareSide?.dataset === 'upcoming' && upcoming.indexLoaded
+  // Preview is open (a link, usually) but there is no upcoming network to show: the index has no entry still to come,
+  // or every listed file failed to load. Map B then shows the current network with a note.
+  const upcomingUnavailable = previewActive && upcoming.indexLoaded
     && (!upcomingAvailable || upcoming.entries.every(e => upcoming.failedSlugs.has(e.slug)));
+  // The way into Preview shows only where some agency has an upcoming network (or Preview is already open).
+  const previewAvailable = FEATURES.upcomingNetwork && compareAvailable && (upcomingAvailable || previewActive);
   const compareStats = useIntervalStats(compareActive ? compareLayers : EMPTY_LAYERS, {
     query,
     maxHeadway: compareB.maxHeadway,
@@ -740,6 +741,8 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
 
   const startCompare = useCallback(() => { setCompareLinked(true); setCompareSide(defaultCompareSide(compareA)); }, [compareA]);
   const exitCompare = useCallback(() => { setCompareLinked(true); setCompareSide(null); }, []);
+  // CIV-1252: Preview opens both maps on map A's day, time and frequency, so only the network differs.
+  const startPreview = useCallback(() => { setCompareLinked(true); setCompareSide({ ...compareA, dataset: 'upcoming' }); }, [compareA]);
   const handledCompareStart = useRef<number | null>(null);
   useEffect(() => {
     if (!compareStartRequest || !compareAvailable || handledCompareStart.current === compareStartRequest) return;
@@ -1269,9 +1272,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
                 settings={compareSide!}
                 onChange={setCompareSide}
                 counts={compareCounts?.b ?? null}
-                dataset={FEATURES.upcomingNetwork && (upcomingAvailable || compareSide?.dataset === 'upcoming')
-                  ? { value: compareBDataset, unavailable: upcomingUnavailable, choosable: upcomingAvailable }
-                  : undefined}
+                upcomingUnavailable={upcomingUnavailable}
               />
             </CompareSideSlot>
           </div>
@@ -1510,12 +1511,20 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
       )}
 
       {viewTabsPortalContainer && compareAvailable && createPortal(
-        <CompareTab active={compareActive} onStart={startCompare} onExit={exitCompare} />,
+        <>
+          <CompareTab active={compareActive && !previewActive} onStart={startCompare} onExit={exitCompare} />
+          {previewAvailable && <PreviewEntry active={previewActive} onStart={startPreview} onExit={exitCompare} />}
+        </>,
         viewTabsPortalContainer,
       )}
 
       {moreMenuPortalContainer && compareAvailable && createPortal(
-        <CompareMenuItem active={compareActive} onStart={startCompare} onExit={exitCompare} onDone={() => onMoreMenuDone?.()} />,
+        <>
+          <CompareMenuItem active={compareActive && !previewActive} onStart={startCompare} onExit={exitCompare} onDone={() => onMoreMenuDone?.()} />
+          {previewAvailable && (
+            <PreviewEntry variant="menu" active={previewActive} onStart={startPreview} onExit={exitCompare} onDone={() => onMoreMenuDone?.()} />
+          )}
+        </>,
         moreMenuPortalContainer,
       )}
 
