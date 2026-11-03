@@ -13,10 +13,11 @@
 import { existsSync } from 'fs';
 import { config } from 'dotenv';
 import { resolve } from 'path';
+import { stagingBucketProblem, stagingRequested } from './stagingGuard.js';
 
 export function resolvePipelineEnvFile(): string {
   if (process.env.ATLAS_ENV_FILE) return process.env.ATLAS_ENV_FILE;
-  if (process.env.ATLAS_ENV === 'staging') return '.env.staging';
+  if (stagingRequested(process.env.ATLAS_ENV)) return '.env.staging';
   return '.env.local';
 }
 
@@ -27,12 +28,16 @@ export function resolvePipelineEnvFile(): string {
  * exports the production bucket (dotenv never overrides it) would read and write production (#1129).
  */
 export function stagingEnvProblem(opts: { file: string; atlasEnv?: string; fileExists: boolean; bucket?: string }): string | null {
-  const staging = opts.atlasEnv === 'staging' || /(^|[\\/])\.env\.staging$/.test(opts.file);
+  const staging = stagingRequested(opts.atlasEnv) || /(^|[\\/])\.env\.staging$/.test(opts.file);
   if (!staging) return null;
   if (!opts.fileExists) return `${opts.file} is missing, so a staging run would use the production bucket`;
-  const bucket = (opts.bucket ?? '').replace(/^["']|["']$/g, '');
-  if (!bucket || bucket === 'atlas') return `${opts.file} is loaded, but R2_BUCKET_NAME is ${bucket ? 'the production bucket "atlas"' : 'unset (the production bucket)'}`;
-  return null;
+  const problem = stagingBucketProblem(opts.bucket, 'staging');
+  return problem ? `${opts.file} is loaded, but ${problem}` : null;
+}
+
+/** An explicit ATLAS_ENV_FILE that does not exist is refused, rather than loading nothing. */
+export function envFileProblem(envFile: string | undefined, fileExists: boolean): string | null {
+  return envFile && !fileExists ? `ATLAS_ENV_FILE ${envFile} does not exist` : null;
 }
 
 /** Load env file into process.env. Returns the path used. Refuses a staging run that would reach production. */
@@ -40,7 +45,8 @@ export function loadPipelineEnv(): string {
   const file = resolvePipelineEnvFile();
   const path = resolve(file);
   const fileExists = existsSync(path);
-  if (process.env.ATLAS_ENV_FILE && !fileExists) throw new Error(`ATLAS_ENV_FILE ${file} does not exist`);
+  const missing = envFileProblem(process.env.ATLAS_ENV_FILE, fileExists);
+  if (missing) throw new Error(missing);
   config({ path, quiet: true });
   const problem = stagingEnvProblem({ file, atlasEnv: process.env.ATLAS_ENV, fileExists, bucket: process.env.R2_BUCKET_NAME });
   if (problem) throw new Error(`Refusing a staging run: ${problem}.`);
