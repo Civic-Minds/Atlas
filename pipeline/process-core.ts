@@ -31,7 +31,7 @@ import { DAY_TYPES, WEEKDAYS, type DayName, type DayType } from '../types/gtfs.j
 import { ALL_DAYS } from '../shared/dayTypes.js';
 import { buildStopRoutePeriodBits } from './stopRoutePeriods.js';
 import { expandFrequencyWindow, expandTripFrequencyWindows, isSingleTripFrequencyWindow, parseFrequencyWindow, SINGLE_TRIP_WINDOW_MAX_DEPARTURES, SINGLE_TRIP_WINDOW_SPAN_TOLERANCE_MIN, t2m, type FrequencyWindow } from './transit-utils.js';
-import { adaptiveMedianHeadwayInWindow, computeHourMaxGaps, computeHourDepartureCounts, computePeriodHeadways, computePeriodHeadwayRanges, computePeriodMaxGaps, computePeriodSustained, computeResearchFrequentService, forCrossMidnightWindow, HEADLINE_MIN_DEPARTURES, HEADLINE_WINDOWS, headlineWindowValue, hasSustainedNightService, headsignOverlapMinHeadway, headwayToTier, headwayToTierOn, isSparseOvernightWindow, isThinAllDayTerminalSample, isUnevenTwoGapMiddayTerminalSample, medianHeadwayInWindow, MIN_ALL_DAY_TERMINAL_DEPARTURES, nightServiceDepartureTimes, NIGHT_SERVICE_WINDOW_END_MIN, periodHeadwayInWindow, RAIL_TIER_WINDOW, resolveTerminalHeadline, sparseOvernightHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
+import { adaptiveMedianHeadwayInWindow, computeHourMaxGaps, computeHourDepartureCounts, hasDepartureInClockHour, computePeriodHeadways, computePeriodHeadwayRanges, computePeriodMaxGaps, computePeriodSustained, computeResearchFrequentService, forCrossMidnightWindow, HEADLINE_MIN_DEPARTURES, HEADLINE_WINDOWS, headlineWindowValue, hasSustainedNightService, headsignOverlapMinHeadway, headwayToTier, headwayToTierOn, isSparseOvernightWindow, isThinAllDayTerminalSample, isUnevenTwoGapMiddayTerminalSample, medianHeadwayInWindow, MIN_ALL_DAY_TERMINAL_DEPARTURES, nightServiceDepartureTimes, NIGHT_SERVICE_WINDOW_END_MIN, periodHeadwayInWindow, RAIL_TIER_WINDOW, resolveTerminalHeadline, sparseOvernightHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
 import { computeRouteBaseFares, detectBusSubType } from './route-metadata.js';
 import { buildStopsMeta } from './stopsMeta.js';
 import { haversineDistance } from './utils.js';
@@ -3447,10 +3447,16 @@ export async function processGtfsBuffer(
       const mergedHourGaps: Record<number, number | null> = {};
       const branchHourDepartures = feature.properties.departuresByHour as Record<number, number> | undefined;
       const mergedHourDepartures: Record<number, number> = {};
+      // CIV-1109 (#1214): an hour with no departure on the row's terminal list (the list the
+      // departure counts above read) shows no value. The fallbacks, the stop's all-headsign list
+      // and then the row's own list, only ever borrowed other service into it: Madison 80 via
+      // Eagle Heights read the plain Memorial Union trips, every 4-5, at 2-4 PM.
+      const terminalHourList = terminalScopedTimes?.length ? terminalScopedTimes : (terminalStopId ? metricStopMap.get(terminalStopId) : undefined);
       for (const h of SPARKLINE_HOURS) {
-        const termH = headsignTerminalHourHw?.[h] ?? terminalHourHw?.[h] ?? null;
+        const terminalEmpty = terminalHourList != null && terminalHourList.length > 0 && !hasDepartureInClockHour(terminalHourList, h * 60);
+        const termH = terminalEmpty ? null : (headsignTerminalHourHw?.[h] ?? terminalHourHw?.[h] ?? null);
         const bH = branchHourHw[h] ?? null;
-        const resolvedH = resolveTerminalPeriodHeadway(termH, bH, terminalHourIsBranchScoped);
+        const resolvedH = terminalEmpty ? null : resolveTerminalPeriodHeadway(termH, bH, terminalHourIsBranchScoped);
         mergedHourHw[h] = resolvedH;
         mergedHourGaps[h] = resolvedH === termH
           ? (h in flooredHourGap ? flooredHourGap[h] : (headsignTerminalHourGaps?.[h] ?? terminalHourGaps?.[h] ?? null))
