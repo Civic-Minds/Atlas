@@ -19,10 +19,22 @@ describe('Live draws only its own routes (CIV-1090)', () => {
     for (const [, filter] of map.setFilter.mock.calls) expect(filter).toEqual(liveRoutesFilter());
   });
 
-  it('clears those filters outside Live, and skips layers the map does not have', () => {
+  it('leaving Live clears only the filters it set, and skips layers the map does not have', () => {
     const map = fakeMap(['route-segments-layer']);
+    applyLiveOnlyFilters(map, true);
+    map.setFilter.mockClear();
     applyLiveOnlyFilters(map, false);
     expect(map.setFilter.mock.calls).toEqual([['route-segments-layer', null]]);
+    // Already cleared: a second pass outside Live leaves the layer alone.
+    map.setFilter.mockClear();
+    applyLiveOnlyFilters(map, false);
+    expect(map.setFilter).not.toHaveBeenCalled();
+  });
+
+  it('never touches a filter outside Live when Live never filtered the layer', () => {
+    const map = fakeMap(LIVE_ONLY_FILTERED_LAYERS);
+    applyLiveOnlyFilters(map, false);
+    expect(map.setFilter).not.toHaveBeenCalled();
   });
 
   it('matches a Live route and nothing else', () => {

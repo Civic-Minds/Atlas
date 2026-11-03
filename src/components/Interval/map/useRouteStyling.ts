@@ -85,10 +85,22 @@ export const LIVE_ONLY_FILTERED_LAYERS = [
   'frequency-qualifying-segments-hit-layer',
 ] as const;
 
+/** Per map, the layers applyLiveOnlyFilters has filtered, so leaving Live clears only those and never another filter. */
+const liveFilteredLayers = new WeakMap<object, Set<string>>();
+
 export function applyLiveOnlyFilters(map: Pick<maplibregl.Map, 'getLayer' | 'setFilter'>, liveRoutesOnly: boolean): void {
+  const filtered = liveFilteredLayers.get(map) ?? new Set<string>();
   for (const id of LIVE_ONLY_FILTERED_LAYERS) {
-    if (map.getLayer(id)) map.setFilter(id, liveRoutesOnly ? liveRoutesFilter() as maplibregl.FilterSpecification : null);
+    if (!map.getLayer(id)) continue;
+    if (liveRoutesOnly) {
+      map.setFilter(id, liveRoutesFilter() as maplibregl.FilterSpecification);
+      filtered.add(id);
+    } else if (filtered.has(id)) {
+      map.setFilter(id, null);
+      filtered.delete(id);
+    }
   }
+  liveFilteredLayers.set(map, filtered);
 }
 
 export function useRouteStyling(
