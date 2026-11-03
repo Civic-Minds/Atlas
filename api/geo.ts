@@ -11,6 +11,9 @@ import { privacyRegionResponse } from '../shared/privacyRegion.js';
  * headers on every request from its edge network, so this needs no external
  * geolocation service or API key.
  */
+/** The visitor's own browser may keep its approximate location an hour (CIV-977): repeat lookups skip the function. Never a shared cache. */
+export const GEO_CACHE_HEADERS = { 'Cache-Control': 'private, max-age=3600' };
+
 export default async function handler(req: ApiRequest, res: ApiResponse): Promise<void> {
   const url = new URL(req.url ?? '/', 'https://atlas.invalid');
   if (url.searchParams.get('mode') === 'privacy-region') {
@@ -41,5 +44,5 @@ export default async function handler(req: ApiRequest, res: ApiResponse): Promis
     longitude: Number(lon),
     city: requestHeader(req, 'x-vercel-ip-city'),
     approximate: true,
-  });
+  }, 200, GEO_CACHE_HEADERS);
 }
