@@ -6,8 +6,8 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import {
-  currentRouteShortNamesFor, mergeAliasedRoutes, projectArchiveByDay, projectSidecarByDay,
-  worseArchiveChange, worseSidecarEntry, type HistoryAliasEntry, type HistoryRouteAliases,
+  aliasesFromDirectionSplits, currentRouteShortNamesFor, mergeAliasedRoutes, projectArchiveByDay, projectSidecarByDay,
+  withGeneratedAliases, worseArchiveChange, worseSidecarEntry, type HistoryAliasEntry, type HistoryRouteAliases,
 } from '../historyIdentity.js';
 
 const YELLOW: Record<string, HistoryAliasEntry[]> = {
@@ -61,10 +61,50 @@ describe('direction-split routes in History (#1285)', () => {
     expect(() => mergeAliasedRoutes({ 'Yellow-N': [{ periodKey: 'a', headway: 1 }] }, YELLOW)).toThrow(/needs a combine/);
   });
 
-  it('the committed config folds BART\'s six lines and SLO RTA 12, and the old keys resolve to the new route', () => {
+  it('BART\'s six lines and SLO RTA 12 come from the merge recorded in the artifact; the config entries are the same aliases (CIV-1275)', () => {
+    // The config entries stay until a full rebuild has published artifacts that carry directionSplits; a
+    // config entry wins over the generated one, so keeping them changes nothing.
     const aliases = JSON.parse(readFileSync('config/history-route-aliases.json', 'utf8')) as HistoryRouteAliases;
-    expect(Object.keys(aliases.bart).sort()).toEqual(['Blue', 'Green', 'Grey', 'Orange', 'Red', 'Yellow']);
-    expect(currentRouteShortNamesFor('Yellow-N', undefined, aliases.bart)).toEqual(['Yellow']);
-    expect(currentRouteShortNamesFor('12S', undefined, aliases.slorta)).toEqual(['12']);
+    expect(aliases.bart).toEqual(aliasesFromDirectionSplits(['Blue', 'Green', 'Grey', 'Orange', 'Red', 'Yellow'].map(base => ({ base, halves: [`${base}-N`, `${base}-S`] }))));
+    expect(aliases.slorta).toEqual(aliasesFromDirectionSplits([{ base: '12', halves: ['12N', '12S'] }]));
+    const bart = aliasesFromDirectionSplits(['Blue', 'Green', 'Grey', 'Orange', 'Red', 'Yellow'].map(base => ({ base, halves: [`${base}-N`, `${base}-S`] })));
+    expect(Object.keys(bart).sort()).toEqual(['Blue', 'Green', 'Grey', 'Orange', 'Red', 'Yellow']);
+    expect(currentRouteShortNamesFor('Yellow-N', undefined, bart)).toEqual(['Yellow']);
+    expect(currentRouteShortNamesFor('12S', undefined, aliasesFromDirectionSplits([{ base: '12', halves: ['12N', '12S'] }]))).toEqual(['12']);
+  });
+});
+
+describe('aliases generated from the direction-split merge (CIV-1275)', () => {
+  it('each merge recorded in the artifact is the direction alias the config used to hold', () => {
+    const generated = aliasesFromDirectionSplits([
+      { base: 'Yellow', halves: ['Yellow-N', 'Yellow-S'] },
+      { base: '12', halves: ['12N', '12S'] },
+    ]);
+    expect(generated).toEqual({
+      Yellow: [{ key: 'Yellow-N', direction: true }, { key: 'Yellow-S', direction: true }],
+      '12': [{ key: '12N', direction: true }, { key: '12S', direction: true }],
+    });
+    // Folding with the generated entry reads exactly as with the hand-written one.
+    const halves = {
+      'Yellow-N': [{ periodKey: '20220901', headway: 15 }],
+      'Yellow-S': [{ periodKey: '20220901', headway: 14 }],
+    };
+    expect(mergeAliasedRoutes(halves, generated, projectArchiveByDay, archive)).toEqual(mergeAliasedRoutes(halves, YELLOW, projectArchiveByDay, archive));
+  });
+
+  it('a half named like its base, or missing, adds nothing', () => {
+    expect(aliasesFromDirectionSplits([{ base: 'Loop', halves: ['Loop', ''] }])).toEqual({});
+  });
+
+  it('a config entry for the same key wins; other keys are added', () => {
+    const configured = { Yellow: ['Yellow Line'] as HistoryAliasEntry[], '20': ['19'] as HistoryAliasEntry[] };
+    const generated = aliasesFromDirectionSplits([{ base: 'Yellow', halves: ['Yellow-N', 'Yellow-S'] }, { base: '12', halves: ['12N', '12S'] }]);
+    expect(withGeneratedAliases(configured, generated)).toEqual({
+      '12': [{ key: '12N', direction: true }, { key: '12S', direction: true }],
+      Yellow: ['Yellow Line'],
+      '20': ['19'],
+    });
+    expect(withGeneratedAliases(undefined, generated)).toEqual(generated);
+    expect(withGeneratedAliases(configured, {})).toBe(configured);
   });
 });
