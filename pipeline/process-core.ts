@@ -2213,9 +2213,13 @@ export async function processGtfsBuffer(
     };
   })();
   const handoverTimesByDay = new Map<string, Map<string, Map<string, number[]>>>();
-  /** night of `day` followed by the morning of `next` → stop → daytime route → its departures there after midnight, in GTFS minutes of `day`. */
-  const handoverTimes = (day: string, next: string): Map<string, Map<string, number[]>> => {
-    const cacheKey = `${day}>${next}`;
+  /**
+   * night of `day` followed by the morning of `next` → stop → daytime route → its departures there after midnight, in
+   * GTFS minutes of `day`. `next` null: the night is written on the morning's own service day (plain 00:00-05:59
+   * times, moved 24 hours by #297), so the morning is `day`'s own and only its trips before 24:00 count.
+   */
+  const handoverTimes = (day: string, next: string | null): Map<string, Map<string, number[]>> => {
+    const cacheKey = `${day}>${next ?? 'same'}`;
     let byStop = handoverTimesByDay.get(cacheKey);
     if (byStop) return byStop;
     byStop = new Map();
@@ -2233,8 +2237,11 @@ export async function processGtfsBuffer(
         }
       }
     };
-    add(day, t => (t >= 24 * 60 ? t : null));
-    add(next, t => (t < 24 * 60 ? t + 24 * 60 : null));
+    if (next == null) add(day, t => (t < 24 * 60 ? t + 24 * 60 : null));
+    else {
+      add(day, t => (t >= 24 * 60 ? t : null));
+      add(next, t => (t < 24 * 60 ? t + 24 * 60 : null));
+    }
     handoverTimesByDay.set(cacheKey, byStop);
     return byStop;
   };
@@ -2247,22 +2254,28 @@ export async function processGtfsBuffer(
     let result: NightHandover | undefined;
     if (here) {
       // Gathered on first use only: the check runs just for a night-only stretch whose last bus is early.
-      // One list per morning after (Weekday nights: the Weekday and the Saturday morning); every one must take over.
-      let nearby: number[][] | null = null;
-      result = last => {
-        if (!nearby) {
-          nearby = (NEXT_SERVICE_DAYS[day] ?? [day]).map(next => {
-            const found: number[] = [];
-            for (const [otherId, byRoute] of handoverTimes(day, next)) {
-              const there = otherId === stopId ? here : stopsById.get(otherId);
-              if (!there || (otherId !== stopId && haversineDistance(here.lat, here.lon, there.lat, there.lon) > NIGHT_HANDOVER_RADIUS_M)) continue;
-              for (const [other, times] of byRoute) if (other !== route) found.push(...times);
-            }
-            return found;
-          });
-        }
-        return nearby.every(list => list.some(t => t > last && t <= last + NIGHT_HANDOVER_MAX_WAIT_MIN));
+      // CIV-1331 final review: the morning after depends on how the night is written. Past 24:00 on the evening's
+      // service day: the next calendar day's service (Weekday nights: both the Weekday and the Saturday morning, the
+      // later start deciding, for Friday). Plain 00:00-05:59 on the morning's own service day: that day's own morning.
+      const lists = new Map<string, number[][]>();
+      const nearbyFor = (writtenOnMorningDay: boolean): number[][] => {
+        const key = writtenOnMorningDay ? 'morning' : 'evening';
+        let got = lists.get(key);
+        if (got) return got;
+        const nexts: (string | null)[] = writtenOnMorningDay ? [null] : [...(NEXT_SERVICE_DAYS[day] ?? [day])];
+        got = nexts.map(next => {
+          const found: number[] = [];
+          for (const [otherId, byRoute] of handoverTimes(day, next)) {
+            const there = otherId === stopId ? here : stopsById.get(otherId);
+            if (!there || (otherId !== stopId && haversineDistance(here.lat, here.lon, there.lat, there.lon) > NIGHT_HANDOVER_RADIUS_M)) continue;
+            for (const [other, times] of byRoute) if (other !== route) found.push(...times);
+          }
+          return found;
+        });
+        lists.set(key, got);
+        return got;
       };
+      result = (last, writtenOnMorningDay) => nearbyFor(writtenOnMorningDay).every(list => list.some(t => t > last && t <= last + NIGHT_HANDOVER_MAX_WAIT_MIN));
     }
     handoverCache.set(cacheKey, result);
     return result;

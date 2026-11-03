@@ -31,7 +31,6 @@ import {
   isSustainedHeadway,
   isUnevenPeriod,
   medianHeadwayInWindow,
-  hasSustainedServiceInWindow,
   headlineDeparturesInWindow,
   HEADLINE_MIN_DEPARTURES,
   nightServiceDepartureTimes,
@@ -88,7 +87,7 @@ export interface Stretch {
  * starts at the stop or within NIGHT_HANDOVER_RADIUS_M of it within NIGHT_HANDOVER_MAX_WAIT_MIN after it. Built by
  * the caller (process-core nightHandoverAt) from every route's departures that day.
  */
-export type NightHandover = (lastNightBus: number) => boolean;
+export type NightHandover = (lastNightBus: number, writtenOnMorningDay: boolean) => boolean;
 
 /** CIV-1332 (Ryan, 2026-11-03): daytime buses must start within 90 minutes of a night-only route's last trip. */
 export const NIGHT_HANDOVER_MAX_WAIT_MIN = 90;
@@ -794,28 +793,59 @@ export function stretchNight(s: Stretch, maxGap: number): boolean | null {
  * CIV-1331: the one night decider, for stretches (stretchNight) and for rows without stretch data
  * (process-core hasNightServiceAtShapeEndpoints), so both paths read the same rules. `times` are the
  * day's departures at the stop, `nightTimes` the same with the #297 overnight shift
- * (nightServiceDepartureTimes). The rules (Ryan, 2026-11-03: "Use 90 minutes as the cutoff everywhere"):
+ * (nightServiceDepartureTimes: every time before 24:00 also appears 24 hours later). The rules (Ryan, 2026-11-03:
+ * "Use 90 minutes as the cutoff everywhere"):
  * - every gap between departures in 2:00-5:00 at most maxGap (90 is the cutoff, 30 and 60 are tiers);
- * - the wait from 2:00 to the first departure and from the last to 5:00 at most NIGHT_EDGE_MAX_WAIT_MIN at
- *   every grade, so the 90 grade never passes day service after a long hole (RTD 45 from 3:05);
- * - #1322: a night-only stretch (nightOnlyStretch) has no service before its first night bus, so the wait
- *   from 2:00 to it is the start of its service and does not count (TTC 339 at Malvern from 3:03). The
- *   wait after its last bus still counts: a night route that stops at 3:45 does not run through the night,
- * - CIV-1332 (Ryan, 2026-11-03): unless daytime buses start within 90 minutes of its last trip at its stop or
- *   within 400 m ("Riders are covered all night, just by a different route after 4 AM": STM 376, TransLink N24).
- *   `handover` answers that; without it the wait counts.
+ * - the edges are real gaps (CIV-1331 final review), at most the grade and never under an hour (NIGHT_EDGE_MAX_WAIT_MIN):
+ *   day service measures from its previous bus to its first in the window and from its last in the window to its next
+ *   bus, so a first trip at 2:58 after a last bus at 0:34 (144 minutes with nobody served) fails, as does a last bus
+ *   at 4:00 with nothing until 6:30. With no bus before (or after), the window's edge stands in;
+ * - #1322: a night-only stretch (nightOnlyStretch) has no service before its first night bus, so the wait from 2:00
+ *   to it does not count (TTC 339 at Malvern from 3:03), when that first bus comes by 3:30 (a later one is
+ *   early-morning service). After its last bus there is its own next bus within that same limit, or its last bus is
+ *   within the hour before 5:00 (CIV-1198), or (CIV-1332, Ryan 2026-11-03) daytime buses start within 90 minutes of it at
+ *   its stop or within 400 m ("Riders are covered all night, just by a different route after 4 AM"). `handover`
+ *   answers that, told whether the night's trips are written on the morning's own service day (plain 00:00-05:59) or
+ *   past 24:00 on the evening's; without it the wait counts. Every night-only stretch goes through these rules,
+ *   whether or not it crosses 3:30.
  */
 export function nightServicePasses(times: readonly number[], nightTimes: readonly number[], maxGap: number, handover?: NightHandover): boolean | null {
-  if (!nightTimes.some(t => t >= STRETCH_NIGHT_START_MIN && t <= STRETCH_NIGHT_END_MIN)) return null;
-  const edge = Math.min(maxGap, NIGHT_EDGE_MAX_WAIT_MIN);
-  if (!runsAcrossNightMidpoint(nightTimes)) return hasSustainedServiceInWindow([...nightTimes], STRETCH_NIGHT_START_MIN, STRETCH_NIGHT_END_MIN, maxGap, edge);
-  const inWindow = [...new Set(nightTimes)].filter(t => t >= STRETCH_NIGHT_START_MIN && t <= STRETCH_NIGHT_END_MIN).sort((a, b) => a - b);
-  const startWait = inWindow[0] - STRETCH_NIGHT_START_MIN;
-  const endWait = STRETCH_NIGHT_END_MIN - inWindow[inWindow.length - 1];
+  const all = [...new Set(nightTimes)].sort((a, b) => a - b);
+  const inWindow = all.filter(t => t >= STRETCH_NIGHT_START_MIN && t <= STRETCH_NIGHT_END_MIN);
+  if (inWindow.length === 0) return null;
+  if (!inWindow.every((t, i) => i === 0 || t - inWindow[i - 1] <= maxGap)) return false;
+  const limit = Math.max(maxGap, NIGHT_EDGE_MAX_WAIT_MIN);
+  const first = inWindow[0];
+  const last = inWindow[inWindow.length - 1];
+  // The neighbouring buses, by how each is written. A raw time past 24:00 is the evening service day's night; a raw
+  // time before 24:00 is that day's own daytime; a time moved 24 hours (#297: 00:00-05:59 on the morning's own day, or
+  // an overnight-only service) is that morning's night. Before a first bus written past 24:00, only raw times are this
+  // night; before one written on the morning's day, the moved times are, and so are the raw times past 24:00 (the same
+  // day type's night before; RTD 45: 24:34, then nothing until 3:05), never that day's own daytime, which comes after
+  // (TTC 320 Sunday). After a last bus written past 24:00 the moved morning times count (the #297 reading); after one
+  // written on the morning's day, only the moved times.
+  const raw = new Set(times);
+  // A bus before 22:00 is not this night's: with nothing since, the night service starts with `first`, measured from
+  // 2:00 within the hour (TTC 320 on Sundays starts at 2:08 at its middle stop; nothing has run there since the
+  // morning).
+  const prevRaw = [...all].reverse().find(t => t < first && (raw.has(first) ? raw.has(t) : !raw.has(t) || t >= 24 * 60));
+  const prev = prevRaw != null && prevRaw >= NIGHT_EVENING_START_MIN ? prevRaw : undefined;
+  const next = all.find(t => t > last && (raw.has(last) || !raw.has(t)));
   const nightOnly = nightOnlyStretch({ times });
-  if (endWait > NIGHT_EDGE_MAX_WAIT_MIN && !(nightOnly && handover?.(inWindow[inWindow.length - 1]) === true)) return false;
-  if (!nightOnly && startWait > NIGHT_EDGE_MAX_WAIT_MIN) return false;
-  return inWindow.every((t, i) => i === 0 || t - inWindow[i - 1] <= maxGap);
+  if (nightOnly) {
+    // Its first bus is the start of its service, as long as it starts in the night: one whose first bus in the window
+    // is after 3:30 is early-morning service, measured from 2:00 like any other.
+    if (first > NIGHT_MIDPOINT_MIN && first - STRETCH_NIGHT_START_MIN > limit) return false;
+  } else if (prev == null ? first - STRETCH_NIGHT_START_MIN > NIGHT_EDGE_MAX_WAIT_MIN : first - prev > limit) return false;
+  if (nightOnly) {
+    // Its own next bus within the limit; or its last bus within the hour before 5:00 (CIV-1198, Ryan 2026-10-30: night
+    // networks hand over to day service inside the window); else a daytime handover.
+    if (next != null && next - last <= limit) return true;
+    if (STRETCH_NIGHT_END_MIN - last <= NIGHT_EDGE_MAX_WAIT_MIN) return true;
+  } else return (next == null ? STRETCH_NIGHT_END_MIN - last : next - last) <= limit;
+  // The night's last bus, written on the morning's own service day when its raw time is not in `times` (a plain
+  // 00:00-05:59 time moved 24 hours, or an overnight-only service's shift).
+  return handover?.(last, !times.includes(last)) === true;
 }
 
 /** #1322: the most daytime (6 AM to 11 PM) departures a night-only stretch may have: a stray positioning trip or two (TTC 353 has one). */
@@ -831,8 +861,11 @@ export function nightOnlyStretch(s: Pick<Stretch, 'times'>): boolean {
  * 2-5am window's midpoint (3:30, which counts as the later side). `nightTimes` are GTFS minutes
  * as nightServiceDepartureTimes builds them.
  */
+const NIGHT_MIDPOINT_MIN = (STRETCH_NIGHT_START_MIN + STRETCH_NIGHT_END_MIN) / 2;
+/** CIV-1331: the earliest a bus still counts as the evening before a night (nightServicePasses). */
+const NIGHT_EVENING_START_MIN = 22 * 60;
 export function runsAcrossNightMidpoint(nightTimes: readonly number[]): boolean {
-  const mid = (STRETCH_NIGHT_START_MIN + STRETCH_NIGHT_END_MIN) / 2;
+  const mid = NIGHT_MIDPOINT_MIN;
   return nightTimes.some(x => x >= STRETCH_NIGHT_START_MIN && x < mid) && nightTimes.some(x => x >= mid && x <= STRETCH_NIGHT_END_MIN);
 }
 
