@@ -196,6 +196,16 @@ describe('feedDateRefusal', () => {
     expect(feedDateRefusal('20261001', null, '20261010')).toMatch(/before today/);
     expect(feedDateRefusal('20261101', '20261128', '20261010')).toMatch(/older than the live data/);
   });
+
+  it('compares an uncapped placeholder live expiry at the same two-year cap as the zip (CIV-1245)', () => {
+    // Waukesha: live stamped 20991231 before capping; the same feed now records today + 2 years.
+    expect(feedDateRefusal('20281103', '20991231', '20261102')).toBeNull();
+    expect(feedDateRefusal('20281103', '20310130', '20261102')).toBeNull();
+    // A zip that really ends sooner than the cap is still older than a placeholder live feed.
+    expect(feedDateRefusal('20270101', '20501230', '20261102')).toMatch(/older than the live data/);
+    // A real live end date within two years is compared as is.
+    expect(feedDateRefusal('20261231', '20270131', '20261102')).toMatch(/older than the live data/);
+  });
 });
 
 describe('expiredFeedPin (#1036, Rockford)', () => {
