@@ -25,6 +25,7 @@ import {
   RESEARCH_OVERLAY_LAYERS,
 } from './routeStyle';
 import { historyYearColorExpression, onTodaysLines } from '../../../utils/historyYearMap';
+import { excludeAgenciesClause } from '../../../utils/upcomingNetwork';
 
 export interface RouteStylingInput {
   agencies: Agency[];
@@ -56,6 +57,8 @@ export interface RouteStylingInput {
   colorMode: ColorVisionMode;
   colorVisionFriendly: boolean;
   onDemandFocus: OnDemandFocusTarget | null;
+  /** CIV-1252: agencies this map draws from their upcoming file; the release tiles skip them. */
+  excludeTileAgencies?: readonly string[];
 }
 
 /**
@@ -69,7 +72,7 @@ export function useRouteStyling(
     agencies, layers, q, period, maxHeadway, tileFilter, selectedRoute, hoveredSearchRoute, hoveredBranch,
     selectedStop, routesForStop, stopZoomTier, showRouteLayers, liveRoutesOnly, filterToAgencies,
     agencyFilterSlugs, nightServiceView, frequentServiceView, historyOverlay, frequencySegmentOverlay,
-    frequencySegmentOverlayRef, colorMode, colorVisionFriendly, onDemandFocus,
+    frequencySegmentOverlayRef, colorMode, colorVisionFriendly, onDemandFocus, excludeTileAgencies,
   }: RouteStylingInput,
 ) {
   // Update Vector Tile Styling & Filters dynamically on parameters change
@@ -172,7 +175,10 @@ export function useRouteStyling(
     const selectedRouteFilter = selectedRoute
       ? concatFilters(routeFilter, routeKeyMatchExpression(selectedRoute))
       : ['==', ['get', 'routeId'], ''];
-    if (map.getLayer('selected-route-layer')) map.setFilter('selected-route-layer', selectedRouteFilter as any);
+    // CIV-1252: the release tiles never draw an agency this map shows from its upcoming file.
+    const tileExclusion = excludeAgenciesClause(excludeTileAgencies ?? []);
+    const forTiles = (filter: any): any => (tileExclusion ? concatFilters(filter, tileExclusion) : filter);
+    if (map.getLayer('selected-route-layer')) map.setFilter('selected-route-layer', forTiles(selectedRouteFilter) as any);
     if (map.getLayer('selected-local-route-layer')) map.setFilter('selected-local-route-layer', selectedRouteFilter as any);
     if (map.getLayer('selected-route-segments-layer')) {
       map.setFilter('selected-route-segments-layer', (selectedRoute ? routeKeyMatchExpression(selectedRoute) : ['==', ['get', 'routeId'], '']) as any);
@@ -186,8 +192,8 @@ export function useRouteStyling(
       map.setPaintProperty('route-segments-layer', 'line-width', ROUTE_LINE_WIDTH_BY_ZOOM as any);
     }
 
-    if (hasOverviewRoutes) map.setFilter('overview-routes-layer', routeFilter as any);
-    if (hasRoutes) map.setFilter('routes-layer', routeFilter as any);
+    if (hasOverviewRoutes) map.setFilter('overview-routes-layer', forTiles(routeFilter) as any);
+    if (hasRoutes) map.setFilter('routes-layer', forTiles(routeFilter) as any);
     // Local (non-tile) routes: Live's route allowlist as a layer filter, so switching modes never
     // rebuilds the local route data.
     if (hasLocalRoutes) map.setFilter('local-routes-layer', liveRoutesOnly ? ['any', ...LIVE_ANALYSIS_ROUTES.map(k => k.split('::')).map(([slug, rsn]) => ['all', ['==', ['get', 'agencySlug'], slug], ['==', ['get', 'routeShortName'], rsn]])] as any : null);
@@ -205,8 +211,8 @@ export function useRouteStyling(
             buildZoomHeadwayGateExpression(headwayExpr),
           )
         : routeFilter;
-      if (hasOverviewRoutesHit) map.setFilter('overview-routes-hit-layer', hitRouteFilter as any);
-      if (hasRoutesHit) map.setFilter('routes-hit-layer', hitRouteFilter as any);
+      if (hasOverviewRoutesHit) map.setFilter('overview-routes-hit-layer', forTiles(hitRouteFilter) as any);
+      if (hasRoutesHit) map.setFilter('routes-hit-layer', forTiles(hitRouteFilter) as any);
     }
 
     if (hasOverviewRoutes || hasRoutes || hasLocalRoutes || hasFrequentRoutes) {
@@ -463,7 +469,7 @@ export function useRouteStyling(
       }
     }
 
-  }, [mapLoaded, q, selectedRoute, hoveredSearchRoute, hoveredBranch, selectedStop, routesForStop, maxHeadway, stopZoomTier, showRouteLayers, liveRoutesOnly, filterToAgencies, agencyFilterSlugs, agencies, tileFilter, nightServiceView, frequentServiceView, historyOverlay, layers, frequencySegmentOverlay, colorMode, onDemandFocus]);
+  }, [mapLoaded, q, selectedRoute, hoveredSearchRoute, hoveredBranch, selectedStop, routesForStop, maxHeadway, stopZoomTier, showRouteLayers, liveRoutesOnly, filterToAgencies, agencyFilterSlugs, agencies, tileFilter, nightServiceView, frequentServiceView, historyOverlay, layers, frequencySegmentOverlay, colorMode, onDemandFocus, excludeTileAgencies]);
 
   // Force-reset route paint when selection clears (guards against stuck highlight state).
   useEffect(() => {

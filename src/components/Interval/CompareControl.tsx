@@ -9,7 +9,10 @@ import { SideBadge } from '../ui/SideBadge';
 import { DayPicker, FrequencyPicker, PeriodPicker, PickerSection } from './pickers';
 import { compareSideHeading, type CompareSide } from '../../utils/compareSides';
 import { plural } from '../../../shared/overflowText';
-import { FREQUENCY_LABEL } from '../../content/noticeCopy';
+import {
+  COMPARE_DATASET_CURRENT_LABEL, COMPARE_DATASET_GROUP_LABEL, COMPARE_DATASET_UPCOMING_LABEL, COMPARE_UPCOMING_UNAVAILABLE_NOTE, FREQUENCY_LABEL,
+} from '../../content/noticeCopy';
+import type { CompareDataset } from '../../utils/upcomingNetwork';
 
 export { SideBadge } from '../ui/SideBadge';
 export { compareSideLabel, defaultCompareSide, type CompareSide } from '../../utils/compareSides';
@@ -89,7 +92,17 @@ interface CompareSideBarProps {
   onChange: (settings: CompareSide) => void;
   /** Routes this map draws in view. */
   counts: { total: number } | null;
+  /**
+   * CIV-1252 (beta): map B's network. `choosable` shows the current / upcoming choice (some agency has an upcoming
+   * network); `unavailable` shows the note that the upcoming network asked for isn't there.
+   */
+  dataset?: { value: CompareDataset; choosable: boolean; unavailable: boolean };
 }
+
+const DATASET_OPTIONS: ReadonlyArray<readonly [CompareDataset, string]> = [
+  ['current', COMPARE_DATASET_CURRENT_LABEL],
+  ['upcoming', COMPARE_DATASET_UPCOMING_LABEL],
+];
 
 /**
  * The label pill catches pointer and touch events so dragging on it does not pan the map beneath it.
@@ -106,7 +119,7 @@ function forwardWheelToMap(e: ReactWheelEvent<HTMLElement>) {
  * Frequency, Day and Time menus (the same chips and menus as the main filter bar), so it is
  * clear which map each control changes.
  */
-export function CompareSideBar({ side, settings, onChange, counts }: CompareSideBarProps) {
+export function CompareSideBar({ side, settings, onChange, counts, dataset }: CompareSideBarProps) {
   return (
     <div className="flex flex-col items-center sm:items-end gap-1.5 min-w-0 max-w-full" data-compare-side={side}>
       <div onWheel={forwardWheelToMap} className={`pointer-events-auto ${MAP_BADGE} min-h-8 max-sm:min-h-[32px] py-1 gap-x-1.5 gap-y-0 flex-wrap justify-center max-w-[calc(100vw-2rem)] sm:flex-nowrap sm:max-w-full sm:min-w-0`}>
@@ -136,6 +149,21 @@ export function CompareSideBar({ side, settings, onChange, counts }: CompareSide
           bounds={null}
         />
       </div>
+      {dataset?.choosable && (
+        <div className="pointer-events-auto flex gap-1" role="group" aria-label={COMPARE_DATASET_GROUP_LABEL} data-testid={`compare-dataset-${side}`}>
+          {DATASET_OPTIONS.map(([key, label]) => (
+            <Pill key={key} tone="glass" size="segment" selected={dataset.value === key}
+              onClick={() => onChange({ ...settings, dataset: key === 'upcoming' ? 'upcoming' : undefined })}>
+              {label}
+            </Pill>
+          ))}
+        </div>
+      )}
+      {dataset?.unavailable && (
+        <p className={`pointer-events-auto ${MAP_BADGE} ${MAP_BADGE_LABEL} min-h-8 py-1 max-w-[calc(100vw-2rem)] sm:max-w-full`} role="status" data-testid={`compare-upcoming-unavailable-${side}`}>
+          {COMPARE_UPCOMING_UNAVAILABLE_NOTE}
+        </p>
+      )}
     </div>
   );
 }

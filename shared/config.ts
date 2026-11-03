@@ -86,6 +86,16 @@ export const MOBILE_ROUTE_SHEET_ENABLED = true;
 // Compare mode: two maps side by side, same filter, each with its own day and time (CIV-19).
 // On for every build (public too, Ryan 2026-10-20); it was beta-only while it was tried out. Still hidden on phones (phoneModeFlags).
 export const COMPARE_MODE_ENABLED = true;
+// CIV-1252 network change preview: Compare's map B can show an agency's upcoming network, read from a separate file
+// (atlas/upcoming/ on the beta bucket) instead of the release tiles. Beta or dev builds only, and only when
+// VITE_UPCOMING_NETWORK_ENABLED=true, so it stays off everywhere until it is switched on for a build.
+const upcomingNetworkEnv: unknown = typeof import.meta !== 'undefined' ? import.meta?.env?.VITE_UPCOMING_NETWORK_ENABLED : undefined;
+export const UPCOMING_NETWORK_ENABLED = (ATLAS_MODE === 'beta' || ATLAS_MODE === 'dev') && upcomingNetworkEnv === 'true';
+// Local testing only: read the upcoming files from a dev path instead of the beta bucket. Ignored in every built site.
+const devUpcomingUrl: unknown =
+  typeof import.meta !== 'undefined' && import.meta?.env?.DEV ? import.meta?.env?.VITE_UPCOMING_URL : undefined;
+export const UPCOMING_URL_OVERRIDE: string | undefined =
+  typeof devUpcomingUrl === 'string' && devUpcomingUrl ? devUpcomingUrl.replace(/\/$/, '') : undefined;
 // Shared links and shared map images carry utm tags so analytics can count shared visits.
 // Beta-only until it's been seen working end to end.
 export const SHARE_UTM_ENABLED = ATLAS_MODE === 'beta' || ATLAS_MODE === 'dev';
@@ -158,6 +168,7 @@ export const FEATURES = {
   mapExport: true,
   mobileRouteSheet: MOBILE_ROUTE_SHEET_ENABLED,
   compareMode: COMPARE_MODE_ENABLED,
+  upcomingNetwork: UPCOMING_NETWORK_ENABLED,
   shareUtm: SHARE_UTM_ENABLED,
   collapseModeTabs: COLLAPSE_MODE_TABS_ENABLED,
   onDemand: ON_DEMAND_ENABLED,

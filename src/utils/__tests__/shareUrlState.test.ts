@@ -201,12 +201,25 @@ describe('compare side B in the URL', () => {
   });
 
   it('always writes B\'s frequency, even when it matches A, so a shared link reproduces both sides', () => {
-    expect(encodeCompareSideParams({ day: 'Weekday', period: 'late', maxHeadway: 10 })).toEqual({ cday: 'Weekday', cp: 'late', ch: '10' });
+    expect(encodeCompareSideParams({ day: 'Weekday', period: 'late', maxHeadway: 10 })).toEqual({ cday: 'Weekday', cp: 'late', ch: '10', cds: null });
     expect(encodeCompareSideParams({ day: 'Weekday', period: 'late', maxHeadway: Infinity }).ch).toBe('all');
   });
 
   it('clears every compare param when compare is off', () => {
     expect(mergeUrlSearchParams('?cday=Saturday&cp=late&ch=15&h=10', encodeCompareSideParams(null))).not.toMatch(/cday|cp=|ch=/);
+  });
+
+  it('CIV-1252: B on the upcoming network rides on cds, read only where the feature is on', () => {
+    const side = { day: 'Weekday', period: 'late', maxHeadway: 15, dataset: 'upcoming' } as const;
+    const url = mergeUrlSearchParams('?h=10', encodeCompareSideParams(side));
+    expect(url).toMatch(/cds=upcoming/);
+    expect(parseCompareSideParams(url, { ...opts, allowUpcoming: true })).toEqual(side);
+    // Feature off: the param is ignored, B opens on the current network.
+    expect(parseCompareSideParams(url, opts)).toEqual({ day: 'Weekday', period: 'late', maxHeadway: 15 });
+    // Any other value is the current network, and the current network writes no cds.
+    expect(parseCompareSideParams('cday=Weekday&cds=junk', { ...opts, allowUpcoming: true })?.dataset).toBeUndefined();
+    expect(encodeCompareSideParams({ day: 'Weekday', period: 'late', maxHeadway: 15, dataset: 'current' }).cds).toBeNull();
+    expect(mergeUrlSearchParams('?cday=Saturday&cds=upcoming', encodeCompareSideParams(null))).not.toMatch(/cds=/);
   });
 
   it('older links without a B frequency copy A\'s', () => {

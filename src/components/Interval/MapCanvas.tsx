@@ -212,6 +212,11 @@ interface MapCanvasProps {
    */
   secondary?: boolean;
   /**
+   * CIV-1252 (beta): agencies this map draws from their upcoming network file (Compare's map B). Their routes come from
+   * `layers` through the local GeoJSON layer, and the release tiles skip them.
+   */
+  upcomingSlugs?: readonly string[];
+  /**
    * Zoom, locate and export buttons. Defaults to on for the main map and off for the second map.
    * In compare mode the second (right / bottom) map shows them instead, so they sit at the
    * bottom right of the whole view; the cameras are synced, so one set drives both maps.
@@ -294,6 +299,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   initialMapBounds,
   areaFocus,
   secondary = false,
+  upcomingSlugs,
   showMapControls = !secondary,
   onMapReady,
   initialOnDemandSlug = null,
@@ -703,6 +709,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         || !pmtilesRouteAgencies.has(a.slug)
         || (a.betaOnly && a.pmtilesPending))
       .map(a => a.slug));
+    for (const slug of upcomingSlugs ?? []) localSlugs.add(slug);
     const sourceLayers = mapFilteredLayers ?? filteredLayers ?? layers ?? {};
     const features = Object.entries(sourceLayers).flatMap(([slug, collection]) => {
       if (!localSlugs.has(slug)) return [];
@@ -722,7 +729,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       });
     });
     return { type: 'FeatureCollection', features };
-  }, [agencies, filteredLayers, layers, mapFilteredLayers, period, pmtilesRouteAgencies, colorMode]);
+  }, [agencies, filteredLayers, layers, mapFilteredLayers, period, pmtilesRouteAgencies, colorMode, upcomingSlugs]);
 
   useEffect(() => {
     onMapContextAgencyCountChange?.(mapContextAgencies.length);
@@ -1226,7 +1233,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     agencies, layers, q, period, maxHeadway, tileFilter, selectedRoute, hoveredSearchRoute, hoveredBranch,
     selectedStop, routesForStop, stopZoomTier, showRouteLayers, liveRoutesOnly, filterToAgencies,
     agencyFilterSlugs, nightServiceView, frequentServiceView, historyOverlay, frequencySegmentOverlay,
-    frequencySegmentOverlayRef, colorMode, colorVisionFriendly, onDemandFocus,
+    frequencySegmentOverlayRef, colorMode, colorVisionFriendly, onDemandFocus, excludeTileAgencies: upcomingSlugs,
   });
 
   // Overlay layers (history, live vehicles) — extracted to hooks

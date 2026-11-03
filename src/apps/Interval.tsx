@@ -8,6 +8,8 @@ import { useViewportLoadGate } from '../hooks/useViewportLoadGate';
 import { agencyNames, distinctAgencyNames } from '../utils/agencyName';
 import SelectionLoadPanel, { SelectionNoticePanel } from '../components/Interval/SelectionLoadPanel';
 import { useAgencyData, viewportAgencySlugs } from '../hooks/useAgencyData';
+import { useUpcomingNetwork } from '../hooks/useUpcomingNetwork';
+import { effectiveDataset, layersWithUpcoming } from '../utils/upcomingNetwork';
 import { anyFeaturePassesRouteFilter, useIntervalStats, routeKey, PERIOD_KEYS, type HoveredBranch, type ShapeProperties } from '../hooks/useIntervalStats';
 import type { ViewportBounds, TimePeriod, DayType } from '../hooks/useIntervalStats';
 import { useNearbyRoutes } from '../hooks/useNearbyRoutes';
@@ -447,6 +449,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
       // CIV-239: no All day; a Compare link without map B's time opens B on map A's.
       allPeriod: period,
       fallbackHeadway: maxHeadway,
+      allowUpcoming: FEATURES.upcomingNetwork,
     });
   });
   const compareActive = compareAvailable && compareSide != null;
@@ -683,7 +686,26 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   // no layers, so the extra pass costs nothing.
   const compareA: CompareSide = useMemo(() => ({ day, period, maxHeadway }), [day, period, maxHeadway]);
   const compareB = compareSide ?? compareA;
-  const compareStats = useIntervalStats(compareActive ? layers : EMPTY_LAYERS, {
+  // CIV-1252 (beta, FEATURES.upcomingNetwork): map B can draw the agencies that have published their next network
+  // from that file instead of the release tiles; every other agency stays on its current network.
+  const upcoming = useUpcomingNetwork({
+    enabled: compareActive,
+    active: compareActive && compareSide?.dataset === 'upcoming',
+    agencies,
+  });
+  const upcomingAvailable = upcoming.entries.length > 0;
+  const compareBDataset = effectiveDataset(compareSide?.dataset, upcomingAvailable);
+  const upcomingSlugKey = compareBDataset === 'upcoming' ? Object.keys(upcoming.layers).sort().join('|') : '';
+  const upcomingSlugs = useMemo(() => (upcomingSlugKey ? upcomingSlugKey.split('|') : []), [upcomingSlugKey]);
+  const compareLayers = useMemo(
+    () => (compareBDataset === 'upcoming' ? layersWithUpcoming(layers, upcoming.layers) : layers),
+    [compareBDataset, layers, upcoming.layers],
+  );
+  // A link (or a choice) asked for the upcoming network but none is there to show: the index has no entry still to
+  // come, or every listed file failed to load. Map B then shows the current network with a note.
+  const upcomingUnavailable = compareActive && compareSide?.dataset === 'upcoming' && upcoming.indexLoaded
+    && (!upcomingAvailable || upcoming.entries.every(e => upcoming.failedSlugs.has(e.slug)));
+  const compareStats = useIntervalStats(compareActive ? compareLayers : EMPTY_LAYERS, {
     query,
     maxHeadway: compareB.maxHeadway,
     agencies: selectedAgencies,
@@ -1176,7 +1198,8 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
           <div className="relative flex-1 min-h-0 min-w-0">
               <MapCanvas
                 agencies={agencies}
-                layers={layers}
+                layers={compareLayers}
+                upcomingSlugs={upcomingSlugs}
                 filteredLayers={compareStats.filteredLayers}
                 mapFilteredLayers={compareStats.mapFilteredLayers}
                 maxHeadway={compareB.maxHeadway}
@@ -1245,6 +1268,9 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
                 settings={compareSide!}
                 onChange={setCompareSide}
                 counts={compareCounts?.b ?? null}
+                dataset={FEATURES.upcomingNetwork && (upcomingAvailable || compareSide?.dataset === 'upcoming')
+                  ? { value: compareBDataset, unavailable: upcomingUnavailable, choosable: upcomingAvailable }
+                  : undefined}
               />
             </CompareSideSlot>
           </div>

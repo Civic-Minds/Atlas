@@ -2,6 +2,7 @@ import type { DayType } from '../../shared/dayTypes';
 import type { TimePeriod } from '../hooks/useIntervalStats';
 import { describeDayAndPeriod } from './mapExportDetails';
 import { headwayFilterLabel } from './headwayText';
+import type { CompareDataset } from './upcomingNetwork';
 
 /** One side of compare mode: its own day, time and frequency threshold (CIV-19). */
 export interface CompareSide {
@@ -9,6 +10,8 @@ export interface CompareSide {
   period: TimePeriod;
   /** Frequency threshold in minutes; Infinity shows every route. */
   maxHeadway: number;
+  /** CIV-1252 (beta): which network the side draws; absent means the current one. Only side B can be 'upcoming'. */
+  dataset?: CompareDataset;
 }
 
 /**

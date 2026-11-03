@@ -170,11 +170,15 @@ export function encodeModesParam(modes: ReadonlySet<number>): string | null {
 export const COMPARE_DAY_PARAM = 'cday';
 export const COMPARE_PERIOD_PARAM = 'cp';
 export const COMPARE_HEADWAY_PARAM = 'ch';
+/** CIV-1252 (beta, behind FEATURES.upcomingNetwork): `cds=upcoming` puts side B on the agency's upcoming network. */
+export const COMPARE_DATASET_PARAM = 'cds';
 
 export interface CompareSideParams<Day extends string = string, Period extends string = string> {
   day: Day;
   period: Period;
   maxHeadway: number;
+  /** CIV-1252: only ever 'upcoming' here; absent means the current network. */
+  dataset?: 'upcoming';
 }
 
 /** Frequency value from a URL (`h` or `ch`): a positive number of minutes, or "all" for no limit. */
@@ -189,7 +193,7 @@ export function encodeHeadwayValue(maxHeadway: number): string {
 /** Side B from the URL, or null when the link isn't a compare link (or names an unknown day). */
 export function parseCompareSideParams<Day extends string, Period extends string>(
   search: string | URLSearchParams,
-  options: { days: readonly Day[]; periods: readonly Period[]; allPeriod: Period; fallbackHeadway: number },
+  options: { days: readonly Day[]; periods: readonly Period[]; allPeriod: Period; fallbackHeadway: number; allowUpcoming?: boolean },
 ): CompareSideParams<Day, Period> | null {
   const sp = toSearchParams(search);
   const day = sp.get(COMPARE_DAY_PARAM);
@@ -197,13 +201,20 @@ export function parseCompareSideParams<Day extends string, Period extends string
   const cp = sp.get(COMPARE_PERIOD_PARAM);
   const period = cp && (options.periods as readonly string[]).includes(cp) ? cp as Period : options.allPeriod;
   const maxHeadway = parseHeadwayValue(sp.get(COMPARE_HEADWAY_PARAM)) ?? options.fallbackHeadway;
-  return { day: day as Day, period, maxHeadway };
+  const side: CompareSideParams<Day, Period> = { day: day as Day, period, maxHeadway };
+  if (options.allowUpcoming && sp.get(COMPARE_DATASET_PARAM) === 'upcoming') side.dataset = 'upcoming';
+  return side;
 }
 
 /** URL params for side B; all null when compare is off. */
-export function encodeCompareSideParams(side: CompareSideParams | null): Record<'cday' | 'cp' | 'ch', string | null> {
-  if (!side) return { cday: null, cp: null, ch: null };
-  return { cday: side.day, cp: side.period, ch: encodeHeadwayValue(side.maxHeadway) };
+export function encodeCompareSideParams(
+  side: (Omit<CompareSideParams, 'dataset'> & { dataset?: string }) | null,
+): Record<'cday' | 'cp' | 'ch' | 'cds', string | null> {
+  if (!side) return { cday: null, cp: null, ch: null, cds: null };
+  return {
+    cday: side.day, cp: side.period, ch: encodeHeadwayValue(side.maxHeadway),
+    cds: side.dataset === 'upcoming' ? 'upcoming' : null,
+  };
 }
 
 /**
