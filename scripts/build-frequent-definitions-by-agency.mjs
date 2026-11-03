@@ -38,6 +38,9 @@ const NARROW_SCOPE = {
 // "frequent" as an analytical or land-use term, rather than a tier the agency
 // runs and publishes today.
 const PLANNED = {
+  fredericton: '2019 Transit Strategic Plan recommendation (15 minutes or less on key corridors); current service peaks at every 30.',
+  greensboro: 'GoBORO Draft Transit Plan (April 2024) network; current GTA pages name no frequent tier.',
+  milton: 'Five-Year Service Plan (2024) target: Frequent Service on Routes 2 and 4 by 2029.',
   abqride: 'ABQ RIDE Forward (2025) proposed Recovery Network.',
   asheville: 'City explainer of the draft ART network (proposal).',
   avta: '2020 strategic plan; states AVTA runs no routes at that level and recommends creating one.',
