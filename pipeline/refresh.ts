@@ -625,14 +625,7 @@ async function refreshAgency(
   }
 
   // Write a compact headway snapshot for history tracking (all agencies with a feedUrl).
-  // The map artifacts and feed meta are already written: a History failure is logged, not thrown,
-  // so the agency is never left stamped as refreshed but reported failed.
-  let histResult: string;
-  try {
-    histResult = await writeHistorySnapshot(agency.slug, geojson, feedExpiry, feedVersion, historyV2Enabled(process.env.ATLAS_HISTORY_V2) ? historyV2InputFor(primary, buf, supplementalFeeds) : undefined);
-  } catch (err) {
-    histResult = `[warn] FAILED, History not written: ${err instanceof Error ? err.message : String(err)}`;
-  }
+  const histResult = await writeHistorySnapshot(agency.slug, geojson, feedExpiry, feedVersion, historyV2Enabled(process.env.ATLAS_HISTORY_V2) ? historyV2InputFor(primary, buf, supplementalFeeds) : undefined);
   writeLog(`  history: ${histResult}\n`);
 
   if (nightServiceCollector) {
