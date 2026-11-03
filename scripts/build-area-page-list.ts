@@ -25,11 +25,24 @@ export function areaRedirects(summaries: AgencyPageSummaries): Redirect[] {
   ]);
 }
 
+/**
+ * The /area/ redirects to write: the rule's, plus every earlier one whose area has no page and no redirect
+ * now (it lost its page, e.g. its second agency was hidden), so links already out keep working
+ * (/area/morgantown -> Mountain Line). An area that gains its own page drops its old redirect.
+ */
+export function mergeAreaRedirects(current: readonly Redirect[], next: readonly Redirect[], pages: ReadonlySet<string>): Redirect[] {
+  const areaOf = (r: Redirect) => r.source.slice(AREA_PATH_PREFIX.length).replace(/\/$/, '');
+  const taken = new Set(next.map(areaOf));
+  const kept = current.filter(r => r.source.startsWith(AREA_PATH_PREFIX) && !taken.has(areaOf(r)) && !pages.has(areaOf(r)));
+  return [...next, ...kept].sort((a, b) => a.source.localeCompare(b.source));
+}
+
 export function writeAreaPageList(summaries: AgencyPageSummaries): void {
-  writeFileSync(AREA_PAGE_SLUGS, JSON.stringify([...areaPageStatus(summaries.agencies).pages].sort()) + '\n');
+  const status = areaPageStatus(summaries.agencies);
+  writeFileSync(AREA_PAGE_SLUGS, JSON.stringify([...status.pages].sort()) + '\n');
   const config = JSON.parse(readFileSync(VERCEL, 'utf8')) as Record<string, unknown> & { redirects?: Redirect[] };
   const other = (config.redirects ?? []).filter(r => !r.source.startsWith(AREA_PATH_PREFIX));
-  const redirects = [...other, ...areaRedirects(summaries)];
+  const redirects = [...other, ...mergeAreaRedirects(config.redirects ?? [], areaRedirects(summaries), status.pages)];
   // `redirects` sits before `rewrites`, the order Vercel applies them in.
   const { headers, rewrites, redirects: _old, ...rest } = config;
   writeFileSync(VERCEL, JSON.stringify({ headers, ...(redirects.length ? { redirects } : {}), rewrites, ...rest }, null, 2) + '\n');

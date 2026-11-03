@@ -12,6 +12,7 @@ import { prepareAgencyRouteFeaturesForTiles } from './prepareAgencyRoutesForTile
 import { simplifyLine } from './geometry.js';
 import { isBuiltIntoTiles } from './pmtilesCoverage.js';
 import { assertRouteArtifactSchema, ROUTE_ARTIFACT_SCHEMA_VERSION, TILE_RULES_VERSION } from '../shared/artifactSchema.js';
+import { emptyAgencySections } from '../shared/agencySections.js';
 import { currentCodeVersion, RELEASE_STAMP_FIELD } from './releaseGuard.js';
 import { planSearchIndex, readReleaseAgencies, uploadSearchIndex } from './searchIndex.js';
 import { consumeDataRefreshMarker, dataRefreshGuardError, readDataRefreshMarker } from './dataRefreshMarker.js';
@@ -258,8 +259,9 @@ async function main() {
       }
     }
 
-    // 4. Sections (CIV-321): the beta section colours' fields, kept out of the route file. Optional
-    // per agency (absent until its next refresh); stamped like the route file so publish can check it.
+    // 4. Sections (CIV-321): the beta section colours' fields, kept out of the route file. An agency
+    // not processed since then has none, and gets an empty one; stamped like the route file so publish
+    // can check it.
     {
       const localPath = localPreviewDir ? path.join(localPreviewDir, slug, `${slug}-sections.json`) : null;
       const data = localPath && fs.existsSync(localPath)
@@ -270,6 +272,10 @@ async function main() {
         fs.writeFileSync(path.join(releaseAgencyDir, `${slug}-sections.json`), JSON.stringify(data));
       } else if (!data) {
         missingStaged(sectionsUrl);
+        // No sections file published yet: the release still carries an empty one (#1192).
+        if (!isStaged) {
+          fs.writeFileSync(path.join(releaseAgencyDir, `${slug}-sections.json`), JSON.stringify({ ...emptyAgencySections(), [RELEASE_STAMP_FIELD]: releaseId }));
+        }
       }
     }
   });
