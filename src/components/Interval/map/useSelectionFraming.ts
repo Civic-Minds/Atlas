@@ -39,14 +39,24 @@ const USER_INPUT_EVENTS = ['pointerdown', 'mousedown', 'touchstart', 'wheel', 'k
  * User input is read from the page, not the map's move events: a drag or scroll first stops the animation, so
  * moveend fires before the user's own move event (MapLibre 6), and a drag on Compare's map B moves map A by code.
  * Page-level capture listeners see the press or wheel before either map does.
+ *
+ * Returns a disposer: call it when another selection's fit starts, or the map goes away, so the old fit never jumps
+ * and no listener outlives the map. Calling it twice is harmless.
  */
-export function finishIfCutShort(map: maplibregl.Map, bounds: maplibregl.LngLatBoundsLike, maxZoom = 14): void {
+export function finishIfCutShort(map: maplibregl.Map, bounds: maplibregl.LngLatBoundsLike, maxZoom = 14): () => void {
   let userInput = false;
+  let disposed = false;
   const onInput = () => { userInput = true; };
   const target = typeof window !== 'undefined' ? window : null;
-  for (const type of USER_INPUT_EVENTS) target?.addEventListener(type, onInput, { capture: true, passive: true });
-  map.once('moveend', () => {
+  const dispose = () => {
+    if (disposed) return;
+    disposed = true;
     for (const type of USER_INPUT_EVENTS) target?.removeEventListener(type, onInput, { capture: true });
+    map.off('moveend', onMoveEnd);
+  };
+  for (const type of USER_INPUT_EVENTS) target?.addEventListener(type, onInput, { capture: true, passive: true });
+  function onMoveEnd() {
+    dispose();
     if (userInput) return;
     const padding = selectionFramePadding(map);
     const camera = map.cameraForBounds(bounds, { padding, maxZoom });
@@ -54,7 +64,9 @@ export function finishIfCutShort(map: maplibregl.Map, bounds: maplibregl.LngLatB
     const off = Math.abs(map.getZoom() - camera.zoom) > 0.05
       || map.project(map.getCenter()).dist(map.project(camera.center)) > 2;
     if (off) map.fitBounds(bounds, { padding, maxZoom, duration: 0 });
-  });
+  }
+  map.on('moveend', onMoveEnd);
+  return dispose;
 }
 
 /** Camera moves for a selection: agency, `?ondemand=` link, area, Reset View, route and stop. */
@@ -67,6 +79,10 @@ export function useSelectionFraming(
   }: SelectionFramingInput,
 ) {
   const fittedRouteRef = useRef<string | null>(null);
+  // The running route fit's finisher (finishIfCutShort): cancelled when another selection comes in or the map unmounts.
+  const finishRef = useRef<(() => void) | null>(null);
+  const cancelFinish = () => { finishRef.current?.(); finishRef.current = null; };
+  useEffect(() => cancelFinish, []);
   // Read through a ref so unlinking Compare's maps doesn't count as a new selection and move map B.
   const frameSelectionRef = useRef(frameSelection);
   frameSelectionRef.current = frameSelection;
@@ -135,11 +151,14 @@ export function useSelectionFraming(
     if (!map || !mapLoaded) return;
     if (!selectedRoute) {
       fittedRouteRef.current = null;
+      cancelFinish();
       return;
     }
     // Direction hover changes filtered layer data, but it is not a new route
     // selection. Do not refit the map on every hover-driven layer update.
     if (fittedRouteRef.current === selectedRoute) return;
+    // A new selection: the previous route's fit must not jump back to its own bounds when it ends.
+    cancelFinish();
     if (!frameSelectionRef.current) {
       fittedRouteRef.current = selectedRoute;
       return;
@@ -167,7 +186,7 @@ export function useSelectionFraming(
     const padding = selectionFramePadding(map);
     if (target?.kind === 'bounds') {
       map.fitBounds(target.bounds, { padding, maxZoom: 14 });
-      finishIfCutShort(map, target.bounds);
+      finishRef.current = finishIfCutShort(map, target.bounds);
       fittedRouteRef.current = selectedRoute;
     } else if (target?.kind === 'point') {
       map.flyTo({

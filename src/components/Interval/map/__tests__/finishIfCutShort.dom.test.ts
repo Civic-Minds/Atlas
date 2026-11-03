@@ -69,6 +69,32 @@ describe('finishIfCutShort (CIV-1252 review: a route opened from a link left hal
     otherCanvas.remove();
   });
 
+  it("a new route picked mid-fit cancels the old fit's finish: no jump back to the old route", () => {
+    const map = fakeMap(11.6);
+    const disposeOld = finishIfCutShort(map as unknown as maplibregl.Map, bounds);
+    // The hook cancels the old finisher when the next selection's fit starts; that fit's own stop then fires moveend.
+    disposeOld();
+    const newBounds: maplibregl.LngLatBoundsLike = [[-84.6, 39.0], [-84.55, 39.05]];
+    finishIfCutShort(map as unknown as maplibregl.Map, newBounds);
+    map.fire('moveend');
+    expect(map.fitBounds).toHaveBeenCalledTimes(1);
+    expect(map.fitBounds).toHaveBeenCalledWith(newBounds, expect.objectContaining({ duration: 0 }));
+  });
+
+  it('the disposer removes every listener it added, and is safe to call twice', () => {
+    const add = vi.spyOn(window, 'addEventListener');
+    const remove = vi.spyOn(window, 'removeEventListener');
+    const map = fakeMap(11.6);
+    const dispose = finishIfCutShort(map as unknown as maplibregl.Map, bounds);
+    dispose();
+    dispose();
+    expect(remove.mock.calls.length).toBe(add.mock.calls.length);
+    map.fire('moveend');
+    expect(map.fitBounds).not.toHaveBeenCalled();
+    add.mockRestore();
+    remove.mockRestore();
+  });
+
   it('stops listening once the fit is done, so later input on the page is not tracked', () => {
     const remove = vi.spyOn(window, 'removeEventListener');
     const map = fakeMap(12);
