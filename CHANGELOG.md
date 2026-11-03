@@ -163,6 +163,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Agency, area and research pages
 
+- **On the About page, the Atlas logo stays on About**: it went to the map, so it couldn't bring you back to the top of the page
 - **The site header fits on one line on phones**: small screens leave Docs to the footer, so Agencies, Research and Go to Atlas no longer wrap to a second line
 - **Area, state and agency pages have one map link, at the top**: the second map link under the frequency bar is gone, and "See all agencies" now follows the agency table, so the links no longer stack down the right edge
 - **The [all-agencies list](https://github.com/Civic-Minds/Atlas/issues/1306) shows an agency under every state it serves**: it listed each agency under its home state only, so Nebraska showed two agencies where its state page shows three

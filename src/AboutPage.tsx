@@ -73,7 +73,7 @@ export default function AboutPage() {
   const tiers = useHeadwayTiers();
   const stories = useOverflows<HTMLDivElement>();
   return (
-    <PageShell variant="wide">
+    <PageShell variant="wide" logoHref="/about">
 
         {/* The headline beside a picture of the map (CIV-1206 D, Ryan: "a picture of the Atlas map beside the headline"):
             Toronto's routes in their frequency colours, without the base map's street names. */}
