@@ -24,7 +24,7 @@ export interface MapTile {
 
 /**
  * A tile map: one equal square per place on a grid in rough geographic order, each with its short name, a figure and a
- * small count, in the split bar legend's text (CHART_TEXT's size and colour from sm up; smaller on phones, where a tile is
+ * small count, in the split bar legend's text (CHART_TEXT's size and colour from sm up; the 12px floor on phones, where a tile is
  * about 26px wide). Hovering, focusing or tapping a tile picks it the split bar's way (useActivePart): the others fade and
  * the picked one gets the accent outline (CIV-1282).
  */
@@ -57,9 +57,9 @@ export default function TileMap({ tiles, label, details }: {
             {t.thin && !on && <span aria-hidden="true" className="pointer-events-none absolute inset-0 rounded-md border-[1.5px] border-dashed" style={{ borderColor: t.darkFill ? 'var(--bg-panel)' : 'var(--text-muted)' }} />}
             <span aria-hidden="true" className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center text-[var(--text-primary)]"
               style={t.darkFill ? { color: 'var(--bg-panel)' } : undefined}>
-              <span className="text-[10px] leading-3 sm:text-xs sm:leading-4">{t.abbr}</span>
-              <span className={`text-[10px] leading-3 sm:text-sm sm:leading-5 ${t.value.length > 2 ? 'font-semibold sm:font-black' : CHART_COUNT}`}>{t.value}</span>
-              <span className="hidden text-[10px] leading-3 sm:block">{t.count}</span>
+              <span className="text-xs leading-3 sm:leading-4">{t.abbr}</span>
+              <span className={`text-xs leading-3 sm:text-sm sm:leading-5 ${t.value.length > 2 ? 'font-semibold sm:font-black' : CHART_COUNT}`}>{t.value}</span>
+              <span className="hidden text-xs leading-3 sm:block">{t.count}</span>
             </span>
           </button>
         );
