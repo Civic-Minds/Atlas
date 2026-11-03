@@ -71,6 +71,22 @@ export type { GeoJsonFeature, StopEntry };
  * made phase 2 classify them as span/limited service. Keep their period-specific headways while
  * giving them the normal frequency tier used by the map and route cards.
  */
+/**
+ * CIV-1305: a stop point's parent station, exactly as stops.txt gives it: parentStation (the
+ * parent_station id) and parentStationName (that parent's stop_name, left out when the parent is not in
+ * stops.txt). Nothing for a stop with no parent_station, or for a parent itself (location_type 1).
+ * The client decides which parents are stations; no rule here.
+ */
+export function parentStationProps(
+  stop: { parent_station?: string | null; location_type?: string | null },
+  stopNameById: ReadonlyMap<string, string | undefined>,
+): { parentStation?: string; parentStationName?: string } {
+  const parent = stop.parent_station;
+  if (!parent || stop.location_type === '1') return {};
+  const name = stopNameById.get(parent);
+  return name ? { parentStation: parent, parentStationName: name } : { parentStation: parent };
+}
+
 export function normalizeNrtAnalysisResult(result: AnalysisResult): AnalysisResult {
   if (result.tier !== 'span' || !Number.isFinite(result.medianHeadway) || result.medianHeadway <= 0) {
     return result;
@@ -1948,6 +1964,9 @@ export async function processGtfsBuffer(
     firstDepartureByTripId,
     lastDepartureByTripId,
   });
+  // CIV-1305: each stop's GTFS parent_station and that parent's name, so stop cards can keep a
+  // station's platforms together. Left out for a stop with no parent and for a parent itself.
+  const stopNameByIdForParents = new Map((gtfs.stops ?? []).map(s => [s.stop_id, s.stop_name]));
   for (const stop of gtfs.stops ?? []) {
     // Include child stops referenced in stop_times, AND parent stations whose children
     // gave them routes via the propagation above (AI-117).
@@ -1984,6 +2003,7 @@ export async function processGtfsBuffer(
         isHub,
         isRail,
         direction: stopDirections.get(stop.stop_id) ?? null,
+        ...parentStationProps(stop, stopNameByIdForParents),
       },
     } as any);
   }
