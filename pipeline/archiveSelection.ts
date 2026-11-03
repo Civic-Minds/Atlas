@@ -237,12 +237,14 @@ function capPlaceholderExpiry(liveFeedExpiry: string, todayYmd: string): string 
 /**
  * Refuse a source zip whose service dates are unknown, already over, or older
  * than the feed the live data was built from. Returns a reason, or null if OK.
+ * capTodayYmd is the date the zip's own expiry was capped with (recordedFeedExpiry), so a
+ * placeholder live expiry is capped on the same day; it defaults to todayYmd.
  * A zip matching an expiredFeedPin may have ended; the other checks still apply.
  */
-export function feedDateRefusal(feedExpiry: string | null, liveFeedExpiry: string | null | undefined, todayYmd: string, pinnedExpiry?: string | null): string | null {
+export function feedDateRefusal(feedExpiry: string | null, liveFeedExpiry: string | null | undefined, todayYmd: string, pinnedExpiry?: string | null, capTodayYmd: string = todayYmd): string | null {
   if (!feedExpiry) return 'source zip has no service dates, so it cannot be shown to be current';
   if (feedExpiry < todayYmd && feedExpiry !== pinnedExpiry) return `source zip service ended ${feedExpiry}, before today (${todayYmd})`;
-  if (liveFeedExpiry && /^\d{8}$/.test(liveFeedExpiry) && feedExpiry < capPlaceholderExpiry(liveFeedExpiry, todayYmd)) {
+  if (liveFeedExpiry && /^\d{8}$/.test(liveFeedExpiry) && feedExpiry < capPlaceholderExpiry(liveFeedExpiry, capTodayYmd)) {
     return `source zip service ends ${feedExpiry}, older than the live data's ${liveFeedExpiry}`;
   }
   return null;
