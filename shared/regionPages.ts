@@ -6,7 +6,6 @@
 import { agencyPlaces, areaAgencySummaries, areaPageStatus, formatIso, regionMembers, type AgencyPageSummary } from './agencyPages';
 import { AREA_INDEX } from './areaIndex';
 import { areaRegionName } from './areaRegions';
-import { areaPagePath } from './areas';
 import { countryForRegion } from './regionCountry';
 import { agencyGroupData, groupIntroParts, groupPageDescription, groupPageTitle, type AgencyGroupData } from './areaPages';
 import { REGION_PATH_PREFIX, regionPagePath, regionSlug } from './pagePaths';
@@ -119,9 +118,11 @@ const REGION_AREAS_NAMED = 3;
  * The sentence after a state's intro naming its biggest area pages (CIV-1298), each linking to its page:
  * "Regions include the Greater Toronto and Hamilton Area, the Ottawa area and Waterloo Region." None with no area page.
  */
-export function regionAreasSentenceParts(d: Pick<RegionPageData, 'areas'>): { lead: string; named: Array<RegionArea & { href: string }>; separators: string[]; tail: string } | null {
+export function regionAreasSentenceParts(d: Pick<RegionPageData, 'areas'>): { lead: string; named: RegionArea[]; separators: string[]; tail: string } | null {
   if (d.areas.length === 0) return null;
-  const named = d.areas.slice(0, REGION_AREAS_NAMED).map(a => ({ ...a, href: areaPagePath(a.slug) }));
+  // No href here: the page reads its data back from the embedded JSON, so it builds each link from the slug at render
+  // time (areaPagePath) and never puts a URL from that text in an href (CodeQL js/xss-through-dom).
+  const named = d.areas.slice(0, REGION_AREAS_NAMED);
   const separators = named.map((_, i) => (i === named.length - 2 ? ' and ' : i < named.length - 2 ? ', ' : ''));
   return { lead: 'Regions include ', named, separators, tail: '.' };
 }

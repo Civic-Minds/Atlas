@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { areaPagePath } from './pagePaths';
 import { agencyPageSummaries } from './agencyPagesData';
 import { agencyBreadcrumbs, agencyPageData, regionPageHref, type AgencyPageRoute, type AgencyPageSummary } from './agencyPages';
 import { buildAgencyIndexData } from './agencyIndex';
@@ -78,7 +79,7 @@ describe('areas named after a state intro (CIV-1298)', { timeout: 30_000 }, () =
   it('names up to three, most routes first, each linking its area page', () => {
     const on = regionAreasSentenceParts(page('Ontario'))!;
     expect(on.named.map(a => a.slug)).toEqual(['toronto', 'ottawa', 'kitchener']);
-    expect(on.named.map(a => a.href)).toEqual(['/area/toronto', '/area/ottawa', '/area/kitchener']);
+    expect(on.named.map(a => areaPagePath(a.slug))).toEqual(['/area/toronto', '/area/ottawa', '/area/kitchener']);
     expect(regionAreasSentence(page('Ontario'))).toBe('Regions include the Greater Toronto and Hamilton Area, the Ottawa area and Waterloo Region.');
     expect(page('California').areas.length).toBeGreaterThan(3);
     expect(regionAreasSentenceParts(page('California'))!.named).toHaveLength(3);

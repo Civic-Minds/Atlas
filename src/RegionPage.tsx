@@ -12,6 +12,7 @@ import {
   type RegionPageData,
 } from '../shared/regionPages';
 import { ATLAS_MODE } from '../shared/config';
+import { areaPagePath } from '../shared/pagePaths';
 import { applySeoToDocument, seoOrigin } from './lib/seoDom';
 import { readEmbeddedJson } from './lib/embeddedData';
 import { UNDERLINED_LINK } from './pageStyles';
@@ -69,7 +70,7 @@ export default function RegionPage({ data: dataProp }: { data?: RegionPageData }
             {intro.lead}{joiners.opener}
             {intro.named.map((a, i) => <span key={a.slug}><a className={UNDERLINED_LINK} href={areaAgencyRowHref(a)}>{a.title}</a>{joiners.separators[i]}</span>)}
             {joiners.tail}
-            {areas && <>{' '}{areas.lead}{areas.named.map((a, i) => <span key={a.slug}><a className={UNDERLINED_LINK} href={a.href}>{a.name}</a>{areas.separators[i]}</span>)}{areas.tail}</>}
+            {areas && <>{' '}{areas.lead}{areas.named.map((a, i) => <span key={a.slug}><a className={UNDERLINED_LINK} href={areaPagePath(a.slug)}>{a.name}</a>{areas.separators[i]}</span>)}{areas.tail}</>}
           </p>
 
           <AgencyGroupSection data={data} barNote={regionBarNote(data)} />
