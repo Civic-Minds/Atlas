@@ -142,10 +142,11 @@ describe('tile rules fingerprint', () => {
   // changes where the files come from, not what is baked into the tiles: hash only.
   // #1192 writes an empty sections file for an agency that has none, beside the route file; it is a
   // separate JSON the app reads, never tile content: hash only.
+  // CIV-1229 removed the ignored per-feature minzoom; tile output unchanged.
   it('changes only together with a deliberate TILE_RULES_VERSION decision', () => {
     expect({ version: TILE_RULES_VERSION, fingerprint: tileRulesFingerprint() }).toEqual({
       version: 5,
-      fingerprint: 'c78824cd987bb1c33088edabd5a5127b51bcccffa07adc861680a5e18f9f5642',
+      fingerprint: 'd63291c737201549913452364d1fdf1f54f37e6d40ccbbbb5efcfdd3c0652c50',
     });
   });
 });
