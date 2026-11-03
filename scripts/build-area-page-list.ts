@@ -75,12 +75,22 @@ export function mergeAreaRedirects(current: readonly Redirect[], next: readonly 
   return [...next, ...kept].sort((a, b) => a.source.localeCompare(b.source));
 }
 
+/**
+ * The redirects build-area-page-list leaves as they are: everything except /area/ ones (mergeAreaRedirects
+ * rewrites those) and the /agency/ paths formerSlugs now generates. A hand-added /agency/ redirect stays, and
+ * so does one from a former slug that was later taken out of a config, so links already out keep working.
+ */
+export function otherRedirects(current: readonly Redirect[], formerSlugs: Record<string, FormerSlug>): Redirect[] {
+  const generated = new Set(agencyRedirects(formerSlugs).map(r => r.source));
+  return current.filter(r => !r.source.startsWith(AREA_PATH_PREFIX) && !generated.has(r.source));
+}
+
 export function writeAreaPageList(summaries: AgencyPageSummaries, formerSlugs: Record<string, FormerSlug> = readFormerSlugs()): void {
   const status = areaPageStatus(summaries.agencies);
   writeFileSync(AREA_PAGE_SLUGS, JSON.stringify([...status.pages].sort()) + '\n');
   writeFileSync(FORMER_SLUGS, JSON.stringify(formerSlugs, null, 2) + '\n');
   const config = JSON.parse(readFileSync(VERCEL, 'utf8')) as Record<string, unknown> & { redirects?: Redirect[] };
-  const other = (config.redirects ?? []).filter(r => !r.source.startsWith(AREA_PATH_PREFIX) && !r.source.startsWith(AGENCY_PATH_PREFIX));
+  const other = otherRedirects(config.redirects ?? [], formerSlugs);
   const redirects = [...other, ...mergeAreaRedirects(config.redirects ?? [], areaRedirects(summaries), status.pages), ...agencyRedirects(formerSlugs)];
   // `redirects` sits before `rewrites`, the order Vercel applies them in.
   const { headers, rewrites, redirects: _old, ...rest } = config;
