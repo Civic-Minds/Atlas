@@ -14,6 +14,7 @@ import { S3Client, PutObjectCommand, GetObjectCommand, ListObjectsV2Command, Del
 import { Upload } from '@aws-sdk/lib-storage';
 import { createHash } from 'node:crypto';
 import { promisify } from 'node:util';
+import { stagingBucketProblem } from './stagingGuard.js';
 
 const R2_WRITE_KEYS = new Set(['R2_ACCOUNT_ID', 'R2_ACCESS_KEY_ID', 'R2_SECRET_ACCESS_KEY']);
 
@@ -21,6 +22,14 @@ const R2_WRITE_KEYS = new Set(['R2_ACCOUNT_ID', 'R2_ACCESS_KEY_ID', 'R2_SECRET_A
  * Worktrees link .env.local to the main checkout's .env.dev-public, which has no
  * R2 keys on purpose, so pipeline writes there stop here instead of touching R2.
  */
+/** The public bucket, refusing a staging run (ATLAS_ENV=staging) that would use production (#1129). */
+export function publicBucketName(): string {
+  const bucket = requireEnv('R2_BUCKET_NAME');
+  const problem = stagingBucketProblem(bucket);
+  if (problem) throw new Error(`Refusing a staging run: ${problem}.`);
+  return bucket;
+}
+
 export function requireEnv(key: string): string {
   const v = process.env[key];
   if (v) return v;
@@ -158,12 +167,12 @@ async function r2PutRaw(key: string, body: string | Buffer | import('fs').ReadSt
 }
 
 export async function r2Put(key: string, body: string, contentType = 'application/json', options: R2PutOptions = {}): Promise<string> {
-  await r2PutRaw(key, body, contentType, requireEnv('R2_BUCKET_NAME'), undefined, options);
+  await r2PutRaw(key, body, contentType, publicBucketName(), undefined, options);
   return r2PublicUrl(key);
 }
 
 export async function r2PutBuffer(key: string, body: Buffer, contentType: string): Promise<string> {
-  await r2PutRaw(key, body, contentType, requireEnv('R2_BUCKET_NAME'));
+  await r2PutRaw(key, body, contentType, publicBucketName());
   return r2PublicUrl(key);
 }
 
@@ -175,7 +184,7 @@ export async function r2PutBuffer(key: string, body: Buffer, contentType: string
 export async function r2PutFile(key: string, filePath: string, contentType: string, options: R2PutOptions = {}): Promise<string> {
   const { statSync, readFileSync, createReadStream } = await import('fs');
   const size = statSync(filePath).size;
-  const bucket = requireEnv('R2_BUCKET_NAME');
+  const bucket = publicBucketName();
 
   if (size >= 100 * 1024 * 1024) {
     // Multipart upload — tolerates transient SSL errors per part
@@ -293,7 +302,7 @@ export async function r2GetArchiveBuffer(key: string): Promise<Buffer | null> {
 }
 
 export async function r2Get(key: string): Promise<string | null> {
-  return r2GetRaw(key, requireEnv('R2_BUCKET_NAME'));
+  return r2GetRaw(key, publicBucketName());
 }
 
 export interface R2ObjectInfo {
@@ -342,18 +351,18 @@ async function r2ListAllObjects(bucket: string, prefix: string): Promise<R2Objec
 }
 
 export async function r2List(prefix: string): Promise<string[]> {
-  return r2ListAll(requireEnv('R2_BUCKET_NAME'), prefix);
+  return r2ListAll(publicBucketName(), prefix);
 }
 
 /** List public-bucket objects with sizes (read-only). */
 export async function r2ListObjects(prefix: string): Promise<R2ObjectInfo[]> {
-  return r2ListAllObjects(requireEnv('R2_BUCKET_NAME'), prefix);
+  return r2ListAllObjects(publicBucketName(), prefix);
 }
 
 /** Delete keys from the public bucket in batches of 1000. Callers own the safety checks. */
 export async function r2DeleteKeys(keys: string[]): Promise<number> {
   const client = getR2Client();
-  const bucket = requireEnv('R2_BUCKET_NAME');
+  const bucket = publicBucketName();
   let deleted = 0;
   for (let i = 0; i < keys.length; i += 1000) {
     const batch = keys.slice(i, i + 1000);
