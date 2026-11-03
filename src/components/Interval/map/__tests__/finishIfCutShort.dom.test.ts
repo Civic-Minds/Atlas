@@ -43,11 +43,38 @@ describe('finishIfCutShort (CIV-1252 review: a route opened from a link left hal
     expect(map.fitBounds).not.toHaveBeenCalled();
   });
 
-  it('never fights the user: a drag or scroll during the animation keeps their view', () => {
+  it("never fights the user: MapLibre's real order is press, then the stop's moveend, then the user's own move", () => {
+    for (const input of [
+      () => window.dispatchEvent(new Event('mousedown')),
+      () => window.dispatchEvent(new Event('touchstart')),
+      () => window.dispatchEvent(new Event('wheel')),
+    ]) {
+      const map = fakeMap(11.6);
+      finishIfCutShort(map as unknown as maplibregl.Map, bounds);
+      input();
+      map.fire('moveend'); // the drag or scroll stops the animation first; no originalEvent on this moveend
+      map.fire('movestart', { originalEvent: {} }); // the user's own move comes after
+      expect(map.fitBounds).not.toHaveBeenCalled();
+    }
+  });
+
+  it("a drag on Compare's other map counts too: its press reaches the page, while this map only moves by code", () => {
     const map = fakeMap(11.6);
     finishIfCutShort(map as unknown as maplibregl.Map, bounds);
-    map.fire('movestart', { originalEvent: {} });
-    map.fire('moveend');
+    const otherCanvas = document.createElement('canvas');
+    document.body.appendChild(otherCanvas);
+    otherCanvas.dispatchEvent(new Event('pointerdown', { bubbles: true }));
+    map.fire('moveend'); // stopped by the linked jumpTo, no originalEvent
     expect(map.fitBounds).not.toHaveBeenCalled();
+    otherCanvas.remove();
+  });
+
+  it('stops listening once the fit is done, so later input on the page is not tracked', () => {
+    const remove = vi.spyOn(window, 'removeEventListener');
+    const map = fakeMap(12);
+    finishIfCutShort(map as unknown as maplibregl.Map, bounds);
+    map.fire('moveend');
+    expect(remove.mock.calls.map(c => c[0]).sort()).toEqual(['keydown', 'mousedown', 'pointerdown', 'touchstart', 'wheel']);
+    remove.mockRestore();
   });
 });

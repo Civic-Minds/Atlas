@@ -27,19 +27,27 @@ export interface SelectionFramingInput {
   frameSelection?: boolean;
 }
 
+/** Input that means the user is moving a map themselves: on either Compare map, so a drag on map B counts for map A. */
+const USER_INPUT_EVENTS = ['pointerdown', 'mousedown', 'touchstart', 'wheel', 'keydown'] as const;
+
 /**
  * A route fit that something other than the user cuts short ends where the route is framed. MapLibre's resize() stops
  * any camera animation, and the map resizes while a page settles (Compare's two maps do, and each one's moves carry to
  * the other), so a route opened from a link could stop part way, zoomed out with the line off to one side. When the
- * animation ends early with no drag, scroll or tap on the map since it began, jump to the fit instead. Once only.
+ * animation ends early with no user input since it began, jump to the fit instead. Once only.
+ *
+ * User input is read from the page, not the map's move events: a drag or scroll first stops the animation, so
+ * moveend fires before the user's own move event (MapLibre 6), and a drag on Compare's map B moves map A by code.
+ * Page-level capture listeners see the press or wheel before either map does.
  */
 export function finishIfCutShort(map: maplibregl.Map, bounds: maplibregl.LngLatBoundsLike, maxZoom = 14): void {
-  let userMoved = false;
-  const onMoveStart = (e: { originalEvent?: unknown }) => { if (e.originalEvent) userMoved = true; };
-  map.on('movestart', onMoveStart);
+  let userInput = false;
+  const onInput = () => { userInput = true; };
+  const target = typeof window !== 'undefined' ? window : null;
+  for (const type of USER_INPUT_EVENTS) target?.addEventListener(type, onInput, { capture: true, passive: true });
   map.once('moveend', () => {
-    map.off('movestart', onMoveStart);
-    if (userMoved) return;
+    for (const type of USER_INPUT_EVENTS) target?.removeEventListener(type, onInput, { capture: true });
+    if (userInput) return;
     const padding = selectionFramePadding(map);
     const camera = map.cameraForBounds(bounds, { padding, maxZoom });
     if (!camera || camera.zoom == null || camera.center == null) return;
