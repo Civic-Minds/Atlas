@@ -1,5 +1,5 @@
 import * as maplibregl from 'maplibre-gl';
-import { getNightServiceColor, type ColorVisionMode } from '../../../utils/colors';
+import { nightServiceTierColorExpression, type ColorVisionMode } from '../../../utils/colors';
 import { getAtlasPmtilesUrl, getAtlasOverviewPmtilesUrl } from '../../../lib/mapStyle';
 import { tileRouteKeyExpr } from '../../../../shared/tileFilterExprs';
 import { buildFocusCase, FOCUS_DIM_OPACITY } from '../../../utils/routeFocus';
@@ -271,7 +271,8 @@ function addNightServiceLayers(map: maplibregl.Map, colorMode: ColorVisionMode) 
     type: 'line',
     source: 'night-service-routes',
     paint: {
-      'line-color': getNightServiceColor(colorMode),
+      // CIV-1329: three shades by night grade (30 darker, 90 lighter).
+      'line-color': nightServiceTierColorExpression(colorMode) as any,
       'line-width': NIGHT_SERVICE_WIDTH_BY_ZOOM as any,
       'line-opacity': OVERLAY_ROUTE_OPACITY,
     },

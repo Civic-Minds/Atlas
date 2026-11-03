@@ -336,6 +336,15 @@ describe('night edges: the wait for the first and after the last night bus (CIV-
   it('a stretch that stops before 3:30 keeps both edges at the grade', () => {
     expect(stretchNight(stretch(every(hm(26, 0), hm(27, 20), 20)), 60)).toBe(false);
   });
+  it('CIV-1329: the 90 grade loosens the gaps between buses, never the edges', () => {
+    const day = (night: number[]) => ({ ...stretch(night), times: [...night, ...every(hm(6, 0), hm(22, 0), 30)] }) as Stretch;
+    // An owl every 75 passes at 90 only.
+    expect([60, 90].map(g => stretchNight(day(every(hm(26, 10), hm(29, 0), 75)), g))).toEqual([false, true]);
+    // RTD 45 Montbello: last bus 0:34, then 3:05, 4:05 and every 30: day service after a 2.5-hour hole fails at 90 too.
+    expect(stretchNight(day([hm(27, 5), ...every(hm(28, 5), hm(30, 35), 30)]), 90)).toBe(false);
+    // Day service from 3:30 does not cross the window's midpoint early enough and fails at 90.
+    expect(stretchNight(day(every(hm(27, 30), hm(30, 0), 20)), 90)).toBe(false);
+  });
 });
 
 describe('Overnight reads the night verdict (#1267, Ryan 2026-10-31)', () => {
@@ -359,12 +368,15 @@ describe('Overnight reads the night verdict (#1267, Ryan 2026-10-31)', () => {
     for (const t of cases) {
       const d = dir(t);
       const v = directionNightValue(d);
-      for (const gap of [30, 60]) expect(v != null && v <= gap, `${t} @${gap}`).toBe(directionNightVerdict(d, gap) !== 'fail');
+      for (const gap of [30, 60, 90]) expect(v != null && v <= gap, `${t} @${gap}`).toBe(directionNightVerdict(d, gap) !== 'fail');
     }
   });
-  it('night service every 75 has no Overnight value: over 60 is not overnight service', () => {
-    expect(directionNightValue(dir(every(hm(26, 0), hm(29, 0), 75)))).toBeNull();
+  it('#1322 (Ryan, 2026-11-03: "Use 90 minutes as the cutoff everywhere"): night service every 75 runs through the night and reads 75; over 90 does not', () => {
+    expect(directionNightValue(dir(every(hm(26, 0), hm(29, 0), 75)))).toBe(75);
+    expect(directionNightVerdict(dir(every(hm(26, 0), hm(29, 0), 75)), 90)).toBe('pass');
+    expect(directionNightVerdict(dir(every(hm(26, 0), hm(29, 0), 75)), 60)).toBe('fail');
     expect(directionNightValue(dir(every(hm(26, 0), hm(29, 0), 60)))).toBe(60);
+    expect(directionNightValue(dir([hm(26, 0), hm(27, 40), hm(29, 0)]))).toBeNull();
   });
   it('Overnight is one number: no branch range and no 2-6 AM wording inputs (TTC 300, its branches every 8-15)', async () => {
     const r = await run('ttc-300-weekday-night');
@@ -936,11 +948,15 @@ describe('Overnight section values read each stop through the night verdict (#10
     expect(directionNightValue(d, true)).toBe(30);
     expect(decodeStopRuns(stopPeriodValues(stops, d.throughTimesAlong!).overnight)).toEqual([30, 30, 30, 30]);
   });
-  it('a stop the verdict does not pass keeps its full-window wait (night buses every 75)', () => {
-    const d = build(75);
+  it('a stop the verdict does not pass keeps its full-window wait (night buses every 100, over the 90 cutoff, CIV-1329)', () => {
+    const d = build(100);
     expect(directionNightValue(d, true)).toBeNull();
     const values = decodeStopRuns(stopPeriodValues(stops, d.throughTimesAlong!).overnight);
-    expect(values.every(v => v != null && v > 60)).toBe(true);
+    expect(values.every(v => v != null && v > 90)).toBe(true);
+  });
+  it('CIV-1329: night buses every 75 pass at the 90 cutoff, and every stop reads 75', () => {
+    const d = build(75);
+    expect(directionNightValue(d, true)).toBe(75);
   });
   it('Late keeps the settled rule (#524): the wait after the last bus still counts', () => {
     const d = build(30);

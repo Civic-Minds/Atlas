@@ -2162,6 +2162,7 @@ export async function processGtfsBuffer(
     feature.properties.researchFrequentService = { daytime15: false, daytime30: false, extended15: false, extended30: false };
     feature.properties.nightService30 = false;
     feature.properties.nightService60 = false;
+    feature.properties.nightService90 = false;
     const gKey = `${shortName}::${dirId}::${day}`;
     // No value, so no cap, without stop data for the direction or when the feed gave the route no
     // direction_id: a synthesized "direction" can be an early and late variant of a one-way loop
@@ -2331,6 +2332,13 @@ export async function processGtfsBuffer(
       metricStopMap,
       stopDepsByGroupNight.get(gKey),
       60,
+    );
+    // CIV-1329: the 90 tier from the same call as 30 and 60, never a separate count.
+    feature.properties.nightService90 = hasNightServiceAtShapeEndpoints(
+      nightEndpointStopIds,
+      metricStopMap,
+      stopDepsByGroupNight.get(gKey),
+      90,
     );
     feature.properties.nightService = feature.properties.nightService60;
     // Frequency focus step 4: whether this row itself runs at night: more than half of its own
@@ -3630,12 +3638,14 @@ export async function processGtfsBuffer(
       // lights every row its night service runs on, and lists the stops it runs at, so the map
       // draws and the card names only that part.
       const nightStops = rowNightStops.get(feature) ?? [];
-      const partial = p.stretchNightPartial60 === true;
+      // CIV-1329: the loosest grade the route passes decides whether it runs on part of the route.
+      const partial = p.stretchNight60 === true ? p.stretchNightPartial60 === true : p.stretchNightPartial90 === true;
       const runs = partial ? nightStops.length >= 2 : rowRunsAtNight.get(feature) === true;
       p.nightService30 = p.stretchNight30 === true && runs;
       p.nightService60 = p.stretchNight60 === true && runs;
+      p.nightService90 = p.stretchNight90 === true && runs;
       p.nightService = p.nightService60;
-      if (p.nightService60 && partial) {
+      if (p.nightService90 && partial) {
         p.nightServicePartOfRoute = true;
         p.nightServiceStops = nightStops;
       } else {

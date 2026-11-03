@@ -32,6 +32,8 @@ export interface NightServiceRouteEntry {
   day: string | null;
   nightService30: boolean;
   nightService60: boolean;
+  /** CIV-1329: the 90 tier, the cutoff for running through the night. */
+  nightService90: boolean;
 }
 
 export interface NightServiceIndexFile {
@@ -43,7 +45,7 @@ export interface NightServiceIndexFile {
 }
 
 export const NIGHT_SERVICE_CRITERIA =
-  'At least one departure every 30 or 60 minutes, 2am-5am local time, with no gap at the start or end of the core overnight window.';
+  'At least one departure every 30, 60 or 90 minutes, 2am-5am local time, with no gap at the start or end of the core overnight window.';
 
 /**
  * Pure: pull the qualifying routes out of one agency's already-processed feature
@@ -70,6 +72,7 @@ export function extractNightServiceRoutes(
       day: f.properties.day ?? null,
       nightService30: f.properties.nightService30 === true,
       nightService60: f.properties.nightService60 === true || f.properties.nightService === true,
+      nightService90: rowRunsThroughNight(f.properties),
     }));
 }
 

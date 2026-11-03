@@ -4,7 +4,7 @@ import { useViewport } from '../context/ViewportContext';
 import { R2_PUBLIC_URL } from '../../shared/config';
 import { countOf } from '../../shared/overflowText';
 import type { NightServiceFrequency } from '../../shared/nightService';
-import { routeNightGrade } from '../../shared/nightService';
+import { routeNightGrade, rowRunsThroughNight } from '../../shared/nightService';
 import Panel, { PanelBody, PanelTitleBar } from '../components/ui/Panel';
 import CardRouteList from '../components/Interval/CardRouteList';
 import { CardReportButton } from '../components/Interval/cardUi';
@@ -95,13 +95,13 @@ export default function NightService({ active, sidebarLeft, searchBarWidth, laye
   // Every row of each route that runs at night, in either view and anywhere on the map, so a route's night
   // value covers all of it: a direction that only makes 60 keeps the route at 60 in the 30 view too (CIV-931).
   const nightGrades = useMemo(() => {
-    const rows = new Map<string, { nightService30?: boolean }[]>();
+    const rows = new Map<string, NightServiceFeatureProperties[]>();
     for (const [agencySlug, collection] of Object.entries(layers)) {
       for (const feature of collection.features) {
         const properties = feature.properties as NightServiceFeatureProperties | null;
-        if (!properties || (properties.nightService60 !== true && properties.nightService !== true && properties.nightService30 !== true)) continue;
+        if (!properties || !rowRunsThroughNight(properties)) continue;
         const key = nightRouteKey(agencySlug, properties);
-        rows.set(key, [...(rows.get(key) ?? []), { nightService30: properties.nightService30 }]);
+        rows.set(key, [...(rows.get(key) ?? []), properties]);
       }
     }
     return new Map([...rows].map(([key, routeRows]) => [key, routeNightGrade(routeRows)]));
@@ -149,7 +149,7 @@ export default function NightService({ active, sidebarLeft, searchBarWidth, laye
         destinations: [],
       };
       // Part of the route only when every lit row of it is partial.
-      const partial = frequency === 60 && properties.nightServicePartOfRoute === true;
+      const partial = frequency !== 30 && properties.nightServicePartOfRoute === true;
       summary.partOfRoute = summary.partOfRoute === undefined ? partial : summary.partOfRoute && partial;
       const headsign = properties.headsign ?? indexed?.headsign;
       if (headsign && !summary.destinations.includes(headsign)) summary.destinations.push(headsign);

@@ -1316,6 +1316,8 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
           )}
           {/* No key in the Night view: every line is the same colour and width (Ryan, CIV-1070). */}
           {frequentServiceView && <ResearchLegend view="frequent" frequentFrequency={frequentServiceFrequency} />}
+          {/* CIV-1329: the night grades' three shades. */}
+          {nightServiceView && <ResearchLegend view="night" frequentFrequency={frequentServiceFrequency} nightFrequency={nightServiceFrequency} />}
           {/* N39: phones hide the counts, so a view the filters leave empty says so there. */}
           {!compareActive && !nightServiceView && !frequentServiceView && stats && (showMapContext || !isLoading)
             && (showMapContext ? (mapContextRouteCount ?? 0) : stats.matching) === 0 && (

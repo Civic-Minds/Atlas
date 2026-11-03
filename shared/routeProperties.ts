@@ -117,9 +117,10 @@ export interface RouteProperties {
     main: { stops: number; refStop: string; trips: number; period?: Partial<Record<PeriodKey, number | null>>; maxGap?: Partial<Record<PeriodKey, number | null>>; noRegular?: PeriodKey[]; /** CIV-1251: this stretch's own late start or early end per period ({from|until, every}). */ edge?: Partial<Record<PeriodKey, { from?: number; until?: number; every: number }>> } | null;
     tails: Array<{ refStop: string; stops: number; km: number; trips: number; period?: Partial<Record<PeriodKey, number | null>>; maxGap?: Partial<Record<PeriodKey, number | null>>; noRegular?: PeriodKey[]; /** CIV-1251: this stretch's own late start or early end per period ({from|until, every}). */ edge?: Partial<Record<PeriodKey, { from?: number; until?: number; every: number }>>; notThrough?: PeriodKey[] }>;
   };
-  /** The row's night grade (pipeline/process-core.ts): it passes the 2am to 5am check at 30 or 60 minutes; nightService is the older 60. */
+  /** The row's night grade (pipeline/process-core.ts): it passes the 2am to 5am check at 30, 60 or 90 minutes; nightService is the older 60. 90 is the cutoff for running through the night (#1322). */
   nightService30?: boolean;
   nightService60?: boolean;
+  nightService90?: boolean;
   nightService?: boolean;
   /** Night service runs on only part of the route: draw and name only these stops' segments ("part of the route"). */
   nightServicePartOfRoute?: boolean;
