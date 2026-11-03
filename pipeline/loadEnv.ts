@@ -10,6 +10,7 @@
  *
  * Staging is a dress-rehearsal of prod (same key layout, different bucket).
  */
+import { existsSync } from 'fs';
 import { config } from 'dotenv';
 import { resolve } from 'path';
 
@@ -19,10 +20,30 @@ export function resolvePipelineEnvFile(): string {
   return '.env.local';
 }
 
-/** Load env file into process.env. Returns the path used. */
+/**
+ * Why a requested staging run must not go ahead, or null. Staging is asked for by ATLAS_ENV=staging or a
+ * .env.staging file. A missing file loads nothing, and an unset R2_BUCKET_NAME means the production
+ * bucket, so a "staging" run in a worktree (which has no .env.staging) or one where the shell already
+ * exports the production bucket (dotenv never overrides it) would read and write production (#1129).
+ */
+export function stagingEnvProblem(opts: { file: string; atlasEnv?: string; fileExists: boolean; bucket?: string }): string | null {
+  const staging = opts.atlasEnv === 'staging' || /(^|[\\/])\.env\.staging$/.test(opts.file);
+  if (!staging) return null;
+  if (!opts.fileExists) return `${opts.file} is missing, so a staging run would use the production bucket`;
+  const bucket = (opts.bucket ?? '').replace(/^["']|["']$/g, '');
+  if (!bucket || bucket === 'atlas') return `${opts.file} is loaded, but R2_BUCKET_NAME is ${bucket ? 'the production bucket "atlas"' : 'unset (the production bucket)'}`;
+  return null;
+}
+
+/** Load env file into process.env. Returns the path used. Refuses a staging run that would reach production. */
 export function loadPipelineEnv(): string {
   const file = resolvePipelineEnvFile();
-  config({ path: resolve(file), quiet: true });
+  const path = resolve(file);
+  const fileExists = existsSync(path);
+  if (process.env.ATLAS_ENV_FILE && !fileExists) throw new Error(`ATLAS_ENV_FILE ${file} does not exist`);
+  config({ path, quiet: true });
+  const problem = stagingEnvProblem({ file, atlasEnv: process.env.ATLAS_ENV, fileExists, bucket: process.env.R2_BUCKET_NAME });
+  if (problem) throw new Error(`Refusing a staging run: ${problem}.`);
   return file;
 }
 

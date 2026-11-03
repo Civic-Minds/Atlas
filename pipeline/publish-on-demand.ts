@@ -32,8 +32,12 @@ if (audience !== 'beta' && audience !== 'public') fail('--audience must be beta 
 if (audience === 'public' && !process.argv.includes('--promote')) {
   fail('The public release needs --promote: it puts promoted services on the public site.');
 }
-// A beta dry run must compare against the live beta release, which is in the staging bucket.
-if (audience === 'beta' && !process.env.ATLAS_ENV && !process.env.ATLAS_ENV_FILE) process.env.ATLAS_ENV = 'staging';
+// A beta dry run must compare against the live beta release, which is in the staging bucket. Without a
+// .env.staging (a worktree) a dry run checks the release on its own; loadEnv refuses a staging run with no
+// file, so --write still stops (#1129).
+const stagingFileMissing = !fs.existsSync(path.resolve('.env.staging'));
+const writeRequested = process.argv.includes('--write');
+if (audience === 'beta' && !process.env.ATLAS_ENV && !process.env.ATLAS_ENV_FILE && !(stagingFileMissing && !writeRequested)) process.env.ATLAS_ENV = 'staging';
 
 async function main() {
   // Imported after ATLAS_ENV is settled: loading the env picks the bucket.
@@ -77,7 +81,11 @@ async function main() {
   const candidate = buildOnDemandRelease(audience);
   let live: Snapshot | null = null;
   try {
-    if (wrongBucket) throw new Error(`${LOADED_ENV_FILE} points at the ${production ? 'production' : 'staging'} bucket`);
+    if (wrongBucket) {
+      throw new Error(audience === 'beta' && stagingFileMissing
+        ? 'there is no .env.staging here, so the live beta release in the staging bucket cannot be read'
+        : `${LOADED_ENV_FILE} points at the ${production ? 'production' : 'staging'} bucket`);
+    }
     live = await readLive();
   } catch (err) {
     if (write) throw err;
