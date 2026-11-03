@@ -59,9 +59,8 @@ import { buildHiddenRoutesForAgency, mergeHiddenRoutes, type HiddenRoutesFile, t
 import { rescoreFeedQuality, type FeedQuality } from '../shared/feedQuality.js';
 import { historyHeadlineWins } from './historyHeadlinePick.js';
 import { historyRouteKey } from './historyRouteKey.js';
-import { baselineFingerprint, buildSidecar, buildV2Routes, buildV2RoutesMerged, fingerprintChanged, fingerprintOf, historyV2Enabled, r2ArchiveSink, routeTrunkHeadway, routeTrunkHeadwayByPeriod, splitFeaturesBySource, writeSidecar, type LatestRouteEntry, type V2FeedPart } from './historyV2.js';
-import { readFeedEvidence } from './historyWeekend.js';
-import { readPickedWeekQuality } from './historyRefQuality.js';
+import { baselineFingerprint, buildV2Routes, fingerprintChanged, fingerprintOf, historyV2Enabled, r2ArchiveSink, routeTrunkHeadway, routeTrunkHeadwayByPeriod, type LatestRouteEntry } from './historyV2.js';
+import { historyV2InputFor, writeRefreshSidecar, type HistoryV2Input } from './historyRefreshSidecar.js';
 import { historyGeometryForRoute } from './historyGeometry.js';
 import { agencyTodayYmd, isActiveProductionFeed, type SupplementalFeedMeta } from '../shared/feedAvailability.js';
 import { recordFeedCheck, type FeedCheckFields } from './feedCheckTracking.js';
@@ -149,21 +148,6 @@ interface RefreshAgencyResult {
  * history-v2/{slug}/{periodKey}.json to the archive bucket and adds weekday/sat/sun
  * fingerprints to latest.json. Off by default, so a normal refresh writes exactly what it did.
  */
-interface HistoryV2Input {
-  buf: Buffer;
-  /**
-   * CIV-1101 Part B: the date the processor read for the main feed and its week's Monday (null on
-   * the old picker), so the sidecar records the week the map was built from.
-   */
-  referenceDate: string;
-  serviceWeekStart: string | null;
-  /** The same for each supplemental feed, by url. */
-  supplementalReferenceDates?: Record<string, string>;
-  /** Supplemental feeds (e.g. rail) and which merged features came from which feed. */
-  supplemental?: Array<{ url: string; buf: Buffer }>;
-  featureSources?: Array<{ url: string | null; count: number }>;
-}
-
 async function writeHistorySnapshot(slug: string, geojson: string, feedExpiry: string | null, feedVersion: string | null, v2Input?: HistoryV2Input): Promise<string> {
   const fc = JSON.parse(geojson) as { features: Array<{ properties: Record<string, unknown> }> };
   const current: Record<string, RouteSummary> = {};
@@ -216,24 +200,10 @@ async function writeHistorySnapshot(slug: string, geojson: string, feedExpiry: s
   let v2Routes: ReturnType<typeof buildV2Routes>['routes'] | undefined;
   let collisionNote = '';
   if (v2Input) {
-    const evidence = await readFeedEvidence(v2Input.buf, { referenceDate: v2Input.referenceDate });
-    // The merged features already hold the supplemental feeds' routes; split them back by feed so
-    // each is built with its own calendar evidence, and a clash with the main feed is reported.
-    const supplementalBufs = new Map((v2Input.supplemental ?? []).map(f => [f.url, f.buf]));
-    const parts: V2FeedPart[] = [];
-    for (const part of splitFeaturesBySource(fc.features, v2Input.featureSources)) {
-      const partBuf = part.url ? supplementalBufs.get(part.url) : v2Input.buf;
-      parts.push({ url: part.url, features: part.features, evidence: part.url === null ? evidence : partBuf ? await readFeedEvidence(partBuf, { referenceDate: v2Input.supplementalReferenceDates?.[part.url] }) : undefined });
-    }
-    const built = buildV2RoutesMerged(parts);
-    v2Routes = built.routes;
-    if (built.collisions.length > 0) {
-      collisionNote = `; ${built.collisions.length} route-key collision(s) between feeds, earlier feed's route kept: ${built.collisions.map(c => `${c.key} (${c.droppedFrom} dropped)`).join(', ')}`;
-    }
-    const sidecar = buildSidecar(slug, periodKey, evidence.refDate, built.routes, built.supplementalRoutes);
-    // The week was picked by vote (a holiday is a day that loses it), so no holiday flag is computed.
-    sidecar.refDateQuality = await readPickedWeekQuality(v2Input.buf, evidence.refDate, v2Input.serviceWeekStart);
-    await writeSidecar(await r2ArchiveSink(), sidecar);
+    const r2 = await import('./r2.js');
+    const written = await writeRefreshSidecar(slug, periodKey, fc.features, v2Input, { sink: await r2ArchiveSink(), peek: key => r2.r2GetArchive(key) });
+    v2Routes = written.routes;
+    collisionNote = written.note;
   }
 
   // Collect per-route writes — only for routes whose headway changed.
@@ -655,7 +625,7 @@ async function refreshAgency(
   }
 
   // Write a compact headway snapshot for history tracking (all agencies with a feedUrl).
-  const histResult = await writeHistorySnapshot(agency.slug, geojson, feedExpiry, feedVersion, historyV2Enabled(process.env.ATLAS_HISTORY_V2) ? { buf, referenceDate: primary.referenceDate, serviceWeekStart: primary.serviceWeekStart, supplementalReferenceDates: Object.fromEntries(primary.supplementalFeatureCounts.map(f => [f.url, f.referenceDate])), supplemental: supplementalFeeds.map(f => ({ url: f.url, buf: f.buf })), featureSources: primary.featureSources } : undefined);
+  const histResult = await writeHistorySnapshot(agency.slug, geojson, feedExpiry, feedVersion, historyV2Enabled(process.env.ATLAS_HISTORY_V2) ? historyV2InputFor(primary, buf, supplementalFeeds) : undefined);
   writeLog(`  history: ${histResult}\n`);
 
   if (nightServiceCollector) {
