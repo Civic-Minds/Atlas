@@ -201,7 +201,7 @@ export const StopCard: React.FC<StopCardProps> = ({
       </SidebarCardList>
 
       {mockOtherSideRoutes.length > 0 && (
-        <SidebarCardSection label="Other side of the street">
+        <SidebarCardSection label="[heading: Ryan's wording]">
           {mockOtherSideRoutes.map(route => (
             <StopRouteGroup
               key={route.shortName}
