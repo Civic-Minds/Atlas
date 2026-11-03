@@ -16,7 +16,7 @@ import { calendarFromNextServiceDates } from './serviceDates.js';
 import { readWeekOf } from './readWeek.js';
 import { dropOneOffRailTrips } from './oneOffServices.js';
 import { prefixGtfsIds } from './supplementalIds.js';
-import { mergeDirectionSplitRoutes } from './directionSplitRoutes.js';
+import { directionSplitsOf, mergeDirectionSplitRoutes, type DirectionSplit } from './directionSplitRoutes.js';
 import { bookingRequiredRouteIds } from './bookedRoutes.js';
 import { DEFAULT_CRITERIA, getTiersForCriteria } from './defaults.js';
 import { normalizeGtfs, type GtfsPreprocess, type GtfsTransformOptions } from './preprocess/run.js';
@@ -559,6 +559,8 @@ export interface ProcessResult {
   livePollingSidecar?: Record<string, any>;
   shapeAnomalies?: import('../types/gtfs.js').ShapeAnomaly[];
   feedQuality: FeedQuality;
+  /** CIV-1275: lines the feed published as one route per direction, merged here (#1285); History reads their old keys from the artifact. */
+  directionSplits?: DirectionSplit[];
 }
 
 /**
@@ -3905,5 +3907,6 @@ export async function processGtfsBuffer(
     livePollingSidecar,
     shapeAnomalies: gtfs.shapeAnomalies,
     feedQuality,
+    ...(directionSplit.merged.length > 0 ? { directionSplits: directionSplitsOf(directionSplit.merged) } : {}),
   };
 }
