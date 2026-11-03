@@ -3242,21 +3242,19 @@ export async function processGtfsBuffer(
     // #690: the period values read the same destination pool as the headline when it qualifies.
     const periodPoolTimes = pooledHeadlineTimes(terminalStopId);
     const periodsFromPool = periodPoolTimes != null;
-    const terminalScopedTimes = periodPoolTimes ?? (railFeature
+    const scopedTerminalList = periodPoolTimes ?? (railFeature
       ? (headsignTerminalTimes ?? (terminalStopId ? shapeMap?.get(terminalStopId) : undefined))
       : selectTerminalDepartureTimes(
         terminalStopId ? shapeMap?.get(terminalStopId) : undefined,
         headsignTerminalTimes,
       ));
-    const headsignTerminalPeriodHw = terminalScopedTimes && terminalScopedTimes.length > 0
-      ? computePeriodHeadways(terminalScopedTimes)
-      : undefined;
-    const headsignTerminalMaxGaps = terminalScopedTimes && terminalScopedTimes.length > 0
-      ? computePeriodMaxGaps(terminalScopedTimes)
-      : undefined;
-    const headsignTerminalPeriodSustained = terminalScopedTimes && terminalScopedTimes.length > 0
-      ? computePeriodSustained(terminalScopedTimes)
-      : undefined;
+    // The row has a terminal list only when it holds a departure: one definition for the period
+    // values, the hour values, their gaps and the departure counts, so an empty list never reads
+    // as "a list" to one of them and "no list" to another (CIV-1109 review note).
+    const terminalScopedTimes = scopedTerminalList && scopedTerminalList.length > 0 ? scopedTerminalList : undefined;
+    const headsignTerminalPeriodHw = terminalScopedTimes ? computePeriodHeadways(terminalScopedTimes) : undefined;
+    const headsignTerminalMaxGaps = terminalScopedTimes ? computePeriodMaxGaps(terminalScopedTimes) : undefined;
+    const headsignTerminalPeriodSustained = terminalScopedTimes ? computePeriodSustained(terminalScopedTimes) : undefined;
     const terminalPeriodSustained = terminalStopId ? allStopPeriodSustained[terminalStopId] : undefined;
     const terminalPeriodMaxGaps = terminalStopId ? allStopPeriodMaxGaps[terminalStopId] : undefined;
     const terminalPeriodIsBranchScoped = !!headsignTerminalPeriodHw;
