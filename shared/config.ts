@@ -365,10 +365,3 @@ export const MAP_ZOOM_HEADWAY_STEPS: ReadonlyArray<readonly [zoom: number, maxHe
   [9, 9999],
 ];
 export const MAP_ZOOM_DEFAULT_MAX_HEADWAY = 10;
-
-export function pmtilesMinZoomForHeadway(hw: number): number {
-  if (hw <= 10) return 0;
-  if (hw <= 15) return 7;
-  if (hw <= 30) return 9;
-  return 11;
-}

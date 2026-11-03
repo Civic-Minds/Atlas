@@ -68,7 +68,7 @@ import { VectorTile } from '@mapbox/vector-tile';
 // loadEnv first so shared/config sees staging R2_PUBLIC_URL
 import { LOADED_ENV_FILE } from './loadEnv.js';
 import { r2PutFile } from './r2.js';
-import { getAgencyArtifactUrls, pmtilesMinZoomForHeadway, AGENCY_BBOX_PAD, R2_PUBLIC_URL } from '../shared/config.js';
+import { getAgencyArtifactUrls, AGENCY_BBOX_PAD, R2_PUBLIC_URL } from '../shared/config.js';
 import { prepareAgencyRouteFeaturesForTiles } from './prepareAgencyRoutesForTiles.js';
 import {
   assertAgencyNotAlreadyPublished,
@@ -340,12 +340,6 @@ async function main() {
     const { routes, stops } = await collectAgencyFeatures(slug);
     console.log(`Collected features for "${slug}" — routes: ${routes.length}, stops: ${stops.length}`);
     if (routes.length === 0) console.warn(`WARNING: 0 route features for "${slug}" — routes layer contribution will be empty!`);
-
-    // LOD annotation — identical to build-pmtiles.ts.
-    for (const f of routes) {
-      const hw = (f.properties?.headway ?? Infinity) as number;
-      f.properties['tippecanoe:minzoom'] = pmtilesMinZoomForHeadway(hw);
-    }
 
     const routesPath = path.join(tmpDir, 'routes.geojson');
     const stopsPath = path.join(tmpDir, 'stops.geojson');
