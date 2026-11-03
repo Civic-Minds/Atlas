@@ -2,7 +2,7 @@ import { readFileSync, readdirSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { agencyPageData, agencyPageJsonLd, agencyPlaces, areaPageStatus, type AgencyPageSummaries, type AgencyPageSummary } from './agencyPages';
 import { buildAgencyIndexData } from './agencyIndex';
-import { agencyRedirects, areaRedirects, readFormerSlugs } from '../scripts/build-area-page-list';
+import { agencyRedirects, areaRedirects, mergeAreaRedirects, readFormerSlugs } from '../scripts/build-area-page-list';
 import { agencyPageSummaries } from './agencyPagesData';
 import type { AreaConfig } from './areas';
 import { AREA_INDEX } from './areaIndex';
@@ -126,8 +126,11 @@ describe('areas need two agencies for a page (Ryan, 2026-11-01)', () => {
   });
 
   it('vercel.json and the map card list match the rule (run scripts/build-area-page-list.ts after a change)', () => {
-    const vercel = JSON.parse(readFileSync('vercel.json', 'utf8')) as { redirects: Array<{ source: string }> };
-    expect(vercel.redirects.filter(r => r.source.startsWith('/area/'))).toEqual(areaRedirects(summaries));
+    const vercel = JSON.parse(readFileSync('vercel.json', 'utf8')) as { redirects: Array<{ source: string; destination: string; permanent: boolean }> };
+    const area = vercel.redirects.filter(r => r.source.startsWith('/area/'));
+    // The rule's redirects, plus kept ones for areas that lost their page (never for an area with a page).
+    expect(area).toEqual(mergeAreaRedirects(area, areaRedirects(summaries), status.pages));
+    for (const r of areaRedirects(summaries)) expect(area).toContainEqual(r);
     expect(JSON.parse(readFileSync('shared/data/area-page-slugs.json', 'utf8'))).toEqual([...status.pages].sort());
   });
 
@@ -138,6 +141,19 @@ describe('areas need two agencies for a page (Ryan, 2026-11-01)', () => {
     expect(JSON.parse(readFileSync('shared/data/former-slugs.json', 'utf8'))).toEqual(former);
     // NJ Transit: the two old agencies are one (Ryan, 2026-11-02), rail's route ids prefixed.
     expect(former).toMatchObject({ 'njt-bus': { slug: 'njt' }, 'njt-rail': { slug: 'njt', idPrefix: 'rail:' } });
+  });
+
+  it('keeps the redirect of an area that loses its page, so old links still work', () => {
+    const morgantown = [
+      { source: '/area/morgantown', destination: '/agency/mountain-line', permanent: true },
+      { source: '/area/morgantown/', destination: '/agency/mountain-line', permanent: true },
+    ];
+    // Morgantown lost its page and its redirect when WVU PRT was hidden; the earlier redirect stays.
+    expect(mergeAreaRedirects(morgantown, [], new Set())).toEqual(morgantown);
+    // An area that gains its own page drops the old redirect, and the rule's current one wins.
+    expect(mergeAreaRedirects(morgantown, [], new Set(['morgantown']))).toEqual([]);
+    const now = [{ source: '/area/morgantown', destination: '/agency/other', permanent: true }];
+    expect(mergeAreaRedirects(morgantown, now, new Set())).toEqual(now);
   });
 
   it('drops a one-agency area from the all-agencies regions list', () => {

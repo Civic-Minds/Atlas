@@ -10,19 +10,46 @@
  *
  * Staging is a dress-rehearsal of prod (same key layout, different bucket).
  */
+import { existsSync } from 'fs';
 import { config } from 'dotenv';
 import { resolve } from 'path';
+import { stagingBucketProblem, stagingRequested } from './stagingGuard.js';
 
 export function resolvePipelineEnvFile(): string {
   if (process.env.ATLAS_ENV_FILE) return process.env.ATLAS_ENV_FILE;
-  if (process.env.ATLAS_ENV === 'staging') return '.env.staging';
+  if (stagingRequested(process.env.ATLAS_ENV)) return '.env.staging';
   return '.env.local';
 }
 
-/** Load env file into process.env. Returns the path used. */
+/**
+ * Why a requested staging run must not go ahead, or null. Staging is asked for by ATLAS_ENV=staging or a
+ * .env.staging file. A missing file loads nothing, and an unset R2_BUCKET_NAME means the production
+ * bucket, so a "staging" run in a worktree (which has no .env.staging) or one where the shell already
+ * exports the production bucket (dotenv never overrides it) would read and write production (#1129).
+ */
+export function stagingEnvProblem(opts: { file: string; atlasEnv?: string; fileExists: boolean; bucket?: string }): string | null {
+  const staging = stagingRequested(opts.atlasEnv) || /(^|[\\/])\.env\.staging$/.test(opts.file);
+  if (!staging) return null;
+  if (!opts.fileExists) return `${opts.file} is missing, so a staging run would use the production bucket`;
+  const problem = stagingBucketProblem(opts.bucket, 'staging');
+  return problem ? `${opts.file} is loaded, but ${problem}` : null;
+}
+
+/** An explicit ATLAS_ENV_FILE that does not exist is refused, rather than loading nothing. */
+export function envFileProblem(envFile: string | undefined, fileExists: boolean): string | null {
+  return envFile && !fileExists ? `ATLAS_ENV_FILE ${envFile} does not exist` : null;
+}
+
+/** Load env file into process.env. Returns the path used. Refuses a staging run that would reach production. */
 export function loadPipelineEnv(): string {
   const file = resolvePipelineEnvFile();
-  config({ path: resolve(file), quiet: true });
+  const path = resolve(file);
+  const fileExists = existsSync(path);
+  const missing = envFileProblem(process.env.ATLAS_ENV_FILE, fileExists);
+  if (missing) throw new Error(missing);
+  config({ path, quiet: true });
+  const problem = stagingEnvProblem({ file, atlasEnv: process.env.ATLAS_ENV, fileExists, bucket: process.env.R2_BUCKET_NAME });
+  if (problem) throw new Error(`Refusing a staging run: ${problem}.`);
   return file;
 }
 

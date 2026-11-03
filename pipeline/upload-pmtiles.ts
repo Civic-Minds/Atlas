@@ -8,16 +8,16 @@
  *
  * Uses multipart upload so large files (800+ MB) succeed even on flaky links.
  */
+import './loadEnv.js';
 import fs from 'fs';
 import path from 'path';
-import dotenv from 'dotenv';
 import { S3Client } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
 import { unpairedUploadError } from './releaseGuard.js';
-import { requireEnv } from './r2.js';
+import { publicBucketName, requireEnv } from './r2.js';
 
-dotenv.config({ path: '.env.local' });
-dotenv.config();
+// loadEnv picks .env.local, or .env.staging under ATLAS_ENV=staging (upload-pmtiles:staging), and refuses a
+// staging run that would reach the production bucket (#1129).
 
 async function main() {
   const unpairedError = unpairedUploadError(process.argv.slice(2), 'upload-pmtiles');
@@ -47,7 +47,7 @@ async function main() {
   const upload = new Upload({
     client,
     params: {
-      Bucket: requireEnv('R2_BUCKET_NAME'),
+      Bucket: publicBucketName(),
       Key: 'atlas.pmtiles',
       Body: fs.createReadStream(absPath),
       ContentType: 'application/octet-stream',
