@@ -1,6 +1,10 @@
+import { readFileSync, readdirSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { agencyIndexDescription, buildAgencyIndexData, resolveAgencyIndexSeo } from './agencyIndex';
-import type { AgencyPageSummary } from './agencyPages';
+import { hasMiddayService, type AgencyPageSummary } from './agencyPages';
+import { agencyPageSummaries } from './agencyPagesData';
+import { buildRegionPageData, regionPages } from './regionPages';
+import type { AreaConfig } from './areas';
 import summaries from './data/agency-pages.json';
 import indexJson from '../public/data/index.json';
 
@@ -84,5 +88,33 @@ describe('agency index names (#1245)', () => {
       ag('miway', 'MiWay (Mississauga)', 'Canada', 'Ontario', 80),
     ], [], null).groups.flatMap(g => g.regions.flatMap(r => r.agencies)).map(a => a.name);
     expect(rows).toEqual(['BC Transit · Kelowna', 'BC Transit · Victoria', 'MiWay', 'Montgomery Transit']);
+  });
+});
+
+describe('states in the agency list match the state pages (#1306)', () => {
+  const all = agencyPageSummaries();
+  const areas = readdirSync('config/areas').filter(f => f.endsWith('.json') && !f.startsWith('_'))
+    .map(f => JSON.parse(readFileSync(`config/areas/${f}`, 'utf8')) as AreaConfig).filter(a => a.page);
+  const index = buildAgencyIndexData(all, areas, null);
+  const listed = (country: string, region: string) => index.groups.find(g => g.country === country)?.regions.find(r => r.region === region)?.agencies ?? [];
+  const bySlug = new Map(all.map(a => [a.slug, a]));
+  // State pages leave out agencies with no weekday midday service; the list keeps them, as it lists every agency page.
+  const noMidday = (slug: string) => { const a = bySlug.get(slug); return !!a && !hasMiddayService(a); };
+
+  it('lists every state page\'s agencies under that state, and no other agency with midday service', () => {
+    for (const r of regionPages(all)) {
+      const page = buildRegionPageData(r, all, null).agencies.map(a => a.slug).sort();
+      expect(listed(r.country, r.name).map(a => a.slug).filter(s => !noMidday(s)).sort(), r.name).toEqual(page);
+    }
+  });
+
+  it('lists a cross-border agency under each state it serves, with one link and one count', () => {
+    expect(listed('United States', 'Nebraska').map(a => a.slug).sort()).toEqual(['lincoln', 'omahametro', 'sioux-city']);
+    expect(listed('United States', 'Iowa').map(a => a.slug)).toContain('sioux-city');
+    const ny = listed('United States', 'Connecticut').find(a => a.slug === 'mta-new-york');
+    expect(ny?.parent?.href).toBe('/agency/mta-new-york');
+    const slugs = index.groups.flatMap(g => g.regions.flatMap(r => r.agencies.map(a => a.slug)));
+    expect(index.agencyCount).toBe(new Set(slugs).size);
+    expect(index.agencyCount).toBeLessThan(slugs.length);
   });
 });

@@ -1,5 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
+// The story map's MapLibre worker URL is a Vite build import (?worker&url) the test runner can't load; no map is drawn here.
+vi.mock('../../lib/maplibreWorker', () => ({}));
 import FrequentServiceStory from '../FrequentServiceStory';
 import { frequentServiceDefinitionSample, frequentServiceStoryResearchRecord, frequentServiceStoryStats } from '../../data/frequentServiceStory';
 import audit from '../../../docs/research/system-map-audit-2026-09/data.json';
@@ -48,6 +50,34 @@ describe('FrequentServiceStory', () => {
   it("says how many agencies the chart shows, from the data (Ryan's caption, 2026-11-02)", () => {
     render(<FrequentServiceStory agencies={agencies} onExploreMap={() => {}} />);
     expect(screen.getByText(`This chart shows the ${frequentServiceStoryStats.chartedAgencies} agencies that publish a specific number of minutes.`, { exact: false })).toBeInTheDocument();
+  });
+
+  it("bridges the montage and the map with Ryan's approved text, word for word (version A, 2026-11-02)", () => {
+    render(<FrequentServiceStory agencies={agencies} onExploreMap={() => {}} />);
+    const bridge = [...screen.getByRole('heading', { name: 'Every map tells it differently.' }).closest('section')!.querySelectorAll('p')].map(p => p.textContent!.replace(/[\u2060\u00a0\u202f]/g, m => (m === '\u2060' ? '' : ' ')));
+    expect(bridge).toEqual([
+      "Each agency decides what its map shows, so one map is hard to compare with the next. Toronto's Ten-Minute Network means a bus or streetcar every 10 min or better, from 6 AM to 1 AM. Vancouver and Los Angeles both draw the line at 15 minutes, but Vancouver checks it until 9 PM every day of the week, and Los Angeles only on weekdays until 6 PM. Washington, DC has two levels, one at 12 minutes and one at 20. Miami-Dade's map doesn't use the word frequent at all. It colours every route by how often the bus comes at weekday midday.",
+      "The maps also differ in what they draw. Vancouver's and Portland's show only the frequent network, so a slower route isn't on the map. Toronto's, Ottawa's and Seattle's draw every route and mark the frequent ones. Seattle also counts two routes that share a street as frequent together, which none of the other maps here do.",
+      "Atlas starts from the schedules instead. Here is Toronto's network, built from the TTC's own schedule data, one step at a time.",
+    ]);
+  });
+
+  it('pins the story map below the sticky header at every width, through the last stage (#1310)', () => {
+    const { container } = render(<FrequentServiceStory agencies={agencies} onExploreMap={() => {}} />);
+    const section = container.querySelector('section[aria-labelledby="network-story-heading"]')!;
+    const pinned = section.querySelector('[data-story-stage="0"]')!.parentElement!.previousElementSibling!;
+    // top-16 (4rem, 56px at the site's 14px root) clears the page header (42px on phones, 53px from sm); no lg: prefix, so phones pin too.
+    expect(pinned.className.split(' ')).toEqual(expect.arrayContaining(['sticky', 'top-16', 'lg:top-24']));
+    expect(pinned.className).not.toContain('lg:sticky');
+    // The space after the last step keeps the map pinned while the last stage is read.
+    expect(section.querySelector('[data-story-stage="3"]')!.parentElement!.className).toContain('pb-[60vh]');
+  });
+
+  it('fills the phone screen under the header with the pinned map, leaving no empty band (#1310)', async () => {
+    const { readFileSync } = await import('node:fs');
+    const map = readFileSync('src/components/FrequentServiceStoryMap.tsx', 'utf8');
+    // top-16 is 4rem: the figure below lg is the rest of the screen; from lg, top-24 with 2rem below.
+    expect(map).toContain('h-[calc(100dvh-4rem)] lg:h-[calc(100dvh-8rem)]');
   });
 
   it('counts the Canada and US definitions that still held on the October 30 recheck (CIV-1149)', () => {

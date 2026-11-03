@@ -2,7 +2,8 @@ import { readFileSync } from 'node:fs';
 import Papa from 'papaparse';
 import { describe, expect, it } from 'vitest';
 import { countryForRegion } from '../../../shared/regionCountry';
-import { FREE_CHILD_AGE_COUNTS, FREE_CHILD_AGENCIES_BY_COUNTRY, FREE_CHILD_OTHER_POLICIES, freeChildFareStats } from '../freeChildFares';
+import { FREE_CHILD_AGE_COUNTS, FREE_CHILD_AGENCIES_BY_COUNTRY, FREE_CHILD_OTHER_POLICIES, FREE_CHILD_REGIONS, freeChildFareStats } from '../freeChildFares';
+import { REGION_TILES } from '../regionTileGrid';
 
 // Canada and US agencies only. A ledger row with no region takes its agency config's region.
 const country = (row: Record<string, string>) => countryForRegion(row.region || JSON.parse(readFileSync(`config/agencies/${row.slug}.json`, 'utf8')).region);
@@ -30,5 +31,23 @@ describe('free child fares chart counts (CIV-1149)', () => {
     const [topAge] = [...FREE_CHILD_AGE_COUNTS].sort((a, b) => b[1] - a[1])[0];
     expect(topAge).toBe(5);
     expect(freeChildFareStats).toMatchObject({ agencies: 553, freeUpToAge: 374, notFound: 34 });
+  });
+
+  it('counts every state and province from the ledger, each with one tile of its own (CIV-1282)', () => {
+    const region = (row: Record<string, string>) => row.region || JSON.parse(readFileSync(`config/agencies/${row.slug}.json`, 'utf8')).region;
+    const byRegion = new Map<string, { agencies: number; ages: Map<number, number> }>();
+    for (const row of ledger) {
+      const r = byRegion.get(region(row)) ?? { agencies: 0, ages: new Map() };
+      r.agencies += 1;
+      if (row.policy_type === 'age') r.ages.set(Number(row.free_child_age), (r.ages.get(Number(row.free_child_age)) ?? 0) + 1);
+      byRegion.set(region(row), r);
+    }
+    expect(FREE_CHILD_REGIONS.map(([name, agencies, ages]) => [name, agencies, ages])).toEqual(
+      [...byRegion].sort((a, b) => a[0].localeCompare(b[0])).map(([name, r]) => [name, r.agencies, [...r.ages].sort((x, y) => x[0] - y[0])]),
+    );
+    const cells = FREE_CHILD_REGIONS.map(([name]) => REGION_TILES[name]);
+    expect(cells.every(Boolean)).toBe(true);
+    expect(new Set(cells.map(c => `${c.col},${c.row}`)).size).toBe(cells.length);
+    expect(new Set(cells.map(c => c.abbr)).size).toBe(cells.length);
   });
 });

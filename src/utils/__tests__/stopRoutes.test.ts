@@ -225,3 +225,22 @@ describe('buildStopRoutes: a stop\'s own route with trips here but no number in 
     expect(build([0]).map(r => [r.shortName, r.noNumber, r.noTrips != null])).toEqual([['110', undefined, true]]);
   });
 });
+
+// #962: the stop card drops a destination row where the route card's row reads its unsteady direction's worst wait as no
+// regular service, and keeps one where the stretch is steady.
+describe('buildStopRoutes: the direction fallback of an unsteady stretch (#962)', () => {
+  const rows = (steady: boolean) => {
+    const fc = structuredClone(ttc29);
+    for (const f of fc.features.filter(x => x.properties?.directionId === 1)) {
+      Object.assign(f.properties!, {
+        stretchRole: 'main', headwayByPeriod: { ...f.properties!.headwayByPeriod, midday: null },
+        directionFilterHeadwayByPeriod: { midday: 95 }, stretchPeriodSustained: { midday: steady },
+      });
+    }
+    return buildStopRoutes({
+      siblingIdsByAgency: { ttc: new Set(['2108']) }, routesByAgency: { ttc: new Set(['29']) }, layers: { ttc: fc }, day: 'Weekday', period: 'midday',
+    })[0]?.branches.filter(b => b.directionId === 1).map(b => b.headsign) ?? [];
+  };
+  it('lists no row for an unsteady stretch', () => expect(rows(false)).toEqual([]));
+  it('keeps the row for a steady one', () => expect(rows(true)).toEqual(['Wilson']));
+});

@@ -1,8 +1,10 @@
 import { describe, expect, it } from 'vitest';
+import { areaPagePath } from './pagePaths';
+import { agencyPageSummaries } from './agencyPagesData';
 import { agencyBreadcrumbs, agencyPageData, regionPageHref, type AgencyPageRoute, type AgencyPageSummary } from './agencyPages';
 import { buildAgencyIndexData } from './agencyIndex';
 import {
-  buildRegionPageData, regionBarNote, regionIntroParts, regionKind, regionMapHref, regionPageDescription, regionPageH1, regionPages, regionPageTitle, resolveRegionSeo,
+  buildRegionPageData, regionAreasSentence, regionAreasSentenceParts, regionBarNote, regionIntroParts, regionKind, regionMapHref, regionPageDescription, regionPageH1, regionPages, regionPageTitle, resolveRegionSeo,
 } from './regionPages';
 
 const r = (name: string, mode: number, midday: number | null): AgencyPageRoute => ({ name, longName: null, mode, midday, am: midday, pm: midday, evening: null, overnight: null });
@@ -67,5 +69,35 @@ describe('state and province pages (CIV-976)', () => {
     expect(co.agencies.map(a => [a.slug, a.totalRoutes])).toEqual([['cross', 3]]);
     // The breadcrumb keeps the home state.
     expect(agencyPageData(cross, all).regionPage).toBe('/region/colorado');
+  });
+});
+
+describe('areas named after a state intro (CIV-1298)', { timeout: 30_000 }, () => {
+  const all = agencyPageSummaries();
+  const page = (name: string) => buildRegionPageData(regionPages(all).find(x => x.name === name)!, all, null);
+
+  it('names up to three, most routes first, each linking its area page', () => {
+    const on = regionAreasSentenceParts(page('Ontario'))!;
+    expect(on.named.map(a => a.slug)).toEqual(['toronto', 'ottawa', 'kitchener']);
+    expect(on.named.map(a => areaPagePath(a.slug))).toEqual(['/area/toronto', '/area/ottawa', '/area/kitchener']);
+    expect(regionAreasSentence(page('Ontario'))).toBe('Regions include the Greater Toronto and Hamilton Area, the Ottawa area and Waterloo Region.');
+    expect(page('California').areas.length).toBeGreaterThan(3);
+    expect(regionAreasSentenceParts(page('California'))!.named).toHaveLength(3);
+  });
+
+  it('reads right with one or two areas, and says nothing with none', () => {
+    expect(regionAreasSentence(page('Colorado'))).toBe('Regions include the Denver area.');
+    expect(regionAreasSentence(page('Texas'))).toBe('Regions include the Dallas–Fort Worth area and the Houston area.');
+    expect(regionAreasSentenceParts(page('Nebraska'))).toBeNull();
+    expect(regionAreasSentence(page('Nebraska'))).toBe('');
+  });
+
+  it('names an area on each state with at least a fifth of its routes, not where a route or two cross the line', () => {
+    for (const s of ['Washington DC', 'Maryland', 'Virginia']) expect(page(s).areas.map(a => a.slug), s).toContain('washington');
+    expect(page('Quebec').areas.map(a => a.slug)).toContain('ottawa');
+    expect(page('New Jersey').areas.map(a => a.slug)).toContain('new-york');
+    expect(page('Maine').areas).toEqual([]);
+    expect(page('Connecticut').areas.map(a => a.slug)).not.toContain('new-york');
+    for (const r of regionPages(all)) for (const a of page(r.name).areas) expect(a.routes, `${r.name} ${a.slug}`).toBeGreaterThan(0);
   });
 });

@@ -74,9 +74,15 @@
   "modeOverrides": [
     {
       "routeType": 2,
-      "routeShortName": "2600",
+      "routeShortName": "Green",
       "mode": 1,
-      "reason": "Metrorail is a heavy-rail metro, published as route_type 2 (commuter rail)"
+      "reason": "Metrorail is a heavy-rail metro, published as route_type 2 (commuter rail); routeSplits names the 2600 route Green and Orange"
+    },
+    {
+      "routeType": 2,
+      "routeShortName": "Orange",
+      "mode": 1,
+      "reason": "Metrorail is a heavy-rail metro, published as route_type 2 (commuter rail); routeSplits names the 2600 route Green and Orange"
     },
     {
       "routeType": 0,

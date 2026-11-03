@@ -4,6 +4,7 @@ import { areaAgencyRowHref, areaDatesText, areaIntroJoiners } from '../shared/ar
 import {
   REGION_DATA_SCRIPT_ID,
   regionBarNote,
+  regionAreasSentenceParts,
   regionIntroParts,
   regionMapHref,
   regionPageH1,
@@ -11,6 +12,7 @@ import {
   type RegionPageData,
 } from '../shared/regionPages';
 import { ATLAS_MODE } from '../shared/config';
+import { areaPagePath } from '../shared/pagePaths';
 import { applySeoToDocument, seoOrigin } from './lib/seoDom';
 import { readEmbeddedJson } from './lib/embeddedData';
 import { UNDERLINED_LINK } from './pageStyles';
@@ -53,6 +55,7 @@ export default function RegionPage({ data: dataProp }: { data?: RegionPageData }
 
   const intro = regionIntroParts(data);
   const joiners = areaIntroJoiners(intro);
+  const areas = regionAreasSentenceParts(data);
   const mapHref = regionMapHref(data);
 
   return (
@@ -67,9 +70,10 @@ export default function RegionPage({ data: dataProp }: { data?: RegionPageData }
             {intro.lead}{joiners.opener}
             {intro.named.map((a, i) => <span key={a.slug}><a className={UNDERLINED_LINK} href={areaAgencyRowHref(a)}>{a.title}</a>{joiners.separators[i]}</span>)}
             {joiners.tail}
+            {areas && <>{' '}{areas.lead}{areas.named.map((a, i) => <span key={a.slug}><a className={UNDERLINED_LINK} href={areaPagePath(a.slug)}>{a.name}</a>{areas.separators[i]}</span>)}{areas.tail}</>}
           </p>
 
-          <AgencyGroupSection data={data} mapHref={mapHref} barNote={regionBarNote(data)} />
+          <AgencyGroupSection data={data} barNote={regionBarNote(data)} />
 
           <p className="mt-12 text-sm leading-6 text-[var(--text-dim)]">{areaDatesText(data)}</p>
     </DocsPageLayout>

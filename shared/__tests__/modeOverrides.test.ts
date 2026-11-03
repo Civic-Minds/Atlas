@@ -49,7 +49,8 @@ describe('per-route mode overrides (#827)', () => {
     expect(at('rtd-denver', 0, 'C')).toBe(VIRTUAL_LRT_MODE);
     expect(at('rtd-denver', 2, 'A')).toBe(2); // commuter rail stays as published
     expect(at('metrostlouis', 2, 'MLB')).toBe(VIRTUAL_LRT_MODE);
-    expect(at('miami-dade-transit', 2, '2600')).toBe(1);
+    expect(at('miami-dade-transit', 2, 'Green')).toBe(1); // #1312: routeSplits renames 2600
+    expect(at('miami-dade-transit', 2, 'Orange')).toBe(1);
     expect(at('qline', 2, 'ML')).toBe(0);
     expect(at('nfta', 0, 'Metro Rail', 'Metro Rail')).toBe(VIRTUAL_LRT_MODE);
     expect(at('capmetro', 0, '550', '550-Metro Rail Red Line')).toBe(2); // commuter rail, published as tram (CIV-956)
