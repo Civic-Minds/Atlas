@@ -774,9 +774,24 @@ export function stretchNight(s: Stretch, maxGap: number): boolean | null {
   if (!s.nightTimes.some(t => t >= STRETCH_NIGHT_START_MIN && t <= STRETCH_NIGHT_END_MIN)) return null;
   if (!runsAcrossNightMidpoint(s.nightTimes)) return hasSustainedServiceInWindow([...s.nightTimes], STRETCH_NIGHT_START_MIN, STRETCH_NIGHT_END_MIN, maxGap);
   const times = [...new Set(s.nightTimes)].filter(t => t >= STRETCH_NIGHT_START_MIN && t <= STRETCH_NIGHT_END_MIN).sort((a, b) => a - b);
-  const edge = Math.max(maxGap, NIGHT_EDGE_MAX_WAIT_MIN);
-  if (times[0] - STRETCH_NIGHT_START_MIN > edge || STRETCH_NIGHT_END_MIN - times[times.length - 1] > edge) return false;
+  // #1322: a stretch that runs only at night has no service before its first night bus or after its
+  // last, so those waits are the start and end of its service, not gaps between buses (TTC 339 north at
+  // Malvern from 3:03, after leaving its terminal at 2:30; TTC 353, 395). Only the gaps between its
+  // departures count. Day service keeps both edges, so a first trip of the morning (RTD A Line from
+  // 3:00) or a last trip at 2:05 never makes a route run through the night.
+  if (!nightOnlyStretch(s)) {
+    const edge = Math.max(maxGap, NIGHT_EDGE_MAX_WAIT_MIN);
+    if (times[0] - STRETCH_NIGHT_START_MIN > edge || STRETCH_NIGHT_END_MIN - times[times.length - 1] > edge) return false;
+  }
   return times.every((t, i) => i === 0 || t - times[i - 1] <= maxGap);
+}
+
+/** #1322: the most daytime (6 AM to 11 PM) departures a night-only stretch may have: a stray positioning trip or two (TTC 353 has one). */
+export const NIGHT_ONLY_MAX_DAY_DEPARTURES = 2;
+
+/** #1322: the stretch runs only at night: no regular daytime service (at most NIGHT_ONLY_MAX_DAY_DEPARTURES from 6 AM to 11 PM). */
+export function nightOnlyStretch(s: Pick<Stretch, 'times'>): boolean {
+  return s.times.filter(t => t >= 6 * 60 && t < 23 * 60).length <= NIGHT_ONLY_MAX_DAY_DEPARTURES;
 }
 
 /**

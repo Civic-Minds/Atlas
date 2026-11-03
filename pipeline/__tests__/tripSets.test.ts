@@ -320,8 +320,18 @@ describe('night edges: the wait for the first and after the last night bus (CIV-
     const day = stretch(every(hm(28, 30), hm(30, 0), 15));
     expect([stretchNight(day, 30), stretchNight(day, 60)]).toEqual([false, false]);
   });
-  it('a first night bus after 3:00 still fails, even every 30 after it', () => {
-    expect(stretchNight(stretch(every(hm(27, 5), hm(29, 5), 30)), 30)).toBe(false);
+  it('day service whose first trip is after 3:00 still fails, even every 30 after it (#1322: RTD A Line from 3:00)', () => {
+    const nightTimes = every(hm(27, 5), hm(29, 5), 30);
+    const day = { ...stretch(nightTimes), times: [...nightTimes, ...every(hm(6, 0), hm(22, 0), 30)] } as Stretch;
+    expect([stretchNight(day, 30), stretchNight(day, 60)]).toEqual([false, false]);
+  });
+  it('#1322: a night-only stretch whose first bus reaches it after 3:00 passes on its gaps alone (TTC 339 at Malvern from 3:03)', () => {
+    expect(stretchNight(stretch(every(hm(27, 5), hm(29, 5), 30)), 30)).toBe(true);
+    expect(stretchNight(stretch(every(hm(27, 3), hm(29, 23), 20)), 30)).toBe(true);
+    // Its gaps still count: every 45 fails every 30.
+    expect(stretchNight(stretch(every(hm(27, 0), hm(29, 15), 45)), 30)).toBe(false);
+    // A stray daytime trip or two does not make it day service (TTC 353 has one).
+    expect(stretchNight({ ...stretch(every(hm(27, 6), hm(29, 6), 30)), times: [...every(hm(27, 6), hm(29, 6), 30), hm(14, 0)] } as Stretch, 30)).toBe(true);
   });
   it('a stretch that stops before 3:30 keeps both edges at the grade', () => {
     expect(stretchNight(stretch(every(hm(26, 0), hm(27, 20), 20)), 60)).toBe(false);
@@ -587,11 +597,11 @@ describe('#1322: Overnight counts only service that runs through the night, by t
     expect(row(r, '105', 'Weekday').routeRunsByPeriod.overnight).toBe(true);
     expect(passes(r, '105', 'Weekday')).toBe(true);
   });
-  it('TTC 353 and 395 fail the Night Service test (a 66-67 minute opening gap), so they do not run Overnight either', async () => {
+  it('TTC 353 and 395, night-only routes whose first bus reaches the middle stop after 3:00, pass Night Service and run Overnight', async () => {
     const r = await run('ttc-353-395-weekday');
     for (const route of ['353', '395']) {
-      expect(row(r, route, 'Weekday').routeRunsByPeriod.overnight, route).toBe(false);
-      expect(passes(r, route, 'Weekday'), route).toBe(false);
+      expect(row(r, route, 'Weekday').routeRunsByPeriod.overnight, route).toBe(true);
+      expect(passes(r, route, 'Weekday'), route).toBe(true);
     }
   });
   it('day service whose first trips leave before 6 AM is not overnight (TTC 102 from 4:48)', async () => {
@@ -629,12 +639,12 @@ describe('runs through the period: the settled checks catch a straggler before t
 });
 
 describe('review fixes: partial night only where night service misses the main stretch; holes are internal gaps', () => {
-  it('TTC 353 and 395 run at night on their corridor with a 66-67 minute opening gap: they fail Night, and have no Overnight value (over 60, #1267)', async () => {
+  it('#1322: TTC 353 and 395 run only at night, so the 66-67 minutes before their first bus reaches the middle stop is the start of service, not a gap: they pass Night', async () => {
     const r = await run('ttc-353-395-weekday');
     for (const route of ['353', '395']) {
       const p = row(r, route, 'Weekday');
-      expect([p.stretchNight30, p.stretchNight60, p.stretchNightPartial60], route).toEqual([false, false, false]);
-      expect(p.routeFilterHeadwayByPeriod.overnight, route).toBeNull();
+      expect([p.stretchNight60, p.stretchNightPartial60], route).toEqual([true, false]);
+      expect(p.routeFilterHeadwayByPeriod.overnight, route).not.toBeNull();
     }
   });
   it('LA Metro 105: the Vernon owl stays a real part-of-route night service', async () => {
