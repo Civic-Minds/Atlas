@@ -15,18 +15,18 @@ const GUTTER = {
   wide: 'px-6 py-8 sm:px-10 lg:px-16',
 } as const;
 
-export default function PageShell({ variant = 'docs', stickyHeader = false, footer = true, maxWidth = 'max-w-5xl', method, children }: { variant?: keyof typeof GUTTER; stickyHeader?: boolean; footer?: boolean; /** Tailwind max-width class for the column (default max-w-5xl). */ maxWidth?: string; method?: ReactNode; children: ReactNode }) {
+export default function PageShell({ variant = 'docs', stickyHeader = false, footer = true, maxWidth = 'max-w-5xl', logoHref, method, children }: { variant?: keyof typeof GUTTER; stickyHeader?: boolean; footer?: boolean; /** Tailwind max-width class for the column (default max-w-5xl). */ maxWidth?: string; /** Where the header and footer logos go (default the map; the About page keeps them on /about, CIV-1312). */ logoHref?: string; method?: ReactNode; children: ReactNode }) {
   return (
     <main className={`flex min-h-screen flex-col overflow-x-clip bg-[var(--bg-app)] text-[var(--text-primary)] ${GUTTER[variant]}`}>
       <div className={`mx-auto flex w-full ${maxWidth} flex-1 flex-col`}>
         {stickyHeader ? (
           <div className="sticky top-0 z-30 -my-3 bg-[var(--bg-app)] py-3">
-            <SiteHeader />
+            <SiteHeader logoHref={logoHref} />
           </div>
-        ) : <SiteHeader />}
+        ) : <SiteHeader logoHref={logoHref} />}
         <div className="flex-1">{children}</div>
         {method && <section data-research-method className="mx-auto mt-8 w-full max-w-3xl border-t border-[var(--border-primary)] pt-10 sm:mt-16">{method}</section>}
-        {footer && <SiteFooter />}
+        {footer && <SiteFooter logoHref={logoHref} />}
       </div>
     </main>
   );
