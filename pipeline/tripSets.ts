@@ -1394,7 +1394,9 @@ export function stampStretchShadow(
     const stopOrder = (p.fullStopOrder ?? p.stopOrder) as readonly string[] | undefined;
     if (stretches.throughTimesAlong && Array.isArray(stopOrder) && stopOrder.length > 0) p.stretchStopPeriodValues = stopPeriodValues(stopOrder, stretches.throughTimesAlong);
     else delete p.stretchStopPeriodValues;
-    p.routeRunsByPeriod = byPeriod(k => route.period[k].runs);
+    // #1322: Overnight runs where the night verdict passes (Night Service's 60 grade, the value above), not by the
+    // 2-6 AM midpoint test, which a first trip at 3 AM passes (RTD A Line).
+    p.routeRunsByPeriod = byPeriod(k => k === 'overnight' ? route.nightValue != null : route.period[k].runs);
     // Card rows (5b): which stretch this row stands for. A row whose own stops cover a whole tail
     // stands for it (the longest such tail); else one covering the whole main stretch stands for
     // the main stretch; else it is a variant (a short turn, a positioning trip, a pattern that only

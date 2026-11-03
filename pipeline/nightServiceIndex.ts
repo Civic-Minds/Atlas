@@ -12,6 +12,7 @@
  */
 
 import type { RouteIndexProperties } from '../shared/routeIndexProperties.js';
+import { rowRunsThroughNight } from '../shared/nightService.js';
 
 type RouteFeatureProperties = RouteIndexProperties;
 
@@ -56,7 +57,7 @@ export function extractNightServiceRoutes(
   features: RouteFeature[],
 ): NightServiceRouteEntry[] {
   return features
-    .filter(f => f.properties.nightService30 === true || f.properties.nightService60 === true || f.properties.nightService === true)
+    .filter(f => rowRunsThroughNight(f.properties))
     .map(f => ({
       agencySlug,
       agencyName,

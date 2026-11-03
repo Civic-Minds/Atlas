@@ -565,6 +565,42 @@ describe('step 5a: the frequency filter reads the stretch selector (rv_)', () =>
   });
 });
 
+describe('#1322: Overnight counts only service that runs through the night, by the Night Service test', () => {
+  const filterable = (r: Run, route: string) => {
+    const features = r.rows.filter(p => p.routeShortName === route).map(p => ({ properties: JSON.parse(JSON.stringify(p)) }));
+    normalizeRouteFilterFeatures(features);
+    return features.map(f => f.properties);
+  };
+  const passes = (r: Run, route: string, day: string) => routePassesHeadwayFilter(filterable(r, route), 'overnight', day, Infinity);
+  it.each([
+    ['ttc-300-weekday-night', '300', 'Weekday'],
+    ['ttc-320-weekday-night', '320', 'Weekday'],
+    ['ttc-320-sunday-night', '320', 'Sunday'],
+    ['cta-77-weekday', '77', 'Weekday'],
+  ] as const)('%s: real night service still runs Overnight and is drawn under All', async (name, route, day) => {
+    const r = await run(name);
+    expect(row(r, route, day).routeRunsByPeriod.overnight).toBe(true);
+    expect(passes(r, route, day)).toBe(true);
+  });
+  it('LA Metro 105: night service on part of the route (the Vernon owl) runs Overnight, as on the Night Service page', async () => {
+    const r = await run('lacmta-105-weekday');
+    expect(row(r, '105', 'Weekday').routeRunsByPeriod.overnight).toBe(true);
+    expect(passes(r, '105', 'Weekday')).toBe(true);
+  });
+  it('TTC 353 and 395 fail the Night Service test (a 66-67 minute opening gap), so they do not run Overnight either', async () => {
+    const r = await run('ttc-353-395-weekday');
+    for (const route of ['353', '395']) {
+      expect(row(r, route, 'Weekday').routeRunsByPeriod.overnight, route).toBe(false);
+      expect(passes(r, route, 'Weekday'), route).toBe(false);
+    }
+  });
+  it('day service whose first trips leave before 6 AM is not overnight (TTC 102 from 4:48)', async () => {
+    const r = await run('ttc-102-weekday');
+    expect(row(r, '102', 'Weekday').routeRunsByPeriod.overnight).toBe(false);
+    expect(passes(r, '102', 'Weekday')).toBe(false);
+  });
+});
+
 describe('step 6 shadow: headline, midday wait and Frequent Service on the stretches', () => {
   it.each([
     // [fixture, route, day, all-day headline, Frequent Service]

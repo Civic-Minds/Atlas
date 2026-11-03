@@ -149,6 +149,29 @@ describe('tilePeriodServiceExpr', () => {
     const compiled = compileFilter(tilePeriodServiceExpr('pmPeak'));
     expect(compiled.filter({ zoom: 10 }, feat({ headway: 5 }) as any)).toBe(false);
   });
+  // #1322: Overnight asks the Night Service test, so the first trips of the morning are not overnight service.
+  it('Overnight draws a row only when it runs through the night (RTD A Line from 3:00 AM is not)', () => {
+    const compiled = compileFilter(tilePeriodServiceExpr('overnight'));
+    const ctx = { zoom: 10 };
+    // RTD A Line: trips from 3:00 AM pass the old 2-6 AM midpoint test (rr_), but not the Night Service test.
+    expect(compiled.filter(ctx, feat({ rr_overnight: true, hph_overnight: 30, nightService60: false }) as any)).toBe(false);
+    // A single stray trip on some weekdays (Transfort GOLD) no longer gets in through the partial-weekday flag.
+    expect(compiled.filter(ctx, feat({ pws_overnight: true, nightService60: false }) as any)).toBe(false);
+    // TTC 320: night service passes, at either grade, and with the older flag.
+    expect(compiled.filter(ctx, feat({ rr_overnight: true, hph_overnight: 10, nightService30: true, nightService60: true }) as any)).toBe(true);
+    expect(compiled.filter(ctx, feat({ hph_overnight: 20, nightService: true }) as any)).toBe(true);
+    // A night row must still run in the window itself.
+    expect(compiled.filter(ctx, feat({ hph_overnight: NO_PERIOD_SERVICE_TILE_VALUE, nightService60: true }) as any)).toBe(false);
+    // Other periods keep their own test.
+    expect(compileFilter(tilePeriodServiceExpr('late')).filter(ctx, feat({ rr_late: true, hph_late: 30 }) as any)).toBe(true);
+  });
+
+  it('Overnight values are read only on rows that run through the night, so a limit never passes a first trip', () => {
+    const compiled = compileFilter(['<=', tileEffectiveHeadwayExpr('overnight'), 60]);
+    const ctx = { zoom: 10 };
+    expect(compiled.filter(ctx, feat({ rv_overnight: 30, hph_overnight: 30, nightService60: false }) as any)).toBe(false);
+    expect(compiled.filter(ctx, feat({ rv_overnight: 30, hph_overnight: 30, nightService60: true }) as any)).toBe(true);
+  });
 });
 
 describe('buildTileHeadwayFilterClause', () => {
