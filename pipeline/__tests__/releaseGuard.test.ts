@@ -140,10 +140,12 @@ describe('tile rules fingerprint', () => {
   // used 'in' (it threw before): no tile value changes, hash only.
   // CIV-522 lets build-pmtiles read a rebuild's staged agency files instead of the published ones; it
   // changes where the files come from, not what is baked into the tiles: hash only.
+  // #1192 writes an empty sections file for an agency that has none, beside the route file; it is a
+  // separate JSON the app reads, never tile content: hash only.
   it('changes only together with a deliberate TILE_RULES_VERSION decision', () => {
     expect({ version: TILE_RULES_VERSION, fingerprint: tileRulesFingerprint() }).toEqual({
       version: 5,
-      fingerprint: '1a43d62d14f513341e114c9a970144783a94012224ab64b47f0fc5ccfaf8252a',
+      fingerprint: 'c78824cd987bb1c33088edabd5a5127b51bcccffa07adc861680a5e18f9f5642',
     });
   });
 });
