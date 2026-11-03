@@ -466,7 +466,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       routesByAgency = hub.routesByAgency;
     }
 
-    // CIV-1052: each route's periods at the stop and its siblings, so the card can list a route with no trips here.
+    // CIV-1052: each route's periods at the stop and its siblings, so the card can tell a route with no trips here in the period (left off, CIV-1310) from one with trips but no number (#1278).
     const routePeriodBitsByAgency: Record<string, Map<string, Array<number | undefined>>> = {};
     for (const f of allFeatures) {
       const p = f.properties as any;
