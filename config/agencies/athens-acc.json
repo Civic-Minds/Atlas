@@ -1,6 +1,6 @@
 {
   "slug": "athens-acc",
-  "name": "Athens Clarke County Transit",
+  "officialName": "Athens Clarke County Transit",
   "websiteUrl": "https://accgov.com/199/Transit",
   "center": [
     33.95,
@@ -9,7 +9,7 @@
   "feedUrl": "https://files.mobilitydatabase.org/tld-4777/latest.zip",
   "lastFeedExpiry": "20261231",
   "lastFeedVersion": "20260820",
-  "lastRefreshedAt": "2026-08-27",
+  "lastRefreshedAt": "2026-11-02",
   "region": "Georgia",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-4777/latest.zip",
   "bbox": [
@@ -21,7 +21,7 @@
   "cities": [
     "Athens, Georgia"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261231",
@@ -34,12 +34,24 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 80
+      "featureCount": 80,
+      "feedExpiry": "20261231",
+      "routeCount": 18,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-08-27"
+    "checkedAt": "2026-11-03"
   },
   "timezone": "America/New_York",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/tld-4777/latest.zip",
-  "lastPeekedExpiry": "20261231"
+  "lastPeekedExpiry": "20261231",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "8602e38268c1f962",
+  "feedObtainedAt": "20260820"
 }

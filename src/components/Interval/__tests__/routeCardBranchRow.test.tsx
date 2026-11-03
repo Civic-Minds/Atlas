@@ -27,10 +27,10 @@ const renderRows = (directions: ShapeProperties[], period: 'midday' | 'pmPeak' |
   />,
 );
 
-const LONG = 'no regular service during this period';
+const LONG = 'Runs irregularly in this period';
 
 // #954: SF Muni 8, weekday PM peak. The route value is empty (City College has no regular
-// service), and the card read every row as "no regular service", including the Fisherman's
+// service), and the card read every row as "Irregular", including the Fisherman's
 // Wharf row that runs every 8.
 const muni = {
   routeId: '8', routeShortName: '8', routeType: 3, day: 'Weekday', tier: '10', serviceClass: 'regular', stretchRole: 'main', stretchIndex: 0,
@@ -52,8 +52,8 @@ const cityCollege = {
 // value is long also wraps (CIV-1143), so the row itself (justify-between) is left out.
 const partPeriodBadge = (re: RegExp) => (_: string, el: Element | null) => !!el?.classList.contains('flex-wrap') && !el.classList.contains('justify-between') && re.test(el.textContent ?? '');
 
-describe('route card rows when the route has no regular service (#954)', () => {
-  it("shows a row's own direction value; a row without one still reads no regular service", () => {
+describe('route card rows when the route has no regular cadence (#954)', () => {
+  it("shows a row's own direction value; a row without one still reads Irregular", () => {
     renderRows([cityCollege, wharf], 'pmPeak', 'sfmta');
     expect(screen.getByText('every 8 min')).toBeTruthy();
     expect(screen.getAllByText(LONG).length).toBe(1);
@@ -61,7 +61,7 @@ describe('route card rows when the route has no regular service (#954)', () => {
     expect(screen.queryByText(/every 40 min/)).toBeNull();
   });
 
-  it('a direction without pipeline fields stays hidden when the route has no regular service, as on main', () => {
+  it('a direction without pipeline fields stays hidden when the route has no regular cadence, as on main', () => {
     const bare = { routeId: '8', routeShortName: '8', routeType: 3, day: 'Weekday', tier: '10', serviceClass: 'regular', directionId: 1,
       headsign: "Fisherman's Wharf", headway: 12, headwayByPeriod: { pmPeak: 12 }, headwayByPeriodSustained: { pmPeak: true } } as unknown as ShapeProperties;
     renderRows([cityCollege, bare], 'pmPeak', 'sfmta');
@@ -131,20 +131,30 @@ describe('a number that is one gap between a few departures (#955)', () => {
     expect(hasRegularServiceInPeriod(steady, 'midday')).toBe(true);
   });
 
-  it('a one-gap period shows no regular service, never the #934 gap or edge wording', () => {
+  it('a one-gap period shows Irregular, never the #934 gap or edge wording', () => {
     const both = { ...vicPark, stretchPeriodGap: { midday: { every: 30, gap: 315 } }, stretchPeriodEdge: { midday: { from: 862, every: 30 } } } as unknown as ShapeProperties;
     renderRows([both], 'midday');
     expect(screen.getByText(LONG)).toBeTruthy();
     expect(screen.queryByText(/gap|from /)).toBeNull();
   });
 
-  it('keeps a slow cadence the pipeline does not flag (MBTA 18 AM every 84)', () => {
+  it('keeps a steady slow cadence the pipeline does not flag (every 84)', () => {
     const mbta18 = { ...vicPark, routeId: '18', routeShortName: '18', headsign: 'Ashmont', headway: 84, headwayByPeriod: { midday: null },
       routeFilterHeadwayByPeriod: { midday: 84 }, directionFilterHeadwayByPeriod: { midday: 84 }, stretchPeriodHeadway: { midday: 84 },
-      periodCoverageHeadway: { midday: 84 }, stretchPeriodOneGap: { midday: false } } as unknown as ShapeProperties;
+      periodCoverageHeadway: { midday: 84 }, stretchPeriodOneGap: { midday: false }, stretchPeriodSustained: { midday: true } } as unknown as ShapeProperties;
     renderRows([mbta18], 'midday');
     expect(screen.queryByText(LONG)).toBeNull();
     expect(screen.getByText(/every \d+ min/)).toBeTruthy();
+    expect(routeListDisplay([mbta18], 'midday').headway).toBe(84);
+  });
+
+  it('#962: an unsteady stretch\'s worst wait reads irregular on the card, while lists keep the filter value (MBTA 18 AM, 84)', () => {
+    const mbta18 = { ...vicPark, routeId: '18', routeShortName: '18', headsign: 'Ashmont', headway: 84, headwayByPeriod: { midday: null },
+      routeFilterHeadwayByPeriod: { midday: 84 }, directionFilterHeadwayByPeriod: { midday: 84 }, stretchPeriodHeadway: { midday: 84 },
+      periodCoverageHeadway: { midday: 84 }, stretchPeriodOneGap: { midday: false }, stretchPeriodSustained: { midday: false } } as unknown as ShapeProperties;
+    renderRows([mbta18], 'midday');
+    expect(screen.getByText(LONG)).toBeTruthy();
+    expect(screen.queryByText(/every \d+ min/)).toBeNull();
     expect(routeListDisplay([mbta18], 'midday').headway).toBe(84);
   });
 });
@@ -157,14 +167,14 @@ describe('route card rows word part-period and one-gap service (#934)', () => {
     headwayByPeriod: { amPeak: 9 }, headwayByPeriodSustained: { amPeak: false }, periodCoverageHeadway: { amPeak: 77 },
     stretchPeriodHeadway: { amPeak: 77 }, stretchPeriodSustained: { amPeak: false }, stretchPeriodRange: { amPeak: null },
   };
-  it('a late start reads "from 7:17 AM, every 9 min" on the row, not every 77', () => {
+  it('a late start reads "every 9 min from 7:17 AM" on the row, not every 77', () => {
     const row = { ...bx, directionId: 0, headsign: 'Fisherman\'s Wharf', headway: 9, directionFilterHeadwayByPeriod: { amPeak: 77 },
       stretchPeriodEdge: { amPeak: { from: 437, every: 9 } } } as unknown as ShapeProperties;
     renderRows([row], 'amPeak' as any, 'sfmta');
-    expect(screen.getByText(partPeriodBadge(/from 7:17 AM, every 9 min/))).toBeTruthy();
+    expect(screen.getByText(partPeriodBadge(/every 9 min from 7:17 AM/))).toBeTruthy();
     expect(screen.queryByText(/every 77/)).toBeNull();
   });
-  it('a part-period row reads "until 9:37 AM, every 12 min" instead of limited', () => {
+  it('a part-period row reads "every 12 min until 9:37 AM" instead of limited', () => {
     const row = { ...bx, directionId: 1, headsign: 'Downtown', headway: null, headwayByPeriod: { midday: null },
       periodCoverageHeadway: { midday: 323 }, maxGapByPeriod: { midday: 323 }, headwayByPeriodSustained: {},
       routeFilterHeadwayByPeriod: { midday: 30 }, routeRunsByPeriod: { midday: true }, directionFilterHeadwayByPeriod: { midday: null },
@@ -174,21 +184,21 @@ describe('route card rows word part-period and one-gap service (#934)', () => {
       routeFilterHeadwayByPeriod: { midday: 30 }, routeRunsByPeriod: { midday: true }, directionFilterHeadwayByPeriod: { midday: 30 },
       stretchPeriodOneGap: { midday: false } } as unknown as ShapeProperties;
     renderRows([other, row], 'midday', 'cta');
-    expect(screen.getByText(partPeriodBadge(/until 9:37 AM, every 12 min/))).toBeTruthy();
-    expect(partPeriodText(row, 'midday')).toBe('until 9:37 AM, every 12 min');
+    expect(screen.getByText(partPeriodBadge(/every 12 min until 9:37 AM/))).toBeTruthy();
+    expect(partPeriodText(row, 'midday')).toBe('every 12 min until 9:37 AM');
   });
-  it('one gap inside steady service reads "every 10 min, with a 45 min gap"', () => {
+  it('one gap inside steady service reads "every 10 min, with one 45 min gap"', () => {
     const row = { ...bx, directionId: 0, headsign: 'North', headway: 10, headwayByPeriod: { midday: 10 },
       routeFilterHeadwayByPeriod: { midday: 45 }, routeRunsByPeriod: { midday: true }, directionFilterHeadwayByPeriod: { midday: 45 },
       stretchPeriodOneGap: { midday: false }, stretchPeriodGap: { midday: { every: 10, gap: 45 } } } as unknown as ShapeProperties;
     renderRows([row], 'midday', 'ttc');
-    expect(screen.getByText(partPeriodBadge(/every 10 min, with a 45 min gap/))).toBeTruthy();
+    expect(screen.getByText(partPeriodBadge(/every 10 min, with one 45 min gap/))).toBeTruthy();
   });
   it('the stop card shows the same part-period words (route card and stop card agree)', () => {
     render(<StopRouteGroup shortName="134" label={routeLabels({ shortName: '134', longName: 'Stony Island' })} longName="Stony Island" branches={[
-      { rKey: 'cta::134', headsign: 'Downtown', directionId: 1, service: { value: 12 } as any, periodText: 'until 9:37 AM, every 12 min' },
+      { rKey: 'cta::134', headsign: 'Downtown', directionId: 1, service: { value: 12 } as any, periodText: 'every 12 min until 9:37 AM' },
     ]} period="midday" onOpenRoute={() => {}} />);
-    expect(screen.getByText(partPeriodBadge(/^until 9:37 AM, every 12 min$/))).toBeTruthy();
+    expect(screen.getByText(partPeriodBadge(/^every 12 min until 9:37 AM$/))).toBeTruthy();
     expect(screen.queryAllByText('every 12 min').filter(el => !el.closest('.flex-wrap'))).toHaveLength(0);
   });
 });

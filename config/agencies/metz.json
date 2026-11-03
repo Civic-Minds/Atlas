@@ -1,6 +1,7 @@
 {
   "slug": "metz",
-  "name": "Le Met' (Metz)",
+  "officialName": "Le Met'",
+  "nameQualifier": "Metz",
   "region": "Grand Est",
   "center": [
     49.1193,

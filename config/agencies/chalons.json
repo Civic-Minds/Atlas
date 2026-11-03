@@ -1,6 +1,7 @@
 {
   "slug": "chalons",
-  "name": "SITAC (Châlons)",
+  "officialName": "SITAC",
+  "nameQualifier": "Châlons",
   "websiteUrl": "http://www.businfo-groupe.com",
   "region": "Grand Est",
   "center": [

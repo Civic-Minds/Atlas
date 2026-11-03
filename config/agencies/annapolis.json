@@ -1,6 +1,6 @@
 {
   "slug": "annapolis",
-  "name": "Annapolis Transit",
+  "officialName": "Annapolis Transit",
   "displayArea": "Annapolis",
   "websiteUrl": "https://www.annapolis.gov/159/Transportation",
   "center": [
@@ -8,6 +8,18 @@
     -76.49
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-2285/latest.zip",
+  "sameNameRoutes": [
+    {
+      "shortName": "Purple",
+      "longName": "Purple-N1 Call-in 4102637964",
+      "name": "Purple North"
+    },
+    {
+      "shortName": "Purple",
+      "longName": "Purple-S2 Call-in 4102637964",
+      "name": "Purple South"
+    }
+  ],
   "lastFeedExpiry": "20260930",
   "lastFeedVersion": "20250923",
   "lastRefreshedAt": "2026-08-07",
@@ -22,15 +34,15 @@
   "cities": [
     "Bowie, Maryland"
   ],
-  "lastFeedCheckAt": "20261019",
-  "expiredFeedCheckCount": 4,
+  "lastFeedCheckAt": "20261102",
+  "expiredFeedCheckCount": 5,
   "expiredFeedCheckSince": "20260622",
   "expiredFeedCheckExpiry": "20260930",
   "timezone": "America/New_York",
   "feedRefreshStatus": "stale",
   "feedRefreshError": "all available feeds expired (latest 20260930)",
-  "feedRefreshErrorAt": "20261019",
-  "feedRefreshRetryCount": 4,
+  "feedRefreshErrorAt": "20261102",
+  "feedRefreshRetryCount": 5,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2285/latest.zip"
 }

@@ -2,7 +2,9 @@ import { readdirSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import JSZip from 'jszip';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { processAgencyFeeds } from '../agencyFeeds';
 import { processGtfsBuffer } from '../process-core';
+import { serviceWeekKey } from '../serviceWeekKey';
 
 // #1038: the detected reference date skips a weekday service that runs today, so these
 // routes were published Saturday only. Humboldt's four services start on different dates,
@@ -99,5 +101,50 @@ describe('referenceDateFromRunDate for Humboldt and GPTC (#1038)', () => {
       expect(pick(after)).toEqual(pick(before));
       expect(pick(after).length).toBeGreaterThan(0);
     });
+  });
+});
+
+// CIV-1101: the live map reads both agencies on the one service-day model (the week riders face
+// from the run date, pickRiderWeek); the run-date opt-in is read only by the old picker. Each
+// case above, read through processAgencyFeeds with the agency's own config, gives the same week.
+describe('Humboldt and GPTC on the one service-day model (CIV-1101)', () => {
+  afterEach(() => { vi.useRealTimers(); });
+
+  async function live(fixture: string, slug: string) {
+    const config = JSON.parse(readFileSync(resolve(CONFIG, `${slug}.json`), 'utf8'));
+    const result = await processAgencyFeeds(await fixtureZip(fixture), [], { ...config, slug, supplementalFeedUrls: [] });
+    return JSON.parse(result.geojson).features.map((f: any) => f.properties).filter((p: any) => p.stopId == null);
+  }
+
+  it('Humboldt reads the fall timetable during the semester', async () => {
+    vi.useFakeTimers({ toFake: ['Date'], now: new Date('2026-10-21T12:00:00') });
+    const features = await live('humboldt-cph-semester', 'humboldt');
+    expect(headway(features, 'HHM', 'Weekday')).toBe(12);
+    expect(has(features, 'A Orng', 'Weekday')).toBe(true);
+    expect(headway(features, 'A Orng', 'Saturday')).toBe(60);
+  });
+
+  it('Humboldt reads the regular timetable after the fall service ends', async () => {
+    vi.useFakeTimers({ toFake: ['Date'], now: new Date('2027-01-13T12:00:00') });
+    const features = await live('humboldt-cph-semester', 'humboldt');
+    expect(has(features, 'HHM', 'Weekday')).toBe(false);
+    expect(has(features, 'A Orng', 'Weekday')).toBe(false);
+    expect(headway(features, 'A Orng', 'Saturday')).toBe(60);
+  });
+
+  it('GPTC reads the running weekday service', async () => {
+    vi.useFakeTimers({ toFake: ['Date'], now: new Date('2026-10-21T12:00:00') });
+    const features = await live('gptc-91161-weekday', 'gptc');
+    expect(headway(features, 'L1', 'Weekday')).toBe(30);
+    expect(headway(features, 'R2', 'Weekday')).toBe(60);
+    expect(has(features, 'L2', 'Weekday')).toBe(true);
+  });
+
+  it('the refresh service-week key moves with the timetable, not every week', async () => {
+    const buf = await fixtureZip('humboldt-cph-semester');
+    const oct21 = await serviceWeekKey(buf, '20261022');
+    expect(oct21).not.toBeNull();
+    expect(await serviceWeekKey(buf, '20261023')).toBe(oct21);
+    expect(await serviceWeekKey(buf, '20270114')).not.toBe(oct21);
   });
 });

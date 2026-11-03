@@ -1,6 +1,7 @@
 {
   "slug": "fred-transit",
-  "name": "FXBGO! (Fredericksburg)",
+  "officialName": "FXBGO!",
+  "nameQualifier": "Fredericksburg",
   "hiddenInProduction": false,
   "issueUrl": "https://github.com/Civic-Minds/Atlas/issues/684",
   "overrideNote": "This schedule is from January 2026. The earlier 6:30 a.m. starts FXBGO! added in April 2026 aren't shown yet.",
@@ -36,9 +37,15 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 31
+      "featureCount": 33,
+      "feedExpiry": "20261231",
+      "routeCount": 17,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-13"
+    "checkedAt": "2026-11-03"
   },
   "lastPeekedExpiry": "20261231"
 }

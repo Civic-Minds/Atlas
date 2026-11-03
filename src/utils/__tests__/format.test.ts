@@ -322,7 +322,8 @@ describe('names in capitals with French linking words (CIV-1054)', () => {
 });
 
 // CIV-1117 row 6 (Ryan): westbound and eastbound stay in capitals, even in a name the feed wrote in mixed case.
-describe('stopNameCase keeps WB and EB in capitals', () => {
+describe('Live stop names keep WB and EB in capitals (the map keeps the feed casing)', () => {
+  const stopNameCase = (s: string) => nameCase(s, 'liveStop');
   it('fixes a mixed-case feed name', () => {
     expect(stopNameCase('Park Lawn Rd at Gardiner Expressway (Wb On Ramp)')).toBe('Park Lawn Rd at Gardiner Expressway (WB On Ramp)');
     expect(stopNameCase('Penn St. & 2nd St. Farside Eb')).toBe('Penn St. & 2nd St. Farside EB');
@@ -331,6 +332,9 @@ describe('stopNameCase keeps WB and EB in capitals', () => {
     expect(stopNameCase('Webb Ave')).toBe('Webb Ave');
     expect(stopNameCase('Eby St')).toBe('Eby St');
     expect(stopNameCase('125 The Queensway')).toBe('125 The Queensway');
+  });
+  it("the map's stop names keep the feed's casing until Ryan OKs the rule there", () => {
+    expect(nameCase('Park Lawn Rd at Gardiner Expressway (Wb On Ramp)', 'stop')).toBe('Park Lawn Rd at Gardiner Expressway (Wb On Ramp)');
   });
 });
 

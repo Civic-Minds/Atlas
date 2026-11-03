@@ -1,6 +1,7 @@
 {
   "slug": "omniride",
-  "name": "OmniRide (PRTC)",
+  "officialName": "OmniRide",
+  "nameQualifier": "PRTC",
   "websiteUrl": "http://www.omniride.com",
   "center": [
     38.5,
@@ -10,7 +11,7 @@
   "lastFeedExpiry": "20270130",
   "lastFeedVersion": "2026 July_20260724",
   "region": "Virginia",
-  "lastRefreshedAt": "2026-10-14",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Dale City, Virginia",
     "Centreville, Virginia",
@@ -20,7 +21,7 @@
     "Alexandria, Virginia"
   ],
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-1156/latest.zip",
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270130",
@@ -36,13 +37,21 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 118
+      "featureCount": 118,
+      "feedExpiry": "20270130",
+      "routeCount": 32,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-14"
+    "checkedAt": "2026-11-03"
   },
   "lastPeekedExpiry": "20270130",
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
-  "feedRefreshRetryCount": 0
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "312507c3b09789d2",
+  "feedObtainedAt": "20260724"
 }

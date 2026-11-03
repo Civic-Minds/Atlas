@@ -1,6 +1,6 @@
 {
   "slug": "martin-county",
-  "name": "Martin County Public Transit",
+  "officialName": "Martin County Public Transit",
   "displayArea": "Martin County, FL",
   "websiteUrl": "https://www.martin.fl.us/transit",
   "region": "Florida",
@@ -18,33 +18,43 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-4506/latest.zip",
   "lastFeedExpiry": "20261231",
   "lastFeedVersion": "2026-08-15 Loop adjustment",
-  "lastRefreshedAt": "2026-08-27",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Port Saint Lucie, Florida",
     "Jupiter, Florida",
     "Palm Beach Gardens, Florida"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261231",
   "feedQuality": {
-    "status": "review",
-    "score": 90,
-    "reasons": [
-      "1 map line was repaired — Atlas fixed unusual route geometry before displaying it."
-    ],
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
-      "shapeAnomalies": 1,
+      "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 10
+      "featureCount": 10,
+      "feedExpiry": "20261231",
+      "routeCount": 5,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-08-27"
+    "checkedAt": "2026-11-03"
   },
   "timezone": "America/New_York",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/tld-4506/latest.zip",
-  "lastPeekedExpiry": "20261231"
+  "lastPeekedExpiry": "20261231",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "ba35c552f75aacd5",
+  "feedObtainedAt": "20260814"
 }

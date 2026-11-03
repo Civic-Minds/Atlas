@@ -1,6 +1,6 @@
 {
   "slug": "njt-rail",
-  "name": "NJ Transit Rail",
+  "officialName": "NJ Transit Rail",
   "displayArea": "New Jersey",
   "websiteUrl": "http://www.njtransit.com/",
   "region": "New Jersey",
@@ -18,7 +18,7 @@
   "lastFeedExpiry": "20270313",
   "lastFeedVersion": null,
   "mergeEquivalentShapeVariantsAllModes": true,
-  "lastRefreshedAt": "2026-10-12",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Plainfield, New Jersey",
     "Paterson, New Jersey",
@@ -31,7 +31,7 @@
     "New Brunswick, New Jersey",
     "Union, New Jersey"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270313",
@@ -39,20 +39,25 @@
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-509/latest.zip",
   "feedQuality": {
-    "status": "degraded",
-    "score": 50,
+    "status": "review",
+    "score": 87,
     "reasons": [
-      "18 route shapes needed adjustment before display.",
       "2 route have stops whose frequency differs from the overall route schedule."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
       "shapeAnomalies": 18,
-      "routeHeadwayMismatches": 2,
-      "featureCount": 36
+      "routeHeadwayMismatches": 7,
+      "featureCount": 129,
+      "feedExpiry": "20270313",
+      "routeCount": 16,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 2,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-12"
+    "checkedAt": "2026-11-03"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -78,5 +83,7 @@
       "reason": "Hudson-Bergen, Newark and River LINE are light rail, published as route_type 0 (tram)"
     }
   ],
-  "lastPeekedExpiry": "20270313"
+  "lastPeekedExpiry": "20270313",
+  "lastServiceWeek": "506f7a7aa88f8ef4",
+  "feedObtainedAt": "20260916"
 }

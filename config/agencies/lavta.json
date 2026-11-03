@@ -1,6 +1,6 @@
 {
   "slug": "lavta",
-  "name": "Livermore Amador Valley Transit Authority",
+  "officialName": "Livermore Amador Valley Transit Authority",
   "center": [
     37.6915,
     -121.8397
@@ -17,7 +17,7 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-64/latest.zip",
   "lastFeedExpiry": "20270129",
   "lastFeedVersion": "20260922",
-  "lastRefreshedAt": "2026-10-08",
+  "lastRefreshedAt": "2026-11-02",
   "websiteUrl": "https://wheelsbus.com/",
   "cities": [
     "Livermore, California",
@@ -26,7 +26,7 @@
   ],
   "timezone": "America/Los_Angeles",
   "lastRawArchiveKey": "20260430-d4b24aea487f70da",
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270129",
@@ -45,9 +45,17 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 51
+      "featureCount": 88,
+      "feedExpiry": "20270129",
+      "routeCount": 30,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-08"
+    "checkedAt": "2026-11-03"
   },
-  "lastPeekedExpiry": "20270129"
+  "lastPeekedExpiry": "20270129",
+  "lastServiceWeek": "bfffedadaf64c15f",
+  "feedObtainedAt": "20260922"
 }

@@ -122,7 +122,7 @@ describe('describeMapExport', () => {
 
   it('says when zooming out hides routes the filter would allow', () => {
     const details = describeMapExport({ ...BASE, maxHeadway: Infinity, period: 'all', day: 'Weekday', zoom: 6 }, samples({ ttc: 3 }), AGENCIES);
-    expect(details.lines).toContain('Zoomed out, so some less frequent routes are hidden');
+    expect(details.lines).toContain('Zoomed out. Some less frequent routes are hidden');
     expect(details.filename).toBe('atlas-toronto-all-routes-weekday-all-day.png');
   });
 

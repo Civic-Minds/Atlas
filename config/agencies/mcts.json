@@ -1,6 +1,7 @@
 {
   "slug": "mcts",
-  "name": "Milwaukee County Transit System (MCTS)",
+  "officialName": "Milwaukee County Transit System",
+  "commonName": "MCTS",
   "websiteUrl": "http://www.ridemcts.com",
   "center": [
     43.0481,
@@ -10,22 +11,42 @@
   "lastFeedExpiry": "20261205",
   "lastFeedVersion": null,
   "region": "Wisconsin",
-  "lastRefreshedAt": "20260811",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Milwaukee, Wisconsin",
     "West Allis, Wisconsin"
   ],
   "timezone": "America/Chicago",
   "lastRawArchiveKey": "20250823-972ecde587d298f8",
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261205",
-  "feedRefreshStatus": "stale",
-  "feedRefreshError": "all available feeds expired (latest 20250823)",
-  "feedRefreshErrorAt": "20261012",
-  "feedRefreshRetryCount": 3,
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://kamino.mcts.org/gtfs/google_transit.zip",
-  "lastPeekedExpiry": "20261205"
+  "lastPeekedExpiry": "20261205",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 296,
+      "feedExpiry": "20261205",
+      "routeCount": 49,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
+    },
+    "checkedAt": "2026-11-03"
+  },
+  "lastServiceWeek": "7175f1c2c4740edf"
 }

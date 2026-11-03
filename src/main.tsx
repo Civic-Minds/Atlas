@@ -18,6 +18,7 @@ import RouteTracker from './components/RouteTracker';
 import RouteSeo from './components/RouteSeo';
 import HomeRemount from './components/HomeRemount';
 import { isInternalTestSession } from './lib/internalTest';
+import { trackKeyboardFocus } from './lib/keyboardFocus';
 import { findSeoRoute } from '../shared/seo';
 
 const AgencyPage = React.lazy(() => import('./AgencyPage'));
@@ -28,6 +29,7 @@ const ResearchPage = React.lazy(() => import('./apps/ResearchPage'));
 const FreeChildFaresPage = React.lazy(() => import('./apps/FreeChildFaresPage'));
 const FrequentServiceStoryPage = React.lazy(() => import('./apps/FrequentServiceStoryPage'));
 const AreaPage = React.lazy(() => import('./AreaPage'));
+const RegionPage = React.lazy(() => import('./RegionPage'));
 const AgenciesIndexPage = React.lazy(() => import('./AgenciesIndexPage'));
 const DiagnosticsUnevenPage = React.lazy(() => import('./DiagnosticsUnevenPage'));
 const DiagnosticsPerformancePage = React.lazy(() => import('./DiagnosticsPerformancePage'));
@@ -58,6 +60,8 @@ if (import.meta.env.PROD && !isInternalTestSession()) {
   inject();
   injectSpeedInsights();
 }
+
+trackKeyboardFocus();
 
 const rootElement = document.getElementById('root')!;
 // A prerendered page already has its text in #root. Keep showing that same HTML while the page's code chunk
@@ -98,6 +102,7 @@ ReactDOM.createRoot(rootElement).render(
           {FEATURES.researchApps && <Route path="/research/free-child-fares" element={<FreeChildFaresPage />} />}
           {FEATURES.frequentService && <Route path={FEATURE_ROUTES.frequentService.story} element={<FrequentServiceStoryPage />} />}
           {FEATURES.agencyPages && <Route path="/area/:slug" element={<AreaPage />} />}
+          {FEATURES.agencyPages && <Route path="/region/:slug" element={<RegionPage />} />}
           {FEATURES.agencyPages && <Route path="/agencies" element={<AgenciesIndexPage />} />}
           <Route path="/*" element={<MapOrNotFound />} />
           </Routes>

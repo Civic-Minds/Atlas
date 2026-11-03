@@ -1,6 +1,6 @@
 {
   "slug": "greensboro",
-  "name": "Greensboro Transit Authority",
+  "officialName": "Greensboro Transit Authority",
   "center": [
     36.0744,
     -79.8048
@@ -8,9 +8,9 @@
   "feedUrl": "https://trackmygta.com/gtfs",
   "region": "North Carolina",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-615/latest.zip",
-  "lastFeedExpiry": "20281028",
+  "lastFeedExpiry": "20281103",
   "lastFeedVersion": "7/4/2024",
-  "lastRefreshedAt": "2026-10-12",
+  "lastRefreshedAt": "2026-11-02",
   "websiteUrl": "http://www.greensboro-nc.gov/index.aspx?page=2180",
   "cities": [
     "Greensboro, North Carolina",
@@ -18,7 +18,7 @@
   ],
   "timezone": "America/New_York",
   "lastRawArchiveKey": "20250228-1828d0c249445f06",
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20991231",
@@ -31,9 +31,15 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 101
+      "featureCount": 104,
+      "feedExpiry": "20281103",
+      "routeCount": 17,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-12"
+    "checkedAt": "2026-11-03"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -41,5 +47,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://trackmygta.com/gtfs",
-  "lastPeekedExpiry": "20991231"
+  "lastPeekedExpiry": "20991231",
+  "lastServiceWeek": "460b540c7894bdf5",
+  "feedObtainedAt": "20261101"
 }

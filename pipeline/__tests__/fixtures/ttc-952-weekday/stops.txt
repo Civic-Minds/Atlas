@@ -1,0 +1,42 @@
+stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,zone_id,stop_url,location_type,parent_station,stop_timezone,wheelchair_boarding
+5357,5357,Lawrence Ave West at Culford Rd,,43.706494,-79.487529,,,,,,1
+6046,6046,Lawrence Ave West at Scarlett Rd East Side,,43.698378,-79.522285,,,,,,2
+4987,4987,Dixon Rd at Islington Ave East Side,,43.697104,-79.545978,,,,,,1
+4988,4988,Dixon Rd at Islington Ave,,43.697362,-79.54593,,,,,,1
+5413,5413,Lawrence Ave West at Weston Rd West Side,,43.700019,-79.517036,,,,,,1
+4972,4972,Dixon Rd at Attwell Dr,,43.688146,-79.586563,,,,,,1
+14278,14278,Pearson Airport Terminal 3 - Arrivals Level Columns C8-C12,,43.686811,-79.620932,,,,,,1
+5004,5004,Dixon Rd at St Phillips Rd,,43.699997,-79.533962,,,,,,1
+5337,5337,Lawrence Ave West at Bathurst St,,43.719036,-79.430158,,,,,,1
+5350,5350,Lawrence Ave West at Caledonia Rd East Side,,43.711461,-79.466099,,,,,,1
+5406,5406,Lawrence Ave West at Scarlett Rd,,43.698314,-79.523078,,,,,,2
+5339,5339,Lawrence Ave West at Bathurst St,,43.719461,-79.429301,,,,,,1
+4993,4993,Dixon Rd at Martin Grove Rd,,43.691791,-79.570592,,,,,,1
+5379,5379,Lawrence Ave West at Jane St,,43.70302,-79.503444,,,,,,1
+5381,5381,Lawrence Ave West at Keele St East Side,,43.708821,-79.477376,,,,,,1
+4976,4976,Dixon Rd at Carlingview Dr,,43.686894,-79.595256,,,,,,1
+5361,5361,Lawrence Ave West at Dufferin St,,43.714223,-79.454377,,,,,,1
+5003,5003,Dixon Rd at Skyway Ave,,43.687734,-79.587111,,,,,,1
+2824,2824,Lawrence Ave West at Jane St,,43.702738,-79.504198,,,,,,1
+4992,4992,Dixon Rd at Martin Grove Rd,,43.691368,-79.571115,,,,,,2
+5360,5360,Lawrence Ave West at Dufferin St,,43.713907,-79.454938,,,,,,1
+5001,5001,Dixon Rd at Royal York Rd East Side,,43.699818,-79.533639,,,,,,2
+12202,12202,Lawrence West Station,,43.715964,-79.444097,,,,,,2
+5351,5351,Lawrence Ave West at Caledonia Rd West Side,,43.711463,-79.467181,,,,,,1
+14092,14092,Pearson Airport Terminal 1 - Ground Level Column R4,,43.681739,-79.611041,,,,,,1
+5414,5414,Lawrence Ave West at Weston Rd,,43.699921,-79.516784,,,,,,1
+5340,5340,Lawrence Ave West at Benton Rd,,43.710145,-79.47202,,,,,,1
+5396,5396,Lawrence Ave West at Pine St,,43.702096,-79.508129,,,,,,2
+4991,4991,Dixon Rd at Kipling Ave,,43.694487,-79.558316,,,,,,1
+4990,4990,Dixon Rd at Kipling Ave,,43.694072,-79.558873,,,,,,1
+5341,5341,Lawrence Ave West at Benton Rd,,43.710536,-79.471373,,,,,,2
+5356,5356,Lawrence Ave West at Culford Rd East Side,,43.706314,-79.487335,,,,,,1
+5382,5382,Lawrence Ave West at Keele St,,43.709011,-79.477644,,,,,,1
+5336,5336,Lawrence Ave West at Avenue Rd,,43.722424,-79.41525,,,,,,1
+4751,4751,Airport Rd at Jetliner Rd East Side,,43.685805,-79.606252,,,,,,1
+5335,5335,Lawrence Ave West at Avenue Rd,,43.722072,-79.415812,,,,,,2
+4975,4975,Dixon Rd at Carlingview Dr,,43.686589,-79.595728,,,,,,1
+5395,5395,Lawrence Ave West at Pine St,,43.701855,-79.508389,,,,,,1
+14733,14733,Lawrence West Station,,43.715586,-79.444126,,,,,,1
+15144,15144,Jetliner Rd at Airport Rd South Side,,43.685321,-79.607296,,,,,,1
+15184,15184,Lawrence Station,,43.725245,-79.402249,,,,,,1

@@ -1,6 +1,7 @@
 {
   "slug": "lyon",
-  "name": "TCL (Lyon)",
+  "officialName": "TCL",
+  "nameQualifier": "Lyon",
   "region": "Auvergne-Rhône-Alpes",
   "center": [
     45.764,

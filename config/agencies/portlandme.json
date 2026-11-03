@@ -1,6 +1,6 @@
 {
   "slug": "portlandme",
-  "name": "Greater Portland Metro",
+  "officialName": "Greater Portland Metro",
   "websiteUrl": "https://www.gpmetro.org",
   "center": [
     43.66,
@@ -15,16 +15,16 @@
   ],
   "feedUrl": "https://gtfs.gptd.cadavl.com/GPTD/GTFS/GTFS_GPTD.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2642/latest.zip",
-  "lastFeedExpiry": "20261125",
+  "lastFeedExpiry": "20261202",
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-10-19",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Portland, Maine"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261118",
+  "expiredFeedCheckExpiry": "20261202",
   "feedQuality": {
     "status": "healthy",
     "score": 100,
@@ -34,9 +34,15 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 111
+      "featureCount": 111,
+      "feedExpiry": "20261202",
+      "routeCount": 15,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-19"
+    "checkedAt": "2026-11-03"
   },
   "timezone": "America/New_York",
   "feedRefreshStatus": "current",
@@ -45,5 +51,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://gtfs.gptd.cadavl.com/GPTD/GTFS/GTFS_GPTD.zip",
-  "lastPeekedExpiry": "20261125"
+  "lastPeekedExpiry": "20261202",
+  "lastServiceWeek": "7e56d94136bd8855",
+  "feedObtainedAt": "20261102"
 }

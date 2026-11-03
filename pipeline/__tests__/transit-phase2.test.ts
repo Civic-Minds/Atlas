@@ -136,6 +136,20 @@ describe('applyAnalysisCriteria', () => {
     expect(school.find(x => x.route === '678')).toMatchObject({ serviceClass: 'irregular', tier: 'span' });
   });
 
+  it('#1254: a steady rush-hour block reads its own cadence, including trips before 07:00', () => {
+    const results = applyAnalysisCriteria([
+      // OC Transpo 187 to Baseline: 06:38, 07:08, 07:36, 08:08 (every 30, one 32-minute gap).
+      raw({ route: '187', departureTimes: [398, 428, 456, 488] }),
+      // OC Transpo 275 to Tunney's Pasture: 05:39 then 06:04 to 08:16, only two trips after 07:00.
+      raw({ route: '275', departureTimes: [339, 364, 394, 419, 451, 496] }),
+      // OC Transpo 221 to Blair: 06:27, 06:36, 07:06, 07:57 (gaps 9, 30, 51) stays one-off.
+      raw({ route: '221', departureTimes: [387, 396, 426, 477] }),
+    ]);
+    expect(results.find(x => x.route === '187')).toMatchObject({ serviceClass: 'time-limited', tier: '60', rushHourOnly: true });
+    expect(results.find(x => x.route === '275')).toMatchObject({ serviceClass: 'time-limited', tier: '60', rushHourOnly: true });
+    expect(results.find(x => x.route === '221')).toMatchObject({ serviceClass: 'irregular', tier: 'span' });
+  });
+
   it('#313: keeps an entirely overnight route instead of dropping it (TTC Blue Night pattern)', () => {
     // All departures ~1:12–2:12am next-day-encoded (25:12–26:12) -- zero in the 07:00–22:00 window.
     const results = applyAnalysisCriteria([
@@ -275,6 +289,33 @@ describe('applyAnalysisCriteria', () => {
     expect(weekday?.times).toEqual([480, 600, 840, 1080, 1320]);
   });
 
+  it('rates a rail direction from the whole day when its midday sample is two trains (CIV-1085, NJT Rail 1)', () => {
+    // NJT Atlantic City Line to Philadelphia, weekdays: 12 trains every 70-120 min; only 10:12 and
+    // 12:04 fall in 09:30-14:30, so the midday sample read irregular.
+    const hhmm = (s: string) => Number(s.slice(0, 2)) * 60 + Number(s.slice(3));
+    const results = applyAnalysisCriteria([raw({
+      route: 'njt-rail-1',
+      routeType: '2',
+      departureTimes: ['04:11', '05:38', '06:49', '08:20', '10:12', '12:04', '14:38', '15:47', '16:59', '18:54', '20:53', '22:51'].map(hhmm),
+    })]);
+    const weekday = results.find(item => item.route === 'njt-rail-1' && item.day === 'Weekday');
+
+    expect(weekday).toMatchObject({ serviceClass: 'regular', tier: 'infrequent' });
+  });
+
+  it('keeps a rush-hour rail line with two midday trains off the all-day scale (CIV-1085)', () => {
+    const peak = (from: number) => Array.from({ length: 9 }, (_, i) => from + i * 15);
+    const results = applyAnalysisCriteria([raw({
+      route: 'rush-rail',
+      routeType: '2',
+      departureTimes: [...peak(390), 660, 780, ...peak(960)],
+    })]);
+    const weekday = results.find(item => item.route === 'rush-rail' && item.day === 'Weekday');
+
+    // Rush-hour-only service as before (#720), not an all-day line rated from the peaks.
+    expect(weekday?.serviceClass).not.toBe('regular');
+  });
+
   it('correctly falls to infrequent/span rather than a false tight tier when a day bucket mixes two separate overnight blocks (real TTC 300 pattern)', () => {
     // Tail of one night's run (233-263, non-extended) plus the start of the next night's run
     // (1512+, extended) landing in the same calendar-day bucket -- a real GTFS quirk confirmed
@@ -384,6 +425,9 @@ describe('peakBlockHoldsTier: the bar for a rush-hour block to hold a tier (#720
     // Every 60 needs two hours, not one.
     expect(peakBlockHoldsTier('60', [55, 60, 65], 119)).toBe(false);
     expect(peakBlockHoldsTier('60', [60, 60, 60], 180)).toBe(true);
+    // #1254: a block whose gaps all sit well inside the tier needs two of its own longest gaps, not two hours.
+    expect(peakBlockHoldsTier('60', [30, 28, 32], 90)).toBe(true);
+    expect(peakBlockHoldsTier('60', [30, 28], 58)).toBe(false);
     // Infrequent has no cycle of its own: two of the block's median gaps.
     expect(peakBlockHoldsTier('infrequent', [80, 90, 100], 179)).toBe(false);
     expect(peakBlockHoldsTier('infrequent', [80, 90, 100], 270)).toBe(true);

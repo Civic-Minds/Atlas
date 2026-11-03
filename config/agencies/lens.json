@@ -1,6 +1,7 @@
 {
   "slug": "lens",
-  "name": "Tadao (Lens-Liévin)",
+  "officialName": "Tadao",
+  "nameQualifier": "Lens-Liévin",
   "region": "Hauts-de-France",
   "center": [
     50.4289,

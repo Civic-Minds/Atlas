@@ -1,6 +1,7 @@
 {
   "slug": "rct",
-  "name": "Redwood Coast Transit (RCT)",
+  "officialName": "Redwood Coast Transit",
+  "commonName": "RCT",
   "center": [
     41.4686,
     -124.1049
@@ -14,32 +15,36 @@
   ],
   "feedUrl": "https://gtfs.remix.com/redwoodcoast.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-20/latest.zip",
-  "lastFeedExpiry": "20261231",
-  "lastFeedVersion": "Updated: Aug 19, 2026, 11:14 PM",
+  "lastFeedExpiry": "20270530",
+  "lastFeedVersion": "Updated: Oct 31, 2026, 2:41 PM",
   "keepLongShapeJumps": true,
   "poolSingleTripShapes": true,
-  "lastRefreshedAt": "2026-10-03",
+  "lastRefreshedAt": "2026-11-02",
   "websiteUrl": "http://www.redwoodcoasttransit.org/",
   "timezone": "America/Los_Angeles",
   "lastRawArchiveKey": "20260530-8364fe10c2bd25da",
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261231",
+  "expiredFeedCheckExpiry": "20270530",
   "feedQuality": {
-    "status": "review",
-    "score": 70,
-    "reasons": [
-      "5 route shapes needed adjustment before display."
-    ],
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
-      "shapeAnomalies": 5,
+      "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 14
+      "featureCount": 13,
+      "feedExpiry": "20270530",
+      "routeCount": 7,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-03"
+    "checkedAt": "2026-11-03"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -47,5 +52,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://gtfs.remix.com/redwoodcoast.zip",
-  "lastPeekedExpiry": "20261231"
+  "lastPeekedExpiry": "20270530",
+  "lastServiceWeek": "6985ab64e7258ccd",
+  "feedObtainedAt": "20261102"
 }

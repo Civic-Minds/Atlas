@@ -1,6 +1,6 @@
 {
   "slug": "brampton",
-  "name": "Brampton Transit",
+  "officialName": "Brampton Transit",
   "websiteUrl": "http://www.bramptontransit.com",
   "region": "Ontario",
   "center": [
@@ -36,7 +36,7 @@
   "lastFeedExpiry": "20261220",
   "lastFeedVersion": "20261102",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-1994/latest.zip",
-  "lastRefreshedAt": "2026-10-19",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Brampton, Ontario",
     "Etobicoke, Ontario",
@@ -44,13 +44,13 @@
     "Mississauga, Ontario",
     "Caledon, Ontario"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261220",
   "feedQuality": {
     "status": "review",
-    "score": 80,
+    "score": 97,
     "reasons": [
       "2 route have stops whose frequency differs from the overall route schedule."
     ],
@@ -59,9 +59,15 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 2,
-      "featureCount": 338
+      "featureCount": 338,
+      "feedExpiry": "20261220",
+      "routeCount": 70,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 2,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-19"
+    "checkedAt": "2026-11-03"
   },
   "timezone": "America/New_York",
   "lastFeedSourceKind": "configured",
@@ -70,5 +76,7 @@
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
-  "feedRefreshRetryCount": 0
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "d1d0c63c592b9ce5",
+  "feedObtainedAt": "20261015"
 }

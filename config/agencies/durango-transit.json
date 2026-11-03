@@ -1,6 +1,6 @@
 {
   "slug": "durango-transit",
-  "name": "Durango Transit",
+  "officialName": "Durango Transit",
   "websiteUrl": "https://durangoco.gov/333/Transit",
   "center": [
     37.27,
@@ -10,9 +10,9 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-456/latest.zip",
   "lastFeedExpiry": "20300131",
   "region": "Colorado",
-  "lastFeedVersion": "2026.07 Route3-5 Split",
-  "lastRefreshedAt": "2026-10-12",
-  "lastFeedCheckAt": "20261019",
+  "lastFeedVersion": "2026.10 Calendar-Fares-Transfer",
+  "lastRefreshedAt": "2026-11-02",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20300131",
@@ -28,13 +28,21 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 18
+      "featureCount": 19,
+      "feedExpiry": "20300131",
+      "routeCount": 6,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-12"
+    "checkedAt": "2026-11-03"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
-  "lastPeekedExpiry": "20300131"
+  "lastPeekedExpiry": "20300131",
+  "lastServiceWeek": "a5646624a60e5297",
+  "feedObtainedAt": "20261102"
 }

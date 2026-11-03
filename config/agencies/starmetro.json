@@ -1,6 +1,7 @@
 {
   "slug": "starmetro",
-  "name": "StarMetro (Tallahassee)",
+  "officialName": "StarMetro",
+  "nameQualifier": "Tallahassee",
   "center": [
     30.4459,
     -84.2889
@@ -15,18 +16,43 @@
   "region": "Florida",
   "lastFeedExpiry": "20270101",
   "lastFeedVersion": "26-05-02 SUM_20260728",
-  "lastRefreshedAt": "20260811",
+  "lastRefreshedAt": "2026-11-02",
   "websiteUrl": "http://www.talgov.com/starmetro",
   "cities": [
     "Tallahassee, Florida"
   ],
   "timezone": "America/New_York",
   "lastRawArchiveKey": "20240901-cca38c6c6d9dd482",
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270101",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://www.talgov.com/Uploads/Public/documents/starmetro/GTFS.zip",
-  "lastPeekedExpiry": "20270101"
+  "lastPeekedExpiry": "20270101",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 1,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 77,
+      "feedExpiry": "20270101",
+      "routeCount": 37,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
+    },
+    "checkedAt": "2026-11-03"
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "dd5a65dd71503037",
+  "feedObtainedAt": "20260728"
 }

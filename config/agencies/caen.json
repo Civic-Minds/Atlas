@@ -1,6 +1,7 @@
 {
   "slug": "caen",
-  "name": "Twisto (Caen)",
+  "officialName": "Twisto",
+  "nameQualifier": "Caen",
   "region": "Normandie",
   "center": [
     49.1829,

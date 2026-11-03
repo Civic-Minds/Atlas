@@ -1,6 +1,7 @@
 {
   "slug": "patco",
-  "name": "PATCO Speedline (Philadelphia-Camden)",
+  "officialName": "PATCO Speedline",
+  "nameQualifier": "Philadelphia-Camden",
   "websiteUrl": "https://www.ridepatco.org/",
   "center": [
     39.95,
@@ -11,14 +12,14 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-3035/latest.zip",
   "lastFeedExpiry": "20261231",
   "lastFeedVersion": "20",
-  "lastRefreshedAt": "2026-10-03",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Cherry Hill, New Jersey",
     "Center City, Pennsylvania",
     "Camden, New Jersey",
     "Philadelphia, Pennsylvania"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261231",
@@ -32,9 +33,15 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 6
+      "featureCount": 6,
+      "feedExpiry": "20261231",
+      "routeCount": 1,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-03"
+    "checkedAt": "2026-11-03"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -42,5 +49,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/13562/PATCO_GTFS.zip",
-  "lastPeekedExpiry": "20261231"
+  "lastPeekedExpiry": "20261231",
+  "lastServiceWeek": "8bc780e295bd0d61",
+  "feedObtainedAt": "20260924"
 }

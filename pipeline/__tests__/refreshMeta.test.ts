@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { decideRefreshSkipUnchanged, lowerStoredFeedExpiry, isFeedExpired, markFeedStale, recordedFeedExpiry, routeLineCount, shouldReplaceExpiredFeed, shouldSkipAllExpiredFeeds, shouldStampFeedMeta, stampFeedMeta, stampReprocessedFeedExpiry, stampSupplementalFeedMeta } from '../refreshMeta.js';
+import { decideRefreshSkipUnchanged, feedFileDate, lowerStoredFeedExpiry, isFeedExpired, markFeedStale, recordedFeedExpiry, routeLineCount, shouldReplaceExpiredFeed, shouldSkipAllExpiredFeeds, shouldStampFeedMeta, stampFeedMeta, stampReprocessedFeedExpiry, stampSupplementalFeedMeta } from '../refreshMeta.js';
 import { isCurrentProductionFeed, isStaleProductionFeed } from '../../shared/feedAvailability.js';
 
 describe('feed expiry checks', () => {
@@ -274,8 +274,15 @@ describe('decideRefreshSkipUnchanged with a run-date reference (#774)', () => {
   it('skips an unchanged feed by default', () => {
     expect(decideRefreshSkipUnchanged(same).skip).toBe(true);
   });
-  it('never skips an agency read as of the run date', () => {
+  it('never skips an agency read as of the run date on the old picker (no service-week key)', () => {
     expect(decideRefreshSkipUnchanged({ ...same, referenceDateFromRunDate: true }).skip).toBe(false);
+  });
+  // CIV-1101: on the one service-day model the run-date agencies follow the service-week key.
+  it('reprocesses a run-date agency when its picked week moved', () => {
+    expect(decideRefreshSkipUnchanged({ ...same, referenceDateFromRunDate: true, serviceWeek: 'b', lastServiceWeek: 'a' }).skip).toBe(false);
+  });
+  it('skips a run-date agency whose picked week did not move', () => {
+    expect(decideRefreshSkipUnchanged({ ...same, referenceDateFromRunDate: true, serviceWeek: 'a', lastServiceWeek: 'a' }).skip).toBe(true);
   });
 });
 
@@ -393,5 +400,18 @@ describe('lowerStoredFeedExpiry: an unchanged feed gets today\'s expiry rule (CI
     const agency = { lastFeedExpiry: '20261231' };
     expect(lowerStoredFeedExpiry(agency, { feedInfoEnd: '20261231', calendarEnd: '20261126', calendarOnlyEnd: '20261126', todayYmd: today })).toBe('20261231');
     expect(agency.lastFeedExpiry).toBe('20261126');
+  });
+});
+
+describe('feedFileDate (#1253)', () => {
+  it('a new file is obtained on the run date', () => {
+    expect(feedFileDate({ newFile: true, runDate: '20261102', feedObtainedAt: '20260101', zipDate: '20260421' })).toBe('20261102');
+  });
+  it('an unchanged file keeps its recorded date', () => {
+    expect(feedFileDate({ newFile: false, runDate: '20261102', feedObtainedAt: '20260915', zipDate: '20260421' })).toBe('20260915');
+  });
+  it('with no recorded date it takes the zip\'s own date, never the last refresh (Miami: April file, refreshed Sep 17)', () => {
+    expect(feedFileDate({ newFile: false, runDate: '20261102', feedObtainedAt: null, zipDate: '20260421' })).toBe('20260421');
+    expect(feedFileDate({ newFile: false, runDate: '20261102', feedObtainedAt: undefined, zipDate: null })).toBeNull();
   });
 });

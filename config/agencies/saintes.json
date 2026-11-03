@@ -1,6 +1,7 @@
 {
   "slug": "saintes",
-  "name": "Buséau (Saintes)",
+  "officialName": "Buséau",
+  "nameQualifier": "Saintes",
   "websiteUrl": "https://www.buss-saintes.com/",
   "region": "Nouvelle-Aquitaine",
   "center": [

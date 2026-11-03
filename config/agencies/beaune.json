@@ -1,6 +1,7 @@
 {
   "slug": "beaune",
-  "name": "Côte&Bus (Beaune)",
+  "officialName": "Côte&Bus",
+  "nameQualifier": "Beaune",
   "websiteUrl": "https://www.coteetbus.fr",
   "region": "Bourgogne-Franche-Comté",
   "center": [

@@ -1,6 +1,7 @@
 {
   "slug": "angers",
-  "name": "Irigo (Angers)",
+  "officialName": "Irigo",
+  "nameQualifier": "Angers",
   "region": "Pays de la Loire",
   "center": [
     47.4784,

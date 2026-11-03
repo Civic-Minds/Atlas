@@ -1,6 +1,6 @@
 {
   "slug": "kart",
-  "name": "Kings Area Rural Transit",
+  "officialName": "Kings Area Rural Transit",
   "websiteUrl": "http://mykartbus.com/",
   "center": [
     36.33,
@@ -10,31 +10,41 @@
   "region": "California",
   "lastFeedExpiry": "20271231",
   "lastFeedVersion": "20260901",
-  "lastRefreshedAt": "2026-09-07",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Hanford, California"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271231",
   "feedQuality": {
-    "status": "review",
-    "score": 70,
-    "reasons": [
-      "4 map lines were repaired — Atlas fixed unusual route geometry before displaying it."
-    ],
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
-      "shapeAnomalies": 4,
+      "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 27
+      "featureCount": 32,
+      "feedExpiry": "20271231",
+      "routeCount": 17,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-09-07"
+    "checkedAt": "2026-11-03"
   },
   "timezone": "America/Los_Angeles",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2204/latest.zip",
-  "lastPeekedExpiry": "20271231"
+  "lastPeekedExpiry": "20271231",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "b02e76e4f1c28cd6",
+  "feedObtainedAt": "20260901"
 }

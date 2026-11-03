@@ -1,6 +1,6 @@
 {
   "slug": "anchorage",
-  "name": "Anchorage People Mover",
+  "officialName": "Anchorage People Mover",
   "websiteUrl": "http://www.muni.org/Departments/transit/PeopleMover/Pages/default.aspx",
   "center": [
     61.22,
@@ -15,7 +15,7 @@
   "cities": [
     "Anchorage, Alaska"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270425",

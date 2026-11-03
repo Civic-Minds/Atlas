@@ -31,15 +31,6 @@ describe('stepFor', () => {
   });
 });
 
-describe('shortStopName', () => {
-  it('keeps the cross street, or the station or loop name', () => {
-    expect(shortStopName('Spadina Ave at Queen St West South Side')).toBe('Queen St West');
-    expect(shortStopName('Broadview Station at Bay 6')).toBe('Broadview Station');
-    expect(shortStopName('Spadina Station Streetcar Platform')).toBe('Spadina Station');
-    expect(shortStopName('Queens Quay Loop at Lower Spadina Ave')).toBe('Queens Quay Loop');
-  });
-});
-
 describe('pickLabels', () => {
   const layout = (n: number, width: number) => {
     const xs = Array.from({ length: n }, (_, i) => 10 + (i * (width - 20)) / (n - 1));

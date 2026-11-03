@@ -1,6 +1,7 @@
 {
   "slug": "moulins",
-  "name": "Aléo (Moulins)",
+  "officialName": "Aléo",
+  "nameQualifier": "Moulins",
   "region": "Auvergne-Rhône-Alpes",
   "center": [
     46.5646,

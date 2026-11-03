@@ -1,6 +1,7 @@
 {
   "slug": "douai",
-  "name": "Évasion (Douai)",
+  "officialName": "Évasion",
+  "nameQualifier": "Douai",
   "region": "Hauts-de-France",
   "center": [
     50.3678,

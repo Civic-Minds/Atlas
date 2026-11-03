@@ -1,6 +1,7 @@
 {
   "slug": "bay-metro",
-  "name": "Bay Metro (Bay City)",
+  "officialName": "Bay Metro",
+  "nameQualifier": "Bay City",
   "websiteUrl": "https://www.baymetro.com",
   "center": [
     43.5945,
@@ -17,7 +18,7 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-50029/latest.zip",
   "lastFeedExpiry": "20270227",
   "lastFeedVersion": "20240313",
-  "lastRefreshedAt": "2026-08-18",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Bay City, Michigan",
     "Essexville, Michigan",
@@ -28,23 +29,35 @@
     "status": "review",
     "score": 90,
     "reasons": [
-      "1 validation warning."
+      "1 minor schedule issue found while reading the feed."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 1,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 23
+      "featureCount": 23,
+      "feedExpiry": "20270227",
+      "routeCount": 10,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-08-18"
+    "checkedAt": "2026-11-03"
   },
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270227",
   "timezone": "America/New_York",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/11684/BMTA_GTFS.zip",
-  "lastPeekedExpiry": "20270227"
+  "lastPeekedExpiry": "20270227",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "3fb34bdf94c919e7",
+  "feedObtainedAt": "20240329"
 }

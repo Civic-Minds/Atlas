@@ -1,6 +1,7 @@
 {
   "slug": "port-huron",
-  "name": "Blue Water Area Transit (Port Huron)",
+  "officialName": "Blue Water Area Transit",
+  "nameQualifier": "Port Huron",
   "displayArea": "Port Huron",
   "websiteUrl": "https://bwbus.com",
   "center": [
@@ -12,16 +13,41 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-7035/latest.zip",
   "lastFeedExpiry": "20261231",
   "lastFeedVersion": "Updated: Jun 2, 2026, 11:45 AM",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Sarnia, Ontario"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261231",
   "timezone": "America/Detroit",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://gtfs.remix.com/bwat_porthuron_mi_us.zip",
-  "lastPeekedExpiry": "20261231"
+  "lastPeekedExpiry": "20261231",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 38,
+      "feedExpiry": "20261231",
+      "routeCount": 12,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
+    },
+    "checkedAt": "2026-11-03"
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "2c018d3fac4dc69f",
+  "feedObtainedAt": "20260602"
 }

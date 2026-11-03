@@ -1,6 +1,7 @@
 {
   "slug": "tor",
-  "name": "Transport of Rockland (TOR)",
+  "officialName": "Transport of Rockland",
+  "commonName": "TOR",
   "displayArea": "Rockland County",
   "region": "New York",
   "center": [
@@ -22,12 +23,39 @@
     "Greenburgh, New York",
     "Paterson, New Jersey"
   ],
-  "lastFeedCheckAt": "20261019",
-  "expiredFeedCheckCount": 0,
-  "expiredFeedCheckSince": null,
+  "lastFeedCheckAt": "20261102",
+  "expiredFeedCheckCount": 1,
+  "expiredFeedCheckSince": "20260622",
   "expiredFeedCheckExpiry": "20261031",
   "timezone": "America/New_York",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://s3.amazonaws.com/datatools-511ny/public/TOR_Transport_of_Rockland.zip",
-  "lastPeekedExpiry": "20261031"
+  "lastPeekedExpiry": "20261031",
+  "feedQuality": {
+    "status": "degraded",
+    "score": 55,
+    "reasons": [
+      "1 minor schedule issue found while reading the feed.",
+      "The schedule dates in this feed have passed."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 1,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 59,
+      "feedExpiry": "20261031",
+      "routeCount": 11,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
+    },
+    "checkedAt": "2026-10-31",
+    "scoredAt": "2026-11-02"
+  },
+  "feedRefreshStatus": "stale",
+  "feedRefreshError": "all available feeds expired (latest 20261031)",
+  "feedRefreshErrorAt": "20261102",
+  "feedRefreshRetryCount": 1
 }

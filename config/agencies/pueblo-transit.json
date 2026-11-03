@@ -1,6 +1,6 @@
 {
   "slug": "pueblo-transit",
-  "name": "Pueblo Transit",
+  "officialName": "Pueblo Transit",
   "websiteUrl": "https://www.pueblo.us/492/Bus-Schedules",
   "center": [
     38.25,
@@ -10,16 +10,41 @@
   "region": "Colorado",
   "lastFeedExpiry": "20270301",
   "lastFeedVersion": "UTC: 24-Apr-2026 17:32",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Pueblo, Colorado"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270301",
   "timezone": "America/Denver",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2232/latest.zip",
-  "lastPeekedExpiry": "20270301"
+  "lastPeekedExpiry": "20270301",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 47,
+      "feedExpiry": "20270301",
+      "routeCount": 13,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
+    },
+    "checkedAt": "2026-11-03"
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "e659fcb8b0b463e4",
+  "feedObtainedAt": "20260424"
 }

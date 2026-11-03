@@ -1,6 +1,6 @@
 {
   "slug": "camtran",
-  "name": "CamTran",
+  "officialName": "CamTran",
   "region": "Pennsylvania",
   "center": [
     40.3267,
@@ -12,30 +12,39 @@
     "Johnstown, Pennsylvania"
   ],
   "feedQuality": {
-    "status": "review",
-    "score": 60,
-    "reasons": [
-      "13 shape corrections needed.",
-      "1 route frequency metric need review."
-    ],
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
-      "shapeAnomalies": 13,
-      "routeHeadwayMismatches": 1,
-      "featureCount": 87
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 96,
+      "feedExpiry": "20290131",
+      "routeCount": 22,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-08-21"
+    "checkedAt": "2026-11-03"
   },
   "lastFeedExpiry": "20290131",
   "lastFeedVersion": "20260716",
-  "lastRefreshedAt": "2026-08-21",
-  "lastFeedCheckAt": "20261019",
+  "lastRefreshedAt": "2026-11-02",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20290131",
   "timezone": "America/New_York",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://live.camtranbus.com/InfoPoint/gtfs-zip.ashx",
-  "lastPeekedExpiry": "20290131"
+  "lastPeekedExpiry": "20290131",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "83cac6e15717a52e",
+  "feedObtainedAt": "20260716"
 }

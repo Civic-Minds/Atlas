@@ -1,6 +1,6 @@
 {
   "slug": "chatham-kent",
-  "name": "Ride CK",
+  "officialName": "Ride CK",
   "region": "Ontario",
   "center": [
     42.4048,
@@ -12,24 +12,28 @@
     "Chatham-Kent, Ontario"
   ],
   "feedQuality": {
-    "status": "review",
-    "score": 80,
-    "reasons": [
-      "2 route shapes needed adjustment before display."
-    ],
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
-      "shapeAnomalies": 2,
+      "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 20
+      "featureCount": 20,
+      "feedExpiry": "20271231",
+      "routeCount": 8,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-12"
+    "checkedAt": "2026-11-03"
   },
   "lastFeedExpiry": "20271231",
-  "lastFeedVersion": "297",
-  "lastRefreshedAt": "2026-10-12",
-  "lastFeedCheckAt": "20261019",
+  "lastFeedVersion": "298",
+  "lastRefreshedAt": "2026-11-02",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271231",
@@ -40,5 +44,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/tld-5552/latest.zip",
-  "lastPeekedExpiry": "20271231"
+  "lastPeekedExpiry": "20271231",
+  "lastServiceWeek": "132840bd0106c4bc",
+  "feedObtainedAt": "20261102"
 }

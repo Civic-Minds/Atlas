@@ -4,7 +4,7 @@
  * - No row shows a number when its headsign runs fewer than 3 times itself in the period, unless the row reads its
  *   stretch (a main or tail slot, whose value is every trip of the stretch, CIV-939).
  * - No row shows a plain number beside a longest gap of half the period or more and at least twice the number: such a
- *   period reads its late start, early end or one gap in words (partPeriod), or no regular service.
+ *   period reads its late start, early end or one gap in words (partPeriod), or no regular cadence.
  * Today's cases are pinned in the snapshot (pipeline follow-ups); a new one changes it.
  */
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
@@ -88,6 +88,8 @@ describe('card rows read their value, gap and words from the same trips, across 
         for (const period of PERIOD_KEYS) {
           const contract = routeContract(directions, period);
           const noRegularService = contract != null && contract.filterValue == null && contract.runs;
+          // The card shows no rows for a period the route does not run in (RouteCardHeadway's doesNotRun).
+          if (contract != null && contract.filterValue == null && !contract.runs) continue;
           for (const group of buildDirectionGroups({ directions }, period)) {
             for (const p of group.realTier) {
               const shown = routeCardRowValue(p, { period, hoveredHour: null, stretchMode, contract, noRegularService, maxHeadway: Infinity });

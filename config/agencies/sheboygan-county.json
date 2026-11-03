@@ -1,6 +1,6 @@
 {
   "slug": "sheboygan-county",
-  "name": "Shoreline Metro",
+  "officialName": "Shoreline Metro",
   "websiteUrl": "http://www.shorelinemetro.com/",
   "center": [
     43.74,
@@ -22,27 +22,39 @@
   "timezone": "America/Chicago",
   "lastFeedExpiry": "20271231",
   "lastFeedVersion": "UTC: 05-Feb-2026 10:06",
-  "lastRefreshedAt": "2026-09-08",
+  "lastRefreshedAt": "2026-11-02",
   "feedQuality": {
     "status": "review",
     "score": 90,
     "reasons": [
-      "1 schedule-data warning — Atlas found a minor issue while reading the schedule."
+      "1 minor schedule issue found while reading the feed."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 1,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 18
+      "featureCount": 18,
+      "feedExpiry": "20271231",
+      "routeCount": 9,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-09-08"
+    "checkedAt": "2026-11-03"
   },
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271231",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "http://data.trilliumtransit.com/gtfs/sheboygan-wi-us/sheboygan-wi-us.zip",
-  "lastPeekedExpiry": "20271231"
+  "lastPeekedExpiry": "20271231",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "1590d353a04848e1",
+  "feedObtainedAt": "20260205"
 }

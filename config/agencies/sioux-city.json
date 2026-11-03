@@ -1,6 +1,6 @@
 {
   "slug": "sioux-city",
-  "name": "Sioux City Transit",
+  "officialName": "Sioux City Transit",
   "websiteUrl": "https://www.sioux-city.org/732/Transit",
   "region": "Iowa",
   "center": [
@@ -17,16 +17,43 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-191/latest.zip",
   "lastFeedExpiry": "20270101",
   "lastFeedVersion": "UTC: 09-Jun-2026 21:02",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Sioux City, Iowa"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270101",
   "timezone": "America/Chicago",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-191/latest.zip",
-  "lastPeekedExpiry": "20270101"
+  "lastPeekedExpiry": "20270101",
+  "feedQuality": {
+    "status": "review",
+    "score": 90,
+    "reasons": [
+      "1 minor schedule issue found while reading the feed."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 1,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 44,
+      "feedExpiry": "20270101",
+      "routeCount": 11,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
+    },
+    "checkedAt": "2026-11-03"
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "42c4350760707762",
+  "feedObtainedAt": "20260609"
 }

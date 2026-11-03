@@ -1,6 +1,6 @@
 {
   "slug": "eco-transit",
-  "name": "Core Transit",
+  "officialName": "Core Transit",
   "center": [
     39.64,
     -106.93
@@ -10,13 +10,38 @@
   "region": "Colorado",
   "lastFeedExpiry": "20261121",
   "lastFeedVersion": "S1000093",
-  "lastRefreshedAt": "2026-08-07",
-  "lastFeedCheckAt": "20261019",
+  "lastRefreshedAt": "2026-11-02",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261121",
   "timezone": "America/Denver",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://evta.org/gtfs.zip",
-  "lastPeekedExpiry": "20261121"
+  "lastPeekedExpiry": "20261121",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 45,
+      "feedExpiry": "20261121",
+      "routeCount": 4,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
+    },
+    "checkedAt": "2026-11-03"
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "f84c82af76e2c786",
+  "feedObtainedAt": "20260416"
 }

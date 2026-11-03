@@ -1,17 +1,89 @@
 {
   "slug": "metrostlouis",
-  "name": "Metro St. Louis",
+  "officialName": "Metro St. Louis",
   "websiteUrl": "http://www.metrostlouis.org",
   "center": [
     38.651,
     -90.2899
   ],
   "feedUrl": "https://www.metrostlouis.org/Transit/google_transit.zip",
+  "sameNameRoutes": [
+    {
+      "shortName": "1",
+      "longName": "Gold",
+      "name": "1 Gold"
+    },
+    {
+      "shortName": "1",
+      "longName": "Main Street - State Street",
+      "name": "1 Main Street - State Street"
+    },
+    {
+      "shortName": "2",
+      "longName": "Red",
+      "name": "2 Red"
+    },
+    {
+      "shortName": "2",
+      "longName": "Cahokia Heights",
+      "name": "2 Cahokia Heights"
+    },
+    {
+      "shortName": "4",
+      "longName": "Natural Bridge",
+      "name": "4 Natural Bridge"
+    },
+    {
+      "shortName": "4",
+      "longName": "19th & Central",
+      "name": "4 19th & Central"
+    },
+    {
+      "shortName": "8",
+      "longName": "Shaw-Cherokee",
+      "name": "8 Shaw-Cherokee"
+    },
+    {
+      "shortName": "8",
+      "longName": "Alta Sita",
+      "name": "8 Alta Sita"
+    },
+    {
+      "shortName": "9",
+      "longName": "Oakville",
+      "name": "9 Oakville"
+    },
+    {
+      "shortName": "9",
+      "longName": "Washington Park",
+      "name": "9 Washington Park"
+    },
+    {
+      "shortName": "13",
+      "longName": "Union",
+      "name": "13 Union"
+    },
+    {
+      "shortName": "13",
+      "longName": "Caseyville",
+      "name": "13 Caseyville"
+    },
+    {
+      "shortName": "16",
+      "longName": "City Limits",
+      "name": "16 City Limits"
+    },
+    {
+      "shortName": "16",
+      "longName": "St. Clair Square",
+      "name": "16 St. Clair Square"
+    }
+  ],
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-190/latest.zip",
   "lastFeedExpiry": "20261129",
   "lastFeedVersion": null,
   "region": "Missouri",
-  "lastRefreshedAt": "2026-10-12",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "St. Louis, Missouri",
     "Florissant, Missouri",
@@ -20,7 +92,7 @@
   ],
   "timezone": "America/Chicago",
   "lastRawArchiveKey": "20261025-4c0fd0987c705d50",
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261129",
@@ -39,9 +111,15 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 425
+      "featureCount": 426,
+      "feedExpiry": "20261129",
+      "routeCount": 59,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-12"
+    "checkedAt": "2026-11-03"
   },
   "modeOverrides": [
     {
@@ -57,5 +135,7 @@
       "reason": "MetroLink is light rail, published as route_type 2 (commuter rail)"
     }
   ],
-  "lastPeekedExpiry": "20261129"
+  "lastPeekedExpiry": "20261129",
+  "lastServiceWeek": "7bc6830cab726c26",
+  "feedObtainedAt": "20261102"
 }

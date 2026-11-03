@@ -1,6 +1,6 @@
 {
   "slug": "sherbrooke",
-  "name": "Société de transport de Sherbrooke",
+  "officialName": "Société de transport de Sherbrooke",
   "websiteUrl": "http://www.sts.qc.ca/",
   "center": [
     45.398,
@@ -17,16 +17,41 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-1996/latest.zip",
   "lastFeedExpiry": "20261220",
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-08-10",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Sherbrooke, Quebec"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261220",
   "timezone": "America/Toronto",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://gtfs.sts.qc.ca:8443/gtfs/client/GTFS_clients.zip",
-  "lastPeekedExpiry": "20261220"
+  "lastPeekedExpiry": "20261220",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 1,
+      "featureCount": 260,
+      "feedExpiry": "20261220",
+      "routeCount": 58,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
+    },
+    "checkedAt": "2026-11-03"
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "4a7275450603d31e",
+  "feedObtainedAt": "20260805"
 }

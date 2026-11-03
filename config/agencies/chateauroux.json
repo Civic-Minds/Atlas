@@ -1,6 +1,7 @@
 {
   "slug": "chateauroux",
-  "name": "Horizon (Châteauroux)",
+  "officialName": "Horizon",
+  "nameQualifier": "Châteauroux",
   "region": "Centre-Val de Loire",
   "center": [
     46.8096,

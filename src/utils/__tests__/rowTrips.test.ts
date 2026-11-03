@@ -19,10 +19,54 @@ describe('rowTrips (CIV-1069): a row reads its value, gap and part-period words 
 
   it('a stretch row pairs its value with the stretch\'s gap, from the same pooled departures (Sun Metro 205)', () => {
     const main = row({
-      stretchRole: 'main', stretchIndex: 0, headwayByPeriod: { midday: 15 }, maxGapByPeriod: { midday: 315 },
+      stretchRole: 'main', stretchIndex: 0, headwayByPeriod: { midday: 18 }, maxGapByPeriod: { midday: 315 },
       stretchMeta: { main: { stops: 13, refStop: 's', trips: 58, period: { midday: 18 }, maxGap: { midday: 20 } }, tails: [] },
     });
-    expect(rowTrips(main, 'midday')).toMatchObject({ value: 15, longestGap: 20 });
+    expect(rowTrips(main, 'midday')).toMatchObject({ value: 18, longestGap: 20 });
+  });
+
+  it('a row faster than its stretch keeps its own gap (NYCT R late: 13 beside the stretch\'s 165, CIV-1074 2c)', () => {
+    const r = row({
+      stretchRole: 'main', stretchIndex: 0, headwayByPeriod: { late: 13 }, maxGapByPeriod: { late: 15 },
+      stretchMeta: { main: { stops: 40, refStop: 's', trips: 90, period: { late: 20 }, maxGap: { late: 165 } }, tails: [] },
+    });
+    expect(rowTrips(r, 'late')).toMatchObject({ value: 13, longestGap: 15 });
+  });
+
+  it('a period that is not steady, off a stretch, reads its full-window wait, not the median (CIV-1074 2a)', () => {
+    const r = row({ headwayByPeriod: { midday: 13 }, headwayByPeriodSustained: { midday: false }, periodCoverageHeadway: { midday: 256 }, maxGapByPeriod: { midday: 256 } });
+    expect(rowTrips(r, 'midday')).toMatchObject({ value: 256, longestGap: 256 });
+    expect(rowTrips({ ...r, headwayByPeriodSustained: { midday: true } } as ShapeProperties, 'midday').value).toBe(13);
+  });
+
+  it('a row unsteady on its own trips reads its stretch where the stretch runs regularly (CTA 9 Ashland & 95th midday, CIV-1074 2a)', () => {
+    // GTFS: the headsign's own 8 midday trips start at 13:04; every bus on 74th-95th comes every 10 (the stretch's 177 trips).
+    const main = row({
+      stretchRole: 'main', stretchIndex: 0, headwayByPeriod: { midday: 13 }, headwayByPeriodSustained: { midday: false },
+      periodCoverageHeadway: { midday: 256 }, maxGapByPeriod: { midday: 256 },
+      stretchMeta: {
+        main: { stops: 15, refStop: '6118', trips: 177, period: { midday: 10 }, maxGap: { midday: 10 }, noRegular: [] },
+        tails: [{ refStop: '6049', stops: 70, km: 9, trips: 131, period: { midday: 10 }, noRegular: [] }],
+      },
+    });
+    expect(rowTrips(main, 'midday')).toMatchObject({ value: 10, longestGap: 10 });
+    // A stretch with no regular cadence in the period leaves the row its own full-window wait.
+    const noRegular = { ...main, stretchMeta: { ...main.stretchMeta!, main: { ...main.stretchMeta!.main!, noRegular: ['midday'] } } } as ShapeProperties;
+    expect(rowTrips(noRegular, 'midday')).toMatchObject({ value: 256, longestGap: 256 });
+  });
+
+  it('a short burst never takes the shared stretch\'s number when the rest of the stretch runs less often (SEPTA 66 PM, CIV-1074)', () => {
+    // GTFS: 7 Express trips 16:48-18:19 (gaps 12-24) on a stretch with locals every 12; pooled, the stretch reads 6. The card's
+    // "Shared stretch every 6" row says that; the Express row keeps its own 12 and its own gap.
+    const express = row({
+      stretchRole: 'main', stretchIndex: 0, headwayByPeriod: { pmPeak: 12 }, headwayByPeriodSustained: { pmPeak: false },
+      periodCoverageHeadway: { pmPeak: 131 }, maxGapByPeriod: { pmPeak: 131 },
+      stretchMeta: {
+        main: { stops: 35, refStop: '21937', trips: 136, period: { pmPeak: 6 }, maxGap: { pmPeak: 12 }, noRegular: [] },
+        tails: [{ refStop: '21910', stops: 12, km: 4, trips: 86, period: { pmPeak: 12 }, noRegular: [] }],
+      },
+    });
+    expect(rowTrips(express, 'pmPeak')).toMatchObject({ value: 12, longestGap: 131 });
   });
 
   it('a row slower than its stretch reads one branch of it and keeps its own gap (Phoenix 35: 30 on a shared 15)', () => {
@@ -43,5 +87,74 @@ describe('rowTrips (CIV-1069): a row reads its value, gap and part-period words 
 
   it('a row without stretch data reads its own value and its own gap', () => {
     expect(rowTrips(row({ headwayByPeriod: { pmPeak: 12 }, maxGapByPeriod: { pmPeak: 14 } }), 'pmPeak')).toMatchObject({ value: 12, longestGap: 14, noOwnService: false });
+  });
+
+  describe('#1239: a main stretch\'s row reads the number at the filter\'s stop', () => {
+    // AC Transit 281 AM to NewPark Mall: one destination, steady every 63 at the stretch's stop, one 66 min gap sets the filter.
+    const main = (over: Partial<ShapeProperties> = {}) => row({
+      stretchRole: 'main', stretchIndex: 0, headwayByPeriod: { amPeak: 60 }, maxGapByPeriod: { amPeak: 66 },
+      departuresByHour: { 6: 1, 7: 1, 8: 1, 9: 1 }, stretchPeriodHeadway: { amPeak: 63 }, stretchPeriodSustained: { amPeak: true },
+      directionFilterHeadwayByPeriod: { amPeak: 66 },
+      stretchMeta: { main: { stops: 30, refStop: 's', trips: 4, period: { amPeak: 66 }, maxGap: { amPeak: 66 } }, tails: [] },
+      ...over,
+    });
+
+    it('the filter\'s own value, with no gap words under 1.5 times the spacing (281: every 66, the number the filter reads)', () => {
+      expect(rowTrips(main(), 'amPeak')).toMatchObject({ value: 66, partPeriod: undefined });
+    });
+
+    it('a gap at exactly 1.5 times the spacing goes into the words; just under it, the row reads the filter\'s value', () => {
+      const at = (gap: number) => main({ stretchPeriodHeadway: { amPeak: 44 }, directionFilterHeadwayByPeriod: { amPeak: gap }, stretchMeta: { main: { stops: 30, refStop: 's', trips: 4, period: { amPeak: gap }, maxGap: { amPeak: gap } }, tails: [] } });
+      const exact = rowTrips(at(66), 'amPeak');
+      expect(exact.value).toBe(44);
+      expect(exact.partPeriod).toContain('66 min gap');
+      expect(rowTrips(at(65), 'amPeak')).toMatchObject({ value: 65, partPeriod: undefined });
+    });
+
+    it('a gap at least 1.5 times the spacing goes into the words', () => {
+      const r = main({ stretchPeriodHeadway: { amPeak: 42 }, directionFilterHeadwayByPeriod: { amPeak: 65 }, stretchMeta: { main: { stops: 30, refStop: 's', trips: 4, period: { amPeak: 65 }, maxGap: { amPeak: 65 } }, tails: [] } });
+      const trips = rowTrips(r, 'amPeak');
+      expect(trips.value).toBe(42);
+      expect(trips.partPeriod).toContain('65 min gap');
+    });
+
+    it('the direction\'s filter value, not the stretch\'s pooled one (AC Transit 40 AM: 20 at the filter, the stretch 11)', () => {
+      const r = main({ stretchPeriodHeadway: { amPeak: 20 }, directionFilterHeadwayByPeriod: { amPeak: 20 }, stretchMeta: { main: { stops: 30, refStop: 's', trips: 4, period: { amPeak: 11 }, maxGap: { amPeak: 14 } }, tails: [] } });
+      expect(rowTrips(r, 'amPeak').value).toBe(20);
+    });
+
+    it('a full-period wait no gap explains reads the stretch\'s spacing, never a bare number (AC Transit 22 Sunday midday: 30, not 168, #1268)', () => {
+      const r = main({ stretchPeriodHeadway: { amPeak: 30 }, directionFilterHeadwayByPeriod: { amPeak: 168 }, stretchMeta: { main: { stops: 30, refStop: 's', trips: 4, period: { amPeak: 30 }, maxGap: { amPeak: 32 } }, tails: [] } });
+      expect(rowTrips(r, 'amPeak')).toMatchObject({ value: 30, partPeriod: undefined });
+    });
+
+    it('the same row reads the branch\'s edge where the data has it (CIV-1241: every 30 until 9:18 PM, on data without the edge\'s stretch)', () => {
+      const r = main({ stretchPeriodHeadway: { amPeak: 30 }, directionFilterHeadwayByPeriod: { amPeak: 168 }, stretchPeriodEdge: { amPeak: { until: 1278, every: 30 } }, stretchMeta: { main: { stops: 30, refStop: 's', trips: 4, period: { amPeak: 30 }, maxGap: { amPeak: 32 } }, tails: [] } });
+      expect(rowTrips(r, 'amPeak').partPeriod).toBe('every 30 min until 9:18 PM');
+    });
+
+    it('an edge goes only on the rows that cover its stretch (#1276)', () => {
+      const edge = { amPeak: { until: 1075, every: 30, stretch: 3 as const } };
+      // TTC 110 weekday PM: the branch via 30th Street covers tail 3; the other branch rows and the main row do not.
+      const via30th = row({ stretchRole: 'tail', stretchIndex: 1, stretchCovers: ['main', 1, 3], stretchPeriodEdge: edge, headwayByPeriod: { amPeak: 30 } });
+      const islington = row({ stretchRole: 'tail', stretchIndex: 2, stretchCovers: ['main', 2], stretchPeriodEdge: edge, headwayByPeriod: { amPeak: 15 } });
+      expect(rowTrips(via30th, 'amPeak').partPeriod).toBe('every 30 min until 5:55 PM');
+      expect(rowTrips(islington, 'amPeak').partPeriod).toBeUndefined();
+      // AC Transit 22 Sunday midday: the edge is a branch no drawn row covers, so the main row keeps "every 30" with no end time.
+      const ac22 = main({ stretchPeriodHeadway: { amPeak: 30 }, directionFilterHeadwayByPeriod: { amPeak: 168 }, stretchCovers: ['main'], stretchPeriodEdge: { amPeak: { until: 732, every: 30, stretch: 0 } }, stretchMeta: { main: { stops: 30, refStop: 's', trips: 4, period: { amPeak: 30 }, maxGap: { amPeak: 32 } }, tails: [] } });
+      expect(rowTrips(ac22, 'amPeak')).toMatchObject({ value: 30, partPeriod: undefined });
+      // A variant covers nothing.
+      expect(rowTrips(row({ stretchRole: 'variant', stretchPeriodEdge: { amPeak: { until: 732, every: 30, stretch: 'main' } } }), 'amPeak').partPeriod).toBeUndefined();
+    });
+
+    it('a row whose trips are only some of the stretch\'s keeps its own (SEPTA 19 Saturday midday: 120 on a stretch every 63)', () => {
+      const r = main({ headwayByPeriod: { amPeak: 120 }, stretchPeriodHeadway: { amPeak: 63 }, stretchMeta: { main: { stops: 30, refStop: 's', trips: 8, period: { amPeak: 63 }, maxGap: { amPeak: 66 } }, tails: [] } });
+      expect(rowTrips(r, 'amPeak').value).toBe(120);
+    });
+
+    it('a late start or early end keeps its own reading (A2), and the pooling reads the row\'s own trips', () => {
+      expect(rowTrips(main({ stretchPeriodEdge: { amPeak: { from: 480, every: 63 } } }), 'amPeak').value).toBe(60);
+      expect(rowTrips(main(), 'amPeak', { ownTrips: true }).value).toBe(60);
+    });
   });
 });

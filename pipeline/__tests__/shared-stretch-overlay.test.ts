@@ -145,10 +145,9 @@ describe('failing routes draw only their passing shared stretches', () => {
   // already counts every trip. The single-pattern direction draws along the paired stops too.
   // Cut from the 2026-10 feeds: one weekday, trips starting 7 AM to noon, every stop, so the
   // all-day value (the midday median) is the one these fixtures can judge.
-  // Rail stays one row per headsign (converging origins are labelled on surface routes only).
+  // A rail direction with one pattern stays one row.
   for (const [fixture, slug, single, branches, max] of [
     ['nyct-b-subway', 'nyct-subway', 'Brighton Beach', ['Park Blvd', '145 St'], 15],
-    ['cta-green-line', 'cta', 'Harlem-Green', ['East 63rd-Cottage Grove', 'Ashland/63rd'], 15],
   ] as const) {
     it(`${slug} ${single}: the single-pattern direction draws where both directions pass`, async () => {
       const fc = weekday(await processed(fixture, slug));
@@ -173,6 +172,30 @@ describe('failing routes draw only their passing shared stretches', () => {
       expect(failingRouteSharedRanges(bare.features, bare.features, 'all', max)).toEqual([]);
     });
   }
+});
+
+// CIV-1152: CTA Green's Harlem-bound trips start on two branches, Ashland/63rd and East 63rd-Cottage Grove, and run
+// one trunk under one headsign. Like a bus's converging origins, each origin draws its own row at its own frequency,
+// and the trunk is a shared stretch at the combined one, as the southbound branches already were.
+describe('rail converging origins (CIV-1152, CTA Green Harlem-bound)', () => {
+  it('draws one row per origin at its own frequency, and the trunk as a shared stretch', async () => {
+    const routes = lineProps(weekday(await processed('cta-green-line', 'cta')));
+    const north = routes.filter(p => p.headsign === 'Harlem-Green');
+    expect(north.map(p => p.routeVariant).sort()).toEqual(['from Ashland/63rd', 'from East 63rd-Cottage Grove']);
+    for (const row of north) {
+      // Each branch runs every 20 midday (every 17 in the AM peak), never the trunk's every 10.
+      expect(row.headway).toBe(20);
+      expect(row.headwayByPeriod.amPeak).toBe(17);
+      const values = (row.stopOrder as string[]).map(id => row.stopHeadways[id]);
+      expect(values.slice(0, 4)).toEqual([20, 20, 20, 20]);
+      expect(new Set(values.slice(4))).toEqual(new Set([10]));
+      expect(row.sharedStretches).toHaveLength(1);
+      expect(row.sharedStretches[0]).toMatchObject({ from: 4, to: values.length - 1 });
+    }
+    // Southbound already drew its two branches with a shared stretch: unchanged.
+    const south = routes.filter(p => p.directionId === 0 || p.directionId === '0');
+    expect(south.map(p => [p.headsign, p.headway])).toEqual(expect.arrayContaining([['East 63rd-Cottage Grove', 20], ['Ashland/63rd', 20]]));
+  });
 });
 
 /**

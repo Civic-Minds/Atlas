@@ -1,29 +1,25 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import { ArrowDown, ArrowRight, MapPinned } from 'lucide-react';
 import { trackEvent } from '../lib/analytics';
-import DataTable, { type DataTableColumn } from '../components/ui/DataTable';
+import { headwayEveryRange } from '../utils/headwayText';
+import { type DataTableColumn } from '../components/ui/DataTable';
 import ChartTableDetails from '../components/charts/ChartTableDetails';
 import RankedBars from '../components/charts/RankedBars';
 import ResearchMethod from '../components/research/ResearchMethod';
-import { frequentServiceCoverageInterpretation, frequentServiceCoverageStats, frequentServiceStoryResearchRecord, frequentServiceStoryStats } from '../data/frequentServiceStory';
+import ResearchHeader from '../components/research/ResearchHeader';
+import { frequentServiceDefinitionSample, frequentServiceStoryResearchRecord, frequentServiceStoryStats } from '../data/frequentServiceStory';
 import FrequentServicePublishedMapMontage from '../components/FrequentServicePublishedMapMontage';
 import FrequentServiceStoryMap from '../components/FrequentServiceStoryMap';
 import PageShell from '../components/ui/PageShell';
+import { UNDERLINED_LINK } from '../pageStyles';
 import type { Agency } from '../App';
-import { headwayAmount } from '../../shared/headwayText';
+import { headwayAmount, headwayOrBetter } from '../../shared/headwayText';
+import { hourTime } from '../../shared/timeText';
 
 interface Props {
   onExploreMap: () => void;
   agencies: Agency[];
 }
-
-type CoverageRow = (typeof frequentServiceCoverageStats)[number];
-const COVERAGE_COLUMNS: DataTableColumn<CoverageRow>[] = [
-  { key: 'country', header: 'Country', cell: row => row.country, rowHeader: true, className: 'font-black text-[var(--text-primary)]' },
-  { key: 'fifteen', header: '15 min', cell: row => row.fifteenMinute, className: 'tabular-nums text-[var(--text-muted)]' },
-  { key: 'thirty', header: '30 min', cell: row => row.thirtyMinute, className: 'tabular-nums text-[var(--text-muted)]' },
-  { key: 'scope', header: 'Scope', cell: row => `${row.metros} · ${row.fifteenMinuteMetros} at 15 min`, className: 'text-[var(--text-muted)]' },
-];
 
 type HeadwayBar = (typeof frequentServiceStoryStats.headwayBars)[number];
 const HEADWAY_COLUMNS: DataTableColumn<HeadwayBar>[] = [
@@ -33,11 +29,13 @@ const HEADWAY_COLUMNS: DataTableColumn<HeadwayBar>[] = [
 ];
 
 export default function FrequentServiceStory({ onExploreMap, agencies }: Props) {
-  const [selectedMinutes, setSelectedMinutes] = useState(15);
+  const tableId = useId();
   const [storyStage, setStoryStage] = useState(0);
   const frequencyMinutes = 15 as const;
   const storyStepRefs = useRef<Array<HTMLDivElement | null>>([]);
   const maxBar = Math.max(...frequentServiceStoryStats.headwayBars.map(bar => bar.agencies));
+  // The most common threshold is highlighted while nothing else is, like the age chart's most common age (CIV-1286).
+  const commonBar = frequentServiceStoryStats.headwayBars.reduce((top, bar) => (bar.agencies > top.agencies ? bar : top));
 
   useEffect(() => {
     if (typeof IntersectionObserver === 'undefined') return;
@@ -61,12 +59,12 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
 
   const method = (
     <ResearchMethod parts={{
-      dateConducted: <>{frequentServiceStoryStats.reviewedAt}.</>,
+      dateConducted: <>October 11, 2026.</>,
       dateUpdated: <>October 30, 2026.</>,
-      sample: <>For this Atlas-facing story, we reviewed {frequentServiceStoryStats.agenciesReviewed} agencies currently represented in Atlas: {frequentServiceStoryStats.countryCounts.map(item => `${item.agencies} in ${item.country}`).join(', ')}. The broader research audit contains {frequentServiceStoryStats.fullAuditAgencies} agencies across additional countries, which are not included here because Atlas does not currently publish data for them. Of the Atlas sample, {frequentServiceStoryStats.categoryCounts.numericDefinition} published a numeric definition, {frequentServiceStoryStats.categoryCounts.qualitativeDefinition} published a qualitative frequent label, {frequentServiceStoryStats.categoryCounts.noDefinitionFound} had no named definition on the reviewed map, and {frequentServiceStoryStats.categoryCounts.mapUnavailable} did not have a current system map we could verify.</>,
-      sources: <>Only current official system maps, map legends, and approved rider-guide maps counted as evidence. Official route pages, schedules, planning documents, and service standards were used only to locate those materials and were never treated as definitions.</>,
-      whatCounted: <>A numeric definition required the agency to name frequent/high-frequency service and give a frequency value or range. A qualitative definition required the named frequent/high-frequency label without a number. “No definition” means the reviewed official material did not name one; it does not mean the agency has no frequent service. “Unavailable” means the current system map could not be located or verified.</>,
-      numbers: <>We recorded every named tier. The chart counts each agency once using its general or representative frequent tier; express, peak-only, rail-only, and other secondary tiers remain in the audit as context.</>,
+      sample: <>We looked for an official definition of frequent service at {frequentServiceDefinitionSample.agencies} agencies Atlas covers in Canada ({frequentServiceDefinitionSample.canada}) and the United States ({frequentServiceDefinitionSample.unitedStates}). We couldn't check {frequentServiceDefinitionSample.blocked} others because their websites block automated visits. {frequentServiceDefinitionSample.namedNetwork} have a named frequent network, such as a “Frequent Network”. {frequentServiceDefinitionSample.withWait} of those say how often the bus comes, such as “every 15 minutes or better”. The chart shows {frequentServiceStoryStats.chartedAgencies} of those {frequentServiceDefinitionSample.withWait} agencies, checked again on October 30.</>,
+      sources: <>The agency’s own current system map, rider guide, frequent network page, service standards, or a plan for the network running today. Shelter photo: <a className={UNDERLINED_LINK} href="https://commons.wikimedia.org/wiki/File:TTC_Bus_Stop_on_Port_Union_Road,_April_30_2026.jpg" rel="noopener noreferrer">Dillan Payne</a>, <a className={UNDERLINED_LINK} href="https://creativecommons.org/licenses/by-sa/4.0/" rel="noopener noreferrer">CC BY-SA 4.0</a>, cut out and adapted.</>,
+      whatCounted: <>Each quote was checked by script against the saved page. When an agency’s pages disagreed, we used the narrower definition. Not finding a definition does not mean an agency has no frequent service.</>,
+      numbers: <>When an agency has more than one frequent tier, we used the fastest one that covers more than one route. When it gives a range, such as {headwayEveryRange(15, 20)}, we used the slower number, for weekday daytime.</>,
       rechecked: <>On October 30, 2026, we opened the source again for each of the {frequentServiceStoryStats.recheckedAgencies} agencies the chart counted. {frequentServiceStoryStats.namedNumericAgencies} still matched and stay in the chart. {frequentServiceStoryStats.recheckLeftOut} are left out: Anchorage's and VIA's maps are gone, DART's site returned an error, Foothill's and Sun Tran's sites block automated visits, and STM's page doesn't show the times to one.</>,
       limitations: <>This is a source-backed sample, not an exhaustive census of every transit agency or a universal definition of frequent service. It describes the research sample and does not change Atlas’s production frequency definitions.</>,
     }} />
@@ -75,28 +73,48 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
   return (
     <PageShell stickyHeader method={method}>
       <article className="pb-16 pt-10 sm:pt-14">
-        <header className="mx-auto max-w-4xl text-center">
-          <p className="text-xs font-black text-[var(--accent)]">Atlas research</p>
-          <h1 className="mt-5 text-4xl sm:text-6xl font-black tracking-[-0.045em] leading-[0.98]">What happens when you miss the bus?</h1>
-          <div className="mx-auto mt-6 max-w-2xl space-y-4 text-left text-base leading-8 text-[var(--text-muted)] sm:text-lg">
+        <ResearchHeader
+          width="story"
+          title="What happens when you miss the bus?"
+          intro={<>
             <p>Miss one when the next vehicle comes in 10 minutes? Annoying, but manageable. Miss one when the next one takes 30? That can change your whole trip.</p>
             <p>Transit maps show where routes go. Transit planning asks the harder questions: how often does service come, how long does it run, and who is it designed to reach?</p>
-            <p>We reviewed official transit maps and approved rider guides from {frequentServiceStoryStats.agenciesWithUsableEvidence} agencies to show how those decisions turn a network of lines into service people can actually rely on.</p>
-          </div>
+            <p>We checked how {frequentServiceDefinitionSample.agencies} agencies define frequent service on their own websites, to show how those decisions turn a network of lines into service people can actually rely on.</p>
+          </>}
+        >
           <div className="w-full max-w-5xl text-left">
             <FrequentServicePublishedMapMontage />
           </div>
           <a href="#story" className="mt-9 inline-flex items-center gap-2 rounded-full border border-[var(--border-primary)] bg-[var(--bg-panel)] px-4 py-2.5 text-xs font-bold text-[var(--text-primary)] hover:bg-[var(--bg-btn-hover)]">
             Explore the research <ArrowDown className="h-3.5 w-3.5" aria-hidden="true" />
           </a>
-        </header>
+        </ResearchHeader>
 
-        <section id="story" aria-labelledby="network-story-heading" className="scroll-mt-16 relative left-1/2 mt-24 w-screen -translate-x-1/2 px-2 sm:mt-32 sm:px-3">
+        {/* CIV-1169 (Ryan's pick 6): a text break between the montage and the first map. */}
+        <section id="story" aria-labelledby="story-break-heading" className="scroll-mt-16 mx-auto mt-24 w-full max-w-[48rem] sm:mt-32">
+          <h2 id="story-break-heading" className="text-3xl sm:text-4xl font-black tracking-tight">Every map tells it differently.</h2>
+          {/* CIV-1168 bridge, Ryan approved version A word for word on 2026-11-02 (_review/frequent-bridge),
+              with its times and wait in Atlas's style ("6 AM", "every 10 min") from the shared helpers. Every claim is from the montage's own
+              maps, linked under each frame; Toronto's hours are its Ten-Minute Network definition (definition-quotes-2026-10-11.json, ttc). */}
+          <p className="mt-5 text-base leading-8 text-[var(--text-muted)]">
+            Each agency decides what its map shows, so one map is hard to compare with the next. Toronto's Ten-Minute Network means a bus or streetcar {headwayOrBetter(10)}, from {hourTime(6)} to {hourTime(25)}. Vancouver and Los Angeles both draw the line at 15 minutes, but Vancouver checks it until {hourTime(21)} every day of the week, and Los Angeles only on weekdays until {hourTime(18)}. Washington, DC has two levels, one at 12 minutes and one at 20. Miami-Dade's map doesn't use the word frequent at all. It colours every route by how often the bus comes at weekday midday.
+          </p>
+          <p className="mt-5 text-base leading-8 text-[var(--text-muted)]">
+            The maps also differ in what they draw. Vancouver's and Portland's show only the frequent network, so a slower route isn't on the map. Toronto's, Ottawa's and Seattle's draw every route and mark the frequent ones. Seattle also counts two routes that share a street as frequent together, which none of the other maps here do.
+          </p>
+          <p className="mt-5 text-base leading-8 text-[var(--text-muted)]">
+            Atlas starts from the schedules instead. Here is Toronto's network, built from the TTC's own schedule data, one step at a time.
+          </p>
+        </section>
+
+        <section aria-labelledby="network-story-heading" className="relative left-1/2 mt-24 w-screen -translate-x-1/2 px-2 sm:mt-32 sm:px-3">
           <div className="relative min-w-0 pb-[12vh]">
-            <div className="min-w-0 lg:sticky lg:top-24">
+            {/* #1310: pinned below the page's sticky header at every width, and held through the last stage (the bottom padding),
+                so a stage heading never scrolls under the Atlas logo while it is the one being read. */}
+            <div className="sticky top-16 min-w-0 lg:top-24">
               <FrequentServiceStoryMap agencies={agencies} stage={storyStage} frequencyMinutes={frequencyMinutes} researchRecord={frequentServiceStoryResearchRecord} />
             </div>
-            <div className="relative z-10 space-y-[55vh] pb-8 pt-8 lg:pb-16" aria-hidden="true">
+            <div className="relative z-10 space-y-[55vh] pb-[60vh] pt-8" aria-hidden="true">
                 {[0, 1, 2, 3].map(stage => <div key={stage} ref={step => { storyStepRefs.current[stage] = step; }} data-story-stage={stage} className="h-[20vh]" />)}
             </div>
           </div>
@@ -122,52 +140,27 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
             <div className="max-w-2xl">
               <h2 id="chart-heading" className="text-3xl sm:text-4xl font-black tracking-tight">There is no single “frequent.”</h2>
               <p className="mt-5 text-base leading-8 text-[var(--text-muted)]">
-                Pick a representative threshold to see how agencies turn that number into a service promise. This chart covers {frequentServiceStoryStats.namedNumericAgencies} agencies with a verified numeric definition; secondary tiers remain in the research instead of being flattened.
+                Pick a representative threshold to see how agencies turn that number into a service promise. This chart shows the {frequentServiceStoryStats.chartedAgencies} agencies that publish a specific number of minutes.
               </p>
             </div>
-            <div className="mt-10" aria-label="Interactive chart showing the number of agencies by the selected published frequent-service threshold">
+            <div className="mt-10">
               <RankedBars
-                as="buttons"
-                bars={frequentServiceStoryStats.headwayBars.map(bar => ({ key: bar.minutes, label: headwayAmount(bar.minutes), value: bar.agencies, fill: selectedMinutes === bar.minutes ? 'var(--accent)' : 'var(--text-muted)' }))}
+                label="Interactive chart showing the number of agencies by the selected published frequent-service threshold"
+                bars={frequentServiceStoryStats.headwayBars.map(bar => ({ key: bar.minutes, label: headwayAmount(bar.minutes), value: bar.agencies, fill: 'var(--text-muted)', sentence: `Show examples for ${bar.minutes}-minute service (${bar.agencies} agencies)` }))}
                 max={maxBar}
-                listClassName="space-y-4"
-                rowClassName="grid w-full grid-cols-[4.5rem_1fr_3rem] items-center gap-3 rounded-lg text-left text-sm outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)]"
-                labelClassName="font-black text-[var(--text-primary)]"
-                fillClassName="transition-[width,background-color]"
-                selectedKey={selectedMinutes}
-                onSelect={key => setSelectedMinutes(key as number)}
-                describe={bar => `Show examples for ${bar.key}-minute service (${bar.value} agencies)`}
+                defaultKey={commonBar.minutes}
+                details={tableId}
               />
               <p className="mt-5 text-xs leading-5 text-[var(--text-dim)]">Each agency appears once, at the slowest wait its source gives for weekday daytime service: “every 15–20 minutes” counts as 20. Other times of day and secondary tiers remain in the research. Checked again on October 30, 2026. {frequentServiceStoryStats.recheckLeftOut} agencies are left out because their page is gone or couldn't be checked again.</p>
-              <ChartTableDetails caption="There is no single “frequent.”" columns={HEADWAY_COLUMNS} rows={frequentServiceStoryStats.headwayBars} rowKey={bar => bar.minutes} />
+              <ChartTableDetails id={tableId} caption="There is no single “frequent.”" columns={HEADWAY_COLUMNS} rows={frequentServiceStoryStats.headwayBars} rowKey={bar => bar.minutes} />
             </div>
           </section>
 
           <section aria-labelledby="more-heading" className="mx-auto w-full max-w-[48rem]">
             <div>
               <h2 id="more-heading" className="text-3xl sm:text-4xl font-black tracking-tight">The number is only the beginning.</h2>
-              <p className="mt-5 text-base leading-8 text-[var(--text-muted)]">A frequency threshold is attached to a span, a set of days, and a geography. It may describe a route, a corridor, a network, or a product that combines modes. A 15-minute route that stops at 6pm is a different promise from a 15-minute corridor that runs into the evening. That is why we track three things together: headway, service span, and geography.</p>
+              <p className="mt-5 text-base leading-8 text-[var(--text-muted)]">A frequency threshold is attached to a span, a set of days, and a geography. It may describe a route, a corridor, a network, or a product that combines modes. A 15-minute route that stops at 6 PM is a different promise from a 15-minute corridor that runs into the evening. That is why we track three things together: headway, service span, and geography.</p>
             </div>
-          </section>
-
-          <section aria-labelledby="population-heading" className="rounded-[2rem] border border-[var(--border-primary)] bg-[var(--bg-panel)] p-6 sm:p-10">
-            <div className="max-w-2xl">
-              <h2 id="population-heading" className="text-3xl sm:text-4xl font-black tracking-tight">The threshold changes who can rely on the network.</h2>
-              <p className="mt-5 text-base leading-8 text-[var(--text-muted)]">
-                We applied the same test to Atlas route data and population geography: a 10-minute walk to weekday service running from 7am to 7pm. The stricter 15-minute threshold reaches far fewer people than the broader 30-minute threshold.
-              </p>
-            </div>
-            <div className="mt-8 overflow-x-auto">
-              <DataTable
-                variant="ruled"
-                caption="Population within a ten-minute walk of frequent transit by headway threshold"
-                columns={COVERAGE_COLUMNS}
-                rows={frequentServiceCoverageStats}
-                rowKey={row => row.country}
-              />
-            </div>
-            <p className="mt-5 text-xs leading-5 text-[var(--text-dim)]">Each country’s percentages use the same population base at both thresholds. Canada uses 2021 Statistics Canada dissemination areas; the United States uses 2020 Census block groups.</p>
-            <p className="mt-5 text-base leading-8 text-[var(--text-muted)]">The practical difference is large: 30-minute service reaches about {frequentServiceCoverageInterpretation.canadaThirtyToFifteenRatio} times as many people in Canada and {frequentServiceCoverageInterpretation.unitedStatesThirtyToFifteenRatio} times as many in the United States as 15-minute service. Canada is higher at both thresholds in this analysis, but the countries use different population vintages and geographies, so the comparison is descriptive rather than a ranking.</p>
           </section>
 
           <section aria-labelledby="atlas-heading" className="rounded-[2rem] border border-[var(--border-primary)] bg-[var(--bg-panel)] p-6 sm:p-10">

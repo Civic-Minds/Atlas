@@ -1,6 +1,7 @@
 {
   "slug": "besancon",
-  "name": "Ginko (Besançon)",
+  "officialName": "Ginko",
+  "nameQualifier": "Besançon",
   "region": "Bourgogne-Franche-Comté",
   "center": [
     47.2378,

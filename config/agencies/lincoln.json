@@ -1,6 +1,7 @@
 {
   "slug": "lincoln",
-  "name": "StarTran (Lincoln)",
+  "officialName": "StarTran",
+  "nameQualifier": "Lincoln",
   "websiteUrl": "https://www.lincoln.ne.gov/City/Departments/LTU/StarTran",
   "center": [
     40.81,
@@ -10,18 +11,18 @@
   "region": "Nebraska",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2269/latest.zip",
   "lastFeedExpiry": "20271231",
-  "lastFeedVersion": "20261014",
-  "lastRefreshedAt": "2026-10-19",
+  "lastFeedVersion": "20261028",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Lincoln, Nebraska"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271231",
   "feedQuality": {
     "status": "review",
-    "score": 90,
+    "score": 94,
     "reasons": [
       "1 route has stops whose frequency differs from the overall route schedule."
     ],
@@ -30,9 +31,15 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 1,
-      "featureCount": 64
+      "featureCount": 64,
+      "feedExpiry": "20271231",
+      "routeCount": 18,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 1,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-19"
+    "checkedAt": "2026-11-03"
   },
   "timezone": "America/Chicago",
   "lastFeedSourceKind": "configured",
@@ -41,5 +48,7 @@
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
-  "lastPeekedExpiry": "20271231"
+  "lastPeekedExpiry": "20271231",
+  "lastServiceWeek": "0d680d8bac3603de",
+  "feedObtainedAt": "20261102"
 }

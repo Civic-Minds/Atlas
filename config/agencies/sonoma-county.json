@@ -1,6 +1,7 @@
 {
   "slug": "sonoma-county",
-  "name": "Sonoma County Transit (SCT)",
+  "officialName": "Sonoma County Transit",
+  "commonName": "SCT",
   "websiteUrl": "http://www.sctransit.com/?referrer=gtfs",
   "center": [
     38.4307,
@@ -23,11 +24,15 @@
     "Petaluma, California",
     "Napa, California"
   ],
-  "lastFeedCheckAt": "20261019",
-  "expiredFeedCheckCount": 0,
-  "expiredFeedCheckSince": null,
+  "lastFeedCheckAt": "20261102",
+  "expiredFeedCheckCount": 1,
+  "expiredFeedCheckSince": "20260622",
   "expiredFeedCheckExpiry": "20261031",
   "timezone": "America/Los_Angeles",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "http://data.trilliumtransit.com/gtfs/sonomacounty-ca-us/sonomacounty-ca-us.zip"
+  "lastFeedSourceUrl": "http://data.trilliumtransit.com/gtfs/sonomacounty-ca-us/sonomacounty-ca-us.zip",
+  "feedRefreshStatus": "stale",
+  "feedRefreshError": "all available feeds expired (latest 20261031)",
+  "feedRefreshErrorAt": "20261102",
+  "feedRefreshRetryCount": 1
 }

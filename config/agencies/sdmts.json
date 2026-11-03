@@ -1,6 +1,7 @@
 {
   "slug": "sdmts",
-  "name": "Metropolitan Transit System (San Diego MTS)",
+  "officialName": "Metropolitan Transit System",
+  "commonName": "San Diego MTS",
   "websiteUrl": "http://www.sdmts.com",
   "center": [
     32.72,
@@ -8,9 +9,9 @@
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-13/latest.zip",
   "lastFeedExpiry": "20270130",
-  "lastFeedVersion": "Generated on 20261006",
+  "lastFeedVersion": "Generated on 20261027",
   "region": "California",
-  "lastRefreshedAt": "2026-10-12",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "San Diego, California",
     "Chula Vista, California",
@@ -23,14 +24,14 @@
     "Rancho Penasquitos, California",
     "Escondido, California"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270130",
   "timezone": "America/Los_Angeles",
   "feedQuality": {
     "status": "review",
-    "score": 90,
+    "score": 99,
     "reasons": [
       "1 route has stops whose frequency differs from the overall route schedule."
     ],
@@ -39,9 +40,15 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 1,
-      "featureCount": 497
+      "featureCount": 503,
+      "feedExpiry": "20270130",
+      "routeCount": 103,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 1,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-12"
+    "checkedAt": "2026-11-03"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -75,5 +82,7 @@
       "reason": "San Diego Trolley lines are light rail, published as route_type 0 (tram); replaces the former agency-name rule"
     }
   ],
-  "lastPeekedExpiry": "20270130"
+  "lastPeekedExpiry": "20270130",
+  "lastServiceWeek": "8162c48f76c62f27",
+  "feedObtainedAt": "20261102"
 }

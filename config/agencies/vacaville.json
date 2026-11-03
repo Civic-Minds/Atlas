@@ -1,6 +1,7 @@
 {
   "slug": "vacaville",
-  "name": "City Coach (Vacaville)",
+  "officialName": "City Coach",
+  "nameQualifier": "Vacaville",
   "center": [
     38.3618,
     -121.9668
@@ -16,14 +17,14 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-599/latest.zip",
   "lastFeedExpiry": "20261231",
   "lastFeedVersion": "6.18.26",
-  "lastRefreshedAt": "2026-10-08",
+  "lastRefreshedAt": "2026-11-02",
   "websiteUrl": "https://citycoach.com/",
   "cities": [
     "Vacaville, California"
   ],
   "timezone": "America/Los_Angeles",
   "lastRawArchiveKey": "20260630-9771867b4141da3d",
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261231",
@@ -42,9 +43,17 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 17
+      "featureCount": 17,
+      "feedExpiry": "20261231",
+      "routeCount": 5,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-08"
+    "checkedAt": "2026-11-03"
   },
-  "lastPeekedExpiry": "20261231"
+  "lastPeekedExpiry": "20261231",
+  "lastServiceWeek": "67c1384acee4f4cf",
+  "feedObtainedAt": "20260924"
 }

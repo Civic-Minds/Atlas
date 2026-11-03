@@ -1,6 +1,7 @@
 {
   "slug": "cobblinc",
-  "name": "CobbLinc (Marietta, GA)",
+  "officialName": "CobbLinc",
+  "nameQualifier": "Marietta, GA",
   "websiteUrl": "https://www.cobbcounty.gov/transportation/cobblinc",
   "center": [
     33.9,
@@ -8,18 +9,18 @@
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-3193/latest.zip",
   "lastFeedExpiry": "20270327",
-  "lastFeedVersion": "20260924",
+  "lastFeedVersion": "20261019",
   "region": "Georgia",
-  "lastRefreshedAt": "2026-10-12",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Smyrna, Georgia",
     "Marietta, Georgia",
     "Atlanta, Georgia"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261231",
+  "expiredFeedCheckExpiry": "20270327",
   "timezone": "America/New_York",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-3193/latest.zip",
@@ -32,13 +33,21 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 62
+      "featureCount": 62,
+      "feedExpiry": "20270327",
+      "routeCount": 10,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-12"
+    "checkedAt": "2026-11-03"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
-  "lastPeekedExpiry": "20270327"
+  "lastPeekedExpiry": "20270327",
+  "lastServiceWeek": "d4f9e4a5e226b4b0",
+  "feedObtainedAt": "20261102"
 }

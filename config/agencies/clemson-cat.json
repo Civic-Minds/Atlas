@@ -1,6 +1,7 @@
 {
   "slug": "clemson-cat",
-  "name": "Clemson Area Transit (CATbus)",
+  "officialName": "Clemson Area Transit",
+  "commonName": "CATbus",
   "displayArea": "Clemson",
   "websiteUrl": "catbus.transloc.com",
   "center": [
@@ -8,10 +9,10 @@
     -82.8532
   ],
   "feedUrl": "https://catbus.ridesystems.net/Secure/Admin/Reports/GTFSDownload.aspx",
-  "lastFeedExpiry": "20281028",
+  "lastFeedExpiry": "20281103",
   "skipBlockTripHeadways": true,
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-10-03",
+  "lastRefreshedAt": "2026-11-02",
   "region": "South Carolina",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-798/latest.zip",
   "bbox": [
@@ -25,7 +26,7 @@
   ],
   "timezone": "America/New_York",
   "lastRawArchiveKey": "20200101-974da843f871ba68",
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20501230",
@@ -40,9 +41,15 @@
       "validationWarnings": 1,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 8
+      "featureCount": 18,
+      "feedExpiry": "20281103",
+      "routeCount": 11,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-03"
+    "checkedAt": "2026-11-03"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -50,5 +57,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://catbus.ridesystems.net/Secure/Admin/Reports/GTFSDownload.aspx",
-  "lastPeekedExpiry": "20501230"
+  "lastPeekedExpiry": "20501230",
+  "lastServiceWeek": "d2c7fd54ee9d1b4c",
+  "feedObtainedAt": "20261102"
 }

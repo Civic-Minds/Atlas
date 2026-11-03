@@ -263,6 +263,15 @@ button:disabled {
   cursor: not-allowed;
 }
 
+/* A picture with a light and a dark version (the About page, CIV-1206): only the current theme's shows. */
+[data-theme='dark'] .theme-light-only {
+  display: none;
+}
+
+:root:not([data-theme='dark']) .theme-dark-only {
+  display: none;
+}
+
 :where(button, a, select, textarea):focus-visible {
   outline: 2px solid var(--accent) !important;
   outline-offset: 2px;
@@ -270,6 +279,12 @@ button:disabled {
 
 input:focus-visible {
   outline: none !important;
+}
+
+/* A text box's ring sits on its pill, and only after a Tab: a click into it shows none (#1196). */
+html[data-keyboard-focus] [data-focus-ring]:focus-within {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 
 @media (prefers-reduced-motion: reduce) {

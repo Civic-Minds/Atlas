@@ -1,6 +1,7 @@
 {
   "slug": "capmetro",
-  "name": "Capital Metro (Austin)",
+  "officialName": "Capital Metro",
+  "nameQualifier": "Austin",
   "displayArea": "Austin",
   "websiteUrl": "http://www.capmetro.org",
   "center": [
@@ -14,7 +15,7 @@
     "3"
   ],
   "region": "Texas",
-  "lastRefreshedAt": "2026-10-12",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "University of Texas, Texas",
     "Austin, Texas",
@@ -23,25 +24,28 @@
     "Round Rock, Texas",
     "Leander, Texas"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270109",
   "feedQuality": {
-    "status": "degraded",
-    "score": 40,
-    "reasons": [
-      "318 route shapes needed adjustment before display.",
-      "4 route have stops whose frequency differs from the overall route schedule."
-    ],
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
-      "shapeAnomalies": 318,
-      "routeHeadwayMismatches": 4,
-      "featureCount": 268
+      "shapeAnomalies": 145,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 318,
+      "feedExpiry": "20270109",
+      "routeCount": 70,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-12"
+    "checkedAt": "2026-11-03"
   },
   "timezone": "America/Chicago",
   "lastFeedSourceKind": "configured",
@@ -58,5 +62,7 @@
       "reason": "CapMetro Rail Red Line (550) is commuter rail, published as route_type 0 (tram)"
     }
   ],
-  "lastPeekedExpiry": "20270109"
+  "lastPeekedExpiry": "20270109",
+  "lastServiceWeek": "2b476d94a394dfa1",
+  "feedObtainedAt": "20261007"
 }

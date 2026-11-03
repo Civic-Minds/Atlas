@@ -1,6 +1,6 @@
 {
   "slug": "washington-county",
-  "name": "Johnson City",
+  "officialName": "Johnson City",
   "websiteUrl": "https://www.johnsoncitytransit.org",
   "center": [
     36.33,
@@ -23,7 +23,7 @@
   "timezoneOverride": "America/New_York",
   "lastFeedExpiry": "20271231",
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-10-03",
+  "lastRefreshedAt": "2026-11-02",
   "feedQuality": {
     "status": "healthy",
     "score": 100,
@@ -33,11 +33,17 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 26
+      "featureCount": 27,
+      "feedExpiry": "20271231",
+      "routeCount": 12,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-03"
+    "checkedAt": "2026-11-03"
   },
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271231",
@@ -47,5 +53,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://www.johnsoncitytransit.org/google_transit.zip",
-  "lastPeekedExpiry": "20271231"
+  "lastPeekedExpiry": "20271231",
+  "lastServiceWeek": "bd7af3a7a96ac2c5",
+  "feedObtainedAt": "20260820"
 }

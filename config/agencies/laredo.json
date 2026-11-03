@@ -1,6 +1,7 @@
 {
   "slug": "laredo",
-  "name": "El Metro (Laredo)",
+  "officialName": "El Metro",
+  "nameQualifier": "Laredo",
   "websiteUrl": "http://elmetrotransit.com/",
   "center": [
     27.538,
@@ -17,11 +18,11 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-7038/latest.zip",
   "lastFeedExpiry": "20261231",
   "lastFeedVersion": "Updated: Oct 6, 2026, 7:25 PM",
-  "lastRefreshedAt": "2026-10-07",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Laredo, Texas"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261231",
@@ -35,9 +36,15 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 131
+      "featureCount": 131,
+      "feedExpiry": "20261231",
+      "routeCount": 25,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-07"
+    "checkedAt": "2026-11-03"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -45,5 +52,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://gtfs.remix.com/el_metro_laredo_transit_us.zip",
-  "lastPeekedExpiry": "20261231"
+  "lastPeekedExpiry": "20261231",
+  "lastServiceWeek": "7744cf64e6227bad",
+  "feedObtainedAt": "20261006"
 }

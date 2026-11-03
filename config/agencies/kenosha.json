@@ -1,6 +1,6 @@
 {
   "slug": "kenosha",
-  "name": "Kenosha Area Transit",
+  "officialName": "Kenosha Area Transit",
   "websiteUrl": "https://www.kenosha.org/departments/transportation",
   "center": [
     42.586,
@@ -8,9 +8,9 @@
   ],
   "feedUrl": "https://kenoshatransit.com/gtfs",
   "mdbFeedUrl": "https://kenoshatransit.com/gtfs",
-  "lastFeedExpiry": "20281028",
+  "lastFeedExpiry": "20281103",
   "lastFeedVersion": "Route 1",
-  "lastRefreshedAt": "2026-10-12",
+  "lastRefreshedAt": "2026-11-02",
   "region": "Wisconsin",
   "bbox": [
     42.4973,
@@ -23,24 +23,28 @@
   ],
   "timezone": "America/Chicago",
   "lastRawArchiveKey": "20240901-de364d144f1f2a51",
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20991231",
   "feedQuality": {
-    "status": "review",
-    "score": 70,
-    "reasons": [
-      "3 route shapes needed adjustment before display."
-    ],
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
-      "shapeAnomalies": 3,
+      "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 29
+      "featureCount": 65,
+      "feedExpiry": "20281103",
+      "routeCount": 17,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-12"
+    "checkedAt": "2026-11-03"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -56,5 +60,7 @@
       "reason": "Kenosha Streetcar is a streetcar, published as route_type 3 (bus)"
     }
   ],
-  "lastPeekedExpiry": "20991231"
+  "lastPeekedExpiry": "20991231",
+  "lastServiceWeek": "06be1750cbd9cfc0",
+  "feedObtainedAt": "20261101"
 }

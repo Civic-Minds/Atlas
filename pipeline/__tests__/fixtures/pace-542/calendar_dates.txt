@@ -1,0 +1,2 @@
+service_id,date,exception_type
+2026-08-RV-Weekday-02,20261126,2

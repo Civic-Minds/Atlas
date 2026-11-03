@@ -1,6 +1,7 @@
 {
   "slug": "valenciennes",
-  "name": "Transvilles (Valenciennes)",
+  "officialName": "Transvilles",
+  "nameQualifier": "Valenciennes",
   "region": "Hauts-de-France",
   "center": [
     50.3591,

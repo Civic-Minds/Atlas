@@ -1,6 +1,6 @@
 {
   "slug": "cata-lansing",
-  "name": "Capital Area Transportation Authority",
+  "officialName": "Capital Area Transportation Authority",
   "websiteUrl": "https://www.cata.org",
   "region": "Michigan",
   "center": [
@@ -12,11 +12,11 @@
   "feedApiKeyParam": "key",
   "lastFeedExpiry": "20261220",
   "lastFeedVersion": "26-06 (Aug24-Dec20)_20260917",
-  "lastRefreshedAt": "2026-10-03",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Lansing, Michigan"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261220",
@@ -29,9 +29,15 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 134
+      "featureCount": 134,
+      "feedExpiry": "20261220",
+      "routeCount": 32,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-03"
+    "checkedAt": "2026-11-03"
   },
   "timezone": "America/Detroit",
   "feedRefreshStatus": "current",
@@ -40,5 +46,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "http://developers.cata.org/gtfsdownload.ashx?data=base",
-  "lastPeekedExpiry": "20261220"
+  "lastPeekedExpiry": "20261220",
+  "lastServiceWeek": "b7750e2cac8a0417",
+  "feedObtainedAt": "20260917"
 }

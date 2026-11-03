@@ -1,6 +1,6 @@
 {
   "slug": "butler-pa",
-  "name": "Butler Transit Authority",
+  "officialName": "Butler Transit Authority",
   "region": "Pennsylvania",
   "center": [
     40.8612,
@@ -20,19 +20,31 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 10
+      "featureCount": 14,
+      "feedExpiry": "20271231",
+      "routeCount": 8,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-08-21"
+    "checkedAt": "2026-11-03"
   },
   "lastFeedExpiry": "20271231",
   "lastFeedVersion": "20260519",
-  "lastRefreshedAt": "2026-08-21",
-  "lastFeedCheckAt": "20261019",
+  "lastRefreshedAt": "2026-11-02",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271231",
   "timezone": "America/New_York",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://butlerivl.availtec.com/InfoPoint/gtfs-zip.ashx",
-  "lastPeekedExpiry": "20271231"
+  "lastPeekedExpiry": "20271231",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "81db15362c6b8279",
+  "feedObtainedAt": "20260519"
 }

@@ -1,6 +1,7 @@
 {
   "slug": "ata",
-  "name": "Area Transportation Authority (ATA)",
+  "officialName": "Area Transportation Authority",
+  "commonName": "ATA",
   "agencyId": "30196",
   "websiteUrl": "https://www.rideata.com/",
   "region": "Pennsylvania",
@@ -26,7 +27,7 @@
   "timezone": "America/New_York",
   "lastFeedExpiry": "20270228",
   "lastFeedVersion": "20260908",
-  "lastRefreshedAt": "2026-10-03",
+  "lastRefreshedAt": "2026-11-02",
   "feedQuality": {
     "status": "healthy",
     "score": 100,
@@ -36,11 +37,17 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 46
+      "featureCount": 65,
+      "feedExpiry": "20270228",
+      "routeCount": 20,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-03"
+    "checkedAt": "2026-11-03"
   },
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270228",
@@ -50,5 +57,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://rideata.rideralerts.com/InfoPoint/gtfs-zip.ashx",
-  "lastPeekedExpiry": "20270228"
+  "lastPeekedExpiry": "20270228",
+  "lastServiceWeek": "82665449ddf098d6",
+  "feedObtainedAt": "20260908"
 }

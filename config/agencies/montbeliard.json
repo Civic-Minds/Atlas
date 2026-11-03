@@ -1,6 +1,7 @@
 {
   "slug": "montbeliard",
-  "name": "Evolity (Montbéliard)",
+  "officialName": "Evolity",
+  "nameQualifier": "Montbéliard",
   "region": "Bourgogne-Franche-Comté",
   "center": [
     47.5096,

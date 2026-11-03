@@ -1,9 +1,10 @@
 {
   "slug": "lirr",
-  "name": "MTA Long Island Rail Road",
+  "officialName": "MTA Long Island Rail Road",
   "displayArea": "Long Island",
   "websiteUrl": "https://new.mta.info/agency/long-island-rail-road",
   "region": "New York",
+  "parentAgency": "mta-new-york",
   "center": [
     40.75,
     -73.6
@@ -15,9 +16,9 @@
     -71.9532
   ],
   "feedUrl": "https://rrgtfsfeeds.s3.amazonaws.com/gtfslirr.zip",
-  "lastFeedExpiry": "20261108",
+  "lastFeedExpiry": "20270228",
   "lastFeedVersion": "GO202_26",
-  "lastRefreshedAt": "2026-10-03",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Hempstead, New York",
     "Brentwood, New York",
@@ -30,24 +31,30 @@
     "East Village, New York",
     "Corona, New York"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261108",
+  "expiredFeedCheckExpiry": "20270228",
   "feedQuality": {
     "status": "review",
-    "score": 70,
+    "score": 92,
     "reasons": [
-      "7 route have stops whose frequency differs from the overall route schedule."
+      "1 route has stops whose frequency differs from the overall route schedule."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
       "shapeAnomalies": 0,
-      "routeHeadwayMismatches": 7,
-      "featureCount": 125
+      "routeHeadwayMismatches": 1,
+      "featureCount": 128,
+      "feedExpiry": "20270228",
+      "routeCount": 12,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 1,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-03"
+    "checkedAt": "2026-11-03"
   },
   "timezone": "America/New_York",
   "feedRefreshStatus": "current",
@@ -56,5 +63,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://rrgtfsfeeds.s3.amazonaws.com/gtfslirr.zip",
-  "lastPeekedExpiry": "20261108"
+  "lastPeekedExpiry": "20270228",
+  "lastServiceWeek": "765bbd3d7844a7b9",
+  "feedObtainedAt": "20261102"
 }

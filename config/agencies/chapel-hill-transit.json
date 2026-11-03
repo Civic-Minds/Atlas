@@ -1,20 +1,20 @@
 {
   "slug": "chapel-hill-transit",
-  "name": "Chapel Hill Transit",
+  "officialName": "Chapel Hill Transit",
   "websiteUrl": "https://www.chapelhillnc.gov/Town-Government/Departments-and-Offices/Transit",
   "center": [
     35.91,
     -79.05
   ],
   "feedUrl": "https://files.mobilitydatabase.org/tld-89/latest.zip",
-  "lastFeedExpiry": "20281028",
+  "lastFeedExpiry": "20281103",
   "lastFeedVersion": "Fall 2026 Update (No Special Services)",
   "region": "North Carolina",
-  "lastRefreshedAt": "2026-10-12",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Chapel Hill, North Carolina"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20991231",
@@ -30,13 +30,21 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 74
+      "featureCount": 74,
+      "feedExpiry": "20281103",
+      "routeCount": 21,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-12"
+    "checkedAt": "2026-11-03"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
-  "lastPeekedExpiry": "20991231"
+  "lastPeekedExpiry": "20991231",
+  "lastServiceWeek": "189f75d8dd0aa391",
+  "feedObtainedAt": "20261031"
 }

@@ -1,9 +1,11 @@
 {
   "slug": "exo-laurentides",
-  "name": "exo (Laurentides)",
+  "officialName": "exo",
+  "nameQualifier": "Laurentides",
   "displayArea": "Laurentides",
   "websiteUrl": "https://exo.quebec/fr/planifier-trajet/autobus/CITLA",
   "region": "Quebec",
+  "parentAgency": "exo",
   "center": [
     45.6611,
     -73.9029
@@ -19,7 +21,7 @@
   "lastFeedVersion": null,
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-744/latest.zip",
   "gtfsFares": true,
-  "lastRefreshedAt": "2026-10-12",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Saint-Louis-de-Terrebonne, Quebec",
     "Saint-Jérôme, Quebec",
@@ -29,7 +31,7 @@
     "Terrebonne, Quebec",
     "Laval, Quebec"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270103",
@@ -42,7 +44,7 @@
   "lastFeedSourceUrl": "https://exo.quebec/uploads/ressources-telechargeables/a-propos/donnees-ouvertes/citla/google_transit.zip",
   "feedQuality": {
     "status": "review",
-    "score": 80,
+    "score": 96,
     "reasons": [
       "2 route have stops whose frequency differs from the overall route schedule."
     ],
@@ -50,10 +52,18 @@
       "validationErrors": 0,
       "validationWarnings": 0,
       "shapeAnomalies": 0,
-      "routeHeadwayMismatches": 2,
-      "featureCount": 180
+      "routeHeadwayMismatches": 3,
+      "featureCount": 187,
+      "feedExpiry": "20270103",
+      "routeCount": 49,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 2,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-12"
+    "checkedAt": "2026-11-03"
   },
-  "lastPeekedExpiry": "20270103"
+  "lastPeekedExpiry": "20270103",
+  "lastServiceWeek": "1baa51f8550c5d03",
+  "feedObtainedAt": "20261026"
 }

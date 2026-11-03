@@ -1,6 +1,6 @@
 {
   "slug": "culvercitybus",
-  "name": "Culver City Bus",
+  "officialName": "Culver City Bus",
   "displayArea": "Culver City",
   "websiteUrl": "https://www.culvercity.org/how-do-i/find/culver-city-bus",
   "center": [
@@ -11,7 +11,7 @@
   "lastFeedExpiry": "20261213",
   "lastFeedVersion": "S1000254_2026.08.05",
   "region": "California",
-  "lastRefreshedAt": "2026-10-03",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Mid-City, California",
     "Inglewood, California",
@@ -19,7 +19,7 @@
   ],
   "timezone": "America/Los_Angeles",
   "lastRawArchiveKey": "20260712-b7c46c977165e86f",
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261213",
@@ -32,9 +32,15 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 43
+      "featureCount": 44,
+      "feedExpiry": "20261213",
+      "routeCount": 11,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-03"
+    "checkedAt": "2026-11-03"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -42,5 +48,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://web.culvercity.org/gtfs/gtfsexport.zip",
-  "lastPeekedExpiry": "20261213"
+  "lastPeekedExpiry": "20261213",
+  "lastServiceWeek": "f20907bc8ba459a8",
+  "feedObtainedAt": "20260824"
 }

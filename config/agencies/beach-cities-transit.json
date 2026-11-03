@@ -1,6 +1,7 @@
 {
   "slug": "beach-cities-transit",
-  "name": "Beach Cities Transit (South Bay, CA)",
+  "officialName": "Beach Cities Transit",
+  "nameQualifier": "South Bay, CA",
   "websiteUrl": "https://www.redondo.org/departments/community_services/transit/bus_schedules/index.php",
   "center": [
     33.8492,
@@ -8,16 +9,16 @@
   ],
   "region": "California",
   "feedUrl": "https://files.mobilitydatabase.org/mdb-1999/latest.zip",
-  "lastFeedExpiry": "20281028",
+  "lastFeedExpiry": "20281103",
   "lastFeedVersion": "New Schedule",
-  "lastRefreshedAt": "2026-10-12",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Redondo Beach, California",
     "Hawthorne, California",
     "Inglewood, California",
     "Torrance, California"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20991231",
@@ -33,13 +34,21 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 12
+      "featureCount": 12,
+      "feedExpiry": "20281103",
+      "routeCount": 2,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-12"
+    "checkedAt": "2026-11-03"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
-  "lastPeekedExpiry": "20991231"
+  "lastPeekedExpiry": "20991231",
+  "lastServiceWeek": "f866bc69b1c43369",
+  "feedObtainedAt": "20261101"
 }

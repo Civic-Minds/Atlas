@@ -1,6 +1,6 @@
 {
   "slug": "raba",
-  "name": "Redding Area Bus Authority",
+  "officialName": "Redding Area Bus Authority",
   "websiteUrl": "http://www.rabaride.com/",
   "center": [
     40.5695,
@@ -15,31 +15,35 @@
   ],
   "feedUrl": "https://gtfs.remix.com/redding_area_bus_authority.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-3031/latest.zip",
-  "lastFeedExpiry": "20261231",
-  "lastFeedVersion": "Updated: Oct 16, 2026, 11:23 PM",
-  "lastRefreshedAt": "2026-10-19",
+  "lastFeedExpiry": "20270430",
+  "lastFeedVersion": "Updated: Oct 27, 2026, 10:10 PM",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Redding, California",
     "Chico, California"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261231",
+  "expiredFeedCheckExpiry": "20270430",
   "feedQuality": {
-    "status": "review",
-    "score": 70,
-    "reasons": [
-      "4 route shapes needed adjustment before display."
-    ],
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
-      "shapeAnomalies": 4,
+      "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 34
+      "featureCount": 34,
+      "feedExpiry": "20270430",
+      "routeCount": 10,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-19"
+    "checkedAt": "2026-11-03"
   },
   "timezone": "America/Los_Angeles",
   "feedRefreshStatus": "current",
@@ -48,5 +52,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://gtfs.remix.com/redding_area_bus_authority.zip",
-  "lastPeekedExpiry": "20261231"
+  "lastPeekedExpiry": "20270430",
+  "lastServiceWeek": "dda35af6c67a3e1b",
+  "feedObtainedAt": "20261102"
 }

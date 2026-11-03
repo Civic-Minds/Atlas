@@ -1,6 +1,7 @@
 {
   "slug": "citibus",
-  "name": "Citibus (Lubbock)",
+  "officialName": "Citibus",
+  "nameQualifier": "Lubbock",
   "websiteUrl": "https://citibus.com/citibus-pass/",
   "center": [
     33.59,
@@ -16,31 +17,34 @@
   "region": "Texas",
   "lastFeedExpiry": "20270305",
   "lastFeedVersion": "UTC: 10-Oct-2026 00:22",
-  "lastRefreshedAt": "2026-10-12",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Lubbock, Texas"
   ],
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-569/latest.zip",
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270305",
   "timezone": "America/Chicago",
   "feedQuality": {
-    "status": "review",
-    "score": 60,
-    "reasons": [
-      "1 route shape needed adjustment before display.",
-      "4 route have stops whose frequency differs from the overall route schedule."
-    ],
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
       "shapeAnomalies": 1,
-      "routeHeadwayMismatches": 4,
-      "featureCount": 24
+      "routeHeadwayMismatches": 0,
+      "featureCount": 33,
+      "feedExpiry": "20270305",
+      "routeCount": 16,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-12"
+    "checkedAt": "2026-11-03"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -48,5 +52,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "http://data.trilliumtransit.com/gtfs/lubbock-tx-us/lubbock-tx-us.zip",
-  "lastPeekedExpiry": "20270305"
+  "lastPeekedExpiry": "20270305",
+  "lastServiceWeek": "13b63ccce1fe01f1",
+  "feedObtainedAt": "20261010"
 }

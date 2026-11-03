@@ -1,6 +1,6 @@
 {
   "slug": "jeffersontransit",
-  "name": "Jefferson Transit",
+  "officialName": "Jefferson Transit",
   "displayArea": "Jefferson County, WA",
   "websiteUrl": "https://jeffersontransit.com/",
   "center": [
@@ -16,12 +16,12 @@
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-838/latest.zip",
   "lastFeedExpiry": "20270926",
-  "lastFeedVersion": "20261014",
-  "lastRefreshedAt": "2026-10-19",
+  "lastFeedVersion": "20261023",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Shoreline, Washington"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270926",
@@ -30,23 +30,30 @@
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-838/latest.zip",
   "feedQuality": {
     "status": "review",
-    "score": 60,
+    "score": 90,
     "reasons": [
-      "1 minor schedule issue found while reading the feed.",
-      "4 route shapes needed adjustment before display."
+      "1 minor schedule issue found while reading the feed."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 1,
-      "shapeAnomalies": 4,
+      "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 47
+      "featureCount": 47,
+      "feedExpiry": "20270926",
+      "routeCount": 11,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-19"
+    "checkedAt": "2026-11-03"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
-  "lastPeekedExpiry": "20270926"
+  "lastPeekedExpiry": "20270926",
+  "lastServiceWeek": "1514caf1df22f38e",
+  "feedObtainedAt": "20261102"
 }

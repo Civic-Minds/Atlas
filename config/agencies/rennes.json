@@ -1,6 +1,7 @@
 {
   "slug": "rennes",
-  "name": "STAR (Rennes)",
+  "officialName": "STAR",
+  "nameQualifier": "Rennes",
   "region": "Bretagne",
   "center": [
     48.1173,

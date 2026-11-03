@@ -5,11 +5,11 @@ import {
   shouldShowTrunkSummary,
   trunkSparklineByHour,
   headsignTrunkHeadway,
-  shouldShowBranchHeadwayRange,
   sparklineSourceDirections,
   sharedStopIdsForBranches,
   stretchSharedHeadway,
 } from '../routeCardTrunk';
+import { headwayRangeShown } from '../headwayText';
 import type { ShapeProperties } from '../../hooks/useIntervalStats';
 
 const hsrWestBranches: ShapeProperties[] = [
@@ -152,21 +152,21 @@ describe('routeCardTrunk', () => {
     expect(groupTrunkHeadway([branch], 'pmPeak')).toBe(30);
   });
 
-  describe('shouldShowBranchHeadwayRange', () => {
+  describe('headwayRangeShown', () => {
     it('shows range for a materially better trunk vs destination gap', () => {
-      expect(shouldShowBranchHeadwayRange(8, 30)).toBe(true);
+      expect(headwayRangeShown(8, 30)).toBe(true);
     });
 
     it('shows range for a single branch too (#493) -- multi-branch is not required', () => {
       // TTC 94 eastbound: one "Castle Frank" branch, headsignMinStopHeadwayByPeriod already
       // pools the overlapping short-turn's departures regardless of branch count.
-      expect(shouldShowBranchHeadwayRange(9, 20)).toBe(true);
+      expect(headwayRangeShown(9, 20)).toBe(true);
     });
 
     it('hides range for a small gap or sub-5 trunk minutes', () => {
-      expect(shouldShowBranchHeadwayRange(8, 11)).toBe(false);
-      expect(shouldShowBranchHeadwayRange(3, 9)).toBe(false);
-      expect(shouldShowBranchHeadwayRange(5, 25)).toBe(false);
+      expect(headwayRangeShown(8, 11)).toBe(false);
+      expect(headwayRangeShown(3, 9)).toBe(false);
+      expect(headwayRangeShown(5, 25)).toBe(false);
     });
   });
 
@@ -280,16 +280,19 @@ describe('stretchSharedHeadway (CIV-937)', () => {
     expect(stretchSharedHeadway(group, 'evening')).toBeNull();
   });
 
-  it('shows nothing for one row, a direction with no tail, All day, or data without the value', () => {
-    expect(stretchSharedHeadway({ realTier: [branches[0]], directionFeatures: branches }, 'midday')).toBeNull();
+  it('reads it above two destinations that share the main stretch with no tail (#1185, TTC 29 southbound)', () => {
     const mains = [row('A', 'main', 30), row('B', 'main', 30)];
-    expect(stretchSharedHeadway({ realTier: mains, directionFeatures: mains }, 'midday')).toBeNull();
+    expect(stretchSharedHeadway({ realTier: mains, directionFeatures: mains }, 'midday')).toBe(15);
+  });
+
+  it('shows nothing for one row, All day, or data without the value', () => {
+    expect(stretchSharedHeadway({ realTier: [branches[0]], directionFeatures: branches }, 'midday')).toBeNull();
     expect(stretchSharedHeadway(group, 'all')).toBeNull();
     const bare = branches.map(b => ({ ...b, stretchMeta: { main: { stops: 50, refStop: 's', trips: 67 }, tails: [] } }));
     expect(stretchSharedHeadway({ realTier: bare, directionFeatures: bare }, 'midday')).toBeNull();
   });
 
-  it('shows nothing when the shared stretch has no regular service in the period', () => {
+  it('shows nothing when the shared stretch has no regular cadence in the period', () => {
     const noReg = branches.map(b => ({ ...b, stretchMeta: { main: { ...meta.main, noRegular: ['midday' as const] }, tails: [] } }));
     expect(stretchSharedHeadway({ realTier: noReg, directionFeatures: noReg }, 'midday')).toBeNull();
   });

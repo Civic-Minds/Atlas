@@ -1,6 +1,6 @@
 {
   "slug": "winnipeg",
-  "name": "Winnipeg Transit",
+  "officialName": "Winnipeg Transit",
   "websiteUrl": "https://winnipegtransit.com",
   "region": "Manitoba",
   "center": [
@@ -17,30 +17,44 @@
   "lastFeedExpiry": "20261212",
   "lastFeedVersion": null,
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-717/latest.zip",
-  "lastRefreshedAt": "2026-08-27",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Winnipeg, Manitoba",
     "Fort Garry South, Manitoba"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261212",
   "feedQuality": {
-    "status": "healthy",
-    "score": 100,
-    "reasons": [],
+    "status": "review",
+    "score": 99,
+    "reasons": [
+      "1 route has stops whose frequency differs from the overall route schedule."
+    ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
       "shapeAnomalies": 0,
-      "routeHeadwayMismatches": 0,
-      "featureCount": 315
+      "routeHeadwayMismatches": 1,
+      "featureCount": 329,
+      "feedExpiry": "20261212",
+      "routeCount": 72,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 1,
+      "resumesOn": null
     },
-    "checkedAt": "2026-08-27"
+    "checkedAt": "2026-11-03"
   },
   "timezone": "America/Winnipeg",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://gtfs.winnipegtransit.com/google_transit.zip",
-  "lastPeekedExpiry": "20261212"
+  "lastPeekedExpiry": "20261212",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "8c8af78a54cb58f0",
+  "feedObtainedAt": "20260907"
 }

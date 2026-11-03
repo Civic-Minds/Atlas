@@ -1,6 +1,7 @@
 {
   "slug": "vichy",
-  "name": "MobiVie (Vichy)",
+  "officialName": "MobiVie",
+  "nameQualifier": "Vichy",
   "region": "Auvergne-Rhône-Alpes",
   "center": [
     46.127,

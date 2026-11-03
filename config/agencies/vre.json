@@ -1,6 +1,7 @@
 {
   "slug": "vre",
-  "name": "Virginia Railway Express (VRE)",
+  "officialName": "Virginia Railway Express",
+  "commonName": "VRE",
   "displayArea": "Northern Virginia",
   "websiteUrl": "http://www.vre.org",
   "region": "Virginia",
@@ -16,9 +17,9 @@
   ],
   "feedUrl": "https://gtfs.vre.org/containercdngtfsupload/google_transit.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-61/latest.zip",
-  "lastFeedExpiry": "20270124",
+  "lastFeedExpiry": "20270131",
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-10-19",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Dale City, Virginia",
     "Centreville, Virginia",
@@ -27,10 +28,10 @@
     "Washington, District of Columbia",
     "Arlington, Virginia"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20270117",
+  "expiredFeedCheckExpiry": "20270131",
   "feedQuality": {
     "status": "healthy",
     "score": 100,
@@ -40,9 +41,15 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 6
+      "featureCount": 6,
+      "feedExpiry": "20270131",
+      "routeCount": 2,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-19"
+    "checkedAt": "2026-11-03"
   },
   "timezone": "America/New_York",
   "feedRefreshStatus": "current",
@@ -51,5 +58,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://gtfs.vre.org/containercdngtfsupload/google_transit.zip",
-  "lastPeekedExpiry": "20270124"
+  "lastPeekedExpiry": "20270131",
+  "lastServiceWeek": "b07b8012cf9e85bf",
+  "feedObtainedAt": "20261102"
 }

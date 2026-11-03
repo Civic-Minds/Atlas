@@ -1,6 +1,6 @@
 {
   "slug": "davenport",
-  "name": "Davenport CitiBus",
+  "officialName": "Davenport CitiBus",
   "websiteUrl": "https://www.davenportiowa.com/services/citibus_transit",
   "center": [
     41.5468,
@@ -9,7 +9,7 @@
   "feedUrl": "https://s3.amazonaws.com/etatransit.gtfs/citibuspublic.etaspot.net/gtfs.zip",
   "lastFeedExpiry": "20271005",
   "lastFeedVersion": "59",
-  "lastRefreshedAt": "2026-10-07",
+  "lastRefreshedAt": "2026-11-02",
   "region": "Iowa",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2304/latest.zip",
   "bbox": [
@@ -23,7 +23,7 @@
   ],
   "timezone": "America/Chicago",
   "lastRawArchiveKey": "20241231-19de367bf787d09c",
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271005",
@@ -36,9 +36,15 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 42
+      "featureCount": 42,
+      "feedExpiry": "20271005",
+      "routeCount": 11,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-07"
+    "checkedAt": "2026-11-03"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -46,5 +52,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://s3.amazonaws.com/etatransit.gtfs/citibuspublic.etaspot.net/gtfs.zip",
-  "lastPeekedExpiry": "20271005"
+  "lastPeekedExpiry": "20271005",
+  "lastServiceWeek": "4acfd930510e3b8b",
+  "feedObtainedAt": "20261005"
 }

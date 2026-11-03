@@ -20,14 +20,13 @@
  *   runTimeAmount(42)         "42 min"                   a trip's run time, rounded to the whole minute
  *
  * Units: headways always read in minutes, never hours ("every 90 min", "every 120 min"), so a
- * column of values never mixes units. headwayAbout rounds to the nearest 30 minutes above 60
- * ("every 90 min") because a measured gap is already approximate. The wording does not say so on
- * each number; the docs say once that gaps above 60 minutes are rounded to the half hour.
+ * column of values never mixes units. Above 60 minutes headwayAbout prints the exact minutes ("every 63
+ * min") like every other value; it used to round to the nearest 30, which let a row read "every 60"
+ * beside a filter that read 63 and hid it (Ryan, 2026-10-31, #1239).
  *
  * Whole numbers print as they are; other numbers print to one decimal ("7.5 min"). Missing or
  * non-finite values print "—" (headwayFilterLabel is the one exception: no limit is "All").
- * Nothing here changes a number except that rounding of measured gaps above 60 minutes and the
- * one-decimal rounding, so the wording can change without the data changing.
+ * Nothing here changes a number except the one-decimal rounding, so the wording can change without the data changing.
  */
 
 const MISSING = '—';
@@ -80,12 +79,12 @@ export function headwayFilterLabel(maxHeadway: number): string {
   return headwayTierLabel(maxHeadway);
 }
 
-/** The number headwayAbout prints: one decimal up to 60 minutes, the nearest 30 above. */
+/** The number headwayAbout prints: the minutes to one decimal, above 60 too (#1239). */
 export function headwayAboutMinutes(minutes: number): number {
-  return minutes <= 60 ? Number(num(minutes)) : Math.round(minutes / 30) * 30;
+  return Number(num(minutes));
 }
 
-/** "every 16 min": a measured or typical spacing. Above 60 minutes it rounds to the nearest 30 min. */
+/** "every 16 min", "every 63 min": a measured or typical spacing. */
 export function headwayAbout(minutes: number | null | undefined): string {
   if (!isUsable(minutes)) return MISSING;
   return `every ${num(headwayAboutMinutes(minutes))} min`;
@@ -99,12 +98,25 @@ export function headwayEveryRange(low: number | null | undefined, high: number |
   return `${prefix}${num(low)}–${num(high)} min`;
 }
 
-/** "every 6–12 min": a spread of typical spacings. Above 60 minutes each end rounds to the half hour. */
+/**
+ * Whether a low end reads as a range beside the value ("every 15–52 min"), or the value stands alone. One rule for every
+ * range: the route list, route cards, History and agency pages (CIV-1143 rule B, Ryan 2026-10-30; the list too, CIV-1227,
+ * 2026-11-02). Shown only when the low end is at least 5 min, the two are at least 5 min apart, and no more than 4 times apart
+ * (TTC 102 PM: 7 against 30 reads "every 30 min"). A single branch's faster short turn counts too (TTC 94 Castle Frank, #493).
+ */
+export function headwayRangeShown(low: number | null | undefined, high: number | null | undefined): boolean {
+  if (low == null || high == null) return false;
+  if (low < 5 || low >= high) return false;
+  if (high - low < 5) return false;
+  if (high / low > 4) return false;
+  return true;
+}
+
+/** "every 6–12 min", "every 75–105 min": a spread of typical spacings. */
 export function headwayAboutRange(low: number, high: number): string {
   if (low === high) return headwayAbout(low);
-  const shown = isUsable(low) && isUsable(high) && low <= 60 && high <= 60
-    ? [num(low), num(high)]
-    : [low, high].map(m => (m <= 60 ? num(m) : String(Math.round(m / 30) * 30)));
+  if (!isUsable(low) || !isUsable(high)) return MISSING;
+  const shown = [num(low), num(high)];
   // Ends that print the same read as one value, never "every 60–60 min" (CIV-1155).
   return shown[0] === shown[1] ? `every ${shown[0]} min` : `every ${shown[0]}–${shown[1]} min`;
 }
@@ -131,16 +143,17 @@ export function runTimeAmount(minutes: number | null | undefined): string {
 
 /**
  * A period's service where it runs, for the route card's time-of-day rows (#934, D6; Ryan,
- * 2026-10-16). `from` and `until` are clock text already formatted for the app:
- * "from 7:17 AM, every 9 min", "until 5:40 PM, every 10 min", "every 10 min, with a 45 min gap".
+ * 2026-10-16). `from` and `until` are clock text already formatted for the app. The frequency comes
+ * first, then its limit (Ryan, 2026-10-30, #962): "every 9 min from 7:17 AM", "every 10 min until
+ * 5:40 PM", "every 10 min, with a 45 min gap".
  */
 export function headwayPeriodShape(shape: { from?: string; until?: string; every: number; gap?: number }): string {
-  const parts = [
+  if (shape.gap != null) return `${headwayEvery(shape.every)}, with one ${delayAmount(shape.gap)} gap`;
+  return [
+    headwayEvery(shape.every),
     shape.from != null ? `from ${shape.from}` : null,
     shape.until != null ? `until ${shape.until}` : null,
-    shape.gap != null ? `${headwayEvery(shape.every)}, with a ${delayAmount(shape.gap)} gap` : headwayEvery(shape.every),
-  ].filter((part): part is string => part != null);
-  return parts.join(', ');
+  ].filter((part): part is string => part != null).join(' ');
 }
 
 export function capitalizeFirst(text: string): string {

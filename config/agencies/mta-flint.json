@@ -1,6 +1,7 @@
 {
   "slug": "mta-flint",
-  "name": "Mass Transportation Authority (Flint)",
+  "officialName": "Mass Transportation Authority",
+  "nameQualifier": "Flint",
   "websiteUrl": "https://www.mtaflint.org/",
   "region": "Michigan",
   "center": [
@@ -10,19 +11,44 @@
   "feedUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/5191/google_transit.zip",
   "lastFeedExpiry": "20271231",
   "lastFeedVersion": "20260519",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Flint, Michigan",
     "Novi, Michigan",
     "Ann Arbor, Michigan",
     "Pontiac, Michigan"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271231",
   "timezone": "America/New_York",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/5191/google_transit.zip",
-  "lastPeekedExpiry": "20271231"
+  "lastPeekedExpiry": "20271231",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 113,
+      "feedExpiry": "20271231",
+      "routeCount": 21,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
+    },
+    "checkedAt": "2026-11-03"
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "79313efb1ade5135",
+  "feedObtainedAt": "20260519"
 }

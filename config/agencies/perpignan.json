@@ -1,6 +1,7 @@
 {
   "slug": "perpignan",
-  "name": "Sankéo (Perpignan)",
+  "officialName": "Sankéo",
+  "nameQualifier": "Perpignan",
   "region": "Occitanie",
   "center": [
     42.6887,

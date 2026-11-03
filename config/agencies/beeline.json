@@ -1,6 +1,7 @@
 {
   "slug": "beeline",
-  "name": "Westchester County Bee-Line System (BeeLine)",
+  "officialName": "Westchester County Bee-Line System",
+  "commonName": "BeeLine",
   "region": "New York",
   "center": [
     41,
@@ -16,7 +17,7 @@
   "mdbFeedUrl": "https://s3.amazonaws.com/datatools-511ny/public/Westchester_County_Bee-Line_System.zip",
   "lastFeedExpiry": "20270209",
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-10-19",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "White Plains, New York",
     "Greenburgh, New York",
@@ -30,7 +31,7 @@
     "Kings Bridge, New York"
   ],
   "timezone": "America/New_York",
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270209",
@@ -43,17 +44,25 @@
   "lastPeekedExpiry": "20270209",
   "feedQuality": {
     "status": "review",
-    "score": 70,
+    "score": 98,
     "reasons": [
-      "3 route have stops whose frequency differs from the overall route schedule."
+      "1 route has stops whose frequency differs from the overall route schedule."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 3,
-      "featureCount": 245
+      "featureCount": 245,
+      "feedExpiry": "20270209",
+      "routeCount": 57,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 1,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-19"
-  }
+    "checkedAt": "2026-11-03"
+  },
+  "lastServiceWeek": "96e3029320158a8e",
+  "feedObtainedAt": "20261013"
 }

@@ -1,6 +1,7 @@
 {
   "slug": "avta",
-  "name": "Antelope Valley Transit Authority (AVTA)",
+  "officialName": "Antelope Valley Transit Authority",
+  "commonName": "AVTA",
   "center": [
     34.6012,
     -118.1182
@@ -9,7 +10,7 @@
   "lastFeedExpiry": "20270228",
   "lastFeedVersion": "20260709",
   "region": "California",
-  "lastRefreshedAt": "2026-10-14",
+  "lastRefreshedAt": "2026-11-02",
   "websiteUrl": "http://www.avta.com",
   "cities": [
     "Lancaster, California",
@@ -24,7 +25,7 @@
   ],
   "timezone": "America/Los_Angeles",
   "lastRawArchiveKey": "20210801-aee75355a03ea49e",
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270228",
@@ -32,22 +33,30 @@
   "lastFeedSourceUrl": "https://www.avta.com/userfiles/files/AVTA_GTFS.zip",
   "feedQuality": {
     "status": "review",
-    "score": 70,
+    "score": 90,
     "reasons": [
-      "48 route shapes needed adjustment before display."
+      "14 route shapes needed adjustment before display."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
-      "shapeAnomalies": 48,
+      "shapeAnomalies": 14,
       "routeHeadwayMismatches": 0,
-      "featureCount": 82
+      "featureCount": 88,
+      "feedExpiry": "20270228",
+      "routeCount": 20,
+      "problemShapes": 14,
+      "problemShapeRoutes": 2,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-14"
+    "checkedAt": "2026-11-03"
   },
   "lastPeekedExpiry": "20270228",
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
-  "feedRefreshRetryCount": 0
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "40972bc3d72fdf04",
+  "feedObtainedAt": "20260709"
 }

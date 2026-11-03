@@ -1,6 +1,7 @@
 {
   "slug": "rts",
-  "name": "RTS (Gainesville)",
+  "officialName": "RTS",
+  "nameQualifier": "Gainesville",
   "center": [
     29.6463,
     -82.3596
@@ -16,18 +17,43 @@
   "lastFeedExpiry": "20270502",
   "lastFeedVersion": "Updated: Aug 24, 2026, 6:35 AM",
   "mdbFeedUrl": "https://go-rts.com/wp-content/uploads/2026/08/RTSGTFS_Fall2026-1.zip",
-  "lastRefreshedAt": "20260811",
+  "lastRefreshedAt": "2026-11-02",
   "websiteUrl": "http://www.go-rts.com/",
   "cities": [
     "Gainesville, Florida"
   ],
   "timezone": "America/New_York",
   "lastRawArchiveKey": "20250817-826a9fab634aebc4",
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270502",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://go-rts.com/wp-content/uploads/2026/08/RTSGTFS_Fall2026-1.zip",
-  "lastPeekedExpiry": "20270502"
+  "lastPeekedExpiry": "20270502",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 118,
+      "feedExpiry": "20270502",
+      "routeCount": 27,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
+    },
+    "checkedAt": "2026-11-03"
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "caa526cda86613a9",
+  "feedObtainedAt": "20260824"
 }

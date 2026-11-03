@@ -1,6 +1,7 @@
 {
   "slug": "terrebonne-parish",
-  "name": "Good Earth Transit (Houma)",
+  "officialName": "Good Earth Transit",
+  "nameQualifier": "Houma",
   "websiteUrl": "https://tpcg.org/index.php?f=public_transit",
   "region": "Louisiana",
   "center": [
@@ -15,13 +16,13 @@
   ],
   "feedUrl": "https://files.mobilitydatabase.org/ntd-60080/latest.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-60080/latest.zip",
-  "lastFeedExpiry": "20270106",
-  "lastFeedVersion": "424",
-  "lastRefreshedAt": "2026-10-12",
-  "lastFeedCheckAt": "20261019",
+  "lastFeedExpiry": "20270130",
+  "lastFeedVersion": "425",
+  "lastRefreshedAt": "2026-11-02",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20270106",
+  "expiredFeedCheckExpiry": "20270130",
   "feedQuality": {
     "status": "healthy",
     "score": 100,
@@ -31,9 +32,15 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 17
+      "featureCount": 66,
+      "feedExpiry": "20270130",
+      "routeCount": 8,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-12"
+    "checkedAt": "2026-11-03"
   },
   "timezone": "America/Chicago",
   "feedRefreshStatus": "current",
@@ -42,5 +49,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/ntd-60080/latest.zip",
-  "lastPeekedExpiry": "20270106"
+  "lastPeekedExpiry": "20270130",
+  "lastServiceWeek": "c63dc75fedf8b877",
+  "feedObtainedAt": "20261102"
 }

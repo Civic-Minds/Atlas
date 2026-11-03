@@ -10,6 +10,7 @@
 import JSZip from 'jszip';
 import { parseCsv } from './parseGtfs.js';
 import { effectiveFeedExpiry, effectiveFeedStart } from './feedFreshness.js';
+import { addYearsYmd, PLACEHOLDER_EXPIRY_YEARS } from './refreshMeta.js';
 import { COUNTRY_LAUNCH_FLAG, isCountryLaunchBlocked, resolveAgencyCountry, type AgencyCountrySource } from './countryLaunchGate.js';
 
 export interface ArchiveObject {
@@ -132,6 +133,26 @@ export interface FeedDates {
 }
 
 /**
+ * #1253: the zip's own date, the newest modification date of its .txt files (YYYYMMDD; zip times carry no
+ * time zone, so the stored wall-clock date is read as is). Dates before 2000 or after `todayYmd` are
+ * ignored. Null when none is usable. The listing-end safeguard reads it when Atlas never recorded when it
+ * first obtained the file: Miami's April file, skipped as unchanged until September, is dated 20260421.
+ */
+export async function zipFileDate(buf: Buffer, todayYmd: string): Promise<string | null> {
+  try {
+    const zip = await JSZip.loadAsync(buf);
+    const dates = Object.values(zip.files)
+      .filter(entry => !entry.dir && entry.name.toLowerCase().endsWith('.txt'))
+      .map(entry => entry.date.toISOString().slice(0, 10).replace(/-/g, ''))
+      .filter(date => date >= '20000101' && date <= todayYmd)
+      .sort();
+    return dates.at(-1) ?? null;
+  } catch {
+    return null;
+  }
+}
+
+/**
  * Read the first and latest advertised service dates and feed_version from a GTFS zip.
  *
  * With `excludeRouteShortNames` (the agency's config), the calendar dates count only services
@@ -203,14 +224,27 @@ export function matchesExpiredFeedPin(pin: ExpiredFeedPin | null | undefined, fe
 }
 
 /**
+ * A live expiry stamped before placeholder capping (e.g. 20991231) compared as today + 2 years,
+ * the same cap recordedFeedExpiry puts on the source zip. Without this, a rebuild of the same
+ * feed reads as older than live and is refused on every run (CIV-1245: Waukesha, Whitehorse,
+ * St. George). A real end date within two years is compared as is.
+ */
+function capPlaceholderExpiry(liveFeedExpiry: string, todayYmd: string): string {
+  const cap = addYearsYmd(todayYmd, PLACEHOLDER_EXPIRY_YEARS);
+  return liveFeedExpiry > cap ? cap : liveFeedExpiry;
+}
+
+/**
  * Refuse a source zip whose service dates are unknown, already over, or older
  * than the feed the live data was built from. Returns a reason, or null if OK.
+ * capTodayYmd is the date the zip's own expiry was capped with (recordedFeedExpiry), so a
+ * placeholder live expiry is capped on the same day; it defaults to todayYmd.
  * A zip matching an expiredFeedPin may have ended; the other checks still apply.
  */
-export function feedDateRefusal(feedExpiry: string | null, liveFeedExpiry: string | null | undefined, todayYmd: string, pinnedExpiry?: string | null): string | null {
+export function feedDateRefusal(feedExpiry: string | null, liveFeedExpiry: string | null | undefined, todayYmd: string, pinnedExpiry?: string | null, capTodayYmd: string = todayYmd): string | null {
   if (!feedExpiry) return 'source zip has no service dates, so it cannot be shown to be current';
   if (feedExpiry < todayYmd && feedExpiry !== pinnedExpiry) return `source zip service ended ${feedExpiry}, before today (${todayYmd})`;
-  if (liveFeedExpiry && /^\d{8}$/.test(liveFeedExpiry) && feedExpiry < liveFeedExpiry) {
+  if (liveFeedExpiry && /^\d{8}$/.test(liveFeedExpiry) && feedExpiry < capPlaceholderExpiry(liveFeedExpiry, capTodayYmd)) {
     return `source zip service ends ${feedExpiry}, older than the live data's ${liveFeedExpiry}`;
   }
   return null;

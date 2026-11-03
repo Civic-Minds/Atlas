@@ -1,6 +1,7 @@
 {
   "slug": "annecy",
-  "name": "Sibra (Annecy)",
+  "officialName": "Sibra",
+  "nameQualifier": "Annecy",
   "region": "Auvergne-Rhône-Alpes",
   "center": [
     45.8992,

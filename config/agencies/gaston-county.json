@@ -1,6 +1,6 @@
 {
   "slug": "gaston-county",
-  "name": "Gaston County Transit",
+  "officialName": "Gaston County Transit",
   "websiteUrl": "https://www.gastongov.com/164/ACCESS---Transportation",
   "region": "North Carolina",
   "center": [
@@ -26,14 +26,20 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 1
+      "featureCount": 1,
+      "feedExpiry": "20301001",
+      "routeCount": 1,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-12"
+    "checkedAt": "2026-11-03"
   },
   "lastFeedExpiry": "20301001",
   "lastFeedVersion": "1",
-  "lastRefreshedAt": "2026-10-12",
-  "lastFeedCheckAt": "20261019",
+  "lastRefreshedAt": "2026-11-02",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20301031",
@@ -44,5 +50,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://gtfs.transitportal.org/CurrentGTFS/Gaston%20County_71/Gaston.zip",
-  "lastPeekedExpiry": "20301031"
+  "lastPeekedExpiry": "20301031",
+  "lastServiceWeek": "a80cb0b9b440f04a",
+  "feedObtainedAt": "20251009"
 }

@@ -1,6 +1,7 @@
 {
   "slug": "gotriangle",
-  "name": "GoTriangle (Raleigh-Durham)",
+  "officialName": "GoTriangle",
+  "nameQualifier": "Raleigh-Durham",
   "websiteUrl": "https://gotriangle.org/",
   "center": [
     35.99,
@@ -10,7 +11,7 @@
   "lastFeedExpiry": "20270213",
   "lastFeedVersion": "2026-08 service V1",
   "region": "North Carolina",
-  "lastRefreshedAt": "2026-10-14",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Durham, North Carolina",
     "Cary, North Carolina",
@@ -20,7 +21,7 @@
     "Burlington, North Carolina"
   ],
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-3183/latest.zip",
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270213",
@@ -36,13 +37,21 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 68
+      "featureCount": 68,
+      "feedExpiry": "20270213",
+      "routeCount": 18,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-14"
+    "checkedAt": "2026-11-03"
   },
   "lastPeekedExpiry": "20270213",
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
-  "feedRefreshRetryCount": 0
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "fc20bec301bc59d7",
+  "feedObtainedAt": "20260827"
 }

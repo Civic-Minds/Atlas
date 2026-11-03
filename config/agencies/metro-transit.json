@@ -1,16 +1,17 @@
 {
   "slug": "metro-transit",
-  "name": "Metro Transit (Minneapolis)",
+  "officialName": "Metro Transit",
+  "nameQualifier": "Minneapolis",
   "websiteUrl": "https://www.metrotransit.org",
   "center": [
     44.98,
     -93.27
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-205/latest.zip",
-  "lastFeedExpiry": "20261211",
-  "lastFeedVersion": "1791990332",
+  "lastFeedExpiry": "20261218",
+  "lastFeedVersion": "1793200170",
   "region": "Minnesota",
-  "lastRefreshedAt": "2026-10-19",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Minneapolis, Minnesota",
     "Saint Paul, Minnesota",
@@ -23,25 +24,30 @@
     "Plymouth, Minnesota",
     "West Coon Rapids, Minnesota"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261204",
+  "expiredFeedCheckExpiry": "20261218",
   "feedQuality": {
     "status": "review",
-    "score": 80,
+    "score": 98,
     "reasons": [
-      "1 route shape needed adjustment before display.",
-      "1 route has stops whose frequency differs from the overall route schedule."
+      "2 route have stops whose frequency differs from the overall route schedule."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
-      "shapeAnomalies": 1,
-      "routeHeadwayMismatches": 1,
-      "featureCount": 671
+      "shapeAnomalies": 2,
+      "routeHeadwayMismatches": 2,
+      "featureCount": 671,
+      "feedExpiry": "20261218",
+      "routeCount": 126,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 2,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-19"
+    "checkedAt": "2026-11-03"
   },
   "timezone": "America/Chicago",
   "feedRefreshStatus": "current",
@@ -50,5 +56,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-205/latest.zip",
-  "lastPeekedExpiry": "20261211"
+  "lastPeekedExpiry": "20261218",
+  "lastServiceWeek": "31fa6f21fa4a7a14",
+  "feedObtainedAt": "20261102"
 }

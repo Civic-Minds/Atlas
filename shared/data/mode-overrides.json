@@ -353,9 +353,16 @@
     {
       "agencySlug": "miami-dade-transit",
       "routeType": 2,
-      "routeShortName": "2600",
+      "routeShortName": "Green",
       "mode": 1,
-      "reason": "Metrorail is a heavy-rail metro, published as route_type 2 (commuter rail)"
+      "reason": "Metrorail is a heavy-rail metro, published as route_type 2 (commuter rail); routeSplits names the 2600 route Green and Orange"
+    },
+    {
+      "agencySlug": "miami-dade-transit",
+      "routeType": 2,
+      "routeShortName": "Orange",
+      "mode": 1,
+      "reason": "Metrorail is a heavy-rail metro, published as route_type 2 (commuter rail); routeSplits names the 2600 route Green and Orange"
     },
     {
       "agencySlug": "miami-dade-transit",
@@ -450,6 +457,27 @@
     },
     {
       "agencySlug": "njt-rail",
+      "routeType": 0,
+      "routeShortName": "RVLN",
+      "mode": 100,
+      "reason": "Hudson-Bergen, Newark and River LINE are light rail, published as route_type 0 (tram)"
+    },
+    {
+      "agencySlug": "njt",
+      "routeType": 0,
+      "routeShortName": "HBLR",
+      "mode": 100,
+      "reason": "Hudson-Bergen, Newark and River LINE are light rail, published as route_type 0 (tram)"
+    },
+    {
+      "agencySlug": "njt",
+      "routeType": 0,
+      "routeShortName": "NLR",
+      "mode": 100,
+      "reason": "Hudson-Bergen, Newark and River LINE are light rail, published as route_type 0 (tram)"
+    },
+    {
+      "agencySlug": "njt",
       "routeType": 0,
       "routeShortName": "RVLN",
       "mode": 100,

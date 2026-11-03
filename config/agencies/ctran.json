@@ -1,6 +1,7 @@
 {
   "slug": "ctran",
-  "name": "C-TRAN (Vancouver, WA)",
+  "officialName": "C-TRAN",
+  "nameQualifier": "Vancouver, WA",
   "websiteUrl": "http://www.C-TRAN.com",
   "center": [
     45.6513,
@@ -17,13 +18,13 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-258/latest.zip",
   "lastFeedExpiry": "20270109",
   "lastFeedVersion": "20260913-20270109",
-  "lastRefreshedAt": "2026-10-03",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Vancouver, Washington",
     "Gresham, Oregon",
     "Portland, Oregon"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270109",
@@ -36,9 +37,15 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 151
+      "featureCount": 150,
+      "feedExpiry": "20270109",
+      "routeCount": 30,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-03"
+    "checkedAt": "2026-11-03"
   },
   "timezone": "America/Los_Angeles",
   "feedRefreshStatus": "current",
@@ -47,5 +54,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://www.c-tran.com/images/Google/GoogleTransitUpload.zip",
-  "lastPeekedExpiry": "20270109"
+  "lastPeekedExpiry": "20270109",
+  "lastServiceWeek": "82a9dabd17e9bbcb",
+  "feedObtainedAt": "20261008"
 }

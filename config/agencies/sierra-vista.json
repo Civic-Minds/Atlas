@@ -1,6 +1,6 @@
 {
   "slug": "sierra-vista",
-  "name": "City of Sierra Vista",
+  "officialName": "City of Sierra Vista",
   "websiteUrl": "https://sierravistaaz.gov/our-city/bus-service/route-information",
   "center": [
     31.55,
@@ -12,7 +12,7 @@
   "region": "Arizona",
   "lastFeedExpiry": "20270622",
   "lastFeedVersion": "20250522",
-  "lastRefreshedAt": "2026-10-12",
+  "lastRefreshedAt": "2026-11-02",
   "feedQuality": {
     "status": "review",
     "score": 90,
@@ -24,13 +24,19 @@
       "validationWarnings": 1,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 3
+      "featureCount": 3,
+      "feedExpiry": "20270622",
+      "routeCount": 3,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-12"
+    "checkedAt": "2026-11-03"
   },
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/12009/VistaTransit_AZ_GTFS.zip",
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270622",
@@ -38,5 +44,7 @@
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
-  "lastPeekedExpiry": "20270622"
+  "lastPeekedExpiry": "20270622",
+  "lastServiceWeek": "aea1ccb09902d0e9",
+  "feedObtainedAt": "20250922"
 }

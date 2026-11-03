@@ -1,4 +1,5 @@
 import { readdirSync, readFileSync } from 'node:fs';
+import { fixtureSameNameRoutes } from './fixtureAgencyNames';
 import { resolve } from 'node:path';
 import JSZip from 'jszip';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
@@ -6,7 +7,7 @@ import { processGtfsBuffer } from '../process-core';
 import { normalizeRouteFilterFeatures, routePassesHeadwayFilter } from '../../shared/routeHeadwayFilter';
 import { isLimitedService } from '../../shared/irregularRoutes';
 import { decodeStopRuns } from '../../shared/stopRuns';
-import { directionStretches, encodeStopRuns, rollupDirection, rollupRoute, stopPeriodValues, stretchMetaPeriods, stretchFilterValue, stretchPeriods, tailNotThrough, type DirectionStretches, type DirectionTrip } from '../tripSets';
+import { directionNightValue, directionNightVerdict, directionStretches, encodeStopRuns, rollupDirection, rollupRoute, stopPeriodValues, stretchMetaPeriods, stretchFilterValue, stretchNight, stretchPeriods, tailNotThrough, type DirectionStretches, type DirectionTrip, type Stretch } from '../tripSets';
 
 // Frequency focus step 3 (`_reports/step3-tripsets-spec.md`): the direction trip-set selector, in
 // shadow. Expected values are the GTFS oracle's (scripts/handcheck/stretch-departures.py --at mid
@@ -26,7 +27,7 @@ function run(name: string, slug = name.split('-')[0]): Promise<Run> {
   if (!runs.has(name)) {
     runs.set(name, (async () => {
       let captured: Omit<Run, 'rows'> | null = null;
-      const result = await processGtfsBuffer(await fixtureZip(name), undefined, { slug, onStretches: input => { captured = input; } });
+      const result = await processGtfsBuffer(await fixtureZip(name), undefined, { slug, sameNameRoutes: fixtureSameNameRoutes(name), onStretches: input => { captured = input; } });
       const rows = JSON.parse(result.geojson).features.map((f: any) => f.properties).filter((p: any) => p.stopId == null);
       return { rows, ...captured! };
     })());
@@ -36,6 +37,10 @@ function run(name: string, slug = name.split('-')[0]): Promise<Run> {
 const row = (r: Run, route: string, day: string, dir = 0) =>
   r.rows.find(p => p.routeShortName === route && p.day === day && p.directionId === dir);
 const mainValue = (r: Run, key: string, period: string) => rollupDirection(r.stretches.get(key)!)!.period[period as 'midday'].mainValue;
+
+// #1272: each fixture test processes a GTFS cut, which can pass vitest's 5 s default under load
+// (CTA 77 in a publish run); the NYC night tests already took 30 s.
+vi.setConfig({ testTimeout: 30_000 });
 
 beforeAll(() => {
   vi.useFakeTimers({ toFake: ['Date'], now: new Date('2026-10-20T12:00:00') });
@@ -284,11 +289,16 @@ describe('night from the selector (D2, D3, D7: 2-5am at the middle stop)', () =>
     const r = await run('ttc-301-weekday-night');
     expect([row(r, '301', 'Weekday').stretchNight30, row(r, '301', 'Weekday').stretchNight60]).toEqual([true, true]);
   });
-  it('TTC 337 and 373 Weekday: every 30 with longer edges, so they pass every 60 and fail every 30', async () => {
+  it('TTC 337 and 373 Weekday: every 30 after a first bus past 2:30, so they pass every 30 and every 60 (CIV-1198)', async () => {
+    // Before CIV-1198 the 31- and 44-minute waits for the first night bus failed every 30.
     const r = await run('ttc-337-373-night');
     for (const route of ['337', '373']) {
-      expect([row(r, route, 'Weekday').stretchNight30, row(r, route, 'Weekday').stretchNight60], route).toEqual([false, true]);
+      expect([row(r, route, 'Weekday').stretchNight30, row(r, route, 'Weekday').stretchNight60], route).toEqual([true, true]);
     }
+  });
+  it('TTC 300 Weekday: the Bloor trunk every 8 and its Danforth Rd branch every 15 from 2:39 pass every 30 (CIV-1198)', async () => {
+    const r = await run('ttc-300-weekday-night');
+    expect([row(r, '300', 'Weekday').stretchNight30, row(r, '300', 'Weekday').stretchNight60]).toEqual([true, true]);
   });
   it('TTC 320 Sunday: passes both', async () => {
     const r = await run('ttc-320-sunday-night');
@@ -296,12 +306,89 @@ describe('night from the selector (D2, D3, D7: 2-5am at the middle stop)', () =>
   });
 });
 
-describe('night on disconnected pieces (NYC subway S)', () => {
-  it('S keeps passing: the 42 St shuttle stops overnight, Franklin Av and Rockaway Park run all night', async () => {
+describe('night edges: the wait for the first and after the last night bus (CIV-1198, Ryan 2026-10-30)', () => {
+  const hm = (h: number, m: number) => h * 60 + m;
+  const every = (from: number, to: number, step: number) => Array.from({ length: Math.floor((to - from) / step) + 1 }, (_, i) => from + i * step);
+  const stretch = (nightTimes: number[]) => ({ kind: 'tail', stops: ['a'], refStop: 'a', lengthKm: 6, times: nightTimes, nightTimes, tripCount: nightTimes.length }) as Stretch;
+  it("TTC 300's Danforth Rd branch: every 15 from its first bus at 2:39 passes every 30", () => {
+    expect(stretchNight(stretch(every(hm(26, 39), hm(29, 24), 15)), 30)).toBe(true);
+  });
+  it('a real gap between night buses still fails every 30 (TTC 352 northbound, 38 minutes)', () => {
+    expect(stretchNight(stretch([...every(hm(26, 9), hm(27, 39), 30), hm(28, 17), hm(28, 47)]), 30)).toBe(false);
+  });
+  it('day service starting at 4:30 never passes as night service, at 30 or 60', () => {
+    const day = stretch(every(hm(28, 30), hm(30, 0), 15));
+    expect([stretchNight(day, 30), stretchNight(day, 60)]).toEqual([false, false]);
+  });
+  it('a first night bus after 3:00 still fails, even every 30 after it', () => {
+    expect(stretchNight(stretch(every(hm(27, 5), hm(29, 5), 30)), 30)).toBe(false);
+  });
+  it('a stretch that stops before 3:30 keeps both edges at the grade', () => {
+    expect(stretchNight(stretch(every(hm(26, 0), hm(27, 20), 20)), 60)).toBe(false);
+  });
+});
+
+describe('Overnight reads the night verdict (#1267, Ryan 2026-10-31)', () => {
+  const hm = (h: number, m: number) => h * 60 + m;
+  const every = (from: number, to: number, step: number) => Array.from({ length: Math.floor((to - from) / step) + 1 }, (_, i) => from + i * step);
+  const dir = (nightTimes: number[]) => ({ main: { kind: 'main', stops: ['a'], refStop: 'a', lengthKm: 6, times: nightTimes, nightTimes, tripCount: nightTimes.length }, tails: [] }) as unknown as DirectionStretches;
+  it('TTC 301 Weekday: Overnight reads 30 or better, as Night Service 30 does (not the 71 across the 5-6am lull)', async () => {
+    const r = await run('ttc-301-weekday-night');
+    const p = row(r, '301', 'Weekday');
+    expect(p.stretchNight30).toBe(true);
+    expect((p.routeFilterHeadwayByPeriod as Record<string, number | null>).overnight).toBeLessThanOrEqual(30);
+  });
+  it('the value passes 30 and 60 exactly when the verdict does', () => {
+    const cases = [
+      every(hm(26, 0), hm(29, 0), 30),
+      [...every(hm(26, 9), hm(27, 39), 30), hm(28, 17), hm(28, 47)],
+      every(hm(26, 10), hm(29, 0), 45),
+      every(hm(26, 0), hm(29, 0), 75),
+      every(hm(26, 39), hm(29, 24), 15),
+    ];
+    for (const t of cases) {
+      const d = dir(t);
+      const v = directionNightValue(d);
+      for (const gap of [30, 60]) expect(v != null && v <= gap, `${t} @${gap}`).toBe(directionNightVerdict(d, gap) !== 'fail');
+    }
+  });
+  it('night service every 75 has no Overnight value: over 60 is not overnight service', () => {
+    expect(directionNightValue(dir(every(hm(26, 0), hm(29, 0), 75)))).toBeNull();
+    expect(directionNightValue(dir(every(hm(26, 0), hm(29, 0), 60)))).toBe(60);
+  });
+  it('Overnight is one number: no branch range and no 2-6 AM wording inputs (TTC 300, its branches every 8-15)', async () => {
+    const r = await run('ttc-300-weekday-night');
+    const rows = r.rows.filter(p => p.stretchPeriodRange !== undefined);
+    expect(rows.length).toBeGreaterThan(0);
+    for (const p of rows as Record<string, any>[]) {
+      expect(p.stretchPeriodRange.overnight).toBeNull();
+      expect(p.stretchPeriodTypical.overnight).toBeNull();
+      expect(p.stretchPeriodOneGap.overnight).toBe(false);
+      expect(p.stretchPeriodEdge?.overnight).toBeUndefined();
+      expect(p.stretchPeriodGap?.overnight).toBeUndefined();
+    }
+  });
+  it('NYC subway 3 to New Lots Av runs at night only on its night path: the route has an Overnight value, the direction none', async () => {
+    const r = await run('nyct-subway-night-weekday', 'nyct');
+    const rows = (r.rows as Record<string, any>[]).filter(p => p.routeShortName === '3' && p.day === 'Weekday' && p.headsign === 'New Lots Av' && p.directionFilterHeadwayByPeriod);
+    expect(rows.length).toBeGreaterThan(0);
+    for (const p of rows) {
+      expect(p.routeFilterHeadwayByPeriod.overnight).toEqual(expect.any(Number));
+      expect(p.directionFilterHeadwayByPeriod.overnight).toBeNull();
+    }
+  }, 30_000);
+  it('day service that only starts after 3:30 has no Overnight value (TTC 102)', () => {
+    expect(directionNightValue(dir(every(hm(28, 48), hm(30, 0), 12)))).toBeNull();
+  });
+});
+
+describe('NYC subway S is three shuttles (#1289)', () => {
+  it('each shuttle is its own route: the 42 St shuttle stops overnight, Franklin and Rockaway run all night', async () => {
     const r = await run('nyct-subway-s-weekday', 'nyct');
-    const p = row(r, 'S', 'Weekday');
-    expect(r.stretches.get('S::0::Weekday')!.disconnected).toBe(true);
-    expect([p.stretchNight30, p.stretchNight60]).toEqual([true, true]);
+    expect(r.rows.some(p => p.routeShortName === 'S')).toBe(false);
+    for (const name of ['42 St Shuttle', 'Franklin Shuttle', 'Rockaway Shuttle']) expect(r.stretches.get(`${name}::0::Weekday`)!.disconnected).toBeFalsy();
+    expect(row(r, '42 St Shuttle', 'Weekday').stretchNight60).toBe(false);
+    for (const name of ['Franklin Shuttle', 'Rockaway Shuttle']) expect(row(r, name, 'Weekday').stretchNight60).toBe(true);
   });
 });
 
@@ -327,7 +414,7 @@ describe('night service on part of the route counts, on the part it runs (Ryan, 
       expect(rows.every(p => p.stretchNight30 === true && p.stretchNight60 === true), route).toBe(true);
       expect(rows.some(p => p.nightServicePartOfRoute === true), route).toBe(true);
     }
-  });
+  }, 30_000);
 });
 
 describe('D8 midpoint shadow (YRT Viva Weekday overnight)', () => {
@@ -425,11 +512,11 @@ describe('Night flags read the stretches (step 4 switch)', () => {
     const r = await run('cta-87-weekday');
     expect(r.rows.filter(p => p.routeShortName === '87' && p.day === 'Weekday').some(p => p.nightService30)).toBe(false);
   });
-  it('TTC 337 rows pass 60 and not 30, as the route does', async () => {
+  it('TTC 337 rows light at 30 as well as 60, as the route does (CIV-1198)', async () => {
     const r = await run('ttc-337-373-night');
     const rows = r.rows.filter(p => p.routeShortName === '337' && p.day === 'Weekday' && p.nightService60);
     expect(rows.length).toBeGreaterThan(0);
-    expect(rows.some(p => p.nightService30)).toBe(false);
+    expect(rows.every(p => p.nightService30)).toBe(true);
   });
 });
 
@@ -506,12 +593,12 @@ describe('runs through the period: the settled checks catch a straggler before t
 });
 
 describe('review fixes: partial night only where night service misses the main stretch; holes are internal gaps', () => {
-  it('TTC 353 and 395 run at night on their corridor with a 66-67 minute opening gap: they fail Night, as their overnight value says', async () => {
+  it('TTC 353 and 395 run at night on their corridor with a 66-67 minute opening gap: they fail Night, and have no Overnight value (over 60, #1267)', async () => {
     const r = await run('ttc-353-395-weekday');
-    for (const [route, wait] of [['353', 66], ['395', 67]] as const) {
+    for (const route of ['353', '395']) {
       const p = row(r, route, 'Weekday');
       expect([p.stretchNight30, p.stretchNight60, p.stretchNightPartial60], route).toEqual([false, false, false]);
-      expect(p.routeFilterHeadwayByPeriod.overnight, route).toBe(wait);
+      expect(p.routeFilterHeadwayByPeriod.overnight, route).toBeNull();
     }
   });
   it('LA Metro 105: the Vernon owl stays a real part-of-route night service', async () => {
@@ -560,6 +647,17 @@ describe('step 6: the all-day filter, the midday cap and Frequent Service read t
     const r507 = await run('ttc-507-weekday');
     const tails = r507.rows.filter(p => p.day === 'Weekday' && p.directionId === 1 && p.stretchRole === 'tail').map(p => p.headsign).sort();
     expect(tails).toEqual(['Long Branch', 'Marine Parade']);
+  });
+  it('#1276: stretchCovers lists every stretch a row covers, its own stretch among them; a variant covers none of its own', async () => {
+    const r = await run('ttc-507-weekday');
+    const rows = r.rows.filter(p => p.day === 'Weekday') as Record<string, any>[];
+    for (const p of rows) {
+      if (p.stretchRole === 'tail') expect(p.stretchCovers).toContain(p.stretchIndex);
+      if (p.stretchRole === 'main') expect(p.stretchCovers).toContain('main');
+      if (p.stretchRole === 'variant') expect(p.stretchCovers ?? []).not.toContain('main');
+    }
+    // A tail row also runs the shared trunk, so it covers the main stretch too.
+    expect(rows.some(p => p.stretchRole === 'tail' && p.stretchCovers.includes('main'))).toBe(true);
   });
 });
 
@@ -734,7 +832,7 @@ describe('stop runs encode compactly and round-trip (CIV-321 S3)', () => {
   });
 });
 
-describe('a stretch period with under three departures reads no regular service on a card row (CIV-321 S4)', () => {
+describe('a stretch period with under three departures reads Irregular on a card row (CIV-321 S4)', () => {
   it('flags the sparse period and keeps the filter value for the map', () => {
     const stretch = { kind: 'tail' as const, stops: ['a'], refStop: 'a', lengthKm: 1, times: [600, 783, 1000, 1030, 1060, 1090], nightTimes: [], tripCount: 6 };
     const meta = stretchMetaPeriods(stretch);
@@ -771,6 +869,36 @@ describe('section values count trips running through a skipped stop (CIV-321)', 
     expect(atSkipped).toBe(15);
     const own = d.timesAtStop!('s2').times.filter(t => t >= 540 && t < 900);
     expect(own[1] - own[0]).toBe(30);
+  });
+});
+
+describe('Overnight section values read each stop through the night verdict (#1094)', () => {
+  // Night buses every 30 from 2:00 to 4:50, then day service from 5:50: over the 2-6am window each stop
+  // waits 60+ minutes between its last night bus and its first day bus, while the night verdict passes 30.
+  const coords = new Map<string, [number, number]>();
+  const stops = ['s0', 's1', 's2', 's3'];
+  stops.forEach((id, i) => coords.set(id, [43.6 + i * 0.01, -79.4]));
+  const build = (nightStep: number) => {
+    const trips: DirectionTrip[] = [];
+    for (const [a, b, step] of [[1560, 1730, nightStep], [350, 1380, 15]] as const)
+      for (let m = a; m <= b; m += step) trips.push({ tripId: `t${m}`, visits: stops.map((stopId, i) => ({ stopId, minutes: m + 3 * i })) });
+    return directionStretches('k', trips, id => coords.get(id));
+  };
+  it('a stop on a line that passes Overnight takes the line value, not its full-window wait', () => {
+    const d = build(30);
+    expect(stretchFilterValue(stretchPeriods(d.main!).overnight)).toBeGreaterThan(60);
+    expect(directionNightValue(d, true)).toBe(30);
+    expect(decodeStopRuns(stopPeriodValues(stops, d.throughTimesAlong!).overnight)).toEqual([30, 30, 30, 30]);
+  });
+  it('a stop the verdict does not pass keeps its full-window wait (night buses every 75)', () => {
+    const d = build(75);
+    expect(directionNightValue(d, true)).toBeNull();
+    const values = decodeStopRuns(stopPeriodValues(stops, d.throughTimesAlong!).overnight);
+    expect(values.every(v => v != null && v > 60)).toBe(true);
+  });
+  it('Late keeps the settled rule (#524): the wait after the last bus still counts', () => {
+    const d = build(30);
+    expect(stopPeriodValues(stops, d.throughTimesAlong!).late).toBe(encodeStopRuns(stops.map(() => stretchFilterValue(stretchPeriods(d.main!).late))));
   });
 });
 
@@ -824,6 +952,42 @@ describe('rule 3: sibling branches that take turns through a period (#1072, HSR 
     expect(rollupDirection(d)!.period.midday.filterValue).toBeGreaterThan(60);
   });
 
+  it('CIV-1241: a branch that runs every 30 and stops at 12:00 reads its stop time as the period edge, and keeps its wait', () => {
+    const d = build(every(360, 720, 30), every(750, 1380, 30), []);
+    const r = rollupDirection(d)!;
+    const edge = r.period.midday.edge!;
+    expect(edge.every).toBe(30);
+    expect(edge.from).toBeUndefined();
+    expect(edge.until).toBeGreaterThanOrEqual(720);
+    expect(edge.until).toBeLessThan(750);
+    // The edge explains the filter value: the wait from the branch's last trip to the window's end.
+    expect(r.period.midday.filterValue).toBe(Math.ceil(900 - edge.until!));
+    expect(r.period.midday.gap).toBeNull();
+    // #1276: the edge names the branch that set it, the index a row standing for it carries.
+    expect(d.tails).toHaveLength(1);
+    expect(edge.stretch).toBe(0);
+  });
+
+  it('#1276: an edge read on the main stretch names the main stretch', () => {
+    const coordsM = new Map<string, [number, number]>(trunk.map((id, i) => [id, [43.6 + i * 0.01, -79.4]]));
+    // Every 30 from 6:00, stopping at 12:00: the main stretch's own early end sets the midday value.
+    const d = directionStretches('m::0::Weekday', every(360, 720, 30).map(m => trip(`m${m}`, m, [])), id => coordsM.get(id));
+    const edge = rollupDirection(d)!.period.midday.edge;
+    expect(edge).toMatchObject({ every: 30, stretch: 'main' });
+  });
+
+  it('CIV-1241 legitimate: branches taking turns read their spacing, with no edge', () => {
+    const r = rollupDirection(build(every(360, 720, 30), every(750, 1380, 30), f))!;
+    expect(r.period.midday.filterValue).toBe(30);
+    expect(r.period.midday.edge).toBeNull();
+  });
+
+  it('CIV-1241 legitimate: a branch that runs all day has no edge', () => {
+    const d = build(every(360, 1380, 30), every(375, 1365, 30), []);
+    expect(d.tails).toHaveLength(1);
+    expect(rollupDirection(d)!.period.midday.edge).toBeNull();
+  });
+
   it('legitimate: a few variant trips to another terminal are not a sibling branch (AC Transit 22\'s late Grand Lake runs)', () => {
     const after = every(750, 1380, 30);
     const odd = new Set([750, 780, 810]);
@@ -873,5 +1037,69 @@ describe('a tail that does not run through a period, by the main stretch\'s rule
   it('a branch running every 12 all day runs through every daytime period', () => {
     const { notThrough } = tailNotThrough(tail(every(360, 1380, 12)));
     expect(notThrough.filter(p => ['amPeak', 'midday', 'pmPeak', 'evening'].includes(p))).toEqual([]);
+  });
+});
+
+describe('CIV-1248: a period the route covers only part of reads its slowest stretch (D1)', () => {
+  const am = (r: Run, route: string, dir: number) => r.rows.filter(p => p.routeShortName === route && p.day === 'Sunday' && p.directionId === dir) as Record<string, any>[];
+  it('TTC 110 Sunday AM to Islington: the branches run every 30 from about 7:53, not the trunk\'s every 15; no filter value (D8)', async () => {
+    const rows = am(await run('ttc-110-79-sunday'), '110', 1);
+    expect(rows.length).toBeGreaterThan(0);
+    for (const p of rows) {
+      expect(p.stretchPeriodEdge.amPeak).toEqual({ from: 473, every: 30, stretch: 0 });
+      expect(p.directionFilterHeadwayByPeriod.amPeak).toBeNull();
+      expect(p.routeFilterHeadwayByPeriod.amPeak).toBeNull();
+    }
+    // A row that covers that branch carries it, so the card can place the words (#1276).
+    expect(rows.some(p => p.stretchCovers?.includes(0))).toBe(true);
+  });
+  it('TTC 110 Sunday AM to Islington via Browns Line: the row carrying the edge is not marked as running under three trips (#1277)', async () => {
+    const rows = am(await run('ttc-110-79-sunday'), '110', 1).filter(p => p.stretchCovers?.includes(p.stretchPeriodEdge.amPeak.stretch));
+    expect(rows.map(p => p.headsign)).toContain('Islington via Browns Line and Horner');
+    for (const p of rows) expect(p.noOwnServiceByPeriod ?? []).not.toContain('amPeak');
+  });
+  it('TTC 110 Sunday AM southbound: Kipling runs the whole period every 30, so the direction reads its 30 from 7:29, not the trunk\'s every 15 from 8:07', async () => {
+    const all = am(await run('ttc-110-79-sunday'), '110', 0);
+    const kipling = all.find(r => r.headsign === 'Kipling and Lake Shore')!;
+    for (const p of all) {
+      expect(p.stretchPeriodEdge.amPeak).toEqual({ from: 449, every: 30, stretch: kipling.stretchIndex });
+      expect(p.directionFilterHeadwayByPeriod.amPeak).toBeNull();
+    }
+  });
+  it('TTC 79 Sunday AM: every 30 on the slower branch (was the trunk\'s every 15)', async () => {
+    const rows = am(await run('ttc-110-79-sunday'), '79', 0);
+    expect(rows.length).toBeGreaterThan(0);
+    for (const p of rows) {
+      expect(p.stretchPeriodEdge.amPeak.every).toBe(30);
+      expect(p.stretchPeriodEdge.amPeak.stretch).not.toBe('main');
+      expect(p.directionFilterHeadwayByPeriod.amPeak).toBeNull();
+    }
+  });
+  it('TTC 952 weekday midday to Pearson: only the branch runs into midday, until 9:42 every 12; no filter value (D8)', async () => {
+    const rows = (await run('ttc-952-weekday')).rows.filter(p => p.routeShortName === '952' && p.day === 'Weekday' && p.directionId === 1) as Record<string, any>[];
+    expect(rows.length).toBeGreaterThan(0);
+    for (const p of rows) {
+      expect(p.stretchPeriodEdge.midday).toEqual({ until: 582, every: 12, stretch: 0 });
+      expect(p.directionFilterHeadwayByPeriod.midday).toBeNull();
+      expect(p.routeFilterHeadwayByPeriod.midday).toBeNull();
+    }
+  });
+});
+
+describe('CIV-1251: each stretch carries its own late start or early end', () => {
+  const rows = async (dir: number) => (await run('ttc-110-79-sunday')).rows.filter(p => p.routeShortName === '110' && p.day === 'Sunday' && p.directionId === dir) as Record<string, any>[];
+  it('TTC 110 Sunday AM southbound: the shared stretch every 15 from 8:07, Kipling every 30 from its first trip at 7:29', async () => {
+    const [p] = await rows(0);
+    expect(p.stretchMeta.main.edge.amPeak).toEqual({ from: 487, every: 15 });
+    const kipling = (await rows(0)).find(r => r.headsign === 'Kipling and Lake Shore')!;
+    expect(p.stretchMeta.tails[kipling.stretchIndex].edge.amPeak).toEqual({ from: 449, every: 30 });
+  });
+  it('legitimate: Long Branch has two trips before 9 (8:05, 8:35), under the three a reading needs, so no AM edge of its own', async () => {
+    const all = await rows(0);
+    const longBranch = all.find(r => r.headsign === 'Long Branch via Horner and Browns Line')!;
+    expect(all[0].stretchMeta.tails[longBranch.stretchIndex].edge?.amPeak).toBeUndefined();
+  });
+  it('overnight never carries a stretch edge (#1267)', async () => {
+    for (const p of await rows(0)) for (const st of [p.stretchMeta.main, ...p.stretchMeta.tails]) expect(st.edge?.overnight).toBeUndefined();
   });
 });

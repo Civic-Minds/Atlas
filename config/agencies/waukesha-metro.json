@@ -1,6 +1,6 @@
 {
   "slug": "waukesha-metro",
-  "name": "Waukesha Metro Transit",
+  "officialName": "Waukesha Metro Transit",
   "center": [
     43.0187,
     -88.1993
@@ -18,10 +18,10 @@
   ],
   "timezone": "America/Chicago",
   "lastRawArchiveKey": "20250601-9d45b36319c36615",
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20991231",
+  "expiredFeedCheckExpiry": "20270117",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://mywaukeshametro.com/gtfs"
 }

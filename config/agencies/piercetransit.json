@@ -1,6 +1,6 @@
 {
   "slug": "piercetransit",
-  "name": "Pierce Transit",
+  "officialName": "Pierce Transit",
   "center": [
     47.25,
     -122.45
@@ -15,7 +15,7 @@
   "feedUrl": "https://gtfs.sound.obaweb.org/prod/3_gtfs.zip",
   "lastFeedExpiry": "20261212",
   "lastFeedVersion": "S1000138",
-  "lastRefreshedAt": "2026-10-03",
+  "lastRefreshedAt": "2026-11-02",
   "websiteUrl": "https://www.piercetransit.org",
   "cities": [
     "Tacoma, Washington",
@@ -30,7 +30,7 @@
     "Kent, Washington"
   ],
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-265/latest.zip",
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261212",
@@ -44,9 +44,15 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 214
+      "featureCount": 214,
+      "feedExpiry": "20261212",
+      "routeCount": 39,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-03"
+    "checkedAt": "2026-11-03"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -54,5 +60,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://gtfs.sound.obaweb.org/prod/3_gtfs.zip",
-  "lastPeekedExpiry": "20261212"
+  "lastPeekedExpiry": "20261212",
+  "lastServiceWeek": "b13457bbebd97bc2",
+  "feedObtainedAt": "20261016"
 }

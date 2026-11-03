@@ -1,6 +1,6 @@
 {
   "slug": "broward-transit",
-  "name": "Broward County Transit",
+  "officialName": "Broward County Transit",
   "websiteUrl": "http://www.broward.org/bct/Pages/default.aspx",
   "center": [
     26.1224,
@@ -10,7 +10,7 @@
   "lastFeedExpiry": "20280930",
   "lastFeedVersion": "20251211",
   "region": "Florida",
-  "lastRefreshedAt": "2026-10-08",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Pompano Beach, Florida",
     "Hollywood, Florida",
@@ -23,7 +23,7 @@
     "Coconut Creek, Florida",
     "Miramar, Florida"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20280930",
@@ -43,9 +43,17 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 9
+      "featureCount": 9,
+      "feedExpiry": "20280930",
+      "routeCount": 5,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-08"
+    "checkedAt": "2026-11-03"
   },
-  "lastPeekedExpiry": "20280930"
+  "lastPeekedExpiry": "20280930",
+  "lastServiceWeek": "eb51abf65c72524e",
+  "feedObtainedAt": "20251211"
 }

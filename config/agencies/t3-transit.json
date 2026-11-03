@@ -1,6 +1,7 @@
 {
   "slug": "t3-transit",
-  "name": "T3 Transit (PEI)",
+  "officialName": "T3 Transit",
+  "nameQualifier": "PEI",
   "websiteUrl": "https://t3transit.ca/",
   "region": "Prince Edward Island",
   "center": [
@@ -17,10 +18,10 @@
   "lastFeedExpiry": "20270131",
   "lastFeedVersion": "UTC: 14-Oct-2026 19:11",
   "lastRefreshedAt": "2026-10-19",
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20270131",
+  "expiredFeedCheckExpiry": "20261231",
   "timezone": "America/Moncton",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2132/latest.zip",
@@ -33,9 +34,11 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 52
+      "featureCount": 52,
+      "feedExpiry": "20270131"
     },
-    "checkedAt": "2026-10-19"
+    "checkedAt": "2026-10-19",
+    "scoredAt": "2026-11-02"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,

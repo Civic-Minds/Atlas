@@ -1,0 +1,283 @@
+route_id,service_id,trip_id,trip_headsign,trip_short_name,direction_id,block_id,shape_id,wheelchair_accessible,bikes_allowed
+110,3,50862363,South - 110C Islington South towards Kipling and Lake Shore,C,0,2237034,1121914,1,1
+110,3,50862351,South - 110C Islington South towards Kipling and Lake Shore,C,0,2237033,1121914,1,1
+110,3,50862388,South - 110A Islington South towards Long Branch via Horner and Browns Line,A,0,2237036,1121917,1,1
+110,3,50862386,South - 110C Islington South towards Kipling and Lake Shore,C,0,2237034,1121915,1,1
+110,3,50862384,South - 110A Islington South towards Long Branch via Horner and Browns Line,A,0,2237032,1121913,1,1
+110,3,50862399,South - 110C Islington South towards Kipling and Lake Shore,C,0,2237033,1121915,1,1
+110,3,50862377,South - 110A Islington South towards Long Branch via Horner and Browns Line,A,0,2237036,1121913,1,1
+110,3,50862418,South - 110C Islington South towards Kipling and Lake Shore,C,0,2237034,1121915,1,1
+110,3,50862350,South - 110A Islington South towards Long Branch via Horner and Browns Line,A,0,2237032,1121913,1,1
+110,3,50862389,South - 110C Islington South towards Kipling and Lake Shore,C,0,2237033,1121915,1,1
+110,3,50862366,South - 110A Islington South towards Long Branch via Horner and Browns Line,A,0,2237036,1121913,1,1
+110,3,50862355,South - 110C Islington South towards Kipling and Lake Shore,C,0,2237034,1121915,1,1
+110,3,50862419,South - 110A Islington South towards Long Branch via Horner and Browns Line,A,0,2237032,1121913,1,1
+110,3,50862374,South - 110C Islington South towards Kipling and Lake Shore,C,0,2237033,1121915,1,1
+110,3,50862365,South - 110A Islington South towards Long Branch via Horner and Browns Line,A,0,2237036,1121913,1,1
+110,3,50862406,South - 110C Islington South towards Kipling and Lake Shore,C,0,2237034,1121915,1,1
+110,3,50862372,South - 110A Islington South towards Long Branch via Horner and Browns Line,A,0,2237032,1121913,1,1
+110,3,50862364,South - 110C Islington South towards Kipling and Lake Shore,C,0,2237033,1121915,1,1
+110,3,50862376,South - 110A Islington South towards Long Branch via Horner and Browns Line,A,0,2237036,1121913,1,1
+110,3,50862354,South - 110C Islington South towards Kipling and Lake Shore,C,0,2237034,1121915,1,1
+110,3,50862375,South - 110A Islington South towards Long Branch via Horner and Browns Line,A,0,2237032,1121913,1,1
+110,3,50862417,South - 110C Islington South towards Kipling and Lake Shore,C,0,2237033,1121915,1,1
+110,3,50862371,South - 110A Islington South towards Long Branch via Horner and Browns Line,A,0,2237036,1121913,1,1
+110,3,50862353,South - 110C Islington South towards Kipling and Lake Shore,C,0,2237034,1121915,1,1
+110,3,50862356,South - 110A Islington South towards Long Branch via Horner and Browns Line,A,0,2237032,1121913,1,1
+110,3,50862373,South - 110C Islington South towards Kipling and Lake Shore,C,0,2237033,1121915,1,1
+110,3,50862361,South - 110A Islington South towards Long Branch via Horner and Browns Line,A,0,2237036,1121913,1,1
+110,3,50862352,South - 110C Islington South towards Kipling and Lake Shore,C,0,2237034,1121915,1,1
+110,3,50862407,South - 110A Islington South towards Long Branch via Horner and Browns Line,A,0,2237032,1121913,1,1
+110,3,50862370,South - 110C Islington South towards Kipling and Lake Shore,C,0,2237033,1121915,1,1
+110,3,50862405,South - 110A Islington South towards Long Branch via Horner and Browns Line,A,0,2237036,1121913,1,1
+110,3,50862385,South - 110C Islington South towards Kipling and Lake Shore,C,0,2237034,1121915,1,1
+110,3,50862362,South - 110A Islington South towards Long Branch via Horner and Browns Line,A,0,2237032,1121913,1,1
+110,3,50862403,South - 110C Islington South towards Kipling and Lake Shore,C,0,2237033,1121915,1,1
+110,3,50862404,South - 110A Islington South towards Long Branch via Horner and Browns Line,A,0,2237036,1121913,1,1
+110,3,50862369,South - 110C Islington South towards Kipling and Lake Shore,C,0,2237034,1121915,1,1
+110,3,50862424,South - 110A Islington South towards Long Branch via Horner and Browns Line,A,0,2237032,1121913,1,1
+110,3,50862402,South - 110C Islington South towards Kipling and Lake Shore,C,0,2237033,1121915,1,1
+110,3,50862423,South - 110A Islington South towards Long Branch via Horner and Browns Line,A,0,2237036,1121913,1,1
+110,3,50862396,South - 110C Islington South towards Kipling and Lake Shore,C,0,2237034,1121915,1,1
+110,3,50862398,South - 110A Islington South towards Long Branch via Horner and Browns Line,A,0,2237032,1121913,1,1
+110,3,50862392,South - 110C Islington South towards Kipling and Lake Shore,C,0,2237033,1121915,1,1
+110,3,50862410,South - 110A Islington South towards Long Branch via Horner and Browns Line,A,0,2237036,1121913,1,1
+110,3,50862359,South - 110C Islington South towards Kipling and Lake Shore,C,0,2237034,1121915,1,1
+110,3,50862380,South - 110A Islington South towards Long Branch via Horner and Browns Line,A,0,2237032,1121913,1,1
+110,3,50862391,South - 110C Islington South towards Kipling and Lake Shore,C,0,2237033,1121915,1,1
+110,3,50862416,South - 110A Islington South towards Long Branch via Horner and Browns Line,A,0,2237036,1121913,1,1
+110,3,50862414,South - 110C Islington South towards Kipling and Lake Shore,C,0,2237034,1121915,1,1
+110,3,50862397,South - 110A Islington South towards Long Branch via Horner and Browns Line,A,0,2237032,1121913,1,1
+110,3,50862401,South - 110C Islington South towards Kipling and Lake Shore,C,0,2237033,1121915,1,1
+110,3,50862360,South - 110A Islington South towards Long Branch via Horner and Browns Line,A,0,2237036,1121913,1,1
+110,3,50862395,South - 110C Islington South towards Kipling and Lake Shore,C,0,2237034,1121915,1,1
+110,3,50862393,South - 110A Islington South towards Long Branch via Horner and Browns Line,A,0,2237032,1121913,1,1
+110,3,50862379,South - 110C Islington South towards Kipling and Lake Shore,C,0,2237033,1121915,1,1
+110,3,50862409,South - 110A Islington South towards Long Branch via Horner and Browns Line,A,0,2237036,1121913,1,1
+110,3,50862421,South - 110C Islington South towards Kipling and Lake Shore,C,0,2237034,1121915,1,1
+110,3,50862415,South - 110A Islington South towards Long Branch via Horner and Browns Line,A,0,2237035,1121913,1,1
+110,3,50862420,South - 110C Islington South towards Kipling and Lake Shore,C,0,2237033,1121915,1,1
+110,3,50862422,South - 110A Islington South towards Long Branch via Horner and Browns Line,A,0,2237036,1121913,1,1
+110,3,50862357,South - 110C Islington South towards Kipling and Lake Shore,C,0,2237035,1121915,1,1
+110,3,50862358,South - 110A Islington South towards Long Branch via Horner and Browns Line,A,0,2237033,1121913,1,1
+110,3,50862411,South - 110C Islington South towards Kipling and Lake Shore,C,0,2237036,1121915,1,1
+110,3,50862400,South - 110A Islington South towards Long Branch via Horner and Browns Line,A,0,2237035,1121913,1,1
+110,3,50862378,South - 110C Islington South towards Kipling and Lake Shore,C,0,2237033,1121915,1,1
+110,3,50862413,South - 110A Islington South towards Long Branch via Horner and Browns Line,A,0,2237036,1121913,1,1
+110,3,50862408,South - 110C Islington South towards Kipling and Lake Shore,C,0,2237035,1121915,1,1
+110,3,50862368,South - 110A Islington South towards Long Branch via Horner and Browns Line,A,0,2237033,1121913,1,1
+110,3,50862390,South - 110C Islington South towards Kipling and Lake Shore,C,0,2237036,1121915,1,1
+110,3,50862412,South - 110A Islington South towards Long Branch via Horner and Browns Line,A,0,2237035,1121913,1,1
+110,3,50862394,South - 110C Islington South towards Kipling and Lake Shore,C,0,2237033,1121915,1,1
+110,3,50862367,South - 110A Islington South towards Long Branch via Horner and Browns Line,A,0,2237036,1121913,1,1
+110,3,50862381,South - 110C Islington South towards Kipling and Lake Shore,C,0,2237035,1121915,1,1
+110,3,50862387,South - 110A Islington South towards Long Branch via Horner and Browns Line,A,0,2237033,1121913,1,1
+110,3,50862383,South - 110C Islington South towards Kipling and Lake Shore,C,0,2237036,1121915,1,1
+110,3,50862382,South - 110C Islington South towards Kipling and Lake Shore,C,0,2237035,1121915,1,1
+110,3,50862425,South - 110C Islington South towards Kipling and Lake Shore,C,0,2237036,1121915,1,1
+110,3,50862467,North - 110C Islington South towards Islington Station,C,1,2237034,1121921,1,1
+110,3,50862456,North - 110A Islington South towards Islington Station via Browns Line and Horner,A,1,2237032,1121919,1,1
+110,3,50862471,North - 110C Islington South towards Islington Station,C,1,2237033,1121921,1,1
+110,3,50862473,North - 110A Islington South towards Islington Station via Browns Line and Horner,A,1,2237036,1121919,1,1
+110,3,50862470,North - 110C Islington South towards Islington Station,C,1,2237034,1121921,1,1
+110,3,50862472,North - 110A Islington South towards Islington Station via Browns Line and Horner,A,1,2237032,1121919,1,1
+110,3,50862469,North - 110C Islington South towards Islington Station,C,1,2237033,1121921,1,1
+110,3,50862498,North - 110A Islington South towards Islington Station via Browns Line and Horner,A,1,2237036,1121919,1,1
+110,3,50862443,North - 110C Islington South towards Islington Station,C,1,2237034,1121921,1,1
+110,3,50862454,North - 110A Islington South towards Islington Station via Browns Line and Horner,A,1,2237032,1121919,1,1
+110,3,50862442,North - 110C Islington South towards Islington Station,C,1,2237033,1121921,1,1
+110,3,50862453,North - 110A Islington South towards Islington Station via Browns Line and Horner,A,1,2237036,1121919,1,1
+110,3,50862441,North - 110C Islington South towards Islington Station,C,1,2237034,1121921,1,1
+110,3,50862452,North - 110A Islington South towards Islington Station via Browns Line and Horner,A,1,2237032,1121919,1,1
+110,3,50862440,North - 110C Islington South towards Islington Station,C,1,2237033,1121921,1,1
+110,3,50862451,North - 110A Islington South towards Islington Station via Browns Line and Horner,A,1,2237036,1121919,1,1
+110,3,50862439,North - 110C Islington South towards Islington Station,C,1,2237034,1121921,1,1
+110,3,50862450,North - 110A Islington South towards Islington Station via Browns Line and Horner,A,1,2237032,1121919,1,1
+110,3,50862438,North - 110C Islington South towards Islington Station,C,1,2237033,1121921,1,1
+110,3,50862449,North - 110A Islington South towards Islington Station via Browns Line and Horner,A,1,2237036,1121919,1,1
+110,3,50862437,North - 110C Islington South towards Islington Station,C,1,2237034,1121921,1,1
+110,3,50862448,North - 110A Islington South towards Islington Station via Browns Line and Horner,A,1,2237032,1121919,1,1
+110,3,50862436,North - 110C Islington South towards Islington Station,C,1,2237033,1121921,1,1
+110,3,50862447,North - 110A Islington South towards Islington Station via Browns Line and Horner,A,1,2237036,1121919,1,1
+110,3,50862435,North - 110C Islington South towards Islington Station,C,1,2237034,1121921,1,1
+110,3,50862446,North - 110A Islington South towards Islington Station via Browns Line and Horner,A,1,2237032,1121919,1,1
+110,3,50862434,North - 110C Islington South towards Islington Station,C,1,2237033,1121921,1,1
+110,3,50862445,North - 110A Islington South towards Islington Station via Browns Line and Horner,A,1,2237036,1121919,1,1
+110,3,50862433,North - 110C Islington South towards Islington Station,C,1,2237034,1121921,1,1
+110,3,50862444,North - 110A Islington South towards Islington Station via Browns Line and Horner,A,1,2237032,1121919,1,1
+110,3,50862432,North - 110C Islington South towards Islington Station,C,1,2237033,1121921,1,1
+110,3,50862431,North - 110A Islington South towards Islington Station via Browns Line and Horner,A,1,2237036,1121919,1,1
+110,3,50862490,North - 110C Islington South towards Islington Station,C,1,2237034,1121921,1,1
+110,3,50862430,North - 110A Islington South towards Islington Station via Browns Line and Horner,A,1,2237032,1121919,1,1
+110,3,50862486,North - 110C Islington South towards Islington Station,C,1,2237033,1121921,1,1
+110,3,50862429,North - 110A Islington South towards Islington Station via Browns Line and Horner,A,1,2237036,1121919,1,1
+110,3,50862485,North - 110C Islington South towards Islington Station,C,1,2237034,1121921,1,1
+110,3,50862428,North - 110A Islington South towards Islington Station via Browns Line and Horner,A,1,2237032,1121919,1,1
+110,3,50862484,North - 110C Islington South towards Islington Station,C,1,2237033,1121921,1,1
+110,3,50862427,North - 110A Islington South towards Islington Station via Browns Line and Horner,A,1,2237036,1121919,1,1
+110,3,50862483,North - 110C Islington South towards Islington Station,C,1,2237034,1121921,1,1
+110,3,50862426,North - 110A Islington South towards Islington Station via Browns Line and Horner,A,1,2237032,1121919,1,1
+110,3,50862482,North - 110C Islington South towards Islington Station,C,1,2237033,1121921,1,1
+110,3,50862455,North - 110A Islington South towards Islington Station via Browns Line and Horner,A,1,2237036,1121919,1,1
+110,3,50862481,North - 110C Islington South towards Islington Station,C,1,2237034,1121921,1,1
+110,3,50862497,North - 110A Islington South towards Islington Station via Browns Line and Horner,A,1,2237032,1121919,1,1
+110,3,50862480,North - 110C Islington South towards Islington Station,C,1,2237033,1121921,1,1
+110,3,50862496,North - 110A Islington South towards Islington Station via Browns Line and Horner,A,1,2237036,1121919,1,1
+110,3,50862479,North - 110C Islington South towards Islington Station,C,1,2237034,1121921,1,1
+110,3,50862495,North - 110A Islington South towards Islington Station via Browns Line and Horner,A,1,2237032,1121919,1,1
+110,3,50862478,North - 110C Islington South towards Islington Station,C,1,2237033,1121921,1,1
+110,3,50862494,North - 110A Islington South towards Islington Station via Browns Line and Horner,A,1,2237036,1121919,1,1
+110,3,50862477,North - 110C Islington South towards Islington Station,C,1,2237034,1121921,1,1
+110,3,50862493,North - 110A Islington South towards Islington Station via Browns Line and Horner,A,1,2237032,1121919,1,1
+110,3,50862476,North - 110C Islington South towards Islington Station,C,1,2237033,1121921,1,1
+110,3,50862492,North - 110A Islington South towards Islington Station via Browns Line and Horner,A,1,2237036,1121919,1,1
+110,3,50862475,North - 110C Islington South towards Islington Station,C,1,2237034,1121921,1,1
+110,3,50862491,North - 110A Islington South towards Islington Station via Browns Line and Horner,A,1,2237035,1121919,1,1
+110,3,50862474,North - 110C Islington South towards Islington Station,C,1,2237033,1121921,1,1
+110,3,50862468,North - 110A Islington South towards Islington Station via Browns Line and Horner,A,1,2237036,1121919,1,1
+110,3,50862461,North - 110C Islington South towards Islington Station,C,1,2237035,1121921,1,1
+110,3,50862466,North - 110A Islington South towards Islington Station via Browns Line and Horner,A,1,2237033,1121919,1,1
+110,3,50862460,North - 110C Islington South towards Islington Station,C,1,2237036,1121921,1,1
+110,3,50862465,North - 110A Islington South towards Islington Station via Browns Line and Horner,A,1,2237035,1121919,1,1
+110,3,50862459,North - 110C Islington South towards Islington Station,C,1,2237033,1121921,1,1
+110,3,50862464,North - 110A Islington South towards Islington Station via Browns Line and Horner,A,1,2237036,1121919,1,1
+110,3,50862458,North - 110C Islington South towards Islington Station,C,1,2237035,1121921,1,1
+110,3,50862463,North - 110A Islington South towards Islington Station via Browns Line and Horner,A,1,2237033,1121919,1,1
+110,3,50862457,North - 110C Islington South towards Islington Station,C,1,2237036,1121921,1,1
+110,3,50862462,North - 110A Islington South towards Islington Station via Browns Line and Horner,A,1,2237035,1121919,1,1
+110,3,50862488,North - 110C Islington South towards Islington Station,C,1,2237033,1121921,1,1
+110,3,50862489,North - 110A Islington South towards Islington Station via Browns Line and Horner,A,1,2237036,1121919,1,1
+110,3,50862501,North - 110C Islington South towards Islington Station,C,1,2237035,1121921,1,1
+110,3,50862500,North - 110C Islington South towards Islington Station,C,1,2237036,1121921,1,1
+110,3,50862487,North - 110S Islington South Short Turn towards Islington and Birmingham,S,1,2237035,1121918,1,1
+110,3,50862499,North - 110S Islington South Short Turn towards Islington and Birmingham,S,1,2237036,1121918,1,1
+79,3,50884440,South - 79A Scarlett Rd towards Runnymede Station via Foxwell/Pritchard,A,0,2237997,1123239,1,1
+79,3,50884437,South - 79B Scarlett Rd towards Runnymede Station via St Clair,B,0,2237999,1123241,1,1
+79,3,50884438,South - 79A Scarlett Rd towards Runnymede Station via Foxwell/Pritchard,A,0,2237996,1123239,1,1
+79,3,50884452,South - 79B Scarlett Rd towards Runnymede Station via St Clair,B,0,2237998,1123241,1,1
+79,3,50884449,South - 79A Scarlett Rd towards Runnymede Station via Foxwell/Pritchard,A,0,2237997,1123239,1,1
+79,3,50884451,South - 79B Scarlett Rd towards Runnymede Station via St Clair,B,0,2237999,1123241,1,1
+79,3,50884448,South - 79A Scarlett Rd towards Runnymede Station via Foxwell/Pritchard,A,0,2237996,1123239,1,1
+79,3,50884418,South - 79B Scarlett Rd towards Runnymede Station via St Clair,B,0,2237998,1123241,1,1
+79,3,50884447,South - 79A Scarlett Rd towards Runnymede Station via Foxwell/Pritchard,A,0,2237997,1123239,1,1
+79,3,50884450,South - 79B Scarlett Rd towards Runnymede Station via St Clair,B,0,2237999,1123241,1,1
+79,3,50884446,South - 79A Scarlett Rd towards Runnymede Station via Foxwell/Pritchard,A,0,2237996,1123239,1,1
+79,3,50884444,South - 79B Scarlett Rd towards Runnymede Station via St Clair,B,0,2237998,1123241,1,1
+79,3,50884439,South - 79A Scarlett Rd towards Runnymede Station via Foxwell/Pritchard,A,0,2237997,1123239,1,1
+79,3,50884445,South - 79B Scarlett Rd towards Runnymede Station via St Clair,B,0,2237999,1123241,1,1
+79,3,50884443,South - 79A Scarlett Rd towards Runnymede Station via Foxwell/Pritchard,A,0,2237996,1123239,1,1
+79,3,50884436,South - 79B Scarlett Rd towards Runnymede Station via St Clair,B,0,2237998,1123241,1,1
+79,3,50884442,South - 79A Scarlett Rd towards Runnymede Station via Foxwell/Pritchard,A,0,2237997,1123239,1,1
+79,3,50884435,South - 79B Scarlett Rd towards Runnymede Station via St Clair,B,0,2237999,1123241,1,1
+79,3,50884441,South - 79A Scarlett Rd towards Runnymede Station via Foxwell/Pritchard,A,0,2237996,1123239,1,1
+79,3,50884432,South - 79B Scarlett Rd towards Runnymede Station via St Clair,B,0,2237998,1123241,1,1
+79,3,50884434,South - 79A Scarlett Rd towards Runnymede Station via Foxwell/Pritchard,A,0,2237995,1123239,1,1
+79,3,50884431,South - 79B Scarlett Rd towards Runnymede Station via St Clair,B,0,2237997,1123241,1,1
+79,3,50884433,South - 79A Scarlett Rd towards Runnymede Station via Foxwell/Pritchard,A,0,2237999,1123239,1,1
+79,3,50884430,South - 79B Scarlett Rd towards Runnymede Station via St Clair,B,0,2237996,1123241,1,1
+79,3,50884424,South - 79A Scarlett Rd towards Runnymede Station via Foxwell/Pritchard,A,0,2237998,1123239,1,1
+79,3,50884429,South - 79B Scarlett Rd towards Runnymede Station via St Clair,B,0,2237995,1123241,1,1
+79,3,50884423,South - 79A Scarlett Rd towards Runnymede Station via Foxwell/Pritchard,A,0,2237997,1123239,1,1
+79,3,50884428,South - 79B Scarlett Rd towards Runnymede Station via St Clair,B,0,2237999,1123241,1,1
+79,3,50884422,South - 79A Scarlett Rd towards Runnymede Station via Foxwell/Pritchard,A,0,2237996,1123239,1,1
+79,3,50884427,South - 79B Scarlett Rd towards Runnymede Station via St Clair,B,0,2237998,1123241,1,1
+79,3,50884453,South - 79A Scarlett Rd towards Runnymede Station via Foxwell/Pritchard,A,0,2237995,1123239,1,1
+79,3,50884426,South - 79B Scarlett Rd towards Runnymede Station via St Clair,B,0,2238046,1123241,1,1
+79,3,50884421,South - 79A Scarlett Rd towards Runnymede Station via Foxwell/Pritchard,A,0,2237999,1123239,1,1
+79,3,50884425,South - 79B Scarlett Rd towards Runnymede Station via St Clair,B,0,2237996,1123241,1,1
+79,3,50884420,South - 79A Scarlett Rd towards Runnymede Station via Foxwell/Pritchard,A,0,2237998,1123239,1,1
+79,3,50884454,South - 79B Scarlett Rd towards Runnymede Station via St Clair,B,0,2237995,1123241,1,1
+79,3,50884419,South - 79A Scarlett Rd towards Runnymede Station via Foxwell/Pritchard,A,0,2238046,1123239,1,1
+79,3,50884481,South - 79B Scarlett Rd towards Runnymede Station via St Clair,B,0,2237999,1123241,1,1
+79,3,50884456,South - 79A Scarlett Rd towards Runnymede Station via Foxwell/Pritchard,A,0,2237996,1123239,1,1
+79,3,50884480,South - 79B Scarlett Rd towards Runnymede Station via St Clair,B,0,2237998,1123241,1,1
+79,3,50884455,South - 79A Scarlett Rd towards Runnymede Station via Foxwell/Pritchard,A,0,2237995,1123239,1,1
+79,3,50884479,South - 79B Scarlett Rd towards Runnymede Station via St Clair,B,0,2238046,1123241,1,1
+79,3,50884475,South - 79A Scarlett Rd towards Runnymede Station via Foxwell/Pritchard,A,0,2238020,1123239,1,1
+79,3,50884478,South - 79B Scarlett Rd towards Runnymede Station via St Clair,B,0,2238019,1123241,1,1
+79,3,50884474,South - 79A Scarlett Rd towards Runnymede Station via Foxwell/Pritchard,A,0,2237998,1123239,1,1
+79,3,50884477,South - 79B Scarlett Rd towards Runnymede Station via St Clair,B,0,2237995,1123241,1,1
+79,3,50884473,South - 79A Scarlett Rd towards Runnymede Station via Foxwell/Pritchard,A,0,2238046,1123239,1,1
+79,3,50884476,South - 79B Scarlett Rd towards Runnymede Station via St Clair,B,0,2238020,1123241,1,1
+79,3,50884471,South - 79A Scarlett Rd towards Runnymede Station via Foxwell/Pritchard,A,0,2238019,1123239,1,1
+79,3,50884466,South - 79B Scarlett Rd towards Runnymede Station via St Clair,B,0,2237998,1123241,1,1
+79,3,50884470,South - 79A Scarlett Rd towards Runnymede Station via Foxwell/Pritchard,A,0,2238046,1123239,1,1
+79,3,50884484,South - 79B Scarlett Rd towards Runnymede Station via St Clair,B,0,2238020,1123241,1,1
+79,3,50884469,South - 79A Scarlett Rd towards Runnymede Station via Foxwell/Pritchard,A,0,2238019,1123239,1,1
+79,3,50884483,South - 79B Scarlett Rd towards Runnymede Station via St Clair,B,0,2237998,1123241,1,1
+79,3,50884468,South - 79A Scarlett Rd towards Runnymede Station via Foxwell/Pritchard,A,0,2238046,1123239,1,1
+79,3,50884465,South - 79B Scarlett Rd towards Runnymede Station via St Clair,B,0,2238020,1123241,1,1
+79,3,50884467,South - 79A Scarlett Rd towards Runnymede Station via Foxwell/Pritchard,A,0,2238019,1123239,1,1
+79,3,50884482,South - 79B Scarlett Rd towards Runnymede Station via St Clair,B,0,2237998,1123241,1,1
+79,3,50884458,South - 79S Scarlett Rd Short Turn towards Jane,S,0,2238046,1123240,1,1
+79,3,50884464,South - 79A Scarlett Rd towards Runnymede Station via Foxwell/Pritchard,A,0,2238020,1123239,1,1
+79,3,50884463,South - 79A Scarlett Rd towards Runnymede Station via Foxwell/Pritchard,A,0,2238019,1123239,1,1
+79,3,50884462,South - 79A Scarlett Rd towards Runnymede Station via Foxwell/Pritchard,A,0,2238020,1123239,1,1
+79,3,50884461,South - 79A Scarlett Rd towards Runnymede Station via Foxwell/Pritchard,A,0,2238019,1123239,1,1
+79,3,50884460,South - 79A Scarlett Rd towards Runnymede Station via Foxwell/Pritchard,A,0,2238020,1123239,1,1
+79,3,50884459,South - 79A Scarlett Rd towards Runnymede Station via Foxwell/Pritchard,A,0,2238019,1123239,1,1
+79,3,50884472,South - 79A Scarlett Rd towards Runnymede Station via Foxwell/Pritchard,A,0,2238020,1123239,1,1
+79,3,50884457,South - 79S Scarlett Rd Short Turn towards Jane,S,0,2238019,1123240,1,1
+79,3,50884547,North - 79A Scarlett Rd towards Lawrence & Jane via Pritchard/Foxwell,A,1,2237997,1123243,1,1
+79,3,50884524,North - 79B Scarlett Rd towards Lawrence & Jane via St Clair,B,1,2237999,1123242,1,1
+79,3,50884532,North - 79A Scarlett Rd towards Lawrence & Jane via Pritchard/Foxwell,A,1,2237996,1123243,1,1
+79,3,50884490,North - 79B Scarlett Rd towards Lawrence & Jane via St Clair,B,1,2237998,1123242,1,1
+79,3,50884531,North - 79A Scarlett Rd towards Lawrence & Jane via Pritchard/Foxwell,A,1,2237997,1123243,1,1
+79,3,50884489,North - 79B Scarlett Rd towards Lawrence & Jane via St Clair,B,1,2237999,1123242,1,1
+79,3,50884530,North - 79A Scarlett Rd towards Lawrence & Jane via Pritchard/Foxwell,A,1,2237996,1123243,1,1
+79,3,50884488,North - 79B Scarlett Rd towards Lawrence & Jane via St Clair,B,1,2237998,1123242,1,1
+79,3,50884529,North - 79A Scarlett Rd towards Lawrence & Jane via Pritchard/Foxwell,A,1,2237997,1123243,1,1
+79,3,50884494,North - 79B Scarlett Rd towards Lawrence & Jane via St Clair,B,1,2237999,1123242,1,1
+79,3,50884502,North - 79A Scarlett Rd towards Lawrence & Jane via Pritchard/Foxwell,A,1,2237996,1123243,1,1
+79,3,50884512,North - 79B Scarlett Rd towards Lawrence & Jane via St Clair,B,1,2237998,1123242,1,1
+79,3,50884496,North - 79A Scarlett Rd towards Lawrence & Jane via Pritchard/Foxwell,A,1,2237997,1123243,1,1
+79,3,50884511,North - 79B Scarlett Rd towards Lawrence & Jane via St Clair,B,1,2237999,1123242,1,1
+79,3,50884500,North - 79A Scarlett Rd towards Lawrence & Jane via Pritchard/Foxwell,A,1,2237996,1123243,1,1
+79,3,50884510,North - 79B Scarlett Rd towards Lawrence & Jane via St Clair,B,1,2237998,1123242,1,1
+79,3,50884501,North - 79A Scarlett Rd towards Lawrence & Jane via Pritchard/Foxwell,A,1,2237995,1123243,1,1
+79,3,50884534,North - 79B Scarlett Rd towards Lawrence & Jane via St Clair,B,1,2237997,1123242,1,1
+79,3,50884504,North - 79A Scarlett Rd towards Lawrence & Jane via Pritchard/Foxwell,A,1,2237999,1123243,1,1
+79,3,50884533,North - 79B Scarlett Rd towards Lawrence & Jane via St Clair,B,1,2237996,1123242,1,1
+79,3,50884508,North - 79A Scarlett Rd towards Lawrence & Jane via Pritchard/Foxwell,A,1,2237998,1123243,1,1
+79,3,50884491,North - 79B Scarlett Rd towards Lawrence & Jane via St Clair,B,1,2237995,1123242,1,1
+79,3,50884507,North - 79A Scarlett Rd towards Lawrence & Jane via Pritchard/Foxwell,A,1,2237997,1123243,1,1
+79,3,50884515,North - 79B Scarlett Rd towards Lawrence & Jane via St Clair,B,1,2237999,1123242,1,1
+79,3,50884503,North - 79A Scarlett Rd towards Lawrence & Jane via Pritchard/Foxwell,A,1,2237996,1123243,1,1
+79,3,50884499,North - 79B Scarlett Rd towards Lawrence & Jane via St Clair,B,1,2237998,1123242,1,1
+79,3,50884514,North - 79A Scarlett Rd towards Lawrence & Jane via Pritchard/Foxwell,A,1,2237995,1123243,1,1
+79,3,50884498,North - 79B Scarlett Rd towards Lawrence & Jane via St Clair,B,1,2238046,1123242,1,1
+79,3,50884487,North - 79A Scarlett Rd towards Lawrence & Jane via Pritchard/Foxwell,A,1,2237999,1123243,1,1
+79,3,50884528,North - 79B Scarlett Rd towards Lawrence & Jane via St Clair,B,1,2237996,1123242,1,1
+79,3,50884486,North - 79A Scarlett Rd towards Lawrence & Jane via Pritchard/Foxwell,A,1,2237998,1123243,1,1
+79,3,50884517,North - 79B Scarlett Rd towards Lawrence & Jane via St Clair,B,1,2237995,1123242,1,1
+79,3,50884485,North - 79A Scarlett Rd towards Lawrence & Jane via Pritchard/Foxwell,A,1,2238046,1123243,1,1
+79,3,50884516,North - 79B Scarlett Rd towards Lawrence & Jane via St Clair,B,1,2237999,1123242,1,1
+79,3,50884540,North - 79A Scarlett Rd towards Lawrence & Jane via Pritchard/Foxwell,A,1,2237996,1123243,1,1
+79,3,50884497,North - 79B Scarlett Rd towards Lawrence & Jane via St Clair,B,1,2237998,1123242,1,1
+79,3,50884539,North - 79A Scarlett Rd towards Lawrence & Jane via Pritchard/Foxwell,A,1,2237995,1123243,1,1
+79,3,50884523,North - 79B Scarlett Rd towards Lawrence & Jane via St Clair,B,1,2238046,1123242,1,1
+79,3,50884538,North - 79A Scarlett Rd towards Lawrence & Jane via Pritchard/Foxwell,A,1,2238020,1123243,1,1
+79,3,50884522,North - 79B Scarlett Rd towards Lawrence & Jane via St Clair,B,1,2238019,1123242,1,1
+79,3,50884537,North - 79A Scarlett Rd towards Lawrence & Jane via Pritchard/Foxwell,A,1,2237998,1123243,1,1
+79,3,50884521,North - 79B Scarlett Rd towards Lawrence & Jane via St Clair,B,1,2237995,1123242,1,1
+79,3,50884536,North - 79A Scarlett Rd towards Lawrence & Jane via Pritchard/Foxwell,A,1,2238046,1123243,1,1
+79,3,50884495,North - 79B Scarlett Rd towards Lawrence & Jane via St Clair,B,1,2238020,1123242,1,1
+79,3,50884535,North - 79A Scarlett Rd towards Lawrence & Jane via Pritchard/Foxwell,A,1,2238019,1123243,1,1
+79,3,50884527,North - 79B Scarlett Rd towards Lawrence & Jane via St Clair,B,1,2237998,1123242,1,1
+79,3,50884520,North - 79A Scarlett Rd towards Lawrence & Jane via Pritchard/Foxwell,A,1,2238046,1123243,1,1
+79,3,50884526,North - 79B Scarlett Rd towards Lawrence & Jane via St Clair,B,1,2238020,1123242,1,1
+79,3,50884519,North - 79A Scarlett Rd towards Lawrence & Jane via Pritchard/Foxwell,A,1,2238019,1123243,1,1
+79,3,50884525,North - 79B Scarlett Rd towards Lawrence & Jane via St Clair,B,1,2237998,1123242,1,1
+79,3,50884518,North - 79A Scarlett Rd towards Lawrence & Jane via Pritchard/Foxwell,A,1,2238046,1123243,1,1
+79,3,50884513,North - 79B Scarlett Rd towards Lawrence & Jane via St Clair,B,1,2238020,1123242,1,1
+79,3,50884506,North - 79A Scarlett Rd towards Lawrence & Jane via Pritchard/Foxwell,A,1,2238019,1123243,1,1
+79,3,50884493,North - 79B Scarlett Rd towards Lawrence & Jane via St Clair,B,1,2237998,1123242,1,1
+79,3,50884505,North - 79A Scarlett Rd towards Lawrence & Jane via Pritchard/Foxwell,A,1,2238046,1123243,1,1
+79,3,50884492,North - 79B Scarlett Rd towards Lawrence & Jane via St Clair,B,1,2238020,1123242,1,1
+79,3,50884546,North - 79A Scarlett Rd towards Lawrence & Jane via Pritchard/Foxwell,A,1,2238019,1123243,1,1
+79,3,50884545,North - 79A Scarlett Rd towards Lawrence & Jane via Pritchard/Foxwell,A,1,2238020,1123243,1,1
+79,3,50884544,North - 79A Scarlett Rd towards Lawrence & Jane via Pritchard/Foxwell,A,1,2238019,1123243,1,1
+79,3,50884543,North - 79A Scarlett Rd towards Lawrence & Jane via Pritchard/Foxwell,A,1,2238020,1123243,1,1
+79,3,50884542,North - 79A Scarlett Rd towards Lawrence & Jane via Pritchard/Foxwell,A,1,2238019,1123243,1,1
+79,3,50884541,North - 79A Scarlett Rd towards Lawrence & Jane via Pritchard/Foxwell,A,1,2238020,1123243,1,1
+79,3,50884509,North - 79A Scarlett Rd towards Lawrence & Jane via Pritchard/Foxwell,A,1,2238019,1123243,1,1

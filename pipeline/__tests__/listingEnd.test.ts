@@ -107,6 +107,41 @@ describe('findListingEnd (CIV-1011 safeguard)', () => {
     expect(findListingEnd({ calendar: read('calendar.txt'), calendarDates: read('calendar_dates.txt'), trips: read('trips.txt'), routes: read('routes.txt'), anchor: ANCHOR, fileDate: '20261016' })).toBeNull();
   });
 
+  // #1253: shapes from the live files (Miami's 27 Apr bus package, Avon's and Wave Transit's current zips).
+  it('Miami: the April bus package ends Jul 19 while Metrorail and the long-running rows go on to 2027', () => {
+    const calendar = [cal('BUS', 'mo,tu,we,th,fr', '20260427', '20260719'), cal('LONG', 'mo,tu,we,th,fr', '20210101', '20271231')];
+    const trips = [
+      ...Array.from({ length: 74 }, (_, i) => tripsOf('BUS', `B${i}`, 80)).flat(),
+      ...Array.from({ length: 45 }, (_, i) => tripsOf('LONG', `L${i}`, 90)).flat(),
+    ];
+    // The zip's own date (20260421) is before the end: the notice shows.
+    expect(findListingEnd({ calendar, calendarDates: [], trips, anchor: ANCHOR, fileDate: '20260421' })?.date).toBe('20260717');
+    // Read as obtained on its 17 Sep refresh (the old fallback), the end looked deliberate.
+    expect(findListingEnd({ calendar, calendarDates: [], trips, anchor: ANCHOR, fileDate: '20260917' })).toBeNull();
+  });
+
+  it('Avon: a summer-only route ending on schedule while every other route runs on is not tripped', () => {
+    const calendar = [cal('BASE', 'mo,tu,we,th,fr,sa,su', '20260331', '20261125'), cal('SUMMER', 'mo,tu,we,th,fr,sa,su', '20260523', '20260913')];
+    const trips = [...tripsOf('BASE', 'Red', 31), ...tripsOf('BASE', 'Blue', 31), ...tripsOf('SUMMER', 'BC Express', 93)];
+    expect(findListingEnd({ calendar, calendarDates: [], trips, anchor: ANCHOR, fileDate: '20260513' })).toBeNull();
+  });
+
+  it('Wave Transit: the UNCW shuttles (a minority of routes) end their term while the city routes run on', () => {
+    const calendar = [cal('TERM', 'mo,tu,we,th,fr', '20251011', '20251211'), cal('CITY', 'mo,tu,we,th,fr', '20250517', '20261231')];
+    const trips = [
+      ...['701', '702', '703', '704', '705', '711', '712'].flatMap(r => tripsOf('TERM', r, 73)),
+      ...['101', '105', '106', '107', '108', '109', '201', '205', '206', '210'].flatMap(r => tripsOf('CITY', r, 40)),
+    ];
+    expect(findListingEnd({ calendar, calendarDates: [], trips, anchor: ANCHOR, fileDate: '20250601' })).toBeNull();
+  });
+
+  it('still trips when the routes that run on lose most of their own trips (Dutchess shape, by route)', () => {
+    // One route of three stops entirely, but the two that run on keep only a few of their trips.
+    const calendar = [cal('MAIN', 'mo,tu,we,th,fr', '20260801', '20261028'), cal('REST', 'mo,tu,we,th,fr', '20260801', '20351231')];
+    const trips = [...tripsOf('MAIN', 'A', 40), ...tripsOf('MAIN', 'B', 30), ...tripsOf('MAIN', 'C', 30), ...tripsOf('REST', 'B', 2), ...tripsOf('REST', 'C', 2)];
+    expect(findListingEnd({ calendar, calendarDates: [], trips, anchor: ANCHOR, fileDate: FILE })?.date).toBe('20261028');
+  });
+
   it('reads a feed_version that is a date', () => {
     expect(feedVersionDate('2026-03-27T18:13:21Z')).toBe('20260327');
     expect(feedVersionDate('UTC: 02-Jun-2026 18:30')).toBe('20260602');

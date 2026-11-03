@@ -1,6 +1,6 @@
 {
   "slug": "ace",
-  "name": "Altamont Corridor Express",
+  "officialName": "Altamont Corridor Express",
   "displayArea": "Northern California",
   "center": [
     37.2902,
@@ -17,7 +17,7 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2684/latest.zip",
   "lastFeedExpiry": "20261231",
   "lastFeedVersion": "20261009",
-  "lastRefreshedAt": "2026-10-12",
+  "lastRefreshedAt": "2026-11-02",
   "websiteUrl": "https://acerail.com/",
   "cities": [
     "Livermore, California",
@@ -27,7 +27,7 @@
     "San Jose, California",
     "Pleasanton, California"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261231",
@@ -43,13 +43,21 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 2
+      "featureCount": 2,
+      "feedExpiry": "20261231",
+      "routeCount": 1,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-12"
+    "checkedAt": "2026-11-03"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
-  "lastPeekedExpiry": "20261231"
+  "lastPeekedExpiry": "20261231",
+  "lastServiceWeek": "a06ee6f35987e888",
+  "feedObtainedAt": "20261009"
 }

@@ -1,6 +1,7 @@
 {
   "slug": "lancaster",
-  "name": "Red Rose Transit Authority (Lancaster, PA)",
+  "officialName": "Red Rose Transit Authority",
+  "nameQualifier": "Lancaster, PA",
   "websiteUrl": "http://www.redrosetransit.com/",
   "center": [
     40.04,
@@ -16,24 +17,30 @@
     "Lancaster, Pennsylvania",
     "Harrisburg, Pennsylvania"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270103",
   "feedQuality": {
     "status": "review",
-    "score": 70,
+    "score": 94,
     "reasons": [
-      "19 map lines were repaired — Atlas fixed unusual route geometry before displaying it."
+      "6 route shapes needed adjustment before display."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
-      "shapeAnomalies": 19,
+      "shapeAnomalies": 13,
       "routeHeadwayMismatches": 0,
-      "featureCount": 72
+      "featureCount": 72,
+      "feedExpiry": "20271231",
+      "routeCount": 18,
+      "problemShapes": 6,
+      "problemShapeRoutes": 1,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-08-27"
+    "checkedAt": "2026-11-03"
   },
   "timezone": "America/New_York",
   "lastFeedSourceKind": "configured",

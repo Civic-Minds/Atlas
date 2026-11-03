@@ -1,6 +1,7 @@
 {
   "slug": "carcassonne",
-  "name": "RTCA (Carcassonne)",
+  "officialName": "RTCA",
+  "nameQualifier": "Carcassonne",
   "region": "Occitanie",
   "center": [
     43.213,

@@ -1,6 +1,7 @@
 {
   "slug": "youngstown-wrta",
-  "name": "Western Reserve Transit Authority (Youngstown)",
+  "officialName": "Western Reserve Transit Authority",
+  "nameQualifier": "Youngstown",
   "center": [
     41.1,
     -80.65
@@ -15,31 +16,37 @@
   "region": "Ohio",
   "lastFeedExpiry": "20261128",
   "lastFeedVersion": "20260908",
-  "lastRefreshedAt": "2026-10-03",
+  "lastRefreshedAt": "2026-11-02",
   "websiteUrl": "http://www.wrtaonline.com/",
   "cities": [
     "Youngstown, Ohio"
   ],
   "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-1717/latest.zip",
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261128",
   "feedQuality": {
     "status": "review",
-    "score": 60,
+    "score": 92,
     "reasons": [
-      "13 route shapes needed adjustment before display.",
+      "5 route shapes needed adjustment before display.",
       "1 route has stops whose frequency differs from the overall route schedule."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
-      "shapeAnomalies": 13,
+      "shapeAnomalies": 9,
       "routeHeadwayMismatches": 1,
-      "featureCount": 93
+      "featureCount": 93,
+      "feedExpiry": "20261128",
+      "routeCount": 24,
+      "problemShapes": 5,
+      "problemShapeRoutes": 1,
+      "mismatchRoutes": 1,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-03"
+    "checkedAt": "2026-11-03"
   },
   "timezone": "America/New_York",
   "feedRefreshStatus": "current",
@@ -48,5 +55,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://myvalleystops.wrtaonline.com/InfoPoint/gtfs-zip.ashx",
-  "lastPeekedExpiry": "20261128"
+  "lastPeekedExpiry": "20261128",
+  "lastServiceWeek": "fb14b2e1d4c5e904",
+  "feedObtainedAt": "20260908"
 }

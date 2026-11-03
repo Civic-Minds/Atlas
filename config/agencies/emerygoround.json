@@ -1,6 +1,6 @@
 {
   "slug": "emerygoround",
-  "name": "Emery Go-Round",
+  "officialName": "Emery Go-Round",
   "websiteUrl": "https://emerygoround.com/",
   "center": [
     37.8371,
@@ -17,8 +17,8 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2224/latest.zip",
   "lastFeedExpiry": "20271127",
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-10-09",
-  "lastFeedCheckAt": "20261019",
+  "lastRefreshedAt": "2026-11-02",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271127",
@@ -34,13 +34,21 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 5
+      "featureCount": 5,
+      "feedExpiry": "20271127",
+      "routeCount": 4,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-09"
+    "checkedAt": "2026-11-03"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
-  "lastPeekedExpiry": "20271127"
+  "lastPeekedExpiry": "20271127",
+  "lastServiceWeek": "4c855b916824e128",
+  "feedObtainedAt": "20260114"
 }

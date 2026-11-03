@@ -1,6 +1,7 @@
 {
   "slug": "path",
-  "name": "PATH (Port Authority Trans-Hudson)",
+  "officialName": "PATH",
+  "nameQualifier": "Port Authority Trans-Hudson",
   "displayArea": "New York & New Jersey",
   "region": "New Jersey",
   "center": [
@@ -15,8 +16,8 @@
   ],
   "feedUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/14843/PATHGTFS.zip",
   "lastFeedExpiry": "20261114",
-  "lastFeedVersion": "UTC: 22-May-2025 18:06",
-  "lastRefreshedAt": "20260811",
+  "lastFeedVersion": null,
+  "lastRefreshedAt": "2026-11-02",
   "websiteUrl": "http://www.panynj.gov/path/",
   "cities": [
     "East Village, New York",
@@ -28,15 +29,38 @@
   ],
   "timezone": "America/New_York",
   "lastRawArchiveKey": "20260601-572eaf8ff298767c",
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261114",
-  "feedRefreshStatus": "stale",
-  "feedRefreshError": "all available feeds expired (latest 20260601)",
-  "feedRefreshErrorAt": "20261012",
-  "feedRefreshRetryCount": 3,
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/14843/PATHGTFS.zip",
-  "lastPeekedExpiry": "20261114"
+  "lastPeekedExpiry": "20261114",
+  "feedQuality": {
+    "status": "review",
+    "score": 70,
+    "reasons": [
+      "2 route have stops whose frequency differs from the overall route schedule."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 3,
+      "featureCount": 30,
+      "feedExpiry": "20261114",
+      "routeCount": 5,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 2,
+      "resumesOn": null
+    },
+    "checkedAt": "2026-11-03"
+  },
+  "lastServiceWeek": "7c1ef8082468e813",
+  "feedObtainedAt": "20261102"
 }

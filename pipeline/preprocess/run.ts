@@ -11,13 +11,16 @@ import { normalizeBrantfordRouteLabels } from '../transforms/brantford-route-lab
 import { fixMountainLineFrequencyWindow } from '../transforms/mountain-line-frequency-fix.js';
 import { addSantaFePickUpWeekendFrequency } from '../transforms/santafe-pickup-schedule.js';
 import { interpolateUntimedStops } from '../transforms/interpolate-untimed-stops.js';
+import { dropMnrExpressBusPairs } from '../transforms/mnr-bus-pairs.js';
 import { mergeEquivalentShapeVariants } from './merge-equivalent-shapes.js';
+import { splitRoutes, type RouteSplit } from './split-routes.js';
+import { separateSameNameRoutes, type SameNameRoute } from './same-name-routes.js';
 import { mergeTerminalBays } from './merge-terminal-bays.js';
 import { poolSingleTripShapes } from './pool-single-trip-shapes.js';
 
 // WVU PRT publishes route geometry separately from the schedule feed.
 // Keep this agency-specific transform opt-in rather than changing shared shape handling.
-export type GtfsPreprocess = 'nrt-day-night' | 'nrt-cleanup' | 'london-route-names' | 'metrolink-shapes' | 'wvu-prt-shapes' | 'wvu-prt-line' | 'brantford-route-labels' | 'interpolate-untimed-stops' | 'mountain-line-frequency-fix' | 'santafe-pickup-schedule';
+export type GtfsPreprocess = 'nrt-day-night' | 'nrt-cleanup' | 'london-route-names' | 'metrolink-shapes' | 'wvu-prt-shapes' | 'wvu-prt-line' | 'brantford-route-labels' | 'interpolate-untimed-stops' | 'mountain-line-frequency-fix' | 'santafe-pickup-schedule' | 'mnr-bus-pairs';
 
 export interface GtfsTransformOptions {
   agencyId?: string;
@@ -32,6 +35,10 @@ export interface GtfsTransformOptions {
   mergeEquivalentShapeVariantsAllModes?: boolean;
   /** Merge equivalent shape variants on these route types only (CapMetro buses, CIV-1083). */
   mergeEquivalentShapeVariantsRouteTypes?: string[];
+  /** #1287: routes the feed publishes as one that are several lines (Miami-Dade Metrorail Green and Orange). */
+  routeSplits?: RouteSplit[];
+  /** #1289: names for separate lines that share a short name (MARC Brunswick, Penn and Camden lines). */
+  sameNameRoutes?: SameNameRoute[];
   /** Keep shapes whole across long point-to-point steps (rural highways, #776). Read at parse time. */
   keepLongShapeJumps?: boolean;
   /** Leave shapes flagged for clustered jumps unrepaired (Streamline Goldline, #433). Read at parse time. */
@@ -79,6 +86,17 @@ export function normalizeGtfs(
     gtfs = filterGtfsByExcludedTripHeadsigns(gtfs, options.excludeTripHeadsigns);
     const removed = before - (gtfs.trips?.length ?? 0);
     if (removed > 0) onStatus?.(`Headsign filter: removed ${removed} non-passenger trip(s)`);
+  }
+  if (options?.routeSplits?.length) {
+    const split = splitRoutes(gtfs, options.routeSplits);
+    gtfs = split.gtfs;
+    onStatus?.(`Route split: ${Object.entries(split.trips).map(([id, n]) => `${id} ${n} trips`).join(', ')}`);
+  }
+  {
+    // #1289: separate lines sharing one short name get their own (see same-name-routes.ts).
+    const sameName = separateSameNameRoutes(gtfs, options?.sameNameRoutes);
+    gtfs = sameName.gtfs;
+    for (const s of sameName.splits) onStatus?.(`Same-name lines: "${s.shortName}" -> ${s.routes.map(r => `"${r.newShortName}"`).join(', ')}`);
   }
   if (!options?.skipLetterSuffixMerge) {
     const { gtfs: merged, result } = mergeLetterSuffixBranches(gtfs);
@@ -145,6 +163,11 @@ export function normalizeGtfs(
     const result = addSantaFePickUpWeekendFrequency(gtfs);
     gtfs = result.gtfs;
     if (result.added > 0) onStatus?.(`Santa Fe Pick-Up: added ${result.added} Saturday-Sunday trips for its published every-15 daytime service (#1076)`);
+  }
+  if (options?.preprocess === 'mnr-bus-pairs') {
+    const result = dropMnrExpressBusPairs(gtfs);
+    gtfs = result.gtfs;
+    onStatus?.(`MNR buses: ${result.dropped} express trips left out beside the local that leaves with them (CIV-1086)`);
   }
   if (options?.preprocess === 'interpolate-untimed-stops') {
     const result = interpolateUntimedStops(gtfs);

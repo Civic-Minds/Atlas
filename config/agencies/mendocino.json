@@ -1,6 +1,6 @@
 {
   "slug": "mendocino",
-  "name": "Mendocino Transit Authority",
+  "officialName": "Mendocino Transit Authority",
   "websiteUrl": "https://mendocinotransit.org/",
   "center": [
     39.1417,
@@ -16,26 +16,30 @@
   "feedUrl": "http://data.trilliumtransit.com/gtfs/mendocino-ca-us/mendocino-ca-us.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-69/latest.zip",
   "lastFeedExpiry": "20270228",
-  "lastFeedVersion": "UTC: 22-Sep-2026 20:33",
-  "lastRefreshedAt": "2026-10-03",
-  "lastFeedCheckAt": "20261019",
+  "lastFeedVersion": "UTC: 30-Oct-2026 17:15",
+  "lastRefreshedAt": "2026-11-02",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270228",
   "feedQuality": {
-    "status": "review",
-    "score": 70,
-    "reasons": [
-      "4 route shapes needed adjustment before display."
-    ],
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
-      "shapeAnomalies": 4,
+      "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 11
+      "featureCount": 31,
+      "feedExpiry": "20270228",
+      "routeCount": 9,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-03"
+    "checkedAt": "2026-11-03"
   },
   "timezone": "America/Los_Angeles",
   "feedRefreshStatus": "current",
@@ -44,5 +48,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "http://data.trilliumtransit.com/gtfs/mendocino-ca-us/mendocino-ca-us.zip",
-  "lastPeekedExpiry": "20270228"
+  "lastPeekedExpiry": "20270228",
+  "lastServiceWeek": "ea7b0eb2b3d7a63f",
+  "feedObtainedAt": "20261102"
 }

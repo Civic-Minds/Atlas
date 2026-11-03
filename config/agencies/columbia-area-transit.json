@@ -1,6 +1,6 @@
 {
   "slug": "columbia-area-transit",
-  "name": "Columbia Area Transit",
+  "officialName": "Columbia Area Transit",
   "websiteUrl": "https://www.ridecatbus.org",
   "center": [
     45.6176,
@@ -18,7 +18,7 @@
   "timezone": "America/Los_Angeles",
   "lastFeedExpiry": "20270101",
   "lastFeedVersion": "UTC: 08-Oct-2026 00:58",
-  "lastRefreshedAt": "2026-10-12",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Hood River, Oregon",
     "Cascade Locks, Oregon",
@@ -33,11 +33,17 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 10
+      "featureCount": 10,
+      "feedExpiry": "20270101",
+      "routeCount": 3,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-12"
+    "checkedAt": "2026-11-03"
   },
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270101",
@@ -47,5 +53,7 @@
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
-  "lastPeekedExpiry": "20270101"
+  "lastPeekedExpiry": "20270101",
+  "lastServiceWeek": "560a29caf94d0d2d",
+  "feedObtainedAt": "20261008"
 }

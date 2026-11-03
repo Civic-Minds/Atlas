@@ -1,6 +1,6 @@
 {
   "slug": "corona",
-  "name": "Corona Cruiser",
+  "officialName": "Corona Cruiser",
   "websiteUrl": "http://www.coronaca.gov/government/departments-divisions/public-works/public-transit/corona-cruiser",
   "region": "California",
   "center": [
@@ -16,16 +16,43 @@
   "feedUrl": "https://data.trilliumtransit.com/gtfs/corona-ca-us/corona-ca-us.zip",
   "lastFeedExpiry": "20270331",
   "lastFeedVersion": "UTC: 27-Jan-2026 10:04",
-  "lastRefreshedAt": "2026-08-10",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Corona, California"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270331",
   "timezone": "America/Los_Angeles",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://data.trilliumtransit.com/gtfs/corona-ca-us/corona-ca-us.zip",
-  "lastPeekedExpiry": "20270331"
+  "lastPeekedExpiry": "20270331",
+  "feedQuality": {
+    "status": "review",
+    "score": 90,
+    "reasons": [
+      "1 minor schedule issue found while reading the feed."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 1,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 8,
+      "feedExpiry": "20270331",
+      "routeCount": 2,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
+    },
+    "checkedAt": "2026-11-03"
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "edbec468c54103c4",
+  "feedObtainedAt": "20260127"
 }

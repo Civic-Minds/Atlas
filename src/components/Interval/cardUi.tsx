@@ -550,19 +550,26 @@ const SUFFIX_TONE = {
 } as const;
 
 /**
- * A part-period value ("from 7:05am, every 20 min") may break after its comma: on a narrow row the dot and
- * "from 7:05am," stay on the first line and "every 20 min" goes under it, right-aligned, instead of running
- * past the card edge (#1128). Each part stays whole; a short value stays one line as before.
+ * A part-period value ("every 20 min from 7:05 AM", "every 10 min, with a 45 min gap") may break before its limit: on a
+ * narrow row the dot and "every 20 min" stay on the first line and "from 7:05 AM" goes under it, right-aligned, instead
+ * of running past the card edge (#1128). Each part stays whole; a short value stays one line as before.
  */
-const twoPart = (text: string | undefined) => !!text && text.includes(', ');
+function twoPartSplit(text: string | undefined): [string, string] | null {
+  if (!text) return null;
+  const comma = text.indexOf(', ');
+  if (comma >= 0) return [text.slice(0, comma + 1), text.slice(comma + 2)];
+  const limit = text.search(/ (from|until) /);
+  return limit > 0 ? [text.slice(0, limit), text.slice(limit + 1)] : null;
+}
+const twoPart = (text: string | undefined) => twoPartSplit(text) != null;
 
 function TwoPartBadge({ dot, text, className }: { dot: React.ReactNode; text: string; className: string }) {
-  const comma = text.indexOf(', ');
+  const [first, second] = twoPartSplit(text) ?? [text, ''];
   return (
     <span className={`inline-flex flex-wrap justify-end gap-x-1 min-w-0 ${className}`}>
-      <span className="inline-flex items-center gap-1 whitespace-nowrap">{dot}{text.slice(0, comma + 1)}</span>
+      <span className="inline-flex items-center gap-1 whitespace-nowrap">{dot}{first}</span>
       {' '}
-      <span className="whitespace-nowrap">{text.slice(comma + 2)}</span>
+      <span className="whitespace-nowrap">{second}</span>
     </span>
   );
 }
@@ -603,7 +610,7 @@ export function HeadwayBadge({
 }
 
 /**
- * A route with no regular frequency to show: the grey dot and a word ("limited", "no regular service"), styled like HeadwayBadge.
+ * A route with no regular frequency to show: the grey dot and a word ("limited", "Irregular"), styled like HeadwayBadge.
  * With no label it is the grey dot alone, kept one text line tall so it sits beside the row's first line.
  */
 /** The tier dot and words inside a line of text that sets its own weight and colour (HeadwayBadge / LimitedBadge `secondLine`). */
@@ -616,7 +623,7 @@ export function LimitedBadge({ label, className = '', secondLine = false }: { la
   if (secondLine) return <SecondLineBadge color={getTierColor(null, colorMode)} words={label ?? ''} />;
   const dot = <span className="w-2 h-2 rounded-full shrink-0" style={{ background: getTierColor(null, colorMode) }} />;
   if (label && twoPart(label)) return <TwoPartBadge dot={dot} text={label} className={`text-xs font-black text-[var(--text-primary)] leading-snug ${className}`} />;
-  // A several-word label ("no regular service during this period") breaks between words, right-aligned, where the row is
+  // A several-word label ("Runs irregularly in this period") breaks between words, right-aligned, where the row is
   // too narrow, instead of running over the destination (TTC 25 northbound AM; the #1128 rule). It stays one line where it fits.
   if (label?.includes(' ')) {
     return (
@@ -856,7 +863,7 @@ export function CardSummaryRow({
   live?: boolean;
   headwaySuffix?: string;
   below?: React.ReactNode;
-  /** Words in place of the headway badge (#934 part-period: "until 9:37am, every 12 min"). */
+  /** Words in place of the headway badge (#934 part-period: "every 12 min until 9:37 AM"). */
   text?: string;
   /** The map hover, as on a direction row (CIV-1053): the route stands out on the map. */
   onHoverStart?: () => void;

@@ -10,6 +10,8 @@ import { R2_PUBLIC_URL, getAgencyArtifactUrls, getAgencyCatalogUrl, FEATURES, FE
 import AtlasLogo from './components/AtlasLogo';
 import { isAgencyVisibleInBrowser } from '../shared/agencyVisibility';
 import { LIVE_POLLING_ROUTES } from '../shared/livePollingConfig';
+import { findSeoRoute } from '../shared/seo';
+import { PageTitle } from './components/ui/PageTitle';
 const Interval = React.lazy(() => import('./apps/Interval'));
 import { useDebouncedValue } from './hooks/useDebouncedValue';
 import { PHONE_MEDIA_QUERY, phoneModeFlags, useMediaQuery } from './hooks/useMediaQuery';
@@ -43,7 +45,7 @@ import { syncUrlParams } from './utils/syncUrlParams';
 import { APP_URL, FREQUENT_URL, MAP_URL, NIGHT_URL, currentSearch, linkUpdate, readLink, readUrlParam, urlParamUpdate } from './utils/urlSchema';
 import { AGENCY_CARD_PARAM, parseAgencyCardParam } from './utils/shareUrlState';
 import AppUpdateBanner from './components/AppUpdateBanner';
-import type { FeedQuality } from '../shared/feedQuality';
+import { withFeedQualityToday, type FeedQuality } from '../shared/feedQuality';
 import { trackEvent } from './lib/analytics';
 import { markAtlasOnce } from './lib/performance';
 import { type FrequentServiceFrequency, type FrequentServiceWindow } from '../shared/frequentService';
@@ -58,7 +60,11 @@ import PanelEmpty from './components/ui/PanelEmpty';
 
 export interface Agency {
   slug: string;
+  /** The registry name, built from the name fields below (#1245); read it through agencyNames() for display. */
   name: string;
+  officialName?: string;
+  commonName?: string;
+  nameQualifier?: string;
   center: [number, number];
   /** Artifact URL on R2. Derived at load time from slug if absent (see getAgencyArtifactUrls). */
   url: string;
@@ -68,6 +74,8 @@ export interface Agency {
   region?: string;
   /** Optional service-area label for regional agencies; avoids presenting one stop-density city as the agency's home. */
   displayArea?: string;
+  /** CIV-1277: its parent agency (config/parent-agencies.json), one row in the agency picker. */
+  parentAgency?: string;
   lastFeedExpiry?: string | null;
   /** CIV-1011: the date most routes stopped being listed with nothing replacing them (YYYYMMDD); the agency shows Ryan's notice. Absent otherwise. */
   listingEndedOn?: string | null;
@@ -186,6 +194,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   const historyOn = FEATURES.history && phoneModes.history;
   const compareOn = FEATURES.compareMode && phoneModes.compareMode;
   const routedApp: AppId = PATH_TO_APP[pathname] ?? 'frequency';
+  const pageHeading = findSeoRoute(pathname)?.title;
   // Direct URL access (e.g. /apps/live) would otherwise bypass the LIVE_ENABLED / HISTORY_ENABLED
   // gate below -- fall back to the frequency map, and correct the URL so it
   // doesn't lie about what's actually showing.
@@ -594,7 +603,8 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
       .then((data: { agencies: Agency[] }) => {
         const enriched = data.agencies
           .filter((a: Agency) => isAgencyVisibleInBrowser(a, { mode: ATLAS_MODE }))
-          .map(withArtifactUrls);
+          .map(withArtifactUrls)
+          .map(a => withFeedQualityToday(a));
         setAgencies(enriched);
         markAtlasOnce('agency-catalog-ready');
         setAgenciesLoadState('ready');
@@ -643,6 +653,8 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
     <HistoryMapOverlayProvider>
     <LiveVehiclesMapOverlayProvider>
     <div className={`relative h-dvh w-screen bg-[var(--bg-app)] text-[var(--text-primary)] font-sans overflow-hidden transition-colors ${TRANSITION_BASE}`}>
+      {/* The page's heading for screen readers, in the page's own title words (#1195). */}
+      {!inResearch && pageHeading && <PageTitle level="hidden">{pageHeading}</PageTitle>}
       {/* Unified header row — left and right sections share one flex container so they can never overlap. Fixed row height so a taller control in one view (e.g. Night's 30/60 toggle) can't push the logo and search off the line they sit on in every other view (#908). */}
       <div className={`absolute ${MAP_TOP_BAR_SLOT} ${infoOpen ? Z_MODAL_TOP : Z_HEADER} flex items-center justify-between pointer-events-none`} data-map-overlay="top-bar">
       <div ref={headerLeftRef} className={`flex items-center gap-2 pointer-events-auto flex-1 min-w-0 ${phoneSearchExpanded ? '' : 'max-w-[calc(100%-3rem)] mr-2'} sm:max-w-none sm:mr-0`}>
@@ -665,21 +677,10 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
 
         {!inResearch && <div className="flex items-center gap-2 flex-1 min-w-0 lg:flex-initial">
         <div className="flex-1 min-w-0 sm:flex">
-        {/* CIV-449 (mock): on every phone width the search rests as a round button, like the About button, and opens into the box. */}
-        {phoneSearchCollapsed && (
-          <button
-            type="button"
-            onClick={() => { setSearchFocused(true); requestAnimationFrame(() => searchInputRef.current?.focus()); }}
-            aria-label={searchPlaceholder}
-            className={TOP_BAR_ICON_BTN}
-          >
-            <Search className="w-4 h-4" />
-          </button>
-        )}
         {/* The outer box keeps the search slot's width, which the side cards measure; in Compare only the pill inside
             stops short of the divider, so the cards keep their width (CIV-844). */}
         <div ref={searchBarRef} className={`${SEARCH_BAR_WIDTH} min-w-0 relative ${phoneSearchCollapsed ? 'hidden' : ''}`}>
-        <div className={`relative w-full min-w-0 ${TOP_BAR_PILL_SURFACE} pl-1 pr-3`} style={compareActive && !isPhone ? { maxWidth: compareSearchMaxWidth(sidebarLeft) } : undefined}>
+        <div data-focus-ring className={`relative w-full min-w-0 ${TOP_BAR_PILL_SURFACE} pl-1 pr-3`} style={compareActive && !isPhone ? { maxWidth: compareSearchMaxWidth(sidebarLeft) } : undefined}>
           <Search className={`absolute left-2 top-1/2 -translate-y-1/2 ${SEARCH_ICON} pointer-events-none`} />
           <input
             ref={searchInputRef}
@@ -810,6 +811,19 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
       </div>
       {/* Portal target for Interval's right header (FilterChips + Now + FilterPanel) */}
       <div className={`${phoneSearchExpanded ? 'hidden' : 'flex'} items-center gap-2 pointer-events-auto`}>
+        {/* CIV-449: on every phone width the search rests as a round button in the right group, just left of the
+            filter button (Ryan, 2026-10-30), and opens into the box, which takes the whole bar while the other
+            buttons step aside (#698). */}
+        {phoneSearchCollapsed && !inResearch && (
+          <button
+            type="button"
+            onClick={() => { setSearchFocused(true); requestAnimationFrame(() => searchInputRef.current?.focus()); }}
+            aria-label={searchPlaceholder}
+            className={TOP_BAR_ICON_BTN}
+          >
+            <Search className="w-4 h-4" />
+          </button>
+        )}
         <div ref={headerPortalRef} className="flex items-center gap-2" />
         <button
           type="button"
@@ -968,7 +982,8 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
                           return { ...a, url: arts.url, stopsUrl: a.stopsUrl ?? arts.stopsUrl, corridorsUrl: a.corridorsUrl ?? arts.corridorsUrl };
                         }
                         return a;
-                      });
+                      })
+                      .map(a => withFeedQualityToday(a));
                     setAgencies(enriched);
                     markAtlasOnce('agency-catalog-ready');
                     setAgenciesLoadState('ready');

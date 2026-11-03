@@ -1,6 +1,6 @@
 {
   "slug": "akron",
-  "name": "Akron Metro Regional Transit Authority",
+  "officialName": "Akron Metro Regional Transit Authority",
   "websiteUrl": "https://www.yourmetrobus.org/",
   "region": "Ohio",
   "center": [
@@ -11,33 +11,43 @@
   "lastFeedExpiry": "20270116",
   "lastFeedVersion": "Updated: Aug 6, 2026, 12:06 PM",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2071/latest.zip",
-  "lastRefreshedAt": "2026-08-24",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Akron, Ohio",
     "Parma, Ohio",
     "Cleveland, Ohio"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270116",
   "feedQuality": {
-    "status": "review",
-    "score": 80,
-    "reasons": [
-      "2 shape corrections needed."
-    ],
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
-      "shapeAnomalies": 2,
+      "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 136
+      "featureCount": 140,
+      "feedExpiry": "20270116",
+      "routeCount": 24,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-08-24"
+    "checkedAt": "2026-11-03"
   },
   "timezone": "America/New_York",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://www.yourmetrobus.org/Data/Sites/2/gtfs-data/metro_rta_gtfs.zip",
-  "lastPeekedExpiry": "20270116"
+  "lastPeekedExpiry": "20270116",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "0f95e0659476180a",
+  "feedObtainedAt": "20260806"
 }

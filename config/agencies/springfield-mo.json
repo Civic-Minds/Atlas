@@ -1,6 +1,7 @@
 {
   "slug": "springfield-mo",
-  "name": "City Utilities Transit (Springfield)",
+  "officialName": "City Utilities Transit",
+  "nameQualifier": "Springfield",
   "websiteUrl": "https://www.cutransit.net/",
   "center": [
     37.209,
@@ -9,7 +10,7 @@
   "feedUrl": "https://webapp.cityutilities.net/GTPM/google_transit.zip",
   "lastFeedExpiry": "20270102",
   "lastFeedVersion": "2026 CU Q4",
-  "lastRefreshedAt": "2026-10-03",
+  "lastRefreshedAt": "2026-11-02",
   "region": "Missouri",
   "bbox": [
     37.1082,
@@ -20,7 +21,7 @@
   "cities": [
     "Springfield, Missouri"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270102",
@@ -34,9 +35,15 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 40
+      "featureCount": 40,
+      "feedExpiry": "20270102",
+      "routeCount": 14,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-03"
+    "checkedAt": "2026-11-03"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -44,5 +51,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://webapp.cityutilities.net/GTPM/google_transit.zip",
-  "lastPeekedExpiry": "20270102"
+  "lastPeekedExpiry": "20270102",
+  "lastServiceWeek": "e7ec17294bdb0f34",
+  "feedObtainedAt": "20260929"
 }

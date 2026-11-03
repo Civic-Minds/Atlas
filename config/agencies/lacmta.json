@@ -1,6 +1,7 @@
 {
   "slug": "lacmta",
-  "name": "Los Angeles County Metropolitan Transportation Authority (LA Metro)",
+  "officialName": "Los Angeles County Metropolitan Transportation Authority",
+  "commonName": "LA Metro",
   "websiteUrl": "https://www.metro.net",
   "center": [
     34.05,
@@ -11,7 +12,7 @@
   "lastFeedExpiry": "20270401",
   "lastFeedVersion": "",
   "region": "California",
-  "lastRefreshedAt": "2026-10-19",
+  "lastRefreshedAt": "2026-11-02",
   "supplementalFeedUrls": [
     "https://gitlab.com/LACMTA/gtfs_rail/raw/master/gtfs_rail.zip"
   ],
@@ -30,24 +31,30 @@
     "North Hills, California",
     "North Hollywood, California"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270401",
   "feedQuality": {
     "status": "review",
-    "score": 80,
+    "score": 99,
     "reasons": [
-      "2 route have stops whose frequency differs from the overall route schedule."
+      "1 route has stops whose frequency differs from the overall route schedule."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 2,
-      "featureCount": 1050
+      "featureCount": 1042,
+      "feedExpiry": "20270401",
+      "routeCount": 109,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 1,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-19"
+    "checkedAt": "2026-11-03"
   },
   "timezone": "America/Los_Angeles",
   "feedRefreshStatus": "current",
@@ -58,10 +65,12 @@
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-29/latest.zip",
   "lastSupplementalFeeds": [
     {
-      "feedExpiry": "20261031",
+      "feedExpiry": "20261114",
       "feedVersion": null,
-      "rawArchiveKey": "20261031-cc21c649b3ff74cf"
+      "rawArchiveKey": "20261114-3aad2a652edfc605"
     }
   ],
-  "lastPeekedExpiry": "20270401"
+  "lastPeekedExpiry": "20270401",
+  "lastServiceWeek": "8a5859505ca2916d",
+  "feedObtainedAt": "20261102"
 }

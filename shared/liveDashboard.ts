@@ -200,14 +200,14 @@ export const QUALITY_MAX_UNLISTED_SHARE = 0.5;
 export function qualityHold(v3: LiveV3): string | null {
   // A file without these blocks cannot be judged here; the page says what is missing section by section.
   if (!v3.swaps || !v3.adherence?.timepoints?.all?.overall) return null;
-  if (v3.swaps.rate > QUALITY_MAX_SWAP_RATE) return `About ${Math.round(v3.swaps.rate * 100)}% of its trips ran under a trip number that does not match the schedule, so its delays cannot be trusted yet.`;
+  if (v3.swaps.rate > QUALITY_MAX_SWAP_RATE) return `About ${Math.round(v3.swaps.rate * 100)}% of its trips ran under a trip number that does not match the schedule. Its delays cannot be trusted yet.`;
   const n = v3.adherence.timepoints.all.overall.n;
   if (n < QUALITY_MIN_TIMEPOINT_DEPARTURES) return n === 0
-    ? 'Its schedule gives no stop times to compare with, so how late it runs cannot be measured.'
+    ? 'Its schedule gives no stop times to compare with. How late it runs cannot be measured.'
     : `Only ${n.toLocaleString()} departures at stops with a scheduled time were measured this week, too few to say how late it runs.`;
   const lo = v3.leftOut;
   const seen = lo ? lo.kept + lo.noTimetableTrip + lo.excluded : 0;
-  if (lo && seen > 0 && lo.noTimetableTrip / seen > QUALITY_MAX_UNLISTED_SHARE) return `${Math.round((lo.noTimetableTrip / seen) * 100)}% of its vehicles ran under trip numbers that are not on the schedule, so the figures would describe only a minority of its service.`;
+  if (lo && seen > 0 && lo.noTimetableTrip / seen > QUALITY_MAX_UNLISTED_SHARE) return `${Math.round((lo.noTimetableTrip / seen) * 100)}% of its vehicles ran under trip numbers that are not on the schedule. The figures would describe only a minority of its service.`;
   return null;
 }
 

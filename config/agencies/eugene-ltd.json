@@ -1,6 +1,6 @@
 {
   "slug": "eugene-ltd",
-  "name": "Lane Transit District",
+  "officialName": "Lane Transit District",
   "center": [
     44.0489,
     -123.0488
@@ -16,7 +16,7 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-131/latest.zip",
   "lastFeedExpiry": "20270130",
   "lastFeedVersion": "2609a",
-  "lastRefreshedAt": "2026-10-03",
+  "lastRefreshedAt": "2026-11-02",
   "websiteUrl": "http://www.ltd.org",
   "cities": [
     "Eugene, Oregon",
@@ -24,26 +24,31 @@
   ],
   "timezone": "America/Los_Angeles",
   "lastRawArchiveKey": "20260131-84ccd5ec5befb0c2",
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270130",
   "feedQuality": {
-    "status": "degraded",
-    "score": 30,
+    "status": "review",
+    "score": 65,
     "reasons": [
       "1 minor schedule issue found while reading the feed.",
-      "4 route shapes needed adjustment before display.",
-      "6 route have stops whose frequency differs from the overall route schedule."
+      "7 route have stops whose frequency differs from the overall route schedule."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 1,
-      "shapeAnomalies": 4,
-      "routeHeadwayMismatches": 6,
-      "featureCount": 145
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 7,
+      "featureCount": 147,
+      "feedExpiry": "20270130",
+      "routeCount": 28,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 7,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-03"
+    "checkedAt": "2026-11-03"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -51,5 +56,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://feed.ltd.org/TMGTFSRealTimeWebService/GTFS/google_transit.zip",
-  "lastPeekedExpiry": "20270130"
+  "lastPeekedExpiry": "20270130",
+  "lastServiceWeek": "4ba21d301c1b415e",
+  "feedObtainedAt": "20260903"
 }

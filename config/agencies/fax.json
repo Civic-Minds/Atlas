@@ -1,6 +1,7 @@
 {
   "slug": "fax",
-  "name": "Fresno Area Express (FAX)",
+  "officialName": "Fresno Area Express",
+  "commonName": "FAX",
   "websiteUrl": "https://www.fresno.gov/transportation/fax/",
   "center": [
     36.74,
@@ -16,12 +17,38 @@
     "Clovis, California"
   ],
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-90/latest.zip",
-  "lastFeedCheckAt": "20261019",
-  "expiredFeedCheckCount": 0,
-  "expiredFeedCheckSince": null,
+  "lastFeedCheckAt": "20261102",
+  "expiredFeedCheckCount": 1,
+  "expiredFeedCheckSince": "20260622",
   "expiredFeedCheckExpiry": "20261101",
   "timezone": "America/Los_Angeles",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://gis4u.fresno.gov/downloads/fax_gtfs.zip",
-  "lastPeekedExpiry": "20261101"
+  "lastPeekedExpiry": "20261101",
+  "feedQuality": {
+    "status": "degraded",
+    "score": 65,
+    "reasons": [
+      "The schedule dates in this feed have passed."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 123,
+      "feedExpiry": "20261101",
+      "routeCount": 19,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
+    },
+    "checkedAt": "2026-11-02",
+    "scoredAt": "2026-11-02"
+  },
+  "feedRefreshStatus": "stale",
+  "feedRefreshError": "all available feeds expired (latest 20261101)",
+  "feedRefreshErrorAt": "20261102",
+  "feedRefreshRetryCount": 1
 }

@@ -3,7 +3,8 @@ import { labelDirectionGroups, sortDirectionGroupIds } from './directionLabel';
 import { hasDirectionPeriodService, routeCardDisplayHeadway } from './effectiveHeadway';
 import { dedupeCrossDirectionHeadsigns } from './crossDirectionDedup';
 import { branchDisplayPeriodHeadway, buildRouteServiceSummary, metricValueForPeriod } from './routeFacts';
-import { hasStretchRoles, stretchRowFeatures, tailNotThroughPeriod, variantOnlyRow } from './stretchCard';
+import { hasStretchRoles, notThroughRowSaysWhen, stretchRowFeatures, tailNotThroughPeriod, variantOnlyRow } from './stretchCard';
+import { pooledMainStretch } from './routeCardTrunk';
 
 export interface RouteCardDirectionGroup {
   dirId: number;
@@ -12,6 +13,8 @@ export interface RouteCardDirectionGroup {
   boundLabel?: string;
   /** Every feature of the direction, when its rows come from the stretches. */
   directionFeatures?: ShapeProperties[];
+  /** #1185: the one row of a main stretch several patterns to one destination share, and the pooled value it reads. */
+  pooledMain?: { feature: ShapeProperties; headway: number };
 }
 
 /** An agency's per-route direction overrides, keyed by route short name (config `directionLabels`, `directionHeadsigns`). */
@@ -75,14 +78,24 @@ export function buildDirectionGroups(
   for (const g of map.values()) {
     const directionFeatures = currentRoute.directions.filter(d => (d.directionId ?? 0) === g.dirId);
     if (!hasStretchRoles(directionFeatures)) continue;
-    // #1115: a branch that does not run through the period has no row for it.
-    const notThrough = stretchRowFeatures(directionFeatures, period).filter(d => tailNotThroughPeriod(d, period));
+    // #1115: a branch that does not run through the period has no row for it, unless the row says when it runs there from
+    // its own trips (#1277, notThroughRowSaysWhen).
+    const notThrough = stretchRowFeatures(directionFeatures, period).filter(d => tailNotThroughPeriod(d, period) && !notThroughRowSaysWhen(d, period));
     let rows = stretchRowFeatures(directionFeatures, period).filter(d => !notThrough.includes(d) && (
       metricValueForPeriod(buildRouteServiceSummary(d).branch, period) != null || hasDirectionPeriodService(d, period)));
     // With tails, the shared main stretch is the trunk they hang off: it gets a row only when it has a cadence of its own to show.
     const variantRow = variantOnlyRow(directionFeatures);
     if (variantRow) rows = [variantRow];
     if (rows.some(d => d.stretchRole === 'tail')) rows = rows.filter(d => d.stretchRole !== 'main' || routeCardDisplayHeadway(d, period) != null);
+    // #1185: a main stretch two destinations share gets a row per destination (under its "Shared stretch" row); one
+    // destination keeps one row, which reads the pooled value (pooledMain).
+    const pooled = variantRow ? null : pooledMainStretch(directionFeatures, period);
+    if (pooled && pooled.destinations.length >= 2 && rows.some(d => d.stretchRole === 'main')) {
+      rows = [...pooled.destinations, ...rows.filter(d => d.stretchRole !== 'main')];
+    } else if (pooled && pooled.destinations.length === 1) {
+      g.pooledMain = { feature: pooled.destinations[0], headway: pooled.pooled };
+      rows = rows.map(d => (d.stretchRole === 'main' ? pooled.destinations[0] : d));
+    }
     if (rows.length > 0 || notThrough.length > 0) { g.realTier = rows; g.span = []; g.directionFeatures = directionFeatures; }
   }
   // Deduplicate realTier entries with the same headsign — keep the one with the best (lowest) headway.

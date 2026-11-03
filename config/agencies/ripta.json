@@ -1,6 +1,7 @@
 {
   "slug": "ripta",
-  "name": "Rhode Island Public Transit Authority (RIPTA)",
+  "officialName": "Rhode Island Public Transit Authority",
+  "commonName": "RIPTA",
   "websiteUrl": "http://www.ripta.com/",
   "center": [
     41.82,
@@ -10,7 +11,7 @@
   "lastFeedExpiry": "20270115",
   "lastFeedVersion": null,
   "region": "Rhode Island",
-  "lastRefreshedAt": "2026-10-03",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Warwick, Rhode Island",
     "Providence, Rhode Island",
@@ -18,25 +19,29 @@
     "Cranston, Rhode Island",
     "Fall River, Massachusetts"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270115",
   "timezone": "America/New_York",
   "feedQuality": {
-    "status": "review",
-    "score": 80,
-    "reasons": [
-      "2 route have stops whose frequency differs from the overall route schedule."
-    ],
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
       "shapeAnomalies": 0,
-      "routeHeadwayMismatches": 2,
-      "featureCount": 303
+      "routeHeadwayMismatches": 0,
+      "featureCount": 316,
+      "feedExpiry": "20270115",
+      "routeCount": 59,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-03"
+    "checkedAt": "2026-11-03"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -44,5 +49,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-624/latest.zip",
-  "lastPeekedExpiry": "20270115"
+  "lastPeekedExpiry": "20270115",
+  "lastServiceWeek": "40d589e1604e9550",
+  "feedObtainedAt": "20261028"
 }

@@ -1,6 +1,7 @@
 {
   "slug": "rouen",
-  "name": "Astuce (Rouen)",
+  "officialName": "Astuce",
+  "nameQualifier": "Rouen",
   "region": "Normandie",
   "center": [
     49.4431,

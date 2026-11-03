@@ -72,7 +72,7 @@ export default function FrequentServicePublishedMapMontage() {
         </div>
       </div>
       <figcaption className="px-4 py-3 text-xs text-[var(--text-muted)] sm:px-6">
-        Quick cuts from real system-map pages published by agencies in this audit.
+        System maps from 12 agencies in Canada and the United States, each as the agency publishes it.
       </figcaption>
     </figure>
   );

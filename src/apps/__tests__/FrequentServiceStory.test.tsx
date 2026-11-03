@@ -1,9 +1,11 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
+// The story map's MapLibre worker URL is a Vite build import (?worker&url) the test runner can't load; no map is drawn here.
+vi.mock('../../lib/maplibreWorker', () => ({}));
 import FrequentServiceStory from '../FrequentServiceStory';
-import { frequentServiceStoryStats } from '../../data/frequentServiceStory';
+import { frequentServiceDefinitionSample, frequentServiceStoryResearchRecord, frequentServiceStoryStats } from '../../data/frequentServiceStory';
 import audit from '../../../docs/research/system-map-audit-2026-09/data.json';
-import recheck from '../../../docs/research/frequent-service-research-2026-09/definition-recheck-2026-10-30.json';
+import recheck from '../../data/definition-recheck-2026-10-30.json';
 
 const agencies = [{ slug: 'ttc', name: 'Toronto Transit Commission' }] as any;
 
@@ -23,12 +25,59 @@ describe('FrequentServiceStory', () => {
     expect(onExploreMap).toHaveBeenCalledOnce();
   });
 
-  it('changes the selected threshold without rendering agency tabs', () => {
+  it('picks a threshold bar the split bar\'s way: it fades the other bars and highlights its name, without agency tabs', () => {
     render(<FrequentServiceStory agencies={agencies} onExploreMap={() => {}} />);
     const tenMinuteButton = screen.getByRole('button', { name: /Show examples for 10-minute service/ });
     fireEvent.click(tenMinuteButton);
     expect(screen.queryByRole('tab')).not.toBeInTheDocument();
-    expect(tenMinuteButton).toHaveAttribute('aria-pressed', 'true');
+    expect(tenMinuteButton.querySelector('[data-active="true"]')).not.toBeNull();
+    const fifteen = screen.getByRole('button', { name: /Show examples for 15-minute service/ });
+    expect((fifteen.querySelector('[style*="width"]') as HTMLElement).style.opacity).toBe('0.35');
+  });
+
+  it('highlights the most common threshold, 15 min, until another bar is picked (CIV-1286)', () => {
+    render(<FrequentServiceStory agencies={agencies} onExploreMap={() => {}} />);
+    const bar = (min: number) => screen.getByRole('button', { name: new RegExp(`Show examples for ${min}-minute service`) });
+    const fill = (min: number) => (bar(min).querySelector('[style*="width"]') as HTMLElement).style.opacity;
+    expect(bar(15).querySelector('[data-active="true"]')).not.toBeNull();
+    expect([fill(15), fill(10)]).toEqual(['', '0.35']);
+    fireEvent.mouseEnter(bar(10));
+    expect([fill(10), fill(15)]).toEqual(['', '0.35']);
+    fireEvent.mouseLeave(bar(10).parentElement!);
+    expect(bar(15).querySelector('[data-active="true"]')).not.toBeNull();
+  });
+
+  it("says how many agencies the chart shows, from the data (Ryan's caption, 2026-11-02)", () => {
+    render(<FrequentServiceStory agencies={agencies} onExploreMap={() => {}} />);
+    expect(screen.getByText(`This chart shows the ${frequentServiceStoryStats.chartedAgencies} agencies that publish a specific number of minutes.`, { exact: false })).toBeInTheDocument();
+  });
+
+  it("bridges the montage and the map with Ryan's approved text, word for word (version A, 2026-11-02)", () => {
+    render(<FrequentServiceStory agencies={agencies} onExploreMap={() => {}} />);
+    const bridge = [...screen.getByRole('heading', { name: 'Every map tells it differently.' }).closest('section')!.querySelectorAll('p')].map(p => p.textContent!.replace(/[\u2060\u00a0\u202f]/g, m => (m === '\u2060' ? '' : ' ')));
+    expect(bridge).toEqual([
+      "Each agency decides what its map shows, so one map is hard to compare with the next. Toronto's Ten-Minute Network means a bus or streetcar every 10 min or better, from 6 AM to 1 AM. Vancouver and Los Angeles both draw the line at 15 minutes, but Vancouver checks it until 9 PM every day of the week, and Los Angeles only on weekdays until 6 PM. Washington, DC has two levels, one at 12 minutes and one at 20. Miami-Dade's map doesn't use the word frequent at all. It colours every route by how often the bus comes at weekday midday.",
+      "The maps also differ in what they draw. Vancouver's and Portland's show only the frequent network, so a slower route isn't on the map. Toronto's, Ottawa's and Seattle's draw every route and mark the frequent ones. Seattle also counts two routes that share a street as frequent together, which none of the other maps here do.",
+      "Atlas starts from the schedules instead. Here is Toronto's network, built from the TTC's own schedule data, one step at a time.",
+    ]);
+  });
+
+  it('pins the story map below the sticky header at every width, through the last stage (#1310)', () => {
+    const { container } = render(<FrequentServiceStory agencies={agencies} onExploreMap={() => {}} />);
+    const section = container.querySelector('section[aria-labelledby="network-story-heading"]')!;
+    const pinned = section.querySelector('[data-story-stage="0"]')!.parentElement!.previousElementSibling!;
+    // top-16 (4rem, 56px at the site's 14px root) clears the page header (42px on phones, 53px from sm); no lg: prefix, so phones pin too.
+    expect(pinned.className.split(' ')).toEqual(expect.arrayContaining(['sticky', 'top-16', 'lg:top-24']));
+    expect(pinned.className).not.toContain('lg:sticky');
+    // The space after the last step keeps the map pinned while the last stage is read.
+    expect(section.querySelector('[data-story-stage="3"]')!.parentElement!.className).toContain('pb-[60vh]');
+  });
+
+  it('fills the phone screen under the header with the pinned map, leaving no empty band (#1310)', async () => {
+    const { readFileSync } = await import('node:fs');
+    const map = readFileSync('src/components/FrequentServiceStoryMap.tsx', 'utf8');
+    // top-16 is 4rem: the figure below lg is the rest of the screen; from lg, top-24 with 2rem below.
+    expect(map).toContain('h-[calc(100dvh-4rem)] lg:h-[calc(100dvh-8rem)]');
   });
 
   it('counts the Canada and US definitions that still held on the October 30 recheck (CIV-1149)', () => {
@@ -37,50 +86,58 @@ describe('FrequentServiceStory', () => {
     expect(frequentServiceStoryStats.namedNumericAgencies).toBe(61);
     expect(frequentServiceStoryStats.recheckLeftOut).toBe(6);
     expect(frequentServiceStoryStats.recheckedAgencies).toBe(67);
-    expect(frequentServiceStoryStats.headwayBars).toEqual([
-      { minutes: 10, agencies: 5, agenciesOct11: 5 },
-      { minutes: 12, agencies: 1, agenciesOct11: 2 },
-      { minutes: 15, agencies: 40, agenciesOct11: 42 },
-      { minutes: 20, agencies: 6, agenciesOct11: 9 },
-      { minutes: 30, agencies: 9, agenciesOct11: 9 },
-      { minutes: 60, agencies: 0, agenciesOct11: 0 },
-    ]);
   });
 
-  it('says in How we did this that the chart was checked again (CIV-1149)', () => {
+  it('applies the tier rule: fastest multi-route frequent tier, slowest weekday daytime wait (CIV-1178)', () => {
+    // CTtransit and Intercity Transit leave (one-corridor and one-route tiers); ART 10→12, CapMetro 20→15,
+    // RTC 20→15, DRT 15→20, Fort McMurray 15→25 (its own 25 bar).
+    expect(frequentServiceStoryStats.chartedAgencies).toBe(59);
+    expect(frequentServiceStoryStats.headwayBars).toEqual([
+      { minutes: 10, agencies: 3, agenciesOct11: 3 },
+      { minutes: 12, agencies: 2, agenciesOct11: 3 },
+      { minutes: 15, agencies: 39, agenciesOct11: 41 },
+      { minutes: 20, agencies: 5, agenciesOct11: 8 },
+      { minutes: 25, agencies: 1, agenciesOct11: 1 },
+      { minutes: 30, agencies: 9, agenciesOct11: 9 },
+    ]);
+    expect(frequentServiceStoryStats.headwayBars.reduce((sum, bar) => sum + bar.agencies, 0)).toBe(59);
+  });
+
+  it('says in Method that the chart was checked again (CIV-1149)', () => {
     render(<FrequentServiceStory agencies={agencies} onExploreMap={vi.fn()} />);
     expect(screen.getByText(/On October 30, 2026, we opened the source again for each of the 67 agencies the chart counted\. 61 still matched and stay in the chart\. 6 are left out:/)).toBeInTheDocument();
   });
 
   it('uses the shared method template: Date updated, and Sources in place of Review boundary (CIV-1167)', () => {
     const { container } = render(<FrequentServiceStory agencies={agencies} onExploreMap={vi.fn()} />);
-    const method = screen.getByRole('heading', { name: 'How we did this' }).closest('section')!;
+    const method = screen.getByRole('heading', { name: 'Method' }).closest('section')!;
     expect([...method.querySelectorAll('strong')].map(el => el.textContent)).toEqual(['Date conducted:', 'Date updated:', 'Sample:', 'Sources:', 'What counted:', 'How we handled numbers:', 'Rechecked:', 'Limitations:']);
     expect(method).toHaveTextContent('Date updated: October 30, 2026.');
     expect(container).not.toHaveTextContent('Review boundary');
   });
 
-  it('offers the chart as a table', () => {
+  it('credits the share picture shelter photo in Sources (CIV-1259)', () => {
+    render(<FrequentServiceStory agencies={agencies} onExploreMap={vi.fn()} />);
+    const method = screen.getByRole('heading', { name: 'Method' }).closest('section')!;
+    expect(method).toHaveTextContent('Shelter photo: Dillan Payne, CC BY-SA 4.0, cut out and adapted.');
+    expect(screen.getByRole('link', { name: 'Dillan Payne' })).toHaveAttribute('href', 'https://commons.wikimedia.org/wiki/File:TTC_Bus_Stop_on_Port_Union_Road,_April_30_2026.jpg');
+    expect(screen.getByRole('link', { name: 'CC BY-SA 4.0' })).toHaveAttribute('href', 'https://creativecommons.org/licenses/by-sa/4.0/');
+  });
+
+  it('gives screen readers the chart as a table, with no visible toggle (CIV-1281)', () => {
     render(<FrequentServiceStory agencies={agencies} onExploreMap={() => {}} />);
-    expect(screen.getByText('Show as a table')).toBeInTheDocument();
+    expect(screen.queryByText('Show as a table')).toBeNull();
+    const chart = screen.getByRole('group', { name: /Interactive chart showing the number of agencies/ });
+    expect(chart).toHaveAttribute('aria-details', screen.getByRole('table', { name: 'There is no single “frequent.”' }).parentElement!.id);
     expect(screen.getByRole('columnheader', { name: /^Agencies, Oct\s30$/ })).toBeInTheDocument();
   });
 
-  it('does not mistake unavailable or unnamed maps for numeric definitions', () => {
-    expect(audit.records).toHaveLength(317);
-    expect(audit.records.filter(record => record.status === 'pending_map_review')).toHaveLength(0);
-    expect(frequentServiceStoryStats.agenciesReviewed).toBe(184);
-    expect(frequentServiceStoryStats.fullAuditAgencies).toBe(317);
-    expect(frequentServiceStoryStats.countryCounts).toEqual([
-      { country: 'Canada', agencies: 74 },
-      { country: 'United States', agencies: 110 },
-    ]);
-    expect(frequentServiceStoryStats.categoryCounts).toMatchObject({
-      numericDefinition: 47,
-      qualitativeDefinition: 12,
-      noDefinitionFound: 120,
-      mapUnavailable: 5,
-    });
+  it('reads the intro count and the story agency from the definitions file (CIV-87)', () => {
+    expect(frequentServiceDefinitionSample).toMatchObject({ agencies: 419, blocked: 12, canada: 83, unitedStates: 336, namedNetwork: 78, withWait: 67 });
+    expect(frequentServiceStoryResearchRecord).toEqual({ agencyId: 'ttc', agencyName: 'Toronto Transit Commission' });
+    render(<FrequentServiceStory agencies={agencies} onExploreMap={() => {}} />);
+    expect(screen.getByText(/We checked how 419 agencies define frequent service on their own websites/)).toBeInTheDocument();
+    expect(screen.getByText(/at 419 agencies Atlas covers in Canada \(83\) and the United States \(336\)\. We couldn't check 12 others because their websites block automated visits\./)).toBeInTheDocument();
   });
 
   it('keeps the audit canonical and unique after alias merging', () => {

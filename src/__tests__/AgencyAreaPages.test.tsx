@@ -4,9 +4,13 @@ import type { ReactElement } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import AgencyPage from '../AgencyPage';
 import AreaPage from '../AreaPage';
-import { agencyPageData, type AgencyPageRoute, type AgencyPageSummary } from '../../shared/agencyPages';
+import RegionPage from '../RegionPage';
+import { buildRegionPageData } from '../../shared/regionPages';
+import { agencyBreadcrumbs, agencyPageData, type AgencyPageRoute, type AgencyPageSummary } from '../../shared/agencyPages';
 import { buildAreaPageData, AREA_TABLE_OTHER } from '../../shared/areaPages';
 import type { AreaConfig } from '../../shared/areas';
+import { agencyPageSummaries } from '../../shared/agencyPagesData';
+import { parentAgency, parentAgencyPageData } from '../../shared/parentAgencies';
 
 const r = (name: string, mode: number, midday: number | null, extra: Partial<AgencyPageRoute> = {}): AgencyPageRoute =>
   ({ name, longName: null, mode, midday, am: midday, pm: midday, evening: midday, overnight: null, ...extra });
@@ -16,6 +20,8 @@ const TTC: AgencyPageSummary = {
   routes: [r('1', 1, 4), r('2', 1, 20), r('5', 3, 12), r('6', 3, 30), r('301', 3, null, { am: null, pm: null, evening: null, overnight: 30 })],
 };
 const HSR: AgencyPageSummary = { ...TTC, slug: 'hsr', name: 'Hamilton Street Railway', displayName: 'HSR (Hamilton)', city: 'Hamilton', routes: [r('A', 3, 10), r('B', 3, 25)], routeCount: 2, sat: true, sun: false };
+// A second Toronto-area agency, so the Toronto area has the two agencies a page needs (areaPageStatus).
+const GO: AgencyPageSummary = { ...HSR, slug: 'go', name: 'GO Transit', displayName: 'GO Transit', city: 'Toronto' };
 const AREA: AreaConfig = {
   slug: 'toronto', name: 'Toronto', type: 'CMA', officialName: 'Toronto', country: 'Canada', cities: ['Toronto'], bbox: [43, -80, 44, -79], center: [43.5, -79.5],
   largeMetro: true, page: true, agencies: ['ttc', 'hsr'],
@@ -26,7 +32,19 @@ function view(ui: React.ReactElement) {
 }
 
 describe('AgencyPage', () => {
-  const data = agencyPageData(TTC, [TTC, HSR], '2026-10-13T00:00:00Z', { slug: 'toronto', name: 'Toronto' });
+  const data = agencyPageData(TTC, [TTC, HSR, GO], '2026-10-13T00:00:00Z', { slug: 'toronto', name: 'Toronto' });
+
+  it('names an area with one agency without a link, keeping the state link in the breadcrumb (Ryan, 2026-11-01)', () => {
+    const alone = agencyPageData(TTC, [TTC, HSR], null, { slug: 'toronto', name: 'Toronto' });
+    expect(alone.area).toEqual({ slug: 'toronto', name: 'Toronto', page: false });
+    view(<AgencyPage data={alone} />);
+    expect(screen.getByText('Greater Toronto and Hamilton Area').tagName).toBe('P');
+    expect(screen.queryByRole('link', { name: 'Greater Toronto and Hamilton Area' })).toBeNull();
+    expect(screen.queryByRole('heading', { name: /Nearby agencies in/ })).toBeNull();
+    const crumbs = agencyBreadcrumbs(TTC, alone.area, '/region/ontario');
+    expect(crumbs.find(c => c.name === 'Greater Toronto and Hamilton Area')?.href).toBeUndefined();
+    expect(crumbs.find(c => c.name === 'Ontario')?.href).toBe('/region/ontario');
+  });
 
   it('shows the full agency name in the heading, the area link, plain stats and the five period columns', () => {
     view(<AgencyPage data={data} />);
@@ -47,7 +65,7 @@ describe('AgencyPage', () => {
     expect(screen.queryByText(/15 min or better/)).toBeNull();
     expect(screen.getByRole('button', { name: /1 route every 10 min or better/ })).toBeTruthy();
     expect(screen.getByRole('button', { name: /route every 16–20 min/ })).toBeTruthy();
-    expect(screen.getByRole('button', { name: /with no regular midday service/ })).toBeTruthy();
+    expect(screen.getByRole('button', { name: /irregularly or not at all at midday/ })).toBeTruthy();
     expect(screen.queryByRole('tooltip')).toBeNull(); // no tooltip: the legend item is highlighted instead
     const segment = screen.getByRole('button', { name: /route every 16–20 min/ });
     const other = screen.getByRole('button', { name: /1 route every 10 min or better/ });
@@ -69,12 +87,12 @@ describe('AgencyPage', () => {
     expect(screen.queryByText(/pick a standard/i)).toBeNull();
   });
 
-  it('has one map link under the bar (Weekday midday, every route); the bar and its legend are not links', () => {
+  it('has one map link, at the top (CIV-1297); the bar and its legend are not links', () => {
     view(<AgencyPage data={data} />);
     expect(screen.queryByRole('link', { name: /route every/ })).toBeNull();
-    const link = screen.getByRole('link', { name: 'See these routes on the map' });
-    const url = new URL(link.getAttribute('href')!, 'http://x');
-    expect([url.pathname, url.searchParams.get('agencies'), url.searchParams.get('h'), url.searchParams.get('p'), url.searchParams.get('day')]).toEqual(['/', 'ttc', 'all', 'midday', 'Weekday']);
+    expect(screen.queryByRole('link', { name: 'See these routes on the map' })).toBeNull();
+    const link = screen.getByRole('link', { name: 'View on map' });
+    expect(new URL(link.getAttribute('href')!, 'http://x').searchParams.get('agencies')).toBe('ttc');
     expect(link.querySelector('svg')).toBeTruthy(); // the shared page-link arrow
   });
 
@@ -100,8 +118,8 @@ describe('AgencyPage intro', () => {
     view(<AgencyPage data={d} />);
     const p = screen.getByText((_, el) => el?.tagName === 'P' && /operates 5 routes \(2 subway\/metro, 3 bus\) in Toronto with 7,566 stops/.test(el.textContent ?? ''));
     expect(p.textContent).toBe(d.intro);
-    // No area page: the place links to its province in the all-agencies list (CIV-966).
-    expect(screen.getByRole('link', { name: 'Toronto' }).getAttribute('href')).toBe('/agencies#index-canada-ontario');
+    // #1283: a link names the page it opens, so a city is plain text.
+    expect(screen.queryByRole('link', { name: 'Toronto' })).toBeNull();
     expect(document.body.textContent!.split('operates 5 routes (').length - 1).toBe(1);
     expect(screen.getAllByRole('link', { name: 'Hamilton Street Railway' })[0].getAttribute('href')).toBe('/agency/hsr');
     expect(screen.queryByRole('link', { name: 'Tiny Transit' })).toBeNull();
@@ -115,6 +133,16 @@ describe('AgencyPage intro', () => {
     expect(screen.getByText(/Its routes have no regular midday service\./)).toBeTruthy();
   });
 
+  it('says "Irregular" where the map list does, and a dash where the route does not run (#1249)', () => {
+    // CTA 1, weekday midday: the route runs, but the filter finds no regular cadence.
+    const cta = { ...HSR, routes: [r('1', 3, null, { am: 10, noRegular: ['midday'] }), r('B', 3, null, { am: 10 })] };
+    view(<AgencyPage data={agencyPageData(cta, [cta, TTC], null)} />);
+    const rowOf = (name: string) => screen.getAllByRole('row').find(row => within(row).queryAllByRole('cell')[0]?.textContent?.includes(name) || row.firstElementChild?.textContent?.startsWith(name))!;
+    const cells = (name: string) => Array.from(rowOf(name).children).map(c => c.textContent);
+    expect(cells('1')[2]).toBe('Irregular');
+    expect(cells('B')[2]).not.toBe('Irregular');
+  });
+
   it('has no connects-with clause without connections', () => {
     view(<AgencyPage data={agencyPageData(TTC, [TTC, HSR], null)} />);
     expect(screen.queryByText(/connects with/)).toBeNull();
@@ -124,11 +152,11 @@ describe('AgencyPage intro', () => {
 describe('AgencyPage intro place, notes and headings', () => {
   const um = { ...TTC, slug: 'um', name: 'University of Michigan Transit Services (Toronto)', city: 'Toronto', stops: 12, websiteUrl: 'https://example.org' };
 
-  it('links the place to its area page and drops the repeated city from the name', () => {
+  it('never links a city to its area page (#1283) and drops the repeated city from the name', () => {
     const d = agencyPageData(um, [um, HSR], '2026-10-13T00:00:00Z', { slug: 'toronto', name: 'Toronto' });
     expect(d.intro.startsWith('University of Michigan Transit Services operates 5 routes')).toBe(true);
     view(<AgencyPage data={d} />);
-    expect(screen.getByRole('link', { name: 'Toronto' }).getAttribute('href')).toBe('/area/toronto');
+    expect(screen.queryByRole('link', { name: 'Toronto' })).toBeNull();
     expect(screen.getByRole('link', { name: 'University of Michigan Transit Services' }).getAttribute('href')).toBe('https://example.org');
     expect(screen.getByText(/Agency website:/)).toBeTruthy();
     expect(screen.getByText(/Based on the agency's published schedule, not live arrivals\./)).toBeTruthy();
@@ -147,7 +175,7 @@ describe('AgencyPage intro place, notes and headings', () => {
 
 describe('AgencyPage other agencies list', () => {
   it('is titled by the area, links the area, and links every agency', () => {
-    const withArea = agencyPageData(TTC, [TTC, HSR], null, { slug: 'toronto', name: 'Toronto' }, [TTC, HSR]);
+    const withArea = agencyPageData(TTC, [TTC, HSR, GO], null, { slug: 'toronto', name: 'Toronto' }, [TTC, HSR]);
     expect(withArea.nearby.map(n => n.slug)).toEqual(['hsr']);
     view(<AgencyPage data={withArea} />);
     const heading = screen.getByRole('heading', { name: 'Nearby agencies in the Greater Toronto and Hamilton Area' });
@@ -168,7 +196,8 @@ describe('AreaPage narrow names column', () => {
     const withOther = buildAreaPageData({ ...AREA, agencies: ['ttc', 'weta'] }, new Map([[TTC.slug, TTC], [weta.slug, weta]]), null);
     view(<AreaPage data={withOther} />);
     const link = screen.getByRole('link', { name: 'WETA (San Francisco Bay)' });
-    expect(link.getAttribute('title')).toBe(long);
+    // The title on hover is the official name, without its bracket (#1245).
+    expect(link.getAttribute('title')).toBe('San Francisco Bay Area Water Emergency Transportation Authority');
     expect(within(screen.getByRole('table')).getByRole('link', { name: 'Toronto Transit Commission' }).getAttribute('title')).toBeNull();
   });
 
@@ -178,7 +207,7 @@ describe('AreaPage narrow names column', () => {
     const data = buildAreaPageData({ ...AREA, agencies: ['ttc', 'beeline'] }, new Map([[TTC.slug, TTC], [beeline.slug, beeline]]), null);
     expect(data.modeColumns).toContain(AREA_TABLE_OTHER);
     view(<AreaPage data={data} />);
-    expect(screen.getByRole('link', { name }).getAttribute('title')).toBeNull();
+    expect(screen.getByRole('link', { name: 'Westchester County Bee-Line System' }).getAttribute('title')).toBeNull();
   });
 
   it('draws the names at normal weight, as the column asks (CIV-973)', () => {
@@ -206,7 +235,7 @@ describe('AreaPage', () => {
     const extra = (slug: string, n: number): AgencyPageSummary => ({ ...HSR, slug, name: `Agency ${slug}`, displayName: `Agency ${slug}`, routes: Array.from({ length: n }, (_, i) => r(`${slug}${i}`, 3, 30)), routeCount: n });
     const four = new Map([[TTC.slug, TTC], [HSR.slug, HSR], ['x', extra('x', 1)], ['y', extra('y', 1)]]);
     view(<AreaPage data={buildAreaPageData({ ...AREA, agencies: ['ttc', 'hsr', 'x', 'y'] }, four, null)} />);
-    const intro = screen.getByText(/transit agencies running/);
+    const intro = screen.getByText(/transit agencies operating/);
     expect(intro.textContent).toMatch(/, including Toronto Transit Commission, Hamilton Street Railway and 2 others\.$/);
     expect(within(intro).getByRole('link', { name: 'Toronto Transit Commission' }).getAttribute('href')).toBe('/agency/ttc');
     expect(within(intro).getByRole('link', { name: 'Hamilton Street Railway' }).getAttribute('href')).toBe('/agency/hsr');
@@ -214,7 +243,7 @@ describe('AreaPage', () => {
 
   it('ends the intro after the route breakdown with three agencies or fewer (CIV-968)', () => {
     view(<AreaPage data={data} />);
-    const intro = screen.getByText(/transit agencies running/);
+    const intro = screen.getByText(/transit agencies operating/);
     expect(intro.textContent).not.toMatch(/including/);
     expect(within(intro).queryAllByRole('link')).toHaveLength(0);
   });
@@ -225,13 +254,13 @@ describe('AreaPage', () => {
     expect(screen.getAllByRole('button', { name: /every 10 min or better/ }).length).toBeGreaterThan(0);
   });
 
-  it('has one map link under the bar framed on the area, and "See all agencies" in the section heading row', () => {
+  it('has one map link, at the top, and "See all agencies" after the agency table (CIV-1297)', () => {
     view(<AreaPage data={data} />);
     expect(screen.queryByRole('link', { name: /route every/ })).toBeNull();
-    const url = new URL(screen.getByRole('link', { name: 'See these routes on the map' }).getAttribute('href')!, 'http://x');
-    expect([url.searchParams.get('area'), url.searchParams.get('h'), url.searchParams.get('p'), url.searchParams.get('day')]).toEqual(['toronto', 'all', 'midday', 'Weekday']);
+    expect(screen.queryByRole('link', { name: 'See these routes on the map' })).toBeNull();
+    expect(new URL(screen.getByRole('link', { name: 'View on map' }).getAttribute('href')!, 'http://x').searchParams.get('area')).toBe('toronto');
     const seeAll = screen.getByRole('link', { name: 'See all agencies' });
-    expect(seeAll.parentElement).toBe(screen.getByRole('heading', { name: 'Agencies and weekday frequency' }).parentElement);
+    expect(screen.getByRole('table').compareDocumentPosition(seeAll) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     expect(screen.queryByText(/A dash means none/)).toBeNull();
   });
 });
@@ -274,5 +303,69 @@ describe('AgencyPage "See all agencies"', () => {
     view(<AgencyPage data={agencyPageData(TTC, [TTC], '2026-10-13T00:00:00Z')} />);
     expect(screen.queryByRole('heading', { name: /Nearby agencies/ })).toBeNull();
     expect(screen.getAllByRole('link', { name: 'See all agencies' })).toHaveLength(1);
+  });
+});
+
+describe('RegionPage (CIV-976)', () => {
+  const data = buildRegionPageData({ slug: 'ontario', name: 'Ontario', country: 'Canada' }, [TTC, HSR], '2026-10-13T00:00:00Z');
+
+  it('lays out a province like an area page: heading, intro, map link, bar note and agency table', () => {
+    view(<RegionPage data={data} />);
+    expect(screen.getByRole('heading', { level: 1 }).textContent).toBe('Ontario');
+    expect(screen.getByText(/transit agencies operating/).textContent).toMatch(/^Ontario has 2 transit agencies operating 7 routes/);
+    expect(screen.getByRole('link', { name: 'View on map' }).getAttribute('href')).toMatch(/^\/\?agencies=ttc%2Chsr/);
+    expect(screen.getByText(/The bar splits this province's routes/)).toBeTruthy();
+    expect(within(screen.getByRole('table')).getByRole('link', { name: 'Hamilton Street Railway' }).getAttribute('href')).toBe('/agency/hsr');
+    expect(screen.queryByText(/^Area:/)).toBeNull();
+  });
+
+  it('names an agency\'s city without a link, since the link would open a different page (#1283)', () => {
+    const night = { ...HSR, routes: [r('N', 3, null)] };
+    const d = agencyPageData(night, [night], null);
+    view(<AgencyPage data={d} />);
+    expect(screen.queryByRole('link', { name: d.place })).toBeNull();
+  });
+
+  it('links each area the intro names to that area\'s page, counting past three (#1283)', () => {
+    const tagged = (name: string, areas: string[]) => r(name, 3, 10, { areas });
+    const wide = { ...HSR, routes: [tagged('1', ['los-angeles', 'riverside']), tagged('2', ['los-angeles', 'oxnard']), tagged('3', ['los-angeles', 'san-diego']), tagged('4', ['riverside', 'bakersfield'])] };
+    // A second agency in Los Angeles and the Inland Empire only, so just those two areas have pages.
+    const other = { ...HSR, slug: 'other', routes: [tagged('9', ['los-angeles', 'riverside'])] };
+    const d = agencyPageData(wide, [wide, other], null);
+    expect(d.place).toBe('Greater Los Angeles, the Inland Empire, the Bakersfield area and 2 other regions');
+    view(<AgencyPage data={d} />);
+    expect(screen.getByRole('link', { name: 'Greater Los Angeles' }).getAttribute('href')).toBe('/area/los-angeles');
+    expect(screen.getByRole('link', { name: 'the Inland Empire' }).getAttribute('href')).toBe('/area/riverside');
+    expect(screen.queryByRole('link', { name: 'the Bakersfield area' })).toBeNull();
+    expect(screen.getByText((_, el) => el?.tagName === 'P' && (el.textContent ?? '').includes('and 2 other regions')).textContent).toBe(d.intro);
+  });
+});
+
+describe('parent agency pages (CIV-1277)', () => {
+  const all = agencyPageSummaries();
+
+  it('lists the members under "Services", each linking its own page', () => {
+    view(<AgencyPage data={parentAgencyPageData(parentAgency('exo')!, all, null)!} />);
+    expect(screen.getByRole('heading', { level: 1 }).textContent).toBe('exo');
+    const services = screen.getByRole('heading', { name: 'Services' }).closest('section')!;
+    expect(within(services).getAllByRole('row').length).toBe(1 + 7);
+    const trains = within(services).getAllByRole('link').find(a => a.getAttribute('href') === '/agency/exo-trains');
+    expect(trains).toBeTruthy();
+  });
+
+  it('names a member\'s parent in its intro, linked (Ryan, 2026-11-02): "MTA NYCT Subway, part of MTA New York, operates …"', () => {
+    const d = agencyPageData(all.find(a => a.slug === 'nyct-subway')!, all, null);
+    expect(d.intro).toMatch(/^MTA NYCT Subway, part of MTA New York, operates \d+ routes /);
+    expect(d.description).toMatch(/^MTA NYCT Subway, part of MTA New York, operates /);
+    view(<AgencyPage data={d} />);
+    const p = screen.getByText((_, el) => el?.tagName === 'P' && (el.textContent ?? '').startsWith('MTA NYCT Subway, part of'));
+    expect(p.textContent).toBe(d.intro);
+    expect(within(p).getByRole('link', { name: 'MTA New York' }).getAttribute('href')).toBe('/agency/mta-new-york');
+    expect(screen.queryByText(/^Part of /)).toBeNull();
+    expect(screen.queryByRole('heading', { name: 'Services' })).toBeNull();
+  });
+
+  it('leaves the intro of an agency with no parent as it was', () => {
+    expect(agencyPageData(all.find(a => a.slug === 'guelph')!, all, null).intro).toMatch(/^Guelph Transit operates /);
   });
 });

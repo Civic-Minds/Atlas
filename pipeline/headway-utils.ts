@@ -117,6 +117,16 @@ export const HEADLINE_WINDOWS = {
 /** A headline value needs at least this many departures in its window. */
 export const HEADLINE_MIN_DEPARTURES = 3;
 
+/**
+ * The distinct departures inside [start, end], sorted, or null when there are fewer than
+ * HEADLINE_MIN_DEPARTURES: the one minimum the rider wait reads at midday, at the PM peak and on
+ * the all-day fallback's grading window (#1257).
+ */
+export function headlineDeparturesInWindow(times: readonly number[], start: number, end: number): number[] | null {
+  const t = [...new Set(times)].filter(x => x >= start && x <= end).sort((a, b) => a - b);
+  return t.length >= HEADLINE_MIN_DEPARTURES ? t : null;
+}
+
 /** Rail's own midday window (09:30 to 14:30), used by its tier scale and the rail roll-up. */
 export const RAIL_TIER_WINDOW = { start: 570, end: 870 } as const;
 

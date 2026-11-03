@@ -1,9 +1,10 @@
 {
   "slug": "nyct-subway",
-  "name": "MTA NYCT Subway",
+  "officialName": "MTA NYCT Subway",
   "displayArea": "New York City",
   "websiteUrl": "http://www.mta.info",
   "region": "New York",
+  "parentAgency": "mta-new-york",
   "center": [
     40.71,
     -74.01
@@ -15,9 +16,35 @@
     -73.7554
   ],
   "feedUrl": "https://rrgtfsfeeds.s3.amazonaws.com/gtfs_subway.zip",
-  "lastFeedExpiry": "20261031",
-  "lastFeedVersion": "20260826-X-long-term-supplement-trip-ids",
-  "lastRefreshedAt": "2026-08-27",
+  "sameNameRoutes": [
+    {
+      "shortName": "S",
+      "longName": "42 St Shuttle",
+      "name": "42 St Shuttle"
+    },
+    {
+      "shortName": "S",
+      "longName": "Franklin Avenue Shuttle",
+      "name": "Franklin Shuttle"
+    },
+    {
+      "shortName": "S",
+      "longName": "Rockaway Park Shuttle",
+      "name": "Rockaway Shuttle"
+    }
+  ],
+  "refStopOverrides": [
+    {
+      "routeShortName": "J",
+      "directionId": 1,
+      "stopId": "J27S",
+      "issue": "https://github.com/Civic-Minds/Atlas/issues/1292",
+      "reason": "The J's AM skip-stop pattern runs past Chauncey St (J28S), the middle stop; read at Broadway Junction, which every J serves."
+    }
+  ],
+  "lastFeedExpiry": "20270515",
+  "lastFeedVersion": "20261028-fall-2026-pick-with-long-term-supplements",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "East Village, New York",
     "Park Slope, New York",
@@ -30,28 +57,37 @@
     "Chinatown, New York",
     "Cypress Hills, New York"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261031",
+  "expiredFeedCheckExpiry": "20270515",
   "feedQuality": {
-    "status": "review",
-    "score": 60,
-    "reasons": [
-      "54 map lines were repaired — Atlas fixed unusual route geometry before displaying it.",
-      "1 route frequency needs checking — some stops appear to have more frequent service than the route's overall schedule suggests."
-    ],
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
-      "shapeAnomalies": 54,
-      "routeHeadwayMismatches": 1,
-      "featureCount": 205
+      "shapeAnomalies": 2,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 202,
+      "feedExpiry": "20270515",
+      "routeCount": 29,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-08-27"
+    "checkedAt": "2026-11-03"
   },
   "timezone": "America/New_York",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://rrgtfsfeeds.s3.amazonaws.com/gtfs_subway.zip",
-  "lastPeekedExpiry": "20261031"
+  "lastPeekedExpiry": "20270515",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "6bed3cf1cf9081b4",
+  "feedObtainedAt": "20261101"
 }

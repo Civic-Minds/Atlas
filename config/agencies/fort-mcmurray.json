@@ -1,6 +1,6 @@
 {
   "slug": "fort-mcmurray",
-  "name": "Regional Municipality of Wood Buffalo Transit",
+  "officialName": "Regional Municipality of Wood Buffalo Transit",
   "websiteUrl": "http://www.rmwb.ca",
   "center": [
     56.72,
@@ -21,7 +21,7 @@
   "timezone": "America/Edmonton",
   "lastFeedExpiry": "20261210",
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-10-03",
+  "lastRefreshedAt": "2026-11-02",
   "feedQuality": {
     "status": "healthy",
     "score": 100,
@@ -31,11 +31,17 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 28
+      "featureCount": 58,
+      "feedExpiry": "20261210",
+      "routeCount": 39,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-03"
+    "checkedAt": "2026-11-03"
   },
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261210",
@@ -45,5 +51,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://rmwb-gtfsrt.civilia.ca/gtfs",
-  "lastPeekedExpiry": "20261210"
+  "lastPeekedExpiry": "20261210",
+  "lastServiceWeek": "c6578b891cd2ce19",
+  "feedObtainedAt": "20261102"
 }

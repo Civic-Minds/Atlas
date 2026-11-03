@@ -1,6 +1,6 @@
 {
   "slug": "montebello",
-  "name": "Montebello Bus Lines",
+  "officialName": "Montebello Bus Lines",
   "websiteUrl": "http://www.ridembl.com/",
   "center": [
     34.01,
@@ -10,26 +10,32 @@
   "lastFeedExpiry": "20270227",
   "lastFeedVersion": "20260916",
   "region": "California",
-  "lastRefreshedAt": "2026-10-03",
-  "lastFeedCheckAt": "20261019",
+  "lastRefreshedAt": "2026-11-02",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270227",
   "timezone": "America/Los_Angeles",
   "feedQuality": {
     "status": "review",
-    "score": 70,
+    "score": 87,
     "reasons": [
-      "5 route shapes needed adjustment before display."
+      "2 route shapes needed adjustment before display."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
-      "shapeAnomalies": 5,
+      "shapeAnomalies": 4,
       "routeHeadwayMismatches": 0,
-      "featureCount": 52
+      "featureCount": 53,
+      "feedExpiry": "20270227",
+      "routeCount": 8,
+      "problemShapes": 2,
+      "problemShapeRoutes": 1,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-03"
+    "checkedAt": "2026-11-03"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -37,5 +43,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2201/latest.zip",
-  "lastPeekedExpiry": "20270227"
+  "lastPeekedExpiry": "20270227",
+  "lastServiceWeek": "d9fe33868aaa6789",
+  "feedObtainedAt": "20260916"
 }

@@ -1,6 +1,6 @@
 {
   "slug": "kitsaptransit",
-  "name": "Kitsap Transit",
+  "officialName": "Kitsap Transit",
   "displayArea": "Kitsap County",
   "center": [
     47.6,
@@ -16,7 +16,7 @@
   "feedUrl": "http://pride.kitsaptransit.com/gtfs/google_transit.zip",
   "lastFeedExpiry": "20261205",
   "lastFeedVersion": "S1000068",
-  "lastRefreshedAt": "2026-10-03",
+  "lastRefreshedAt": "2026-11-02",
   "websiteUrl": "http://www.kitsaptransit.com",
   "cities": [
     "Seattle, Washington",
@@ -24,7 +24,7 @@
     "Shoreline, Washington"
   ],
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-1304/latest.zip",
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261205",
@@ -38,9 +38,15 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 147
+      "featureCount": 196,
+      "feedExpiry": "20261205",
+      "routeCount": 77,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-03"
+    "checkedAt": "2026-11-03"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -48,5 +54,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "http://pride.kitsaptransit.com/gtfs/google_transit.zip",
-  "lastPeekedExpiry": "20261205"
+  "lastPeekedExpiry": "20261205",
+  "lastServiceWeek": "88154364510f1ed3",
+  "feedObtainedAt": "20260910"
 }

@@ -1,6 +1,7 @@
 {
   "slug": "nyct-bus-brooklyn",
-  "name": "MTA NYCT Bus (Brooklyn)",
+  "officialName": "MTA NYCT Bus",
+  "nameQualifier": "Brooklyn",
   "displayArea": "Brooklyn",
   "websiteUrl": "http://www.mta.info",
   "center": [
@@ -15,9 +16,10 @@
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-512/latest.zip",
   "region": "New York",
+  "parentAgency": "mta-new-york",
   "lastFeedExpiry": "20270102",
   "lastFeedVersion": "20261009",
-  "lastRefreshedAt": "2026-10-19",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Bushwick, New York",
     "Park Slope, New York",
@@ -30,25 +32,31 @@
     "Ridgewood, New York",
     "East New York, New York"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270102",
   "timezone": "America/New_York",
   "feedQuality": {
     "status": "review",
-    "score": 70,
+    "score": 97,
     "reasons": [
-      "4 route have stops whose frequency differs from the overall route schedule."
+      "2 route have stops whose frequency differs from the overall route schedule."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 4,
-      "featureCount": 507
+      "featureCount": 507,
+      "feedExpiry": "20270102",
+      "routeCount": 68,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 2,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-19"
+    "checkedAt": "2026-11-03"
   },
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-512/latest.zip",
@@ -56,5 +64,6 @@
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
-  "feedRefreshRetryCount": 0
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "a30a504b1fcd3c70"
 }

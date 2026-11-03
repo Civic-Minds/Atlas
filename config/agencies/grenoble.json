@@ -1,6 +1,7 @@
 {
   "slug": "grenoble",
-  "name": "TAG (Grenoble)",
+  "officialName": "TAG",
+  "nameQualifier": "Grenoble",
   "region": "Auvergne-Rhône-Alpes",
   "center": [
     45.1885,

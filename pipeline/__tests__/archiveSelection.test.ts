@@ -10,6 +10,7 @@ import {
   matchesExpiredFeedPin,
   outputDropRefusal,
   peekFeedDates,
+  zipFileDate,
   reprocessCountryLaunchSkip,
   selectArchiveForAgency,
   selectByFeedDates,
@@ -195,6 +196,23 @@ describe('feedDateRefusal', () => {
     expect(feedDateRefusal('20261001', null, '20261010')).toMatch(/before today/);
     expect(feedDateRefusal('20261101', '20261128', '20261010')).toMatch(/older than the live data/);
   });
+
+  it('compares an uncapped placeholder live expiry at the same two-year cap as the zip (CIV-1245)', () => {
+    // Waukesha: live stamped 20991231 before capping; the same feed now records today + 2 years.
+    expect(feedDateRefusal('20281103', '20991231', '20261102')).toBeNull();
+    expect(feedDateRefusal('20281103', '20310130', '20261102')).toBeNull();
+    // A zip that really ends sooner than the cap is still older than a placeholder live feed.
+    expect(feedDateRefusal('20270101', '20501230', '20261102')).toMatch(/older than the live data/);
+    // A real live end date within two years is compared as is.
+    expect(feedDateRefusal('20261231', '20270131', '20261102')).toMatch(/older than the live data/);
+  });
+
+  it('caps the live side on the same day as the zip side when the agency date is ahead of UTC', () => {
+    // The zip was capped on the UTC date (20261102 -> 20281102); the agency's own date is 20261103.
+    expect(feedDateRefusal('20281102', '20991231', '20261103', null, '20261102')).toBeNull();
+    // Capping the live side on the agency date would read the same feed as one day older.
+    expect(feedDateRefusal('20281102', '20991231', '20261103')).toMatch(/older than the live data/);
+  });
 });
 
 describe('expiredFeedPin (#1036, Rockford)', () => {
@@ -361,5 +379,22 @@ describe('reprocess and publish read one expiry (#875)', () => {
     zip.file('calendar.txt', 'service_id,start_date,end_date\nwk,20260101,20500101\n');
     const { feedExpiry: calendarEnd, feedInfoEnd } = await peekFeedDates(await zip.generateAsync({ type: 'nodebuffer' }));
     expect(feedDateRefusal(recordedFeedExpiry(feedInfoEnd, calendarEnd, '20261015'), null, '20261015')).toBeNull();
+  });
+});
+
+describe('zipFileDate (#1253)', () => {
+  it('reads the newest .txt modification date as stored in the zip', async () => {
+    const zip = new JSZip();
+    zip.file('BUS 27APR26/agency.txt', 'agency_id\n', { date: new Date(Date.UTC(2026, 3, 21, 8, 59)) });
+    zip.file('BUS 27APR26/calendar.txt', 'service_id\n', { date: new Date(Date.UTC(2026, 3, 21, 9, 1)) });
+    zip.file('readme.md', 'x', { date: new Date(Date.UTC(2026, 9, 1)) });
+    const buf = await zip.generateAsync({ type: 'nodebuffer' });
+    expect(await zipFileDate(buf, '20261102')).toBe('20260421');
+  });
+  it('ignores dates after today or before 2000, and a file that is not a zip', async () => {
+    const zip = new JSZip();
+    zip.file('calendar.txt', 'service_id\n', { date: new Date(Date.UTC(2030, 0, 1)) });
+    expect(await zipFileDate(await zip.generateAsync({ type: 'nodebuffer' }), '20261102')).toBeNull();
+    expect(await zipFileDate(Buffer.from('not a zip'), '20261102')).toBeNull();
   });
 });

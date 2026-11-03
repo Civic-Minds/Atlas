@@ -1,6 +1,6 @@
 {
   "slug": "pvta",
-  "name": "Pioneer Valley Transit Authority",
+  "officialName": "Pioneer Valley Transit Authority",
   "labelPlace": "Pioneer Valley",
   "websiteUrl": "https://www.pvta.com",
   "region": "Massachusetts",
@@ -9,38 +9,60 @@
     -72.59
   ],
   "feedUrl": "https://www.pvta.com/g_trans/google_transit.zip",
+  "sameNameRoutes": [
+    {
+      "shortName": "G1",
+      "longName": "Five Town Plaza-Sumner-Union Station",
+      "name": "G1 Springfield"
+    },
+    {
+      "shortName": "G1",
+      "longName": "Chicopee Big Y-Chicopee Ctr-Union Station",
+      "name": "G1 Chicopee"
+    }
+  ],
   "lastFeedExpiry": "20261219",
   "lastFeedVersion": null,
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2416/latest.zip",
   "gtfsFares": true,
-  "lastRefreshedAt": "2026-08-27",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Springfield, Massachusetts",
     "North Chicopee, Massachusetts",
     "Chicopee, Massachusetts",
     "Worcester, Massachusetts"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261219",
   "feedQuality": {
-    "status": "review",
-    "score": 80,
-    "reasons": [
-      "2 route frequencies need checking — some stops appear to have more frequent service than the route's overall schedule suggests."
-    ],
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
       "shapeAnomalies": 0,
-      "routeHeadwayMismatches": 2,
-      "featureCount": 295
+      "routeHeadwayMismatches": 0,
+      "featureCount": 405,
+      "feedExpiry": "20261219",
+      "routeCount": 61,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-08-27"
+    "checkedAt": "2026-11-03"
   },
   "timezone": "America/New_York",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://www.pvta.com/g_trans/google_transit.zip",
-  "lastPeekedExpiry": "20261219"
+  "lastPeekedExpiry": "20261219",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "cbde892bbc440f35",
+  "feedObtainedAt": "20261028"
 }

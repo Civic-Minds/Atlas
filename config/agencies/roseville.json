@@ -1,6 +1,6 @@
 {
   "slug": "roseville",
-  "name": "Roseville Transit",
+  "officialName": "Roseville Transit",
   "websiteUrl": "http://www.roseville.ca.us/transit",
   "center": [
     38.745,
@@ -17,18 +17,45 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-1067/latest.zip",
   "lastFeedExpiry": "20261231",
   "lastFeedVersion": "Roseville_April_2025-26",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Roseville, California",
     "Citrus Heights, California",
     "Rocklin, California"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261231",
   "timezone": "America/Los_Angeles",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-1067/latest.zip",
-  "lastPeekedExpiry": "20261231"
+  "lastPeekedExpiry": "20261231",
+  "feedQuality": {
+    "status": "review",
+    "score": 90,
+    "reasons": [
+      "1 minor schedule issue found while reading the feed."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 1,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 40,
+      "feedExpiry": "20261231",
+      "routeCount": 32,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
+    },
+    "checkedAt": "2026-11-03"
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "37b54e400c78eb7c",
+  "feedObtainedAt": "20250630"
 }

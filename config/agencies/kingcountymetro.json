@@ -1,6 +1,7 @@
 {
   "slug": "kingcountymetro",
-  "name": "King County Metro (Seattle)",
+  "officialName": "King County Metro",
+  "nameQualifier": "Seattle",
   "websiteUrl": "https://kingcounty.gov/en/dept/metro",
   "center": [
     47.5,
@@ -15,8 +16,8 @@
   ],
   "feedUrl": "https://metro.kingcounty.gov/gtfs/google_transit.zip",
   "lastFeedExpiry": "20271231",
-  "lastFeedVersion": "FAL26-161.2",
-  "lastRefreshedAt": "2026-10-12",
+  "lastFeedVersion": "FAL26-161.5",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Seattle, Washington",
     "Shoreline, Washington",
@@ -29,26 +30,29 @@
     "Sammamish, Washington",
     "Redmond, Washington"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271231",
   "timezone": "America/Los_Angeles",
   "feedQuality": {
-    "status": "degraded",
-    "score": 40,
-    "reasons": [
-      "7 route shapes needed adjustment before display.",
-      "3 route have stops whose frequency differs from the overall route schedule."
-    ],
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
-      "shapeAnomalies": 7,
-      "routeHeadwayMismatches": 3,
-      "featureCount": 791
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 803,
+      "feedExpiry": "20271231",
+      "routeCount": 142,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-12"
+    "checkedAt": "2026-11-03"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -56,5 +60,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://metro.kingcounty.gov/gtfs/google_transit.zip",
-  "lastPeekedExpiry": "20271231"
+  "lastPeekedExpiry": "20271231",
+  "lastServiceWeek": "519eb4a14554b073",
+  "feedObtainedAt": "20261102"
 }

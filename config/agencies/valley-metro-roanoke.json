@@ -1,6 +1,7 @@
 {
   "slug": "valley-metro-roanoke",
-  "name": "Valley Metro (Roanoke, VA)",
+  "officialName": "Valley Metro",
+  "nameQualifier": "Roanoke, VA",
   "websiteUrl": "https://valleymetro.com/",
   "center": [
     37.229,
@@ -14,32 +15,37 @@
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-2274/latest.zip",
   "region": "Virginia",
-  "lastFeedExpiry": "20281028",
-  "lastFeedVersion": "10/17/2026",
-  "lastRefreshedAt": "2026-10-19",
+  "lastFeedExpiry": "20281103",
+  "lastFeedVersion": "11/1/2026",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Roanoke, Virginia"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20991231",
   "feedQuality": {
-    "status": "degraded",
-    "score": 40,
+    "status": "review",
+    "score": 87,
     "reasons": [
       "1 minor schedule issue found while reading the feed.",
-      "3 route shapes needed adjustment before display.",
-      "2 route have stops whose frequency differs from the overall route schedule."
+      "1 route has stops whose frequency differs from the overall route schedule."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 1,
-      "shapeAnomalies": 3,
+      "shapeAnomalies": 0,
       "routeHeadwayMismatches": 2,
-      "featureCount": 63
+      "featureCount": 59,
+      "feedExpiry": "20281103",
+      "routeCount": 31,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 1,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-19"
+    "checkedAt": "2026-11-03"
   },
   "timezone": "America/New_York",
   "feedRefreshStatus": "current",
@@ -48,5 +54,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2274/latest.zip",
-  "lastPeekedExpiry": "20991231"
+  "lastPeekedExpiry": "20991231",
+  "lastServiceWeek": "2fd16f736518ff1a",
+  "feedObtainedAt": "20261102"
 }

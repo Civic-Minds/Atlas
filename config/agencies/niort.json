@@ -1,6 +1,7 @@
 {
   "slug": "niort",
-  "name": "TanLib (Niort)",
+  "officialName": "TanLib",
+  "nameQualifier": "Niort",
   "websiteUrl": "https://tanlib.com/",
   "region": "Nouvelle-Aquitaine",
   "center": [

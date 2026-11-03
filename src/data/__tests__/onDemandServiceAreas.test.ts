@@ -96,7 +96,7 @@ describe('BWG on-demand service area', () => {
     expect(METRO_MICRO_SERVICE_AREA.features).toHaveLength(4);
     expect(METRO_MICRO_SERVICE_AREA.sourceUrl).toBe('https://svc.metrotransit.org/mtgtfs/gtfs-flex.zip');
     const northMinneapolis = METRO_MICRO_SERVICE_AREA.zoneMetadata?.['North Minneapolis Area'];
-    expect(northMinneapolis?.serviceHours).toBe('Weekdays: 5:30 a.m.–10:30 p.m.; Saturday: 7:00 a.m.–10:30 p.m.; Sunday: 7:00 a.m.–10:30 p.m.');
+    expect(northMinneapolis?.serviceHours).toBe('Weekdays: 5:30 AM–10:30 PM; Saturday: 7 AM–10:30 PM; Sunday: 7 AM–10:30 PM.');
     expect(isOnDemandActive(northMinneapolis?.availability, 'Weekday', 'amPeak')).toBe(true);
     expect(isOnDemandActive(northMinneapolis?.availability, 'Saturday', 'amPeak')).toBe(true);
     expect(isOnDemandActive(northMinneapolis?.availability, 'Sunday', 'overnight')).toBe(false);

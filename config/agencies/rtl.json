@@ -1,6 +1,7 @@
 {
   "slug": "rtl",
-  "name": "RTL (Longueuil)",
+  "officialName": "RTL",
+  "nameQualifier": "Longueuil",
   "websiteUrl": "http://www.rtl-longueuil.qc.ca",
   "region": "Quebec",
   "center": [
@@ -14,11 +15,11 @@
     -72.97
   ],
   "feedUrl": "https://www.rtl-longueuil.qc.ca/transit/latestfeed/RTL.zip",
-  "lastFeedExpiry": "20261101",
-  "lastFeedVersion": "202610091441",
+  "lastFeedExpiry": "20270103",
+  "lastFeedVersion": "202610141115",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-751/latest.zip",
   "gtfsFares": true,
-  "lastRefreshedAt": "2026-10-19",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Longueuil, Quebec",
     "Saint-Hubert, Quebec",
@@ -30,25 +31,31 @@
     "Saint-Léonard, Quebec",
     "Verdun, Quebec"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261101",
+  "expiredFeedCheckExpiry": "20270103",
   "timezone": "America/Montreal",
   "feedQuality": {
     "status": "review",
-    "score": 80,
+    "score": 99,
     "reasons": [
-      "2 route have stops whose frequency differs from the overall route schedule."
+      "1 route has stops whose frequency differs from the overall route schedule."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 2,
-      "featureCount": 467
+      "featureCount": 467,
+      "feedExpiry": "20270103",
+      "routeCount": 148,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 1,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-19"
+    "checkedAt": "2026-11-03"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -56,5 +63,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://www.rtl-longueuil.qc.ca/transit/latestfeed/RTL.zip",
-  "lastPeekedExpiry": "20261101"
+  "lastPeekedExpiry": "20270103",
+  "lastServiceWeek": "a26784e76df64aae",
+  "feedObtainedAt": "20261102"
 }

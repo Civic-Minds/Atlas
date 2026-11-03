@@ -1,6 +1,7 @@
 {
   "slug": "countyconnection",
-  "name": "County Connection (CCCTA)",
+  "officialName": "County Connection",
+  "commonName": "CCCTA",
   "websiteUrl": "http://www.countyconnection.com/",
   "center": [
     37.9068,
@@ -17,7 +18,7 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2421/latest.zip",
   "lastFeedExpiry": "20270109",
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-08-10",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Concord, California",
     "Walnut Creek, California",
@@ -28,12 +29,37 @@
     "Antioch, California",
     "Pleasanton, California"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270109",
   "timezone": "America/Los_Angeles",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://countyconnection.com/GTFS/google_transit.zip",
-  "lastPeekedExpiry": "20270109"
+  "lastPeekedExpiry": "20270109",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 2,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 124,
+      "feedExpiry": "20270109",
+      "routeCount": 51,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
+    },
+    "checkedAt": "2026-11-03"
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "1f262e32b5212d7c",
+  "feedObtainedAt": "20260819"
 }

@@ -71,6 +71,6 @@ export function openAtlasProblemEmail(title: string, details: string, context: I
     "**What's wrong:**",
     context.description.trim(),
   ].join('\n');
-  const body = `${plainDetails}\n\nDIAGNOSTICS ABOVE — PLEASE DO NOT EDIT\n\n${reportSection}\n`;
+  const body = `${plainDetails}\n\nDiagnostics above — please do not edit\n\n${reportSection}\n`;
   openAtlasProblemDestination(`Atlas report: ${title}`, body);
 }

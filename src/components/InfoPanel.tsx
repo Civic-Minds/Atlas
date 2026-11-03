@@ -544,12 +544,6 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                   rel="noopener noreferrer" icon="external">Transitland</LinkCard>
               </div>
               <p className="text-xs text-[var(--text-dim)] leading-relaxed">
-                {feedRefreshMeta?.lastCompletedAt && formatStoredDate(feedRefreshMeta.lastCompletedAt.slice(0, 10))
-                  ? `Last full refresh: ${formatStoredDate(feedRefreshMeta.lastCompletedAt.slice(0, 10))}. `
-                  : ''}
-                {feedRefreshMeta?.lastScopedAt && formatStoredDate(feedRefreshMeta.lastScopedAt.slice(0, 10))
-                  ? `Last targeted refresh: ${formatStoredDate(feedRefreshMeta.lastScopedAt.slice(0, 10))}. `
-                  : ''}
                 {feedRefreshCountdownLabel(feedRefreshMeta)}
               </p>
             </div>
@@ -560,8 +554,6 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
             const checkHistory = expiredFeedCheckHistory({
               count: helpContext?.expiredFeedCheckCount,
               since: helpContext?.expiredFeedCheckSince,
-              lastChecked: helpContext?.lastFeedCheckAt,
-              lastRefreshed: helpContext?.lastRefreshedAt,
             });
             return (
               // E1, N25 version (Ryan, CIV-1051): its own paragraph 1, then N2's paragraphs 2 and 3.

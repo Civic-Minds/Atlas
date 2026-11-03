@@ -1,6 +1,6 @@
 {
   "slug": "mbta",
-  "name": "Massachusetts Bay Transportation Authority",
+  "officialName": "Massachusetts Bay Transportation Authority",
   "shortName": "MBTA",
   "displayArea": "Boston",
   "websiteUrl": "https://www.mbta.com/",
@@ -10,11 +10,23 @@
     -71.057
   ],
   "feedUrl": "https://cdn.mbta.com/MBTA_GTFS.zip",
+  "sameNameRoutes": [
+    {
+      "shortName": "Shuttle",
+      "longName": "Boston College - Kenmore (Shuttle)",
+      "name": "Boston College–Kenmore Shuttle"
+    },
+    {
+      "shortName": "Shuttle",
+      "longName": "Cleveland Circle - Kenmore (Shuttle)",
+      "name": "Cleveland Circle–Kenmore Shuttle"
+    }
+  ],
   "lastFeedExpiry": "20261212",
-  "lastFeedVersion": "Fall 2026, 2026-10-16T20:25:58+00:00, version D",
+  "lastFeedVersion": "Fall 2026, 2026-10-30T17:51:33+00:00, version D",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-437/latest.zip",
   "gtfsFares": true,
-  "lastRefreshedAt": "2026-10-19",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Dorchester, Massachusetts",
     "Brookline, Massachusetts",
@@ -27,25 +39,31 @@
     "Newton, Massachusetts",
     "Cambridge, Massachusetts"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261212",
   "feedQuality": {
-    "status": "degraded",
-    "score": 40,
+    "status": "review",
+    "score": 96,
     "reasons": [
-      "17 route shapes needed adjustment before display.",
-      "11 route have stops whose frequency differs from the overall route schedule."
+      "4 route shapes needed adjustment before display.",
+      "6 route have stops whose frequency differs from the overall route schedule."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
-      "shapeAnomalies": 17,
-      "routeHeadwayMismatches": 11,
-      "featureCount": 1093
+      "shapeAnomalies": 5,
+      "routeHeadwayMismatches": 12,
+      "featureCount": 1114,
+      "feedExpiry": "20261212",
+      "routeCount": 184,
+      "problemShapes": 4,
+      "problemShapeRoutes": 1,
+      "mismatchRoutes": 6,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-19"
+    "checkedAt": "2026-11-03"
   },
   "timezone": "America/New_York",
   "feedRefreshStatus": "current",
@@ -86,5 +104,7 @@
       "reason": "Mattapan Line is light rail (the MBTA groups it with the Green Line), published as route_type 0 (tram)"
     }
   ],
-  "lastPeekedExpiry": "20261212"
+  "lastPeekedExpiry": "20261212",
+  "lastServiceWeek": "4e17e0d4afcc9ce5",
+  "feedObtainedAt": "20261102"
 }

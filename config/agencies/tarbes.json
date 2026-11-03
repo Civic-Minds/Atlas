@@ -1,6 +1,7 @@
 {
   "slug": "tarbes",
-  "name": "TLP Mobilités (Tarbes)",
+  "officialName": "TLP Mobilités",
+  "nameQualifier": "Tarbes",
   "region": "Occitanie",
   "center": [
     43.2329,

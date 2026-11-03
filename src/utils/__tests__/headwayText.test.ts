@@ -72,9 +72,11 @@ describe('headwayText', () => {
       expect(headwayEvery(75)).toBe('every 75 min');
       expect(headwayOrBetter(120)).toBe('every 120 min or better');
     });
-    it('about rounds to the nearest 30 min', () => {
-      expect(headwayAbout(61)).toBe('every 60 min');
-      expect(headwayAbout(80)).toBe('every 90 min');
+    it('about prints the exact minutes, never rounded to the half hour (#1239)', () => {
+      expect(headwayAbout(61)).toBe('every 61 min');
+      expect(headwayAbout(63)).toBe('every 63 min');
+      expect(headwayAbout(80)).toBe('every 80 min');
+      expect(headwayAbout(87.6)).toBe('every 87.6 min');
       expect(headwayAbout(90)).toBe('every 90 min');
       expect(headwayAbout(120)).toBe('every 120 min');
     });
@@ -111,11 +113,13 @@ describe('headwayText', () => {
 describe('headwayAboutRange: ends that print the same (CIV-1155)', () => {
   it('reads as one value, never "every 60–60 min"', () => {
     expect(headwayAboutRange(59.96, 60.04)).toBe('every 60 min');
-    expect(headwayAboutRange(80, 100)).toBe('every 90 min');
+    expect(headwayAboutRange(89.96, 90.04)).toBe('every 90 min');
     expect(headwayAboutRange(14.98, 15.02)).toBe('every 15 min');
   });
   it('keeps ranges whose ends differ', () => {
     expect(headwayAboutRange(6, 12)).toBe('every 6–12 min');
-    expect(headwayAboutRange(50, 100)).toBe('every 50–90 min');
+    expect(headwayAboutRange(50, 100)).toBe('every 50–100 min');
+    // Above 60 each end prints its own minutes (#1239): TTC 403 midday read "every 90–120".
+    expect(headwayAboutRange(75, 105)).toBe('every 75–105 min');
   });
 });

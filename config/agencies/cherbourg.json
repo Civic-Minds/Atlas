@@ -1,6 +1,7 @@
 {
   "slug": "cherbourg",
-  "name": "Cap Cotentin (Cherbourg)",
+  "officialName": "Cap Cotentin",
+  "nameQualifier": "Cherbourg",
   "region": "Normandie",
   "center": [
     49.6337,

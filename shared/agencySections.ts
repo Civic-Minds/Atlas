@@ -31,6 +31,15 @@ export interface AgencySections {
   sections: Record<string, AgencySectionEntry>;
 }
 
+/**
+ * The sections file a release carries for an agency that has none yet (not processed since CIV-321,
+ * e.g. an expired feed every rebuild refuses), so the app never requests a file the release lacks
+ * (#1192). Its empty routeKeys never matches a route file, so applyAgencySections leaves it unchanged.
+ */
+export function emptyAgencySections(): AgencySections {
+  return { version: 1, routeKeys: '', sections: {} };
+}
+
 /** A short FNV-1a hash of the route features' keys, in order. */
 export function routeKeysFingerprint(keys: ReadonlyArray<string | null>): string {
   let h = 0x811c9dc5;

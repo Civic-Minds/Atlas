@@ -1,6 +1,7 @@
 {
   "slug": "evreux",
-  "name": "Transurbain (Évreux)",
+  "officialName": "Transurbain",
+  "nameQualifier": "Évreux",
   "region": "Normandie",
   "center": [
     49.027,

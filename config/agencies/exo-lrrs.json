@@ -1,9 +1,11 @@
 {
   "slug": "exo-lrrs",
-  "name": "exo (Le Richelain–Roussillon)",
+  "officialName": "exo",
+  "nameQualifier": "Le Richelain–Roussillon",
   "displayArea": "Le Richelain–Roussillon",
   "websiteUrl": "https://exo.quebec/fr/planifier-trajet/autobus/LRRS",
   "region": "Quebec",
+  "parentAgency": "exo",
   "center": [
     45.4086,
     -73.5026
@@ -19,7 +21,7 @@
   "lastFeedVersion": null,
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2142/latest.zip",
   "gtfsFares": true,
-  "lastRefreshedAt": "2026-10-12",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Brossard, Quebec",
     "Verdun, Quebec",
@@ -27,7 +29,7 @@
     "Le Vieux-Longueuil, Quebec",
     "Le Sud-Ouest, Quebec"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270103",
@@ -39,17 +41,27 @@
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://exo.quebec/uploads/ressources-telechargeables/a-propos/donnees-ouvertes/lrrs/google_transit.zip",
   "feedQuality": {
-    "status": "healthy",
-    "score": 100,
-    "reasons": [],
+    "status": "review",
+    "score": 95,
+    "reasons": [
+      "2 route have stops whose frequency differs from the overall route schedule."
+    ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
       "shapeAnomalies": 0,
-      "routeHeadwayMismatches": 0,
-      "featureCount": 81
+      "routeHeadwayMismatches": 3,
+      "featureCount": 81,
+      "feedExpiry": "20270103",
+      "routeCount": 38,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 2,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-12"
+    "checkedAt": "2026-11-03"
   },
-  "lastPeekedExpiry": "20270103"
+  "lastPeekedExpiry": "20270103",
+  "lastServiceWeek": "e4ad35cb2eca9c8f",
+  "feedObtainedAt": "20260827"
 }

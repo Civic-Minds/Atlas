@@ -1,6 +1,6 @@
 {
   "slug": "pierce-county-ferries",
-  "name": "Pierce County Ferries",
+  "officialName": "Pierce County Ferries",
   "websiteUrl": "https://www.piercecountywa.gov/ferry",
   "region": "Washington",
   "center": [
@@ -15,7 +15,7 @@
   ],
   "feedUrl": "https://files.mobilitydatabase.org/tld-2289/latest.zip",
   "timezone": "America/Los_Angeles",
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261231",
@@ -30,18 +30,26 @@
       "validationWarnings": 1,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 15
+      "featureCount": 15,
+      "feedExpiry": "20261231",
+      "routeCount": 2,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-03"
+    "checkedAt": "2026-11-03"
   },
   "lastFeedExpiry": "20261231",
   "lastFeedVersion": "UTC: 13-May-2026 10:51",
-  "lastRefreshedAt": "2026-10-03",
+  "lastRefreshedAt": "2026-11-02",
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/tld-2289/latest.zip",
-  "lastPeekedExpiry": "20261231"
+  "lastPeekedExpiry": "20261231",
+  "lastServiceWeek": "be956cf192c4c780",
+  "feedObtainedAt": "20260513"
 }

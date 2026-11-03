@@ -1,6 +1,7 @@
 {
   "slug": "orleans",
-  "name": "TAO (Orléans)",
+  "officialName": "TAO",
+  "nameQualifier": "Orléans",
   "region": "Centre-Val de Loire",
   "center": [
     47.9029,

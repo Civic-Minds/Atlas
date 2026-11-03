@@ -1,6 +1,7 @@
 {
   "slug": "samtrans",
-  "name": "San Mateo County Transit District (samTrans)",
+  "officialName": "San Mateo County Transit District",
+  "commonName": "samTrans",
   "websiteUrl": "http://www.samtrans.com",
   "center": [
     37.5672,
@@ -18,7 +19,7 @@
   "lastFeedExpiry": "20261114",
   "lastFeedVersion": "Revision2",
   "mergeEquivalentShapeVariantsAllModes": true,
-  "lastRefreshedAt": "2026-10-03",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "South San Francisco, California",
     "San Mateo, California",
@@ -28,7 +29,7 @@
     "San Francisco, California",
     "Chinatown, California"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261114",
@@ -41,9 +42,15 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 115
+      "featureCount": 256,
+      "feedExpiry": "20261114",
+      "routeCount": 75,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-03"
+    "checkedAt": "2026-11-03"
   },
   "timezone": "America/Los_Angeles",
   "feedRefreshStatus": "current",
@@ -52,5 +59,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "http://www.samtrans.com/Assets/GTFS/samtrans/ST-GTFS.zip",
-  "lastPeekedExpiry": "20261114"
+  "lastPeekedExpiry": "20261114",
+  "lastServiceWeek": "109fce2a80cc17b5",
+  "feedObtainedAt": "20260902"
 }

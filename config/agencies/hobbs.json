@@ -1,6 +1,6 @@
 {
   "slug": "hobbs",
-  "name": "City of Hobbs Transit",
+  "officialName": "City of Hobbs Transit",
   "websiteUrl": "https://www.hobbsnm.org/hobbs_express.html",
   "region": "New Mexico",
   "center": [
@@ -17,13 +17,38 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-60190/latest.zip",
   "lastFeedExpiry": "20270331",
   "lastFeedVersion": "20230901",
-  "lastRefreshedAt": "2026-08-07",
-  "lastFeedCheckAt": "20261019",
+  "lastRefreshedAt": "2026-11-02",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270331",
   "timezone": "America/Denver",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/ntd-60190/latest.zip",
-  "lastPeekedExpiry": "20270331"
+  "lastPeekedExpiry": "20270331",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 5,
+      "feedExpiry": "20270331",
+      "routeCount": 4,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
+    },
+    "checkedAt": "2026-11-03"
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "b14fb0d99183dec3",
+  "feedObtainedAt": "20260123"
 }

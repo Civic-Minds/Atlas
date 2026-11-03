@@ -1,6 +1,7 @@
 {
   "slug": "saint-brieuc",
-  "name": "TUB (Saint-Brieuc)",
+  "officialName": "TUB",
+  "nameQualifier": "Saint-Brieuc",
   "region": "Bretagne",
   "center": [
     48.514,

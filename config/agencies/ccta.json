@@ -1,6 +1,7 @@
 {
   "slug": "ccta",
-  "name": "CCTA / Green Mountain Transit (Burlington, VT)",
+  "officialName": "CCTA / Green Mountain Transit",
+  "nameQualifier": "Burlington, VT",
   "websiteUrl": "https://www.ridegmt.com/",
   "center": [
     44.48,
@@ -8,8 +9,8 @@
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-629/latest.zip",
   "lastFeedExpiry": "20270101",
-  "lastFeedVersion": "UTC: 14-Oct-2026 20:09",
-  "lastRefreshedAt": "2026-10-19",
+  "lastFeedVersion": "UTC: 30-Oct-2026 22:12",
+  "lastRefreshedAt": "2026-11-02",
   "region": "Vermont",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-629/latest.zip",
   "bbox": [
@@ -18,24 +19,28 @@
     45.0175,
     -72.0007
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270101",
   "feedQuality": {
-    "status": "review",
-    "score": 80,
-    "reasons": [
-      "2 route shapes needed adjustment before display."
-    ],
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
-      "shapeAnomalies": 2,
+      "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 57
+      "featureCount": 57,
+      "feedExpiry": "20270101",
+      "routeCount": 25,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-19"
+    "checkedAt": "2026-11-03"
   },
   "timezone": "America/New_York",
   "feedRefreshStatus": "current",
@@ -44,5 +49,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-629/latest.zip",
-  "lastPeekedExpiry": "20270101"
+  "lastPeekedExpiry": "20270101",
+  "lastServiceWeek": "bc540178aeafbfe6",
+  "feedObtainedAt": "20261102"
 }

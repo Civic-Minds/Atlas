@@ -26,6 +26,7 @@ import type { Agency } from '../../App';
 import type { ShapeProperties, ViewportBounds, TimePeriod, HoveredBranch } from '../../hooks/useIntervalStats';
 import type { DayType } from '../../../shared/dayTypes';
 import { registerProtocol, getMapStyle, getActiveDataRelease } from '../../lib/mapStyle';
+import { showBasemapTheme } from '../../lib/basemap';
 import { MAP_CONTROLS_SLOT, MAP_NOTICE_SLOT, MAP_NOTICE_SLOT_RAISED, Z_PANEL, MAP_BADGE } from '../../styles';
 import { useColorVision } from '../../context/ColorVisionContext';
 import { useColorMode } from '../../hooks/useColorMode';
@@ -1181,15 +1182,8 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !mapLoaded) return;
-    const lightVis = lightMode ? 'visible' : 'none';
-    const darkVis = lightMode ? 'none' : 'visible';
-    // Guard: layers may not exist in some edge cases (initial load, StrictMode)
-    if (map.getLayer('basemap-light')) {
-      map.setLayoutProperty('basemap-light', 'visibility', lightVis);
-    }
-    if (map.getLayer('basemap-dark')) {
-      map.setLayoutProperty('basemap-dark', 'visibility', darkVis);
-    }
+    // Layers may not exist in some edge cases (initial load, StrictMode); the helper skips them.
+    showBasemapTheme(map, lightMode);
   }, [lightMode, mapLoaded]);
 
   // Handle locating the user

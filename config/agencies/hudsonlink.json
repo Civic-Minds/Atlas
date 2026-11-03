@@ -1,6 +1,6 @@
 {
   "slug": "hudsonlink",
-  "name": "Hudson Link",
+  "officialName": "Hudson Link",
   "labelPlace": "",
   "websiteUrl": "https://www.ridehudsonlink.com/Tools/Maps-and-Schedules",
   "center": [
@@ -17,13 +17,13 @@
   "feedUrl": "https://s3.amazonaws.com/datatools-511ny/public/Hudson_Link.zip",
   "lastFeedExpiry": "20270628",
   "lastFeedVersion": "S1000138",
-  "lastRefreshedAt": "2026-10-08",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Greenburgh, New York",
     "White Plains, New York",
     "Paterson, New Jersey"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270628",
@@ -41,11 +41,19 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 30
+      "featureCount": 30,
+      "feedExpiry": "20270628",
+      "routeCount": 6,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-08"
+    "checkedAt": "2026-11-03"
   },
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://s3.amazonaws.com/datatools-511ny/public/Hudson_Link.zip",
-  "lastPeekedExpiry": "20270628"
+  "lastPeekedExpiry": "20270628",
+  "lastServiceWeek": "5df4cc23fac097d5",
+  "feedObtainedAt": "20260622"
 }

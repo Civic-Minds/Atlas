@@ -1,6 +1,7 @@
 {
   "slug": "telluride",
-  "name": "Town of Telluride (Galloping Goose)",
+  "officialName": "Town of Telluride",
+  "commonName": "Galloping Goose",
   "center": [
     37.9375,
     -107.8123
@@ -23,29 +24,33 @@
     "Telluride, Colorado"
   ],
   "feedQuality": {
-    "status": "review",
-    "score": 70,
-    "reasons": [
-      "4 route shapes needed adjustment before display."
-    ],
+    "status": "paused",
+    "score": 0,
+    "reasons": [],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
-      "shapeAnomalies": 4,
+      "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 3
+      "featureCount": 0,
+      "feedExpiry": "20270404",
+      "routeCount": 0,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": "20261123"
     },
-    "checkedAt": "2026-10-19"
+    "checkedAt": "2026-11-03"
   },
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20280503",
   "timezone": "America/Denver",
-  "feedRefreshStatus": "current",
-  "feedRefreshError": null,
-  "feedRefreshErrorAt": null,
-  "feedRefreshRetryCount": 0,
+  "feedRefreshStatus": "stale",
+  "feedRefreshError": "pipeline produced 0 route lines",
+  "feedRefreshErrorAt": "20261102",
+  "feedRefreshRetryCount": 1,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://data.trilliumtransit.com/gtfs/sanmiguelcounty-co-us/sanmiguelcounty-co-us--flex-v2.zip",
   "lastPeekedExpiry": "20270404"

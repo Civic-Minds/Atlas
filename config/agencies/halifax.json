@@ -1,6 +1,6 @@
 {
   "slug": "halifax",
-  "name": "Halifax Transit",
+  "officialName": "Halifax Transit",
   "displayArea": "Halifax",
   "websiteUrl": "http://www.halifax.ca/transit",
   "region": "Nova Scotia",
@@ -18,13 +18,13 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-734/latest.zip",
   "lastFeedExpiry": "20261129",
   "lastFeedVersion": "2026_08_August_20260806",
-  "lastRefreshedAt": "2026-09-17",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Dartmouth, Nova Scotia",
     "Halifax, Nova Scotia",
     "Lower Sackville, Nova Scotia"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261129",
@@ -38,11 +38,23 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 361
+      "featureCount": 361,
+      "feedExpiry": "20261129",
+      "routeCount": 81,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-09-17"
+    "checkedAt": "2026-11-03"
   },
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-734/latest.zip",
-  "lastPeekedExpiry": "20261129"
+  "lastPeekedExpiry": "20261129",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "bc27bc4efb2447c6",
+  "feedObtainedAt": "20260806"
 }

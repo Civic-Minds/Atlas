@@ -1,6 +1,6 @@
 {
   "slug": "marathon-county",
-  "name": "Metro Ride",
+  "officialName": "Metro Ride",
   "websiteUrl": "https://www.ci.wausau.wi.us/Departments/MetroRide.aspx",
   "center": [
     44.97,
@@ -22,27 +22,39 @@
   "timezone": "America/Chicago",
   "lastFeedExpiry": "20270101",
   "lastFeedVersion": "UTC: 16-Apr-2024 16:53",
-  "lastRefreshedAt": "2026-09-08",
+  "lastRefreshedAt": "2026-11-02",
   "feedQuality": {
     "status": "review",
     "score": 90,
     "reasons": [
-      "1 schedule-data warning — Atlas found a minor issue while reading the schedule."
+      "1 minor schedule issue found while reading the feed."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 1,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 7
+      "featureCount": 7,
+      "feedExpiry": "20270101",
+      "routeCount": 7,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-09-08"
+    "checkedAt": "2026-11-03"
   },
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270101",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "http://data.trilliumtransit.com/gtfs/wausau-wi-us/wausau-wi-us.zip",
-  "lastPeekedExpiry": "20270101"
+  "lastPeekedExpiry": "20270101",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "fecfaeea4d1f23a3",
+  "feedObtainedAt": "20240416"
 }

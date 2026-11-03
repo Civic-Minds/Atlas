@@ -1,6 +1,6 @@
 {
   "slug": "fredericton",
-  "name": "Fredericton Transit",
+  "officialName": "Fredericton Transit",
   "region": "New Brunswick",
   "center": [
     45.9636,
@@ -14,19 +14,19 @@
   ],
   "feedUrl": "https://fredericton.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/gtfs.zip",
   "lastFeedExpiry": "20261219",
-  "lastFeedVersion": "202610190/20261018 23:30:00/20261019 04:00:00",
+  "lastFeedVersion": "202611020/20261101 23:30:00/20261102 04:00:00",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2460/latest.zip",
-  "lastRefreshedAt": "2026-10-19",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Fredericton, New Brunswick"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261219",
   "feedQuality": {
     "status": "review",
-    "score": 80,
+    "score": 89,
     "reasons": [
       "2 route have stops whose frequency differs from the overall route schedule."
     ],
@@ -35,9 +35,15 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 2,
-      "featureCount": 56
+      "featureCount": 56,
+      "feedExpiry": "20261219",
+      "routeCount": 18,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 2,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-19"
+    "checkedAt": "2026-11-03"
   },
   "timezone": "America/Halifax",
   "feedRefreshStatus": "current",
@@ -46,5 +52,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://fredericton.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/gtfs.zip",
-  "lastPeekedExpiry": "20261219"
+  "lastPeekedExpiry": "20261219",
+  "lastServiceWeek": "25edd27589956ee3",
+  "feedObtainedAt": "20261102"
 }

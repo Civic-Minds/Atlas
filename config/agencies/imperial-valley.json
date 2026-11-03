@@ -1,6 +1,6 @@
 {
   "slug": "imperial-valley",
-  "name": "Imperial Valley Transit",
+  "officialName": "Imperial Valley Transit",
   "websiteUrl": "http://www.ivtransit.com/",
   "region": "California",
   "center": [
@@ -15,30 +15,35 @@
   ],
   "feedUrl": "https://schedule.ivtransit.com/gtfs/data.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-5547/latest.zip",
-  "lastRefreshedAt": "2026-10-03",
+  "lastRefreshedAt": "2026-11-02",
   "lastFeedExpiry": "20261231",
   "lastFeedVersion": "2026-08-27",
   "timezone": "America/Los_Angeles",
   "lastRawArchiveKey": "20251231-915e28c519db2c9f",
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261231",
   "feedQuality": {
-    "status": "degraded",
-    "score": 50,
+    "status": "review",
+    "score": 87,
     "reasons": [
-      "8 route shapes needed adjustment before display.",
       "2 route have stops whose frequency differs from the overall route schedule."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
-      "shapeAnomalies": 8,
+      "shapeAnomalies": 0,
       "routeHeadwayMismatches": 2,
-      "featureCount": 22
+      "featureCount": 36,
+      "feedExpiry": "20261231",
+      "routeCount": 15,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 2,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-03"
+    "checkedAt": "2026-11-03"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -46,5 +51,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://schedule.ivtransit.com/gtfs/data.zip",
-  "lastPeekedExpiry": "20261231"
+  "lastPeekedExpiry": "20261231",
+  "lastServiceWeek": "58c3204b795a7c5d",
+  "feedObtainedAt": "20260827"
 }

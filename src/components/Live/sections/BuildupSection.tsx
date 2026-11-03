@@ -67,7 +67,7 @@ export default function BuildupSection({ v3, data, dir, uncertain, detail, bound
                 zero
                 zeroLabel="On time"
                 scale={scale}
-                lessExactNote="the first stops are in the tunnel, where we see the vehicles less often, so these are rough."
+                lessExactNote="the first stops are in the tunnel, where we see the vehicles less often. These are rough."
                 marks={marked >= 0 ? [{ index: marked, label: `Builds up by ${points[marked].short}` }] : []}
               />
               )}

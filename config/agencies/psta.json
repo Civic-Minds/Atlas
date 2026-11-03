@@ -1,6 +1,7 @@
 {
   "slug": "psta",
-  "name": "Pinellas Suncoast Transit Authority (PSTA)",
+  "officialName": "Pinellas Suncoast Transit Authority",
+  "commonName": "PSTA",
   "center": [
     27.8704,
     -82.7219
@@ -9,7 +10,7 @@
   "lastFeedExpiry": "20270206",
   "lastFeedVersion": "S1000246",
   "region": "Florida",
-  "lastRefreshedAt": "2026-10-03",
+  "lastRefreshedAt": "2026-11-02",
   "websiteUrl": "http://www.psta.net",
   "cities": [
     "St. Petersburg, Florida",
@@ -22,22 +23,30 @@
   ],
   "timezone": "America/New_York",
   "lastRawArchiveKey": "20260606-face4e6e47319b36",
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270206",
   "feedQuality": {
-    "status": "healthy",
-    "score": 100,
-    "reasons": [],
+    "status": "review",
+    "score": 97,
+    "reasons": [
+      "1 route has stops whose frequency differs from the overall route schedule."
+    ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
       "shapeAnomalies": 0,
-      "routeHeadwayMismatches": 0,
-      "featureCount": 264
+      "routeHeadwayMismatches": 1,
+      "featureCount": 264,
+      "feedExpiry": "20270206",
+      "routeCount": 39,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 1,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-03"
+    "checkedAt": "2026-11-03"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -45,5 +54,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://www.ftis.org/PostFileDownload.aspx?id=1036A0",
-  "lastPeekedExpiry": "20270206"
+  "lastPeekedExpiry": "20270206",
+  "lastServiceWeek": "ab4bfdf8b126158a",
+  "feedObtainedAt": "20260707"
 }

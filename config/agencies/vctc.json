@@ -1,6 +1,7 @@
 {
   "slug": "vctc",
-  "name": "Ventura County Transportation Commission (VCTC Intercity)",
+  "officialName": "Ventura County Transportation Commission",
+  "commonName": "VCTC Intercity",
   "center": [
     34.27,
     -119.23
@@ -10,7 +11,7 @@
   "lastFeedExpiry": "20301231",
   "lastFeedVersion": "UTC: 13-Feb-2026 16:48",
   "region": "California",
-  "lastRefreshedAt": "2026-10-14",
+  "lastRefreshedAt": "2026-11-02",
   "websiteUrl": "http://www.goventura.org/",
   "cities": [
     "Ventura, California",
@@ -20,7 +21,7 @@
     "Oxnard, California",
     "Thousand Oaks, California"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20301231",
@@ -28,23 +29,29 @@
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://www.goventura.org/wp-content/uploads/2026/02/20260213-GMV_Schedule.zip",
   "feedQuality": {
-    "status": "review",
-    "score": 80,
-    "reasons": [
-      "2 route shapes needed adjustment before display."
-    ],
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
-      "shapeAnomalies": 2,
+      "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 49
+      "featureCount": 51,
+      "feedExpiry": "20301231",
+      "routeCount": 17,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-14"
+    "checkedAt": "2026-11-03"
   },
   "lastPeekedExpiry": "20301231",
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
-  "feedRefreshRetryCount": 0
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "06ed92c93aa23825",
+  "feedObtainedAt": "20260213"
 }

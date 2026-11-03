@@ -1,6 +1,7 @@
 {
   "slug": "villeneuve-sur-lot",
-  "name": "Elios (Villeneuve-sur-Lot)",
+  "officialName": "Elios",
+  "nameQualifier": "Villeneuve-sur-Lot",
   "region": "Nouvelle-Aquitaine",
   "center": [
     44.4069,

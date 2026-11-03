@@ -158,7 +158,10 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     return result;
   }, [layers]);
 
-  const scrollRef = useRef<HTMLDivElement>(null);
+  const scrollRef = useRef<HTMLDivElement | null>(null);
+  // The card body as state too, so the fade's observers follow it when it remounts (#1187).
+  const [scrollBody, setScrollBody] = useState<HTMLDivElement | null>(null);
+  const setScrollRef = useCallback((el: HTMLDivElement | null) => { scrollRef.current = el; setScrollBody(el); }, []);
   const [canScrollMore, setCanScrollMore] = useState(false);
   const [stopAgencyFilter, setStopAgencyFilter] = useState<string | null>(null);
   const { recentSearches, saveRecentSearch, clearRecentSearches } = useRecentSearches(!!searchFocused);
@@ -270,7 +273,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   // quadratic in route features and reran on every layer update (froze Live zooming, CIV-218).
   const notableRoutes = useMemo(() => {
     if (!searchFocused) return [];
-    const routes = new Map<string, { key: string; shortName: string; labelShortName: string; agencySlug: string; longNames: string[]; agencyName: string; routeType?: number; headway: number; limited: boolean; noRegular?: boolean; sharedHeadway?: number }>();
+    const routes = new Map<string, { key: string; shortName: string; labelShortName: string; agencySlug: string; longNames: string[]; agencyName: string; routeType?: number; headway: number; limited: boolean; noRegular?: boolean; sharedHeadway?: number; edgeText?: string }>();
     for (const [slug, fc] of Object.entries(nonCorridorLayers)) {
       if (!fc?.features) continue;
       for (const f of fc.features) {
@@ -291,17 +294,19 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         const limited = display.limited;
         const noRegular = display.noRegular === true;
         const sharedHeadway = display.sharedHeadway;
+        const edgeText = display.edgeText;
         const shortName = facts.shortName;
         const longName = facts.longName || '';
         const agencyName = agencyNames(facts.agencyName).name;
         const existing = routes.get(groupKey);
         if (!existing) {
-          routes.set(groupKey, { key: facts.key, shortName: slug === 'bart' ? suggestedRouteGroupKey(slug, shortName) : shortName, labelShortName: slug === 'bart' ? suggestedRouteGroupKey(slug, shortName) : labelShortNameOf(p), agencySlug: slug, longNames: longName ? [longName] : [], agencyName, routeType: facts.routeType, headway, limited, noRegular, sharedHeadway });
+          routes.set(groupKey, { key: facts.key, shortName: slug === 'bart' ? suggestedRouteGroupKey(slug, shortName) : shortName, labelShortName: slug === 'bart' ? suggestedRouteGroupKey(slug, shortName) : labelShortNameOf(p), agencySlug: slug, longNames: longName ? [longName] : [], agencyName, routeType: facts.routeType, headway, limited, noRegular, sharedHeadway, edgeText });
         } else {
           if (longName && !existing.longNames.includes(longName)) existing.longNames.push(longName);
           if (headway < existing.headway) {
             existing.headway = headway;
             existing.sharedHeadway = sharedHeadway;
+            existing.edgeText = edgeText;
           }
           existing.limited = existing.headway >= 999 && (existing.limited || limited);
           existing.noRegular = existing.headway >= 999 && (existing.noRegular === true || noRegular);
@@ -612,7 +617,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   const disambigDetails = useMemo(() => {
     if (!disambiguationRoutes) return null;
     const details = disambiguationRoutes
-      .map(key => chooserRouteRow(key, nonCorridorLayers, agencies, colorMode))
+      .map(key => chooserRouteRow(key, nonCorridorLayers, agencies, colorMode, currentDay, period))
       .filter((route, index, routes) => {
         const displayKey = `${route.agencyName.trim().toLowerCase()}::${routeLabels({ shortName: route.shortName, longName: route.longName, routeType: route.routeType, agencySlug: route.agencySlug, agencyName: route.agencyName }).text.trim().toLowerCase().replace(/\s+/g, ' ')}`;
         return routes.findIndex(candidate => {
@@ -623,7 +628,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       .sort((a, b) => compareAgencyName(a.agencyName, b.agencyName)
         || compareRouteNumber(a.shortName, b.shortName, a.longName, b.longName));
     return details;
-  }, [disambiguationRoutes, nonCorridorLayers, colorMode, agencies]);
+  }, [disambiguationRoutes, nonCorridorLayers, colorMode, agencies, currentDay, period]);
 
   // A recent route saved by an older build has no route type; read it from the loaded route so the row names the route like every other list.
   const recentlyViewedWithType = useMemo(() => recentlyViewed.map(r => {
@@ -748,6 +753,25 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
 
   const panelStop = currentStop && !searchOverlayHidesPanel(searchFocused, query);
   const panelRoute = currentRoute && !searchOverlayHidesPanel(searchFocused, query);
+
+  // The card's content arrives after it opens and its tallest size follows the footer row, so the fade is rechecked
+  // whenever either changes size (#1187: at 200% zoom the frequency rows sat below the fold with no fade).
+  useEffect(() => {
+    const el = scrollBody;
+    if (!el || typeof ResizeObserver === 'undefined') return;
+    const resize = new ResizeObserver(checkScroll);
+    const observeChildren = () => {
+      resize.disconnect();
+      resize.observe(el);
+      for (const child of Array.from(el.children)) resize.observe(child);
+      checkScroll();
+    };
+    observeChildren();
+    const mutation = new MutationObserver(observeChildren);
+    mutation.observe(el, { childList: true });
+    return () => { resize.disconnect(); mutation.disconnect(); };
+  }, [checkScroll, scrollBody]);
+
   const hasContent = !!(
     panelStop
     || panelRoute
@@ -823,7 +847,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         />
       )}
       {(panelStop || panelRoute || hasSearchResults) && <div
-        ref={scrollRef}
+        ref={setScrollRef}
         onScroll={checkScroll}
         data-report-anchor="true"
         className={sheetMode

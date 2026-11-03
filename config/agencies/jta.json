@@ -1,12 +1,35 @@
 {
   "slug": "jta",
-  "name": "Jacksonville Transportation Authority (JTA)",
+  "officialName": "Jacksonville Transportation Authority",
+  "commonName": "JTA",
   "websiteUrl": "http://www.jtafla.com",
   "center": [
     30.33,
     -81.65
   ],
   "feedUrl": "https://files.mobilitydatabase.org/tld-764/latest.zip",
+  "sameNameRoutes": [
+    {
+      "shortName": "FCF",
+      "longName": "Green Line",
+      "name": "Green Line"
+    },
+    {
+      "shortName": "FCF",
+      "longName": "Orange Line",
+      "name": "Orange Line"
+    },
+    {
+      "shortName": "FCF",
+      "longName": "Blue Line",
+      "name": "Blue Line"
+    },
+    {
+      "shortName": "FCF",
+      "longName": "Red Line",
+      "name": "Red Line"
+    }
+  ],
   "lastFeedExpiry": "20261031",
   "lastFeedVersion": null,
   "region": "Florida",
@@ -14,12 +37,38 @@
   "cities": [
     "Jacksonville, Florida"
   ],
-  "lastFeedCheckAt": "20261019",
-  "expiredFeedCheckCount": 0,
-  "expiredFeedCheckSince": null,
+  "lastFeedCheckAt": "20261102",
+  "expiredFeedCheckCount": 1,
+  "expiredFeedCheckSince": "20260622",
   "expiredFeedCheckExpiry": "20261031",
   "timezone": "America/New_York",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/tld-764/latest.zip",
-  "lastPeekedExpiry": "20261031"
+  "lastPeekedExpiry": "20261031",
+  "feedQuality": {
+    "status": "degraded",
+    "score": 65,
+    "reasons": [
+      "The schedule dates in this feed have passed."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 242,
+      "feedExpiry": "20261031",
+      "routeCount": 44,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
+    },
+    "checkedAt": "2026-10-31",
+    "scoredAt": "2026-11-02"
+  },
+  "feedRefreshStatus": "stale",
+  "feedRefreshError": "all available feeds expired (latest 20261031)",
+  "feedRefreshErrorAt": "20261102",
+  "feedRefreshRetryCount": 1
 }

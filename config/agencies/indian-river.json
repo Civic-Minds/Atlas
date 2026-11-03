@@ -1,6 +1,6 @@
 {
   "slug": "indian-river",
-  "name": "Indian River Transit",
+  "officialName": "Indian River Transit",
   "displayArea": "Indian River County",
   "websiteUrl": "http://www.ridesystems.net",
   "region": "Florida",
@@ -16,18 +16,46 @@
   ],
   "feedUrl": "https://files.mobilitydatabase.org/ntd-40104/latest.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-40104/latest.zip",
-  "lastFeedExpiry": "20501230",
+  "lastFeedExpiry": "20281103",
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-08-10",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Port Saint Lucie, Florida",
     "Palm Bay, Florida"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20501230",
   "timezone": "America/New_York",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://files.mobilitydatabase.org/ntd-40104/latest.zip"
+  "lastFeedSourceUrl": "https://files.mobilitydatabase.org/ntd-40104/latest.zip",
+  "feedQuality": {
+    "status": "review",
+    "score": 90,
+    "reasons": [
+      "1 minor schedule issue found while reading the feed."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 1,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 29,
+      "feedExpiry": "20281103",
+      "routeCount": 15,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
+    },
+    "checkedAt": "2026-11-03"
+  },
+  "lastPeekedExpiry": "20501230",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "2c67f2050b49580e",
+  "feedObtainedAt": "20240130"
 }

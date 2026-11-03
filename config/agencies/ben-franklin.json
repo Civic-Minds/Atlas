@@ -1,6 +1,7 @@
 {
   "slug": "ben-franklin",
-  "name": "Ben Franklin Transit (Tri-Cities, WA)",
+  "officialName": "Ben Franklin Transit",
+  "nameQualifier": "Tri-Cities, WA",
   "websiteUrl": "https://www.bft.org/",
   "center": [
     46.21,
@@ -9,7 +10,7 @@
   "feedUrl": "https://files.mobilitydatabase.org/mdb-2122/latest.zip",
   "lastFeedExpiry": "20270313",
   "lastFeedVersion": "0926 Fixed Rev 2",
-  "lastRefreshedAt": "2026-09-07",
+  "lastRefreshedAt": "2026-11-02",
   "region": "Washington",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2122/latest.zip",
   "bbox": [
@@ -24,7 +25,7 @@
     "Kennewick, Washington",
     "Pasco, Washington"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270313",
@@ -38,11 +39,23 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 104
+      "featureCount": 106,
+      "feedExpiry": "20270313",
+      "routeCount": 30,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-09-07"
+    "checkedAt": "2026-11-03"
   },
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2122/latest.zip",
-  "lastPeekedExpiry": "20270313"
+  "lastPeekedExpiry": "20270313",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "c3cbc2e4199054ee",
+  "feedObtainedAt": "20260903"
 }

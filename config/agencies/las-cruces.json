@@ -1,6 +1,7 @@
 {
   "slug": "las-cruces",
-  "name": "RoadRUNNER Transit (Las Cruces)",
+  "officialName": "RoadRUNNER Transit",
+  "nameQualifier": "Las Cruces",
   "websiteUrl": "https://lascruces.gov/community/transportation/roadrunner-transit/",
   "region": "New Mexico",
   "center": [
@@ -16,14 +17,41 @@
   "feedUrl": "https://passio3.com/roadrunner/passioTransit/gtfs/google_transit.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2075/latest.zip",
   "lastFeedExpiry": "20271231",
-  "lastFeedVersion": "20250228",
-  "lastRefreshedAt": "2026-08-10",
-  "lastFeedCheckAt": "20261019",
+  "lastFeedVersion": "20260917",
+  "lastRefreshedAt": "2026-11-02",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271231",
   "timezone": "America/Denver",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://passio3.com/roadrunner/passioTransit/gtfs/google_transit.zip",
-  "lastPeekedExpiry": "20271231"
+  "lastPeekedExpiry": "20271231",
+  "feedQuality": {
+    "status": "review",
+    "score": 90,
+    "reasons": [
+      "1 minor schedule issue found while reading the feed."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 1,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 20,
+      "feedExpiry": "20271231",
+      "routeCount": 10,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
+    },
+    "checkedAt": "2026-11-03"
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "230cde35b2f187a3",
+  "feedObtainedAt": "20261102"
 }

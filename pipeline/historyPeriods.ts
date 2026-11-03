@@ -80,6 +80,28 @@ export function labelFromRefDate(refDate: string | null | undefined): string | n
   return `${MONTHS[month - 1]} ${m[1]}`;
 }
 
+/** A label's month as YYYYMM ("Dec 2026" -> 202612); null for a label with no month (a plain year). */
+export function labelYearMonth(label: string): number | null {
+  const m = /^([A-Za-z]{3})[A-Za-z]*\s+(\d{4})$/.exec(label.trim());
+  if (!m) return null;
+  const month = MONTHS.findIndex(name => name.toLowerCase() === m[1].toLowerCase());
+  return month >= 0 ? Number(m[2]) * 100 + month + 1 : null;
+}
+
+/** A date's month as YYYYMM (2026-10-29 -> 202610), in local time like the build year. */
+export function yearMonthOf(date: Date): number {
+  return date.getFullYear() * 100 + date.getMonth() + 1;
+}
+
+/**
+ * Whether a label or year falls after the build month. A month label is compared by month; a plain-year
+ * label only by year, since it says nothing finer.
+ */
+export function afterBuildMonth(label: string, year: number, buildYm: number): boolean {
+  const ym = labelYearMonth(label);
+  return ym != null ? ym > buildYm : year > Math.floor(buildYm / 100);
+}
+
 /**
  * A History change file named by its refresh run's date (YYYY-MM-DD): refresh.ts falls back to the
  * run date when a feed has no end date or version, so the row records a pipeline run, not a schedule

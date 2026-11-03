@@ -1,6 +1,7 @@
 {
   "slug": "tulare-county-transit",
-  "name": "Tulare County Area Transit (TCAT)",
+  "officialName": "Tulare County Area Transit",
+  "commonName": "TCAT",
   "websiteUrl": "https://tcrta.wpenginepowered.com/",
   "center": [
     36.33,
@@ -11,7 +12,7 @@
   "region": "California",
   "lastFeedExpiry": "20270501",
   "lastFeedVersion": "UTC: 13-Oct-2026 00:21",
-  "lastRefreshedAt": "2026-10-19",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Tulare, California",
     "Visalia, California",
@@ -19,25 +20,31 @@
     "Delano, California",
     "Fresno, California"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270501",
   "timezone": "America/Los_Angeles",
   "feedQuality": {
     "status": "review",
-    "score": 70,
+    "score": 100,
     "reasons": [
-      "6 route shapes needed adjustment before display."
+      "1 route shape needed adjustment before display."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
-      "shapeAnomalies": 6,
+      "shapeAnomalies": 1,
       "routeHeadwayMismatches": 0,
-      "featureCount": 68
+      "featureCount": 69,
+      "feedExpiry": "20270501",
+      "routeCount": 20,
+      "problemShapes": 1,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-19"
+    "checkedAt": "2026-11-03"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -45,5 +52,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-646/latest.zip",
-  "lastPeekedExpiry": "20270501"
+  "lastPeekedExpiry": "20270501",
+  "lastServiceWeek": "41dffa00739623aa",
+  "feedObtainedAt": "20261013"
 }

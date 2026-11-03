@@ -1,6 +1,7 @@
 {
   "slug": "belfort",
-  "name": "Optymo (Belfort)",
+  "officialName": "Optymo",
+  "nameQualifier": "Belfort",
   "region": "Bourgogne-Franche-Comté",
   "center": [
     47.638,

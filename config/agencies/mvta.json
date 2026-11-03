@@ -1,6 +1,7 @@
 {
   "slug": "mvta",
-  "name": "Minnesota Valley Transit Authority (MVTA)",
+  "officialName": "Minnesota Valley Transit Authority",
+  "commonName": "MVTA",
   "websiteUrl": "http://www.mvta.com",
   "center": [
     44.6,
@@ -9,9 +10,9 @@
   "feedUrl": "http://srv.mvta.com/InfoPoint/GTFS-Zip.ashx",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-206/latest.zip",
   "lastFeedExpiry": "20261206",
-  "lastFeedVersion": "20260909",
+  "lastFeedVersion": "20261019",
   "region": "Minnesota",
-  "lastRefreshedAt": "2026-10-03",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Eagan, Minnesota",
     "Burnsville, Minnesota",
@@ -22,24 +23,28 @@
     "Bloomington, Minnesota",
     "Lakeville, Minnesota"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261101",
+  "expiredFeedCheckExpiry": "20261206",
   "feedQuality": {
-    "status": "review",
-    "score": 70,
-    "reasons": [
-      "30 route shapes needed adjustment before display."
-    ],
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
-      "shapeAnomalies": 30,
+      "shapeAnomalies": 4,
       "routeHeadwayMismatches": 0,
-      "featureCount": 80
+      "featureCount": 80,
+      "feedExpiry": "20261206",
+      "routeCount": 19,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-03"
+    "checkedAt": "2026-11-03"
   },
   "timezone": "America/Chicago",
   "feedRefreshStatus": "current",
@@ -48,5 +53,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "http://srv.mvta.com/InfoPoint/GTFS-Zip.ashx",
-  "lastPeekedExpiry": "20261206"
+  "lastPeekedExpiry": "20261206",
+  "lastServiceWeek": "914331f323fced5f",
+  "feedObtainedAt": "20261102"
 }

@@ -1,6 +1,7 @@
 {
   "slug": "sun-tran",
-  "name": "Sun Tran (Tucson)",
+  "officialName": "Sun Tran",
+  "nameQualifier": "Tucson",
   "websiteUrl": "https://www.SunTran.com",
   "center": [
     32.22,
@@ -24,26 +25,37 @@
   "lastFeedExpiry": "20261128",
   "lastFeedVersion": "Aug1626_20260723",
   "lastRawArchiveKey": "20260815-5c6eab88e8d5dede",
-  "lastRefreshedAt": "2026-08-24",
-  "lastFeedCheckAt": "20261019",
+  "lastRefreshedAt": "2026-11-02",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261128",
   "feedQuality": {
-    "status": "review",
-    "score": 80,
-    "reasons": [
-      "2 shape corrections needed."
-    ],
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
-      "shapeAnomalies": 2,
+      "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 206
+      "featureCount": 222,
+      "feedExpiry": "20261128",
+      "routeCount": 44,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-08-24"
+    "checkedAt": "2026-11-02"
   },
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://gtfs-rt.suntran.com/TMGTFSRealTimeWebService/Static/SunTranGTFS.zip"
+  "lastFeedSourceUrl": "https://gtfs-rt.suntran.com/TMGTFSRealTimeWebService/Static/SunTranGTFS.zip",
+  "lastPeekedExpiry": "20261128",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "f67a147489e402aa",
+  "feedObtainedAt": "20260723"
 }

@@ -19,7 +19,8 @@ export interface DisambigRoute {
   agencyPlace?: string;
   agencySlug?: string;
   routeType?: number;
-  color: string;
+  /** No dot where the map draws nothing for the day and period (#1246). */
+  color?: string;
 }
 
 export interface DisambiguationPanelProps {

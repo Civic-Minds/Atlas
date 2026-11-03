@@ -1,6 +1,6 @@
 {
   "slug": "muskegon",
-  "name": "Muskegon Area Transit System",
+  "officialName": "Muskegon Area Transit System",
   "websiteUrl": "https://matsbus.com/",
   "center": [
     43.2342,
@@ -16,7 +16,7 @@
   "region": "Michigan",
   "lastFeedExpiry": "20271231",
   "lastFeedVersion": "20260928",
-  "lastRefreshedAt": "2026-10-03",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Muskegon, Michigan",
     "Muskegon Heights, Michigan",
@@ -31,11 +31,17 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 14
+      "featureCount": 14,
+      "feedExpiry": "20271231",
+      "routeCount": 7,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-03"
+    "checkedAt": "2026-11-03"
   },
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271231",
@@ -46,5 +52,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://muskegon.connexionz.net/rtt/public/resource/gtfs.zip",
-  "lastPeekedExpiry": "20271231"
+  "lastPeekedExpiry": "20271231",
+  "lastServiceWeek": "07455c20077fbcff",
+  "feedObtainedAt": "20260928"
 }

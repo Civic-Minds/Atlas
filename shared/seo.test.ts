@@ -8,6 +8,7 @@ import {
   injectRootHtml,
   normalizePath,
   prerenderRoutes,
+  researchPreviewRoutes,
   resolveSeo,
   type SeoContext,
 } from './seo';
@@ -44,7 +45,7 @@ describe('route metadata table', () => {
     const main = readFileSync('src/main.tsx', 'utf8');
     const app = readFileSync('src/App.tsx', 'utf8');
     const routePaths = [...main.matchAll(/<Route path="(\/[^"*]*)"/g)].map(m => m[1])
-      .filter(p => !p.startsWith('/dev/') && p !== '/apps/night' && p !== '/docs' && p !== '/agencies' && p !== '/agency/:slug' && p !== '/area/:slug' && p !== '/apps/live/:agency/:route' && p !== '/apps/live/:agency' && p !== '/apps/live/:agency/tool'); // /apps/night and /docs only redirect; the agency index is prerendered per build; the Live route and agency dashboards are local-only
+      .filter(p => !p.startsWith('/dev/') && p !== '/apps/night' && p !== '/docs' && p !== '/agencies' && p !== '/agency/:slug' && p !== '/area/:slug' && p !== '/region/:slug' && p !== '/apps/live/:agency/:route' && p !== '/apps/live/:agency' && p !== '/apps/live/:agency/tool'); // /apps/night and /docs only redirect; the agency index is prerendered per build; the Live route and agency dashboards are local-only
     const appPaths = [...app.matchAll(/'(\/apps\/[a-z]+)':/g)].map(m => m[1]);
     const research = [...readFileSync('shared/config.ts', 'utf8').matchAll(/: '(\/research[^']*)'/g)].map(m => m[1]);
     const known = new Set([...SEO_ROUTES.map(r => r.path), ...UNREACHABLE_APP_PATHS]);
@@ -119,6 +120,48 @@ describe('head tag rewriting', () => {
 
   it('adds noindex for staging builds', () => {
     expect(applySeoToHtml(html, resolveSeo('/research/night', BETA))).toContain('<meta name="robots" content="noindex" />');
+  });
+
+  it('gives a research page its own share image, in place of the site one (CIV-1167)', () => {
+    const out = applySeoToHtml(html, resolveSeo('/research/night', BETA));
+    expect(out).toContain('<title>[Beta] Overnight service: Transit Atlas</title>');
+    expect(out).toContain('<meta property="og:title" content="[Beta] Overnight service: Transit Atlas" />');
+    expect(out).toContain('<meta property="og:description" content="Find routes with sustained scheduled service from 2–5 AM." />');
+    expect(out).toContain(`<meta property="og:image" content="${SITE_URL}/assets/research/share/night.png" />`);
+    expect(out).toContain(`<meta name="twitter:image" content="${SITE_URL}/assets/research/share/night.png" />`);
+    expect(out).toContain('<meta property="og:image:type" content="image/png" />');
+    expect(out).not.toContain('atlas-social-preview.jpg');
+    expect(out.match(/property="og:image"/g)).toHaveLength(1);
+    expect(out.match(/property="og:image:width"/g)).toHaveLength(1);
+    expect(out.match(/name="twitter:image"/g)).toHaveLength(1);
+  });
+
+  it('gives the Frequent service story its own picture (CIV-1167, pick B4)', () => {
+    const out = applySeoToHtml(html, resolveSeo('/research/frequent-service/story', BETA));
+    expect(out).toContain(`<meta property="og:image" content="${SITE_URL}/assets/research/share/frequent-light.png" />`);
+    expect(out).not.toContain('atlas-social-preview.jpg');
+  });
+
+  it('keeps the site image on a research page with no pick yet, and on the map a public build shows there', () => {
+    for (const out of [applySeoToHtml(html, resolveSeo('/research/frequent-service', BETA)), applySeoToHtml(html, resolveSeo('/research/night', PUBLIC))]) {
+      expect(out).toContain('atlas-social-preview.jpg');
+      expect(out.match(/property="og:image"/g)).toHaveLength(1);
+    }
+    expect(applySeoToHtml(html, resolveSeo('/research/night', PUBLIC))).toContain('<title>Transit Atlas: scheduled frequency map</title>');
+  });
+
+  it('writes a link-preview file for every research page the prerender does not cover, in every build', () => {
+    const research = SEO_ROUTES.map(r => r.path).filter(p => p === '/research' || p.startsWith('/research/'));
+    for (const flags of [BETA.flags, PUBLIC.flags]) {
+      const covered = [...prerenderRoutes(flags), ...researchPreviewRoutes(flags)].map(r => r.path);
+      for (const path of research) expect(covered, path).toContain(path);
+      expect(researchPreviewRoutes(flags).every(r => !prerenderRoutes(flags).includes(r))).toBe(true);
+    }
+    expect(researchPreviewRoutes(BETA.flags).map(r => r.path)).toEqual(['/research/night', '/research/frequent-service', '/research/frequent-service/story']);
+  });
+
+  it('every share image is a file under public/', () => {
+    for (const r of SEO_ROUTES) if (r.shareImage) expect(readFileSync(`public${r.shareImage.path}`).length, r.path).toBeGreaterThan(1000);
   });
 
   it('fills the root and refuses a page without an empty root', () => {

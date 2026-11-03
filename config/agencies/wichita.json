@@ -1,6 +1,6 @@
 {
   "slug": "wichita",
-  "name": "Wichita Transit",
+  "officialName": "Wichita Transit",
   "websiteUrl": "http://www.wichitatransit.org",
   "region": "Kansas",
   "center": [
@@ -11,11 +11,11 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-395/latest.zip",
   "lastFeedExpiry": "20261218",
   "lastFeedVersion": "20261008",
-  "lastRefreshedAt": "2026-10-12",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Wichita, Kansas"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261218",
@@ -27,19 +27,25 @@
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://bus.wichitatransit.org/InfoPoint/gtfs-zip.ashx",
   "feedQuality": {
-    "status": "review",
-    "score": 70,
-    "reasons": [
-      "32 route shapes needed adjustment before display."
-    ],
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
-      "shapeAnomalies": 32,
+      "shapeAnomalies": 28,
       "routeHeadwayMismatches": 0,
-      "featureCount": 90
+      "featureCount": 104,
+      "feedExpiry": "20261218",
+      "routeCount": 23,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-12"
+    "checkedAt": "2026-11-03"
   },
-  "lastPeekedExpiry": "20261218"
+  "lastPeekedExpiry": "20261218",
+  "lastServiceWeek": "c3ae93e734bd1912",
+  "feedObtainedAt": "20261008"
 }

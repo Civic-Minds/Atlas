@@ -1,6 +1,7 @@
 {
   "slug": "max-transit",
-  "name": "MAX Transit (Birmingham)",
+  "officialName": "MAX Transit",
+  "nameQualifier": "Birmingham",
   "websiteUrl": "https://maxtransit.org",
   "center": [
     33.51,
@@ -14,19 +15,46 @@
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-2263/latest.zip",
   "region": "Alabama",
-  "lastFeedExpiry": "20350201",
+  "lastFeedExpiry": "20250531",
   "lastFeedVersion": "20240531",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Birmingham, Alabama",
     "Hoover, Alabama"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20350201",
   "timezone": "America/Chicago",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2263/latest.zip",
-  "lastPeekedExpiry": "20350201"
+  "lastPeekedExpiry": "20350201",
+  "feedQuality": {
+    "status": "degraded",
+    "score": 65,
+    "reasons": [
+      "The schedule dates in this feed have passed."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 113,
+      "feedExpiry": "20250531",
+      "routeCount": 18,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
+    },
+    "checkedAt": "2026-11-02"
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "e82d846cfea2d2eb",
+  "feedObtainedAt": "20240531"
 }

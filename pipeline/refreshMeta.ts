@@ -25,6 +25,19 @@ export interface FeedMetaFields {
   lastSupplementalFeeds?: SupplementalFeedMeta[];
   /** A fetched timetable starting on this date waits until then (#1144); cleared once one is processed. */
   heldFeedStart?: string | null;
+  /** CIV-1223: the zips the release gate last refused (feedSetSha256); cleared once a feed is processed. */
+  refusedFeedSha256?: string | null;
+}
+
+/**
+ * CIV-1011 safeguard: when Atlas first obtained the feed file. A new file is obtained today; an unchanged
+ * one keeps its recorded date, else the zip's own date (#1253), never the last refresh: Miami's April file
+ * read as obtained on its 17 Sep refresh, after its bus services ended (Jul 19), so the safeguard took the
+ * end as deliberate and showed no notice.
+ */
+export function feedFileDate(opts: { newFile: boolean; runDate: string; feedObtainedAt?: string | null; zipDate: string | null }): string | null {
+  if (opts.newFile) return opts.runDate;
+  return opts.feedObtainedAt ?? opts.zipDate ?? null;
 }
 
 /** Whether a feed's declared service end date is before the refresh date. */
@@ -129,6 +142,16 @@ function laterOfFeedInfoAndCappedCalendar(feedExpiry: string | null, peekedExpir
 }
 
 /**
+ * The expiry a refresh records for the feed it just processed (stampFeedMeta), and the service end
+ * its release gate checks, so the two never disagree (#1304). The gate read feed_info's 20350201
+ * for MAX while 20250531 was recorded: the refresh wrote a changed file for an expired feed, and the
+ * publish gate, reading the recorded end, refused the whole weekly release.
+ */
+export function refreshedFeedExpiry(opts: { feedExpiry: string | null; peekedExpiry: string | null; todayYmd: string; calendarExpiry?: string | null; calendarOnlyEnd?: string | null }): string | null {
+  return recordedFeedExpiry(opts.feedExpiry, opts.calendarExpiry !== undefined ? opts.calendarExpiry : opts.peekedExpiry, opts.todayYmd, opts.calendarOnlyEnd);
+}
+
+/**
  * A refresh that skips an unchanged feed records nothing new, so an expiry stored before a rule
  * change stayed as it was: MAX kept feed_info's 20350201 after #1039 taught recordedFeedExpiry to
  * use the calendar's last service date (20250531), and no expired notice showed (CIV-443). The
@@ -169,7 +192,7 @@ export function stampFeedMeta(
     feedObtainedAt?: string | null;
   },
 ): void {
-  agency.lastFeedExpiry = recordedFeedExpiry(opts.feedExpiry, opts.calendarExpiry !== undefined ? opts.calendarExpiry : opts.peekedExpiry, opts.todayYmd, opts.calendarOnlyEnd);
+  agency.lastFeedExpiry = refreshedFeedExpiry(opts);
   agency.lastPeekedExpiry = opts.peekedExpiry;
   agency.lastFeedVersion = opts.feedVersion ?? opts.peekedVersion ?? null;
   agency.lastRefreshedAt = opts.todayYmd;
@@ -178,6 +201,7 @@ export function stampFeedMeta(
   agency.feedRefreshErrorAt = null;
   agency.feedRefreshRetryCount = 0;
   delete agency.heldFeedStart;
+  delete agency.refusedFeedSha256;
   stampListingEnd(agency, opts.listingEnd);
   if (opts.serviceWeek) agency.lastServiceWeek = opts.serviceWeek;
   else if (opts.serviceWeek === null) delete agency.lastServiceWeek;
@@ -268,13 +292,17 @@ export function decideRefreshSkipUnchanged(opts: {
   /** Uncapped expiry stored at the last refresh; the right key to compare a raw peek against (#688). */
   lastPeekedExpiry?: string | null;
   lastFeedVersion?: string | null;
-  /** The agency reads its feed as of the run date (#774), so an unchanged feed still has new output. */
+  /**
+   * The agency reads its feed as of the run date on the old picker (#774), so an unchanged feed
+   * still has new output. CIV-1101: only without a service-week key (the kill switch); with one,
+   * a moved week reprocesses like any other agency.
+   */
   referenceDateFromRunDate?: boolean;
   /** CIV-1011 stage 4: the picked week's key now (serviceWeekKey) and at the last refresh; a moved week reprocesses. */
   serviceWeek?: string | null;
   lastServiceWeek?: string | null;
 }): RefreshSkipReason {
-  if (opts.forceRefresh || opts.hasSupplementals || opts.feedExpired || opts.referenceDateFromRunDate) return { skip: false };
+  if (opts.forceRefresh || opts.hasSupplementals || opts.feedExpired || (opts.referenceDateFromRunDate && !opts.serviceWeek)) return { skip: false };
   if (opts.serviceWeek && opts.serviceWeek !== (opts.lastServiceWeek ?? null)) return { skip: false };
   const { peekedExpiry, peekedVersion, lastFeedVersion } = opts;
   // Older records have no uncapped value; compare against the recorded one as before.

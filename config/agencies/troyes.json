@@ -1,6 +1,7 @@
 {
   "slug": "troyes",
-  "name": "TCAT (Troyes)",
+  "officialName": "TCAT",
+  "nameQualifier": "Troyes",
   "region": "Grand Est",
   "center": [
     48.2973,

@@ -1,6 +1,7 @@
 {
   "slug": "septa",
-  "name": "SEPTA (Philadelphia)",
+  "officialName": "SEPTA",
+  "nameQualifier": "Philadelphia",
   "shortName": "SEPTA",
   "displayArea": "Philadelphia",
   "websiteUrl": "https://septa.org/",
@@ -21,8 +22,8 @@
   ],
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-502/latest.zip",
   "lastFeedExpiry": "20270220",
-  "lastFeedVersion": "v202609271",
-  "lastRefreshedAt": "2026-10-19",
+  "lastFeedVersion": "v202611010",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Havertown, Pennsylvania",
     "Philadelphia, Pennsylvania",
@@ -35,24 +36,30 @@
     "Camden, New Jersey",
     "Reading, Pennsylvania"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270220",
   "feedQuality": {
     "status": "review",
-    "score": 70,
+    "score": 99,
     "reasons": [
-      "3 route have stops whose frequency differs from the overall route schedule."
+      "2 route have stops whose frequency differs from the overall route schedule."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
       "shapeAnomalies": 0,
-      "routeHeadwayMismatches": 3,
-      "featureCount": 1076
+      "routeHeadwayMismatches": 4,
+      "featureCount": 1086,
+      "feedExpiry": "20270220",
+      "routeCount": 161,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 2,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-19"
+    "checkedAt": "2026-11-03"
   },
   "timezone": "America/New_York",
   "feedRefreshStatus": "current",
@@ -63,9 +70,9 @@
   "lastFeedSourceUrl": "https://www3.septa.org/developer/google_bus.zip",
   "lastSupplementalFeeds": [
     {
-      "feedExpiry": "20261121",
-      "feedVersion": "v202609271",
-      "rawArchiveKey": "20261121-c908d0f0e8098bc6"
+      "feedExpiry": "20270220",
+      "feedVersion": "v202611010",
+      "rawArchiveKey": "20270220-fd7d36b9fc0708d1"
     }
   ],
   "modeOverrides": [
@@ -118,5 +125,7 @@
       "reason": "Philadelphia trolley lines (subway-surface and Media/Sharon Hill) are light rail, published as route_type 0 (tram)"
     }
   ],
-  "lastPeekedExpiry": "20270220"
+  "lastPeekedExpiry": "20270220",
+  "lastServiceWeek": "bd0d335f20972bf5",
+  "feedObtainedAt": "20261102"
 }

@@ -1,6 +1,6 @@
 {
   "slug": "cornwall",
-  "name": "Cornwall Transit",
+  "officialName": "Cornwall Transit",
   "region": "Ontario",
   "center": [
     45.018,
@@ -14,16 +14,16 @@
   ],
   "feedUrl": "https://metrolinx.tmix.se/gtfs/gtfs-cornwall.zip",
   "lastFeedExpiry": "20261231",
-  "lastFeedVersion": "1/20261015 22:00:01/20261016 00:00:00",
+  "lastFeedVersion": "1/20261101 22:00:00/20261102 00:00:00",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-718/latest.zip",
-  "lastRefreshedAt": "2026-10-19",
-  "lastFeedCheckAt": "20261019",
+  "lastRefreshedAt": "2026-11-02",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261231",
   "feedQuality": {
     "status": "review",
-    "score": 70,
+    "score": 92,
     "reasons": [
       "5 route shapes needed adjustment before display."
     ],
@@ -32,9 +32,15 @@
       "validationWarnings": 0,
       "shapeAnomalies": 5,
       "routeHeadwayMismatches": 0,
-      "featureCount": 41
+      "featureCount": 41,
+      "feedExpiry": "20261231",
+      "routeCount": 12,
+      "problemShapes": 5,
+      "problemShapeRoutes": 1,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-19"
+    "checkedAt": "2026-11-03"
   },
   "timezone": "America/Toronto",
   "feedRefreshStatus": "current",
@@ -43,5 +49,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://metrolinx.tmix.se/gtfs/gtfs-cornwall.zip",
-  "lastPeekedExpiry": "20261231"
+  "lastPeekedExpiry": "20261231",
+  "lastServiceWeek": "e2fdbf075e864b32",
+  "feedObtainedAt": "20261102"
 }

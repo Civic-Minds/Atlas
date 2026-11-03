@@ -1,6 +1,6 @@
 {
   "slug": "metrohouston",
-  "name": "METRO Houston",
+  "officialName": "METRO Houston",
   "websiteUrl": "http://www.ridemetro.org",
   "center": [
     29.76,
@@ -10,7 +10,7 @@
   "lastFeedExpiry": "20270213",
   "lastFeedVersion": "August2026IVOMS_20261008",
   "region": "Texas",
-  "lastRefreshedAt": "2026-10-12",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Houston, Texas",
     "Alief, Texas",
@@ -24,24 +24,28 @@
     "Baytown, Texas"
   ],
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2060/latest.zip",
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270213",
   "feedQuality": {
-    "status": "review",
-    "score": 90,
-    "reasons": [
-      "1 route has stops whose frequency differs from the overall route schedule."
-    ],
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
       "shapeAnomalies": 0,
-      "routeHeadwayMismatches": 1,
-      "featureCount": 580
+      "routeHeadwayMismatches": 2,
+      "featureCount": 583,
+      "feedExpiry": "20270213",
+      "routeCount": 109,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-12"
+    "checkedAt": "2026-11-03"
   },
   "timezone": "America/Chicago",
   "feedRefreshStatus": "current",
@@ -70,5 +74,7 @@
       "reason": "METRORail is light rail, published as route_type 0 (tram)"
     }
   ],
-  "lastPeekedExpiry": "20270213"
+  "lastPeekedExpiry": "20270213",
+  "lastServiceWeek": "20b6c44a0ac771e7",
+  "feedObtainedAt": "20261008"
 }

@@ -2,12 +2,14 @@ import type { GeoJSON } from 'geojson';
 import type { ShapeProperties, TimePeriod } from '../hooks/useIntervalStats';
 import { branchDisplayPeriodHeadway, buildRouteFacts, buildRouteStopMetric, metricValueForPeriod, type HeadwayMetric, type RouteLabel } from './routeFacts';
 import { buildSharedStopIndex } from '../../shared/sharedStops';
-import { partPeriodText } from './effectiveHeadway';
+import { partPeriodText, periodEdgeText } from './effectiveHeadway';
+import { routeCardSharedStretchEdge } from './routeCardRows';
 import { hasRegularServiceInPeriod } from './stretchCard';
 import { agencyNames } from './agencyName';
-import { rowTrips } from './rowTrips';
+import { rowTrips, unsteadyDirectionFallback } from './rowTrips';
 import { compareRouteNumber } from './sortCompare';
 import { noTripsInPeriod } from '../../shared/stopRoutePeriods';
+import { routeCardNoNumberWords } from './routeCardNotices';
 import type { DayType } from '../../shared/dayTypes';
 import type { PeriodKey } from '../../shared/config';
 
@@ -26,6 +28,11 @@ export interface StopBranch {
   directionId: number;
   /** #934: part-period wording shown in place of a number, as on the route card's row. */
   periodText?: string;
+  /**
+   * CIV-1251 row 8: where the stop is on the direction's shared stretch (two or more of its destinations serve it) and that
+   * stretch starts late or ends early, its own words and spacing for the stop card's Shared stretch row, as the route card.
+   */
+  sharedEdge?: { text: string; every: number };
 }
 
 export interface StopRoute {
@@ -42,6 +49,19 @@ export interface StopRoute {
    * (its stop points' routePeriodBits). It has no branches; the card lists it with "No trips from {range}".
    */
   noTrips?: { rKey: string };
+  /**
+   * #1278: the route has trips at this stop in the period (its routePeriodBits) but no stop row, since it has no number
+   * there (#750). It has no branches; the card lists it with the route card's own words (routeCardNoNumberWords).
+   */
+  noNumber?: { rKey: string; text: string };
+}
+
+/**
+ * The route's headline, standing in where the stop has no all-day value of its own. CIV-1204: none where the headline's
+ * window has no regular cadence (the route card's verdict), so it never reads as "every N".
+ */
+export function headlineStandIn(p: Pick<ShapeProperties, 'headway' | 'headlineNoRegular'>): number | null {
+  return p.headlineNoRegular ? null : p.headway ?? null;
 }
 
 /** The stop's own value for a branch in the period: every trip of the direction at the stop, pooled where patterns share it. */
@@ -91,13 +111,15 @@ export function buildStopRoutes({ siblingIdsByAgency, routesByAgency, routePerio
   day: string;
   period: TimePeriod;
 }): StopRoute[] {
-  type Branch = { rKey: string; headsign: string | null; service: ReturnType<typeof buildRouteStopMetric>; rowHeadway: number | null; directionId: number; periodText?: string; dirKey: string; patterns: number };
+  type Branch = { rKey: string; headsign: string | null; service: ReturnType<typeof buildRouteStopMetric>; rowHeadway: number | null; directionId: number; periodText?: string; sharedEdge?: { text: string; every: number }; dirKey: string; patterns: number };
 
   const routeMap = new Map<string, { shortName: string; label: RouteLabel; longName: string; agencyName: string; agencySlug: string; routeType?: number; branches: Map<string, Branch> }>();
   // Pooled values at shared stops (CIV-82), so the stop card agrees with the map and route card.
   const sharedIndexBySlug = new Map(Object.entries(layers).map(([slug, fc]) => [slug, buildSharedStopIndex(fc.features)]));
   // Every destination each route's direction has at the stop in the day, whatever the period (CIV-1080).
   const headsignsAtStop = new Map<string, Set<string>>();
+  // CIV-1251 row 8: each route-direction's features for the day, for the route card's own Shared stretch decision.
+  const directionFeaturesByKey = new Map<string, ShapeProperties[]>();
 
 
   for (const [slug, fc] of Object.entries(layers)) {
@@ -112,15 +134,20 @@ export function buildStopRoutes({ siblingIdsByAgency, routesByAgency, routePerio
       if (!p.routeId || !routeIds.has(p.routeId)) continue;
       if (p.day !== undefined && p.day !== day) continue;
       const dirKey = `${slug}::${p.routeId}::${(p as any).directionId ?? 0}`;
+      if ((p as any).stopId == null) (directionFeaturesByKey.get(dirKey) ?? directionFeaturesByKey.set(dirKey, []).get(dirKey)!).push(p);
       if ([...siblingIds].some(sId => p.stopHeadways?.[sId] != null)) {
         (headsignsAtStop.get(dirKey) ?? headsignsAtStop.set(dirKey, new Set()).get(dirKey)!).add(p.headsign ?? '');
       }
       // #934: a direction the route only runs on one side of the period shows the route card's
-      // words ("until 9:37am, every 12 min") instead of a cadence, at a stop its shape serves.
-      const periodText = partPeriodText(p, period);
-      // No cadence at the stop for a period the route card says has no regular service (#750), or where the
-      // destination has no service of its own and its value is other headsigns' trips (CIV-1069, rowTrips).
-      if (!periodText && (!hasRegularServiceInPeriod(p, period) || rowTrips(p, period).noOwnService)) continue;
+      // words ("every 12 min until 9:37 AM") instead of a cadence, at a stop its shape serves.
+      // #1228: only where the route card's row has the words too (rowTrips): a destination with no trips of its own
+      // in the period never reads its stretch's "from 5:34 AM" (TTC 100 to Pape, weekday overnight).
+      const trips = rowTrips(p, period);
+      const periodText = trips.partPeriod != null ? partPeriodText(p, period) : undefined;
+      // No cadence at the stop for a period the route card says has no regular cadence (#750), where the
+      // destination has no service of its own and its value is other headsigns' trips (CIV-1069, rowTrips), or where the
+      // card's row reads its unsteady direction's worst wait as no regular service (#962).
+      if (!periodText && (!hasRegularServiceInPeriod(p, period) || trips.noOwnService || unsteadyDirectionFallback(p, period, trips))) continue;
 
       // Only include features whose shape actually covers any of the sibling stops.
       let stopHw: number | undefined = undefined;
@@ -154,7 +181,8 @@ export function buildStopRoutes({ siblingIdsByAgency, routesByAgency, routePerio
       const branchKey = `${dirId}::${p.headsign ?? ''}`;
       // Prefer stop-specific headway over feature headway; keep the best (lowest) when deduping.
       const service = buildRouteStopMetric(p, matchingStopId, sharedIndexBySlug.get(slug));
-      const newHeadway = service.value ?? p.headway ?? null;
+      const standIn = headlineStandIn(p);
+      const newHeadway = service.value ?? standIn;
       const existing = entry.branches.get(branchKey);
       const patterns = (existing?.patterns ?? 0) + 1;
       if (existing) existing.patterns = patterns;
@@ -162,8 +190,8 @@ export function buildStopRoutes({ siblingIdsByAgency, routesByAgency, routePerio
         entry.branches.set(branchKey, {
           rKey: facts.key,
           headsign: p.headsign ?? null,
-          service: service.value == null && p.headway != null && !periodText
-            ? { ...service, value: p.headway, provenance: 'all-day-summary' }
+          service: service.value == null && standIn != null && !periodText
+            ? { ...service, value: standIn, provenance: 'all-day-summary' }
             : service,
           // A destination row says how often that destination comes (CIV-918): the branch's own value, the
           // same number its row on the route card shows. The stop's value counts every trip of the
@@ -175,6 +203,20 @@ export function buildStopRoutes({ siblingIdsByAgency, routesByAgency, routePerio
           patterns,
         });
       }
+    }
+  }
+  // CIV-1251 row 8: the Shared stretch row's time where the route card shows it (routeCardSharedStretchEdge, the card's own
+  // decision), at a stop on the shared stretch (two or more of the direction's destinations serve it), so the same time is
+  // never on two lines.
+  const sharedEdgeByKey = new Map<string, ReturnType<typeof routeCardSharedStretchEdge>>();
+  for (const entry of routeMap.values()) {
+    for (const b of entry.branches.values()) {
+      if (!sharedEdgeByKey.has(b.dirKey)) {
+        const features = directionFeaturesByKey.get(b.dirKey) ?? [];
+        sharedEdgeByKey.set(b.dirKey, (headsignsAtStop.get(b.dirKey)?.size ?? 0) >= 2 ? routeCardSharedStretchEdge(features, b.directionId, period) : undefined);
+      }
+      const edge = sharedEdgeByKey.get(b.dirKey);
+      if (edge) b.sharedEdge = { text: periodEdgeText(edge), every: edge.every };
     }
   }
   // Two patterns to one destination (TTC 29's two northbound trips to Wilson, from either loop) are one row, and
@@ -217,6 +259,36 @@ export function buildStopRoutes({ siblingIdsByAgency, routesByAgency, routePerio
       }
     }
   }
+  // #1278: the stop's own route with trips here in the period that got no row (#750: no number in the period) is listed
+  // with the route card's words for the period, where every stop point proves the trips (TTC 110 Sunday AM, 7:52 first trip).
+  const noNumber = new Map<string, StopRoute>();
+  if (period !== 'all') {
+    for (const [slug, fc] of Object.entries(layers)) {
+      const bitsByRoute = routePeriodBitsByAgency?.[slug];
+      if (!bitsByRoute) continue;
+      for (const rid of routesByAgency[slug] ?? []) {
+        if (noTripsInPeriod(bitsByRoute.get(rid) ?? [], day as DayType, period as PeriodKey) !== false) continue;
+        const features = fc.features
+          .map(f => f.properties as unknown as ShapeProperties)
+          .filter(p => (p as any).stopId == null && p.routeId === rid && p.day === day);
+        if (features.length === 0) continue;
+        const facts = buildRouteFacts(features[0], slug);
+        if (routeMap.has(facts.shortName) || idle.has(facts.shortName) || noNumber.has(facts.shortName)) continue;
+        const text = routeCardNoNumberWords(features, period);
+        if (!text) continue;
+        noNumber.set(facts.shortName, {
+          shortName: facts.shortName,
+          label: facts.label,
+          longName: facts.longName || '',
+          agencyName: agencyNames(facts.agencyName).name,
+          agencySlug: slug,
+          routeType: facts.routeType,
+          branches: [],
+          noNumber: { rKey: facts.key, text },
+        });
+      }
+    }
+  }
   return [...Array.from(routeMap.entries())
     .sort(([a], [b]) => compareRouteNumber(a, b))
     .map(([, v]) => ({
@@ -228,6 +300,6 @@ export function buildStopRoutes({ siblingIdsByAgency, routesByAgency, routePerio
       routeType: v.routeType,
       branches: Array.from(v.branches.values())
         .sort((a, b) => a.directionId - b.directionId || (a.service.value ?? Infinity) - (b.service.value ?? Infinity))
-        .map(b => ({ rKey: b.rKey, headsign: b.headsign, service: b.service, rowHeadway: b.rowHeadway, directionId: b.directionId, ...(b.periodText ? { periodText: b.periodText } : {}) })),
-    })), ...[...idle.values()].sort((a, b) => compareRouteNumber(a.shortName, b.shortName))];
+        .map(b => ({ rKey: b.rKey, headsign: b.headsign, service: b.service, rowHeadway: b.rowHeadway, directionId: b.directionId, ...(b.periodText ? { periodText: b.periodText } : {}), ...(b.sharedEdge ? { sharedEdge: b.sharedEdge } : {}) })),
+    })), ...[...noNumber.values(), ...idle.values()].sort((a, b) => compareRouteNumber(a.shortName, b.shortName))];
 }

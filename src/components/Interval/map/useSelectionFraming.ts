@@ -165,14 +165,12 @@ export function useSelectionFraming(
       map.fitBounds(target.bounds, { padding, maxZoom: 14 });
       fittedRouteRef.current = fitKey;
     } else if (target?.kind === 'point') {
-      // Padding goes into the centre so the camera doesn't keep it for later fits (routeFraming).
       const zoom = Math.max(map.getZoom(), 14);
-      map.flyTo({
-        center: paddedCenter(target.center, zoom, padding),
-        zoom,
-        duration: 900,
-        essential: true,
-      });
+      // Live's card (framePadding): the padding goes into the centre so the camera doesn't keep it for later fits
+      // (routeFraming). The main map keeps its own fly until that change is reviewed for it.
+      map.flyTo(framePadding
+        ? { center: paddedCenter(target.center, zoom, padding), zoom, duration: 900, essential: true }
+        : { center: target.center, zoom, padding, duration: 900, essential: true });
       fittedRouteRef.current = fitKey;
     }
   }, [selectedRoute, mapLoaded, layers, framePadding, vehicleCardOpen, cardWait]);

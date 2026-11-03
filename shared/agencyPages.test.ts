@@ -1,11 +1,12 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import {
-  agencyIntroSentence, introName, agencySpansArea, namesList, agencyBreadcrumbs, agencyDatesText, agencyLeadSentence, agencyMapHref, agencyPageDescription, agencyPageH1, agencyPageJsonLd, hasMiddayService,
+  agencyIntroSentence, agencyMention, agencyTitle, sharedOfficialNames, agencySpansArea, namesList, agencyBreadcrumbs, agencyDatesText, agencyLeadSentence, agencyMapHref, agencyPageDescription, agencyPageH1, agencyPageJsonLd, hasMiddayService,
   agencyPageData, agencyPagePath, agencyPageTitle, agencyStats, bandCounts, formatDataDate, nearbyAgencies, resolveAgencySeo, trimRedundantCity,
   type AgencyPageRoute, type AgencyPageSummary, bestRoute, modesText, listingEndedNotice, listingEndHasPassed,
 } from './agencyPages';
 import { agencyTodayYmd } from './feedAvailability';
 import { agencyPageSummaries, getAgencyPageSummary } from './agencyPagesData';
+import { PARENT_AGENCIES, parentAgencyPageData } from './parentAgencies';
 
 const r = (name: string, mode: number, midday: number | null, am = midday, pm = midday): AgencyPageRoute => ({ name, longName: `${name} St`, mode, midday, am, pm, evening: null, overnight: null });
 
@@ -20,9 +21,12 @@ describe('agency page text', () => {
   it('uses the agreed title and H1', () => {
     expect(agencyPageTitle(TTC)).toBe('TTC frequency: how often routes run | Transit Atlas');
     expect(agencyPageH1(TTC)).toBe('Toronto Transit Commission');
-    expect(agencyPageH1({ name: 'Hamilton Street Railway', city: 'Hamilton' })).toBe('Hamilton Street Railway');
-    expect(agencyPageH1({ name: 'University of Michigan Transit Services (Ann Arbor)', city: 'Ann Arbor' })).toBe('University of Michigan Transit Services');
-    expect(agencyPageH1({ name: 'GO Transit', city: 'Toronto' })).toBe('GO Transit');
+    expect(agencyPageH1({ name: 'Hamilton Street Railway' })).toBe('Hamilton Street Railway');
+    expect(agencyPageH1({ name: 'University of Michigan Transit Services (Ann Arbor)' })).toBe('University of Michigan Transit Services');
+    // #1245: the heading is the card's title, never the registry form with its bracket.
+    expect(agencyPageH1({ name: 'Montgomery Transit (The M)' })).toBe(agencyTitle({ name: 'Montgomery Transit (The M)' }));
+    expect(agencyPageH1({ name: 'Montgomery Transit (The M)' })).not.toContain('(');
+    expect(agencyPageH1({ name: 'GO Transit' })).toBe('GO Transit');
   });
 
   it('writes a standalone lead sentence from the route numbers', () => {
@@ -128,16 +132,32 @@ describe('trimRedundantCity', () => {
 describe('dates', () => {
   it('names each date for what it is', () => {
     const lead = "Based on the agency's published schedule, not live arrivals.";
-    expect(agencyDatesText({ lastRefreshedAt: '2026-08-27', validThrough: '20261031' }, '2026-10-13T06:34:30.913Z'))
+    expect(agencyDatesText({ lastRefreshedAt: '2026-08-27', validThrough: '20261031' }, '2026-10-13T06:34:30.913Z', '20261013'))
       .toBe(`${lead} This schedule was published Aug 27, 2026 and covers service until Oct 31, 2026. This page was last updated Oct 13, 2026.`);
-    expect(agencyDatesText({ lastRefreshedAt: null, validThrough: null }, null)).toBe(lead);
-    expect(agencyDatesText({ lastRefreshedAt: '2026-08-27', validThrough: null }, '2026-10-13')).toBe(`${lead} This schedule was published Aug 27, 2026. This page was last updated Oct 13, 2026.`);
-    expect(agencyDatesText({ lastRefreshedAt: null, validThrough: '20261031' }, null)).toBe(`${lead} This schedule covers service until Oct 31, 2026.`);
+    expect(agencyDatesText({ lastRefreshedAt: null, validThrough: null }, null, '20261013')).toBe(lead);
+    expect(agencyDatesText({ lastRefreshedAt: '2026-08-27', validThrough: null }, '2026-10-13', '20261013')).toBe(`${lead} This schedule was published Aug 27, 2026. This page was last updated Oct 13, 2026.`);
+    expect(agencyDatesText({ lastRefreshedAt: null, validThrough: '20261031' }, null, '20261013')).toBe(`${lead} This schedule covers service until Oct 31, 2026.`);
   });
 
   it('says plainly when the timetable has ended', () => {
-    expect(agencyDatesText({ lastRefreshedAt: '2026-01-05', validThrough: '20260901' }, '2026-10-13T00:00:00Z'))
+    expect(agencyDatesText({ lastRefreshedAt: '2026-01-05', validThrough: '20260901' }, '2026-10-13T00:00:00Z', '20261013'))
       .toBe("Based on the agency's published schedule, not live arrivals. This schedule ended on Sep 1, 2026; the agency hasn't published a newer one yet. This page was last updated Oct 13, 2026.");
+  });
+
+  it('ends on the map\'s date: the day after the last day, in the agency\'s own time zone (#1229)', () => {
+    // LA Metro: the rail feed's Oct 31 ends the page's schedule, as on the map.
+    const lacmta = { lastRefreshedAt: '2026-10-19', validThrough: '20261031', timezone: 'America/Los_Angeles' };
+    expect(agencyDatesText(lacmta, '2026-10-27', '20261031')).toContain('This schedule was published Oct 19, 2026 and covers service until Oct 31, 2026.');
+    expect(agencyDatesText(lacmta, '2026-10-27', '20261101')).toContain('This schedule ended on Oct 31, 2026;');
+    // No date passed: the agency's own date. 06:59 UTC Nov 1 is still Oct 31 in Los Angeles.
+    vi.useFakeTimers({ now: new Date('2026-11-01T06:59:00Z') });
+    try {
+      expect(agencyDatesText(lacmta, '2026-10-27')).toContain('covers service until Oct 31, 2026.');
+      vi.setSystemTime(new Date('2026-11-01T07:01:00Z'));
+      expect(agencyDatesText(lacmta, '2026-10-27')).toContain('This schedule ended on Oct 31, 2026;');
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
   it('N112: the agency page names the through date and the listing end (CIV-1055)', () => {
@@ -165,12 +185,20 @@ describe('dates', () => {
     expect(listingEndHasPassed('20261028', agencyTodayYmd({ timezone: 'America/New_York' }, new Date('2026-10-28T03:00:00Z')))).toBe(false);
   });
 
-  it('drops a trailing city from the agency name only when the sentence names that place', () => {
-    expect(introName('University of Michigan Transit Services (Ann Arbor)', 'Ann Arbor')).toBe('University of Michigan Transit Services');
-    expect(introName('University of Michigan Transit Services (Ann Arbor)', 'the Greater Toronto and Hamilton Area')).toBe('University of Michigan Transit Services (Ann Arbor)');
-    expect(introName('Alameda-Contra Costa Transit District (AC Transit)', 'Berkeley')).toBe('Alameda-Contra Costa Transit District (AC Transit)');
-    expect(introName('ABQ RIDE (Albuquerque)', 'Albuquerque')).toBe('ABQ RIDE');
-    expect(introName('Toronto Transit Commission', 'Toronto')).toBe('Toronto Transit Commission');
+  it('names agencies through agencyNames, never with a raw bracket (#1245)', () => {
+    expect(agencyTitle({ name: 'University of Michigan Transit Services (Ann Arbor)' })).toBe('University of Michigan Transit Services');
+    expect(agencyTitle({ name: 'ABQ RIDE (Albuquerque)' })).toBe('ABQ RIDE');
+    expect(agencyTitle({ name: 'Toronto Transit Commission' })).toBe('Toronto Transit Commission');
+    expect(agencyMention({ name: 'Toronto Transit Commission' })).toBe('TTC');
+    expect(agencyMention({ name: 'San Francisco Municipal Transportation Agency (SFMTA - Muni)' })).toBe('Muni');
+    expect(agencyMention({ name: 'Capital Metro (Austin)' })).toBe('Capital Metro');
+  });
+
+  it('keeps the place of agencies that share an official name (#1245)', () => {
+    const shared = sharedOfficialNames([{ name: 'BC Transit (Kelowna)' }, { name: 'BC Transit (Victoria)' }, { name: 'MiWay (Mississauga)' }]);
+    expect([...shared]).toEqual(['BC Transit']);
+    expect(agencyTitle({ name: 'BC Transit (Kelowna)' }, shared)).toBe('BC Transit · Kelowna');
+    expect(agencyTitle({ name: 'MiWay (Mississauga)' }, shared)).toBe('MiWay');
   });
 });
 
@@ -236,3 +264,33 @@ describe('hasMiddayService', () => {
   });
 });
 
+describe('agency page search titles (#1291)', () => {
+  const all = agencyPageSummaries();
+  const pages = [
+    ...all.map(a => agencyPageData(a, all)),
+    ...PARENT_AGENCIES.map(p => parentAgencyPageData(p, all, null)!),
+  ];
+  const titleOf = (path: string) => {
+    const d = pages.find(x => x.path === path)!;
+    return resolveAgencySeo(d.agency, { mode: 'public', path: d.path, pageTitle: d.pageTitle }).title;
+  };
+
+  it('no two agency pages share a search title', () => {
+    const titles = pages.map(d => resolveAgencySeo(d.agency, { mode: 'public', path: d.path, pageTitle: d.pageTitle }).title);
+    expect(titles.filter((t, i) => titles.indexOf(t) !== i)).toEqual([]);
+  });
+
+  it('adds what tells same-named agencies apart, and leaves a one-of-a-kind name alone', () => {
+    expect(titleOf('/agency/nyct-bus-bronx')).toBe('MTA NYCT Bus (Bronx) frequency: how often routes run');
+    // The registry bracket is only the short name again, so the place tells them apart.
+    expect(titleOf('/agency/dart')).toBe('DART (Dallas) frequency: how often routes run');
+    expect(titleOf('/agency/des-moines')).toBe('DART (Des Moines) frequency: how often routes run');
+    expect(titleOf('/agency/exo-trains')).toBe('exo (Trains) frequency: how often routes run | Transit Atlas');
+    expect(titleOf('/agency/ttc')).toBe('TTC frequency: how often routes run | Transit Atlas');
+  });
+
+  it('a parent keeps its own name; a member named like it says what it runs', () => {
+    expect(titleOf('/agency/exo')).toBe('exo frequency: how often routes run | Transit Atlas');
+    expect(titleOf('/agency/bustang-interregional')).toBe('Bustang · Interregional frequency: how often routes run');
+  });
+});

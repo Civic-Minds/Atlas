@@ -20,10 +20,10 @@ describe('route lists show the slower direction (#821)', () => {
   it('GO 47: no "every 3 min" from the peak-direction cluster when the other direction barely runs', () => {
     const rows = go47();
     // Hamilton-bound runs a dense AM cluster; 407-bound has one AM trip, so there is no cadence.
-    expect(routeListDisplay(rows, 'amPeak')).toEqual({ headway: null, limited: true });
+    expect(routeListDisplay(rows, 'amPeak')).toEqual({ headway: null, limited: true, noRegular: true });
     // Midday and PM: the opposite direction runs a few trips with no cadence of its own.
-    expect(routeListDisplay(rows, 'midday')).toEqual({ headway: null, limited: true });
-    expect(routeListDisplay(rows, 'pmPeak')).toEqual({ headway: null, limited: true });
+    expect(routeListDisplay(rows, 'midday')).toEqual({ headway: null, limited: true, noRegular: true });
+    expect(routeListDisplay(rows, 'pmPeak')).toEqual({ headway: null, limited: true, noRegular: true });
     // Evening: Hamilton-bound has no trips at all, so the 407-bound cadence stands.
     expect(routeListDisplayHeadway(rows, 'evening')).toBe(28);
   });
@@ -69,7 +69,7 @@ describe('steady infrequent-tier rows in route lists (#821)', () => {
   });
 
   it('stays limited past 30 min or when the period is not steady', () => {
-    expect(routeListDisplay([other, steady(31)], 'midday')).toEqual({ headway: null, limited: true });
-    expect(routeListDisplay([other, steady(20, false)], 'midday')).toEqual({ headway: null, limited: true });
+    expect(routeListDisplay([other, steady(31)], 'midday')).toEqual({ headway: null, limited: true, noRegular: true });
+    expect(routeListDisplay([other, steady(20, false)], 'midday')).toEqual({ headway: null, limited: true, noRegular: true });
   });
 });

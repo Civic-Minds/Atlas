@@ -11,7 +11,7 @@ describe('E1 outdated schedule, three paragraphs (CIV-1051)', () => {
   it('N2: the issue, the weekly check with its history, then the website', () => {
     const t = text({});
     expect(t).toContain("Grand River Transit's schedule ended on Apr 26, 2026. Times shown may be out of date. This is the latest schedule the agency has published that we could verify.");
-    expect(t).toContain("We check for new schedules every week. We've checked for a new schedule 4 times since Sep 1, 2026, with our most recent check on Oct 26, 2026.");
+    expect(t).toContain("We check for new schedules every week. We've checked for a new schedule 4 times since Sep 1, 2026.");
     expect(t).toContain("A newer schedule may be on the agency's website.");
     expect(t).not.toContain('We check all feeds weekly');
   });

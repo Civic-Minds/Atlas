@@ -1,6 +1,7 @@
 {
   "slug": "soundtransit",
-  "name": "Sound Transit (Seattle)",
+  "officialName": "Sound Transit",
+  "nameQualifier": "Seattle",
   "websiteUrl": "https://www.soundtransit.org",
   "center": [
     47.5,
@@ -14,13 +15,25 @@
     -121.7
   ],
   "feedUrl": "https://gtfs.sound.obaweb.org/prod/40_gtfs.zip",
+  "sameNameRoutes": [
+    {
+      "shortName": "Shuttle",
+      "longName": "1 Line Shuttle Bus",
+      "name": "1 Line Shuttle"
+    },
+    {
+      "shortName": "Shuttle",
+      "longName": "2 Line Shuttle Bus",
+      "name": "2 Line Shuttle"
+    }
+  ],
   "nextServiceDatesFeedUrls": [
     "https://gtfs.sound.obaweb.org/prod/40_gtfs.zip"
   ],
   "nextServiceDatesSkipWeekendEvents": true,
   "lastFeedExpiry": "20270328",
   "lastFeedVersion": "SC-Fall-2026.5",
-  "lastRefreshedAt": "2026-10-19",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Seattle, Washington",
     "Tacoma, Washington",
@@ -33,7 +46,7 @@
     "Kent, Washington",
     "Federal Way, Washington"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270328",
@@ -42,17 +55,22 @@
     "status": "review",
     "score": 80,
     "reasons": [
-      "1 route shape needed adjustment before display.",
       "1 route has stops whose frequency differs from the overall route schedule."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
-      "shapeAnomalies": 1,
-      "routeHeadwayMismatches": 1,
-      "featureCount": 15
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 2,
+      "featureCount": 26,
+      "feedExpiry": "20270328",
+      "routeCount": 5,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 1,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-19"
+    "checkedAt": "2026-11-03"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -80,5 +98,7 @@
       "reason": "Link (1 Line, 2 Line, T Line) is light rail, published as route_type 0 (tram)"
     }
   ],
-  "lastPeekedExpiry": "20270328"
+  "lastPeekedExpiry": "20270328",
+  "lastServiceWeek": "4b895ab9dae86f7f",
+  "feedObtainedAt": "20261016"
 }

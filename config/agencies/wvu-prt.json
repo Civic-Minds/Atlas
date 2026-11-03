@@ -1,6 +1,7 @@
 {
   "slug": "wvu-prt",
-  "name": "West Virginia University PRT (Morgantown, WV)",
+  "officialName": "West Virginia University PRT",
+  "nameQualifier": "Morgantown, WV",
   "websiteUrl": "http://transportation.wvu.edu/",
   "region": "West Virginia",
   "center": [
@@ -29,11 +30,13 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 40
+      "featureCount": 40,
+      "feedExpiry": "20261218"
     },
-    "checkedAt": "2026-08-18"
+    "checkedAt": "2026-08-18",
+    "scoredAt": "2026-11-02"
   },
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261218",
@@ -48,5 +51,6 @@
       "mode": 101,
       "reason": "WVU PRT is an automated people mover, published as route_type 0 (streetcar)"
     }
-  ]
+  ],
+  "refusedFeedSha256": "e33954079578e5ca449a6325d255b4caead99196c0aff97a93ebceae3c66c582"
 }

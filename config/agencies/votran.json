@@ -1,6 +1,7 @@
 {
   "slug": "votran",
-  "name": "Votran (Volusia County)",
+  "officialName": "Votran",
+  "nameQualifier": "Volusia County",
   "center": [
     29.1432,
     -81.0746
@@ -9,7 +10,7 @@
   "lastFeedExpiry": "20270605",
   "lastFeedVersion": "20260610",
   "region": "Florida",
-  "lastRefreshedAt": "2026-10-03",
+  "lastRefreshedAt": "2026-11-02",
   "websiteUrl": "http://www.votran.org",
   "cities": [
     "Daytona Beach, Florida",
@@ -18,24 +19,30 @@
   ],
   "timezone": "America/New_York",
   "lastRawArchiveKey": "20220223-e5fca0a56e84cfdb",
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270605",
   "feedQuality": {
     "status": "review",
-    "score": 70,
+    "score": 96,
     "reasons": [
-      "68 route shapes needed adjustment before display."
+      "1 route has stops whose frequency differs from the overall route schedule."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
-      "shapeAnomalies": 68,
-      "routeHeadwayMismatches": 0,
-      "featureCount": 88
+      "shapeAnomalies": 42,
+      "routeHeadwayMismatches": 1,
+      "featureCount": 88,
+      "feedExpiry": "20270605",
+      "routeCount": 26,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 1,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-03"
+    "checkedAt": "2026-11-03"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -43,5 +50,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://www.votran.org/file/6120/google_transit_June-2026.zip",
-  "lastPeekedExpiry": "20270605"
+  "lastPeekedExpiry": "20270605",
+  "lastServiceWeek": "8668d761e562bf07",
+  "feedObtainedAt": "20260610"
 }

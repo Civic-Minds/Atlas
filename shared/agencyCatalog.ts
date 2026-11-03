@@ -12,6 +12,8 @@ export interface AgencyCatalogEntry extends BrowserAgencyVisibility {
   corridorsUrl?: string;
   bbox?: [number, number, number, number];
   displayArea?: string;
+  /** CIV-1277: its parent agency (config/parent-agencies.json), one row in the map's agency picker. */
+  parentAgency?: string;
   lastFeedExpiry?: string | null;
   /** CIV-1011: the date most routes stopped being listed with nothing replacing them (YYYYMMDD); the agency shows Ryan's notice. Absent otherwise. */
   listingEndedOn?: string | null;
@@ -59,7 +61,7 @@ export function buildAgencyCatalog(
 ): AgencyCatalogFile {
   const agencies = source
     .filter(agency => isAgencyVisibleInBrowser(agency, { mode }))
-    .map(({ feedUrl: _feedUrl, mdbFeedUrl: _mdbFeedUrl, supplementalFeedUrls: _supplementalFeedUrls, nextServiceDatesFeedUrls: _nextServiceDatesFeedUrls, nextServiceDatesSkipWeekendEvents: _nextServiceDatesSkipWeekendEvents, shortName: _shortName, labelPlace: _labelPlace, ...agency }) => agency as unknown as AgencyCatalogEntry);
+    .map(({ feedUrl: _feedUrl, mdbFeedUrl: _mdbFeedUrl, supplementalFeedUrls: _supplementalFeedUrls, nextServiceDatesFeedUrls: _nextServiceDatesFeedUrls, nextServiceDatesSkipWeekendEvents: _nextServiceDatesSkipWeekendEvents, supplementalIdPrefixes: _supplementalIdPrefixes, formerSlugs: _formerSlugs, shortName: _shortName, labelPlace: _labelPlace, ...agency }) => agency as unknown as AgencyCatalogEntry);
 
   return { mode, agencyCount: agencies.length, agencies };
 }

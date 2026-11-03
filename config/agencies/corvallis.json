@@ -1,6 +1,6 @@
 {
   "slug": "corvallis",
-  "name": "Corvallis Transit System",
+  "officialName": "Corvallis Transit System",
   "websiteUrl": "https://www.corvallisoregon.gov/cts",
   "center": [
     44.5746,
@@ -17,11 +17,11 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2283/latest.zip",
   "lastFeedExpiry": "20271231",
   "lastFeedVersion": "20260921",
-  "lastRefreshedAt": "2026-10-03",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Corvallis, Oregon"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271231",
@@ -34,9 +34,15 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 24
+      "featureCount": 24,
+      "feedExpiry": "20271231",
+      "routeCount": 10,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-03"
+    "checkedAt": "2026-11-03"
   },
   "timezone": "America/Los_Angeles",
   "feedRefreshStatus": "current",
@@ -45,5 +51,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "http://www.corvallistransit.com/rtt/public/resource/gtfs.zip",
-  "lastPeekedExpiry": "20271231"
+  "lastPeekedExpiry": "20271231",
+  "lastServiceWeek": "6c6e2e86d092cdc0",
+  "feedObtainedAt": "20260921"
 }

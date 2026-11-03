@@ -1,6 +1,7 @@
 {
   "slug": "des-moines",
-  "name": "Des Moines Area Regional Transit Authority (DART)",
+  "officialName": "Des Moines Area Regional Transit Authority",
+  "commonName": "DART",
   "websiteUrl": "http://www.ridedart.com",
   "region": "Iowa",
   "center": [
@@ -11,16 +12,16 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-193/latest.zip",
   "lastFeedExpiry": "20270221",
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-08-24",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Des Moines, Iowa",
     "West Des Moines, Iowa",
     "Ankeny, Iowa"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261121",
+  "expiredFeedCheckExpiry": "20270221",
   "feedQuality": {
     "status": "healthy",
     "score": 100,
@@ -30,12 +31,23 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 66
+      "featureCount": 91,
+      "feedExpiry": "20270221",
+      "routeCount": 17,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-08-24"
+    "checkedAt": "2026-11-03"
   },
   "timezone": "America/Chicago",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-193/latest.zip",
-  "lastPeekedExpiry": "20270221"
+  "lastPeekedExpiry": "20270221",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "373fa1be57bdb70c"
 }

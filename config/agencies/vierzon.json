@@ -1,6 +1,7 @@
 {
   "slug": "vierzon",
-  "name": "Le Vib (Vierzon)",
+  "officialName": "Le Vib",
+  "nameQualifier": "Vierzon",
   "region": "Centre-Val de Loire",
   "center": [
     47.2219,

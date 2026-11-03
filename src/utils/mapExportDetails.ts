@@ -314,7 +314,7 @@ export function describeMapExport(state: MapExportState, samples: RenderedRouteS
   const filter = filterLine(state);
   if (filter) lines.push(filter);
   if (state.view === 'frequency') {
-    if (zoomCeiling(state.zoom) < state.maxHeadway) lines.push('Zoomed out, so some less frequent routes are hidden');
+    if (zoomCeiling(state.zoom) < state.maxHeadway) lines.push('Zoomed out. Some less frequent routes are hidden');
     if (state.query?.trim()) lines.push(`Matching “${state.query.trim()}”`);
   }
 

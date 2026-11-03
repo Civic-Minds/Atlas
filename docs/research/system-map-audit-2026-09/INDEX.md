@@ -56,7 +56,7 @@ have no definition and 5 have no map available.
 
 - The audit describes map language, not GTFS performance.
 - For a cross-agency comparison, use the per-agency file
-  [frequent-definitions-by-agency.json](../frequent-service-research-2026-09/frequent-definitions-by-agency.json).
+  [frequent-definitions-by-agency.json](../../../src/data/frequent-definitions-by-agency.json).
   It combines this audit with the catalog and adds machine-checked quotes.
 - Many `exactMapWording` values are paraphrased or reconstructed from map
   graphics. Only 11 matched the current page text verbatim on 2026-10-11, so

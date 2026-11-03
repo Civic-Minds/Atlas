@@ -1,6 +1,7 @@
 {
   "slug": "campbell-river",
-  "name": "BC Transit (Campbell River)",
+  "officialName": "BC Transit",
+  "nameQualifier": "Campbell River",
   "websiteUrl": "https://www.bctransit.com/",
   "region": "British Columbia",
   "center": [
@@ -9,9 +10,9 @@
   ],
   "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=12",
   "lastFeedExpiry": "20270905",
-  "lastFeedVersion": "202610190/20261018 21:00:00/20261019 04:00:00",
-  "lastRefreshedAt": "2026-10-19",
-  "lastFeedCheckAt": "20261019",
+  "lastFeedVersion": "202611020/20261101 21:00:00/20261102 03:00:00",
+  "lastRefreshedAt": "2026-11-02",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270905",
@@ -24,9 +25,15 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 41
+      "featureCount": 41,
+      "feedExpiry": "20270905",
+      "routeCount": 8,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-19"
+    "checkedAt": "2026-11-03"
   },
   "timezone": "America/Vancouver",
   "feedRefreshStatus": "current",
@@ -35,5 +42,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=12",
-  "lastPeekedExpiry": "20270905"
+  "lastPeekedExpiry": "20270905",
+  "lastServiceWeek": "239436e1a5b16e43",
+  "feedObtainedAt": "20261102"
 }

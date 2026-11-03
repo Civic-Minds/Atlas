@@ -1,6 +1,7 @@
 {
   "slug": "dunkirk",
-  "name": "DK'Bus (Dunkerque)",
+  "officialName": "DK'Bus",
+  "nameQualifier": "Dunkerque",
   "region": "Hauts-de-France",
   "center": [
     51.0343,

@@ -1,6 +1,7 @@
 {
   "slug": "streamline",
-  "name": "Streamline (Bozeman)",
+  "officialName": "Streamline",
+  "nameQualifier": "Bozeman",
   "websiteUrl": "http://www.streamlinebus.com/",
   "center": [
     45.6881,
@@ -9,7 +10,7 @@
   "feedUrl": "http://data.trilliumtransit.com/gtfs/streamlinetransit-mt-us/streamlinetransit-mt-us.zip",
   "lastFeedExpiry": "20281231",
   "lastFeedVersion": "UTC: 23-Jan-2025 11:14",
-  "lastRefreshedAt": "2026-10-14",
+  "lastRefreshedAt": "2026-11-02",
   "region": "Montana",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-295/latest.zip",
   "bbox": [
@@ -18,7 +19,7 @@
     45.8027,
     -110.5413
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20281231",
@@ -29,18 +30,30 @@
   "lastPeekedExpiry": "20281231",
   "feedQuality": {
     "status": "review",
-    "score": 60,
+    "score": 73,
     "reasons": [
       "1 minor schedule issue found while reading the feed.",
-      "4 route shapes needed adjustment before display."
+      "1 route shape needed adjustment before display."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 1,
-      "shapeAnomalies": 4,
+      "shapeAnomalies": 1,
       "routeHeadwayMismatches": 0,
-      "featureCount": 22
+      "featureCount": 22,
+      "feedExpiry": "20281231",
+      "routeCount": 6,
+      "problemShapes": 1,
+      "problemShapeRoutes": 1,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-14"
-  }
+    "checkedAt": "2026-11-03"
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "1a5ca6198f0eb887",
+  "feedObtainedAt": "20250123"
 }

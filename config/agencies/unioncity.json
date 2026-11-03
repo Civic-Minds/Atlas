@@ -1,6 +1,6 @@
 {
   "slug": "unioncity",
-  "name": "Union City Transit",
+  "officialName": "Union City Transit",
   "center": [
     37.5967,
     -122.0526
@@ -16,14 +16,14 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-628/latest.zip",
   "lastFeedExpiry": "20270816",
   "lastFeedVersion": "",
-  "lastRefreshedAt": "2026-10-12",
+  "lastRefreshedAt": "2026-11-02",
   "websiteUrl": "http://www.uctransit.org",
   "cities": [
     "Union City, California"
   ],
   "timezone": "America/Los_Angeles",
   "lastRawArchiveKey": "20230927-651281e25dba5ea3",
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270816",
@@ -41,10 +41,18 @@
       "validationErrors": 0,
       "validationWarnings": 0,
       "shapeAnomalies": 0,
-      "routeHeadwayMismatches": 0,
-      "featureCount": 34
+      "routeHeadwayMismatches": 1,
+      "featureCount": 34,
+      "feedExpiry": "20270816",
+      "routeCount": 6,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-12"
+    "checkedAt": "2026-11-03"
   },
-  "lastPeekedExpiry": "20270816"
+  "lastPeekedExpiry": "20270816",
+  "lastServiceWeek": "a44094e5d44b3fc5",
+  "feedObtainedAt": "20261102"
 }

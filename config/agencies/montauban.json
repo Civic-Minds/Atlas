@@ -1,6 +1,7 @@
 {
   "slug": "montauban",
-  "name": "TM (Montauban)",
+  "officialName": "TM",
+  "nameQualifier": "Montauban",
   "region": "Occitanie",
   "center": [
     44.0176,

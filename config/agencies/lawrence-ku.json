@@ -1,6 +1,6 @@
 {
   "slug": "lawrence-ku",
-  "name": "Lawrence Transit / KU on Wheels",
+  "officialName": "Lawrence Transit / KU on Wheels",
   "websiteUrl": "http://www.lawrencetransit.org",
   "center": [
     38.97,
@@ -8,8 +8,8 @@
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-2063/latest.zip",
   "lastFeedExpiry": "20271231",
-  "lastFeedVersion": "20250228",
-  "lastRefreshedAt": "2026-08-10",
+  "lastFeedVersion": "20260917",
+  "lastRefreshedAt": "2026-11-02",
   "region": "Kansas",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2063/latest.zip",
   "bbox": [
@@ -21,12 +21,39 @@
   "cities": [
     "Lawrence, Kansas"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271231",
   "timezone": "America/Chicago",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2063/latest.zip",
-  "lastPeekedExpiry": "20271231"
+  "lastPeekedExpiry": "20271231",
+  "feedQuality": {
+    "status": "review",
+    "score": 90,
+    "reasons": [
+      "1 minor schedule issue found while reading the feed."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 1,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 41,
+      "feedExpiry": "20271231",
+      "routeCount": 20,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
+    },
+    "checkedAt": "2026-11-03"
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "c012908dcd017a93",
+  "feedObtainedAt": "20261102"
 }

@@ -1,6 +1,6 @@
 import { readFileSync, existsSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { AGENCY_ROUTE_SOURCES, AREA_ROUTE_SOURCES, SEO_ROUTES, SITE_URL, buildSitemapXml, knownRouteSources, sitemapRoutes } from './seo';
+import { AGENCY_ROUTE_SOURCES, AREA_ROUTE_SOURCES, REGION_ROUTE_SOURCES, SEO_ROUTES, SITE_URL, buildSitemapXml, knownRouteSources, sitemapRoutes } from './seo';
 import { liveReportPaths } from './liveReportPaths';
 
 const vercel = JSON.parse(readFileSync('vercel.json', 'utf8')) as { rewrites: { source: string; destination: string }[] };
@@ -38,7 +38,7 @@ describe('vercel.json routing', () => {
     // No catch-all: an unknown path must fall through to a real 404.
     for (const s of sources) {
       const patterned = s.includes('(') || s.includes('*') || s.includes(':');
-      expect(patterned, `${s} is a pattern`).toBe(s.startsWith('/beta-data/') || AGENCY_ROUTE_SOURCES.includes(s) || AREA_ROUTE_SOURCES.includes(s));
+      expect(patterned, `${s} is a pattern`).toBe(s.startsWith('/beta-data/') || AGENCY_ROUTE_SOURCES.includes(s) || AREA_ROUTE_SOURCES.includes(s) || REGION_ROUTE_SOURCES.includes(s));
     }
   });
 
@@ -48,6 +48,9 @@ describe('vercel.json routing', () => {
     }
     for (const source of AREA_ROUTE_SOURCES) {
       expect(vercel.rewrites.find(r => r.source === source)?.destination).toBe('/area/:slug/index.html');
+    }
+    for (const source of REGION_ROUTE_SOURCES) {
+      expect(vercel.rewrites.find(r => r.source === source)?.destination).toBe('/region/:slug/index.html');
     }
   });
 
@@ -64,6 +67,12 @@ describe('vercel.json routing', () => {
   it('serves the prerendered pages from their own file', () => {
     for (const path of ['/about', '/about/docs', '/privacy', '/terms']) {
       expect(vercel.rewrites.find(r => r.source === path)?.destination).toBe(`${path}/index.html`);
+    }
+  });
+
+  it('serves each research page from its own file, which every build writes (CIV-1167 link previews)', () => {
+    for (const r of SEO_ROUTES.filter(r => r.path === '/research' || r.path.startsWith('/research/'))) {
+      for (const source of [r.path, `${r.path}/`]) expect(vercel.rewrites.find(x => x.source === source)?.destination, source).toBe(`${r.path}/index.html`);
     }
   });
 

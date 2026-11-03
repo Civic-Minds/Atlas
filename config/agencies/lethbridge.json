@@ -1,6 +1,6 @@
 {
   "slug": "lethbridge",
-  "name": "Lethbridge Transit",
+  "officialName": "Lethbridge Transit",
   "websiteUrl": "https://LethbridgeTransit.ca",
   "region": "Alberta",
   "center": [
@@ -11,11 +11,11 @@
   "lastFeedExpiry": "20261231",
   "lastFeedVersion": "2026-09-04",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-1997/latest.zip",
-  "lastRefreshedAt": "2026-10-03",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Lethbridge, Alberta"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261231",
@@ -29,9 +29,15 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 52
+      "featureCount": 52,
+      "feedExpiry": "20261231",
+      "routeCount": 13,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-03"
+    "checkedAt": "2026-11-03"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -39,5 +45,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://gis.lethbridge.ca/OpenData/DataSets/GTFS_Transit_Data.zip",
-  "lastPeekedExpiry": "20261231"
+  "lastPeekedExpiry": "20261231",
+  "lastServiceWeek": "d2fb6a0a088453a2",
+  "feedObtainedAt": "20260902"
 }

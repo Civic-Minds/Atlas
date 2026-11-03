@@ -1,6 +1,7 @@
 {
   "slug": "narbonne",
-  "name": "Citibus (Narbonne)",
+  "officialName": "Citibus",
+  "nameQualifier": "Narbonne",
   "websiteUrl": "https://www.citibus.fr",
   "region": "Occitanie",
   "center": [

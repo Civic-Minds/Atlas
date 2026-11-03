@@ -1,6 +1,6 @@
 {
   "slug": "southportlandme",
-  "name": "South Portland Bus Service",
+  "officialName": "South Portland Bus Service",
   "center": [
     43.63,
     -70.28
@@ -23,10 +23,10 @@
     "Portland, Maine"
   ],
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2642/latest.zip",
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261118",
+  "expiredFeedCheckExpiry": "20261202",
   "feedQuality": {
     "status": "healthy",
     "score": 100,
@@ -36,9 +36,11 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 108
+      "featureCount": 108,
+      "feedExpiry": "20261105"
     },
-    "checkedAt": "2026-10-07"
+    "checkedAt": "2026-10-07",
+    "scoredAt": "2026-11-02"
   },
   "timezone": "America/New_York",
   "feedRefreshStatus": "current",
@@ -46,5 +48,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://gtfs.gptd.cadavl.com/GPTD/GTFS/GTFS_GPTD.zip"
+  "lastFeedSourceUrl": "https://gtfs.gptd.cadavl.com/GPTD/GTFS/GTFS_GPTD.zip",
+  "refusedFeedSha256": "da308a0c10e1cb93a9eb8639b2ed1e5ae9771a30657f5f58b3f58dad527465f1"
 }

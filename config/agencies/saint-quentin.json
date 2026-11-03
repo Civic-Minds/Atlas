@@ -1,6 +1,7 @@
 {
   "slug": "saint-quentin",
-  "name": "TUC (Saint-Quentin)",
+  "officialName": "TUC",
+  "nameQualifier": "Saint-Quentin",
   "region": "Hauts-de-France",
   "center": [
     49.8466,

@@ -1,6 +1,7 @@
 {
   "slug": "la-rochelle",
-  "name": "Yélo (La Rochelle)",
+  "officialName": "Yélo",
+  "nameQualifier": "La Rochelle",
   "region": "Nouvelle-Aquitaine",
   "center": [
     46.1603,

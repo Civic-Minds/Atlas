@@ -1,6 +1,7 @@
 {
   "slug": "smart-telluride",
-  "name": "San Miguel Authority for Regional Transportation (SMART)",
+  "officialName": "San Miguel Authority for Regional Transportation",
+  "commonName": "SMART",
   "center": [
     37.9375,
     -107.8123
@@ -18,7 +19,7 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2050/latest.zip",
   "lastFeedExpiry": "20280503",
   "lastFeedVersion": "UTC: 16-Oct-2026 21:24",
-  "lastRefreshedAt": "2026-10-19",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Telluride, Colorado",
     "Mountain Village, Colorado",
@@ -28,22 +29,27 @@
     "Naturita, Colorado"
   ],
   "feedQuality": {
-    "status": "degraded",
-    "score": 40,
+    "status": "review",
+    "score": 70,
     "reasons": [
-      "3 minor schedule issues found while reading the feed.",
-      "4 route shapes needed adjustment before display."
+      "3 minor schedule issues found while reading the feed."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 3,
-      "shapeAnomalies": 4,
+      "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 33
+      "featureCount": 33,
+      "feedExpiry": "20280503",
+      "routeCount": 8,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-19"
+    "checkedAt": "2026-11-03"
   },
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20280503",
@@ -54,5 +60,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://data.trilliumtransit.com/gtfs/sanmiguelcounty-co-us/sanmiguelcounty-co-us--flex-v2.zip",
-  "lastPeekedExpiry": "20280503"
+  "lastPeekedExpiry": "20280503",
+  "lastServiceWeek": "02fa7d12a003b761",
+  "feedObtainedAt": "20261016"
 }

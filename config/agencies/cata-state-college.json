@@ -1,6 +1,7 @@
 {
   "slug": "cata-state-college",
-  "name": "CATA (State College)",
+  "officialName": "CATA",
+  "nameQualifier": "State College",
   "websiteUrl": "http://www.catabus.com",
   "center": [
     40.79,
@@ -9,7 +10,7 @@
   "feedUrl": "https://files.mobilitydatabase.org/ntd-30054/latest.zip",
   "lastFeedExpiry": "20261213",
   "lastFeedVersion": "20260810",
-  "lastRefreshedAt": "2026-08-24",
+  "lastRefreshedAt": "2026-11-02",
   "region": "Pennsylvania",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-30054/latest.zip",
   "bbox": [
@@ -18,7 +19,7 @@
     40.8581,
     -77.7763
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261213",
@@ -31,12 +32,24 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 90
+      "featureCount": 79,
+      "feedExpiry": "20261213",
+      "routeCount": 18,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-08-24"
+    "checkedAt": "2026-11-03"
   },
   "timezone": "America/New_York",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/ntd-30054/latest.zip",
-  "lastPeekedExpiry": "20261213"
+  "lastPeekedExpiry": "20261213",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "059daa7c9d823592",
+  "feedObtainedAt": "20260827"
 }

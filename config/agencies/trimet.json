@@ -1,6 +1,7 @@
 {
   "slug": "trimet",
-  "name": "TriMet (Portland, OR)",
+  "officialName": "TriMet",
+  "nameQualifier": "Portland, OR",
   "shortName": "TriMet",
   "websiteUrl": "https://trimet.org/",
   "center": [
@@ -17,8 +18,8 @@
   "feedUrl": "http://developer.trimet.org/schedule/gtfs.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-247/latest.zip",
   "lastFeedExpiry": "20270227",
-  "lastFeedVersion": "20260927-20261007-0900",
-  "lastRefreshedAt": "2026-10-12",
+  "lastFeedVersion": "20261011-20261021-0903",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Portland, Oregon",
     "Gresham, Oregon",
@@ -27,7 +28,7 @@
     "Hillsboro, Oregon",
     "Vancouver, Washington"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270227",
@@ -39,10 +40,16 @@
       "validationErrors": 0,
       "validationWarnings": 0,
       "shapeAnomalies": 0,
-      "routeHeadwayMismatches": 0,
-      "featureCount": 498
+      "routeHeadwayMismatches": 2,
+      "featureCount": 509,
+      "feedExpiry": "20270227",
+      "routeCount": 81,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-12"
+    "checkedAt": "2026-11-03"
   },
   "timezone": "America/Los_Angeles",
   "feedRefreshStatus": "current",
@@ -83,5 +90,7 @@
       "reason": "MAX is light rail, published as route_type 0 (tram); Portland Streetcar lines stay streetcars"
     }
   ],
-  "lastPeekedExpiry": "20270227"
+  "lastPeekedExpiry": "20270227",
+  "lastServiceWeek": "28d9afc4b227acc6",
+  "feedObtainedAt": "20261102"
 }

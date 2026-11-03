@@ -2,6 +2,8 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { countArtifacts, dropGuardRefusal, type ArtifactCounts } from '../archiveSelection.js';
+import { refreshedFeedExpiry, stampFeedMeta } from '../refreshMeta.js';
+import { applyOverrides, evaluateAgency, type ArtifactSummary } from '../releaseDiff.js';
 
 // refresh.ts runs its CLI on import, so these tests exercise the shared guard
 // with refresh's options and pin how refresh.ts wires it up.
@@ -92,5 +94,32 @@ describe('refresh drop guard', () => {
     const releaseSource = readFileSync(resolve('pipeline/refresh-release.ts'), 'utf8');
     expect(releaseSource).toMatch(/requestedSlugs = overrides\.rest\.filter/);
     expect(releaseSource).toMatch(/run\('publish-data-release', overrideArgs\(overrides\)\)/);
+  });
+});
+
+describe('refresh gate reads the expiry refresh records (#1304)', () => {
+  // MAX (2026-11-02 weekly refresh): feed_info ends 20350201, calendar.txt's last service date is 20250531.
+  const max = { feedExpiry: '20350201', peekedExpiry: '20350201', calendarExpiry: '20350201', calendarOnlyEnd: '20250531', todayYmd: '2026-11-02' };
+  const live: ArtifactSummary = { counts: { stops: 1224, stopPoints: 1224, routes: 18 }, modes: ['Bus'], contentHash: 'live', routeSignatures: [], weekdayHeadways: {}, weekdayTiers: {}, weekdayDirectionHeadway: {}, centroid: null };
+
+  it('gives the gate the same end stampFeedMeta records', () => {
+    expect(refreshedFeedExpiry(max)).toBe('20250531');
+    const agency = { slug: 'max-transit' } as Parameters<typeof stampFeedMeta>[0];
+    stampFeedMeta(agency, { ...max, feedVersion: '20240531', peekedVersion: '20240531' });
+    expect(agency.lastFeedExpiry).toBe(refreshedFeedExpiry(max));
+  });
+
+  it('refuses MAX\'s changed output at refresh, so it keeps its live file and the publish only warns', () => {
+    const changed: ArtifactSummary = { ...live, contentHash: 'rebuilt' };
+    const atRefresh = evaluateAgency({ slug: 'max-transit', live, next: changed, service: { end: refreshedFeedExpiry(max) }, allowMissingLive: true }, [], '20261102');
+    expect(applyOverrides(atRefresh, { allow: [], allowDrop: false }).blocked).toEqual(['max-transit']);
+    // The release then carries the live file: unchanged, so expired is yellow and the publish goes ahead.
+    const atPublish = evaluateAgency({ slug: 'max-transit', live, next: live, service: { end: '20250531' }, allowMissingLive: true }, [], '20261102');
+    expect(applyOverrides(atPublish, { allow: [], allowDrop: false }).blocked).toEqual([]);
+  });
+
+  it('refresh.ts passes that end to its gate', () => {
+    expect(refreshSource).toMatch(/const serviceEnd = refreshedFeedExpiry\(\{ feedExpiry, peekedExpiry, .*calendarExpiry: keptCalendarExpiry, calendarOnlyEnd \}\);/);
+    expect(refreshSource).toMatch(/service: \{ start: feedStart, end: serviceEnd,/);
   });
 });

@@ -20,6 +20,7 @@ function footerGroups(): { title: string; links: FooterLink[] }[] {
       links: [
         { href: '/about/docs', label: 'Docs' },
         ...(FEATURES.researchApps ? [{ href: '/research', label: 'Research' }] : []),
+        { href: '/terms', label: 'Terms' },
       ],
     },
     {
@@ -27,6 +28,7 @@ function footerGroups(): { title: string; links: FooterLink[] }[] {
       links: [
         { href: '/about', label: 'About Atlas' },
         ...(FEATURES.whatsNew ? [{ href: '/changelog', label: 'Changelog' }] : []),
+        { href: '/privacy', label: 'Privacy' },
       ],
     },
   ];
@@ -38,9 +40,10 @@ export default function SiteFooter() {
       <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <AtlasLogo href="/" ariaLabel="Atlas by Civic Minds" showMark={false} size="page" />
-          <p className="mt-2 sm:whitespace-nowrap">Transit service, from schedule to street.</p>
+          {/* Wraps below 1024px so the three link columns fit beside it from 640px up. */}
+          <p className="mt-2 lg:whitespace-nowrap">Transit service, from schedule to street.</p>
         </div>
-        <nav className="grid grid-cols-3 gap-x-4 gap-y-5 sm:flex sm:gap-x-20" aria-label="Footer links">
+        <nav className="grid shrink-0 grid-cols-3 gap-x-4 gap-y-5 sm:flex sm:gap-x-20" aria-label="Footer links">
           {footerGroups().map(group => (
             <div key={group.title}>
               <div className="mb-2 text-xs font-black text-[var(--text-muted)]">{group.title}</div>
@@ -53,14 +56,7 @@ export default function SiteFooter() {
           ))}
         </nav>
       </div>
-      <div className="mt-6 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-        <span>© {new Date().getFullYear()} Civic Minds.</span>
-        <nav className="flex flex-wrap items-center gap-x-2 gap-y-1" aria-label="Legal links">
-          <a className={LINK} href="/terms">Terms of Service</a>
-          <span aria-hidden="true">·</span>
-          <a className={LINK} href="/privacy">Privacy Policy</a>
-        </nav>
-      </div>
+      <p className="mt-6">© {new Date().getFullYear()} Civic Minds.</p>
     </footer>
   );
 }

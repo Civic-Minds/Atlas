@@ -1,6 +1,7 @@
 {
   "slug": "all-points-transit",
-  "name": "All Points Transit (Montrose)",
+  "officialName": "All Points Transit",
+  "nameQualifier": "Montrose",
   "websiteUrl": "https://www.allpointstransit.com/",
   "center": [
     38.47,
@@ -10,8 +11,8 @@
   "region": "Colorado",
   "lastFeedExpiry": "20270201",
   "lastFeedVersion": "UTC: 19-Aug-2026 23:19",
-  "lastRefreshedAt": "2026-08-27",
-  "lastFeedCheckAt": "20261019",
+  "lastRefreshedAt": "2026-11-02",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270201",
@@ -19,19 +20,31 @@
     "status": "review",
     "score": 90,
     "reasons": [
-      "1 schedule-data warning — Atlas found a minor issue while reading the schedule."
+      "1 minor schedule issue found while reading the feed."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 1,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 4
+      "featureCount": 7,
+      "feedExpiry": "20270201",
+      "routeCount": 5,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-08-27"
+    "checkedAt": "2026-11-03"
   },
   "timezone": "America/Denver",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-212/latest.zip",
-  "lastPeekedExpiry": "20270201"
+  "lastPeekedExpiry": "20270201",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "5a73fbf753bbc1ba",
+  "feedObtainedAt": "20260819"
 }

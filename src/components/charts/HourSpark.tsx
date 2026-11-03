@@ -3,6 +3,7 @@ import { SPARKLINE_HOUR_LABELS } from '../../../shared/config';
 import { hourTime as clock } from '../../../shared/timeText';
 import { HOUR_TO_PERIOD, hoverOfHour, liveChartHours, type HourHover } from '../../utils/sparklinePeriods';
 import PeriodBand from './PeriodBand';
+import { AXIS_W, SPARK_BAR, SparkTicks } from './sparkParts';
 import DataTable from '../ui/DataTable';
 
 export interface HourValue {
@@ -14,8 +15,6 @@ export interface HourValue {
 }
 
 const H = 64;
-/** Width of the % axis on the left. */
-export const AXIS_W = 36;
 /** Height of the departures band under the bars. */
 const BAND_H = 12;
 
@@ -86,12 +85,7 @@ export default function HourSpark({ values, scale, color, barColor, format, aria
           </div>
           {/* The peak label sits above the tallest bar: room is kept for it so it never runs into the line above. */}
           <div className={`relative ${yAxis ? 'mt-2.5' : peakLabel ? 'mt-3' : ''}`} style={{ paddingLeft: ml }}>
-            {ticks.map(t => (
-              <div key={t} data-tick className="pointer-events-none absolute" style={{ top: height - pos(t), left: 0, right: 0 }}>
-                <span className="absolute -translate-y-1/2 text-xs leading-none text-[var(--text-dim)]" style={{ left: 0, width: AXIS_W - 6, textAlign: 'right' }}>{format(t)}</span>
-                <div className="absolute border-t border-[var(--border-primary)]" style={{ left: AXIS_W, right: 0, opacity: 0.7 }} />
-              </div>
-            ))}
+            <SparkTicks ticks={ticks} y={t => height - pos(t)} format={format} />
             <div className="relative flex gap-px" style={{ height }}>
               {scale.min < 0 && <div className="pointer-events-none absolute inset-x-0 border-t border-dashed border-[var(--text-dim)] opacity-60" style={{ bottom: zeroPx }} />}
               {axis.map(gtfsHour => {
@@ -103,7 +97,7 @@ export default function HourSpark({ values, scale, color, barColor, format, aria
                 return (
                   <div key={gtfsHour} data-hour={v.hour} data-lit={lit ? '' : undefined} className={`relative h-full min-w-0 flex-1 rounded-sm ${lit ? 'bg-[var(--bg-btn-hover)]' : ''}`} onPointerEnter={() => setHv(hoverOfHour(v.hour))} onPointerDown={() => setHv(hoverOfHour(v.hour))}>
                     <div
-                      className={`absolute left-1/2 w-[60%] max-w-[12px] min-w-[3px] -translate-x-1/2 rounded-sm ${v.n >= minN ? 'opacity-90' : 'opacity-35'}`}
+                      className={`${SPARK_BAR} ${v.n >= minN ? 'opacity-90' : 'opacity-35'}`}
                       style={{ bottom, height: Math.max(2, top - bottom), background: barColor ? barColor(v.value) : color }}
                     />
                     {v.value > scale.max && (
@@ -123,7 +117,7 @@ export default function HourSpark({ values, scale, color, barColor, format, aria
                   const n = v?.n ?? 0;
                   return (
                     <div key={h} className="relative min-w-0 flex-1" onPointerEnter={() => setHv(hoverOfHour(h % 24))} onPointerDown={() => setHv(hoverOfHour(h % 24))}>
-                      {n > 0 && <div className={`absolute bottom-0 left-1/2 w-[60%] max-w-[12px] min-w-[3px] -translate-x-1/2 rounded-sm bg-[var(--text-dim)] ${n >= minN ? 'opacity-50' : 'opacity-25'}`} style={{ height: Math.max(1, (n / maxN) * BAND_H) }} />}
+                      {n > 0 && <div className={`${SPARK_BAR} bottom-0 bg-[var(--text-dim)] ${n >= minN ? 'opacity-50' : 'opacity-25'}`} style={{ height: Math.max(1, (n / maxN) * BAND_H) }} />}
                     </div>
                   );
                 })}

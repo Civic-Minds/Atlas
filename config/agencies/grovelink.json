@@ -1,6 +1,7 @@
 {
   "slug": "grovelink",
-  "name": "Ride Connection (GroveLink)",
+  "officialName": "Ride Connection",
+  "commonName": "GroveLink",
   "websiteUrl": "https://rideconnection.org/ride/",
   "center": [
     45.4948,
@@ -18,7 +19,7 @@
   "timezone": "America/Los_Angeles",
   "lastFeedExpiry": "20270201",
   "lastFeedVersion": "UTC: 30-Jul-2026 16:18",
-  "lastRefreshedAt": "2026-08-18",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Forest Grove, Oregon",
     "Cornelius, Oregon",
@@ -35,15 +36,27 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 24
+      "featureCount": 24,
+      "feedExpiry": "20270201",
+      "routeCount": 12,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-08-18"
+    "checkedAt": "2026-11-03"
   },
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270201",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-253/latest.zip",
-  "lastPeekedExpiry": "20270201"
+  "lastPeekedExpiry": "20270201",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "a853d232d4311310",
+  "feedObtainedAt": "20260730"
 }

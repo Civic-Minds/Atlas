@@ -70,9 +70,9 @@ export function delayHeatPoints(
         // Measured against the timetable like the "Where delays start" panel: falling back from early running counts too.
         const added = Math.max(0, Math.min(x.medianAddedMin, Math.min(...later) - before));
         // A stop id is one side of the street, so routes are combined by stop id (their direction numbers need not agree).
-        const hit = acc.get(x.toStopId) ?? acc.set(x.toStopId, { kept: -1, raw: 0, n: 0, point: { stopId: x.toStopId, directionId: b.directionId, name: nameCase(stop.name, 'stop'), lonLat: stop.lonLat as [number, number], addedMin: 0, rawAddedMin: 0, fromStopId: x.fromStopId, fromName: nameCase(x.fromName ?? x.fromStopId, 'stop'), route, n: 0, routes: [] } }).get(x.toStopId)!;
+        const hit = acc.get(x.toStopId) ?? acc.set(x.toStopId, { kept: -1, raw: 0, n: 0, point: { stopId: x.toStopId, directionId: b.directionId, name: nameCase(stop.name, 'liveStop'), lonLat: stop.lonLat as [number, number], addedMin: 0, rawAddedMin: 0, fromStopId: x.fromStopId, fromName: nameCase(x.fromName ?? x.fromStopId, 'liveStop'), route, n: 0, routes: [] } }).get(x.toStopId)!;
         // Routes sharing a stop: the one that adds the most (a quieter route never hides another route's delay start).
-        if (added > hit.kept) { hit.kept = added; hit.raw = x.medianAddedMin; hit.n = x.n; Object.assign(hit.point, { fromStopId: x.fromStopId, fromName: nameCase(x.fromName ?? x.fromStopId, 'stop'), route, directionId: b.directionId }); }
+        if (added > hit.kept) { hit.kept = added; hit.raw = x.medianAddedMin; hit.n = x.n; Object.assign(hit.point, { fromStopId: x.fromStopId, fromName: nameCase(x.fromName ?? x.fromStopId, 'liveStop'), route, directionId: b.directionId }); }
         if (!hit.point.routes.includes(route)) hit.point.routes.push(route);
       });
     }

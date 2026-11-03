@@ -1,9 +1,11 @@
 {
   "slug": "exo-sudouest",
-  "name": "exo (Sud-Ouest)",
+  "officialName": "exo",
+  "nameQualifier": "Sud-Ouest",
   "displayArea": "Sud-Ouest",
   "websiteUrl": "https://exo.quebec/fr/planifier-trajet/autobus/CITSO",
   "region": "Quebec",
+  "parentAgency": "exo",
   "center": [
     45.3549,
     -73.7643
@@ -19,7 +21,7 @@
   "lastFeedVersion": null,
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-742/latest.zip",
   "gtfsFares": true,
-  "lastRefreshedAt": "2026-10-12",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Pierrefonds, Quebec",
     "Notre-Dame-de-Grâce, Quebec",
@@ -28,7 +30,7 @@
     "Verdun, Quebec",
     "Ville-Marie, Quebec"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270103",
@@ -48,9 +50,17 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 96
+      "featureCount": 97,
+      "feedExpiry": "20270103",
+      "routeCount": 26,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-12"
+    "checkedAt": "2026-11-03"
   },
-  "lastPeekedExpiry": "20270103"
+  "lastPeekedExpiry": "20270103",
+  "lastServiceWeek": "a921ed53576d61ac",
+  "feedObtainedAt": "20261001"
 }

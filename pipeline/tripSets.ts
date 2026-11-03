@@ -32,10 +32,13 @@ import {
   isUnevenPeriod,
   medianHeadwayInWindow,
   hasSustainedServiceInWindow,
+  headlineDeparturesInWindow,
+  HEADLINE_MIN_DEPARTURES,
   nightServiceDepartureTimes,
 } from './headway-utils.js';
 import { SHARED_STRETCH_MIN_KM, SHARED_STRETCH_MIN_STOPS } from './sharedStretch.js';
 import { SAME_TERMINAL_METERS } from './featureDedupe.js';
+import { boardingMainStretchWait, riderWait } from './routeGrading.js';
 
 /** A short turn (stops all on a longer regular pattern) under this share of trips is a variant (the spec's regular-pattern share). */
 export const SHORT_TURN_MIN_SHARE = 0.2;
@@ -153,6 +156,14 @@ function middleStop(stops: readonly string[], tripStops: readonly ReadonlySet<st
   return pool[Math.floor(pool.length / 2)];
 }
 
+/** The trips' distinct counted departures at `stop`, earliest first. */
+function departuresAt(trips: readonly DirectionTrip[], stop: string): number[] {
+  return [...new Set(trips
+    .map(trip => trip.visits.find(v => v.stopId === stop))
+    .filter((v): v is NonNullable<typeof v> => v != null && v.counted !== false)
+    .map(v => v.minutes))].sort((x, y) => x - y);
+}
+
 /** True when the trips, read at `stop`, run steadily through at least one period (steady and on both sides of its midpoint). */
 function runsSteadily(trips: readonly DirectionTrip[], stop: string, periods: readonly PeriodKey[]): boolean {
   const times: number[] = [];
@@ -186,6 +197,8 @@ export function directionStretches(
    * hop with many trips (TTC 353's 3-stop Tapscott hop) cannot become the night route.
    */
   mainBy: 'shared' | 'mostVisits' = 'shared',
+  /** #1292: the main stretch's reference stop from the agency config (refStopOverrides), when it is on the main stretch. */
+  mainRefStop?: string,
 ): DirectionStretches {
   const withVisits = trips.filter(trip => trip.visits.length > 0);
   const patterns = new Map<string, { stops: string[]; trips: DirectionTrip[] }>();
@@ -238,10 +251,6 @@ export function directionStretches(
   // spacings and the gap at the handover passing the settled steadiness test against each other.
   if (regular.length > 0) {
     const sameEnds = (a: readonly string[], b: readonly string[]) => sameTerminal(a[0], b[0]) && sameTerminal(a[a.length - 1], b[b.length - 1]);
-    const timesAtStop = (trips: readonly DirectionTrip[], stop: string) => [...new Set(trips
-      .map(trip => trip.visits.find(v => v.stopId === stop))
-      .filter((v): v is NonNullable<typeof v> => v != null && v.counted !== false)
-      .map(v => v.minutes))].sort((x, y) => x - y);
     // Daytime service shapes the stretches (as steadyIn above): a pattern that takes over only at night
     // (OC Transpo 39's after-midnight Place d'Orléans routing, 00:09-02:09) stays a variant by day.
     const daytimeWindows = PERIOD_WINDOWS.filter(w => DAYTIME_PERIODS.includes(w.key));
@@ -253,7 +262,7 @@ export function directionStretches(
       const shared = q.stops.filter(stop => pStops.has(stop));
       if (shared.length === 0) return false;
       const ref = shared[Math.floor(shared.length / 2)];
-      const a = timesAtStop(p.trips, ref), b = timesAtStop(q.trips, ref);
+      const a = departuresAt(p.trips, ref), b = departuresAt(q.trips, ref);
       if (a.length < MIN_SCHEDULE_DEPARTURES || b.length < MIN_SCHEDULE_DEPARTURES) return false;
       const [first, second] = a[a.length - 1] < b[0] ? [a, b] : b[b.length - 1] < a[0] ? [b, a] : [null, null];
       if (!first || !second) return false;
@@ -267,6 +276,36 @@ export function directionStretches(
     const regularNow = new Set(regular);
     const turnTakers = eligible.filter(p => !regularNow.has(p) && regular.some(q => takesTurnsWith(p, q)));
     if (turnTakers.length > 0) regular = [...regular, ...turnTakers];
+  }
+  // #1256: the busiest pattern can fail the steady test only because another pattern takes alternate trips.
+  // Pace 542 on weekdays runs every 30, but a 6-trip pattern from another stop takes the 7:14, 7:50, 8:25,
+  // 14:02, 15:03 and 17:29 slots, so the 22-trip pattern has an hour's hole in every period and only the
+  // 6-trip pattern was regular: the main stretch was its 14 stops, 10 of them served by 6 trips. MATA 30's
+  // two routings each run every 4 hours, alternating. Pooled where they meet, they are one steady service,
+  // so both are regular and the main stretch is the stops they share. Only when the busiest pattern is not
+  // regular itself, the two end (or start) at the same terminal, the other's trips fall between the
+  // busiest's first and last at their shared middle stop, and together they run steadily through a daytime
+  // period that neither does alone: a branch steady on its own, or a peak-only branch beside a steady
+  // all-day pattern (Pace 808), is not pooled.
+  const busiestEligible = eligible.length > 0 ? eligible.reduce((x, y) => (y.trips.length > x.trips.length ? y : x)) : null;
+  if (busiestEligible && !regular.includes(busiestEligible)) {
+    const top = busiestEligible;
+    const alternatesWithTop = (q: (typeof all)[number]): boolean => {
+      if (q === top) return false;
+      const qStops = new Set(q.stops);
+      const shared = top.stops.filter(stop => qStops.has(stop));
+      if (shared.length < 2) return false;
+      const meet = sameTerminal(top.stops[top.stops.length - 1], q.stops[q.stops.length - 1]) || sameTerminal(top.stops[0], q.stops[0]);
+      if (!meet) return false;
+      const ref = shared[Math.floor(shared.length / 2)];
+      const a = departuresAt(top.trips, ref), b = departuresAt(q.trips, ref);
+      if (a.length < MIN_SCHEDULE_DEPARTURES || !b.some(t => t > a[0] && t < a[a.length - 1])) return false;
+      const alone = periodSustainedMid(a), other = periodSustainedMid(b);
+      const together = periodSustainedMid([...new Set([...a, ...b])].sort((x, y) => x - y));
+      return DAYTIME_PERIODS.some(k => together[k] === true && alone[k] !== true && other[k] !== true);
+    };
+    const partners = eligible.filter(alternatesWithTop);
+    if (partners.length > 0) regular = [...new Set([...regular, top, ...partners])];
   }
   // A short turn: a regular pattern whose stops all lie on a longer regular pattern shapes the
   // main stretch only when it carries a real share of the direction's trips (the spec's 20%).
@@ -327,7 +366,7 @@ export function directionStretches(
     return { times: sorted, nightTimes: nightServiceDepartureTimes(sorted, overnight), tripCount: count };
   };
   const stretch = (kind: Stretch['kind'], stops: readonly string[], lengthKm: number): Stretch => {
-    const refStop = middleStop(stops, tripStops);
+    const refStop = kind === 'main' && mainRefStop != null && stops.includes(mainRefStop) ? mainRefStop : middleStop(stops, tripStops);
     return { kind, stops, refStop, lengthKm, ...timesAt(refStop) };
   };
 
@@ -561,15 +600,26 @@ export function encodeStopRuns(values: ReadonlyArray<number | null>): string {
  * stretchFilterValue). One run-length-encoded string per period aligned to the feature's stopOrder
  * (encodeStopRuns), empty where no trip passes. Where every trip stops, it equals the stretch value at
  * that stretch's reference stop. Read by the section colours (S3, beta only).
+ *
+ * #1094: Overnight reads each stop through the night verdict (directionNightValue over the stop alone), the
+ * function the line's own Overnight value reads (#1267), so a stop never turns grey on a line that passes
+ * Overnight by the same rule. A stop the verdict does not pass at 60 keeps its full-window wait, never
+ * a better one.
  */
 export function stopPeriodValues(stops: readonly string[], throughTimesAlong: NonNullable<DirectionStretches['throughTimesAlong']>): Record<PeriodKey, string> {
   const reads = throughTimesAlong(stops);
   const perStop = stops.map((stop, i) => {
     const read = reads[i];
     if (read.times.length === 0) return null;
-    return stretchPeriods({ kind: 'main', stops: [stop], refStop: stop, lengthKm: 0, ...read });
+    const stretch: Stretch = { kind: 'main', stops: [stop], refStop: stop, lengthKm: 0, ...read };
+    const night = directionNightValue({ key: stop, main: stretch, tails: [], regularPatternCount: 1, variantTripCount: 0 }, true);
+    return { periods: stretchPeriods(stretch), night };
   });
-  return Object.fromEntries(PERIOD_WINDOWS.map(({ key }) => [key, encodeStopRuns(perStop.map(p => (p ? stretchFilterValue(p[key]) : null)))])) as Record<PeriodKey, string>;
+  const value = (p: (typeof perStop)[number], key: PeriodKey) => {
+    if (!p) return null;
+    return key === 'overnight' && p.night != null ? p.night : stretchFilterValue(p.periods[key]);
+  };
+  return Object.fromEntries(PERIOD_WINDOWS.map(({ key }) => [key, encodeStopRuns(perStop.map(p => value(p, key)))])) as Record<PeriodKey, string>;
 }
 
 /**
@@ -578,19 +628,32 @@ export function stopPeriodValues(stops: readonly string[], throughTimesAlong: No
  * section needs the usual three departures for a value, then the same filter and limited-service
  * handling; no thresholds of its own).
  */
-export function stretchMetaPeriods(s: Stretch): { period: Record<PeriodKey, number | null>; noRegular: PeriodKey[]; maxGap: Record<PeriodKey, number | null> } {
+export function stretchMetaPeriods(s: Stretch): { period: Record<PeriodKey, number | null>; noRegular: PeriodKey[]; maxGap: Record<PeriodKey, number | null>; edge?: Partial<Record<PeriodKey, StretchPeriodEdge>> } {
   const own = stretchPeriods(s);
   // CIV-1069: the longest gap between the same departures the value reads, so a card row never pairs
   // the stretch's value with a gap measured over one headsign's trips.
   const gaps = computePeriodMaxGaps([...s.times]);
   // The card's guard (#955): a period whose value is one gap, or that has under three departures (no
-  // cadence to read, only the full-window wait), reads "no regular service" on a row; the map keeps
+  // cadence to read, only the full-window wait), reads "Irregular" on a row; the map keeps
   // the filter value.
   const departures = (start: number, end: number) => new Set(forCrossMidnightWindow([...s.times], end).filter(t => t >= start && t <= end)).size;
+  // CIV-1251 (Ryan): the stretch's own late start or early end, read as the direction's edge is
+  // (#934, CIV-1248), so a branch row can say when its own service starts or stops (TTC 110 Sunday
+  // AM: the shared stretch every 15 from 8:07, each branch every 30 from its own first trip).
+  // Overnight reads the night verdict (#1267) and has none; an uneven period reads its range.
+  const edges: Partial<Record<PeriodKey, StretchPeriodEdge>> = {};
+  for (const { key, start, end } of PERIOD_WINDOWS) {
+    if (key === 'overnight' || own[key].uneven) continue;
+    const edge = runsThroughPeriod(s.times, start, end, own[key].sustained)
+      ? periodEdge(s.times, start, end, stretchFilterValue(own[key]))
+      : periodPartialEdge(s.times, start, end);
+    if (edge) edges[key] = edge;
+  }
   return {
     period: Object.fromEntries(PERIOD_WINDOWS.map(({ key }) => [key, stretchFilterValue(own[key])])) as Record<PeriodKey, number | null>,
     noRegular: PERIOD_WINDOWS.filter(({ key, start, end }) => own[key].coverage != null && (own[key].oneGap || departures(start, end) < 3)).map(w => w.key),
     maxGap: Object.fromEntries(PERIOD_WINDOWS.map(({ key }) => [key, own[key].value == null ? null : gaps[key] ?? null])) as Record<PeriodKey, number | null>,
+    ...(Object.keys(edges).length > 0 ? { edge: edges } : {}),
   };
 }
 
@@ -612,6 +675,41 @@ export function runsThroughPeriod(times: readonly number[], start: number, end: 
   let longest = 0;
   for (let i = 1; i < t.length; i++) longest = Math.max(longest, t[i] - t[i - 1]);
   return !(longest / median > BOUNDARY_DOMINANT_RATIO);
+}
+
+/**
+ * CIV-1204 (Ryan, 2026-10-31): the rider wait (CIV-1161) stands for the headline only where the direction runs through
+ * the window it read, by the settled verdicts, at every boarding stop that has a reading: at midday, runsThroughPeriod
+ * there and the #899 midday test (rule 7); at the PM peak, runsThroughPeriod there; on the all-day fallback, a direction
+ * that is not limited (#720) at a stop whose departures span the all-day share of the grading window (#720's coverage). A peak route's few trips reaching into midday (TTC 945: 9:28, then 14:40) are not a
+ * 312-minute wait. Null when no boarding stop has a reading.
+ */
+export function gatedRiderWait(
+  stops: readonly string[],
+  timesAt: (stopId: string) => readonly number[],
+  dropOffOnly: ReadonlySet<string>,
+  direction: { middayRuns: boolean; limited: boolean; gradingWindow: { start: number; end: number } },
+): { wait: number; stops: number; allDayStops: number; passes: boolean } | null {
+  const board = boardingMainStretchWait(stops, timesAt, dropOffOnly);
+  if (!board) return null;
+  const passes = stops.filter(stop => !dropOffOnly.has(stop)).every(stop => {
+    const times = timesAt(stop);
+    const reading = riderWait(times);
+    if (!reading) return true;
+    if (reading.window === 'allDay') {
+      // #720's all-day coverage test, as a branch takes part in the all-day value (spansWindow in rollupDirection): the
+      // stop's departures span at least ALL_DAY_MIN_COVERAGE of the day's grading window. #1257 (Ryan, 2026-10-31): and
+      // at least HEADLINE_MIN_DEPARTURES of them fall inside it, the minimum midday and the PM peak read (NJT 194 Sunday:
+      // 10:36 and 18:34 inside 9-21 read 478).
+      const { start, end } = direction.gradingWindow;
+      const t = headlineDeparturesInWindow(times, start, end);
+      return !direction.limited && t != null && (t[t.length - 1] - t[0]) / (end - start) >= ALL_DAY_MIN_COVERAGE;
+    }
+    const { start, end } = PERIOD_MINUTES[reading.window];
+    const runs = runsThroughPeriod(times, start, end, computePeriodSustained([...times])[reading.window]);
+    return reading.window === 'midday' ? runs && direction.middayRuns : runs;
+  });
+  return { ...board, passes };
 }
 
 /**
@@ -658,10 +756,27 @@ export function stretchPeriods(s: Stretch): Record<PeriodKey, StretchPeriod> {
   return out;
 }
 
-/** Night (D7: 26:00-29:00), every gap including both edges at most maxGap. null: no departure in the window. */
-export function stretchNight(s: Stretch, maxGap: 30 | 60): boolean | null {
+/**
+ * CIV-1198 (Ryan, 2026-10-30): the longest wait a stretch that runs at night may have before its first
+ * 2:00-5:00 departure and after its last. Night networks start when day service and the subway stop,
+ * and that hand-over falls inside the window (TTC 304 King from 2:32, while the 504 runs to about 3:10).
+ */
+export const NIGHT_EDGE_MAX_WAIT_MIN = 60;
+
+/**
+ * Night (D7: 26:00-29:00), every gap between departures at most maxGap. A stretch that runs at night
+ * (D3: departures on both sides of 3:30) may wait up to NIGHT_EDGE_MAX_WAIT_MIN before its first
+ * departure and after its last (CIV-1198: TTC 300's Danforth Rd branch runs every 15 from its first
+ * bus at 2:39). Any other stretch keeps both edges at maxGap, so day service starting at 4:30 never
+ * passes. null: no departure in the window.
+ */
+export function stretchNight(s: Stretch, maxGap: number): boolean | null {
   if (!s.nightTimes.some(t => t >= STRETCH_NIGHT_START_MIN && t <= STRETCH_NIGHT_END_MIN)) return null;
-  return hasSustainedServiceInWindow([...s.nightTimes], STRETCH_NIGHT_START_MIN, STRETCH_NIGHT_END_MIN, maxGap);
+  if (!runsAcrossNightMidpoint(s.nightTimes)) return hasSustainedServiceInWindow([...s.nightTimes], STRETCH_NIGHT_START_MIN, STRETCH_NIGHT_END_MIN, maxGap);
+  const times = [...new Set(s.nightTimes)].filter(t => t >= STRETCH_NIGHT_START_MIN && t <= STRETCH_NIGHT_END_MIN).sort((a, b) => a - b);
+  const edge = Math.max(maxGap, NIGHT_EDGE_MAX_WAIT_MIN);
+  if (times[0] - STRETCH_NIGHT_START_MIN > edge || STRETCH_NIGHT_END_MIN - times[times.length - 1] > edge) return false;
+  return times.every((t, i) => i === 0 || t - times[i - 1] <= maxGap);
 }
 
 /**
@@ -685,7 +800,7 @@ export function runsAcrossNightMidpoint(nightTimes: readonly number[]): boolean 
  * - 'fail': neither.
  */
 export type NightVerdict = 'pass' | 'partial' | 'fail';
-function fullNightVerdict(d: DirectionStretches, gap: 30 | 60): boolean {
+function fullNightVerdict(d: DirectionStretches, gap: number): boolean {
   if (!d.main) return false;
   const runsAtNight = (t: Stretch) => runsAcrossNightMidpoint(t.nightTimes);
   const passes = (t: Stretch) => stretchNight(t, gap) === true;
@@ -697,7 +812,7 @@ function fullNightVerdict(d: DirectionStretches, gap: 30 | 60): boolean {
   }
   return passes(d.main) && d.tails.filter(runsAtNight).every(passes);
 }
-export function directionNightVerdict(d: DirectionStretches, gap: 30 | 60): NightVerdict {
+export function directionNightVerdict(d: DirectionStretches, gap: number): NightVerdict {
   if (fullNightVerdict(d, gap)) return 'pass';
   // Partial only when night service does not reach the daytime main stretch's middle stop (no
   // departures on both sides of 3:30 there): the night route runs elsewhere or on part of the
@@ -706,6 +821,36 @@ export function directionNightVerdict(d: DirectionStretches, gap: 30 | 60): Nigh
   if (d.main && !d.disconnected && runsAcrossNightMidpoint(d.main.nightTimes)) return 'fail';
   if (d.night && fullNightVerdict(d.night, gap)) return 'partial';
   return 'fail';
+}
+
+/**
+ * #1267 (Ryan, 2026-10-31): the Overnight period reads the night verdict, so its value and Night
+ * Service never disagree. A direction's night value is the smallest gap at which its verdict passes
+ * (pass or partial), up to the window's length: at most 30 exactly when it is Night Service 30, at
+ * most 60 exactly when it is Night Service 60. TTC 301 reads 30, not the 71 a 2-6am window gave it
+ * across the 5-6am lull before day service. null: nothing in the direction runs at night (D3: no
+ * stretch with departures on both sides of 3:30), as for day service that starts at 4:48 (TTC 102),
+ * or no gap of 60 or less passes: Night Service's longest grade, so a wait like TTC 504's 172 minutes
+ * is not overnight service (#1267, pending Ryan's OK). `wholeDirection`: only a full pass counts, not one on the night version alone
+ * (the direction's card row, which stands for the whole direction: NYC subway 3 to New Lots Av
+ * runs every 20 at night on its night path, but 220 minutes apart at the row's own stops).
+ */
+/** #1267: the longest Overnight value; a direction that passes only above it has none (Night Service's 60 grade). */
+export const NIGHT_OVERNIGHT_MAX_VALUE = 60;
+
+export function directionNightValue(d: DirectionStretches, wholeDirection = false): number | null {
+  const stretches = [d.main, ...d.tails, ...(wholeDirection ? [] : [d.night?.main, ...(d.night?.tails ?? [])])];
+  if (!stretches.some(st => st != null && runsAcrossNightMidpoint(st.nightTimes))) return null;
+  const max = NIGHT_OVERNIGHT_MAX_VALUE;
+  const passes = (gap: number) => (wholeDirection ? directionNightVerdict(d, gap) === 'pass' : directionNightVerdict(d, gap) !== 'fail');
+  if (!passes(max)) return null;
+  // The verdict only gets easier as the gap grows (the edge allowance stays 60 up to here).
+  let lo = 1, hi = max;
+  while (lo < hi) {
+    const mid = Math.floor((lo + hi) / 2);
+    if (passes(mid)) hi = mid; else lo = mid + 1;
+  }
+  return lo;
 }
 
 /**
@@ -731,7 +876,7 @@ export interface DirectionRollup {
      * Step 5a filter value: the worst counting stretch, each read as the tile rule reads a row
      * (steady with a full-window wait of PERIOD_COVERAGE_MAX_HEADWAY or less: its headway; else its
      * wait). null: the main stretch runs only stray or part-day trips in the period (no departure on
-     * one side of its midpoint), so the direction has no regular service there.
+     * one side of its midpoint), so the direction has no regular cadence there.
      */
     filterValue: number | null;
     /** The main stretch runs through the period (departures on both sides of its midpoint). */
@@ -750,6 +895,10 @@ export interface DirectionRollup {
   }>;
   night30: boolean;
   night60: boolean;
+  /** #1267: the Overnight value, directionNightValue. */
+  nightValue: number | null;
+  /** #1267: the direction's own Overnight value (card rows): a full pass only, not on the night version alone. */
+  nightDirectionValue: number | null;
   /** Passes only on the night version of the direction (part of the route, or a night path). */
   nightPartial30: boolean;
   nightPartial60: boolean;
@@ -774,6 +923,8 @@ export interface StretchPeriodEdge {
   from?: number;
   until?: number;
   every: number;
+  /** #1276: the stretch the edge is read on: 'main', or a tail's index (a row's stretchIndex when its stretchRole is 'tail'). */
+  stretch?: 'main' | number;
 }
 
 /**
@@ -787,13 +938,13 @@ export interface StretchPeriodEdge {
 export function periodEdge(stretchTimes: readonly number[], start: number, end: number, value: number | null): StretchPeriodEdge | null {
   if (value == null) return null;
   const t = [...new Set(forCrossMidnightWindow([...stretchTimes], end))].filter(x => x >= start && x < end).sort((a, b) => a - b);
-  if (t.length < 3) return null;
+  if (t.length < HEADLINE_MIN_DEPARTURES) return null;
   const gaps = t.slice(1).map((x, i) => x - t[i]);
   const lead = t[0] - start;
   const trail = end - t[t.length - 1];
   const inner = Math.max(...gaps);
   if (Math.ceil(Math.max(lead, trail, inner)) !== value || inner >= value) return null;
-  const every = medianHeadwayInWindow(t, start, end, 3, true);
+  const every = medianHeadwayInWindow(t, start, end, HEADLINE_MIN_DEPARTURES, true);
   if (every == null || every <= 0 || !isSustainedHeadway(gaps, every)) return null;
   // The wait is rounded up to whole minutes; frequencies.txt spacing can leave fractional times.
   const fromEdge = Math.ceil(lead) === value, untilEdge = Math.ceil(trail) === value;
@@ -808,13 +959,13 @@ export function periodEdge(stretchTimes: readonly number[], start: number, end: 
  */
 export function periodPartialEdge(stretchTimes: readonly number[], start: number, end: number): StretchPeriodEdge | null {
   const t = [...new Set(forCrossMidnightWindow([...stretchTimes], end))].filter(x => x >= start && x < end).sort((a, b) => a - b);
-  if (t.length < 3) return null;
+  if (t.length < HEADLINE_MIN_DEPARTURES) return null;
   const mid = (start + end) / 2;
   const after = t[0] >= mid;
   const before = t[t.length - 1] < mid;
   if (!after && !before) return null;
   const gaps = t.slice(1).map((x, i) => x - t[i]);
-  const every = medianHeadwayInWindow(t, start, end, 3, true);
+  const every = medianHeadwayInWindow(t, start, end, HEADLINE_MIN_DEPARTURES, true);
   if (every == null || every <= 0 || !isSustainedHeadway(gaps, every)) return null;
   return after ? { from: t[0], every } : { until: t[t.length - 1], every };
 }
@@ -852,6 +1003,8 @@ export function periodOneGap(stretchTimes: readonly number[], start: number, end
 /** D1 and D3: the direction value is the worst counting stretch; night needs the main stretch and every tail that runs at night. */
 export function rollupDirection(d: DirectionStretches): DirectionRollup | null {
   if (!d.main) return null;
+  // The guard's narrowing does not reach the closures below.
+  const mainStretch = d.main;
   const main = stretchPeriods(d.main);
   const tails = d.tails.map(stretchPeriods);
   // #1072, rule 3: a tail that runs only part of a period because a sibling branch takes over the
@@ -913,19 +1066,53 @@ export function rollupDirection(d: DirectionStretches): DirectionRollup | null {
     // window wait as "every N" (MBTA 23 Sunday overnight to Ashmont: every 196). A sparse main
     // stretch leaves the direction without a value, a sparse tail drops out.
     const sparse = (s: Stretch | null | undefined) => s != null && key === 'overnight' && isSparseOvernightWindow(s.times);
-    const counting = [main[key], ...tails.map((t, i) => (handover[key][i] ? turnTaking(t[key]) : t[key]))]
-      .filter((p, i) => p.counts && (i === 0 ? runs && !sparse(d.main) : !sparse(d.tails[i - 1])));
+    const countingStretches = [d.main, ...d.tails]
+      .map((st, i) => ({ st, stretch: (i === 0 ? 'main' : i - 1) as 'main' | number, p: i === 0 ? main[key] : handover[key][i - 1] ? turnTaking(tails[i - 1][key]) : tails[i - 1][key] }))
+      .filter(({ st, p }, i) => p.counts && (i === 0 ? runs && !sparse(d.main) : !sparse(st)));
+    const counting = countingStretches.map(c => c.p);
     const values = counting.map(filterOf).filter((v): v is number => v != null);
     period[key].runs = runs;
     period[key].hasService = forCrossMidnightWindow([...d.main.times], end).some(t => t >= start && t <= end);
     period[key].filterValue = runs && !sparse(d.main) && values.length > 0 ? Math.max(...values) : null;
-    const setter = period[key].filterValue == null ? undefined : counting.find(p => filterOf(p) === period[key].filterValue);
+    const setterAt = period[key].filterValue == null ? undefined : countingStretches.find(c => filterOf(c.p) === period[key].filterValue);
+    const setter = setterAt?.p;
     period[key].typical = setter?.uneven && setter.headway != null && setter.headway < period[key].filterValue! ? setter.headway : null;
     // An uneven period's card reads its range, not an edge or one-gap wording.
     const uneven = period[key].typical != null;
-    period[key].edge = uneven ? null : runs ? periodEdge(d.main.times, start, end, period[key].filterValue) : periodPartialEdge(d.main.times, start, end);
+    // CIV-1241 (Ryan, 2026-11-01): the edge is read on the stretch that sets the filter value, so a
+    // branch that runs steadily and then stops (settled rule 3 keeps its full-window wait: AC
+    // Transit 22 Sunday midday, every 30 until 12:12, 168) reads "every 30 until 12:12" from the
+    // same reading as a main stretch's early end.
+    // CIV-1248 (Ryan, 2026-11-01): a period the main stretch covers only part of reads the partial
+    // edge of every stretch that starts or ends in it, and the slowest decides (D1), as the filter
+    // value's setter does: TTC 110 Sunday AM's trunk runs every 15 from 7:52, its branches every 30.
+    // The filter value stays null there (D8).
+    const partial = () => [mainStretch, ...d.tails]
+      .map((st, i) => ({ edge: periodPartialEdge(st.times, start, end), stretch: (i === 0 ? 'main' : i - 1) as 'main' | number }))
+      .filter((c): c is { edge: StretchPeriodEdge; stretch: 'main' | number } => c.edge != null)
+      .reduce<{ edge: StretchPeriodEdge; stretch: 'main' | number } | null>((worst, c) => (worst == null || c.edge.every > worst.edge.every ? c : worst), null);
+    // #1276: name the stretch, so the card puts the words on that stretch's row.
+    if (uneven) period[key].edge = null;
+    else if (runs) {
+      const edge = periodEdge((setterAt?.st ?? d.main).times, start, end, period[key].filterValue);
+      period[key].edge = edge && { ...edge, stretch: setterAt?.stretch ?? 'main' };
+    } else {
+      const slowest = partial();
+      // CIV-1248 follow-up (Ryan, 2026-11-01): a branch that runs the whole period counts too, so
+      // the direction never reads a faster spacing than one of its branches (TTC 110 Sunday AM
+      // southbound: the trunk every 15 from 8:07, Kipling every 30 through the period). The branch's
+      // own late start or early end is read as its row's is (CIV-1251); with none, there is no edge.
+      const slowerThrough = slowest && [mainStretch, ...d.tails]
+        .map((st, i) => ({ st, own: i === 0 ? main[key] : tails[i - 1][key], stretch: (i === 0 ? 'main' : i - 1) as 'main' | number }))
+        .filter(c => c.own.counts && c.own.headway != null && c.own.headway > slowest.edge.every && runsThroughPeriod(c.st.times, start, end, c.own.sustained))
+        .reduce<{ own: StretchPeriod; st: Stretch; stretch: 'main' | number } | null>((worst, c) => (worst == null || c.own.headway! > worst.own.headway! ? c : worst), null);
+      if (slowerThrough) {
+        const edge = slowerThrough.own.uneven ? null : periodEdge(slowerThrough.st.times, start, end, stretchFilterValue(slowerThrough.own));
+        period[key].edge = edge && { ...edge, stretch: slowerThrough.stretch };
+      } else period[key].edge = slowest && { ...slowest.edge, stretch: slowest.stretch };
+    }
     // Only where the settled checks count the period as running: a big-gap period that does not
-    // run (TTC 504 overnight, 169 minutes against a typical 5) keeps "no regular service".
+    // run (TTC 504 overnight, 169 minutes against a typical 5) keeps "Irregular".
     period[key].gap = runs && !uneven && !period[key].edge ? periodOneGap(d.main.times, start, end) : null;
   }
   // D3 with the D8 midpoint test: a tail runs at night only when it has departures on both sides
@@ -983,7 +1170,7 @@ export function rollupDirection(d: DirectionStretches): DirectionRollup | null {
   const frequentStretches = [d.main, ...allDayTails];
   const researchOf = frequentStretches.map(st => computeResearchFrequentService([...st.times]));
   return {
-    period, night30: v30 !== 'fail', night60: v60 !== 'fail', nightPartial30: v30 === 'partial', nightPartial60: v60 === 'partial',
+    period, night30: v30 !== 'fail', night60: v60 !== 'fail', nightValue: directionNightValue(d), nightDirectionValue: directionNightValue(d, true), nightPartial30: v30 === 'partial', nightPartial60: v60 === 'partial',
     allDay: !limitedOnly && allDays.every(v => v != null) ? Math.max(...(allDays as number[])) : null,
     limitedOnly,
     middayWait,
@@ -1006,6 +1193,8 @@ export interface RouteRollup {
   }>;
   night30: boolean;
   night60: boolean;
+  /** #1267: the Overnight value, the worst direction's night value; null when any has none. */
+  nightValue: number | null;
   /** The route qualifies only on the night version of some direction: drawn on the part it runs. */
   nightPartial30: boolean;
   nightPartial60: boolean;
@@ -1023,7 +1212,7 @@ export interface RouteRollup {
 
 /**
  * Rule 1: the route value is the worst direction, and a direction with no value (no stretch data,
- * or no regular service in the period) leaves the route with none: never one direction alone.
+ * or no regular cadence in the period) leaves the route with none: never one direction alone.
  * The range (D1, display only) runs from the worst direction's main stretch to the route value,
  * null when they agree. Night: every direction the route runs by day must pass. `dirs` holds one
  * entry per direction the route runs by day, null where it has no stretch data.
@@ -1055,6 +1244,7 @@ export function rollupRoute(dirs: readonly (DirectionRollup | null)[]): RouteRol
     period,
     night30: complete && known.every(d => d.night30),
     night60: complete && known.every(d => d.night60),
+    nightValue: complete && known.every(d => d.nightValue != null) ? Math.max(...known.map(d => d.nightValue!)) : null,
     nightPartial30: complete && known.every(d => d.night30) && known.some(d => d.nightPartial30),
     nightPartial60: complete && known.every(d => d.night60) && known.some(d => d.nightPartial60),
     // A limited direction (#720) has no all-day value, so neither has its route: every direction
@@ -1105,6 +1295,7 @@ export const STRETCH_SHADOW_KEYS = [
   'stretchMeta',
   'stretchRole',
   'stretchIndex',
+  'stretchCovers',
   'headwayByPeriodSustainedMid',
 ] as const;
 
@@ -1165,19 +1356,21 @@ export function stampStretchShadow(
     p.stretchPeriodCoverage = byPeriod(k => dir.period[k].coverage);
     p.stretchPeriodSustained = byPeriod(k => dir.period[k].sustained);
     p.stretchPeriodSustainedMid = byPeriod(k => dir.period[k].sustainedMid);
-    p.stretchPeriodOneGap = byPeriod(k => dir.period[k].oneGap);
-    p.stretchPeriodTypical = byPeriod(k => dir.period[k].typical);
+    // #1267: Overnight is one number from the night verdict, so its old 2-6 AM wording inputs (one gap, typical-worst
+    // range, late start or early end, one gap inside) are not stamped.
+    p.stretchPeriodOneGap = byPeriod(k => k === 'overnight' ? false : dir.period[k].oneGap);
+    p.stretchPeriodTypical = byPeriod(k => k === 'overnight' ? null : dir.period[k].typical);
     // #934: only periods with an edge reading, so most features carry an empty object at most.
     {
-      const edges = Object.fromEntries(PERIOD_WINDOWS.flatMap(({ key }) => (dir.period[key].edge ? [[key, dir.period[key].edge]] : [])));
+      const edges = Object.fromEntries(PERIOD_WINDOWS.flatMap(({ key }) => (key !== 'overnight' && dir.period[key].edge ? [[key, dir.period[key].edge]] : [])));
       if (Object.keys(edges).length > 0) p.stretchPeriodEdge = edges;
       else delete p.stretchPeriodEdge;
-      const gaps = Object.fromEntries(PERIOD_WINDOWS.flatMap(({ key }) => (dir.period[key].gap ? [[key, dir.period[key].gap]] : [])));
+      const gaps = Object.fromEntries(PERIOD_WINDOWS.flatMap(({ key }) => (key !== 'overnight' && dir.period[key].gap ? [[key, dir.period[key].gap]] : [])));
       if (Object.keys(gaps).length > 0) p.stretchPeriodGap = gaps;
       else delete p.stretchPeriodGap;
     }
     p.stretchRoutePeriodHeadway = byPeriod(k => route.period[k].value);
-    p.stretchPeriodRange = byPeriod(k => route.period[k].range);
+    p.stretchPeriodRange = byPeriod(k => k === 'overnight' ? null : route.period[k].range);
     p.stretchNight30 = route.night30;
     p.stretchNight60 = route.night60;
     p.stretchNightPartial30 = route.nightPartial30;
@@ -1193,8 +1386,9 @@ export function stampStretchShadow(
     p.stretchMiddayWait = route.middayWait;
     p.stretchFrequentService = slot.day === 'Weekday' ? route.frequent : false;
     p.stretchResearchFrequentService = route.research;
-    p.routeFilterHeadwayByPeriod = byPeriod(k => route.period[k].filterValue);
-    p.directionFilterHeadwayByPeriod = byPeriod(k => dir.period[k].filterValue);
+    // #1267: Overnight reads the night verdict's value (directionNightValue), as Night Service does.
+    p.routeFilterHeadwayByPeriod = byPeriod(k => k === 'overnight' ? route.nightValue : route.period[k].filterValue);
+    p.directionFilterHeadwayByPeriod = byPeriod(k => k === 'overnight' ? dir.nightDirectionValue : dir.period[k].filterValue);
     // CIV-321: per drawn stop and period, every trip of the direction running through the stop, along
     // the display-only full line where the row has one (S4), else the row's own stops.
     const stopOrder = (p.fullStopOrder ?? p.stopOrder) as readonly string[] | undefined;
@@ -1215,6 +1409,14 @@ export function stampStretchShadow(
       if (tailIdx != null) { p.stretchRole = 'tail'; p.stretchIndex = tailIdx; }
       else if (stretches.main && covers(stretches.main.stops)) { p.stretchRole = 'main'; p.stretchIndex = 0; }
       else { p.stretchRole = 'variant'; delete p.stretchIndex; }
+      // #1276: every stretch the row's stops cover, so a period edge (stretchPeriodEdge[k].stretch)
+      // finds its rows where no row stands for that stretch (TTC 110 Weekday PM: tail 3).
+      const coversAll: ('main' | number)[] = [
+        ...(stretches.main && covers(stretches.main.stops) ? ['main' as const] : []),
+        ...stretches.tails.flatMap((t, i) => (covers(t.stops) ? [i] : [])),
+      ];
+      if (coversAll.length > 0) p.stretchCovers = coversAll;
+      else delete p.stretchCovers;
     }
     p.stretchMeta = {
       main: stretches.main ? { stops: stretches.main.stops.length, refStop: stretches.main.refStop, trips: stretches.main.tripCount, ...stretchMetaPeriods(stretches.main) } : null,

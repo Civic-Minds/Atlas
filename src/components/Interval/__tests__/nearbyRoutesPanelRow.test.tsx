@@ -33,7 +33,7 @@ describe('Near You route rows', () => {
         ]}
       />,
     );
-    for (const text of ['every 8 min', 'every 6–12 min', 'no regular service']) {
+    for (const text of ['every 8 min', 'every 6–12 min', 'Irregular']) {
       const badge = screen.getByText(text).closest('span.inline-flex') as HTMLElement;
       expect(badge.className).toContain('font-black');
       expect(badge.className).toContain('text-[var(--text-primary)]');

@@ -1,6 +1,7 @@
 {
   "slug": "lynx",
-  "name": "LYNX (Central Florida)",
+  "officialName": "LYNX",
+  "nameQualifier": "Central Florida",
   "websiteUrl": "http://www.golynx.com",
   "center": [
     28.54,
@@ -11,7 +12,7 @@
   "lastFeedExpiry": "20261212",
   "lastFeedVersion": null,
   "region": "Florida",
-  "lastRefreshedAt": "2026-10-14",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Orlando, Florida",
     "Pine Hills, Florida",
@@ -19,7 +20,7 @@
     "Alafaya, Florida",
     "Poinciana, Florida"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261212",
@@ -28,10 +29,9 @@
   "lastFeedSourceUrl": "http://gtfsrt.golynx.com/gtfsrt/google_transit.zip",
   "feedQuality": {
     "status": "review",
-    "score": 70,
+    "score": 88,
     "reasons": [
       "1 minor schedule issue found while reading the feed.",
-      "1 route shape needed adjustment before display.",
       "1 route has stops whose frequency differs from the overall route schedule."
     ],
     "metrics": {
@@ -39,13 +39,21 @@
       "validationWarnings": 1,
       "shapeAnomalies": 1,
       "routeHeadwayMismatches": 1,
-      "featureCount": 309
+      "featureCount": 335,
+      "feedExpiry": "20261212",
+      "routeCount": 62,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 1,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-14"
+    "checkedAt": "2026-11-03"
   },
   "lastPeekedExpiry": "20261212",
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
-  "feedRefreshRetryCount": 0
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "be397a5d8f3847f5",
+  "feedObtainedAt": "20260930"
 }

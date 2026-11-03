@@ -123,11 +123,21 @@ describe('stretch filter fields (frequency focus step 7)', () => {
     expect(bandCounts([r])[FREQUENCY_BANDS.findIndex(b => b.key === 'b15')]).toBe(1);
   });
 
-  it('a period the filter calls no regular service records no number and is not limited', () => {
+  it('a period the filter calls irregular records no number and is not limited', () => {
     const f = { amPeak: 20, midday: null, pmPeak: 20, evening: null, late: null, overnight: null };
     const r = summarize([stretch('X', 0, 20, f, {}), stretch('X', 1, 20, f, {})], 'x', null).routes[0];
     expect(r.midday).toBeNull();
     expect(r.limited ?? []).not.toContain('midday');
+    // #1249: kept, so the page says "Irregular" as the map list does, not a blank.
+    expect(r.noRegular).toEqual(['midday', 'evening', 'overnight']);
+  });
+
+  it('a period the route does not run in is not irregular (#1249)', () => {
+    const f = { amPeak: 20, midday: null, pmPeak: 20, evening: null, late: null, overnight: null };
+    const runs = { amPeak: true, midday: false, pmPeak: true, evening: false, late: false, overnight: false };
+    const r = summarize([stretch('X', 0, 20, f, {}, { routeRunsByPeriod: runs }), stretch('X', 1, 20, f, {}, { routeRunsByPeriod: runs })], 'x', null).routes[0];
+    expect(r.midday).toBeNull();
+    expect(r.noRegular).toBeUndefined();
   });
 });
 
@@ -144,6 +154,14 @@ describe('summarize: areas per route (CIV-274)', () => {
   });
   it('leaves areas out without boundaries', () => {
     expect(summarize([line('66', 0, 30)] as any, 'x', null).routes[0].areas).toBeUndefined();
+  });
+  it('tags states and provinces by the same rule (#1283)', () => {
+    const states = { Ohio: boundaries.metro, Indiana: { bbox: [0, 10, 10, 20] as [number, number, number, number], polygons: [[[[10, 0], [20, 0], [20, 10], [10, 10], [10, 0]] as Array<[number, number]>]] } };
+    const s = summarize([
+      line('66', 0, 30), stop('a', 1, 1, ['66']), stop('b', 2, 2, ['66']), stop('c', 12, 5, ['66']), stop('d', 15, 5, ['66']),
+    ] as any, 'x', null, undefined, states);
+    expect(s.routes[0].regions).toEqual(['Indiana', 'Ohio']);
+    expect(s.routes[0].areas).toBeUndefined();
   });
 });
 

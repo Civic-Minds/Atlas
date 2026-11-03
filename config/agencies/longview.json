@@ -1,6 +1,6 @@
 {
   "slug": "longview",
-  "name": "City of Longview Transit",
+  "officialName": "City of Longview Transit",
   "websiteUrl": "http://www.longviewtransit.com/",
   "region": "Texas",
   "center": [
@@ -21,15 +21,15 @@
   "cities": [
     "Longview, Texas"
   ],
-  "lastFeedCheckAt": "20261019",
-  "expiredFeedCheckCount": 4,
+  "lastFeedCheckAt": "20261102",
+  "expiredFeedCheckCount": 5,
   "expiredFeedCheckSince": "20260622",
   "expiredFeedCheckExpiry": "20260930",
   "timezone": "America/Chicago",
   "feedRefreshStatus": "stale",
   "feedRefreshError": "all available feeds expired (latest 20260930)",
-  "feedRefreshErrorAt": "20261019",
-  "feedRefreshRetryCount": 4,
+  "feedRefreshErrorAt": "20261102",
+  "feedRefreshRetryCount": 5,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://cloud.longviewtexas.gov/maps/LongviewTransitGTFS/LongviewTransitGTFS.zip"
 }

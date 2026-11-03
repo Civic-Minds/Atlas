@@ -1,45 +1,19 @@
-import { Moon, Ticket, Zap } from 'lucide-react';
-import { FEATURE_ROUTES } from '../../shared/config';
 import DocsPageLayout from '../components/ui/DocsPageLayout';
 import ArrowLink from '../components/ui/ArrowLink';
 import Tag from '../components/ui/Tag';
 import { SURFACE } from '../styles';
 import { PageTitle, SectionTitle } from '../components/ui/PageTitle';
-
-/** Each card names its kind of page with a small label (CIV-1167, Ryan's "Sure"). */
-const CARDS = [
-  {
-    href: FEATURE_ROUTES.nightService,
-    Icon: Moon,
-    kind: 'Map',
-    title: 'Overnight service',
-    body: 'Find routes with sustained service from 2–5 AM.',
-  },
-  {
-    href: FEATURE_ROUTES.frequentService.story,
-    Icon: Zap,
-    kind: 'Story',
-    title: 'Frequent service',
-    body: 'See what frequent service means and which routes meet Atlas’s sustained-frequency thresholds.',
-  },
-  {
-    href: FEATURE_ROUTES.freeChildFares,
-    Icon: Ticket,
-    kind: 'Data',
-    title: 'Free child fares',
-    body: "See up to what age children ride free.",
-  },
-];
+import { RESEARCH } from '../data/research';
 
 export default function ResearchPage() {
   return (
     <DocsPageLayout articleClassName="text-sm leading-relaxed text-[var(--text-dim)]">
             <header>
               <PageTitle className="text-[var(--text-primary)]">Research</PageTitle>
-              <p className="mt-3">Views of transit service that the main map does not show.</p>
+              <p className="mt-3">Maps, stories and data that look closer at transit service in Canada and the United States.</p>
             </header>
             <div className="grid gap-4 sm:grid-cols-2">
-              {CARDS.map(({ href, Icon, kind, title, body }) => (
+              {RESEARCH.map(({ href, Icon, kind, title, body, linkText }) => (
                 <a key={href} href={href} className={`${SURFACE} group flex flex-col rounded-2xl p-5 transition-colors hover:border-[var(--accent-border)]`}>
                   <div className="flex items-center justify-between gap-3">
                     <Icon className="h-4 w-4 text-[var(--text-dim)]" aria-hidden="true" />
@@ -48,7 +22,7 @@ export default function ResearchPage() {
                   <SectionTitle level="item" className="mt-4">{title}</SectionTitle>
                   <p className="mt-2">{body}</p>
                   {/* Pinned to the bottom so the links line up across a row. */}
-                  <ArrowLink as="span" tone="inline" size="xs" nudge className="mt-auto self-start pt-4">Open</ArrowLink>
+                  <ArrowLink as="span" tone="inline" size="xs" nudge className="mt-auto self-start pt-4">{linkText}</ArrowLink>
                 </a>
               ))}
             </div>

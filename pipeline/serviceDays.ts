@@ -637,6 +637,8 @@ export function pickServiceWeek(table: ServiceDayTable): ServiceWeek {
  */
 export const LISTING_END_TRIP_SHARE = 0.5;
 export const REPLACEMENT_TRIP_SHARE = 0.5;
+/** #1253: a route that keeps this share of its trips after a listing end runs on unchanged (minorityRoutesRetired). */
+export const KEPT_ROUTE_TRIP_SHARE = 0.9;
 /** A service listed again within this many days was only paused (a weekend, a holiday week). */
 export const RETURN_GAP_DAYS = 28;
 /** After a longer gap, the days it must be listed again to count (not a fragment at the file's end). */
@@ -739,11 +741,17 @@ export function findListingEnd(
   const nameOf = new Map((input.routes ?? []).map(r => [r.route_id, r.route_short_name?.trim() || r.route_long_name?.trim() || r.route_id]));
   const tripsOfService = new Map<string, number>();
   const routesOfService = new Map<string, Set<string>>();
+  /** Trips per route (by public name) of each service. */
+  const routeTripsOfService = new Map<string, Map<string, number>>();
   for (const t of input.trips) {
     tripsOfService.set(t.service_id, (tripsOfService.get(t.service_id) ?? 0) + 1);
+    const name = nameOf.get(t.route_id) ?? t.route_id;
     const set = routesOfService.get(t.service_id) ?? new Set<string>();
-    set.add(nameOf.get(t.route_id) ?? t.route_id);
+    set.add(name);
     routesOfService.set(t.service_id, set);
+    const byRoute = routeTripsOfService.get(t.service_id) ?? new Map<string, number>();
+    byRoute.set(name, (byRoute.get(name) ?? 0) + 1);
+    routeTripsOfService.set(t.service_id, byRoute);
   }
   const serviceLast = new Map<string, number>();
   for (const id of tripsOfService.keys()) {
@@ -767,6 +775,27 @@ export function findListingEnd(
     const counts = new Map<string, number>();
     for (let n = from; n <= to; n++) for (const id of servicesOn(n)) counts.set(id, (counts.get(id) ?? 0) + tripsOfService.get(id)!);
     return counts;
+  };
+  /** Trips per route over [from, to]. */
+  const routeTripsIn = (from: number, to: number): Map<string, number> => {
+    const counts = new Map<string, number>();
+    for (let n = from; n <= to; n++) {
+      for (const id of servicesOn(n)) for (const [route, trips] of routeTripsOfService.get(id) ?? []) counts.set(route, (counts.get(route) ?? 0) + trips);
+    }
+    return counts;
+  };
+  /**
+   * #1253: a minority of routes stopped entirely while every other route keeps its own trips (at least
+   * KEPT_ROUTE_TRIP_SHARE of them in the week after the end): a seasonal or retired route, not a timetable
+   * the agency has not updated. Avon's summer-only BC Express ends Sep 13 while Red and Blue run on
+   * unchanged; Wave Transit's UNCW shuttles (7 of 17 routes) end their term on Dec 11 2025 while the city
+   * routes run on.
+   */
+  const minorityRoutesRetired = (d: number): boolean => {
+    const before = routeTripsIn(d - 6, d), after = routeTripsIn(d + 1, d + 7);
+    const stopped = [...before.keys()].filter(route => !after.has(route));
+    if (stopped.length === 0 || stopped.length * 2 >= before.size) return false;
+    return [...before].every(([route, trips]) => !after.has(route) || after.get(route)! >= KEPT_ROUTE_TRIP_SHARE * trips);
   };
 
   // Each service's last listed day on or before the anchor week, and whether it is listed afterwards.
@@ -821,6 +850,7 @@ export function findListingEnd(
       laterSeason = others - (total - endedTrips) >= REPLACEMENT_TRIP_SHARE * endedTrips;
     }
     if (laterSeason) continue;
+    if (minorityRoutesRetired(d)) continue;
     // The end that took the most trips (SLO Transit: its weekday services in August, not its one
     // trolley in October); the latest on a tie.
     if (!best || endedTrips > best.endedTrips) {

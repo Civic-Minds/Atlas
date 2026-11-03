@@ -1,6 +1,6 @@
 {
   "slug": "seattle-monorail",
-  "name": "Seattle Center Monorail",
+  "officialName": "Seattle Center Monorail",
   "websiteUrl": "http://www.seattlemonorail.com",
   "region": "Washington",
   "center": [
@@ -16,17 +16,42 @@
   "feedUrl": "https://github.com/Seattle-Monorail-Services/gtfs/raw/refs/heads/main/96_gtfs.zip",
   "lastFeedExpiry": "20270530",
   "lastFeedVersion": "2026-Apr-A",
-  "lastRefreshedAt": "2026-08-10",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Seattle, Washington"
   ],
   "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-2290/latest.zip",
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270530",
   "timezone": "America/Los_Angeles",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://github.com/Seattle-Monorail-Services/gtfs/raw/refs/heads/main/96_gtfs.zip",
-  "lastPeekedExpiry": "20270530"
+  "lastPeekedExpiry": "20270530",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 6,
+      "feedExpiry": "20270530",
+      "routeCount": 1,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
+    },
+    "checkedAt": "2026-11-03"
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "68022408e6d1b7af",
+  "feedObtainedAt": "20260419"
 }

@@ -1,7 +1,8 @@
 import type { ReactNode } from 'react';
+import { SectionTitle } from '../ui/PageTitle';
 
 /**
- * "How we did this" at the bottom of every research page (CIV-1167). Each part is a paragraph that opens with its
+ * "Method" at the bottom of every research page (CIV-1167). Each part is a paragraph that opens with its
  * bold label (ending in a colon, CIV-1177), always in this order; an optional part shows only when a page passes it. Labels and order are
  * Editorial's template, approved by Ryan on 2026-10-30.
  */
@@ -41,8 +42,8 @@ const PARTS: ReadonlyArray<[keyof ResearchMethodParts, string]> = [
 export default function ResearchMethod({ parts }: { parts: ResearchMethodParts }) {
   return (
     <section aria-labelledby="research-method-heading">
-      <h2 id="research-method-heading" className="text-2xl sm:text-3xl font-black tracking-tight text-[var(--text-primary)]">How we did this</h2>
-      <div className="mt-5 space-y-5 text-sm sm:text-base leading-7 sm:leading-8 text-[var(--text-muted)]">
+      <SectionTitle id="research-method-heading" className="text-[var(--text-primary)]">Method</SectionTitle>
+      <div className="mt-5 space-y-5 text-sm leading-7 text-[var(--text-muted)]">
         {PARTS.filter(([key]) => parts[key] != null).map(([key, label]) => (
           <p key={key}><strong className="text-[var(--text-primary)]">{label}</strong> {parts[key]}</p>
         ))}

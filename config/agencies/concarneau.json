@@ -1,6 +1,7 @@
 {
   "slug": "concarneau",
-  "name": "Coralie (Concarneau)",
+  "officialName": "Coralie",
+  "nameQualifier": "Concarneau",
   "websiteUrl": "https://www.coralie-cca.fr",
   "region": "Bretagne",
   "center": [

@@ -1,6 +1,7 @@
 {
   "slug": "thebus",
-  "name": "TheBus (Honolulu)",
+  "officialName": "TheBus",
+  "nameQualifier": "Honolulu",
   "websiteUrl": "http://www.thebus.org",
   "center": [
     21.31,
@@ -10,11 +11,11 @@
   "lastFeedExpiry": "20261205",
   "lastFeedVersion": "(2608_v5_BusRail_MERGED_Landlines)",
   "region": "Hawaii",
-  "lastRefreshedAt": "2026-10-12",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Honolulu, Hawaii"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261205",
@@ -27,9 +28,15 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 640
+      "featureCount": 659,
+      "feedExpiry": "20261205",
+      "routeCount": 118,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-12"
+    "checkedAt": "2026-11-03"
   },
   "timezone": "Pacific/Honolulu",
   "feedRefreshStatus": "current",
@@ -38,5 +45,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2350/latest.zip",
-  "lastPeekedExpiry": "20261205"
+  "lastPeekedExpiry": "20261205",
+  "lastServiceWeek": "b6ccd7bccb4fb16a",
+  "feedObtainedAt": "20260724"
 }

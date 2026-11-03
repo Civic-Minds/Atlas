@@ -1,6 +1,6 @@
 {
   "slug": "saint-john",
-  "name": "Saint John Transit",
+  "officialName": "Saint John Transit",
   "websiteUrl": "https://saintjohn.ca/en/transit",
   "region": "New Brunswick",
   "center": [
@@ -16,16 +16,41 @@
   "feedUrl": "https://files.mobilitydatabase.org/mdb-2131/latest.zip",
   "lastFeedExpiry": "20271231",
   "lastFeedVersion": "a5193e57-6986-42e9-9310-bf35d76fe078",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Saint John, New Brunswick"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271231",
   "timezone": "America/Halifax",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2131/latest.zip",
-  "lastPeekedExpiry": "20271231"
+  "lastPeekedExpiry": "20271231",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 2,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 45,
+      "feedExpiry": "20271231",
+      "routeCount": 15,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
+    },
+    "checkedAt": "2026-11-03"
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "631252b00fa562f5",
+  "feedObtainedAt": "20260506"
 }

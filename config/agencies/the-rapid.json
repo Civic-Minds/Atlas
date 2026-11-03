@@ -1,6 +1,7 @@
 {
   "slug": "the-rapid",
-  "name": "The Rapid (Grand Rapids)",
+  "officialName": "The Rapid",
+  "nameQualifier": "Grand Rapids",
   "websiteUrl": "http://www.ridetherapid.org",
   "region": "Michigan",
   "center": [
@@ -10,31 +11,36 @@
   "feedUrl": "http://connect.ridetherapid.org/InfoPoint/gtfs-zip.ashx",
   "lastFeedExpiry": "20270110",
   "lastFeedVersion": "20261015",
-  "lastRefreshedAt": "2026-10-19",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Grand Rapids, Michigan",
     "Wyoming, Michigan",
     "Kentwood, Michigan"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270110",
   "feedQuality": {
-    "status": "degraded",
-    "score": 40,
+    "status": "review",
+    "score": 93,
     "reasons": [
-      "47 route shapes needed adjustment before display.",
-      "3 route have stops whose frequency differs from the overall route schedule."
+      "2 route have stops whose frequency differs from the overall route schedule."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
-      "shapeAnomalies": 47,
+      "shapeAnomalies": 17,
       "routeHeadwayMismatches": 3,
-      "featureCount": 159
+      "featureCount": 159,
+      "feedExpiry": "20270110",
+      "routeCount": 30,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 2,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-19"
+    "checkedAt": "2026-11-03"
   },
   "timezone": "America/New_York",
   "feedRefreshStatus": "current",
@@ -43,5 +49,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "http://connect.ridetherapid.org/InfoPoint/gtfs-zip.ashx",
-  "lastPeekedExpiry": "20270110"
+  "lastPeekedExpiry": "20270110",
+  "lastServiceWeek": "778c515d658a4dee",
+  "feedObtainedAt": "20261015"
 }

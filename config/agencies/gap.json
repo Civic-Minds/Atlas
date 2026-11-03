@@ -1,6 +1,7 @@
 {
   "slug": "gap",
-  "name": "Trotibus (Gap)",
+  "officialName": "Trotibus",
+  "nameQualifier": "Gap",
   "websiteUrl": "https://www.gap-tallard-durance.fr",
   "region": "Provence-Alpes-Côte d'Azur",
   "center": [

@@ -1,6 +1,6 @@
 {
   "slug": "pasadenatransit",
-  "name": "Pasadena Transit",
+  "officialName": "Pasadena Transit",
   "websiteUrl": "https://www.cityofpasadena.net/pasadena-transit/",
   "center": [
     34.15,
@@ -8,14 +8,14 @@
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-41/latest.zip",
   "lastFeedExpiry": "20271231",
-  "lastFeedVersion": "20261018",
+  "lastFeedVersion": "20261101",
   "region": "California",
-  "lastRefreshedAt": "2026-10-19",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Pasadena, California",
     "Arcadia, California"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271231",
@@ -23,23 +23,29 @@
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-41/latest.zip",
   "feedQuality": {
-    "status": "review",
-    "score": 90,
-    "reasons": [
-      "1 route shape needed adjustment before display."
-    ],
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
-      "shapeAnomalies": 1,
+      "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 52
+      "featureCount": 52,
+      "feedExpiry": "20271231",
+      "routeCount": 12,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-19"
+    "checkedAt": "2026-11-03"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
-  "lastPeekedExpiry": "20271231"
+  "lastPeekedExpiry": "20271231",
+  "lastServiceWeek": "b3403f4f4e35c3c8",
+  "feedObtainedAt": "20261102"
 }

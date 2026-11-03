@@ -1,6 +1,7 @@
 {
   "slug": "rideon",
-  "name": "Ride On (Montgomery County)",
+  "officialName": "Ride On",
+  "nameQualifier": "Montgomery County",
   "websiteUrl": "https://www.montgomerycountymd.gov/dot-transit/index.html",
   "region": "Maryland",
   "center": [
@@ -16,7 +17,7 @@
   "feedUrl": "https://mcg.montgomerycountymd.gov/DOT-Transit/Resources/Files/GTFS/RideOnGTFS.zip",
   "lastFeedExpiry": "20270109",
   "lastFeedVersion": "13-September 6, 2026_20260901",
-  "lastRefreshedAt": "2026-09-07",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Rockville, Maryland",
     "Silver Spring, Maryland",
@@ -27,26 +28,36 @@
     "Reston, Virginia"
   ],
   "timezone": "America/New_York",
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270109",
   "feedQuality": {
-    "status": "review",
-    "score": 90,
-    "reasons": [
-      "1 route frequency needs checking — some stops appear to have more frequent service than the route's overall schedule suggests."
-    ],
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
       "shapeAnomalies": 0,
-      "routeHeadwayMismatches": 1,
-      "featureCount": 392
+      "routeHeadwayMismatches": 0,
+      "featureCount": 392,
+      "feedExpiry": "20270109",
+      "routeCount": 82,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-09-07"
+    "checkedAt": "2026-11-03"
   },
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://mcg.montgomerycountymd.gov/DOT-Transit/Resources/Files/GTFS/RideOnGTFS.zip",
-  "lastPeekedExpiry": "20270109"
+  "lastPeekedExpiry": "20270109",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "cc4ce406879a6abd",
+  "feedObtainedAt": "20260902"
 }

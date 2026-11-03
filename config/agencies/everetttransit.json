@@ -1,6 +1,6 @@
 {
   "slug": "everetttransit",
-  "name": "Everett Transit",
+  "officialName": "Everett Transit",
   "websiteUrl": "http://www.everetttransit.org/",
   "center": [
     47.97,
@@ -16,29 +16,33 @@
   "feedUrl": "https://gtfs.sound.obaweb.org/prod/97_gtfs.zip",
   "lastFeedExpiry": "20261213",
   "lastFeedVersion": "f3eb566c-18ab-42f6-a5e2-e58b848458a2",
-  "lastRefreshedAt": "2026-10-03",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Everett, Washington"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261213",
   "timezone": "America/Los_Angeles",
   "feedQuality": {
-    "status": "review",
-    "score": 80,
-    "reasons": [
-      "2 route shapes needed adjustment before display."
-    ],
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
       "shapeAnomalies": 2,
       "routeHeadwayMismatches": 0,
-      "featureCount": 56
+      "featureCount": 56,
+      "feedExpiry": "20261213",
+      "routeCount": 10,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-03"
+    "checkedAt": "2026-11-03"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -46,5 +50,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://gtfs.sound.obaweb.org/prod/97_gtfs.zip",
-  "lastPeekedExpiry": "20261213"
+  "lastPeekedExpiry": "20261213",
+  "lastServiceWeek": "96e80fd615bf2603",
+  "feedObtainedAt": "20261016"
 }

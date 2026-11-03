@@ -42,6 +42,218 @@
       ]
     }
   ],
+  "redirects": [
+    {
+      "source": "/area/austin",
+      "destination": "/agency/capmetro",
+      "permanent": true
+    },
+    {
+      "source": "/area/austin/",
+      "destination": "/agency/capmetro",
+      "permanent": true
+    },
+    {
+      "source": "/area/birmingham",
+      "destination": "/agency/max-transit",
+      "permanent": true
+    },
+    {
+      "source": "/area/birmingham/",
+      "destination": "/agency/max-transit",
+      "permanent": true
+    },
+    {
+      "source": "/area/calgary",
+      "destination": "/agency/calgary",
+      "permanent": true
+    },
+    {
+      "source": "/area/calgary/",
+      "destination": "/agency/calgary",
+      "permanent": true
+    },
+    {
+      "source": "/area/columbus-oh",
+      "destination": "/agency/cota",
+      "permanent": true
+    },
+    {
+      "source": "/area/columbus-oh/",
+      "destination": "/agency/cota",
+      "permanent": true
+    },
+    {
+      "source": "/area/edmonton",
+      "destination": "/agency/edmonton",
+      "permanent": true
+    },
+    {
+      "source": "/area/edmonton/",
+      "destination": "/agency/edmonton",
+      "permanent": true
+    },
+    {
+      "source": "/area/grand-rapids",
+      "destination": "/agency/the-rapid",
+      "permanent": true
+    },
+    {
+      "source": "/area/grand-rapids/",
+      "destination": "/agency/the-rapid",
+      "permanent": true
+    },
+    {
+      "source": "/area/hartford",
+      "destination": "/agency/cttransit",
+      "permanent": true
+    },
+    {
+      "source": "/area/hartford/",
+      "destination": "/agency/cttransit",
+      "permanent": true
+    },
+    {
+      "source": "/area/indianapolis",
+      "destination": "/agency/indygo",
+      "permanent": true
+    },
+    {
+      "source": "/area/indianapolis/",
+      "destination": "/agency/indygo",
+      "permanent": true
+    },
+    {
+      "source": "/area/kansas-city",
+      "destination": "/agency/kcata",
+      "permanent": true
+    },
+    {
+      "source": "/area/kansas-city/",
+      "destination": "/agency/kcata",
+      "permanent": true
+    },
+    {
+      "source": "/area/las-vegas",
+      "destination": "/agency/rtcsnv",
+      "permanent": true
+    },
+    {
+      "source": "/area/las-vegas/",
+      "destination": "/agency/rtcsnv",
+      "permanent": true
+    },
+    {
+      "source": "/area/louisville-jefferson-county",
+      "destination": "/agency/tarc",
+      "permanent": true
+    },
+    {
+      "source": "/area/louisville-jefferson-county/",
+      "destination": "/agency/tarc",
+      "permanent": true
+    },
+    {
+      "source": "/area/memphis",
+      "destination": "/agency/mata",
+      "permanent": true
+    },
+    {
+      "source": "/area/memphis/",
+      "destination": "/agency/mata",
+      "permanent": true
+    },
+    {
+      "source": "/area/morgantown",
+      "destination": "/agency/mountain-line",
+      "permanent": true
+    },
+    {
+      "source": "/area/morgantown/",
+      "destination": "/agency/mountain-line",
+      "permanent": true
+    },
+    {
+      "source": "/area/nashville",
+      "destination": "/agency/nashvillemta",
+      "permanent": true
+    },
+    {
+      "source": "/area/nashville/",
+      "destination": "/agency/nashvillemta",
+      "permanent": true
+    },
+    {
+      "source": "/area/oklahoma-city",
+      "destination": "/agency/embark",
+      "permanent": true
+    },
+    {
+      "source": "/area/oklahoma-city/",
+      "destination": "/agency/embark",
+      "permanent": true
+    },
+    {
+      "source": "/area/phoenix",
+      "destination": "/agency/valleymetro",
+      "permanent": true
+    },
+    {
+      "source": "/area/phoenix/",
+      "destination": "/agency/valleymetro",
+      "permanent": true
+    },
+    {
+      "source": "/area/richmond",
+      "destination": "/agency/grtc",
+      "permanent": true
+    },
+    {
+      "source": "/area/richmond/",
+      "destination": "/agency/grtc",
+      "permanent": true
+    },
+    {
+      "source": "/area/salt-lake-city",
+      "destination": "/agency/uta",
+      "permanent": true
+    },
+    {
+      "source": "/area/salt-lake-city/",
+      "destination": "/agency/uta",
+      "permanent": true
+    },
+    {
+      "source": "/area/san-antonio",
+      "destination": "/agency/via",
+      "permanent": true
+    },
+    {
+      "source": "/area/san-antonio/",
+      "destination": "/agency/via",
+      "permanent": true
+    },
+    {
+      "source": "/area/st-louis",
+      "destination": "/agency/metrostlouis",
+      "permanent": true
+    },
+    {
+      "source": "/area/st-louis/",
+      "destination": "/agency/metrostlouis",
+      "permanent": true
+    },
+    {
+      "source": "/area/winnipeg",
+      "destination": "/agency/winnipeg",
+      "permanent": true
+    },
+    {
+      "source": "/area/winnipeg/",
+      "destination": "/agency/winnipeg",
+      "permanent": true
+    }
+  ],
   "rewrites": [
     {
       "source": "/api/privacy-region",
@@ -106,6 +318,14 @@
     {
       "source": "/area/:slug/",
       "destination": "/area/:slug/index.html"
+    },
+    {
+      "source": "/region/:slug",
+      "destination": "/region/:slug/index.html"
+    },
+    {
+      "source": "/region/:slug/",
+      "destination": "/region/:slug/index.html"
     },
     {
       "source": "/",
@@ -241,43 +461,43 @@
     },
     {
       "source": "/research",
-      "destination": "/index.html"
+      "destination": "/research/index.html"
     },
     {
       "source": "/research/",
-      "destination": "/index.html"
+      "destination": "/research/index.html"
     },
     {
       "source": "/research/night",
-      "destination": "/index.html"
+      "destination": "/research/night/index.html"
     },
     {
       "source": "/research/night/",
-      "destination": "/index.html"
+      "destination": "/research/night/index.html"
     },
     {
       "source": "/research/free-child-fares",
-      "destination": "/index.html"
+      "destination": "/research/free-child-fares/index.html"
     },
     {
       "source": "/research/free-child-fares/",
-      "destination": "/index.html"
+      "destination": "/research/free-child-fares/index.html"
     },
     {
       "source": "/research/frequent-service",
-      "destination": "/index.html"
+      "destination": "/research/frequent-service/index.html"
     },
     {
       "source": "/research/frequent-service/",
-      "destination": "/index.html"
+      "destination": "/research/frequent-service/index.html"
     },
     {
       "source": "/research/frequent-service/story",
-      "destination": "/index.html"
+      "destination": "/research/frequent-service/story/index.html"
     },
     {
       "source": "/research/frequent-service/story/",
-      "destination": "/index.html"
+      "destination": "/research/frequent-service/story/index.html"
     },
     {
       "source": "/changelog",

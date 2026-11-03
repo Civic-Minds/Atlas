@@ -1,6 +1,7 @@
 {
   "slug": "nyct-bus-bronx",
-  "name": "MTA NYCT Bus (Bronx)",
+  "officialName": "MTA NYCT Bus",
+  "nameQualifier": "Bronx",
   "displayArea": "Bronx",
   "websiteUrl": "http://www.mta.info",
   "center": [
@@ -15,9 +16,10 @@
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-528/latest.zip",
   "region": "New York",
+  "parentAgency": "mta-new-york",
   "lastFeedExpiry": "20270102",
   "lastFeedVersion": "20261009",
-  "lastRefreshedAt": "2026-10-19",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Parkchester, New York",
     "Fordham, New York",
@@ -30,7 +32,7 @@
     "Yonkers, New York",
     "Morningside Heights, New York"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270102",
@@ -44,9 +46,15 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 361
+      "featureCount": 361,
+      "feedExpiry": "20270102",
+      "routeCount": 46,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-19"
+    "checkedAt": "2026-11-03"
   },
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-528/latest.zip",
@@ -54,5 +62,6 @@
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
-  "feedRefreshRetryCount": 0
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "c89c314c4beee52a"
 }

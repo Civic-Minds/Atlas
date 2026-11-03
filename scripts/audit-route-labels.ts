@@ -21,6 +21,7 @@ import { routeLabels } from '../src/utils/format';
 import { agencyNames } from '../src/utils/agencyName';
 import { routeRowLabels } from '../src/components/Interval/SearchSuggestionsPanel';
 import { effectiveMode } from '../shared/modes';
+import { configAgencyName } from '../shared/agencyRegistryName';
 
 type Route = { slug: string; agencyName: string; short: string; long: string | null; type: number };
 type Site = { name: string; byDesign?: boolean; label: (r: Route) => string };
@@ -84,7 +85,7 @@ export function readRoutes(feeds: string, slugs?: string[]): Route[] {
     const zips = readdirSync(dir).filter(f => f.endsWith('.zip')).map(f => join(dir, f)).sort((a, b) => statSync(b).mtimeMs - statSync(a).mtimeMs);
     if (!zips.length) continue;
     const cfgPath = join('config/agencies', `${slug}.json`);
-    const agencyName = existsSync(cfgPath) ? (JSON.parse(readFileSync(cfgPath, 'utf8')).name as string) ?? slug : slug;
+    const agencyName = existsSync(cfgPath) ? configAgencyName(JSON.parse(readFileSync(cfgPath, 'utf8'))) ?? slug : slug;
     let files: Record<string, Uint8Array>;
     try { files = unzipSync(readFileSync(zips[0]), { filter: f => /(^|\/)routes\.txt$/.test(f.name) }); } catch { console.error('bad zip', zips[0]); continue; }
     const name = Object.keys(files)[0];

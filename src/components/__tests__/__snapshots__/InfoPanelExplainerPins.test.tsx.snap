@@ -9,7 +9,7 @@ exports[`explainer text is pinned (CIV-1061) > E1, N2 1`] = `
   "paragraphs": [
     "Atlas by Civic Minds",
     "Grand River Transit's schedule ended on Apr 26, 2026. Times shown may be out of date. This is the latest schedule the agency has published that we could verify.",
-    "We check for new schedules every week. We've checked for a new schedule 4 times since Sep 1, 2026, with our most recent check on Oct 26, 2026.",
+    "We check for new schedules every week. We've checked for a new schedule 4 times since Sep 1, 2026.",
     "A newer schedule may be on the agency's website.",
   ],
 }
@@ -23,7 +23,7 @@ exports[`explainer text is pinned (CIV-1061) > E1, N2 with no check count 1`] = 
   "paragraphs": [
     "Atlas by Civic Minds",
     "Grand River Transit's schedule ended on Apr 26, 2026. Times shown may be out of date. This is the latest schedule the agency has published that we could verify.",
-    "We check for new schedules every week. The feed was last refreshed on Oct 20, 2026.",
+    "We check for new schedules every week.",
     "A newer schedule may be on the agency's website.",
   ],
 }

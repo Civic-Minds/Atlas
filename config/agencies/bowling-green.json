@@ -1,6 +1,6 @@
 {
   "slug": "bowling-green",
-  "name": "City of Bowling Green",
+  "officialName": "City of Bowling Green",
   "center": [
     36.97,
     -86.44
@@ -9,9 +9,9 @@
   "feedUrl": "https://gobg.ridesystems.net/Secure/Admin/Reports/GTFSDownload.aspx",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-40184/latest.zip",
   "region": "Kentucky",
-  "lastFeedExpiry": "20281028",
+  "lastFeedExpiry": "20281103",
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-10-12",
+  "lastRefreshedAt": "2026-11-02",
   "feedQuality": {
     "status": "review",
     "score": 90,
@@ -23,13 +23,19 @@
       "validationWarnings": 1,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 5
+      "featureCount": 7,
+      "feedExpiry": "20281103",
+      "routeCount": 7,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-12"
+    "checkedAt": "2026-11-03"
   },
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://gobg.ridesystems.net/Secure/Admin/Reports/GTFSDownload.aspx",
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20501230",
@@ -37,5 +43,7 @@
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
-  "lastPeekedExpiry": "20501230"
+  "lastPeekedExpiry": "20501230",
+  "lastServiceWeek": "e0cc370be7b1d79e",
+  "feedObtainedAt": "20261102"
 }

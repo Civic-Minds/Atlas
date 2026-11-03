@@ -1,6 +1,6 @@
 {
   "slug": "nashvillemta",
-  "name": "Nashville MTA WeGo Public Transit",
+  "officialName": "Nashville MTA WeGo Public Transit",
   "websiteUrl": "http://www.wegotransit.com",
   "center": [
     36.16,
@@ -10,7 +10,7 @@
   "lastFeedExpiry": "20270102",
   "lastFeedVersion": null,
   "region": "Tennessee",
-  "lastRefreshedAt": "2026-08-10",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Nashville, Tennessee",
     "Hendersonville, Tennessee",
@@ -18,12 +18,37 @@
     "Franklin, Tennessee",
     "Clarksville, Tennessee"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270102",
   "timezone": "America/Chicago",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-360/latest.zip",
-  "lastPeekedExpiry": "20270102"
+  "lastPeekedExpiry": "20270102",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 194,
+      "feedExpiry": "20270102",
+      "routeCount": 37,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
+    },
+    "checkedAt": "2026-11-03"
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "8c7c58ee0fff0843",
+  "feedObtainedAt": "20260930"
 }

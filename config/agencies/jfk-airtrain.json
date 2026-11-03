@@ -1,6 +1,6 @@
 {
   "slug": "jfk-airtrain",
-  "name": "JFK AirTrain",
+  "officialName": "JFK AirTrain",
   "websiteUrl": "https://www.jfkairport.com/to-from-airport/air-train",
   "region": "New York",
   "center": [
@@ -17,10 +17,10 @@
   "mdbFeedUrl": "https://s3.amazonaws.com/datatools-511ny/public/AirTrain_JFK.zip",
   "lastFeedExpiry": "20270228",
   "lastFeedVersion": "jfk_20112026",
-  "lastRefreshedAt": "2026-10-12",
+  "lastRefreshedAt": "2026-11-02",
   "timezone": "America/New_York",
   "lastRawArchiveKey": "20211231-d3fb77447fdc2f06",
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270228",
@@ -33,9 +33,15 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 9
+      "featureCount": 9,
+      "feedExpiry": "20270228",
+      "routeCount": 3,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-12"
+    "checkedAt": "2026-11-03"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -51,5 +57,7 @@
       "mode": 101,
       "reason": "AirTrain JFK (all three routes) is an automated people mover, published as route_type 0 (streetcar)"
     }
-  ]
+  ],
+  "lastServiceWeek": "4512945757f145d2",
+  "feedObtainedAt": "20260625"
 }

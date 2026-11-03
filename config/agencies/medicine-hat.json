@@ -1,6 +1,6 @@
 {
   "slug": "medicine-hat",
-  "name": "Medicine Hat Transit",
+  "officialName": "Medicine Hat Transit",
   "websiteUrl": "https://www.medicinehat.ca/en/roads-parking-and-transportation/transit.aspx",
   "center": [
     50.03,
@@ -21,7 +21,7 @@
   "timezone": "America/Edmonton",
   "lastFeedExpiry": "20270327",
   "lastFeedVersion": "202603280/20260327 09:51:37/20260328 04:00:00",
-  "lastRefreshedAt": "2026-09-08",
+  "lastRefreshedAt": "2026-11-02",
   "feedQuality": {
     "status": "healthy",
     "score": 100,
@@ -31,15 +31,27 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 31
+      "featureCount": 32,
+      "feedExpiry": "20270327",
+      "routeCount": 11,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-09-08"
+    "checkedAt": "2026-11-03"
   },
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270327",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://medicinehat.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/",
-  "lastPeekedExpiry": "20270327"
+  "lastPeekedExpiry": "20270327",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "57e32c15fa5e8ebd",
+  "feedObtainedAt": "20261102"
 }

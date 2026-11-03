@@ -1,6 +1,6 @@
 {
   "slug": "richland-county-oh",
-  "name": "Richland County Transit",
+  "officialName": "Richland County Transit",
   "region": "Ohio",
   "center": [
     40.7584,
@@ -21,19 +21,31 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 11
+      "featureCount": 11,
+      "feedExpiry": "20270504",
+      "routeCount": 11,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-08-21"
+    "checkedAt": "2026-11-03"
   },
   "lastFeedExpiry": "20270504",
   "lastFeedVersion": "21",
-  "lastRefreshedAt": "2026-08-21",
-  "lastFeedCheckAt": "20261019",
+  "lastRefreshedAt": "2026-11-02",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270504",
   "timezone": "America/New_York",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://s3.amazonaws.com/etatransit.gtfs/rctpublic.etaspot.net/gtfs.zip",
-  "lastPeekedExpiry": "20270504"
+  "lastPeekedExpiry": "20270504",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "a9fb4439e2f8f2b9",
+  "feedObtainedAt": "20260504"
 }

@@ -1,6 +1,7 @@
 {
   "slug": "yolobus",
-  "name": "Yolo County Transportation District (Yolobus)",
+  "officialName": "Yolo County Transportation District",
+  "commonName": "Yolobus",
   "websiteUrl": "http://avl.yctd.org/",
   "center": [
     38.6169,
@@ -17,7 +18,7 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-1295/latest.zip",
   "lastFeedExpiry": "20270630",
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-10-03",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "West Sacramento, California",
     "Woodland, California",
@@ -26,24 +27,30 @@
   ],
   "timezone": "America/Los_Angeles",
   "lastRawArchiveKey": "20260201-a6cccff8306719af",
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270630",
   "feedQuality": {
     "status": "review",
-    "score": 70,
+    "score": 93,
     "reasons": [
-      "6 route shapes needed adjustment before display."
+      "1 route has stops whose frequency differs from the overall route schedule."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
-      "shapeAnomalies": 6,
-      "routeHeadwayMismatches": 0,
-      "featureCount": 34
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 1,
+      "featureCount": 38,
+      "feedExpiry": "20270630",
+      "routeCount": 15,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 1,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-03"
+    "checkedAt": "2026-11-03"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -51,5 +58,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://avl.yctd.org/RealTime/google_transit.zip",
-  "lastPeekedExpiry": "20270630"
+  "lastPeekedExpiry": "20270630",
+  "lastServiceWeek": "e5ad0d31cc65b819",
+  "feedObtainedAt": "20261001"
 }

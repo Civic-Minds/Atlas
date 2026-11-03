@@ -36,6 +36,7 @@ const layers: Record<string, GeoJSON.FeatureCollection> = {
           day: 'Weekday',
           tier: '10',
           headway: 10,
+          headwayByPeriod: { midday: 10 },
           stopHeadways: { S1: 10 },
           stopPeriodHeadways: { S1: { midday: 10, overnight: null } },
         },
@@ -53,6 +54,7 @@ const layers: Record<string, GeoJSON.FeatureCollection> = {
           day: 'Weekday',
           tier: '10',
           headway: 10,
+          headwayByPeriod: { midday: 10 },
         },
       },
       {

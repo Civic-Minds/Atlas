@@ -13,12 +13,14 @@ import { applyAnalysisCriteria, BURST_MAX_SPAN_MINUTES, determineTierWithEdgeGap
 import { calculateCorridors } from './transit-logic.js';
 import { detectReferenceDate, getActiveServiceIds } from './transit-calendar.js';
 import { calendarFromNextServiceDates } from './serviceDates.js';
-import { feedVersionDate, pickRiderWeek, serviceAnchor } from './serviceDays.js';
+import { readWeekOf } from './readWeek.js';
 import { dropOneOffRailTrips } from './oneOffServices.js';
+import { prefixGtfsIds } from './supplementalIds.js';
+import { mergeDirectionSplitRoutes } from './directionSplitRoutes.js';
 import { bookingRequiredRouteIds } from './bookedRoutes.js';
 import { DEFAULT_CRITERIA, getTiersForCriteria } from './defaults.js';
 import { normalizeGtfs, type GtfsPreprocess, type GtfsTransformOptions } from './preprocess/run.js';
-import { clearLoneOriginRows, labelConvergingOrigins } from './convergingOrigins.js';
+import { clearLoneOriginRows, labelConvergingOrigins, originLabelOf } from './convergingOrigins.js';
 import { validateGtfs, type ValidationReport } from './validation.js';
 import { resolveDisplayHeadsign } from '../shared/headsignDisplay.js';
 import { routeGroupKey } from '../shared/routeGroupKey.js';
@@ -53,9 +55,9 @@ import { noOwnServicePeriods } from './noOwnService.js';
 import { laterServiceByRoute } from './seasonalPause.js';
 import { nearDuplicateTripIds } from './nearDuplicateTrips.js';
 import { decideDedupe, runsInDay, type DedupePattern } from './featureDedupe.js';
-import { decideHeadline, decidePeriod, liftTierOnDestinationPool, ownStepOneHeadway, pooledStepOneHeadway, settleTier, terminalReading, type PeriodValue } from './routeGrading.js';
+import { decideHeadline, decidePeriod, liftTierOnDestinationPool, OVERSTATED_HEADLINE_MARGIN, ownStepOneHeadway, pooledStepOneHeadway, settleTier, terminalReading, type PeriodValue } from './routeGrading.js';
 import type { SharedStretchPattern } from './sharedStretch.js';
-import { directionStretches, nightOnlyTrips, periodSustainedMid, runsAcrossNightMidpoint, stampStretchShadow, type DirectionStretches, type TripVisit } from './tripSets.js';
+import { directionStretches, gatedRiderWait, nightOnlyTrips, periodSustainedMid, rollupDirection, runsAcrossNightMidpoint, stampStretchShadow, type DirectionStretches, type TripVisit } from './tripSets.js';
 import { buildPooledStopMap, computeStopSharers, pooledHeadwayInWindow, type StopSharers } from './stopPools.js';
 
 export type { GtfsPreprocess };
@@ -476,6 +478,10 @@ export function hasNightServiceAtShapeEndpoints(
 
 export interface ProcessOptions extends GtfsTransformOptions {
   slug?: string;
+  /** #1292: per route and direction, the main stretch's reference stop where the middle stop is skipped by the route's own trips. */
+  refStopOverrides?: Array<{ routeShortName: string; directionId: number; stopId: string }>;
+  /** Prefix for this feed's route, trip and shape ids (a supplemental feed's `supplementalIdPrefixes` entry). */
+  idPrefix?: string;
   /** CIV-1006: force a route's booking-required status by short name, over the pickup_type share rule. */
   bookingRequiredRoutes?: Record<string, boolean>;
   manualBaseFare?: number;
@@ -498,9 +504,10 @@ export interface ProcessOptions extends GtfsTransformOptions {
   referenceDate?: string;
   /**
    * Stage 4 of the reference-date plan (CIV-1011): read the week riders face from the run date
-   * (pickRiderWeek, serviceDays.ts) instead of detectReferenceDate. Set by processAgencyFeeds for
+   * (readWeekOf / pickRiderWeek) instead of detectReferenceDate. Set by processAgencyFeeds for
    * the live map; History backfills and direct callers keep the old picker. An explicit
-   * referenceDate and the referenceDateFromRunDate / next-service-dates opt-ins take precedence.
+   * referenceDate takes precedence; the referenceDateFromRunDate and next-service-dates opt-ins
+   * are ignored while it is on (CIV-1101).
    */
   riderWeek?: boolean;
   /** The anchor for riderWeek (YYYYMMDD); serviceAnchor() of the run date when unset. Tests pin it. */
@@ -734,6 +741,8 @@ export async function processGtfsBuffer(
   options?: ProcessOptions,
 ): Promise<ProcessResult> {
   let gtfs = await parseGtfsZip(buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength) as ArrayBuffer, onStatus, { keepLongShapeJumps: options?.keepLongShapeJumps, skipClusteredJumpRepair: options?.skipClusteredJumpRepair, agencySlug: options?.slug });
+  // A supplemental feed whose ids would collide with the main feed's (NJ Transit rail): see supplementalIds.ts.
+  if (options?.idPrefix) gtfs = prefixGtfsIds(gtfs, options.idPrefix);
   gtfs = normalizeGtfs(gtfs, options, onStatus);
 
   const validation = validateGtfs(gtfs, options?.slug ?? 'feed');
@@ -749,6 +758,14 @@ export async function processGtfsBuffer(
     onStatus?.('  continuing despite validation errors (--force)');
   } else if (validation.warnings > 0) {
     onStatus?.(`Validation: ${validation.warnings} warning(s)`);
+  }
+
+  // #1285: a line the feed splits into one route per direction (BART "Yellow-S" and "Yellow-N") is
+  // one route with two directions. See directionSplitRoutes.ts.
+  const directionSplit = mergeDirectionSplitRoutes(gtfs);
+  if (directionSplit.merged.length > 0) {
+    gtfs = directionSplit.gtfs;
+    onStatus?.(`Direction-split routes merged: ${directionSplit.merged.map(m => `${m.base} (${m.keptRouteId} + ${m.mergedRouteId})`).join(', ')}`);
   }
 
   const routeBaseFares = computeRouteBaseFares(gtfs, options?.manualBaseFare);
@@ -772,17 +789,16 @@ export async function processGtfsBuffer(
     }
   }
 
-  // Agency opt-in: read the feed as of the run date. NCSU Wolfline (Passio) gives every
-  // service a 2025-2027 calendar.txt period and switches semester and summer timetables only
-  // with calendar_dates removals, so the period midpoint (Jul 2, 2026) always read the summer
-  // timetable and dropped the semester-only routes 40 and 51 (#774).
-  // The feed's own calendar, kept for the expiry below when a feed opts into next service dates.
+  // The feed's own calendar, kept for the expiry below when the week replaces the calendar.
   const feedCalendar = gtfs.calendar;
   const feedCalendarDates = gtfs.calendarDates;
-  // Feed opt-in (an agency's nextServiceDatesFeedUrls): rolling per-day service_ids, read from one
-  // typical real weekday, Saturday and Sunday after the run date instead of one reference date. LA Metro Rail lost
-  // Weekday and Sunday on A, B and D in release-mvf8jscd. See serviceDates.ts.
-  const nextServiceDates = options?.dayTypesFromNextServiceDates
+  // CIV-1101: the live map reads one model, the week riders face (readWeekOf, pickRiderWeek), for
+  // every agency. The run-date and next-service-dates opt-ins below are read only by the old
+  // picker: the kill switch (ATLAS_LEGACY_REFERENCE_DATE=1), History backfills and direct callers.
+  const useRiderWeek = !!options?.riderWeek && !options.referenceDate;
+  // Old picker, feed opt-in (an agency's nextServiceDatesFeedUrls): rolling per-day service_ids, read
+  // from one typical real weekday, Saturday and Sunday after the run date. See serviceDates.ts.
+  const nextServiceDates = !useRiderWeek && options?.dayTypesFromNextServiceDates
     ? calendarFromNextServiceDates(gtfs.calendar ?? [], gtfs.calendarDates ?? [], gtfs.trips ?? [], runDateYmd(), {
       skipWeekendEvents: options?.nextServiceDatesSkipWeekendEvents,
     })
@@ -792,18 +808,10 @@ export async function processGtfsBuffer(
     const { Weekday, Saturday, Sunday } = nextServiceDates.dates;
     onStatus?.(`Next service dates: Weekday ${Weekday}, Saturday ${Saturday}, Sunday ${Sunday}`);
   }
-  // Stage 4 (CIV-1011): the week riders face, from the feed's own calendar files (never the
-  // calendar parseGtfs synthesizes from calendar_dates), written back as that week's calendar so
-  // every reader below (phase 1, corridors, converging origins, part-week counts) reads it.
-  const riderWeek = options?.riderWeek && !nextServiceDates && !options.referenceDate && !options.referenceDateFromRunDate
-    ? pickRiderWeek({
-      calendar: gtfs.calendarSynthesized ? [] : gtfs.calendar ?? [],
-      calendarDates: gtfs.calendarDates ?? [],
-      trips: gtfs.trips ?? [],
-      routes: gtfs.routes ?? [],
-      anchor: options.serviceAnchor ?? serviceAnchor(),
-      fileDate: [options.fileDate, feedVersionDate(gtfs.feedInfo?.[0]?.feed_version)].filter((d): d is string => !!d && /^\d{8}$/.test(d)).sort()[0] ?? null,
-    })
+  // Stage 4 (CIV-1011): the week riders face, written back as that week's calendar so every reader
+  // below (phase 1, corridors, converging origins, part-week counts) reads it.
+  const riderWeek = useRiderWeek
+    ? readWeekOf(gtfs, { anchor: options!.serviceAnchor, fileDate: options!.fileDate, legacy: false }).riderWeek
     : null;
   // CIV-1076: routes with trips in the file but none in the read week, and the date each runs again.
   const resumingRoutes = riderWeek
@@ -910,12 +918,25 @@ export async function processGtfsBuffer(
   // is already swapped for a typical week by getActiveServiceIds (#658).
   type StopTripGroup = {
     routeId: string; shortName: string; dirId: string; dayType: DayType; headsign: string | null;
+    /** The trip's display headsign: `headsign` without a rail origin (metricHeadsign, CIV-1152). */
+    displayHeadsign: string | null;
     shapeId: string | null; serviceId: string; routeVariant: string | null;
     // Whether this trip's departures go into the group, headsign and shape maps. Always
     // true outside Weekday; for Weekday, true only when the trip runs on that map's day.
     inGroup: boolean; inHeadsign: boolean; inShape: boolean;
   };
-  const stopTripMeta = new Map<string, { shortName: string; dirId: string; headsign: string | null; shapeId: string | null }>();
+  const railRouteIds = new Set((gtfs.routes ?? []).filter(route => isRailRoute(route, options?.slug)).map(route => route.route_id));
+  // CIV-1152: a rail line's stop values are scoped by headsign, so the origins of a rail direction that converge under
+  // one headsign (convergingOrigins: CTA Green's Harlem-bound trips from Ashland/63rd and from Cottage Grove) each key
+  // their stop data by headsign and origin. Otherwise every origin row read the whole headsign's trips (every 10, where
+  // each branch runs every 20). Every other trip and feature keeps its plain headsign key.
+  const metricHeadsign = (routeId: string, headsign: string | null, variant: unknown): string | null => {
+    const origin = originLabelOf(variant);
+    return headsign && origin && railRouteIds.has(routeId) ? `${headsign} ${origin}` : headsign;
+  };
+  const featureMetricHeadsign = (feature: GeoJsonFeature): string | null =>
+    metricHeadsign(feature.properties.routeId as string, feature.properties.headsign as string | null, feature.properties.routeVariant);
+  const stopTripMeta = new Map<string, { shortName: string; dirId: string; headsign: string | null; displayHeadsign: string | null; shapeId: string | null }>();
   for (const trip of gtfs.trips ?? []) {
     if (!serviceIdToDayTypes.has(trip.service_id)) continue;
     // Use shortName as the group key so agencies with multiple route_ids per line (e.g. GO Transit
@@ -930,8 +951,9 @@ export async function processGtfsBuffer(
       const lastStopId = lastStopByTrip.get(trip.trip_id);
       if (lastStopId) rawHeadsign = stopNameById.get(lastStopId) ?? null;
     }
-    const headsign = resolveDisplayHeadsign(rawHeadsign, shortName, longName);
-    stopTripMeta.set(trip.trip_id, { shortName: groupName, dirId: String(trip.direction_id ?? '0'), headsign, shapeId: trip.shape_id || null });
+    const displayHeadsign = resolveDisplayHeadsign(rawHeadsign, shortName, longName);
+    const headsign = metricHeadsign(trip.route_id, displayHeadsign, trip.route_variant);
+    stopTripMeta.set(trip.trip_id, { shortName: groupName, dirId: String(trip.direction_id ?? '0'), headsign, displayHeadsign, shapeId: trip.shape_id || null });
   }
   const frequencyDepartureCount = frequencyDepartureCounts(gtfs.frequencies, gtfs.stopTimes);
   // Stop maps are keyed by short name + direction (plus headsign and shape), while phase 2
@@ -1122,7 +1144,7 @@ export async function processGtfsBuffer(
         // span or irregular pattern never does (capmetro 550 NB: the midday short turns to
         // Lakeline are span, so the Leander line is not their variant).
         if (feature.geometry.type !== 'LineString' || partialWeekdayFeatures.has(feature) || !keepsHeadline(feature)) continue;
-        const member = sharedPatternKey(feature.properties.routeId as string, feature.properties.headsign as string | null, featureShapeId.get(feature));
+        const member = sharedPatternKey(feature.properties.routeId as string, featureMetricHeadsign(feature), featureShapeId.get(feature));
         if (!member) continue;
         const pool = `${shortName}::${dirId}::${day}`;
         let members = drawnMembersByPool.get(pool);
@@ -1145,12 +1167,11 @@ export async function processGtfsBuffer(
         const pool = `${shortName}::${dirId}::${day}`;
         let set = drawnHeadsignsByPool.get(pool);
         if (!set) { set = new Set(); drawnHeadsignsByPool.set(pool, set); }
-        set.add(`${feature.properties.routeId}|${feature.properties.headsign}`);
+        set.add(`${feature.properties.routeId}|${featureMetricHeadsign(feature)}`);
       }
     }
     return drawnHeadsignsByPool.get(poolKey) ?? new Set();
   };
-  const railRouteIds = new Set((gtfs.routes ?? []).filter(route => isRailRoute(route, options?.slug)).map(route => route.route_id));
   // A pattern: route_id + shape for buses (every trip on the feature's own shape, as in its
   // shape-scoped stop metrics), route_id + headsign for rail (headsign-scoped metrics).
   const sharedPatternKey = (routeId: string, headsign: string | null, shapeId: string | null | undefined): string | null => {
@@ -1335,7 +1356,7 @@ export async function processGtfsBuffer(
     // The slot's representative weekday (#716) and how much of the slot this pattern carries
     // on it: the dedupe rules themselves are in featureDedupe.ts.
     const repWeekday = result.day === 'Weekday'
-      ? (cleanedForDedup ? representativeWeekday.headsign.get(`${groupName}::${result.dir}::${cleanedForDedup}`) : undefined)
+      ? (cleanedForDedup ? representativeWeekday.headsign.get(`${groupName}::${result.dir}::${metricHeadsign(result.route, cleanedForDedup, result.routeVariant)}`) : undefined)
         ?? representativeWeekday.group.get(`${groupName}::${result.dir}`)
       : undefined;
     // A pattern "carries" the representative weekday when it has at least half of the slot's
@@ -1343,7 +1364,7 @@ export async function processGtfsBuffer(
     // never preferred over a more frequent pattern just for running on that day.
     const repIndex = repWeekday != null ? WEEKDAYS.indexOf(repWeekday) : -1;
     const slotCounts = repWeekday == null ? undefined
-      : (cleanedForDedup ? weekdayCounts.headsign.get(`${groupName}::${result.dir}::${cleanedForDedup}`) : undefined)
+      : (cleanedForDedup ? weekdayCounts.headsign.get(`${groupName}::${result.dir}::${metricHeadsign(result.route, cleanedForDedup, result.routeVariant)}`) : undefined)
         ?? weekdayCounts.group.get(`${groupName}::${result.dir}`);
     const shapeCounts = result.shapeId ? weekdayCounts.shape.get(result.shapeId) : undefined;
     const newRunsOnRepDay = repWeekday != null && (result.daysIncluded?.includes(repWeekday) ?? false);
@@ -1484,7 +1505,7 @@ export async function processGtfsBuffer(
   }
 
   for (const [feature, slot] of featureStopHeadwaySlots) {
-    const headsignKey = `${slot.shortName}::${slot.dirId}::${slot.day}::${feature.properties.routeId}::${(feature.properties.headsign as string | null) ?? ''}`;
+    const headsignKey = `${slot.shortName}::${slot.dirId}::${slot.day}::${feature.properties.routeId}::${featureMetricHeadsign(feature) ?? ''}`;
     if (readsRushPool(feature)) rushEligibleHeadsigns.add(headsignKey);
     if (!addsToSharedPool(feature)) continue;
     sharedEligibleHeadsigns.add(headsignKey);
@@ -1995,9 +2016,10 @@ export async function processGtfsBuffer(
       const poolKey = `${grp.shortName}::${grp.dirId}::${grp.dayType}`;
       const key = `${poolKey}::${member}`;
       const prev = sharedPatternTrip.get(key);
-      if (!prev) sharedPatternTrip.set(key, { poolKey, routeId: grp.routeId, headsigns: new Set([grp.headsign ?? '']), tripId: trip.trip_id, stops });
+      // The display headsign: a rail origin's member is told apart by its route variant, as on a bus (CIV-1152).
+      if (!prev) sharedPatternTrip.set(key, { poolKey, routeId: grp.routeId, headsigns: new Set([grp.displayHeadsign ?? '']), tripId: trip.trip_id, stops });
       else {
-        prev.headsigns.add(grp.headsign ?? '');
+        prev.headsigns.add(grp.displayHeadsign ?? '');
         if (stops > prev.stops) { prev.tripId = trip.trip_id; prev.stops = stops; }
       }
     }
@@ -2152,7 +2174,7 @@ export async function processGtfsBuffer(
       feature.properties.nightService = false;
       continue;
     }
-    const featureHeadsign = feature.properties.headsign as string | null;
+    const featureHeadsign = featureMetricHeadsign(feature);
     const featureRoute = routeById.get(feature.properties.routeId as string);
     const railFeature = isRailRoute(featureRoute, options?.slug);
     const headsignMap = featureHeadsign
@@ -3198,7 +3220,7 @@ export async function processGtfsBuffer(
     // pool and a sibling pattern ends at another terminal nearby (terminalReadsSibling).
     const terminalStopId = terminalReadsSibling().reads ? terminalReadsSibling().lastPooled ?? onShape[onShape.length - 1]?.stopId : onShape[onShape.length - 1]?.stopId;
     const terminalPeriodHw = terminalStopId ? allStopPeriodHw[terminalStopId] : undefined;
-    const featHeadsign = feature.properties.headsign as string | null;
+    const featHeadsign = featureMetricHeadsign(feature);
     const hsStopMap = featHeadsign
       ? stopDepsByHeadsignGroup.get(`${shortName}::${dirId}::${day}::${featHeadsign}`)
       : undefined;
@@ -3306,7 +3328,7 @@ export async function processGtfsBuffer(
       // CIV-1069: a headsign with its own terminal list but under three of its own departures in the period
       // shows a value read from other headsigns' trips at the stop (CTA 77 Belmont & Octavia: "every 10" at
       // AM peak with no trip of its own). The value stays (the route filter reads it: a short variant's far
-      // end may really be served that rarely); the card row reads no regular service for these periods.
+      // end may really be served that rarely); the card row reads Irregular for these periods.
       if (headsignTerminalPeriodHw && period.headway != null && hsSparseH == null) {
         const { start, end } = PERIODS[pk];
         const own = new Set(forCrossMidnightWindow(terminalScopedTimes ?? [], end).filter(t => t >= start && t <= end)).size;
@@ -3452,6 +3474,9 @@ export async function processGtfsBuffer(
   stampWorstDirectionHeadways(features);
   stampRouteIrregularDirection(features);
 
+  // CIV-1204: the headline each row had before the rider wait replaced it. Feed quality's stop-versus-route check
+  // measures the feed, so it keeps reading this value (a longer rider wait is not a feed problem).
+  const headlineBeforeRiderWait = new Map<GeoJsonFeature, number>();
   // Frequency focus step 3, shadow only: the stretch selector's values beside today's, for the
   // report. Nothing reads them, and tiles leave them out. Routes with no direction_id in the feed
   // get no stretch data, as the midday cap does.
@@ -3471,7 +3496,10 @@ export async function processGtfsBuffer(
         const stop = stopsById.get(stopId);
         return stop ? [stop.lat, stop.lon] : undefined;
       };
-      const stretches = directionStretches(gKey, directionTrips, coord);
+      // #1292: a configured reference stop (NYC J: the AM skip-stop pattern runs past Chauncey St).
+      const [ovRoute, ovDir] = gKey.split('::');
+      const mainRefStop = options?.refStopOverrides?.find(o => o.routeShortName === ovRoute && String(o.directionId) === ovDir)?.stopId;
+      const stretches = directionStretches(gKey, directionTrips, coord, directionTrips, 'shared', mainRefStop);
       // The night version (Ryan, 2026-10-15): the same direction from its 2-5am trips only.
       const nightTrips = nightOnlyTrips(directionTrips);
       if (nightTrips.length > 0) stretches.night = directionStretches(gKey, nightTrips, coord, directionTrips, 'mostVisits');
@@ -3483,6 +3511,50 @@ export async function processGtfsBuffer(
       const slot = featureStopHeadwaySlots.get(feature as GeoJsonFeature);
       return slot ? { group: slot.shortName, dirId: slot.dirId, day: slot.day } : null;
     }, feature => Object.keys((feature.properties.stopPeriodCoverageHeadways as Record<string, unknown> | undefined) ?? {}));
+    // CIV-1161 step 1 with the CIV-1204 gate (Ryan, 2026-10-31): a headline that riders wait 10+ minutes longer than, at
+    // the main stretch's reference stop (#1255), reads their wait instead (riderWait, never faster), and its tier can only
+    // get worse, where the direction runs through the window that wait reads there (gatedRiderWait). Where it does not, the
+    // headline and tier stay, and the row says the headline window has no regular cadence (headlineNoRegular), the
+    // route card's verdict, so no fallback prints the headline as "every N". The filter values are untouched.
+    {
+      const rollups = new Map<string, ReturnType<typeof rollupDirection>>();
+      for (const feature of features) {
+        const slot = featureStopHeadwaySlots.get(feature as GeoJsonFeature);
+        const p = feature.properties;
+        const headline = p.headway as number | null | undefined;
+        if (!slot || p.stopId != null || headline == null || p.tier === 'span') continue;
+        const key = `${slot.shortName}::${slot.dirId}::${slot.day}`;
+        const stretches = stretchesByKey.get(key);
+        if (!stretches?.main || !stretches.timesAtStop) continue;
+        if (!rollups.has(key)) rollups.set(key, rollupDirection(stretches));
+        const rollup = rollups.get(key);
+        if (!rollup) continue;
+        const dropOff = new Set((p.dropOffOnlyStops as string[] | undefined) ?? []);
+        // #1255 (Ryan's one-calculation rule): the wait is read at the main stretch's reference stop, the stop and
+        // departures the filter and the card read (main.refStop, main.times), not as a median over every stop of the
+        // main stretch: where the one regular pattern is a minor one (Pace 542: 6 of 28 trips; MATA 30 Saturday: 3 of 6),
+        // most of those stops see only its few trips and read the all-day fallback (337, 240).
+        const main = stretches.main;
+        const board = gatedRiderWait([main.refStop], () => main.times, dropOff,
+          { middayRuns: rollup.midday.runs, limited: rollup.limitedOnly, gradingWindow: DEFAULT_CRITERIA.dayTypes[slot.day as DayType]?.timeWindow ?? { start: 420, end: 1320 } });
+        if (!board || board.wait < headline + OVERSTATED_HEADLINE_MARGIN) continue;
+        const tierBefore = p.tier as string | undefined;
+        if (board.passes) {
+          const scale = getTiersForCriteria(String(p.routeType ?? ''), DEFAULT_CRITERIA.dayTypes[slot.day as DayType]?.tiers ?? SURFACE_TIER_MAXES, DEFAULT_CRITERIA.modeTierOverrides);
+          const byWait = headwayToTierOn(board.wait, scale);
+          headlineBeforeRiderWait.set(feature as GeoJsonFeature, headline);
+          p.headway = board.wait;
+          if ((TIER_RANK[byWait] ?? -1) > (TIER_RANK[tierBefore ?? ''] ?? -1)) p.tier = byWait;
+        } else {
+          p.headlineNoRegular = true;
+        }
+        console.log('CIV1204\t' + JSON.stringify({
+          agency: options?.slug, route: slot.shortName, dir: slot.dirId, day: slot.day, headsign: p.headsign ?? null,
+          routeType: p.routeType ?? null, headline, tier: tierBefore ?? null, wait: board.wait, boardStops: board.stops,
+          allDayStops: board.allDayStops, passes: board.passes, headlineAfter: p.headway, tierAfter: p.tier ?? null,
+        }));
+      }
+    }
     // #961: a row whose own overnight value #897 withheld carries no direction overnight value
     // either, so the card's fallback cannot print the window's wait as "every N". The stretch
     // check in tripSets reads the reference stop, where the window can look different from the
@@ -3499,6 +3571,7 @@ export async function processGtfsBuffer(
       if (p.stopId != null || !(feature.properties as { routeId?: unknown }).routeId) continue;
       const periods = noOwnServicePeriods(p);
       if (periods.length > 0) (feature.properties as Record<string, unknown>).noOwnServiceByPeriod = periods;
+      else delete (feature.properties as Record<string, unknown>).noOwnServiceByPeriod;
     }
     // A partial-weekday route-day (#710) keeps today's filter: its stretch reads one weekday, while
     // its service runs on others and continues on the next day's service after midnight.
@@ -3580,7 +3653,7 @@ export async function processGtfsBuffer(
       if (!slot) return null;
       const member = sharedPatternKey(
         feature.properties.routeId as string,
-        feature.properties.headsign as string | null,
+        featureMetricHeadsign(feature),
         featureShapeId.get(feature),
       );
       return member ? { poolKey: `${slot.shortName}::${slot.dirId}::${slot.day}`, memberKey: member } : null;
@@ -3735,17 +3808,31 @@ export async function processGtfsBuffer(
   const routeFeatures = features.filter(feature =>
     feature.properties.routeShortName != null,
   );
-  const routeHeadwayMismatches = routeFeatures.filter(feature => {
-    const headway = Number(feature.properties.headway);
+  const mismatchFeatures = routeFeatures.filter(feature => {
+    const headway = Number(headlineBeforeRiderWait.get(feature) ?? feature.properties.headway);
     const minStopHeadway = Number(feature.properties.minStopHeadway);
     return Number.isFinite(headway) && Number.isFinite(minStopHeadway) && minStopHeadway > 0 && headway >= minStopHeadway * 1.8;
-  }).length;
+  });
+  const routeHeadwayMismatches = mismatchFeatures.length;
+  // CIV-533 share rules: the routes each problem touches. A shape counts only when Atlas could not
+  // repair it (cut short at an implausible jump, or a detour the repair left in place), and a
+  // mismatch only on a main-line row: a tail or variant row is split from the line by design.
+  const routeIdsOf = (list: readonly GeoJsonFeature[]) => new Set(list.map(feature => String(feature.properties.routeId)));
+  const problemShapeIds = new Set((gtfs.shapeAnomalies ?? [])
+    .filter(anomaly => anomaly.truncated || (anomaly.clusteredJumps && !anomaly.repairedClusteredJumps))
+    .map(anomaly => anomaly.shapeId));
+  const resumeDates = Object.values(resumingRoutes).sort();
   const feedQuality = assessFeedQuality({
     validationErrors: validation.errors,
     validationWarnings: validation.warnings,
     shapeAnomalies: gtfs.shapeAnomalies?.length ?? 0,
     routeHeadwayMismatches,
     featureCount: routeFeatures.length,
+    routeCount: routeIdsOf(routeFeatures).size,
+    problemShapes: problemShapeIds.size,
+    problemShapeRoutes: routeIdsOf(routeFeatures.filter(feature => problemShapeIds.has(featureShapeId.get(feature) ?? ''))).size,
+    mismatchRoutes: routeIdsOf(mismatchFeatures.filter(feature => feature.properties.stretchRole !== 'tail' && feature.properties.stretchRole !== 'variant')).size,
+    resumesOn: routeFeatures.length === 0 ? resumeDates[0] ?? null : null,
     // Same rule as the registry's lastFeedExpiry, so a stale feed_info end date
     // does not mark a feed whose calendar runs on as expired (#687).
     feedExpiry: recordedFeedExpiry(feedInfo?.feed_end_date ?? null, calendarExpiry, new Date().toISOString().slice(0, 10), calendarOnlyEnd),

@@ -20,14 +20,15 @@ describe('route lists show a range where alternating branches share a stretch', 
     // No pooled PM value on the shared stretch: the single number (the map's 64) stays.
     expect(routeListDisplay(lw, 'pmPeak')).toEqual({ headway: 64, limited: false });
     // Limited stays limited, never a range.
-    expect(routeListDisplay(lw, 'amPeak')).toEqual({ headway: null, limited: true });
+    expect(routeListDisplay(lw, 'amPeak')).toEqual({ headway: null, limited: true, noRegular: true });
   });
 
   it('Expo Line Saturday: every 3 on the trunk, 6 on each branch', () => {
     const expo = rows('expoSaturday');
-    // The map's number is 12 (the branches); the card keeps 3 on the trunk and 6 per branch.
+    // The map's number is 12 (the branches); the card keeps 3 on the trunk and 6 per branch. The list shows no range: the range
+    // rule needs a low end of at least 5 (CIV-1227, as the cards and History).
     expect(routeListDisplayHeadway(expo, 'midday')).toBe(12);
-    expect(routeListDisplay(expo, 'midday').sharedHeadway).toBe(3);
+    expect(routeListDisplay(expo, 'midday').sharedHeadway).toBeUndefined();
   });
 
   it('a short shared stretch never makes a range (Miami 37)', () => {

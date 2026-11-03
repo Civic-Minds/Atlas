@@ -1,6 +1,6 @@
 {
   "slug": "go",
-  "name": "GO Transit",
+  "officialName": "GO Transit",
   "websiteUrl": "https://www.gotransit.com",
   "region": "Ontario",
   "displayArea": "Greater Toronto & Hamilton Area",
@@ -16,8 +16,8 @@
   ],
   "feedUrl": "https://assets.metrolinx.com/raw/upload/Documents/Metrolinx/Open%20Data/GO-GTFS.zip",
   "lastFeedExpiry": "20261127",
-  "lastFeedVersion": "20261005110625",
-  "lastRefreshedAt": "2026-10-07",
+  "lastFeedVersion": "20261028133417",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Mississauga, Ontario",
     "Brampton, Ontario",
@@ -37,25 +37,30 @@
       "1": "Westbound"
     }
   },
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261127",
   "feedQuality": {
-    "status": "degraded",
-    "score": 40,
+    "status": "review",
+    "score": 82,
     "reasons": [
-      "3 route shapes needed adjustment before display.",
-      "12 route have stops whose frequency differs from the overall route schedule."
+      "8 route have stops whose frequency differs from the overall route schedule."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
-      "shapeAnomalies": 3,
-      "routeHeadwayMismatches": 12,
-      "featureCount": 407
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 15,
+      "featureCount": 418,
+      "feedExpiry": "20261127",
+      "routeCount": 45,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 8,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-07"
+    "checkedAt": "2026-11-03"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -63,5 +68,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://assets.metrolinx.com/raw/upload/Documents/Metrolinx/Open%20Data/GO-GTFS.zip",
-  "lastPeekedExpiry": "20261127"
+  "lastPeekedExpiry": "20261127",
+  "lastServiceWeek": "1d00efb929df1b99",
+  "feedObtainedAt": "20261102"
 }

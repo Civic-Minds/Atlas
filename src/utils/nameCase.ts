@@ -5,9 +5,11 @@
  * - 'stop': stop and destination names; cased only when the feed sent them in capitals (CIV-935).
  * - 'route': one part of a route label; the stop rule plus the route-name acronyms (ROUTE_NAME_ACRONYMS).
  */
-export type NameCaseMode = 'title' | 'stop' | 'route';
+/** 'liveStop' is 'stop' plus Live's own rule that WB and EB stay in capitals (Ryan, CIV-1117 row 6); the map keeps 'stop' until he OKs it there. */
+export type NameCaseMode = 'title' | 'stop' | 'liveStop' | 'route';
 
 export function nameCase(text: string, mode: NameCaseMode): string {
+  if (mode === 'liveStop') return directionCaps(stopNameCase(text));
   return mode === 'title' ? titleCase(text) : mode === 'stop' ? stopNameCase(text) : routeLabelCase(text);
 }
 
@@ -243,10 +245,12 @@ function titleCase(s: string): string {
  * as written ("McDonald Ave", "Lower Jarvis St at The Esplanade"), the same rule routeLabelCase uses for route names.
  */
 function stopNameCase(name: string): string {
-  const cased = writtenInCapitals(name) ? keepFeedCodes(name, keepFeedParticles(name, titleCase(name))) : name;
-  // Westbound and eastbound ramps stay in capitals even in a mixed-case name ("Gardiner Expressway (WB On Ramp)",
-  // Ryan, CIV-1117 row 6).
-  return cased.replace(/\b(Wb|Eb)\b/g, w => w.toUpperCase());
+  return writtenInCapitals(name) ? keepFeedCodes(name, keepFeedParticles(name, titleCase(name))) : name;
+}
+
+/** Live only: westbound and eastbound ramps stay in capitals even in a mixed-case name ("Gardiner Expressway (WB On Ramp)", Ryan, CIV-1117 row 6). */
+function directionCaps(name: string): string {
+  return name.replace(/\b(Wb|Eb)\b/g, w => w.toUpperCase());
 }
 
 /** Compass points and travel directions, always in capitals ("SE", "NB"). */

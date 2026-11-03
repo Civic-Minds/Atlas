@@ -1,6 +1,6 @@
 {
   "slug": "lcta",
-  "name": "Luzerne County Transportation Authority",
+  "officialName": "Luzerne County Transportation Authority",
   "displayArea": "Wilkes-Barre",
   "websiteUrl": "http://www.lctabus.com/",
   "center": [
@@ -12,31 +12,43 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-4555/latest.zip",
   "lastFeedExpiry": "20301214",
   "lastFeedVersion": "20260828",
-  "lastRefreshedAt": "2026-09-07",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Scranton, Pennsylvania"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20301214",
   "timezone": "America/New_York",
   "feedQuality": {
     "status": "review",
-    "score": 80,
+    "score": 95,
     "reasons": [
-      "2 map lines were repaired — Atlas fixed unusual route geometry before displaying it."
+      "1 route has stops whose frequency differs from the overall route schedule."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
       "shapeAnomalies": 2,
-      "routeHeadwayMismatches": 0,
-      "featureCount": 79
+      "routeHeadwayMismatches": 1,
+      "featureCount": 81,
+      "feedExpiry": "20301214",
+      "routeCount": 21,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 1,
+      "resumesOn": null
     },
-    "checkedAt": "2026-09-07"
+    "checkedAt": "2026-11-03"
   },
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://realtimelctabus.availtec.com/InfoPoint/gtfs-zip.ashx",
-  "lastPeekedExpiry": "20301214"
+  "lastPeekedExpiry": "20301214",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "62237f3469318790",
+  "feedObtainedAt": "20260828"
 }

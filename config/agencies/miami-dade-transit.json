@@ -1,6 +1,6 @@
 {
   "slug": "miami-dade-transit",
-  "name": "Miami-Dade Transit",
+  "officialName": "Miami-Dade Transit",
   "displayArea": "Miami-Dade County",
   "websiteUrl": "http://www.miamidade.gov/transit",
   "center": [
@@ -8,11 +8,30 @@
     -80.1918
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-331/latest.zip",
+  "routeSplits": [
+    {
+      "routeShortName": "2600",
+      "parts": [
+        {
+          "shortName": "Green",
+          "longName": "Palmetto ↔ Dadeland South",
+          "color": "A2CF5F",
+          "servesStop": "PALMETTO"
+        },
+        {
+          "shortName": "Orange",
+          "longName": "Miami International Airport ↔ Dadeland South",
+          "color": "F04E23",
+          "servesStop": "MIAMI INTERNATIONAL AIRPORT"
+        }
+      ]
+    }
+  ],
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-331/latest.zip",
   "lastFeedExpiry": "20271231",
   "lastFeedVersion": null,
   "region": "Florida",
-  "lastRefreshedAt": "2026-09-17",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "North Miami, Florida",
     "Allapattah, Florida",
@@ -25,34 +44,44 @@
     "Flagami, Florida",
     "Coral Gables, Florida"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271231",
   "timezone": "America/New_York",
   "feedQuality": {
-    "status": "review",
-    "score": 90,
-    "reasons": [
-      "1 route frequency needs checking — some stops appear to have more frequent service than the route's overall schedule suggests."
-    ],
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
       "shapeAnomalies": 0,
-      "routeHeadwayMismatches": 1,
-      "featureCount": 579
+      "routeHeadwayMismatches": 0,
+      "featureCount": 582,
+      "feedExpiry": "20271231",
+      "routeCount": 123,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-09-17"
+    "checkedAt": "2026-11-03"
   },
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-331/latest.zip",
   "modeOverrides": [
     {
       "routeType": 2,
-      "routeShortName": "2600",
+      "routeShortName": "Green",
       "mode": 1,
-      "reason": "Metrorail is a heavy-rail metro, published as route_type 2 (commuter rail)"
+      "reason": "Metrorail is a heavy-rail metro, published as route_type 2 (commuter rail); routeSplits names the 2600 route Green and Orange"
+    },
+    {
+      "routeType": 2,
+      "routeShortName": "Orange",
+      "mode": 1,
+      "reason": "Metrorail is a heavy-rail metro, published as route_type 2 (commuter rail); routeSplits names the 2600 route Green and Orange"
     },
     {
       "routeType": 0,
@@ -73,5 +102,11 @@
       "reason": "Metromover MIA is an automated people mover, published as route_type 0 (streetcar)"
     }
   ],
-  "lastPeekedExpiry": "20271231"
+  "lastPeekedExpiry": "20271231",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "6ec3ac3915f250c5",
+  "feedObtainedAt": "20260731"
 }

@@ -1,6 +1,7 @@
 {
   "slug": "ladot",
-  "name": "Los Angeles Department of Transportation (LADOT/DASH)",
+  "officialName": "Los Angeles Department of Transportation",
+  "commonName": "LADOT/DASH",
   "websiteUrl": "https://www.ladottransit.com/",
   "center": [
     34.05,
@@ -10,7 +11,7 @@
   "lastFeedExpiry": "20271231",
   "lastFeedVersion": "30-5-20-2026 El Sereno Tripper,47-7/9/2026 Changes,45-CE 439 and Metrolink v2,183-Downtown DASH eff 7-11-2026",
   "region": "California",
-  "lastRefreshedAt": "2026-10-12",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Los Angeles, California",
     "Florence-Graham, California",
@@ -23,7 +24,7 @@
     "North Hills, California",
     "North Hollywood, California"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271231",
@@ -39,13 +40,21 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 223
+      "featureCount": 225,
+      "feedExpiry": "20271231",
+      "routeCount": 51,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-12"
+    "checkedAt": "2026-11-03"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
-  "lastPeekedExpiry": "20271231"
+  "lastPeekedExpiry": "20271231",
+  "lastServiceWeek": "d29027b89561fe67",
+  "feedObtainedAt": "20261101"
 }

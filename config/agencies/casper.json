@@ -1,6 +1,6 @@
 {
   "slug": "casper",
-  "name": "Casper Area Transit",
+  "officialName": "Casper Area Transit",
   "region": "Wyoming",
   "center": [
     42.8501,
@@ -8,8 +8,8 @@
   ],
   "feedUrl": "https://passio3.com/casper/passioTransit/gtfs/google_transit.zip",
   "lastFeedExpiry": "20271231",
-  "lastFeedVersion": "20250228",
-  "lastRefreshedAt": "2026-10-12",
+  "lastFeedVersion": "20260917",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Casper, Wyoming",
     "Evansville, Wyoming",
@@ -25,11 +25,17 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 22
+      "featureCount": 32,
+      "feedExpiry": "20271231",
+      "routeCount": 8,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-12"
+    "checkedAt": "2026-11-03"
   },
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271231",
@@ -39,5 +45,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://passio3.com/casper/passioTransit/gtfs/google_transit.zip",
-  "lastPeekedExpiry": "20271231"
+  "lastPeekedExpiry": "20271231",
+  "lastServiceWeek": "093e4234723bf495",
+  "feedObtainedAt": "20261102"
 }

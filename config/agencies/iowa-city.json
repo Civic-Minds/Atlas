@@ -1,6 +1,6 @@
 {
   "slug": "iowa-city",
-  "name": "Iowa City Transit",
+  "officialName": "Iowa City Transit",
   "websiteUrl": "https://www.icgov.org/city-government/departments-and-divisions/transit",
   "center": [
     41.66,
@@ -9,7 +9,7 @@
   "feedUrl": "https://files.mobilitydatabase.org/mdb-559/latest.zip",
   "lastFeedExpiry": "20270401",
   "lastFeedVersion": "UTC: 17-Sep-2026 13:46",
-  "lastRefreshedAt": "2026-10-03",
+  "lastRefreshedAt": "2026-11-02",
   "region": "Iowa",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-559/latest.zip",
   "bbox": [
@@ -21,7 +21,7 @@
   "cities": [
     "Iowa City, Iowa"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270401",
@@ -34,9 +34,15 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 23
+      "featureCount": 26,
+      "feedExpiry": "20270401",
+      "routeCount": 13,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-03"
+    "checkedAt": "2026-11-03"
   },
   "timezone": "America/Chicago",
   "feedRefreshStatus": "current",
@@ -45,5 +51,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-559/latest.zip",
-  "lastPeekedExpiry": "20270401"
+  "lastPeekedExpiry": "20270401",
+  "lastServiceWeek": "448bcaf24a596817",
+  "feedObtainedAt": "20260917"
 }

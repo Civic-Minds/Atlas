@@ -1,6 +1,7 @@
 {
   "slug": "dijon",
-  "name": "Divia (Dijon)",
+  "officialName": "Divia",
+  "nameQualifier": "Dijon",
   "region": "Bourgogne-Franche-Comté",
   "center": [
     47.322,

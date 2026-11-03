@@ -1,6 +1,7 @@
 {
   "slug": "dubuque",
-  "name": "The Jule (Dubuque)",
+  "officialName": "The Jule",
+  "nameQualifier": "Dubuque",
   "websiteUrl": "https://www.cityofdubuque.org/274/Transit",
   "center": [
     42.5,
@@ -9,7 +10,7 @@
   "feedUrl": "https://myride.cityofdubuque.org/gtfs/google_transit.zip",
   "lastFeedExpiry": "20280330",
   "lastFeedVersion": "09_21_2026",
-  "lastRefreshedAt": "2026-10-03",
+  "lastRefreshedAt": "2026-11-02",
   "region": "Iowa",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2083/latest.zip",
   "bbox": [
@@ -21,7 +22,7 @@
   "cities": [
     "Dubuque, Iowa"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20280330",
@@ -35,9 +36,15 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 26
+      "featureCount": 35,
+      "feedExpiry": "20280330",
+      "routeCount": 18,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-03"
+    "checkedAt": "2026-11-03"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -45,5 +52,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://myride.cityofdubuque.org/gtfs/google_transit.zip",
-  "lastPeekedExpiry": "20280330"
+  "lastPeekedExpiry": "20280330",
+  "lastServiceWeek": "330a76f73d7ab85e",
+  "feedObtainedAt": "20260916"
 }

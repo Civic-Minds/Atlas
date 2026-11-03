@@ -1,6 +1,6 @@
 {
   "slug": "coralville",
-  "name": "Coralville Transit",
+  "officialName": "Coralville Transit",
   "displayArea": "Coralville",
   "websiteUrl": "http://www.coralville.org/166/Bus-Schedules-Route-Maps",
   "center": [
@@ -22,25 +22,30 @@
   "cities": [
     "Iowa City, Iowa"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270601",
   "feedQuality": {
     "status": "review",
-    "score": 80,
+    "score": 90,
     "reasons": [
-      "1 minor schedule issue found while reading the feed.",
-      "1 route shape needed adjustment before display."
+      "1 minor schedule issue found while reading the feed."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 1,
       "shapeAnomalies": 1,
       "routeHeadwayMismatches": 0,
-      "featureCount": 10
+      "featureCount": 12,
+      "feedExpiry": "20270601",
+      "routeCount": 6,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-03"
+    "checkedAt": "2026-11-03"
   },
   "timezone": "America/Chicago",
   "feedRefreshStatus": "current",
@@ -49,5 +54,6 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-196/latest.zip",
-  "lastPeekedExpiry": "20270601"
+  "lastPeekedExpiry": "20270601",
+  "refusedFeedSha256": "e231dafbbb77d7b574af81d96a2f30fa42c02e6531230b0a83ebbb105face947"
 }

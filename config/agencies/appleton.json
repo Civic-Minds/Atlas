@@ -1,6 +1,7 @@
 {
   "slug": "appleton",
-  "name": "Valley Transit (Appleton/Fox Cities)",
+  "officialName": "Valley Transit",
+  "nameQualifier": "Appleton/Fox Cities",
   "websiteUrl": "https://myvalleytransit.com/",
   "region": "Wisconsin",
   "center": [
@@ -15,7 +16,7 @@
   "cities": [
     "Appleton, Wisconsin"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270102",

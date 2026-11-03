@@ -472,10 +472,11 @@ describe('shared-stretch-only routes (#850)', () => {
     const features = (layers.ttc as GeoJSON.FeatureCollection).features;
     const directions = features.filter(f => f.geometry.type === 'LineString').map(f => ({ ...(f.properties as ShapeProperties) }));
     expect(computeFrequencySegmentOverlay(layers, 'midday', 10).sharedStretchRoutes.length).toBeGreaterThan(0);
-    expect(routePartMeetsFilter(features, directions, 'midday', 10)).toBe(true);
+    expect(routePartMeetsFilter(features, directions, 'midday', 10).length).toBeGreaterThan(0);
     // At 5 min no stretch qualifies: the map draws none and the card keeps the general note.
     expect(computeFrequencySegmentOverlay(layers, 'midday', 5).sharedStretchRoutes).toEqual([]);
-    expect(routePartMeetsFilter(features, directions, 'midday', 5)).toBe(false);
-    expect(selectedRoutePartMeetsFilterNotice(15)).toBe('Only part of this route runs every 15\u00A0minutes or better during the selected period.');
+    expect(routePartMeetsFilter(features, directions, 'midday', 5)).toEqual([]);
+    expect(selectedRoutePartMeetsFilterNotice(15, '3–7 PM').replace(/\u2060/g, '').replace(/[\u00a0\u202f]/g, ' ')).toBe('Only the shared stretch runs every 15 min or better from 3–7 PM.');
+    expect(selectedRoutePartMeetsFilterNotice(15, null, 'Northbound').replace(/[\u00a0\u202f]/g, ' ')).toBe('Northbound, only the shared stretch runs every 15 min or better all day.');
   });
 });

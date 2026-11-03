@@ -6,6 +6,8 @@
  */
 import type { ShapeProperties, TimePeriod } from '../hooks/useIntervalStats';
 import { NO_PERIOD_SERVICE_TILE_VALUE } from '../../shared/pmtilesProps';
+import { routeFilterHeadway } from '../../shared/routeHeadwayFilter';
+import { rowReadsPeriodEdge } from './effectiveHeadway';
 
 type PeriodKey = Exclude<TimePeriod, 'all'>;
 
@@ -21,8 +23,16 @@ export interface StretchRow {
   refStop: string;
   /** The stretch's own value in the period (same rules as a whole route): a number, null for no value, undefined on older data. */
   value: number | null | undefined;
-  /** The row reads "no regular service during this period" (#955: one gap, or under three departures), never its wait as "every N". */
+  /** The row reads "Runs irregularly in this period" (#955: one gap, or under three departures), never its wait as "every N". */
   noRegular: boolean;
+}
+
+/** A shared value at or under this share of a row's own value is materially better than it (the Combined rule). */
+export const SHARED_STRETCH_RATIO = 0.65;
+
+/** The shared section is materially better than the typical branch: worth its own row ("Shared stretch every N"). */
+export function trunkBeatsBranches(trunk: number, terminal: number): boolean {
+  return trunk <= terminal * SHARED_STRETCH_RATIO && terminal / trunk <= 4;
 }
 
 /** The stretch rows a feature's stretchMeta describes, main first then tails in order. Empty on data without it. */
@@ -64,7 +74,7 @@ export function variantOnlyRow(features: readonly ShapeProperties[]): ShapePrope
   return [...features].sort((a, b) => (b.stopOrder?.length ?? 0) - (a.stopOrder?.length ?? 0))[0];
 }
 
-/** The direction's filter value for a variant-only row: a number, or null for no regular service. Undefined when absent. */
+/** The direction's filter value for a variant-only row: a number, or null for no regular cadence. Undefined when absent. */
 export function variantRowHeadway(f: ShapeProperties, period: TimePeriod): number | null | undefined {
   if (f.stretchRole !== 'variant' || period === 'all') return undefined;
   return f.directionFilterHeadwayByPeriod?.[period as PeriodKey];
@@ -80,8 +90,18 @@ export function tailNotThroughPeriod(f: ShapeProperties, period: TimePeriod): bo
   return f.stretchMeta?.tails?.[f.stretchIndex ?? 0]?.notThrough?.includes(period as PeriodKey) ?? false;
 }
 
+/**
+ * #1277: a branch that does not run through the period keeps its row when the row's until or from words are true of its own
+ * trips: the edge was read on the branch's own stretch, and the branch has departures of its own in the period. An edge read
+ * on a stretch other rows share can be another branch's trips (OC Transpo 25 Sunday AM: the first two trips from 7:25 go to
+ * Blair, not Carson's; TTC 130 late: no trip runs via Maybrook), so such a row stays hidden, as #1115 has it.
+ */
+export function notThroughRowSaysWhen(f: ShapeProperties, period: TimePeriod): boolean {
+  return f.stretchPeriodEdge?.[period as PeriodKey]?.stretch !== undefined && rowReadsPeriodEdge(f, period);
+}
+
 export interface RouteContract {
-  /** The route's filter value in the period: a number, or null for no regular service. */
+  /** The route's filter value in the period: a number, or null for no regular cadence. */
   filterValue: number | null;
   /** The route runs in the period at all (the "All" level). */
   runs: boolean;
@@ -122,6 +142,34 @@ export function routeContract(features: readonly ShapeProperties[], period: Time
 }
 
 /**
+ * #1247: the stored value as the map's filter reads it. The tile rule counts the route value only on a row that is not span and
+ * runs in the period itself, so where no row of the route does (AC Transit E weekday AM: both rows span), the filter reads no
+ * service, and a list or card must not show the stored number ("every 53" while the route fails 60). The value is the lowest
+ * routeFilterHeadway across the route's rows, as routePassesHeadwayFilter decides; null where none qualifies.
+ */
+function filterReadValue(features: readonly ShapeProperties[], period: TimePeriod, stored: number | null): number | null {
+  if (stored == null) return null;
+  let best: number | null = null;
+  for (const feature of features) {
+    const value = routeFilterHeadway(feature, period);
+    if (value != null && (best == null || value < best)) best = value;
+  }
+  return best;
+}
+
+/** routeContract with the filter's reading of its value (#1247): for route lists and the route card. */
+export function routeFilterContract(features: readonly ShapeProperties[], period: TimePeriod): RouteContract | undefined {
+  const contract = routeContract(features, period);
+  return contract && { ...contract, filterValue: filterReadValue(features, period, contract.filterValue) };
+}
+
+/** routeAllDayContract with the filter's reading of its value (#1247). */
+export function routeFilterAllDayContract(features: readonly ShapeProperties[]): { filterValue: number | null; limited: boolean } | undefined {
+  const allDay = routeAllDayContract(features);
+  return allDay && { ...allDay, filterValue: filterReadValue(features, 'all', allDay.filterValue) };
+}
+
+/**
  * Whether a route direction has regular service in the period, by the same filter values the route card reads: this
  * direction's own value when the data has one (the card shows a row with a value even when the route's is empty, #954:
  * SF Muni 8 PM, Fisherman's Wharf every 8), otherwise the route's. True for all day and for older data without the
@@ -154,7 +202,7 @@ export function isOneGapRow(f: ShapeProperties, period: TimePeriod): boolean {
 
 /**
  * #955: the route's period value is one gap between a few departures: the direction that sets it (its value is the
- * route's) is flagged. Lists, compare and the card's scheduled line then say no regular service, as the card's rows do.
+ * route's) is flagged. Lists, compare and the card's scheduled line then say Irregular, as the card's rows do.
  */
 export function routeValueIsOneGap(features: readonly ShapeProperties[], period: TimePeriod): boolean {
   const contract = routeContract(features, period);

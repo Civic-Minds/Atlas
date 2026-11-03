@@ -5,6 +5,8 @@ describe('Live wording', () => {
   it('writes the build time in Toronto time, "Built Oct 16, 6:12 PM"', () => {
     expect(builtText('2026-10-16T22:12:03Z')).toBe('Built Oct 16, 6:12 PM');
     expect(builtText('2026-10-16T13:05:00Z')).toBe('Built Oct 16, 9:05 AM');
+    expect(builtText('2026-10-16T22:00:00Z')).toBe('Built Oct 16, 6 PM');
+    expect(builtText('2026-10-16T04:30:00Z')).toBe('Built Oct 16, 12:30 AM');
   });
 
   it('counts the covered routes with no mode word, since replacement buses can run a streetcar route (CIV-1075)', () => {

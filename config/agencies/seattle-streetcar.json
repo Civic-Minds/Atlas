@@ -1,6 +1,6 @@
 {
   "slug": "seattle-streetcar",
-  "name": "Seattle Streetcar",
+  "officialName": "Seattle Streetcar",
   "websiteUrl": "https://www.seattlestreetcar.org/",
   "region": "Washington",
   "center": [
@@ -16,27 +16,31 @@
   "feedUrl": "https://metro.kingcounty.gov/GTFS/google_transit.zip",
   "agencyId": "23",
   "lastFeedExpiry": "20270326",
-  "lastFeedVersion": "FAL26-161.2",
-  "lastRefreshedAt": "2026-10-19",
-  "lastFeedCheckAt": "20261019",
+  "lastFeedVersion": "FAL26-161.5",
+  "lastRefreshedAt": "2026-11-02",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271231",
   "timezone": "America/Los_Angeles",
   "feedQuality": {
-    "status": "review",
-    "score": 70,
-    "reasons": [
-      "7 route shapes needed adjustment before display."
-    ],
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
-      "shapeAnomalies": 7,
+      "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 12
+      "featureCount": 12,
+      "feedExpiry": "20270326",
+      "routeCount": 2,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-19"
+    "checkedAt": "2026-11-03"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -44,5 +48,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://metro.kingcounty.gov/GTFS/google_transit.zip",
-  "lastPeekedExpiry": "20270326"
+  "lastPeekedExpiry": "20270326",
+  "lastServiceWeek": "519eb4a14554b073",
+  "feedObtainedAt": "20261102"
 }

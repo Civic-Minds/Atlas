@@ -34,12 +34,17 @@ on:
         required: false
         type: string
       concurrency:
-        description: 'Agencies reprocessed in parallel (1-4). The runner has 16 GB; 2 matches the local run.'
+        description: 'Agencies each reprocess process keeps in flight (1-4). Processing is CPU work on one core, so this only overlaps downloads; 2 matches the local run.'
         required: false
         default: '2'
         type: string
+      shards:
+        description: 'Separate reprocess processes, one per core (1-4; CIV-1110). The release diff gate still runs once over every agency before any R2 write.'
+        required: false
+        default: '3'
+        type: string
       start_at:
-        description: 'Publish only. Resume a stopped run: reprocess (everything), pmtiles (agency artifacts already in R2), history, or publish. history and publish need resume_run_id.'
+        description: 'Publish only. Resume a stopped run: reprocess (everything), pmtiles (the earlier run staged its agency files), history, publish, or promote (the release is public; copy its files to top-level). Every step after reprocess needs resume_run_id.'
         required: false
         default: reprocess
         type: choice
@@ -48,12 +53,13 @@ on:
           - pmtiles
           - history
           - publish
+          - promote
       agencies:
         description: 'Dry run only. Space-separated agency slugs (e.g. "ttc translink") whose regenerated JSON (routes, stops, corridors, trips, stops-meta) is uploaded as an artifact.'
         required: false
         type: string
       resume_run_id:
-        description: 'Publish only. The run id of the earlier run to resume (its saved stamps and release manifest are downloaded). Required for start_at history or publish.'
+        description: 'Publish only. The run id of the earlier run to resume (its saved stamps and release manifest are downloaded, and its staged agency files under atlas/runs/<id>/ are used). Required for every start_at after reprocess.'
         required: false
         type: string
 
@@ -88,6 +94,7 @@ jobs:
       REF_INPUT: ${{ inputs.ref }}
       ALLOW_INPUT: ${{ inputs.allow }}
       CONCURRENCY_INPUT: ${{ inputs.concurrency }}
+      SHARDS_INPUT: ${{ inputs.shards }}
       AGENCIES_INPUT: ${{ inputs.agencies }}
       NODE_OPTIONS: --max-old-space-size=8192
     steps:
@@ -97,6 +104,7 @@ jobs:
           RO_SECRET: ${{ secrets.R2_RO_SECRET_ACCESS_KEY }}
         run: |
           [[ "$CONCURRENCY_INPUT" =~ ^[1-4]$ ]] || { echo "concurrency must be 1-4, got: $CONCURRENCY_INPUT"; exit 1; }
+          [[ "$SHARDS_INPUT" =~ ^[1-4]$ ]] || { echo "shards must be 1-4, got: $SHARDS_INPUT"; exit 1; }
           for pair in $ALLOW_INPUT; do
             [[ "$pair" =~ ^[a-z0-9-]+:[a-z-]+$ ]] || { echo "Bad allow value: $pair (expected <slug>:<flag>)"; exit 1; }
           done
@@ -147,7 +155,7 @@ jobs:
         run: |
           allow_args=()
           for pair in $ALLOW_INPUT; do allow_args+=(--allow "$pair"); done
-          REPROCESS_CONCURRENCY="$CONCURRENCY_INPUT" npm run reprocess-derived-artifacts -- "${allow_args[@]}"
+          REPROCESS_CONCURRENCY="$CONCURRENCY_INPUT" REPROCESS_SHARDS="$SHARDS_INPUT" bash pipeline/reprocess-sharded.sh ${allow_args[@]+"${allow_args[@]}"}
         env:
           R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
           R2_BUCKET_NAME: ${{ secrets.R2_BUCKET_NAME }}
@@ -209,7 +217,9 @@ jobs:
 
       - name: Build PMTiles from the reprocessed data (dry run)
         if: always() && steps.summary.outputs.report == 'true'
-        run: npm run build-pmtiles -- --dry-run
+        # The run prefix has nothing staged in a dry run (read-only keys): this checks the listing and
+        # that every agency falls back to its published files (CIV-522).
+        run: npm run build-pmtiles -- --dry-run --source-prefix "atlas/runs/${{ github.run_id }}"
         env:
           R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
           R2_BUCKET_NAME: ${{ secrets.R2_BUCKET_NAME }}
@@ -289,19 +299,25 @@ jobs:
       RESUME_RUN_ID: ${{ inputs.resume_run_id }}
       ALLOW_INPUT: ${{ inputs.allow }}
       CONCURRENCY_INPUT: ${{ inputs.concurrency }}
+      SHARDS_INPUT: ${{ inputs.shards }}
       NODE_OPTIONS: --max-old-space-size=8192
+      # CIV-522: the run's agency files go under atlas/runs/<run id>/, not over the top-level files.
+      # The release is built from there, and the top-level files change only in the promote step,
+      # after the release is public. A resumed run keeps the run id that reprocessed.
+      RUN_PREFIX: atlas/runs/${{ inputs.resume_run_id || github.run_id }}
     steps:
       - name: Check the inputs
         run: |
           [[ "$CONCURRENCY_INPUT" =~ ^[1-4]$ ]] || { echo "concurrency must be 1-4, got: $CONCURRENCY_INPUT"; exit 1; }
+          [[ "$SHARDS_INPUT" =~ ^[1-4]$ ]] || { echo "shards must be 1-4, got: $SHARDS_INPUT"; exit 1; }
           for pair in $ALLOW_INPUT; do
             [[ "$pair" =~ ^[a-z0-9-]+:[a-z-]+$ ]] || { echo "Bad allow value: $pair (expected <slug>:<flag>)"; exit 1; }
           done
           if [ -n "$RESUME_RUN_ID" ] && ! [[ "$RESUME_RUN_ID" =~ ^[0-9]+$ ]]; then
             echo "resume_run_id must be a run id (digits), got: $RESUME_RUN_ID"; exit 1
           fi
-          if { [ "$START_AT" = "history" ] || [ "$START_AT" = "publish" ]; } && [ -z "$RESUME_RUN_ID" ]; then
-            echo "start_at=$START_AT needs resume_run_id: the release manifest from the earlier run."; exit 1
+          if [ "$START_AT" != "reprocess" ] && [ -z "$RESUME_RUN_ID" ]; then
+            echo "start_at=$START_AT needs resume_run_id: the earlier run's staged files and release manifest."; exit 1
           fi
 
       - uses: actions/checkout@v4
@@ -397,14 +413,14 @@ jobs:
       # continue-on-error: when some agency is refused the run exits 1 after uploading the
       # others. Their stamped expiry files must still be kept, so the steps below run and the
       # failure is re-raised afterwards.
-      - name: Reprocess every agency and write the artifacts to R2
+      - name: Reprocess every agency and stage the artifacts in R2
         id: reprocess
         if: inputs.start_at == 'reprocess'
         continue-on-error: true
         run: |
           allow_args=()
           for pair in $ALLOW_INPUT; do allow_args+=(--allow "$pair"); done
-          REPROCESS_CONCURRENCY="$CONCURRENCY_INPUT" npm run reprocess-derived-artifacts -- --write "${allow_args[@]}"
+          REPROCESS_CONCURRENCY="$CONCURRENCY_INPUT" REPROCESS_SHARDS="$SHARDS_INPUT" bash pipeline/reprocess-sharded.sh --write --run-prefix "$RUN_PREFIX" ${allow_args[@]+"${allow_args[@]}"}
         env:
           R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
           R2_BUCKET_NAME: ${{ secrets.R2_BUCKET_NAME }}
@@ -549,7 +565,7 @@ jobs:
       # --allow-stale-data (docs/operations/DATA_REPROCESSING.md).
       - name: Build and upload the PMTiles release (not public yet)
         if: inputs.start_at == 'reprocess' || inputs.start_at == 'pmtiles'
-        run: npm run build-pmtiles -- --allow-stale-data
+        run: npm run build-pmtiles -- --allow-stale-data --source-prefix "$RUN_PREFIX"
         env:
           R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
           R2_BUCKET_NAME: ${{ secrets.R2_BUCKET_NAME }}
@@ -590,7 +606,7 @@ jobs:
       # Writes atlas/history-config.json to the LIVE bucket straight away; it is not gated by the
       # publish step below.
       - name: Rebuild history config
-        if: inputs.start_at != 'publish'
+        if: inputs.start_at != 'publish' && inputs.start_at != 'promote'
         run: npm run build-history
         env:
           ATLAS_HISTORY_V2: '1'
@@ -604,10 +620,23 @@ jobs:
       # Repeat every --allow accepted during the reprocess: publish compares the whole release
       # with the public one again.
       - name: Publish the verified data release
+        if: inputs.start_at != 'promote'
         run: |
           allow_args=()
           for pair in $ALLOW_INPUT; do allow_args+=(--allow "$pair"); done
           npm run publish-data-release -- "${allow_args[@]}"
+        env:
+          R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+          R2_BUCKET_NAME: ${{ secrets.R2_BUCKET_NAME }}
+          R2_PUBLIC_URL: ${{ secrets.R2_PUBLIC_URL }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+
+      # Only now, with the release public, do the top-level agency files (local dev and beta-only
+      # agencies read them) take this run's copies (CIV-522). A failed promote is rerun alone with
+      # start_at=promote; it never touches the public release.
+      - name: Promote the run's agency files to top-level
+        run: npx tsx pipeline/promote-run-artifacts.ts --run-prefix "$RUN_PREFIX"
         env:
           R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
           R2_BUCKET_NAME: ${{ secrets.R2_BUCKET_NAME }}
@@ -620,10 +649,12 @@ jobs:
       # exactly as the weekly refresh does (CI is dispatched on the branch, then auto-merge).
       - name: Read the published release id
         id: agency-pages-release
+        if: inputs.start_at != 'promote'
         run: echo "id=$(node -p "require('./shared/data/agency-pages.json').releaseId")" >> "$GITHUB_OUTPUT"
 
       - name: Open agency pages pull request
         id: agency-pages-pr
+        if: inputs.start_at != 'promote'
         uses: peter-evans/create-pull-request@v8
         with:
           token: ${{ secrets.GITHUB_TOKEN }}

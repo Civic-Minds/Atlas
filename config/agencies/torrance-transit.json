@@ -1,6 +1,6 @@
 {
   "slug": "torrance-transit",
-  "name": "Torrance Transit",
+  "officialName": "Torrance Transit",
   "websiteUrl": "http://Transit.TorranceCA.gov",
   "center": [
     33.8586,
@@ -10,7 +10,7 @@
   "feedUrl": "https://transit.torranceca.gov/home/showpublisheddocument/16673/639196160075870000",
   "lastFeedExpiry": "20270109",
   "lastFeedVersion": "S1000178",
-  "lastRefreshedAt": "2026-10-03",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Torrance, California",
     "Gardena, California",
@@ -25,7 +25,7 @@
   ],
   "timezone": "America/Los_Angeles",
   "lastRawArchiveKey": "20240113-a600269e90446424",
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270109",
@@ -38,9 +38,15 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 54
+      "featureCount": 54,
+      "feedExpiry": "20270109",
+      "routeCount": 12,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-03"
+    "checkedAt": "2026-11-03"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -48,5 +54,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://transit.torranceca.gov/home/showpublisheddocument/16673/639196160075870000",
-  "lastPeekedExpiry": "20270109"
+  "lastPeekedExpiry": "20270109",
+  "lastServiceWeek": "ad91f457204c6304",
+  "feedObtainedAt": "20260922"
 }

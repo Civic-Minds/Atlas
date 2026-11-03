@@ -1,6 +1,6 @@
 {
   "slug": "rivercities",
-  "name": "RiverCities Transit",
+  "officialName": "RiverCities Transit",
   "websiteUrl": "http://rctransit.org",
   "center": [
     45.9434,
@@ -18,28 +18,32 @@
   "timezone": "America/Los_Angeles",
   "lastFeedExpiry": "20261130",
   "lastFeedVersion": "UTC: 01-Oct-2026 04:57",
-  "lastRefreshedAt": "2026-10-12",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Longview, Washington",
     "Kelso, Washington",
     "Woodland, Washington"
   ],
   "feedQuality": {
-    "status": "review",
-    "score": 80,
-    "reasons": [
-      "2 route shapes needed adjustment before display."
-    ],
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
       "shapeAnomalies": 2,
       "routeHeadwayMismatches": 0,
-      "featureCount": 17
+      "featureCount": 17,
+      "feedExpiry": "20261130",
+      "routeCount": 10,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-12"
+    "checkedAt": "2026-11-03"
   },
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261130",
@@ -49,5 +53,7 @@
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
-  "lastPeekedExpiry": "20261130"
+  "lastPeekedExpiry": "20261130",
+  "lastServiceWeek": "eb910d48835cb5f1",
+  "feedObtainedAt": "20261001"
 }

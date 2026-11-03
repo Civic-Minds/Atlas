@@ -1,6 +1,7 @@
 {
   "slug": "art",
-  "name": "Arlington Transit (ART)",
+  "officialName": "Arlington Transit",
+  "commonName": "ART",
   "websiteUrl": "http://www.arlingtontransit.com",
   "region": "Virginia",
   "center": [
@@ -16,31 +17,37 @@
   "feedUrl": "https://www.arlingtontransit.com/shared/content/gtfs/art/google_transit.zip",
   "lastFeedExpiry": "20271231",
   "lastFeedVersion": "Updated: Oct 2, 2026, 2:02 PM",
-  "lastRefreshedAt": "2026-10-07",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Arlington, Virginia",
     "Washington, District of Columbia",
     "Alexandria, Virginia"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271231",
   "timezone": "America/New_York",
   "feedQuality": {
     "status": "review",
-    "score": 80,
+    "score": 93,
     "reasons": [
-      "2 route have stops whose frequency differs from the overall route schedule."
+      "1 route has stops whose frequency differs from the overall route schedule."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
       "shapeAnomalies": 0,
-      "routeHeadwayMismatches": 2,
-      "featureCount": 57
+      "routeHeadwayMismatches": 1,
+      "featureCount": 57,
+      "feedExpiry": "20271231",
+      "routeCount": 14,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 1,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-07"
+    "checkedAt": "2026-11-03"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -48,5 +55,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://www.arlingtontransit.com/shared/content/gtfs/art/google_transit.zip",
-  "lastPeekedExpiry": "20271231"
+  "lastPeekedExpiry": "20271231",
+  "lastServiceWeek": "4189b685e2409a47",
+  "feedObtainedAt": "20261002"
 }

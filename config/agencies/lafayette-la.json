@@ -1,6 +1,6 @@
 {
   "slug": "lafayette-la",
-  "name": "Lafayette Transit System",
+  "officialName": "Lafayette Transit System",
   "websiteUrl": "https://www.ridelts.com/",
   "region": "Louisiana",
   "center": [
@@ -26,14 +26,20 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 27
+      "featureCount": 28,
+      "feedExpiry": "20281103",
+      "routeCount": 15,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-12"
+    "checkedAt": "2026-11-03"
   },
-  "lastFeedExpiry": "20281028",
-  "lastFeedVersion": "10/6/2026",
-  "lastRefreshedAt": "2026-10-12",
-  "lastFeedCheckAt": "20261019",
+  "lastFeedExpiry": "20281103",
+  "lastFeedVersion": "10/23/2026",
+  "lastRefreshedAt": "2026-11-02",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20991231",
@@ -44,5 +50,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://lts.syncromatics.com/gtfs",
-  "lastPeekedExpiry": "20991231"
+  "lastPeekedExpiry": "20991231",
+  "lastServiceWeek": "a0dee429c4c6eb1f",
+  "feedObtainedAt": "20261102"
 }

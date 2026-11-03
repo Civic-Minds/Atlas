@@ -166,10 +166,12 @@ describe('real routes with alternating gaps (#772)', () => {
   it('MATA 42 Sunday: Woodrow 30, 30, 60, 60, 30, 30 reads 40, the mean wait', async () => {
     // Real MATA feed (2026-10-12 to 11-10), route 42, Sunday service 3-Sun. Toward Frayser at
     // Woodrow: 10:07 10:37 11:07 12:07 13:07 13:37 14:07 15:07, midday gaps 30, 30, 60, 60, 30,
-    // 30. The long gaps take half the time, not most of it, so the mean (40) stands.
+    // 30. The long gaps take half the time, not most of it, so the mean (40) stands at Woodrow. CIV-1161/CIV-1204:
+    // the headline reads the rider's wait over the main stretch's boarding stops, 60 (the median of 133 stops), and the
+    // direction runs through midday, so that wait stands.
     expect(await headlines('mata-42-sunday', 'mata', 'Sunday')).toEqual({
       '0 AIRWAYS TRANSIT': 60,
-      '1 FRAYSER at WOODROW': 40,
+      '1 FRAYSER at WOODROW': 60,
     });
   });
 

@@ -1,6 +1,6 @@
 {
   "slug": "wata",
-  "name": "Williamsburg Area Transit Authority",
+  "officialName": "Williamsburg Area Transit Authority",
   "displayArea": "Williamsburg",
   "websiteUrl": "http://www.gowata.org",
   "center": [
@@ -15,17 +15,17 @@
   ],
   "feedUrl": "https://gtfs.wata.cadavl.com/WATA/GTFS/GTFS_WATA.zip",
   "region": "Virginia",
-  "lastFeedExpiry": "20261126",
+  "lastFeedExpiry": "20261203",
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-10-19",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Newport News, Virginia",
     "Hampton, Virginia"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261119",
+  "expiredFeedCheckExpiry": "20261203",
   "feedQuality": {
     "status": "healthy",
     "score": 100,
@@ -35,9 +35,15 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 69
+      "featureCount": 69,
+      "feedExpiry": "20261203",
+      "routeCount": 12,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-19"
+    "checkedAt": "2026-11-03"
   },
   "timezone": "America/New_York",
   "feedRefreshStatus": "current",
@@ -46,5 +52,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://gtfs.wata.cadavl.com/WATA/GTFS/GTFS_WATA.zip",
-  "lastPeekedExpiry": "20261126"
+  "lastPeekedExpiry": "20261203",
+  "lastServiceWeek": "0edd6e6da2533406",
+  "feedObtainedAt": "20261102"
 }

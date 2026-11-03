@@ -1,6 +1,7 @@
 {
   "slug": "nyct-bus-si",
-  "name": "MTA NYCT Bus (Staten Island)",
+  "officialName": "MTA NYCT Bus",
+  "nameQualifier": "Staten Island",
   "websiteUrl": "http://www.mta.info",
   "center": [
     40.634,
@@ -14,9 +15,10 @@
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-514/latest.zip",
   "region": "New York",
+  "parentAgency": "mta-new-york",
   "lastFeedExpiry": "20270102",
   "lastFeedVersion": "20261009",
-  "lastRefreshedAt": "2026-10-19",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Staten Island, New York",
     "Bayonne, New Jersey",
@@ -29,14 +31,14 @@
     "New York City, New York",
     "Manhattan, New York"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270102",
   "timezone": "America/New_York",
   "feedQuality": {
     "status": "review",
-    "score": 70,
+    "score": 91,
     "reasons": [
       "5 route have stops whose frequency differs from the overall route schedule."
     ],
@@ -45,9 +47,15 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 5,
-      "featureCount": 225
+      "featureCount": 225,
+      "feedExpiry": "20270102",
+      "routeCount": 58,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 5,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-19"
+    "checkedAt": "2026-11-03"
   },
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-514/latest.zip",
@@ -55,5 +63,6 @@
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
-  "feedRefreshRetryCount": 0
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "82190a31965e331b"
 }

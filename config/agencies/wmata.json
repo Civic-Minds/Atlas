@@ -1,6 +1,7 @@
 {
   "slug": "wmata",
-  "name": "WMATA (Washington, DC)",
+  "officialName": "WMATA",
+  "nameQualifier": "Washington, DC",
   "shortName": "WMATA",
   "region": "Washington DC",
   "center": [
@@ -20,7 +21,7 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-1846/latest.zip",
   "lastFeedExpiry": "20270327",
   "lastFeedVersion": "S1000251",
-  "lastRefreshedAt": "2026-10-19",
+  "lastRefreshedAt": "2026-11-02",
   "websiteUrl": "https://www.wmata.com",
   "cities": [
     "Downtown DC, District of Columbia",
@@ -34,7 +35,7 @@
     "Centreville, Virginia",
     "Reston, Virginia"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270327",
@@ -47,9 +48,15 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 757
+      "featureCount": 757,
+      "feedExpiry": "20270327",
+      "routeCount": 126,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-19"
+    "checkedAt": "2026-11-03"
   },
   "timezone": "America/New_York",
   "feedRefreshStatus": "current",
@@ -62,8 +69,10 @@
     {
       "feedExpiry": "20270102",
       "feedVersion": null,
-      "rawArchiveKey": "20270102-b9d427b0f14b87c6"
+      "rawArchiveKey": "20270102-863bbf6fdcd978b8"
     }
   ],
-  "lastPeekedExpiry": "20270327"
+  "lastPeekedExpiry": "20270327",
+  "lastServiceWeek": "c43410d55931867f",
+  "feedObtainedAt": "20260828"
 }

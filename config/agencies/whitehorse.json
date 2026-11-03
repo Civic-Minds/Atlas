@@ -1,6 +1,6 @@
 {
   "slug": "whitehorse",
-  "name": "Whitehorse Transit",
+  "officialName": "Whitehorse Transit",
   "websiteUrl": "https://whitehorse.transloc.com",
   "center": [
     60.72,
@@ -18,11 +18,12 @@
     60.8076,
     -134.9969
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20501230",
   "timezone": "America/Whitehorse",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-689/latest.zip"
+  "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-689/latest.zip",
+  "refusedFeedSha256": "fa52abc9d8f4d81b75472580473937cb10ab2524bd732bac7bf8c2b8a313530e"
 }

@@ -16,7 +16,7 @@ describe('bunched trips never set a cadence (#826)', () => {
     const route = rows('lanta410');
     const dieruff = route.find(p => p.headsign === 'Dieruff High School')!;
     expect(routeCardDisplayHeadway(dieruff, 'amPeak')).toBeNull();
-    expect(routeListDisplay(route, 'amPeak')).toEqual({ headway: null, limited: true });
+    expect(routeListDisplay(route, 'amPeak')).toEqual({ headway: null, limited: true, noRegular: true });
   });
 
   it('Dutchess J MS: the hourly pattern speaks, not the 2 min pairs', () => {

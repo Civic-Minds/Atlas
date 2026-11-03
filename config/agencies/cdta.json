@@ -1,6 +1,6 @@
 {
   "slug": "cdta",
-  "name": "Capital District Transportation Authority",
+  "officialName": "Capital District Transportation Authority",
   "displayArea": "Albany",
   "websiteUrl": "http://www.cdta.org",
   "region": "New York",
@@ -12,13 +12,13 @@
   "lastFeedExpiry": "20261128",
   "lastFeedVersion": "Major",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-538/latest.zip",
-  "lastRefreshedAt": "2026-08-24",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "West Albany, New York",
     "Schenectady, New York",
     "Albany, New York"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261128",
@@ -31,12 +31,24 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 315
+      "featureCount": 367,
+      "feedExpiry": "20261128",
+      "routeCount": 64,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-08-24"
+    "checkedAt": "2026-11-03"
   },
   "timezone": "America/New_York",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://www.cdta.org/schedules/google_transit.zip",
-  "lastPeekedExpiry": "20261128"
+  "lastPeekedExpiry": "20261128",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "2ead3cf8a6e734c2",
+  "feedObtainedAt": "20261002"
 }

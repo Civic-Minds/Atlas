@@ -26,6 +26,7 @@ import {
 // the pre-Oct 8 artifact is no longer published).
 // Real, weekday lines only (release-mv0iozy4 vs the 2026-10-11 final reprocess
 // dry run): waco, clemson-cat, uga (#707).
+// Real, weekday sample (release-mvw2q0ig vs the MDB S1000544 dry run): ttc-live-modes, ttc-mdb-s1000544 (#1251).
 const fixture = (name: string) => readFileSync(resolve('pipeline/__tests__/fixtures/release-diff', name), 'utf8');
 const TODAY = '20261010';
 
@@ -69,6 +70,31 @@ describe('release diff gate: red flags', () => {
     const flags = evaluateAgency({ slug: 'njt-rail', live, next, allowMissingLive: true }, [], TODAY);
     expect(names(flags)).toContain('njt-rail:mode-lost:red');
     expect(flags.find(f => f.flag === 'mode-lost')!.message).toMatch(/loses Commuter Rail/);
+  });
+
+  // #1251: the Mobility Database TTC copy (S1000544, Nov 1 to Dec 19) has Lines 1, 2 and 4 only as trip-less shuttle
+  // stubs, so the subway disappears while routes drop only 5% (232 -> 220 weekday), under the drop guard.
+  // Fixtures: weekday lines of release-mvw2q0ig and of that zip's dry run, rail plus a bus and streetcar sample.
+  it('blocks TTC losing the subway to the MDB copy, whatever the route count says (#1251)', () => {
+    const live = summarizeArtifact(fixture('ttc-live-modes.json'), null);
+    const next = summarizeArtifact(fixture('ttc-mdb-s1000544.json'), null);
+    expect(live.modes).toContain('Subway/Metro');
+    const flags = evaluateAgency({ slug: 'ttc', live, next, allowMissingLive: true }, [], TODAY);
+    expect(names(flags)).toContain('ttc:mode-lost:red');
+    expect(names(flags)).not.toContain('ttc:drop:red');
+    const result = applyOverrides(flags, parseGateOverrides([]));
+    expect(blockReason('ttc', result)).toMatch(/loses Subway\/Metro.*--allow ttc:mode-lost after review/);
+    expect(applyOverrides(flags, parseGateOverrides(['--allow', 'ttc:mode-lost'])).blocked).toEqual([]);
+  });
+
+  it('a normal TTC refresh that keeps the subway passes (#1251)', () => {
+    const live = summarizeArtifact(fixture('ttc-live-modes.json'), null);
+    const refreshed = JSON.parse(fixture('ttc-live-modes.json')) as { features: Array<{ properties: Record<string, unknown> }> };
+    // A routine timetable change: a few headways move by a minute.
+    for (const feature of refreshed.features.slice(0, 5)) if (typeof feature.properties.headway === 'number') feature.properties.headway += 1;
+    const flags = evaluateAgency({ slug: 'ttc', live, next: summarizeArtifact(JSON.stringify(refreshed), null), allowMissingLive: true }, [], TODAY);
+    expect(flags.filter(f => f.level === 'red')).toEqual([]);
+    expect(blockReason('ttc', applyOverrides(flags, parseGateOverrides([])))).toBeNull();
   });
 
   it('flags sct 25 -> 10 routes and amarillo 344 -> 41 stops with the shared drop guard (#655)', () => {

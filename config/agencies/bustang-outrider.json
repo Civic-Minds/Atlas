@@ -1,13 +1,51 @@
 {
   "slug": "bustang-outrider",
-  "name": "Bustang Outrider",
+  "officialName": "Bustang Outrider",
   "websiteUrl": "http://ridebustang.com/",
   "center": [
     38.5,
     -104.9
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-2330/latest.zip",
+  "sameNameRoutes": [
+    {
+      "shortName": "CDOT Outrider",
+      "longName": "Crested Butte - Denver",
+      "name": "Crested Butte–Denver"
+    },
+    {
+      "shortName": "CDOT Outrider",
+      "longName": "Alamosa - Pueblo",
+      "name": "Alamosa–Pueblo"
+    },
+    {
+      "shortName": "CDOT Outrider",
+      "longName": "Lamar - Colorado Springs",
+      "name": "Lamar–Colorado Springs"
+    },
+    {
+      "shortName": "CDOT Outrider",
+      "longName": "Durango - Grand Junction",
+      "name": "Durango–Grand Junction"
+    },
+    {
+      "shortName": "CDOT Outrider",
+      "longName": "Craig - Denver",
+      "name": "Craig–Denver"
+    },
+    {
+      "shortName": "CDOT Outrider",
+      "longName": "Trinidad - Pueblo",
+      "name": "Trinidad–Pueblo"
+    },
+    {
+      "shortName": "CDOT Outrider",
+      "longName": "Sterling - Denver",
+      "name": "Sterling–Denver"
+    }
+  ],
   "region": "Colorado",
+  "parentAgency": "bustang",
   "bbox": [
     37.1,
     -105,
@@ -16,29 +54,40 @@
   ],
   "lastFeedExpiry": "20270201",
   "lastFeedVersion": "UTC: 28-Aug-2026 14:56",
-  "lastRefreshedAt": "2026-09-07",
-  "lastFeedCheckAt": "20261019",
+  "lastRefreshedAt": "2026-11-02",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270201",
   "timezone": "America/Denver",
   "feedQuality": {
     "status": "review",
-    "score": 60,
+    "score": 90,
     "reasons": [
-      "1 schedule-data warning — Atlas found a minor issue while reading the schedule.",
-      "10 map lines were repaired — Atlas fixed unusual route geometry before displaying it."
+      "1 minor schedule issue found while reading the feed."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 1,
-      "shapeAnomalies": 10,
+      "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 8
+      "featureCount": 34,
+      "feedExpiry": "20270201",
+      "routeCount": 7,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-09-07"
+    "checkedAt": "2026-11-03"
   },
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2330/latest.zip",
-  "lastPeekedExpiry": "20270201"
+  "lastPeekedExpiry": "20270201",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "f0a7d28c6fd22d9d",
+  "feedObtainedAt": "20260828"
 }

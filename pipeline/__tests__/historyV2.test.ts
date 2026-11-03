@@ -1,15 +1,19 @@
-import { mkdtempSync } from 'node:fs';
+import { mkdtempSync, readFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { computeFeedEvidence, positivelyNoService, weekendDay } from '../historyWeekend.js';
 import {
   baselineFingerprint, buildSidecar, buildV2Routes, fingerprintChanged, fingerprintOf, localDirSink,
-  periodKeyForZip, representativeRep, writeSidecar,
+  periodKeyForZip, representativeRep, routeTrunkHeadway, writeSidecar,
 } from '../historyV2.js';
 import { buildRouteSnapshots, joinCandidates, newBuildReport, visibilityCheck } from '../historyV2Build.js';
 import { mergeAliasedRoutes, currentRouteShortNamesFor } from '../historyIdentity.js';
 import { historyFlagFor } from '../../shared/historyV2.js';
+import type { PeriodKey } from '../../shared/config.js';
+import { normalizeRouteFilterFeatures } from '../../shared/routeHeadwayFilter.js';
+import type { ShapeProperties, TimePeriod } from '../../src/hooks/useIntervalStats.js';
+import { routeListLowEnd } from '../../src/utils/effectiveHeadway.js';
 
 const REF = '20240612'; // Wednesday; reference week 10-16 Jun, Saturday the 15th, Sunday the 16th
 const cal = (id: string, days: string, start = '20240101', end = '20241231') => {
@@ -102,6 +106,43 @@ describe('representative value', () => {
     expect(representativeRep([{ routeAllDayHeadway: 999999 }]).rep).toEqual({ lim: true });
     expect(representativeRep([{ routeAllDayHeadway: 30, tier: 'span' }]).rep).toEqual({ lim: true });
   });
+  // #1248: History's low end is the live route list's (routeListLowEnd), never the busiest stop's own gap. Real weekday
+  // features from release-mvw2q0ig.
+  const fixture = (name: string): Array<Record<string, unknown>> =>
+    JSON.parse(readFileSync(new URL(`./fixtures/history-list-low-end/${name}-weekday.json`, import.meta.url), 'utf8'));
+  const listLow = (features: Array<Record<string, unknown>>, period: TimePeriod) => {
+    const copies = features.map(f => ({ properties: { ...f } }));
+    normalizeRouteFilterFeatures(copies);
+    return routeListLowEnd(copies.map(c => c.properties) as unknown as ShapeProperties[], period) ?? undefined;
+  };
+  it('TTC 102: the low end is the list\'s in every period (midday 20–30, not 11–30; AM 6, not 9)', () => {
+    const features = fixture('ttc-102');
+    const { rep } = representativeRep(features);
+    expect(rep.h).toBe(30);
+    expect(rep.tp).toEqual({ amPeak: 6, midday: 20, pmPeak: 7, evening: 20 });
+    for (const k of Object.keys(rep.p ?? {}) as PeriodKey[]) expect(rep.tp?.[k]).toBe(listLow(features, k));
+    // The list shows no all-day range for 102, so neither does History.
+    expect(rep.t).toBeUndefined();
+  });
+  it('GRT 10: a range the list shows that the busiest stop missed is kept (midday 13–30, PM 15–30)', () => {
+    expect(representativeRep(fixture('grt-10')).rep.tp).toEqual({ midday: 13, pmPeak: 15 });
+  });
+  it('STM 1: no range where the list shows none (late read 8–68 before; the list shows every 68)', () => {
+    const { rep } = representativeRep(fixture('stm-1'));
+    expect(rep.p?.late).toBe(68);
+    expect(rep.t).toBeUndefined();
+    expect(rep.tp).toBeUndefined();
+  });
+  it('reads copies: the features being written are not changed', () => {
+    const features = fixture('ttc-102');
+    const before = JSON.stringify(features);
+    representativeRep(features);
+    expect(JSON.stringify(features)).toBe(before);
+  });
+  it('no range for plain routes or without features', () => {
+    expect(representativeRep([{ routeAllDayHeadway: 20, minStopHeadway: 8 }]).rep).toEqual({ h: 20 });
+    expect(routeTrunkHeadway([])).toBeNull();
+  });
   it('no stamp is blank, never a minimum', () => {
     expect(representativeRep([{ headway: 10 }, { headway: 5 }]).rep).toEqual({});
   });
@@ -183,6 +224,16 @@ const build = (cands: ReturnType<typeof joinCandidates>, buildYear = 2026) => {
 };
 
 describe('build-time rules', () => {
+  it('carries the shared-stretch value onto the snapshot from v2 and old change files (CIV-555)', () => {
+    const { snaps } = build(joinCandidates(
+      [{ periodKey: '20150630', headway: 60, trunkHeadway: 8, label: 'Jun 2015' }],
+      [{ periodKey: '20240615', v2: { refDate: '20240615', rep: { h: 60, t: 8, tp: { midday: 9 } } } }],
+    ));
+    expect(snaps.map(s => [s.year, s.weekdayHeadwayMin, s.trunkHeadwayMin])).toEqual([[2015, 60, 8], [2024, 60, 8]]);
+    expect(snaps[1].trunkHeadwayByPeriod).toEqual({ midday: 9 });
+    const plain = build(joinCandidates([{ periodKey: '20240630', headway: 20 }], [])).snaps[0];
+    expect(plain.trunkHeadwayMin).toBeUndefined();
+  });
   it('drops snapshots after the build year, not only 2027', () => {
     const { snaps, report } = build(joinCandidates([
       { periodKey: '20240630', headway: 10 }, { periodKey: '20270101', headway: 10 },
@@ -329,5 +380,38 @@ describe('a change file keyed by its feed end date after this year (CIV-394)', (
     const report = newBuildReport();
     const snaps = buildRouteSnapshots('mbta', '1', joinCandidates([{ periodKey: '20121215', headway: 10, processedAt: '2026-08-01T00:00:00.000Z' }], []), 2026, report);
     expect(snaps.map(s => [s.year, s.label])).toEqual([[2012, 'Dec 2012']]);
+  });
+});
+
+describe('a snapshot dated after the build month (CIV-1124)', () => {
+  // MBTA: the current feed, read in Oct 2026, ends Dec 2026; the build runs in Oct 2026.
+  const BUILD_YM = 202610;
+
+  it('dates an end-date-keyed file later this year by when it was read', () => {
+    const report = newBuildReport();
+    const snaps = buildRouteSnapshots('mbta', '1', joinCandidates([
+      { periodKey: '20251214', headway: 12, processedAt: '2025-09-01T06:00:00.000Z' },
+      { periodKey: '20261213', headway: 10, processedAt: '2026-10-05T06:00:00.000Z' },
+    ], []), 2026, report, { buildYm: BUILD_YM });
+    expect(snaps.map(s => [s.year, s.label, s.weekdayHeadwayMin])).toEqual([[2025, 'Dec 2025', 12], [2026, 'Oct 2026', 10]]);
+    expect(report.drops).toEqual([]);
+  });
+
+  it('drops one with no read date, and a v2 period whose in-service date has not come yet', () => {
+    const report = newBuildReport();
+    const snaps = buildRouteSnapshots('mbta', '1', joinCandidates([
+      { periodKey: '20260913', headway: 11 },
+      { periodKey: '20261213', headway: 10 },
+    ], [
+      { periodKey: '20270301', v2: { refDate: '20261111', rep: { h: 8 } } as never },
+    ]), 2026, report, { buildYm: BUILD_YM });
+    expect(snaps.map(s => [s.label, s.weekdayHeadwayMin])).toEqual([['Sep 2026', 11]]);
+    expect(report.drops.map(d => [d.label, d.reason])).toEqual([['Dec 2026', 'after build month'], ['Nov 2026', 'after build month']]);
+  });
+
+  it('keeps this month and earlier as before', () => {
+    const report = newBuildReport();
+    const snaps = buildRouteSnapshots('mbta', '1', joinCandidates([{ periodKey: '20261031', headway: 10 }], []), 2026, report, { buildYm: BUILD_YM });
+    expect(snaps.map(s => s.label)).toEqual(['Oct 2026']);
   });
 });

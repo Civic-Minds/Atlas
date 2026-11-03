@@ -1,6 +1,6 @@
 {
   "slug": "clallamtransit",
-  "name": "Clallam Transit System",
+  "officialName": "Clallam Transit System",
   "displayArea": "Clallam County",
   "websiteUrl": "https://www.clallamtransit.com/",
   "center": [
@@ -17,13 +17,13 @@
   "feedUrl": "https://files.mobilitydatabase.org/mdb-279/latest.zip",
   "lastFeedExpiry": "20271231",
   "lastFeedVersion": "Updated: Sep 4, 2026, 10:08 AM",
-  "lastRefreshedAt": "2026-10-12",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Victoria, British Columbia",
     "Shoreline, Washington",
     "Seattle, Washington"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271231",
@@ -31,23 +31,29 @@
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-279/latest.zip",
   "feedQuality": {
-    "status": "review",
-    "score": 80,
-    "reasons": [
-      "2 route shapes needed adjustment before display."
-    ],
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
-      "shapeAnomalies": 2,
+      "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 56
+      "featureCount": 58,
+      "feedExpiry": "20271231",
+      "routeCount": 16,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-12"
+    "checkedAt": "2026-11-03"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
-  "lastPeekedExpiry": "20271231"
+  "lastPeekedExpiry": "20271231",
+  "lastServiceWeek": "1566e5cdba8ad6df",
+  "feedObtainedAt": "20260904"
 }

@@ -3,7 +3,7 @@ import { useParams } from 'react-router';
 import {
   bandCounts,
   agencyDatesText,
-  introName,
+  agencyTitle,
   agencyMapHref,
   agencyPageH1,
   agencyPagePath,
@@ -14,65 +14,85 @@ import {
   CONNECTS_WITH,
   NO_MIDDAY_PHRASE,
   connectionNames,
+  PART_OF,
+  PLACE_OTHERS,
   type AgencyPageData,
   type AgencyPageRoute,
 } from '../shared/agencyPages';
 import { areaRegionName, areaRegionTitle } from '../shared/areaRegions';
-import { AGENCY_INDEX_PATH, agencyIndexRegionHref } from '../shared/agencyIndex';
+import { AGENCY_INDEX_PATH } from '../shared/agencyIndex';
 import { areaPagePath } from '../shared/areas';
 import { andOthers } from '../shared/overflowText';
-import { routeListHeadwayText } from './utils/effectiveHeadway';
+import { periodEdgeText, routeListHeadwayText } from './utils/effectiveHeadway';
 import { ATLAS_MODE, PERIOD_LABELS } from '../shared/config';
 import DocsPageLayout from './components/ui/DocsPageLayout';
+import { AgencyModeTable } from './AgencyGroupSection';
+import { parentAgencyPagePath } from '../shared/pagePaths';
+import type { ParentAgencyPageData } from '../shared/parentAgencies';
 import ArrowLink from './components/ui/ArrowLink';
 import { PageTitle, SectionTitle } from './components/ui/PageTitle';
 import EmptyPage from './components/ui/EmptyPage';
 import DataTable from './components/ui/DataTable';
+import ScrollX from './components/ui/ScrollX';
 import { applySeoToDocument, seoOrigin } from './lib/seoDom';
 import { readEmbeddedJson } from './lib/embeddedData';
 import { LINK, UNDERLINED_LINK } from './pageStyles';
 import { FrequencyBar, RouteNameCell } from './pageParts';
-import { AGENCY_PAGE_NOT_FOUND_TITLE, LIMITED_SERVICE_LABEL, NO_FREQUENCY_PAGE_BODY } from './content/noticeCopy';
+import { AGENCY_PAGE_NOT_FOUND_TITLE, LIMITED_SERVICE_LABEL, NO_FREQUENCY_PAGE_BODY, IRREGULAR_PERIOD_SHORT_LABEL } from './content/noticeCopy';
 import { capitalizeFirst } from './utils/headwayText';
 
 /** Read this page's numbers from the JSON the prerender embedded next to the app root. */
 function readEmbeddedData(slug: string | undefined): AgencyPageData | null {
   const data = readEmbeddedJson<AgencyPageData>(AGENCY_DATA_SCRIPT_ID);
-  return data && data.agency.slug === slug ? data : null;
+  // CIV-1277: matched on the page's own path, since a parent's page and a moved member's page differ from the agency's slug.
+  return data && slug && data.path === parentAgencyPagePath(slug) ? data : null;
+}
+
+/** "A, B and C" or "A, B, C and 4 other agencies" (namesList's wording), each name a link when it has a page. */
+function LinkedNames({ items, others, counted }: { items: ReadonlyArray<{ name: string; href?: string }>; others: number; counted: readonly [string, string] }) {
+  return (
+    <>
+      {items.map((p, i) => (
+        <span key={p.name}>
+          {i > 0 ? (i === items.length - 1 && others === 0 ? ' and ' : ', ') : ''}
+          {p.href ? <a className={UNDERLINED_LINK} href={p.href}>{p.name}</a> : p.name}
+        </span>
+      ))}
+      {others > 0 ? ` ${andOthers(others, ...counted)}` : ''}
+    </>
+  );
 }
 
 /**
- * The intro sentence, once, under the title. The place links to its area page when the agency has one, and otherwise
- * to its state or province in the all-agencies list (CIV-966); connecting agencies named in it are links when they have
- * a page. An agency with no regular midday service says so after it (CIV-965).
+ * The intro sentence, once, under the title. Each area it names links to that area's page; a city is plain text, since a
+ * link always names the page it opens (#1283). Connecting agencies named in it are links when they have a page.
+ * An agency with no regular midday service says so after it (CIV-965).
  */
 function Intro({ data }: { data: AgencyPageData }) {
-  const { intro, introLead, place, connections, area } = data;
+  const { intro, introLead, place, places, connections } = data;
   const sentence = 'mt-4 max-w-2xl text-base leading-7 text-[var(--text-muted)]';
   const placeAt = introLead.length;
   const noMidday = data.agency.routes.length > 0 && data.agency.routes.every(r => r.midday == null)
     ? ` ${data.agency.routes.length === 1 ? 'Its route has' : 'Its routes have'} ${NO_MIDDAY_PHRASE.replace(/^with /, '')}.`
     : '';
-  const placeHref = area ? areaPagePath(area.slug) : agencyIndexRegionHref(data.agency);
   if (!intro.startsWith(introLead) || !intro.startsWith(place, placeAt)) return <p className={sentence}>{intro}{noMidday}</p>;
   const at = intro.indexOf(CONNECTS_WITH, placeAt);
   const { named, others } = connectionNames(connections);
   const between = intro.slice(placeAt + place.length, at < 0 ? intro.length - 1 : at);
+  // CIV-1277 (Ryan, 2026-11-02): a member's parent sits in the sentence, linked: "MTA NYCT Subway, part of MTA New York, operates …".
+  const parentAt = data.parent ? introLead.indexOf(`${PART_OF}${data.parent.name},`) : -1;
+  const lead = data.parent && parentAt >= 0
+    ? <>{introLead.slice(0, parentAt)}{PART_OF}<a className={UNDERLINED_LINK} href={data.parent.path}>{data.parent.name}</a>{introLead.slice(parentAt + PART_OF.length + data.parent.name.length)}</>
+    : introLead;
   return (
     <p className={sentence}>
-      {introLead}
-      {placeHref ? <a className={UNDERLINED_LINK} href={placeHref}>{place}</a> : place}
+      {lead}
+      <LinkedNames items={places.named} others={places.others} counted={PLACE_OTHERS} />
       {between}
       {at >= 0 && named.length > 0 && (
         <>
           {CONNECTS_WITH}
-          {named.map((c, i) => (
-            <span key={c.slug}>
-              {i > 0 ? (i === named.length - 1 && others === 0 ? ' and ' : ', ') : ''}
-              {c.page ? <a className={UNDERLINED_LINK} href={agencyPagePath(c.slug)}>{c.name}</a> : c.name}
-            </span>
-          ))}
-          {others > 0 ? ` ${andOthers(others, 'agency', 'agencies')}` : ''}
+          <LinkedNames items={named.map(c => ({ name: c.name, href: c.page ? agencyPagePath(c.slug) : undefined }))} others={others} counted={['agency', 'agencies']} />
         </>
       )}
       .{noMidday}
@@ -82,12 +102,17 @@ function Intro({ data }: { data: AgencyPageData }) {
 
 /**
  * A period cell: the card's cadence (a range where alternating branches combine on a shared
- * stretch), "Limited" when the route runs but has no trustworthy cadence, else a dash.
+ * stretch), "Limited" when the route runs but has no trustworthy cadence, "Irregular" where the
+ * map list says so (#1249, CIV-1238), else a dash.
  */
 function cell(col: 'am' | 'midday' | 'pm' | 'evening' | 'overnight', r: AgencyPageRoute): string {
   const v = r[col];
+  const edge = r.edge?.[col];
+  if (v != null && edge) return periodEdgeText(edge);
   if (v != null) return routeListHeadwayText(v, r.shared?.[col], true);
-  return Array.isArray(r.limited) && r.limited.includes(col) ? capitalizeFirst(LIMITED_SERVICE_LABEL) : headwayEvery(null);
+  if (Array.isArray(r.noRegular) && r.noRegular.includes(col)) return IRREGULAR_PERIOD_SHORT_LABEL;
+  // CIV-1251: a period column with service but no number reads Irregular, whichever check found it.
+  return Array.isArray(r.limited) && r.limited.includes(col) ? IRREGULAR_PERIOD_SHORT_LABEL : headwayEvery(null);
 }
 
 /**
@@ -113,8 +138,11 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
       mode: ATLAS_MODE,
       origin: seoOrigin(),
       intro: data?.intro,
+      description: data?.description,
+      path: data?.path,
+      pageTitle: data?.pageTitle,
     }));
-  }, [agency, data?.intro]);
+  }, [agency, data?.intro, data?.description, data?.path, data?.pageTitle]);
 
   if (!agency && !lookedUp) return <main className="min-h-screen bg-[var(--bg-app)]" aria-busy="true" />;
 
@@ -131,23 +159,26 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
     <DocsPageLayout width="wide">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="min-w-0">
-              <PageTitle>{agencyPageH1(agency)}</PageTitle>
-              {data!.area
+              <PageTitle>{data!.title ?? agencyPageH1(agency)}</PageTitle>
+              {data!.area?.page !== false && data!.area
                 ? <ArrowLink tone="inline" className="mt-1" href={areaPagePath(data!.area.slug)}>{areaRegionTitle(data!.area)}</ArrowLink>
+                // An area with too few agencies for a page is named without a link (Ryan, 2026-11-01).
+                : data!.area ? <p className="mt-1 text-sm text-[var(--text-muted)]">{areaRegionTitle(data!.area)}</p>
                 : agency.city && <p className="mt-1 text-sm text-[var(--text-muted)]">{agency.city}</p>}
             </div>
-            <ArrowLink href={agencyMapHref(agency)}>View on map</ArrowLink>
+            <ArrowLink href={data!.mapHref ?? agencyMapHref(agency)}>View on map</ArrowLink>
           </div>
           <Intro data={data!} />
 
           <section className="mt-14" aria-labelledby="routes-heading">
             <SectionTitle id="routes-heading">Routes and weekday frequency</SectionTitle>
             <p className="mt-3 text-base font-bold">Weekday midday frequency, by route</p>
-            <FrequencyBar counts={bandCounts(agency.routes)} mapHref={agencyMapHref(agency)} />
+            <FrequencyBar counts={bandCounts(agency.routes)} />
             <p className="mt-2 text-sm leading-6 text-[var(--text-muted)]">The bar splits this agency's routes by how often they run on a weekday midday. Each route is judged by its slower direction.</p>
             {stats.byMode.map(group => (
-              <div key={group.mode} className="mt-4 overflow-x-auto">
+              <div key={group.mode} className="mt-4">
                 <h3 className="pb-2 text-base font-black" aria-hidden="true">{group.label} <span className="ml-1 font-normal text-[var(--text-muted)]">{group.routes.length}</span></h3>
+                <ScrollX>
                   <DataTable
                     caption={`${group.label} ${group.routes.length}`}
                     layout="page"
@@ -162,15 +193,24 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
                       { key: 'overnight', header: PERIOD_LABELS.overnight, cell: r => cell('overnight', r) },
                     ]}
                   />
+                </ScrollX>
               </div>
             ))}
           </section>
+
+          {'services' in data! && (
+            // CIV-1277 (Ryan, 2026-11-02): a parent agency lists its members under "Services".
+            <section className="mt-12" aria-labelledby="services-heading">
+              <SectionTitle id="services-heading">Services</SectionTitle>
+              <AgencyModeTable data={(data as ParentAgencyPageData).services} />
+            </section>
+          )}
 
           {nearby.length > 0 && (
             <section className="mt-12" aria-labelledby="nearby-heading">
               <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
                 <SectionTitle id="nearby-heading">
-                  {data!.area ? <>Nearby agencies in <a className="underline underline-offset-2" href={areaPagePath(data!.area.slug)}>{areaRegionName(data!.area)}</a></> : 'Nearby agencies'}
+                  {data!.area?.page !== false && data!.area ? <>Nearby agencies in <a className="underline underline-offset-2" href={areaPagePath(data!.area.slug)}>{areaRegionName(data!.area)}</a></> : 'Nearby agencies'}
                 </SectionTitle>
                 <ArrowLink href={AGENCY_INDEX_PATH}>See all agencies</ArrowLink>
               </div>
@@ -188,7 +228,7 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
 
           <p className="mt-12 text-sm leading-6 text-[var(--text-dim)]">
             {agencyDatesText(agency, data!.releaseDate)}
-            {agency.websiteUrl && <> Agency website: <a className={LINK} href={agency.websiteUrl} rel="noopener noreferrer">{introName(agency.name, agency.city)}</a>.</>}
+            {agency.websiteUrl && <> Agency website: <a className={LINK} href={agency.websiteUrl} rel="noopener noreferrer">{data!.title ?? agencyTitle(agency)}</a>.</>}
           </p>
     </DocsPageLayout>
   );

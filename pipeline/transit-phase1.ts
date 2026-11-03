@@ -5,7 +5,8 @@ import {
     ALL_DAYS,
 } from '../types/gtfs';
 import { t2m, getModeName, expandTripFrequencyWindows, parseFrequencyWindow, type FrequencyWindow } from './transit-utils';
-import { detectReferenceDate, getActiveServiceIds } from './transit-calendar';
+import { getActiveServiceIds } from './transit-calendar';
+import { readWeekOf } from './readWeek';
 import { isRailRoute } from './routeMode';
 
 /**
@@ -216,13 +217,16 @@ export function computeRawDepartures(
     agencySlug?: string,
     options?: { skipBlockTripHeadways?: boolean },
 ): RawRouteDepartures[] {
-    const { routes, calendar, calendarDates } = gtfs;
+    const { routes } = gtfs;
     if (!routes || !gtfs.trips || !gtfs.stops || !gtfs.stopTimes) return [];
 
     const routeById = new Map(routes.map(r => [r.route_id, r]));
     const skipBlockTripHeadways = options?.skipBlockTripHeadways === true;
     const tripData = buildTripDepartures(gtfs, skipBlockTripHeadways);
-    const refDate = referenceDate ?? detectReferenceDate(calendar, calendarDates, gtfs.trips);
+    // CIV-1101: with no date passed in, read the one service-day model's week (readWeekOf).
+    const { calendar, calendarDates, referenceDate: refDate } = referenceDate
+        ? { calendar: gtfs.calendar, calendarDates: gtfs.calendarDates, referenceDate }
+        : readWeekOf(gtfs);
     const results: RawRouteDepartures[] = [];
 
     for (const day of ALL_DAYS) {

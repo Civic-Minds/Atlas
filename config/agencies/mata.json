@@ -1,16 +1,16 @@
 {
   "slug": "mata",
-  "name": "Memphis Area Transit Authority",
+  "officialName": "Memphis Area Transit Authority",
   "websiteUrl": "http://www.matatransit.com",
   "center": [
     35.1217,
     -89.9687
   ],
   "feedUrl": "https://gtfs.mata.cadavl.com/MATA/GTFS/GTFS_MATA.zip",
-  "lastFeedExpiry": "20261124",
+  "lastFeedExpiry": "20261201",
   "lastFeedVersion": null,
   "region": "Tennessee",
-  "lastRefreshedAt": "2026-10-19",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Memphis, Tennessee",
     "New South Memphis, Tennessee",
@@ -20,13 +20,13 @@
   ],
   "timezone": "America/Chicago",
   "lastRawArchiveKey": "20250310-afc2dd4fc38ea397",
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261117",
+  "expiredFeedCheckExpiry": "20261201",
   "feedQuality": {
     "status": "review",
-    "score": 90,
+    "score": 96,
     "reasons": [
       "1 route has stops whose frequency differs from the overall route schedule."
     ],
@@ -35,9 +35,15 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 1,
-      "featureCount": 143
+      "featureCount": 143,
+      "feedExpiry": "20261201",
+      "routeCount": 25,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 1,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-19"
+    "checkedAt": "2026-11-03"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -45,5 +51,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://gtfs.mata.cadavl.com/MATA/GTFS/GTFS_MATA.zip",
-  "lastPeekedExpiry": "20261124"
+  "lastPeekedExpiry": "20261201",
+  "lastServiceWeek": "b411be9e922a5b4b",
+  "feedObtainedAt": "20261102"
 }

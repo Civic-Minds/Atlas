@@ -1,6 +1,7 @@
 {
   "slug": "get",
-  "name": "Golden Empire Transit District (GET)",
+  "officialName": "Golden Empire Transit District",
+  "commonName": "GET",
   "websiteUrl": "http://www.getbus.org/",
   "center": [
     35.37,
@@ -10,11 +11,11 @@
   "lastFeedExpiry": "20271231",
   "lastFeedVersion": "20260929",
   "region": "California",
-  "lastRefreshedAt": "2026-10-12",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Bakersfield, California"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271231",
@@ -30,13 +31,21 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 101
+      "featureCount": 101,
+      "feedExpiry": "20271231",
+      "routeCount": 16,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-12"
+    "checkedAt": "2026-11-03"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
-  "lastPeekedExpiry": "20271231"
+  "lastPeekedExpiry": "20271231",
+  "lastServiceWeek": "06d98a27bdcdb2f0",
+  "feedObtainedAt": "20260929"
 }

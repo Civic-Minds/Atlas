@@ -1,6 +1,6 @@
 {
   "slug": "carson-circuit",
-  "name": "Carson Circuit",
+  "officialName": "Carson Circuit",
   "websiteUrl": "https://ci.carson.ca.us/CommunityServices/Transportation.aspx",
   "center": [
     33.8432,
@@ -8,9 +8,9 @@
   ],
   "region": "California",
   "feedUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/11488/CarsonGTFS.zip",
-  "lastFeedExpiry": "20281015",
+  "lastFeedExpiry": "20261126",
   "lastFeedVersion": "20231127",
-  "lastRefreshedAt": "2026-10-12",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Carson, California",
     "Compton, California",
@@ -18,13 +18,13 @@
   ],
   "timezone": "America/Los_Angeles",
   "lastRawArchiveKey": "20211111-1c359ccdcc3657b6",
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20320103",
   "feedQuality": {
     "status": "review",
-    "score": 70,
+    "score": 60,
     "reasons": [
       "1 minor schedule issue found while reading the feed.",
       "2 route have stops whose frequency differs from the overall route schedule."
@@ -34,9 +34,15 @@
       "validationWarnings": 1,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 2,
-      "featureCount": 2
+      "featureCount": 2,
+      "feedExpiry": "20261126",
+      "routeCount": 2,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 2,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-12"
+    "checkedAt": "2026-11-03"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -44,5 +50,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/11488/CarsonGTFS.zip",
-  "lastPeekedExpiry": "20320103"
+  "lastPeekedExpiry": "20320103",
+  "lastServiceWeek": "9f90ca1c07cde3c8",
+  "feedObtainedAt": "20250430"
 }

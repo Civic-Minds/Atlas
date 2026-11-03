@@ -1,6 +1,7 @@
 {
   "slug": "leetran",
-  "name": "LeeTran (Fort Myers)",
+  "officialName": "LeeTran",
+  "nameQualifier": "Fort Myers",
   "websiteUrl": "http://www.leegov.com/leetran",
   "center": [
     26.64,
@@ -16,19 +17,44 @@
   "region": "Florida",
   "lastFeedExpiry": "20261118",
   "lastFeedVersion": "S1000223",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Fort Myers, Florida",
     "Cape Coral, Florida",
     "Bonita Springs, Florida",
     "Lehigh Acres, Florida"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261118",
   "timezone": "America/New_York",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-324/latest.zip",
-  "lastPeekedExpiry": "20261118"
+  "lastPeekedExpiry": "20261118",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 111,
+      "feedExpiry": "20261118",
+      "routeCount": 22,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
+    },
+    "checkedAt": "2026-11-03"
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "dcbad4a14fe758f4",
+  "feedObtainedAt": "20260415"
 }

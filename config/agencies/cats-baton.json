@@ -1,6 +1,7 @@
 {
   "slug": "cats-baton",
-  "name": "Capital Area Transit System (Baton Rouge)",
+  "officialName": "Capital Area Transit System",
+  "nameQualifier": "Baton Rouge",
   "websiteUrl": "https://www.brcats.com/",
   "center": [
     30.45,
@@ -11,16 +12,43 @@
   "region": "Louisiana",
   "lastFeedExpiry": "20261231",
   "lastFeedVersion": "20260619",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Baton Rouge, Louisiana"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261231",
   "timezone": "America/Chicago",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://cats.rideralerts.com/InfoPoint/gtfs-zip.ashx",
-  "lastPeekedExpiry": "20261231"
+  "lastPeekedExpiry": "20261231",
+  "feedQuality": {
+    "status": "review",
+    "score": 89,
+    "reasons": [
+      "6 route shapes needed adjustment before display."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 6,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 110,
+      "feedExpiry": "20261231",
+      "routeCount": 19,
+      "problemShapes": 6,
+      "problemShapeRoutes": 2,
+      "mismatchRoutes": 0,
+      "resumesOn": null
+    },
+    "checkedAt": "2026-11-03"
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "ac040c37f9db9565",
+  "feedObtainedAt": "20260619"
 }

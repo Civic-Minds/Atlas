@@ -17,12 +17,12 @@
  * Princes' Gates pattern's line; TTC 94 from Wellesley starts on the Ossington pattern): the
  * end-side short turn already has its own row under its own headsign, and the start side gets
  * the same treatment. Feeds that give every trip block its own shape from one origin (CapMetro)
- * share a first stop and are untouched. Surface routes only; rail keeps one row per headsign.
+ * share a first stop and are untouched. Rail lines too (CIV-1152; CTA Green Harlem-bound).
  */
 import type { DayName, DayType, GtfsData } from '../types/gtfs.js';
 import { ALL_DAYS, WEEKDAYS } from '../shared/dayTypes.js';
-import { getModeCategory } from './defaults.js';
-import { detectReferenceDate, getActiveServiceIds } from './transit-calendar.js';
+import { getActiveServiceIds } from './transit-calendar.js';
+import { readWeekOf } from './readWeek.js';
 
 /**
  * Both origins must run on the same calendar day the pipeline draws: on at least one of the
@@ -40,8 +40,9 @@ import { detectReferenceDate, getActiveServiceIds } from './transit-calendar.js'
  */
 export function activeServiceIdsByCalendarDay(gtfs: GtfsData): Map<DayName, Set<string>> | null {
   if (!(gtfs.calendar?.length || gtfs.calendarDates?.length)) return null;
-  const refDate = detectReferenceDate(gtfs.calendar ?? [], gtfs.calendarDates, gtfs.trips);
-  return new Map(ALL_DAYS.map(day => [day, getActiveServiceIds(gtfs.calendar ?? [], gtfs.calendarDates ?? [], day, refDate)]));
+  // CIV-1101: the one service-day model's week (readWeekOf), as process-core reads it.
+  const { calendar, calendarDates, referenceDate } = readWeekOf(gtfs);
+  return new Map(ALL_DAYS.map(day => [day, getActiveServiceIds(calendar, calendarDates, day, referenceDate)]));
 }
 
 /** The origin label of a feature's row, or null when the feature carries no origin label. */
@@ -144,11 +145,10 @@ export function labelConvergingOrigins(gtfs: GtfsData, activeByDay: Map<DayName,
     const lat = Number(stop.stop_lat), lon = Number(stop.stop_lon);
     if (Number.isFinite(lat) && Number.isFinite(lon)) { at.set(stop.stop_id, { lat, lon }); at.set(stop.parent_station?.trim() || stop.stop_id, at.get(stop.parent_station?.trim() || stop.stop_id) ?? { lat, lon }); }
   }
-  // Surface routes only: a rail line's stop values are scoped by headsign, so two origins under
-  // one headsign would draw two identical rows (CTA Green's Harlem-bound branches); rail keeps
-  // its single row.
-  const surfaceRoutes = new Set((gtfs.routes ?? []).filter(r => getModeCategory(String(r.route_type ?? '')) !== 'rail').map(r => r.route_id));
-  const tripById = new Map((gtfs.trips ?? []).filter(t => surfaceRoutes.has(t.route_id)).map(t => [t.trip_id, t] as const));
+  // Rail too since CIV-1152: process-core keys a rail line's stop values by headsign and origin
+  // (metricHeadsign), so CTA Green's Harlem-bound origins each read their own trips.
+  const routeIds = new Set((gtfs.routes ?? []).map(r => r.route_id));
+  const tripById = new Map((gtfs.trips ?? []).filter(t => routeIds.has(t.route_id)).map(t => [t.trip_id, t] as const));
   const seqs = new Map<string, Array<{ seq: number; stopId: string }>>();
   for (const st of gtfs.stopTimes ?? []) {
     if (!tripById.has(st.trip_id)) continue;

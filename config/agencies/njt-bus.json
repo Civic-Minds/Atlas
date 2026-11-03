@@ -1,6 +1,6 @@
 {
   "slug": "njt-bus",
-  "name": "NJ Transit Bus",
+  "officialName": "NJ Transit Bus",
   "displayArea": "New Jersey",
   "websiteUrl": "http://www.njtransit.com/",
   "region": "New Jersey",
@@ -17,7 +17,7 @@
   "feedUrl": "https://files.mobilitydatabase.org/mdb-508/latest.zip",
   "lastFeedExpiry": "20270417",
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-10-12",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Trenton, New Jersey",
     "Passaic, New Jersey",
@@ -32,31 +32,38 @@
   ],
   "timezone": "America/New_York",
   "lastRawArchiveKey": "20261225-dafb95e8c171680d",
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20270313",
+  "expiredFeedCheckExpiry": "20270417",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-508/latest.zip",
   "feedQuality": {
-    "status": "degraded",
-    "score": 40,
+    "status": "review",
+    "score": 96,
     "reasons": [
-      "10 route shapes needed adjustment before display.",
-      "32 route have stops whose frequency differs from the overall route schedule."
+      "10 route have stops whose frequency differs from the overall route schedule."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
       "shapeAnomalies": 10,
-      "routeHeadwayMismatches": 32,
-      "featureCount": 2036
+      "routeHeadwayMismatches": 18,
+      "featureCount": 2039,
+      "feedExpiry": "20270417",
+      "routeCount": 261,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 10,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-12"
+    "checkedAt": "2026-11-03"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
-  "lastPeekedExpiry": "20270417"
+  "lastPeekedExpiry": "20270417",
+  "lastServiceWeek": "0294aeca5ca9ccd1",
+  "feedObtainedAt": "20261021"
 }

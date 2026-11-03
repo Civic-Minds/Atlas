@@ -1,6 +1,7 @@
 {
   "slug": "soltrans",
-  "name": "SolTrans (Vallejo)",
+  "officialName": "SolTrans",
+  "nameQualifier": "Vallejo",
   "websiteUrl": "https://soltrans.org/",
   "center": [
     38.1087,
@@ -16,8 +17,8 @@
   "feedUrl": "https://soltrans.connexionz.net/rtt/public/resource/gtfs.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-80/latest.zip",
   "lastFeedExpiry": "20271231",
-  "lastFeedVersion": "20261002",
-  "lastRefreshedAt": "2026-10-03",
+  "lastFeedVersion": "20261101",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Vallejo, California",
     "Fairfield, California",
@@ -28,24 +29,28 @@
     "Vacaville, California",
     "Chinatown, California"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271231",
   "feedQuality": {
-    "status": "review",
-    "score": 70,
-    "reasons": [
-      "7 route shapes needed adjustment before display."
-    ],
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
-      "shapeAnomalies": 7,
+      "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 60
+      "featureCount": 69,
+      "feedExpiry": "20271231",
+      "routeCount": 15,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-03"
+    "checkedAt": "2026-11-03"
   },
   "timezone": "America/Los_Angeles",
   "feedRefreshStatus": "current",
@@ -54,5 +59,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://soltrans.connexionz.net/rtt/public/resource/gtfs.zip",
-  "lastPeekedExpiry": "20271231"
+  "lastPeekedExpiry": "20271231",
+  "lastServiceWeek": "17d32bde16b12bd7",
+  "feedObtainedAt": "20261102"
 }

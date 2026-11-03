@@ -1,6 +1,7 @@
 {
   "slug": "gold-coast",
-  "name": "Gold Coast Transit District (Oxnard)",
+  "officialName": "Gold Coast Transit District",
+  "nameQualifier": "Oxnard",
   "websiteUrl": "http://www.goldcoasttransit.org",
   "center": [
     34.2396,
@@ -16,7 +17,7 @@
   ],
   "lastFeedExpiry": "20270102",
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-10-03",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Oxnard, California",
     "Ventura, California"
@@ -24,24 +25,28 @@
   "timezone": "America/Los_Angeles",
   "timezoneOverride": "America/Los_Angeles",
   "lastRawArchiveKey": "20260808-26a2b10b0d954217",
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270102",
   "feedQuality": {
-    "status": "review",
-    "score": 90,
-    "reasons": [
-      "1 route shape needed adjustment before display."
-    ],
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
       "shapeAnomalies": 1,
       "routeHeadwayMismatches": 0,
-      "featureCount": 99
+      "featureCount": 107,
+      "feedExpiry": "20270102",
+      "routeCount": 24,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-03"
+    "checkedAt": "2026-11-03"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -49,5 +54,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://www.gctd.org/wp-content/uploads/2021/06/GCTD_GTFS.zip",
-  "lastPeekedExpiry": "20270102"
+  "lastPeekedExpiry": "20270102",
+  "lastServiceWeek": "e43c037bf732a7ec",
+  "feedObtainedAt": "20261015"
 }

@@ -1,6 +1,7 @@
 {
   "slug": "epinal",
-  "name": "Imagine (Épinal)",
+  "officialName": "Imagine",
+  "nameQualifier": "Épinal",
   "websiteUrl": "https://www.imaginelebus.com/fr/",
   "region": "Grand Est",
   "center": [

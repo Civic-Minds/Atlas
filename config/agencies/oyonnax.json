@@ -1,6 +1,7 @@
 {
   "slug": "oyonnax",
-  "name": "Duobus (Oyonnax)",
+  "officialName": "Duobus",
+  "nameQualifier": "Oyonnax",
   "websiteUrl": "https://www.duobus.fr/",
   "region": "Auvergne-Rhône-Alpes",
   "center": [

@@ -1,6 +1,6 @@
 {
   "slug": "loudoun-transit",
-  "name": "Loudoun County Transit",
+  "officialName": "Loudoun County Transit",
   "websiteUrl": "https://www.loudoun.gov/bus",
   "center": [
     39.08,
@@ -10,7 +10,7 @@
   "lastFeedExpiry": "20270327",
   "lastFeedVersion": "S1000085",
   "region": "Virginia",
-  "lastRefreshedAt": "2026-10-08",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Leesburg, Virginia",
     "Reston, Virginia",
@@ -18,7 +18,7 @@
     "Washington, District of Columbia",
     "Downtown DC, District of Columbia"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270327",
@@ -28,19 +28,29 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "feedQuality": {
-    "status": "healthy",
-    "score": 100,
-    "reasons": [],
+    "status": "review",
+    "score": 98,
+    "reasons": [
+      "1 route has stops whose frequency differs from the overall route schedule."
+    ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
       "shapeAnomalies": 0,
-      "routeHeadwayMismatches": 0,
-      "featureCount": 123
+      "routeHeadwayMismatches": 1,
+      "featureCount": 123,
+      "feedExpiry": "20270327",
+      "routeCount": 49,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 1,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-08"
+    "checkedAt": "2026-11-03"
   },
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://www.loudoun.gov/loudountransitgtfs",
-  "lastPeekedExpiry": "20270327"
+  "lastPeekedExpiry": "20270327",
+  "lastServiceWeek": "86d1b7f649433587",
+  "feedObtainedAt": "20260923"
 }

@@ -1,6 +1,7 @@
 {
   "slug": "lanta",
-  "name": "Lehigh and Northampton Transportation Authority (LANTA)",
+  "officialName": "Lehigh and Northampton Transportation Authority",
+  "commonName": "LANTA",
   "websiteUrl": "http://www.lantabus.com",
   "center": [
     40.6,
@@ -11,18 +12,18 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-30010/latest.zip",
   "lastFeedExpiry": "20270124",
   "lastFeedVersion": "20261014",
-  "lastRefreshedAt": "2026-10-19",
+  "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Allentown, Pennsylvania",
     "Bethlehem, Pennsylvania"
   ],
-  "lastFeedCheckAt": "20261019",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270124",
   "feedQuality": {
     "status": "review",
-    "score": 90,
+    "score": 97,
     "reasons": [
       "1 route has stops whose frequency differs from the overall route schedule."
     ],
@@ -31,9 +32,15 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 1,
-      "featureCount": 160
+      "featureCount": 160,
+      "feedExpiry": "20270124",
+      "routeCount": 40,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 1,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-19"
+    "checkedAt": "2026-11-03"
   },
   "timezone": "America/New_York",
   "lastFeedSourceKind": "configured",
@@ -42,5 +49,7 @@
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
-  "feedRefreshRetryCount": 0
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "316ed945400c1431",
+  "feedObtainedAt": "20261014"
 }

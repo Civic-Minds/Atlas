@@ -1,6 +1,7 @@
 {
   "slug": "pvpta",
-  "name": "Palos Verdes Peninsula Transit Authority (PVPTA)",
+  "officialName": "Palos Verdes Peninsula Transit Authority",
+  "commonName": "PVPTA",
   "websiteUrl": "http://www.palosverdes.com/pvtransit/",
   "center": [
     33.74,
@@ -9,10 +10,10 @@
   "feedUrl": "http://data.trilliumtransit.com/gtfs/pvpta-ca-us/pvpta-ca-us.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-35/latest.zip",
   "lastFeedExpiry": "20270122",
-  "lastFeedVersion": "UTC: 09-Sep-2026 18:25",
+  "lastFeedVersion": "UTC: 22-Oct-2026 22:53",
   "region": "California",
-  "lastRefreshedAt": "2026-10-03",
-  "lastFeedCheckAt": "20261019",
+  "lastRefreshedAt": "2026-11-02",
+  "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270122",
@@ -28,9 +29,15 @@
       "validationWarnings": 1,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 20
+      "featureCount": 25,
+      "feedExpiry": "20270122",
+      "routeCount": 10,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-03"
+    "checkedAt": "2026-11-03"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -38,5 +45,7 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "http://data.trilliumtransit.com/gtfs/pvpta-ca-us/pvpta-ca-us.zip",
-  "lastPeekedExpiry": "20270122"
+  "lastPeekedExpiry": "20270122",
+  "lastServiceWeek": "3d0b265f09d5f463",
+  "feedObtainedAt": "20261102"
 }
