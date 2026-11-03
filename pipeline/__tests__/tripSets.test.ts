@@ -685,6 +685,12 @@ describe('CIV-1331: one night decider, 90-minute cutoff, real feeds', () => {
     expect(lynnValley(withDay).main!.nightTimes.filter(t => t <= hm(29, 0)).at(-1)).toBe(hm(27, 57));
     expect([directionNightVerdict(lynnValley(withDay), 90), directionNightVerdict(lynnValley(alone), 90)]).toEqual(['pass', 'fail']);
   });
+  it('CIV-1331 review, Friday night: a Weekday night must be taken over on the Saturday morning too (the stricter of the two mornings)', async () => {
+    // The same weekday service with no Saturday service in the feed: Monday to Thursday nights are covered, Friday's is
+    // not known to be, so the Weekday night does not pass.
+    const noSaturday = await run('translink-n24-handover-no-saturday', 'translink');
+    expect(directionNightVerdict(noSaturday.stretches.get('N24::0::Weekday')!, 90)).toBe('fail');
+  });
   it('CIV-1331 review: only daytime service takes over: N24 with the other night routes nearby (N8, N19, N20, N35) and no day routes does not pass', async () => {
     const r = await run('translink-n24-night-routes-weekday', 'translink');
     expect(directionNightVerdict(r.stretches.get('N24::0::Weekday')!, 90)).toBe('fail');

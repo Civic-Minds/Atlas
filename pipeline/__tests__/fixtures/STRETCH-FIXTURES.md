@@ -30,7 +30,8 @@ Each folder is one route's trips on the services active on one date, cut from th
 | translink-321-weekday | `_feeds/translink/20270103-fresh.zip` | 2026-10-21 | 321 |
 | rtd-denver-first-trips-weekday | `_feeds/rtd-denver/20270102-fresh.zip` | 2026-10-21 | A, 45, 15 |
 | lacmta-240-owl-weekday | `_feeds/lacmta/20270401-fresh.zip` | 2026-10-21 | 240 |
-| translink-n24-handover-weekday | `_feeds/translink/20270103-fresh.zip` | 2026-10-21 | N24, 014, 240, 228, 255 |
+| translink-n24-handover-weekday | `_feeds/translink/20270103-fresh.zip` | 2026-10-23 + 2026-10-24 (merged: a Friday and the Saturday after it, for the Friday-night handover) | N24, 014, 240, 228, 255 |
+| translink-n24-handover-no-saturday | `_feeds/translink/20270103-fresh.zip` | 2026-10-21 (weekday service only) | N24, 014, 240, 228, 255 |
 | translink-n24-alone-weekday | `_feeds/translink/20270103-fresh.zip` | 2026-10-21 | N24 |
 | stm-376-handover-weekday | `_feeds/stm/20261025-fresh.zip` | 2026-10-21 | 376, 470, 68, 215, 205 |
 | translink-n24-night-routes-weekday | `_feeds/translink/20270103-fresh.zip` | 2026-10-21 | N24, N20, N8, N19, N35 |
