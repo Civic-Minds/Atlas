@@ -1,0 +1,2 @@
+feed_publisher_name,feed_publisher_url,feed_lang,default_lang,feed_start_date,feed_end_date,feed_version,feed_contact_email,feed_contact_url
+SamTrans,https://www.samtrans.com,en,en,20260920,20261114,Revision2,opsplan@samtrans.com,https://www.samtrans.com/developer

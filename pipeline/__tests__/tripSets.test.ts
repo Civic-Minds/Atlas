@@ -685,6 +685,45 @@ describe('CIV-1331: one night decider, 90-minute cutoff, real feeds', () => {
     expect(lynnValley(withDay).main!.nightTimes.filter(t => t <= hm(29, 0)).at(-1)).toBe(hm(27, 57));
     expect([directionNightVerdict(lynnValley(withDay), 90), directionNightVerdict(lynnValley(alone), 90)]).toEqual(['pass', 'fail']);
   });
+  it('CIV-1331 review: only daytime service takes over: N24 with the other night routes nearby (N8, N19, N20, N35) and no day routes does not pass', async () => {
+    const r = await run('translink-n24-night-routes-weekday', 'translink');
+    expect(directionNightVerdict(r.stretches.get('N24::0::Weekday')!, 90)).toBe('fail');
+  });
+  it('CIV-1331 review: Saturday night hands over to Sunday morning (SamTrans 397, Saturday)', async () => {
+    const withSunday = await run('samtrans-397-saturday-night', 'samtrans');
+    const saturdayOnly = await run('samtrans-397-saturday-only', 'samtrans');
+    const sat = (r: Run) => r.stretches.get('397::0::Saturday')!;
+    expect(directionNightVerdict(sat(withSunday), 90)).toBe('pass');
+    // The same Saturday with no Sunday service in the feed: Saturday's own early buses (the night before) never count.
+    expect(directionNightVerdict(sat(saturdayOnly), 90)).toBe('fail');
+    const rows = withSunday.rows.filter(p => p.routeShortName === '397' && p.day === 'Saturday');
+    expect(rows.some(p => p.nightService90)).toBe(true);
+    expect(rows[0].routeRunsByPeriod.overnight).toBe(true);
+  });
+  it('CIV-1331 review: Sunday night hands over to Monday (Weekday) morning (SamTrans 397, Sunday: last bus 3:37 at the middle stop)', async () => {
+    const r = await run('samtrans-397-sunday-night', 'samtrans');
+    const sun = r.stretches.get('397::0::Sunday')!;
+    expect(sun.main!.nightTimes.filter(t => t <= hm(29, 0)).at(-1)).toBe(hm(27, 37));
+    expect(directionNightVerdict(sun, 90)).toBe('pass');
+    expect(r.rows.filter(p => p.routeShortName === '397' && p.day === 'Sunday').some(p => p.nightService90)).toBe(true);
+  });
+  it.each(['Saturday', 'Sunday'])('RTD A, 45 and 15 on %s: first trips of the morning are not overnight service', async day => {
+    const r = await run('rtd-denver-first-trips-weekend', 'rtd-denver');
+    for (const route of ['A', '45', '15']) {
+      const rows = r.rows.filter(p => p.routeShortName === route && p.day === day);
+      expect(rows.length, `${route} ${day}`).toBeGreaterThan(0);
+      for (const p of rows) expect([p.nightService30, p.nightService60, p.nightService90], `${route} ${day}`).toEqual([false, false, false]);
+      expect(routePassesHeadwayFilter(filterable(r, route), 'overnight', day, Infinity), `${route} ${day}`).toBe(false);
+    }
+  });
+  it.each(['Saturday', 'Sunday'])('LA Metro 240 owl on %s: fails at 60, passes at 90 in both directions', async day => {
+    const r = await run('lacmta-240-owl-weekend', 'lacmta');
+    for (const dir of [0, 1]) {
+      const d = r.stretches.get(`240::${dir}::${day}`)!;
+      expect([directionNightVerdict(d, 60), directionNightVerdict(d, 90)], `${dir}`).toEqual(['fail', 'pass']);
+    }
+    expect(routePassesHeadwayFilter(filterable(r, '240'), 'overnight', day, Infinity)).toBe(true);
+  });
   it('rows without stretch data and stretch rows agree: both read nightServicePasses', () => {
     const every = (from: number, to: number, step: number) => Array.from({ length: Math.floor((to - from) / step) + 1 }, (_, i) => from + i * step);
     const day = every(hm(6, 0), hm(23, 0), 20);
