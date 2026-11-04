@@ -15,7 +15,7 @@ import { routeLabels } from '../utils/format';
 import { agencyNames } from '../utils/agencyName';
 import { headwayAmount, headwayEvery, headwayOrBetter } from '../utils/headwayText';
 import ResearchInfo from '../components/ResearchInfo';
-import { NIGHT_INFO_HEADING, nightRuleText } from '../content/researchRules';
+import { NIGHT_INFO_HEADING, NIGHT_LIST_TITLE, nightRuleText } from '../content/researchRules';
 import { compareRouteNumber } from '../utils/sortCompare';
 import PanelEmpty from '../components/ui/PanelEmpty';
 import { CARD_SUMMARY } from '../components/Interval/cardUi';
@@ -191,10 +191,10 @@ export default function NightService({ active, sidebarLeft, searchBarWidth, laye
         {/* The list shows data, so it has the report flag (CIV-932). */}
         <PanelTitleBar
           icon={<Moon className="w-3 h-3 text-[var(--text-dim)] shrink-0" />}
-          title="Overnight service"
+          title={NIGHT_LIST_TITLE}
           action={
             <CardReportButton
-              title={`Overnight service (${headwayAmount(frequency)} view)`}
+              title={`${NIGHT_LIST_TITLE} (${headwayAmount(frequency)} view)`}
               details={nightReportDetails(frequency, agencies.map(agency => ({
                 name: agency.agencyName,
                 routes: agency.routes.map(route => {

@@ -8,6 +8,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Map and route behavior
 
+- **Back from a route opened from the [Night Service list](https://github.com/Civic-Minds/Atlas/issues/1326) returns to the list**: it went to the agency card instead, losing the list and the map position
 - **Station platforms read as their station**: Sound Transit's Link stations list two platforms and trains alternate between them, so each platform read every 20 and graded 60 on a line every 10 (Federal Way Downtown, Downtown Redmond); the platforms and the 2 Line toward Redmond now read the station's every 10
 - **The [Overnight view](https://github.com/Civic-Minds/Atlas/issues/1322) shows only routes that run through the night**: the first trips of the morning counted as overnight service (Denver's A Line from 3 AM); it now uses the Night Service test, where a route runs through the night when its buses come at least every 60 minutes, and night-only routes whose first bus reaches mid-route after 3 AM (TTC 339, 353, 395) now count; routes without full stop data are judged by the same test, and a night route that ends around 4 AM counts when daytime buses start nearby within 90 minutes of its last trip (TransLink N24)
 - **The Night Service page adds an every-90-minutes level, with 30, 60 and 90 in three shades**: hourly-or-so owl routes (NICE n4, LA Metro Owl lines every 61-90 minutes) were left off; the main map's Overnight view stays at 30 and 60
