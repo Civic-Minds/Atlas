@@ -373,6 +373,31 @@ describe('night edges: the wait for the first and after the last night bus (CIV-
     const allNight = withNight(every(hm(23, 20), hm(30, 0), 30));
     expect(nightServicePasses(allNight.times, allNight.nightTimes, 30)).toBe(true);
   });
+  it('CIV-1331: the bus before is the true last departure, whenever it was, in both notations', () => {
+    const evening = (end: number) => every(hm(6, 0), end, 20).filter(t => t <= end).concat(end);
+    // Past 24:00 on the evening's day: last bus 22:00 (or 21:55), first night bus 3:00 written 27:00, then every 30.
+    for (const end of [hm(22, 0), hm(21, 55)]) {
+      const times = [...evening(end), ...every(hm(27, 0), hm(30, 0), 30)];
+      expect(nightServicePasses(times, nightServiceDepartureTimes(times), 90), `extended ${end}`).toBe(false);
+    }
+    // The same schedule written on the morning's own day (03:00): the evening is the previous service day's.
+    for (const end of [hm(22, 0), hm(21, 55)]) {
+      const times = [...every(hm(3, 0), hm(6, 0), 30), ...evening(end)];
+      expect(nightServicePasses(times, nightServiceDepartureTimes(times), 90, undefined, [evening(end)]), `plain ${end}`).toBe(false);
+      // and with no previous-day data, the same day type's evening stands in.
+      expect(nightServicePasses(times, nightServiceDepartureTimes(times), 90), `plain ${end}, same day type`).toBe(false);
+    }
+    // Continuous evening into the night passes in both notations: last bus 1:30, then 2:00 and every 30.
+    const ext = [...evening(hm(22, 0)), ...every(hm(22, 30), hm(30, 0), 30)];
+    expect(nightServicePasses(ext, nightServiceDepartureTimes(ext), 30)).toBe(true);
+    const morning = every(hm(2, 0), hm(6, 0), 30);
+    const prevEvening = [...evening(hm(22, 0)), ...every(hm(22, 30), hm(25, 30), 30)];
+    const plain = [...morning, ...evening(hm(22, 0))];
+    expect(nightServicePasses(plain, nightServiceDepartureTimes(plain), 30, undefined, [prevEvening])).toBe(true);
+    // A night-only stretch whose first bus is exactly 3:30 is early-morning service.
+    const at330 = every(hm(27, 30), hm(30, 0), 20);
+    expect(nightServicePasses(at330, nightServiceDepartureTimes(at330), 90, () => true)).toBe(false);
+  });
   it('CIV-1331 final review: every night-only stretch goes through the same rules', () => {
     const only = (night: number[]) => [night, nightServiceDepartureTimes(night)] as const;
     const takeover = (at: number) => (last: number) => at > last && at <= last + 90;
@@ -388,11 +413,11 @@ describe('night edges: the wait for the first and after the last night bus (CIV-
     expect(nightServicePasses(...tenPast, 90)).toBe(true);
   });
   it('CIV-1329: the 90 grade loosens the gaps between buses, never the edges', () => {
-    const day = (night: number[]) => ({ ...stretch(night), times: [...night, ...every(hm(6, 0), hm(22, 0), 30)] }) as Stretch;
-    // An owl every 75 passes at 90 only.
-    expect([60, 90].map(g => stretchNight(day(every(hm(26, 10), hm(29, 0), 75)), g))).toEqual([false, true]);
+    const day = (night: number[], eveningEnd = hm(22, 0)) => ({ ...stretch(night), times: [...night, ...every(hm(6, 0), eveningEnd, 30)] }) as Stretch;
+    // An owl every 75 after evening service to 1:00 passes at 90 only.
+    expect([60, 90].map(g => stretchNight(day(every(hm(26, 10), hm(29, 0), 75), hm(25, 0)), g))).toEqual([false, true]);
     // RTD 45 Montbello: last bus 0:34, then 3:05, 4:05 and every 30: day service after a 2.5-hour hole fails at 90 too.
-    expect(stretchNight(day([hm(27, 5), ...every(hm(28, 5), hm(30, 35), 30)]), 90)).toBe(false);
+    expect(stretchNight(day([hm(24, 34), hm(27, 5), ...every(hm(28, 5), hm(30, 35), 30)]), 90)).toBe(false);
     // Day service from 3:30 does not cross the window's midpoint early enough and fails at 90.
     expect(stretchNight(day(every(hm(27, 30), hm(30, 0), 20)), 90)).toBe(false);
   });

@@ -57,7 +57,7 @@ import { nearDuplicateTripIds } from './nearDuplicateTrips.js';
 import { decideDedupe, runsInDay, type DedupePattern } from './featureDedupe.js';
 import { decideHeadline, decidePeriod, liftTierOnDestinationPool, OVERSTATED_HEADLINE_MARGIN, ownStepOneHeadway, pooledStepOneHeadway, settleTier, terminalReading, type PeriodValue } from './routeGrading.js';
 import type { SharedStretchPattern } from './sharedStretch.js';
-import { directionStretches, gatedRiderWait, nightOnlyTrips, nightServicePasses, periodSustainedMid, NIGHT_HANDOVER_MAX_WAIT_MIN, NIGHT_ONLY_MAX_DAY_DEPARTURES, NIGHT_HANDOVER_RADIUS_M, type NightHandover, rollupDirection, runsAcrossNightMidpoint, stampStretchShadow, type DirectionStretches, type TripVisit } from './tripSets.js';
+import { directionStretches, gatedRiderWait, nightOnlyTrips, nightServicePasses, periodSustainedMid, NIGHT_HANDOVER_MAX_WAIT_MIN, NIGHT_ONLY_MAX_DAY_DEPARTURES, NIGHT_ONLY_DAY_START_MIN, NIGHT_ONLY_DAY_END_MIN, NIGHT_HANDOVER_RADIUS_M, type NightHandover, rollupDirection, runsAcrossNightMidpoint, stampStretchShadow, type DirectionStretches, type TripVisit } from './tripSets.js';
 import { buildPooledStopMap, computeStopSharers, pooledHeadwayInWindow, type StopSharers } from './stopPools.js';
 
 export type { GtfsPreprocess };
@@ -491,11 +491,13 @@ export function hasNightServiceAtShapeEndpoints(
   maxGapMinutes: number = 60,
   /** CIV-1332: the handover check at a stop (tripSets NightHandover); without it a night-only route's end wait counts. */
   handoverAt?: (stopId: string) => NightHandover | undefined,
+  /** CIV-1331: the stop's departures on the service day(s) before (tripSets nightServicePasses previousDays). */
+  previousAt?: (stopId: string) => ReadonlyArray<readonly number[]>,
 ): boolean {
   return [...new Set(endpointStopIds.filter((id): id is string => id != null))].some(stopId => {
     const departures = routeDepartures.get(stopId);
     if (!departures) return false;
-    return nightServicePasses(departures, nightServiceDepartureTimes(departures, overnightOnlyDepartures.get(stopId) ?? []), maxGapMinutes, handoverAt?.(stopId)) === true;
+    return nightServicePasses(departures, nightServiceDepartureTimes(departures, overnightOnlyDepartures.get(stopId) ?? []), maxGapMinutes, handoverAt?.(stopId), previousAt?.(stopId)) === true;
   });
 }
 
@@ -2204,7 +2206,7 @@ export async function processGtfsBuffer(
         v = false;
         for (const [gKey, stops] of stopDepsByGroup) {
           if (!gKey.startsWith(`${route}::`) || gKey.slice(gKey.lastIndexOf('::') + 2) !== day) continue;
-          for (const times of stops.values()) if (times.filter(t => t >= 6 * 60 && t < 23 * 60).length > NIGHT_ONLY_MAX_DAY_DEPARTURES) { v = true; break; }
+          for (const times of stops.values()) if (times.filter(t => t >= NIGHT_ONLY_DAY_START_MIN && t < NIGHT_ONLY_DAY_END_MIN).length > NIGHT_ONLY_MAX_DAY_DEPARTURES) { v = true; break; }
           if (v) break;
         }
         cache.set(key, v);
@@ -2245,6 +2247,12 @@ export async function processGtfsBuffer(
     handoverTimesByDay.set(cacheKey, byStop);
     return byStop;
   };
+  // CIV-1331: the service day(s) before a morning, for a night written on the morning's own day: Monday's morning follows
+  // Sunday's evening and Tuesday to Friday's a Weekday's, so a Weekday morning reads both; Saturday's follows Friday's
+  // (Weekday), Sunday's Saturday's.
+  const PREVIOUS_SERVICE_DAYS: Record<string, readonly string[]> = { Weekday: ['Weekday', 'Sunday'], Saturday: ['Weekday'], Sunday: ['Saturday'] };
+  const previousDaysAt = (route: string, dirId: string | number, day: string, stopId: string): number[][] =>
+    (PREVIOUS_SERVICE_DAYS[day] ?? [day]).map(prev => stopDepsByGroup.get(`${route}::${dirId}::${prev}`)?.get(stopId) ?? []);
   const handoverCache = new Map<string, NightHandover | undefined>();
   /** `route`: the night route itself, left out, so its own bus a few stops on is never the handover. */
   const nightHandoverAt = (day: string, stopId: string, route: string): NightHandover | undefined => {
@@ -2447,12 +2455,14 @@ export async function processGtfsBuffer(
       nightShapeStops.at(-1)?.stopId,
     ].filter((id): id is string => id != null))];
     const handoverAt = (stopId: string) => nightHandoverAt(day, stopId, shortName);
+    const previousAt = (stopId: string) => previousDaysAt(shortName, dirId, day, stopId);
     feature.properties.nightService30 = hasNightServiceAtShapeEndpoints(
       nightEndpointStopIds,
       metricStopMap,
       stopDepsByGroupNight.get(gKey),
       30,
       handoverAt,
+      previousAt,
     );
     feature.properties.nightService60 = hasNightServiceAtShapeEndpoints(
       nightEndpointStopIds,
@@ -2460,6 +2470,7 @@ export async function processGtfsBuffer(
       stopDepsByGroupNight.get(gKey),
       60,
       handoverAt,
+      previousAt,
     );
     // CIV-1329: the 90 tier from the same call as 30 and 60, never a separate count.
     feature.properties.nightService90 = hasNightServiceAtShapeEndpoints(
@@ -2468,6 +2479,7 @@ export async function processGtfsBuffer(
       stopDepsByGroupNight.get(gKey),
       90,
       handoverAt,
+      previousAt,
     );
     feature.properties.nightService = feature.properties.nightService60;
     // Frequency focus step 4: whether this row itself runs at night: more than half of its own
@@ -3632,6 +3644,7 @@ export async function processGtfsBuffer(
     for (const [gKey, trips] of stretchVisitsByGroup) {
       const day = gKey.slice(gKey.lastIndexOf('::') + 2);
       const groupRoute = gKey.slice(0, gKey.indexOf('::'));
+      const groupDir = gKey.split('::')[1];
       if (synthesizedGroups.has(gKey.slice(0, gKey.indexOf('::')))) continue;
       const directionTrips = [...trips].map(([tripId, visits]) => ({
         tripId,
@@ -3651,8 +3664,12 @@ export async function processGtfsBuffer(
       stretches.midday899 = directionMidday899(gKey);
       // CIV-1332: whether other service picks riders up soon after a night-only route's last bus, at each stretch's stop.
       stretches.handoverAt = stopId => nightHandoverAt(day, stopId, groupRoute);
+      stretches.previousDaysAt = stopId => previousDaysAt(groupRoute, groupDir, day, stopId);
       for (const st of [stretches.main, ...stretches.tails, stretches.night?.main, ...(stretches.night?.tails ?? [])]) {
-        if (st) (st as { handover?: NightHandover }).handover = nightHandoverAt(day, st.refStop, groupRoute);
+        if (st) {
+          (st as { handover?: NightHandover }).handover = nightHandoverAt(day, st.refStop, groupRoute);
+          (st as { previousDays?: number[][] }).previousDays = previousDaysAt(groupRoute, groupDir, day, st.refStop);
+        }
       }
       stretchesByKey.set(gKey, stretches);
     }
