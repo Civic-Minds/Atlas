@@ -36,12 +36,19 @@ export interface FeedStop {
 export interface StopEvent {
   stopId: string;
   tripId: string;
+  routeId: string;
   routeName: string;
   headsign: string | null;
   arrival: number;
   departure: number;
   canAlight: boolean;
   canBoard: boolean;
+  /** The trip's stops before and after this one, so a trip that ends (or starts) a few stops away can be left out (CIV-101). */
+  stopsBefore: number;
+  stopsAfter: number;
+  /** Minutes from the trip's first departure to this arrival, and from this departure to the trip's last arrival. */
+  minutesFromStart: number;
+  minutesToEnd: number;
 }
 
 export interface ConnectionFeed {
@@ -77,12 +84,12 @@ export async function loadConnectionFeed(buf: Buffer, filter: FeedFilter = {}): 
     if (excluded.has(r.route_short_name ?? '')) continue;
     routes.set(r.route_id, (r.route_short_name || r.route_long_name || r.route_id).trim());
   }
-  const trips = new Map<string, { routeName: string; serviceId: string; headsign: string | null }>();
+  const trips = new Map<string, { routeId: string; routeName: string; serviceId: string; headsign: string | null }>();
   const keptServices = new Set<string>();
   for (const t of tripsRows) {
     const routeName = routes.get(t.route_id);
     if (!routeName) continue;
-    trips.set(t.trip_id, { routeName, serviceId: t.service_id, headsign: t.trip_headsign?.trim() || null });
+    trips.set(t.trip_id, { routeId: t.route_id, routeName, serviceId: t.service_id, headsign: t.trip_headsign?.trim() || null });
     keptServices.add(t.service_id);
   }
   const stationNames = new Map(stopsRows.filter(s => s.location_type === '1').map(s => [s.stop_id, (s.stop_name ?? '').trim()]));
@@ -130,6 +137,8 @@ export async function loadConnectionFeed(buf: Buffer, filter: FeedFilter = {}): 
         const offsets = windows && times.length
           ? expandTripFrequencyOffsets(times[0], windows, times[times.length - 1] - times[0])
           : [0];
+        const firstTime = gtfsTimeToMinutes(list[0].departure_time) ?? gtfsTimeToMinutes(list[0].arrival_time);
+        const lastTime = gtfsTimeToMinutes(list[list.length - 1].arrival_time) ?? gtfsTimeToMinutes(list[list.length - 1].departure_time);
         for (const offset of offsets) list.forEach((r, i) => {
           if (!stopIds.has(r.stop_id)) return;
           // Blank arrival falls back to departure and the other way round (untimed stops are skipped).
@@ -139,10 +148,14 @@ export async function loadConnectionFeed(buf: Buffer, filter: FeedFilter = {}): 
           const arrival = arrivalRaw + offset;
           const departure = departureRaw + offset;
           out.push({
-            stopId: r.stop_id, tripId, routeName: trip.routeName, headsign: trip.headsign, arrival, departure,
+            stopId: r.stop_id, tripId, routeId: trip.routeId, routeName: trip.routeName, headsign: trip.headsign, arrival, departure,
             // Nobody gets off at a trip's first stop or on at its last.
             canAlight: i > 0 && r.drop_off_type !== '1',
             canBoard: i < list.length - 1 && r.pickup_type !== '1',
+            stopsBefore: i,
+            stopsAfter: list.length - 1 - i,
+            minutesFromStart: firstTime === null ? Infinity : arrivalRaw - firstTime,
+            minutesToEnd: lastTime === null ? Infinity : lastTime - departureRaw,
           });
         });
       }

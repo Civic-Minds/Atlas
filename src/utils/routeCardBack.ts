@@ -6,7 +6,7 @@ export interface MapCamera {
   pitch: number;
 }
 
-/** A route opened from the Night Service list, with the map's camera at the moment it was opened. */
+/** A route opened from a research view's list (Night Service, Bustang connections), with the map's camera at the moment it was opened. */
 export interface ListOpenedRoute {
   routeKey: string;
   camera: MapCamera | null;
@@ -14,6 +14,7 @@ export interface ListOpenedRoute {
 
 export type RouteCardBackTarget =
   | { kind: 'nightList'; camera: MapCamera | null }
+  | { kind: 'bustangList'; camera: MapCamera | null }
   | { kind: 'nearYou' }
   | null;
 
@@ -24,18 +25,22 @@ export type RouteCardBackTarget =
 export function resolveRouteCardBack({
   selectedRoute,
   nightServiceView,
+  bustangView = false,
   nightListRoute,
   nearYouRoute,
   hasUserLocation,
 }: {
   selectedRoute: string | null;
   nightServiceView: boolean;
+  /** The Bustang connections view (CIV-101): a route its list opened goes back to that list. */
+  bustangView?: boolean;
   nightListRoute: ListOpenedRoute | null;
   nearYouRoute: string | null;
   hasUserLocation: boolean;
 }): RouteCardBackTarget {
   if (!selectedRoute) return null;
   if (nightServiceView && nightListRoute?.routeKey === selectedRoute) return { kind: 'nightList', camera: nightListRoute.camera };
+  if (bustangView && nightListRoute?.routeKey === selectedRoute) return { kind: 'bustangList', camera: nightListRoute.camera };
   if (hasUserLocation && nearYouRoute === selectedRoute) return { kind: 'nearYou' };
   return null;
 }

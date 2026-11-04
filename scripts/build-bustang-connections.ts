@@ -9,14 +9,18 @@
  * within each distance choice (200, 400 and 800 m); each hub arrival gets its wait for the next local departure from the
  * shared connectionWaits, and each local route its count of Bustang trips met within 15, 30 and 60 min on both sides
  * (getting off Bustang: local departures after each arrival; catching Bustang: local drop-offs before each departure),
- * from the shared routeConnections. One real date per day type: the first Wednesday, Saturday and Sunday
+ * from the shared routeConnections. A local bus that ends its trip within a few stops (or, catching Bustang, started
+ * only a few stops before) is left out (countsAsConnection). Each Bustang trip is also kept with every stop it serves
+ * and, at each, the local routes that meet it within 60 min on both sides (tripStopConnections), for the route card's
+ * departure list. One real date per day type: the first Wednesday, Saturday and Sunday
  * after --from (default today). The code works for any hub agency; v1 is run for Bustang only.
  */
 import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { loadConnectionFeed, readDateFor, runsOn, type ConnectionFeed, type FeedStop } from '../pipeline/connectionTimetables.js';
 import { nextDateWithDow, addDaysYmd } from '../pipeline/serviceDates.js';
-import { connectionWaits, departuresWithin, distanceMeters, MAX_NEARBY_METERS, NEARBY_CHOICES, routeConnections, type HubArrival, type LocalDeparture } from '../shared/connections.js';
+import { connectionWaits, countsAsConnection, departuresWithin, distanceMeters, MAX_NEARBY_METERS, NEARBY_CHOICES, routeConnections, tripStopConnections, type HubArrival, type LocalDeparture } from '../shared/connections.js';
+import type { StopEvent } from '../pipeline/connectionTimetables.js';
 import { agencyShortLabel } from '../shared/agencyPages.js';
 import { effectiveFeedExpiry, todayUtcYmd } from '../shared/feedAvailability.js';
 
@@ -114,6 +118,9 @@ for (const c of locals) {
 }
 
 const stopsOut = [];
+// Each kept group's local buses per day, for the per-trip connections below.
+const localByGroup = new Map<string, Record<string, { departures: LocalDeparture[]; dropOffs: LocalDeparture[] }>>();
+const rifleCheck: string[] = [];
 for (const [groupId, hubStops] of groups) {
   // Other agencies' served stops within the widest choice of any of the group's stops, at their nearest distance.
   const nearby: Array<{ agency: LocalLoaded; stop: FeedStop; distanceM: number }> = [];
@@ -145,15 +152,20 @@ for (const [groupId, hubStops] of groups) {
       for (const e of agency.feed.eventsOn(readDate, new Set(byStop.keys()))) {
         const n = byStop.get(e.stopId)!;
         const at = { agencySlug: agency.config.slug, routeName: e.routeName, stopName: n.stop.name, distanceM: n.distanceM };
-        if (e.canBoard) departures.push({ time: Math.round(e.departure), ...at });
-        if (e.canAlight) dropOffs.push({ time: Math.round(e.arrival), ...at });
+        if (e.canBoard && countsAsConnection('after', e)) departures.push({ time: Math.round(e.departure), ...at });
+        if (e.canAlight && countsAsConnection('before', e)) dropOffs.push({ time: Math.round(e.arrival), ...at });
       }
     }
+    const perDay = localByGroup.get(groupId) ?? {};
+    perDay[key] = { departures, dropOffs };
+    localByGroup.set(groupId, perDay);
+    // The longest wait after an arrival, logged for checking against the raw schedules (Rifle weekday at 400 m).
+    const longest = Math.max(-1, ...connectionWaits(arrivals, departuresWithin(departures, 400)).map(w => w.waitMin ?? -1));
+    rifleCheck.push(`${key} ${hubStops[0].name}: longest wait at 400 m ${longest < 0 ? 'none' : `${longest} min`}`);
     days[key] = {
       hubDate,
       readDates,
-      // One set of waits per distance choice, each from the shared function on the departures within it.
-      waits: Object.fromEntries(NEARBY_CHOICES.map(m => [m, connectionWaits(arrivals, departuresWithin(departures, m))])),
+      arrivals: arrivals.length,
       // Each local route once per side, with its counts within 15, 30 and 60 min.
       routes: Object.fromEntries(NEARBY_CHOICES.map(m => [m, {
         after: routeConnections(arrivals, departuresWithin(departures, m), 'after'),
@@ -165,6 +177,8 @@ for (const [groupId, hubStops] of groups) {
   const first = hubStops[0];
   stopsOut.push({
     id: groupId,
+    // The member stop ids, so a stop picked on the map finds its group (a station's gates).
+    stopIds: hubStops.map(s => s.stopId),
     // A station's gates read as the station; a single stop keeps its own name.
     name: hubFeed.stationNames.get(groupId) || (hubStops.length > 1 ? commonName(hubStops.map(s => s.name)) : first.name),
     lat: first.lat,
@@ -185,6 +199,58 @@ const pageNames = new Map((JSON.parse(readFileSync('shared/data/agency-pages.jso
   .map(a => [a.slug, agencyShortLabel(a)]));
 const shortName = (c: AgencyConfig) => pageNames.get(c.slug) ?? displayName(c);
 
+// Each Bustang trip that day with every kept stop it serves, and the local routes meeting it there within 60 min on each
+// side: [route index, wait at 200, 400 and 800 m] (null where the route is not within that distance or not within 60).
+const stopIndex = new Map(stopsOut.map((s, i) => [s.id, i]));
+const stopOfHubStop = new Map<string, string>();
+for (const [groupId, hubStops] of groups) for (const s of hubStops) stopOfHubStop.set(s.stopId, groupId);
+const routeTable: Array<[string, string]> = [];
+const routeIndex = new Map<string, number>();
+const routeRef = (agencySlug: string, routeName: string) => {
+  const k = `${agencySlug}\u0000${routeName}`;
+  if (!routeIndex.has(k)) { routeIndex.set(k, routeTable.length); routeTable.push([agencySlug, routeName]); }
+  return routeIndex.get(k)!;
+};
+function sideWaits(time: number, local: LocalDeparture[], side: 'after' | 'before'): Array<[number, number | null, number | null, number | null]> {
+  const at = NEARBY_CHOICES.map(m => new Map(tripStopConnections(time, departuresWithin(local, m), side).map(r => [`${r.agencySlug}\u0000${r.routeName}`, r])));
+  const widest = at[at.length - 1];
+  return [...widest.values()].map(r => {
+    const k = `${r.agencySlug}\u0000${r.routeName}`;
+    return [routeRef(r.agencySlug, r.routeName), ...at.map(m => m.get(k)?.waitMin ?? null)] as [number, number | null, number | null, number | null];
+  });
+}
+const tripsOut: Record<string, unknown[]> = {};
+for (const { key } of DAY_TYPES) {
+  const events = hubFeed.eventsOn(hubReadDates[key], new Set([...stopOfHubStop.keys()]));
+  const byTrip = new Map<string, StopEvent[]>();
+  for (const e of events) byTrip.set(e.tripId, [...(byTrip.get(e.tripId) ?? []), e]);
+  const list = [];
+  for (const [tripId, tripEvents] of byTrip) {
+    tripEvents.sort((a, b) => a.departure - b.departure);
+    const first = tripEvents[0];
+    list.push({
+      id: tripId,
+      routeId: first.routeId,
+      routeName: first.routeName,
+      headsign: first.headsign,
+      stops: tripEvents.filter(e => stopIndex.has(stopOfHubStop.get(e.stopId)!)).map(e => {
+        const groupId = stopOfHubStop.get(e.stopId)!;
+        const local = localByGroup.get(groupId)?.[key];
+        return {
+          stop: stopIndex.get(groupId),
+          arrival: Math.round(e.arrival),
+          departure: Math.round(e.departure),
+          // Getting off Bustang here (after it arrives) and catching it here (before it leaves).
+          after: e.canAlight && local ? sideWaits(Math.round(e.arrival), local.departures, 'after') : null,
+          before: e.canBoard && local ? sideWaits(Math.round(e.departure), local.dropOffs, 'before') : null,
+        };
+      }),
+    });
+  }
+  tripsOut[key] = list.filter(t => t.stops.length > 0).sort((a, b) => a.stops[0].departure - b.stops[0].departure);
+}
+console.log(rifleCheck.filter(l => /Rifle/.test(l)).join('\n'));
+
 const usedAgencies = new Set(stopsOut.flatMap(s => s.agencies[MAX_NEARBY_METERS]));
 const out = {
   builtFrom: FROM,
@@ -195,6 +261,8 @@ const out = {
     name: shortName(a.config), feedVersion: a.config.lastFeedVersion ?? null, feedExpiry: a.expiry,
   }])),
   stops: stopsOut,
+  routes: routeTable,
+  trips: tripsOut,
 };
 writeFileSync(OUT, `${JSON.stringify(out)}\n`);
 console.log(`wrote ${OUT}: ${stopsOut.length} stops, ${(JSON.stringify(out).length / 1024).toFixed(0)} KB`);

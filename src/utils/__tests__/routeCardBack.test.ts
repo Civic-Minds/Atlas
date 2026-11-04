@@ -36,6 +36,20 @@ describe('resolveRouteCardBack', () => {
     expect(resolveRouteCardBack({ ...base, selectedRoute: null })).toBeNull();
   });
 
+  it('a route opened from the Bustang connections list goes back to that list (CIV-101)', () => {
+    const bustang = { ...base, selectedRoute: 'bustang::WEST', nightServiceView: false, bustangView: true, nightListRoute: { routeKey: 'bustang::WEST', camera } };
+    expect(resolveRouteCardBack(bustang)).toEqual({ kind: 'bustangList', camera });
+    // The same route on the regular map, or another route, keeps its agency card.
+    expect(resolveRouteCardBack({ ...bustang, bustangView: false })).toBeNull();
+    expect(resolveRouteCardBack({ ...bustang, selectedRoute: 'bustang::NRTH' })).toBeNull();
+  });
+
+  it('the map records the Bustang list as the opener of the route it hands over', () => {
+    const source = readFileSync(join(__dirname, '../../apps/Interval.tsx'), 'utf8');
+    const start = source.indexOf('const prevPendingBustangRoute');
+    expect(source.slice(start, source.indexOf('onPendingBustangRouteHandled?.();', start))).toContain('setNightListRoute(');
+  });
+
   it('the map records the Night Service list as the opener of the route it hands over', () => {
     // vitest related misses this wiring; the source check keeps the handoff from dropping the list target.
     const source = readFileSync(join(__dirname, '../../apps/Interval.tsx'), 'utf8');

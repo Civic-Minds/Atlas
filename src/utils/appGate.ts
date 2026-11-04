@@ -1,4 +1,4 @@
-export type AppId = 'frequency' | 'history' | 'live' | 'night';
+export type AppId = 'frequency' | 'history' | 'live' | 'night' | 'bustang';
 
 interface GateFlags {
   live: boolean;
@@ -13,5 +13,5 @@ export const RETIRED_APP_PATHS: readonly string[] = ['/apps/corridors', '/apps/f
 export function isAppGated(app: AppId, flags: GateFlags): boolean {
   return (app === 'live' && !flags.live)
     || (app === 'history' && !flags.history)
-    || (app === 'night' && !flags.researchApps);
+    || ((app === 'night' || app === 'bustang') && !flags.researchApps);
 }

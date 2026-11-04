@@ -27,7 +27,6 @@ const LiveAgencyPage = React.lazy(() => import('./LiveAgencyPage'));
 const LiveToolPage = React.lazy(() => import('./LiveToolPage'));
 const ResearchPage = React.lazy(() => import('./apps/ResearchPage'));
 const FreeChildFaresPage = React.lazy(() => import('./apps/FreeChildFaresPage'));
-const BustangConnectionsPage = React.lazy(() => import('./apps/BustangConnectionsPage'));
 const FrequentServiceStoryPage = React.lazy(() => import('./apps/FrequentServiceStoryPage'));
 const AreaPage = React.lazy(() => import('./AreaPage'));
 const RegionPage = React.lazy(() => import('./RegionPage'));
@@ -101,7 +100,6 @@ ReactDOM.createRoot(rootElement).render(
           {FEATURES.agencyPages && <Route path="/agency/:slug" element={<AgencyPage />} />}
           {FEATURES.researchApps && <Route path="/research" element={<ResearchPage />} />}
           {FEATURES.researchApps && <Route path="/research/free-child-fares" element={<FreeChildFaresPage />} />}
-          {FEATURES.researchApps && <Route path={FEATURE_ROUTES.bustangConnections} element={<BustangConnectionsPage />} />}
           {FEATURES.frequentService && <Route path={FEATURE_ROUTES.frequentService.story} element={<FrequentServiceStoryPage />} />}
           {FEATURES.agencyPages && <Route path="/area/:slug" element={<AreaPage />} />}
           {FEATURES.agencyPages && <Route path="/region/:slug" element={<RegionPage />} />}

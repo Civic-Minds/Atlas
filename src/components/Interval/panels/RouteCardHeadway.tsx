@@ -130,6 +130,8 @@ export interface RouteCardHeadwayProps {
   hoveredBranch: HoveredBranch | null;
   setHoveredBranch: (b: HoveredBranch | null) => void;
   onInfoOpen?: OpenInfoFn;
+  /** A research view's own section at the end of the card (Bustang departures, CIV-101); the regular map passes none. */
+  extra?: React.ReactNode;
 }
 
 export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
@@ -155,6 +157,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
   hoveredBranch,
   setHoveredBranch,
   onInfoOpen,
+  extra,
 }) => {
   const [hoveredHour, setHoveredHour] = React.useState<number | null>(null);
   const reportRef = React.useRef<CardReportButtonHandle>(null);
@@ -564,6 +567,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
           </div>
         )}
       </SidebarCardList>
+      {extra}
       </>)}
     </SidebarCardShell>
   );

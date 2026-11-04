@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import {
-  bestWindow, compareStopsWorstFirst, connectionWaits, departuresWithin, gtfsTimeToMinutes, isNearby, NEARBY_CHOICES, NEARBY_METERS, parseNearbyChoice, rankWorstFirst, routeConnections, summarizeWaits, worstWaitGroup,
+  bestWindow, connectionWaits, countsAsConnection, departuresWithin, gtfsTimeToMinutes, isNearby, NEARBY_CHOICES, NEARBY_METERS, parseNearbyChoice, routeConnections, tripStopConnections, windowOf,
   type HubArrival, type LocalDeparture,
 } from '../connections';
 import { clockTime } from '../timeText';
@@ -69,23 +69,6 @@ describe('distance choices (Ryan, 2026-11-03: 200, 400 and 800 m, starting at 40
     expect(departuresWithin(deps, 400).map(d => d.routeName)).toEqual(['mid', 'near']);
     const waits = NEARBY_CHOICES.map(m => connectionWaits([arrival(605)], departuresWithin(deps, m))[0].waitMin);
     expect(waits).toEqual([15, 5, 5]);
-  });
-});
-
-describe('ranking: worst first, no cut-off and no pass/fail', () => {
-  const stop = (name: string, waits: Array<number | null>) => ({
-    name,
-    waits: waits.map((w, i) => ({ arrival: arrival(600 + i), next: w === null ? null : departure(600 + i + w), waitMin: w })),
-  });
-
-  it('ranks arrivals with no local bus after them worst, then the longest real wait', () => {
-    const ranked = rankWorstFirst([stop('short', [2, 3]), stop('none-after', [1, null]), stop('long', [5, 90]), stop('empty', [])], s => s.waits);
-    expect(ranked.map(r => r.item.name)).toEqual(['none-after', 'long', 'short', 'empty']);
-  });
-
-  it('summarizes from the same waits the table shows', () => {
-    expect(summarizeWaits(stop('x', [4, null, 10, 2]).waits)).toEqual({ arrivals: 4, noBusAfter: 1, longestWaitMin: 10, medianWaitMin: 4 });
-    expect(compareStopsWorstFirst(summarizeWaits([]), summarizeWaits(stop('y', [1]).waits))).toBeGreaterThan(0);
   });
 });
 
@@ -167,9 +150,51 @@ describe('routes in their best group, with a count (15, 30 or 60 min)', () => {
   });
 });
 
-describe('map colour groups from the ranking summary', () => {
-  it('uses the longest wait, and treats an arrival with no bus after as the worst', () => {
-    const s = (longestWaitMin: number | null, noBusAfter = 0, arrivals = 3) => ({ arrivals, noBusAfter, longestWaitMin, medianWaitMin: 1 });
-    expect([s(15), s(16), s(60), s(61), s(5, 1), s(null, 0, 0)].map(worstWaitGroup)).toEqual([15, 30, 60, 'longer', 'longer', null]);
+describe('a local trip that ends within a few stops does not count (Ryan, 2026-11-04)', () => {
+  const place = (stopsBefore: number, minutesFromStart: number, stopsAfter: number, minutesToEnd: number) => ({ stopsBefore, minutesFromStart, stopsAfter, minutesToEnd });
+
+  it("leaves out Rifle's 3:50 PM HGB, which ends 2 stops and 4 minutes later", () => {
+    // RFTA trip 579040 at Rifle Park & Ride (stop 93): stops 94 and 95 follow, the last at 3:54 PM.
+    expect(countsAsConnection('after', place(14, 45, 2, 4))).toBe(false);
+  });
+
+  it('keeps a short shuttle or an express that rides on for 10 minutes or more', () => {
+    // Summit Stage Frisco - Silverthorne: 3 stops, 15 minutes; RTD 120X: 3 stops, 20 minutes.
+    expect(countsAsConnection('after', place(0, 0, 2, 15))).toBe(true);
+    expect(countsAsConnection('after', place(0, 0, 2, 20))).toBe(true);
+    // Three more stops always counts, however quick.
+    expect(countsAsConnection('after', place(0, 0, 3, 4))).toBe(true);
+  });
+
+  it('mirrors the rule when catching Bustang: a bus that only just started brings nobody', () => {
+    expect(countsAsConnection('before', place(2, 5, 10, 40))).toBe(false);
+    expect(countsAsConnection('before', place(2, 12, 10, 40))).toBe(true);
+    expect(countsAsConnection('before', place(5, 5, 0, 0))).toBe(true);
+  });
+});
+
+describe("one Bustang bus's connections at one stop (the route card's departure view)", () => {
+  it('lists each route once with its own wait, shortest first, up to 60 min', () => {
+    const local = [departure(610, '2'), departure(605, '1'), departure(640, '1'), departure(655, '3'), departure(700, '4')];
+    expect(tripStopConnections(600, local, 'after')).toEqual([
+      { agencySlug: 'local', routeName: '1', waitMin: 5 },
+      { agencySlug: 'local', routeName: '2', waitMin: 10 },
+      { agencySlug: 'local', routeName: '3', waitMin: 55 },
+    ]);
+  });
+
+  it('reads drop-offs before the Bustang departure when catching it', () => {
+    expect(tripStopConnections(600, [departure(590, '1'), departure(610, '2')], 'before')).toEqual([{ agencySlug: 'local', routeName: '1', waitMin: 10 }]);
+  });
+
+  it('agrees with the per-route counts for the same bus', () => {
+    const local = [departure(612, '1'), departure(645, '2')];
+    const one = tripStopConnections(600, local, 'after');
+    const counts = routeConnections([arrival(600)], local, 'after');
+    for (const r of one) expect(counts.find(c => c.routeName === r.routeName)!.within[[15, 30, 60].indexOf(windowOf(r.waitMin)!)]).toBe(1);
+  });
+
+  it('puts a wait in its window', () => {
+    expect([0, 15, 16, 30, 31, 60, 61].map(windowOf)).toEqual([15, 15, 30, 30, 60, 60, null]);
   });
 });

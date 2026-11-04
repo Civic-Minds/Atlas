@@ -36,6 +36,12 @@ describe('loadConnectionFeed (CIV-101)', () => {
     expect([...f.boardingStopIds].sort()).toEqual(['A', 'B']);
   });
 
+  it("counts each stop's place on its trip, and keeps the route id (CIV-101)", async () => {
+    const f = await loadConnectionFeed(await feed(BASE));
+    const ev = f.eventsOn('20261014', new Set(['A', 'B', 'C'])).filter(e => e.tripId === 'T1');
+    expect(ev.map(e => [e.stopId, e.stopsBefore, e.stopsAfter, e.routeId])).toEqual([['A', 0, 2, 'R1'], ['B', 1, 1, 'R1'], ['C', 2, 0, 'R1']]);
+  });
+
   it('reads only the exact date: a removed date and another weekday have no trips', async () => {
     const f = await loadConnectionFeed(await feed(BASE));
     expect(f.eventsOn('20261021', new Set(['A']))).toEqual([]);
