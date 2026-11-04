@@ -2190,13 +2190,23 @@ export async function processGtfsBuffer(
   // CIV-1331 review: the morning after a night is the next calendar day's service, so the night of `day` reads that
   // day's own after-midnight trips (24:00 and later) and the next day's trips moved forward 24 hours: Saturday night
   // hands over to Sunday morning, Sunday night to Monday (Weekday), and a Weekday night to both the Weekday morning
-  // (Monday to Thursday nights) and the Saturday morning (Friday night), whichever starts later deciding. Only daytime routes count (more than
-  // NIGHT_ONLY_MAX_DAY_DEPARTURES departures 6 AM to 11 PM at some stop that day): another night route's bus is not
-  // the daytime service taking over.
+  // (Monday to Thursday nights) and the Saturday morning (Friday night), whichever starts later deciding. Only daytime
+  // routes count (routeIsDaytime): another night route's bus is not the daytime service taking over.
   // Friday night (CIV-1331 review): the Weekday row stands for Monday to Friday nights, and Friday's morning after is
   // Saturday's service, so a Weekday night must be taken over on both the Weekday and the Saturday morning (the
   // stricter of the two: the later start decides).
+  const DAYTIME_TAKEOVER_START_MIN = 5 * 60;
+  const DAYTIME_TAKEOVER_END_MIN = 7 * 60 + 30;
   const NEXT_SERVICE_DAYS: Record<string, readonly string[]> = { Weekday: ['Weekday', 'Saturday'], Saturday: ['Sunday'], Sunday: ['Weekday'] };
+  /**
+   * CIV-1331: a route takes over from a night route when, at some stop that day, it runs regular daytime service (more
+   * than NIGHT_ONLY_MAX_DAY_DEPARTURES departures 9 AM to 10 PM, nightOnlyStretch's hours) or its morning service starts
+   * there between 5:00 and 7:30 with no bus from 2:00 to 5:00 (early-morning and peak routes, which are the ones that take
+   * over; a night route's own tail after 5:00 has night buses before it and does not count).
+   */
+  const isDaytimeTakeover = (times: readonly number[]): boolean =>
+    times.filter(t => t >= NIGHT_ONLY_DAY_START_MIN && t < NIGHT_ONLY_DAY_END_MIN).length > NIGHT_ONLY_MAX_DAY_DEPARTURES
+    || (times.some(t => t >= DAYTIME_TAKEOVER_START_MIN && t < DAYTIME_TAKEOVER_END_MIN) && !times.some(t => t >= 2 * 60 && t < DAYTIME_TAKEOVER_START_MIN));
   const routeIsDaytime = (() => {
     const cache = new Map<string, boolean>();
     return (route: string, day: string): boolean => {
@@ -2206,7 +2216,7 @@ export async function processGtfsBuffer(
         v = false;
         for (const [gKey, stops] of stopDepsByGroup) {
           if (!gKey.startsWith(`${route}::`) || gKey.slice(gKey.lastIndexOf('::') + 2) !== day) continue;
-          for (const times of stops.values()) if (times.filter(t => t >= NIGHT_ONLY_DAY_START_MIN && t < NIGHT_ONLY_DAY_END_MIN).length > NIGHT_ONLY_MAX_DAY_DEPARTURES) { v = true; break; }
+          for (const times of stops.values()) if (isDaytimeTakeover(times)) { v = true; break; }
           if (v) break;
         }
         cache.set(key, v);

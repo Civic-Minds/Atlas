@@ -11,7 +11,7 @@ import { directionNightVerdict, type DirectionStretches } from '../tripSets';
 const hm = (h: number, m: number) => `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:00`;
 const range = (from: number, to: number, step: number) => { const out: number[] = []; for (let m = from; m <= to; m += step) out.push(m); return out; };
 
-async function feed(nTrips: { service: string; at: number[] }, dTrips: Array<{ service: string; from: number }>): Promise<Buffer> {
+async function feed(nTrips: { service: string; at: number[] }, dTrips: Array<{ service: string; from: number; to?: number }>): Promise<Buffer> {
   const zip = new JSZip();
   zip.file('agency.txt', 'agency_id,agency_name,agency_url,agency_timezone\nA,Made Up,https://example.com,America/Toronto\n');
   zip.file('routes.txt', 'route_id,agency_id,route_short_name,route_type\nN,A,N,3\nD,A,D,3\n');
@@ -27,7 +27,7 @@ async function feed(nTrips: { service: string; at: number[] }, dTrips: Array<{ s
     times.push(`${id},${hm(Math.floor(end / 60), end % 60)},${hm(Math.floor(end / 60), end % 60)},${stops[1]},2`);
   };
   for (const at of nTrips.at) add('N', nTrips.service, at, ['a', 'b']);
-  for (const { service, from } of dTrips) for (const at of range(from, 22 * 60, 20)) add('D', service, at, ['c', 'd']);
+  for (const { service, from, to = 22 * 60 } of dTrips) for (const at of range(from, to, 20)) add('D', service, at, ['c', 'd']);
   zip.file('trips.txt', trips.join('\n') + '\n');
   zip.file('stop_times.txt', times.join('\n') + '\n');
   return zip.generateAsync({ type: 'nodebuffer' });
@@ -58,5 +58,14 @@ describe('night handover reads the morning after, in both notations (CIV-1331)',
   });
   it("Saturday night written on Sunday's own day: Monday's early buses do not", async () => {
     expect(await nightVerdict(await feed(plain, [{ service: 'WKD', from: 4 * 60 + 30 }, { service: 'SUN', from: 7 * 60 }, { service: 'SAT', from: 7 * 60 }]), 'N::0::Sunday')).toBe('fail');
+  });
+
+  // CIV-1331: early-morning and peak routes are the ones that take over. N ends at 3:40 here (80 minutes before 5:00).
+  const endsAt340 = { service: 'SAT', at: range(25 * 60, 27 * 60 + 40, 20) };
+  it('a peak-only route (5:00 to 8:40, nothing from 9 AM) takes over', async () => {
+    expect(await nightVerdict(await feed(endsAt340, [{ service: 'SUN', from: 5 * 60, to: 8 * 60 + 40 }]), 'N::0::Saturday')).toBe('pass');
+  });
+  it("another night route's tail (2:00 to 5:40, nothing from 9 AM) does not", async () => {
+    expect(await nightVerdict(await feed(endsAt340, [{ service: 'SUN', from: 2 * 60, to: 5 * 60 + 40 }]), 'N::0::Saturday')).toBe('fail');
   });
 });
