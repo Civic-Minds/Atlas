@@ -7,14 +7,16 @@
  * from R2, never written), checked against the config's recorded feed version and expiry, and
  * cached in --zips. The hub agency's stops are matched to every other agency in the same region
  * within each distance choice (200, 400 and 800 m); each hub arrival gets its wait for the next local departure from the
- * shared connectionWaits. One real date per day type: the first Wednesday, Saturday and Sunday
+ * shared connectionWaits, and each local route its count of Bustang trips met within 15, 30 and 60 min on both sides
+ * (getting off Bustang: local departures after each arrival; catching Bustang: local drop-offs before each departure),
+ * from the shared routeConnections. One real date per day type: the first Wednesday, Saturday and Sunday
  * after --from (default today). The code works for any hub agency; v1 is run for Bustang only.
  */
 import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { loadConnectionFeed, readDateFor, runsOn, type ConnectionFeed, type FeedStop } from '../pipeline/connectionTimetables.js';
 import { nextDateWithDow, addDaysYmd } from '../pipeline/serviceDates.js';
-import { connectionWaits, departuresWithin, distanceMeters, MAX_NEARBY_METERS, NEARBY_CHOICES, type HubArrival, type LocalDeparture } from '../shared/connections.js';
+import { connectionWaits, departuresWithin, distanceMeters, MAX_NEARBY_METERS, NEARBY_CHOICES, routeConnections, type HubArrival, type LocalDeparture } from '../shared/connections.js';
 import { agencyShortLabel } from '../shared/agencyPages.js';
 import { effectiveFeedExpiry, todayUtcYmd } from '../shared/feedAvailability.js';
 
@@ -92,12 +94,13 @@ for (const { key } of DAY_TYPES) {
   if (!runsOn(hubFeed, hubReadDates[key])) console.warn(`${hub.slug} has no service on ${key} ${hubReadDates[key]}`);
 }
 
-// Hub stops grouped by parent station (Denver Union Station's gates), else one stop each.
-const alightStops = new Set<string>();
-for (const date of Object.values(hubReadDates)) for (const e of hubFeed.eventsOn(date, new Set(hubFeed.stops.map(s => s.stopId)))) if (e.canAlight) alightStops.add(e.stopId);
+// Hub stops grouped by parent station (Denver Union Station's gates), else one stop each: every stop riders can get
+// off or on at (a pickup-only stop has only the catching side).
+const servedStops = new Set<string>();
+for (const date of Object.values(hubReadDates)) for (const e of hubFeed.eventsOn(date, new Set(hubFeed.stops.map(s => s.stopId)))) if (e.canAlight || e.canBoard) servedStops.add(e.stopId);
 const groups = new Map<string, FeedStop[]>();
 for (const s of hubFeed.stops) {
-  if (!alightStops.has(s.stopId)) continue;
+  if (!servedStops.has(s.stopId)) continue;
   const key = s.parentStation ?? s.stopId;
   groups.set(key, [...(groups.get(key) ?? []), s]);
 }
@@ -128,19 +131,22 @@ for (const [groupId, hubStops] of groups) {
   const days: Record<string, unknown> = {};
   for (const { key } of DAY_TYPES) {
     const hubDate = hubReadDates[key];
-    const arrivals: HubArrival[] = hubFeed.eventsOn(hubDate, new Set(hubStops.map(s => s.stopId)))
-      .filter(e => e.canAlight)
-      .map(e => ({ time: Math.round(e.arrival), routeName: e.routeName }));
+    const hubEvents = hubFeed.eventsOn(hubDate, new Set(hubStops.map(s => s.stopId)));
+    const arrivals: HubArrival[] = hubEvents.filter(e => e.canAlight).map(e => ({ time: Math.round(e.arrival), routeName: e.routeName }));
+    const hubDepartures: HubArrival[] = hubEvents.filter(e => e.canBoard).map(e => ({ time: Math.round(e.departure), routeName: e.routeName }));
     const departures: LocalDeparture[] = [];
+    // Local buses riders can get off, for the catching side: their arrival time at the nearby stop.
+    const dropOffs: LocalDeparture[] = [];
     const readDates: Record<string, string> = {};
     for (const agency of agenciesHere) {
       const readDate = readDateFor(agency.feed, dates[key], agency.expiry);
       readDates[agency.config.slug] = readDate;
       const byStop = new Map(nearby.filter(n => n.agency === agency).map(n => [n.stop.stopId, n]));
       for (const e of agency.feed.eventsOn(readDate, new Set(byStop.keys()))) {
-        if (!e.canBoard) continue;
         const n = byStop.get(e.stopId)!;
-        departures.push({ time: Math.round(e.departure), agencySlug: agency.config.slug, routeName: e.routeName, stopName: n.stop.name, distanceM: n.distanceM });
+        const at = { agencySlug: agency.config.slug, routeName: e.routeName, stopName: n.stop.name, distanceM: n.distanceM };
+        if (e.canBoard) departures.push({ time: Math.round(e.departure), ...at });
+        if (e.canAlight) dropOffs.push({ time: Math.round(e.arrival), ...at });
       }
     }
     days[key] = {
@@ -148,12 +154,19 @@ for (const [groupId, hubStops] of groups) {
       readDates,
       // One set of waits per distance choice, each from the shared function on the departures within it.
       waits: Object.fromEntries(NEARBY_CHOICES.map(m => [m, connectionWaits(arrivals, departuresWithin(departures, m))])),
+      // Each local route once per side, with its counts within 15, 30 and 60 min.
+      routes: Object.fromEntries(NEARBY_CHOICES.map(m => [m, {
+        after: routeConnections(arrivals, departuresWithin(departures, m), 'after'),
+        before: routeConnections(hubDepartures, departuresWithin(dropOffs, m), 'before'),
+      }])),
+      departures: hubDepartures.length,
     };
   }
   const first = hubStops[0];
   stopsOut.push({
     id: groupId,
-    name: hubStops.length > 1 ? commonName(hubStops.map(s => s.name)) : first.name,
+    // A station's gates read as the station; a single stop keeps its own name.
+    name: hubFeed.stationNames.get(groupId) || (hubStops.length > 1 ? commonName(hubStops.map(s => s.name)) : first.name),
     lat: first.lat,
     lon: first.lon,
     agencies: agenciesWithin,

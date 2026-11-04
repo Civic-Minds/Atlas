@@ -43,6 +43,15 @@ describe('loadConnectionFeed (CIV-101)', () => {
     expect(runsOn(f, '20261014')).toBe(true);
   });
 
+  it("names a station's gates by the station, and keeps the station itself out of the stops", async () => {
+    const f = await loadConnectionFeed(await feed({
+      ...BASE,
+      'stops.txt': 'stop_id,stop_name,stop_lat,stop_lon,location_type,parent_station\nS,Union Station,39.75,-105,1,\nA,Union Station Gate B19,39.7,-105,0,S\nB,Middle,39.71,-105,0,\nC,Last,39.72,-105,0,\n',
+    }));
+    expect(f.stationNames.get('S')).toBe('Union Station');
+    expect(f.stops.map(s => [s.stopId, s.parentStation])).toEqual([['A', 'S'], ['B', null], ['C', null]]);
+  });
+
   it('keeps only the configured agency in a shared zip', async () => {
     const f = await loadConnectionFeed(await feed(BASE), { agencyId: 'Y' });
     expect(new Set(f.eventsOn('20261014', new Set(['A'])).map(e => e.tripId))).toEqual(new Set(['T2']));

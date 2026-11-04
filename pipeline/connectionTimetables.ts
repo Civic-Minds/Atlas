@@ -46,6 +46,8 @@ export interface StopEvent {
 
 export interface ConnectionFeed {
   stops: FeedStop[];
+  /** Parent stations' names by stop_id (location_type 1), so a station's gates read as the station ("Union Station"). */
+  stationNames: Map<string, string>;
   /** Stops some kept trip lets riders board at (a stop listed but never served, like Bustang's stops in RTD's feed, is left out). */
   boardingStopIds: Set<string>;
   calendar: GtfsCalendar[];
@@ -83,6 +85,7 @@ export async function loadConnectionFeed(buf: Buffer, filter: FeedFilter = {}): 
     trips.set(t.trip_id, { routeName, serviceId: t.service_id, headsign: t.trip_headsign?.trim() || null });
     keptServices.add(t.service_id);
   }
+  const stationNames = new Map(stopsRows.filter(s => s.location_type === '1').map(s => [s.stop_id, (s.stop_name ?? '').trim()]));
   const stops: FeedStop[] = stopsRows
     .filter(s => (s.location_type ?? '0') === '0' || s.location_type === '')
     .map(s => ({ stopId: s.stop_id, name: (s.stop_name ?? '').trim(), lat: Number(s.stop_lat), lon: Number(s.stop_lon), parentStation: s.parent_station || null }))
@@ -111,6 +114,7 @@ export async function loadConnectionFeed(buf: Buffer, filter: FeedFilter = {}): 
 
   return {
     stops,
+    stationNames,
     boardingStopIds,
     calendar,
     calendarDates,

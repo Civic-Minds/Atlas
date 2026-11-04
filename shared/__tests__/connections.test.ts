@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import {
-  compareStopsWorstFirst, connectionWaits, departuresWithin, gtfsTimeToMinutes, isNearby, NEARBY_CHOICES, NEARBY_METERS, parseNearbyChoice, rankWorstFirst, summarizeWaits,
+  bestWindow, compareStopsWorstFirst, connectionWaits, departuresWithin, gtfsTimeToMinutes, isNearby, NEARBY_CHOICES, NEARBY_METERS, parseNearbyChoice, rankWorstFirst, routeConnections, summarizeWaits, worstWaitGroup,
   type HubArrival, type LocalDeparture,
 } from '../connections';
 import { clockTime } from '../timeText';
@@ -110,5 +110,66 @@ describe('real sample: Bustang at Federal Center Station and RTD within 400 m, W
       ['11:45 AM', 'West', 1, '17'],
     ]);
     expect(waits.every(w => w.next!.distanceM <= NEARBY_METERS)).toBe(true);
+  });
+});
+
+describe('catching Bustang: the same search run backwards (Ryan, 2026-11-04)', () => {
+  it('gives each Bustang departure its wait since the last local drop-off before it', () => {
+    const waits = connectionWaits([arrival(600), arrival(700)], [departure(590), departure(606, '2'), departure(650, '3')], 'before');
+    expect(waits.map(w => [w.waitMin, w.next?.routeName])).toEqual([[10, '1'], [50, '3']]);
+  });
+
+  it('counts a drop-off in the same minute, and reads nothing before the first local bus as no bus', () => {
+    expect(connectionWaits([arrival(600)], [departure(600)], 'before')[0].waitMin).toBe(0);
+    const [w] = connectionWaits([arrival(300)], [departure(400)], 'before');
+    expect(w.next).toBeNull();
+    expect(w.waitMin).toBeNull();
+  });
+
+  it('prefers the closer stop at the same minute on this side too', () => {
+    const [w] = connectionWaits([arrival(600)], [departure(590, 'far', 380), departure(590, 'near', 20)], 'before');
+    expect(w.next?.routeName).toBe('near');
+  });
+});
+
+describe('routes in their best group, with a count (15, 30 or 60 min)', () => {
+  // Eight Bustang arrivals an hour apart; route 1 leaves 5 min after six of them, route 2 at 25 min after two, route 3 never within 60.
+  const hub = Array.from({ length: 8 }, (_, i) => arrival(360 + i * 60));
+  const local = [
+    ...hub.slice(0, 6).map(a => departure(a.time + 5, '1', 50)),
+    ...hub.slice(0, 2).map(a => departure(a.time + 25, '2', 300)),
+    departure(1400, '3'),
+  ];
+
+  it('places each route once, in the tightest window it makes at least once', () => {
+    const routes = routeConnections(hub, local, 'after');
+    expect(routes.map(r => [r.routeName, r.trips, r.within])).toEqual([
+      ['1', 8, [6, 6, 6]],
+      ['2', 8, [0, 2, 2]],
+      ['3', 8, [0, 0, 0]],
+    ]);
+    expect(routes.map(r => bestWindow(r))).toEqual([{ window: 15, count: 6, of: 8 }, { window: 30, count: 2, of: 8 }, null]);
+  });
+
+  it("reads one route's buses alone, so another route's earlier bus does not hide it", () => {
+    const routes = routeConnections([arrival(600)], [departure(601, 'A'), departure(620, 'B')], 'after');
+    expect(routes.find(r => r.routeName === 'B')?.within).toEqual([0, 1, 1]);
+  });
+
+  it('works the same on the catching side', () => {
+    const routes = routeConnections([arrival(600)], [departure(590, 'A'), departure(550, 'B')], 'before');
+    expect(routes.map(r => [r.routeName, bestWindow(r)?.window])).toEqual([['A', 15], ['B', 60]]);
+  });
+
+  it('keeps routes of two agencies with the same name apart', () => {
+    const routes = routeConnections([arrival(600)], [departure(605, '1'), { ...departure(610, '1'), agencySlug: 'other' }], 'after');
+    expect(routes).toHaveLength(2);
+  });
+});
+
+describe('map colour groups from the ranking summary', () => {
+  it('uses the longest wait, and treats an arrival with no bus after as the worst', () => {
+    const s = (longestWaitMin: number | null, noBusAfter = 0, arrivals = 3) => ({ arrivals, noBusAfter, longestWaitMin, medianWaitMin: 1 });
+    expect([s(15), s(16), s(60), s(61), s(5, 1), s(null, 0, 0)].map(worstWaitGroup)).toEqual([15, 30, 60, 'longer', 'longer', null]);
   });
 });

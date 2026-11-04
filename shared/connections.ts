@@ -71,28 +71,107 @@ export function gtfsTimeToMinutes(value: string | null | undefined): number | nu
 }
 
 /**
- * Each hub arrival's wait for the next local departure. A departure in the same minute counts
- * (no walking-time allowance: that would be a cut-off). Only the same service day is read, so a
- * late arrival with nothing after it reads "no local bus", not the next morning's first trip.
- * Arrivals come back in time order.
+ * The two sides of a connection (CIV-101, Ryan 2026-11-04):
+ * - 'after': getting off Bustang. Each Bustang arrival's wait for the next local departure.
+ * - 'before': catching Bustang. Each Bustang departure's wait back to the last local bus that
+ *   dropped riders off before it (the time a rider stands at the stop waiting for Bustang).
+ * Both are the same search: 'before' runs it on the times mirrored (negated), so a same-minute
+ * match counts on both sides and neither side reaches into another service day.
  */
-export function connectionWaits(arrivals: readonly HubArrival[], departures: readonly LocalDeparture[]): ConnectionWait[] {
-  const deps = [...departures].sort((a, b) => a.time - b.time || a.distanceM - b.distanceM);
+export type ConnectionSide = 'after' | 'before';
+
+/**
+ * Each hub bus's wait to the nearest local bus on the given side. A local bus in the same minute
+ * counts (no walking-time allowance: that would be a cut-off). Only the same service day is read,
+ * so a late arrival with nothing after it reads "no local bus", not the next morning's first trip.
+ * On the 'after' side `arrivals` are Bustang arrivals and `departures` local departures; on the
+ * 'before' side they are Bustang departures and local drop-offs. Hub buses come back in time order.
+ */
+export function connectionWaits(arrivals: readonly HubArrival[], departures: readonly LocalDeparture[], side: ConnectionSide = 'after'): ConnectionWait[] {
+  const sign = side === 'after' ? 1 : -1;
+  // Ties at one minute go to the closer stop on both sides.
+  const deps = [...departures].sort((a, b) => sign * (a.time - b.time) || a.distanceM - b.distanceM);
+  const mirrored = deps.map(d => sign * d.time);
   return [...arrivals].sort((a, b) => a.time - b.time).map(arrival => {
-    const next = firstAtOrAfter(deps, arrival.time);
-    return { arrival, next, waitMin: next ? Math.round(next.time - arrival.time) : null };
+    const i = firstAtOrAfter(mirrored, sign * arrival.time);
+    const next = i < deps.length ? deps[i] : null;
+    return { arrival, next, waitMin: next ? Math.round(sign * (next.time - arrival.time)) || 0 : null };
   });
 }
 
-function firstAtOrAfter(sorted: readonly LocalDeparture[], time: number): LocalDeparture | null {
+/** The index of the first sorted time at or after `time` (the list's length when there is none). */
+function firstAtOrAfter(sorted: readonly number[], time: number): number {
   let lo = 0;
   let hi = sorted.length;
   while (lo < hi) {
     const mid = (lo + hi) >> 1;
-    if (sorted[mid].time < time) lo = mid + 1;
+    if (sorted[mid] < time) lo = mid + 1;
     else hi = mid;
   }
-  return sorted[lo] ?? null;
+  return lo;
+}
+
+/** The groups a route is placed in (Ryan, 2026-11-04: "within 15 mins, 30 mins, 60 mins"). */
+export const CONNECTION_WINDOWS = [15, 30, 60] as const;
+export type ConnectionWindow = (typeof CONNECTION_WINDOWS)[number];
+
+/** One local route at a Bustang stop, on one side: how many Bustang trips it meets within each window. */
+export interface RouteConnection {
+  agencySlug: string;
+  routeName: string;
+  /** Bustang trips on this side that day (the "of 8"). */
+  trips: number;
+  /** Trips this route meets within 15, 30 and 60 min, in that order (each counts the ones before it too). */
+  within: [number, number, number];
+  /** The nearby stop the route most often meets Bustang at, and its distance. */
+  stopName: string;
+  distanceM: number;
+}
+
+/**
+ * Every local route near a stop, on one side, from the same connectionWaits as the per-trip table:
+ * each route's waits are read on that route's buses alone, at any of its nearby stops and in either
+ * direction. Routes come back best first (most trips within 15, then 30, then 60 min), then by name.
+ */
+export function routeConnections(hub: readonly HubArrival[], local: readonly LocalDeparture[], side: ConnectionSide): RouteConnection[] {
+  const byRoute = new Map<string, LocalDeparture[]>();
+  for (const d of local) {
+    const key = `${d.agencySlug}\u0000${d.routeName}`;
+    const list = byRoute.get(key);
+    if (list) list.push(d); else byRoute.set(key, [d]);
+  }
+  const out: RouteConnection[] = [];
+  for (const list of byRoute.values()) {
+    const waits = connectionWaits(hub, list, side);
+    const within = CONNECTION_WINDOWS.map(w => waits.filter(x => x.waitMin !== null && x.waitMin <= w).length) as RouteConnection['within'];
+    const stops = new Map<string, { n: number; distanceM: number }>();
+    for (const w of waits) if (w.next && w.waitMin !== null && w.waitMin <= CONNECTION_WINDOWS[CONNECTION_WINDOWS.length - 1]) {
+      const s = stops.get(w.next.stopName);
+      stops.set(w.next.stopName, { n: (s?.n ?? 0) + 1, distanceM: Math.min(s?.distanceM ?? Infinity, w.next.distanceM) });
+    }
+    const nearest = [...list].sort((a, b) => a.distanceM - b.distanceM)[0];
+    const [stopName, stop] = [...stops].sort((a, b) => b[1].n - a[1].n || a[1].distanceM - b[1].distanceM)[0] ?? [nearest.stopName, { distanceM: nearest.distanceM }];
+    out.push({ agencySlug: list[0].agencySlug, routeName: list[0].routeName, trips: hub.length, within, stopName, distanceM: stop.distanceM });
+  }
+  return out.sort((a, b) => b.within[0] - a.within[0] || b.within[1] - a.within[1] || b.within[2] - a.within[2]
+    || a.routeName.localeCompare(b.routeName, undefined, { numeric: true }) || a.agencySlug.localeCompare(b.agencySlug));
+}
+
+/**
+ * A route's best group: the tightest window it meets at least one Bustang trip within, with the
+ * count in that window ("within 15 min for 6 of 8 Bustang trips"). Null when it meets none within 60.
+ */
+export function bestWindow(route: Pick<RouteConnection, 'within' | 'trips'>): { window: ConnectionWindow; count: number; of: number } | null {
+  const i = route.within.findIndex(n => n > 0);
+  return i < 0 ? null : { window: CONNECTION_WINDOWS[i], count: route.within[i], of: route.trips };
+}
+
+/** A stop's map colour group, from its worst wait (the same summary the ranking reads). */
+export type WaitGroup = ConnectionWindow | 'longer';
+export function worstWaitGroup(summary: StopWaitSummary): WaitGroup | null {
+  if (summary.arrivals === 0) return null;
+  if (summary.noBusAfter > 0 || summary.longestWaitMin === null) return 'longer';
+  return CONNECTION_WINDOWS.find(w => summary.longestWaitMin! <= w) ?? 'longer';
 }
 
 /** A stop's figures for one day type, all from its waits. */
