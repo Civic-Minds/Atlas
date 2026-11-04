@@ -1,7 +1,10 @@
-/** The Night Service grades (CIV-1329): every 30, 60 or 90 minutes or better, 2 to 5 AM. 90 is the cutoff for running through the night (#1322). */
+/** The Night Service grades (CIV-1329): every 30, 60 or 90 minutes or better, 2 to 5 AM. 90 is offered on the Night Service page only. */
 export type NightServiceFrequency = 30 | 60 | 90;
 
 export const NIGHT_SERVICE_FREQUENCIES: readonly NightServiceFrequency[] = [30, 60, 90];
+
+/** CIV-1329: the loosest grade the Overnight view counts; 90 is the Night Service page's alone. */
+export const OVERNIGHT_NIGHT_GRADE: NightServiceFrequency = 60;
 
 export function nightServiceKey(frequency: NightServiceFrequency): 'nightService30' | 'nightService60' | 'nightService90' {
   return `nightService${frequency}` as 'nightService30' | 'nightService60' | 'nightService90';
@@ -39,14 +42,14 @@ export function routeNightGrade(rows: ReadonlyArray<NightFlags>): NightServiceFr
 }
 
 /**
- * #1322 (Ryan, 2026-11-03: "Use 90 minutes as the cutoff everywhere"): the one night test. A row runs through the
- * night when it passes the Night Service check at its loosest grade, 90 (2am to 5am, no gap between buses over 90
- * minutes, from the night verdict); 30 and 60 are display tiers within it. The Night Service page lists exactly
- * these rows (pipeline/nightServiceIndex.ts), and the Overnight period reads the same test (tileNightServiceExpr is
- * its tile twin), so a first trip at 3 AM is never overnight service.
+ * #1322: the Overnight test. A row runs through the night when it passes the Night Service check at 60 (2am to 5am,
+ * no gap between buses over 60 minutes, from the night verdict); 30 implies it, and nightService is the older 60.
+ * The Overnight period reads it (tileNightServiceExpr is its tile twin), so a first trip at 3 AM is never overnight
+ * service. CIV-1329 (Ryan, 2026-11-04: "i only meant to include 90 mins in" the Night Service page): the 90 grade
+ * is for that page only (rowPassesNightGrade(row, 90)); the Overnight view stays at 30 and 60.
  */
 export function rowRunsThroughNight(row: NightFlags | null | undefined): boolean {
-  return rowNightGrade(row) != null;
+  return rowPassesNightGrade(row, OVERNIGHT_NIGHT_GRADE);
 }
 
 /** MapLibre twin of rowRunsThroughNight, for tile filters (shared/tileFilterExprs.ts). */
@@ -54,7 +57,6 @@ export function tileNightServiceExpr(): unknown[] {
   return ['any',
     ['==', ['get', 'nightService30'], true],
     ['==', ['get', 'nightService60'], true],
-    ['==', ['get', 'nightService90'], true],
     ['==', ['get', 'nightService'], true],
   ];
 }

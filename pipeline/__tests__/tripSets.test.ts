@@ -444,11 +444,11 @@ describe('Overnight reads the night verdict (#1267, Ryan 2026-10-31)', () => {
     for (const t of cases) {
       const d = dir(t);
       const v = directionNightValue(d);
-      for (const gap of [30, 60, 90]) expect(v != null && v <= gap, `${t} @${gap}`).toBe(directionNightVerdict(d, gap) !== 'fail');
+      for (const gap of [30, 60]) expect(v != null && v <= gap, `${t} @${gap}`).toBe(directionNightVerdict(d, gap) !== 'fail');
     }
   });
-  it('#1322 (Ryan, 2026-11-03: "Use 90 minutes as the cutoff everywhere"): night service every 75 runs through the night and reads 75; over 90 does not', () => {
-    expect(directionNightValue(dir(every(hm(26, 0), hm(29, 0), 75)))).toBe(75);
+  it('CIV-1329 (Ryan, 2026-11-04: "i only meant to include 90 mins in" the Night Service page): night service every 75 passes the 90 grade but has no Overnight value', () => {
+    expect(directionNightValue(dir(every(hm(26, 0), hm(29, 0), 75)))).toBeNull();
     expect(directionNightVerdict(dir(every(hm(26, 0), hm(29, 0), 75)), 90)).toBe('pass');
     expect(directionNightVerdict(dir(every(hm(26, 0), hm(29, 0), 75)), 60)).toBe('fail');
     expect(directionNightValue(dir(every(hm(26, 0), hm(29, 0), 60)))).toBe(60);
@@ -714,16 +714,15 @@ describe('CIV-1331: one night decider, 90-minute cutoff, real feeds', () => {
     for (const p of rows) expect([p.nightService30, p.nightService60, p.nightService90, p.routeRunsByPeriod?.overnight], route).toEqual([false, false, false, false]);
     expect(passes(r, route, Infinity)).toBe(false);
   });
-  it('LA Metro 240 owl, gaps of 61-90 minutes: passes at 90, fails at 60, and is drawn under All', async () => {
+  it('LA Metro 240 owl, gaps of 61-90 minutes: passes at 90 for the Night Service page, fails at 60, and is not Overnight service (CIV-1329)', async () => {
     const r = await run('lacmta-240-owl-weekday', 'lacmta');
     const p = row(r, '240', 'Weekday');
     expect([p.stretchNight60, p.stretchNight90]).toEqual([false, true]);
     expect(r.rows.filter(x => x.routeShortName === '240' && x.day === 'Weekday').some(x => x.nightService90 && !x.nightService60)).toBe(true);
-    expect(p.routeRunsByPeriod.overnight).toBe(true);
-    const value = p.routeFilterHeadwayByPeriod.overnight;
-    expect(value).toBeGreaterThan(60);
-    expect(value).toBeLessThanOrEqual(90);
-    expect([passes(r, '240', Infinity), passes(r, '240', 60)]).toEqual([true, false]);
+    // Ryan, 2026-11-04: "i only meant to include 90 mins in" the Night Service page.
+    expect(p.routeRunsByPeriod.overnight).toBe(false);
+    expect(p.routeFilterHeadwayByPeriod.overnight).toBeNull();
+    expect([passes(r, '240', Infinity), passes(r, '240', 60)]).toEqual([false, false]);
   });
   it('CIV-1332: STM 376 to Côte-Vertu ends at 3:58 at its middle stop, and no other bus stops within 400 m until after 5:28: it does not run through the night', async () => {
     const r = await run('stm-376-handover-weekday', 'stm');
@@ -779,13 +778,13 @@ describe('CIV-1331: one night decider, 90-minute cutoff, real feeds', () => {
       expect(routePassesHeadwayFilter(filterable(r, route), 'overnight', day, Infinity), `${route} ${day}`).toBe(false);
     }
   });
-  it.each(['Saturday', 'Sunday'])('LA Metro 240 owl on %s: fails at 60, passes at 90 in both directions', async day => {
+  it.each(['Saturday', 'Sunday'])('LA Metro 240 owl on %s: fails at 60, passes at 90 in both directions, not Overnight service (CIV-1329)', async day => {
     const r = await run('lacmta-240-owl-weekend', 'lacmta');
     for (const dir of [0, 1]) {
       const d = r.stretches.get(`240::${dir}::${day}`)!;
       expect([directionNightVerdict(d, 60), directionNightVerdict(d, 90)], `${dir}`).toEqual(['fail', 'pass']);
     }
-    expect(routePassesHeadwayFilter(filterable(r, '240'), 'overnight', day, Infinity)).toBe(true);
+    expect(routePassesHeadwayFilter(filterable(r, '240'), 'overnight', day, Infinity)).toBe(false);
   });
   it('rows without stretch data and stretch rows agree: both read nightServicePasses', () => {
     const every = (from: number, to: number, step: number) => Array.from({ length: Math.floor((to - from) / step) + 1 }, (_, i) => from + i * step);
@@ -1132,15 +1131,16 @@ describe('Overnight section values read each stop through the night verdict (#10
     expect(directionNightValue(d, true)).toBe(30);
     expect(decodeStopRuns(stopPeriodValues(stops, d.throughTimesAlong!).overnight)).toEqual([30, 30, 30, 30]);
   });
-  it('a stop the verdict does not pass keeps its full-window wait (night buses every 100, over the 90 cutoff, CIV-1329)', () => {
+  it('a stop the verdict does not pass keeps its full-window wait (night buses every 100, over the 60 Overnight limit)', () => {
     const d = build(100);
     expect(directionNightValue(d, true)).toBeNull();
     const values = decodeStopRuns(stopPeriodValues(stops, d.throughTimesAlong!).overnight);
     expect(values.every(v => v != null && v > 90)).toBe(true);
   });
-  it('CIV-1329: night buses every 75 pass at the 90 cutoff, and every stop reads 75', () => {
+  it('CIV-1329: night buses every 75 pass the Night Service page\'s 90 grade but have no Overnight value', () => {
     const d = build(75, 1545, 290);
-    expect(directionNightValue(d, true)).toBe(75);
+    expect(directionNightVerdict(d, 90)).toBe('pass');
+    expect(directionNightValue(d, true)).toBeNull();
   });
   it('Late keeps the settled rule (#524): the wait after the last bus still counts', () => {
     const d = build(30);

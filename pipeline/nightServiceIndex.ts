@@ -12,7 +12,7 @@
  */
 
 import type { RouteIndexProperties } from '../shared/routeIndexProperties.js';
-import { rowRunsThroughNight } from '../shared/nightService.js';
+import { rowPassesNightGrade } from '../shared/nightService.js';
 
 type RouteFeatureProperties = RouteIndexProperties;
 
@@ -32,7 +32,7 @@ export interface NightServiceRouteEntry {
   day: string | null;
   nightService30: boolean;
   nightService60: boolean;
-  /** CIV-1329: the 90 tier, the cutoff for running through the night. */
+  /** CIV-1329: the 90 tier, offered on the Night Service page only. */
   nightService90: boolean;
 }
 
@@ -59,7 +59,8 @@ export function extractNightServiceRoutes(
   features: RouteFeature[],
 ): NightServiceRouteEntry[] {
   return features
-    .filter(f => rowRunsThroughNight(f.properties))
+    // CIV-1329: the Night Service page lists every grade up to 90 (the Overnight view stops at 60).
+    .filter(f => rowPassesNightGrade(f.properties, 90))
     .map(f => ({
       agencySlug,
       agencyName,
@@ -72,7 +73,7 @@ export function extractNightServiceRoutes(
       day: f.properties.day ?? null,
       nightService30: f.properties.nightService30 === true,
       nightService60: f.properties.nightService60 === true || f.properties.nightService === true,
-      nightService90: rowRunsThroughNight(f.properties),
+      nightService90: rowPassesNightGrade(f.properties, 90),
     }));
 }
 

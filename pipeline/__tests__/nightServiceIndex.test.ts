@@ -27,7 +27,7 @@ describe('extractNightServiceRoutes', () => {
     ]);
   });
 
-  it('CIV-1329: keeps a route that passes only at 90, the cutoff for running through the night', () => {
+  it('CIV-1329: keeps a route that passes only at 90 (the Night Service page alone shows it; the Overnight view stops at 60)', () => {
     const result = extractNightServiceRoutes('lacmta', 'LA Metro', null, [{ properties: { nightService90: true, routeShortName: '240', day: 'Weekday' } }]);
     expect(result.map(r => [r.routeShortName, r.nightService60, r.nightService90])).toEqual([['240', false, true]]);
   });

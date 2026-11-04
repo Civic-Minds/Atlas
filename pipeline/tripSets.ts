@@ -797,9 +797,9 @@ export function stretchNight(s: Stretch, maxGap: number): boolean | null {
  * CIV-1331: the one night decider, for stretches (stretchNight) and for rows without stretch data
  * (process-core hasNightServiceAtShapeEndpoints), so both paths read the same rules. `times` are the
  * day's departures at the stop, `nightTimes` the same with the #297 overnight shift
- * (nightServiceDepartureTimes: every time before 24:00 also appears 24 hours later). The rules (Ryan, 2026-11-03:
- * "Use 90 minutes as the cutoff everywhere"):
- * - every gap between departures in 2:00-5:00 at most maxGap (90 is the cutoff, 30 and 60 are tiers);
+ * (nightServiceDepartureTimes: every time before 24:00 also appears 24 hours later). The rules:
+ * - every gap between departures in 2:00-5:00 at most maxGap (30, 60 or 90; the Overnight view counts up to 60 and the
+ *   Night Service page alone offers 90, CIV-1329 2026-11-04);
  * - the edges are real gaps (CIV-1331 final review), at most the grade and never under an hour (NIGHT_EDGE_MAX_WAIT_MIN):
  *   day service measures from its previous bus to its first in the window and from its last in the window to its next
  *   bus, so a first trip at 2:58 after a last bus at 0:34 (144 minutes with nobody served) fails, as does a last bus
@@ -940,10 +940,10 @@ export function directionNightVerdict(d: DirectionStretches, gap: number): Night
  * runs every 20 at night on its night path, but 220 minutes apart at the row's own stops).
  */
 /**
- * #1267: the longest Overnight value; a direction that passes only above it has none. #1322 (Ryan, 2026-11-03: "Use 90
- * minutes as the cutoff everywhere"): Night Service's loosest grade, 90, so an owl every 61-90 minutes runs through the night.
+ * #1267: the longest Overnight value; a direction that passes only above it has none (Night Service's 60 grade).
+ * CIV-1329 (Ryan, 2026-11-04): the 90 grade is the Night Service page's only, so the Overnight view stays at 60.
  */
-export const NIGHT_OVERNIGHT_MAX_VALUE = 90;
+export const NIGHT_OVERNIGHT_MAX_VALUE = 60;
 
 export function directionNightValue(d: DirectionStretches, wholeDirection = false): number | null {
   const stretches = [d.main, ...d.tails, ...(wholeDirection ? [] : [d.night?.main, ...(d.night?.tails ?? [])])];
@@ -1002,7 +1002,7 @@ export interface DirectionRollup {
   }>;
   night30: boolean;
   night60: boolean;
-  /** #1322 / CIV-1329: passes at 90, the cutoff for running through the night. */
+  /** CIV-1329: passes at 90, the Night Service page's loosest grade (the Overnight view stops at 60). */
   night90: boolean;
   /** #1267: the Overnight value, directionNightValue. */
   nightValue: number | null;
@@ -1230,7 +1230,7 @@ export function rollupDirection(d: DirectionStretches): DirectionRollup | null {
   // loop at 4:47 and 4:57) or only ends it there does not run at night, and drops out.
   const v30 = directionNightVerdict(d, 30);
   const v60 = directionNightVerdict(d, 60);
-  // #1322 / CIV-1329: the 90 grade, the cutoff for running through the night (Ryan, 2026-11-03).
+  // CIV-1329: the 90 grade, for the Night Service page only (Ryan, 2026-11-04).
   const v90 = directionNightVerdict(d, 90);
   // Step 6 shadow values. Tails count when they run steadily through some daytime period.
   // Tails that run steadily through midday are all-day branches; a peak-only tail (CTA 9's Beverly
@@ -1305,7 +1305,7 @@ export interface RouteRollup {
   }>;
   night30: boolean;
   night60: boolean;
-  /** #1322 / CIV-1329: every direction passes at 90, the cutoff for running through the night. */
+  /** CIV-1329: every direction passes at 90, the Night Service page's loosest grade. */
   night90: boolean;
   /** #1267: the Overnight value, the worst direction's night value; null when any has none. */
   nightValue: number | null;
@@ -1515,9 +1515,9 @@ export function stampStretchShadow(
     const stopOrder = (p.fullStopOrder ?? p.stopOrder) as readonly string[] | undefined;
     if (stretches.throughTimesAlong && Array.isArray(stopOrder) && stopOrder.length > 0) p.stretchStopPeriodValues = stopPeriodValues(stopOrder, stretches.throughTimesAlong, stretches.handoverAt, stretches.previousDaysAt);
     else delete p.stretchStopPeriodValues;
-    // #1322: Overnight runs where the night verdict passes at 90, the cutoff for running through the night (Ryan,
-    // 2026-11-03), not by the 2-6 AM midpoint test, which a first trip at 3 AM passes (RTD A Line).
-    p.routeRunsByPeriod = byPeriod(k => k === 'overnight' ? route.night90 : route.period[k].runs);
+    // #1322: Overnight runs where the night verdict passes at 60 (the 90 grade is the Night Service page's only,
+    // CIV-1329), not by the 2-6 AM midpoint test, which a first trip at 3 AM passes (RTD A Line).
+    p.routeRunsByPeriod = byPeriod(k => k === 'overnight' ? route.night60 : route.period[k].runs);
     // Card rows (5b): which stretch this row stands for. A row whose own stops cover a whole tail
     // stands for it (the longest such tail); else one covering the whole main stretch stands for
     // the main stretch; else it is a variant (a short turn, a positioning trip, a pattern that only

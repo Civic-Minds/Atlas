@@ -482,7 +482,7 @@ export function combineRowNightDirections(rows: ReadonlyArray<{ routeDay: string
 /**
  * Evaluate route-level Night Service from either end of a shape, for rows without stretch data. CIV-1331: it reads
  * the stretches' own decider (tripSets nightServicePasses), so both paths apply the same rules: 2-5 AM, gaps at most
- * the grade (90 is the cutoff), an hour's edge for day service, and the night-only start exemption.
+ * the grade (30, 60, or 90 for the Night Service page only), an hour's edge for day service, and the night-only start exemption.
  */
 export function hasNightServiceAtShapeEndpoints(
   endpointStopIds: readonly (string | undefined)[],

@@ -6,7 +6,7 @@ import { getNightServiceTierColor } from '../utils/colors';
 import { R2_PUBLIC_URL } from '../../shared/config';
 import { countOf } from '../../shared/overflowText';
 import type { NightServiceFrequency } from '../../shared/nightService';
-import { routeNightGrade, rowRunsThroughNight } from '../../shared/nightService';
+import { routeNightGrade, rowPassesNightGrade } from '../../shared/nightService';
 import Panel, { PanelBody, PanelTitleBar } from '../components/ui/Panel';
 import CardRouteList from '../components/Interval/CardRouteList';
 import { CardReportButton } from '../components/Interval/cardUi';
@@ -102,7 +102,7 @@ export default function NightService({ active, sidebarLeft, searchBarWidth, laye
     for (const [agencySlug, collection] of Object.entries(layers)) {
       for (const feature of collection.features) {
         const properties = feature.properties as NightServiceFeatureProperties | null;
-        if (!properties || !rowRunsThroughNight(properties)) continue;
+        if (!properties || !rowPassesNightGrade(properties, 90)) continue;
         const key = nightRouteKey(agencySlug, properties);
         rows.set(key, [...(rows.get(key) ?? []), properties]);
       }
