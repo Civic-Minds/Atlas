@@ -1,10 +1,12 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Moon } from 'lucide-react';
 import { useViewport } from '../context/ViewportContext';
+import { useColorMode } from '../hooks/useColorMode';
+import { getNightServiceTierColor } from '../utils/colors';
 import { R2_PUBLIC_URL } from '../../shared/config';
 import { countOf } from '../../shared/overflowText';
 import type { NightServiceFrequency } from '../../shared/nightService';
-import { routeNightGrade } from '../../shared/nightService';
+import { routeNightGrade, rowPassesNightGrade } from '../../shared/nightService';
 import Panel, { PanelBody, PanelTitleBar } from '../components/ui/Panel';
 import CardRouteList from '../components/Interval/CardRouteList';
 import { CardReportButton } from '../components/Interval/cardUi';
@@ -13,7 +15,7 @@ import { routeLabels } from '../utils/format';
 import { agencyNames } from '../utils/agencyName';
 import { headwayAmount, headwayEvery, headwayOrBetter } from '../utils/headwayText';
 import ResearchInfo from '../components/ResearchInfo';
-import { NIGHT_INFO_HEADING, nightRuleText } from '../content/researchRules';
+import { NIGHT_INFO_HEADING, NIGHT_LIST_TITLE, nightRuleText } from '../content/researchRules';
 import { compareRouteNumber } from '../utils/sortCompare';
 import PanelEmpty from '../components/ui/PanelEmpty';
 import { CARD_SUMMARY } from '../components/Interval/cardUi';
@@ -88,6 +90,7 @@ export default function NightService({ active, sidebarLeft, searchBarWidth, laye
   const [data, setData] = useState<NightServiceIndexFile | null>(null);
   const [loadState, setLoadState] = useState<'loading' | 'ready' | 'error'>('loading');
   const { bounds } = useViewport();
+  const colorMode = useColorMode();
   const visibleRoutes = useMemo(
     () => (Object.keys(layers).length === 0 ? [] : nightRoutesInView(layers, frequency, bounds)),
     [bounds, layers, frequency],
@@ -95,13 +98,13 @@ export default function NightService({ active, sidebarLeft, searchBarWidth, laye
   // Every row of each route that runs at night, in either view and anywhere on the map, so a route's night
   // value covers all of it: a direction that only makes 60 keeps the route at 60 in the 30 view too (CIV-931).
   const nightGrades = useMemo(() => {
-    const rows = new Map<string, { nightService30?: boolean }[]>();
+    const rows = new Map<string, NightServiceFeatureProperties[]>();
     for (const [agencySlug, collection] of Object.entries(layers)) {
       for (const feature of collection.features) {
         const properties = feature.properties as NightServiceFeatureProperties | null;
-        if (!properties || (properties.nightService60 !== true && properties.nightService !== true && properties.nightService30 !== true)) continue;
+        if (!properties || !rowPassesNightGrade(properties, 90)) continue;
         const key = nightRouteKey(agencySlug, properties);
-        rows.set(key, [...(rows.get(key) ?? []), { nightService30: properties.nightService30 }]);
+        rows.set(key, [...(rows.get(key) ?? []), properties]);
       }
     }
     return new Map([...rows].map(([key, routeRows]) => [key, routeNightGrade(routeRows)]));
@@ -149,7 +152,7 @@ export default function NightService({ active, sidebarLeft, searchBarWidth, laye
         destinations: [],
       };
       // Part of the route only when every lit row of it is partial.
-      const partial = frequency === 60 && properties.nightServicePartOfRoute === true;
+      const partial = frequency !== 30 && properties.nightServicePartOfRoute === true;
       summary.partOfRoute = summary.partOfRoute === undefined ? partial : summary.partOfRoute && partial;
       const headsign = properties.headsign ?? indexed?.headsign;
       if (headsign && !summary.destinations.includes(headsign)) summary.destinations.push(headsign);
@@ -188,10 +191,10 @@ export default function NightService({ active, sidebarLeft, searchBarWidth, laye
         {/* The list shows data, so it has the report flag (CIV-932). */}
         <PanelTitleBar
           icon={<Moon className="w-3 h-3 text-[var(--text-dim)] shrink-0" />}
-          title="Overnight service"
+          title={NIGHT_LIST_TITLE}
           action={
             <CardReportButton
-              title={`Overnight service (${headwayAmount(frequency)} view)`}
+              title={`${NIGHT_LIST_TITLE} (${headwayAmount(frequency)} view)`}
               details={nightReportDetails(frequency, agencies.map(agency => ({
                 name: agency.agencyName,
                 routes: agency.routes.map(route => {
@@ -226,6 +229,8 @@ export default function NightService({ active, sidebarLeft, searchBarWidth, laye
                   route: nightRouteLabel(route, agency),
                   // Ryan's approved row: "● every 30 min". The grade is an upper bound, so this never overstates.
                   headway: nightGrade(route, agency.slug),
+                  // CIV-1329: the dot takes the night shade of its grade, as the map and key draw it.
+                  dotColor: getNightServiceTierColor(nightGrade(route, agency.slug), colorMode),
                   subLabel: route.partOfRoute ? 'Overnight service on part of the route' : undefined,
                   disabled: !route.routeId || !onRouteSelect,
                 }))}

@@ -1,0 +1,6 @@
+route_id,agency_id,route_short_name,route_long_name,route_desc,route_type,route_url,route_color,route_text_color
+16718,TL,014,Hastings/UBC Exchange,,3,https://translink.ca/schedules-and-maps/route/14/direction/0/schedule?utm_source=referral&utm_medium=google+maps&utm_campaign=gtfs&utm_content=schedules_route&utm_term=14,,
+6676,TL,228,Grand Blvd,,3,https://translink.ca/schedules-and-maps/route/228/direction/0/schedule?utm_source=referral&utm_medium=google+maps&utm_campaign=gtfs&utm_content=schedules_route&utm_term=228,,
+6682,TL,240,Lynn Valley/Downtown,,3,https://translink.ca/schedules-and-maps/route/240/direction/0/schedule?utm_source=referral&utm_medium=google+maps&utm_campaign=gtfs&utm_content=schedules_route&utm_term=240,,
+6692,TL,255,Dundarave/Capilano University,,3,https://translink.ca/schedules-and-maps/route/255/direction/0/schedule?utm_source=referral&utm_medium=google+maps&utm_campaign=gtfs&utm_content=schedules_route&utm_term=255,,
+6837,TL,N24,Downtown/Lynn Valley,,3,https://translink.ca/schedules-and-maps/route/N24/direction/0/schedule?utm_source=referral&utm_medium=google+maps&utm_campaign=gtfs&utm_content=schedules_route&utm_term=N24,,

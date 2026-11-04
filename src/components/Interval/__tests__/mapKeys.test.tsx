@@ -13,10 +13,11 @@ describe('map keys', () => {
     expect(text.endsWith('Selected / qualifyingOther routes')).toBe(true);
   });
 
-  it('night key: one line step', () => {
-    const { container } = render(<ResearchLegend view="night" frequentFrequency={15} />);
-    expect(container.textContent).toBe('Overnight service');
-    expect(container.querySelectorAll('[aria-hidden="true"]')).toHaveLength(1);
+  it('night key: one shade per grade up to the one selected (CIV-1329)', () => {
+    const at = (nightFrequency: 30 | 60 | 90) => render(<ResearchLegend view="night" frequentFrequency={15} nightFrequency={nightFrequency} />).container;
+    expect(at(30).querySelectorAll('[aria-hidden="true"]')).toHaveLength(1);
+    expect(at(60).textContent).toBe('≤30 min≤60 min');
+    expect(at(90).querySelectorAll('[aria-hidden="true"]')).toHaveLength(3);
   });
 
   it('frequent service key: a second step only in the 30 min view', () => {

@@ -7,6 +7,8 @@ import { headwayOrBetter } from '../../shared/headwayText';
 /** The rule shown in each research view's info panel, always using the numbers currently selected. */
 
 export const NIGHT_INFO_HEADING = 'Which routes run overnight?';
+/** The Night Service route list's title, also the back link of a route opened from it (#1326). */
+export const NIGHT_LIST_TITLE = 'Overnight service';
 
 export function nightRuleText(frequency: NightServiceFrequency): string {
   return `Routes with a departure ${headwayOrBetter(frequency)} from 2–5 AM.`;

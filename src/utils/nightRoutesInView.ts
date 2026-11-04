@@ -1,10 +1,11 @@
-import { nightServiceKey, type NightServiceFrequency } from '../../shared/nightService';
+import { rowPassesNightGrade, type NightServiceFrequency } from '../../shared/nightService';
 import { boundingBox, lineCoordinates } from '../../shared/routeGeometry';
 
 export interface NightServiceFeatureProperties {
   nightService?: boolean;
   nightService30?: boolean;
   nightService60?: boolean;
+  nightService90?: boolean;
   nightServicePartOfRoute?: boolean;
   routeId?: string | null;
   routeShortName?: string | null;
@@ -36,7 +37,7 @@ export function nightRoutesInView(
   for (const [agencySlug, collection] of Object.entries(layers)) {
     for (const feature of collection.features) {
       const properties = feature.properties as NightServiceFeatureProperties | null;
-      if (properties?.[nightServiceKey(frequency)] !== true && !(frequency === 60 && properties?.nightService === true)) continue;
+      if (!rowPassesNightGrade(properties, frequency)) continue;
       if (!featureIntersectsBounds(feature, bounds)) continue;
       routes.push({ agencySlug, properties: properties! });
     }

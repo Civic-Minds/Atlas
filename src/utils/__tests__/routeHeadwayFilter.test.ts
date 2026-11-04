@@ -162,7 +162,10 @@ describe('the one frequency-filter rule: worst direction decides', () => {
 
   it('Frequency = All with a period still requires service in that period', () => {
     expect(featurePassesHeadwayFilter({ routeId: 'a', headwayByPeriod: { overnight: null } }, 'overnight', Infinity)).toBe(false);
-    expect(featurePassesHeadwayFilter({ routeId: 'a', headwayByPeriod: { overnight: 40 } }, 'overnight', Infinity)).toBe(true);
+    expect(featurePassesHeadwayFilter({ routeId: 'a', headwayByPeriod: { overnight: 40 }, nightService60: true }, 'overnight', Infinity)).toBe(true);
+    // #1322: Overnight also needs the Night Service test, so a first morning trip at 3 AM is not overnight service.
+    expect(featurePassesHeadwayFilter({ routeId: 'a', headwayByPeriod: { overnight: 40 }, nightService60: false }, 'overnight', Infinity)).toBe(false);
+    expect(featurePassesHeadwayFilter({ routeId: 'a', headwayByPeriod: { late: 40 } }, 'late', Infinity)).toBe(true);
     expect(featurePassesHeadwayFilter({ routeId: 'a' }, 'all', Infinity)).toBe(true);
   });
 });

@@ -143,10 +143,12 @@ describe('tile rules fingerprint', () => {
   // #1192 writes an empty sections file for an agency that has none, beside the route file; it is a
   // separate JSON the app reads, never tile content: hash only.
   // CIV-1229 removed the ignored per-feature minzoom; tile output unchanged.
+  // CIV-1329 / #1322 adds the nightService90 key, read with the 30/60 flags by the Overnight filter. No version bump, as
+  // for #899: older tiles lack the key and evaluate on their 30/60 flags, and older apps ignore it. Hash only.
   it('changes only together with a deliberate TILE_RULES_VERSION decision', () => {
     expect({ version: TILE_RULES_VERSION, fingerprint: tileRulesFingerprint() }).toEqual({
       version: 5,
-      fingerprint: 'd63291c737201549913452364d1fdf1f54f37e6d40ccbbbb5efcfdd3c0652c50',
+      fingerprint: '949a7eac19013092c1bfddb64aa4fd1cafe2accbbdc79db1d0b1db4f43c85f7d',
     });
   });
 });

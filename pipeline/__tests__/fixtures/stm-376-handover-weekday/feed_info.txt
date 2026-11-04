@@ -1,0 +1,2 @@
+feed_publisher_name,feed_publisher_url,feed_lang,feed_start_date,feed_end_date,feed_version
+Société de transport de Montréal,https://www.stm.info,fr,20260615,20261025,20260805110000_26S
