@@ -577,6 +577,7 @@ function TwoPartBadge({ dot, text, className }: { dot: React.ReactNode; text: st
 export function HeadwayBadge({
   headway,
   colorHeadway,
+  dotColor,
   label,
   live,
   suffix,
@@ -586,6 +587,8 @@ export function HeadwayBadge({
 }: {
   headway: number;
   colorHeadway?: number | null;
+  /** A fixed dot colour in place of the headway tier's (the Night list's night shades, CIV-1329). */
+  dotColor?: string;
   label?: string;
   live?: boolean;
   suffix?: string;
@@ -597,8 +600,9 @@ export function HeadwayBadge({
 }) {
   const colorMode = useColorMode();
   const words = label ?? fmtHeadway(headway);
-  if (secondLine) return <SecondLineBadge color={headwayToTierColor(colorHeadway ?? headway, colorMode)} words={words} />;
-  const dot = <span className="w-2 h-2 rounded-full shrink-0" style={{ background: headwayToTierColor(colorHeadway ?? headway, colorMode) }} />;
+  const color = dotColor ?? headwayToTierColor(colorHeadway ?? headway, colorMode);
+  if (secondLine) return <SecondLineBadge color={color} words={words} />;
+  const dot = <span className="w-2 h-2 rounded-full shrink-0" style={{ background: color }} />;
   const base = 'font-black text-[var(--text-primary)] text-xs leading-snug';
   return (
     <span className={`inline-flex items-center gap-1 ${base} ${twoPart(words) ? 'min-w-0' : 'shrink-0'} ${className}`}>

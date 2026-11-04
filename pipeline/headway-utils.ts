@@ -488,11 +488,13 @@ export function hasSustainedServiceInWindow(
   start: number,
   end: number,
   maxGapMinutes: number,
+  /** The longest wait from the window's start to the first departure and from the last to its end; defaults to maxGapMinutes. */
+  maxEdgeMinutes: number = maxGapMinutes,
 ): boolean {
   const times = [...new Set(departureTimes)].filter(t => t >= start && t <= end).sort((a, b) => a - b);
   if (times.length === 0) return false;
-  if (times[0] - start > maxGapMinutes) return false;
-  if (end - times[times.length - 1] > maxGapMinutes) return false;
+  if (times[0] - start > maxEdgeMinutes) return false;
+  if (end - times[times.length - 1] > maxEdgeMinutes) return false;
   for (let i = 1; i < times.length; i++) {
     if (times[i] - times[i - 1] > maxGapMinutes) return false;
   }
@@ -526,13 +528,17 @@ export function nightServiceDepartureTimes(
  * maxGapMinutes across the whole [start, end] window, with no gap at either edge. See
  * hasSustainedServiceInWindow above for the shared boundary-gap logic.
  */
+// CIV-1331: no longer a Night Service decider. Every night flag comes from tripSets nightServicePasses (stretch rows
+// and rows without stretch data alike); this stays only as the 2-6 AM window helper its tests pin.
 export function hasSustainedNightService(
   departureTimes: number[],
   start: number = NIGHT_SERVICE_WINDOW_START_MIN,
   end: number = NIGHT_SERVICE_WINDOW_END_MIN,
   maxGapMinutes: number = NIGHT_SERVICE_MAX_GAP_MINUTES,
 ): boolean {
-  return hasSustainedServiceInWindow(departureTimes, start, end, maxGapMinutes);
+  // CIV-1329: the 90 grade loosens the gaps between buses, never the edges: a first trip more than an hour into
+  // the window (day service from 3:30) is not night service at any grade.
+  return hasSustainedServiceInWindow(departureTimes, start, end, maxGapMinutes, Math.min(maxGapMinutes, NIGHT_SERVICE_MAX_GAP_MINUTES));
 }
 
 // Frequent Network window: 7am-7pm, matching Victoria (BC Transit)'s own "Frequent" product

@@ -42,7 +42,7 @@ import { encodeCompareSideParams, encodeSelectionParams, encodeModesParam, isAge
 import { searchOverlayHidesPanel } from '../utils/format';
 import { trackEvent } from '../lib/analytics';
 import type { FrequentServiceFrequency, FrequentServiceWindow } from '../../shared/frequentService';
-import type { NightServiceFrequency } from '../../shared/nightService';
+import { rowPassesNightGrade, type NightServiceFrequency } from '../../shared/nightService';
 import { getRegionalView, getSavedView, parseUrlView } from '../utils/regionView';
 import ResearchLegend from '../components/Interval/ResearchLegend';
 import { selectFrequentServiceFeatures } from '../components/Interval/map/useOverlaySources';
@@ -859,7 +859,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     prevPendingNightRoute.current = pendingNightRoute;
     const found = fc.features.find(f => {
       const p = f.properties as any;
-      return p.routeId === pendingNightRoute.routeId && (p[`nightService${pendingNightRoute.frequency}`] === true || (pendingNightRoute.frequency === 60 && p.nightService === true));
+      return p.routeId === pendingNightRoute.routeId && rowPassesNightGrade(p, pendingNightRoute.frequency);
     });
     if (found) {
       const p = found.properties as any;
@@ -1316,6 +1316,8 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
           )}
           {/* No key in the Night view: every line is the same colour and width (Ryan, CIV-1070). */}
           {frequentServiceView && <ResearchLegend view="frequent" frequentFrequency={frequentServiceFrequency} />}
+          {/* CIV-1329: the night grades' three shades. */}
+          {nightServiceView && <ResearchLegend view="night" frequentFrequency={frequentServiceFrequency} nightFrequency={nightServiceFrequency} />}
           {/* N39: phones hide the counts, so a view the filters leave empty says so there. */}
           {!compareActive && !nightServiceView && !frequentServiceView && stats && (showMapContext || !isLoading)
             && (showMapContext ? (mapContextRouteCount ?? 0) : stats.matching) === 0 && (

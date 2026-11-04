@@ -11,6 +11,7 @@ export interface RouteIndexProperties {
   nightService?: boolean;
   nightService30?: boolean;
   nightService60?: boolean;
+  nightService90?: boolean;
   routeShortName?: string | null;
   routeLongName?: string | null;
   routeColor?: string | null;

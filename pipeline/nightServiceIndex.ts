@@ -12,6 +12,7 @@
  */
 
 import type { RouteIndexProperties } from '../shared/routeIndexProperties.js';
+import { rowPassesNightGrade } from '../shared/nightService.js';
 
 type RouteFeatureProperties = RouteIndexProperties;
 
@@ -31,6 +32,8 @@ export interface NightServiceRouteEntry {
   day: string | null;
   nightService30: boolean;
   nightService60: boolean;
+  /** CIV-1329: the 90 tier, offered on the Night Service page only. */
+  nightService90: boolean;
 }
 
 export interface NightServiceIndexFile {
@@ -42,7 +45,7 @@ export interface NightServiceIndexFile {
 }
 
 export const NIGHT_SERVICE_CRITERIA =
-  'At least one departure every 30 or 60 minutes, 2am-5am local time, with no gap at the start or end of the core overnight window.';
+  'At least one departure every 30, 60 or 90 minutes, 2am-5am local time, with no gap at the start or end of the core overnight window.';
 
 /**
  * Pure: pull the qualifying routes out of one agency's already-processed feature
@@ -56,7 +59,8 @@ export function extractNightServiceRoutes(
   features: RouteFeature[],
 ): NightServiceRouteEntry[] {
   return features
-    .filter(f => f.properties.nightService30 === true || f.properties.nightService60 === true || f.properties.nightService === true)
+    // CIV-1329: the Night Service page lists every grade up to 90 (the Overnight view stops at 60).
+    .filter(f => rowPassesNightGrade(f.properties, 90))
     .map(f => ({
       agencySlug,
       agencyName,
@@ -69,6 +73,7 @@ export function extractNightServiceRoutes(
       day: f.properties.day ?? null,
       nightService30: f.properties.nightService30 === true,
       nightService60: f.properties.nightService60 === true || f.properties.nightService === true,
+      nightService90: rowPassesNightGrade(f.properties, 90),
     }));
 }
 

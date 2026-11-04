@@ -22,8 +22,14 @@ describe('extractNightServiceRoutes', () => {
         day: 'Saturday',
         nightService30: false,
         nightService60: true,
+        nightService90: true,
       },
     ]);
+  });
+
+  it('CIV-1329: keeps a route that passes only at 90 (the Night Service page alone shows it; the Overnight view stops at 60)', () => {
+    const result = extractNightServiceRoutes('lacmta', 'LA Metro', null, [{ properties: { nightService90: true, routeShortName: '240', day: 'Weekday' } }]);
+    expect(result.map(r => [r.routeShortName, r.nightService60, r.nightService90])).toEqual([['240', false, true]]);
   });
 
   it('returns an empty array when no route qualifies', () => {

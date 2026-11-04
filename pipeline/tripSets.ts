@@ -31,7 +31,6 @@ import {
   isSustainedHeadway,
   isUnevenPeriod,
   medianHeadwayInWindow,
-  hasSustainedServiceInWindow,
   headlineDeparturesInWindow,
   HEADLINE_MIN_DEPARTURES,
   nightServiceDepartureTimes,
@@ -79,7 +78,23 @@ export interface Stretch {
   nightTimes: readonly number[];
   /** Trips serving refStop. */
   tripCount: number;
+  /** CIV-1332: whether other service picks up riders at refStop (or within 400 m) soon after a night-only route's last bus (nightHandover). */
+  handover?: NightHandover;
+  /** CIV-1331: refStop's raw departures on the service day(s) before (nightServicePasses previousDays). */
+  previousDays?: ReadonlyArray<readonly number[]>;
 }
+
+/**
+ * CIV-1332: given a night-only route's last night departure (GTFS minutes, as nightTimes), whether daytime service
+ * starts at the stop or within NIGHT_HANDOVER_RADIUS_M of it within NIGHT_HANDOVER_MAX_WAIT_MIN after it. Built by
+ * the caller (process-core nightHandoverAt) from every route's departures that day.
+ */
+export type NightHandover = (lastNightBus: number, writtenOnMorningDay: boolean) => boolean;
+
+/** CIV-1332 (Ryan, 2026-11-03): daytime buses must start within 90 minutes of a night-only route's last trip. */
+export const NIGHT_HANDOVER_MAX_WAIT_MIN = 90;
+/** CIV-1332: "at the route's own stops (or within 400 m)". */
+export const NIGHT_HANDOVER_RADIUS_M = 400;
 
 export interface DirectionStretches {
   key: string;
@@ -107,6 +122,10 @@ export interface DirectionStretches {
    * (Ryan, 2026-10-15: night service on part of the route counts, on the part it runs).
    */
   night?: DirectionStretches;
+  /** CIV-1332: the handover check at a stop (nightHandover), set by the caller; each stretch's own is on Stretch.handover. */
+  handoverAt?: (stopId: string) => NightHandover | undefined;
+  /** CIV-1331: a stop's departures on the service day(s) before (Stretch.previousDays), set by the caller. */
+  previousDaysAt?: (stopId: string) => ReadonlyArray<readonly number[]>;
   /**
    * CIV-321 S1: departures at any stop of the direction, every trip that serves it (the same read
    * a stretch's reference stop gets). Not serialized.
@@ -606,12 +625,12 @@ export function encodeStopRuns(values: ReadonlyArray<number | null>): string {
  * Overnight by the same rule. A stop the verdict does not pass at 60 keeps its full-window wait, never
  * a better one.
  */
-export function stopPeriodValues(stops: readonly string[], throughTimesAlong: NonNullable<DirectionStretches['throughTimesAlong']>): Record<PeriodKey, string> {
+export function stopPeriodValues(stops: readonly string[], throughTimesAlong: NonNullable<DirectionStretches['throughTimesAlong']>, handoverAt?: (stopId: string) => NightHandover | undefined, previousDaysAt?: (stopId: string) => ReadonlyArray<readonly number[]>): Record<PeriodKey, string> {
   const reads = throughTimesAlong(stops);
   const perStop = stops.map((stop, i) => {
     const read = reads[i];
     if (read.times.length === 0) return null;
-    const stretch: Stretch = { kind: 'main', stops: [stop], refStop: stop, lengthKm: 0, ...read };
+    const stretch: Stretch = { kind: 'main', stops: [stop], refStop: stop, lengthKm: 0, ...read, handover: handoverAt?.(stop), previousDays: previousDaysAt?.(stop) };
     const night = directionNightValue({ key: stop, main: stretch, tails: [], regularPatternCount: 1, variantTripCount: 0 }, true);
     return { periods: stretchPeriods(stretch), night };
   });
@@ -767,16 +786,100 @@ export const NIGHT_EDGE_MAX_WAIT_MIN = 60;
  * Night (D7: 26:00-29:00), every gap between departures at most maxGap. A stretch that runs at night
  * (D3: departures on both sides of 3:30) may wait up to NIGHT_EDGE_MAX_WAIT_MIN before its first
  * departure and after its last (CIV-1198: TTC 300's Danforth Rd branch runs every 15 from its first
- * bus at 2:39). Any other stretch keeps both edges at maxGap, so day service starting at 4:30 never
- * passes. null: no departure in the window.
+ * bus at 2:39). Any other stretch keeps both edges at the grade (at most the hour), so day service
+ * starting at 4:30 never passes. null: no departure in the window.
  */
 export function stretchNight(s: Stretch, maxGap: number): boolean | null {
-  if (!s.nightTimes.some(t => t >= STRETCH_NIGHT_START_MIN && t <= STRETCH_NIGHT_END_MIN)) return null;
-  if (!runsAcrossNightMidpoint(s.nightTimes)) return hasSustainedServiceInWindow([...s.nightTimes], STRETCH_NIGHT_START_MIN, STRETCH_NIGHT_END_MIN, maxGap);
-  const times = [...new Set(s.nightTimes)].filter(t => t >= STRETCH_NIGHT_START_MIN && t <= STRETCH_NIGHT_END_MIN).sort((a, b) => a - b);
-  const edge = Math.max(maxGap, NIGHT_EDGE_MAX_WAIT_MIN);
-  if (times[0] - STRETCH_NIGHT_START_MIN > edge || STRETCH_NIGHT_END_MIN - times[times.length - 1] > edge) return false;
-  return times.every((t, i) => i === 0 || t - times[i - 1] <= maxGap);
+  return nightServicePasses(s.times, s.nightTimes, maxGap, s.handover, s.previousDays);
+}
+
+/**
+ * CIV-1331: the one night decider, for stretches (stretchNight) and for rows without stretch data
+ * (process-core hasNightServiceAtShapeEndpoints), so both paths read the same rules. `times` are the
+ * day's departures at the stop, `nightTimes` the same with the #297 overnight shift
+ * (nightServiceDepartureTimes: every time before 24:00 also appears 24 hours later). The rules:
+ * - every gap between departures in 2:00-5:00 at most maxGap (30, 60 or 90; the Overnight view counts up to 60 and the
+ *   Night Service page alone offers 90, CIV-1329 2026-11-04);
+ * - the edges are real gaps (CIV-1331 final review), at most the grade and never under an hour (NIGHT_EDGE_MAX_WAIT_MIN):
+ *   day service measures from its previous bus to its first in the window and from its last in the window to its next
+ *   bus, so a first trip at 2:58 after a last bus at 0:34 (144 minutes with nobody served) fails, as does a last bus
+ *   at 4:00 with nothing until 6:30. With no bus before (or after), the window's edge stands in;
+ * - #1322: a night-only stretch (nightOnlyStretch) has no service before its first night bus, so the wait from 2:00
+ *   to it does not count (TTC 339 at Malvern from 3:03), when that first bus comes by 3:30 (a later one is
+ *   early-morning service). After its last bus there is its own next bus within that same limit, or its last bus is
+ *   within the hour before 5:00 (CIV-1198), or (CIV-1332, Ryan 2026-11-03) daytime buses start within 90 minutes of it at
+ *   its stop or within 400 m ("Riders are covered all night, just by a different route after 4 AM"). `handover`
+ *   answers that, told whether the night's trips are written on the morning's own service day (plain 00:00-05:59) or
+ *   past 24:00 on the evening's; without it the wait counts. Every night-only stretch goes through these rules,
+ *   whether or not it crosses 3:30.
+ */
+export function nightServicePasses(
+  times: readonly number[],
+  nightTimes: readonly number[],
+  maxGap: number,
+  handover?: NightHandover,
+  /**
+   * CIV-1331: the stop's raw departures on the service day (or days) before, for a night written on the morning's own
+   * day (00:00-05:59): its evening is that day's. Weekday mornings follow both a Sunday and a Weekday evening, and each
+   * must pass. Without it the same day type's own times stand in.
+   */
+  previousDays?: ReadonlyArray<readonly number[]>,
+): boolean | null {
+  const all = [...new Set(nightTimes)].sort((a, b) => a - b);
+  const inWindow = all.filter(t => t >= STRETCH_NIGHT_START_MIN && t <= STRETCH_NIGHT_END_MIN);
+  if (inWindow.length === 0) return null;
+  if (!inWindow.every((t, i) => i === 0 || t - inWindow[i - 1] <= maxGap)) return false;
+  const limit = Math.max(maxGap, NIGHT_EDGE_MAX_WAIT_MIN);
+  const first = inWindow[0];
+  const last = inWindow[inWindow.length - 1];
+  const raw = new Set(times);
+  const nightOnly = nightOnlyStretch({ times });
+  if (nightOnly) {
+    // Its first bus is the start of its service, as long as it starts in the night: one whose first bus in the window
+    // is at or after 3:30 is early-morning service, not night service.
+    if (first >= NIGHT_MIDPOINT_MIN) return false;
+  } else {
+    // CIV-1331: the bus before is the true last departure before the first night bus, whenever it was. Written past
+    // 24:00 on the evening's day, that is the same day's raw times. Written on the morning's own day (a moved time),
+    // it is that morning's earlier night trips and the previous service day's departures (its evening), in the same
+    // minutes (the previous day's 22:00 is 1320 before a first bus at 3:00 written 27:00). So a 22:00 last bus and a
+    // 3:00 first fail in both notations, as does 21:55. With no bus before at all, the wait from 2:00 counts.
+    const before = (candidates: Iterable<number>) => { let p: number | undefined; for (const t of candidates) if (t < first && (p == null || t > p)) p = t; return p; };
+    const edgeOk = (p: number | undefined) => (p == null ? first - STRETCH_NIGHT_START_MIN <= NIGHT_EDGE_MAX_WAIT_MIN : first - p <= limit);
+    if (raw.has(first)) {
+      if (!edgeOk(before(times))) return false;
+    } else {
+      const sameMorning = all.filter(t => !raw.has(t));
+      const evenings = previousDays && previousDays.length > 0 ? previousDays : [times];
+      if (!evenings.every(evening => edgeOk(before([...sameMorning, ...evening])))) return false;
+    }
+  }
+  // After the last bus: written past 24:00, the same day's later raw times and the moved morning times (the #297
+  // reading); written on the morning's own day, only the moved times.
+  const next = all.find(t => t > last && (raw.has(last) || !raw.has(t)));
+  if (nightOnly) {
+    // Its own next bus within the limit; or its last bus within the hour before 5:00 (CIV-1198, Ryan 2026-10-30: night
+    // networks hand over to day service inside the window); else a daytime handover.
+    if (next != null && next - last <= limit) return true;
+    if (STRETCH_NIGHT_END_MIN - last <= NIGHT_EDGE_MAX_WAIT_MIN) return true;
+  } else return (next == null ? STRETCH_NIGHT_END_MIN - last : next - last) <= limit;
+  // The night's last bus, written on the morning's own service day when its raw time is not in `times` (a plain
+  // 00:00-05:59 time moved 24 hours, or an overnight-only service's shift).
+  return handover?.(last, !raw.has(last)) === true;
+}
+
+/** #1322: the most daytime departures a night-only stretch may have: a stray positioning trip or two (TTC 353 has one). */
+export const NIGHT_ONLY_MAX_DAY_DEPARTURES = 2;
+/**
+ * The daytime a night-only stretch has (almost) no departures in: 9 AM to 10 PM. CIV-1331: a night route that runs on
+ * into the early morning (TTC 320 on Sundays until about 8 AM, before the subway opens) is still a night route.
+ */
+export const NIGHT_ONLY_DAY_START_MIN = 9 * 60;
+export const NIGHT_ONLY_DAY_END_MIN = 22 * 60;
+
+/** #1322: the stretch runs only at night: no regular daytime service (at most NIGHT_ONLY_MAX_DAY_DEPARTURES from 9 AM to 10 PM). */
+export function nightOnlyStretch(s: Pick<Stretch, 'times'>): boolean {
+  return s.times.filter(t => t >= NIGHT_ONLY_DAY_START_MIN && t < NIGHT_ONLY_DAY_END_MIN).length <= NIGHT_ONLY_MAX_DAY_DEPARTURES;
 }
 
 /**
@@ -784,8 +887,9 @@ export function stretchNight(s: Stretch, maxGap: number): boolean | null {
  * 2-5am window's midpoint (3:30, which counts as the later side). `nightTimes` are GTFS minutes
  * as nightServiceDepartureTimes builds them.
  */
+const NIGHT_MIDPOINT_MIN = (STRETCH_NIGHT_START_MIN + STRETCH_NIGHT_END_MIN) / 2;
 export function runsAcrossNightMidpoint(nightTimes: readonly number[]): boolean {
-  const mid = (STRETCH_NIGHT_START_MIN + STRETCH_NIGHT_END_MIN) / 2;
+  const mid = NIGHT_MIDPOINT_MIN;
   return nightTimes.some(x => x >= STRETCH_NIGHT_START_MIN && x < mid) && nightTimes.some(x => x >= mid && x <= STRETCH_NIGHT_END_MIN);
 }
 
@@ -835,7 +939,10 @@ export function directionNightVerdict(d: DirectionStretches, gap: number): Night
  * (the direction's card row, which stands for the whole direction: NYC subway 3 to New Lots Av
  * runs every 20 at night on its night path, but 220 minutes apart at the row's own stops).
  */
-/** #1267: the longest Overnight value; a direction that passes only above it has none (Night Service's 60 grade). */
+/**
+ * #1267: the longest Overnight value; a direction that passes only above it has none (Night Service's 60 grade).
+ * CIV-1329 (Ryan, 2026-11-04): the 90 grade is the Night Service page's only, so the Overnight view stays at 60.
+ */
 export const NIGHT_OVERNIGHT_MAX_VALUE = 60;
 
 export function directionNightValue(d: DirectionStretches, wholeDirection = false): number | null {
@@ -895,6 +1002,8 @@ export interface DirectionRollup {
   }>;
   night30: boolean;
   night60: boolean;
+  /** CIV-1329: passes at 90, the Night Service page's loosest grade (the Overnight view stops at 60). */
+  night90: boolean;
   /** #1267: the Overnight value, directionNightValue. */
   nightValue: number | null;
   /** #1267: the direction's own Overnight value (card rows): a full pass only, not on the night version alone. */
@@ -902,6 +1011,7 @@ export interface DirectionRollup {
   /** Passes only on the night version of the direction (part of the route, or a night path). */
   nightPartial30: boolean;
   nightPartial60: boolean;
+  nightPartial90: boolean;
   /** Step 6 shadow: the all-day (6-22h) headline, the worst of the main stretch and each steady tail. */
   allDay: number | null;
   /** Step 6 shadow: the main stretch's midday wait (#899 cap input), null with no midday service. */
@@ -1120,6 +1230,8 @@ export function rollupDirection(d: DirectionStretches): DirectionRollup | null {
   // loop at 4:47 and 4:57) or only ends it there does not run at night, and drops out.
   const v30 = directionNightVerdict(d, 30);
   const v60 = directionNightVerdict(d, 60);
+  // CIV-1329: the 90 grade, for the Night Service page only (Ryan, 2026-11-04).
+  const v90 = directionNightVerdict(d, 90);
   // Step 6 shadow values. Tails count when they run steadily through some daytime period.
   // Tails that run steadily through midday are all-day branches; a peak-only tail (CTA 9's Beverly
   // tail, a 313-minute midday hole) is limited and takes no part in the all-day value or Frequent.
@@ -1170,7 +1282,7 @@ export function rollupDirection(d: DirectionStretches): DirectionRollup | null {
   const frequentStretches = [d.main, ...allDayTails];
   const researchOf = frequentStretches.map(st => computeResearchFrequentService([...st.times]));
   return {
-    period, night30: v30 !== 'fail', night60: v60 !== 'fail', nightValue: directionNightValue(d), nightDirectionValue: directionNightValue(d, true), nightPartial30: v30 === 'partial', nightPartial60: v60 === 'partial',
+    period, night30: v30 !== 'fail', night60: v60 !== 'fail', night90: v90 !== 'fail', nightValue: directionNightValue(d), nightDirectionValue: directionNightValue(d, true), nightPartial30: v30 === 'partial', nightPartial60: v60 === 'partial', nightPartial90: v90 === 'partial',
     allDay: !limitedOnly && allDays.every(v => v != null) ? Math.max(...(allDays as number[])) : null,
     limitedOnly,
     middayWait,
@@ -1193,11 +1305,14 @@ export interface RouteRollup {
   }>;
   night30: boolean;
   night60: boolean;
+  /** CIV-1329: every direction passes at 90, the Night Service page's loosest grade. */
+  night90: boolean;
   /** #1267: the Overnight value, the worst direction's night value; null when any has none. */
   nightValue: number | null;
   /** The route qualifies only on the night version of some direction: drawn on the part it runs. */
   nightPartial30: boolean;
   nightPartial60: boolean;
+  nightPartial90: boolean;
   /** Step 6 shadow: worst direction's all-day headline; null when any direction has none. */
   /** Some direction is limited (#720): its main stretch does not run at midday (rollupDirection). */
   limited: boolean;
@@ -1244,9 +1359,11 @@ export function rollupRoute(dirs: readonly (DirectionRollup | null)[]): RouteRol
     period,
     night30: complete && known.every(d => d.night30),
     night60: complete && known.every(d => d.night60),
+    night90: complete && known.every(d => d.night90),
     nightValue: complete && known.every(d => d.nightValue != null) ? Math.max(...known.map(d => d.nightValue!)) : null,
     nightPartial30: complete && known.every(d => d.night30) && known.some(d => d.nightPartial30),
     nightPartial60: complete && known.every(d => d.night60) && known.some(d => d.nightPartial60),
+    nightPartial90: complete && known.every(d => d.night90) && known.some(d => d.nightPartial90),
     // A limited direction (#720) has no all-day value, so neither has its route: every direction
     // must run all day (#899), and the other direction alone never passes for it.
     limited: known.some(d => d.limitedOnly),
@@ -1286,8 +1403,10 @@ export const STRETCH_SHADOW_KEYS = [
   'stretchPeriodRange',
   'stretchNight30',
   'stretchNight60',
+  'stretchNight90',
   'stretchNightPartial30',
   'stretchNightPartial60',
+  'stretchNightPartial90',
   'stretchAllDayHeadway',
   'stretchMiddayWait',
   'stretchFrequentService',
@@ -1373,8 +1492,10 @@ export function stampStretchShadow(
     p.stretchPeriodRange = byPeriod(k => k === 'overnight' ? null : route.period[k].range);
     p.stretchNight30 = route.night30;
     p.stretchNight60 = route.night60;
+    p.stretchNight90 = route.night90;
     p.stretchNightPartial30 = route.nightPartial30;
     p.stretchNightPartial60 = route.nightPartial60;
+    p.stretchNightPartial90 = route.nightPartial90;
     // Step 6 shadow: nothing reads these yet.
     p.stretchAllDayHeadway = route.allDay;
     p.stretchRouteLimited = route.limited;
@@ -1392,9 +1513,11 @@ export function stampStretchShadow(
     // CIV-321: per drawn stop and period, every trip of the direction running through the stop, along
     // the display-only full line where the row has one (S4), else the row's own stops.
     const stopOrder = (p.fullStopOrder ?? p.stopOrder) as readonly string[] | undefined;
-    if (stretches.throughTimesAlong && Array.isArray(stopOrder) && stopOrder.length > 0) p.stretchStopPeriodValues = stopPeriodValues(stopOrder, stretches.throughTimesAlong);
+    if (stretches.throughTimesAlong && Array.isArray(stopOrder) && stopOrder.length > 0) p.stretchStopPeriodValues = stopPeriodValues(stopOrder, stretches.throughTimesAlong, stretches.handoverAt, stretches.previousDaysAt);
     else delete p.stretchStopPeriodValues;
-    p.routeRunsByPeriod = byPeriod(k => route.period[k].runs);
+    // #1322: Overnight runs where the night verdict passes at 60 (the 90 grade is the Night Service page's only,
+    // CIV-1329), not by the 2-6 AM midpoint test, which a first trip at 3 AM passes (RTD A Line).
+    p.routeRunsByPeriod = byPeriod(k => k === 'overnight' ? route.night60 : route.period[k].runs);
     // Card rows (5b): which stretch this row stands for. A row whose own stops cover a whole tail
     // stands for it (the longest such tail); else one covering the whole main stretch stands for
     // the main stretch; else it is a variant (a short turn, a positioning trip, a pattern that only

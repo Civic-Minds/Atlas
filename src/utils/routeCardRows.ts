@@ -13,6 +13,7 @@ import { featurePassesHeadwayFilter } from '../../shared/routeHeadwayFilter';
 import { headwayAbout, headwayAboutRange, headwayRangeShown } from './headwayText';
 import { LIMITED_SERVICE_LABEL, noNumberRowLabel, SHARED_STRETCH_LABEL } from '../content/noticeCopy';
 import { buildDirectionGroups, type RouteCardDirectionGroup } from './routeCardDirectionGroups';
+import { rowNightGrade } from '../../shared/nightService';
 
 /**
  * The route card's rows, built once (CIV-987). Every part of the card (rows, Shared stretch / Combined row, hover and the
@@ -36,7 +37,7 @@ export interface CardRow {
   /** What hovering the row sends (none for a row without a destination). */
   hover: HoveredBranch | null;
   /** The Night view's grade (CIV-934): 30, 60, or none. */
-  night?: { grade: 30 | 60 | null; partOfRoute: boolean };
+  night?: { grade: 30 | 60 | 90 | null; partOfRoute: boolean };
   /** The daytime row's number, words, colour and layout, for the chart hour under the pointer (null: none). */
   display: (hoveredHour: number | null) => CardRowDisplay;
 }
@@ -266,9 +267,9 @@ export function buildRouteCardModel(input: RouteCardModelInput): RouteCardModel 
         hover: rowHover(group.dirId, d.headsign, d.routeVariant),
       };
       if (nightView) {
-        // The row's night grade: 30 when it passes the 30-minute night check, else 60 when it passes the
-        // hourly one, as the Night list reads it (an upper bound, never overstated).
-        const grade = d.nightService30 === true ? 30 : d.nightService60 === true || d.nightService === true ? 60 : null;
+        // The row's night grade: 30, 60 or 90, the strictest night check it passes, as the Night list reads it
+        // (an upper bound, never overstated; CIV-1329).
+        const grade = rowNightGrade(d);
         return { ...base, night: { grade, partOfRoute: d.nightServicePartOfRoute === true }, display: rowDisplay(d) };
       }
       return { ...base, display: rowDisplay(d, group.pooledMain?.feature === d ? group.pooledMain.headway : undefined, shared != null) };
