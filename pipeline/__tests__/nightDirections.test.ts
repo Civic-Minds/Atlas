@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { combineRowNightDirections } from '../../../pipeline/process-core';
-import { extractNightServiceRoutes } from '../../../pipeline/nightServiceIndex';
-import { routePassesHeadwayFilter } from '../../../shared/routeHeadwayFilter';
-import { routeRunsThroughNight } from '../../../shared/nightService';
-import { countNightRoutesInView } from '../nightRoutesInView';
-import { selectNightServiceFeatures } from '../../components/Interval/map/useOverlaySources';
+import { combineRowNightDirections } from '../process-core';
+import { extractNightServiceRoutes } from '../nightServiceIndex';
+import { routePassesHeadwayFilter } from '../../shared/routeHeadwayFilter';
+import { routeRunsThroughNight } from '../../shared/nightService';
+import { countNightRoutesInView } from '../../src/utils/nightRoutesInView';
+import { selectNightServiceFeatures } from '../../src/components/Interval/map/useOverlaySources';
 
 // CIV-1331 review: a made-up route without stop-by-stop (stretch) data, graded row by row. One direction passes the night
 // check, the other fails, so the route must fail on every surface once the pipeline combines its directions.
