@@ -1,6 +1,8 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Moon } from 'lucide-react';
 import { useViewport } from '../context/ViewportContext';
+import { useColorMode } from '../hooks/useColorMode';
+import { getNightServiceTierColor } from '../utils/colors';
 import { R2_PUBLIC_URL } from '../../shared/config';
 import { countOf } from '../../shared/overflowText';
 import type { NightServiceFrequency } from '../../shared/nightService';
@@ -88,6 +90,7 @@ export default function NightService({ active, sidebarLeft, searchBarWidth, laye
   const [data, setData] = useState<NightServiceIndexFile | null>(null);
   const [loadState, setLoadState] = useState<'loading' | 'ready' | 'error'>('loading');
   const { bounds } = useViewport();
+  const colorMode = useColorMode();
   const visibleRoutes = useMemo(
     () => (Object.keys(layers).length === 0 ? [] : nightRoutesInView(layers, frequency, bounds)),
     [bounds, layers, frequency],
@@ -226,6 +229,8 @@ export default function NightService({ active, sidebarLeft, searchBarWidth, laye
                   route: nightRouteLabel(route, agency),
                   // Ryan's approved row: "● every 30 min". The grade is an upper bound, so this never overstates.
                   headway: nightGrade(route, agency.slug),
+                  // CIV-1329: the dot takes the night shade of its grade, as the map and key draw it.
+                  dotColor: getNightServiceTierColor(nightGrade(route, agency.slug), colorMode),
                   subLabel: route.partOfRoute ? 'Overnight service on part of the route' : undefined,
                   disabled: !route.routeId || !onRouteSelect,
                 }))}
