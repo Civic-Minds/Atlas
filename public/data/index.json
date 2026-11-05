@@ -7160,10 +7160,10 @@
         "Portland, Maine"
       ],
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2642/latest.zip",
-      "lastFeedCheckAt": "20261104",
+      "lastFeedCheckAt": "20261105",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20261204",
+      "expiredFeedCheckExpiry": "20261205",
       "feedQuality": {
         "status": "healthy",
         "score": 100,
@@ -7177,7 +7177,7 @@
           "feedExpiry": "20261105"
         },
         "checkedAt": "2026-10-07",
-        "scoredAt": "2026-11-04"
+        "scoredAt": "2026-11-05"
       },
       "timezone": "America/New_York",
       "feedRefreshStatus": "current",
@@ -7186,7 +7186,7 @@
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://gtfs.gptd.cadavl.com/GPTD/GTFS/GTFS_GPTD.zip",
-      "refusedFeedSha256": "43bdc38a86ab6e1fe9dee7849fe31323ced6407056f8d6bc91e6f9fcce652491"
+      "refusedFeedSha256": "9dd8394c1cfdfb6beb4d8ab65be6ca97ec3d5384886d6f784d475c7b2816082f"
     },
     {
       "slug": "hocts",
@@ -11074,7 +11074,7 @@
       "lastFeedExpiry": "20270401",
       "lastFeedVersion": "",
       "region": "California",
-      "lastRefreshedAt": "2026-11-04",
+      "lastRefreshedAt": "2026-11-05",
       "supplementalFeedUrls": [
         "https://gitlab.com/LACMTA/gtfs_rail/raw/master/gtfs_rail.zip"
       ],
@@ -11093,7 +11093,7 @@
         "North Hills, California",
         "North Hollywood, California"
       ],
-      "lastFeedCheckAt": "20261104",
+      "lastFeedCheckAt": "20261105",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
       "expiredFeedCheckExpiry": "20270401",
@@ -11116,7 +11116,7 @@
           "mismatchRoutes": 1,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-04"
+        "checkedAt": "2026-11-05"
       },
       "timezone": "America/Los_Angeles",
       "feedRefreshStatus": "current",
@@ -11127,14 +11127,14 @@
       "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-29/latest.zip",
       "lastSupplementalFeeds": [
         {
-          "feedExpiry": "20261118",
+          "feedExpiry": "20261119",
           "feedVersion": null,
-          "rawArchiveKey": "20261118-e40b19e9fefd2947"
+          "rawArchiveKey": "20261119-8f5ba01ab64ae349"
         }
       ],
       "lastPeekedExpiry": "20270401",
       "lastServiceWeek": "8a5859505ca2916d",
-      "feedObtainedAt": "20261104"
+      "feedObtainedAt": "20261105"
     },
     {
       "slug": "metrolink",
