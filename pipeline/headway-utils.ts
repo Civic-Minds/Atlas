@@ -174,6 +174,16 @@ export const ADAPTIVE_WINDOW_BASE_MINUTES = 60;
 export const ADAPTIVE_WINDOW_MAX_MINUTES = 90;
 
 /**
+ * True when the list has a departure in the clock hour starting at `start` ([start, start + 60)),
+ * read on the same cross-midnight fold as the hour windows (#297). An hour without one shows no
+ * value (CIV-1109, #1214).
+ */
+export function hasDepartureInClockHour(departureTimes: readonly number[], start: number): boolean {
+  const end = start + 60;
+  return forCrossMidnightWindow([...departureTimes], end).some(t => t >= start && t < end);
+}
+
+/**
  * Like medianHeadwayInWindow, but only widens past a strict `baseMinutes`-wide window when that
  * window doesn't already have enough departures on its own -- rescuing sparse hours (TTC 10
  * above) without blending hours that don't need it (TTC 5 above).
@@ -188,6 +198,10 @@ export function adaptiveMedianHeadwayInWindow(
   const narrowEnd = start + baseMinutes;
   const narrow = medianHeadwayInWindow(forCrossMidnightWindow(departureTimes, narrowEnd), start, narrowEnd, minDeps);
   if (narrow != null) return narrow;
+  // CIV-1109 (#1214): an hour with no departure of its own never widens. The wider window only
+  // ever borrowed the next hour's trips into it (Madison 80 via Eagle Heights read 12 at 4 PM from
+  // its 5:02, 5:17 and 5:26 arrivals; TTC 504 westbound read 3 AM from the 4 AM trips, CIV-1106).
+  if (!hasDepartureInClockHour(departureTimes, start)) return null;
   const wideEnd = start + maxMinutes;
   return medianHeadwayInWindow(forCrossMidnightWindow(departureTimes, wideEnd), start, wideEnd, minDeps);
 }
