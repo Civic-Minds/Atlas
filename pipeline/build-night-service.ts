@@ -15,7 +15,6 @@ import './loadEnv.js';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { r2Get, r2Put } from './r2.js';
-import { isReprocessTarget } from './archiveSelection.js';
 import { runWithConcurrency } from './utils.js';
 import { buildNightServiceIndex, extractNightServiceRoutes, type NightServiceRouteEntry } from './nightServiceIndex.js';
 
@@ -23,11 +22,6 @@ interface IndexAgency {
   slug: string;
   name: string;
   region?: string | null;
-  pmtilesPending?: boolean;
-  hiddenInProduction?: boolean;
-  staged?: boolean;
-  lastFeedExpiry?: string | null;
-  lastRefreshedAt?: string | null;
 }
 
 function argValue(flag: string): string | null {
@@ -43,11 +37,12 @@ const dryRun = process.argv.includes('--dry-run');
 const localDir = argValue('--local-dir');
 
 const index = JSON.parse(readFileSync(resolve('public/data/index.json'), 'utf8')) as { agencies: IndexAgency[] };
-// Same agencies the rebuild processes, so the file covers what the rebuild just wrote.
-const agencies = index.agencies.filter(agency => isReprocessTarget(agency));
+// Every agency in index.json, exactly the weekly refresh's scope (refresh.ts), so hidden and
+// beta-only agencies keep their rows.
+const agencies = index.agencies;
 
 let fromLocal = 0;
-let fromPublished = 0;
+const publishedSlugs: string[] = [];
 const noRouteFile: string[] = [];
 const all: NightServiceRouteEntry[] = [];
 
@@ -59,7 +54,7 @@ const tasks = agencies.map(agency => async () => {
     fromLocal++;
   } else {
     raw = await r2Get(`atlas/${agency.slug}.json`); // a read error throws and stops the build
-    if (raw) fromPublished++;
+    if (raw) publishedSlugs.push(agency.slug);
   }
   if (!raw) {
     noRouteFile.push(agency.slug);
@@ -74,7 +69,8 @@ if (noRouteFile.length) console.warn(`  [warn] no route file for ${noRouteFile.l
 const file = buildNightServiceIndex(all);
 if (file.routeCount === 0) throw new Error('Built an empty night-service.json; refusing to write it.');
 
-const summary = `night-service: ${file.routeCount} routes across ${file.agencyCount} agencies (from ${fromLocal} dry-run files, ${fromPublished} published files; ${agencies.length} agencies checked)`;
+if (localDir) console.log(`  read from the published file, not the dry run (${publishedSlugs.length}): ${publishedSlugs.sort().join(', ') || 'none'}`);
+const summary = `night-service: ${file.routeCount} routes across ${file.agencyCount} agencies (from ${fromLocal} dry-run files, ${publishedSlugs.length} published files; ${agencies.length} agencies checked)`;
 if (dryRun) {
   mkdirSync(resolve('tmp'), { recursive: true });
   writeFileSync(resolve('tmp/night-service.json'), JSON.stringify(file));
