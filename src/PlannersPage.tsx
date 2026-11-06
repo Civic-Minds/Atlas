@@ -32,7 +32,7 @@ function Email() {
 /** A feature section: a tinted card, its heading and text beside its pictures (stacked on phones). */
 function Feature({ title, color, pictures, children }: { title: string; color: string; pictures: ReactNode; children: ReactNode }) {
   return (
-    <section className="grid gap-8 rounded-2xl p-6 sm:p-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-center lg:gap-10" style={{ background: tint(color) }}>
+    <section className="grid gap-8 rounded-2xl p-6 sm:p-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-start lg:gap-10" style={{ background: tint(color) }}>
       <div>
         <h2 className="text-2xl font-black tracking-tight">{title}</h2>
         <div className="mt-3 space-y-3 text-base leading-7 text-[var(--text-muted)]">{children}</div>
@@ -86,10 +86,10 @@ export default function PlannersPage() {
         </Feature>
         <Feature title="See how service changes over the day and week" color={color(1)} pictures={
           <div className="space-y-3">
-            <ThemedPicture base={pic('compare')} ext="webp" className={`${PICTURE} aspect-[16/10]`} />
-            <div className="grid grid-cols-2 gap-3">
-              <ThemedPicture base={pic('chicago')} ext="webp" className={`${PICTURE} aspect-[10/11]`} />
-              <ThemedPicture base={pic('routecard')} ext="webp" className={`${PICTURE} aspect-[10/11] object-top`} />
+            <ThemedPicture base={pic('compare')} ext="webp" className={`${PICTURE} aspect-[1440/730]`} />
+            <div className="grid grid-cols-2 items-start gap-3">
+              <ThemedPicture base={pic('chicago')} ext="webp" className={`${PICTURE} aspect-[700/740]`} />
+              <ThemedPicture base={pic('routecard')} ext="webp" className={`${PICTURE} aspect-[700/1078]`} />
             </div>
           </div>
         }>
@@ -98,7 +98,7 @@ export default function PlannersPage() {
           <p>Open any route to see an hourly chart of its headways, which also shows its span of service.</p>
         </Feature>
         <Feature title="Every agency in a region, on one map" color={color(2)} pictures={
-          <ThemedPicture base={pic('bayarea')} ext="webp" className={`${PICTURE} aspect-[47/38]`} />
+          <ThemedPicture base={pic('bayarea')} ext="webp" className={`${PICTURE} aspect-[740/700]`} />
         }>
           <p>Riders don't care which agency runs the bus. Atlas puts every agency it covers on the same map, so you can see where local, regional and intercity services meet, and where they don't. Use the agency filter to focus on one operator, or leave it on All to see the whole region.</p>
           <p>This helps you spot weak connections between agencies: a hub where one agency runs every 10 minutes and the other once an hour, or a town where an intercity route stops but no local bus runs in the evening.</p>
