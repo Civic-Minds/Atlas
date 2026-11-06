@@ -1423,3 +1423,16 @@ describe('CIV-1251: each stretch carries its own late start or early end', () =>
     for (const p of await rows(0)) for (const st of [p.stretchMeta.main, ...p.stretchMeta.tails]) expect(st.edge?.overnight).toBeUndefined();
   });
 });
+
+describe('a stretch publishes its reference stop\'s departures per clock hour (#1343)', () => {
+  it('counts every departure at refStop by hour, as the row\'s own counts are built', () => {
+    // Bustang South to Colorado Springs at its mid-route reference stop: evening buses at 6:30, 7:40 and 8:45 PM.
+    const stretch = { kind: 'main' as const, stops: ['a', 'b'], refStop: 'a', lengthKm: 100, times: [1110, 1180, 1245], nightTimes: [], tripCount: 3 };
+    expect(stretchMetaPeriods(stretch).departuresByHour).toEqual({ 18: 1, 19: 1, 20: 1 });
+  });
+
+  it('keeps after-midnight hours as GTFS hours (25 is 1 AM)', () => {
+    const stretch = { kind: 'main' as const, stops: ['a'], refStop: 'a', lengthKm: 1, times: [1430, 1450, 1510], nightTimes: [], tripCount: 3 };
+    expect(stretchMetaPeriods(stretch).departuresByHour).toEqual({ 23: 1, 24: 1, 25: 1 });
+  });
+});

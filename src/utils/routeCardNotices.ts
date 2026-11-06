@@ -6,7 +6,7 @@ import {
   ROUTE_DATA_QUALITY_WARNING_MESSAGE, selectedRouteFilterNotice, selectedRouteOutsideFilterNotice, stopRunsOnlyText,
   selectedRoutePartMeetsFilterNotice, unevenServiceNotice, variantsIncludedNotice, WEEKDAY_VARIATION_NOTICE,
 } from '../content/noticeCopy';
-import { partPeriodNoticeApplies, partPeriodNoticeHeadway, partPeriodOutside, periodTripRanges } from './periodActiveRanges';
+import { partPeriodNoticeApplies, partPeriodNoticeHeadway, partPeriodOutside, periodTripRanges, refStopHourDirections } from './periodActiveRanges';
 import { routePartMeetsFilter } from './routeCardTrunk';
 import { buildRouteCardModel, type RouteCardModel } from './routeCardRows';
 import { buildDirectionGroups } from './routeCardDirectionGroups';
@@ -88,9 +88,16 @@ export function routeCardNotices(input: RouteCardNoticeInput): RouteCardNotices 
   // hours has trips; "This route runs only from …" names those hours, and the "no scheduled trips" line shows only
   // when there are none (TTC 504 Sunday read both: its run from 1 AM counted the hour before the period).
   // Whether it runs reads every direction, as the period check does; the hours named are the chart's where it has some.
-  const tripRangesOf = (list: ShapeProperties[]) => (selectedPeriod ? periodTripRanges(list, selectedPeriod.startHour, selectedPeriod.endHour) : []);
+  const tripRangesOf = (list: Parameters<typeof periodTripRanges>[0]) => (selectedPeriod ? periodTripRanges(list, selectedPeriod.startHour, selectedPeriod.endHour) : []);
   const allDirectionRanges = tripRangesOf(directions);
-  const chartRanges = tripRangesOf(model.activeRangeDirections);
+  // #1343: the hours named are the chart's (#1186), except where they fill the whole period: "only from 7–11 PM" in
+  // 7–11 PM says nothing. There the hours come from the reference stop, where the period decision is read (Bustang
+  // South's last evening bus passes mid-route about 8:45 PM but reaches Colorado Springs at 10:20, so its chart's
+  // end-of-line hours fill the evening). Those hours then differ from the chart's bars. Data without them keeps the chart's.
+  const rowChartRanges = tripRangesOf(model.activeRangeDirections);
+  const fillsPeriod = periodRange != null && rowChartRanges.map(([start, end]) => formatPeriodRangeLong(start, end)).join(', ') === periodRange;
+  const refDirections = fillsPeriod ? refStopHourDirections(model.activeRangeDirections) : null;
+  const chartRanges = refDirections ? tripRangesOf(refDirections) : rowChartRanges;
   const periodRanges = chartRanges.length > 0 ? chartRanges : allDirectionRanges;
   // #1277: a route the filter says doesn't run (no rows) can still have trips inside the period: TTC 110 Sunday AM, first
   // trip 7:52: its directions carry AM values, but the route reads as not running. It has trips there, so it never reads "no scheduled trips".
@@ -116,7 +123,8 @@ export function routeCardNotices(input: RouteCardNoticeInput): RouteCardNotices 
       // direction's own "No trips from 3–7 PM" says why the route misses the filter.
       // N13 (Ryan): name what the rest of the period has, from the card's own hourly data. CIV-1069: the notice names
       // the rows' own value (the slowest row), not the route's filter value; CIV-975's rule still checks it against every row.
-      const split = partPeriodOutside(model.activeRangeDirections, selectedPeriod.startHour, selectedPeriod.endHour);
+      // #1343: the reference stop's hours carry no hourly headways to split the period by; the notice names them alone.
+      const split = refDirections ? null : partPeriodOutside(model.activeRangeDirections, selectedPeriod.startHour, selectedPeriod.endHour);
       const rowHeadways = model.rowHeadways;
       filter = {
         code: 'N13',
