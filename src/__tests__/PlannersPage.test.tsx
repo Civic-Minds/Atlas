@@ -17,6 +17,17 @@ describe('For transit planners page (CIV-1320)', () => {
     ]) expect(screen.getByRole('heading', { level: 2, name })).toBeInTheDocument();
   });
 
+  it('shows the map pictures from its own folder, each in a light and a dark version except the export', () => {
+    const { container } = render(<PlannersPage />);
+    const srcs = [...container.querySelectorAll('img')].map(img => img.getAttribute('src'));
+    for (const name of ['hero', 'tiers-all', 'tiers-10', 'compare', 'chicago', 'routecard', 'bayarea']) {
+      expect(srcs).toContain(`/assets/planners/${name}-light.webp`);
+      expect(srcs).toContain(`/assets/planners/${name}-dark.webp`);
+    }
+    expect(srcs).toContain('/assets/planners/export.webp');
+    for (const img of container.querySelectorAll('img')) expect(img).toHaveAttribute('alt', '');
+  });
+
   it('opens the map from the top and the bottom, and gives the contact email', () => {
     render(<PlannersPage />);
     const open = screen.getAllByRole('link', { name: 'Open the map' });
