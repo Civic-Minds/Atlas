@@ -1,3 +1,4 @@
+import { stopCardSiblings } from '../../utils/stopStation';
 import { searchAreas, type AreaSearchResult } from '../../../shared/areaSearch';
 import React, { useMemo, useRef, useEffect, useCallback, useState } from 'react';
 import { useColorMode } from '../../hooks/useColorMode';
@@ -466,11 +467,22 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       routesByAgency = hub.routesByAgency;
     }
 
-    // CIV-1052: each route's periods at the stop and its siblings, so the card can tell a route with no trips here in the period (left off, CIV-1310) from one with trips but no number (#1278).
+    // CIV-1305: the card lists only what stops at the clicked stop or elsewhere in its station; the hub's other stops of
+    // the same agency (the stop across the road) stay in the hub for the map and Nearby. Other agencies keep the hub's
+    // grouping (GO and UP at TTC Union), since station ids don't cross feeds.
+    const ownSiblings = allFeatures
+      .filter(f => f.geometry.type === 'Point' && (f.properties as any).agencySlug === slug && siblingIdsByAgency[slug]?.has((f.properties as any).stopId))
+      .map(f => f.properties as any);
+    const toStation = (p: any) => ({ stopId: p.stopId, stopName: p.stopName, parentStation: p.parentStation, parentStationName: p.parentStationName, routeIds: Array.isArray(p.routeIds) ? p.routeIds : [] });
+    const { siblingIdsByAgency: cardSiblingIdsByAgency, routesByAgency: cardRoutesByAgency } = stopCardSiblings(
+      slug, toStation(props), ownSiblings.map(toStation), siblingIdsByAgency, routesByAgency,
+    );
+
+    // CIV-1052: each route's periods at the stop and its station, so the card can tell a route with no trips here in the period (left off, CIV-1310) from one with trips but no number (#1278).
     const routePeriodBitsByAgency: Record<string, Map<string, Array<number | undefined>>> = {};
     for (const f of allFeatures) {
       const p = f.properties as any;
-      if (f.geometry.type !== 'Point' || !p?.stopId || !p.agencySlug || !siblingIdsByAgency[p.agencySlug]?.has(p.stopId)) continue;
+      if (f.geometry.type !== 'Point' || !p?.stopId || !p.agencySlug || !cardSiblingIdsByAgency[p.agencySlug]?.has(p.stopId)) continue;
       const rids: string[] = Array.isArray(p.routeIds) ? p.routeIds : [];
       const bits: unknown[] | undefined = Array.isArray(p.routePeriodBits) ? p.routePeriodBits : undefined;
       const byRoute = routePeriodBitsByAgency[p.agencySlug] ??= new Map();
@@ -485,6 +497,8 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       ...props,
       siblingIdsByAgency,
       routesByAgency,
+      cardSiblingIdsByAgency,
+      cardRoutesByAgency,
       routePeriodBitsByAgency,
       lat: clickLat,
       lon: clickLon,
@@ -494,8 +508,8 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   // The stop card's routes and destination rows, built in one tested place (utils/stopRoutes.ts, CIV-997).
   const stopRoutes = useMemo(() => (currentStop
     ? buildStopRoutes({
-      siblingIdsByAgency: currentStop.siblingIdsByAgency || {},
-      routesByAgency: currentStop.routesByAgency || {},
+      siblingIdsByAgency: currentStop.cardSiblingIdsByAgency || {},
+      routesByAgency: currentStop.cardRoutesByAgency || {},
       routePeriodBitsByAgency: currentStop.routePeriodBitsByAgency,
       layers: nonCorridorLayers,
       day: currentDay,
