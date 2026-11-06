@@ -450,3 +450,52 @@ describe('candidateIsOlderThanActive: a placeholder stamp sets no floor (CIV-135
     expect(candidateIsOlderThanActive({ candidateExpiry: '20261205' })).toBe(false);
   });
 });
+
+describe('candidateIsOlderThanActive: a later period start is a newer feed, whatever its end (#1359)', () => {
+  // A period starts on feed_info's start date, else the earliest calendar start.
+  it('tulsa: the September feed (20260910-20261205) is not older than the April feed to 20261231', () => {
+    // No stored start yet (every record today): the period began after the live feed was obtained on 2026-08-10.
+    expect(candidateIsOlderThanActive({ candidateExpiry: '20261205', candidateStart: '20260910', existingExpiry: '20261231', existingPeekedExpiry: null, recordedAt: '2026-08-10' })).toBe(false);
+    // With the live feed's start recorded (lastFeedStart 20260421), the same verdict by the stored start.
+    expect(candidateIsOlderThanActive({ candidateExpiry: '20261205', candidateStart: '20260910', existingExpiry: '20261231', existingStart: '20260421', recordedAt: '2026-08-10' })).toBe(false);
+    // The obtained date is the more precise record date when the agency has it.
+    expect(candidateIsOlderThanActive({ candidateExpiry: '20261206', candidateStart: '20261105', existingExpiry: '20271231', existingPeekedExpiry: '20271231', existingObtainedAt: '20261102', recordedAt: '2026-11-02' })).toBe(false);
+  });
+
+  it('qline: an earlier edition with the same start (version 22 against 29) stays refused by its end', () => {
+    expect(candidateIsOlderThanActive({ candidateExpiry: '20261223', candidateStart: '20250911', existingExpiry: '20270523', existingStart: '20250911', recordedAt: '2026-10-12' })).toBe(true);
+    expect(candidateIsOlderThanActive({ candidateExpiry: '20261223', candidateStart: '20250911', existingExpiry: '20270523', existingPeekedExpiry: '20270523', recordedAt: '2026-10-12' })).toBe(true);
+  });
+
+  it('marintransit: a transient older download (earlier start and end) stays refused', () => {
+    expect(candidateIsOlderThanActive({ candidateExpiry: '20260912', candidateStart: '20260613', existingExpiry: '20270110', existingStart: '20260913', recordedAt: '2026-11-02' })).toBe(true);
+    expect(candidateIsOlderThanActive({ candidateExpiry: '20260912', candidateStart: '20260613', existingExpiry: '20270110', existingPeekedExpiry: '20270110', existingObtainedAt: '20261020', recordedAt: '2026-11-02' })).toBe(true);
+  });
+
+  it('greeley: a newer feed starting before the record date is still refused until the live start is stored', () => {
+    const greeley = { candidateExpiry: '20270113', candidateStart: '20260820', existingExpiry: '20270228', existingPeekedExpiry: '20270228', recordedAt: '2026-08-27' };
+    expect(candidateIsOlderThanActive(greeley)).toBe(true);
+    expect(candidateIsOlderThanActive({ ...greeley, existingStart: '20260813' })).toBe(false);
+  });
+
+  it('an undated candidate, and one without a start, are judged as before', () => {
+    expect(candidateIsOlderThanActive({ candidateExpiry: null, candidateStart: '20261105', existingExpiry: '20261231', existingStart: '20260421', recordedAt: '2026-08-10' })).toBe(true);
+    expect(candidateIsOlderThanActive({ candidateExpiry: '20261205', candidateStart: null, existingExpiry: '20261231', existingStart: '20260421', recordedAt: '2026-08-10' })).toBe(true);
+    expect(candidateIsOlderThanActive({ candidateExpiry: '20270601', candidateStart: '20270101', existingExpiry: '20261231', existingStart: '20260421', recordedAt: '2026-08-10' })).toBe(false);
+  });
+
+  it('the refresh and a reprocess record the live feed\'s period start', () => {
+    const agency: Record<string, unknown> = {};
+    stampFeedMeta(agency, { feedExpiry: '20261205', feedVersion: '20260910', peekedExpiry: '20261205', peekedVersion: '20260910', todayYmd: '20261106', feedStart: '20260910' });
+    expect(agency.lastFeedStart).toBe('20260910');
+    const reprocessed: Record<string, unknown> = { lastFeedExpiry: '20261231', lastPeekedExpiry: '20261231', lastFeedStart: '20260421' };
+    expect(stampReprocessedFeedExpiry(reprocessed, { feedExpiry: '20261205', calendarExpiry: '20261205', todayYmd: '20261106', feedStart: '20260910' })).toBe(true);
+    expect(reprocessed.lastFeedStart).toBe('20260910');
+    // The same feed again: nothing changes, nothing is rewritten.
+    expect(stampReprocessedFeedExpiry(reprocessed, { feedExpiry: '20261205', calendarExpiry: '20261205', todayYmd: '20261106', feedStart: '20260910' })).toBe(false);
+    // A start alone counts as a change, so a record without one gains it on the next rebuild.
+    const noStart: Record<string, unknown> = { lastFeedExpiry: '20261205', lastPeekedExpiry: '20261205' };
+    expect(stampReprocessedFeedExpiry(noStart, { feedExpiry: '20261205', calendarExpiry: '20261205', todayYmd: '20261106', feedStart: '20260910' })).toBe(true);
+    expect(noStart.lastFeedStart).toBe('20260910');
+  });
+});
