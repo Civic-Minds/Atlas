@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { calculateReport, pointInGeometry, populationAreas, qualifies, qualifyingRoutes } from '../src/coverage.mjs';
+import { calculateReport, json, ATLAS_FETCH_HEADERS, pointInGeometry, populationAreas, qualifies, qualifyingRoutes } from '../src/coverage.mjs';
 import { bufferedBounds, deriveServiceBundles, mergeCoverageReports } from '../src/bundles.mjs';
 
 const square = (w, s, e, n) => ({ type: 'Polygon', coordinates: [[[w, s], [e, s], [e, n], [w, n], [w, s]]] });
@@ -66,4 +66,21 @@ test('the frequency rule is a parameter: the study rule needs the sustained flag
   assert.equal(qualifies(unsustained, 15, 'study'), false);
   assert.equal(qualifies(unsustained, 15, 'no-sustained'), true);
   assert.equal(qualifies({ ...unsustained, headwayByPeriod: { amPeak: 20, midday: 12, pmPeak: 15 } }, 15, 'no-sustained'), false);
+});
+
+test('Atlas files are read with a named User-Agent, retried, and a refusal says who refused it (#1367)', async () => {
+  const realFetch = globalThis.fetch;
+  const calls = [];
+  const reply = (status, body, headers = {}) => new Response(body, { status, headers });
+  try {
+    let n = 0;
+    globalThis.fetch = async (url, init) => { calls.push(init?.headers); return n++ === 0 ? reply(403, 'blocked') : reply(200, '{"stops":[]}'); };
+    assert.deepEqual(await json('https://data.example/atlas/x-stops-meta.json', { delayMs: 0 }), { stops: [] });
+    assert.equal(calls.length, 2);
+    assert.equal(calls[0]['User-Agent'], ATLAS_FETCH_HEADERS['User-Agent']);
+    globalThis.fetch = async () => reply(403, '<html>Attention Required</html>', { server: 'cloudflare', 'cf-mitigated': 'challenge' });
+    await assert.rejects(json('https://data.example/atlas/x.json', { delayMs: 0 }), /403 https:\/\/data\.example\/atlas\/x\.json \(cloudflare cf-mitigated=challenge\): <html>Attention Required/);
+  } finally {
+    globalThis.fetch = realFetch;
+  }
 });
