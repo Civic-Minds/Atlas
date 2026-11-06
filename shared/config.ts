@@ -156,6 +156,8 @@ export const ROUTE_VARIANTS_ENABLED = BETA_BUILD;
 export const RUNNING_TIMES_ENABLED = BETA_BUILD;
 // The expand control on the route card's frequency chart.
 export const SPARKLINE_EXPAND_ENABLED = BETA_BUILD;
+// The footer link to the "For transit planners" page (CIV-1320).
+export const PLANNERS_LINK_ENABLED = BETA_BUILD;
 // "Source" link to the agency's own website on the agency card (CIV-467; renamed in CIV-841).
 // Off everywhere (CIV-940): it links to the agency's website, not its data feed.
 export const DATA_SOURCE_LINK_ENABLED = false;
@@ -207,6 +209,7 @@ export const FEATURES = {
   routeVariants: ROUTE_VARIANTS_ENABLED,
   runningTimes: RUNNING_TIMES_ENABLED,
   sparklineExpand: SPARKLINE_EXPAND_ENABLED,
+  plannersLink: PLANNERS_LINK_ENABLED,
   dataSourceLink: DATA_SOURCE_LINK_ENABLED,
   connectionsBar: CONNECTIONS_BAR_ENABLED,
   agencyHoursBar: AGENCY_HOURS_BAR_ENABLED,

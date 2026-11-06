@@ -28,6 +28,9 @@ export const PAGE_NAMES = {
   /** CIV-1630 (Ryan, option 1): the public footer's link to the beta site, first in the legal row. */
   betaLink: 'Beta',
   serviceHistory: 'Service History',
+  /** CIV-1320: the page for planners, and its footer link (Ryan: "For Planners" to keep it shorter). */
+  planners: 'For Transit Planners',
+  plannersLink: 'For Planners',
 } as const;
 
 /** Browser tab titles stay within this many characters (search results cut the rest). */
