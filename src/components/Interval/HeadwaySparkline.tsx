@@ -436,7 +436,7 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
                     return (
                       <div className="relative pl-11" data-testid="full-day-frequency-cell">
                         {titleRow(FREQUENCY_LABEL, hw != null ? headwayEvery(hw) : '', 'full-day-frequency-heading')}
-                        {pairFreqTicks.length > 0 && <div className={`-ml-11 mb-2 ${UNIT_LINE}`} data-testid="full-day-frequency-unit">{TRIPS_PER_HOUR_LABEL}</div>}
+                        {pairFreqTicks.length > 0 && <div className={`mb-2 ${UNIT_LINE}`} data-testid="full-day-frequency-unit">{TRIPS_PER_HOUR_LABEL}</div>}
                         <HeadwaySparkline
                           byHour={option.byHour}
                           period="all"
