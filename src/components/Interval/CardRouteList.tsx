@@ -7,6 +7,8 @@ export interface CardRouteListRow {
   route: Pick<ReturnType<typeof routeLabels>, 'primary' | 'secondary'>;
   headway?: number;
   headwayLabel?: string;
+  /** A fixed dot colour for the headway (the Night list's night shades, CIV-1329). */
+  dotColor?: string;
   limited?: boolean;
   limitedLabel?: string;
   subLabel?: string;
@@ -35,6 +37,7 @@ export default function CardRouteList({ rows, onSelect, dimmed = false }: {
             label={row.route.secondary ? `${row.route.primary} ${row.route.secondary}` : row.route.primary}
             routeName={{ shortName: row.route.primary, name: row.route.secondary }}
             headway={row.headway}
+            dotColor={row.dotColor}
             headwayLabel={row.headwayLabel}
             limited={row.limited}
             limitedLabel={row.limitedLabel}

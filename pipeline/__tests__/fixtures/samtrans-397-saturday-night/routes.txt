@@ -1,0 +1,6 @@
+route_id,agency_id,route_short_name,route_long_name,route_desc,route_type,route_url
+292-229,samtrans-ca-us,292,San Francisco - SFO - Hillsdale Mall,,3,
+296O-229,samtrans-ca-us,296O,Redwood City TC- Palo Alto TC,,3,
+397-229,samtrans-ca-us,397,San Francisco - Palo Alto Transit Ctr,,3,
+ECR-229,samtrans-ca-us,ECR,Daly City BART - Palo Alto Transit Ctr,,3,
+ECRO-229,samtrans-ca-us,ECRO,Daly City - SFO,,3,

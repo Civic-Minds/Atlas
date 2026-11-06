@@ -1,0 +1,6 @@
+route_id,agency_id,route_short_name,route_long_name,route_desc,route_type,route_url,route_color,route_text_color
+6834,TL,N19,Kingsway,,3,https://translink.ca/schedules-and-maps/route/N19/direction/0/schedule?utm_source=referral&utm_medium=google+maps&utm_campaign=gtfs&utm_content=schedules_route&utm_term=N19,,
+6835,TL,N20,Victoria,,3,https://translink.ca/schedules-and-maps/route/N20/direction/0/schedule?utm_source=referral&utm_medium=google+maps&utm_campaign=gtfs&utm_content=schedules_route&utm_term=N20,,
+6837,TL,N24,Downtown/Lynn Valley,,3,https://translink.ca/schedules-and-maps/route/N24/direction/0/schedule?utm_source=referral&utm_medium=google+maps&utm_campaign=gtfs&utm_content=schedules_route&utm_term=N24,,
+6838,TL,N35,Hastings St,,3,https://translink.ca/schedules-and-maps/route/N35/direction/0/schedule?utm_source=referral&utm_medium=google+maps&utm_campaign=gtfs&utm_content=schedules_route&utm_term=N35,,
+6840,TL,N8,Fraser,,3,https://translink.ca/schedules-and-maps/route/N8/direction/0/schedule?utm_source=referral&utm_medium=google+maps&utm_campaign=gtfs&utm_content=schedules_route&utm_term=N8,,

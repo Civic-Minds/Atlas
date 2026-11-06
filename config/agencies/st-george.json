@@ -7,7 +7,8 @@
     37.1,
     -113.58
   ],
-  "feedUrl": "https://files.mobilitydatabase.org/mdb-111/latest.zip",
+  "feedUrl": "https://apps.sgcityutah.gov/GTFS_2025-10-13.zip",
+  "preprocess": "st-george-labels",
   "lastFeedExpiry": "20310130",
   "lastFeedVersion": null,
   "lastRefreshedAt": "2026-08-10",
@@ -22,12 +23,12 @@
   "cities": [
     "Saint George, Utah"
   ],
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261106",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20310130",
+  "expiredFeedCheckExpiry": "20271231",
   "timezone": "America/Denver",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-111/latest.zip",
+  "lastFeedSourceUrl": "https://apps.sgcityutah.gov/GTFS_2025-10-13.zip",
   "refusedFeedSha256": "570540a0b13667a02338358e19908e80f887308526b6952ffb05c167ec5a283f"
 }

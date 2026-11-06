@@ -16,7 +16,7 @@ import { calendarFromNextServiceDates } from './serviceDates.js';
 import { readWeekOf } from './readWeek.js';
 import { dropOneOffRailTrips } from './oneOffServices.js';
 import { prefixGtfsIds } from './supplementalIds.js';
-import { mergeDirectionSplitRoutes } from './directionSplitRoutes.js';
+import { directionSplitsOf, mergeDirectionSplitRoutes, type DirectionSplit } from './directionSplitRoutes.js';
 import { bookingRequiredRouteIds } from './bookedRoutes.js';
 import { DEFAULT_CRITERIA, getTiersForCriteria } from './defaults.js';
 import { normalizeGtfs, type GtfsPreprocess, type GtfsTransformOptions } from './preprocess/run.js';
@@ -31,7 +31,7 @@ import { DAY_TYPES, WEEKDAYS, type DayName, type DayType } from '../types/gtfs.j
 import { ALL_DAYS } from '../shared/dayTypes.js';
 import { buildStopRoutePeriodBits } from './stopRoutePeriods.js';
 import { expandFrequencyWindow, expandTripFrequencyWindows, isSingleTripFrequencyWindow, parseFrequencyWindow, SINGLE_TRIP_WINDOW_MAX_DEPARTURES, SINGLE_TRIP_WINDOW_SPAN_TOLERANCE_MIN, t2m, type FrequencyWindow } from './transit-utils.js';
-import { adaptiveMedianHeadwayInWindow, computeHourMaxGaps, computeHourDepartureCounts, computePeriodHeadways, computePeriodHeadwayRanges, computePeriodMaxGaps, computePeriodSustained, computeResearchFrequentService, forCrossMidnightWindow, HEADLINE_MIN_DEPARTURES, HEADLINE_WINDOWS, headlineWindowValue, hasSustainedNightService, headsignOverlapMinHeadway, headwayToTier, headwayToTierOn, isSparseOvernightWindow, isThinAllDayTerminalSample, isUnevenTwoGapMiddayTerminalSample, medianHeadwayInWindow, MIN_ALL_DAY_TERMINAL_DEPARTURES, nightServiceDepartureTimes, NIGHT_SERVICE_WINDOW_END_MIN, periodHeadwayInWindow, RAIL_TIER_WINDOW, resolveTerminalHeadline, sparseOvernightHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
+import { adaptiveMedianHeadwayInWindow, computeHourMaxGaps, computeHourDepartureCounts, hasDepartureInClockHour, computePeriodHeadways, computePeriodHeadwayRanges, computePeriodMaxGaps, computePeriodSustained, computeResearchFrequentService, forCrossMidnightWindow, HEADLINE_MIN_DEPARTURES, HEADLINE_WINDOWS, headlineWindowValue, headsignOverlapMinHeadway, headwayToTier, headwayToTierOn, isSparseOvernightWindow, isThinAllDayTerminalSample, isUnevenTwoGapMiddayTerminalSample, medianHeadwayInWindow, MIN_ALL_DAY_TERMINAL_DEPARTURES, nightServiceDepartureTimes, NIGHT_SERVICE_WINDOW_END_MIN, periodHeadwayInWindow, RAIL_TIER_WINDOW, resolveTerminalHeadline, sparseOvernightHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
 import { computeRouteBaseFares, detectBusSubType } from './route-metadata.js';
 import { buildStopsMeta } from './stopsMeta.js';
 import { haversineDistance } from './utils.js';
@@ -51,19 +51,36 @@ import { isNightRouteDirection, nextServiceDay, nightStartsBeforeWindow, overnig
 import { makeShapeCoverChecker } from './shapeCoverage.js';
 import { annotateSharedStretches, contiguousSharedRuns, isPoolablePattern } from './sharedStretch.js';
 import { boardsAt, isThinPool } from './stopEligibility.js';
+import { platformsAsStation, remapWith } from './platformAsStation.js';
 import { noOwnServicePeriods } from './noOwnService.js';
 import { laterServiceByRoute } from './seasonalPause.js';
 import { nearDuplicateTripIds } from './nearDuplicateTrips.js';
 import { decideDedupe, runsInDay, type DedupePattern } from './featureDedupe.js';
 import { decideHeadline, decidePeriod, liftTierOnDestinationPool, OVERSTATED_HEADLINE_MARGIN, ownStepOneHeadway, pooledStepOneHeadway, settleTier, terminalReading, type PeriodValue } from './routeGrading.js';
 import type { SharedStretchPattern } from './sharedStretch.js';
-import { directionStretches, gatedRiderWait, nightOnlyTrips, periodSustainedMid, rollupDirection, runsAcrossNightMidpoint, stampStretchShadow, type DirectionStretches, type TripVisit } from './tripSets.js';
+import { directionStretches, gatedRiderWait, nightOnlyTrips, nightServicePasses, periodSustainedMid, NIGHT_HANDOVER_MAX_WAIT_MIN, NIGHT_ONLY_MAX_DAY_DEPARTURES, NIGHT_ONLY_DAY_START_MIN, NIGHT_ONLY_DAY_END_MIN, NIGHT_HANDOVER_RADIUS_M, type NightHandover, rollupDirection, runsAcrossNightMidpoint, stampStretchShadow, type DirectionStretches, type TripVisit } from './tripSets.js';
 import { buildPooledStopMap, computeStopSharers, pooledHeadwayInWindow, type StopSharers } from './stopPools.js';
 
 export type { GtfsPreprocess };
 export type { HeadwayByPeriod };
 export type HeadwayByHour = Partial<Record<number, number | null>>;
 export type { GeoJsonFeature, StopEntry };
+
+/**
+ * CIV-1305: a stop point's parent station, exactly as stops.txt gives it: parentStation (the
+ * parent_station id) and parentStationName (that parent's stop_name, left out when the parent is not in
+ * stops.txt). Nothing for a stop with no parent_station, or for a parent itself (location_type 1).
+ * The client decides which parents are stations; no rule here.
+ */
+export function parentStationProps(
+  stop: { parent_station?: string | null; location_type?: string | null },
+  stopNameById: ReadonlyMap<string, string | undefined>,
+): { parentStation?: string; parentStationName?: string } {
+  const parent = stop.parent_station;
+  if (!parent || stop.location_type === '1') return {};
+  const name = stopNameById.get(parent);
+  return name ? { parentStation: parent, parentStationName: name } : { parentStation: parent };
+}
 
 /**
  * NRT publishes scheduled evening/night route variants separately from its daytime routes.
@@ -456,22 +473,48 @@ export function scopedTerminalHeadline(
 
 export { selectPeriodCoverageHeadway } from './routeGrading.js';
 
-/** Evaluate route-level Night Service from either end of a shape. */
+/**
+ * CIV-1331 review: rows without stretch data are graded one by one (hasNightServiceAtShapeEndpoints); a route runs
+ * through the night only when every direction does (the settled rule: never one direction alone). A row keeps a
+ * night grade only when every direction of its route that day has a row passing it. Runs before any surface reads the
+ * row flags (the map overlay, the Night Service index and list, nightRoutesInView); stretch rows are graded again
+ * later from the route's own every-direction verdict.
+ */
+export function combineRowNightDirections(rows: ReadonlyArray<{ routeDay: string; dirId: number | string; props: Record<string, unknown> }>): void {
+  const grades = ['30', '60', '90'] as const;
+  const byRouteDay = new Map<string, Map<number | string, Record<'30' | '60' | '90', boolean>>>();
+  for (const { routeDay, dirId, props } of rows) {
+    let dirs = byRouteDay.get(routeDay);
+    if (!dirs) { dirs = new Map(); byRouteDay.set(routeDay, dirs); }
+    const prev = dirs.get(dirId) ?? { '30': false, '60': false, '90': false };
+    dirs.set(dirId, Object.fromEntries(grades.map(g => [g, prev[g] || props[`nightService${g}`] === true])) as Record<'30' | '60' | '90', boolean>);
+  }
+  for (const { routeDay, props } of rows) {
+    const dirs = [...byRouteDay.get(routeDay)!.values()];
+    for (const g of grades) if (props[`nightService${g}`] === true && !dirs.every(d => d[g])) props[`nightService${g}`] = false;
+    props.nightService = props.nightService60;
+  }
+}
+
+/**
+ * Evaluate route-level Night Service from either end of a shape, for rows without stretch data. CIV-1331: it reads
+ * the stretches' own decider (tripSets nightServicePasses), so both paths apply the same rules: 2-5 AM, gaps at most
+ * the grade (30, 60, or 90 for the Night Service page only), an hour's edge for day service, and the night-only start exemption.
+ */
 export function hasNightServiceAtShapeEndpoints(
   endpointStopIds: readonly (string | undefined)[],
   routeDepartures: ReadonlyMap<string, number[]>,
   overnightOnlyDepartures: ReadonlyMap<string, number[]> = new Map(),
   maxGapMinutes: number = 60,
+  /** CIV-1332: the handover check at a stop (tripSets NightHandover); without it a night-only route's end wait counts. */
+  handoverAt?: (stopId: string) => NightHandover | undefined,
+  /** CIV-1331: the stop's departures on the service day(s) before (tripSets nightServicePasses previousDays). */
+  previousAt?: (stopId: string) => ReadonlyArray<readonly number[]>,
 ): boolean {
   return [...new Set(endpointStopIds.filter((id): id is string => id != null))].some(stopId => {
     const departures = routeDepartures.get(stopId);
     if (!departures) return false;
-    return hasSustainedNightService(
-      nightServiceDepartureTimes(departures, overnightOnlyDepartures.get(stopId) ?? []),
-      undefined,
-      undefined,
-      maxGapMinutes,
-    );
+    return nightServicePasses(departures, nightServiceDepartureTimes(departures, overnightOnlyDepartures.get(stopId) ?? []), maxGapMinutes, handoverAt?.(stopId), previousAt?.(stopId)) === true;
   });
 }
 
@@ -555,10 +598,19 @@ export interface ProcessResult {
    * (findListingEnd); the map then reads the last full listed week. null otherwise, or on the old picker.
    */
   listingEnd: string | null;
+  /**
+   * CIV-1101 Part B: the reference date this run read (the picked week's, or the old picker's), so
+   * History's sidecar records the same week the map was built from instead of picking again.
+   */
+  referenceDate: string;
+  /** Monday of the week the new picker read; null on the old picker. */
+  serviceWeekStart: string | null;
   feedVersion: string | null;  // feed_version from feed_info.txt, or null if absent
   livePollingSidecar?: Record<string, any>;
   shapeAnomalies?: import('../types/gtfs.js').ShapeAnomaly[];
   feedQuality: FeedQuality;
+  /** CIV-1275: lines the feed published as one route per direction, merged here (#1285); History reads their old keys from the artifact. */
+  directionSplits?: DirectionSplit[];
 }
 
 /**
@@ -1046,6 +1098,8 @@ export async function processGtfsBuffer(
   }
   // stopDepsByGroup["routeId::dirId::dayType"] → stopId → sorted departure minutes
   const stopDepsByGroup = new Map<string, Map<string, number[]>>();
+  // CIV-226: the service patterns (shape ids) of each row's trips at each stop, by group and headsign key.
+  const stopPatternsByKey = new Map<string, Map<string, Set<string>>>();
   // Headsign-scoped deps for display trunk headways (RGRTA 21/22: combined trunk deps
   // from competing branches produced misleading "every 13–30 min" ranges).
   const stopDepsByHeadsignGroup = new Map<string, Map<string, number[]>>();
@@ -1577,6 +1631,16 @@ export async function processGtfsBuffer(
           const shKey = grp.shapeId ? `${grp.shapeId}::${grp.dayType}` : null;
           const smKey = sharedMemberKey(grp);
           const rushKey = rushMemberKey(grp);
+          const recordPattern = (key: string | null) => {
+            if (!key) return;
+            let byStop = stopPatternsByKey.get(key);
+            if (!byStop) { byStop = new Map(); stopPatternsByKey.set(key, byStop); }
+            let set = byStop.get(st.stop_id);
+            if (!set) { set = new Set(); byStop.set(st.stop_id, set); }
+            set.add(trip.shape_id ?? '');
+          };
+          if (grp.inGroup) recordPattern(gKey);
+          if (grp.inHeadsign) recordPattern(hsKey);
           const pushTwin = (twin: Map<string, number[]>, stopId: string, mins: number) => {
             let arr = twin.get(stopId);
             if (!arr) { arr = []; twin.set(stopId, arr); }
@@ -1948,6 +2012,9 @@ export async function processGtfsBuffer(
     firstDepartureByTripId,
     lastDepartureByTripId,
   });
+  // CIV-1305: each stop's GTFS parent_station and that parent's name, so stop cards can keep a
+  // station's platforms together. Left out for a stop with no parent and for a parent itself.
+  const stopNameByIdForParents = new Map((gtfs.stops ?? []).map(s => [s.stop_id, s.stop_name]));
   for (const stop of gtfs.stops ?? []) {
     // Include child stops referenced in stop_times, AND parent stations whose children
     // gave them routes via the propagation above (AI-117).
@@ -1984,6 +2051,7 @@ export async function processGtfsBuffer(
         isHub,
         isRail,
         direction: stopDirections.get(stop.stop_id) ?? null,
+        ...parentStationProps(stop, stopNameByIdForParents),
       },
     } as any);
   }
@@ -2156,12 +2224,130 @@ export async function processGtfsBuffer(
     return { wait, hasReading };
   };
 
+  // CIV-1332 (Ryan, 2026-11-03): a night-only route that ends around 4 AM still runs through the night "if daytime
+  // buses start within 90 minutes of their last trip. Riders are covered all night, just by a different route after
+  // 4 AM." nightHandoverAt(day, stop, route) answers that for one stop: the departures of other daytime routes at the
+  // stop or within NIGHT_HANDOVER_RADIUS_M of it, any in (last, last + NIGHT_HANDOVER_MAX_WAIT_MIN]. tripSets
+  // nightServicePasses asks it only for a night-only stretch.
+  // CIV-1331 review: the morning after a night is the next calendar day's service, so the night of `day` reads that
+  // day's own after-midnight trips (24:00 and later) and the next day's trips moved forward 24 hours: Saturday night
+  // hands over to Sunday morning, Sunday night to Monday (Weekday), and a Weekday night to both the Weekday morning
+  // (Monday to Thursday nights) and the Saturday morning (Friday night), whichever starts later deciding. Only daytime
+  // routes count (routeIsDaytime): another night route's bus is not the daytime service taking over.
+  // Friday night (CIV-1331 review): the Weekday row stands for Monday to Friday nights, and Friday's morning after is
+  // Saturday's service, so a Weekday night must be taken over on both the Weekday and the Saturday morning (the
+  // stricter of the two: the later start decides).
+  const DAYTIME_TAKEOVER_START_MIN = 5 * 60;
+  const DAYTIME_TAKEOVER_END_MIN = 7 * 60 + 30;
+  const NEXT_SERVICE_DAYS: Record<string, readonly string[]> = { Weekday: ['Weekday', 'Saturday'], Saturday: ['Sunday'], Sunday: ['Weekday'] };
+  /**
+   * CIV-1331: a route takes over from a night route when, at some stop that day, it runs regular daytime service (more
+   * than NIGHT_ONLY_MAX_DAY_DEPARTURES departures 9 AM to 10 PM, nightOnlyStretch's hours) or its morning service starts
+   * there between 5:00 and 7:30 with no bus from 2:00 to 5:00 (early-morning and peak routes, which are the ones that take
+   * over; a night route's own tail after 5:00 has night buses before it and does not count).
+   */
+  const isDaytimeTakeover = (times: readonly number[]): boolean =>
+    times.filter(t => t >= NIGHT_ONLY_DAY_START_MIN && t < NIGHT_ONLY_DAY_END_MIN).length > NIGHT_ONLY_MAX_DAY_DEPARTURES
+    || (times.some(t => t >= DAYTIME_TAKEOVER_START_MIN && t < DAYTIME_TAKEOVER_END_MIN) && !times.some(t => t >= 2 * 60 && t < DAYTIME_TAKEOVER_START_MIN));
+  const routeIsDaytime = (() => {
+    const cache = new Map<string, boolean>();
+    return (route: string, day: string): boolean => {
+      const key = `${route}::${day}`;
+      let v = cache.get(key);
+      if (v === undefined) {
+        v = false;
+        for (const [gKey, stops] of stopDepsByGroup) {
+          if (!gKey.startsWith(`${route}::`) || gKey.slice(gKey.lastIndexOf('::') + 2) !== day) continue;
+          for (const times of stops.values()) if (isDaytimeTakeover(times)) { v = true; break; }
+          if (v) break;
+        }
+        cache.set(key, v);
+      }
+      return v;
+    };
+  })();
+  const handoverTimesByDay = new Map<string, Map<string, Map<string, number[]>>>();
+  /**
+   * night of `day` followed by the morning of `next` → stop → daytime route → its departures there after midnight, in
+   * GTFS minutes of `day`. `next` null: the night is written on the morning's own service day (plain 00:00-05:59
+   * times, moved 24 hours by #297), so the morning is `day`'s own and only its trips before 24:00 count.
+   */
+  const handoverTimes = (day: string, next: string | null): Map<string, Map<string, number[]>> => {
+    const cacheKey = `${day}>${next ?? 'same'}`;
+    let byStop = handoverTimesByDay.get(cacheKey);
+    if (byStop) return byStop;
+    byStop = new Map();
+    const add = (fromDay: string, pick: (t: number) => number | null) => {
+      for (const [key, stops] of stopDepsByGroup) {
+        if (key.slice(key.lastIndexOf('::') + 2) !== fromDay) continue;
+        const route = key.slice(0, key.indexOf('::'));
+        if (!routeIsDaytime(route, fromDay)) continue;
+        for (const [stopId, times] of stops) {
+          const picked = times.map(pick).filter((t): t is number => t != null);
+          if (picked.length === 0) continue;
+          let byRoute = byStop!.get(stopId);
+          if (!byRoute) { byRoute = new Map(); byStop!.set(stopId, byRoute); }
+          byRoute.set(route, [...(byRoute.get(route) ?? []), ...picked]);
+        }
+      }
+    };
+    if (next == null) add(day, t => (t < 24 * 60 ? t + 24 * 60 : null));
+    else {
+      add(day, t => (t >= 24 * 60 ? t : null));
+      add(next, t => (t < 24 * 60 ? t + 24 * 60 : null));
+    }
+    handoverTimesByDay.set(cacheKey, byStop);
+    return byStop;
+  };
+  // CIV-1331: the service day(s) before a morning, for a night written on the morning's own day: Monday's morning follows
+  // Sunday's evening and Tuesday to Friday's a Weekday's, so a Weekday morning reads both; Saturday's follows Friday's
+  // (Weekday), Sunday's Saturday's.
+  const PREVIOUS_SERVICE_DAYS: Record<string, readonly string[]> = { Weekday: ['Weekday', 'Sunday'], Saturday: ['Weekday'], Sunday: ['Saturday'] };
+  const previousDaysAt = (route: string, dirId: string | number, day: string, stopId: string): number[][] =>
+    (PREVIOUS_SERVICE_DAYS[day] ?? [day]).map(prev => stopDepsByGroup.get(`${route}::${dirId}::${prev}`)?.get(stopId) ?? []);
+  const handoverCache = new Map<string, NightHandover | undefined>();
+  /** `route`: the night route itself, left out, so its own bus a few stops on is never the handover. */
+  const nightHandoverAt = (day: string, stopId: string, route: string): NightHandover | undefined => {
+    const cacheKey = `${day}::${route}::${stopId}`;
+    if (handoverCache.has(cacheKey)) return handoverCache.get(cacheKey);
+    const here = stopsById.get(stopId);
+    let result: NightHandover | undefined;
+    if (here) {
+      // Gathered on first use only: the check runs just for a night-only stretch whose last bus is early.
+      // CIV-1331 final review: the morning after depends on how the night is written. Past 24:00 on the evening's
+      // service day: the next calendar day's service (Weekday nights: both the Weekday and the Saturday morning, the
+      // later start deciding, for Friday). Plain 00:00-05:59 on the morning's own service day: that day's own morning.
+      const lists = new Map<string, number[][]>();
+      const nearbyFor = (writtenOnMorningDay: boolean): number[][] => {
+        const key = writtenOnMorningDay ? 'morning' : 'evening';
+        let got = lists.get(key);
+        if (got) return got;
+        const nexts: (string | null)[] = writtenOnMorningDay ? [null] : [...(NEXT_SERVICE_DAYS[day] ?? [day])];
+        got = nexts.map(next => {
+          const found: number[] = [];
+          for (const [otherId, byRoute] of handoverTimes(day, next)) {
+            const there = otherId === stopId ? here : stopsById.get(otherId);
+            if (!there || (otherId !== stopId && haversineDistance(here.lat, here.lon, there.lat, there.lon) > NIGHT_HANDOVER_RADIUS_M)) continue;
+            for (const [other, times] of byRoute) if (other !== route) found.push(...times);
+          }
+          return found;
+        });
+        lists.set(key, got);
+        return got;
+      };
+      result = (last, writtenOnMorningDay) => nearbyFor(writtenOnMorningDay).every(list => list.some(t => t > last && t <= last + NIGHT_HANDOVER_MAX_WAIT_MIN));
+    }
+    handoverCache.set(cacheKey, result);
+    return result;
+  };
+
   const rowRunsAtNight = new Map<GeoJsonFeature, boolean>();
   const rowNightStops = new Map<GeoJsonFeature, string[]>();
   for (const [feature, { shortName, dirId, day }] of featureStopHeadwaySlots) {
     feature.properties.researchFrequentService = { daytime15: false, daytime30: false, extended15: false, extended30: false };
     feature.properties.nightService30 = false;
     feature.properties.nightService60 = false;
+    feature.properties.nightService90 = false;
     const gKey = `${shortName}::${dirId}::${day}`;
     // No value, so no cap, without stop data for the direction or when the feed gave the route no
     // direction_id: a synthesized "direction" can be an early and late variant of a one-way loop
@@ -2255,9 +2441,11 @@ export async function processGtfsBuffer(
     // shape-scoped map prevents unrelated branches from being combined; for rail, the
     // same-destination headsign pool preserves service that would otherwise disappear
     // when the daytime shape wins feature deduplication (e.g. TTC Lines 1 and 2 evening).
-    const metricStopMap = railFeature
+    const ownMetricStopMap = railFeature
       ? (headsignMap ?? shapeMap ?? stopMap)
       : (shapeMap ?? headsignMap ?? stopMap);
+    // CIV-226: remapped below (platformsAsStation) once the stop values say which platforms are drawn.
+    let metricStopMap: Map<string, number[]> = ownMetricStopMap;
     // #690: the stop values below read what serves each stop, not only the drawn pattern. At
     // every stop where another pattern of this route direction pools with the feature's own
     // (computeStopSharers: an aligned shared run, or a same-destination variant), the stop's
@@ -2269,15 +2457,16 @@ export async function processGtfsBuffer(
     const ownMember = readsSharedPool(feature)
       ? sharedPatternKey(feature.properties.routeId as string, featureHeadsign, featureShape)
       : null;
-    const ownIsPattern = railFeature ? (headsignMap != null && metricStopMap === headsignMap) : (shapeMap != null && metricStopMap === shapeMap);
-    const pooled = ownMember && ownIsPattern && stopDepsBySharedMember.has(`${poolKey}::${ownMember}`)
-      ? buildPooledStopMap(metricStopMap, stopSharersFor(poolKey).get(ownMember), key => stopDepsBySharedMember.get(`${poolKey}::${key}`), childToParent,
+    const ownIsPattern = railFeature ? (headsignMap != null && ownMetricStopMap === headsignMap) : (shapeMap != null && ownMetricStopMap === shapeMap);
+    const poolFor = (map: Map<string, number[]>) => ownMember && ownIsPattern && stopDepsBySharedMember.has(`${poolKey}::${ownMember}`)
+      ? buildPooledStopMap(map, stopSharersFor(poolKey).get(ownMember), key => stopDepsBySharedMember.get(`${poolKey}::${key}`), childToParent,
         stopDepsBySharedMember.get(`${poolKey}::${ownMember}`))
       : null;
-    const stopMetricMap: Map<string, number[]> = pooled?.map ?? metricStopMap;
+    let pooled = poolFor(metricStopMap);
+    let stopMetricMap: Map<string, number[]> = pooled?.map ?? metricStopMap;
     // Drop-off-only stops of the drawn shape (#879): own stop times all pickup_type 1. Only
     // when the feature reads its own shape map; a headsign or group fallback already pools.
-    const dropOffOnlyStops: ReadonlySet<string> = !railFeature && featureShape && shapeMap != null && metricStopMap === shapeMap
+    const dropOffOnlyStops: ReadonlySet<string> = !railFeature && featureShape && shapeMap != null && ownMetricStopMap === shapeMap
       ? new Set([...shapeMap.keys()].filter(stopId => !(boardableStopsByShape.get(`${featureShape}::${day}`)?.has(stopId))))
       : new Set();
     /** CIV-1011 #6: a drawn stop is graded, and settles the tier, only where a rider can board (boardsAt). */
@@ -2320,17 +2509,32 @@ export async function processGtfsBuffer(
       nightShapeStops[0]?.stopId,
       nightShapeStops.at(-1)?.stopId,
     ].filter((id): id is string => id != null))];
+    const handoverAt = (stopId: string) => nightHandoverAt(day, stopId, shortName);
+    const previousAt = (stopId: string) => previousDaysAt(shortName, dirId, day, stopId);
     feature.properties.nightService30 = hasNightServiceAtShapeEndpoints(
       nightEndpointStopIds,
       metricStopMap,
       stopDepsByGroupNight.get(gKey),
       30,
+      handoverAt,
+      previousAt,
     );
     feature.properties.nightService60 = hasNightServiceAtShapeEndpoints(
       nightEndpointStopIds,
       metricStopMap,
       stopDepsByGroupNight.get(gKey),
       60,
+      handoverAt,
+      previousAt,
+    );
+    // CIV-1329: the 90 tier from the same call as 30 and 60, never a separate count.
+    feature.properties.nightService90 = hasNightServiceAtShapeEndpoints(
+      nightEndpointStopIds,
+      metricStopMap,
+      stopDepsByGroupNight.get(gKey),
+      90,
+      handoverAt,
+      previousAt,
     );
     feature.properties.nightService = feature.properties.nightService60;
     // Frequency focus step 4: whether this row itself runs at night: more than half of its own
@@ -2483,9 +2687,32 @@ export async function processGtfsBuffer(
       }
       return { allStopHw, allStopHwPlain, allStopMiddayHwPlain, allStopPeriodHw, sparseOvernightStopHw, allStopPeriodCoverageHw, allStopPeriodMaxGaps, allStopPeriodSustained, allStopHourHw, ownFallbackHw, ownFallbackPeriodHw, thinPoolFallbackPeriodHw };
     };
-    const { allStopHw, allStopHwPlain, allStopMiddayHwPlain, allStopPeriodHw, sparseOvernightStopHw, allStopPeriodCoverageHw, allStopPeriodMaxGaps, allStopPeriodSustained, allStopHourHw, ownFallbackHw, ownFallbackPeriodHw, thinPoolFallbackPeriodHw } = computeStopValues(stopMetricMap, metricStopMap, pooled);
+    let { allStopHw, allStopHwPlain, allStopMiddayHwPlain, allStopPeriodHw, sparseOvernightStopHw, allStopPeriodCoverageHw, allStopPeriodMaxGaps, allStopPeriodSustained, allStopHourHw, ownFallbackHw, ownFallbackPeriodHw, thinPoolFallbackPeriodHw } = computeStopValues(stopMetricMap, metricStopMap, pooled);
+    // CIV-226: a drawn child platform whose station the row also lists reads the station's list (Sound
+    // Transit's alternating Link platforms held half the trips each, graded 60 and read every 20 on a line
+    // every 10), unless another pattern of the route stops at that station (platformsAsStation). Only a
+    // platform already drawn with a boardable value of its own: the drawn stop list never changes, and an
+    // arrival-only platform (MBTA 120's Maverick bay) keeps its missing value. The row's own reading (its
+    // stretches, tripSets) is untouched; the stop values, grades and floors below read the station.
+    const ownDepartureTwin = departuresOf.get(ownMetricStopMap);
+    const ownPatternKey = ownMetricStopMap === stopMap ? gKey
+      : (featureHeadsign && ownMetricStopMap === headsignMap ? `${shortName}::${dirId}::${day}::${featureHeadsign}` : null);
+    const platformStations = platformsAsStation(ownMetricStopMap, stopMap, childToParent,
+      stopId => allStopHw[stopId] != null && (ownDepartureTwin == null || (ownDepartureTwin.get(stopId)?.length ?? 0) > 0),
+      ownPatternKey ? stopId => stopPatternsByKey.get(ownPatternKey)?.get(stopId) : undefined);
+    if (platformStations.remapped.size > 0) {
+      metricStopMap = platformStations.map;
+      pooled = poolFor(metricStopMap);
+      stopMetricMap = pooled?.map ?? metricStopMap;
+      ({ allStopHw, allStopHwPlain, allStopMiddayHwPlain, allStopPeriodHw, sparseOvernightStopHw, allStopPeriodCoverageHw, allStopPeriodMaxGaps, allStopPeriodSustained, allStopHourHw, ownFallbackHw, ownFallbackPeriodHw, thinPoolFallbackPeriodHw } = computeStopValues(stopMetricMap, metricStopMap, pooled));
+    }
     // The departure twins of the same lists (CIV-1071), pooled with the same sharers.
-    const departureMetricMap = departuresOf.get(metricStopMap) ?? metricStopMap;
+    const departureMetricMap = ownDepartureTwin ? remapWith(ownDepartureTwin, platformStations.remapped) : metricStopMap;
+    // CIV-226: the row's own terminal reading (headline times, period fallbacks, hour chart) stays on the
+    // own map, except where the terminal itself is a remapped platform: there the station is what riders
+    // at the terminal get (the 2 Line toward Downtown Redmond alternates E31-T1 and E31-T2, every 10 together).
+    const terminalReadTimes = (stopId: string | undefined | null): number[] | undefined =>
+      stopId ? (platformStations.remapped.has(stopId) ? metricStopMap : ownMetricStopMap).get(stopId) : undefined;
     const departurePooled = pooled && ownMember
       ? buildPooledStopMap(departureMetricMap, stopSharersFor(poolKey).get(ownMember), key => stopDepsBySharedMember.get(`${poolKey}::${key}`), childToParent,
         stopDepsBySharedMember.get(`${poolKey}::${ownMember}`))
@@ -3002,7 +3229,7 @@ export async function processGtfsBuffer(
       const terminalId = onShape[onShape.length - 1]?.stopId;
       // The headline reads the own pattern at the terminal (allStopHw may hold a pooled value
       // there, #690) or the qualifying destination pool.
-      const ownTerminalTimes = (terminalId ? metricStopMap.get(terminalId) : undefined) ?? [];
+      const ownTerminalTimes = terminalReadTimes(terminalId) ?? [];
       const headlinePool = pooledHeadlineTimes(terminalId);
       const hwVals = onShape.map(({ stopId }) => ownStopHw[stopId]).filter((v): v is number => v != null).sort((a, b) => a - b);
       // Step 4.1 (routeGrading.ts): the terminal's value, from the pool or the own pattern.
@@ -3232,7 +3459,7 @@ export async function processGtfsBuffer(
     // Line 1 can lose post-midnight departures during phase 1/2 analysis.
     const terminalRawTimes = (headsignTerminalTimes && headsignTerminalTimes.length > 0)
       ? headsignTerminalTimes
-      : (terminalStopId ? metricStopMap.get(terminalStopId) : undefined);
+      : terminalReadTimes(terminalStopId);
     // Frequent Network (#294 follow-on): entirely within normal (non-extended-hour) GTFS notation,
     // so unlike Night Service this needs no service_id union across the midnight boundary --
     // terminalRawTimes alone is the right input. Weekday only, per docs/research/frequent-service-research-2026-09/CRITERIA.md.
@@ -3242,28 +3469,26 @@ export async function processGtfsBuffer(
     // #690: the period values read the same destination pool as the headline when it qualifies.
     const periodPoolTimes = pooledHeadlineTimes(terminalStopId);
     const periodsFromPool = periodPoolTimes != null;
-    const terminalScopedTimes = periodPoolTimes ?? (railFeature
+    const scopedTerminalList = periodPoolTimes ?? (railFeature
       ? (headsignTerminalTimes ?? (terminalStopId ? shapeMap?.get(terminalStopId) : undefined))
       : selectTerminalDepartureTimes(
         terminalStopId ? shapeMap?.get(terminalStopId) : undefined,
         headsignTerminalTimes,
       ));
-    const headsignTerminalPeriodHw = terminalScopedTimes && terminalScopedTimes.length > 0
-      ? computePeriodHeadways(terminalScopedTimes)
-      : undefined;
-    const headsignTerminalMaxGaps = terminalScopedTimes && terminalScopedTimes.length > 0
-      ? computePeriodMaxGaps(terminalScopedTimes)
-      : undefined;
-    const headsignTerminalPeriodSustained = terminalScopedTimes && terminalScopedTimes.length > 0
-      ? computePeriodSustained(terminalScopedTimes)
-      : undefined;
+    // The row has a terminal list only when it holds a departure: one definition for the period
+    // values, the hour values, their gaps and the departure counts, so an empty list never reads
+    // as "a list" to one of them and "no list" to another (CIV-1109 review note).
+    const terminalScopedTimes = scopedTerminalList && scopedTerminalList.length > 0 ? scopedTerminalList : undefined;
+    const headsignTerminalPeriodHw = terminalScopedTimes ? computePeriodHeadways(terminalScopedTimes) : undefined;
+    const headsignTerminalMaxGaps = terminalScopedTimes ? computePeriodMaxGaps(terminalScopedTimes) : undefined;
+    const headsignTerminalPeriodSustained = terminalScopedTimes ? computePeriodSustained(terminalScopedTimes) : undefined;
     const terminalPeriodSustained = terminalStopId ? allStopPeriodSustained[terminalStopId] : undefined;
     const terminalPeriodMaxGaps = terminalStopId ? allStopPeriodMaxGaps[terminalStopId] : undefined;
     const terminalPeriodIsBranchScoped = !!headsignTerminalPeriodHw;
     // Select the time array before looking up a period: a scoped null is real no-service,
     // not permission to borrow departures from another branch at the same stop.
     const terminalCoverage = computePeriodCoverageHeadways(
-      terminalScopedTimes ?? (terminalStopId ? metricStopMap.get(terminalStopId) : undefined) ?? [],
+      terminalScopedTimes ?? terminalReadTimes(terminalStopId) ?? [],
     );
     const branchCoverage = feature.properties.periodCoverageHeadway as HeadwayByPeriod;
     const periodCoverage: HeadwayByPeriod = {};
@@ -3430,7 +3655,7 @@ export async function processGtfsBuffer(
         ) as HeadwayByHour
       : undefined;
     const terminalHourGaps = terminalStopId
-      ? computeHourMaxGaps(metricStopMap.get(terminalStopId) ?? [], SPARKLINE_HOURS)
+      ? computeHourMaxGaps(terminalReadTimes(terminalStopId) ?? [], SPARKLINE_HOURS)
       : undefined;
     const headsignTerminalHourGaps = terminalScopedTimes
       ? computeHourMaxGaps(terminalScopedTimes, SPARKLINE_HOURS)
@@ -3438,7 +3663,7 @@ export async function processGtfsBuffer(
     // CIV-1010: departures per hour from the same list as the hour's gap, so the two always agree on the source.
     const terminalHourDepartures = terminalScopedTimes
       ? computeHourDepartureCounts(terminalScopedTimes, SPARKLINE_HOURS)
-      : terminalStopId ? computeHourDepartureCounts(metricStopMap.get(terminalStopId) ?? [], SPARKLINE_HOURS) : undefined;
+      : terminalStopId ? computeHourDepartureCounts(terminalReadTimes(terminalStopId) ?? [], SPARKLINE_HOURS) : undefined;
     const terminalHourIsBranchScoped = !!headsignTerminalHourHw;
     const branchHourHw = feature.properties.headwayByHour as HeadwayByHour | undefined;
     if (branchHourHw) {
@@ -3447,10 +3672,16 @@ export async function processGtfsBuffer(
       const mergedHourGaps: Record<number, number | null> = {};
       const branchHourDepartures = feature.properties.departuresByHour as Record<number, number> | undefined;
       const mergedHourDepartures: Record<number, number> = {};
+      // CIV-1109 (#1214): an hour with no departure on the row's terminal list (the list the
+      // departure counts above read) shows no value. The fallbacks, the stop's all-headsign list
+      // and then the row's own list, only ever borrowed other service into it: Madison 80 via
+      // Eagle Heights read the plain Memorial Union trips, every 4-5, at 2-4 PM.
+      const terminalHourList = terminalScopedTimes?.length ? terminalScopedTimes : (terminalStopId ? metricStopMap.get(terminalStopId) : undefined);
       for (const h of SPARKLINE_HOURS) {
-        const termH = headsignTerminalHourHw?.[h] ?? terminalHourHw?.[h] ?? null;
+        const terminalEmpty = terminalHourList != null && terminalHourList.length > 0 && !hasDepartureInClockHour(terminalHourList, h * 60);
+        const termH = terminalEmpty ? null : (headsignTerminalHourHw?.[h] ?? terminalHourHw?.[h] ?? null);
         const bH = branchHourHw[h] ?? null;
-        const resolvedH = resolveTerminalPeriodHeadway(termH, bH, terminalHourIsBranchScoped);
+        const resolvedH = terminalEmpty ? null : resolveTerminalPeriodHeadway(termH, bH, terminalHourIsBranchScoped);
         mergedHourHw[h] = resolvedH;
         mergedHourGaps[h] = resolvedH === termH
           ? (h in flooredHourGap ? flooredHourGap[h] : (headsignTerminalHourGaps?.[h] ?? terminalHourGaps?.[h] ?? null))
@@ -3472,6 +3703,14 @@ export async function processGtfsBuffer(
   clearLoneOriginRows(features as Array<{ properties: Record<string, unknown> }>);
   annotateShortTurnVariants(features, shapes);
   stampWorstDirectionHeadways(features);
+  // CIV-1331 review: rows without stretch data are graded one by one above; a route runs through the night only when
+  // every direction does (the settled rule: never one direction alone), so combine them here, before any surface reads
+  // the row flags (the map overlay, the Night Service index and list, nightRoutesInView). A row keeps a grade only when
+  // every direction of its route that day has a row passing it. Stretch rows are graded again below from the
+  // route's own every-direction verdict. Routes whose directions the feed did not give (synthesized) are left as rows.
+  combineRowNightDirections([...featureStopHeadwaySlots]
+    .filter(([feature]) => !gtfs.synthesizedDirectionRouteIds?.has(feature.properties.routeId as string))
+    .map(([feature, { shortName, dirId, day }]) => ({ routeDay: `${shortName}::${day}`, dirId, props: feature.properties as Record<string, unknown> })));
   stampRouteIrregularDirection(features);
 
   // CIV-1204: the headline each row had before the rider wait replaced it. Feed quality's stop-versus-route check
@@ -3487,6 +3726,9 @@ export async function processGtfsBuffer(
     }
     const stretchesByKey = new Map<string, DirectionStretches>();
     for (const [gKey, trips] of stretchVisitsByGroup) {
+      const day = gKey.slice(gKey.lastIndexOf('::') + 2);
+      const groupRoute = gKey.slice(0, gKey.indexOf('::'));
+      const groupDir = gKey.split('::')[1];
       if (synthesizedGroups.has(gKey.slice(0, gKey.indexOf('::')))) continue;
       const directionTrips = [...trips].map(([tripId, visits]) => ({
         tripId,
@@ -3504,6 +3746,15 @@ export async function processGtfsBuffer(
       const nightTrips = nightOnlyTrips(directionTrips);
       if (nightTrips.length > 0) stretches.night = directionStretches(gKey, nightTrips, coord, directionTrips, 'mostVisits');
       stretches.midday899 = directionMidday899(gKey);
+      // CIV-1332: whether other service picks riders up soon after a night-only route's last bus, at each stretch's stop.
+      stretches.handoverAt = stopId => nightHandoverAt(day, stopId, groupRoute);
+      stretches.previousDaysAt = stopId => previousDaysAt(groupRoute, groupDir, day, stopId);
+      for (const st of [stretches.main, ...stretches.tails, stretches.night?.main, ...(stretches.night?.tails ?? [])]) {
+        if (st) {
+          (st as { handover?: NightHandover }).handover = nightHandoverAt(day, st.refStop, groupRoute);
+          (st as { previousDays?: number[][] }).previousDays = previousDaysAt(groupRoute, groupDir, day, st.refStop);
+        }
+      }
       stretchesByKey.set(gKey, stretches);
     }
     options?.onStretches?.({ stretches: stretchesByKey, stopDepsByGroup });
@@ -3632,12 +3883,14 @@ export async function processGtfsBuffer(
       // lights every row its night service runs on, and lists the stops it runs at, so the map
       // draws and the card names only that part.
       const nightStops = rowNightStops.get(feature) ?? [];
-      const partial = p.stretchNightPartial60 === true;
+      // CIV-1329: the loosest grade the route passes decides whether it runs on part of the route.
+      const partial = p.stretchNight60 === true ? p.stretchNightPartial60 === true : p.stretchNightPartial90 === true;
       const runs = partial ? nightStops.length >= 2 : rowRunsAtNight.get(feature) === true;
       p.nightService30 = p.stretchNight30 === true && runs;
       p.nightService60 = p.stretchNight60 === true && runs;
+      p.nightService90 = p.stretchNight90 === true && runs;
       p.nightService = p.nightService60;
-      if (p.nightService60 && partial) {
+      if (p.nightService90 && partial) {
         p.nightServicePartOfRoute = true;
         p.nightServiceStops = nightStops;
       } else {
@@ -3901,9 +4154,12 @@ export async function processGtfsBuffer(
     calendarExpiry,
     calendarOnlyEnd,
     listingEnd: riderWeek?.listingEnd?.date ?? null,
+    referenceDate: refDate,
+    serviceWeekStart: riderWeek ? riderWeek.week.weekStart ?? riderWeek.week.dates.Monday ?? null : null,
     feedVersion: feedInfo?.feed_version ?? null,
     livePollingSidecar,
     shapeAnomalies: gtfs.shapeAnomalies,
     feedQuality,
+    ...(directionSplit.merged.length > 0 ? { directionSplits: directionSplitsOf(directionSplit.merged) } : {}),
   };
 }

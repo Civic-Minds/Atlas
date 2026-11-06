@@ -20,7 +20,7 @@ import { dirname, resolve } from 'path';
 import { config } from 'dotenv';
 import { r2ListArchive, r2GetArchive, r2Get, r2Put } from './r2.js';
 import { runWithConcurrency } from './utils.js';
-import { resolveCurrentHistoryRoute, mergeAliasedRoutes, currentRouteShortNamesFor, aliasesFor, weekendOnlyKeysFor, projectArchiveByDay, projectSidecarByDay, worseArchiveChange, worseSidecarEntry, type HistoryRouteAliases } from './historyIdentity.js';
+import { resolveCurrentHistoryRoute, mergeAliasedRoutes, currentRouteShortNamesFor, aliasesFor, aliasesFromDirectionSplits, weekendOnlyKeysFor, withGeneratedAliases, projectArchiveByDay, projectSidecarByDay, worseArchiveChange, worseSidecarEntry, type HistoryRouteAliases } from './historyIdentity.js';
 import { representativeRep, routeTrunkHeadway, routeTrunkHeadwayByPeriod } from './historyV2.js';
 import { buildRouteSnapshots, filterSnapshotsForPublish, isFlatRouteToSkip, joinCandidates, newBuildReport, visibilityCheck, type Candidate } from './historyV2Build.js';
 import type { HistoryV2Sidecar } from '../shared/historyV2.js';
@@ -150,6 +150,9 @@ async function loadCurrentHeadwaysLegacy(slug: string): Promise<Record<string, {
   }
 }
 
+/** CIV-1275: each agency artifact's direction-split merges (#1285), read with its current headways. */
+const artifactDirectionSplits: Record<string, Array<{ base: string; halves: [string, string] }>> = {};
+
 /** v2 loader (ATLAS_HISTORY_V2=1): current route facts from the public Atlas artifact, not the archive baseline. */
 async function loadCurrentHeadwaysV2(slug: string): Promise<Record<string, {
   headway: number | null;
@@ -164,7 +167,8 @@ async function loadCurrentHeadwaysV2(slug: string): Promise<Record<string, {
   try {
     const raw = await r2Get(`atlas/${slug}.json`);
     if (!raw) return {};
-    const fc = JSON.parse(raw) as { features?: Array<{ geometry?: { type?: string; coordinates?: unknown }; properties?: Record<string, unknown> }> };
+    const fc = JSON.parse(raw) as { features?: Array<{ geometry?: { type?: string; coordinates?: unknown }; properties?: Record<string, unknown> }>; directionSplits?: Array<{ base: string; halves: [string, string] }> };
+    artifactDirectionSplits[slug] = fc.directionSplits ?? [];
     const weekdayFeatures: Record<string, Array<Record<string, unknown>>> = {};
     const current: Record<string, {
       headway: number | null;
@@ -460,6 +464,29 @@ async function main() {
     archiveRoutes[slug] ??= {};
     for (const key of Object.keys(routes)) archiveRoutes[slug][key] ??= [];
   }
+  // 3. Load current headways from the public Atlas artifact. This keeps the
+  // history endpoint aligned with the current map after route redesigns or
+  // refreshes, rather than trusting the archive diff baseline. Loaded before the
+  // alias fold, which reads each artifact's direction-split merges (CIV-1275).
+  const slugsWithData = Object.keys(archiveRoutes);
+  console.log(`Loading latest headways for ${slugsWithData.length} agencies...`);
+
+  const currentHeadways: Record<string, Record<string, Awaited<ReturnType<typeof loadCurrentHeadwaysV2>>[string]>> = {};
+  const headwayTasks = slugsWithData.map(slug => async () => {
+    currentHeadways[slug] = await (v2 ? loadCurrentHeadwaysV2(slug) : loadCurrentHeadwaysLegacy(slug));
+  });
+  const currentDataConcurrency = Number(process.env.HISTORY_CURRENT_DATA_CONCURRENCY ?? 8);
+  await runWithConcurrency(
+    headwayTasks,
+    Number.isInteger(currentDataConcurrency) && currentDataConcurrency > 0 ? currentDataConcurrency : 8,
+  );
+
+  // CIV-1275: a line the feed publishes as one route per direction is merged in processing (#1285);
+  // its halves' old keys fold into the merged key from the artifact's record, with no config entry.
+  if (v2) for (const slug of Object.keys(archiveRoutes)) {
+    const merged = withGeneratedAliases(routeAliases[slug], aliasesFromDirectionSplits(artifactDirectionSplits[slug] ?? []));
+    if (merged) routeAliases[slug] = merged;
+  }
   let aliasMerged = 0;
   if (v2) for (const slug of Object.keys(archiveRoutes)) {
     const slugAliases = routeAliases[slug];
@@ -511,22 +538,6 @@ async function main() {
     }
     console.log(`Route identity: ${splitCount} route keys split.`);
   }
-
-  // 3. Load current headways from the public Atlas artifact. This keeps the
-  // history endpoint aligned with the current map after route redesigns or
-  // refreshes, rather than trusting the archive diff baseline.
-  const slugsWithData = Object.keys(archiveRoutes);
-  console.log(`Loading latest headways for ${slugsWithData.length} agencies...`);
-
-  const currentHeadways: Record<string, Record<string, Awaited<ReturnType<typeof loadCurrentHeadwaysV2>>[string]>> = {};
-  const headwayTasks = slugsWithData.map(slug => async () => {
-    currentHeadways[slug] = await (v2 ? loadCurrentHeadwaysV2(slug) : loadCurrentHeadwaysLegacy(slug));
-  });
-  const currentDataConcurrency = Number(process.env.HISTORY_CURRENT_DATA_CONCURRENCY ?? 8);
-  await runWithConcurrency(
-    headwayTasks,
-    Number.isInteger(currentDataConcurrency) && currentDataConcurrency > 0 ? currentDataConcurrency : 8,
-  );
 
   const currentYear = new Date().getFullYear();
   const historyData: any[] = [];

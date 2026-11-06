@@ -8,6 +8,7 @@ import { linkMetrolinkShapes } from '../transforms/metrolink-shapes.js';
 import { linkWvuPrtShapes } from '../transforms/wvu-prt-shapes.js';
 import { mergeWvuPrtLine } from '../transforms/wvu-prt-line.js';
 import { normalizeBrantfordRouteLabels } from '../transforms/brantford-route-labels.js';
+import { normalizeStGeorgeLabels } from '../transforms/st-george-labels.js';
 import { fixMountainLineFrequencyWindow } from '../transforms/mountain-line-frequency-fix.js';
 import { addSantaFePickUpWeekendFrequency } from '../transforms/santafe-pickup-schedule.js';
 import { interpolateUntimedStops } from '../transforms/interpolate-untimed-stops.js';
@@ -20,7 +21,7 @@ import { poolSingleTripShapes } from './pool-single-trip-shapes.js';
 
 // WVU PRT publishes route geometry separately from the schedule feed.
 // Keep this agency-specific transform opt-in rather than changing shared shape handling.
-export type GtfsPreprocess = 'nrt-day-night' | 'nrt-cleanup' | 'london-route-names' | 'metrolink-shapes' | 'wvu-prt-shapes' | 'wvu-prt-line' | 'brantford-route-labels' | 'interpolate-untimed-stops' | 'mountain-line-frequency-fix' | 'santafe-pickup-schedule' | 'mnr-bus-pairs';
+export type GtfsPreprocess = 'nrt-day-night' | 'nrt-cleanup' | 'london-route-names' | 'metrolink-shapes' | 'wvu-prt-shapes' | 'wvu-prt-line' | 'brantford-route-labels' | 'st-george-labels' | 'interpolate-untimed-stops' | 'mountain-line-frequency-fix' | 'santafe-pickup-schedule' | 'mnr-bus-pairs';
 
 export interface GtfsTransformOptions {
   agencyId?: string;
@@ -153,6 +154,13 @@ export function normalizeGtfs(
   if (options?.preprocess === 'brantford-route-labels') {
     gtfs = normalizeBrantfordRouteLabels(gtfs);
     onStatus?.('Brantford route labels: removed feed-supplied leading separators');
+  }
+  if (options?.preprocess === 'st-george-labels') {
+    const result = normalizeStGeorgeLabels(gtfs);
+    gtfs = result.gtfs;
+    const mapped = Object.entries(result.mappedStops).map(([from, to]) => `${from}->${to}`).join(', ');
+    onStatus?.(`St. George labels: ${result.renamedRoutes} route names, ${result.renamedStops} stop names, "Transfer Announcement" stops ${mapped || 'none'} (CIV-1334)`);
+    if (result.unmappedStops.length) onStatus?.(`St. George labels: no terminal near "Transfer Announcement" stop(s) ${result.unmappedStops.join(', ')}; left as published`);
   }
   if (options?.preprocess === 'mountain-line-frequency-fix') {
     const result = fixMountainLineFrequencyWindow(gtfs);

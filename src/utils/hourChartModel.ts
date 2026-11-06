@@ -5,7 +5,6 @@ import { isHourInPeriod, periodKeyForHour } from '../../shared/config';
 import { branchStackColor } from './colors';
 import { branchDisplayHourHeadway, branchDisplayPeriodHeadway, buildRouteServiceSummary } from './routeFacts';
 import { medianHeadway, shouldShowTrunkSummary, sparklineSourceDirections, trunkSparklineByHour, worstDirectionByHour } from './routeCardTrunk';
-import { headwayAmount } from './headwayText';
 import { isRiderMeaningfulGap } from './routeCardUneven';
 import { HOUR_TO_PERIOD } from './sparklinePeriods';
 
@@ -41,24 +40,25 @@ export function sparklineBarHeight(headway: number | null | undefined, maxFreq: 
 }
 
 /**
- * Headway axis for the full-day charts: round headways ("10 min") placed where a bar of that headway
- * tops out. Bars are as tall as 1/headway on the chart's fixed scale (sparklineBarHeight), so a tick's
- * height is (1/minutes) / maxFreq, and more frequent service sits higher.
+ * Axis for the full-day frequency charts, in trips per hour (CIV-1311, Ryan picked 2026-11-03): bars are as tall as
+ * 1/headway on the chart's fixed scale (sparklineBarHeight), so trips per hour is linear in bar height. Ticks are
+ * round, evenly spaced multiples of one step, rising from zero: the axis no longer reads minutes that shrink going up.
  */
-export function headwayAxisTicks(maxFreq: number, height: number): AxisTick[] {
+export function tripsPerHourAxisTicks(maxFreq: number, height: number): AxisTick[] {
   if (!(maxFreq > 0)) return [];
   const minGap = height < 60 ? 16 : 24;
   const maxTicks = height < 60 ? 2 : 3;
-  const ticks: AxisTick[] = [];
-  let lastPx = Infinity;
-  for (const minutes of [2, 3, 5, 10, 15, 20, 30, 60, 120]) {
-    const fraction = (1 / minutes) / maxFreq;
-    const px = fraction * height;
-    if (fraction > 1.0001 || px < 14 || lastPx - px < minGap || ticks.length >= maxTicks) continue;
-    ticks.push({ label: headwayAmount(minutes), fraction: Math.min(1, fraction) });
-    lastPx = px;
+  const maxPerHour = maxFreq * 60;
+  for (const step of [1, 2, 3, 4, 5, 10, 15, 20, 25, 50, 100]) {
+    const count = Math.floor(maxPerHour / step + 1e-9);
+    if (count < 1) return [];
+    if (count > maxTicks || (step / maxPerHour) * height < minGap) continue;
+    return Array.from({ length: count }, (_, i) => {
+      const value = step * (i + 1);
+      return { label: String(value), fraction: Math.min(1, value / maxPerHour) };
+    }).reverse();
   }
-  return ticks;
+  return [];
 }
 
 /** The headway a bar's tier colour reads: the hour's longest gap when it is a real gap for riders, else its headway (CIV-497). */

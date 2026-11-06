@@ -200,6 +200,8 @@ export const OTHER_REGION_LABEL = 'Other';
 export const SHARED_STRETCH_LABEL = 'Shared stretch';
 // The frequency heading and button (full-day chart, filter chip, Frequency picker).
 export const FREQUENCY_LABEL = 'Frequency';
+/** The full-day frequency chart's axis unit (CIV-1311, Ryan's wording 2026-11-03). */
+export const TRIPS_PER_HOUR_LABEL = 'Trips per hour';
 // The default title of an exported map image.
 export const DEFAULT_EXPORT_TITLE = 'Transit map';
 // The privacy settings title and the About panel link that opens it.

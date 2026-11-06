@@ -34,12 +34,12 @@ function footerGroups(): { title: string; links: FooterLink[] }[] {
   ];
 }
 
-export default function SiteFooter() {
+export default function SiteFooter({ logoHref = '/' }: { logoHref?: string }) {
   return (
     <footer className="mt-8 pt-5 sm:[html[data-consent-prompt]_&]:pb-16 text-sm text-[var(--text-dim)]" aria-label="Site footer">
       <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <AtlasLogo href="/" ariaLabel="Atlas by Civic Minds" showMark={false} size="page" />
+          <AtlasLogo href={logoHref} ariaLabel="Atlas by Civic Minds" showMark={false} size="page" />
           {/* Wraps below 1024px so the three link columns fit beside it from 640px up. */}
           <p className="mt-2 lg:whitespace-nowrap">Transit service, from schedule to street.</p>
         </div>

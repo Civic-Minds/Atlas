@@ -1,0 +1,445 @@
+route_id,service_id,trip_id,trip_headsign,direction_id,block_id,shape_id
+15,WK,116039205,Billings via E Colfax Ave,0,  15 28,1341822
+15,WK,116039206,Billings via E Colfax Ave,0,  15  9,1341822
+15,WK,116039207,Billings via E Colfax Ave,0,  15 29,1341822
+15,WK,116039208,Picadilly,0,  15  9,1341832
+15,WK,116039209,Tower Rd,0,  15 28,1341817
+15,WK,116039210,Billings via E Colfax Ave,0,  15 11,1341822
+15,WK,116039211,Tower Rd,0,  15 28,1341818
+15,WK,116039212,Billings via E Colfax Ave,0,  15 14,1341822
+15,WK,116039213,Billings via E Colfax Ave,0,  15  3,1341822
+15,WK,116039214,Billings via E Colfax Ave,0,  15  8,1341822
+15,WK,116039215,Billings via E Colfax Ave,0,  15 11,1341822
+15,WK,116039216,Billings via E Colfax Ave,0,  15 12,1341822
+15,WK,116039217,Billings via E Colfax Ave,0,  15 28,1341822
+15,WK,116039218,Billings via E Colfax Ave,0,  15 15,1341822
+15,WK,116039219,Billings via E Colfax Ave,0,  15  2,1341822
+15,WK,116039220,Billings via E Colfax Ave,0,  15  8,1341822
+15,WK,116039221,Billings via E Colfax Ave,0,  15  4,1341822
+15,WK,116039222,Billings via E Colfax Ave,0,  15 15,1341822
+15,WK,116039223,Tower Rd,0,  15  4,1341818
+15,WK,116039224,Billings via E Colfax Ave,0,  15 14,1341822
+15,WK,116039225,Tower Rd,0,  15  2,1341818
+15,WK,116039226,Picadilly,0,  15  3,1341832
+15,WK,116039227,Tower Rd,0,  15  4,1341817
+15,WK,116039228,Billings via E Colfax Ave,0,  15 10,1341822
+15,WK,116039229,Billings via E Colfax Ave,0,  15  8,1341822
+15,WK,116039230,Picadilly,0,  15  5,1341832
+15,WK,116039231,Billings via E Colfax Ave,0,  15  7,1341822
+15,WK,116039232,Billings via E Colfax Ave,0,  15 28,1341822
+15,WK,116039233,Tower Rd,0,  15  5,1341817
+15,WK,116039234,Tower Rd,0,  15  7,1341818
+15,WK,116039235,Billings via E Colfax Ave,0,  15  5,1341822
+15,WK,116039236,Billings via E Colfax Ave,0,  15  3,1341822
+15,WK,116039237,Tower Rd,0,  15 12,1341817
+15,WK,116039238,Billings via E Colfax Ave,0,  15  9,1341822
+15,WK,116039239,Tower Rd,0,  15 28,1341818
+15,WK,116039240,Tower Rd,0,  15 16,1341818
+15,WK,116039241,Tower Rd,0,  15  4,1341818
+15,WK,116039242,Tower Rd,0,  15 14,1341818
+15,WK,116039243,Billings via E Colfax Ave,0,  15 14,1341822
+15,WK,116039244,Billings via E Colfax Ave,0,  15  3,1341822
+15,WK,116039245,Tower Rd,0,  15 15,1341817
+15,WK,116039246,Tower Rd,0,  15 11,1341817
+15,WK,116039247,Tower Rd,0,  15  9,1341818
+15,WK,116039248,Picadilly,0,  15 14,1341832
+15,WK,116039249,Tower Rd,0,  15  8,1341817
+15,WK,116039250,Billings via E Colfax Ave,0, 15L 13,1341822
+15,WK,116039251,Billings via E Colfax Ave,0,  15 11,1341822
+15,WK,116039252,Tower Rd,0,  15  3,1341817
+15,WK,116039253,Billings via E Colfax Ave,0,  15  2,1341822
+15,WK,116039254,Picadilly,0,  15  6,1341832
+15,WK,116039255,Billings via E Colfax Ave,0,  15  3,1341822
+15,WK,116039256,Billings via E Colfax Ave,0,  15 11,1341822
+15,WK,116039257,Billings via E Colfax Ave,0,  15  3,1341823
+15,WK,116039258,Tower Rd,0,  15  7,1341817
+15,WK,116039259,Billings via E Colfax Ave,0,  15 10,1341822
+15,WK,116039260,Tower Rd,0,  15 16,1341818
+15,WK,116039261,Billings via E Colfax Ave,0,  15  1,1341822
+15,WK,116039262,Billings via E Colfax Ave,0,  15  2,1341822
+15,WK,116039263,Billings via E Colfax Ave,0,  15  4,1341822
+15,WK,116039264,Tower Rd,0,  15 17,1341818
+15,WK,116039265,Tower Rd,0,  15  7,1341818
+15,WK,116039266,Tower Rd,0,  15 10,1341818
+15,WK,116039267,Billings via E Colfax Ave,0,  15  6,1341822
+15,WK,116039268,Billings via E Colfax Ave,0,  15  5,1341822
+15,WK,116039269,Billings via E Colfax Ave,0,  15 15,1341822
+15,WK,116039270,Billings via E Colfax Ave,0,  15 12,1341822
+15,WK,116039271,Billings via E Colfax Ave,0,  15  8,1341822
+15,WK,116039272,Billings via E Colfax Ave,0,  15 16,1341822
+15,WK,116039273,Billings via E Colfax Ave,0,  15  1,1341822
+15,WK,116039274,Billings via E Colfax Ave,0,  15  2,1341822
+15,WK,116039275,Billings via E Colfax Ave,0,  15  4,1341822
+15,WK,116039276,Billings via E Colfax Ave,0,  15  7,1341822
+15,WK,116039277,Billings via E Colfax Ave,0,  15 10,1341822
+15,WK,116039278,Billings via E Colfax Ave,0,  15  1,1341822
+15,WK,116039279,Billings via E Colfax Ave,0,  15  2,1341822
+15,WK,116039280,Billings via E Colfax Ave,0,  15 12,1341822
+15,WK,116039281,Billings via E Colfax Ave,0,  15  8,1341822
+15,WK,116039282,Billings via E Colfax Ave,0,  15 11,1341820
+15,WK,116039283,Billings via E Colfax Ave,0,  15  1,1341820
+15,WK,116039284,Billings via E Colfax Ave,0,  15  1,1341820
+15,WK,116039285,Billings via E Colfax Ave,0,  15  2,1341820
+15,WK,116039286,Tower Rd,0,  15 14,1341817
+15,WK,116039287,Billings via E Colfax Ave,0,  15  5,1341822
+15,WK,116039288,Tower Rd,0,  15  9,1341817
+15,WK,116039289,Billings via E Colfax Ave,0,  15  1,1341822
+15,WK,116039290,Billings via E Colfax Ave,0,  15  6,1341822
+15,WK,116039291,Billings via E Colfax Ave,0,  15 28,1341822
+15,WK,116039292,Billings via E Colfax Ave,0,  15  4,1341822
+15,WK,116039293,Tower Rd,0,  15  2,1341818
+15,WK,116039294,Tower Rd,0,  15  1,1341818
+15,WK,116039295,Tower Rd,0,  15 16,1341818
+15,WK,116039296,Billings via E Colfax Ave,0,  15  1,1341822
+15,WK,116039297,Billings via E Colfax Ave,0,  15 10,1341822
+15,WK,116039298,Billings via E Colfax Ave,0,  15 12,1341822
+15,WK,116039299,Tower Rd,0,  15  6,1341818
+15,WK,116039300,Tower Rd,0,  15  3,1341818
+15,WK,116039301,Billings via E Colfax Ave,0,  15 11,1341822
+15,WK,116039302,Billings via E Colfax Ave,0,  15  9,1341822
+15,WK,116039303,Tower Rd,0,  15 10,1341818
+15,WK,116039304,Tower Rd,0,  15  1,1341818
+15,WK,116039305,Billings via E Colfax Ave,0,  15  6,1341822
+15,WK,116039306,Billings via E Colfax Ave,0,  15  4,1341822
+15,WK,116039307,Billings via E Colfax Ave,0,  15  9,1341822
+15,WK,116039308,Billings via E Colfax Ave,0,  15  2,1341822
+15,WK,116039309,Tower Rd,0,  15 11,1341818
+15,WK,116039310,Billings via E Colfax Ave,0,  15 16,1341822
+15,WK,116039311,Tower Rd,0,  15 10,1341818
+15,WK,116039312,Union Station Downtown,1,  15 11,1341836
+15,WK,116039313,Union Station Downtown,1,  15 11,1341846
+15,WK,116039314,Union Station Downtown,1,  15  1,1341846
+15,WK,116039315,Union Station Downtown,1,  15  2,1341836
+15,WK,116039316,Union Station Downtown,1,  15  8,1341849
+15,WK,116039317,Union Station Downtown,1,  15 17,1341834
+15,WK,116039318,Union Station Downtown,1,  15 15,1341836
+15,WK,116039319,Union Station Downtown,1,  15 14,1341849
+15,WK,116039320,Union Station Downtown,1,  15  1,1341836
+15,WK,116039321,Union Station Downtown,1,  15  4,1341834
+15,WK,116039322,Union Station Downtown,1,  15  5,1341836
+15,WK,116039323,Union Station Downtown,1,  15  2,1341834
+15,WK,116039324,Union Station Downtown,1,  15  6,1341836
+15,WK,116039325,Union Station Downtown,1,  15  1,1341836
+15,WK,116039326,Union Station Downtown,1,  15  3,1341844
+15,WK,116039327,Union Station Downtown,1,  15  4,1341836
+15,WK,116039328,Union Station Downtown,1,  15  1,1341846
+15,WK,116039329,Union Station Downtown,1,  15  1,1341836
+15,WK,116039330,Union Station Downtown,1,  15  1,1341834
+15,WK,116039331,Union Station Downtown,1,  15  9,1341844
+15,WK,116039332,Union Station Downtown,1,  15  3,1341836
+15,WK,116039333,Union Station Downtown,1,  15 14,1341844
+15,WK,116039334,Union Station Downtown,1,  15 10,1341834
+15,WK,116039335,Union Station Downtown,1,  15 12,1341849
+15,WK,116039336,Union Station Downtown,1,  15 28,1341849
+15,WK,116039337,Union Station Downtown,1,  15  2,1341834
+15,WK,116039338,Union Station Downtown,1,  15 11,1341836
+15,WK,116039339,Union Station Downtown,1,  15 11,1341849
+15,WK,116039340,Union Station Downtown,1,  15  4,1341834
+15,WK,116039341,Union Station Downtown,1,  15  9,1341836
+15,WK,116039342,Union Station Downtown,1,  15  2,1341836
+15,WK,116039343,Union Station Downtown,1,  15 11,1341836
+15,WK,116039344,Union Station Downtown,1,  15  5,1341849
+15,WK,116039345,Union Station Downtown,1,  15  5,1341836
+15,WK,116039346,Union Station Downtown,1,  15  4,1341836
+15,WK,116039347,Union Station Downtown,1,  15  8,1341836
+15,WK,116039348,Union Station Downtown,1,  15  7,1341834
+15,WK,116039349,Union Station Downtown,1,  15  7,1341836
+15,WK,116039350,Union Station Downtown,1,  15  6,1341844
+15,WK,116039351,Union Station Downtown,1,  15 28,1341836
+15,WK,116039352,Union Station Downtown,1,  15  7,1341834
+15,WK,116039353,Union Station Downtown,1,  15  3,1341836
+15,WK,116039354,Union Station Downtown,1,  15  1,1341834
+15,WK,116039355,Union Station Downtown,1,  15 16,1341836
+15,WK,116039356,Union Station Downtown,1,  15 10,1341834
+15,WK,116039357,Union Station Downtown,1,  15 10,1341849
+15,WK,116039358,Union Station Downtown,1,  15  4,1341836
+15,WK,116039359,Union Station Downtown,1,  15 16,1341834
+15,WK,116039360,Union Station Downtown,1,  15  2,1341836
+15,WK,116039361,Union Station Downtown,1,  15 16,1341834
+15,WK,116039362,Union Station Downtown,1,  15 10,1341834
+15,WK,116039363,Union Station Downtown,1,  15  9,1341835
+15,WK,116039364,Union Station Downtown,1,  15 14,1341836
+15,WK,116039365,Union Station Downtown,1,  15  2,1341836
+15,WK,116039366,Union Station Downtown,1,  15  5,1341844
+15,WK,116039367,Union Station Downtown,1,  15  1,1341836
+15,WK,116039368,Union Station Downtown,1,  15  6,1341844
+15,WK,116039369,Union Station Downtown,1,  15 10,1341836
+15,WK,116039370,Union Station Downtown,1,  15  8,1341836
+15,WK,116039371,Union Station Downtown,1,  15  3,1341849
+15,WK,116039372,Union Station Downtown,1,  15  4,1341836
+15,WK,116039373,Union Station Downtown,1,  15  2,1341836
+15,WK,116039374,Union Station Downtown,1,  15 15,1341849
+15,WK,116039375,Union Station Downtown,1,  15  2,1341836
+15,WK,116039376,Union Station Downtown,1,  15 16,1341836
+15,WK,116039377,Union Station Downtown,1,  15 29,1341836
+15,WK,116039378,Union Station Downtown,1,  15  9,1341849
+15,WK,116039379,Union Station Downtown,1,  15 10,1341836
+15,WK,116039380,Union Station Downtown,1,  15  9,1341844
+15,WK,116039381,Union Station Downtown,1,  15 12,1341836
+15,WK,116039382,Union Station Downtown,1,  15 28,1341836
+15,WK,116039383,Union Station Downtown,1,  15  3,1341837
+15,WK,116039384,Union Station Downtown,1,  15  7,1341849
+15,WK,116039385,Union Station Downtown,1,  15 12,1341836
+15,WK,116039386,Union Station Downtown,1,  15  4,1341849
+15,WK,116039387,Union Station Downtown,1,  15  1,1341836
+15,WK,116039388,Union Station Downtown,1,  15  6,1341834
+15,WK,116039389,Union Station Downtown,1,  15 14,1341834
+15,WK,116039390,Union Station Downtown,1,  15  4,1341836
+15,WK,116039391,Union Station Downtown,1,  15 11,1341834
+15,WK,116039392,Union Station Downtown,1,  15 10,1341836
+15,WK,116039393,Union Station Downtown,1,  15 28,1341834
+15,WK,116039394,Union Station Downtown,1,  15  7,1341836
+15,WK,116039395,Union Station Downtown,1,  15 15,1341836
+15,WK,116039396,Union Station Downtown,1,  15 12,1341836
+15,WK,116039397,Union Station Downtown,1,  15  8,1341836
+15,WK,116039398,Union Station Downtown,1,  15  3,1341836
+15,WK,116039399,Union Station Downtown,1,  15  9,1341836
+15,WK,116039400,Union Station Downtown,1,  15 14,1341836
+15,WK,116039401,Union Station Downtown,1,  15 28,1341836
+15,WK,116039402,Union Station Downtown,1,  15 11,1341836
+15,WK,116039403,Union Station Downtown,1,  15  3,1341836
+15,WK,116039404,Union Station Downtown,1,  15  9,1341836
+15,WK,116039405,Union Station Downtown,1,  15 14,1341836
+15,WK,116039406,Union Station Downtown,1,  15 28,1341836
+15,WK,116039407,Union Station Downtown,1,  15 11,1341836
+15,WK,116039408,Union Station Downtown,1,  15  3,1341836
+15,WK,116039409,Union Station Downtown,1,  15  6,1341836
+15,WK,116039410,Union Station Downtown,1,  15  5,1341836
+15,WK,116039411,Union Station Downtown,1,  15 15,1341836
+15,WK,116039412,Union Station Downtown,1,  15 12,1341836
+15,WK,116039413,Union Station Downtown,1,  15  8,1341836
+15,WK,116039414,Union Station Downtown,1,  15  9,1341836
+15,WK,116039415,Union Station Downtown,1,  15 14,1341836
+15,WK,116039416,Union Station Downtown,1,  15 28,1341836
+45,WK,116045944,Green Valley Ranch,0,  42  3,1342051
+45,WK,116045945,Green Valley Ranch,0,  42  4,1342051
+45,WK,116045946,Green Valley Ranch,0,  42  7,1342051
+45,WK,116045947,Green Valley Ranch,0,  42 11,1342051
+45,WK,116045948,Green Valley Ranch,0,  42 10,1342051
+45,WK,116045949,Green Valley Ranch,0,  42  9,1342051
+45,WK,116045950,Green Valley Ranch,0,  42  5,1342051
+45,WK,116045951,Green Valley Ranch,0,  42 11,1342051
+45,WK,116045952,Green Valley Ranch,0,  42 13,1342051
+45,WK,116045953,Green Valley Ranch,0,  42 14,1342051
+45,WK,116045954,Green Valley Ranch,0,  42 16,1342051
+45,WK,116045955,Green Valley Ranch,0,  42  6,1342051
+45,WK,116045956,Green Valley Ranch,0,  42 14,1342051
+45,WK,116045957,Green Valley Ranch,0,  42 16,1342051
+45,WK,116045958,Green Valley Ranch,0,  42  6,1342051
+45,WK,116045959,Green Valley Ranch,0,  42  5,1342051
+45,WK,116045960,Green Valley Ranch,0,  42  8,1342051
+45,WK,116045961,Green Valley Ranch,0,  42 12,1342051
+45,WK,116045962,Green Valley Ranch,0,  42  3,1342051
+45,WK,116045963,Green Valley Ranch,0,  42  7,1342051
+45,WK,116045964,Green Valley Ranch,0,  42  8,1342051
+45,WK,116045965,Green Valley Ranch,0,  42  6,1342051
+45,WK,116045966,Green Valley Ranch,0,  42  8,1342051
+45,WK,116045967,Green Valley Ranch,0,  42 11,1342051
+45,WK,116045968,Green Valley Ranch,0,  42 12,1342051
+45,WK,116045969,Green Valley Ranch,0,  42 10,1342051
+45,WK,116045970,Green Valley Ranch,0,  42 15,1342051
+45,WK,116045971,Green Valley Ranch,0,  16 17,1342051
+45,WK,116045972,Green Valley Ranch,0,  42  6,1342051
+45,WK,116045973,Green Valley Ranch,0,  42  3,1342053
+45,WK,116045974,Green Valley Ranch,0,  42  4,1342051
+45,WK,116045975,Green Valley Ranch,0,  65  1,1342051
+45,WK,116045976,Green Valley Ranch,0,  42  8,1342051
+45,WK,116045977,Green Valley Ranch,0,  42 12,1342051
+45,WK,116045978,Green Valley Ranch,0,  42 10,1342051
+45,WK,116045979,Green Valley Ranch,0,  42  3,1342051
+45,WK,116045980,Green Valley Ranch,0,  42  4,1342051
+45,WK,116045981,Green Valley Ranch,0,  42  7,1342051
+45,WK,116045982,Green Valley Ranch,0,  42  5,1342051
+45,WK,116045983,Green Valley Ranch,0,  42  6,1342051
+45,WK,116045984,Green Valley Ranch,0,  42 11,1342051
+45,WK,116045985,Green Valley Ranch,0,  42 12,1342051
+45,WK,116045986,Green Valley Ranch,0,  42 10,1342051
+45,WK,116045987,Peoria Stn via Montbello,1,  42  8,1342055
+45,WK,116045988,Peoria Stn via Montbello,1,  42 11,1342055
+45,WK,116045989,Peoria Stn via Montbello,1,  42 12,1342055
+45,WK,116045990,Peoria Stn via Montbello,1,  42 10,1342055
+45,WK,116045991,Peoria Stn via Montbello,1,  42  3,1342055
+45,WK,116045992,Peoria Stn via Montbello,1,  42  9,1342055
+45,WK,116045993,Peoria Stn via Montbello,1,  42  7,1342055
+45,WK,116045994,Peoria Stn via Montbello,1,  42 15,1342055
+45,WK,116045995,Peoria Stn via Montbello,1,  42 13,1342055
+45,WK,116045996,Peoria Stn via Montbello,1,  42 14,1342055
+45,WK,116045997,Peoria Stn via Montbello,1,  42 16,1342055
+45,WK,116045998,40th & Airport Stn,1,  42 12,1342054
+45,WK,116045999,Peoria Stn via Montbello,1,  42 10,1342055
+45,WK,116046000,Peoria Stn via Montbello,1,  42 15,1342055
+45,WK,116046001,Peoria Stn via Montbello,1,  42 13,1342055
+45,WK,116046002,Peoria Stn via Montbello,1,  42 14,1342055
+45,WK,116046003,Peoria Stn via Montbello,1,  42 16,1342055
+45,WK,116046004,Peoria Stn via Montbello,1,  42  6,1342055
+45,WK,116046005,Peoria Stn via Montbello,1,  42  8,1342055
+45,WK,116046006,Peoria Stn via Montbello,1,  42 11,1342055
+45,WK,116046007,Peoria Stn via Montbello,1,  42 12,1342055
+45,WK,116046008,Peoria Stn via Montbello,1,  42 10,1342055
+45,WK,116046009,Peoria Stn via Montbello,1,  42  5,1342055
+45,WK,116046010,Peoria Stn via Montbello,1,  42  4,1342055
+45,WK,116046011,Peoria Stn via Montbello,1,  65  1,1342055
+45,WK,116046012,Peoria Stn via Montbello,1,  42 11,1342055
+45,WK,116046013,Peoria Stn via Montbello,1,  16 17,1342055
+45,WK,116046014,Peoria Stn via Montbello,1,  42  6,1342055
+45,WK,116046015,Peoria Stn via Montbello,1,  42  8,1342055
+45,WK,116046016,Peoria Stn via Montbello,1,  42 11,1342055
+45,WK,116046017,Peoria Stn via Montbello,1,  42 12,1342055
+45,WK,116046018,Peoria Stn via Montbello,1,  42 10,1342055
+45,WK,116046019,Peoria Stn via Montbello,1,  42  3,1342055
+45,WK,116046020,Peoria Stn via Montbello,1,  42  4,1342055
+45,WK,116046021,Peoria Stn via Montbello,1,  42  7,1342055
+45,WK,116046022,Peoria Stn via Montbello,1,  42  5,1342055
+45,WK,116046023,Peoria Stn via Montbello,1,  42  6,1342055
+45,WK,116046024,Peoria Stn via Montbello,1,  42  8,1342055
+45,WK,116046025,Peoria Stn via Montbello,1,  42 12,1342055
+45,WK,116046026,Peoria Stn via Montbello,1,  42 10,1342055
+45,WK,116046027,Peoria Stn via Montbello,1,  42  3,1342055
+45,WK,116046028,Peoria Stn via Montbello,1,  42  4,1342055
+45,WK,116046029,Peoria Stn via Montbello,1,  42  7,1342055
+45,WK,116046030,Peoria Stn via Montbello,1,  42  5,1342055
+45,WK,116046031,Peoria Stn via Montbello,1,  42  6,1342055
+45,WK,116057895,Peoria Stn via Montbello,1,  42 80,1342055
+45,WK,116057896,Peoria Stn via Montbello,1,  42 81,1342055
+A,MT,116064919,Denver Airport,0,   A  2,1342201
+A,MT,116064920,Denver Airport,0,   A  1,1342201
+A,MT,116064921,Denver Airport,0,   A  4,1342201
+A,MT,116064922,Denver Airport,0,   A  5,1342201
+A,MT,116064923,Denver Airport,0,   A  7,1342201
+A,MT,116064924,Denver Airport,0,   A  6,1342201
+A,MT,116064925,Denver Airport,0,   A  3,1342201
+A,MT,116064926,Denver Airport,0,   A  2,1342201
+A,MT,116064927,Denver Airport,0,   A  1,1342201
+A,MT,116064928,Denver Airport,0,   A  4,1342201
+A,MT,116064929,Denver Airport,0,   A  2,1342201
+A,MT,116064930,Denver Airport,0,   A  4,1342201
+A,MT,116064931,Denver Airport,0,   A  1,1342201
+A,MT,116064932,Denver Airport,0,   A  4,1342201
+A,MT,116064933,Denver Airport,0,   A  5,1342201
+A,MT,116064934,Denver Airport,0,   A  7,1342201
+A,MT,116064935,Denver Airport,0,   A  6,1342201
+A,MT,116064936,Denver Airport,0,   A  3,1342201
+A,MT,116064937,Denver Airport,0,   A  2,1342201
+A,MT,116064938,Denver Airport,0,   A  1,1342201
+A,MT,116064939,Denver Airport,0,   A  4,1342201
+A,MT,116064940,Denver Airport,0,   A  5,1342201
+A,MT,116064941,Denver Airport,0,   A  7,1342201
+A,MT,116064942,Denver Airport,0,   A  6,1342201
+A,MT,116064943,Denver Airport,0,   A  3,1342201
+A,MT,116064944,Denver Airport,0,   A  2,1342201
+A,MT,116064945,Denver Airport,0,   A  1,1342201
+A,MT,116064946,Denver Airport,0,   A  4,1342201
+A,MT,116064947,Denver Airport,0,   A  5,1342201
+A,MT,116064948,Denver Airport,0,   A  7,1342201
+A,MT,116064949,Denver Airport,0,   A  6,1342201
+A,MT,116064950,Denver Airport,0,   A  3,1342201
+A,MT,116064951,Denver Airport,0,   A  2,1342201
+A,MT,116064952,Denver Airport,0,   A  1,1342201
+A,MT,116064953,Denver Airport,0,   A  4,1342201
+A,MT,116064954,Denver Airport,0,   A  5,1342201
+A,MT,116064955,Denver Airport,0,   A  7,1342201
+A,MT,116064956,Denver Airport,0,   A  6,1342201
+A,MT,116064957,Denver Airport,0,   A  3,1342201
+A,MT,116064958,Denver Airport,0,   A  1,1342201
+A,MT,116064959,Denver Airport,0,   A  2,1342201
+A,MT,116064960,Denver Airport,0,   A  1,1342201
+A,MT,116064968,Denver Airport,0,   A  4,1342201
+A,MT,116064969,Denver Airport,0,   A  4,1342201
+A,MT,116064970,Denver Airport,0,   A  3,1342201
+A,MT,116064971,Denver Airport,0,   A  2,1342201
+A,MT,116064972,Denver Airport,0,   A  1,1342201
+A,MT,116064973,Denver Airport,0,   A  4,1342201
+A,MT,116064974,Denver Airport,0,   A  1,1342201
+A,MT,116064975,Denver Airport,0,   A  3,1342201
+A,MT,116064976,Denver Airport,0,   A  3,1342201
+A,MT,116064977,Denver Airport,0,   A  2,1342201
+A,MT,116064978,Denver Airport,0,   A  2,1342201
+A,MT,116064979,Denver Airport,0,   A  7,1342201
+A,MT,116064980,Denver Airport,0,   A  6,1342201
+A,MT,116064981,Denver Airport,0,   A  3,1342201
+A,MT,116064982,Denver Airport,0,   A  2,1342201
+A,MT,116064983,Denver Airport,0,   A  1,1342201
+A,MT,116064984,Denver Airport,0,   A  4,1342201
+A,MT,116064985,Denver Airport,0,   A  5,1342201
+A,MT,116064986,Denver Airport,0,   A  7,1342201
+A,MT,116064987,Denver Airport,0,   A  6,1342201
+A,MT,116064988,Denver Airport,0,   A  3,1342201
+A,MT,116064989,Denver Airport,0,   A  2,1342201
+A,MT,116064990,Denver Airport,0,   A  1,1342201
+A,MT,116064991,Denver Airport,0,   A  4,1342201
+A,MT,116064992,Denver Airport,0,   A  5,1342201
+A,MT,116064993,Denver Airport,0,   A  3,1342201
+A,MT,116064994,Denver Airport,0,   A  7,1342201
+A,MT,116064995,Denver Airport,0,   A  6,1342201
+A,MT,116064996,Denver Airport,0,   A  3,1342201
+A,MT,116064999,Union Station,1,   A  4,1342204
+A,MT,116065000,Union Station,1,   A  3,1342204
+A,MT,116065001,Union Station,1,   A  2,1342204
+A,MT,116065002,Union Station,1,   A  1,1342204
+A,MT,116065003,Union Station,1,   A  4,1342204
+A,MT,116065004,Union Station,1,   A  3,1342204
+A,MT,116065005,Union Station,1,   A  2,1342204
+A,MT,116065006,Union Station,1,   A  1,1342204
+A,MT,116065007,Union Station,1,   A  4,1342204
+A,MT,116065008,Union Station,1,   A  3,1342204
+A,MT,116065009,Union Station,1,   A  2,1342204
+A,MT,116065010,Union Station,1,   A  7,1342204
+A,MT,116065011,Union Station,1,   A  1,1342204
+A,MT,116065012,Union Station,1,   A  4,1342204
+A,MT,116065013,Union Station,1,   A  5,1342204
+A,MT,116065014,Union Station,1,   A  3,1342204
+A,MT,116065015,Union Station,1,   A  2,1342204
+A,MT,116065016,Union Station,1,   A  1,1342204
+A,MT,116065017,Union Station,1,   A  4,1342204
+A,MT,116065018,Union Station,1,   A  5,1342204
+A,MT,116065019,Union Station,1,   A  7,1342204
+A,MT,116065020,Union Station,1,   A  6,1342204
+A,MT,116065021,Union Station,1,   A  3,1342204
+A,MT,116065022,Union Station,1,   A  2,1342204
+A,MT,116065023,Union Station,1,   A  1,1342204
+A,MT,116065024,Union Station,1,   A  4,1342204
+A,MT,116065025,Union Station,1,   A  5,1342204
+A,MT,116065026,Union Station,1,   A  7,1342204
+A,MT,116065027,Union Station,1,   A  6,1342204
+A,MT,116065028,Union Station,1,   A  3,1342204
+A,MT,116065029,Union Station,1,   A  2,1342204
+A,MT,116065030,Union Station,1,   A  1,1342204
+A,MT,116065031,Union Station,1,   A  4,1342204
+A,MT,116065032,Union Station,1,   A  2,1342204
+A,MT,116065033,Union Station,1,   A  1,1342204
+A,MT,116065034,Union Station,1,   A  3,1342204
+A,MT,116065035,Union Station,1,   A  2,1342204
+A,MT,116065036,Union Station,1,   A  1,1342204
+A,MT,116065037,Union Station,1,   A  6,1342204
+A,MT,116065038,Union Station,1,   A  3,1342204
+A,MT,116065039,Union Station,1,   A  2,1342204
+A,MT,116065040,Union Station,1,   A  1,1342204
+A,MT,116065041,Union Station,1,   A  4,1342204
+A,MT,116065042,Union Station,1,   A  5,1342204
+A,MT,116065043,Union Station,1,   A  7,1342204
+A,MT,116065044,Union Station,1,   A  6,1342204
+A,MT,116065045,Union Station,1,   A  3,1342204
+A,MT,116065046,Union Station,1,   A  2,1342204
+A,MT,116065047,Union Station,1,   A  1,1342204
+A,MT,116065048,Union Station,1,   A  4,1342204
+A,MT,116065049,Union Station,1,   A  6,1342204
+A,MT,116065050,Union Station,1,   A  5,1342204
+A,MT,116065051,Union Station,1,   A  7,1342204
+A,MT,116065052,Union Station,1,   A  3,1342204
+A,MT,116065053,Union Station,1,   A  2,1342204
+A,MT,116065054,Union Station,1,   A  1,1342204
+A,MT,116065055,Union Station,1,   A  4,1342204
+A,MT,116065056,Union Station,1,   A  5,1342204
+A,MT,116065057,Union Station,1,   A  7,1342204
+A,MT,116065058,Union Station,1,   A  7,1342204
+A,MT,116065059,Union Station,1,   A  6,1342204
+A,MT,116065060,Union Station,1,   A  3,1342204
+A,MT,116065061,Union Station,1,   A  4,1342204
+A,MT,116065062,Union Station,1,   A  6,1342204
+A,MT,116065063,Union Station,1,   A  3,1342204
+A,MT,116065064,Union Station,1,   A  2,1342204
+A,MT,116065065,Union Station,1,   A  1,1342204
+A,MT,116065066,Union Station,1,   A  4,1342204
+A,MT,116065067,Union Station,1,   A  5,1342204
+A,MT,116065068,Union Station,1,   A  7,1342204
+A,MT,116065069,Union Station,1,   A  6,1342204

@@ -1,0 +1,224 @@
+route_id,service_id,trip_id,trip_headsign,trip_short_name,direction_id,block_id,shape_id
+292-229,155-Blocks-Saturday-62,15252437-155-Blocks-Saturday-62,San Francisco,2926002,0,2951577,2921930
+292-229,155-Blocks-Saturday-62,15252438-155-Blocks-Saturday-62,San Francisco,2926004,0,2951607,2921930
+292-229,155-Blocks-Saturday-62,15252439-155-Blocks-Saturday-62,San Francisco,2926006,0,2951579,2921930
+292-229,155-Blocks-Saturday-62,15252440-155-Blocks-Saturday-62,San Francisco,2926008,0,2951585,2921930
+292-229,155-Blocks-Saturday-62,15252441-155-Blocks-Saturday-62,San Francisco,2926010,0,2951580,2921930
+292-229,155-Blocks-Saturday-62,15252442-155-Blocks-Saturday-62,San Francisco,2926012,0,2951583,2921930
+292-229,155-Blocks-Saturday-62,15252443-155-Blocks-Saturday-62,San Francisco,2926014,0,2951578,2921930
+292-229,155-Blocks-Saturday-62,15252444-155-Blocks-Saturday-62,San Francisco,2926016,0,2951586,2921930
+292-229,155-Blocks-Saturday-62,15252445-155-Blocks-Saturday-62,San Francisco,2926018,0,2951577,2921930
+292-229,155-Blocks-Saturday-62,15252446-155-Blocks-Saturday-62,San Francisco,2926020,0,2951589,2921930
+292-229,155-Blocks-Saturday-62,15252447-155-Blocks-Saturday-62,San Francisco,2926022,0,2951607,2921930
+292-229,155-Blocks-Saturday-62,15252448-155-Blocks-Saturday-62,San Francisco,2926024,0,2951582,2921930
+292-229,155-Blocks-Saturday-62,15252449-155-Blocks-Saturday-62,San Francisco,2926026,0,2951619,2921930
+292-229,155-Blocks-Saturday-62,15252450-155-Blocks-Saturday-62,San Francisco,2926028,0,2951585,2921930
+292-229,155-Blocks-Saturday-62,15252451-155-Blocks-Saturday-62,San Francisco,2926030,0,2951620,2921930
+292-229,155-Blocks-Saturday-62,15252452-155-Blocks-Saturday-62,San Francisco,2926032,0,2951580,2921930
+292-229,155-Blocks-Saturday-62,15252453-155-Blocks-Saturday-62,San Francisco,2926034,0,2951590,2921930
+292-229,155-Blocks-Saturday-62,15252454-155-Blocks-Saturday-62,San Francisco,2926036,0,2951622,2921930
+292-229,155-Blocks-Saturday-62,15252455-155-Blocks-Saturday-62,San Francisco,2926038,0,2951591,2921930
+292-229,155-Blocks-Saturday-62,15252456-155-Blocks-Saturday-62,San Francisco,2926040,0,2951627,2921930
+292-229,155-Blocks-Saturday-62,15252457-155-Blocks-Saturday-62,San Francisco,2926042,0,2951589,2921930
+292-229,155-Blocks-Saturday-62,15252458-155-Blocks-Saturday-62,San Francisco,2926044,0,2951628,2921930
+292-229,155-Blocks-Saturday-62,15252459-155-Blocks-Saturday-62,San Francisco,2926046,0,2951630,2921930
+292-229,155-Blocks-Saturday-62,15252460-155-Blocks-Saturday-62,San Francisco,2926048,0,2951595,2921930
+292-229,155-Blocks-Saturday-62,15252461-155-Blocks-Saturday-62,San Francisco,2926050,0,2951626,2921930
+292-229,155-Blocks-Saturday-62,15252462-155-Blocks-Saturday-62,San Francisco,2926052,0,2951600,2921930
+292-229,155-Blocks-Saturday-62,15252463-155-Blocks-Saturday-62,San Francisco,2926054,0,2951632,2921930
+292-229,155-Blocks-Saturday-62,15252464-155-Blocks-Saturday-62,San Francisco,2926056,0,2951633,2921930
+292-229,155-Blocks-Saturday-62,15252465-155-Blocks-Saturday-62,San Francisco,2926058,0,2951627,2921930
+292-229,155-Blocks-Saturday-62,15252466-155-Blocks-Saturday-62,San Francisco,2926060,0,2951628,2921930
+292-229,155-Blocks-Saturday-62,15252467-155-Blocks-Saturday-62,San Francisco,2926062,0,2951637,2921930
+292-229,155-Blocks-Saturday-62,15252468-155-Blocks-Saturday-62,San Francisco,2926064,0,2951632,2921930
+292-229,155-Blocks-Saturday-62,15252469-155-Blocks-Saturday-62,San Francisco,2926066,0,2951633,2921930
+292-229,155-Blocks-Saturday-62,15252470-155-Blocks-Saturday-62,San Francisco,2926068,0,2951603,2921930
+292-229,155-Blocks-Saturday-62,15252471-155-Blocks-Saturday-62,Hillsdale Mall,2926001,1,2951580,2921928
+292-229,155-Blocks-Saturday-62,15252472-155-Blocks-Saturday-62,Hillsdale Mall,2926003,1,2951583,2921928
+292-229,155-Blocks-Saturday-62,15252473-155-Blocks-Saturday-62,Hillsdale Mall,2926005,1,2951586,2921928
+292-229,155-Blocks-Saturday-62,15252474-155-Blocks-Saturday-62,Hillsdale Mall,2926007,1,2951577,2921928
+292-229,155-Blocks-Saturday-62,15252475-155-Blocks-Saturday-62,Hillsdale Mall,2926009,1,2951589,2921928
+292-229,155-Blocks-Saturday-62,15252476-155-Blocks-Saturday-62,Hillsdale Mall,2926011,1,2951607,2921928
+292-229,155-Blocks-Saturday-62,15252477-155-Blocks-Saturday-62,Hillsdale Mall,2926013,1,2951582,2921928
+292-229,155-Blocks-Saturday-62,15252478-155-Blocks-Saturday-62,Hillsdale Mall,2926015,1,2951579,2921928
+292-229,155-Blocks-Saturday-62,15252479-155-Blocks-Saturday-62,Hillsdale Mall,2926017,1,2951585,2921928
+292-229,155-Blocks-Saturday-62,15252480-155-Blocks-Saturday-62,Hillsdale Mall,2926019,1,2951580,2921928
+292-229,155-Blocks-Saturday-62,15252481-155-Blocks-Saturday-62,Hillsdale Mall,2926021,1,2951590,2921928
+292-229,155-Blocks-Saturday-62,15252482-155-Blocks-Saturday-62,Hillsdale Mall,2926023,1,2951578,2921928
+292-229,155-Blocks-Saturday-62,15252483-155-Blocks-Saturday-62,Hillsdale Mall,2926025,1,2951586,2921928
+292-229,155-Blocks-Saturday-62,15252484-155-Blocks-Saturday-62,Hillsdale Mall,2926027,1,2951591,2921928
+292-229,155-Blocks-Saturday-62,15252485-155-Blocks-Saturday-62,Hillsdale Mall,2926029,1,2951589,2921928
+292-229,155-Blocks-Saturday-62,15252486-155-Blocks-Saturday-62,Hillsdale Mall,2926031,1,2951593,2921928
+292-229,155-Blocks-Saturday-62,15252487-155-Blocks-Saturday-62,Hillsdale Mall,2926033,1,2951595,2921928
+292-229,155-Blocks-Saturday-62,15252488-155-Blocks-Saturday-62,Hillsdale Mall,2926035,1,2951597,2921928
+292-229,155-Blocks-Saturday-62,15252489-155-Blocks-Saturday-62,Hillsdale Mall,2926037,1,2951619,2921928
+292-229,155-Blocks-Saturday-62,15252490-155-Blocks-Saturday-62,Hillsdale Mall,2926039,1,2951599,2921928
+292-229,155-Blocks-Saturday-62,15252491-155-Blocks-Saturday-62,Hillsdale Mall,2926041,1,2951600,2921928
+292-229,155-Blocks-Saturday-62,15252492-155-Blocks-Saturday-62,Hillsdale Mall,2926043,1,2951620,2921928
+292-229,155-Blocks-Saturday-62,15252493-155-Blocks-Saturday-62,Hillsdale Mall,2926045,1,2951590,2921928
+292-229,155-Blocks-Saturday-62,15252494-155-Blocks-Saturday-62,Hillsdale Mall,2926047,1,2951622,2921928
+292-229,155-Blocks-Saturday-62,15252495-155-Blocks-Saturday-62,Hillsdale Mall,2926049,1,2951591,2921928
+292-229,155-Blocks-Saturday-62,15252496-155-Blocks-Saturday-62,Hillsdale Mall,2926051,1,2951627,2921928
+292-229,155-Blocks-Saturday-62,15252497-155-Blocks-Saturday-62,Hillsdale Mall,2926053,1,2951628,2921928
+292-229,155-Blocks-Saturday-62,15252498-155-Blocks-Saturday-62,Hillsdale Mall,2926055,1,2951630,2921928
+292-229,155-Blocks-Saturday-62,15252499-155-Blocks-Saturday-62,Hillsdale Mall,2926057,1,2951632,2921928
+292-229,155-Blocks-Saturday-62,15252500-155-Blocks-Saturday-62,Hillsdale Mall,2926059,1,2951633,2921928
+292-229,155-Blocks-Saturday-62,15252501-155-Blocks-Saturday-62,Hillsdale Mall,2926061,1,2951627,2921928
+292-229,155-Blocks-Saturday-62,15252502-155-Blocks-Saturday-62,Hillsdale Mall,2926063,1,2951628,2921928
+292-229,155-Blocks-Saturday-62,15252503-155-Blocks-Saturday-62,Hillsdale Mall,2926065,1,2951637,2921928
+296O-229,155-Blocks-Saturday-62,15252925-155-Blocks-Saturday-62,Redwood City Transit Center,3966002,0,2951607,296O0059
+296O-229,155-Blocks-Saturday-62,15252926-155-Blocks-Saturday-62,Redwood City Transit Center,3966004,0,2951608,296O0059
+296O-229,155-Blocks-Saturday-62,15252927-155-Blocks-Saturday-62,Redwood City Transit Center,3966006,0,2951609,296O0059
+296O-229,155-Blocks-Saturday-62,15252928-155-Blocks-Saturday-62,Redwood City Transit Center,3966008,0,2951604,296O0059
+296O-229,155-Blocks-Saturday-62,15252929-155-Blocks-Saturday-62,Redwood City Transit Center,3966010,0,2951634,296O0059
+296O-229,155-Blocks-Saturday-62,15252930-155-Blocks-Saturday-62,Palo Alto Transit Center,3966001,1,2951604,296O0060
+296O-229,155-Blocks-Saturday-62,15252931-155-Blocks-Saturday-62,Palo Alto Transit Center,3966003,1,2951634,296O0060
+296O-229,155-Blocks-Saturday-62,15252932-155-Blocks-Saturday-62,Palo Alto Transit Center,3966005,1,2951604,296O0060
+296O-229,155-Blocks-Saturday-62,15252933-155-Blocks-Saturday-62,Palo Alto Transit Center,3966007,1,2951634,296O0060
+296O-229,155-Blocks-Saturday-62,15252934-155-Blocks-Saturday-62,Palo Alto Transit Center,3966009,1,2951606,296O0060
+397-229,155-Blocks-Saturday-62,15252977-155-Blocks-Saturday-62,Palo Alto Transit Center,3976003,1,2951578,3970634
+397-229,155-Blocks-Saturday-62,15252978-155-Blocks-Saturday-62,San Francisco,3976002,0,2951604,3970633
+397-229,155-Blocks-Saturday-62,15252979-155-Blocks-Saturday-62,Palo Alto Transit Center,3976005,1,2951632,3970634
+397-229,155-Blocks-Saturday-62,15252980-155-Blocks-Saturday-62,San Francisco,3976004,0,2951634,3970633
+397-229,155-Blocks-Saturday-62,15252981-155-Blocks-Saturday-62,Palo Alto Transit Center,3976007,1,2951633,3970634
+397-229,155-Blocks-Saturday-62,15252982-155-Blocks-Saturday-62,San Francisco,3976006,0,2951606,3970633
+397-229,155-Blocks-Saturday-62,15252983-155-Blocks-Saturday-62,Palo Alto Transit Center,3976001,1,2951576,3970634
+ECRO-229,155-Blocks-Saturday-62,15322047-155-Blocks-Saturday-62,Mission/Wellington,3996006,0,2951605,ECRO0079
+ECRO-229,155-Blocks-Saturday-62,15322048-155-Blocks-Saturday-62,SFO,3996001,1,2951581,ECRO0077
+ECRO-229,155-Blocks-Saturday-62,15322049-155-Blocks-Saturday-62,Mission/Wellington,3996002,0,2951581,ECRO0079
+ECRO-229,155-Blocks-Saturday-62,15322050-155-Blocks-Saturday-62,SFO,3996003,1,2951585,ECRO0077
+ECRO-229,155-Blocks-Saturday-62,15322051-155-Blocks-Saturday-62,SFO,3996009,1,2951605,ECRO0077
+ECRO-229,155-Blocks-Saturday-62,15322052-155-Blocks-Saturday-62,SFO,3996007,1,2951605,ECRO0077
+ECRO-229,155-Blocks-Saturday-62,15322053-155-Blocks-Saturday-62,Mission/Wellington,3996008,0,2951605,ECRO0079
+ECRO-229,155-Blocks-Saturday-62,15322054-155-Blocks-Saturday-62,SFO,3996005,1,2951605,ECRO0077
+ECRO-229,155-Blocks-Saturday-62,15322055-155-Blocks-Saturday-62,Mission/Wellington,3996004,0,2951605,ECRO0079
+ECR-229,155-Blocks-Saturday-62,15369959-155-Blocks-Saturday-62,Daly City BART,4006012,0,2951472,ECR2087
+ECR-229,155-Blocks-Saturday-62,15369960-155-Blocks-Saturday-62,Daly City BART,4006016,0,2951530,ECR2087
+ECR-229,155-Blocks-Saturday-62,15369961-155-Blocks-Saturday-62,Daly City BART,4006018,0,2951554,ECR2087
+ECR-229,155-Blocks-Saturday-62,15369962-155-Blocks-Saturday-62,Daly City BART,4006024,0,2951537,ECR2087
+ECR-229,155-Blocks-Saturday-62,15369963-155-Blocks-Saturday-62,Daly City BART,4006028,0,2951496,ECR2087
+ECR-229,155-Blocks-Saturday-62,15369964-155-Blocks-Saturday-62,Daly City BART,4006032,0,2951562,ECR2087
+ECR-229,155-Blocks-Saturday-62,15369965-155-Blocks-Saturday-62,Daly City BART,4006034,0,2951525,ECR2087
+ECR-229,155-Blocks-Saturday-62,15369966-155-Blocks-Saturday-62,Daly City BART,4006040,0,2951485,ECR2087
+ECR-229,155-Blocks-Saturday-62,15369967-155-Blocks-Saturday-62,Daly City BART,4006042,0,2951481,ECR2087
+ECR-229,155-Blocks-Saturday-62,15369968-155-Blocks-Saturday-62,Daly City BART,4006048,0,2951499,ECR2087
+ECR-229,155-Blocks-Saturday-62,15369969-155-Blocks-Saturday-62,Daly City BART,4006050,0,2951500,ECR2087
+ECR-229,155-Blocks-Saturday-62,15369970-155-Blocks-Saturday-62,Daly City BART,4006056,0,2951549,ECR2087
+ECR-229,155-Blocks-Saturday-62,15369971-155-Blocks-Saturday-62,Daly City BART,4006058,0,2951552,ECR2087
+ECR-229,155-Blocks-Saturday-62,15369972-155-Blocks-Saturday-62,Daly City BART,4006064,0,2951545,ECR2087
+ECR-229,155-Blocks-Saturday-62,15369973-155-Blocks-Saturday-62,Daly City BART,4006066,0,2951510,ECR2087
+ECR-229,155-Blocks-Saturday-62,15369974-155-Blocks-Saturday-62,Daly City BART,4006072,0,2951575,ECR2087
+ECR-229,155-Blocks-Saturday-62,15369975-155-Blocks-Saturday-62,Daly City BART,4006074,0,2951571,ECR2087
+ECR-229,155-Blocks-Saturday-62,15369976-155-Blocks-Saturday-62,Daly City BART,4006080,0,2951573,ECR2087
+ECR-229,155-Blocks-Saturday-62,15369977-155-Blocks-Saturday-62,Daly City BART,4006082,0,2951511,ECR2087
+ECR-229,155-Blocks-Saturday-62,15369978-155-Blocks-Saturday-62,Daly City BART,4006088,0,2951574,ECR2087
+ECR-229,155-Blocks-Saturday-62,15369979-155-Blocks-Saturday-62,Daly City BART,4006090,0,2951520,ECR2087
+ECR-229,155-Blocks-Saturday-62,15369980-155-Blocks-Saturday-62,Daly City BART,4006096,0,2951482,ECR2087
+ECR-229,155-Blocks-Saturday-62,15369981-155-Blocks-Saturday-62,Daly City BART,4006100,0,2951521,ECR2087
+ECR-229,155-Blocks-Saturday-62,15369982-155-Blocks-Saturday-62,Daly City BART,4006104,0,2951491,ECR2087
+ECR-229,155-Blocks-Saturday-62,15369983-155-Blocks-Saturday-62,Daly City BART,4006108,0,2951509,ECR2087
+ECR-229,155-Blocks-Saturday-62,15369984-155-Blocks-Saturday-62,Daly City BART,4006110,0,2951522,ECR2087
+ECR-229,155-Blocks-Saturday-62,15369985-155-Blocks-Saturday-62,Daly City BART,4006112,0,2951504,ECR2087
+ECR-229,155-Blocks-Saturday-62,15369986-155-Blocks-Saturday-62,Daly City BART,4006118,0,2951572,ECR2087
+ECR-229,155-Blocks-Saturday-62,15369987-155-Blocks-Saturday-62,Daly City BART,4006120,0,2951573,ECR2087
+ECR-229,155-Blocks-Saturday-62,15369988-155-Blocks-Saturday-62,Daly City BART,4006122,0,2951635,ECR2087
+ECR-229,155-Blocks-Saturday-62,15369989-155-Blocks-Saturday-62,Daly City BART,4006124,0,2951636,ECR2087
+ECR-229,155-Blocks-Saturday-62,15369990-155-Blocks-Saturday-62,Palo Alto Transit Center,4006001,1,2951581,ECR2086
+ECR-229,155-Blocks-Saturday-62,15369991-155-Blocks-Saturday-62,Palo Alto Transit Center,4006013,1,2951485,ECR2086
+ECR-229,155-Blocks-Saturday-62,15369992-155-Blocks-Saturday-62,Palo Alto Transit Center,4006015,1,2951481,ECR2086
+ECR-229,155-Blocks-Saturday-62,15369993-155-Blocks-Saturday-62,Palo Alto Transit Center,4006021,1,2951499,ECR2086
+ECR-229,155-Blocks-Saturday-62,15369994-155-Blocks-Saturday-62,Palo Alto Transit Center,4006025,1,2951503,ECR2086
+ECR-229,155-Blocks-Saturday-62,15369995-155-Blocks-Saturday-62,Palo Alto Transit Center,4006029,1,2951544,ECR2086
+ECR-229,155-Blocks-Saturday-62,15369996-155-Blocks-Saturday-62,Palo Alto Transit Center,4006033,1,2951533,ECR2086
+ECR-229,155-Blocks-Saturday-62,15369997-155-Blocks-Saturday-62,Palo Alto Transit Center,4006037,1,2951537,ECR2086
+ECR-229,155-Blocks-Saturday-62,15369998-155-Blocks-Saturday-62,Palo Alto Transit Center,4006039,1,2951510,ECR2086
+ECR-229,155-Blocks-Saturday-62,15369999-155-Blocks-Saturday-62,Palo Alto Transit Center,4006045,1,2951575,ECR2086
+ECR-229,155-Blocks-Saturday-62,15370000-155-Blocks-Saturday-62,Palo Alto Transit Center,4006049,1,2951518,ECR2086
+ECR-229,155-Blocks-Saturday-62,15370001-155-Blocks-Saturday-62,Palo Alto Transit Center,4006053,1,2951573,ECR2086
+ECR-229,155-Blocks-Saturday-62,15370002-155-Blocks-Saturday-62,Palo Alto Transit Center,4006057,1,2951519,ECR2086
+ECR-229,155-Blocks-Saturday-62,15370003-155-Blocks-Saturday-62,Palo Alto Transit Center,4006061,1,2951574,ECR2086
+ECR-229,155-Blocks-Saturday-62,15370004-155-Blocks-Saturday-62,Palo Alto Transit Center,4006065,1,2951528,ECR2086
+ECR-229,155-Blocks-Saturday-62,15370005-155-Blocks-Saturday-62,Palo Alto Transit Center,4006069,1,2951482,ECR2086
+ECR-229,155-Blocks-Saturday-62,15370006-155-Blocks-Saturday-62,Palo Alto Transit Center,4006071,1,2951550,ECR2086
+ECR-229,155-Blocks-Saturday-62,15370007-155-Blocks-Saturday-62,Palo Alto Transit Center,4006077,1,2951491,ECR2086
+ECR-229,155-Blocks-Saturday-62,15370008-155-Blocks-Saturday-62,Palo Alto Transit Center,4006079,1,2951474,ECR2086
+ECR-229,155-Blocks-Saturday-62,15370009-155-Blocks-Saturday-62,Palo Alto Transit Center,4006081,1,2951509,ECR2086
+ECR-229,155-Blocks-Saturday-62,15370010-155-Blocks-Saturday-62,Palo Alto Transit Center,4006087,1,2951545,ECR2086
+ECR-229,155-Blocks-Saturday-62,15370011-155-Blocks-Saturday-62,Palo Alto Transit Center,4006089,1,2951551,ECR2086
+ECR-229,155-Blocks-Saturday-62,15370012-155-Blocks-Saturday-62,Palo Alto Transit Center,4006095,1,2951572,ECR2086
+ECR-229,155-Blocks-Saturday-62,15370013-155-Blocks-Saturday-62,Palo Alto Transit Center,4006097,1,2951573,ECR2086
+ECR-229,155-Blocks-Saturday-62,15370014-155-Blocks-Saturday-62,Palo Alto Transit Center,4006101,1,2951518,ECR2086
+ECR-229,155-Blocks-Saturday-62,15370015-155-Blocks-Saturday-62,Palo Alto Transit Center,4006107,1,2951563,ECR2086
+ECR-229,155-Blocks-Saturday-62,15370016-155-Blocks-Saturday-62,Palo Alto Transit Center,4006111,1,2951549,ECR2086
+ECR-229,155-Blocks-Saturday-62,15370017-155-Blocks-Saturday-62,Palo Alto Transit Center,4006115,1,2951624,ECR2086
+ECR-229,155-Blocks-Saturday-62,15370018-155-Blocks-Saturday-62,Daly City BART,4006130,0,2951600,ECR2087
+ECR-229,155-Blocks-Saturday-62,15370019-155-Blocks-Saturday-62,Palo Alto Transit Center,4006125,1,2951636,ECR2086
+ECR-229,155-Blocks-Saturday-62,15370020-155-Blocks-Saturday-62,Daly City BART,4006116,0,2951546,ECR2087
+ECR-229,155-Blocks-Saturday-62,15370021-155-Blocks-Saturday-62,Daly City BART,4006128,0,2951605,ECR2087
+ECR-229,155-Blocks-Saturday-62,15370022-155-Blocks-Saturday-62,Palo Alto Transit Center,4006117,1,2951601,ECR2086
+ECR-229,155-Blocks-Saturday-62,15370023-155-Blocks-Saturday-62,Daly City BART,4006132,0,2951624,ECR2087
+ECR-229,155-Blocks-Saturday-62,15370024-155-Blocks-Saturday-62,Palo Alto Transit Center,4006121,1,2951606,ECR2086
+ECR-229,155-Blocks-Saturday-62,15370025-155-Blocks-Saturday-62,Palo Alto Transit Center,4006007,1,2951525,ECR2086
+ECR-229,155-Blocks-Saturday-62,15370026-155-Blocks-Saturday-62,Palo Alto Transit Center,4006119,1,2951630,ECR2086
+ECR-229,155-Blocks-Saturday-62,15370027-155-Blocks-Saturday-62,Daly City BART,4006126,0,2951631,ECR2087
+ECR-229,155-Blocks-Saturday-62,15370028-155-Blocks-Saturday-62,Palo Alto Transit Center,4006063,1,2951483,ECR2086
+ECR-229,155-Blocks-Saturday-62,15370029-155-Blocks-Saturday-62,Palo Alto Transit Center,4006073,1,2951546,ECR2086
+ECR-229,155-Blocks-Saturday-62,15370030-155-Blocks-Saturday-62,Palo Alto Transit Center,4006123,1,2951635,ECR2086
+ECR-229,155-Blocks-Saturday-62,15370031-155-Blocks-Saturday-62,Palo Alto Transit Center,4006109,1,2951521,ECR2086
+ECR-229,155-Blocks-Saturday-62,15370032-155-Blocks-Saturday-62,Palo Alto Transit Center,4006113,1,2951600,ECR2086
+ECR-229,155-Blocks-Saturday-62,15370033-155-Blocks-Saturday-62,Palo Alto Transit Center,4006085,1,2951504,ECR2086
+ECR-229,155-Blocks-Saturday-62,15370034-155-Blocks-Saturday-62,Palo Alto Transit Center,4006103,1,2951520,ECR2086
+ECR-229,155-Blocks-Saturday-62,15370035-155-Blocks-Saturday-62,Palo Alto Transit Center,4006093,1,2951559,ECR2086
+ECR-229,155-Blocks-Saturday-62,15370036-155-Blocks-Saturday-62,Palo Alto Transit Center,4006003,1,2951587,ECR2086
+ECR-229,155-Blocks-Saturday-62,15370037-155-Blocks-Saturday-62,Palo Alto Transit Center,4006009,1,2951480,ECR2086
+ECR-229,155-Blocks-Saturday-62,15370038-155-Blocks-Saturday-62,Palo Alto Transit Center,4006017,1,2951495,ECR2086
+ECR-229,155-Blocks-Saturday-62,15370039-155-Blocks-Saturday-62,Palo Alto Transit Center,4006023,1,2951500,ECR2086
+ECR-229,155-Blocks-Saturday-62,15370040-155-Blocks-Saturday-62,Palo Alto Transit Center,4006031,1,2951554,ECR2086
+ECR-229,155-Blocks-Saturday-62,15370041-155-Blocks-Saturday-62,Palo Alto Transit Center,4006105,1,2951515,ECR2086
+ECR-229,155-Blocks-Saturday-62,15370042-155-Blocks-Saturday-62,Palo Alto Transit Center,4006041,1,2951511,ECR2086
+ECR-229,155-Blocks-Saturday-62,15370043-155-Blocks-Saturday-62,Palo Alto Transit Center,4006047,1,2951571,ECR2086
+ECR-229,155-Blocks-Saturday-62,15370044-155-Blocks-Saturday-62,Palo Alto Transit Center,4006055,1,2951525,ECR2086
+ECR-229,155-Blocks-Saturday-62,15370045-155-Blocks-Saturday-62,Daly City BART,4006010,0,2951612,ECR2087
+ECR-229,155-Blocks-Saturday-62,15370046-155-Blocks-Saturday-62,Daly City BART,4006002,0,2951582,ECR2087
+ECR-229,155-Blocks-Saturday-62,15370047-155-Blocks-Saturday-62,Daly City BART,4006020,0,2951533,ECR2087
+ECR-229,155-Blocks-Saturday-62,15370048-155-Blocks-Saturday-62,Daly City BART,4006026,0,2951539,ECR2087
+ECR-229,155-Blocks-Saturday-62,15370049-155-Blocks-Saturday-62,Daly City BART,4006036,0,2951480,ECR2087
+ECR-229,155-Blocks-Saturday-62,15370050-155-Blocks-Saturday-62,Daly City BART,4006044,0,2951495,ECR2087
+ECR-229,155-Blocks-Saturday-62,15370051-155-Blocks-Saturday-62,Daly City BART,4006052,0,2951503,ECR2087
+ECR-229,155-Blocks-Saturday-62,15370052-155-Blocks-Saturday-62,Daly City BART,4006060,0,2951529,ECR2087
+ECR-229,155-Blocks-Saturday-62,15370053-155-Blocks-Saturday-62,Daly City BART,4006068,0,2951537,ECR2087
+ECR-229,155-Blocks-Saturday-62,15370054-155-Blocks-Saturday-62,Daly City BART,4006076,0,2951557,ECR2087
+ECR-229,155-Blocks-Saturday-62,15370055-155-Blocks-Saturday-62,Daly City BART,4006084,0,2951565,ECR2087
+ECR-229,155-Blocks-Saturday-62,15370056-155-Blocks-Saturday-62,Daly City BART,4006092,0,2951533,ECR2087
+ECR-229,155-Blocks-Saturday-62,15370057-155-Blocks-Saturday-62,Daly City BART,4006106,0,2951560,ECR2087
+ECR-229,155-Blocks-Saturday-62,15370058-155-Blocks-Saturday-62,Daly City BART,4006098,0,2951550,ECR2087
+ECR-229,155-Blocks-Saturday-62,15370059-155-Blocks-Saturday-62,Palo Alto Transit Center,4006127,1,2951631,ECR2086
+ECR-229,155-Blocks-Saturday-62,15370060-155-Blocks-Saturday-62,Palo Alto Transit Center,4006059,1,2951520,ECR2086
+ECR-229,155-Blocks-Saturday-62,15370061-155-Blocks-Saturday-62,Palo Alto Transit Center,4006099,1,2951565,ECR2086
+ECR-229,155-Blocks-Saturday-62,15370062-155-Blocks-Saturday-62,Palo Alto Transit Center,4006091,1,2951557,ECR2086
+ECR-229,155-Blocks-Saturday-62,15370063-155-Blocks-Saturday-62,Palo Alto Transit Center,4006067,1,2951521,ECR2086
+ECR-229,155-Blocks-Saturday-62,15370064-155-Blocks-Saturday-62,Palo Alto Transit Center,4006051,1,2951562,ECR2086
+ECR-229,155-Blocks-Saturday-62,15370065-155-Blocks-Saturday-62,Palo Alto Transit Center,4006075,1,2951549,ECR2086
+ECR-229,155-Blocks-Saturday-62,15370066-155-Blocks-Saturday-62,Palo Alto Transit Center,4006043,1,2951561,ECR2086
+ECR-229,155-Blocks-Saturday-62,15370067-155-Blocks-Saturday-62,Palo Alto Transit Center,4006035,1,2951530,ECR2086
+ECR-229,155-Blocks-Saturday-62,15370068-155-Blocks-Saturday-62,Palo Alto Transit Center,4006083,1,2951522,ECR2086
+ECR-229,155-Blocks-Saturday-62,15370069-155-Blocks-Saturday-62,Palo Alto Transit Center,4006005,1,2951588,ECR2086
+ECR-229,155-Blocks-Saturday-62,15370070-155-Blocks-Saturday-62,Palo Alto Transit Center,4006011,1,2951483,ECR2086
+ECR-229,155-Blocks-Saturday-62,15370071-155-Blocks-Saturday-62,Palo Alto Transit Center,4006019,1,2951497,ECR2086
+ECR-229,155-Blocks-Saturday-62,15370072-155-Blocks-Saturday-62,Palo Alto Transit Center,4006027,1,2951529,ECR2086
+ECR-229,155-Blocks-Saturday-62,15370073-155-Blocks-Saturday-62,Daly City BART,4006102,0,2951549,ECR2087
+ECR-229,155-Blocks-Saturday-62,15370074-155-Blocks-Saturday-62,Daly City BART,4006094,0,2951563,ECR2087
+ECR-229,155-Blocks-Saturday-62,15370075-155-Blocks-Saturday-62,Daly City BART,4006114,0,2951545,ECR2087
+ECR-229,155-Blocks-Saturday-62,15370076-155-Blocks-Saturday-62,Daly City BART,4006086,0,2951518,ECR2087
+ECR-229,155-Blocks-Saturday-62,15370077-155-Blocks-Saturday-62,Daly City BART,4006006,0,2951584,ECR2087
+ECR-229,155-Blocks-Saturday-62,15370078-155-Blocks-Saturday-62,Daly City BART,4006008,0,2951610,ECR2087
+ECR-229,155-Blocks-Saturday-62,15370079-155-Blocks-Saturday-62,Daly City BART,4006014,0,2951529,ECR2087
+ECR-229,155-Blocks-Saturday-62,15370080-155-Blocks-Saturday-62,Daly City BART,4006022,0,2951555,ECR2087
+ECR-229,155-Blocks-Saturday-62,15370081-155-Blocks-Saturday-62,Daly City BART,4006030,0,2951561,ECR2087
+ECR-229,155-Blocks-Saturday-62,15370082-155-Blocks-Saturday-62,Daly City BART,4006038,0,2951483,ECR2087
+ECR-229,155-Blocks-Saturday-62,15370083-155-Blocks-Saturday-62,Daly City BART,4006046,0,2951497,ECR2087
+ECR-229,155-Blocks-Saturday-62,15370084-155-Blocks-Saturday-62,Daly City BART,4006054,0,2951546,ECR2087
+ECR-229,155-Blocks-Saturday-62,15370085-155-Blocks-Saturday-62,Daly City BART,4006062,0,2951530,ECR2087
+ECR-229,155-Blocks-Saturday-62,15370086-155-Blocks-Saturday-62,Daly City BART,4006070,0,2951554,ECR2087
+ECR-229,155-Blocks-Saturday-62,15370087-155-Blocks-Saturday-62,Daly City BART,4006078,0,2951559,ECR2087
+ECR-229,155-Blocks-Saturday-62,15370088-155-Blocks-Saturday-62,Daly City BART,4006004,0,2951638,ECR2087

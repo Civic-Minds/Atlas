@@ -140,6 +140,27 @@ export function getNightServiceColor(mode: ColorVisionMode = 'default'): string 
   return mode === 'friendly' ? COLOR_VISION_NIGHT_SERVICE_COLOR : NIGHT_SERVICE_COLOR;
 }
 
+/**
+ * CIV-1329 (Ryan, 2026-11-03): Night Service in three shades of the night colour, darker = more frequent. 60 keeps
+ * the night colour; 30 is darker and 90 lighter.
+ */
+export const NIGHT_SERVICE_TIER_COLORS: Record<'default' | 'friendly', Record<30 | 60 | 90, string>> = {
+  default: { 30: '#4f46e5', 60: NIGHT_SERVICE_COLOR, 90: '#c7d2fe' },
+  friendly: { 30: '#004a75', 60: COLOR_VISION_NIGHT_SERVICE_COLOR, 90: '#56b4e9' },
+};
+
+export function getNightServiceTierColor(grade: 30 | 60 | 90, mode: ColorVisionMode = 'default'): string {
+  return NIGHT_SERVICE_TIER_COLORS[mode === 'friendly' ? 'friendly' : 'default'][grade];
+}
+
+/** MapLibre colour for the Night Service overlay, by each feature's nightGrade (selectNightServiceFeatures). */
+export function nightServiceTierColorExpression(mode: ColorVisionMode = 'default'): unknown[] {
+  return ['match', ['get', 'nightGrade'],
+    30, getNightServiceTierColor(30, mode),
+    90, getNightServiceTierColor(90, mode),
+    getNightServiceTierColor(60, mode)];
+}
+
 /** MapLibre step expression for runtime zoom headway gate. */
 export function buildZoomHeadwayGateExpression(headwayExpr: unknown): unknown[] {
   const steps: unknown[] = ['step', ['zoom'], MAP_ZOOM_DEFAULT_MAX_HEADWAY];

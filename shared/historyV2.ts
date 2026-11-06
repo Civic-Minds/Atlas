@@ -49,7 +49,11 @@ export interface HistoryV2SidecarRoute {
   flag?: HistoryFlag;
 }
 
-/** Is the snapshot's reference date a holiday-week date? Computed by the sidecar writer (pipeline/historyRefQuality.ts). */
+/**
+ * How the snapshot's reference date was chosen (pipeline/historyRefQuality.ts). Sidecars written
+ * before CIV-1101 Part B carry a holiday verdict from a date list; newer ones say the week was
+ * picked by vote and are never flagged holiday.
+ */
 export interface RefDateQuality {
   holiday: boolean;
   reason: string;
@@ -58,10 +62,14 @@ export interface RefDateQuality {
   /** Median trips over the other days of the same day type in the feed's calendar window. */
   medianTrips: number;
   /**
-   * Present only when the v2 backfill read this feed at another real date of the same feed because
-   * the picked one was a holiday or split week (pipeline/historyRefRepick.ts). Additive.
+   * Present only on sidecars from the retired v2 re-pick (before CIV-1101 Part B), which read the feed
+   * at another real date of the same feed because the old pick was a holiday or split week. Additive.
    */
   repicked?: RefDateRepick;
+  /** CIV-1101 Part B: 'vote' = the one service-day model's week; 'legacy' = the old picker's kill switch. Absent on older sidecars. */
+  pickedBy?: 'vote' | 'legacy';
+  /** Monday of the week read, when picked by vote. */
+  weekStart?: string;
 }
 
 /** A reference date replaced by a normal week of the same feed. */
@@ -89,6 +97,12 @@ export interface HistoryV2Sidecar {
   supplementalRoutes?: Record<string, string[]>;
   /** Optional and additive: absent on sidecars written before the holiday check. */
   refDateQuality?: RefDateQuality;
+  /**
+   * CIV-1101 Part B: sha256 over the feed zips this sidecar was built from (feedSetSha256: main,
+   * then supplementals). The weekly refresh keeps a period's first sidecar when the same feed reads
+   * a later week; this proves it is the same feed. Absent on older sidecars.
+   */
+  feedSha256?: string;
 }
 
 export function historyFlagFor(rep: HistoryRep): HistoryFlag | undefined {

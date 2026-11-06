@@ -119,6 +119,7 @@ download automatically.
 | Agency | Why it needs manual work | Next action |
 | --- | --- | --- |
 | Augusta Transit | Official archive URL is unavailable and the Mobility Database copy is expired | Find a current agency feed or request one from Augusta Transit |
+| Dutchess County Public Transit | The configured 511NY ZIP is the only source and is still version 124, but 16 of its 23 calendars (all regular Mon-Sat and Sunday service) end 2026-10-28; a refresh would leave 8 of 19 routes and no Sunday ([#1313](https://github.com/Civic-Minds/Atlas/issues/1313)). The agency site lists no cut. Live data is kept by the release gate | Recheck the ZIP weekly; refresh only once its calendars run past 2026-10-28, and never allow the drop |
 | LAVTA / Wheels | Configured sources are expired, including the April 2026 schedule | Find the current Wheels schedule export |
 | SFMTA / Muni | The official ZIP downloads, but its service calendar ends 2026-08-28 and no later feed was verified | Confirm the next Muni GTFS release and refresh the catalog URL |
 | West Berkeley Shuttle | Cal-ITP URL does not return a usable ZIP and the catalog copy is expired | Confirm whether the shuttle still operates and locate its current feed |

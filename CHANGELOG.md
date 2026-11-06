@@ -10,6 +10,11 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 - **"Couldn't be found" and "couldn't load" notes close like every map card**: "← Map" above the note replaces a "Close →" link that looked out of place
 - **Links to a [route, stop or on-demand service](https://github.com/Civic-Minds/Atlas/issues/1191) Atlas doesn't have say so and drop the bad part**: a garbled value or unknown agency used to open the plain map with no message and stay in the address bar
+- **Back from a route opened from the [Night Service list](https://github.com/Civic-Minds/Atlas/issues/1326) returns to the list**: it went to the agency card instead, losing the list and the map position
+- **Station platforms read as their station**: Sound Transit's Link stations list two platforms and trains alternate between them, so each platform read every 20 and graded 60 on a line every 10 (Federal Way Downtown, Downtown Redmond); the platforms and the 2 Line toward Redmond now read the station's every 10
+- **The [Overnight view](https://github.com/Civic-Minds/Atlas/issues/1322) shows only routes that run through the night**: the first trips of the morning counted as overnight service (Denver's A Line from 3 AM); it now uses the Night Service test, where a route runs through the night when its buses come at least every 60 minutes, and night-only routes whose first bus reaches mid-route after 3 AM (TTC 339, 353, 395) now count; routes without full stop data are judged by the same test, and a night route that ends around 4 AM counts when daytime buses start nearby within 90 minutes of its last trip (TransLink N24)
+- **The Night Service page adds an every-90-minutes level, with 30, 60 and 90 in three shades**: hourly-or-so owl routes (NICE n4, LA Metro Owl lines every 61-90 minutes) were left off; the main map's Overnight view stays at 30 and 60
+- **An [empty hour](https://github.com/Civic-Minds/Atlas/issues/1214) in the route card chart shows no bar**: Madison 80 via Eagle Heights read every 12 at 4 PM from its 5 PM arrivals, and other rows borrowed another destination's trips for hours they don't run
 - **Route lists and agency pages say when a route starts or stops instead of a long wait**: [NYC B and W](https://github.com/Civic-Minds/Atlas/issues/1292) AM peak read "every 72" and "every 88" where the card already said "every 9 min from 7:12 AM", and the J read every 75 at a station it skips at rush hour
 - **[Lines that share one name](https://github.com/Civic-Minds/Atlas/issues/1289) show as separate routes**: MARC's Brunswick, Penn and Camden lines, the three NYC S shuttles, Metro St Louis's Missouri and Illinois routes and JTA's First Coast Flyer lines each read as one route before
 - **[Miami Metrorail](https://github.com/Civic-Minds/Atlas/issues/1287) shows its Green and Orange lines**: the feed lists all of Metrorail as one route, "2600"
@@ -105,6 +110,9 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Route cards and frequency
 
+- **A stop card lists only the routes that stop there**: the stop across the road added its own direction to almost every card; a station still lists all its platforms
+- **A stop card leaves out routes with no trips there in the chosen time**: they were listed with a "No trips" line; a stop where nothing runs says so instead
+- **The expanded schedule chart counts trips per hour**: its side numbers were minutes that shrank going up and sat unevenly apart
 - **Rows with uneven service read "Irregular", not their longest wait**: [exo MA](https://github.com/Civic-Minds/Atlas/issues/962) weekday midday read "every 301"; stop cards follow the route card, and steady service and waits of an hour or less keep their number
 - **Route cards use one set of words for each situation**: "Shared stretch" names a route's shared part, "Irregular" replaces "limited" in a time period, a route that doesn't run reads "no trips", and branches that take turns on a shared stretch each say when they run (TTC 110)
 - **Route lists show the route card's number**: the [slower direction](https://github.com/Civic-Minds/Atlas/issues/821) (GO 47 no longer reads every 3), a [range](https://github.com/Civic-Minds/Atlas/issues/1231) that starts where the card does, and no number for a route the [filter reads as irregular](https://github.com/Civic-Minds/Atlas/issues/1247)
@@ -140,6 +148,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### History (beta)
 
+- **New History snapshots read the same week as the map**: holidays drop out because they lose the feed's own weekly vote, with no fixed holiday list, and run-date agencies (LA Metro, Sound Transit) no longer get a different History week; published years are unchanged
 - **The History chart covers a route's whole history and reads in order**: it shows dots only where they fit, labels the latest value, puts same-year schedules in [date order](https://github.com/Civic-Minds/Atlas/issues/1030), and shows one label where [snapshots](https://github.com/Civic-Minds/Atlas/issues/1037) are close
 - **History shows exact minutes**: rows match the chart ([NFTA 76](https://github.com/Civic-Minds/Atlas/issues/1085) reads 349, not 360)
 - **History no longer lists years that haven't happened**: a feed starting next year no longer adds a point, so an agency needs ten real years to appear
@@ -165,6 +174,9 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Agency, area and research pages
 
+- **On the About page, the Atlas logo stays on About**: it went to the map, so it couldn't bring you back to the top of the page
+- **[Unknown addresses](https://github.com/Civic-Minds/Atlas/issues/1193) show the same not-found page as unknown agencies and areas**: /research/nope had no footer and a different link
+- **"[View on map](https://github.com/Civic-Minds/Atlas/issues/1194)" stays on one line beside long agency names**: on WETA's page it was squeezed onto two lines
 - **The site header fits on one line on phones**: small screens leave Docs to the footer, so Agencies, Research and Go to Atlas no longer wrap to a second line
 - **Area, state and agency pages have one map link, at the top**: the second map link under the frequency bar is gone, and "See all agencies" now follows the agency table, so the links no longer stack down the right edge
 - **The [all-agencies list](https://github.com/Civic-Minds/Atlas/issues/1306) shows an agency under every state it serves**: it listed each agency under its home state only, so Nebraska showed two agencies where its state page shows three
@@ -200,6 +212,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Data pipeline
 
+- **Rebuilds no longer skip agencies whose old schedule had a [far-future end date](https://github.com/Civic-Minds/Atlas/issues/1317)**: Waukesha, Whitehorse and St. George kept old data in every publish because the same feed read as older than live
 - **[An expired feed no longer stops the weekly refresh from publishing](https://github.com/Civic-Minds/Atlas/issues/1304)**: MAX Transit's timetable ended in May 2025 while its feed claimed 2035; the refresh now keeps its live data with the expired notice instead of rebuilding it, so the release gate no longer refuses the whole release
 - **A route whose patterns [take alternate trips](https://github.com/Civic-Minds/Atlas/issues/1256) is read as one service where they meet**: Pace 542 and MATA 30 read their real frequency
 - **Consistent rush-hour-only trips show on the map in their peak**: [express routes](https://github.com/Civic-Minds/Atlas/issues/1254) like OC Transpo 187 were hidden as one-off trips

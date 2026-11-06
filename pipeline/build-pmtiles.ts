@@ -5,13 +5,14 @@ import { execSync } from 'child_process';
 import { LOADED_ENV_FILE } from './loadEnv.js';
 import { IMMUTABLE_CACHE_CONTROL, r2List, r2Put, r2PutFile, r2PublicUrl } from './r2';
 import { parseRunPrefixArg, stagedAgencySlugs } from './runArtifacts.js';
-import { getAgencyArtifactUrls, pmtilesMinZoomForHeadway } from '../shared/config.js';
+import { getAgencyArtifactUrls } from '../shared/config.js';
 import { runWithConcurrency } from './utils.js';
 import { runStopClustering } from './stopClustering.js';
 import { prepareAgencyRouteFeaturesForTiles } from './prepareAgencyRoutesForTiles.js';
 import { simplifyLine } from './geometry.js';
 import { isBuiltIntoTiles } from './pmtilesCoverage.js';
 import { assertRouteArtifactSchema, ROUTE_ARTIFACT_SCHEMA_VERSION, TILE_RULES_VERSION } from '../shared/artifactSchema.js';
+import { emptyAgencySections } from '../shared/agencySections.js';
 import { currentCodeVersion, RELEASE_STAMP_FIELD } from './releaseGuard.js';
 import { planSearchIndex, readReleaseAgencies, uploadSearchIndex } from './searchIndex.js';
 import { consumeDataRefreshMarker, dataRefreshGuardError, readDataRefreshMarker } from './dataRefreshMarker.js';
@@ -79,7 +80,6 @@ export function buildOverviewRoutes(routes: Feature[]): Feature[] {
           'weekdayTierVariation',
           'edgeGapAllowance',
           'routeHasIrregularDirection', 'worstDirectionMiddayCap', 'routeAllDayHeadway', 'routeMiddayCap', 'headway', 'minStopHeadway', 'worstDirectionHeadway',
-          'tippecanoe:minzoom',
         ].includes(key)
         || /^(pch|wdpch|hps|msph|wdph|hph|pws|rv|rr)_/.test(key)
       )),
@@ -258,8 +258,9 @@ async function main() {
       }
     }
 
-    // 4. Sections (CIV-321): the beta section colours' fields, kept out of the route file. Optional
-    // per agency (absent until its next refresh); stamped like the route file so publish can check it.
+    // 4. Sections (CIV-321): the beta section colours' fields, kept out of the route file. An agency
+    // not processed since then has none, and gets an empty one; stamped like the route file so publish
+    // can check it.
     {
       const localPath = localPreviewDir ? path.join(localPreviewDir, slug, `${slug}-sections.json`) : null;
       const data = localPath && fs.existsSync(localPath)
@@ -270,6 +271,10 @@ async function main() {
         fs.writeFileSync(path.join(releaseAgencyDir, `${slug}-sections.json`), JSON.stringify(data));
       } else if (!data) {
         missingStaged(sectionsUrl);
+        // No sections file published yet: the release still carries an empty one (#1192).
+        if (!isStaged) {
+          fs.writeFileSync(path.join(releaseAgencyDir, `${slug}-sections.json`), JSON.stringify({ ...emptyAgencySections(), [RELEASE_STAMP_FIELD]: releaseId }));
+        }
       }
     }
   });
@@ -296,14 +301,9 @@ async function main() {
     console.log(`Stop groups: ${groups} for ${allStops.length} stops.`);
   }
 
-  // LOD: annotate each route feature with headway minzoom
-  // tippecanoe reads this property to set the minimum zoom at which a feature appears in tiles.
-  // ≤10 min (frequent rapid) → visible from zoom 0; less frequent tiers reveal progressively later.
-  for (const f of allRoutes) {
-    const hw = (f.properties?.headway ?? Infinity) as number;
-    const minzoom = pmtilesMinZoomForHeadway(hw);
-    f.properties['tippecanoe:minzoom'] = minzoom;
-  }
+  // No per-feature minimum zoom (#1250): the one written here as a property was never read by
+  // tippecanoe, and the zoomed-out map hides slower routes with the runtime zoom rule
+  // (MAP_ZOOM_HEADWAY_STEPS), which follows the chosen period and the filter's own number.
 
   // Write temporary files
   const routesPath = path.join(tmpDir, 'routes.geojson');
