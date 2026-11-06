@@ -830,8 +830,9 @@ export function nightServicePasses(
    */
   previousDays?: ReadonlyArray<readonly number[]>,
 ): boolean | null {
+  const inWindowAt = (t: number) => t >= STRETCH_NIGHT_START_MIN && t <= STRETCH_NIGHT_END_MIN;
   const all = [...new Set(nightTimes)].sort((a, b) => a - b);
-  const inWindow = all.filter(t => t >= STRETCH_NIGHT_START_MIN && t <= STRETCH_NIGHT_END_MIN);
+  const inWindow = all.filter(inWindowAt);
   if (inWindow.length === 0) return null;
   if (!inWindow.every((t, i) => i === 0 || t - inWindow[i - 1] <= maxGap)) return false;
   const limit = Math.max(maxGap, NIGHT_EDGE_MAX_WAIT_MIN);
@@ -852,27 +853,34 @@ export function nightServicePasses(
     const before = (candidates: Iterable<number>, from = first) => { let p: number | undefined; for (const t of candidates) if (t < from && (p == null || t > p)) p = t; return p; };
     const edgeOk = (p: number | undefined, from = first) => (p == null ? from - STRETCH_NIGHT_START_MIN <= NIGHT_EDGE_MAX_WAIT_MIN : from - p <= limit);
     const sameMorning = all.filter(t => !raw.has(t));
-    if (raw.has(first)) {
+    // Written past 24:00, the first bus follows this day type's own evening, read here from all its trips.
+    const ownEveningRead = raw.has(first);
+    if (ownEveningRead) {
       if (!edgeOk(before(times))) return false;
-      // CIV-1344: a night written in both notations (MiWay 3: 26:05 and 26:35 past 24:00 on the evening's day, then
-      // 02:57 on the morning's own day). The evening-day trips run only after this day type's own evening, but the
-      // morning-day ones also run after each previous service day's (Monday's after Sunday's), so each of those
-      // evenings is checked as well: its own trips and the morning-day ones, from its first bus in the window. A day
-      // with no departures at the stop (no service that day, or a one-date cut) has no evening to check. Nor does one
-      // whose every departure is among this day's own times: that is this day type's own evening, which the check
-      // above already read with all its trips (previousDays holds the trips that stop here, `times` also those that
-      // pass through, so reading it again could only lose trips: NYCT N at Canal St, whose late trips pass through).
-      if (previousDays && previousDays.length > 0 && sameMorning.some(t => t >= STRETCH_NIGHT_START_MIN && t <= STRETCH_NIGHT_END_MIN)) {
-        for (const evening of previousDays) {
-          if (evening.length === 0 || evening.every(t => raw.has(t))) continue;
-          const night = [...sameMorning, ...evening];
-          const from = night.reduce<number | undefined>((m, t) => (t >= STRETCH_NIGHT_START_MIN && t <= STRETCH_NIGHT_END_MIN && (m == null || t < m) ? t : m), undefined);
-          if (from != null && !edgeOk(before(night, from), from)) return false;
-        }
+    } else if (!previousDays || previousDays.length === 0) {
+      if (!edgeOk(before([...sameMorning, ...times]))) return false;
+    }
+    // CIV-1344: a night written in both notations (MiWay 3: 26:05 and 26:35 past 24:00 on the evening's day, then
+    // 02:57 on the morning's own day). The evening-day trips run only after this day type's own evening, but the
+    // morning-day ones also run after each previous service day's (Monday's after Sunday's), whichever notation this
+    // day type's first bus uses. CIV-1348: each of those nights is judged whole, the morning-day trips with that
+    // evening's: every gap inside the window at most the grade (Sunday's last bus at 2:07 and a 4:00 morning-day bus
+    // leave Monday with nobody between), and the wait before its first bus in the window. A day with no departures at
+    // the stop (no service that day, or a one-date cut) leaves the morning-day trips on their own, so the wait from
+    // 2:00 counts, as it does above. An evening whose every departure is among this day's own times is this day
+    // type's own evening: previousDays holds the trips that stop here, `times` also those that pass through, so
+    // reading it again could only lose trips (NYCT N at Canal St, whose late trips pass through). Its gaps were read
+    // above from all its trips, and so was its edge when the first bus is written past 24:00; written on the
+    // morning's day, its edge is still read here, as the CIV-1331 check always did.
+    if (previousDays && previousDays.length > 0 && sameMorning.some(inWindowAt)) {
+      for (const evening of previousDays) {
+        const ownEvening = evening.length > 0 && evening.every(t => raw.has(t));
+        if (ownEvening && ownEveningRead) continue;
+        const night = [...new Set([...sameMorning, ...evening])].sort((a, b) => a - b);
+        const nightWindow = night.filter(inWindowAt);
+        if (!ownEvening && !nightWindow.every((t, i) => i === 0 || t - nightWindow[i - 1] <= maxGap)) return false;
+        if (!edgeOk(before(night, nightWindow[0]), nightWindow[0])) return false;
       }
-    } else {
-      const evenings = previousDays && previousDays.length > 0 ? previousDays : [times];
-      if (!evenings.every(evening => edgeOk(before([...sameMorning, ...evening])))) return false;
     }
   }
   // After the last bus: written past 24:00, the same day's later raw times and the moved morning times (the #297

@@ -5,6 +5,12 @@ Each folder is one route's trips on the services active on one date, cut from th
 `tripSets.test.ts` are the GTFS oracle's at the middle stop
 (`scripts/handcheck/stretch-departures.py --at mid --tails`).
 
+CIV-1348: the night rule reads a weekday morning against the Sunday evening before it (and a Saturday
+morning against Friday's), so a one-date cut of a route whose night trips are written past 24:00 and whose
+day service starts before 5:00 reads an empty Sunday as nobody running until the first morning bus. The
+LA Metro fixtures (105, 240, 40, 51; lacmta-105 and lacmta-40-weekday are the same 2026-10-21 cuts) and
+nyct-subway-night-weekday carry the previous service day too, merged with `merge-fixture.py` (union of the cuts' rows).
+
 | Fixture | Source zip | Date | Route |
 |---|---|---|---|
 | ttc-507-weekday | `_feeds/_live-data/ttc.zip` (2026-10-14) | 2026-10-21 | 507 |
@@ -17,7 +23,7 @@ Each folder is one route's trips on the services active on one date, cut from th
 | ttc-25-weekday | same | 2026-10-21 | 25 |
 | ttc-900-weekday | same | 2026-10-21 | 900 |
 | ttc-353-395-weekday | same | 2026-10-21 | 353, 395 |
-| lacmta-105-weekday | `_feeds/lacmta/20270401-fresh.zip` | 2026-10-21 | 105 |
+| lacmta-105-weekday | `_feeds/lacmta/20270401-fresh.zip` (re-cut from the archive zip 20261212-cb1a2283abecc0af, same JUNE26 services) | 2026-10-21 + 2026-10-18 (Sunday, merged; CIV-1348) | 105 |
 | cta-134-143-weekday | `_feeds/cta/20261130-fresh.zip` | 2026-10-21 | 134, 143 |
 | ttc-300-weekday-night | same | 2026-10-21 | 300 |
 | capmetro-7-weekday | `_feeds/capmetro/20270109-fresh.zip` | 2026-10-21 | 7 |
@@ -29,7 +35,7 @@ Each folder is one route's trips on the services active on one date, cut from th
 | miway-45-weekday | `_feeds/miway/20261220-fresh.zip` | 2026-10-21 | 45 |
 | translink-321-weekday | `_feeds/translink/20270103-fresh.zip` | 2026-10-21 | 321 |
 | rtd-denver-first-trips-weekday | `_feeds/rtd-denver/20270102-fresh.zip` | 2026-10-21 | A, 45, 15 |
-| lacmta-240-owl-weekday | `_feeds/lacmta/20270401-fresh.zip` | 2026-10-21 | 240 |
+| lacmta-240-owl-weekday | same | 2026-10-21 + 2026-10-18 (Sunday, merged; CIV-1348) | 240 |
 | translink-n24-handover-weekday | `_feeds/translink/20270103-fresh.zip` | 2026-10-23 + 2026-10-24 (merged: a Friday and the Saturday after it, for the Friday-night handover) | N24, 014, 240, 228, 255 |
 | translink-n24-handover-no-saturday | `_feeds/translink/20270103-fresh.zip` | 2026-10-21 (weekday service only) | N24, 014, 240, 228, 255 |
 | translink-n24-alone-weekday | `_feeds/translink/20270103-fresh.zip` | 2026-10-21 | N24 |
@@ -39,7 +45,7 @@ Each folder is one route's trips on the services active on one date, cut from th
 | samtrans-397-saturday-only | same | 2026-10-24 | same |
 | samtrans-397-sunday-night | same | 2026-10-25 + 2026-10-26 (merged) | same |
 | rtd-denver-first-trips-weekend | `_feeds/rtd-denver/20270102-fresh.zip` | 2026-10-24 + 2026-10-25 (merged) | A, 45, 15 |
-| lacmta-240-owl-weekend | `_feeds/lacmta/20270401-fresh.zip` | 2026-10-24 + 2026-10-25 (merged) | 240 |
+| lacmta-240-owl-weekend | same | 2026-10-24 + 2026-10-25 + 2026-10-23 (Friday, merged; CIV-1348) | 240 |
 | ttc-110-79-sunday | `_feeds/ttc/20261031-fresh.zip` | 2026-10-25 | 110, 79 |
 | ttc-952-weekday | `_feeds/ttc/20261031-fresh.zip` | 2026-10-21 | 952 |
 | go-88-saturday | `_feeds/go/20261127-fresh.zip` | 2026-10-24 | 88 |
@@ -51,7 +57,7 @@ Each folder is one route's trips on the services active on one date, cut from th
 | cta-77-weekday | `_feeds/cta/20261130-fresh.zip` | 2026-10-21 | 77 |
 | cta-93-sunday | `_feeds/cta/20261130-fresh.zip` | 2026-10-18 | 93 |
 | cta-87-weekday | `_feeds/cta/20261130-fresh.zip` | 2026-10-21 | 87 |
-| nyct-subway-night-weekday | `_feeds/nyct-subway/20261031-fresh.zip` | 2026-10-21 | 3, 5, M, N, R |
+| nyct-subway-night-weekday | `_feeds/nyct-subway/20261031-fresh.zip` (re-cut from the archive zip 20261031-2c9e69b82ac596a2, same services) | 2026-10-21 + 2026-10-18 (Sunday, merged; CIV-1348) | 3, 5, M, N, R |
 | nyct-subway-s-weekday | `_feeds/nyct-subway/20261031-fresh.zip` | 2026-10-21 | S (FS, GS, H) |
 | septa-66-weekday | `_feeds/septa/20270220-fresh.zip` | 2026-10-21 | 66 |
 | translink-044-weekday | `_feeds/translink/20270103-fresh.zip` | 2026-10-21 | 044 |
@@ -59,7 +65,7 @@ Each folder is one route's trips on the services active on one date, cut from th
 | ttc-301-weekday-night | same | 2026-10-21 | 301 |
 | ttc-320-weekday-night | same | 2026-10-21 | 320 |
 | cta-36-saturday | `_feeds/cta/20261130-fresh.zip` | 2026-10-17 | 36 |
-| lacmta-51-weekday | `_feeds/lacmta/20270401-fresh.zip` | 2026-10-21 | 51 |
+| lacmta-51-weekday | same | 2026-10-21 + 2026-10-18 (Sunday, merged; CIV-1348) | 51 |
 | yrt-viva-weekday | `_feeds/yrt/20261031-fresh.zip` | 2026-10-21 | Viva blue, purple, orange, yellow |
 | mbta-436-weekday | `_feeds/mbta/20261212-fresh.zip` | 2026-10-21 | 436 |
 
