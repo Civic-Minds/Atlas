@@ -234,6 +234,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **Schedule end dates are read one way**: a [placeholder date](https://github.com/Civic-Minds/Atlas/issues/875), a stale [end date](https://github.com/Civic-Minds/Atlas/issues/687), [unchanged feeds](https://github.com/Civic-Minds/Atlas/issues/688), rebuilt [expiry](https://github.com/Civic-Minds/Atlas/issues/837) and an old [archived feed](https://github.com/Civic-Minds/Atlas/issues/859) no longer give a wrong date
 - **Refreshes and releases fail safe**: a stray [blank line](https://github.com/Civic-Minds/Atlas/issues/835), a refresh with no [route lines](https://github.com/Civic-Minds/Atlas/issues/634), a lost [display name](https://github.com/Civic-Minds/Atlas/issues/785), a "[Couldn't load](https://github.com/Civic-Minds/Atlas/issues/759)" agency or a [frequency drop](https://github.com/Civic-Minds/Atlas/issues/871) on rail no longer ship
 - **Agency pages stay in sync with the weekly data**
+- **A [rebuild](https://github.com/Civic-Minds/Atlas/issues/1355) no longer puts an agency back on an old feed**: St. George's old timetable, kept in the archive with a far-off placeholder end date, replaced the city's current one
 
 ### Platform and other
 

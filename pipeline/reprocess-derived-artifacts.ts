@@ -205,7 +205,7 @@ async function selectArchiveKey(agency: Agency): Promise<{ key: string; reason: 
     const at = objects.find(o => o.key === p.key)?.lastModified;
     return { ...p, uploaded: at ? at.toISOString().slice(0, 10).replace(/-/g, '') : null };
   };
-  const selection = selectArchiveForAgency(objects, agency);
+  const selection = selectArchiveForAgency(objects, agency, agencyTodayYmd(agency));
   if (!selection.ok && selection.noArchive) return null;
   const zips = objects.filter(obj => obj.key.endsWith('.zip'));
   const peekAll = () => Promise.all(zips.map(async obj => {
@@ -220,7 +220,7 @@ async function selectArchiveKey(agency: Agency): Promise<{ key: string; reason: 
     // Key dates and upload order disagree: read each zip's own service dates instead (#859).
     const prior = selection.reason.replace(/^cannot tell which archived zip is newest: /, '');
     peeked = await peekAll();
-    const byDates = selectByFeedDates(peeked, agencyTodayYmd(agency), prior);
+    const byDates = selectByFeedDates(peeked, agencyTodayYmd(agency), prior, agency.lastFeedExpiry);
     if (!byDates.ok) throw new Refusal(byDates.reason);
     picked = { key: byDates.key, reason: byDates.reason };
   }
