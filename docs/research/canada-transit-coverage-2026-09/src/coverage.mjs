@@ -135,7 +135,22 @@ export function qualifyingRoutes(features, maxHeadwayMinutes = 15) {
   return result;
 }
 
-async function json(url) { const response = await fetch(url); if (!response.ok) throw new Error(`${response.status} ${url}`); return response.json(); }
+// #1367: Atlas's published files, read the way the pipeline reads feeds: a named User-Agent (a bare
+// Node fetch from a GitHub runner got 403 on data.transitatlas.fyi while the same request from a
+// desktop got 200), up to three tries, and an error that says what refused it.
+export const ATLAS_FETCH_HEADERS = { 'User-Agent': 'atlas-coverage-study/1.0', Accept: 'application/json' };
+export async function json(url, { tries = 3, delayMs = 2000 } = {}) {
+  let lastError;
+  for (let attempt = 0; attempt < tries; attempt++) {
+    const response = await fetch(url, { headers: ATLAS_FETCH_HEADERS });
+    if (response.ok) return response.json();
+    const body = (await response.text().catch(() => '')).replace(/\s+/g, ' ').slice(0, 200);
+    const by = [response.headers.get('server'), response.headers.get('cf-mitigated') && `cf-mitigated=${response.headers.get('cf-mitigated')}`, response.headers.get('cf-ray') && `cf-ray=${response.headers.get('cf-ray')}`].filter(Boolean).join(' ');
+    lastError = new Error(`${response.status} ${url}${by ? ` (${by})` : ''}${body ? `: ${body}` : ''}`);
+    if (attempt < tries - 1) await new Promise(done => setTimeout(done, delayMs * (attempt + 1)));
+  }
+  throw lastError;
+}
 
 export async function coverageForAgencies(agencies, baseUrl = 'https://data.transitatlas.fyi', maxHeadwayMinutes = 15) {
   const result = [];
