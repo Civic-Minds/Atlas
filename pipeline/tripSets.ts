@@ -853,10 +853,13 @@ export function nightServicePasses(
       // 02:57 on the morning's own day). The evening-day trips run only after this day type's own evening, but the
       // morning-day ones also run after each previous service day's (Monday's after Sunday's), so each of those
       // evenings is checked as well: its own trips and the morning-day ones, from its first bus in the window. A day
-      // with no departures at the stop (no service that day, or a one-date cut) has no evening to check.
+      // with no departures at the stop (no service that day, or a one-date cut) has no evening to check. Nor does one
+      // whose every departure is among this day's own times: that is this day type's own evening, which the check
+      // above already read with all its trips (previousDays holds the trips that stop here, `times` also those that
+      // pass through, so reading it again could only lose trips: NYCT N at Canal St, whose late trips pass through).
       if (previousDays && previousDays.length > 0 && sameMorning.some(t => t >= STRETCH_NIGHT_START_MIN && t <= STRETCH_NIGHT_END_MIN)) {
         for (const evening of previousDays) {
-          if (evening.length === 0) continue;
+          if (evening.length === 0 || evening.every(t => raw.has(t))) continue;
           const night = [...sameMorning, ...evening];
           const from = night.reduce<number | undefined>((m, t) => (t >= STRETCH_NIGHT_START_MIN && t <= STRETCH_NIGHT_END_MIN && (m == null || t < m) ? t : m), undefined);
           if (from != null && !edgeOk(before(night, from), from)) return false;

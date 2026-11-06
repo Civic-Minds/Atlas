@@ -413,6 +413,9 @@ describe('night edges: the wait for the first and after the last night bus (CIV-
     expect(pass(undefined, 30)).toBe(true);
     // A previous day with no departures at the stop has no evening to check (the one-date fixtures below).
     expect(pass([weekday, []], 30)).toBe(true);
+    // This day type's own evening, read from only the trips that stop here (late trips pass through, NYCT N at Canal
+    // St), is not read again: the check from this day's own times already covers it.
+    expect(pass([weekday.filter(t => t <= hm(23, 0))], 30)).toBe(true);
     // Legitimate: a night written only past 24:00 belongs to the evening's own day, so Sunday's short evening is
     // Sunday's row to judge (checked there), not the weekday's.
     const extendedOnly = [...every(hm(6, 0), hm(23, 0), 30), ...every(hm(23, 7), hm(29, 7), 30)];
