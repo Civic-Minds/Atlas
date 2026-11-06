@@ -48,7 +48,7 @@ import {
 } from './overrideAudit.js';
 import { readFeedReviewHistory, shouldReviewNextFeed } from './feedReview.js';
 import { compareStopSnapshots, formatStopAuditLog, type AuditedStop } from './stopAudit.js';
-import { feedFileDate, lowerStoredFeedExpiry, candidateIsOlderThanActive, shouldClearStaged, decideRefreshSkipUnchanged, isFeedExpired, markFeedStale, shouldSkipAllExpiredFeeds, shouldStampFeedMeta, stampFeedMeta, refreshedFeedExpiry, routeLineCount, stampSupplementalFeedMeta } from './refreshMeta.js';
+import { feedFileDate, feedPeriodStart, lowerStoredFeedExpiry, candidateIsOlderThanActive, shouldClearStaged, decideRefreshSkipUnchanged, isFeedExpired, markFeedStale, shouldSkipAllExpiredFeeds, shouldStampFeedMeta, stampFeedMeta, refreshedFeedExpiry, routeLineCount, stampSupplementalFeedMeta } from './refreshMeta.js';
 import {
   COUNTRY_LAUNCH_FLAG,
   isCountryLaunchBlocked,
@@ -265,6 +265,7 @@ interface AgencyEntry {
   lastSupplementalFeeds?: SupplementalFeedMeta[];
   lastFeedExpiry?: string | null;
   lastPeekedExpiry?: string | null;
+  lastFeedStart?: string | null;
   lastFeedVersion?: string | null;
   lastRefreshedAt?: string | null;
   lastFeedCheckAt?: string | null;
@@ -372,7 +373,9 @@ async function refreshAgency(
 
   // #1144: a timetable that hasn't started waits while the current one still runs. The zip is
   // archived and the agency marked, so the run on its start date (heldFeedsDue) processes it.
-  const { feedStart: peekedStart, feedExpiry: peekedCalendarEnd, feedInfoEnd: peekedFeedInfoEnd, calendarOnlyEnd: peekedCalendarOnlyEnd } = await peekFeedDates(buf, agency.excludeRouteShortNames);
+  const peekedDates = await peekFeedDates(buf, agency.excludeRouteShortNames);
+  const { feedStart: peekedStart, feedExpiry: peekedCalendarEnd, feedInfoEnd: peekedFeedInfoEnd, calendarOnlyEnd: peekedCalendarOnlyEnd } = peekedDates;
+  const peekedPeriodStart = feedPeriodStart(peekedDates);
   const heldUntil = futureFeedHoldUntil({ feedStart: peekedStart, todayYmd: expiryToday, liveFeedExpiry: agency.lastFeedExpiry });
   if (heldUntil) {
     agency.heldFeedStart = heldUntil;
@@ -417,7 +420,8 @@ async function refreshAgency(
   }
 
   if (!forceRefresh && candidateIsOlderThanActive({
-    candidateExpiry: peekedExpiry, existingExpiry: agency.lastFeedExpiry,
+    candidateExpiry: peekedExpiry, candidateStart: peekedPeriodStart, existingExpiry: agency.lastFeedExpiry,
+    existingStart: agency.lastFeedStart, existingObtainedAt: agency.feedObtainedAt,
     existingPeekedExpiry: agency.lastPeekedExpiry, recordedAt: agency.lastRefreshedAt, todayYmd: today,
   })) {
     writeLog(`\n  [warn] downloaded feed is older than the active snapshot (${peekedExpiry ?? 'unknown'} < ${agency.lastFeedExpiry}); keeping the active snapshot\n  `);
@@ -623,6 +627,7 @@ async function refreshAgency(
       listingEnd: primary.listingEnd,
       serviceWeek,
       feedObtainedAt,
+      feedStart: peekedPeriodStart,
     });
     stampSupplementalFeedMeta(agency, supplementalMeta);
   }

@@ -10,6 +10,7 @@
 import JSZip from 'jszip';
 import { parseCsv } from './parseGtfs.js';
 import { effectiveFeedExpiry, effectiveFeedStart } from './feedFreshness.js';
+import { isYmd } from '../shared/feedAvailability.js';
 import { addYearsYmd, PLACEHOLDER_EXPIRY_YEARS } from './refreshMeta.js';
 import { COUNTRY_LAUNCH_FLAG, isCountryLaunchBlocked, resolveAgencyCountry, type AgencyCountrySource } from './countryLaunchGate.js';
 
@@ -136,6 +137,8 @@ export interface FeedDates {
   /** Latest service date across feed_info, calendar.txt and calendar_dates.txt; uncapped. */
   feedExpiry: string | null;
   feedVersion: string | null;
+  /** feed_info.txt feed_start_date alone; with feedStart it gives feedPeriodStart (#1359). */
+  feedInfoStart?: string | null;
   /** feed_info.txt feed_end_date alone, for recordedFeedExpiry (#875). */
   feedInfoEnd: string | null;
   /** Latest service date from calendar.txt and added calendar_dates alone, for recordedFeedExpiry (#1039). */
@@ -205,6 +208,7 @@ export async function peekFeedDates(buf: Buffer, excludeRouteShortNames?: readon
         calendarDates,
       }),
       feedVersion: feedInfo.feed_version || null,
+      feedInfoStart: isYmd(feedInfo.feed_start_date) ? feedInfo.feed_start_date : null,
       feedInfoEnd: feedInfo.feed_end_date || null,
       calendarOnlyEnd: effectiveFeedExpiry({
         calendarEnds: calendar.map(row => row.end_date),
