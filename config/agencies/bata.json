@@ -9,7 +9,7 @@
     -85.6206
   ],
   "feedUrl": "https://batabustracker.com/gtfs",
-  "lastFeedExpiry": "20281103",
+  "lastFeedExpiry": "20281105",
   "lastFeedVersion": "9/7/2026",
   "lastRefreshedAt": "2026-11-02",
   "cities": [
@@ -29,14 +29,14 @@
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
       "featureCount": 43,
-      "feedExpiry": "20281103",
+      "feedExpiry": "20281105",
       "routeCount": 13,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-05"
   },
   "timezone": "America/New_York",
   "feedRefreshStatus": "current",
