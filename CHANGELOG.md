@@ -110,6 +110,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ### Route cards and frequency
 
 - **A stop card lists only the routes that stop there**: the stop across the road added its own direction to almost every card; a station still lists all its platforms
+- **A route that only uses the stop across the road is listed under Nearby routes**: once the card listed only its own stop's routes, such a route showed nowhere (TTC 86 at Kingston Rd and Pine Ridge Dr)
 - **A stop card leaves out routes with no trips there in the chosen time**: they were listed with a "No trips" line; a stop where nothing runs says so instead
 - **The expanded schedule chart counts trips per hour**: its side numbers were minutes that shrank going up and sat unevenly apart
 - **Rows with uneven service read "Irregular", not their longest wait**: [exo MA](https://github.com/Civic-Minds/Atlas/issues/962) weekday midday read "every 301"; stop cards follow the route card, and steady service and waits of an hour or less keep their number
