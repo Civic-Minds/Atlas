@@ -34,7 +34,7 @@ import type { OpenInfoFn } from '../InfoPanel';
 import { SearchSuggestionsPanel } from './SearchSuggestionsPanel';
 import { SearchResultsList } from './SearchResultsList';
 import { branchDisplayPeriodHeadway, buildRouteFacts, labelShortNameOf, type RouteLabel } from '../../utils/routeFacts';
-import { collectStopHubSiblings, getDistanceMeters } from '../../utils/stopHub';
+import { collectStopHubSiblings, nearbyRouteClosestStops } from '../../utils/stopHub';
 import { splitRouteKey } from '../../utils/routeKey';
 import { effectiveFeedExpiry, isAgencyFeedExpired } from '../../../shared/feedAvailability';
 import { trackEvent } from '../../lib/analytics';
@@ -547,29 +547,10 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     const connectionRows = new Map<string, ShapeProperties[]>();
 
     for (const [slug, fc] of Object.entries(nonCorridorLayers)) {
-      // Find stops in the transfer band (beyond sibling radius, within walking radius)
-      const routeIdToClosest = new Map<string, { stopName: string; dist: number }>();
-      // A route that serves this stop is never "nearby", even in a period it has no service here (#1117: MiWay 314 and
-      // 315 at stop 0814 showed as 423 m away at midday).
-      // CIV-1345: the card's own routes and stops (CIV-1305), not the whole hub's, so a route that only uses the stop
-      // across the road is listed here instead of nowhere.
-      const ownRouteIds = currentStop.cardRoutesByAgency?.[slug];
-      for (const f of fc.features) {
-        if (f.geometry.type !== 'Point') continue;
-        const [flon, flat] = (f.geometry as GeoJSON.Point).coordinates;
-        const d = getDistanceMeters(lat, lon, flat, flon);
-        const p = f.properties as any;
-        if (!p.stopId || !p.routeIds?.length) continue;
-        const isSibling = currentStop.cardSiblingIdsByAgency?.[slug]?.has(p.stopId);
-        if (isSibling || d > TRANSFER_MAX_M) continue;
-        for (const rid of p.routeIds as string[]) {
-          if (ownRouteIds?.has(rid)) continue;
-          const existing = routeIdToClosest.get(rid);
-          if (!existing || d < existing.dist) {
-            routeIdToClosest.set(rid, { stopName: p.stopName ?? '', dist: d });
-          }
-        }
-      }
+      // Routes at stops within walking distance, other than the card's own stops and routes (CIV-1305, CIV-1345, #1117).
+      const routeIdToClosest = nearbyRouteClosestStops(
+        fc.features, lat, lon, currentStop.cardSiblingIdsByAgency?.[slug], currentStop.cardRoutesByAgency?.[slug], TRANSFER_MAX_M,
+      );
       if (routeIdToClosest.size === 0) continue;
 
       for (const f of fc.features) {
