@@ -8,7 +8,7 @@
   "feedUrl": "https://mywaukeshametro.com/gtfs",
   "mdbFeedUrl": "https://mywaukeshametro.com/gtfs",
   "region": "Wisconsin",
-  "lastFeedExpiry": "20281105",
+  "lastFeedExpiry": "20281106",
   "lastFeedVersion": "Fall 2026 9 Detour",
   "lastRefreshedAt": "20260811",
   "websiteUrl": "https://www.waukesha-wi.gov/departments/transit.php",
@@ -35,13 +35,13 @@
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
       "featureCount": 38,
-      "feedExpiry": "20281105",
+      "feedExpiry": "20281106",
       "routeCount": 8,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-05"
+    "checkedAt": "2026-11-06"
   }
 }
