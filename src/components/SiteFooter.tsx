@@ -27,6 +27,7 @@ function footerGroups(): { title: string; links: FooterLink[] }[] {
       title: 'About',
       links: [
         { href: '/about', label: 'About Atlas' },
+        ...(FEATURES.plannersLink ? [{ href: '/about/planners', label: 'For transit planners' }] : []),
         ...(FEATURES.whatsNew ? [{ href: '/changelog', label: 'Changelog' }] : []),
         { href: '/privacy', label: 'Privacy' },
       ],
