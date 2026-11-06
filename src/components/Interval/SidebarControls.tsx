@@ -551,14 +551,16 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       const routeIdToClosest = new Map<string, { stopName: string; dist: number }>();
       // A route that serves this stop is never "nearby", even in a period it has no service here (#1117: MiWay 314 and
       // 315 at stop 0814 showed as 423 m away at midday).
-      const ownRouteIds = currentStop.routesByAgency?.[slug];
+      // CIV-1345: the card's own routes and stops (CIV-1305), not the whole hub's, so a route that only uses the stop
+      // across the road is listed here instead of nowhere.
+      const ownRouteIds = currentStop.cardRoutesByAgency?.[slug];
       for (const f of fc.features) {
         if (f.geometry.type !== 'Point') continue;
         const [flon, flat] = (f.geometry as GeoJSON.Point).coordinates;
         const d = getDistanceMeters(lat, lon, flat, flon);
         const p = f.properties as any;
         if (!p.stopId || !p.routeIds?.length) continue;
-        const isSibling = currentStop.siblingIdsByAgency?.[slug]?.has(p.stopId);
+        const isSibling = currentStop.cardSiblingIdsByAgency?.[slug]?.has(p.stopId);
         if (isSibling || d > TRANSFER_MAX_M) continue;
         for (const rid of p.routeIds as string[]) {
           if (ownRouteIds?.has(rid)) continue;
