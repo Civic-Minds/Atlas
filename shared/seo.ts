@@ -10,7 +10,7 @@ import { LIVE_VEHICLES_TITLE } from './liveWording';
 import { FREQUENT_SERVICE_TITLE } from './frequentService';
 import { PAGE_NAMES, tabTitle } from './pageNames';
 import { titleCase } from './titleCase';
-import { ABOUT_PATH, CHANGELOG_PATH, DOCS_PATH, LIVE_PATH, PRIVACY_PATH, RESEARCH_PATH, TERMS_PATH } from './pagePaths';
+import { ABOUT_PATH, CHANGELOG_PATH, DOCS_PATH, LIVE_PATH, PLANNERS_PATH, PRIVACY_PATH, RESEARCH_PATH, TERMS_PATH } from './pagePaths';
 
 export const SITE_URL = 'https://www.transitatlas.fyi';
 /** The beta site, where beta-only agencies and services can be seen (never the preview site, which is for agencies' own previews). */
@@ -93,6 +93,15 @@ export const SEO_ROUTES: readonly SeoRoute[] = [
     title: tabTitle(PAGE_NAMES.docs, 'Data, Frequency and Methods'),
     description:
       'How Atlas turns published schedules into frequency maps: its data, how frequency is measured, how service is classified and how errors are corrected.',
+    indexable: true,
+    prerender: true,
+    includeInSitemap: true,
+  },
+  {
+    // CIV-1320: title and description are the page's own words.
+    path: PLANNERS_PATH,
+    title: 'For transit planners: Transit Atlas',
+    description: 'Atlas shows how often transit really runs, across every agency in a region, on one map.',
     indexable: true,
     prerender: true,
     includeInSitemap: true,

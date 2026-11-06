@@ -5,6 +5,7 @@ import App from './App';
 import LegalPage from './LegalPage';
 import AboutDocsPage from './AboutDocsPage';
 import AboutPage from './AboutPage';
+import PlannersPage from './PlannersPage';
 import ChangelogPage from './ChangelogPage';
 import NotFoundPage from './NotFoundPage';
 import './styles/index.css';
@@ -22,7 +23,7 @@ import { withoutMapPosition } from './lib/analytics';
 import { trackKeyboardFocus } from './lib/keyboardFocus';
 import { RESEARCH_DRAFTS } from './apps/researchDrafts';
 import { findSeoRoute } from '../shared/seo';
-import { ABOUT_PATH, AGENCY_INDEX_PATH, CHANGELOG_PATH, DOCS_PATH, PRIVACY_PATH, TERMS_PATH } from '../shared/pagePaths';
+import { ABOUT_PATH, AGENCY_INDEX_PATH, CHANGELOG_PATH, DOCS_PATH, PLANNERS_PATH, PRIVACY_PATH, TERMS_PATH } from '../shared/pagePaths';
 
 const AgencyPage = React.lazy(() => import('./AgencyPage'));
 const LiveRoutePage = React.lazy(() => import('./LiveRoutePage'));
@@ -100,6 +101,7 @@ ReactDOM.createRoot(rootElement).render(
           <Route path={TERMS_PATH} element={<LegalPage document="terms" />} />
           <Route path={PRIVACY_PATH} element={<LegalPage document="privacy" />} />
           <Route path={DOCS_PATH} element={<AboutDocsPage />} />
+          <Route path={PLANNERS_PATH} element={<PlannersPage />} />
           <Route path={ABOUT_PATH} element={<AboutPage />} />
           {/* On in every build; beta-tagged entries still show only on beta. */}
           {FEATURES.whatsNew && <Route path={CHANGELOG_PATH} element={<ChangelogPage />} />}
