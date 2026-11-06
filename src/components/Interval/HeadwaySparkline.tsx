@@ -34,8 +34,10 @@ export const SPARKLINE_EXPANDED_HEIGHT_PHONE = 100;
  * Each full-day chart when both directions show at once, in px. Desktop: a 2x2 grid (frequency charts
  * stacked on the left, trip time charts on the right), each half the dialog wide. Phone: all four stacked.
  */
+/** The full-day chart's axis text: the clock labels under the bars, and (CIV-1343) the y axis unit, so it reads as an axis label, not a second title. */
+const AXIS_LABEL = 'text-xs text-[var(--text-dim)]';
 /** The full-day frequency chart's unit line (CIV-1311), and its invisible twin over the trip time chart. */
-const UNIT_LINE = `${CARD_NOTE} leading-tight`;
+const UNIT_LINE = `${AXIS_LABEL} leading-tight`;
 export const SPARKLINE_PAIRED_HEIGHT = 96;
 export const SPARKLINE_PAIRED_HEIGHT_PHONE = 44;
 
@@ -55,7 +57,7 @@ function ClockLabels({ className = '' }: { className?: string }) {
     <div className={`flex gap-px mt-1 ${className}`} data-testid="full-day-clock-labels">
       {HOURS.map(h => (
         <div key={h} className="flex-1 min-w-0 text-center">
-          <span className={`text-xs text-[var(--text-dim)] whitespace-nowrap ${(h - HOURS[0]) % 6 === 0 ? '' : (h - HOURS[0]) % 3 === 0 ? 'hidden sm:inline' : 'hidden'}`}>
+          <span className={`${AXIS_LABEL} whitespace-nowrap ${(h - HOURS[0]) % 6 === 0 ? '' : (h - HOURS[0]) % 3 === 0 ? 'hidden sm:inline' : 'hidden'}`}>
             {formatClock(h * 60)}
           </span>
         </div>
@@ -368,7 +370,7 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
             {(expanded || HOUR_LABELS[h]) && (
               expanded ? (
                 // Every third hour only, so the 12px clock labels don't collide.
-                <span className={`text-xs text-[var(--text-dim)] whitespace-nowrap ${(h - HOURS[0]) % 3 === 0 ? '' : 'hidden'}`}>
+                <span className={`${AXIS_LABEL} whitespace-nowrap ${(h - HOURS[0]) % 3 === 0 ? '' : 'hidden'}`}>
                   {formatClock(h * 60)}
                 </span>
               ) : (

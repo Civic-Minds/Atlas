@@ -435,16 +435,16 @@ describe('HeadwaySparkline', () => {
 
 describe('full-day y axis', () => {
   it('labels trips per hour, rising and evenly spaced, at the top of a bar with that many trips (CIV-1311)', () => {
-    // Shortest headway 5 min = 12 trips an hour at full height: ticks 12, 8 and 4, a third of the chart apart.
+    // Shortest headway 5 min = 12 trips an hour at full height: ticks 12, 8, 4 and 0 (CIV-1343), a third of the chart apart.
     const ticks = tripsPerHourAxisTicks(1 / 5, 96);
-    expect(ticks.map(t => t.label)).toEqual(['12', '8', '4']);
-    expect(ticks.map(t => t.fraction)).toEqual([1, 2 / 3, 1 / 3]);
+    expect(ticks.map(t => t.label)).toEqual(['12', '8', '4', '0']);
+    expect(ticks.map(t => t.fraction)).toEqual([1, 2 / 3, 1 / 3, 0]);
     // An every-15 bar (4 trips an hour) tops out at the "4" tick.
     expect(sparklineBarHeight(15, 1 / 5, 96)).toBe(Math.round(96 / 3));
     expect(tripsPerHourAxisTicks(0, 96)).toEqual([]);
-    expect(tripsPerHourAxisTicks(1 / 5, 44).length).toBeLessThanOrEqual(2);
-    // A phone's 44px chart still gets two ticks: 6 trips an hour at the top gives 6 and 3.
-    expect(tripsPerHourAxisTicks(1 / 10, 44).map(t => t.label)).toEqual(['6', '3']);
+    expect(tripsPerHourAxisTicks(1 / 5, 44).length).toBeLessThanOrEqual(3);
+    // A phone's 44px chart still gets two ticks above 0: 6 trips an hour at the top gives 6, 3 and 0.
+    expect(tripsPerHourAxisTicks(1 / 10, 44).map(t => t.label)).toEqual(['6', '3', '0']);
     // Every gap between ticks is the same, and values rise going up.
     for (const max of [1 / 3, 1 / 7.5, 1 / 12, 1 / 20, 1 / 30, 1 / 60]) {
       const t = tripsPerHourAxisTicks(max, 96);
