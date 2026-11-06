@@ -8,9 +8,9 @@
     -88.75
   ],
   "feedUrl": "http://data.trilliumtransit.com/gtfs/cityofdekalb-il-us/cityofdekalb-il-us.zip",
-  "lastFeedExpiry": "20271231",
-  "lastFeedVersion": "UTC: 01-May-2026 18:38",
-  "lastRefreshedAt": "2026-08-07",
+  "lastFeedExpiry": "20261231",
+  "lastFeedVersion": "UTC: 19-Oct-2026 16:32",
+  "lastRefreshedAt": "2026-11-06",
   "region": "Illinois",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-308/latest.zip",
   "bbox": [
@@ -23,14 +23,14 @@
     "Elgin, Illinois",
     "Aurora, Illinois"
   ],
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261106",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261231",
   "timezone": "US/Central",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "http://data.trilliumtransit.com/gtfs/cityofdekalb-il-us/cityofdekalb-il-us.zip",
-  "lastPeekedExpiry": "20271231",
+  "lastPeekedExpiry": "20261231",
   "feedQuality": {
     "status": "review",
     "score": 90,
@@ -43,7 +43,7 @@
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
       "featureCount": 38,
-      "feedExpiry": "20271231",
+      "feedExpiry": "20261231",
       "routeCount": 11,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
@@ -51,5 +51,12 @@
       "resumesOn": null
     },
     "checkedAt": "2026-11-06"
-  }
+  },
+  "lastFeedStart": "20261019",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "a77794cc4bf494a7",
+  "feedObtainedAt": "20261106"
 }

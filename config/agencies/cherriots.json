@@ -16,16 +16,16 @@
   ],
   "feedUrl": "https://cherriots.rideralerts.com/InfoPoint/gtfs-zip.ashx",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-128/latest.zip",
-  "lastFeedExpiry": "20270117",
-  "lastFeedVersion": "20260717",
-  "lastRefreshedAt": "2026-08-24",
+  "lastFeedExpiry": "20270102",
+  "lastFeedVersion": "20261104",
+  "lastRefreshedAt": "2026-11-06",
   "cities": [
     "Salem, Oregon",
     "Tigard, Oregon"
   ],
   "timezone": "America/Los_Angeles",
   "lastRawArchiveKey": "20260102-024bddedbb9eacbd",
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261106",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270102",
@@ -41,7 +41,7 @@
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 1,
       "featureCount": 136,
-      "feedExpiry": "20270117",
+      "feedExpiry": "20270102",
       "routeCount": 30,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
@@ -52,5 +52,12 @@
   },
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://cherriots.rideralerts.com/InfoPoint/gtfs-zip.ashx",
-  "lastPeekedExpiry": "20270117"
+  "lastPeekedExpiry": "20270102",
+  "lastFeedStart": "20261104",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "ae5a43aa09cf029c",
+  "feedObtainedAt": "20261106"
 }

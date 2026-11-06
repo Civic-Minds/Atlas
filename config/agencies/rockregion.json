@@ -8,17 +8,17 @@
     -92.3139
   ],
   "feedUrl": "https://gtfs.rrmetro.cadavl.com/RRMETRO/GTFS/GTFS_RRMETRO.zip",
-  "lastFeedExpiry": "20261231",
+  "lastFeedExpiry": "20261115",
   "lastFeedVersion": null,
   "region": "Arkansas",
-  "lastRefreshedAt": "2026-10-08",
+  "lastRefreshedAt": "2026-11-06",
   "cities": [
     "Little Rock, Arkansas",
     "North Little Rock, Arkansas"
   ],
   "timezone": "America/Chicago",
   "lastRawArchiveKey": "20251019-9254f70ee7df65fe",
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261106",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261115",
@@ -38,7 +38,7 @@
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
       "featureCount": 92,
-      "feedExpiry": "20261231",
+      "feedExpiry": "20261115",
       "routeCount": 16,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
@@ -47,5 +47,8 @@
     },
     "checkedAt": "2026-11-06"
   },
-  "lastPeekedExpiry": "20261231"
+  "lastPeekedExpiry": "20261115",
+  "lastFeedStart": "20261106",
+  "lastServiceWeek": "7d5d2b179e4d9049",
+  "feedObtainedAt": "20261106"
 }
