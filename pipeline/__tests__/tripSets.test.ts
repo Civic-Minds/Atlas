@@ -398,6 +398,29 @@ describe('night edges: the wait for the first and after the last night bus (CIV-
     const at330 = every(hm(27, 30), hm(30, 0), 20);
     expect(nightServicePasses(at330, nightServiceDepartureTimes(at330), 90, () => true)).toBe(false);
   });
+  it('CIV-1344: a night written in both notations is checked after a Sunday evening too', () => {
+    // MiWay 3 westbound at Bloor at Riverspray: weekday evening trips run past 24:00 (to 26:37) on the evening's day,
+    // morning trips are written from 02:57 on the morning's own day. Sunday's evening ends at 0:22, so Monday has no
+    // bus from 0:22 to 2:57.
+    const weekday = [...every(hm(6, 0), hm(23, 0), 30), ...every(hm(23, 7), hm(26, 37), 30), ...every(hm(2, 57), hm(5, 57), 30)];
+    const sunday = [...every(hm(7, 0), hm(23, 27), 30), hm(23, 57), hm(24, 22)];
+    const pass = (prev: number[][] | undefined, g: number) => nightServicePasses(weekday, nightServiceDepartureTimes(weekday), g, undefined, prev);
+    expect([30, 60, 90].map(g => pass([weekday, sunday], g))).toEqual([false, false, false]);
+    // Legitimate: a Sunday evening that runs on past 2:00 closes the gap, so the night still counts.
+    const lateSunday = [...sunday, ...every(hm(24, 52), hm(26, 22), 30)];
+    expect(pass([weekday, lateSunday], 30)).toBe(true);
+    // Legitimate: without the previous days, the weekday's own evening stands in, as before.
+    expect(pass(undefined, 30)).toBe(true);
+    // A previous day with no departures at the stop has no evening to check (the one-date fixtures below).
+    expect(pass([weekday, []], 30)).toBe(true);
+    // This day type's own evening, read from only the trips that stop here (late trips pass through, NYCT N at Canal
+    // St), is not read again: the check from this day's own times already covers it.
+    expect(pass([weekday.filter(t => t <= hm(23, 0))], 30)).toBe(true);
+    // Legitimate: a night written only past 24:00 belongs to the evening's own day, so Sunday's short evening is
+    // Sunday's row to judge (checked there), not the weekday's.
+    const extendedOnly = [...every(hm(6, 0), hm(23, 0), 30), ...every(hm(23, 7), hm(29, 7), 30)];
+    expect(nightServicePasses(extendedOnly, nightServiceDepartureTimes(extendedOnly), 30, undefined, [extendedOnly, sunday])).toBe(true);
+  });
   it('CIV-1331 final review: every night-only stretch goes through the same rules', () => {
     const only = (night: number[]) => [night, nightServiceDepartureTimes(night)] as const;
     const takeover = (at: number) => (last: number) => at > last && at <= last + 90;
