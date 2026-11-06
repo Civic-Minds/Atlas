@@ -372,6 +372,8 @@ export const ROUTE_NOT_FOUND = "This route couldn't be found. It may have been r
 export const AGENCY_ROUTES_FAILED = `${loadErrorText("this agency's routes")} ${RETRY_HINT}`;
 // N30 agency-not-found (Ryan)
 export const AGENCY_NOT_FOUND = "This agency couldn't be found.";
+// On-demand service from a link that Atlas doesn't have (#1191). Proposed wording, waiting on Ryan's word-for-word OK.
+export const ON_DEMAND_NOT_FOUND = "This on-demand service couldn't be found.";
 // N25 listing-ended (Ryan's exact text, CIV-1011; shown since CIV-1055). Defined beside the agency page text it shares.
 export { listingEndedNotice, listingEndedPageLine, listingEndHasPassed } from '../../shared/agencyPages';
 

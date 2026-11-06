@@ -8,6 +8,8 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Map and route behavior
 
+- **"Couldn't be found" and "couldn't load" notes close like every map card**: "← Map" above the note replaces a "Close →" link that looked out of place
+- **Links to a [route, stop or on-demand service](https://github.com/Civic-Minds/Atlas/issues/1191) Atlas doesn't have say so and drop the bad part**: a garbled value or unknown agency used to open the plain map with no message and stay in the address bar
 - **The full-day schedule chart's scale reads as an axis**: "Trips per hour" is in the light axis-label style instead of looking like a second title, and the scale starts at 0
 - **Back from a route opened from the [Night Service list](https://github.com/Civic-Minds/Atlas/issues/1326) returns to the list**: it went to the agency card instead, losing the list and the map position
 - **Station platforms read as their station**: Sound Transit's Link stations list two platforms and trains alternate between them, so each platform read every 20 and graded 60 on a line every 10 (Federal Way Downtown, Downtown Redmond); the platforms and the 2 Line toward Redmond now read the station's every 10

@@ -1,5 +1,5 @@
 import { FOOTER_NOTICE_MEDIA_QUERY, PHONE_MEDIA_QUERY, phoneModeFlags, useMediaQuery } from '../hooks/useMediaQuery';
-import { useOnDemandStatus } from '../hooks/useOnDemandData';
+import { useOnDemandServiceSlugs, useOnDemandStatus } from '../hooks/useOnDemandData';
 import { MAP_OVERLAY_VARS, publishMapOverlayVar } from '../mapOverlayLayout';
 import React, { useState, useCallback, useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import { createPortal } from 'react-dom';
@@ -53,7 +53,9 @@ import type { AreaSearchResult } from '../../shared/areaSearch';
 import Spinner from '../components/ui/Spinner';
 import { onDemandSelectionZoneId, resolveSelectedOnDemandSlug } from '../utils/onDemandSelection';
 import { encodeStopBackTarget, parseStopBackTarget, resolveStopBack, STOP_BACK_PARAM, stopBackTarget, type StopBackRoute, type StopBackSnapshot, type StopBackTarget } from '../utils/stopBack';
-import { AGENCY_NOT_FOUND, loadingText, ON_DEMAND_AREAS_FAILED, networksFailedHint, networksFailedText, networksLoadingText, noRoutesMatchText, noServiceOnDayNotice, ROUTE_NOT_FOUND, STOP_NOT_FOUND } from '../content/noticeCopy';
+import { linkValueUnknown } from '../utils/linkSelection';
+import { useMissingLinkCard } from '../hooks/useMissingLinkCard';
+import { AGENCY_NOT_FOUND, loadingText, ON_DEMAND_AREAS_FAILED, ON_DEMAND_NOT_FOUND, networksFailedHint, networksFailedText, networksLoadingText, noRoutesMatchText, noServiceOnDayNotice, ROUTE_NOT_FOUND, STOP_NOT_FOUND } from '../content/noticeCopy';
 import { useIndexSearch } from '../hooks/useIndexSearch';
 import { mergeRouteResults, mergeStopResults } from '../utils/searchResults';
 import { resolveRouteCardBack, type ListOpenedRoute } from '../utils/routeCardBack';
@@ -959,8 +961,17 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   // A route the card can't show (no service on this day, or not in the agency's data) says why in the card's place
   // (N17, N18) instead of the card vanishing; picking that route's day again brings the card back.
   const [missingRoute, setMissingRoute] = useState<{ key: string; found: boolean } | null>(null);
+  // Links whose route, stop or on-demand value names no agency Atlas has, or isn't in the agency::id form (#1191).
+  const linkCatalog = allAgencies ?? agencies;
+  const onDemandSlugs = useOnDemandServiceSlugs();
   useEffect(() => {
     if (!selectedRoute) return;
+    if (linkValueUnknown(selectedRoute, linkCatalog, 'route')) {
+      // N18 in the card's place, and the bad value leaves the address bar.
+      clearMapSelection();
+      setMissingRoute({ key: selectedRoute, found: false });
+      return;
+    }
     const [slug] = selectedRoute.split('::');
     const fc = layers[slug];
     if (!fc) return;
@@ -972,7 +983,19 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
       clearMapSelection();
       setMissingRoute(missing);
     }
-  }, [selectedRoute, layers, day, clearMapSelection]);
+  }, [selectedRoute, layers, day, clearMapSelection, linkCatalog]);
+  // The same for a stop (N36) or an on-demand service: the note shows and the value leaves the address bar (#1191).
+  const clearOnDemandLink = useCallback(() => setOnDemandStopAgencySlug(null), []);
+  const { missing: missingLinkCard, dismiss: dismissMissingLinkCard } = useMissingLinkCard({
+    selectedStop,
+    onDemandSelection: onDemandStopAgencySlug,
+    catalog: linkCatalog,
+    onDemandSlugs,
+    onDemandEnabled: FEATURES.onDemand,
+    clearSelection: clearMapSelection,
+    clearOnDemand: clearOnDemandLink,
+    otherSelectionOpen: !!(selectedRoute || selectedAgencySlug || searchFocused),
+  });
   useEffect(() => {
     if (!missingRoute) return;
     if (selectedRoute || selectedStop || selectedAgencySlug || searchFocused) { setMissingRoute(null); return; }
@@ -1427,6 +1450,15 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
         if (!fc || !stopId || fc.features.some(f => (f.properties as { stopId?: string } | null)?.stopId === stopId)) return null;
         return <SelectionNoticePanel message={STOP_NOT_FOUND} onClose={clearMapSelection} sidebarLeft={sidebarLeft} searchBarWidth={searchBarWidth} />;
       })()}
+
+      {(showUi || showSelectionUi) && missingLinkCard && !missingRoute && (
+        <SelectionNoticePanel
+          message={missingLinkCard === 'stop' ? STOP_NOT_FOUND : ON_DEMAND_NOT_FOUND}
+          onClose={dismissMissingLinkCard}
+          sidebarLeft={sidebarLeft}
+          searchBarWidth={searchBarWidth}
+        />
+      )}
 
       {(showUi || showSelectionUi) && missingRoute && !selectedRoute && !selectedStop && !selectedAgencySlug && (
         <SelectionNoticePanel
