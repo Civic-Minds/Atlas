@@ -15,10 +15,10 @@
     -62.96
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-2132/latest.zip",
-  "lastFeedExpiry": "20270131",
-  "lastFeedVersion": "UTC: 14-Oct-2026 19:11",
-  "lastRefreshedAt": "2026-10-19",
-  "lastFeedCheckAt": "20261102",
+  "lastFeedExpiry": "20261231",
+  "lastFeedVersion": "UTC: 21-Oct-2026 19:16",
+  "lastRefreshedAt": "2026-11-06",
+  "lastFeedCheckAt": "20261106",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261231",
@@ -35,14 +35,21 @@
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
       "featureCount": 52,
-      "feedExpiry": "20270131"
+      "feedExpiry": "20261231",
+      "routeCount": 12,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-10-19",
-    "scoredAt": "2026-11-02"
+    "checkedAt": "2026-11-06"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
-  "lastPeekedExpiry": "20270131"
+  "lastPeekedExpiry": "20261231",
+  "lastFeedStart": "20261021",
+  "lastServiceWeek": "ca1e61a2db4aa951",
+  "feedObtainedAt": "20261106"
 }
