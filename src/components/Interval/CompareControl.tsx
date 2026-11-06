@@ -1,6 +1,6 @@
 import type { WheelEvent as ReactWheelEvent } from 'react';
 import ModeTab from '../ModeTab';
-import { CalendarClock, Columns2, Lock, LockOpen } from 'lucide-react';
+import { Columns2, Lock, LockOpen } from 'lucide-react';
 import { MAP_BADGE, MAP_BADGE_COUNT, MAP_BADGE_LABEL } from '../../styles';
 import Pill from '../ui/Pill';
 import RoundIconButton from '../ui/RoundIconButton';
@@ -9,7 +9,7 @@ import { SideBadge } from '../ui/SideBadge';
 import { DayPicker, FrequencyPicker, PeriodPicker, PickerSection } from './pickers';
 import { compareSideHeading, type CompareSide } from '../../utils/compareSides';
 import { plural } from '../../../shared/overflowText';
-import { COMPARE_UPCOMING_UNAVAILABLE_NOTE, FREQUENCY_LABEL, PREVIEW_ENTRY_ARIA_LABEL, PREVIEW_ENTRY_LABEL } from '../../content/noticeCopy';
+import { COMPARE_UPCOMING_UNAVAILABLE_NOTE, FREQUENCY_LABEL } from '../../content/noticeCopy';
 
 export { SideBadge } from '../ui/SideBadge';
 export { compareSideLabel, defaultCompareSide, type CompareSide } from '../../utils/compareSides';
@@ -48,22 +48,6 @@ export function CompareMenuItem({ active, onStart, onExit, onDone }: { active: b
       variant="menu" icon={<Columns2 className="h-3.5 w-3.5" aria-hidden="true" />}
       label="Compare" ariaLabel="Compare two maps" active={active}
       onClick={() => { (active ? onExit : onStart)(); onDone(); }}
-    />
-  );
-}
-
-/**
- * CIV-1252 (beta): the way into the network change preview, its own two-map mode. A placeholder entry beside Compare
- * (top bar, or the More menu item) until Ryan picks where it lives; label and icon are placeholders too.
- */
-export function PreviewEntry({ active, onStart, onExit, onDone, variant }: {
-  active: boolean; onStart: () => void; onExit: () => void; onDone?: () => void; variant?: 'menu';
-}) {
-  return (
-    <ModeTab
-      variant={variant} icon={<CalendarClock className="h-3.5 w-3.5" aria-hidden="true" />}
-      label={PREVIEW_ENTRY_LABEL} ariaLabel={PREVIEW_ENTRY_ARIA_LABEL} active={active}
-      onClick={() => { (active ? onExit : onStart)(); onDone?.(); }}
     />
   );
 }

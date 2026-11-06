@@ -30,7 +30,7 @@ import { ON_DEMAND_MODE } from '../../shared/modes';
 import { ATLAS_MODE, FEATURES, VIEWPORT_BBOX_PAD } from '../../shared/config';
 import { countOf, plural } from '../../shared/overflowText';
 import type * as maplibregl from 'maplibre-gl';
-import { CompareSideBar, CompareLinkToggle, CompareTab, CompareMenuItem, PreviewEntry, defaultCompareSide, type CompareSide } from '../components/Interval/CompareControl';
+import { CompareSideBar, CompareLinkToggle, CompareTab, CompareMenuItem, defaultCompareSide, type CompareSide } from '../components/Interval/CompareControl';
 import { compareSideBView, linkCompareMaps } from '../utils/compareMapSync';
 import { DAY_TYPES, type DayType as DayTypeName } from '../../shared/dayTypes';
 import { splitRouteKey } from '../utils/routeKey';
@@ -704,8 +704,8 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   // or every listed file failed to load. Map B then shows the current network with a note.
   const upcomingUnavailable = previewActive && upcoming.indexLoaded
     && (!upcomingAvailable || upcoming.entries.every(e => upcoming.failedSlugs.has(e.slug)));
-  // The way into Preview shows only where some agency has an upcoming network (or Preview is already open).
-  const previewAvailable = FEATURES.upcomingNetwork && compareAvailable && (upcomingAvailable || previewActive);
+  // The way into Preview is tabled (Ryan, 2026-11-05: not a top-bar tab; it will sit on the agency's card). Until
+  // then Preview opens only from a link (cds=upcoming).
   const compareStats = useIntervalStats(compareActive ? compareLayers : EMPTY_LAYERS, {
     query,
     maxHeadway: compareB.maxHeadway,
@@ -741,8 +741,6 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
 
   const startCompare = useCallback(() => { setCompareLinked(true); setCompareSide(defaultCompareSide(compareA)); }, [compareA]);
   const exitCompare = useCallback(() => { setCompareLinked(true); setCompareSide(null); }, []);
-  // CIV-1252: Preview opens both maps on map A's day, time and frequency, so only the network differs.
-  const startPreview = useCallback(() => { setCompareLinked(true); setCompareSide({ ...compareA, dataset: 'upcoming' }); }, [compareA]);
   const handledCompareStart = useRef<number | null>(null);
   useEffect(() => {
     if (!compareStartRequest || !compareAvailable || handledCompareStart.current === compareStartRequest) return;
@@ -1511,20 +1509,12 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
       )}
 
       {viewTabsPortalContainer && compareAvailable && createPortal(
-        <>
-          <CompareTab active={compareActive && !previewActive} onStart={startCompare} onExit={exitCompare} />
-          {previewAvailable && <PreviewEntry active={previewActive} onStart={startPreview} onExit={exitCompare} />}
-        </>,
+        <CompareTab active={compareActive && !previewActive} onStart={startCompare} onExit={exitCompare} />,
         viewTabsPortalContainer,
       )}
 
       {moreMenuPortalContainer && compareAvailable && createPortal(
-        <>
-          <CompareMenuItem active={compareActive && !previewActive} onStart={startCompare} onExit={exitCompare} onDone={() => onMoreMenuDone?.()} />
-          {previewAvailable && (
-            <PreviewEntry variant="menu" active={previewActive} onStart={startPreview} onExit={exitCompare} onDone={() => onMoreMenuDone?.()} />
-          )}
-        </>,
+        <CompareMenuItem active={compareActive && !previewActive} onStart={startCompare} onExit={exitCompare} onDone={() => onMoreMenuDone?.()} />,
         moreMenuPortalContainer,
       )}
 
