@@ -53,8 +53,9 @@ export function tripsPerHourAxisTicks(maxFreq: number, height: number): AxisTick
     const count = Math.floor(maxPerHour / step + 1e-9);
     if (count < 1) return [];
     if (count > maxTicks || (step / maxPerHour) * height < minGap) continue;
-    return Array.from({ length: count }, (_, i) => {
-      const value = step * (i + 1);
+    // CIV-1343: the axis starts at 0, on the chart's bottom edge.
+    return Array.from({ length: count + 1 }, (_, i) => {
+      const value = step * i;
       return { label: String(value), fraction: Math.min(1, value / maxPerHour) };
     }).reverse();
   }
