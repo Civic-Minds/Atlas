@@ -7,7 +7,7 @@
     -120.51
   ],
   "feedUrl": "https://yakimatransit.org/gtfs/yakima_gtfs.zip",
-  "lastFeedExpiry": "20281105",
+  "lastFeedExpiry": "20281106",
   "lastFeedVersion": null,
   "lastRefreshedAt": "2026-11-02",
   "region": "Washington",
@@ -40,14 +40,14 @@
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
       "featureCount": 33,
-      "feedExpiry": "20281105",
+      "feedExpiry": "20281106",
       "routeCount": 23,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-05"
+    "checkedAt": "2026-11-06"
   },
   "lastPeekedExpiry": "20351231",
   "feedRefreshStatus": "current",
