@@ -844,12 +844,25 @@ export function nightServicePasses(
     // it is that morning's earlier night trips and the previous service day's departures (its evening), in the same
     // minutes (the previous day's 22:00 is 1320 before a first bus at 3:00 written 27:00). So a 22:00 last bus and a
     // 3:00 first fail in both notations, as does 21:55. With no bus before at all, the wait from 2:00 counts.
-    const before = (candidates: Iterable<number>) => { let p: number | undefined; for (const t of candidates) if (t < first && (p == null || t > p)) p = t; return p; };
-    const edgeOk = (p: number | undefined) => (p == null ? first - STRETCH_NIGHT_START_MIN <= NIGHT_EDGE_MAX_WAIT_MIN : first - p <= limit);
+    const before = (candidates: Iterable<number>, from = first) => { let p: number | undefined; for (const t of candidates) if (t < from && (p == null || t > p)) p = t; return p; };
+    const edgeOk = (p: number | undefined, from = first) => (p == null ? from - STRETCH_NIGHT_START_MIN <= NIGHT_EDGE_MAX_WAIT_MIN : from - p <= limit);
+    const sameMorning = all.filter(t => !raw.has(t));
     if (raw.has(first)) {
       if (!edgeOk(before(times))) return false;
+      // CIV-1344: a night written in both notations (MiWay 3: 26:05 and 26:35 past 24:00 on the evening's day, then
+      // 02:57 on the morning's own day). The evening-day trips run only after this day type's own evening, but the
+      // morning-day ones also run after each previous service day's (Monday's after Sunday's), so each of those
+      // evenings is checked as well: its own trips and the morning-day ones, from its first bus in the window. A day
+      // with no departures at the stop (no service that day, or a one-date cut) has no evening to check.
+      if (previousDays && previousDays.length > 0 && sameMorning.some(t => t >= STRETCH_NIGHT_START_MIN && t <= STRETCH_NIGHT_END_MIN)) {
+        for (const evening of previousDays) {
+          if (evening.length === 0) continue;
+          const night = [...sameMorning, ...evening];
+          const from = night.reduce<number | undefined>((m, t) => (t >= STRETCH_NIGHT_START_MIN && t <= STRETCH_NIGHT_END_MIN && (m == null || t < m) ? t : m), undefined);
+          if (from != null && !edgeOk(before(night, from), from)) return false;
+        }
+      }
     } else {
-      const sameMorning = all.filter(t => !raw.has(t));
       const evenings = previousDays && previousDays.length > 0 ? previousDays : [times];
       if (!evenings.every(evening => edgeOk(before([...sameMorning, ...evening])))) return false;
     }
