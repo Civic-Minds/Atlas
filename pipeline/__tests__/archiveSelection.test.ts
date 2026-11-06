@@ -96,6 +96,20 @@ describe('selectArchiveForAgency', () => {
     expect(selection.reason).toMatch(/cannot tell which archived zip is newest/);
   });
 
+  it('st-george (#1355): the zip carrying the live feed\'s expiry wins over an older upload with a later placeholder date', () => {
+    const objects = [
+      obj('st-george', '20310130-873a2da3c5cb110b.zip', '2026-10-13T12:00:00Z'),
+      obj('st-george', '20271231-79ad5c2333e514ce.zip', '2026-11-05T02:10:00Z'),
+    ];
+    const selection = selectArchiveForAgency(objects, { lastFeedExpiry: '20271231' });
+    expect(selection).toMatchObject({ ok: true, key: 'gtfs/archive/st-george/20271231-79ad5c2333e514ce.zip' });
+    expect(selection.reason).toMatch(/matching the live feed/);
+    // Legitimate: with the old feed live, the newest upload is not the live feed and nothing else matches: refused, as before.
+    expect(selectArchiveForAgency(objects, { lastFeedExpiry: '20310130' })).toMatchObject({ ok: true, key: 'gtfs/archive/st-george/20310130-873a2da3c5cb110b.zip' });
+    expect(selectArchiveForAgency(objects, { lastFeedExpiry: '20281106' })).toMatchObject({ ok: false, noArchive: false });
+    expect(selectArchiveForAgency(objects, { lastFeedExpiry: null })).toMatchObject({ ok: false, noArchive: false });
+  });
+
   it('refuses tied upload times with no service dates', () => {
     const objects = [
       obj('x', 'unknown-aaaa.zip', '2026-10-08T23:16:33Z'),
@@ -120,7 +134,7 @@ describe('selectByFeedDates: dates inside each zip when key dates and uploads di
   const TODAY = '20261014';
   const dates = (feedStart: string | null, feedExpiry: string | null, feedVersion: string | null = null): FeedDates => ({ feedStart, feedExpiry, feedVersion });
   const pickAfterRefusal = (objects: ArchiveObject[], lastFeedExpiry: string, peeked: Record<string, FeedDates>) => {
-    const first = selectArchiveForAgency(objects, { lastFeedExpiry });
+    const first = selectArchiveForAgency(objects, { lastFeedExpiry }, TODAY);
     expect(first.ok).toBe(false);
     return selectByFeedDates(objects.map(obj => ({ obj, dates: peeked[obj.key.split('/').pop()!] })), TODAY, first.reason);
   };
@@ -158,6 +172,19 @@ describe('selectByFeedDates: dates inside each zip when key dates and uploads di
     const selection = pickAfterRefusal(objects, '20271231', { '20260908.zip': same, '20260805.zip': same });
     expect(selection).toMatchObject({ ok: true, key: `gtfs/archive/${slug}/20260805.zip` });
     expect(selection.reason).toContain('2 archived copies of the same feed');
+  });
+
+  it('st-george (#1355): a zip in service whose own end date is the live feed\'s expiry wins over one running later by a placeholder', () => {
+    const old = { obj: obj('st-george', '20310130-873a2da3c5cb110b.zip', '2026-10-13T12:00:00Z'), dates: { feedStart: '20251013', feedExpiry: '20310130', feedVersion: '20251013', feedInfoEnd: null } };
+    const city = { obj: obj('st-george', '20271231-79ad5c2333e514ce.zip', '2026-11-05T02:10:00Z'), dates: { feedStart: '20261101', feedExpiry: '20271231', feedVersion: '20261101', feedInfoEnd: null } };
+    expect(selectByFeedDates([old, city], '20261106', 'why', '20271231')).toMatchObject({ ok: true, key: city.obj.key });
+    expect(selectByFeedDates([old, city], '20261106', 'why', '20271231').reason).toMatch(/live feed's expiry/);
+    // Legitimate: no live expiry, or one matching no zip, keeps the latest-running zip as before.
+    expect(selectByFeedDates([old, city], '20261106', 'why')).toMatchObject({ ok: true, key: old.obj.key });
+    expect(selectByFeedDates([old, city], '20261106', 'why', '20281106')).toMatchObject({ ok: true, key: old.obj.key });
+    // Legitimate: copies of the live feed tied on its date still take the newest upload (texarkana).
+    const copy = { obj: obj('st-george', '20271231-bbbbbbbbbbbbbbbb.zip', '2026-11-06T02:10:00Z'), dates: city.dates };
+    expect(selectByFeedDates([old, city, copy], '20261106', 'why', '20271231')).toMatchObject({ ok: true, key: copy.obj.key });
   });
 
   it('sacrt: stays refused when no archived zip is in service', () => {
