@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { decideRefreshSkipUnchanged, feedFileDate, lowerStoredFeedExpiry, isFeedExpired, markFeedStale, recordedFeedExpiry, routeLineCount, shouldReplaceExpiredFeed, shouldSkipAllExpiredFeeds, shouldStampFeedMeta, stampFeedMeta, stampReprocessedFeedExpiry, stampSupplementalFeedMeta } from '../refreshMeta.js';
+import { candidateIsOlderThanActive, decideRefreshSkipUnchanged, feedFileDate, lowerStoredFeedExpiry, isFeedExpired, markFeedStale, recordedFeedExpiry, routeLineCount, shouldReplaceExpiredFeed, shouldSkipAllExpiredFeeds, shouldStampFeedMeta, stampFeedMeta, stampReprocessedFeedExpiry, stampSupplementalFeedMeta } from '../refreshMeta.js';
 import { isCurrentProductionFeed, isStaleProductionFeed } from '../../shared/feedAvailability.js';
 
 describe('feed expiry checks', () => {
@@ -413,5 +413,40 @@ describe('feedFileDate (#1253)', () => {
   it('with no recorded date it takes the zip\'s own date, never the last refresh (Miami: April file, refreshed Sep 17)', () => {
     expect(feedFileDate({ newFile: false, runDate: '20261102', feedObtainedAt: null, zipDate: '20260421' })).toBe('20260421');
     expect(feedFileDate({ newFile: false, runDate: '20261102', feedObtainedAt: undefined, zipDate: null })).toBeNull();
+  });
+});
+
+describe('candidateIsOlderThanActive: a placeholder stamp sets no floor (CIV-1351)', () => {
+  const refreshed = '2026-11-02';
+
+  it('st-george: the city feed is not older than a stamp recorded from the 2031 placeholder', () => {
+    // The rebuild stamped the old timetable back: 20310130 capped to 20281106. The refresh of 2026-11-06 01:04 refused
+    // the city feed as "20271231 < 20310130"; with the cap it would still read 20271231 < 20281106.
+    const active = { lastFeedExpiry: '20281106', lastPeekedExpiry: '20310130', lastRefreshedAt: refreshed };
+    expect(candidateIsOlderThanActive({ candidateExpiry: '20271231', existingExpiry: active.lastFeedExpiry, existingPeekedExpiry: active.lastPeekedExpiry, recordedAt: active.lastRefreshedAt })).toBe(false);
+    expect(candidateIsOlderThanActive({ candidateExpiry: '20271231', existingExpiry: '20310130', existingPeekedExpiry: '20310130', recordedAt: refreshed })).toBe(false);
+  });
+
+  it('an uncapped feed_info placeholder (dutchess 20510930) and an old record without a peeked end (appleton 20991231) set no floor either', () => {
+    expect(candidateIsOlderThanActive({ candidateExpiry: '20270601', existingExpiry: '20510930', existingPeekedExpiry: '20510930', recordedAt: refreshed })).toBe(false);
+    expect(candidateIsOlderThanActive({ candidateExpiry: '20270102', existingExpiry: '20991231', existingPeekedExpiry: null, recordedAt: '2026-08-10' })).toBe(false);
+    // No record date at all: read against today.
+    expect(candidateIsOlderThanActive({ candidateExpiry: '20270102', existingExpiry: '20991231', todayYmd: '20261106' })).toBe(false);
+  });
+
+  it('a real stamp still refuses an older or undated download, and a stamp two years out to the day is still a floor', () => {
+    // tulsa-transit, 2026-11-03: 20261205 < 20261231, stamp recorded 2026-08-10.
+    expect(candidateIsOlderThanActive({ candidateExpiry: '20261205', existingExpiry: '20261231', existingPeekedExpiry: null, recordedAt: '2026-08-10' })).toBe(true);
+    expect(candidateIsOlderThanActive({ candidateExpiry: null, existingExpiry: '20261231', existingPeekedExpiry: '20261231', recordedAt: refreshed })).toBe(true);
+    expect(candidateIsOlderThanActive({ candidateExpiry: '20270601', existingExpiry: '20281102', existingPeekedExpiry: '20281102', recordedAt: refreshed })).toBe(true);
+    expect(candidateIsOlderThanActive({ candidateExpiry: '20270601', existingExpiry: '20281103', existingPeekedExpiry: '20281103', recordedAt: refreshed })).toBe(false);
+    // The record date, not today, decides: prince-albert's 20281229 stays a placeholder after 2026-12-30.
+    expect(candidateIsOlderThanActive({ candidateExpiry: '20270630', existingExpiry: '20281106', existingPeekedExpiry: '20281229', recordedAt: refreshed, todayYmd: '20270115' })).toBe(false);
+  });
+
+  it('a placeholder candidate is never older, and no stamp means no floor, as before', () => {
+    expect(candidateIsOlderThanActive({ candidateExpiry: '20991231', existingExpiry: '20261231', existingPeekedExpiry: '20261231', recordedAt: refreshed })).toBe(false);
+    expect(candidateIsOlderThanActive({ candidateExpiry: '20261205', existingExpiry: null })).toBe(false);
+    expect(candidateIsOlderThanActive({ candidateExpiry: '20261205' })).toBe(false);
   });
 });
