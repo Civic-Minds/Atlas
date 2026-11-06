@@ -7,7 +7,8 @@
     37.1,
     -113.58
   ],
-  "feedUrl": "https://files.mobilitydatabase.org/mdb-111/latest.zip",
+  "feedUrl": "https://apps.sgcityutah.gov/GTFS_2025-10-13.zip",
+  "preprocess": "st-george-labels",
   "lastFeedExpiry": "20310130",
   "lastFeedVersion": null,
   "lastRefreshedAt": "2026-08-10",

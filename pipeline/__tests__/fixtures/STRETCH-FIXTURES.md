@@ -28,6 +28,18 @@ Each folder is one route's trips on the services active on one date, cut from th
 | septa-113-44-weekday | `_feeds/septa/20270220-fresh.zip` | 2026-10-21 | 113, 44 |
 | miway-45-weekday | `_feeds/miway/20261220-fresh.zip` | 2026-10-21 | 45 |
 | translink-321-weekday | `_feeds/translink/20270103-fresh.zip` | 2026-10-21 | 321 |
+| rtd-denver-first-trips-weekday | `_feeds/rtd-denver/20270102-fresh.zip` | 2026-10-21 | A, 45, 15 |
+| lacmta-240-owl-weekday | `_feeds/lacmta/20270401-fresh.zip` | 2026-10-21 | 240 |
+| translink-n24-handover-weekday | `_feeds/translink/20270103-fresh.zip` | 2026-10-23 + 2026-10-24 (merged: a Friday and the Saturday after it, for the Friday-night handover) | N24, 014, 240, 228, 255 |
+| translink-n24-handover-no-saturday | `_feeds/translink/20270103-fresh.zip` | 2026-10-21 (weekday service only) | N24, 014, 240, 228, 255 |
+| translink-n24-alone-weekday | `_feeds/translink/20270103-fresh.zip` | 2026-10-21 | N24 |
+| stm-376-handover-weekday | `_feeds/stm/20261025-fresh.zip` | 2026-10-21 | 376, 470, 68, 215, 205 |
+| translink-n24-night-routes-weekday | `_feeds/translink/20270103-fresh.zip` | 2026-10-21 | N24, N20, N8, N19, N35 |
+| samtrans-397-saturday-night | `_feeds/samtrans/20261114-fresh.zip` | 2026-10-24 + 2026-10-25 (merged) | 397, 292, ECR, 296O, ECRO |
+| samtrans-397-saturday-only | same | 2026-10-24 | same |
+| samtrans-397-sunday-night | same | 2026-10-25 + 2026-10-26 (merged) | same |
+| rtd-denver-first-trips-weekend | `_feeds/rtd-denver/20270102-fresh.zip` | 2026-10-24 + 2026-10-25 (merged) | A, 45, 15 |
+| lacmta-240-owl-weekend | `_feeds/lacmta/20270401-fresh.zip` | 2026-10-24 + 2026-10-25 (merged) | 240 |
 | ttc-110-79-sunday | `_feeds/ttc/20261031-fresh.zip` | 2026-10-25 | 110, 79 |
 | ttc-952-weekday | `_feeds/ttc/20261031-fresh.zip` | 2026-10-21 | 952 |
 | go-88-saturday | `_feeds/go/20261127-fresh.zip` | 2026-10-24 | 88 |
@@ -61,3 +73,7 @@ Where the middle-stop number differs from the spec's dispatch-end or hand value:
 - TTC 63: the oracle counts both the arriving and the departing trip at Ossington (113 departures,
   median 2); the selector, like stopDepsByGroup, counts a chained trip's end once, as the next
   trip's departure.
+
+- soundtransit-1-line-weekday (CIV-226): Sound Transit 1 Line, cut 2026-11-04 from the 2027-03-28 archive zip;
+  its calendar_dates removals are dropped so the pinned read week (from 2026-11-09) has service. Trips alternate
+  between the two Federal Way Downtown platforms S07-T1 and S07-T2 (children of S07), 60 each per direction.

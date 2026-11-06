@@ -106,6 +106,7 @@ describe('older names and odd values still read', () => {
 
   it('Night and Frequent Service leave their defaults out', () => {
     expect(readLink('?nightFrequency=30', NIGHT_URL).frequency).toBe(30);
+    expect(readLink('?nightFrequency=90', NIGHT_URL).frequency).toBe(90);
     expect(readLink('?nightFrequency=45', NIGHT_URL).frequency).toBeUndefined();
     expect(linkUpdate(NIGHT_URL, { frequency: 60 })).toEqual({ nightFrequency: null });
     expect(readLink('?days=Saturday,Weekday&frequency=30&window=extended', FREQUENT_URL)).toEqual({ days: ['Weekday', 'Saturday'], frequency: 30, window: 'extended' });

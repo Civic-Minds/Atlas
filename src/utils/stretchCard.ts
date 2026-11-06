@@ -7,6 +7,7 @@
 import type { ShapeProperties, TimePeriod } from '../hooks/useIntervalStats';
 import { NO_PERIOD_SERVICE_TILE_VALUE } from '../../shared/pmtilesProps';
 import { routeFilterHeadway } from '../../shared/routeHeadwayFilter';
+import { routeRunsThroughNight } from '../../shared/nightService';
 import { rowReadsPeriodEdge } from './effectiveHeadway';
 
 type PeriodKey = Exclude<TimePeriod, 'all'>;
@@ -136,7 +137,9 @@ export function routeContract(features: readonly ShapeProperties[], period: Time
   const range = f.stretchPeriodRange?.[key] ?? null;
   return {
     filterValue: typeof value === 'number' ? value : null,
-    runs: f.routeRunsByPeriod?.[key] ?? value != null,
+    // #1322: Overnight runs only where the route runs through the night by the Night Service test (shared/nightService.ts),
+    // not by the stored 2-6 AM midpoint flag that counts a 3 AM first trip; CIV-1331: in every direction.
+    runs: key === 'overnight' ? routeRunsThroughNight(features) : f.routeRunsByPeriod?.[key] ?? value != null,
     range: range && range.length === 2 && range[0] !== range[1] ? [Math.min(range[0], range[1]), Math.max(range[0], range[1])] : null,
   };
 }

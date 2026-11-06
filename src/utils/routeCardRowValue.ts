@@ -5,6 +5,7 @@ import { headwayAboutRange } from './headwayText';
 import { branchDisplayHourHeadway } from './routeFacts';
 import { rowTrips, unsteadyDirectionFallback } from './rowTrips';
 import { hasRegularServiceInPeriod, isOneGapRow, variantRowHeadway, type RouteContract } from './stretchCard';
+import { rowRunsThroughNight } from '../../shared/nightService';
 
 /** The card-level facts every row of the route card reads (CIV-992). */
 export interface RouteCardRowContext {
@@ -83,7 +84,7 @@ export function routeCardRowValue(d: ShapeProperties, ctx: RouteCardRowContext):
   // "every 71" beside Night Service 30 (TTC 301).
   const nightRow = period === 'overnight' && stretchMode && hoveredHour == null && d.directionFilterHeadwayByPeriod !== undefined;
   const nightOwn = nightRow ? d.directionFilterHeadwayByPeriod?.overnight : undefined;
-  const nightH = nightRow ? (typeof nightOwn === 'number' && d.nightService60 === true ? contract?.filterValue ?? null : null) : undefined;
+  const nightH = nightRow ? (typeof nightOwn === 'number' && rowRunsThroughNight(d) ? contract?.filterValue ?? null : null) : undefined;
   const displayH = nightRow ? nightH! : variantH !== undefined ? variantH : pooledH ?? uneven?.worst ?? directionFallback ?? ownH;
   // #934 and D6: the main stretch's row names a late start, an early end or one gap inside
   // steady service, in place of a long wait or "limited"; the dot keeps the filter's colour.

@@ -4,7 +4,7 @@ import type { DayType } from '../../../../shared/dayTypes';
 import { frequentServiceBand, frequentServiceFeatureKey, frequentServiceQueryKey, type FrequentServiceFrequency, type FrequentServiceWindow } from '../../../../shared/frequentService';
 import { effectiveMode } from '../../../../shared/modes';
 import { clipToStopIds } from '../../../utils/lineClip';
-import { nightServiceKey, type NightServiceFrequency } from '../../../../shared/nightService';
+import { rowNightGrade, rowPassesNightGrade, type NightServiceFrequency } from '../../../../shared/nightService';
 
 type MapRef = React.RefObject<maplibregl.Map | null>;
 
@@ -53,11 +53,14 @@ export function selectNightServiceFeatures(
   if (!layers) return [];
   return Object.values(layers).flatMap(collection => collection.features.filter(feature => {
     const properties = feature.properties as Record<string, any> | null;
-    return feature.geometry.type === 'LineString' && (properties?.[nightServiceKey(nightServiceFrequency)] === true || (nightServiceFrequency === 60 && properties?.nightService === true));
-  }).flatMap((feature): GeoJSON.Feature[] => {
-    // A route that runs at night on only part of it draws just the stops it serves.
+    return feature.geometry.type === 'LineString' && rowPassesNightGrade(properties, nightServiceFrequency);
+  }).flatMap((source): GeoJSON.Feature[] => {
+    // CIV-1329: the row's own grade colours it (30 darker, 90 lighter).
+    const feature = { ...source, properties: { ...source.properties, nightGrade: rowNightGrade(source.properties) } };
+    // A route that runs at night on only part of it draws just the stops it serves (the part is set at the
+    // loosest grade the route passes, 60 or 90).
     const p = feature.properties as Record<string, any> | null;
-    if (nightServiceFrequency !== 60 || p?.nightServicePartOfRoute !== true || !Array.isArray(p.nightServiceStops)) return [feature];
+    if (nightServiceFrequency === 30 || p?.nightServicePartOfRoute !== true || !Array.isArray(p.nightServiceStops)) return [feature];
     const pieces = clipToStopIds((feature.geometry as GeoJSON.LineString).coordinates, p.stopOrder, p.stopPositions, p.nightServiceStops);
     if (!pieces) return [feature];
     return pieces.map(coordinates => ({ ...feature, geometry: { type: 'LineString', coordinates } }));

@@ -54,7 +54,7 @@ describe('processAgencyFeeds (main feed + supplementals)', () => {
     expect(routeArtifactSchemaError(artifact, 'fixture-metro')).toBeNull();
     expect(routes.some((f: any) => f.properties.routeShortName === 'MR' && f.properties.routeType === 0)).toBe(true);
     expect(routes.some((f: any) => f.properties.routeShortName === '4' && f.properties.routeType === 3)).toBe(true);
-    expect(result.supplementalFeatureCounts).toEqual([{ url: RAIL_URL, featureCount: expect.any(Number) }]);
+    expect(result.supplementalFeatureCounts).toEqual([{ url: RAIL_URL, featureCount: expect.any(Number), referenceDate: expect.stringMatching(/^\d{8}$/), serviceWeekStart: expect.anything() }]);
     expect(result.supplementalFeatureCounts[0].featureCount).toBeGreaterThan(0);
     const stopsMeta = JSON.parse(result.stopsMetaJson);
     expect(stopsMeta.stopCount).toBe(stopsMeta.stops.length);

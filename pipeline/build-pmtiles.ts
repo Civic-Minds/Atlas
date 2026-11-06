@@ -5,7 +5,7 @@ import { execSync } from 'child_process';
 import { LOADED_ENV_FILE } from './loadEnv.js';
 import { IMMUTABLE_CACHE_CONTROL, r2List, r2Put, r2PutFile, r2PublicUrl } from './r2';
 import { parseRunPrefixArg, stagedAgencySlugs } from './runArtifacts.js';
-import { getAgencyArtifactUrls, pmtilesMinZoomForHeadway } from '../shared/config.js';
+import { getAgencyArtifactUrls } from '../shared/config.js';
 import { runWithConcurrency } from './utils.js';
 import { runStopClustering } from './stopClustering.js';
 import { prepareAgencyRouteFeaturesForTiles } from './prepareAgencyRoutesForTiles.js';
@@ -80,7 +80,6 @@ export function buildOverviewRoutes(routes: Feature[]): Feature[] {
           'weekdayTierVariation',
           'edgeGapAllowance',
           'routeHasIrregularDirection', 'worstDirectionMiddayCap', 'routeAllDayHeadway', 'routeMiddayCap', 'headway', 'minStopHeadway', 'worstDirectionHeadway',
-          'tippecanoe:minzoom',
         ].includes(key)
         || /^(pch|wdpch|hps|msph|wdph|hph|pws|rv|rr)_/.test(key)
       )),
@@ -302,14 +301,9 @@ async function main() {
     console.log(`Stop groups: ${groups} for ${allStops.length} stops.`);
   }
 
-  // LOD: annotate each route feature with headway minzoom
-  // tippecanoe reads this property to set the minimum zoom at which a feature appears in tiles.
-  // ≤10 min (frequent rapid) → visible from zoom 0; less frequent tiers reveal progressively later.
-  for (const f of allRoutes) {
-    const hw = (f.properties?.headway ?? Infinity) as number;
-    const minzoom = pmtilesMinZoomForHeadway(hw);
-    f.properties['tippecanoe:minzoom'] = minzoom;
-  }
+  // No per-feature minimum zoom (#1250): the one written here as a property was never read by
+  // tippecanoe, and the zoomed-out map hides slower routes with the runtime zoom rule
+  // (MAP_ZOOM_HEADWAY_STEPS), which follows the chosen period and the filter's own number.
 
   // Write temporary files
   const routesPath = path.join(tmpDir, 'routes.geojson');

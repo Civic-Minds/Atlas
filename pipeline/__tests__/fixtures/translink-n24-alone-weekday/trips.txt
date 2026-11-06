@@ -1,0 +1,11 @@
+route_id,service_id,trip_id,trip_headsign,trip_short_name,direction_id,block_id,shape_id,wheelchair_accessible,bikes_allowed
+6837,1,15514275,N24 Lynn Valley NightBus,,0,2201446,322406,0,1
+6837,1,15514276,N24 Lynn Valley NightBus,,0,2200392,322406,0,1
+6837,1,15514277,N24 Lynn Valley NightBus,,0,2201527,322406,0,1
+6837,1,15514278,N24 Lynn Valley NightBus,,0,2201051,322406,0,1
+6837,1101,15514280,N24 Lynn Valley NightBus,,0,2201446,322406,0,1
+6837,1,15514281,N24 Lynn Valley NightBus,,0,2203820,322406,0,1
+6837,1,15514282,N24 Lynn Valley NightBus,,0,2201527,322406,0,1
+6837,1,15514283,N24 Lynn Valley NightBus,,0,2203805,322406,0,1
+6837,1,15514284,N24 Downtown NightBus,,1,2201527,322411,0,1
+6837,1,15514285,N24 Downtown NightBus,,1,2203820,322410,0,1

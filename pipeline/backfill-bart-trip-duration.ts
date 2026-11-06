@@ -25,6 +25,8 @@ import { normalizeGtfs, type GtfsTransformOptions } from './preprocess/run.js';
 import { effectiveFeedExpiry } from './feedFreshness.js';
 import { computeRailTripDurations, type RouteTripDuration } from './trip-duration.js';
 import { readFeedEvidence } from './historyWeekend.js';
+import { readQualityRows } from './historyRefQuality.js';
+import { firstFullWeekAnchor } from './serviceDays.js';
 
 const SLUG = 'bart';
 const write = process.argv.includes('--write');
@@ -82,7 +84,8 @@ async function main() {
       }) ?? gtfs.feedInfo?.[0]?.feed_version ?? fallbackPeriodKeyFromFilename(key);
 
       const routes = computeRailTripDurations(gtfs, SLUG);
-      const { refDate } = await readFeedEvidence(buf);
+      // CIV-1101 Part B: an archived zip is read at its own first full week in force, not the run date.
+      const { refDate } = await readFeedEvidence(buf, { anchor: firstFullWeekAnchor(await readQualityRows(buf)) ?? undefined });
       periods.push({ periodKey: sanitizeLabel(periodKey), refDate, key, routes });
       console.log(`  ${key} -> period ${periodKey}, ${routes.length} rail route(s)`);
     } catch (err) {

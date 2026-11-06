@@ -28,6 +28,7 @@ Route-days without stretch data (no direction_id in the feed, partial-weekday ro
 - The filter counts a row's period value (`rv_`, `routeAllDayHeadway`) only on a row that is not `span` and runs in the period. Route lists, agency and area pages, Compare and search read `routeFilterContract` (`src/utils/stretchCard.ts`): the lowest `routeFilterHeadway` across the route's rows, so a list number always passes the filter at that number, and a route with none reads "Irregular" (#1247, CIV-1238).
 - The route chooser's dot reads `routeFilterHeadway`, like the route card dot and the map line (#1246, `src/utils/chooserRoutes.ts`).
 - `shared/worstDirection.ts` keeps the worst-direction values for route-days without stretch data.
+- **Zoomed out, slower routes fade** (the runtime zoom rule, `MAP_ZOOM_HEADWAY_STEPS` in `shared/config.ts`, applied as line opacity in `src/utils/colors.ts`): below zoom 7 only routes every 10 min or better draw, at zoom 7 and 8 routes every 20 or better, from zoom 9 everything. It reads the same number the filter reads (the all-day value, or the chosen period's), so it follows the period and never disagrees with the filter. It is the only zoom rule: the tiles carry no per-feature minimum zoom (#1250, Ryan 2026-11-03: the written one was never applied and was removed).
 - `shared/sharedStops.ts` reads the pooled values at shared stops (processing: `pipeline/sharedStretch.ts`). A shared stretch is judged stop by stop with the same `featurePassesHeadwayFilter` (`src/utils/frequencySegments.ts`).
 
 ## Reaching the map

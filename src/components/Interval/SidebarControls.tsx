@@ -41,7 +41,7 @@ import { trackEvent } from '../../lib/analytics';
 import type { CompareSide } from '../../utils/compareSides';
 import { FEATURES } from '../../../shared/config';
 import { PHONE_MEDIA_QUERY, useMediaQuery } from '../../hooks/useMediaQuery';
-import { buildStopRoutes } from '../../utils/stopRoutes';
+import { buildStopRoutes, stopCardAgencies } from '../../utils/stopRoutes';
 import { compareAgencyName, compareHeadwayThenNumber, compareRouteNumber } from '../../utils/sortCompare';
 import { SIDEBAR_CARD_BODY } from './cardUi';
 import { useRecentSearches } from '../../hooks/useRecentSearches';
@@ -478,7 +478,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       slug, toStation(props), ownSiblings.map(toStation), siblingIdsByAgency, routesByAgency,
     );
 
-    // CIV-1052: each route's periods at the stop and its station, so the card can tell idle routes from running ones.
+    // CIV-1052: each route's periods at the stop and its station, so the card can tell a route with no trips here in the period (left off, CIV-1310) from one with trips but no number (#1278).
     const routePeriodBitsByAgency: Record<string, Map<string, Array<number | undefined>>> = {};
     for (const f of allFeatures) {
       const p = f.properties as any;
@@ -517,12 +517,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     })
     : []), [currentStop, nonCorridorLayers, currentDay, period]);
 
-  const stopAgencies = useMemo(() => {
-    const seen = new Set<string>();
-    return stopRoutes
-      .map(r => r.agencyName)
-      .filter(n => { if (seen.has(n)) return false; seen.add(n); return true; });
-  }, [stopRoutes]);
+  const stopAgencies = useMemo(() => stopCardAgencies(stopRoutes, selectedStop, agencies), [stopRoutes, selectedStop, agencies]);
 
   const filteredStopRoutes = useMemo(() =>
     stopAgencyFilter ? stopRoutes.filter(r => r.agencyName === stopAgencyFilter) : stopRoutes,

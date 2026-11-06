@@ -1,0 +1,4 @@
+route_id,agency_id,route_short_name,route_long_name,route_desc,route_type,route_url,route_color,route_text_color
+15,RTD,15,East Colfax Avenue,This Route Travels Eastbound & Westbound,3,https://app.rtd-denver.com/nextride/route/15,0076CE,FFFFFF
+45,RTD,45,Montbello via 51st/GVR,This Route Travels Eastbound & Westbound,3,https://app.rtd-denver.com/nextride/route/45,0076CE,FFFFFF
+A,RTD,A,Union Station to Denver Airport Station,This Route Travels Eastbound & Westbound,2,https://app.rtd-denver.com/nextride/route/A,57C1E9,FFFFFF

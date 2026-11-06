@@ -64,7 +64,7 @@ export default function RegionPage({ data: dataProp }: { data?: RegionPageData }
             <div className="min-w-0">
               <PageTitle>{regionPageH1(data)}</PageTitle>
             </div>
-            <ArrowLink href={mapHref}>View on map</ArrowLink>
+            <ArrowLink className="shrink-0 whitespace-nowrap" href={mapHref}>View on map</ArrowLink>
           </div>
           <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--text-muted)]">
             {intro.lead}{joiners.opener}

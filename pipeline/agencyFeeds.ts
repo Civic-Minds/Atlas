@@ -73,10 +73,12 @@ export interface AgencyProcessOverrides {
   /** Resolved fare (e.g. from fare-overrides.json); falls back to the agency's legacy `fare`. */
   manualBaseFare?: number;
   force?: boolean;
-  /** History v2 backfill only: read the feed at this reference date (YYYYMMDD) instead of the detected one. */
+  /** Read the feed at this reference date (YYYYMMDD) instead of picking one (tests, one-off tools). */
   referenceDate?: string;
-  /** History backfills: keep the old reference-date picker (the new one, stage 4, reads the week from the run date). */
+  /** Keep the old reference-date picker (the new one, stage 4, reads the week from the anchor). */
   legacyReferenceDate?: boolean;
+  /** The new picker's anchor (YYYYMMDD); serviceAnchor() of the run date when unset. History backfills pass the archived zip's own (CIV-1101 Part B). */
+  serviceAnchor?: string;
   /** When Atlas first obtained the main feed's file (YYYYMMDD), for the listing-end safeguard. */
   fileDate?: string | null;
 }
@@ -87,8 +89,8 @@ export interface SupplementalFeed {
 }
 
 export interface AgencyFeedResult extends ProcessResult {
-  /** Feature count contributed by each supplemental feed, in input order. */
-  supplementalFeatureCounts: Array<{ url: string; featureCount: number }>;
+  /** Feature count contributed by each supplemental feed, in input order, and the reference date it was read at. */
+  supplementalFeatureCounts: Array<{ url: string; featureCount: number; referenceDate: string; serviceWeekStart: string | null }>;
   /**
    * Which feed each entry of the merged `geojson.features` came from, in order: the main feed
    * first (url null), then each supplemental. Counts are the merged array's own slice sizes.
@@ -128,6 +130,7 @@ export function agencyProcessOptions(agency: AgencyFeedConfig, overrides: Agency
     // (pickRiderWeek). ATLAS_LEGACY_REFERENCE_DATE=1 is the kill switch back to the old picker.
     ...(overrides.legacyReferenceDate || process.env.ATLAS_LEGACY_REFERENCE_DATE === '1' ? {} : { riderWeek: true }),
     ...(overrides.fileDate ? { fileDate: overrides.fileDate } : {}),
+    ...(overrides.serviceAnchor ? { serviceAnchor: overrides.serviceAnchor } : {}),
   };
 }
 
@@ -227,6 +230,8 @@ export async function processAgencyFeeds(
   const runningTimes: Record<string, unknown> = {};
   // CIV-1076: routes paused in the read week, and when each runs again; a supplemental feed's add to the main feed's.
   const resumingRoutes: Record<string, string> = { ...(primaryCollection.resumingRoutes ?? {}) };
+  // CIV-1275: direction-split merges (#1285) of every feed, so History can fold the halves' old keys.
+  const directionSplits = [...(primary.directionSplits ?? [])];
   const corridorFeatures = (JSON.parse(primary.corridorsGeojson) as FeatureCollection).features;
   const stopsIndex = JSON.parse(primary.stopsJson) as Record<string, unknown>;
   const tripsIndex = JSON.parse(primary.tripsJson) as Record<string, unknown>;
@@ -255,13 +260,14 @@ export async function processAgencyFeeds(
     featureSources.push({ url, count: suppCollection.features.length });
     Object.assign(runningTimes, suppCollection.runningTimes ?? {});
     for (const [id, date] of Object.entries(suppCollection.resumingRoutes ?? {})) resumingRoutes[id] ??= date;
+    directionSplits.push(...(supp.directionSplits ?? []));
     corridorFeatures.push(...(JSON.parse(supp.corridorsGeojson) as FeatureCollection).features);
     Object.assign(stopsIndex, JSON.parse(supp.stopsJson));
     Object.assign(tripsIndex, JSON.parse(supp.tripsJson));
     stopsMeta.stops.push(...(JSON.parse(supp.stopsMetaJson) as StopsMeta).stops);
     shapeAnomalies.push(...(supp.shapeAnomalies ?? []));
     featureCount += supp.featureCount;
-    supplementalFeatureCounts.push({ url, featureCount: supp.featureCount });
+    supplementalFeatureCounts.push({ url, featureCount: supp.featureCount, referenceDate: supp.referenceDate, serviceWeekStart: supp.serviceWeekStart });
   }
   stopsMeta.stopCount = stopsMeta.stops.length;
   Object.assign(runningTimes, primaryCollection.runningTimes ?? {});
@@ -272,7 +278,7 @@ export async function processAgencyFeeds(
 
   return {
     ...primary,
-    geojson: JSON.stringify({ type: 'FeatureCollection', atlasSchemaVersion: ROUTE_ARTIFACT_SCHEMA_VERSION, features, runningTimes, ...(Object.keys(resumingRoutes).length ? { resumingRoutes } : {}) }),
+    geojson: JSON.stringify({ type: 'FeatureCollection', atlasSchemaVersion: ROUTE_ARTIFACT_SCHEMA_VERSION, features, runningTimes, ...(Object.keys(resumingRoutes).length ? { resumingRoutes } : {}), ...(directionSplits.length ? { directionSplits } : {}) }),
     corridorsGeojson: JSON.stringify({ type: 'FeatureCollection', features: corridorFeatures }),
     stopsJson: JSON.stringify(stopsIndex),
     tripsJson: JSON.stringify(tripsIndex),
