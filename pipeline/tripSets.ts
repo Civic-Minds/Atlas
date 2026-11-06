@@ -623,7 +623,9 @@ export function encodeStopRuns(values: ReadonlyArray<number | null>): string {
  * #1094: Overnight reads each stop through the night verdict (directionNightValue over the stop alone), the
  * function the line's own Overnight value reads (#1267), so a stop never turns grey on a line that passes
  * Overnight by the same rule. A stop the verdict does not pass at 60 keeps its full-window wait, never
- * a better one.
+ * a better one: CIV-1349, that wait is the night's own longest wait as the verdict reads it (stopNightWait),
+ * never the plain period reading, which can be smaller (NJT 143 on Sundays: the verdict fails on Saturday's
+ * 64-minute gap while the plain reading says 40).
  */
 export function stopPeriodValues(stops: readonly string[], throughTimesAlong: NonNullable<DirectionStretches['throughTimesAlong']>, handoverAt?: (stopId: string) => NightHandover | undefined, previousDaysAt?: (stopId: string) => ReadonlyArray<readonly number[]>): Record<PeriodKey, string> {
   const reads = throughTimesAlong(stops);
@@ -631,12 +633,15 @@ export function stopPeriodValues(stops: readonly string[], throughTimesAlong: No
     const read = reads[i];
     if (read.times.length === 0) return null;
     const stretch: Stretch = { kind: 'main', stops: [stop], refStop: stop, lengthKm: 0, ...read, handover: handoverAt?.(stop), previousDays: previousDaysAt?.(stop) };
-    const night = directionNightValue({ key: stop, main: stretch, tails: [], regularPatternCount: 1, variantTripCount: 0 }, true);
-    return { periods: stretchPeriods(stretch), night };
+    const alone: DirectionStretches = { key: stop, main: stretch, tails: [], regularPatternCount: 1, variantTripCount: 0 };
+    const night = directionNightValue(alone, true);
+    return { periods: stretchPeriods(stretch), night, wait: night == null ? stopNightWait(alone) : undefined };
   });
   const value = (p: (typeof perStop)[number], key: PeriodKey) => {
     if (!p) return null;
-    return key === 'overnight' && p.night != null ? p.night : stretchFilterValue(p.periods[key]);
+    if (key !== 'overnight') return stretchFilterValue(p.periods[key]);
+    if (p.night != null) return p.night;
+    return p.wait === undefined ? stretchFilterValue(p.periods[key]) : p.wait;
   };
   return Object.fromEntries(PERIOD_WINDOWS.map(({ key }) => [key, encodeStopRuns(perStop.map(p => value(p, key)))])) as Record<PeriodKey, string>;
 }
@@ -969,6 +974,28 @@ export function directionNightValue(d: DirectionStretches, wholeDirection = fals
   if (!passes(max)) return null;
   // The verdict only gets easier as the gap grows (the edge allowance stays 60 up to here).
   let lo = 1, hi = max;
+  while (lo < hi) {
+    const mid = Math.floor((lo + hi) / 2);
+    if (passes(mid)) hi = mid; else lo = mid + 1;
+  }
+  return lo;
+}
+
+/**
+ * CIV-1349: a stop's full-window wait when its night verdict fails at the Overnight cap: the smallest gap above the
+ * cap at which the verdict passes, read by the same rule (NJT 143 on a Sunday morning: 64, Saturday's gap; a last
+ * bus at 23:10 before a first at 2:00: 190), searched up to a day. null when no gap passes (its first night bus is
+ * over an hour from 2:00 with nothing before it; a night-only stretch starting after 3:30), so the stop shows no
+ * value rather than a better one. undefined when no night service crosses 3:30: the verdict never ran, and the plain
+ * period reading stands as before.
+ */
+export function stopNightWait(d: DirectionStretches): number | null | undefined {
+  if (![d.main, ...d.tails].some(st => st != null && runsAcrossNightMidpoint(st.nightTimes))) return undefined;
+  const day = 24 * 60;
+  const passes = (gap: number) => directionNightVerdict(d, gap) === 'pass';
+  if (!passes(day)) return null;
+  // Easier as the gap grows, as in directionNightValue: the edge limit is the gap itself past the hour.
+  let lo = NIGHT_OVERNIGHT_MAX_VALUE + 1, hi = day;
   while (lo < hi) {
     const mid = Math.floor((lo + hi) / 2);
     if (passes(mid)) hi = mid; else lo = mid + 1;

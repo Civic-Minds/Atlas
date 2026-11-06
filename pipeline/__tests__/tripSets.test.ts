@@ -1169,6 +1169,30 @@ describe('Overnight section values read each stop through the night verdict (#10
     const d = build(30);
     expect(stopPeriodValues(stops, d.throughTimesAlong!).late).toBe(encodeStopRuns(stops.map(() => stretchFilterValue(stretchPeriods(d.main!).late))));
   });
+  it('CIV-1349: a stop the verdict fails at 60 reads the night\'s own longest wait, never the smaller plain value', () => {
+    // Night trips written on the morning's day, every 20 from 2:00 (or 3:10) to 4:30; day service to 1:30 and from 5:00,
+    // so the night's own gaps are all 20 and the plain overnight reading is every 20.
+    const plain = (nightFrom: number) => {
+      const trips: DirectionTrip[] = [];
+      for (const [a, b, step] of [[nightFrom, 290, 20], [300, 1530, 15]] as const)
+        for (let m = a; m <= b; m += step) trips.push({ tripId: `p${m}`, visits: stops.map((stopId, i) => ({ stopId, minutes: m + 3 * i })) });
+      return directionStretches('k', trips, id => coords.get(id));
+    };
+    const d = plain(120);
+    // Its own evening stands in without a previous day: the night passes at 20 and every stop reads 20.
+    expect(decodeStopRuns(stopPeriodValues(stops, d.throughTimesAlong!).overnight)).toEqual([20, 20, 20, 20]);
+    // Sunday's evening ends at 0:50, 70 minutes before Monday's first night bus: the verdict fails at 60 and the stop
+    // reads that wait, 70, not the plain every-20 of its own night.
+    const sunday = Array.from({ length: 30 }, (_, i) => 620 + i * 30);
+    // The previous day's departures at each stop, offset along the line like the trips above.
+    const after = (evening: number[]) => decodeStopRuns(stopPeriodValues(stops, d.throughTimesAlong!, undefined, stopId => [evening.map(t => t + 3 * stops.indexOf(stopId))]).overnight);
+    expect(after(sunday)).toEqual([70, 70, 70, 70]);
+    // Legitimate: a Sunday evening running to 1:30 leaves the night passing at 20.
+    expect(after([...sunday, 1510, 1530])).toEqual([20, 20, 20, 20]);
+    // No bus before a first night bus at 3:10 (an empty Sunday): no gap ever passes, so there is no value, not 20.
+    const late = plain(190);
+    expect(decodeStopRuns(stopPeriodValues(stops, late.throughTimesAlong!, undefined, () => [[]]).overnight)).toEqual([null, null, null, null]);
+  });
 });
 
 describe('rule 3: sibling branches that take turns through a period (#1072, HSR 16 Ancaster)', () => {
