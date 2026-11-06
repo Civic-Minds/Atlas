@@ -416,7 +416,10 @@ async function refreshAgency(
     return { summary: `stale (${reason})`, stale: true };
   }
 
-  if (!forceRefresh && candidateIsOlderThanActive({ candidateExpiry: peekedExpiry, existingExpiry: agency.lastFeedExpiry })) {
+  if (!forceRefresh && candidateIsOlderThanActive({
+    candidateExpiry: peekedExpiry, existingExpiry: agency.lastFeedExpiry,
+    existingPeekedExpiry: agency.lastPeekedExpiry, recordedAt: agency.lastRefreshedAt, todayYmd: today,
+  })) {
     writeLog(`\n  [warn] downloaded feed is older than the active snapshot (${peekedExpiry ?? 'unknown'} < ${agency.lastFeedExpiry}); keeping the active snapshot\n  `);
     return { summary: `skipped (older feed: ${peekedExpiry ?? 'unknown'})` };
   }

@@ -265,12 +265,30 @@ export function markFeedStale(
   agency.feedRefreshRetryCount = (agency.feedRefreshRetryCount ?? 0) + 1;
 }
 
-/** Never replace a dated active snapshot with an older or undated candidate. */
+/**
+ * Never replace a dated active snapshot with an older or undated candidate. A stamp recorded from a
+ * placeholder end sets no floor (CIV-1351): when the active feed's own uncapped end (lastPeekedExpiry,
+ * else the recorded expiry) is more than PLACEHOLDER_EXPIRY_YEARS past the date it was recorded, it
+ * says nothing about when that service ends, and every real-dated feed would read as older (st-george,
+ * 2026-11-06: the city feed 20271231 refused against the old timetable's 20310130; CIV-1334 cleared the
+ * same stamp by hand). The record date, not today, keeps that verdict from drifting as today's horizon
+ * moves past a stamp.
+ */
 export function candidateIsOlderThanActive(opts: {
   candidateExpiry: string | null;
   existingExpiry?: string | null;
+  /** The active feed's uncapped end (lastPeekedExpiry); the recorded expiry stands in when absent. */
+  existingPeekedExpiry?: string | null;
+  /** When the stamp was recorded (lastRefreshedAt, YYYY-MM-DD or YYYYMMDD); today stands in when absent. */
+  recordedAt?: string | null;
+  todayYmd?: string;
 }): boolean {
   if (!opts.existingExpiry) return false;
+  const recordedAt = opts.recordedAt ?? opts.todayYmd;
+  if (recordedAt) {
+    const ownEnd = opts.existingPeekedExpiry ?? opts.existingExpiry;
+    if (isYmd(ownEnd) && ownEnd > addYearsYmd(recordedAt, PLACEHOLDER_EXPIRY_YEARS)) return false;
+  }
   return !opts.candidateExpiry || opts.candidateExpiry < opts.existingExpiry;
 }
 
