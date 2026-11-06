@@ -406,12 +406,14 @@ describe('night edges: the wait for the first and after the last night bus (CIV-
     const sunday = [...every(hm(7, 0), hm(23, 27), 30), hm(23, 57), hm(24, 22)];
     const pass = (prev: number[][] | undefined, g: number) => nightServicePasses(weekday, nightServiceDepartureTimes(weekday), g, undefined, prev);
     expect([30, 60, 90].map(g => pass([weekday, sunday], g))).toEqual([false, false, false]);
-    // Legitimate: a Sunday evening that runs on past 2:00 closes the gap, so the night still counts.
+    // Legitimate: a Sunday evening that runs on past 2:00 closes the gap, so the night still counts at 60. At 30 the
+    // 35 minutes from Sunday's 2:22 bus to the 2:57 one is a gap inside the window, over the grade (CIV-1348).
     const lateSunday = [...sunday, ...every(hm(24, 52), hm(26, 22), 30)];
-    expect(pass([weekday, lateSunday], 30)).toBe(true);
+    expect([30, 60].map(g => pass([weekday, lateSunday], g))).toEqual([false, true]);
     // Legitimate: without the previous days, the weekday's own evening stands in, as before.
     expect(pass(undefined, 30)).toBe(true);
-    // A previous day with no departures at the stop has no evening to check (the one-date fixtures below).
+    // A previous day with no departures at the stop leaves the morning-day trips on their own: the wait from 2:00
+    // to the first (2:57) counts and is within the hour (CIV-1348; the one-date fixtures below).
     expect(pass([weekday, []], 30)).toBe(true);
     // This day type's own evening, read from only the trips that stop here (late trips pass through, NYCT N at Canal
     // St), is not read again: the check from this day's own times already covers it.
@@ -420,6 +422,31 @@ describe('night edges: the wait for the first and after the last night bus (CIV-
     // Sunday's row to judge (checked there), not the weekday's.
     const extendedOnly = [...every(hm(6, 0), hm(23, 0), 30), ...every(hm(23, 7), hm(29, 7), 30)];
     expect(nightServicePasses(extendedOnly, nightServiceDepartureTimes(extendedOnly), 30, undefined, [extendedOnly, sunday])).toBe(true);
+  });
+  it('CIV-1348: the morning after a previous day is judged whole: its gaps inside the window, and an empty previous day', () => {
+    // Item 2. Weekday nights run every 30 all night, written past 24:00, plus a 4:00 morning-day trip; Sunday's
+    // buses stop at 2:07. On Monday nobody runs from 2:07 to 4:00: a gap inside the window, over every grade.
+    const allNight = [...every(hm(6, 0), hm(23, 0), 30), ...every(hm(23, 7), hm(29, 7), 30), ...every(hm(4, 0), hm(5, 57), 30)];
+    const sundayTo207 = every(hm(7, 0), hm(26, 7), 30);
+    const pass = (times: number[], prev: number[][] | undefined, g: number) => nightServicePasses(times, nightServiceDepartureTimes(times), g, undefined, prev);
+    expect([30, 60, 90].map(g => pass(allNight, [allNight, sundayTo207], g))).toEqual([false, false, false]);
+    // Legitimate: a Sunday that runs on every 30 to 4:07 meets the morning-day trips; the gap is 30 and the night counts.
+    expect(pass(allNight, [allNight, every(hm(7, 0), hm(28, 7), 30)], 30)).toBe(true);
+    // Legitimate: at a grade of 60 a Sunday ending 3:07 leaves a 53-minute gap to the 4:00 bus.
+    expect([30, 60].map(g => pass(allNight, [allNight, every(hm(7, 0), hm(27, 7), 30)], g))).toEqual([false, true]);
+    // Item 1. The weekday's first morning-day bus comes at 3:30 after evening trips to 2:37 written past 24:00, so its
+    // own nights pass at 60 (53-minute gap). With no Sunday service at the stop, Monday's first bus is the 3:30 one:
+    // 90 minutes from 2:00 with nobody served, over the hour at every grade (the branch for a first bus written past
+    // 24:00 skipped an empty previous day; the other branch counted the wait, as both do now).
+    const from330 = [...every(hm(6, 0), hm(23, 0), 30), ...every(hm(23, 7), hm(26, 37), 30), ...every(hm(3, 30), hm(5, 30), 30)];
+    expect(pass(from330, undefined, 60)).toBe(true);
+    expect([30, 60, 90].map(g => pass(from330, [from330, []], g))).toEqual([false, false, false]);
+    // The same morning with the night written on the morning's day only reads the same (the CIV-1331 branch).
+    const plainFrom330 = [...every(hm(6, 0), hm(23, 0), 30), ...every(hm(23, 7), hm(23, 37), 30), ...every(hm(3, 30), hm(5, 30), 30)];
+    expect([60, 90].map(g => pass(plainFrom330, [plainFrom330, []], g))).toEqual([false, false]);
+    // Legitimate: a first morning-day bus by 3:00 is within the hour of 2:00 even with an empty Sunday.
+    const from300 = [...every(hm(6, 0), hm(23, 0), 30), ...every(hm(23, 7), hm(26, 37), 30), ...every(hm(3, 0), hm(5, 30), 30)];
+    expect(pass(from300, [from300, []], 60)).toBe(true);
   });
   it('CIV-1331 final review: every night-only stretch goes through the same rules', () => {
     const only = (night: number[]) => [night, nightServiceDepartureTimes(night)] as const;

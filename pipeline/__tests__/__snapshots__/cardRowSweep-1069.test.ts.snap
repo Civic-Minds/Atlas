@@ -16,6 +16,7 @@ exports[`card rows read their value, gap and words from the same trips, across e
     "cta-9-weekday 9 Weekday d0 "Ashland & 95th Street" pmPeak: every 14 beside 158",
     "go-ki-week KI Weekday d0 "Kitchener GO" evening: every 29 beside 176",
     "lacmta-40-weekday 40 Weekday d1 "Redondo Beach Transit Center" late: every 29 beside 96",
+    "lacmta-40-weekday 40 Sunday d1 "Redondo Beach Transit Center" late: every 29 beside 96",
     "septa-66-weekday 66 Weekday d0 "Express Frankford Transit Center" pmPeak: every 12 beside 131",
     "ttc-129-weekday-pool-hole 129 Weekday d1 "Major Mackenzie via Scarborough Centre Stn" late: every 29 beside 118",
   ],
