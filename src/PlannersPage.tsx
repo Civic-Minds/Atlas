@@ -15,7 +15,7 @@ const CONTACT_EMAIL = 'hey@ryanisnota.pro';
 /** A pale tint of a frequency colour on the page background: never a dark fill (STYLE.md), as on About. */
 const tint = (color: string) => `color-mix(in srgb, ${color} 11%, var(--bg-app))`;
 
-/** The same light and dark map picture as About's hero (index.css, .theme-light-only). */
+/** A map picture with a light and a dark version, as on About (index.css, .theme-light-only). Decorative: the text says what it shows. */
 function ThemedPicture({ base, ext, className }: { base: string; ext: string; className: string }) {
   return (
     <>
@@ -29,15 +29,21 @@ function Email() {
   return <a href={`mailto:${CONTACT_EMAIL}`} className="text-[var(--accent)] hover:underline">{CONTACT_EMAIL}</a>;
 }
 
-/** A feature section: a tinted card with its heading and text. */
-function Feature({ title, color, children }: { title: string; color: string; children: ReactNode }) {
+/** A feature section: a tinted card, its heading and text beside its pictures (stacked on phones). */
+function Feature({ title, color, pictures, children }: { title: string; color: string; pictures: ReactNode; children: ReactNode }) {
   return (
-    <section className="rounded-2xl p-6 sm:p-8" style={{ background: tint(color) }}>
-      <h2 className="text-2xl font-black tracking-tight">{title}</h2>
-      <div className="mt-3 space-y-3 text-base leading-7 text-[var(--text-muted)]">{children}</div>
+    <section className="grid gap-8 rounded-2xl p-6 sm:p-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-center lg:gap-10" style={{ background: tint(color) }}>
+      <div>
+        <h2 className="text-2xl font-black tracking-tight">{title}</h2>
+        <div className="mt-3 space-y-3 text-base leading-7 text-[var(--text-muted)]">{children}</div>
+      </div>
+      <div>{pictures}</div>
     </section>
   );
 }
+
+const PICTURE = 'block w-full rounded-xl border border-[var(--border-primary)] object-cover';
+const pic = (name: string) => `/assets/planners/${name}`;
 
 /** A text section beside its heading, like About's "Built for looking closer." */
 function TextSection({ title, children }: { title: string; children: ReactNode }) {
@@ -66,24 +72,42 @@ export default function PlannersPage() {
             <ArrowLink href="/">Open the map</ArrowLink>
           </div>
         </div>
-        <ThemedPicture base="/assets/about/atlas-routes-toronto" ext="webp" className="block aspect-[10/9] w-full rounded-2xl border sm:aspect-[16/9] lg:aspect-[10/9] border-[var(--border-primary)] object-cover" />
+        <ThemedPicture base={pic('hero')} ext="webp" className="block aspect-[10/9] w-full rounded-2xl border sm:aspect-[16/9] lg:aspect-[10/9] border-[var(--border-primary)] object-cover" />
       </section>
 
-      <div className="grid gap-5 py-16 sm:py-20 lg:grid-cols-2">
-        <Feature title="See frequency, not just routes" color={color(0)}>
+      <div className="grid gap-5 py-16 sm:py-20">
+        <Feature title="See frequency, not just routes" color={color(0)} pictures={
+          <div className="grid grid-cols-2 gap-3">
+            <ThemedPicture base={pic('tiers-all')} ext="webp" className={`${PICTURE} aspect-square`} />
+            <ThemedPicture base={pic('tiers-10')} ext="webp" className={`${PICTURE} aspect-square`} />
+          </div>
+        }>
           <p>Every route is coloured by its headway: every 10, 15, 20, 30 or 60 minutes, or less often. Pick a tier and Atlas shows only the routes that meet it, so a frequent network map takes one click. The tiers make it quick to check a network against your own service frequency standards.</p>
         </Feature>
-        <Feature title="See how service changes over the day and week" color={color(1)}>
+        <Feature title="See how service changes over the day and week" color={color(1)} pictures={
+          <div className="space-y-3">
+            <ThemedPicture base={pic('compare')} ext="webp" className={`${PICTURE} aspect-[16/10]`} />
+            <div className="grid grid-cols-2 gap-3">
+              <ThemedPicture base={pic('chicago')} ext="webp" className={`${PICTURE} aspect-[10/11]`} />
+              <ThemedPicture base={pic('routecard')} ext="webp" className={`${PICTURE} aspect-[10/11] object-top`} />
+            </div>
+          </div>
+        }>
           <p>Frequency on a map is only half the story. Switch between weekday, Saturday and Sunday, then pick a time of day: AM peak, midday, PM peak, evening, late night, or overnight (2 to 6 AM), so peak, off-peak and owl service each get their own map.</p>
           <p>Weekday midday and Sunday evening are often very different networks. Atlas shows both, and Compare puts two of them side by side on desktop.</p>
           <p>Open any route to see an hourly chart of its headways, which also shows its span of service.</p>
         </Feature>
-        <Feature title="Every agency in a region, on one map" color={color(2)}>
+        <Feature title="Every agency in a region, on one map" color={color(2)} pictures={
+          <ThemedPicture base={pic('bayarea')} ext="webp" className={`${PICTURE} aspect-[47/38]`} />
+        }>
           <p>Riders don't care which agency runs the bus. Atlas puts every agency it covers on the same map, so you can see where local, regional and intercity services meet, and where they don't. Use the agency filter to focus on one operator, or leave it on All to see the whole region.</p>
           <p>This helps you spot weak connections between agencies: a hub where one agency runs every 10 minutes and the other once an hour, or a town where an intercity route stops but no local bus runs in the evening.</p>
           <p>Each agency also has its own page with a summary of its routes and the agencies nearby.</p>
         </Feature>
-        <Feature title="A map instead of a long report" color={color(3)}>
+        <Feature title="A map instead of a long report" color={color(3)} pictures={
+          // The exported image looks the same in either theme.
+          <img src={pic('export.webp')} alt="" className={`${PICTURE} aspect-[40/21]`} />
+        }>
           <p>Existing-conditions work often ends up as a long report with a few static maps. Atlas gives you a map people can explore.</p>
           <ul className="list-disc space-y-2 pl-5">
             <li><strong className={STRONG}>Share links</strong> keep the view: the place, frequency tier, day, time of day, agencies, and any open route or stop.</li>
