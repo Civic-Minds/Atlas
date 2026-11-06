@@ -11,6 +11,7 @@ import type { AgencyPageData } from '../shared/agencyPages';
 import type { SeoFlags } from '../shared/seo';
 import AboutDocsPage from './AboutDocsPage';
 import AboutPage from './AboutPage';
+import PlannersPage from './PlannersPage';
 import LegalPage from './LegalPage';
 import ResearchPage from './apps/ResearchPage';
 import FreeChildFaresPage from './apps/FreeChildFaresPage';
@@ -26,6 +27,7 @@ import { AGENCY_INDEX_PATH, agencyPagePath, areaPagePath, regionPagePath } from 
 const PAGES: Record<string, () => ReactElement> = {
   '/about': () => <AboutPage />,
   '/about/docs': () => <AboutDocsPage />,
+  '/about/planners': () => <PlannersPage />,
   '/privacy': () => <LegalPage document="privacy" />,
   '/terms': () => <LegalPage document="terms" />,
   '/research': () => <ResearchPage />,

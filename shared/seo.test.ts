@@ -57,7 +57,7 @@ describe('route metadata table', () => {
 
 describe('resolveSeo', () => {
   it('returns each public route its own title, description and self-referencing canonical', () => {
-    for (const path of ['/', '/about', '/about/docs', '/privacy', '/terms']) {
+    for (const path of ['/', '/about', '/about/docs', '/about/planners', '/privacy', '/terms']) {
       const seo = resolveSeo(path, PUBLIC);
       expect(seo.noindex).toBe(false);
       expect(seo.canonicalUrl).toBe(path === '/' ? `${SITE_URL}/` : `${SITE_URL}${path}`);
@@ -170,7 +170,7 @@ describe('head tag rewriting', () => {
   });
 
   it('prerenders only pages that exist in the build', () => {
-    expect(prerenderRoutes({}).map(r => r.path)).toEqual(['/about', '/about/docs', '/privacy', '/terms']);
+    expect(prerenderRoutes({}).map(r => r.path)).toEqual(['/about', '/about/docs', '/about/planners', '/privacy', '/terms']);
     expect(prerenderRoutes({ researchApps: true }).map(r => r.path)).toContain('/research');
   });
 });

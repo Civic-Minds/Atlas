@@ -77,6 +77,15 @@ export const SEO_ROUTES: readonly SeoRoute[] = [
     includeInSitemap: true,
   },
   {
+    // CIV-1320: title and description are the page's own words.
+    path: '/about/planners',
+    title: 'For transit planners: Transit Atlas',
+    description: 'Atlas shows how often transit really runs, across every agency in a region, on one map.',
+    indexable: true,
+    prerender: true,
+    includeInSitemap: true,
+  },
+  {
     path: '/privacy',
     title: 'Privacy policy: Transit Atlas',
     description: 'What Transit Atlas collects, how analytics and location are handled, and how to ask for your information to be removed.',

@@ -173,6 +173,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Agency, area and research pages
 
+- **A "For transit planners" page explains what Atlas shows planners and where its data comes from**: so planners and agency staff get one page to start from
 - **On the About page, the Atlas logo stays on About**: it went to the map, so it couldn't bring you back to the top of the page
 - **[Unknown addresses](https://github.com/Civic-Minds/Atlas/issues/1193) show the same not-found page as unknown agencies and areas**: /research/nope had no footer and a different link
 - **"[View on map](https://github.com/Civic-Minds/Atlas/issues/1194)" stays on one line beside long agency names**: on WETA's page it was squeezed onto two lines
