@@ -210,6 +210,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Data pipeline
 
+- **A full data rebuild now refreshes the [Night Service list](https://github.com/Civic-Minds/Atlas/issues/1333) too**: only the weekly refresh updated it, so after a rebuild it kept old night rules and missed routes
 - **Rebuilds no longer skip agencies whose old schedule had a [far-future end date](https://github.com/Civic-Minds/Atlas/issues/1317)**: Waukesha, Whitehorse and St. George kept old data in every publish because the same feed read as older than live
 - **[An expired feed no longer stops the weekly refresh from publishing](https://github.com/Civic-Minds/Atlas/issues/1304)**: MAX Transit's timetable ended in May 2025 while its feed claimed 2035; the refresh now keeps its live data with the expired notice instead of rebuilding it, so the release gate no longer refuses the whole release
 - **A route whose patterns [take alternate trips](https://github.com/Civic-Minds/Atlas/issues/1256) is read as one service where they meet**: Pace 542 and MATA 30 read their real frequency
