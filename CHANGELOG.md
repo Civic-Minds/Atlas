@@ -114,6 +114,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Route cards and frequency
 
+- **Route names no longer repeat the agency's name**: Metrolink's lines read "AV Line — Antelope Valley Line" instead of "AV Line — Metrolink Antelope Valley Line" ([#1373](https://github.com/Civic-Minds/Atlas/issues/1373))
 - **A stop card lists only the routes that stop there**: the stop across the road added its own direction to almost every card; a station still lists all its platforms
 - **A route that only uses the stop across the road is listed under Nearby routes**: once the card listed only its own stop's routes, such a route showed nowhere (TTC 86 at Kingston Rd and Pine Ridge Dr)
 - **A stop card leaves out routes with no trips there in the chosen time**: they were listed with a "No trips" line; a stop where nothing runs says so instead
