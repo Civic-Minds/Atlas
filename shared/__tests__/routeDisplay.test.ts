@@ -117,3 +117,16 @@ describe('routeDisplay', () => {
     expect(d('02', 'Main via Park', 3).text).toBe('2 — Main');
   });
 });
+
+describe('agency name at the start of a long name (#1373)', () => {
+  it('drops the agency name before a line name, on every surface', () => {
+    expect(d('AV Line', 'Metrolink Antelope Valley Line', 2, 'Metrolink').text).toBe('AV Line — Antelope Valley Line');
+    expect(routeDisplay({ shortName: 'SB Line', longName: 'Metrolink San Bernardino Line', routeType: 2, agencySlug: 'metrolink' }).text).toBe('SB Line — San Bernardino Line');
+  });
+  it('keeps place names and one-word line names that share the agency name', () => {
+    expect(routeDisplay({ shortName: '40', longName: 'Niagara College NOTL Campus', routeType: 3, agencySlug: 'niagara' }).text).toBe('40 — Niagara College NOTL Campus');
+    expect(d('ME', 'Metra Electric', 2, 'Metra').text).toBe('ME — Metra Electric');
+    expect(d('Estes', 'Bustang to Estes', 3, 'Bustang').text).toBe('Estes — Bustang to Estes');
+    expect(routeDisplay({ shortName: '1', longName: 'Nanaimo Rapid Line', routeType: 3, agencySlug: 'nanaimo', agencyName: 'BC Transit (Nanaimo)' }).text).toBe('1 — Nanaimo Rapid Line');
+  });
+});
