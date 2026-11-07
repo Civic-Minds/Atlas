@@ -27,12 +27,17 @@ function footerGroups(): { title: string; links: FooterLink[] }[] {
       title: 'About',
       links: [
         { href: '/about', label: 'About Atlas' },
-        ...(FEATURES.plannersLink ? [{ href: '/about/planners', label: 'For transit planners' }] : []),
         ...(FEATURES.whatsNew ? [{ href: '/changelog', label: 'Changelog' }] : []),
         { href: '/privacy', label: 'Privacy' },
       ],
     },
-  ];
+    {
+      title: 'Product',
+      links: [
+        ...(FEATURES.plannersLink ? [{ href: '/about/planners', label: 'For planners' }] : []),
+      ],
+    },
+  ].filter(group => group.links.length > 0);
 }
 
 export default function SiteFooter({ logoHref = '/' }: { logoHref?: string }) {
