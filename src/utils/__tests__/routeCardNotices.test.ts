@@ -213,3 +213,31 @@ describe('CIV-1251: never "only from" the whole period', () => {
   });
 });
 
+
+describe('#1343: a part-period notice that would name the whole period names the reference stop\'s hours', () => {
+  // Bustang South, weekday evening (7–11 PM), as published: the chart's end-of-line counts fill the evening, while the
+  // mid-route reference stop, where the period decision is read, has its last bus at 8:45 PM.
+  const meta = (hours: Record<number, number>) => ({ main: { stops: 9, refStop: '26122', trips: 12, departuresByHour: hours }, tails: [] });
+  const toDenver = { headsign: 'Denver', directionId: 0, departuresByHour: { 18: 1, 19: 1 }, stretchMeta: meta({ 18: 1, 19: 1 }) } as any;
+  const toSprings = { headsign: 'Colorado Springs', directionId: 1, departuresByHour: { 19: 1, 20: 1, 21: 1, 22: 1 }, stretchMeta: meta({ 18: 1, 19: 1, 20: 1 }) } as any;
+  const evening = { ...model, hasPeriodService: false, hasPartialPeriodService: true, activeRangeDirections: [toDenver, toSprings] } as unknown as RouteCardNoticeInput['model'];
+  const plain = (t?: string) => (t ?? '').replace(/[ ⁠‑​]/g, ' ').replace(/\s*–\s*/g, '–');
+
+  it('Bustang South: "runs only from 7–9 PM", not the whole evening', () => {
+    const n = routeCardNotices({ ...base, directions: [toDenver, toSprings], model: evening, period: 'evening', maxHeadway: Infinity });
+    expect(plain(n.period?.text)).toBe('This route runs only from 7–9 PM.');
+    expect(n.period?.activeRange).not.toBe('7–11 PM');
+  });
+
+  it('legitimate: hours short of the period stay the chart\'s (#1186), even where the reference stop differs', () => {
+    const only = { ...toSprings, departuresByHour: { 20: 1, 21: 1 } };
+    const n = routeCardNotices({ ...base, directions: [only], model: { ...evening, activeRangeDirections: [only] }, period: 'evening', maxHeadway: Infinity });
+    expect(plain(n.period?.text)).toBe('This route runs only from 8–10 PM.');
+  });
+
+  it('data from before #1343 (no reference-stop hours) keeps the chart\'s hours', () => {
+    const old = [toDenver, toSprings].map(({ stretchMeta: _m, ...d }) => d);
+    const n = routeCardNotices({ ...base, directions: old, model: { ...evening, activeRangeDirections: old }, period: 'evening', maxHeadway: Infinity });
+    expect(plain(n.period?.text)).toBe('This route runs only from 7–11 PM.');
+  });
+});
