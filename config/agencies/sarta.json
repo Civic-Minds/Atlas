@@ -16,10 +16,10 @@
     "Canton, Ohio",
     "Akron, Ohio"
   ],
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261107",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261107",
+  "expiredFeedCheckExpiry": "20270206",
   "timezone": "America/New_York",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/11346/gtfs.zip",
@@ -41,7 +41,8 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-07"
+    "checkedAt": "2026-11-07",
+    "scoredAt": "2026-11-07"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -49,5 +50,6 @@
   "feedRefreshRetryCount": 0,
   "lastServiceWeek": "4ecac77976d1a2d6",
   "feedObtainedAt": "20260804",
-  "lastFeedStart": "20260809"
+  "lastFeedStart": "20260809",
+  "heldFeedStart": "20261108"
 }
