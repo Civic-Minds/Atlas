@@ -1,0 +1,24 @@
+{
+  "slug": "tricounty-link",
+  "officialName": "TriCounty Link",
+  "websiteUrl": "https://ridetricountylink.com/",
+  "center": [
+    33.075,
+    -80.019
+  ],
+  "feedUrl": "http://data.trilliumtransit.com/gtfs/tricountylink-sc-us/tricountylink-sc-us.zip",
+  "region": "South Carolina",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-40206/latest.zip",
+  "bbox": [
+    32.5693,
+    -80.5739,
+    33.5814,
+    -79.464
+  ],
+  "cities": [
+    "Moncks Corner, South Carolina",
+    "Summerville, South Carolina",
+    "Goose Creek, South Carolina"
+  ],
+  "timezone": "America/New_York"
+}
