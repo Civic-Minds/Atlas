@@ -42,7 +42,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-06"
+    "checkedAt": "2026-11-07"
   },
   "timezone": "America/Chicago",
   "feedRefreshStatus": "current",
@@ -53,5 +53,6 @@
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/tld-1660_1/latest.zip",
   "lastPeekedExpiry": "20261231",
   "lastServiceWeek": "5b24d2f84002adad",
-  "feedObtainedAt": "20261102"
+  "feedObtainedAt": "20261102",
+  "lastFeedStart": "20260101"
 }

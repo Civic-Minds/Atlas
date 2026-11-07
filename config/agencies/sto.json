@@ -49,7 +49,7 @@
       "mismatchRoutes": 1,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-06"
+    "checkedAt": "2026-11-07"
   },
   "timezone": "America/Montreal",
   "feedRefreshStatus": "current",
@@ -60,5 +60,6 @@
   "lastFeedSourceUrl": "https://contenu.sto.ca/GTFS/GTFS.zip",
   "lastPeekedExpiry": "20261227",
   "lastServiceWeek": "589e4f6f67728c20",
-  "feedObtainedAt": "20261102"
+  "feedObtainedAt": "20261102",
+  "lastFeedStart": "20261101"
 }

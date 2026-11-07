@@ -45,7 +45,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-06"
+    "checkedAt": "2026-11-07"
   },
   "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
@@ -59,5 +59,6 @@
   "lastFeedSourceUrl": "https://rideata.rideralerts.com/InfoPoint/gtfs-zip.ashx",
   "lastPeekedExpiry": "20270228",
   "lastServiceWeek": "82665449ddf098d6",
-  "feedObtainedAt": "20260908"
+  "feedObtainedAt": "20260908",
+  "lastFeedStart": "20260908"
 }

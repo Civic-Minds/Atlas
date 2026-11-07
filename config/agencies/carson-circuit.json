@@ -42,7 +42,7 @@
       "mismatchRoutes": 2,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-06"
+    "checkedAt": "2026-11-07"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -52,5 +52,6 @@
   "lastFeedSourceUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/11488/CarsonGTFS.zip",
   "lastPeekedExpiry": "20320103",
   "lastServiceWeek": "9f90ca1c07cde3c8",
-  "feedObtainedAt": "20250430"
+  "feedObtainedAt": "20250430",
+  "lastFeedStart": "20231127"
 }

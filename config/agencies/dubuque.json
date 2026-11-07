@@ -44,7 +44,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-06"
+    "checkedAt": "2026-11-07"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -54,5 +54,6 @@
   "lastFeedSourceUrl": "https://myride.cityofdubuque.org/gtfs/google_transit.zip",
   "lastPeekedExpiry": "20280330",
   "lastServiceWeek": "330a76f73d7ab85e",
-  "feedObtainedAt": "20260916"
+  "feedObtainedAt": "20260916",
+  "lastFeedStart": "20260921"
 }

@@ -40,7 +40,7 @@
       "mismatchRoutes": 1,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-06"
+    "checkedAt": "2026-11-07"
   },
   "timezone": "America/New_York",
   "feedRefreshStatus": "current",
@@ -51,5 +51,6 @@
   "lastFeedSourceUrl": "https://mystop.lextran.com/InfoPoint/gtfs-zip.ashx",
   "lastPeekedExpiry": "20261219",
   "lastServiceWeek": "a9fb42aa18191eb1",
-  "feedObtainedAt": "20261102"
+  "feedObtainedAt": "20261102",
+  "lastFeedStart": "20261101"
 }

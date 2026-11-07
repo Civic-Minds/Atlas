@@ -39,7 +39,7 @@
       "mismatchRoutes": 1,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-06"
+    "checkedAt": "2026-11-07"
   },
   "timezone": "America/Chicago",
   "lastFeedSourceKind": "configured",
@@ -50,5 +50,6 @@
   "feedRefreshRetryCount": 0,
   "lastPeekedExpiry": "20271231",
   "lastServiceWeek": "0d680d8bac3603de",
-  "feedObtainedAt": "20261102"
+  "feedObtainedAt": "20261102",
+  "lastFeedStart": "20260827"
 }

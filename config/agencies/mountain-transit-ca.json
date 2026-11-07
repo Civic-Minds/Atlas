@@ -52,12 +52,13 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-06"
+    "checkedAt": "2026-11-07"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastServiceWeek": "3b44550e3bbf843c",
-  "feedObtainedAt": "20260629"
+  "feedObtainedAt": "20260629",
+  "lastFeedStart": "20260629"
 }

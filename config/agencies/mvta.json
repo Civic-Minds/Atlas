@@ -44,7 +44,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-06"
+    "checkedAt": "2026-11-07"
   },
   "timezone": "America/Chicago",
   "feedRefreshStatus": "current",
@@ -55,5 +55,6 @@
   "lastFeedSourceUrl": "http://srv.mvta.com/InfoPoint/GTFS-Zip.ashx",
   "lastPeekedExpiry": "20261206",
   "lastServiceWeek": "914331f323fced5f",
-  "feedObtainedAt": "20261102"
+  "feedObtainedAt": "20261102",
+  "lastFeedStart": "20261019"
 }

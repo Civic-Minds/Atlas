@@ -45,7 +45,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-06"
+    "checkedAt": "2026-11-07"
   },
   "timezone": "America/Los_Angeles",
   "feedRefreshStatus": "current",
@@ -56,5 +56,6 @@
   "lastFeedSourceUrl": "https://www.c-tran.com/images/Google/GoogleTransitUpload.zip",
   "lastPeekedExpiry": "20270109",
   "lastServiceWeek": "82a9dabd17e9bbcb",
-  "feedObtainedAt": "20261008"
+  "feedObtainedAt": "20261008",
+  "lastFeedStart": "20260913"
 }

@@ -42,7 +42,7 @@
       "mismatchRoutes": 1,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-06"
+    "checkedAt": "2026-11-07"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -52,5 +52,6 @@
   "lastFeedSourceUrl": "https://www.votran.org/file/6120/google_transit_June-2026.zip",
   "lastPeekedExpiry": "20270605",
   "lastServiceWeek": "8668d761e562bf07",
-  "feedObtainedAt": "20260610"
+  "feedObtainedAt": "20260610",
+  "lastFeedStart": "20260610"
 }

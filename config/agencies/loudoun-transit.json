@@ -46,11 +46,12 @@
       "mismatchRoutes": 1,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-06"
+    "checkedAt": "2026-11-07"
   },
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://www.loudoun.gov/loudountransitgtfs",
   "lastPeekedExpiry": "20270327",
   "lastServiceWeek": "86d1b7f649433587",
-  "feedObtainedAt": "20260923"
+  "feedObtainedAt": "20260923",
+  "lastFeedStart": "20260927"
 }

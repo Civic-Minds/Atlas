@@ -55,7 +55,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-06"
+    "checkedAt": "2026-11-07"
   },
   "timezone": "America/Vancouver",
   "feedRefreshStatus": "current",
@@ -66,5 +66,6 @@
   "lastFeedSourceUrl": "https://gtfs-static.translink.ca/gtfs/google_transit.zip",
   "lastPeekedExpiry": "20270103",
   "lastServiceWeek": "7748a31ec22d898b",
-  "feedObtainedAt": "20261102"
+  "feedObtainedAt": "20261102",
+  "lastFeedStart": "20260907"
 }

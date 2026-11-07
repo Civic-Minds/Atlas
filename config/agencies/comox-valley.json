@@ -35,7 +35,7 @@
       "mismatchRoutes": 1,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-06"
+    "checkedAt": "2026-11-07"
   },
   "timezone": "America/Vancouver",
   "feedRefreshStatus": "current",
@@ -46,5 +46,6 @@
   "lastFeedSourceUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=45",
   "lastPeekedExpiry": "20270331",
   "lastServiceWeek": "b0b6bf12e717834b",
-  "feedObtainedAt": "20261102"
+  "feedObtainedAt": "20261102",
+  "lastFeedStart": "20261031"
 }

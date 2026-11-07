@@ -34,7 +34,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-06"
+    "checkedAt": "2026-11-07"
   },
   "lastFeedExpiry": "20301001",
   "lastFeedVersion": "1",
@@ -52,5 +52,6 @@
   "lastFeedSourceUrl": "https://gtfs.transitportal.org/CurrentGTFS/Gaston%20County_71/Gaston.zip",
   "lastPeekedExpiry": "20301031",
   "lastServiceWeek": "a80cb0b9b440f04a",
-  "feedObtainedAt": "20251009"
+  "feedObtainedAt": "20251009",
+  "lastFeedStart": "20231001"
 }

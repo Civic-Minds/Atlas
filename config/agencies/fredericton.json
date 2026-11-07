@@ -43,7 +43,7 @@
       "mismatchRoutes": 2,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-06"
+    "checkedAt": "2026-11-07"
   },
   "timezone": "America/Halifax",
   "feedRefreshStatus": "current",
@@ -54,5 +54,6 @@
   "lastFeedSourceUrl": "https://fredericton.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/gtfs.zip",
   "lastPeekedExpiry": "20261219",
   "lastServiceWeek": "25edd27589956ee3",
-  "feedObtainedAt": "20261102"
+  "feedObtainedAt": "20261102",
+  "lastFeedStart": "20261031"
 }

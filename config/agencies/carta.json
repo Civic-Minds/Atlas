@@ -49,8 +49,8 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-06",
-    "scoredAt": "2026-11-06"
+    "checkedAt": "2026-11-07"
   },
-  "refusedFeedSha256": "add38b6782df1129a038227410eba09b1f91994decb1850a1d131cb6fb1c1f5b"
+  "refusedFeedSha256": "add38b6782df1129a038227410eba09b1f91994decb1850a1d131cb6fb1c1f5b",
+  "lastFeedStart": "20260625"
 }

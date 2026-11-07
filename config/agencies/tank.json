@@ -21,9 +21,11 @@
     "Florence, Kentucky"
   ],
   "feedQuality": {
-    "status": "healthy",
-    "score": 100,
-    "reasons": [],
+    "status": "degraded",
+    "score": 65,
+    "reasons": [
+      "The schedule dates in this feed have passed."
+    ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
@@ -37,7 +39,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-06"
+    "checkedAt": "2026-11-07"
   },
   "lastFeedExpiry": "20261106",
   "lastFeedVersion": "20260713",
@@ -50,5 +52,6 @@
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://tank.rideralerts.com/InfoPoint/GTFS-Zip.ashx",
   "lastPeekedExpiry": "20261106",
-  "heldFeedStart": "20261107"
+  "heldFeedStart": "20261107",
+  "lastFeedStart": "20260714"
 }

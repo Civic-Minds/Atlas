@@ -48,7 +48,7 @@
       "mismatchRoutes": 7,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-06"
+    "checkedAt": "2026-11-07"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -58,5 +58,6 @@
   "lastFeedSourceUrl": "https://feed.ltd.org/TMGTFSRealTimeWebService/GTFS/google_transit.zip",
   "lastPeekedExpiry": "20270130",
   "lastServiceWeek": "4ba21d301c1b415e",
-  "feedObtainedAt": "20260903"
+  "feedObtainedAt": "20260903",
+  "lastFeedStart": "20260903"
 }

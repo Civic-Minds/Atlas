@@ -44,9 +44,10 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-06"
+    "checkedAt": "2026-11-07"
   },
   "lastPeekedExpiry": "20270424",
   "lastServiceWeek": "a627c3c70fdb6d6f",
-  "feedObtainedAt": "20261026"
+  "feedObtainedAt": "20261026",
+  "lastFeedStart": "20261026"
 }
