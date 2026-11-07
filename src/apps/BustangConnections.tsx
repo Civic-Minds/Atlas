@@ -10,7 +10,8 @@ import { outdatedLabel } from '../components/research/BustangCardSections';
 import { loadingText } from '../content/noticeCopy';
 import { countOf } from '../../shared/overflowText';
 import { DAY_TYPES, type DayType } from '../../shared/dayTypes';
-import { NEARBY_CHOICES, parseNearbyChoice, type NearbyChoice } from '../../shared/connections';
+import { LIST_DISTANCE_CHOICES, parseNearbyChoice, type NearbyChoice } from '../../shared/connections';
+import { FEATURES } from '../../shared/config';
 import { compareRouteNumber } from '../utils/sortCompare';
 import { BUSTANG_INFO_HEADING, BUSTANG_LIST_TITLE, scheduleEnded, type BustangData } from '../utils/bustangConnections';
 
@@ -53,7 +54,7 @@ export default function BustangConnections({ active, data, day, setDay, within, 
     }
     return [...byRoute.values()].sort((a, b) => compareRouteNumber(a.routeName, b.routeName, null, null));
   }, [data, day]);
-  const outdated = data ? [...(scheduleEnded(data.hub) ? [data.hub] : []), ...Object.values(data.agencies).filter(scheduleEnded)] : [];
+  const outdated = data ? [data.hub, ...Object.values(data.agencies)].filter(a => scheduleEnded(a, data.hub.timezone)) : [];
 
   if (!active) return null;
   return (
@@ -62,6 +63,8 @@ export default function BustangConnections({ active, data, day, setDay, within, 
         <PanelTitleBar icon={<Bus className="w-3 h-3 text-[var(--text-dim)] shrink-0" />} title={BUSTANG_LIST_TITLE} />
         <PanelBody>
           <div className="px-3 pt-3 pb-1 space-y-2">
+            {/* With the connections top bar (local only, CIV-1353), Day and distance live in the bar instead. */}
+            {!FEATURES.connectionsBar && <>
             <div>
               <CardSectionLabel>Day</CardSectionLabel>
               <PillGroup label="Day" value={day} onChange={v => setDay(v as DayType)}
@@ -70,8 +73,9 @@ export default function BustangConnections({ active, data, day, setDay, within, 
             <div>
               <CardSectionLabel>Local stop within</CardSectionLabel>
               <PillGroup label="Local stop within" value={String(within)} onChange={v => setWithin(parseNearbyChoice(v))}
-                options={NEARBY_CHOICES.map(m => [String(m), `${m} m`] as const)} />
+                options={LIST_DISTANCE_CHOICES.map(m => [String(m), `${m} m`] as const)} />
             </div>
+            </>}
             {data && <p className={CARD_SUMMARY}>Schedules for {dayDate(data.dates[day])}.</p>}
             {outdated.map(a => <p key={a.name} className="text-xs text-[var(--text-muted)]">{a.name}: {outdatedLabel(a)}</p>)}
           </div>

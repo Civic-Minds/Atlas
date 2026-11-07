@@ -12,8 +12,13 @@ import { haversineM } from './shapeProjection.js';
 
 /** "Nearby" (Ryan, 2026-11-03): within 400 m in a straight line by default. Labelled by distance, never "connects". */
 export const NEARBY_METERS = 400;
-/** The distances a reader can pick (Ryan, 2026-11-03: 200, 400 and 800 m, starting at 400). Each is precomputed. */
-export const NEARBY_CHOICES = [200, 400, 800] as const;
+/** Every distance the build precomputes, smallest first. The data file lists its own (nearbyChoices), so a file built
+ * before a distance was added simply lacks it. */
+export const NEARBY_CHOICES = [200, 400, 600, 800] as const;
+/** The route list's distance choice (Ryan, 2026-11-03: 200, 400 and 800 m, starting at 400). */
+export const LIST_DISTANCE_CHOICES = [200, 400, 800] as const;
+/** The connections top bar's distance choice (CIV-1353, Ryan 2026-11-06: "200m 400m 600m"). */
+export const BAR_DISTANCE_CHOICES = [200, 400, 600] as const;
 export type NearbyChoice = (typeof NEARBY_CHOICES)[number];
 /** The widest choice: the build reads every stop within it once, then each choice keeps the ones within its own distance. */
 export const MAX_NEARBY_METERS = Math.max(...NEARBY_CHOICES);

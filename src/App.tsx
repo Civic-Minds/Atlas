@@ -492,6 +492,14 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
     if (inBustang) syncUrlParams({ [BUSTANG_WITHIN_PARAM]: bustangWithin === NEARBY_METERS ? null : String(bustangWithin) });
   }, [inBustang, bustangWithin, pathname]);
   const bustangSlugs = useMemo(() => bustangMapSlugs(bustangData), [bustangData]);
+  // The connections top bar (CIV-1353, local only): its wait and side; the walk is the view's distance above.
+  const [connectionWait, setConnectionWait] = useState(15);
+  const [connectionSide, setConnectionSide] = useState<'after' | 'before'>('after');
+  const connectionsBar = useMemo(() => (inBustang && FEATURES.connectionsBar ? {
+    wait: connectionWait, setWait: setConnectionWait,
+    distance: bustangWithin, setDistance: (m: number) => setBustangWithin(parseNearbyChoice(String(m))),
+    side: connectionSide, setSide: setConnectionSide,
+  } : null), [inBustang, connectionWait, bustangWithin, connectionSide]);
   const bustangRouteExtra = useCallback((key: string) => {
     if (!bustangData) return null;
     const { agencySlug, routeId } = splitRouteKey(key);
@@ -915,7 +923,9 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
               bustangView={inBustang}
               pendingBustangRoute={inBustang ? pendingBustangRoute : null}
               onPendingBustangRouteHandled={handleBustangPendingHandled}
-              routeCardExtra={inBustang ? bustangRouteExtra : undefined}
+              // With the connections bar the route card holds nothing of its own (CIV-1353).
+              routeCardExtra={inBustang && !FEATURES.connectionsBar ? bustangRouteExtra : undefined}
+              connectionsBar={connectionsBar}
               stopCardExtra={inBustang ? bustangStopExtra : undefined}
               fallbackMapBounds={inBustang ? BUSTANG_MAP_BOUNDS : null}
               searchFocused={searchFocused}

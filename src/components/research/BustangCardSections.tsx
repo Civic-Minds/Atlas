@@ -8,7 +8,7 @@ import type { DayType } from '../../../shared/dayTypes';
 import { EXPLAINERS } from '../../content/noticeCopy';
 import { compareRouteNumber } from '../../utils/sortCompare';
 import {
-  scheduleEnded, tripsForRoute, waitWithin,
+  scheduleEnded, tripDirections, tripsForRoute, waitWithin,
   type BustangAgency, type BustangData, type BustangStop, type TripRouteWaits,
 } from '../../utils/bustangConnections';
 
@@ -28,7 +28,8 @@ const NOTICE = 'text-xs text-[var(--text-muted)]';
 
 /** The outdated schedules a stop reads (Bustang's own, then its local agencies'), one line each. */
 function OutdatedLines({ data, slugs }: { data: BustangData; slugs: string[] }) {
-  const list = [...(scheduleEnded(data.hub) ? [data.hub] : []), ...slugs.map(s => data.agencies[s]).filter(a => a && scheduleEnded(a))];
+  const tz = data.hub.timezone;
+  const list = [...(scheduleEnded(data.hub, tz) ? [data.hub] : []), ...slugs.map(s => data.agencies[s]).filter(a => a && scheduleEnded(a, tz))];
   if (list.length === 0) return null;
   return <>{list.map(a => <p key={a.name} className={`${NOTICE} mt-1`}>{a.name}: {outdatedLabel(a)}</p>)}</>;
 }
@@ -50,7 +51,7 @@ const SIDE_LABEL = { after: 'Getting off Bustang', before: 'Catching Bustang' } 
 /** One trip stop's local routes on one side, in 15 / 30 / 60 min groups, each route with its wait. */
 function TripSide({ data, rows, within, side, nameAgency }: { data: BustangData; rows: TripRouteWaits[]; within: NearbyChoice; side: 'after' | 'before'; nameAgency: boolean }) {
   const routes = rows
-    .map(r => ({ agencySlug: data.routes[r[0]][0], routeName: data.routes[r[0]][1], wait: waitWithin(r, within) }))
+    .map(r => ({ agencySlug: data.routes[r[0]][0], routeName: data.routes[r[0]][1], wait: waitWithin(data, r, within) }))
     .filter((r): r is { agencySlug: string; routeName: string; wait: number } => r.wait !== null)
     .sort((a, b) => a.wait - b.wait || compareRouteNumber(a.routeName, b.routeName, null, null));
   return (
@@ -88,15 +89,7 @@ export function BustangRouteDepartures({ data, day, within, routeId }: { data: B
   useEffect(() => { setPicked(null); }, [routeId, day]);
   // Grouped by where each trip starts and where it goes, so two trips leaving at the same time from different
   // stops read apart ("Grand Junction Regional Airport to Denver", "West Glenwood Park & Ride to Denver").
-  const directions = useMemo(() => {
-    const groups = new Map<string, typeof trips>();
-    for (const t of trips) {
-      const from = data.stops[t.stops[0].stop].name;
-      const k = t.headsign ? `${from} to ${t.headsign}` : `From ${from}`;
-      groups.set(k, [...(groups.get(k) ?? []), t]);
-    }
-    return [...groups];
-  }, [trips, data]);
+  const directions = useMemo(() => tripDirections(data, trips), [trips, data]);
   const trip = trips.find(t => t.id === picked) ?? null;
 
   return (
@@ -115,12 +108,12 @@ export function BustangRouteDepartures({ data, day, within, routeId }: { data: B
           {/* The picked trip's stops open under its own group, next to the time that was tapped. */}
           {trip && list.includes(trip) && (
             <div className="mt-1">
-              <OutdatedLines data={data} slugs={[...new Set(trip.stops.flatMap(s => data.stops[s.stop].agencies[within]))]} />
+              <OutdatedLines data={data} slugs={[...new Set(trip.stops.flatMap(s => data.stops[s.stop].agencies[within] ?? []))]} />
               <ol className="divide-y divide-[var(--border-primary)]">
                 {trip.stops.map((ts, i) => {
                   const stop = data.stops[ts.stop];
-                  const nameAgency = stop.agencies[within].length > 1;
-                  const hasLocal = stop.agencies[within].length > 0;
+                  const nameAgency = (stop.agencies[within]?.length ?? 0) > 1;
+                  const hasLocal = (stop.agencies[within]?.length ?? 0) > 0;
                   return (
                     <li key={`${ts.stop}-${i}`} className="py-2">
                       <p className="text-xs font-bold text-[var(--text-primary)]">{stop.name}</p>
@@ -193,8 +186,8 @@ function StopSide({ data, routes, trips, side, nameAgency }: { data: BustangData
 /** The stop card's Bustang section: local routes that connect with Bustang here, getting off and catching it. */
 export function BustangStopConnections({ data, day, within, stop }: { data: BustangData; day: DayType; within: NearbyChoice; stop: BustangStop }) {
   const stopDay = stop.days[day];
-  const routes = stopDay.routes[within];
-  const slugs = stop.agencies[within];
+  const routes = stopDay.routes[within] ?? { after: [], before: [] };
+  const slugs = stop.agencies[within] ?? [];
   const nameAgency = slugs.length > 1;
   return (
     <SidebarCardSection label={`Bustang connections (${day})`}>

@@ -58,7 +58,18 @@ import { useIndexSearch } from '../hooks/useIndexSearch';
 import { mergeRouteResults, mergeStopResults } from '../utils/searchResults';
 import { resolveRouteCardBack, type ListOpenedRoute } from '../utils/routeCardBack';
 import { NIGHT_LIST_TITLE } from '../content/researchRules';
-import { BUSTANG_LIST_TITLE } from '../utils/bustangConnections';
+import { BUSTANG_LIST_TITLE, barDistancesFor, routeKeysForNames, tripConnectingRoutes, tripDirections, tripsForRoute, useConnectionData } from '../utils/bustangConnections';
+import { clockTime } from '../../shared/timeText';
+
+/** The connections bar's choices, kept by the view so they survive a route change (CIV-1353). */
+export interface ConnectionsBarState {
+  wait: number;
+  setWait: (minutes: number) => void;
+  distance: number;
+  setDistance: (meters: number) => void;
+  side: 'after' | 'before';
+  setSide: (side: 'after' | 'before') => void;
+}
 import type { StopCardExtraInput } from '../components/Interval/SidebarControls';
 
 // Versioned because the original preference could accidentally persist only
@@ -96,6 +107,9 @@ interface Props {
   /** The Bustang connections view (CIV-101): a route its list opened, handled like the Night list's (#1326). */
   bustangView?: boolean;
   pendingBustangRoute?: { slug: string; routeId: string } | null;
+  /** The connections top bar's choices (CIV-1353, local only). The picked route's own agency's connection data, when
+   * built, gives its trips; the picked trip's connecting routes show on the map. Null hides the bar. */
+  connectionsBar?: ConnectionsBarState | null;
   onPendingBustangRouteHandled?: () => void;
   /** A research view's own sections on the route and stop cards (Bustang connections); none on the regular map. */
   routeCardExtra?: (routeKey: string) => React.ReactNode;
@@ -186,7 +200,7 @@ function CompareSideSlot({ side, children }: { side: 'A' | 'B'; children: React.
 
 const PENDING_ROUTE_TIMEOUT_MS = 20000;
 
-export default function Interval({ agencies, allAgencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showSelectionUi = false, showRouteLayers = true, liveRoutesOnly = false, filterToAgencies = false, agencyFilterSlugs = null, onHistoryRouteClick, onInfoOpen, selectedAgencySlug, setSelectedAgencySlug, onAgencyCardClose, historyView, onMapDismiss, externalPanelOpen = false, pendingLiveRoute, onPendingLiveRouteHandled, pendingNightRoute, onPendingNightRouteHandled, bustangView = false, pendingBustangRoute, onPendingBustangRouteHandled, routeCardExtra, stopCardExtra, fallbackMapBounds = null, searchFocused = false, setSearchFocused, hideFilterPanel = false, day, setDay, onLayersChange, onViewportAgencySlugsChange, onUserMoveMap, onSelectedMapAgencyChange, onSelectionActiveChange, onLiveRouteSelected, compareStartRequest = null, onCompareActiveChange, headerPortalContainer, viewTabsPortalContainer, moreMenuPortalContainer, onMoreMenuDone, nightServiceView = false, nightServiceFrequency = 60, setNightServiceFrequency, frequentServiceView = false, frequentServiceDays = ['Weekday'], frequentServiceFrequency = 15, frequentServiceWindow = 'daytime', setFrequentServiceDays, setFrequentServiceFrequency, setFrequentServiceWindow, showMapContext = false, showMatchPercentage = false, sidebarLeft, searchBarWidth, searchEnterRef, analyticsApp = 'frequency', hideLowQuality, setHideLowQuality, feedQualityEnabled = false, showMapLegend, setShowMapLegend, dataSaver, setDataSaver, exportEnabled = false, exportTitle = 'Transit map' }: Props) {
+export default function Interval({ agencies, allAgencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showSelectionUi = false, showRouteLayers = true, liveRoutesOnly = false, filterToAgencies = false, agencyFilterSlugs = null, onHistoryRouteClick, onInfoOpen, selectedAgencySlug, setSelectedAgencySlug, onAgencyCardClose, historyView, onMapDismiss, externalPanelOpen = false, pendingLiveRoute, onPendingLiveRouteHandled, pendingNightRoute, onPendingNightRouteHandled, bustangView = false, pendingBustangRoute, connectionsBar = null, onPendingBustangRouteHandled, routeCardExtra, stopCardExtra, fallbackMapBounds = null, searchFocused = false, setSearchFocused, hideFilterPanel = false, day, setDay, onLayersChange, onViewportAgencySlugsChange, onUserMoveMap, onSelectedMapAgencyChange, onSelectionActiveChange, onLiveRouteSelected, compareStartRequest = null, onCompareActiveChange, headerPortalContainer, viewTabsPortalContainer, moreMenuPortalContainer, onMoreMenuDone, nightServiceView = false, nightServiceFrequency = 60, setNightServiceFrequency, frequentServiceView = false, frequentServiceDays = ['Weekday'], frequentServiceFrequency = 15, frequentServiceWindow = 'daytime', setFrequentServiceDays, setFrequentServiceFrequency, setFrequentServiceWindow, showMapContext = false, showMatchPercentage = false, sidebarLeft, searchBarWidth, searchEnterRef, analyticsApp = 'frequency', hideLowQuality, setHideLowQuality, feedQualityEnabled = false, showMapLegend, setShowMapLegend, dataSaver, setDataSaver, exportEnabled = false, exportTitle = 'Transit map' }: Props) {
   const [searchParams] = useSearchParams();
   const [mapContextOpen, setMapContextOpen] = useState(false);
   const [mapContextView, setMapContextView] = useState<'agencies' | 'routes'>('routes');
@@ -643,6 +657,32 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   // map back where the list was (#1326). Other routes keep their agency card as the back target.
   const [nightListRoute, setNightListRoute] = useState<ListOpenedRoute | null>(null);
   useEffect(() => { if (!nightServiceView && !bustangView) setNightListRoute(null); }, [nightServiceView, bustangView]);
+
+  // The connections bar (CIV-1353): the picked route's agency is the hub when its connection data is built, so any
+  // agency works once built. The first trip is picked until another is chosen; the map shows the route and the routes
+  // meeting that trip within the chosen wait and walk, on the chosen side.
+  const connectionsHub = connectionsBar && selectedRoute ? splitRouteKey(selectedRoute).agencySlug : null;
+  const connectionData = useConnectionData(connectionsHub);
+  const connectionTrips = useMemo(() => (
+    connectionData && selectedRoute && splitRouteKey(selectedRoute).agencySlug === connectionData.hub.slug
+      ? tripsForRoute(connectionData, day, splitRouteKey(selectedRoute).routeId) : []
+  ), [connectionData, selectedRoute, day]);
+  const [connectionTripId, setConnectionTripId] = useState<string | null>(null);
+  useEffect(() => { setConnectionTripId(null); }, [selectedRoute, day]);
+  const connectionTrip = connectionTrips.find(t => t.id === connectionTripId) ?? connectionTrips[0] ?? null;
+  const connectionDistances = useMemo(() => barDistancesFor(connectionData), [connectionData]);
+  const focusRoutes = useMemo(() => {
+    if (!connectionsBar || !connectionData || !connectionTrip || !selectedRoute) return null;
+    const names = tripConnectingRoutes(connectionData, connectionTrip, connectionsBar.side, connectionsBar.distance, connectionsBar.wait);
+    return [selectedRoute, ...routeKeysForNames(layers, names)];
+  }, [connectionsBar, connectionData, connectionTrip, selectedRoute, layers]);
+  const connectionsBarControls = useMemo(() => connectionsBar ? {
+    ...connectionsBar,
+    distances: connectionDistances,
+    trips: connectionData ? tripDirections(connectionData, connectionTrips).map(([title, list]) => [title, list.map(t => ({ id: t.id, label: clockTime(t.stops[0].departure) }))] as [string, Array<{ id: string; label: string }>]) : [],
+    tripId: connectionTrip?.id ?? null,
+    setTripId: setConnectionTripId,
+  } : null, [connectionsBar, connectionDistances, connectionData, connectionTrips, connectionTrip]);
   // Once another route (or none) is open, the list no longer opened what is shown.
   useEffect(() => {
     setNightListRoute(current => (current && current.routeKey !== selectedRoute ? null : current));
@@ -1159,6 +1199,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
             q={q}
             selectedRoute={selectedRoute}
             highlightRoutes={highlightRoutes}
+            focusRoutes={focusRoutes}
             hoveredSearchRoute={hoveredSearchRoute}
             hoveredBranch={hoveredBranch}
             setSelectedRoute={setSelectedRoute}
@@ -1554,8 +1595,8 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
       )}
 
       {headerPortalContainer && createPortal(
-        <div className={`flex items-center gap-2 ${!showUi && hideFilterPanel && !nightServiceView && !historyView ? 'pointer-events-none' : ''}`}>
-          <div className={`hidden sm:flex items-center gap-2 transition-opacity ${TRANSITION_BASE} ${showUi || nightServiceView || historyView ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+        <div className={`flex items-center gap-2 ${!showUi && hideFilterPanel && !nightServiceView && !historyView && !connectionsBar ? 'pointer-events-none' : ''}`}>
+          <div className={`hidden sm:flex items-center gap-2 transition-opacity ${TRANSITION_BASE} ${showUi || nightServiceView || historyView || connectionsBar ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
             {historyView ? (
               <FilterChips
                 maxHeadway={historyView.view.maxHeadway}
@@ -1597,6 +1638,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
               nightServiceFrequency={nightServiceFrequency}
               setNightServiceFrequency={setNightServiceFrequency}
               variant={compareActive ? 'shared' : 'full'}
+              connectionsBar={connectionsBarControls}
             />
             )}
           </div>

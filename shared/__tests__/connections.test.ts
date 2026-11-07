@@ -57,7 +57,7 @@ describe('nearby is 400 m in a straight line', () => {
 
 describe('distance choices (Ryan, 2026-11-03: 200, 400 and 800 m, starting at 400)', () => {
   it('offers the three choices and falls back to 400', () => {
-    expect(NEARBY_CHOICES).toEqual([200, 400, 800]);
+    expect(NEARBY_CHOICES).toEqual([200, 400, 600, 800]);
     expect(parseNearbyChoice('800')).toBe(800);
     expect(parseNearbyChoice(null)).toBe(400);
     expect(parseNearbyChoice('500')).toBe(400);
@@ -68,7 +68,7 @@ describe('distance choices (Ryan, 2026-11-03: 200, 400 and 800 m, starting at 40
     expect(departuresWithin(deps, 200).map(d => d.routeName)).toEqual(['near']);
     expect(departuresWithin(deps, 400).map(d => d.routeName)).toEqual(['mid', 'near']);
     const waits = NEARBY_CHOICES.map(m => connectionWaits([arrival(605)], departuresWithin(deps, m))[0].waitMin);
-    expect(waits).toEqual([15, 5, 5]);
+    expect(waits).toEqual([15, 5, 5, 5]);
   });
 });
 

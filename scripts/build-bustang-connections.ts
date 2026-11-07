@@ -1,12 +1,12 @@
 /**
- * Builds the Bustang connection check's data (CIV-101): src/data/bustangConnections.json.
+ * Builds one hub agency's connection data (CIV-101, CIV-1353): src/data/connections/<hub>.json.
  *
- *   npx tsx scripts/build-bustang-connections.ts [--from YYYYMMDD] [--zips tmp/connections/zips] [--hub bustang]
+ *   npx tsx scripts/build-bustang-connections.ts [--hub bustang] [--from YYYYMMDD] [--zips tmp/connections/zips] [--out path]
  *
  * Read-only. Each agency's feed is the archived zip Atlas published (gtfs/archive/<slug>/, read
  * from R2, never written), checked against the config's recorded feed version and expiry, and
  * cached in --zips. The hub agency's stops are matched to every other agency in the same region
- * within each distance choice (200, 400 and 800 m); each hub arrival gets its wait for the next local departure from the
+ * within each distance in NEARBY_CHOICES (200, 400, 600 and 800 m); each hub arrival gets its wait for the next local departure from the
  * shared connectionWaits, and each local route its count of Bustang trips met within 15, 30 and 60 min on both sides
  * (getting off Bustang: local departures after each arrival; catching Bustang: local drop-offs before each departure),
  * from the shared routeConnections. A local bus that ends its trip within a few stops (or, catching Bustang, started
@@ -31,13 +31,14 @@ const arg = (name: string): string | undefined => {
 const HUB = arg('--hub') ?? 'bustang';
 const ZIPS = arg('--zips') ?? 'tmp/connections/zips';
 const FROM = arg('--from') ?? todayUtcYmd();
-const OUT = arg('--out') ?? 'src/data/bustangConnections.json';
+const OUT = arg('--out') ?? `src/data/connections/${HUB}.json`;
 
 interface AgencyConfig {
   slug: string;
   officialName?: string;
   nameQualifier?: string;
   region?: string;
+  timezone?: string;
   parentAgency?: string;
   agencyId?: string;
   excludeRouteShortNames?: string[];
@@ -255,7 +256,7 @@ const usedAgencies = new Set(stopsOut.flatMap(s => s.agencies[MAX_NEARBY_METERS]
 const out = {
   builtFrom: FROM,
   nearbyChoices: NEARBY_CHOICES,
-  hub: { slug: hub.slug, name: shortName(hub), feedVersion: hub.lastFeedVersion ?? null, feedExpiry: hubExpiry },
+  hub: { slug: hub.slug, name: shortName(hub), feedVersion: hub.lastFeedVersion ?? null, feedExpiry: hubExpiry, timezone: hub.timezone ?? null },
   dates,
   agencies: Object.fromEntries(loaded.filter(a => usedAgencies.has(a.config.slug)).map(a => [a.config.slug, {
     name: shortName(a.config), feedVersion: a.config.lastFeedVersion ?? null, feedExpiry: a.expiry,

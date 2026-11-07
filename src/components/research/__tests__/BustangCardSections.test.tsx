@@ -14,6 +14,7 @@ const stopDay = (after = [route('17', 4, [3, 4, 4]), route('W', 4, [0, 1, 2]), r
 };
 const data: BustangData = {
   builtFrom: '20261103',
+  nearbyChoices: [200, 400, 800],
   hub: { slug: 'bustang', name: 'Bustang', feedVersion: 'v', feedExpiry: '20991231' },
   dates: { Weekday: '20261104', Saturday: '20261107', Sunday: '20261108' },
   agencies: {
