@@ -123,6 +123,8 @@ export const loadingText = (noun: string) => `Loading ${noun}…`;
 /** "This route couldn't load.": the thing first. */
 export const loadErrorText = (subject: string) => `${subject.charAt(0).toUpperCase()}${subject.slice(1)} couldn't load.`;
 
+/** The zoomed-out note, shared by the map export and the Night list (CIV-1337, Ryan: reuse this exact string). */
+export const ZOOMED_OUT_NOTICE = 'Zoomed out. Some less frequent routes are hidden';
 // N54 history-failed (hint)
 /** Added after a load error that the person can retry. */
 export const RETRY_HINT = 'Check your connection and try again.';

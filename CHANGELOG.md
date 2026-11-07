@@ -8,6 +8,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Map and route behavior
 
+- **The Night list says "Zoomed out" instead of "No routes here run…" when the map is zoomed out**: routes aren't loaded that far out, so the old note wrongly said there was no overnight service
 - **"Couldn't be found" and "couldn't load" notes close like every map card**: "← Map" above the note replaces a "Close →" link that looked out of place
 - **Links to a [route, stop or on-demand service](https://github.com/Civic-Minds/Atlas/issues/1191) Atlas doesn't have say so and drop the bad part**: a garbled value or unknown agency used to open the plain map with no message and stay in the address bar
 - **The full-day schedule chart's scale reads as an axis**: "Trips per hour" is in the light axis-label style instead of looking like a second title, and the scale starts at 0

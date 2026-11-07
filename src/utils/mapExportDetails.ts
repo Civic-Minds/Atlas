@@ -1,5 +1,5 @@
 import type { Agency } from '../App';
-import { DEFAULT_EXPORT_TITLE } from '../content/noticeCopy';
+import { DEFAULT_EXPORT_TITLE, ZOOMED_OUT_NOTICE } from '../content/noticeCopy';
 import type { DayType } from '../../shared/dayTypes';
 import type { TimePeriod } from '../hooks/useIntervalStats';
 import { PERIOD_LABELS } from '../hooks/useIntervalStats';
@@ -317,7 +317,7 @@ export function describeMapExport(state: MapExportState, samples: RenderedRouteS
   const filter = filterLine(state);
   if (filter) lines.push(filter);
   if (state.view === 'frequency') {
-    if (zoomCeiling(state.zoom) < state.maxHeadway) lines.push('Zoomed out. Some less frequent routes are hidden');
+    if (zoomCeiling(state.zoom) < state.maxHeadway) lines.push(ZOOMED_OUT_NOTICE);
     if (state.query?.trim()) lines.push(`Matching “${state.query.trim()}”`);
   }
 
