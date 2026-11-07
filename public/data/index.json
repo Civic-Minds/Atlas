@@ -5188,10 +5188,10 @@
         "Canton, Ohio",
         "Akron, Ohio"
       ],
-      "lastFeedCheckAt": "20261102",
+      "lastFeedCheckAt": "20261107",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20261107",
+      "expiredFeedCheckExpiry": "20270206",
       "timezone": "America/New_York",
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/11346/gtfs.zip",
@@ -5213,7 +5213,8 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-07"
+        "checkedAt": "2026-11-07",
+        "scoredAt": "2026-11-07"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -5221,7 +5222,8 @@
       "feedRefreshRetryCount": 0,
       "lastServiceWeek": "4ecac77976d1a2d6",
       "feedObtainedAt": "20260804",
-      "lastFeedStart": "20260809"
+      "lastFeedStart": "20260809",
+      "heldFeedStart": "20261108"
     },
     {
       "slug": "laketran",
@@ -7287,14 +7289,16 @@
         "Portland, Maine"
       ],
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2642/latest.zip",
-      "lastFeedCheckAt": "20261105",
+      "lastFeedCheckAt": "20261107",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20261205",
+      "expiredFeedCheckExpiry": "20261207",
       "feedQuality": {
-        "status": "healthy",
-        "score": 100,
-        "reasons": [],
+        "status": "degraded",
+        "score": 65,
+        "reasons": [
+          "The schedule dates in this feed have passed."
+        ],
         "metrics": {
           "validationErrors": 0,
           "validationWarnings": 0,
@@ -7304,7 +7308,7 @@
           "feedExpiry": "20261105"
         },
         "checkedAt": "2026-10-07",
-        "scoredAt": "2026-11-05"
+        "scoredAt": "2026-11-07"
       },
       "timezone": "America/New_York",
       "feedRefreshStatus": "current",
@@ -7313,7 +7317,7 @@
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://gtfs.gptd.cadavl.com/GPTD/GTFS/GTFS_GPTD.zip",
-      "refusedFeedSha256": "9dd8394c1cfdfb6beb4d8ab65be6ca97ec3d5384886d6f784d475c7b2816082f"
+      "refusedFeedSha256": "23e2a25edb490c17c18c50881e3364a32557dab7cf3d31f2e65eb23931ddf69a"
     },
     {
       "slug": "hocts",
@@ -11273,7 +11277,7 @@
       "lastFeedExpiry": "20270401",
       "lastFeedVersion": "",
       "region": "California",
-      "lastRefreshedAt": "2026-11-05",
+      "lastRefreshedAt": "2026-11-07",
       "supplementalFeedUrls": [
         "https://gitlab.com/LACMTA/gtfs_rail/raw/master/gtfs_rail.zip"
       ],
@@ -11292,7 +11296,7 @@
         "North Hills, California",
         "North Hollywood, California"
       ],
-      "lastFeedCheckAt": "20261105",
+      "lastFeedCheckAt": "20261107",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
       "expiredFeedCheckExpiry": "20270401",
@@ -11326,14 +11330,14 @@
       "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-29/latest.zip",
       "lastSupplementalFeeds": [
         {
-          "feedExpiry": "20261119",
+          "feedExpiry": "20261121",
           "feedVersion": null,
-          "rawArchiveKey": "20261119-8f5ba01ab64ae349"
+          "rawArchiveKey": "20261121-0dcb5e3d36b58ecb"
         }
       ],
       "lastPeekedExpiry": "20270401",
       "lastServiceWeek": "8a5859505ca2916d",
-      "feedObtainedAt": "20261105",
+      "feedObtainedAt": "20261107",
       "lastFeedStart": "20260607"
     },
     {
@@ -28592,9 +28596,9 @@
           "name": "Purple South"
         }
       ],
-      "lastFeedExpiry": "20260930",
-      "lastFeedVersion": "20250923",
-      "lastRefreshedAt": "2026-08-07",
+      "lastFeedExpiry": "20290115",
+      "lastFeedVersion": "20260917",
+      "lastRefreshedAt": "2026-11-07",
       "region": "Maryland",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2285/latest.zip",
       "bbox": [
@@ -28606,17 +28610,40 @@
       "cities": [
         "Bowie, Maryland"
       ],
-      "lastFeedCheckAt": "20261102",
-      "expiredFeedCheckCount": 5,
-      "expiredFeedCheckSince": "20260622",
-      "expiredFeedCheckExpiry": "20260930",
+      "lastFeedCheckAt": "20261107",
+      "expiredFeedCheckCount": 0,
+      "expiredFeedCheckSince": null,
+      "expiredFeedCheckExpiry": "20290115",
       "timezone": "America/New_York",
-      "feedRefreshStatus": "stale",
-      "feedRefreshError": "all available feeds expired (latest 20260930)",
-      "feedRefreshErrorAt": "20261102",
-      "feedRefreshRetryCount": 5,
+      "feedRefreshStatus": "current",
+      "feedRefreshError": null,
+      "feedRefreshErrorAt": null,
+      "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2285/latest.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2285/latest.zip",
+      "feedQuality": {
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 30,
+          "feedExpiry": "20290115",
+          "routeCount": 8,
+          "problemShapes": 0,
+          "problemShapeRoutes": 0,
+          "mismatchRoutes": 0,
+          "resumesOn": null
+        },
+        "checkedAt": "2026-11-07"
+      },
+      "lastPeekedExpiry": "20290115",
+      "lastFeedStart": "20260917",
+      "lastServiceWeek": "987f4446f9b34296",
+      "feedObtainedAt": "20261107"
     },
     {
       "slug": "yellowknife",
@@ -35490,12 +35517,13 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-07"
+        "checkedAt": "2026-11-07",
+        "scoredAt": "2026-11-07"
       },
       "lastFeedExpiry": "20261106",
       "lastFeedVersion": "20260713",
       "lastRefreshedAt": "2026-08-21",
-      "lastFeedCheckAt": "20261102",
+      "lastFeedCheckAt": "20261107",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
       "expiredFeedCheckExpiry": "20270319",
@@ -35504,7 +35532,8 @@
       "lastFeedSourceUrl": "https://tank.rideralerts.com/InfoPoint/GTFS-Zip.ashx",
       "lastPeekedExpiry": "20261106",
       "heldFeedStart": "20261107",
-      "lastFeedStart": "20260714"
+      "lastFeedStart": "20260714",
+      "refusedFeedSha256": "d3b930f530173968ef5284655835a3b2aff5a8152b2e6896e3171088b772e63a"
     },
     {
       "slug": "sandusky",
@@ -36182,9 +36211,9 @@
         -106.0384
       ],
       "feedUrl": "https://mybreckfreeride.com/gtfs",
-      "lastFeedExpiry": "20261113",
-      "lastFeedVersion": "111-Resort.Winter25/26.1,103-Summer 2026.8,124-UWM Summer 26",
-      "lastRefreshedAt": "2026-11-02",
+      "lastFeedExpiry": "20270404",
+      "lastFeedVersion": "103-Summer 2026.8,124-UWM Summer 26,111-Winter 26/27.1,111-Winter 26/27.2",
+      "lastRefreshedAt": "2026-11-07",
       "cities": [
         "Breckenridge, Colorado"
       ],
@@ -36208,20 +36237,20 @@
         },
         "checkedAt": "2026-11-07"
       },
-      "lastFeedCheckAt": "20261102",
+      "lastFeedCheckAt": "20261107",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20991231",
+      "expiredFeedCheckExpiry": "20270404",
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://mybreckfreeride.com/gtfs",
-      "lastPeekedExpiry": "20261113",
-      "lastServiceWeek": "cd7d5ba8b00cfe66",
-      "feedObtainedAt": "20261102",
-      "lastFeedStart": "20251125"
+      "lastPeekedExpiry": "20270404",
+      "lastServiceWeek": "42eb630b1d24f382",
+      "feedObtainedAt": "20261107",
+      "lastFeedStart": "20260531"
     },
     {
       "slug": "summit-stage",
