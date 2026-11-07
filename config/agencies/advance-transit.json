@@ -41,7 +41,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-06"
+    "checkedAt": "2026-11-07"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -51,5 +51,6 @@
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-631/latest.zip",
   "lastPeekedExpiry": "20270101",
   "lastServiceWeek": "c1e663f1b3d52024",
-  "feedObtainedAt": "20261102"
+  "feedObtainedAt": "20261102",
+  "lastFeedStart": "20261026"
 }

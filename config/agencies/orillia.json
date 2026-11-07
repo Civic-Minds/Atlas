@@ -28,7 +28,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-06"
+    "checkedAt": "2026-11-07"
   },
   "lastFeedExpiry": "20280101",
   "lastFeedVersion": "1/20261101 22:00:00/20261102 00:00:00",
@@ -46,5 +46,6 @@
   "lastFeedSourceUrl": "http://metrolinx.tmix.se/gtfs/gtfs-orillia.zip",
   "lastPeekedExpiry": "20280101",
   "lastServiceWeek": "8fe86e75342304ab",
-  "feedObtainedAt": "20261102"
+  "feedObtainedAt": "20261102",
+  "lastFeedStart": "20261101"
 }

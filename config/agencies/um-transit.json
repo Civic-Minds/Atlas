@@ -44,7 +44,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-06"
+    "checkedAt": "2026-11-07"
   },
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://webapps.fo.umich.edu/transit_uploads/google_transit.zip",
@@ -54,5 +54,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastServiceWeek": "95a0e1905460c032",
-  "feedObtainedAt": "20260819"
+  "feedObtainedAt": "20260819",
+  "lastFeedStart": "20260823"
 }

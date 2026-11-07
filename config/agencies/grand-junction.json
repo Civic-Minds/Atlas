@@ -41,7 +41,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-06"
+    "checkedAt": "2026-11-07"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -51,5 +51,6 @@
   "lastFeedSourceUrl": "https://emap.mesacounty.us/datadownload/Google_Transit_Feed/google_transit.zip",
   "lastPeekedExpiry": "20271012",
   "lastServiceWeek": "cf55fcd96034a1d4",
-  "feedObtainedAt": "20261013"
+  "feedObtainedAt": "20261013",
+  "lastFeedStart": "20261013"
 }

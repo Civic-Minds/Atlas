@@ -50,7 +50,7 @@
       "mismatchRoutes": 1,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-06"
+    "checkedAt": "2026-11-07"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -60,5 +60,6 @@
   "lastFeedSourceUrl": "https://avl.yctd.org/RealTime/google_transit.zip",
   "lastPeekedExpiry": "20270630",
   "lastServiceWeek": "e5ad0d31cc65b819",
-  "feedObtainedAt": "20261001"
+  "feedObtainedAt": "20261001",
+  "lastFeedStart": "20261003"
 }

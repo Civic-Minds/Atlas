@@ -39,7 +39,7 @@
       "mismatchRoutes": 1,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-06"
+    "checkedAt": "2026-11-07"
   },
   "timezone": "America/Detroit",
   "feedRefreshStatus": "current",
@@ -50,5 +50,6 @@
   "lastFeedSourceUrl": "https://trackmybus.kmetro.org/InfoPoint/GTFS-Zip.ashx",
   "lastPeekedExpiry": "20261228",
   "lastServiceWeek": "9dc1aa17c6d5cc88",
-  "feedObtainedAt": "20261102"
+  "feedObtainedAt": "20261102",
+  "lastFeedStart": "20261030"
 }

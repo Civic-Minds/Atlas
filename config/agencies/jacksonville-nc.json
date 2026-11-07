@@ -36,7 +36,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-06"
+    "checkedAt": "2026-11-07"
   },
   "lastFeedExpiry": "20271231",
   "lastFeedVersion": "20260917",
@@ -54,5 +54,6 @@
   "lastFeedSourceUrl": "https://passio3.com/jacksonville/passioTransit/gtfs/google_transit.zip",
   "lastPeekedExpiry": "20271231",
   "lastServiceWeek": "8e8c3b665a9548cb",
-  "feedObtainedAt": "20261102"
+  "feedObtainedAt": "20261102",
+  "lastFeedStart": "20261018"
 }

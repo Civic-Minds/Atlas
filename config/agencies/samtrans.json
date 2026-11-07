@@ -50,7 +50,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-06"
+    "checkedAt": "2026-11-07"
   },
   "timezone": "America/Los_Angeles",
   "feedRefreshStatus": "current",
@@ -61,5 +61,6 @@
   "lastFeedSourceUrl": "http://www.samtrans.com/Assets/GTFS/samtrans/ST-GTFS.zip",
   "lastPeekedExpiry": "20261114",
   "lastServiceWeek": "109fce2a80cc17b5",
-  "feedObtainedAt": "20260902"
+  "feedObtainedAt": "20260902",
+  "lastFeedStart": "20260920"
 }

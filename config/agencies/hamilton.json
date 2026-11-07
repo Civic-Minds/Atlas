@@ -50,7 +50,7 @@
       "mismatchRoutes": 1,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-06"
+    "checkedAt": "2026-11-07"
   },
   "timezone": "America/Toronto",
   "feedRefreshStatus": "current",
@@ -61,5 +61,6 @@
   "lastFeedSourceUrl": "https://opendata.hamilton.ca/GTFS-Static/google_transit.zip",
   "lastPeekedExpiry": "20261226",
   "lastServiceWeek": "b365807d267f0fc5",
-  "feedObtainedAt": "20261001"
+  "feedObtainedAt": "20261001",
+  "lastFeedStart": "20260906"
 }

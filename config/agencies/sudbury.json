@@ -36,7 +36,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-06"
+    "checkedAt": "2026-11-07"
   },
   "timezone": "America/Toronto",
   "feedRefreshStatus": "current",
@@ -47,5 +47,6 @@
   "lastFeedSourceUrl": "https://www.greatersudbury.ca/image/opendata/gtfs.zip",
   "lastPeekedExpiry": "20261127",
   "lastServiceWeek": "a7a14e88333bd51e",
-  "feedObtainedAt": "20261102"
+  "feedObtainedAt": "20261102",
+  "lastFeedStart": "20261028"
 }

@@ -42,7 +42,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-06"
+    "checkedAt": "2026-11-07"
   },
   "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
@@ -56,5 +56,6 @@
   "lastFeedSourceUrl": "https://oregon-gtfs.trilliumtransit.com/gtfs_data/clatsopcounty-or-us/clatsopcounty-or-us.zip",
   "lastPeekedExpiry": "20270531",
   "lastServiceWeek": "aa82482c3f61d333",
-  "feedObtainedAt": "20261015"
+  "feedObtainedAt": "20261015",
+  "lastFeedStart": "20261001"
 }

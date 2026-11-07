@@ -36,7 +36,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-06"
+    "checkedAt": "2026-11-07"
   },
   "lastFeedExpiry": "20261231",
   "lastFeedVersion": "20250228",
@@ -54,5 +54,6 @@
   "lastFeedSourceUrl": "https://www.ftis.org/PostFileDownload.aspx?id=962A0",
   "lastPeekedExpiry": "20261231",
   "lastServiceWeek": "8c69d39b8c21e620",
-  "feedObtainedAt": "20251029"
+  "feedObtainedAt": "20251029",
+  "lastFeedStart": "20251028"
 }

@@ -30,7 +30,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-06"
+    "checkedAt": "2026-11-07"
   },
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/11767/CityofKokomo_Transit.zip",
@@ -44,5 +44,6 @@
   "feedRefreshRetryCount": 0,
   "lastPeekedExpiry": "20280504",
   "lastServiceWeek": "8afca8f344b9bdc0",
-  "feedObtainedAt": "20260610"
+  "feedObtainedAt": "20260610",
+  "lastFeedStart": "20260505"
 }

@@ -9,7 +9,7 @@
     -85.6206
   ],
   "feedUrl": "https://batabustracker.com/gtfs",
-  "lastFeedExpiry": "20281106",
+  "lastFeedExpiry": "20281107",
   "lastFeedVersion": "9/7/2026",
   "lastRefreshedAt": "2026-11-02",
   "cities": [
@@ -29,14 +29,14 @@
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
       "featureCount": 43,
-      "feedExpiry": "20281106",
+      "feedExpiry": "20281107",
       "routeCount": 13,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-06"
+    "checkedAt": "2026-11-07"
   },
   "timezone": "America/New_York",
   "feedRefreshStatus": "current",
@@ -47,5 +47,6 @@
   "lastFeedSourceUrl": "https://batabustracker.com/gtfs",
   "lastPeekedExpiry": "20991231",
   "lastServiceWeek": "c67e41b2419237c2",
-  "feedObtainedAt": "20261101"
+  "feedObtainedAt": "20261101",
+  "lastFeedStart": "20260906"
 }

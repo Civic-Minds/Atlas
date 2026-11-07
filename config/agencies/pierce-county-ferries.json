@@ -38,7 +38,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-06"
+    "checkedAt": "2026-11-07"
   },
   "lastFeedExpiry": "20261231",
   "lastFeedVersion": "UTC: 13-May-2026 10:51",
@@ -51,5 +51,6 @@
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/tld-2289/latest.zip",
   "lastPeekedExpiry": "20261231",
   "lastServiceWeek": "be956cf192c4c780",
-  "feedObtainedAt": "20260513"
+  "feedObtainedAt": "20260513",
+  "lastFeedStart": "20260513"
 }

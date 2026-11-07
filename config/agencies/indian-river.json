@@ -16,7 +16,7 @@
   ],
   "feedUrl": "https://files.mobilitydatabase.org/ntd-40104/latest.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-40104/latest.zip",
-  "lastFeedExpiry": "20281106",
+  "lastFeedExpiry": "20281107",
   "lastFeedVersion": null,
   "lastRefreshedAt": "2026-11-02",
   "cities": [
@@ -42,14 +42,14 @@
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
       "featureCount": 29,
-      "feedExpiry": "20281106",
+      "feedExpiry": "20281107",
       "routeCount": 15,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-06"
+    "checkedAt": "2026-11-07"
   },
   "lastPeekedExpiry": "20501230",
   "feedRefreshStatus": "current",
@@ -57,5 +57,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastServiceWeek": "2c67f2050b49580e",
-  "feedObtainedAt": "20240130"
+  "feedObtainedAt": "20240130",
+  "lastFeedStart": "20231129"
 }

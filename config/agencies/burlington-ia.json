@@ -42,7 +42,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-06"
+    "checkedAt": "2026-11-07"
   },
   "lastFeedCheckAt": "20261102",
   "expiredFeedCheckCount": 0,
@@ -57,5 +57,6 @@
   "lastFeedSourceUrl": "https://data.trilliumtransit.com/gtfs/burlington-ia-us/burlington-ia-us.zip",
   "lastPeekedExpiry": "20270401",
   "lastServiceWeek": "8833677f8c69d9d4",
-  "feedObtainedAt": "20260924"
+  "feedObtainedAt": "20260924",
+  "lastFeedStart": "20260924"
 }
