@@ -21697,7 +21697,8 @@
         "Summerville, South Carolina",
         "Goose Creek, South Carolina"
       ],
-      "timezone": "America/New_York"
+      "timezone": "America/New_York",
+      "hiddenInProduction": true
     },
     {
       "slug": "cat-savannah",
