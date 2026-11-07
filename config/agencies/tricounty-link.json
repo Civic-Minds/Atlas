@@ -21,5 +21,6 @@
     "Goose Creek, South Carolina"
   ],
   "timezone": "America/New_York",
-  "hiddenInProduction": true
+  "hiddenInProduction": true,
+  "issueUrl": "https://github.com/Civic-Minds/Atlas/issues/1379"
 }
