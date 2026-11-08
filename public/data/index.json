@@ -21628,10 +21628,10 @@
         -79.93
       ],
       "bbox": [
-        32.569,
-        -80.574,
-        33.581,
-        -79.464
+        32.6854,
+        -80.1692,
+        32.9774,
+        -79.7613
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-352/latest.zip",
       "region": "South Carolina",
@@ -21702,8 +21702,6 @@
         "Goose Creek, South Carolina"
       ],
       "timezone": "America/New_York",
-      "hiddenInProduction": true,
-      "issueUrl": "https://github.com/Civic-Minds/Atlas/issues/1379",
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "http://data.trilliumtransit.com/gtfs/tricountylink-sc-us/tricountylink-sc-us.zip",
       "lastFeedCheckAt": "20261107",
