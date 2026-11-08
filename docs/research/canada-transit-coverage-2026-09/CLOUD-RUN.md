@@ -47,7 +47,7 @@ The workflow tries StatCan first. If StatCan refuses, it reads the archive copy.
 | `us` × bundle | `src/run-us-bundle.mjs` at 30, then at 15 (the 15-minute run reuses the 30-minute network). Up to 10 at a time | ubuntu-latest |
 | `summarize` | Merges per country and threshold (`merge-reports.mjs`), then `summarize-cloud.mjs`: the headline figures the way catalog/findings.json computed them, plus a per-metro table. Writes to the run summary and the `coverage-summary` artifact | ubuntu-latest |
 
-**Smoke mode:** Saskatchewan (Saskatoon and Regina; a 112 MB extract) and US bundle 15 (Hawaii; a 26 MB extract). This tests every path, StatCan files included, in a short run. The first run should be smoke with `rule=study`: Honolulu should land near the study's 12.97%, or this note's 17.8–22.0% bracket from CIV-1179.
+**Smoke mode:** Saskatchewan (Saskatoon and Regina; a 112 MB extract) and US bundle 15 (Hawaii; a 26 MB extract). This tests every path, StatCan files included, in a short run. The first run should be smoke with `rule=study`: Honolulu's 30-minute figure should land near the study's 12.97%, or under this note's 17.8–22.0% straight-line bracket from CIV-1179. Both are 30-minute figures; the study has no 15-minute Honolulu figure.
 
 ## Runner size, time and cost
 - **Runner:** ubuntu-latest, 4 vCPU, 16 GB RAM, about 14 GB free disk, plus about 25 GB once the workflow deletes the preinstalled toolchains. Node gets a 12 GB heap. The biggest jobs are Ontario, Quebec and BC, and the California, Texas, Florida and New York bundles. Clipping the network to qualifying stops keeps them inside 16 GB. If one runs out of memory, rerun only that job (`bundles` or `provinces` input) on a larger runner.
