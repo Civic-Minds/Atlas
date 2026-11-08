@@ -9,10 +9,10 @@
   ],
   "feedUrl": "https://www.octa.net/current/google_transit.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-15/latest.zip",
-  "lastFeedExpiry": "20261107",
+  "lastFeedExpiry": "20270213",
   "lastFeedVersion": null,
   "region": "California",
-  "lastRefreshedAt": "2026-11-02",
+  "lastRefreshedAt": "2026-11-08",
   "cities": [
     "Santa Ana, California",
     "Westminster, California",
@@ -25,14 +25,14 @@
     "Placentia, California",
     "Costa Mesa, California"
   ],
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261108",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261107",
+  "expiredFeedCheckExpiry": "20270213",
   "timezone": "America/Los_Angeles",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://www.octa.net/current/google_transit.zip",
-  "lastPeekedExpiry": "20261107",
+  "lastPeekedExpiry": "20270213",
   "feedQuality": {
     "status": "healthy",
     "score": 100,
@@ -43,20 +43,20 @@
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
       "featureCount": 269,
-      "feedExpiry": "20261107",
+      "feedExpiry": "20270213",
       "routeCount": 53,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-07"
+    "checkedAt": "2026-11-08"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
-  "lastServiceWeek": "f394465f5e766811",
-  "feedObtainedAt": "20260813",
-  "lastFeedStart": "20260809"
+  "lastServiceWeek": "049848fdca899237",
+  "feedObtainedAt": "20261108",
+  "lastFeedStart": "20261108"
 }
