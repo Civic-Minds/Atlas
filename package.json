@@ -129,6 +129,7 @@
     "brace-expansion": "^2.1.3"
   },
   "devDependencies": {
+    "@anthropic-ai/sdk": "^1.7.0",
     "@cloudflare/workers-types": "^5.20261023.1",
     "@emnapi/core": "1.11.3",
     "@emnapi/runtime": "1.11.3",

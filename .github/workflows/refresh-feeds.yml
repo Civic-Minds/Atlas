@@ -167,6 +167,18 @@ jobs:
           fi
           echo "$count public agencies on expired timetables"
 
+      # For each agency on that issue, ask Claude (with web search) for a newer official timetable
+      # link, or evidence the service ended, and post the suggestions as one comment on the issue
+      # (CIV-1360). Suggestions only: it changes no config or data. Skips itself when the
+      # ANTHROPIC_API_KEY secret is not set. Never blocks the release.
+      - name: Suggest newer links for agencies on expired timetables
+        continue-on-error: true
+        timeout-minutes: 30
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: npx tsx scripts/find-expired-feed-links.ts
+
       - name: Install tippecanoe
         run: sudo apt-get install -y tippecanoe
 
