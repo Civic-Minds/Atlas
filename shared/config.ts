@@ -106,9 +106,9 @@ const devOnDemandUrl: unknown =
 export const ON_DEMAND_URL_OVERRIDE: string | undefined =
   typeof devOnDemandUrl === 'string' && devOnDemandUrl ? devOnDemandUrl : undefined;
 // "What's new" link in the map's bottom bar, listing recent changes in plain words (CIV-83).
-// Beta-only while the wording and placement are tried out.
-export function whatsNewEnabledFor(mode: AtlasMode): boolean {
-  return mode === 'beta' || mode === 'dev';
+// On in every build since 3.4; entries tagged beta stay beta-only (WHATS_NEW_BETA_ITEMS_ENABLED).
+export function whatsNewEnabledFor(_mode: AtlasMode): boolean {
+  return true;
 }
 export const WHATS_NEW_ENABLED = whatsNewEnabledFor(ATLAS_MODE);
 

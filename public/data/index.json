@@ -19993,22 +19993,22 @@
       "sameNameRoutes": [
         {
           "shortName": "FCF",
-          "longName": "Green Line",
+          "longName": "Green Line Armsdale",
           "name": "Green Line"
         },
         {
           "shortName": "FCF",
-          "longName": "Orange Line",
+          "longName": "Orange Line Orange Park Mall",
           "name": "Orange Line"
         },
         {
           "shortName": "FCF",
-          "longName": "Blue Line",
+          "longName": "Blue Line Avenues Walk",
           "name": "Blue Line"
         },
         {
           "shortName": "FCF",
-          "longName": "Red Line",
+          "longName": "Red Line Arlington Beaches",
           "name": "Red Line"
         }
       ],
