@@ -83,7 +83,7 @@
   "lastFeedExpiry": "20261129",
   "lastFeedVersion": null,
   "region": "Missouri",
-  "lastRefreshedAt": "2026-11-02",
+  "lastRefreshedAt": "2026-11-09",
   "cities": [
     "St. Louis, Missouri",
     "Florissant, Missouri",
@@ -92,7 +92,7 @@
   ],
   "timezone": "America/Chicago",
   "lastRawArchiveKey": "20261025-4c0fd0987c705d50",
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261129",
@@ -111,7 +111,7 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 426,
+      "featureCount": 423,
       "feedExpiry": "20261129",
       "routeCount": 59,
       "problemShapes": 0,
@@ -119,7 +119,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-07"
+    "checkedAt": "2026-11-09"
   },
   "modeOverrides": [
     {
@@ -136,7 +136,7 @@
     }
   ],
   "lastPeekedExpiry": "20261129",
-  "lastServiceWeek": "7bc6830cab726c26",
+  "lastServiceWeek": "b73eb5c15fa818a9",
   "feedObtainedAt": "20261102",
   "lastFeedStart": "20261102"
 }

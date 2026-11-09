@@ -9,9 +9,9 @@
     -105.5136
   ],
   "feedUrl": "https://data.trilliumtransit.com/gtfs/clearcreek-co-us/clearcreek-co-us.zip",
-  "lastFeedExpiry": "20261130",
-  "lastFeedVersion": "UTC: 20-May-2026 16:35",
-  "lastRefreshedAt": "2026-11-02",
+  "lastFeedExpiry": "20270531",
+  "lastFeedVersion": "UTC: 05-Nov-2026 19:20",
+  "lastRefreshedAt": "2026-11-09",
   "cities": [
     "Idaho Springs, Colorado",
     "Georgetown, Colorado",
@@ -31,27 +31,27 @@
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
       "featureCount": 8,
-      "feedExpiry": "20261130",
+      "feedExpiry": "20270531",
       "routeCount": 2,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-07"
+    "checkedAt": "2026-11-09"
   },
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261130",
+  "expiredFeedCheckExpiry": "20270531",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://data.trilliumtransit.com/gtfs/clearcreek-co-us/clearcreek-co-us.zip",
-  "lastPeekedExpiry": "20261130",
+  "lastPeekedExpiry": "20270531",
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
-  "lastServiceWeek": "34fff7b1030052c4",
-  "feedObtainedAt": "20260520",
-  "lastFeedStart": "20260520"
+  "lastServiceWeek": "0d7a95d3a16783c8",
+  "feedObtainedAt": "20261109",
+  "lastFeedStart": "20261101"
 }

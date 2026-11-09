@@ -10,17 +10,44 @@
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-2069/latest.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2069/latest.zip",
-  "lastFeedExpiry": "20991231",
-  "lastFeedVersion": "2026 Summer Detours 6/27",
-  "lastRefreshedAt": "2026-08-10",
+  "lastFeedExpiry": "20270102",
+  "lastFeedVersion": "Fall 2026 (10/7/26)",
+  "lastRefreshedAt": "2026-11-09",
   "cities": [
     "Appleton, Wisconsin"
   ],
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270102",
   "timezone": "America/Chicago",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2069/latest.zip"
+  "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2069/latest.zip",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 66,
+      "feedExpiry": "20270102",
+      "routeCount": 24,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
+    },
+    "checkedAt": "2026-11-09"
+  },
+  "lastPeekedExpiry": "20270102",
+  "lastFeedStart": "20261006",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "c8888132b467cefe",
+  "feedObtainedAt": "20261109"
 }

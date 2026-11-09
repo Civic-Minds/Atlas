@@ -8,9 +8,9 @@
     -72.97
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-430/latest.zip",
-  "lastFeedExpiry": "20270327",
-  "lastFeedVersion": "UTC: 21-Sep-2026 22:33",
-  "lastRefreshedAt": "2026-11-02",
+  "lastFeedExpiry": "20270328",
+  "lastFeedVersion": "UTC: 03-Nov-2026 15:34",
+  "lastRefreshedAt": "2026-11-09",
   "region": "Vermont",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-430/latest.zip",
   "bbox": [
@@ -19,10 +19,10 @@
     44.0308,
     -72.6852
   ],
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20270327",
+  "expiredFeedCheckExpiry": "20270328",
   "feedQuality": {
     "status": "healthy",
     "score": 100,
@@ -33,14 +33,14 @@
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
       "featureCount": 32,
-      "feedExpiry": "20270327",
+      "feedExpiry": "20270328",
       "routeCount": 9,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-07"
+    "checkedAt": "2026-11-09"
   },
   "timezone": "America/New_York",
   "feedRefreshStatus": "current",
@@ -49,8 +49,8 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-430/latest.zip",
-  "lastPeekedExpiry": "20270327",
-  "lastServiceWeek": "ea2b8a101d11aab0",
-  "feedObtainedAt": "20260921",
-  "lastFeedStart": "20260818"
+  "lastPeekedExpiry": "20270328",
+  "lastServiceWeek": "7369db2d085262e1",
+  "feedObtainedAt": "20261109",
+  "lastFeedStart": "20261103"
 }

@@ -12,7 +12,7 @@
   "lastFeedExpiry": "20270401",
   "lastFeedVersion": "",
   "region": "California",
-  "lastRefreshedAt": "2026-11-07",
+  "lastRefreshedAt": "2026-11-09",
   "supplementalFeedUrls": [
     "https://gitlab.com/LACMTA/gtfs_rail/raw/master/gtfs_rail.zip"
   ],
@@ -31,7 +31,7 @@
     "North Hills, California",
     "North Hollywood, California"
   ],
-  "lastFeedCheckAt": "20261107",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270401",
@@ -54,7 +54,7 @@
       "mismatchRoutes": 1,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-07"
+    "checkedAt": "2026-11-09"
   },
   "timezone": "America/Los_Angeles",
   "feedRefreshStatus": "current",
@@ -72,6 +72,6 @@
   ],
   "lastPeekedExpiry": "20270401",
   "lastServiceWeek": "8a5859505ca2916d",
-  "feedObtainedAt": "20261107",
+  "feedObtainedAt": "20261109",
   "lastFeedStart": "20260607"
 }

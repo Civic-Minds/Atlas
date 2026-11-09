@@ -17,8 +17,8 @@
     "Clovis, California"
   ],
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-90/latest.zip",
-  "lastFeedCheckAt": "20261102",
-  "expiredFeedCheckCount": 1,
+  "lastFeedCheckAt": "20261109",
+  "expiredFeedCheckCount": 2,
   "expiredFeedCheckSince": "20260622",
   "expiredFeedCheckExpiry": "20261101",
   "timezone": "America/Los_Angeles",
@@ -45,10 +45,10 @@
       "resumesOn": null
     },
     "checkedAt": "2026-11-02",
-    "scoredAt": "2026-11-02"
+    "scoredAt": "2026-11-09"
   },
   "feedRefreshStatus": "stale",
   "feedRefreshError": "all available feeds expired (latest 20261101)",
-  "feedRefreshErrorAt": "20261102",
-  "feedRefreshRetryCount": 1
+  "feedRefreshErrorAt": "20261109",
+  "feedRefreshRetryCount": 2
 }

@@ -23,7 +23,7 @@
   "websiteUrl": "http://www.redwoodcoasttransit.org/",
   "timezone": "America/Los_Angeles",
   "lastRawArchiveKey": "20260530-8364fe10c2bd25da",
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270530",
@@ -44,7 +44,8 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-07"
+    "checkedAt": "2026-11-07",
+    "scoredAt": "2026-11-09"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
