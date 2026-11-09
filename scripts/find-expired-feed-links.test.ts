@@ -294,7 +294,9 @@ describe('the weekly comment', () => {
 
   it('is plain text: no emoji and no all-caps words apart from GTFS', () => {
     expect(comment).not.toMatch(/\p{Extended_Pictographic}/u);
-    const shouting = (comment.replace(/<[^>]*>/g, '').match(/\b[A-Z]{2,}\b/g) ?? []).filter(word => word !== 'GTFS');
+    // Links sit in angle brackets; only the words outside them are checked.
+    const outsideLinks = comment.split('<').map((part, i) => (i === 0 ? part : part.slice(part.indexOf('>') + 1))).join(' ');
+    const shouting = (outsideLinks.match(/\b[A-Z]{2,}\b/g) ?? []).filter(word => word !== 'GTFS');
     expect(shouting).toEqual([]);
   });
 
