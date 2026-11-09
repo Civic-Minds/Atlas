@@ -163,7 +163,8 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **Analytics count what people use**: exports, outbound links, content views and shared links, and shared images link back to the map (beta)
 - **Text is bigger and the [Atlas logo](https://github.com/Civic-Minds/Atlas/issues/1068) is the same everywhere**: nothing you read is below 12px, colours meet WCAG AA, and the logo is a light circle, not a [dark one](https://github.com/Civic-Minds/Atlas/issues/1058)
 - **Content pages share one layout**: the footer groups Explore, Learn and About, with Terms under Learn and Privacy under About, they follow the saved [dark theme](https://github.com/Civic-Minds/Atlas/issues/1190), and Docs and legal pages keep the top bar and "On this page" in view
-- **A Changelog page lists every app version (beta)**: What's new links to it
+- **A Changelog page lists every app version**: What's new links to it
+- **The map has a "What's new" link**: it lists recent changes in plain words, so you can see what changed since your last visit
 - **Retired pages go to the map**: Corridors and Fares redirect, and Diagnostics is for developers only
 
 ## [3.3.0] - 2026-10-12
