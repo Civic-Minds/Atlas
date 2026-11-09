@@ -19,7 +19,7 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-247/latest.zip",
   "lastFeedExpiry": "20270227",
   "lastFeedVersion": "20261011-20261021-0903",
-  "lastRefreshedAt": "2026-11-02",
+  "lastRefreshedAt": "2026-11-09",
   "cities": [
     "Portland, Oregon",
     "Gresham, Oregon",
@@ -28,7 +28,7 @@
     "Hillsboro, Oregon",
     "Vancouver, Washington"
   ],
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270227",
@@ -49,7 +49,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-07"
+    "checkedAt": "2026-11-09"
   },
   "timezone": "America/Los_Angeles",
   "feedRefreshStatus": "current",
@@ -91,7 +91,7 @@
     }
   ],
   "lastPeekedExpiry": "20270227",
-  "lastServiceWeek": "28d9afc4b227acc6",
+  "lastServiceWeek": "bb6d1cb5a794f939",
   "feedObtainedAt": "20261102",
   "lastFeedStart": "20261011"
 }

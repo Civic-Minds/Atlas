@@ -34,12 +34,12 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-07"
+    "checkedAt": "2026-11-09"
   },
   "lastFeedExpiry": "20270131",
-  "lastFeedVersion": "20261020",
-  "lastRefreshedAt": "2026-11-02",
-  "lastFeedCheckAt": "20261102",
+  "lastFeedVersion": "20261102",
+  "lastRefreshedAt": "2026-11-09",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270131",
@@ -51,7 +51,7 @@
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://godurham.rideralerts.com/InfoPoint/GTFS-Zip.ashx",
   "lastPeekedExpiry": "20270131",
-  "lastServiceWeek": "d46df307c89dd94b",
-  "feedObtainedAt": "20261102",
-  "lastFeedStart": "20261020"
+  "lastServiceWeek": "dee53ee0ce5048af",
+  "feedObtainedAt": "20261109",
+  "lastFeedStart": "20261102"
 }

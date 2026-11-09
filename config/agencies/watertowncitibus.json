@@ -18,13 +18,13 @@
   "lastRefreshedAt": "2026-11-02",
   "websiteUrl": "http://passiotech.com/",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2881/latest.zip",
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271231",
   "timezone": "America/New_York",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://passio3.com/watertown/passioTransit/gtfs/google_transit.zip",
+  "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2881/latest.zip",
   "lastPeekedExpiry": "20271231",
   "feedQuality": {
     "status": "review",
@@ -45,7 +45,8 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-07"
+    "checkedAt": "2026-11-07",
+    "scoredAt": "2026-11-09"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,

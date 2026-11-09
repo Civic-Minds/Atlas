@@ -20,9 +20,9 @@
   ],
   "feedUrl": "https://oct-gtfs-emasagcnfmcgeham.z01.azurefd.net/public-access/GTFSExport.zip",
   "mdbFeedUrl": "https://oct-gtfs-emasagcnfmcgeham.z01.azurefd.net/public-access/GTFSExport.zip",
-  "lastFeedExpiry": "20261130",
-  "lastFeedVersion": "S1000525",
-  "lastRefreshedAt": "2026-11-02",
+  "lastFeedExpiry": "20261206",
+  "lastFeedVersion": "S1000526",
+  "lastRefreshedAt": "2026-11-09",
   "cities": [
     "Nepean, Ontario",
     "Orléans, Ontario",
@@ -34,10 +34,10 @@
     "Hull, Quebec",
     "Gatineau, Quebec"
   ],
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261130",
+  "expiredFeedCheckExpiry": "20261206",
   "timezone": "Canada/Eastern",
   "feedQuality": {
     "status": "review",
@@ -51,14 +51,14 @@
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 5,
       "featureCount": 736,
-      "feedExpiry": "20261130",
+      "feedExpiry": "20261206",
       "routeCount": 174,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
       "mismatchRoutes": 1,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-07"
+    "checkedAt": "2026-11-09"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -66,8 +66,8 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://oct-gtfs-emasagcnfmcgeham.z01.azurefd.net/public-access/GTFSExport.zip",
-  "lastPeekedExpiry": "20261130",
-  "lastServiceWeek": "f4776457da6ed500",
-  "feedObtainedAt": "20261102",
-  "lastFeedStart": "20261030"
+  "lastPeekedExpiry": "20261206",
+  "lastServiceWeek": "a53aacdf5a3ecbdd",
+  "feedObtainedAt": "20261109",
+  "lastFeedStart": "20261106"
 }

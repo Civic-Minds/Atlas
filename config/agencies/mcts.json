@@ -8,27 +8,27 @@
     -87.9598
   ],
   "feedUrl": "https://kamino.mcts.org/gtfs/google_transit.zip",
-  "lastFeedExpiry": "20261205",
+  "lastFeedExpiry": "20270306",
   "lastFeedVersion": null,
   "region": "Wisconsin",
-  "lastRefreshedAt": "2026-11-02",
+  "lastRefreshedAt": "2026-11-09",
   "cities": [
     "Milwaukee, Wisconsin",
     "West Allis, Wisconsin"
   ],
   "timezone": "America/Chicago",
   "lastRawArchiveKey": "20250823-972ecde587d298f8",
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261205",
+  "expiredFeedCheckExpiry": "20270306",
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://kamino.mcts.org/gtfs/google_transit.zip",
-  "lastPeekedExpiry": "20261205",
+  "lastPeekedExpiry": "20270306",
   "feedQuality": {
     "status": "healthy",
     "score": 100,
@@ -39,15 +39,16 @@
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
       "featureCount": 296,
-      "feedExpiry": "20261205",
+      "feedExpiry": "20270306",
       "routeCount": 49,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-07"
+    "checkedAt": "2026-11-09"
   },
-  "lastServiceWeek": "7175f1c2c4740edf",
-  "lastFeedStart": "20260607"
+  "lastServiceWeek": "e4e8e6c9e16a7092",
+  "lastFeedStart": "20260823",
+  "feedObtainedAt": "20261109"
 }

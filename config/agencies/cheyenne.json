@@ -22,14 +22,14 @@
   ],
   "timezone": "America/Denver",
   "lastRawArchiveKey": "20250914-5430c00ec2bfc130",
-  "lastFeedCheckAt": "20261102",
-  "expiredFeedCheckCount": 7,
+  "lastFeedCheckAt": "20261109",
+  "expiredFeedCheckCount": 8,
   "expiredFeedCheckSince": "20260622",
   "expiredFeedCheckExpiry": "20250914",
   "feedRefreshStatus": "stale",
   "feedRefreshError": "all available feeds expired (latest 20250914)",
-  "feedRefreshErrorAt": "20261102",
-  "feedRefreshRetryCount": 5,
+  "feedRefreshErrorAt": "20261109",
+  "feedRefreshRetryCount": 6,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/5226/CTP_gtfs.zip"
 }

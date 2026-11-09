@@ -9,8 +9,8 @@
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-294/latest.zip",
   "lastFeedExpiry": "20270430",
-  "lastFeedVersion": "UTC: 02-Oct-2026 20:43",
-  "lastRefreshedAt": "2026-11-02",
+  "lastFeedVersion": "UTC: 05-Nov-2026 16:10",
+  "lastRefreshedAt": "2026-11-09",
   "region": "Alaska",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-294/latest.zip",
   "bbox": [
@@ -19,7 +19,7 @@
     58.4252,
     -134.3699
   ],
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270430",
@@ -43,7 +43,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-07"
+    "checkedAt": "2026-11-09"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -52,7 +52,7 @@
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-294/latest.zip",
   "lastPeekedExpiry": "20270430",
-  "lastServiceWeek": "fd6e3700d62a03ca",
-  "feedObtainedAt": "20261002",
-  "lastFeedStart": "20261002"
+  "lastServiceWeek": "539d1b92e7f408a1",
+  "feedObtainedAt": "20261109",
+  "lastFeedStart": "20261105"
 }

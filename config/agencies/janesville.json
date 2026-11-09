@@ -19,9 +19,9 @@
     "Janesville, Wisconsin"
   ],
   "timezone": "America/Chicago",
-  "lastFeedExpiry": "20261210",
-  "lastFeedVersion": "UTC: 15-Oct-2026 17:05",
-  "lastRefreshedAt": "2026-11-02",
+  "lastFeedExpiry": "20270610",
+  "lastFeedVersion": "UTC: 06-Nov-2026 17:21",
+  "lastRefreshedAt": "2026-11-09",
   "feedQuality": {
     "status": "healthy",
     "score": 100,
@@ -32,27 +32,27 @@
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
       "featureCount": 11,
-      "feedExpiry": "20261210",
+      "feedExpiry": "20270610",
       "routeCount": 6,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-07"
+    "checkedAt": "2026-11-09"
   },
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261210",
+  "expiredFeedCheckExpiry": "20270610",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "http://data.trilliumtransit.com/gtfs/jts-wi-us/jts-wi-us.zip",
-  "lastPeekedExpiry": "20261210",
+  "lastPeekedExpiry": "20270610",
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
-  "lastServiceWeek": "07fd6510d14552c0",
-  "feedObtainedAt": "20261015",
-  "lastFeedStart": "20261015"
+  "lastServiceWeek": "22af7bf4de140f8c",
+  "feedObtainedAt": "20261109",
+  "lastFeedStart": "20261106"
 }
