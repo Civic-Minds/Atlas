@@ -20019,10 +20019,10 @@
       "cities": [
         "Jacksonville, Florida"
       ],
-      "lastFeedCheckAt": "20261102",
-      "expiredFeedCheckCount": 1,
-      "expiredFeedCheckSince": "20260622",
-      "expiredFeedCheckExpiry": "20261031",
+      "lastFeedCheckAt": "20261109",
+      "expiredFeedCheckCount": 0,
+      "expiredFeedCheckSince": null,
+      "expiredFeedCheckExpiry": "20270326",
       "timezone": "America/New_York",
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://files.mobilitydatabase.org/tld-764/latest.zip",
@@ -20047,12 +20047,13 @@
           "resumesOn": null
         },
         "checkedAt": "2026-10-31",
-        "scoredAt": "2026-11-02"
+        "scoredAt": "2026-11-09"
       },
       "feedRefreshStatus": "stale",
       "feedRefreshError": "all available feeds expired (latest 20261031)",
       "feedRefreshErrorAt": "20261102",
-      "feedRefreshRetryCount": 1
+      "feedRefreshRetryCount": 1,
+      "refusedFeedSha256": "eaa94c918192f0780d076b088d75cd3b36e35ea44d07b2b0d89f4c32bfd9aceb"
     },
     {
       "slug": "cats",
@@ -35974,7 +35975,7 @@
       "lastPeekedExpiry": "20261106",
       "heldFeedStart": "20261107",
       "lastFeedStart": "20260714",
-      "refusedFeedSha256": "d3b930f530173968ef5284655835a3b2aff5a8152b2e6896e3171088b772e63a"
+      "refusedFeedSha256": "dfab34b20e786d4635ce1a6715b38af9c6ce2e0b6ce66826b05570947e85b09d"
     },
     {
       "slug": "sandusky",
