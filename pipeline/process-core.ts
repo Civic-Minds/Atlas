@@ -2766,6 +2766,46 @@ export async function processGtfsBuffer(
         }
       }
     }
+    // CIV-1072 (#1088): the other way round. A pooled bus pattern's AM and PM peak stop values also count
+    // the boarding departures of rush-hour-only patterns that share the stop with it stop for stop (the
+    // runs rushSharersFor gives the rush pattern). TTC 102 Warden at 4220 left out the 15 PM trips of 102C
+    // via Dynamic Dr and read a 5/15 pattern for a bus about every 10. Even gaps only and never worse
+    // than the pattern's own pooled list (pooledHeadwayInWindow). Only stopPeriodHeadways reads this, as
+    // CIV-850: the pool, headline, tier, all-day stop values, row periods and every route field keep the
+    // pattern's own pool, so rush trips never lift another line's headline (#720, LA 105 Marlton/King).
+    const trunkRushOverlay = new Map<string, Partial<Record<PeriodKey, number>>>();
+    if (pooled && ownMember && !railFeature) {
+      const prefix = `${poolKey}::`;
+      const station = (stopId: string) => childToParent.get(stopId) ?? stopId;
+      const rushAt = new Map<string, number[]>();
+      for (const key of rushPatternTrip.keys()) {
+        if (!key.startsWith(prefix)) continue;
+        const deps = stopDepsByRushMember.get(key);
+        const sharers = deps ? rushSharersFor(poolKey, key.slice(prefix.length)) : undefined;
+        if (!deps || !sharers) continue;
+        const byStation = new Map<string, number[]>();
+        for (const [stopId, times] of deps) byStation.set(station(stopId), [...(byStation.get(station(stopId)) ?? []), ...times]);
+        for (const stopId of pooled.map.keys()) {
+          if (!sharers.get(station(stopId))?.has(ownMember)) continue;
+          const times = byStation.get(station(stopId));
+          if (times?.length) rushAt.set(stopId, [...(rushAt.get(stopId) ?? []), ...times]);
+        }
+      }
+      for (const [stopId, extra] of rushAt) {
+        const base = [...(pooled.map.get(stopId) ?? [])].sort((a, b) => a - b);
+        const merged = [...base, ...extra].sort((a, b) => a - b);
+        for (const pk of ['amPeak', 'pmPeak'] as const) {
+          const { start, end } = PERIODS[pk];
+          const current = allStopPeriodHw[stopId]?.[pk];
+          if (!extra.some(t => t >= start && t <= end)) continue;
+          // A period the pattern's own pool leaves without a value (its own list refused, as TTC 102 Warden's
+          // 5/15 PM list at 4220) gets one only when the merged list passes the same even-gaps check.
+          const value = pooledHeadwayInWindow(merged, start, end, 3, false, base);
+          if (value == null || (current != null && value >= current)) continue;
+          trunkRushOverlay.set(stopId, { ...(trunkRushOverlay.get(stopId) ?? {}), [pk]: value });
+        }
+      }
+    }
     // Coverage needs only one departure, so publish it before the legacy median bail-outs.
     // Project separately to keep historical stopOrder and geometry completely unchanged.
     const coverageStops = isMapless
@@ -3009,7 +3049,7 @@ export async function processGtfsBuffer(
       // frequency at the user's chosen TO stop, not just the route terminal.
       const stopPeriodHeadways: Record<string, Partial<Record<PeriodKey, number>>> = {};
       for (const { stopId } of onShape) {
-        const overlay = rushPeriodOverlay.get(stopId);
+        const overlay = rushPeriodOverlay.get(stopId) ?? trunkRushOverlay.get(stopId);
         const periods = overlay ? { ...departureValues.allStopPeriodHw[stopId], ...overlay } : departureValues.allStopPeriodHw[stopId];
         if (periods && Object.keys(periods).length > 0) stopPeriodHeadways[stopId] = periods;
       }
@@ -4163,3 +4203,4 @@ export async function processGtfsBuffer(
     ...(directionSplit.merged.length > 0 ? { directionSplits: directionSplitsOf(directionSplit.merged) } : {}),
   };
 }
+
