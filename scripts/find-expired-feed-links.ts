@@ -25,7 +25,7 @@ import { staleFeedRows, type StaleFeedAgency, type StaleFeedRow } from './report
 
 // Spending caps for one run. Web search is billed per search and every search result is read as
 // input tokens, so these three numbers bound what a run can cost.
-/** Agencies looked up per run, longest expired first. The rest are counted in the comment. */
+/** Agencies looked up per run. The starting point moves each week; the rest are counted in the comment. */
 export const MAX_AGENCIES_PER_RUN = 40;
 /** Web searches Claude may run for one agency. */
 export const MAX_SEARCHES_PER_AGENCY = 5;
@@ -35,10 +35,21 @@ export const MAX_OUTPUT_TOKENS = 4096;
 export const MAX_REQUESTS_PER_AGENCY = 3;
 /** Agencies looked up at the same time. */
 export const AGENCY_CONCURRENCY = 2;
-/** Agencies not started within this many minutes are left for next week. */
+/**
+ * Hard time cap for the lookups. At this point requests still running are stopped and their
+ * agencies are left for next week. Well inside the workflow step's 30-minute timeout.
+ */
 export const MAX_RUN_MINUTES = 20;
 /** A suggested zip is only opened when it is at most this big. */
 export const MAX_ZIP_CHECK_BYTES = 25 * 1024 * 1024;
+/** A file inside a suggested zip is only read while it unpacks to at most this much. */
+export const MAX_UNZIPPED_ENTRY_BYTES = 50 * 1024 * 1024;
+/** Redirects followed when checking a link. Every hop must itself be a public http(s) link. */
+export const MAX_REDIRECTS = 5;
+/** Longest link accepted from the model, so the comment stays far below GitHub's size limit. */
+export const MAX_URL_LENGTH = 500;
+/** Longest comment posted. GitHub rejects a comment over 65,536 characters. */
+export const MAX_COMMENT_CHARS = 60_000;
 /** Sonnet 5.5: reliable at judging official sources, at a fraction of the Opus price. */
 export const MODEL = 'claude-sonnet-5-5';
 
@@ -73,8 +84,11 @@ export type AgencyResult =
   | { kind: 'nothing'; reason?: string }
   | { kind: 'error' };
 
-/** Asks the model about one agency and returns its raw structured answer. Tests pass a fake. */
-export type AskModel = (agency: FinderAgency) => Promise<unknown>;
+/**
+ * Asks the model about one agency and returns its raw structured answer. The signal fires at the
+ * run's time cap and must stop the request. Tests pass a fake.
+ */
+export type AskModel = (agency: FinderAgency, signal?: AbortSignal) => Promise<unknown>;
 export type FetchLike = (url: string, init?: RequestInit) => Promise<Response>;
 /** Runs the GitHub CLI and returns its output. Tests pass a fake. */
 export type GhRunner = (args: string[], input?: string) => string;
@@ -87,6 +101,30 @@ type IndexAgency = StaleFeedAgency & {
 };
 
 const dashed = (ymd: string) => `${ymd.slice(0, 4)}-${ymd.slice(4, 6)}-${ymd.slice(6, 8)}`;
+
+/**
+ * Number of the calendar week (Monday to Sunday, UTC) a date falls in. It changes on the same
+ * Mondays as the ISO week number, but keeps counting across new year instead of going back to 1.
+ */
+export function weekIndex(ymd: string): number {
+  const days = Date.UTC(Number(ymd.slice(0, 4)), Number(ymd.slice(4, 6)) - 1, Number(ymd.slice(6, 8))) / 86_400_000;
+  // Day 0 (1970-01-01) was a Thursday, so the first Monday is day 4.
+  return Math.floor((days + 3) / 7);
+}
+
+const gcd = (a: number, b: number): number => (b === 0 ? a : gcd(b, a % b));
+
+/**
+ * The same list, started at a point that moves each week. When the time cap cuts a run short, the
+ * agencies it never reached are nearer the front in later weeks, so every agency gets its turn.
+ */
+export function rotateForWeek<T>(items: T[], today: string): T[] {
+  if (items.length < 2) return items;
+  // A step that shares no factor with the list length visits every starting point in turn.
+  const step = [7, 5, 3, 2, 1].find(candidate => gcd(candidate, items.length) === 1)!;
+  const start = (weekIndex(today) * step) % items.length;
+  return [...items.slice(start), ...items.slice(0, start)];
+}
 
 /** An http(s) link to a public host name, normalised, or null. */
 export function publicHttpUrl(value: unknown): string | null {
@@ -126,11 +164,16 @@ export function parseFinderAnswer(raw: unknown): FinderAnswer | null {
   if (typeof raw !== 'object' || raw === null) return null;
   const { outcome, link_url, source_page_url } = raw as Record<string, unknown>;
   if (outcome === 'nothing_found') return { outcome };
-  const sourcePageUrl = publicHttpUrl(source_page_url);
+  // Over-long links are refused: both are printed in the comment, which has a size limit.
+  const modelUrl = (value: unknown) => {
+    const url = publicHttpUrl(value);
+    return url && url.length <= MAX_URL_LENGTH ? url : null;
+  };
+  const sourcePageUrl = modelUrl(source_page_url);
   if (!sourcePageUrl) return null;
   if (outcome === 'service_ended') return { outcome, sourcePageUrl };
   if (outcome !== 'link_found') return null;
-  const linkUrl = publicHttpUrl(link_url);
+  const linkUrl = modelUrl(link_url);
   return linkUrl ? { outcome, linkUrl, sourcePageUrl } : null;
 }
 
@@ -174,8 +217,35 @@ async function readCapped(response: Response, cap: number): Promise<{ bytes: Uin
   return { bytes: Buffer.concat(chunks), complete, isZip: isZip === true };
 }
 
-/** Timetable end date of a GTFS zip, or a reason it is not one. */
-async function inspectGtfsZip(bytes: Uint8Array): Promise<{ isGtfs: boolean; expiry: string | null }> {
+class EntryTooLargeError extends Error {}
+
+/** Unpacks one file of a zip, stopping as soon as it grows past the cap (a small zip can unpack to gigabytes). */
+function readEntryText(file: JSZip.JSZipObject, maxBytes: number): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const chunks: Buffer[] = [];
+    let size = 0;
+    const stream = file.nodeStream('nodebuffer');
+    stream.on('data', (chunk: Buffer) => {
+      size += chunk.length;
+      if (size <= maxBytes) {
+        chunks.push(chunk);
+        return;
+      }
+      // Paused for good: nothing more of this file is unpacked.
+      stream.pause();
+      stream.removeAllListeners('data');
+      reject(new EntryTooLargeError());
+    });
+    stream.on('error', reject);
+    stream.on('end', () => resolve(Buffer.concat(chunks).toString('utf8')));
+  });
+}
+
+/** Timetable end date of a GTFS zip, or a reason it is not one. Throws when a file in it unpacks past the cap. */
+export async function inspectGtfsZip(
+  bytes: Uint8Array,
+  maxEntryBytes = MAX_UNZIPPED_ENTRY_BYTES,
+): Promise<{ isGtfs: boolean; expiry: string | null }> {
   const zip = await JSZip.loadAsync(bytes);
   const entry = (name: string) => {
     const path = Object.keys(zip.files).find(f => (f === name || f.endsWith(`/${name}`)) && !zip.files[f].dir);
@@ -184,7 +254,7 @@ async function inspectGtfsZip(bytes: Uint8Array): Promise<{ isGtfs: boolean; exp
   const rows = async (name: string) => {
     const file = entry(name);
     if (!file) return [] as Array<Record<string, string>>;
-    return Papa.parse<Record<string, string>>((await file.async('text')).replace(/^﻿/, ''), { header: true, skipEmptyLines: true }).data;
+    return Papa.parse<Record<string, string>>((await readEntryText(file, maxEntryBytes)).replace(/^﻿/, ''), { header: true, skipEmptyLines: true }).data;
   };
   if (!entry('routes.txt') || !entry('stops.txt') || !entry('trips.txt')) return { isGtfs: false, expiry: null };
   const calendar = await rows('calendar.txt');
@@ -200,16 +270,39 @@ async function inspectGtfsZip(bytes: Uint8Array): Promise<{ isGtfs: boolean; exp
 
 /**
  * Checks a suggested link without trusting the model: it must respond, and a zip must hold GTFS
- * timetable files that have not expired. A zip over the size cap is not opened.
+ * timetable files that have not expired. A zip over the size cap is not opened, and counts as
+ * unverified. Redirects are followed by hand so that every hop is held to the public-link rule.
  */
-export async function checkLink(url: string, fetchImpl: FetchLike = fetch, today = todayUtcYmd()): Promise<LinkCheck> {
+export async function checkLink(
+  url: string,
+  fetchImpl: FetchLike = fetch,
+  today = todayUtcYmd(),
+  limits: { maxEntryBytes?: number; signal?: AbortSignal } = {},
+): Promise<LinkCheck> {
+  const signal = AbortSignal.any([AbortSignal.timeout(LINK_CHECK_TIMEOUT_MS), ...(limits.signal ? [limits.signal] : [])]);
   let response: Response;
+  let current: string | null = publicHttpUrl(url);
+  if (!current) return { verified: false, detail: 'the link is not a public web address' };
   try {
-    response = await fetchImpl(url, {
-      redirect: 'follow',
-      headers: { 'User-Agent': 'atlas-expired-feed-link-finder/1.0' },
-      signal: AbortSignal.timeout(LINK_CHECK_TIMEOUT_MS),
-    });
+    for (let hop = 0; ; hop++) {
+      response = await fetchImpl(current, {
+        redirect: 'manual',
+        headers: { 'User-Agent': 'atlas-expired-feed-link-finder/1.0' },
+        signal,
+      });
+      const location = response.headers.get('location');
+      if (![301, 302, 303, 307, 308].includes(response.status) || !location) break;
+      await response.body?.cancel().catch(() => undefined);
+      if (hop >= MAX_REDIRECTS) return { verified: false, detail: 'the link redirects too many times' };
+      let next: string | null = null;
+      try {
+        next = publicHttpUrl(new URL(location, current).href);
+      } catch {
+        next = null;
+      }
+      if (!next) return { verified: false, detail: 'the link redirects to an address that is not a public web link' };
+      current = next;
+    }
   } catch {
     return { verified: false, detail: 'the link did not respond' };
   }
@@ -228,14 +321,15 @@ export async function checkLink(url: string, fetchImpl: FetchLike = fetch, today
         ? { verified: false, detail: 'the link is not a zip file' }
         : { verified: true, detail: 'the link opens, but it is a web page, not a zip' };
     }
-    if (!body.complete) return { verified: true, detail: 'a zip file, too large to open here' };
-    const gtfs = await inspectGtfsZip(body.bytes);
+    if (!body.complete) return { verified: false, detail: 'a zip file, too large to open here' };
+    const gtfs = await inspectGtfsZip(body.bytes, limits.maxEntryBytes);
     if (!gtfs.isGtfs) return { verified: false, detail: 'a zip file without timetable files' };
     if (!gtfs.expiry) return { verified: true, detail: 'a GTFS zip, end date not stated' };
     return gtfs.expiry < today
       ? { verified: false, detail: `a GTFS zip, but its timetable also ended on ${dashed(gtfs.expiry)}` }
       : { verified: true, detail: `a GTFS zip, timetable runs to ${dashed(gtfs.expiry)}` };
-  } catch {
+  } catch (error) {
+    if (error instanceof EntryTooLargeError) return { verified: false, detail: 'a zip file that unpacks too large to open here' };
     return { verified: false, detail: 'the file could not be read' };
   }
 }
@@ -247,10 +341,11 @@ export async function findForAgency(
   fetchImpl: FetchLike = fetch,
   today = todayUtcYmd(),
   log: (line: string) => void = () => undefined,
+  signal?: AbortSignal,
 ): Promise<AgencyResult> {
   let answer: FinderAnswer | null;
   try {
-    answer = parseFinderAnswer(await askModel(agency));
+    answer = parseFinderAnswer(await askModel(agency, signal));
   } catch (error) {
     // Rate limits and API errors cost this agency its answer, never the whole run.
     const status = error instanceof Anthropic.APIError ? ` (HTTP ${error.status})` : '';
@@ -270,7 +365,7 @@ export async function findForAgency(
     kind: 'link',
     linkUrl: answer.linkUrl,
     sourcePageUrl: answer.sourcePageUrl,
-    check: await checkLink(answer.linkUrl, fetchImpl, today),
+    check: await checkLink(answer.linkUrl, fetchImpl, today, { signal }),
   };
 }
 
@@ -289,32 +384,50 @@ const resultText = (result: AgencyResult): string => {
 
 const markerLine = (today: string) => `<!-- ${MARKER} ${dashed(today)} -->`;
 
-/** The weekly comment: a dated heading, then one line per agency. */
+/** The weekly comment: a dated heading, then one line per agency. Always short enough for GitHub to accept. */
 export function formatComment(
   results: Array<{ agency: FinderAgency; result: AgencyResult }>,
   today: string,
   notChecked = 0,
 ): string {
-  return [
+  const head = [
     markerLine(today),
     `### Link finder, ${dashed(today)}`,
     '',
     'Suggestions only: nothing in Atlas was changed. Claude searched the web for each agency, and this script then opened every suggested link to check it.',
     '',
-    ...results.map(({ agency, result }) => `- ${agency.name.replace(/\s+/g, ' ')} (\`${agency.slug}\`): ${resultText(result)}`),
+  ];
+  const tail = [
     ...(notChecked > 0
       ? ['', `${notChecked} more ${notChecked === 1 ? 'agency was' : 'agencies were'} not checked this week (the finder stops at ${MAX_AGENCIES_PER_RUN} agencies or ${MAX_RUN_MINUTES} minutes per run).`]
       : []),
     '',
-  ].join('\n');
+  ];
+  const lines = results.map(({ agency, result }) => `- ${agency.name.replace(/\s+/g, ' ')} (\`${agency.slug}\`): ${resultText(result)}`);
+  // Keep whole lines while they fit, leaving room for the "cut short" line.
+  const budget = MAX_COMMENT_CHARS - [...head, ...tail].join('\n').length - 200;
+  const kept: string[] = [];
+  let used = 0;
+  for (const line of lines) {
+    if (used + line.length + 1 > budget) break;
+    kept.push(line);
+    used += line.length + 1;
+  }
+  const dropped = lines.length - kept.length;
+  const cut = dropped > 0
+    ? ['', `List cut short: ${dropped} more ${dropped === 1 ? 'result' : 'results'} did not fit in one comment.`]
+    : [];
+  return [...head, ...kept, ...cut, ...tail].join('\n').slice(0, MAX_COMMENT_CHARS);
 }
 
-/** True when a finder comment from the last six days is already on the issue. */
-export function hasRecentFinderComment(bodies: string[], today: string): boolean {
-  const day = (ymd: string) => Date.UTC(Number(ymd.slice(0, 4)), Number(ymd.slice(4, 6)) - 1, Number(ymd.slice(6, 8))) / 86_400_000;
+/**
+ * True when the issue already has a finder comment from the same calendar week (Monday to Sunday,
+ * UTC) as today. The finder's own comments are recognised by the dated marker on their first line.
+ */
+export function hasFinderCommentThisWeek(bodies: string[], today: string): boolean {
   return bodies.some(body => {
     const match = body.match(new RegExp(`<!-- ${MARKER} (\\d{4})-(\\d{2})-(\\d{2}) -->`));
-    return match != null && day(today) - day(`${match[1]}${match[2]}${match[3]}`) < 6;
+    return match != null && weekIndex(`${match[1]}${match[2]}${match[3]}`) === weekIndex(today);
   });
 }
 
@@ -367,27 +480,29 @@ export function agencyPrompt(agency: FinderAgency): string {
 
 /** The real model call: Claude with server-side web search, answering through a strict tool. */
 export function createClaudeAsk(client: Pick<Anthropic, 'messages'> = new Anthropic({ maxRetries: 3, timeout: 180_000 })): AskModel {
-  return async agency => {
+  return async (agency, signal) => {
     const messages: Anthropic.MessageParam[] = [{ role: 'user', content: agencyPrompt(agency) }];
     let searches = 0;
     for (let request = 0; request < MAX_REQUESTS_PER_AGENCY; request++) {
+      // max_uses counts per request, so a resumed turn is only given the searches still unused.
+      const searchesLeft = MAX_SEARCHES_PER_AGENCY - searches;
       const response = await client.messages.create({
         model: MODEL,
         max_tokens: MAX_OUTPUT_TOKENS,
         system: SYSTEM_PROMPT,
         output_config: { effort: 'medium' },
         tools: [
-          { type: 'web_search_20260209', name: 'web_search', max_uses: MAX_SEARCHES_PER_AGENCY },
+          { type: 'web_search_20260209', name: 'web_search', max_uses: searchesLeft },
           REPORT_TOOL,
         ],
         messages,
-      });
+      }, { signal });
       searches += response.usage.server_tool_use?.web_search_requests ?? 0;
       const report = response.content.find(
         (block): block is Anthropic.ToolUseBlock => block.type === 'tool_use' && block.name === REPORT_TOOL.name,
       );
       if (report) return report.input;
-      // A long search turn can pause; sending it back unchanged resumes it, within the search cap.
+      // A long search turn can pause; sending it back unchanged resumes it, while searches remain.
       if (response.stop_reason === 'pause_turn' && searches < MAX_SEARCHES_PER_AGENCY) {
         messages.push({ role: 'assistant', content: response.content });
         continue;
@@ -409,6 +524,8 @@ export interface RunOptions {
   fetchImpl?: FetchLike;
   log?: (line: string) => void;
   now?: () => number;
+  /** Hard time cap for the lookups, in milliseconds. Defaults to MAX_RUN_MINUTES. */
+  maxRunMs?: number;
 }
 
 export type RunOutcome = 'no-key' | 'none-expired' | 'no-open-issue' | 'already-commented' | 'all-failed' | 'dry-run' | 'posted';
@@ -433,23 +550,36 @@ export async function runLinkFinder(options: RunOptions): Promise<RunOutcome> {
       return 'no-open-issue';
     }
     const comments = JSON.parse(gh(['issue', 'view', String(issue), '--json', 'comments']) || '{}') as { comments?: Array<{ body: string }> };
-    if (hasRecentFinderComment((comments.comments ?? []).map(c => c.body), today)) {
+    if (hasFinderCommentThisWeek((comments.comments ?? []).map(c => c.body), today)) {
       log(`Issue #${issue} already has a link finder comment from this week: nothing to do.`);
       return 'already-commented';
     }
   }
 
   const askModel = (options.createAsk ?? createClaudeAsk)();
-  const queue = expired.slice(0, MAX_AGENCIES_PER_RUN);
-  const deadline = now() + MAX_RUN_MINUTES * 60_000;
+  const queue = rotateForWeek(expired, today).slice(0, MAX_AGENCIES_PER_RUN);
+  const maxRunMs = options.maxRunMs ?? MAX_RUN_MINUTES * 60_000;
+  const deadline = now() + maxRunMs;
+  // The time cap is hard: at the deadline the signal stops requests still running, and the run
+  // moves on without waiting for them. Their agencies count as not checked this week.
+  const cap = new AbortController();
+  const capReached = new Promise<null>(resolve => cap.signal.addEventListener('abort', () => resolve(null), { once: true }));
+  const timer = setTimeout(() => cap.abort(), maxRunMs);
   const results = new Map<string, AgencyResult>();
   const worker = async () => {
-    for (let agency = queue.shift(); agency && now() < deadline; agency = queue.shift()) {
-      results.set(agency.slug, await findForAgency(agency, askModel, fetchImpl, today, log));
-      log(`${agency.slug}: ${results.get(agency.slug)!.kind}`);
+    for (let agency = queue.shift(); agency && !cap.signal.aborted && now() < deadline; agency = queue.shift()) {
+      const result = await Promise.race([findForAgency(agency, askModel, fetchImpl, today, log, cap.signal), capReached]);
+      if (result === null || cap.signal.aborted) return;
+      results.set(agency.slug, result);
+      log(`${agency.slug}: ${result.kind}`);
     }
   };
-  await Promise.all(Array.from({ length: AGENCY_CONCURRENCY }, worker));
+  try {
+    await Promise.all(Array.from({ length: AGENCY_CONCURRENCY }, worker));
+  } finally {
+    clearTimeout(timer);
+  }
+  if (cap.signal.aborted) log(`Time cap of ${Math.round(maxRunMs / 60_000)} minutes reached: the agencies not finished are left for next week.`);
 
   const checked = expired.filter(a => results.has(a.slug)).map(agency => ({ agency, result: results.get(agency.slug)! }));
   if (checked.every(({ result }) => result.kind === 'error')) {
@@ -471,5 +601,6 @@ if (process.argv[1]?.endsWith('find-expired-feed-links.ts')) {
   const index = JSON.parse(readFileSync('public/data/index.json', 'utf8')) as { agencies: IndexAgency[] };
   runLinkFinder({ env: process.env, agencies: index.agencies, dryRun: process.argv.includes('--dry-run'), gh })
     .catch(error => console.log(`Link finder stopped: ${error instanceof Error ? error.message : String(error)}`))
-    .finally(() => { process.exitCode = 0; });
+    // Exit outright, so a request that is slow to stop can never hold the step open.
+    .finally(() => process.exit(0));
 }

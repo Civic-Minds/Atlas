@@ -3,17 +3,25 @@ import JSZip from 'jszip';
 import { describe, expect, it, vi } from 'vitest';
 import {
   MAX_AGENCIES_PER_RUN,
+  MAX_COMMENT_CHARS,
+  MAX_REDIRECTS,
   MAX_REQUESTS_PER_AGENCY,
+  MAX_RUN_MINUTES,
   MAX_SEARCHES_PER_AGENCY,
+  MAX_UNZIPPED_ENTRY_BYTES,
+  MAX_URL_LENGTH,
   checkLink,
   createClaudeAsk,
   expiredAgencies,
   findForAgency,
   formatComment,
-  hasRecentFinderComment,
+  hasFinderCommentThisWeek,
+  inspectGtfsZip,
   isKnownFeedUrl,
   parseFinderAnswer,
+  rotateForWeek,
   runLinkFinder,
+  weekIndex,
   type AskModel,
   type FetchLike,
   type FinderAgency,
@@ -96,6 +104,16 @@ describe('parsing the model answer', () => {
       expect(parseFinderAnswer(bad)).toBeNull();
     }
   });
+
+  it('rejects a suggested link or source page longer than the length cap', () => {
+    const long = `https://moosejaw.ca/${'a'.repeat(MAX_URL_LENGTH)}`;
+    const fits = `https://moosejaw.ca/${'a'.repeat(MAX_URL_LENGTH - 'https://moosejaw.ca/'.length)}`;
+    expect(fits).toHaveLength(MAX_URL_LENGTH);
+    expect(parseFinderAnswer({ outcome: 'link_found', link_url: fits, source_page_url: fits })).not.toBeNull();
+    expect(parseFinderAnswer({ outcome: 'link_found', link_url: long, source_page_url: 'https://moosejaw.ca/transit' })).toBeNull();
+    expect(parseFinderAnswer({ outcome: 'link_found', link_url: 'https://moosejaw.ca/GTFS.zip', source_page_url: long })).toBeNull();
+    expect(parseFinderAnswer({ outcome: 'service_ended', link_url: null, source_page_url: long })).toBeNull();
+  });
 });
 
 describe('checking a suggested link', () => {
@@ -135,8 +153,83 @@ describe('checking a suggested link', () => {
       },
     });
     const check = await checkLink('https://moosejaw.ca/huge.zip', respond(body, { headers: { 'content-length': String(900 * 1024 * 1024) } }), TODAY);
-    expect(check).toEqual({ verified: true, detail: 'a zip file, too large to open here' });
+    expect(check).toEqual({ verified: false, detail: 'a zip file, too large to open here' });
     expect(pulled).toBeLessThan(5);
+  });
+
+  it('marks a zip unverified when the download itself runs past the size cap', async () => {
+    // No content-length, so the size is only known once the cap is hit mid-download.
+    let sent = 0;
+    const body = new ReadableStream<Uint8Array>({
+      pull(controller) {
+        const chunk = new Uint8Array(1024 * 1024);
+        if (sent === 0) chunk.set([0x50, 0x4b, 0x03, 0x04]);
+        sent += 1;
+        controller.enqueue(chunk);
+      },
+    });
+    expect(await checkLink('https://moosejaw.ca/huge.zip', respond(body), TODAY))
+      .toEqual({ verified: false, detail: 'a zip file, too large to open here' });
+    expect(sent).toBeLessThan(40);
+  });
+
+  it('stops unpacking a small zip whose timetable file inflates past the cap', async () => {
+    expect(MAX_UNZIPPED_ENTRY_BYTES).toBe(50 * 1024 * 1024);
+    const zip = new JSZip();
+    for (const [name, text] of Object.entries(gtfsFiles('20270301'))) zip.file(name, text);
+    zip.file('calendar_dates.txt', `service_id,date,exception_type\n${'wk,20270101,1\n'.repeat(200_000)}`);
+    const bomb = await zip.generateAsync({ type: 'uint8array', compression: 'DEFLATE' });
+    expect(bomb.length).toBeLessThan(100_000);
+
+    await expect(inspectGtfsZip(bomb, 100_000)).rejects.toThrow();
+    expect(await checkLink('https://moosejaw.ca/GTFS.zip', respond(bomb), TODAY, { maxEntryBytes: 100_000 }))
+      .toEqual({ verified: false, detail: 'a zip file that unpacks too large to open here' });
+    // The same zip is fine under the real cap.
+    expect((await checkLink('https://moosejaw.ca/GTFS.zip', respond(bomb), TODAY)).verified).toBe(true);
+  });
+});
+
+describe('redirects when checking a link', () => {
+  const redirect = (location: string, status = 302) => new Response(null, { status, headers: { location } });
+  /** A fake fetch that answers each address from a table and records what was asked for. */
+  const site = (pages: Record<string, () => Response>) => {
+    const seen: Array<{ url: string; redirect?: string }> = [];
+    const fetchImpl: FetchLike = async (url, init) => {
+      seen.push({ url, redirect: init?.redirect });
+      if (!(url in pages)) throw new Error(`unexpected fetch: ${url}`);
+      return pages[url]();
+    };
+    return { fetchImpl, seen };
+  };
+
+  it('follows redirects by hand and checks the file at the end', async () => {
+    const zip = await gtfsZip(gtfsFiles('20270301'));
+    const { fetchImpl, seen } = site({
+      'https://moosejaw.ca/GTFS.zip': () => redirect('/files/current.zip', 301),
+      'https://moosejaw.ca/files/current.zip': () => redirect('https://cdn.moosejaw.ca/current.zip'),
+      'https://cdn.moosejaw.ca/current.zip': () => new Response(zip as BodyInit),
+    });
+    expect(await checkLink('https://moosejaw.ca/GTFS.zip', fetchImpl, TODAY))
+      .toEqual({ verified: true, detail: 'a GTFS zip, timetable runs to 2027-03-01' });
+    expect(seen.map(call => call.url)).toEqual(['https://moosejaw.ca/GTFS.zip', 'https://moosejaw.ca/files/current.zip', 'https://cdn.moosejaw.ca/current.zip']);
+    expect(seen.every(call => call.redirect === 'manual')).toBe(true);
+  });
+
+  it('never fetches a redirect target that is not a public http(s) link', async () => {
+    for (const target of ['http://169.254.169.254/latest/meta-data', 'http://localhost:8080/admin', 'http://10.0.0.5/x.zip', 'file:///etc/passwd', 'http://[::1]/x.zip']) {
+      const { fetchImpl, seen } = site({ 'https://moosejaw.ca/GTFS.zip': () => redirect(target) });
+      expect(await checkLink('https://moosejaw.ca/GTFS.zip', fetchImpl, TODAY))
+        .toEqual({ verified: false, detail: 'the link redirects to an address that is not a public web link' });
+      expect(seen).toHaveLength(1);
+    }
+  });
+
+  it('gives up after the redirect cap', async () => {
+    let hops = 0;
+    const fetchImpl: FetchLike = async () => { hops += 1; return redirect(`https://moosejaw.ca/hop${hops}`); };
+    expect(await checkLink('https://moosejaw.ca/GTFS.zip', fetchImpl, TODAY))
+      .toEqual({ verified: false, detail: 'the link redirects too many times' });
+    expect(hops).toBe(MAX_REDIRECTS + 1);
   });
 });
 
@@ -205,10 +298,61 @@ describe('the weekly comment', () => {
     expect(shouting).toEqual([]);
   });
 
-  it('recognises a finder comment from this week, not an older one', () => {
-    expect(hasRecentFinderComment(['unrelated', comment], '20261112')).toBe(true);
-    expect(hasRecentFinderComment([comment], '20261116')).toBe(false);
-    expect(hasRecentFinderComment(['### Link finder, 2026-11-09'], TODAY)).toBe(false);
+  it('recognises its own comment by the marker, for the same Monday-to-Sunday week only', () => {
+    // 2026-11-09 is a Monday.
+    expect(hasFinderCommentThisWeek(['unrelated', comment], '20261112')).toBe(true);
+    expect(hasFinderCommentThisWeek([comment], '20261115')).toBe(true);
+    expect(hasFinderCommentThisWeek([comment], '20261116')).toBe(false);
+    expect(hasFinderCommentThisWeek(['### Link finder, 2026-11-09'], TODAY)).toBe(false);
+    // A manual run on Thursday the 5th does not suppress the comment on Monday the 9th.
+    expect(hasFinderCommentThisWeek([formatComment([], '20261105')], TODAY)).toBe(false);
+    // The week does not break at new year: Thursday 2026-12-31 and Friday 2027-01-01 share one.
+    expect(hasFinderCommentThisWeek([formatComment([], '20261231')], '20270101')).toBe(true);
+  });
+
+  it('stays under the GitHub comment limit, with a plain line saying the list was cut short', () => {
+    const link = `https://example.org/${'a'.repeat(MAX_URL_LENGTH - 'https://example.org/'.length)}`;
+    const many = Array.from({ length: 200 }, (_, i) => ({
+      agency: finderAgency({ slug: `agency-${i}`, name: `Agency ${i}` }),
+      result: { kind: 'link' as const, linkUrl: link, sourcePageUrl: link, check: { verified: false, detail: 'the link did not respond' } },
+    }));
+    const long = formatComment(many, TODAY, 4);
+    expect(MAX_COMMENT_CHARS).toBeLessThan(65_536);
+    expect(long.length).toBeLessThanOrEqual(MAX_COMMENT_CHARS);
+    const listed = long.split('\n').filter(line => line.startsWith('- '));
+    expect(listed.length).toBeGreaterThan(0);
+    expect(listed.length).toBeLessThan(200);
+    // Only whole lines are kept.
+    expect(listed.every(line => line.endsWith(`found on <${link}>`))).toBe(true);
+    expect(long).toContain(`List cut short: ${200 - listed.length} more results did not fit in one comment.`);
+    expect(long).toContain('4 more agencies were not checked this week');
+    expect(long.startsWith('<!-- expired-feed-link-finder 2026-11-09 -->')).toBe(true);
+    expect(comment).not.toContain('List cut short');
+  });
+});
+
+describe('the weekly starting point', () => {
+  it('numbers weeks Monday to Sunday', () => {
+    expect(weekIndex('20261108')).toBe(weekIndex('20261109') - 1);
+    expect(weekIndex('20261115')).toBe(weekIndex('20261109'));
+    expect(weekIndex('20261116')).toBe(weekIndex('20261109') + 1);
+  });
+
+  it('starts somewhere else each week, the same within a week, and reaches every agency in turn', () => {
+    const mondays = (count: number) => Array.from({ length: count }, (_, i) => {
+      const date = new Date(Date.UTC(2026, 10, 9 + 7 * i));
+      return date.toISOString().slice(0, 10).replace(/-/g, '');
+    });
+    for (const size of [2, 7, 35, 40, 43, 210]) {
+      const list = Array.from({ length: size }, (_, i) => i);
+      const firsts = mondays(size).map(day => rotateForWeek(list, day)[0]);
+      // Over as many weeks as there are agencies, each one is first exactly once.
+      expect(new Set(firsts).size).toBe(size);
+      const rotated = rotateForWeek(list, TODAY);
+      expect([...rotated].sort((a, b) => a - b)).toEqual(list);
+      expect(rotateForWeek(list, '20261113')).toEqual(rotated);
+    }
+    expect(rotateForWeek(['only'], TODAY)).toEqual(['only']);
   });
 });
 
@@ -245,11 +389,58 @@ describe('the whole run', () => {
   });
 
   it('does not post a second comment in the same week', async () => {
-    const { gh, posted } = fakeGh({ comments: [formatComment([], '20261107')] });
+    const { gh, posted } = fakeGh({ comments: [formatComment([], TODAY)] });
     const createAsk = vi.fn();
-    expect(await runLinkFinder({ env: key, agencies, gh, createAsk, log: () => undefined, today: TODAY })).toBe('already-commented');
+    expect(await runLinkFinder({ env: key, agencies, gh, createAsk, log: () => undefined, today: '20261113' })).toBe('already-commented');
     expect(createAsk).not.toHaveBeenCalled();
     expect(posted).toEqual([]);
+  });
+
+  it('still posts on Monday after a manual run late the week before', async () => {
+    const { gh, posted } = fakeGh({ comments: [formatComment([], '20261107')] });
+    const askModel = ask({ taft: { outcome: 'nothing_found', link_url: null, source_page_url: null } });
+    expect(await runLinkFinder({ env: key, agencies, gh, createAsk: () => askModel, log: () => undefined, today: TODAY })).toBe('posted');
+    expect(posted).toHaveLength(1);
+  });
+
+  it('starts from a different agency each week', async () => {
+    const many = Array.from({ length: 9 }, (_, i) => indexAgency(`a${i}`, '20220101'));
+    const firstAsked = async (today: string) => {
+      const { gh } = fakeGh();
+      const askModel = vi.fn<AskModel>(async () => ({ outcome: 'nothing_found', link_url: null, source_page_url: null }));
+      await runLinkFinder({ env: key, agencies: many, gh, createAsk: () => askModel, log: () => undefined, today });
+      expect(askModel).toHaveBeenCalledTimes(9);
+      return askModel.mock.calls[0][0].slug;
+    };
+    expect(await firstAsked(TODAY)).not.toBe(await firstAsked('20261116'));
+  });
+
+  it('stops requests still running at the time cap and posts what it has', async () => {
+    expect(MAX_RUN_MINUTES).toBeLessThan(30);
+    const { gh, posted } = fakeGh();
+    const signals: AbortSignal[] = [];
+    let quick = true;
+    const askModel = vi.fn<AskModel>((_agency, signal) => {
+      if (quick) { quick = false; return Promise.resolve({ outcome: 'nothing_found', link_url: null, source_page_url: null }); }
+      signals.push(signal!);
+      // One request stops when told to, the others ignore the signal and never finish.
+      return signals.length === 1
+        ? new Promise((_resolve, reject) => signal!.addEventListener('abort', () => reject(new Error('aborted'))))
+        : new Promise(() => undefined);
+    });
+    const many = Array.from({ length: 6 }, (_, i) => indexAgency(`a${i}`, '20220101'));
+    const log = vi.fn();
+    const started = Date.now();
+    expect(await runLinkFinder({ env: key, agencies: many, gh, createAsk: () => askModel, log, today: TODAY, maxRunMs: 60 })).toBe('posted');
+    expect(Date.now() - started).toBeLessThan(2000);
+    expect(signals.length).toBeGreaterThan(0);
+    expect(signals.every(signal => signal.aborted)).toBe(true);
+    // Nothing new was started after the cap.
+    expect(askModel.mock.calls.length).toBeLessThanOrEqual(3);
+    expect(posted).toHaveLength(1);
+    expect(posted[0].split('\n').filter(line => line.startsWith('- '))).toHaveLength(1);
+    expect(posted[0]).toContain('5 more agencies were not checked this week');
+    expect(log.mock.calls.flat().join('\n')).toContain('Time cap');
   });
 
   it('posts exactly one comment on the exact-title issue, and one failed agency does not stop the rest', async () => {
@@ -321,6 +512,29 @@ describe('the Claude request', () => {
 
     const prose = client([message([{ type: 'text', text: 'I could not find it.' }], 'end_turn')]);
     await expect(createClaudeAsk(prose.client)(finderAgency())).rejects.toThrow(/no report/);
+  });
+
+  it('gives a resumed turn only the searches still unused, and stops resuming at zero', async () => {
+    const paused = (searches: number) => message([{ type: 'server_tool_use', id: 's1', name: 'web_search', input: {} }], 'pause_turn', searches);
+    const input = { outcome: 'nothing_found', link_url: null, source_page_url: null };
+    const maxUses = (create: ReturnType<typeof client>['create']) =>
+      create.mock.calls.map(call => (call[0] as { tools: Array<{ max_uses?: number }> }).tools[0].max_uses);
+
+    const resumed = client([paused(3), paused(1), message([{ type: 'tool_use', id: 't1', name: 'report_finding', input }], 'tool_use', 1)]);
+    expect(await createClaudeAsk(resumed.client)(finderAgency())).toEqual(input);
+    expect(maxUses(resumed.create)).toEqual([MAX_SEARCHES_PER_AGENCY, MAX_SEARCHES_PER_AGENCY - 3, MAX_SEARCHES_PER_AGENCY - 4]);
+
+    const spent = client([paused(3), paused(2), paused(1)]);
+    await expect(createClaudeAsk(spent.client)(finderAgency())).rejects.toThrow(/no report/);
+    expect(maxUses(spent.create)).toEqual([MAX_SEARCHES_PER_AGENCY, MAX_SEARCHES_PER_AGENCY - 3]);
+  });
+
+  it('passes the time-cap signal to the request', async () => {
+    const input = { outcome: 'nothing_found', link_url: null, source_page_url: null };
+    const create = vi.fn(async (_params: unknown, _options?: { signal?: AbortSignal }) => message([{ type: 'tool_use', id: 't1', name: 'report_finding', input }], 'tool_use'));
+    const cap = new AbortController();
+    await createClaudeAsk({ messages: { create } } as never)(finderAgency(), cap.signal);
+    expect(create.mock.calls[0][1]?.signal).toBe(cap.signal);
   });
 });
 
