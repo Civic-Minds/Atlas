@@ -13,7 +13,7 @@ import {
   type SeoContext,
 } from './seo';
 
-const PUBLIC: SeoContext = { mode: 'public', flags: {} };
+const PUBLIC: SeoContext = { mode: 'public', flags: { whatsNew: true } };
 const BETA: SeoContext = {
   mode: 'beta',
   flags: { researchApps: true, whatsNew: true, live: false, history: true },
@@ -89,11 +89,17 @@ describe('resolveSeo', () => {
   });
 
   it('treats a route missing from the build as the map, indexable only as the home page', () => {
-    for (const path of ['/research', '/changelog', '/research/night', '/apps/live', '/nope']) {
+    for (const path of ['/research', '/research/night', '/apps/live', '/nope']) {
       const seo = resolveSeo(path, PUBLIC);
       expect(seo.matchedPath).toBe('/');
       expect(seo.canonicalUrl).toBe(`${SITE_URL}/`);
     }
+  });
+
+  it('serves /changelog in a public build, not indexed', () => {
+    const seo = resolveSeo('/changelog', PUBLIC);
+    expect(seo.matchedPath).toBe('/changelog');
+    expect(seo.noindex).toBe(true);
   });
 
   it('uses the staging origin for canonical when given one', () => {

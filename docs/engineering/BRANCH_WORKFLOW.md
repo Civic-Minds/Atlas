@@ -48,6 +48,13 @@ CI builds the full checkout, but Vercel builds only what `.vercelignore` lets th
 5. Update `[Unreleased]`, commit the logical change, and open a PR into `main`.
 6. Merge only after CI, preview checks, and the required data/UI validation pass.
 
+## Before a version cut
+
+1. Add the release's entry to `src/data/whatsNew.ts` before the cut: about six plain points, big launches first. Each point is either public or `beta: true`, never mixed.
+2. Get Ryan's word-for-word OK on the wording before it is committed.
+3. Show him the list as it will read on the public site and on the beta site.
+4. Make the entry's version and date match the CHANGELOG release header.
+
 ## Deployment verification
 
 Run `npm run verify:deployments` after a deployment change or when a hosted site appears stale. It checks that each hostname serves its app shell and the matching mode-specific catalog rather than falling back to the single-page app's `index.html`. It does not prove which mode a hostname was built with. The check accepts `ATLAS_PUBLIC_URL`, `ATLAS_PREVIEW_URL`, and `ATLAS_BETA_URL` overrides for protected or temporary hostnames.

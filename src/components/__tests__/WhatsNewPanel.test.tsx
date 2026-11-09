@@ -41,9 +41,9 @@ describe('What\'s new link', () => {
 });
 
 describe('What\'s new flag', () => {
-  it('is off on the public site and on in beta', () => {
-    expect(whatsNewEnabledFor('public')).toBe(false);
-    expect(whatsNewEnabledFor('preview')).toBe(false);
+  it('is on in every build, public included', () => {
+    expect(whatsNewEnabledFor('public')).toBe(true);
+    expect(whatsNewEnabledFor('preview')).toBe(true);
     expect(whatsNewEnabledFor('beta')).toBe(true);
     expect(whatsNewEnabledFor('dev')).toBe(true);
     expect(FEATURES.whatsNew).toBe(WHATS_NEW_ENABLED);

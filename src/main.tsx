@@ -95,7 +95,7 @@ ReactDOM.createRoot(rootElement).render(
           <Route path="/privacy" element={<LegalPage document="privacy" />} />
           <Route path="/about/docs" element={<AboutDocsPage />} />
           <Route path="/about" element={<AboutPage />} />
-          {/* Beta-only; on the public site /changelog falls through to the map. */}
+          {/* On in every build; beta-tagged entries still show only on beta. */}
           {FEATURES.whatsNew && <Route path="/changelog" element={<ChangelogPage />} />}
           {FEATURES.agencyPages && <Route path="/agency/:slug" element={<AgencyPage />} />}
           {FEATURES.researchApps && <Route path="/research" element={<ResearchPage />} />}
