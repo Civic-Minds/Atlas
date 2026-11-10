@@ -10,4 +10,14 @@ describe('ChangelogPage', () => {
     expect(screen.getByText('What changed in Atlas.')).toBeInTheDocument();
     expect(screen.queryByText(/Map data updated/i)).toBeNull();
   });
+
+  it('shows bullet leads in normal weight so only the headers are bold', () => {
+    const { container } = render(<ChangelogPage />);
+    const leads = container.querySelectorAll('li strong');
+    expect(leads.length).toBeGreaterThan(0);
+    leads.forEach(el => {
+      expect(el).toHaveClass('font-normal');
+      expect(el).not.toHaveClass('font-black');
+    });
+  });
 });

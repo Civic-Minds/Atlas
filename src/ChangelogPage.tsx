@@ -26,7 +26,7 @@ export default function ChangelogPage() {
                 <ul className="list-disc pl-5 space-y-1">
                   {entry.items.map(item => (
                     <li key={item.text}>
-                      <WhatsNewItemText item={item} />
+                      <WhatsNewItemText item={item} leadClass="font-normal" />
                     </li>
                   ))}
                 </ul>
