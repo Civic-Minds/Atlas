@@ -25,6 +25,9 @@ export function CompareSidePicker({ side, onChange }: { side: CompareSide; onCha
   );
 }
 
+/** The small tag on the Compare tab: Compare is still in beta, even on the public map (CIV-1361). */
+export const COMPARE_TAB_TAG = 'Beta';
+
 /**
  * Top-bar view tab beside History and Live. Compare swaps the whole map for two synced maps, so it
  * sits with the other views rather than with the filter chips. It toggles like the other view tabs:
@@ -34,7 +37,7 @@ export function CompareTab({ active, onStart, onExit }: { active: boolean; onSta
   return (
     <ModeTab
       icon={<Columns2 className="h-3.5 w-3.5" aria-hidden="true" />}
-      label="Compare" ariaLabel="Compare two maps"
+      label="Compare" tag={COMPARE_TAB_TAG} ariaLabel={`Compare two maps, ${COMPARE_TAB_TAG.toLowerCase()}`}
       active={active}
       onClick={active ? onExit : onStart}
     />

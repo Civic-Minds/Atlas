@@ -2,6 +2,7 @@ import React from 'react';
 import { APP_TAB_ACTIVE, APP_TAB_INACTIVE, TOP_BAR_TAB_INACTIVE } from '../styles';
 import { ModeTabLabel, modeTabSpacing, modeTabCollapsed, useModeTabsCollapseOthers, NARROW_TOP_BAR_QUERY, COMPACT_TOP_BAR_QUERY } from './ModeTabLabel';
 import { useMediaQuery } from '../hooks/useMediaQuery';
+import Tag from './ui/Tag';
 
 const FOCUS = 'focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)]';
 
@@ -22,12 +23,14 @@ const MODE_TAB_PEEK = 'hover:gap-1.5 focus-visible:gap-1.5 hover:pr-3 focus-visi
  * menu: it names the current mode, takes `expanded` and a `trailing` chevron, and is not a toggle.
  */
 export default function ModeTab({
-  icon, label, extra, active, onClick, onWarm, ariaLabel, variant = 'bar', expanded, trailing,
+  icon, label, extra, tag, active, onClick, onWarm, ariaLabel, variant = 'bar', expanded, trailing,
 }: {
   icon?: React.ReactNode;
   label: string;
   /** Small count after the label, e.g. "7" or "22+". */
   extra?: React.ReactNode;
+  /** Small accent tag after the label ("Beta"). It sits inside the label, so it folds away with it when the tab shrinks to its icon. */
+  tag?: string;
   active: boolean;
   onClick: () => void;
   /** Hover, focus or touch: the user is about to open this mode, so start loading what it needs. */
@@ -44,6 +47,7 @@ export default function ModeTab({
   // On the bar an unselected tab takes the top bar's outline (CIV-1020); the phone menu's items sit in a panel and keep the panel border.
   const state = active ? APP_TAB_ACTIVE : variant === 'menu' ? APP_TAB_INACTIVE : TOP_BAR_TAB_INACTIVE;
   const extraEl = extra != null && extra !== '' ? <span className="font-normal text-[var(--text-dim)]">{extra}</span> : null;
+  const tagEl = tag ? <Tag tone="accent" className="text-[11px]">{tag}</Tag> : null;
   if (variant === 'menu-trigger') {
     return (
       <button
@@ -93,6 +97,7 @@ export default function ModeTab({
       <ModeTabLabel collapsed={collapsed}>
         <span>{label}</span>
         {extraEl}
+        {tagEl}
       </ModeTabLabel>
     </button>
   );

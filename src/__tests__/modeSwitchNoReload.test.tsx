@@ -81,7 +81,7 @@ describe('switching modes (#888)', () => {
     // Compare from Live goes back to the map and starts comparing, still on the same map.
     await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Live vehicles' })); });
     await waitFor(() => expect(window.location.pathname).toBe('/apps/live'));
-    await act(async () => { fireEvent.click(screen.getAllByRole('button', { name: 'Compare two maps' })[0]); });
+    await act(async () => { fireEvent.click(screen.getAllByRole('button', { name: /^Compare two maps/ })[0]); });
     await waitFor(() => expect(window.location.pathname).toBe('/'));
 
     expect(mapMounts).toBe(1);
