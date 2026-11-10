@@ -23,7 +23,7 @@
   "timezone": "America/New_York",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "http://data.trilliumtransit.com/gtfs/tricountylink-sc-us/tricountylink-sc-us.zip",
-  "lastFeedCheckAt": "20261109",
+  "lastFeedCheckAt": "20261110",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270529",
@@ -45,7 +45,7 @@
       "resumesOn": null
     },
     "checkedAt": "2026-11-07",
-    "scoredAt": "2026-11-09"
+    "scoredAt": "2026-11-10"
   },
   "lastFeedExpiry": "20270529",
   "lastPeekedExpiry": "20270529",
