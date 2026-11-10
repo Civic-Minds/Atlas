@@ -20012,48 +20012,47 @@
           "name": "Red Line"
         }
       ],
-      "lastFeedExpiry": "20261031",
-      "lastFeedVersion": null,
+      "lastFeedExpiry": "20270326",
+      "lastFeedVersion": "S1000222",
       "region": "Florida",
-      "lastRefreshedAt": "2026-08-10",
+      "lastRefreshedAt": "2026-11-10",
       "cities": [
         "Jacksonville, Florida"
       ],
-      "lastFeedCheckAt": "20261109",
+      "lastFeedCheckAt": "20261110",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
       "expiredFeedCheckExpiry": "20270326",
       "timezone": "America/New_York",
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://files.mobilitydatabase.org/tld-764/latest.zip",
-      "lastPeekedExpiry": "20261031",
+      "lastPeekedExpiry": "20270326",
       "feedQuality": {
-        "status": "degraded",
-        "score": 65,
-        "reasons": [
-          "The schedule dates in this feed have passed."
-        ],
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
         "metrics": {
           "validationErrors": 0,
           "validationWarnings": 0,
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 0,
-          "featureCount": 242,
-          "feedExpiry": "20261031",
-          "routeCount": 44,
+          "featureCount": 229,
+          "feedExpiry": "20270326",
+          "routeCount": 40,
           "problemShapes": 0,
           "problemShapeRoutes": 0,
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-10-31",
-        "scoredAt": "2026-11-09"
+        "checkedAt": "2026-11-10"
       },
-      "feedRefreshStatus": "stale",
-      "feedRefreshError": "all available feeds expired (latest 20261031)",
-      "feedRefreshErrorAt": "20261102",
-      "feedRefreshRetryCount": 1,
-      "refusedFeedSha256": "eaa94c918192f0780d076b088d75cd3b36e35ea44d07b2b0d89f4c32bfd9aceb"
+      "feedRefreshStatus": "current",
+      "feedRefreshError": null,
+      "feedRefreshErrorAt": null,
+      "feedRefreshRetryCount": 0,
+      "lastFeedStart": "20261102",
+      "lastServiceWeek": "2dba5bf33bb16ba2",
+      "feedObtainedAt": "20261109"
     },
     {
       "slug": "cats",
