@@ -18,13 +18,13 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-258/latest.zip",
   "lastFeedExpiry": "20270109",
   "lastFeedVersion": "20260913-20270109",
-  "lastRefreshedAt": "2026-11-02",
+  "lastRefreshedAt": "2026-11-09",
   "cities": [
     "Vancouver, Washington",
     "Gresham, Oregon",
     "Portland, Oregon"
   ],
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270109",
@@ -45,7 +45,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-09"
   },
   "timezone": "America/Los_Angeles",
   "feedRefreshStatus": "current",
@@ -55,6 +55,7 @@
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://www.c-tran.com/images/Google/GoogleTransitUpload.zip",
   "lastPeekedExpiry": "20270109",
-  "lastServiceWeek": "82a9dabd17e9bbcb",
-  "feedObtainedAt": "20261008"
+  "lastServiceWeek": "f7bd3be31718fcd7",
+  "feedObtainedAt": "20261008",
+  "lastFeedStart": "20260913"
 }

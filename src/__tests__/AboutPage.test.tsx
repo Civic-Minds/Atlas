@@ -5,6 +5,13 @@ import AboutPage from '../AboutPage';
 import { newestResearch, RESEARCH } from '../data/research';
 
 describe('About page (CIV-1206 D)', () => {
+  it('keeps the header and footer logos on the About page (CIV-1312)', () => {
+    render(<AboutPage />);
+    const logos = screen.getAllByRole('link', { name: 'Atlas by Civic Minds' });
+    expect(logos.length).toBeGreaterThanOrEqual(2);
+    for (const logo of logos) expect(logo).toHaveAttribute('href', '/about');
+  });
+
   it('shows the headline beside the map picture, in a light and a dark version', () => {
     const { container } = render(<AboutPage />);
     expect(screen.getByRole('heading', { level: 1, name: 'Find the transit service that actually runs.' })).toBeInTheDocument();

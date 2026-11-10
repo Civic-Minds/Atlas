@@ -42,6 +42,19 @@ export interface DirectionSplitMerge {
   keptRouteId: string;
   mergedRouteId: string;
   overlap: number;
+  /** The two halves' published short names (CIV-1275: History folds their old keys into `base`). */
+  keptShortName: string;
+  mergedShortName: string;
+}
+
+/** CIV-1275: one merge as the agency artifact records it, for History's route-key aliases. */
+export interface DirectionSplit {
+  base: string;
+  halves: [string, string];
+}
+
+export function directionSplitsOf(merged: readonly DirectionSplitMerge[]): DirectionSplit[] {
+  return merged.map(m => ({ base: m.base, halves: [m.keptShortName, m.mergedShortName] }));
 }
 
 /** The route's long name as "A ↔ B" when it reads "A to B"; otherwise as given. */
@@ -127,7 +140,7 @@ export function mergeDirectionSplitRoutes(gtfs: GtfsData): { gtfs: GtfsData; mer
     direction.set(a.route.route_id, da);
     direction.set(b.route.route_id, db);
     rename.set(kept.route.route_id, { short: kept.base, long: bothWays(kept.route.route_long_name) });
-    merged.push({ base: kept.base, keptRouteId: kept.route.route_id, mergedRouteId: gone.route.route_id, overlap });
+    merged.push({ base: kept.base, keptRouteId: kept.route.route_id, mergedRouteId: gone.route.route_id, overlap, keptShortName: (kept.route.route_short_name ?? '').trim(), mergedShortName: (gone.route.route_short_name ?? '').trim() });
   }
   for (const [cw, ccw] of loopPairs) {
     if (shortNames.has(cw.base.toLowerCase())) continue;
@@ -137,7 +150,7 @@ export function mergeDirectionSplitRoutes(gtfs: GtfsData): { gtfs: GtfsData; mer
     direction.set(ccw.route.route_id, '1');
     // "DASH Hollywood Clockwise" -> "DASH Hollywood".
     rename.set(cw.route.route_id, { short: cw.base, long: cw.route.route_long_name?.trim().replace(/\s*[-–]?\s*clockwise$/i, '') });
-    merged.push({ base: cw.base, keptRouteId: cw.route.route_id, mergedRouteId: ccw.route.route_id, overlap: NaN });
+    merged.push({ base: cw.base, keptRouteId: cw.route.route_id, mergedRouteId: ccw.route.route_id, overlap: NaN, keptShortName: (cw.route.route_short_name ?? '').trim(), mergedShortName: (ccw.route.route_short_name ?? '').trim() });
   }
   if (merged.length === 0) return { gtfs, merged };
 

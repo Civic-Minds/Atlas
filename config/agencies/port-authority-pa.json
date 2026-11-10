@@ -14,7 +14,7 @@
   "cities": [
     "Pittsburgh, Pennsylvania"
   ],
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270220",
@@ -40,7 +40,8 @@
       "mismatchRoutes": 1,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-07",
+    "scoredAt": "2026-11-09"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -86,5 +87,6 @@
   ],
   "lastPeekedExpiry": "20270220",
   "lastServiceWeek": "f3b68582fe16ff54",
-  "feedObtainedAt": "20261101"
+  "feedObtainedAt": "20261101",
+  "lastFeedStart": "20261018"
 }

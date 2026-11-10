@@ -7,10 +7,10 @@
     -118.1182
   ],
   "feedUrl": "https://www.avta.com/userfiles/files/AVTA_GTFS.zip",
-  "lastFeedExpiry": "20270228",
-  "lastFeedVersion": "20260709",
+  "lastFeedExpiry": "20261231",
+  "lastFeedVersion": "20261104",
   "region": "California",
-  "lastRefreshedAt": "2026-11-02",
+  "lastRefreshedAt": "2026-11-09",
   "websiteUrl": "http://www.avta.com",
   "cities": [
     "Lancaster, California",
@@ -25,38 +25,39 @@
   ],
   "timezone": "America/Los_Angeles",
   "lastRawArchiveKey": "20210801-aee75355a03ea49e",
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20270228",
+  "expiredFeedCheckExpiry": "20261231",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://www.avta.com/userfiles/files/AVTA_GTFS.zip",
   "feedQuality": {
     "status": "review",
     "score": 90,
     "reasons": [
-      "14 route shapes needed adjustment before display."
+      "12 route shapes needed adjustment before display."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
-      "shapeAnomalies": 14,
+      "shapeAnomalies": 12,
       "routeHeadwayMismatches": 0,
       "featureCount": 88,
-      "feedExpiry": "20270228",
+      "feedExpiry": "20261231",
       "routeCount": 20,
-      "problemShapes": 14,
+      "problemShapes": 12,
       "problemShapeRoutes": 2,
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-09"
   },
-  "lastPeekedExpiry": "20270228",
+  "lastPeekedExpiry": "20261231",
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
-  "lastServiceWeek": "40972bc3d72fdf04",
-  "feedObtainedAt": "20260709"
+  "lastServiceWeek": "25f60aca65ebadc5",
+  "feedObtainedAt": "20261109",
+  "lastFeedStart": "20261104"
 }

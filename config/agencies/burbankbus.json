@@ -7,7 +7,7 @@
     -118.31
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-2149/latest.zip",
-  "lastFeedExpiry": "20281103",
+  "lastFeedExpiry": "20281107",
   "lastFeedVersion": "7/8/2026",
   "region": "California",
   "lastRefreshedAt": "2026-11-02",
@@ -16,7 +16,7 @@
     "North Hollywood, California",
     "Universal City, California"
   ],
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20991231",
@@ -33,14 +33,15 @@
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
       "featureCount": 2,
-      "feedExpiry": "20281103",
+      "feedExpiry": "20281107",
       "routeCount": 2,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-07",
+    "scoredAt": "2026-11-09"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -48,5 +49,6 @@
   "feedRefreshRetryCount": 0,
   "lastPeekedExpiry": "20991231",
   "lastServiceWeek": "96c3b4f8f154ea47",
-  "feedObtainedAt": "20261101"
+  "feedObtainedAt": "20261101",
+  "lastFeedStart": "20260719"
 }

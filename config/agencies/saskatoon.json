@@ -26,7 +26,7 @@
   ],
   "timezone": "America/Regina",
   "lastRawArchiveKey": "20250830-3e8e316896a70dd6",
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270102",
@@ -49,7 +49,8 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-07",
+    "scoredAt": "2026-11-09"
   },
   "lastPeekedExpiry": "20270102",
   "feedRefreshStatus": "current",
@@ -57,5 +58,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastServiceWeek": "8d49cb506c44667f",
-  "feedObtainedAt": "20260924"
+  "feedObtainedAt": "20260924",
+  "lastFeedStart": "20260830"
 }

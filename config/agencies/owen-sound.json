@@ -30,12 +30,13 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-07",
+    "scoredAt": "2026-11-09"
   },
   "lastFeedExpiry": "20280115",
   "lastFeedVersion": "1/20261101 22:00:00/20261102 00:00:00",
   "lastRefreshedAt": "2026-11-02",
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20280115",
@@ -48,5 +49,6 @@
   "lastFeedSourceUrl": "http://metrolinx.tmix.se/gtfs/gtfs-owensound.zip",
   "lastPeekedExpiry": "20280115",
   "lastServiceWeek": "92a495bb0b1b81c3",
-  "feedObtainedAt": "20261102"
+  "feedObtainedAt": "20261102",
+  "lastFeedStart": "20261102"
 }

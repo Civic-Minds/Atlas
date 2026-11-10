@@ -756,7 +756,7 @@
     },
     {
       "slug": "brownsville",
-      "status": "fetch-blocked",
+      "status": "not-found",
       "label": null,
       "thresholdMinutes": null,
       "span": null,
@@ -765,12 +765,14 @@
       "sourceType": null,
       "quote": null,
       "quoteMethod": null,
-      "quoteCheck": "fetch-blocked",
+      "quoteCheck": "not-applicable",
       "pagesSearched": [
-        "https://www.brownsvilletx.gov/608/Rider-Guide"
+        "https://www.brownsvilletx.gov/608/Rider-Guide",
+        "https://www.brownsvilletx.gov/608/Rider-Guide (live, headless browser)",
+        "https://web.archive.org/web/20250210174411id_/https://www.brownsvilletx.gov/DocumentCenter/View/13525/2022-Title-VI-Document"
       ],
       "conflict": null,
-      "notes": "brownsvilletx.gov returns HTTP 403 to curl and WebFetch. Earlier research only described hourly routes with a few 30-minute routes (no named frequent tier), so likely not-found even if reachable."
+      "notes": "Rechecked 2026-11-01 and 2026-11-03 (CIV-1258): Read the live Rider Guide page with a headless browser (later requests got a Cloudflare challenge) and the 2022 Title VI Program via a Wayback copy. Rider Guide says 'Most of our routes operate on an hourly schedule, but a few of our routes operate on a 30-minute interval'; the Title VI headway standard is only a 60-minute weekday maximum; no named frequent tier."
     },
     {
       "slug": "bts-or",
@@ -793,7 +795,7 @@
     },
     {
       "slug": "burbankbus",
-      "status": "fetch-blocked",
+      "status": "not-found",
       "label": null,
       "thresholdMinutes": null,
       "span": null,
@@ -802,13 +804,13 @@
       "sourceType": null,
       "quote": null,
       "quoteMethod": null,
-      "quoteCheck": "fetch-blocked",
+      "quoteCheck": "not-applicable",
       "pagesSearched": [
         "https://www.burbankca.gov/documents/d/guest/2025_titlevi_program_update",
         "https://www.burbankca.gov/burbankbus"
       ],
       "conflict": null,
-      "notes": "burbankca.gov returns HTTP 403 to curl and WebFetch. Earlier research cited a Title VI peak-headway standard (no greater than 15 minutes in peak), which is a minimum standard rather than a named frequent tier; unverified."
+      "notes": "Rechecked 2026-11-01 and 2026-11-03 (CIV-1258): Downloaded the 2025 Title VI Program Triennial Update with a headless browser. Its only frequency rule is a minimum standard, 'BurbankBus routes should operate at no greater than 15-minute headways during peak hours' (Pink 15-30 min, Orange 30 min); it names no frequent tier."
     },
     {
       "slug": "burlington",
@@ -1021,24 +1023,26 @@
     },
     {
       "slug": "cats",
-      "status": "fetch-blocked",
-      "label": null,
-      "thresholdMinutes": null,
+      "status": "found",
+      "label": "High Frequency Bus Routes",
+      "thresholdMinutes": 15,
       "span": null,
       "days": null,
-      "sourceUrl": null,
-      "sourceType": null,
-      "quote": null,
-      "quoteMethod": null,
-      "quoteCheck": "fetch-blocked",
+      "sourceUrl": "https://www.charlottenc.gov/files/sharedassets/cats/v/1/mtc-policies/mtc-06_transit_service_guidelines[1].pdf",
+      "archiveUrl": "https://web.archive.org/web/20240426195827id_/https://www.charlottenc.gov/files/sharedassets/cats/v/1/mtc-policies/mtc-06_transit_service_guidelines%5B1%5D.pdf",
+      "sourceType": "service_guidelines",
+      "quote": "High Frequency Bus Routes – Frequent bus routes that have a minimum headway of 15-minutes or better",
+      "quoteMethod": "pdftotext",
+      "quoteCheck": "verbatim",
       "pagesSearched": [
         "https://www.charlottenc.gov/files/sharedassets/cats/mtc-meeting-summaries-amp-agendas/agendas-2023/mtc-agenda-packet-for-wednesday-august-23-2023_1.pdf",
         "https://www.charlottenc.gov/files/sharedassets/cats/v/3/tsp/cats-tsp-update-9_11_2025-digital-for-web-1.pdf",
         "https://www.charlottenc.gov/CATS/Ride/Bus",
-        "https://www.charlottenc.gov/CATS/News/October-2026-Service-Change-Brings-Increased-Frequency-and-New-Routes"
+        "https://www.charlottenc.gov/CATS/News/October-2026-Service-Change-Brings-Increased-Frequency-and-New-Routes",
+        "https://web.archive.org/web/20240426195827id_/https://www.charlottenc.gov/files/sharedassets/cats/v/1/mtc-policies/mtc-06_transit_service_guidelines%5B1%5D.pdf"
       ],
       "conflict": null,
-      "notes": "charlottenc.gov returns 403 to curl; both source PDFs exceed WebFetch's 10MB limit, so the 'High Frequency Bus Routes' 15-min definition could not be quoted. The Bus page has no frequent tier; the Oct 2026 service-change news only lists routes improved to 15- and 20-minute service. Needs a manual check of the TSP update PDF."
+      "notes": "Rechecked 2026-11-01 and 2026-11-03 (CIV-1258): Read the MTC-06 Transit Service Guidelines (approved July 26, 2023) via a Wayback copy of 2024-04-26. It names 'High Frequency Bus Routes' at 15 minutes or better; the headway section adds that CATS 'will strive to provide at least 15-minute peak service on high frequency routes'."
     },
     {
       "slug": "ccta",
@@ -1601,10 +1605,11 @@
       "pagesSearched": [
         "https://www.cyride.com/home/showpublisheddocument/9840/637039033812130000",
         "https://www.cyride.com/schedules/school-year-schedule",
-        "https://www.cyride.com/"
+        "https://www.cyride.com/",
+        "https://web.archive.org/web/20260418161224/https://www.cyride.com/home/showpublisheddocument/9311/636408362268370000"
       ],
       "conflict": null,
-      "notes": "cyride.com returns 403 to curl and WebFetch. Earlier research only found a qualitative 'Core routes' class in service standards with no numeric threshold, so a frequent definition is unlikely even if reachable."
+      "notes": "Rechecked 2026-11-01 and 2026-11-03 (CIV-1258): cyride.com still 403s to a headless browser; read its Planning & Documents and Civil Rights pages and the System Redesign final report via Wayback copies (2026). The redesign report sets only minimum frequencies ('Strive to maintain peak hour service at 20 minutes', 40 minutes off-peak) and calls one new route 'high-frequency'; no named frequent tier. The current Title VI service standards document is not linked from the archived pages. Its main standards documents still could not be read, so it stays blocked."
     },
     {
       "slug": "dart",
@@ -2209,7 +2214,7 @@
     },
     {
       "slug": "fred-transit",
-      "status": "fetch-blocked",
+      "status": "not-found",
       "label": null,
       "thresholdMinutes": null,
       "span": null,
@@ -2218,34 +2223,36 @@
       "sourceType": null,
       "quote": null,
       "quoteMethod": null,
-      "quoteCheck": "fetch-blocked",
+      "quoteCheck": "not-applicable",
       "pagesSearched": [
         "https://www.fredericksburgva.gov/2077/Routes",
         "https://www.fredericksburgva.gov/DocumentCenter/View/18678/FREDTransitTDP_2018_2027",
-        "https://www.ridefred.com/"
+        "https://www.ridefred.com/",
+        "https://drpt.virginia.gov/wp-content/uploads/2024/10/Fredericksburg-Regional-Transit-TSP-Updated-2024.pdf"
       ],
       "conflict": null,
-      "notes": "fredericksburgva.gov returns 403 to curl and WebFetch; ridefred.com did not respond. Earlier research tiers (60-min local F routes, proposed 30-min service) look like route frequencies rather than a named frequent tier, so this may be not-found even if reachable."
+      "notes": "Rechecked 2026-11-01 and 2026-11-03 (CIV-1258): Read the FY2025-2034 Transit Strategic Plan (Final June 2024) via the copy hosted by Virginia DRPT (city DocumentCenter copies still 403 in a headless browser). Its only headway standard is a maximum ('Vehicle headways should not exceed one (1) hour'); most routes run every 60 minutes, Route EX every 30; no named frequent tier."
     },
     {
       "slug": "fredericton",
-      "status": "fetch-blocked",
-      "label": null,
-      "thresholdMinutes": null,
+      "status": "found",
+      "label": "Frequent service",
+      "thresholdMinutes": 15,
       "span": null,
       "days": null,
-      "sourceUrl": "https://pub-fredericton.escribemeetings.com/filestream.ashx?DocumentId=14694",
+      "sourceUrl": "https://fredericton.ca/sites/default/files/2023-05/2019-transitstrategic-finalreportjan19_0.pdf",
       "sourceType": "planning_document",
-      "quote": null,
-      "quoteMethod": null,
-      "quoteCheck": "fetch-blocked",
+      "quote": "Frequent service, typically headways of 15 minutes or less, are desirable.",
+      "quoteMethod": "pdftotext",
+      "quoteCheck": "verbatim",
       "pagesSearched": [
         "https://pub-fredericton.escribemeetings.com/filestream.ashx?DocumentId=14694",
         "https://www.fredericton.ca/resident-services/fredericton-transit/schedule-maps",
-        "https://www.fredericton.ca/en/resident-services/fredericton-transit"
+        "https://www.fredericton.ca/en/resident-services/fredericton-transit",
+        "https://fredericton.ca/sites/default/files/2023-05/2019-transitstrategic-finalreportjan19_0.pdf"
       ],
       "conflict": null,
-      "notes": "The council document with the Frequent/Peak/Basic tiers is behind an eScribe browser check (403 via curl and WebFetch). City transit and schedule-map pages publish no frequent-tier definition (map is an ArcGIS app)."
+      "notes": "Rechecked 2026-11-01 and 2026-11-03 (CIV-1258): Read the city-hosted 2019 Transit Strategic Plan (Stantec, Jan 2019) with a headless browser. It recommends frequent service of 15 minutes or less on key corridors and tracks coverage of 'frequent (every 15 minutes or better) routes' as a target; current service peaks at half-hourly. The eScribe council document with Frequent/Peak/Basic tiers was not found (eScribe search not reachable by URL)."
     },
     {
       "slug": "gcrta",
@@ -2365,7 +2372,7 @@
     },
     {
       "slug": "grand-forks",
-      "status": "fetch-blocked",
+      "status": "not-found",
       "label": null,
       "thresholdMinutes": null,
       "span": null,
@@ -2374,33 +2381,36 @@
       "sourceType": null,
       "quote": null,
       "quoteMethod": null,
-      "quoteCheck": "fetch-blocked",
+      "quoteCheck": "not-applicable",
       "pagesSearched": [
         "https://www.grandforksgov.com/government/city-departments/cities-area-transit-cat",
         "https://cdnsm5-hosted.civiclive.com/UserFiles/Servers/Server_16222865/File/Plans%20and%20Programs/Microtransit/07.2025%20DRAFT%20Microtransit%20Final%20Plan_Draft_PMT%20Review_20250630.pdf",
-        "http://www.ridecat.org"
+        "http://www.ridecat.org",
+        "https://www.theforksmpo.org//Userfiles/DBFiles/server_16222865/202302/19334429/grand_forks_east_grand_forks_transit_development_plan.pdf"
       ],
       "conflict": null,
-      "notes": "City CAT page 403 (curl and WebFetch); draft microtransit plan PDF now 404; ridecat.org 404. Earlier tiers (60-min standard routes, 15-min UND routes) look like route frequencies, not a named frequent tier."
+      "notes": "Rechecked 2026-11-01 and 2026-11-03 (CIV-1258): Read the final Grand Forks - East Grand Forks Transit Development Plan (January 2023, adopted Dec 2022) directly from the MPO site (theforksmpo.org, not blocked). It lists 'Frequency' only as a performance measure and proposes route-level changes (e.g. Route 5 'every 30 minutes'); no named frequent tier or frequency threshold."
     },
     {
       "slug": "greensboro",
-      "status": "fetch-blocked",
-      "label": null,
-      "thresholdMinutes": null,
-      "span": null,
-      "days": null,
-      "sourceUrl": "https://www.greensboro-nc.gov/departments/transportation/transit/goboro-final-bus-network",
+      "status": "found",
+      "label": "Frequent routes (GoBORO Draft Network)",
+      "thresholdMinutes": 15,
+      "span": "most of the day",
+      "days": "all seven days",
+      "sourceUrl": "https://www.greensboro-nc.gov/home/showpublisheddocument/58811/638494671995870000",
+      "archiveUrl": "https://web.archive.org/web/20250311034028id_/https://www.greensboro-nc.gov/home/showpublisheddocument/58811/638494671995870000",
       "sourceType": "planning_document",
-      "quote": null,
-      "quoteMethod": null,
-      "quoteCheck": "fetch-blocked",
+      "quote": "The Draft Network has many frequent routes (buses every 15 minutes most of the day). Every route runs from 5 AM through midnight to 1 AM the next day.",
+      "quoteMethod": "pdftotext",
+      "quoteCheck": "verbatim",
       "pagesSearched": [
         "https://www.greensboro-nc.gov/departments/transportation/transit/goboro-final-bus-network",
-        "https://www.greensboro-nc.gov/home/showpublisheddocument/62573/638824112289200000"
+        "https://www.greensboro-nc.gov/home/showpublisheddocument/62573/638824112289200000",
+        "https://web.archive.org/web/20250311034028id_/https://www.greensboro-nc.gov/home/showpublisheddocument/58811/638494671995870000"
       ],
       "conflict": null,
-      "notes": "greensboro-nc.gov returns 403 to curl and WebFetch. Earlier research: GoBoro 'Frequent Network' plan at 15 minutes most of the day; unverified."
+      "notes": "Rechecked 2026-11-01 and 2026-11-03 (CIV-1258): Read the GoBORO Draft Transit Plan Report (April 2024) via Wayback; greensboro-nc.gov blocks the headless browser too (Akamai). The plan's frequent routes run about every 15 minutes most of the day (6 AM-10 PM, 30 min early/late); current GTA pages archived in 2026 name no frequent tier, and the adopted final plan was not reachable."
     },
     {
       "slug": "grenoble",
@@ -2856,22 +2866,24 @@
     },
     {
       "slug": "ladot",
-      "status": "fetch-blocked",
-      "label": null,
-      "thresholdMinutes": null,
+      "status": "found",
+      "label": "Frequent service",
+      "thresholdMinutes": 20,
       "span": null,
       "days": null,
-      "sourceUrl": "https://www.ladottransit.com/dash/",
-      "sourceType": null,
-      "quote": null,
-      "quoteMethod": null,
-      "quoteCheck": "fetch-blocked",
+      "sourceUrl": "https://cdn.ladottransit.com/pdf/titlevi/LADOT-Transit-2025-Title-VI-Report.pdf",
+      "archiveUrl": "https://web.archive.org/web/20260205074434id_/https://cdn.ladottransit.com/pdf/titlevi/LADOT-Transit-2025-Title-VI-Report.pdf",
+      "sourceType": "service_guidelines",
+      "quote": "Frequent service, which enables riders to use the service spontaneously without consulting a bus schedule, is defined as 20-minute headways or shorter.",
+      "quoteMethod": "pdftotext",
+      "quoteCheck": "verbatim",
       "pagesSearched": [
         "https://www.ladottransit.com/dash/",
-        "https://ladot.lacity.gov/sites/default/files/documents/nest-stop-gender-equity-action-plan-06052025.pdf"
+        "https://ladot.lacity.gov/sites/default/files/documents/nest-stop-gender-equity-action-plan-06052025.pdf",
+        "https://web.archive.org/web/20260205074434id_/https://cdn.ladottransit.com/pdf/titlevi/LADOT-Transit-2025-Title-VI-Report.pdf"
       ],
       "conflict": null,
-      "notes": "ladottransit.com returns 403 to curl and WebFetch. The 2025 Next Stop gender-equity plan only calls for increasing DASH frequency; it defines no frequent tier. Earlier research also had no threshold ('DASH frequent service', none)."
+      "notes": "Rechecked 2026-11-01 and 2026-11-03 (CIV-1258): Read the 2025 Title VI Program Update (covers Dec 2021 to Nov 2025) via a Wayback copy of 2026-02-05. It defines frequent service as 20-minute headways or shorter (the 2021 update said 15), matching the 20-minute DASH maximum headway standard; no routes are labeled frequent."
     },
     {
       "slug": "lens",
@@ -3157,23 +3169,24 @@
     },
     {
       "slug": "milton",
-      "status": "fetch-blocked",
-      "label": null,
-      "thresholdMinutes": null,
+      "status": "found",
+      "label": "Frequent Service",
+      "thresholdMinutes": 20,
       "span": null,
-      "days": null,
-      "sourceUrl": null,
-      "sourceType": null,
-      "quote": null,
-      "quoteMethod": null,
-      "quoteCheck": "fetch-blocked",
+      "days": "weekdays",
+      "sourceUrl": "https://pub-milton.escribemeetings.com/filestream.ashx?DocumentId=9272",
+      "sourceType": "planning_document",
+      "quote": "More frequent service with buses every 15-20 minutes on weekdays along major corridors (Routes 2 & 4) ... Formal establishment of Frequent Service on Route 2 and Route 4",
+      "quoteMethod": "pdftotext",
+      "quoteCheck": "verbatim",
       "pagesSearched": [
         "https://www.milton.ca/en/living-in-milton/resources/2019_-_2023_Milton_Transit_Services_Review_and_Master_Plan_Update.pdf",
         "https://www.milton.ca/en/living-in-milton/transit-master-plan.aspx",
-        "https://www.milton.ca/en/news/council-endorses-2025-2029-roadmap-for-milton-transit.aspx"
+        "https://www.milton.ca/en/news/council-endorses-2025-2029-roadmap-for-milton-transit.aspx",
+        "https://pub-milton.escribemeetings.com/Meeting.aspx?Id=6affb9de-18a8-4121-8e9e-f55e37af92ef&lang=English&Agenda=Agenda&Item=34&Tab=attachments"
       ],
       "conflict": null,
-      "notes": "Every milton.ca URL (including ones search engines currently index) returns the site 404 page to curl, so the plan could not be read. Search snippets mention 'more frequent service' in the 2024-2029 plan but no threshold."
+      "notes": "Rechecked 2026-11-01 and 2026-11-03 (CIV-1258): Read the Five-Year Service Plan and Master Plan Update final report (Arcadis; Appendix 1 to council report CORS-021-24, endorsed June 24, 2024) from Milton's eScribe with a headless browser; the milton.ca plan page links to it. 'Frequent Service' at 15-20 minutes on weekdays is a 2029 target for Routes 2 and 4 only, with a 30-minute Base Service on all routes."
     },
     {
       "slug": "montbeliard",
@@ -4621,23 +4634,24 @@
     },
     {
       "slug": "unitrans",
-      "status": "fetch-blocked",
+      "status": "found",
       "label": null,
-      "thresholdMinutes": null,
-      "span": null,
-      "days": null,
-      "sourceUrl": "https://unitrans.ucdavis.edu/news/regular-service-resumes-wednesday-sept-23",
-      "sourceType": null,
-      "quote": null,
-      "quoteMethod": null,
-      "quoteCheck": "fetch-blocked",
+      "thresholdMinutes": 15,
+      "span": "daytime",
+      "days": "weekdays when UC Davis is in session",
+      "sourceUrl": "https://unitrans.ucdavis.edu/sites/g/files/dgvnsk13431/files/inline-files/_2023_Davis-Unitrans-TitleVI-Program_FINAL.pdf",
+      "sourceType": "service_guidelines",
+      "quote": "Peak hour service frequencies for routes with >60 pass/hour ... Standard: 15-minute service ... On bus lines with more than 60 passengers per hour, the daytime headway is halved to every 15 minutes on days with UC Davis in session and every 30 minutes on weekdays when classes are not in session.",
+      "quoteMethod": "pdfkit",
+      "quoteCheck": "verbatim",
       "pagesSearched": [
         "https://unitrans.ucdavis.edu/news/regular-service-resumes-wednesday-sept-23",
         "https://unitrans.ucdavis.edu/",
-        "https://unitrans.ucdavis.edu/routes/"
+        "https://unitrans.ucdavis.edu/routes/",
+        "https://unitrans.ucdavis.edu/sites/g/files/dgvnsk13431/files/inline-files/_2023_Davis-Unitrans-TitleVI-Program_FINAL.pdf"
       ],
       "conflict": null,
-      "notes": "Whole unitrans.ucdavis.edu site returns 403 to curl and WebFetch. Earlier tiers (15/30/60-minute service) look like frequency groupings from news posts, not a named frequent tier; unverified."
+      "notes": "Rechecked 2026-11-03 (CIV-1258): the 2023 City of Davis and Unitrans Title VI Program sets a 15-minute standard only for lines over 60 riders an hour, on weekday daytimes while UC Davis is in session; the same page says pandemic staffing has kept it from being fully restored. A service standard with frequency classes (15/30/60-minute service in the Fall 2026 notice), not a named frequent tier."
     },
     {
       "slug": "upexpress",
@@ -4783,10 +4797,11 @@
       "pagesSearched": [
         "https://www.visalia.gov/transit",
         "https://www.visalia.gov/357/Visalia-Transit-Fixed-Routes",
-        "https://www.visalia.gov/DocumentCenter/View/752/2022-Short-Range-Transit-Plan-Final-PDF?bidId="
+        "https://www.visalia.gov/DocumentCenter/View/752/2022-Short-Range-Transit-Plan-Final-PDF?bidId=",
+        "https://www.visalia.gov/1080/Short-Range-Transit-Plan"
       ],
       "conflict": null,
-      "notes": "visalia.gov returns 403 to curl and WebFetch. Earlier tiers were Route 1/Route 2 frequencies and a 30-minute minimum standard, not a named frequent tier; likely not-found if reachable."
+      "notes": "Rechecked 2026-11-01 and 2026-11-03 (CIV-1258): A headless browser got past the 403 for visalia.gov HTML pages (Transit, Transit Planning, Short-Range Transit Plan); none names a frequent tier. Both plan PDFs (Final 2022 SRTP and the Reimagine Visalia Transit draft SRTP 2027-2032, DocumentCenter/View/752 and /4536) still return 403/429 to browser, WebFetch and curl and have no Wayback copy, so the plans themselves were not checked. Its main standards documents still could not be read, so it stays blocked."
     },
     {
       "slug": "vta",

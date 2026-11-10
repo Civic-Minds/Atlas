@@ -20,7 +20,7 @@
   "lastFeedExpiry": "20281230",
   "lastFeedVersion": "1",
   "lastRefreshedAt": "2026-11-02",
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "pmtilesPending": true,
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
@@ -45,7 +45,8 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-02"
+    "checkedAt": "2026-11-02",
+    "scoredAt": "2026-11-09"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,

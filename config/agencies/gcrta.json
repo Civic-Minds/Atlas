@@ -19,7 +19,7 @@
     "Elyria, Ohio"
   ],
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-406/latest.zip",
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261205",
@@ -41,7 +41,8 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-07",
+    "scoredAt": "2026-11-09"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -51,5 +52,6 @@
   "lastFeedSourceUrl": "https://www.riderta.com/sites/default/files/gtfs/latest/google_transit.zip",
   "lastPeekedExpiry": "20261205",
   "lastServiceWeek": "ae2d48769beb5e36",
-  "feedObtainedAt": "20260914"
+  "feedObtainedAt": "20260914",
+  "lastFeedStart": "20260919"
 }

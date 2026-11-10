@@ -35,9 +35,8 @@ interface Agency extends TileInclusionAgency, SupplementalFeedExpiryEntry {
   // so we notice (and print) if the underlying issue actually gets resolved.
 }
 
-// Cap the sampling zoom — tippecanoe:minzoom for infrequent routes tops out at 11
-// (see shared/config.ts pmtilesMinZoomForHeadway), so any zoom >= 11 will surface
-// every headway tier. We still clamp to the archive's actual maxZoom at runtime.
+// Sampling zoom: every route is in the tiles at every zoom (there is no per-feature minimum zoom,
+// #1250), so any zoom works; 12 keeps the sample tiles small. Clamped to the archive's maxZoom.
 const PREFERRED_ZOOM = 12;
 const REQUEST_TIMEOUT_MS = 15_000;
 

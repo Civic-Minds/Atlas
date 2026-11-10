@@ -10,11 +10,11 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-736/latest.zip",
   "lastFeedExpiry": "20270220",
   "lastFeedVersion": "1/20261030 09:08:50/20261115 04:00:00",
-  "lastRefreshedAt": "2026-11-02",
+  "lastRefreshedAt": "2026-11-09",
   "cities": [
     "Thunder Bay, Ontario"
   ],
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270220",
@@ -35,7 +35,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-09"
   },
   "timezone": "America/Thunder_Bay",
   "lastFeedSourceKind": "configured",
@@ -45,6 +45,7 @@
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
-  "lastServiceWeek": "9e3571dc8d0ddc25",
-  "feedObtainedAt": "20261102"
+  "lastServiceWeek": "59ed1ac58397f884",
+  "feedObtainedAt": "20261102",
+  "lastFeedStart": "20261029"
 }

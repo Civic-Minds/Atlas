@@ -29,3 +29,27 @@ describe('canCountRenderedRoutes', () => {
     expect(canCountRenderedRoutes({ loaded: () => true }, 2)).toBe(true);
   });
 });
+
+describe('Compare grouping (CIV-1367)', () => {
+  it('puts the badge once, the summary and the three menus in one named group per map', () => {
+    render(bar({ total: 3 }));
+    const group = screen.getByRole('group', { name: 'Filters for map B' });
+    expect(group.querySelectorAll('span[aria-hidden="true"]').length).toBe(1);
+    expect(group.textContent).toContain('3 routes');
+    for (const name of ['Frequency', 'Day', 'Time']) expect(screen.getByRole('button', { name: new RegExp(name) })).toBeTruthy();
+    expect(screen.getAllByRole('group').length).toBe(1);
+  });
+
+  it('names the shared group and keeps "Both maps" as plain text, not a button', async () => {
+    const { FilterChips } = await import('../FilterChips');
+    render(
+      <FilterChips variant="shared" maxHeadway={20} setMaxHeadway={() => {}} day="Saturday" setDay={() => {}} period="midday" setPeriod={() => {}}
+        selectedModes={new Set()} setSelectedModes={() => {}} agencies={[]} selectedAgencies={new Set()} setSelectedAgencies={() => {}} bounds={null} />,
+    );
+    const group = screen.getByRole('group', { name: 'Filters for both maps' });
+    expect(group.textContent).toContain('Both maps');
+    expect(screen.queryByRole('button', { name: /Both maps/ })).toBeNull();
+    expect(screen.getByRole('button', { name: /Mode/ })).toBeTruthy();
+    expect(screen.getByRole('button', { name: /Agencies/ })).toBeTruthy();
+  });
+});

@@ -24,7 +24,7 @@
     "Halifax, Nova Scotia",
     "Lower Sackville, Nova Scotia"
   ],
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261129",
@@ -46,7 +46,8 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-07",
+    "scoredAt": "2026-11-09"
   },
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-734/latest.zip",
@@ -56,5 +57,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastServiceWeek": "bc27bc4efb2447c6",
-  "feedObtainedAt": "20260806"
+  "feedObtainedAt": "20260806",
+  "lastFeedStart": "20260824"
 }

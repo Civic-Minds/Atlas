@@ -238,9 +238,12 @@ describe('route filter headway and card display', () => {
       headwayByPeriodSustained: { overnight: false },
       periodCoverageHeadway: { overnight: 171 },
       tier: '10',
+      nightService60: true,
     } as ShapeProperties;
     expect(routeCardDisplayHeadway(p, 'overnight')).toBe(10);
     expect(routeFilterHeadway(p, 'overnight')).toBe(171);
+    // #1322: a row that does not run through the night by the Night Service test has no Overnight value at all.
+    expect(routeFilterHeadway({ ...p, nightService60: false }, 'overnight')).toBeNull();
   });
 
   it('preserves active-service cadence on cards while filtering by full-period coverage (#507)', () => {
@@ -250,6 +253,7 @@ describe('route filter headway and card display', () => {
       headwayByPeriodSustained: { overnight: true },
       periodCoverageHeadway: { overnight: 190 },
       tier: '30',
+      nightService60: true,
     } as ShapeProperties;
     expect(routeCardDisplayHeadway(p, 'overnight')).toBe(24);
     expect(routeFilterHeadway(p, 'overnight')).toBe(190);

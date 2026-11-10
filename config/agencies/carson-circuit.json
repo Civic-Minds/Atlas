@@ -18,7 +18,7 @@
   ],
   "timezone": "America/Los_Angeles",
   "lastRawArchiveKey": "20211111-1c359ccdcc3657b6",
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20320103",
@@ -42,7 +42,8 @@
       "mismatchRoutes": 2,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-07",
+    "scoredAt": "2026-11-09"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -52,5 +53,6 @@
   "lastFeedSourceUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/11488/CarsonGTFS.zip",
   "lastPeekedExpiry": "20320103",
   "lastServiceWeek": "9f90ca1c07cde3c8",
-  "feedObtainedAt": "20250430"
+  "feedObtainedAt": "20250430",
+  "lastFeedStart": "20231127"
 }

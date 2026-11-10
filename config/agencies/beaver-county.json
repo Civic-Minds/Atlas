@@ -28,12 +28,13 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-07",
+    "scoredAt": "2026-11-09"
   },
   "lastFeedExpiry": "20261231",
   "lastFeedVersion": "20260710",
   "lastRefreshedAt": "2026-11-02",
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261231",
@@ -46,5 +47,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastServiceWeek": "47d1f772ebb10533",
-  "feedObtainedAt": "20260710"
+  "feedObtainedAt": "20260710",
+  "lastFeedStart": "20260712"
 }

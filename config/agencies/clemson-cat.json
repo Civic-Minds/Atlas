@@ -9,7 +9,7 @@
     -82.8532
   ],
   "feedUrl": "https://catbus.ridesystems.net/Secure/Admin/Reports/GTFSDownload.aspx",
-  "lastFeedExpiry": "20281103",
+  "lastFeedExpiry": "20281107",
   "skipBlockTripHeadways": true,
   "lastFeedVersion": null,
   "lastRefreshedAt": "2026-11-02",
@@ -26,7 +26,7 @@
   ],
   "timezone": "America/New_York",
   "lastRawArchiveKey": "20200101-974da843f871ba68",
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20501230",
@@ -42,14 +42,15 @@
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
       "featureCount": 18,
-      "feedExpiry": "20281103",
+      "feedExpiry": "20281107",
       "routeCount": 11,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-07",
+    "scoredAt": "2026-11-09"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -59,5 +60,6 @@
   "lastFeedSourceUrl": "https://catbus.ridesystems.net/Secure/Admin/Reports/GTFSDownload.aspx",
   "lastPeekedExpiry": "20501230",
   "lastServiceWeek": "d2c7fd54ee9d1b4c",
-  "feedObtainedAt": "20261102"
+  "feedObtainedAt": "20261102",
+  "lastFeedStart": "20201130"
 }

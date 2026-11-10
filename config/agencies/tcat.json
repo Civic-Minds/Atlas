@@ -12,7 +12,7 @@
   "lastFeedExpiry": "20261219",
   "lastFeedVersion": "20260922",
   "lastRefreshedAt": "2026-11-02",
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261219",
@@ -33,7 +33,8 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-07",
+    "scoredAt": "2026-11-09"
   },
   "timezone": "America/New_York",
   "feedRefreshStatus": "current",
@@ -44,5 +45,6 @@
   "lastFeedSourceUrl": "https://s3.amazonaws.com/tcat-gtfs/tcat-ny-us.zip",
   "lastPeekedExpiry": "20261219",
   "lastServiceWeek": "427230c58c823555",
-  "feedObtainedAt": "20260922"
+  "feedObtainedAt": "20260922",
+  "lastFeedStart": "20260922"
 }

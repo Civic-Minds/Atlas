@@ -3,6 +3,11 @@ import { describe, expect, it } from 'vitest';
 import AboutDocsPage from '../AboutDocsPage';
 
 describe('Docs page Notices section (CIV-1236)', () => {
+  it('keeps its logos going to the map, as before (CIV-1312 changes only /about)', () => {
+    render(<AboutDocsPage />);
+    for (const logo of screen.getAllByRole('link', { name: 'Atlas by Civic Minds' })) expect(logo).toHaveAttribute('href', '/');
+  });
+
   it('lists the seven notice groups, each with two of the app’s own notices', () => {
     const { container } = render(<AboutDocsPage />);
     const section = container.querySelector('#notices')!;

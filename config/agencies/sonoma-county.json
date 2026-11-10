@@ -24,8 +24,8 @@
     "Petaluma, California",
     "Napa, California"
   ],
-  "lastFeedCheckAt": "20261102",
-  "expiredFeedCheckCount": 1,
+  "lastFeedCheckAt": "20261109",
+  "expiredFeedCheckCount": 2,
   "expiredFeedCheckSince": "20260622",
   "expiredFeedCheckExpiry": "20261031",
   "timezone": "America/Los_Angeles",
@@ -33,6 +33,6 @@
   "lastFeedSourceUrl": "http://data.trilliumtransit.com/gtfs/sonomacounty-ca-us/sonomacounty-ca-us.zip",
   "feedRefreshStatus": "stale",
   "feedRefreshError": "all available feeds expired (latest 20261031)",
-  "feedRefreshErrorAt": "20261102",
-  "feedRefreshRetryCount": 1
+  "feedRefreshErrorAt": "20261109",
+  "feedRefreshRetryCount": 2
 }

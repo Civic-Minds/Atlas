@@ -1,5 +1,5 @@
 import { FOOTER_NOTICE_MEDIA_QUERY, PHONE_MEDIA_QUERY, phoneModeFlags, useMediaQuery } from '../hooks/useMediaQuery';
-import { useOnDemandStatus } from '../hooks/useOnDemandData';
+import { useOnDemandServiceSlugs, useOnDemandStatus } from '../hooks/useOnDemandData';
 import { MAP_OVERLAY_VARS, publishMapOverlayVar } from '../mapOverlayLayout';
 import React, { useState, useCallback, useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import { createPortal } from 'react-dom';
@@ -42,7 +42,7 @@ import { encodeCompareSideParams, encodeSelectionParams, encodeModesParam, isAge
 import { searchOverlayHidesPanel } from '../utils/format';
 import { trackEvent } from '../lib/analytics';
 import type { FrequentServiceFrequency, FrequentServiceWindow } from '../../shared/frequentService';
-import type { NightServiceFrequency } from '../../shared/nightService';
+import { rowPassesNightGrade, type NightServiceFrequency } from '../../shared/nightService';
 import { getRegionalView, getSavedView, parseUrlView } from '../utils/regionView';
 import ResearchLegend from '../components/Interval/ResearchLegend';
 import { selectFrequentServiceFeatures } from '../components/Interval/map/useOverlaySources';
@@ -53,9 +53,13 @@ import type { AreaSearchResult } from '../../shared/areaSearch';
 import Spinner from '../components/ui/Spinner';
 import { onDemandSelectionZoneId, resolveSelectedOnDemandSlug } from '../utils/onDemandSelection';
 import { encodeStopBackTarget, parseStopBackTarget, resolveStopBack, STOP_BACK_PARAM, stopBackTarget, type StopBackRoute, type StopBackSnapshot, type StopBackTarget } from '../utils/stopBack';
-import { AGENCY_NOT_FOUND, loadingText, ON_DEMAND_AREAS_FAILED, networksFailedHint, networksFailedText, networksLoadingText, noRoutesMatchText, noServiceOnDayNotice, ROUTE_NOT_FOUND, STOP_NOT_FOUND } from '../content/noticeCopy';
+import { linkValueUnknown } from '../utils/linkSelection';
+import { useMissingLinkCard } from '../hooks/useMissingLinkCard';
+import { AGENCY_NOT_FOUND, loadingText, ON_DEMAND_AREAS_FAILED, ON_DEMAND_NOT_FOUND, networksFailedHint, networksFailedText, networksLoadingText, noRoutesMatchText, noServiceOnDayNotice, ROUTE_NOT_FOUND, STOP_NOT_FOUND } from '../content/noticeCopy';
 import { useIndexSearch } from '../hooks/useIndexSearch';
 import { mergeRouteResults, mergeStopResults } from '../utils/searchResults';
+import { resolveRouteCardBack, type ListOpenedRoute } from '../utils/routeCardBack';
+import { NIGHT_LIST_TITLE } from '../content/researchRules';
 
 // Versioned because the original preference could accidentally persist only
 // agencies in the current viewport when the bulk "All" action was used.
@@ -626,12 +630,14 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     setNearYouRoute(key);
     setSelectedRoute(key);
   }, []);
-  const routeCardBack = useMemo(
-    () => (userLocation && nearYouRoute && selectedRoute === nearYouRoute
-      ? { to: 'Near You', onClick: () => setSelectedRoute(null) }
-      : undefined),
-    [userLocation, nearYouRoute, selectedRoute],
-  );
+  // A route opened from the Night Service list gets "← Overnight service", which closes the route and puts the
+  // map back where the list was (#1326). Other routes keep their agency card as the back target.
+  const [nightListRoute, setNightListRoute] = useState<ListOpenedRoute | null>(null);
+  useEffect(() => { if (!nightServiceView) setNightListRoute(null); }, [nightServiceView]);
+  // Once another route (or none) is open, the list no longer opened what is shown.
+  useEffect(() => {
+    setNightListRoute(current => (current && current.routeKey !== selectedRoute ? null : current));
+  }, [selectedRoute]);
 
   useEffect(() => {
     if (!nearYouShown) return;
@@ -708,6 +714,21 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   // Linked (the default), the two maps share one view: whichever one the user moves leads. Unlinked,
   // each map moves on its own. Linking again snaps B to A's view. Resets to linked whenever compare opens.
   const [mapA, setMapA] = useState<maplibregl.Map | null>(null);
+  const routeCardBack = useMemo(() => {
+    const target = resolveRouteCardBack({ selectedRoute, nightServiceView, nightListRoute, nearYouRoute, hasUserLocation: !!userLocation });
+    if (target?.kind === 'nearYou') return { to: 'Near You', onClick: () => setSelectedRoute(null) };
+    if (target?.kind === 'nightList') {
+      return {
+        to: NIGHT_LIST_TITLE,
+        onClick: () => {
+          setSelectedRoute(null);
+          setNightListRoute(null);
+          if (target.camera) mapA?.jumpTo(target.camera);
+        },
+      };
+    }
+    return undefined;
+  }, [selectedRoute, nightServiceView, nightListRoute, nearYouRoute, userLocation, mapA]);
   const [mapB, setMapB] = useState<maplibregl.Map | null>(null);
   useEffect(() => {
     if (!compareActive || !compareLinked || !mapA || !mapB) return;
@@ -859,14 +880,16 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     prevPendingNightRoute.current = pendingNightRoute;
     const found = fc.features.find(f => {
       const p = f.properties as any;
-      return p.routeId === pendingNightRoute.routeId && (p[`nightService${pendingNightRoute.frequency}`] === true || (pendingNightRoute.frequency === 60 && p.nightService === true));
+      return p.routeId === pendingNightRoute.routeId && rowPassesNightGrade(p, pendingNightRoute.frequency);
     });
     if (found) {
       const p = found.properties as any;
-      setSelectedRoute(routeKey({ ...p, agencySlug: p.agencySlug ?? pendingNightRoute.slug } as ShapeProperties));
+      const key = routeKey({ ...p, agencySlug: p.agencySlug ?? pendingNightRoute.slug } as ShapeProperties);
+      setNightListRoute({ routeKey: key, camera: mapA ? { center: mapA.getCenter(), zoom: mapA.getZoom(), bearing: mapA.getBearing(), pitch: mapA.getPitch() } : null });
+      setSelectedRoute(key);
     }
     onPendingNightRouteHandled?.();
-  }, [pendingNightRoute, layers, onPendingNightRouteHandled]);
+  }, [pendingNightRoute, layers, onPendingNightRouteHandled, mapA]);
 
   useEffect(() => {
     if (!pendingNightRoute) return;
@@ -938,8 +961,17 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   // A route the card can't show (no service on this day, or not in the agency's data) says why in the card's place
   // (N17, N18) instead of the card vanishing; picking that route's day again brings the card back.
   const [missingRoute, setMissingRoute] = useState<{ key: string; found: boolean } | null>(null);
+  // Links whose route, stop or on-demand value names no agency Atlas has, or isn't in the agency::id form (#1191).
+  const linkCatalog = allAgencies ?? agencies;
+  const onDemandSlugs = useOnDemandServiceSlugs();
   useEffect(() => {
     if (!selectedRoute) return;
+    if (linkValueUnknown(selectedRoute, linkCatalog, 'route')) {
+      // N18 in the card's place, and the bad value leaves the address bar.
+      clearMapSelection();
+      setMissingRoute({ key: selectedRoute, found: false });
+      return;
+    }
     const [slug] = selectedRoute.split('::');
     const fc = layers[slug];
     if (!fc) return;
@@ -951,7 +983,19 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
       clearMapSelection();
       setMissingRoute(missing);
     }
-  }, [selectedRoute, layers, day, clearMapSelection]);
+  }, [selectedRoute, layers, day, clearMapSelection, linkCatalog]);
+  // The same for a stop (N36) or an on-demand service: the note shows and the value leaves the address bar (#1191).
+  const clearOnDemandLink = useCallback(() => setOnDemandStopAgencySlug(null), []);
+  const { missing: missingLinkCard, dismiss: dismissMissingLinkCard } = useMissingLinkCard({
+    selectedStop,
+    onDemandSelection: onDemandStopAgencySlug,
+    catalog: linkCatalog,
+    onDemandSlugs,
+    onDemandEnabled: FEATURES.onDemand,
+    clearSelection: clearMapSelection,
+    clearOnDemand: clearOnDemandLink,
+    otherSelectionOpen: !!(selectedRoute || selectedAgencySlug || searchFocused),
+  });
   useEffect(() => {
     if (!missingRoute) return;
     if (selectedRoute || selectedStop || selectedAgencySlug || searchFocused) { setMissingRoute(null); return; }
@@ -1316,6 +1360,8 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
           )}
           {/* No key in the Night view: every line is the same colour and width (Ryan, CIV-1070). */}
           {frequentServiceView && <ResearchLegend view="frequent" frequentFrequency={frequentServiceFrequency} />}
+          {/* CIV-1329: the night grades' three shades. */}
+          {nightServiceView && <ResearchLegend view="night" frequentFrequency={frequentServiceFrequency} nightFrequency={nightServiceFrequency} />}
           {/* N39: phones hide the counts, so a view the filters leave empty says so there. */}
           {!compareActive && !nightServiceView && !frequentServiceView && stats && (showMapContext || !isLoading)
             && (showMapContext ? (mapContextRouteCount ?? 0) : stats.matching) === 0 && (
@@ -1404,6 +1450,15 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
         if (!fc || !stopId || fc.features.some(f => (f.properties as { stopId?: string } | null)?.stopId === stopId)) return null;
         return <SelectionNoticePanel message={STOP_NOT_FOUND} onClose={clearMapSelection} sidebarLeft={sidebarLeft} searchBarWidth={searchBarWidth} />;
       })()}
+
+      {(showUi || showSelectionUi) && missingLinkCard && !missingRoute && (
+        <SelectionNoticePanel
+          message={missingLinkCard === 'stop' ? STOP_NOT_FOUND : ON_DEMAND_NOT_FOUND}
+          onClose={dismissMissingLinkCard}
+          sidebarLeft={sidebarLeft}
+          searchBarWidth={searchBarWidth}
+        />
+      )}
 
       {(showUi || showSelectionUi) && missingRoute && !selectedRoute && !selectedStop && !selectedAgencySlug && (
         <SelectionNoticePanel

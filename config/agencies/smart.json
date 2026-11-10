@@ -26,7 +26,7 @@
     "Farmington Hills, Michigan"
   ],
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-414/latest.zip",
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270103",
@@ -47,7 +47,8 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-07",
+    "scoredAt": "2026-11-09"
   },
   "timezone": "America/Detroit",
   "lastFeedSourceKind": "configured",
@@ -58,5 +59,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastServiceWeek": "40cbdffa6a6a3e66",
-  "feedObtainedAt": "20260826"
+  "feedObtainedAt": "20260826",
+  "lastFeedStart": "20260907"
 }

@@ -48,7 +48,7 @@ import {
 } from './overrideAudit.js';
 import { readFeedReviewHistory, shouldReviewNextFeed } from './feedReview.js';
 import { compareStopSnapshots, formatStopAuditLog, type AuditedStop } from './stopAudit.js';
-import { feedFileDate, lowerStoredFeedExpiry, candidateIsOlderThanActive, shouldClearStaged, decideRefreshSkipUnchanged, isFeedExpired, markFeedStale, shouldSkipAllExpiredFeeds, shouldStampFeedMeta, stampFeedMeta, refreshedFeedExpiry, routeLineCount, stampSupplementalFeedMeta } from './refreshMeta.js';
+import { feedFileDate, feedPeriodStart, lowerStoredFeedExpiry, candidateIsOlderThanActive, shouldClearStaged, decideRefreshSkipUnchanged, isFeedExpired, markFeedStale, shouldSkipAllExpiredFeeds, shouldStampFeedMeta, stampFeedMeta, refreshedFeedExpiry, routeLineCount, stampSupplementalFeedMeta } from './refreshMeta.js';
 import {
   COUNTRY_LAUNCH_FLAG,
   isCountryLaunchBlocked,
@@ -59,10 +59,8 @@ import { buildHiddenRoutesForAgency, mergeHiddenRoutes, type HiddenRoutesFile, t
 import { rescoreFeedQuality, type FeedQuality } from '../shared/feedQuality.js';
 import { historyHeadlineWins } from './historyHeadlinePick.js';
 import { historyRouteKey } from './historyRouteKey.js';
-import { baselineFingerprint, buildSidecar, buildV2Routes, buildV2RoutesMerged, fingerprintChanged, fingerprintOf, historyV2Enabled, r2ArchiveSink, routeTrunkHeadway, routeTrunkHeadwayByPeriod, splitFeaturesBySource, writeSidecar, type LatestRouteEntry, type V2FeedPart } from './historyV2.js';
-import { readFeedEvidence } from './historyWeekend.js';
-import { readRefDateQuality } from './historyRefQuality.js';
-import { assessWithWeekCheck, readRepickRows } from './historyRefRepick.js';
+import { baselineFingerprint, buildV2Routes, fingerprintChanged, fingerprintOf, historyV2Enabled, r2ArchiveSink, routeTrunkHeadway, routeTrunkHeadwayByPeriod, type LatestRouteEntry } from './historyV2.js';
+import { historyV2InputFor, writeRefreshSidecar, type HistoryV2Input } from './historyRefreshSidecar.js';
 import { historyGeometryForRoute } from './historyGeometry.js';
 import { agencyTodayYmd, isActiveProductionFeed, type SupplementalFeedMeta } from '../shared/feedAvailability.js';
 import { recordFeedCheck, type FeedCheckFields } from './feedCheckTracking.js';
@@ -150,14 +148,6 @@ interface RefreshAgencyResult {
  * history-v2/{slug}/{periodKey}.json to the archive bucket and adds weekday/sat/sun
  * fingerprints to latest.json. Off by default, so a normal refresh writes exactly what it did.
  */
-interface HistoryV2Input {
-  buf: Buffer;
-  referenceDateFromRunDate?: boolean;
-  /** Supplemental feeds (e.g. rail) and which merged features came from which feed. */
-  supplemental?: Array<{ url: string; buf: Buffer }>;
-  featureSources?: Array<{ url: string | null; count: number }>;
-}
-
 async function writeHistorySnapshot(slug: string, geojson: string, feedExpiry: string | null, feedVersion: string | null, v2Input?: HistoryV2Input): Promise<string> {
   const fc = JSON.parse(geojson) as { features: Array<{ properties: Record<string, unknown> }> };
   const current: Record<string, RouteSummary> = {};
@@ -210,29 +200,10 @@ async function writeHistorySnapshot(slug: string, geojson: string, feedExpiry: s
   let v2Routes: ReturnType<typeof buildV2Routes>['routes'] | undefined;
   let collisionNote = '';
   if (v2Input) {
-    const today = pipelineRunDateYmd();
-    const refOpts = v2Input.referenceDateFromRunDate ? { referenceDate: today } : {};
-    const evidence = await readFeedEvidence(v2Input.buf, refOpts);
-    // The merged features already hold the supplemental feeds' routes; split them back by feed so
-    // each is built with its own calendar evidence, and a clash with the main feed is reported.
-    const supplementalBufs = new Map((v2Input.supplemental ?? []).map(f => [f.url, f.buf]));
-    const parts: V2FeedPart[] = [];
-    for (const part of splitFeaturesBySource(fc.features, v2Input.featureSources)) {
-      const partBuf = part.url ? supplementalBufs.get(part.url) : v2Input.buf;
-      parts.push({ url: part.url, features: part.features, evidence: part.url === null ? evidence : partBuf ? await readFeedEvidence(partBuf, refOpts) : undefined });
-    }
-    const built = buildV2RoutesMerged(parts);
-    v2Routes = built.routes;
-    if (built.collisions.length > 0) {
-      collisionNote = `; ${built.collisions.length} route-key collision(s) between feeds, earlier feed's route kept: ${built.collisions.map(c => `${c.key} (${c.droppedFrom} dropped)`).join(', ')}`;
-    }
-    const sidecar = buildSidecar(slug, periodKey, evidence.refDate, built.routes, built.supplementalRoutes);
-    // The writer reuses the live map's geojson, so it cannot re-read the feed at another date: a split or
-    // Thanksgiving-week reading is flagged here and the build drops the period (the backfill re-picks instead).
-    sidecar.refDateQuality = v2Input.referenceDateFromRunDate
-      ? await readRefDateQuality(v2Input.buf, evidence.refDate)
-      : assessWithWeekCheck(await readRepickRows(v2Input.buf), evidence.refDate);
-    await writeSidecar(await r2ArchiveSink(), sidecar);
+    const r2 = await import('./r2.js');
+    const written = await writeRefreshSidecar(slug, periodKey, fc.features, v2Input, { sink: await r2ArchiveSink(), peek: key => r2.r2GetArchive(key) });
+    v2Routes = written.routes;
+    collisionNote = written.note;
   }
 
   // Collect per-route writes — only for routes whose headway changed.
@@ -294,6 +265,7 @@ interface AgencyEntry {
   lastSupplementalFeeds?: SupplementalFeedMeta[];
   lastFeedExpiry?: string | null;
   lastPeekedExpiry?: string | null;
+  lastFeedStart?: string | null;
   lastFeedVersion?: string | null;
   lastRefreshedAt?: string | null;
   lastFeedCheckAt?: string | null;
@@ -401,7 +373,9 @@ async function refreshAgency(
 
   // #1144: a timetable that hasn't started waits while the current one still runs. The zip is
   // archived and the agency marked, so the run on its start date (heldFeedsDue) processes it.
-  const { feedStart: peekedStart, feedExpiry: peekedCalendarEnd, feedInfoEnd: peekedFeedInfoEnd, calendarOnlyEnd: peekedCalendarOnlyEnd } = await peekFeedDates(buf, agency.excludeRouteShortNames);
+  const peekedDates = await peekFeedDates(buf, agency.excludeRouteShortNames);
+  const { feedStart: peekedStart, feedExpiry: peekedCalendarEnd, feedInfoEnd: peekedFeedInfoEnd, calendarOnlyEnd: peekedCalendarOnlyEnd } = peekedDates;
+  const peekedPeriodStart = feedPeriodStart(peekedDates);
   const heldUntil = futureFeedHoldUntil({ feedStart: peekedStart, todayYmd: expiryToday, liveFeedExpiry: agency.lastFeedExpiry });
   if (heldUntil) {
     agency.heldFeedStart = heldUntil;
@@ -445,7 +419,11 @@ async function refreshAgency(
     return { summary: `stale (${reason})`, stale: true };
   }
 
-  if (!forceRefresh && candidateIsOlderThanActive({ candidateExpiry: peekedExpiry, existingExpiry: agency.lastFeedExpiry })) {
+  if (!forceRefresh && candidateIsOlderThanActive({
+    candidateExpiry: peekedExpiry, candidateStart: peekedPeriodStart, existingExpiry: agency.lastFeedExpiry,
+    existingStart: agency.lastFeedStart, existingObtainedAt: agency.feedObtainedAt,
+    existingPeekedExpiry: agency.lastPeekedExpiry, recordedAt: agency.lastRefreshedAt, todayYmd: today,
+  })) {
     writeLog(`\n  [warn] downloaded feed is older than the active snapshot (${peekedExpiry ?? 'unknown'} < ${agency.lastFeedExpiry}); keeping the active snapshot\n  `);
     return { summary: `skipped (older feed: ${peekedExpiry ?? 'unknown'})` };
   }
@@ -649,12 +627,13 @@ async function refreshAgency(
       listingEnd: primary.listingEnd,
       serviceWeek,
       feedObtainedAt,
+      feedStart: peekedPeriodStart,
     });
     stampSupplementalFeedMeta(agency, supplementalMeta);
   }
 
   // Write a compact headway snapshot for history tracking (all agencies with a feedUrl).
-  const histResult = await writeHistorySnapshot(agency.slug, geojson, feedExpiry, feedVersion, historyV2Enabled(process.env.ATLAS_HISTORY_V2) ? { buf, referenceDateFromRunDate: agency.referenceDateFromRunDate, supplemental: supplementalFeeds.map(f => ({ url: f.url, buf: f.buf })), featureSources: primary.featureSources } : undefined);
+  const histResult = await writeHistorySnapshot(agency.slug, geojson, feedExpiry, feedVersion, historyV2Enabled(process.env.ATLAS_HISTORY_V2) ? historyV2InputFor(primary, buf, supplementalFeeds) : undefined);
   writeLog(`  history: ${histResult}\n`);
 
   if (nightServiceCollector) {

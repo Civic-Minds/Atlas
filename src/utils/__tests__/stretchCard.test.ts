@@ -73,7 +73,8 @@ describe('variant-only direction (TTC 134 southbound)', () => {
 });
 
 describe('no filter value for the period (YRT Viva overnight)', () => {
-  const route = (runs: boolean) => [f({ stretchRole: 'main', routeFilterHeadwayByPeriod: { overnight: null }, routeRunsByPeriod: { overnight: runs }, headwayByPeriod: { overnight: 13 }, tier: 'frequent' })];
+  // #1322: Overnight runs by the Night Service test (the row's night flags), not the stored 2-6 AM flag.
+  const route = (runs: boolean) => [f({ stretchRole: 'main', routeFilterHeadwayByPeriod: { overnight: null }, routeRunsByPeriod: { overnight: true }, nightService60: runs, headwayByPeriod: { overnight: 13 }, tier: 'frequent' })];
   it('is neither a number nor limited, whether or not the route runs', () => {
     for (const runs of [true, false]) {
       expect(routeListDisplayLimited(route(runs), 'overnight')).toBe(false);
@@ -83,6 +84,13 @@ describe('no filter value for the period (YRT Viva overnight)', () => {
   it('says Irregular only when the route runs', () => {
     expect(routeListNoRegularService(route(true), 'overnight')).toBe(true);
     expect(routeListNoRegularService(route(false), 'overnight')).toBe(false);
+  });
+  it('a first trip of the morning is not overnight service, whatever the stored 2-6 AM flag says (#1322, RTD A Line)', () => {
+    const firstTrip = [f({ stretchRole: 'main', routeFilterHeadwayByPeriod: { overnight: null }, routeRunsByPeriod: { overnight: true }, nightService60: false, headwayByPeriod: { overnight: 30 }, tier: 'frequent' })];
+    expect(routeContract(firstTrip, 'overnight')?.runs).toBe(false);
+    expect(routeContract(firstTrip, 'evening')).toBeUndefined();
+    const night = [f({ stretchRole: 'main', routeFilterHeadwayByPeriod: { overnight: 15 }, routeRunsByPeriod: { overnight: false }, nightService30: true, nightService60: true, tier: 'frequent' })];
+    expect(routeContract(night, 'overnight')?.runs).toBe(true);
   });
 });
 

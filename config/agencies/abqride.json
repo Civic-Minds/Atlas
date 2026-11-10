@@ -16,7 +16,7 @@
     "Albuquerque, New Mexico",
     "Rio Rancho, New Mexico"
   ],
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261211",
@@ -38,7 +38,8 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-07",
+    "scoredAt": "2026-11-09"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -48,5 +49,6 @@
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-166/latest.zip",
   "lastPeekedExpiry": "20261211",
   "lastServiceWeek": "c416610b1e8043d9",
-  "feedObtainedAt": "20260807"
+  "feedObtainedAt": "20260807",
+  "lastFeedStart": "20260806"
 }

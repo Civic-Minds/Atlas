@@ -25,7 +25,7 @@
   "timezone": "America/Los_Angeles",
   "timezoneOverride": "America/Los_Angeles",
   "lastRawArchiveKey": "20260808-26a2b10b0d954217",
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270102",
@@ -46,7 +46,8 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-07",
+    "scoredAt": "2026-11-09"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -56,5 +57,6 @@
   "lastFeedSourceUrl": "https://www.gctd.org/wp-content/uploads/2021/06/GCTD_GTFS.zip",
   "lastPeekedExpiry": "20270102",
   "lastServiceWeek": "e43c037bf732a7ec",
-  "feedObtainedAt": "20261015"
+  "feedObtainedAt": "20261015",
+  "lastFeedStart": "20260719"
 }

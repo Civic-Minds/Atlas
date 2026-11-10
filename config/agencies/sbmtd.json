@@ -15,7 +15,7 @@
   "cities": [
     "Santa Barbara, California"
   ],
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261129",
@@ -36,7 +36,8 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-07",
+    "scoredAt": "2026-11-09"
   },
   "timezone": "America/Los_Angeles",
   "lastFeedSourceKind": "configured",
@@ -47,5 +48,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastServiceWeek": "3e94d3b15666d7da",
-  "feedObtainedAt": "20260722"
+  "feedObtainedAt": "20260722",
+  "lastFeedStart": "20260817"
 }

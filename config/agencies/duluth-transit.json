@@ -20,10 +20,10 @@
   "cities": [
     "Duluth, Minnesota"
   ],
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261205",
+  "expiredFeedCheckExpiry": "20270327",
   "timezone": "America/Chicago",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-301/latest.zip",
@@ -47,12 +47,14 @@
       "mismatchRoutes": 1,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-07",
+    "scoredAt": "2026-11-09"
   },
-  "feedRefreshStatus": "current",
-  "feedRefreshError": null,
-  "feedRefreshErrorAt": null,
-  "feedRefreshRetryCount": 0,
+  "feedRefreshStatus": "stale",
+  "feedRefreshError": "GTFS validation failed (1 error(s))",
+  "feedRefreshErrorAt": "20261109",
+  "feedRefreshRetryCount": 1,
   "lastServiceWeek": "d4970b0b6d8e0112",
-  "feedObtainedAt": "20260805"
+  "feedObtainedAt": "20260805",
+  "lastFeedStart": "20260607"
 }

@@ -23,7 +23,7 @@
   ],
   "timezone": "America/Chicago",
   "lastRawArchiveKey": "20211231-c26aa6cd3c0c0489",
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261230",
@@ -50,9 +50,11 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-07",
+    "scoredAt": "2026-11-09"
   },
   "lastPeekedExpiry": "20261230",
   "lastServiceWeek": "b6d0a81e3efe7c1e",
-  "feedObtainedAt": "20260625"
+  "feedObtainedAt": "20260625",
+  "lastFeedStart": "20260701"
 }

@@ -23,7 +23,7 @@
     "Bloomington, Minnesota",
     "Lakeville, Minnesota"
   ],
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261206",
@@ -44,7 +44,8 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-07",
+    "scoredAt": "2026-11-09"
   },
   "timezone": "America/Chicago",
   "feedRefreshStatus": "current",
@@ -55,5 +56,6 @@
   "lastFeedSourceUrl": "http://srv.mvta.com/InfoPoint/GTFS-Zip.ashx",
   "lastPeekedExpiry": "20261206",
   "lastServiceWeek": "914331f323fced5f",
-  "feedObtainedAt": "20261102"
+  "feedObtainedAt": "20261102",
+  "lastFeedStart": "20261019"
 }

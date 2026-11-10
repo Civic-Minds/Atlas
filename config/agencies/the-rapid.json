@@ -9,18 +9,18 @@
     -85.668
   ],
   "feedUrl": "http://connect.ridetherapid.org/InfoPoint/gtfs-zip.ashx",
-  "lastFeedExpiry": "20270110",
-  "lastFeedVersion": "20261015",
-  "lastRefreshedAt": "2026-11-02",
+  "lastFeedExpiry": "20270103",
+  "lastFeedVersion": "20261105",
+  "lastRefreshedAt": "2026-11-09",
   "cities": [
     "Grand Rapids, Michigan",
     "Wyoming, Michigan",
     "Kentwood, Michigan"
   ],
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20270110",
+  "expiredFeedCheckExpiry": "20270103",
   "feedQuality": {
     "status": "review",
     "score": 93,
@@ -33,14 +33,14 @@
       "shapeAnomalies": 17,
       "routeHeadwayMismatches": 3,
       "featureCount": 159,
-      "feedExpiry": "20270110",
+      "feedExpiry": "20270103",
       "routeCount": 30,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
       "mismatchRoutes": 2,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-09"
   },
   "timezone": "America/New_York",
   "feedRefreshStatus": "current",
@@ -49,7 +49,8 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "http://connect.ridetherapid.org/InfoPoint/gtfs-zip.ashx",
-  "lastPeekedExpiry": "20270110",
-  "lastServiceWeek": "778c515d658a4dee",
-  "feedObtainedAt": "20261015"
+  "lastPeekedExpiry": "20270103",
+  "lastServiceWeek": "62e03227e2efc4a2",
+  "feedObtainedAt": "20261109",
+  "lastFeedStart": "20261106"
 }

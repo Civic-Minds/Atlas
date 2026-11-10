@@ -10,14 +10,14 @@
   "feedUrl": "https://busfinder.redrosetransit.com/Infopoint/gtfs-zip.ashx",
   "region": "Pennsylvania",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2000/latest.zip",
-  "lastFeedExpiry": "20271231",
-  "lastFeedVersion": "20260826",
-  "lastRefreshedAt": "2026-08-27",
+  "lastFeedExpiry": "20270103",
+  "lastFeedVersion": "20261103",
+  "lastRefreshedAt": "2026-11-06",
   "cities": [
     "Lancaster, Pennsylvania",
     "Harrisburg, Pennsylvania"
   ],
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270103",
@@ -25,25 +25,33 @@
     "status": "review",
     "score": 94,
     "reasons": [
-      "6 route shapes needed adjustment before display."
+      "4 route shapes needed adjustment before display."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
-      "shapeAnomalies": 13,
+      "shapeAnomalies": 9,
       "routeHeadwayMismatches": 0,
       "featureCount": 72,
-      "feedExpiry": "20271231",
+      "feedExpiry": "20270103",
       "routeCount": 18,
-      "problemShapes": 6,
+      "problemShapes": 4,
       "problemShapeRoutes": 1,
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-07",
+    "scoredAt": "2026-11-09"
   },
   "timezone": "America/New_York",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://busfinder.redrosetransit.com/Infopoint/gtfs-zip.ashx",
-  "lastPeekedExpiry": "20271231"
+  "lastPeekedExpiry": "20270103",
+  "lastFeedStart": "20261103",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "de1ddb11589233be",
+  "feedObtainedAt": "20261106"
 }

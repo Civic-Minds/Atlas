@@ -38,9 +38,10 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-07",
+    "scoredAt": "2026-11-09"
   },
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20351004",
@@ -48,10 +49,11 @@
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://jctgtfsdownload.itcurves.us/DownloadGtfs",
   "lastPeekedExpiry": "20351004",
-  "feedRefreshStatus": "current",
-  "feedRefreshError": null,
-  "feedRefreshErrorAt": null,
-  "feedRefreshRetryCount": 0,
+  "feedRefreshStatus": "stale",
+  "feedRefreshError": "The operation was aborted due to timeout",
+  "feedRefreshErrorAt": "20261109",
+  "feedRefreshRetryCount": 1,
   "lastServiceWeek": "cc98e285ac538b14",
-  "feedObtainedAt": "20261102"
+  "feedObtainedAt": "20261102",
+  "lastFeedStart": "20221130"
 }

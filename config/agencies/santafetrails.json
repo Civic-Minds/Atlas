@@ -17,7 +17,7 @@
   ],
   "timezone": "America/Denver",
   "lastRawArchiveKey": "20260330-d16bafca3fa50d8f",
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271231",
@@ -38,7 +38,8 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-07",
+    "scoredAt": "2026-11-09"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -48,5 +49,6 @@
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://passio3.com/santafenm/passioTransit/gtfs/google_transit.zip",
   "lastServiceWeek": "0e1ba62bb86d89e4",
-  "feedObtainedAt": "20261102"
+  "feedObtainedAt": "20261102",
+  "lastFeedStart": "20261018"
 }

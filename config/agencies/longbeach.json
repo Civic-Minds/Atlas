@@ -10,7 +10,7 @@
   "lastFeedExpiry": "20270206",
   "lastFeedVersion": null,
   "region": "California",
-  "lastRefreshedAt": "2026-11-02",
+  "lastRefreshedAt": "2026-11-09",
   "cities": [
     "Long Beach, California",
     "Lakewood, California",
@@ -23,7 +23,7 @@
     "Downey, California",
     "Santa Monica, California"
   ],
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270206",
@@ -44,7 +44,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-09"
   },
   "timezone": "America/Los_Angeles",
   "lastFeedSourceKind": "configured",
@@ -54,6 +54,7 @@
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
-  "lastServiceWeek": "6841bb709b049a63",
-  "feedObtainedAt": "20260824"
+  "lastServiceWeek": "5a9e56aff4465888",
+  "feedObtainedAt": "20260824",
+  "lastFeedStart": "20260823"
 }

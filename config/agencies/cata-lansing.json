@@ -16,7 +16,7 @@
   "cities": [
     "Lansing, Michigan"
   ],
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261220",
@@ -37,7 +37,8 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-07",
+    "scoredAt": "2026-11-09"
   },
   "timezone": "America/Detroit",
   "feedRefreshStatus": "current",
@@ -48,5 +49,6 @@
   "lastFeedSourceUrl": "http://developers.cata.org/gtfsdownload.ashx?data=base",
   "lastPeekedExpiry": "20261220",
   "lastServiceWeek": "b7750e2cac8a0417",
-  "feedObtainedAt": "20260917"
+  "feedObtainedAt": "20260917",
+  "lastFeedStart": "20260824"
 }

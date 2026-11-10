@@ -16,7 +16,7 @@
   "cities": [
     "Santa Maria, California"
   ],
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271231",
@@ -40,7 +40,8 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-07",
+    "scoredAt": "2026-11-09"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -48,5 +49,6 @@
   "feedRefreshRetryCount": 0,
   "lastPeekedExpiry": "20271231",
   "lastServiceWeek": "4bc2ed495fbdd034",
-  "feedObtainedAt": "20260917"
+  "feedObtainedAt": "20260917",
+  "lastFeedStart": "20260816"
 }

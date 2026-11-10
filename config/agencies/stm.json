@@ -21,11 +21,11 @@
   ],
   "feedUrl": "https://www.stm.info/sites/default/files/gtfs/gtfs_stm.zip",
   "lastFeedExpiry": "20270103",
-  "lastFeedVersion": "20261007130000_26N",
+  "lastFeedVersion": "20261029135439_26N",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2126/latest.zip",
   "gtfsFares": true,
   "fareUrl": "https://www.stm.info/en/info/fares",
-  "lastRefreshedAt": "2026-11-02",
+  "lastRefreshedAt": "2026-11-09",
   "cities": [
     "Saint-Laurent, Quebec",
     "Notre-Dame-de-Grâce, Quebec",
@@ -38,7 +38,7 @@
     "Rosemont–La Petite-Patrie, Quebec",
     "Ville-Marie, Quebec"
   ],
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270103",
@@ -61,7 +61,7 @@
       "mismatchRoutes": 1,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-09"
   },
   "timezone": "America/Montreal",
   "lastFeedSourceKind": "configured",
@@ -71,6 +71,7 @@
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
-  "lastServiceWeek": "1d5d325683015269",
-  "feedObtainedAt": "20261015"
+  "lastServiceWeek": "71d91cf187b8b58f",
+  "feedObtainedAt": "20261109",
+  "lastFeedStart": "20260824"
 }

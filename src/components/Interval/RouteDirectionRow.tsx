@@ -27,6 +27,8 @@ interface Props {
   // Regular service
   headway?: number | null;
   colorHeadway?: number | null;
+  /** A fixed headway dot colour (HeadwayBadge dotColor). */
+  dotColor?: string;
   headwayLabel?: string;
   trunkHeadway?: number | null;  // for range display (every 6–12 min)
   headwaySuffix?: string;
@@ -80,7 +82,7 @@ export function keyboardFocusHover(onHoverStart?: () => void, onHoverEnd?: () =>
 /** Longer than this, a value counts as long: a plain value or range ("every 60–120 min", 16) stays beside the name. */
 export const LONG_VALUE_CHARS = 16;
 
-export default function RouteDirectionRow({ label, routeName, labelWeight = 'bold', singleLine: singleLineProp = false, valueEnd: valueEndProp = false, wrapLongValue = false, headway, colorHeadway, headwayLabel, trunkHeadway, headwaySuffix, headwaySuffixTone, subLabel, subLabelTrailing, subLabelWeight = 'bold', live, limited, limitedLabel = LIMITED_SERVICE_LABEL, edgeGapAllowance, onEdgeGapAllowanceClick, dimmed, onHoverStart, onHoverEnd, branchHovered, branchDimmed, onClick, holdLayout = false }: Props) {
+export default function RouteDirectionRow({ label, routeName, labelWeight = 'bold', singleLine: singleLineProp = false, valueEnd: valueEndProp = false, wrapLongValue = false, headway, colorHeadway, dotColor, headwayLabel, trunkHeadway, headwaySuffix, headwaySuffixTone, subLabel, subLabelTrailing, subLabelWeight = 'bold', live, limited, limitedLabel = LIMITED_SERVICE_LABEL, edgeGapAllowance, onEdgeGapAllowanceClick, dimmed, onHoverStart, onHoverEnd, branchHovered, branchDimmed, onClick, holdLayout = false }: Props) {
   const interactive = !!(onHoverStart && onHoverEnd);
   const clickable = !!onClick;
   const faded = dimmed || branchDimmed;
@@ -143,7 +145,7 @@ export default function RouteDirectionRow({ label, routeName, labelWeight = 'bol
           )}
           {limited && <LimitedBadge label={limitedLabel} />}
           {!limited && headway != null && !showRange && (
-            <HeadwayBadge headway={headway} colorHeadway={colorHeadway} live={live} suffix={headwaySuffix} suffixTone={headwaySuffixTone} label={headwayLabel} />
+            <HeadwayBadge headway={headway} colorHeadway={colorHeadway} dotColor={dotColor} live={live} suffix={headwaySuffix} suffixTone={headwaySuffixTone} label={headwayLabel} />
           )}
           {/* The trunk-to-branch range ("every 6–12 min") is the shared badge, coloured by the trunk (CIV-1000). */}
           {!limited && rangeText && <HeadwayBadge headway={trunkHeadway!} label={rangeText} />}

@@ -57,9 +57,10 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-07",
+    "scoredAt": "2026-11-09"
   },
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261128",
@@ -71,5 +72,6 @@
   "lastFeedSourceUrl": "http://68.71.24.110/gtfs/GTFSExport.zip",
   "lastPeekedExpiry": "20261128",
   "lastServiceWeek": "e33f8e7e7040af64",
-  "feedObtainedAt": "20260930"
+  "feedObtainedAt": "20260930",
+  "lastFeedStart": "20261011"
 }

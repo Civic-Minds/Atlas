@@ -9,17 +9,46 @@
   "feedUrl": "http://gtfs.muni.org/People_Mover.gtfs.zip",
   "region": "Alaska",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-225/latest.zip",
-  "lastFeedExpiry": "20270531",
-  "lastFeedVersion": "20260714",
-  "lastRefreshedAt": "2026-08-07",
+  "lastFeedExpiry": "20270425",
+  "lastFeedVersion": "20261102",
+  "lastRefreshedAt": "2026-11-09",
   "cities": [
     "Anchorage, Alaska"
   ],
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270425",
   "timezone": "America/Anchorage",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "http://gtfs.muni.org/People_Mover.gtfs.zip"
+  "lastFeedSourceUrl": "http://gtfs.muni.org/People_Mover.gtfs.zip",
+  "feedQuality": {
+    "status": "review",
+    "score": 93,
+    "reasons": [
+      "1 route has stops whose frequency differs from the overall route schedule."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 2,
+      "routeHeadwayMismatches": 1,
+      "featureCount": 68,
+      "feedExpiry": "20270425",
+      "routeCount": 14,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 1,
+      "resumesOn": null
+    },
+    "checkedAt": "2026-11-09"
+  },
+  "lastPeekedExpiry": "20270425",
+  "lastFeedStart": "20261102",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "5163d49489d72817",
+  "feedObtainedAt": "20261106"
 }

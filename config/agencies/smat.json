@@ -7,17 +7,17 @@
     -120.44
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-2272/latest.zip",
-  "lastFeedExpiry": "20270811",
+  "lastFeedExpiry": "20280101",
   "lastFeedVersion": "",
   "region": "California",
-  "lastRefreshedAt": "2026-11-02",
+  "lastRefreshedAt": "2026-11-09",
   "cities": [
     "Santa Maria, California"
   ],
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20270811",
+  "expiredFeedCheckExpiry": "20280101",
   "timezone": "America/Los_Angeles",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2272/latest.zip",
@@ -32,21 +32,22 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 2,
-      "featureCount": 49,
-      "feedExpiry": "20270811",
+      "featureCount": 51,
+      "feedExpiry": "20280101",
       "routeCount": 20,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
       "mismatchRoutes": 2,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-09"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
-  "lastPeekedExpiry": "20270811",
-  "lastServiceWeek": "4d8748bf8c48f829",
-  "feedObtainedAt": "20261102"
+  "lastPeekedExpiry": "20280101",
+  "lastServiceWeek": "735abdbe9055ae12",
+  "feedObtainedAt": "20261109",
+  "lastFeedStart": "20240527"
 }

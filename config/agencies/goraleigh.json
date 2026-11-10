@@ -19,7 +19,7 @@
     "West Raleigh, North Carolina",
     "Cary, North Carolina"
   ],
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270131",
@@ -41,7 +41,8 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-07",
+    "scoredAt": "2026-11-09"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -51,5 +52,6 @@
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2074/latest.zip",
   "lastPeekedExpiry": "20270131",
   "lastServiceWeek": "5de77c428a649d3c",
-  "feedObtainedAt": "20260904"
+  "feedObtainedAt": "20260904",
+  "lastFeedStart": "20260906"
 }

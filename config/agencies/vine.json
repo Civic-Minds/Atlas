@@ -16,9 +16,9 @@
   ],
   "feedUrl": "https://data.trilliumtransit.com/gtfs/vinetransit-ca-us/vinetransit-ca-us.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-1288/latest.zip",
-  "lastFeedExpiry": "20270109",
-  "lastFeedVersion": "UTC: 14-Sep-2026 16:38",
-  "lastRefreshedAt": "2026-10-03",
+  "lastFeedExpiry": "20261231",
+  "lastFeedVersion": null,
+  "lastRefreshedAt": "2026-11-06",
   "cities": [
     "Napa, California",
     "Vallejo, California",
@@ -26,7 +26,7 @@
     "Fairfield, California",
     "Richmond, California"
   ],
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261231",
@@ -39,15 +39,16 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 41,
-      "feedExpiry": "20270109",
-      "routeCount": 12,
+      "featureCount": 43,
+      "feedExpiry": "20261231",
+      "routeCount": 14,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-07",
+    "scoredAt": "2026-11-09"
   },
   "timezone": "America/Los_Angeles",
   "feedRefreshStatus": "current",
@@ -56,5 +57,8 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://data.trilliumtransit.com/gtfs/vinetransit-ca-us/vinetransit-ca-us.zip",
-  "lastPeekedExpiry": "20270109"
+  "lastPeekedExpiry": "20261231",
+  "lastFeedStart": "20261014",
+  "lastServiceWeek": "ca67caf6a1b92b30",
+  "feedObtainedAt": "20261106"
 }

@@ -25,7 +25,7 @@
     "San Rafael, California",
     "Novato, California"
   ],
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270110",
@@ -50,12 +50,14 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-07",
+    "scoredAt": "2026-11-09"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastServiceWeek": "43d5ac5e6d40b67c",
-  "feedObtainedAt": "20260414"
+  "feedObtainedAt": "20260414",
+  "lastFeedStart": "20260414"
 }

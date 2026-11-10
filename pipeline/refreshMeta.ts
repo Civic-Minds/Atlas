@@ -14,6 +14,8 @@ export interface FeedMetaFields {
   listingEndedOn?: string | null;
   /** The feed's own latest service date, uncapped. lastFeedExpiry caps placeholder dates, so it can't detect an unchanged feed (#688). */
   lastPeekedExpiry?: string | null;
+  /** The live feed's period start (feedPeriodStart), so a later-starting feed with an earlier end reads as newer (#1359). */
+  lastFeedStart?: string | null;
   lastFeedVersion?: string | null;
   lastRawArchiveKey?: string | null;
   lastRefreshedAt?: string | null;
@@ -190,10 +192,13 @@ export function stampFeedMeta(
     serviceWeek?: string | null;
     /** When Atlas first obtained this file (YYYYMMDD), for the listing-end safeguard. */
     feedObtainedAt?: string | null;
+    /** The feed's period start (feedPeriodStart), for the older-feed check (#1359). */
+    feedStart?: string | null;
   },
 ): void {
   agency.lastFeedExpiry = refreshedFeedExpiry(opts);
   agency.lastPeekedExpiry = opts.peekedExpiry;
+  if (opts.feedStart !== undefined) agency.lastFeedStart = opts.feedStart;
   agency.lastFeedVersion = opts.feedVersion ?? opts.peekedVersion ?? null;
   agency.lastRefreshedAt = opts.todayYmd;
   agency.feedRefreshStatus = 'current';
@@ -226,16 +231,21 @@ export function stampListingEnd(agency: Pick<FeedMetaFields, 'listingEndedOn'>, 
  * changed, so unchanged agencies leave their files alone.
  */
 export function stampReprocessedFeedExpiry(
-  agency: Pick<FeedMetaFields, 'lastFeedExpiry' | 'lastPeekedExpiry' | 'listingEndedOn'>,
-  opts: { feedExpiry: string | null; calendarExpiry: string | null; todayYmd: string; calendarOnlyEnd?: string | null; listingEnd?: string | null },
+  agency: Pick<FeedMetaFields, 'lastFeedExpiry' | 'lastPeekedExpiry' | 'lastFeedStart' | 'listingEndedOn'>,
+  opts: { feedExpiry: string | null; calendarExpiry: string | null; todayYmd: string; calendarOnlyEnd?: string | null; listingEnd?: string | null; feedStart?: string | null },
 ): boolean {
   const lastFeedExpiry = recordedFeedExpiry(opts.feedExpiry, opts.calendarExpiry, opts.todayYmd, opts.calendarOnlyEnd);
   if (lastFeedExpiry == null) return false;
   const listingChanged = opts.listingEnd !== undefined && stampListingEnd(agency, opts.listingEnd);
   const lastPeekedExpiry = opts.calendarExpiry ?? agency.lastPeekedExpiry ?? null;
-  if (agency.lastFeedExpiry === lastFeedExpiry && (agency.lastPeekedExpiry ?? null) === lastPeekedExpiry) return listingChanged;
+  // The period start travels with the expiry (#1359); a record without one gains it.
+  const lastFeedStart = opts.feedStart !== undefined ? opts.feedStart : (agency.lastFeedStart ?? null);
+  const startChanged = (agency.lastFeedStart ?? null) !== lastFeedStart;
+  if (agency.lastFeedExpiry === lastFeedExpiry && (agency.lastPeekedExpiry ?? null) === lastPeekedExpiry && !startChanged) return listingChanged;
   agency.lastFeedExpiry = lastFeedExpiry;
   agency.lastPeekedExpiry = lastPeekedExpiry;
+  if (lastFeedStart) agency.lastFeedStart = lastFeedStart;
+  else delete agency.lastFeedStart;
   return true;
 }
 
@@ -265,13 +275,57 @@ export function markFeedStale(
   agency.feedRefreshRetryCount = (agency.feedRefreshRetryCount ?? 0) + 1;
 }
 
-/** Never replace a dated active snapshot with an older or undated candidate. */
+/**
+ * Never replace a dated active snapshot with an older or undated candidate. A stamp recorded from a
+ * placeholder end sets no floor (CIV-1351): when the active feed's own uncapped end (lastPeekedExpiry,
+ * else the recorded expiry) is more than PLACEHOLDER_EXPIRY_YEARS past the date it was recorded, it
+ * says nothing about when that service ends, and every real-dated feed would read as older (st-george,
+ * 2026-11-06: the city feed 20271231 refused against the old timetable's 20310130; CIV-1334 cleared the
+ * same stamp by hand). The record date, not today, keeps that verdict from drifting as today's horizon
+ * moves past a stamp.
+ */
 export function candidateIsOlderThanActive(opts: {
   candidateExpiry: string | null;
+  /** The candidate's period start (feedPeriodStart). */
+  candidateStart?: string | null;
   existingExpiry?: string | null;
+  /** The live feed's period start (lastFeedStart), when the record carries it. */
+  existingStart?: string | null;
+  /** When Atlas obtained the live feed file (feedObtainedAt); the record date stands in when absent. */
+  existingObtainedAt?: string | null;
+  /** The active feed's uncapped end (lastPeekedExpiry); the recorded expiry stands in when absent. */
+  existingPeekedExpiry?: string | null;
+  /** When the stamp was recorded (lastRefreshedAt, YYYY-MM-DD or YYYYMMDD); today stands in when absent. */
+  recordedAt?: string | null;
+  todayYmd?: string;
 }): boolean {
   if (!opts.existingExpiry) return false;
-  return !opts.candidateExpiry || opts.candidateExpiry < opts.existingExpiry;
+  const recordedAt = opts.recordedAt ?? opts.todayYmd;
+  if (recordedAt) {
+    const ownEnd = opts.existingPeekedExpiry ?? opts.existingExpiry;
+    if (isYmd(ownEnd) && ownEnd > addYearsYmd(recordedAt, PLACEHOLDER_EXPIRY_YEARS)) return false;
+  }
+  if (!opts.candidateExpiry) return true;
+  // #1359: a new timetable period usually ends sooner than the long calendar it replaces (tulsa's
+  // September feed to 20261205 against the April feed to 20261231), so a later period start is a newer
+  // feed whatever its end. Without a stored start, a period that began after Atlas obtained the live
+  // feed is newer too. A candidate starting the same day or earlier (qline's earlier edition, a transient
+  // older download) is judged by its end date as before.
+  if (isYmd(opts.candidateStart)) {
+    const liveStart = opts.existingStart ?? null;
+    if (isYmd(liveStart)) {
+      if (opts.candidateStart > liveStart) return false;
+    } else {
+      const obtained = (opts.existingObtainedAt ?? recordedAt ?? '').replace(/-/g, '');
+      if (isYmd(obtained) && opts.candidateStart > obtained) return false;
+    }
+  }
+  return opts.candidateExpiry < opts.existingExpiry;
+}
+
+/** A feed's period start: feed_info's start date, else the earliest calendar start (#1359). */
+export function feedPeriodStart(dates: { feedInfoStart?: string | null; feedStart: string | null }): string | null {
+  return dates.feedInfoStart ?? dates.feedStart ?? null;
 }
 
 export type RefreshSkipReason =

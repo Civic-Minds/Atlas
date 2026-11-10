@@ -7,9 +7,9 @@
     -135.05
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-689/latest.zip",
-  "lastFeedExpiry": "20501230",
+  "lastFeedExpiry": "20281109",
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-08-10",
+  "lastRefreshedAt": "2026-11-09",
   "region": "Yukon",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-689/latest.zip",
   "bbox": [
@@ -18,12 +18,40 @@
     60.8076,
     -134.9969
   ],
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20501230",
-  "timezone": "America/Whitehorse",
+  "timezone": "America/Los_Angeles",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-689/latest.zip",
-  "refusedFeedSha256": "fa52abc9d8f4d81b75472580473937cb10ab2524bd732bac7bf8c2b8a313530e"
+  "lastPeekedExpiry": "20501230",
+  "feedQuality": {
+    "status": "review",
+    "score": 100,
+    "reasons": [
+      "1 route shape needed adjustment before display."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 1,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 24,
+      "feedExpiry": "20281109",
+      "routeCount": 8,
+      "problemShapes": 1,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
+    },
+    "checkedAt": "2026-11-09"
+  },
+  "lastFeedStart": "20240701",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "711afa684d868b84",
+  "feedObtainedAt": "20260629"
 }

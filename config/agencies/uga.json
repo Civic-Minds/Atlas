@@ -9,7 +9,7 @@
   "feedUrl": "https://files.mobilitydatabase.org/tld-2276/latest.zip",
   "lastFeedExpiry": "20271231",
   "lastFeedVersion": "20260917",
-  "lastRefreshedAt": "2026-11-02",
+  "lastRefreshedAt": "2026-11-09",
   "region": "Georgia",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-2276/latest.zip",
   "bbox": [
@@ -21,7 +21,7 @@
   "cities": [
     "Athens, Georgia"
   ],
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271231",
@@ -49,12 +49,13 @@
       "mismatchRoutes": 1,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-09"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
-  "lastServiceWeek": "bde7669ecf142d6e",
-  "feedObtainedAt": "20261102"
+  "lastServiceWeek": "5f72deaea0d2d30b",
+  "feedObtainedAt": "20261102",
+  "lastFeedStart": "20261107"
 }

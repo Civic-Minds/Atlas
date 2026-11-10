@@ -20,7 +20,7 @@ import { dirname, resolve } from 'path';
 import { config } from 'dotenv';
 import { r2ListArchive, r2GetArchive, r2Get, r2Put } from './r2.js';
 import { runWithConcurrency } from './utils.js';
-import { resolveCurrentHistoryRoute, mergeAliasedRoutes, currentRouteShortNamesFor, aliasesFor, weekendOnlyKeysFor, projectArchiveByDay, projectSidecarByDay, worseArchiveChange, worseSidecarEntry, type HistoryRouteAliases } from './historyIdentity.js';
+import { resolveCurrentHistoryRoute, mergeAliasedRoutes, currentRouteShortNamesFor, aliasesFor, aliasesFromDirectionSplits, weekendOnlyKeysFor, withGeneratedAliases, projectArchiveByDay, projectSidecarByDay, worseArchiveChange, worseSidecarEntry, type HistoryRouteAliases } from './historyIdentity.js';
 import { representativeRep, routeTrunkHeadway, routeTrunkHeadwayByPeriod } from './historyV2.js';
 import { buildRouteSnapshots, filterSnapshotsForPublish, isFlatRouteToSkip, joinCandidates, newBuildReport, visibilityCheck, type Candidate } from './historyV2Build.js';
 import type { HistoryV2Sidecar } from '../shared/historyV2.js';
@@ -150,6 +150,9 @@ async function loadCurrentHeadwaysLegacy(slug: string): Promise<Record<string, {
   }
 }
 
+/** CIV-1275: each agency artifact's direction-split merges (#1285), read with its current headways. */
+const artifactDirectionSplits: Record<string, Array<{ base: string; halves: [string, string] }>> = {};
+
 /** v2 loader (ATLAS_HISTORY_V2=1): current route facts from the public Atlas artifact, not the archive baseline. */
 async function loadCurrentHeadwaysV2(slug: string): Promise<Record<string, {
   headway: number | null;
@@ -164,7 +167,8 @@ async function loadCurrentHeadwaysV2(slug: string): Promise<Record<string, {
   try {
     const raw = await r2Get(`atlas/${slug}.json`);
     if (!raw) return {};
-    const fc = JSON.parse(raw) as { features?: Array<{ geometry?: { type?: string; coordinates?: unknown }; properties?: Record<string, unknown> }> };
+    const fc = JSON.parse(raw) as { features?: Array<{ geometry?: { type?: string; coordinates?: unknown }; properties?: Record<string, unknown> }>; directionSplits?: Array<{ base: string; halves: [string, string] }> };
+    artifactDirectionSplits[slug] = fc.directionSplits ?? [];
     const weekdayFeatures: Record<string, Array<Record<string, unknown>>> = {};
     const current: Record<string, {
       headway: number | null;
@@ -230,18 +234,21 @@ async function main() {
   const registryBySlug = new Map(index.agencies.map(a => [a.slug, a]));
 
   // 1. List all per-route change files: history/{slug}/{routeShortName}/{periodKey}.json
-  const keys = await r2ListArchive('history/');
+  // CIV-1315: every listing below is sorted and every read returns its parsed record, which is folded
+  // into the maps in listed-key order after the parallel download. Route order, agency order and the
+  // first-name fallback all follow insertion order, so a build now reads the same bytes whatever order
+  // the downloads finish in.
+  const keys = (await r2ListArchive('history/')).sort();
   console.log(`Found ${keys.length} files in atlas-archive/history/`);
 
   // 1b. List trip-duration files: trip-duration/{slug}/{routeKey}/{periodKey}.json
   // (separate prefix from history/ so this can never collide with or overwrite
   // a headway snapshot file — see pipeline/backfill-bart-trip-duration.ts)
-  const tripDurationKeys = await r2ListArchive('trip-duration/');
+  const tripDurationKeys = (await r2ListArchive('trip-duration/')).sort();
   console.log(`Found ${tripDurationKeys.length} files in atlas-archive/trip-duration/`);
-  const tripDurationRoutes: Record<string, Record<string, Array<{
-    periodKey: string; durationMinutes: number; stopSequence: string[]; refDate?: string;
-  }>>> = {};
-  const tripDurationTasks: (() => Promise<void>)[] = [];
+  type TripDurationEntry = { periodKey: string; durationMinutes: number; stopSequence: string[]; refDate?: string };
+  const tripDurationRoutes: Record<string, Record<string, TripDurationEntry[]>> = {};
+  const tripDurationTasks: (() => Promise<{ slug: string; routeKey: string; entry: TripDurationEntry } | undefined>)[] = [];
   for (const key of tripDurationKeys) {
     const parts = key.split('/');
     if (parts.length !== 4 || !parts[3].endsWith('.json')) continue;
@@ -250,24 +257,29 @@ async function main() {
     tripDurationTasks.push(async () => {
       try {
         const raw = await r2GetArchive(key);
-        if (!raw) return;
+        if (!raw) return undefined;
         const data = JSON.parse(raw);
-        if (typeof data.durationMinutes !== 'number' || !Array.isArray(data.stopSequence)) return;
-        if (!tripDurationRoutes[slug]) tripDurationRoutes[slug] = {};
-        if (!tripDurationRoutes[slug][routeKey]) tripDurationRoutes[slug][routeKey] = [];
-        tripDurationRoutes[slug][routeKey].push({
-          periodKey,
-          durationMinutes: data.durationMinutes,
-          stopSequence: data.stopSequence,
-          refDate: typeof data.refDate === 'string' ? data.refDate : undefined,
-        });
+        if (typeof data.durationMinutes !== 'number' || !Array.isArray(data.stopSequence)) return undefined;
+        return {
+          slug,
+          routeKey,
+          entry: {
+            periodKey,
+            durationMinutes: data.durationMinutes,
+            stopSequence: data.stopSequence,
+            refDate: typeof data.refDate === 'string' ? data.refDate : undefined,
+          },
+        };
       } catch (err) {
         console.error(`Failed to parse: ${key}`, err);
+        return undefined;
       }
     });
   }
   const tripDurationConcurrency = Number(process.env.HISTORY_TRIP_DURATION_CONCURRENCY ?? 10);
-  await runWithConcurrency(tripDurationTasks, Number.isInteger(tripDurationConcurrency) && tripDurationConcurrency > 0 ? tripDurationConcurrency : 10);
+  for (const read of await runWithConcurrency(tripDurationTasks, Number.isInteger(tripDurationConcurrency) && tripDurationConcurrency > 0 ? tripDurationConcurrency : 10)) {
+    if (read) ((tripDurationRoutes[read.slug] ??= {})[read.routeKey] ??= []).push(read.entry);
+  }
   for (const routes of Object.values(tripDurationRoutes)) {
     for (const entries of Object.values(routes)) {
       entries.sort((a, b) => getPeriodKeySortValue(a.periodKey) - getPeriodKeySortValue(b.periodKey));
@@ -275,11 +287,19 @@ async function main() {
   }
 
   // Map: slug → routeShortName → sorted array of change events
-  const archiveRoutes: Record<string, Record<string, Array<{
+  type ArchiveChange = {
     periodKey: string; headway: number; routeLongName?: string; label?: string;
     headwayByPeriod?: HeadwayByPeriod; trunkHeadway?: number; trunkHeadwayByPeriod?: HeadwayByPeriod; geometry?: unknown; processedAt?: string;
-  }>>> = {};
-  const coverageBySlug: Record<string, { coverageYears: number[]; materializeAllPeriods?: boolean }> = {};
+  };
+  type Coverage = { coverageYears: number[]; materializeAllPeriods?: boolean };
+  type ArchiveRead =
+    | { kind: 'coverage'; slug: string; coverage: Coverage }
+    | { kind: 'change'; slug: string; routeShortName: string; change: ArchiveChange }
+    | { kind: 'refresh-run' }
+    | { kind: 'failed'; key: string }
+    | undefined;
+  const archiveRoutes: Record<string, Record<string, ArchiveChange[]>> = {};
+  const coverageBySlug: Record<string, Coverage> = {};
   let failedFiles = 0;
   let refreshRunSkipped = 0;
   const failedKeys: string[] = [];
@@ -288,7 +308,7 @@ async function main() {
     failedKeys.push(key);
   };
 
-  const tasks: (() => Promise<void>)[] = [];
+  const tasks: (() => Promise<ArchiveRead>)[] = [];
   for (const key of keys) {
     const parts = key.split('/');
     if (parts.length === 3 && parts[0] === 'history' && parts[2] === 'coverage.json') {
@@ -297,15 +317,18 @@ async function main() {
           const raw = await r2GetArchive(key);
           const metadata = JSON.parse(raw ?? '{}');
           const years = metadata.coverageYears;
-          if (Array.isArray(years)) {
-            coverageBySlug[parts[1]] = {
+          if (!Array.isArray(years)) return undefined;
+          return {
+            kind: 'coverage',
+            slug: parts[1],
+            coverage: {
               coverageYears: years.filter((year): year is number => Number.isInteger(year)),
               materializeAllPeriods: metadata.materializeAllPeriods === true,
-            };
-          }
+            },
+          };
         } catch (err) {
-          recordFailure(key);
           console.error(`Failed to parse coverage metadata: ${key}`, err);
+          return { kind: 'failed', key };
         }
       });
       continue;
@@ -324,30 +347,32 @@ async function main() {
       try {
         const raw = await r2GetArchive(key);
         if (!raw) {
-          recordFailure(key);
           console.error(`Failed to read: ${key} (object missing)`);
-          return;
+          return { kind: 'failed', key };
         }
         const data = JSON.parse(raw);
         const h = data.headway;
-        if (h == null) return;
+        if (h == null) return undefined;
         // Rows named by a refresh run's date are hidden until History is rebuilt from archived feeds (#1114).
-        if (isRefreshRunPeriodKey(periodKey, data.processedAt)) { refreshRunSkipped++; return; }
-        if (!archiveRoutes[slug]) archiveRoutes[slug] = {};
-        if (!archiveRoutes[slug][routeShortName]) archiveRoutes[slug][routeShortName] = [];
-        archiveRoutes[slug][routeShortName].push({
-          periodKey,
-          headway: h,
-          routeLongName: data.routeLongName ?? undefined,
-          headwayByPeriod: data.headwayByPeriod ?? undefined,
-          ...(typeof data.trunkHeadway === 'number' ? { trunkHeadway: data.trunkHeadway } : {}),
-          ...(data.trunkHeadwayByPeriod && typeof data.trunkHeadwayByPeriod === 'object' ? { trunkHeadwayByPeriod: data.trunkHeadwayByPeriod } : {}),
-          // v2 dates a file keyed by a feed end date after this year by when it was read (CIV-394).
-          processedAt: typeof data.processedAt === 'string' ? data.processedAt : undefined,
-        });
+        if (isRefreshRunPeriodKey(periodKey, data.processedAt)) return { kind: 'refresh-run' };
+        return {
+          kind: 'change',
+          slug,
+          routeShortName,
+          change: {
+            periodKey,
+            headway: h,
+            routeLongName: data.routeLongName ?? undefined,
+            headwayByPeriod: data.headwayByPeriod ?? undefined,
+            ...(typeof data.trunkHeadway === 'number' ? { trunkHeadway: data.trunkHeadway } : {}),
+            ...(data.trunkHeadwayByPeriod && typeof data.trunkHeadwayByPeriod === 'object' ? { trunkHeadwayByPeriod: data.trunkHeadwayByPeriod } : {}),
+            // v2 dates a file keyed by a feed end date after this year by when it was read (CIV-394).
+            processedAt: typeof data.processedAt === 'string' ? data.processedAt : undefined,
+          },
+        };
       } catch (err) {
-        recordFailure(key);
         console.error(`Failed to parse: ${key}`, err);
+        return { kind: 'failed', key };
       }
     });
   }
@@ -357,7 +382,13 @@ async function main() {
     ? configuredConcurrency
     : 4;
   console.log(`Downloading ${tasks.length} history snapshot files in parallel (concurrency ${concurrency})...`);
-  await runWithConcurrency(tasks, concurrency);
+  for (const read of await runWithConcurrency(tasks, concurrency)) {
+    if (!read) continue;
+    if (read.kind === 'failed') recordFailure(read.key);
+    else if (read.kind === 'refresh-run') refreshRunSkipped++;
+    else if (read.kind === 'coverage') coverageBySlug[read.slug] = read.coverage;
+    else ((archiveRoutes[read.slug] ??= {})[read.routeShortName] ??= []).push(read.change);
+  }
   console.log(`History archive summary: ${tasks.length - failedFiles}/${tasks.length} files read successfully; ${failedFiles} failed.`);
   console.log(`Hid ${refreshRunSkipped} change files named by a refresh run's date (#1114).`);
   if (failedFiles > 0) {
@@ -376,51 +407,60 @@ async function main() {
   // Each sidecar period's in-service date, so a trip-duration file with the same period key can be
   // dated by when its feed ran, not when it ends (CIV-1124).
   const sidecarRefDates: Record<string, Record<string, string>> = {};
-  const sidecarKeys = !v2 ? [] : (await r2ListArchive('history-v2/')).filter(k => k.split('/').length === 3 && k.endsWith('.json'));
+  const sidecarKeys = !v2 ? [] : (await r2ListArchive('history-v2/')).filter(k => k.split('/').length === 3 && k.endsWith('.json')).sort();
   if (v2) console.log(`Found ${sidecarKeys.length} v2 sidecar files in atlas-archive/history-v2/`);
-  await runWithConcurrency(sidecarKeys.map(key => async () => {
+  type SidecarRead = { key: string; sc?: HistoryV2Sidecar; failed?: boolean };
+  const sidecarReads = await runWithConcurrency(sidecarKeys.map(key => async (): Promise<SidecarRead> => {
     try {
       const raw = await r2GetArchive(key);
-      if (!raw) { recordFailure(key); return; }
+      if (!raw) return { key, failed: true };
       const sc = JSON.parse(raw) as HistoryV2Sidecar;
-      if (sc.version !== 2 || !sc.routes) return;
-      const slug = key.split('/')[1];
-      const periodKey = key.split('/')[2].replace('.json', '');
-      if (typeof sc.refDate === 'string') (sidecarRefDates[slug] ??= {})[periodKey] = sc.refDate;
-      const holidayDrop = holidayDropFor(slug, periodKey, sc);
-      if (holidayDrop) {
-        holidayDrops.push(holidayDrop);
-        (holidayPeriods[slug] ??= new Set()).add(periodKey);
-        return;
-      }
-      const repicked = repickedFor(slug, periodKey, sc);
-      if (repicked) repickedPeriods.push(repicked);
-      for (const url of Object.keys(sc.supplementalRoutes ?? {})) ((sidecarSupplementalPeriods[slug] ??= {})[url] ??= []).push(periodKey);
-      for (const [routeKey, rec] of Object.entries(sc.routes)) {
-        ((sidecarRoutes[slug] ??= {})[routeKey] ??= []).push({ periodKey, v2: { ...rec, refDate: sc.refDate } });
-      }
+      return sc.version === 2 && sc.routes ? { key, sc } : { key };
     } catch (err) {
-      recordFailure(key);
       console.error(`Failed to parse sidecar: ${key}`, err);
+      return { key, failed: true };
     }
   }), concurrency);
+  for (const { key, sc, failed } of sidecarReads) {
+    if (failed) recordFailure(key);
+    if (!sc) continue;
+    const slug = key.split('/')[1];
+    const periodKey = key.split('/')[2].replace('.json', '');
+    if (typeof sc.refDate === 'string') (sidecarRefDates[slug] ??= {})[periodKey] = sc.refDate;
+    const holidayDrop = holidayDropFor(slug, periodKey, sc);
+    if (holidayDrop) {
+      holidayDrops.push(holidayDrop);
+      (holidayPeriods[slug] ??= new Set()).add(periodKey);
+      continue;
+    }
+    const repicked = repickedFor(slug, periodKey, sc);
+    if (repicked) repickedPeriods.push(repicked);
+    for (const url of Object.keys(sc.supplementalRoutes ?? {})) ((sidecarSupplementalPeriods[slug] ??= {})[url] ??= []).push(periodKey);
+    for (const [routeKey, rec] of Object.entries(sc.routes)) {
+      ((sidecarRoutes[slug] ??= {})[routeKey] ??= []).push({ periodKey, v2: { ...rec, refDate: sc.refDate } });
+    }
+  }
   // 1d. v2 route shapes: history-v2-shapes/{slug}/{periodKey}.json (written only by the v2 backfill with --shapes).
   // Flag-gated like the sidecars: unset, nothing is listed or read.
   const shapePeriods: Record<string, Map<string, HistoryPeriodShapes>> = {};
-  const shapeKeys = !v2 ? [] : (await r2ListArchive('history-v2-shapes/')).filter(k => k.split('/').length === 3 && k.endsWith('.json'));
+  const shapeKeys = !v2 ? [] : (await r2ListArchive('history-v2-shapes/')).filter(k => k.split('/').length === 3 && k.endsWith('.json')).sort();
   if (v2) console.log(`Found ${shapeKeys.length} v2 shape files in atlas-archive/history-v2-shapes/`);
-  await runWithConcurrency(shapeKeys.map(key => async () => {
+  type ShapeRead = { key: string; ps?: HistoryPeriodShapes; failed?: boolean };
+  const shapeReads = await runWithConcurrency(shapeKeys.map(key => async (): Promise<ShapeRead> => {
     try {
       const raw = await r2GetArchive(key);
-      if (!raw) { recordFailure(key); return; }
+      if (!raw) return { key, failed: true };
       const ps = JSON.parse(raw) as HistoryPeriodShapes;
-      if (ps.version !== 1 || !ps.routes) return;
-      (shapePeriods[key.split('/')[1]] ??= new Map()).set(key.split('/')[2].replace('.json', ''), ps);
+      return ps.version === 1 && ps.routes ? { key, ps } : { key };
     } catch (err) {
-      recordFailure(key);
       console.error(`Failed to parse shapes: ${key}`, err);
+      return { key, failed: true };
     }
   }), 8);
+  for (const { key, ps, failed } of shapeReads) {
+    if (failed) recordFailure(key);
+    if (ps) (shapePeriods[key.split('/')[1]] ??= new Map()).set(key.split('/')[2].replace('.json', ''), ps);
+  }
   const routeAliases: HistoryRouteAliases = v2 ? JSON.parse(readFileSync(resolve('config/history-route-aliases.json'), 'utf8')) : {};
   // #1289: keys whose archived values mixed separate lines (Metro St Louis's Missouri and Illinois
   // routes shared numbers) are kept in the archive but not published; the lines start fresh under
@@ -459,6 +499,29 @@ async function main() {
   if (v2) for (const [slug, routes] of Object.entries(sidecarRoutes)) {
     archiveRoutes[slug] ??= {};
     for (const key of Object.keys(routes)) archiveRoutes[slug][key] ??= [];
+  }
+  // 3. Load current headways from the public Atlas artifact. This keeps the
+  // history endpoint aligned with the current map after route redesigns or
+  // refreshes, rather than trusting the archive diff baseline. Loaded before the
+  // alias fold, which reads each artifact's direction-split merges (CIV-1275).
+  const slugsWithData = Object.keys(archiveRoutes);
+  console.log(`Loading latest headways for ${slugsWithData.length} agencies...`);
+
+  const currentHeadways: Record<string, Record<string, Awaited<ReturnType<typeof loadCurrentHeadwaysV2>>[string]>> = {};
+  const headwayTasks = slugsWithData.map(slug => async () => {
+    currentHeadways[slug] = await (v2 ? loadCurrentHeadwaysV2(slug) : loadCurrentHeadwaysLegacy(slug));
+  });
+  const currentDataConcurrency = Number(process.env.HISTORY_CURRENT_DATA_CONCURRENCY ?? 8);
+  await runWithConcurrency(
+    headwayTasks,
+    Number.isInteger(currentDataConcurrency) && currentDataConcurrency > 0 ? currentDataConcurrency : 8,
+  );
+
+  // CIV-1275: a line the feed publishes as one route per direction is merged in processing (#1285);
+  // its halves' old keys fold into the merged key from the artifact's record, with no config entry.
+  if (v2) for (const slug of Object.keys(archiveRoutes)) {
+    const merged = withGeneratedAliases(routeAliases[slug], aliasesFromDirectionSplits(artifactDirectionSplits[slug] ?? []));
+    if (merged) routeAliases[slug] = merged;
   }
   let aliasMerged = 0;
   if (v2) for (const slug of Object.keys(archiveRoutes)) {
@@ -511,22 +574,6 @@ async function main() {
     }
     console.log(`Route identity: ${splitCount} route keys split.`);
   }
-
-  // 3. Load current headways from the public Atlas artifact. This keeps the
-  // history endpoint aligned with the current map after route redesigns or
-  // refreshes, rather than trusting the archive diff baseline.
-  const slugsWithData = Object.keys(archiveRoutes);
-  console.log(`Loading latest headways for ${slugsWithData.length} agencies...`);
-
-  const currentHeadways: Record<string, Record<string, Awaited<ReturnType<typeof loadCurrentHeadwaysV2>>[string]>> = {};
-  const headwayTasks = slugsWithData.map(slug => async () => {
-    currentHeadways[slug] = await (v2 ? loadCurrentHeadwaysV2(slug) : loadCurrentHeadwaysLegacy(slug));
-  });
-  const currentDataConcurrency = Number(process.env.HISTORY_CURRENT_DATA_CONCURRENCY ?? 8);
-  await runWithConcurrency(
-    headwayTasks,
-    Number.isInteger(currentDataConcurrency) && currentDataConcurrency > 0 ? currentDataConcurrency : 8,
-  );
 
   const currentYear = new Date().getFullYear();
   const historyData: any[] = [];

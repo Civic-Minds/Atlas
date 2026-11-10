@@ -16,14 +16,14 @@
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-2634/latest.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2634/latest.zip",
-  "lastFeedExpiry": "20281103",
+  "lastFeedExpiry": "20281107",
   "lastFeedVersion": null,
   "lastRefreshedAt": "2026-11-02",
   "cities": [
     "Midland, Texas",
     "Odessa, Texas"
   ],
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20501230",
@@ -42,14 +42,15 @@
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
       "featureCount": 34,
-      "feedExpiry": "20281103",
+      "feedExpiry": "20281107",
       "routeCount": 14,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-07",
+    "scoredAt": "2026-11-09"
   },
   "lastPeekedExpiry": "20501230",
   "feedRefreshStatus": "current",
@@ -57,5 +58,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastServiceWeek": "cc5ef9d9307da6de",
-  "feedObtainedAt": "20250106"
+  "feedObtainedAt": "20250106",
+  "lastFeedStart": "20181104"
 }

@@ -19,7 +19,7 @@
   ],
   "timezone": "America/Los_Angeles",
   "lastRawArchiveKey": "20260712-b7c46c977165e86f",
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261213",
@@ -40,7 +40,8 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-07",
+    "scoredAt": "2026-11-09"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -50,5 +51,6 @@
   "lastFeedSourceUrl": "https://web.culvercity.org/gtfs/gtfsexport.zip",
   "lastPeekedExpiry": "20261213",
   "lastServiceWeek": "f20907bc8ba459a8",
-  "feedObtainedAt": "20260824"
+  "feedObtainedAt": "20260824",
+  "lastFeedStart": "20260713"
 }

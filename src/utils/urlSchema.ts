@@ -132,7 +132,7 @@ export const APP_URL = {
 export const NIGHT_URL = {
   frequency: {
     key: 'nightFrequency', presence: 'nonEmpty',
-    parse: (raw): NightServiceFrequency | undefined => (raw === '30' ? 30 : undefined),
+    parse: (raw): NightServiceFrequency | undefined => (raw === '30' ? 30 : raw === '90' ? 90 : undefined),
     serialize: value => (value === 60 ? null : String(value)),
   } satisfies UrlParam<NightServiceFrequency>,
 } as const;

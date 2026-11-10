@@ -20,7 +20,7 @@
   "lastFeedVersion": "2026-08-27",
   "timezone": "America/Los_Angeles",
   "lastRawArchiveKey": "20251231-915e28c519db2c9f",
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261231",
@@ -43,7 +43,8 @@
       "mismatchRoutes": 2,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-07",
+    "scoredAt": "2026-11-09"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -53,5 +54,6 @@
   "lastFeedSourceUrl": "https://schedule.ivtransit.com/gtfs/data.zip",
   "lastPeekedExpiry": "20261231",
   "lastServiceWeek": "58c3204b795a7c5d",
-  "feedObtainedAt": "20260827"
+  "feedObtainedAt": "20260827",
+  "lastFeedStart": "20260101"
 }

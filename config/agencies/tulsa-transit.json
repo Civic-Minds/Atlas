@@ -14,20 +14,48 @@
   ],
   "feedUrl": "https://tulsa.rideralerts.com/InfoPoint/GTFS-Zip.ashx",
   "region": "Oklahoma",
-  "lastFeedExpiry": "20261231",
-  "lastFeedVersion": "20260421",
-  "lastRefreshedAt": "2026-08-10",
+  "lastFeedExpiry": "20261205",
+  "lastFeedVersion": "20260910",
+  "lastRefreshedAt": "2026-11-07",
   "websiteUrl": "https://www.metrolinkok.org/",
   "cities": [
     "Tulsa, Oklahoma",
     "Broken Arrow, Oklahoma"
   ],
   "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-235/latest.zip",
-  "lastFeedCheckAt": "20261103",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261205",
   "timezone": "America/Chicago",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://tulsa.rideralerts.com/InfoPoint/GTFS-Zip.ashx"
+  "lastFeedSourceUrl": "https://tulsa.rideralerts.com/InfoPoint/GTFS-Zip.ashx",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 2,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 72,
+      "feedExpiry": "20261205",
+      "routeCount": 18,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
+    },
+    "checkedAt": "2026-11-07",
+    "scoredAt": "2026-11-09"
+  },
+  "lastPeekedExpiry": "20261205",
+  "lastFeedStart": "20260910",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "ce06c8f7011c7f66",
+  "feedObtainedAt": "20261107"
 }

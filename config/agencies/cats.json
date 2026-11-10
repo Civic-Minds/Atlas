@@ -16,7 +16,7 @@
     "Charlotte, North Carolina",
     "Huntersville, North Carolina"
   ],
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270131",
@@ -38,7 +38,8 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-07",
+    "scoredAt": "2026-11-09"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -56,5 +57,6 @@
   ],
   "lastPeekedExpiry": "20270131",
   "lastServiceWeek": "d08a7cc17950eaed",
-  "feedObtainedAt": "20261026"
+  "feedObtainedAt": "20261026",
+  "lastFeedStart": "20261026"
 }

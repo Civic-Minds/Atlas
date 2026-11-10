@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { setConsentPrompt, useConsentPrompt } from '../lib/consentPrompt';
 import { getAnalyticsConsent, initAnalytics, setAnalyticsConsent, type AnalyticsConsent } from '../lib/analytics';
 import { privacyRegionCountry } from '../lib/privacyRegion';
+import { isLocalHost } from '../lib/internalTest';
 import { MAP_CONSENT_SLOT, DROPDOWN_PANEL, dropdownAnim, MAP_BADGE, Z_HEADER, Z_MODAL_TOP } from '../styles';
 import Toggle from './ui/Toggle';
 import ArrowLink from './ui/ArrowLink';
@@ -41,6 +42,9 @@ export default function AnalyticsConsent() {
   useEffect(() => {
     const openSettings = () => setShowSettings(true);
     window.addEventListener('atlas:privacy-settings', openSettings);
+    // Local dev and preview servers load no analytics, so there is nothing to ask about (CIV-1335).
+    // initAnalytics still runs so queued events are dropped instead of piling up.
+    if (isLocalHost()) { initAnalytics(); return () => window.removeEventListener('atlas:privacy-settings', openSettings); }
     const existing = getAnalyticsConsent();
     if (existing) { initAnalytics(); return () => window.removeEventListener('atlas:privacy-settings', openSettings); }
     if (window.navigator.globalPrivacyControl) { setAnalyticsConsent('denied'); return () => window.removeEventListener('atlas:privacy-settings', openSettings); }

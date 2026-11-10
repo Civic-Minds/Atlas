@@ -23,7 +23,7 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-502/latest.zip",
   "lastFeedExpiry": "20270220",
   "lastFeedVersion": "v202611010",
-  "lastRefreshedAt": "2026-11-02",
+  "lastRefreshedAt": "2026-11-09",
   "cities": [
     "Havertown, Pennsylvania",
     "Philadelphia, Pennsylvania",
@@ -36,7 +36,7 @@
     "Camden, New Jersey",
     "Reading, Pennsylvania"
   ],
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270220",
@@ -51,15 +51,15 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 4,
-      "featureCount": 1086,
+      "featureCount": 1088,
       "feedExpiry": "20270220",
-      "routeCount": 161,
+      "routeCount": 162,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
       "mismatchRoutes": 2,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-09"
   },
   "timezone": "America/New_York",
   "feedRefreshStatus": "current",
@@ -126,6 +126,7 @@
     }
   ],
   "lastPeekedExpiry": "20270220",
-  "lastServiceWeek": "bd0d335f20972bf5",
-  "feedObtainedAt": "20261102"
+  "lastServiceWeek": "22043bb292e84392",
+  "feedObtainedAt": "20261102",
+  "lastFeedStart": "20261101"
 }

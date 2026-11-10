@@ -20,9 +20,9 @@ import { PHONE_MEDIA_QUERY, useMediaQuery } from '../../hooks/useMediaQuery';
 import { encodeFullDayUrlState, parseFullDayUrlState } from '../../utils/shareUrlState';
 import { HOUR_TO_PERIOD, PERIOD_BANDS } from '../../utils/sparklinePeriods';
 import { FullDayPeriodBands, HoveredPeriodName } from './FullDayPeriodBands';
-import { headwayAxisTicks, hourBarColorHeadway, hourBarEmphasis, hourChartLitPeriod, hourChartMaxFreq, sparklineBarHeight } from '../../utils/hourChartModel';
-import { FREQUENCY_LABEL } from '../../content/noticeCopy';
-export { headwayAxisTicks, sparklineBarHeight };
+import { tripsPerHourAxisTicks, hourBarColorHeadway, hourBarEmphasis, hourChartLitPeriod, hourChartMaxFreq, sparklineBarHeight } from '../../utils/hourChartModel';
+import { FREQUENCY_LABEL, TRIPS_PER_HOUR_LABEL } from '../../content/noticeCopy';
+export { tripsPerHourAxisTicks, sparklineBarHeight };
 
 /** Bar area height of the route card's compact sparkline, in px. The one place to change it. */
 export const SPARKLINE_CARD_HEIGHT = 38;
@@ -34,6 +34,10 @@ export const SPARKLINE_EXPANDED_HEIGHT_PHONE = 100;
  * Each full-day chart when both directions show at once, in px. Desktop: a 2x2 grid (frequency charts
  * stacked on the left, trip time charts on the right), each half the dialog wide. Phone: all four stacked.
  */
+/** The full-day chart's axis text: the clock labels under the bars, and (CIV-1343) the y axis unit, so it reads as an axis label, not a second title. */
+const AXIS_LABEL = 'text-xs text-[var(--text-dim)]';
+/** The full-day frequency chart's unit line (CIV-1311), and its invisible twin over the trip time chart. */
+const UNIT_LINE = `${AXIS_LABEL} leading-tight`;
 export const SPARKLINE_PAIRED_HEIGHT = 96;
 export const SPARKLINE_PAIRED_HEIGHT_PHONE = 44;
 
@@ -53,7 +57,7 @@ function ClockLabels({ className = '' }: { className?: string }) {
     <div className={`flex gap-px mt-1 ${className}`} data-testid="full-day-clock-labels">
       {HOURS.map(h => (
         <div key={h} className="flex-1 min-w-0 text-center">
-          <span className={`text-xs text-[var(--text-dim)] whitespace-nowrap ${(h - HOURS[0]) % 6 === 0 ? '' : (h - HOURS[0]) % 3 === 0 ? 'hidden sm:inline' : 'hidden'}`}>
+          <span className={`${AXIS_LABEL} whitespace-nowrap ${(h - HOURS[0]) % 6 === 0 ? '' : (h - HOURS[0]) % 3 === 0 ? 'hidden sm:inline' : 'hidden'}`}>
             {formatClock(h * 60)}
           </span>
         </div>
@@ -261,7 +265,7 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
   const scaleSources = directionOptions && directionOptions.length > 0 ? directionOptions : gridBlocks;
   const pairMaxFreq = hourChartMaxFreq(scaleSources.map(option => option.byHour), HOURS, scaleMaxFreq);
   const pairTripMax = Math.max(0, ...scaleSources.flatMap(option => HOURS.map(h => option.tripTime?.byHour[h]).filter((v): v is number => v != null)));
-  const pairFreqTicks = headwayAxisTicks(pairMaxFreq, pairH);
+  const pairFreqTicks = tripsPerHourAxisTicks(pairMaxFreq, pairH);
   const pairTripTicks = tripTimeAxisTicks(pairTripMax, pairH);
 
   return (
@@ -366,7 +370,7 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
             {(expanded || HOUR_LABELS[h]) && (
               expanded ? (
                 // Every third hour only, so the 12px clock labels don't collide.
-                <span className={`text-xs text-[var(--text-dim)] whitespace-nowrap ${(h - HOURS[0]) % 3 === 0 ? '' : 'hidden'}`}>
+                <span className={`${AXIS_LABEL} whitespace-nowrap ${(h - HOURS[0]) % 3 === 0 ? '' : 'hidden'}`}>
                   {formatClock(h * 60)}
                 </span>
               ) : (
@@ -432,6 +436,7 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
                     return (
                       <div className="relative pl-11" data-testid="full-day-frequency-cell">
                         {titleRow(FREQUENCY_LABEL, hw != null ? headwayEvery(hw) : '', 'full-day-frequency-heading')}
+                        {pairFreqTicks.length > 0 && <div className={`mb-2 ${UNIT_LINE}`} data-testid="full-day-frequency-unit">{TRIPS_PER_HOUR_LABEL}</div>}
                         <HeadwaySparkline
                           byHour={option.byHour}
                           period="all"
@@ -455,7 +460,11 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
                     return (
                       <div className="relative pl-11" data-testid="full-day-trip-time-cell">
                         <TripTimeStrip
-                          above={titleRow(tripTimeHeading(loop), tt != null ? tripTimeAbout(tt) : '', 'full-day-trip-time-heading')}
+                          above={<>
+                            {titleRow(tripTimeHeading(loop), tt != null ? tripTimeAbout(tt) : '', 'full-day-trip-time-heading')}
+                            {/* The frequency chart's unit line has no twin here: an empty line of the same size keeps the two charts level. */}
+                            {pairFreqTicks.length > 0 && <div className={`mb-2 ${UNIT_LINE} invisible`} aria-hidden="true">{TRIPS_PER_HOUR_LABEL}</div>}
+                          </>}
                           series={option.tripTime}
                           height={pairH}
                           hoveredHour={modalHour}

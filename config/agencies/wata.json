@@ -15,17 +15,17 @@
   ],
   "feedUrl": "https://gtfs.wata.cadavl.com/WATA/GTFS/GTFS_WATA.zip",
   "region": "Virginia",
-  "lastFeedExpiry": "20261203",
+  "lastFeedExpiry": "20261210",
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-11-02",
+  "lastRefreshedAt": "2026-11-09",
   "cities": [
     "Newport News, Virginia",
     "Hampton, Virginia"
   ],
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261203",
+  "expiredFeedCheckExpiry": "20261210",
   "feedQuality": {
     "status": "healthy",
     "score": 100,
@@ -36,14 +36,14 @@
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
       "featureCount": 69,
-      "feedExpiry": "20261203",
+      "feedExpiry": "20261210",
       "routeCount": 12,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-09"
   },
   "timezone": "America/New_York",
   "feedRefreshStatus": "current",
@@ -52,7 +52,8 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://gtfs.wata.cadavl.com/WATA/GTFS/GTFS_WATA.zip",
-  "lastPeekedExpiry": "20261203",
-  "lastServiceWeek": "0edd6e6da2533406",
-  "feedObtainedAt": "20261102"
+  "lastPeekedExpiry": "20261210",
+  "lastServiceWeek": "cce787d34a7e8628",
+  "feedObtainedAt": "20261109",
+  "lastFeedStart": "20261109"
 }

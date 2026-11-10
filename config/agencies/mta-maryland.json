@@ -18,7 +18,7 @@
   "parentAgency": "mta-maryland",
   "pageSlug": "mta-maryland-baltimore",
   "pageTitleQualifier": "Bus, Metro and Light Rail",
-  "lastRefreshedAt": "2026-11-02",
+  "lastRefreshedAt": "2026-11-09",
   "cities": [
     "Baltimore, Maryland",
     "Towson, Maryland",
@@ -28,7 +28,7 @@
     "Bowie, Maryland",
     "Columbia, Maryland"
   ],
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270206",
@@ -49,7 +49,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-09"
   },
   "timezone": "America/New_York",
   "lastFeedSourceKind": "configured",
@@ -80,5 +80,6 @@
   ],
   "lastPeekedExpiry": "20270206",
   "lastServiceWeek": "8153f17217cdbad4",
-  "feedObtainedAt": "20260903"
+  "feedObtainedAt": "20260903",
+  "lastFeedStart": "20260821"
 }

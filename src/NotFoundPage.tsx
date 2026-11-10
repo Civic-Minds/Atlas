@@ -17,6 +17,6 @@ export default function NotFoundPage() {
     robots.content = 'noindex';
   }, []);
   return (
-    <EmptyPage title={NOT_FOUND_TITLE} body={NOT_FOUND_BODY} footer={false} action={<ArrowLink as={Link} to="/">Back to the map</ArrowLink>} />
+    <EmptyPage title={NOT_FOUND_TITLE} body={NOT_FOUND_BODY} action={<ArrowLink as={Link} to="/">Open the Atlas map</ArrowLink>} />
   );
 }

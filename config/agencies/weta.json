@@ -18,8 +18,8 @@
   "feedUrl": "https://gtfs.sanfranciscobayferry.com/gtfs.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-3143/latest.zip",
   "lastFeedExpiry": "20270228",
-  "lastFeedVersion": "2026-10-23",
-  "lastRefreshedAt": "2026-11-02",
+  "lastFeedVersion": "2026-11-04",
+  "lastRefreshedAt": "2026-11-09",
   "cities": [
     "Chinatown, California",
     "Oakland, California",
@@ -28,7 +28,7 @@
     "South San Francisco, California",
     "Richmond, California"
   ],
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270228",
@@ -51,7 +51,7 @@
       "mismatchRoutes": 1,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-09"
   },
   "timezone": "America/Los_Angeles",
   "lastFeedSourceKind": "configured",
@@ -61,6 +61,7 @@
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
-  "lastServiceWeek": "d03477652c032401",
-  "feedObtainedAt": "20261102"
+  "lastServiceWeek": "f9e2d01eee7728c7",
+  "feedObtainedAt": "20261109",
+  "lastFeedStart": "20261102"
 }

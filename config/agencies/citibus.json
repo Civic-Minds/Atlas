@@ -22,7 +22,7 @@
     "Lubbock, Texas"
   ],
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-569/latest.zip",
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270305",
@@ -44,7 +44,8 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-07",
+    "scoredAt": "2026-11-09"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -54,5 +55,6 @@
   "lastFeedSourceUrl": "http://data.trilliumtransit.com/gtfs/lubbock-tx-us/lubbock-tx-us.zip",
   "lastPeekedExpiry": "20270305",
   "lastServiceWeek": "13b63ccce1fe01f1",
-  "feedObtainedAt": "20261010"
+  "feedObtainedAt": "20261010",
+  "lastFeedStart": "20261009"
 }

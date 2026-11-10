@@ -44,7 +44,7 @@
     "Mississauga, Ontario",
     "Caledon, Ontario"
   ],
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261220",
@@ -67,7 +67,8 @@
       "mismatchRoutes": 2,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-07",
+    "scoredAt": "2026-11-09"
   },
   "timezone": "America/New_York",
   "lastFeedSourceKind": "configured",
@@ -78,5 +79,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastServiceWeek": "d1d0c63c592b9ce5",
-  "feedObtainedAt": "20261015"
+  "feedObtainedAt": "20261015",
+  "lastFeedStart": "20260907"
 }

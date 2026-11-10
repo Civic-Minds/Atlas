@@ -8,30 +8,29 @@
     -79.93
   ],
   "bbox": [
-    32.569,
-    -80.574,
-    33.581,
-    -79.464
+    32.6854,
+    -80.1692,
+    32.9774,
+    -79.7613
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-352/latest.zip",
   "region": "South Carolina",
-  "lastFeedExpiry": "20270529",
-  "lastFeedVersion": "UTC: 25-Jun-2026 16:41",
-  "lastRefreshedAt": "2026-08-10",
+  "lastFeedExpiry": "20270527",
+  "lastFeedVersion": "UTC: 05-Nov-2026 17:17",
+  "lastRefreshedAt": "2026-11-07",
   "cities": [
     "North Charleston, South Carolina",
     "Charleston, South Carolina",
     "Mount Pleasant, South Carolina"
   ],
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270527",
   "timezone": "America/New_York",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-352/latest.zip",
-  "lastPeekedExpiry": "20270529",
-  "listingEndedOn": "20260815",
+  "lastPeekedExpiry": "20270527",
   "feedQuality": {
     "status": "healthy",
     "score": 100,
@@ -41,14 +40,22 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 133,
-      "feedExpiry": "20270529",
-      "routeCount": 38,
+      "featureCount": 100,
+      "feedExpiry": "20270527",
+      "routeCount": 23,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
-  }
+    "checkedAt": "2026-11-07",
+    "scoredAt": "2026-11-09"
+  },
+  "lastFeedStart": "20261105",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "650cedf133dfdb6d",
+  "feedObtainedAt": "20261107"
 }

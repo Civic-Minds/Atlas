@@ -18,7 +18,7 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2455/latest.zip",
   "lastFeedExpiry": "20270403",
   "lastFeedVersion": "S1000256",
-  "lastRefreshedAt": "2026-11-02",
+  "lastRefreshedAt": "2026-11-09",
   "websiteUrl": "http://www.actransit.org",
   "cities": [
     "Berkeley, California",
@@ -32,7 +32,7 @@
     "Castro Valley, California",
     "Milpitas, California"
   ],
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270403",
@@ -57,12 +57,13 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-09"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
-  "lastServiceWeek": "f58e5172775dcd43",
-  "feedObtainedAt": "20260723"
+  "lastServiceWeek": "ef499a9ab878bad9",
+  "feedObtainedAt": "20260723",
+  "lastFeedStart": "20260809"
 }

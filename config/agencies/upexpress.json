@@ -18,13 +18,13 @@
   "feedUrl": "https://assets.metrolinx.com/raw/upload/v1/Documents/Metrolinx/Open%20Data/UP-GTFS.zip",
   "lastFeedExpiry": "20270428",
   "lastFeedVersion": "20261030134250",
-  "lastRefreshedAt": "2026-11-02",
+  "lastRefreshedAt": "2026-11-09",
   "cities": [
     "Waterfront Communities-The Island, Ontario",
     "Etobicoke, Ontario",
     "Toronto, Ontario"
   ],
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270428",
@@ -46,7 +46,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-09"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -55,6 +55,7 @@
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://assets.metrolinx.com/raw/upload/v1/Documents/Metrolinx/Open%20Data/UP-GTFS.zip",
   "lastPeekedExpiry": "20270428",
-  "lastServiceWeek": "54fb4183bbc894bd",
-  "feedObtainedAt": "20261102"
+  "lastServiceWeek": "8835bab0b56a5997",
+  "feedObtainedAt": "20261102",
+  "lastFeedStart": "20261030"
 }

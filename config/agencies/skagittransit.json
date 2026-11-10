@@ -16,8 +16,8 @@
   ],
   "feedUrl": "https://strweb.skagittransit.org/GTFS/google_transit.zip",
   "lastFeedExpiry": "20270103",
-  "lastFeedVersion": "2026 09 07 Fixed Route V4",
-  "lastRefreshedAt": "2026-11-02",
+  "lastFeedVersion": "2026 09 07 Fixed Route V5",
+  "lastRefreshedAt": "2026-11-09",
   "cities": [
     "Bellingham, Washington",
     "Everett, Washington",
@@ -25,7 +25,7 @@
   ],
   "timezone": "America/Los_Angeles",
   "lastRawArchiveKey": "20251024-da59ce8fbb6ab9c7",
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270103",
@@ -48,13 +48,14 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-09"
   },
   "lastPeekedExpiry": "20270103",
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
-  "lastServiceWeek": "9a65030b3df8c070",
-  "feedObtainedAt": "20261102"
+  "lastServiceWeek": "a5e7364b76336f39",
+  "feedObtainedAt": "20261109",
+  "lastFeedStart": "20261107"
 }

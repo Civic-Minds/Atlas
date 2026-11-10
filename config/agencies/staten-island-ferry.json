@@ -23,7 +23,7 @@
     "Bayonne, New Jersey",
     "Financial District, New York"
   ],
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20280130",
@@ -48,12 +48,14 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-07",
+    "scoredAt": "2026-11-09"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastServiceWeek": "03c7f2cab8e4f320",
-  "feedObtainedAt": "20260109"
+  "feedObtainedAt": "20260109",
+  "lastFeedStart": "20260101"
 }

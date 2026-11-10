@@ -21,7 +21,7 @@
   "cities": [
     "Simi Valley, California"
   ],
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270301",
@@ -42,7 +42,8 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-07",
+    "scoredAt": "2026-11-09"
   },
   "timezone": "America/Los_Angeles",
   "lastFeedSourceKind": "configured",
@@ -53,5 +54,7 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastServiceWeek": "c57c4f0314d77558",
-  "feedObtainedAt": "20260813"
+  "feedObtainedAt": "20260813",
+  "lastFeedStart": "20260813",
+  "refusedFeedSha256": "3b39193cd0304468f65c7295b766dab312554ae0aabd9acbb6a771f19bff15d1"
 }

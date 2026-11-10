@@ -8,9 +8,9 @@
     -96.7354
   ],
   "feedUrl": "https://s3.amazonaws.com/etatransit.gtfs/siouxareametro.etaspot.net/gtfs.zip",
-  "lastFeedExpiry": "20271023",
-  "lastFeedVersion": "104",
-  "lastRefreshedAt": "2026-11-02",
+  "lastFeedExpiry": "20271102",
+  "lastFeedVersion": "105",
+  "lastRefreshedAt": "2026-11-09",
   "region": "South Dakota",
   "mdbFeedUrl": "https://s3.amazonaws.com/etatransit.gtfs/siouxareametro.etaspot.net/gtfs.zip",
   "bbox": [
@@ -24,10 +24,10 @@
   ],
   "timezone": "America/Chicago",
   "lastRawArchiveKey": "20240403-d45b07265ba69af5",
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20271023",
+  "expiredFeedCheckExpiry": "20271102",
   "feedQuality": {
     "status": "healthy",
     "score": 100,
@@ -38,14 +38,14 @@
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
       "featureCount": 24,
-      "feedExpiry": "20271023",
+      "feedExpiry": "20271102",
       "routeCount": 9,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-09"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -53,7 +53,8 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://s3.amazonaws.com/etatransit.gtfs/siouxareametro.etaspot.net/gtfs.zip",
-  "lastPeekedExpiry": "20271023",
-  "lastServiceWeek": "d043d18f2ec22467",
-  "feedObtainedAt": "20261102"
+  "lastPeekedExpiry": "20271102",
+  "lastServiceWeek": "3dd7b5322319568f",
+  "feedObtainedAt": "20261109",
+  "lastFeedStart": "20240916"
 }
