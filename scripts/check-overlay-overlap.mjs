@@ -23,10 +23,10 @@ const SCENES = [
   // An agency with several years, so the year scrubber shows (History is off on phones: the map shows instead).
   { name: 'history', path: '/apps/history?agency=marta', visitors: ['default'] },
   // Compare is off on phones (phoneModeFlags), so it starts at the sm width.
-  { name: 'compare', path: '/', visitors: ['default'], minWidth: 640, open: page => page.getByRole('button', { name: 'Compare two maps' }).click() },
+  { name: 'compare', path: '/', visitors: ['default', 'loading', 'unlinked-loading', 'error'], minWidth: 640, open: page => page.getByRole('button', { name: 'Compare two maps' }).click() },
   { name: 'live', path: '/apps/live', visitors: ['default'] },
 ].filter(s => !only || only.includes(s.name));
-const WIDTHS = [360, 390, 768, 1024, 1280];
+const WIDTHS = [360, 390, 768, 1024, 1280, 1440];
 const HEIGHT = 900;
 const SETTLE_MS = 6000;
 
@@ -98,6 +98,10 @@ try {
     if (visitor.startsWith('consent')) await page.route('**/api/privacy-region*', route => route.fulfill({ json: { country: 'FR' } }));
     // On-demand areas that fail to load put the notice pill along the bottom edge.
     if (visitor.endsWith('notice')) await page.route('**/on-demand/manifest.json*', route => route.fulfill({ status: 500, body: '' }));
+    // Compare's loading and error pills (CIV-1372): agency data held back, or failing, while the measure runs.
+    const holdAgencies = visitor.endsWith('loading'), failAgencies = visitor === 'error';
+    if (holdAgencies) await page.route(/\/agencies\/[^/]+\.json/, async route => { await new Promise(r => setTimeout(r, 120000)); route.abort().catch(() => {}); });
+    if (failAgencies) await page.route(/\/agencies\/[^/]+\.json/, route => route.fulfill({ status: 500, body: '' }));
     // The map key is a setting (Settings, "Show map legend"), off by default.
     if (scene.key) await page.addInitScript(() => { try { localStorage.setItem('atlas_pref_map_legend', 'true'); } catch {} });
     await page.goto(baseUrl + scene.path, { waitUntil: 'domcontentloaded' });
@@ -105,10 +109,13 @@ try {
     const opened = await page.waitForSelector('[data-map-overlay="top-bar"]', { timeout: 30000 }).then(() => true, () => false);
     if (!opened) { skipped.push(label); await ctx.close(); continue; }
     if (scene.open) await scene.open(page).catch(err => failures.push(`${label}: could not open the scene (${String(err).split('\n')[0]})`));
+    if (visitor.startsWith('unlinked')) await page.locator('[data-map-overlay="compare-link"] button').click().catch(err => failures.push(`${label}: could not unlink (${String(err).split('\n')[0]})`));
     await page.waitForTimeout(SETTLE_MS);
     // Measure the settled map, not one still loading: the loading pill and half-drawn counts change the bottom row.
-    await page.waitForFunction(() => !/Loading/.test(document.body.innerText), null, { timeout: 30000 }).catch(() => {});
+    // The loading visitors are measured while it loads, and must show the pill; the error visitor must show its pill.
+    if (!holdAgencies) await page.waitForFunction(() => !/Loading/.test(document.body.innerText), null, { timeout: 30000 }).catch(() => {});
     const { overlays, viewport } = await page.evaluate(measure);
+    if ((holdAgencies || failAgencies) && !overlays.some(o => o.name === 'counts')) failures.push(`${label}: the ${holdAgencies ? 'loading' : 'error'} pill never showed, so it was not measured`);
     const names = overlays.map(o => `${o.name}(${o.boxes.length})`).join(' ');
     console.log(`${label}: ${names}`);
     for (const o of overlays) for (const b of o.boxes) {

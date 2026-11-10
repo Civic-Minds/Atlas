@@ -20,7 +20,7 @@ import { MapErrorsPanel, MapErrorsPill } from '../components/Interval/MapErrorsP
 import { FilterPanel } from '../components/Interval/FilterPanel';
 import { FilterChips, getNowPeriodForTimezone } from '../components/Interval/FilterChips';
 import { AgencyCard } from '../components/Interval/AgencyCard';
-import { MAP_FOOTER_ROW_SLOT, MAP_FOOTER_ROW_COMPARE_SLOT, MAP_FOOTER_RIGHT_SLOT, MAP_FOOTER_NOTICE_SLOT, MAP_COUNTS_PHONE_SLOT, mapFooterStyle, TRANSITION_BASE, TRANSITION_SLOW, Z_PANEL, MAP_BADGE, MAP_BADGE_COUNT, MAP_BADGE_LABEL, SIDEBAR_CARD_TOP, SIDEBAR_CARD_TOP_DESKTOP, Z_PANEL_RAISED } from '../styles';
+import { MAP_FOOTER_ROW_SLOT, MAP_FOOTER_ROW_COMPARE_SLOT, MAP_COUNTS_COMPARE_SLOT, MAP_FOOTER_RIGHT_SLOT, MAP_FOOTER_NOTICE_SLOT, MAP_COUNTS_PHONE_SLOT, mapFooterStyle, TRANSITION_BASE, TRANSITION_SLOW, Z_PANEL, MAP_BADGE, MAP_BADGE_COUNT, MAP_BADGE_LABEL, SIDEBAR_CARD_TOP, SIDEBAR_CARD_TOP_DESKTOP, Z_PANEL_RAISED } from '../styles';
 import type { Agency } from '../App';
 import type { OpenInfoFn } from '../components/InfoPanel';
 import { mapViewKind, viewAllowsOnDemand, viewShowsOnDemand } from '../../shared/viewLayers';
@@ -1319,7 +1319,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
       )}
       {((stats && (stats.total > 0 || !isLoading)) || researchCounts || isLoading || isTilesLoading || isBasemapLoading || failedSlugs.size > 0 || phoneErrorsInRow) && (
         // An error never fades (CIV-50): with the phone's "Error" pill in the row, the row stays.
-        <div data-map-overlay="counts" className={`${MAP_COUNTS_PHONE_SLOT} ${Z_PANEL} shrink-0 flex gap-2 transition-all ${TRANSITION_SLOW} ${showUi || nightServiceView || phoneErrorsInRow ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
+        <div data-map-overlay="counts" className={`${MAP_COUNTS_PHONE_SLOT} ${compareActive ? MAP_COUNTS_COMPARE_SLOT : ''} ${Z_PANEL} shrink-0 flex gap-2 transition-all ${TRANSITION_SLOW} ${showUi || nightServiceView || phoneErrorsInRow ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
           {(isLoading || isTilesLoading || isBasemapLoading) && (
             <div className={`${MAP_BADGE} h-8 max-sm:h-[32px]`}>
               <Spinner />
