@@ -3,9 +3,10 @@ import { describe, expect, it } from 'vitest';
 import ChangelogPage from '../ChangelogPage';
 
 describe('ChangelogPage', () => {
-  it('lists versions with their month and no map data lines', () => {
+  it('lists versions with their full release date and no map data lines', () => {
     render(<ChangelogPage />);
-    expect(screen.getByRole('heading', { name: /Version 3\.3\s*·\s*\w+ 20\d\d/ })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /Version 3\.4\s*·\s*Nov 9, 2026/ })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /Version 3\.3\s*·\s*Oct 12, 2026/ })).toBeInTheDocument();
     expect(screen.getByText('What changed in Atlas.')).toBeInTheDocument();
     expect(screen.queryByText(/Map data updated/i)).toBeNull();
   });

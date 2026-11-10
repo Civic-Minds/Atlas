@@ -21,7 +21,7 @@ export default function ChangelogPage() {
               <section key={entry.key} id={entry.key} className="scroll-mt-24">
                 <SectionTitle level="item" className="mb-2">
                   {entry.label}
-                  <span className="font-normal text-[var(--text-dim)]"> · {entry.month}</span>
+                  <span className="font-normal text-[var(--text-dim)]"> · {entry.dateLabel}</span>
                 </SectionTitle>
                 <ul className="list-disc pl-5 space-y-1">
                   {entry.items.map(item => (
