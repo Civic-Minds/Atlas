@@ -11,11 +11,11 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-225/latest.zip",
   "lastFeedExpiry": "20270425",
   "lastFeedVersion": "20261102",
-  "lastRefreshedAt": "2026-11-06",
+  "lastRefreshedAt": "2026-11-09",
   "cities": [
     "Anchorage, Alaska"
   ],
-  "lastFeedCheckAt": "20261106",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270425",
@@ -41,7 +41,7 @@
       "mismatchRoutes": 1,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-07"
+    "checkedAt": "2026-11-09"
   },
   "lastPeekedExpiry": "20270425",
   "lastFeedStart": "20261102",
@@ -49,6 +49,6 @@
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
-  "lastServiceWeek": "c9e408cd6190bc87",
+  "lastServiceWeek": "5163d49489d72817",
   "feedObtainedAt": "20261106"
 }

@@ -1,7 +1,7 @@
 import type { WheelEvent as ReactWheelEvent } from 'react';
 import ModeTab from '../ModeTab';
 import { Columns2, Lock, LockOpen } from 'lucide-react';
-import { MAP_BADGE, MAP_BADGE_COUNT, MAP_BADGE_LABEL } from '../../styles';
+import { COMPARE_SIDE_GROUP, MAP_BADGE_COUNT, MAP_BADGE_LABEL } from '../../styles';
 import Pill from '../ui/Pill';
 import RoundIconButton from '../ui/RoundIconButton';
 import { FilterChips } from './FilterChips';
@@ -102,26 +102,30 @@ function forwardWheelToMap(e: ReactWheelEvent<HTMLElement>) {
 }
 
 /**
- * Sits on each compare map: the side's label (its settings and route counts) and its own
- * Frequency, Day and Time menus (the same chips and menus as the main filter bar), so it is
- * clear which map each control changes.
+ * Sits on each compare map, in one outline: the side's badge, its label (settings and route counts), then its
+ * own Frequency, Day and Time menus (the same chips and menus as the main filter bar). All on one line when
+ * the map's half has room; when it has not, the menus wrap to a second line inside the same outline, so it
+ * is clear which map each control changes.
  */
 export function CompareSideBar({ side, settings, onChange, counts }: CompareSideBarProps) {
   return (
-    <div className="flex flex-col items-center sm:items-end gap-1.5 min-w-0 max-w-full" data-compare-side={side}>
-      <div onWheel={forwardWheelToMap} className={`pointer-events-auto ${MAP_BADGE} min-h-8 max-sm:min-h-[32px] py-1 gap-x-1.5 gap-y-0 flex-wrap justify-center max-w-[calc(100vw-2rem)] sm:flex-nowrap sm:max-w-full sm:min-w-0`}>
-        <SideBadge side={side} />
-        <span className={`${MAP_BADGE_COUNT} whitespace-nowrap sm:shrink-0`} data-testid={`compare-heading-${side}`}>{compareSideHeading(settings)}</span>
-        {counts && (
-          <span className={`${MAP_BADGE_LABEL} whitespace-nowrap sm:min-w-0 sm:truncate`} data-testid={`compare-counts-${side}`}>
-            <span className="hidden sm:inline">· </span>{counts.total} {plural(counts.total, 'route')}
-          </span>
-        )}
-      </div>
-      <div className="pointer-events-auto">
+    <div className="flex flex-col items-center sm:items-end min-w-0 max-w-full" data-compare-side={side}>
+      <div
+        role="group"
+        aria-label={`Filters for map ${side}`}
+        className={`pointer-events-auto ${COMPARE_SIDE_GROUP} flex-wrap justify-center sm:justify-start max-w-[calc(100vw-2rem)] sm:max-w-full`}
+      >
+        <div onWheel={forwardWheelToMap} className="flex items-center gap-1.5 pl-1.5 pr-1 min-h-8 min-w-0 max-w-full">
+          <SideBadge side={side} />
+          <span className={`${MAP_BADGE_COUNT} whitespace-nowrap shrink-0`} data-testid={`compare-heading-${side}`}>{compareSideHeading(settings)}</span>
+          {counts && (
+            <span className={`${MAP_BADGE_LABEL} whitespace-nowrap min-w-0 truncate`} data-testid={`compare-counts-${side}`}>
+              <span className="hidden sm:inline">· </span>{counts.total} {plural(counts.total, 'route')}
+            </span>
+          )}
+        </div>
         <FilterChips
           variant="side"
-          groupLabel={`Map ${side} settings`}
           maxHeadway={settings.maxHeadway}
           setMaxHeadway={maxHeadway => onChange({ ...settings, maxHeadway })}
           day={settings.day}

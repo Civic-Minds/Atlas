@@ -33,7 +33,7 @@
   "nextServiceDatesSkipWeekendEvents": true,
   "lastFeedExpiry": "20270328",
   "lastFeedVersion": "SC-Fall-2026.5",
-  "lastRefreshedAt": "2026-11-02",
+  "lastRefreshedAt": "2026-11-09",
   "cities": [
     "Seattle, Washington",
     "Tacoma, Washington",
@@ -46,7 +46,7 @@
     "Kent, Washington",
     "Federal Way, Washington"
   ],
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270328",
@@ -68,7 +68,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-07"
+    "checkedAt": "2026-11-09"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -97,7 +97,7 @@
     }
   ],
   "lastPeekedExpiry": "20270328",
-  "lastServiceWeek": "4b895ab9dae86f7f",
+  "lastServiceWeek": "8df0e969f80451c5",
   "feedObtainedAt": "20261016",
   "lastFeedStart": "20261001"
 }

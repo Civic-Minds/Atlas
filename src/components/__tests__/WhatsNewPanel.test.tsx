@@ -1,7 +1,7 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import { FEATURES, WHATS_NEW_ENABLED, whatsNewEnabledFor } from '../../../shared/config';
-import { WhatsNewPanel, dataUpdatedLabel } from '../WhatsNewPanel';
+import { WhatsNewPanel } from '../WhatsNewPanel';
 import { MapAttribution } from '../Interval/MapAttribution';
 import { WHATS_NEW, visibleWhatsNew, type WhatsNewRelease } from '../../data/whatsNew';
 import { version } from '../../../package.json';
@@ -41,9 +41,9 @@ describe('What\'s new link', () => {
 });
 
 describe('What\'s new flag', () => {
-  it('is off on the public site and on in beta', () => {
-    expect(whatsNewEnabledFor('public')).toBe(false);
-    expect(whatsNewEnabledFor('preview')).toBe(false);
+  it('is on in every build, public included', () => {
+    expect(whatsNewEnabledFor('public')).toBe(true);
+    expect(whatsNewEnabledFor('preview')).toBe(true);
     expect(whatsNewEnabledFor('beta')).toBe(true);
     expect(whatsNewEnabledFor('dev')).toBe(true);
     expect(FEATURES.whatsNew).toBe(WHATS_NEW_ENABLED);
@@ -52,43 +52,31 @@ describe('What\'s new flag', () => {
 
 describe('WhatsNewPanel', () => {
   it('shows only the latest version and links to the full changelog', () => {
-    render(<WhatsNewPanel onClose={() => {}} includeBeta releases={RELEASES} loadRelease={async () => null} />);
-    expect(screen.getAllByRole('heading', { level: 3 }).map(h => h.textContent)).toEqual(['Version 3.3 · October 2026']);
+    render(<WhatsNewPanel onClose={() => {}} includeBeta releases={RELEASES} />);
+    expect(screen.getAllByRole('heading', { level: 3 }).map(h => h.textContent)).toEqual(['Version 3.3 · Released Oct 12, 2026']);
     expect(screen.getByRole('link', { name: 'See all changes' })).toHaveAttribute('href', '/changelog');
   });
 
   it('shows beta items only in beta', () => {
     const { unmount } = render(
-      <WhatsNewPanel onClose={() => {}} includeBeta releases={RELEASES} loadRelease={async () => null} />,
+      <WhatsNewPanel onClose={() => {}} includeBeta releases={RELEASES} />,
     );
     expect(screen.getAllByRole('listitem').map(li => li.textContent)).toEqual(['Public change one.', 'Beta change. Beta', 'Public change two.']);
     unmount();
 
-    render(<WhatsNewPanel onClose={() => {}} includeBeta={false} releases={RELEASES} loadRelease={async () => null} />);
+    render(<WhatsNewPanel onClose={() => {}} includeBeta={false} releases={RELEASES} />);
     expect(screen.getAllByRole('listitem').map(li => li.textContent)).toEqual(['Public change one.', 'Public change two.']);
   });
 
-  it('shows the data date from the release manifest', async () => {
-    render(<WhatsNewPanel onClose={() => {}} includeBeta releases={RELEASES} loadRelease={async () => ({ generatedAt: '2026-10-09T05:21:01.950Z' })} />);
-    expect(await screen.findByText(/map data updated Oct 9, 2026/)).toBeInTheDocument();
-  });
-
-  it.each([
-    ['no manifest', async () => null],
-    ['manifest without a date', async () => ({})],
-    ['manifest with a bad date', async () => ({ generatedAt: 'soon' })],
-    ['failed load', async () => { throw new Error('offline'); }],
-  ])('omits the date with %s', async (_label, loadRelease) => {
-    render(<WhatsNewPanel onClose={() => {}} includeBeta releases={RELEASES} loadRelease={loadRelease} />);
-    await screen.findByRole('dialog');
-    await new Promise(resolve => setTimeout(resolve, 0));
+  it('shows the app release date, never the map data date', () => {
+    render(<WhatsNewPanel onClose={() => {}} includeBeta releases={RELEASES} />);
+    expect(screen.getByRole('heading', { level: 3 }).textContent).toBe('Version 3.3 · Released Oct 12, 2026');
     expect(screen.queryByText(/data updated/i)).toBeNull();
   });
 
-  it('dataUpdatedLabel never invents a date', () => {
-    expect(dataUpdatedLabel(null)).toBeNull();
-    expect(dataUpdatedLabel({ generatedAt: undefined })).toBeNull();
-    expect(dataUpdatedLabel({ generatedAt: '2026-10-09T05:21:01Z' })).toBe('Oct 9, 2026');
+  it('falls back to the month when the release date is unusable', () => {
+    render(<WhatsNewPanel onClose={() => {}} includeBeta releases={[{ ...RELEASES[0], date: 'soon' }]} />);
+    expect(screen.getByRole('heading', { level: 3 }).textContent).toBe('Version 3.3 · October 2026');
   });
 });
 

@@ -8,22 +8,22 @@
     -81.379
   ],
   "feedUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/11346/gtfs.zip",
-  "lastFeedExpiry": "20261107",
-  "lastFeedVersion": "AUGUST 2026_20260722",
+  "lastFeedExpiry": "20270206",
+  "lastFeedVersion": "NOVEMBER 2026_20261021",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2001/latest.zip",
-  "lastRefreshedAt": "2026-11-02",
+  "lastRefreshedAt": "2026-11-08",
   "cities": [
     "Canton, Ohio",
     "Akron, Ohio"
   ],
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261107",
+  "expiredFeedCheckExpiry": "20270206",
   "timezone": "America/New_York",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/11346/gtfs.zip",
-  "lastPeekedExpiry": "20261107",
+  "lastPeekedExpiry": "20270206",
   "feedQuality": {
     "status": "healthy",
     "score": 100,
@@ -34,20 +34,21 @@
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
       "featureCount": 98,
-      "feedExpiry": "20261107",
+      "feedExpiry": "20270206",
       "routeCount": 24,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-07"
+    "checkedAt": "2026-11-08",
+    "scoredAt": "2026-11-09"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
-  "lastServiceWeek": "4ecac77976d1a2d6",
-  "feedObtainedAt": "20260804",
-  "lastFeedStart": "20260809"
+  "lastServiceWeek": "4424bc14600557c2",
+  "feedObtainedAt": "20261108",
+  "lastFeedStart": "20261108"
 }

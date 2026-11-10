@@ -16,8 +16,8 @@
   "feedUrl": "https://gtfs.sound.obaweb.org/prod/95_gtfs.zip",
   "lastFeedExpiry": "20261129",
   "lastFeedVersion": "PDT: 16-Oct-2026 11:51",
-  "lastRefreshedAt": "2026-11-02",
-  "lastFeedCheckAt": "20261102",
+  "lastRefreshedAt": "2026-11-09",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261129",
@@ -41,7 +41,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-07"
+    "checkedAt": "2026-11-09"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -50,7 +50,7 @@
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://gtfs.sound.obaweb.org/prod/95_gtfs.zip",
   "lastPeekedExpiry": "20261129",
-  "lastServiceWeek": "5c695887ccadbee7",
+  "lastServiceWeek": "8616cd945905e9d1",
   "feedObtainedAt": "20261016",
   "lastFeedStart": "20261009"
 }

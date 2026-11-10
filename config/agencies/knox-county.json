@@ -10,8 +10,8 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-50502/latest.zip",
   "region": "Illinois",
   "lastFeedExpiry": "20270131",
-  "lastFeedVersion": "26.32",
-  "lastRefreshedAt": "2026-11-02",
+  "lastFeedVersion": "26.34",
+  "lastRefreshedAt": "2026-11-09",
   "feedQuality": {
     "status": "review",
     "score": 90,
@@ -31,11 +31,11 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-07"
+    "checkedAt": "2026-11-09"
   },
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://gis.ci.galesburg.il.us/cityofgalesburg-il-us.zip",
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270131",
@@ -45,6 +45,6 @@
   "feedRefreshRetryCount": 0,
   "lastPeekedExpiry": "20270131",
   "lastServiceWeek": "222133bc30db048c",
-  "feedObtainedAt": "20260819",
+  "feedObtainedAt": "20261109",
   "lastFeedStart": "20251201"
 }

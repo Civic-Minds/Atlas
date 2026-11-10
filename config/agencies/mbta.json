@@ -23,10 +23,10 @@
     }
   ],
   "lastFeedExpiry": "20261212",
-  "lastFeedVersion": "Fall 2026, 2026-10-30T17:51:33+00:00, version D",
+  "lastFeedVersion": "Fall 2026, 2026-11-03T23:46:00+00:00, version D",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-437/latest.zip",
   "gtfsFares": true,
-  "lastRefreshedAt": "2026-11-02",
+  "lastRefreshedAt": "2026-11-09",
   "cities": [
     "Dorchester, Massachusetts",
     "Brookline, Massachusetts",
@@ -39,7 +39,7 @@
     "Newton, Massachusetts",
     "Cambridge, Massachusetts"
   ],
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261212",
@@ -55,15 +55,15 @@
       "validationWarnings": 0,
       "shapeAnomalies": 5,
       "routeHeadwayMismatches": 12,
-      "featureCount": 1108,
+      "featureCount": 1121,
       "feedExpiry": "20261212",
-      "routeCount": 184,
+      "routeCount": 188,
       "problemShapes": 4,
       "problemShapeRoutes": 1,
       "mismatchRoutes": 6,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-07"
+    "checkedAt": "2026-11-09"
   },
   "timezone": "America/New_York",
   "feedRefreshStatus": "current",
@@ -105,7 +105,7 @@
     }
   ],
   "lastPeekedExpiry": "20261212",
-  "lastServiceWeek": "4e17e0d4afcc9ce5",
-  "feedObtainedAt": "20261102",
-  "lastFeedStart": "20261023"
+  "lastServiceWeek": "38ea6ab81b5a20f2",
+  "feedObtainedAt": "20261109",
+  "lastFeedStart": "20261027"
 }

@@ -8,9 +8,9 @@
   "feedUrl": "https://mywaukeshametro.com/gtfs",
   "mdbFeedUrl": "https://mywaukeshametro.com/gtfs",
   "region": "Wisconsin",
-  "lastFeedExpiry": "20281107",
-  "lastFeedVersion": "Fall 2026 9 Detour",
-  "lastRefreshedAt": "20260811",
+  "lastFeedExpiry": "20270110",
+  "lastFeedVersion": "11/7/2026",
+  "lastRefreshedAt": "2026-11-09",
   "websiteUrl": "https://www.waukesha-wi.gov/departments/transit.php",
   "cities": [
     "Waukesha, Wisconsin",
@@ -18,13 +18,13 @@
   ],
   "timezone": "America/Chicago",
   "lastRawArchiveKey": "20250601-9d45b36319c36615",
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20270117",
+  "expiredFeedCheckExpiry": "20270110",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://mywaukeshametro.com/gtfs",
-  "lastPeekedExpiry": "20991231",
+  "lastPeekedExpiry": "20270110",
   "feedQuality": {
     "status": "healthy",
     "score": 100,
@@ -35,14 +35,20 @@
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
       "featureCount": 38,
-      "feedExpiry": "20281107",
+      "feedExpiry": "20270110",
       "routeCount": 8,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-07"
+    "checkedAt": "2026-11-09"
   },
-  "lastFeedStart": "20260830"
+  "lastFeedStart": "20261106",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "321e03a9f92690cc",
+  "feedObtainedAt": "20261109"
 }
