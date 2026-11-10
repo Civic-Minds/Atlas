@@ -5,6 +5,7 @@ import type { DashboardBand } from '../../shared/liveDashboard';
 import type { NightServiceFrequency } from '../../shared/nightService';
 import { parseFrequentServiceDays, type FrequentServiceFrequency, type FrequentServiceWindow } from '../../shared/frequentService';
 import type { MapMeasure } from '../components/Live/routeMapModel';
+import { currentAgencyKey } from './formerSlugs';
 
 /**
  * Every view's link parameters, declared once (CIV-1011 #11, CIV-1139): each one's key, the older names a shared
@@ -94,12 +95,12 @@ export const MAP_URL = {
     parse: raw => raw !== '0',
     serialize: value => (value ? '1' : '0'),
   } satisfies UrlParam<boolean>,
-  /** The open route card: agency::route[::branch:x]. */
-  route: { key: 'route', presence: 'any', parse: identity, serialize: value => value || null } satisfies UrlParam<string>,
+  /** The open route card: agency::route[::branch:x]. A renamed or merged agency's old key opens its route (formerSlugs). */
+  route: { key: 'route', presence: 'any', parse: raw => currentAgencyKey(raw, true), serialize: value => value || null } satisfies UrlParam<string>,
   /** The open stop card: agency::stopId. */
-  stop: { key: 'stop', presence: 'any', parse: identity, serialize: value => value || null } satisfies UrlParam<string>,
+  stop: { key: 'stop', presence: 'any', parse: raw => currentAgencyKey(raw, false), serialize: value => value || null } satisfies UrlParam<string>,
   /** The open on-demand card: agency, or agency::zoneId. */
-  onDemand: { key: 'ondemand', presence: 'any', parse: identity, serialize: value => value || null } satisfies UrlParam<string>,
+  onDemand: { key: 'ondemand', presence: 'any', parse: raw => currentAgencyKey(raw, false), serialize: value => value || null } satisfies UrlParam<string>,
   /** Debug only: extra routes drawn in distinct colours. Read on load, never written. */
   highlight: {
     key: 'highlight', presence: 'nonEmpty',

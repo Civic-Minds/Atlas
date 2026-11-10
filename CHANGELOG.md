@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
+## [Unreleased]
+
+- **NJ Transit is [one agency](https://github.com/Civic-Minds/Atlas/issues/1303)**: bus and rail were listed as two, unlike SEPTA and LA Metro; old NJ Transit Bus and Rail pages and map links open the combined agency
+
 ## [3.4.0] - 2026-11-09
 
 ### Map and route behavior

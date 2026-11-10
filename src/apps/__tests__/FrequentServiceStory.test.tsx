@@ -133,11 +133,11 @@ describe('FrequentServiceStory', () => {
   });
 
   it('reads the intro count and the story agency from the definitions file (CIV-87)', () => {
-    expect(frequentServiceDefinitionSample).toMatchObject({ agencies: 429, blocked: 2, canada: 85, unitedStates: 344, namedNetwork: 80, withWait: 69 });
+    expect(frequentServiceDefinitionSample).toMatchObject({ agencies: 428, blocked: 2, canada: 85, unitedStates: 343, namedNetwork: 80, withWait: 69 });
     expect(frequentServiceStoryResearchRecord).toEqual({ agencyId: 'ttc', agencyName: 'Toronto Transit Commission' });
     render(<FrequentServiceStory agencies={agencies} onExploreMap={() => {}} />);
-    expect(screen.getByText(/We checked how 429 agencies define frequent service on their own websites/)).toBeInTheDocument();
-    expect(screen.getByText(/at 429 agencies Atlas covers in Canada \(85\) and the United States \(344\)\. We couldn't check 2 others because their websites block automated visits\./)).toBeInTheDocument();
+    expect(screen.getByText(/We checked how 428 agencies define frequent service on their own websites/)).toBeInTheDocument();
+    expect(screen.getByText(/at 428 agencies Atlas covers in Canada \(85\) and the United States \(343\)\. We couldn't check 2 others because their websites block automated visits\./)).toBeInTheDocument();
   });
 
   it('keeps the audit canonical and unique after alias merging', () => {

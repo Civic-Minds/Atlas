@@ -17292,176 +17292,16 @@
       "lastFeedStart": "20261101"
     },
     {
-      "slug": "njt-rail",
-      "name": "NJ Transit Rail",
-      "officialName": "NJ Transit Rail",
-      "displayArea": "New Jersey",
-      "websiteUrl": "http://www.njtransit.com/",
-      "region": "New Jersey",
-      "center": [
-        40.7,
-        -74.2
-      ],
-      "bbox": [
-        39.3633,
-        -75.198,
-        41.4887,
-        -73.9883
-      ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-509/latest.zip",
-      "lastFeedExpiry": "20270313",
-      "lastFeedVersion": null,
-      "mergeEquivalentShapeVariantsAllModes": true,
-      "lastRefreshedAt": "2026-11-02",
-      "cities": [
-        "Plainfield, New Jersey",
-        "Paterson, New Jersey",
-        "East Orange, New Jersey",
-        "Newark, New Jersey",
-        "Passaic, New Jersey",
-        "Parsippany, New Jersey",
-        "Cherry Hill, New Jersey",
-        "Middletown, New Jersey",
-        "New Brunswick, New Jersey",
-        "Union, New Jersey"
-      ],
-      "lastFeedCheckAt": "20261109",
-      "expiredFeedCheckCount": 0,
-      "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20270313",
-      "timezone": "America/New_York",
-      "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-509/latest.zip",
-      "feedQuality": {
-        "status": "review",
-        "score": 87,
-        "reasons": [
-          "2 route have stops whose frequency differs from the overall route schedule."
-        ],
-        "metrics": {
-          "validationErrors": 0,
-          "validationWarnings": 0,
-          "shapeAnomalies": 18,
-          "routeHeadwayMismatches": 7,
-          "featureCount": 129,
-          "feedExpiry": "20270313",
-          "routeCount": 16,
-          "problemShapes": 0,
-          "problemShapeRoutes": 0,
-          "mismatchRoutes": 2,
-          "resumesOn": null
-        },
-        "checkedAt": "2026-11-07",
-        "scoredAt": "2026-11-09"
-      },
-      "feedRefreshStatus": "current",
-      "feedRefreshError": null,
-      "feedRefreshErrorAt": null,
-      "feedRefreshRetryCount": 0,
-      "modeOverrides": [
+      "slug": "njt",
+      "formerSlugs": [
+        "njt-bus",
         {
-          "routeType": 0,
-          "routeShortName": "HBLR",
-          "mode": 100,
-          "reason": "Hudson-Bergen, Newark and River LINE are light rail, published as route_type 0 (tram)"
-        },
-        {
-          "routeType": 0,
-          "routeShortName": "NLR",
-          "mode": 100,
-          "reason": "Hudson-Bergen, Newark and River LINE are light rail, published as route_type 0 (tram)"
-        },
-        {
-          "routeType": 0,
-          "routeShortName": "RVLN",
-          "mode": 100,
-          "reason": "Hudson-Bergen, Newark and River LINE are light rail, published as route_type 0 (tram)"
+          "slug": "njt-rail",
+          "idPrefix": "rail:"
         }
       ],
-      "lastPeekedExpiry": "20270313",
-      "lastServiceWeek": "506f7a7aa88f8ef4",
-      "feedObtainedAt": "20260916",
-      "lastFeedStart": "20260915"
-    },
-    {
-      "slug": "njt-bus",
-      "name": "NJ Transit Bus",
-      "officialName": "NJ Transit Bus",
-      "displayArea": "New Jersey",
-      "websiteUrl": "http://www.njtransit.com/",
-      "region": "New Jersey",
-      "center": [
-        40.3698,
-        -74.4005
-      ],
-      "bbox": [
-        38.9331,
-        -75.5212,
-        41.2563,
-        -73.9391
-      ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-508/latest.zip",
-      "lastFeedExpiry": "20270417",
-      "lastFeedVersion": null,
-      "lastRefreshedAt": "2026-11-02",
-      "cities": [
-        "Trenton, New Jersey",
-        "Passaic, New Jersey",
-        "Cherry Hill, New Jersey",
-        "Camden, New Jersey",
-        "East Orange, New Jersey",
-        "Paterson, New Jersey",
-        "Newark, New Jersey",
-        "Plainfield, New Jersey",
-        "Elizabeth, New Jersey",
-        "Irvington, New Jersey"
-      ],
-      "timezone": "America/New_York",
-      "lastRawArchiveKey": "20261225-dafb95e8c171680d",
-      "lastFeedCheckAt": "20261109",
-      "expiredFeedCheckCount": 0,
-      "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20270417",
-      "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-508/latest.zip",
-      "feedQuality": {
-        "status": "review",
-        "score": 96,
-        "reasons": [
-          "10 route have stops whose frequency differs from the overall route schedule."
-        ],
-        "metrics": {
-          "validationErrors": 0,
-          "validationWarnings": 0,
-          "shapeAnomalies": 10,
-          "routeHeadwayMismatches": 18,
-          "featureCount": 2039,
-          "feedExpiry": "20270417",
-          "routeCount": 261,
-          "problemShapes": 0,
-          "problemShapeRoutes": 0,
-          "mismatchRoutes": 10,
-          "resumesOn": null
-        },
-        "checkedAt": "2026-11-07",
-        "scoredAt": "2026-11-09"
-      },
-      "feedRefreshStatus": "current",
-      "feedRefreshError": null,
-      "feedRefreshErrorAt": null,
-      "feedRefreshRetryCount": 0,
-      "lastPeekedExpiry": "20270417",
-      "lastServiceWeek": "0294aeca5ca9ccd1",
-      "feedObtainedAt": "20261021",
-      "lastFeedStart": "20261020"
-    },
-    {
-      "slug": "njt",
       "name": "NJ Transit",
       "officialName": "NJ Transit",
-      "betaOnly": true,
-      "hiddenInProduction": true,
-      "issueUrl": "https://github.com/Civic-Minds/Atlas/issues/1303",
       "displayArea": "New Jersey",
       "websiteUrl": "http://www.njtransit.com/",
       "region": "New Jersey",
@@ -17521,7 +17361,7 @@
       ],
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-508/latest.zip",
-      "lastFeedCheckAt": "20261109",
+      "lastFeedCheckAt": "20261110",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
       "expiredFeedCheckExpiry": "20270417",
@@ -17544,13 +17384,12 @@
           "mismatchRoutes": 10,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-03",
-        "scoredAt": "2026-11-09"
+        "checkedAt": "2026-11-10"
       },
       "lastFeedExpiry": "20270417",
       "lastPeekedExpiry": "20270417",
       "lastFeedVersion": null,
-      "lastRefreshedAt": "2026-11-03",
+      "lastRefreshedAt": "2026-11-10",
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
       "feedRefreshErrorAt": null,
@@ -17564,7 +17403,7 @@
           "rawArchiveKey": "20270313-0b0c31986a080e18"
         }
       ],
-      "refusedFeedSha256": "0e09c82fcfe3d1722195a63036745883d3add28a6bde35f127e99b147d0e6cb9"
+      "lastFeedStart": "20261020"
     },
     {
       "slug": "path",
