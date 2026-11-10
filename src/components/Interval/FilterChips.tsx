@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { Search } from 'lucide-react';
 import { HEADWAY_TIERS, getTierColor } from '../../utils/colors';
-import { FLOATING_CARD, GLASS_PILL, PILL_SURFACE, PANEL_ENTER_TOP, CONTROL_ACTIVE, CONTROL_ACTIVE_GLASS, CONTROL_INACTIVE, SEARCH_PILL, SEARCH_ICON, SEARCH_FIELD, CARD_SECTION, TOP_BAR_OUTLINE } from '../../styles';
+import { FLOATING_CARD, GLASS_PILL, PANEL_ENTER_TOP, CONTROL_ACTIVE, CONTROL_ACTIVE_GLASS, CONTROL_INACTIVE, SEARCH_PILL, SEARCH_ICON, SEARCH_FIELD, CARD_SECTION, TOP_BAR_OUTLINE, COMPARE_GROUP } from '../../styles';
 import { AgencyRegionSection } from '../ui/AgencyList';
 import Pill from '../ui/Pill';
 import PillGroup from '../ui/PillGroup';
@@ -62,8 +62,7 @@ interface FilterChipsProps {
    * map's own Time menu (CIV-389, CIV-392; no "All day" since CIV-1097).
    */
   variant?: 'full' | 'shared' | 'side' | 'history';
-  /** Accessible name for the 'side' variant's group, e.g. "Map B settings". */
-  groupLabel?: string;
+
 }
 
 const MODES = filterModeOptions(FEATURES.onDemand);
@@ -254,7 +253,6 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
   nightServiceFrequency = 60,
   setNightServiceFrequency,
   variant = 'full',
-  groupLabel,
 }) => {
   const compactTopBar = useMediaQuery(COMPACT_TOP_BAR_QUERY);
   const colorMode = useColorMode();
@@ -478,7 +476,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
 
   if (variant === 'side') {
     return (
-      <div ref={rowRef} className="flex items-center gap-2" role="group" aria-label={groupLabel}>
+      <div ref={rowRef} className="flex items-center gap-2">
         {frequencyChip('')}
         {dayChip('')}
         {periodChip('')}
@@ -488,8 +486,8 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
 
   if (variant === 'shared') {
     return (
-      <div ref={rowRef} className="flex items-center gap-2" role="group" aria-label="Filters for both maps">
-        <span title={compactTopBar ? 'Both maps' : undefined} className={`${PILL_SURFACE} px-3 gap-1.5 text-xs font-bold text-[var(--text-primary)] whitespace-nowrap`}>
+      <div ref={rowRef} className={COMPARE_GROUP} role="group" aria-label="Filters for both maps">
+        <span title={compactTopBar ? 'Both maps' : undefined} className="flex items-center gap-1.5 pl-1.5 pr-0.5 text-xs font-bold text-[var(--text-primary)] whitespace-nowrap cursor-default select-none">
           <SideBadge side="A+B" />
           {!compactTopBar && 'Both maps'}
         </span>
