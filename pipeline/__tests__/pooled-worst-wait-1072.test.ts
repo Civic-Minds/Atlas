@@ -66,12 +66,12 @@ describe('stop period values: a refused pooled window publishes its worst wait',
   it('TTC 102 Weekday to Warden: the shared stretch reads its longest PM wait, not nothing (#1088)', async () => {
     const rows = await fixtureRows('ttc-102-weekday');
     const warden = rows.find(p => p.routeShortName === '102' && p.day === 'Weekday' && p.headsign === 'Warden');
-    // The merged PM list at 4220 runs 5, 15, 15, 5, 22, ...: refused as uneven, and the Warden
-    // pattern has no PM trips of its own there. Its worst wait is 22 (the 102C trips via Dynamic
-    // Dr are still left out of the pool, #1088). Stops that already had a value keep it.
-    expect(warden.stopPeriodHeadways['4220'].pmPeak).toBe(22);
-    expect(warden.stopPeriodHeadways['4469'].pmPeak).toBe(30);
-    expect(warden.stopPeriodHeadways['13668'].pmPeak).toBe(30);
+    // The merged PM list at 4220 is refused as uneven, and the Warden pattern has no PM trips of
+    // its own there. With the 102C trips via Dynamic Dr counted (CIV-1389, #1088) its worst wait
+    // is 15; without them it was 22. 4469 and 13668 read every 10 with them, 30 before.
+    expect(warden.stopPeriodHeadways['4220'].pmPeak).toBe(15);
+    expect(warden.stopPeriodHeadways['4469'].pmPeak).toBe(10);
+    expect(warden.stopPeriodHeadways['13668'].pmPeak).toBe(10);
     // The own pattern's overnight value stands where it had one.
     expect(warden.stopPeriodHeadways['4220'].overnight).toBe(12);
     // Overnight stragglers (two trips after 26:00, then nothing for 150 minutes) do not run
