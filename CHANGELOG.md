@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Shared stops with uneven service show their longest wait instead of nothing**: the [TTC 102](https://github.com/Civic-Minds/Atlas/issues/1088) stretch to Warden had no rush-hour value, and a blank hid that buses still come
 - **Compare's loading and "couldn't load" pills sit at the bottom right, beside the map controls**: they report both maps, so they no longer sit against the divider under map A
 - **NJ Transit is [one agency](https://github.com/Civic-Minds/Atlas/issues/1303)**: bus and rail were listed as two, unlike SEPTA and LA Metro; old NJ Transit Bus and Rail pages and map links open the combined agency
 
