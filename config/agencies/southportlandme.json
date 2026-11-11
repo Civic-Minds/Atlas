@@ -23,10 +23,10 @@
     "Portland, Maine"
   ],
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2642/latest.zip",
-  "lastFeedCheckAt": "20261110",
+  "lastFeedCheckAt": "20261111",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261210",
+  "expiredFeedCheckExpiry": "20261211",
   "feedQuality": {
     "status": "degraded",
     "score": 65,
@@ -42,7 +42,7 @@
       "feedExpiry": "20261105"
     },
     "checkedAt": "2026-10-07",
-    "scoredAt": "2026-11-10"
+    "scoredAt": "2026-11-11"
   },
   "timezone": "America/New_York",
   "feedRefreshStatus": "current",
@@ -51,5 +51,5 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://gtfs.gptd.cadavl.com/GPTD/GTFS/GTFS_GPTD.zip",
-  "refusedFeedSha256": "1eeaf75e3f08875e16be4be658abd988724b0be82e09631cb9075d0fce458099"
+  "refusedFeedSha256": "d9ac495308d6e1ff1037e27f3ec843f93853da7f827820c28d18faf3a14d7b8a"
 }

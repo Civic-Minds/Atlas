@@ -7373,10 +7373,10 @@
         "Portland, Maine"
       ],
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2642/latest.zip",
-      "lastFeedCheckAt": "20261110",
+      "lastFeedCheckAt": "20261111",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20261210",
+      "expiredFeedCheckExpiry": "20261211",
       "feedQuality": {
         "status": "degraded",
         "score": 65,
@@ -7392,7 +7392,7 @@
           "feedExpiry": "20261105"
         },
         "checkedAt": "2026-10-07",
-        "scoredAt": "2026-11-10"
+        "scoredAt": "2026-11-11"
       },
       "timezone": "America/New_York",
       "feedRefreshStatus": "current",
@@ -7401,7 +7401,7 @@
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://gtfs.gptd.cadavl.com/GPTD/GTFS/GTFS_GPTD.zip",
-      "refusedFeedSha256": "1eeaf75e3f08875e16be4be658abd988724b0be82e09631cb9075d0fce458099"
+      "refusedFeedSha256": "d9ac495308d6e1ff1037e27f3ec843f93853da7f827820c28d18faf3a14d7b8a"
     },
     {
       "slug": "hocts",
@@ -11408,7 +11408,7 @@
       "lastFeedExpiry": "20270401",
       "lastFeedVersion": "",
       "region": "California",
-      "lastRefreshedAt": "2026-11-10",
+      "lastRefreshedAt": "2026-11-11",
       "supplementalFeedUrls": [
         "https://gitlab.com/LACMTA/gtfs_rail/raw/master/gtfs_rail.zip"
       ],
@@ -11427,7 +11427,7 @@
         "North Hills, California",
         "North Hollywood, California"
       ],
-      "lastFeedCheckAt": "20261110",
+      "lastFeedCheckAt": "20261111",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
       "expiredFeedCheckExpiry": "20270401",
@@ -11450,7 +11450,7 @@
           "mismatchRoutes": 1,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-10"
+        "checkedAt": "2026-11-11"
       },
       "timezone": "America/Los_Angeles",
       "feedRefreshStatus": "current",
@@ -11461,14 +11461,14 @@
       "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-29/latest.zip",
       "lastSupplementalFeeds": [
         {
-          "feedExpiry": "20261124",
+          "feedExpiry": "20261125",
           "feedVersion": null,
-          "rawArchiveKey": "20261124-39297f476a6f233c"
+          "rawArchiveKey": "20261125-d5384f0c0df337ce"
         }
       ],
       "lastPeekedExpiry": "20270401",
       "lastServiceWeek": "8a5859505ca2916d",
-      "feedObtainedAt": "20261110",
+      "feedObtainedAt": "20261111",
       "lastFeedStart": "20260607"
     },
     {
@@ -13163,17 +13163,17 @@
         -111.65
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-1979/latest.zip",
-      "lastFeedExpiry": "20261114",
-      "lastFeedVersion": "10/15/2026",
+      "lastFeedExpiry": "20281111",
+      "lastFeedVersion": "11/10/2026",
       "region": "Arizona",
-      "lastRefreshedAt": "2026-11-09",
+      "lastRefreshedAt": "2026-11-11",
       "cities": [
         "Flagstaff, Arizona"
       ],
-      "lastFeedCheckAt": "20261109",
+      "lastFeedCheckAt": "20261111",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20261114",
+      "expiredFeedCheckExpiry": "20991231",
       "timezone": "America/Phoenix",
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-1979/latest.zip",
@@ -13187,23 +13187,23 @@
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 0,
           "featureCount": 39,
-          "feedExpiry": "20261114",
+          "feedExpiry": "20281111",
           "routeCount": 9,
           "problemShapes": 0,
           "problemShapeRoutes": 0,
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-09"
+        "checkedAt": "2026-11-11"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
-      "lastPeekedExpiry": "20261114",
-      "lastFeedStart": "20261015",
-      "lastServiceWeek": "5347dd62657ca0a4",
-      "feedObtainedAt": "20261109"
+      "lastPeekedExpiry": "20991231",
+      "lastFeedStart": "20261109",
+      "lastServiceWeek": "38cb82c7e34ff2de",
+      "feedObtainedAt": "20261111"
     },
     {
       "slug": "mountainmetro",
