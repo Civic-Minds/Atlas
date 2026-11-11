@@ -79,6 +79,19 @@ describe('a sibling counts the rush-hour-only trips at the stops they share (CIV
     expect(periodRow(x3, 'pmPeak')).toEqual(runs('10x10,20x5'));
   });
 
+  it('never adds the branch where a trip of the route that boards there is left out of the list', async () => {
+    // Review of 2e4c1a53e: TransLink 4 to UBC, Saturday AM, read every 20 at 19 stops from its pool
+    // plus the Blanca Loop rush trips, for a bus every 22-23: the 06:23 "To Blanca" trip draws no
+    // row of its own, so it is outside the pool, and leaving it out hid a 35-minute gap. Synthetic
+    // X4 is X1 plus one 15:05 trip to the depot over the first 5 stops (one trip: never pooled).
+    // Those 5 stops keep the local's own 20; the next 5, which the depot trip does not serve, read 10.
+    const rows = await fixtureRows('synthetic-rush-branch-1389', 'synthetic');
+    const local = rows.find(p => p.routeShortName === 'X4' && p.headsign === 'Downtown');
+    expect(periodRow(local, 'pmPeak')).toEqual(runs('20x5,10x5,20x5'));
+    expect(local).toMatchObject({ headway: 20, tier: '20', serviceClass: 'regular' });
+    expect(periodRow(rows.find(p => p.routeShortName === 'X4' && p.headsign === 'Branch Rd'), 'pmPeak')).toEqual(runs('10x10,20x5'));
+  });
+
   it('a skip-stop rush express counts only where it serves every stop (ETS 202, synthetic X1)', async () => {
     // ETS 202 eastbound weekday: the AM Kingsway TC Express serves the local's first 10 stops stop for
     // stop (contiguousSharedRuns), every 20 06:06-08:26 at A0111. The local has no AM trips of its own
@@ -103,9 +116,12 @@ describe('what the rush-hour-only trips still never change (#720)', () => {
     expect(marlton).toMatchObject({ headway: 27, tier: '60', serviceClass: 'regular' });
     expect(Object.values(marlton.headwayByPeriod).every(v => v == null)).toBe(true);
     // 8128 weekday PM: every 9-13 from 15:03 to 18:55 (GTFS 2026-10-21, all 105 trips). The pool this
-    // pattern reads there plus the Washington Fairfax trips still has a 24-minute gap, so it reads 24
-    // (was 40): never better than the buses a rider sees.
-    expect(marlton.stopPeriodHeadways['8128'].pmPeak).toBe(24);
+    // pattern reads there leaves out 105 trips that board there, so the Washington Fairfax trips are
+    // not added and it keeps its 40 (with them it read 24, from an incomplete list).
+    expect(marlton.stopPeriodHeadways['8128'].pmPeak).toBe(40);
+    // Sunday 4198 PM: the list is complete (15 departures, mean 15.6): 20 -> 16.
+    const sunday = rows.find(p => p.day === 'Sunday' && p.headsign === 'Marlton / King Layover');
+    expect(sunday.stopPeriodHeadways['4198'].pmPeak).toBe(16);
     expect(marlton.stopPeriodHeadways['8128']).toMatchObject({ amPeak: 11, midday: 10 });
     // The rush row itself is unchanged, and gains no midday or AM value.
     const fairfax = rows.find(p => p.day === 'Weekday' && p.headsign === 'Washington Fairfax Hub');

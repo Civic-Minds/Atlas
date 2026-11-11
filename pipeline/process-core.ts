@@ -2809,7 +2809,8 @@ export async function processGtfsBuffer(
     // bus at least every 15. The merged list is read as the pool is (pooledReadingInWindow on the
     // departure lists the row publishes): its pooled value, or where that is refused and the slot has
     // no value of its own, its worst wait (CIV-1072); either only when more frequent than what the stop
-    // shows now. Only stopPeriodHeadways reads this. The rush pattern never joins the shared pool
+    // shows now, and only where the merged list holds every boarding departure of the route direction
+    // at the stop in that period. Only stopPeriodHeadways reads this. The rush pattern never joins the shared pool
     // (#720): its trips stay in stopDepsByRushMember (stop_times and frequency expansion alike), so no
     // headline, tier, all-day or row value, shared-stretch label or route field reads them, and the
     // rush row keeps its own values. A rush pattern whose headsign already pools is in the pool once.
@@ -2837,6 +2838,8 @@ export async function processGtfsBuffer(
         const depsOf = (key: string) => key.startsWith(RUSH)
           ? stopDepsByRushMember.get(`${poolKey}::${key.slice(RUSH.length)}`)
           : stopDepsBySharedMember.get(`${poolKey}::${key}`);
+        const groupMap = stopDepsByGroup.get(gKey);
+        const groupDepartures = groupMap ? departuresOf.get(groupMap) : undefined;
         const withRush = buildPooledStopMap(departureMetricMap, sharersWithRush, depsOf, childToParent, stopDepsBySharedMember.get(`${poolKey}::${ownMember}`));
         for (const stopId of withRush.pooledStops) {
           const rushMembers = [...(sharersWithRush.get(childToParent.get(stopId) ?? stopId) ?? [])].filter(key => key.startsWith(RUSH));
@@ -2844,17 +2847,28 @@ export async function processGtfsBuffer(
           if (rushTimes.length === 0) continue;
           const merged = withRush.map.get(stopId) ?? [];
           const own = [...(departureMetricMap.get(stopId) ?? [])].sort((a, b) => a - b);
+          if (!groupDepartures) continue;
+          // Every boarding departure of the route direction at this stop (a station: its platforms).
+          const routeTimes = groupDepartures.get(stopId)
+            ?? [...groupDepartures].flatMap(([id, times]) => (childToParent.get(id) === stopId ? times : []));
+          const mergedSet = new Set(merged);
           for (const pk of ['amPeak', 'pmPeak'] as const) {
             const { start, end } = PERIODS[pk];
             if (rushTimes.filter(t => t >= start && t <= end).length < 3) continue;
             if (!runsThroughPeriod(rushTimes, start, end, computePeriodSustained(rushTimes)[pk])) continue;
+            // Never add the rush trips while a trip of the route that boards here in the period is
+            // left out of the list (a pattern outside the pool): the gap it fills or shows must count.
+            // TransLink 4 to UBC Saturday AM: the 06:23 To Blanca trip, outside the pool, hid a
+            // 35-minute gap and the stops read every 20 for a bus every 22-23.
+            if (routeTimes.some(t => t >= start && t <= end && !mergedSet.has(t))) continue;
             const ownValue = departureValues.allStopPeriodHw[stopId]?.[pk];
             const current = ownValue ?? departureValues.worstWaitPeriodHw[stopId]?.[pk];
             const reading = pooledReadingInWindow(merged, start, end, 3, false, own);
             const value = reading.value
               ?? (ownValue == null && reading.worstWait != null && runsThroughPeriod(merged, start, end, computePeriodSustained(merged)[pk]) ? reading.worstWait : null);
             if (value == null || (current != null && value >= current)) continue;
-            siblingRushOverlay.set(stopId, { ...(siblingRushOverlay.get(stopId) ?? {}), [pk]: value });          }
+            siblingRushOverlay.set(stopId, { ...(siblingRushOverlay.get(stopId) ?? {}), [pk]: value });
+          }
         }
       }
     }
