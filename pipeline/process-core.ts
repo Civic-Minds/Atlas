@@ -2668,11 +2668,11 @@ export async function processGtfsBuffer(
           if (ph != null) byPeriod[pk] = ph;
           // Only where the merged list runs through the period (settled rule 5: departures on both
           // sides of its midpoint and no hole over BOUNDARY_DOMINANT_RATIO times its typical gap), so
-          // a straggler and the next service's first trips never read "every 150"; and a sparse
-          // overnight merged list keeps no value (#897), as it would were the pool read.
-          else if (pooledReading?.worstWait != null
-            && runsThroughPeriod(times, start, end, computePeriodSustained(times)[pk])
-            && !(pk === 'overnight' && isSparseOvernightWindow(times))) {
+          // a straggler and the next service's first trips never read "every 150". Never overnight:
+          // the night check decides that period, and a failed one never falls back to a per-stop
+          // overnight value (CIV-1349).
+          else if (pooledReading?.worstWait != null && pk !== 'overnight'
+            && runsThroughPeriod(times, start, end, computePeriodSustained(times)[pk])) {
             (worstWaitPeriodHw[stopId] ??= {})[pk] = pooledReading.worstWait;
           }
         }

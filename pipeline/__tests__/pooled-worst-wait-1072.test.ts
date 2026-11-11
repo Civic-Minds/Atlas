@@ -81,4 +81,15 @@ describe('stop period values: a refused pooled window publishes its worst wait',
     // Route-level values never read it (#690): the route keeps no overnight value.
     expect(warden.routeRunsByPeriod.overnight).toBe(false);
   });
+
+  it('an overnight window refused as uneven still publishes nothing (CIV-1349)', async () => {
+    // TTC 41 Saturday to Keele via Keelesdale at 3964: two night trips half an hour apart, then
+    // nothing for 168 minutes until the first morning bus. Refused as uneven, no own value, and it
+    // passes rule 5 at the stop, but the night check decides the overnight period, so no value.
+    const rows = await fixtureRows('ttc-41-saturday-pooled');
+    const row = rows.find(p => p.routeShortName === '41' && p.day === 'Saturday' && p.directionId === 0 && p.headsign === 'Keele Station via Keelesdale');
+    expect(row.stopPeriodHeadways['3964']).toBeDefined();
+    expect(row.stopPeriodHeadways['3964'].overnight).toBeUndefined();
+    expect(row.routeRunsByPeriod.overnight).toBe(false);
+  });
 });
