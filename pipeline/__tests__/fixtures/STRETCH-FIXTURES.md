@@ -11,6 +11,12 @@ day service starts before 5:00 reads an empty Sunday as nobody running until the
 LA Metro fixtures (105, 240, 40, 51; lacmta-105 and lacmta-40-weekday are the same 2026-10-21 cuts) and
 nyct-subway-night-weekday carry the previous service day too, merged with `merge-fixture.py` (union of the cuts' rows).
 
+CIV-1384: a night now belongs to the service day it starts on, so each day is read with the morning AFTER it (a
+Weekday with its own morning and Saturday's, Saturday with Sunday's, Sunday with a Weekday's). A day type missing from
+a cut is not known and the day's own morning stands in, but a day type present only in part is read as it is: the CTA
+9, 77 and 87 weekday cuts held a few Saturday-morning owl trips (a Tuesday-to-Saturday service), so they now carry the
+whole Saturday too (2026-10-24, merged).
+
 | Fixture | Source zip | Date | Route |
 |---|---|---|---|
 | ttc-507-weekday | `_feeds/_live-data/ttc.zip` (2026-10-14) | 2026-10-21 | 507 |
@@ -53,10 +59,10 @@ nyct-subway-night-weekday carry the previous service day too, merged with `merge
 | translink-748-weekday | R2 `gtfs/archive/translink/20270103-ac5f83a35d4c7906.zip` | 2026-10-21 | 748 |
 | translink-749-saturday | same | 2026-10-24 | 749 |
 | octranspo-226-weekday | `_feeds/octranspo/20261109-fresh.zip` | 2026-10-21 | 226 |
-| cta-9-weekday | `_feeds/cta/20261130-fresh.zip` | 2026-10-21 | 9 |
-| cta-77-weekday | `_feeds/cta/20261130-fresh.zip` | 2026-10-21 | 77 |
+| cta-9-weekday | `_feeds/cta/20261130-fresh.zip` | 2026-10-21 + 2026-10-24 (Saturday, merged; CIV-1384) | 9 |
+| cta-77-weekday | `_feeds/cta/20261130-fresh.zip` | 2026-10-21 + 2026-10-24 (Saturday, merged; CIV-1384) | 77 |
 | cta-93-sunday | `_feeds/cta/20261130-fresh.zip` | 2026-10-18 | 93 |
-| cta-87-weekday | `_feeds/cta/20261130-fresh.zip` | 2026-10-21 | 87 |
+| cta-87-weekday | `_feeds/cta/20261130-fresh.zip` | 2026-10-21 + 2026-10-24 (Saturday, merged; CIV-1384) | 87 |
 | nyct-subway-night-weekday | `_feeds/nyct-subway/20261031-fresh.zip` (re-cut from the archive zip 20261031-2c9e69b82ac596a2, same services) | 2026-10-21 + 2026-10-18 (Sunday, merged; CIV-1348) | 3, 5, M, N, R |
 | nyct-subway-s-weekday | `_feeds/nyct-subway/20261031-fresh.zip` | 2026-10-21 | S (FS, GS, H) |
 | septa-66-weekday | `_feeds/septa/20270220-fresh.zip` | 2026-10-21 | 66 |

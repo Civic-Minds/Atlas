@@ -8,7 +8,7 @@ import { nightServiceDepartureTimes } from '../headway-utils';
 import { normalizeRouteFilterFeatures, routePassesHeadwayFilter } from '../../shared/routeHeadwayFilter';
 import { isLimitedService } from '../../shared/irregularRoutes';
 import { decodeStopRuns } from '../../shared/stopRuns';
-import { directionNightValue, directionNightVerdict, directionStretches, nightServicePasses, encodeStopRuns, rollupDirection, rollupRoute, stopPeriodValues, stretchMetaPeriods, stretchFilterValue, stretchNight, stretchPeriods, tailNotThrough, type DirectionStretches, type DirectionTrip, type Stretch } from '../tripSets';
+import { directionNightValue, directionNightVerdict, directionStretches, nightServicePasses, encodeStopRuns, rollupDirection, rollupRoute, stopPeriodValues, stretchMetaPeriods, stretchFilterValue, stretchNight, stretchPeriods, tailNotThrough, type DirectionStretches, type DirectionTrip, type NextMorning, type NightHandover, type Stretch } from '../tripSets';
 
 // Frequency focus step 3 (`_reports/step3-tripsets-spec.md`): the direction trip-set selector, in
 // shadow. Expected values are the GTFS oracle's (scripts/handcheck/stretch-departures.py --at mid
@@ -380,73 +380,121 @@ describe('night edges: the wait for the first and after the last night bus (CIV-
       const times = [...evening(end), ...every(hm(27, 0), hm(30, 0), 30)];
       expect(nightServicePasses(times, nightServiceDepartureTimes(times), 90), `extended ${end}`).toBe(false);
     }
-    // The same schedule written on the morning's own day (03:00): the evening is the previous service day's.
+    // The same schedule written on the morning's own day (03:00): the night is the evening's, with the next morning's
+    // trips (CIV-1384: the next service day of another type, or the day's own morning).
     for (const end of [hm(22, 0), hm(21, 55)]) {
       const times = [...every(hm(3, 0), hm(6, 0), 30), ...evening(end)];
-      expect(nightServicePasses(times, nightServiceDepartureTimes(times), 90, undefined, [evening(end)]), `plain ${end}`).toBe(false);
-      // and with no previous-day data, the same day type's evening stands in.
+      expect(nightServicePasses(evening(end), nightServiceDepartureTimes(evening(end)), 90, undefined, [{ times }]), `plain ${end}`).toBe(false);
+      // and with no next-day data, the same day type's morning stands in.
       expect(nightServicePasses(times, nightServiceDepartureTimes(times), 90), `plain ${end}, same day type`).toBe(false);
+      expect(nightServicePasses(times, nightServiceDepartureTimes(times), 90, undefined, ['own']), `plain ${end}, own`).toBe(false);
     }
     // Continuous evening into the night passes in both notations: last bus 1:30, then 2:00 and every 30.
     const ext = [...evening(hm(22, 0)), ...every(hm(22, 30), hm(30, 0), 30)];
     expect(nightServicePasses(ext, nightServiceDepartureTimes(ext), 30)).toBe(true);
     const morning = every(hm(2, 0), hm(6, 0), 30);
-    const prevEvening = [...evening(hm(22, 0)), ...every(hm(22, 30), hm(25, 30), 30)];
-    const plain = [...morning, ...evening(hm(22, 0))];
-    expect(nightServicePasses(plain, nightServiceDepartureTimes(plain), 30, undefined, [prevEvening])).toBe(true);
+    const lateEvening = [...evening(hm(22, 0)), ...every(hm(22, 30), hm(25, 30), 30)];
+    expect(nightServicePasses(lateEvening, nightServiceDepartureTimes(lateEvening), 30, undefined, [{ times: [...morning, ...evening(hm(22, 0))] }])).toBe(true);
     // A night-only stretch whose first bus is exactly 3:30 is early-morning service.
     const at330 = every(hm(27, 30), hm(30, 0), 20);
     expect(nightServicePasses(at330, nightServiceDepartureTimes(at330), 90, () => true)).toBe(false);
   });
-  it('CIV-1344: a night written in both notations is checked after a Sunday evening too', () => {
-    // MiWay 3 westbound at Bloor at Riverspray: weekday evening trips run past 24:00 (to 26:37) on the evening's day,
-    // morning trips are written from 02:57 on the morning's own day. Sunday's evening ends at 0:22, so Monday has no
-    // bus from 0:22 to 2:57.
+  it('CIV-1384 (Ryan, 2026-11-10): a night belongs to the service day it starts on (MiWay 2 and 17)', () => {
+    // MiWay 2 at its middle stop: Weekday evenings run past 24:00 to 26:00 on the evening's day, and the morning trips
+    // are written from 02:19 every 25 on the morning's own day. Sunday's evening ends at 0:32, so Monday has nobody from
+    // 0:32 to 2:19: that gap is in the Sunday service day, so it is Sunday's night, not the weekday's.
+    const weekday = [...every(hm(6, 0), hm(23, 25), 25), ...every(hm(23, 50), hm(26, 0), 25), ...every(hm(2, 19), hm(5, 54), 25)];
+    const sunday = [...every(hm(7, 0), hm(24, 0), 30), hm(24, 32)];
+    const pass = (times: number[], next: NextMorning[] | undefined, g: number) => nightServicePasses(times, nightServiceDepartureTimes(times), g, undefined, next);
+    // Monday to Thursday nights: the evening runs into the weekday's own morning trips, every 25 all night. The Friday
+    // night here runs on into a Saturday morning written the same way.
+    expect([30, 60, 90].map(g => pass(weekday, ['own', { times: weekday }], g))).toEqual([true, true, true]);
+    // Sunday's night is Sunday's evening with Monday's (a Weekday's) morning: 107 minutes with nobody, at every grade.
+    expect([30, 60, 90].map(g => pass(sunday, [{ times: weekday }], g))).toEqual([false, false, false]);
+    // The open point: MiWay's real Saturday starts at 4:40, so Friday's night (Weekday evening to 2:00, then 4:40) has a
+    // 160-minute hole, and it starts on a weekday (Ryan's rule taken literally): the weekday fails.
+    const saturday = [...every(hm(4, 40), hm(23, 0), 20), ...every(hm(23, 12), hm(26, 10), 22)];
+    expect([30, 60, 90].map(g => pass(weekday, ['own', { times: saturday }], g))).toEqual([false, false, false]);
+    // Saturday's night (to 2:10, then Sunday from 5:50) is Saturday's to carry.
+    expect(pass(saturday, [{ times: [hm(5, 50), ...sunday.filter(t => t >= hm(7, 0))] }], 90)).toBe(false);
+  });
+  it('CIV-1384: the weekday\'s own night with a hole still fails, whatever the days around it', () => {
+    // Weekday evenings stop at 1:00 and the morning-day trips start at 3:30: 150 minutes in the weekday's own night.
+    const weekday = [...every(hm(6, 0), hm(25, 0), 30), ...every(hm(3, 30), hm(5, 30), 30)];
+    const allNight = [...every(hm(6, 0), hm(23, 30), 30), ...every(hm(24, 0), hm(29, 30), 30), ...every(hm(0, 0), hm(5, 30), 30)];
+    const pass = (next: NextMorning[], g: number) => nightServicePasses(weekday, nightServiceDepartureTimes(weekday), g, undefined, next);
+    // A Saturday running all night does not carry the Monday to Thursday nights (CIV-1348: no night passes on a
+    // better neighbouring day).
+    expect([30, 60, 90].map(g => pass(['own', { times: allNight }], g))).toEqual([false, false, false]);
+    expect([30, 60, 90].map(g => pass(['own'], g))).toEqual([false, false, false]);
+    // Nor does a Sunday evening running all night into the weekday's morning carry the weekday's own nights: it passes
+    // Sunday's.
+    expect(nightServicePasses(allNight, nightServiceDepartureTimes(allNight), 30, undefined, [{ times: allNight }])).toBe(true);
+  });
+  it('CIV-1384: Saturday and Sunday read their own evening with the next morning, never their own morning (the night before)', () => {
+    // Saturday's own early trips (2:00-5:00, written on Saturday) run after Friday's evening. With Saturday's evening to
+    // 2:00 they made a Saturday-into-Saturday night that never happens; Sunday's morning starts at 6:00.
+    const saturday = [...every(hm(2, 0), hm(5, 30), 30), ...every(hm(6, 0), hm(26, 0), 30)];
+    const sunday = every(hm(6, 0), hm(24, 0), 30);
+    const own = nightServicePasses(saturday, nightServiceDepartureTimes(saturday), 60);
+    expect(own).toBe(true);
+    // Saturday's real night: last bus 2:00, nothing until 6:00.
+    expect([30, 60, 90].map(g => nightServicePasses(saturday, nightServiceDepartureTimes(saturday), g, undefined, [{ times: sunday }]))).toEqual([false, false, false]);
+    // A stretch's night verdict and Overnight value read the same nights.
+    const st = { kind: 'main', stops: ['a'], refStop: 'a', lengthKm: 6, times: saturday, nightTimes: nightServiceDepartureTimes(saturday), tripCount: saturday.length, nextDays: [{ times: sunday }] } as Stretch;
+    const dir = { key: 'k', main: st, tails: [], regularPatternCount: 1, variantTripCount: 0 } as DirectionStretches;
+    expect([directionNightVerdict(dir, 90), directionNightValue(dir)]).toEqual(['fail', null]);
+    // Legitimate: Sunday's morning trips from 2:30 continue Saturday's night, and it passes at 30.
+    const sundayOwl = [...every(hm(2, 30), hm(5, 30), 30), ...sunday];
+    expect(nightServicePasses(saturday, nightServiceDepartureTimes(saturday), 30, undefined, [{ times: sundayOwl }])).toBe(true);
+  });
+  it('CIV-1344, CIV-1348 under CIV-1384: each night judged whole on the day it starts, and an empty next morning', () => {
+    // CIV-1344: MiWay 3 westbound at Bloor at Riverspray: weekday evening trips run past 24:00 (to 26:37) on the
+    // evening's day, morning trips are written from 02:57 on the morning's own day. Sunday's evening ends at 0:22.
     const weekday = [...every(hm(6, 0), hm(23, 0), 30), ...every(hm(23, 7), hm(26, 37), 30), ...every(hm(2, 57), hm(5, 57), 30)];
     const sunday = [...every(hm(7, 0), hm(23, 27), 30), hm(23, 57), hm(24, 22)];
-    const pass = (prev: number[][] | undefined, g: number) => nightServicePasses(weekday, nightServiceDepartureTimes(weekday), g, undefined, prev);
-    expect([30, 60, 90].map(g => pass([weekday, sunday], g))).toEqual([false, false, false]);
-    // Legitimate: a Sunday evening that runs on past 2:00 closes the gap, so the night still counts at 60. At 30 the
-    // 35 minutes from Sunday's 2:22 bus to the 2:57 one is a gap inside the window, over the grade (CIV-1348).
+    const pass = (times: number[], next: NextMorning[] | undefined, g: number) => nightServicePasses(times, nightServiceDepartureTimes(times), g, undefined, next);
+    // Monday has no bus from 0:22 to 2:57: Sunday's night fails at every grade.
+    expect([30, 60, 90].map(g => pass(sunday, [{ times: weekday }], g))).toEqual([false, false, false]);
+    // A Sunday evening that runs on past 2:00 closes the gap at 60; at 30 the 35 minutes from its 2:22 bus to the 2:57
+    // one is a gap inside the window, over the grade (CIV-1348).
     const lateSunday = [...sunday, ...every(hm(24, 52), hm(26, 22), 30)];
-    expect([30, 60].map(g => pass([weekday, lateSunday], g))).toEqual([false, true]);
-    // Legitimate: without the previous days, the weekday's own evening stands in, as before.
-    expect(pass(undefined, 30)).toBe(true);
-    // A previous day with no departures at the stop leaves the morning-day trips on their own: the wait from 2:00
-    // to the first (2:57) counts and is within the hour (CIV-1348; the one-date fixtures below).
-    expect(pass([weekday, []], 30)).toBe(true);
-    // This day type's own evening, read from only the trips that stop here (late trips pass through, NYCT N at Canal
-    // St), is not read again: the check from this day's own times already covers it.
-    expect(pass([weekday.filter(t => t <= hm(23, 0))], 30)).toBe(true);
-    // Legitimate: a night written only past 24:00 belongs to the evening's own day, so Sunday's short evening is
-    // Sunday's row to judge (checked there), not the weekday's.
-    const extendedOnly = [...every(hm(6, 0), hm(23, 0), 30), ...every(hm(23, 7), hm(29, 7), 30)];
-    expect(nightServicePasses(extendedOnly, nightServiceDepartureTimes(extendedOnly), 30, undefined, [extendedOnly, sunday])).toBe(true);
-  });
-  it('CIV-1348: the morning after a previous day is judged whole: its gaps inside the window, and an empty previous day', () => {
-    // Item 2. Weekday nights run every 30 all night, written past 24:00, plus a 4:00 morning-day trip; Sunday's
-    // buses stop at 2:07. On Monday nobody runs from 2:07 to 4:00: a gap inside the window, over every grade.
+    expect([30, 60].map(g => pass(lateSunday, [{ times: weekday }], g))).toEqual([false, true]);
+    // The weekday's own nights pass at 30, as before; without next days its own morning stands in.
+    expect(pass(weekday, ['own'], 30)).toBe(true);
+    expect(pass(weekday, undefined, 30)).toBe(true);
+    // CIV-1348: weekday nights every 30 all night written past 24:00, plus a 4:00 morning-day trip; Sunday's buses stop
+    // at 2:07. On Monday nobody runs from 2:07 to 4:00: Sunday's night fails at every grade, the weekday's passes.
     const allNight = [...every(hm(6, 0), hm(23, 0), 30), ...every(hm(23, 7), hm(29, 7), 30), ...every(hm(4, 0), hm(5, 57), 30)];
-    const sundayTo207 = every(hm(7, 0), hm(26, 7), 30);
-    const pass = (times: number[], prev: number[][] | undefined, g: number) => nightServicePasses(times, nightServiceDepartureTimes(times), g, undefined, prev);
-    expect([30, 60, 90].map(g => pass(allNight, [allNight, sundayTo207], g))).toEqual([false, false, false]);
-    // Legitimate: a Sunday that runs on every 30 to 4:07 meets the morning-day trips; the gap is 30 and the night counts.
-    expect(pass(allNight, [allNight, every(hm(7, 0), hm(28, 7), 30)], 30)).toBe(true);
-    // Legitimate: at a grade of 60 a Sunday ending 3:07 leaves a 53-minute gap to the 4:00 bus.
-    expect([30, 60].map(g => pass(allNight, [allNight, every(hm(7, 0), hm(27, 7), 30)], g))).toEqual([false, true]);
-    // Item 1. The weekday's first morning-day bus comes at 3:30 after evening trips to 2:37 written past 24:00, so its
-    // own nights pass at 60 (53-minute gap). With no Sunday service at the stop, Monday's first bus is the 3:30 one:
-    // 90 minutes from 2:00 with nobody served, over the hour at every grade (the branch for a first bus written past
-    // 24:00 skipped an empty previous day; the other branch counted the wait, as both do now).
+    expect([30, 60, 90].map(g => pass(every(hm(7, 0), hm(26, 7), 30), [{ times: allNight }], g))).toEqual([false, false, false]);
+    expect(pass(allNight, ['own', { times: allNight }], 30)).toBe(true);
+    // Legitimate: a Sunday running on every 30 to 4:07 meets the morning-day trips; at 60 one ending 3:07 leaves 53 minutes.
+    expect(pass(every(hm(7, 0), hm(28, 7), 30), [{ times: allNight }], 30)).toBe(true);
+    expect([30, 60].map(g => pass(every(hm(7, 0), hm(27, 7), 30), [{ times: allNight }], g))).toEqual([false, true]);
+    // CIV-1348's empty day: a next morning with no departures at the stop (no Saturday service) leaves the evening's
+    // night on its own, so the wait after its last bus counts. Evening trips to 2:37 written past 24:00 and nothing
+    // after: Friday's night fails at every grade, though Monday to Thursday's pass at 60.
     const from330 = [...every(hm(6, 0), hm(23, 0), 30), ...every(hm(23, 7), hm(26, 37), 30), ...every(hm(3, 30), hm(5, 30), 30)];
-    expect(pass(from330, undefined, 60)).toBe(true);
-    expect([30, 60, 90].map(g => pass(from330, [from330, []], g))).toEqual([false, false, false]);
-    // The same morning with the night written on the morning's day only reads the same (the CIV-1331 branch).
+    expect(pass(from330, ['own'], 60)).toBe(true);
+    expect([30, 60, 90].map(g => pass(from330, ['own', { times: [] }], g))).toEqual([false, false, false]);
+    // Written on the morning's day only, an evening to 23:37 has no night bus of its own: that night has none in the
+    // window, and with service on the other nights the day does not pass.
     const plainFrom330 = [...every(hm(6, 0), hm(23, 0), 30), ...every(hm(23, 7), hm(23, 37), 30), ...every(hm(3, 30), hm(5, 30), 30)];
-    expect([60, 90].map(g => pass(plainFrom330, [plainFrom330, []], g))).toEqual([false, false]);
-    // Legitimate: a first morning-day bus by 3:00 is within the hour of 2:00 even with an empty Sunday.
+    expect([60, 90].map(g => pass(plainFrom330, ['own', { times: [] }], g))).toEqual([false, false]);
+    // A day with no night bus on any of its nights has no night service at all (null), as before.
+    expect(pass(every(hm(6, 0), hm(23, 0), 30), ['own', { times: [] }], 60)).toBeNull();
+    // Legitimate: a first morning-day bus by 3:00 with Saturday the same passes at 60.
     const from300 = [...every(hm(6, 0), hm(23, 0), 30), ...every(hm(23, 7), hm(26, 37), 30), ...every(hm(3, 0), hm(5, 30), 30)];
-    expect(pass(from300, [from300, []], 60)).toBe(true);
+    expect(pass(from300, ['own', { times: from300 }], 60)).toBe(true);
+  });
+  it('CIV-1384: a night written on the next morning\'s day hands over to that morning\'s day service', () => {
+    // A night-only route on Sunday's evening, its trips written on Monday's (a Weekday's) day, last bus 3:57: the
+    // Weekday morning's daytime buses decide, never the Sunday handover.
+    const night = every(hm(2, 17), hm(3, 57), 20);
+    const sundayHandover: NightHandover = () => false;
+    const weekdayHandover: NightHandover = (last, onMorningDay) => onMorningDay && last === hm(27, 57);
+    expect(nightServicePasses([], [], 90, sundayHandover, [{ times: night, handover: weekdayHandover }])).toBe(true);
+    expect(nightServicePasses([], [], 90, sundayHandover, [{ times: night }])).toBe(false);
   });
   it('CIV-1331 final review: every night-only stretch goes through the same rules', () => {
     const only = (night: number[]) => [night, nightServiceDepartureTimes(night)] as const;
@@ -828,11 +876,15 @@ describe('CIV-1331: one night decider, 90-minute cutoff, real feeds', () => {
       expect(routePassesHeadwayFilter(filterable(r, route), 'overnight', day, Infinity), `${route} ${day}`).toBe(false);
     }
   });
-  it.each(['Saturday', 'Sunday'])('LA Metro 240 owl on %s: fails at 60, passes at 90 in both directions, not Overnight service (CIV-1329)', async day => {
+  it.each(['Saturday', 'Sunday'])('LA Metro 240 owl on %s: fails at 60, passes at 90, not Overnight service (CIV-1329)', async day => {
     const r = await run('lacmta-240-owl-weekend', 'lacmta');
+    // CIV-1384: Sunday's night runs into Monday's (a Weekday's) morning. Toward Sherman Oaks (1) its last owl, 3:32,
+    // meets the weekday's 4:32 bus 60 minutes later, where Sunday's own morning bus (the Saturday night's) is 4:33, 61
+    // minutes; the other direction still fails at 60, so the route does.
+    const expected = (dir: number) => (day === 'Sunday' && dir === 1 ? ['pass', 'pass'] : ['fail', 'pass']);
     for (const dir of [0, 1]) {
       const d = r.stretches.get(`240::${dir}::${day}`)!;
-      expect([directionNightVerdict(d, 60), directionNightVerdict(d, 90)], `${dir}`).toEqual(['fail', 'pass']);
+      expect([directionNightVerdict(d, 60), directionNightVerdict(d, 90)], `${dir}`).toEqual(expected(dir));
     }
     expect(routePassesHeadwayFilter(filterable(r, '240'), 'overnight', day, Infinity)).toBe(false);
   });
@@ -1206,19 +1258,25 @@ describe('Overnight section values read each stop through the night verdict (#10
       return directionStretches('k', trips, id => coords.get(id));
     };
     const d = plain(120);
-    // Its own evening stands in without a previous day: the night passes at 20 and every stop reads 20.
+    // Its own evening stands in without next days: the night passes at 20 and every stop reads 20.
     expect(decodeStopRuns(stopPeriodValues(stops, d.throughTimesAlong!).overnight)).toEqual([20, 20, 20, 20]);
-    // Sunday's evening ends at 0:50, 70 minutes before Monday's first night bus: the verdict fails at 60 and the stop
-    // reads that wait, 70, not the plain every-20 of its own night.
+    // CIV-1384: Sunday's evening ends at 0:50, 70 minutes before Monday's (a Weekday's) first night bus. That is
+    // Sunday's night: its verdict fails at 60 and the stop reads that wait, 70, not the plain every-20 of the night trips.
     const sunday = Array.from({ length: 30 }, (_, i) => 620 + i * 30);
-    // The previous day's departures at each stop, offset along the line like the trips above.
-    const after = (evening: number[]) => decodeStopRuns(stopPeriodValues(stops, d.throughTimesAlong!, undefined, stopId => [evening.map(t => t + 3 * stops.indexOf(stopId))]).overnight);
-    expect(after(sunday)).toEqual([70, 70, 70, 70]);
+    const evening = (times: number[]) => {
+      const trips: DirectionTrip[] = times.map(m => ({ tripId: `s${m}`, visits: stops.map((stopId, i) => ({ stopId, minutes: m + 3 * i })) }));
+      return directionStretches('k', trips, id => coords.get(id));
+    };
+    // The weekday's departures at each stop, offset along the line like the trips above.
+    const weekdayAt = (stopId: string) => [...d.throughTimesAlong!([stopId])[0].times];
+    const sundayNight = (times: number[]) => decodeStopRuns(stopPeriodValues(stops, evening(times).throughTimesAlong!, undefined, stopId => [{ times: weekdayAt(stopId) }]).overnight);
+    expect(sundayNight(sunday)).toEqual([70, 70, 70, 70]);
     // Legitimate: a Sunday evening running to 1:30 leaves the night passing at 20.
-    expect(after([...sunday, 1510, 1530])).toEqual([20, 20, 20, 20]);
-    // No bus before a first night bus at 3:10 (an empty Sunday): no gap ever passes, so there is no value, not 20.
+    expect(sundayNight([...sunday, 1510, 1530])).toEqual([20, 20, 20, 20]);
+    // Night trips from 3:10 and a Friday whose night has no bus at all (no Saturday morning trips): no gap ever passes
+    // for the weekday, so there is no value, not 20.
     const late = plain(190);
-    expect(decodeStopRuns(stopPeriodValues(stops, late.throughTimesAlong!, undefined, () => [[]]).overnight)).toEqual([null, null, null, null]);
+    expect(decodeStopRuns(stopPeriodValues(stops, late.throughTimesAlong!, undefined, () => ['own', { times: [] }]).overnight)).toEqual([null, null, null, null]);
   });
 });
 
