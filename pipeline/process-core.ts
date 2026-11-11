@@ -58,8 +58,8 @@ import { nearDuplicateTripIds } from './nearDuplicateTrips.js';
 import { decideDedupe, runsInDay, type DedupePattern } from './featureDedupe.js';
 import { decideHeadline, decidePeriod, liftTierOnDestinationPool, OVERSTATED_HEADLINE_MARGIN, ownStepOneHeadway, pooledStepOneHeadway, settleTier, terminalReading, type PeriodValue } from './routeGrading.js';
 import type { SharedStretchPattern } from './sharedStretch.js';
-import { directionStretches, gatedRiderWait, nightOnlyTrips, nightServicePasses, periodSustainedMid, NIGHT_HANDOVER_MAX_WAIT_MIN, NIGHT_ONLY_MAX_DAY_DEPARTURES, NIGHT_ONLY_DAY_START_MIN, NIGHT_ONLY_DAY_END_MIN, NIGHT_HANDOVER_RADIUS_M, type NightHandover, type NextMorning, rollupDirection, runsAcrossNightMidpoint, stampStretchShadow, type DirectionStretches, type TripVisit } from './tripSets.js';
-import { buildPooledStopMap, computeStopSharers, pooledHeadwayInWindow, type StopSharers } from './stopPools.js';
+import { directionStretches, gatedRiderWait, nightOnlyTrips, nightServicePasses, periodSustainedMid, NIGHT_HANDOVER_MAX_WAIT_MIN, NIGHT_ONLY_MAX_DAY_DEPARTURES, NIGHT_ONLY_DAY_START_MIN, NIGHT_ONLY_DAY_END_MIN, NIGHT_HANDOVER_RADIUS_M, type NightHandover, type NextMorning, rollupDirection, runsAcrossNightMidpoint, runsThroughPeriod, stampStretchShadow, type DirectionStretches, type TripVisit } from './tripSets.js';
+import { buildPooledStopMap, computeStopSharers, pooledHeadwayInWindow, pooledReadingInWindow, type StopSharers } from './stopPools.js';
 
 export type { GtfsPreprocess };
 export type { HeadwayByPeriod };
@@ -2603,6 +2603,11 @@ export async function processGtfsBuffer(
       // Channel: 3 own and 2 from a same-stop-list shape are every 33, not every 51). The stop's
       // published value and companions still follow the own list, as for any fallback.
       const thinPoolFallbackPeriodHw = new Map<string, Map<PeriodKey, PeriodValue>>();
+      // CIV-1072 (Ryan, 2026-11-10): a pooled period the evenness guard refused, with no own
+      // value to fall back on, shows its worst wait (the merged list's longest gap) instead of
+      // nothing. Published in stopPeriodHeadways only: the route-level steps, stop order, grades
+      // and the filter fields never read it, as #690 keeps every pooled value off the route.
+      const worstWaitPeriodHw: Record<string, Partial<Record<PeriodKey, number>>> = {};
       for (const [stopId, times] of stopMetricMap) {
         times.sort((a, b) => a - b);
         // Prefer midday (9–15h) then PM peak (15–19h) rather than a raw all-day window.
@@ -2655,7 +2660,8 @@ export async function processGtfsBuffer(
         if (hw != null && usedOwnFallback) ownFallbackHw.add(stopId);
         const byPeriod: Partial<Record<PeriodKey, number>> = {};
         for (const [pk, { start, end }] of Object.entries(PERIODS) as [PeriodKey, { start: number; end: number }][]) {
-          const pooledPh = isPooled ? pooledHeadwayInWindow(times, start, end, 3, false, own) : null;
+          const pooledReading = isPooled ? pooledReadingInWindow(times, start, end, 3, false, own) : null;
+          const pooledPh = pooledReading?.value ?? null;
           const ph = isPooled
             ? (pooledPh ?? medianHeadwayInWindow(forCrossMidnightWindow(own, end), start, end, 3, true))
             : medianHeadwayInWindow(forCrossMidnightWindow(times, end), start, end, 3, true);
@@ -2680,6 +2686,15 @@ export async function processGtfsBuffer(
             continue;
           }
           if (ph != null) byPeriod[pk] = ph;
+          // Only where the merged list runs through the period (settled rule 5: departures on both
+          // sides of its midpoint and no hole over BOUNDARY_DOMINANT_RATIO times its typical gap), so
+          // a straggler and the next service's first trips never read "every 150". Never overnight:
+          // the night check decides that period, and a failed one never falls back to a per-stop
+          // overnight value (CIV-1349).
+          else if (pooledReading?.worstWait != null && pk !== 'overnight'
+            && runsThroughPeriod(times, start, end, computePeriodSustained(times)[pk])) {
+            (worstWaitPeriodHw[stopId] ??= {})[pk] = pooledReading.worstWait;
+          }
         }
         // The max gap, coverage and sustained flag describe the list the shown value came from:
         // the merged list where the pool published, the own pattern where it fell back.
@@ -2705,9 +2720,9 @@ export async function processGtfsBuffer(
         }
         allStopHourHw[stopId] = byHour;
       }
-      return { allStopHw, allStopHwPlain, allStopMiddayHwPlain, allStopPeriodHw, sparseOvernightStopHw, allStopPeriodCoverageHw, allStopPeriodMaxGaps, allStopPeriodSustained, allStopHourHw, ownFallbackHw, ownFallbackPeriodHw, thinPoolFallbackPeriodHw };
+      return { allStopHw, allStopHwPlain, allStopMiddayHwPlain, allStopPeriodHw, sparseOvernightStopHw, allStopPeriodCoverageHw, allStopPeriodMaxGaps, allStopPeriodSustained, allStopHourHw, ownFallbackHw, ownFallbackPeriodHw, thinPoolFallbackPeriodHw, worstWaitPeriodHw };
     };
-    let { allStopHw, allStopHwPlain, allStopMiddayHwPlain, allStopPeriodHw, sparseOvernightStopHw, allStopPeriodCoverageHw, allStopPeriodMaxGaps, allStopPeriodSustained, allStopHourHw, ownFallbackHw, ownFallbackPeriodHw, thinPoolFallbackPeriodHw } = computeStopValues(stopMetricMap, metricStopMap, pooled);
+    let { allStopHw, allStopHwPlain, allStopMiddayHwPlain, allStopPeriodHw, sparseOvernightStopHw, allStopPeriodCoverageHw, allStopPeriodMaxGaps, allStopPeriodSustained, allStopHourHw, ownFallbackHw, ownFallbackPeriodHw, thinPoolFallbackPeriodHw, worstWaitPeriodHw } = computeStopValues(stopMetricMap, metricStopMap, pooled);
     // CIV-226: a drawn child platform whose station the row also lists reads the station's list (Sound
     // Transit's alternating Link platforms held half the trips each, graded 60 and read every 20 on a line
     // every 10), unless another pattern of the route stops at that station (platformsAsStation). Only a
@@ -2724,7 +2739,7 @@ export async function processGtfsBuffer(
       metricStopMap = platformStations.map;
       pooled = poolFor(metricStopMap);
       stopMetricMap = pooled?.map ?? metricStopMap;
-      ({ allStopHw, allStopHwPlain, allStopMiddayHwPlain, allStopPeriodHw, sparseOvernightStopHw, allStopPeriodCoverageHw, allStopPeriodMaxGaps, allStopPeriodSustained, allStopHourHw, ownFallbackHw, ownFallbackPeriodHw, thinPoolFallbackPeriodHw } = computeStopValues(stopMetricMap, metricStopMap, pooled));
+      ({ allStopHw, allStopHwPlain, allStopMiddayHwPlain, allStopPeriodHw, sparseOvernightStopHw, allStopPeriodCoverageHw, allStopPeriodMaxGaps, allStopPeriodSustained, allStopHourHw, ownFallbackHw, ownFallbackPeriodHw, thinPoolFallbackPeriodHw, worstWaitPeriodHw } = computeStopValues(stopMetricMap, metricStopMap, pooled));
     }
     // The departure twins of the same lists (CIV-1071), pooled with the same sharers.
     const departureMetricMap = ownDepartureTwin ? remapWith(ownDepartureTwin, platformStations.remapped) : metricStopMap;
@@ -2738,7 +2753,7 @@ export async function processGtfsBuffer(
         stopDepsBySharedMember.get(`${poolKey}::${ownMember}`))
       : null;
     const departureValues = departureMetricMap === metricStopMap
-      ? { allStopHw, allStopPeriodHw, allStopPeriodCoverageHw }
+      ? { allStopHw, allStopPeriodHw, allStopPeriodCoverageHw, worstWaitPeriodHw }
       : computeStopValues(departurePooled?.map ?? departureMetricMap, departureMetricMap, departurePooled);
     // #690: the route-level fallbacks (all-stop median, branch detection, the minimum stop
     // headways the filter reads) keep reading the own pattern, so pooled stop values never
@@ -3030,7 +3045,9 @@ export async function processGtfsBuffer(
       const stopPeriodHeadways: Record<string, Partial<Record<PeriodKey, number>>> = {};
       for (const { stopId } of onShape) {
         const overlay = rushPeriodOverlay.get(stopId);
-        const periods = overlay ? { ...departureValues.allStopPeriodHw[stopId], ...overlay } : departureValues.allStopPeriodHw[stopId];
+        // CIV-1072: a refused pooled period with no value of its own shows its worst wait.
+        const worstWait = departureValues.worstWaitPeriodHw[stopId];
+        const periods = overlay || worstWait ? { ...worstWait, ...departureValues.allStopPeriodHw[stopId], ...overlay } : departureValues.allStopPeriodHw[stopId];
         if (periods && Object.keys(periods).length > 0) stopPeriodHeadways[stopId] = periods;
       }
       if (Object.keys(stopPeriodHeadways).length > 0) {
