@@ -2801,6 +2801,63 @@ export async function processGtfsBuffer(
         }
       }
     }
+    // CIV-1389 (#1088, Ryan's decision): the other way round. A pooled bus pattern's AM and PM peak stop
+    // values also count the boarding departures of the route's rush-hour-only patterns at the stops they
+    // share with it stop for stop (rushSharersFor, the CIV-850 run), in a peak only where the rush
+    // pattern's own departures at that stop run through it (3 in the window, settled rule 5). TTC 102 to
+    // Warden at 4220 PM left out the 102C trips via Dynamic Dr and read its longest wait as 22, for a
+    // bus at least every 15. The merged list is read as the pool is (pooledReadingInWindow on the
+    // departure lists the row publishes): its pooled value, or where that is refused and the slot has
+    // no value of its own, its worst wait (CIV-1072); either only when more frequent than what the stop
+    // shows now. Only stopPeriodHeadways reads this. The rush pattern never joins the shared pool
+    // (#720): its trips stay in stopDepsByRushMember (stop_times and frequency expansion alike), so no
+    // headline, tier, all-day or row value, shared-stretch label or route field reads them, and the
+    // rush row keeps its own values. A rush pattern whose headsign already pools is in the pool once.
+    const siblingRushOverlay = new Map<string, Partial<Record<PeriodKey, number>>>();
+    if (pooled && ownMember && !railFeature && !rushHourOnlyFeatures.has(feature)) {
+      const RUSH = 'rush::';
+      const sharersWithRush = new Map<string, Set<string>>();
+      const rushPrefix = `${poolKey}::`;
+      for (const key of rushPatternTrip.keys()) {
+        if (!key.startsWith(rushPrefix) || stopDepsBySharedMember.has(key)) continue;
+        const member = key.slice(rushPrefix.length);
+        for (const [stationKey, members] of rushSharersFor(poolKey, member) ?? []) {
+          if (!members.has(ownMember)) continue;
+          const set = sharersWithRush.get(stationKey) ?? new Set<string>();
+          set.add(`${RUSH}${member}`);
+          sharersWithRush.set(stationKey, set);
+        }
+      }
+      if (sharersWithRush.size > 0) {
+        const ownSharers = stopSharersFor(poolKey).get(ownMember);
+        for (const [stationKey, members] of ownSharers ?? []) {
+          const set = sharersWithRush.get(stationKey);
+          if (set) members.forEach(m => set.add(m));
+        }
+        const depsOf = (key: string) => key.startsWith(RUSH)
+          ? stopDepsByRushMember.get(`${poolKey}::${key.slice(RUSH.length)}`)
+          : stopDepsBySharedMember.get(`${poolKey}::${key}`);
+        const withRush = buildPooledStopMap(departureMetricMap, sharersWithRush, depsOf, childToParent, stopDepsBySharedMember.get(`${poolKey}::${ownMember}`));
+        for (const stopId of withRush.pooledStops) {
+          const rushMembers = [...(sharersWithRush.get(childToParent.get(stopId) ?? stopId) ?? [])].filter(key => key.startsWith(RUSH));
+          const rushTimes = rushMembers.flatMap(key => depsOf(key)?.get(stopId) ?? []).sort((a, b) => a - b);
+          if (rushTimes.length === 0) continue;
+          const merged = withRush.map.get(stopId) ?? [];
+          const own = [...(departureMetricMap.get(stopId) ?? [])].sort((a, b) => a - b);
+          for (const pk of ['amPeak', 'pmPeak'] as const) {
+            const { start, end } = PERIODS[pk];
+            if (rushTimes.filter(t => t >= start && t <= end).length < 3) continue;
+            if (!runsThroughPeriod(rushTimes, start, end, computePeriodSustained(rushTimes)[pk])) continue;
+            const ownValue = departureValues.allStopPeriodHw[stopId]?.[pk];
+            const current = ownValue ?? departureValues.worstWaitPeriodHw[stopId]?.[pk];
+            const reading = pooledReadingInWindow(merged, start, end, 3, false, own);
+            const value = reading.value
+              ?? (ownValue == null && reading.worstWait != null && runsThroughPeriod(merged, start, end, computePeriodSustained(merged)[pk]) ? reading.worstWait : null);
+            if (value == null || (current != null && value >= current)) continue;
+            siblingRushOverlay.set(stopId, { ...(siblingRushOverlay.get(stopId) ?? {}), [pk]: value });          }
+        }
+      }
+    }
     // Coverage needs only one departure, so publish it before the legacy median bail-outs.
     // Project separately to keep historical stopOrder and geometry completely unchanged.
     const coverageStops = isMapless
@@ -3044,7 +3101,7 @@ export async function processGtfsBuffer(
       // frequency at the user's chosen TO stop, not just the route terminal.
       const stopPeriodHeadways: Record<string, Partial<Record<PeriodKey, number>>> = {};
       for (const { stopId } of onShape) {
-        const overlay = rushPeriodOverlay.get(stopId);
+        const overlay = rushPeriodOverlay.get(stopId) ?? siblingRushOverlay.get(stopId);
         // CIV-1072: a refused pooled period with no value of its own shows its worst wait.
         const worstWait = departureValues.worstWaitPeriodHw[stopId];
         const periods = overlay || worstWait ? { ...worstWait, ...departureValues.allStopPeriodHw[stopId], ...overlay } : departureValues.allStopPeriodHw[stopId];
