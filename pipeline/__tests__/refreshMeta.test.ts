@@ -1,5 +1,9 @@
-import { describe, expect, it } from 'vitest';
-import { candidateIsOlderThanActive, decideRefreshSkipUnchanged, feedFileDate, lowerStoredFeedExpiry, isFeedExpired, markFeedStale, rawArchiveKeyDigest, recordedFeedExpiry, routeLineCount, shouldReplaceExpiredFeed, shouldSkipAllExpiredFeeds, shouldStampFeedMeta, stampFeedMeta, stampReprocessedFeedExpiry, stampSupplementalFeedMeta } from '../refreshMeta.js';
+import { beforeAll, describe, expect, it } from 'vitest';
+import JSZip from 'jszip';
+import { zipContentKey } from '../feedPeek.js';
+import { rawFeedArchiveKey, rawFeedDigest } from '../r2.js';
+import { clearOverrideUserFacingOnFeedChange, upstreamFeedChanged } from '../overrideAudit.js';
+import { candidateIsOlderThanActive, decideRefreshSkipUnchanged, feedContentsChanged, feedFileDate, isNewFeedFile, lowerStoredFeedExpiry, isFeedExpired, markFeedStale, rawArchiveKeyDigest, recordedFeedExpiry, routeLineCount, shouldReplaceExpiredFeed, shouldSkipAllExpiredFeeds, shouldStampFeedMeta, stampFeedMeta, stampReprocessedFeedExpiry, stampSupplementalFeedMeta } from '../refreshMeta.js';
 import { isCurrentProductionFeed, isStaleProductionFeed } from '../../shared/feedAvailability.js';
 
 describe('feed expiry checks', () => {
@@ -577,5 +581,58 @@ describe('candidateIsOlderThanActive: a later period start is a newer feed, what
     const noStart: Record<string, unknown> = { lastFeedExpiry: '20261205', lastPeekedExpiry: '20261205' };
     expect(stampReprocessedFeedExpiry(noStart, { feedExpiry: '20261205', calendarExpiry: '20261205', todayYmd: '20261106', feedStart: '20260910' })).toBe(true);
     expect(noStart.lastFeedStart).toBe('20260910');
+  });
+});
+
+describe('refresh bookkeeping reads "changed" from the feed contents (#1429)', () => {
+  const zipOf = async (trips: string, opts: { date: string; level: number }) => {
+    const zip = new JSZip();
+    zip.file('feed_info.txt', 'feed_end_date,feed_version\n20510930,124\n', { date: new Date(opts.date) });
+    zip.file('trips.txt', trips, { date: new Date(opts.date) });
+    return zip.generateAsync({ type: 'nodebuffer', compression: 'DEFLATE', compressionOptions: { level: opts.level } });
+  };
+  // Dutchess: same end date and version, corrected trips.
+  let live: Buffer, corrected: Buffer, rezipped: Buffer;
+  const record = { lastFeedExpiry: '20510930', lastPeekedExpiry: '20510930', lastFeedVersion: '124' };
+  let withHash: typeof record & { lastRawArchiveKey: string };
+  let withContents: typeof withHash & { lastFeedContentKey: string | null };
+  beforeAll(async () => {
+    live = await zipOf('route_id,service_id,trip_id\nA,WK,1\n', { date: '2026-11-02T10:00:00Z', level: 6 });
+    corrected = await zipOf('route_id,service_id,trip_id\nA,WK,1\nA,WK,2\n', { date: '2026-11-02T10:00:00Z', level: 6 });
+    rezipped = await zipOf('route_id,service_id,trip_id\nA,WK,1\n', { date: '2026-11-09T10:00:00Z', level: 9 });
+    withHash = { ...record, lastRawArchiveKey: rawFeedArchiveKey('20510930', '124', live) };
+    withContents = { ...withHash, lastFeedContentKey: zipContentKey(live) };
+  });
+  const changed = (agency: typeof withHash & { lastFeedContentKey?: string | null }, buf: Buffer) => feedContentsChanged({
+    contentKey: zipContentKey(buf), lastFeedContentKey: agency.lastFeedContentKey, zipDigest: rawFeedDigest(buf), lastRawArchiveKey: agency.lastRawArchiveKey,
+  })?.changed ?? null;
+  const spots = (agency: typeof withHash & { lastFeedContentKey?: string | null }, buf: Buffer) => {
+    const c = changed(agency, buf);
+    const noted = { ...agency, overrideNote: 'Route 9 removed' };
+    return [
+      isNewFeedFile(agency, '20510930', '124', c),
+      upstreamFeedChanged(agency, '20510930', '124', c),
+      clearOverrideUserFacingOnFeedChange(noted, '20510930', '124', c),
+    ];
+  };
+
+  it('counts a corrected feed with the same end date and version as changed at all three spots', () => {
+    expect(spots(withContents, corrected)).toEqual([true, true, true]);
+    expect(spots(withHash, corrected)).toEqual([true, true, true]);
+  });
+  it('leaves an identical or re-zipped identical feed unchanged at all three spots', () => {
+    expect(spots(withContents, live)).toEqual([false, false, false]);
+    expect(spots(withContents, rezipped)).toEqual([false, false, false]);
+    expect(spots(withHash, live)).toEqual([false, false, false]);
+  });
+  it('keeps the end-date / version rule when nothing is recorded', () => {
+    expect(changed(record as typeof withHash, corrected)).toBeNull();
+    expect(spots(record as typeof withHash, corrected)).toEqual([false, false, false]);
+    expect(isNewFeedFile(record, '20511231', '124', null)).toBe(true);
+    expect(upstreamFeedChanged(record, '20511231', '124', null)).toBe(true);
+  });
+  it('the obtained date moves to the run date only for a changed feed', () => {
+    expect(feedFileDate({ newFile: spots(withContents, corrected)[0], runDate: '20261116', feedObtainedAt: '20260901', zipDate: null })).toBe('20261116');
+    expect(feedFileDate({ newFile: spots(withContents, rezipped)[0], runDate: '20261116', feedObtainedAt: '20260901', zipDate: null })).toBe('20260901');
   });
 });
