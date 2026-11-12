@@ -19,7 +19,7 @@
     "Kauaʻi County, Hawaii"
   ],
   "timezone": "Pacific/Honolulu",
-  "lastFeedExpiry": "20281107",
+  "lastFeedExpiry": "20281112",
   "lastFeedVersion": "CORRECTED RUN NUMBERS Routes with 900/950 Express and Kilauea Food Mart.",
   "lastRefreshedAt": "2026-11-02",
   "feedQuality": {
@@ -32,15 +32,14 @@
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
       "featureCount": 21,
-      "feedExpiry": "20281107",
+      "feedExpiry": "20281112",
       "routeCount": 11,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-07",
-    "scoredAt": "2026-11-09"
+    "checkedAt": "2026-11-12"
   },
   "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,

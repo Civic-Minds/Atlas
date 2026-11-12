@@ -32,25 +32,25 @@
   "lastPeekedExpiry": "20271231",
   "feedQuality": {
     "status": "review",
-    "score": 85,
+    "score": 64,
     "reasons": [
-      "1 minor schedule issue found while reading the feed.",
+      "3 minor schedule issues found while reading the feed.",
       "1 route has stops whose frequency differs from the overall route schedule."
     ],
     "metrics": {
       "validationErrors": 0,
-      "validationWarnings": 1,
+      "validationWarnings": 3,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 1,
-      "featureCount": 40,
+      "featureCount": 38,
       "feedExpiry": "20271231",
-      "routeCount": 20,
+      "routeCount": 18,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
       "mismatchRoutes": 1,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-09"
+    "checkedAt": "2026-11-12"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -58,5 +58,5 @@
   "feedRefreshRetryCount": 0,
   "lastServiceWeek": "919cb92ec414300a",
   "feedObtainedAt": "20261102",
-  "lastFeedStart": "20261108"
+  "lastFeedStart": "20261018"
 }
