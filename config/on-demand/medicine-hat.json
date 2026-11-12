@@ -6,7 +6,7 @@
     "sourceLabel": "MHTnow page and City of Medicine Hat Transit On-Demand layer",
     "sourceRetrievedAt": "2026-10-11",
     "bookingUrl": "https://www.medicinehat.ca/roads-parking-transportation/transit/mhtnow/",
-    "tripRules": "Trips start and end within the zone. MHTnow buses connect with other routes at the Transit Terminal downtown.",
+    "tripRules": "Trips can start and end anywhere in your zone.",
     "zoneMetadata": {
       "Central": {
         "serviceName": "MHTnow",

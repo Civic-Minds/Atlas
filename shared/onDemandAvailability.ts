@@ -60,6 +60,8 @@ export interface OnDemandZoneDetails {
   hoursSource?: { url: string; retrievedAt: string };
   /** Last day a temporary zone is expected to run (YYYY-MM-DD); the publish gate blocks it after. */
   validUntil?: string;
+  /** Where a trip can go in this zone, when it differs from the service's rule (CIV-1427: Tri Delta's Brentwood). */
+  tripRules?: string;
 }
 
 /** Structural subset of an agency's on-demand service used for hours and pickup lookups. */
@@ -112,7 +114,7 @@ export function resolveOnDemandZone(service: OnDemandServiceDetails, areaName: s
     eligibility: zone.eligibility ?? service.eligibility,
     availability: zone.availability ?? service.availability,
     pickup: zone.pickup ?? service.pickup,
-    tripRules: service.tripRules,
+    tripRules: zone.tripRules ?? service.tripRules,
   };
 }
 

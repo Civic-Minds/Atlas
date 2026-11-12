@@ -182,3 +182,19 @@ describe('Friday-only weekday service (#1440)', () => {
     expect(screen.getByTestId('on-demand-running-note')).toHaveTextContent('Running during Saturday late');
   });
 });
+
+describe('on-demand card sections (CIV-1427)', () => {
+  it('has no "Who can ride" section, even when the data says who may ride', () => {
+    const agency = {
+      slug: 'demo', name: 'Demo Transit', region: 'Ontario', center: [43, -79], url: '',
+      onDemandServiceArea: { serviceName: 'Demo On-Demand', sourceUrl: 'https://example.com', eligibility: 'Riders 13 and older.', tripRules: 'Trips must start and end in the same zone.', features: [] },
+    } as unknown as Agency;
+    render(
+      <AgencyCard agency={agency} layers={{}} day="Weekday" period="midday" maxHeadway={Infinity} selectedModes={new Set()}
+        hideSpan={false} hideLimitedService={false} onRouteSelect={() => {}} onClose={() => {}} onDemandFocus onDemandZoneId={null} />,
+    );
+    expect(screen.queryByText('Who can ride')).toBeNull();
+    expect(screen.queryByText('Riders 13 and older.')).toBeNull();
+    expect(screen.getByText('Trips must start and end in the same zone.')).toBeInTheDocument();
+  });
+});

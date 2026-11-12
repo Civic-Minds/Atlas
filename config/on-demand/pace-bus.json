@@ -7,12 +7,11 @@
     "sourceRetrievedAt": "2026-10-11",
     "bookingUrl": "https://www.pacebus.com/ondemand",
     "eligibility": "Open to the general public.",
-    "tripRules": "Trips must start and end within one of the On Demand zones.",
+    "tripRules": "Trips can start and end anywhere in your zone.",
     "zoneMetadata": {
       "Batavia": {
         "serviceName": "Pace On Demand",
         "serviceHours": "Weekdays, 6:30 a.m. - 6:50 p.m.",
-        "hoursNote": "Holiday service is not stated on the Pace On Demand page.",
         "availability": {
           "Weekday": [
             {
@@ -31,7 +30,6 @@
       "Hoffman Estates": {
         "serviceName": "Pace On Demand",
         "serviceHours": "Weekdays, 6:00 a.m. - 6:30 p.m.",
-        "hoursNote": "Holiday service is not stated on the Pace On Demand page.",
         "availability": {
           "Weekday": [
             {
@@ -50,7 +48,6 @@
       "Lansing Area": {
         "serviceName": "Pace On Demand",
         "serviceHours": "Weekdays and Saturdays, 6:00 a.m. - 7:00 p.m.",
-        "hoursNote": "Holiday service is not stated on the Pace On Demand page.",
         "availability": {
           "Weekday": [
             {
@@ -74,7 +71,6 @@
       "Naperville-Aurora": {
         "serviceName": "Pace On Demand",
         "serviceHours": "Weekdays, 6:30 a.m. - 7:00 p.m.",
-        "hoursNote": "Holiday service is not stated on the Pace On Demand page.",
         "availability": {
           "Weekday": [
             {
@@ -93,7 +89,6 @@
       "Northwest Cook": {
         "serviceName": "Pace On Demand",
         "serviceHours": "Weekdays, 6:00 a.m. - 8:00 p.m.",
-        "hoursNote": "Holiday service is not stated on the Pace On Demand page.",
         "availability": {
           "Weekday": [
             {
@@ -112,7 +107,6 @@
       "Round Lake Area": {
         "serviceName": "Pace On Demand",
         "serviceHours": "Weekdays, 6:00 a.m. - 6:15 p.m.",
-        "hoursNote": "Holiday service is not stated on the Pace On Demand page.",
         "availability": {
           "Weekday": [
             {
@@ -131,7 +125,6 @@
       "Southeast Aurora": {
         "serviceName": "Pace On Demand",
         "serviceHours": "Weekdays, 6:10 a.m. - 6:30 p.m. / Saturdays, 7:10 a.m. - 6:30 p.m.",
-        "hoursNote": "Holiday service is not stated on the Pace On Demand page.",
         "availability": {
           "Weekday": [
             {
@@ -155,7 +148,6 @@
       "St. Charles-Geneva": {
         "serviceName": "Pace On Demand",
         "serviceHours": "Weekdays, 5:30 a.m. - 7:00 p.m. / Saturdays, 8:00 a.m. - 6:30 p.m.",
-        "hoursNote": "Holiday service is not stated on the Pace On Demand page.",
         "availability": {
           "Weekday": [
             {
@@ -179,7 +171,6 @@
       "Vernon Hills-Mundelein": {
         "serviceName": "Pace On Demand",
         "serviceHours": "Weekdays, 6:00 a.m. - 6:15 p.m.",
-        "hoursNote": "Holiday service is not stated on the Pace On Demand page.",
         "availability": {
           "Weekday": [
             {
@@ -198,7 +189,6 @@
       "West Joliet": {
         "serviceName": "Pace On Demand",
         "serviceHours": "Weekdays, 6:00 a.m. - 6:15 p.m.",
-        "hoursNote": "Holiday service is not stated on the Pace On Demand page.",
         "availability": {
           "Weekday": [
             {
@@ -217,7 +207,6 @@
       "Wheaton-Winfield": {
         "serviceName": "Pace On Demand",
         "serviceHours": "Weekdays, 6:30 a.m. - 6:45 p.m.",
-        "hoursNote": "Holiday service is not stated on the Pace On Demand page.",
         "availability": {
           "Weekday": [
             {
