@@ -84,7 +84,8 @@ describe('BWG on-demand service area', () => {
     for (const area of HAMILTON_TRANS_CAB_SERVICE_AREAS) {
       expect(area.geometry.coordinates[0][0]).toEqual(area.geometry.coordinates[0].at(-1));
     }
-    expect(HAMILTON_TRANS_CAB_TRANSFER_POINTS).toHaveLength(2);
+    // All five transfer points on hamilton.ca's Trans-Cab page (#1451).
+    expect(HAMILTON_TRANS_CAB_TRANSFER_POINTS).toHaveLength(5);
     expect(HAMILTON_MY_RIDE_SERVICE_AREA.features).toBe(HAMILTON_TRANS_CAB_SERVICE_AREAS);
     expect(HAMILTON_MY_RIDE_SERVICE_AREA.stopFeatures?.slice(0, 138)).toEqual(HSR_MY_RIDE_STOP_FEATURES);
     expect(HAMILTON_MY_RIDE_SERVICE_AREA.stopFeatures?.slice(138)).toEqual(HAMILTON_TRANS_CAB_TRANSFER_POINTS);
@@ -262,7 +263,13 @@ describe('Hamilton Trans-Cab hours and transfer points', () => {
   });
 
   it('ties each transfer point to the zone it serves and hides it with that zone', () => {
-    expect(HAMILTON_TRANS_CAB_TRANSFER_POINTS.map(point => point.properties?.areaName)).toEqual(['Lower North Stoney Creek', 'West Glanbrook']);
+    expect(HAMILTON_TRANS_CAB_TRANSFER_POINTS.map(point => [point.properties?.stopName, point.properties?.areaName])).toEqual([
+      ['Bell Manor Loop', 'Lower North Stoney Creek'],
+      ['Garth Street and Rymal Road West', 'West Glanbrook'],
+      ['Mountain Transit Centre', 'West Glanbrook'],
+      ['HWY 8 and Jones Road', 'Lower East Stoney Creek'],
+      ['Winona Crossing', 'Lower East Stoney Creek'],
+    ]);
     expect(isOnDemandStopShown(HAMILTON_MY_RIDE_SERVICE_AREA, HAMILTON_TRANS_CAB_TRANSFER_POINTS[0].properties, 'Weekday', 'overnight')).toBe(false);
   });
 
@@ -304,8 +311,9 @@ describe('on-demand pickup methods stated by agencies', () => {
 
 describe('Hamilton pickup methods from hamilton.ca', () => {
   it('describes Trans-Cab trips as to or from a transfer point and myRide as set stops', () => {
-    expect(onDemandPickupSentence(HAMILTON_MY_RIDE_SERVICE_AREA, 'West Glanbrook')).toBe("Every trip starts or ends at this zone's transfer point, shown on the map.");
-    expect(onDemandPickupSentence(HAMILTON_MY_RIDE_SERVICE_AREA, 'Lower East Stoney Creek')).toBe('Every trip starts or ends at a transfer point.');
+    expect(onDemandPickupSentence(HAMILTON_MY_RIDE_SERVICE_AREA, 'West Glanbrook')).toBe("Every trip starts or ends at this zone's transfer points, shown on the map.");
+    expect(onDemandPickupSentence(HAMILTON_MY_RIDE_SERVICE_AREA, 'Lower East Stoney Creek')).toBe("Every trip starts or ends at this zone's transfer points, shown on the map.");
+    expect(onDemandPickupSentence(HAMILTON_MY_RIDE_SERVICE_AREA, 'Lower North Stoney Creek')).toBe("Every trip starts or ends at this zone's transfer point, shown on the map.");
     expect(onDemandPickupSentence(HAMILTON_MY_RIDE_SERVICE_AREA, undefined)).toMatch(/^Pickups and drop-offs are at \d+ set stops, shown on the map\.$/);
   });
 });
