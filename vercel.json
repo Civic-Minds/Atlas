@@ -379,39 +379,43 @@
     },
     {
       "source": "/",
-      "destination": "/index.html"
+      "destination": "/app.html"
+    },
+    {
+      "source": "/index.html",
+      "destination": "/app.html"
     },
     {
       "source": "/apps/frequency",
-      "destination": "/index.html"
+      "destination": "/app.html"
     },
     {
       "source": "/apps/frequency/",
-      "destination": "/index.html"
+      "destination": "/app.html"
     },
     {
       "source": "/apps/history",
-      "destination": "/index.html"
+      "destination": "/app.html"
     },
     {
       "source": "/apps/history/",
-      "destination": "/index.html"
+      "destination": "/app.html"
     },
     {
       "source": "/apps/compare",
-      "destination": "/index.html"
+      "destination": "/app.html"
     },
     {
       "source": "/apps/compare/",
-      "destination": "/index.html"
+      "destination": "/app.html"
     },
     {
       "source": "/apps/live",
-      "destination": "/index.html"
+      "destination": "/app.html"
     },
     {
       "source": "/apps/live/",
-      "destination": "/index.html"
+      "destination": "/app.html"
     },
     {
       "source": "/apps/live/ttc",
@@ -503,19 +507,19 @@
     },
     {
       "source": "/docs",
-      "destination": "/index.html"
+      "destination": "/app.html"
     },
     {
       "source": "/docs/",
-      "destination": "/index.html"
+      "destination": "/app.html"
     },
     {
       "source": "/apps/night",
-      "destination": "/index.html"
+      "destination": "/app.html"
     },
     {
       "source": "/apps/night/",
-      "destination": "/index.html"
+      "destination": "/app.html"
     },
     {
       "source": "/research",
@@ -559,19 +563,19 @@
     },
     {
       "source": "/changelog",
-      "destination": "/index.html"
+      "destination": "/app.html"
     },
     {
       "source": "/changelog/",
-      "destination": "/index.html"
+      "destination": "/app.html"
     },
     {
       "source": "/apps/fares",
-      "destination": "/index.html"
+      "destination": "/app.html"
     },
     {
       "source": "/apps/fares/",
-      "destination": "/index.html"
+      "destination": "/app.html"
     }
   ]
 }

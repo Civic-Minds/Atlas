@@ -161,6 +161,16 @@ describe('vercel.json preview-bot rewrite', () => {
     expect(existsSync('api/share-preview.ts')).toBe(true);
   });
 
+  it('has no file at "/" on Vercel to win over it: every app route goes to the moved shell, /app.html (CIV-1175)', () => {
+    expect(vercel.rewrites.filter(r => r.destination === '/index.html')).toEqual([]);
+    expect(vercel.rewrites[homeIndex].destination).toBe('/app.html');
+    expect(vercel.rewrites.find(r => r.source === '/index.html')?.destination).toBe('/app.html');
+    const pkg = JSON.parse(readFileSync('package.json', 'utf8')) as { scripts: Record<string, string> };
+    expect(pkg.scripts.build.trim().endsWith('node scripts/vercel-root-shell.mjs')).toBe(true);
+    expect(readFileSync('scripts/vercel-root-shell.mjs', 'utf8')).toContain("export const ROOT_SHELL = 'app.html'");
+    expect(readFileSync('.vercelignore', 'utf8')).toContain('!scripts/vercel-root-shell.mjs');
+  });
+
   it('matches preview bots, never people or search engines', () => {
     for (const rule of botRules) {
       const value = rule.has!.find(h => h.type === 'header')!.value!;
