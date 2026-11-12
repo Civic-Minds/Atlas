@@ -413,7 +413,7 @@ export const MVTA_CONNECT_SERVICE_AREA = {
   bookingUrl: 'https://www.mvta.com/new-riders/mvta-connect/',
   availability: MVTA_CONNECT_DAILY,
   zoneMetadata: {
-    "Central Zone": { serviceName: 'MVTA Connect', serviceHours: 'Daily 6 AM–9 PM.', availability: MVTA_CONNECT_DAILY },
+    "Main Zone": { serviceName: 'MVTA Connect', serviceHours: 'Daily 6 AM–9 PM.', availability: MVTA_CONNECT_DAILY },
     "Eagan": { serviceName: 'MVTA Connect', serviceHours: 'Daily 6 AM–9 PM.', availability: MVTA_CONNECT_DAILY },
     "Shakopee\u2013Prior Lake": { serviceName: 'MVTA Connect', serviceHours: 'Daily 6 AM–9 PM.', availability: MVTA_CONNECT_DAILY },
   },
