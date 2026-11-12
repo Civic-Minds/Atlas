@@ -57,6 +57,8 @@ import { approximateLocationHint, CLIPBOARD_DENIED, DEFAULT_EXPORT_TITLE, LOCATI
 import { FOOTER_NOTICE_MEDIA_QUERY, PHONE_MEDIA_QUERY, useMediaQuery } from '../../hooks/useMediaQuery';
 
 // Keep the Live/Deck.gl graph out of public builds entirely when Live is disabled.
+// Read directly, not through FEATURES.live: the bundler only drops the import when it sees the literal env read
+// (with FEATURES.live the public build gains the deck and LiveVehiclesLayer chunks; checked in CIV-1402).
 const LiveVehiclesLayer = import.meta.env.VITE_LIVE_ENABLED === 'true'
   ? React.lazy(() => import('./map/LiveVehiclesLayer'))
   : null;
