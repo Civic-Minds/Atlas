@@ -12,6 +12,7 @@ import { parentAgencyPageData, parentHome, parentMembers, parentsWithMembers } f
 import { AGENCY_INDEX_DATA_SCRIPT_ID, AGENCY_INDEX_PATH, buildAgencyIndexData, resolveAgencyIndexSeo } from '../shared/agencyIndex';
 import { AREA_DATA_SCRIPT_ID, areaPageJsonLd, buildAreaPageData, resolveAreaSeo } from '../shared/areaPages';
 import { areaPagePath, type AreaConfig } from '../shared/areas';
+import { areaShareImageSeo } from '../shared/sharePreview';
 import { REGION_DATA_SCRIPT_ID, buildRegionPageData, regionPageJsonLd, regionPages, resolveRegionSeo } from '../shared/regionPages';
 import { regionPagePath } from '../shared/pagePaths';
 import { AGENCY_PAGE_DATA, agencyPageSummaries } from '../shared/agencyPagesData';
@@ -87,7 +88,7 @@ if (mod.BUILD_FLAGS.agencyPages) {
     };
     for (const a of agencies) {
       const data = agencyPageData(a, agencies, AGENCY_PAGE_DATA.generatedAt, areaOf.get(a.slug), areaMembers.get(a.slug));
-      const seo = resolveAgencySeo(a, { mode: mod.BUILD_MODE, origin, intro: data.intro, description: data.description, path: data.path, pageTitle: data.pageTitle });
+      const seo = { ...resolveAgencySeo(a, { mode: mod.BUILD_MODE, origin, intro: data.intro, description: data.description, path: data.path, pageTitle: data.pageTitle }), ...areaShareImageSeo(areaOf.get(a.slug)?.slug) };
       writePage(data.path, seo, mod.renderAgencyPage(data), { id: AGENCY_DATA_SCRIPT_ID, value: data }, agencyPageJsonLd(a, seo.canonicalUrl, origin, data.area, data.intro, data.regionPage));
       claimTitle(seo.title, data.path);
       urls.push(seo.canonicalUrl);
@@ -96,7 +97,7 @@ if (mod.BUILD_FLAGS.agencyPages) {
     for (const parent of parentsWithMembers(agencies)) {
       const home = parentHome(parent, parentMembers(parent, agencies))!;
       const data = parentAgencyPageData(parent, agencies, AGENCY_PAGE_DATA.generatedAt, areaOf.get(home.slug), areaMembers.get(home.slug))!;
-      const seo = resolveAgencySeo(data.agency, { mode: mod.BUILD_MODE, origin, intro: data.intro, description: data.description, path: data.path, pageTitle: data.pageTitle });
+      const seo = { ...resolveAgencySeo(data.agency, { mode: mod.BUILD_MODE, origin, intro: data.intro, description: data.description, path: data.path, pageTitle: data.pageTitle }), ...areaShareImageSeo(areaOf.get(home.slug)?.slug) };
       writePage(data.path, seo, mod.renderAgencyPage(data), { id: AGENCY_DATA_SCRIPT_ID, value: data }, agencyPageJsonLd(data.agency, seo.canonicalUrl, origin, data.area, data.intro, data.regionPage));
       claimTitle(seo.title, data.path);
       urls.push(seo.canonicalUrl);
@@ -106,7 +107,8 @@ if (mod.BUILD_FLAGS.agencyPages) {
     for (const area of areas) {
       if (!areaPages.has(area.slug)) continue;
       const data = buildAreaPageData(area, bySlug, AGENCY_PAGE_DATA.generatedAt);
-      const seo = resolveAreaSeo(data, { mode: mod.BUILD_MODE, origin });
+      // CIV-1175: area pages show their city's map picture, and agency pages (above) their area's.
+      const seo = { ...resolveAreaSeo(data, { mode: mod.BUILD_MODE, origin }), ...areaShareImageSeo(area.slug) };
       writePage(areaPagePath(area.slug), seo, mod.renderAreaPage(data), { id: AREA_DATA_SCRIPT_ID, value: data }, areaPageJsonLd(data, seo.canonicalUrl, origin));
       urls.push(seo.canonicalUrl);
     }
