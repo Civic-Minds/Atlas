@@ -3,7 +3,7 @@ import * as maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { getMapStyle } from '../../lib/mapStyle';
 import { LATE_SHARE_SWATCH } from './lateShare';
-import { numberedDots, type LateStopDot } from './lateStopsMapModel';
+import { dotLabel, dotWidth, mergeSameSpot, numberedDots, type LateStopDot } from './lateStopsMapModel';
 
 /**
  * A small map of the stops most often late (CIV-1405 mock-up): the Atlas basemap with one numbered dot per stop, the
@@ -46,13 +46,15 @@ export default function LateStopsMap({ dots, lines = [], label, note, mapClassNa
       // rest get theirs as zooming in makes room. Hover always names the stop.
       const draw = () => {
         markers.splice(0).forEach(m => m.remove());
-        const numbered = numberedDots(ds, p => map.project(p));
-        for (const d of [...ds].sort((a, b) => b.rank - a.rank)) {
+        const spots = mergeSameSpot(ds);
+        const numbered = numberedDots(spots, p => map.project(p));
+        for (const d of [...spots].sort((a, b) => b.rank - a.rank)) {
           const shown = numbered.has(d.key);
           const el = document.createElement('div');
-          el.textContent = shown ? String(d.rank) : '';
-          el.title = `${d.rank}. ${d.title}`;
-          el.style.cssText = `width:${d.size}px;height:${d.size}px;border-radius:9999px;background:${d.color};border:2px solid var(--bg-app);box-shadow:0 0 0 1px rgba(0,0,0,0.25);display:flex;align-items:center;justify-content:center;font:800 ${d.size >= 24 ? 12 : 10}px/1 Inter,system-ui,sans-serif;color:#111827;font-variant-numeric:tabular-nums;box-sizing:border-box;`;
+          const label = dotLabel(d);
+          el.textContent = shown ? label : '';
+          el.title = [`${d.rank}. ${d.title}`, ...(d.alsoAt ?? []).map(a => `${a.rank}. ${a.title}`)].join('\n');
+          el.style.cssText = `width:${dotWidth(d)}px;height:${d.size}px;border-radius:9999px;background:${d.color};border:2px solid var(--bg-app);box-shadow:0 0 0 1px rgba(0,0,0,0.25);display:flex;align-items:center;justify-content:center;font:800 ${d.size >= 24 ? 12 : 10}px/1 Inter,system-ui,sans-serif;color:#111827;font-variant-numeric:tabular-nums;box-sizing:border-box;`;
           el.style.zIndex = String(shown ? 2000 - d.rank : 1000 - d.rank);
           markers.push(new maplibregl.Marker({ element: el }).setLngLat(d.lonLat).addTo(map));
         }
@@ -73,7 +75,7 @@ export default function LateStopsMap({ dots, lines = [], label, note, mapClassNa
     <figure className={`m-0 ${className}`}>
       <div ref={box} role="img" aria-label={label} className={`${mapClassName} isolate w-full overflow-hidden rounded-2xl border border-[var(--border-primary)]`} />
       <figcaption className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs leading-5 text-[var(--text-muted)]">
-        <span>Numbers match the table. A bigger dot is late more often. Zoom in to see the number on every dot.{note ? ` ${note}` : ''}</span>
+        <span>Numbers match the table. A bigger dot is late more often. Zoom in to see the number on every dot; one dot can carry two numbers when routes share a stop.{note ? ` ${note}` : ''}</span>
         <span className="inline-flex items-center gap-1.5"><span aria-hidden="true" className="inline-block h-2 w-9 rounded-full" style={{ background: LATE_SHARE_SWATCH }} />under 10%, 10–20%, 20% or more</span>
       </figcaption>
     </figure>
