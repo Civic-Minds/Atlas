@@ -93,7 +93,7 @@ function checkDay(v: unknown, path: string): HistoryV2Error | null {
   if (v === undefined) return null; // absent = blank
   if (!isObj(v)) return { code: 'bad-field', path, message: 'day value must be an object' };
   if (v.none !== undefined) {
-    return v.none === true && v.h === undefined && v.lim === undefined ? null
+    return v.none === true && v.h === undefined && v.lim === undefined && v.p === undefined ? null
       : { code: 'bad-field', path, message: 'none must be exactly {none:true}' };
   }
   if (v.p !== undefined && !isObj(v.p)) return { code: 'bad-field', path: `${path}.p`, message: 'p must be an object' };

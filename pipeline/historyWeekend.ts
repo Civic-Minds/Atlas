@@ -178,10 +178,12 @@ export function positivelyNoService(ev: FeedEvidence, key: string, day: WeekendD
  */
 export function weekendDay(features: Props[], noServiceProven: boolean, opts: { periods?: boolean } = {}): HistoryDayValue | undefined {
   if (features.length === 0) return noServiceProven ? { none: true } : undefined;
-  const stamped = features.filter(f => f.routeAllDayHeadway != null && Number.isFinite(Number(f.routeAllDayHeadway)));
+  const stamped = features.filter(f => f.routeAllDayHeadway != null);
   if (stamped.length === 0) return undefined;
-  const worst = Math.max(...stamped.map(f => Number(f.routeAllDayHeadway)));
+  const values = stamped.map(f => Number(f.routeAllDayHeadway)).filter(Number.isFinite);
+  if (values.length === 0) return undefined;
   const allSpan = stamped.every(f => f.tier === 'span');
+  const worst = Math.max(...values);
   const p = opts.periods ? periodsOf(stamped) : undefined;
   if (allSpan || worst >= NO_PERIOD_SERVICE_TILE_VALUE) return { lim: true, ...(p ? { p } : {}) };
   return { h: worst, ...(p ? { p } : {}) };
