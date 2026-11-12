@@ -15,7 +15,7 @@ import { useMediaQuery } from '../../hooks/useMediaQuery';
 import { agencyNames } from '../../utils/agencyName';
 import { parentAgency } from '../../../shared/parentAgencyList';
 import { bboxInViewport } from '../../utils/agencySearch';
-import { filterModeOptions } from '../../../shared/modes';
+import { filterModeOptions, ON_DEMAND_MODE } from '../../../shared/modes';
 import { modesForView } from '../../../shared/viewLayers';
 import { DAY_TYPES, getNowDay, type DayType } from '../../../shared/dayTypes';
 import { FREQUENT_WINDOW_LABELS, type FrequentServiceFrequency, type FrequentServiceWindow } from '../../../shared/frequentService';
@@ -28,7 +28,7 @@ import { SideBadge } from '../ui/SideBadge';
 import PanelEmpty from '../ui/PanelEmpty';
 import AgencyName from '../ui/AgencyName';
 import { capitalizeFirst, headwayAmount, headwayBandLabel, headwayOrBetter, headwayTierLabel } from '../../utils/headwayText';
-import { FREQUENCY_LABEL, NO_AGENCIES_IN_VIEW, OTHER_REGION_LABEL } from '../../content/noticeCopy';
+import { FREQUENCY_LABEL, NO_AGENCIES_IN_VIEW, ON_DEMAND_PARTIAL_COVERAGE, OTHER_REGION_LABEL } from '../../content/noticeCopy';
 
 export { getNowDay };
 
@@ -460,6 +460,9 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
               {m.label}
             </button>
           ))}
+          {MODES.some(m => m.id === ON_DEMAND_MODE) && (
+            <p className="px-2 pt-1 text-xs leading-snug text-[var(--text-muted)]">{ON_DEMAND_PARTIAL_COVERAGE}</p>
+          )}
         </div>
       )}
     </div>
@@ -524,6 +527,9 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
                   </Pill>
                 ))}
               </div>
+              {MODES.some(m => m.id === ON_DEMAND_MODE) && (
+                <p className="mt-1.5 text-xs leading-snug text-[var(--text-muted)]">{ON_DEMAND_PARTIAL_COVERAGE}</p>
+              )}
             </div>
           </div>
         )}

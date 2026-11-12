@@ -65,3 +65,16 @@ export const HAMILTON_TRANS_CAB_SOURCE = {
     Sunday: [{ startHour: 5.5, endHour: 25 }],
   } satisfies OnDemandAvailability,
 };
+
+/**
+ * West Glanbrook's own hours, which differ from the two Stoney Creek zones on Saturday and Sunday (hamilton.ca
+ * Trans-Cab page, checked 2026-11-11): "Saturday: 4:30 am to 1 am / Sundays/Holidays: 4:30 am to 12 am".
+ */
+export const HAMILTON_TRANS_CAB_WEST_GLANBROOK_HOURS = {
+  serviceHours: 'Mon–Fri 4:30 AM–2 AM; Sat 4:30 AM–1 AM; Sun/holidays 4:30 AM–midnight.',
+  availability: {
+    Weekday: [{ startHour: 4.5, endHour: 26 }],
+    Saturday: [{ startHour: 4.5, endHour: 25 }],
+    Sunday: [{ startHour: 4.5, endHour: 24 }],
+  } satisfies OnDemandAvailability,
+};

@@ -6,8 +6,10 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **The map key and Mode menu say some on-demand zones aren't mapped yet**: so a place with no shaded zone isn't read as having no on-demand service
 - **An on-demand service's card lists every zone with its hours**: services whose hours differ by zone, like RTD FlexRide, read "Hours unavailable" until a zone was picked; each zone row opens that zone
 - **History shows [trip time](https://github.com/Civic-Minds/Atlas/issues/1431) for BART again**: it went missing when each line's two directions were merged into one route
+- **Shared map links preview with a map of their own city**: a link to a spot in Chicago showed Toronto; area and agency pages show their city's map too
 - **The [Jacksonville ferry](https://github.com/Civic-Minds/Atlas/issues/1422) shows as a ferry**: JTA's data lists it as a bus
 - **The weekly refresh picks up [corrected feeds](https://github.com/Civic-Minds/Atlas/issues/1423)**: an agency's fixed feed was skipped when its end date hadn't changed
 - **Links to Atlas preview with a frequency map of Toronto**: the old preview was the logo on a gray illustration
