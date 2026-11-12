@@ -38,10 +38,13 @@ export function liveYesterdayDataUrl(agency: string, route: string | null): stri
     : `/api/live-yesterday?agency=${encodeURIComponent(agency)}${route ? `&route=${encodeURIComponent(route)}` : ''}${devDate()}`;
 }
 
-export function liveGapsDataUrl(agency: string, route: string): string {
-  return fromR2
-    ? `${R2_PUBLIC_URL}/atlas/live/${encodeURIComponent(agency)}/${encodeURIComponent(route)}-gaps.json`
-    : `/api/live-gaps?agency=${encodeURIComponent(agency)}&route=${encodeURIComponent(route)}`;
+/**
+ * The per-stop gaps file for the gaps-through-the-day chart: the local endpoint in dev; null on deployed builds, because
+ * scripts/live-publish.ts publishes no gaps file, so asking R2 only logged a 404 on every route page (#1475). When the
+ * publish uploads `<route>-gaps.json`, return its R2 URL here again.
+ */
+export function liveGapsDataUrl(agency: string, route: string): string | null {
+  return fromR2 ? null : `/api/live-gaps?agency=${encodeURIComponent(agency)}&route=${encodeURIComponent(route)}`;
 }
 
 /** R2 answers a missing file with an error page, not JSON: read that as "no such route", the API's own answer. */
