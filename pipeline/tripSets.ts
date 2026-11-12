@@ -604,15 +604,8 @@ export function isOneGapPeriod(times: readonly number[], start: number, end: num
 }
 
 /** A stretch period's filter value: the headway when steady with every gap within the coverage cap, else the full-window wait. */
-/** The longest gap between consecutive departures inside [start, end), or null with under two. */
-function longestInnerGap(times: readonly number[], start: number, end: number): number | null {
-  const t = [...new Set(forCrossMidnightWindow([...times], end))].filter(x => x >= start && x < end).sort((a, b) => a - b);
-  if (t.length < 2) return null;
-  return Math.max(...t.slice(1).map((x, i) => x - t[i]));
-}
-
 /**
- * CIV-1064: an uneven main stretch's longest wait. It counts every gap between its departures in
+ * CIV-1064, CIV-1414: an uneven stretch's longest wait, main stretch or tail alike. It counts every gap between its departures in
  * [start, end). It also counts the wait from the window's start to its first departure, or from its
  * last departure to the window's end, but only where the stretch has a departure on the other side
  * of that boundary. Then the wait is a real gap that the window cuts. Where it has none, the edge is
@@ -621,9 +614,12 @@ function longestInnerGap(times: readonly number[], start: number, end: number): 
  * TTC 320 weekday overnight is the case: night service only, its last northbound bus at Eglinton is
  * 5:32, and its gaps are 5-15, but it read 28, the run from 5:32 to 6:00. A true start or end longer
  * than PERIOD_COVERAGE_MAX_HEADWAY keeps the full-window wait, as a steady period's does
- * (stretchFilterValue).
+ * (stretchFilterValue). A tail reads the same way (Ryan, 2026-11-12, CIV-1414): Sherbrooke 1's tail at
+ * 268 left 7:07, 7:24 and 8:01, then nothing until 10:23, and read 37 between its own departures; the
+ * 59 minutes from 8:01 to 9:00 are a wait the window cuts, so it reads 59. A tail whose service starts
+ * inside the window still leaves out that start (the 6's Pelham Bay tail from 19:41 reads 18).
  */
-function unevenMainWait(times: readonly number[], start: number, end: number, coverage: number | null): number | null {
+function unevenWait(times: readonly number[], start: number, end: number, coverage: number | null): number | null {
   if (coverage == null || coverage > PERIOD_COVERAGE_MAX_HEADWAY) return coverage;
   const all = [...new Set(forCrossMidnightWindow([...times], end))].sort((a, b) => a - b);
   const t = all.filter(x => x >= start && x < end);
@@ -636,8 +632,8 @@ function unevenMainWait(times: readonly number[], start: number, end: number, co
 }
 
 export function stretchFilterValue(p: StretchPeriod): number | null {
-  // An uneven period reads its value: its longest wait (for a tail, between its own departures; for
-  // a main stretch, leaving out a true start or end of service, unevenMainWait).
+  // An uneven period reads its value: its longest wait, leaving out a true start or end of service
+  // (unevenWait).
   if (p.uneven) return p.value;
   return p.sustained === true && !p.uneven && p.coverage != null && p.coverage <= PERIOD_COVERAGE_MAX_HEADWAY ? p.headway : p.coverage;
 }
@@ -808,14 +804,13 @@ export function stretchPeriods(s: Stretch): Record<PeriodKey, StretchPeriod> {
     const runs = coverage[key] != null;
     const steady = sustained[key] === true;
     const uneven = runs && steady && isUnevenPeriod(times, start, end, headways[key]);
-    // An uneven tail reads its longest wait between its own departures in the period, not the lead-in
-    // before its first or the run after its last: the 6's Pelham Bay tail starts its evening at 19:41,
-    // when the <6> express (another route) serves it, and read 41 though its gaps are 5-18. An uneven
-    // main stretch leaves out only a true start or end of its service (CIV-1064, unevenMainWait).
+    // An uneven period reads its longest wait, leaving out only a true start or end of its service
+    // (CIV-1064, unevenWait): the 6's Pelham Bay tail starts its evening at 19:41, when the <6> express
+    // (another route) serves it, and reads 18, not 41. A wait the window cuts counts, for a tail as for
+    // a main stretch (CIV-1414: Sherbrooke 1's tail reads 59, not 37).
     const value = !runs ? null
       : steady && !uneven ? (headways[key] ?? null)
-      : uneven && s.kind === 'tail' ? longestInnerGap(times, start, end) ?? coverage[key] ?? null
-      : uneven ? unevenMainWait(times, start, end, coverage[key] ?? null)
+      : uneven ? unevenWait(times, start, end, coverage[key] ?? null)
       : coverage[key] ?? null;
     out[key] = {
       // A tail speaks for the direction only where it runs steadily through the period.

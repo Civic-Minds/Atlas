@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Branches count a wait the time window cuts, as the main route does**: Sherbrooke 1's branch read every 37 in the morning though riders could wait over two hours
 - **A shared stretch no longer counts buses that [end there](https://github.com/Civic-Minds/Atlas/issues/1425) as departures**: Niagara 45 read every 8 at NOTL Campus, where buses leave about every 15
 - **Three buses around a long gap no longer read as [steady service](https://github.com/Civic-Minds/Atlas/issues/1432)**: GO 33 read "every 99" in the PM peak where riders wait 158
 - **An on-demand service's card lists every zone with its hours**: services whose hours differ by zone, like RTD FlexRide, read "Hours unavailable" until a zone was picked; each zone row opens that zone
