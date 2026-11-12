@@ -20,7 +20,7 @@ const NightService = React.lazy(() => import('./apps/NightService'));
 // of what main's build actually fetches, not just hidden behind a runtime check.
 const History = React.lazy(() => import('./apps/History'));
 const LiveVehicles = React.lazy(() => import('./apps/LiveVehicles'));
-import { isAppGated, type AppId } from './utils/appGate';
+import { COMPARE_PATH, isAppGated, isCompareGated, type AppId } from './utils/appGate';
 import { ModeTabsProvider } from './components/ModeTabLabel';
 import { HistoryMapOverlayProvider } from './context/HistoryMapOverlay';
 import { LiveVehiclesMapOverlayProvider } from './context/LiveVehiclesMapOverlay';
@@ -154,6 +154,8 @@ const PATH_TO_APP: Record<string, AppId> = {
   '/apps/frequency': 'frequency',
   '/apps/history': 'history',
   '/apps/live': 'live',
+  // Compare's own address shows the frequency map, split in two (Interval turns Compare on from the path).
+  '/apps/compare': 'frequency',
   [FEATURE_ROUTES.nightService]: 'night',
 };
 
@@ -199,6 +201,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   // gate below -- fall back to the frequency map, and correct the URL so it
   // doesn't lie about what's actually showing.
   const gated = isAppGated(routedApp, { ...FEATURES, history: historyOn })
+    || isCompareGated(pathname, compareOn)
     || (isFrequentServiceMapRoute && !FEATURES.frequentService);
   const activeApp: AppId = gated ? 'frequency' : routedApp;
   // The router's view of the address lags the address bar while the next mode renders (a
@@ -212,11 +215,11 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
     if (gated && !liveOffHere) navigate('/', { replace: true });
   }, [gated, liveOffHere, navigate]);
 
-  function setActiveApp(app: AppId) {
+  function setActiveApp(app: AppId, path: string = APP_TO_PATH[app]) {
     trackEvent('app_opened', { app });
     // The map's open route carries into History (useHistoryRouteLink); the switch drops the URL's params.
     if (app === 'history') noteHistorySwitch();
-    navigate(APP_TO_PATH[app]);
+    navigate(path);
   }
 
   const [catalogAgencies, setAgencies] = useState<Agency[]>([]);
@@ -298,8 +301,6 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   const headerPortalRef = useCallback((el: HTMLDivElement | null) => { setHeaderPortalEl(el); }, []);
   // Interval renders its Compare view tab here, beside History and Live.
   const [viewTabsPortalEl, setViewTabsPortalEl] = useState<Element | null>(null);
-  // Compare picked from Live or History: back to the map, then start comparing.
-  const [compareStartRequest, setCompareStartRequest] = useState<number | null>(null);
   const viewTabsPortalRef = useCallback((el: HTMLDivElement | null) => { setViewTabsPortalEl(el); }, []);
 
   // Phones: Compare sits in the More menu beside History and Live (the menu mounts only while open).
@@ -757,11 +758,11 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
 
         {/* Compare (beta) portals in here from Interval. Phones reach it from the filter panel. */}
         <div ref={viewTabsPortalRef} className="hidden sm:contents" />
-        {/* Live and History have no compare view: keep the tab (as an icon) and take it back to the map to compare. */}
+        {/* Live and History have no compare view: keep the tab (as an icon); it opens Compare's own address on the map. */}
         {compareOn && (inLive || inHistory) && (
           <CompareTab
             active={false}
-            onStart={() => { setCompareStartRequest(Date.now()); setActiveApp('frequency'); }}
+            onStart={() => setActiveApp('frequency', COMPARE_PATH)}
             onExit={() => {}}
           />
         )}
@@ -897,7 +898,6 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
               onCompareActiveChange={setCompareActive}
               headerPortalContainer={headerPortalEl}
               viewTabsPortalContainer={viewTabsPortalEl}
-              compareStartRequest={compareStartRequest}
               moreMenuPortalContainer={moreMenuPortalEl}
               onMoreMenuDone={() => setAppLinksOpen(false)}
               sidebarLeft={sidebarLeft}

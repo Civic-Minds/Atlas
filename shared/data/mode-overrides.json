@@ -526,6 +526,13 @@
       "reason": "TRAX is light rail, published as route_type 0 (tram); the S-Line stays a streetcar"
     },
     {
+      "agencySlug": "jta",
+      "routeType": 3,
+      "routeShortName": "500",
+      "mode": 4,
+      "reason": "The St. Johns River Ferry is a ferry, published by JTA as route_type 3 (bus) (#1422)"
+    },
+    {
       "agencySlug": "cats",
       "routeType": 0,
       "routeShortName": "501",

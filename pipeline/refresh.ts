@@ -27,7 +27,7 @@ import { resolve } from 'path';
 import { canRebuildPmtilesAfterRefresh, clearDataRefreshHandoff, writeDataRefreshMarker, writeRefreshRunResult, type RefreshAgencyStatus } from './dataRefreshMarker.js';
 // loadEnv first so shared/config sees staging R2_PUBLIC_URL
 import { LOADED_ENV_FILE, isProductionPublicR2Bucket } from './loadEnv.js';
-import { r2Put, r2Get, r2PutArchive, r2PutArchiveJson, r2GetArchive, rawFeedArchiveKey } from './r2.js';
+import { r2Put, r2Get, r2PutArchive, r2PutArchiveJson, r2GetArchive, r2ListArchiveObjects, rawFeedArchiveKey, rawFeedDigest } from './r2.js';
 import { GtfsValidationError, type GtfsPreprocess } from './process-core.js';
 import { loadSupplementalFeeds, processAgencyFeeds, supplementalArchiveStem, type SupplementalFeed } from './agencyFeeds.js';
 import { serviceWeekKey } from './serviceWeekKey.js';
@@ -36,7 +36,7 @@ import { buildNightServiceIndex, extractNightServiceRoutes, mergeNightServiceInd
 import type { HeadwayByPeriod } from '../shared/config.js';
 import { R2_PUBLIC_URL } from '../shared/config.js';
 import { configFromIndexEntry } from '../shared/agencyRegistryName.js';
-import { downloadFeed, feedSetSha256, peekFeedInfo, pickFeedSource } from './feedPeek.js';
+import { downloadFeed, feedSetSha256, peekFeedInfo, pickFeedSource, zipContentKey } from './feedPeek.js';
 import { runWithConcurrency, todayUtcYmd } from './utils.js';
 import {
   clearOverrideUserFacingOnFeedChange,
@@ -48,7 +48,7 @@ import {
 } from './overrideAudit.js';
 import { readFeedReviewHistory, shouldReviewNextFeed } from './feedReview.js';
 import { compareStopSnapshots, formatStopAuditLog, type AuditedStop } from './stopAudit.js';
-import { feedFileDate, feedPeriodStart, lowerStoredFeedExpiry, candidateIsOlderThanActive, shouldClearStaged, decideRefreshSkipUnchanged, isFeedExpired, markFeedStale, shouldSkipAllExpiredFeeds, shouldStampFeedMeta, stampFeedMeta, refreshedFeedExpiry, routeLineCount, stampSupplementalFeedMeta } from './refreshMeta.js';
+import { feedFileDate, feedPeriodStart, lowerStoredFeedExpiry, candidateIsOlderThanActive, shouldClearStaged, decideRefreshSkipUnchanged, rawArchiveKeyDigest, isFeedExpired, markFeedStale, shouldSkipAllExpiredFeeds, shouldStampFeedMeta, stampFeedMeta, refreshedFeedExpiry, routeLineCount, stampSupplementalFeedMeta } from './refreshMeta.js';
 import {
   COUNTRY_LAUNCH_FLAG,
   isCountryLaunchBlocked,
@@ -67,7 +67,7 @@ import { recordFeedCheck, type FeedCheckFields } from './feedCheckTracking.js';
 import { buildFeedCandidates, type FeedCandidate } from './feedSourceCandidates.js';
 import { resolveFeedUrl } from './feedUrl.js';
 import { ROUTE_ARTIFACT_SCHEMA_VERSION } from '../shared/artifactSchema.js';
-import { peekFeedDates, zipFileDate } from './archiveSelection.js';
+import { newestArchivedZipStem, peekFeedDates, zipFileDate } from './archiveSelection.js';
 import { tryArchiveUnchangedFeed } from './archiveIfMissing.js';
 import { futureFeedHoldUntil, heldFeedSummary } from './futureFeedHold.js';
 import { resolveAgencyTimezone } from '../shared/agencyTimezone.js';
@@ -267,6 +267,10 @@ interface AgencyEntry {
   lastPeekedExpiry?: string | null;
   lastFeedStart?: string | null;
   lastFeedVersion?: string | null;
+  /** Archive key of the zip the live artifacts came from; its hash decides "unchanged" (#1423). */
+  lastRawArchiveKey?: string | null;
+  /** The processed zip's content key (zipContentKey), compared before the byte hash (#1423). */
+  lastFeedContentKey?: string | null;
   lastRefreshedAt?: string | null;
   lastFeedCheckAt?: string | null;
   /** A fetched timetable starting on this date waits until then (#1144). */
@@ -311,6 +315,15 @@ interface AgencyEntry {
 }
 
 type GeoJsonFc = { type: string; features: unknown[] };
+
+/** #1423: the newest archived zip's stem for an agency with no recorded key; null when the archive is empty or unreadable. */
+async function newestArchivedRawKey(agency: AgencyEntry, todayYmd: string): Promise<string | null> {
+  try {
+    return newestArchivedZipStem(await r2ListArchiveObjects(`gtfs/archive/${agency.slug}/`), agency, todayYmd);
+  } catch {
+    return null;
+  }
+}
 
 async function refreshAgency(
   agency: AgencyEntry,
@@ -440,6 +453,7 @@ async function refreshAgency(
   // CIV-1011 stage 4: the week the map reads moves with the run date, so an unchanged zip whose
   // picked week moved is reprocessed (the old picker's kill switch leaves the check as it was).
   const serviceWeek = process.env.ATLAS_LEGACY_REFERENCE_DATE === '1' ? null : await serviceWeekKey(buf);
+  const feedContentKey = zipContentKey(buf);
   const skipDecision = decideRefreshSkipUnchanged({
     forceRefresh,
     hasSupplementals,
@@ -452,6 +466,11 @@ async function refreshAgency(
     referenceDateFromRunDate: agency.referenceDateFromRunDate,
     serviceWeek,
     lastServiceWeek: agency.lastServiceWeek,
+    zipDigest: rawFeedDigest(buf),
+    lastRawArchiveKey: agency.lastRawArchiveKey,
+    archivedRawKey: rawArchiveKeyDigest(agency.lastRawArchiveKey) ? null : await newestArchivedRawKey(agency, expiryToday),
+    contentKey: feedContentKey,
+    lastFeedContentKey: agency.lastFeedContentKey,
   });
   if (skipDecision.skip) {
     // A current feed can still have a legacy processed artifact. Do not let
@@ -628,6 +647,8 @@ async function refreshAgency(
       serviceWeek,
       feedObtainedAt,
       feedStart: peekedPeriodStart,
+      rawArchiveKey: archiveKey,
+      contentKey: feedContentKey,
     });
     stampSupplementalFeedMeta(agency, supplementalMeta);
   }

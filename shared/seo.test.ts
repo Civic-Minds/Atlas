@@ -136,7 +136,7 @@ describe('head tag rewriting', () => {
     expect(out).toContain(`<meta property="og:image" content="${SITE_URL}/assets/research/share/night.png" />`);
     expect(out).toContain(`<meta name="twitter:image" content="${SITE_URL}/assets/research/share/night.png" />`);
     expect(out).toContain('<meta property="og:image:type" content="image/png" />');
-    expect(out).not.toContain('atlas-social-preview.jpg');
+    expect(out).not.toContain('atlas-share-map-toronto.jpg');
     expect(out.match(/property="og:image"/g)).toHaveLength(1);
     expect(out.match(/property="og:image:width"/g)).toHaveLength(1);
     expect(out.match(/name="twitter:image"/g)).toHaveLength(1);
@@ -145,12 +145,12 @@ describe('head tag rewriting', () => {
   it('gives the Frequent service story its own picture (CIV-1167, pick B4)', () => {
     const out = applySeoToHtml(html, resolveSeo('/research/frequent-service/story', BETA));
     expect(out).toContain(`<meta property="og:image" content="${SITE_URL}/assets/research/share/frequent-light.png" />`);
-    expect(out).not.toContain('atlas-social-preview.jpg');
+    expect(out).not.toContain('atlas-share-map-toronto.jpg');
   });
 
   it('keeps the site image on a research page with no pick yet, and on the map a public build shows there', () => {
     for (const out of [applySeoToHtml(html, resolveSeo('/research/frequent-service', BETA)), applySeoToHtml(html, resolveSeo('/research/night', PUBLIC))]) {
-      expect(out).toContain('atlas-social-preview.jpg');
+      expect(out).toContain('atlas-share-map-toronto.jpg');
       expect(out.match(/property="og:image"/g)).toHaveLength(1);
     }
     expect(applySeoToHtml(html, resolveSeo('/research/night', PUBLIC))).toContain('<title>Transit Atlas: scheduled frequency map</title>');

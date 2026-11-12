@@ -1,5 +1,5 @@
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { BrowserRouter } from 'react-router';
+import { BrowserRouter, useLocation } from 'react-router';
 import { useEffect } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -8,14 +8,15 @@ let mapMounts = 0;
 // The agency list the map loads from: a new list object makes the real map reload its data.
 const agencyLists = new Set<unknown>();
 vi.mock('../apps/Interval', () => ({
-  default: function MockInterval({ agencies, onViewportAgencySlugsChange, onCompareActiveChange, compareStartRequest }: {
+  default: function MockInterval({ agencies, onViewportAgencySlugsChange, onCompareActiveChange }: {
     agencies?: unknown;
     onViewportAgencySlugsChange?: (slugs: string[]) => void;
     onCompareActiveChange?: (active: boolean) => void;
-    compareStartRequest?: number | null;
   }) {
+    // The real map turns Compare on at Compare's own address.
+    const { pathname } = useLocation();
     useEffect(() => { mapMounts++; onViewportAgencySlugsChange?.(['ttc']); }, []); // eslint-disable-line react-hooks/exhaustive-deps
-    useEffect(() => { if (compareStartRequest) onCompareActiveChange?.(true); }, [compareStartRequest]); // eslint-disable-line react-hooks/exhaustive-deps
+    useEffect(() => { onCompareActiveChange?.(pathname === '/apps/compare'); }, [pathname]); // eslint-disable-line react-hooks/exhaustive-deps
     agencyLists.add(agencies);
     return <div data-testid="map" />;
   },
@@ -78,11 +79,13 @@ describe('switching modes (#888)', () => {
       expect(screen.getByTestId('map')).toBeTruthy();
       expect(screen.queryByText('Loading map…')).toBeNull();
     }
-    // Compare from Live goes back to the map and starts comparing, still on the same map.
+    // Compare from Live opens Compare's own address in one step, still on the same map.
     await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Live vehicles' })); });
     await waitFor(() => expect(window.location.pathname).toBe('/apps/live'));
+    const entries = window.history.length;
     await act(async () => { fireEvent.click(screen.getAllByRole('button', { name: 'Compare two maps' })[0]); });
-    await waitFor(() => expect(window.location.pathname).toBe('/'));
+    await waitFor(() => expect(window.location.pathname).toBe('/apps/compare'));
+    expect(window.history.length).toBe(entries + 1);
 
     expect(mapMounts).toBe(1);
     expect(agencyLists.size).toBe(1);

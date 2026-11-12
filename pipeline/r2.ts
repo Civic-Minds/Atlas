@@ -242,8 +242,12 @@ export function rawFeedArchiveKey(feedExpiry: string | null, feedVersion: string
     .replace(/[^a-zA-Z0-9_-]+/g, '-')
     .replace(/^-+|-+$/g, '')
     .slice(0, 80) || 'unknown';
-  const digest = createHash('sha256').update(body).digest('hex').slice(0, 16);
-  return `${label}-${digest}`;
+  return `${label}-${rawFeedDigest(body)}`;
+}
+
+/** The content hash a raw archive key ends with (first 16 hex of the zip's sha256). */
+export function rawFeedDigest(body: Buffer): string {
+  return createHash('sha256').update(body).digest('hex').slice(0, 16);
 }
 
 /** Upload JSON text to the private archive bucket. */
