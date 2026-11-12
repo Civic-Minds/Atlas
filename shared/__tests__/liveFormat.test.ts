@@ -23,7 +23,9 @@ describe('delivered share', () => {
   it('rounds down to a tenth of a percent, so missed trips never read 100%', () => {
     expect(pctTenth(0.9996)).toBe('99.9%');
     expect(pctTenth(1)).toBe('100%');
-    expect(pctTenth(0.57)).toBe('57%');
+    expect(pctTenth(0.57)).toBe('57.0%');
+    // Last week's 99.06% beside this week's 99.4%: the same one decimal (#1472).
+    expect(pctTenth(0.9906)).toBe('99.0%');
     expect(pctTenth(0.9667)).toBe('96.6%');
   });
 });
