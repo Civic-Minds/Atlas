@@ -63,6 +63,7 @@
     "build:gtfs-flex-metadata": "node scripts/build-gtfs-flex-metadata.mjs",
     "validate-index": "npx tsx pipeline/validate-index.ts",
     "build:agency-index": "npx tsx scripts/build-agency-index.ts",
+    "flags": "npx tsx scripts/print-flags.ts",
     "build:sitemap": "npx tsx scripts/build-sitemap.ts",
     "build:agency-catalog": "npx tsx scripts/build-agency-catalog.ts",
     "build:history-agencies": "npx tsx scripts/build-history-agency-list.ts",

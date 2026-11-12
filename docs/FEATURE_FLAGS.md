@@ -26,6 +26,14 @@ Atlas gates immature features (thin agency coverage, no scaling plan, or genuine
 | `ON_DEMAND_ENABLED` (read as `FEATURES.onDemand`) | On-demand zones on the map, the On-demand filter chip and the standalone on-demand agencies (`MapCanvas.tsx`, `FilterChips.tsx`, `AgencyCard.tsx`, `useOnDemandData.tsx`) | off | on (any non-`public` mode: `beta`, `preview`, `dev`) | Not env-driven; `ON_DEMAND_PUBLIC` is `false` until Ryan signs off on the public launch (CIV-23), and launch flips that one value. |
 | `ATLAS_MODE=preview` | Preview title and research-app visibility | off | not configured for the stable domains | Stable Preview uses the Beta project's production deployment; there is no separate Preview project or verified `preview` mode. |
 
+## What is on right now: `npm run flags`
+
+The table above is the intended state. To see what each site actually has switched on, run `npm run flags` before stating it anywhere (CIV-1402). It prints one row per `FEATURES` entry for the public site, beta, and the local `dev:public` / `dev:beta` scripts.
+
+- Every build writes `/flags.json` (the `atlas-flags-json` plugin in `vite.config.ts`): the mode, every `FEATURES` value computed by `shared/config.ts` from that build's env, the switch values it was given (never URLs or keys), and the deployed commit. The command reads it from each site, so it reports what Vercel really built, not what the docs say.
+- The local columns run `shared/config.ts` with the env the `package.json` script sets.
+- A site deployed before this existed shows `?` with "no flags.json yet".
+
 ## How it works
 
 Defined in `shared/config.ts`, read from Vite build-time environment variables rather than hardcoded booleans:
