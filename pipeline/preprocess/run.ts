@@ -14,6 +14,7 @@ import { addSantaFePickUpWeekendFrequency } from '../transforms/santafe-pickup-s
 import { interpolateUntimedStops } from '../transforms/interpolate-untimed-stops.js';
 import { dropMnrExpressBusPairs } from '../transforms/mnr-bus-pairs.js';
 import { mergeEquivalentShapeVariants } from './merge-equivalent-shapes.js';
+import { mergeIdenticalShapes } from './merge-identical-shapes.js';
 import { splitRoutes, type RouteSplit } from './split-routes.js';
 import { separateSameNameRoutes, type SameNameRoute } from './same-name-routes.js';
 import { mergeTerminalBays } from './merge-terminal-bays.js';
@@ -206,5 +207,12 @@ export function normalizeGtfs(
       onStatus?.(`Single-trip shapes: drew ${pooled.pooledTrips} trips on one shape across ${pooled.pooledGroups} headsign groups`);
     }
   }
-  return synthesizeMissingDirections(gtfs);
+  gtfs = synthesizeMissingDirections(gtfs);
+  // #1446, every agency: one line written under two shape ids (the same points and the same stops)
+  // is one pattern. Last, so the opt-in merges above and the direction fill read the feed's own ids.
+  const identical = mergeIdenticalShapes(gtfs);
+  if (identical.mergedTrips > 0) {
+    onStatus?.(`Identical shapes: ${identical.mergedTrips} trips of ${identical.mergedGroups} pattern(s) written under a second shape id for the same line (#1446)`);
+  }
+  return identical.gtfs;
 }
