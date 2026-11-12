@@ -28,7 +28,7 @@ import { OutboundLink } from '../OutboundLink';
 import { buildRouteFacts, type RouteLabel } from '../../utils/routeFacts';
 import { reportDetails } from '../../utils/reportIssue';
 import { AGENCY_ROUTES_FAILED, BACK_TO_MAP_LABEL, BETA_ROLLOUT_NOTICE, BETA_SERVICE_ROLLOUT_NOTICE, explainerFor, getRolloutNotice, NO_ROUTES_LOADED, noRoutesMatchText, noServiceOnDayNotice, notOnMapYetNotice, ON_DEMAND_NOT_MAPPED_NOTE, ON_DEMAND_SHADED_AREA, onDemandPickupSentence, ROUTES_OUTSIDE_FILTERS_NOTICE, routesOutsideFiltersNotice, VIEW_ON_BETA } from '../../content/noticeCopy';
-import { onDemandCardName } from '../../utils/onDemandSelection';
+import { namedOnDemandService, onDemandCardName, resolveOnDemandLinkTarget } from '../../utils/onDemandSelection';
 import { onDemandCoverageNote } from '../../data/onDemandCoverage';
 import {
   formatOnDemandHoursLines,
@@ -157,6 +157,34 @@ export function getRoutes(
       matchesFilter: row.matchesFilter,
     }))
     .sort(compareHeadwayThenNumber);
+}
+
+export interface OnDemandZoneHoursRow {
+  zoneId: string;
+  serviceHours?: string;
+  availability?: OnDemandAvailability;
+}
+
+/**
+ * The whole-service card's zone rows (Ryan, 2026-11-11: "one row per zone, each clickable"): when a service has no
+ * hours of its own and sets them zone by zone (RTD FlexRide, C-TRAN, Edmonton), every drawn zone of that service is
+ * listed by name with its hours. Empty when the service has its own hours or no zone sets any.
+ */
+export function onDemandZoneHoursRows(service: NonNullable<Agency['onDemandServiceArea']>): OnDemandZoneHoursRow[] {
+  if (service.availability || service.serviceHours) return [];
+  const names = new Set<string>();
+  for (const feature of service.features) {
+    const name = (feature.properties as { areaName?: string } | undefined)?.areaName;
+    if (name) names.add(name);
+  }
+  const rows: OnDemandZoneHoursRow[] = [];
+  for (const name of names) {
+    const zone = resolveOnDemandZone(service, name);
+    if (!zone.sameServiceAsParent) continue;
+    rows.push({ zoneId: name, serviceHours: zone.serviceHours, availability: zone.availability });
+  }
+  if (!rows.some(row => row.availability || row.serviceHours)) return [];
+  return rows.sort((a, b) => a.zoneId.localeCompare(b.zoneId));
 }
 
 /** Separate services that own some zones (e.g. Hamilton Trans-Cab beside myRide), listed once each. */
@@ -333,6 +361,8 @@ interface Props {
   onDemandZoneId?: string | null;
   /** The on-demand card's back link to the agency card (CIV-900); shown only when that is a different card. */
   onBackToAgency?: () => void;
+  /** Opens one zone's card, as clicking the zone on the map does (the whole-service card's zone rows). */
+  onSelectOnDemandZone?: (zoneId: string) => void;
   /** Closes the card: the "← Map" back link every card with nothing before it gets (CIV-929). */
   onClose: () => void;
   /** The agency's route data failed to load (N27). */
@@ -379,6 +409,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
   onDemandFocus = false,
   onDemandZoneId = null,
   onBackToAgency,
+  onSelectOnDemandZone,
   onClose,
   loadFailed = false,
 }, ref) {
@@ -479,24 +510,27 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
   if (onDemandFocus && !agency.onDemandServiceArea) return null;
 
   if (onDemandFocus && agency.onDemandServiceArea) {
-    const service = agency.onDemandServiceArea;
-    const selectedZone = onDemandZoneId
-      ? service.features.find(feature => (feature.properties as { areaName?: string } | undefined)?.areaName === onDemandZoneId)
-      : undefined;
-    const zoneName = (selectedZone?.properties as { areaName?: string } | undefined)?.areaName;
+    // The link's id names a zone, a separately run service (Trans-Cab), or nothing (#1440).
+    const linkTarget = resolveOnDemandLinkTarget(agency.onDemandServiceArea, onDemandZoneId);
+    const service = linkTarget.kind === 'named-service'
+      ? namedOnDemandService(agency.onDemandServiceArea, linkTarget.serviceName, linkTarget.zoneIds)
+      : agency.onDemandServiceArea;
+    const zoneName = linkTarget.kind === 'zone' ? linkTarget.zoneId : undefined;
     const zone = resolveOnDemandZone(service, zoneName);
     const pickupSentence = onDemandPickupSentence(service, zoneName);
     // Only claim a shaded area when one belongs to this service (Hamilton's shaded zones are Trans-Cab, not myRide).
     const showsShadedArea = zoneName
-      ? true
+      // A stop-only zone (Grande Prairie's Late Night) has no shaded area.
+      ? service.features.some(feature => (feature.properties as { areaName?: string } | undefined)?.areaName === zoneName)
       : service.features.some(feature => resolveOnDemandZone(service, (feature.properties as { areaName?: string } | undefined)?.areaName).sameServiceAsParent);
     const runningNote = onDemandRunningNote(zone.availability, day, period);
+    const zoneRows = zoneName ? [] : onDemandZoneHoursRows(service);
     const backToAgency = onBackToAgency && (onDemandZoneId || !agency.onDemandOnly) ? onBackToAgency : undefined;
     // An on-demand card's report names the service, the zone and its hours as published (CIV-932), so a report about the
     // area or its hours says which one; the agency's own report says only the agency.
     const onDemandReport = (
       <CardReportButton
-        title={`On-demand issue: ${onDemandCardName(service, onDemandZoneId, agencyNamePrimary)}`}
+        title={`On-demand issue: ${onDemandCardName(agency.onDemandServiceArea, onDemandZoneId, agencyNamePrimary)}`}
         details={reportDetails([
           ['Agency', agency.name],
           ['Agency slug', agency.slug],
@@ -524,7 +558,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
             // A zone (or a fixed-route agency's service) reads like a route card: "← Agency" back to the agency
             // card, then the bold zone name (Ryan: "the on demand should be closer to the route card").
             <div className="flex items-start gap-2">
-              <SidebarCardHeader title={onDemandCardName(service, onDemandZoneId, agencyNamePrimary)} back={{ to: agencyCardName, onClick: backToAgency }} />
+              <SidebarCardHeader title={onDemandCardName(agency.onDemandServiceArea, onDemandZoneId, agencyNamePrimary)} back={{ to: agencyCardName, onClick: backToAgency }} />
               {onDemandReport}
             </div>
           ) : (
@@ -573,15 +607,47 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
           )}
           <div>
             <CardSectionLabel>Service hours</CardSectionLabel>
-            <CardBodyText data-testid="on-demand-running-note">{runningNote}</CardBodyText>
-            <OnDemandHoursRows
-              availability={zone.availability}
-              serviceHours={zone.serviceHours}
-              day={day}
-              className={CARD_BODY_TEXT}
-            />
-            {zone.availability && zone.hoursNote && (
-              <CardBodyText>{zone.hoursNote}</CardBodyText>
+            {zoneRows.length > 0 ? (
+              // Hours set zone by zone: one row per zone, each opening that zone's card.
+              <div className="-mx-2 mt-1 space-y-1" data-testid="on-demand-zone-rows">
+                {zoneRows.map(row => {
+                  const body = (
+                    <>
+                      <p className="text-xs text-[var(--text-primary)] leading-snug"><RouteRowName shortName={row.zoneId} /></p>
+                      {row.availability || row.serviceHours ? (
+                        <OnDemandHoursRows availability={row.availability} serviceHours={row.serviceHours} day={day} className={CARD_BODY_TEXT} />
+                      ) : (
+                        <p className={CARD_SUMMARY}>{onDemandRunningNote(undefined, day, period)}</p>
+                      )}
+                    </>
+                  );
+                  return onSelectOnDemandZone ? (
+                    <button
+                      key={row.zoneId}
+                      type="button"
+                      onClick={() => onSelectOnDemandZone(row.zoneId)}
+                      className="block w-full rounded-md px-2 py-1 text-left transition-colors hover:bg-[var(--bg-btn-hover)]"
+                    >
+                      {body}
+                    </button>
+                  ) : (
+                    <div key={row.zoneId} className="px-2 py-1">{body}</div>
+                  );
+                })}
+              </div>
+            ) : (
+              <>
+                <CardBodyText data-testid="on-demand-running-note">{runningNote}</CardBodyText>
+                <OnDemandHoursRows
+                  availability={zone.availability}
+                  serviceHours={zone.serviceHours}
+                  day={day}
+                  className={CARD_BODY_TEXT}
+                />
+                {zone.availability && zone.hoursNote && (
+                  <CardBodyText>{zone.hoursNote}</CardBodyText>
+                )}
+              </>
             )}
           </div>
           {zone.bookingInfo && (

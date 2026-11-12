@@ -35,7 +35,7 @@ function renderZoneCard(zoneId: string | null, day: 'Weekday' | 'Saturday' | 'Su
 
 describe('on-demand zone card', () => {
   it('builds hours from structured data and bolds the selected day', () => {
-    renderZoneCard('West Glanbrook', 'Saturday', 'midday');
+    renderZoneCard('Lower North Stoney Creek', 'Saturday', 'midday');
     expect(screen.getByText('Running during Saturday midday')).toBeInTheDocument();
     // Hours rows (CIV-964): the selected day's row is bold, days and times in words beside its bar.
     expect(screen.getByText('Mon–Sat')).toHaveClass('font-bold');
@@ -45,6 +45,12 @@ describe('on-demand zone card', () => {
     expect(screen.getByText('Holidays follow Sunday hours.')).toBeInTheDocument();
     expect(screen.getByText("Every trip starts or ends at this zone's transfer point, shown on the map.")).toBeInTheDocument();
     expect(screen.queryByText(/not fixed-route stops/)).toBeNull();
+  });
+
+  it("shows West Glanbrook's own weekend hours, not Stoney Creek's", () => {
+    renderZoneCard('West Glanbrook', 'Sunday', 'midday');
+    expect(screen.getByText('4:30 AM–1 AM')).toBeInTheDocument();
+    expect(screen.getByText('4:30 AM–12 AM')).toBeInTheDocument();
   });
 
   it('says when a zone is not running', () => {
@@ -101,5 +107,51 @@ describe('on-demand card back link', () => {
   it("an on-demand-only agency's zone card goes back to the service name its agency card shows", () => {
     renderZoneCard('West Glanbrook', 'Saturday', 'midday', { ...hamilton, onDemandOnly: true } as unknown as Agency, vi.fn());
     expect(screen.getByRole('button', { name: `← ${HAMILTON_MY_RIDE_SERVICE_AREA.serviceName}` })).toBeInTheDocument();
+  });
+});
+
+describe('whole-service card with hours set zone by zone', () => {
+  const zone = (areaName: string) => ({ type: 'Feature', properties: { areaName }, geometry: { type: 'Polygon', coordinates: [] } });
+  const rtd = {
+    slug: 'rtd-denver',
+    name: 'RTD Denver',
+    region: 'Colorado',
+    center: [39.7, -105],
+    url: '',
+    onDemandServiceArea: {
+      serviceName: 'FlexRide',
+      sourceUrl: 'https://example.com',
+      features: [zone('Parker'), zone('Brighton'), zone('Brighton')],
+      zoneMetadata: {
+        Brighton: { serviceName: 'FlexRide', serviceHours: 'Monday–Friday 5:30 AM–7 PM.', availability: { Weekday: [{ startHour: 5.5, endHour: 19 }], Saturday: [], Sunday: [] } },
+        Parker: { serviceName: 'FlexRide', serviceHours: 'Monday–Friday 6 AM–6 PM.', availability: { Weekday: [{ startHour: 6, endHour: 18 }], Saturday: [], Sunday: [] } },
+      },
+    },
+  } as unknown as Agency;
+
+  it('lists each zone once, in name order, with its hours, and opens a zone when its row is clicked', () => {
+    const onSelect = vi.fn();
+    render(
+      <AgencyCard agency={rtd} layers={{}} day="Weekday" period="midday" maxHeadway={Infinity} selectedModes={new Set()}
+        hideSpan={false} hideLimitedService={false} onRouteSelect={() => {}} onClose={() => {}} onDemandFocus
+        onDemandZoneId={null} onSelectOnDemandZone={onSelect} />,
+    );
+    expect(screen.queryByText('Hours unavailable')).toBeNull();
+    const rows = screen.getAllByRole('button').filter(b => b.closest('[data-testid="on-demand-zone-rows"]'));
+    expect(rows.map(r => r.querySelector('p')?.textContent)).toEqual(['Brighton', 'Parker']);
+    expect(screen.getByText('5:30 AM–7 PM')).toBeInTheDocument();
+    expect(screen.getByText('6 AM–6 PM')).toBeInTheDocument();
+    fireEvent.click(rows[1]);
+    expect(onSelect).toHaveBeenCalledWith('Parker');
+  });
+
+  it('keeps the zone card as it was once a zone is picked', () => {
+    render(
+      <AgencyCard agency={rtd} layers={{}} day="Weekday" period="midday" maxHeadway={Infinity} selectedModes={new Set()}
+        hideSpan={false} hideLimitedService={false} onRouteSelect={() => {}} onClose={() => {}} onDemandFocus
+        onDemandZoneId="Parker" onSelectOnDemandZone={() => {}} />,
+    );
+    expect(screen.queryByTestId('on-demand-zone-rows')).toBeNull();
+    expect(screen.getByTestId('on-demand-running-note')).toHaveTextContent('Running during weekday midday');
   });
 });

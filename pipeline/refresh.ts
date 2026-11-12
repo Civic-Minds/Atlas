@@ -48,7 +48,7 @@ import {
 } from './overrideAudit.js';
 import { readFeedReviewHistory, shouldReviewNextFeed } from './feedReview.js';
 import { compareStopSnapshots, formatStopAuditLog, type AuditedStop } from './stopAudit.js';
-import { feedFileDate, feedPeriodStart, lowerStoredFeedExpiry, candidateIsOlderThanActive, shouldClearStaged, decideRefreshSkipUnchanged, rawArchiveKeyDigest, isFeedExpired, markFeedStale, shouldSkipAllExpiredFeeds, shouldStampFeedMeta, stampFeedMeta, refreshedFeedExpiry, routeLineCount, stampSupplementalFeedMeta } from './refreshMeta.js';
+import { feedContentsChanged, feedFileDate, feedPeriodStart, isNewFeedFile, lowerStoredFeedExpiry, candidateIsOlderThanActive, shouldClearStaged, decideRefreshSkipUnchanged, rawArchiveKeyDigest, isFeedExpired, markFeedStale, shouldSkipAllExpiredFeeds, shouldStampFeedMeta, stampFeedMeta, refreshedFeedExpiry, routeLineCount, stampSupplementalFeedMeta } from './refreshMeta.js';
 import {
   COUNTRY_LAUNCH_FLAG,
   isCountryLaunchBlocked,
@@ -441,9 +441,17 @@ async function refreshAgency(
     return { summary: `skipped (older feed: ${peekedExpiry ?? 'unknown'})` };
   }
 
-  // CIV-1011 safeguard: when Atlas first obtained this file. A new version or expiry is obtained
-  // today; an unchanged one keeps its recorded date, else the zip's own date (#1253).
-  const newFile = (peekedVersion ?? null) !== (agency.lastFeedVersion ?? null) || (peekedExpiry ?? null) !== (agency.lastPeekedExpiry ?? agency.lastFeedExpiry ?? null);
+  // #1429: one "did the feed change" answer, from the zip's contents when recorded, for the obtained
+  // date, the review flag and the override note below (the skip check reads the same keys).
+  const feedContentKey = zipContentKey(buf);
+  const feedDigest = rawFeedDigest(buf);
+  const contentsChanged = feedContentsChanged({
+    contentKey: feedContentKey, lastFeedContentKey: agency.lastFeedContentKey,
+    zipDigest: feedDigest, lastRawArchiveKey: agency.lastRawArchiveKey,
+  })?.changed ?? null;
+  // CIV-1011 safeguard: when Atlas first obtained this file. A new file is obtained today; an
+  // unchanged one keeps its recorded date, else the zip's own date (#1253).
+  const newFile = isNewFeedFile(agency, peekedExpiry, peekedVersion, contentsChanged);
   // The run date in the pipeline's time zone, as the picker's anchor reads it (CIV-1101), not UTC `today`.
   const runDate = pipelineRunDateYmd();
   const feedObtainedAt = feedFileDate({
@@ -453,7 +461,6 @@ async function refreshAgency(
   // CIV-1011 stage 4: the week the map reads moves with the run date, so an unchanged zip whose
   // picked week moved is reprocessed (the old picker's kill switch leaves the check as it was).
   const serviceWeek = process.env.ATLAS_LEGACY_REFERENCE_DATE === '1' ? null : await serviceWeekKey(buf);
-  const feedContentKey = zipContentKey(buf);
   const skipDecision = decideRefreshSkipUnchanged({
     forceRefresh,
     hasSupplementals,
@@ -466,7 +473,7 @@ async function refreshAgency(
     referenceDateFromRunDate: agency.referenceDateFromRunDate,
     serviceWeek,
     lastServiceWeek: agency.lastServiceWeek,
-    zipDigest: rawFeedDigest(buf),
+    zipDigest: feedDigest,
     lastRawArchiveKey: agency.lastRawArchiveKey,
     archivedRawKey: rawArchiveKeyDigest(agency.lastRawArchiveKey) ? null : await newestArchivedRawKey(agency, expiryToday),
     contentKey: feedContentKey,
@@ -502,8 +509,8 @@ async function refreshAgency(
 
   // A drop-guard refusal must leave the agency's metadata exactly as it was.
   const agencyBeforeRebuild = structuredClone(agency);
-  const clearedOverrideNote = clearOverrideUserFacingOnFeedChange(agency, peekedExpiry, peekedVersion);
-  const feedChanged = upstreamFeedChanged(agency, peekedExpiry, peekedVersion);
+  const clearedOverrideNote = clearOverrideUserFacingOnFeedChange(agency, peekedExpiry, peekedVersion, contentsChanged);
+  const feedChanged = upstreamFeedChanged(agency, peekedExpiry, peekedVersion, contentsChanged);
   if (feedChanged) {
     agency.feedReviewStatus = shouldReviewNextFeed(readFeedReviewHistory().agencies[agency.slug] ?? []) ? 'review' : undefined;
   }

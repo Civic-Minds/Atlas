@@ -14,12 +14,12 @@
     "zoneMetadata": {
       "North Mecklenburg": {
         "serviceName": "CATS Micro",
-        "serviceHours": "Service runs daily, 7 a.m. - 9 p.m.",
+        "serviceHours": "Weekdays 6 AM–9 PM; weekends 7 AM–9 PM.",
         "hoursNote": "Holiday service is not stated on the CATS Micro page.",
         "availability": {
           "Weekday": [
             {
-              "startHour": 7,
+              "startHour": 6,
               "endHour": 21
             }
           ],
@@ -38,17 +38,17 @@
         },
         "hoursSource": {
           "url": "https://www.charlottenc.gov/CATS/CATS-Micro",
-          "retrievedAt": "2026-10-11"
+          "retrievedAt": "2026-11-11"
         }
       },
       "West Boulevard": {
         "serviceName": "CATS Micro",
-        "serviceHours": "Service runs daily, 7 a.m. - 9 p.m.",
+        "serviceHours": "Weekdays 6 AM–9 PM; weekends 7 AM–9 PM.",
         "hoursNote": "Holiday service is not stated on the CATS Micro page.",
         "availability": {
           "Weekday": [
             {
-              "startHour": 7,
+              "startHour": 6,
               "endHour": 21
             }
           ],
@@ -67,7 +67,7 @@
         },
         "hoursSource": {
           "url": "https://www.charlottenc.gov/CATS/CATS-Micro",
-          "retrievedAt": "2026-10-11"
+          "retrievedAt": "2026-11-11"
         }
       }
     }
