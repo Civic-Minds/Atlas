@@ -1,0 +1,221 @@
+name: Live report refresh
+
+# Rebuilds the Live report pages' data for the TTC streetcar routes (CIV-1407): copies the last 15 service dates of
+# archived vehicle positions from R2, gets the timetable each date runs on (two of them when the window spans a
+# timetable change), analyses every route, and builds atlas/live/ttc/<route>.json, agency.json and manifest.json.
+#
+#   gh workflow run live-report-refresh.yml                     no-publish: builds, uploads the files and a summary as a run artifact, writes nothing
+#   gh workflow run live-report-refresh.yml -f mode=publish     main only: builds, saves the published files, then replaces them
+#
+# no-publish runs the code of any branch with the READ-ONLY R2 keys. publish runs only from main; the build still uses
+# the read-only keys, and a separate job with the write keys only saves the current files and uploads the built ones.
+# To undo a publish: download that run's live-report-backup artifact and upload it back with
+#   npx tsx scripts/live-publish-upload.ts ttc --from <backup dir> --backup <another dir> --allow-older --upload
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'no-publish builds the files and a summary as a run artifact (read-only keys). publish also replaces the public files (main only).'
+        required: true
+        default: no-publish
+        type: choice
+        options:
+          - no-publish
+          - publish
+  # Off until the first publish has been reviewed. Monday 09:30 UTC = 04:30 or 05:30 Toronto, after the 4 a.m. end of
+  # Sunday's service date. A scheduled run publishes.
+  # schedule:
+  # - cron: '30 9 * * 1'
+
+permissions:
+  contents: read
+
+# Date math (Toronto service dates) is pinned to the zone the analysis was reviewed on.
+env:
+  TZ: America/Toronto
+
+concurrency:
+  group: live-report-refresh
+  cancel-in-progress: false
+
+jobs:
+  # ---------------------------------------------------------------------------------------
+  # Build. Read-only R2 keys only, whatever the mode: it never sees a write-capable credential.
+  # ---------------------------------------------------------------------------------------
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    timeout-minutes: 120
+    env:
+      MODE: ${{ github.event_name == 'schedule' && 'publish' || inputs.mode }}
+      R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+      R2_ACCESS_KEY_ID: ${{ secrets.R2_RO_ACCESS_KEY_ID }}
+      R2_SECRET_ACCESS_KEY: ${{ secrets.R2_RO_SECRET_ACCESS_KEY }}
+      R2_BUCKET_NAME: ${{ secrets.R2_BUCKET_NAME }}
+      R2_PUBLIC_URL: ${{ secrets.R2_PUBLIC_URL }}
+      # The stored TTC surface timetables are in the private archive bucket (pipeline/r2.ts reads it from this name).
+      R2_ARCHIVE_BUCKET_NAME: ${{ secrets.R2_ARCHIVE_BUCKET_NAME }}
+    steps:
+      - name: Check the mode, the branch and the read-only keys
+        run: |
+          case "$MODE" in no-publish|publish) ;; *) echo "mode must be no-publish or publish, got: $MODE"; exit 1 ;; esac
+          if [ "$MODE" = "publish" ] && [ "$GITHUB_REF" != "refs/heads/main" ]; then
+            echo "Refusing to publish from $GITHUB_REF: publishing only runs from main. Use mode=no-publish for a branch."
+            exit 1
+          fi
+          if [ -z "$R2_ACCESS_KEY_ID" ] || [ -z "$R2_SECRET_ACCESS_KEY" ]; then
+            echo "Missing the read-only R2 keys (repository secrets R2_RO_ACCESS_KEY_ID and R2_RO_SECRET_ACCESS_KEY)."
+            echo "They must be able to read the atlas-live bucket (positions) as well as the data and archive buckets."
+            exit 1
+          fi
+
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+          cache: npm
+
+      - run: npm ci
+
+      # Same layout scripts/live-analyze.sh reads: $LIVE_DATA/archive, $LIVE_DATA/gtfs/candidates/surface-feeds/<feed start>/
+      # (one timetable per folder) and $LIVE_DATA/gtfs/candidates/surface. Absolute, because the analysis script changes
+      # into the repo root first. LIVE_SEGMENTS_DIR is where live-publish.ts reads the analysis from.
+      - name: Set up the work folder
+        id: day
+        run: |
+          echo "LIVE_DATA=$RUNNER_TEMP/live-data" >> "$GITHUB_ENV"
+          echo "LIVE_SEGMENTS_DIR=$RUNNER_TEMP/live-data/out" >> "$GITHUB_ENV"
+          mkdir -p "$RUNNER_TEMP/live-data/archive" "$RUNNER_TEMP/live-data/gtfs/candidates" "$RUNNER_TEMP/live-data/review"
+          echo "day=$(date +%F)" >> "$GITHUB_OUTPUT"
+
+      - name: Restore archived positions
+        id: archive-cache
+        uses: actions/cache/restore@v6
+        with:
+          path: ${{ runner.temp }}/live-data/archive
+          key: live-report-archive-${{ steps.day.outputs.day }}
+          restore-keys: live-report-archive-
+
+      # A day already in the cache is skipped only when it was fetched whole; yesterday's run left today's folder cut
+      # at 4 a.m., and that one is fetched again. Fails when a day loses more than 2% of its snapshots.
+      - name: Fetch archived positions (last 15 service dates)
+        run: >-
+          npx tsx scripts/live-fetch-archive.ts --days 15 --out "$LIVE_DATA/archive" --prune
+          --routes 501,503,504,505,506,507,509,510,511,512 --report "$LIVE_DATA/review/fetch.json"
+
+      # Saved even when a later step fails, so a failed run doesn't throw away the fetched days.
+      - name: Save archived positions
+        if: always() && steps.archive-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v6
+        with:
+          path: ${{ runner.temp }}/live-data/archive
+          key: live-report-archive-${{ steps.day.outputs.day }}
+
+      # One stored TTC surface timetable per service date (gtfs/live/ttc-surface/, archive bucket). When the TTC publishes
+      # a new one, store it by hand: npx tsx scripts/live-store-surface-gtfs.ts <surfacegtfs.zip>. Fails, after writing its
+      # report, when a day's positions match its timetable below 90%.
+      - name: Get the timetable for each service date and check it matches the positions
+        run: >-
+          npx tsx scripts/live-gtfs-for-window.ts --days 15
+          --feeds-dir "$LIVE_DATA/gtfs/candidates/surface-feeds" --surface "$LIVE_DATA/gtfs/candidates/surface"
+          --archive "$LIVE_DATA/archive" --report "$LIVE_DATA/review/timetable-match.json"
+
+      - name: Analyse every route
+        run: bash scripts/live-analyze.sh all --days 15
+
+      # No --upload: writes $LIVE_DATA/publish/atlas/live/ttc/ only.
+      - name: Build the report files
+        run: npx tsx scripts/live-publish.ts ttc
+
+      # Plain public downloads (no keys), so the summary can put the new numbers beside what is published now.
+      - name: Download the published files for the comparison
+        run: |
+          mkdir -p "$LIVE_DATA/review/published"
+          for f in "$LIVE_DATA"/publish/atlas/live/ttc/*.json; do
+            name="$(basename "$f")"
+            curl -fsS -o "$LIVE_DATA/review/published/$name" "$R2_PUBLIC_URL/atlas/live/ttc/$name" || echo "not published now: $name"
+          done
+
+      - name: Write the summary
+        if: always()
+        run: |
+          if [ -f "$LIVE_DATA/publish/atlas/live/ttc/manifest.json" ]; then
+            npx tsx scripts/live-refresh-summary.ts --files "$LIVE_DATA/publish/atlas/live/ttc" \
+              --match "$LIVE_DATA/review/timetable-match.json" --fetch "$LIVE_DATA/review/fetch.json" \
+              --published "$LIVE_DATA/review/published" --out "$LIVE_DATA/review/summary.md" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "## Live report refresh" >> "$GITHUB_STEP_SUMMARY"
+            echo "No report files were built. See the log; the timetable match report, if any, is in the run artifact." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Upload the report files and the summary
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: live-report-files-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/live-data/publish/atlas/live/ttc/*.json
+            ${{ runner.temp }}/live-data/review/
+          if-no-files-found: warn
+          retention-days: 30
+
+  # ---------------------------------------------------------------------------------------
+  # Publish. main only. Uploads exactly the files the build job made; the analysis never runs here.
+  # ---------------------------------------------------------------------------------------
+  publish:
+    needs: build
+    if: github.ref == 'refs/heads/main' && (inputs.mode == 'publish' || github.event_name == 'schedule')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    timeout-minutes: 20
+    env:
+      R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+      R2_BUCKET_NAME: ${{ secrets.R2_BUCKET_NAME }}
+      R2_PUBLIC_URL: ${{ secrets.R2_PUBLIC_URL }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+          cache: npm
+
+      - run: npm ci
+
+      - name: Download the built report files
+        uses: actions/download-artifact@v8
+        with:
+          name: live-report-files-${{ github.run_id }}
+          path: ${{ runner.temp }}/built
+
+      # Read-only keys, no --upload: saves every published file that is about to be replaced, and refuses a file set
+      # that is not a complete report or that is older than what is published. Fails when it could not save the
+      # published set (nothing there, or no manifest): a first publish is done by hand with --first-publish.
+      - name: Save the published files
+        run: npx tsx scripts/live-publish-upload.ts ttc --from "$RUNNER_TEMP/built/publish/atlas/live/ttc" --backup "$RUNNER_TEMP/backup"
+        env:
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_RO_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_RO_SECRET_ACCESS_KEY }}
+
+      # The undo copy must exist as an artifact before anything is written.
+      - name: Upload the saved files
+        uses: actions/upload-artifact@v7
+        with:
+          name: live-report-backup-${{ github.run_id }}
+          path: ${{ runner.temp }}/backup
+          if-no-files-found: error
+          retention-days: 90
+
+      # The only step with the write keys.
+      - name: Publish the report files
+        run: npx tsx scripts/live-publish-upload.ts ttc --from "$RUNNER_TEMP/built/publish/atlas/live/ttc" --backup "$RUNNER_TEMP/backup-at-publish" --upload
+        env:
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}

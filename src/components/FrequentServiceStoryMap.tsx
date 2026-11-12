@@ -8,7 +8,8 @@ import { storyMapFailedText, storyMapLoadingText } from '../content/noticeCopy';
 import { fetchAgencyGeo } from '../lib/agencyGeo';
 import type { Agency } from '../App';
 import { headwayOrBetter } from '../utils/headwayText';
-import { routeFilterHeadway } from '../../shared/routeHeadwayFilter';
+import { featurePassesHeadwayFilter, routeFilterHeadway } from '../../shared/routeHeadwayFilter';
+import { isLimitedService, type IrregularRouteProperties } from '../../shared/irregularRoutes';
 
 interface Props {
   agencies: Agency[];
@@ -36,9 +37,22 @@ function boundsOf(features: StoryFeature[]): maplibregl.LngLatBoundsLike | null 
   return [[Math.min(...lons), Math.min(...lats)], [Math.max(...lons), Math.max(...lats)]];
 }
 
+/**
+ * #1433: the rows the story counts. Weekday rows only, as the caption says ("Weekday daytime"): a route's Saturday or Sunday
+ * row must not carry it into a stage its weekday service does not reach. The map draws these rows, and any number shown
+ * beside it must count the same ones.
+ */
+export function storyRows(features: Array<GeoJSON.Feature | null | undefined>): StoryFeature[] {
+  return features.filter((feature): feature is StoryFeature =>
+    (feature?.geometry?.type === 'LineString' || feature?.geometry?.type === 'MultiLineString')
+    && (feature.properties as { day?: string } | null)?.day === 'Weekday');
+}
+
+// #1434: limited service as the main map's hide-limited filter reads it (isLimitedService), not the row's own class: a
+// route the map treats as all-day (TTC Line 1) is not removed as rush-hour-only.
 function isNotRushHourOnly(feature: StoryFeature): boolean {
-  const properties = feature.properties as { serviceClass?: string } | null;
-  return properties?.serviceClass !== 'time-limited' && properties?.serviceClass !== 'irregular';
+  const properties = (feature.properties ?? {}) as IrregularRouteProperties;
+  return !isLimitedService(properties) && properties.serviceClass !== 'irregular';
 }
 
 // Midday service as the route card and the map filter read it (#750): the route's filter value,
@@ -48,16 +62,24 @@ function runsThroughTheDay(feature: StoryFeature): boolean {
   return properties?.researchFrequentService?.daytime30 === true || (properties != null && routeFilterHeadway(properties, 'midday') != null);
 }
 
+// CIV-1410: the frequency step reads the main map's own frequency filter (featurePassesHeadwayFilter, the route's typical
+// wait with the worst direction deciding) in each daytime period, so a route the map shows at 15 or better stays here.
+// The strict daytime15 flag (no single gap over 15 minutes) dropped routes the map shows as frequent, like TTC 501 Queen.
+const DAYTIME_PERIODS = ['amPeak', 'midday', 'pmPeak'] as const;
+function meetsOnTheMainMap(feature: StoryFeature, maxHeadway: number): boolean {
+  const properties = feature.properties;
+  return properties != null && DAYTIME_PERIODS.every(period => featurePassesHeadwayFilter(properties, period, maxHeadway));
+}
+
 export function featuresForStage(features: StoryFeature[], stage: number, frequencyMinutes: 15 | 30) {
   if (stage === 0) return features;
   const daytimeFeatures = features.filter(feature => isNotRushHourOnly(feature) && runsThroughTheDay(feature));
   if (stage === 1) return features.filter(isNotRushHourOnly);
   if (stage === 2) return daytimeFeatures;
   return daytimeFeatures.filter(feature => {
-    const properties = feature.properties as { researchFrequentService?: { daytime15?: boolean; daytime30?: boolean } } | null;
-    return frequencyMinutes === 15
-      ? properties?.researchFrequentService?.daytime15 === true
-      : properties?.researchFrequentService?.daytime30 === true;
+    if (frequencyMinutes === 15) return meetsOnTheMainMap(feature, 15);
+    const properties = feature.properties as { researchFrequentService?: { daytime30?: boolean } } | null;
+    return properties?.researchFrequentService?.daytime30 === true;
   });
 }
 
@@ -78,7 +100,33 @@ export function stageCollection(features: StoryFeature[], frequencyMinutes: 15 |
 }
 
 const STAGES = [0, 1, 2, 3] as const;
-const FADE = { duration: 700, delay: 0 };
+const FADE_MS = 700;
+
+/**
+ * The map's layers. `routes` is the grey base of every route; each `stage-N` draws only the routes still kept at stage N
+ * (`keep >= N`). `minKeep` is the lowest `keep` a layer draws.
+ */
+export const STORY_LAYERS = [
+  { id: 'routes', minKeep: 0 },
+  ...STAGES.map(stage => ({ id: `stage-${stage}`, minKeep: stage })),
+] as const;
+
+/**
+ * CIV-1408: the opacity each layer ends at for a stage. Only the stage's own layer is lit, and the grey base only at stage 0,
+ * so a route that no longer qualifies is on no lit layer: it fades out with the layers it was on and is not drawn at all
+ * (MapLibre skips a line layer at opacity 0). Scrolling back up lights the earlier layers again, which fades it back in.
+ */
+export function storyLayerOpacity(stage: number): Record<string, number> {
+  const opacity: Record<string, number> = { routes: stage === 0 ? 0.34 : 0 };
+  for (const s of STAGES) opacity[`stage-${s}`] = stage === s ? 0.88 : 0;
+  return opacity;
+}
+
+/** The fade between stages; none for a reader who asked for reduced motion, as the page's CSS transitions do. */
+export function storyFade(reducedMotion: boolean) {
+  return { duration: reducedMotion ? 0 : FADE_MS, delay: 0 };
+}
+const prefersReducedMotion = () => typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const isLight = () => document.documentElement.getAttribute('data-theme') !== 'dark';
 const cssColor = (name: string) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
 
@@ -95,7 +143,7 @@ export default function FrequentServiceStoryMap({ agencies, stage, frequencyMinu
       .then(data => {
         if (cancelled) return;
         // fetchAgencyGeo has already applied the map's filter inputs (normalizeRouteFilterFeatures).
-        setFeatures(data.features.filter(feature => feature.geometry?.type === 'LineString' || feature.geometry?.type === 'MultiLineString') as StoryFeature[]);
+        setFeatures(storyRows(data.features));
         setLoadState('ready');
       })
       .catch(() => {
@@ -128,9 +176,10 @@ export default function FrequentServiceStoryMap({ agencies, stage, frequencyMinu
     map.on('load', () => {
       map.addSource('story', { type: 'geojson', data: collection });
       const line = { 'line-cap': 'round', 'line-join': 'round' } as const;
-      map.addLayer({ id: 'routes', type: 'line', source: 'story', layout: line, paint: { 'line-color': cssColor('--text-dim'), 'line-width': 1.1, 'line-opacity': 0.34, 'line-opacity-transition': FADE } });
-      for (const s of STAGES) {
-        map.addLayer({ id: `stage-${s}`, type: 'line', source: 'story', filter: ['>=', ['get', 'keep'], s], layout: line, paint: { 'line-color': cssColor('--accent'), 'line-width': 2.1, 'line-opacity': 0, 'line-opacity-transition': FADE } });
+      const fade = storyFade(prefersReducedMotion());
+      for (const { id, minKeep } of STORY_LAYERS) {
+        const base = id === 'routes';
+        map.addLayer({ id, type: 'line', source: 'story', filter: ['>=', ['get', 'keep'], minKeep], layout: line, paint: { 'line-color': cssColor(base ? '--text-dim' : '--accent'), 'line-width': base ? 1.1 : 2.1, 'line-opacity': base ? storyLayerOpacity(0).routes : 0, 'line-opacity-transition': fade } });
       }
       // A theme switch while the style was loading was skipped: draw the theme the page has now.
       paint();
@@ -151,8 +200,7 @@ export default function FrequentServiceStoryMap({ agencies, stage, frequencyMinu
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !mapReady) return;
-    map.setPaintProperty('routes', 'line-opacity', stage === 0 ? 0.34 : 0.16);
-    for (const s of STAGES) map.setPaintProperty(`stage-${s}`, 'line-opacity', stage === s ? 0.88 : 0);
+    for (const [id, opacity] of Object.entries(storyLayerOpacity(stage))) map.setPaintProperty(id, 'line-opacity', opacity);
   }, [stage, mapReady]);
 
   return (

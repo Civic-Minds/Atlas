@@ -25,8 +25,9 @@ npm ci --no-audit --no-fund
 echo "check:vercel: public build"
 npm run build
 echo "check:vercel: beta build"
-VITE_ATLAS_MODE=beta VITE_BETA_BUILD=true VITE_LIVE_ENABLED=true VITE_HISTORY_ENABLED=true \
-  VITE_CARD_CLICK_TO_FLAG_ENABLED=true VITE_DIAGNOSTICS_ENABLED=true VITE_UNEVEN_BANNER_ENABLED=true \
+# The switches the deployed beta site has (docs/FEATURE_FLAGS.md): reports on, Live map off.
+VITE_ATLAS_MODE=beta VITE_BETA_BUILD=true VITE_LIVE_REPORTS_ENABLED=true VITE_HISTORY_ENABLED=true \
+  VITE_CARD_CLICK_TO_FLAG_ENABLED=true VITE_UNEVEN_BANNER_ENABLED=true \
   npm run build
 for f in dist/app.html dist/area dist/agency; do [ -e "$f" ] || { echo "check:vercel: $f missing" >&2; exit 1; }; done
 [ ! -e dist/index.html ] || { echo "check:vercel: dist/index.html still sits at / (the share-preview rewrite would never fire)" >&2; exit 1; }

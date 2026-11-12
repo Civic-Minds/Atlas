@@ -30,6 +30,7 @@ import { MAP_CONTROLS_SLOT, MAP_NOTICE_SLOT, MAP_NOTICE_SLOT_RAISED, Z_PANEL, MA
 import { useColorVision } from '../../context/ColorVisionContext';
 import { useColorMode } from '../../hooks/useColorMode';
 import { routeFilterHeadway } from '../../../shared/routeHeadwayFilter';
+import { resolveOnDemandLinkTarget } from '../../utils/onDemandSelection';
 import { isOnDemandStopFocused, isOnDemandZoneFocused, ON_DEMAND_FOCUSED_PROP, type OnDemandFocusTarget } from './map/onDemandFocus';
 import { TRANSFER_POINT_SERVICE_TYPE, transferPointStop } from './map/transferPointStop';
 import { dedupeRouteKeysByDisplay } from '../../utils/routeKey';
@@ -57,6 +58,8 @@ import { approximateLocationHint, CLIPBOARD_DENIED, DEFAULT_EXPORT_TITLE, LOCATI
 import { FOOTER_NOTICE_MEDIA_QUERY, PHONE_MEDIA_QUERY, useMediaQuery } from '../../hooks/useMediaQuery';
 
 // Keep the Live/Deck.gl graph out of public builds entirely when Live is disabled.
+// Read directly, not through FEATURES.live: the bundler only drops the import when it sees the literal env read
+// (with FEATURES.live the public build gains the deck and LiveVehiclesLayer chunks; checked in CIV-1402).
 const LiveVehiclesLayer = import.meta.env.VITE_LIVE_ENABLED === 'true'
   ? React.lazy(() => import('./map/LiveVehiclesLayer'))
   : null;
@@ -499,9 +502,14 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       ? agencies.filter(agency => agency.onDemandServiceArea && (selectedAgencies?.has(agency.slug) ?? true))
       : []
   ), [agencies, selectedAgencies, onDemandShown]);
-  const onDemandFocus = useMemo<OnDemandFocusTarget | null>(() => (
-    selectedOnDemandSlug ? { slug: selectedOnDemandSlug, zoneId: selectedOnDemandZoneId ?? null } : null
-  ), [selectedOnDemandSlug, selectedOnDemandZoneId]);
+  const onDemandFocus = useMemo<OnDemandFocusTarget | null>(() => {
+    if (!selectedOnDemandSlug) return null;
+    // A link naming a separately run service (Trans-Cab) keeps all of that service's zones in focus (#1440).
+    const service = agencies.find(agency => agency.slug === selectedOnDemandSlug)?.onDemandServiceArea;
+    const target = resolveOnDemandLinkTarget(service, selectedOnDemandZoneId);
+    if (target.kind === 'named-service') return { slug: selectedOnDemandSlug, zoneId: null, zoneIds: target.zoneIds };
+    return { slug: selectedOnDemandSlug, zoneId: target.kind === 'zone' ? target.zoneId : selectedOnDemandZoneId ?? null };
+  }, [selectedOnDemandSlug, selectedOnDemandZoneId, agencies]);
   const onDemandServiceAreaData = useMemo<GeoJSON.FeatureCollection<GeoJSON.Polygon | GeoJSON.MultiPolygon>>(() => ({
     type: 'FeatureCollection',
     features: onDemandAgencies.flatMap(agency => {
