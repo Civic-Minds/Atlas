@@ -99,6 +99,17 @@ export function selectArchiveForAgency(
   return { ok: true, key: pick.key, reason: `service date ${liveExpiry}, matching the live feed (${why}${later})` };
 }
 
+/**
+ * #1423: the archive stem (`<label>-<hash>`, no `.zip`) of the zip an agency's live data most likely came
+ * from, for refresh's unchanged check on records without lastRawArchiveKey. Same pick as reprocess
+ * (selectArchiveForAgency); null when the archive is empty or the pick is ambiguous.
+ */
+export function newestArchivedZipStem(objects: ArchiveObject[], agency: { lastFeedExpiry?: string | null }, todayYmd?: string): string | null {
+  const selection = selectArchiveForAgency(objects, agency, todayYmd);
+  if (!selection.ok) return null;
+  return (selection.key.split('/').pop() ?? selection.key).replace(/\.zip$/, '');
+}
+
 /** An archived zip with the service dates read from inside it (`peekFeedDates`). */
 export interface PeekedArchive {
   obj: ArchiveObject;

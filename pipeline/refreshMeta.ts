@@ -18,6 +18,8 @@ export interface FeedMetaFields {
   lastFeedStart?: string | null;
   lastFeedVersion?: string | null;
   lastRawArchiveKey?: string | null;
+  /** #1423: the processed zip's content key (zipContentKey); decides "unchanged" before the byte hash. */
+  lastFeedContentKey?: string | null;
   lastRefreshedAt?: string | null;
   lastFeedCheckAt?: string | null;
   feedRefreshStatus?: 'current' | 'stale';
@@ -194,8 +196,15 @@ export function stampFeedMeta(
     feedObtainedAt?: string | null;
     /** The feed's period start (feedPeriodStart), for the older-feed check (#1359). */
     feedStart?: string | null;
+    /** The raw zip's archive key, whose hash the next refresh's unchanged check compares (#1423). */
+    rawArchiveKey?: string | null;
+    /** The zip's content key (zipContentKey), which the next refresh's unchanged check compares first. */
+    contentKey?: string | null;
   },
 ): void {
+  if (opts.rawArchiveKey !== undefined) agency.lastRawArchiveKey = opts.rawArchiveKey;
+  if (opts.contentKey) agency.lastFeedContentKey = opts.contentKey;
+  else if (opts.contentKey === null) delete agency.lastFeedContentKey;
   agency.lastFeedExpiry = refreshedFeedExpiry(opts);
   agency.lastPeekedExpiry = opts.peekedExpiry;
   if (opts.feedStart !== undefined) agency.lastFeedStart = opts.feedStart;
@@ -328,6 +337,12 @@ export function feedPeriodStart(dates: { feedInfoStart?: string | null; feedStar
   return dates.feedInfoStart ?? dates.feedStart ?? null;
 }
 
+/** The content hash at the end of a raw archive key (`<label>-<16 hex>`); null for older keys without one. */
+export function rawArchiveKeyDigest(key: string | null | undefined): string | null {
+  const match = key ? /-([0-9a-f]{16})$/.exec(key) : null;
+  return match ? match[1] : null;
+}
+
 export type RefreshSkipReason =
   | { skip: true; reason: string }
   | { skip: false };
@@ -355,9 +370,39 @@ export function decideRefreshSkipUnchanged(opts: {
   /** CIV-1011 stage 4: the picked week's key now (serviceWeekKey) and at the last refresh; a moved week reprocesses. */
   serviceWeek?: string | null;
   lastServiceWeek?: string | null;
+  /** #1423: the downloaded zip's content hash (rawFeedDigest). */
+  zipDigest?: string | null;
+  /** #1423: the archive key of the zip the live artifacts were built from; its hash suffix is compared with zipDigest. */
+  lastRawArchiveKey?: string | null;
+  /** Without a recorded key: the stem of the newest zip in the agency's archive (newestArchivedZipStem). */
+  archivedRawKey?: string | null;
+  /** The downloaded zip's content key (zipContentKey) and the one recorded at the last processing. */
+  contentKey?: string | null;
+  lastFeedContentKey?: string | null;
 }): RefreshSkipReason {
   if (opts.forceRefresh || opts.hasSupplementals || opts.feedExpired || (opts.referenceDateFromRunDate && !opts.serviceWeek)) return { skip: false };
   if (opts.serviceWeek && opts.serviceWeek !== (opts.lastServiceWeek ?? null)) return { skip: false };
+  // The files inside the zip decide when both content keys are known, so a publisher that re-zips the
+  // same files every download is not reprocessed weekly.
+  if (opts.contentKey && opts.lastFeedContentKey) {
+    return opts.contentKey === opts.lastFeedContentKey
+      ? { skip: true, reason: `skipped (same feed contents: ${opts.contentKey})` }
+      : { skip: false };
+  }
+  // #1423: when the last ingested zip's hash is recorded, it alone decides. Dutchess republished a
+  // corrected feed with the same end date and version, and the date rule below skipped it.
+  const lastDigest = rawArchiveKeyDigest(opts.lastRawArchiveKey);
+  if (opts.zipDigest && lastDigest) {
+    return opts.zipDigest === lastDigest
+      ? { skip: true, reason: `skipped (same zip: ${lastDigest})` }
+      : { skip: false };
+  }
+  // A record without a key compares against the newest archived zip, which can only veto a skip: the
+  // archive also holds zips refresh never processed (a held future timetable, backfills), so a match
+  // there falls through to the rule below rather than skipping a held feed on its start date (#1144).
+  const archivedDigest = rawArchiveKeyDigest(opts.archivedRawKey);
+  if (opts.zipDigest && archivedDigest && opts.zipDigest !== archivedDigest) return { skip: false };
+  // No recorded hash and no differing archived zip: the end-date / version rule.
   const { peekedExpiry, peekedVersion, lastFeedVersion } = opts;
   // Older records have no uncapped value; compare against the recorded one as before.
   const lastFeedExpiry = opts.lastPeekedExpiry ?? opts.lastFeedExpiry;
