@@ -9,6 +9,7 @@ import { fetchAgencyGeo } from '../lib/agencyGeo';
 import type { Agency } from '../App';
 import { headwayOrBetter } from '../utils/headwayText';
 import { routeFilterHeadway } from '../../shared/routeHeadwayFilter';
+import { isLimitedService, type IrregularRouteProperties } from '../../shared/irregularRoutes';
 
 interface Props {
   agencies: Agency[];
@@ -47,9 +48,11 @@ export function storyRows(features: Array<GeoJSON.Feature | null | undefined>): 
     && (feature.properties as { day?: string } | null)?.day === 'Weekday');
 }
 
+// #1434: limited service as the main map's hide-limited filter reads it (isLimitedService), not the row's own class: a
+// route the map treats as all-day (TTC Line 1) is not removed as rush-hour-only.
 function isNotRushHourOnly(feature: StoryFeature): boolean {
-  const properties = feature.properties as { serviceClass?: string } | null;
-  return properties?.serviceClass !== 'time-limited' && properties?.serviceClass !== 'irregular';
+  const properties = (feature.properties ?? {}) as IrregularRouteProperties;
+  return !isLimitedService(properties) && properties.serviceClass !== 'irregular';
 }
 
 // Midday service as the route card and the map filter read it (#750): the route's filter value,

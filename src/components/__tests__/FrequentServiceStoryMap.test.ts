@@ -22,6 +22,21 @@ describe('Frequent Service story stages', () => {
     expect(featuresForStage([rushOnlyWithMiddayData, allDay], 2, 15)).toEqual([allDay]);
   });
 
+  it('keeps a route the main map treats as all-day, whatever class its rows carry (#1434: TTC Line 1)', () => {
+    // Both of Line 1's weekday rows read time-limited, but the route has an all-day headway and no limited direction.
+    const lineOne = feature('time-limited', 4, true, true);
+    lineOne.properties.routeAllDayHeadway = 3;
+    for (const stage of [1, 2, 3]) expect(featuresForStage([lineOne], stage, 15)).toEqual([lineOne]);
+    expect(stageCollection([lineOne], 15).features[0].properties?.keep).toBe(3);
+  });
+
+  it('removes a route whose main stretch skips midday, as the main map does (#1434)', () => {
+    const peakOnly = feature('regular', 30, false, false);
+    peakOnly.properties.routeAllDayHeadway = 999999;
+    peakOnly.properties.routeHasLimitedDirection = true;
+    expect(featuresForStage([peakOnly], 1, 15)).toEqual([]);
+  });
+
   it('reads midday from the route filter value, not the row (#750: SF Muni 8AX inbound)', () => {
     // The row's own terminal reading says every 8 at midday; the route has no regular midday service.
     const rowOnly = feature('regular', null, false, false, 8);
