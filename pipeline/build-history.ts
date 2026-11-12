@@ -20,7 +20,7 @@ import { dirname, resolve } from 'path';
 import { config } from 'dotenv';
 import { r2ListArchive, r2GetArchive, r2Get, r2Put } from './r2.js';
 import { runWithConcurrency } from './utils.js';
-import { resolveCurrentHistoryRoute, mergeAliasedRoutes, currentRouteShortNamesFor, aliasesFor, aliasesFromDirectionSplits, weekendOnlyKeysFor, withGeneratedAliases, projectArchiveByDay, projectSidecarByDay, worseArchiveChange, worseSidecarEntry, type HistoryRouteAliases } from './historyIdentity.js';
+import { resolveCurrentHistoryRoute, mergeAliasedRoutes, foldDirectionTripDurations, currentRouteShortNamesFor, aliasesFor, aliasesFromDirectionSplits, weekendOnlyKeysFor, withGeneratedAliases, projectArchiveByDay, projectSidecarByDay, worseArchiveChange, worseSidecarEntry, type HistoryRouteAliases } from './historyIdentity.js';
 import { representativeRep, routeTrunkHeadway, routeTrunkHeadwayByPeriod } from './historyV2.js';
 import { buildRouteSnapshots, filterSnapshotsForPublish, isFlatRouteToSkip, joinCandidates, newBuildReport, visibilityCheck, type Candidate } from './historyV2Build.js';
 import type { HistoryV2Sidecar } from '../shared/historyV2.js';
@@ -522,6 +522,12 @@ async function main() {
   if (v2) for (const slug of Object.keys(archiveRoutes)) {
     const merged = withGeneratedAliases(routeAliases[slug], aliasesFromDirectionSplits(artifactDirectionSplits[slug] ?? []));
     if (merged) routeAliases[slug] = merged;
+  }
+  // #1431: trip time files under the halves' old keys fold into the merged key too, or the merged line has none.
+  if (v2) for (const [slug, routes] of Object.entries(tripDurationRoutes)) {
+    const folded = foldDirectionTripDurations(routes, routeAliases[slug]);
+    for (const entries of Object.values(folded)) entries.sort((a, b) => getPeriodKeySortValue(a.periodKey) - getPeriodKeySortValue(b.periodKey));
+    tripDurationRoutes[slug] = folded;
   }
   let aliasMerged = 0;
   if (v2) for (const slug of Object.keys(archiveRoutes)) {
