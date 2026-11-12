@@ -171,7 +171,7 @@ jobs:
           MUNI_511_API_KEY: ${{ secrets.MUNI_511_API_KEY }}
           CATA_LANSING_API_KEY: ${{ secrets.CATA_LANSING_API_KEY }}
           GRAND_EST_API_KEY: ${{ secrets.GRAND_EST_API_KEY }}
-          # CIV-1411: a rule under evaluation, dry run only. The publish job never sets it.
+          # CIV-1411: a rule under evaluation, dry run only. The publish job refuses the input and never sets it.
           ATLAS_SLOW_FIRST_HOUR_UNSTEADY: ${{ inputs.slow_first_hour_unsteady && '1' || '' }}
 
       # Every route's and direction's period figures, small enough to upload for every agency, so
@@ -180,6 +180,17 @@ jobs:
         if: always()
         continue-on-error: true
         run: npx tsx scripts/diff-period-figures.ts --summary=tmp/derived-reprocess --out=tmp/derived-reprocess/period-figures.json
+
+      # The settings this dry run processed with, kept beside its figures so a comparison knows which side is which.
+      # (The release manifest is written by the tile build, which the publish job runs with the switch refused.)
+      - name: Record the build settings
+        if: always()
+        continue-on-error: true
+        env:
+          SLOW_FIRST_HOUR_INPUT: ${{ inputs.slow_first_hour_unsteady }}
+        run: |
+          mkdir -p tmp/derived-reprocess
+          printf '{"commit":"%s","slowFirstHourUnsteady":%s}\n' "$(git rev-parse HEAD)" "$([ "$SLOW_FIRST_HOUR_INPUT" = "true" ] && echo true || echo false)" > tmp/derived-reprocess/build-settings.json
 
       # Refused agencies are normal; only a crash (no report) or a "failed" agency is an error.
       - name: Summarize the reprocess
@@ -263,6 +274,7 @@ jobs:
           path: |
             tmp/derived-reprocess/report.json
             tmp/derived-reprocess/period-figures.json
+            tmp/derived-reprocess/build-settings.json
             tmp/release-diff/*.md
             tmp/release-diff/*.json
           if-no-files-found: warn
@@ -334,7 +346,15 @@ jobs:
       RUN_PREFIX: atlas/runs/${{ inputs.resume_run_id || github.run_id }}
     steps:
       - name: Check the inputs
+        env:
+          SLOW_FIRST_HOUR_INPUT: ${{ inputs.slow_first_hour_unsteady }}
         run: |
+          # CIV-1411: the slow-first-hour rule is under evaluation. A release never carries it.
+          if [ "$SLOW_FIRST_HOUR_INPUT" = "true" ]; then
+            echo "slow_first_hour_unsteady is a dry-run comparison switch (CIV-1411, not approved for the public map)."
+            echo "Publish mode refuses it. Run again with slow_first_hour_unsteady=false, or use mode=dry-run to compare."
+            exit 1
+          fi
           [[ "$CONCURRENCY_INPUT" =~ ^[1-4]$ ]] || { echo "concurrency must be 1-4, got: $CONCURRENCY_INPUT"; exit 1; }
           [[ "$SHARDS_INPUT" =~ ^[1-4]$ ]] || { echo "shards must be 1-4, got: $SHARDS_INPUT"; exit 1; }
           for pair in $ALLOW_INPUT; do
