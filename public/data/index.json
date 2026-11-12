@@ -7754,6 +7754,7 @@
         -122.6593
       ],
       "region": "Oregon",
+      "mergeIdenticalShapeIds": true,
       "bbox": [
         45.29,
         -123.12,
