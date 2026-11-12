@@ -43,24 +43,24 @@
   "expiredFeedCheckExpiry": "20261127",
   "feedQuality": {
     "status": "review",
-    "score": 82,
+    "score": 84,
     "reasons": [
-      "8 route have stops whose frequency differs from the overall route schedule."
+      "7 route have stops whose frequency differs from the overall route schedule."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
       "shapeAnomalies": 0,
-      "routeHeadwayMismatches": 15,
+      "routeHeadwayMismatches": 14,
       "featureCount": 412,
       "feedExpiry": "20261127",
-      "routeCount": 44,
+      "routeCount": 45,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
-      "mismatchRoutes": 8,
+      "mismatchRoutes": 7,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-09"
+    "checkedAt": "2026-11-12"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,

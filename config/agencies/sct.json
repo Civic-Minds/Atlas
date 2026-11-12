@@ -16,7 +16,7 @@
   ],
   "feedUrl": "https://tracksctbus.org/gtfs",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-3115/latest.zip",
-  "lastFeedExpiry": "20281107",
+  "lastFeedExpiry": "20281112",
   "lastFeedVersion": "265-10/26/2026,272-10/31/2026,262-10/31/2026",
   "lastRefreshedAt": "2026-11-02",
   "cities": [
@@ -39,15 +39,14 @@
       "shapeAnomalies": 1,
       "routeHeadwayMismatches": 0,
       "featureCount": 127,
-      "feedExpiry": "20281107",
+      "feedExpiry": "20281112",
       "routeCount": 23,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-07",
-    "scoredAt": "2026-11-09"
+    "checkedAt": "2026-11-12"
   },
   "timezone": "America/New_York",
   "feedRefreshStatus": "current",

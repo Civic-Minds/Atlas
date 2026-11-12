@@ -8,7 +8,7 @@
     -88.99
   ],
   "feedUrl": "https://rideconnecttransit.com/gtfs",
-  "lastFeedExpiry": "20281107",
+  "lastFeedExpiry": "20281112",
   "lastFeedVersion": "Sapphire Change 9/14/2026",
   "lastRefreshedAt": "2026-11-02",
   "region": "Illinois",
@@ -37,15 +37,14 @@
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
       "featureCount": 98,
-      "feedExpiry": "20281107",
+      "feedExpiry": "20281112",
       "routeCount": 18,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-07",
-    "scoredAt": "2026-11-09"
+    "checkedAt": "2026-11-12"
   },
   "timezone": "America/Chicago",
   "feedRefreshStatus": "current",

@@ -8,7 +8,7 @@
   ],
   "feedUrl": "https://kenoshatransit.com/gtfs",
   "mdbFeedUrl": "https://kenoshatransit.com/gtfs",
-  "lastFeedExpiry": "20281107",
+  "lastFeedExpiry": "20281112",
   "lastFeedVersion": "Route 1",
   "lastRefreshedAt": "2026-11-02",
   "region": "Wisconsin",
@@ -37,15 +37,14 @@
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
       "featureCount": 65,
-      "feedExpiry": "20281107",
+      "feedExpiry": "20281112",
       "routeCount": 17,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-07",
-    "scoredAt": "2026-11-09"
+    "checkedAt": "2026-11-12"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,

@@ -8,7 +8,7 @@
     -105.7631
   ],
   "feedUrl": "https://theliftwp.ridesystems.net/Secure/Admin/Reports/GTFSDownload.aspx",
-  "lastFeedExpiry": "20281107",
+  "lastFeedExpiry": "20281112",
   "lastFeedVersion": null,
   "lastRefreshedAt": "2026-11-02",
   "cities": [
@@ -29,15 +29,14 @@
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
       "featureCount": 9,
-      "feedExpiry": "20281107",
+      "feedExpiry": "20281112",
       "routeCount": 3,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-07",
-    "scoredAt": "2026-11-09"
+    "checkedAt": "2026-11-12"
   },
   "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,

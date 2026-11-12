@@ -38,15 +38,15 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 1,
-      "featureCount": 130,
+      "featureCount": 123,
       "feedExpiry": "20270327",
-      "routeCount": 50,
+      "routeCount": 49,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
       "mismatchRoutes": 1,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-09"
+    "checkedAt": "2026-11-12"
   },
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://www.loudoun.gov/loudountransitgtfs",
