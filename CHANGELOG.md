@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Three buses around a long gap no longer read as [steady service](https://github.com/Civic-Minds/Atlas/issues/1432)**: GO 33 read "every 99" in the PM peak where riders wait 158
 - **An on-demand service's card lists every zone with its hours**: services whose hours differ by zone, like RTD FlexRide, read "Hours unavailable" until a zone was picked; each zone row opens that zone
 - **The [Jacksonville ferry](https://github.com/Civic-Minds/Atlas/issues/1422) shows as a ferry**: JTA's data lists it as a bus
 - **The weekly refresh picks up [corrected feeds](https://github.com/Civic-Minds/Atlas/issues/1423)**: an agency's fixed feed was skipped when its end date hadn't changed
