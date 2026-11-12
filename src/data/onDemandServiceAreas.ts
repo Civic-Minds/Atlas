@@ -6,7 +6,7 @@ import { LEAMINGTON_LT_GO_STOP_FEATURES } from './leamingtonLtGoStops';
 import { COBOURG_ON_DEMAND_STOP_FEATURES } from './cobourgOnDemandStops';
 import { MVTA_CONNECT_FEATURES, MVTA_CONNECT_STOPS } from './mvtaConnectData';
 import { EDMONTON_ON_DEMAND_FEATURES, EDMONTON_ON_DEMAND_STOPS, EDMONTON_ON_DEMAND_ZONE_METADATA } from './edmontonOnDemandData';
-import { HAMILTON_TRANS_CAB_SERVICE_AREAS, HAMILTON_TRANS_CAB_SOURCE, HAMILTON_TRANS_CAB_TRANSFER_POINTS } from './transCabServiceArea';
+import { HAMILTON_TRANS_CAB_SERVICE_AREAS, HAMILTON_TRANS_CAB_SOURCE, HAMILTON_TRANS_CAB_TRANSFER_POINTS, HAMILTON_TRANS_CAB_WEST_GLANBROOK_HOURS } from './transCabServiceArea';
 import { GTFS_FLEX_METADATA } from './metroMicroFlexMetadata';
 import { C_TRAN_CURRENT_FLEX_STOPS } from './ctranCurrentFlexStops';
 import { ALL_POINTS_DIAL_A_RIDE_FEATURES, ASPEN_DOWNTOWNER_FEATURES, BAY_TRANSIT_EXPRESS_FEATURES, CAT_DIAL_A_RIDE_FEATURES, DURANGO_MICROTRANSIT_FEATURES, GLTC_FLEX_FEATURES, ISLAND_TRANSIT_GO_STOPS, SAM_RIDES_FEATURES, SNOQUALMIE_DOOR_TO_DOOR_FEATURES, TCTD_DIAL_A_RIDE_FEATURES, VALLEY_METRO_METROFLX_FEATURES } from './flexBatchData';
@@ -209,6 +209,7 @@ export const HAMILTON_MY_RIDE_SERVICE_AREA = {
         hoursNote: HAMILTON_TRANS_CAB_SOURCE.hoursNote,
         availability: HAMILTON_TRANS_CAB_SOURCE.availability,
         pickup: HAMILTON_TRANS_CAB_SOURCE.pickup,
+        ...((zone.properties as { areaName: string }).areaName === 'West Glanbrook' ? HAMILTON_TRANS_CAB_WEST_GLANBROOK_HOURS : {}),
       },
     ]),
   ),
@@ -381,14 +382,16 @@ export const MOUNTAIN_LINE_GO_SERVICE_AREA = {
   sourceLabel: MOUNTAIN_LINE_GO_SOURCE_LABEL,
   sourceRetrievedAt: '2026-10-10',
   serviceName: 'Mountain Line Go!',
-  serviceHours: 'Weekdays 7 AM–6 PM; weekends 8 AM–5 PM.',
+  // Hours from the Go! page (checked 2026-11-11): "Monday – Friday from 6am – 10pm and weekends and Holidays from 7am – 8pm".
+  serviceHours: 'Weekdays 6 AM–10 PM; weekends 7 AM–8 PM.',
+  hoursNote: 'Holidays follow Sunday hours.',
   bookingInfo: 'Book at least 30 minutes and up to 7 days ahead.',
   pickup: { method: 'door-to-door', note: 'Trips can also use 17 nearby bus stops, shown on the map.' } satisfies OnDemandPickup,
   bookingUrl: MOUNTAIN_LINE_GO_SOURCE_URL,
   availability: {
-    Weekday: [{ startHour: 7, endHour: 18 }],
-    Saturday: [{ startHour: 8, endHour: 17 }],
-    Sunday: [{ startHour: 8, endHour: 17 }],
+    Weekday: [{ startHour: 6, endHour: 22 }],
+    Saturday: [{ startHour: 7, endHour: 20 }],
+    Sunday: [{ startHour: 7, endHour: 20 }],
   } satisfies OnDemandAvailability,
 };
 
@@ -567,6 +570,7 @@ export const WINKLER_ON_DEMAND_AGENCY = {
     sourceRetrievedAt: '2026-10-10',
     serviceName: 'Winkler On-Demand Transit',
     serviceHours: 'Weekdays 6 AM–6 PM; Saturday 9 AM–6 PM.',
+    hoursNote: 'No holiday service.',
     bookingInfo: 'Book 15 minutes to 7 days ahead.',
     pickup: { method: 'door-to-door' } satisfies OnDemandPickup,
     bookingUrl: WINKLER_SOURCE_URL,
@@ -605,6 +609,7 @@ export const ST_ALBERT_ON_DEMAND_AGENCY = {
     sourceRetrievedAt: '2026-09-29',
     serviceName: 'StAT On-Demand',
     serviceHours: 'Monday–Friday 6:35 PM–midnight; Saturday 6:30 PM–midnight; Sunday 5:55 AM–7 PM.',
+    hoursNote: 'Holidays follow Sunday hours.',
     pickup: { method: 'fixed-stops', note: 'Trips use the St. Albert Transit bus stops inside the shaded area.' } satisfies OnDemandPickup,
     bookingUrl: ST_ALBERT_SOURCE_URL,
     availability: {
@@ -664,6 +669,7 @@ export const BWG_ON_DEMAND_AGENCY = {
     sourceLabel: 'Argo service-area map',
     sourceRetrievedAt: '2026-09-22',
     serviceHours: 'Mon–Fri 6:30 AM–7:30 PM; Sat 7:30 AM–7:30 PM; no Sunday service',
+    hoursNote: 'No service on statutory holidays.',
     bookingUrl: 'https://www.rideargo.com/cities/bwg#scroll-offset',
     availability: {
       Weekday: [{ startHour: 6.5, endHour: 19.5 }],
@@ -691,6 +697,7 @@ export const CALEDON_ON_DEMAND_AGENCY = {
     sourceLabel: CALEDON_SOURCE_LABEL,
     sourceRetrievedAt: '2026-09-22',
     serviceHours: 'Mon–Fri 5:30 AM–8 PM; Sat–Sun 7 AM–7 PM.',
+    hoursNote: 'Holidays follow Sunday hours.',
     // Town of Caledon by email (2026-10-10): door-to-door within the zones; Brampton and YRT
     // transfers use designated points at BRT stops on Mayfield Rd and two YRT stops on Barons St.
     pickup: {
@@ -724,6 +731,7 @@ export const BRAMPTON_ON_DEMAND_AGENCY = {
     sourceLabel: BRAMPTON_SOURCE_LABEL,
     sourceRetrievedAt: '2026-09-22',
     serviceHours: 'Mon–Fri 5:30 AM–9:30 PM; no Saturday or Sunday service',
+    hoursNote: 'No service on statutory holidays.',
     bookingUrl: BRAMPTON_SOURCE_URL,
     availability: {
       Weekday: [{ startHour: 5.5, endHour: 21.5 }],
@@ -839,6 +847,7 @@ export const SAM_RIDES_SERVICE_AREA = {
   sourceRetrievedAt: FLEX_RETRIEVED_AT,
   serviceName: 'SAM rides',
   serviceHours: 'Weekdays 5:30 AM–9 PM; Saturday 10:15 AM–4:30 PM; no Sunday service',
+  hoursNote: "No service on New Year's Day, Memorial Day, Independence Day, Labor Day, Thanksgiving or Christmas.",
   bookingInfo: 'Call 503-668-3466, up to 2 weeks ahead or by 5 PM the day before.',
   tripRules: 'Pickups must be within 3 miles of Sandy.',
   bookingUrl: 'https://www.ci.sandy.or.us/transit/page/sam-rides-demand-response-dial-ride-service',

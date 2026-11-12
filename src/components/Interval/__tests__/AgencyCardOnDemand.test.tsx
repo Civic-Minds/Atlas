@@ -35,7 +35,7 @@ function renderZoneCard(zoneId: string | null, day: 'Weekday' | 'Saturday' | 'Su
 
 describe('on-demand zone card', () => {
   it('builds hours from structured data and bolds the selected day', () => {
-    renderZoneCard('West Glanbrook', 'Saturday', 'midday');
+    renderZoneCard('Lower North Stoney Creek', 'Saturday', 'midday');
     expect(screen.getByText('Running during Saturday midday')).toBeInTheDocument();
     // Hours rows (CIV-964): the selected day's row is bold, days and times in words beside its bar.
     expect(screen.getByText('Mon–Sat')).toHaveClass('font-bold');
@@ -45,6 +45,12 @@ describe('on-demand zone card', () => {
     expect(screen.getByText('Holidays follow Sunday hours.')).toBeInTheDocument();
     expect(screen.getByText("Every trip starts or ends at this zone's transfer point, shown on the map.")).toBeInTheDocument();
     expect(screen.queryByText(/not fixed-route stops/)).toBeNull();
+  });
+
+  it("shows West Glanbrook's own weekend hours, not Stoney Creek's", () => {
+    renderZoneCard('West Glanbrook', 'Sunday', 'midday');
+    expect(screen.getByText('4:30 AM–1 AM')).toBeInTheDocument();
+    expect(screen.getByText('4:30 AM–12 AM')).toBeInTheDocument();
   });
 
   it('says when a zone is not running', () => {
