@@ -5689,6 +5689,7 @@
       "name": "CTtransit",
       "officialName": "CTtransit",
       "region": "Connecticut",
+      "mergeIdenticalShapeIds": true,
       "center": [
         41.765,
         -72.682

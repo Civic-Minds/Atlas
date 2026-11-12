@@ -2,6 +2,7 @@
   "slug": "cttransit",
   "officialName": "CTtransit",
   "region": "Connecticut",
+  "mergeIdenticalShapeIds": true,
   "center": [
     41.765,
     -72.682
