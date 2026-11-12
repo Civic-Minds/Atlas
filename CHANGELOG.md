@@ -15,6 +15,17 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **Shared stops with uneven service show their longest wait instead of nothing**: the [TTC 102](https://github.com/Civic-Minds/Atlas/issues/1088) stretch to Warden had no rush-hour value, and a blank hid that buses still come
 - **Compare's loading and "couldn't load" pills sit at the bottom right, beside the map controls**: they report both maps, so they no longer sit against the divider under map A
 - **NJ Transit is [one agency](https://github.com/Civic-Minds/Atlas/issues/1303)**: bus and rail were listed as two, unlike SEPTA and LA Metro; old NJ Transit Bus and Rail pages and map links open the combined agency
+- **Live shortens a [stop name](https://github.com/Civic-Minds/Atlas/issues/1235) the same way everywhere**: SEPTA, MARTA and [MBTA stops](https://github.com/Civic-Minds/Atlas/issues/1237) no longer read as codes like "FS" or "BAY C"
+- **Live is one mode that opens on the vehicles**: a route's card matches the regular card, including its [scheduled frequency](https://github.com/Civic-Minds/Atlas/issues/1234) (TTC 29), counts every vehicle, and loads lateness and arrivals
+- **Live has a vehicle card and frames what you click**: a vehicle shows its direction, destination, speed and on-time status
+- **Live's place list says what each agency offers**: "Vehicles" or "Vehicles + performance", and Toronto no longer lists [York Region](https://github.com/Civic-Minds/Atlas/issues/900) routes
+- **Live zooms and closes without freezing**: zoom pauses are gone, and leaving Live hides it at once
+- **Live has a whole-TTC page and a planner screen**: this week against last on five measures, and every analysed route coloured by measure and time of day
+- **Live route pages open on a shareable summary, with a full analysis view**
+- **Live's [lateness](https://github.com/Civic-Minds/Atlas/issues/866) is measured one way, on good days only**: "Late" is leaving the end of the line over 5½ min behind, and bad days are left out
+- **Live reports cover the rolling 7 days and always agree**
+- **Live charts, tiles and stop lists read clearly and the same everywhere**: one late-by-hour chart, run time in minutes, delay and bunching on the route strip, "Few measurements" where data is thin, and stop names in full
+- **Live pages fit on one screen**: headers and switchers fit one line, the planner's notes show only where they apply, and phones draw the route strip too
 
 ## [3.4.0] - 2026-11-09
 
@@ -114,21 +125,6 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Agency and area pages
 
-- **Live shortens a [stop name](https://github.com/Civic-Minds/Atlas/issues/1235) the same way everywhere**: SEPTA, MARTA and [MBTA stops](https://github.com/Civic-Minds/Atlas/issues/1237) no longer read as codes like "FS" or "BAY C"
-- **Live is one mode that opens on the vehicles**: a route's card matches the regular card, including its [scheduled frequency](https://github.com/Civic-Minds/Atlas/issues/1234) (TTC 29), counts every vehicle, and loads lateness and arrivals
-- **Live has a vehicle card and frames what you click**: a vehicle shows its direction, destination, speed and on-time status
-- **Live's place list says what each agency offers**: "Vehicles" or "Vehicles + performance", and Toronto no longer lists [York Region](https://github.com/Civic-Minds/Atlas/issues/900) routes
-- **Live zooms and closes without freezing**: zoom pauses are gone, and leaving Live hides it at once
-- **Live has a whole-TTC page and a planner screen**: this week against last on five measures, and every analysed route coloured by measure and time of day
-- **Live route pages open on a shareable summary, with a full analysis view**
-- **Live's [lateness](https://github.com/Civic-Minds/Atlas/issues/866) is measured one way, on good days only**: "Late" is leaving the end of the line over 5½ min behind, and bad days are left out
-- **Live reports cover the rolling 7 days and always agree**
-- **Live charts, tiles and stop lists read clearly and the same everywhere**: one late-by-hour chart, run time in minutes, delay and bunching on the route strip, "Few measurements" where data is thin, and stop names in full
-- **Live pages fit on one screen**: headers and switchers fit one line, the planner's notes show only where they apply, and phones draw the route strip too
-
-### Agency, area and research pages
-
-- **The site header fits on one line on phones**: small screens leave Docs to the footer, so Agencies, Research and Go to Atlas no longer wrap to a second line
 - **Page links and not-found pages behave**: the Atlas logo on the About page stays on About, "[View on map](https://github.com/Civic-Minds/Atlas/issues/1194)" stays on one line beside long agency names (WETA), and [unknown addresses](https://github.com/Civic-Minds/Atlas/issues/1193) show the same not-found page as unknown agencies and areas
 - **The site header fits on one line on phones**: small screens leave Docs to the footer, so Agencies, Research and Go to Atlas no longer wrap to a second line, and on the narrowest phones the links move under the logo instead of [running off the edge](https://github.com/Civic-Minds/Atlas/issues/1189)
 - **Area, state and agency pages have one map link, at the top**: the second map link under the frequency bar is gone, and "See all agencies" now follows the agency table, so the links no longer stack down the right edge
