@@ -8,7 +8,7 @@ import { storyMapFailedText, storyMapLoadingText } from '../content/noticeCopy';
 import { fetchAgencyGeo } from '../lib/agencyGeo';
 import type { Agency } from '../App';
 import { headwayOrBetter } from '../utils/headwayText';
-import { routeFilterHeadway } from '../../shared/routeHeadwayFilter';
+import { featurePassesHeadwayFilter, routeFilterHeadway } from '../../shared/routeHeadwayFilter';
 import { isLimitedService, type IrregularRouteProperties } from '../../shared/irregularRoutes';
 
 interface Props {
@@ -62,16 +62,24 @@ function runsThroughTheDay(feature: StoryFeature): boolean {
   return properties?.researchFrequentService?.daytime30 === true || (properties != null && routeFilterHeadway(properties, 'midday') != null);
 }
 
+// CIV-1410: the frequency step reads the main map's own frequency filter (featurePassesHeadwayFilter, the route's typical
+// wait with the worst direction deciding) in each daytime period, so a route the map shows at 15 or better stays here.
+// The strict daytime15 flag (no single gap over 15 minutes) dropped routes the map shows as frequent, like TTC 501 Queen.
+const DAYTIME_PERIODS = ['amPeak', 'midday', 'pmPeak'] as const;
+function meetsOnTheMainMap(feature: StoryFeature, maxHeadway: number): boolean {
+  const properties = feature.properties;
+  return properties != null && DAYTIME_PERIODS.every(period => featurePassesHeadwayFilter(properties, period, maxHeadway));
+}
+
 export function featuresForStage(features: StoryFeature[], stage: number, frequencyMinutes: 15 | 30) {
   if (stage === 0) return features;
   const daytimeFeatures = features.filter(feature => isNotRushHourOnly(feature) && runsThroughTheDay(feature));
   if (stage === 1) return features.filter(isNotRushHourOnly);
   if (stage === 2) return daytimeFeatures;
   return daytimeFeatures.filter(feature => {
-    const properties = feature.properties as { researchFrequentService?: { daytime15?: boolean; daytime30?: boolean } } | null;
-    return frequencyMinutes === 15
-      ? properties?.researchFrequentService?.daytime15 === true
-      : properties?.researchFrequentService?.daytime30 === true;
+    if (frequencyMinutes === 15) return meetsOnTheMainMap(feature, 15);
+    const properties = feature.properties as { researchFrequentService?: { daytime30?: boolean } } | null;
+    return properties?.researchFrequentService?.daytime30 === true;
   });
 }
 

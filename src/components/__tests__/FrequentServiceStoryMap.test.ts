@@ -1,13 +1,14 @@
 import { describe, expect, it } from 'vitest';
 import { featuresForStage, stageCollection, STORY_LAYERS, storyFade, storyLayerOpacity, storyRows } from '../FrequentServiceStoryMap';
 
-const feature = (serviceClass: string, midday: number | null, daytime30: boolean, daytime15: boolean, rowMidday: number | null = midday) => ({
+// `midday` is the route's wait in AM peak, midday and PM peak alike, as the main map's filter reads it; `daytime` sets the three apart.
+const feature = (serviceClass: string, midday: number | null, daytime30: boolean, daytime15: boolean, rowMidday: number | null = midday, daytime: { amPeak?: number | null; pmPeak?: number | null } = {}) => ({
   type: 'Feature',
   geometry: { type: 'LineString', coordinates: [[0, 0], [1, 1]] },
   properties: {
     serviceClass,
-    headwayByPeriod: { midday: rowMidday },
-    routeFilterHeadwayByPeriod: { midday },
+    headwayByPeriod: { amPeak: rowMidday, midday: rowMidday, pmPeak: rowMidday },
+    routeFilterHeadwayByPeriod: { amPeak: midday, midday, pmPeak: midday, ...daytime },
     routeRunsByPeriod: { midday: midday != null },
     researchFrequentService: { daytime30, daytime15 },
   },
@@ -51,6 +52,26 @@ describe('Frequent Service story stages', () => {
     expect(featuresForStage([daytimeOnly, frequent], 3, 15)).toEqual([frequent]);
   });
 
+  describe('the frequency stage reads the main map\'s frequency filter, not the strict no-long-gap flag (CIV-1410)', () => {
+    it('keeps a route the map shows at 10 in AM peak, midday and PM peak though one long gap fails the flag (TTC 501 Queen)', () => {
+      const queen = feature('regular', 10, true, false);
+      expect(featuresForStage([queen], 3, 15)).toEqual([queen]);
+      expect(stageCollection([queen], 15).features[0].properties?.keep).toBe(3);
+    });
+
+    it('removes a route the map shows at 20 at midday, whatever the flag says', () => {
+      const slowMidday = feature('regular', 20, true, true, 20, { amPeak: 10, pmPeak: 10 });
+      expect(featuresForStage([slowMidday], 2, 15)).toEqual([slowMidday]);
+      expect(featuresForStage([slowMidday], 3, 15)).toEqual([]);
+    });
+
+    it('needs all three daytime periods: a slow or missing AM peak or PM peak removes the route', () => {
+      const slowAmPeak = feature('regular', 10, true, true, 10, { amPeak: 20 });
+      const noPmPeak = feature('regular', 10, true, true, 10, { pmPeak: null });
+      expect(featuresForStage([slowAmPeak, noPmPeak], 3, 15)).toEqual([]);
+    });
+  });
+
   it('marks each route with the last stage it is shown at, so each stage layer filters on it (CIV-1168)', () => {
     const rushOnly = feature('time-limited', 20, true, true);
     const nightOnly = feature('regular', null, false, false);
@@ -61,8 +82,8 @@ describe('Frequent Service story stages', () => {
   });
 
   it('counts weekday rows only, so a weekend row cannot carry a route into a stage (#1433)', () => {
-    const onDay = (day: string | undefined, daytime15: boolean) => {
-      const row = feature('regular', 10, true, daytime15);
+    const onDay = (day: string | undefined, frequent: boolean) => {
+      const row = feature('regular', frequent ? 10 : 20, true, frequent);
       row.properties.day = day;
       return row;
     };
