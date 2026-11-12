@@ -36,6 +36,17 @@ function boundsOf(features: StoryFeature[]): maplibregl.LngLatBoundsLike | null 
   return [[Math.min(...lons), Math.min(...lats)], [Math.max(...lons), Math.max(...lats)]];
 }
 
+/**
+ * #1433: the rows the story counts. Weekday rows only, as the caption says ("Weekday daytime"): a route's Saturday or Sunday
+ * row must not carry it into a stage its weekday service does not reach. The map draws these rows, and any number shown
+ * beside it must count the same ones.
+ */
+export function storyRows(features: Array<GeoJSON.Feature | null | undefined>): StoryFeature[] {
+  return features.filter((feature): feature is StoryFeature =>
+    (feature?.geometry?.type === 'LineString' || feature?.geometry?.type === 'MultiLineString')
+    && (feature.properties as { day?: string } | null)?.day === 'Weekday');
+}
+
 function isNotRushHourOnly(feature: StoryFeature): boolean {
   const properties = feature.properties as { serviceClass?: string } | null;
   return properties?.serviceClass !== 'time-limited' && properties?.serviceClass !== 'irregular';
@@ -121,7 +132,7 @@ export default function FrequentServiceStoryMap({ agencies, stage, frequencyMinu
       .then(data => {
         if (cancelled) return;
         // fetchAgencyGeo has already applied the map's filter inputs (normalizeRouteFilterFeatures).
-        setFeatures(data.features.filter(feature => feature.geometry?.type === 'LineString' || feature.geometry?.type === 'MultiLineString') as StoryFeature[]);
+        setFeatures(storyRows(data.features));
         setLoadState('ready');
       })
       .catch(() => {

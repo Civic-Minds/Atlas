@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { featuresForStage, stageCollection, STORY_LAYERS, storyFade, storyLayerOpacity } from '../FrequentServiceStoryMap';
+import { featuresForStage, stageCollection, STORY_LAYERS, storyFade, storyLayerOpacity, storyRows } from '../FrequentServiceStoryMap';
 
 const feature = (serviceClass: string, midday: number | null, daytime30: boolean, daytime15: boolean, rowMidday: number | null = midday) => ({
   type: 'Feature',
@@ -43,6 +43,24 @@ describe('Frequent Service story stages', () => {
     const every15 = feature('regular', 10, true, true);
     const keep = stageCollection([rushOnly, nightOnly, every30, every15], 15).features.map(f => f.properties?.keep);
     expect(keep).toEqual([0, 1, 2, 3]);
+  });
+
+  it('counts weekday rows only, so a weekend row cannot carry a route into a stage (#1433)', () => {
+    const onDay = (day: string | undefined, daytime15: boolean) => {
+      const row = feature('regular', 10, true, daytime15);
+      row.properties.day = day;
+      return row;
+    };
+    const weekday = onDay('Weekday', false);
+    const saturday = onDay('Saturday', true);
+    const sunday = onDay('Sunday', true);
+    const stop = { type: 'Feature', geometry: { type: 'Point', coordinates: [0, 0] }, properties: { day: 'Weekday' } } as any;
+
+    const rows = storyRows([weekday, saturday, sunday, onDay(undefined, true), stop]);
+    expect(rows).toEqual([weekday]);
+    // Frequent on the weekend only: the route stays through the daytime stage and is gone at the frequency stage.
+    expect(featuresForStage(rows, 2, 15)).toEqual([weekday]);
+    expect(featuresForStage(rows, 3, 15)).toEqual([]);
   });
 
   // CIV-1408: what the map ends up drawing at each stage, from the layers' filters and end opacities.
