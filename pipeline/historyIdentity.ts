@@ -224,3 +224,32 @@ export function worseSidecarEntry<E extends { v2: HistoryV2SidecarRoute }>(a: E,
   const { rep: _r, sat: _s, sun: _u, flag: _f, ...rest } = a.v2;
   return { ...a, v2: { ...rest, rep, ...(sat ? { sat } : {}), ...(sun ? { sun } : {}), ...(flag ? { flag } : {}) } };
 }
+
+/** One archived period of a route's trip time: the scheduled minutes end to end and the stops it calls at. */
+export type TripDurationPeriod = { periodKey: string; durationMinutes: number; stopSequence: string[]; refDate?: string };
+
+/**
+ * #1431: the trip time of a merged line in one period, from its two directions' files. The longer
+ * direction's minutes stand for the line, as the worse direction's frequency does, and the stops are both
+ * directions' in order, so a change to either direction's stops still counts as a changed line.
+ */
+export function longerTripDuration(a: TripDurationPeriod, b: TripDurationPeriod): TripDurationPeriod {
+  const [longer, other] = b.durationMinutes > a.durationMinutes ? [b, a] : [a, b];
+  const refDate = longer.refDate ?? other.refDate;
+  return { ...longer, ...(refDate ? { refDate } : {}), stopSequence: [...a.stopSequence, '|', ...b.stopSequence] };
+}
+
+/**
+ * #1431: trip time files recorded under a merged line's old per-direction keys (BART "Red-N" and "Red-S")
+ * fold into the merged key ("Red"), one entry per period (`longerTripDuration`). Only direction aliases
+ * fold; renames and day-type splits leave trip time as it was.
+ */
+export function foldDirectionTripDurations(
+  routes: Record<string, TripDurationPeriod[]>,
+  slugAliases: Record<string, HistoryAliasEntry[]> | undefined,
+): Record<string, TripDurationPeriod[]> {
+  const directionOnly = Object.fromEntries(Object.entries(slugAliases ?? {})
+    .map(([canonical, olds]) => [canonical, olds.filter(isDirection)] as const)
+    .filter(([, olds]) => olds.length > 0));
+  return mergeAliasedRoutes(routes, directionOnly, undefined, { periodKey: e => e.periodKey, combine: longerTripDuration }).routes;
+}
