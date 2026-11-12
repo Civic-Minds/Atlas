@@ -250,6 +250,9 @@ export function useLiveVehiclesLayer(
     const map = mapRef.current;
     const fly = liveOverlay?.vehicleFly;
     if (!map || !mapLoaded || !fly) return;
+    // Only the newest camera request frames the map: when the map finishes loading after a link asked for both the
+    // agency's area and then a vehicle, both effects run at once and the area must not win (#1468).
+    if (liveOverlay?.focusArea && liveOverlay.focusArea.ts > fly.ts) return;
     frameRoute(map, [[fly.lon, fly.lat]], { maxZoom: 15, padding: cardFramePadding(map, cardRefRef.current?.current) });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [liveOverlay?.vehicleFly?.ts, mapLoaded, mapRef]);
@@ -259,8 +262,11 @@ export function useLiveVehiclesLayer(
     const map = mapRef.current;
     const area = liveOverlay?.focusArea;
     if (!map || !mapLoaded || !area) return;
+    // A vehicle asked for after this area keeps the camera (#1468).
+    if (liveOverlay?.vehicleFly && liveOverlay.vehicleFly.ts >= area.ts) return;
     const [w, s, e, n] = area.bounds;
     frameRoute(map, [[w, s], [e, n]], { minZoom: area.minZoom ?? 0, padding: cardFramePadding(map, cardRefRef.current?.current) });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [liveOverlay?.focusArea, mapLoaded, mapRef]);
 
   // Clicks while Live is open: every vehicle dot under the click goes to Live (an empty click clears the pick list).
