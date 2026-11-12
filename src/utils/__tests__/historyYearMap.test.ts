@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { historyPeriodValue, historyYearColorExpression, historyYearRoutes, onTodaysLines, passesHistoryLimit } from '../historyYearMap';
+import { historyDayHasPeriods, historyDayPeriodValue, historyPeriodValue, historyYearColorExpression, historyYearRoutes, onTodaysLines, passesHistoryLimit } from '../historyYearMap';
 import { localRouteHeadwayColor } from '../../components/Interval/map/routeStyle';
 
 const snap = (year: number, v2: Record<string, unknown> | undefined, extra: Record<string, unknown> = {}) =>
@@ -72,8 +72,68 @@ describe('History period and frequency limit (CIV-389, CIV-392)', () => {
   });
 
   it("the year's map routes follow the period and the limit", () => {
-    const view = { period: 'all' as const, maxHeadway: 15 };
+    const view = { period: 'all' as const, maxHeadway: 15, day: 'Weekday' as const };
     expect(historyYearRoutes(agency, 2014, 'default', view).map(r => r.routeShortName)).toEqual(['6']);
     expect(historyYearRoutes(agency, 2020, 'default', view)).toEqual([]);
+  });
+});
+
+describe('History weekend days (CIV-1425)', () => {
+  const v2 = (extra: Record<string, unknown>) => ({ refDate: '20240301', rep: { h: 10, p: { midday: 10, evening: 20 } }, ...extra });
+  const satP = snap(2024, v2({ sat: { h: 30, p: { midday: 25 } }, sun: { lim: true, p: { midday: 40 } } }), { headwayByPeriod: { midday: 9, evening: 9 } });
+
+  it("Saturday and Sunday read the day's own value by time of day", () => {
+    expect(historyDayPeriodValue(satP, 'Saturday', 'midday')).toEqual({ kind: 'value', min: 25 });
+    expect(historyDayPeriodValue(satP, 'Sunday', 'midday')).toEqual({ kind: 'value', min: 40 });
+  });
+
+  it("a period without a stored weekend value is blank: never the weekday's rep.p, headwayByPeriod or the day's h", () => {
+    expect(historyDayPeriodValue(satP, 'Saturday', 'evening')).toEqual({ kind: 'blank' });
+    expect(historyDayPeriodValue(satP, 'Sunday', 'evening')).toEqual({ kind: 'blank' });
+    const noP = snap(2024, v2({ sat: { h: 30 } }), { headwayByPeriod: { midday: 9 } });
+    expect(historyDayPeriodValue(noP, 'Saturday', 'midday')).toEqual({ kind: 'blank' });
+    expect(historyDayPeriodValue(noP, 'Sunday', 'midday')).toEqual({ kind: 'blank' });
+  });
+
+  it('a day with no trips is "none" in every period and fails any frequency limit', () => {
+    const none = snap(2024, v2({ sat: { none: true } }));
+    for (const period of ['amPeak', 'midday', 'pmPeak', 'evening', 'late', 'overnight', 'all'] as const) {
+      expect(historyDayPeriodValue(none, 'Saturday', period)).toEqual({ kind: 'none' });
+    }
+    expect(passesHistoryLimit({ kind: 'none' }, 60)).toBe(false);
+    expect(passesHistoryLimit({ kind: 'none' }, Infinity)).toBe(true);
+  });
+
+  it('an old v1 snapshot is blank on the weekend', () => {
+    const v1 = snap(2014, undefined, { headwayByPeriod: { midday: 12 } });
+    expect(historyDayPeriodValue(v1, 'Saturday', 'midday')).toEqual({ kind: 'blank' });
+    expect(historyDayPeriodValue(v1, 'Sunday', 'all')).toEqual({ kind: 'blank' });
+  });
+
+  it('Weekday is exactly historyPeriodValue', () => {
+    for (const period of ['all', 'midday', 'evening', 'late'] as const) {
+      expect(historyDayPeriodValue(satP, 'Weekday', period)).toEqual(historyPeriodValue(satP, period));
+    }
+  });
+
+  it('knows whether a weekend day stores values by time of day', () => {
+    expect(historyDayHasPeriods(satP, 'Saturday')).toBe(true);
+    expect(historyDayHasPeriods(snap(2024, v2({ sat: { h: 30 } })), 'Saturday')).toBe(false);
+    expect(historyDayHasPeriods(snap(2024, v2({ sat: { none: true } })), 'Saturday')).toBe(true);
+    expect(historyDayHasPeriods(snap(2014, undefined), 'Sunday')).toBe(false);
+  });
+
+  it("the year's map routes follow the view's day", () => {
+    const weekend: Parameters<typeof historyYearRoutes>[0] = {
+      routes: [
+        { routeShortName: 'A', snapshots: [satP] },
+        { routeShortName: 'N', snapshots: [snap(2024, v2({ sat: { none: true } }))] },
+      ],
+    };
+    const sat = historyYearRoutes(weekend, 2024, 'default', { period: 'midday', maxHeadway: Infinity, day: 'Saturday' });
+    expect(sat.map(r => [r.routeShortName, r.headway])).toEqual([['A', 25], ['N', null]]);
+    expect(sat[1].color).toBe(localRouteHeadwayColor(null, 'default'));
+    expect(historyYearRoutes(weekend, 2024, 'default', { period: 'midday', maxHeadway: 30, day: 'Saturday' }).map(r => r.routeShortName)).toEqual(['A']);
+    expect(historyYearRoutes(weekend, 2024, 'default', { period: 'midday', maxHeadway: Infinity, day: 'Weekday' })[0].headway).toBe(10);
   });
 });
