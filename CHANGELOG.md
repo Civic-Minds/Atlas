@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Cards keep a readable width in a narrow window or at 200% zoom**: [TTC 504's card](https://github.com/Civic-Minds/Atlas/issues/1187) shrank to the search bar's squeezed width, so its rows and hour labels ran into each other
 - **On-demand cards drop "Who can ride" and say trip rules one way**: Atlas maps only services open to the public, trip rules use three fixed sentences instead of repeating the pickup, booking or hours lines, and lines saying the agency doesn't state something are gone
 - **The frequent service story map's last step matches the main map**: routes the map shows at 15 minutes or better, like TTC 501 Queen, were dropped for a single longer gap
 - **The frequent service story map keeps [all-day routes](https://github.com/Civic-Minds/Atlas/issues/1434) like TTC Line 1**: the rush-hour-only step removed the subway, which the main map treats as all-day service
