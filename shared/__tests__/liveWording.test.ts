@@ -43,3 +43,15 @@ describe('bunching total and parts', () => {
     expect(bunchTotalParts(0.2, null, null)).toEqual({ total: 20, bunched: 20, tooLong: 0 });
   });
 });
+
+describe('lateStopsIntro (CIV-1405)', () => {
+  it('says how many stops, what late means, and the first and last day of the figures', async () => {
+    const { lateStopsIntro } = await import('../liveWording');
+    expect(lateStopsIntro(10, ['2026-10-08', '2026-10-09', '2026-10-14'])).toBe('The 10 stops where buses and streetcars most often left more than 5½ min late, Oct 8 to Oct 14, across all analysed routes.');
+    expect(lateStopsIntro(7, ['2026-10-30', '2026-11-05'])).toBe('The 7 stops where buses and streetcars most often left more than 5½ min late, Oct 30 to Nov 5, across all analysed routes.');
+  });
+  it('leaves the days out when the file has none', async () => {
+    const { lateStopsIntro } = await import('../liveWording');
+    expect(lateStopsIntro(10, [])).toBe('The 10 stops where buses and streetcars most often left more than 5½ min late, across all analysed routes.');
+  });
+});

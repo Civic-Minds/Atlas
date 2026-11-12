@@ -18,6 +18,16 @@ export const LATE_DEFINITION = "is more than 5½ min behind schedule. This is ba
 export const LATE_BY_HOUR_TITLE = 'Late departures by hour';
 /** The threshold in one phrase, wherever a caption or intro says how late counts as Late (approved by Ryan 2026-10-17). */
 export const LATE_THRESHOLD = 'more than 5½ min late';
+
+/**
+ * The line under "Stops most often late" on the agency page, with the days the figures cover (wording from Ryan via
+ * the manager, CIV-1405): "The 10 stops where buses and streetcars most often left more than 5½ min late, Oct 8 to
+ * Oct 14, across all analysed routes." With no dates in the file, the days are left out.
+ */
+export const lateStopsIntro = (count: number, dates: readonly string[]): string => {
+  const days = dates.length ? `, ${dateRangeText(dates[0], dates[0])} to ${dateRangeText(dates[dates.length - 1], dates[dates.length - 1])}` : '';
+  return `The ${count} stops where buses and streetcars most often left ${LATE_THRESHOLD}${days}, across all analysed routes.`;
+};
 /** The Late tile's caption under its percentage. */
 export const LATE_TILE_CAPTION = `of trips left the end of the line ${LATE_THRESHOLD}`;
 

@@ -29,7 +29,7 @@ import ArrowLink from './components/ui/ArrowLink';
 import { PageTitle } from './components/ui/PageTitle';
 import DevHint from './components/Live/DevHint';
 import { ANALYZE_DEV_HINT } from './lib/liveReportData';
-import { coveredRoutesText, LATE_THRESHOLD, bunchPartsText, liveSubtitle, risePointsText, runTimeDiffText } from '../shared/liveWording';
+import { coveredRoutesText, lateStopsIntro, bunchPartsText, liveSubtitle, risePointsText, runTimeDiffText } from '../shared/liveWording';
 import { pct as pctOf, pctTenth, signedPct } from '../shared/liveFormat';
 import { mins } from './components/Live/sections/figures';
 import MethodSection from './components/Live/sections/MethodSection';
@@ -224,7 +224,7 @@ export default function LiveAgencyPage() {
           <RoutesTable s={s} />
         </Section>
 
-        <Section id="agency-stops" title="Stops most often late" intro={`The ${Math.min(s.worstStops.length, TOP_STOPS)} stops with the highest share of departures ${LATE_THRESHOLD}, across all analysed routes.`}>
+        <Section id="agency-stops" title="Stops most often late" intro={lateStopsIntro(Math.min(s.worstStops.length, TOP_STOPS), dates)}>
           <StopsTable s={s} rows={s.worstStops.slice(0, TOP_STOPS)} />
         </Section>
 
