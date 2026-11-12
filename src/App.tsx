@@ -811,7 +811,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
         </div>}
       </div>
       {/* Portal target for Interval's right header (FilterChips + Now + FilterPanel) */}
-      <div className={`${phoneSearchExpanded ? 'hidden' : 'flex'} items-center gap-2 pointer-events-auto`}>
+      <div className={`${phoneSearchExpanded ? 'hidden' : 'flex'} items-center gap-2 pointer-events-none [&>button]:pointer-events-auto`}>
         {/* CIV-449: on every phone width the search rests as a round button in the right group, just left of the
             filter button (Ryan, 2026-10-30), and opens into the box, which takes the whole bar while the other
             buttons step aside (#698). */}
@@ -825,7 +825,9 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
             <Search className="w-4 h-4" />
           </button>
         )}
-        <div ref={headerPortalRef} className="flex items-center gap-2" />
+        {/* This group and the portal slot are click-through; only their buttons and what Interval portals in take clicks,
+            so the empty space and the invisible filters in Live don't cover Live's own buttons under this bar (#1467). */}
+        <div ref={headerPortalRef} className="flex items-center gap-2 pointer-events-none" />
         <button
           type="button"
           onClick={toggleInfo}

@@ -1599,7 +1599,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
       )}
 
       {headerPortalContainer && createPortal(
-        <div className={`flex items-center gap-2 ${!showUi && hideFilterPanel && !nightServiceView && !historyView ? 'pointer-events-none' : ''}`}>
+        <div className={`flex items-center gap-2 ${!showUi && hideFilterPanel && !nightServiceView && !historyView ? 'pointer-events-none' : 'pointer-events-auto'}`}>
           <div className={`hidden sm:flex items-center gap-2 transition-opacity ${TRANSITION_BASE} ${showUi || nightServiceView || historyView ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
             {historyView ? (
               <FilterChips
