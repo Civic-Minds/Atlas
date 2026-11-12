@@ -315,7 +315,12 @@ describe('unchanged-feed check by zip hash (#1423)', () => {
     expect(decideRefreshSkipUnchanged({ ...legacy, lastRawArchiveKey: '20510930' }).skip).toBe(true);
   });
   it('without a recorded key, skips a zip matching the newest archived zip', () => {
-    expect(decideRefreshSkipUnchanged({ ...base, peekedVersion: '124', lastFeedVersion: '124', zipDigest: '0123456789abcdef', archivedRawKey: '20510930-0123456789abcdef' })).toEqual({ skip: true, reason: 'skipped (same zip: 0123456789abcdef)' });
+    expect(decideRefreshSkipUnchanged({ ...base, peekedVersion: '124', lastFeedVersion: '124', zipDigest: '0123456789abcdef', archivedRawKey: '20510930-0123456789abcdef' }).skip).toBe(true);
+  });
+  // #1144: a held timetable is archived before it is processed, so on its start date the newest
+  // archived zip matches the download; its new end date must still reprocess it.
+  it('without a recorded key, a matching archived zip with a new end date still reprocesses', () => {
+    expect(decideRefreshSkipUnchanged({ ...base, peekedExpiry: '20270630', peekedVersion: null, lastFeedVersion: null, zipDigest: '0123456789abcdef', archivedRawKey: '20270630-0123456789abcdef' }).skip).toBe(false);
   });
   it('without a recorded key, reprocesses a zip that differs from the newest archived zip (Dutchess)', () => {
     expect(decideRefreshSkipUnchanged({ ...base, peekedVersion: '124', lastFeedVersion: '124', zipDigest: 'fedcba9876543210', archivedRawKey: '20510930-0123456789abcdef' }).skip).toBe(false);
