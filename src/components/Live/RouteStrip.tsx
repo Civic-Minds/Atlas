@@ -196,7 +196,7 @@ export default function RouteStrip({ stops, modes = ['delay', 'bunching'], direc
           columns={[
             { key: 'stop', header: STRIP_COLUMNS.stop, rowHeader: true, className: 'font-normal', cell: r => r.s.name },
             { key: 'delay', header: STRIP_COLUMNS.delay, cell: r => (shownDelayMin(r.s) != null && r.s.n > 0 ? delayText(shownDelayMin(r.s)!) : NOT_MEASURED_CELL) },
-            { key: 'late', header: STRIP_COLUMNS.late, cell: r => (r.s.lateShare != null && r.s.n > 0 ? pct(r.s.lateShare) : '') },
+            { key: 'late', header: STRIP_COLUMNS.late, cell: r => (r.s.lateShare != null && r.s.n > 0 ? pct(r.s.lateShare) : NOT_MEASURED_CELL) },
             { key: 'bunch', header: STRIP_COLUMNS.bunch, cell: r => { const b = bunchParts(r.s); return b ? `${b.total}%` : NOT_MEASURED_CELL; } },
             { key: 'n', header: STRIP_COLUMNS.n, cell: r => r.s.n.toLocaleString() },
             { key: 'note', header: 'Note', cell: r => [r.s.uncertain ? 'less exact' : '', r.s.n < minN ? 'few departures' : ''].filter(Boolean).join(', ') },

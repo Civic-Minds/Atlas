@@ -140,7 +140,7 @@ export default function BranchStrip({ model, selected = null, onSelect, modes = 
         columns={[
           { key: 'stop', header: STRIP_COLUMNS.stop, rowHeader: true, className: 'font-normal', cell: s => s.name },
           { key: 'delay', header: STRIP_COLUMNS.delay, cell: s => (shownDelayMin(s) != null && s.n > 0 ? delayText(shownDelayMin(s)!) : NOT_MEASURED_CELL) },
-          { key: 'late', header: STRIP_COLUMNS.late, cell: s => (s.lateShare != null && s.n > 0 ? pct(s.lateShare) : '') },
+          { key: 'late', header: STRIP_COLUMNS.late, cell: s => (s.lateShare != null && s.n > 0 ? pct(s.lateShare) : NOT_MEASURED_CELL) },
           { key: 'bunch', header: STRIP_COLUMNS.bunch, cell: s => { const b = bunchParts(s); return b ? `${b.total}%` : NOT_MEASURED_CELL; } },
           { key: 'n', header: STRIP_COLUMNS.n, cell: s => s.n.toLocaleString() },
         ]}
