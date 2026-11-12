@@ -1,6 +1,6 @@
 import { render, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import History, { tripTimeChangedEnough, type AgencyHistory, type RouteHistoryEntry } from '../History';
+import History, { changeHeadline, tripTimeChangedEnough, type AgencyHistory, type RouteHistoryEntry } from '../History';
 import { HistoryMapOverlayProvider } from '../../context/HistoryMapOverlay';
 
 const trip = { firstMinutes: 52, firstLabel: 'Feb 2022', lastMinutes: 58, lastLabel: 'Aug 2024' };
@@ -33,8 +33,8 @@ describe('History route card boxes (CIV-1127)', () => {
     const trip = c.querySelector('[data-testid="history-trip-time-box"]')!;
     expect(freq).not.toBe(trip);
     expect(freq.contains(trip)).toBe(false);
-    expect([...freq.children].map(p => p.textContent).slice(0, 2)).toEqual(['Every 15 min → every 20 min', 'Feb 2022 to Aug 2024']);
-    expect([...trip.children].map(p => p.textContent).slice(0, 2)).toEqual(['Trip time: 52 min → 58 min', 'Feb 2022 to Aug 2024']);
+    expect([...freq.children].map(p => p.textContent).slice(0, 2)).toEqual(['Frequency: 15 → 20 min', 'Feb 2022 to Aug 2024']);
+    expect([...trip.children].map(p => p.textContent).slice(0, 2)).toEqual(['Trip time: 52 → 58 min', 'Feb 2022 to Aug 2024']);
     expect(freq.children).toHaveLength(3);
     expect(trip.children).toHaveLength(3);
     expect(c.textContent).not.toContain('Learn more');
@@ -62,7 +62,7 @@ describe('History route card boxes (CIV-1127)', () => {
     expect(trip.className).toContain('status-positive-bg');
     expect(trip.className).toContain('border border-[var(--border-primary)]');
     expect(trip.children[0].className).toContain('status-positive-text');
-    expect(trip.children[0].textContent).toBe('Trip time: 58 min → 52 min');
+    expect(trip.children[0].textContent).toBe('Trip time: 58 → 52 min');
   });
 
   it('colours the trip time box red when the trip got longer', async () => {
@@ -74,7 +74,7 @@ describe('History route card boxes (CIV-1127)', () => {
 
   it('shows the frequency change alone when there is no trip time', async () => {
     const c = await open('2');
-    expect(c.textContent).toContain('Every 15 min → every 20 min');
+    expect(c.textContent).toContain('Frequency: 15 → 20 min');
     expect(c.querySelector('[data-testid="history-trip-time-box"]')).toBeNull();
   });
 
@@ -86,7 +86,7 @@ describe('History route card boxes (CIV-1127)', () => {
 
   it('shows no trip time box when the trip time did not change', async () => {
     const c = await open('4');
-    expect(c.textContent).toContain('Every 15 min → every 20 min');
+    expect(c.textContent).toContain('Frequency: 15 → 20 min');
     expect(c.querySelector('[data-testid="history-trip-time-box"]')).toBeNull();
   });
 
@@ -95,7 +95,7 @@ describe('History route card boxes (CIV-1127)', () => {
   });
 
   it('shows a 2 minute change on a 76 minute trip', async () => {
-    expect((await open('7')).querySelector('[data-testid="history-trip-time"]')!.textContent).toBe('Trip time: 76 min → 78 min');
+    expect((await open('7')).querySelector('[data-testid="history-trip-time"]')!.textContent).toBe('Trip time: 76 → 78 min');
   });
 });
 
@@ -106,5 +106,18 @@ describe('trip time changed enough to show (CIV-1127: about 2% of the earlier tr
     [64, 64, false], [50, 51, true], [51, 52, false], [0, 5, false], [5, 0, false],
   ])('%i to %i min: %s', (first, last, shown) => {
     expect(tripTimeChangedEnough(first, last)).toBe(shown);
+  });
+});
+
+describe('change box headline (CIV-1127: label, first value, arrow, second value, the unit once)', () => {
+  it.each([
+    ['Frequency', '15 min', '20 min', 'Frequency: 15 → 20 min'],
+    ['Trip time', '73 min', '76 min', 'Trip time: 73 → 76 min'],
+    ['Frequency', '7.5 min', '10 min', 'Frequency: 7.5 → 10 min'],
+    ['Frequency', '120 min', '90 min', 'Frequency: 120 → 90 min'],
+    // Not a case today (History prints minutes only): amounts that do not share the unit each keep their own.
+    ['Frequency', '45 min', '2 hr', 'Frequency: 45 min → 2 hr'],
+  ] as const)('%s, %s to %s', (label, first, last, text) => {
+    expect(changeHeadline(label, first, last)).toBe(text);
   });
 });

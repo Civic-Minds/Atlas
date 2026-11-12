@@ -36,7 +36,7 @@ import {
   agencyQualifiesForHistory,
   type HistoryTier,
 } from '../../shared/historyEligibility';
-import { capitalizeFirst, headwayEvery, headwayEveryRange, headwayRangeShown, runTimeAmount } from '../utils/headwayText';
+import { headwayEvery, headwayEveryRange, headwayExactAmount, headwayRangeShown, runTimeAmount } from '../utils/headwayText';
 import { historyChartPoints, historyDotPriority, historyYearTicks, placeHistoryDots, snapshotMonth } from '../utils/historyChart';
 import ExpandDialog, { ExpandButton } from '../components/ui/ExpandDialog';
 import Panel, { PanelBody, PanelTitleBar } from '../components/ui/Panel';
@@ -146,6 +146,18 @@ function snapshotHeadwayLabel(snapshot: RouteSnapshot, period: TimePeriod, minut
     : headwayEvery(shownMinutes(minutes));
 }
 
+/**
+ * A change box's headline (CIV-1127, Ryan's wording 2026-11-12: "Frequency: 15 → 20 min", "Trip time: 73 → 76 min"):
+ * label, colon, first value, arrow, second value, with the unit once at the end. Both boxes' headlines come
+ * from here. The amounts are the shared formatters' ("15 min", "7.5 min"); should the two ever not share
+ * the unit, each keeps its own.
+ */
+export function changeHeadline(label: 'Frequency' | 'Trip time', firstAmount: string, lastAmount: string): string {
+  const unit = ' min';
+  const first = firstAmount.endsWith(unit) && lastAmount.endsWith(unit) ? firstAmount.slice(0, -unit.length) : firstAmount;
+  return `${label}: ${first} → ${lastAmount}`;
+}
+
 function changeSummary(entry: RouteHistoryEntry, period: TimePeriod = 'all'): { text: string; subtext: string; worse: boolean } | null {
   // Only snapshots with a value in the period take part (CIV-389).
   const snaps = sortSnapshotsNewestFirst(entry.snapshots).filter(s => periodMinutes(s, period) != null);
@@ -159,7 +171,7 @@ function changeSummary(entry: RouteHistoryEntry, period: TimePeriod = 'all'): { 
   if (Math.abs(fHw - lHw) < 2) return null;
   const worse = lHw > fHw;
   return {
-    text: `${capitalizeFirst(headwayEvery(fHw))} → ${headwayEvery(lHw)}`,
+    text: changeHeadline('Frequency', headwayExactAmount(fHw), headwayExactAmount(lHw)),
     subtext: `${first.label} to ${last.label}`,
     worse,
   };
@@ -387,7 +399,7 @@ function RouteHistoryCard({
           <ChangeBox tone={summary.worse ? 'negative' : 'positive'} headline={summary.text} dates={summary.subtext} note={HISTORY_FREQUENCY_CHANGE_NOTE} testId="history-frequency" />
         )}
         {tripTime && (
-          <ChangeBox tone={tripTime.tone} headline={`Trip time: ${tripTime.first} → ${tripTime.last}`} dates={tripTime.dates} note={HISTORY_TRIP_TIME_NOTE} testId="history-trip-time" />
+          <ChangeBox tone={tripTime.tone} headline={changeHeadline('Trip time', tripTime.first, tripTime.last)} dates={tripTime.dates} note={HISTORY_TRIP_TIME_NOTE} testId="history-trip-time" />
         )}
     </SidebarCardShell>
     </div>
