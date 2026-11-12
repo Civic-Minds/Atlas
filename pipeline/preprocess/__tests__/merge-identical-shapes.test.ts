@@ -7,8 +7,12 @@ import { normalizeGtfs } from '../run.js';
 // 22524: the same points and the same stops.
 
 const line: [number, number][] = [[36.74, -119.78], [36.75, -119.77], [36.76, -119.76], [36.77, -119.75]];
-const stopsOf = (tripId: string, stopIds: string[]) =>
-  stopIds.map((stop_id, i) => ({ trip_id: tripId, stop_id, stop_sequence: String(i + 1), arrival_time: '', departure_time: '' }));
+// Trip tN leaves at 6:00 + 15N minutes, so the second id's t1 and t3 take turns with the first's.
+const hm = (m: number) => `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}:00`;
+const stopsOf = (tripId: string, stopIds: string[]) => {
+  const start = 360 + Number(tripId.slice(1)) * 15;
+  return stopIds.map((stop_id, i) => ({ trip_id: tripId, stop_id, stop_sequence: String(i + 1), arrival_time: hm(start + i * 3), departure_time: hm(start + i * 3) }));
+};
 
 function feed(options: {
   secondShape?: [number, number][];
@@ -103,6 +107,41 @@ describe('mergeIdenticalShapes (#1446)', () => {
     const single = feed();
     for (const trip of single.trips) trip.shape_id = '22524';
     expect(mergeIdenticalShapes(single).gtfs).toBe(single);
+  });
+
+  it('keeps ids apart when they never share a service id: MBTA Red Line weekday vs weekend ids', () => {
+    // MBTA draws Red Line Ashmont trips as 931_0020 on weekdays and 931_0010 on weekends: the same
+    // points and stops, but two timetables. Joining them moved the weekday trips and the northbound
+    // trunk read every 10 instead of every 5.
+    const split = feed();
+    for (const trip of split.trips) trip.service_id = trip.shape_id === '22539' ? 'sat' : 'wk';
+    const result = mergeIdenticalShapes(split);
+    expect(result.gtfs).toBe(split);
+    expect(result.mergedGroups).toBe(0);
+  });
+
+  it('joins ids that take turns in one service id even when one also runs another', () => {
+    const shared = feed();
+    shared.trips.push({ ...shared.trips[1], trip_id: 't9', service_id: 'sat' });
+    shared.stopTimes.push(...stopsOf('t9', ['a', 'b', 'c', 'd']));
+    expect(mergeIdenticalShapes(shared).mergedTrips).toBe(3);
+  });
+
+  it('keeps an id that only carries the first or last trips of the day apart: Fresno 01 at 23:22', () => {
+    // A A A A B B: one switch, a block at the end of the span, not a line split in two.
+    for (const lastTrips of [['t4', 't5'], ['t0', 't1']]) {
+      const block = feed();
+      for (const trip of block.trips) trip.shape_id = lastTrips.includes(trip.trip_id) ? '22539' : '22524';
+      const result = mergeIdenticalShapes(block);
+      expect(result.gtfs).toBe(block);
+      expect(result.mergedGroups).toBe(0);
+    }
+  });
+
+  it('keeps ids whose trips have no times apart', () => {
+    const untimed = feed();
+    for (const st of untimed.stopTimes) st.arrival_time = st.departure_time = '';
+    expect(mergeIdenticalShapes(untimed).gtfs).toBe(untimed);
   });
 
   it('reads stop order from stop_sequence, not file order', () => {
