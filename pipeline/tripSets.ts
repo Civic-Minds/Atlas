@@ -626,8 +626,17 @@ function unevenWait(times: readonly number[], start: number, end: number, covera
   if (t.length === 0) return coverage;
   let worst = 0;
   for (let i = 1; i < t.length; i++) worst = Math.max(worst, t[i] - t[i - 1]);
-  if (all[0] < start) worst = Math.max(worst, t[0] - start);
-  if (all[all.length - 1] >= end) worst = Math.max(worst, end - t[t.length - 1]);
+  // The other side of a boundary is the neighbouring period: a stretch that does not run in it starts
+  // or ends its service at this edge, after a break, and that is not a gap between buses either. The
+  // 6's Pelham Bay tail runs no local in the PM peak and starts its evening at 19:41, when the <6>
+  // express serves it (CIV-1018): 18, not 41. Sherbrooke 1's tail runs on into midday (10:23 after
+  // 8:01), so its AM keeps its full-window wait (CIV-1414).
+  const i = PERIOD_WINDOWS.findIndex(w => w.start === start && w.end === end);
+  const span = (k: number) => PERIOD_WINDOWS[(k + PERIOD_WINDOWS.length) % PERIOD_WINDOWS.length];
+  const before = i < 0 ? Infinity : span(i - 1).end - span(i - 1).start;
+  const after = i < 0 ? Infinity : span(i + 1).end - span(i + 1).start;
+  if (all.some(x => x < start && x >= start - before)) worst = Math.max(worst, t[0] - start);
+  if (all.some(x => x >= end && x < end + after)) worst = Math.max(worst, end - t[t.length - 1]);
   return Math.ceil(worst);
 }
 
