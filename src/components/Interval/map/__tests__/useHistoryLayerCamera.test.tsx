@@ -94,12 +94,15 @@ describe('History camera (#1016)', () => {
       expect(map.fitBounds).not.toHaveBeenCalledWith([[2014, 0], [2015, 1]], expect.anything());
       // After the fit the line is read again once, so a line that was partly off screen is framed whole.
       withLayers(map, [todayLine('marta', '3', 8), todayLine('marta', '3', 10)]);
-      const refit = handlers(map).at(-1)!;
+      // The refit waits for idle (tiles of the new view loaded), not moveend.
+      const idle = (m: ReturnType<typeof fakeMap>) => m.on.mock.calls.filter(c => c[0] === 'idle').map(c => c[1] as () => void);
+      expect(handlers(map)).toHaveLength(0);
+      const refit = idle(map).at(-1)!;
       refit();
       expect(map.fitBounds).toHaveBeenLastCalledWith([[8, 5], [12, 7]], PAD);
       // The refit removes itself and registers nothing new: one refit, no chain of moves (#478).
-      expect(map.off).toHaveBeenCalledWith('moveend', refit);
-      expect(handlers(map).at(-1)).toBe(refit);
+      expect(map.off).toHaveBeenCalledWith('idle', refit);
+      expect(idle(map)).toHaveLength(1);
     });
 
     it('frames the route\'s own line when it arrives after the route was picked (Caltrain)', () => {
@@ -118,6 +121,7 @@ describe('History camera (#1016)', () => {
       withLayers(map, [todayLine('marta', '3', 20)]);
       handlers(map).at(-1)!();
       expect(map.fitBounds).toHaveBeenLastCalledWith([[20, 5], [22, 7]], PAD);
+      expect(map.on).toHaveBeenLastCalledWith('idle', expect.any(Function));
     });
   });
 });

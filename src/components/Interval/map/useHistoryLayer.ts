@@ -72,6 +72,7 @@ export function useHistoryLayer(
     // Cancel any stale one-shot zoom handler left over from a previous route/overlay
     if (tryZoomHandlerRef.current) {
       map.off('moveend', tryZoomHandlerRef.current);
+      map.off('idle', tryZoomHandlerRef.current);
       tryZoomHandlerRef.current = null;
     }
 
@@ -92,13 +93,15 @@ export function useHistoryLayer(
     // #1095: a picked route with no line of its own that year draws on today's line. Frame that line, never the
     // whole agency's shapes (which left MARTA 3 at the agency-wide view). Only the on-screen part of a tile line
     // can be read, so after the first fit the line is read once more and refitted, once (no chain of moves, #478).
+    // It waits for `idle`, not `moveend`: at moveend the new view's tiles have not loaded, so Caltrain's line still
+    // ended at the old edge and ran off the top at San Francisco.
     const fitTodaysLine = (refine: boolean): boolean => {
       const points = todaysLinePoints(map, historyOverlay.slug, rsn);
       if (points.length === 0) return false;
       if (refine) {
-        const refit = () => { map.off('moveend', refit); tryZoomHandlerRef.current = null; fitTodaysLine(false); };
+        const refit = () => { map.off('idle', refit); tryZoomHandlerRef.current = null; fitTodaysLine(false); };
         tryZoomHandlerRef.current = refit;
-        map.on('moveend', refit);
+        map.on('idle', refit);
       }
       fitHistoryLines(map, points, 14);
       return true;
