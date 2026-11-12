@@ -2,7 +2,7 @@ name: Live report refresh
 
 # Rebuilds the Live report pages' data for the TTC streetcar routes (CIV-1407): copies the last 15 service dates of
 # archived vehicle positions from R2, gets the timetable each date runs on (two of them when the window spans a
-# timetable change), analyses every route, and builds atlas/live/ttc/<route>.json, agency.json and manifest.json.
+# timetable change), analyses every route, and builds atlas/live/ttc/<route>.json, agency.json and manifest.json. (Re-registered 2026-11-12.)
 #
 #   gh workflow run live-report-refresh.yml                     no-publish: builds, uploads the files and a summary as a run artifact, writes nothing
 #   gh workflow run live-report-refresh.yml -f mode=publish     main only: builds, saves the published files, then replaces them
