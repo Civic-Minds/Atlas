@@ -10,9 +10,10 @@
  * file. With no ANTHROPIC_API_KEY it prints one line and exits 0, and it always exits 0 so it can
  * never fail the refresh.
  *
- *   npx tsx scripts/find-expired-feed-links.ts [--dry-run]   (reads public/data/index.json)
+ *   npx tsx scripts/find-expired-feed-links.ts [--dry-run] [--limit N]   (reads public/data/index.json)
  *
  * --dry-run prints the comment instead of posting it (it still calls Claude, so it needs the key).
+ * --limit N checks at most N agencies this run, for a small manual test (CIV-1362).
  */
 import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
@@ -384,11 +385,40 @@ const resultText = (result: AgencyResult): string => {
 
 const markerLine = (today: string) => `<!-- ${MARKER} ${dashed(today)} -->`;
 
-/** The weekly comment: a dated heading, then one line per agency. Always short enough for GitHub to accept. */
+/**
+ * Reads --limit from the command line ("--limit 3" or "--limit=3"). No flag gives no limit. The
+ * value must be a whole number of at least 1, and is capped at MAX_AGENCIES_PER_RUN.
+ */
+export function parseLimitArg(argv: string[]): { limit?: number } | { error: string } {
+  const at = argv.findIndex(arg => arg === '--limit' || arg.startsWith('--limit='));
+  if (at === -1) return {};
+  const value = argv[at] === '--limit' ? argv[at + 1] : argv[at].slice('--limit='.length);
+  if (value === undefined || !/^[0-9]+$/.test(value.trim()) || Number(value) < 1) {
+    return { error: `--limit needs a whole number of at least 1 (got ${value === undefined ? 'nothing' : JSON.stringify(value.slice(0, 40))}): nothing was checked.` };
+  }
+  return { limit: Math.min(Number(value), MAX_AGENCIES_PER_RUN) };
+}
+
+const notCheckedLine = (notChecked: number, limit?: number): string | null => {
+  const more = `${notChecked} more ${notChecked === 1 ? 'agency was' : 'agencies were'} not checked`;
+  if (limit != null) {
+    const limited = `This run was limited to ${limit} ${limit === 1 ? 'agency' : 'agencies'}`;
+    return notChecked > 0 ? `${limited}: ${more}.` : `${limited}.`;
+  }
+  return notChecked > 0
+    ? `${more} this week (the finder stops at ${MAX_AGENCIES_PER_RUN} agencies or ${MAX_RUN_MINUTES} minutes per run).`
+    : null;
+};
+
+/**
+ * The weekly comment: a dated heading, then one line per agency. Always short enough for GitHub
+ * to accept. A run started with --limit says so in place of the weekly "not checked" line.
+ */
 export function formatComment(
   results: Array<{ agency: FinderAgency; result: AgencyResult }>,
   today: string,
   notChecked = 0,
+  limit?: number,
 ): string {
   const head = [
     markerLine(today),
@@ -397,12 +427,8 @@ export function formatComment(
     'Suggestions only: nothing in Atlas was changed. Claude searched the web for each agency, and this script then opened every suggested link to check it.',
     '',
   ];
-  const tail = [
-    ...(notChecked > 0
-      ? ['', `${notChecked} more ${notChecked === 1 ? 'agency was' : 'agencies were'} not checked this week (the finder stops at ${MAX_AGENCIES_PER_RUN} agencies or ${MAX_RUN_MINUTES} minutes per run).`]
-      : []),
-    '',
-  ];
+  const note = notCheckedLine(notChecked, limit);
+  const tail = [...(note ? ['', note] : []), ''];
   const lines = results.map(({ agency, result }) => `- ${agency.name.replace(/\s+/g, ' ')} (\`${agency.slug}\`): ${resultText(result)}`);
   // Keep whole lines while they fit, leaving room for the "cut short" line.
   const budget = MAX_COMMENT_CHARS - [...head, ...tail].join('\n').length - 200;
@@ -517,6 +543,8 @@ export interface RunOptions {
   env: Record<string, string | undefined>;
   agencies: IndexAgency[];
   dryRun?: boolean;
+  /** Check at most this many agencies (--limit). Never more than MAX_AGENCIES_PER_RUN. */
+  limit?: number;
   today?: string;
   gh: GhRunner;
   /** Built only once a lookup is certain to happen, so nothing touches the API before that. */
@@ -557,7 +585,8 @@ export async function runLinkFinder(options: RunOptions): Promise<RunOutcome> {
   }
 
   const askModel = (options.createAsk ?? createClaudeAsk)();
-  const queue = rotateForWeek(expired, today).slice(0, MAX_AGENCIES_PER_RUN);
+  const limit = options.limit == null ? undefined : Math.max(1, Math.min(Math.floor(options.limit), MAX_AGENCIES_PER_RUN));
+  const queue = rotateForWeek(expired, today).slice(0, limit ?? MAX_AGENCIES_PER_RUN);
   const maxRunMs = options.maxRunMs ?? MAX_RUN_MINUTES * 60_000;
   const deadline = now() + maxRunMs;
   // The time cap is hard: at the deadline the signal stops requests still running, and the run
@@ -586,7 +615,7 @@ export async function runLinkFinder(options: RunOptions): Promise<RunOutcome> {
     log('Every lookup failed (see above): not posting a comment.');
     return 'all-failed';
   }
-  const comment = formatComment(checked, today, expired.length - checked.length);
+  const comment = formatComment(checked, today, expired.length - checked.length, limit);
   if (dryRun) {
     log(comment);
     return 'dry-run';
@@ -597,9 +626,14 @@ export async function runLinkFinder(options: RunOptions): Promise<RunOutcome> {
 }
 
 if (process.argv[1]?.endsWith('find-expired-feed-links.ts')) {
+  const limitArg = parseLimitArg(process.argv.slice(2));
+  if ('error' in limitArg) {
+    console.log(limitArg.error);
+    process.exit(0);
+  }
   const gh: GhRunner = (args, input) => execFileSync('gh', args, { encoding: 'utf8', input, maxBuffer: 16 * 1024 * 1024 });
   const index = JSON.parse(readFileSync('public/data/index.json', 'utf8')) as { agencies: IndexAgency[] };
-  runLinkFinder({ env: process.env, agencies: index.agencies, dryRun: process.argv.includes('--dry-run'), gh })
+  runLinkFinder({ env: process.env, agencies: index.agencies, dryRun: process.argv.includes('--dry-run'), limit: limitArg.limit, gh })
     .catch(error => console.log(`Link finder stopped: ${error instanceof Error ? error.message : String(error)}`))
     // Exit outright, so a request that is slow to stop can never hold the step open.
     .finally(() => process.exit(0));
