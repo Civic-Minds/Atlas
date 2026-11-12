@@ -6,7 +6,7 @@
     "sourceLabel": "LYNX NeighborLink page and LYNX NeighborLink layer",
     "sourceRetrievedAt": "2026-10-11",
     "bookingUrl": "https://www.golynx.com/news-events/neighborlink.stml",
-    "tripRules": "Trips must start and end in the same zone.",
+    "tripRules": "Trips can start and end anywhere in your zone.",
     "pickup": {
       "method": "curb-to-curb"
     },
@@ -14,7 +14,6 @@
       "NeighborLink 801 Poinciana": {
         "serviceName": "NeighborLink",
         "serviceHours": "Monday to Friday 5:10 AM to 8:00 PM. Saturday 5:10 AM to 8:00 PM. No Sunday service.",
-        "hoursNote": "LYNX says all NeighborLink service runs Monday through Saturday only. Holiday service is not stated on the NeighborLink page.",
         "availability": {
           "Weekday": [
             {
@@ -38,7 +37,6 @@
       "NeighborLink 804 Intercession and Campbell Cities": {
         "serviceName": "NeighborLink",
         "serviceHours": "Monday to Friday 5:10 AM to 9:20 AM and 2:40 PM to 10:10 PM. No Saturday service. No Sunday service.",
-        "hoursNote": "LYNX says all NeighborLink service runs Monday through Saturday only. Holiday service is not stated on the NeighborLink page.",
         "availability": {
           "Weekday": [
             {
@@ -61,7 +59,6 @@
       "NeighborLink 811 Ocoee": {
         "serviceName": "NeighborLink",
         "serviceHours": "Monday to Friday 4:50 AM to 9:25 PM. Saturday 4:50 AM to 8:00 PM. No Sunday service.",
-        "hoursNote": "LYNX says all NeighborLink service runs Monday through Saturday only. Holiday service is not stated on the NeighborLink page.",
         "availability": {
           "Weekday": [
             {
@@ -85,7 +82,6 @@
       "NeighborLink 812 Winter Garden": {
         "serviceName": "NeighborLink",
         "serviceHours": "Monday to Friday 5:40 AM to 8:20 PM. Saturday 5:40 AM to 8:20 PM. No Sunday service.",
-        "hoursNote": "LYNX says all NeighborLink service runs Monday through Saturday only. Holiday service is not stated on the NeighborLink page.",
         "availability": {
           "Weekday": [
             {
@@ -109,7 +105,6 @@
       "NeighborLink 813 Pine Hills": {
         "serviceName": "NeighborLink",
         "serviceHours": "Monday to Friday 5:30 AM to 8:25 PM. Saturday 5:30 AM to 8:20 PM. No Sunday service.",
-        "hoursNote": "LYNX says all NeighborLink service runs Monday through Saturday only. Holiday service is not stated on the NeighborLink page.",
         "availability": {
           "Weekday": [
             {
@@ -133,7 +128,6 @@
       "NeighborLink 821 Bithlo": {
         "serviceName": "NeighborLink",
         "serviceHours": "Monday to Friday 4:40 AM to 8:45 PM. Saturday 4:40 AM to 8:45 PM. No Sunday service.",
-        "hoursNote": "LYNX says all NeighborLink service runs Monday through Saturday only. Holiday service is not stated on the NeighborLink page.",
         "availability": {
           "Weekday": [
             {
@@ -157,7 +151,6 @@
       "NeighborLink 831 N. Kissimmee/Buena Ventura Lakes": {
         "serviceName": "NeighborLink",
         "serviceHours": "Monday to Friday 5:25 AM to 10:45 PM. No Saturday service. No Sunday service.",
-        "hoursNote": "LYNX says all NeighborLink service runs Monday through Saturday only. Holiday service is not stated on the NeighborLink page.",
         "availability": {
           "Weekday": [
             {
@@ -176,7 +169,6 @@
       "NeighborLink 841 Williamsburg": {
         "serviceName": "NeighborLink",
         "serviceHours": "Monday to Friday 6:15 AM to 8:00 PM. Saturday 6:15 AM to 8:00 PM. No Sunday service.",
-        "hoursNote": "LYNX says all NeighborLink service runs Monday through Saturday only. Holiday service is not stated on the NeighborLink page.",
         "availability": {
           "Weekday": [
             {
@@ -200,7 +192,6 @@
       "NeighborLink 852 Maitland": {
         "serviceName": "NeighborLink",
         "serviceHours": "Monday to Friday 6:35 AM to 9:05 AM and 4:20 PM to 6:55 PM. No Saturday service. No Sunday service.",
-        "hoursNote": "LYNX says all NeighborLink service runs Monday through Saturday only. Holiday service is not stated on the NeighborLink page.",
         "availability": {
           "Weekday": [
             {

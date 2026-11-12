@@ -7,86 +7,67 @@
     "sourceRetrievedAt": "2026-10-11",
     "bookingUrl": "https://www.wegotransit.com/ride/transit-services/wego-link/",
     "bookingInfo": "WeGo Link is an Uber voucher program. Download the reusable WeGo Link voucher, then book your ride in the Uber app at a discounted rate. South Nashville rides are free until further notice. For an accessible vehicle or to pay with cash, book with Mobility Solutions (615-844-3399) or zTrip (629-294-4447).",
-    "tripRules": "Trips must start and end in the same zone.",
+    "tripRules": "Trips can start and end anywhere in your zone.",
     "pickup": {
       "method": "fixed-stops"
     },
     "zoneMetadata": {
       "Adventure Science Center": {
-        "serviceName": "WeGo Link",
-        "hoursNote": "WeGo does not publish WeGo Link hours on its WeGo Link page, FAQ or zone sheets."
+        "serviceName": "WeGo Link"
       },
       "Antioch": {
-        "serviceName": "WeGo Link",
-        "hoursNote": "WeGo does not publish WeGo Link hours on its WeGo Link page, FAQ or zone sheets."
+        "serviceName": "WeGo Link"
       },
       "Bell Road": {
-        "serviceName": "WeGo Link",
-        "hoursNote": "WeGo does not publish WeGo Link hours on its WeGo Link page, FAQ or zone sheets."
+        "serviceName": "WeGo Link"
       },
       "Bellevue": {
-        "serviceName": "WeGo Link",
-        "hoursNote": "WeGo does not publish WeGo Link hours on its WeGo Link page, FAQ or zone sheets."
+        "serviceName": "WeGo Link"
       },
       "Burton Hills": {
-        "serviceName": "WeGo Link",
-        "hoursNote": "WeGo does not publish WeGo Link hours on its WeGo Link page, FAQ or zone sheets."
+        "serviceName": "WeGo Link"
       },
       "Cockrill Bend": {
-        "serviceName": "WeGo Link",
-        "hoursNote": "WeGo does not publish WeGo Link hours on its WeGo Link page, FAQ or zone sheets."
+        "serviceName": "WeGo Link"
       },
       "Elm Hill Pike": {
-        "serviceName": "WeGo Link",
-        "hoursNote": "WeGo does not publish WeGo Link hours on its WeGo Link page, FAQ or zone sheets."
+        "serviceName": "WeGo Link"
       },
       "Goodlettsville": {
-        "serviceName": "WeGo Link",
-        "hoursNote": "WeGo does not publish WeGo Link hours on its WeGo Link page, FAQ or zone sheets."
+        "serviceName": "WeGo Link"
       },
       "Hermitage": {
-        "serviceName": "WeGo Link",
-        "hoursNote": "WeGo does not publish WeGo Link hours on its WeGo Link page, FAQ or zone sheets."
+        "serviceName": "WeGo Link"
       },
       "Maplewood": {
-        "serviceName": "WeGo Link",
-        "hoursNote": "WeGo does not publish WeGo Link hours on its WeGo Link page, FAQ or zone sheets."
+        "serviceName": "WeGo Link"
       },
       "Old Hickory": {
-        "serviceName": "WeGo Link",
-        "hoursNote": "WeGo does not publish WeGo Link hours on its WeGo Link page, FAQ or zone sheets."
+        "serviceName": "WeGo Link"
       },
       "Opry Mills": {
-        "serviceName": "WeGo Link",
-        "hoursNote": "WeGo does not publish WeGo Link hours on its WeGo Link page, FAQ or zone sheets."
+        "serviceName": "WeGo Link"
       },
       "Rosebank": {
-        "serviceName": "WeGo Link",
-        "hoursNote": "WeGo does not publish WeGo Link hours on its WeGo Link page, FAQ or zone sheets."
+        "serviceName": "WeGo Link"
       },
       "Skyline": {
-        "serviceName": "WeGo Link",
-        "hoursNote": "WeGo does not publish WeGo Link hours on its WeGo Link page, FAQ or zone sheets."
+        "serviceName": "WeGo Link"
       },
       "South Nashville": {
-        "serviceName": "WeGo Link",
-        "hoursNote": "WeGo does not publish WeGo Link hours on its WeGo Link page, FAQ or zone sheets."
+        "serviceName": "WeGo Link"
       },
       "Sylvan Park": {
-        "serviceName": "WeGo Link",
-        "hoursNote": "WeGo does not publish WeGo Link hours on its WeGo Link page, FAQ or zone sheets."
+        "serviceName": "WeGo Link"
       },
       "Bordeaux/Buena Vista": {
-        "serviceName": "WeGo Link",
-        "hoursNote": "WeGo does not publish WeGo Link hours on its WeGo Link page, FAQ or zone sheets."
+        "serviceName": "WeGo Link"
       },
       "Brick Church Pike": {
-        "serviceName": "WeGo Link",
-        "hoursNote": "WeGo does not publish WeGo Link hours on its WeGo Link page, FAQ or zone sheets."
+        "serviceName": "WeGo Link"
       },
       "East Thompson Lane": {
-        "serviceName": "WeGo Link",
-        "hoursNote": "WeGo does not publish WeGo Link hours on its WeGo Link page, FAQ or zone sheets."
+        "serviceName": "WeGo Link"
       }
     }
   },

@@ -6,7 +6,7 @@
     "sourceLabel": "Tri MyRide page and service-area GeoJSON",
     "sourceRetrievedAt": "2026-10-11",
     "bookingUrl": "https://trideltatransit.com/tri-myride/",
-    "tripRules": "Trips must start and end in the same zone. Brentwood zone trips can also go to Los Medanos College Brentwood Campus and John Muir Health Brentwood.",
+    "tripRules": "Trips can start and end anywhere in your zone.",
     "zoneMetadata": {
       "Brentwood": {
         "serviceName": "Tri MyRide",
@@ -35,7 +35,8 @@
         "hoursSource": {
           "url": "https://trideltatransit.com/tri-myride/",
           "retrievedAt": "2026-10-11"
-        }
+        },
+        "tripRules": "Trips can start and end anywhere in Brentwood, or at Los Medanos College Brentwood Campus and John Muir Health Brentwood outside it."
       },
       "Antioch-Oakley": {
         "serviceName": "Tri MyRide",

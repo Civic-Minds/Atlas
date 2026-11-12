@@ -223,7 +223,7 @@ export const GRT_ROUTE_79_SERVICE_AREA = {
   serviceHours: 'Monday–Friday: 6–10 AM, 2–6 PM, and 10:45–11:45 PM.',
   bookingUrl: GRT_ROUTE_79_SOURCE_URL,
   serviceName: 'Route 79 Breslau On-Demand',
-  tripRules: 'Trips to or from the Kitchener connection points must start or end in Breslau.',
+  tripRules: 'Trips can start and end anywhere in Breslau, or at the Kitchener connection points outside it.',
   zoneMetadata: Object.fromEntries(
     GRT_ROUTE_79_SERVICE_AREAS
       .map(zone => (zone.properties as { areaName: string }).areaName)
@@ -290,7 +290,7 @@ export const EDMONTON_ON_DEMAND_SERVICE_AREA = {
   sourceRetrievedAt: '2026-10-10',
   serviceName: 'ETS On Demand',
   pickup: { method: 'fixed-stops' } satisfies OnDemandPickup,
-  tripRules: 'Trips go between a neighbourhood stop and its assigned transit hub.',
+  tripRules: "Trips must start or end at the neighbourhood's assigned transit hub.",
   bookingUrl: 'https://www.edmonton.ca/ets/on-demand-transit',
   zoneMetadata: EDMONTON_ON_DEMAND_ZONE_METADATA,
 };
@@ -434,14 +434,12 @@ const C_TRAN_HOURS_SOURCE = { url: 'https://www.c-tran.com/thecurrent', retrieve
 const C_TRAN_ZONE_HOURS: OnDemandZoneDetails = {
   serviceName: 'The Current',
   serviceHours: 'Monday\u2013Friday 5:30 AM\u20137 PM; Saturday and Sunday 8 AM\u20136 PM.',
-  hoursNote: "Holiday hours aren't confirmed.",
   availability: { Weekday: [{ startHour: 5.5, endHour: 19 }], Saturday: [{ startHour: 8, endHour: 18 }], Sunday: [{ startHour: 8, endHour: 18 }] },
   hoursSource: C_TRAN_HOURS_SOURCE,
 };
 const C_TRAN_PORT_HOURS: OnDemandZoneDetails = {
   serviceName: 'The Current',
   serviceHours: 'Monday\u2013Friday 5:30 AM\u20137 PM.',
-  hoursNote: "Holiday hours aren't confirmed.",
   availability: { Weekday: [{ startHour: 5.5, endHour: 19 }], Saturday: [], Sunday: [] },
   hoursSource: C_TRAN_HOURS_SOURCE,
 };
@@ -848,7 +846,7 @@ export const SAM_RIDES_SERVICE_AREA = {
   serviceHours: 'Weekdays 5:30 AM–9 PM; Saturday 10:15 AM–4:30 PM; no Sunday service',
   hoursNote: "No service on New Year's Day, Memorial Day, Independence Day, Labor Day, Thanksgiving or Christmas.",
   bookingInfo: 'Call 503-668-3466, up to 2 weeks ahead or by 5 PM the day before.',
-  tripRules: 'Trips must start within 3 miles of Sandy.',
+  tripRules: 'Trips can start and end anywhere in the area within 3 miles of Sandy.',
   bookingUrl: 'https://www.ci.sandy.or.us/transit/page/sam-rides-demand-response-dial-ride-service',
   availability: {
     Weekday: [{ startHour: 5.5, endHour: 21 }],

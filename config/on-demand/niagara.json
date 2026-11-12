@@ -6,7 +6,6 @@
     "sourceLabel": "Niagara Region Transit microtransit page and its embedded interactive zone map",
     "sourceRetrievedAt": "2026-10-11",
     "bookingUrl": "https://nrtransit.ca/microtransit/",
-    "tripRules": "Trips can't start and end within West Lincoln or within Wainfleet.",
     "zoneMetadata": {
       "Lincoln": {
         "serviceName": "NRT OnDemand",
@@ -122,7 +121,8 @@
         "hoursSource": {
           "url": "https://niagaratransit.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2",
           "retrievedAt": "2026-10-11"
-        }
+        },
+        "tripRules": "Trips must start or end at a stop outside West Lincoln."
       },
       "Wainfleet": {
         "serviceName": "NRT OnDemand",
@@ -151,7 +151,8 @@
         "hoursSource": {
           "url": "https://niagaratransit.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2",
           "retrievedAt": "2026-10-11"
-        }
+        },
+        "tripRules": "Trips must start or end at a stop outside Wainfleet."
       },
       "Port Colborne": {
         "serviceName": "NRT OnDemand",
