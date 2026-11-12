@@ -19,6 +19,7 @@ import {
   inspectGtfsZip,
   isKnownFeedUrl,
   parseFinderAnswer,
+  parseLimitArg,
   rotateForWeek,
   runLinkFinder,
   weekIndex,
@@ -480,6 +481,95 @@ describe('the whole run', () => {
     await runLinkFinder({ env: key, agencies: many, gh, createAsk: () => askModel, log: () => undefined, today: TODAY });
     expect(askModel).toHaveBeenCalledTimes(MAX_AGENCIES_PER_RUN);
     expect(posted[0]).toContain('3 more agencies were not checked this week');
+    expect(posted[0]).not.toContain('limited');
+  });
+});
+
+// CIV-1362: a small manual test run.
+describe('the --limit option', () => {
+  const nothing = { outcome: 'nothing_found', link_url: null, source_page_url: null };
+  const many = (count: number) => Array.from({ length: count }, (_, i) => indexAgency(`a${String(i).padStart(2, '0')}`, '20220101'));
+  const key = { ANTHROPIC_API_KEY: 'test-key' };
+
+  it('reads a whole number of at least 1, in either spelling, and no flag means no limit', () => {
+    expect(parseLimitArg([])).toEqual({});
+    expect(parseLimitArg(['--dry-run'])).toEqual({});
+    expect(parseLimitArg(['--limit', '3', '--dry-run'])).toEqual({ limit: 3 });
+    expect(parseLimitArg(['--dry-run', '--limit=1'])).toEqual({ limit: 1 });
+  });
+
+  it('caps the number at the per-run agency cap', () => {
+    expect(parseLimitArg(['--limit', String(MAX_AGENCIES_PER_RUN + 50)])).toEqual({ limit: MAX_AGENCIES_PER_RUN });
+  });
+
+  it('turns anything else into one plain line instead of a number', () => {
+    for (const argv of [['--limit'], ['--limit', ''], ['--limit', '0'], ['--limit', '-2'], ['--limit', '1.5'], ['--limit', 'three'], ['--limit', '3; rm -rf /'], ['--limit', '--dry-run'], ['--limit=']]) {
+      const parsed = parseLimitArg(argv);
+      expect(parsed, argv.join(' ')).toHaveProperty('error');
+      expect((parsed as { error: string }).error).toMatch(/^--limit needs a whole number of at least 1 \(got .*\): nothing was checked\.$/);
+    }
+  });
+
+  it('checks only that many agencies and says plainly that the run was limited', async () => {
+    const { gh, calls } = fakeGh();
+    const log = vi.fn();
+    const askModel = vi.fn<AskModel>(async () => nothing);
+    expect(await runLinkFinder({ env: key, agencies: many(12), gh, createAsk: () => askModel, log, dryRun: true, limit: 3, today: TODAY })).toBe('dry-run');
+    expect(askModel).toHaveBeenCalledTimes(3);
+    expect(calls).toEqual([]);
+    const printed = log.mock.calls.at(-1)?.[0] as string;
+    expect(printed.split('\n').filter(line => line.startsWith('- '))).toHaveLength(3);
+    expect(printed).toContain('This run was limited to 3 agencies: 9 more agencies were not checked.');
+    expect(printed).not.toContain('not checked this week');
+  });
+
+  it('says the same in a posted comment, and words one agency in the singular', async () => {
+    const { gh, posted } = fakeGh();
+    const askModel = vi.fn<AskModel>(async () => nothing);
+    await runLinkFinder({ env: key, agencies: many(2), gh, createAsk: () => askModel, log: () => undefined, limit: 1, today: TODAY });
+    expect(askModel).toHaveBeenCalledTimes(1);
+    expect(posted[0]).toContain('This run was limited to 1 agency: 1 more agency was not checked.');
+  });
+
+  it('still says the run was limited when the limit left nobody out', async () => {
+    const { gh, posted } = fakeGh();
+    await runLinkFinder({ env: key, agencies: many(2), gh, createAsk: () => vi.fn<AskModel>(async () => nothing), log: () => undefined, limit: 5, today: TODAY });
+    expect(posted[0]).toContain('\n\nThis run was limited to 5 agencies.\n');
+    expect(posted[0]).not.toContain('not checked');
+  });
+
+  it('never goes past the per-run agency cap, whatever number is passed', async () => {
+    const { gh } = fakeGh();
+    const askModel = vi.fn<AskModel>(async () => nothing);
+    await runLinkFinder({ env: key, agencies: many(MAX_AGENCIES_PER_RUN + 3), gh, createAsk: () => askModel, log: () => undefined, limit: 9999, today: TODAY });
+    expect(askModel).toHaveBeenCalledTimes(MAX_AGENCIES_PER_RUN);
+  });
+});
+
+describe('the manual test workflow', () => {
+  const workflow = readFileSync('.github/workflows/link-finder-manual.yml', 'utf8');
+
+  it('starts only by hand, with a limit of 3 and posting off unless asked', () => {
+    expect(workflow.match(/^on:\n((?:  .*\n|\n)+)/m)?.[1].match(/^  \S+/gm)).toEqual(['  workflow_dispatch:']);
+    expect(workflow).toMatch(/limit:\n(?: {8}.*\n)*? {8}default: 3\n/);
+    expect(workflow).toMatch(/post:\n(?: {8}.*\n)*? {8}default: false\n/);
+    expect(workflow).toContain('if [ "$POST" != "true" ]; then args+=(--dry-run); fi');
+  });
+
+  it('has the least permissions, a short timeout and no data-store secrets', () => {
+    expect(workflow.match(/^permissions:\n((?:  .*\n)+)/m)?.[1]).toBe('  contents: read\n  issues: write\n');
+    expect(workflow).toContain('timeout-minutes: 15');
+    expect(workflow.match(/secrets\.[A-Z0-9_]+/g)?.sort()).toEqual(['secrets.ANTHROPIC_API_KEY', 'secrets.GITHUB_TOKEN']);
+    expect(workflow).not.toMatch(/R2_|git push|npm run /);
+  });
+
+  it('passes the inputs through env, never straight into the shell', () => {
+    const run = workflow.slice(workflow.indexOf('        run: |'));
+    expect(run).not.toContain('${{');
+    expect(workflow).toContain('LIMIT: ${{ inputs.limit }}');
+    expect(workflow).toContain('POST: ${{ inputs.post }}');
+    expect(run).toContain('args=(--limit "$LIMIT")');
+    expect(run).toContain('npx tsx scripts/find-expired-feed-links.ts "${args[@]}"');
   });
 });
 
