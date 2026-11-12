@@ -18,6 +18,8 @@ export interface FeedMetaFields {
   lastFeedStart?: string | null;
   lastFeedVersion?: string | null;
   lastRawArchiveKey?: string | null;
+  /** #1423: the processed zip's content key (zipContentKey); decides "unchanged" before the byte hash. */
+  lastFeedContentKey?: string | null;
   lastRefreshedAt?: string | null;
   lastFeedCheckAt?: string | null;
   feedRefreshStatus?: 'current' | 'stale';
@@ -196,9 +198,13 @@ export function stampFeedMeta(
     feedStart?: string | null;
     /** The raw zip's archive key, whose hash the next refresh's unchanged check compares (#1423). */
     rawArchiveKey?: string | null;
+    /** The zip's content key (zipContentKey), which the next refresh's unchanged check compares first. */
+    contentKey?: string | null;
   },
 ): void {
   if (opts.rawArchiveKey !== undefined) agency.lastRawArchiveKey = opts.rawArchiveKey;
+  if (opts.contentKey) agency.lastFeedContentKey = opts.contentKey;
+  else if (opts.contentKey === null) delete agency.lastFeedContentKey;
   agency.lastFeedExpiry = refreshedFeedExpiry(opts);
   agency.lastPeekedExpiry = opts.peekedExpiry;
   if (opts.feedStart !== undefined) agency.lastFeedStart = opts.feedStart;
@@ -370,9 +376,19 @@ export function decideRefreshSkipUnchanged(opts: {
   lastRawArchiveKey?: string | null;
   /** Without a recorded key: the stem of the newest zip in the agency's archive (newestArchivedZipStem). */
   archivedRawKey?: string | null;
+  /** The downloaded zip's content key (zipContentKey) and the one recorded at the last processing. */
+  contentKey?: string | null;
+  lastFeedContentKey?: string | null;
 }): RefreshSkipReason {
   if (opts.forceRefresh || opts.hasSupplementals || opts.feedExpired || (opts.referenceDateFromRunDate && !opts.serviceWeek)) return { skip: false };
   if (opts.serviceWeek && opts.serviceWeek !== (opts.lastServiceWeek ?? null)) return { skip: false };
+  // The files inside the zip decide when both content keys are known, so a publisher that re-zips the
+  // same files every download is not reprocessed weekly.
+  if (opts.contentKey && opts.lastFeedContentKey) {
+    return opts.contentKey === opts.lastFeedContentKey
+      ? { skip: true, reason: `skipped (same feed contents: ${opts.contentKey})` }
+      : { skip: false };
+  }
   // #1423: when the last ingested zip's hash is recorded, it alone decides. Dutchess republished a
   // corrected feed with the same end date and version, and the date rule below skipped it.
   const lastDigest = rawArchiveKeyDigest(opts.lastRawArchiveKey);

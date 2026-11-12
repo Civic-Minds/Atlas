@@ -333,6 +333,26 @@ describe('unchanged-feed check by zip hash (#1423)', () => {
     expect(decideRefreshSkipUnchanged({ ...base, peekedVersion: '124', lastFeedVersion: '124', zipDigest: 'fedcba9876543210', archivedRawKey: null }).skip).toBe(true);
     expect(decideRefreshSkipUnchanged({ ...base, peekedVersion: '124', lastFeedVersion: '124', zipDigest: 'fedcba9876543210', archivedRawKey: 'en' }).skip).toBe(true);
   });
+  it('with content keys, skips a re-zipped copy of the same files even though the bytes differ', () => {
+    expect(decideRefreshSkipUnchanged({ ...base, peekedVersion: null, zipDigest: 'fedcba9876543210', lastRawArchiveKey, contentKey: 'aaaaaaaaaaaaaaaa', lastFeedContentKey: 'aaaaaaaaaaaaaaaa' })).toEqual({ skip: true, reason: 'skipped (same feed contents: aaaaaaaaaaaaaaaa)' });
+  });
+  it('with content keys, reprocesses when one file changed even though the bytes match an old key', () => {
+    expect(decideRefreshSkipUnchanged({ ...base, peekedVersion: null, zipDigest: '0123456789abcdef', lastRawArchiveKey, contentKey: 'bbbbbbbbbbbbbbbb', lastFeedContentKey: 'aaaaaaaaaaaaaaaa' }).skip).toBe(false);
+  });
+  it('without a recorded content key, keeps the byte-hash and archive checks', () => {
+    expect(decideRefreshSkipUnchanged({ ...base, peekedVersion: null, zipDigest: 'fedcba9876543210', lastRawArchiveKey, contentKey: 'aaaaaaaaaaaaaaaa' }).skip).toBe(false);
+    expect(decideRefreshSkipUnchanged({ ...base, peekedVersion: null, zipDigest: '0123456789abcdef', lastRawArchiveKey, contentKey: 'aaaaaaaaaaaaaaaa' }).skip).toBe(true);
+    expect(decideRefreshSkipUnchanged({ ...base, peekedVersion: '124', lastFeedVersion: '124', zipDigest: 'fedcba9876543210', archivedRawKey: '20510930-0123456789abcdef', contentKey: 'aaaaaaaaaaaaaaaa' }).skip).toBe(false);
+  });
+  it('a moved service week still reprocesses the same contents', () => {
+    expect(decideRefreshSkipUnchanged({ ...base, peekedVersion: null, contentKey: 'aaaaaaaaaaaaaaaa', lastFeedContentKey: 'aaaaaaaaaaaaaaaa', serviceWeek: 'b', lastServiceWeek: 'a' }).skip).toBe(false);
+  });
+  it('a refresh records the content key it processed', () => {
+    const agency: Record<string, unknown> = {};
+    stampFeedMeta(agency, { feedExpiry: '20510930', feedVersion: '124', peekedExpiry: '20510930', peekedVersion: '124', todayYmd: '2026-11-11', rawArchiveKey: lastRawArchiveKey, contentKey: 'aaaaaaaaaaaaaaaa' });
+    expect(agency.lastFeedContentKey).toBe('aaaaaaaaaaaaaaaa');
+    expect(agency.lastRawArchiveKey).toBe(lastRawArchiveKey);
+  });
   it('reads the hash from an archive key', () => {
     expect(rawArchiveKeyDigest('20240630-cc0eb0e68ef49960')).toBe('cc0eb0e68ef49960');
     expect(rawArchiveKeyDigest('v1-2-cc0eb0e68ef49960')).toBe('cc0eb0e68ef49960');

@@ -36,7 +36,7 @@ import { buildNightServiceIndex, extractNightServiceRoutes, mergeNightServiceInd
 import type { HeadwayByPeriod } from '../shared/config.js';
 import { R2_PUBLIC_URL } from '../shared/config.js';
 import { configFromIndexEntry } from '../shared/agencyRegistryName.js';
-import { downloadFeed, feedSetSha256, peekFeedInfo, pickFeedSource } from './feedPeek.js';
+import { downloadFeed, feedSetSha256, peekFeedInfo, pickFeedSource, zipContentKey } from './feedPeek.js';
 import { runWithConcurrency, todayUtcYmd } from './utils.js';
 import {
   clearOverrideUserFacingOnFeedChange,
@@ -269,6 +269,8 @@ interface AgencyEntry {
   lastFeedVersion?: string | null;
   /** Archive key of the zip the live artifacts came from; its hash decides "unchanged" (#1423). */
   lastRawArchiveKey?: string | null;
+  /** The processed zip's content key (zipContentKey), compared before the byte hash (#1423). */
+  lastFeedContentKey?: string | null;
   lastRefreshedAt?: string | null;
   lastFeedCheckAt?: string | null;
   /** A fetched timetable starting on this date waits until then (#1144). */
@@ -451,6 +453,7 @@ async function refreshAgency(
   // CIV-1011 stage 4: the week the map reads moves with the run date, so an unchanged zip whose
   // picked week moved is reprocessed (the old picker's kill switch leaves the check as it was).
   const serviceWeek = process.env.ATLAS_LEGACY_REFERENCE_DATE === '1' ? null : await serviceWeekKey(buf);
+  const feedContentKey = zipContentKey(buf);
   const skipDecision = decideRefreshSkipUnchanged({
     forceRefresh,
     hasSupplementals,
@@ -466,6 +469,8 @@ async function refreshAgency(
     zipDigest: rawFeedDigest(buf),
     lastRawArchiveKey: agency.lastRawArchiveKey,
     archivedRawKey: rawArchiveKeyDigest(agency.lastRawArchiveKey) ? null : await newestArchivedRawKey(agency, expiryToday),
+    contentKey: feedContentKey,
+    lastFeedContentKey: agency.lastFeedContentKey,
   });
   if (skipDecision.skip) {
     // A current feed can still have a legacy processed artifact. Do not let
@@ -643,6 +648,7 @@ async function refreshAgency(
       feedObtainedAt,
       feedStart: peekedPeriodStart,
       rawArchiveKey: archiveKey,
+      contentKey: feedContentKey,
     });
     stampSupplementalFeedMeta(agency, supplementalMeta);
   }
