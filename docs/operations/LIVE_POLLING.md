@@ -13,14 +13,14 @@ For where this fits in the platform's future direction, see [Live Data Infrastru
 One command: `npm run live`. It checks the setup first (`node_modules`, `.env.local`, free ports), starts the API server
 (port 5001) and Vite (port 5100) together, and prints the address, `http://localhost:5100/apps/live`. Ctrl-C stops both.
 For a second copy use other ports: `ATLAS_API_PORT=5003 ATLAS_VITE_PORT=5197 npm run live`.
-Live needs no key for TTC vehicles. The R2 keys in `.env.local` are only for recent positions and history. Live is local-only
-and stays off in every deployment.
+Live needs no key for TTC vehicles. The R2 keys in `.env.local` are only for recent positions and history. Where Live is switched
+on is in [`FEATURE_FLAGS.md`](../FEATURE_FLAGS.md).
 
 ## Live polling
 
 The Live Vehicles UI, feed configuration, and the `/api/live-vehicles` handler
-(`local-api/live-vehicles.ts`, never deployed) are in the repository, but Live is gated off in every deployment (`LIVE_ENABLED`, see
-[`FEATURE_FLAGS.md`](../FEATURE_FLAGS.md)). The handler polls configured feeds for
+(`local-api/live-vehicles.ts`, never deployed) are in the repository, and gated by `LIVE_ENABLED` (see
+[`FEATURE_FLAGS.md`](../FEATURE_FLAGS.md) for where it is on). The handler polls configured feeds for
 local use (`npm run dev:api` with `npm run dev:live`). Feed configuration lives in
 [`shared/livePollingConfig.ts`](../../shared/livePollingConfig.ts). An agency is only
 eligible when its feed needs no API key or its config is marked `active`; the API

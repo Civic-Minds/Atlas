@@ -343,6 +343,41 @@ export function rawArchiveKeyDigest(key: string | null | undefined): string | nu
   return match ? match[1] : null;
 }
 
+/**
+ * #1423/#1429: whether the downloaded zip differs from the one the live artifacts were built from, read
+ * from its contents. The content keys (zipContentKey) decide when both are known, so a re-zip of the same
+ * files is unchanged; else the recorded zip's hash (lastRawArchiveKey) against this zip's. Null when
+ * neither is recorded: each caller then keeps its own feed_version / end-date rule.
+ */
+export function feedContentsChanged(opts: {
+  contentKey?: string | null;
+  lastFeedContentKey?: string | null;
+  zipDigest?: string | null;
+  lastRawArchiveKey?: string | null;
+}): { changed: boolean; by: 'contents' | 'zip'; key: string } | null {
+  if (opts.contentKey && opts.lastFeedContentKey) {
+    return { changed: opts.contentKey !== opts.lastFeedContentKey, by: 'contents', key: opts.contentKey };
+  }
+  const lastDigest = rawArchiveKeyDigest(opts.lastRawArchiveKey);
+  if (opts.zipDigest && lastDigest) return { changed: opts.zipDigest !== lastDigest, by: 'zip', key: lastDigest };
+  return null;
+}
+
+/**
+ * Whether Atlas obtained a new feed file this run (feedFileDate's newFile). The contents decide when
+ * recorded (feedContentsChanged); without them, a changed feed_version or end date (#1429).
+ */
+export function isNewFeedFile(
+  agency: Pick<FeedMetaFields, 'lastFeedVersion' | 'lastPeekedExpiry' | 'lastFeedExpiry'>,
+  peekedExpiry: string | null,
+  peekedVersion: string | null,
+  contentsChanged: boolean | null,
+): boolean {
+  if (contentsChanged !== null) return contentsChanged;
+  return (peekedVersion ?? null) !== (agency.lastFeedVersion ?? null)
+    || (peekedExpiry ?? null) !== (agency.lastPeekedExpiry ?? agency.lastFeedExpiry ?? null);
+}
+
 export type RefreshSkipReason =
   | { skip: true; reason: string }
   | { skip: false };
@@ -383,19 +418,13 @@ export function decideRefreshSkipUnchanged(opts: {
   if (opts.forceRefresh || opts.hasSupplementals || opts.feedExpired || (opts.referenceDateFromRunDate && !opts.serviceWeek)) return { skip: false };
   if (opts.serviceWeek && opts.serviceWeek !== (opts.lastServiceWeek ?? null)) return { skip: false };
   // The files inside the zip decide when both content keys are known, so a publisher that re-zips the
-  // same files every download is not reprocessed weekly.
-  if (opts.contentKey && opts.lastFeedContentKey) {
-    return opts.contentKey === opts.lastFeedContentKey
-      ? { skip: true, reason: `skipped (same feed contents: ${opts.contentKey})` }
-      : { skip: false };
-  }
-  // #1423: when the last ingested zip's hash is recorded, it alone decides. Dutchess republished a
-  // corrected feed with the same end date and version, and the date rule below skipped it.
-  const lastDigest = rawArchiveKeyDigest(opts.lastRawArchiveKey);
-  if (opts.zipDigest && lastDigest) {
-    return opts.zipDigest === lastDigest
-      ? { skip: true, reason: `skipped (same zip: ${lastDigest})` }
-      : { skip: false };
+  // same files every download is not reprocessed weekly. Else, when the last ingested zip's hash is
+  // recorded, it alone decides (#1423): Dutchess republished a corrected feed with the same end date and
+  // version, and the date rule below skipped it.
+  const contents = feedContentsChanged(opts);
+  if (contents) {
+    if (contents.changed) return { skip: false };
+    return { skip: true, reason: contents.by === 'contents' ? `skipped (same feed contents: ${contents.key})` : `skipped (same zip: ${contents.key})` };
   }
   // A record without a key compares against the newest archived zip, which can only veto a skip: the
   // archive also holds zips refresh never processed (a held future timetable, backfills), so a match

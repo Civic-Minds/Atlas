@@ -13,6 +13,7 @@ scripts/*
 !scripts/agencyIndexGeneration.ts
 !scripts/build-sitemap.ts
 !scripts/prerender-routes.ts
+!scripts/vercel-root-shell.mjs
 # Imported by shared/agencyPlaces.test.ts, which the build's `tsc` type-checks.
 !scripts/build-area-page-list.ts
 types/

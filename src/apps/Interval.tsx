@@ -1488,6 +1488,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
             onDemandFocus
             onDemandZoneId={selectedOnDemandZoneId}
             onBackToAgency={setSelectedAgencySlug ? () => { setOnDemandStopAgencySlug(null); setSelectedAgencySlug(agency.slug); } : undefined}
+            onSelectOnDemandZone={zoneId => handleOnDemandZoneClick({ slug: agency.slug, zoneId })}
             onClose={closeAgencyCard}
           />
         ) : null;

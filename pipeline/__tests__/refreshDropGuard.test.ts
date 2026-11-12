@@ -126,10 +126,22 @@ describe('refresh gate reads the expiry refresh records (#1304)', () => {
 
 describe('refresh wiring for the zip-hash unchanged check (#1423)', () => {
   it('compares the downloaded zip with the recorded archive key and records the key it processes', () => {
-    expect(refreshSource).toMatch(/zipDigest: rawFeedDigest\(buf\),\s*lastRawArchiveKey: agency\.lastRawArchiveKey,/);
+    expect(refreshSource).toMatch(/const feedDigest = rawFeedDigest\(buf\);/);
+    expect(refreshSource).toMatch(/zipDigest: feedDigest,\s*lastRawArchiveKey: agency\.lastRawArchiveKey,/);
     expect(refreshSource).toMatch(/archivedRawKey: rawArchiveKeyDigest\(agency\.lastRawArchiveKey\) \? null : await newestArchivedRawKey\(agency, expiryToday\),/);
     expect(refreshSource).toMatch(/rawArchiveKey: archiveKey,\s*contentKey: feedContentKey,\s*\}\);/);
     expect(refreshSource).toMatch(/const feedContentKey = zipContentKey\(buf\);/);
     expect(refreshSource).toMatch(/contentKey: feedContentKey,\s*lastFeedContentKey: agency\.lastFeedContentKey,/);
+  });
+});
+
+describe('refresh reads "changed" from the feed contents for its bookkeeping (#1429)', () => {
+  it('passes one contentsChanged answer to the obtained date, the review flag and the override note', () => {
+    expect(refreshSource).toMatch(/const contentsChanged = feedContentsChanged\(\{\s*contentKey: feedContentKey, lastFeedContentKey: agency\.lastFeedContentKey,\s*zipDigest: feedDigest, lastRawArchiveKey: agency\.lastRawArchiveKey,\s*\}\)\?\.changed \?\? null;/);
+    expect(refreshSource).toMatch(/const newFile = isNewFeedFile\(agency, peekedExpiry, peekedVersion, contentsChanged\);/);
+    expect(refreshSource).toMatch(/clearOverrideUserFacingOnFeedChange\(agency, peekedExpiry, peekedVersion, contentsChanged\)/);
+    expect(refreshSource).toMatch(/const feedChanged = upstreamFeedChanged\(agency, peekedExpiry, peekedVersion, contentsChanged\);/);
+    // The feed's own end date or version alone no longer decides when the contents are recorded.
+    expect(refreshSource).not.toMatch(/const newFile = \(peekedVersion/);
   });
 });

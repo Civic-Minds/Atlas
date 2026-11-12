@@ -553,6 +553,10 @@ export const explainerFor = (code: LearnMoreCode): HelpTopic => NOTICE_EXPLAINER
 // N124 on-demand-shaded-area: the on-demand card's line when the map shades this service's area (CIV-941).
 export const ON_DEMAND_SHADED_AREA = 'The shaded map area shows where this on-demand service operates.';
 
+// N126 on-demand-partial: on-demand coverage is partial, so a place with no shading isn't read as having no service. Shown as
+// the map key's last line and under On-demand in the Mode menu (CIV-23; Ryan's word-for-word OK, 2026-11-11).
+export const ON_DEMAND_PARTIAL_COVERAGE = 'Some on-demand zones aren\u2019t on the map yet.';
+
 // N125 on-demand-pickup: how riders board an on-demand zone (CIV-941, moved here from shared/onDemandAvailability.ts unchanged).
 /**
  * One sentence on how riders board, specific to the selected zone (or the

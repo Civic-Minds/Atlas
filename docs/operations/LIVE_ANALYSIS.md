@@ -1,6 +1,6 @@
 # Live route analysis (schema v3)
 
-Local only, like all of Live. The TTC feed has no delay values, so the route analysis is our own calculation from archived
+The analysis is built locally; where the Live pages are switched on is in [FEATURE_FLAGS.md](../FEATURE_FLAGS.md). The TTC feed has no delay values, so the route analysis is our own calculation from archived
 vehicle positions and the timetable.
 
 ## Build it
@@ -50,7 +50,7 @@ recomputes random stop departures (25 m past the stop) from the raw archive and 
 
 ## The page
 
-`/apps/live/<agency>/<route>` (local only, same switch as Live) shows B1 to B4 and the method from the `v3` block, through the local-only
+`/apps/live/<agency>/<route>` (see [FEATURE_FLAGS.md](../FEATURE_FLAGS.md) for where it is on) shows B1 to B4 and the method from the `v3` block, through the local-only
 `/api/live-dashboard?agency=ttc&route=505` (`local-api/`, never deployed). The answer always has a status (`ready`, `held`, `no_analysis`, `unknown_route`) and a plain
 reason. Routes held back until a known problem is fixed are listed in `shared/liveDashboard.ts` (`LIVE_DASHBOARD_HOLD`: 512).
 
