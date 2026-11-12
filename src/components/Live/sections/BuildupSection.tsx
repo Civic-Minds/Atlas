@@ -3,6 +3,7 @@ import { buildupTakeaway, type DashboardBand, type DashboardBandData, type LiveV
 import { isMajorStop, shortStopName, stretchLabel } from '../../../utils/stopLabel';
 import ProfileBars, { sharedScale, type ProfilePoint } from '../../charts/ProfileBars';
 import SortableDataTable from '../../ui/SortableDataTable';
+import { PageTable } from '../../ui/PageSection';
 import DirectionStrip from '../DirectionStrip';
 import { branchNamesWrap } from '../BranchStrip';
 import { branchStripFromV3 } from '../branchStripModel';
@@ -82,7 +83,7 @@ export default function BuildupSection({ v3, data, dir, uncertain, detail, bound
                   })}
                 />
               )}
-              <div className="mt-3 sm:overflow-x-auto">
+              <PageTable>
                 <SortableDataTable
                   narrowFit
                   caption={`${label}: the stretches that add the most delay`}
@@ -99,7 +100,7 @@ export default function BuildupSection({ v3, data, dir, uncertain, detail, bound
                     { key: 'grows', header: 'Trips where it grows', worst: s => s.growShare, cell: s => `${pct(s.growShare)} of ${s.n.toLocaleString()}` },
                   ]}
                 />
-              </div>
+              </PageTable>
             </div>
           );
         })}

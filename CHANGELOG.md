@@ -31,6 +31,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **Live reports cover the rolling 7 days and always agree**
 - **Live charts, tiles and stop lists read clearly and the same everywhere**: one late-by-hour chart, run time in minutes, delay and bunching on the route strip, "Few measurements" where data is thin, and stop names in full
 - **Live pages fit on one screen**: headers and switchers fit one line, the planner's notes show only where they apply, and phones draw the route strip too
+- **Live report tables match the area and agency page tables**: numbers line up at the right edge, spacing is the same, and a route's row opens its report
 
 ## [3.4.0] - 2026-11-09
 

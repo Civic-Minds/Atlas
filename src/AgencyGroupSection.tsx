@@ -4,16 +4,15 @@ import { AGENCY_INDEX_PATH } from '../shared/agencyIndex';
 import { LINK } from './pageStyles';
 import { FrequencyBar } from './pageParts';
 import ArrowLink from './components/ui/ArrowLink';
-import { SectionTitle } from './components/ui/PageTitle';
-import DataTable from './components/ui/DataTable';
-import ScrollX from './components/ui/ScrollX';
+import DataTable, { PAGE_FIGURE_COLUMN_REM } from './components/ui/DataTable';
+import PageSection, { PageTable } from './components/ui/PageSection';
 
 /**
  * Desktop widths of the agency table: the names' smallest width, and each mode column's. Seven mode columns fit beside the
  * names from 768px wide up, every header on at most two lines (CIV-973); narrower, the table scrolls.
  */
 const AREA_NAME_COLUMN_REM = 10.75;
-const AREA_MODE_COLUMN_REM = 5.5;
+const AREA_MODE_COLUMN_REM = PAGE_FIGURE_COLUMN_REM;
 /**
  * This surface's own width, past the one rule (AGENCY_NAME_MAX_CHARS) because its layout allows two lines:
  * with the "Other" column the names column is at its narrowest, so a full name past this length would wrap to three lines
@@ -46,21 +45,20 @@ function agencyNameLink(a: AreaAgencyRow, narrow: boolean) {
 export default function AgencyGroupSection({ data, barNote }: { data: AgencyGroupData; barNote: string }) {
   // CIV-1297: the page's one map link is at its top; "See all agencies" follows the table, as on agency pages.
   return (
-    <section className="mt-14" aria-labelledby="agencies-heading">
-      <SectionTitle id="agencies-heading">Agencies and weekday frequency</SectionTitle>
+    <PageSection id="agencies-heading" title="Agencies and weekday frequency">
       <p className="mt-3 text-base font-bold">Weekday midday frequency, by route</p>
       <FrequencyBar counts={data.bands} />
       <p className="mt-2 text-sm leading-6 text-[var(--text-muted)]">{barNote}</p>
       <AgencyModeTable data={data} />
       <ArrowLink href={AGENCY_INDEX_PATH} className="mt-6">See all agencies</ArrowLink>
-    </section>
+    </PageSection>
   );
 }
 
 /** The agency table by mode: an area's or state's agencies, or a parent agency's services (CIV-1277). */
 export function AgencyModeTable({ data }: { data: Pick<AgencyGroupData, 'agencies' | 'modeColumns'> }) {
   return (
-      <ScrollX className="mt-6 -mx-2">
+      <PageTable linkedRows>
           <DataTable
             caption="Agencies and route counts by mode"
             layout="page"
@@ -73,6 +71,6 @@ export function AgencyModeTable({ data }: { data: Pick<AgencyGroupData, 'agencie
               ...data.modeColumns.map(m => ({ key: m, header: modeHeader(m), width: AREA_MODE_COLUMN_REM, cell: (a: (typeof data.agencies)[number]) => a.modes[m] ?? '–' })),
             ]}
           />
-      </ScrollX>
+      </PageTable>
   );
 }

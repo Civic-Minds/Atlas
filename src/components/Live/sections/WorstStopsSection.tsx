@@ -6,6 +6,8 @@ import ErrorBoundary from '../../ErrorBoundary';
 import ArrowLink from '../../ui/ArrowLink';
 import { SectionTitle } from '../../ui/PageTitle';
 import SortableDataTable from '../../ui/SortableDataTable';
+import { PAGE_FIGURE_COLUMN_REM } from '../../ui/DataTable';
+import { PageTable } from '../../ui/PageSection';
 import Section from './Section';
 import { mins, pct } from './figures';
 import { lateShareColor } from '../lateShare';
@@ -20,6 +22,8 @@ export function worstStopsModel(v3: LiveV3, data: DashboardBandData, dir: number
 }
 
 const EMPTY = LIVE_NO_STOP_TO_RANK;
+/** A figure column's width, the data pages' one (rem). */
+const FIGURE = PAGE_FIGURE_COLUMN_REM;
 
 /** The tool panel's short clickable list, built from the same model: a stop name and its late share. */
 export function worstStopRows(v3: LiveV3, data: DashboardBandData, dir: number | null, uncertain: readonly UncertainStart[], limit: number, onPick: (stopId: string) => void) {
@@ -47,7 +51,7 @@ export default function WorstStopsSection({ v3, data, dir, uncertain, limit, col
   // The share, with the strip's three late colours as a dot (the Full analysis: no bar repeating the number).
   const bar = (share: number) => <LegendItem color={lateShareColor(share)} className="gap-2">{pct(share)}</LegendItem>;
   const table = top.length ? (
-    <div className={`${full ? 'mt-4' : 'mt-3'} sm:overflow-x-auto`}>
+    <PageTable>
       <SortableDataTable
         narrowFit
         rowTitle={s => `${s.name}: ${s.n.toLocaleString()} departures`}
@@ -59,18 +63,18 @@ export default function WorstStopsSection({ v3, data, dir, uncertain, limit, col
           onPick && canPick
             ? { key: 'stop', header: 'Stop', rowHeader: true, className: 'font-normal', cell: s => !canPick(s.directionId, s.stopId) ? s.name : <button type="button" onClick={() => onPick(s.directionId, s.stopId)} className="text-left font-[inherit] hover:underline max-sm:min-h-[44px] max-sm:w-full">{s.name}</button> }
             : { key: 'stop', header: 'Stop', rowHeader: true, className: 'font-normal break-words', cell: s => <span title={s.name}>{s.name}</span> },
-          ...(both ? [{ key: 'dir', header: 'Direction', cell: (s: (typeof top)[number]) => directionLabels[String(s.directionId)] }] : []),
+          ...(both ? [{ key: 'dir', header: 'Direction', align: 'left' as const, cell: (s: (typeof top)[number]) => directionLabels[String(s.directionId)] }] : []),
           full
-            ? { key: 'late', header: 'Late', worst: (s: (typeof top)[number]) => s.lateShare, cell: (s: (typeof top)[number]) => bar(s.lateShare) }
-            : { key: 'late', header: 'Late', worst: (s: (typeof top)[number]) => s.lateShare, cell: (s: (typeof top)[number]) => <span title={`${s.n.toLocaleString()} departures`}>{pct(s.lateShare)}</span> },
+            ? { key: 'late', header: 'Late', width: FIGURE, worst: (s: (typeof top)[number]) => s.lateShare, cell: (s: (typeof top)[number]) => bar(s.lateShare) }
+            : { key: 'late', header: 'Late', width: FIGURE, worst: (s: (typeof top)[number]) => s.lateShare, cell: (s: (typeof top)[number]) => <span title={`${s.n.toLocaleString()} departures`}>{pct(s.lateShare)}</span> },
           ...(full ? [
-            { key: 'median', header: 'Typical delay', worst: (s: (typeof top)[number]) => s.medianMin, cell: (s: (typeof top)[number]) => mins(s.medianMin) },
-            { key: 'p90', header: '1 in 10 later than', narrowHide: true, ...(p90Width != null ? { width: p90Width } : {}), worst: (s: (typeof top)[number]) => s.p90Min, cell: (s: (typeof top)[number]) => mins(s.p90Min) },
-            { key: 'n', header: 'Departures', narrowHide: true, cell: (s: (typeof top)[number]) => s.n.toLocaleString() },
+            { key: 'median', header: 'Typical delay', width: FIGURE, worst: (s: (typeof top)[number]) => s.medianMin, cell: (s: (typeof top)[number]) => mins(s.medianMin) },
+            { key: 'p90', header: '1 in 10 later than', narrowHide: true, width: p90Width ?? FIGURE, worst: (s: (typeof top)[number]) => s.p90Min, cell: (s: (typeof top)[number]) => mins(s.p90Min) },
+            { key: 'n', header: 'Departures', narrowHide: true, width: FIGURE, cell: (s: (typeof top)[number]) => s.n.toLocaleString() },
           ] : []),
         ]}
       />
-    </div>
+    </PageTable>
   ) : <p className="mt-3 text-sm text-[var(--text-muted)]">{EMPTY}</p>;
   const introLine = intro && <p className="mt-2 text-sm text-[var(--text-muted)]">Stops ranked by how often vehicles leave {LATE_THRESHOLD} (stops with 30+ departures).</p>;
   const note = notRanked && hidden.length > 0 && (

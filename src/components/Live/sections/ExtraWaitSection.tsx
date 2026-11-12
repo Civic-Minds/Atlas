@@ -3,6 +3,7 @@ import { type DashboardBand, type LiveV3 } from '../../../../shared/liveDashboar
 import { isMajorStop, shortStopName } from '../../../utils/stopLabel';
 import ProfileBars, { sharedScale, type ProfilePoint } from '../../charts/ProfileBars';
 import SortableDataTable from '../../ui/SortableDataTable';
+import { PageTable } from '../../ui/PageSection';
 import Section from './Section';
 import { headwayExactAmount, headwayOrBetter } from '../../../utils/headwayText';
 import { dirsOf, num } from './figures';
@@ -71,7 +72,7 @@ export default function ExtraWaitSection({ v3, band, dir, detail, boundary }: { 
     </div>
     {full && points0 > 1 && <p className="mt-2 text-xs text-[var(--text-dim)]">Paler bars rest on fewer than 30 gaps.</p>}
     {worst.length > 0 && (
-      <div className="mt-5 sm:overflow-x-auto">
+      <PageTable>
         <SortableDataTable
           narrowFit
           rowTitle={s => `${s.name}: ${s.gaps.toLocaleString()} gaps`}
@@ -81,13 +82,13 @@ export default function ExtraWaitSection({ v3, band, dir, detail, boundary }: { 
           rowKey={s => `${s.stopId}-${s.directionId}`}
           columns={[
             { key: 'stop', header: 'Stop', rowHeader: true, className: full ? 'font-normal break-words' : 'font-normal', cell: s => (full ? <span title={s.name}>{s.name}</span> : s.name) },
-            ...(dir == null ? [{ key: 'dir', header: 'Direction', cell: (s: (typeof worst)[number]) => v3.directionLabels[String(s.directionId)] }] : []),
+            ...(dir == null ? [{ key: 'dir', header: 'Direction', align: 'left' as const, cell: (s: (typeof worst)[number]) => v3.directionLabels[String(s.directionId)] }] : []),
             { key: 'extra', header: 'Extra wait', worst: s => s.extraWaitMin, cell: s => `${num(s.extraWaitMin)} min` },
             { key: 'sched', header: 'Scheduled every', narrowHide: true, cell: s => headwayExactAmount(s.scheduledGapMin) },
             { key: 'n', header: 'Gaps', narrowHide: true, cell: s => s.gaps.toLocaleString() },
           ]}
         />
-      </div>
+      </PageTable>
     )}
   </>);
 }

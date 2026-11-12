@@ -17,7 +17,7 @@ import { syncUrlParams } from './utils/syncUrlParams';
 import { LIVE_ROUTE_URL, currentSearch, linkUpdate, readUrlParam } from './utils/urlSchema';
 import { nameCase } from './utils/format';
 import ErrorBoundary from './components/ErrorBoundary';
-import PageShell from './components/ui/PageShell';
+import DocsPageLayout from './components/ui/DocsPageLayout';
 import EmptyPage from './components/ui/EmptyPage';
 import PillGroup, { PILL_ROW } from './components/ui/PillGroup';
 import LiveOffNotice from './components/LiveOffNotice';
@@ -140,7 +140,7 @@ function AnalysisPage() {
   if (!FEATURES.liveReports) return <LiveOffNotice />;
   const title = `${agencyName} ${route}`;
   const back = FEATURES.live ? <ArrowLink href="/apps/live">Open Live</ArrowLink> : null;
-  if (state.kind === 'loading') return <PageShell variant="wide"><p className="mt-24 text-sm text-[var(--text-muted)]" aria-busy="true">{loadingText(title)}</p></PageShell>;
+  if (state.kind === 'loading') return <DocsPageLayout width="wide"><p className="mt-24 text-sm text-[var(--text-muted)]" aria-busy="true">{loadingText(title)}</p></DocsPageLayout>;
   if (state.kind === 'error') return <EmptyPage title={title} body={state.reason} action={back} />;
   const data = state.data;
   if (data.status !== 'ready') {
@@ -151,8 +151,7 @@ function AnalysisPage() {
   const bandData = v3.bands?.[band] as DashboardBandData;
   const uncertain = data.uncertainStart ?? [];
   return (
-    <PageShell variant="wide">
-      <article className="pb-16 pt-10 sm:pt-14">
+    <DocsPageLayout width="wide">
         <div className="flex flex-col gap-1 sm:grid sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center sm:gap-x-4">
           <div className="min-w-0"><PageTitle>{data.routeTitle ? <RouteTitleName label={liveRouteTitleLabel(data.routeTitle, route)} /> : title}</PageTitle></div>
           <p className="m-0 text-sm text-[var(--text-muted)] sm:col-span-2 sm:row-start-2">
@@ -183,8 +182,7 @@ function AnalysisPage() {
         </>)}
         {/* One "How this is measured" for Summary and Full analysis alike, every line of the method (CIV-308). */}
         <ErrorBoundary label={LIVE_METHOD_DRAW_ERROR}><MethodSection scope="route" data={data} /></ErrorBoundary>
-      </article>
-    </PageShell>
+    </DocsPageLayout>
   );
 }
 

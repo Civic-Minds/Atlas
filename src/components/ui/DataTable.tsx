@@ -15,6 +15,11 @@ export interface DataTableColumn<T> {
   sortable?: boolean;
   /** With `narrowFit`: leave this column out below the sm breakpoint (its figure can go in `rowTitle`). */
   narrowHide?: boolean;
+  /**
+   * `page` layout only: this column holds words, not figures (a route, a direction), so it stays left-aligned where the
+   * figure columns are right-aligned. The first column is always left-aligned.
+   */
+  align?: 'left';
 }
 
 /** Which column the rows are sorted by. `reversed` is the second click: the table's own default order turned round. */
@@ -80,8 +85,9 @@ interface DataTableProps<T> {
    */
   layout?: DataTableLayout;
   /**
-   * With `layout="fill"`, phone widths (below sm): no minimum width, columns size to their content and the ones marked
-   * `narrowHide` are left out, so the table fits its container without scrolling. From sm up it is the `fill` layout.
+   * With `layout="fill"` or `layout="page"`, phone widths (below sm): no minimum width, columns size to their content and
+   * the ones marked `narrowHide` are left out, so the table fits its container without scrolling. From sm up it is the
+   * layout asked for. Off by default: a `page` table without it scrolls sideways on a phone (the area and agency pages).
    */
   narrowFit?: boolean;
   /**
@@ -101,6 +107,8 @@ interface DataTableProps<T> {
 export const FIXED_FIRST_COLUMN_REM = 16;
 /** Width of every other column in a fixed-layout table. */
 export const FIXED_COLUMN_REM = 8;
+/** Width of a short figure column in a `page` table (a count, a percentage, minutes): the area page's mode columns and the Live tables' figures. */
+export const PAGE_FIGURE_COLUMN_REM = 5.5;
 
 /**
  * A click anywhere on a linked row follows its link, and a middle, Cmd or Ctrl click opens it in a new tab. A click on a
@@ -122,17 +130,25 @@ export default function DataTable<T>({ columns, rows, rowKey, variant = 'compact
   const fill = layout === 'fill';
   const v = VARIANTS[variant];
   const widths = columns.map((col, i) => col.width ?? (i === 0 ? FIXED_FIRST_COLUMN_REM : FIXED_COLUMN_REM));
-  const fit = fixed && fill && narrowFit;
+  const end = layout === 'page';
+  const fit = narrowFit && (fill || end);
   const shown = columns.map(c => !(fit && c.narrowHide));
   // The last column drawn on a phone carries no gap on its right.
   const lastNarrow = shown.lastIndexOf(true);
   const pad = (i: number) => (v.gap && i < columns.length - 1 ? (fit && i !== lastNarrow ? ' pr-3 sm:pr-4' : fit ? ' pr-0 sm:pr-4' : ' pr-4') : '');
   const hide = (i: number) => (fit && columns[i].narrowHide ? ' max-sm:hidden' : '');
-  const end = layout === 'page';
   // From sm up, right-aligned columns take their gap on the left; the last one has none on the right, so it meets the edge.
   // The last column sets no right padding of its own, so a linked row's `pr-2` (rowEdge) still lines it up with the edge.
   // The names column keeps a wider gap before the first figure column, so a long name doesn't run up against it (CIV-973).
-  const cellPad = (i: number) => (end ? (i === 0 ? ' pr-6' : `${i < columns.length - 1 ? ' pr-4 sm:pr-0' : ''} sm:pl-2 sm:text-right`) : pad(i));
+  // A column of words (`align: 'left'`) keeps its gap on the right and is not right-aligned.
+  // With `narrowFit`, phones get the fitted table's smaller gaps and none after the last column drawn.
+  const words = (i: number) => columns[i].align === 'left';
+  const pageGap = (i: number) => (fit
+    ? `${i === lastNarrow ? '' : ' max-sm:pr-3'}${i < columns.length - 1 && words(i) ? ' sm:pr-4' : ''}`
+    : i < columns.length - 1 ? (words(i) ? ' pr-4' : ' pr-4 sm:pr-0') : '');
+  const cellPad = (i: number) => (end ? (i === 0 ? (fit ? ' max-sm:pr-3 sm:pr-6' : ' pr-6') : `${pageGap(i)}${words(i) ? '' : ' sm:pl-2 sm:text-right'}`) : pad(i));
+  // The right-aligned figure columns of a `page` table.
+  const figure = (i: number) => end && i > 0 && !words(i);
   // Phones: the default fixed widths, whatever the columns ask for from sm up.
   const phoneWidths = columns.map((_, i) => (i === 0 ? FIXED_FIRST_COLUMN_REM : FIXED_COLUMN_REM));
   // A linked row's highlight reaches a little past the text on both sides, as in card lists.
@@ -140,14 +156,14 @@ export default function DataTable<T>({ columns, rows, rowKey, variant = 'compact
   const totalRem = widths.reduce((a, b) => a + b, 0);
   return (
     <table
-      className={fixed ? `${v.table} ${fit ? 'sm:table-fixed sm:min-w-[var(--table-min)]' : 'table-fixed'}${end ? ' max-sm:!w-[var(--table-w)] sm:min-w-[var(--table-min)]' : ''}` : v.table}
-      style={end ? ({ width: '100%', '--table-w': `${phoneWidths.reduce((a, b) => a + b, 0)}rem`, '--table-min': `${totalRem}rem` } as CSSProperties) : fixed ? (fill ? (fit ? ({ width: '100%', '--table-min': `${totalRem}rem` } as CSSProperties) : { width: '100%', minWidth: `${totalRem}rem` }) : { width: `${totalRem}rem` }) : undefined}
+      className={fixed ? `${v.table} ${fit ? 'sm:table-fixed sm:min-w-[var(--table-min)]' : 'table-fixed'}${end && !fit ? ' max-sm:!w-[var(--table-w)] sm:min-w-[var(--table-min)]' : ''}` : v.table}
+      style={fit ? ({ width: '100%', '--table-min': `${totalRem}rem` } as CSSProperties) : end ? ({ width: '100%', '--table-w': `${phoneWidths.reduce((a, b) => a + b, 0)}rem`, '--table-min': `${totalRem}rem` } as CSSProperties) : fixed ? (fill ? { width: '100%', minWidth: `${totalRem}rem` } : { width: `${totalRem}rem` }) : undefined}
     >
       {caption && <caption className="sr-only">{caption}</caption>}
       {fixed && (
         <colgroup>
           {columns.map((col, i) => fit
-            ? <col key={col.key} className={`${fill && i > 0 && col.width == null ? '' : 'sm:w-[var(--col-w)]'}${hide(i)}`} style={{ '--col-w': `${widths[i]}rem` } as CSSProperties} />
+            ? <col key={col.key} className={`${end ? (i > 0 ? 'sm:w-[var(--col-w)]' : 'sm:w-auto') : fill && i > 0 && col.width == null ? '' : 'sm:w-[var(--col-w)]'}${hide(i)}`} style={{ '--col-w': `${widths[i]}rem` } as CSSProperties} />
             : end
               ? <col key={col.key} className={`w-[var(--col-phone)] ${i > 0 ? 'sm:w-[var(--col-w)]' : 'sm:w-auto'}`} style={{ '--col-phone': `${phoneWidths[i]}rem`, '--col-w': `${widths[i]}rem` } as CSSProperties} />
               : <col key={col.key} style={fill && i > 0 && col.width == null ? undefined : { width: `${widths[i]}rem` }} />)}
@@ -158,10 +174,19 @@ export default function DataTable<T>({ columns, rows, rowKey, variant = 'compact
           {columns.map((col, i) => (
             col.sortable && onSort ? (
               <th key={col.key} scope="col" className={`${v.th}${cellPad(i)}${rowEdge(i)}${hide(i)}${end ? ' align-bottom' : ''}`} aria-sort={sort?.key === col.key ? (sort.reversed ? 'ascending' : 'descending') : 'none'}>
-                <button type="button" onClick={() => onSort(col.key)} className="inline-flex items-center gap-1 font-[inherit] hover:underline">
+                {/* In a `page` table a figure column's header ends at the column's right edge and may wrap, so its arrow goes
+                    before the words, in the line of text, and takes no room until the column is sorted. */}
+                {figure(i) ? (
+                  <button type="button" onClick={() => onSort(col.key)} className="font-[inherit] hover:underline text-left sm:text-right">
+                    {sort?.key === col.key && <span aria-hidden="true" className="mr-1 inline-block text-[0.7em] align-[0.1em]">{sort.reversed ? '▲' : '▼'}</span>}
+                    {col.header}
+                  </button>
+                ) : (
+                <button type="button" onClick={() => onSort(col.key)} className={`inline-flex items-center gap-1 font-[inherit] hover:underline${end ? ' text-left' : ''}`}>
                   {col.header}
                   <span aria-hidden="true" className={`text-[0.7em] ${sort?.key === col.key ? '' : 'invisible'}`}>{sort?.key === col.key && sort.reversed ? '▲' : '▼'}</span>
                 </button>
+                )}
               </th>
             ) : <th key={col.key} scope="col" className={`${v.th}${cellPad(i)}${rowEdge(i)}${hide(i)}${end ? ' align-bottom' : ''}`}>{col.header}</th>
           ))}

@@ -17,14 +17,16 @@ import { LIVE_AGENCY_URL, currentSearch, linkUpdate, readUrlParam, type LiveSort
 import { nameCase } from './utils/format';
 import { liveStopName as stop, stretchLabel } from './utils/stopLabel';
 import ErrorBoundary from './components/ErrorBoundary';
-import PageShell from './components/ui/PageShell';
+import DocsPageLayout from './components/ui/DocsPageLayout';
+import PageSection, { PageTable } from './components/ui/PageSection';
+import ScrollX from './components/ui/ScrollX';
 import EmptyPage from './components/ui/EmptyPage';
-import DataTable from './components/ui/DataTable';
+import DataTable, { PAGE_FIGURE_COLUMN_REM } from './components/ui/DataTable';
 import SortableDataTable from './components/ui/SortableDataTable';
 import LiveOffNotice from './components/LiveOffNotice';
 import { KpiTiles } from './LiveDashboardView';
 import ArrowLink from './components/ui/ArrowLink';
-import { PageTitle, SectionTitle } from './components/ui/PageTitle';
+import { PageTitle } from './components/ui/PageTitle';
 import DevHint from './components/Live/DevHint';
 import { ANALYZE_DEV_HINT } from './lib/liveReportData';
 import { coveredRoutesText, LATE_THRESHOLD, bunchPartsText, liveSubtitle, risePointsText, runTimeDiffText } from '../shared/liveWording';
@@ -33,8 +35,12 @@ import { mins } from './components/Live/sections/figures';
 import MethodSection from './components/Live/sections/MethodSection';
 import { LIVE_API_NO_ANSWER, LIVE_NO_STOP_TO_RANK_YET, LIVE_NO_STRETCH_STANDS_OUT, LIVE_WEEK_NOT_IN_FILES, liveNoAgencyAnalysis, loadingText } from './content/noticeCopy';
 
-/** One column grid for every table on the page, so the first column, Route and Direction line up from table to table (widths in rem; the number columns share the rest of the width equally). */
-const FIRST_COL = 15, ROUTE_COL = 10, DIR_COL = 6.5;
+/**
+ * One column grid for every table on the page (widths in rem), in the area page's table layout: the figure columns sit
+ * right-aligned at the right edge, each this wide, Route and Direction line up from table to table, and the first column
+ * takes the rest (FIRST_COL is the least it gets before the table scrolls).
+ */
+const FIRST_COL = 15, ROUTE_COL = 10, DIR_COL = 6.5, FIGURE_COL = PAGE_FIGURE_COLUMN_REM;
 
 const pct = (x: number | null) => (x == null ? '–' : pctOf(x));
 const pctSigned = (x: number | null) => (x == null ? '–' : signedPct(x));
@@ -69,11 +75,9 @@ export function useLiveAgency(agency: string): { kind: 'loading' } | { kind: 'er
 
 function Section({ id, title, intro, children }: { id: string; title: string; intro?: string; children: React.ReactNode }) {
   return (
-    <section className="mt-12" aria-labelledby={id}>
-      <SectionTitle id={id}>{title}</SectionTitle>
-      {intro && <p className="mt-1 max-w-3xl text-sm text-[var(--text-muted)]">{intro}</p>}
+    <PageSection id={id} title={title} intro={intro}>
       <ErrorBoundary>{children}</ErrorBoundary>
-    </section>
+    </PageSection>
   );
 }
 
@@ -97,26 +101,30 @@ function RoutesTable({ s }: { s: AgencySummary }) {
   return (
     <>
       {routesByMode(rows.map(r => ({ ...r, mode: r.mode ?? 3 }))).map(group => (
-        <div key={group.mode} className="mt-4 sm:overflow-x-auto">
+        <div key={group.mode} className="mt-4">
           <h3 className="pb-2 text-base font-black" aria-hidden="true">{group.label} <span className="ml-1 font-normal text-[var(--text-muted)]">{group.routes.length}</span></h3>
+          {/* The agency page's routes table (ScrollX + the page layout), with each row opening its route's report. */}
+          <ScrollX className="-mx-2">
           <DataTable
             caption={`${group.label} ${group.routes.length}`}
-            layout="fill"
+            layout="page"
             // On a phone the table fits the screen, leaving out last week's Late, as Live's other tables do (#1151).
             narrowFit
+            rowHref={r => liveDashboardPath(s.agency, r.route)}
             sort={{ key: sort, reversed }}
             onSort={onSort}
             rows={group.routes}
             rowKey={r => r.route}
             columns={[
               { key: 'route', header: 'Route', rowHeader: true, width: FIRST_COL, className: 'font-normal', cell: r => <a href={liveDashboardPath(s.agency, r.route)} className="hover:underline"><RouteNameCell shortName={r.route} longName={r.longName} mode={r.mode} agencyName={s.agency} /></a> },
-              { key: 'late', sortable: true, header: 'Late', cell: r => <span title={`${r.lateN.toLocaleString()} trips this week`}>{pct(r.lateShare)}</span> },
-              { key: 'lastWeek', header: 'Last week', narrowHide: true, className: 'text-[var(--text-muted)]', cell: r => pct(r.lateLastWeek) },
-              { key: 'runTime', sortable: true, header: 'Run time', cell: r => (r.runTimeDiffMin != null ? runTimeDiffText(r.runTimeDiffMin, false) : pctSigned(r.runTimeOver)) },
-              { key: 'bunching', sortable: true, header: 'Bunching', cell: r => (r.bunchingShare != null && r.bunchedShare != null && r.gappedShare != null ? bunchPartsText(r.bunchingShare, r.bunchedShare, r.gappedShare) : pct(r.bunchingShare)) },
-              { key: 'delivered', sortable: true, header: 'Delivered', cell: r => (r.deliveredShare == null ? '–' : pctTenth(r.deliveredShare)) },
+              { key: 'late', sortable: true, header: 'Late', width: FIGURE_COL, cell: r => <span title={`${r.lateN.toLocaleString()} trips this week`}>{pct(r.lateShare)}</span> },
+              { key: 'lastWeek', header: 'Last week', width: FIGURE_COL, narrowHide: true, className: 'text-[var(--text-muted)]', cell: r => pct(r.lateLastWeek) },
+              { key: 'runTime', sortable: true, header: 'Run time', width: FIGURE_COL, cell: r => (r.runTimeDiffMin != null ? runTimeDiffText(r.runTimeDiffMin, false) : pctSigned(r.runTimeOver)) },
+              { key: 'bunching', sortable: true, header: 'Bunching', width: FIGURE_COL, cell: r => (r.bunchingShare != null && r.bunchedShare != null && r.gappedShare != null ? bunchPartsText(r.bunchingShare, r.bunchedShare, r.gappedShare) : pct(r.bunchingShare)) },
+              { key: 'delivered', sortable: true, header: 'Delivered', width: FIGURE_COL, cell: r => (r.deliveredShare == null ? '–' : pctTenth(r.deliveredShare)) },
             ]}
           />
+          </ScrollX>
         </div>
       ))}
     </>
@@ -129,7 +137,7 @@ const TOP_STOPS = 10;
 function StopsTable({ s, rows }: { s: AgencySummary; rows: AgencyHotspotStop[] }) {
   if (!rows.length) return <p className="mt-3 text-sm text-[var(--text-muted)]">{LIVE_NO_STOP_TO_RANK_YET}</p>;
   return (
-    <div className="relative mt-3 sm:overflow-x-auto">
+    <PageTable>
       <SortableDataTable
         narrowFit
         caption="Stops most often late, all analysed routes"
@@ -138,14 +146,14 @@ function StopsTable({ s, rows }: { s: AgencySummary; rows: AgencyHotspotStop[] }
         rowKey={r => `${r.route}-${r.directionId}-${r.stopId}`}
         columns={[
           { key: 'stop', header: 'Stop', rowHeader: true, width: FIRST_COL, className: 'font-normal break-words', cell: r => <span title={stop(r.name)}>{stop(r.name)}</span> },
-          { key: 'route', header: 'Route', width: ROUTE_COL, className: 'truncate', cell: r => <HotspotRoute s={s} route={r.route} /> },
-          { key: 'dir', header: 'Direction', width: DIR_COL, narrowHide: true, cell: r => nameCase(r.direction, 'liveStop') },
-          { key: 'late', header: 'Late', worst: r => r.lateShare, cell: r => pct(r.lateShare) },
-          { key: 'typical', header: 'Typical', worst: r => r.medianMin, cell: r => mins(r.medianMin) },
-          { key: 'n', header: 'Departures', narrowHide: true, cell: r => r.n.toLocaleString() },
+          { key: 'route', header: 'Route', width: ROUTE_COL, align: 'left', className: 'truncate', cell: r => <HotspotRoute s={s} route={r.route} /> },
+          { key: 'dir', header: 'Direction', width: DIR_COL, align: 'left', narrowHide: true, cell: r => nameCase(r.direction, 'liveStop') },
+          { key: 'late', header: 'Late', width: FIGURE_COL, worst: r => r.lateShare, cell: r => pct(r.lateShare) },
+          { key: 'typical', header: 'Typical', width: FIGURE_COL, worst: r => r.medianMin, cell: r => mins(r.medianMin) },
+          { key: 'n', header: 'Departures', width: FIGURE_COL, narrowHide: true, cell: r => r.n.toLocaleString() },
         ]}
       />
-    </div>
+    </PageTable>
   );
 }
 
@@ -153,23 +161,23 @@ function StopsTable({ s, rows }: { s: AgencySummary; rows: AgencyHotspotStop[] }
 function StretchTable({ s, rows, caption, valueHeader, format }: { s: AgencySummary; rows: AgencyHotspotStretch[]; caption: string; valueHeader?: string; format?: (v: number) => string }) {
   if (!rows.length) return <p className="mt-3 text-sm text-[var(--text-muted)]">{LIVE_NO_STRETCH_STANDS_OUT}</p>;
   return (
-    <div className="relative mt-3 sm:overflow-x-auto">
+    <PageTable>
       <SortableDataTable
         narrowFit={!!valueHeader}
         caption={caption}
-        // With no number column there is nothing to share the leftover width, so the table keeps the shared widths and ends short of the edge.
-        layout={valueHeader ? 'fill' : 'fixed'}
+        // With no number column the table keeps the shared widths and ends short of the edge.
+        layout={valueHeader ? 'page' : 'fixed'}
         rows={rows}
         defaultSort={valueHeader ? 'value' : undefined}
         rowKey={r => `${r.route}-${r.directionId}-${r.fromStopId}-${r.toStopId}`}
         columns={[
           { key: 'stretch', header: 'Stretch', rowHeader: true, width: FIRST_COL, className: 'font-normal break-words', cell: r => { const name = stretchLabel(nameCase(r.fromName, 'liveStop'), nameCase(r.toName, 'liveStop')); return <span title={name}>{name}</span>; } },
-          { key: 'route', header: 'Route', width: ROUTE_COL, className: 'truncate', cell: r => <HotspotRoute s={s} route={r.route} /> },
-          { key: 'dir', header: 'Direction', width: DIR_COL, narrowHide: !!valueHeader, cell: r => nameCase(r.direction, 'liveStop') },
-          ...(valueHeader && format ? [{ key: 'value', header: valueHeader, worst: (r: AgencyHotspotStretch) => r.value, cell: (r: AgencyHotspotStretch) => <span className="whitespace-nowrap">{format(r.value)}</span> }] : []),
+          { key: 'route', header: 'Route', width: ROUTE_COL, align: 'left' as const, className: 'truncate', cell: r => <HotspotRoute s={s} route={r.route} /> },
+          { key: 'dir', header: 'Direction', width: DIR_COL, align: 'left' as const, narrowHide: !!valueHeader, cell: r => nameCase(r.direction, 'liveStop') },
+          ...(valueHeader && format ? [{ key: 'value', header: valueHeader, width: FIGURE_COL, worst: (r: AgencyHotspotStretch) => r.value, cell: (r: AgencyHotspotStretch) => <span className="whitespace-nowrap">{format(r.value)}</span> }] : []),
         ]}
       />
-    </div>
+    </PageTable>
   );
 }
 
@@ -185,7 +193,7 @@ export default function LiveAgencyPage() {
   if (!FEATURES.liveReports) return <LiveOffNotice />;
   const name = agencyName;
   const back = FEATURES.live ? <ArrowLink href="/apps/live">Open Live</ArrowLink> : null;
-  if (state.kind === 'loading') return <PageShell variant="wide"><p className="mt-24 text-sm text-[var(--text-muted)]" aria-busy="true">{loadingText(name)}</p></PageShell>;
+  if (state.kind === 'loading') return <DocsPageLayout width="wide"><p className="mt-24 text-sm text-[var(--text-muted)]" aria-busy="true">{loadingText(name)}</p></DocsPageLayout>;
   if (state.kind === 'error' || state.data.status !== 'ready') {
     const reason = state.kind === 'error' ? state.reason : state.data.status === 'no_analysis' ? devOnly(state.data.reason) : (state.data as { reason: string }).reason;
     return <EmptyPage title={name} body={reason} action={back} />;
@@ -196,8 +204,7 @@ export default function LiveAgencyPage() {
   const dates = w?.thisWeek.dates ?? [];
   const tiles = agencyKpiTiles(s);
   return (
-    <PageShell variant="wide">
-      <article className="pb-16 pt-10 sm:pt-14">
+    <DocsPageLayout width="wide">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="min-w-0">
             <PageTitle>{name}</PageTitle>
@@ -230,7 +237,6 @@ export default function LiveAgencyPage() {
         </Section>
 
         <MethodSection scope="agency" s={s} />
-      </article>
-    </PageShell>
+    </DocsPageLayout>
   );
 }
