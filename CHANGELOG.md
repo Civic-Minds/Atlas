@@ -6,6 +6,9 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **The frequent service story map's last step matches the main map**: routes the map shows at 15 minutes or better, like TTC 501 Queen, were dropped for a single longer gap
+- **The frequent service story map keeps [all-day routes](https://github.com/Civic-Minds/Atlas/issues/1434) like TTC Line 1**: the rush-hour-only step removed the subway, which the main map treats as all-day service
+- **The frequent service story map counts [weekday service](https://github.com/Civic-Minds/Atlas/issues/1433) only**: a route's Saturday or Sunday service could keep it on a map captioned weekday daytime
 - **Each on-demand service has its own link**: a link can open [Hamilton's Trans-Cab](https://github.com/Civic-Minds/Atlas/issues/1440) on its own card, where it had opened myRide, and a link to Grande Prairie's Late Night opens that service
 - **The map key and Mode menu say some on-demand zones aren't mapped yet**: so a place with no shaded zone isn't read as having no on-demand service
 - **An on-demand service's card lists every zone with its hours**: services whose hours differ by zone, like RTD FlexRide, read "Hours unavailable" until a zone was picked; each zone row opens that zone

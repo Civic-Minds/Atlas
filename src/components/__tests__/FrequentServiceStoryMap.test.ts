@@ -1,13 +1,14 @@
 import { describe, expect, it } from 'vitest';
-import { featuresForStage, stageCollection } from '../FrequentServiceStoryMap';
+import { featuresForStage, stageCollection, STORY_LAYERS, storyFade, storyLayerOpacity, storyRows } from '../FrequentServiceStoryMap';
 
-const feature = (serviceClass: string, midday: number | null, daytime30: boolean, daytime15: boolean, rowMidday: number | null = midday) => ({
+// `midday` is the route's wait in AM peak, midday and PM peak alike, as the main map's filter reads it; `daytime` sets the three apart.
+const feature = (serviceClass: string, midday: number | null, daytime30: boolean, daytime15: boolean, rowMidday: number | null = midday, daytime: { amPeak?: number | null; pmPeak?: number | null } = {}) => ({
   type: 'Feature',
   geometry: { type: 'LineString', coordinates: [[0, 0], [1, 1]] },
   properties: {
     serviceClass,
-    headwayByPeriod: { midday: rowMidday },
-    routeFilterHeadwayByPeriod: { midday },
+    headwayByPeriod: { amPeak: rowMidday, midday: rowMidday, pmPeak: rowMidday },
+    routeFilterHeadwayByPeriod: { amPeak: midday, midday, pmPeak: midday, ...daytime },
     routeRunsByPeriod: { midday: midday != null },
     researchFrequentService: { daytime30, daytime15 },
   },
@@ -20,6 +21,21 @@ describe('Frequent Service story stages', () => {
 
     expect(featuresForStage([rushOnlyWithMiddayData, allDay], 1, 15)).toEqual([allDay]);
     expect(featuresForStage([rushOnlyWithMiddayData, allDay], 2, 15)).toEqual([allDay]);
+  });
+
+  it('keeps a route the main map treats as all-day, whatever class its rows carry (#1434: TTC Line 1)', () => {
+    // Both of Line 1's weekday rows read time-limited, but the route has an all-day headway and no limited direction.
+    const lineOne = feature('time-limited', 4, true, true);
+    lineOne.properties.routeAllDayHeadway = 3;
+    for (const stage of [1, 2, 3]) expect(featuresForStage([lineOne], stage, 15)).toEqual([lineOne]);
+    expect(stageCollection([lineOne], 15).features[0].properties?.keep).toBe(3);
+  });
+
+  it('removes a route whose main stretch skips midday, as the main map does (#1434)', () => {
+    const peakOnly = feature('regular', 30, false, false);
+    peakOnly.properties.routeAllDayHeadway = 999999;
+    peakOnly.properties.routeHasLimitedDirection = true;
+    expect(featuresForStage([peakOnly], 1, 15)).toEqual([]);
   });
 
   it('reads midday from the route filter value, not the row (#750: SF Muni 8AX inbound)', () => {
@@ -36,6 +52,26 @@ describe('Frequent Service story stages', () => {
     expect(featuresForStage([daytimeOnly, frequent], 3, 15)).toEqual([frequent]);
   });
 
+  describe('the frequency stage reads the main map\'s frequency filter, not the strict no-long-gap flag (CIV-1410)', () => {
+    it('keeps a route the map shows at 10 in AM peak, midday and PM peak though one long gap fails the flag (TTC 501 Queen)', () => {
+      const queen = feature('regular', 10, true, false);
+      expect(featuresForStage([queen], 3, 15)).toEqual([queen]);
+      expect(stageCollection([queen], 15).features[0].properties?.keep).toBe(3);
+    });
+
+    it('removes a route the map shows at 20 at midday, whatever the flag says', () => {
+      const slowMidday = feature('regular', 20, true, true, 20, { amPeak: 10, pmPeak: 10 });
+      expect(featuresForStage([slowMidday], 2, 15)).toEqual([slowMidday]);
+      expect(featuresForStage([slowMidday], 3, 15)).toEqual([]);
+    });
+
+    it('needs all three daytime periods: a slow or missing AM peak or PM peak removes the route', () => {
+      const slowAmPeak = feature('regular', 10, true, true, 10, { amPeak: 20 });
+      const noPmPeak = feature('regular', 10, true, true, 10, { pmPeak: null });
+      expect(featuresForStage([slowAmPeak, noPmPeak], 3, 15)).toEqual([]);
+    });
+  });
+
   it('marks each route with the last stage it is shown at, so each stage layer filters on it (CIV-1168)', () => {
     const rushOnly = feature('time-limited', 20, true, true);
     const nightOnly = feature('regular', null, false, false);
@@ -43,5 +79,74 @@ describe('Frequent Service story stages', () => {
     const every15 = feature('regular', 10, true, true);
     const keep = stageCollection([rushOnly, nightOnly, every30, every15], 15).features.map(f => f.properties?.keep);
     expect(keep).toEqual([0, 1, 2, 3]);
+  });
+
+  it('counts weekday rows only, so a weekend row cannot carry a route into a stage (#1433)', () => {
+    const onDay = (day: string | undefined, frequent: boolean) => {
+      const row = feature('regular', frequent ? 10 : 20, true, frequent);
+      row.properties.day = day;
+      return row;
+    };
+    const weekday = onDay('Weekday', false);
+    const saturday = onDay('Saturday', true);
+    const sunday = onDay('Sunday', true);
+    const stop = { type: 'Feature', geometry: { type: 'Point', coordinates: [0, 0] }, properties: { day: 'Weekday' } } as any;
+
+    const rows = storyRows([weekday, saturday, sunday, onDay(undefined, true), stop]);
+    expect(rows).toEqual([weekday]);
+    // Frequent on the weekend only: the route stays through the daytime stage and is gone at the frequency stage.
+    expect(featuresForStage(rows, 2, 15)).toEqual([weekday]);
+    expect(featuresForStage(rows, 3, 15)).toEqual([]);
+  });
+
+  // CIV-1408: what the map ends up drawing at each stage, from the layers' filters and end opacities.
+  describe('what is drawn at each stage', () => {
+    /** The `keep` values (0-3) drawn at a stage: on at least one layer that is lit and whose filter lets them through. */
+    const drawnKeeps = (stage: number) => {
+      const opacity = storyLayerOpacity(stage);
+      return [0, 1, 2, 3].filter(keep => STORY_LAYERS.some(layer => opacity[layer.id] > 0 && keep >= layer.minKeep));
+    };
+
+    it('draws only the routes that still qualify, and nothing else', () => {
+      expect(drawnKeeps(0)).toEqual([0, 1, 2, 3]);
+      expect(drawnKeeps(1)).toEqual([1, 2, 3]);
+      expect(drawnKeeps(2)).toEqual([2, 3]);
+      expect(drawnKeeps(3)).toEqual([3]);
+    });
+
+    it('draws at each stage exactly the routes the stage rules keep', () => {
+      const routes = [feature('time-limited', 20, true, true), feature('regular', null, false, false), feature('regular', 30, true, false), feature('regular', 10, true, true)];
+      const keeps = stageCollection(routes, 15).features.map(f => f.properties?.keep as number);
+      for (const stage of [0, 1, 2, 3]) {
+        const drawn = routes.filter((_, i) => drawnKeeps(stage).includes(keeps[i]));
+        expect(drawn).toEqual(featuresForStage(routes, stage, 15));
+      }
+    });
+
+    it('lights the grey base of every route only at the first stage: no grey ghost of removed routes after it', () => {
+      expect(storyLayerOpacity(0).routes).toBe(0.34);
+      for (const stage of [1, 2, 3]) expect(storyLayerOpacity(stage).routes).toBe(0);
+    });
+
+    it('lights one orange layer per stage, at the same strength, and gives every layer an end state', () => {
+      for (const stage of [0, 1, 2, 3]) {
+        const opacity = storyLayerOpacity(stage);
+        expect(Object.keys(opacity).sort()).toEqual(STORY_LAYERS.map(layer => layer.id).sort());
+        const lit = STORY_LAYERS.filter(layer => layer.id !== 'routes' && opacity[layer.id] > 0);
+        expect(lit.map(layer => layer.id)).toEqual([`stage-${stage}`]);
+        expect(opacity[`stage-${stage}`]).toBe(0.88);
+      }
+    });
+
+    it('scrolling back up gives the same picture as scrolling down did', () => {
+      // The end state depends on the stage alone, never on the stage before it.
+      const walk = [0, 1, 2, 3, 2, 1, 0].map(drawnKeeps);
+      expect(walk).toEqual([[0, 1, 2, 3], [1, 2, 3], [2, 3], [3], [2, 3], [1, 2, 3], [0, 1, 2, 3]]);
+    });
+
+    it('fades between stages, and not at all for reduced motion', () => {
+      expect(storyFade(false)).toEqual({ duration: 700, delay: 0 });
+      expect(storyFade(true)).toEqual({ duration: 0, delay: 0 });
+    });
   });
 });
