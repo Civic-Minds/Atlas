@@ -6,7 +6,7 @@
     "sourceLabel": "Lawrence Transit On Demand page and City of Lawrence city limit layer",
     "sourceRetrievedAt": "2026-10-11",
     "bookingUrl": "https://lawrencetransit.org/on-demand/",
-    "tripRules": "Trips can be booked up to five days in advance and can go between any two places in town.",
+    "tripRules": "Trips can go anywhere in town.",
     "pickup": {
       "method": "curb-to-curb"
     },
@@ -34,7 +34,8 @@
           "retrievedAt": "2026-10-11"
         }
       }
-    }
+    },
+    "bookingInfo": "Book up to five days ahead."
   },
   "features": [
     {

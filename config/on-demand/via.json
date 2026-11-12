@@ -7,7 +7,6 @@
     "sourceRetrievedAt": "2026-10-11",
     "bookingUrl": "https://www.viainfo.net/link/",
     "eligibility": "Riders must be 12 or older to ride alone.",
-    "tripRules": "VIA Link runs stop to stop; drivers can't deviate from these stops.",
     "pickup": {
       "method": "fixed-stops"
     },

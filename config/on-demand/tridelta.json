@@ -6,7 +6,7 @@
     "sourceLabel": "Tri MyRide page and service-area GeoJSON",
     "sourceRetrievedAt": "2026-10-11",
     "bookingUrl": "https://trideltatransit.com/tri-myride/",
-    "tripRules": "You can travel within the individual areas, but not between them. The Brentwood zone can also go to Los Medanos College Brentwood Campus and John Muir Health Brentwood.",
+    "tripRules": "Trips must start and end in the same zone. Brentwood zone trips can also go to Los Medanos College Brentwood Campus and John Muir Health Brentwood.",
     "zoneMetadata": {
       "Brentwood": {
         "serviceName": "Tri MyRide",

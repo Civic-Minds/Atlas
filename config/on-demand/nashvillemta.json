@@ -7,7 +7,7 @@
     "sourceRetrievedAt": "2026-10-11",
     "bookingUrl": "https://www.wegotransit.com/ride/transit-services/wego-link/",
     "bookingInfo": "WeGo Link is an Uber voucher program. Download the reusable WeGo Link voucher, then book your ride in the Uber app at a discounted rate. South Nashville rides are free until further notice. For an accessible vehicle or to pay with cash, book with Mobility Solutions (615-844-3399) or zTrip (629-294-4447).",
-    "tripRules": "All trips must take place within one service zone and start and end at one of its designated stops.",
+    "tripRules": "Trips must start and end in the same zone.",
     "pickup": {
       "method": "fixed-stops"
     },

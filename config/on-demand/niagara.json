@@ -6,7 +6,7 @@
     "sourceLabel": "Niagara Region Transit microtransit page and its embedded interactive zone map",
     "sourceRetrievedAt": "2026-10-11",
     "bookingUrl": "https://nrtransit.ca/microtransit/",
-    "tripRules": "Travel within West Lincoln is not available. Travel within Wainfleet is not available.",
+    "tripRules": "Trips can't start and end within West Lincoln or within Wainfleet.",
     "zoneMetadata": {
       "Lincoln": {
         "serviceName": "NRT OnDemand",

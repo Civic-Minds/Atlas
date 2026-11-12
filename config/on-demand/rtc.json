@@ -7,7 +7,7 @@
     "sourceRetrievedAt": "2026-10-11",
     "bookingUrl": "https://www.rtcquebec.ca/flexibus",
     "eligibility": "Riders must be 12 or older to book.",
-    "tripRules": "Trips can't go from one zone to another.",
+    "tripRules": "Trips must start and end in the same zone.",
     "pickup": {
       "method": "virtual-stops"
     },

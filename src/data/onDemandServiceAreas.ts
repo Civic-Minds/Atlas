@@ -223,7 +223,7 @@ export const GRT_ROUTE_79_SERVICE_AREA = {
   serviceHours: 'Monday–Friday: 6–10 AM, 2–6 PM, and 10:45–11:45 PM.',
   bookingUrl: GRT_ROUTE_79_SOURCE_URL,
   serviceName: 'Route 79 Breslau On-Demand',
-  tripRules: 'The Kitchener connection points only serve trips that start or end in Breslau.',
+  tripRules: 'Trips to or from the Kitchener connection points must start or end in Breslau.',
   zoneMetadata: Object.fromEntries(
     GRT_ROUTE_79_SERVICE_AREAS
       .map(zone => (zone.properties as { areaName: string }).areaName)
@@ -290,7 +290,7 @@ export const EDMONTON_ON_DEMAND_SERVICE_AREA = {
   sourceRetrievedAt: '2026-10-10',
   serviceName: 'ETS On Demand',
   pickup: { method: 'fixed-stops' } satisfies OnDemandPickup,
-  tripRules: 'Trips run from a signed On Demand stop in the neighbourhood to an assigned transit hub, not door to door.',
+  tripRules: 'Trips go between a neighbourhood stop and its assigned transit hub.',
   bookingUrl: 'https://www.edmonton.ca/ets/on-demand-transit',
   zoneMetadata: EDMONTON_ON_DEMAND_ZONE_METADATA,
 };
@@ -305,7 +305,6 @@ export const COBOURG_ON_DEMAND_SERVICE_AREA = {
   serviceName: 'Cobourg Transit On Demand',
   pickup: { method: 'fixed-stops' } satisfies OnDemandPickup,
   serviceHours: 'Monday–Friday 6:15 AM–9 PM; Saturday 8:15 AM–6:45 PM; Sunday 8:45 AM–3:45 PM.',
-  tripRules: 'Trips run between Cobourg Transit On Demand stops, not door to door.',
   bookingUrl: 'https://book.cobourgtransit.rideco.com/login',
   availability: {
     Weekday: [{ startHour: 6.25, endHour: 21 }],
@@ -788,7 +787,7 @@ export const SNOQUALMIE_DOOR_TO_DOOR_SERVICE_AREA = {
   serviceName: 'Door-to-Door',
   serviceHours: 'Weekdays 6 AM–8 PM; weekends 6:30 AM–7 PM.',
   bookingInfo: 'Call 425-888-7001, from 1 day to 1 month ahead (3–5 days recommended).',
-  tripRules: 'The agency’s data lists shorter hours for trips in the Carnation, Duvall and Monroe area: weekdays 7:30 AM–4:30 PM, weekends 8 AM–4 PM.',
+  hoursNote: 'Trips in the Carnation, Duvall and Monroe area run shorter hours: weekdays 7:30 AM–4:30 PM, weekends 8 AM–4 PM.',
   pickup: { method: 'door-to-door' } satisfies OnDemandPickup,
   bookingUrl: 'https://svtbus.org/door-to-door/',
   availability: {
@@ -849,7 +848,7 @@ export const SAM_RIDES_SERVICE_AREA = {
   serviceHours: 'Weekdays 5:30 AM–9 PM; Saturday 10:15 AM–4:30 PM; no Sunday service',
   hoursNote: "No service on New Year's Day, Memorial Day, Independence Day, Labor Day, Thanksgiving or Christmas.",
   bookingInfo: 'Call 503-668-3466, up to 2 weeks ahead or by 5 PM the day before.',
-  tripRules: 'Pickups must be within 3 miles of Sandy.',
+  tripRules: 'Trips must start within 3 miles of Sandy.',
   bookingUrl: 'https://www.ci.sandy.or.us/transit/page/sam-rides-demand-response-dial-ride-service',
   availability: {
     Weekday: [{ startHour: 5.5, endHour: 21 }],

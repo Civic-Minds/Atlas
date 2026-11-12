@@ -8,7 +8,7 @@
     "bookingUrl": "https://gonctd.com/services/nctdplus/",
     "eligibility": "Anyone can ride NCTD+. Children 12 and under must be accompanied by an adult.",
     "bookingInfo": "Trips can only be requested for same-day rides.",
-    "tripRules": "All trips must start and end within the same service zone.",
+    "tripRules": "Trips must start and end in the same zone.",
     "zoneMetadata": {
       "Vista": {
         "serviceName": "NCTD+",

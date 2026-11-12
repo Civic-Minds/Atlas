@@ -596,12 +596,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
               <CardBodyText>{notOnMapYetNotice(coverageNote.missing)}</CardBodyText>
             )}
           </div>
-          {zone.eligibility && (
-            <div>
-              <CardSectionLabel>Who can ride</CardSectionLabel>
-              <CardBodyText>{zone.eligibility}</CardBodyText>
-            </div>
-          )}
+          {/* No "Who can ride" section (CIV-1427): Atlas maps only services open to the public. */}
           {zone.tripRules && (
             <div>
               <CardSectionLabel>Trip rules</CardSectionLabel>
