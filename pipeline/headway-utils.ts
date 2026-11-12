@@ -802,7 +802,7 @@ export const UNEVEN_MIN_GAPS = 2;
 export const UNEVEN_FIRST_HOUR_MINUTES = 60;
 
 /** Whether a period's departures are uneven around its typical gap (see UNEVEN_GAP_RATIO). */
-export function isUnevenPeriod(departureTimes: readonly number[], start: number, end: number, typical: number | null | undefined): boolean {
+export function isUnevenPeriod(departureTimes: readonly number[], start: number, end: number, typical: number | null | undefined, slowStartAllowed = true): boolean {
   if (typical == null || typical <= 0) return false;
   const t = [...new Set(forCrossMidnightWindow([...departureTimes], end))].filter(x => x >= start && x < end).sort((a, b) => a - b);
   const gaps = t.slice(1).map((x, i) => x - t[i]);
@@ -810,8 +810,59 @@ export function isUnevenPeriod(departureTimes: readonly number[], start: number,
   if (slow.length < UNEVEN_MIN_GAPS) return false;
   const total = slow.reduce((n, { g }) => n + g, 0);
   if (total < UNEVEN_MIN_SHARE * (end - start)) return false;
-  const firstHour = slow.every(({ i }, k) => i === k) && total <= UNEVEN_FIRST_HOUR_MINUTES;
+  const firstHour = slowStartAllowed && slow.every(({ i }, k) => i === k) && total <= UNEVEN_FIRST_HOUR_MINUTES;
   return !firstHour;
+}
+
+/**
+ * CIV-1411 (Ryan, 2026-11-11; refs #602), under evaluation: off unless ATLAS_SLOW_FIRST_HOUR_UNSTEADY=1.
+ * The slow first hour above is forgiven only in a period the settled check calls steady. A start-up
+ * with one or two long gaps fails that check, so the whole period reads its longest wait (TTC Line 5
+ * westbound AM: 6:06, 6:26, 6:46, then every 8.5 to 7:27, then every 3.6, read 20).
+ */
+export function slowFirstHourUnsteadyEnabled(): boolean {
+  return typeof process !== 'undefined' && process.env?.ATLAS_SLOW_FIRST_HOUR_UNSTEADY === '1';
+}
+
+/**
+ * Whether a period that reads its longest wait (unsteady by the settled check, or uneven) does so
+ * only because of gaps in its slow first hour: the day's service is starting up, and with the
+ * period's first UNEVEN_FIRST_HOUR_MINUTES set aside the rest passes the same checks a steady period
+ * passes. The caller then reads the period as steady (its typical gap). Every condition must hold:
+ * - a daytime period (late evening and overnight end after midnight and keep their own rules);
+ * - the start of the day's service: the first departure is inside the period's first hour, and
+ *   any before the period are in the hour before it (STM 18 eastbound starts 5:15), with none in
+ *   the two hours before that. A gap after earlier service is a gap, not a start-up;
+ * - the settled edge check still holds on the whole period (BOUNDARY_DOMINANT_RATIO): a late first
+ *   trip or an early last one is not forgiven here;
+ * - the gaps set aside are those before the first departure at or after the hour mark (the gap that
+ *   crosses the mark is the start-up's last: TransLink 99 eastbound, 6:23, 6:39, 6:45, 7:04, then
+ *   every 3). They total UNEVEN_FIRST_HOUR_MINUTES or less, as the slow first hour above, and none is
+ *   more than BOUNDARY_DOMINANT_RATIO times the period's value: that is a hole, not slow service;
+ * - the rest, from that departure on, needs 4 departures (#571: 3, and 4 after an allowance), must
+ *   hold the whole period's own value by the settled check (isSustainedHeadway), and must not be
+ *   uneven (isUnevenPeriod, without a second slow-start allowance: the two never add up).
+ * The value read is the whole period's typical gap, slow gaps included, and the rest of the period
+ * must run it with no real gap: a route never reads a figure it does not run after its first hour.
+ */
+export function slowFirstHourSetAside(departureTimes: readonly number[], start: number, end: number): boolean {
+  if (end > MINUTES_PER_DAY) return false;
+  const all = [...new Set(departureTimes)].sort((a, b) => a - b);
+  const cut = start + UNEVEN_FIRST_HOUR_MINUTES;
+  if (all.some(t => t >= start - 3 * UNEVEN_FIRST_HOUR_MINUTES && t < start - UNEVEN_FIRST_HOUR_MINUTES)) return false;
+  const times = all.filter(t => t >= start && t <= end);
+  const firstHour = times.filter(t => t < cut);
+  if (firstHour.length === 0) return false;
+  const value = medianHeadwayInWindow(all, start, end, 3);
+  const typical = medianHeadwayInWindow(all, start, end, 3, true);
+  if (value == null || value <= 0 || typical == null || typical <= 0) return false;
+  if ((times[0] - start) / value > BOUNDARY_DOMINANT_RATIO || (end - times[times.length - 1]) / value > BOUNDARY_DOMINANT_RATIO) return false;
+  const rest = times.filter(t => t >= cut);
+  if (rest.length < 4 || rest[0] - times[0] > UNEVEN_FIRST_HOUR_MINUTES) return false;
+  const setAside = [...firstHour, rest[0]];
+  if (setAside.slice(1).some((t, i) => (t - setAside[i]) / value > BOUNDARY_DOMINANT_RATIO)) return false;
+  const gaps = rest.slice(1).map((t, i) => t - rest[i]);
+  return isSustainedHeadway(gaps, value) && isSustainedHeadway(gaps, typical) && !isUnevenPeriod(rest, rest[0], end, typical, false);
 }
 
 export function computePeriodSustained(departureTimes: number[]): Partial<Record<PeriodKey, boolean>> {

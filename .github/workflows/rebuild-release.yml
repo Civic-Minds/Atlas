@@ -58,6 +58,11 @@ on:
         description: 'Dry run only. Space-separated agency slugs (e.g. "ttc translink") whose regenerated JSON (routes, stops, corridors, trips, stops-meta) is uploaded as an artifact.'
         required: false
         type: string
+      slow_first_hour_unsteady:
+        description: 'Dry run only (CIV-1411, under evaluation). true processes with ATLAS_SLOW_FIRST_HOUR_UNSTEADY=1: a period unsteady only because of its slow first hour reads its typical gap. Compare the period-figures.json of a run with it on and a run with it off (scripts/diff-period-figures.ts).'
+        required: false
+        default: false
+        type: boolean
       resume_run_id:
         description: 'Publish only. The run id of the earlier run to resume (its saved stamps and release manifest are downloaded, and its staged agency files under atlas/runs/<id>/ are used). Required for every start_at after reprocess.'
         required: false
@@ -166,6 +171,15 @@ jobs:
           MUNI_511_API_KEY: ${{ secrets.MUNI_511_API_KEY }}
           CATA_LANSING_API_KEY: ${{ secrets.CATA_LANSING_API_KEY }}
           GRAND_EST_API_KEY: ${{ secrets.GRAND_EST_API_KEY }}
+          # CIV-1411: a rule under evaluation, dry run only. The publish job never sets it.
+          ATLAS_SLOW_FIRST_HOUR_UNSTEADY: ${{ inputs.slow_first_hour_unsteady && '1' || '' }}
+
+      # Every route's and direction's period figures, small enough to upload for every agency, so
+      # two dry runs (an old rule and a new one) compare with scripts/diff-period-figures.ts.
+      - name: Summarize the period figures
+        if: always()
+        continue-on-error: true
+        run: npx tsx scripts/diff-period-figures.ts --summary=tmp/derived-reprocess --out=tmp/derived-reprocess/period-figures.json
 
       # Refused agencies are normal; only a crash (no report) or a "failed" agency is an error.
       - name: Summarize the reprocess
@@ -248,6 +262,7 @@ jobs:
           name: rebuild-report-dry-run-${{ github.run_id }}
           path: |
             tmp/derived-reprocess/report.json
+            tmp/derived-reprocess/period-figures.json
             tmp/release-diff/*.md
             tmp/release-diff/*.json
           if-no-files-found: warn

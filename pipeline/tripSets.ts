@@ -35,6 +35,8 @@ import {
   headlineDeparturesInWindow,
   HEADLINE_MIN_DEPARTURES,
   nightServiceDepartureTimes,
+  slowFirstHourSetAside,
+  slowFirstHourUnsteadyEnabled,
 } from './headway-utils.js';
 import { SHARED_STRETCH_MIN_KM, SHARED_STRETCH_MIN_STOPS } from './sharedStretch.js';
 import { SAME_TERMINAL_METERS } from './featureDedupe.js';
@@ -766,12 +768,20 @@ export function stretchPeriods(s: Stretch): Record<PeriodKey, StretchPeriod> {
   const times = [...s.times];
   const headways = computePeriodHeadways(times);
   const coverage = computePeriodCoverageHeadways(times);
-  const sustained = computePeriodSustained(times);
+  const settled = computePeriodSustained(times);
+  // CIV-1411 (under evaluation, off by default): a period unsteady or uneven only because of its slow first hour is steady.
+  // Main stretches only: a tail read as steady would start to speak for its direction (TTC 68 northbound AM went 8 to 16).
+  const setAsideOn = s.kind === 'main' && slowFirstHourUnsteadyEnabled();
+  const sustained: Partial<Record<PeriodKey, boolean>> = { ...settled };
   const out = {} as Record<PeriodKey, StretchPeriod>;
   for (const { key, start, end } of PERIOD_WINDOWS) {
     const runs = coverage[key] != null;
+    const settledUneven = runs && settled[key] === true && isUnevenPeriod(times, start, end, headways[key]);
+    const setAside = setAsideOn && runs && (settled[key] === false || settledUneven) && slowFirstHourSetAside(times, start, end);
+    if (setAside) sustained[key] = true;
     const steady = sustained[key] === true;
-    const uneven = runs && steady && isUnevenPeriod(times, start, end, headways[key]);
+    // The set-aside has already found the rest of the period not uneven; the first hour's gaps are the ones forgiven.
+    const uneven = settledUneven && !setAside;
     // An uneven tail reads its longest wait between its own departures in the period, not the lead-in
     // before its first or the run after its last: the 6's Pelham Bay tail starts its evening at 19:41,
     // when the <6> express (another route) serves it, and read 41 though its gaps are 5-18. An uneven
