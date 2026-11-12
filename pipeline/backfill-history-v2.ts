@@ -34,6 +34,7 @@ import { parseGtfsZip } from './parseGtfs.js';
 import { readPickedWeekQuality, readQualityRows } from './historyRefQuality.js';
 import { firstFullWeekAnchor } from './serviceDays.js';
 import { splitLumpedRoutes, type HistoryRouteSplits } from './historyRouteSplits.js';
+import { historyWeekendPeriodsFor } from './historyV2Flag.js';
 
 function arg(name: string): string | undefined {
   const i = process.argv.indexOf(name);
@@ -71,7 +72,7 @@ async function main(): Promise<void> {
       const anchor = firstFullWeekAnchor(await readQualityRows(buf));
       const processed = await processAgencyFeeds(buf, [], { ...agency, supplementalFeedUrls: [] } as any, anchor ? { serviceAnchor: anchor } : {}, m => process.stdout.write(`  ${m}`));
       const evidence = await readFeedEvidence(buf, { referenceDate: processed.referenceDate });
-      const built = buildV2Routes((JSON.parse(processed.geojson) as { features: Array<{ properties?: Record<string, unknown> }> }).features, evidence);
+      const built = buildV2Routes((JSON.parse(processed.geojson) as { features: Array<{ properties?: Record<string, unknown> }> }).features, evidence, { weekendPeriods: historyWeekendPeriodsFor(slug) });
       const sidecar = buildSidecar(slug, periodKey, evidence.refDate, built.routes);
       sidecar.refDateQuality = await readPickedWeekQuality(buf, evidence.refDate, processed.serviceWeekStart);
       const result = await writeSidecar(sink, sidecar);

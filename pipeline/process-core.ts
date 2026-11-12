@@ -1282,6 +1282,18 @@ export async function processGtfsBuffer(
   // it, shared stretch), where the continuing trip's departure is also counted. The shape's own
   // map keeps it, so the ending trip's terminal stays in its stop list.
   const chainedTripEnds = findChainedTripEnds(gtfs.trips ?? [], stopTimesByTripId, firstDepartureByTripId);
+  // #1425: each trip's last stop_sequence, so a shared stretch does not read the arrival of a trip that
+  // only reaches the stretch at its last stop as a departure where other trips leave from that stop
+  // (Niagara 45B ends at NOTL Campus, 4361, and goes on as route 40, which the same-route chained-end
+  // guard above does not see). A loop's
+  // closing visit repeats its first stop, which keeps only its first visit, so the loop's start still
+  // counts. A one-stop trip is not marked.
+  const lastStopSequenceByTripId = new Map<string, number>();
+  for (const [tripId, tripStops] of stopTimesByTripId) {
+    if (tripStops.length < 2) continue;
+    lastStopSequenceByTripId.set(tripId, Math.max(...tripStops.map(st => Number(st.stop_sequence))));
+  }
+  const isTripFinalStop = (tripId: string, stopSequence: string | number) => lastStopSequenceByTripId.get(tripId) === Number(stopSequence);
   // Routes whose feed has no usable shape are published as a Point with noRouteShape. Their stop
   // order comes from one representative trip's stop_sequence (the matching trip that serves the
   // most stops), not from the order stops happen to appear in stop_times.txt.
@@ -1705,7 +1717,7 @@ export async function processGtfsBuffer(
             // direction map counts (TTC 63 runs as two trips joined at Ossington, so dropping
             // that stop from the pattern left the two halves sharing no stop).
             if (grp.inGroup) {
-              addStretchVisit(gKey, st.trip_id, { stopId: st.stop_id, minutes: mins, seq: Number(st.stop_sequence), overnightOnly: night || undefined, counted: chainedEnd === undefined ? undefined : false });
+              addStretchVisit(gKey, st.trip_id, { stopId: st.stop_id, minutes: mins, seq: Number(st.stop_sequence), overnightOnly: night || undefined, counted: chainedEnd === undefined ? undefined : false, final: isTripFinalStop(st.trip_id, st.stop_sequence) || undefined });
             }
             // Propagate to parent station so it also gets headways (only count first visit to parent per trip)
             const parentVisitKey = parentId ? `${grp.dayType}:${parentId}` : null;
@@ -1988,7 +2000,7 @@ export async function processGtfsBuffer(
             addFrequencyDeparture(grp, st.stop_id, mins, pickupAllowed);
             if (grp.inGroup) {
               const night = mins < NIGHT_SHIFT_EARLY_CUTOFF && (serviceIdMaxMinute.get(grp.serviceId) ?? Infinity) < NIGHT_SHIFT_EARLY_CUTOFF;
-              addStretchVisit(`${grp.shortName}::${grp.dirId}::${grp.dayType}`, `${tripId}@${offset}`, { stopId: st.stop_id, minutes: mins, seq: Number(st.stop_sequence), overnightOnly: night || undefined });
+              addStretchVisit(`${grp.shortName}::${grp.dirId}::${grp.dayType}`, `${tripId}@${offset}`, { stopId: st.stop_id, minutes: mins, seq: Number(st.stop_sequence), overnightOnly: night || undefined, final: isTripFinalStop(tripId, st.stop_sequence) || undefined });
             }
             if (countParent) addFrequencyDeparture(grp, parentId!, mins, pickupAllowed);
             else if (parentId && pickupAllowed && grp.shapeId && grp.inShape) markBoardable(`${grp.shapeId}::${grp.dayType}`, parentId);
@@ -3840,7 +3852,7 @@ export async function processGtfsBuffer(
       if (synthesizedGroups.has(gKey.slice(0, gKey.indexOf('::')))) continue;
       const directionTrips = [...trips].map(([tripId, visits]) => ({
         tripId,
-        visits: [...visits].sort((a, b) => a.seq - b.seq).map(({ stopId, minutes, overnightOnly, counted }) => ({ stopId, minutes, overnightOnly, counted })),
+        visits: [...visits].sort((a, b) => a.seq - b.seq).map(({ stopId, minutes, overnightOnly, counted, final }) => ({ stopId, minutes, overnightOnly, counted, final })),
       }));
       const coord = (stopId: string): [number, number] | undefined => {
         const stop = stopsById.get(stopId);

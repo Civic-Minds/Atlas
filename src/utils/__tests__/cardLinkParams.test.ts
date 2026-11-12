@@ -16,7 +16,7 @@ import { mergeUrlSearchParams } from '../syncUrlParams';
 
 describe('card link param names', () => {
   it('never reuse a name another link already owns', () => {
-    const taken = [HISTORY_AGENCY_PARAM, 'agencies', 'hide', 'area', 'route', 'stop', 'ondemand', 'hroute', 'highlight', 'cday', 'cp', 'ch', 'h', 'p', 'day', 'm'];
+    const taken = [HISTORY_AGENCY_PARAM, 'agencies', 'hide', 'area', 'route', 'stop', 'ondemand', 'hroute', 'highlight', 'cday', 'cp', 'ch', 'h', 'p', 'day', 'hday', 'm'];
     for (const name of [AGENCY_CARD_PARAM, ROUTE_CHOOSER_PARAM, STOP_BACK_PARAM]) expect(taken).not.toContain(name);
     expect(new Set([AGENCY_CARD_PARAM, ROUTE_CHOOSER_PARAM, STOP_BACK_PARAM]).size).toBe(3);
   });

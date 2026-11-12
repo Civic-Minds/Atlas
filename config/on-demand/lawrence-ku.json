@@ -6,7 +6,7 @@
     "sourceLabel": "Lawrence Transit On Demand page and City of Lawrence city limit layer",
     "sourceRetrievedAt": "2026-10-11",
     "bookingUrl": "https://lawrencetransit.org/on-demand/",
-    "tripRules": "Trips can be booked up to five days in advance and can go between any two places in town.",
+    "tripRules": "Trips can start and end anywhere in Lawrence.",
     "pickup": {
       "method": "curb-to-curb"
     },
@@ -14,7 +14,6 @@
       "Lawrence": {
         "serviceName": "Lawrence Transit On Demand",
         "serviceHours": "Day: 8 a.m. - 6 p.m., Sunday. Night: 8 p.m. - 6 a.m., Monday - Saturday. Night: 12 a.m. - 6 a.m., Sunday. No daytime service Monday to Saturday.",
-        "hoursNote": "Sunday is left out because the page's Sunday 12 a.m. - 6 a.m. night window is unclear: it may mean early Sunday (already covered by Saturday night) or the night running into Monday. The page lists no holiday hours.",
         "availability": {
           "Weekday": [
             {
@@ -34,7 +33,8 @@
           "retrievedAt": "2026-10-11"
         }
       }
-    }
+    },
+    "bookingInfo": "Book up to five days ahead."
   },
   "features": [
     {

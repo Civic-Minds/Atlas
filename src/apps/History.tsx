@@ -10,7 +10,7 @@ import { isDrawableLineCoordinates } from '../../shared/routeGeometry';
 import { TRANSITION_BASE, AGENCY_LIST_FILTERS, PILL_SURFACE, PILL_SCROLL_ROW, SIDEBAR_CARD, SIDEBAR_CARD_MAX_H, sidebarFrameStyle, sidebarCardFrame, SIDEBAR_PANEL_WIDTH, Z_PANEL, CARD_NOTICE, CARD_NOTE } from '../styles';
 import { routeLabels } from '../utils/format';
 import { RouteTitleName } from '../components/RouteRowName';
-import { agencyNames } from '../utils/agencyName';
+import { agencyCardTitle, agencyNames } from '../utils/agencyName';
 import CardRouteList from '../components/Interval/CardRouteList';
 import { AgencyCardTop, CardHelpNotice, CARD_CALLOUT_HEADLINE, CARD_CALLOUT_HEADLINE_TONE, CARD_CALLOUT_TEXT, CARD_HEADER_BLOCK, CardCallout, CardDirectionRow, CardReportButton, SIDEBAR_CARD_BODY, SidebarCardHeaderBlock, SidebarCardListRows, SidebarCardShell } from '../components/Interval/cardUi';
 import RouteCardTitle from '../components/RouteCardTitle';
@@ -27,7 +27,8 @@ import { buildRouteModeFilters, routeMatchesModeFilter, type RouteModeFilterKey 
 import { useColorMode } from '../hooks/useColorMode';
 import { loadHistoryAgencyV2, loadHistoryShapesV2 } from '../utils/historyV2Loader';
 import { routesForYear, snapshotValue, yearsAvailable, type HistoryShapesFile } from '../../shared/historyV2Reader';
-import { HISTORY_VIEW_ALL, historyPeriodValue, historyYearRoutes, passesHistoryLimit, type HistoryView } from '../utils/historyYearMap';
+import { HISTORY_VIEW_ALL, historyDayHasPeriods, historyDayPeriodValue, historyYearRoutes, passesHistoryLimit, type HistoryView } from '../utils/historyYearMap';
+import type { DayType } from '../../shared/dayTypes';
 import type { TimePeriod } from '../hooks/useIntervalStats';
 import { labelsThatFit } from '../utils/chartLabels';
 import RegionFilterPills from '../components/RegionFilterPills';
@@ -36,7 +37,7 @@ import {
   agencyQualifiesForHistory,
   type HistoryTier,
 } from '../../shared/historyEligibility';
-import { capitalizeFirst, headwayEvery, headwayEveryRange, headwayRangeShown, runTimeAmount } from '../utils/headwayText';
+import { headwayEvery, headwayEveryRange, headwayExactAmount, headwayRangeShown, runTimeAmount } from '../utils/headwayText';
 import { historyChartPoints, historyDotPriority, historyYearTicks, placeHistoryDots, snapshotMonth } from '../utils/historyChart';
 import ExpandDialog, { ExpandButton } from '../components/ui/ExpandDialog';
 import Panel, { PanelBody, PanelTitleBar } from '../components/ui/Panel';
@@ -49,7 +50,7 @@ import ModeFilterPillRow from '../components/ui/ModeFilterPillRow';
 import { syncUrlParams } from '../utils/syncUrlParams';
 import { encodeHistoryUrlState, parseHistoryUrlState, type HistoryUrlState } from '../utils/shareUrlState';
 import PanelEmpty from '../components/ui/PanelEmpty';
-import { HISTORY_LOAD_FAILED, HISTORY_ROUTE_NOT_COVERED, HISTORY_ROUTE_ORDER_NOTE, HISTORY_TRIP_TIME_NOTE, loadingText, NO_AGENCIES_MATCH, NO_ROUTES_LOADED, noRoutesMatchText, RETRY_HINT, RETRY_LABEL } from '../content/noticeCopy';
+import { HISTORY_LOAD_FAILED, HISTORY_NO_TRIPS_LABEL, HISTORY_ROUTE_NOT_COVERED, HISTORY_ROUTE_ORDER_NOTE, HISTORY_TRIP_TIME_NOTE, loadingText, NO_AGENCIES_MATCH, NO_ROUTES_LOADED, noRoutesMatchText, RETRY_HINT, RETRY_LABEL, historyWeekendFrequencyChangeNote, historyWeekendPeriodsMissingNote } from '../content/noticeCopy';
 import { compareAgencyName, compareRegion } from '../utils/sortCompare';
 import { inViewFirst } from '../utils/historyOpen';
 
@@ -118,9 +119,9 @@ interface Props {
   onPanelOpenChange?: (open: boolean) => void;
 }
 
-/** A snapshot's minutes in the chosen period, or null when it has no value there (never guessed). */
-function periodMinutes(snapshot: RouteSnapshot, period: TimePeriod): number | null {
-  const value = historyPeriodValue(snapshot, period);
+/** A snapshot's minutes on the day in the chosen period, or null when it has no value there (never guessed). */
+function periodMinutes(snapshot: RouteSnapshot, period: TimePeriod, day: DayType = 'Weekday'): number | null {
+  const value = historyDayPeriodValue(snapshot, day, period);
   return value.kind === 'value' ? value.min : null;
 }
 
@@ -137,32 +138,92 @@ export const MIN_CHART_VALUES = 3;
 /**
  * A row's words (CIV-555): "every 15–52 min" where a slow branch sets the period's value and the shared stretch runs
  * more often, by the one range rule (headwayRangeShown, headwayEveryRange); else "every 52 min".
- * The number that colours and filters stays the period's value.
+ * The number that colours and filters stays the period's value. The shared-stretch values are weekday-only, so a
+ * Saturday or Sunday row is the plain "every 52 min" (CIV-1425).
  */
-function snapshotHeadwayLabel(snapshot: RouteSnapshot, period: TimePeriod, minutes: number): string {
+function snapshotHeadwayLabel(snapshot: RouteSnapshot, period: TimePeriod, minutes: number, day: DayType = 'Weekday'): string {
+  if (day !== 'Weekday') return headwayEvery(shownMinutes(minutes));
   const trunk = period === 'all' ? snapshot.trunkHeadwayMin : snapshot.trunkHeadwayByPeriod?.[period] ?? undefined;
   return trunk != null && headwayRangeShown(trunk, minutes)
     ? headwayEveryRange(trunk, shownMinutes(minutes))
     : headwayEvery(shownMinutes(minutes));
 }
 
-function changeSummary(entry: RouteHistoryEntry, period: TimePeriod = 'all'): { text: string; subtext: string; worse: boolean } | null {
-  // Only snapshots with a value in the period take part (CIV-389).
-  const snaps = sortSnapshotsNewestFirst(entry.snapshots).filter(s => periodMinutes(s, period) != null);
+/**
+ * A change box's headline (CIV-1127, Ryan's wording 2026-11-12: "Frequency: 15 → 20 min", "Trip time: 73 → 76 min"):
+ * label, colon, first value, arrow, second value, with the unit once at the end. Both boxes' headlines come
+ * from here. The amounts are the shared formatters' ("15 min", "7.5 min"); should the two ever not share
+ * the unit, each keeps its own.
+ */
+export function changeHeadline(label: 'Frequency' | 'Trip time', firstAmount: string, lastAmount: string): string {
+  const unit = ' min';
+  const first = firstAmount.endsWith(unit) && lastAmount.endsWith(unit) ? firstAmount.slice(0, -unit.length) : firstAmount;
+  return `${label}: ${first} → ${lastAmount}`;
+}
+
+function changeSummary(entry: RouteHistoryEntry, period: TimePeriod = 'all', day: DayType = 'Weekday'): { text: string; subtext: string; worse: boolean } | null {
+  // Only snapshots with a value on the day in the period take part (CIV-389, CIV-1425).
+  const snaps = sortSnapshotsNewestFirst(entry.snapshots).filter(s => periodMinutes(s, period, day) != null);
   if (snaps.length < 2) return null;
   const first = snaps[snaps.length - 1];
   const last = snaps[0];
   // Only a change across calendar years gets the box; schedules from the same year show just the rows.
   if (first.year === last.year) return null;
-  const fHw = shownMinutes(periodMinutes(first, period)!);
-  const lHw = shownMinutes(periodMinutes(last, period)!);
+  const fHw = shownMinutes(periodMinutes(first, period, day)!);
+  const lHw = shownMinutes(periodMinutes(last, period, day)!);
   if (Math.abs(fHw - lHw) < 2) return null;
   const worse = lHw > fHw;
   return {
-    text: `${capitalizeFirst(headwayEvery(fHw))} → ${headwayEvery(lHw)}`,
+    text: changeHeadline('Frequency', headwayExactAmount(fHw), headwayExactAmount(lHw)),
     subtext: `${first.label} to ${last.label}`,
     worse,
   };
+}
+
+/** The neutral callout's outline, for the tinted frequency box, so both History boxes have the same edge (CIV-1127). */
+const CALLOUT_OUTLINE = 'border border-[var(--border-primary)]';
+
+/** The one sentence in the frequency change box: Ryan's wording, 2026-11-12 (CIV-1127). */
+const HISTORY_FREQUENCY_CHANGE_NOTE = 'This compares the oldest and newest weekday schedules available for this route.';
+/** The frequency box's sentence for the day shown: the weekday one above, or the weekend one (CIV-1425, pending OK). */
+const frequencyChangeNote = (day: DayType): string => (day === 'Weekday' ? HISTORY_FREQUENCY_CHANGE_NOTE : historyWeekendFrequencyChangeNote(day));
+
+type ChangeTone = 'negative' | 'positive' | 'neutral';
+
+/** Ryan, 2026-11-12 (CIV-1127): a trip time change shows when it is at least about 2% of the earlier trip. */
+export const TRIP_TIME_MIN_CHANGE_SHARE = 0.02;
+
+/**
+ * Whether a trip time changed enough to show (CIV-1127): at least `TRIP_TIME_MIN_CHANGE_SHARE` of the earlier
+ * trip, longer or shorter, and at least 1 minute as displayed. So 20 to 21 min shows, 76 to 77 does not and
+ * 76 to 78 does. The minutes are the stored ones: History's trip times are whole minutes, the same as shown.
+ */
+export function tripTimeChangedEnough(firstMinutes: number, lastMinutes: number): boolean {
+  if (!(firstMinutes > 0) || !(lastMinutes > 0)) return false;
+  if (Math.abs(Math.round(lastMinutes) - Math.round(firstMinutes)) < 1) return false;
+  return Math.abs(lastMinutes - firstMinutes) >= firstMinutes * TRIP_TIME_MIN_CHANGE_SHARE;
+}
+
+/** The trip time box's lines, only when the trip time changed enough (`tripTimeChangedEnough`; Ryan 2026-10-29:
+ *  "why are we showing trip time if it iddint change"). A longer trip is the worse colour and a shorter one
+ *  the better colour, as the frequency box (Ryan 2026-11-12: "why is one red tbut not the other if both got worse"). */
+export function tripTimeChange(entry: RouteHistoryEntry): { first: string; last: string; dates: string; tone: ChangeTone } | null {
+  const trip = entry.tripDuration;
+  if (!trip || !tripTimeChangedEnough(trip.firstMinutes, trip.lastMinutes)) return null;
+  const tone: ChangeTone = trip.lastMinutes > trip.firstMinutes ? 'negative' : 'positive';
+  return { first: runTimeAmount(trip.firstMinutes), last: runTimeAmount(trip.lastMinutes), dates: `${trip.firstLabel} to ${trip.lastLabel}`, tone };
+}
+
+/** One change box on the History route card: both boxes (frequency, trip time) are this piece, so their tint,
+ *  headline colour and outline cannot differ (CIV-1127). Grey when a change is neither better nor worse. */
+function ChangeBox({ tone, headline, dates, note, testId }: { tone: ChangeTone; headline: string; dates: string; note: string; testId: string }) {
+  return (
+    <CardCallout tone={tone} className={tone === 'neutral' ? 'mt-3' : `mt-3 ${CALLOUT_OUTLINE}`} data-testid={`${testId}-box`} data-tone={tone}>
+      <p className={tone === 'neutral' ? CARD_CALLOUT_HEADLINE : CARD_CALLOUT_HEADLINE_TONE[tone]} data-testid={testId}>{headline}</p>
+      <p className={CARD_CALLOUT_TEXT}>{dates}</p>
+      <p className={`${CARD_NOTICE} mt-1`}>{note}</p>
+    </CardCallout>
+  );
 }
 
 /** The agency with only the snapshots History shows (#1030). */
@@ -201,9 +262,12 @@ function RouteHistoryCard({
   frameStyle,
   sheetVisible,
   period,
+  day = 'Weekday',
 }: {
   /** The Time chip's period: the rows, chart and summary read that period's values (CIV-389). */
   period: TimePeriod;
+  /** History's day (CIV-1425): Weekday unless the beta day picker says Saturday or Sunday. */
+  day?: DayType;
   route: RouteHistoryEntry;
   agencyName: string;
   agencySlug: string;
@@ -225,10 +289,10 @@ function RouteHistoryCard({
   const gradientId = `sparkline-grad-${useId().replace(/[^A-Za-z0-9_-]/g, '')}`;
   const { newestFirst: snaps } = routeHistorySnapshots(route);
   // The chart and summary use the snapshots with a value in the period; rows list every snapshot.
-  const valued = snaps.filter(s => periodMinutes(s, period) != null);
+  const valued = snaps.filter(s => periodMinutes(s, period, day) != null);
   const chartSnaps = [...valued].reverse();
   const showChart = chartSnaps.length >= MIN_CHART_VALUES;
-  const snapHeadway = (snap: RouteSnapshot): number => periodMinutes(snap, period) ?? NaN;
+  const snapHeadway = (snap: RouteSnapshot): number => periodMinutes(snap, period, day) ?? NaN;
 
   const first = valued[valued.length - 1] ?? snaps[snaps.length - 1];
   const last = valued[0] ?? snaps[0];
@@ -237,7 +301,9 @@ function RouteHistoryCard({
   const lastHw = shownMinutes(snapHeadway(last));
   const worse = lastHw > firstHw;
   const better = lastHw < firstHw;
-  const summary = changeSummary(route, period);
+  const summary = changeSummary(route, period, day);
+  // The trip time is a weekday trip's, so it shows on Weekday only (CIV-1425).
+  const tripTime = day === 'Weekday' ? tripTimeChange(route) : null;
   // The snapshot under the pointer or keyboard, on a row or a chart point: its row highlights like a route card row and
   // its point grows and shows its value (Ryan: "when u hover over a date in this list does it hihglight it on the date on the chart too").
   const [hoveredSnap, setHoveredSnap] = useState<RouteSnapshot | null>(null);
@@ -277,6 +343,7 @@ function RouteHistoryCard({
               ['Agency slug', agencySlug],
               ['Route', `${route.routeShortName}${route.routeName ? ` ${route.routeName}` : ''}`],
               ['Snapshots', snaps.map(s => s.label).join(', ')],
+              ...(day !== 'Weekday' ? [['Day', day] as [string, string]] : []),
             ])}
             excludeReasons={['Stop is missing, misplaced, or assigned incorrectly']}
           />
@@ -300,8 +367,10 @@ function RouteHistoryCard({
 
       <SidebarCardListRows className="mt-3">
         {snaps.map((snap, i) => {
-          const hw = periodMinutes(snap, period);
-          const older = i < snaps.length - 1 ? periodMinutes(snaps[i + 1], period) : null;
+          const hw = periodMinutes(snap, period, day);
+          const older = i < snaps.length - 1 ? periodMinutes(snaps[i + 1], period, day) : null;
+          // A weekend day with no trips at all says so in the row's limited slot (CIV-1425).
+          const noTrips = day !== 'Weekday' && historyDayPeriodValue(snap, day, period).kind === 'none';
           const delta = hw != null && older != null ? hw - older : null;
           const charted = hw != null && showChart;
           return (
@@ -319,7 +388,8 @@ function RouteHistoryCard({
               headway={hw ?? undefined}
               // The snapshot's own minutes, as in the chart, the summary and the change beside it (#1085):
               // rounding to the half hour once made NFTA 76 read 360 beside a chart reading 349.
-              headwayLabel={hw != null ? snapshotHeadwayLabel(snap, period, hw) : undefined}
+              headwayLabel={hw != null ? snapshotHeadwayLabel(snap, period, hw, day) : undefined}
+              {...(noTrips ? { limited: true, limitedLabel: HISTORY_NO_TRIPS_LABEL } : {})}
               headwaySuffix={delta ? (delta > 0 ? `+${delta}` : `${delta}`) : undefined}
               headwaySuffixTone={delta ? (delta > 0 ? 'negative' : 'positive') : undefined}
               // Regular weight, like the map cards' destination rows (CIV-971).
@@ -336,28 +406,13 @@ function RouteHistoryCard({
         })}
       </SidebarCardListRows>
 
-        {/* One box (CIV-1127): the frequency change first, in its better or worse colour (CIV-971), then the trip time
-            as one line under it. A route with only one of the two shows that one. */}
-        {(summary || route.tripDuration) && (
-          <CardCallout tone={summary ? (summary.worse ? 'negative' : 'positive') : 'neutral'} className="mt-3">
-            {summary && (
-              <>
-                <p className={CARD_CALLOUT_HEADLINE_TONE[summary.worse ? 'negative' : 'positive']}>{summary.text}</p>
-                <p className={CARD_CALLOUT_TEXT}>{summary.subtext}</p>
-              </>
-            )}
-            {route.tripDuration && (
-              <>
-                <p className={summary ? `${CARD_CALLOUT_TEXT} mt-2` : CARD_CALLOUT_HEADLINE} data-testid="history-trip-time">
-                  Trip time: {runTimeAmount(route.tripDuration.firstMinutes)} ({route.tripDuration.firstLabel}) → {runTimeAmount(route.tripDuration.lastMinutes)} ({route.tripDuration.lastLabel})
-                </p>
-                {/* The long explanation stays here until Ryan picks where it goes: History has no explainer link (CIV-1127). */}
-                <p className={`${CARD_NOTICE} mt-1`}>
-                  {HISTORY_TRIP_TIME_NOTE}
-                </p>
-              </>
-            )}
-          </CardCallout>
+        {/* Two short boxes from one piece (CIV-1127): the frequency change, then the trip time, each in its better
+            or worse colour with its dates on their own line and one sentence. */}
+        {summary && (
+          <ChangeBox tone={summary.worse ? 'negative' : 'positive'} headline={summary.text} dates={summary.subtext} note={frequencyChangeNote(day)} testId="history-frequency" />
+        )}
+        {tripTime && (
+          <ChangeBox tone={tripTime.tone} headline={changeHeadline('Trip time', tripTime.first, tripTime.last)} dates={tripTime.dates} note={HISTORY_TRIP_TIME_NOTE} testId="history-trip-time" />
         )}
     </SidebarCardShell>
     </div>
@@ -607,13 +662,13 @@ function HistoryAgencyPanel({
     // "Biggest change" order as before, among the routes that ran in the selected year.
     return yearRoutes
       // Only routes within the Frequency limit in the chosen period, as on the map (CIV-392).
-      .filter(({ snapshot }) => passesHistoryLimit(historyPeriodValue(snapshot, view.period), view.maxHeadway))
+      .filter(({ snapshot }) => passesHistoryLimit(historyDayPeriodValue(snapshot, view.day, view.period), view.maxHeadway))
       .map(({ route, snapshot: yearSnapshot }) => {
         if (route.snapshots.length === 0) return null;
-        const valued = routeHistorySnapshots(route).newestFirst.filter(s => periodMinutes(s, view.period) != null);
+        const valued = routeHistorySnapshots(route).newestFirst.filter(s => periodMinutes(s, view.period, view.day) != null);
         const first = valued[valued.length - 1];
         const last = valued[0];
-        const ratio = valued.length > 1 ? periodMinutes(last, view.period)! / periodMinutes(first, view.period)! : 1;
+        const ratio = valued.length > 1 ? periodMinutes(last, view.period, view.day)! / periodMinutes(first, view.period, view.day)! : 1;
         const worse = ratio > 1.05;
         const better = ratio < 0.95;
         return { route, first, last, ratio, worse, better, yearSnapshot };
@@ -639,6 +694,13 @@ function HistoryAgencyPanel({
   })), [yearRoutes, agencyHistory.slug]);
 
   const routeFilters = useMemo(() => buildRouteModeFilters(filterRoutes), [filterRoutes]);
+
+  // CIV-1425: on Saturday or Sunday, an agency with no route storing that day's values by time of day says so once.
+  const weekendPeriodsMissing = useMemo(() => {
+    const day = view.day;
+    if (day === 'Weekday') return null;
+    return agencyHistory.routes.some(r => r.snapshots.some(s => historyDayHasPeriods(s, day))) ? null : day;
+  }, [agencyHistory, view.day]);
 
   const visibleRouteRows = useMemo(() => {
     if (!activeFilter) return routeRows;
@@ -672,6 +734,7 @@ function HistoryAgencyPanel({
         >
           {/* N55 (Ryan): a linked route History has no past schedules for says so, above the agency's list. */}
           {missingRoute && <CardHelpNotice className="mt-1" message={HISTORY_ROUTE_NOT_COVERED} />}
+          {weekendPeriodsMissing && <CardHelpNotice className="mt-1" message={historyWeekendPeriodsMissingNote(weekendPeriodsMissing)} />}
           {!routeQuery && !activeFilter && (
             <CardHelpNotice className="mt-1" message={HISTORY_ROUTE_ORDER_NOTE} />
           )}
@@ -687,18 +750,20 @@ function HistoryAgencyPanel({
         )}
         <CardRouteList
           rows={visibleRouteRows.map(({ route, yearSnapshot }) => {
-            // That year's weekday value: a number, limited, or unknown (no badge), never guessed.
-            const value = historyPeriodValue(yearSnapshot, view.period);
+            // That year's value on the day (Weekday unless the day picker says otherwise): a number, limited,
+            // no trips (weekend only), or unknown (no badge), never guessed.
+            const value = historyDayPeriodValue(yearSnapshot, view.day, view.period);
             // The change from the route's previous snapshot, as on the route view's rows (numbers only).
             const oldestFirst = routeHistorySnapshots(route).oldestFirst;
             const previous = oldestFirst[oldestFirst.indexOf(yearSnapshot) - 1];
-            const before = previous ? historyPeriodValue(previous, view.period) : null;
+            const before = previous ? historyDayPeriodValue(previous, view.day, view.period) : null;
             const delta = value.kind === 'value' && before?.kind === 'value' ? value.min - before.min : 0;
             return {
               key: route.routeShortName,
               route: routeLabels({ shortName: route.routeShortName, longName: route.routeName, routeType: route.currentRouteType ?? undefined, agencySlug: agencyHistory.slug }),
               headway: value.kind === 'value' ? value.min : undefined,
-              limited: value.kind === 'limited',
+              limited: value.kind === 'limited' || value.kind === 'none',
+              ...(value.kind === 'none' ? { limitedLabel: HISTORY_NO_TRIPS_LABEL } : {}),
               headwaySuffix: delta ? (delta > 0 ? `+${delta}` : `${delta}`) : undefined,
               headwaySuffixTone: delta ? (delta > 0 ? 'negative' as const : 'positive' as const) : undefined,
             };
@@ -758,7 +823,7 @@ export default function History({ active, view = HISTORY_VIEW_ALL, initialAgency
   const catalogBySlug = useMemo(() => new Map((agencyCatalog ?? []).map(a => [a.slug, a])), [agencyCatalog]);
   const agencyCardParts = useCallback((slug: string, fallbackName: string) => {
     const a = catalogBySlug.get(slug);
-    return a ? agencyNames({ name: a.name, cities: a.cities, displayArea: a.displayArea }).card : agencyNames(fallbackName).card;
+    return agencyCardTitle(a ?? fallbackName);
   }, [catalogBySlug]);
   // List rows use the short name (CIV-998); the agency card above keeps the full name.
   const agencyListNameParts = useCallback((slug: string, fallbackName: string) => {
@@ -839,7 +904,7 @@ export default function History({ active, view = HISTORY_VIEW_ALL, initialAgency
   const openAgencyFailed = openAgency?.slug === selectedSlug && openAgency.agency === null;
 
   // The map draws the selected year's routes only (routesForYear: no fallback to another year),
-  // coloured by that year's weekday value (historyYearRoutes).
+  // coloured by that year's value on History's day (historyYearRoutes; Weekday unless the day picker says otherwise).
   const historyColorMode = useColorMode();
   useEffect(() => {
     if (!active) { setOverlay(null); return; }
@@ -1059,6 +1124,7 @@ export default function History({ active, view = HISTORY_VIEW_ALL, initialAgency
                   frameStyle={frameStyle}
                   sheetVisible={visible}
                   period={view.period}
+                  day={view.day}
                 />
               );
             }

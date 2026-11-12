@@ -12256,7 +12256,8 @@
         36.74,
         -119.78
       ],
-      "feedUrl": "https://gis4u.fresno.gov/downloads/fax_gtfs.zip",
+      "feedUrl": "https://gis4u.fresno.gov/downloads/zip/fax_gtfs.zip",
+      "mergeIdenticalShapeIds": true,
       "lastFeedExpiry": "20261101",
       "lastFeedVersion": "8.10.26 Production_20260729",
       "region": "California",
@@ -20707,7 +20708,7 @@
         33.8203,
         -84.3277
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-2426/mdb-2426-202504011416/mdb-2426-202504011416.zip",
+      "feedUrl": "https://gamobility.info/wp-content/uploads/2025/09/google_transit.zip",
       "lastFeedExpiry": "20250705",
       "lastFeedVersion": "S1000101",
       "region": "Georgia",

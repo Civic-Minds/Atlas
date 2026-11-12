@@ -237,6 +237,12 @@ export const SIDEBAR_LEFT_FALLBACK = 182;
 export function sidebarFrameStyle(sidebarLeft?: number | null, searchBarWidth?: number): CSSProperties {
   return {
     '--sidebar-left': `${sidebarLeft ?? SIDEBAR_LEFT_FALLBACK}px`,
-    ...(searchBarWidth ? { width: `${searchBarWidth}px`, maxWidth: 'none' } : {}),
+    // #1187: on a narrow desktop window (640px, or 200% zoom) the search bar shrinks for the top-bar buttons, and a
+    // card that copied it was 153px wide: rows and hour labels ran into each other. The card keeps the bar's own
+    // width (sm:w-72, 18rem) at least, and never runs past the window's right edge.
+    ...(searchBarWidth ? { width: `${searchBarWidth}px`, maxWidth: 'none', minWidth: SIDEBAR_CARD_MIN_WIDTH } : {}),
   } as CSSProperties;
 }
+
+/** #1187: a sidebar card's narrowest width on sm and up: the search bar's own width, kept 1.5rem inside the window. */
+export const SIDEBAR_CARD_MIN_WIDTH = 'min(18rem, calc(100vw - var(--sidebar-left) - 1.5rem))';

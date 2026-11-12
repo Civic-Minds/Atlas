@@ -6,9 +6,20 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Cards keep a readable width in a narrow window or at 200% zoom**: [TTC 504's card](https://github.com/Civic-Minds/Atlas/issues/1187) shrank to the search bar's squeezed width, so its rows and hour labels ran into each other
+- **On-demand cards drop "Who can ride" and say trip rules one way**: Atlas maps only services open to the public, trip rules use three fixed sentences instead of repeating the pickup, booking or hours lines, and lines saying the agency doesn't state something are gone
+- **Fresno 39 counts a line written under two [identical shapes](https://github.com/Civic-Minds/Atlas/issues/1446) as one pattern**: toward the airport it read every 30 where a bus comes every 15
+- **The frequent service story map's last step matches the main map**: routes the map shows at 15 minutes or better, like TTC 501 Queen, were dropped for a single longer gap
+- **The frequent service story map keeps [all-day routes](https://github.com/Civic-Minds/Atlas/issues/1434) like TTC Line 1**: the rush-hour-only step removed the subway, which the main map treats as all-day service
+- **The frequent service story map counts [weekday service](https://github.com/Civic-Minds/Atlas/issues/1433) only**: a route's Saturday or Sunday service could keep it on a map captioned weekday daytime
 - **Each on-demand service has its own link**: a link can open [Hamilton's Trans-Cab](https://github.com/Civic-Minds/Atlas/issues/1440) on its own card, where it had opened myRide, and a link to Grande Prairie's Late Night opens that service
+- **On-demand hours can give Friday its own row**: [CyRide's Moonlight Express](https://github.com/Civic-Minds/Atlas/issues/1440) reads Fri–Sat 10:30 PM–2 AM, where its card said "Hours unavailable" and showed Saturday only
 - **The map key and Mode menu say some on-demand zones aren't mapped yet**: so a place with no shaded zone isn't read as having no on-demand service
+- **Branches count a wait the time window cuts, as the main route does**: Sherbrooke 1's branch read every 37 in the morning though riders could wait over two hours
+- **A shared stretch no longer counts buses that [end there](https://github.com/Civic-Minds/Atlas/issues/1425) as departures**: Niagara 45 read every 8 at NOTL Campus, where buses leave about every 15
+- **Three buses around a long gap no longer read as [steady service](https://github.com/Civic-Minds/Atlas/issues/1432)**: GO 33 read "every 99" in the PM peak where riders wait 158
 - **An on-demand service's card lists every zone with its hours**: services whose hours differ by zone, like RTD FlexRide, read "Hours unavailable" until a zone was picked; each zone row opens that zone
+- **Picking a route in History [frames that route](https://github.com/Civic-Minds/Atlas/issues/1095)**: MARTA 3 left the map on the whole agency, and Caltrain's line could run off screen behind the card
 - **History shows [trip time](https://github.com/Civic-Minds/Atlas/issues/1431) for BART again**: it went missing when each line's two directions were merged into one route
 - **Shared map links preview with a map of their own city**: a link to a spot in Chicago showed Toronto; area and agency pages show their city's map too
 - **The [Jacksonville ferry](https://github.com/Civic-Minds/Atlas/issues/1422) shows as a ferry**: JTA's data lists it as a bus

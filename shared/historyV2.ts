@@ -15,8 +15,11 @@ export const HISTORY_SLOW_ABOVE_MIN = 300;
 
 export type HistoryFlag = 'fast' | 'slow' | 'limited';
 
-/** A weekend day's headline: a number, limited (no all-day value), or positively no service. */
-export type HistoryDayValue = { h: number } | { lim: true } | { none: true };
+/**
+ * A weekend day's headline: a number, limited (no all-day value), or positively no service.
+ * CIV-1425: a known day may carry its per-period values `p` (worst direction, like rep.p).
+ */
+export type HistoryDayValue = { h: number; p?: HeadwayByPeriod } | { lim: true; p?: HeadwayByPeriod } | { none: true };
 
 /** The representative weekday value: `h` (minutes), or `lim` when the route has no all-day value. Neither = blank. */
 export interface HistoryRep {

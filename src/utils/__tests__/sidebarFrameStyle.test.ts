@@ -1,14 +1,18 @@
 import { describe, expect, it } from 'vitest';
-import { SIDEBAR_LEFT_FALLBACK, sidebarFrameStyle } from '../../styles';
+import { SIDEBAR_CARD_MIN_WIDTH, SIDEBAR_LEFT_FALLBACK, sidebarFrameStyle } from '../../styles';
 
 describe('sidebarFrameStyle', () => {
   it('uses the measured left edge and the search bar width', () => {
-    expect(sidebarFrameStyle(240, 360)).toEqual({ '--sidebar-left': '240px', width: '360px', maxWidth: 'none' });
+    expect(sidebarFrameStyle(240, 360)).toEqual({ '--sidebar-left': '240px', width: '360px', maxWidth: 'none', minWidth: SIDEBAR_CARD_MIN_WIDTH });
   });
 
   it('falls back to the default left edge before it is measured', () => {
-    expect(sidebarFrameStyle(undefined, 360)).toEqual({ '--sidebar-left': `${SIDEBAR_LEFT_FALLBACK}px`, width: '360px', maxWidth: 'none' });
+    expect(sidebarFrameStyle(undefined, 360)).toEqual({ '--sidebar-left': `${SIDEBAR_LEFT_FALLBACK}px`, width: '360px', maxWidth: 'none', minWidth: SIDEBAR_CARD_MIN_WIDTH });
     expect(sidebarFrameStyle(null)).toEqual({ '--sidebar-left': `${SIDEBAR_LEFT_FALLBACK}px` });
+  });
+
+  it('never narrower than the search bar\'s own width, inside the window (#1187: 153px at 640px wide)', () => {
+    expect(sidebarFrameStyle(133, 153).minWidth).toBe('min(18rem, calc(100vw - var(--sidebar-left) - 1.5rem))');
   });
 
   it('leaves the width to the card classes when there is no search bar width (phones)', () => {

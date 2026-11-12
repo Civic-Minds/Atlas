@@ -16,6 +16,7 @@ import { addDaysYmd } from './serviceDates.js';
 import type { GtfsCalendar, GtfsCalendarDate } from '../types/gtfs.js';
 import type { HistoryDayValue } from '../shared/historyV2.js';
 import { NO_PERIOD_SERVICE_TILE_VALUE } from '../shared/pmtilesProps.js';
+import { periodsOf } from './historyRoutePeriods.js';
 
 export type WeekendDayName = 'Saturday' | 'Sunday';
 
@@ -172,8 +173,10 @@ export function positivelyNoService(ev: FeedEvidence, key: string, day: WeekendD
  * A route's weekend headline for one day. `features` are the route's features for that
  * day type (empty when the processor drew none). A stamped value is read like the map reads
  * it; no features is "none" only when the calendar proves it; anything else is unknown.
+ * With `periods` (CIV-1425), a known day also carries its per-period values `p`, worst
+ * direction, the same way the weekday rep does. "none" and unknown never get `p`.
  */
-export function weekendDay(features: Props[], noServiceProven: boolean): HistoryDayValue | undefined {
+export function weekendDay(features: Props[], noServiceProven: boolean, opts: { periods?: boolean } = {}): HistoryDayValue | undefined {
   if (features.length === 0) return noServiceProven ? { none: true } : undefined;
   const stamped = features.filter(f => f.routeAllDayHeadway != null);
   if (stamped.length === 0) return undefined;
@@ -181,6 +184,7 @@ export function weekendDay(features: Props[], noServiceProven: boolean): History
   if (values.length === 0) return undefined;
   const allSpan = stamped.every(f => f.tier === 'span');
   const worst = Math.max(...values);
-  if (allSpan || worst >= NO_PERIOD_SERVICE_TILE_VALUE) return { lim: true };
-  return { h: worst };
+  const p = opts.periods ? periodsOf(stamped) : undefined;
+  if (allSpan || worst >= NO_PERIOD_SERVICE_TILE_VALUE) return { lim: true, ...(p ? { p } : {}) };
+  return { h: worst, ...(p ? { p } : {}) };
 }

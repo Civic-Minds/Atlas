@@ -17,6 +17,7 @@ import type { ShapeProperties, TimePeriod } from '../src/hooks/useIntervalStats.
 import { routeListLowEnd } from '../src/utils/effectiveHeadway.js';
 import { historyRouteKey } from './historyRouteKey.js';
 import { positivelyNoService, weekendDay, type FeedEvidence } from './historyWeekend.js';
+import { periodsOf } from './historyRoutePeriods.js';
 
 type Props = Record<string, unknown>;
 
@@ -24,27 +25,6 @@ export interface RepResult {
   rep: HistoryRep;
   /** Stamped features of the key disagreed on the all-day value (the worst was kept). */
   conflict: boolean;
-}
-
-function finiteOrNull(v: unknown): number | null {
-  return typeof v === 'number' && Number.isFinite(v) && v < NO_PERIOD_SERVICE_TILE_VALUE ? v : null;
-}
-
-function periodsOf(features: Props[]): HeadwayByPeriod | undefined {
-  const out: Partial<Record<PeriodKey, number | null>> = {};
-  let any = false;
-  for (const f of features) {
-    const src = (f.routeFilterHeadwayByPeriod ?? f.worstDirectionHeadwayByPeriod) as Record<string, unknown> | undefined;
-    if (!src) continue;
-    for (const [k, raw] of Object.entries(src)) {
-      const v = finiteOrNull(raw);
-      const cur = out[k as PeriodKey];
-      // worst direction: keep the larger value across features
-      if (cur === undefined || (v != null && (cur == null || v > cur))) out[k as PeriodKey] = v;
-      any = true;
-    }
-  }
-  return any ? out : undefined;
 }
 
 /**
@@ -114,7 +94,12 @@ export interface BuildV2Result {
 }
 
 /** All routes of one processed feed -> sidecar route records, keyed by historyRouteKey. */
-export function buildV2Routes(features: Array<{ properties?: Props | null }>, evidence?: FeedEvidence): BuildV2Result {
+export interface BuildV2Options {
+  /** CIV-1425: also store Saturday/Sunday per-period values (`p`). Off = the output is unchanged. */
+  weekendPeriods?: boolean;
+}
+
+export function buildV2Routes(features: Array<{ properties?: Props | null }>, evidence?: FeedEvidence, opts: BuildV2Options = {}): BuildV2Result {
   const byKey = new Map<string, { Weekday: Props[]; Saturday: Props[]; Sunday: Props[]; name?: string }>();
   for (const f of features) {
     const p = f.properties;
@@ -138,7 +123,7 @@ export function buildV2Routes(features: Array<{ properties?: Props | null }>, ev
     const { rep, conflict } = representativeRep(e.Weekday);
     const rec: HistoryV2SidecarRoute = { name: e.name ?? key, rep };
     for (const [field, day] of [['sat', 'Saturday'], ['sun', 'Sunday']] as const) {
-      const v = weekendDay(e[day], evidence ? positivelyNoService(evidence, key, day) : false);
+      const v = weekendDay(e[day], evidence ? positivelyNoService(evidence, key, day) : false, { periods: opts.weekendPeriods });
       if (v) { rec[field] = v; if ('none' in v) report.weekendNone++; }
     }
     const flag = historyFlagFor(rep);
@@ -188,8 +173,8 @@ export function splitFeaturesBySource<T>(features: T[], sources: Array<{ url: st
  * taken by an earlier feed is never overwritten: the earlier route is kept and the clash is
  * returned as a collision. One part gives exactly buildV2Routes' result.
  */
-export function buildV2RoutesMerged(parts: V2FeedPart[]): MergedV2Result {
-  const built = parts.map(p => ({ url: p.url, ...buildV2Routes(p.features, p.evidence) }));
+export function buildV2RoutesMerged(parts: V2FeedPart[], opts: BuildV2Options = {}): MergedV2Result {
+  const built = parts.map(p => ({ url: p.url, ...buildV2Routes(p.features, p.evidence, opts) }));
   if (built.length === 1) return { routes: built[0].routes, report: built[0].report, conflictKeys: built[0].conflictKeys, collisions: [], supplementalRoutes: {} };
   const routes: Record<string, HistoryV2SidecarRoute> = {};
   const collisions: V2Collision[] = [];

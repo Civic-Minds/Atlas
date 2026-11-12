@@ -7,12 +7,12 @@
     "sourceRetrievedAt": "2026-10-11",
     "bookingUrl": "https://santaclaritatransit.com/services/go-santa-clarita/",
     "eligibility": "Open to the general public. Children under 12 must ride with an adult.",
-    "tripRules": "Go! Santa Clarita offers service citywide.",
+    "tripRules": "Trips can start and end anywhere in Santa Clarita.",
     "zoneMetadata": {
       "Santa Clarita": {
         "serviceName": "Go! Santa Clarita",
         "serviceHours": "Monday-Friday: 6am-8pm. Saturday: 8am-10pm. Sunday: 8am-9pm.",
-        "hoursNote": "The system may stop accepting new ride requests near the end of the service window. Holiday hours not stated.",
+        "hoursNote": "The system may stop accepting new ride requests near the end of the service window.",
         "availability": {
           "Weekday": [
             {

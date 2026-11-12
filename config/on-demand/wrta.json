@@ -15,7 +15,6 @@
       "Westborough/Northborough": {
         "serviceName": "Via-WRTA",
         "serviceHours": "Monday through Friday, 7:00 am to 7:00 pm.",
-        "hoursNote": "Holiday service is not stated.",
         "availability": {
           "Weekday": [
             {
@@ -34,7 +33,6 @@
       "Shrewsbury/Northborough": {
         "serviceName": "Via-WRTA",
         "serviceHours": "Monday through Friday, 7:00 am to 7:00 pm.",
-        "hoursNote": "Holiday service is not stated.",
         "availability": {
           "Weekday": [
             {

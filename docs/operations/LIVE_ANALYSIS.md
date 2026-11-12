@@ -9,6 +9,34 @@ vehicle positions and the timetable.
 (`archive/` = archived positions, `gtfs/candidates/surface` = the TTC surface timetable) and writes
 `../_live-data/out/ttc-<route>-segments.json`, which the local-only `/api/live-segments` serves (`local-api/`, never deployed).
 
+## Refresh the published report files (cloud)
+
+The report pages on beta read `atlas/live/ttc/<route>.json`, `agency.json` and `manifest.json` from the public bucket. The
+`live-report-refresh.yml` workflow rebuilds them from the last 15 service dates:
+
+- `gh workflow run live-report-refresh.yml` (mode `no-publish`, the default) builds everything with the read-only R2 keys and
+  writes nothing. The run artifact `live-report-files-<run id>` holds the files and `review/summary.md`: the weeks covered, the
+  days with good recordings, how well each service date's positions matched its timetable, and each route's headline numbers
+  for both weeks. Review that first.
+- `-f mode=publish` runs only from `main`. A separate job saves the published files as the artifact `live-report-backup-<run id>`
+  and then replaces them (`scripts/live-publish-upload.ts`). It refuses an incomplete file set and data older than what is
+  published, and stops if it could not save the published set. To undo, upload a backup folder back with
+  `--from <backup> --allow-older --upload`. Publishing is an R2 write: it
+  needs the same go-ahead as any other.
+
+A window that spans a TTC timetable change uses each service date's own timetable (`scripts/live-gtfs-for-window.ts` unpacks
+every stored surface zip the window needs into `gtfs/candidates/surface-feeds/`). The run stops when a day's positions match
+its timetable below 90%, when another stored timetable matches a day better than the one chosen, or when the fetch could not
+read more than 2% of a day's snapshots.
+
+The weekly schedule is in the file, off. Before it is turned on (a scheduled run publishes with nobody looking):
+
+- an upload that fails part-way should put the saved files back by itself, or upload to a new prefix and switch once;
+- refuse to publish when either week has too few days with good recordings;
+- refuse a window that does not end yesterday;
+- stop an unattended publish when a headline number moves by more than a set amount from the published one;
+- tell someone when a run fails.
+
 ## What it measures (the `v3` block)
 
 - **Delay at a stop** = the time the car LEFT the stop (interpolated between archived positions, at the point 25 m past the stop on

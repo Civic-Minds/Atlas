@@ -46,6 +46,24 @@ export const HAMILTON_TRANS_CAB_TRANSFER_POINTS: GeoJSON.Feature<GeoJSON.Point>[
     properties: { agencySlug: 'hamilton', serviceType: 'on-demand-transfer-point', stopName: 'Garth Street and Rymal Road West', areaName: 'West Glanbrook' },
     geometry: { type: 'Point', coordinates: [-79.912301, 43.20714] },
   },
+  // The other three transfer points on hamilton.ca's Trans-Cab page (#1451), placed at HSR's own stops in its GTFS feed
+  // (opendata.hamilton.ca, 2026-11-12) for the routes the page names: Mountain Transit Centre (Routes 20 and 27) is the
+  // centre of its four platforms; HWY 8 and Jones Road and Winona Crossing are the Route 55 stops at those places.
+  {
+    type: 'Feature',
+    properties: { agencySlug: 'hamilton', serviceType: 'on-demand-transfer-point', stopName: 'Mountain Transit Centre', areaName: 'West Glanbrook' },
+    geometry: { type: 'Point', coordinates: [-79.901973, 43.184724] },
+  },
+  {
+    type: 'Feature',
+    properties: { agencySlug: 'hamilton', serviceType: 'on-demand-transfer-point', stopName: 'HWY 8 and Jones Road', areaName: 'Lower East Stoney Creek' },
+    geometry: { type: 'Point', coordinates: [-79.694382, 43.212001] },
+  },
+  {
+    type: 'Feature',
+    properties: { agencySlug: 'hamilton', serviceType: 'on-demand-transfer-point', stopName: 'Winona Crossing', areaName: 'Lower East Stoney Creek' },
+    geometry: { type: 'Point', coordinates: [-79.644492, 43.21694] },
+  },
 ];
 
 export const HAMILTON_TRANS_CAB_SOURCE = {

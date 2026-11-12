@@ -36,7 +36,7 @@
     "bookingUrl": "https://www.ncrtd.org/myblue/",
     "eligibility": "Riders under 13 must ride with an adult.",
     "bookingInfo": "Book 24 hours ahead; no walk-ups.",
-    "tripRules": "Trips between zones may require a transfer to a bus route.",
+    "tripRules": "Trips can start and end anywhere in your zone.",
     "zoneMetadata": {
       "Taos": {
         "serviceName": "MyBlue",

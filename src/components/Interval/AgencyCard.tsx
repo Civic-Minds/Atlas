@@ -18,7 +18,7 @@ import ModeFilterPillRow from '../ui/ModeFilterPillRow';
 import { isRailReplacementBus } from '../../../shared/modes';
 import { buildRouteModeFilters, routeMatchesModeFilter, type RouteModeFilter, type RouteModeFilterKey, type RouteModeFilterRoute } from '../../utils/routeModeFilters';
 import { headwayEveryRange } from '../../utils/headwayText';
-import { agencyNames } from '../../utils/agencyName';
+import { agencyCardTitle } from '../../utils/agencyName';
 import type { DayType, TimePeriod, ShapeProperties } from '../../hooks/useIntervalStats';
 import { passesRouteFilter } from '../../hooks/useIntervalStats';
 import { IRREGULAR_PERIOD_SHORT_LABEL, routeListDisplay } from '../../utils/effectiveHeadway';
@@ -457,7 +457,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
   );
   const liveShortNames = useMemo(() => new Set(liveRoutes.map(r => r.displayRouteShortName)), [liveRoutes]);
   const { primary: agencyNamePrimary, secondary: agencyNameSecondary } = useMemo(
-    () => agencyNames({ name: agency.name, cities: agency.cities, displayArea: agency.displayArea }).card,
+    () => agencyCardTitle(agency),
     [agency.name, agency.cities, agency.displayArea],
   );
   // An on-demand-only agency's cards are named by its service ("GP Transit On-Demand"), with no place beside it,
@@ -524,6 +524,9 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
       ? service.features.some(feature => (feature.properties as { areaName?: string } | undefined)?.areaName === zoneName)
       : service.features.some(feature => resolveOnDemandZone(service, (feature.properties as { areaName?: string } | undefined)?.areaName).sameServiceAsParent);
     const runningNote = onDemandRunningNote(zone.availability, day, period);
+    // A service with Friday hours but none Monday to Thursday (CyRide Moonlight, #1440): on a weekday the note would
+    // read "Hours unavailable" above a Fri–Sat row, so the rows speak alone and Mon–Thu service is never claimed.
+    const fridayOnlyWeekday = day === 'Weekday' && !!zone.availability?.Friday && !zone.availability.Weekday;
     const zoneRows = zoneName ? [] : onDemandZoneHoursRows(service);
     const backToAgency = onBackToAgency && (onDemandZoneId || !agency.onDemandOnly) ? onBackToAgency : undefined;
     // An on-demand card's report names the service, the zone and its hours as published (CIV-932), so a report about the
@@ -593,12 +596,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
               <CardBodyText>{notOnMapYetNotice(coverageNote.missing)}</CardBodyText>
             )}
           </div>
-          {zone.eligibility && (
-            <div>
-              <CardSectionLabel>Who can ride</CardSectionLabel>
-              <CardBodyText>{zone.eligibility}</CardBodyText>
-            </div>
-          )}
+          {/* No "Who can ride" section (CIV-1427): Atlas maps only services open to the public. */}
           {zone.tripRules && (
             <div>
               <CardSectionLabel>Trip rules</CardSectionLabel>
@@ -637,7 +635,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
               </div>
             ) : (
               <>
-                <CardBodyText data-testid="on-demand-running-note">{runningNote}</CardBodyText>
+                {!fridayOnlyWeekday && <CardBodyText data-testid="on-demand-running-note">{runningNote}</CardBodyText>}
                 <OnDemandHoursRows
                   availability={zone.availability}
                   serviceHours={zone.serviceHours}

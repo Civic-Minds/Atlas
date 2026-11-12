@@ -1607,8 +1607,9 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
                 setMaxHeadway={maxHeadway => historyView.setView({ ...historyView.view, maxHeadway })}
                 selectedModes={selectedModes}
                 setSelectedModes={setSelectedModes}
-                day={day}
-                setDay={setDay}
+                // History's own day (CIV-1425): the chip shows only behind its beta flag, and never changes the map's day.
+                day={historyView.view.day}
+                setDay={nextDay => historyView.setView({ ...historyView.view, day: nextDay })}
                 period={historyView.view.period}
                 setPeriod={period => historyView.setView({ ...historyView.view, period })}
                 agencies={allAgencies ?? agencies}

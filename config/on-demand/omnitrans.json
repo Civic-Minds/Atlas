@@ -13,7 +13,6 @@
       "Chino/Chino Hills": {
         "serviceName": "OmniRide",
         "serviceHours": "Weekdays from 6 AM to 8 PM.",
-        "hoursNote": "Holiday service is not stated on the OmniRide page.",
         "availability": {
           "Weekday": [
             {
@@ -32,7 +31,6 @@
       "Upland": {
         "serviceName": "OmniRide",
         "serviceHours": "Weekdays from 6 AM to 8 PM.",
-        "hoursNote": "Holiday service is not stated on the OmniRide page.",
         "availability": {
           "Weekday": [
             {
@@ -51,7 +49,6 @@
       "Bloomington": {
         "serviceName": "OmniRide",
         "serviceHours": "Seven days a week from 5 AM to 10 PM.",
-        "hoursNote": "Holiday service is not stated on the OmniRide page.",
         "availability": {
           "Weekday": [
             {

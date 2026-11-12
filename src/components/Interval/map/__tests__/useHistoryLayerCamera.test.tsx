@@ -75,5 +75,53 @@ describe('History camera (#1016)', () => {
     act(() => setOverlay({ ...overlay(2014), slug: 'other', routeShortName: '2', routeGeometry: [[5, 1], [5, 1]] }));
     expect(map.fitBounds.mock.calls.length).toBe(fits);
   });
-});
 
+  describe('a picked route with no line of its own that year (#1095)', () => {
+    const PAD = { padding: { top: 80, bottom: 80, left: 320, right: 80 }, maxZoom: 14 };
+    const todayLine = (slug: string, rsn: string, x: number) => ({ properties: { agencySlug: slug, routeShortName: rsn }, geometry: { type: 'LineString', coordinates: [[x, 5], [x + 2, 7]] } });
+    const withLayers = (map: ReturnType<typeof fakeMap>, features: unknown[]) => {
+      map.getLayer.mockImplementation(((id: string) => (id === 'routes-layer' ? {} : null)) as never);
+      map.queryRenderedFeatures.mockImplementation((() => features) as never);
+    };
+    const handlers = (map: ReturnType<typeof fakeMap>) => map.on.mock.calls.filter(c => c[0] === 'moveend').map(c => c[1] as () => void);
+
+    it('frames that route on today\'s line, not the whole agency (MARTA 3)', () => {
+      const map = fakeMap();
+      withLayers(map, [todayLine('marta', '3', 10), todayLine('marta', '117', 40), todayLine('other', '3', 90)]);
+      render(<HistoryMapOverlayProvider><Harness map={map} /></HistoryMapOverlayProvider>);
+      act(() => setOverlay({ ...overlay(2014), routeShortName: '3', routeGeometry: undefined }));
+      expect(map.fitBounds).toHaveBeenLastCalledWith([[10, 5], [12, 7]], PAD);
+      expect(map.fitBounds).not.toHaveBeenCalledWith([[2014, 0], [2015, 1]], expect.anything());
+      // After the fit the line is read again once, so a line that was partly off screen is framed whole.
+      withLayers(map, [todayLine('marta', '3', 8), todayLine('marta', '3', 10)]);
+      // The refit waits for idle (tiles of the new view loaded), not moveend.
+      const idle = (m: ReturnType<typeof fakeMap>) => m.on.mock.calls.filter(c => c[0] === 'idle').map(c => c[1] as () => void);
+      expect(handlers(map)).toHaveLength(0);
+      const refit = idle(map).at(-1)!;
+      refit();
+      expect(map.fitBounds).toHaveBeenLastCalledWith([[8, 5], [12, 7]], PAD);
+      // The refit removes itself and registers nothing new: one refit, no chain of moves (#478).
+      expect(map.off).toHaveBeenCalledWith('idle', refit);
+      expect(idle(map)).toHaveLength(1);
+    });
+
+    it('frames the route\'s own line when it arrives after the route was picked (Caltrain)', () => {
+      const map = fakeMap();
+      render(<HistoryMapOverlayProvider><Harness map={map} /></HistoryMapOverlayProvider>);
+      act(() => setOverlay({ ...overlay(2014), routeShortName: 'Local Weekday', routeGeometry: undefined }));
+      act(() => setOverlay({ ...overlay(2014), routeShortName: 'Local Weekday', routeGeometry: [[1, 1], [2, 3]] }));
+      expect(map.fitBounds).toHaveBeenLastCalledWith([[1, 1], [2, 3]], PAD);
+    });
+
+    it('with the line off screen, flies to the agency and frames the route when the fly ends', () => {
+      const map = fakeMap();
+      render(<HistoryMapOverlayProvider><Harness map={map} /></HistoryMapOverlayProvider>);
+      act(() => setOverlay({ ...overlay(2014), routeShortName: '3', routeGeometry: undefined }));
+      expect(map.flyTo).toHaveBeenCalled();
+      withLayers(map, [todayLine('marta', '3', 20)]);
+      handlers(map).at(-1)!();
+      expect(map.fitBounds).toHaveBeenLastCalledWith([[20, 5], [22, 7]], PAD);
+      expect(map.on).toHaveBeenLastCalledWith('idle', expect.any(Function));
+    });
+  });
+});
