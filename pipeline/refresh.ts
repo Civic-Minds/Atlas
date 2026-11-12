@@ -297,6 +297,7 @@ interface AgencyEntry {
   keepLongShapeJumps?: boolean;
   skipClusteredJumpRepair?: boolean;
   poolSingleTripShapes?: boolean;
+  mergeIdenticalShapeIds?: boolean;
   referenceDateFromRunDate?: boolean;
   skipBlockTripHeadways?: boolean;
   nextServiceDatesFeedUrls?: string[];

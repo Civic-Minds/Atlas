@@ -12257,6 +12257,7 @@
         -119.78
       ],
       "feedUrl": "https://gis4u.fresno.gov/downloads/fax_gtfs.zip",
+      "mergeIdenticalShapeIds": true,
       "lastFeedExpiry": "20261101",
       "lastFeedVersion": "8.10.26 Production_20260729",
       "region": "California",

@@ -14,6 +14,7 @@ import { addSantaFePickUpWeekendFrequency } from '../transforms/santafe-pickup-s
 import { interpolateUntimedStops } from '../transforms/interpolate-untimed-stops.js';
 import { dropMnrExpressBusPairs } from '../transforms/mnr-bus-pairs.js';
 import { mergeEquivalentShapeVariants } from './merge-equivalent-shapes.js';
+import { mergeIdenticalShapes } from './merge-identical-shapes.js';
 import { splitRoutes, type RouteSplit } from './split-routes.js';
 import { separateSameNameRoutes, type SameNameRoute } from './same-name-routes.js';
 import { mergeTerminalBays } from './merge-terminal-bays.js';
@@ -46,6 +47,8 @@ export interface GtfsTransformOptions {
   skipClusteredJumpRepair?: boolean;
   /** Draw a headsign whose trips each have their own shape on one shape (RCT 20 southbound, #776). */
   poolSingleTripShapes?: boolean;
+  /** Join shape ids with the same points and stops whose trips take turns as one pattern (Fresno 39, #1446). */
+  mergeIdenticalShapeIds?: boolean;
   /** Read the feed as of the run date instead of the detected reference date (#774). */
   referenceDateFromRunDate?: boolean;
   /**
@@ -206,5 +209,16 @@ export function normalizeGtfs(
       onStatus?.(`Single-trip shapes: drew ${pooled.pooledTrips} trips on one shape across ${pooled.pooledGroups} headsign groups`);
     }
   }
-  return synthesizeMissingDirections(gtfs);
+  gtfs = synthesizeMissingDirections(gtfs);
+  // #1446, opt-in: one line written under two shape ids (the same points and stops, trips taking
+  // turns) is one pattern. Last, so the merges above and the direction fill read the feed's own ids.
+  // Not global: across 124 feeds it also regrouped NJ Transit bus patterns in ways not yet checked.
+  if (options?.mergeIdenticalShapeIds) {
+    const identical = mergeIdenticalShapes(gtfs);
+    gtfs = identical.gtfs;
+    if (identical.mergedTrips > 0) {
+      onStatus?.(`Identical shapes: ${identical.mergedTrips} trips of ${identical.mergedGroups} pattern(s) written under a second shape id for the same line (#1446)`);
+    }
+  }
+  return gtfs;
 }
