@@ -86,6 +86,23 @@ describe('an uneven tail reads its longest gap between its own departures (NYC 6
   });
 });
 
+describe('an uneven tail counts a wait the window cuts, as a main stretch does (CIV-1414, Sherbrooke 1)', () => {
+  it('never reads only the gaps between its own departures when the window cuts a longer wait', () => {
+    // Sherbrooke 1's tail at 268, weekdays: 7:07, 7:24, 8:01, then nothing until 10:23. The 59 minutes
+    // from 8:01 to 9:00 are part of a 142-minute wait the window cuts; it read 37 between its own departures.
+    // Its AM starts 67 minutes in, longer than the coverage cap, so it keeps the full-window wait (67),
+    // as a main stretch does; either way never the 37 between its own departures.
+    const am = PERIOD_MINUTES.amPeak;
+    const times = [am.start + 67, am.start + 84, am.start + 121, am.start + 263, am.start + 300];
+    const tail = stretchPeriods({ ...main(times), kind: 'tail' }).amPeak;
+    expect(tail.uneven).toBe(true);
+    expect(tail.value).toBe(67);
+    expect(stretchPeriods(main(times)).amPeak.value).toBe(67);
+    expect(stretchFilterValue(tail)).toBe(67);
+    // A cut wait under the cap is read as is: the TTC 320 tail case below (28).
+  });
+});
+
 describe('an uneven main stretch leaves out only a true start or end of its service (CIV-1064, TTC 320 overnight)', () => {
   const on = PERIOD_MINUTES.overnight;
   // TTC 320 weekday overnight northbound at Eglinton (8980), from the feed: night service only. The
@@ -131,8 +148,10 @@ describe('an uneven main stretch leaves out only a true start or end of its serv
     expect(stretchFilterValue(p)).toBe(70);
   });
 
-  it('leaves a tail as it was (NYC 6: no guard on its edges)', () => {
-    expect(stretchPeriods({ ...main([...night, on.end + 10]), kind: 'tail' }).overnight.value).toBe(15);
+  it('reads a tail the same way (CIV-1414): the 28 minutes the window cuts count', () => {
+    expect(stretchPeriods({ ...main([...night, on.end + 10]), kind: 'tail' }).overnight.value).toBe(28);
+    // Without the 6:10 bus, the run to 6:00 is the end of its service and stays out.
+    expect(stretchPeriods({ ...main(night), kind: 'tail' }).overnight.value).toBe(15);
   });
 });
 
