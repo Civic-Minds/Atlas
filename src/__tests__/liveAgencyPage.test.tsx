@@ -8,6 +8,8 @@ vi.mock('../../shared/config', async importOriginal => {
 });
 
 import LiveAgencyPage from '../LiveAgencyPage';
+// The late-stops map (CIV-1405) needs a browser with WebGL; its dots are tested in lateStopsMapModel.test.ts.
+vi.mock('../components/Live/LateStopsMapLazy', () => ({ default: () => null }));
 
 const stretch = { route: '510', routeLabel: '510 Spadina', directionId: 1, direction: 'Northbound', fromStopId: 'a', toStopId: 'b', fromName: 'Queens Quay West', toName: 'King St West', n: 500 };
 const summary = {

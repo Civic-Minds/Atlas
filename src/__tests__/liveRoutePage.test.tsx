@@ -14,6 +14,8 @@ vi.mock('../../shared/config', async importOriginal => {
 vi.mock('../hooks/useLiveAgencyName', () => ({ useLiveAgencyName: (slug: string) => (slug === 'ttc' ? 'TTC' : slug) }));
 
 import LiveRoutePage from '../LiveRoutePage';
+// The late-stops map (CIV-1405) needs a browser with WebGL; its dots are tested in lateStopsMapModel.test.ts.
+vi.mock('../components/Live/LateStopsMapLazy', () => ({ default: () => null }));
 
 const counts = (n: number, late: number, early: number) => ({ n, early: Math.round(n * early), onTime: n - Math.round(n * early) - Math.round(n * late), late: Math.round(n * late), earlyShare: early, onTimeShare: 1 - early - late, lateShare: late, notLateShare: 1 - late });
 const block = (late: number): AdherenceBlock => ({ overall: counts(1000, late, 0.1), byHour: [{ hour: 8, ...counts(100, late, 0.1) }, { hour: 9, ...counts(100, late, 0.1) }], byDate: [], byDirection: { '0': counts(500, late, 0.1), '1': counts(500, late, 0.1) } });

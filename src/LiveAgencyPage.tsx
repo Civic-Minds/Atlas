@@ -33,6 +33,11 @@ import { coveredRoutesText, lateStopsIntro, bunchPartsText, liveSubtitle, risePo
 import { pct as pctOf, pctTenth, signedPct } from '../shared/liveFormat';
 import { mins } from './components/Live/sections/figures';
 import MethodSection from './components/Live/sections/MethodSection';
+import LateStopsMap from './components/Live/LateStopsMapLazy';
+import LegendItem from './components/ui/LegendItem';
+import { lateShareColor } from './components/Live/lateShare';
+import { lateStopDots } from './components/Live/lateStopsMapModel';
+import { LATE_MAP_STOPS, lateMapNote, lateTableRows } from './components/Live/lateStopsMock';
 import { LIVE_API_NO_ANSWER, LIVE_NO_STOP_TO_RANK_YET, LIVE_NO_STRETCH_STANDS_OUT, LIVE_WEEK_NOT_IN_FILES, liveNoAgencyAnalysis, loadingText } from './content/noticeCopy';
 
 /**
@@ -131,13 +136,24 @@ function RoutesTable({ s }: { s: AgencySummary }) {
   );
 }
 
-/** The network's worst stops shown (the summary may hold more; older files had 15). */
-const TOP_STOPS = 10;
+/** Widths of the late-stops table beside its map (rem): narrower than the page's shared grid, so the table fits its half. */
+const LATE_STOP_COL = 10, LATE_ROUTE_COL = 7, LATE_DIR_COL = 6, LATE_FIGURE_COL = 5, LATE_COUNT_COL = 5.5;
 
-function StopsTable({ s, rows }: { s: AgencySummary; rows: AgencyHotspotStop[] }) {
-  if (!rows.length) return <p className="mt-3 text-sm text-[var(--text-muted)]">{LIVE_NO_STOP_TO_RANK_YET}</p>;
+/**
+ * CIV-1405 mock-up: the stops most often late as a table and, beside it, a map of the same list. `mapRows` is the
+ * summary's list, worst first; the table shows its first `tableCount` rows. Each stop's rank in that list is the number
+ * on its dot and in front of its name, whatever the table is sorted by.
+ */
+function StopsTable({ s, mapRows, tableCount }: { s: AgencySummary; mapRows: AgencyHotspotStop[]; tableCount: number }) {
+  if (!mapRows.length) return <p className="mt-3 text-sm text-[var(--text-muted)]">{LIVE_NO_STOP_TO_RANK_YET}</p>;
+  const keyOf = (r: AgencyHotspotStop) => `${r.route}-${r.directionId}-${r.stopId}`;
+  const rank = new Map(mapRows.map((r, i) => [keyOf(r), i + 1]));
+  const rows = mapRows.slice(0, tableCount);
+  const dots = lateStopDots(mapRows, r => ({ key: keyOf(r), lonLat: r.lat != null && r.lon != null ? [r.lon, r.lat] : null, lateShare: r.lateShare, title: `${stop(r.name)} (${r.route} ${nameCase(r.direction, 'liveStop')}): ${pct(r.lateShare)} late` }));
   return (
-    <PageTable>
+    <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1fr)_18rem] lg:items-start">
+      <LateStopsMap dots={dots} label={`Map of the ${dots.length} stops most often late; the table lists the same stops with their figures`} note={lateMapNote(rows.length, dots.length)} mapClassName={rows.length > 12 ? 'h-72 lg:h-[30rem]' : 'h-72 lg:h-[19rem]'} className="lg:order-2 lg:sticky lg:top-20" />
+      <ScrollX className="min-w-0">
       <SortableDataTable
         narrowFit
         caption="Stops most often late, all analysed routes"
@@ -145,15 +161,16 @@ function StopsTable({ s, rows }: { s: AgencySummary; rows: AgencyHotspotStop[] }
         defaultSort="late"
         rowKey={r => `${r.route}-${r.directionId}-${r.stopId}`}
         columns={[
-          { key: 'stop', header: 'Stop', rowHeader: true, width: FIRST_COL, className: 'font-normal break-words', cell: r => <span title={stop(r.name)}>{stop(r.name)}</span> },
-          { key: 'route', header: 'Route', width: ROUTE_COL, align: 'left', className: 'truncate', cell: r => <HotspotRoute s={s} route={r.route} /> },
-          { key: 'dir', header: 'Direction', width: DIR_COL, align: 'left', narrowHide: true, cell: r => nameCase(r.direction, 'liveStop') },
-          { key: 'late', header: 'Late', width: FIGURE_COL, worst: r => r.lateShare, cell: r => pct(r.lateShare) },
-          { key: 'typical', header: 'Typical', width: FIGURE_COL, worst: r => r.medianMin, cell: r => mins(r.medianMin) },
-          { key: 'n', header: 'Departures', width: FIGURE_COL, narrowHide: true, cell: r => r.n.toLocaleString() },
+          { key: 'stop', header: 'Stop', rowHeader: true, width: LATE_STOP_COL, className: 'font-normal break-words', cell: r => <span title={stop(r.name)} className="flex gap-2"><span className="w-5 shrink-0 whitespace-nowrap text-right font-bold tabular-nums text-[var(--text-muted)]">{rank.get(keyOf(r))}</span><span>{stop(r.name)}</span></span> },
+          { key: 'route', header: 'Route', width: LATE_ROUTE_COL, align: 'left', className: 'truncate', cell: r => <HotspotRoute s={s} route={r.route} /> },
+          { key: 'dir', header: 'Direction', width: LATE_DIR_COL, align: 'left', narrowHide: true, cell: r => nameCase(r.direction, 'liveStop') },
+          { key: 'late', header: 'Late', width: LATE_COUNT_COL, className: 'whitespace-nowrap', worst: r => r.lateShare, cell: r => <LegendItem color={lateShareColor(r.lateShare)} className="gap-2">{pct(r.lateShare)}</LegendItem> },
+          { key: 'typical', header: 'Typical', width: LATE_FIGURE_COL, className: 'whitespace-nowrap', worst: r => r.medianMin, cell: r => mins(r.medianMin) },
+          { key: 'n', header: 'Departures', width: LATE_COUNT_COL, narrowHide: true, cell: r => r.n.toLocaleString() },
         ]}
       />
-    </PageTable>
+      </ScrollX>
+    </div>
   );
 }
 
@@ -224,8 +241,8 @@ export default function LiveAgencyPage() {
           <RoutesTable s={s} />
         </Section>
 
-        <Section id="agency-stops" title="Stops most often late" intro={lateStopsIntro(Math.min(s.worstStops.length, TOP_STOPS), dates)}>
-          <StopsTable s={s} rows={s.worstStops.slice(0, TOP_STOPS)} />
+        <Section id="agency-stops" title="Stops most often late" intro={lateStopsIntro(Math.min(s.worstStops.length, lateTableRows()), dates)}>
+          <StopsTable s={s} mapRows={s.worstStops.slice(0, LATE_MAP_STOPS)} tableCount={lateTableRows()} />
         </Section>
 
         <Section id="agency-delay" title="Where delays start" intro="Route directions where delay jumps on one stretch and stays up, and the typical minutes it adds there.">
