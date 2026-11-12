@@ -9,6 +9,11 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **The frequent service story map's last step matches the main map**: routes the map shows at 15 minutes or better, like TTC 501 Queen, were dropped for a single longer gap
 - **The frequent service story map keeps [all-day routes](https://github.com/Civic-Minds/Atlas/issues/1434) like TTC Line 1**: the rush-hour-only step removed the subway, which the main map treats as all-day service
 - **The frequent service story map counts [weekday service](https://github.com/Civic-Minds/Atlas/issues/1433) only**: a route's Saturday or Sunday service could keep it on a map captioned weekday daytime
+- **Each on-demand service has its own link**: a link can open [Hamilton's Trans-Cab](https://github.com/Civic-Minds/Atlas/issues/1440) on its own card, where it had opened myRide, and a link to Grande Prairie's Late Night opens that service
+- **The map key and Mode menu say some on-demand zones aren't mapped yet**: so a place with no shaded zone isn't read as having no on-demand service
+- **An on-demand service's card lists every zone with its hours**: services whose hours differ by zone, like RTD FlexRide, read "Hours unavailable" until a zone was picked; each zone row opens that zone
+- **History shows [trip time](https://github.com/Civic-Minds/Atlas/issues/1431) for BART again**: it went missing when each line's two directions were merged into one route
+- **Shared map links preview with a map of their own city**: a link to a spot in Chicago showed Toronto; area and agency pages show their city's map too
 - **The [Jacksonville ferry](https://github.com/Civic-Minds/Atlas/issues/1422) shows as a ferry**: JTA's data lists it as a bus
 - **The weekly refresh picks up [corrected feeds](https://github.com/Civic-Minds/Atlas/issues/1423)**: an agency's fixed feed was skipped when its end date hadn't changed
 - **Links to Atlas preview with a frequency map of Toronto**: the old preview was the logo on a gray illustration

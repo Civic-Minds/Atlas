@@ -31,7 +31,7 @@ export interface SeoRoute {
   /** Listed in sitemap.xml (public, canonical pages only). */
   includeInSitemap?: boolean;
   /**
-   * The page's own link-preview image (1200×630 PNG under public/), in place of the site's. Pages without one keep the
+   * The page's own link-preview image (1200×630 PNG or JPEG under public/), in place of the site's. Pages without one keep the
    * site image from index.html. Research pages get theirs as Ryan picks them (CIV-1167).
    */
   shareImage?: { path: string; alt: string };
@@ -228,6 +228,11 @@ function escapeAttr(value: string): string {
   return value.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
+/** og:image:type from the file name, so a JPEG is never announced as a PNG. */
+export function imageMimeType(path: string): string {
+  return /\.jpe?g$/i.test(path) ? 'image/jpeg' : /\.webp$/i.test(path) ? 'image/webp' : 'image/png';
+}
+
 /** The head tags a route owns, as HTML (used at build time). Mirrors applySeoToDocument. */
 export function renderSeoTags(seo: ResolvedSeo): string {
   const t = escapeAttr(seo.title);
@@ -249,7 +254,7 @@ export function renderSeoTags(seo: ResolvedSeo): string {
       `<meta property="og:image" content="${img}" />`,
       '<meta property="og:image:width" content="1200" />',
       '<meta property="og:image:height" content="630" />',
-      '<meta property="og:image:type" content="image/png" />',
+      `<meta property="og:image:type" content="${imageMimeType(seo.image.url)}" />`,
       `<meta property="og:image:alt" content="${escapeAttr(seo.image.alt)}" />`,
       `<meta name="twitter:image" content="${img}" />`,
     );
