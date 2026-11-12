@@ -640,7 +640,7 @@ export function encodeStopRuns(values: ReadonlyArray<number | null>): string {
  * never the plain period reading, which can be smaller (NJT 143 on Sundays: the verdict fails on Saturday's
  * 64-minute gap while the plain reading says 40).
  */
-export function stopPeriodValues(stops: readonly string[], throughTimesAlong: NonNullable<DirectionStretches['throughTimesAlong']>, handoverAt?: (stopId: string) => NightHandover | undefined, nextDaysAt?: (stopId: string) => ReadonlyArray<NextMorning>): Record<PeriodKey, string> {
+export function stopPeriodValues(stops: readonly string[], throughTimesAlong: NonNullable<DirectionStretches['throughTimesAlong']>, handoverAt?: (stopId: string) => NightHandover | undefined, nextDaysAt?: (stopId: string) => ReadonlyArray<NextMorning>, slowStartAt?: (stopId: string) => SlowStart | undefined): Record<PeriodKey, string> {
   const reads = throughTimesAlong(stops);
   const perStop = stops.map((stop, i) => {
     const read = reads[i];
@@ -648,7 +648,8 @@ export function stopPeriodValues(stops: readonly string[], throughTimesAlong: No
     const stretch: Stretch = { kind: 'main', stops: [stop], refStop: stop, lengthKm: 0, ...read, handover: handoverAt?.(stop), nextDays: nextDaysAt?.(stop) };
     const alone: DirectionStretches = { key: stop, main: stretch, tails: [], regularPatternCount: 1, variantTripCount: 0 };
     const night = directionNightValue(alone, true);
-    return { periods: stretchPeriods(stretch), night, wait: night == null ? stopNightWait(alone) : undefined };
+    // CIV-1411: a stop on a stretch reads that stretch's decision, never one of its own.
+    return { periods: stretchPeriods(stretch, slowStartAt?.(stop)), night, wait: night == null ? stopNightWait(alone) : undefined };
   });
   const value = (p: (typeof perStop)[number], key: PeriodKey) => {
     if (!p) return null;
@@ -665,8 +666,8 @@ export function stopPeriodValues(stops: readonly string[], throughTimesAlong: No
  * section needs the usual three departures for a value, then the same filter and limited-service
  * handling; no thresholds of its own).
  */
-export function stretchMetaPeriods(s: Stretch): { period: Record<PeriodKey, number | null>; noRegular: PeriodKey[]; maxGap: Record<PeriodKey, number | null>; edge?: Partial<Record<PeriodKey, StretchPeriodEdge>>; departuresByHour: Record<number, number> } {
-  const own = stretchPeriods(s);
+export function stretchMetaPeriods(s: Stretch, slowStart?: SlowStart): { period: Record<PeriodKey, number | null>; noRegular: PeriodKey[]; maxGap: Record<PeriodKey, number | null>; edge?: Partial<Record<PeriodKey, StretchPeriodEdge>>; departuresByHour: Record<number, number> } {
+  const own = stretchPeriods(s, slowStart);
   // CIV-1069: the longest gap between the same departures the value reads, so a card row never pairs
   // the stretch's value with a gap measured over one headsign's trips.
   const gaps = computePeriodMaxGaps([...s.times]);
@@ -759,25 +760,31 @@ export function gatedRiderWait(
  * trip at the tail's reference stop. The card leaves that branch's row off for the period (TTC 84 to Pioneer Village:
  * peak-only, nothing from 9:35 to 15:12, read "every 21" at midday).
  */
-export function tailNotThrough(s: Stretch): { notThrough: PeriodKey[] } {
-  const own = stretchPeriods(s);
+export function tailNotThrough(s: Stretch, slowStart?: SlowStart): { notThrough: PeriodKey[] } {
+  const own = stretchPeriods(s, slowStart);
   return { notThrough: PERIOD_WINDOWS.filter(({ key, start, end }) => !runsThroughPeriod(s.times, start, end, own[key].sustained)).map(w => w.key) };
 }
 
-export function stretchPeriods(s: Stretch): Record<PeriodKey, StretchPeriod> {
+/** CIV-1411: the periods a stretch's slow first hour is set aside in. Decided once per direction (directionSlowStart). */
+export type SlowStart = Partial<Record<PeriodKey, boolean>>;
+
+/**
+ * A stretch's periods by the settled checks. `slowStart` is the direction's CIV-1411 decision for this
+ * stretch (directionSlowStart): this function never decides a set-aside itself, so every reader of a
+ * stretch (the direction value, the filter, the card's row, the stops along it) reads the one decision.
+ */
+export function stretchPeriods(s: Stretch, slowStart?: SlowStart): Record<PeriodKey, StretchPeriod> {
   const times = [...s.times];
   const headways = computePeriodHeadways(times);
   const coverage = computePeriodCoverageHeadways(times);
   const settled = computePeriodSustained(times);
-  // CIV-1411 (under evaluation, off by default): a period unsteady or uneven only because of its slow first hour is steady.
-  // Main stretches only: a tail read as steady would start to speak for its direction (TTC 68 northbound AM went 8 to 16).
-  const setAsideOn = s.kind === 'main' && slowFirstHourUnsteadyEnabled();
   const sustained: Partial<Record<PeriodKey, boolean>> = { ...settled };
   const out = {} as Record<PeriodKey, StretchPeriod>;
   for (const { key, start, end } of PERIOD_WINDOWS) {
     const runs = coverage[key] != null;
     const settledUneven = runs && settled[key] === true && isUnevenPeriod(times, start, end, headways[key]);
-    const setAside = setAsideOn && runs && (settled[key] === false || settledUneven) && slowFirstHourSetAside(times, start, end);
+    // CIV-1411 (under evaluation, off by default): a period unsteady or uneven only because of its slow first hour is steady.
+    const setAside = slowStart?.[key] === true && runs && headways[key] != null && (settled[key] === false || settledUneven);
     if (setAside) sustained[key] = true;
     const steady = sustained[key] === true;
     // The set-aside has already found the rest of the period not uneven; the first hour's gaps are the ones forgiven.
@@ -1053,6 +1060,8 @@ export function nightOnlyTrips(trips: readonly DirectionTrip[]): DirectionTrip[]
 }
 
 export interface DirectionRollup {
+  /** CIV-1411: the periods whose slow first hour is set aside, per stretch (directionSlowStart). Absent when none. */
+  slowStart?: DirectionSlowStart;
   period: Record<PeriodKey, {
     value: number | null; coverage: number | null; sustained: boolean | null; sustainedMid: boolean | null; mainValue: number | null;
     /** The main stretch's best reading for the range's low end: its typical gap when uneven (#1142), else mainValue. */
@@ -1190,13 +1199,61 @@ export function periodOneGap(stretchTimes: readonly number[], start: number, end
   return isSustainedHeadway(rest, every) ? { every, gap } : null;
 }
 
+export interface DirectionSlowStart { main: SlowStart; tails: SlowStart[] }
+
+/**
+ * CIV-1411 (under evaluation: null unless ATLAS_SLOW_FIRST_HOUR_UNSTEADY=1): the one decision, per
+ * direction and period, on whether a slow first hour is set aside (slowFirstHourSetAside). Everything
+ * that reads the direction takes it from here: the stretch values and filter (rollupDirection), the
+ * card row's stretch slot (stretchMetaPeriods), the stops along the stretch (stopPeriodValues) and the
+ * row's own steady flag (stampStretchShadow), so a card never pairs one verdict with another's figure.
+ * - The main stretch reads its longest wait by the settled checks and passes slowFirstHourSetAside.
+ * - Branches keep their say (D1). A tail that already speaks for the direction at its typical gap is
+ *   untouched. A tail that reads its longest wait (uneven) or does not speak (unsteady), and passes the
+ *   same test on its own departures, is set aside too, and then speaks at its own typical gap. One that does not pass, and runs through the period, decides as it
+ *   does without the rule: nothing is set aside, and the direction reads its longest wait (a trunk
+ *   like TTC Line 5 whose branch takes every other trip waits 40 on that branch in the first hour).
+ * - The direction never reads a longer wait than without the rule (a branch newly speaking at a
+ *   figure over the main stretch's longest wait leaves the period as it was).
+ */
+export function directionSlowStart(d: DirectionStretches): DirectionSlowStart | null {
+  if (!d.main || !slowFirstHourUnsteadyEnabled()) return null;
+  const main = stretchPeriods(d.main);
+  const tails = d.tails.map(t => stretchPeriods(t));
+  const out: DirectionSlowStart = { main: {}, tails: d.tails.map(() => ({})) };
+  const worst = (periods: StretchPeriod[]) => Math.max(...periods.filter(p => p.counts && p.value != null).map(p => stretchFilterValue(p) ?? p.value!));
+  let any = false;
+  for (const { key, start, end } of PERIOD_WINDOWS) {
+    const m = main[key];
+    if (m.coverage == null || !(m.sustained === false || m.uneven)) continue;
+    if (!slowFirstHourSetAside(d.main.times, start, end)) continue;
+    const joins: number[] = [];
+    let decidesAsBefore = false;
+    d.tails.forEach((t, i) => {
+      const p = tails[i][key];
+      if (p.coverage == null || (p.counts && !p.uneven)) return;
+      if (slowFirstHourSetAside(t.times, start, end)) joins.push(i);
+      else if (!p.counts && p.sustained === false && runsThroughPeriod(t.times, start, end, p.sustained)) decidesAsBefore = true;
+    });
+    if (decidesAsBefore) continue;
+    const on: SlowStart = { [key]: true };
+    const after = [stretchPeriods(d.main, on)[key], ...d.tails.map((t, i) => (joins.includes(i) ? stretchPeriods(t, on)[key] : tails[i][key]))];
+    if (!(worst(after) < worst([m, ...tails.map(t => t[key])]))) continue;
+    out.main[key] = true;
+    for (const i of joins) out.tails[i][key] = true;
+    any = true;
+  }
+  return any ? out : null;
+}
+
 /** D1 and D3: the direction value is the worst counting stretch; night needs the main stretch and every tail that runs at night. */
 export function rollupDirection(d: DirectionStretches): DirectionRollup | null {
   if (!d.main) return null;
   // The guard's narrowing does not reach the closures below.
   const mainStretch = d.main;
-  const main = stretchPeriods(d.main);
-  const tails = d.tails.map(stretchPeriods);
+  const slowStart = directionSlowStart(d);
+  const main = stretchPeriods(d.main, slowStart?.main);
+  const tails = d.tails.map((t, i) => stretchPeriods(t, slowStart?.tails[i]));
   // #1072, rule 3: a tail that runs only part of a period because a sibling branch takes over the
   // same cadence from it at the main stretch (HSR 16: every 30 via Wilson until 12:10, then every 30
   // via Fiddler's Green) is read at its own spacing in that period, not at its full-window wait
@@ -1362,6 +1419,7 @@ export function rollupDirection(d: DirectionStretches): DirectionRollup | null {
   const frequentStretches = [d.main, ...allDayTails];
   const researchOf = frequentStretches.map(st => computeResearchFrequentService([...st.times]));
   return {
+    ...(slowStart ? { slowStart } : {}),
     period, night30: v30 !== 'fail', night60: v60 !== 'fail', night90: v90 !== 'fail', nightValue: directionNightValue(d), nightDirectionValue: directionNightValue(d, true), nightPartial30: v30 === 'partial', nightPartial60: v60 === 'partial', nightPartial90: v90 === 'partial',
     allDay: !limitedOnly && allDays.every(v => v != null) ? Math.max(...(allDays as number[])) : null,
     limitedOnly,
@@ -1498,6 +1556,9 @@ export const STRETCH_SHADOW_KEYS = [
   'headwayByPeriodSustainedMid',
 ] as const;
 
+/** CIV-1411: a row's own period figure is its stretch's when within this share of it (or a minute). */
+const SLOW_START_SAME_FIGURE_SHARE = 0.25;
+
 type ShadowFeature = { properties: Record<string, unknown> };
 
 /**
@@ -1592,8 +1653,14 @@ export function stampStretchShadow(
     p.directionFilterHeadwayByPeriod = byPeriod(k => k === 'overnight' ? dir.nightDirectionValue : dir.period[k].filterValue);
     // CIV-321: per drawn stop and period, every trip of the direction running through the stop, along
     // the display-only full line where the row has one (S4), else the row's own stops.
+    const slow = dir.slowStart;
+    const slowStartAt = !slow ? undefined : (stop: string): SlowStart | undefined => {
+      if (stretches.main?.stops.includes(stop)) return slow.main;
+      const i = stretches.tails.findIndex(t => t.stops.includes(stop));
+      return i >= 0 ? slow.tails[i] : undefined;
+    };
     const stopOrder = (p.fullStopOrder ?? p.stopOrder) as readonly string[] | undefined;
-    if (stretches.throughTimesAlong && Array.isArray(stopOrder) && stopOrder.length > 0) p.stretchStopPeriodValues = stopPeriodValues(stopOrder, stretches.throughTimesAlong, stretches.handoverAt, stretches.nextDaysAt);
+    if (stretches.throughTimesAlong && Array.isArray(stopOrder) && stopOrder.length > 0) p.stretchStopPeriodValues = stopPeriodValues(stopOrder, stretches.throughTimesAlong, stretches.handoverAt, stretches.nextDaysAt, slowStartAt);
     else delete p.stretchStopPeriodValues;
     // #1322: Overnight runs where the night verdict passes at 60 (the 90 grade is the Night Service page's only,
     // CIV-1329), not by the 2-6 AM midpoint test, which a first trip at 3 AM passes (RTD A Line).
@@ -1621,9 +1688,32 @@ export function stampStretchShadow(
       if (coversAll.length > 0) p.stretchCovers = coversAll;
       else delete p.stretchCovers;
     }
+    // CIV-1411: the row that stands for a stretch whose slow first hour is set aside reads steady too, where its own
+    // figure is the stretch's (the same trips, read at another stop), so the card's steady flag, range and wording
+    // follow the decision the filter figure reads. The longest gap stays the period's real longest gap, as in a slow
+    // first hour the settled check already forgives (#1142). A row with a figure of its own keeps its own verdict.
+    if (slow) {
+      const idx = p.stretchIndex as number | undefined;
+      const st = p.stretchRole === 'main' ? stretches.main : p.stretchRole === 'tail' && idx != null ? stretches.tails[idx] : null;
+      const on = p.stretchRole === 'main' ? slow.main : p.stretchRole === 'tail' && idx != null ? slow.tails[idx] : undefined;
+      const steady = p.headwayByPeriodSustained as Partial<Record<PeriodKey, boolean>> | undefined;
+      const mid = p.headwayByPeriodSustainedMid as Partial<Record<PeriodKey, boolean>> | undefined;
+      const ownValue = p.headwayByPeriod as Partial<Record<PeriodKey, number | null>> | undefined;
+      if (st && on && steady) {
+        const read = stretchPeriods(st, on);
+        for (const { key } of PERIOD_WINDOWS) {
+          const sp = read[key];
+          const rowValue = ownValue?.[key];
+          if (on[key] !== true || steady[key] !== false || sp.sustained !== true || sp.sustainedMid !== true || sp.headway == null || rowValue == null) continue;
+          if (Math.abs(rowValue - sp.headway) > Math.max(1, SLOW_START_SAME_FIGURE_SHARE * sp.headway)) continue;
+          steady[key] = true;
+          if (mid) mid[key] = true;
+        }
+      }
+    }
     p.stretchMeta = {
-      main: stretches.main ? { stops: stretches.main.stops.length, refStop: stretches.main.refStop, trips: stretches.main.tripCount, ...stretchMetaPeriods(stretches.main) } : null,
-      tails: stretches.tails.map(t => ({ refStop: t.refStop, stops: t.stops.length, km: Math.round(t.lengthKm * 100) / 100, trips: t.tripCount, ...stretchMetaPeriods(t), ...tailNotThrough(t) })),
+      main: stretches.main ? { stops: stretches.main.stops.length, refStop: stretches.main.refStop, trips: stretches.main.tripCount, ...stretchMetaPeriods(stretches.main, slow?.main) } : null,
+      tails: stretches.tails.map((t, i) => ({ refStop: t.refStop, stops: t.stops.length, km: Math.round(t.lengthKm * 100) / 100, trips: t.tripCount, ...stretchMetaPeriods(t, slow?.tails[i]), ...tailNotThrough(t, slow?.tails[i]) })),
     };
   }
   // The filter fields sit on every feature of a route-day or on none (no mixing with today's pools).

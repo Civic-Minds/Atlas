@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { PERIOD_MINUTES } from '../../shared/config.js';
 import { computePeriodSustained, isUnevenPeriod, slowFirstHourSetAside } from '../headway-utils.js';
-import { rollupDirection, rollupRoute, stretchFilterValue, stretchPeriods, type Stretch } from '../tripSets.js';
+import { directionSlowStart, rollupDirection, rollupRoute, stampStretchShadow, stopPeriodValues, stretchFilterValue, stretchMetaPeriods, stretchPeriods, type DirectionStretches, type Stretch } from '../tripSets.js';
 
 // #1142 (CIV-1018): a period the settled check calls steady but that runs a slower stretch of
 // several medium gaps reads its longest wait, and publishes its typical gap for the card's range.
@@ -47,11 +47,17 @@ describe('isUnevenPeriod (#1142)', () => {
 describe('a slow first hour in an unsteady period (CIV-1411)', () => {
   const am = PERIOD_MINUTES.amPeak;
   const hm = (h: number, m: number) => h * 60 + m;
-  const dirOf = (times: number[]) => rollupDirection({ key: 'r::1::Weekday', main: main(times), tails: [], regularPatternCount: 1, variantTripCount: 0 } as never)!;
-  const read = (times: number[], on: boolean) => {
+  const tail = (times: number[]): Stretch => ({ ...main(times), kind: 'tail', stops: ['t'], refStop: 't' });
+  const direction = (times: number[], tails: number[][] = []) => ({ key: 'r::1::Weekday', main: main(times), tails: tails.map(tail), regularPatternCount: 1 + tails.length, variantTripCount: 0 }) as unknown as DirectionStretches;
+  const read = (times: number[], on: boolean, tails: number[][] = []) => {
     vi.stubEnv('ATLAS_SLOW_FIRST_HOUR_UNSTEADY', on ? '1' : '');
-    const p = stretchPeriods(main(times)).amPeak;
-    return { value: p.value, sustained: p.sustained, uneven: p.uneven, filter: dirOf(times).period.amPeak.filterValue };
+    const p = rollupDirection(direction(times, tails))!.period.amPeak;
+    return { value: p.value, sustained: p.sustained, uneven: p.typical != null, filter: p.filterValue };
+  };
+  /** The rule leaves the period exactly as it reads without it. */
+  const unchanged = (times: number[], tails: number[][] = []) => {
+    expect(read(times, true, tails)).toEqual(read(times, false, tails));
+    return read(times, true, tails);
   };
   afterEach(() => vi.unstubAllEnvs());
 
@@ -66,85 +72,133 @@ describe('a slow first hour in an unsteady period (CIV-1411)', () => {
   const stm24 = at('5:31 6:01 6:34 6:48 7:01 7:13 7:24 7:32 7:42 7:47 7:57 8:02 8:14 8:20 8:26 8:38 8:44 8:49 8:54 8:59');
   const stm51 = at('5:08 5:34 5:57 6:09 6:29 6:39 6:57 7:15 7:19 7:23 7:27 7:34 7:36 7:43 7:49 7:53 7:56 8:01 8:04 8:08 8:12 8:16 8:20 8:23 8:29 8:35 8:37 8:43 8:50 8:55 8:58');
 
-  it('reads the rush figure with the switch on and the longest wait without it (TTC Line 5)', () => {
+  it('reads the rush figure with the switch on and the longest wait without it (TTC Line 5: gaps of 20)', () => {
     expect(computePeriodSustained(line5).amPeak).toBe(false);
     expect(read(line5, false)).toEqual({ value: 20, sustained: false, uneven: false, filter: 20 });
     expect(slowFirstHourSetAside(line5, am.start, am.end)).toBe(true);
     expect(read(line5, true)).toEqual({ value: 4, sustained: true, uneven: false, filter: 4 });
   });
 
-  it('reads the rush figure for a start-up whose last gap crosses the hour mark (TransLink 99, #602)', () => {
+  it('reads the rush figure for a start-up whose last gap crosses the hour mark (TransLink 99, #602: gap 19)', () => {
     expect(read(translink99, false).filter).toBe(23);
-    expect(read(translink99, true).filter).toBe(3);
+    expect(read(translink99, true)).toMatchObject({ value: 3, sustained: true, filter: 3 });
   });
 
-  it('reads the typical gap for a bus whose day starts slowly just before the period (STM 24: 33, then every 5 to 14)', () => {
-    expect(read(stm24, false)).toMatchObject({ sustained: false, filter: 33 });
-    expect(read(stm24, true)).toMatchObject({ sustained: true, uneven: false, filter: 9 });
-  });
-
-  it('reads the typical gap for a steady period that is uneven only because of its first hour (STM 18: 24, then 3 to 14, one 21)', () => {
+  it('reads the typical gap for a steady period that is uneven only because of its first hour (STM 18: gap 24)', () => {
     expect(read(stm18, false)).toMatchObject({ sustained: true, uneven: true, filter: 24 });
     expect(read(stm18, true)).toMatchObject({ sustained: true, uneven: false, filter: 10 });
   });
 
+  it('a set-aside gap over 25 minutes stays the longest wait (STM 24: 6:01 to 6:34 is 33)', () => {
+    expect(slowFirstHourSetAside(stm24, am.start, am.end)).toBe(false);
+    expect(unchanged(stm24)).toMatchObject({ sustained: false, filter: 33 });
+  });
+
+  it('a lone early trip is not a start-up: three departures in the first hour, no set-aside gap over 25', () => {
+    // 6:05, then every 10 from 7:00: a rider at 6:10 waits 50 minutes.
+    const lone = [hm(6, 5), ...every(hm(7, 0), am.end, 10)];
+    expect(slowFirstHourSetAside(lone, am.start, am.end)).toBe(false);
+    expect(unchanged(lone).filter).toBe(55);
+    // 6:50, 7:45, then every 7 (the TTC 22 Sunday shape).
+    const two = [hm(6, 50), hm(7, 45), ...every(hm(7, 52), am.end, 7)];
+    expect(slowFirstHourSetAside(two, am.start, am.end)).toBe(false);
+    expect(unchanged(two).filter).toBe(55);
+    // Two early trips 20 apart, then every 4: two departures are not three.
+    const pair = [hm(6, 20), hm(6, 40), ...every(hm(7, 0), am.end, 4)];
+    expect(slowFirstHourSetAside(pair, am.start, am.end)).toBe(false);
+    unchanged(pair);
+    // The wait from the period's start counts as a gap: first bus 6:26, then 6:40, 6:54, then every 4.
+    const lateFirst = [hm(6, 26), hm(6, 40), hm(6, 54), ...every(hm(7, 0), am.end, 4)];
+    expect(slowFirstHourSetAside(lateFirst, am.start, am.end)).toBe(false);
+    unchanged(lateFirst);
+  });
+
+  it('three departures 24 apart, then every 3, meet the bounds and read 3 (the 25-minute bound is the owner\'s to lower)', () => {
+    const times = [hm(6, 0), hm(6, 24), hm(6, 48), ...every(hm(6, 51), am.end, 3)];
+    expect(read(times, false)).toMatchObject({ sustained: false, filter: 24 });
+    expect(read(times, true)).toMatchObject({ value: 3, sustained: true, filter: 3 });
+  });
+
+  it('value and filter never split: a period whose service ends early keeps its full-window wait', () => {
+    // The reviewer's sequence: 6:00, 6:30, then every 10 until 7:40. Nothing runs from 7:40 to 9:00.
+    const reviewers = [hm(6, 0), hm(6, 30), ...every(hm(6, 40), hm(7, 40), 10)];
+    expect(unchanged(reviewers)).toMatchObject({ value: 80, filter: 80 });
+    // Inside the first-hour bounds, with the last trip 62 minutes before the period ends: 62 either way.
+    const early = [hm(6, 0), hm(6, 24), hm(6, 48), ...every(hm(6, 54), hm(7, 58), 8)];
+    expect(unchanged(early)).toMatchObject({ value: 62, filter: 62 });
+    for (const times of [line5, translink99, stm18, stm24, stm51, reviewers, early]) {
+      const on = read(times, true);
+      expect(on.value).toBe(on.filter);
+    }
+  });
+
   it('a slow start of more than an hour still reads the longest wait (STM 51: 6:09 to 7:15)', () => {
-    expect(read(stm51, true)).toEqual(read(stm51, false));
-    expect(read(stm51, true).filter).toBe(20);
+    expect(unchanged(stm51).filter).toBe(20);
     // Every 20 from 6:06 to 7:26, then every 4.
     const long = [...every(hm(6, 6), hm(7, 26), 20), ...every(hm(7, 30), am.end, 4)];
-    expect(read(long, true)).toEqual(read(long, false));
-    expect(read(long, true).filter).toBe(20);
+    expect(unchanged(long).filter).toBe(20);
     // #1142's own case, from the start of service: every 15 for two hours, then every 4, stays uneven.
     const twoHours = [...every(am.start, am.start + 120, 15), ...every(am.start + 124, am.end, 4)];
     expect(read(twoHours, false).uneven).toBe(true);
-    expect(read(twoHours, true)).toEqual(read(twoHours, false));
+    unchanged(twoHours);
+  });
+
+  it('Line 5 passes with a thin margin: its every-8.5 stretch after the first hour is under a quarter of the rest', () => {
+    // As scheduled the slower stretch ends 7:27: three gaps of 8.5 after 7:02, 25.5 minutes of the 118 left (the limit is 29.5).
+    expect(read(line5, true).filter).toBe(4);
+    // One more 8.5 gap (the slower stretch to about 7:36) and the period reads 20 again.
+    const oneMore = [...line5.filter(t => t <= 447.5), 456, ...every(460, am.end, 3.65)];
+    expect(unchanged(oneMore).filter).toBe(20);
+    // The slower stretch running to 7:45.
+    const to745 = [...line5.filter(t => t <= 447.5), 456, 464.5, ...every(468, am.end, 3.65)];
+    expect(unchanged(to745).filter).toBe(20);
   });
 
   it('a gap later in the period still reads the longest wait', () => {
     // Every 4 from 6:00, with nothing from 8:00 to 8:20.
     const laterGap = [...every(am.start, hm(8, 0), 4), ...every(hm(8, 20), am.end, 4)];
-    expect(read(laterGap, true)).toEqual(read(laterGap, false));
-    expect(read(laterGap, true).filter).toBe(20);
+    expect(unchanged(laterGap).filter).toBe(20);
     // Line 5's start-up and the same 8:00 gap: the gap is not at the start of service.
     const both = line5.filter(t => t <= hm(8, 0) || t >= hm(8, 20));
     expect(slowFirstHourSetAside(both, am.start, am.end)).toBe(false);
     // 7:57 to 8:23 at this stop: the longest wait, with the switch on or off.
-    expect(read(both, true)).toEqual(read(both, false));
-    expect(read(both, true).filter).toBe(26);
+    expect(unchanged(both).filter).toBe(26);
   });
 
-  it('a hole in the first hour is not a slow start (one early trip, then nothing for 50 minutes)', () => {
-    const hole = [hm(6, 10), ...every(hm(7, 0), am.end, 5)];
-    expect(slowFirstHourSetAside(hole, am.start, am.end)).toBe(false);
-    expect(read(hole, true)).toEqual(read(hole, false));
-  });
-
-  it('a gap after earlier service is not a start-up (buses from 4:20)', () => {
+  it('a gap after earlier service is not a start-up, however the earlier trips are written', () => {
+    // Buses from 4:20.
     const earlier = [hm(4, 20), hm(4, 40), hm(5, 0), hm(5, 20), hm(5, 40), ...line5];
     expect(slowFirstHourSetAside(earlier, am.start, am.end)).toBe(false);
-    expect(read(earlier, true)).toEqual(read(earlier, false));
+    unchanged(earlier);
+    // A stretch's list keeps a trip past midnight as written: 27:00 and 28:00 are 3:00 and 4:00 the next morning.
+    const pastMidnight = [...line5, hm(27, 0), hm(28, 0)];
+    expect(slowFirstHourSetAside(pastMidnight, am.start, am.end)).toBe(false);
+    unchanged(pastMidnight);
+    // The same trips in plain notation.
+    expect(slowFirstHourSetAside([hm(3, 0), hm(4, 0), ...line5], am.start, am.end)).toBe(false);
+    // A last trip at 25:30 (1:30) is the end of the night before, not earlier service: Line 5 still starts up at 6:06.
+    expect(slowFirstHourSetAside([...line5, hm(25, 30)], am.start, am.end)).toBe(true);
+    // Trips in the hour before the period are the same start-up (STM 18 starts 5:15), in either notation.
+    expect(slowFirstHourSetAside([hm(5, 40), ...line5], am.start, am.end)).toBe(true);
+    expect(slowFirstHourSetAside([...line5, hm(29, 40)], am.start, am.end)).toBe(true);
   });
 
   it('a route that is sparse all period is unchanged', () => {
     const every20 = every(hm(6, 6), am.end, 20);
-    expect(read(every20, true)).toEqual(read(every20, false));
-    expect(read(every20, true).filter).toBe(20);
+    expect(unchanged(every20).filter).toBe(20);
     // Irregular all period: 6:06, 6:50, 7:20, 8:15, 8:40.
     const irregular = [hm(6, 6), hm(6, 50), hm(7, 20), hm(8, 15), hm(8, 40)];
     expect(slowFirstHourSetAside(irregular, am.start, am.end)).toBe(false);
-    expect(read(irregular, true)).toEqual(read(irregular, false));
+    unchanged(irregular);
     // Every 20 for the first hour, then every 15: steady already, and never reads better than 15.
     const slow = [...every(hm(6, 5), hm(6, 45), 20), ...every(hm(7, 0), am.end, 15)];
-    expect(read(slow, true)).toEqual(read(slow, false));
-    expect(read(slow, true).filter).toBe(15);
+    expect(unchanged(slow).filter).toBe(15);
   });
 
   it('the slow first hour a steady period already forgives is unchanged (MBTA 7 AM)', () => {
     const mbta7 = [...every(am.start, am.start + 60, 15), ...every(am.start + 64, am.end, 4)];
     expect(computePeriodSustained(mbta7).amPeak).toBe(true);
-    expect(read(mbta7, true)).toEqual(read(mbta7, false));
-    expect(read(mbta7, true).filter).toBe(4);
+    expect(unchanged(mbta7).filter).toBe(4);
   });
 
   it('does not apply after midnight (late evening and overnight keep their own rules)', () => {
@@ -153,10 +207,116 @@ describe('a slow first hour in an unsteady period (CIV-1411)', () => {
     expect(slowFirstHourSetAside(times, late.start, late.end)).toBe(false);
   });
 
-  it('leaves a tail as it was: only a main stretch is read this way', () => {
-    vi.stubEnv('ATLAS_SLOW_FIRST_HOUR_UNSTEADY', '1');
-    const tail = stretchPeriods({ ...main(line5), kind: 'tail' }).amPeak;
-    expect(tail).toMatchObject({ value: 20, sustained: false, counts: false });
+  describe('branches keep their say', () => {
+    // A trunk like Line 5 whose branch takes every other trip: 6:06, 6:46, then about every 7 once the trunk runs every 3.6.
+    const everyOther = line5.filter((_, i) => i % 2 === 0);
+    // A branch that takes all three start-up trips, then every other one: 20, 20, 16, 17, 13, then about every 7.
+    const startsWithTrunk = [...line5.slice(0, 3), ...line5.slice(3).filter((_, i) => i % 2 === 1)];
+
+    it('a slow-starting branch that does not pass the test decides its direction as without the rule', () => {
+      expect(read(line5, false, [everyOther])).toMatchObject({ value: 20, filter: 20 });
+      // Its first hour holds two trips 40 apart: nothing is set aside, on the trunk or the branch.
+      expect(slowFirstHourSetAside(everyOther, am.start, am.end)).toBe(false);
+      expect(unchanged(line5, [everyOther])).toMatchObject({ value: 20, sustained: false, filter: 20 });
+      vi.stubEnv('ATLAS_SLOW_FIRST_HOUR_UNSTEADY', '1');
+      expect(directionSlowStart(direction(line5, [everyOther]))).toBeNull();
+    });
+
+    it('a branch that passes the same test is set aside with the trunk and speaks at its own gap', () => {
+      expect(read(line5, false, [startsWithTrunk]).filter).toBe(20);
+      const on = read(line5, true, [startsWithTrunk]);
+      // The branch's typical gap, not the trunk's 4.
+      expect(on).toMatchObject({ value: 7, sustained: true, filter: 7 });
+      expect(directionSlowStart(direction(line5, [startsWithTrunk]))).toEqual({ main: { amPeak: true }, tails: [{ amPeak: true }] });
+    });
+
+    it('a branch that already speaks for its direction is untouched, and stray trips on a branch decide nothing', () => {
+      // A steady branch every 12 from 6:00: the direction reads the slower branch, 12.
+      const steady = every(am.start, am.end, 12);
+      expect(read(line5, false, [steady]).filter).toBe(20);
+      expect(read(line5, true, [steady])).toMatchObject({ value: 12, filter: 12 });
+      // Two trips to a branch (6:30 and 8:30) are not service through the period.
+      expect(read(line5, true, [[hm(6, 30), hm(8, 30)]]).filter).toBe(4);
+    });
+
+    it('a tail is never set aside where the main stretch is not (TTC 68 northbound AM stayed 8)', () => {
+      const trunk = every(am.start, am.end, 8);
+      expect(unchanged(trunk, [line5]).filter).toBe(8);
+    });
+  });
+
+  describe('one decision, read everywhere', () => {
+    it('a stretch never decides for itself: without the direction\'s decision it reads the settled checks', () => {
+      vi.stubEnv('ATLAS_SLOW_FIRST_HOUR_UNSTEADY', '1');
+      expect(stretchPeriods(main(line5)).amPeak).toMatchObject({ value: 20, sustained: false });
+      expect(stretchPeriods(tail(line5)).amPeak).toMatchObject({ value: 20, sustained: false, counts: false });
+      expect(stretchPeriods(main(line5), { amPeak: true }).amPeak).toMatchObject({ value: 4, sustained: true, sustainedMid: true, uneven: false, oneGap: false });
+      // A decision for a period that is steady already changes nothing.
+      const steady = every(am.start, am.end, 8);
+      expect(stretchPeriods(main(steady), { amPeak: true })).toEqual(stretchPeriods(main(steady)));
+    });
+
+    it('the card row\'s stretch slot reads the decision, and keeps the period\'s real longest gap', () => {
+      vi.stubEnv('ATLAS_SLOW_FIRST_HOUR_UNSTEADY', '1');
+      expect(stretchMetaPeriods(main(line5)).period.amPeak).toBe(20);
+      const slot = stretchMetaPeriods(main(line5), { amPeak: true });
+      expect(slot.period.amPeak).toBe(4);
+      expect(slot.maxGap.amPeak).toBe(20);
+      expect(slot.noRegular).not.toContain('amPeak');
+    });
+
+    const stamped = (on: boolean, row: Record<string, unknown> = {}) => {
+      vi.stubEnv('ATLAS_SLOW_FIRST_HOUR_UNSTEADY', on ? '1' : '');
+      const d = direction(line5);
+      const feature = { properties: {
+        headwayByPeriod: { amPeak: 4 }, maxGapByPeriod: { amPeak: 20 },
+        headwayByPeriodSustained: { amPeak: false }, headwayByPeriodSustainedMid: { amPeak: false }, ...row,
+      } as Record<string, unknown> };
+      stampStretchShadow([feature], new Map([[d.key, d]]), () => ({ group: 'r', dirId: '1', day: 'Weekday' }), () => ['s']);
+      const p = feature.properties as Record<string, Record<string, unknown>>;
+      return {
+        role: feature.properties.stretchRole, filter: p.directionFilterHeadwayByPeriod.amPeak, routeFilter: p.routeFilterHeadwayByPeriod.amPeak,
+        steady: p.headwayByPeriodSustained.amPeak, mid: p.headwayByPeriodSustainedMid.amPeak, stretchSteady: p.stretchPeriodSustained.amPeak,
+        longestGap: p.maxGapByPeriod.amPeak, slot: (p.stretchMeta.main as { period: Record<string, number>; maxGap: Record<string, number> }),
+      };
+    };
+
+    it('the row\'s steady flag, its stretch slot and the filter figure agree, with the switch on and off', () => {
+      const off = stamped(false);
+      expect(off).toMatchObject({ role: 'main', filter: 20, routeFilter: 20, steady: false, mid: false, stretchSteady: false, longestGap: 20 });
+      expect(off.slot.period.amPeak).toBe(20);
+      const on = stamped(true);
+      // Never "unsteady" beside a figure of 4: the row reads steady where the filter reads the typical gap.
+      expect(on).toMatchObject({ role: 'main', filter: 4, routeFilter: 4, steady: true, mid: true, stretchSteady: true, longestGap: 20 });
+      expect(on.slot.period.amPeak).toBe(4);
+      expect(on.slot.maxGap.amPeak).toBe(20);
+    });
+
+    it('a row with a figure of its own keeps its own verdict', () => {
+      // A row whose own trips run every 9 on a stretch every 4 is not the stretch's trips read at another stop.
+      expect(stamped(true, { headwayByPeriod: { amPeak: 9 } })).toMatchObject({ filter: 4, steady: false, mid: false });
+    });
+
+    it('a row is never read steady where the direction is not set aside', () => {
+      vi.stubEnv('ATLAS_SLOW_FIRST_HOUR_UNSTEADY', '1');
+      const d = direction(stm24);
+      const feature = { properties: { headwayByPeriod: { amPeak: 9 }, headwayByPeriodSustained: { amPeak: false }, headwayByPeriodSustainedMid: { amPeak: false } } as Record<string, unknown> };
+      stampStretchShadow([feature], new Map([[d.key, d]]), () => ({ group: 'r', dirId: '1', day: 'Weekday' }), () => ['s']);
+      const p = feature.properties as Record<string, Record<string, unknown>>;
+      expect(p.directionFilterHeadwayByPeriod.amPeak).toBe(33);
+      expect(p.headwayByPeriodSustained.amPeak).toBe(false);
+    });
+
+    it('the stops along a stretch read its decision, not one of their own', () => {
+      vi.stubEnv('ATLAS_SLOW_FIRST_HOUR_UNSTEADY', '1');
+      // The same trips 34 minutes down the line: 6:40, 7:00, 7:20, then the rush.
+      const downstream = line5.map(t => t + 34).filter(t => t < 22 * 60);
+      const through = (stops: readonly string[]) => stops.map(stop => ({ times: stop === 'far' ? downstream : line5, nightTimes: [], tripCount: line5.length }));
+      const alone = stopPeriodValues(['s', 'far'], through);
+      expect(alone.amPeak).toBe('20,40');
+      const decided = stopPeriodValues(['s', 'far'], through, undefined, undefined, () => ({ amPeak: true }));
+      expect(decided.amPeak).toBe('4*2');
+    });
   });
 });
 
