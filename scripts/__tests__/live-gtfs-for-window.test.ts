@@ -36,11 +36,28 @@ describe('live-gtfs-for-window', () => {
 
   it('reports a day against its timetable: fine, too low, no timetable, or no positions', () => {
     const feed: FeedCoverage = { key: 'S1', dir: '/x', version: 'S1', start: '20261101', end: '20261219' };
-    const timetable = new Set(['a', 'b', 'c']);
-    expect(dayMatch('2026-11-02', new Set(['a', 'b']), feed, timetable, 0.9)).toEqual({ date: '2026-11-02', feed: 'S1', matched: 2, total: 2, share: 1, problem: null });
-    expect(dayMatch('2026-11-02', new Set(['a', 'x', 'y', 'z']), feed, timetable, 0.9).problem).toMatch(/below 90%/);
-    expect(dayMatch('2026-11-02', new Set(['a']), null, null, 0.9).problem).toBe('no stored timetable covers this date');
+    const timetables = new Map([['S1', new Set(['a', 'b', 'c'])]]);
+    expect(dayMatch('2026-11-02', new Set(['a', 'b']), feed, timetables, 0.9)).toEqual({ date: '2026-11-02', feed: 'S1', matched: 2, total: 2, share: 1, problem: null, others: [] });
+    expect(dayMatch('2026-11-02', new Set(['a', 'x', 'y', 'z']), feed, timetables, 0.9).problem).toMatch(/below 90%/);
+    expect(dayMatch('2026-11-02', new Set(['a']), null, timetables, 0.9).problem).toBe('no stored timetable covers this date');
     // A day the collector was down is reported, not failed: the analysis leaves it out by itself.
-    expect(dayMatch('2026-11-02', new Set(), feed, timetable, 0.9)).toMatchObject({ total: 0, share: null, problem: null });
+    expect(dayMatch('2026-11-02', new Set(), feed, timetables, 0.9)).toMatchObject({ total: 0, share: null, problem: null });
+  });
+
+  it('flags a day that another timetable matches better, even when the chosen one passes the share', () => {
+    const oldFeed: FeedCoverage = { key: 'OLD', dir: '/o', version: 'OLD', start: '20260930', end: '20261031' };
+    // The two feeds share most trip ids, as the TTC's do: the chosen one passes 90% but the other holds every id.
+    const shared = Array.from({ length: 19 }, (_, i) => `t${i}`);
+    const timetables = new Map([['OLD', new Set(shared)], ['NEW', new Set([...shared, 'new-only'])]]);
+    const live = new Set([...shared, 'new-only']);
+    const wrong = dayMatch('2026-10-31', live, oldFeed, timetables, 0.9);
+    expect(wrong.share).toBe(0.95);
+    expect(wrong.problem).toMatch(/timetable NEW matches more of this day \(100\.0%\)/);
+    expect(wrong.others).toEqual([{ feed: 'NEW', matched: 20, share: 1 }]);
+    // The right way round: the other timetable matches fewer, so it is listed and nothing is flagged.
+    const newFeed: FeedCoverage = { key: 'NEW', dir: '/n', version: 'NEW', start: '20261101', end: '20261219' };
+    const right = dayMatch('2026-11-01', live, newFeed, timetables, 0.9);
+    expect(right.problem).toBeNull();
+    expect(right.others).toEqual([{ feed: 'OLD', matched: 19, share: 0.95 }]);
   });
 });

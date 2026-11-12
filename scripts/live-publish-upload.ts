@@ -10,7 +10,10 @@
  * atlas/live/<agency>/ are read or written, and only the names in --from. Refuses files that are not the report set
  * (no manifest, no weeks, a listed route without a file) and refuses to replace newer data with older (the published
  * manifest's this-week end date is later than the new one) unless --allow-older.
- * To undo an upload: run this again with --from <the backup dir> --allow-older --upload.
+ * Stops, before writing anything, when it could not save a single published file or the published manifest is missing:
+ * that is either a first publish (pass --first-publish, by hand only) or a read that went wrong.
+ * To undo an upload: run this again with --from <the backup dir> --allow-older --upload (the BACKUP.json note in a
+ * backup folder is ignored).
  */
 import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
@@ -37,6 +40,25 @@ export function checkReportSet(agency: string, texts: ReadonlyMap<string, string
   return { files: names };
 }
 
+/** The note this script leaves in a backup folder; never part of a report set. */
+export const BACKUP_NOTE = 'BACKUP.json';
+
+/** A folder's report files, name -> contents: files only (the separate yesterday/ set is a sub-folder), without the backup note. */
+export function readReportFolder(dir: string): Map<string, string> {
+  return new Map(readdirSync(dir).filter(n => n !== BACKUP_NOTE && statSync(join(dir, n)).isFile()).map(n => [n, readFileSync(join(dir, n), 'utf8')] as const));
+}
+
+/**
+ * Why the save of the published files cannot be trusted as an undo copy, or null. Nothing saved, or no published
+ * manifest, means a first publish or a failed read: both stop the upload unless --first-publish says it is the former.
+ */
+export function backupProblem(saved: readonly string[], firstPublish: boolean): string | null {
+  if (firstPublish) return null;
+  if (saved.length === 0) return 'none of the files is published yet, so there is nothing to save. If this really is the first publish, pass --first-publish.';
+  if (!saved.includes('manifest.json')) return 'the published manifest.json could not be read, so the saved copy is not a complete report and the older-data check cannot run. If this really is the first publish, pass --first-publish.';
+  return null;
+}
+
 /** True when the published data ends later than the new data (an upload would go backwards). */
 export function wouldGoBackwards(publishedManifest: string | null, next: ReportManifest): boolean {
   if (!publishedManifest) return false;
@@ -49,7 +71,7 @@ export function wouldGoBackwards(publishedManifest: string | null, next: ReportM
 async function main() {
   await import('../pipeline/loadEnv.js');
   const argv = process.argv.slice(2);
-  const flags = new Set(argv.filter(a => a === '--upload' || a === '--allow-older'));
+  const flags = new Set(argv.filter(a => a === '--upload' || a === '--allow-older' || a === '--first-publish'));
   const args: Record<string, string> = {};
   for (let i = 0; i < argv.length; i++) if (argv[i].startsWith('--') && !flags.has(argv[i])) args[argv[i].slice(2)] = argv[++i] ?? '';
   // The agency is the first argument when it is not an option.
@@ -60,8 +82,7 @@ async function main() {
   if (!existsSync(from)) throw new Error(`live-publish-upload: no folder at ${from}`);
   const PREFIX = `atlas/live/${agency}/`;
 
-  // Files only: a sub-folder (the separate yesterday/ set) is not part of this upload.
-  const texts = new Map(readdirSync(from).filter(n => statSync(join(from, n)).isFile()).map(n => [n, readFileSync(join(from, n), 'utf8')] as const));
+  const texts = readReportFolder(from);
   const set = checkReportSet(agency, texts);
   if ('problem' in set) throw new Error(`live-publish-upload: refusing ${from}: ${set.problem}`);
   const manifest = JSON.parse(texts.get('manifest.json')!) as ReportManifest;
@@ -78,9 +99,11 @@ async function main() {
     writeFileSync(join(backup, name), cur);
     saved.push(name);
   }
-  writeFileSync(join(backup, 'BACKUP.json'), JSON.stringify({ prefix: PREFIX, savedAt: new Date().toISOString(), saved, notPublishedBefore: fresh }, null, 2));
+  writeFileSync(join(backup, BACKUP_NOTE), JSON.stringify({ prefix: PREFIX, savedAt: new Date().toISOString(), saved, notPublishedBefore: fresh }, null, 2));
   console.log(`live-publish-upload: saved ${saved.length} published file(s) to ${backup}${fresh.length ? `; not published before: ${fresh.join(', ')}` : ''}`);
 
+  const noUndo = backupProblem(saved, flags.has('--first-publish'));
+  if (noUndo) throw new Error(`live-publish-upload: refusing: ${noUndo}`);
   if (wouldGoBackwards(publishedManifest, manifest) && !flags.has('--allow-older')) {
     throw new Error(`live-publish-upload: refusing: the published data ends later than this (${manifest.thisWeek?.to}). Pass --allow-older to restore a backup.`);
   }

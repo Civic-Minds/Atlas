@@ -11,8 +11,10 @@
  *    spans a timetable change. The newest one also goes into --surface, which the agency summary reads route names from.
  * 3. For each date it takes the trip ids the vehicles reported during that SERVICE date (4 a.m. to 4 a.m. Toronto, so
  *    two UTC archive files) and counts how many are in the timetable the analysis will use for it (feedForDate, the
- *    analysis's own rule). A day with positions and no timetable, or a match below --min-share, fails the run after the
- *    report is written. A day with no positions at all is reported, not failed: the analysis leaves it out by itself.
+ *    analysis's own rule), and in every other unpacked timetable. A day with positions and no timetable, a match below
+ *    --min-share, or another timetable that matches MORE of the day's ids than the chosen one (two TTC feeds share
+ *    thousands of trip ids, so a wrong feed can still pass the share) fails the run after the report is written.
+ *    A day with no positions at all is reported, not failed: the analysis leaves it out by itself.
  *
  * Read-only on R2. Needs R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY and R2_ARCHIVE_BUCKET_NAME.
  */
@@ -56,14 +58,26 @@ export function serviceDateTripIds(files: readonly string[], read: (file: string
   return ids;
 }
 
-export interface WindowDayMatch { date: string; feed: string | null; matched: number; total: number; share: number | null; problem: string | null }
+export interface WindowDayMatch {
+  date: string; feed: string | null; matched: number; total: number; share: number | null; problem: string | null;
+  /** The same day against every other unpacked timetable. */
+  others: Array<{ feed: string; matched: number; share: number }>;
+}
 
-/** One day's line of the report: the timetable it uses and the share of its live trip ids found there. */
-export function dayMatch(date: string, live: Set<string>, feed: FeedCoverage | null, timetableIds: Set<string> | null, minShare: number): WindowDayMatch {
-  if (live.size === 0) return { date, feed: feed?.key ?? null, matched: 0, total: 0, share: null, problem: null };
-  if (!feed || !timetableIds) return { date, feed: null, matched: 0, total: live.size, share: null, problem: 'no stored timetable covers this date' };
-  const { matched, total, share } = matchShare(live, timetableIds);
-  return { date, feed: feed.key, matched, total, share, problem: share < minShare ? `below ${(minShare * 100).toFixed(0)}%: the timetable does not match the live feed` : null };
+/**
+ * One day's line of the report: the timetable it uses, the share of its live trip ids found there, and the same count
+ * for every other timetable. `timetables` is feed key -> its trip ids.
+ */
+export function dayMatch(date: string, live: Set<string>, feed: FeedCoverage | null, timetables: ReadonlyMap<string, Set<string>>, minShare: number): WindowDayMatch {
+  const others = [...timetables].filter(([key]) => key !== feed?.key).map(([key, ids]) => { const m = matchShare(live, ids); return { feed: key, matched: m.matched, share: m.share }; });
+  if (live.size === 0) return { date, feed: feed?.key ?? null, matched: 0, total: 0, share: null, problem: null, others: [] };
+  const chosen = feed ? timetables.get(feed.key) : undefined;
+  if (!feed || !chosen) return { date, feed: null, matched: 0, total: live.size, share: null, problem: 'no stored timetable covers this date', others };
+  const { matched, total, share } = matchShare(live, chosen);
+  const better = others.filter(o => o.matched > matched).sort((a, b) => b.matched - a.matched)[0];
+  const problem = better ? `timetable ${better.feed} matches more of this day (${(better.share * 100).toFixed(1)}%) than the one chosen: wrong timetable for the date`
+    : share < minShare ? `below ${(minShare * 100).toFixed(0)}%: the timetable does not match the live feed` : null;
+  return { date, feed: feed.key, matched, total, share, problem, others };
 }
 
 async function main() {
@@ -114,11 +128,12 @@ async function main() {
   const read = (f: string) => readFileSync(join(archiveDir, f), 'utf8');
   const rows = dates.map(date => {
     const feed = feedForDate(feeds, date);
-    return dayMatch(date, serviceDateTripIds(files, read, date), feed, feed ? tripIds.get(feed.key) ?? null : null, minShare);
+    return dayMatch(date, serviceDateTripIds(files, read, date), feed, tripIds, minShare);
   });
   for (const r of rows) {
     const share = r.share == null ? (r.total ? 'no timetable' : 'no positions') : `${(r.share * 100).toFixed(1)}%`;
-    console.log(`live-gtfs-window: ${r.date} ${r.feed ?? '-'} ${r.matched}/${r.total} ${share}${r.problem ? `  <-- ${r.problem}` : ''}`);
+    const rest = r.others.map(o => `${o.feed} ${(o.share * 100).toFixed(1)}%`).join(', ');
+    console.log(`live-gtfs-window: ${r.date} ${r.feed ?? '-'} ${r.matched}/${r.total} ${share}${rest ? ` (other: ${rest})` : ''}${r.problem ? `  <-- ${r.problem}` : ''}`);
   }
   const problems = rows.filter(r => r.problem);
   const withPositions = rows.filter(r => r.total > 0).length;

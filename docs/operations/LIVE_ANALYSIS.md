@@ -20,11 +20,22 @@ The report pages on beta read `atlas/live/ttc/<route>.json`, `agency.json` and `
   for both weeks. Review that first.
 - `-f mode=publish` runs only from `main`. A separate job saves the published files as the artifact `live-report-backup-<run id>`
   and then replaces them (`scripts/live-publish-upload.ts`). It refuses an incomplete file set and data older than what is
-  published. To undo, upload a backup folder back with `--from <backup> --allow-older --upload`. Publishing is an R2 write: it
+  published, and stops if it could not save the published set. To undo, upload a backup folder back with
+  `--from <backup> --allow-older --upload`. Publishing is an R2 write: it
   needs the same go-ahead as any other.
 
 A window that spans a TTC timetable change uses each service date's own timetable (`scripts/live-gtfs-for-window.ts` unpacks
-every stored surface zip the window needs into `gtfs/candidates/surface-feeds/`). The weekly schedule is in the file, off.
+every stored surface zip the window needs into `gtfs/candidates/surface-feeds/`). The run stops when a day's positions match
+its timetable below 90%, when another stored timetable matches a day better than the one chosen, or when the fetch could not
+read more than 2% of a day's snapshots.
+
+The weekly schedule is in the file, off. Before it is turned on (a scheduled run publishes with nobody looking):
+
+- an upload that fails part-way should put the saved files back by itself, or upload to a new prefix and switch once;
+- refuse to publish when either week has too few days with good recordings;
+- refuse a window that does not end yesterday;
+- stop an unattended publish when a headline number moves by more than a set amount from the published one;
+- tell someone when a run fails.
 
 ## What it measures (the `v3` block)
 

@@ -16,6 +16,27 @@ describe('live report refresh workflow contract', () => {
     expect(buildJob).toContain('"$GITHUB_REF" != "refs/heads/main"');
   });
 
+  it('has no trigger but a manual run', () => {
+    const on = workflow.slice(workflow.indexOf('\non:\n') + 5, workflow.indexOf('\npermissions:'));
+    const triggers = on.split('\n').filter(l => /^  [a-z_]+:/.test(l)).map(l => l.trim());
+    expect(triggers).toEqual(['workflow_dispatch:']);
+  });
+
+  it('keeps the two jobs apart: publish waits for build, and neither keeps the checkout token', () => {
+    expect(publishJob).toMatch(/^\n  publish:\n    needs: build\n/);
+    for (const job of [buildJob, publishJob]) {
+      expect(job.match(/uses: actions\/checkout@/g)).toHaveLength(1);
+      expect(job).toMatch(/uses: actions\/checkout@v\d+\n\s+with:\n\s+persist-credentials: false/);
+    }
+  });
+
+  it('never passes the flags that are for a person at a keyboard', () => {
+    expect(workflow).not.toMatch(/run: .*--first-publish/);
+    expect(workflow).not.toMatch(/run: .*--allow-older/);
+    expect(workflow).not.toMatch(/run: .*--force/);
+    expect(workflow).not.toMatch(/--max-failed-share/);
+  });
+
   it('builds with the read-only keys and no write permission', () => {
     expect(workflow).toMatch(/^permissions:\n  contents: read$/m);
     expect(workflow).not.toMatch(/: write$/m);
@@ -38,6 +59,10 @@ describe('live report refresh workflow contract', () => {
     expect(buildJob).toContain('--routes 501,503,504,505,506,507,509,510,511,512');
     expect(buildJob).toContain('--feeds-dir "$LIVE_DATA/gtfs/candidates/surface-feeds" --surface "$LIVE_DATA/gtfs/candidates/surface"');
     expect(buildJob).toContain('LIVE_SEGMENTS_DIR=$RUNNER_TEMP/live-data/out');
+    // The summary gets the fetch report, the timetable match and a copy of what is published now.
+    expect(buildJob).toContain('--report "$LIVE_DATA/review/fetch.json"');
+    expect(buildJob).toContain('--fetch "$LIVE_DATA/review/fetch.json"');
+    expect(buildJob).toContain('--published "$LIVE_DATA/review/published"');
   });
 
   it('saves the published files as an artifact before the one step that holds the write keys', () => {

@@ -100,10 +100,12 @@ jobs:
           key: live-report-archive-${{ steps.day.outputs.day }}
           restore-keys: live-report-archive-
 
+      # A day already in the cache is skipped only when it was fetched whole; yesterday's run left today's folder cut
+      # at 4 a.m., and that one is fetched again. Fails when a day loses more than 2% of its snapshots.
       - name: Fetch archived positions (last 15 service dates)
         run: >-
           npx tsx scripts/live-fetch-archive.ts --days 15 --out "$LIVE_DATA/archive" --prune
-          --routes 501,503,504,505,506,507,509,510,511,512
+          --routes 501,503,504,505,506,507,509,510,511,512 --report "$LIVE_DATA/review/fetch.json"
 
       # Saved even when a later step fails, so a failed run doesn't throw away the fetched days.
       - name: Save archived positions
@@ -129,12 +131,22 @@ jobs:
       - name: Build the report files
         run: npx tsx scripts/live-publish.ts ttc
 
+      # Plain public downloads (no keys), so the summary can put the new numbers beside what is published now.
+      - name: Download the published files for the comparison
+        run: |
+          mkdir -p "$LIVE_DATA/review/published"
+          for f in "$LIVE_DATA"/publish/atlas/live/ttc/*.json; do
+            name="$(basename "$f")"
+            curl -fsS -o "$LIVE_DATA/review/published/$name" "$R2_PUBLIC_URL/atlas/live/ttc/$name" || echo "not published now: $name"
+          done
+
       - name: Write the summary
         if: always()
         run: |
           if [ -f "$LIVE_DATA/publish/atlas/live/ttc/manifest.json" ]; then
             npx tsx scripts/live-refresh-summary.ts --files "$LIVE_DATA/publish/atlas/live/ttc" \
-              --match "$LIVE_DATA/review/timetable-match.json" --out "$LIVE_DATA/review/summary.md" >> "$GITHUB_STEP_SUMMARY"
+              --match "$LIVE_DATA/review/timetable-match.json" --fetch "$LIVE_DATA/review/fetch.json" \
+              --published "$LIVE_DATA/review/published" --out "$LIVE_DATA/review/summary.md" >> "$GITHUB_STEP_SUMMARY"
           else
             echo "## Live report refresh" >> "$GITHUB_STEP_SUMMARY"
             echo "No report files were built. See the log; the timetable match report, if any, is in the run artifact." >> "$GITHUB_STEP_SUMMARY"
@@ -184,7 +196,8 @@ jobs:
           path: ${{ runner.temp }}/built
 
       # Read-only keys, no --upload: saves every published file that is about to be replaced, and refuses a file set
-      # that is not a complete report or that is older than what is published.
+      # that is not a complete report or that is older than what is published. Fails when it could not save the
+      # published set (nothing there, or no manifest): a first publish is done by hand with --first-publish.
       - name: Save the published files
         run: npx tsx scripts/live-publish-upload.ts ttc --from "$RUNNER_TEMP/built/publish/atlas/live/ttc" --backup "$RUNNER_TEMP/backup"
         env:
