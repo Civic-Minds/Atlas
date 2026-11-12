@@ -79,11 +79,16 @@ function guard(archiveDir: string, date: string, tripsTxt: string, minShare: num
   return true;
 }
 
+/** Of the stored surface zips (keys named by feed start, <prefix>YYYY-MM-DD.zip), the latest that starts on or before `date`. */
+export function surfaceKeyForDate(keys: readonly string[], date: string): string | undefined {
+  return keys.filter(k => /\d{4}-\d{2}-\d{2}\.zip$/.test(k)).sort().filter(k => basename(k, '.zip') <= date).pop();
+}
+
 /** The stored surface zip that starts on or before `date` (keys are named by feed start), downloaded once into `cache`. */
 async function pickSurfaceZip(date: string, cache: string): Promise<{ zip: string; key: string; reason: string }> {
   const { r2GetArchiveBuffer, r2ListArchiveObjects } = await import('../pipeline/r2.js');
   const keys = (await r2ListArchiveObjects(LIVE_SURFACE_PREFIX)).map(o => o.key).filter(k => /\d{4}-\d{2}-\d{2}\.zip$/.test(k)).sort();
-  const key = keys.filter(k => basename(k, '.zip') <= date).pop();
+  const key = surfaceKeyForDate(keys, date);
   if (!key) { console.error(`live-gtfs: no stored surface GTFS in ${LIVE_SURFACE_PREFIX} starts on or before ${date}`); process.exit(1); }
   mkdirSync(cache, { recursive: true });
   const local = join(cache, basename(key));

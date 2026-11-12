@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { datesFromArgs, splitSnapshot, fileSafe, serviceWindowFolders, torontoServiceStart, torontoDate } from '../live-fetch-archive';
+import { datesFromArgs, dayIsDone, daysOverFailedShare, splitSnapshot, fileSafe, serviceWindowFolders, torontoServiceStart, torontoDate, MAX_FAILED_SHARE } from '../live-fetch-archive';
 
 describe('live-fetch-archive', () => {
   it('keeps every route of a snapshot, one line per route in the analysis format', () => {
@@ -46,6 +46,23 @@ describe('serviceWindowFolders', () => {
   });
   it('reads a bare number as a service-date window', () => {
     expect(datesFromArgs({ days: '3' })).toHaveLength(4);
+  });
+});
+
+describe('live-fetch-archive: what counts as fetched', () => {
+  it('skips a day only on its completeness marker, never because its files are there', () => {
+    // Yesterday's run left this day cut at 4 a.m. with files and no marker: it must be fetched again.
+    expect(dayIsDone({ force: false, cutBefore: null, markerExists: false })).toBe(false);
+    expect(dayIsDone({ force: false, cutBefore: null, markerExists: true })).toBe(true);
+    // Today's folder is still filling, and --force always fetches.
+    expect(dayIsDone({ force: false, cutBefore: 1_700_000_000, markerExists: true })).toBe(false);
+    expect(dayIsDone({ force: true, cutBefore: null, markerExists: true })).toBe(false);
+  });
+  it('fails a day that lost more than the allowed share of its snapshots', () => {
+    const day = (d: string, snapshots: number, failed: number) => ({ day: d, snapshots, failed, skipped: false, cut: false });
+    const days = [day('2026-11-01', 1440, 0), day('2026-11-02', 1440, 28), day('2026-11-03', 1440, 29), day('2026-11-04', 0, 0)];
+    expect(MAX_FAILED_SHARE).toBe(0.02);
+    expect(daysOverFailedShare(days, MAX_FAILED_SHARE).map(d => d.day)).toEqual(['2026-11-03']);
   });
 });
 
