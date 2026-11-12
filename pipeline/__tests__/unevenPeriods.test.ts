@@ -79,6 +79,11 @@ describe('an uneven tail reads its longest gap between its own departures (NYC 6
     expect(stretchFilterValue(tail)).toBe(18);
     // CIV-1064: the same departures as a main stretch with a departure before 19:00 (service continues
     // from the PM peak): the 41 minutes from 19:00 are a real wait the window cuts, and still count.
+    // CIV-1414 follow-up: the real tail also runs in the morning (603N from 2:20) but no local in the
+    // PM peak, so 19:41 starts its evening after a break: still 18, never 41.
+    const withMorning = stretchPeriods({ ...main([140, 400, 430, 460, ...times]), kind: 'tail' }).evening;
+    expect(withMorning.value).toBe(18);
+    expect(stretchPeriods(main([140, 400, 430, 460, ...times])).evening.value).toBe(18);
     const asMain = stretchPeriods(main([ev.start - 20, ...times])).evening;
     expect(asMain.uneven).toBe(true);
     expect(asMain.value).toBe(asMain.coverage);
