@@ -183,6 +183,32 @@ describe('buildV2Routes', () => {
     expect(out['7'].flag).toBe('limited');
     expect(out['7'].sat).toBeUndefined();
   });
+  describe('weekend periods (CIV-1425)', () => {
+    const route = [
+      f({ day: 'Weekday', routeShortName: '5', directionId: 0, routeAllDayHeadway: 12, routeFilterHeadwayByPeriod: { amPeak: 8, midday: 12 } }),
+      f({ day: 'Saturday', routeShortName: '5', directionId: 0, routeAllDayHeadway: 20, routeFilterHeadwayByPeriod: { amPeak: 20, midday: 15, late: 999999 } }),
+      f({ day: 'Saturday', routeShortName: '5', directionId: 1, routeAllDayHeadway: 20, routeFilterHeadwayByPeriod: { amPeak: 25, midday: 15, late: null } }),
+      f({ day: 'Sunday', routeShortName: '5', routeAllDayHeadway: 999999, routeFilterHeadwayByPeriod: { midday: 60 } }),
+    ];
+    it('off: weekend days carry only the headline, exactly as before', () => {
+      const { routes: out } = buildV2Routes(route);
+      expect(out['5'].sat).toEqual({ h: 20 });
+      expect(out['5'].sun).toEqual({ lim: true });
+    });
+    it('on: each known weekend day carries its own periods, worst direction, no-service as null', () => {
+      const { routes: out } = buildV2Routes(route, undefined, { weekendPeriods: true });
+      expect(out['5'].sat).toEqual({ h: 20, p: { amPeak: 25, midday: 15, late: null } });
+      expect(out['5'].sun).toEqual({ lim: true, p: { midday: 60 } });
+      expect(out['5'].rep.p).toEqual({ amPeak: 8, midday: 12 });
+      expect(fingerprintOf(out['5'])).toEqual(fingerprintOf(buildV2Routes(route).routes['5']));
+    });
+    it('on: none and unknown days never get periods', () => {
+      expect(weekendDay([], true, { periods: true })).toEqual({ none: true });
+      expect(weekendDay([], false, { periods: true })).toBeUndefined();
+      expect(weekendDay([{ day: 'Saturday', routeFilterHeadwayByPeriod: { midday: 15 } }], false, { periods: true })).toBeUndefined();
+      expect(weekendDay([{ routeAllDayHeadway: 30 }], false, { periods: true })).toEqual({ h: 30 });
+    });
+  });
 });
 
 describe('change fingerprint', () => {

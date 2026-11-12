@@ -3,6 +3,7 @@ import {
   backfillSupplementalPolicy, buildSidecar, buildV2Routes, buildV2RoutesMerged, historyV2Enabled,
   splitFeaturesBySource, BUS_ONLY_NOTE,
 } from '../historyV2.js';
+import { historyWeekendPeriodsFor } from '../historyV2Flag.js';
 import { visibilityCheck } from '../historyV2Build.js';
 
 const wk = (short: string, h: number, extra: Record<string, unknown> = {}) => ({
@@ -51,6 +52,12 @@ describe('supplemental routes in the v2 snapshot', () => {
   it('the gate is only ATLAS_HISTORY_V2=1', () => {
     expect(historyV2Enabled('1')).toBe(true);
     for (const v of [undefined, '', '0', 'true']) expect(historyV2Enabled(v)).toBe(false);
+  });
+
+  it('weekend periods are on only for listed slugs (CIV-1425)', () => {
+    expect(historyWeekendPeriodsFor('mbta', 'mbta')).toBe(true);
+    expect(historyWeekendPeriodsFor('mbta', ' ttc , mbta ')).toBe(true);
+    for (const v of [undefined, '', 'ttc', 'mbta-x']) expect(historyWeekendPeriodsFor('mbta', v)).toBe(false);
   });
 });
 

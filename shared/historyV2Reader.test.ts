@@ -56,6 +56,8 @@ describe('parseHistoryV2Sidecar', () => {
       expect(r.value.routes['1'].sun).toEqual({ none: true });
       expect(r.value.routes['2'].sat).toBeUndefined();
     }
+    // CIV-1425: weekend days may carry per-period values
+    expect(parseHistoryV2Sidecar({ ...sidecar, routes: { 1: { rep: { h: 5 }, sat: { h: 20, p: { midday: 15, late: null } }, sun: { lim: true, p: { midday: 60 } } } } }).ok).toBe(true);
   });
 
   it('returns typed errors and never throws', () => {
@@ -67,6 +69,7 @@ describe('parseHistoryV2Sidecar', () => {
     expect(parseHistoryV2Sidecar({ ...sidecar, routes: { 1: { rep: { h: 0 } } } })).toMatchObject({ error: { path: 'routes.1.rep.h' } });
     expect(parseHistoryV2Sidecar({ ...sidecar, routes: { 1: { rep: { h: 5 }, sat: { h: 0 } } } })).toMatchObject({ error: { path: 'routes.1.sat' } });
     expect(parseHistoryV2Sidecar({ ...sidecar, routes: { 1: { rep: { h: 5 }, sat: { none: false } } } })).toMatchObject({ error: { path: 'routes.1.sat' } });
+    expect(parseHistoryV2Sidecar({ ...sidecar, routes: { 1: { rep: { h: 5 }, sat: { h: 20, p: 5 } } } })).toMatchObject({ error: { path: 'routes.1.sat.p' } });
     expect(parseHistoryV2Sidecar({ ...sidecar, routes: { 1: { rep: { h: 5 }, flag: 'huge' } } })).toMatchObject({ error: { path: 'routes.1.flag' } });
     expect(parseHistoryV2Sidecar({ ...sidecar, routes: { 1: { rep: { h: 5, lim: true } } } })).toMatchObject({ error: { code: 'bad-field' } });
   });
