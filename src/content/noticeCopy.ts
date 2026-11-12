@@ -281,7 +281,8 @@ export const REPORT_NEEDS_REASON = 'Select a reason or describe what is wrong.';
 
 // ---- History ----
 // N53 history-trip-time
-export const HISTORY_TRIP_TIME_NOTE = "This is the scheduled time for one typical weekday trip end to end, shown only when the route's stops and path stayed the same across these years.";
+/** Ryan's wording, 2026-11-12 (CIV-1127): about the length of the frequency box's sentence. */
+export const HISTORY_TRIP_TIME_NOTE = 'This compares one typical weekday trip, end to end, over the same stops and path.';
 // N56 history-order
 export const HISTORY_ROUTE_ORDER_NOTE = 'Biggest changes first';
 

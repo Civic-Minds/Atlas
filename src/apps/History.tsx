@@ -168,18 +168,45 @@ function changeSummary(entry: RouteHistoryEntry, period: TimePeriod = 'all'): { 
 /** The neutral callout's outline, for the tinted frequency box, so both History boxes have the same edge (CIV-1127). */
 const CALLOUT_OUTLINE = 'border border-[var(--border-primary)]';
 
-/** Draft, pending Ryan's word-for-word OK (CIV-1127): the one sentence in the frequency change box. */
-const HISTORY_FREQUENCY_CHANGE_NOTE_DRAFT = 'This compares the oldest and newest weekday schedules Atlas has for this route.';
+/** The one sentence in the frequency change box: Ryan's wording, 2026-11-12 (CIV-1127). */
+const HISTORY_FREQUENCY_CHANGE_NOTE = 'This compares the oldest and newest weekday schedules available for this route.';
 
-/** The trip time box's lines, only when the trip time changed as displayed (CIV-1127, Ryan 2026-10-29:
- *  "why are we showing trip time if it iddint change"). A larger minimum is still his call. */
-export function tripTimeChange(entry: RouteHistoryEntry): { first: string; last: string; dates: string } | null {
+type ChangeTone = 'negative' | 'positive' | 'neutral';
+
+/** Ryan, 2026-11-12 (CIV-1127): a trip time change shows when it is at least about 2% of the earlier trip. */
+export const TRIP_TIME_MIN_CHANGE_SHARE = 0.02;
+
+/**
+ * Whether a trip time changed enough to show (CIV-1127): at least `TRIP_TIME_MIN_CHANGE_SHARE` of the earlier
+ * trip, longer or shorter, and at least 1 minute as displayed. So 20 to 21 min shows, 76 to 77 does not and
+ * 76 to 78 does. The minutes are the stored ones: History's trip times are whole minutes, the same as shown.
+ */
+export function tripTimeChangedEnough(firstMinutes: number, lastMinutes: number): boolean {
+  if (!(firstMinutes > 0) || !(lastMinutes > 0)) return false;
+  if (Math.abs(Math.round(lastMinutes) - Math.round(firstMinutes)) < 1) return false;
+  return Math.abs(lastMinutes - firstMinutes) >= firstMinutes * TRIP_TIME_MIN_CHANGE_SHARE;
+}
+
+/** The trip time box's lines, only when the trip time changed enough (`tripTimeChangedEnough`; Ryan 2026-10-29:
+ *  "why are we showing trip time if it iddint change"). A longer trip is the worse colour and a shorter one
+ *  the better colour, as the frequency box (Ryan 2026-11-12: "why is one red tbut not the other if both got worse"). */
+export function tripTimeChange(entry: RouteHistoryEntry): { first: string; last: string; dates: string; tone: ChangeTone } | null {
   const trip = entry.tripDuration;
-  if (!trip) return null;
-  const first = runTimeAmount(trip.firstMinutes);
-  const last = runTimeAmount(trip.lastMinutes);
-  if (first === last) return null;
-  return { first, last, dates: `${trip.firstLabel} to ${trip.lastLabel}` };
+  if (!trip || !tripTimeChangedEnough(trip.firstMinutes, trip.lastMinutes)) return null;
+  const tone: ChangeTone = trip.lastMinutes > trip.firstMinutes ? 'negative' : 'positive';
+  return { first: runTimeAmount(trip.firstMinutes), last: runTimeAmount(trip.lastMinutes), dates: `${trip.firstLabel} to ${trip.lastLabel}`, tone };
+}
+
+/** One change box on the History route card: both boxes (frequency, trip time) are this piece, so their tint,
+ *  headline colour and outline cannot differ (CIV-1127). Grey when a change is neither better nor worse. */
+function ChangeBox({ tone, headline, dates, note, testId }: { tone: ChangeTone; headline: string; dates: string; note: string; testId: string }) {
+  return (
+    <CardCallout tone={tone} className={tone === 'neutral' ? 'mt-3' : `mt-3 ${CALLOUT_OUTLINE}`} data-testid={`${testId}-box`} data-tone={tone}>
+      <p className={tone === 'neutral' ? CARD_CALLOUT_HEADLINE : CARD_CALLOUT_HEADLINE_TONE[tone]} data-testid={testId}>{headline}</p>
+      <p className={CARD_CALLOUT_TEXT}>{dates}</p>
+      <p className={`${CARD_NOTICE} mt-1`}>{note}</p>
+    </CardCallout>
+  );
 }
 
 /** The agency with only the snapshots History shows (#1030). */
@@ -354,22 +381,13 @@ function RouteHistoryCard({
         })}
       </SidebarCardListRows>
 
-        {/* Two short boxes in one style (CIV-1127, Ryan 2026-10-30: "why does one box have an outline here and the other
-            doesnt ... jut put a sentence in both to exlpain if needed"): the frequency change in its better or worse
-            colour (CIV-971), then the trip time. Each has its headline, its dates on their own line and one sentence. */}
+        {/* Two short boxes from one piece (CIV-1127): the frequency change, then the trip time, each in its better
+            or worse colour with its dates on their own line and one sentence. */}
         {summary && (
-          <CardCallout tone={summary.worse ? 'negative' : 'positive'} className={`mt-3 ${CALLOUT_OUTLINE}`} data-testid="history-frequency-box">
-            <p className={CARD_CALLOUT_HEADLINE_TONE[summary.worse ? 'negative' : 'positive']}>{summary.text}</p>
-            <p className={CARD_CALLOUT_TEXT}>{summary.subtext}</p>
-            <p className={`${CARD_NOTICE} mt-1`}>{HISTORY_FREQUENCY_CHANGE_NOTE_DRAFT}</p>
-          </CardCallout>
+          <ChangeBox tone={summary.worse ? 'negative' : 'positive'} headline={summary.text} dates={summary.subtext} note={HISTORY_FREQUENCY_CHANGE_NOTE} testId="history-frequency" />
         )}
         {tripTime && (
-          <CardCallout className="mt-3" data-testid="history-trip-time-box">
-            <p className={CARD_CALLOUT_HEADLINE} data-testid="history-trip-time">Trip time: {tripTime.first} → {tripTime.last}</p>
-            <p className={CARD_CALLOUT_TEXT}>{tripTime.dates}</p>
-            <p className={`${CARD_NOTICE} mt-1`}>{HISTORY_TRIP_TIME_NOTE}</p>
-          </CardCallout>
+          <ChangeBox tone={tripTime.tone} headline={`Trip time: ${tripTime.first} → ${tripTime.last}`} dates={tripTime.dates} note={HISTORY_TRIP_TIME_NOTE} testId="history-trip-time" />
         )}
     </SidebarCardShell>
     </div>
