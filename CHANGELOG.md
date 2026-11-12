@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **On-demand hours can give Friday its own row**: [CyRide's Moonlight Express](https://github.com/Civic-Minds/Atlas/issues/1440) reads Fri–Sat 10:30 PM–2 AM, where its card said "Hours unavailable" and showed Saturday only
 - **The map key and Mode menu say some on-demand zones aren't mapped yet**: so a place with no shaded zone isn't read as having no on-demand service
 - **An on-demand service's card lists every zone with its hours**: services whose hours differ by zone, like RTD FlexRide, read "Hours unavailable" until a zone was picked; each zone row opens that zone
 - **Shared map links preview with a map of their own city**: a link to a spot in Chicago showed Toronto; area and agency pages show their city's map too

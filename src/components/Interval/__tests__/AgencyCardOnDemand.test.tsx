@@ -155,3 +155,30 @@ describe('whole-service card with hours set zone by zone', () => {
     expect(screen.getByTestId('on-demand-running-note')).toHaveTextContent('Running during weekday midday');
   });
 });
+
+describe('Friday-only weekday service (#1440)', () => {
+  const cyride = {
+    slug: 'cyride', name: 'CyRide', region: 'Iowa', center: [42, -93.6], url: '',
+    onDemandServiceArea: {
+      serviceName: 'EASE', sourceUrl: 'https://example.com',
+      features: [{ type: 'Feature', properties: { areaName: 'Ames city limits' }, geometry: { type: 'Polygon', coordinates: [] } }],
+      zoneMetadata: { 'Ames city limits': { serviceName: 'Moonlight Express', availability: { Friday: [{ startHour: 22.5, endHour: 26 }], Saturday: [{ startHour: 22.5, endHour: 26 }], Sunday: [] } } },
+    },
+  } as unknown as Agency;
+  const card = (day: 'Weekday' | 'Saturday') => render(
+    <AgencyCard agency={cyride} layers={{}} day={day} period="late" maxHeadway={Infinity} selectedModes={new Set()}
+      hideSpan={false} hideLimitedService={false} onRouteSelect={() => {}} onClose={() => {}} onDemandFocus onDemandZoneId="Ames city limits" />,
+  );
+
+  it('shows a Fri–Sat row and no "Hours unavailable" note on a weekday', () => {
+    card('Weekday');
+    expect(screen.getByText('Fri–Sat')).toBeInTheDocument();
+    expect(screen.queryByText('Hours unavailable')).toBeNull();
+    expect(screen.queryByText(/Running/)).toBeNull();
+  });
+
+  it('keeps the running note on Saturday', () => {
+    card('Saturday');
+    expect(screen.getByTestId('on-demand-running-note')).toHaveTextContent('Running during Saturday late');
+  });
+});
