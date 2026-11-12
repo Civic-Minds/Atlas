@@ -27,7 +27,7 @@ import { resolve } from 'path';
 import { canRebuildPmtilesAfterRefresh, clearDataRefreshHandoff, writeDataRefreshMarker, writeRefreshRunResult, type RefreshAgencyStatus } from './dataRefreshMarker.js';
 // loadEnv first so shared/config sees staging R2_PUBLIC_URL
 import { LOADED_ENV_FILE, isProductionPublicR2Bucket } from './loadEnv.js';
-import { r2Put, r2Get, r2PutArchive, r2PutArchiveJson, r2GetArchive, rawFeedArchiveKey, rawFeedDigest } from './r2.js';
+import { r2Put, r2Get, r2PutArchive, r2PutArchiveJson, r2GetArchive, r2ListArchiveObjects, rawFeedArchiveKey, rawFeedDigest } from './r2.js';
 import { GtfsValidationError, type GtfsPreprocess } from './process-core.js';
 import { loadSupplementalFeeds, processAgencyFeeds, supplementalArchiveStem, type SupplementalFeed } from './agencyFeeds.js';
 import { serviceWeekKey } from './serviceWeekKey.js';
@@ -48,7 +48,7 @@ import {
 } from './overrideAudit.js';
 import { readFeedReviewHistory, shouldReviewNextFeed } from './feedReview.js';
 import { compareStopSnapshots, formatStopAuditLog, type AuditedStop } from './stopAudit.js';
-import { feedFileDate, feedPeriodStart, lowerStoredFeedExpiry, candidateIsOlderThanActive, shouldClearStaged, decideRefreshSkipUnchanged, isFeedExpired, markFeedStale, shouldSkipAllExpiredFeeds, shouldStampFeedMeta, stampFeedMeta, refreshedFeedExpiry, routeLineCount, stampSupplementalFeedMeta } from './refreshMeta.js';
+import { feedFileDate, feedPeriodStart, lowerStoredFeedExpiry, candidateIsOlderThanActive, shouldClearStaged, decideRefreshSkipUnchanged, rawArchiveKeyDigest, isFeedExpired, markFeedStale, shouldSkipAllExpiredFeeds, shouldStampFeedMeta, stampFeedMeta, refreshedFeedExpiry, routeLineCount, stampSupplementalFeedMeta } from './refreshMeta.js';
 import {
   COUNTRY_LAUNCH_FLAG,
   isCountryLaunchBlocked,
@@ -67,7 +67,7 @@ import { recordFeedCheck, type FeedCheckFields } from './feedCheckTracking.js';
 import { buildFeedCandidates, type FeedCandidate } from './feedSourceCandidates.js';
 import { resolveFeedUrl } from './feedUrl.js';
 import { ROUTE_ARTIFACT_SCHEMA_VERSION } from '../shared/artifactSchema.js';
-import { peekFeedDates, zipFileDate } from './archiveSelection.js';
+import { newestArchivedZipStem, peekFeedDates, zipFileDate } from './archiveSelection.js';
 import { tryArchiveUnchangedFeed } from './archiveIfMissing.js';
 import { futureFeedHoldUntil, heldFeedSummary } from './futureFeedHold.js';
 import { resolveAgencyTimezone } from '../shared/agencyTimezone.js';
@@ -314,6 +314,15 @@ interface AgencyEntry {
 
 type GeoJsonFc = { type: string; features: unknown[] };
 
+/** #1423: the newest archived zip's stem for an agency with no recorded key; null when the archive is empty or unreadable. */
+async function newestArchivedRawKey(agency: AgencyEntry, todayYmd: string): Promise<string | null> {
+  try {
+    return newestArchivedZipStem(await r2ListArchiveObjects(`gtfs/archive/${agency.slug}/`), agency, todayYmd);
+  } catch {
+    return null;
+  }
+}
+
 async function refreshAgency(
   agency: AgencyEntry,
   manualBaseFareOverride?: number,
@@ -456,6 +465,7 @@ async function refreshAgency(
     lastServiceWeek: agency.lastServiceWeek,
     zipDigest: rawFeedDigest(buf),
     lastRawArchiveKey: agency.lastRawArchiveKey,
+    archivedRawKey: rawArchiveKeyDigest(agency.lastRawArchiveKey) ? null : await newestArchivedRawKey(agency, expiryToday),
   });
   if (skipDecision.skip) {
     // A current feed can still have a legacy processed artifact. Do not let

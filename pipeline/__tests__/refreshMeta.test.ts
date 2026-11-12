@@ -314,6 +314,20 @@ describe('unchanged-feed check by zip hash (#1423)', () => {
     // Older archive names carry only a label.
     expect(decideRefreshSkipUnchanged({ ...legacy, lastRawArchiveKey: '20510930' }).skip).toBe(true);
   });
+  it('without a recorded key, skips a zip matching the newest archived zip', () => {
+    expect(decideRefreshSkipUnchanged({ ...base, peekedVersion: '124', lastFeedVersion: '124', zipDigest: '0123456789abcdef', archivedRawKey: '20510930-0123456789abcdef' })).toEqual({ skip: true, reason: 'skipped (same zip: 0123456789abcdef)' });
+  });
+  it('without a recorded key, reprocesses a zip that differs from the newest archived zip (Dutchess)', () => {
+    expect(decideRefreshSkipUnchanged({ ...base, peekedVersion: '124', lastFeedVersion: '124', zipDigest: 'fedcba9876543210', archivedRawKey: '20510930-0123456789abcdef' }).skip).toBe(false);
+    expect(decideRefreshSkipUnchanged({ ...base, peekedVersion: null, lastFeedVersion: '124', zipDigest: 'fedcba9876543210', archivedRawKey: '20510930-0123456789abcdef' }).skip).toBe(false);
+  });
+  it('a recorded key wins over the archive', () => {
+    expect(decideRefreshSkipUnchanged({ ...base, peekedVersion: null, zipDigest: '0123456789abcdef', lastRawArchiveKey, archivedRawKey: '20510930-fedcba9876543210' }).skip).toBe(true);
+  });
+  it('keeps the end-date rule when the archive is empty or unreadable', () => {
+    expect(decideRefreshSkipUnchanged({ ...base, peekedVersion: '124', lastFeedVersion: '124', zipDigest: 'fedcba9876543210', archivedRawKey: null }).skip).toBe(true);
+    expect(decideRefreshSkipUnchanged({ ...base, peekedVersion: '124', lastFeedVersion: '124', zipDigest: 'fedcba9876543210', archivedRawKey: 'en' }).skip).toBe(true);
+  });
   it('reads the hash from an archive key', () => {
     expect(rawArchiveKeyDigest('20240630-cc0eb0e68ef49960')).toBe('cc0eb0e68ef49960');
     expect(rawArchiveKeyDigest('v1-2-cc0eb0e68ef49960')).toBe('cc0eb0e68ef49960');

@@ -368,18 +368,21 @@ export function decideRefreshSkipUnchanged(opts: {
   zipDigest?: string | null;
   /** #1423: the archive key of the zip the live artifacts were built from; its hash suffix is compared with zipDigest. */
   lastRawArchiveKey?: string | null;
+  /** Without a recorded key: the stem of the newest zip in the agency's archive (newestArchivedZipStem). */
+  archivedRawKey?: string | null;
 }): RefreshSkipReason {
   if (opts.forceRefresh || opts.hasSupplementals || opts.feedExpired || (opts.referenceDateFromRunDate && !opts.serviceWeek)) return { skip: false };
   if (opts.serviceWeek && opts.serviceWeek !== (opts.lastServiceWeek ?? null)) return { skip: false };
   // #1423: when the last ingested zip's hash is recorded, it alone decides. Dutchess republished a
   // corrected feed with the same end date and version, and the date rule below skipped it.
-  const lastDigest = rawArchiveKeyDigest(opts.lastRawArchiveKey);
+  // A record without a key compares against the newest archived zip instead.
+  const lastDigest = rawArchiveKeyDigest(opts.lastRawArchiveKey) ?? rawArchiveKeyDigest(opts.archivedRawKey);
   if (opts.zipDigest && lastDigest) {
     return opts.zipDigest === lastDigest
       ? { skip: true, reason: `skipped (same zip: ${lastDigest})` }
       : { skip: false };
   }
-  // Records without a hash (refreshed before #1423) keep the end-date / version rule.
+  // No hash to compare (empty or unreadable archive, ambiguous pick, hashless key): the end-date / version rule.
   const { peekedExpiry, peekedVersion, lastFeedVersion } = opts;
   // Older records have no uncapped value; compare against the recorded one as before.
   const lastFeedExpiry = opts.lastPeekedExpiry ?? opts.lastFeedExpiry;

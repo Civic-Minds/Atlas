@@ -3,6 +3,7 @@ import { recordedFeedExpiry } from '../refreshMeta.js';
 import JSZip from 'jszip';
 import {
   archiveKeyServiceDate,
+  newestArchivedZipStem,
   countArtifacts,
   includeHiddenArgError,
   isReprocessTarget,
@@ -423,5 +424,24 @@ describe('zipFileDate (#1253)', () => {
     zip.file('calendar.txt', 'service_id\n', { date: new Date(Date.UTC(2030, 0, 1)) });
     expect(await zipFileDate(await zip.generateAsync({ type: 'nodebuffer' }), '20261102')).toBeNull();
     expect(await zipFileDate(Buffer.from('not a zip'), '20261102')).toBeNull();
+  });
+});
+
+describe('newestArchivedZipStem (#1423)', () => {
+  const prefix = 'gtfs/archive/dutchess/';
+  it('names the newest upload, without .zip', () => {
+    const objects = [
+      { key: `${prefix}20510930-0123456789abcdef.zip`, lastModified: new Date('2026-10-01') },
+      { key: `${prefix}20510930-a4634dda6cc46dcb.zip`, lastModified: new Date('2026-11-02') },
+    ];
+    expect(newestArchivedZipStem(objects, { lastFeedExpiry: '20510930' }, '20261111')).toBe('20510930-a4634dda6cc46dcb');
+  });
+  it('is null for an empty archive or an ambiguous pick', () => {
+    expect(newestArchivedZipStem([], { lastFeedExpiry: '20510930' })).toBeNull();
+    const tied = [
+      { key: `${prefix}20510930-0123456789abcdef.zip`, lastModified: null },
+      { key: `${prefix}20520101-a4634dda6cc46dcb.zip`, lastModified: null },
+    ];
+    expect(newestArchivedZipStem(tied, { lastFeedExpiry: '20261231' }, '20261111')).toBeNull();
   });
 });
