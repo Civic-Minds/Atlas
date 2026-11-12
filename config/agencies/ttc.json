@@ -7,6 +7,7 @@
     "Toronto"
   ],
   "region": "Ontario",
+  "mergeIdenticalShapeIds": true,
   "center": [
     43.7187,
     -79.4077
