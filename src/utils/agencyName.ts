@@ -445,6 +445,15 @@ export function agencyNames(agency: AgencyNameInput): AgencyNames {
 }
 
 /**
+ * The agency card's title and place ("MARTA", "Atlanta"), the one source for the map's agency card and History's
+ * agency card (CIV-1428, #1027): neither view builds its own, so they can never name a different place.
+ * A bare name (History's fallback for an agency missing from the catalog) is read the same way.
+ */
+export function agencyCardTitle(agency: string | { name: string; cities?: string[]; displayArea?: string }): { primary: string; secondary?: string } {
+  return agencyNames(typeof agency === 'string' ? agency : { name: agency.name, cities: agency.cities, displayArea: agency.displayArea }).card;
+}
+
+/**
  * Each agency's short name, with what tells it apart where two in the list share one (#1245): "MTA NYCT Bus · Bronx",
  * "Valley Metro · Phoenix". For text that names several agencies at once, such as the map's load-error hint.
  */

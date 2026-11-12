@@ -18,7 +18,7 @@ import ModeFilterPillRow from '../ui/ModeFilterPillRow';
 import { isRailReplacementBus } from '../../../shared/modes';
 import { buildRouteModeFilters, routeMatchesModeFilter, type RouteModeFilter, type RouteModeFilterKey, type RouteModeFilterRoute } from '../../utils/routeModeFilters';
 import { headwayEveryRange } from '../../utils/headwayText';
-import { agencyNames } from '../../utils/agencyName';
+import { agencyCardTitle } from '../../utils/agencyName';
 import type { DayType, TimePeriod, ShapeProperties } from '../../hooks/useIntervalStats';
 import { passesRouteFilter } from '../../hooks/useIntervalStats';
 import { IRREGULAR_PERIOD_SHORT_LABEL, routeListDisplay } from '../../utils/effectiveHeadway';
@@ -457,7 +457,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
   );
   const liveShortNames = useMemo(() => new Set(liveRoutes.map(r => r.displayRouteShortName)), [liveRoutes]);
   const { primary: agencyNamePrimary, secondary: agencyNameSecondary } = useMemo(
-    () => agencyNames({ name: agency.name, cities: agency.cities, displayArea: agency.displayArea }).card,
+    () => agencyCardTitle(agency),
     [agency.name, agency.cities, agency.displayArea],
   );
   // An on-demand-only agency's cards are named by its service ("GP Transit On-Demand"), with no place beside it,
