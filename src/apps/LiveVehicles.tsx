@@ -318,7 +318,10 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
       ? allVehicles.filter(v =>
           v.routeShortName.toLowerCase().includes(q) ||
           (v.displayName && v.displayName.toLowerCase().includes(q)) ||
-          (v.headsign && v.headsign.toLowerCase().includes(q))
+          (v.headsign && v.headsign.toLowerCase().includes(q)) ||
+          // A vehicle number ("4503") finds that vehicle: whole number only, so "50" doesn't pull in every 50xx car (#1470).
+          v.id.toLowerCase() === q ||
+          (v.vehicleLabel != null && v.vehicleLabel.toLowerCase() === q)
         )
       : allVehicles;
 
