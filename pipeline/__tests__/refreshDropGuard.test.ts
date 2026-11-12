@@ -123,3 +123,10 @@ describe('refresh gate reads the expiry refresh records (#1304)', () => {
     expect(refreshSource).toMatch(/service: \{ start: feedStart, end: serviceEnd,/);
   });
 });
+
+describe('refresh wiring for the zip-hash unchanged check (#1423)', () => {
+  it('compares the downloaded zip with the recorded archive key and records the key it processes', () => {
+    expect(refreshSource).toMatch(/zipDigest: rawFeedDigest\(buf\),\s*lastRawArchiveKey: agency\.lastRawArchiveKey,/);
+    expect(refreshSource).toMatch(/rawArchiveKey: archiveKey,\s*\}\);/);
+  });
+});

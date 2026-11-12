@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { candidateIsOlderThanActive, decideRefreshSkipUnchanged, feedFileDate, lowerStoredFeedExpiry, isFeedExpired, markFeedStale, recordedFeedExpiry, routeLineCount, shouldReplaceExpiredFeed, shouldSkipAllExpiredFeeds, shouldStampFeedMeta, stampFeedMeta, stampReprocessedFeedExpiry, stampSupplementalFeedMeta } from '../refreshMeta.js';
+import { candidateIsOlderThanActive, decideRefreshSkipUnchanged, feedFileDate, lowerStoredFeedExpiry, isFeedExpired, markFeedStale, rawArchiveKeyDigest, recordedFeedExpiry, routeLineCount, shouldReplaceExpiredFeed, shouldSkipAllExpiredFeeds, shouldStampFeedMeta, stampFeedMeta, stampReprocessedFeedExpiry, stampSupplementalFeedMeta } from '../refreshMeta.js';
 import { isCurrentProductionFeed, isStaleProductionFeed } from '../../shared/feedAvailability.js';
 
 describe('feed expiry checks', () => {
@@ -283,6 +283,47 @@ describe('decideRefreshSkipUnchanged with a run-date reference (#774)', () => {
   });
   it('skips a run-date agency whose picked week did not move', () => {
     expect(decideRefreshSkipUnchanged({ ...same, referenceDateFromRunDate: true, serviceWeek: 'a', lastServiceWeek: 'a' }).skip).toBe(true);
+  });
+});
+
+describe('unchanged-feed check by zip hash (#1423)', () => {
+  // Dutchess: a corrected feed republished with the same end date (and no new version) was skipped.
+  const base = { forceRefresh: false, hasSupplementals: false, feedExpired: false, peekedExpiry: '20510930', lastPeekedExpiry: '20510930', lastFeedExpiry: '20510930' };
+  const lastRawArchiveKey = '20510930-0123456789abcdef';
+
+  it('reprocesses a corrected zip with the same end date and an unknown version', () => {
+    expect(decideRefreshSkipUnchanged({ ...base, peekedVersion: null, lastFeedVersion: '124', zipDigest: 'fedcba9876543210', lastRawArchiveKey }).skip).toBe(false);
+  });
+  it('reprocesses a corrected zip with the same end date and the same version', () => {
+    expect(decideRefreshSkipUnchanged({ ...base, peekedVersion: '124', lastFeedVersion: '124', zipDigest: 'fedcba9876543210', lastRawArchiveKey }).skip).toBe(false);
+  });
+  it('skips a byte-identical zip', () => {
+    expect(decideRefreshSkipUnchanged({ ...base, peekedVersion: null, lastFeedVersion: null, zipDigest: '0123456789abcdef', lastRawArchiveKey })).toEqual({ skip: true, reason: 'skipped (same zip: 0123456789abcdef)' });
+  });
+  it('skips an identical zip even when no end date was read', () => {
+    expect(decideRefreshSkipUnchanged({ ...base, peekedExpiry: null, peekedVersion: null, zipDigest: '0123456789abcdef', lastRawArchiveKey }).skip).toBe(true);
+  });
+  it('still reprocesses an identical zip whose picked week moved or that has ended', () => {
+    expect(decideRefreshSkipUnchanged({ ...base, peekedVersion: null, zipDigest: '0123456789abcdef', lastRawArchiveKey, serviceWeek: 'b', lastServiceWeek: 'a' }).skip).toBe(false);
+    expect(decideRefreshSkipUnchanged({ ...base, feedExpired: true, peekedVersion: null, zipDigest: '0123456789abcdef', lastRawArchiveKey }).skip).toBe(false);
+  });
+  it('keeps the end-date rule for a record without a hash', () => {
+    const legacy = { ...base, peekedVersion: null, lastFeedVersion: '124', zipDigest: 'fedcba9876543210' };
+    expect(decideRefreshSkipUnchanged(legacy).skip).toBe(true);
+    expect(decideRefreshSkipUnchanged({ ...legacy, lastRawArchiveKey: null }).skip).toBe(true);
+    // Older archive names carry only a label.
+    expect(decideRefreshSkipUnchanged({ ...legacy, lastRawArchiveKey: '20510930' }).skip).toBe(true);
+  });
+  it('reads the hash from an archive key', () => {
+    expect(rawArchiveKeyDigest('20240630-cc0eb0e68ef49960')).toBe('cc0eb0e68ef49960');
+    expect(rawArchiveKeyDigest('v1-2-cc0eb0e68ef49960')).toBe('cc0eb0e68ef49960');
+    expect(rawArchiveKeyDigest('20240630')).toBeNull();
+    expect(rawArchiveKeyDigest(null)).toBeNull();
+  });
+  it('a refresh records the archive key it processed', () => {
+    const agency: Record<string, unknown> = { lastRawArchiveKey: '20240630-cc0eb0e68ef49960' };
+    stampFeedMeta(agency, { feedExpiry: '20510930', feedVersion: '124', peekedExpiry: '20510930', peekedVersion: '124', todayYmd: '2026-11-11', rawArchiveKey: lastRawArchiveKey });
+    expect(agency.lastRawArchiveKey).toBe(lastRawArchiveKey);
   });
 });
 

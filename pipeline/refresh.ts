@@ -27,7 +27,7 @@ import { resolve } from 'path';
 import { canRebuildPmtilesAfterRefresh, clearDataRefreshHandoff, writeDataRefreshMarker, writeRefreshRunResult, type RefreshAgencyStatus } from './dataRefreshMarker.js';
 // loadEnv first so shared/config sees staging R2_PUBLIC_URL
 import { LOADED_ENV_FILE, isProductionPublicR2Bucket } from './loadEnv.js';
-import { r2Put, r2Get, r2PutArchive, r2PutArchiveJson, r2GetArchive, rawFeedArchiveKey } from './r2.js';
+import { r2Put, r2Get, r2PutArchive, r2PutArchiveJson, r2GetArchive, rawFeedArchiveKey, rawFeedDigest } from './r2.js';
 import { GtfsValidationError, type GtfsPreprocess } from './process-core.js';
 import { loadSupplementalFeeds, processAgencyFeeds, supplementalArchiveStem, type SupplementalFeed } from './agencyFeeds.js';
 import { serviceWeekKey } from './serviceWeekKey.js';
@@ -267,6 +267,8 @@ interface AgencyEntry {
   lastPeekedExpiry?: string | null;
   lastFeedStart?: string | null;
   lastFeedVersion?: string | null;
+  /** Archive key of the zip the live artifacts came from; its hash decides "unchanged" (#1423). */
+  lastRawArchiveKey?: string | null;
   lastRefreshedAt?: string | null;
   lastFeedCheckAt?: string | null;
   /** A fetched timetable starting on this date waits until then (#1144). */
@@ -452,6 +454,8 @@ async function refreshAgency(
     referenceDateFromRunDate: agency.referenceDateFromRunDate,
     serviceWeek,
     lastServiceWeek: agency.lastServiceWeek,
+    zipDigest: rawFeedDigest(buf),
+    lastRawArchiveKey: agency.lastRawArchiveKey,
   });
   if (skipDecision.skip) {
     // A current feed can still have a legacy processed artifact. Do not let
@@ -628,6 +632,7 @@ async function refreshAgency(
       serviceWeek,
       feedObtainedAt,
       feedStart: peekedPeriodStart,
+      rawArchiveKey: archiveKey,
     });
     stampSupplementalFeedMeta(agency, supplementalMeta);
   }
