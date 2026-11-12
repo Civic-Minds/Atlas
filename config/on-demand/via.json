@@ -202,6 +202,25 @@
           "retrievedAt": "2026-10-11"
         }
       },
+      "Elmendorf": {
+        "serviceName": "VIA Link",
+        "serviceHours": "Weekdays, 7 a.m. to 7 p.m.",
+        "hoursNote": "Southeast zone extension.",
+        "availability": {
+          "Weekday": [
+            {
+              "startHour": 7,
+              "endHour": 19
+            }
+          ],
+          "Saturday": [],
+          "Sunday": []
+        },
+        "hoursSource": {
+          "url": "https://www.viainfo.net/link/",
+          "retrievedAt": "2026-11-12"
+        }
+      },
       "Sandy Oaks": {
         "serviceName": "VIA Link",
         "serviceHours": "Weekdays, 7 a.m. to 7 p.m.",
@@ -11641,6 +11660,44 @@
         "serviceType": "on-demand",
         "sourceUrl": "https://www.google.com/maps/d/kml?mid=1lEalfJeDd-nz8tEVQQOQ8_YkCk1LFXs&forcekml=1",
         "sourceLabel": "VIA Link Southeast zone map, satellite zones (Google My Maps)",
+        "sourceRetrievedAt": "2026-11-12",
+        "areaName": "Elmendorf"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -98.306346,
+              29.265814
+            ],
+            [
+              -98.305426,
+              29.264451
+            ],
+            [
+              -98.303835,
+              29.265801
+            ],
+            [
+              -98.305222,
+              29.26654
+            ],
+            [
+              -98.306346,
+              29.265814
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "via",
+        "serviceType": "on-demand",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1lEalfJeDd-nz8tEVQQOQ8_YkCk1LFXs&forcekml=1",
+        "sourceLabel": "VIA Link Southeast zone map, satellite zones (Google My Maps)",
         "sourceRetrievedAt": "2026-10-11",
         "areaName": "Sandy Oaks"
       },
@@ -11978,5 +12035,5 @@
     }
   ],
   "stopFeatures": [],
-  "notes": "Each zone map was matched to its zone by the map's own title (Map - Downtown, Map - Southeast, etc.). Display polygons for Northeast Lakeview College were left out. The Southeast map's satellite layer has 10 small boxes, one around each satellite stop, each drawn as its own zone and named after the KML stop inside it. St. Hedwig and Sandy Oaks use the weekday extension hours. The other 8 use Southeast hours because the VIA Link booklet's Southeast Zone map marks them as Additional VIA Link stops (Sinclair & Glacier Lake is labelled Lakeside on that map, matched by location; the H-E-B box is the H-E-B circle at WW White and Lord, not the Super Regional Warehouse star). Holiday hours are not stated. The page lists the Randolph end time for the Northeast Lakeview College link as both 10 p.m. and 9:30 p.m.; recheck."
+  "notes": "Each zone map was matched to its zone by the map's own title (Map - Downtown, Map - Southeast, etc.). Display polygons for Northeast Lakeview College were left out. The Southeast map's satellite layer has 11 small boxes, one around each satellite stop, each drawn as its own zone and named after the KML stop inside it. St. Hedwig, Sandy Oaks and Elmendorf (added 2026-11-12; its stop, Tex Best Travel Center, is in the map's 'VIA Link Southeast - Elmendorf' hubset) use the weekday extension hours. The other 8 use Southeast hours because the VIA Link booklet's Southeast Zone map marks them as Additional VIA Link stops (Sinclair & Glacier Lake is labelled Lakeside on that map, matched by location; the H-E-B box is the H-E-B circle at WW White and Lord, not the Super Regional Warehouse star). Holiday hours are not stated. The page lists the Randolph end time for the Northeast Lakeview College link as both 10 p.m. and 9:30 p.m.; recheck."
 }
