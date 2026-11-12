@@ -285,6 +285,17 @@ export const REPORT_NEEDS_REASON = 'Select a reason or describe what is wrong.';
 export const HISTORY_TRIP_TIME_NOTE = 'This compares one typical weekday trip, end to end, over the same stops and path.';
 // N56 history-order
 export const HISTORY_ROUTE_ORDER_NOTE = 'Biggest changes first';
+// CIV-1425: pending Ryan's word-for-word OK
+/** The frequency change box's sentence on Saturday or Sunday (the weekday sentence stays Ryan's CIV-1127 wording). */
+export const historyWeekendFrequencyChangeNote = (day: 'Saturday' | 'Sunday') =>
+  `This compares the oldest and newest ${day} schedules available for this route.`;
+// CIV-1425: pending Ryan's word-for-word OK
+/** A History row whose weekend day has no trips at all. */
+export const HISTORY_NO_TRIPS_LABEL = 'no trips';
+// CIV-1425: pending Ryan's word-for-word OK
+/** Above an agency's History list when no route has the picked weekend day's values by time of day. */
+export const historyWeekendPeriodsMissingNote = (day: 'Saturday' | 'Sunday') =>
+  `${day} values by time of day aren't available for this agency yet.`;
 
 // ---- Map ----
 // N46 networks-failed

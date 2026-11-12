@@ -58,8 +58,9 @@ interface FilterChipsProps {
   /**
    * Compare mode. 'shared': only the filters both maps share (Mode and Agencies), labelled as
    * such. 'side': only Frequency, Day and Time, for one map's own controls. Same chips and menus
-   * as the full bar either way. 'history': only Frequency and Time (History is weekday only), with the
-   * map's own Time menu (CIV-389, CIV-392; no "All day" since CIV-1097).
+   * as the full bar either way. 'history': Frequency and Time, with the map's own Time menu (CIV-389,
+   * CIV-392; no "All day" since CIV-1097), and the Day chip only behind the beta day picker flag (CIV-1425);
+   * without it History is weekday only.
    */
   variant?: 'full' | 'shared' | 'side' | 'history';
 
@@ -472,6 +473,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
     return (
       <div ref={rowRef} className="flex items-center gap-2">
         {frequencyChip('')}
+        {FEATURES.historyDayPicker && dayChip('')}
         {periodChip('')}
       </div>
     );

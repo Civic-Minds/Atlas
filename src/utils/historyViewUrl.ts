@@ -1,6 +1,7 @@
 import { getNowPeriodForTimezone } from '../components/Interval/FilterChips';
 import { type TimePeriod } from '../hooks/useIntervalStats';
 import { type HistoryView } from './historyYearMap';
+import { FEATURES } from '../../shared/config';
 import { HISTORY_VIEW_URL, linkUpdate, readLink } from './urlSchema';
 
 /** The period History opens on (CIV-1097): the current one, from the same helper the map opens on. */
@@ -10,7 +11,7 @@ export function historyDefaultPeriod(now: Date = new Date()): TimePeriod {
 
 /** History's Frequency (All) and Time (the default period) when nothing else says otherwise. */
 export function historyDefaultView(now: Date = new Date()): HistoryView {
-  return { period: historyDefaultPeriod(now), maxHeadway: Infinity };
+  return { period: historyDefaultPeriod(now), maxHeadway: Infinity, day: 'Weekday' };
 }
 
 /**
@@ -19,12 +20,16 @@ export function historyDefaultView(now: Date = new Date()): HistoryView {
  * always written: the map reads a missing h as its 60 default while History's default is All, and a
  * missing p as the current period. A link without p (every older History link, or one saying "all", the
  * all-day view History no longer has) opens on the default period (CIV-1097).
+ * CIV-1425: with the day picker on, History's day is its own `hday` (Weekday left out); with it off, `hday` is
+ * neither read nor written and History stays on Weekday.
  */
-export function parseHistoryView(search: string | URLSearchParams, now: Date = new Date()): HistoryView {
+export function parseHistoryView(search: string | URLSearchParams, now: Date = new Date(), dayPicker: boolean = FEATURES.historyDayPicker): HistoryView {
   const link = readLink(search, HISTORY_VIEW_URL);
-  return { period: link.period ?? historyDefaultPeriod(now), maxHeadway: link.headway ?? Infinity };
+  return { period: link.period ?? historyDefaultPeriod(now), maxHeadway: link.headway ?? Infinity, day: dayPicker ? link.day ?? 'Weekday' : 'Weekday' };
 }
 
-export function encodeHistoryView(view: HistoryView): { h: string; p: string } {
-  return linkUpdate(HISTORY_VIEW_URL, { headway: view.maxHeadway, period: view.period }) as { h: string; p: string };
+export function encodeHistoryView(view: HistoryView, dayPicker: boolean = FEATURES.historyDayPicker): { h: string; p: string; hday?: string | null } {
+  return dayPicker
+    ? linkUpdate(HISTORY_VIEW_URL, { headway: view.maxHeadway, period: view.period, day: view.day }) as { h: string; p: string; hday: string | null }
+    : linkUpdate(HISTORY_VIEW_URL, { headway: view.maxHeadway, period: view.period }) as { h: string; p: string };
 }
