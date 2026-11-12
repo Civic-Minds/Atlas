@@ -368,6 +368,14 @@
       "destination": "/index.html"
     },
     {
+      "source": "/apps/compare",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/apps/compare/",
+      "destination": "/index.html"
+    },
+    {
       "source": "/apps/live",
       "destination": "/index.html"
     },

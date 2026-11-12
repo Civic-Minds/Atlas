@@ -3,7 +3,7 @@ import { useOnDemandServiceSlugs, useOnDemandStatus } from '../hooks/useOnDemand
 import { MAP_OVERLAY_VARS, publishMapOverlayVar } from '../mapOverlayLayout';
 import React, { useState, useCallback, useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { useLocation, useSearchParams } from 'react-router';
+import { useLocation, useNavigate, useSearchParams } from 'react-router';
 import { useViewportLoadGate } from '../hooks/useViewportLoadGate';
 import { agencyNames, distinctAgencyNames } from '../utils/agencyName';
 import SelectionLoadPanel, { SelectionNoticePanel } from '../components/Interval/SelectionLoadPanel';
@@ -30,6 +30,7 @@ import { countOf, plural } from '../../shared/overflowText';
 import type * as maplibregl from 'maplibre-gl';
 import { CompareSideBar, CompareLinkToggle, CompareTab, CompareMenuItem, defaultCompareSide, type CompareSide } from '../components/Interval/CompareControl';
 import { compareSideBView, linkCompareMaps } from '../utils/compareMapSync';
+import { COMPARE_PATH, compareStepForPathChange } from '../utils/appGate';
 import { DAY_TYPES, type DayType as DayTypeName } from '../../shared/dayTypes';
 import { splitRouteKey } from '../utils/routeKey';
 import { getPolledRoute } from '../../shared/livePollingConfig';
@@ -38,7 +39,7 @@ import { MAP_URL, currentSearch, linkUpdate, readUrlParam, urlParamPresent, urlP
 import { syncUrlParams } from '../utils/syncUrlParams';
 import type { HistoryView } from '../utils/historyYearMap';
 import { usePersistedFilterPref } from '../hooks/usePersistedFilterPref';
-import { encodeCompareSideParams, encodeSelectionParams, encodeModesParam, isAgencyOff, parseAgencyUrlRule, parseAreaBounds, parseCompareSideParams, parseModesParam, parseRouteChooserParam, encodeRouteChooserParam, MODES_PARAM, ROUTE_CHOOSER_PARAM, settleAgencyUrlRule, shouldPersistAgencySelection, type AgencyUrlRule } from '../utils/shareUrlState';
+import { compareAddress, encodeCompareSideParams, encodeSelectionParams, encodeModesParam, isAgencyOff, parseAgencyUrlRule, parseAreaBounds, parseCompareSideParams, parseModesParam, parseRouteChooserParam, encodeRouteChooserParam, MODES_PARAM, ROUTE_CHOOSER_PARAM, settleAgencyUrlRule, shouldPersistAgencySelection, type AgencyUrlRule } from '../utils/shareUrlState';
 import { searchOverlayHidesPanel } from '../utils/format';
 import { trackEvent } from '../lib/analytics';
 import type { FrequentServiceFrequency, FrequentServiceWindow } from '../../shared/frequentService';
@@ -112,8 +113,6 @@ interface Props {
   onSelectionActiveChange?: (active: boolean) => void;
   /** Live mode: a live route picked here opens in Live's card instead of this one. */
   onLiveRouteSelected?: (slug: string, routeShortName: string) => void;
-  /** Start comparing once compare is available (Compare picked from Live or History). */
-  compareStartRequest?: number | null;
   /** Tells the top bar when compare is on, so the other mode tabs can shrink to icons. */
   onCompareActiveChange?: (active: boolean) => void;
   headerPortalContainer?: Element | null;
@@ -177,8 +176,11 @@ function CompareSideSlot({ side, children }: { side: 'A' | 'B'; children: React.
 
 const PENDING_ROUTE_TIMEOUT_MS = 20000;
 
-export default function Interval({ agencies, allAgencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showSelectionUi = false, showRouteLayers = true, liveRoutesOnly = false, filterToAgencies = false, agencyFilterSlugs = null, onHistoryRouteClick, onInfoOpen, selectedAgencySlug, setSelectedAgencySlug, onAgencyCardClose, historyView, onMapDismiss, externalPanelOpen = false, pendingLiveRoute, onPendingLiveRouteHandled, pendingNightRoute, onPendingNightRouteHandled, searchFocused = false, setSearchFocused, hideFilterPanel = false, day, setDay, onLayersChange, onViewportAgencySlugsChange, onUserMoveMap, onSelectedMapAgencyChange, onSelectionActiveChange, onLiveRouteSelected, compareStartRequest = null, onCompareActiveChange, headerPortalContainer, viewTabsPortalContainer, moreMenuPortalContainer, onMoreMenuDone, nightServiceView = false, nightServiceFrequency = 60, setNightServiceFrequency, frequentServiceView = false, frequentServiceDays = ['Weekday'], frequentServiceFrequency = 15, frequentServiceWindow = 'daytime', setFrequentServiceDays, setFrequentServiceFrequency, setFrequentServiceWindow, showMapContext = false, showMatchPercentage = false, sidebarLeft, searchBarWidth, searchEnterRef, analyticsApp = 'frequency', hideLowQuality, setHideLowQuality, feedQualityEnabled = false, showMapLegend, setShowMapLegend, dataSaver, setDataSaver, exportEnabled = false, exportTitle = 'Transit map' }: Props) {
+export default function Interval({ agencies, allAgencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showSelectionUi = false, showRouteLayers = true, liveRoutesOnly = false, filterToAgencies = false, agencyFilterSlugs = null, onHistoryRouteClick, onInfoOpen, selectedAgencySlug, setSelectedAgencySlug, onAgencyCardClose, historyView, onMapDismiss, externalPanelOpen = false, pendingLiveRoute, onPendingLiveRouteHandled, pendingNightRoute, onPendingNightRouteHandled, searchFocused = false, setSearchFocused, hideFilterPanel = false, day, setDay, onLayersChange, onViewportAgencySlugsChange, onUserMoveMap, onSelectedMapAgencyChange, onSelectionActiveChange, onLiveRouteSelected, onCompareActiveChange, headerPortalContainer, viewTabsPortalContainer, moreMenuPortalContainer, onMoreMenuDone, nightServiceView = false, nightServiceFrequency = 60, setNightServiceFrequency, frequentServiceView = false, frequentServiceDays = ['Weekday'], frequentServiceFrequency = 15, frequentServiceWindow = 'daytime', setFrequentServiceDays, setFrequentServiceFrequency, setFrequentServiceWindow, showMapContext = false, showMatchPercentage = false, sidebarLeft, searchBarWidth, searchEnterRef, analyticsApp = 'frequency', hideLowQuality, setHideLowQuality, feedQualityEnabled = false, showMapLegend, setShowMapLegend, dataSaver, setDataSaver, exportEnabled = false, exportTitle = 'Transit map' }: Props) {
   const [searchParams] = useSearchParams();
+  // Router path: Compare has its own address (/apps/compare); the link sync below also follows it.
+  const { pathname } = useLocation();
+  const navigate = useNavigate();
   const [mapContextOpen, setMapContextOpen] = useState(false);
   const [mapContextView, setMapContextView] = useState<'agencies' | 'routes'>('routes');
   const [mapContextAgencyCount, setMapContextAgencyCount] = useState(0);
@@ -443,16 +445,19 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     && viewShowsOnDemand(mapViewKind({ nightServiceView, frequentServiceView, liveRoutesOnly }), selectedModes);
   const compareAvailable = FEATURES.compareMode && phoneModeFlags(isPhoneScreen).compareMode && showRouteLayers && !nightServiceView
     && !frequentServiceView && !liveRoutesOnly && !filterToAgencies;
-  const [compareSide, setCompareSide] = useState<CompareSide | null>(() => {
-    if (!compareAvailable) return null;
-    return parseCompareSideParams<DayTypeName, TimePeriod>(searchParams, {
+  // Side B from a link's own settings; at /apps/compare without them, B starts from A's settings as the tab does.
+  const compareSideFromLink = (search: string | URLSearchParams, atComparePath: boolean): CompareSide | null => (
+    parseCompareSideParams<DayTypeName, TimePeriod>(search, {
       days: DAY_TYPES,
       periods: PERIOD_KEYS as readonly TimePeriod[],
       // CIV-239: no All day; a Compare link without map B's time opens B on map A's.
       allPeriod: period,
       fallbackHeadway: maxHeadway,
-    });
-  });
+    }) ?? (atComparePath ? defaultCompareSide({ day, period, maxHeadway }) : null)
+  );
+  const [compareSide, setCompareSide] = useState<CompareSide | null>(() => (
+    compareAvailable ? compareSideFromLink(searchParams, pathname === COMPARE_PATH) : null
+  ));
   const compareActive = compareAvailable && compareSide != null;
   const [compareLinked, setCompareLinked] = useState(true);
   // Switching to another app (History, Live, Fares...) leaves compare in the same step, so coming
@@ -463,6 +468,21 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     setCompareWasAvailable(compareAvailable);
     if (!compareAvailable && compareSide != null) setCompareSide(null);
     if (!compareAvailable) setCompareLinked(true);
+  }
+  // Back and forward between the map and /apps/compare turn Compare on and off with the address. Done during
+  // render like the block above, so the link sync below never writes a stale side B into the new address.
+  const [comparePathSeen, setComparePathSeen] = useState(pathname);
+  if (comparePathSeen !== pathname) {
+    setComparePathSeen(pathname);
+    const step = compareStepForPathChange(comparePathSeen, pathname, compareActive);
+    if (step === 'start' && compareAvailable) {
+      setCompareLinked(true);
+      // The address bar, not the router: side B's settings are written outside the router (syncUrlParams).
+      setCompareSide(compareSideFromLink(window.location.search, true));
+    } else if (step === 'exit') {
+      setCompareLinked(true);
+      setCompareSide(null);
+    }
   }
 
   const previousAnalyticsFilters = useRef<{
@@ -737,14 +757,28 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
 
   useEffect(() => { onCompareActiveChange?.(compareActive); }, [compareActive, onCompareActiveChange]);
 
-  const startCompare = useCallback(() => { setCompareLinked(true); setCompareSide(defaultCompareSide(compareA)); }, [compareA]);
-  const exitCompare = useCallback(() => { setCompareLinked(true); setCompareSide(null); }, []);
-  const handledCompareStart = useRef<number | null>(null);
+  // Turning Compare on or off from the map moves the address between the map's path and /apps/compare (a new
+  // history entry, so Back undoes it).
+  const startCompare = useCallback(() => {
+    setCompareLinked(true);
+    setCompareSide(defaultCompareSide(compareA));
+    const to = compareAddress(window.location.pathname, window.location.search, true);
+    if (to) navigate(to);
+  }, [compareA, navigate]);
+  const exitCompare = useCallback(() => {
+    setCompareLinked(true);
+    setCompareSide(null);
+    const to = compareAddress(window.location.pathname, window.location.search, false);
+    if (to) navigate(to);
+  }, [navigate]);
+  // An old map link carrying side B's settings opens Compare; its address becomes /apps/compare in place.
   useEffect(() => {
-    if (!compareStartRequest || !compareAvailable || handledCompareStart.current === compareStartRequest) return;
-    handledCompareStart.current = compareStartRequest;
-    startCompare();
-  }, [compareStartRequest, compareAvailable, startCompare]);
+    if (!compareActive) return;
+    const to = compareAddress(window.location.pathname, window.location.search, true);
+    if (to) navigate(to, { replace: true });
+  // Only the address the page opened on.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Side labels: how many routes each map draws in view. Counted from what is on screen, the same
   // way as the route-count badge.
@@ -1087,7 +1121,6 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   // A tab switch opens the new view on a bare path (App's setActiveApp), and the effects above write only on a change,
   // so coming back left the link without the map's filters and a copied link opened on the viewer's own (CIV-1139).
   // When the map's own view opens again it writes its whole link once; any view showing the map writes its position.
-  const { pathname } = useLocation();
   const linkPathRef = useRef(pathname);
   useEffect(() => {
     if (linkPathRef.current === pathname) return;
