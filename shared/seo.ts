@@ -100,6 +100,14 @@ export const SEO_ROUTES: readonly SeoRoute[] = [
     gate: 'history',
   },
   {
+    // Compare's own address: the frequency map split in two, so it keeps the map's title and points at the map.
+    path: '/apps/compare',
+    title: 'Transit Atlas: scheduled frequency map',
+    description: HOME_DESCRIPTION,
+    indexable: false,
+    canonicalPath: '/',
+  },
+  {
     path: '/apps/live',
     title: 'Live vehicles: Transit Atlas',
     description: 'Compare live vehicle positions with scheduled service on the Atlas map.',

@@ -44,7 +44,7 @@ Live is unset/false in every deployment. Do not add a beta override until the Li
 
 ## Graduated features
 
-- Compare mode (`COMPARE_MODE_ENABLED`) is on in every deployment on desktop and tablet; it stays hidden on phones (Ryan, 2026-10-20, CIV-75).
+- Compare mode (`COMPARE_MODE_ENABLED`) is on in every deployment on desktop and tablet; it stays hidden on phones (Ryan, 2026-10-20, CIV-75). It has its own address, `/apps/compare`, which falls back to the map where Compare is off.
 - The phone bottom sheet for route and stop cards (`MOBILE_ROUTE_SHEET_ENABLED`) is on in every deployment (Ryan, 2026-10-20, [#647](https://github.com/Civic-Minds/Atlas/issues/647)).
 - Map image export is on in every deployment; its `VITE_MAP_EXPORT_ENABLED` flag was removed ([#642](https://github.com/Civic-Minds/Atlas/pull/642)).
 - Research is no longer in the map's top bar in any mode; in `beta` and `dev` it is reached from the About page ([#652](https://github.com/Civic-Minds/Atlas/pull/652)).

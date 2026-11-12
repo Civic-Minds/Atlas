@@ -19,6 +19,8 @@ import { AREA_INDEX, AREA_PARAM, areaMatchingSelection, lookupArea, type AreaInd
 import { FEATURES } from '../../shared/config';
 import { filterModeOptions } from '../../shared/modes';
 import { MAP_URL } from './urlSchema';
+import { COMPARE_PATH, MAP_PATHS } from './appGate';
+import { mergeUrlSearchParams } from './syncUrlParams';
 import { currentAgencyKey, currentAgencySlug } from './formerSlugs';
 
 export const AGENCY_URL_MAX_SLUGS = 60;
@@ -205,6 +207,18 @@ export function parseCompareSideParams<Day extends string, Period extends string
 export function encodeCompareSideParams(side: CompareSideParams | null): Record<'cday' | 'cp' | 'ch', string | null> {
   if (!side) return { cday: null, cp: null, ch: null };
   return { cday: side.day, cp: side.period, ch: encodeHeadwayValue(side.maxHeadway) };
+}
+
+/**
+ * The address to move to when Compare turns on or off on the map, or null when the address already fits.
+ * On: the map's path becomes /apps/compare and every setting stays in the query. Off: back to the map's path,
+ * without side B's settings. An old map link carrying side B's settings uses the "on" address (replacing it).
+ */
+export function compareAddress(pathname: string, search: string, compareActive: boolean): string | null {
+  if (compareActive) return MAP_PATHS.includes(pathname) ? `${COMPARE_PATH}${search}` : null;
+  if (pathname !== COMPARE_PATH) return null;
+  const qs = mergeUrlSearchParams(search, encodeCompareSideParams(null));
+  return qs ? `/?${qs}` : '/';
 }
 
 /**
