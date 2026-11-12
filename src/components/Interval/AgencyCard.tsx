@@ -28,7 +28,7 @@ import { OutboundLink } from '../OutboundLink';
 import { buildRouteFacts, type RouteLabel } from '../../utils/routeFacts';
 import { reportDetails } from '../../utils/reportIssue';
 import { AGENCY_ROUTES_FAILED, BACK_TO_MAP_LABEL, BETA_ROLLOUT_NOTICE, BETA_SERVICE_ROLLOUT_NOTICE, explainerFor, getRolloutNotice, NO_ROUTES_LOADED, noRoutesMatchText, noServiceOnDayNotice, notOnMapYetNotice, ON_DEMAND_NOT_MAPPED_NOTE, ON_DEMAND_SHADED_AREA, onDemandPickupSentence, ROUTES_OUTSIDE_FILTERS_NOTICE, routesOutsideFiltersNotice, VIEW_ON_BETA } from '../../content/noticeCopy';
-import { onDemandCardName } from '../../utils/onDemandSelection';
+import { namedOnDemandService, onDemandCardName, resolveOnDemandLinkTarget } from '../../utils/onDemandSelection';
 import { onDemandCoverageNote } from '../../data/onDemandCoverage';
 import {
   formatOnDemandHoursLines,
@@ -510,16 +510,18 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
   if (onDemandFocus && !agency.onDemandServiceArea) return null;
 
   if (onDemandFocus && agency.onDemandServiceArea) {
-    const service = agency.onDemandServiceArea;
-    const selectedZone = onDemandZoneId
-      ? service.features.find(feature => (feature.properties as { areaName?: string } | undefined)?.areaName === onDemandZoneId)
-      : undefined;
-    const zoneName = (selectedZone?.properties as { areaName?: string } | undefined)?.areaName;
+    // The link's id names a zone, a separately run service (Trans-Cab), or nothing (#1440).
+    const linkTarget = resolveOnDemandLinkTarget(agency.onDemandServiceArea, onDemandZoneId);
+    const service = linkTarget.kind === 'named-service'
+      ? namedOnDemandService(agency.onDemandServiceArea, linkTarget.serviceName, linkTarget.zoneIds)
+      : agency.onDemandServiceArea;
+    const zoneName = linkTarget.kind === 'zone' ? linkTarget.zoneId : undefined;
     const zone = resolveOnDemandZone(service, zoneName);
     const pickupSentence = onDemandPickupSentence(service, zoneName);
     // Only claim a shaded area when one belongs to this service (Hamilton's shaded zones are Trans-Cab, not myRide).
     const showsShadedArea = zoneName
-      ? true
+      // A stop-only zone (Grande Prairie's Late Night) has no shaded area.
+      ? service.features.some(feature => (feature.properties as { areaName?: string } | undefined)?.areaName === zoneName)
       : service.features.some(feature => resolveOnDemandZone(service, (feature.properties as { areaName?: string } | undefined)?.areaName).sameServiceAsParent);
     const runningNote = onDemandRunningNote(zone.availability, day, period);
     const zoneRows = zoneName ? [] : onDemandZoneHoursRows(service);
@@ -528,7 +530,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
     // area or its hours says which one; the agency's own report says only the agency.
     const onDemandReport = (
       <CardReportButton
-        title={`On-demand issue: ${onDemandCardName(service, onDemandZoneId, agencyNamePrimary)}`}
+        title={`On-demand issue: ${onDemandCardName(agency.onDemandServiceArea, onDemandZoneId, agencyNamePrimary)}`}
         details={reportDetails([
           ['Agency', agency.name],
           ['Agency slug', agency.slug],
@@ -556,7 +558,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
             // A zone (or a fixed-route agency's service) reads like a route card: "← Agency" back to the agency
             // card, then the bold zone name (Ryan: "the on demand should be closer to the route card").
             <div className="flex items-start gap-2">
-              <SidebarCardHeader title={onDemandCardName(service, onDemandZoneId, agencyNamePrimary)} back={{ to: agencyCardName, onClick: backToAgency }} />
+              <SidebarCardHeader title={onDemandCardName(agency.onDemandServiceArea, onDemandZoneId, agencyNamePrimary)} back={{ to: agencyCardName, onClick: backToAgency }} />
               {onDemandReport}
             </div>
           ) : (
