@@ -56,6 +56,8 @@ describe('per-route mode overrides (#827)', () => {
     expect(at('capmetro', 0, '550', '550-Metro Rail Red Line')).toBe(2); // commuter rail, published as tram (CIV-956)
     expect(at('rioc-tram', 0, '', 'Roosevelt Island Aerial Tramway')).toBe(6);
     expect(at('rioc-tram', 3, '', 'RIOC Red Bus')).toBe(3);
+    expect(at('jta', 3, '500', 'St Johns River Ferry')).toBe(4); // #1422
+    expect(at('jta', 3, '5', 'Other bus')).toBe(3);
   });
 
   it('an overridden route is rail-like only when its corrected mode is', () => {

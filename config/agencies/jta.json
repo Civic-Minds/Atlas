@@ -64,6 +64,14 @@
     },
     "checkedAt": "2026-11-12"
   },
+  "modeOverrides": [
+    {
+      "routeType": 3,
+      "routeShortName": "500",
+      "mode": 4,
+      "reason": "The St. Johns River Ferry is a ferry, published by JTA as route_type 3 (bus) (#1422)"
+    }
+  ],
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
