@@ -70,9 +70,10 @@ describe('History on Saturday (CIV-1425)', () => {
   });
 
   it('the agency list reads Saturday values, "no trips" rows, and no missing-values notice for a pilot agency', async () => {
-    const c = await open('/apps/history?agency=mbta&year=2024&p=midday', pilot, saturday, 'Biggest changes first');
+    // Waits for a row, not the list heading: the rows can render a moment after it (CI, PR #1457).
+    const c = await open('/apps/history?agency=mbta&year=2024&p=midday', pilot, saturday, 'Nightless');
     const text = c.textContent ?? '';
-    expect(text).toContain('Nightless');
+    expect(text).toContain('Biggest changes first');
     expect(text).toContain('no trips');
     expect(text).toContain('30 min');
     expect(text).toContain('+6');
@@ -81,8 +82,9 @@ describe('History on Saturday (CIV-1425)', () => {
   });
 
   it('a frequency limit leaves out "no trips" routes', async () => {
-    const c = await open('/apps/history?agency=mbta&year=2024&p=midday', pilot, { ...saturday, maxHeadway: 60 }, 'Biggest changes first');
-    expect(c.textContent).toContain('Alpha');
+    // Waits for the row that stays, not the list heading (it can render first; failed in CI on PR #1457).
+    const c = await open('/apps/history?agency=mbta&year=2024&p=midday', pilot, { ...saturday, maxHeadway: 60 }, 'Alpha');
+    expect(c.textContent).toContain('Biggest changes first');
     expect(c.textContent).not.toContain('Nightless');
   });
 
