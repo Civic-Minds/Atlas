@@ -17,6 +17,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **A shared stretch no longer counts buses that [end there](https://github.com/Civic-Minds/Atlas/issues/1425) as departures**: Niagara 45 read every 8 at NOTL Campus, where buses leave about every 15
 - **Three buses around a long gap no longer read as [steady service](https://github.com/Civic-Minds/Atlas/issues/1432)**: GO 33 read "every 99" in the PM peak where riders wait 158
 - **An on-demand service's card lists every zone with its hours**: services whose hours differ by zone, like RTD FlexRide, read "Hours unavailable" until a zone was picked; each zone row opens that zone
+- **Picking a route in History [frames that route](https://github.com/Civic-Minds/Atlas/issues/1095)**: MARTA 3 left the map on the whole agency, and Caltrain's line could run off screen behind the card
 - **History shows [trip time](https://github.com/Civic-Minds/Atlas/issues/1431) for BART again**: it went missing when each line's two directions were merged into one route
 - **Shared map links preview with a map of their own city**: a link to a spot in Chicago showed Toronto; area and agency pages show their city's map too
 - **The [Jacksonville ferry](https://github.com/Civic-Minds/Atlas/issues/1422) shows as a ferry**: JTA's data lists it as a bus

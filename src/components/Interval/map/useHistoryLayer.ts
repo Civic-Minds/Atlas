@@ -15,6 +15,18 @@ function fitHistoryLines(map: maplibregl.Map, points: ReadonlyArray<LonLat>, max
   if (target?.kind === 'bounds') map.fitBounds(target.bounds, { padding: selectionFramePadding(map), maxZoom });
 }
 
+const TODAY_LINE_LAYERS = ['overview-routes-layer', 'routes-layer', 'local-routes-layer'];
+
+/** Points of today's drawn lines for one agency, optionally one route (History's key is the line's routeShortName). */
+function todaysLinePoints(map: maplibregl.Map, slug: string, routeShortName?: string): LonLat[] {
+  const layers = TODAY_LINE_LAYERS.filter(id => map.getLayer(id));
+  if (layers.length === 0) return [];
+  return map.queryRenderedFeatures(undefined, { layers })
+    .filter(f => String(f.properties?.agencySlug ?? '') === slug
+      && (routeShortName === undefined || String(f.properties?.routeShortName ?? '') === routeShortName))
+    .flatMap(f => lineCoordinates(f.geometry));
+}
+
 /** History map layers: route shape, time-scrubber routes, and camera fit. */
 export function useHistoryLayer(
   mapRef: React.RefObject<maplibregl.Map | null>,
@@ -47,7 +59,11 @@ export function useHistoryLayer(
   // route changes, not on every year step (the overlay changes with the year).
   const latestOverlayRef = useRef(historyOverlay);
   latestOverlayRef.current = historyOverlay;
-  const cameraKey = historyOverlay ? `${historyOverlay.slug}|${historyOverlay.routeShortName}` : '';
+  // #1095: whether the picked route's own line has arrived is part of the key, so a line that loads after the
+  // route was picked still gets framed (once; a year step that keeps the line does not move the map).
+  const cameraKey = historyOverlay
+    ? `${historyOverlay.slug}|${historyOverlay.routeShortName}|${historyOverlay.routeShortName && isDrawableLineCoordinates(historyOverlay.routeGeometry) ? 'line' : ''}`
+    : '';
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !mapLoaded) return;
@@ -68,8 +84,27 @@ export function useHistoryLayer(
     const hasRouteGeometry = Boolean(routeGeometry);
     const ownShapes = (historyOverlay.yearRoutes ?? []).filter(r => isDrawableLineCoordinates(r.coordinates));
     const hasHistoricalRouteGeometry = ownShapes.length > 0;
+    const rsn = historyOverlay.routeShortName;
     if (routeGeometry && routeGeometry.length > 1) {
       fitHistoryLines(map, routeGeometry as LonLat[], 14);
+      return;
+    }
+    // #1095: a picked route with no line of its own that year draws on today's line. Frame that line, never the
+    // whole agency's shapes (which left MARTA 3 at the agency-wide view). Only the on-screen part of a tile line
+    // can be read, so after the first fit the line is read once more and refitted, once (no chain of moves, #478).
+    const fitTodaysLine = (refine: boolean): boolean => {
+      const points = todaysLinePoints(map, historyOverlay.slug, rsn);
+      if (points.length === 0) return false;
+      if (refine) {
+        const refit = () => { map.off('moveend', refit); tryZoomHandlerRef.current = null; fitTodaysLine(false); };
+        tryZoomHandlerRef.current = refit;
+        map.on('moveend', refit);
+      }
+      fitHistoryLines(map, points, 14);
+      return true;
+    };
+    if (rsn) {
+      if (fitTodaysLine(true)) return;
     } else if (hasHistoricalRouteGeometry) {
       fitHistoryLines(map, ownShapes.flatMap(route => route.coordinates! as LonLat[]), 11);
     }
@@ -79,33 +114,24 @@ export function useHistoryLayer(
       // immediately fly back to the agency center; the competing camera
       // animations can keep emitting moveend updates and trigger React's
       // update-depth guard (#478).
-      if (!hasRouteGeometry && !hasHistoricalRouteGeometry) {
+      if (rsn) {
+        // The route's line is not on screen yet: fly to the agency, then frame the route once the fly ends.
+        const tryZoom = () => {
+          map.off('moveend', tryZoom);
+          tryZoomHandlerRef.current = null;
+          fitTodaysLine(true);
+        };
+        tryZoomHandlerRef.current = tryZoom;
+        map.on('moveend', tryZoom);
+        map.flyTo({ center: [historyOverlay.agencyCenter[1], historyOverlay.agencyCenter[0]], zoom: 10, duration: 700 });
+      } else if (!hasHistoricalRouteGeometry) {
         const fitAgencyRoutes = () => {
           tryZoomHandlerRef.current = null;
-          const features = map.queryRenderedFeatures(undefined, {
-            layers: ['overview-routes-layer', 'routes-layer', 'local-routes-layer'],
-          }).filter(feature => String(feature.properties?.agencySlug ?? '') === historyOverlay.slug);
-          fitHistoryLines(map, features.flatMap(feature => lineCoordinates(feature.geometry)), 11);
+          fitHistoryLines(map, todaysLinePoints(map, historyOverlay.slug), 11);
         };
         tryZoomHandlerRef.current = fitAgencyRoutes;
         map.once('moveend', fitAgencyRoutes);
         map.flyTo({ center: [historyOverlay.agencyCenter[1], historyOverlay.agencyCenter[0]], zoom: 10, duration: 700 });
-      }
-      // Without historical geometry, try to zoom to the specific current route
-      // after the agency fly completes.
-      if (!hasRouteGeometry && historyOverlay.routeShortName) {
-        const rsn = historyOverlay.routeShortName;
-        const tryZoom = () => {
-          map.off('moveend', tryZoom);
-          tryZoomHandlerRef.current = null;
-          if (!map.getLayer('routes-layer')) return;
-          const features = map.queryRenderedFeatures(undefined, { layers: ['routes-layer'] })
-            .filter((f: maplibregl.MapGeoJSONFeature) => String(f.properties?.routeShortName ?? '') === rsn);
-          if (features.length === 0) return;
-          fitHistoryLines(map, features.flatMap(f => lineCoordinates(f.geometry)), 14);
-        };
-        tryZoomHandlerRef.current = tryZoom;
-        map.on('moveend', tryZoom);
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
