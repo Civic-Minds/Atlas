@@ -165,6 +165,23 @@ function changeSummary(entry: RouteHistoryEntry, period: TimePeriod = 'all'): { 
   };
 }
 
+/** The neutral callout's outline, for the tinted frequency box, so both History boxes have the same edge (CIV-1127). */
+const CALLOUT_OUTLINE = 'border border-[var(--border-primary)]';
+
+/** Draft, pending Ryan's word-for-word OK (CIV-1127): the one sentence in the frequency change box. */
+const HISTORY_FREQUENCY_CHANGE_NOTE_DRAFT = 'This compares the oldest and newest weekday schedules Atlas has for this route.';
+
+/** The trip time box's lines, only when the trip time changed as displayed (CIV-1127, Ryan 2026-10-29:
+ *  "why are we showing trip time if it iddint change"). A larger minimum is still his call. */
+export function tripTimeChange(entry: RouteHistoryEntry): { first: string; last: string; dates: string } | null {
+  const trip = entry.tripDuration;
+  if (!trip) return null;
+  const first = runTimeAmount(trip.firstMinutes);
+  const last = runTimeAmount(trip.lastMinutes);
+  if (first === last) return null;
+  return { first, last, dates: `${trip.firstLabel} to ${trip.lastLabel}` };
+}
+
 /** The agency with only the snapshots History shows (#1030). */
 function withUsableSnapshots(agency: AgencyHistory): AgencyHistory {
   return { ...agency, routes: agency.routes.map(r => ({ ...r, snapshots: usableSnapshots(r.snapshots) })) };
@@ -238,6 +255,7 @@ function RouteHistoryCard({
   const worse = lastHw > firstHw;
   const better = lastHw < firstHw;
   const summary = changeSummary(route, period);
+  const tripTime = tripTimeChange(route);
   // The snapshot under the pointer or keyboard, on a row or a chart point: its row highlights like a route card row and
   // its point grows and shows its value (Ryan: "when u hover over a date in this list does it hihglight it on the date on the chart too").
   const [hoveredSnap, setHoveredSnap] = useState<RouteSnapshot | null>(null);
@@ -336,27 +354,21 @@ function RouteHistoryCard({
         })}
       </SidebarCardListRows>
 
-        {/* One box (CIV-1127): the frequency change first, in its better or worse colour (CIV-971), then the trip time
-            as one line under it. A route with only one of the two shows that one. */}
-        {(summary || route.tripDuration) && (
-          <CardCallout tone={summary ? (summary.worse ? 'negative' : 'positive') : 'neutral'} className="mt-3">
-            {summary && (
-              <>
-                <p className={CARD_CALLOUT_HEADLINE_TONE[summary.worse ? 'negative' : 'positive']}>{summary.text}</p>
-                <p className={CARD_CALLOUT_TEXT}>{summary.subtext}</p>
-              </>
-            )}
-            {route.tripDuration && (
-              <>
-                <p className={summary ? `${CARD_CALLOUT_TEXT} mt-2` : CARD_CALLOUT_HEADLINE} data-testid="history-trip-time">
-                  Trip time: {runTimeAmount(route.tripDuration.firstMinutes)} ({route.tripDuration.firstLabel}) → {runTimeAmount(route.tripDuration.lastMinutes)} ({route.tripDuration.lastLabel})
-                </p>
-                {/* The long explanation stays here until Ryan picks where it goes: History has no explainer link (CIV-1127). */}
-                <p className={`${CARD_NOTICE} mt-1`}>
-                  {HISTORY_TRIP_TIME_NOTE}
-                </p>
-              </>
-            )}
+        {/* Two short boxes in one style (CIV-1127, Ryan 2026-10-30: "why does one box have an outline here and the other
+            doesnt ... jut put a sentence in both to exlpain if needed"): the frequency change in its better or worse
+            colour (CIV-971), then the trip time. Each has its headline, its dates on their own line and one sentence. */}
+        {summary && (
+          <CardCallout tone={summary.worse ? 'negative' : 'positive'} className={`mt-3 ${CALLOUT_OUTLINE}`} data-testid="history-frequency-box">
+            <p className={CARD_CALLOUT_HEADLINE_TONE[summary.worse ? 'negative' : 'positive']}>{summary.text}</p>
+            <p className={CARD_CALLOUT_TEXT}>{summary.subtext}</p>
+            <p className={`${CARD_NOTICE} mt-1`}>{HISTORY_FREQUENCY_CHANGE_NOTE_DRAFT}</p>
+          </CardCallout>
+        )}
+        {tripTime && (
+          <CardCallout className="mt-3" data-testid="history-trip-time-box">
+            <p className={CARD_CALLOUT_HEADLINE} data-testid="history-trip-time">Trip time: {tripTime.first} → {tripTime.last}</p>
+            <p className={CARD_CALLOUT_TEXT}>{tripTime.dates}</p>
+            <p className={`${CARD_NOTICE} mt-1`}>{HISTORY_TRIP_TIME_NOTE}</p>
           </CardCallout>
         )}
     </SidebarCardShell>
