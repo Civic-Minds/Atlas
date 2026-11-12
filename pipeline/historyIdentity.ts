@@ -229,27 +229,50 @@ export function worseSidecarEntry<E extends { v2: HistoryV2SidecarRoute }>(a: E,
 export type TripDurationPeriod = { periodKey: string; durationMinutes: number; stopSequence: string[]; refDate?: string };
 
 /**
- * #1431: the trip time of a merged line in one period, from its two directions' files. The longer
- * direction's minutes stand for the line, as the worse direction's frequency does, and the stops are both
- * directions' in order, so a change to either direction's stops still counts as a changed line.
+ * #1431: the trip time of a merged line in one period, from its directions' files for that period. The
+ * longest direction's minutes stand for the line, as the worse direction's frequency does (the first
+ * listed on a tie), and the stops are every direction's in order, so a change to any direction's stops
+ * still counts as a changed line. A direction with no minutes (0, negative or not a number) means the
+ * period has no trip time: never the other direction's value as a guess.
  */
-export function longerTripDuration(a: TripDurationPeriod, b: TripDurationPeriod): TripDurationPeriod {
-  const [longer, other] = b.durationMinutes > a.durationMinutes ? [b, a] : [a, b];
-  const refDate = longer.refDate ?? other.refDate;
-  return { ...longer, ...(refDate ? { refDate } : {}), stopSequence: [...a.stopSequence, '|', ...b.stopSequence] };
+export function longerTripDuration(directions: readonly TripDurationPeriod[]): TripDurationPeriod | null {
+  if (directions.length === 0) return null;
+  if (directions.some(d => !Number.isFinite(d.durationMinutes) || d.durationMinutes <= 0)) return null;
+  const longest = directions.reduce((best, d) => d.durationMinutes > best.durationMinutes ? d : best);
+  const refDate = longest.refDate ?? directions.find(d => d.refDate)?.refDate;
+  const stopSequence = directions.flatMap((d, i) => i === 0 ? d.stopSequence : ['|', ...d.stopSequence]);
+  return { ...longest, ...(refDate ? { refDate } : {}), stopSequence };
 }
 
 /**
  * #1431: trip time files recorded under a merged line's old per-direction keys (BART "Red-N" and "Red-S")
- * fold into the merged key ("Red"), one entry per period (`longerTripDuration`). Only direction aliases
- * fold; renames and day-type splits leave trip time as it was.
+ * fold into the merged key ("Red"), one entry per period (`longerTripDuration`). A period where only some
+ * of the directions have a file gets no trip time; a period recorded under the merged key alone keeps its
+ * own. Only direction aliases fold; renames and day-type splits leave trip time as it was.
  */
 export function foldDirectionTripDurations(
   routes: Record<string, TripDurationPeriod[]>,
   slugAliases: Record<string, HistoryAliasEntry[]> | undefined,
 ): Record<string, TripDurationPeriod[]> {
-  const directionOnly = Object.fromEntries(Object.entries(slugAliases ?? {})
-    .map(([canonical, olds]) => [canonical, olds.filter(isDirection)] as const)
-    .filter(([, olds]) => olds.length > 0));
-  return mergeAliasedRoutes(routes, directionOnly, undefined, { periodKey: e => e.periodKey, combine: longerTripDuration }).routes;
+  const out: Record<string, TripDurationPeriod[]> = {};
+  for (const [k, v] of Object.entries(routes)) out[k] = [...v];
+  for (const [canonical, olds] of Object.entries(slugAliases ?? {})) {
+    const halves = olds.filter(isDirection).map(e => e.key).filter(key => key !== canonical);
+    if (!halves.some(key => out[key])) continue;
+    const at = (key: string, periodKey: string) => out[key]?.find(e => e.periodKey === periodKey);
+    const periodKeys = [...new Set([canonical, ...halves].flatMap(key => (out[key] ?? []).map(e => e.periodKey)))];
+    const folded: TripDurationPeriod[] = [];
+    for (const periodKey of periodKeys) {
+      const own = at(canonical, periodKey);
+      const directions = halves.map(key => at(key, periodKey));
+      const recorded = directions.filter((d): d is TripDurationPeriod => d !== undefined);
+      // Some directions but not all: the line's trip time for the period is not known.
+      if (recorded.length > 0 && recorded.length < halves.length) continue;
+      const line = longerTripDuration([...(own ? [own] : []), ...recorded]);
+      if (line) folded.push(line);
+    }
+    for (const key of halves) delete out[key];
+    out[canonical] = folded;
+  }
+  return out;
 }
