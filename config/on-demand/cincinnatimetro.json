@@ -7,7 +7,6 @@
     "sourceRetrievedAt": "2026-10-11",
     "bookingUrl": "https://www.go-metro.com/riding-metro/metronow/",
     "eligibility": "Open to everyone; riders under 12 must ride with someone older.",
-    "tripRules": "Trips must be scheduled in advance.",
     "zoneMetadata": {
       "Springdale/Sharonville": {
         "serviceName": "MetroNow!",
@@ -154,7 +153,8 @@
           "retrievedAt": "2026-10-11"
         }
       }
-    }
+    },
+    "bookingInfo": "Book trips in advance."
   },
   "features": [
     {
